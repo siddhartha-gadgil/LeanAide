@@ -40,7 +40,7 @@ def promptJs(js: Value): Value = {
     val argSeq = obj("args").arr.toVector.map(js => Str(exprString(js("arg"))))
     val args  =  Str(argSeq.mkString(" "))
     val typeExpr = Str(exprString(obj("type")))
-    Obj("name" -> name, "args" -> args, "type" -> typeExpr)
+    Obj("doc_string" -> obj("doc_string").str, "name" -> name, "args" -> args, "type" -> typeExpr)
 }
 
 def allPrompts(js: Value) = {
