@@ -50,5 +50,6 @@ def allPrompts(js: Value) = {
 
 def writeFull(): Unit = {
     val fullJs = allPrompts(fullDecls)
-    os.write(os.pwd / "data" / "prompts.json", ujson.write(fullJs, 2))
+    println(s"Writing ${fullJs.arr.length} full declarations to ${os.pwd / "data" / "fulldecls.json"}")
+    os.write.over(os.pwd / "data" / "prompts.json", ujson.write(fullJs, 2))
 }
