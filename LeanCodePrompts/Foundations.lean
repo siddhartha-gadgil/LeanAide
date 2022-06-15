@@ -1,3 +1,6 @@
+import Mathlib.Init.Data.Nat.Basic
+import Mathlib.Init.Logic
+
 /-
 Basic examples of Lean's dependent type theory, including
 - Functions (`λ` notation, `fun` notation, `def` notation, etc)
@@ -8,3 +11,14 @@ Basic examples of Lean's dependent type theory, including
 
 The aim is to introduce most of the basic constructions in Lean along with their notational nuances.
 -/
+
+/-
+Text: `m` is a natural number.
+-/
+def m : Nat := 1
+
+/-
+Text: `n` is a natural number equal to `0`.
+-/
+
+def n := (0 : ℕ)
