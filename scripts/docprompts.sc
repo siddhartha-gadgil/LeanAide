@@ -16,7 +16,7 @@ def exprString(js: Value) : String = js.strOpt.map(s => clean(s).replace("\n", "
     val arr = js.arr
     val head = arr.head.str
     head match {
-        case "c" => exprString(arr(1)) + " " + exprString(arr(2))
+        case "c" => exprString(arr(1))  + exprString(arr(2))
         case "n" =>
             // println(arr(1))
             exprString(arr(1)) 
@@ -37,7 +37,7 @@ def nameArgStrings(arr: Value) = nameArgTypes(arr).map{case (name, args, typeExp
 def promptJs(js: Value): Value = {
     val obj = js.obj
     val name = Str(obj("name").str.replace("\n", " "))
-    val argSeq = obj("args").arr.toVector.map(js => Str(exprString(js("arg"))))
+    val argSeq = obj("args").arr.toVector.map(js => exprString(js("arg")))
     val args  =  Str(argSeq.mkString(" "))
     val typeExpr = Str(exprString(obj("type")))
     Obj("doc_string" -> obj("doc_string").str, "name" -> name, "args" -> args, "type" -> typeExpr)
