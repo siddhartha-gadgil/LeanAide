@@ -44,12 +44,6 @@ def checkTerm (s : String) : MetaM Bool := do
 
 #eval checkTerm "(fun x : Nat => x + 1)"
 
-syntax term "•" term : term
-syntax term "⊆" term : term
-syntax term "⊂" term : term
-syntax term "∩" term : term
-
-
 #eval checkTerm "a • s"
 
 #eval checkTerm "λ x : Nat, x + 1"
