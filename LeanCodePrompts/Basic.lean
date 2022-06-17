@@ -12,3 +12,11 @@ infix:50 " ⊇ " => Subset.supset
   sMul : α → β → β 
 
 infixl:70 " • "   =>  SMul.sMul
+
+class HasNorm (α : Type u) (k : Type v) where
+  norm : α → k
+
+def Norm.norm {α : Type u} {k : Type v} [c: HasNorm α k] : α → k :=
+  c.norm
+
+notation " ∥ " α " ∥ " =>  Norm.norm α

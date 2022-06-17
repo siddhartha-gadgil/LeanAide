@@ -72,12 +72,14 @@ irreducible f
 has_dist.dist p3 p2 ≠ 0
 strict_concave_on 𝕜 s f
 p x
+∥x + y∥ = ∥x∥ + ∥y∥ ↔ inner_product_geometry.angle x y = 0
 strict_convex_on ℝ D f
 ↑(r - p) = ↑r - ↑p
 lower_central_series G n ≤ H n
 P f
 padic_val_rat p q⁻¹ = -padic_val_rat p q
 ⇑(s.affine_combination p) w = s.sum (λ (i : ι), w i • p i)
+∥⟨continuous_map.to_ae_eq_fun μ f.to_continuous_map, _⟩∥ ≤ ↑(measure_theory.measure_univ_nnreal μ) ^ (p.to_real)⁻¹ * ∥f∥
 f a ≠ x
 measurable g
 ∃ (C : nnreal), C ≤ A * B ∧ has_sum (λ (i : ι), f i * g i) C
@@ -114,6 +116,7 @@ is_coatom a → is_atom (⇑order_dual.to_dual a)
 isometry f ↔ ∀ (x y : α), has_dist.dist (f x) (f y) = has_dist.dist x y
 ⇑g x = ⇑g y
 ∃ (x : α), f x ≠ y
+∥a ^ n∥ ≤ ∥a∥ ^ n
 s ∈ nhds_within a (set.Ici a) ↔ ∃ (u : α) (H : u ∈ set.Ioi a), set.Ico a u ⊆ s
 ∃ (z : E) (H : z ∈ segment ℝ x y), f y - f x = ⇑(f' z) (y - x)
 padic_norm p (q + r) ≤ linear_order.max (padic_norm p q) (padic_norm p r)
@@ -130,6 +133,7 @@ quotient_map f
 x ∈ S → y ∈ S → x * y ∈ S
 ∃ (Q : ideal S), Q.is_prime ∧ ideal.comap (algebra_map R S) Q = P
 filter.tendsto (ε • f) l (nhds 0)
+∥⇑(fr.to_linear_map.extend_to_𝕜') x∥ ≤ ∥fr∥ * ∥x∥
 ∃ (f : bump_covering ι X s), f.is_subordinate U
 (matrix.from_blocks A B C D).is_diag ↔ A.is_diag ∧ B = 0 ∧ C = 0 ∧ D.is_diag
 set.unbounded has_lt.lt {b : ordinal | b.card.ord = b ∧ ordinal.omega ≤ b}
@@ -207,6 +211,7 @@ a / b = a * b⁻¹
 metric.ball x r = set.univ.pi (λ (b : β), metric.ball (x b) r)
 ↑(x.nat_abs) ^ 2 = x ^ 2
 module.rank R (tensor_product R M N) = module.rank R M * module.rank R N
+∥x + y∥ * ∥x + y∥ = ∥x∥ * ∥x∥ + ∥y∥ * ∥y∥
 same_ray R (r • x) y
 category_theory.limits.has_limit (category_theory.limits.cospan a b)
 filter.tendsto u f (nhds a)
@@ -252,6 +257,7 @@ a * b < a * c
 hb.oangle x z - hb.oangle y z = hb.oangle x y
 is_fraction_ring C L
 a ≤ a
+has_inner.inner x y ≤ ∥x∥ * ∥y∥
 ⇑f (midpoint ℝ x y) = midpoint ℝ (⇑f x) (⇑f y)
 (↑n)⁻¹ • x = (↑n)⁻¹ • x
 a * b < 1
@@ -269,6 +275,7 @@ E / E ∈ nhds 1
 l₁ <+: l₂ → l₁.reverse <:+ l₂.reverse
 filter.tendsto (λ (x : ℝ), real.exp (-x)) filter.at_top (nhds 0)
 has_inner.inner (⇑(finsupp.total ι E 𝕜 v) l) (v i) = ⇑(star_ring_end 𝕜) (⇑l i)
+∃ (a : ℝ) (H : a ∈ set.Ioo 0 1) (C : ℝ) (H : C > 0), ∀ (y : E), y ∈ metric.ball 0 ↑r' → ∀ (n : ℕ), ∥f (x + y) - p.partial_sum n y∥ ≤ C * (a * (∥y∥ / ↑r')) ^ n
 is_open_map coe
 has_strict_deriv_at (exp 𝕂) (exp 𝕂 x) x
 l ~ n.factors
@@ -325,6 +332,7 @@ b < c → a < b → a < c
 is_preconnected (⋃₀c)
 uniform_continuous_on f s ↔ ∀ (ε : ennreal), ε > 0 → (∃ (δ : ennreal) (H : δ > 0), ∀ {a : α} {H : a ∈ s} {b : α} {H : b ∈ s}, has_edist.edist a b < δ → has_edist.edist (f a) (f b) < ε)
 submonoid.closure ↑S = S
+∥x∥ ≤ M
 (a ∨ b) ∧ c ↔ a ∧ c ∨ b ∧ c
 (filter.cocompact α).coprod (filter.cocompact β) = filter.cocompact (α × β)
 is_normal_subgroup (group.normal_closure s)
@@ -332,6 +340,7 @@ cont_diff 𝕜 n id
 a < b + c → a - c < b
 has_dist.dist (f 0) (f n) ≤ (finset.range n).sum (λ (i : ℕ), has_dist.dist (f i) (f (i + 1)))
 a ≤ b → b ≤ c → a ≤ c
+continuous (λ (f : (Π (j : ι), π j) × π i), function.update f.fst i f.snd)
 category_theory.is_iso f
 continuous continuous_map.curry
 ∃ (m n : ℤ), x = m ^ 2 - n ^ 2 ∧ y = 2 * m * n ∧ z = m ^ 2 + n ^ 2 ∧ m.gcd n = 1 ∧ (m % 2 = 0 ∧ n % 2 = 1 ∨ m % 2 = 1 ∧ n % 2 = 0) ∧ 0 ≤ m
@@ -360,6 +369,7 @@ linear_order.min (f x) (f y) < f (a • x + b • y)
 ((v.map f.to_linear_equiv).to_orthonormal_basis _).repr = f.symm.trans (v.to_orthonormal_basis hv).repr
 (multiset.map (λ (a : R), polynomial.X - ⇑polynomial.C a) p.roots).prod ∣ p
 set.Icc a b ⊆ s
+filter.tendsto (λ (n : ℕ), ennreal.of_real (∥a ^ n∥ ^ (1 / ↑n))) filter.at_top (nhds (spectral_radius ℂ a))
 ⇑(algebra.norm K) (is_cyclotomic_extension.zeta (p ^ (k + 1)) K L - 1) = ↑p
 (polynomial.X ^ n - 1).separable ↔ ↑n ≠ 0
 x < y ↔ (∃ (i : y.left_moves), x ≤ y.move_left i) ∨ ∃ (j : x.right_moves), x.move_right j ≤ y
@@ -381,6 +391,8 @@ s1 = s2
 o.oangle (-x) y = o.oangle x (-y)
 A.det • A⁻¹.mul_vec b = ⇑(A.cramer) b
 ⇑μ s = ⇑μ t
+∥x∥ ≤ r ↔ ∀ (i : ι), ∥x i∥ ≤ r
+∥f.mk_continuous C h∥ ≤ C
 add_subsemigroup.closure ↑S = S
 ∃ (Q : ideal S) (H : Q ≥ I), Q.is_prime ∧ ideal.comap (algebra_map R S) Q = P
 (set.extreme_points ℝ s).nonempty
@@ -421,6 +433,7 @@ continuous f
 has_dist.dist (f m) (f n) ≤ (finset.Ico m n).sum (λ (i : ℕ), d i)
 q.partial_sum N ((finset.Ico 1 N).sum (λ (i : ℕ), ⇑(p i) (λ (j : fin i), z))) = (formal_multilinear_series.comp_partial_sum_target 0 N N).sum (λ (i : Σ (n : ℕ), composition n), ⇑(q.comp_along_composition p i.snd) (λ (j : fin i.fst), z))
 dite P (λ (h : P), a) (λ (h : ¬P), b) = ite P a b
+(∀ (i : ι), is_compact (s i)) → is_compact {x : Π (i : ι), π i | ∀ (i : ι), x i ∈ s i}
 tendsto_uniformly (λ (n : ι), F n ∘ g) (f ∘ g) p
 F = F'
 measure_theory.uniform_integrable f p μ
@@ -494,6 +507,7 @@ a * b ≠ 0 ↔ b * a ≠ 0
 relation.trans_gen r n m
 is_noetherian_ring R ↔ ∀ (I : ideal R), I.fg
 is_localization.is_integer A r
+↑(⇑(orthogonal_projection (submodule.span 𝕜 {v})) w) = (has_inner.inner v w / ↑∥v∥ ^ 2) • v
 continuous f
 s.finite ∨ s.infinite
 is_complete ↑s
@@ -524,6 +538,7 @@ finsum (λ (a : α), finsum (λ (H : a ∈ ⋃₀t), f a)) = finsum (λ (s : set
 ¬bdd_above s ↔ ∀ (x : α), ∃ (y : α) (H : y ∈ s), x < y
 A⁻¹ = B
 n.factorial * n.asc_factorial k = (n + k).factorial
+has_inner.inner x (r • x) = r * (∥x∥ * ∥x∥)
 hb.oangle (⇑(hb.rotation θ) x) y = hb.oangle x y - θ
 category_theory.ess_surj Compactum_to_CompHaus
 concave_on ℝ D f
@@ -534,6 +549,7 @@ x ∈ H → y ∈ H → x + y ∈ H
 ↑1 = 1
 subsingleton R
 category_theory.limits.has_limit F
+group.nilpotency_class (Π (i : η), Gs i) = finset.univ.sup (λ (i : η), group.nilpotency_class (Gs i))
 a⁻¹ < 1 ↔ 1 < a
 (p ^ (n + 1)).totient = p ^ n * (p - 1)
 has_edist.edist (f m) (f n) ≤ (finset.Ico m n).sum (λ (i : ℕ), d i)
@@ -548,6 +564,7 @@ multiset.nat.antidiagonal 0 = {(0, 0)}
 is_integral R x
 x < y ↔ (∃ (i : y.left_moves), (∀ (i' : x.left_moves), x.move_left i' < y.move_left i) ∧ ∀ (j : (y.move_left i).right_moves), x < (y.move_left i).move_right j) ∨ ∃ (j : x.right_moves), (∀ (i : (x.move_right j).left_moves), (x.move_right j).move_left i < y) ∧ ∀ (j' : y.right_moves), x.move_right j < y.move_right j'
 p q
+∥f z∥ ≤ C
 category_theory.ess_surj F
 ∃ (x : ℕ → ι'), (∀ (i : ℕ), p (x i)) ∧ f.has_antitone_basis (λ (i : ℕ), s (x i))
 unique_diff_within_at 𝕜 s x → unique_mdiff_within_at (model_with_corners_self 𝕜 E) s x
@@ -555,6 +572,7 @@ continuous_on f s ↔ ∀ (y : E), continuous_on (λ (x : X), ⇑(f x) y) s
 metric.bounded (metric.closed_ball x r)
 ∃ (n : ℕ), x = pell.xn a1 n ∧ y = pell.yn a1 n
 well_founded (relation.cut_expand r)
+∥0∥ = 0
 function.injective f ↔ ∀ (a : α), f a = 1 → a = 1
 (matrix.from_blocks A B 0 D).det = A.det * D.det
 ∃! (b : set α) (H : b ∈ r.classes), a ∈ b
@@ -604,6 +622,7 @@ o.oangle x y = θ ↔ (x ≠ 0 ∧ y ≠ 0 ∧ ∃ (r : ℝ), 0 < r ∧ y = r �
 has_fpower_series_on_ball (⇑g ∘ f) (g.comp_formal_multilinear_series p) x r
 nhds a ≤ f
 φ = ψ
+∥f z∥ ≤ C
 l₁ <:+: l₂ → l₁.reverse <:+: l₂.reverse
 a ∣ b + c ↔ a ∣ c
 (span_points k s).nonempty ↔ s.nonempty
@@ -678,6 +697,7 @@ padic_norm p (q - r) ≤ linear_order.max (padic_norm p q) (padic_norm p r)
 φ = ψ
 s1 < s2 ↔ ↑s1 ⊂ ↑s2
 measure_theory.tendsto_in_measure μ f l g
+∥orthogonal_projection K∥ ≤ 1
 s.prod (λ (i : ι), g i) + s.prod (λ (i : ι), h i) ≤ s.prod (λ (i : ι), f i)
 ∃ (m : M), m + m = m
 is_trivial_topological_fiber_bundle ℝ complex.re
@@ -717,6 +737,7 @@ vector_span k s₁ ≤ vector_span k s₂
 ⇑(f.lift hg) z * ⇑g ↑((f.sec z).snd) = ⇑g (f.sec z).fst
 -b ≤ a
 is_seq_closed s ↔ is_closed s
+∥f'∥ ≤ ↑C
 a ^ 4 + 4 * b ^ 4 = ((a - b) ^ 2 + b ^ 2) * ((a + b) ^ 2 + b ^ 2)
 t.prod (λ (i : ι), f i) ∈ s
 ⇑f x = ⇑f y
@@ -778,6 +799,7 @@ measure_theory.sigma_finite μ
 affine_independent k p ↔ ∀ (w1 w2 : ι → k), finset.univ.sum (λ (i : ι), w1 i) = 1 → finset.univ.sum (λ (i : ι), w2 i) = 1 → ⇑(finset.univ.affine_combination p) w1 = ⇑(finset.univ.affine_combination p) w2 → w1 = w2
 g.comp (⇑dfinsupp.lift_add_hom f) = ⇑dfinsupp.lift_add_hom (λ (a : ι), g.comp (f a))
 C a
+asymptotics.is_O_with c l (λ (x : α), ∥f' x∥) (λ (x : α), ∥g' x∥) → asymptotics.is_O_with c l f' g'
 filter.tendsto (λ (n : ℕ), measure_theory.set_to_fun μ T hT (fs n)) filter.at_top (nhds (measure_theory.set_to_fun μ T hT f))
 has_dist.dist (f 0) (f n) ≤ (finset.range n).sum (λ (i : ℕ), d i)
 cont_diff_at 𝕜 n (λ (x : E), f x * g x) x
@@ -795,6 +817,7 @@ has_strict_fderiv_at (λ (x : E), g (f x)) (g'.comp f') x
 ↑r ≤ p.radius
 p a b
 has_deriv_within_at f f' (set.Iio x) x → has_deriv_within_at f f' (set.Iic x) x
+asymptotics.is_O_with c l f g' → asymptotics.is_O_with c l f (λ (x : α), ∥g' x∥)
 (cardinal.mk ι).lift ≤ (cardinal.mk κ).lift
 ∃ (m : M) (H : m ∈ s), m + m = m
 s = set.univ
@@ -818,6 +841,7 @@ asymptotics.is_O_with c l (λ (x : α), -f' x) g → asymptotics.is_O_with c l f
 s.sum (λ (i : ι), f i • g i) < s.sum (λ (i : ι), f (⇑σ i) • g i) ↔ ¬antivary_on (f ∘ ⇑σ) g ↑s
 monotone_on f s → antitone_on (f ∘ ⇑order_dual.of_dual) s
 0 < a + b
+has_faithful_smul α (Π (i : I), f i)
 cont_diff_groupoid 0 I = continuous_groupoid H
 ↑(z.im) = (z - ⇑(star_ring_end ℂ) z) / (2 * complex.I)
 s.prod (λ (i : ι), z i ^ w i) ≤ s.sum (λ (i : ι), w i * z i)
@@ -842,6 +866,7 @@ has_Inf.Inf s = a
 ⇑(polynomial.monomial n) s ∈ polynomial.lifts f
 a * a / a = a
 balanced 𝕜 (interior A)
+∥x - y∥ * ∥x - y∥ = ∥x∥ * ∥x∥ - 2 * has_inner.inner x y + ∥y∥ * ∥y∥
 l.head + l.tail.sum = l.sum
 (p ^ k).factorization = finsupp.single p k
 t₂.orthocenter = t₁.points i₁
@@ -855,6 +880,7 @@ S = T
 ⇑(category_theory.limits.cokernel.π g) x = ⇑(category_theory.limits.cokernel.π g) y
 has_edist.edist (f 0) (f n) ≤ (finset.range n).sum (λ (i : ℕ), has_edist.edist (f i) (f (i + 1)))
 cont_diff_within_at 𝕜 n (λ (x : E), f x - g x) s x
+∃ (C : ℝ), 0 < C ∧ ∀ (x : E), ∥⇑f x∥ ≤ C * ∥x∥
 monoid.is_torsion H
 add_monoid.is_torsion H
 is_cyclic α
@@ -877,6 +903,7 @@ is_open ↑(E.fixing_subgroup)
 (finset.nat.antidiagonal n).sum (λ (ij : ℕ × ℕ), f ij.fst ij.snd) = (finset.range n.succ).sum (λ (k : ℕ), f k (n - k))
 k ≤ G.min_degree
 AddMon.filtered_colimits.colimit_add_aux F x y = AddMon.filtered_colimits.colimit_add_aux F x y'
+∃ (f : Π (a : α), β a), ∀ (x : α), R x (f x)
 v = w
 has_star.star (x / y) = has_star.star x / has_star.star y
 is_of_fin_add_order (⇑f x)
@@ -900,6 +927,7 @@ P n
 ↑(n.totient) = ↑n * n.factors.to_finset.prod (λ (p : ℕ), 1 - (↑p)⁻¹)
 g = Hausdorffification.lift I f
 gauge (p.ball 0 1) = ⇑p
+has_inner.inner x (r • x) / (∥x∥ * ∥r • x∥) = -1
 simple_graph.inc_matrix R G a e = ite (e ∈ G.incidence_set a) 1 0
 cont_mdiff_within_at I I'' n (g ∘ f) s x
 filter.tendsto u filter.at_top (nhds a) ↔ ∀ (ε : ℝ), ε > 0 → (∃ (N : β), ∀ (n : β), n > N → has_dist.dist (u n) a < ε)
@@ -919,6 +947,7 @@ filter.tendsto (λ (x : ℝ), x ^ s * real.exp (-b * x)) filter.at_top (nhds 0)
 is_compact (closure s)
 has_sum (λ (n : ℕ), ↑n * r ^ n) (r / (1 - r) ^ 2)
 ∃ (Λ : module.dual ℝ F) (Λ₀ : ℝ), (Λ, Λ₀) ≠ 0 ∧ ∀ (x : E), ⇑Λ (⇑f' x) + Λ₀ • ⇑φ' x = 0
+⇑is_R_or_C.re (has_inner.inner x y) = (∥x + y∥ * ∥x + y∥ - ∥x - y∥ * ∥x - y∥) / 4
 a = b
 set.inj_on f s → function.injective (s.restrict f)
 monotone (λ (x : α), linear_order.max (f x) (g x))
@@ -935,6 +964,7 @@ nonempty (α ≃o β)
 ⇑f (bit1 a) = bit1 (⇑f a)
 (∀ (x : α → ℕ), ⇑f x = ⇑g x) → f = g
 ⇑f (x - y) = ⇑f x - ⇑f y
+⇑f (λ (i : ι), (A i).sum (λ (j : α i), g i j)) = (fintype.pi_finset A).sum (λ (r : Π (a : ι), α a), ⇑f (λ (i : ι), g i (r i)))
 ((λ (z : α), f z x) ∘ λ (z : α), f z y) = λ (z : α), f z (f y x)
 category_theory.limits.has_equalizer f g
 is_seq_closed s
@@ -959,6 +989,7 @@ topological_space.pseudo_metrizable_space X
 commute (⇑quaternion.conj a) (⇑quaternion.conj b)
 measure_theory.uniform_integrable f p μ
 (hb.is_limit.cone_point_unique_up_to_iso (category_theory.limits.binary_biproduct.is_limit X Y)).hom = category_theory.limits.biprod.lift b.fst b.snd
+∥box_integral.integral I l f μ.to_box_additive.to_smul∥ ≤ box_integral.integral I l g μ.to_box_additive.to_smul
 ⇑h 0 = 0
 pi.mul_single i x i' = 1
 f = g
@@ -1007,6 +1038,7 @@ minpoly ℤ μ = minpoly ℤ (μ ^ p)
 category_theory.limits.pi.π f b (category_theory.limits.pi.lift s x) = s b x
 has_strict_fderiv_at (has_strict_fderiv_at.local_inverse f f' a hf) ↑(f'.symm) (f a)
 ∃ (f : α → set α), ↑s.pairwise_disjoint f ∧ ∀ (x : α), x ∈ s → x ∈ f x ∧ is_open (f x)
+∥fderiv 𝕜 f x₀∥ ≤ ↑C
 cont_diff_on 𝕜 n (⇑g ∘ f) s
 N.topological_closure.normal
 μ = ν ↔ ∀ (s : set α), s ∈ S → μ.restrict s = ν.restrict s
@@ -1030,9 +1062,11 @@ r x y → x = y
 s.points i ∈ s.altitude i
 {s : set α | is_preconnected s} = set.range (function.uncurry set.Icc) ∪ set.range (function.uncurry set.Ico) ∪ set.range (function.uncurry set.Ioc) ∪ set.range (function.uncurry set.Ioo) ∪ (set.range set.Ici ∪ set.range set.Ioi ∪ set.range set.Iic ∪ set.range set.Iio ∪ {set.univ, ∅})
 proper_space α
+∥x + y∥ < ∥x∥ + ∥y∥
 ∃ (j : ι) (hij : i ≤ j), ⇑(f i j hij) x = 0
 f ∈ metric.closed_ball f₀ r
 subgroup.map f H.normalizer = (subgroup.map f H).normalizer
+∥f x - f a∥ ≤ C * (x - a)
 category_theory.limits.has_limit G
 f = g
 x = finset.univ.sum (λ (i : ι), x i • λ (j : ι), ite (i = j) 1 0)
@@ -1072,6 +1106,7 @@ is_left_regular (a ^ n) ↔ is_left_regular a
 (generalized_continued_fraction.squash_seq s (n + 1)).tail = generalized_continued_fraction.squash_seq s.tail n
 P x
 add_subgroup.closure ↑K = K
+∃ (f : (Π (n : ℕ), E n) → Π (n : ℕ), E n), (∀ (x : Π (n : ℕ), E n), x ∈ s → f x = x) ∧ set.range f = s ∧ lipschitz_with 1 f
 f = g
 nontrivial α
 ⇑(m₁.trim) s = op (⇑(m₂.trim) s) (⇑(m₃.trim) s)
@@ -1085,6 +1120,7 @@ irrational (x + y) → irrational x ∨ irrational y
 ∃ (x : X) (H : x ∈ s), ∀ (t : set X), t ∈ nhds_within x s → r < dimH t
 (finset.range n).sum (λ (k : ℕ), power_series.exp A ^ k) = power_series.mk (λ (p : ℕ), (finset.range n).sum (λ (k : ℕ), ↑k ^ p * ⇑(algebra_map ℚ A) (↑(p.factorial))⁻¹))
 emetric.inf_edist x s < r ↔ ∃ (y : α) (H : y ∈ s), has_edist.edist x y < r
+∥⇑f m₁ - ⇑f m₂∥ ≤ ∥f∥ * ↑(fintype.card ι) * linear_order.max ∥m₁∥ ∥m₂∥ ^ (fintype.card ι - 1) * ∥m₁ - m₂∥
 s₁.equivalent s₂
 has_Sup.Sup s = b
 finset.univ.sum (λ (x : K), x ^ i) = 0
@@ -1154,6 +1190,7 @@ s.card * n ≤ B.sum (λ (t : finset α), (s ∩ t).card)
 continuous_within_at f (set.Ici a) a
 f.ker.is_maximal
 finite_dimensional K V₂
+∥f.mk_normed_group_hom C h∥ ≤ C
 absorbent 𝕜 (p.ball 0 r)
 (-1) ^ 2 = 1
 has_inner.inner x y = 1 ↔ x = y
@@ -1184,6 +1221,7 @@ irreducible f
 has_ftaylor_series_up_to_on (↑n + 1) f p s ↔ has_ftaylor_series_up_to_on ↑n f p s ∧ (∀ (x : E), x ∈ s → has_fderiv_within_at (λ (y : E), p y n) (p x n.succ).curry_left s x) ∧ continuous_on (λ (x : E), p x (n + 1)) s
 cont_diff ℝ n exp_neg_inv_glue
 I.jacobson = I ↔ ∀ (x : R), x ∉ I → (∃ (M : ideal R), (I ≤ M ∧ M.is_maximal) ∧ x ∉ M)
+o.oangle x y = θ ↔ y = (∥y∥ / ∥x∥) • ⇑(o.rotation θ) x
 padic_val_int p 1 = 0
 ⇑(algebra_map K F) (⇑(algebra.norm K) pb.gen) = (polynomial.map (algebra_map K F) (minpoly K pb.gen)).roots.prod
 {o : ordinal | a ≤ b + o}.nonempty
@@ -1222,6 +1260,8 @@ f (s.prod (λ (i : ι), g i)) ≤ s.prod (λ (i : ι), f (g i))
 p.pred_above (⇑((⇑fin.cast_succ p).succ_above) i) = i
 {x : α | (setoid.mk_classes c H).rel x y} ∈ c
 (Z.local_triv_as_local_equiv i).symm.trans (Z.local_triv_as_local_equiv j) ≈ (Z.triv_change i j).to_local_equiv
+∥f z∥ ≤ C
+∥a • x + b • y∥ < r
 y ∈ submonoid.closure {x} ↔ ∃ (n : ℕ), x ^ n = y
 0 ≤ metric.diam s
 (equiv.to_pequiv σ).to_matrix.det = ↑(⇑equiv.perm.sign σ)
@@ -1245,12 +1285,14 @@ filter.map (λ (s : finset γ), s.sum (λ (i : γ), f (g i))) filter.at_top = fi
 euclidean_geometry.angle p3 (midpoint ℝ p1 p2) p1 = real.pi / 2
 (∀ (i : ι), i ∈ t → 0 ≤ w i) → 0 < t.sum (λ (i : ι), w i) → (∀ (i : ι), i ∈ t → z i ∈ s) → t.center_mass w z ∈ s
 function.injective (λ (g : multilinear_map R M₁' M₂), g.comp_linear_map f)
+∥x + y∥ ^ 2 = ∥x∥ ^ 2 + 2 * ⇑is_R_or_C.re (has_inner.inner x y) + ∥y∥ ^ 2
 topological_space.second_countable_topology α
 has_deriv_at (exp 𝕂) (exp 𝕂 x) x
 lie_module.is_nilpotent R L M
 x = ⇑(hb.rotation θ) x ↔ θ = 0
 antitone (λ (n : N), f (μ m n))
 has_sum g a
+x ∈ set.Icc a b → ∥f x∥ ≤ B x
 b ≤ c → a ≤ b → a ≤ c
 cardinal.mk (W_type β) ≤ κ
 category_theory.limits.has_zero_object C
@@ -1274,6 +1316,7 @@ filter.tendsto (λ (x : β), (f₁ x, f₃ x)) l (uniformity α)
 -0 = 0
 ⇑(algebra_map R A) r * x = x * ⇑(algebra_map R A) r
 s.nonempty
+∃ (C : ℝ) (H : C > 0), ∀ {u : E →L[𝕜] F} {M : ℝ}, 0 ≤ M → (∀ (i : ι), ∥⇑u (⇑v i)∥ ≤ M) → ∥u∥ ≤ C * M
 f = g
 G.max_degree < fintype.card V
 category_theory.limits.is_limit.of_nat_iso.cone_of_hom h f = (category_theory.limits.is_limit.of_nat_iso.limit_cone h).extend f
@@ -1366,6 +1409,7 @@ ideal.comap (algebra_map R S) P = p
 (finset.filter (λ (J : box_integral.box ι), x ∈ ⇑box_integral.box.Icc J) π.boxes).card ≤ 2 ^ fintype.card ι
 continuous_at f x
 function.injective (quotient.lift f _)
+∥f y - f x∥ ≤ C * ∥y - x∥
 cauchy_seq s ↔ ∃ (b : β → ennreal), (∀ (n m N : β), N ≤ n → N ≤ m → has_edist.edist (s n) (s m) ≤ b N) ∧ filter.tendsto b filter.at_top (nhds 0)
 filter.tendsto (λ (x : β), (f x, f x)) l (uniformity α)
 (set.univ.pi t).finite
@@ -1404,6 +1448,7 @@ has_edist.edist (f n) a ≤ C * r ^ n / (1 - r)
 collinear k {p₁, p₂}
 ∅.shadow = ∅
 is_smul_regular M s
+∥(finset.range n).sum (λ (x : ℕ), f x) - a∥ ≤ C * r ^ n / (1 - r)
 AddMon.filtered_colimits.colimit_add_aux F x y = AddMon.filtered_colimits.colimit_add_aux F x' y
 0 < L.length
 is_Gδ (s ∪ t)
@@ -1534,6 +1579,7 @@ p s
 is_coprime (↑g 1 0) (↑g 1 1)
 ∃ (f : ℤ → α), strict_anti f
 tendsto_uniformly f (f x) (nhds x)
+∥x - y∥ = ∥x∥ + ∥y∥ ↔ inner_product_geometry.angle x y = real.pi
 filter.tendsto f filter.at_top (nhds g)
 ⇑(o.rotation θ) x = x ↔ x = 0 ∨ θ = 0
 ↑(subsemiring.closure s) = ↑(add_submonoid.closure ↑(submonoid.closure s))
@@ -1559,8 +1605,10 @@ is_closed (std_simplex ℝ ι)
 a < b → order.succ a < order.succ b
 inner_product_geometry.angle x z + inner_product_geometry.angle y z = real.pi
 continuous (tangent_map I I' f)
+o.oangle x y = θ ↔ x ≠ 0 ∧ y ≠ 0 ∧ y = (∥y∥ / ∥x∥) • ⇑(o.rotation θ) x ∨ θ = 0 ∧ (x = 0 ∨ y = 0)
 (has_insert.insert a s).sum (λ (x : α), f x) = s.sum (λ (x : α), f x)
 metric.Hausdorff_dist s (closure s) = 0
+∥↑x∥ = ∥x∥
 r x y → x = y
 ∃ (y : β) (H : y ∈ t), (finset.filter (λ (x : α), f x = y) s).sum (λ (x : α), w x) < b
 f ≤ nhds a → f.Limsup = a
@@ -1657,6 +1705,7 @@ has_strict_fderiv_at (exp 𝕂) (exp 𝕂 x • 1) x
 matrix.vec_mul (⇑(b₂.coords) x) (b.to_matrix b₂.points) = ⇑(b.coords) x
 ⇑is_R_or_C.re is_R_or_C.I = 0
 s1 = s2 ↔ ∀ (i : fin (n + 1)), s1.points i = s2.points i
+∥deriv f c∥ ≤ R₂ / R₁
 metric.inf_dist x s ≤ has_dist.dist x y
 s = ∅
 finset.image₂ f s (finset.image g t) = finset.image g' (finset.image₂ f' t s)
@@ -1687,6 +1736,7 @@ finsum (λ (i : α), finsum (λ (H : i ∈ {a}), f i)) = f a
 s.prod (λ (i : α), g i (f i)) = t.prod (λ (i : α), g i (↑s.mul_indicator f i))
 (polynomial.map (int.cast_ring_hom K) (minpoly ℤ μ)).is_root (μ ^ m)
 k = l
+∥↑x∥ = ∥x∥
 s.sum (λ (i : ι), w i * z i) ^ p ≤ s.sum (λ (i : ι), w i * z i ^ p)
 filter.tendsto (λ (r : ℝ), ⇑μ (metric.cthickening r s)) (nhds 0) (nhds (⇑μ s))
 ordinal.principal has_add.add o ↔ o = 0 ∨ ∃ (a : ordinal), o = ordinal.omega ^ a
@@ -1746,6 +1796,7 @@ well_founded nat.lt
 polynomial.cyclotomic (p ^ (n + 1)) R = (finset.range p).sum (λ (i : ℕ), (polynomial.X ^ p ^ n) ^ i)
 parser.nat cb n = parse_result.done n' val ↔ ∃ (hn : n < n'), val = nat.of_digits 10 (list.map (λ (c : char), c.to_nat - '0'.to_nat) (list.take (n' - n) (list.drop n (buffer.to_list cb))).reverse) ∧ (∀ (hn' : n' < buffer.size cb), '0' ≤ buffer.read cb ⟨n', hn'⟩ → '9' < buffer.read cb ⟨n', hn'⟩) ∧ ∃ (hn'' : n' ≤ buffer.size cb), ∀ (k : ℕ) (hk : k < n'), n ≤ k → '0' ≤ buffer.read cb ⟨k, _⟩ ∧ buffer.read cb ⟨k, _⟩ ≤ '9'
 G.min_degree ≤ G.degree v
+∥(↑r * (↑∥x∥)⁻¹) • x∥ = r
 continuous_at (f / g) a
 (v.on_quot hJ).supp = ideal.map (ideal.quotient.mk J) v.supp
 finite_dimensional.finrank K V = fintype.card ι
@@ -1827,6 +1878,7 @@ C x
 smooth I (model_with_corners_self ℝ G) (λ (x : M), ⇑f x • g x)
 f = g
 ∃ (f : ℤ → α), strict_mono f
+∃ (C : ℝ) (H : C > 0), ∀ (n : ℕ), ∥p n∥ * ↑r ^ n ≤ C
 ⇑(f.generalized_eigenspace μ) k ≤ ⇑(f.generalized_eigenspace μ) (finite_dimensional.finrank K V)
 ⇑f (g / h) = ⇑f g / ⇑f h
 nonempty α → nonempty β
@@ -1865,6 +1917,7 @@ J₁ = J₂
 is_semiring_hom f
 b ≤ a → ⇑order_dual.of_dual a ≤ ⇑order_dual.of_dual b
 ∃ (θ : real.angle), f = o.rotation θ
+∥x - y∥ * ∥x - y∥ = ∥x∥ * ∥x∥ + ∥y∥ * ∥y∥
 has_fderiv_at (g ∘ f) (g'.comp f') x
 (h.comp g).comp f = h.comp (g.comp f)
 f = g
@@ -1875,6 +1928,7 @@ is_absolute_value.uniform_space has_abs.abs = pseudo_metric_space.to_uniform_spa
 a ⊆ b
 category_theory.is_iso f
 convex_on ℝ (set.Ici 0) (λ (x : ℝ), x ^ n)
+∥x∥ ≤ 1 → ∥⇑f x∥ ≤ ∥f∥
 is_open_map f
 ∃ (r : ℝ), ∀ (sx : affine.simplex ℝ P n), set.range sx.points ⊆ ps → sx.circumradius = r
 ⇑(polynomial.aeval x) a ≠ 0
@@ -1912,6 +1966,7 @@ n.totient * n.factors.to_finset.prod (λ (p : ℕ), p) = n * n.factors.to_finset
 a ∈ s
 algebraic_topology.dold_kan.hσ' q n m hnm = G.map (algebraic_topology.dold_kan.hσ' q n m hnm)
 0 < a + b
+∃ (f : Π (b : ordinal), b < a.cof.ord → ordinal), a.is_fundamental_sequence a.cof.ord f
 filter.tendsto (λ (n : ι), F n (g n)) p (nhds (f x))
 finsum (λ (i : α), f i + g i) = finsum (λ (i : α), f i) + finsum (λ (i : α), g i)
 list.pairwise R l → list.pw_filter R l = l
@@ -2012,13 +2067,16 @@ solvable_by_rad.P β
 c.boundaries.order_emb_of_fin _ = c.boundary
 measure_theory.measure.hausdorff_measure ↑(fintype.card ι) = measure_theory.measure_space.volume
 ⇑f (fin.cons (x + y) m) = ⇑f (fin.cons x m) + ⇑f (fin.cons y m)
+∥f 1 - f 0∥ ≤ C
 p = s.monge_point
 c < b
 ⇑linear_map.det (⇑(algebra.lmul K L) x) = 0 ↔ x = 0
 padic_val_nat p 1 = 0
 upper_semicontinuous_on (λ (z : α), f z + g z) s
+real.cos (inner_product_geometry.angle x y) * (∥x∥ * ∥y∥) = has_inner.inner x y
 p ↑x
 filter.tendsto (λ (x : β), f x * r) l filter.at_top
+metric.bounded s → (∃ (R : ℝ), ∀ (x : E), x ∈ s → ∥x∥ ≤ R)
 is_preconnected s
 x ≤ 0 ↔ ∀ (i : x.left_moves), ∃ (j : (x.move_left i).right_moves), (x.move_left i).move_right j ≤ 0
 o.oangle x (r • y) = o.oangle x y
@@ -2027,9 +2085,11 @@ s.monge_point ∈ s.monge_plane i₁ i₂
 uniform_embedding f
 ray_of_ne_zero R x.some_vector _ = x
 (truncated_witt_vector.truncate hm).comp (truncated_witt_vector.zmod_equiv_trunc p m).to_ring_hom = (truncated_witt_vector.zmod_equiv_trunc p n).to_ring_hom.comp (zmod.cast_hom _ (zmod (p ^ n)))
+∥⇑f m∥ ≤ C * finset.univ.prod (λ (i : ι), ∥m i∥)
 ∃ (L L' : list (matrix.transvection_struct n 𝕜)) (D : n → 𝕜), ((list.map matrix.transvection_struct.to_matrix L).prod.mul M).mul (list.map matrix.transvection_struct.to_matrix L').prod = matrix.diagonal D
 M.transpose j i = M i j
 continuous (λ (h : G), g + h + -g)
+∥f∥ = has_Inf.Inf {C : ℝ | ∀ (x : α), ∥⇑f x∥ ≤ C}
 (finset.Ico a b).sum (λ (i : ℕ), (finset.Ico i b).sum (λ (j : ℕ), f i j)) = (finset.Ico a b).sum (λ (j : ℕ), (finset.Ico a (j + 1)).sum (λ (i : ℕ), f i j))
 ⇑(euclidean_geometry.orthogonal_projection s) ↑(⇑(euclidean_geometry.orthogonal_projection s) p) = ⇑(euclidean_geometry.orthogonal_projection s) p
 finsum (λ (i : α), finsum (λ (H : i ∈ s ∪ t), f i)) = finsum (λ (i : α), finsum (λ (H : i ∈ s), f i)) + finsum (λ (i : α), finsum (λ (H : i ∈ t), f i))
@@ -2049,11 +2109,13 @@ f z < linear_order.max (f x) (f y)
 is_countably_spanning (set.image2 has_set_prod.prod C D)
 f = g
 ⇑f ↑y = ⇑f ↑z
+module.rank R (Π (i : ι), M i) = cardinal.sum (λ (i : ι), module.rank R (M i))
 ⇑(probability_theory.cond μ s) t = (⇑μ s)⁻¹ * ⇑(probability_theory.cond μ t) s * ⇑μ t
 x ∈ S → y ∈ S → x / y ∈ S
 category_theory.is_pullback h₁₁ v₁₁ v₁₂ h₂₁
 C r hr
 ↑e.inverse = ↑(e.symm)
+∃ (C r : ℝ) (hC : 0 < C) (hr : 0 < r), ∀ (n : ℕ), ∥p n∥ ≤ C * r ^ n
 finset.univ.sum (λ (j : affine.simplex.points_with_circumcenter_index n), affine.simplex.point_weights_with_circumcenter i j) = 1
 f.has_generalized_eigenvalue μ k
 φ₁ = φ₂
@@ -2061,6 +2123,7 @@ f.has_generalized_eigenvalue μ k
 o = p
 hb.oangle x (-x) = ↑real.pi
 conformal_at f x ↔ ∃ (c : ℝ), 0 < c ∧ ∀ (u v : E), has_inner.inner (⇑f' u) (⇑f' v) = c * has_inner.inner u v
+∥f + g∥ ≤ ∥f∥ + ∥g∥
 is_extr_on f s a → is_extr_on (⇑order_dual.to_dual ∘ f) s a
 ∃ (f : ι → α), function.injective f ∧ ∀ (x : ι), f x ∈ t x
 cont_diff_at 𝕜 n (prod.map f g) (x, y)
@@ -2074,6 +2137,7 @@ category_theory.is_iso c.ι
 has_dist.dist (convolution f g (continuous_linear_map.lsmul ℝ ℝ) μ x₀) (g x₀) ≤ ε
 s.sum (λ (x : α), f x) = t.sum (λ (x : γ), g x)
 emetric.diam ∅ = 0
+∥⇑f m∥ ≤ ∥f∥ * finset.univ.prod (λ (i : ι), ∥m i∥)
 measure_theory.prog_measurable f u
 filter.tendsto (λ (x : ℝ), f x / g x) (nhds_within a (set.univ  {a})) l
 p ∣ Q.coeff 0
@@ -2108,6 +2172,8 @@ algebra.finite_presentation R B
 strict_concave_on 𝕜 s f ↔ convex 𝕜 s ∧ ∀ ⦃x y z : 𝕜⦄, x ∈ s → z ∈ s → x < y → y < z → (f z - f y) / (z - y) < (f y - f x) / (y - x)
 a ∣ b → b ∣ c → a ∣ c
 category_theory.limits.has_initial C
+has_dist.dist (⇑f x) (⇑f y) ≤ 2 * ∥f∥
+x = y ↔ ∥x∥ = ∥y∥ ∧ hb.oangle x y = 0
 ∃! (cccr₂ : P × ℝ), cccr₂.fst ∈ affine_span ℝ (has_insert.insert p ↑s) ∧ ∀ (p1 : P), p1 ∈ has_insert.insert p ps → has_dist.dist p1 cccr₂.fst = cccr₂.snd
 ⇑(module.End.generalized_eigenspace (linear_map.restrict f hfp) μ) k = submodule.comap p.subtype (⇑(f.generalized_eigenspace μ) k)
 ∃ (g : matrix.special_linear_group (fin 2) ℤ), ∀ (g' : matrix.special_linear_group (fin 2) ℤ), (g' • z).im ≤ (g • z).im
@@ -2123,6 +2189,7 @@ midpoint R x y = midpoint R' x y
 cont_diff_at 𝕜 n (g ∘ f) x
 has_deriv_at (λ (x : ℝ), (e ↑x).re) e'.re z
 finprod (λ (i : α), finprod (λ (H : i ∈ s ∪ t), f i)) * finprod (λ (i : α), finprod (λ (H : i ∈ s ∩ t), f i)) = finprod (λ (i : α), finprod (λ (H : i ∈ s), f i)) * finprod (λ (i : α), finprod (λ (H : i ∈ t), f i))
+¬same_ray ℝ x y ↔ ∥x + y∥ < ∥x∥ + ∥y∥
 o.oangle x (r • y) = o.oangle x (-y)
 continuous (λ (x : β), has_dist.dist (f x) (g x))
 p x hx
@@ -2148,6 +2215,7 @@ x ∈ S → y ∈ S → x + y ∈ S
 (minpoly A x).coeff 0 ≠ 0
 x ∈ s ↔ emetric.inf_edist x s = 0
 p = t.orthocenter
+has_inner.inner x y = (↑∥x + y∥ ^ 2 - ↑∥x - y∥ ^ 2 + (↑∥x - is_R_or_C.I • y∥ ^ 2 - ↑∥x + is_R_or_C.I • y∥ ^ 2) * is_R_or_C.I) / 4
 ∃ (z : ℤ), padic_norm p q = ↑p ^ -z
 has_inner.inner x y = 0 ↔ inner_product_geometry.angle x y = real.pi / 2
 convex_on 𝕜 s f
@@ -2168,6 +2236,7 @@ F.map_triangle.obj T ∈ dist_triang D
 (a * b).factorization.support = a.factorization.support ∪ b.factorization.support
 f.has_generalized_eigenvalue μ k ↔ f.has_eigenvalue μ
 euclidean_geometry.angle p3 (midpoint ℝ p1 p2) p2 = real.pi / 2
+∥x - y∥ * ∥x - y∥ = ∥x∥ * ∥x∥ + ∥y∥ * ∥y∥ ↔ has_inner.inner x y = 0
 prime ↑p ↔ p % 4 = 3
 inner_product_geometry.angle x (r • y) = inner_product_geometry.angle x (-y)
 has_edist.edist (f n) a ≤ 2 * C / 2 ^ n
@@ -2178,12 +2247,15 @@ filter.map coe filter.at_bot = filter.at_bot
 is_associative X m₂
 dense (closure s) → dense s
 is_integrally_closed R ↔ ∀ {x : K}, is_integral R x → (∃ (y : R), ⇑(algebra_map R K) y = x)
+∥f∥ = 0 ↔ f = 0
 linear_independent R (v ∘ f)
 is_locally_constant f
 submodule.span R (r • s) = submodule.span R s
 supr f ≤ c
 is_preconnected s ↔ ∀ (u v : set α), is_open u → is_open v → s ⊆ u ∪ v → s ∩ (u ∩ v) = ∅ → s ⊆ u ∨ s ⊆ v
+∥continuous_map.to_Lp p μ 𝕜∥ ≤ ↑(measure_theory.measure_univ_nnreal μ) ^ (p.to_real)⁻¹
 fderiv ℝ f a = 0
+∥0∥ = 0
 w₁ + w₂ = 1 → p₁ ^ ↑w₁ * p₂ ^ ↑w₂ ≤ w₁ * p₁ + w₂ * p₂
 a ∣ c
 real.sin (real.pi / 3) ^ 2 = 3 / 4
@@ -2196,6 +2268,7 @@ set.inj_on coe {0, 1, -1}
 filter.tendsto (λ (r : α), r⁻¹) filter.at_top (nhds_within 0 (set.Ioi 0))
 is_cyclic (quaternion_group 1)
 (r • A).map f = f r • A.map f
+group.is_nilpotent (Π (i : η), Gs i)
 ring.inverse ↑u = ↑u⁻¹
 ↑r ≤ p.radius
 tangent_cone_at 𝕜 s x = tangent_cone_at 𝕜 t x
@@ -2231,8 +2304,10 @@ cardinal.mk κ = cardinal.mk ι
 add_le_cancellable a
 function.surjective (quot.mk r)
 ∃ (y : β) (H : y ∈ t), ↑((finset.filter (λ (x : α), f x = y) s).card) < b
+(g.to_continuous_map_on (set.Icc (-∥f∥) ∥f∥)).comp ↑f.attach_bound ∈ A
 metric.diam (⇑(convex_hull ℝ) s) = metric.diam s
 o.oangle x y + o.oangle y z + o.oangle z x = 0
+⇑(hb.rotation (hb.oangle x y)) x = y ↔ ∥x∥ = ∥y∥
 ⇑zmod.χ₄ ↑n = ite (n % 2 = 0) 0 (ite (n % 4 = 1) 1 (-1))
 has_mfderiv_at I I'' (g ∘ f) x (g'.comp f')
 x ^ m = x ^ (m % n)
@@ -2244,6 +2319,7 @@ is_add_monoid_hom (λ (y : γ), x * y)
 closure (set.Iio a) = set.Iic a
 a + b < 0
 topological_space.second_countable_topology α
+x ∈ set.Icc a b → ∥f x∥ ≤ B x
 is_clopen s → frontier s = ∅
 has_Sup.Sup s = b
 measurable g
@@ -2279,10 +2355,12 @@ f = g ↔ ∀ (i : ι), ⇑f i = ⇑g i
 analytic_at ℂ f c
 function.involutive (has_mul.mul (equiv.swap i j))
 tendsto_locally_uniformly F f p ↔ tendsto_uniformly F f p
+f' =o[l] g → (λ (x : α), ∥f' x∥) =o[l] g
 ∃ (i : ι), i ∈ s1 ∩ s2
 a * d + b * c < a * c + b * d
 free_group.red L (free_group.reduce L)
 subring.closure s ≤ subring.closure t
+∥f.mk_normed_group_hom C h∥ ≤ linear_order.max C 0
 filter.tendsto (λ (x : ℝ), f x / g x) filter.at_top l
 ⇑witt_vector.verschiebung (x * ⇑witt_vector.frobenius y) = ⇑witt_vector.verschiebung x * y
 m = m'
@@ -2305,6 +2383,7 @@ has_dist.dist (f z) (f c) ≤ R₂ / R₁ * has_dist.dist z c
 (category_theory.limits.is_colimit.of_nat_iso.colimit_cocone h).extend (category_theory.limits.is_colimit.of_nat_iso.hom_of_cocone h s) = s
 filter.tendsto (λ (r : ℝ), ⇑μ (s ∩ ({x} + r • t)) / ⇑μ ({x} + r • t)) (nhds_within 0 (set.Ioi 0)) (nhds 0)
 (linear_map.trace R M).comp (dual_tensor_hom R M M) = contract_left R M
+has_inner.inner (x + y) (x - y) = 0 ↔ ∥x∥ = ∥y∥
 ∃ (x : α) (H : x ∈ s), ∀ (t : set α), t ∈ nhds_within x s → 0 < ⇑m t
 x / y ∈ H
 s.noncomm_sum (f + g) _ = s.noncomm_sum f comm_ff + s.noncomm_sum g comm_gg
@@ -2325,6 +2404,7 @@ box_integral.has_integral I l f vol y
 ∃ (g : α → E'), lipschitz_with (lipschitz_extension_constant E' * K) g ∧ set.eq_on f g s
 e.trans f ≈ e'.trans f'
 ∃ (n : ℕ) (f : fin n → σ) (hf : function.injective f) (q : mv_polynomial (fin n) R), p = ⇑(mv_polynomial.rename f) q
+∥U∥ ≤ 1
 f = g
 μ.weakly_regular
 exp 𝕂 = exp 𝕂'
@@ -2333,6 +2413,7 @@ has_deriv_within_at f f' (set.Ioo x y) x → has_deriv_within_at f f' (set.Ioi x
 x.sieve_extend f _ = x f hf
 L.length ≤ L.sum
 (∀ (x : R), x ∈ l → x ∈ s) → l.sum ∈ s
+∥x + y∥ = ∥x∥ + ∥y∥
 g * f = 1
 u n = E.mk_sol init n
 cont_diff 𝕜 ↑(n + 1) f ↔ differentiable 𝕜 f ∧ cont_diff 𝕜 ↑n (λ (y : E), fderiv 𝕜 f y)
@@ -2357,6 +2438,7 @@ has_inner.inner (x + y) (x + y) = has_inner.inner x x + has_inner.inner x y + ha
 is_add_group_hom (λ (a : α), -f a)
 affine.simplex.altitude t₂ j₂ = affine_span ℝ {t₁.points i₁, t₁.points i₂}
 1 ≤ a * b
+∃ (a : ℝ) (H : a ∈ set.Ioo 0 1) (C : ℝ) (H : C > 0), ∀ (y : E), y ∈ metric.ball 0 ↑r' → ∀ (n : ℕ), ∥f (x + y) - p.partial_sum n y∥ ≤ C * a ^ n
 zmod.legendre_sym p a = -1 ↔ ¬is_square ↑a
 di.extend f (i a) = f a
 polynomial.eval x (s.prod (λ (j : ι), p j)) = s.prod (λ (j : ι), polynomial.eval x (p j))
@@ -2367,6 +2449,8 @@ category_theory.is_pushout h₂₁ v₂₁ v₂₂ h₃₁
 s.sum (λ (x : β), ⇑(A.cramer) (λ (j : n), f j x) i) = ⇑(A.cramer) (λ (j : n), s.sum (λ (x : β), f j x)) i
 (list.take j L).nth_le i hi = L.nth_le i _
 ¬has_sbtw.sbtw c b a
+⇑(o.rotation (o.oangle x y)) x = y ↔ ∥x∥ = ∥y∥
+summable (λ (x : α), ∥f x∥) ↔ summable f
 semiconj_by a ↑x⁻¹ ↑y⁻¹
 ⇑linear_map.det (↑e.comp (f.comp ↑(e.symm))) = ⇑linear_map.det f
 minpoly ℤ μ ∣ polynomial.cyclotomic n ℤ
@@ -2497,12 +2581,14 @@ s ∈ nhds_within a (set.Ici a) ↔ ∃ (u : α) (H : u ∈ set.Ioi a), set.Icc 
 E.map (alg_hom.id K L) = E
 (add_con.ker_lift f).mrange = f.mrange
 bdd_above (set.range f)
+hb.oangle x y = θ ↔ y = (∥y∥ / ∥x∥) • ⇑(hb.rotation θ) x
 o.oangle x x = 0
 s ∈ nhds a ↔ ∃ (l u : α), a ∈ set.Ioo l u ∧ set.Ioo l u ⊆ s
 (Q i).anisotropic
 a + x = y + a
 category_theory.limits.cokernel.π f = 0
 hb.oangle x z - hb.oangle x y = hb.oangle y z
+summable (λ (i : ι), ⇑(V i) (f i)) ↔ summable (λ (i : ι), ∥f i∥ ^ 2)
 real.sqrt ↑a ≤ ↑(nat.sqrt a) + 1
 s1.direction < s2.direction
 measure_theory.integrable_on (λ (θ : fin n → ℝ), finset.univ.prod (λ (i : fin n), ↑(R i) * complex.exp (↑(θ i) * complex.I) * complex.I) • f (torus_map c R θ)) (set.Icc 0 (λ (_x : fin n), 2 * real.pi)) measure_theory.measure_space.volume
@@ -2517,9 +2603,11 @@ pythagorean_triple (k * x) (k * y) (k * z) ↔ pythagorean_triple x y z
 t.prod (λ (i : ι), g i) ∈ t.prod (λ (i : ι), f i)
 monotone (λ (x : α), linear_order.min (f x) (g x))
 module.projective R P
+∥bounded_continuous_function.const α b∥ ≤ ∥b∥
 ↑a.val = a
 t.sum (λ (i : ι), w i • f (p i)) ≤ f (t.sum (λ (i : ι), w i • p i))
 emetric.Hausdorff_edist s t ≤ emetric.diam (s ∪ t)
+∥normed_group_hom.id V∥ = 1
 emetric.inf_edist x t ≤ emetric.Hausdorff_edist s t
 category_theory.limits.has_limit F
 m < b ^ (b.digits m).length
@@ -2534,6 +2622,7 @@ t.prod (λ (i : ι), f i) ∈ s
 category_theory.limits.has_finite_biproducts C
 function.update g i a ∘ f = g ∘ f
 cont_diff_at 𝕜 n prod.fst p
+⇑f (λ (i : ι), finset.univ.sum (λ (j : α i), g i j)) = finset.univ.sum (λ (r : Π (i : ι), α i), ⇑f (λ (i : ι), g i (r i)))
 p q₁ q₂
 continuous_within_at f s x → continuous_within_at f (has_insert.insert x s) x
 ⇑linear_equiv.det (⇑rotation a).to_linear_equiv = 1
@@ -2541,9 +2630,13 @@ S.pointed
 measure_theory.locally_integrable f μ
 algebra.is_algebraic L A
 ↑↑a = a
+(∀ (x y : Π (n : ℕ), E n), has_dist.dist (f x) (f y) ≤ has_dist.dist x y) ↔ ∀ (x y : Π (n : ℕ), E n) (n : ℕ), y ∈ pi_nat.cylinder x n → has_dist.dist (f x) (f y) ≤ (1 / 2) ^ n
+∥x + y∥ * ∥x + y∥ = ∥x∥ * ∥x∥ + ∥y∥ * ∥y∥
 a / c < b / d → (a * d - b * c) / (c * d) < 0
+∥f.extend e h_dense _∥ ≤ ↑N * ∥f∥
 a ≠ 0
 ⇑(v.valuation) (⇑(algebra_map R K) r) = ⇑(v.int_valuation) r
+∥f∥ ≤ C ↔ ∀ (x : α), ∥⇑f x∥ ≤ C
 x ∈ monoid.closure (s ∪ t) ↔ ∃ (y : M) (H : y ∈ monoid.closure s) (z : M) (H : z ∈ monoid.closure t), y * z = x
 is_cau_seq has_norm.norm u ↔ cauchy_seq u
 category_theory.limits.has_colimit F
@@ -2639,6 +2732,7 @@ a • d + b • c ≤ a • c + b • d
 category_theory.exponential_ideal i
 ⇑(k.to_map) (⇑g x) = ⇑(k.to_map) (⇑g y)
 1 ∈ s
+∥a ^ n∥ ≤ ∥a∥ ^ n
 ⇑(witt_vector.ghost_component n) (⇑(witt_vector.teichmuller p) r) = r ^ p ^ n
 asymptotics.is_O_with c l f g' → asymptotics.is_O_with c l f (λ (x : α), -g' x)
 filter.tendsto (λ (x : α), r * f x) l filter.at_top
@@ -2710,6 +2804,7 @@ category_theory.limits.has_finite_limits C
 measure_theory.analytic_set s ↔ ∃ (β : Type) (h : topological_space β) (h' : polish_space β) (f : β → α), continuous f ∧ set.range f = s
 powers a ⊆ s
 a < b → b < c → a < c
+∥continuous_linear_map.lsmul 𝕜 𝕜'∥ ≤ 1
 l₁ <:+ l₂ → l₁.reverse <+: l₂.reverse
 ⇑(algebra.norm K) ζ = (-1) ^ finite_dimensional.finrank K L
 add_monoid.is_torsion G
@@ -2722,6 +2817,7 @@ category_theory.is_pushout h₁₂ v₁₂ v₁₃ h₂₂
 nonempty (category_theory.limits.cone F)
 p s
 measure_theory.integrable_on (λ (x : ℝ), real.exp (-x) * x ^ (s - 1)) (set.Ioi 0) measure_theory.measure_space.volume
+∥f y - f x∥ ≤ C * ∥y - x∥
 even a → even (-a)
 x * s • y = s • (x * y)
 free_group.reduce (free_group.reduce L) = free_group.reduce L
@@ -2735,6 +2831,7 @@ summable (λ (n : ℕ), (↑n ^ p)⁻¹) ↔ 1 < p
 filter.map₂ m f (filter.map n g) = filter.map n' (filter.map₂ m' f g)
 emetric.diam {x} = 0
 inner_product_geometry.angle x x = 0
+∃ (g : bounded_continuous_function Y ℝ), ∥g∥ ≤ ∥f∥ / 3 ∧ has_dist.dist (g.comp_continuous e) f ≤ 2 / 3 * ∥f∥
 prod.rprod rα rβ ≤ relation.trans_gen (relation.game_add rα rβ)
 filter.tendsto has_neg.neg (filter.comap has_norm.norm filter.at_top) (filter.comap has_norm.norm filter.at_top)
 nonempty (field α) ↔ is_prime_pow (cardinal.mk α)
@@ -2772,11 +2869,13 @@ category_theory.solution_set_condition G
 m < (b + 2) ^ ((b + 2).digits m).length
 ∅ ∉ r.classes
 monoid.is_torsion H ↔ monoid.is_torsion G
+∥f y - f x - ⇑φ (y - x)∥ ≤ C * ∥y - x∥
 padic_val_nat p p = 1
 ⇑((n.choose k).factorization) p ≤ nat.log p n
 subsingleton R
 s.nodup → s.powerset.nodup
 ⇑f a⁻¹ = (⇑f a)⁻¹
+s.prod (λ (a : α), (t a).sum (λ (b : δ a), f a b)) = (s.pi t).sum (λ (p : Π (a : α), a ∈ s → δ a), s.attach.prod (λ (x : {x // x ∈ s}), f x.val (p x.val _)))
 ⇑(linear_map.trace R M) (↑f * g * ↑f⁻¹) = ⇑(linear_map.trace R M) g
 ∃ (j : J) (y : F.obj j), category_theory.limits.colimit.ι F j y = x
 Mon.filtered_colimits.colimit_mul_aux F x y = Mon.filtered_colimits.colimit_mul_aux F x' y
@@ -2814,6 +2913,7 @@ bornology.is_vonN_bounded 𝕜 s₁
 is_regular 0 ↔ subsingleton R
 f =o[l] g ↔ ∀ ⦃c : ℝ⦄, 0 < c → asymptotics.is_O_with c l f g
 continuous_within_at f (set.Iic a) a
+hb.oangle x y = θ ↔ x ≠ 0 ∧ y ≠ 0 ∧ y = (∥y∥ / ∥x∥) • ⇑(hb.rotation θ) x ∨ θ = 0 ∧ (x = 0 ∨ y = 0)
 f₁ = f₂
 y - x ∈ tangent_cone_at ℝ s x
 convolution (convolution f g L μ) k L₂ ν x₀ = convolution f (convolution g k L₄ ν) L₃ μ x₀
@@ -2823,6 +2923,7 @@ is_cyclotomic_extension {n} A B ↔ (∃ (r : B), ⇑(polynomial.aeval r) (polyn
 category_theory.limits.has_finite_products C
 x = y
 p = p₁ ∨ p = p₂
+∃ (x₀ : E), x₀ ∉ F ∧ ∀ (y : E), y ∈ F → r * ∥x₀∥ ≤ ∥x₀ - y∥
 ∃ (r : ℝ), ∀ (sx : affine.simplex ℝ P n), set.range sx.points ⊆ ps → sx.circumradius = r
 b ≤ c
 finset.univ.sum f = finset.univ.sum g
@@ -2835,6 +2936,7 @@ category_theory.is_preconnected K
 continuous (λ (g : G × G), g.fst + g.snd + -g.fst)
 s.ord_connected ↔ ∀ (x : α), x ∈ s → ∀ (y : α), y ∈ s → x ≤ y → set.Icc x y ⊆ s
 p x hx
+summable (λ (n : ℕ), ξ ^ n) ↔ ∥ξ∥ < 1
 x ∈ s → y ∈ s → x + y ∈ s
 a ^ n = b ^ n ↔ a = b
 measure_theory.measure.sum (λ (a : α), ⇑μ {a} • measure_theory.measure.dirac a) = μ
@@ -2856,6 +2958,7 @@ ideal.map f I ≤ ideal.comap g I
 t = h.extend f
 emetric.diam (⇑(convex_hull ℝ) s) = emetric.diam s
 Class.iota p ∈ Class.univ
+∥⇑(quotient_add_group.mk' S) m∥ = 0 ↔ m ∈ closure ↑S
 Y ∈ F'.ess_image
 E1.map e.to_alg_hom ≤ E2.map e.to_alg_hom
 has_inner.inner (finset.univ.sum (λ (i : ι), l i • v i)) (v i) = ⇑(star_ring_end 𝕜) (l i)
@@ -2867,6 +2970,7 @@ algebra.is_algebraic K A
 dense_range has_pure.pure
 (finset.range n).sum (λ (i : ℕ), (x + y) ^ i * y ^ (n - 1 - i)) * x + y ^ n = (x + y) ^ n
 has_inner.inner (⇑f x) (⇑f y) = has_inner.inner x y
+∃ (g : bounded_continuous_function Y ℝ), ∥g∥ = ∥f∥ ∧ g.restrict s = f
 category_theory.is_iso f
 (l.nth 0).get_or_else 0 + l.tail.sum = l.sum
 z = ↑(z.re)
@@ -2912,6 +3016,7 @@ submodule.span (polynomial R) {g : polynomial R | ∃ (i : ℕ), g = ⇑polynomi
 monoid.closure {x} = powers x
 bdd_above s → bdd_above t → bdd_above (set.image2 f s t)
 fintype.card (sym2 α) = fintype.card α * (fintype.card α + 1) / 2
+∥f y - f x∥ ≤ C * ∥y - x∥
 F.map_iso (category_theory.eq_to_iso p) = category_theory.eq_to_iso _
 measure_theory.fin_strongly_measurable f μ
 {i : ι | (f i).nonempty}.finite
@@ -2952,6 +3057,8 @@ is_closed s
 ⇑ρ s ≤ ↑p * ⇑μ s
 ideal.is_jacobson R ↔ ∀ (P : ideal R), P.is_prime → P.jacobson = P
 B = C
+has_inner.inner x y = ∥x∥ * ∥y∥ ↔ ∥y∥ • x = ∥x∥ • y
+∥f.mk_continuous C h∥ ≤ linear_order.max C 0
 (polynomial_functions unit_interval).comap' (continuous_map.comp_right_alg_hom ℝ (Icc_homeo_I a b h).symm.to_continuous_map) = polynomial_functions (set.Icc a b)
 is_add_group_hom (g ∘ f)
 uniform_cauchy_seq_on F p s
@@ -2965,6 +3072,7 @@ has_fderiv_at (exp 𝕂) 1 0
 algebra.discr A b = 0
 v (⇑(equiv.swap i j) k) = v k
 contracting_with.efixed_point' f hsc hsf hfs x hxs hx = contracting_with.efixed_point' f htc htf hft y hyt hy
+∃ (d : α), d ≠ 0 ∧ ∥d • x∥ < ε ∧ ε / ∥c∥ ≤ ∥d • x∥ ∧ ∥d∥⁻¹ ≤ ε⁻¹ * ∥c∥ * ∥x∥
 (convex_cone.positive_cone 𝕜 E).pointed
 polynomial.rev_at_fun N i = ⇑(polynomial.rev_at N) i
 (s ∩ t).nonempty
@@ -2974,6 +3082,7 @@ affine_independent k p ↔ ∀ (w : ι → k), finset.univ.sum (λ (i : ι), w i
 (h.comp g).comp f = h.comp (g.comp f)
 mv_polynomial.esymm σ R n = finset.univ.sum (λ (t : {s // s.card = n}), ↑t.prod (λ (i : σ), mv_polynomial.X i))
 finsupp.comap_domain f (r • v) _ = r • finsupp.comap_domain f v _
+∥f z∥ ≤ C
 a * b < c → b < a⁻¹ * c
 has_fderiv_at f (⇑(continuous_multilinear_curry_fin1 𝕜 E F) (p x 1)) x
 (∀ (x : category_theory.presieve.family_of_elements P R), x.compatible → (∃ (t : P.obj (opposite.op X)), x.is_amalgamation t)) → category_theory.presieve.is_sheaf_for P R
@@ -3005,6 +3114,7 @@ is_least {n : ℕ | 0 < n ∧ ∃ (x y : ℤ), ↑n = a * x + b * y} (a.gcd b)
 metric.Hausdorff_dist (set.range (Gromov_Hausdorff.optimal_GH_injl X Y)) (set.range (Gromov_Hausdorff.optimal_GH_injr X Y)) ≤ Gromov_Hausdorff.HD f
 antisymm_rel r a b → a = b
 A = ⇑continuous_linear_map.adjoint B ↔ ∀ (x : E) (y : F), has_inner.inner (⇑A x) y = has_inner.inner x (⇑B y)
+asymptotics.is_O_with c l f (λ (x : α), ∥g' x∥) → asymptotics.is_O_with c l f g'
 ↑a ≤ ↑b ↔ a ≤ b
 a < b → order.pred a < order.pred b
 I = J
@@ -3022,8 +3132,10 @@ A.adjugate.adjugate = A.det ^ (fintype.card n - 2) • A
 b < c
 cont_diff 𝕜 n f ↔ (∀ (m : ℕ), ↑m ≤ n → continuous (iterated_deriv m f)) ∧ ∀ (m : ℕ), ↑m < n → differentiable 𝕜 (iterated_deriv m f)
 polynomial.X * ⇑polynomial.C r = ⇑polynomial.C r * polynomial.X
+lipschitz_with C f → ∀ (x y : E), ∥f x - f y∥ ≤ ↑C * ∥x - y∥
 smooth ((model_with_corners_self 𝕜 𝕜).prod (model_with_corners_self 𝕜 V)) (model_with_corners_self 𝕜 V) (λ (p : 𝕜 × V), p.fst • p.snd)
 p i
+∥x - y∥ ^ 2 = ∥x∥ ^ 2 - 2 * has_inner.inner x y + ∥y∥ ^ 2
 function.injective real.sinh
 0 < -a ↔ a < 0
 s ∈ uniformity α ↔ ∃ (ε : ennreal) (H : ε > 0), ∀ {a b : α}, has_edist.edist a b < ε → (a, b) ∈ s
@@ -3062,6 +3174,7 @@ a ∣ -b ↔ a ∣ b
 euclidean_geometry.angle p2 p1 p3 = 0
 path_connected_space E
 a + b < 0
+same_ray ℝ x y ↔ ∥x∥⁻¹ • x = ∥y∥⁻¹ • y
 same_ray R x z
 t = uniform_space.to_topological_space
 ⇑c w x → ⇑c y z → ⇑c (w - y) (x - z)
@@ -3074,6 +3187,7 @@ set.eq_on f g t
 p ∈ I
 is_min a → is_max (⇑order_dual.of_dual a)
 f =o[nhds b] g ↔ (f ∘ ⇑e) =o[nhds (⇑(e.symm) b)] (g ∘ ⇑e)
+asymptotics.is_O_with c l f' g' → asymptotics.is_O_with c l (λ (x : α), ∥f' x∥) (λ (x : α), ∥g' x∥)
 small α
 continuous (λ (g : G), g * h * g⁻¹)
 a⁻¹ < b⁻¹ → b < a
@@ -3153,13 +3267,16 @@ category_theory.is_filtered D
 isometry f
 (B.restrict W).is_symm
 closure (set.Ioi a) = set.Ici a
+real.sin (inner_product_geometry.angle x y) * (∥x∥ * ∥y∥) = real.sqrt (has_inner.inner x x * has_inner.inner y y - has_inner.inner x y * has_inner.inner x y)
 irreducible (polynomial.cyclotomic n ℤ)
+∥f∥ = 0 ↔ f = 0
 mdifferentiable (model_with_corners_self 𝕜 E) (model_with_corners_self 𝕜 E') f ↔ differentiable 𝕜 f
 φ = ψ ↔ ∀ (n : ℕ), ⇑(power_series.coeff R n) φ = ⇑(power_series.coeff R n) ψ
 ↑r ≤ (q.comp p).radius
 p s
 finprod (λ (i : α), finprod (λ (H : i ∈ s ∪ t), f i)) = finprod (λ (i : α), finprod (λ (H : i ∈ s), f i)) * finprod (λ (i : α), finprod (λ (H : i ∈ t), f i))
 ∃ (y : α) (H : y ∈ set.Ico 0 c), f x = f y
+has_inner.inner x y = ∥x∥ * ∥y∥
 ⇑(hfdifferential _) (⇑(derivation.eval_at 1) ↑X) = ⇑(derivation.eval_at g) ↑X
 dense_range coe
 ∃ (r : R), 0 ≤ r ∧ x = r • y
@@ -3183,6 +3300,7 @@ continuous_on (iterated_deriv_within m f s) s
 S = T
 ⇑(e.adjust_to_orientation x) i = ⇑e i ∨ ⇑(e.adjust_to_orientation x) i = -⇑e i
 0 < L.length
+∥S.normed_mk∥ = 0
 category_theory.mono f
 cauchy_seq s
 x ^ y * x ^ z ≤ x ^ (y + z)
@@ -3243,8 +3361,10 @@ orthonormal 𝕜 (gram_schmidt_normed 𝕜 f)
 a ≠ 0
 cont_diff_at 𝕜 n (λ (x : E), -f x) x
 measure_theory.uniform_integrable (λ (n : ι), g) p μ
+∥measure_theory.Lp_meas_subgroup_to_Lp_trim F p μ hm f∥ = ∥f∥
 (λ (i : α), dite (i ∈ s) (λ (h : i ∈ s), function.update v j x (⇑(e.symm) ⟨i, h⟩)) (λ (h : i ∉ s), w i)) = function.update (λ (i : α), dite (i ∈ s) (λ (h : i ∈ s), v (⇑(e.symm) ⟨i, h⟩)) (λ (h : i ∉ s), w i)) ↑(⇑e j) x
 ⇑(c.lift f H) ↑x = ⇑f x
+(∀ (x : α), ∃ (y : β x), P x y) ↔ ∃ (f : Π (a : α), β a), ∀ (x : α), P x (f x)
 2 • o.oangle (r • x) x = 0
 ⇑f (a + -b) = ⇑f a + -⇑f b
 totally_separated_space α
@@ -3292,6 +3412,7 @@ function.is_fixed_pt id x
 cont_diff 𝕜 n f ↔ has_ftaylor_series_up_to n f (ftaylor_series 𝕜 f)
 ⇑(clifford_algebra.ι Q) m * ⇑(clifford_algebra.ι Q) m = ⇑(algebra_map R (clifford_algebra Q)) (⇑Q m)
 noncompact_space E
+continuous (λ (p : continuous_multilinear_map 𝕜 E G × Π (i : ι), E i), ⇑(p.fst) p.snd)
 ∃ (ν : measure_theory.measure α), measure_theory.is_finite_measure ν ∧ μ.absolutely_continuous ν
 c = d
 ⇑(algebra.norm K) x = 0 ↔ x = 0
@@ -3310,6 +3431,7 @@ cardinal.mk κ ≤ cardinal.mk ι
 subfield.closure s ≤ subfield.closure t
 x.is_amalgamation (category_theory.Ran_is_sheaf_of_cover_lifting.glued_section hu ℱ hS hx)
 linear_map.trace R M = (contract_left R M).comp (dual_tensor_hom_equiv R M M).symm.to_linear_map
+∃ (C : ℝ) (H : C > 0), ∀ (n : ℕ), ∥p n∥ ≤ C / ↑r ^ n
 valuation_ring 𝒪
 μ.absolutely_continuous ν
 (s.erase a).sum (λ (x : α), f x) + f a = s.sum (λ (x : α), f x)
@@ -3352,6 +3474,7 @@ category_theory.is_reflexive_pair g f
 (c.lift f H).comp c.mk' = f
 equiv.swap i j * (equiv.swap i j * σ) = σ
 S.normed_mk.ker = S
+∥⇑(add_monoid_hom.mul_right x) y∥ ≤ ∥x∥ * ∥y∥
 (polynomial.X ^ n - ⇑polynomial.C ↑u).separable
 subsingleton α
 list.take (list.take i (list.map list.length L)).sum L.join = (list.take i L).join
@@ -3367,6 +3490,7 @@ measurable (λ (x : α), ite (p x) (f x) (g x))
 affine_independent k coe ↔ affine_independent k coe
 ↑(⇑(orthogonal_projection K) v) = v ↔ v ∈ K
 ∃ (δ : ℝ) (hδ : 0 < δ), ∀ (s : set α), measurable_set s → ⇑μ s ≤ ennreal.of_real δ → measure_theory.snorm (s.indicator f) p μ ≤ 2 * ennreal.of_real ε
+filter.tendsto f filter.at_top (nhds b) ↔ ∀ (ε : ℝ), 0 < ε → (∃ (N : α), ∀ (n : α), N < n → ∥f n - b∥ < ε)
 category_theory.simple X
 ↑(⇑abv (⇑(algebra.norm R) a)) < ↑(class_group.norm_bound abv bS) * y ^ fintype.card ι
 finset.univ.sum (λ (i : ι), finset.centroid_weights_indicator k s i) = 1
@@ -3378,6 +3502,7 @@ category_theory.is_filtered D
 (μ.restrict A).weakly_regular
 H = add_subgroup.closure {a}
 a + b < 0
+∃ (m : M), ⇑(quotient_add_group.mk' S) m = x ∧ ∥m∥ < ∥x∥ + ε
 ∃ (p : ℕ), liouville.liouville_number_initial_terms ↑m k = ↑p / ↑m ^ k.factorial
 measure_theory.integrable_on f K μ
 is_bot a → is_top (⇑order_dual.of_dual a)
@@ -3385,6 +3510,7 @@ tangent_map I I.tangent (tangent_bundle.zero_section I M) p = ⟨⟨p.fst, 0⟩,
 is_of_fin_order (x i)
 filter.tendsto (λ (x : β), f x / r) l filter.at_bot
 f (x + y) = f x + f y
+∥x + y∥ ^ 2 = ∥x∥ ^ 2 + 2 * has_inner.inner x y + ∥y∥ ^ 2
 x + t • (y - x) ∈ interior s
 cont_diff_at 𝕜 n ring.inverse ↑x
 ideal.map (algebra_map R (localization.at_prime I)) I = local_ring.maximal_ideal (localization I.prime_compl)
@@ -3423,6 +3549,7 @@ k ≠ 0
 C * (y - x) ≤ f y - f x
 X = category_theory.subobject.mk f
 category_theory.limits.has_colimit F
+∃ (δ : ℝ), 0 < δ ∧ δ < 1 ∧ ∀ (s : finset E), (∀ (c : E), c ∈ s → ∥c∥ ≤ 2) → (∀ (c : E), c ∈ s → ∀ (d : E), d ∈ s → c ≠ d → 1 - δ ≤ ∥c - d∥) → s.card ≤ besicovitch.multiplicity E
 (p ^ k).factors.to_finset = {p}
 has_edist.edist x y ≤ emetric.diam s
 category_theory.is_pullback h₁₁ v₁₁ v₁₂ h₂₁
@@ -3467,8 +3594,10 @@ has_deriv_at (g₁ ∘ h) (h' • g₁') x
 strict_convex_on ℝ set.univ f
 μ.restrict s ≤ ν.restrict s'
 0 < -a → a < 0
+∃ (f : (Π (n : ℕ), E n) → Π (n : ℕ), E n), (∀ (x : Π (n : ℕ), E n), x ∈ s → f x = x) ∧ set.range f = s ∧ continuous f
 ⇑(algebra.norm K) pb.gen = (-1) ^ pb.dim * (minpoly K pb.gen).coeff 0
 p (finprod (λ (i : α), f i))
+has_inner.inner x y = (∥x + y∥ * ∥x + y∥ - ∥x∥ * ∥x∥ - ∥y∥ * ∥y∥) / 2
 is_topological_fiber_bundle F prod.snd
 (p ^ n).totient = p ^ (n - 1) * (p - 1)
 (X.presheaf_to_Type T).is_sheaf
@@ -3503,6 +3632,7 @@ metric.inf_dist x t ≤ metric.inf_dist x s + metric.Hausdorff_dist s t
 s.face _ = affine.simplex.mk_of_point k (s.points i)
 function.involutive (λ (_x : equiv.perm α), _x * equiv.swap i j)
 s.nonempty
+⇑is_R_or_C.re (has_inner.inner x y) = (∥x∥ * ∥x∥ + ∥y∥ * ∥y∥ - ∥x - y∥ * ∥x - y∥) / 2
 filter.tendsto u filter.at_bot filter.at_bot
 category_theory.is_iso f
 l₁.sum ≤ l₂.sum
@@ -3531,9 +3661,11 @@ filter.tendsto real.log filter.at_top filter.at_top
 unique_factorization_monoid R
 (generalized_continued_fraction.int_fract_pair.stream v).is_seq
 ¬interval_integrable g measure_theory.measure_space.volume a b
+∃ (a : ℝ) (H : a ∈ set.Ioo 0 1), (λ (n : ℕ), ∥p n∥ * ↑r ^ n) =o[filter.at_top] has_pow.pow a
 filter.map₂ m (filter.map₂ n f g) h ≤ filter.map₂ n' (filter.map₂ m₁ f h) (filter.map₂ m₂ g h)
 a ∉ finset.map (function.embedding.subtype (λ (x : α), p x)) s
 padic_val_nat p (b / p) = padic_val_nat p b - 1
+same_ray ℝ x y ↔ x = 0 ∨ y = 0 ∨ ∥x∥⁻¹ • x = ∥y∥⁻¹ • y
 function.periodic f (2 * c)
 B.nondegenerate
 r = s.circumradius
@@ -3578,6 +3710,7 @@ strict_mono f → strict_anti (f ∘ ⇑order_dual.of_dual)
 ⇑g (s.sum (λ (x : α), f x)) = s.sum (λ (x : α), ⇑g (f x))
 has_dist.dist p1 p2 ≠ 0
 is_of_fin_order x⁻¹ ↔ is_of_fin_order x
+∥⇑f m₁ - ⇑f m₂∥ ≤ ∥f∥ * finset.univ.sum (λ (i : ι), finset.univ.prod (λ (j : ι), ite (j = i) ∥m₁ i - m₂ i∥ (linear_order.max ∥m₁ j∥ ∥m₂ j∥)))
 has_dist.dist (f z) c ≤ has_dist.dist z c
 s.sum (λ (i : ι), f (⇑σ i) * g i) < s.sum (λ (i : ι), f i * g i) ↔ ¬monovary_on (f ∘ ⇑σ) g ↑s
 function.injective (finsupp.single a)
@@ -3670,6 +3803,7 @@ cardinal.mk κ ≤ cardinal.mk ι
 has_fderiv_at (exp 𝕂) (exp 𝕂 x • 1) x
 a • d + b • c < a • c + b • d
 is_commutative X m₂
+asymptotics.is_O_with c l (λ (x : α), ∥f' x∥) g → asymptotics.is_O_with c l f' g
 M p
 has_strict_deriv_at (λ (x : ℝ), a ^ x) (a ^ x * real.log a - real.exp (real.log a * x) * real.sin (x * real.pi) * real.pi) x
 {x : α | ∃ (y : α), y < x ∧ set.Ioo y x = ∅}.countable
@@ -3690,6 +3824,7 @@ order.pred a < order.pred b → a < b
 a * b ∣ a * c ↔ b ∣ c
 minpoly K x = minpoly K y
 vadd_comm_class N M α
+nontrivial (Π (i : I), f i)
 ⇑(direct_sum.to_module R ι N φ) = ⇑(direct_sum.to_add_monoid (λ (i : ι), (φ i).to_add_monoid_hom))
 asymptotics.is_O_with C (nhds b) f g ↔ asymptotics.is_O_with C (nhds (⇑(e.symm) b)) (f ∘ ⇑e) (g ∘ ⇑e)
 nhds ↑γ = has_pure.pure ↑γ
@@ -3711,6 +3846,7 @@ a ∣ u * b ↔ a ∣ b
 padic_val_rat p ↑z = ↑((multiplicity ↑p z).get _)
 relation.game_add rα rβ ≤ prod.lex rα rβ
 dense (s ∩ t)
+x ∈ set.Icc a b → ∥f x∥ ≤ B x
 t₁.orthocenter = t₂.orthocenter
 hb.oangle x y = hb₂.oangle x y
 is_smul_regular M (a ^ n) ↔ is_smul_regular M a
@@ -3777,6 +3913,8 @@ list.of_fn f = list.nil
 ∃ (n : ℕ), v = (generalized_continued_fraction.of v).convergents n
 e.option_congr = equiv_functor.map_equiv option e
 u * a ∣ b ↔ a ∣ b
+∥continuous_linear_map.lsmul 𝕜 𝕜'∥ = 1
+∃ (C : ℝ) (H : C ≥ 0), ∀ (y : F), ∃ (x : E), has_dist.dist (⇑f x) y ≤ 1 / 2 * ∥y∥ ∧ ∥x∥ ≤ C * ∥y∥
 finset.image g (finset.image₂ f s t) = finset.image₂ f' (finset.image g' s) t
 ∃ (a b : set α), measurable_set a ∧ measurable_set b ∧ {x : α | v.lim_ratio ρ x < ↑p} ⊆ a ∧ {x : α | ↑q < v.lim_ratio ρ x} ⊆ b ∧ ⇑μ (a ∩ b) = 0
 cont_diff_on 𝕜 ↑(n + 1) f₂ s₂ ↔ differentiable_on 𝕜 f₂ s₂ ∧ cont_diff_on 𝕜 ↑n (deriv_within f₂ s₂) s₂
@@ -3880,6 +4018,7 @@ padic_norm_e (q + r) ≤ linear_order.max (padic_norm_e q) (padic_norm_e r)
 ⇑linear_map.det ↑(complex.conj_lie.to_linear_equiv) = -1
 f = g
 has_dist.dist p₁ (⇑(euclidean_geometry.reflection s) p₂) = has_dist.dist p₁ p₂
+∥f z∥ ≤ C
 c.map_gen f = c.map_of_surjective f H h hf
 ∃ (q : polynomial R), polynomial.map f q = p ∧ q.degree = p.degree
 function.injective has_dvd.dvd
@@ -3907,6 +4046,7 @@ f = g
 (a + b) * c = a * c + b * c
 f.cycle_factors_finset.noncomm_prod id comm = f
 I ≤ lie_ideal.comap f (lie_ideal.map f I)
+∥x + y∥ * ∥x + y∥ = ∥x∥ * ∥x∥ + ∥y∥ * ∥y∥ ↔ has_inner.inner x y = 0
 a * b < 1
 a ⊂ b
 finprod (λ (i : α), finprod (λ (H : i ∈ s), f i)) = finprod (λ (j : β), finprod (λ (H : j ∈ t), g j))
@@ -3987,6 +4127,7 @@ ideal.comap f I ≤ ideal.map g I
 hb.oangle (⇑(hb.rotation θ) x) x = -θ
 dense_range (prod.map f g)
 bdd_below (has_insert.insert a s) ↔ bdd_below s
+∥x + y∥ * ∥x + y∥ = ∥x∥ * ∥x∥ + ∥y∥ * ∥y∥ ↔ inner_product_geometry.angle x y = real.pi / 2
 emetric.inf_edist x s ≤ emetric.inf_edist x (metric.thickening δ s) + ennreal.of_real δ
 t.sum (λ (i : ι), f i) ∈ S
 {o : ordinal | a < b * order.succ o}.nonempty
@@ -4018,6 +4159,7 @@ a + b = b + a
 add_con_gen r ≤ c
 ⇑(s₁.weighted_vsub p) w = ⇑(s₂.weighted_vsub p) (↑s₁.indicator w)
 ∃ (g : α → ℝ), lipschitz_with K g ∧ set.eq_on f g s
+∃ (x₀ : E), ∥x₀∥ ≤ R ∧ ∀ (y : E), y ∈ F → 1 ≤ ∥x₀ - y∥
 ⇑(polynomial.expand R p) (polynomial.cyclotomic n R) = polynomial.cyclotomic (n * p) R
 same_ray R x (y + z)
 (g.squash_gcf (n + 1)).s.nth m = g.s.nth m
@@ -4044,6 +4186,7 @@ finite_dimensional.finrank K V = 1 ↔ nonempty (basis ι K V)
 (0 + x).equiv x
 metric.cthickening δ E₁ ⊆ metric.cthickening δ E₂
 p f
+∥⇑f m₁ - ⇑f m₂∥ ≤ C * ↑(fintype.card ι) * linear_order.max ∥m₁∥ ∥m₂∥ ^ (fintype.card ι - 1) * ∥m₁ - m₂∥
 is_of_fin_order (x * y)
 monotone (λ (n : N), f (μ n m))
 ∃ (t : finset α) (H : t ∈ 𝒜), s ⊆ t
@@ -4065,16 +4208,20 @@ has_inner.inner (A.transpose i) (B.transpose j) = A.conj_transpose.mul B i j
 ⇑f (a / b) = ⇑f a / ⇑f b
 (k.map hl j).comp (f.map hy k) = f.map _ j
 finsum (λ (i : α), finsum (λ (H : i ∈ s), f i - g i)) = finsum (λ (i : α), finsum (λ (H : i ∈ s), f i)) - finsum (λ (i : α), finsum (λ (H : i ∈ s), g i))
+filter.Coprod (λ (d : δ), filter.cocompact (κ d)) = filter.cocompact (Π (d : δ), κ d)
 open_embedding coe
 v.prod.factor_multiset = v
 is_open_map prod.snd
 (f.lift g).has_basis (λ (i : Σ (i : ι), β i), p i.fst ∧ pg i.fst i.snd) (λ (i : Σ (i : ι), β i), sg i.fst i.snd)
 hb.oangle (r • x) x = 0
 (S.prod g).factorization = S.sum (λ (x : α), (g x).factorization)
+∥g + h∥ ≤ ∥g∥ + ∥h∥
 ⇑(exterior_algebra.ι R) m * ⇑(exterior_algebra.ι R) m = 0
 {x : ℝ | differentiable_within_at ℝ f (set.Ici x) x ∧ deriv_within f (set.Ici x) x ∈ K} ⊆ right_deriv_measurable_aux.D f K
 (m + n).choose k = (finset.nat.antidiagonal k).sum (λ (ij : ℕ × ℕ), m.choose ij.fst * n.choose ij.snd)
+monoid.is_torsion_free (Π (i : η), Gs i)
 (reflection K).trans (reflection K) = linear_isometry_equiv.refl 𝕜 E
+∥q.comp_along_composition p c∥ ≤ ∥q c.length∥ * finset.univ.prod (λ (i : fin c.length), ∥p (c.blocks_fun i)∥)
 ⇑(⇑(b.repr) x) i = f x i
 ↑c.convergents = ↑c.convergents'
 f.comp_linear_map ↑g = 0 ↔ f = 0
@@ -4083,6 +4230,7 @@ a < 1 → 1 < a⁻¹
 uniform_embedding topological_space.nonempty_compacts.to_closeds
 ⇑(v.valuation) (⇑(algebra_map R K) r) ≤ 1
 F.is_sheaf ↔ F.is_sheaf_pairwise_intersections
+∥w - v∥ = ∥w + v∥
 set.image2 f (set.image2 g s t) u ⊆ set.image2 g' (set.image2 f₁ s u) (set.image2 f₂ t u)
 hb.oangle y z + hb.oangle x y = hb.oangle x z
 ⇑f (g - h) = ⇑f g - ⇑f h
@@ -4102,6 +4250,7 @@ cauchy_seq f
 category_theory.presheaf.is_sheaf J E.X
 (finset.range n).sum (λ (i : ℕ), f i • g i) = f (n - 1) • (finset.range n).sum (λ (i : ℕ), g i) - (finset.range (n - 1)).sum (λ (i : ℕ), (f (i + 1) - f i) • (finset.range (i + 1)).sum (λ (i : ℕ), g i))
 m.sum ∈ S
+∥f y - f x∥ ≤ C * ∥y - x∥
 category_theory.subobject.lower F₁ = category_theory.subobject.lower F₂
 has_strict_fderiv_at (exp 𝕂) 1 0
 s.infinite
@@ -4126,6 +4275,7 @@ is_smul_regular M s
 filter.cofinite = filter.at_top
 char.quadratic_char F a = -1 ↔ ¬char.quadratic_char F a = 1
 liouville.liouville_number m = liouville.liouville_number_initial_terms m k + liouville.liouville_number_tail m k
+∥S.normed_mk∥ ≤ 1
 a < 0 → c • a < 0
 is_square m → (∃ (c : α), m = c ^ 2)
 1 < a * b
@@ -4170,6 +4320,7 @@ relation.trans_gen r n m
 (truncated_witt_vector.zmod_equiv_trunc p n).symm.to_ring_hom.comp (truncated_witt_vector.truncate hm) = (zmod.cast_hom _ (zmod (p ^ n))).comp (truncated_witt_vector.zmod_equiv_trunc p m).symm.to_ring_hom
 continuous f ↔ continuous (⇑e ∘ f)
 nat.fib (n + 2) = nat.fib n + nat.fib (n + 1)
+has_dist.dist (⇑f x) (⇑f y) ≤ 2 * ∥f∥
 is_monoid_hom f
 inner_product_space.is_self_adjoint T ↔ ∀ (v : V), ⇑(star_ring_end ℂ) (has_inner.inner (⇑T v) v) = has_inner.inner (⇑T v) v
 ∃ (i : ι) (x : G i), ⇑(first_order.language.direct_limit.of L ι G f i) x = z
@@ -4203,6 +4354,7 @@ generalized_continued_fraction.int_fract_pair.stream v n = option.some ifp_n →
 ⇑(c.map d h) x = ⇑(c.lift d.mk' _) x
 P.fg ↔ ∃ (S : set G), subgroup.closure S = P ∧ S.finite
 finset.image₂ f s t = finset.image₂ f' s t
+∃ (C : ℝ), ∀ (z : E), ∥⇑f z∥ ≤ C * ∥z∥
 continuous (λ (a_1 : γ), set.Icc_extend h (f a_1) (g a_1))
 is_smul_regular R g
 is_add_hom (g ∘ f)
@@ -4269,6 +4421,7 @@ has_sbtw.sbtw a b c
 L.limsup (λ (i : ι), ⇑↑(μs i) F) ≤ ⇑↑μ F
 has_strict_fderiv_at f (⇑(continuous_multilinear_curry_fin1 𝕂 E' F') (p x 1)) x
 a ∈ tactic.interval_cases.set_elems s
+finset.univ.prod (λ (a : α), (t a).sum (λ (b : δ a), f a b)) = (fintype.pi_finset t).sum (λ (p : Π (a : α), δ a), finset.univ.prod (λ (x : α), f x (p x)))
 cont_diff 𝕜 n prod.fst
 0 < k → polynomial.cyclotomic (p ^ k * m) R = polynomial.cyclotomic m R ^ (p ^ k - p ^ (k - 1))
 category_theory.epi α
@@ -4297,6 +4450,7 @@ category_theory.mono t.inl
 f.translation_number = ↑m / ↑n
 f i = 0
 finprod (λ (i : α), finprod (λ (H : i ∈ has_insert.insert a s), f i)) = f a * finprod (λ (i : α), finprod (λ (H : i ∈ s), f i))
+∥x - y∥ * ∥x - y∥ = ∥x∥ * ∥x∥ + ∥y∥ * ∥y∥ - 2 * ∥x∥ * ∥y∥ * real.cos (inner_product_geometry.angle x y)
 category_theory.is_iso (category_theory.limits.limit.π F j)
 a / a * a = a
 ⇑f x = ⇑g x
@@ -4318,11 +4472,14 @@ category_theory.limits.has_pushouts C
 ∃ (s : β), (interior (f s)).nonempty
 function.is_periodic_pt f n x
 (finset.range (n + 1)).sum (λ (m : ℕ), n.choose m) = 2 ^ n
+∃ (p : polynomial ℝ), ∥p.to_continuous_map_on (set.Icc a b) - f∥ < ε
 set.Icc a b ⊆ s
+∃ (f : ℕ → E), (∀ (n : ℕ), ∥f n∥ ≤ R) ∧ ∀ (m n : ℕ), m ≠ n → 1 ≤ ∥f m - f n∥
 a⁻¹ < 1 ↔ 1 < a
 coe ∘ coe = coe
 (2 * n).choose r ≤ n.central_binom
 pi.single i (r • x) = r • pi.single i x
+set.eq_on (has_norm.norm ∘ f) (function.const E ∥f z∥) (metric.closed_ball z r)
 set.range coe = {x : α | p x}
 is_add_regular (a + b) ∧ is_add_regular (b + a) ↔ is_add_regular a ∧ is_add_regular b
 -b + a < c → a < b + c
@@ -4347,6 +4504,7 @@ subfield.closure ↑s = s
 is_min_filter (⇑order_dual.to_dual ∘ f) l a → is_max_filter f l a
 irreducible ϖ ↔ local_ring.maximal_ideal R = ideal.span {ϖ}
 b = a
+∃ (g : bounded_continuous_function Y ℝ), ∥g∥ = ∥f∥ ∧ ⇑g ∘ e = ⇑f
 f ∈ measure_theory.Lp.bounded_continuous_function E p μ ↔ ∃ (f₀ : bounded_continuous_function α E), continuous_map.to_ae_eq_fun μ f₀.to_continuous_map = ↑f
 (∀ (a : G), a ∈ g → a ∈ K) → g.sum ∈ K
 finset.centroid k s p = ⇑(finset.univ.affine_combination p) (finset.centroid_weights_indicator k s)
@@ -4409,6 +4567,7 @@ t.prod (λ (i : ι), f i) ∈ s
 (∃ (v : n → K) (H : v ≠ 0), M.mul_vec v = 0) ↔ M.det = 0
 finsum (λ (i : α), finsum (λ (H : i ∈ s ∪ t), f i)) + finsum (λ (i : α), finsum (λ (H : i ∈ s ∩ t), f i)) = finsum (λ (i : α), finsum (λ (H : i ∈ s), f i)) + finsum (λ (i : α), finsum (λ (H : i ∈ t), f i))
 has_dist.dist x y ≤ metric.diam s
+∥x∥ < r ↔ ∀ (i : ι), ∥x i∥ < r
 function.injective (λ (n : ℕ), polynomial.cyclotomic n R)
 uniform_embedding f → ((∀ (ε : ℝ), ε > 0 → (∃ (δ : ℝ) (H : δ > 0), ∀ {a b : α}, has_dist.dist a b < δ → has_dist.dist (f a) (f b) < ε)) ∧ ∀ (δ : ℝ), δ > 0 → (∃ (ε : ℝ) (H : ε > 0), ∀ {a b : α}, has_dist.dist (f a) (f b) < ε → has_dist.dist a b < δ))
 s.nonempty → (∀ (a : α), a ∈ s → b ≤ a) → (∀ (w : α), b < w → (∃ (a : α) (H : a ∈ s), a < w)) → has_Inf.Inf s = b
@@ -4420,6 +4579,7 @@ padic_val_int p 0 = 0
 ↑0 = 0
 metric.diam (s ∪ t) ≤ metric.diam s + has_dist.dist x y + metric.diam t
 directed r f
+⇑f (λ (i : ι), finset.univ.sum (λ (j : α i), g i j)) = finset.univ.sum (λ (r : Π (i : ι), α i), ⇑f (λ (i : ι), g i (r i)))
 ∃ (x : β), ∀ (y : β), f x ≤ f y
 a ∣ b
 has_nndist.nndist a a = 0
@@ -4431,6 +4591,7 @@ convex_on ℝ D f
 f.maximal_generalized_eigenspace μ = ⇑(f.generalized_eigenspace μ) (f.maximal_generalized_eigenspace_index μ)
 _.oangle x y = hb.oangle (⇑(f.symm) x) (⇑(f.symm) y)
 matrix.dot_product u (⇑(⇑cross_product v) w) = matrix.det ![u, v, w]
+∥x + y∥ * ∥x + y∥ = ∥x∥ * ∥x∥ + ∥y∥ * ∥y∥
 polynomial.X ^ n - 1 = (polynomial.nth_roots_finset n R).prod (λ (ζ : R), polynomial.X - ⇑polynomial.C ζ)
 a = 0
 ∃ (K : nnreal) (t : set E') (H : t ∈ nhds x), lipschitz_on_with K f t
@@ -4439,6 +4600,7 @@ s ∈ nhds_within a (set.Iic a) ↔ ∃ (l : α) (H : l ∈ set.Iio a), set.Ioc 
 filter.tendsto complex.exp (filter.comap complex.re filter.at_bot) (nhds 0)
 has_deriv_at (λ (x : ℝ), polynomial.eval x (exp_neg_inv_glue.P_aux n) * real.exp (-x⁻¹) / x ^ (2 * n)) (polynomial.eval x (exp_neg_inv_glue.P_aux (n + 1)) * real.exp (-x⁻¹) / x ^ (2 * (n + 1))) x
 closure E ⊆ metric.thickening δ E
+∥x - y∥ * ∥x - y∥ = ∥x∥ * ∥x∥ + ∥y∥ * ∥y∥
 L.tail.sum = L.sum - L.head
 P f
 finset.univ.prod f = finset.univ.prod g
@@ -4522,6 +4684,7 @@ is_glb t a
 measurable (λ (x : δ), filter.at_top.liminf (λ (i : ℕ), f i x))
 function.is_fixed_pt (f ∘ g) x
 m ≠ 0 → b ^ (b.digits m).length ≤ b * m
+∥f y - f x∥ ≤ C * ∥y - x∥
 deriv f a = 0
 a * b = b * a
 ⇑μ (t ∩ s) = ⇑μ (u ∩ s)
@@ -4546,6 +4709,7 @@ a⁻¹ < 1 ↔ 1 < a
 dense (closure s) ↔ dense s
 c (f ^ n) = (c f^[n])
 e = e'
+∥continuous_linear_map.id 𝕜 E∥ = 1
 convex_on ℝ set.univ f
 continuous (λ (x : α), h x (f x / g x))
 a < 0 → 0 < -a
@@ -4553,6 +4717,7 @@ zmod.legendre_sym p a = 1 ↔ is_square ↑a
 is_compact (weak_dual.polar 𝕜 s)
 continuous f ↔ seq_continuous f
 a ≤ c
+∥f z∥ ≤ C
 (-o).rotation θ = o.rotation (-θ)
 omega_complete_partial_order.continuous' coe
 (∀ (a : α), a ∈ s → acc (relation.cut_expand r) {a}) → acc (relation.cut_expand r) s
@@ -4577,6 +4742,7 @@ set.image2 f s (set.image2 g t u) ⊆ set.image2 g' (set.image2 f₁ s t) (set.i
 2 * a * b ≤ a ^ 2 + b ^ 2
 (s.sigma t).sum (λ (x : Σ (i : α), σ i), f x) = s.sum (λ (a : α), (t a).sum (λ (s : σ a), f ⟨a, s⟩))
 totally_disconnected_space α ↔ ∀ (x : α), connected_component x = {x}
+same_ray ℝ x y → ∥x∥⁻¹ • x = ∥y∥⁻¹ • y
 (A.mul B + 1).det = (B.mul A + 1).det
 f 0 = 0
 dense t
@@ -4630,6 +4796,7 @@ zmod.legendre_sym p a = zmod.legendre_sym p (a % ↑p)
 g₁ = g₂
 has_strict_deriv_at g f'⁻¹ a
 finite_dimensional.finrank K K = 1
+has_inner.inner x (r • x) / (∥x∥ * ∥r • x∥) = 1
 1 + ↑n * (a - 1) ≤ a ^ n
 is_add_monoid_hom f
 a ∈ s → b ∉ s → a ≠ b
@@ -4651,6 +4818,7 @@ category_theory.is_equivalence.of_iso (category_theory.iso.refl F) hF = hF
 P α
 ∃ (t : set α), s ⊆ t ∧ measurable_set t ∧ ∀ (i : ι), ⇑(μ i) t = ⇑(μ i) s
 has_star.star 1 = 1
+∃ (g : E →L[𝕜] 𝕜), ∥g∥ = 1 ∧ ⇑g x = ↑∥x∥
 liouville_with p (x * ↑r) ↔ liouville_with p x
 ⇑(s₁.affine_combination p) w = ⇑(s₂.affine_combination p) (↑s₁.indicator w)
 u = v ↔ set.eq_on u v ↑(finset.range E.order)
@@ -4662,11 +4830,13 @@ affine_subspace.mk' p s.direction = s
 σ.to_pequiv.to_matrix i j = 1 (⇑σ i) j
 (C.boundaries i).of_le (C.cycles i) h = C.boundaries_to_cycles i
 pi.mul_single i x i' = pi.mul_single i' x i
+has_inner.inner x y = ↑∥x∥ * ↑∥y∥ ↔ ↑∥y∥ • x = ↑∥x∥ • y
 list.chain' R (l₁ ++ l₂ ++ l₃)
 Q.equivalent (quadratic_form.weighted_sum_squares ℂ 1)
 s.points i = ⇑(finset.univ.affine_combination s.points_with_circumcenter) (affine.simplex.point_weights_with_circumcenter i)
 finite_dimensional.finrank K V ≤ 1
 (has_insert.insert a s).prod (λ (x : α), f x) = s.prod (λ (x : α), f x)
+∥f z∥ ≤ C
 l.dprod fι fA = (list.map fA l).prod
 nontrivial M₀'
 is_closed_map (λ (x : α), c • x)
@@ -4676,6 +4846,7 @@ euclidean_geometry.cospherical ps ↔ ∃ (center : P) (H : center ∈ s) (radiu
 has_fderiv_at (exp 𝕂) (exp 𝕂 x • 1) x
 p = q
 ((M.mul N).mul M⁻¹).det = N.det
+∃ (g : bounded_continuous_function Y ℝ), ∥g∥ = ∥f∥ ∧ g.comp_continuous e = f
 a * b = c * d ↔ a = c ∧ b = d
 cont_diff_on 𝕜 ↑(n + 1) f s ↔ ∀ (x : E), x ∈ s → (∃ (u : set E) (H : u ∈ nhds_within x (has_insert.insert x s)) (f' : E → (E →L[𝕜] F)), (∀ (x : E), x ∈ u → has_fderiv_within_at f (f' x) u x) ∧ cont_diff_on 𝕜 ↑n f' u)
 category_theory.is_iso f
@@ -4707,12 +4878,14 @@ g y (⇑f y) + (finsupp.erase y f).sum g = f.sum g
 ⇑f (-x) = -⇑f x
 measure_theory.has_pdf X «ℙ» measure_theory.measure_space.volume ↔ (measure_theory.measure.map X «ℙ»).absolutely_continuous measure_theory.measure_space.volume
 category_theory.limits.has_colimit K
+∥f 1 - f 0∥ ≤ C
 fintype.card (quaternion_group n) = 4 * n
 s ⊆ ↑(affine_span k s)
 has_strict_deriv_at f f' x
 o.oangle x y + o.oangle y z = o.oangle x z
 ⇑{to_fun := f, linear := linear, map_vadd' := add} = f
 emetric.inf_edist x s ≤ has_edist.edist x y
+∥f.to_continuous_linear_map.comp g∥ = ∥g∥
 z - ↑(⇑padic_int.to_zmod z) ∈ local_ring.maximal_ideal ℤ_[p]
 ∃ (x : M), ¬B.is_ortho x x
 ⇑(direct_sum.is_internal.subordinate_orthonormal_basis hn hV) a ∈ V (direct_sum.is_internal.subordinate_orthonormal_basis_index hn hV a)
@@ -4759,6 +4932,8 @@ s ∈ nhds_within a (set.Iic a) ↔ ∃ (l : α) (H : l ∈ set.Iio a), set.Ioc 
 monotone f ↔ ∀ (i : fin n), f (⇑fin.cast_succ i) ≤ f i.succ
 ⇑(s.weighted_vsub p) w = s.sum (λ (i : ι), w i • p i)
 a * x * x + b * x + c = 0 ↔ x = -b / (2 * a)
+∃ (s : M) (H : s ∈ S), ∥m + s∥ < ∥⇑(quotient_add_group.mk' S) m∥ + ε
+∥deriv f c∥ ≤ C / R
 has_dist.dist s.circumcenter (s.points i) = s.circumradius
 p.comp (p.right_inv i) = formal_multilinear_series.id 𝕜 F
 ⇑linear_equiv.det complex.conj_ae.to_linear_equiv = -1
@@ -4790,6 +4965,7 @@ t.sum (λ (i : ι), f i) ∈ s
 measure_theory.strongly_measurable (λ (x : α), g (f x)) ↔ measure_theory.strongly_measurable f
 ⇑(algebra.norm K) (⇑(algebra_map K L) x) = x ^ finite_dimensional.finrank K L
 cast h = ⇑(fin.cast _)
+⇑is_R_or_C.im (has_inner.inner x y) = (∥x - is_R_or_C.I • y∥ * ∥x - is_R_or_C.I • y∥ - ∥x + is_R_or_C.I • y∥ * ∥x + is_R_or_C.I • y∥) / 4
 (n + 1) / (b + 2) < n + 1
 finset.centroid k s p ∈ affine_span k (set.range p)
 submodule.span S ↑p = submodule.restrict_scalars S p
@@ -4805,10 +4981,12 @@ subsingleton α
 is_right_regular (b * a) ↔ is_right_regular b
 ∃ (n : set (α × α)) (H : n ∈ uniformity α), ∀ (x : α), x ∈ s → (∃ (i : ι), {y : α | (x, y) ∈ n} ⊆ c i)
 hb.oangle x y = θ ↔ (x ≠ 0 ∧ y ≠ 0 ∧ ∃ (r : ℝ), 0 < r ∧ y = r • ⇑(hb.rotation θ) x) ∨ θ = 0 ∧ (x = 0 ∨ y = 0)
+∥x - y∥ ^ 2 = ∥x∥ ^ 2 - 2 * ⇑is_R_or_C.re (has_inner.inner x y) + ∥y∥ ^ 2
 ∃ (n : ℕ) (H : n ≥ N), ∀ (k : ℕ), k < n → u k < u n
 is_adic J ↔ (∀ (n : ℕ), is_open ↑(J ^ n)) ∧ ∀ (s : set R), s ∈ nhds 0 → (∃ (n : ℕ), ↑(J ^ n) ⊆ s)
 ⇑(measure_theory.measure.hausdorff_measure d₂) s ≤ ⇑(measure_theory.measure.hausdorff_measure d₁) s
 a * a - b * b = (a + b) * (a - b)
+∥f'∥ ≤ C
 o.oangle (-x) x = ↑real.pi
 ∃ (H : subgroup G), N.is_complement' H
 bdd_below t → bdd_below s
@@ -4870,6 +5048,7 @@ a ≤ b → b ≠ a → a < b
 concave_on 𝕜 s f → convex_on 𝕜 s (-f)
 module.rank R (tensor_product R M N) = (module.rank R M).lift * (module.rank R N).lift
 set.Icc a b ⊆ s
+∥continuous_linear_map.id 𝕜 E∥ ≤ 1
 f (⇑(affine_map.line_map a b) r) ≤ ⇑(affine_map.line_map (f a) (f b)) r ↔ slope f a b ≤ slope f (⇑(affine_map.line_map a b) r) b
 a < 0 → 0 < c • a
 ↑↑a = a
@@ -4901,6 +5080,7 @@ asymptotics.is_O_with c l f (λ (x : α), -g' x) → asymptotics.is_O_with c l f
 cont_diff 𝕜 n (λ (x : E), f x * g x)
 S ≤ J₁.close S
 (finset.range n).sum (λ (i : ℕ), i) = n * (n - 1) / 2
+∥f∥ ≤ M
 a < -b → b < -a
 ⇑(q.comp p 1) v = ⇑(q 1) (λ (i : fin 1), ⇑(p 1) v)
 topological_ring α
@@ -4919,6 +5099,7 @@ measure_theory.integrable_on (λ (x : ℝ), ↑(real.exp (-x)) * ↑x ^ (s - 1))
 a < c
 has_inner.inner (v i) (finset.univ.sum (λ (i : ι), l i • v i)) = l i
 a ∣ b → 0 < multiplicity a b
+∃ (C : ℝ), ∀ (y : E), y ∈ emetric.ball x r' → ∀ (z : E), z ∈ emetric.ball x r' → ∥f y - f z - ⇑(p 1) (λ (_x : fin 1), y - z)∥ ≤ C * linear_order.max ∥y - x∥ ∥z - x∥ * ∥y - z∥
 upper_semicontinuous (λ (z : α), f z + g z)
 finprod (λ (i : α), finprod (λ (H : i ∈ set.range g), f i)) = finprod (λ (j : β), f (g j))
 s.finite
@@ -4971,6 +5152,7 @@ module.rank R (matrix m n R) = (cardinal.mk m * cardinal.mk n).lift
 ∃ (m : M) (H : m ∈ s), m * m = m
 ⇑(orientation.map ι f) x = -x ↔ ⇑linear_map.det ↑f < 0
 continuous_within_at f (set.Iic a) a
+∥⇑(add_monoid_hom.mul_left x) y∥ ≤ ∥x∥ * ∥y∥
 {r}.to_colex < {s}.to_colex ↔ r < s
 F.is_sheaf
 is_compact (s ∩ t)
@@ -4983,6 +5165,7 @@ filter.map f filter.at_top = filter.at_top
 s.sum (λ (i : ι), f (⇑σ i) * g i) ≤ s.sum (λ (i : ι), f i * g i)
 ∃ (q : S) (r : R) (H : r ∈ class_group.finset_approx bS adm), ⇑abv (⇑(algebra.norm R) (r • a - q * b)) < ⇑abv (⇑(algebra.norm R) b)
 bdd_above s → bdd_above t → bdd_above (s ∪ t)
+x ∈ set.Icc a b → ∥f x∥ ≤ B x
 bdd_below (s ∪ t) ↔ bdd_below s ∧ bdd_below t
 is_primitive_root (is_cyclotomic_extension.zeta n A B) ↑n
 continuous (convolution f g L μ)
@@ -5017,6 +5200,7 @@ probability_theory.indep_fun f g μ ↔ ∀ {φ : β → ℝ} {ψ : β' → ℝ}
 (finset.filter p (finset.Ico n (n + a))).card = nat.count p a
 P.next_coeff = -P.roots.sum
 metric.bounded (metric.ball x r)
+∥⇑f m₁ - ⇑f m₂∥ ≤ C * finset.univ.sum (λ (i : ι), finset.univ.prod (λ (j : ι), ite (j = i) ∥m₁ i - m₂ i∥ (linear_order.max ∥m₁ j∥ ∥m₂ j∥)))
 (linear_map.trace R M).comp (dual_tensor_hom R M M) = contract_left R M
 s ∈ 𝒜.up_shadow ↔ ∃ (t : finset α) (H : t ∈ 𝒜) (a : α) (H : a ∉ t), has_insert.insert a t = s
 ⇑x = ⇑↑x
@@ -5035,11 +5219,13 @@ category_theory.is_iso f
 ⇑linear_map.adjoint (A.comp B) = (⇑linear_map.adjoint B).comp (⇑linear_map.adjoint A)
 group.nilpotency_class G ≤ 1
 -a < b → -b < a
+has_inner.inner (s₁.sum (λ (i₁ : ι₁), w₁ i₁ • v₁ i₁)) (s₂.sum (λ (i₂ : ι₂), w₂ i₂ • v₂ i₂)) = -s₁.sum (λ (i₁ : ι₁), s₂.sum (λ (i₂ : ι₂), w₁ i₁ * w₂ i₂ * (∥v₁ i₁ - v₂ i₂∥ * ∥v₁ i₁ - v₂ i₂∥))) / 2
 convex_on ℝ s has_norm.norm
 f (s.sum (λ (i : ι), g i)) ≤ s.sum (λ (i : ι), f (g i))
 f.of_add_equiv_of_dom _ = f
 0 < (polynomial.cyclotomic n R).degree
 finsum (λ (i : α), finsum (λ (H : i ∈ s ∪ t), f i)) = finsum (λ (i : α), finsum (λ (H : i ∈ s), f i)) + finsum (λ (i : α), finsum (λ (H : i ∈ t), f i))
+∥f y - f x - ⇑φ (y - x)∥ ≤ C * ∥y - x∥
 convex ℝ (p.ball x r)
 has_inner.inner (x + y) (x + y) + has_inner.inner (x - y) (x - y) = 2 * (has_inner.inner x x + has_inner.inner y y)
 J₁.close (category_theory.sieve.pullback f S) = category_theory.sieve.pullback f (J₁.close S)
@@ -5070,6 +5256,7 @@ continuous (λ (p : α × β), f p.fst p.snd)
 nat.log p n < b → multiplicity p n.factorial = ↑((finset.Ico 1 b).sum (λ (i : ℕ), n / p ^ i))
 finprod (λ (i : α), finprod (λ (H : i ∈ s), f i * g i)) = finprod (λ (i : α), finprod (λ (H : i ∈ s), f i)) * finprod (λ (i : α), finprod (λ (H : i ∈ s), g i))
 0 ≤ ⇑is_R_or_C.re (has_inner.inner x (⇑(⇑linear_map.adjoint T * T) x))
+∃ (x : E), c < ∥x∥
 cont_diff_on 𝕜 n f s ↔ (∀ (m : ℕ), ↑m ≤ n → continuous_on (iterated_deriv_within m f s) s) ∧ ∀ (m : ℕ), ↑m < n → differentiable_on 𝕜 (iterated_deriv_within m f s) s
 is_min_filter f l a → is_max_filter (⇑order_dual.to_dual ∘ f) l a
 μ.absolutely_continuous ν
@@ -5082,6 +5269,7 @@ has_dist.dist (f t) (g t) ≤ δ * real.exp (↑K * (t - a))
 ⇑(s₁.weighted_vsub_of_point p b) w = ⇑(s₂.weighted_vsub_of_point p b) (↑s₁.indicator w)
 reflection (submodule.map ↑(f.to_linear_equiv) K) = f.symm.trans ((reflection K).trans f)
 ∃ (ϖ : R), prime ϖ
+∥⇑(quotient_add_group.mk' S) m∥ ≤ ∥m∥
 ⇑(first_order.language.substructure.closure L) ↑S = S
 is_unit (⇑linear_map.det ↑f)
 a * b ∈ add_submonoid.closure ↑S
@@ -5110,6 +5298,7 @@ o.oangle (r • x) y = o.oangle (-x) y
 (∀ (x : α) (h : p x), q x h) ↔ ∀ (x : {a // p a}), q ↑x _
 is_of_fin_order 1
 f = g ↔ ∀ (x : M), ⇑f x = ⇑g x
+∥⇑f x∥ ≤ ∥f∥ * ∥x∥
 finset.univ.sum (λ (i : ι), f i * g (⇑σ i)) ≤ finset.univ.sum (λ (i : ι), f i * g i)
 a ∣ b * ↑u ↔ a ∣ b
 orthonormal ℂ (fourier_Lp 2)
@@ -5126,6 +5315,7 @@ is_open {u : ultrafilter α | s ∈ u}
 f' =o[l] g → (λ (x : α), -f' x) =o[l] g
 0 < 1
 ⇑f (g * h⁻¹) = ⇑f g * (⇑f h)⁻¹
+∥f x∥ ≤ gronwall_bound δ K ε (x - a)
 s ⊆ ↑(submonoid.closure s)
 cont_diff_on 𝕜 n f s
 measurable g
@@ -5148,6 +5338,8 @@ category_theory.limits.limit F = infi F.obj
 1 ≤ a⁻¹ ↔ a ≤ 1
 x - y ∈ H
 measurable_set (region_between f g s)
+x ∈ set.Icc a b → ∥f x∥ ≤ B x
+∥(↑∥x∥)⁻¹ • x∥ = 1
 -a < 0 ↔ 0 < a
 ⇑(fin.cast h) = cast _
 (⇑(matrix.reindex_alg_equiv R e) A).det = A.det
@@ -5155,6 +5347,7 @@ quot.lift f h (quot.mk r a) = f a
 is_left_regular k
 function.injective mul_action.to_perm
 ↑(submodule.span R s) ⊆ ↑(submodule.span S s)
+has_inner.inner (r • x) x = r * (∥x∥ * ∥x∥)
 filter.tendsto f l₁ l₂ → l₁ ≤ filter.comap f l₂
 continuous f
 finset.univ.sum (λ (i : ι), finset.centroid_weights_indicator k s i) = 1
@@ -5181,6 +5374,7 @@ cont_diff 𝕜 n f
 finite_dimensional.finrank R (tensor_product R M N) = finite_dimensional.finrank R M * finite_dimensional.finrank R N
 n ≤ polynomial.root_multiplicity a p
 (∀ (s : finset ι), s.card ≤ (s.bUnion t).card) ↔ ∃ (f : ι → α), function.injective f ∧ ∀ (x : ι), f x ∈ t x
+∥⇑f z∥ ≤ c / r * ∥z∥
 is_closed {t : topological_space.closeds α | ↑t ⊆ s}
 filter.tendsto f (nhds x) (nhds y)
 cont_diff_on 𝕜 n f s
@@ -5191,6 +5385,7 @@ filter.tendsto f b (nhds a)
 is_regular a
 (∀ (a : ℕ), m ∣ a ↔ n ∣ a) ↔ m = n
 irreducible (minpoly A x)
+∥f.mk_normed_group_hom C h∥ ≤ C
 (list.map f l).prod = graded_monoid.mk (l.dprod_index (λ (i : α), (f i).fst)) (l.dprod (λ (i : α), (f i).fst) (λ (i : α), (f i).snd))
 filter.tendsto (λ (x : α), f x * r) l filter.at_top
 measure_theory.conservative f μ
@@ -5206,11 +5401,13 @@ function.injective f → pairwise (ne on f)
 sym.map (λ (x : α), x) s = s
 ρ.character 1 = ↑(finite_dimensional.finrank k V)
 ⇑f = ⇑(f.linear) + λ (z : V1), ⇑f 0
+∥f z∥ ≤ C
 p x
 p I
 analytic_on 𝕜 (iterated_fderiv 𝕜 n f) s
 fintype.card {x // ¬p x} = fintype.card {x // ¬q x}
 category_theory.presieve.is_sheaf_for P R → category_theory.presieve.is_sheaf_for P' R
+∥f y - f x∥ ≤ C * ∥y - x∥
 finprod (λ (i : α), finprod (λ (H : i ∈ has_insert.insert a s), f i)) = f a * finprod (λ (i : α), finprod (λ (H : i ∈ s), f i))
 0 ≤ ⇑f' y
 F.sections.nonempty
@@ -5224,7 +5421,9 @@ is_closed (⇑(convex_hull ℝ) s)
 (((matrix.pivot.list_transvec_col M).prod.mul M).mul (matrix.pivot.list_transvec_row M).prod).is_two_block_diagonal
 (affine_subspace.mk' p direction).direction = direction
 b = c → a ≤ b → a ≤ c
+x = y ↔ ∥x∥ = ∥y∥
 [x].intercalate (list.split_on x xs) = xs
+∥⇑f x∥ = 0
 ∃ (l : list α), list.chain r a l ∧ (a :: l).last _ = b
 0 ∈ s
 c ∈ submonoid.closure {a, b} ↔ ∃ (m n : ℕ), a ^ m * b ^ n = c
@@ -5248,6 +5447,7 @@ multiplicity m n = ↑((finset.filter (λ (i : ℕ), m ^ i ∣ n) (finset.Ico 1 
 measure_theory.integrable f μ
 g = h
 v = (generalized_continued_fraction.of v).convergents (n - 1)
+∥⇑f m∥ ≤ ∥f∥
 nonempty {t // s ⊆ t ∧ measurable_set t}
 filter.cofinite.coprod filter.cofinite = filter.cofinite
 (uniformity α).has_basis (λ (V : set (α × α)), V ∈ uniformity α ∧ is_open V ∧ symmetric_rel V) id
@@ -5278,8 +5478,10 @@ emetric.diam s ≤ d
 (⇑(orientation.map (fin 2) f.to_linear_equiv) o).oangle x y = o.oangle (⇑(f.symm) x) (⇑(f.symm) y)
 is_Gδ s
 ⇑(algebra.norm K) ζ = 1
+∥h.comp f∥ ≤ ∥h∥ * ∥f∥
 μ = (⇑μ E / ⇑ν E) • ν
 summable f
+∥f.mk_continuous C H∥ ≤ linear_order.max C 0
 b ∈ list.map f l → (∃ (a : α), a ∈ l ∧ f a = b)
 complete_lattice.independent f ↔ finset.univ.sup_indep f
 is_add_right_regular (a + b)
@@ -5347,9 +5549,13 @@ finprod (λ (i : α), finprod (λ (H : i ∈ s), f i * g i)) = finprod (λ (i : 
 s.min' _ < s.max' _
 is_totally_disconnected set.univ
 f = g
+x = y ↔ ∥x∥ = ∥y∥ ∧ o.oangle x y = 0
 ⇑fin.cast_succ i < p ∨ p ≤ ⇑fin.cast_succ i
 0 < ⇑fin.cast_succ i
+has_inner.inner x y = ∥x∥ * ∥y∥ ↔ inner_product_geometry.angle x y = 0
+∥normed_group_hom.equalizer.lift φ h∥ ≤ C
 p ∣ L.prod ↔ ∃ (a : M) (H : a ∈ L), p ∣ a
+∥0∥ = 0
 1 < a * b
 category_theory.limits.has_colimit F
 x < y → f y - f x < C * (y - x)
@@ -5372,6 +5578,7 @@ category_theory.is_iso (category_theory.limits.equalizer.ι f g)
 set.surj_on f s (set.interval (f a) (f b))
 char.quadratic_char F a = -1 ↔ ¬is_square a
 p ∨ ¬p
+∃ (a : ℝ) (H : a ∈ set.Ioo 0 1) (C : ℝ) (H : C > 0), ∀ (n : ℕ), ∥p n∥ * ↑r ^ n ≤ C * a ^ n
 category_theory.is_connected J
 l.sum ∈ s
 1 ∈ H
@@ -5426,6 +5633,7 @@ continuous f
 ⇑(formal_multilinear_series.id 𝕜 E 1) v = v 0
 strict_mono (λ (x : β), f x + g x)
 (∀ (a : α), a ∈ s → b ≤ a) → (∀ (w : α), b < w → (∃ (a : α) (H : a ∈ s), a < w)) → has_Inf.Inf s = b
+∥f∥ ≤ C ↔ ∀ (x : α), ∥⇑f x∥ ≤ C
 continuous f
 metric.diam s ≤ metric.diam t
 ⇑c w x → ⇑c y z → ⇑c (w + y) (x + z)
@@ -5446,6 +5654,7 @@ is_fraction_ring.num A r ∣ p.coeff 0
 is_integral R x
 algebraic_geometry.structure_sheaf.comap (ring_hom.id R) U V _ = (algebraic_geometry.Spec.structure_sheaf R).val.map iVU.op
 x ∈ add_monoid.closure (s ∪ t) ↔ ∃ (y : M) (H : y ∈ add_monoid.closure s) (z : M) (H : z ∈ add_monoid.closure t), y + z = x
+∥x + y∥ = ∥x - y∥ ↔ inner_product_geometry.angle x y = real.pi / 2
 is_open (metric.thickening δ E)
 u.step.v = u.v.swap
 s ⊆ span_points k s
@@ -5456,6 +5665,7 @@ filter.tendsto f filter.at_top filter.at_top
 differentiable 𝕜 f → mdifferentiable (model_with_corners_self 𝕜 E) (model_with_corners_self 𝕜 E') f
 (1 - 1 / a)⁻¹ ≤ 2
 category_theory.limits.has_limits_of_size D
+∃ (g : E →L[𝕜] 𝕜), ∥g∥ = 1 ∧ ⇑g x = ↑∥x∥
 is_smul_regular M (a • s)
 (matrix.from_blocks A B C D).is_symm
 ∃ (n : ℕ), ∀ (m' : M), m' ∈ hindman.FP (stream.drop n a) → m * m' ∈ hindman.FP a
@@ -5497,6 +5707,7 @@ function.injective fin
 ae_measurable f μ
 has_star.star (x * y) = has_star.star x * has_star.star y
 submodule.torsion_by_set R M s = submodule.torsion_by_set R M ↑(ideal.span s)
+∥normed_group_hom.id V∥ = 1
 cardinal.mk K = cardinal.mk ι
 con.ker c.mk' = c
 a • d + b • c < a • c + b • d
@@ -5534,6 +5745,7 @@ cont_diff_at 𝕜 n (λ (x : E), f x - g x) x
 ∃ (f : ι → α), function.injective f ∧ ∀ (x : ι), f x ∈ t x
 0 ≤ -a → a ≤ 0
 (s ∩ t).nonempty
+∥f.comp g.to_linear_isometry.to_continuous_linear_map∥ = ∥f∥
 ↑(⇑(fin.cast h) i) = ↑i
 ⇑(⇑dfinsupp.lift_add_hom f) (dfinsupp.single i x) = ⇑(f i) x
 continuous_within_at f (set.Ici a) a
@@ -5544,6 +5756,7 @@ is_integral R x
 semiconj_by 1 x x
 char_zero A
 k = l
+∥dslope f c z∥ ≤ R₂ / R₁
 a * b < 1
 ⇑polynomial.derivative (polynomial.eval₂ polynomial.C q p) = polynomial.eval₂ polynomial.C q (⇑polynomial.derivative p) * ⇑polynomial.derivative q
 inseparable x y → nhds x = nhds y
@@ -5594,6 +5807,7 @@ F = G
 r • x * y = r • (x * y)
 category_theory.is_pullback c.fst c.snd f g
 finsum (λ (i : α), finsum (λ (H : i ∈ s), finsum (λ (j : β), finsum (λ (H : j ∈ t), f i j)))) = finsum (λ (j : β), finsum (λ (H : j ∈ t), finsum (λ (i : α), finsum (λ (H : i ∈ s), f i j))))
+∃ (C' : ℝ), ∀ (i : ι), ∥g i∥ ≤ C'
 algebraic_geometry.structure_sheaf.comap (ring_hom.id R) U V _ = category_theory.eq_to_hom _
 0 < a + b
 s ∈ 𝒜.shadow ↔ ∃ (t : finset α) (H : t ∈ 𝒜) (a : α) (H : a ∈ t), t.erase a = s
@@ -5607,6 +5821,7 @@ uniform_continuous_on f s
 -a < -b → b < a
 well_founded has_lt.lt
 ⇑c x y → ⇑c y z → ⇑c x z
+s.sum (λ (i : ι), ∥has_inner.inner (v i) x∥ ^ 2) ≤ ∥x∥ ^ 2
 ⇑polynomial.C r = ⇑(algebra_map R (polynomial R)) r
 ¬bdd_below s ↔ ∀ (x : α), ∃ (y : α) (H : y ∈ s), ¬x ≤ y
 has_dist.dist a b ^ 2 * has_dist.dist c p + has_dist.dist a c ^ 2 * has_dist.dist b p = has_dist.dist b c * (has_dist.dist a p ^ 2 + has_dist.dist b p * has_dist.dist c p)
@@ -5661,6 +5876,7 @@ summable (λ (k : ℕ), 2 ^ k * f (2 ^ k)) ↔ summable f
 euclidean_geometry.angle p1 p5 p2 = euclidean_geometry.angle p3 p5 p4
 ↑f.to_monoid_hom = ↑f.to_monoid_hom
 category_theory.limits.has_finite_products (category_theory.over B)
+∥f∥ = has_Inf.Inf {C : ℝ | 0 ≤ C ∧ ∀ (x : α), ∥⇑f x∥ ≤ C}
 has_dist.dist (f 0) a ≤ C
 tangent_cone_at 𝕜 (s ∩ t) x = tangent_cone_at 𝕜 s x
 ∃ (x : α) (H : x ∈ s), has_dist.dist x y < r
@@ -5705,6 +5921,7 @@ polynomial.splits (algebra_map K L) (polynomial.cyclotomic ↑n K)
 v.int_valuation_def (x * y) = v.int_valuation_def x * v.int_valuation_def y
 lower_semicontinuous_within_at (λ (z : α), f z + g z) s x
 s.pairwise r → ∀ ⦃a : α⦄, a ∈ s → ∀ ⦃b : α⦄, b ∈ s → r a b
+is_R_or_C.abs (has_inner.inner x y / (↑∥x∥ * ↑∥y∥)) = 1 ↔ x ≠ 0 ∧ ∃ (r : 𝕜), r ≠ 0 ∧ y = r • x
 0 < ⇑μ U
 -a < 0 → 0 < a
 s ⊆ monoid.closure s
@@ -5743,9 +5960,11 @@ category_theory.limits.has_pullbacks C
 n.desc_factorial k = n.factorial / (n - k).factorial
 (has_insert.insert x s).powerset.sum (λ (a : finset α), f a) = s.powerset.sum (λ (a : finset α), f a) + s.powerset.sum (λ (t : finset α), f (has_insert.insert x t))
 metric.inductive_limit_dist f x y = has_dist.dist (nat.le_rec_on hx f x.snd) (nat.le_rec_on hy f y.snd)
+is_R_or_C.abs (has_inner.inner x y) = ∥x∥ * ∥y∥ ↔ ∃ (r : 𝕜), r ≠ 0 ∧ y = r • x
 s ∈ 𝒜.shadow ↔ ∃ (a : α) (H : a ∉ s), has_insert.insert a s ∈ 𝒜
 ⇑f 0 = 0
 is_group_hom (g ∘ f)
+⇑f (λ (i : ι), (A i).sum (λ (j : α i), g i j)) = (fintype.pi_finset A).sum (λ (r : Π (a : ι), α a), ⇑f (λ (i : ι), g i (r i)))
 ∃ (t : set Γ₀) (H : t ∈ linear_ordered_comm_group_with_zero.nhds_fun Γ₀ x), t ⊆ s ∧ ∀ (y : Γ₀), y ∈ t → s ∈ linear_ordered_comm_group_with_zero.nhds_fun Γ₀ y
 x + t • (y - x) ∈ interior s
 algebra.is_algebraic A C ↔ algebra.is_algebraic K C
@@ -5783,10 +6002,12 @@ f ≤ nhds a ↔ ∀ (s : set α), a ∈ s → is_open s → s ∈ f
 p = p' → ps = ps' → p * ps = p' * ps'
 (matrix.circulant v).is_symm ↔ ∀ (i : n), v (-i) = v i
 ⇑(iterated_fderiv 𝕜 n f x) m = finset.univ.prod (λ (i : fin n), m i) • iterated_deriv n f x
+same_ray ℝ x y ↔ ∥x + y∥ = ∥x∥ + ∥y∥
 (hb.is_limit.cone_point_unique_up_to_iso (category_theory.limits.binary_biproduct.is_limit X Y)).inv = category_theory.limits.biprod.desc b.inl b.inr
 setoid.r = setoid.r ↔ c = d
 ⇑f (fin.cons (c • x) m) = c • ⇑f (fin.cons x m)
 f = f'
+∥x + y∥ = ∥x∥ + ∥y∥
 (∀ (i : ι), i ∈ t → x.coprime (s i)) → x.coprime (t.prod (λ (i : ι), s i))
 ↑n ≤ (a ^ n - 1) / (a - 1)
 (∀ (i j : ℕ), ⇑(⇑c₀ i) (⇑c₁ j) ≤ z) ↔ ∀ (i : ℕ), ⇑(⇑c₀ i) (⇑c₁ i) ≤ z
@@ -5811,6 +6032,7 @@ o.oangle x y = θ ↔ ∃ (r : ℝ), 0 < r ∧ y = r • ⇑(o.rotation θ) x
 rack.pre_envel_group_rel' R a b → rack.to_envel_group.map_aux f a = rack.to_envel_group.map_aux f b
 fintype.card α = 0
 ⇑((has_insert.insert i s).weighted_vsub_of_point p (p i)) w = ⇑(s.weighted_vsub_of_point p (p i)) w
+has_inner.inner x y = (∥x∥ * ∥x∥ + ∥y∥ * ∥y∥ - ∥x - y∥ * ∥x - y∥) / 2
 matrix.to_lin (pi.basis_fun R n) (pi.basis_fun R m) = matrix.to_lin'
 odd n → odd n.nat_abs
 ⇑(algebra.trace K S) pb.gen = -(minpoly K pb.gen).next_coeff
@@ -5833,6 +6055,7 @@ L.head ≤ L.sum
 submodule.map p.subtype (module.End.eigenspace (linear_map.restrict f hfp) μ) ≤ f.eigenspace μ
 filter.tendsto (λ (x : α), op (f x) (g x)) l (nhds 0)
 add_submonoid.closure s ≤ S ↔ s ⊆ ↑S
+(λ (x : α), ∥f' x∥) =O[l] g → f' =O[l] g
 same_ray R (⇑e x) (⇑e y) ↔ same_ray R x y
 ∃ (a : α) (H : a ∈ s), a < b
 contracting_with K (set.maps_to.restrict f s s hs)
@@ -5942,6 +6165,7 @@ category_theory.faithful F
 filter.tendsto (λ (x : ℝ), x ^ y) filter.at_top filter.at_top
 add_commute (pi.single i (x i)) (pi.single j (x j))
 b = 0
+(finset.Ico 1 (n + 1)).sum (λ (k : ℕ), a ^ k * ∥p.right_inv i k∥) ≤ ∥↑(i.symm)∥ * a + ∥↑(i.symm)∥ * C * (finset.Ico 2 (n + 1)).sum (λ (k : ℕ), (r * (finset.Ico 1 n).sum (λ (j : ℕ), a ^ j * ∥p.right_inv i j∥)) ^ k)
 filter.tendsto (λ (n : ℕ), bernstein_approximation n f) filter.at_top (nhds f)
 metric.inf_dist x (closure s) = metric.inf_dist x s
 free_group.reduce L₁ = free_group.reduce L₂
@@ -5965,6 +6189,7 @@ is_add_group_hom id
 (∀ (a : M), a ∈ m → a ∈ s) → m.prod ∈ s
 filter.tendsto (λ (x : ℝ), f x / g x) (nhds_within a (set.Ioi a)) l
 category_theory.limits.has_cokernels C
+∥x - y∥ * ∥x - y∥ = ∥x∥ * ∥x∥ - 2 * ⇑is_R_or_C.re (has_inner.inner x y) + ∥y∥ * ∥y∥
 F.sections.nonempty
 filter.tendsto (λ (n : ℕ), measure_theory.snorm (f n - g) p μ) filter.at_top (nhds 0)
 euclidean_geometry.orthogonal_projection_fn s p ∈ s
@@ -5972,6 +6197,7 @@ filter.tendsto (λ (x : β), f x + g x) l filter.at_bot
 euclidean_geometry.angle p2 p3 p1 = 0
 char_zero R
 is_algebraic S x
+∃ (d : α), d ≠ 0 ∧ ∥d • x∥ < ε ∧ ε / ∥c∥ ≤ ∥d • x∥ ∧ ∥d∥⁻¹ ≤ ε⁻¹ * ∥c∥ * ∥x∥
 gp.a = 1 ∧ ∃ (z : ℤ), gp.b = ↑z
 ⇑(∅.weighted_vsub p) w = 0
 (M.mul N).det = (N.mul M).det
@@ -6082,13 +6308,17 @@ is_min_on f (set.Icc a b) a
 f = g
 (∀ (x y : M), ⇑c x y ↔ ⇑d x y) ↔ c = d
 linear_order.min φ.order ψ.order ≤ (φ + ψ).order
+0 ≤ ∥⇑(quotient_add_group.mk' S) m∥
+∥x + y∥ * ∥x + y∥ = ∥x∥ * ∥x∥ + 2 * ⇑is_R_or_C.re (has_inner.inner x y) + ∥y∥ * ∥y∥
 setoid.mk_classes r.classes setoid.classes_eqv_classes = r
 measurable_space.generate_from (set.image2 has_set_prod.prod C D) = prod.measurable_space
 same_ray R y x
 ⇑(e.symm) (⇑e x) = x
+∥⇑(continuous_multilinear_map.comp_along_composition p c f) v∥ ≤ ∥f∥ * finset.univ.prod (λ (i : fin c.length), ∥p (c.blocks_fun i)∥) * finset.univ.prod (λ (i : fin n), ∥v i∥)
 submonoid.closure s ≤ submonoid.closure t
 1 / a < 1 / b ↔ b < a
 convex 𝕜 s ↔ ∀ ⦃x y : E⦄, x ∈ s → y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → 0 < a + b → (a / (a + b)) • x + (b / (a + b)) • y ∈ s
+∥⇑innerSL x∥ = ∥x∥
 filter.at_top ≤ filter.cofinite
 (padic_int.to_zmod_pow n).comp (padic_int.lift f_compat) = f n
 local_ring R
@@ -6100,6 +6330,7 @@ a ∈ finset.univ.sum (λ (i : ι), f i) ↔ ∃ (g : ι → α) (hg : ∀ (i : 
 (B.restrict W).nondegenerate ↔ is_compl W (B.orthogonal W)
 (category_theory.presieve.family_of_elements.functor_pushforward G x).compatible
 finset.univ.prod (λ (i : σ), ⇑polynomial.C (r i) + polynomial.X) = (finset.range (fintype.card σ + 1)).sum (λ (i : ℕ), (finset.powerset_len i finset.univ).sum (λ (t : finset σ), t.prod (λ (i : σ), ⇑polynomial.C (r i))) * polynomial.X ^ (fintype.card σ - i))
+∥f x - f a∥ ≤ C * (x - a)
 subgroup.closure h ≤ subgroup.closure k
 filter.tendsto f t₀ (nhds 0)
 finite_dimensional K V
@@ -6110,7 +6341,9 @@ is_extr_filter f l a → is_extr_filter (⇑order_dual.to_dual ∘ f) l a
 ∃ (π : R), v.int_valuation_def π = ↑(⇑multiplicative.of_add (-1))
 (x + y) ^ n = (finset.range (n + 1)).sum (λ (m : ℕ), x ^ m * y ^ (n - m) * ↑(n.choose m))
 relation.trans_gen r n m
+∃ (C : ℝ), 0 < C ∧ ∀ (m : Π (i : ι), E i), ∥⇑f m∥ ≤ C * finset.univ.prod (λ (i : ι), ∥m i∥)
 ∃ (a : F), char.quadratic_char F a = -1
+⇑is_R_or_C.re (has_inner.inner x y) = (∥x + y∥ * ∥x + y∥ - ∥x∥ * ∥x∥ - ∥y∥ * ∥y∥) / 2
 0 ∈ H
 ∃ (B : finset α), B ⊆ A ∧ B.card = i
 measure_theory.tendsto_in_measure μ f filter.at_top g
@@ -6142,6 +6375,7 @@ cont_mdiff_on I I'' n (g ∘ f) s
 (fin.cast h).to_equiv = equiv.cast _
 emetric.diam s ≤ ennreal.of_real C
 category_theory.zigzag j₁ j₂
+real.cos (inner_product_geometry.angle x y) = has_inner.inner x y / (∥x∥ * ∥y∥)
 f =o[nhds b] g ↔ (f ∘ ⇑e) =o[nhds (⇑(e.symm) b)] (g ∘ ⇑e)
 metric.bounded s
 measure_theory.conservative id μ
@@ -6166,6 +6400,7 @@ a * b < 1
 bdd_below s
 filter.is_bounded r f ↔ ∃ (s : set α) (H : s ∈ f.sets) (b : α), s ⊆ {x : α | r x b}
 set.eq_on f g U
+has_compact_support f → has_compact_support (λ (x : α), ∥f x∥)
 padic_norm p 1 = 1
 a - b = a + -b
 submodule.map clifford_algebra.reverse (p ^ n) = submodule.map clifford_algebra.reverse p ^ n
@@ -6187,6 +6422,7 @@ polynomial.cyclotomic (n * p) R = polynomial.cyclotomic n R ^ p
 (is_localization.map Sₘ (P.quotient_map polynomial.C le_rfl) _).is_integral
 has_deriv_within_at f f' (set.Ioi x) x → has_deriv_within_at f f' (set.Ici x) x
 filter.tendsto F filter.at_top (nhds f)
+∥v∥ ≤ ∥u∥ + ∥u - v∥
 s.sum (λ (i : ι), f i • g i) ≤ s.sum (λ (i : ι), f (⇑σ i) • g i)
 concave_on ℝ D f
 ⇑(c.lift f H) (⇑(c.mk') x) = ⇑f x
@@ -6242,6 +6478,7 @@ t.prod (λ (c : ι), f c) ∈ S
 category_theory.limits.has_limit F
 uniform_embedding f
 measurable_set (set.range f)
+module.End.has_eigenvector ↑T ↑((λ (x : E), T.re_apply_inner_self x / ∥x∥ ^ 2) x₀) x₀
 padic_norm p (q + r) ≤ padic_norm p q + padic_norm p r
 is_max_filter f l a → is_min_filter (⇑order_dual.to_dual ∘ f) l a
 measure_theory.integrable_on f (set.Ioi a) measure_theory.measure_space.volume
@@ -6282,6 +6519,7 @@ f * laurent_polynomial.T m * laurent_polynomial.T n = f * laurent_polynomial.T (
 f = s.order_emb_of_fin h
 has_sbtw.sbtw c a b
 f₁ = f₂
+∥x∥ = ∥↑x∥
 disjoint (⇑(convex_hull 𝕜) ↑s) (⇑(convex_hull 𝕜) ↑t) ∨ ∃ (u : finset E) (H : u ∈ K.faces), ⇑(convex_hull 𝕜) ↑s ∩ ⇑(convex_hull 𝕜) ↑t = ⇑(convex_hull 𝕜) ↑u
 measure_theory.strongly_measurable f
 concave_on ℝ set.univ f
@@ -6298,6 +6536,7 @@ a + c < b + d
 a ⊂ b → a ≠ b
 is_right_regular a
 measurable f → m₂ ≤ measurable_space.map f m₁
+∃ (C : ℝ) (H : C > 0), ∀ ⦃x : α⦄, g'' x ≠ 0 → ∥f x∥ ≤ C * ∥g'' x∥
 ↑(⇑(polynomial.gal.restrict p E) ϕ • x) = ⇑ϕ ↑x
 linear_independent K b ↔ fintype.card ι = set.finrank K (set.range b)
 real.sin (inner_product_geometry.angle x (x - y) + inner_product_geometry.angle y (y - x)) = real.sin (inner_product_geometry.angle x y)
@@ -6309,6 +6548,7 @@ has_dist.dist (convolution (φ.normed μ) g (continuous_linear_map.lsmul ℝ ℝ
 n • b = ↑n • b
 φ.realize (⇑f ∘ x) ↔ φ.realize x
 cont_diff_at 𝕜 n (λ (x : E), (f x).fst) x
+∥dslope f c z∥ ≤ R₂ / R₁
 ∃ (t : ι → fin (h.card ε)), ∀ (i₀ i₁ : ι), t i₀ = t i₁ → ↑(⇑abv (A i₁ % b - A i₀ % b)) < ⇑abv b • ε
 ∃ (lb : ℤ), P lb ∧ ∀ (z : ℤ), P z → lb ≤ z
 ∃ (z : ℂ), f.is_root z
@@ -6330,6 +6570,7 @@ continuous Z.proj
 ∃ (y : α) (H : y ∈ t), has_dist.dist x y < r
 a = p ^ nat.find _
 (∀ (x : R), x ∈ l → x ∈ s) → l.prod ∈ s
+∥f + g∥ ≤ ∥f∥ + ∥g∥
 AddMon.filtered_colimits.M.mk F x + AddMon.filtered_colimits.M.mk F y = AddMon.filtered_colimits.M.mk F ⟨k, ⇑(F.map f) x.snd + ⇑(F.map g) y.snd⟩
 add_monoid.is_torsion_free G → ¬add_monoid.is_torsion G
 ⇑h x⁻¹ = (⇑h x)⁻¹
@@ -6351,6 +6592,7 @@ x • m⁻¹ = (x • m)⁻¹
 measure_theory.is_probability_measure (probability_theory.cond μ s)
 2 • o.oangle x (-x) = 0
 f = g
+∥f∥ ≤ M
 inner_product_geometry.angle 0 x = real.pi / 2
 f = g
 is_square a
@@ -6362,6 +6604,8 @@ category_theory.limits.has_colimit (category_theory.limits.parallel_pair f g)
 euclidean_geometry.angle p1 (midpoint ℝ p1 p2) p2 = real.pi
 (list.of_fn f).nth i = list.of_fn_nth_val f i
 filter.tendsto (λ (n : ℕ), ↑n ^ k * r ^ n) filter.at_top (nhds 0)
+∥x + y∥ ^ 2 = ∥x∥ ^ 2 + 2 * ⇑is_R_or_C.re (has_inner.inner x y) + ∥y∥ ^ 2
+has_inner.inner x y / (∥x∥ * ∥y∥) = 1 ↔ x ≠ 0 ∧ ∃ (r : ℝ), 0 < r ∧ y = r • x
 f.fix a = f.fix a'
 is_closed (function.fixed_points f)
 is_preconnected s → convex ℝ s
@@ -6410,6 +6654,7 @@ affine_span k (has_insert.insert p ↑(affine_span k ps)) = affine_span k (has_i
 box_integral.has_integral I l f vol (⇑g I)
 local_ring R
 0 < f.prod has_pow.pow
+measure_theory.integrable_on (λ (x : ℝ), ∥real.exp (-x) * real.log x * x ^ (s - 1)∥) (set.Ioi 0) measure_theory.measure_space.volume
 (s.product t).sum (λ (x : γ × α), f x.fst x.snd) = t.sum (λ (y : α), s.sum (λ (x : γ), f x y))
 ⇑complex.norm_sq ↑(modular_group.S • z) < 1
 z = ↑(z.re)
@@ -6421,6 +6666,7 @@ p (⇑(closure_operator.mk₃ f p hf hfp hmin) x)
 ⇑(measure_theory.measure.mk_metric m) s ≤ l.liminf (λ (n : β), finset.univ.sum (λ (i : ι n), m (emetric.diam (t n i))))
 f = g
 a ≠ 0
+asymptotics.is_O_with c l f' g → asymptotics.is_O_with c l (λ (x : α), ∥f' x∥) g
 path.homotopic.proj_left (path.homotopic.prod q₁ q₂) = q₁
 (L.prod)⁻¹ = (list.map (λ (x : G), x⁻¹) L).prod
 subsingleton α ∨ nontrivial α
@@ -6434,6 +6680,7 @@ cont_diff_at 𝕜 n (λ (x : E), f x • g x) x
 is_conformal_map f ↔ ∃ (c : ℝ), 0 < c ∧ ∀ (u v : E), has_inner.inner (⇑f u) (⇑f v) = c * has_inner.inner u v
 filter.map n (filter.map₂ m f g) = filter.map₂ m' g (filter.map n' f)
 ⇑(n.central_binom.factorization) p = 0
+∥x - y∥ = ∥x∥ + ∥y∥
 monotone f → antitone (⇑order_dual.to_dual ∘ f)
 u⁻¹ • v = u • v
 is_compact s → s.nonempty → ∀ {f : β → α}, continuous_on f s → (∃ (x : β) (H : x ∈ s), ∀ (y : β), y ∈ s → f y ≤ f x)
@@ -6458,6 +6705,7 @@ function.injective f → function.injective (set.cod_restrict f t h)
 (p.take_until u h).append (p.drop_until u h) = p
 f.lintegral μ ≤ g.lintegral ν
 f i = 1
+finset.univ.sum (λ (i : ι), ∥x i∥) ≤ fintype.card ι • ∥x∥
 u.r + (u.bp + 1) * u.q = u.ap + 1
 f (s.prod (λ (i : ι), g i)) ≤ s.prod (λ (i : ι), f (g i))
 metric.bounded s
@@ -6467,6 +6715,7 @@ l.prod.degree = (list.map polynomial.degree l).sum
 is_smul_regular M 1
 is_glb s (has_Inf.Inf s)
 cont_diff 𝕜 m (λ (p : E × E), ⇑(fderiv 𝕜 f p.fst) p.snd)
+∥x∥ = ∥↑x∥
 setoid.ker f = r
 emetric.Hausdorff_edist s t = 0 ↔ s = t
 x ≠ y → r x y ↔ r x y
@@ -6475,8 +6724,10 @@ function.injective2 fin.cons
 o.oangle (-x) y + o.oangle (-y) z + o.oangle (-z) x = ↑real.pi
 a = b → a / b = 1
 a ≤ b → b < c → a < c
+∥f∥ = 0 ↔ f = 0
 a - b < c → a < b + c
 ⇑(algebra_map K F) (⇑(algebra.trace K S) pb.gen) = (polynomial.map (algebra_map K F) (minpoly K pb.gen)).roots.sum
+∥dGamma_integrand t x∥ ≤ dGamma_integrand_real s1 x + dGamma_integrand_real s2 x
 p x hx
 category_theory.is_iso c.ι
 μ.regular
@@ -6493,6 +6744,7 @@ set.bij_on g (function.fixed_points (f ∘ g)) (function.fixed_points (g ∘ f))
 f.inverse = (ring.inverse (↑(e.symm).comp f)).comp ↑(e.symm)
 (o.rotation θ).symm = o.rotation (-θ)
 has_strict_deriv_at (λ (x : ℝ), (e ↑x).re) e'.re z
+∃ (C : ℝ) (H : C > 0), ∀ (y : F), ∃ (x : E), ⇑f x = y ∧ ∥x∥ ≤ C * ∥y∥
 ⇑μ s = ⇑μ t
 ⇑f 0 = 0
 fin_succ_equiv' 0 = fin_succ_equiv n
@@ -6522,6 +6774,7 @@ category_theory.is_iso f
 p x hx
 ∃ (q : ℚ), (generalized_continued_fraction.of v).convergents n = ↑q
 s.sum (λ (i : ι), f i * g i) ≤ s.sum (λ (i : ι), f i ^ p) ^ (1 / p) * s.sum (λ (i : ι), g i ^ q) ^ (1 / q)
+∥f z∥ ≤ C
 cont_mdiff_on I I' n f s
 ⇑f₁ p₁ = ⇑f₂ p₂
 is_smul_regular M (a ^ n)
@@ -6552,6 +6805,7 @@ category_theory.limits.has_finite_biproducts C
 is_smul_regular M (a * b) ∧ is_smul_regular M (b * a) ↔ is_smul_regular M a ∧ is_smul_regular M b
 strict_concave_on ℝ D f
 (matrix.from_blocks A B C D).is_hermitian
+∥x + y∥ ≤ ∥x∥ + ∥y∥
 A ∈ i.ess_image
 L.join.split_wrt_composition c = L
 matrix.circulant (k • v) = k • matrix.circulant v
@@ -6586,12 +6840,15 @@ has_sum f (s.sum (λ (b : β), f b))
 differentiable_at 𝕜 f x
 (matrix.circulant v).mul (matrix.circulant w) = matrix.circulant ((matrix.circulant v).mul_vec w)
 ⇑(f.lift hg) z = v ↔ ⇑g (f.sec z).fst = ⇑g ↑((f.sec z).snd) + v
+∥-x∥ = ∥x∥
 f = g
 nonempty (Z j)
 ⇑μ s = 0
 continuous (λ (p : bounded_continuous_function α β × α), ⇑(p.fst) p.snd)
 ↑(⇑(orthogonal_projection K) u) = v
 linear_independent R (⇑f ∘ v)
+is_R_or_C.abs (has_inner.inner x y) ≤ ∥x∥ * ∥y∥
+∥x - y∥ ^ 2 = ∥x∥ ^ 2 - 2 * ⇑is_R_or_C.re (has_inner.inner x y) + ∥y∥ ^ 2
 is_compl (A i) (A j)
 category_theory.is_iso (category_theory.limits.coequalizer.π f g)
 measure_theory.integrable_on (λ (x : ℝ), real.exp (-b * x)) (set.Ioi a) measure_theory.measure_space.volume
@@ -6603,13 +6860,16 @@ s.finite
 padic_val_rat p q = ↑((multiplicity ↑p n).get _) - ↑((multiplicity ↑p d).get _)
 nat.find _ = group.nilpotency_class G
 ⇑f' y = 0
+∥x + y∥ * ∥x + y∥ = ∥x∥ * ∥x∥ + 2 * has_inner.inner x y + ∥y∥ * ∥y∥
 y ∈ S → ∀ {x : K}, x • y ∈ S
 (tactic.ring2.horner_expr.of_csexpr r).is_cs ∧ tactic.ring2.horner_expr.cseval t (tactic.ring2.horner_expr.of_csexpr r) = tactic.ring2.csring_expr.eval t r
 filter.tendsto (λ (x : β), f x * g x) l filter.at_top
 category_theory.limits.initial_mono_class C
 A.is_diag ↔ matrix.diagonal A.diag = A
+∥f∥ ≤ C
 ⇑f 0 = 0
 (∀ (x : M), x ∈ l → x ∈ s) → l.prod ∈ s
+filter.tendsto f filter.at_top (nhds b) ↔ ∀ (ε : ℝ), 0 < ε → (∃ (N : α), ∀ (n : α), N ≤ n → ∥f n - b∥ < ε)
 L.reverse.sum = -(list.map (λ (x : G), -x) L).sum
 μ.is_open_pos_measure
 iterated_deriv (n + 1) f = deriv (iterated_deriv n f)
@@ -6632,6 +6892,7 @@ n • a < cardinal.aleph_0 ↔ a < cardinal.aleph_0
 isometry (Gromov_Hausdorff.optimal_GH_injl X Y)
 t.sum (λ (i : ι), g i) ∈ t.sum (λ (i : ι), f i)
 a + b < c → b < -a + c
+∥f w∥ = ∥f z∥
 linear_independent R v
 star_convex 𝕜 x s ↔ ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → a + b = 1 → a • {x} + b • s ⊆ s
 F.final
@@ -6678,6 +6939,7 @@ s.pairwise_disjoint id → complete_lattice.set_independent s
 continuous_within_at f (set.Iic a) a
 ∃ (u : set τ) (H : u ∈ f), closure (set.image2 ϕ u s) ⊆ n
 a ∈ uv.compression u v s ↔ a ∈ s ∧ uv.compress u v a ∈ s ∨ a ∉ s ∧ ∃ (b : α) (H : b ∈ s), uv.compress u v b = a
+∥continuous_linear_map.id 𝕜 E∥ = 1
 ⇑(fderiv_within ℝ f s a) y = 0
 Q x → u x = v x
 linear_independent R coe
@@ -6701,7 +6963,9 @@ f.to_fun = ⇑f
 has_dist.dist (f 0) a ≤ C / (1 - r)
 category_theory.compatible_preserving K G
 B = C
+∥⇑(f.restr s hk z) v∥ ≤ C * ∥z∥ ^ (n - k) * finset.univ.prod (λ (i : fin k), ∥v i∥)
 φ₁ = φ₂
+(λ (x : α), ∥f' x∥) =o[l] g → f' =o[l] g
 ⇑((hV.linear_isometry_equiv hV').symm) (lp.single 2 i x) = ⇑(V i) x
 ⇑((basis.mk hli hsp).coord i) (v j) = 0
 add_submonoid.closure ↑S = S
@@ -6790,6 +7054,7 @@ a + b < 0
 P.fg ↔ ∃ (S : set M), add_submonoid.closure S = P ∧ S.finite
 f = g
 p i
+∥f∥ ≤ M
 category_theory.is_subterminal A
 measure_theory.measure.map has_inv.inv μ = μ
 category_theory.is_iso (category_theory.limits.diag A)
@@ -6799,6 +7064,7 @@ char_zero K
 metric.Hausdorff_dist s u ≤ metric.Hausdorff_dist s t + metric.Hausdorff_dist t u
 lower_semicontinuous_on (λ (z : α), f z + g z) s
 (s + 1).Gamma = s * s.Gamma
+finite_dimensional.finrank R (Π (i : ι), M i) = finset.univ.sum (λ (i : ι), finite_dimensional.finrank R (M i))
 1 < a⁻¹ ↔ a < 1
 f = g
 irrational (real.sqrt 2)
@@ -6851,6 +7117,7 @@ real.sin (inner_product_geometry.angle x y + inner_product_geometry.angle x (x -
 nat.fib (m.gcd n) = (nat.fib m).gcd (nat.fib n)
 ⇑(algebra.norm K) (is_cyclotomic_extension.zeta p K L - 1) = ↑p
 real.sqrt (1 + real.sinh x ^ 2) = real.cosh x
+0 ≤ ∥x∥
 set.bij_on g (function.fixed_points (f ∘ g)) (function.fixed_points (f ∘ g))
 is_irreducible S
 continuous_at f a
@@ -6862,6 +7129,7 @@ j ∈ p
 a * -1 = -a
 ⇑(measure_theory.measure.haar.haar_content K₀) (topological_space.compacts.map (λ (b : G), g * b) _ K) = ⇑(measure_theory.measure.haar.haar_content K₀) K
 0 < 3
+∥f x - f a∥ ≤ C * (x - a)
 hs.index (quotient.out' x) = hs.index (⇑(hs.out) x)
 {a}.max' _ = a
 nat.partrec f ↔ ∃ (c : nat.partrec.code), c.eval = f
@@ -6871,6 +7139,7 @@ real.cos (inner_product_geometry.angle x (x - y) + inner_product_geometry.angle 
 is_add_left_regular (a + b) ↔ is_add_left_regular b
 complete_space α
 ∃ (x' : E) (H : x' ∈ s), has_dist.dist x y ≤ has_dist.dist x' y
+∥f + g∥ ≤ ∥f∥ + ∥g∥
 continuous (λ (h : G), g * h * g⁻¹)
 ∃ (u : set (set α)) (H : u ⊆ t), u.pairwise_disjoint id ∧ ∀ (a : set α), a ∈ t → (∃ (x : α) (r : ℝ), metric.closed_ball x r ∈ u ∧ a ⊆ metric.closed_ball x (5 * r))
 z ∈ set.Ico x y ↔ ∃ (a b : 𝕜), 0 < a ∧ 0 ≤ b ∧ a + b = 1 ∧ a * x + b * y = z
@@ -6889,6 +7158,7 @@ add_con.ker f = c
 B = C
 has_sum (λ (b : ι), ⇑φ (f b)) (⇑φ x)
 ∃ (u : ultrafilter α), ↑u ≤ f
+x = y ↔ ∥x∥ = ∥y∥
 N.topological_closure.normal
 s.subsingleton
 ∃ (p : P) (H : p ∈ s2), p ∉ s1
@@ -6900,6 +7170,7 @@ a * c < b * d
 metric.bounded s
 m • x = (m % n) • x
 has_inner.inner (x - y) (x - y) = has_inner.inner x x - 2 * has_inner.inner x y + has_inner.inner y y
+⇑f (λ (i : ι), (A i).sum (λ (j : α i), g i j)) = (fintype.pi_finset A).sum (λ (r : Π (a : ι), α a), ⇑f (λ (i : ι), g i (r i)))
 category_theory.is_iso c.π
 direct_sum.is_internal (λ (μ : module.End.eigenvalues T), module.End.eigenspace T ↑μ)
 ∃ (f : ℕ → α), (∀ (n : ℕ), P (f n)) ∧ ∀ (m n : ℕ), m ≠ n → r (f m) (f n)
@@ -6910,6 +7181,7 @@ p (finsum (λ (i : α), finsum (λ (H : i ∈ s), f i)))
 y ∈ multiples x → z ∈ multiples x → y + z ∈ multiples x
 torus_integrable (λ (_x : fin n → ℂ), a) c R
 hb.oangle (⇑(hb.rotation θ) x) (⇑(hb.rotation θ) y) = hb.oangle x y
+is_R_or_C.abs (has_inner.inner x (r • x)) / (∥x∥ * ∥r • x∥) = 1
 hb.oangle x (r • x) = 0
 1 ≤ a⁻¹ ↔ a ≤ 1
 ∃ (r : R), 0 ≤ r ∧ r • x = y
@@ -6918,6 +7190,7 @@ metric.Hausdorff_dist ∅ s = 0
 complete_lattice.independent f.eigenspace
 L.head + L.tail.sum = L.sum
 (a * b).factors ~ a.factors ++ b.factors
+∥⇑f x∥ ≤ ∥f∥ * ∥x∥
 1 < a * b
 s.sum (λ (i : ι), f i) ^ p ≤ ↑(s.card) ^ (p - 1) * s.sum (λ (i : ι), f i ^ p)
 (⇑(linear_map.to_matrix b b) f).det = (⇑(linear_map.to_matrix c c) f).det
@@ -6942,11 +7215,13 @@ irreducible (polynomial.cyclotomic (p ^ m) R)
 i = j
 p.color i < N
 uniform_cauchy_seq_on F filter.at_top s ↔ ∀ (ε : ℝ), ε > 0 → (∃ (N : β), ∀ (m : β), m ≥ N → ∀ (n : β), n ≥ N → ∀ (x : γ), x ∈ s → has_dist.dist (F m x) (F n x) < ε)
+summable (λ (i : ι), ∥has_inner.inner (v i) x∥ ^ 2)
 a ∈ closure s ↔ ∃ (x : ℕ → X), (∀ (n : ℕ), x n ∈ s) ∧ filter.tendsto x filter.at_top (nhds a)
 ∃ (f : W → L), t.sum (λ (e : W), f e • e) = 0 ∧ t.sum (λ (e : W), f e) = 0 ∧ ∃ (x : W) (H : x ∈ t), 0 < f x
 ⇑(s.affine_combination p) w = p i
 has_edist.edist (f 0) (f n) ≤ (finset.range n).sum (λ (i : ℕ), d i)
 multiplicity.finite ↑p a ↔ a ≠ 0
+has_inner.inner x y = -(∥x∥ * ∥y∥) ↔ inner_product_geometry.angle x y = real.pi
 char.quadratic_char F a ^ 2 = 1
 is_bounded_linear_map 𝕜 (λ (f : continuous_multilinear_map 𝕜 (λ (i : ι), E) F), f.comp_continuous_linear_map (λ (_x : ι), g))
 0 ≤ ifp_n.fr ∧ ifp_n.fr < 1
@@ -6989,9 +7264,11 @@ convolution_exists_at f g x₀ L μ
 a < b
 has_Sup.Sup S ≤ 0
 is_preconnected t
+∥f y - f x - ⇑φ (y - x)∥ ≤ C * ∥y - x∥
 same_ray R (s • x) (s • y)
 ⇑f (a - b) = ⇑f a - ⇑f b
 is_add_monoid_hom f
+∥normed_group_hom.id V∥ ≤ 1
 category_theory.is_iso f
 s1.direction ≤ s2.direction
 hb.rotation θ = hb₂.rotation (-θ)
@@ -7145,9 +7422,11 @@ category_theory.is_iso c.π
 x + 1 ≤ real.exp x
 padic_norm p (q + r) = linear_order.max (padic_norm p q) (padic_norm p r)
 fib_rec.is_solution (has_pow.pow golden_conj)
+∥S.normed_mk∥ = 1
 H n ≤ upper_central_series G n
 ∃ (ε' : ℝ) (H : ε' < ε), x ∈ metric.ball y ε'
 closure (⇑(convex_hull ℝ) (set.extreme_points ℝ s)) = s
+∥f.mk_continuous C H∥ ≤ C
 a ∈ closure s ↔ ∀ (ε : ℝ), ε > 0 → (∃ (b : α) (H : b ∈ s), has_dist.dist a b < ε)
 filter.tendsto (λ (x : β), f x * g x) l filter.at_top
 cauchy_seq u ↔ ∀ (ε : ℝ), ε > 0 → (∃ (N : β), ∀ (m : β), m ≥ N → ∀ (n : β), n ≥ N → has_dist.dist (u m) (u n) < ε)
@@ -7160,6 +7439,7 @@ t.prod (λ (c : ι), f c) ∈ S
 ∃ (c : ℝ) (H : c ∈ set.Ioo a b), (g b - g a) * deriv f c = (f b - f a) * deriv g c
 0 < (p.right_inv i).radius
 is_dedekind_domain A ↔ is_dedekind_domain_inv A
+∥x - y∥ * ∥x - y∥ = ∥x∥ * ∥x∥ + ∥y∥ * ∥y∥ ↔ inner_product_geometry.angle x y = real.pi / 2
 con_gen r ≤ con_gen s
 X.to_Γ_Spec_map_basic_open r = X.to_RingedSpace.basic_open r
 1 ≤ a * b
@@ -7191,6 +7471,7 @@ has_deriv_at f (g x) x
 n.asc_factorial k = (n + k).factorial / n.factorial
 2 • hb.oangle (r₁ • x) (r₂ • x) = 0
 ⇑(polynomial.aeval M) M.charpoly = 0
+∃ (g : E →L[𝕜] 𝕜), ∥g∥ ≤ 1 ∧ ⇑g x = ↑∥x∥
 {to_finsupp := a} = {to_finsupp := b} ↔ a = b
 cont_diff_at 𝕜 n (λ (x : E × F), f x.snd) x
 finset.univ = finset.cons 0 (finset.map {to_fun := fin.succ n, inj' := _} finset.univ) _
@@ -7209,6 +7490,7 @@ padic_val_rat p ↑p = 1
 list.take n (l₁ ++ l₂) = list.take n l₁ ++ list.take (n - l₁.length) l₂
 set.inj_on nat.factorization {x : ℕ | x ≠ 0}
 star_convex 𝕜 x s ↔ ∀ ⦃y : E⦄, y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → 0 < a + b → (a / (a + b)) • x + (b / (a + b)) • y ∈ s
+∥x + y∥ ^ 2 = ∥x∥ ^ 2 + 2 * has_inner.inner x y + ∥y∥ ^ 2
 I ∣ J → J ≤ I
 list.insertion_sort r l = l
 b = a
@@ -7291,6 +7573,7 @@ approximates_linear_on f f' s c → lipschitz_on_with c (f - ⇑f') s
 has_ftaylor_series_up_to_on n f (ftaylor_series_within 𝕜 f s) s
 emetric.ball x ↑ε = metric.ball x ↑ε
 (list.take i (list.map list.length L)).sum + j < L.join.length
+∥c.smul_right f∥ = ∥c∥ * ∥f∥
 padic_val_rat p (q * r) = padic_val_rat p q + padic_val_rat p r
 {γ} ∈ nhds γ
 ∃ (c : K), f.has_eigenvalue c
@@ -7311,6 +7594,7 @@ unique_diff_within_at ℝ s x
 n ≤ k → '0' ≤ buffer.read cb ⟨k, _⟩ ∧ buffer.read cb ⟨k, _⟩ ≤ '9'
 r₁ = r₂ ↔ ∀ (x : α), {y : α | r₁.rel x y} = {y : α | r₂.rel x y}
 μ.is_open_pos_measure
+∃ (x : E), ∥x∥ ≤ R ∧ ∀ (y : E), y ∈ s → 1 ≤ ∥y - x∥
 module.rank R M < cardinal.aleph_0
 filter.tendsto (λ (x : α), x ^ n) filter.at_top filter.at_top
 (∀ (n : ℕ), 0 < n → n.divisors.sum (λ (i : ℕ), f i) = g n) ↔ ∀ (n : ℕ), 0 < n → n.divisors_antidiagonal.sum (λ (x : ℕ × ℕ), ⇑nat.arithmetic_function.moebius x.fst • g x.snd) = f n
@@ -7340,6 +7624,7 @@ a * b ≤ 1
 ⇑linear_map.det ↑((o.rotation θ).to_linear_equiv) = 1
 category_theory.is_iso f
 (∃ (a : α), b = l a) ↔ b = l (u b)
+add_monoid.is_torsion_free (Π (i : η), Gs i)
 ∃ (i : ι) (x : G i), ⇑(module.direct_limit.of R ι G f i) x = z
 (simple_graph.adj_matrix α G).is_adj_matrix
 category_theory.is_iso f
@@ -7354,6 +7639,7 @@ has_strict_deriv_at (exp 𝕂) (exp 𝕂 x) x
 ⇑(euclidean_geometry.reflection s) p = p ↔ p ∈ s
 fintype.card α = 1
 category_theory.limits.has_products (category_theory.over B)
+has_inner.inner x y / (∥x∥ * ∥y∥) = -1 ↔ x ≠ 0 ∧ ∃ (r : ℝ), r < 0 ∧ y = r • x
 is_of_fin_add_order (x + y)
 ¬is_unit (minpoly A x)
 (infi f).ne_bot
@@ -7397,6 +7683,7 @@ category_theory.essentially_small C ↔ small (category_theory.skeleton C)
 dite (¬P) x y = dite P (λ (h : P), y _) x
 subring.closure ↑s = s
 p a b
+∥x∥ = ∥y∥
 category_theory.presheaf.is_sheaf J (J.plus_obj (J.plus_obj P))
 p.remove_zero.left_inv i = p.left_inv i
 f = g
@@ -7435,8 +7722,11 @@ b⁻¹ * a < c → a < b * c
 category_theory.limits.has_colimits_of_shape J C
 g.numerators (n + 2) = gp.b * predA + gp.a * ppredA
 (∀ (a : K), a ∈ m → a ∈ s) → m.sum ∈ s
+f' =O[l] g → (λ (x : α), ∥f' x∥) =O[l] g
 disjoint s t → 0 ∉ s - t
+∥f.mk_normed_group_hom C h∥ ≤ linear_order.max C 0
 cauchy_seq (λ (s : finset ℕ), s.sum (λ (x : ℕ), f x))
+∥x - y∥ ^ 2 = ∥x∥ ^ 2 - 2 * has_inner.inner x y + ∥y∥ ^ 2
 ∃ (c : ℝ) (H : c ∈ set.Ioo a b), deriv f c = (f b - f a) / (b - a)
 bdd_below s → a ∈ s → a < b → has_Inf.Inf s < b
 category_theory.exact (F.map f) (F.map g)
@@ -7444,6 +7734,7 @@ euclidean_geometry.cospherical ps ↔ ∃ (center : P) (H : center ∈ s) (radiu
 a * b < 1
 (list.permutations_aux2 t ts list.nil ys f).snd ++ r = (list.permutations_aux2 t ts r ys f).snd
 linear_independent R v
+is_R_or_C.abs (has_inner.inner x y) ≤ ∥x∥ * ∥y∥
 order_of (dihedral_group.r i) = n / n.gcd i.val
 c • s ∈ nhds (c • x)
 ∃ (c : ℝ) (H : c ∈ set.Ioo a b), (g b - g a) * f' c = (f b - f a) * g' c
@@ -7502,6 +7793,7 @@ category_theory.presheaf.is_sheaf J P ↔ ∀ ⦃X : C⦄ (S : category_theory.s
 f = g
 {x : E | differentiable_at 𝕜 f x ∧ fderiv 𝕜 f x ∈ K} ⊆ fderiv_measurable_aux.D f K
 category_theory.indecomposable X
+has_inner.inner x y = -(∥x∥ * ∥y∥)
 (1 * x).equiv x
 S ≤ μ.outer_measure.caratheodory
 c.lift (f.comp c.mk') _ = f
@@ -7540,3 +7832,4 @@ is_unit (a * ↑u) ↔ is_unit a
 (has_insert.insert x s).powerset.prod (λ (a : finset α), f a) = s.powerset.prod (λ (a : finset α), f a) * s.powerset.prod (λ (t : finset α), f (has_insert.insert x t))
 ∃ (K : set α) (H : K ⊆ A), is_compact K ∧ ⇑μ A < ⇑μ K + ε
 (b.to_matrix b₂.points).det • ⇑(b₂.coords) x = ⇑((b.to_matrix b₂.points).transpose.cramer) (⇑(b.coords) x)
+∥↑m∥ ≤ ∥m∥

@@ -19,12 +19,20 @@ syntax "(" term ")" : term
 syntax "λ" ident "," term : term
 syntax "λ"  ident ":" term  "," term : term
 syntax "λ" "(" ident ":" term ")" "," term : term
+syntax "Π"  ident ":" term  "," term : term
+syntax "Π" "(" ident ":" term ")" "," term : term
 syntax "⇑" term : term
 macro_rules
 | `(λ $x:ident : $type:term , $y:term) => 
   `(fun ($x : $type)  => $y)
 | `(λ ( $x:ident : $type:term ) , $y:term) => 
   `(fun ($x : $type)  => $y)
+| `(Π $x:ident : $type:term , $y:term) => 
+  `(($x : $type) →  $y)
+| `(Π ( $x:ident : $type:term ) , $y:term) => 
+  `(($x : $type) →  $y)
+| `(⇑ $x:term) => `($x)
+
 
 
 def checkTerm (s : String) : MetaM Bool := do
