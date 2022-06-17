@@ -44,8 +44,26 @@ syntax term "∩" term : term
 
 #eval checkTerm "a • s"
 
-
 #eval checkTerm "λ x : Nat, x + 1"
+
+#eval checkTerm "a - t = 0"
+
+#check Array.split
+
+def promptsSplit : MetaM ((Array String) × (Array String)) := do 
+  let deps ← depsPrompt
+  let mut succ: Array String := Array.empty
+  let mut fail: Array String := Array.empty
+  for type in deps do
+    let chk ←  checkTerm type
+    if chk then
+      succ := succ.push type
+    else
+      fail := fail.push type
+  return (succ, fail)
+
+def promptsSplitCore : CoreM ((Array String) × (Array String)) :=
+  promptsSplit.run'
 
 def checkStatements : MetaM (List (String × Bool)) := do
   let prompts ← depsPrompt
