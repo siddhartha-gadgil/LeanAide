@@ -2,6 +2,7 @@
 #
 
 from sentence_transformers import SentenceTransformer, util
+import torch
 import json
 
 def sentence_tokenize_info(sentence,model):
@@ -78,6 +79,33 @@ def write_prompts_to_file():
 
 def test_similarity_with_data():
     model_name = 'sentence-transformers/all-mpnet-base-v2'
+    fread = open("/home/t-agrawala/Desktop/ATP-Project/SentenceSimilarityTask/prompt_lists.txt")
+    prompt_corpus = fread.readlines()
+    model = SentenceTransformer(model_name)
+    corpus_embeddings = model.encode(prompt_corpus, convert_to_tensor=True)
+    num_prompts_to_analyse = 20
+    top_k = 10
+    for prompt in prompt_corpus[:num_prompts_to_analyse]:
+        query_embedding = model.encode(prompt, convert_to_tensor=True)
+        cos_scores = util.cos_sim(query_embedding, corpus_embeddings)[0]
+        top_results = torch.topk(cos_scores, k=top_k)
+
+        print("\n\n======================\n\n")
+        print("PROMPT:", prompt)
+        print("\nTop {} most similar prompts from the entire corpus:".format(top_k))
+
+        for score, idx in zip(top_results[0], top_results[1]):
+            print(prompt_corpus[idx].rstrip("\n"), "(Score: {:.4f})".format(score))
+
+    """
+    # Alternatively, we can also use util.semantic_search to perform cosine similarty + topk
+    hits = util.semantic_search(query_embedding, corpus_embeddings, top_k=5)
+    hits = hits[0]      #Get the hits for the first query
+    for hit in hits:
+        print(corpus[hit['corpus_id']], "(Score: {:.4f})".format(hit['score']))
+    """
+
+test_similarity_with_data()
 
 
 
