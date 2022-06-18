@@ -3,6 +3,15 @@
 
 from sentence_transformers import SentenceTransformer, util
 
+def sentence_tokenize_info(sentence,model):
+        print("Info for {}".format(sentence))
+        print("Print token ids..")
+        inp_ids = model.tokenizer(sentence).input_ids
+        print(inp_ids,"\n")
+        print("Print the tokens mapped to the ids (to detect UNKOWN tokens)..")
+        tokens = model.tokenizer.convert_ids_to_tokens(inp_ids)
+        print(tokens,"\n")
+
 def calc_similarity(sentence_pair_list,model,check=True):
     """
     sentence_pair : list having pair of sentences to compute similarity
@@ -18,30 +27,17 @@ def calc_similarity(sentence_pair_list,model,check=True):
 
     #check flag boolean to check the token-ids and mapped tokens
     if check:
-        print("Info for {}".format(sentence_pair_list[0]))
-        print("Print token ids..")
-        inp_ids0 = model.tokenizer(sentence_pair_list[0]).input_ids
-        print(inp_ids0,"\n")
-        print("Print the tokens mapped to the ids (to detect UNKOWN tokens)..")
-        tokens0 = model.tokenizer.convert_ids_to_tokens(inp_ids0)
-        print(tokens0,"\n")
+        sentence_tokenize_info(sentence_pair_list[0], model)
         print("Size of embedding vector..")
         print(emb_1.shape[0],"\n")
-
-        print("Info for {}".format(sentence_pair_list[1]))
-        print("Print token ids..")
-        inp_ids1 = model.tokenizer(sentence_pair_list[1]).input_ids
-        print(inp_ids1,"\n")
-        print("Print the tokens mapped to the ids (to detect UNKOWN tokens)..")
-        tokens1 = model.tokenizer.convert_ids_to_tokens(inp_ids1)
-        print(tokens1,"\n")
+        sentence_tokenize_info(sentence_pair_list[1], model)
         print("Size of embedding vector..")
         print(emb_2.shape[0],"\n")
 
     return sim_score
 
 
-def main():
+def test_similarity():
     #Examples to check
     sentences = [
                     ["I'm happy", "I'm full of happiness"],
@@ -61,8 +57,17 @@ def main():
         print("score: {}".format(sim_score))
         print("========================================")
 
-main()
+def test_tokenize_info():
+    model_name = 'sentence-transformers/all-mpnet-base-v2' 
+    model = SentenceTransformer(model_name)
+    fread = open("/home/t-agrawala/Desktop/ATP-Project/SentenceSimilarityTask/lean_notations.txt")
+    ex_lis = fread.readlines()
+    for ex in ex_lis:
+        sentence_tokenize_info(ex, model)
+        print("============================================")
 
+
+test_tokenize_info()
 
 #Compute embedding for both lists
 #embedding_1= model.encode(sentences[0], convert_to_tensor=True)
