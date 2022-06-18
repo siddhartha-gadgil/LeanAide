@@ -2,6 +2,7 @@
 #
 
 from sentence_transformers import SentenceTransformer, util
+import json
 
 def sentence_tokenize_info(sentence,model):
         print("Info for {}".format(sentence))
@@ -66,8 +67,20 @@ def test_tokenize_info():
         sentence_tokenize_info(ex, model)
         print("============================================")
 
+def write_prompts_to_file():
+    fread = open("/home/t-agrawala/Desktop/ATP-Project/data/prompts.json","r")
+    lis = json.load(fread)
+    fwrite = open("prompt_lists.txt","a+")
+    for dct in lis:
+        fwrite.write(dct['doc_string']+"\n")
+    fwrite.close()
+    fread.close()
 
-test_tokenize_info()
+def test_similarity_with_data():
+    model_name = 'sentence-transformers/all-mpnet-base-v2'
+
+
+
 
 #Compute embedding for both lists
 #embedding_1= model.encode(sentences[0], convert_to_tensor=True)
