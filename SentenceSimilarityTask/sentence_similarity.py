@@ -45,14 +45,16 @@ def main():
     #Examples to check
     sentences = [
                     ["I'm happy", "I'm full of happiness"],
-                    #["α : Type,	p : parser α	⊢ p.bind parser.pure = p", "I am happy"],
-                    ["α : Type,	p : parser α    \u22A2 p.bind parser.pure = p", "I am happy"], #unknown for	'⊢' 
+                    ["α : Type,	p : parser α	⊢ p.bind parser.pure = p", "I am happy"],
+                    #["α : Type,	p : parser α    \u22A2 p.bind parser.pure = p", "I am happy"], #unknown for	'⊢' 
                     ["Multiplication of two with two is always four","two times two gives four"],
                     ["Multiplication of two with two is always four","2 times 2 gives 4"],
-                    ["2 is a prime number","2 is divisible by every natural number other than 1 and 2"]
+                    ["2 is a prime number","2 is divisible by every natural number other than 1 and 2"],
+                    ["a ≤ b → a + c ≤ b + c","a ≤ b ∧ c > 0 → a*c ≤ b*c"]
                 ]
     #Select Model
-    model_name = 'sentence-transformers/all-MiniLM-L6-v2' 
+    #model_name = 'sentence-transformers/all-MiniLM-L6-v2'
+    model_name = 'sentence-transformers/all-mpnet-base-v2' 
     model = SentenceTransformer(model_name)
     for i in range(len(sentences)):
         sim_score = calc_similarity(sentences[i], model)
