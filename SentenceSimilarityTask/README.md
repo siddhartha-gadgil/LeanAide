@@ -18,4 +18,6 @@
 ## Fine-tuning LMs for this task
 * Use Siamese Networks
 
+## Aproximate KNN Search
+
 ## Hand-crafted Heuristics
