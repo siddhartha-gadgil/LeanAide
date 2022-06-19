@@ -72,4 +72,50 @@ def checkStatements : MetaM (List (String × Bool)) := do
   (prompts.toList.take 50).mapM fun s => 
     do return (s, ← checkTerm s)
 
-#eval checkStatements
+-- #eval checkStatements
+declare_syntax_cat argument
+syntax "(" ident " : " term ")" : argument
+syntax "{" ident " : " term "}" : argument
+syntax "[" ident " : " term "]" : argument
+syntax "[" term "]" : argument
+
+declare_syntax_cat thmStat
+syntax "theorem" ident argument*  ":" term : thmStat
+
+def checkThm (s : String) : MetaM String := do
+  let env ← getEnv
+  let chk := runParserCategory env `thmStat  s
+  match chk with
+  | Except.ok stx  =>
+      match stx with
+      | `(thmStat|theorem $_ $args:argument* : $type:term) =>
+        let termStx ← `(fun $(args[0]) => $type)
+        pure s!"match: {termStx}"
+      | _ => pure s!"parsed to mysterious {stx}"
+  | Except.error e  => pure s!"error: {e}"
+
+#eval checkThm "theorem blah (n : Nat) {m: Type} : n  = n"
+
+#eval checkThm "theorem subfield.list_sum_mem {K : Type u} [field K] (s : subfield K) {l : list K} : (∀ (x : K), x ∈ l → x ∈ s) → l.sum ∈ s"
+
+def checkElabThm (s : String) : TermElabM String := do
+  let env ← getEnv
+  let chk := runParserCategory env `thmStat  s
+  match chk with
+  | Except.ok stx  =>
+      match stx with
+      | `(thmStat|theorem $_ $args:argument* : $type:term) =>
+        let argsStx := args[0]
+        let termStx ← `(fun $argsStx => $type)
+        try 
+          let expr ← Term.elabTerm termStx none
+          Term.synthesizeSyntheticMVarsNoPostponing
+          let stx ← PrettyPrinter.delab  expr
+          let fmt ← PrettyPrinter.ppTerm stx
+          pure s!"elaborated: {fmt.pretty} from {termStx}"
+        catch e => 
+          pure s!"parsed; error while elaborating: {← e.toMessageData.toString}"
+      | _ => pure s!"parsed to mysterious {stx}"
+  | Except.error e  => pure s!"error: {e}"
+
+#eval checkElabThm "theorem blah (n : Nat) : n  = n"
