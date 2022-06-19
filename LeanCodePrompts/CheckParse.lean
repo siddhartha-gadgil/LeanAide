@@ -116,7 +116,6 @@ def checkThm (s : String) : MetaM String := do
 
 #eval checkThm "theorem subfield.list_sum_mem {K : Type u} [field K] (s : subfield K) {l : list K} : (∀ (x : K), x ∈ l → x ∈ s) → l.sum ∈ s"
 
-
 def checkElabThm (s : String) : TermElabM String := do
   let env ← getEnv
   let chk := runParserCategory env `thmStat  s
@@ -129,10 +128,10 @@ def checkElabThm (s : String) : TermElabM String := do
           argS := argS ++ (showSyntax arg)
         let funStx := s!"fun {argS} => {showSyntax type}"
         match runParserCategory env `term funStx with
-        | Except.ok termStx => 
+        | Except.ok termStx => Term.withLevelNames [`u, `v] <|
           try 
-            let expr ← Term.elabTerm termStx none
-            Term.synthesizeSyntheticMVarsNoPostponing
+            let expr ← Term.withoutErrToSorry <| 
+                Term.elabTerm termStx none
             pure s!"elaborated: {← expr.view} from {funStx}"
           catch e => 
             pure s!"parsed; error while elaborating: {← e.toMessageData.toString}"
@@ -142,3 +141,7 @@ def checkElabThm (s : String) : TermElabM String := do
   | Except.error e  => pure s!"error: {e}"
 
 #eval checkElabThm "theorem blah (n : Nat) {m : Nat} : n  = m"
+
+
+#eval checkElabThm "theorem subfield.list_sum_mem {K : Type u} [field K] (s : subfield K) {l : list K} : (∀ (x : K), x ∈ l → x ∈ s) → l.sum ∈ s"
+
