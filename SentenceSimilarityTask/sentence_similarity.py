@@ -2,6 +2,17 @@
 #
 
 from sentence_transformers import SentenceTransformer, util
+import torch
+import json
+
+def sentence_tokenize_info(sentence,model):
+        print("Info for {}".format(sentence))
+        print("Print token ids..")
+        inp_ids = model.tokenizer(sentence).input_ids
+        print(inp_ids,"\n")
+        print("Print the tokens mapped to the ids (to detect UNKOWN tokens)..")
+        tokens = model.tokenizer.convert_ids_to_tokens(inp_ids)
+        print(tokens,"\n")
 
 def calc_similarity(sentence_pair_list,model,check=True):
     """
@@ -18,48 +29,85 @@ def calc_similarity(sentence_pair_list,model,check=True):
 
     #check flag boolean to check the token-ids and mapped tokens
     if check:
-        print("Info for {}".format(sentence_pair_list[0]))
-        print("Print token ids..")
-        inp_ids0 = model.tokenizer(sentence_pair_list[0]).input_ids
-        print(inp_ids0,"\n")
-        print("Print the tokens mapped to the ids (to detect UNKOWN tokens)..")
-        tokens0 = model.tokenizer.convert_ids_to_tokens(inp_ids0)
-        print(tokens0,"\n")
+        sentence_tokenize_info(sentence_pair_list[0], model)
         print("Size of embedding vector..")
         print(emb_1.shape[0],"\n")
-
-        print("Info for {}".format(sentence_pair_list[1]))
-        print("Print token ids..")
-        inp_ids1 = model.tokenizer(sentence_pair_list[1]).input_ids
-        print(inp_ids1,"\n")
-        print("Print the tokens mapped to the ids (to detect UNKOWN tokens)..")
-        tokens1 = model.tokenizer.convert_ids_to_tokens(inp_ids1)
-        print(tokens1,"\n")
+        sentence_tokenize_info(sentence_pair_list[1], model)
         print("Size of embedding vector..")
         print(emb_2.shape[0],"\n")
 
     return sim_score
 
 
-def main():
+def test_similarity():
     #Examples to check
     sentences = [
                     ["I'm happy", "I'm full of happiness"],
-                    #["α : Type,	p : parser α	⊢ p.bind parser.pure = p", "I am happy"],
-                    ["α : Type,	p : parser α    \u22A2 p.bind parser.pure = p", "I am happy"], #unknown for	'⊢' 
+                    ["α : Type,	p : parser α	⊢ p.bind parser.pure = p", "I am happy"],
+                    #["α : Type,	p : parser α    \u22A2 p.bind parser.pure = p", "I am happy"], #unknown for	'⊢' 
                     ["Multiplication of two with two is always four","two times two gives four"],
                     ["Multiplication of two with two is always four","2 times 2 gives 4"],
-                    ["2 is a prime number","2 is divisible by every natural number other than 1 and 2"]
+                    ["2 is a prime number","2 is divisible by every natural number other than 1 and 2"],
+                    ["a ≤ b → a + c ≤ b + c","a ≤ b ∧ c > 0 → a*c ≤ b*c"]
                 ]
     #Select Model
-    model_name = 'sentence-transformers/all-MiniLM-L6-v2' 
+    #model_name = 'sentence-transformers/all-MiniLM-L6-v2'
+    model_name = 'sentence-transformers/all-mpnet-base-v2' 
     model = SentenceTransformer(model_name)
     for i in range(len(sentences)):
         sim_score = calc_similarity(sentences[i], model)
         print("score: {}".format(sim_score))
         print("========================================")
 
-main()
+def test_tokenize_info():
+    model_name = 'sentence-transformers/all-mpnet-base-v2' 
+    model = SentenceTransformer(model_name)
+    fread = open("/home/t-agrawala/Desktop/ATP-Project/SentenceSimilarityTask/lean_notations.txt")
+    ex_lis = fread.readlines()
+    for ex in ex_lis:
+        sentence_tokenize_info(ex, model)
+        print("============================================")
+
+def write_prompts_to_file():
+    fread = open("/home/t-agrawala/Desktop/ATP-Project/data/prompts.json","r")
+    lis = json.load(fread)
+    fwrite = open("prompt_lists.txt","a+")
+    for dct in lis:
+        fwrite.write(dct['doc_string']+"\n")
+    fwrite.close()
+    fread.close()
+
+def test_similarity_with_data():
+    model_name = 'sentence-transformers/all-mpnet-base-v2'
+    fread = open("/home/t-agrawala/Desktop/ATP-Project/SentenceSimilarityTask/prompt_lists.txt")
+    prompt_corpus = fread.readlines()
+    model = SentenceTransformer(model_name)
+    corpus_embeddings = model.encode(prompt_corpus, convert_to_tensor=True)
+    num_prompts_to_analyse = 20
+    top_k = 10
+    for prompt in prompt_corpus[:num_prompts_to_analyse]:
+        query_embedding = model.encode(prompt, convert_to_tensor=True)
+        cos_scores = util.cos_sim(query_embedding, corpus_embeddings)[0]
+        top_results = torch.topk(cos_scores, k=top_k)
+
+        print("\n\n======================\n\n")
+        print("PROMPT:", prompt)
+        print("\nTop {} most similar prompts from the entire corpus:".format(top_k))
+
+        for score, idx in zip(top_results[0], top_results[1]):
+            print(prompt_corpus[idx].rstrip("\n"), "(Score: {:.4f})".format(score))
+
+    """
+    # Alternatively, we can also use util.semantic_search to perform cosine similarty + topk
+    hits = util.semantic_search(query_embedding, corpus_embeddings, top_k=5)
+    hits = hits[0]      #Get the hits for the first query
+    for hit in hits:
+        print(corpus[hit['corpus_id']], "(Score: {:.4f})".format(hit['score']))
+    """
+
+test_similarity_with_data()
+
+
 
 
 #Compute embedding for both lists
