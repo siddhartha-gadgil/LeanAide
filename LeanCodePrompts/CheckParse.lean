@@ -91,10 +91,10 @@ def elabThm (s : String)(opens: List String := [])
       | `(thmStat|theorem $_ $args:argument* : $type:term) =>
         let mut argS := ""
         for arg in args do
-          argS := argS ++ (showSyntax arg)
+          argS := argS ++ (showSyntax arg) ++ " -> "
         let header := if opens.isEmpty then "" else 
           (opens.foldl (fun acc s => acc ++ " " ++ s) "open ") ++ " in "
-        let funStx := s!"{header}fun {argS} => {showSyntax type}"
+        let funStx := s!"{header}{argS}{showSyntax type}"
         match runParserCategory env `term funStx with
         | Except.ok termStx => Term.withLevelNames levelNames <|
           try 
@@ -135,8 +135,8 @@ def checkThm (s : String) : MetaM String := do
       | `(thmStat|theorem $_ $args:argument* : $type:term) =>
         let mut argS := ""
         for arg in args do
-          argS := argS ++ (showSyntax arg)
-        let funStx := s!"fun {argS} => {showSyntax type}"
+          argS := argS ++ (showSyntax arg) ++ " -> "
+        let funStx := s!"{argS}{showSyntax type}"
         pure s!"match: {funStx}"
       | _ => pure s!"parsed to mysterious {stx}"
   | Except.error e  => pure s!"error: {e}"
@@ -154,8 +154,8 @@ def checkElabThm (s : String) : TermElabM String := do
       | `(thmStat|theorem $_ $args:argument* : $type:term) =>
         let mut argS := ""
         for arg in args do
-          argS := argS ++ (showSyntax arg)
-        let funStx := s!"fun {argS} => {showSyntax type}"
+          argS := argS ++ (showSyntax arg) ++ " -> "
+        let funStx := s!"{argS}{showSyntax type}"
         match runParserCategory env `term funStx with
         | Except.ok termStx => Term.withLevelNames [`u, `v] <|
           try 
