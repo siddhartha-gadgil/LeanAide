@@ -72,6 +72,14 @@ def checkStatements : MetaM (List (String × Bool)) := do
   (prompts.toList.take 50).mapM fun s => 
     do return (s, ← checkTerm s)
 
+
+def Lean.Expr.view (expr: Expr) : MetaM String := do
+  let stx ← PrettyPrinter.delab  expr
+  let fmt ← PrettyPrinter.ppTerm stx
+  return fmt.pretty
+
+
+
 -- #eval checkStatements
 declare_syntax_cat argument
 syntax "(" ident " : " term ")" : argument
@@ -82,6 +90,13 @@ syntax "[" term "]" : argument
 declare_syntax_cat thmStat
 syntax "theorem" ident argument*  ":" term : thmStat
 
+partial def showSyntax : Syntax → String
+| Syntax.node _ _ args => 
+  (args.map <| fun s => showSyntax s).foldl (fun acc s => acc ++ " " ++ s) ""
+| Lean.Syntax.atom _ val => val
+| Lean.Syntax.ident _ _ val _ => val.toString
+| _ => ""
+
 def checkThm (s : String) : MetaM String := do
   let env ← getEnv
   let chk := runParserCategory env `thmStat  s
@@ -89,14 +104,18 @@ def checkThm (s : String) : MetaM String := do
   | Except.ok stx  =>
       match stx with
       | `(thmStat|theorem $_ $args:argument* : $type:term) =>
-        let termStx ← `(fun $(args[0]) => $type)
-        pure s!"match: {termStx}"
+        let mut argS := ""
+        for arg in args do
+          argS := argS ++ (showSyntax arg)
+        let funStx := s!"fun {argS} => {showSyntax type}"
+        pure s!"match: {funStx}"
       | _ => pure s!"parsed to mysterious {stx}"
   | Except.error e  => pure s!"error: {e}"
 
 #eval checkThm "theorem blah (n : Nat) {m: Type} : n  = n"
 
 #eval checkThm "theorem subfield.list_sum_mem {K : Type u} [field K] (s : subfield K) {l : list K} : (∀ (x : K), x ∈ l → x ∈ s) → l.sum ∈ s"
+
 
 def checkElabThm (s : String) : TermElabM String := do
   let env ← getEnv
@@ -105,17 +124,21 @@ def checkElabThm (s : String) : TermElabM String := do
   | Except.ok stx  =>
       match stx with
       | `(thmStat|theorem $_ $args:argument* : $type:term) =>
-        let argsStx := args[0]
-        let termStx ← `(fun $argsStx => $type)
-        try 
-          let expr ← Term.elabTerm termStx none
-          Term.synthesizeSyntheticMVarsNoPostponing
-          let stx ← PrettyPrinter.delab  expr
-          let fmt ← PrettyPrinter.ppTerm stx
-          pure s!"elaborated: {fmt.pretty} from {termStx}"
-        catch e => 
-          pure s!"parsed; error while elaborating: {← e.toMessageData.toString}"
+        let mut argS := ""
+        for arg in args do
+          argS := argS ++ (showSyntax arg)
+        let funStx := s!"fun {argS} => {showSyntax type}"
+        match runParserCategory env `term funStx with
+        | Except.ok termStx => 
+          try 
+            let expr ← Term.elabTerm termStx none
+            Term.synthesizeSyntheticMVarsNoPostponing
+            pure s!"elaborated: {← expr.view} from {funStx}"
+          catch e => 
+            pure s!"parsed; error while elaborating: {← e.toMessageData.toString}"
+        | Except.error e => 
+            pure s!"parsed to {funStx}; error while parsing: {e}"
       | _ => pure s!"parsed to mysterious {stx}"
   | Except.error e  => pure s!"error: {e}"
 
-#eval checkElabThm "theorem blah (n : Nat) : n  = n"
+#eval checkElabThm "theorem blah (n : Nat) {m : Nat} : n  = m"
