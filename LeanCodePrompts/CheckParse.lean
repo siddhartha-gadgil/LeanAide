@@ -65,8 +65,8 @@ def Lean.Expr.view (expr: Expr) : MetaM String := do
   return fmt.pretty
 
 declare_syntax_cat argument
-syntax "(" ident " : " term ")" : argument
-syntax "{" ident " : " term "}" : argument
+syntax "(" ident+ " : " term ")" : argument
+syntax "{" ident+ " : " term "}" : argument
 syntax "[" ident " : " term "]" : argument
 syntax "[" term "]" : argument
 
