@@ -71,7 +71,8 @@ syntax "[" ident " : " term "]" : argument
 syntax "[" term "]" : argument
 
 declare_syntax_cat thmStat
-syntax "theorem" ident argument*  ":" term : thmStat
+syntax "theorem" (ident)? argument*  ":" term : thmStat
+syntax argument*  ":" term : thmStat
 
 partial def showSyntax : Syntax → String
 | Syntax.node _ _ args => 
@@ -89,24 +90,34 @@ def elabThm (s : String)(opens: List String := [])
   | Except.ok stx  =>
       match stx with
       | `(thmStat|theorem $_ $args:argument* : $type:term) =>
+        elabAux type args
+      | `(thmStat|$args:argument* : $type:term) =>
+        elabAux type args
+      | _ => return Except.error s!"parsed incorrectly to {stx}"
+  | Except.error e  => return Except.error e
+  where elabAux (type: Syntax)(args: Array Syntax) : 
+        TermElabM <| Except String Expr := do
+        let header := if opens.isEmpty then "" else 
+          (opens.foldl (fun acc s => acc ++ " " ++ s) "open ") ++ " in "
         let mut argS := ""
         for arg in args do
           argS := argS ++ (showSyntax arg) ++ " -> "
-        let header := if opens.isEmpty then "" else 
-          (opens.foldl (fun acc s => acc ++ " " ++ s) "open ") ++ " in "
         let funStx := s!"{header}{argS}{showSyntax type}"
-        match runParserCategory env `term funStx with
+        match runParserCategory (← getEnv) `term funStx with
         | Except.ok termStx => Term.withLevelNames levelNames <|
           try 
             let expr ← Term.withoutErrToSorry <| 
                 Term.elabTerm termStx none
             return Except.ok expr
           catch e => 
-            return Except.error s!"parsed; error while elaborating: {← e.toMessageData.toString}"
+            return Except.error s!"{← e.toMessageData.toString} (during elaboration)"
         | Except.error e => 
-            return Except.error s!"parsed to {funStx}; error while parsing: {e}"
-      | _ => return Except.error s!"parsed incorrectly to {stx}"
-  | Except.error e  => return Except.error s!"error: {e}"
+            return Except.error s!"parsed to {funStx}; error while parsing as theorem: {e}" 
+
+def elabThmCore (s : String)(opens: List String := []) 
+  (levelNames : List Name := [`u, `v])
+  : CoreM <| Except String Expr := 
+    (elabThm s opens levelNames).run'.run'
 
 #eval ["a", "b"].foldl (fun acc s => acc ++ " " ++ s) "the letters"
 
@@ -163,7 +174,7 @@ def checkElabThm (s : String) : TermElabM String := do
                 Term.elabTerm termStx none
             pure s!"elaborated: {← expr.view} from {funStx}"
           catch e => 
-            pure s!"parsed; error while elaborating: {← e.toMessageData.toString}"
+            pure s!"{← e.toMessageData.toString} during elaboaration"
         | Except.error e => 
             pure s!"parsed to {funStx}; error while parsing: {e}"
       | _ => pure s!"parsed to mysterious {stx}"
@@ -176,5 +187,11 @@ def checkElabThm (s : String) : TermElabM String := do
 #eval elabThm "theorem blah (n : Nat) {m : Nat} : n  = m" 
 
 #eval elabThm "theorem blah (n : Nat) {m : Nat} : n  = succ n" ["Nat"]
+
+#eval elabThm "theorem blah (n : Nat) {m : Nat} : n  = succ n" ["Nat"]
+
+#eval elabThm "(n : Nat) {m : Nat} : n  = succ n" ["Nat"]
+
+#eval elabThmCore "(n : Nat) {m : Nat} : n  = succ n" ["Nat"]
 
 #eval elabThm "theorem subfield.list_sum_mem {K : Type u} [field K] (s : subfield K) {l : list K} : (∀ (x : K), x ∈ l → x ∈ s) → l.sum ∈ s"
