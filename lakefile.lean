@@ -3,8 +3,12 @@ open Lake DSL
 
 package LeanCodePrompts
 
-@[defaultTarget]
 lean_exe datagen{
+  supportInterpreter := true
+}
+
+@[defaultTarget]
+lean_exe chkthms{
   supportInterpreter := true
 }
 

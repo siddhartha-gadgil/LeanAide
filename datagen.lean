@@ -9,7 +9,7 @@ set_option compiler.extract_closed false
 
 
 def main (args: List String) : IO Unit := do
-  initSearchPath (← Lean.findSysroot) ["build/lib", "lean_packages/mathlib/build/lib/"]
+  initSearchPath (← Lean.findSysroot) ["build/lib", "lean_packages/mathlib/build/lib/", "lean_packages/lean3port/build/lib/", "lean_packages/mathlib3port/build/lib/"]
   let env ← 
     importModules [{module := `Mathlib},
     {module := `LeanCodePrompts.Basic},
@@ -33,4 +33,3 @@ def main (args: List String) : IO Unit := do
     do
           let msg ← e.toMessageData.toString
           IO.println msg
-  IO.println s!"Hello, {hello}!"

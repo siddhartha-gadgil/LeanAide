@@ -119,7 +119,23 @@ def elabThmCore (s : String)(opens: List String := [])
   : CoreM <| Except String Expr := 
     (elabThm s opens levelNames).run'.run'
 
-#eval ["a", "b"].foldl (fun acc s => acc ++ " " ++ s) "the letters"
+def compareThms(s₁ s₂ : String)(opens: List String := []) 
+  (levelNames : List Name := [`u, `v])
+  : TermElabM <| Except String Bool := do
+  let e₁ ← elabThm s₁ opens levelNames
+  let e₂ ← elabThm s₂ opens levelNames
+  match e₁ with
+  | Except.ok e₁ => match e₂ with
+    | Except.ok e₂ => 
+        let p ← isDefEq e₁ e₂
+        return Except.ok p
+    | Except.error e₂ => return Except.error e₂
+  | Except.error e₁ => return Except.error e₁
+
+def compareThmsCore(s₁ s₂ : String)(opens: List String := []) 
+  (levelNames : List Name := [`u, `v])
+  : CoreM <| Except String Bool := 
+    (compareThms s₁ s₂ opens levelNames).run'.run'
 
 -- Tests
 
@@ -195,3 +211,5 @@ def checkElabThm (s : String) : TermElabM String := do
 #eval elabThmCore "(n : Nat) {m : Nat} : n  = succ n" ["Nat"]
 
 #eval elabThm "theorem subfield.list_sum_mem {K : Type u} [field K] (s : subfield K) {l : list K} : (∀ (x : K), x ∈ l → x ∈ s) → l.sum ∈ s"
+
+#eval compareThms "theorem nonsense(n : Nat) (m : Nat) : n = m" "(p : Nat)(q: Nat) : p = q"
