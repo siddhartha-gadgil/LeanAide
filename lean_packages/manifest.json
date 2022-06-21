@@ -1,0 +1,11 @@
+{"version": 1,
+ "packages":
+ [{"url": "https://github.com/leanprover-community/mathlib3port.git",
+   "rev": "ebaf6d212fb8bc623aa70895588b87bb239d4555",
+   "name": "mathlib3port"},
+  {"url": "https://github.com/leanprover-community/mathlib4.git",
+   "rev": "8b7a86a8c1a98511e706f54beb288ee1974f052f",
+   "name": "mathlib"},
+  {"url": "https://github.com/leanprover-community/lean3port.git",
+   "rev": "d47f5546fb6b55d3830ced999e56eb5ba18eaacd",
+   "name": "lean3port"}]}
