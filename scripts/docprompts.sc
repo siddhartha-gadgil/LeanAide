@@ -46,8 +46,11 @@ def promptJs(js: Value): Value = {
   val typeExpr = exprString(obj("type"))
   val statement =
     s"theorem ${name} ${args} : ${typeExpr}"
+  val theorem =
+    s"${args} : ${typeExpr}"
   Obj(
     "doc_string" -> obj("doc_string").str.replace("\n", " "),
+    "theorem" -> theorem,
     "statement" -> statement,
     "name" -> name,
     "args" -> args,
