@@ -74,6 +74,35 @@ declare_syntax_cat thmStat
 syntax "theorem" (ident)? argument*  ":" term : thmStat
 syntax argument*  ":" term : thmStat
 
+def thmsPrompt : IO (Array String) := do
+  let file := System.mkFilePath ["data/thms.txt"]
+  IO.FS.lines file
+
+/-- check whether a string parses as a theorem -/
+def checkThm (s : String) : MetaM Bool := do
+  let env ← getEnv
+  let chk := runParserCategory env `thmStat  s
+  match chk with
+  | Except.ok _  => pure true
+  | Except.error _  => pure false
+
+/-- split prompts into those that parse -/
+def promptsThmSplit : MetaM ((Array String) × (Array String)) := do 
+  let deps ← thmsPrompt
+  let mut succ: Array String := Array.empty
+  let mut fail: Array String := Array.empty
+  for type in deps do
+    let chk ←  checkThm type
+    if chk then
+      succ := succ.push type
+    else
+      fail := fail.push type
+  return (succ, fail)
+
+def promptsThmSplitCore : CoreM ((Array String) × (Array String)) :=
+  promptsThmSplit.run'
+
+
 partial def showSyntax : Syntax → String
 | Syntax.node _ _ args => 
   (args.map <| fun s => showSyntax s).foldl (fun acc s => acc ++ " " ++ s) ""
@@ -153,7 +182,7 @@ def checkStatements : MetaM (List (String × Bool)) := do
   (prompts.toList.take 50).mapM fun s => 
     do return (s, ← checkTerm s)
 
-def checkThm (s : String) : MetaM String := do
+def tryParseThm (s : String) : MetaM String := do
   let env ← getEnv
   let chk := runParserCategory env `thmStat  s
   match chk with
@@ -168,9 +197,13 @@ def checkThm (s : String) : MetaM String := do
       | _ => pure s!"parsed to mysterious {stx}"
   | Except.error e  => pure s!"error: {e}"
 
+#eval tryParseThm "theorem blah (n : Nat) {m: Type} : n  = n"
+
 #eval checkThm "theorem blah (n : Nat) {m: Type} : n  = n"
 
-#eval checkThm "theorem subfield.list_sum_mem {K : Type u} [field K] (s : subfield K) {l : list K} : (∀ (x : K), x ∈ l → x ∈ s) → l.sum ∈ s"
+#eval checkThm "(n : Nat) {m: Type} : n  = n"
+
+#eval tryParseThm "theorem subfield.list_sum_mem {K : Type u} [field K] (s : subfield K) {l : list K} : (∀ (x : K), x ∈ l → x ∈ s) → l.sum ∈ s"
 
 def checkElabThm (s : String) : TermElabM String := do
   let env ← getEnv
