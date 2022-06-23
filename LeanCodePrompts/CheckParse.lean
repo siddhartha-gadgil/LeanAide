@@ -71,7 +71,8 @@ syntax "[" ident " : " term "]" : argument
 syntax "[" term "]" : argument
 
 declare_syntax_cat thmStat
-syntax "theorem" (ident)? argument*  ":" term : thmStat
+syntax "theorem" ident argument*  ":" term : thmStat
+syntax "def" ident argument*  ":" term : thmStat
 syntax argument*  ":" term : thmStat
 
 def thmsPrompt : IO (Array String) := do
@@ -119,6 +120,8 @@ def elabThm (s : String)(opens: List String := [])
   | Except.ok stx  =>
       match stx with
       | `(thmStat|theorem $_ $args:argument* : $type:term) =>
+        elabAux type args
+      | `(thmStat|def $_ $args:argument* : $type:term) =>
         elabAux type args
       | `(thmStat|$args:argument* : $type:term) =>
         elabAux type args
