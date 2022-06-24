@@ -1,0 +1,3930 @@
+[
+  {
+    "name": "List.Pairwise.below",
+    "count": 2
+  },
+  {
+    "name": "Function.RightInverse",
+    "count": 13
+  },
+  {
+    "name": "instLTFloat",
+    "count": 2
+  },
+  {
+    "name": "Nat.pos_of_ne_zero",
+    "count": 1
+  },
+  {
+    "name": "Fin.overflowingAdd",
+    "count": 1
+  },
+  {
+    "name": "usize_size_gt_zero",
+    "count": 1
+  },
+  {
+    "name": "Nat.Up",
+    "count": 2
+  },
+  {
+    "name": "BoundedRandom",
+    "count": 4
+  },
+  {
+    "name": "ReprTuple",
+    "count": 3
+  },
+  {
+    "name": "Array.toListLitAux.proof_2",
+    "count": 3
+  },
+  {
+    "name": "List.Forall₂.nil",
+    "count": 1
+  },
+  {
+    "name": "Prod.RProd",
+    "count": 2
+  },
+  {
+    "name": "Or.elim",
+    "count": 5
+  },
+  {
+    "name": "List.cons_ne_nil",
+    "count": 1
+  },
+  {
+    "name": "Nat.Linear.Expr.toPoly",
+    "count": 4
+  },
+  {
+    "name": "List.eq_nil_of_length_eq_zero",
+    "count": 1
+  },
+  {
+    "name": "List.append",
+    "count": 1
+  },
+  {
+    "name": "Ordering.noConfusionType",
+    "count": 1
+  },
+  {
+    "name": "WellFoundedRelation",
+    "count": 15
+  },
+  {
+    "name": "USize.le",
+    "count": 2
+  },
+  {
+    "name": "CoeFun",
+    "count": 2
+  },
+  {
+    "name": "NonemptyType",
+    "count": 1
+  },
+  {
+    "name": "Nat.le_or_eq_or_le_succ",
+    "count": 1
+  },
+  {
+    "name": "LT.mk",
+    "count": 356
+  },
+  {
+    "name": "Fin.isLt",
+    "count": 4
+  },
+  {
+    "name": "Classical.strongIndefiniteDescription",
+    "count": 3
+  },
+  {
+    "name": "UFNode",
+    "count": 2
+  },
+  {
+    "name": "UFModel.push",
+    "count": 1
+  },
+  {
+    "name": "of_decide_eq_true",
+    "count": 18
+  },
+  {
+    "name": "Nat.lt_of_lt_of_eq",
+    "count": 3
+  },
+  {
+    "name": "Pure.pure",
+    "count": 15
+  },
+  {
+    "name": "List.asString",
+    "count": 1
+  },
+  {
+    "name": "Int.NonNeg",
+    "count": 156
+  },
+  {
+    "name": "StateRefT'",
+    "count": 114
+  },
+  {
+    "name": "congrFun",
+    "count": 6
+  },
+  {
+    "name": "Subset.subset",
+    "count": 13
+  },
+  {
+    "name": "List.repeat'",
+    "count": 4
+  },
+  {
+    "name": "WellFounded.apply",
+    "count": 96
+  },
+  {
+    "name": "List.replicateTR.loop",
+    "count": 1
+  },
+  {
+    "name": "MonadExcept",
+    "count": 2
+  },
+  {
+    "name": "MonadState.modifyGet",
+    "count": 1
+  },
+  {
+    "name": "Function.inv_fun",
+    "count": 7
+  },
+  {
+    "name": "List.concat",
+    "count": 13
+  },
+  {
+    "name": "Subtype.prop",
+    "count": 4
+  },
+  {
+    "name": "AddSemigroup",
+    "count": 8
+  },
+  {
+    "name": "List.equiv",
+    "count": 3
+  },
+  {
+    "name": "Subtype",
+    "count": 63
+  },
+  {
+    "name": "SeqLeft",
+    "count": 2
+  },
+  {
+    "name": "Classical.choose",
+    "count": 23
+  },
+  {
+    "name": "Tactic.Ring.Cache",
+    "count": 12
+  },
+  {
+    "name": "ToString",
+    "count": 36
+  },
+  {
+    "name": "Nat.Linear.Poly.fuse",
+    "count": 3
+  },
+  {
+    "name": "System.FilePath",
+    "count": 18
+  },
+  {
+    "name": "Sat.Fmla.reify",
+    "count": 3
+  },
+  {
+    "name": "AddMonoid",
+    "count": 4
+  },
+  {
+    "name": "Nat.Linear.Expr.num",
+    "count": 3
+  },
+  {
+    "name": "USize.modn",
+    "count": 1
+  },
+  {
+    "name": "Array.toListLitAux.proof_1",
+    "count": 3
+  },
+  {
+    "name": "Mul",
+    "count": 15
+  },
+  {
+    "name": "floatSpec",
+    "count": 5
+  },
+  {
+    "name": "Fin.val",
+    "count": 62
+  },
+  {
+    "name": "Function.bicompl",
+    "count": 1
+  },
+  {
+    "name": "Nat.lt_add_right",
+    "count": 1
+  },
+  {
+    "name": "Nat.repr",
+    "count": 1
+  },
+  {
+    "name": "Function.surj_inv",
+    "count": 4
+  },
+  {
+    "name": "Tactic.NormCast.Label.elim",
+    "count": 1
+  },
+  {
+    "name": "Setoid.r",
+    "count": 8
+  },
+  {
+    "name": "List.get",
+    "count": 50
+  },
+  {
+    "name": "List.sublist",
+    "count": 3
+  },
+  {
+    "name": "List.get_append_right_aux",
+    "count": 1
+  },
+  {
+    "name": "List.leftpad",
+    "count": 3
+  },
+  {
+    "name": "ForInStep",
+    "count": 3
+  },
+  {
+    "name": "SubNegMonoid",
+    "count": 2
+  },
+  {
+    "name": "StdGen",
+    "count": 7
+  },
+  {
+    "name": "Prod.fst",
+    "count": 29
+  },
+  {
+    "name": "UFModel.parent",
+    "count": 16
+  },
+  {
+    "name": "Fin.elim0",
+    "count": 1
+  },
+  {
+    "name": "Nat.one_pos",
+    "count": 1
+  },
+  {
+    "name": "Nat.le.refl",
+    "count": 144
+  },
+  {
+    "name": "Semiring.npow",
+    "count": 2
+  },
+  {
+    "name": "SeqLeft.seqLeft",
+    "count": 3
+  },
+  {
+    "name": "WellFoundedRelation.wf",
+    "count": 70
+  },
+  {
+    "name": "Int.instLTInt",
+    "count": 82
+  },
+  {
+    "name": "Tactic.NormCast.CoeFnInfo",
+    "count": 6
+  },
+  {
+    "name": "UInt32.val",
+    "count": 19
+  },
+  {
+    "name": "Bool.false",
+    "count": 92
+  },
+  {
+    "name": "Acc",
+    "count": 19
+  },
+  {
+    "name": "Dvd.mk",
+    "count": 39
+  },
+  {
+    "name": "Nat.Linear.PolyCnstr.eq",
+    "count": 7
+  },
+  {
+    "name": "True",
+    "count": 1146
+  },
+  {
+    "name": "ReprAtom",
+    "count": 12
+  },
+  {
+    "name": "Ord",
+    "count": 12
+  },
+  {
+    "name": "Ring",
+    "count": 7
+  },
+  {
+    "name": "Nat.le_of_succ_le",
+    "count": 7
+  },
+  {
+    "name": "Nat.zero_lt_succ",
+    "count": 82
+  },
+  {
+    "name": "Iff.mp",
+    "count": 9
+  },
+  {
+    "name": "ne_eq",
+    "count": 2
+  },
+  {
+    "name": "instLEFloat",
+    "count": 2
+  },
+  {
+    "name": "Hashable",
+    "count": 16
+  },
+  {
+    "name": "List.reverseAux",
+    "count": 21
+  },
+  {
+    "name": "List.Perm.trans",
+    "count": 1
+  },
+  {
+    "name": "Nat.bitwise",
+    "count": 3
+  },
+  {
+    "name": "Nat.succ_sub_succ",
+    "count": 2
+  },
+  {
+    "name": "Functor.mapConst",
+    "count": 1
+  },
+  {
+    "name": "Function.comp",
+    "count": 50
+  },
+  {
+    "name": "List.Mem.below",
+    "count": 2
+  },
+  {
+    "name": "List.remove",
+    "count": 3
+  },
+  {
+    "name": "UnionFind.rank",
+    "count": 5
+  },
+  {
+    "name": "Equiv.invFun",
+    "count": 6
+  },
+  {
+    "name": "MonadState.get",
+    "count": 1
+  },
+  {
+    "name": "Function.HasUncurry",
+    "count": 3
+  },
+  {
+    "name": "Nat.Linear.ExprCnstr.toNormPoly",
+    "count": 2
+  },
+  {
+    "name": "UInt64.mk",
+    "count": 23
+  },
+  {
+    "name": "Nat.sub_succ",
+    "count": 2
+  },
+  {
+    "name": "Subtype.mk",
+    "count": 48
+  },
+  {
+    "name": "HXor",
+    "count": 2
+  },
+  {
+    "name": "Tactic.NormCast.Label.toCtorIdx",
+    "count": 2
+  },
+  {
+    "name": "Nat.pos_iff_ne_zero",
+    "count": 1
+  },
+  {
+    "name": "Tactic.NormCast.CoeFnType.coe",
+    "count": 1
+  },
+  {
+    "name": "EmptyCollection.emptyCollection",
+    "count": 1
+  },
+  {
+    "name": "Equiv.symm",
+    "count": 6
+  },
+  {
+    "name": "Fin.checkedAdd",
+    "count": 1
+  },
+  {
+    "name": "Decidable.em",
+    "count": 5
+  },
+  {
+    "name": "List.getLast.proof_2",
+    "count": 4
+  },
+  {
+    "name": "Nat.lcm",
+    "count": 7
+  },
+  {
+    "name": "Int.negOfNat",
+    "count": 62
+  },
+  {
+    "name": "Tactic.Ring.RingM",
+    "count": 11
+  },
+  {
+    "name": "Eq.mpr",
+    "count": 9
+  },
+  {
+    "name": "Classical.choice",
+    "count": 32
+  },
+  {
+    "name": "HMod.mk",
+    "count": 1
+  },
+  {
+    "name": "Exists.choose",
+    "count": 1
+  },
+  {
+    "name": "Decidable.isTrue",
+    "count": 6
+  },
+  {
+    "name": "List.elem",
+    "count": 2
+  },
+  {
+    "name": "decide_eq_true",
+    "count": 1
+  },
+  {
+    "name": "Sub",
+    "count": 13
+  },
+  {
+    "name": "instBEqNat",
+    "count": 54
+  },
+  {
+    "name": "lt_of_lt_of_le",
+    "count": 3
+  },
+  {
+    "name": "CoeTail",
+    "count": 7
+  },
+  {
+    "name": "le_of_lt",
+    "count": 4
+  },
+  {
+    "name": "Nat.sub_succ_lt_self",
+    "count": 2
+  },
+  {
+    "name": "NonUnitalNonAssocSemiring.natCast",
+    "count": 4
+  },
+  {
+    "name": "Function.injective",
+    "count": 40
+  },
+  {
+    "name": "UnionFind.rankMaxAux",
+    "count": 4
+  },
+  {
+    "name": "Equiv.right_inv",
+    "count": 6
+  },
+  {
+    "name": "StateM",
+    "count": 11
+  },
+  {
+    "name": "Nat.le_of_lt_succ",
+    "count": 4
+  },
+  {
+    "name": "List.Perm.nil",
+    "count": 1
+  },
+  {
+    "name": "Nat.zero_lt_one",
+    "count": 1
+  },
+  {
+    "name": "Nat.iterate",
+    "count": 1
+  },
+  {
+    "name": "MonadLift",
+    "count": 9
+  },
+  {
+    "name": "Prod.Lex",
+    "count": 12
+  },
+  {
+    "name": "Mathlib.Tactic.Lint.NamedLinter",
+    "count": 5
+  },
+  {
+    "name": "Nat",
+    "count": 980
+  },
+  {
+    "name": "UInt16.mk",
+    "count": 14
+  },
+  {
+    "name": "PSigma.fst",
+    "count": 2
+  },
+  {
+    "name": "One",
+    "count": 6
+  },
+  {
+    "name": "NonAssocSemiring",
+    "count": 2
+  },
+  {
+    "name": "Nat.find",
+    "count": 2
+  },
+  {
+    "name": "UInt32.size",
+    "count": 12
+  },
+  {
+    "name": "List.getLast.proof_1",
+    "count": 4
+  },
+  {
+    "name": "Subtype.map.proof_1",
+    "count": 4
+  },
+  {
+    "name": "OrElse",
+    "count": 6
+  },
+  {
+    "name": "Function.is_partial_inv",
+    "count": 1
+  },
+  {
+    "name": "congrArg",
+    "count": 104
+  },
+  {
+    "name": "And.right",
+    "count": 1
+  },
+  {
+    "name": "RandomGen",
+    "count": 2
+  },
+  {
+    "name": "Nat.lt_of_lt_of_le",
+    "count": 94
+  },
+  {
+    "name": "Nat.le_succ",
+    "count": 142
+  },
+  {
+    "name": "List.length",
+    "count": 137
+  },
+  {
+    "name": "nsmul_rec",
+    "count": 2
+  },
+  {
+    "name": "UFNode.mk",
+    "count": 2
+  },
+  {
+    "name": "UnionFind.size",
+    "count": 11
+  },
+  {
+    "name": "Group",
+    "count": 2
+  },
+  {
+    "name": "Nat.Linear.Poly.denote_le",
+    "count": 11
+  },
+  {
+    "name": "funext",
+    "count": 2
+  },
+  {
+    "name": "Nat.le_of_lt",
+    "count": 4
+  },
+  {
+    "name": "implies_congr",
+    "count": 2
+  },
+  {
+    "name": "Tactic.DeclCache",
+    "count": 6
+  },
+  {
+    "name": "AddGroup",
+    "count": 3
+  },
+  {
+    "name": "UnionFind",
+    "count": 6
+  },
+  {
+    "name": "Nat.lt_trans",
+    "count": 14
+  },
+  {
+    "name": "LE",
+    "count": 13
+  },
+  {
+    "name": "List.Chain.cons",
+    "count": 1
+  },
+  {
+    "name": "Acc.inv",
+    "count": 2
+  },
+  {
+    "name": "ExceptCpsT.lift",
+    "count": 1
+  },
+  {
+    "name": "Nat.pos_pow_of_pos",
+    "count": 1
+  },
+  {
+    "name": "Nat.Linear.PolyCnstr.mul",
+    "count": 1
+  },
+  {
+    "name": "List.card",
+    "count": 12
+  },
+  {
+    "name": "Subarray.as",
+    "count": 1
+  },
+  {
+    "name": "Squash",
+    "count": 3
+  },
+  {
+    "name": "Applicative",
+    "count": 3
+  },
+  {
+    "name": "System.Platform.getNumBits",
+    "count": 13
+  },
+  {
+    "name": "Tactic.Cache",
+    "count": 9
+  },
+  {
+    "name": "WellFounded.fix'",
+    "count": 2
+  },
+  {
+    "name": "Acc.inv.proof_1",
+    "count": 2
+  },
+  {
+    "name": "instLTUInt64",
+    "count": 3
+  },
+  {
+    "name": "CommRing",
+    "count": 8
+  },
+  {
+    "name": "Array.isEqvAux.proof_2",
+    "count": 2
+  },
+  {
+    "name": "PProd",
+    "count": 1
+  },
+  {
+    "name": "lt_of_le_of_lt",
+    "count": 1
+  },
+  {
+    "name": "Tactic.NormCast.CoeFnType.ofNat",
+    "count": 1
+  },
+  {
+    "name": "List.modifyNth",
+    "count": 4
+  },
+  {
+    "name": "FloatSpec",
+    "count": 2
+  },
+  {
+    "name": "Fin.checkedSub",
+    "count": 1
+  },
+  {
+    "name": "instHModUSizeNat",
+    "count": 1
+  },
+  {
+    "name": "List.removeNth",
+    "count": 2
+  },
+  {
+    "name": "AddCommSemigroup",
+    "count": 8
+  },
+  {
+    "name": "Sat.Clause",
+    "count": 7
+  },
+  {
+    "name": "CommGroup",
+    "count": 1
+  },
+  {
+    "name": "Nat.Linear.monomialToExpr",
+    "count": 2
+  },
+  {
+    "name": "Nat.div.inductionOn",
+    "count": 91
+  },
+  {
+    "name": "Ordering.toCtorIdx",
+    "count": 1
+  },
+  {
+    "name": "Not",
+    "count": 250
+  },
+  {
+    "name": "HOrElse",
+    "count": 2
+  },
+  {
+    "name": "UFModel.setParent.proof_1",
+    "count": 1
+  },
+  {
+    "name": "List.erasep",
+    "count": 13
+  },
+  {
+    "name": "PSigma.Lex",
+    "count": 7
+  },
+  {
+    "name": "Option.lt",
+    "count": 1
+  },
+  {
+    "name": "Nat.succ_sub_succ_eq_sub",
+    "count": 94
+  },
+  {
+    "name": "Equiv.mk",
+    "count": 6
+  },
+  {
+    "name": "USize.val",
+    "count": 18
+  },
+  {
+    "name": "and",
+    "count": 13
+  },
+  {
+    "name": "Function.sometimes",
+    "count": 2
+  },
+  {
+    "name": "Nat.pred",
+    "count": 165
+  },
+  {
+    "name": "dite",
+    "count": 161
+  },
+  {
+    "name": "List.Pairwise",
+    "count": 5
+  },
+  {
+    "name": "Id",
+    "count": 21
+  },
+  {
+    "name": "List.isPrefix",
+    "count": 1
+  },
+  {
+    "name": "List.Pairwise.nil",
+    "count": 1
+  },
+  {
+    "name": "Nat.Linear.Expr.denote",
+    "count": 14
+  },
+  {
+    "name": "Nat.lt_of_le_of_lt",
+    "count": 1
+  },
+  {
+    "name": "Tactic.NormCast.CoeFnType.noConfusionType",
+    "count": 1
+  },
+  {
+    "name": "left_commutative",
+    "count": 2
+  },
+  {
+    "name": "List.length_set",
+    "count": 1
+  },
+  {
+    "name": "Mathlib.Tactic.Sat.Clause",
+    "count": 2
+  },
+  {
+    "name": "Tactic.NormCast.Label.squash",
+    "count": 1
+  },
+  {
+    "name": "Array.isEqvAux.proof_1",
+    "count": 2
+  },
+  {
+    "name": "OfScientific",
+    "count": 2
+  },
+  {
+    "name": "ToStream",
+    "count": 6
+  },
+  {
+    "name": "Array.mkEmpty",
+    "count": 6
+  },
+  {
+    "name": "DivInvMonoid.gpow",
+    "count": 3
+  },
+  {
+    "name": "Nat.ble",
+    "count": 16
+  },
+  {
+    "name": "PSigma.lexNdep",
+    "count": 2
+  },
+  {
+    "name": "le_max_left",
+    "count": 4
+  },
+  {
+    "name": "UInt8.mk",
+    "count": 14
+  },
+  {
+    "name": "AddGroupWithOne",
+    "count": 3
+  },
+  {
+    "name": "instLTUInt8",
+    "count": 2
+  },
+  {
+    "name": "PartialOrder",
+    "count": 2
+  },
+  {
+    "name": "And",
+    "count": 254
+  },
+  {
+    "name": "Nat.le_add_right",
+    "count": 2
+  },
+  {
+    "name": "Neg",
+    "count": 12
+  },
+  {
+    "name": "Function.has_RightInverse",
+    "count": 2
+  },
+  {
+    "name": "UInt64.ofNat",
+    "count": 4
+  },
+  {
+    "name": "UFModel.Agrees",
+    "count": 15
+  },
+  {
+    "name": "eq_true_of_decide",
+    "count": 4
+  },
+  {
+    "name": "Nat.Linear.PolyCnstr.mk",
+    "count": 5
+  },
+  {
+    "name": "IsAddRightCancel",
+    "count": 2
+  },
+  {
+    "name": "Subtype.property",
+    "count": 4
+  },
+  {
+    "name": "List.nil_append",
+    "count": 2
+  },
+  {
+    "name": "List.sublist.cons2",
+    "count": 1
+  },
+  {
+    "name": "Seq",
+    "count": 2
+  },
+  {
+    "name": "UFNode.parent",
+    "count": 16
+  },
+  {
+    "name": "instLTUSize",
+    "count": 2
+  },
+  {
+    "name": "Tactic.NormCast.CoeFnType.coeFn",
+    "count": 1
+  },
+  {
+    "name": "Function.involutive",
+    "count": 2
+  },
+  {
+    "name": "Exists",
+    "count": 187
+  },
+  {
+    "name": "Quot",
+    "count": 7
+  },
+  {
+    "name": "BEq.mk",
+    "count": 56
+  },
+  {
+    "name": "Function.has_LeftInverse",
+    "count": 2
+  },
+  {
+    "name": "CommSemigroup",
+    "count": 3
+  },
+  {
+    "name": "Prod",
+    "count": 167
+  },
+  {
+    "name": "HSub.hSub",
+    "count": 386
+  },
+  {
+    "name": "CommMonoid",
+    "count": 3
+  },
+  {
+    "name": "zero_lt_of_lt",
+    "count": 1
+  },
+  {
+    "name": "Nat.mod.inductionOn",
+    "count": 91
+  },
+  {
+    "name": "Classical.indefiniteDescription.proof_1",
+    "count": 24
+  },
+  {
+    "name": "Equivalence.refl",
+    "count": 1
+  },
+  {
+    "name": "inferInstance",
+    "count": 5
+  },
+  {
+    "name": "UnionFind.rankMaxAux.proof_2",
+    "count": 4
+  },
+  {
+    "name": "PProd.fst",
+    "count": 378
+  },
+  {
+    "name": "Nat.Linear.ExprCnstr.eq",
+    "count": 6
+  },
+  {
+    "name": "MProd",
+    "count": 1
+  },
+  {
+    "name": "UInt32.instNegUInt32",
+    "count": 3
+  },
+  {
+    "name": "Option.choice",
+    "count": 2
+  },
+  {
+    "name": "UInt64.le",
+    "count": 2
+  },
+  {
+    "name": "Thunk.get",
+    "count": 1
+  },
+  {
+    "name": "Int.instHPowIntNat",
+    "count": 1
+  },
+  {
+    "name": "Nat.Linear.Var.denote",
+    "count": 43
+  },
+  {
+    "name": "bne",
+    "count": 1
+  },
+  {
+    "name": "Sat.Clause.reify",
+    "count": 4
+  },
+  {
+    "name": "List.modifyHead",
+    "count": 4
+  },
+  {
+    "name": "NonScalar",
+    "count": 2
+  },
+  {
+    "name": "StateCpsT.runK",
+    "count": 4
+  },
+  {
+    "name": "Option.isNone",
+    "count": 2
+  },
+  {
+    "name": "Array.toArrayLit.proof_1",
+    "count": 2
+  },
+  {
+    "name": "Nat.lt_irrefl",
+    "count": 92
+  },
+  {
+    "name": "Thunk.mk",
+    "count": 1
+  },
+  {
+    "name": "UInt16.ofNat",
+    "count": 1
+  },
+  {
+    "name": "trivial",
+    "count": 11
+  },
+  {
+    "name": "StateCpsT",
+    "count": 6
+  },
+  {
+    "name": "not",
+    "count": 1
+  },
+  {
+    "name": "Bind.bind",
+    "count": 21
+  },
+  {
+    "name": "Tactic.NormCast.Label.move",
+    "count": 1
+  },
+  {
+    "name": "instOrdUInt64",
+    "count": 1
+  },
+  {
+    "name": "Sat.Clause.nil",
+    "count": 2
+  },
+  {
+    "name": "List.filter",
+    "count": 1
+  },
+  {
+    "name": "DoResultPRBC",
+    "count": 4
+  },
+  {
+    "name": "Nat.Linear.Expr.var",
+    "count": 2
+  },
+  {
+    "name": "Ordering.gt",
+    "count": 1
+  },
+  {
+    "name": "Float.le",
+    "count": 2
+  },
+  {
+    "name": "USize.size",
+    "count": 12
+  },
+  {
+    "name": "FloatSpec.lt",
+    "count": 3
+  },
+  {
+    "name": "True.intro",
+    "count": 11
+  },
+  {
+    "name": "Monad.mk",
+    "count": 2
+  },
+  {
+    "name": "AddMonoid.nsmul",
+    "count": 12
+  },
+  {
+    "name": "MonadFinally",
+    "count": 7
+  },
+  {
+    "name": "Eq.mpr_prop",
+    "count": 4
+  },
+  {
+    "name": "Nat.Linear.PolyCnstr",
+    "count": 14
+  },
+  {
+    "name": "DoResultSBC",
+    "count": 3
+  },
+  {
+    "name": "Acc.intro",
+    "count": 1
+  },
+  {
+    "name": "UInt8",
+    "count": 88
+  },
+  {
+    "name": "Array.getLit",
+    "count": 3
+  },
+  {
+    "name": "Nat.lt.base",
+    "count": 4
+  },
+  {
+    "name": "ULift",
+    "count": 13
+  },
+  {
+    "name": "CoeHead",
+    "count": 2
+  },
+  {
+    "name": "Subarray.start",
+    "count": 3
+  },
+  {
+    "name": "if_neg",
+    "count": 5
+  },
+  {
+    "name": "UnionFind.rankMax",
+    "count": 4
+  },
+  {
+    "name": "Ring.intCast",
+    "count": 2
+  },
+  {
+    "name": "Equiv.toFun",
+    "count": 6
+  },
+  {
+    "name": "ByteSliceT",
+    "count": 2
+  },
+  {
+    "name": "UnionFind.rankMaxAux.proof_1",
+    "count": 4
+  },
+  {
+    "name": "Union",
+    "count": 3
+  },
+  {
+    "name": "UInt16.le",
+    "count": 2
+  },
+  {
+    "name": "Or.resolve_left",
+    "count": 1
+  },
+  {
+    "name": "List.sublist.cons",
+    "count": 1
+  },
+  {
+    "name": "Nat.Linear.Poly.denote",
+    "count": 34
+  },
+  {
+    "name": "Neg.neg",
+    "count": 86
+  },
+  {
+    "name": "Functor.map",
+    "count": 26
+  },
+  {
+    "name": "List.lt.below",
+    "count": 3
+  },
+  {
+    "name": "FloatArray.size",
+    "count": 3
+  },
+  {
+    "name": "UInt64.instNegUInt64",
+    "count": 3
+  },
+  {
+    "name": "le_refl",
+    "count": 4
+  },
+  {
+    "name": "OrOp",
+    "count": 8
+  },
+  {
+    "name": "Nat.not_succ_le_self",
+    "count": 92
+  },
+  {
+    "name": "lt_iff_le_not_le",
+    "count": 8
+  },
+  {
+    "name": "HMul.hMul",
+    "count": 257
+  },
+  {
+    "name": "Array.size",
+    "count": 82
+  },
+  {
+    "name": "Set",
+    "count": 20
+  },
+  {
+    "name": "rfl.proof_1",
+    "count": 170
+  },
+  {
+    "name": "Mathlib.Tactic.Sat.LClause",
+    "count": 1
+  },
+  {
+    "name": "Nat.zero_eq",
+    "count": 2
+  },
+  {
+    "name": "List.cons",
+    "count": 151
+  },
+  {
+    "name": "HAndThen",
+    "count": 2
+  },
+  {
+    "name": "UInt16",
+    "count": 74
+  },
+  {
+    "name": "Int.toNat",
+    "count": 1
+  },
+  {
+    "name": "ulift",
+    "count": 1
+  },
+  {
+    "name": "Int.lt",
+    "count": 82
+  },
+  {
+    "name": "Fin.ofNat.proof_1",
+    "count": 9
+  },
+  {
+    "name": "Array.isEqvAux.proof_3",
+    "count": 2
+  },
+  {
+    "name": "List.lengthTR",
+    "count": 1
+  },
+  {
+    "name": "List.Chain.below",
+    "count": 2
+  },
+  {
+    "name": "Nat.Linear.Poly.toExpr.go",
+    "count": 1
+  },
+  {
+    "name": "UInt64",
+    "count": 88
+  },
+  {
+    "name": "List.replicateTR",
+    "count": 1
+  },
+  {
+    "name": "Nat.Linear.Poly.combineAux",
+    "count": 3
+  },
+  {
+    "name": "BEq.beq",
+    "count": 71
+  },
+  {
+    "name": "Set.instFunctorSet",
+    "count": 2
+  },
+  {
+    "name": "UInt32.toNat",
+    "count": 1
+  },
+  {
+    "name": "Nat.sub",
+    "count": 9
+  },
+  {
+    "name": "Div",
+    "count": 12
+  },
+  {
+    "name": "List.erase",
+    "count": 10
+  },
+  {
+    "name": "Nat.le_refl",
+    "count": 13
+  },
+  {
+    "name": "MonadWithReader",
+    "count": 2
+  },
+  {
+    "name": "Function.bijective",
+    "count": 9
+  },
+  {
+    "name": "AddCommGroup",
+    "count": 2
+  },
+  {
+    "name": "Array.isEqv",
+    "count": 1
+  },
+  {
+    "name": "IsMulLeftCancel",
+    "count": 1
+  },
+  {
+    "name": "dite_congr",
+    "count": 5
+  },
+  {
+    "name": "UFModel.rank",
+    "count": 16
+  },
+  {
+    "name": "Preorder",
+    "count": 2
+  },
+  {
+    "name": "Nat.Linear.Poly.norm",
+    "count": 2
+  },
+  {
+    "name": "And.left",
+    "count": 4
+  },
+  {
+    "name": "ForIn",
+    "count": 8
+  },
+  {
+    "name": "Except",
+    "count": 51
+  },
+  {
+    "name": "Option.bind",
+    "count": 12
+  },
+  {
+    "name": "Ring.gsmul",
+    "count": 18
+  },
+  {
+    "name": "LinearOrder.decidable_lt",
+    "count": 4
+  },
+  {
+    "name": "IsMulRightCancel",
+    "count": 1
+  },
+  {
+    "name": "Subtype.restrict",
+    "count": 3
+  },
+  {
+    "name": "Prod.mk",
+    "count": 57
+  },
+  {
+    "name": "Sat.Fmla.subsumes",
+    "count": 4
+  },
+  {
+    "name": "LT",
+    "count": 15
+  },
+  {
+    "name": "Or.inl",
+    "count": 21
+  },
+  {
+    "name": "List.mapTRAux",
+    "count": 2
+  },
+  {
+    "name": "UInt8.ofNat",
+    "count": 1
+  },
+  {
+    "name": "Or.inr",
+    "count": 18
+  },
+  {
+    "name": "Nat.Linear.Poly.denote_eq",
+    "count": 11
+  },
+  {
+    "name": "List.modifyNthTail",
+    "count": 7
+  },
+  {
+    "name": "eq_true",
+    "count": 6
+  },
+  {
+    "name": "Quotient.mk",
+    "count": 3
+  },
+  {
+    "name": "Int.sign",
+    "count": 7
+  },
+  {
+    "name": "Sat.Literal",
+    "count": 17
+  },
+  {
+    "name": "Sat.Literal.pos",
+    "count": 1
+  },
+  {
+    "name": "CoeTC",
+    "count": 3
+  },
+  {
+    "name": "PSigma.RevLex",
+    "count": 9
+  },
+  {
+    "name": "Array.pop",
+    "count": 1
+  },
+  {
+    "name": "Nat.Linear.PolyCnstr.lhs",
+    "count": 7
+  },
+  {
+    "name": "WellFounded.fixF",
+    "count": 98
+  },
+  {
+    "name": "Quot.mk",
+    "count": 9
+  },
+  {
+    "name": "BinaryHeap",
+    "count": 13
+  },
+  {
+    "name": "List.union",
+    "count": 2
+  },
+  {
+    "name": "Nat.succ_pos",
+    "count": 1
+  },
+  {
+    "name": "Sat.Fmla.proof",
+    "count": 1
+  },
+  {
+    "name": "List.lengthTRAux",
+    "count": 2
+  },
+  {
+    "name": "NonUnitalNonAssocSemiring",
+    "count": 3
+  },
+  {
+    "name": "LinearOrder.le_total",
+    "count": 4
+  },
+  {
+    "name": "instLTNat",
+    "count": 262
+  },
+  {
+    "name": "Ord.compare",
+    "count": 1
+  },
+  {
+    "name": "setOf",
+    "count": 9
+  },
+  {
+    "name": "noConfusionTypeEnum",
+    "count": 5
+  },
+  {
+    "name": "Nat.Linear.Poly.cancelAux",
+    "count": 9
+  },
+  {
+    "name": "Mathlib.Tactic.Lint.LintVerbosity.ofNat",
+    "count": 1
+  },
+  {
+    "name": "Nat.lt_succ_of_le",
+    "count": 2
+  },
+  {
+    "name": "Functor",
+    "count": 4
+  },
+  {
+    "name": "or",
+    "count": 1
+  },
+  {
+    "name": "Function.uncurry",
+    "count": 3
+  },
+  {
+    "name": "absurd",
+    "count": 119
+  },
+  {
+    "name": "UInt8.le",
+    "count": 2
+  },
+  {
+    "name": "Trans",
+    "count": 13
+  },
+  {
+    "name": "Classical.epsilon",
+    "count": 3
+  },
+  {
+    "name": "Nat.instDvdNat",
+    "count": 39
+  },
+  {
+    "name": "lt_of_le_not_le",
+    "count": 8
+  },
+  {
+    "name": "Nat.zero_add",
+    "count": 4
+  },
+  {
+    "name": "List.Chain",
+    "count": 2
+  },
+  {
+    "name": "List.redLength",
+    "count": 5
+  },
+  {
+    "name": "RandG",
+    "count": 9
+  },
+  {
+    "name": "Nat.Linear.Poly.insertSorted",
+    "count": 2
+  },
+  {
+    "name": "PUnit",
+    "count": 549
+  },
+  {
+    "name": "MulZeroClass",
+    "count": 4
+  },
+  {
+    "name": "le_total",
+    "count": 4
+  },
+  {
+    "name": "ShiftRight",
+    "count": 8
+  },
+  {
+    "name": "SubNegMonoid.gsmul",
+    "count": 3
+  },
+  {
+    "name": "instHashableString",
+    "count": 2
+  },
+  {
+    "name": "EST",
+    "count": 6
+  },
+  {
+    "name": "Subset",
+    "count": 3
+  },
+  {
+    "name": "Tactic.NormCast.CoeFnType.toCtorIdx",
+    "count": 2
+  },
+  {
+    "name": "Nat.sub_zero",
+    "count": 2
+  },
+  {
+    "name": "Setoid.refl",
+    "count": 1
+  },
+  {
+    "name": "Add",
+    "count": 12
+  },
+  {
+    "name": "FloatArray",
+    "count": 13
+  },
+  {
+    "name": "Neg.mk",
+    "count": 69
+  },
+  {
+    "name": "Except.map",
+    "count": 1
+  },
+  {
+    "name": "BinaryHeap.size",
+    "count": 3
+  },
+  {
+    "name": "EStateM.Backtrackable",
+    "count": 2
+  },
+  {
+    "name": "SizeOf",
+    "count": 5
+  },
+  {
+    "name": "le_max_right",
+    "count": 4
+  },
+  {
+    "name": "Nat.zero_lt_sub_of_lt",
+    "count": 2
+  },
+  {
+    "name": "id",
+    "count": 28
+  },
+  {
+    "name": "List.iotaTR",
+    "count": 1
+  },
+  {
+    "name": "USize",
+    "count": 78
+  },
+  {
+    "name": "Acc.below",
+    "count": 1
+  },
+  {
+    "name": "Ordering",
+    "count": 9
+  },
+  {
+    "name": "Tactic.Ring.HornerExpr",
+    "count": 13
+  },
+  {
+    "name": "Mathlib.Tactic.Lint.LintVerbosity.noConfusionType",
+    "count": 1
+  },
+  {
+    "name": "List.toArray",
+    "count": 5
+  },
+  {
+    "name": "Array.get?",
+    "count": 7
+  },
+  {
+    "name": "ByteArray.size",
+    "count": 3
+  },
+  {
+    "name": "Decidable.decide",
+    "count": 27
+  },
+  {
+    "name": "EStateM.Result",
+    "count": 164
+  },
+  {
+    "name": "Nat.sub_lt_left_of_lt_add",
+    "count": 1
+  },
+  {
+    "name": "Nat.lt_eq",
+    "count": 2
+  },
+  {
+    "name": "plift",
+    "count": 1
+  },
+  {
+    "name": "Nat.pow_le_pow_of_le_right",
+    "count": 1
+  },
+  {
+    "name": "PSigma.mk",
+    "count": 104
+  },
+  {
+    "name": "MonadControlT",
+    "count": 3
+  },
+  {
+    "name": "Quot.sound",
+    "count": 3
+  },
+  {
+    "name": "Nat.le_total",
+    "count": 4
+  },
+  {
+    "name": "AddMonoidWithOne",
+    "count": 4
+  },
+  {
+    "name": "STWorld",
+    "count": 3
+  },
+  {
+    "name": "PSum",
+    "count": 3
+  },
+  {
+    "name": "Inhabited",
+    "count": 64
+  },
+  {
+    "name": "Nat.lt",
+    "count": 265
+  },
+  {
+    "name": "GroupWithZero",
+    "count": 1
+  },
+  {
+    "name": "List.map",
+    "count": 14
+  },
+  {
+    "name": "Eq.trans",
+    "count": 11
+  },
+  {
+    "name": "Option.getD",
+    "count": 2
+  },
+  {
+    "name": "PSigma.SkipLeft",
+    "count": 1
+  },
+  {
+    "name": "Set.image",
+    "count": 2
+  },
+  {
+    "name": "instDecidableTrue",
+    "count": 5
+  },
+  {
+    "name": "Setoid",
+    "count": 3
+  },
+  {
+    "name": "Option.lift_or_get",
+    "count": 1
+  },
+  {
+    "name": "Task",
+    "count": 15
+  },
+  {
+    "name": "Option.get",
+    "count": 2
+  },
+  {
+    "name": "Nat.Linear.Expr.toNormPoly",
+    "count": 2
+  },
+  {
+    "name": "Array.isEqvAux",
+    "count": 2
+  },
+  {
+    "name": "HShiftRight",
+    "count": 2
+  },
+  {
+    "name": "Decidable",
+    "count": 123
+  },
+  {
+    "name": "Substring",
+    "count": 21
+  },
+  {
+    "name": "instLEUInt8",
+    "count": 2
+  },
+  {
+    "name": "Mod",
+    "count": 9
+  },
+  {
+    "name": "Quotient.lift",
+    "count": 1
+  },
+  {
+    "name": "UInt64.ofNatCore",
+    "count": 8
+  },
+  {
+    "name": "UInt64.val",
+    "count": 18
+  },
+  {
+    "name": "GT.gt",
+    "count": 16
+  },
+  {
+    "name": "Subtype.val",
+    "count": 58
+  },
+  {
+    "name": "List.reverse",
+    "count": 17
+  },
+  {
+    "name": "EStateM",
+    "count": 158
+  },
+  {
+    "name": "Quot.lift",
+    "count": 2
+  },
+  {
+    "name": "Subarray.stop",
+    "count": 4
+  },
+  {
+    "name": "Or",
+    "count": 161
+  },
+  {
+    "name": "List.Mem.tail",
+    "count": 1
+  },
+  {
+    "name": "Bool",
+    "count": 232
+  },
+  {
+    "name": "Nat.Linear.instBEqPolyCnstr",
+    "count": 2
+  },
+  {
+    "name": "List.sublist.below",
+    "count": 3
+  },
+  {
+    "name": "Ne",
+    "count": 1
+  },
+  {
+    "name": "DoResultBC",
+    "count": 2
+  },
+  {
+    "name": "Fin",
+    "count": 92
+  },
+  {
+    "name": "ne_true_of_eq_false",
+    "count": 18
+  },
+  {
+    "name": "Array.set",
+    "count": 4
+  },
+  {
+    "name": "Int.instLEInt",
+    "count": 153
+  },
+  {
+    "name": "Subtype.map",
+    "count": 4
+  },
+  {
+    "name": "Float.val",
+    "count": 2
+  },
+  {
+    "name": "Int.neg",
+    "count": 54
+  },
+  {
+    "name": "ExceptT",
+    "count": 18
+  },
+  {
+    "name": "Pow",
+    "count": 3
+  },
+  {
+    "name": "USize.toNat",
+    "count": 2
+  },
+  {
+    "name": "ne_false_of_eq_true",
+    "count": 1
+  },
+  {
+    "name": "Nat.gcd.proof_1",
+    "count": 70
+  },
+  {
+    "name": "Array.data",
+    "count": 101
+  },
+  {
+    "name": "Ordering.lt",
+    "count": 1
+  },
+  {
+    "name": "USize.lt",
+    "count": 2
+  },
+  {
+    "name": "HEq.refl",
+    "count": 152
+  },
+  {
+    "name": "List.inj_on",
+    "count": 1
+  },
+  {
+    "name": "MonadFunctorT",
+    "count": 3
+  },
+  {
+    "name": "HasEquiv.Equiv",
+    "count": 10
+  },
+  {
+    "name": "Eq.refl",
+    "count": 177
+  },
+  {
+    "name": "Bool.true",
+    "count": 96
+  },
+  {
+    "name": "Mathlib.Util.LibraryNote.LibraryNoteEntry",
+    "count": 1
+  },
+  {
+    "name": "le_trans",
+    "count": 8
+  },
+  {
+    "name": "UInt16.val",
+    "count": 17
+  },
+  {
+    "name": "List.length_cons",
+    "count": 4
+  },
+  {
+    "name": "Prod.snd",
+    "count": 29
+  },
+  {
+    "name": "List.join",
+    "count": 6
+  },
+  {
+    "name": "Nat.not_lt_zero",
+    "count": 5
+  },
+  {
+    "name": "Sum",
+    "count": 17
+  },
+  {
+    "name": "List.Forall₂.cons",
+    "count": 1
+  },
+  {
+    "name": "le_not_le_of_lt",
+    "count": 8
+  },
+  {
+    "name": "Semigroup",
+    "count": 9
+  },
+  {
+    "name": "congr",
+    "count": 7
+  },
+  {
+    "name": "DoResultPR",
+    "count": 2
+  },
+  {
+    "name": "GE.ge",
+    "count": 12
+  },
+  {
+    "name": "Option",
+    "count": 144
+  },
+  {
+    "name": "Inv",
+    "count": 2
+  },
+  {
+    "name": "le_of_not_lt",
+    "count": 4
+  },
+  {
+    "name": "HMod.hMod",
+    "count": 134
+  },
+  {
+    "name": "Setoid.iseqv",
+    "count": 1
+  },
+  {
+    "name": "ForM",
+    "count": 2
+  },
+  {
+    "name": "Int.negSucc",
+    "count": 99
+  },
+  {
+    "name": "LawfulFunctor",
+    "count": 6
+  },
+  {
+    "name": "Fin.overflowingMul",
+    "count": 1
+  },
+  {
+    "name": "List.filterAux",
+    "count": 2
+  },
+  {
+    "name": "PSigma",
+    "count": 7
+  },
+  {
+    "name": "Membership.mem",
+    "count": 93
+  },
+  {
+    "name": "List.get.proof_1",
+    "count": 50
+  },
+  {
+    "name": "Random",
+    "count": 3
+  },
+  {
+    "name": "MulOneClass",
+    "count": 3
+  },
+  {
+    "name": "UFNode.rank",
+    "count": 19
+  },
+  {
+    "name": "Function.surjective",
+    "count": 27
+  },
+  {
+    "name": "Eq.mp",
+    "count": 2
+  },
+  {
+    "name": "List.lt.nil",
+    "count": 1
+  },
+  {
+    "name": "FloatSpec.float",
+    "count": 2
+  },
+  {
+    "name": "DecidableRel",
+    "count": 10
+  },
+  {
+    "name": "UInt64.size",
+    "count": 14
+  },
+  {
+    "name": "Function.bicompr",
+    "count": 1
+  },
+  {
+    "name": "Nat.le_trans",
+    "count": 147
+  },
+  {
+    "name": "Nat.Linear.Poly.combine",
+    "count": 2
+  },
+  {
+    "name": "List.length_append",
+    "count": 2
+  },
+  {
+    "name": "Sigma.fst",
+    "count": 1
+  },
+  {
+    "name": "Option.isSome",
+    "count": 6
+  },
+  {
+    "name": "Fin.underflowingSub",
+    "count": 1
+  },
+  {
+    "name": "LawfulBEq",
+    "count": 15
+  },
+  {
+    "name": "Sat.Fmla.one",
+    "count": 1
+  },
+  {
+    "name": "Nat.Linear.ExprCnstr.toPoly",
+    "count": 2
+  },
+  {
+    "name": "List.Perm",
+    "count": 10
+  },
+  {
+    "name": "UnionFind.arr",
+    "count": 18
+  },
+  {
+    "name": "Quotient",
+    "count": 3
+  },
+  {
+    "name": "Function.Equiv",
+    "count": 4
+  },
+  {
+    "name": "instLEUSize",
+    "count": 2
+  },
+  {
+    "name": "WellFounded.intro",
+    "count": 2
+  },
+  {
+    "name": "LawfulApplicative",
+    "count": 2
+  },
+  {
+    "name": "PartialOrder.le_antisymm",
+    "count": 4
+  },
+  {
+    "name": "ExistsUnique",
+    "count": 5
+  },
+  {
+    "name": "List.Mem.head",
+    "count": 1
+  },
+  {
+    "name": "List.iota",
+    "count": 1
+  },
+  {
+    "name": "dif_neg",
+    "count": 5
+  },
+  {
+    "name": "Iff.mpr",
+    "count": 9
+  },
+  {
+    "name": "CommSemiring",
+    "count": 4
+  },
+  {
+    "name": "Except.error",
+    "count": 2
+  },
+  {
+    "name": "StateCpsT.run",
+    "count": 1
+  },
+  {
+    "name": "Option.instFunctorOption",
+    "count": 2
+  },
+  {
+    "name": "cast",
+    "count": 2
+  },
+  {
+    "name": "Quot.indep",
+    "count": 2
+  },
+  {
+    "name": "CoeSort",
+    "count": 2
+  },
+  {
+    "name": "of_eq_true",
+    "count": 10
+  },
+  {
+    "name": "Nat.Linear.Expr.mulL",
+    "count": 2
+  },
+  {
+    "name": "List.Chain.nil",
+    "count": 1
+  },
+  {
+    "name": "ExceptT.mk",
+    "count": 2
+  },
+  {
+    "name": "Option.some",
+    "count": 51
+  },
+  {
+    "name": "LawfulMonad",
+    "count": 11
+  },
+  {
+    "name": "WellFoundedRelation.rel",
+    "count": 21
+  },
+  {
+    "name": "Subsingleton",
+    "count": 22
+  },
+  {
+    "name": "Nat.Linear.PolyCnstr.denote",
+    "count": 6
+  },
+  {
+    "name": "Nat.Linear.ExprCnstr.lhs",
+    "count": 6
+  },
+  {
+    "name": "OfNat.ofNat",
+    "count": 668
+  },
+  {
+    "name": "instOrdNat",
+    "count": 1
+  },
+  {
+    "name": "List.replicate",
+    "count": 2
+  },
+  {
+    "name": "HShiftRight.hShiftRight",
+    "count": 1
+  },
+  {
+    "name": "EmptyCollection",
+    "count": 7
+  },
+  {
+    "name": "AndThen",
+    "count": 1
+  },
+  {
+    "name": "Iff",
+    "count": 279
+  },
+  {
+    "name": "Monad",
+    "count": 13
+  },
+  {
+    "name": "instLEUInt16",
+    "count": 2
+  },
+  {
+    "name": "List.foldr",
+    "count": 2
+  },
+  {
+    "name": "Ordering.eq",
+    "count": 1
+  },
+  {
+    "name": "Thunk",
+    "count": 4
+  },
+  {
+    "name": "Fin.size_positive'",
+    "count": 3
+  },
+  {
+    "name": "Fin.mk",
+    "count": 87
+  },
+  {
+    "name": "Mathlib.Tactic.Lint.LintVerbosity.high",
+    "count": 1
+  },
+  {
+    "name": "UInt16.size",
+    "count": 6
+  },
+  {
+    "name": "UFModel.push.proof_2",
+    "count": 1
+  },
+  {
+    "name": "HMul",
+    "count": 2
+  },
+  {
+    "name": "Stream",
+    "count": 6
+  },
+  {
+    "name": "Mathlib.Tactic.Lint.LintVerbosity",
+    "count": 10
+  },
+  {
+    "name": "Iff.intro",
+    "count": 12
+  },
+  {
+    "name": "MulZeroOneClass",
+    "count": 3
+  },
+  {
+    "name": "WellFounded.apply.proof_1",
+    "count": 96
+  },
+  {
+    "name": "if_pos",
+    "count": 5
+  },
+  {
+    "name": "Membership",
+    "count": 5
+  },
+  {
+    "name": "TC.below",
+    "count": 2
+  },
+  {
+    "name": "Nat.eq_or_lt_of_le",
+    "count": 15
+  },
+  {
+    "name": "sorryAx",
+    "count": 5
+  },
+  {
+    "name": "Classical.strongIndefiniteDescription.proof_2",
+    "count": 3
+  },
+  {
+    "name": "Nat.cast",
+    "count": 83
+  },
+  {
+    "name": "UInt8.val",
+    "count": 18
+  },
+  {
+    "name": "modify",
+    "count": 1
+  },
+  {
+    "name": "Int.pow",
+    "count": 1
+  },
+  {
+    "name": "Preorder.le_refl",
+    "count": 4
+  },
+  {
+    "name": "Preorder.lt_iff_le_not_le",
+    "count": 8
+  },
+  {
+    "name": "Equiv",
+    "count": 7
+  },
+  {
+    "name": "System.SearchPath",
+    "count": 1
+  },
+  {
+    "name": "Nat.find_x",
+    "count": 2
+  },
+  {
+    "name": "List.mapTR",
+    "count": 1
+  },
+  {
+    "name": "UInt32.mk",
+    "count": 20
+  },
+  {
+    "name": "HDiv.hDiv",
+    "count": 49
+  },
+  {
+    "name": "MonadReaderOf",
+    "count": 3
+  },
+  {
+    "name": "Nat.Linear.Poly.sort.go",
+    "count": 1
+  },
+  {
+    "name": "SizeOf.sizeOf",
+    "count": 7
+  },
+  {
+    "name": "HAnd",
+    "count": 2
+  },
+  {
+    "name": "instLEUInt32",
+    "count": 2
+  },
+  {
+    "name": "Nat.add",
+    "count": 44
+  },
+  {
+    "name": "of_decide_eq_false",
+    "count": 1
+  },
+  {
+    "name": "PSigma.eta",
+    "count": 1
+  },
+  {
+    "name": "LE.mk",
+    "count": 434
+  },
+  {
+    "name": "List.get?",
+    "count": 14
+  },
+  {
+    "name": "Nat.Linear.PolyCnstr.norm",
+    "count": 1
+  },
+  {
+    "name": "Mathlib.Tactic.Lint.LintVerbosity.toCtorIdx",
+    "count": 2
+  },
+  {
+    "name": "lt_trichotomy",
+    "count": 4
+  },
+  {
+    "name": "TC",
+    "count": 6
+  },
+  {
+    "name": "Tactic.NormCast.NormCastExtension",
+    "count": 3
+  },
+  {
+    "name": "NonUnitalSemiring",
+    "count": 2
+  },
+  {
+    "name": "Prod.swap",
+    "count": 5
+  },
+  {
+    "name": "DivInvMonoid",
+    "count": 3
+  },
+  {
+    "name": "Nat.le_step",
+    "count": 14
+  },
+  {
+    "name": "UFModel.Models",
+    "count": 10
+  },
+  {
+    "name": "instOrdString",
+    "count": 1
+  },
+  {
+    "name": "Decidable.lt_or_eq_of_le",
+    "count": 4
+  },
+  {
+    "name": "Nat.succ_le_succ",
+    "count": 98
+  },
+  {
+    "name": "max",
+    "count": 18
+  },
+  {
+    "name": "UFModel.push.proof_1",
+    "count": 1
+  },
+  {
+    "name": "Nat.lor",
+    "count": 1
+  },
+  {
+    "name": "Nat.Linear.PolyCnstr.rhs",
+    "count": 7
+  },
+  {
+    "name": "HAdd.hAdd",
+    "count": 528
+  },
+  {
+    "name": "Fin.checkedMul",
+    "count": 1
+  },
+  {
+    "name": "MonadExcept.throw",
+    "count": 1
+  },
+  {
+    "name": "List.Perm.swap",
+    "count": 1
+  },
+  {
+    "name": "HSub",
+    "count": 2
+  },
+  {
+    "name": "Sat.Literal.reify",
+    "count": 3
+  },
+  {
+    "name": "List.product",
+    "count": 1
+  },
+  {
+    "name": "Float",
+    "count": 64
+  },
+  {
+    "name": "Nat.mul",
+    "count": 43
+  },
+  {
+    "name": "Eq.symm",
+    "count": 161
+  },
+  {
+    "name": "HMod",
+    "count": 8
+  },
+  {
+    "name": "Inv.inv",
+    "count": 4
+  },
+  {
+    "name": "MonadState",
+    "count": 2
+  },
+  {
+    "name": "List.Perm.cons",
+    "count": 1
+  },
+  {
+    "name": "Hashable.hash",
+    "count": 2
+  },
+  {
+    "name": "LinearOrder.mk",
+    "count": 4
+  },
+  {
+    "name": "lt_or_eq_of_le",
+    "count": 4
+  },
+  {
+    "name": "SeqRight",
+    "count": 2
+  },
+  {
+    "name": "Nat.zero_le",
+    "count": 98
+  },
+  {
+    "name": "ExceptCpsT",
+    "count": 7
+  },
+  {
+    "name": "Nat.blt",
+    "count": 13
+  },
+  {
+    "name": "emptyRelation",
+    "count": 4
+  },
+  {
+    "name": "UInt16.instNegUInt16",
+    "count": 3
+  },
+  {
+    "name": "ExceptCpsT.runCatch",
+    "count": 1
+  },
+  {
+    "name": "Dvd",
+    "count": 2
+  },
+  {
+    "name": "Nat.Linear.Poly.toExpr",
+    "count": 1
+  },
+  {
+    "name": "Nat.toDigits",
+    "count": 1
+  },
+  {
+    "name": "List.length_eq_zero",
+    "count": 1
+  },
+  {
+    "name": "ite",
+    "count": 99
+  },
+  {
+    "name": "List",
+    "count": 340
+  },
+  {
+    "name": "List.cons_append",
+    "count": 2
+  },
+  {
+    "name": "instLENat",
+    "count": 269
+  },
+  {
+    "name": "Sat.Valuation.satisfies_fmla",
+    "count": 1
+  },
+  {
+    "name": "List.appendTR",
+    "count": 1
+  },
+  {
+    "name": "Tactic.NormCast.CoeFnType",
+    "count": 12
+  },
+  {
+    "name": "Nat.isValidChar",
+    "count": 6
+  },
+  {
+    "name": "SeqRight.seqRight",
+    "count": 3
+  },
+  {
+    "name": "Function.LeftInverse",
+    "count": 25
+  },
+  {
+    "name": "ExceptT.lift",
+    "count": 2
+  },
+  {
+    "name": "ByteSlice",
+    "count": 5
+  },
+  {
+    "name": "MonadWithReaderOf",
+    "count": 3
+  },
+  {
+    "name": "Inter",
+    "count": 3
+  },
+  {
+    "name": "Nat.instLinearOrderNat",
+    "count": 4
+  },
+  {
+    "name": "Nat.add_sub_self_left",
+    "count": 2
+  },
+  {
+    "name": "LT.lt",
+    "count": 418
+  },
+  {
+    "name": "False.elim",
+    "count": 161
+  },
+  {
+    "name": "Nat.lt_succ_self",
+    "count": 4
+  },
+  {
+    "name": "List.set",
+    "count": 11
+  },
+  {
+    "name": "Nat.pred_lt",
+    "count": 2
+  },
+  {
+    "name": "instLEUInt64",
+    "count": 2
+  },
+  {
+    "name": "Nat.gcd",
+    "count": 70
+  },
+  {
+    "name": "Decidable.byCases",
+    "count": 6
+  },
+  {
+    "name": "Classical.em",
+    "count": 2
+  },
+  {
+    "name": "MonadControl",
+    "count": 5
+  },
+  {
+    "name": "UInt8.size",
+    "count": 7
+  },
+  {
+    "name": "Append",
+    "count": 5
+  },
+  {
+    "name": "PUnit.unit",
+    "count": 475
+  },
+  {
+    "name": "ByteArray",
+    "count": 20
+  },
+  {
+    "name": "Nat.Linear.Poly",
+    "count": 44
+  },
+  {
+    "name": "UFModel",
+    "count": 5
+  },
+  {
+    "name": "Nat.succ_ne_zero",
+    "count": 1
+  },
+  {
+    "name": "Nat.find_x.proof_1",
+    "count": 2
+  },
+  {
+    "name": "List.Forall₂.below",
+    "count": 2
+  },
+  {
+    "name": "Int.subNatNat",
+    "count": 18
+  },
+  {
+    "name": "sizeOf_nat",
+    "count": 2
+  },
+  {
+    "name": "TC.base",
+    "count": 1
+  },
+  {
+    "name": "List.drop",
+    "count": 3
+  },
+  {
+    "name": "Seq.seq",
+    "count": 12
+  },
+  {
+    "name": "xor",
+    "count": 2
+  },
+  {
+    "name": "Unit",
+    "count": 149
+  },
+  {
+    "name": "Nat.Linear.Poly.cancel",
+    "count": 7
+  },
+  {
+    "name": "Nat.lt.base.proof_1",
+    "count": 4
+  },
+  {
+    "name": "Zero",
+    "count": 8
+  },
+  {
+    "name": "Sigma",
+    "count": 5
+  },
+  {
+    "name": "Mathlib.Tactic.Lint.SimpTheoremInfo",
+    "count": 1
+  },
+  {
+    "name": "Nat.Linear.Var",
+    "count": 61
+  },
+  {
+    "name": "Subarray",
+    "count": 11
+  },
+  {
+    "name": "Set.univ",
+    "count": 7
+  },
+  {
+    "name": "HPow.hPow",
+    "count": 44
+  },
+  {
+    "name": "ShiftLeft",
+    "count": 8
+  },
+  {
+    "name": "Array.getLit.proof_1",
+    "count": 3
+  },
+  {
+    "name": "List.lt.tail",
+    "count": 1
+  },
+  {
+    "name": "Option.none",
+    "count": 51
+  },
+  {
+    "name": "Nat.Linear.Expr.add",
+    "count": 1
+  },
+  {
+    "name": "HAppend",
+    "count": 3
+  },
+  {
+    "name": "Nat.add_one",
+    "count": 2
+  },
+  {
+    "name": "PProd.snd",
+    "count": 15
+  },
+  {
+    "name": "Nat.Linear.Expr",
+    "count": 15
+  },
+  {
+    "name": "Tactic.NormCast.CoeFnType.coeSort",
+    "count": 1
+  },
+  {
+    "name": "Nat.Linear.Certificate.denote",
+    "count": 3
+  },
+  {
+    "name": "FloatSpec.le",
+    "count": 3
+  },
+  {
+    "name": "List.lt",
+    "count": 3
+  },
+  {
+    "name": "Quot.indepCoherent",
+    "count": 1
+  },
+  {
+    "name": "Nat.add_succ",
+    "count": 2
+  },
+  {
+    "name": "HPow",
+    "count": 4
+  },
+  {
+    "name": "IsAddLeftCancel",
+    "count": 2
+  },
+  {
+    "name": "Array",
+    "count": 134
+  },
+  {
+    "name": "Empty",
+    "count": 9
+  },
+  {
+    "name": "List.nil",
+    "count": 181
+  },
+  {
+    "name": "Nat.coprime",
+    "count": 24
+  },
+  {
+    "name": "Nat.succ_add",
+    "count": 4
+  },
+  {
+    "name": "And.intro",
+    "count": 10
+  },
+  {
+    "name": "Fin.ofNat",
+    "count": 9
+  },
+  {
+    "name": "HShiftLeft",
+    "count": 2
+  },
+  {
+    "name": "Pure",
+    "count": 2
+  },
+  {
+    "name": "AndOp",
+    "count": 8
+  },
+  {
+    "name": "rfl",
+    "count": 170
+  },
+  {
+    "name": "Unit.unit",
+    "count": 472
+  },
+  {
+    "name": "Nat.xor",
+    "count": 1
+  },
+  {
+    "name": "Eq",
+    "count": 1246
+  },
+  {
+    "name": "Int.ofNat",
+    "count": 72
+  },
+  {
+    "name": "Nat.zero",
+    "count": 141
+  },
+  {
+    "name": "Nat.le_succ_of_le",
+    "count": 6
+  },
+  {
+    "name": "HEq",
+    "count": 17
+  },
+  {
+    "name": "List.Pairwise.cons",
+    "count": 1
+  },
+  {
+    "name": "mixHash",
+    "count": 2
+  },
+  {
+    "name": "Nat.succ",
+    "count": 466
+  },
+  {
+    "name": "Nat.AtLeastTwo",
+    "count": 3
+  },
+  {
+    "name": "List.sublist.slnil",
+    "count": 1
+  },
+  {
+    "name": "Distrib",
+    "count": 2
+  },
+  {
+    "name": "List.isSuffix",
+    "count": 1
+  },
+  {
+    "name": "DecidablePred",
+    "count": 1
+  },
+  {
+    "name": "Nat.not_succ_le_zero",
+    "count": 101
+  },
+  {
+    "name": "implies",
+    "count": 1
+  },
+  {
+    "name": "Nat.Linear.Poly.mul.go",
+    "count": 1
+  },
+  {
+    "name": "Int.instNegInt",
+    "count": 54
+  },
+  {
+    "name": "Nat.Linear.hugeFuel",
+    "count": 8
+  },
+  {
+    "name": "UInt64.toNat",
+    "count": 1
+  },
+  {
+    "name": "Nat.le.below",
+    "count": 2
+  },
+  {
+    "name": "Array.toArrayLit",
+    "count": 2
+  },
+  {
+    "name": "decide_eq_false",
+    "count": 18
+  },
+  {
+    "name": "MonadExceptOf",
+    "count": 11
+  },
+  {
+    "name": "Nonempty.elim.proof_1",
+    "count": 3
+  },
+  {
+    "name": "Sdiff",
+    "count": 2
+  },
+  {
+    "name": "UInt32.ofNat",
+    "count": 3
+  },
+  {
+    "name": "Classical.indefiniteDescription",
+    "count": 24
+  },
+  {
+    "name": "UInt64.lt",
+    "count": 3
+  },
+  {
+    "name": "USize.mk",
+    "count": 17
+  },
+  {
+    "name": "Function.partial_inv",
+    "count": 2
+  },
+  {
+    "name": "Sat.Valuation.satisfies",
+    "count": 2
+  },
+  {
+    "name": "Prod.map",
+    "count": 7
+  },
+  {
+    "name": "MonadReader",
+    "count": 2
+  },
+  {
+    "name": "PNonScalar",
+    "count": 3
+  },
+  {
+    "name": "Sat.Valuation",
+    "count": 1
+  },
+  {
+    "name": "Monoid.npow",
+    "count": 5
+  },
+  {
+    "name": "Mathlib.Tactic.Sat.LRATStep",
+    "count": 3
+  },
+  {
+    "name": "Sat.Fmla.and",
+    "count": 1
+  },
+  {
+    "name": "Nat.pred_le_pred",
+    "count": 141
+  },
+  {
+    "name": "AddGroupWithOne.intCast",
+    "count": 4
+  },
+  {
+    "name": "Nat.not_eq_zero_of_lt",
+    "count": 2
+  },
+  {
+    "name": "min",
+    "count": 21
+  },
+  {
+    "name": "instLTUInt32",
+    "count": 2
+  },
+  {
+    "name": "Nat.eq_zero_or_pos",
+    "count": 1
+  },
+  {
+    "name": "List.insert",
+    "count": 9
+  },
+  {
+    "name": "Int.le",
+    "count": 153
+  },
+  {
+    "name": "Function.update",
+    "count": 13
+  },
+  {
+    "name": "Nat.toDigitsCore",
+    "count": 4
+  },
+  {
+    "name": "LinearOrder",
+    "count": 4
+  },
+  {
+    "name": "Tactic.NormCast.Label",
+    "count": 11
+  },
+  {
+    "name": "Int.noConfusionType",
+    "count": 2
+  },
+  {
+    "name": "SemigroupWithZero",
+    "count": 3
+  },
+  {
+    "name": "Nat.digitChar",
+    "count": 4
+  },
+  {
+    "name": "Nat.Linear.ExprCnstr.denote",
+    "count": 5
+  },
+  {
+    "name": "Float.lt",
+    "count": 2
+  },
+  {
+    "name": "UFModel.setParent",
+    "count": 1
+  },
+  {
+    "name": "eq_self",
+    "count": 5
+  },
+  {
+    "name": "PLift",
+    "count": 1
+  },
+  {
+    "name": "Nat.Linear.fixedVar",
+    "count": 44
+  },
+  {
+    "name": "Array.get",
+    "count": 33
+  },
+  {
+    "name": "UFModel.empty.proof_1",
+    "count": 1
+  },
+  {
+    "name": "TC.trans",
+    "count": 1
+  },
+  {
+    "name": "UInt32",
+    "count": 76
+  },
+  {
+    "name": "HShiftLeft.hShiftLeft",
+    "count": 1
+  },
+  {
+    "name": "Int.natAbs",
+    "count": 10
+  },
+  {
+    "name": "Dvd.dvd",
+    "count": 39
+  },
+  {
+    "name": "instDecidableLtToLTToPreorderToPartialOrder",
+    "count": 4
+  },
+  {
+    "name": "eq_of_heq",
+    "count": 147
+  },
+  {
+    "name": "HPow.mk",
+    "count": 1
+  },
+  {
+    "name": "Array.mk",
+    "count": 17
+  },
+  {
+    "name": "Int",
+    "count": 339
+  },
+  {
+    "name": "List.lt.head",
+    "count": 1
+  },
+  {
+    "name": "Tactic.Ring.horner",
+    "count": 11
+  },
+  {
+    "name": "Tactic.NormCast.Label.ofNat",
+    "count": 1
+  },
+  {
+    "name": "Alternative",
+    "count": 3
+  },
+  {
+    "name": "MonoidWithZero",
+    "count": 4
+  },
+  {
+    "name": "UInt16.toNat",
+    "count": 1
+  },
+  {
+    "name": "Nat.le.step",
+    "count": 148
+  },
+  {
+    "name": "LE.le",
+    "count": 495
+  },
+  {
+    "name": "Nonempty",
+    "count": 67
+  },
+  {
+    "name": "List.getLast",
+    "count": 4
+  },
+  {
+    "name": "Task.Priority",
+    "count": 3
+  },
+  {
+    "name": "Nat.le_of_succ_le_succ",
+    "count": 141
+  },
+  {
+    "name": "Sat.Literal.neg",
+    "count": 1
+  },
+  {
+    "name": "List.disjoint",
+    "count": 9
+  },
+  {
+    "name": "HasEquiv",
+    "count": 3
+  },
+  {
+    "name": "List.toArrayAux",
+    "count": 5
+  },
+  {
+    "name": "List.Mem",
+    "count": 2
+  },
+  {
+    "name": "UInt16.lt",
+    "count": 2
+  },
+  {
+    "name": "Except.ok",
+    "count": 3
+  },
+  {
+    "name": "Semiring",
+    "count": 8
+  },
+  {
+    "name": "Sat.Clause.cons",
+    "count": 2
+  },
+  {
+    "name": "USize.instNegUSize",
+    "count": 3
+  },
+  {
+    "name": "System.Platform.numBits",
+    "count": 13
+  },
+  {
+    "name": "Preorder.le_trans",
+    "count": 8
+  },
+  {
+    "name": "MonadLiftT",
+    "count": 3
+  },
+  {
+    "name": "Nat.find_x.proof_3",
+    "count": 2
+  },
+  {
+    "name": "le_antisymm",
+    "count": 4
+  },
+  {
+    "name": "Nat.beq",
+    "count": 57
+  },
+  {
+    "name": "toBoolUsing",
+    "count": 2
+  },
+  {
+    "name": "HAppend.hAppend",
+    "count": 61
+  },
+  {
+    "name": "propext",
+    "count": 11
+  },
+  {
+    "name": "InvImage",
+    "count": 17
+  },
+  {
+    "name": "Nat.Linear.PolyCnstr.combine",
+    "count": 1
+  },
+  {
+    "name": "Equivalence",
+    "count": 5
+  },
+  {
+    "name": "Xor",
+    "count": 8
+  },
+  {
+    "name": "List.Perm.below",
+    "count": 4
+  },
+  {
+    "name": "CoeT",
+    "count": 4
+  },
+  {
+    "name": "BinaryHeap.arr",
+    "count": 9
+  },
+  {
+    "name": "AddGroupWithOne.gsmul",
+    "count": 6
+  },
+  {
+    "name": "ToBool",
+    "count": 3
+  },
+  {
+    "name": "Fin.size_positive",
+    "count": 9
+  },
+  {
+    "name": "Nat.mod_lt",
+    "count": 91
+  },
+  {
+    "name": "MonadLiftT.monadLift",
+    "count": 1
+  },
+  {
+    "name": "HOr",
+    "count": 2
+  },
+  {
+    "name": "AddCommMonoid",
+    "count": 4
+  },
+  {
+    "name": "Tactic.NormCast.Label.noConfusionType",
+    "count": 1
+  },
+  {
+    "name": "Array.toListLitAux",
+    "count": 3
+  },
+  {
+    "name": "Nat.land",
+    "count": 1
+  },
+  {
+    "name": "Nat.Linear.Poly.mul",
+    "count": 6
+  },
+  {
+    "name": "Array.push",
+    "count": 11
+  },
+  {
+    "name": "List.Nodup",
+    "count": 1
+  },
+  {
+    "name": "Nat.Linear.ExprCnstr.rhs",
+    "count": 6
+  },
+  {
+    "name": "instHashableNat",
+    "count": 3
+  },
+  {
+    "name": "Id.instMonadId",
+    "count": 2
+  },
+  {
+    "name": "UFModel.rank_lt",
+    "count": 2
+  },
+  {
+    "name": "Mathlib.Prelude.Rename.RenameMap",
+    "count": 3
+  },
+  {
+    "name": "List.length_nil",
+    "count": 2
+  },
+  {
+    "name": "BinaryHeap.mkHeap",
+    "count": 1
+  },
+  {
+    "name": "OfNat",
+    "count": 16
+  },
+  {
+    "name": "right_commutative",
+    "count": 1
+  },
+  {
+    "name": "Nat.Linear.ExprCnstr",
+    "count": 5
+  },
+  {
+    "name": "Tactic.Ring.State",
+    "count": 12
+  },
+  {
+    "name": "Functor.mk",
+    "count": 4
+  },
+  {
+    "name": "MonadFunctor",
+    "count": 4
+  },
+  {
+    "name": "UInt8.instNegUInt8",
+    "count": 3
+  },
+  {
+    "name": "Mathlib.Tactic.Lint.LintVerbosity.low",
+    "count": 1
+  },
+  {
+    "name": "Coe",
+    "count": 8
+  },
+  {
+    "name": "List.dropLast",
+    "count": 1
+  },
+  {
+    "name": "List.length_pos_of_ne_nil",
+    "count": 1
+  },
+  {
+    "name": "compareOfLessAndEq",
+    "count": 1
+  },
+  {
+    "name": "Bind",
+    "count": 3
+  },
+  {
+    "name": "CoeHTCT",
+    "count": 8
+  },
+  {
+    "name": "OptionT",
+    "count": 14
+  },
+  {
+    "name": "Decidable.isFalse",
+    "count": 1
+  },
+  {
+    "name": "Option.map",
+    "count": 10
+  },
+  {
+    "name": "Function.extend",
+    "count": 3
+  },
+  {
+    "name": "ExceptT.run",
+    "count": 3
+  },
+  {
+    "name": "instLTUInt16",
+    "count": 2
+  },
+  {
+    "name": "CoeDep",
+    "count": 4
+  },
+  {
+    "name": "False",
+    "count": 317
+  },
+  {
+    "name": "dif_pos",
+    "count": 5
+  },
+  {
+    "name": "AddMonoidWithOne.natCast",
+    "count": 91
+  },
+  {
+    "name": "Complement",
+    "count": 6
+  },
+  {
+    "name": "Option.rel",
+    "count": 2
+  },
+  {
+    "name": "Equiv.left_inv",
+    "count": 6
+  },
+  {
+    "name": "Nat.Linear.Poly.sort",
+    "count": 3
+  },
+  {
+    "name": "Fin.ofNat'",
+    "count": 6
+  },
+  {
+    "name": "List.bind",
+    "count": 4
+  },
+  {
+    "name": "Mathlib.Tactic.Lint.LintVerbosity.medium",
+    "count": 1
+  },
+  {
+    "name": "ForIn'",
+    "count": 2
+  },
+  {
+    "name": "Monoid",
+    "count": 4
+  },
+  {
+    "name": "Function.inv_fun_on",
+    "count": 12
+  },
+  {
+    "name": "Mathlib.Tactic.Lint.Linter",
+    "count": 5
+  },
+  {
+    "name": "Nat.le",
+    "count": 406
+  },
+  {
+    "name": "Hashable.mk",
+    "count": 8
+  },
+  {
+    "name": "UInt8.toNat",
+    "count": 1
+  },
+  {
+    "name": "HDiv",
+    "count": 3
+  },
+  {
+    "name": "Nonempty.intro",
+    "count": 25
+  },
+  {
+    "name": "DecidableEq",
+    "count": 29
+  },
+  {
+    "name": "cond",
+    "count": 47
+  },
+  {
+    "name": "Sat.Fmla",
+    "count": 4
+  },
+  {
+    "name": "UFModel.empty",
+    "count": 1
+  },
+  {
+    "name": "WellFounded.fix",
+    "count": 96
+  },
+  {
+    "name": "UInt8.lt",
+    "count": 2
+  },
+  {
+    "name": "List.tail",
+    "count": 1
+  },
+  {
+    "name": "Nat.sub_lt",
+    "count": 92
+  },
+  {
+    "name": "UFModel.mk",
+    "count": 3
+  },
+  {
+    "name": "Nat.lt_or_ge",
+    "count": 4
+  },
+  {
+    "name": "MonadStateOf",
+    "count": 6
+  },
+  {
+    "name": "Ord.mk",
+    "count": 1
+  },
+  {
+    "name": "MonadStateOf.set",
+    "count": 1
+  },
+  {
+    "name": "USize.ofNat",
+    "count": 1
+  },
+  {
+    "name": "Nonempty.elim",
+    "count": 3
+  },
+  {
+    "name": "WellFounded",
+    "count": 29
+  },
+  {
+    "name": "List.Forall₂",
+    "count": 1
+  },
+  {
+    "name": "dite_true",
+    "count": 5
+  },
+  {
+    "name": "BEq",
+    "count": 11
+  },
+  {
+    "name": "Function.const",
+    "count": 6
+  },
+  {
+    "name": "Subtype.coind",
+    "count": 3
+  },
+  {
+    "name": "HAdd",
+    "count": 2
+  }
+]
