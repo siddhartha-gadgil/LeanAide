@@ -6,3 +6,4 @@
 .metals/
 .vscode/
 OpenaiModelPrompting/Some_prac_work/Open_ai_key.py
+__pycache__
