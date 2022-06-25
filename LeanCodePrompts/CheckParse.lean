@@ -60,8 +60,7 @@ def promptsSplitCore : CoreM ((Array String) × (Array String)) :=
 
 
 def Lean.Expr.view (expr: Expr) : MetaM String := do
-  let stx ← PrettyPrinter.delab  expr
-  let fmt ← PrettyPrinter.ppTerm stx
+  let fmt ← PrettyPrinter.ppExpr expr
   return fmt.pretty
 
 declare_syntax_cat argument

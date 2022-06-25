@@ -282,7 +282,7 @@ theorem implies_transitive : ∀ {P Q R : Prop}, (P → Q) → (Q → R) → (P 
 /-
 If propositions `P` and `Q` are individually true, their conjunction is also true.
 -/
-theorem conjunction_implies : ∀ {P Q : Prop}, P → Q → P ∧ Q := λ {P Q} (h₁ : P) (h₂ : Q) => ⟨h₁, h₂⟩
+theorem individual_implies_conjunction : ∀ {P Q : Prop}, P → Q → P ∧ Q := λ {P Q} (h₁ : P) (h₂ : Q) => ⟨h₁, h₂⟩
 
 /-
 Conjunction is commutative.
@@ -294,3 +294,141 @@ Conjunction is associative.
 -/
 theorem conjunction_associative {P Q R : Prop} : P ∧ (Q ∧ R) ↔ (P ∧ Q) ∧ R := 
   Iff.intro (λ (⟨hp, ⟨hq, hr⟩⟩ : P ∧ (Q ∧ R)) => ⟨⟨hp, hq⟩, hr⟩) (λ (⟨⟨hp, hq⟩, hr⟩ : (P ∧ Q) ∧ R) => ⟨hp, ⟨hq, hr⟩⟩)
+
+/-
+If the conjunction of two propositions is true, then one of the individual propositions is true.
+-/
+def conjunction_implies_individual : P ∧ Q → P ∨ Q := λ ⟨hp, hq⟩ => Or.inl hp 
+
+/-
+Disjunction is commutative.
+-/
+theorem disjunction_commutative {P Q : Prop} : P ∨ Q → Q ∨ P :=
+  λ h : P ∨ Q =>
+  match h with
+    | Or.inl hp => Or.inr hp
+    | Or.inr hq => Or.inl hq
+
+/-
+Disjunction is associative.
+-/
+theorem disjunction_associative {P Q R : Prop} : P ∨ (Q ∨ R) ↔ (P ∨ Q) ∨ R :=
+  Iff.intro (Or.rec (Or.inl ∘ Or.inl) (Or.rec (Or.inl ∘ Or.inr) Or.inr)) (Or.rec (Or.rec Or.inl (Or.inr ∘ Or.inl)) (Or.inr ∘ Or.inr))
+
+/-
+For propositions `P` and `Q`, if `P` is true, then the disjunction of `P` and `Q` is true. 
+-/
+theorem fst_implies_disj : ∀ {P Q : Prop}, P → P ∨ Q := λ {P Q} (hp : P) => Or.inl hp
+
+/-
+For propositions `P` and `Q`, if `Q` is true, then the disjunction of `P` and `Q` is true.
+-/
+theorem snd_implies_disj : ∀ {P Q : Prop}, Q → P ∨ Q := λ {P Q} (hq : Q) => Or.inr hq
+
+/-
+Conjunction left-distributes over disjunction.
+-/
+theorem conjunction_left_distributes {P Q R : Prop} : P ∧ (Q ∨ R) ↔ (P ∧ Q) ∨ (P ∧ R) :=
+  Iff.intro (λ (⟨hp, hqr⟩ : P ∧ (Q ∨ R)) => match hqr with | Or.inl hq => Or.inl ⟨hp, hq⟩ | Or.inr hr => Or.inr ⟨hp, hr⟩) (Or.rec (λ ⟨hp, hq⟩ => ⟨hp, Or.inl hq⟩) (λ ⟨hp, hr⟩ => ⟨hp, Or.inr hr⟩))
+
+/-
+Conjunction right-distributes over disjunction.
+-/
+theorem conjunction_right_distributes {P Q R : Prop} : (P ∨ Q) ∧ R ↔ (P ∧ R) ∨ (Q ∧ R) :=
+  Iff.intro (λ (⟨hpq, hr⟩ : (P ∨ Q) ∧ R) => match hpq with | Or.inl hp => Or.inl ⟨hp, hr⟩ | Or.inr hq => Or.inr ⟨hq, hr⟩) (Or.rec (λ ⟨hp, hr⟩ => ⟨Or.inl hp, hr⟩) (λ ⟨hq, hr⟩ => ⟨Or.inr hq, hr⟩))
+
+/-
+Disjunction left-distributes over conjunction.
+-/
+theorem disjunction_left_distributes {P Q R : Prop} : P ∨ (Q ∧ R) ↔ (P ∨ Q) ∧ (P ∨ R) :=
+  Iff.intro (Or.rec (λ hp => ⟨Or.inl hp, Or.inl hp⟩) (λ ⟨hq, hr⟩ => ⟨Or.inr hq, Or.inr hr⟩)) 
+  (λ ⟨hpq, hpr⟩ => 
+    match hpq, hpr with
+      | Or.inl hp, Or.inl hq => Or.inl hp
+      | Or.inl hp, Or.inr hr => Or.inl hp
+      | Or.inr hq, Or.inl hp => Or.inl hp
+      | Or.inr hq, Or.inr hr => Or.inr ⟨hq, hr⟩
+  )
+
+/-
+Disjunction right-distributes over conjunction.
+-/
+theorem disjunction_right_distributes {P Q R : Prop} : (P ∧ Q) ∨ R ↔ (P ∨ R) ∧ (Q ∨ R) :=
+  Iff.intro (Or.rec (λ ⟨hp, hq⟩ => ⟨Or.inl hp, Or.inl hq⟩) (λ hr => ⟨Or.inr hr, Or.inr hr⟩)) 
+  (λ ⟨hpr, hqr⟩ =>
+    match hpr, hqr with
+      | Or.inl hp, Or.inl hq => Or.inl ⟨hp, hq⟩
+      | Or.inl hp, Or.inr hr => Or.inr hr
+      | Or.inr hr, Or.inl hq => Or.inr hr
+      | Or.inr hr, Or.inr hq => Or.inr hr
+  )
+  
+/-
+The proposition `False` is a left identity for disjunction.
+-/
+theorem false_disjunction_left_ident {P : Prop} : False ∨ P ↔ P := Iff.intro (Or.rec (λ f => False.elim f) (λ hp => hp)) (λ hp => Or.inr hp)
+
+/-
+The proposition `False` is a right identity for disjunction.
+-/
+theorem false_disjunction_right_ident {P : Prop} : P ∨ False ↔ P := Iff.intro (Or.rec (λ hp => hp) (λ f => False.elim f)) (λ hp => Or.inl hp)
+
+/-
+The proposition `True` is a left identity for conjunction.
+-/
+theorem true_conjunction_left_ident {P : Prop} : True ∧ P ↔ P := Iff.intro (λ ⟨h, hp⟩ => hp) (λ hp => ⟨trivial, hp⟩)
+
+/-
+The proposition `True` is a right identity for conjunction.
+-/
+theorem true_conjunction_right_ident {P : Prop} : P ∧ True ↔ P := Iff.intro (λ ⟨hp, h⟩ => hp) (λ hp => ⟨hp, trivial⟩)
+
+/-
+The proposition `True` is a left annihilator for disjunction.
+-/
+theorem true_disjunction_left_annihilator {P : Prop} : True ∨ P ↔ True := Iff.intro (Or.rec (λ t => trivial) (λ hp => trivial)) (λ hp => Or.inl hp)
+
+/-
+The proposition `True` is a right annihilator for disjunction.
+-/
+theorem true_disjunction_right_annihilator {P : Prop} : P ∨ True ↔ True := Iff.intro (Or.rec (λ hp => trivial) (λ t => trivial)) (λ t => Or.inr t)
+
+/-
+The proposition `False` is a left annihilator for conjunction.
+-/
+theorem false_conjunction_left_annihilator {P : Prop} : False ∧ P ↔ False := Iff.intro (λ ⟨h, hp⟩ => h) (λ h => False.elim h)
+
+/-
+The proposition `False` is a right annihilator for conjunction.
+-/
+theorem false_conjunction_right_annihilator {P : Prop} : P ∧ False ↔ False := Iff.intro (λ ⟨hp, h⟩ => h) (λ h => False.elim h)
+
+/-
+Every proposition is equivalent to itself.
+-/
+theorem equivalent_self {P : Prop} : P ↔ P := Iff.intro (λ hp => hp) (λ hp => hp)
+
+/-
+Every proposition is equivalent to the conjunction with itself.
+-/
+theorem equivalent_conjunction_self {P : Prop} : P ↔ P ∧ P := Iff.intro (λ hp => ⟨hp, hp⟩) (λ ⟨hp, hq⟩ => hp)
+
+/-
+Every proposition is equivalent to the disjunction with itself.
+-/
+theorem equivalent_disjunction_self {P : Prop} : P ↔ P ∨ P := Iff.intro (λ hp => Or.inl hp) (Or.rec (λ hp => hp) (λ hp => hp))
+
+/-
+Equivalence of propositions is a reflexive relation.
+-/
+theorem equivalence_reflexive {P : Prop} : P ↔ P := Iff.intro (λ hp => hp) (λ hp => hp)
+
+/-
+Equivalence of propositions is a symmetric relation.
+-/
+theorem equivalence_symmetric {P Q : Prop} : (P ↔ Q) → (Q ↔ P) := λ ⟨hpq, hqp⟩ => ⟨hqp, hpq⟩
+
+/-
+Equivalence of propositions is a transitive relation.
+-/
+theorem equivalence_transitive {P Q R : Prop} : (P ↔ Q) → (Q ↔ R) → (P ↔ R) := λ ⟨hpq, hqp⟩ ⟨hqr, hrq⟩ => ⟨hqr ∘ hpq, hqp ∘ hrq⟩
