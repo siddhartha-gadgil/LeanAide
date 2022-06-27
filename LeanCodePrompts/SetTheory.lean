@@ -161,4 +161,33 @@ theorem intersection_self : X ∩ X = X := by
   apply Iff.symm 
   apply equivalent_conjunction_self
 
+/-
+Every set contains itself.
+-/
+theorem subset_self : X ⊆ X := id
+
+/-
+The subset relation is transitive.
+-/
+theorem subset_transitive : X ⊆ Y → Y ⊆ Z → X ⊆ Z := by
+  intro hXY hYZ x h
+  apply hYZ
+  apply hXY
+  exact h
+
+/-
+Every set is a subset of the universe.
+-/
+theorem subset_universe : X ⊆ univ := λ _ => trivial
+
+/-
+The empty set is a subset of every set.
+-/
+theorem empty_subset : ∅ ⊆ X := by intro _ h; contradiction 
+
+/-
+The pre-image of a set under a function.
+-/
+def preimage (f : α → β) (X : Set β) : Set α := {a | f a ∈ X}
+
 end Set
