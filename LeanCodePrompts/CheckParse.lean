@@ -111,7 +111,7 @@ partial def showSyntax : Syntax → String
 | _ => ""
 
 def elabThm (s : String)(opens: List String := []) 
-  (levelNames : List Name := [`u, `v])
+  (levelNames : List Name := [`u, `v, `u_1, `u_2])
   : TermElabM <| Except String Expr := do
   let env ← getEnv
   let chk := runParserCategory env `thmStat  s
@@ -148,12 +148,12 @@ def elabThm (s : String)(opens: List String := [])
             return Except.error s!"parsed to {funStx}; error while parsing as theorem: {e}" 
 
 def elabThmCore (s : String)(opens: List String := []) 
-  (levelNames : List Name := [`u, `v])
+  (levelNames : List Name := [`u, `v, `u_1, `u_2])
   : CoreM <| Except String Expr := 
     (elabThm s opens levelNames).run'.run'
 
 def compareThms(s₁ s₂ : String)(opens: List String := []) 
-  (levelNames : List Name := [`u, `v])
+  (levelNames : List Name := [`u, `v, `u_1, `u_2])
   : TermElabM <| Except String Bool := do
   let e₁ ← elabThm s₁ opens levelNames
   let e₂ ← elabThm s₂ opens levelNames
@@ -166,7 +166,7 @@ def compareThms(s₁ s₂ : String)(opens: List String := [])
   | Except.error e₁ => return Except.error e₁
 
 def compareThmsCore(s₁ s₂ : String)(opens: List String := []) 
-  (levelNames : List Name := [`u, `v])
+  (levelNames : List Name := [`u, `v, `u_1, `u_2])
   : CoreM <| Except String Bool := 
     (compareThms s₁ s₂ opens levelNames).run'.run'
 
@@ -221,7 +221,7 @@ def checkElabThm (s : String) : TermElabM String := do
           argS := argS ++ (showSyntax arg) ++ " -> "
         let funStx := s!"{argS}{showSyntax type}"
         match runParserCategory env `term funStx with
-        | Except.ok termStx => Term.withLevelNames [`u, `v] <|
+        | Except.ok termStx => Term.withLevelNames [`u, `v, `u_1, `u_2] <|
           try 
             let expr ← Term.withoutErrToSorry <| 
                 Term.elabTerm termStx none
