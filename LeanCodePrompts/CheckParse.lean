@@ -73,6 +73,7 @@ declare_syntax_cat thmStat
 syntax "theorem" ident argument*  ":" term : thmStat
 syntax "def" ident argument*  ":" term : thmStat
 syntax argument*  ":" term : thmStat
+syntax ident argument*  ":" term : thmStat
 
 def thmsPrompt : IO (Array String) := do
   let file := System.mkFilePath ["data/thms.txt"]
@@ -123,6 +124,8 @@ def elabThm (s : String)(opens: List String := [])
       | `(thmStat|def $_ $args:argument* : $type:term) =>
         elabAux type args
       | `(thmStat|$args:argument* : $type:term) =>
+        elabAux type args
+      | `(thmStat|$_:ident $args:argument* : $type:term) =>
         elabAux type args
       | _ => return Except.error s!"parsed incorrectly to {stx}"
   | Except.error e  => return Except.error e
