@@ -15,7 +15,6 @@ def depsPrompt : IO (Array String) := do
   let file := System.mkFilePath ["data/types.txt"]
   IO.FS.lines file
 
-syntax "(" term ")" : term
 syntax "λ" ident "," term : term
 syntax "λ"  ident ":" term  "," term : term
 syntax "λ" "(" ident ":" term ")" "," term : term
@@ -251,3 +250,5 @@ def checkElabThm (s : String) : TermElabM String := do
 #eval elabThm "theorem subfield.list_sum_mem {K : Type u} [field K] (s : subfield K) {l : list K} : (∀ (x : K), x ∈ l → x ∈ s) → l.sum ∈ s"
 
 #eval compareThms "theorem nonsense(n : Nat) (m : Nat) : n = m" "(p : Nat)(q: Nat) : p = q"
+
+theorem not_iff_implies_false (P Q : Prop) : (¬ P ↔ (P → false)) := sorry
