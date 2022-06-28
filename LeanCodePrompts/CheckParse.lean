@@ -9,7 +9,7 @@ import LeanCodePrompts.Basic
 open Lean Meta Std Elab Parser Mathlib Set
  
 def s : Set Nat := fun _ => true
-#check s ∩ s
+-- #check s ∩ s
 
 def depsPrompt : IO (Array String) := do
   let file := System.mkFilePath ["data/types.txt"]
@@ -172,13 +172,13 @@ def compareThmsCore(s₁ s₂ : String)(opens: List String := [])
 
 -- Tests
 
-#eval checkTerm "(fun x : Nat => x + 1)"
+-- #eval checkTerm "(fun x : Nat => x + 1)"
 
-#eval checkTerm "a • s"
+-- #eval checkTerm "a • s"
 
-#eval checkTerm "λ x : Nat, x + 1"
+-- #eval checkTerm "λ x : Nat, x + 1"
 
-#eval checkTerm "a - t = 0"
+-- #eval checkTerm "a - t = 0"
 
 
 def checkStatements : MetaM (List (String × Bool)) := do
@@ -201,13 +201,13 @@ def tryParseThm (s : String) : MetaM String := do
       | _ => pure s!"parsed to mysterious {stx}"
   | Except.error e  => pure s!"error: {e}"
 
-#eval tryParseThm "theorem blah (n : Nat) {m: Type} : n  = n"
+-- #eval tryParseThm "theorem blah (n : Nat) {m: Type} : n  = n"
 
-#eval checkThm "theorem blah (n : Nat) {m: Type} : n  = n"
+-- #eval checkThm "theorem blah (n : Nat) {m: Type} : n  = n"
 
-#eval checkThm "(n : Nat) {m: Type} : n  = n"
+-- #eval checkThm "(n : Nat) {m: Type} : n  = n"
 
-#eval tryParseThm "theorem subfield.list_sum_mem {K : Type u} [field K] (s : subfield K) {l : list K} : (∀ (x : K), x ∈ l → x ∈ s) → l.sum ∈ s"
+-- #eval tryParseThm "theorem subfield.list_sum_mem {K : Type u} [field K] (s : subfield K) {l : list K} : (∀ (x : K), x ∈ l → x ∈ s) → l.sum ∈ s"
 
 def checkElabThm (s : String) : TermElabM String := do
   let env ← getEnv
@@ -233,22 +233,20 @@ def checkElabThm (s : String) : TermElabM String := do
       | _ => pure s!"parsed to mysterious {stx}"
   | Except.error e  => pure s!"error: {e}"
 
-#eval checkElabThm "theorem blah (n : Nat) {m : Nat} : n  = m"
+-- #eval checkElabThm "theorem blah (n : Nat) {m : Nat} : n  = m"
 
-#eval checkElabThm "theorem subfield.list_sum_mem {K : Type u} [field K] (s : subfield K) {l : list K} : (∀ (x : K), x ∈ l → x ∈ s) → l.sum ∈ s"
+-- #eval checkElabThm "theorem subfield.list_sum_mem {K : Type u} [field K] (s : subfield K) {l : list K} : (∀ (x : K), x ∈ l → x ∈ s) → l.sum ∈ s"
 
-#eval elabThm "theorem blah (n : Nat) {m : Nat} : n  = m" 
+-- #eval elabThm "theorem blah (n : Nat) {m : Nat} : n  = m" 
 
-#eval elabThm "theorem blah (n : Nat) {m : Nat} : n  = succ n" ["Nat"]
+-- #eval elabThm "theorem blah (n : Nat) {m : Nat} : n  = succ n" ["Nat"]
 
-#eval elabThm "theorem blah (n : Nat) {m : Nat} : n  = succ n" ["Nat"]
+-- #eval elabThm "theorem blah (n : Nat) {m : Nat} : n  = succ n" ["Nat"]
 
-#eval elabThm "(n : Nat) {m : Nat} : n  = succ n" ["Nat"]
+-- #eval elabThm "(n : Nat) {m : Nat} : n  = succ n" ["Nat"]
 
-#eval elabThmCore "(n : Nat) {m : Nat} : n  = succ n" ["Nat"]
+-- #eval elabThmCore "(n : Nat) {m : Nat} : n  = succ n" ["Nat"]
 
-#eval elabThm "theorem subfield.list_sum_mem {K : Type u} [field K] (s : subfield K) {l : list K} : (∀ (x : K), x ∈ l → x ∈ s) → l.sum ∈ s"
+-- #eval elabThm "theorem subfield.list_sum_mem {K : Type u} [field K] (s : subfield K) {l : list K} : (∀ (x : K), x ∈ l → x ∈ s) → l.sum ∈ s"
 
-#eval compareThms "theorem nonsense(n : Nat) (m : Nat) : n = m" "(p : Nat)(q: Nat) : p = q"
-
-theorem not_iff_implies_false (P Q : Prop) : (¬ P ↔ (P → false)) := sorry
+-- #eval compareThms "theorem nonsense(n : Nat) (m : Nat) : n = m" "(p : Nat)(q: Nat) : p = q"
