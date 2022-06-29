@@ -17,20 +17,31 @@ def depsPrompt : IO (Array String) := do
 
 syntax "λ" ident "," term : term
 syntax "λ"  ident ":" term  "," term : term
+syntax "fun" ident "," term : term
+syntax "fun"  ident ":" term  "," term : term
+syntax "λ" "_" "," term : term
 syntax "λ" "(" ident ":" term ")" "," term : term
 syntax "Π"  ident ":" term  "," term : term
 syntax "Π" "(" ident ":" term ")" "," term : term
 syntax "⇑" term : term
+syntax "Type*" : term
 macro_rules
 | `(λ $x:ident : $type:term , $y:term) => 
   `(fun ($x : $type)  => $y)
 | `(λ ( $x:ident : $type:term ) , $y:term) => 
   `(fun ($x : $type)  => $y)
+| `(fun $x:ident : $type:term , $y:term) => 
+  `(fun ($x : $type)  => $y)
+| `(fun  $x:ident : $type:term  , $y:term) => 
+  `(fun ($x : $type)  => $y)
+| `(λ _ , $y:term) => 
+  `(fun _  => $y)
 | `(Π $x:ident : $type:term , $y:term) => 
   `(($x : $type) →  $y)
 | `(Π ( $x:ident : $type:term ) , $y:term) => 
   `(($x : $type) →  $y)
 | `(⇑ $x:term) => `($x)
+| `(Type*) => `(Type _)
 
 /-- check whether a string parses as a term -/
 def checkTerm (s : String) : MetaM Bool := do
