@@ -1,6 +1,10 @@
 /build
 /lean_packages
+!/lean_packages/manifest.json
 /rawdata
 .ammonite/
 .metals/
 .vscode/
+OpenaiModelPrompting/Some_prac_work/Open_ai_key.py
+__pycache__
+OpenaiModelPrompting/exp1/.ipynb_checkpoints

@@ -41,3 +41,5 @@ variable (A B : Type)(φ : A → B)(e: B)
 Text: $\ker \phi$ is the set of all $a\in A$ that map to the identity element in $B$
 -/
 def ker :=  {a : A // φ a = e}
+
+example : 1 = 1 := by simp_arith

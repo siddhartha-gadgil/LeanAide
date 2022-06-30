@@ -105,7 +105,26 @@ def test_similarity_with_data():
         print(corpus[hit['corpus_id']], "(Score: {:.4f})".format(hit['score']))
     """
 
-test_similarity_with_data()
+def retrieve_similar_k_stats(main_prompt,corpus_path,top_k=4,model_name = 'sentence-transformers/all-mpnet-base-v2'):
+    fread = open(corpus_path,"r",encoding="utf-8")
+    prompt_corpus = json.load(fread)
+    model = SentenceTransformer(model_name,device='cuda')
+    prompts = [stats["doc_string"] for stats in prompt_corpus]
+    corpus_embeddings = model.encode(prompts, convert_to_tensor=True)
+    query_embedding = model.encode(main_prompt, convert_to_tensor=True)
+    cos_scores = util.cos_sim(query_embedding.to('cuda'),corpus_embeddings.to('cuda'))[0]
+    top_results = torch.topk(cos_scores.to('cuda'),k=top_k)
+    top_results = top_results
+    result_lis = []
+    for score, idx in zip(top_results[0],top_results[1]):
+        result = {}
+        result['score'] = score.item()
+        # print(prompts[idx])
+        result['dct'] = prompt_corpus[idx]
+        result_lis.append(result)
+    return result_lis
+
+#test_similarity_with_data()
 
 
 

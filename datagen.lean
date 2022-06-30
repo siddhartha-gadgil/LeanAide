@@ -14,7 +14,7 @@ def main (args: List String) : IO Unit := do
     importModules [{module := `Mathlib},
     {module := `LeanCodePrompts.Basic},
     {module:= `LeanCodePrompts.CheckParse}] {}
-  let core := promptsSplitCore
+  let core := promptsThmSplitCore
   let io? := 
     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} 
     {env := env}
@@ -23,10 +23,10 @@ def main (args: List String) : IO Unit := do
     IO.println "Success"
     IO.println s!"parsed : {succ.size}"
     IO.println s!"failed to parse: {fail.size}"
-    let succFile := System.mkFilePath ["data/parsed.txt"]
+    let succFile := System.mkFilePath ["data/parsed_thms.txt"]
     IO.FS.writeFile succFile <| 
       succ.foldl (fun acc x => acc ++ s!"{x}\n") ""
-    let failFile := System.mkFilePath ["data/unparsed.txt"]
+    let failFile := System.mkFilePath ["data/unparsed_thms.txt"]
     IO.FS.writeFile failFile <| 
       fail.foldl (fun acc x => acc ++ s!"{x}\n") ""
   | Except.error e =>
