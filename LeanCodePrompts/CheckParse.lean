@@ -6,7 +6,7 @@ import Std
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Init.Set
 import LeanCodePrompts.Basic
-open Lean Meta Std Elab Parser Mathlib Set
+open Lean Meta Std Elab Parser Mathlib Set Tactic
  
 def s : Set Nat := fun _ => true
 -- #check s ∩ s
@@ -26,6 +26,7 @@ syntax "Π" "(" ident ":" term ")" "," term : term
 syntax "⇑" term : term
 syntax "Type*" : term
 macro_rules
+| `(λ $x:ident, $y:term) => `(fun $x => $y)
 | `(λ $x:ident : $type:term , $y:term) => 
   `(fun ($x : $type)  => $y)
 | `(λ ( $x:ident : $type:term ) , $y:term) => 
@@ -163,6 +164,55 @@ def elabThmCore (s : String)(opens: List String := [])
   : CoreM <| Except String Expr := 
     (elabThm s opens levelNames).run'.run'
 
+theorem true_true_iff_True : true = true ↔ True := by
+    apply Iff.intro
+    intros
+    exact True.intro
+    intros
+    rfl
+
+example : true = true ↔ True := by
+    repeat (rw [true_true_iff_True])
+
+theorem true_false_iff_false : false = true ↔ False := by
+    apply Iff.intro 
+    intro hyp
+    simp at hyp
+    intro hyp
+    contradiction
+
+syntax "lynx" ("at" ident)? : tactic
+syntax "lynx" "at" "*" : tactic
+macro_rules 
+| `(tactic| lynx) => 
+  `(tactic|try(repeat rw [true_true_iff_True]);try (repeat (rw [true_false_iff_false])))
+| `(tactic| lynx at $t:ident) => 
+  `(tactic|try(repeat rw [true_true_iff_True] at $t);try (repeat (rw [true_false_iff_false] at $t)))
+| `(tactic| lynx at *) => 
+  `(tactic|try(repeat rw [true_true_iff_True] at *);try (repeat (rw [true_false_iff_false] at *)))
+
+
+def provedEqual (e₁ e₂ : Expr) : TermElabM Bool := do
+  let type ← mkEq e₁ e₂
+  let mvar ← mkFreshExprMVar type
+  let mvarId := mvar.mvarId!
+  let stx ← `(tactic| lynx;  try (rfl))
+  let res ←  runTactic mvarId stx
+  let (remaining, _) := res
+  return remaining.isEmpty
+
+def provedEquiv (e₁ e₂ : Expr) : TermElabM Bool := do
+  try
+  let type ← mkAppM ``Iff #[e₁, e₂]
+  let mvar ← mkFreshExprMVar type
+  let mvarId := mvar.mvarId!
+  let stx ← `(tactic| intros; lynx at *<;> apply Iff.intro <;> intro hyp  <;> (lynx at *) <;> (try assumption) <;> try (intros; apply Eq.symm; apply hyp))
+  let res ←  runTactic mvarId stx
+  let (remaining, _) := res
+  return remaining.isEmpty
+  catch _ => pure false
+
+
 def compareThms(s₁ s₂ : String)(opens: List String := []) 
   (levelNames : List Name := [`u, `v, `u_1, `u_2])
   : TermElabM <| Except String Bool := do
@@ -171,7 +221,8 @@ def compareThms(s₁ s₂ : String)(opens: List String := [])
   match e₁ with
   | Except.ok e₁ => match e₂ with
     | Except.ok e₂ => 
-        let p ← isDefEq e₁ e₂
+        let p := (← provedEqual e₁ e₂) || 
+          (← provedEquiv e₁ e₂)
         return Except.ok p
     | Except.error e₂ => return Except.error e₂
   | Except.error e₁ => return Except.error e₁
@@ -260,4 +311,22 @@ def checkElabThm (s : String) : TermElabM String := do
 
 -- #eval elabThm "theorem subfield.list_sum_mem {K : Type u} [field K] (s : subfield K) {l : list K} : (∀ (x : K), x ∈ l → x ∈ s) → l.sum ∈ s"
 
--- #eval compareThms "theorem nonsense(n : Nat) (m : Nat) : n = m" "(p : Nat)(q: Nat) : p = q"
+#eval compareThms "theorem nonsense(n : Nat) (m : Nat) : n = m" "(p : Nat)(q: Nat) : p = q"
+
+#eval compareThms ": True" ": true = true"
+
+#eval compareThms "{A: Type} : A →  True" "{A: Type}: A →  true"
+
+#eval compareThms ": False" ": false = true"
+
+#eval compareThms "{A: Sort} : False →  A" "{A: Sort} : false = true →  A"
+
+example : (∀ {A: Sort}, False → A) ↔ (∀ {A: Sort}, false = true → A) := by
+  intros; lynx at *<;> apply Iff.intro <;> intro hyp  <;> (lynx at *) <;> (try assumption) <;> try (intros; apply Eq.symm; apply hyp)
+
+
+example : (∀ (a b c: Nat), 
+  a + (b + c) = (a + b) + c) ↔ (∀ (a b c: Nat), (a + b) + c = a + (b + c)) := by 
+  intros; apply Iff.intro <;> intro hyp  <;> (try assumption) <;> try (intros; apply Eq.symm; apply hyp)
+  
+#eval compareThms "(a b c: Nat): a + (b + c) = (a + b) + c" "(a b c: Nat): (a + b) + c = a + (b + c)"
