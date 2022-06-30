@@ -37,7 +37,7 @@ def main (args: List String) : IO Unit := do
     {module := `Mathbin.All}] {}
   match args with
   | [] => IO.println chkDocs
-  | [s] => do
+  | s::[] => do
     let core := elabThmCore s
     let io? := 
     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
@@ -54,7 +54,7 @@ def main (args: List String) : IO Unit := do
       IO.println "error"
       let m := e.toMessageData
       IO.println <| ← m.toString
-  | [s₁, s₂] => do
+  | s₁ :: s₂ :: [] => do
     let core := compareThmsCore s₁ s₂
     let io? := 
     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
