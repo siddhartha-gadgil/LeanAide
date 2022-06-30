@@ -206,7 +206,7 @@ def provedEquiv (e₁ e₂ : Expr) : TermElabM Bool := do
   let type ← mkAppM ``Iff #[e₁, e₂]
   let mvar ← mkFreshExprMVar type
   let mvarId := mvar.mvarId!
-  let stx ← `(tactic| intros; apply Iff.intro <;> intro hyp  <;> (lynx at *) <;> (try assumption) <;> try (intros; apply Eq.symm; apply hyp))
+  let stx ← `(tactic| intros; lynx at *<;> apply Iff.intro <;> intro hyp  <;> (lynx at *) <;> (try assumption) <;> try (intros; apply Eq.symm; apply hyp))
   let res ←  runTactic mvarId stx
   let (remaining, _) := res
   return remaining.isEmpty
@@ -319,7 +319,11 @@ def checkElabThm (s : String) : TermElabM String := do
 
 #eval compareThms ": False" ": false = true"
 
-#eval compareThms "{A: Type} : False →  A" "{A: Type} : false = true →  A"
+#eval compareThms "{A: Sort} : False →  A" "{A: Sort} : false = true →  A"
+
+example : (∀ {A: Sort}, False → A) ↔ (∀ {A: Sort}, false = true → A) := by
+  intros; lynx at *<;> apply Iff.intro <;> intro hyp  <;> (lynx at *) <;> (try assumption) <;> try (intros; apply Eq.symm; apply hyp)
+
 
 example : (∀ (a b c: Nat), 
   a + (b + c) = (a + b) + c) ↔ (∀ (a b c: Nat), (a + b) + c = a + (b + c)) := by 
