@@ -144,4 +144,4 @@ def retrieve_similar_k_stats(main_prompt,corpus_path,top_k=4,model_name = 'sente
 #print(embedding_1)
 #print(embedding_2)
 #print(util.pytorch_cos_sim(embedding_1, embedding_2))
-test_similarity()
+#test_similarity()
