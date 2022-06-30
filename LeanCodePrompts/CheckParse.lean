@@ -6,7 +6,7 @@ import Std
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Init.Set
 import LeanCodePrompts.Basic
-open Lean Meta Std Elab Parser Mathlib Set
+open Lean Meta Std Elab Parser Mathlib Set Tactic
  
 def s : Set Nat := fun _ => true
 -- #check s ∩ s
@@ -164,6 +164,25 @@ def elabThmCore (s : String)(opens: List String := [])
   : CoreM <| Except String Expr := 
     (elabThm s opens levelNames).run'.run'
 
+theorem true_true_iff_True : true = true ↔ True := by
+    apply Iff.intro
+    intros
+    exact True.intro
+    intros
+    rfl
+
+example : true = true ↔ True := by
+    repeat (rw [true_true_iff_True])
+
+def provedEqual (e₁ e₂ : Expr) : TermElabM Bool := do
+  let type ← mkEq e₁ e₂
+  let mvar ← mkFreshExprMVar type
+  let mvarId := mvar.mvarId!
+  let stx ← `(tactic|try (repeat (rw [true_true_iff_True]));  try (rfl))
+  let res ←  runTactic mvarId stx
+  let (remaining, _) := res
+  return remaining.isEmpty
+
 def compareThms(s₁ s₂ : String)(opens: List String := []) 
   (levelNames : List Name := [`u, `v, `u_1, `u_2])
   : TermElabM <| Except String Bool := do
@@ -172,7 +191,7 @@ def compareThms(s₁ s₂ : String)(opens: List String := [])
   match e₁ with
   | Except.ok e₁ => match e₂ with
     | Except.ok e₂ => 
-        let p ← isDefEq e₁ e₂
+        let p ← provedEqual e₁ e₂
         return Except.ok p
     | Except.error e₂ => return Except.error e₂
   | Except.error e₁ => return Except.error e₁
@@ -261,4 +280,6 @@ def checkElabThm (s : String) : TermElabM String := do
 
 -- #eval elabThm "theorem subfield.list_sum_mem {K : Type u} [field K] (s : subfield K) {l : list K} : (∀ (x : K), x ∈ l → x ∈ s) → l.sum ∈ s"
 
--- #eval compareThms "theorem nonsense(n : Nat) (m : Nat) : n = m" "(p : Nat)(q: Nat) : p = q"
+#eval compareThms "theorem nonsense(n : Nat) (m : Nat) : n = m" "(p : Nat)(q: Nat) : p = q"
+
+#eval compareThms ": True" ": true = true"
