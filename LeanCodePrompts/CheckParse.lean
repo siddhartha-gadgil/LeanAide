@@ -26,6 +26,7 @@ syntax "Π" "(" ident ":" term ")" "," term : term
 syntax "⇑" term : term
 syntax "Type*" : term
 macro_rules
+| `(λ $x:ident, $y:term) => `(fun $x => $y)
 | `(λ $x:ident : $type:term , $y:term) => 
   `(fun ($x : $type)  => $y)
 | `(λ ( $x:ident : $type:term ) , $y:term) => 
