@@ -18,6 +18,9 @@ def main : IO Unit := do
     match ← io?.toIO' with
     | Except.ok res =>
       IO.println s!"obtained constants: {res.size}"
+      let file := System.mkFilePath ["data/binport_names.txt"]
+      IO.FS.writeFile file <| 
+        res.foldl (fun acc x => acc ++ s!"{x}\n") ""
     | Except.error e =>
       IO.println "error"
       let m := e.toMessageData
