@@ -155,11 +155,11 @@ def save_corpus_embeddings(corpus_path="/home/t-agrawala/Desktop/ATP-Project/dat
 
 #save_corpus_embeddings()
 
-main_prompt = "For any propositions `P` and `A`, `P` follows from `A` under the assumption that `P` is true."
-r1 = retrieve_similar_k_stats(main_prompt,use_precomputed_embeddings=True)
-print(r1)
-r2 = retrieve_similar_k_stats(main_prompt)
-print(r2)
+# main_prompt = "For any propositions `P` and `A`, `P` follows from `A` under the assumption that `P` is true."
+# r1 = retrieve_similar_k_stats(main_prompt,use_precomputed_embeddings=True)
+# print(r1)
+# r2 = retrieve_similar_k_stats(main_prompt)
+# print(r2)
 
 #Compute embedding for both lists
 #embedding_1= model.encode(sentences[0], convert_to_tensor=True)
