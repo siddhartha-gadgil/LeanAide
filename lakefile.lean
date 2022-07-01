@@ -10,6 +10,9 @@ lean_exe datagen{
 lean_exe bulkchk{
   supportInterpreter := true
 }
+lean_exe constnames{
+  supportInterpreter := true
+}
 
 @[defaultTarget]
 lean_exe chkthms{
