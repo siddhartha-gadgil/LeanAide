@@ -171,8 +171,6 @@ theorem true_true_iff_True : true = true ↔ True := by
     intros
     rfl
 
-example : true = true ↔ True := by
-    repeat (rw [true_true_iff_True])
 
 theorem true_false_iff_false : false = true ↔ False := by
     apply Iff.intro 

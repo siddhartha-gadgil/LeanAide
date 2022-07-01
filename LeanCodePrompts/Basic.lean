@@ -1,5 +1,5 @@
 import Mathlib.Init.Set
-import Mathbin.All
+-- import Mathbin.All
 /-  Basic definitions to allow syntax matching -/
 
 infix:50 " ⊂ " => Subset.subset
