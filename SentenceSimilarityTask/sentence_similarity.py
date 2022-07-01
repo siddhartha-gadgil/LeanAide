@@ -4,6 +4,8 @@
 from sentence_transformers import SentenceTransformer, util
 import torch
 import json
+import pickle
+import time
 
 def sentence_tokenize_info(sentence,model):
         print("Info for {}".format(sentence))
@@ -105,12 +107,26 @@ def test_similarity_with_data():
         print(corpus[hit['corpus_id']], "(Score: {:.4f})".format(hit['score']))
     """
 
-def retrieve_similar_k_stats(main_prompt,corpus_path,top_k=4,model_name = 'sentence-transformers/all-mpnet-base-v2'):
+def retrieve_similar_k_stats(main_prompt,
+    corpus_path="/home/t-agrawala/Desktop/ATP-Project/data/clean_prompts.json",
+    top_k=4,
+    model_name = 'sentence-transformers/all-mpnet-base-v2',
+    use_precomputed_embeddings=None,embedding_store_path = "/home/t-agrawala/Desktop/ATP-Project/SentenceSimilarityTask/embeddings_store/" ):
+
     fread = open(corpus_path,"r",encoding="utf-8")
     prompt_corpus = json.load(fread)
     model = SentenceTransformer(model_name,device='cuda')
-    prompts = [stats["doc_string"] for stats in prompt_corpus]
-    corpus_embeddings = model.encode(prompts, convert_to_tensor=True)
+    corpus_embeddings = None
+    if use_precomputed_embeddings :
+        embedding_path = embedding_store_path+model_name.split('/')[-1]+".pkl"
+        with open(embedding_path, "rb") as fIn:
+            stored_data = pickle.load(fIn)
+            #stored_sentences = stored_data['sentences']
+            corpus_embeddings = stored_data['embeddings']      
+    else:
+        prompts = [stats["doc_string"] for stats in prompt_corpus]
+        corpus_embeddings = model.encode(prompts, convert_to_tensor=True)
+    
     query_embedding = model.encode(main_prompt, convert_to_tensor=True)
     cos_scores = util.cos_sim(query_embedding.to('cuda'),corpus_embeddings.to('cuda'))[0]
     top_results = torch.topk(cos_scores.to('cuda'),k=top_k)
@@ -122,12 +138,28 @@ def retrieve_similar_k_stats(main_prompt,corpus_path,top_k=4,model_name = 'sente
         # print(prompts[idx])
         result['dct'] = prompt_corpus[idx]
         result_lis.append(result)
+
     return result_lis
+
+def save_corpus_embeddings(corpus_path="/home/t-agrawala/Desktop/ATP-Project/data/clean_prompts.json",out_path = "/home/t-agrawala/Desktop/ATP-Project/SentenceSimilarityTask/embeddings_store/",model_name='sentence-transformers/all-mpnet-base-v2'):
+    out_path = out_path + model_name.split('/')[-1]+".pkl"
+    fread = open(corpus_path,"r",encoding="utf-8")
+    prompt_corpus = json.load(fread)
+    model = SentenceTransformer(model_name,device='cuda')
+    prompts = [stats["doc_string"] for stats in prompt_corpus]
+    corpus_embeddings = model.encode(prompts, convert_to_tensor=True)
+    with open(out_path, "wb") as fOut:
+        pickle.dump({'corpus_path':corpus_path,'sentences': prompts,'embeddings':corpus_embeddings}, fOut, protocol=pickle.HIGHEST_PROTOCOL)
 
 #test_similarity_with_data()
 
+#save_corpus_embeddings()
 
-
+main_prompt = "For any propositions `P` and `A`, `P` follows from `A` under the assumption that `P` is true."
+r1 = retrieve_similar_k_stats(main_prompt,use_precomputed_embeddings=True)
+print(r1)
+r2 = retrieve_similar_k_stats(main_prompt)
+print(r2)
 
 #Compute embedding for both lists
 #embedding_1= model.encode(sentences[0], convert_to_tensor=True)
