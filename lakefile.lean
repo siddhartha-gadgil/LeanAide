@@ -7,6 +7,10 @@ lean_exe datagen{
   supportInterpreter := true
 }
 
+lean_exe constnames{
+  supportInterpreter := true
+}
+
 @[defaultTarget]
 lean_exe chkthms{
   supportInterpreter := true
