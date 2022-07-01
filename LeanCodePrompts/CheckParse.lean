@@ -2,6 +2,7 @@ import Lean
 import Lean.Meta
 import Lean.Elab
 import Lean.Parser
+import Lean.Parser.Extension
 import Std
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Init.Set
@@ -23,7 +24,7 @@ syntax "λ" "_" "," term : term
 syntax "λ" "(" ident ":" term ")" "," term : term
 syntax "Π"  ident ":" term  "," term : term
 syntax "Π" "(" ident ":" term ")" "," term : term
-syntax "⇑" term : term
+-- syntax "⇑" term : term
 syntax "Type*" : term
 macro_rules
 | `(λ $x:ident, $y:term) => `(fun $x => $y)
@@ -41,13 +42,13 @@ macro_rules
   `(($x : $type) →  $y)
 | `(Π ( $x:ident : $type:term ) , $y:term) => 
   `(($x : $type) →  $y)
-| `(⇑ $x:term) => `($x)
+-- | `(⇑ $x:term) => `($x)
 | `(Type*) => `(Type _)
 
 /-- check whether a string parses as a term -/
 def checkTerm (s : String) : MetaM Bool := do
   let env ← getEnv
-  let chk := runParserCategory env `term  s
+  let chk := Lean.Parser.runParserCategory env `term  s
   match chk with
   | Except.ok _  => pure true
   | Except.error _  => pure false
@@ -93,7 +94,7 @@ def thmsPrompt : IO (Array String) := do
 /-- check whether a string parses as a theorem -/
 def checkThm (s : String) : MetaM Bool := do
   let env ← getEnv
-  let chk := runParserCategory env `thmStat  s
+  let chk := Lean.Parser.runParserCategory env `thmStat  s
   match chk with
   | Except.ok _  => pure true
   | Except.error _  => pure false
@@ -123,10 +124,10 @@ partial def showSyntax : Syntax → String
 | _ => ""
 
 def elabThm (s : String)(opens: List String := []) 
-  (levelNames : List Name := [`u, `v, `u_1, `u_2])
+  (levelNames : List Lean.Name := [`u, `v, `u_1, `u_2])
   : TermElabM <| Except String Expr := do
   let env ← getEnv
-  let chk := runParserCategory env `thmStat  s
+  let chk := Lean.Parser.runParserCategory env `thmStat  s
   match chk with
   | Except.ok stx  =>
       match stx with
@@ -148,7 +149,7 @@ def elabThm (s : String)(opens: List String := [])
         for arg in args do
           argS := argS ++ (showSyntax arg) ++ " -> "
         let funStx := s!"{header}{argS}{showSyntax type}"
-        match runParserCategory (← getEnv) `term funStx with
+        match Lean.Parser.runParserCategory (← getEnv) `term funStx with
         | Except.ok termStx => Term.withLevelNames levelNames <|
           try 
             let expr ← Term.withoutErrToSorry <| 
@@ -160,7 +161,7 @@ def elabThm (s : String)(opens: List String := [])
             return Except.error s!"parsed to {funStx}; error while parsing as theorem: {e}" 
 
 def elabThmCore (s : String)(opens: List String := []) 
-  (levelNames : List Name := [`u, `v, `u_1, `u_2])
+  (levelNames : List Lean.Name := [`u, `v, `u_1, `u_2])
   : CoreM <| Except String Expr := 
     (elabThm s opens levelNames).run'.run'
 
@@ -194,7 +195,7 @@ macro_rules
 
 def provedEqual (e₁ e₂ : Expr) : TermElabM Bool := do
   let type ← mkEq e₁ e₂
-  let mvar ← mkFreshExprMVar type
+  let mvar ← mkFreshExprMVar <| some type
   let mvarId := mvar.mvarId!
   let stx ← `(tactic| lynx;  try (rfl))
   let res ←  runTactic mvarId stx
@@ -204,7 +205,7 @@ def provedEqual (e₁ e₂ : Expr) : TermElabM Bool := do
 def provedEquiv (e₁ e₂ : Expr) : TermElabM Bool := do
   try
   let type ← mkAppM ``Iff #[e₁, e₂]
-  let mvar ← mkFreshExprMVar type
+  let mvar ← mkFreshExprMVar <| some type
   let mvarId := mvar.mvarId!
   let stx ← `(tactic| intros; lynx at *<;> apply Iff.intro <;> intro hyp  <;> (lynx at *) <;> (try assumption) <;> try (intros; apply Eq.symm; apply hyp))
   let res ←  runTactic mvarId stx
@@ -214,7 +215,7 @@ def provedEquiv (e₁ e₂ : Expr) : TermElabM Bool := do
 
 
 def compareThms(s₁ s₂ : String)(opens: List String := []) 
-  (levelNames : List Name := [`u, `v, `u_1, `u_2])
+  (levelNames : List Lean.Name := [`u, `v, `u_1, `u_2])
   : TermElabM <| Except String Bool := do
   let e₁ ← elabThm s₁ opens levelNames
   let e₂ ← elabThm s₂ opens levelNames
@@ -228,7 +229,7 @@ def compareThms(s₁ s₂ : String)(opens: List String := [])
   | Except.error e₁ => return Except.error e₁
 
 def compareThmsCore(s₁ s₂ : String)(opens: List String := []) 
-  (levelNames : List Name := [`u, `v, `u_1, `u_2])
+  (levelNames : List Lean.Name := [`u, `v, `u_1, `u_2])
   : CoreM <| Except String Bool := 
     (compareThms s₁ s₂ opens levelNames).run'.run'
 
@@ -250,7 +251,7 @@ def checkStatements : MetaM (List (String × Bool)) := do
 
 def tryParseThm (s : String) : MetaM String := do
   let env ← getEnv
-  let chk := runParserCategory env `thmStat  s
+  let chk := Lean.Parser.runParserCategory env `thmStat  s
   match chk with
   | Except.ok stx  =>
       match stx with
@@ -273,7 +274,7 @@ def tryParseThm (s : String) : MetaM String := do
 
 def checkElabThm (s : String) : TermElabM String := do
   let env ← getEnv
-  let chk := runParserCategory env `thmStat  s
+  let chk := Lean.Parser.runParserCategory env `thmStat  s
   match chk with
   | Except.ok stx  =>
       match stx with
@@ -282,7 +283,7 @@ def checkElabThm (s : String) : TermElabM String := do
         for arg in args do
           argS := argS ++ (showSyntax arg) ++ " -> "
         let funStx := s!"{argS}{showSyntax type}"
-        match runParserCategory env `term funStx with
+        match Lean.Parser.runParserCategory env `term funStx with
         | Except.ok termStx => Term.withLevelNames [`u, `v, `u_1, `u_2] <|
           try 
             let expr ← Term.withoutErrToSorry <| 

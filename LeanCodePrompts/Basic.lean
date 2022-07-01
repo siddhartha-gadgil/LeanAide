@@ -1,8 +1,10 @@
 import Mathlib.Init.Set
+import Mathbin.All
 /-  Basic definitions to allow syntax matching -/
 
 infix:50 " ⊂ " => Subset.subset
 
+/-
 def Set.supset (s₁ s₂ : Set α) : Prop := s₂ ⊂ s₁
 
 infix:50 " ⊃ " => Subset.supset
@@ -20,3 +22,5 @@ def Norm.norm {α : Type u} {k : Type v} [c: HasNorm α k] : α → k :=
   c.norm
 
 notation " ∥ " α " ∥ " =>  Norm.norm α
+-/
+
