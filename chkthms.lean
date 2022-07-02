@@ -1,6 +1,7 @@
 import Lean.Meta
 import LeanCodePrompts
 import LeanCodePrompts.CheckParse
+import LeanCodePrompts.Makecaps
 open Lean
 
 set_option maxHeartbeats 10000000
@@ -38,7 +39,7 @@ def main (args: List String) : IO Unit := do
   match args with
   | [] => IO.println chkDocs
   | s::[] => do
-    let core := elabThmCore s
+    let core := elabThmCore <| mkCap s
     let io? := 
     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
     match ← io?.toIO' with
@@ -55,7 +56,7 @@ def main (args: List String) : IO Unit := do
       let m := e.toMessageData
       IO.println <| ← m.toString
   | s₁ :: s₂ :: [] => do
-    let core := compareThmsCore s₁ s₂
+    let core := compareThmsCore (mkCap s₁) (mkCap s₂)
     let io? := 
     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
     match ← io?.toIO' with
