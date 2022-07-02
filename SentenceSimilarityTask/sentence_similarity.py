@@ -111,7 +111,8 @@ def retrieve_similar_k_stats(main_prompt,
     corpus_path="/home/t-agrawala/Desktop/ATP-Project/data/clean_prompts.json",
     top_k=4,
     model_name = 'sentence-transformers/all-mpnet-base-v2',
-    use_precomputed_embeddings=None,embedding_store_path = "/home/t-agrawala/Desktop/ATP-Project/SentenceSimilarityTask/embeddings_store/" ):
+    use_precomputed_embeddings=None,
+    embedding_store_path = "/home/t-agrawala/Desktop/ATP-Project/SentenceSimilarityTask/embeddings_store/" ):
 
     fread = open(corpus_path,"r",encoding="utf-8")
     prompt_corpus = json.load(fread)
