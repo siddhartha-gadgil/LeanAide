@@ -119,3 +119,5 @@ theorem compl_union {α : Type _} (S T : Set α) : (S ∪ T).compl = S.compl ∩
 The sum of the cubes of two positive integers is never equal to the cube of a third integer.
 -/
 theorem flt_3 : ∀ a b c : ℕ, a > 0 → b > 0 → ¬(a^3 + b^3 = c^3) := sorry
+
+#check Nonempty
