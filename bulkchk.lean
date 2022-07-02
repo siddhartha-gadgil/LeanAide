@@ -16,7 +16,7 @@ def promptsIO : IO (Array String) := do
 
 def main : IO Unit := do
   IO.println "starting"
-    let initTime ← IO.monoMsNow
+  let initTime ← IO.monoMsNow
   initSearchPath (← Lean.findSysroot) ["build/lib", "lean_packages/mathlib/build/lib/", "lean_packages/lean3port/build/lib/", "lean_packages/mathlib3port/build/lib/" ]
   let env ← 
     importModules [{module := `Mathlib},
