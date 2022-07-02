@@ -44,6 +44,16 @@ def main (args: List String) : IO Unit := do
         match md? with
         | Except.error _ => pure ()
         | Except.ok md => entry := entry.push ("metadata", md)
+        let answer? : Option String := 
+          match js.getObjVal? "answer" with
+          | Except.error _ => none
+          | Except.ok answerJs => do
+            match answerJs.getStr? with
+            | Except.error _ => none
+            | Except.ok answer => some <|mkCap answer
+        match answer? with
+          | none => pure ()
+          | some answer => entry := entry.push ("answer", Json.str answer)
         match js.getObjVal? "outputs" with
         | Except.error e => 
             entry := entry.push ("error", Json.str e)
@@ -55,6 +65,7 @@ def main (args: List String) : IO Unit := do
           -- this is where we do the actual work
           let mut elabChecks : Array Json := #[]
           let mut elabs : Array String := #[]
+          let mut eql : Array String := #[]
           for sJs in arr do
             let mut elabEntry : Array (String × Json) := #[]
             match sJs.getStr? with
@@ -62,7 +73,7 @@ def main (args: List String) : IO Unit := do
               elabEntry := elabEntry.push ("error", Json.str e)
             | Except.ok s =>
               elabEntry := elabEntry.push ("statement", Json.str s)
-              let core := elabThmCore s
+              let core := elabThmCore <| mkCap s
               let io? := 
               core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
               match ← io?.toIO' with
@@ -72,6 +83,26 @@ def main (args: List String) : IO Unit := do
                   elabEntry:= elabEntry.push ("success", Json.bool Bool.true)
                   elabEntry := elabEntry.push ("code", Json.str s!"{expr}")
                   elabs:= elabs.push s
+                  match answer? with 
+                  | none => pure ()
+                  | some answer =>
+                    let core := compareThmsCore (mkCap s) answer
+                    let io? := 
+                    core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
+                    match ← io?.toIO' with
+                    | Except.ok res =>
+                      match res with 
+                      | Except.ok expr => do
+                        if expr then eql := eql.push s
+                        else pure ()
+                        pure ()
+                      | Except.error e =>
+                        IO.println e
+                        pure ()
+                    | Except.error e =>
+                      IO.println "error"
+                      let m := e.toMessageData
+                      IO.println <| ← m.toString
                 | Except.error err =>
                   elabEntry:= elabEntry.push ("success", Json.bool Bool.false)
                   elabEntry := elabEntry.push ("parse-message", Json.str err)
@@ -83,7 +114,12 @@ def main (args: List String) : IO Unit := do
           entry := entry.push ("parse-checks", Json.arr elabChecks)
           entry := 
             entry.push ("parsed", Json.arr (elabs.map (Json.str)))
-          pure ()
+          entry := 
+            entry.push ("number-parsed", Json.num elabs.size)
+          entry :=
+            entry.push ("equivalent", Json.arr (eql.map (Json.str)))
+          entry := 
+            entry.push ("number-equivalent", Json.num eql.size)
         entries := entries.push <| Json.mkObj entry.toList
       out := Json.arr entries
   IO.FS.writeFile outfile out.pretty
