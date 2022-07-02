@@ -1,6 +1,7 @@
 import Lean.Meta
 import LeanCodePrompts
 import LeanCodePrompts.CheckParse
+import LeanCodePrompts.Makecaps
 open Lean
 
 set_option maxHeartbeats 10000000
@@ -9,7 +10,9 @@ set_option compiler.extract_closed false
 
 def promptsIO : IO (Array String) := do
   let file := System.mkFilePath ["data/all_outputs.txt"]
-  IO.FS.lines file
+  let lines ← IO.FS.lines file
+  let cls := lines.map mkCap
+  return cls
 
 def main : IO Unit := do
   IO.println "starting"
