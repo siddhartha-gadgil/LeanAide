@@ -6,6 +6,7 @@ import torch
 import json
 import pickle
 import time
+from KNN_search import *
 
 def sentence_tokenize_info(sentence,model):
         print("Info for {}".format(sentence))
@@ -112,12 +113,13 @@ def retrieve_similar_k_stats(main_prompt,
     top_k=4,
     model_name = 'sentence-transformers/all-mpnet-base-v2',
     use_precomputed_embeddings=None,
-    embedding_store_path = "/home/t-agrawala/Desktop/ATP-Project/SentenceSimilarityTask/embeddings_store/" ):
+    embedding_store_path = "/home/t-agrawala/Desktop/ATP-Project/SentenceSimilarityTask/embeddings_store/"):
 
     fread = open(corpus_path,"r",encoding="utf-8")
     prompt_corpus = json.load(fread)
     model = SentenceTransformer(model_name,device='cuda')
     corpus_embeddings = None
+    #TODO optimization here, do one-time loading in the main method
     if use_precomputed_embeddings :
         embedding_path = embedding_store_path+model_name.split('/')[-1]+".pkl"
         with open(embedding_path, "rb") as fIn:
@@ -145,7 +147,7 @@ def retrieve_similar_k_stats(main_prompt,
 def save_corpus_embeddings(corpus_path="/home/t-agrawala/Desktop/ATP-Project/data/clean_prompts.json",out_path = "/home/t-agrawala/Desktop/ATP-Project/SentenceSimilarityTask/embeddings_store/",model_name='sentence-transformers/all-mpnet-base-v2'):
     out_path = out_path + model_name.split('/')[-1]+".pkl"
     fread = open(corpus_path,"r",encoding="utf-8")
-    prompt_corpus = json.load(fread)
+    prompt_corpus = json.load(fread) #Do we need to worry about the order?
     model = SentenceTransformer(model_name,device='cuda')
     prompts = [stats["doc_string"] for stats in prompt_corpus]
     corpus_embeddings = model.encode(prompts, convert_to_tensor=True)
@@ -158,7 +160,14 @@ def save_corpus_embeddings(corpus_path="/home/t-agrawala/Desktop/ATP-Project/dat
 
 # main_prompt = "For any propositions `P` and `A`, `P` follows from `A` under the assumption that `P` is true."
 # r1 = retrieve_similar_k_stats(main_prompt,use_precomputed_embeddings=True)
-# print(r1)
+# for s in r1:
+#     print(s['dct']["doc_string"])
+# print("====================================")
+# ret = convert_to_Dataset()
+# samples = faiss_sample(ret, main_prompt)
+# for s in samples['info']:
+#     print(s["doc_string"])
+
 # r2 = retrieve_similar_k_stats(main_prompt)
 # print(r2)
 
