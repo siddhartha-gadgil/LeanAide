@@ -240,6 +240,34 @@ def compareThmExps(e₁ e₂: Expr)
 def compareThmExpsCore(e₁ e₂: Expr)
   : CoreM <| Except String Bool := do
       (compareThmExps e₁ e₂).run'.run'
+
+def equalThms(s₁ s₂ : String)(opens: List String := []) 
+  (levelNames : List Lean.Name := [`u, `v, `u_1, `u_2, `u_3])
+  : TermElabM Bool := do
+  match ← compareThms s₁ s₂ opens levelNames with
+  | Except.ok p => return p
+  | Except.error _ => return false
+
+def groupThms(ss: Array String)(opens: List String := []) 
+  (levelNames : List Lean.Name := [`u, `v, `u_1, `u_2, `u_3])
+  : TermElabM (Array (Array String)) := do
+    let mut groups: Array (Array String) := Array.empty
+    for s in ss do
+      match ← groups.findIdxM? (fun g => 
+          equalThms s g[0] opens levelNames) with
+      |none  => 
+        groups := groups.push #[s]
+      | some j => 
+        groups := groups.set! j (groups[j].push s)
+    return groups
+
+def groupTheoremsCore(ss: Array String)(opens: List String := []) 
+  (levelNames : List Lean.Name := [`u, `v, `u_1, `u_2, `u_3])
+  : CoreM (Array (Array String)) := 
+    (groupThms ss opens levelNames).run'.run'
+
+
+
 -- Tests
 
 -- #eval checkTerm "(fun x : Nat => x + 1)"

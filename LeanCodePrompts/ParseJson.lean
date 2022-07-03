@@ -1,5 +1,6 @@
 import Lean
 import Lean.Parser
+import LeanCodePrompts.CheckParse
 
 open Lean Parser
 
@@ -11,6 +12,7 @@ syntax str: jsonid
 declare_syntax_cat json
 syntax str : json
 syntax num : json
+syntax scientific: json
 syntax "true" : json
 syntax "false" : json
 syntax "null" : json
@@ -26,8 +28,6 @@ def getJsonSyntax(s: String) : MetaM Syntax := do
 
 #eval getJsonSyntax "[{hello: 1}, [2, 3]]"
 
-#check Bool.true
-
 open Json in
 partial def parseJsonSyntax (s: Syntax) : MetaM Json := do
   match s with
@@ -39,6 +39,8 @@ partial def parseJsonSyntax (s: Syntax) : MetaM Json := do
       return (Json.null)
   | `(json|$s:str) => pure (Syntax.isStrLit? s).get!
   | `(json|$n:num) => pure (Syntax.isNatLit? n).get!
+  | `(json|$n:scientific) => 
+        return (showSyntax s).trim
   | `(json|{ $[$ns : $js],* }) => do
     let mut fields := #[]
     for n in ns, j in js do
@@ -64,9 +66,13 @@ def readJson(s: String) : MetaM Json := do
 
 #eval readJson "[{hello: 1}, [2, 3], {\"x\": 3}]"
 
+
 def checkRead: MetaM Json := do 
   let file := System.mkFilePath ["data/test.json"]
   let s ← IO.FS.readFile file 
   readJson s
 
 #eval checkRead
+
+def readJsonCore(s: String) : CoreM Json :=
+    (readJson s).run'

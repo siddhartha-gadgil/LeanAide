@@ -10,6 +10,12 @@ lean_exe datagen{
 lean_exe bulkchk{
   supportInterpreter := true
 }
+
+@[defaultTarget]
+lean_exe batchcheck{
+  supportInterpreter := true
+}
+
 lean_exe constnames{
   supportInterpreter := true
 }
