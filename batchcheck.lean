@@ -82,7 +82,7 @@ def main (args: List String) : IO Unit := do
                 | Except.ok expr =>
                   elabEntry:= elabEntry.push ("success", Json.bool Bool.true)
                   elabEntry := elabEntry.push ("code", Json.str s!"{expr}")
-                  elabs:= elabs.push s
+                  elabs:= elabs.push <| mkCap s
                   match answer? with 
                   | none => pure ()
                   | some answer =>
@@ -119,7 +119,17 @@ def main (args: List String) : IO Unit := do
           entry :=
             entry.push ("equivalent", Json.arr (eql.map (Json.str)))
           entry := 
-            entry.push ("number-equivalent", Json.num eql.size)
+            entry.push ("number-equivalent", Json.num eql.size) 
+          let core := groupTheoremsCore elabs
+              let io? := 
+              core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
+              match ← io?.toIO' with
+              | Except.ok res => 
+                let gps := toJson res
+                entry := entry.push ("grouped", gps)
+              | Except.error e =>
+                let m := e.toMessageData
+                entry := entry.push ("error", Json.str <| ←  m.toString)
         entries := entries.push <| Json.mkObj entry.toList
       out := Json.arr entries
   IO.FS.writeFile outfile out.pretty

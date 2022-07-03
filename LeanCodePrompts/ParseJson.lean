@@ -28,9 +28,6 @@ def getJsonSyntax(s: String) : MetaM Syntax := do
 
 #eval getJsonSyntax "[{hello: 1}, [2, 3]]"
 
-#check Bool.true
-
-
 open Json in
 partial def parseJsonSyntax (s: Syntax) : MetaM Json := do
   match s with
@@ -43,7 +40,7 @@ partial def parseJsonSyntax (s: Syntax) : MetaM Json := do
   | `(json|$s:str) => pure (Syntax.isStrLit? s).get!
   | `(json|$n:num) => pure (Syntax.isNatLit? n).get!
   | `(json|$n:scientific) => 
-        return showSyntax s
+        return (showSyntax s).trim
   | `(json|{ $[$ns : $js],* }) => do
     let mut fields := #[]
     for n in ns, j in js do
