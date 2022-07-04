@@ -120,4 +120,44 @@ The sum of the cubes of two positive integers is never equal to the cube of a th
 -/
 theorem flt_3 : ∀ a b c : ℕ, a > 0 → b > 0 → ¬(a^3 + b^3 = c^3) := sorry
 
-#check Nonempty
+
+/-
+If every element of a group `G` has order two, then every pair of elements of `G` commutes.
+-/
+theorem order_two_commutative {G: Type _}[Group G] : (∀ x y : G, x * x = 1) → (∀ x y : G, Commute x y) := sorry
+
+/-
+Every prime number is either `2` or odd.
+-/
+theorem prime_two_or_odd {n: Nat} : Prime n → n = 2 ∨ Odd n := sorry
+
+/-
+Every odd degree polynomial over `ℝ` has a zero
+-/
+theorem poly_odd_degree_has_zero {α : Type _} [Field α] (p : Polynomial α) : Odd (p.degree) → ∃ x, p.IsRoot x := sorry
+
+/-
+The product of two consequitive natural numbers is odd
+-/
+theorem product_conseq_odd (n: Nat): Odd <| n * (n + 1) := sorry
+
+/-
+Every constant function `f x = c` from real numbers to real numbers is differentiable.
+-/
+theorem constant_is_differentiable 
+  {f: ℝ → ℝ}: ∃ c: ℝ, (∀ x : ℝ, f x = c) → Differentiable ℝ f := sorry 
+
+/-
+Every index 2 subgroup of a group is free
+-/
+theorem index_two_subgroup {G : Type _} [Groupₓ G] (H : Subgroup G): 
+      H.index = 2 → Subgroup.Normal H := sorry
+
+
+#check @FreeGroup
+
+#check FreeGroup.freeGroupCongr
+
+#check @Subgroup.index_inf_ne_zero
+
+#check @Subgroup.Normal
