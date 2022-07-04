@@ -16,12 +16,16 @@ def depsPrompt : IO (Array String) := do
   let file := System.mkFilePath ["data/types.txt"]
   IO.FS.lines file
 
+declare_syntax_cat typed_ident
+syntax "(" ident ":" term ")" : typed_ident
+syntax "{" ident ":" term "}" : typed_ident
+
 syntax "λ" ident "," term : term
 syntax "λ"  ident ":" term  "," term : term
 syntax "fun" ident "," term : term
 syntax "fun"  ident ":" term  "," term : term
 syntax "λ" "_" "," term : term
-syntax "λ" "(" ident ":" term ")" "," term : term
+syntax "λ" typed_ident* "," term : term
 syntax "Π"  ident ":" term  "," term : term
 syntax "Π" "(" ident ":" term ")" "," term : term
 -- syntax "⇑" term : term
@@ -30,8 +34,8 @@ macro_rules
 | `(λ $x:ident, $y:term) => `(fun $x => $y)
 | `(λ $x:ident : $type:term , $y:term) => 
   `(fun ($x : $type)  => $y)
-| `(λ ( $x:ident : $type:term ) , $y:term) => 
-  `(fun ($x : $type)  => $y)
+| `(λ $xs:typed_ident* , $y:term) => 
+    xs.foldrM (fun x acc => `(fun $x => $acc)) y
 | `(fun $x:ident : $type:term , $y:term) => 
   `(fun ($x : $type)  => $y)
 | `(fun  $x:ident : $type:term  , $y:term) => 
@@ -274,7 +278,7 @@ def groupTheoremsCore(ss: Array String)(opens: List String := [])
 
 -- #eval checkTerm "a • s"
 
--- #eval checkTerm "λ x : Nat, x + 1"
+#eval checkTerm "λ x : Nat, x + 1"
 
 -- #eval checkTerm "a - t = 0"
 

@@ -124,12 +124,12 @@ theorem flt_3 : ∀ a b c : ℕ, a > 0 → b > 0 → ¬(a^3 + b^3 = c^3) := sorr
 /-
 If every element of a group `G` has order two, then every pair of elements of `G` commutes.
 -/
-theorem order_two_commutative {G: Type _}[Group G] : (∀ x y : G, x * x = 1) → (∀ x y : G, Commute x y) := sorry
+theorem elems_order_two_implies_commutative {G: Type _}[Group G] : (∀ x y : G, x * x = 1) → (∀ x y : G, Commute x y) := sorry
 
 /-
 Every prime number is either `2` or odd.
 -/
-theorem prime_two_or_odd {n: Nat} : Prime n → n = 2 ∨ Odd n := sorry
+theorem prime_eq_two_or_odd {n: Nat} : Prime n → n = 2 ∨ Odd n := sorry
 
 /-
 Every odd degree polynomial over `ℝ` has a zero
@@ -153,11 +153,26 @@ Every index 2 subgroup of a group is free
 theorem index_two_subgroup {G : Type _} [Groupₓ G] (H : Subgroup G): 
       H.index = 2 → Subgroup.Normal H := sorry
 
+/-
+Every free group is torsion free
+-/
+theorem free_group_torsion_free {α : Type} :
+  Monoidₓ.IsTorsionFree (FreeGroup α) := sorry
 
-#check @FreeGroup
+/- If the coefficients of a polynomial over rationals are integral, every rational root is integral.-/
+theorem int_poly_rat_zeros_int (p: Polynomial ℚ) :
+  ∀ n: ℕ, IsIntegral ℚ (p.coeff n) →  
+  ∀ x: ℚ, p.IsRoot x →  IsIntegral ℚ x := sorry
 
-#check FreeGroup.freeGroupCongr
+/-
+Every natural number greater than `1` is divisible by a prime number. 
+-/
+theorem has_prime_factor(n: ℕ) :
+  n > 1 → ∃ p: ℕ, Prime p ∧ (∃ d: ℕ, p * d = n) := sorry
 
-#check @Subgroup.index_inf_ne_zero
+/-
+Six is not the sum of two prime numbers.
+-/
+theorem six_not_prime_sum : 
+  ¬ (∃ n m: Nat, Prime n ∧ Prime m ∧ n ≠ m ∧ 6 = n + m) := sorry
 
-#check @Subgroup.Normal
