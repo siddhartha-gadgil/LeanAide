@@ -13,7 +13,8 @@ def main (args: List String) : IO Unit := do
   let env ← 
     importModules [{module := `Mathlib},
     {module := `LeanCodePrompts.Basic},
-    {module:= `LeanCodePrompts.CheckParse}] {}
+    {module:= `LeanCodePrompts.CheckParse},
+    {module := `Mathbin.All}] {}
   let core := promptsThmSplitCore
   let io? := 
     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} 
