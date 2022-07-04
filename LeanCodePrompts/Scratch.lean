@@ -154,6 +154,12 @@ theorem index_two_subgroup {G : Type _} [Groupₓ G] (H : Subgroup G):
       H.index = 2 → Subgroup.Normal H := sorry
 
 /-
+Every subgroup of a free group is free
+-/
+theorem subgpFree {G : Type _} [Groupₓ G] : 
+      (K : Subgroup G) → Σ β, FreeGroup β ≃* ↥K := sorry
+
+/-
 Every free group is torsion free
 -/
 theorem free_group_torsion_free {α : Type} :
