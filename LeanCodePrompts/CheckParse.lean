@@ -28,7 +28,7 @@ syntax "λ" "_" "," term : term
 syntax "λ" typed_ident* "," term : term
 syntax "Π"  ident ":" term  "," term : term
 syntax "Π" "(" ident ":" term ")" "," term : term
--- syntax "⇑" term : term
+syntax "⇑" term : term
 syntax "Type*" : term
 macro_rules
 | `(λ $x:ident, $y:term) => `(fun $x => $y)
@@ -46,7 +46,7 @@ macro_rules
   `(($x : $type) →  $y)
 | `(Π ( $x:ident : $type:term ) , $y:term) => 
   `(($x : $type) →  $y)
--- | `(⇑ $x:term) => `($x)
+| `(⇑ $x:term) => `(↑ $x)
 | `(Type*) => `(Type _)
 
 /-- check whether a string parses as a term -/
