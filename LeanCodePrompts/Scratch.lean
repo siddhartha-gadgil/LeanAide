@@ -165,6 +165,12 @@ Every free group is torsion free
 theorem free_group_torsion_free {α : Type} :
   Monoidₓ.IsTorsionFree (FreeGroup α) := sorry
 
+/-
+Every non-empty subgroup of `ℤ` is isomorphic to `ℤ`
+-/
+theorem integer_subgroups (H : AddSubgroup ℤ) :
+    H.Carrier.Nonempty  →   ↥H ≃+ ℤ := sorry
+
 /- If the coefficients of a polynomial over rationals are integral, every rational root is integral.-/
 theorem int_poly_rat_zeros_int (p: Polynomial ℚ) :
   ∀ n: ℕ, IsIntegral ℚ (p.coeff n) →  
@@ -182,3 +188,16 @@ Six is not the sum of two prime numbers.
 theorem six_not_prime_sum : 
   ¬ (∃ n m: Nat, Prime n ∧ Prime m ∧ n ≠ m ∧ 6 = n + m) := sorry
 
+/-
+A finite torsion-free group is trivial
+-/
+theorem fin_torsionfree {G: Type _}[Groupₓ G][Finite G] :
+  Monoidₓ.IsTorsionFree G → IsSubgroup.Trivial G := sorry
+
+/-
+Any homomorphism from the additive group of rational numbers to `ℤ` is trivial
+-/
+theorem hom_rat_Z_trivial (f : ℚ → ℤ) : 
+  IsAddGroupHom f →  ∀ x: ℚ, f x = 0 := sorry
+
+#check IsGroupHom
