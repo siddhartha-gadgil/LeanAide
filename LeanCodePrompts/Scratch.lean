@@ -200,4 +200,11 @@ Any homomorphism from the additive group of rational numbers to `ℤ` is trivial
 theorem hom_rat_Z_trivial (f : ℚ → ℤ) : 
   IsAddGroupHom f →  ∀ x: ℚ, f x = 0 := sorry
 
-#check IsGroupHom
+/-
+Every finite division ring is a field.
+-/
+theorem fin_int_domain_ring_is_field 
+    {R : Type _} [Ringₓ R][IsDomain R] [Finite R] : Field R := sorry
+
+theorem finite_space_compact{X : Type _}[TopologicalSpace X][Finite X] :
+  CompactSpace X := sorry
