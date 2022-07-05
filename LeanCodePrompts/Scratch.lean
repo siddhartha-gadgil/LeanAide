@@ -206,5 +206,21 @@ Every finite division ring is a field.
 theorem fin_int_domain_ring_is_field 
     {R : Type _} [Ringₓ R][IsDomain R] [Finite R] : Field R := sorry
 
+/-
+Every finite topological space is compact
+-/
 theorem finite_space_compact{X : Type _}[TopologicalSpace X][Finite X] :
   CompactSpace X := sorry
+
+/-
+Every surjective homomorphism from a finitely generated free group to itself is injective
+-/
+theorem freegroup_hopfian {α : Type _} [Finite α]: (f: FreeGroup α → FreeGroup α) → (IsGroupHom f) → f.Surjective → f.Injective := sorry
+
+/-
+Every polynomial of positive degree over reals is unbounded.
+-/
+theorem polys_unbounded(p: Polynomial ℝ) : p.degree > 0 → 
+    ∀ m: ℝ, ∃ x: ℝ, p.eval x  > m ∨ p.eval x < -m  := sorry
+
+noncomputable example : NormedField ℝ := inferInstance
