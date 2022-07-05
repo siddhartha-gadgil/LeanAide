@@ -113,20 +113,21 @@ def retrieve_similar_k_stats(main_prompt,
     top_k=4,
     model_name = 'sentence-transformers/all-mpnet-base-v2',
     use_precomputed_embeddings=None,
-    embedding_store_path = "/home/t-agrawala/Desktop/ATP-Project/SentenceSimilarityTask/embeddings_store/"):
+    #embedding_store_path = "/home/t-agrawala/Desktop/ATP-Project/SentenceSimilarityTask/embeddings_store/"
+    corpus_embeddings = None):
 
     fread = open(corpus_path,"r",encoding="utf-8")
     prompt_corpus = json.load(fread)
     model = SentenceTransformer(model_name,device='cuda')
-    corpus_embeddings = None
+    #corpus_embeddings = None
     #TODO optimization here, do one-time loading in the main method
-    if use_precomputed_embeddings :
-        embedding_path = embedding_store_path+model_name.split('/')[-1]+".pkl"
-        with open(embedding_path, "rb") as fIn:
-            stored_data = pickle.load(fIn)
-            #stored_sentences = stored_data['sentences']
-            corpus_embeddings = stored_data['embeddings']      
-    else:
+    # if use_precomputed_embeddings and embeddings is not None :
+    #     embedding_path = embedding_store_path+model_name.split('/')[-1]+".pkl"
+    #     with open(embedding_path, "rb") as fIn:
+    #         stored_data = pickle.load(fIn)
+    #         #stored_sentences = stored_data['sentences']
+    #         corpus_embeddings = stored_data['embeddings']      
+    if corpus_embeddings is None and use_precomputed_embeddings == False:
         prompts = [stats["doc_string"] for stats in prompt_corpus]
         corpus_embeddings = model.encode(prompts, convert_to_tensor=True)
     
