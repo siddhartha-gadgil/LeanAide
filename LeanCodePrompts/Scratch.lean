@@ -267,8 +267,7 @@ Every Lebesgue measurable function is equal almost everywhere to a Borel measura
 /-
 For any prime divisor $p$ of the order of a finite group $G$, there is a subgroup of $G$ whose order is $p$.
 -/
--- dealing with the subgroup `H` is tricky
--- theorem cauchy {G : Type _} [Groupₓ G] [Fintype G] : ∀ p : ℕ, Prime p → (Fintype.card G % p = 0) → ∃ H : Subgroup G, Set.card H.carrier = p := sorry
+-- theorem cauchy {G : Type _} [Groupₓ G] [Fintype G] : ∀ p : ℕ, Prime p → (Fintype.card G % p = 0) → ∃ H : Subgroup G, Monoidₓ.exponent (↥H) = p := sorry
 
 /-
 Any locally-small category $C$ can be embedded into the category of contravariant functors from $C$ to $Set$.
@@ -368,7 +367,7 @@ theorem non_id_implies_infinite_order {G : Type _} [Groupₓ G] : FreeGroup G �
 /-
 Any sub-ring of a field that contains the identity is an integral domain.
 -/
--- theorem sub_ring_field_with_id_is_int_domain {F : Type _} [Field F] : ∀ R : Subring F, 1 ∈ R.Carrier → IsDomain R := sorry
+theorem sub_ring_field_with_id_is_int_domain {F : Type _} [Field F] : ∀ R : Subring F, 1 ∈ R.Carrier → IsDomain ↥R := sorry
 
 /-
 An element of a discrete valuation ring is a unit if and only if it has a valuation of zero.
