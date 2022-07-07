@@ -223,4 +223,205 @@ Every polynomial of positive degree over reals is unbounded.
 theorem polys_unbounded(p: Polynomial ℝ) : p.degree > 0 → 
     ∀ m: ℝ, ∃ x: ℝ, p.eval x  > m ∨ p.eval x < -m  := sorry
 
-noncomputable example : NormedField ℝ := inferInstance
+/-
+A homomorphism between fields is either injective or trivial.
+-/
+theorem field_hom_inj_or_trivial {F F' : Type _} [Field F] [Field F'] : ∀ ϕ : F →+* F', ϕ.toFun.Injective ∨ (∀ x : F, ϕ x = 0) := sorry
+
+/-
+Any homomorphism from a group $G$ to an Abelian group factors through the Abelianisation of $G$.
+-/
+-- typeclass difficulties
+--theorem abelianisation_factor {G : Type _} [Groupₓ G] [NonAssocSemiringₓ G] {A : Type _} [CommGroup A] [NonAssocSemiringₓ A] [NonAssocSemiringₓ (Abelianization G)] : ∀ ϕ : G →+* A, ∃! (ϕ' : Abelianization G →+* A), ϕ = ϕ' ∘ (@Abelianization.of G _) := sorry
+
+/-
+Every ascending chain of sub-modules of a Noetherian module eventually stabilises.
+-/
+theorem noetherian_implies_ascending_chain_condition {R M : Type _} [Ringₓ R] [AddCommMonoidₓ M] [Module R M] : IsNoetherian R M → ∀ (f : ℕ →o Submodule R M), ∃ n : ℕ, ∀ m : ℕ, n < m → f n = f m := sorry
+
+/-
+Differentiability implies continuity.
+-/
+theorem differentiability_implies_continuity [TopologicalSpace ℝ] : ∀ f : ℝ → ℝ, Differentiable ℝ f → Continuous f := sorry
+
+/-
+Left adjoint functors preserve colimits.
+-/
+open CategoryTheory in
+theorem left_adjoints_preserve_colimits {C D J : Type _} [Category C] [Category D] [Category J] (F : Functor C D) [IsLeftAdjoint F] (K : Functor J C) :
+∀ c : Limits.Cocone K, Limits.IsColimit c → ( Limits.IsColimit $ Functor.mapCocone F c) := sorry
+
+/-
+The angles of a triangle add up to two right angles.
+-/
+theorem angle_sum_pi {p q r : EuclideanSpace ℝ (Finₓ 2)} : EuclideanGeometry.angle p q r + EuclideanGeometry.angle q r p + EuclideanGeometry.angle r p q = Real.pi := sorry
+
+/-
+Every Lebesgue measurable function is equal almost everywhere to a Borel measurable function.
+-/
+
+
+/-
+For any prime divisor $p$ of the order of a finite group $G$, there is a subgroup of $G$ whose order is $p$.
+-/
+-- dealing with the subgroup `H` is tricky
+-- theorem cauchy {G : Type _} [Groupₓ G] [Fintype G] : ∀ p : ℕ, Prime p → (Fintype.card G % p = 0) → ∃ H : Subgroup G, Set.card H.carrier = p := sorry
+
+/-
+Any locally-small category $C$ can be embedded into the category of contravariant functors from $C$ to $Set$.
+-/
+
+
+/-
+Every positive even integer can be written as the sum of two primes.
+-/
+theorem goldbach : ∀ n : ℕ, n > 0 → Even n → ∃ p q : ℕ, Prime p → Prime q → n = p + q := sorry
+
+/-
+A complex function that is once differentiable is infinitely differentiable.
+-/
+
+
+/-
+The elements of any finite distributive lattice can be represented as finite sets, in such a way that the meet and join lattice operations correspond to unions and intersections of sets.
+-/
+
+/-
+Every matrix satisfies its own characteristic polynomial.
+-/
+theorem cayley_hamilton {R : Type _} [CommRingₓ R] {n : Type _} [DecidableEq n] [Fintype n] (M : Matrix n n R) : (Polynomial.aeval M) M.charpoly = 0 := sorry
+
+/-
+The square root of an irrational number is irrational.
+-/
+theorem sqrt_of_irrat_irrat (x : ℝ) : Irrational x → Irrational (Real.sqrt x) := sorry
+
+/-
+Among all rectangles of a given area $A$, the square of side √A has the smallest perimeter.
+-/
+
+/-
+If each strongly-connected component of a graph is contracted to a single vertex, the resulting graph is a directed acyclic graph.
+-/
+
+/-
+If $n$ infinitely long straight lines are lying on a plane such that no two lines are parallel and no three lines intersect at a single point, then the lines divide the plane into $(n^2 + n + 2)/2$ regions.
+-/
+
+/-
+The tangent bundle of the circle is trivial.
+-/
+
+/-
+The number of binary strings of length $n$ with no consecutive zeros is equal to the $n+2$th Fibonacci number.
+-/
+
+/-
+If a sub-sequence of a Cauchy sequence in a metric space converges to a point, then the full sequence also converges to the same point.
+-/
+
+/-
+Every finite Abelian group is isomorphic to the product of cyclic groups.
+-/
+
+/-
+If the square of a number is even, the number itself is even.
+-/
+theorem sq_even_implies_num_even : ∀ n : ℕ, Even (n^2) → Even n := sorry
+
+/-
+In a finite commutative ring, all prime ideals are maximal.
+-/
+theorem finite_ring_prime_implies_maximal {R : Type _} [CommRingₓ R] [Fintype R] : ∀ (Idl : Ideal R), Idl.IsPrime → Idl.IsMaximal := sorry
+
+/-
+An integer polynomial with a root in the integers has a root modulo every prime.
+-/
+
+/-
+The number of Sylow-2 subgroups of a dihedral group is equal to the largest odd number dividing the order of the group.
+-/
+
+/-
+A topological space $X$ is Hausdorff if and only if the diagonal is a closed set in $X × X$.
+-/
+
+/-
+If every point of a subset of a topological space is contained in some open set, the subset itself is open.
+-/
+theorem open_iff_open_nhd_all_pt {X : Type _} [TopologicalSpace X] (S : Set X) : (∀ x ∈ S, ∃ U : Set X, IsOpen U) → IsOpen S := sorry
+
+/-
+The product of a complex number with its conjugate is a real number.
+-/
+theorem complex_conj_prod_real : ∀ z : ℂ, ∃ r : ℝ, z * (starRingEnd ℂ $ z) = (r : ℂ) := sorry
+
+/-
+Every non-identity element of a free group is of infinite order.
+-/
+theorem non_id_implies_infinite_order {G : Type _} [Groupₓ G] : FreeGroup G → (∀ g : G, g ≠ 1 → orderOf g = 0) := sorry
+
+/-
+Any sub-ring of a field that contains the identity is an integral domain.
+-/
+
+/-
+An element of a discrete valuation ring is a unit if and only if it has a valuation of zero.
+-/
+
+/-
+Every automorphism of a tree fixes a vertex or an edge.
+-/
+
+/-
+If $e$ is an idempotent in a commutative ring $R$ with identity, the $R$ is isomorphic to the product of the ideals generated by $e$ and $1-e$.
+-/
+
+/-
+The number of leaves in any tree is at least the maximum degree.
+-/
+
+/-
+The exponential function is convex.
+-/
+
+/-
+For every natural number $k$, there is a natural number $n$ such that any partition of the first $n$ natural numbers into $k$ sets has a set containing numbers $x, y, z$ such that $x + y = z$.
+-/
+
+/-
+No non-constant polynomial of a complex variable can take imaginary values only.
+-/
+
+/-
+For any two relatively prime positive integers $a$ and $b$, every sufficiently large natural number $N$ can be written as a linear combination $ax + by$ of $a$ and $b$, where both $x$ and $y$ are natural numbers.
+-/
+
+/-
+An integer-valued polynomial need not have all integer coefficients.
+-/
+
+/-
+For a module $M$, if a sub-module $N$ and the quotient $M/N$ are both finitely generated, then so is $M$.
+-/
+
+/-
+If $ϕ$ is a linear transformation from a finite dimensional vector space to itself, there is an integer $m$ such that the intersection of the image of $ϕ^m$ with the kernel of $ϕ^m$ is trivial.
+-/
+
+/-
+The eigenvalues of an orthogonal matrix have absolute value $1$.
+-/
+
+/-
+In a commutative ring with prime characteristic $p$, the $p$th power of the sum of two elements is equal to the sum of the $p$th powers of the elements.
+-/
+
+/-
+Every alternating $n$ tensor over a vector space of dimension $n$ is a scalar multiple of the determinant.
+-/
+
+/-
+An absolutely convergent sequence is convergent.
+-/
+
