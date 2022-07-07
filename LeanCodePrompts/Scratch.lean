@@ -74,12 +74,13 @@ lemma zorn {α : Type _} [PartialOrder α] [Nonempty α] : (∀ c : Set α, IsCh
 /-
 A group whose automorphism group is cyclic is Abelian.
 -/
-
+theorem aut_group_cyclic_implies_abelian {G : Type _} [Groupₓ G] : CategoryTheory.Aut G → CommGroup G := sorry
 
 /-
 A uniformly continuous function of a uniformly continuous function is uniformly continuous.
+* This translation may be incorrect
 -/
-
+theorem uniformcts_of_uniformcts {α β γ : Type _} [UniformSpace α] [UniformSpace β] [UniformSpace γ] (f : α → β) (g : β → γ) : UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f) := sorry
 
 /-
 The image of a union of sets is the union of the images.
@@ -89,8 +90,8 @@ theorem image_union (f : α → β) (S : Set (Set α)) : (f <$> (⋃₀ S)) = (�
 /-
 A topological space is normal if and only if any two disjoint closed subsets can be separated by a continuous function.
 -/
--- lemma urysohn {X : Type _} [TopologicalSpace X] [NormalSpace X] {S T : Set X} : IsClosed S → IsClosed T → Disjoint S T →
---  (∃ f : X → ℝ, Continuous f → ):= sorry
+lemma urysohn {X : Type _} [TopologicalSpace X] [TopologicalSpace ℝ] : NormalSpace X ↔ ( ∀ {S T : Set X}, IsClosed S → IsClosed T → Disjoint S T →
+ (∃ f : X → ℝ, Continuous f → (∀ x ∈ S, f x = 0) ∧ (∀ x ∈ T, f x = 1)) ) := sorry
 
 /-
 The only field automorphism of the reals is the identity.
@@ -105,10 +106,12 @@ theorem period_three_implies_chaos : ∀ f : Set.Icc 0 1 → Set.Icc 0 1, (∃ x
 /-
 A terminal object in a category is unique up to unique isomorphism.
 -/
+theorem terminal_unique_iso {C : Type _} [CategoryTheory.Category C] : ∀ T₁ T₂ : C, CategoryTheory.Limits.IsTerminal T₁ → CategoryTheory.Limits.IsTerminal T₂ → (∃ ι : CategoryTheory.Iso T₁ T₂, ∀ ι' : CategoryTheory.Iso T₁ T₂, ι = ι') := sorry
 
 /-
 A finitely-presented group containing a torsion element is finite.
 -/
+theorem torsion_in_fg_group_implies_finite {G : Type _} [Groupₓ G] : Groupₓ.Fg G → Finite G := sorry
 
 /-
 The complement of the union of two sets is the intersection of their complements.
@@ -345,6 +348,7 @@ The number of Sylow-2 subgroups of a dihedral group is equal to the largest odd 
 /-
 A topological space $X$ is Hausdorff if and only if the diagonal is a closed set in $X × X$.
 -/
+theorem hausdorff_iff_diag_closed {X : Type _} [TopologicalSpace X] : T2Space X ↔ IsClosed (Set.Diagonal X) := sorry
 
 /-
 If every point of a subset of a topological space is contained in some open set, the subset itself is open.
@@ -364,10 +368,12 @@ theorem non_id_implies_infinite_order {G : Type _} [Groupₓ G] : FreeGroup G �
 /-
 Any sub-ring of a field that contains the identity is an integral domain.
 -/
+-- theorem sub_ring_field_with_id_is_int_domain {F : Type _} [Field F] : ∀ R : Subring F, 1 ∈ R.Carrier → IsDomain R := sorry
 
 /-
 An element of a discrete valuation ring is a unit if and only if it has a valuation of zero.
 -/
+theorem dvr_unit_iff_val_zero {R : Type _} [CommRingₓ R] [IsDomain R] [DiscreteValuationRing R] : ∀ r : R, IsUnit r → DiscreteValuationRing.addVal R r = 0 := sorry
 
 /-
 Every automorphism of a tree fixes a vertex or an edge.
@@ -384,6 +390,7 @@ The number of leaves in any tree is at least the maximum degree.
 /-
 The exponential function is convex.
 -/
+theorem exp_convex : ConvexOn ℝ Set.univ Real.exp := sorry
 
 /-
 For every natural number $k$, there is a natural number $n$ such that any partition of the first $n$ natural numbers into $k$ sets has a set containing numbers $x, y, z$ such that $x + y = z$.
@@ -396,6 +403,7 @@ No non-constant polynomial of a complex variable can take imaginary values only.
 /-
 For any two relatively prime positive integers $a$ and $b$, every sufficiently large natural number $N$ can be written as a linear combination $ax + by$ of $a$ and $b$, where both $x$ and $y$ are natural numbers.
 -/
+theorem coprime_integer_span_sylvester_coin : ∀ a b : ℕ, a > 0 → b > 0 → Nat.coprime a b → ∃ m : ℕ, ∀ N : ℕ, N > m → ∃ x y : ℕ, N = a*x + b*y := sorry
 
 /-
 An integer-valued polynomial need not have all integer coefficients.
@@ -404,6 +412,7 @@ An integer-valued polynomial need not have all integer coefficients.
 /-
 For a module $M$, if a sub-module $N$ and the quotient $M/N$ are both finitely generated, then so is $M$.
 -/
+-- theorem module_fg_if_sub_and_quot_fg {M R : Type _} [Ringₓ R] [AddCommGroupₓ M] [Module R M] : ∀ N : Submodule R M, N.Fg → (N.Quotient.Module.Fg) → M.Fg := sorry
 
 /-
 If $ϕ$ is a linear transformation from a finite dimensional vector space to itself, there is an integer $m$ such that the intersection of the image of $ϕ^m$ with the kernel of $ϕ^m$ is trivial.
@@ -416,6 +425,7 @@ The eigenvalues of an orthogonal matrix have absolute value $1$.
 /-
 In a commutative ring with prime characteristic $p$, the $p$th power of the sum of two elements is equal to the sum of the $p$th powers of the elements.
 -/
+theorem frobenius_pow_sum_eq_sum_pow {R : Type _} [CommRingₓ R] : (p : ℕ) → Prime p → CharP R p → ∀ a b : R, (a + b)^p = a^p + b^p := sorry
 
 /-
 Every alternating $n$ tensor over a vector space of dimension $n$ is a scalar multiple of the determinant.
@@ -425,3 +435,8 @@ Every alternating $n$ tensor over a vector space of dimension $n$ is a scalar mu
 An absolutely convergent sequence is convergent.
 -/
 
+/-
+The combinator (S K K) is equal to the identity combinator.
+-/
+-- Library/Init/Core.lean not yet ported
+-- theorem combinator_I_derivable_from_S_K : Combinator.S Combinator.K Combinator.K = Combinator.I := sorry
