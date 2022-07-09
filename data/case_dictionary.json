@@ -1,0 +1,4246 @@
+[
+  {
+    "snakecase": "add_commute",
+    "camelcase": "AddCommute"
+  },
+  {
+    "snakecase": "zero_hom",
+    "camelcase": "ZeroHom"
+  },
+  {
+    "snakecase": "baire_space",
+    "camelcase": "BaireSpace"
+  },
+  {
+    "snakecase": "conditionally_complete_lattice",
+    "camelcase": "ConditionallyCompleteLattice"
+  },
+  {
+    "snakecase": "partrec",
+    "camelcase": "Partrec"
+  },
+  {
+    "snakecase": "left_distrib_class",
+    "camelcase": "LeftDistribClass"
+  },
+  {
+    "snakecase": "bind",
+    "camelcase": "Bind"
+  },
+  {
+    "snakecase": "pmf",
+    "camelcase": "Pmf"
+  },
+  {
+    "snakecase": "fixed_by_finite",
+    "camelcase": "FixedByFinite"
+  },
+  {
+    "snakecase": "sup",
+    "camelcase": "Sup_eq_bot"
+  },
+  {
+    "snakecase": "transcendental",
+    "camelcase": "Transcendental"
+  },
+  {
+    "snakecase": "has_fderiv_at_filter",
+    "camelcase": "HasFderivAtFilter"
+  },
+  {
+    "snakecase": "normal",
+    "camelcase": "Normal"
+  },
+  {
+    "snakecase": "locally_finite_order",
+    "camelcase": "LocallyFiniteOrder"
+  },
+  {
+    "snakecase": "quotient",
+    "camelcase": "Quotient"
+  },
+  {
+    "snakecase": "linear_ordered_add_comm_monoid_with_top",
+    "camelcase": "LinearOrderedAddCommMonoidWithTop"
+  },
+  {
+    "snakecase": "has_abs",
+    "camelcase": "HasAbs"
+  },
+  {
+    "snakecase": "analytic_at",
+    "camelcase": "AnalyticAt"
+  },
+  {
+    "snakecase": "closure",
+    "camelcase": "Closure"
+  },
+  {
+    "snakecase": "bdd_above",
+    "camelcase": "BddAbove"
+  },
+  {
+    "snakecase": "subset",
+    "camelcase": "Subset"
+  },
+  {
+    "snakecase": "metric_space",
+    "camelcase": "MetricSpace"
+  },
+  {
+    "snakecase": "is_domain",
+    "camelcase": "IsDomain"
+  },
+  {
+    "snakecase": "order_bot",
+    "camelcase": "OrderBot"
+  },
+  {
+    "snakecase": "right_distrib_class",
+    "camelcase": "RightDistribClass"
+  },
+  {
+    "snakecase": "ext",
+    "camelcase": "Ext_obj_map"
+  },
+  {
+    "snakecase": "is_closed_map",
+    "camelcase": "IsClosedMap"
+  },
+  {
+    "snakecase": "lower_semicontinuous_at",
+    "camelcase": "LowerSemicontinuousAt"
+  },
+  {
+    "snakecase": "star_semigroup",
+    "camelcase": "StarSemigroup"
+  },
+  {
+    "snakecase": "triv_sq_zero_ext",
+    "camelcase": "TrivSqZeroExt"
+  },
+  {
+    "snakecase": "holder_on_with",
+    "camelcase": "HolderOnWith"
+  },
+  {
+    "snakecase": "has_compact_support",
+    "camelcase": "HasCompactSupport"
+  },
+  {
+    "snakecase": "or",
+    "camelcase": "Or"
+  },
+  {
+    "snakecase": "max_chain",
+    "camelcase": "MaxChain"
+  },
+  {
+    "snakecase": "cont",
+    "camelcase": "Cont"
+  },
+  {
+    "snakecase": "is_order_right_adjoint",
+    "camelcase": "IsOrderRightAdjoint"
+  },
+  {
+    "snakecase": "cont_diff_at",
+    "camelcase": "ContDiffAt"
+  },
+  {
+    "snakecase": "is_min",
+    "camelcase": "IsMin"
+  },
+  {
+    "snakecase": "covariant_class",
+    "camelcase": "CovariantClass"
+  },
+  {
+    "snakecase": "rank_condition",
+    "camelcase": "RankCondition"
+  },
+  {
+    "snakecase": "ext",
+    "camelcase": "Ext_obj_obj"
+  },
+  {
+    "snakecase": "add_cancel_comm_monoid",
+    "camelcase": "AddCancelCommMonoid"
+  },
+  {
+    "snakecase": "sup",
+    "camelcase": "Sup_eq_of_forall_le_of_forall_lt_exists_gt"
+  },
+  {
+    "snakecase": "balanced",
+    "camelcase": "Balanced"
+  },
+  {
+    "snakecase": "interval_integrable",
+    "camelcase": "IntervalIntegrable"
+  },
+  {
+    "snakecase": "has_faithful_smul",
+    "camelcase": "HasFaithfulSmul"
+  },
+  {
+    "snakecase": "is_local_extr_on",
+    "camelcase": "IsLocalExtrOn"
+  },
+  {
+    "snakecase": "normed_ring",
+    "camelcase": "NormedRing"
+  },
+  {
+    "snakecase": "local_equiv",
+    "camelcase": "LocalEquiv"
+  },
+  {
+    "snakecase": "generalized_continued_fraction",
+    "camelcase": "GeneralizedContinuedFraction"
+  },
+  {
+    "snakecase": "is_noetherian_ring",
+    "camelcase": "IsNoetherianRing"
+  },
+  {
+    "snakecase": "ring",
+    "camelcase": "Ring"
+  },
+  {
+    "snakecase": "is_lie_abelian",
+    "camelcase": "IsLieAbelian"
+  },
+  {
+    "snakecase": "unit_interval",
+    "camelcase": "UnitInterval"
+  },
+  {
+    "snakecase": "inner_product_space",
+    "camelcase": "InnerProductSpace"
+  },
+  {
+    "snakecase": "continuous_multilinear_map",
+    "camelcase": "ContinuousMultilinearMap"
+  },
+  {
+    "snakecase": "clifford_algebra",
+    "camelcase": "CliffordAlgebra"
+  },
+  {
+    "snakecase": "subalgebra",
+    "camelcase": "Subalgebra"
+  },
+  {
+    "snakecase": "holder_with",
+    "camelcase": "HolderWith"
+  },
+  {
+    "snakecase": "linear_pmap",
+    "camelcase": "LinearPmap"
+  },
+  {
+    "snakecase": "prime",
+    "camelcase": "Prime"
+  },
+  {
+    "snakecase": "opposite",
+    "camelcase": "Opposite"
+  },
+  {
+    "snakecase": "is_square",
+    "camelcase": "IsSquare"
+  },
+  {
+    "snakecase": "open_subgroup",
+    "camelcase": "OpenSubgroup"
+  },
+  {
+    "snakecase": "has_strict_deriv_at",
+    "camelcase": "HasStrictDerivAt"
+  },
+  {
+    "snakecase": "parse_result",
+    "camelcase": "ParseResult"
+  },
+  {
+    "snakecase": "absorbent",
+    "camelcase": "Absorbent"
+  },
+  {
+    "snakecase": "linear_isometry_equiv",
+    "camelcase": "LinearIsometryEquiv"
+  },
+  {
+    "snakecase": "is_local_max_on",
+    "camelcase": "IsLocalMaxOn"
+  },
+  {
+    "snakecase": "exp_char",
+    "camelcase": "ExpChar"
+  },
+  {
+    "snakecase": "lipschitz_on_with",
+    "camelcase": "LipschitzOnWith"
+  },
+  {
+    "snakecase": "polish_space",
+    "camelcase": "PolishSpace"
+  },
+  {
+    "snakecase": "id",
+    "camelcase": "Id"
+  },
+  {
+    "snakecase": "sup",
+    "camelcase": "Sup_singleton"
+  },
+  {
+    "snakecase": "false",
+    "camelcase": "False"
+  },
+  {
+    "snakecase": "of_nat",
+    "camelcase": "OfNat"
+  },
+  {
+    "snakecase": "hall_matchings_on",
+    "camelcase": "HallMatchingsOn"
+  },
+  {
+    "snakecase": "is_add_monoid_hom",
+    "camelcase": "IsAddMonoidHom"
+  },
+  {
+    "snakecase": "continuous_within_at",
+    "camelcase": "ContinuousWithinAt"
+  },
+  {
+    "snakecase": "normed_algebra",
+    "camelcase": "NormedAlgebra"
+  },
+  {
+    "snakecase": "is_submonoid",
+    "camelcase": "IsSubmonoid"
+  },
+  {
+    "snakecase": "semigroup_with_zero",
+    "camelcase": "SemigroupWithZero"
+  },
+  {
+    "snakecase": "is_add_hom",
+    "camelcase": "IsAddHom"
+  },
+  {
+    "snakecase": "pfunctor",
+    "camelcase": "Pfunctor"
+  },
+  {
+    "snakecase": "add_subsemigroup",
+    "camelcase": "AddSubsemigroup"
+  },
+  {
+    "snakecase": "erased",
+    "camelcase": "Erased"
+  },
+  {
+    "snakecase": "inf",
+    "camelcase": "Inf_union"
+  },
+  {
+    "snakecase": "is_compact",
+    "camelcase": "IsCompact"
+  },
+  {
+    "snakecase": "has_set_prod",
+    "camelcase": "HasSetProd"
+  },
+  {
+    "snakecase": "add_zero_class",
+    "camelcase": "AddZeroClass"
+  },
+  {
+    "snakecase": "normalized_gcd_monoid",
+    "camelcase": "NormalizedGcdMonoid"
+  },
+  {
+    "snakecase": "is_max_on",
+    "camelcase": "IsMaxOn"
+  },
+  {
+    "snakecase": "localization",
+    "camelcase": "Localization"
+  },
+  {
+    "snakecase": "sigma",
+    "camelcase": "Sigma"
+  },
+  {
+    "snakecase": "int",
+    "camelcase": "Int"
+  },
+  {
+    "snakecase": "inf",
+    "camelcase": "Inf_mem_closure"
+  },
+  {
+    "snakecase": "conformal",
+    "camelcase": "Conformal"
+  },
+  {
+    "snakecase": "cardinal",
+    "camelcase": "Cardinal"
+  },
+  {
+    "snakecase": "interior",
+    "camelcase": "Interior"
+  },
+  {
+    "snakecase": "ordered_smul",
+    "camelcase": "OrderedSmul"
+  },
+  {
+    "snakecase": "tensor_algebra",
+    "camelcase": "TensorAlgebra"
+  },
+  {
+    "snakecase": "uniform_continuous_on",
+    "camelcase": "UniformContinuousOn"
+  },
+  {
+    "snakecase": "monoid_algebra",
+    "camelcase": "MonoidAlgebra"
+  },
+  {
+    "snakecase": "is_dedekind_domain_inv",
+    "camelcase": "IsDedekindDomainInv"
+  },
+  {
+    "snakecase": "upper_semicontinuous_within_at",
+    "camelcase": "UpperSemicontinuousWithinAt"
+  },
+  {
+    "snakecase": "ring_hom_isometric",
+    "camelcase": "RingHomIsometric"
+  },
+  {
+    "snakecase": "fundamental_group",
+    "camelcase": "FundamentalGroup"
+  },
+  {
+    "snakecase": "monoid_with_zero_hom",
+    "camelcase": "MonoidWithZeroHom"
+  },
+  {
+    "snakecase": "padic",
+    "camelcase": "Padic"
+  },
+  {
+    "snakecase": "spectrum",
+    "camelcase": "Spectrum"
+  },
+  {
+    "snakecase": "add_group",
+    "camelcase": "AddGroup"
+  },
+  {
+    "snakecase": "is_of_fin_order",
+    "camelcase": "IsOfFinOrder"
+  },
+  {
+    "snakecase": "inf",
+    "camelcase": "Inf_singleton"
+  },
+  {
+    "snakecase": "semi_normed_ring",
+    "camelcase": "SemiNormedRing"
+  },
+  {
+    "snakecase": "sup",
+    "camelcase": "Sup_eq_supr"
+  },
+  {
+    "snakecase": "has_measurable_mul",
+    "camelcase": "HasMeasurableMul"
+  },
+  {
+    "snakecase": "semilattice_inf",
+    "camelcase": "SemilatticeInf"
+  },
+  {
+    "snakecase": "add_torsor",
+    "camelcase": "AddTorsor"
+  },
+  {
+    "snakecase": "quandle",
+    "camelcase": "Quandle"
+  },
+  {
+    "snakecase": "add_mon",
+    "camelcase": "AddMon"
+  },
+  {
+    "snakecase": "commute",
+    "camelcase": "Commute"
+  },
+  {
+    "snakecase": "truncated_witt_vector",
+    "camelcase": "TruncatedWittVector"
+  },
+  {
+    "snakecase": "order_topology",
+    "camelcase": "OrderTopology"
+  },
+  {
+    "snakecase": "algebraic_independent",
+    "camelcase": "AlgebraicIndependent"
+  },
+  {
+    "snakecase": "rep",
+    "camelcase": "Rep"
+  },
+  {
+    "snakecase": "discrete_topology",
+    "camelcase": "DiscreteTopology"
+  },
+  {
+    "snakecase": "subfield",
+    "camelcase": "Subfield"
+  },
+  {
+    "snakecase": "and",
+    "camelcase": "And"
+  },
+  {
+    "snakecase": "is_fw_invariant",
+    "camelcase": "IsFwInvariant"
+  },
+  {
+    "snakecase": "mul_equiv",
+    "camelcase": "MulEquiv"
+  },
+  {
+    "snakecase": "add_monoid_hom_class",
+    "camelcase": "AddMonoidHomClass"
+  },
+  {
+    "snakecase": "preorder",
+    "camelcase": "Preorder"
+  },
+  {
+    "snakecase": "has_deriv_at_filter",
+    "camelcase": "HasDerivAtFilter"
+  },
+  {
+    "snakecase": "born",
+    "camelcase": "Born"
+  },
+  {
+    "snakecase": "strict_mono_on",
+    "camelcase": "StrictMonoOn"
+  },
+  {
+    "snakecase": "is_add_cyclic",
+    "camelcase": "IsAddCyclic"
+  },
+  {
+    "snakecase": "is_local_min_on",
+    "camelcase": "IsLocalMinOn"
+  },
+  {
+    "snakecase": "bilin_form",
+    "camelcase": "BilinForm"
+  },
+  {
+    "snakecase": "is_add_right_regular",
+    "camelcase": "IsAddRightRegular"
+  },
+  {
+    "snakecase": "tc",
+    "camelcase": "Tc"
+  },
+  {
+    "snakecase": "quotient_map",
+    "camelcase": "QuotientMap"
+  },
+  {
+    "snakecase": "is_totally_separated",
+    "camelcase": "IsTotallySeparated"
+  },
+  {
+    "snakecase": "open_add_subgroup",
+    "camelcase": "OpenAddSubgroup"
+  },
+  {
+    "snakecase": "inf",
+    "camelcase": "Inf_diff_singleton_top"
+  },
+  {
+    "snakecase": "is_nonstrict_strict_order",
+    "camelcase": "IsNonstrictStrictOrder"
+  },
+  {
+    "snakecase": "inv",
+    "camelcase": "Inv"
+  },
+  {
+    "snakecase": "char_buffer",
+    "camelcase": "CharBuffer"
+  },
+  {
+    "snakecase": "is_descending_central_series",
+    "camelcase": "IsDescendingCentralSeries"
+  },
+  {
+    "snakecase": "local_homeomorph",
+    "camelcase": "LocalHomeomorph"
+  },
+  {
+    "snakecase": "is_bounded_linear_map",
+    "camelcase": "IsBoundedLinearMap"
+  },
+  {
+    "snakecase": "linear_ordered_semiring",
+    "camelcase": "LinearOrderedSemiring"
+  },
+  {
+    "snakecase": "quasi_sober",
+    "camelcase": "QuasiSober"
+  },
+  {
+    "snakecase": "linear_map",
+    "camelcase": "LinearMap"
+  },
+  {
+    "snakecase": "is_open",
+    "camelcase": "IsOpen"
+  },
+  {
+    "snakecase": "reflexive",
+    "camelcase": "Reflexive"
+  },
+  {
+    "snakecase": "is_antichain",
+    "camelcase": "IsAntichain"
+  },
+  {
+    "snakecase": "has_ftaylor_series_up_to",
+    "camelcase": "HasFtaylorSeriesUpTo"
+  },
+  {
+    "snakecase": "valuation",
+    "camelcase": "Valuation"
+  },
+  {
+    "snakecase": "seq",
+    "camelcase": "Seq"
+  },
+  {
+    "snakecase": "group",
+    "camelcase": "Group"
+  },
+  {
+    "snakecase": "uniform_inducing",
+    "camelcase": "UniformInducing"
+  },
+  {
+    "snakecase": "same_ray",
+    "camelcase": "SameRay"
+  },
+  {
+    "snakecase": "has_btw",
+    "camelcase": "HasBtw"
+  },
+  {
+    "snakecase": "fraction_ring",
+    "camelcase": "FractionRing"
+  },
+  {
+    "snakecase": "language",
+    "camelcase": "Language"
+  },
+  {
+    "snakecase": "quot",
+    "camelcase": "Quot"
+  },
+  {
+    "snakecase": "ideal",
+    "camelcase": "Ideal"
+  },
+  {
+    "snakecase": "unique_diff_on",
+    "camelcase": "UniqueDiffOn"
+  },
+  {
+    "snakecase": "prod",
+    "camelcase": "Prod"
+  },
+  {
+    "snakecase": "simplex_category",
+    "camelcase": "SimplexCategory"
+  },
+  {
+    "snakecase": "subadditive",
+    "camelcase": "Subadditive"
+  },
+  {
+    "snakecase": "is_localization",
+    "camelcase": "IsLocalization"
+  },
+  {
+    "snakecase": "right_cancel_semigroup",
+    "camelcase": "RightCancelSemigroup"
+  },
+  {
+    "snakecase": "subgroup_class",
+    "camelcase": "SubgroupClass"
+  },
+  {
+    "snakecase": "quiver",
+    "camelcase": "Quiver"
+  },
+  {
+    "snakecase": "has_fpower_series_on_ball",
+    "camelcase": "HasFpowerSeriesOnBall"
+  },
+  {
+    "snakecase": "sup",
+    "camelcase": "Sup_atoms_le_eq"
+  },
+  {
+    "snakecase": "mul_one_class",
+    "camelcase": "MulOneClass"
+  },
+  {
+    "snakecase": "inseparable",
+    "camelcase": "Inseparable"
+  },
+  {
+    "snakecase": "is_add_regular",
+    "camelcase": "IsAddRegular"
+  },
+  {
+    "snakecase": "dense",
+    "camelcase": "Dense"
+  },
+  {
+    "snakecase": "lower_semicontinuous_within_at",
+    "camelcase": "LowerSemicontinuousWithinAt"
+  },
+  {
+    "snakecase": "empty_relation",
+    "camelcase": "EmptyRelation"
+  },
+  {
+    "snakecase": "is_trivial_topological_fiber_bundle",
+    "camelcase": "IsTrivialTopologicalFiberBundle"
+  },
+  {
+    "snakecase": "name",
+    "camelcase": "Name"
+  },
+  {
+    "snakecase": "sup",
+    "camelcase": "Sup_within_of_ord_connected"
+  },
+  {
+    "snakecase": "has_subset",
+    "camelcase": "HasSubset"
+  },
+  {
+    "snakecase": "is_top",
+    "camelcase": "IsTop"
+  },
+  {
+    "snakecase": "monotone_on",
+    "camelcase": "MonotoneOn"
+  },
+  {
+    "snakecase": "limsup",
+    "camelcase": "Limsup_nhds"
+  },
+  {
+    "snakecase": "subsemigroup",
+    "camelcase": "Subsemigroup"
+  },
+  {
+    "snakecase": "directed",
+    "camelcase": "Directed"
+  },
+  {
+    "snakecase": "perfection_map",
+    "camelcase": "PerfectionMap"
+  },
+  {
+    "snakecase": "fact",
+    "camelcase": "Fact"
+  },
+  {
+    "snakecase": "cochain_complex",
+    "camelcase": "CochainComplex"
+  },
+  {
+    "snakecase": "shelf",
+    "camelcase": "Shelf"
+  },
+  {
+    "snakecase": "finsupp",
+    "camelcase": "Finsupp"
+  },
+  {
+    "snakecase": "mdifferentiable_within_at",
+    "camelcase": "MdifferentiableWithinAt"
+  },
+  {
+    "snakecase": "alg_equiv",
+    "camelcase": "AlgEquiv"
+  },
+  {
+    "snakecase": "is_monoid_hom",
+    "camelcase": "IsMonoidHom"
+  },
+  {
+    "snakecase": "normed_comm_ring",
+    "camelcase": "NormedCommRing"
+  },
+  {
+    "snakecase": "convex_on",
+    "camelcase": "ConvexOn"
+  },
+  {
+    "snakecase": "lower_adjoint",
+    "camelcase": "LowerAdjoint"
+  },
+  {
+    "snakecase": "jordan_holder_lattice",
+    "camelcase": "JordanHolderLattice"
+  },
+  {
+    "snakecase": "tendsto_locally_uniformly_on",
+    "camelcase": "TendstoLocallyUniformlyOn"
+  },
+  {
+    "snakecase": "",
+    "camelcase": "L_mul"
+  },
+  {
+    "snakecase": "strict_convex",
+    "camelcase": "StrictConvex"
+  },
+  {
+    "snakecase": "is_invariant",
+    "camelcase": "IsInvariant"
+  },
+  {
+    "snakecase": "star_add_monoid",
+    "camelcase": "StarAddMonoid"
+  },
+  {
+    "snakecase": "finite",
+    "camelcase": "Finite"
+  },
+  {
+    "snakecase": "iff",
+    "camelcase": "Iff"
+  },
+  {
+    "snakecase": "linear_isometry",
+    "camelcase": "LinearIsometry"
+  },
+  {
+    "snakecase": "class",
+    "camelcase": "Class"
+  },
+  {
+    "snakecase": "is_separable",
+    "camelcase": "IsSeparable"
+  },
+  {
+    "snakecase": "is_alg_closed",
+    "camelcase": "IsAlgClosed"
+  },
+  {
+    "snakecase": "indexed_partition",
+    "camelcase": "IndexedPartition"
+  },
+  {
+    "snakecase": "ico",
+    "camelcase": "Ico_mem_nhds"
+  },
+  {
+    "snakecase": "symmetric_rel",
+    "camelcase": "SymmetricRel"
+  },
+  {
+    "snakecase": "pos_tangent_cone_at",
+    "camelcase": "PosTangentConeAt"
+  },
+  {
+    "snakecase": "subsingleton",
+    "camelcase": "Subsingleton"
+  },
+  {
+    "snakecase": "filter",
+    "camelcase": "Filter"
+  },
+  {
+    "snakecase": "universal_enveloping_algebra",
+    "camelcase": "UniversalEnvelopingAlgebra"
+  },
+  {
+    "snakecase": "lipschitz_with",
+    "camelcase": "LipschitzWith"
+  },
+  {
+    "snakecase": "is_idempotent",
+    "camelcase": "IsIdempotent"
+  },
+  {
+    "snakecase": "inf",
+    "camelcase": "Inf_within_of_ord_connected"
+  },
+  {
+    "snakecase": "conditionally_complete_linear_order",
+    "camelcase": "ConditionallyCompleteLinearOrder"
+  },
+  {
+    "snakecase": "is_local_extr",
+    "camelcase": "IsLocalExtr"
+  },
+  {
+    "snakecase": "inf",
+    "camelcase": "Inf_le_of_le"
+  },
+  {
+    "snakecase": "add_subgroup_class",
+    "camelcase": "AddSubgroupClass"
+  },
+  {
+    "snakecase": "is_atom",
+    "camelcase": "IsAtom"
+  },
+  {
+    "snakecase": "inf",
+    "camelcase": "Inf_insert"
+  },
+  {
+    "snakecase": "linear_ordered_add_comm_monoid",
+    "camelcase": "LinearOrderedAddCommMonoid"
+  },
+  {
+    "snakecase": "topological_space",
+    "camelcase": "TopologicalSpace"
+  },
+  {
+    "snakecase": "subspace",
+    "camelcase": "Subspace"
+  },
+  {
+    "snakecase": "has_ftaylor_series_up_to_on",
+    "camelcase": "HasFtaylorSeriesUpToOn"
+  },
+  {
+    "snakecase": "complex_shape",
+    "camelcase": "ComplexShape"
+  },
+  {
+    "snakecase": "mul_opposite",
+    "camelcase": "MulOpposite"
+  },
+  {
+    "snakecase": "quaternion_algebra",
+    "camelcase": "QuaternionAlgebra"
+  },
+  {
+    "snakecase": "add",
+    "camelcase": "Add"
+  },
+  {
+    "snakecase": "ne_zero",
+    "camelcase": "NeZero"
+  },
+  {
+    "snakecase": "mon",
+    "camelcase": "Mon"
+  },
+  {
+    "snakecase": "multiset",
+    "camelcase": "Multiset"
+  },
+  {
+    "snakecase": "has_insert",
+    "camelcase": "HasInsert"
+  },
+  {
+    "snakecase": "tropical",
+    "camelcase": "Tropical"
+  },
+  {
+    "snakecase": "representation",
+    "camelcase": "Representation"
+  },
+  {
+    "snakecase": "is_bounded_bilinear_map",
+    "camelcase": "IsBoundedBilinearMap"
+  },
+  {
+    "snakecase": "path_connected_space",
+    "camelcase": "PathConnectedSpace"
+  },
+  {
+    "snakecase": "add_valuation",
+    "camelcase": "AddValuation"
+  },
+  {
+    "snakecase": "is_right_regular",
+    "camelcase": "IsRightRegular"
+  },
+  {
+    "snakecase": "contravariant_class",
+    "camelcase": "ContravariantClass"
+  },
+  {
+    "snakecase": "span_points",
+    "camelcase": "SpanPoints"
+  },
+  {
+    "snakecase": "irreflexive",
+    "camelcase": "Irreflexive"
+  },
+  {
+    "snakecase": "region_between",
+    "camelcase": "RegionBetween"
+  },
+  {
+    "snakecase": "zero_at_infty_continuous_map",
+    "camelcase": "ZeroAtInftyContinuousMap"
+  },
+  {
+    "snakecase": "is_fraction_ring",
+    "camelcase": "IsFractionRing"
+  },
+  {
+    "snakecase": "lim",
+    "camelcase": "Lim_eq"
+  },
+  {
+    "snakecase": "exists",
+    "camelcase": "Exists"
+  },
+  {
+    "snakecase": "inf",
+    "camelcase": "Inf_apply"
+  },
+  {
+    "snakecase": "cont_diff",
+    "camelcase": "ContDiff"
+  },
+  {
+    "snakecase": "left_cancel_monoid",
+    "camelcase": "LeftCancelMonoid"
+  },
+  {
+    "snakecase": "small",
+    "camelcase": "Small"
+  },
+  {
+    "snakecase": "is_separated",
+    "camelcase": "IsSeparated"
+  },
+  {
+    "snakecase": "append",
+    "camelcase": "Append"
+  },
+  {
+    "snakecase": "upper_semicontinuous_on",
+    "camelcase": "UpperSemicontinuousOn"
+  },
+  {
+    "snakecase": "continued_fraction",
+    "camelcase": "ContinuedFraction"
+  },
+  {
+    "snakecase": "tangent_space",
+    "camelcase": "TangentSpace"
+  },
+  {
+    "snakecase": "generalized_boolean_algebra",
+    "camelcase": "GeneralizedBooleanAlgebra"
+  },
+  {
+    "snakecase": "zsqrtd",
+    "camelcase": "Zsqrtd"
+  },
+  {
+    "snakecase": "submodule",
+    "camelcase": "Submodule"
+  },
+  {
+    "snakecase": "sequential_space",
+    "camelcase": "SequentialSpace"
+  },
+  {
+    "snakecase": "dense_range",
+    "camelcase": "DenseRange"
+  },
+  {
+    "snakecase": "add_localization",
+    "camelcase": "AddLocalization"
+  },
+  {
+    "snakecase": "rack",
+    "camelcase": "Rack"
+  },
+  {
+    "snakecase": "sup",
+    "camelcase": "Sup_range"
+  },
+  {
+    "snakecase": "separated",
+    "camelcase": "Separated"
+  },
+  {
+    "snakecase": "division_comm_monoid",
+    "camelcase": "DivisionCommMonoid"
+  },
+  {
+    "snakecase": "liminf",
+    "camelcase": "Liminf_eq_of_le_nhds"
+  },
+  {
+    "snakecase": "antisymm_rel",
+    "camelcase": "AntisymmRel"
+  },
+  {
+    "snakecase": "free_group",
+    "camelcase": "FreeGroup"
+  },
+  {
+    "snakecase": "comm_group_with_zero",
+    "camelcase": "CommGroupWithZero"
+  },
+  {
+    "snakecase": "has_continuous_mul",
+    "camelcase": "HasContinuousMul"
+  },
+  {
+    "snakecase": "dfinsupp",
+    "camelcase": "Dfinsupp"
+  },
+  {
+    "snakecase": "subring",
+    "camelcase": "Subring"
+  },
+  {
+    "snakecase": "rat",
+    "camelcase": "Rat"
+  },
+  {
+    "snakecase": "inf",
+    "camelcase": "Inf_eq_argmin_on"
+  },
+  {
+    "snakecase": "smul_with_zero",
+    "camelcase": "SmulWithZero"
+  },
+  {
+    "snakecase": "field",
+    "camelcase": "Field"
+  },
+  {
+    "snakecase": "lie_submodule",
+    "camelcase": "LieSubmodule"
+  },
+  {
+    "snakecase": "is_free_groupoid",
+    "camelcase": "IsFreeGroupoid"
+  },
+  {
+    "snakecase": "liouville_with",
+    "camelcase": "LiouvilleWith"
+  },
+  {
+    "snakecase": "cofinite_topology",
+    "camelcase": "CofiniteTopology"
+  },
+  {
+    "snakecase": "pythagorean_triple",
+    "camelcase": "PythagoreanTriple"
+  },
+  {
+    "snakecase": "linear_order",
+    "camelcase": "LinearOrder"
+  },
+  {
+    "snakecase": "joined_in",
+    "camelcase": "JoinedIn"
+  },
+  {
+    "snakecase": "partial_order",
+    "camelcase": "PartialOrder"
+  },
+  {
+    "snakecase": "ordering",
+    "camelcase": "Ordering"
+  },
+  {
+    "snakecase": "direct_sum",
+    "camelcase": "DirectSum"
+  },
+  {
+    "snakecase": "euclidean_space",
+    "camelcase": "EuclideanSpace"
+  },
+  {
+    "snakecase": "projectivization",
+    "camelcase": "Projectivization"
+  },
+  {
+    "snakecase": "set_of",
+    "camelcase": "SetOf"
+  },
+  {
+    "snakecase": "smooth",
+    "camelcase": "Smooth"
+  },
+  {
+    "snakecase": "complete_lattice",
+    "camelcase": "CompleteLattice"
+  },
+  {
+    "snakecase": "is_coatom",
+    "camelcase": "IsCoatom"
+  },
+  {
+    "snakecase": "is_dedekind_domain",
+    "camelcase": "IsDedekindDomain"
+  },
+  {
+    "snakecase": "add_comm_monoid",
+    "camelcase": "AddCommMonoid"
+  },
+  {
+    "snakecase": "exterior_algebra",
+    "camelcase": "ExteriorAlgebra"
+  },
+  {
+    "snakecase": "basis",
+    "camelcase": "Basis"
+  },
+  {
+    "snakecase": "has_sbtw",
+    "camelcase": "HasSbtw"
+  },
+  {
+    "snakecase": "add_comm_group",
+    "camelcase": "AddCommGroup"
+  },
+  {
+    "snakecase": "intermediate_field",
+    "camelcase": "IntermediateField"
+  },
+  {
+    "snakecase": "sup",
+    "camelcase": "Sup_disjoint_iff"
+  },
+  {
+    "snakecase": "tendsto_locally_uniformly",
+    "camelcase": "TendstoLocallyUniformly"
+  },
+  {
+    "snakecase": "is_totally_disconnected",
+    "camelcase": "IsTotallyDisconnected"
+  },
+  {
+    "snakecase": "lie_ring",
+    "camelcase": "LieRing"
+  },
+  {
+    "snakecase": "mvqpf",
+    "camelcase": "Mvqpf"
+  },
+  {
+    "snakecase": "galois_connection",
+    "camelcase": "GaloisConnection"
+  },
+  {
+    "snakecase": "pnat",
+    "camelcase": "Pnat"
+  },
+  {
+    "snakecase": "lim",
+    "camelcase": "Lim_eq_iff"
+  },
+  {
+    "snakecase": "multiples",
+    "camelcase": "Multiples"
+  },
+  {
+    "snakecase": "topological_semiring",
+    "camelcase": "TopologicalSemiring"
+  },
+  {
+    "snakecase": "inf",
+    "camelcase": "Inf_eq_bot"
+  },
+  {
+    "snakecase": "comm_mon",
+    "camelcase": "CommMon"
+  },
+  {
+    "snakecase": "con",
+    "camelcase": "Con"
+  },
+  {
+    "snakecase": "cluster_pt",
+    "camelcase": "ClusterPt"
+  },
+  {
+    "snakecase": "is_least",
+    "camelcase": "IsLeast"
+  },
+  {
+    "snakecase": "strong_rank_condition",
+    "camelcase": "StrongRankCondition"
+  },
+  {
+    "snakecase": "limsup",
+    "camelcase": "Limsup_eq_of_le_nhds"
+  },
+  {
+    "snakecase": "char_zero",
+    "camelcase": "CharZero"
+  },
+  {
+    "snakecase": "associative",
+    "camelcase": "Associative"
+  },
+  {
+    "snakecase": "monoid_with_zero",
+    "camelcase": "MonoidWithZero"
+  },
+  {
+    "snakecase": "chain_complex",
+    "camelcase": "ChainComplex"
+  },
+  {
+    "snakecase": "comm_semiring",
+    "camelcase": "CommSemiring"
+  },
+  {
+    "snakecase": "dense_embedding",
+    "camelcase": "DenseEmbedding"
+  },
+  {
+    "snakecase": "frame",
+    "camelcase": "Frame"
+  },
+  {
+    "snakecase": "cauchy",
+    "camelcase": "Cauchy"
+  },
+  {
+    "snakecase": "comm_semigroup",
+    "camelcase": "CommSemigroup"
+  },
+  {
+    "snakecase": "tensor_product",
+    "camelcase": "TensorProduct"
+  },
+  {
+    "snakecase": "inhabited",
+    "camelcase": "Inhabited"
+  },
+  {
+    "snakecase": "smul_comm_class",
+    "camelcase": "SmulCommClass"
+  },
+  {
+    "snakecase": "comm_group",
+    "camelcase": "CommGroup"
+  },
+  {
+    "snakecase": "dioph",
+    "camelcase": "Dioph"
+  },
+  {
+    "snakecase": "contravariant",
+    "camelcase": "Contravariant"
+  },
+  {
+    "snakecase": "is_seq_compact",
+    "camelcase": "IsSeqCompact"
+  },
+  {
+    "snakecase": "irrational",
+    "camelcase": "Irrational"
+  },
+  {
+    "snakecase": "mod",
+    "camelcase": "Mod"
+  },
+  {
+    "snakecase": "nonempty",
+    "camelcase": "Nonempty"
+  },
+  {
+    "snakecase": "semi_normed_group",
+    "camelcase": "SemiNormedGroup"
+  },
+  {
+    "snakecase": "is_total",
+    "camelcase": "IsTotal"
+  },
+  {
+    "snakecase": "derivation",
+    "camelcase": "Derivation"
+  },
+  {
+    "snakecase": "continuous_on",
+    "camelcase": "ContinuousOn"
+  },
+  {
+    "snakecase": "boolean_algebra",
+    "camelcase": "BooleanAlgebra"
+  },
+  {
+    "snakecase": "is_pi_system",
+    "camelcase": "IsPiSystem"
+  },
+  {
+    "snakecase": "nnreal",
+    "camelcase": "Nnreal"
+  },
+  {
+    "snakecase": "ennreal",
+    "camelcase": "Ennreal"
+  },
+  {
+    "snakecase": "is_adic",
+    "camelcase": "IsAdic"
+  },
+  {
+    "snakecase": "is_equiv",
+    "camelcase": "IsEquiv"
+  },
+  {
+    "snakecase": "is_antisymm",
+    "camelcase": "IsAntisymm"
+  },
+  {
+    "snakecase": "odd",
+    "camelcase": "Odd"
+  },
+  {
+    "snakecase": "has_mfderiv_at",
+    "camelcase": "HasMfderivAt"
+  },
+  {
+    "snakecase": "galois_insertion",
+    "camelcase": "GaloisInsertion"
+  },
+  {
+    "snakecase": "model_with_corners",
+    "camelcase": "ModelWithCorners"
+  },
+  {
+    "snakecase": "has_exists_add_of_le",
+    "camelcase": "HasExistsAddOfLe"
+  },
+  {
+    "snakecase": "bounded_continuous_function",
+    "camelcase": "BoundedContinuousFunction"
+  },
+  {
+    "snakecase": "charted_space",
+    "camelcase": "ChartedSpace"
+  },
+  {
+    "snakecase": "mvpfunctor",
+    "camelcase": "Mvpfunctor"
+  },
+  {
+    "snakecase": "cont_diff_on",
+    "camelcase": "ContDiffOn"
+  },
+  {
+    "snakecase": "convex_cone",
+    "camelcase": "ConvexCone"
+  },
+  {
+    "snakecase": "lattice",
+    "camelcase": "Lattice"
+  },
+  {
+    "snakecase": "pow",
+    "camelcase": "Pow"
+  },
+  {
+    "snakecase": "tendsto_uniformly_on",
+    "camelcase": "TendstoUniformlyOn"
+  },
+  {
+    "snakecase": "mul_mem_class",
+    "camelcase": "MulMemClass"
+  },
+  {
+    "snakecase": "list",
+    "camelcase": "List"
+  },
+  {
+    "snakecase": "mon",
+    "camelcase": "Mon_"
+  },
+  {
+    "snakecase": "differentiable_at",
+    "camelcase": "DifferentiableAt"
+  },
+  {
+    "snakecase": "add_subgroup",
+    "camelcase": "AddSubgroup"
+  },
+  {
+    "snakecase": "has_ssubset",
+    "camelcase": "HasSsubset"
+  },
+  {
+    "snakecase": "sup",
+    "camelcase": "Sup_apply"
+  },
+  {
+    "snakecase": "well_order",
+    "camelcase": "WellOrder"
+  },
+  {
+    "snakecase": "gt",
+    "camelcase": "Gt"
+  },
+  {
+    "snakecase": "division_ring",
+    "camelcase": "DivisionRing"
+  },
+  {
+    "snakecase": "nat_ordinal",
+    "camelcase": "NatOrdinal"
+  },
+  {
+    "snakecase": "quaternion_group",
+    "camelcase": "QuaternionGroup"
+  },
+  {
+    "snakecase": "is_prime_pow",
+    "camelcase": "IsPrimePow"
+  },
+  {
+    "snakecase": "bounded_order",
+    "camelcase": "BoundedOrder"
+  },
+  {
+    "snakecase": "upper_half_plane",
+    "camelcase": "UpperHalfPlane"
+  },
+  {
+    "snakecase": "cyclotomic_field",
+    "camelcase": "CyclotomicField"
+  },
+  {
+    "snakecase": "or_else",
+    "camelcase": "OrElse"
+  },
+  {
+    "snakecase": "ordered_comm_ring",
+    "camelcase": "OrderedCommRing"
+  },
+  {
+    "snakecase": "unit",
+    "camelcase": "Unit"
+  },
+  {
+    "snakecase": "summable",
+    "camelcase": "Summable"
+  },
+  {
+    "snakecase": "no_zero_divisors",
+    "camelcase": "NoZeroDivisors"
+  },
+  {
+    "snakecase": "is_principal_ideal_ring",
+    "camelcase": "IsPrincipalIdealRing"
+  },
+  {
+    "snakecase": "is_simple_group",
+    "camelcase": "IsSimpleGroup"
+  },
+  {
+    "snakecase": "cont_diff_bump",
+    "camelcase": "ContDiffBump"
+  },
+  {
+    "snakecase": "top",
+    "camelcase": "Top"
+  },
+  {
+    "snakecase": "finite_dimensional",
+    "camelcase": "FiniteDimensional"
+  },
+  {
+    "snakecase": "canonically_ordered_comm_semiring",
+    "camelcase": "CanonicallyOrderedCommSemiring"
+  },
+  {
+    "snakecase": "complete_space",
+    "camelcase": "CompleteSpace"
+  },
+  {
+    "snakecase": "true",
+    "camelcase": "True"
+  },
+  {
+    "snakecase": "bdd_below",
+    "camelcase": "BddBelow"
+  },
+  {
+    "snakecase": "torus_integrable",
+    "camelcase": "TorusIntegrable"
+  },
+  {
+    "snakecase": "magma",
+    "camelcase": "Magma"
+  },
+  {
+    "snakecase": "power_series",
+    "camelcase": "PowerSeries"
+  },
+  {
+    "snakecase": "distrib",
+    "camelcase": "Distrib"
+  },
+  {
+    "snakecase": "linear_ordered_comm_group",
+    "camelcase": "LinearOrderedCommGroup"
+  },
+  {
+    "snakecase": "normal_space",
+    "camelcase": "NormalSpace"
+  },
+  {
+    "snakecase": "totally_disconnected_space",
+    "camelcase": "TotallyDisconnectedSpace"
+  },
+  {
+    "snakecase": "add_left_cancel_monoid",
+    "camelcase": "AddLeftCancelMonoid"
+  },
+  {
+    "snakecase": "transitive",
+    "camelcase": "Transitive"
+  },
+  {
+    "snakecase": "has_continuous_add",
+    "camelcase": "HasContinuousAdd"
+  },
+  {
+    "snakecase": "sup",
+    "camelcase": "Sup_union"
+  },
+  {
+    "snakecase": "has_scalar",
+    "camelcase": "HasScalar"
+  },
+  {
+    "snakecase": "isometric",
+    "camelcase": "Isometric"
+  },
+  {
+    "snakecase": "is_cyclotomic_extension",
+    "camelcase": "IsCyclotomicExtension"
+  },
+  {
+    "snakecase": "has_lift",
+    "camelcase": "HasLift"
+  },
+  {
+    "snakecase": "has_sup",
+    "camelcase": "HasSup"
+  },
+  {
+    "snakecase": "alternating_map",
+    "camelcase": "AlternatingMap"
+  },
+  {
+    "snakecase": "separated_space",
+    "camelcase": "SeparatedSpace"
+  },
+  {
+    "snakecase": "game",
+    "camelcase": "Game"
+  },
+  {
+    "snakecase": "semilattice_sup",
+    "camelcase": "SemilatticeSup"
+  },
+  {
+    "snakecase": "computable",
+    "camelcase": "Computable"
+  },
+  {
+    "snakecase": "sup",
+    "camelcase": "Sup_atoms_eq_top"
+  },
+  {
+    "snakecase": "is_locally_homeomorph",
+    "camelcase": "IsLocallyHomeomorph"
+  },
+  {
+    "snakecase": "set_like",
+    "camelcase": "SetLike"
+  },
+  {
+    "snakecase": "joined",
+    "camelcase": "Joined"
+  },
+  {
+    "snakecase": "module",
+    "camelcase": "Module"
+  },
+  {
+    "snakecase": "is_per",
+    "camelcase": "IsPer"
+  },
+  {
+    "snakecase": "equiv_functor",
+    "camelcase": "EquivFunctor"
+  },
+  {
+    "snakecase": "antilipschitz_with",
+    "camelcase": "AntilipschitzWith"
+  },
+  {
+    "snakecase": "normed_field",
+    "camelcase": "NormedField"
+  },
+  {
+    "snakecase": "norm_one_class",
+    "camelcase": "NormOneClass"
+  },
+  {
+    "snakecase": "empty",
+    "camelcase": "Empty"
+  },
+  {
+    "snakecase": "holor",
+    "camelcase": "Holor"
+  },
+  {
+    "snakecase": "totally_separated_space",
+    "camelcase": "TotallySeparatedSpace"
+  },
+  {
+    "snakecase": "linear_ordered_comm_monoid",
+    "camelcase": "LinearOrderedCommMonoid"
+  },
+  {
+    "snakecase": "ordered_cancel_add_comm_monoid",
+    "camelcase": "OrderedCancelAddCommMonoid"
+  },
+  {
+    "snakecase": "uniform_continuous",
+    "camelcase": "UniformContinuous"
+  },
+  {
+    "snakecase": "is_linear_order",
+    "camelcase": "IsLinearOrder"
+  },
+  {
+    "snakecase": "perfect_ring",
+    "camelcase": "PerfectRing"
+  },
+  {
+    "snakecase": "has_sep",
+    "camelcase": "HasSep"
+  },
+  {
+    "snakecase": "set",
+    "camelcase": "Set"
+  },
+  {
+    "snakecase": "ordered_comm_semiring",
+    "camelcase": "OrderedCommSemiring"
+  },
+  {
+    "snakecase": "ereal",
+    "camelcase": "Ereal"
+  },
+  {
+    "snakecase": "concave_on",
+    "camelcase": "ConcaveOn"
+  },
+  {
+    "snakecase": "differentiable",
+    "camelcase": "Differentiable"
+  },
+  {
+    "snakecase": "conformal_at",
+    "camelcase": "ConformalAt"
+  },
+  {
+    "snakecase": "trans",
+    "camelcase": "Trans"
+  },
+  {
+    "snakecase": "with_zero",
+    "camelcase": "WithZero"
+  },
+  {
+    "snakecase": "semiring",
+    "camelcase": "Semiring"
+  },
+  {
+    "snakecase": "is_modular_lattice",
+    "camelcase": "IsModularLattice"
+  },
+  {
+    "snakecase": "is_empty",
+    "camelcase": "IsEmpty"
+  },
+  {
+    "snakecase": "powers",
+    "camelcase": "Powers"
+  },
+  {
+    "snakecase": "meas",
+    "camelcase": "Meas"
+  },
+  {
+    "snakecase": "upper_semicontinuous_at",
+    "camelcase": "UpperSemicontinuousAt"
+  },
+  {
+    "snakecase": "local_ring",
+    "camelcase": "LocalRing"
+  },
+  {
+    "snakecase": "is_irrefl",
+    "camelcase": "IsIrrefl"
+  },
+  {
+    "snakecase": "inf",
+    "camelcase": "Inf_eq_infi"
+  },
+  {
+    "snakecase": "number_field",
+    "camelcase": "NumberField"
+  },
+  {
+    "snakecase": "non_unital_semi_normed_ring",
+    "camelcase": "NonUnitalSemiNormedRing"
+  },
+  {
+    "snakecase": "weak_dual",
+    "camelcase": "WeakDual"
+  },
+  {
+    "snakecase": "has_inf",
+    "camelcase": "HasInf"
+  },
+  {
+    "snakecase": "is_poly",
+    "camelcase": "IsPoly"
+  },
+  {
+    "snakecase": "fin",
+    "camelcase": "Fin"
+  },
+  {
+    "snakecase": "normalization_monoid",
+    "camelcase": "NormalizationMonoid"
+  },
+  {
+    "snakecase": "is_ascending_central_series",
+    "camelcase": "IsAscendingCentralSeries"
+  },
+  {
+    "snakecase": "multilinear_map",
+    "camelcase": "MultilinearMap"
+  },
+  {
+    "snakecase": "sum",
+    "camelcase": "Sum"
+  },
+  {
+    "snakecase": "implies",
+    "camelcase": "Implies"
+  },
+  {
+    "snakecase": "pfun",
+    "camelcase": "Pfun"
+  },
+  {
+    "snakecase": "locally_compact_space",
+    "camelcase": "LocallyCompactSpace"
+  },
+  {
+    "snakecase": "collinear",
+    "camelcase": "Collinear"
+  },
+  {
+    "snakecase": "locally_convex_space",
+    "camelcase": "LocallyConvexSpace"
+  },
+  {
+    "snakecase": "second_countable_topology_either",
+    "camelcase": "SecondCountableTopologyEither"
+  },
+  {
+    "snakecase": "non_assoc_semiring",
+    "camelcase": "NonAssocSemiring"
+  },
+  {
+    "snakecase": "partition_of_unity",
+    "camelcase": "PartitionOfUnity"
+  },
+  {
+    "snakecase": "tsupport",
+    "camelcase": "Tsupport"
+  },
+  {
+    "snakecase": "is_frobenius_number",
+    "camelcase": "IsFrobeniusNumber"
+  },
+  {
+    "snakecase": "pred_order",
+    "camelcase": "PredOrder"
+  },
+  {
+    "snakecase": "absolute_value",
+    "camelcase": "AbsoluteValue"
+  },
+  {
+    "snakecase": "uniform_space",
+    "camelcase": "UniformSpace"
+  },
+  {
+    "snakecase": "regular_expression",
+    "camelcase": "RegularExpression"
+  },
+  {
+    "snakecase": "subtraction_comm_monoid",
+    "camelcase": "SubtractionCommMonoid"
+  },
+  {
+    "snakecase": "std_simplex",
+    "camelcase": "StdSimplex"
+  },
+  {
+    "snakecase": "irreducible",
+    "camelcase": "Irreducible"
+  },
+  {
+    "snakecase": "add_con",
+    "camelcase": "AddCon"
+  },
+  {
+    "snakecase": "ordered_add_comm_monoid",
+    "camelcase": "OrderedAddCommMonoid"
+  },
+  {
+    "snakecase": "ordered_ring",
+    "camelcase": "OrderedRing"
+  },
+  {
+    "snakecase": "mdifferentiable_on",
+    "camelcase": "MdifferentiableOn"
+  },
+  {
+    "snakecase": "approximates_linear_on",
+    "camelcase": "ApproximatesLinearOn"
+  },
+  {
+    "snakecase": "sup",
+    "camelcase": "Sup_univ"
+  },
+  {
+    "snakecase": "affine_map",
+    "camelcase": "AffineMap"
+  },
+  {
+    "snakecase": "matrix",
+    "camelcase": "Matrix"
+  },
+  {
+    "snakecase": "inf",
+    "camelcase": "Inf_image"
+  },
+  {
+    "snakecase": "order_top",
+    "camelcase": "OrderTop"
+  },
+  {
+    "snakecase": "zmod",
+    "camelcase": "Zmod"
+  },
+  {
+    "snakecase": "mul_zero_class",
+    "camelcase": "MulZeroClass"
+  },
+  {
+    "snakecase": "vector",
+    "camelcase": "Vector"
+  },
+  {
+    "snakecase": "mul_action_with_zero",
+    "camelcase": "MulActionWithZero"
+  },
+  {
+    "snakecase": "plift",
+    "camelcase": "Plift"
+  },
+  {
+    "snakecase": "composition",
+    "camelcase": "Composition"
+  },
+  {
+    "snakecase": "is_transcendence_basis",
+    "camelcase": "IsTranscendenceBasis"
+  },
+  {
+    "snakecase": "non_unital_ring",
+    "camelcase": "NonUnitalRing"
+  },
+  {
+    "snakecase": "sup",
+    "camelcase": "Sup_insert"
+  },
+  {
+    "snakecase": "is_compactly_generated",
+    "camelcase": "IsCompactlyGenerated"
+  },
+  {
+    "snakecase": "has_continuous_inv",
+    "camelcase": "HasContinuousInv"
+  },
+  {
+    "snakecase": "class_group",
+    "camelcase": "ClassGroup"
+  },
+  {
+    "snakecase": "strict_convex_on",
+    "camelcase": "StrictConvexOn"
+  },
+  {
+    "snakecase": "division_monoid",
+    "camelcase": "DivisionMonoid"
+  },
+  {
+    "snakecase": "sylow",
+    "camelcase": "Sylow"
+  },
+  {
+    "snakecase": "absorbs",
+    "camelcase": "Absorbs"
+  },
+  {
+    "snakecase": "differentiable_within_at",
+    "camelcase": "DifferentiableWithinAt"
+  },
+  {
+    "snakecase": "sup",
+    "camelcase": "Sup_eq_top"
+  },
+  {
+    "snakecase": "is_glb",
+    "camelcase": "IsGlb"
+  },
+  {
+    "snakecase": "pseudo_emetric_space",
+    "camelcase": "PseudoEmetricSpace"
+  },
+  {
+    "snakecase": "distrib_mul_action",
+    "camelcase": "DistribMulAction"
+  },
+  {
+    "snakecase": "io",
+    "camelcase": "Io"
+  },
+  {
+    "snakecase": "proper_space",
+    "camelcase": "ProperSpace"
+  },
+  {
+    "snakecase": "is_atomistic",
+    "camelcase": "IsAtomistic"
+  },
+  {
+    "snakecase": "is_simple_module",
+    "camelcase": "IsSimpleModule"
+  },
+  {
+    "snakecase": "is_seq_closed",
+    "camelcase": "IsSeqClosed"
+  },
+  {
+    "snakecase": "preconnected_space",
+    "camelcase": "PreconnectedSpace"
+  },
+  {
+    "snakecase": "well_founded",
+    "camelcase": "WellFounded"
+  },
+  {
+    "snakecase": "tendsto_uniformly",
+    "camelcase": "TendstoUniformly"
+  },
+  {
+    "snakecase": "is_integral_closure",
+    "camelcase": "IsIntegralClosure"
+  },
+  {
+    "snakecase": "group_filter_basis",
+    "camelcase": "GroupFilterBasis"
+  },
+  {
+    "snakecase": "fintype",
+    "camelcase": "Fintype"
+  },
+  {
+    "snakecase": "inf",
+    "camelcase": "Inf_range"
+  },
+  {
+    "snakecase": "discrete_valuation_ring",
+    "camelcase": "DiscreteValuationRing"
+  },
+  {
+    "snakecase": "lim",
+    "camelcase": "Lim_nhds"
+  },
+  {
+    "snakecase": "",
+    "camelcase": "X_in_terms_of_W_vars_aux"
+  },
+  {
+    "snakecase": "add_semigroup",
+    "camelcase": "AddSemigroup"
+  },
+  {
+    "snakecase": "is_directed",
+    "camelcase": "IsDirected"
+  },
+  {
+    "snakecase": "is_solvable_by_rad",
+    "camelcase": "IsSolvableByRad"
+  },
+  {
+    "snakecase": "cycle",
+    "camelcase": "Cycle"
+  },
+  {
+    "snakecase": "nontrivial",
+    "camelcase": "Nontrivial"
+  },
+  {
+    "snakecase": "derangements",
+    "camelcase": "Derangements"
+  },
+  {
+    "snakecase": "is_fractional",
+    "camelcase": "IsFractional"
+  },
+  {
+    "snakecase": "is_integrally_closed",
+    "camelcase": "IsIntegrallyClosed"
+  },
+  {
+    "snakecase": "restrict_scalars",
+    "camelcase": "RestrictScalars"
+  },
+  {
+    "snakecase": "is_normal_subgroup",
+    "camelcase": "IsNormalSubgroup"
+  },
+  {
+    "snakecase": "is_solvable",
+    "camelcase": "IsSolvable"
+  },
+  {
+    "snakecase": "pseudo_metric_space",
+    "camelcase": "PseudoMetricSpace"
+  },
+  {
+    "snakecase": "ordinal",
+    "camelcase": "Ordinal"
+  },
+  {
+    "snakecase": "has_fpower_series_at",
+    "camelcase": "HasFpowerSeriesAt"
+  },
+  {
+    "snakecase": "balanced_hull",
+    "camelcase": "BalancedHull"
+  },
+  {
+    "snakecase": "",
+    "camelcase": "R_mul"
+  },
+  {
+    "snakecase": "ico",
+    "camelcase": "Ico_to_dual"
+  },
+  {
+    "snakecase": "add_group_filter_basis",
+    "camelcase": "AddGroupFilterBasis"
+  },
+  {
+    "snakecase": "quadratic_form",
+    "camelcase": "QuadraticForm"
+  },
+  {
+    "snakecase": "measurable_set",
+    "camelcase": "MeasurableSet"
+  },
+  {
+    "snakecase": "complex",
+    "camelcase": "Complex"
+  },
+  {
+    "snakecase": "add_submonoid",
+    "camelcase": "AddSubmonoid"
+  },
+  {
+    "snakecase": "ab",
+    "camelcase": "Ab"
+  },
+  {
+    "snakecase": "witt_vector",
+    "camelcase": "WittVector"
+  },
+  {
+    "snakecase": "mul_zero_one_class",
+    "camelcase": "MulZeroOneClass"
+  },
+  {
+    "snakecase": "lower_set",
+    "camelcase": "LowerSet"
+  },
+  {
+    "snakecase": "inf_sup",
+    "camelcase": "Inf_le_Sup"
+  },
+  {
+    "snakecase": "open_embedding",
+    "camelcase": "OpenEmbedding"
+  },
+  {
+    "snakecase": "structomorph",
+    "camelcase": "Structomorph"
+  },
+  {
+    "snakecase": "has_vadd",
+    "camelcase": "HasVadd"
+  },
+  {
+    "snakecase": "uniform_add_group",
+    "camelcase": "UniformAddGroup"
+  },
+  {
+    "snakecase": "inf",
+    "camelcase": "Inf_empty"
+  },
+  {
+    "snakecase": "continuous_at",
+    "camelcase": "ContinuousAt"
+  },
+  {
+    "snakecase": "uniform_embedding",
+    "camelcase": "UniformEmbedding"
+  },
+  {
+    "snakecase": "mul_action_hom",
+    "camelcase": "MulActionHom"
+  },
+  {
+    "snakecase": "inf",
+    "camelcase": "Inf_le"
+  },
+  {
+    "snakecase": "star_module",
+    "camelcase": "StarModule"
+  },
+  {
+    "snakecase": "shelf_hom",
+    "camelcase": "ShelfHom"
+  },
+  {
+    "snakecase": "regular_space",
+    "camelcase": "RegularSpace"
+  },
+  {
+    "snakecase": "lower_semicontinuous_on",
+    "camelcase": "LowerSemicontinuousOn"
+  },
+  {
+    "snakecase": "denumerable",
+    "camelcase": "Denumerable"
+  },
+  {
+    "snakecase": "cau_seq",
+    "camelcase": "CauSeq"
+  },
+  {
+    "snakecase": "is_regular",
+    "camelcase": "IsRegular"
+  },
+  {
+    "snakecase": "is_group_hom",
+    "camelcase": "IsGroupHom"
+  },
+  {
+    "snakecase": "stieltjes_function",
+    "camelcase": "StieltjesFunction"
+  },
+  {
+    "snakecase": "add_units",
+    "camelcase": "AddUnits"
+  },
+  {
+    "snakecase": "monotone",
+    "camelcase": "Monotone"
+  },
+  {
+    "snakecase": "decidable_pred",
+    "camelcase": "DecidablePred"
+  },
+  {
+    "snakecase": "mul_aut",
+    "camelcase": "MulAut"
+  },
+  {
+    "snakecase": "connected_component",
+    "camelcase": "ConnectedComponent"
+  },
+  {
+    "snakecase": "lie_subalgebra",
+    "camelcase": "LieSubalgebra"
+  },
+  {
+    "snakecase": "function_field",
+    "camelcase": "FunctionField"
+  },
+  {
+    "snakecase": "topological_ring",
+    "camelcase": "TopologicalRing"
+  },
+  {
+    "snakecase": "stone_cech",
+    "camelcase": "StoneCech"
+  },
+  {
+    "snakecase": "inf",
+    "camelcase": "Inf_lt_iff"
+  },
+  {
+    "snakecase": "right_inverse",
+    "camelcase": "RightInverse"
+  },
+  {
+    "snakecase": "is_well_order",
+    "camelcase": "IsWellOrder"
+  },
+  {
+    "snakecase": "localization_preserves",
+    "camelcase": "LocalizationPreserves"
+  },
+  {
+    "snakecase": "is_trichotomous",
+    "camelcase": "IsTrichotomous"
+  },
+  {
+    "snakecase": "left_cancel_semigroup",
+    "camelcase": "LeftCancelSemigroup"
+  },
+  {
+    "snakecase": "even",
+    "camelcase": "Even"
+  },
+  {
+    "snakecase": "archimedean",
+    "camelcase": "Archimedean"
+  },
+  {
+    "snakecase": "weak_bilin",
+    "camelcase": "WeakBilin"
+  },
+  {
+    "snakecase": "convex",
+    "camelcase": "Convex"
+  },
+  {
+    "snakecase": "has_fderiv_at",
+    "camelcase": "HasFderivAt"
+  },
+  {
+    "snakecase": "formal_multilinear_series",
+    "camelcase": "FormalMultilinearSeries"
+  },
+  {
+    "snakecase": "is_algebraic",
+    "camelcase": "IsAlgebraic"
+  },
+  {
+    "snakecase": "cancel_monoid_with_zero",
+    "camelcase": "CancelMonoidWithZero"
+  },
+  {
+    "snakecase": "is_absolute_value",
+    "camelcase": "IsAbsoluteValue"
+  },
+  {
+    "snakecase": "topological_group",
+    "camelcase": "TopologicalGroup"
+  },
+  {
+    "snakecase": "num",
+    "camelcase": "Num"
+  },
+  {
+    "snakecase": "unique_mdiff_within_at",
+    "camelcase": "UniqueMdiffWithinAt"
+  },
+  {
+    "snakecase": "squarefree",
+    "camelcase": "Squarefree"
+  },
+  {
+    "snakecase": "normed_group_hom",
+    "camelcase": "NormedGroupHom"
+  },
+  {
+    "snakecase": "pos",
+    "camelcase": "Pos"
+  },
+  {
+    "snakecase": "isometry",
+    "camelcase": "Isometry"
+  },
+  {
+    "snakecase": "analytic_on",
+    "camelcase": "AnalyticOn"
+  },
+  {
+    "snakecase": "has_norm",
+    "camelcase": "HasNorm"
+  },
+  {
+    "snakecase": "directed_on",
+    "camelcase": "DirectedOn"
+  },
+  {
+    "snakecase": "bounded_space",
+    "camelcase": "BoundedSpace"
+  },
+  {
+    "snakecase": "canonically_linear_ordered_add_monoid",
+    "camelcase": "CanonicallyLinearOrderedAddMonoid"
+  },
+  {
+    "snakecase": "typevec",
+    "camelcase": "Typevec"
+  },
+  {
+    "snakecase": "finset",
+    "camelcase": "Finset"
+  },
+  {
+    "snakecase": "euclidean_domain",
+    "camelcase": "EuclideanDomain"
+  },
+  {
+    "snakecase": "is_mul_hom",
+    "camelcase": "IsMulHom"
+  },
+  {
+    "snakecase": "is_irreducible",
+    "camelcase": "IsIrreducible"
+  },
+  {
+    "snakecase": "nonarchimedean_group",
+    "camelcase": "NonarchimedeanGroup"
+  },
+  {
+    "snakecase": "one_hom_class",
+    "camelcase": "OneHomClass"
+  },
+  {
+    "snakecase": "has_compact_mul_support",
+    "camelcase": "HasCompactMulSupport"
+  },
+  {
+    "snakecase": "add_monoid",
+    "camelcase": "AddMonoid"
+  },
+  {
+    "snakecase": "convex_independent",
+    "camelcase": "ConvexIndependent"
+  },
+  {
+    "snakecase": "functor",
+    "camelcase": "Functor"
+  },
+  {
+    "snakecase": "ring_subgroups_basis",
+    "camelcase": "RingSubgroupsBasis"
+  },
+  {
+    "snakecase": "is_chain",
+    "camelcase": "IsChain"
+  },
+  {
+    "snakecase": "paracompact_space",
+    "camelcase": "ParacompactSpace"
+  },
+  {
+    "snakecase": "non_unital_non_assoc_ring",
+    "camelcase": "NonUnitalNonAssocRing"
+  },
+  {
+    "snakecase": "cancel_comm_monoid_with_zero",
+    "camelcase": "CancelCommMonoidWithZero"
+  },
+  {
+    "snakecase": "measurable_space",
+    "camelcase": "MeasurableSpace"
+  },
+  {
+    "snakecase": "ray_vector",
+    "camelcase": "RayVector"
+  },
+  {
+    "snakecase": "total",
+    "camelcase": "Total"
+  },
+  {
+    "snakecase": "is_primitive_root",
+    "camelcase": "IsPrimitiveRoot"
+  },
+  {
+    "snakecase": "star_ordered_ring",
+    "camelcase": "StarOrderedRing"
+  },
+  {
+    "snakecase": "units",
+    "camelcase": "Units"
+  },
+  {
+    "snakecase": "pairwise",
+    "camelcase": "Pairwise"
+  },
+  {
+    "snakecase": "has_nndist",
+    "camelcase": "HasNndist"
+  },
+  {
+    "snakecase": "decidable_rel",
+    "camelcase": "DecidableRel"
+  },
+  {
+    "snakecase": "is_noetherian",
+    "camelcase": "IsNoetherian"
+  },
+  {
+    "snakecase": "minimals",
+    "camelcase": "Minimals"
+  },
+  {
+    "snakecase": "is_upper_set",
+    "camelcase": "IsUpperSet"
+  },
+  {
+    "snakecase": "is_nilpotent",
+    "camelcase": "IsNilpotent"
+  },
+  {
+    "snakecase": "is_cyclic",
+    "camelcase": "IsCyclic"
+  },
+  {
+    "snakecase": "diff_cont_on_cl",
+    "camelcase": "DiffContOnCl"
+  },
+  {
+    "snakecase": "seminorm",
+    "camelcase": "Seminorm"
+  },
+  {
+    "snakecase": "orthonormal",
+    "camelcase": "Orthonormal"
+  },
+  {
+    "snakecase": "quaternion",
+    "camelcase": "Quaternion"
+  },
+  {
+    "snakecase": "measure",
+    "camelcase": "Measure"
+  },
+  {
+    "snakecase": "prime_spectrum",
+    "camelcase": "PrimeSpectrum"
+  },
+  {
+    "snakecase": "closure_operator",
+    "camelcase": "ClosureOperator"
+  },
+  {
+    "snakecase": "semiconj_by",
+    "camelcase": "SemiconjBy"
+  },
+  {
+    "snakecase": "decidable",
+    "camelcase": "Decidable"
+  },
+  {
+    "snakecase": "mul",
+    "camelcase": "Mul"
+  },
+  {
+    "snakecase": "is_connected",
+    "camelcase": "IsConnected"
+  },
+  {
+    "snakecase": "ordered_semiring",
+    "camelcase": "OrderedSemiring"
+  },
+  {
+    "snakecase": "continuous_map",
+    "camelcase": "ContinuousMap"
+  },
+  {
+    "snakecase": "has_strict_fderiv_at",
+    "camelcase": "HasStrictFderivAt"
+  },
+  {
+    "snakecase": "is_add_unit",
+    "camelcase": "IsAddUnit"
+  },
+  {
+    "snakecase": "pgame",
+    "camelcase": "Pgame"
+  },
+  {
+    "snakecase": "strongly_measurable_at_filter",
+    "camelcase": "StronglyMeasurableAtFilter"
+  },
+  {
+    "snakecase": "normalizer_condition",
+    "camelcase": "NormalizerCondition"
+  },
+  {
+    "snakecase": "dvd_not_unit",
+    "camelcase": "DvdNotUnit"
+  },
+  {
+    "snakecase": "unique",
+    "camelcase": "Unique"
+  },
+  {
+    "snakecase": "cont_mdiff_at",
+    "camelcase": "ContMdiffAt"
+  },
+  {
+    "snakecase": "mul_semiring_action",
+    "camelcase": "MulSemiringAction"
+  },
+  {
+    "snakecase": "dense_inducing",
+    "camelcase": "DenseInducing"
+  },
+  {
+    "snakecase": "is_max",
+    "camelcase": "IsMax"
+  },
+  {
+    "snakecase": "denoms_clearable",
+    "camelcase": "DenomsClearable"
+  },
+  {
+    "snakecase": "group_with_zero",
+    "camelcase": "GroupWithZero"
+  },
+  {
+    "snakecase": "alg_hom",
+    "camelcase": "AlgHom"
+  },
+  {
+    "snakecase": "unique_factorization_monoid",
+    "camelcase": "UniqueFactorizationMonoid"
+  },
+  {
+    "snakecase": "is_lub",
+    "camelcase": "IsLub"
+  },
+  {
+    "snakecase": "uniform_cauchy_seq_on",
+    "camelcase": "UniformCauchySeqOn"
+  },
+  {
+    "snakecase": "is_semiring_hom",
+    "camelcase": "IsSemiringHom"
+  },
+  {
+    "snakecase": "borel_space",
+    "camelcase": "BorelSpace"
+  },
+  {
+    "snakecase": "",
+    "camelcase": "R_apply"
+  },
+  {
+    "snakecase": "eqv_gen",
+    "camelcase": "EqvGen"
+  },
+  {
+    "snakecase": "is_coprime",
+    "camelcase": "IsCoprime"
+  },
+  {
+    "snakecase": "lim",
+    "camelcase": "Lim_nhds_within"
+  },
+  {
+    "snakecase": "unique_diff_within_at",
+    "camelcase": "UniqueDiffWithinAt"
+  },
+  {
+    "snakecase": "add_right_cancel_semigroup",
+    "camelcase": "AddRightCancelSemigroup"
+  },
+  {
+    "snakecase": "is_max_chain",
+    "camelcase": "IsMaxChain"
+  },
+  {
+    "snakecase": "order_dual",
+    "camelcase": "OrderDual"
+  },
+  {
+    "snakecase": "is_bot",
+    "camelcase": "IsBot"
+  },
+  {
+    "snakecase": "non_assoc_ring",
+    "camelcase": "NonAssocRing"
+  },
+  {
+    "snakecase": "linear_ordered_comm_group_with_zero",
+    "camelcase": "LinearOrderedCommGroupWithZero"
+  },
+  {
+    "snakecase": "has_mfderiv_within_at",
+    "camelcase": "HasMfderivWithinAt"
+  },
+  {
+    "snakecase": "sub",
+    "camelcase": "Sub"
+  },
+  {
+    "snakecase": "ici",
+    "camelcase": "Ici_mem_nhds"
+  },
+  {
+    "snakecase": "padic_seq",
+    "camelcase": "PadicSeq"
+  },
+  {
+    "snakecase": "sub_mul_action",
+    "camelcase": "SubMulAction"
+  },
+  {
+    "snakecase": "div_inv_monoid",
+    "camelcase": "DivInvMonoid"
+  },
+  {
+    "snakecase": "is_lower_set",
+    "camelcase": "IsLowerSet"
+  },
+  {
+    "snakecase": "id_rel",
+    "camelcase": "IdRel"
+  },
+  {
+    "snakecase": "shrink",
+    "camelcase": "Shrink"
+  },
+  {
+    "snakecase": "ring_hom_comp_triple",
+    "camelcase": "RingHomCompTriple"
+  },
+  {
+    "snakecase": "locally_finite",
+    "camelcase": "LocallyFinite"
+  },
+  {
+    "snakecase": "sup",
+    "camelcase": "Sup_pair"
+  },
+  {
+    "snakecase": "is_smul_regular",
+    "camelcase": "IsSmulRegular"
+  },
+  {
+    "snakecase": "sup",
+    "camelcase": "Sup_diff_singleton_bot"
+  },
+  {
+    "snakecase": "algebra",
+    "camelcase": "Algebra"
+  },
+  {
+    "snakecase": "frontier",
+    "camelcase": "Frontier"
+  },
+  {
+    "snakecase": "non_unital_non_assoc_semiring",
+    "camelcase": "NonUnitalNonAssocSemiring"
+  },
+  {
+    "snakecase": "linear_ordered_comm_monoid_with_zero",
+    "camelcase": "LinearOrderedCommMonoidWithZero"
+  },
+  {
+    "snakecase": "monoid",
+    "camelcase": "Monoid"
+  },
+  {
+    "snakecase": "add_comm_semigroup",
+    "camelcase": "AddCommSemigroup"
+  },
+  {
+    "snakecase": "mv_polynomial",
+    "camelcase": "MvPolynomial"
+  },
+  {
+    "snakecase": "strict_concave_on",
+    "camelcase": "StrictConcaveOn"
+  },
+  {
+    "snakecase": "has_continuous_neg",
+    "camelcase": "HasContinuousNeg"
+  },
+  {
+    "snakecase": "sup",
+    "camelcase": "Sup_inter_le"
+  },
+  {
+    "snakecase": "is_unit",
+    "camelcase": "IsUnit"
+  },
+  {
+    "snakecase": "vadd_comm_class",
+    "camelcase": "VaddCommClass"
+  },
+  {
+    "snakecase": "is_artinian",
+    "camelcase": "IsArtinian"
+  },
+  {
+    "snakecase": "is_coatomic",
+    "camelcase": "IsCoatomic"
+  },
+  {
+    "snakecase": "upper_semicontinuous",
+    "camelcase": "UpperSemicontinuous"
+  },
+  {
+    "snakecase": "bump_covering",
+    "camelcase": "BumpCovering"
+  },
+  {
+    "snakecase": "superset",
+    "camelcase": "Superset"
+  },
+  {
+    "snakecase": "canonically_ordered_add_monoid",
+    "camelcase": "CanonicallyOrderedAddMonoid"
+  },
+  {
+    "snakecase": "sigma_compact_space",
+    "camelcase": "SigmaCompactSpace"
+  },
+  {
+    "snakecase": "non_unital_comm_ring",
+    "camelcase": "NonUnitalCommRing"
+  },
+  {
+    "snakecase": "neg",
+    "camelcase": "Neg"
+  },
+  {
+    "snakecase": "homotopic",
+    "camelcase": "Homotopic"
+  },
+  {
+    "snakecase": "equivalence",
+    "camelcase": "Equivalence"
+  },
+  {
+    "snakecase": "add_action",
+    "camelcase": "AddAction"
+  },
+  {
+    "snakecase": "embedding",
+    "camelcase": "Embedding"
+  },
+  {
+    "snakecase": "is_succ_archimedean",
+    "camelcase": "IsSuccArchimedean"
+  },
+  {
+    "snakecase": "closed_under_restriction",
+    "camelcase": "ClosedUnderRestriction"
+  },
+  {
+    "snakecase": "projective_spectrum",
+    "camelcase": "ProjectiveSpectrum"
+  },
+  {
+    "snakecase": "has_dist",
+    "camelcase": "HasDist"
+  },
+  {
+    "snakecase": "no_max_order",
+    "camelcase": "NoMaxOrder"
+  },
+  {
+    "snakecase": "action",
+    "camelcase": "Action"
+  },
+  {
+    "snakecase": "semigroup",
+    "camelcase": "Semigroup"
+  },
+  {
+    "snakecase": "circular_preorder",
+    "camelcase": "CircularPreorder"
+  },
+  {
+    "snakecase": "add_le_cancellable",
+    "camelcase": "AddLeCancellable"
+  },
+  {
+    "snakecase": "connected_space",
+    "camelcase": "ConnectedSpace"
+  },
+  {
+    "snakecase": "monoid_hom_class",
+    "camelcase": "MonoidHomClass"
+  },
+  {
+    "snakecase": "inf",
+    "camelcase": "Inf_eq_of_forall_ge_of_forall_gt_exists_lt"
+  },
+  {
+    "snakecase": "inter",
+    "camelcase": "Inter"
+  },
+  {
+    "snakecase": "buffer",
+    "camelcase": "Buffer"
+  },
+  {
+    "snakecase": "monoid_hom",
+    "camelcase": "MonoidHom"
+  },
+  {
+    "snakecase": "maximals",
+    "camelcase": "Maximals"
+  },
+  {
+    "snakecase": "fundamental_groupoid",
+    "camelcase": "FundamentalGroupoid"
+  },
+  {
+    "snakecase": "topological_add_group",
+    "camelcase": "TopologicalAddGroup"
+  },
+  {
+    "snakecase": "star_ring",
+    "camelcase": "StarRing"
+  },
+  {
+    "snakecase": "cauchy_seq",
+    "camelcase": "CauchySeq"
+  },
+  {
+    "snakecase": "is_cau_seq",
+    "camelcase": "IsCauSeq"
+  },
+  {
+    "snakecase": "decidable_eq",
+    "camelcase": "DecidableEq"
+  },
+  {
+    "snakecase": "is_open_map",
+    "camelcase": "IsOpenMap"
+  },
+  {
+    "snakecase": "antitone_on",
+    "camelcase": "AntitoneOn"
+  },
+  {
+    "snakecase": "pequiv",
+    "camelcase": "Pequiv"
+  },
+  {
+    "snakecase": "encodable",
+    "camelcase": "Encodable"
+  },
+  {
+    "snakecase": "resolvent_set",
+    "camelcase": "ResolventSet"
+  },
+  {
+    "snakecase": "is_greatest",
+    "camelcase": "IsGreatest"
+  },
+  {
+    "snakecase": "lower_semicontinuous",
+    "camelcase": "LowerSemicontinuous"
+  },
+  {
+    "snakecase": "sym",
+    "camelcase": "Sym"
+  },
+  {
+    "snakecase": "unique_mdiff_on",
+    "camelcase": "UniqueMdiffOn"
+  },
+  {
+    "snakecase": "conjugates_of",
+    "camelcase": "ConjugatesOf"
+  },
+  {
+    "snakecase": "is_complete",
+    "camelcase": "IsComplete"
+  },
+  {
+    "snakecase": "comm_ring",
+    "camelcase": "CommRing"
+  },
+  {
+    "snakecase": "is_complemented",
+    "camelcase": "IsComplemented"
+  },
+  {
+    "snakecase": "add_equiv",
+    "camelcase": "AddEquiv"
+  },
+  {
+    "snakecase": "",
+    "camelcase": "L_apply"
+  },
+  {
+    "snakecase": "bornology",
+    "camelcase": "Bornology"
+  },
+  {
+    "snakecase": "is_add_submonoid",
+    "camelcase": "IsAddSubmonoid"
+  },
+  {
+    "snakecase": "dvd",
+    "camelcase": "Dvd"
+  },
+  {
+    "snakecase": "trunc",
+    "camelcase": "Trunc"
+  },
+  {
+    "snakecase": "",
+    "camelcase": "X_in_terms_of_W_zero"
+  },
+  {
+    "snakecase": "simple_graph",
+    "camelcase": "SimpleGraph"
+  },
+  {
+    "snakecase": "has_continuous_const_smul",
+    "camelcase": "HasContinuousConstSmul"
+  },
+  {
+    "snakecase": "closed_embedding",
+    "camelcase": "ClosedEmbedding"
+  },
+  {
+    "snakecase": "has_edist",
+    "camelcase": "HasEdist"
+  },
+  {
+    "snakecase": "ordered_comm_monoid",
+    "camelcase": "OrderedCommMonoid"
+  },
+  {
+    "snakecase": "is_extreme",
+    "camelcase": "IsExtreme"
+  },
+  {
+    "snakecase": "union",
+    "camelcase": "Union_compact_covering"
+  },
+  {
+    "snakecase": "nonunits",
+    "camelcase": "Nonunits"
+  },
+  {
+    "snakecase": "linear_equiv",
+    "camelcase": "LinearEquiv"
+  },
+  {
+    "snakecase": "ext",
+    "camelcase": "Ext_map_app"
+  },
+  {
+    "snakecase": "add_salem_spencer",
+    "camelcase": "AddSalemSpencer"
+  },
+  {
+    "snakecase": "strict_anti",
+    "camelcase": "StrictAnti"
+  },
+  {
+    "snakecase": "mvfunctor",
+    "camelcase": "Mvfunctor"
+  },
+  {
+    "snakecase": "is_max_filter",
+    "camelcase": "IsMaxFilter"
+  },
+  {
+    "snakecase": "has_star",
+    "camelcase": "HasStar"
+  },
+  {
+    "snakecase": "inf",
+    "camelcase": "Inf_univ"
+  },
+  {
+    "snakecase": "inf",
+    "camelcase": "Inf_eq_top"
+  },
+  {
+    "snakecase": "div",
+    "camelcase": "Div"
+  },
+  {
+    "snakecase": "is_free_group",
+    "camelcase": "IsFreeGroup"
+  },
+  {
+    "snakecase": "submonoid_class",
+    "camelcase": "SubmonoidClass"
+  },
+  {
+    "snakecase": "is_topological_fiber_bundle",
+    "camelcase": "IsTopologicalFiberBundle"
+  },
+  {
+    "snakecase": "prime_multiset",
+    "camelcase": "PrimeMultiset"
+  },
+  {
+    "snakecase": "laurent_polynomial",
+    "camelcase": "LaurentPolynomial"
+  },
+  {
+    "snakecase": "nonarchimedean_ring",
+    "camelcase": "NonarchimedeanRing"
+  },
+  {
+    "snakecase": "floor_ring",
+    "camelcase": "FloorRing"
+  },
+  {
+    "snakecase": "dihedral_group",
+    "camelcase": "DihedralGroup"
+  },
+  {
+    "snakecase": "opens_measurable_space",
+    "camelcase": "OpensMeasurableSpace"
+  },
+  {
+    "snakecase": "real",
+    "camelcase": "Real"
+  },
+  {
+    "snakecase": "free_product",
+    "camelcase": "FreeProduct"
+  },
+  {
+    "snakecase": "continuous_linear_map",
+    "camelcase": "ContinuousLinearMap"
+  },
+  {
+    "snakecase": "to_nat",
+    "camelcase": "ToNat"
+  },
+  {
+    "snakecase": "associated",
+    "camelcase": "Associated"
+  },
+  {
+    "snakecase": "tree",
+    "camelcase": "Tree"
+  },
+  {
+    "snakecase": "flow",
+    "camelcase": "Flow"
+  },
+  {
+    "snakecase": "option",
+    "camelcase": "Option"
+  },
+  {
+    "snakecase": "galois_coinsertion",
+    "camelcase": "GaloisCoinsertion"
+  },
+  {
+    "snakecase": "one",
+    "camelcase": "One"
+  },
+  {
+    "snakecase": "coe",
+    "camelcase": "Coe"
+  },
+  {
+    "snakecase": "zero",
+    "camelcase": "Zero"
+  },
+  {
+    "snakecase": "is_local_min",
+    "camelcase": "IsLocalMin"
+  },
+  {
+    "snakecase": "is_subgroup",
+    "camelcase": "IsSubgroup"
+  },
+  {
+    "snakecase": "inf",
+    "camelcase": "Inf_pair"
+  },
+  {
+    "snakecase": "add_monoid_algebra",
+    "camelcase": "AddMonoidAlgebra"
+  },
+  {
+    "snakecase": "sup",
+    "camelcase": "Sup_image"
+  },
+  {
+    "snakecase": "cont_mdiff_within_at",
+    "camelcase": "ContMdiffWithinAt"
+  },
+  {
+    "snakecase": "continuous",
+    "camelcase": "Continuous"
+  },
+  {
+    "snakecase": "cont_mdiff_on",
+    "camelcase": "ContMdiffOn"
+  },
+  {
+    "snakecase": "inf",
+    "camelcase": "Inf_mem"
+  },
+  {
+    "snakecase": "lex",
+    "camelcase": "Lex"
+  },
+  {
+    "snakecase": "orthogonal_family",
+    "camelcase": "OrthogonalFamily"
+  },
+  {
+    "snakecase": "eq",
+    "camelcase": "Eq"
+  },
+  {
+    "snakecase": "valuation_ring",
+    "camelcase": "ValuationRing"
+  },
+  {
+    "snakecase": "cstar_ring",
+    "camelcase": "CstarRing"
+  },
+  {
+    "snakecase": "orientation",
+    "camelcase": "Orientation"
+  },
+  {
+    "snakecase": "symmetric",
+    "camelcase": "Symmetric"
+  },
+  {
+    "snakecase": "is_local_max",
+    "camelcase": "IsLocalMax"
+  },
+  {
+    "snakecase": "ratfunc",
+    "camelcase": "Ratfunc"
+  },
+  {
+    "snakecase": "parser",
+    "camelcase": "Parser"
+  },
+  {
+    "snakecase": "inducing",
+    "camelcase": "Inducing"
+  },
+  {
+    "snakecase": "ring_hom",
+    "camelcase": "RingHom"
+  },
+  {
+    "snakecase": "normed_star_group",
+    "camelcase": "NormedStarGroup"
+  },
+  {
+    "snakecase": "monoid_with_zero_hom_class",
+    "camelcase": "MonoidWithZeroHomClass"
+  },
+  {
+    "snakecase": "lower_bounds",
+    "camelcase": "LowerBounds"
+  },
+  {
+    "snakecase": "mul_hom",
+    "camelcase": "MulHom"
+  },
+  {
+    "snakecase": "is_scalar_tower",
+    "camelcase": "IsScalarTower"
+  },
+  {
+    "snakecase": "pempty",
+    "camelcase": "Pempty"
+  },
+  {
+    "snakecase": "has_measurable_add",
+    "camelcase": "HasMeasurableAdd"
+  },
+  {
+    "snakecase": "wf_dvd_monoid",
+    "camelcase": "WfDvdMonoid"
+  },
+  {
+    "snakecase": "add_comm_mon",
+    "camelcase": "AddCommMon"
+  },
+  {
+    "snakecase": "acc",
+    "camelcase": "Acc"
+  },
+  {
+    "snakecase": "is_exposed",
+    "camelcase": "IsExposed"
+  },
+  {
+    "snakecase": "order_iso",
+    "camelcase": "OrderIso"
+  },
+  {
+    "snakecase": "subsemiring",
+    "camelcase": "Subsemiring"
+  },
+  {
+    "snakecase": "measurable_embedding",
+    "camelcase": "MeasurableEmbedding"
+  },
+  {
+    "snakecase": "is_galois",
+    "camelcase": "IsGalois"
+  },
+  {
+    "snakecase": "submonoid",
+    "camelcase": "Submonoid"
+  },
+  {
+    "snakecase": "normed_linear_ordered_field",
+    "camelcase": "NormedLinearOrderedField"
+  },
+  {
+    "snakecase": "comm_monoid",
+    "camelcase": "CommMonoid"
+  },
+  {
+    "snakecase": "inter",
+    "camelcase": "Inter_halfspaces_eq"
+  },
+  {
+    "snakecase": "is_closed",
+    "camelcase": "IsClosed"
+  },
+  {
+    "snakecase": "rand",
+    "camelcase": "Rand"
+  },
+  {
+    "snakecase": "complete_linear_order",
+    "camelcase": "CompleteLinearOrder"
+  },
+  {
+    "snakecase": "add_monoid_hom",
+    "camelcase": "AddMonoidHom"
+  },
+  {
+    "snakecase": "is_conj",
+    "camelcase": "IsConj"
+  },
+  {
+    "snakecase": "primrec",
+    "camelcase": "Primrec"
+  },
+  {
+    "snakecase": "pointed",
+    "camelcase": "Pointed"
+  },
+  {
+    "snakecase": "measurable_singleton_class",
+    "camelcase": "MeasurableSingletonClass"
+  },
+  {
+    "snakecase": "associates",
+    "camelcase": "Associates"
+  },
+  {
+    "snakecase": "topological_vector_bundle_core",
+    "camelcase": "TopologicalVectorBundleCore"
+  },
+  {
+    "snakecase": "antitone",
+    "camelcase": "Antitone"
+  },
+  {
+    "snakecase": "is_preirreducible",
+    "camelcase": "IsPreirreducible"
+  },
+  {
+    "snakecase": "cont_mdiff",
+    "camelcase": "ContMdiff"
+  },
+  {
+    "snakecase": "is_reduced",
+    "camelcase": "IsReduced"
+  },
+  {
+    "snakecase": "rel",
+    "camelcase": "Rel"
+  },
+  {
+    "snakecase": "normed_space",
+    "camelcase": "NormedSpace"
+  },
+  {
+    "snakecase": "monad",
+    "camelcase": "Monad"
+  },
+  {
+    "snakecase": "has_distrib_neg",
+    "camelcase": "HasDistribNeg"
+  },
+  {
+    "snakecase": "setoid",
+    "camelcase": "Setoid"
+  },
+  {
+    "snakecase": "homological_complex",
+    "camelcase": "HomologicalComplex"
+  },
+  {
+    "snakecase": "circle_integrable",
+    "camelcase": "CircleIntegrable"
+  },
+  {
+    "snakecase": "free_abelian_group",
+    "camelcase": "FreeAbelianGroup"
+  },
+  {
+    "snakecase": "lie_ring_module",
+    "camelcase": "LieRingModule"
+  },
+  {
+    "snakecase": "unitization",
+    "camelcase": "Unitization"
+  },
+  {
+    "snakecase": "linear_ordered_field",
+    "camelcase": "LinearOrderedField"
+  },
+  {
+    "snakecase": "add_hom_class",
+    "camelcase": "AddHomClass"
+  },
+  {
+    "snakecase": "inf",
+    "camelcase": "Inf_le_iff"
+  },
+  {
+    "snakecase": "strict_anti_on",
+    "camelcase": "StrictAntiOn"
+  },
+  {
+    "snakecase": "is_add_left_regular",
+    "camelcase": "IsAddLeftRegular"
+  },
+  {
+    "snakecase": "has_vsub",
+    "camelcase": "HasVsub"
+  },
+  {
+    "snakecase": "sup",
+    "camelcase": "Sup_empty"
+  },
+  {
+    "snakecase": "padic_int",
+    "camelcase": "PadicInt"
+  },
+  {
+    "snakecase": "inf",
+    "camelcase": "Inf_sup_eq"
+  },
+  {
+    "snakecase": "antisymm",
+    "camelcase": "Antisymm"
+  },
+  {
+    "snakecase": "homeomorph",
+    "camelcase": "Homeomorph"
+  },
+  {
+    "snakecase": "zero_hom_class",
+    "camelcase": "ZeroHomClass"
+  },
+  {
+    "snakecase": "linear_recurrence",
+    "camelcase": "LinearRecurrence"
+  },
+  {
+    "snakecase": "upper_bounds",
+    "camelcase": "UpperBounds"
+  },
+  {
+    "snakecase": "is_partial_order",
+    "camelcase": "IsPartialOrder"
+  },
+  {
+    "snakecase": "comp_rel",
+    "camelcase": "CompRel"
+  },
+  {
+    "snakecase": "squash",
+    "camelcase": "Squash"
+  },
+  {
+    "snakecase": "union",
+    "camelcase": "Union"
+  },
+  {
+    "snakecase": "with_top",
+    "camelcase": "WithTop"
+  },
+  {
+    "snakecase": "poly",
+    "camelcase": "Poly"
+  },
+  {
+    "snakecase": "map_cluster_pt",
+    "camelcase": "MapClusterPt"
+  },
+  {
+    "snakecase": "part",
+    "camelcase": "Part"
+  },
+  {
+    "snakecase": "nondiscrete_normed_field",
+    "camelcase": "NondiscreteNormedField"
+  },
+  {
+    "snakecase": "lie_algebra",
+    "camelcase": "LieAlgebra"
+  },
+  {
+    "snakecase": "ring_hom_inv_pair",
+    "camelcase": "RingHomInvPair"
+  },
+  {
+    "snakecase": "has_fderiv_within_at",
+    "camelcase": "HasFderivWithinAt"
+  },
+  {
+    "snakecase": "linear_ordered_cancel_add_comm_monoid",
+    "camelcase": "LinearOrderedCancelAddCommMonoid"
+  },
+  {
+    "snakecase": "is_conformal_map",
+    "camelcase": "IsConformalMap"
+  },
+  {
+    "snakecase": "is_simple_order",
+    "camelcase": "IsSimpleOrder"
+  },
+  {
+    "snakecase": "non_unital_semiring",
+    "camelcase": "NonUnitalSemiring"
+  },
+  {
+    "snakecase": "sup",
+    "camelcase": "Sup_mem_closure"
+  },
+  {
+    "snakecase": "comm_monoid_with_zero",
+    "camelcase": "CommMonoidWithZero"
+  },
+  {
+    "snakecase": "nat",
+    "camelcase": "Nat"
+  },
+  {
+    "snakecase": "hilbert_basis",
+    "camelcase": "HilbertBasis"
+  },
+  {
+    "snakecase": "is_preconnected",
+    "camelcase": "IsPreconnected"
+  },
+  {
+    "snakecase": "order_closed_topology",
+    "camelcase": "OrderClosedTopology"
+  },
+  {
+    "snakecase": "sup",
+    "camelcase": "Sup_compact_le_eq"
+  },
+  {
+    "snakecase": "ordered_add_comm_group",
+    "camelcase": "OrderedAddCommGroup"
+  },
+  {
+    "snakecase": "linear_ordered_comm_ring",
+    "camelcase": "LinearOrderedCommRing"
+  },
+  {
+    "snakecase": "differentiable_on",
+    "camelcase": "DifferentiableOn"
+  },
+  {
+    "snakecase": "seq_continuous",
+    "camelcase": "SeqContinuous"
+  },
+  {
+    "snakecase": "mdifferentiable_at",
+    "camelcase": "MdifferentiableAt"
+  },
+  {
+    "snakecase": "affine_basis",
+    "camelcase": "AffineBasis"
+  },
+  {
+    "snakecase": "ico",
+    "camelcase": "Ico_subset_closure_interior"
+  },
+  {
+    "snakecase": "cont_diff_within_at",
+    "camelcase": "ContDiffWithinAt"
+  },
+  {
+    "snakecase": "is_artinian_ring",
+    "camelcase": "IsArtinianRing"
+  },
+  {
+    "snakecase": "is_field",
+    "camelcase": "IsField"
+  },
+  {
+    "snakecase": "lists",
+    "camelcase": "Lists"
+  },
+  {
+    "snakecase": "compact_space",
+    "camelcase": "CompactSpace"
+  },
+  {
+    "snakecase": "floor_semiring",
+    "camelcase": "FloorSemiring"
+  },
+  {
+    "snakecase": "sup",
+    "camelcase": "Sup_le"
+  },
+  {
+    "snakecase": "is_compl",
+    "camelcase": "IsCompl"
+  },
+  {
+    "snakecase": "is_asymm",
+    "camelcase": "IsAsymm"
+  },
+  {
+    "snakecase": "bool",
+    "camelcase": "Bool"
+  },
+  {
+    "snakecase": "has_deriv_at",
+    "camelcase": "HasDerivAt"
+  },
+  {
+    "snakecase": "distrib_lattice",
+    "camelcase": "DistribLattice"
+  },
+  {
+    "snakecase": "power_basis",
+    "camelcase": "PowerBasis"
+  },
+  {
+    "snakecase": "sup",
+    "camelcase": "Sup_compact_eq_top"
+  },
+  {
+    "snakecase": "is_trans",
+    "camelcase": "IsTrans"
+  },
+  {
+    "snakecase": "add_left_cancel_semigroup",
+    "camelcase": "AddLeftCancelSemigroup"
+  },
+  {
+    "snakecase": "array",
+    "camelcase": "Array"
+  },
+  {
+    "snakecase": "invertible",
+    "camelcase": "Invertible"
+  },
+  {
+    "snakecase": "linear_independent",
+    "camelcase": "LinearIndependent"
+  },
+  {
+    "snakecase": "homotopy",
+    "camelcase": "Homotopy"
+  },
+  {
+    "snakecase": "",
+    "camelcase": "X_in_terms_of_W_eq"
+  },
+  {
+    "snakecase": "subtraction_monoid",
+    "camelcase": "SubtractionMonoid"
+  },
+  {
+    "snakecase": "measurable",
+    "camelcase": "Measurable"
+  },
+  {
+    "snakecase": "omega_complete_partial_order",
+    "camelcase": "OmegaCompletePartialOrder"
+  },
+  {
+    "snakecase": "add_submonoid_class",
+    "camelcase": "AddSubmonoidClass"
+  },
+  {
+    "snakecase": "normed_group",
+    "camelcase": "NormedGroup"
+  },
+  {
+    "snakecase": "topological_fiber_bundle_core",
+    "camelcase": "TopologicalFiberBundleCore"
+  },
+  {
+    "snakecase": "emetric_space",
+    "camelcase": "EmetricSpace"
+  },
+  {
+    "snakecase": "liouville",
+    "camelcase": "Liouville"
+  },
+  {
+    "snakecase": "segment",
+    "camelcase": "Segment"
+  },
+  {
+    "snakecase": "disjoint",
+    "camelcase": "Disjoint"
+  },
+  {
+    "snakecase": "no_min_order",
+    "camelcase": "NoMinOrder"
+  },
+  {
+    "snakecase": "contracting_with",
+    "camelcase": "ContractingWith"
+  },
+  {
+    "snakecase": "orthonormal_basis",
+    "camelcase": "OrthonormalBasis"
+  },
+  {
+    "snakecase": "densely_ordered",
+    "camelcase": "DenselyOrdered"
+  },
+  {
+    "snakecase": "liminf",
+    "camelcase": "Liminf_nhds"
+  },
+  {
+    "snakecase": "has_deriv_within_at",
+    "camelcase": "HasDerivWithinAt"
+  },
+  {
+    "snakecase": "polynomial",
+    "camelcase": "Polynomial"
+  },
+  {
+    "snakecase": "union",
+    "camelcase": "Union_disjointed"
+  },
+  {
+    "snakecase": "add_cancel_monoid",
+    "camelcase": "AddCancelMonoid"
+  },
+  {
+    "snakecase": "has_sum",
+    "camelcase": "HasSum"
+  },
+  {
+    "snakecase": "subtype",
+    "camelcase": "Subtype"
+  },
+  {
+    "snakecase": "locally_constant",
+    "camelcase": "LocallyConstant"
+  },
+  {
+    "snakecase": "comm_mon",
+    "camelcase": "CommMon_"
+  },
+  {
+    "snakecase": "",
+    "camelcase": "X_in_terms_of_W_vars_subset"
+  },
+  {
+    "snakecase": "is_min_filter",
+    "camelcase": "IsMinFilter"
+  },
+  {
+    "snakecase": "succ_order",
+    "camelcase": "SuccOrder"
+  },
+  {
+    "snakecase": "lie_ideal",
+    "camelcase": "LieIdeal"
+  },
+  {
+    "snakecase": "ord",
+    "camelcase": "Ord"
+  },
+  {
+    "snakecase": "additive",
+    "camelcase": "Additive"
+  },
+  {
+    "snakecase": "mul_action",
+    "camelcase": "MulAction"
+  },
+  {
+    "snakecase": "inf",
+    "camelcase": "Inf_sup_le_infi_sup"
+  },
+  {
+    "snakecase": "arity",
+    "camelcase": "Arity"
+  },
+  {
+    "snakecase": "is_min_on",
+    "camelcase": "IsMinOn"
+  },
+  {
+    "snakecase": "is_locally_constant",
+    "camelcase": "IsLocallyConstant"
+  },
+  {
+    "snakecase": "ring_hom_surjective",
+    "camelcase": "RingHomSurjective"
+  },
+  {
+    "snakecase": "seq_closure",
+    "camelcase": "SeqClosure"
+  },
+  {
+    "snakecase": "gcd_monoid",
+    "camelcase": "GcdMonoid"
+  },
+  {
+    "snakecase": "ge",
+    "camelcase": "Ge"
+  },
+  {
+    "snakecase": "is_commutative",
+    "camelcase": "IsCommutative"
+  },
+  {
+    "snakecase": "noncompact_space",
+    "camelcase": "NoncompactSpace"
+  },
+  {
+    "snakecase": "covariant",
+    "camelcase": "Covariant"
+  },
+  {
+    "snakecase": "no_zero_smul_divisors",
+    "camelcase": "NoZeroSmulDivisors"
+  },
+  {
+    "snakecase": "qpf",
+    "camelcase": "Qpf"
+  },
+  {
+    "snakecase": "picard_lindelof",
+    "camelcase": "PicardLindelof"
+  },
+  {
+    "snakecase": "has_groupoid",
+    "camelcase": "HasGroupoid"
+  },
+  {
+    "snakecase": "strict_mono",
+    "camelcase": "StrictMono"
+  },
+  {
+    "snakecase": "linear_ordered_add_comm_group",
+    "camelcase": "LinearOrderedAddCommGroup"
+  },
+  {
+    "snakecase": "has_inner",
+    "camelcase": "HasInner"
+  },
+  {
+    "snakecase": "is_ring_hom",
+    "camelcase": "IsRingHom"
+  },
+  {
+    "snakecase": "ring_hom_class",
+    "camelcase": "RingHomClass"
+  },
+  {
+    "snakecase": "one_hom",
+    "camelcase": "OneHom"
+  },
+  {
+    "snakecase": "pure",
+    "camelcase": "Pure"
+  },
+  {
+    "snakecase": "complement",
+    "camelcase": "Complement"
+  },
+  {
+    "snakecase": "add_semiconj_by",
+    "camelcase": "AddSemiconjBy"
+  },
+  {
+    "snakecase": "iic",
+    "camelcase": "Iic_mem_nhds"
+  },
+  {
+    "snakecase": "open_segment",
+    "camelcase": "OpenSegment"
+  },
+  {
+    "snakecase": "is_clopen",
+    "camelcase": "IsClopen"
+  },
+  {
+    "snakecase": "affine_equiv",
+    "camelcase": "AffineEquiv"
+  },
+  {
+    "snakecase": "normed_division_ring",
+    "camelcase": "NormedDivisionRing"
+  },
+  {
+    "snakecase": "strict_convex_space",
+    "camelcase": "StrictConvexSpace"
+  },
+  {
+    "snakecase": "mul_hom_class",
+    "camelcase": "MulHomClass"
+  },
+  {
+    "snakecase": "order_hom",
+    "camelcase": "OrderHom"
+  },
+  {
+    "snakecase": "invariant_basis_number",
+    "camelcase": "InvariantBasisNumber"
+  },
+  {
+    "snakecase": "composition_series",
+    "camelcase": "CompositionSeries"
+  },
+  {
+    "snakecase": "omega_limit",
+    "camelcase": "OmegaLimit"
+  },
+  {
+    "snakecase": "has_continuous_sub",
+    "camelcase": "HasContinuousSub"
+  },
+  {
+    "snakecase": "sub_neg_monoid",
+    "camelcase": "SubNegMonoid"
+  },
+  {
+    "snakecase": "cancel_monoid",
+    "camelcase": "CancelMonoid"
+  },
+  {
+    "snakecase": "structure_groupoid",
+    "camelcase": "StructureGroupoid"
+  },
+  {
+    "snakecase": "add_hom",
+    "camelcase": "AddHom"
+  },
+  {
+    "snakecase": "subgroup",
+    "camelcase": "Subgroup"
+  },
+  {
+    "snakecase": "finpartition",
+    "camelcase": "Finpartition"
+  },
+  {
+    "snakecase": "affine_independent",
+    "camelcase": "AffineIndependent"
+  },
+  {
+    "snakecase": "is_extr_filter",
+    "camelcase": "IsExtrFilter"
+  },
+  {
+    "snakecase": "is_of_fin_add_order",
+    "camelcase": "IsOfFinAddOrder"
+  },
+  {
+    "snakecase": "is_left_regular",
+    "camelcase": "IsLeftRegular"
+  },
+  {
+    "snakecase": "multiplicative",
+    "camelcase": "Multiplicative"
+  },
+  {
+    "snakecase": "add_equiv_class",
+    "camelcase": "AddEquivClass"
+  },
+  {
+    "snakecase": "lie_module",
+    "camelcase": "LieModule"
+  },
+  {
+    "snakecase": "filter_basis",
+    "camelcase": "FilterBasis"
+  },
+  {
+    "snakecase": "orthonormal_basis_index",
+    "camelcase": "OrthonormalBasisIndex"
+  },
+  {
+    "snakecase": "graded_monoid",
+    "camelcase": "GradedMonoid"
+  },
+  {
+    "snakecase": "wide_subquiver",
+    "camelcase": "WideSubquiver"
+  },
+  {
+    "snakecase": "mdifferentiable",
+    "camelcase": "Mdifferentiable"
+  },
+  {
+    "snakecase": "has_continuous_smul",
+    "camelcase": "HasContinuousSmul"
+  },
+  {
+    "snakecase": "ne",
+    "camelcase": "Ne"
+  },
+  {
+    "snakecase": "balanced_core",
+    "camelcase": "BalancedCore"
+  },
+  {
+    "snakecase": "has_ordered_sub",
+    "camelcase": "HasOrderedSub"
+  },
+  {
+    "snakecase": "upper_set",
+    "camelcase": "UpperSet"
+  },
+  {
+    "snakecase": "is_extr_on",
+    "camelcase": "IsExtrOn"
+  },
+  {
+    "snakecase": "dual_number",
+    "camelcase": "DualNumber"
+  },
+  {
+    "snakecase": "star_convex",
+    "camelcase": "StarConvex"
+  },
+  {
+    "snakecase": "group_topology",
+    "camelcase": "GroupTopology"
+  },
+  {
+    "snakecase": "is_local_ring_hom",
+    "camelcase": "IsLocalRingHom"
+  },
+  {
+    "snakecase": "normed_add_torsor",
+    "camelcase": "NormedAddTorsor"
+  },
+  {
+    "snakecase": "ordered_comm_group",
+    "camelcase": "OrderedCommGroup"
+  },
+  {
+    "snakecase": "totally_bounded",
+    "camelcase": "TotallyBounded"
+  },
+  {
+    "snakecase": "commutative",
+    "camelcase": "Commutative"
+  },
+  {
+    "snakecase": "topological_vector_bundle",
+    "camelcase": "TopologicalVectorBundle"
+  },
+  {
+    "snakecase": "uniform_group",
+    "camelcase": "UniformGroup"
+  },
+  {
+    "snakecase": "is_refl",
+    "camelcase": "IsRefl"
+  },
+  {
+    "snakecase": "sup",
+    "camelcase": "Sup_inf_eq"
+  },
+  {
+    "snakecase": "ultrafilter",
+    "camelcase": "Ultrafilter"
+  },
+  {
+    "snakecase": "stream",
+    "camelcase": "Stream"
+  },
+  {
+    "snakecase": "is_pred_archimedean",
+    "camelcase": "IsPredArchimedean"
+  },
+  {
+    "snakecase": "add_aut",
+    "camelcase": "AddAut"
+  },
+  {
+    "snakecase": "affine_subspace",
+    "camelcase": "AffineSubspace"
+  },
+  {
+    "snakecase": "not",
+    "camelcase": "Not"
+  },
+  {
+    "snakecase": "infinite",
+    "camelcase": "Infinite"
+  },
+  {
+    "snakecase": "conj_act",
+    "camelcase": "ConjAct"
+  },
+  {
+    "snakecase": "sup",
+    "camelcase": "Sup_le_iff"
+  },
+  {
+    "snakecase": "",
+    "camelcase": "X_in_terms_of_W_aux"
+  },
+  {
+    "snakecase": "is_countably_spanning",
+    "camelcase": "IsCountablySpanning"
+  },
+  {
+    "snakecase": "cont_diff_bump_of_inner",
+    "camelcase": "ContDiffBumpOfInner"
+  },
+  {
+    "snakecase": "cancel_comm_monoid",
+    "camelcase": "CancelCommMonoid"
+  },
+  {
+    "snakecase": "is_symm",
+    "camelcase": "IsSymm"
+  },
+  {
+    "snakecase": "is_integral",
+    "camelcase": "IsIntegral"
+  },
+  {
+    "snakecase": "graded_algebra",
+    "camelcase": "GradedAlgebra"
+  },
+  {
+    "snakecase": "tangent_cone_at",
+    "camelcase": "TangentConeAt"
+  },
+  {
+    "snakecase": "has_mem",
+    "camelcase": "HasMem"
+  },
+  {
+    "snakecase": "is_add_group_hom",
+    "camelcase": "IsAddGroupHom"
+  },
+  {
+    "snakecase": "free_algebra",
+    "camelcase": "FreeAlgebra"
+  },
+  {
+    "snakecase": "is_associative",
+    "camelcase": "IsAssociative"
+  },
+  {
+    "snakecase": "distrib_mul_action_hom",
+    "camelcase": "DistribMulActionHom"
+  },
+  {
+    "snakecase": "linear_ordered_ring",
+    "camelcase": "LinearOrderedRing"
+  },
+  {
+    "snakecase": "cyclotomic_ring",
+    "camelcase": "CyclotomicRing"
+  },
+  {
+    "snakecase": "equiv",
+    "camelcase": "Equiv"
+  },
+  {
+    "snakecase": "path",
+    "camelcase": "Path"
+  }
+]
