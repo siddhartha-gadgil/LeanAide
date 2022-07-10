@@ -50,7 +50,7 @@ def main (args: List String) : IO Unit := do
           | Except.ok answerJs => do
             match answerJs.getStr? with
             | Except.error _ => none
-            | Except.ok answer => some <|mkCap answer
+            | Except.ok answer => answer
         match answer? with
           | none => pure ()
           | some answer => entry := entry.push ("answer", Json.str answer)
