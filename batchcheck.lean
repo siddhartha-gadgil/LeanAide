@@ -73,7 +73,7 @@ def main (args: List String) : IO Unit := do
               elabEntry := elabEntry.push ("error", Json.str e)
             | Except.ok s =>
               elabEntry := elabEntry.push ("statement", Json.str s)
-              let core := elabThmCore <| mkCap s
+              let core := elabThmCore <|  s
               let io? := 
               core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
               match ← io?.toIO' with
@@ -82,11 +82,11 @@ def main (args: List String) : IO Unit := do
                 | Except.ok expr =>
                   elabEntry:= elabEntry.push ("success", Json.bool Bool.true)
                   elabEntry := elabEntry.push ("code", Json.str s!"{expr}")
-                  elabs:= elabs.push <| mkCap s
+                  elabs:= elabs.push <|  s
                   match answer? with 
                   | none => pure ()
                   | some answer =>
-                    let core := compareThmsCore (mkCap s) answer
+                    let core := compareThmsCore ( s) answer
                     let io? := 
                     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
                     match ← io?.toIO' with
@@ -98,6 +98,7 @@ def main (args: List String) : IO Unit := do
                         pure ()
                       | Except.error e =>
                         IO.println e
+                        IO.println answer
                         pure ()
                     | Except.error e =>
                       IO.println "error"
