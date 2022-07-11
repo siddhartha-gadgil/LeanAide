@@ -6,7 +6,7 @@ import torch
 import json
 import pickle
 import time
-from KNN_search import *
+#from KNN_search import *
 
 def sentence_tokenize_info(sentence,model):
         print("Info for {}".format(sentence))
@@ -118,9 +118,9 @@ def retrieve_similar_k_stats(main_prompt,
 
     fread = open(corpus_path,"r",encoding="utf-8")
     prompt_corpus = json.load(fread)
-    model = SentenceTransformer(model_name,device='cuda')
+    model = SentenceTransformer(model_name,device='cpu')
     #corpus_embeddings = None
-    #TODO optimization here, do one-time loading in the main method
+    #TODO optimization here, do one-time loading in the main method DONE for the sentence-similarity one
     # if use_precomputed_embeddings and embeddings is not None :
     #     embedding_path = embedding_store_path+model_name.split('/')[-1]+".pkl"
     #     with open(embedding_path, "rb") as fIn:
@@ -132,8 +132,8 @@ def retrieve_similar_k_stats(main_prompt,
         corpus_embeddings = model.encode(prompts, convert_to_tensor=True)
     
     query_embedding = model.encode(main_prompt, convert_to_tensor=True)
-    cos_scores = util.cos_sim(query_embedding.to('cuda'),corpus_embeddings.to('cuda'))[0]
-    top_results = torch.topk(cos_scores.to('cuda'),k=top_k)
+    cos_scores = util.cos_sim(query_embedding.to('cpu'),corpus_embeddings.to('cpu'))[0]
+    top_results = torch.topk(cos_scores.to('cpu'),k=top_k)
     top_results = top_results
     result_lis = []
     for score, idx in zip(top_results[0],top_results[1]):
@@ -149,7 +149,7 @@ def save_corpus_embeddings(corpus_path="/home/t-agrawala/Desktop/ATP-Project/dat
     out_path = out_path + model_name.split('/')[-1]+".pkl"
     fread = open(corpus_path,"r",encoding="utf-8")
     prompt_corpus = json.load(fread) #Do we need to worry about the order?
-    model = SentenceTransformer(model_name,device='cuda')
+    model = SentenceTransformer(model_name,device='cpu')
     prompts = [stats["doc_string"] for stats in prompt_corpus]
     corpus_embeddings = model.encode(prompts, convert_to_tensor=True)
     with open(out_path, "wb") as fOut:
@@ -157,7 +157,7 @@ def save_corpus_embeddings(corpus_path="/home/t-agrawala/Desktop/ATP-Project/dat
 
 #test_similarity_with_data()
 
-#save_corpus_embeddings()
+save_corpus_embeddings(corpus_path="F:\ATP_WORK\ATP-Project\data\clean_prompts.json",out_path = "F:\\ATP_WORK\\ATP-Project\\SentenceSimilarityTask\\embeddings_store\\")
 
 # main_prompt = "For any propositions `P` and `A`, `P` follows from `A` under the assumption that `P` is true."
 # r1 = retrieve_similar_k_stats(main_prompt,use_precomputed_embeddings=True)
