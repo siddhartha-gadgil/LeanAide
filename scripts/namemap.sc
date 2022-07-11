@@ -4,6 +4,13 @@ def capSegments(s: String) = {
   val pieces = "[A-Z][a-z0-9]+".r.findAllIn(s).toVector
   if (pieces.mkString("") == s) pieces else Vector(s)
 }
+
+def segments(s: String) = s
+  .split("_")
+  .toVector
+  .flatMap(capSegments)
+  .map(_.toLowerCase)
+
 def segmentsNoIs(s: String) = s
   .split("_")
   .toVector
@@ -23,11 +30,14 @@ def equalTokens(s1: String, s2: String) = {
   s1s.zip(s2s).forall{case (a, b) => equalSegments(a, b)}
 }
 
-def piecesSegments(s: String) = s.split("\\.").toVector.map(segmentsNoIs(_))
+def piecesSegments(s: String) = s.split("\\.").toVector.map(segments(_))
 
-def segmentMap(ss: Vector[String]) = ss.map(s => piecesSegments(s) -> s).toMap 
+def piecesSegmentsNoIs(s: String) = s.split("\\.").toVector.map(segmentsNoIs(_))
 
-def piecesMap(ss: Vector[String]) = ss.map(s => segmentsNoIs(s) -> s).toMap 
+
+def segmentMap(ss: Vector[String]) = ss.map(s => piecesSegmentsNoIs(s) -> s).toMap ++ ss.map(s => piecesSegments(s) -> s).toMap
+
+def piecesMap(ss: Vector[String]) = ss.map(s => segmentsNoIs(s) -> s).toMap ++ ss.map(s => segments(s) -> s).toMap
 
 def lastPiecesMap(ss: Vector[String]) = ss.filter(_.contains(".")).map(s => piecesSegments(s.split("\\.").last) -> s).toMap
 
@@ -37,10 +47,10 @@ val allNamesPieces = allNames.flatMap(_.split("\\.")).distinct
 val allNamePieceSegs = piecesMap(allNamesPieces.toVector)
 val binNamesPieces = binNames.flatMap(_.split("\\.")).distinct
 val binSegs = segmentMap(binNames.toVector)
-val nameMatch = allNames.flatMap(s1 => binSegs.get(piecesSegments(s1)).map(s2 => s1 -> s2 ))
+val nameMatch = allNames.flatMap(s1 => binSegs.get(piecesSegments(s1)).orElse(binSegs.get(piecesSegmentsNoIs(s1))).map(s2 => s1 -> s2 ))
 val binPieces = binNames.flatMap(_.split("\\.")).distinct
 val binPieceSegs = piecesMap(binPieces.toVector)
-val namePieceMatch = allNamesPieces.flatMap(s1 => binPieceSegs.get(segmentsNoIs(s1)).map(s2 => s1 -> s2 )) 
+val namePieceMatch = allNamesPieces.flatMap(s1 => binPieceSegs.get(segments(s1)).orElse(binPieceSegs.get(segmentsNoIs(s1))).map(s2 => s1 -> s2 )) 
 val nameMatchAll = (nameMatch ++ namePieceMatch).distinct
 
 import $ivy.`com.lihaoyi::upickle:1.6.0`

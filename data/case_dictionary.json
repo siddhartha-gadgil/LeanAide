@@ -181,7 +181,7 @@
   },
   {
     "snakecase": "preorder",
-    "camelcase": "IsPreorder"
+    "camelcase": "Preorder"
   },
   {
     "snakecase": "zero_lt.pos_mul_mono",
@@ -198,10 +198,6 @@
   {
     "snakecase": "polynomial.cyclotomic",
     "camelcase": "Polynomial.cyclotomic"
-  },
-  {
-    "snakecase": "symm",
-    "camelcase": "IsSymm"
   },
   {
     "snakecase": "witt_vector.is_poly",
@@ -309,7 +305,7 @@
   },
   {
     "snakecase": "field",
-    "camelcase": "IsField"
+    "camelcase": "Field"
   },
   {
     "snakecase": "linear_map.det",
@@ -445,7 +441,7 @@
   },
   {
     "snakecase": "category_theory.limits.colimit.",
-    "camelcase": "CategoryTheory.Limits.IsColimit"
+    "camelcase": "CategoryTheory.Limits.colimit"
   },
   {
     "snakecase": "category_theory.prod.swap",
@@ -457,7 +453,7 @@
   },
   {
     "snakecase": "category_theory.limits.limit.",
-    "camelcase": "CategoryTheory.Limits.IsLimit"
+    "camelcase": "CategoryTheory.Limits.limit"
   },
   {
     "snakecase": "category_theory.limits.colim",
@@ -513,7 +509,7 @@
   },
   {
     "snakecase": "linear_order",
-    "camelcase": "IsLinearOrder"
+    "camelcase": "LinearOrder"
   },
   {
     "snakecase": "order_topology",
@@ -689,7 +685,7 @@
   },
   {
     "snakecase": "directed",
-    "camelcase": "IsDirected"
+    "camelcase": "Directed"
   },
   {
     "snakecase": "ge",
@@ -701,7 +697,7 @@
   },
   {
     "snakecase": "partial_order",
-    "camelcase": "IsPartialOrder"
+    "camelcase": "PartialOrder"
   },
   {
     "snakecase": "lower_adjoint",
@@ -761,7 +757,7 @@
   },
   {
     "snakecase": "subfield",
-    "camelcase": "IsSubfield"
+    "camelcase": "Subfield"
   },
   {
     "snakecase": "submodule.span",
@@ -809,7 +805,7 @@
   },
   {
     "snakecase": "irreducible",
-    "camelcase": "IsIrreducible"
+    "camelcase": "Irreducible"
   },
   {
     "snakecase": "finite_dimensional.finrank",
@@ -1029,7 +1025,7 @@
   },
   {
     "snakecase": "add_subgroup",
-    "camelcase": "IsAddSubgroup"
+    "camelcase": "AddSubgroup"
   },
   {
     "snakecase": "category_theory.is_kernel_pair",
@@ -1065,7 +1061,7 @@
   },
   {
     "snakecase": "is_equiv",
-    "camelcase": "Equiv"
+    "camelcase": "IsEquiv"
   },
   {
     "snakecase": "add_valuation.comap",
@@ -1145,11 +1141,11 @@
   },
   {
     "snakecase": "free_group",
-    "camelcase": "IsFreeGroup"
+    "camelcase": "FreeGroup"
   },
   {
     "snakecase": "free_group.of",
-    "camelcase": "IsFreeGroup.of"
+    "camelcase": "FreeGroup.of"
   },
   {
     "snakecase": "filter.is_bounded",
@@ -1221,7 +1217,7 @@
   },
   {
     "snakecase": "category_theory.limits.limit",
-    "camelcase": "CategoryTheory.Limits.IsLimit"
+    "camelcase": "CategoryTheory.Limits.limit"
   },
   {
     "snakecase": "normal_space",
@@ -1341,7 +1337,7 @@
   },
   {
     "snakecase": "add_submonoid",
-    "camelcase": "IsAddSubmonoid"
+    "camelcase": "AddSubmonoid"
   },
   {
     "snakecase": "borel_space",
@@ -1405,11 +1401,11 @@
   },
   {
     "snakecase": "is_localization.away",
-    "camelcase": "Localization.Away"
+    "camelcase": "IsLocalization.Away"
   },
   {
     "snakecase": "ideal.is_jacobson",
-    "camelcase": "Ideal.jacobson"
+    "camelcase": "Ideal.IsJacobson"
   },
   {
     "snakecase": "char_zero",
@@ -1433,7 +1429,7 @@
   },
   {
     "snakecase": "is_monoid_hom",
-    "camelcase": "MonoidHom"
+    "camelcase": "IsMonoidHom"
   },
   {
     "snakecase": "formal_multilinear_series",
@@ -1957,7 +1953,7 @@
   },
   {
     "snakecase": "is_max",
-    "camelcase": "max"
+    "camelcase": "IsMax"
   },
   {
     "snakecase": "order.succ",
@@ -2681,7 +2677,7 @@
   },
   {
     "snakecase": "trans",
-    "camelcase": "IsTrans"
+    "camelcase": "Trans"
   },
   {
     "snakecase": "mul",
@@ -2749,7 +2745,7 @@
   },
   {
     "snakecase": "category_theory.is_equivalence",
-    "camelcase": "CategoryTheory.Equivalence"
+    "camelcase": "CategoryTheory.IsEquivalence"
   },
   {
     "snakecase": "unique_mdiff_within_at",
@@ -2805,7 +2801,7 @@
   },
   {
     "snakecase": "unit",
-    "camelcase": "IsUnit"
+    "camelcase": "Unit"
   },
   {
     "snakecase": "sum.inr",
@@ -2817,7 +2813,7 @@
   },
   {
     "snakecase": "is_submonoid",
-    "camelcase": "Submonoid"
+    "camelcase": "IsSubmonoid"
   },
   {
     "snakecase": "prod.fst",
@@ -2901,7 +2897,7 @@
   },
   {
     "snakecase": "subring",
-    "camelcase": "IsSubring"
+    "camelcase": "Subring"
   },
   {
     "snakecase": "multiset",
@@ -2917,7 +2913,7 @@
   },
   {
     "snakecase": "is_mul_hom",
-    "camelcase": "MulHom"
+    "camelcase": "IsMulHom"
   },
   {
     "snakecase": "emetric.diam",
@@ -3009,7 +3005,7 @@
   },
   {
     "snakecase": "is_upper_set",
-    "camelcase": "UpperSet"
+    "camelcase": "IsUpperSet"
   },
   {
     "snakecase": "is_lower_set",
@@ -3249,7 +3245,7 @@
   },
   {
     "snakecase": "is_top",
-    "camelcase": "Top"
+    "camelcase": "IsTop"
   },
   {
     "snakecase": "subtraction_monoid",
@@ -3769,7 +3765,7 @@
   },
   {
     "snakecase": "is_antisymm",
-    "camelcase": "Antisymm"
+    "camelcase": "IsAntisymm"
   },
   {
     "snakecase": "holder_with",
@@ -3793,7 +3789,7 @@
   },
   {
     "snakecase": "category_theory.limits.image.",
-    "camelcase": "CategoryTheory.Limits.IsImage"
+    "camelcase": "CategoryTheory.Limits.image"
   },
   {
     "snakecase": "normalization_monoid",
@@ -3865,7 +3861,7 @@
   },
   {
     "snakecase": "is_add_monoid_hom",
-    "camelcase": "AddMonoidHom"
+    "camelcase": "IsAddMonoidHom"
   },
   {
     "snakecase": "complete_lattice.is_Sup_finite_compact",
@@ -4021,7 +4017,7 @@
   },
   {
     "snakecase": "is_min",
-    "camelcase": "min"
+    "camelcase": "IsMin"
   },
   {
     "snakecase": "polynomial.degree",
@@ -4029,7 +4025,7 @@
   },
   {
     "snakecase": "free_group.mk",
-    "camelcase": "IsFreeGroup.mk"
+    "camelcase": "FreeGroup.mk"
   },
   {
     "snakecase": "option.none",
@@ -4101,7 +4097,7 @@
   },
   {
     "snakecase": "is_poly",
-    "camelcase": "Poly"
+    "camelcase": "IsPoly"
   },
   {
     "snakecase": "cardinal.sum",
@@ -4153,7 +4149,7 @@
   },
   {
     "snakecase": "localization",
-    "camelcase": "IsLocalization"
+    "camelcase": "Localization"
   },
   {
     "snakecase": "nat.partrec.code",
@@ -4241,7 +4237,7 @@
   },
   {
     "snakecase": "subgroup.center",
-    "camelcase": "IsSubgroup.Center"
+    "camelcase": "Subgroup.center"
   },
   {
     "snakecase": "complete_lattice.is_compact_element",
@@ -4577,7 +4573,7 @@
   },
   {
     "snakecase": "absolute_value",
-    "camelcase": "IsAbsoluteValue"
+    "camelcase": "AbsoluteValue"
   },
   {
     "snakecase": "is_empty",
@@ -4989,7 +4985,7 @@
   },
   {
     "snakecase": "is_add_hom",
-    "camelcase": "AddHom"
+    "camelcase": "IsAddHom"
   },
   {
     "snakecase": "int.fract",
@@ -5041,7 +5037,7 @@
   },
   {
     "snakecase": "is_total",
-    "camelcase": "Total"
+    "camelcase": "IsTotal"
   },
   {
     "snakecase": "uniform_space.completion",
@@ -5493,7 +5489,7 @@
   },
   {
     "snakecase": "is_separated",
-    "camelcase": "Separated"
+    "camelcase": "IsSeparated"
   },
   {
     "snakecase": "is_artinian_ring",
@@ -5545,7 +5541,7 @@
   },
   {
     "snakecase": "category_theory.limits.colimit",
-    "camelcase": "CategoryTheory.Limits.IsColimit"
+    "camelcase": "CategoryTheory.Limits.colimit"
   },
   {
     "snakecase": "category_theory.limits.has_finite_wide_pullbacks",
@@ -5685,7 +5681,7 @@
   },
   {
     "snakecase": "cau_seq",
-    "camelcase": "IsCauSeq"
+    "camelcase": "CauSeq"
   },
   {
     "snakecase": "is_totally_disconnected",
@@ -5753,7 +5749,7 @@
   },
   {
     "snakecase": "fraction_ring",
-    "camelcase": "IsFractionRing"
+    "camelcase": "FractionRing"
   },
   {
     "snakecase": "witt_vector.isocrystal_equiv",
@@ -5769,7 +5765,7 @@
   },
   {
     "snakecase": "empty",
-    "camelcase": "IsEmpty"
+    "camelcase": "Empty"
   },
   {
     "snakecase": "pempty",
@@ -6133,7 +6129,7 @@
   },
   {
     "snakecase": "is_commutative",
-    "camelcase": "Commutative"
+    "camelcase": "IsCommutative"
   },
   {
     "snakecase": "encodable.decode",
@@ -6241,7 +6237,7 @@
   },
   {
     "snakecase": "category_theory.limits.terminal.from",
-    "camelcase": "CategoryTheory.Limits.IsTerminal.from"
+    "camelcase": "CategoryTheory.Limits.terminal.from"
   },
   {
     "snakecase": "category_theory.is_left_adjoint",
@@ -6293,7 +6289,7 @@
   },
   {
     "snakecase": "max_chain",
-    "camelcase": "IsMaxChain"
+    "camelcase": "MaxChain"
   },
   {
     "snakecase": "list.chain",
@@ -6493,7 +6489,7 @@
   },
   {
     "snakecase": "category_theory.limits.initial.to",
-    "camelcase": "CategoryTheory.Limits.IsInitial.to"
+    "camelcase": "CategoryTheory.Limits.initial.to"
   },
   {
     "snakecase": "classical.some",
@@ -6589,7 +6585,7 @@
   },
   {
     "snakecase": "locally_constant",
-    "camelcase": "IsLocallyConstant"
+    "camelcase": "LocallyConstant"
   },
   {
     "snakecase": "locally_constant.comap",
@@ -7477,7 +7473,7 @@
   },
   {
     "snakecase": "is_subgroup",
-    "camelcase": "Subgroup"
+    "camelcase": "IsSubgroup"
   },
   {
     "snakecase": "order.frame",
@@ -7712,6 +7708,10 @@
     "camelcase": "LeftDistribClass"
   },
   {
+    "snakecase": "Type",
+    "camelcase": "type"
+  },
+  {
     "snakecase": "has_nndist",
     "camelcase": "HasNndist"
   },
@@ -7741,7 +7741,7 @@
   },
   {
     "snakecase": "Top",
-    "camelcase": "IsTop"
+    "camelcase": "top"
   },
   {
     "snakecase": "concrete_category",
@@ -7758,10 +7758,6 @@
   {
     "snakecase": "preserves_limits",
     "camelcase": "PreservesLimits"
-  },
-  {
-    "snakecase": "sheaf",
-    "camelcase": "is_sheaf"
   },
   {
     "snakecase": "opens",
@@ -7789,11 +7785,7 @@
   },
   {
     "snakecase": "lt",
-    "camelcase": "is_lt"
-  },
-  {
-    "snakecase": "is_scalar_tower",
-    "camelcase": "scalar_tower"
+    "camelcase": "Lt"
   },
   {
     "snakecase": "is_initial",
@@ -7812,10 +7804,6 @@
     "camelcase": "Right"
   },
   {
-    "snakecase": "preorder",
-    "camelcase": "is_preorder"
-  },
-  {
     "snakecase": "pos_mul_mono",
     "camelcase": "PosMulMono"
   },
@@ -7832,16 +7820,8 @@
     "camelcase": "hF"
   },
   {
-    "snakecase": "is_open",
-    "camelcase": "Open"
-  },
-  {
     "snakecase": "is_diag",
     "camelcase": "IsDiag"
-  },
-  {
-    "snakecase": "complete_space",
-    "camelcase": "is_complete_space"
   },
   {
     "snakecase": "measure_theory",
@@ -7888,28 +7868,16 @@
     "camelcase": "Preadditive"
   },
   {
-    "snakecase": "abelian",
-    "camelcase": "IsAbelian"
-  },
-  {
     "snakecase": "preserves_finite_limits",
     "camelcase": "PreservesFiniteLimits"
   },
   {
     "snakecase": "adj",
-    "camelcase": "is_adj"
+    "camelcase": "Adj"
   },
   {
     "snakecase": "edge_set",
     "camelcase": "EdgeSet"
-  },
-  {
-    "snakecase": "nonempty",
-    "camelcase": "is_nonempty"
-  },
-  {
-    "snakecase": "prime",
-    "camelcase": "is_prime"
   },
   {
     "snakecase": "subset",
@@ -7934,10 +7902,6 @@
   {
     "snakecase": "target",
     "camelcase": "Target"
-  },
-  {
-    "snakecase": "is_domain",
-    "camelcase": "Domain"
   },
   {
     "snakecase": "univ",
@@ -7965,7 +7929,7 @@
   },
   {
     "snakecase": "limit",
-    "camelcase": "is_limit"
+    "camelcase": "Limit"
   },
   {
     "snakecase": "exp",
@@ -7986,10 +7950,6 @@
   {
     "snakecase": "snd",
     "camelcase": "Snd"
-  },
-  {
-    "snakecase": "linear_order",
-    "camelcase": "is_linear_order"
   },
   {
     "snakecase": "Ioi",
@@ -8041,7 +8001,7 @@
   },
   {
     "snakecase": "id",
-    "camelcase": "is_id"
+    "camelcase": "Id"
   },
   {
     "snakecase": "grothendieck_topology",
@@ -8056,20 +8016,12 @@
     "camelcase": "Paths"
   },
   {
-    "snakecase": "path",
-    "camelcase": "IsPath"
-  },
-  {
     "snakecase": "homotopic",
     "camelcase": "Homotopic"
   },
   {
     "snakecase": "proj",
     "camelcase": "Proj"
-  },
-  {
-    "snakecase": "affine",
-    "camelcase": "is_affine"
   },
   {
     "snakecase": "simplex",
@@ -8084,28 +8036,12 @@
     "camelcase": "GE"
   },
   {
-    "snakecase": "principal",
-    "camelcase": "is_principal"
-  },
-  {
-    "snakecase": "partial_order",
-    "camelcase": "is_partial_order"
-  },
-  {
     "snakecase": "closed",
-    "camelcase": "is_closed"
-  },
-  {
-    "snakecase": "subgroup",
-    "camelcase": "is_subgroup"
+    "camelcase": "Closed"
   },
   {
     "snakecase": "normalizer",
     "camelcase": "Normalizer"
-  },
-  {
-    "snakecase": "topological_add_group",
-    "camelcase": "is_topological_add_group"
   },
   {
     "snakecase": "algebraic_topology",
@@ -8122,14 +8058,6 @@
   {
     "snakecase": "has_le",
     "camelcase": "HasLe"
-  },
-  {
-    "snakecase": "le",
-    "camelcase": "is_le"
-  },
-  {
-    "snakecase": "subfield",
-    "camelcase": "is_subfield"
   },
   {
     "snakecase": "span",
@@ -8152,28 +8080,12 @@
     "camelcase": "Diagonal"
   },
   {
-    "snakecase": "diag",
-    "camelcase": "IsDiag"
-  },
-  {
-    "snakecase": "ideal",
-    "camelcase": "is_ideal"
-  },
-  {
     "snakecase": "coeff",
     "camelcase": "Coeff"
   },
   {
-    "snakecase": "irreducible",
-    "camelcase": "is_irreducible"
-  },
-  {
     "snakecase": "hd",
     "camelcase": "hD"
-  },
-  {
-    "snakecase": "add_submonoid",
-    "camelcase": "is_add_submonoid"
   },
   {
     "snakecase": "Hmul",
@@ -8192,28 +8104,12 @@
     "camelcase": "IsConjugateExponent"
   },
   {
-    "snakecase": "is_prime_pow",
-    "camelcase": "prime_pow"
-  },
-  {
-    "snakecase": "equiv",
-    "camelcase": "is_equiv"
-  },
-  {
     "snakecase": "fuzzy",
     "camelcase": "Fuzzy"
   },
   {
-    "snakecase": "submonoid",
-    "camelcase": "is_submonoid"
-  },
-  {
     "snakecase": "positive_cone",
     "camelcase": "PositiveCone"
-  },
-  {
-    "snakecase": "max",
-    "camelcase": "is_max"
   },
   {
     "snakecase": "presieve",
@@ -8248,16 +8144,12 @@
     "camelcase": "Bijective"
   },
   {
-    "snakecase": "is_fraction_ring",
-    "camelcase": "FractionRing"
-  },
-  {
     "snakecase": "dynkin_system",
     "camelcase": "DynkinSystem"
   },
   {
     "snakecase": "is_quotient",
-    "camelcase": "quotient"
+    "camelcase": "IsQuotient"
   },
   {
     "snakecase": "is_kernel_pair",
@@ -8270,10 +8162,6 @@
   {
     "snakecase": "localization_map",
     "camelcase": "LocalizationMap"
-  },
-  {
-    "snakecase": "is_unit",
-    "camelcase": "Unit"
   },
   {
     "snakecase": "Ici",
@@ -8353,11 +8241,11 @@
   },
   {
     "snakecase": "is_terminal",
-    "camelcase": "terminal"
+    "camelcase": "IsTerminal"
   },
   {
     "snakecase": "mono",
-    "camelcase": "IsMono"
+    "camelcase": "Mono"
   },
   {
     "snakecase": "factors",
@@ -8378,10 +8266,6 @@
   {
     "snakecase": "orthogonal",
     "camelcase": "Orthogonal"
-  },
-  {
-    "snakecase": "liouville",
-    "camelcase": "is_liouville"
   },
   {
     "snakecase": "away",
@@ -8408,14 +8292,6 @@
     "camelcase": "Star"
   },
   {
-    "snakecase": "is_principal_ideal_ring",
-    "camelcase": "principal_ideal_ring"
-  },
-  {
-    "snakecase": "subring",
-    "camelcase": "is_subring"
-  },
-  {
     "snakecase": "Hadd",
     "camelcase": "hAdd"
   },
@@ -8425,7 +8301,7 @@
   },
   {
     "snakecase": "is_iso",
-    "camelcase": "iso"
+    "camelcase": "IsIso"
   },
   {
     "snakecase": "coprod",
@@ -8438,10 +8314,6 @@
   {
     "snakecase": "normal_mono_category",
     "camelcase": "NormalMonoCategory"
-  },
-  {
-    "snakecase": "zero",
-    "camelcase": "is_zero"
   },
   {
     "snakecase": "b",
@@ -8464,10 +8336,6 @@
     "camelcase": "HasFiniteBiproducts"
   },
   {
-    "snakecase": "seq",
-    "camelcase": "IsSeq"
-  },
-  {
     "snakecase": "admissible",
     "camelcase": "Admissible"
   },
@@ -8477,7 +8345,7 @@
   },
   {
     "snakecase": "is_colimit",
-    "camelcase": "Colimit"
+    "camelcase": "IsColimit"
   },
   {
     "snakecase": "walking_parallel_family",
@@ -8486,14 +8354,6 @@
   {
     "snakecase": "continuous_linear_map",
     "camelcase": "ContinuousLinearMap"
-  },
-  {
-    "snakecase": "norm",
-    "camelcase": "is_norm"
-  },
-  {
-    "snakecase": "is_integral_closure",
-    "camelcase": "integral_closure"
   },
   {
     "snakecase": "group_algebra",
@@ -8514,14 +8374,6 @@
   {
     "snakecase": "desc",
     "camelcase": "Desc"
-  },
-  {
-    "snakecase": "is_alg_closed",
-    "camelcase": "alg_closed"
-  },
-  {
-    "snakecase": "bounded",
-    "camelcase": "is_bounded"
   },
   {
     "snakecase": "is_ortho",
@@ -8548,10 +8400,6 @@
     "camelcase": "Open"
   },
   {
-    "snakecase": "is_preconnected",
-    "camelcase": "Preconnected"
-  },
-  {
     "snakecase": "const",
     "camelcase": "Const"
   },
@@ -8561,15 +8409,11 @@
   },
   {
     "snakecase": "is_maximal",
-    "camelcase": "Maximal"
-  },
-  {
-    "snakecase": "top",
-    "camelcase": "IsTop"
+    "camelcase": "IsMaximal"
   },
   {
     "snakecase": "equivalent",
-    "camelcase": "is_equivalent"
+    "camelcase": "Equivalent"
   },
   {
     "snakecase": "some",
@@ -8594,10 +8438,6 @@
   {
     "snakecase": "space",
     "camelcase": "Space"
-  },
-  {
-    "snakecase": "is_compact",
-    "camelcase": "Compact"
   },
   {
     "snakecase": "char",
@@ -8626,10 +8466,6 @@
   {
     "snakecase": "split_epi",
     "camelcase": "SplitEpi"
-  },
-  {
-    "snakecase": "coprime",
-    "camelcase": "is_coprime"
   },
   {
     "snakecase": "gcd",
@@ -8688,10 +8524,6 @@
     "camelcase": "Adjoint"
   },
   {
-    "snakecase": "min",
-    "camelcase": "is_min"
-  },
-  {
     "snakecase": "asymptotics",
     "camelcase": "Asymptotics"
   },
@@ -8708,16 +8540,8 @@
     "camelcase": "RightMoves"
   },
   {
-    "snakecase": "pure",
-    "camelcase": "IsPure"
-  },
-  {
     "snakecase": "extreme_points",
     "camelcase": "ExtremePoints"
-  },
-  {
-    "snakecase": "is_artinian",
-    "camelcase": "Artinian"
   },
   {
     "snakecase": "thickening",
@@ -8729,7 +8553,7 @@
   },
   {
     "snakecase": "monoid_hom",
-    "camelcase": "is_monoid_hom"
+    "camelcase": "MonoidHom"
   },
   {
     "snakecase": "separating_left",
@@ -8761,7 +8585,7 @@
   },
   {
     "snakecase": "is_pullback",
-    "camelcase": "pullback"
+    "camelcase": "IsPullback"
   },
   {
     "snakecase": "split_mono",
@@ -8824,10 +8648,6 @@
     "camelcase": "StrictOrder"
   },
   {
-    "snakecase": "normal",
-    "camelcase": "is_normal"
-  },
-  {
     "snakecase": "is_compatible",
     "camelcase": "IsCompatible"
   },
@@ -8842,10 +8662,6 @@
   {
     "snakecase": "reflective",
     "camelcase": "Reflective"
-  },
-  {
-    "snakecase": "unit",
-    "camelcase": "Unit"
   },
   {
     "snakecase": "left_adjoint",
@@ -8893,7 +8709,7 @@
   },
   {
     "snakecase": "is_cobounded",
-    "camelcase": "cobounded"
+    "camelcase": "IsCobounded"
   },
   {
     "snakecase": "has_wide_equalizers",
@@ -8928,20 +8744,12 @@
     "camelcase": "HasCokernel"
   },
   {
-    "snakecase": "is_mul_hom",
-    "camelcase": "mul_hom"
-  },
-  {
     "snakecase": "has_pullbacks",
     "camelcase": "HasPullbacks"
   },
   {
     "snakecase": "first_obj",
     "camelcase": "FirstObj"
-  },
-  {
-    "snakecase": "compatible",
-    "camelcase": "IsCompatible"
   },
   {
     "snakecase": "arithmetic_function",
@@ -8956,10 +8764,6 @@
     "camelcase": "Pivot"
   },
   {
-    "snakecase": "embedding",
-    "camelcase": "is_embedding"
-  },
-  {
     "snakecase": "uniformity",
     "camelcase": "Uniformity"
   },
@@ -8968,16 +8772,12 @@
     "camelcase": "EqvGen"
   },
   {
-    "snakecase": "is_upper_set",
-    "camelcase": "IsUpperSet"
-  },
-  {
     "snakecase": "cover_preserving",
     "camelcase": "CoverPreserving"
   },
   {
     "snakecase": "Sheaf",
-    "camelcase": "is_sheaf"
+    "camelcase": "sheaf"
   },
   {
     "snakecase": "monoidal_category",
@@ -9056,10 +8856,6 @@
     "camelcase": "HasLeftDual"
   },
   {
-    "snakecase": "is_top",
-    "camelcase": "IsTop"
-  },
-  {
     "snakecase": "maximal",
     "camelcase": "Maximal"
   },
@@ -9100,10 +8896,6 @@
     "camelcase": "Nil"
   },
   {
-    "snakecase": "is_field",
-    "camelcase": "field"
-  },
-  {
     "snakecase": "large",
     "camelcase": "Large"
   },
@@ -9113,7 +8905,7 @@
   },
   {
     "snakecase": "cokernel",
-    "camelcase": "IsCokernel"
+    "camelcase": "Cokernel"
   },
   {
     "snakecase": "local_max",
@@ -9124,16 +8916,8 @@
     "camelcase": "FactorThruImage"
   },
   {
-    "snakecase": "closed_embedding",
-    "camelcase": "is_closed_embedding"
-  },
-  {
-    "snakecase": "cs",
-    "camelcase": "IsCs"
-  },
-  {
     "snakecase": "is_gluing",
-    "camelcase": "gluing"
+    "camelcase": "IsGluing"
   },
   {
     "snakecase": "incidence_set",
@@ -9160,14 +8944,6 @@
     "camelcase": "AlgHom"
   },
   {
-    "snakecase": "poly",
-    "camelcase": "is_poly"
-  },
-  {
-    "snakecase": "is_associative",
-    "camelcase": "associative"
-  },
-  {
     "snakecase": "has_image_maps",
     "camelcase": "HasImageMaps"
   },
@@ -9177,11 +8953,11 @@
   },
   {
     "snakecase": "ring_hom",
-    "camelcase": "IsRingHom"
+    "camelcase": "RingHom"
   },
   {
     "snakecase": "conj",
-    "camelcase": "is_conj"
+    "camelcase": "Conj"
   },
   {
     "snakecase": "binary_bicone",
@@ -9208,10 +8984,6 @@
     "camelcase": "HasSub"
   },
   {
-    "snakecase": "absolute_value",
-    "camelcase": "AbsoluteValue"
-  },
-  {
     "snakecase": "is_euclidean",
     "camelcase": "IsEuclidean"
   },
@@ -9222,10 +8994,6 @@
   {
     "snakecase": "localization_preserves",
     "camelcase": "LocalizationPreserves"
-  },
-  {
-    "snakecase": "cover",
-    "camelcase": "is_cover"
   },
   {
     "snakecase": "has_multiequalizer",
@@ -9246,10 +9014,6 @@
   {
     "snakecase": "arborescence",
     "camelcase": "Arborescence"
-  },
-  {
-    "snakecase": "root",
-    "camelcase": "IsRoot"
   },
   {
     "snakecase": "spanning_tree",
@@ -9296,10 +9060,6 @@
     "camelcase": "IsPushout"
   },
   {
-    "snakecase": "supported",
-    "camelcase": "IsSupported"
-  },
-  {
     "snakecase": "default",
     "camelcase": "Default"
   },
@@ -9320,14 +9080,6 @@
     "camelcase": "NonPreadditiveAbelian"
   },
   {
-    "snakecase": "topological_ring",
-    "camelcase": "is_topological_ring"
-  },
-  {
-    "snakecase": "torsion",
-    "camelcase": "is_torsion"
-  },
-  {
     "snakecase": "translation_number",
     "camelcase": "TranslationNumber"
   },
@@ -9344,10 +9096,6 @@
     "camelcase": "IntValuation"
   },
   {
-    "snakecase": "is_add_monoid_hom",
-    "camelcase": "add_monoid_hom"
-  },
-  {
     "snakecase": "has_set_prod",
     "camelcase": "HasSetProd"
   },
@@ -9358,14 +9106,6 @@
   {
     "snakecase": "hmul",
     "camelcase": "hMul"
-  },
-  {
-    "snakecase": "is_chain",
-    "camelcase": "chain"
-  },
-  {
-    "snakecase": "refl",
-    "camelcase": "IsRefl"
   },
   {
     "snakecase": "orthocentric_system",
@@ -9428,20 +9168,12 @@
     "camelcase": "to_is_monoid_hom"
   },
   {
-    "snakecase": "is_invariant",
-    "camelcase": "invariant"
-  },
-  {
     "snakecase": "limit_cone",
     "camelcase": "LimitCone"
   },
   {
     "snakecase": "minimal",
     "camelcase": "Minimal"
-  },
-  {
-    "snakecase": "localization",
-    "camelcase": "is_localization"
   },
   {
     "snakecase": "stalk_map",
@@ -9466,10 +9198,6 @@
   {
     "snakecase": "is_multiplicative",
     "camelcase": "IsMultiplicative"
-  },
-  {
-    "snakecase": "is_cycle",
-    "camelcase": "cycle"
   },
   {
     "snakecase": "envel_group",
@@ -9528,14 +9256,6 @@
     "camelcase": "CreatesLimitsOfSize"
   },
   {
-    "snakecase": "add_hom",
-    "camelcase": "is_add_hom"
-  },
-  {
-    "snakecase": "sqrt",
-    "camelcase": "is_sqrt"
-  },
-  {
     "snakecase": "choose_basis_index",
     "camelcase": "ChooseBasisIndex"
   },
@@ -9550,10 +9270,6 @@
   {
     "snakecase": "clifford_algebra_quaternion",
     "camelcase": "CliffordAlgebraQuaternion"
-  },
-  {
-    "snakecase": "is_separable",
-    "camelcase": "separable"
   },
   {
     "snakecase": "family_of_elements",
@@ -9605,7 +9321,7 @@
   },
   {
     "snakecase": "is_image",
-    "camelcase": "image"
+    "camelcase": "IsImage"
   },
   {
     "snakecase": "has_finite_coproducts",
@@ -9652,16 +9368,8 @@
     "camelcase": "IntFractPair"
   },
   {
-    "snakecase": "splitting_field",
-    "camelcase": "is_splitting_field"
-  },
-  {
-    "snakecase": "projective",
-    "camelcase": "IsProjective"
-  },
-  {
     "snakecase": "is_solution",
-    "camelcase": "solution"
+    "camelcase": "IsSolution"
   },
   {
     "snakecase": "is_root",
@@ -9725,7 +9433,7 @@
   },
   {
     "snakecase": "is_absolute_value",
-    "camelcase": "AbsoluteValue"
+    "camelcase": "IsAbsoluteValue"
   },
   {
     "snakecase": "has_abs",
@@ -9812,10 +9520,6 @@
     "camelcase": "to_is_mul_hom"
   },
   {
-    "snakecase": "is_integrally_closed",
-    "camelcase": "integrally_closed"
-  },
-  {
     "snakecase": "is_eisenstein_at",
     "camelcase": "IsEisensteinAt"
   },
@@ -9849,11 +9553,7 @@
   },
   {
     "snakecase": "linear",
-    "camelcase": "is_linear"
-  },
-  {
-    "snakecase": "is_asymm",
-    "camelcase": "asymm"
+    "camelcase": "Linear"
   },
   {
     "snakecase": "shrinking_lemma",
@@ -9889,7 +9589,7 @@
   },
   {
     "snakecase": "root_",
-    "camelcase": "IsRoot"
+    "camelcase": "root"
   },
   {
     "snakecase": "is_some",
@@ -9917,7 +9617,7 @@
   },
   {
     "snakecase": "multiplicative",
-    "camelcase": "IsMultiplicative"
+    "camelcase": "Multiplicative"
   },
   {
     "snakecase": "as_ideal",
@@ -9925,7 +9625,7 @@
   },
   {
     "snakecase": "lift_hom",
-    "camelcase": "is_lift_hom"
+    "camelcase": "LiftHom"
   },
   {
     "snakecase": "con_gen",
@@ -9934,10 +9634,6 @@
   {
     "snakecase": "Ran",
     "camelcase": "ran"
-  },
-  {
-    "snakecase": "is_amalgamation",
-    "camelcase": "Amalgamation"
   },
   {
     "snakecase": "fdo",
@@ -9954,10 +9650,6 @@
   {
     "snakecase": "initial_mono_class",
     "camelcase": "InitialMonoClass"
-  },
-  {
-    "snakecase": "comm",
-    "camelcase": "is_comm"
   },
   {
     "snakecase": "eigenvalues",
@@ -10004,10 +9696,6 @@
     "camelcase": "SuperpolynomialDecay"
   },
   {
-    "snakecase": "topological_group",
-    "camelcase": "is_topological_group"
-  },
-  {
     "snakecase": "positive_compacts",
     "camelcase": "PositiveCompacts"
   },
@@ -10026,10 +9714,6 @@
   {
     "snakecase": "add_haar_measure",
     "camelcase": "is_add_haar_measure"
-  },
-  {
-    "snakecase": "equivalence",
-    "camelcase": "is_equivalence"
   },
   {
     "snakecase": "elements",
@@ -10085,7 +9769,7 @@
   },
   {
     "snakecase": "is_semisimple",
-    "camelcase": "semisimple"
+    "camelcase": "IsSemisimple"
   },
   {
     "snakecase": "cross_product",
@@ -10100,10 +9784,6 @@
     "camelcase": "SolutionSetCondition"
   },
   {
-    "snakecase": "of_iso",
-    "camelcase": "of_is_iso"
-  },
-  {
     "snakecase": "has_finite_wide_pullbacks",
     "camelcase": "HasFiniteWidePullbacks"
   },
@@ -10116,24 +9796,12 @@
     "camelcase": "FundamentalGroupoidFunctor"
   },
   {
-    "snakecase": "pushout",
-    "camelcase": "IsPushout"
-  },
-  {
     "snakecase": "is_hermitian",
-    "camelcase": "Hermitian"
-  },
-  {
-    "snakecase": "is_compl",
-    "camelcase": "compL"
+    "camelcase": "IsHermitian"
   },
   {
     "snakecase": "Set",
     "camelcase": "set"
-  },
-  {
-    "snakecase": "induced",
-    "camelcase": "IsInduced"
   },
   {
     "snakecase": "self_adjoint",
@@ -10160,10 +9828,6 @@
     "camelcase": "Product"
   },
   {
-    "snakecase": "jacobson",
-    "camelcase": "is_jacobson"
-  },
-  {
     "snakecase": "is_sheaf_opens_le_cover",
     "camelcase": "IsSheafOpensLeCover"
   },
@@ -10185,19 +9849,11 @@
   },
   {
     "snakecase": "pfilter",
-    "camelcase": "is_pfilter"
-  },
-  {
-    "snakecase": "is_symm",
-    "camelcase": "Symm"
+    "camelcase": "Pfilter"
   },
   {
     "snakecase": "hom_orthogonal",
     "camelcase": "HomOrthogonal"
-  },
-  {
-    "snakecase": "fraction_ring",
-    "camelcase": "FractionRing"
   },
   {
     "snakecase": "isocrystal_equiv",
@@ -10300,10 +9956,6 @@
     "camelcase": "WeakDual"
   },
   {
-    "snakecase": "st",
-    "camelcase": "IsSt"
-  },
-  {
     "snakecase": "f",
     "camelcase": "F"
   },
@@ -10360,6 +10012,10 @@
     "camelcase": "Punit"
   },
   {
+    "snakecase": "is_complement",
+    "camelcase": "IsComplement"
+  },
+  {
     "snakecase": "is_left_adjoint",
     "camelcase": "IsLeftAdjoint"
   },
@@ -10384,20 +10040,12 @@
     "camelcase": "HasDvd"
   },
   {
-    "snakecase": "is_max_chain",
-    "camelcase": "max_chain"
-  },
-  {
     "snakecase": "refl_gen",
     "camelcase": "ReflGen"
   },
   {
     "snakecase": "is_sheaf_pairwise_intersections",
     "camelcase": "IsSheafPairwiseIntersections"
-  },
-  {
-    "snakecase": "initial",
-    "camelcase": "IsInitial"
   },
   {
     "snakecase": "is_adj_matrix",
@@ -10424,10 +10072,6 @@
     "camelcase": "S"
   },
   {
-    "snakecase": "continued_fraction",
-    "camelcase": "IsContinuedFraction"
-  },
-  {
     "snakecase": "nonempty_compacts",
     "camelcase": "NonemptyCompacts"
   },
@@ -10444,12 +10088,8 @@
     "camelcase": "MonoOver"
   },
   {
-    "snakecase": "omega_limit",
-    "camelcase": "omega_is_limit"
-  },
-  {
     "snakecase": "is_clique",
-    "camelcase": "clique"
+    "camelcase": "IsClique"
   },
   {
     "snakecase": "has_wide_coequalizers",
@@ -10465,7 +10105,7 @@
   },
   {
     "snakecase": "is_finite_measure",
-    "camelcase": "FiniteMeasure"
+    "camelcase": "IsFiniteMeasure"
   },
   {
     "snakecase": "creates_colimits_of_shape",
@@ -10474,10 +10114,6 @@
   {
     "snakecase": "has_strict_terminal_objects",
     "camelcase": "HasStrictTerminalObjects"
-  },
-  {
-    "snakecase": "locally_constant",
-    "camelcase": "is_locally_constant"
   },
   {
     "snakecase": "simple_func",
@@ -10533,7 +10169,7 @@
   },
   {
     "snakecase": "is_admissible",
-    "camelcase": "Admissible"
+    "camelcase": "IsAdmissible"
   },
   {
     "snakecase": "compacts",
@@ -10561,7 +10197,7 @@
   },
   {
     "snakecase": "to_partial_order",
-    "camelcase": "to_is_partial_order"
+    "camelcase": "ToPartialOrder"
   },
   {
     "snakecase": "blunt",
@@ -10572,12 +10208,8 @@
     "camelcase": "Gmonoid"
   },
   {
-    "snakecase": "is_directed",
-    "camelcase": "directed"
-  },
-  {
     "snakecase": "topological_fiber_bundle",
-    "camelcase": "is_topological_fiber_bundle"
+    "camelcase": "TopologicalFiberBundle"
   },
   {
     "snakecase": "presieve_of_covering",
@@ -10620,10 +10252,6 @@
     "camelcase": "PresieveOfCoveringAux"
   },
   {
-    "snakecase": "is_trichotomous",
-    "camelcase": "trichotomous"
-  },
-  {
     "snakecase": "xgcd_type",
     "camelcase": "XgcdType"
   },
@@ -10641,7 +10269,7 @@
   },
   {
     "snakecase": "is_metric",
-    "camelcase": "metric"
+    "camelcase": "IsMetric"
   },
   {
     "snakecase": "endofunctor",
@@ -10769,7 +10397,7 @@
   },
   {
     "snakecase": "Model",
-    "camelcase": "is_model"
+    "camelcase": "model"
   },
   {
     "snakecase": "zag",
@@ -10805,7 +10433,7 @@
   },
   {
     "snakecase": "kernel",
-    "camelcase": "IsKernel"
+    "camelcase": "Kernel"
   },
   {
     "snakecase": "of_vector_space_index",
@@ -10821,7 +10449,7 @@
   },
   {
     "snakecase": "partition",
-    "camelcase": "is_partition"
+    "camelcase": "Partition"
   },
   {
     "snakecase": "Gamma",
@@ -10902,10 +10530,6 @@
   {
     "snakecase": "has_wide_pullbacks",
     "camelcase": "HasWidePullbacks"
-  },
-  {
-    "snakecase": "is_idempotent",
-    "camelcase": "idempotent"
   },
   {
     "snakecase": "rotate",
