@@ -439,3 +439,5 @@ The combinator (S K K) is equal to the identity combinator.
 -/
 -- Library/Init/Core.lean not yet ported
 -- theorem combinator_I_derivable_from_S_K : Combinator.S Combinator.K Combinator.K = Combinator.I := sorry
+
+#check Function.Injective

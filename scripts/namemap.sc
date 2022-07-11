@@ -29,14 +29,18 @@ def segmentMap(ss: Vector[String]) = ss.map(s => piecesSegments(s) -> s).toMap
 
 def piecesMap(ss: Vector[String]) = ss.map(s => segmentsNoIs(s) -> s).toMap 
 
+def lastPiecesMap(ss: Vector[String]) = ss.filter(_.contains(".")).map(s => piecesSegments(s.split("\\.").last) -> s).toMap
+
 val binNames = os.read.lines(os.pwd / "data" / "binport_names.txt")
 val allNames = os.read.lines(os.pwd/"data"/"all_names.txt")
 val allNamesPieces = allNames.flatMap(_.split("\\.")).distinct
 val allNamePieceSegs = piecesMap(allNamesPieces.toVector)
 val binNamesPieces = binNames.flatMap(_.split("\\.")).distinct
-val allNameSegs = segmentMap(allNames.toVector) 
-val nameMatch = binNames.flatMap(s2 => allNameSegs.get(piecesSegments(s2)).map(s1 => s1 -> s2 ))
-val namePieceMatch = binNamesPieces.flatMap(s2 => allNamePieceSegs.get(segmentsNoIs(s2)).map(s1 => s1 -> s2 ))
+val binSegs = segmentMap(binNames.toVector)
+val nameMatch = allNames.flatMap(s1 => binSegs.get(piecesSegments(s1)).map(s2 => s1 -> s2 ))
+val binPieces = binNames.flatMap(_.split("\\.")).distinct
+val binPieceSegs = piecesMap(binPieces.toVector)
+val namePieceMatch = allNamesPieces.flatMap(s1 => binPieceSegs.get(segmentsNoIs(s1)).map(s2 => s1 -> s2 )) 
 val nameMatchAll = (nameMatch ++ namePieceMatch).distinct
 
 import $ivy.`com.lihaoyi::upickle:1.6.0`
