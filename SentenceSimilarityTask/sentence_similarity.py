@@ -157,7 +157,7 @@ def save_corpus_embeddings(corpus_path="/home/t-agrawala/Desktop/ATP-Project/dat
 
 #test_similarity_with_data()
 
-save_corpus_embeddings(corpus_path="F:\ATP_WORK\ATP-Project\data\clean_prompts.json",out_path = "F:\\ATP_WORK\\ATP-Project\\SentenceSimilarityTask\\embeddings_store\\")
+#save_corpus_embeddings(corpus_path="F:\ATP_WORK\ATP-Project\data\clean_prompts.json",out_path = "F:\\ATP_WORK\\ATP-Project\\SentenceSimilarityTask\\embeddings_store\\")
 
 # main_prompt = "For any propositions `P` and `A`, `P` follows from `A` under the assumption that `P` is true."
 # r1 = retrieve_similar_k_stats(main_prompt,use_precomputed_embeddings=True)
