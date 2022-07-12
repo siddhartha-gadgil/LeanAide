@@ -41,7 +41,6 @@ def segmentMap(ss: Vector[String]) = ss
 def piecesMap(ss: Vector[String]) =
   ss.map(s => segmentsNoIs(s) -> s).toMap ++ ss.map(s => segments(s) -> s).toMap
 
-
 val binNames = os.read.lines(os.pwd / "data" / "binport_names.txt")
 val allNames = os.read.lines(os.pwd / "data" / "all_names.txt")
 val allNamesPieces = allNames.flatMap(_.split("\\.")).distinct
@@ -82,9 +81,54 @@ val lastPieceSegs = lastPiecesMap(binNames.toVector)
 
 val pureNames = allNames.filterNot(_.contains("."))
 
-val lastPiecesMatch = pureNames.flatMap(s1 => lastPieceSegs.get(segments(s1)).orElse(lastPieceSegs.get(segmentsNoIs(s1))).map(s2 => s1 -> s2 )).toVector.filter(_._1 != "Type")
+val lastPiecesMatch = pureNames
+  .flatMap(s1 =>
+    lastPieceSegs
+      .get(segments(s1))
+      .orElse(lastPieceSegs.get(segmentsNoIs(s1)))
+      .map(s2 => s1 -> s2)
+  )
+  .toVector
+  .filter(_._1 != "Type")
 
-val repsLonger = lastPiecesMatch.filter{case (a, b) => a != b}.map{case (a, b) => ujson.Obj("snakecase" -> a, "camelcase" -> b)}
+val repsLonger = lastPiecesMatch.filter { case (a, b) => a != b }.map {
+  case (a, b) => ujson.Obj("snakecase" -> a, "camelcase" -> b)
+}
 
 val jsrepsLonger = ujson.write(repsLonger, 2)
 
+def seeOut(): Unit = {
+  val blob = os.read(os.pwd / "data" / "output.json")
+  val jsBlob = upickle.default.read[ujson.Arr](blob)
+  for {i <- 0 until jsBlob.value.size
+     j <- 0 until jsBlob(i)("outputs").arr.value.size}
+   println (jsBlob(i)("outputs")(j))
+}
+
+val dictBlob = os.read(os.pwd / "data" / "case_dictionary.json")
+val dictJson = upickle.default.read[Vector[ujson.Obj]](dictBlob)
+val dictMapper = dictJson.map(obj => (wordMatch(obj("snakecase").str), obj("camelcase").str))
+def mapDict(s: String) = dictMapper.foldLeft(s){case (accum, (r,out)) => r.replaceAllIn(accum, out)}
+
+def cleanOutput(jsBlob : ujson.Arr) : Unit = {
+  for {i <- 0 until jsBlob.value.size
+     j <- 0 until jsBlob(i)("outputs").arr.value.size}
+   {val prev = jsBlob(i)("outputs")(j)
+    val newVal = mapDict(prev.str.replace("\n", " "))
+    println (s"group: $i; output: $j")
+    jsBlob(i)("outputs")(j) = ujson.Str(newVal)}
+}
+
+val dictBlobExt = os.read(os.pwd / "data" / "case_dictionary_extend.json")
+val dictJsonExt = upickle.default.read[Vector[ujson.Obj]](dictBlobExt)
+val dictMapperExt = dictJsonExt.map(obj => (wordMatch(obj("snakecase").str), obj("camelcase").str))
+def mapDictExt(s: String) = dictMapperExt.foldLeft(s){case (accum, (r,out)) => r.replaceAllIn(accum, out)}
+
+
+def identifiers(blob: String) = {
+  val regex = "unknown identifier ('[^']*')".r 
+  val finds= regex.findAllIn(blob).toVector
+  finds.map(s => s.drop(20).dropRight(1)).distinct
+  }
+
+ 
