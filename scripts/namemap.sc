@@ -131,3 +131,10 @@ def identifiers(blob: String) = {
   finds.map(s => s.drop(20).dropRight(1)).distinct
   }.filter(_.size > 1)
 
+def identifiersMult(blob: String) = {
+  val regex = "unknown identifier ('[^']*')".r 
+  val finds= regex.findAllIn(blob).toVector
+  finds.map(s => s.drop(20).dropRight(1)).filter(_.size > 1).groupBy(identity).mapValues(_.size).toVector.sortBy(_._2).reverse
+  }
+  
+  
