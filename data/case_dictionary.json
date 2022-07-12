@@ -1,5 +1,9 @@
 [
   {
+    "snakecase": "type",
+    "camelcase": "Type"
+  },
+  {
     "snakecase": "pseudo_metric_space",
     "camelcase": "PseudoMetricSpace"
   },
@@ -7706,10 +7710,6 @@
   {
     "snakecase": "left_distrib_class",
     "camelcase": "LeftDistribClass"
-  },
-  {
-    "snakecase": "Type",
-    "camelcase": "type"
   },
   {
     "snakecase": "has_nndist",
