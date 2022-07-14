@@ -11,6 +11,11 @@ lean_exe bulkchk{
   supportInterpreter := true
 }
 
+lean_exe lib4chk{
+  supportInterpreter := true
+}
+
+
 @[defaultTarget]
 lean_exe batchcheck{
   supportInterpreter := true
