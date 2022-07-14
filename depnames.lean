@@ -24,4 +24,17 @@ def main : IO Unit := do
     | Except.error e =>
       IO.println "error"
       let m := e.toMessageData
+      IO.println <| ← m.toString
+  let core := offSpringShallowTripleCore
+  let io? := 
+    core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000, options := ⟨[(`synthInstance.maxHeartbeats, (DataValue.ofNat 100000))]⟩} {env := env}
+    match ← io?.toIO' with
+    | Except.ok res =>
+      IO.println s!"obtained triples: {res.size}"
+      -- let file := System.mkFilePath ["data/dep_names.txt"]
+      -- IO.FS.writeFile file <| 
+      --   res.foldl (fun acc x => acc ++ s!"{x}\n") ""
+    | Except.error e =>
+      IO.println "error"
+      let m := e.toMessageData
       IO.println <| ← m.toString  
