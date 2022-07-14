@@ -107,7 +107,7 @@ def seeOut(): Unit = {
 
 val dictBlob = os.read(os.pwd / "data" / "case_dictionary.json")
 val dictJson = upickle.default.read[Vector[ujson.Obj]](dictBlob)
-val dictMapper = dictJson.map(obj => (wordMatch(obj("snakecase").str), obj("camelcase").str))
+val dictMapper = dictJson.map(obj => (wordMatch(obj("snakecase").str), obj("camelcase").str)).sortBy(_._2.length()).reverse.filter(_._2.length() > 1)
 def mapDict(s: String) = dictMapper.foldLeft(s){case (accum, (r,out)) => r.replaceAllIn(accum, out)}
 
 def cleanOutput(jsBlob : ujson.Arr) : Unit = {
