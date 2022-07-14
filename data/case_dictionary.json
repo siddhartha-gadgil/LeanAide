@@ -8548,10 +8548,6 @@
     "camelcase": "Thickening"
   },
   {
-    "snakecase": "is",
-    "camelcase": ""
-  },
-  {
     "snakecase": "monoid_hom",
     "camelcase": "MonoidHom"
   },
