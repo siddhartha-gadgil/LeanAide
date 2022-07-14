@@ -127,8 +127,11 @@ partial def showSyntax : Syntax → String
 | Lean.Syntax.ident _ _ val _ => val.toString
 | _ => ""
 
+def levelNames := 
+  [`u, `v, `u_1, `u_2, `u_3, `u_4, `u_5, `u_6, `u_7, `u_8, `u_9, `u_10, `u_11]
+
 def elabThm (s : String)(opens: List String := []) 
-  (levelNames : List Lean.Name := [`u, `v, `u_1, `u_2, `u_3])
+  (levelNames : List Lean.Name := levelNames)
   : TermElabM <| Except String Expr := do
   let env ← getEnv
   let chk := Lean.Parser.runParserCategory env `thmStat  s
@@ -165,7 +168,7 @@ def elabThm (s : String)(opens: List String := [])
             return Except.error s!"parsed to {funStx}; error while parsing as theorem: {e}" 
 
 def elabThmCore (s : String)(opens: List String := []) 
-  (levelNames : List Lean.Name := [`u, `v, `u_1, `u_2, `u_3])
+  (levelNames : List Lean.Name := levelNames)
   : CoreM <| Except String Expr := 
     (elabThm s opens levelNames).run'.run'
 
@@ -217,7 +220,7 @@ def provedEquiv (e₁ e₂ : Expr) : TermElabM Bool := do
 
 
 def compareThms(s₁ s₂ : String)(opens: List String := []) 
-  (levelNames : List Lean.Name := [`u, `v, `u_1, `u_2, `u_3])
+  (levelNames : List Lean.Name := levelNames)
   : TermElabM <| Except String Bool := do
   let e₁ ← elabThm s₁ opens levelNames
   let e₂ ← elabThm s₂ opens levelNames
@@ -231,7 +234,7 @@ def compareThms(s₁ s₂ : String)(opens: List String := [])
   | Except.error e₁ => return Except.error e₁
 
 def compareThmsCore(s₁ s₂ : String)(opens: List String := []) 
-  (levelNames : List Lean.Name := [`u, `v, `u_1, `u_2, `u_3])
+  (levelNames : List Lean.Name := levelNames)
   : CoreM <| Except String Bool := 
     (compareThms s₁ s₂ opens levelNames).run'.run'
 
@@ -246,14 +249,14 @@ def compareThmExpsCore(e₁ e₂: Expr)
       (compareThmExps e₁ e₂).run'.run'
 
 def equalThms(s₁ s₂ : String)(opens: List String := []) 
-  (levelNames : List Lean.Name := [`u, `v, `u_1, `u_2, `u_3])
+  (levelNames : List Lean.Name := levelNames)
   : TermElabM Bool := do
   match ← compareThms s₁ s₂ opens levelNames with
   | Except.ok p => return p
   | Except.error _ => return false
 
 def groupThms(ss: Array String)(opens: List String := []) 
-  (levelNames : List Lean.Name := [`u, `v, `u_1, `u_2, `u_3])
+  (levelNames : List Lean.Name := levelNames)
   : TermElabM (Array (Array String)) := do
     let mut groups: Array (Array String) := Array.empty
     for s in ss do
@@ -266,7 +269,7 @@ def groupThms(ss: Array String)(opens: List String := [])
     return groups
 
 def groupTheoremsCore(ss: Array String)(opens: List String := []) 
-  (levelNames : List Lean.Name := [`u, `v, `u_1, `u_2, `u_3])
+  (levelNames : List Lean.Name := levelNames)
   : CoreM (Array (Array String)) := 
     (groupThms ss opens levelNames).run'.run'
 
@@ -323,7 +326,7 @@ def checkElabThm (s : String) : TermElabM String := do
           argS := argS ++ (showSyntax arg) ++ " -> "
         let funStx := s!"{argS}{showSyntax type}"
         match Lean.Parser.runParserCategory env `term funStx with
-        | Except.ok termStx => Term.withLevelNames [`u, `v, `u_1, `u_2, `u_3] <|
+        | Except.ok termStx => Term.withLevelNames levelNames <|
           try 
             let expr ← Term.withoutErrToSorry <| 
                 Term.elabTerm termStx none
