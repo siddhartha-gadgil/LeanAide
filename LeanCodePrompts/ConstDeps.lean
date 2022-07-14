@@ -28,8 +28,10 @@ def isNotAux  (declName : Name) : MetaM  Bool := do
   return (not nAux)
 
 def isWhiteListed (declName : Name) : MetaM Bool := do
+  try
   let bl ← isBlackListed  declName
   return !bl
+  catch _ => return false
 
 def excludePrefixes := [`Lean, `Std, `IO, 
           `Char, `String, `ST, `StateT, `Repr, `ReaderT, `EIO, `BaseIO, `UInt8, ``UInt16, ``UInt32, ``UInt64]
@@ -82,14 +84,15 @@ def inferType?(e: Expr) : MetaM (Option Expr) := do
 partial def recExprNames: Expr → MetaM (Array Name) :=
   fun e =>
   do 
-  let fmt ← PrettyPrinter.ppExpr e
-  IO.println s!"expr : {fmt.pretty}"
+  -- let fmt ← PrettyPrinter.ppExpr e
+  -- IO.println s!"expr : {fmt.pretty}"
   match ← getCached? e with
   | some offs => return offs
   | none =>
-    IO.println "matching"
+    -- IO.println "matching"
     let res ← match e with
       | Expr.bvar ..       => return #[]
+      | Expr.fvar ..       => return #[]
       | Expr.const name _ _  =>
         do
         if ← (isWhiteListed name) 
@@ -102,13 +105,17 @@ partial def recExprNames: Expr → MetaM (Array Name) :=
           else pure #[]        
       | Expr.app f a _ => 
           do  
+            -- IO.println "app"
             let ftype? ← inferType? f 
+            -- IO.println "got ftype"
             let expl? := 
               ftype?.map $ fun ftype =>
               (ftype.data.binderInfo.isExplicit)
             let expl := expl?.getD true
+            -- IO.println s!"got expl: {expl}"
             let s ←  
               if !expl then 
+                -- IO.println a
                 match a with
                 | Expr.const name _ _  =>
                     do
@@ -116,11 +123,14 @@ partial def recExprNames: Expr → MetaM (Array Name) :=
                       then
                         return (← recExprNames f).push name
                       else recExprNames f 
-                | _ =>   recExprNames f 
+                | _ =>                  
+                  -- IO.println s!"using only f: {f}"   
+                  recExprNames f 
                 else return (← recExprNames f) ++ (← recExprNames a)
             return s
       | Expr.lam _ _ b _ => 
           do
+            -- IO.println s!"lam; body: {b}"
             return ← recExprNames b 
       | Expr.forallE _ _ b _ => do
           return  ← recExprNames b 
@@ -169,7 +179,7 @@ def offSpringShallowTriple(excludePrefixes: List Name := [])
           let l := (← offSpring? n).getD #[]
           IO.println s!"Offspring: {l.size}"
           let type ← type.simplify
-          IO.println "simplified"
+          -- IO.println "simplified"
           let l := l.filter fun n => !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n))
           let tl ←  recExprNames type
           IO.println s!"Type offspring: {tl.size}"
