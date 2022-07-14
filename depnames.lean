@@ -25,7 +25,7 @@ def main : IO Unit := do
       IO.println "error"
       let m := e.toMessageData
       IO.println <| ← m.toString
-  let core := offSpringShallowTripleCore 3
+  let core := offSpringShallowTripleCore 10
   let io? := 
     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000, options := ⟨[(`synthInstance.maxHeartbeats, (DataValue.ofNat 100000))]⟩} {env := env}
     match ← io?.toIO' with

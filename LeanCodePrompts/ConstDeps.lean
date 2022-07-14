@@ -164,6 +164,10 @@ def Lean.Expr.simplify(e: Expr) : MetaM Expr := do
   | some expr => return expr
   catch _ => return e
 
+def excludeSuffixes := #[`dcasesOn, `recOn, `casesOn]
+
+#eval (`dcasesOn).isSuffixOf (`AlgebraicGeometry.IsAffine.dcasesOn)
+
 /-- 
 Array of constants, names in their definition, and names in their type. 
 -/
@@ -173,7 +177,7 @@ def offSpringShallowTriple(excludePrefixes: List Name := [])(depth: Nat)
   let keys ←  constantNameTypes  
   IO.println s!"Tokens: {keys.size}"
   let goodKeys := keys.filter fun (name, _) =>
-    !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name))
+    !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name))
   IO.println s!"Tokens considered (excluding system code): {goodKeys.size}"
   let kv : Array (Name × (Array Name) × (Array Name)) ←  (goodKeys).mapM $ 
       fun (n, type) => 
@@ -183,7 +187,7 @@ def offSpringShallowTriple(excludePrefixes: List Name := [])(depth: Nat)
           IO.println s!"Offspring: {l.size}"
           let type ← type.simplify
           -- IO.println "simplified"
-          let l := l.filter fun n => !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n))
+          let l := l.filter fun n => !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf n))
           let tl ←  recExprNames depth type
           IO.println s!"Type offspring: {tl.size}"
           let tl := tl.filter fun n => !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n))
