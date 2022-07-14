@@ -81,9 +81,12 @@ def inferType?(e: Expr) : MetaM (Option Expr) := do
   catch _ => return none
 
 /-- recursively find (whitelisted) names of constants in an expression; -/
-partial def recExprNames: Expr → MetaM (Array Name) :=
+partial def recExprNames (depth: Nat): Expr → MetaM (Array Name) := 
   fun e =>
   do 
+  match depth with
+  | 0 => return #[]
+  | k + 1 => 
   -- let fmt ← PrettyPrinter.ppExpr e
   -- IO.println s!"expr : {fmt.pretty}"
   match ← getCached? e with
@@ -100,7 +103,7 @@ partial def recExprNames: Expr → MetaM (Array Name) :=
           else
           if ← (isNotAux name)  then
             match ←  nameExpr?  name with
-            | some e => recExprNames e
+            | some e => recExprNames k e
             | none => return #[]
           else pure #[]        
       | Expr.app f a _ => 
@@ -121,31 +124,31 @@ partial def recExprNames: Expr → MetaM (Array Name) :=
                     do
                     if ← (isWhiteListed name) 
                       then
-                        return (← recExprNames f).push name
-                      else recExprNames f 
+                        return (← recExprNames k f).push name
+                      else recExprNames k f 
                 | _ =>                  
                   -- IO.println s!"using only f: {f}"   
-                  recExprNames f 
-                else return (← recExprNames f) ++ (← recExprNames a)
+                  recExprNames k f 
+                else return (← recExprNames k f) ++ (← recExprNames k a)
             return s
       | Expr.lam _ _ b _ => 
           do
             -- IO.println s!"lam; body: {b}"
-            return ← recExprNames b 
+            return ← recExprNames k b 
       | Expr.forallE _ _ b _ => do
-          return  ← recExprNames b 
+          return  ← recExprNames k b 
       | Expr.letE _ _ v b _ => 
-            return (← recExprNames b) ++ (← recExprNames v)
+            return (← recExprNames k b) ++ (← recExprNames k v)
       | _ => pure #[]
     cache e res
     return res
 
 /-- names that are offspring of the constant with a given name -/
-def offSpring? (name: Name) : MetaM (Option (Array Name)) := do
+def offSpring? (depth: Nat)(name: Name) : MetaM (Option (Array Name)) := do
   let expr? ← nameExpr?  name
   match expr? with
   | some e => 
-    return  some <| (← recExprNames e)
+    return  some <| (← recExprNames depth e)
   | none => return none
 
 initialize simplifyCache : IO.Ref (HashMap Expr Expr) ← IO.mkRef HashMap.empty
@@ -164,7 +167,7 @@ def Lean.Expr.simplify(e: Expr) : MetaM Expr := do
 /-- 
 Array of constants, names in their definition, and names in their type. 
 -/
-def offSpringShallowTriple(excludePrefixes: List Name := [])
+def offSpringShallowTriple(excludePrefixes: List Name := [])(depth: Nat)
               : MetaM (Array (Name × (Array Name) × (Array Name) )) :=
   do
   let keys ←  constantNameTypes  
@@ -176,12 +179,12 @@ def offSpringShallowTriple(excludePrefixes: List Name := [])
       fun (n, type) => 
           do 
           IO.println s!"Token: {n}"
-          let l := (← offSpring? n).getD #[]
+          let l := (← offSpring? depth n).getD #[]
           IO.println s!"Offspring: {l.size}"
           let type ← type.simplify
           -- IO.println "simplified"
           let l := l.filter fun n => !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n))
-          let tl ←  recExprNames type
+          let tl ←  recExprNames depth type
           IO.println s!"Type offspring: {tl.size}"
           let tl := tl.filter fun n => !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n))
           -- IO.println s!"Type offspring (excluding system code): {tl.size}"
@@ -189,6 +192,6 @@ def offSpringShallowTriple(excludePrefixes: List Name := [])
   return kv
 
   
-def offSpringShallowTripleCore: 
+def offSpringShallowTripleCore (depth: Nat): 
     CoreM (Array (Name × (Array Name) × (Array Name) )) := 
-          (offSpringShallowTriple excludePrefixes).run' 
+          (offSpringShallowTriple excludePrefixes depth).run' 
