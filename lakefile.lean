@@ -20,6 +20,11 @@ lean_exe constnames{
   supportInterpreter := true
 }
 
+lean_exe depnames{
+  supportInterpreter := true
+}
+
+
 @[defaultTarget]
 lean_exe chkthms{
   supportInterpreter := true
@@ -33,3 +38,4 @@ require mathlib from git
 
 require mathlib3port from git
   "https://github.com/leanprover-community/mathlib3port.git"@"master"
+
