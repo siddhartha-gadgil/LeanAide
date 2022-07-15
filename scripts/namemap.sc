@@ -1,8 +1,10 @@
 import scala.util.matching.Regex
 def wordMatch(w: String) = new Regex("(?<![a-zA-Z\\.]+)" + w + "(?![a-zA-Z\\.]+)")
 def capSegments(s: String) = {
-  val pieces = "[A-Z][a-z0-9]+".r.findAllIn(s).toVector
-  if (pieces.mkString("") == s) pieces else Vector(s)
+  val pieces = "[A-Z]+[a-z0-9]+".r.findAllIn(s).toVector
+  if (pieces.mkString("") == s) pieces else 
+  if (pieces.nonEmpty && s.endsWith(pieces.mkString(""))) (s.dropRight(pieces.map(_.length()).sum)) +: pieces
+  else Vector(s)
 }
 
 def segments(s: String) = s
@@ -16,7 +18,7 @@ def segmentsNoIs(s: String) = s
   .toVector
   .flatMap(capSegments)
   .map(_.toLowerCase)
-  .filterNot(_ == "is")
+  .filterNot(s => Set("is", "has").contains(s))
 
 def equalSegments(s1: String, s2: String) = {
   val s1s = segmentsNoIs(s1)
@@ -64,7 +66,7 @@ val namePieceMatch = allNamesPieces.flatMap(s1 =>
 val nameMatchAll = (nameMatch ++ namePieceMatch).distinct
 
 import $ivy.`com.lihaoyi::upickle:1.6.0`
-val reps = nameMatchAll.filter { case (a, b) => a != b }.map { case (a, b) =>
+val reps = nameMatchAll.filter { case (a, b) => a != b  && b!= "" && b!= "type"}.map { case (a, b) =>
   ujson.Obj("snakecase" -> a, "camelcase" -> b)
 }
 val jsreps = ujson.write(reps, 2)
