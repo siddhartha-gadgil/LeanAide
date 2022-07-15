@@ -88,7 +88,7 @@ partial def recExprNames (depth: Nat): Expr → MetaM (Array Name) :=
   | 0 => return #[]
   | k + 1 => 
   -- let fmt ← PrettyPrinter.ppExpr e
-  -- IO.println s!"expr : {fmt.pretty}"
+  -- IO.println s!"expr : {e}"
   match ← getCached? e with
   | some offs => return offs
   | none =>
@@ -149,7 +149,9 @@ def offSpring? (depth: Nat)(name: Name) : MetaM (Option (Array Name)) := do
   match expr? with
   | some e => 
     return  some <| (← recExprNames depth e)
-  | none => return none
+  | none =>
+    IO.println s!"no expr for {name}" 
+    return none
 
 initialize simplifyCache : IO.Ref (HashMap Expr Expr) ← IO.mkRef HashMap.empty
 
@@ -184,9 +186,10 @@ def offSpringShallowTriple(excludePrefixes: List Name := [])(depth: Nat)
       IO.println s!"Token: {n}"
       let l := (← offSpring? depth n).getD #[]
       IO.println s!"Offspring: {l.size}"
-      let type ← type.simplify
+      -- let type ← type.simplify
       -- IO.println "simplified"
       let l := l.filter fun n => !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf n))
+      -- IO.println s!"Computing offspring for {type}"
       let tl ←  recExprNames depth type
       IO.println s!"Type offspring: {tl.size}"
       let tl := tl.filter fun n => !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n))
