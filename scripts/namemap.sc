@@ -1,5 +1,5 @@
 import scala.util.matching.Regex
-def wordMatch(w: String) = new Regex("(?<![a-zA-Z]+)" + w + "(?![a-zA-Z]+)")
+def wordMatch(w: String) = new Regex("(?<![a-zA-Z\\.]+)" + w + "(?![a-zA-Z\\.]+)")
 def capSegments(s: String) = {
   val pieces = "[A-Z][a-z0-9]+".r.findAllIn(s).toVector
   if (pieces.mkString("") == s) pieces else Vector(s)

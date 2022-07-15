@@ -4,6 +4,14 @@
     "camelcase": "Type"
   },
   {
+    "snakecase": "has_zero",
+    "camelcase": "HasZero"
+  },
+  {
+    "snakecase": "has_mul",
+    "camelcase": "HasMul"
+  },
+  {
     "snakecase": "pseudo_metric_space",
     "camelcase": "PseudoMetricSpace"
   },
