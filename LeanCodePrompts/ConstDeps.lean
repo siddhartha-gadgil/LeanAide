@@ -172,30 +172,36 @@ def excludeSuffixes := #[`dcasesOn, `recOn, `casesOn]
 Array of constants, names in their definition, and names in their type. 
 -/
 def offSpringShallowTriple(excludePrefixes: List Name := [])(depth: Nat)
-              : MetaM (Array (Name × (Array Name) × (Array Name) )) :=
+              : MetaM (Unit) :=
   do
   let keys ←  constantNameTypes  
   IO.println s!"Tokens: {keys.size}"
   let goodKeys := keys.filter fun (name, _) =>
     !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name))
   IO.println s!"Tokens considered (excluding system code): {goodKeys.size}"
-  let kv : Array (Name × (Array Name) × (Array Name)) ←  (goodKeys).mapM $ 
-      fun (n, type) => 
-          do 
-          IO.println s!"Token: {n}"
-          let l := (← offSpring? depth n).getD #[]
-          IO.println s!"Offspring: {l.size}"
-          let type ← type.simplify
-          -- IO.println "simplified"
-          let l := l.filter fun n => !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf n))
-          let tl ←  recExprNames depth type
-          IO.println s!"Type offspring: {tl.size}"
-          let tl := tl.filter fun n => !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n))
-          -- IO.println s!"Type offspring (excluding system code): {tl.size}"
-          return (n, l, tl)
-  return kv
+  let mut count := 0
+  for (n, type) in  (goodKeys) do
+      IO.println s!"Token: {n}"
+      let l := (← offSpring? depth n).getD #[]
+      IO.println s!"Offspring: {l.size}"
+      let type ← type.simplify
+      -- IO.println "simplified"
+      let l := l.filter fun n => !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf n))
+      let tl ←  recExprNames depth type
+      IO.println s!"Type offspring: {tl.size}"
+      let tl := tl.filter fun n => !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n))
+      -- IO.println s!"Type offspring (excluding system code): {tl.size}"
+      IO.eprintln s!"- name: {n}"
+      IO.eprintln s!"  defn: {l.toList}"
+      IO.eprintln s!"  type: {tl.toList}"
+      IO.eprintln ""
+      count := count + 1
+      IO.println s!"Completed: {count} (out of {goodKeys.size})"
+  return ()
 
   
 def offSpringShallowTripleCore (depth: Nat): 
-    CoreM (Array (Name × (Array Name) × (Array Name) )) := 
+    CoreM Unit := 
           (offSpringShallowTriple excludePrefixes depth).run' 
+
+#eval ([`this, `that]).toString

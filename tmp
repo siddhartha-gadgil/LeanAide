@@ -1,0 +1,192 @@
+- name: Ordnode.dual_balance_r
+  defn: [Eq.mpr, id_tag, Tactic.IdTag.rw, Eq.mpr]
+  type: [Eq, Ordnode.dual, Ordnode.balanceL, Ordnode.dual]
+
+- name: MeasureTheory.measure_univ_nnreal_eq_zero
+  defn: [Eq.mpr, id_tag, Tactic.IdTag.rw, Eq.mpr, Iff.refl]
+  type: [Iff, Eq, Nnreal, Zero.zero, Nnreal, Eq, Zero.zero]
+
+- name: Nzsnum.msb.inj
+  defn: []
+  type: [True]
+
+- name: Asymptotics.is_O_neg_left
+  defn: []
+  type: []
+
+- name: Equivₓ.Perm.IsCycle
+  defn: [Exists, And, Ne, Exists, Int]
+  type: []
+
+- name: CategoryTheory.LaxMonoidal
+  defn: []
+  type: []
+
+- name: Prod.fst_vsub
+  defn: []
+  type: [True]
+
+- name: CategoryTheory.Bicategory.Strict.right_unitor_eq_to_iso'
+  defn: []
+  type: [True]
+
+- name: Ideal.mul_mono_left
+  defn: []
+  type: []
+
+- name: εNFA
+  defn: []
+  type: []
+
+- name: ProbabilityTheory.IndepFun
+  defn: []
+  type: []
+
+- name: ContinuousLinearEquiv.map_eq_zero_iff
+  defn: []
+  type: []
+
+- name: disjoint_iff_le_compl_right
+  defn: [Eq.mpr, id_tag, Tactic.IdTag.rw, Iff.refl]
+  type: [Iff, LE.le, HasCompl.compl]
+
+- name: Associates.prod_le_prod
+  defn: [Eq.mp]
+  type: [LE.le, Multiset.prod]
+
+- name: compareOfLessAndEq
+  defn: [Ordering.lt, Ordering.eq, Ordering.gt]
+  type: [Ordering]
+
+- name: Pnat.Coprime.symm
+  defn: [Eq.mpr, id_tag, Tactic.IdTag.simp, Eq.mpr, id_tag, Tactic.IdTag.rw, Pnat.gcd_comm, Eq.mpr, True, id_tag, Tactic.IdTag.simp, True, imp_self, trivialₓ]
+  type: [Pnat.Coprime]
+
+- name: Pgame.below
+  defn: []
+  type: []
+
+- name: CategoryTheory.Endofunctor.Algebra.str
+  defn: []
+  type: [Quiver.Hom, CategoryTheory.Endofunctor.Algebra.a]
+
+- name: not_surjective_fintype_infinite
+  defn: []
+  type: [Exists, Not]
+
+- name: MeasureTheory.VectorMeasure.MutuallySingular.neg_left_iff
+  defn: []
+  type: [True]
+
+- name: Multiplicative.leftCancelMonoid
+  defn: [Monoidₓ.npow]
+  type: [LeftCancelMonoid, Multiplicative]
+
+- name: Complex.Gamma_integral_add_one
+  defn: [Complex.tendsto_partial_Gamma, Eq.mpr, Complex, Real, Real.preorder, Real, Real.hasZero, id, Eq.mpr, id_tag, Tactic.IdTag.simp, Eq.mp]
+  type: [Eq, Complex, Complex.gammaIntegral, Complex, Complex, One.one, Complex, Complex.hasOne, HMul.hMul, Complex, Complex, Complex, Complex.gammaIntegral]
+
+- name: Array.appendCore
+  defn: []
+  type: [Array]
+
+- name: DenselyOrdered.drec
+  defn: []
+  type: []
+
+- name: PrimeMultiset.prod_dvd_iff
+  defn: [Iff.symm, Eq.mp, id_tag, Tactic.IdTag.rw, PrimeMultiset.factor_multiset_prod, Pnat.factor_multiset_le_iff']
+  type: [Iff, Dvd.Dvd, Pnat, PrimeMultiset.prod, PrimeMultiset.prod, LE.le, PrimeMultiset]
+
+- name: QuotientAddGroup.has_continuous_const_vadd
+  defn: []
+  type: [HasContinuousConstVadd]
+
+- name: CategoryTheory.congr_hom
+  defn: []
+  type: []
+
+- name: CategoryTheory.LiftsToLimit.mk.sizeof_spec
+  defn: []
+  type: []
+
+- name: Units.mul_inv_of_eq
+  defn: [Eq.mpr, rfl]
+  type: [True]
+
+- name: WittVector.mk.injArrow
+  defn: []
+  type: []
+
+- name: of_heq_true
+  defn: [of_eq_true, eq_of_heq, True]
+  type: [True]
+
+- name: MeasureTheory.OuterMeasure
+  defn: []
+  type: []
+
+- name: CompleteLatticeHom.dual_apply_to_Inf_hom
+  defn: [rfl]
+  type: [True]
+
+- name: AddMonoidHom.add_submonoid_map_apply_coe
+  defn: [rfl]
+  type: []
+
+- name: HasDerivAt.rpow
+  defn: []
+  type: []
+
+- name: FirstOrder.Language.Hom.map_fun
+  defn: []
+  type: []
+
+- name: LinearOrderₓ.ext
+  defn: [LinearOrderₓ.to_partial_order_injective, PartialOrderₓ.to_preorder_injective]
+  type: [Eq]
+
+- name: Order.Ideal.IsProper.ne_top
+  defn: []
+  type: [Not]
+
+- name: AddSubgroup.relindex_bot_left_eq_card
+  defn: [Nat, AddSubgroup.relindex_bot_left, Nat.card_eq_fintype_card]
+  type: [True]
+
+- name: Primrec.vector_of_fn
+  defn: [trivialₓ]
+  type: []
+
+- name: Cardinal.mk_bUnion_le
+  defn: [Eq.mpr, id_tag, Tactic.IdTag.rw, Cardinal.mk_Union_le]
+  type: [LE.le, Cardinal, Cardinal.hasLe, Cardinal.mk, Cardinal, Cardinal, Cardinal.mk, Cardinal.sup, Cardinal.mk]
+
+- name: OmegaCompletePartialOrder.ContinuousHom.hasCoeToFun
+  defn: [CoeFun.mk]
+  type: [CoeFun]
+
+- name: CategoryTheory.HasRightDual.mk
+  defn: []
+  type: []
+
+- name: LinearOrderedCancelCommMonoid.sizeof
+  defn: []
+  type: [Nat]
+
+- name: unique_diff_within_at_convex
+  defn: []
+  type: []
+
+- name: Zmod.exists_sq_eq_prime_iff_of_mod_four_eq_three
+  defn: []
+  type: [Iff, Not]
+
+- name: MeasureTheory.AeEqFun.coe_fn_add
+  defn: []
+  type: []
+
+- name: Ideal.coprime_of_no_prime_ge
+  defn: [Classical.by_contradiction]
+  type: [Eq, HasTop.top]
+
