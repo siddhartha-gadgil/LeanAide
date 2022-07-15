@@ -63,10 +63,10 @@ val namePieceMatch = allNamesPieces.flatMap(s1 =>
     .orElse(binPieceSegs.get(segmentsNoIs(s1)))
     .map(s2 => s1 -> s2)
 )
-val nameMatchAll = (nameMatch ++ namePieceMatch).distinct
+val nameMatchAll = (namePieceMatch ++ nameMatch).distinct
 
 import $ivy.`com.lihaoyi::upickle:1.6.0`
-val reps = nameMatchAll.filter { case (a, b) => a != b  && b!= "" && b!= "type"}.map { case (a, b) =>
+val reps = nameMatch.filter { case (a, b) => a != b  && b!= "" && b!= "type"}.map { case (a, b) =>
   ujson.Obj("snakecase" -> a, "camelcase" -> b)
 }
 val jsreps = ujson.write(reps, 2)
