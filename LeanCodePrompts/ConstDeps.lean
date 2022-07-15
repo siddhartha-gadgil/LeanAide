@@ -195,8 +195,8 @@ def offSpringShallowTriple(excludePrefixes: List Name := [])(depth: Nat)
       let tl := tl.filter fun n => !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n))
       -- IO.println s!"Type offspring (excluding system code): {tl.size}"
       IO.eprintln s!"- name: {n}"
-      IO.eprintln s!"  defn: {l.toList}"
-      IO.eprintln s!"  type: {tl.toList}"
+      IO.eprintln <| s!"  defn: " ++ ((s!"{l}").drop 1)
+      IO.eprintln <| s!"  type: " ++ ((s!"{tl}").drop 1)
       IO.eprintln ""
       count := count + 1
       IO.println s!"Completed: {count} (out of {goodKeys.size})"

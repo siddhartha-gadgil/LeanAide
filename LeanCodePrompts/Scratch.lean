@@ -441,3 +441,7 @@ The combinator (S K K) is equal to the identity combinator.
 -- theorem combinator_I_derivable_from_S_K : Combinator.S Combinator.K Combinator.K = Combinator.I := sorry
 
 #check Function.Injective
+
+#check AddGroup
+#print AddGroupₓ
+#print AddGroup
