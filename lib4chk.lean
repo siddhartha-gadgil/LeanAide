@@ -42,13 +42,14 @@ def main : IO Unit := do
       | Except.ok _ =>
         IO.println "success"
         elabs:= elabs.push s
-        IO.println s!"elabs size: {elabs.size}"
+        IO.println s!"successes: {elabs.size}"
         IO.println s!"failures: {failures}"
+        IO.println s!"total: {count} out of {lines.size}"
       | Except.error err =>
         IO.println "failure"
         failures := failures + 1
         IO.println s!"failures: {failures}"
-        IO.println s!"elabs size: {elabs.size}"
+        IO.println s!"successes: {elabs.size}"
         IO.eprintln s
         IO.eprintln err
         IO.eprintln "-----------------------------------------"
