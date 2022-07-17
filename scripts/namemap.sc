@@ -113,11 +113,13 @@ def cleanOutputExtend(jsBlob : ujson.Arr) : Unit = {
   for {i <- 0 until jsBlob.value.size}
    {val prevs = jsBlob(i)("outputs").arr.toVector.par
     val newVals = prevs.map{prev => 
-        val dictMapped = mapDict(prev.str.replace("\n", " ")) 
-        ujson.Str(dictMapped)
-        }.seq
-    println (s"group: $i")
-    jsBlob(i)("outputs") = ujson.Arr(newVals : _*)}
+        mapDict(prev.str.replace("\n", " ")) 
+        }
+    val mappedNewval = newVals.flatMap(withXRep(_))
+    val mappedNewval2 = mappedNewval.flatMap(withXXRep(_))
+    val mappedNewval3 = mappedNewval2.map(ujson.Str(_))
+    println (s"group: $i, size: ${mappedNewval3.size}")
+    jsBlob(i)("outputs") = ujson.Arr(mappedNewval3.seq : _*)}
 }
 
 
