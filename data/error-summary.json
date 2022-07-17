@@ -421,32 +421,32 @@
     "parse-checks": [
       {
         "success": false,
-        "statement": "theorem is_torsion.finset.fintype_of_fp{G : Type u_1} [Group G] [fp_group G] (U : G) (H : monoid.is_torsion G U) : Fintype G ",
+        "statement": "theorem is_torsion.finset.fintype_of_fp{G : Type u_1} [Group G] [fp_group G] (U : G) (H : Monoidₓ.IsTorsion G U) : Fintype G ",
         "parse-message": "unknown identifier 'fp_group' (during elaboration)"
       },
       {
         "success": false,
-        "statement": "theorem is_torsion.finset.fintype_of_fp{G : Type u_1} [Groupₓₓ G] [fp_group G] (U : G) (H : monoid.is_torsion G U) : Fintype G ",
+        "statement": "theorem is_torsion.finset.fintype_of_fp{G : Type u_1} [Groupₓₓ G] [fp_group G] (U : G) (H : Monoidₓ.IsTorsion G U) : Fintype G ",
         "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
       },
       {
         "success": false,
-        "statement": "theorem is_torsion.finset.fintype_of_fp{G : Type u_1} [Groupₓ G] [fp_group G] (U : G) (H : monoid.is_torsion G U) : Fintype G ",
+        "statement": "theorem is_torsion.finset.fintype_of_fp{G : Type u_1} [Groupₓ G] [fp_group G] (U : G) (H : Monoidₓ.IsTorsion G U) : Fintype G ",
         "parse-message": "unknown identifier 'fp_group' (during elaboration)"
       },
       {
         "success": false,
-        "statement": "theorem is_torsion.finset.fintype_of_fp{G : Type u_1} [Group G] [fp_group G] (U : G) (H : monoid.is_torsion G U) : Fintypeₓ G ",
+        "statement": "theorem is_torsion.finset.fintype_of_fp{G : Type u_1} [Group G] [fp_group G] (U : G) (H : Monoidₓ.IsTorsion G U) : Fintypeₓ G ",
         "parse-message": "unknown identifier 'fp_group' (during elaboration)"
       },
       {
         "success": false,
-        "statement": "theorem is_torsion.finset.fintype_of_fp{G : Type u_1} [Groupₓₓ G] [fp_group G] (U : G) (H : monoid.is_torsion G U) : Fintypeₓ G ",
+        "statement": "theorem is_torsion.finset.fintype_of_fp{G : Type u_1} [Groupₓₓ G] [fp_group G] (U : G) (H : Monoidₓ.IsTorsion G U) : Fintypeₓ G ",
         "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
       },
       {
         "success": false,
-        "statement": "theorem is_torsion.finset.fintype_of_fp{G : Type u_1} [Groupₓ G] [fp_group G] (U : G) (H : monoid.is_torsion G U) : Fintypeₓ G ",
+        "statement": "theorem is_torsion.finset.fintype_of_fp{G : Type u_1} [Groupₓ G] [fp_group G] (U : G) (H : Monoidₓ.IsTorsion G U) : Fintypeₓ G ",
         "parse-message": "unknown identifier 'fp_group' (during elaboration)"
       },
       {
@@ -481,17 +481,17 @@
       },
       {
         "success": false,
-        "statement": "theorem is_torsion.finset{G : Type u} [Group G] [hNG : Nontrivial G] [is_fin_pres G] : ∃ x : G, monoid.is_torsion (finset.singleton x) ",
+        "statement": "theorem is_torsion.finset{G : Type u} [Group G] [hNG : Nontrivial G] [is_fin_pres G] : ∃ x : G, Monoidₓ.IsTorsion (finset.singleton x) ",
         "parse-message": "unknown identifier 'is_fin_pres' (during elaboration)"
       },
       {
         "success": false,
-        "statement": "theorem is_torsion.finset{G : Type u} [Groupₓₓ G] [hNG : Nontrivial G] [is_fin_pres G] : ∃ x : G, monoid.is_torsion (finset.singleton x) ",
+        "statement": "theorem is_torsion.finset{G : Type u} [Groupₓₓ G] [hNG : Nontrivial G] [is_fin_pres G] : ∃ x : G, Monoidₓ.IsTorsion (finset.singleton x) ",
         "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
       },
       {
         "success": false,
-        "statement": "theorem is_torsion.finset{G : Type u} [Groupₓ G] [hNG : Nontrivial G] [is_fin_pres G] : ∃ x : G, monoid.is_torsion (finset.singleton x) ",
+        "statement": "theorem is_torsion.finset{G : Type u} [Groupₓ G] [hNG : Nontrivial G] [is_fin_pres G] : ∃ x : G, Monoidₓ.IsTorsion (finset.singleton x) ",
         "parse-message": "unknown identifier 'is_fin_pres' (during elaboration)"
       },
       {
@@ -791,72 +791,6 @@
     ]
   },
   {
-    "main-prompt": "Every free group is torsion free",
-    "answer": "theorem free_group_torsion_free {α : Type} : Monoidₓ.IsTorsionFree (FreeGroup α) ",
-    "parse-checks": [
-      {
-        "success": false,
-        "statement": "theorem free_group.is_torsion_free{α : Type u_1} : monoid.is_torsion_free (FreeGroup α) ",
-        "parse-message": "unknown identifier 'monoid.is_torsion_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem free_group.is_torsion_free{n : Type u_1} {α : Type u_2} [Group α] [Fintype n] : monoid.is_torsion_free (FreeGroup n α) ",
-        "parse-message": "unknown identifier 'monoid.is_torsion_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem free_group.is_torsion_free{n : Type u_1} {α : Type u_2} [Groupₓₓ α] [Fintype n] : monoid.is_torsion_free (FreeGroup n α) ",
-        "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.8 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem free_group.is_torsion_free{n : Type u_1} {α : Type u_2} [Groupₓ α] [Fintype n] : monoid.is_torsion_free (FreeGroup n α) ",
-        "parse-message": "unknown identifier 'monoid.is_torsion_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem free_group.is_torsion_free{n : Type u_1} {α : Type u_2} [Group α] [Fintypeₓ n] : monoid.is_torsion_free (FreeGroup n α) ",
-        "parse-message": "function expected at\n  Fintypeₓ\nterm has type\n  Type (?u.12 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem free_group.is_torsion_free{n : Type u_1} {α : Type u_2} [Groupₓₓ α] [Fintypeₓ n] : monoid.is_torsion_free (FreeGroup n α) ",
-        "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.8 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem free_group.is_torsion_free{n : Type u_1} {α : Type u_2} [Groupₓ α] [Fintypeₓ n] : monoid.is_torsion_free (FreeGroup n α) ",
-        "parse-message": "function expected at\n  Fintypeₓ\nterm has type\n  Type (?u.12 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem free_group.is_torsion_free{α : Type u_1} (s : Set α) : monoid.is_torsion_free (FreeGroup s) ",
-        "parse-message": "unknown identifier 'monoid.is_torsion_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem free_group.is_torsion_free{α : Type u_1} (s : Setₓ α) : monoid.is_torsion_free (FreeGroup s) ",
-        "parse-message": "function expected at\n  Setₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.free_group{α : Type u_1} [Fintype α] (tG : monoid.is_torsion (FreeGroup α)) : is_torsion_free (FreeGroup α) ",
-        "parse-message": "unknown identifier 'monoid.is_torsion' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.free_group{α : Type u_1} [Fintypeₓ α] (tG : monoid.is_torsion (FreeGroup α)) : is_torsion_free (FreeGroup α) ",
-        "parse-message": "function expected at\n  Fintypeₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem free_group.is_torsion_free{α : Type u} [FreeGroup α] : monoid.is_torsion_free (FreeGroup.of α) ",
-        "parse-message": "invalid binder annotation, type is not a class instance\n  FreeGroup α\nuse the command `set_option checkBinderAnnotations false` to disable the check (during elaboration)"
-      }
-    ]
-  },
-  {
     "main-prompt": "Every non-empty subgroup of `ℤ` is isomorphic to `ℤ`",
     "answer": "theorem integer_subgroups (H : AddSubgroup ℤ) : H.Carrier.Nonempty  →   ↥H ≃+ ℤ ",
     "parse-checks": [
@@ -950,192 +884,6 @@
         "success": false,
         "statement": "theorem is_integral_of_roots_integral{R : Type u_1} [CommRingₓ R] {p : Polynomial R} (hp : ∀ (i : ℕ), p.coeff i ∈ @submonoid.to_submodule ℤ ℤ (submonoid.of ℤ 1) _) {r : ℚ} (hr : Polynomial.aeval r p = 0) :  IsIntegral r ",
         "parse-message": "unknown identifier 'submonoid.to_submodule' (during elaboration)"
-      }
-    ]
-  },
-  {
-    "main-prompt": "A finite torsion-free group is trivial",
-    "answer": "theorem fin_torsionfree {G: Type _}[Groupₓ G][Finite G] : Monoidₓ.IsTorsionFree G → IsSubgroup.Trivial G ",
-    "parse-checks": [
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free_of_finite{G : Type u_1} [Group G] [Fintype G] [is_torsion_free : monoid.is_torsion_free G] : G ≃ (1 : G) ",
-        "parse-message": "unknown identifier 'monoid.is_torsion_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free_of_finite{G : Type u_1} [Groupₓₓ G] [Fintype G] [is_torsion_free : monoid.is_torsion_free G] : G ≃ (1 : G) ",
-        "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free_of_finite{G : Type u_1} [Groupₓ G] [Fintype G] [is_torsion_free : monoid.is_torsion_free G] : G ≃ (1 : G) ",
-        "parse-message": "unknown identifier 'monoid.is_torsion_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free_of_finite{G : Type u_1} [Group G] [Fintypeₓ G] [is_torsion_free : monoid.is_torsion_free G] : G ≃ (1 : G) ",
-        "parse-message": "function expected at\n  Fintypeₓ\nterm has type\n  Type (?u.9 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free_of_finite{G : Type u_1} [Groupₓₓ G] [Fintypeₓ G] [is_torsion_free : monoid.is_torsion_free G] : G ≃ (1 : G) ",
-        "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free_of_finite{G : Type u_1} [Groupₓ G] [Fintypeₓ G] [is_torsion_free : monoid.is_torsion_free G] : G ≃ (1 : G) ",
-        "parse-message": "function expected at\n  Fintypeₓ\nterm has type\n  Type (?u.9 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.finite_iff_trivial{G : Type u_1} [Group G] (tfG : monoid.is_torsion_free G) (fG : Fintype G) : G ≃ fin_zero ",
-        "parse-message": "unknown identifier 'monoid.is_torsion_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.finite_iff_trivial{G : Type u_1} [Groupₓₓ G] (tfG : monoid.is_torsion_free G) (fG : Fintype G) : G ≃ fin_zero ",
-        "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.finite_iff_trivial{G : Type u_1} [Groupₓ G] (tfG : monoid.is_torsion_free G) (fG : Fintype G) : G ≃ fin_zero ",
-        "parse-message": "unknown identifier 'monoid.is_torsion_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.finite_iff_trivial{G : Type u_1} [Group G] (tfG : monoid.is_torsion_free G) (fG : Fintypeₓ G) : G ≃ fin_zero ",
-        "parse-message": "unknown identifier 'monoid.is_torsion_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.finite_iff_trivial{G : Type u_1} [Groupₓₓ G] (tfG : monoid.is_torsion_free G) (fG : Fintypeₓ G) : G ≃ fin_zero ",
-        "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.finite_iff_trivial{G : Type u_1} [Groupₓ G] (tfG : monoid.is_torsion_free G) (fG : Fintypeₓ G) : G ≃ fin_zero ",
-        "parse-message": "unknown identifier 'monoid.is_torsion_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.fintype_card1_iff {G : Type u_1} [Group G] [Fintype G] (H : monoid.is_torsion_free G) : card G = 1 ↔ IsUnit G.0 ",
-        "parse-message": "<input>:1:134: expected end of input"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.fintype_card1_iff {G : Type u_1} [Groupₓₓ G] [Fintype G] (H : monoid.is_torsion_free G) : card G = 1 ↔ IsUnit G.0 ",
-        "parse-message": "<input>:1:136: expected end of input"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.fintype_card1_iff {G : Type u_1} [Groupₓ G] [Fintype G] (H : monoid.is_torsion_free G) : card G = 1 ↔ IsUnit G.0 ",
-        "parse-message": "<input>:1:135: expected end of input"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.fintype_card1_iff {G : Type u_1} [Group G] [Fintypeₓ G] (H : monoid.is_torsion_free G) : card G = 1 ↔ IsUnit G.0 ",
-        "parse-message": "<input>:1:135: expected end of input"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.fintype_card1_iff {G : Type u_1} [Groupₓₓ G] [Fintypeₓ G] (H : monoid.is_torsion_free G) : card G = 1 ↔ IsUnit G.0 ",
-        "parse-message": "<input>:1:137: expected end of input"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.fintype_card1_iff {G : Type u_1} [Groupₓ G] [Fintypeₓ G] (H : monoid.is_torsion_free G) : card G = 1 ↔ IsUnit G.0 ",
-        "parse-message": "<input>:1:136: expected end of input"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.fintype {G : Type u_1} [Group G] [Fintype G] : monoid.is_torsion_free G → trivial G ",
-        "parse-message": "unknown identifier 'monoid.is_torsion_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.fintype {G : Type u_1} [Groupₓₓ G] [Fintype G] : monoid.is_torsion_free G → trivial G ",
-        "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.fintype {G : Type u_1} [Groupₓ G] [Fintype G] : monoid.is_torsion_free G → trivial G ",
-        "parse-message": "unknown identifier 'monoid.is_torsion_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.fintype {G : Type u_1} [Group G] [Fintype G] : monoid.is_torsion_free G → trivialₓ G ",
-        "parse-message": "unknown identifier 'monoid.is_torsion_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.fintype {G : Type u_1} [Groupₓₓ G] [Fintype G] : monoid.is_torsion_free G → trivialₓ G ",
-        "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.fintype {G : Type u_1} [Groupₓ G] [Fintype G] : monoid.is_torsion_free G → trivialₓ G ",
-        "parse-message": "unknown identifier 'monoid.is_torsion_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.fintype {G : Type u_1} [Group G] [Fintypeₓ G] : monoid.is_torsion_free G → trivial G ",
-        "parse-message": "function expected at\n  Fintypeₓ\nterm has type\n  Type (?u.9 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.fintype {G : Type u_1} [Groupₓₓ G] [Fintypeₓ G] : monoid.is_torsion_free G → trivial G ",
-        "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.fintype {G : Type u_1} [Groupₓ G] [Fintypeₓ G] : monoid.is_torsion_free G → trivial G ",
-        "parse-message": "function expected at\n  Fintypeₓ\nterm has type\n  Type (?u.9 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.fintype {G : Type u_1} [Group G] [Fintypeₓ G] : monoid.is_torsion_free G → trivialₓ G ",
-        "parse-message": "function expected at\n  Fintypeₓ\nterm has type\n  Type (?u.9 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.fintype {G : Type u_1} [Groupₓₓ G] [Fintypeₓ G] : monoid.is_torsion_free G → trivialₓ G ",
-        "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.fintype {G : Type u_1} [Groupₓ G] [Fintypeₓ G] : monoid.is_torsion_free G → trivialₓ G ",
-        "parse-message": "function expected at\n  Fintypeₓ\nterm has type\n  Type (?u.9 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.trivial_finite{G : Type u_1} [Group G] [Fintype G] [hN : Nontrivial G] : monoid.is_torsion_free G → ⊥ ",
-        "parse-message": "unknown identifier 'monoid.is_torsion_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.trivial_finite{G : Type u_1} [Groupₓₓ G] [Fintype G] [hN : Nontrivial G] : monoid.is_torsion_free G → ⊥ ",
-        "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.trivial_finite{G : Type u_1} [Groupₓ G] [Fintype G] [hN : Nontrivial G] : monoid.is_torsion_free G → ⊥ ",
-        "parse-message": "unknown identifier 'monoid.is_torsion_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.trivial_finite{G : Type u_1} [Group G] [Fintypeₓ G] [hN : Nontrivial G] : monoid.is_torsion_free G → ⊥ ",
-        "parse-message": "function expected at\n  Fintypeₓ\nterm has type\n  Type (?u.9 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.trivial_finite{G : Type u_1} [Groupₓₓ G] [Fintypeₓ G] [hN : Nontrivial G] : monoid.is_torsion_free G → ⊥ ",
-        "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "theorem is_torsion_free.trivial_finite{G : Type u_1} [Groupₓ G] [Fintypeₓ G] [hN : Nontrivial G] : monoid.is_torsion_free G → ⊥ ",
-        "parse-message": "function expected at\n  Fintypeₓ\nterm has type\n  Type (?u.9 + 1) (during elaboration)"
       }
     ]
   },
@@ -2443,32 +2191,32 @@
       },
       {
         "success": false,
-        "statement": "{G : Type u_1} [Group G] : group.is_f.p G → ∃ (g : G) (h : monoid.is_torsion g), Fintype G ",
+        "statement": "{G : Type u_1} [Group G] : group.is_f.p G → ∃ (g : G) (h : Monoidₓ.IsTorsion g), Fintype G ",
         "parse-message": "unknown identifier 'group.is_f.p' (during elaboration)"
       },
       {
         "success": false,
-        "statement": "{G : Type u_1} [Groupₓₓ G] : group.is_f.p G → ∃ (g : G) (h : monoid.is_torsion g), Fintype G ",
+        "statement": "{G : Type u_1} [Groupₓₓ G] : group.is_f.p G → ∃ (g : G) (h : Monoidₓ.IsTorsion g), Fintype G ",
         "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
       },
       {
         "success": false,
-        "statement": "{G : Type u_1} [Groupₓ G] : group.is_f.p G → ∃ (g : G) (h : monoid.is_torsion g), Fintype G ",
+        "statement": "{G : Type u_1} [Groupₓ G] : group.is_f.p G → ∃ (g : G) (h : Monoidₓ.IsTorsion g), Fintype G ",
         "parse-message": "unknown identifier 'group.is_f.p' (during elaboration)"
       },
       {
         "success": false,
-        "statement": "{G : Type u_1} [Group G] : group.is_f.p G → ∃ (g : G) (h : monoid.is_torsion g), Fintypeₓ G ",
+        "statement": "{G : Type u_1} [Group G] : group.is_f.p G → ∃ (g : G) (h : Monoidₓ.IsTorsion g), Fintypeₓ G ",
         "parse-message": "unknown identifier 'group.is_f.p' (during elaboration)"
       },
       {
         "success": false,
-        "statement": "{G : Type u_1} [Groupₓₓ G] : group.is_f.p G → ∃ (g : G) (h : monoid.is_torsion g), Fintypeₓ G ",
+        "statement": "{G : Type u_1} [Groupₓₓ G] : group.is_f.p G → ∃ (g : G) (h : Monoidₓ.IsTorsion g), Fintypeₓ G ",
         "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
       },
       {
         "success": false,
-        "statement": "{G : Type u_1} [Groupₓ G] : group.is_f.p G → ∃ (g : G) (h : monoid.is_torsion g), Fintypeₓ G ",
+        "statement": "{G : Type u_1} [Groupₓ G] : group.is_f.p G → ∃ (g : G) (h : Monoidₓ.IsTorsion g), Fintypeₓ G ",
         "parse-message": "unknown identifier 'group.is_f.p' (during elaboration)"
       },
       {
@@ -2631,102 +2379,6 @@
     ]
   },
   {
-    "main-prompt": "Every free group is torsion free",
-    "answer": "{α : Type} : Monoidₓ.IsTorsionFree (FreeGroup α) ",
-    "parse-checks": [
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Group G] (tG : FreeGroup G) : monoid.is_torsion_free G ",
-        "parse-message": "unknown identifier 'monoid.is_torsion_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Groupₓₓ G] (tG : FreeGroup G) : monoid.is_torsion_free G ",
-        "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Groupₓ G] (tG : FreeGroup G) : monoid.is_torsion_free G ",
-        "parse-message": "unknown identifier 'monoid.is_torsion_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{η : Type u_1} {G : Type u_2} [Group G] (H : ∀ (a : η), ∃ (g : G), g ≠ (1 : G)) : monoid.is_torsion_free G ",
-        "parse-message": "unknown identifier 'monoid.is_torsion_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{η : Type u_1} {G : Type u_2} [Groupₓₓ G] (H : ∀ (a : η), ∃ (g : G), g ≠ (1 : G)) : monoid.is_torsion_free G ",
-        "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.8 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{η : Type u_1} {G : Type u_2} [Groupₓ G] (H : ∀ (a : η), ∃ (g : G), g ≠ (1 : G)) : monoid.is_torsion_free G ",
-        "parse-message": "unknown identifier 'monoid.is_torsion_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{A : Type u} [Group A] (fA : monoid.is_free A) : monoid.is_torsion_free A ",
-        "parse-message": "unknown identifier 'monoid.is_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{A : Type u} [Groupₓₓ A] (fA : monoid.is_free A) : monoid.is_torsion_free A ",
-        "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{A : Type u} [Groupₓ A] (fA : monoid.is_free A) : monoid.is_torsion_free A ",
-        "parse-message": "unknown identifier 'monoid.is_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{α : Type u_1} [c : Fintype α] (Gs : α → Type u_2) (hgs : ∀ (i : α) (f : Gs i), ∃ g : Gs i, g ≠ f) (hs : ∀ {i j : α}, i ≠ j → ∃ k : Gs i → Gs j, ∀ (l : Gs i), k l ≠ l) (Hs : ∀ i : α, Group (Gs i)) : monoid.is_torsion_free (FreeGroup α Gs) ",
-        "parse-message": "application type mismatch\n  k l ≠ l\nargument\n  l\nhas type\n  Gs i : Type u_2\nbut is expected to have type\n  Gs j : Type u_2 (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{α : Type u_1} [c : Fintype α] (Gs : α → Type u_2) (hgs : ∀ (i : α) (f : Gs i), ∃ g : Gs i, g ≠ f) (hs : ∀ {i j : α}, i ≠ j → ∃ k : Gs i → Gs j, ∀ (l : Gs i), k l ≠ l) (Hs : ∀ i : α, Groupₓₓ (Gs i)) : monoid.is_torsion_free (FreeGroup α Gs) ",
-        "parse-message": "application type mismatch\n  k l ≠ l\nargument\n  l\nhas type\n  Gs i : Type u_2\nbut is expected to have type\n  Gs j : Type u_2 (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{α : Type u_1} [c : Fintype α] (Gs : α → Type u_2) (hgs : ∀ (i : α) (f : Gs i), ∃ g : Gs i, g ≠ f) (hs : ∀ {i j : α}, i ≠ j → ∃ k : Gs i → Gs j, ∀ (l : Gs i), k l ≠ l) (Hs : ∀ i : α, Groupₓ (Gs i)) : monoid.is_torsion_free (FreeGroup α Gs) ",
-        "parse-message": "application type mismatch\n  k l ≠ l\nargument\n  l\nhas type\n  Gs i : Type u_2\nbut is expected to have type\n  Gs j : Type u_2 (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{α : Type u_1} [c : Fintypeₓ α] (Gs : α → Type u_2) (hgs : ∀ (i : α) (f : Gs i), ∃ g : Gs i, g ≠ f) (hs : ∀ {i j : α}, i ≠ j → ∃ k : Gs i → Gs j, ∀ (l : Gs i), k l ≠ l) (Hs : ∀ i : α, Group (Gs i)) : monoid.is_torsion_free (FreeGroup α Gs) ",
-        "parse-message": "function expected at\n  Fintypeₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{α : Type u_1} [c : Fintypeₓ α] (Gs : α → Type u_2) (hgs : ∀ (i : α) (f : Gs i), ∃ g : Gs i, g ≠ f) (hs : ∀ {i j : α}, i ≠ j → ∃ k : Gs i → Gs j, ∀ (l : Gs i), k l ≠ l) (Hs : ∀ i : α, Groupₓₓ (Gs i)) : monoid.is_torsion_free (FreeGroup α Gs) ",
-        "parse-message": "function expected at\n  Fintypeₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{α : Type u_1} [c : Fintypeₓ α] (Gs : α → Type u_2) (hgs : ∀ (i : α) (f : Gs i), ∃ g : Gs i, g ≠ f) (hs : ∀ {i j : α}, i ≠ j → ∃ k : Gs i → Gs j, ∀ (l : Gs i), k l ≠ l) (Hs : ∀ i : α, Groupₓ (Gs i)) : monoid.is_torsion_free (FreeGroup α Gs) ",
-        "parse-message": "function expected at\n  Fintypeₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} {s : Type u_2} [Group G] (is_free : IsFreeGroup s G) : monoid.is_torsion_free G ",
-        "parse-message": "failed to synthesize instance\n  Groupₓ s (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} {s : Type u_2} [Groupₓₓ G] (is_free : IsFreeGroup s G) : monoid.is_torsion_free G ",
-        "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.8 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} {s : Type u_2} [Groupₓ G] (is_free : IsFreeGroup s G) : monoid.is_torsion_free G ",
-        "parse-message": "failed to synthesize instance\n  Groupₓ s (during elaboration)"
-      }
-    ]
-  },
-  {
     "main-prompt": "Every non-empty subgroup of `ℤ` is isomorphic to `ℤ`",
     "answer": "(H : AddSubgroup ℤ) : H.Carrier.Nonempty  →   ↥H ≃+ ℤ ",
     "parse-checks": [
@@ -2784,147 +2436,6 @@
         "success": false,
         "statement": "{G : Type u} [Groupₓ G] (H : Nonempty (Subgroup G)) : @group.equiv.{u u} G G ",
         "parse-message": "<input>:1:70: expected '}'"
-      }
-    ]
-  },
-  {
-    "main-prompt": "A finite torsion-free group is trivial",
-    "answer": "{G: Type _}[Groupₓ G][Finite G] : Monoidₓ.IsTorsionFree G → IsSubgroup.Trivial G ",
-    "parse-checks": [
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Group G] [hG : is_finitely_generated G] (tfG : monoid.is_torsion_free G) : trivial G ",
-        "parse-message": "unknown identifier 'is_finitely_generated' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Groupₓₓ G] [hG : is_finitely_generated G] (tfG : monoid.is_torsion_free G) : trivial G ",
-        "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Groupₓ G] [hG : is_finitely_generated G] (tfG : monoid.is_torsion_free G) : trivial G ",
-        "parse-message": "unknown identifier 'is_finitely_generated' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Group G] [hG : is_finitely_generated G] (tfG : monoid.is_torsion_free G) : trivialₓ G ",
-        "parse-message": "unknown identifier 'is_finitely_generated' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Groupₓₓ G] [hG : is_finitely_generated G] (tfG : monoid.is_torsion_free G) : trivialₓ G ",
-        "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Groupₓ G] [hG : is_finitely_generated G] (tfG : monoid.is_torsion_free G) : trivialₓ G ",
-        "parse-message": "unknown identifier 'is_finitely_generated' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Group G] (f : Fintype G) : monoid.is_torsion_free G → Fintype.card G = 1 ",
-        "parse-message": "unknown identifier 'monoid.is_torsion_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Groupₓₓ G] (f : Fintype G) : monoid.is_torsion_free G → Fintype.card G = 1 ",
-        "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Groupₓ G] (f : Fintype G) : monoid.is_torsion_free G → Fintype.card G = 1 ",
-        "parse-message": "unknown identifier 'monoid.is_torsion_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Group G] (f : Fintypeₓ G) : monoid.is_torsion_free G → Fintypeₓ.card G = 1 ",
-        "parse-message": "function expected at\n  Fintypeₓ\nterm has type\n  Type (?u.9 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Groupₓₓ G] (f : Fintypeₓ G) : monoid.is_torsion_free G → Fintypeₓ.card G = 1 ",
-        "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Groupₓ G] (f : Fintypeₓ G) : monoid.is_torsion_free G → Fintypeₓ.card G = 1 ",
-        "parse-message": "function expected at\n  Fintypeₓ\nterm has type\n  Type (?u.9 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Group G] [Fintype G] : monoid.is_torsion_free G → ¬ Nontrivial G ",
-        "parse-message": "unknown identifier 'monoid.is_torsion_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Groupₓₓ G] [Fintype G] : monoid.is_torsion_free G → ¬ Nontrivial G ",
-        "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Groupₓ G] [Fintype G] : monoid.is_torsion_free G → ¬ Nontrivial G ",
-        "parse-message": "unknown identifier 'monoid.is_torsion_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Group G] [Fintypeₓ G] : monoid.is_torsion_free G → ¬ Nontrivial G ",
-        "parse-message": "function expected at\n  Fintypeₓ\nterm has type\n  Type (?u.9 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Groupₓₓ G] [Fintypeₓ G] : monoid.is_torsion_free G → ¬ Nontrivial G ",
-        "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Groupₓ G] [Fintypeₓ G] : monoid.is_torsion_free G → ¬ Nontrivial G ",
-        "parse-message": "function expected at\n  Fintypeₓ\nterm has type\n  Type (?u.9 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Group G] [finite_group G] (tfG : monoid.is_torsion_free G) : Nontrivial G → False ",
-        "parse-message": "unknown identifier 'finite_group' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Groupₓₓ G] [finite_group G] (tfG : monoid.is_torsion_free G) : Nontrivial G → False ",
-        "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Groupₓ G] [finite_group G] (tfG : monoid.is_torsion_free G) : Nontrivial G → False ",
-        "parse-message": "unknown identifier 'finite_group' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Group G] [fG : Fintype G] [tfG : monoid.is_torsion_free G] : G ≃ ℕ ",
-        "parse-message": "unknown identifier 'monoid.is_torsion_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Groupₓₓ G] [fG : Fintype G] [tfG : monoid.is_torsion_free G] : G ≃ ℕ ",
-        "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Groupₓ G] [fG : Fintype G] [tfG : monoid.is_torsion_free G] : G ≃ ℕ ",
-        "parse-message": "unknown identifier 'monoid.is_torsion_free' (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Group G] [fG : Fintypeₓ G] [tfG : monoid.is_torsion_free G] : G ≃ ℕ ",
-        "parse-message": "function expected at\n  Fintypeₓ\nterm has type\n  Type (?u.9 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Groupₓₓ G] [fG : Fintypeₓ G] [tfG : monoid.is_torsion_free G] : G ≃ ℕ ",
-        "parse-message": "function expected at\n  Groupₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"
-      },
-      {
-        "success": false,
-        "statement": "{G : Type u_1} [Groupₓ G] [fG : Fintypeₓ G] [tfG : monoid.is_torsion_free G] : G ≃ ℕ ",
-        "parse-message": "function expected at\n  Fintypeₓ\nterm has type\n  Type (?u.9 + 1) (during elaboration)"
       }
     ]
   },
