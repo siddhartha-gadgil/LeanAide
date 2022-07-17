@@ -1,0 +1,1216 @@
+[
+  {
+    "main-prompt": "If every proper closed set of a topological space is compact, then the space itself is compact.",
+    "answer": "theorem compact_if_all_proper_compact {α : Type _} [TopologicalSpace α] : (∀ (s : Set α), (s ≠ Set.univ) → IsCompact s) → CompactSpace α ",
+    "grouped": [
+      [
+        "theorem is_closed.compact_iff_all_closed_subsets_are_compact{α : Type u} [TopologicalSpace α] (hα : ∀ (s : Set α) [IsClosed s], IsCompact s) : IsCompact α ↔ (∀ (s : Set α), IsClosed s → IsCompact s) "
+      ],
+      [
+        "theorem is_compact.subset_closed{α : Type u} [TopologicalSpace α] (h : ∀ t : Set α, IsClosed t → IsCompact t → t ≠ Set.Univ → ∃ (p : α), p ∉ t) : IsCompact Set.Univ "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every prime that is one greater than a multiple of four can be expressed as the sum of two squares.",
+    "answer": "theorem fermat_two_square : ∀ p : ℕ, Prime p → (p % 4 = 1) → ∃ a b : ℕ, a ^ 2 + b ^ 2 = p ",
+    "grouped": [
+      [
+        "theorem nat.prime.sum_two_squares{p : ℕ} [Fact (Nat.Prime p)] (h : p % 4 = 3) : ∃ (x y : ℕ), p = x ^ 2 + y ^ 2 "
+      ],
+      [
+        "theorem nat.prime.eq_four_mod_four_add_one{p : ℕ} [Fact (Nat.Prime p)] : ∃ (a b : ℕ), a ^ 2 + b ^ 2 = p ↔ p % 4 = 1 "
+      ],
+      [
+        "theorem nat.prime.sq_add_sq_iff{p : ℕ} [Fact (Nat.Prime p)] : p % 4 = 1 ↔ ∃ (a b : ℕ), a ^ 2 + b ^ 2 = p "
+      ],
+      [
+        "theorem nat.prime.sq_add_sq_mod_four{p : ℕ} [Fact (Nat.Prime p)] (h : p % 4 = 3) : ∃ (a b : ℕ), a ^ 2 + b ^ 2 = p "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "For every subset of the Euclidean plane, there is a line segment of unit length whose endpoints are either both inside the subset or both outside it.",
+    "answer": "theorem unit_line_in_or_out_of_euclidean_plane_subset : ∀ (S : Set $ EuclideanSpace ℝ (Finₓ 2)), ∃ (x y : EuclideanSpace ℝ (Finₓ 2)), (∥x - y∥ = (1 : ℝ)) → (x ∈ S ∧ y ∈ S) ∨ (x ∉ S ∧ y ∉ S) ",
+    "grouped": [
+      [
+        "theorem euclidean_plane.alternatives_mem_closure_of_mem_interior {s : Set ℝ^2} {x y : ℝ^2} (h1 : x ∈ Interior s) (h2 : y ∈ Interior s) (h3 : x ≠ y) :   x ∈ Closure s ↔ y ∈ Closure s "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "A ring with all elements idempotent is commutative.",
+    "answer": "theorem all_idempotent_implies_commutative {R : Type _} [Ring R] : (∀ x : R, x * x = 1) → CommRing R ",
+    "grouped": [
+      [
+        "theorem non_comm_ring_with_idempotent.comm{R : Type u} [Ring R] {H : ∀ (x : R), x * x = x} : CommRing R ",
+        "theorem idempotent_ring.comm{R : Type u} [Ring R] (h : ∀ (x : R), x * x = x) : CommRing R "
+      ],
+      [
+        "theorem non_comm_ring_with_idempotent.comm{R : Type u} [Ringₓ R] {H : ∀ (x : R), x * x = x} : CommRing R ",
+        "theorem idempotent_ring.comm{R : Type u} [Ringₓ R] (h : ∀ (x : R), x * x = x) : CommRing R "
+      ],
+      [
+        "theorem non_comm_ring_with_idempotent.comm{R : Type u} [Ring R] {H : ∀ (x : R), x * x = x} : CommRingₓ R ",
+        "theorem idempotent_ring.comm{R : Type u} [Ring R] (h : ∀ (x : R), x * x = x) : CommRingₓ R "
+      ],
+      [
+        "theorem non_comm_ring_with_idempotent.comm{R : Type u} [Ringₓ R] {H : ∀ (x : R), x * x = x} : CommRingₓ R ",
+        "theorem idempotent_ring.comm{R : Type u} [Ringₓ R] (h : ∀ (x : R), x * x = x) : CommRingₓ R "
+      ],
+      [
+        "theorem idempotent_is_comm_ring{R : Type u} [Ring R] (H : (∀ (x : R), x ^ 2 =  x)) : CommRing R "
+      ],
+      [
+        "theorem idempotent_is_comm_ring{R : Type u} [Ringₓ R] (H : (∀ (x : R), x ^ 2 =  x)) : CommRing R "
+      ],
+      [
+        "theorem idempotent_is_comm_ring{R : Type u} [Ring R] (H : (∀ (x : R), x ^ 2 =  x)) : CommRingₓ R "
+      ],
+      [
+        "theorem idempotent_is_comm_ring{R : Type u} [Ringₓ R] (H : (∀ (x : R), x ^ 2 =  x)) : CommRingₓ R "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "There are infinitely many pairs of primes that differ exactly by two.",
+    "answer": "theorem twin_prime_conjecture : ∀ n : ℕ, ∃ p : ℕ, p > n → Prime p → Prime (p + 2) ",
+    "grouped": [
+      [
+        "theorem nat.exists_infinite_twin_primes : ∃ (p : ℕ), ∃ (q : ℕ), p < q ∧ Nat.Prime p ∧ Nat.Prime q ∧ q - p = 2 "
+      ],
+      [
+        "theorem nat.prime_twin_pair_inf : ∀ (n : ℕ), ∃ (p : ℕ), n ≤ p ∧ Nat.Prime p ∧ ∃ (p' : ℕ), p' = p + 2 ∧ Nat.Prime p' "
+      ],
+      [
+        "theorem nat.exists_infinite_primes_diff_two : ∃ (p : ℕ), Nat.Prime p ∧ Nat.Prime (p + 2) "
+      ],
+      [
+        "theorem have_infinite_two_between_primes : ∀ (n : ℕ), ∃ (p : ℕ), (n ≤ p ∧ Nat.Prime p) ∧ ∃ (q : ℕ), (p + 2 ≤ q ∧ Nat.Prime q) "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every finite division ring is a field.",
+    "answer": "theorem fin_div_ring_is_field {R : Type _} [DivisionRing R] [Finite R] : Field R ",
+    "grouped": [
+      [
+        "theorem division_ring.field(K : Type u) [DivisionRing K] (H :   Nat.Prime (FiniteDimensional.finrank K K)) : Field K "
+      ],
+      [
+        "theorem fincard.division_ring_iff_field(K : Type u) [DivisionRing K] [h : Fintype K] : FiniteDimensional.finrank K K = 1 → Field K "
+      ],
+      [
+        "theorem finite_dimensional.field_of_division_ring(K : Type u) [DivisionRing K] (h : FiniteDimensional K K) : IsField K "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "The product of two positive numbers is at most the square of their average.",
+    "answer": "theorem am_gm_ineq : ∀ (a b : ℝ), a > 0 → b > 0 → a * b ≤ ((a + b)/(1 + 1))^2 ",
+    "grouped": [
+      [
+        "theorem real.mul_le_sqr_pos{a b : ℝ} :  0 < a → 0 < b → a * b ≤ (a + b) ^ 2 "
+      ],
+      [
+        "theorem real.prod_le_avg_sq{a b : ℝ} (wa : 0 < a) (wb : 0 < b) : a * b ≤ (a + b) ^ 2 / 4 "
+      ],
+      [
+        "theorem real.product_le_average(a b : Nnreal) : a * b ≤ (a+b)/2 "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "If each of two types can be mapped injectively into the other, then there is a bijection between them.",
+    "answer": "theorem cantor_schroeder_bernstein {α β : Type _} (f : α → β) (g : β → α) : Function.Injective f → Function.Injective g → (∃ h : α → β, Function.Bijective h) ",
+    "grouped": [
+      [
+        "theorem function.injective.bijective_of_self_injective {α : Type u_1} {β : Type u_2} (f : α → β) : Function.Injective f → ∃ g, Function.bijective g "
+      ],
+      [
+        "theorem function.exists_bijective_of_injective_left_inverse{α : Type u} {β : Type v} {f : α → β} {g : β → α} (hf: Function.Injective f) (hg: Function.Injective g) (h : ∀ x, g (f x) = x) : ∃ (h : α → β), Function.bijective h "
+      ],
+      [
+        "theorem function.embedding.schroeder_bernstein{α : Type u} {β : Type v} {f : α → β} {g : β → α} (hf : Function.Injective f) (hg : Function.Injective g) : ∃ (h : α → β), Function.bijective h "
+      ],
+      [
+        "theorem schroeder_bernstein {α β : Type u} (h1 : α ⟶ β) (h2 : β ⟶ α) (inj₁ : Function.Injective h1) (inj₂ : Function.Injective h2) : Nonempty (Equiv α β) "
+      ],
+      [
+        "theorem schroeder_bernstein {α β : Type u} (h1 : α ⟶ β) (h2 : β ⟶ α) (inj₁ : Function.Injective h1) (inj₂ : Function.Injective h2) : Nonempty (Equivₓ α β) "
+      ]
+    ],
+    "equivalent": [
+      "theorem function.embedding.schroeder_bernstein{α : Type u} {β : Type v} {f : α → β} {g : β → α} (hf : Function.Injective f) (hg : Function.Injective g) : ∃ (h : α → β), Function.bijective h "
+    ]
+  },
+  {
+    "main-prompt": "Every non-empty poset in which every chain has an upper bound contains a maximal element.",
+    "answer": "theorem zorn {α : Type _} [PartialOrder α] [Nonempty α] : (∀ c : Set α, IsChain LE.le c → (∃ b : α, ∀ a ∈ c, a ≤ b)) → (∃ m : α, ∀ a : α, m ≤ a → a = m) ",
+    "grouped": [
+      [
+        "theorem exists_max_of_chains_bounded{α : Type u_1} {r : α → α → Prop} [IsRefl α r] (h : ∀ (c : Set α), IsChain r c → (∃ (ub : α), ∀ (a : α), a ∈ c → r a ub)) : ∃ (m : α), ∀ (a : α), r m a → r a m "
+      ],
+      [
+        "theorem exists_maximal_of_chains_bounded{α : Type u_1} {r : α → α → Prop} (h : ∀ (c : Set α), IsChain r c → (∃ (ub : α), ∀ (a : α), a ∈ c → r a ub)) (Trans : ∀ {a b c : α}, r a b → r b c → r a c) : ∃ (m : α), ∀ (a : α), r m a → r a m "
+      ],
+      [
+        "theorem upper_bounded_implies_exists_maximal{α : Type u_1} {r : α → α → Prop} (h : ∀ (c : Set α), IsChain r c → ∃ (ub : α), ∀ (a : α), a ∈ c → r ub a) (Trans : ∀ {a b c : α}, r a b → r b c → r a c) [Nonempty α] : ∃ (m : α), ∀ (a : α), r a m → r m a "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "A topological space is normal if and only if any two disjoint closed subsets can be separated by a continuous function.",
+    "answer": "theorem urysohn {X : Type _} [TopologicalSpace X] [TopologicalSpace ℝ] : NormalSpace X ↔ ( ∀ {S T : Set X}, IsClosed S → IsClosed T → Disjoint S T → (∃ f : X → ℝ, Continuous f → (∀ x ∈ S, f x = 0) ∧ (∀ x ∈ T, f x = 1)) ) ",
+    "grouped": [
+      [
+        "theorem is_normal_of_separation_of_disjoint_closed{X : Type u_1} [TopologicalSpace X] : NormalSpace X ↔ ∀ (s t : Set X), IsClosed s → IsClosed t → Disjoint s t → ∃ (f : BoundedContinuousFunction X ℝ),   Set.EqOn ⇑f 0 s ∧ Set.EqOn ⇑f 1 t "
+      ],
+      [
+        "theorem normal_iff_separated_of_closed_of_closed{X : Type u_1} [TopologicalSpace X] [NormalSpace X] {s t : Set X} (hs : IsClosed s) (ht : IsClosed t) (hd : Disjoint s t) : ∃ (f : BoundedContinuousFunction X ℝ), Set.EqOn ⇑f 0 s ∧ Set.EqOn ⇑f 1 t ∧ ∀ (x : X), ⇑f x ∈ Set.Icc 0 1 "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "If a function from the unit interval to itself has a point of period three, then it has points of all positive periods.",
+    "answer": "theorem period_three_implies_chaos : ∀ f : Set.Icc 0 1 → Set.Icc 0 1, (∃ x : Set.Icc 0 1, Function.IsPeriodicPt f 3 x) → (∀ n : ℕ, n > 0 → ∃ y : Set.Icc 0 1, Function.IsPeriodicPt f n y) ",
+    "grouped": [
+      [
+        "theorem function.is_periodic_pt_of_period_three_Icc{f : ℝ → ℝ} (H : Function.IsPeriodicPt f (3 : ℕ) (0 : ℝ)) :  ∀ (m : ℕ), Function.IsPeriodicPt f m (0 : ℝ) "
+      ],
+      [
+        "theorem function.exists_of_is_periodic_pt{α : Type u_1} {f : α → α} {x : α} {m : ℕ} (hx : Function.IsPeriodicPt f m x) (hm : 0 < m) : ∃ (y : α) (n : ℕ), (0 < n) ∧ (Function.IsPeriodicPt f n y) "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "A terminal object in a category is unique up to unique isomorphism.",
+    "answer": "theorem terminal_unique_iso {C : Type _} [CategoryTheory.Category C] : ∀ T₁ T₂ : C, CategoryTheory.Limits.IsTerminal T₁ → CategoryTheory.Limits.IsTerminal T₂ → (∃ ι : CategoryTheory.Iso T₁ T₂, ∀ ι' : CategoryTheory.Iso T₁ T₂, ι = ι') ",
+    "grouped": [
+      [
+        "theorem category_theory.limits.unique_terminal_equiv{C : Type u₁} [CategoryTheory.Category C] : Unique (CategoryTheory.Limits.HasTerminal C) "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "The sum of the cubes of two positive integers is never equal to the cube of a third integer.",
+    "answer": "theorem flt_3 : ∀ a b c : ℕ, a > 0 → b > 0 → ¬(a^3 + b^3 = c^3) ",
+    "grouped": [
+      [
+        "theorem cube_sum{x y z : ℕ} (hxy : x ^ 3 + y ^ 3 = z ^ 3) : False "
+      ],
+      [
+        "theorem sum_of_cubes {x y z : ℤ} (hx : x > 0) (hy : y > 0) (hz : z > 0) : ¬ x ^ 3 + y ^ 3 = z ^ 3 "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every prime number is either `2` or odd.",
+    "answer": "theorem prime_eq_two_or_odd {n: Nat} : Prime n → n = 2 ∨ Odd n ",
+    "grouped": [
+      [
+        "theorem nat.prime.or_eq_two(p : ℕ) [Fact (Nat.Prime p)] : p = 2 ∨ p % 2 = 1 ",
+        "theorem nat.prime.is_odd_or_eq_two(p : ℕ) [Fact (Nat.Prime p)] :  p = 2 ∨ p % 2 = 1 "
+      ],
+      [
+        "theorem nat.prime.not_two_of_odd{n : ℕ} (h_prime : Nat.Prime n) (h_odd : n % 2 = 1) : n ≠ 2 "
+      ],
+      [
+        "theorem nat.prime.exhaust{p : ℕ} (hp : Nat.Prime p) : p = 2 ∨ p % 2 = 1 "
+      ],
+      [
+        "theorem nat.prime.or_two{p : ℕ} (hp : Nat.Prime p) : p ≠ 2 ∨ p = 2 "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "The product of two consequitive natural numbers is odd",
+    "answer": "theorem product_conseq_odd (n: Nat): Odd <| n * (n + 1) ",
+    "grouped": [
+      [
+        "theorem nat.prod_succ: ∀ a : ℕ, Even (a + 1) "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every constant function `f x = c` from real numbers to real numbers is differentiable.",
+    "answer": "theorem constant_is_differentiable {f: ℝ → ℝ}: ∃ c: ℝ, (∀ x : ℝ, f x = c) → Differentiable ℝ f ",
+    "grouped": [
+      [
+        "theorem continuous_const.differentiable (c : ℝ) : Differentiable ℝ (λ (x : ℝ), c) "
+      ],
+      [
+        "theorem continuous_linear_map.const.differentiable (c : ℝ) : Differentiable ℝ (λ x:ℝ, c) "
+      ],
+      [
+        "theorem differentiable_const : Differentiable ℝ (λ x : ℝ, 0) "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every subgroup of a free group is free",
+    "answer": "theorem subgpFree {G : Type _} [Groupₓ G] : (K : Subgroup G) → Σ β, FreeGroup β ≃* ↥K ",
+    "grouped": [
+      [
+        "theorem free.subgroup(S : Type u_1) [Groupₓ S] (fS : FreeGroup S) (H : Subgroup S) : FreeGroup ↥H "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every free group is torsion free",
+    "answer": "theorem free_group_torsion_free {α : Type} : Monoidₓ.IsTorsionFree (FreeGroup α) ",
+    "grouped": [
+      [
+        "theorem free_group.is_torsion_free{α : Type u_1} : Monoidₓ.IsTorsionFree (FreeGroup α) "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every natural number greater than `1` is divisible by a prime number.",
+    "answer": "theorem has_prime_factor (n: ℕ) : n > 1 → ∃ p: ℕ, Prime p ∧ (∃ d: ℕ, p * d = n) ",
+    "grouped": [
+      [
+        "theorem nat.ge.prime{n : ℕ} (h : n > 1) : ∃ p : ℕ, Nat.Prime p ∧ 1 < p ∧ p ∣ n "
+      ],
+      [
+        "theorem nat.one_lt_prime_divisor{n : ℕ} (hn : 1 < n) : ∃ p, Nat.Prime p ∧ p ∣ n ",
+        "theorem nat.exists_prime_divisor{n : ℕ} (h : n > 1) : ∃ (p : ℕ), Nat.Prime p ∧ p ∣ n "
+      ],
+      [
+        "theorem nat.exists_prime_factor (n : ℕ) (h : n > 1) : ∃ p, Prime p ∧ p ∣ n ",
+        "theorem nat.ge_two.has_dvd_prime(n : ℕ) (h : 2 ≤ n) : ∃ p : ℕ, Prime p ∧ p ∣ n "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Six is not the sum of two prime numbers.",
+    "answer": "theorem six_not_prime_sum : ¬ (∃ n m: Nat, Prime n ∧ Prime m ∧ n ≠ m ∧ 6 = n + m) ",
+    "grouped": [
+      [
+        "theorem nat.prime.no_sum_of_two{p q : ℕ} (hp : Nat.Prime p) (hq : Nat.Prime q) : 2 < p → 2 < q → p + q ≠ 6 "
+      ],
+      [
+        "theorem nat.not_two_primes_six : ∀ {a b : ℕ}, a ≠ 2 → b ≠ 2 → ∀ (h : a + b = 6), a ≤ 2 ∧ b ≤ 2 "
+      ],
+      [
+        "theorem nat.not_sum_of_primes_of_six : ∀ (a b : ℕ), Nat.Prime a → Nat.Prime b → a + b ≠ 6 "
+      ],
+      [
+        "theorem nat.prime.sq_add_sq_not_six(p : ℕ) [Fact (Nat.Prime p)] (hp : p % 4 = 1) : ¬(∃ (a b : ℕ), a ^ 2 + b ^ 2 = p) "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "A finite torsion-free group is trivial",
+    "answer": "theorem fin_torsionfree {G: Type _}[Groupₓ G][Finite G] : Monoidₓ.IsTorsionFree G → IsSubgroup.Trivial G ",
+    "grouped": [
+      [
+        "theorem is_torsion_free.trivial_finite{G : Type u_1} [Groupₓ G] [Fintype G] [hN : Nontrivial G] : Monoidₓ.IsTorsionFree G → ⊥ "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every finite division ring is a field.",
+    "answer": "theorem fin_int_domain_ring_is_field {R : Type _} [Ringₓ R][IsDomain R] [Finite R] : Field R ",
+    "grouped": [
+      [
+        "theorem finite_division_ring.field (K : Type u) [DivisionRing K] [Fintype K] : IsField K ",
+        "theorem finite.division_ring_is_field{K : Type u} [DivisionRing K] [Fintype K] : IsField K "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every finite topological space is compact",
+    "answer": "theorem finite_space_compact {X : Type _}[TopologicalSpace X][Finite X] : CompactSpace X ",
+    "grouped": [
+      [
+        "theorem is_compact_fintype{α : Type u} [TopologicalSpace α] (h : Fintype α) : IsCompact α "
+      ],
+      [
+        "theorem finite_iff_compact{α : Type u} [TopologicalSpace α] : Finite α ↔ IsCompact α "
+      ],
+      [
+        "theorem finite.compact{α : Type u} [TopologicalSpace α] (h : Finite α) : IsCompact α "
+      ],
+      [
+        "theorem finset.finite_topological_space_is_compact {α : Type*} [t : TopologicalSpace α]  (b : Finset α) : IsCompact b "
+      ],
+      [
+        "theorem is_compact.finite{α : Type*} [TopologicalSpace α] [Fintype α] : IsCompact α "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every surjective homomorphism from a finitely generated free group to itself is injective",
+    "answer": "theorem freegroup_hopfian {α : Type _} [Finite α]: (f: FreeGroup α → FreeGroup α) → (IsGroupHom f) → f.Surjective → f.Injective ",
+    "grouped": [
+      [
+        "theorem free_group.surjective_injective_of_finitely_generated{G : Type u} [Fintype G] [Group G] {f : FreeGroup G →* FreeGroup G} (hf : Function.Surjective ⇑f) : Function.Injective ⇑f "
+      ],
+      [
+        "theorem free_group.surjective_injective_of_finitely_generated{G : Type u} [Fintype G] [Groupₓ G] {f : FreeGroup G →* FreeGroup G} (hf : Function.Surjective ⇑f) : Function.Injective ⇑f "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "A homomorphism between fields is either injective or trivial.",
+    "answer": "theorem field_hom_inj_or_trivial {F F' : Type _} [Field F] [Field F'] : ∀ ϕ : F →+* F', ϕ.toFun.Injective ∨ (∀ x : F, ϕ x = 0) ",
+    "grouped": [
+      [
+        "theorem field.hom_eq_one_of_injective{F₁ : Type u_1} {F₂ : Type u_4} [Field F₁] [Field F₂] {f : F₁ →+* F₂} (h : ∀ x y, f x = f y → x = y) : Function.Injective f "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every ascending chain of sub-modules of a Noetherian module eventually stabilises.",
+    "answer": "theorem noetherian_implies_ascending_chain_condition {R M : Type _} [Ringₓ R] [AddCommMonoidₓ M] [Module R M] : IsNoetherian R M → ∀ (f : ℕ →o Submodule R M), ∃ n : ℕ, ∀ m : ℕ, n < m → f n = f m ",
+    "grouped": [
+      [
+        "theorem monotone_stabilises_noetherian{R : Type u_1} {M : Type u_2} [Semiringₓ R] [AddCommMonoidₓ M] [Module R M] (h : IsNoetherian R M) : ∀ {f : ℕ → Submodule R M}, Monotone f → ∃ N : ℕ, ∀ {n : ℕ}, n ≥ N → f n = f (n + 1) "
+      ],
+      [
+        "theorem is_noetherian_iff'{R : Type u_1} {M : Type u_2} [Semiringₓ R] [AddCommMonoidₓ M] [Module R M] : IsNoetherian R M ↔ ∀ (f : ℕ →o Submodule R M), ∃ (n : ℕ), ∀ (m : ℕ), n ≤ m → ⇑f n = ⇑f m "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "The angles of a triangle add up to two right angles.",
+    "answer": "theorem angle_sum_pi {p q r : EuclideanSpace ℝ (Finₓ 2)} : EuclideanGeometry.angle p q r + EuclideanGeometry.angle q r p + EuclideanGeometry.angle r p q = Real.pi ",
+    "grouped": [
+      [
+        "theorem euclidean_geometry.angle_sum_eq2pi{V : Type u_1} {P : Type u_2} [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P] {p1 p2 p3 : P} : EuclideanGeometry.angle p1 p2 p3 + EuclideanGeometry.angle p2 p3 p1 + EuclideanGeometry.angle p3 p1 p2 = 2 * Real.pi "
+      ],
+      [
+        "theorem euclidean_geometry.triangle_angle_sum_eq_tworightangles(α β γ : ℝ) (hα : α < Real.pi) (hβ : β < Real.pi) (hγ : γ < Real.pi) (hab : α + β > Real.pi) (hbc : β + γ > Real.pi) : α + β + γ = ↑(real.int 2) * ↑Real.pi "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every positive even integer can be written as the sum of two primes.",
+    "answer": "theorem goldbach : ∀ n : ℕ, n > 0 → Even n → ∃ p q : ℕ, Prime p → Prime q → n = p + q ",
+    "grouped": [
+      [
+        "theorem nat.sum_two_primes_of_even{p q : ℕ}(h : p ≠ 0 ∧ q ≠ 0 ∧ (p + q) % 2 = 0) : ∃ n : ℕ, n > 1 ∧ Odd n ∧ ∃ m : ℕ, m > 1 ∧ Odd m "
+      ],
+      [
+        "theorem even_sum_primes(n : ℕ) (h : n % 2 = 0) : ∃(p q : ℕ), Nat.Prime p ∧ Nat.Prime q ∧ (p + q = n) "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every matrix satisfies its own characteristic polynomial.",
+    "answer": "theorem cayley_hamilton {R : Type _} [CommRingₓ R] {n : Type _} [DecidableEq n] [Fintype n] (M : Matrix n n R) : (Polynomial.aeval M) M.charpoly = 0 ",
+    "grouped": [
+      [
+        "theorem charpoly_eq_map_aeval{R : Type u} [CommRingₓ R] {n : Type v} [DecidableEq n] [Fintype n] (M : Matrix n n R) : M.charpoly = ⇑(Polynomial.aeval M) M.charpoly "
+      ],
+      [
+        "theorem matrix.charpoly_eq_aeval_charpoly{R : Type u} [CommRingₓ R] {n : Type v} [DecidableEq n] [Fintype n] (M : Matrix n n R) : ⇑(Polynomial.aeval M) M.charpoly = 0 ",
+        "theorem matrix.aeval_char_poly{R : Type u} [CommRingₓ R] {n : Type v} [DecidableEq n] [Fintype n] (M : Matrix n n R) : ⇑(Polynomial.aeval M) M.charpoly = 0 "
+      ]
+    ],
+    "equivalent": [
+      "theorem matrix.charpoly_eq_aeval_charpoly{R : Type u} [CommRingₓ R] {n : Type v} [DecidableEq n] [Fintype n] (M : Matrix n n R) : ⇑(Polynomial.aeval M) M.charpoly = 0 ",
+      "theorem matrix.aeval_char_poly{R : Type u} [CommRingₓ R] {n : Type v} [DecidableEq n] [Fintype n] (M : Matrix n n R) : ⇑(Polynomial.aeval M) M.charpoly = 0 "
+    ]
+  },
+  {
+    "main-prompt": "The square root of an irrational number is irrational.",
+    "answer": "theorem sqrt_of_irrat_irrat (x : ℝ) : Irrational x → Irrational (Real.sqrt x) ",
+    "grouped": [
+      [
+        "theorem irrational_of_irrational_sqrt{x : ℝ} (hxir : Irrational x) (hxpos : 0 < x) : Irrational (Real.sqrt x) "
+      ],
+      [
+        "theorem irrational_sqrt{x : ℝ} (n : ℤ) (hxr : x ^ 2 = ↑n) (hv : ¬∃ (y : ℕ), x = ↑y) : Irrational x "
+      ],
+      [
+        "theorem irrational_sqrt_of_irrational{r : ℝ} : Irrational r → Irrational (Real.sqrt r) ",
+        "theorem irrational_real_sqrt{x : ℝ} (h : Irrational x) : Irrational (Real.sqrt x) ",
+        "theorem irrational_sqrt_of_irrational{r : ℝ} (irr : Irrational r) : Irrational (Real.sqrt r) "
+      ]
+    ],
+    "equivalent": [
+      "theorem irrational_sqrt_of_irrational{r : ℝ} : Irrational r → Irrational (Real.sqrt r) ",
+      "theorem irrational_real_sqrt{x : ℝ} (h : Irrational x) : Irrational (Real.sqrt x) ",
+      "theorem irrational_sqrt_of_irrational{r : ℝ} (irr : Irrational r) : Irrational (Real.sqrt r) "
+    ]
+  },
+  {
+    "main-prompt": "If the square of a number is even, the number itself is even.",
+    "answer": "theorem sq_even_implies_num_even : ∀ n : ℕ, Even (n^2) → Even n ",
+    "grouped": [
+      [
+        "theorem even_mul_self{α : Type u_3} [Semiring α] (a : α) : Even (a * a) → Even a "
+      ],
+      [
+        "theorem even_mul_self{α : Type u_3} [Semiringₓ α] (a : α) : Even (a * a) → Even a "
+      ],
+      [
+        "theorem mul_self_even{m: ℕ} : Even (m * m) → Even m "
+      ],
+      [
+        "theorem int.even_mul_even_iff_even_pow_two{n : ℤ} : Even (n * n) ↔ Even n "
+      ]
+    ],
+    "equivalent": [
+      "theorem mul_self_even{m: ℕ} : Even (m * m) → Even m "
+    ]
+  },
+  {
+    "main-prompt": "If every point of a subset of a topological space is contained in some open set, the subset itself is open.",
+    "answer": "theorem open_iff_open_nhd_all_pt {X : Type _} [TopologicalSpace X] (S : Set X) : (∀ x ∈ S, ∃ U : Set X, IsOpen U) → IsOpen S ",
+    "grouped": [
+      [
+        "theorem topological_space.of_forall_mem_open{α : Type u} [TopologicalSpace α]{s:Set α} (m:∀ (x : α), x ∈ s → ∃ (t:Set α), IsOpen t ∧ x ∈ t): IsOpen s "
+      ],
+      [
+        "theorem is_open_iff_forall_mem_open_nhds{α : Type u} [TopologicalSpace α] {s : Set α} : IsOpen s ↔ ∀ (x : α), x ∈ s → ∃ (u : Set α), IsOpen u ∧ x ∈ u ∧ u ⊆ s "
+      ],
+      [
+        "theorem mem_nhds_of_mem_nhds_within{α : Type u} [TopologicalSpace α] {s : Set α} {a : α} (h : ∀ (x : α), x ∈ s → ∃ (V : Set α), a ∈ V ∧ IsOpen V ∧ x ∈ V) : ∃ (V : Set α), a ∈ V ∧ IsOpen V ∧ s ⊆ V "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every non-identity element of a free group is of infinite order.",
+    "answer": "theorem non_id_implies_infinite_order {G : Type _} [Groupₓ G] : FreeGroup G → (∀ g : G, g ≠ 1 → orderOf g = 0) ",
+    "grouped": [
+      [
+        "theorem free_group.is_of_fin_order.neg{α : Type u}  (x : FreeGroup α) : IsOfFinOrder x ↔ x = 1 "
+      ],
+      [
+        "theorem order_of_ne_one_of_inf_order_free_group{α : Type u} {g : FreeGroup α} (hg : g ≠ 1) : ∃ (N : ℕ), ∀ n, n ≥ N → g ^ n ≠ 1 "
+      ],
+      [
+        "theorem free_group.is_of_fin_order {α : Type u} [DecidableEq α] {s : FreeGroup α} (H : s ≠ 1) :   ¬ IsOfFinOrder s "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "For any two relatively prime positive integers $a$ and $b$, every sufficiently large natural number $N$ can be written as a linear combination $ax + by$ of $a$ and $b$, where both $x$ and $y$ are natural numbers.",
+    "answer": "theorem coprime_integer_span_sylvester_coin : ∀ a b : ℕ, a > 0 → b > 0 → Nat.coprime a b → ∃ m : ℕ, ∀ N : ℕ, N > m → ∃ x y : ℕ, N = a*x + b*y ",
+    "grouped": [
+      [
+        "theorem exists_nat_mul_eq_linear_comb_of_coprime {a b : ℕ} (h : IsCoprime a b) : ∀ {N : ℕ}, N > (b - 1) * (a - 1) + b + 1 → ∃ (x y : ℕ), ↑N = ↑a * x + ↑b * y "
+      ],
+      [
+        "theorem exists_gcd_eq_gcd_nat{a b : ℕ} (hab : gcd a b = 1) {N : ℕ} (hN : N ≥ a * b) : ∃ (x y : ℕ), ↑(x * a + y * b) = N ∧ ↑a * ↑x + ↑b * ↑y = N "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "If every proper closed set of a topological space is compact, then the space itself is compact.",
+    "answer": "{α : Type _} [TopologicalSpace α] : (∀ (s : Set α), (s ≠ Set.univ) → IsCompact s) → CompactSpace α",
+    "grouped": [
+      [
+        "{α : Type u} [TopologicalSpace α] : (∀ {s : Set α} (hs : IsClosed s) (hns : ∀ x, s x → x ≠ x), IsCompact s) → IsCompact α "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every prime that is one greater than a multiple of four can be expressed as the sum of two squares.",
+    "answer": ": ∀ p : ℕ, Prime p → (p % 4 = 1) → ∃ a b : ℕ, a ^ 2 + b ^ 2 = p ",
+    "grouped": [
+      [
+        "{p : ℕ} [Fact (Nat.Prime p)] (h : p % 4 = 3) : ∃ (a b : ℕ), a ^ 2 + b ^ 2 = p "
+      ],
+      [
+        "{p : ℕ} [Fact (Nat.Prime p)] (hp : 1 = p % 4) : ∃ (a b : ℕ), a + b = p "
+      ],
+      [
+        "{p : ℕ} [Fact (Nat.Prime p)] (hp : ∃ k, p = 4 * k + 1) : ∃ (a b : ℕ), a ^ 2 + b ^ 2 = p "
+      ],
+      [
+        "{p : ℕ} [Fact (Nat.Prime p)] (hp : p ≠ 2) (hp : p % 4 = 1) : ∃ (a b : ℕ), (a ^ 2 + b ^ 2 = p) "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "A ring with all elements idempotent is commutative.",
+    "answer": "{R : Type _} [Ring R] : (∀ x : R, x * x = 1) → CommRing R ",
+    "grouped": [
+      [
+        "{α : Type u} [Ring α] (h : ∀ x, x * x = x) : CommRing α "
+      ],
+      [
+        "{α : Type u} [Ringₓ α] (h : ∀ x, x * x = x) : CommRing α "
+      ],
+      [
+        "{α : Type u} [Ring α] (h : ∀ x, x * x = x) : CommRingₓ α "
+      ],
+      [
+        "{α : Type u} [Ringₓ α] (h : ∀ x, x * x = x) : CommRingₓ α "
+      ],
+      [
+        "{R : Type u} [Ring R] (h : ∀ (x : R), x^2 = x) : commutative R "
+      ],
+      [
+        "{R : Type u} [Ringₓ R] (h : ∀ (x : R), x^2 = x) : commutative R "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "There are infinitely many pairs of primes that differ exactly by two.",
+    "answer": ": ∀ n : ℕ, ∃ p : ℕ, p > n → Prime p → Prime (p + 2) ",
+    "grouped": [
+      [
+        ": ∀ n, ∃ p q, Nat.Prime p ∧ Nat.Prime q ∧ p + 2 = q "
+      ],
+      [
+        ": ∀ (n : ℕ), ∃ (pp : ℕ), Nat.Prime pp ∧ ∃ (pp' : ℕ), Nat.Prime pp' ∧ pp'=pp+2 "
+      ],
+      [
+        "(p q : ℕ) : Nat.Prime p → Nat.Prime q → ∃ (r : ℕ), Nat.Prime r ∧ ∃ (s : ℕ), Nat.Prime s ∧ p + 2 = r ∧ q + 2 = s "
+      ],
+      [
+        "{p q : ℕ} [Fact (Nat.Prime p)] [Fact (Nat.Prime q)] (h₁ : p ≠ q) : ∃ (k : ℕ) (hp ha : Nat.Prime (2 * k + 1)) (h₂ : p = 2 * k + 1 ∨ q = 2 * k + 1), (2 * k + 1 = p ∨ 2 * k + 1 = q) ∧ (2 * k + 1 = p ∨ (2 * k + 2) = q) "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every finite division ring is a field.",
+    "answer": "{R : Type _} [DivisionRing R] [Finite R] : Field R ",
+    "grouped": [
+      [
+        "(K : Type u) [Fintype K] [DivisionRing K] : Field K ",
+        "{K : Type u} [Fintype K] [DivisionRing K] : Field K "
+      ],
+      [
+        "{K : Type u} [DivisionRing K] (h : Finite K) : Field K "
+      ]
+    ],
+    "equivalent": [
+      "{K : Type u} [DivisionRing K] (h : Finite K) : Field K "
+    ]
+  },
+  {
+    "main-prompt": "The product of two positive numbers is at most the square of their average.",
+    "answer": ": ∀ (a b : ℝ), a > 0 → b > 0 → a * b ≤ ((a + b)/(1 + 1))^2 ",
+    "grouped": [
+      [
+        "(x y : ℝ) (hx0 : 0 < x) (hy0 : 0 < y) : x * y ≤ x + y "
+      ],
+      [
+        "{a b : ℝ} (h : 0 < a) (h' : 0 < b) : a * b ≤ (a + b) ^ 2 / 4. ",
+        "{a b : ℝ} (ha : 0 < a) (hb : 0 < b) : a * b ≤ (a + b) ^ 2 / 4 "
+      ],
+      [
+        "{a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) : a * b ≤ (a + b)^2 / 2 "
+      ],
+      [
+        "{a b : ℝ} (h₁ : 0 ≤ a) (h₂ : 0 ≤ b) : a * b ≤ ((a + b) / 2) ^ 2 "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "In any configuration of points on the plane, not all on a line, there is a line which contains exactly two of the points.",
+    "answer": "{P L : Type _} [HasMem P L] [Membership P L] [Configuration.Nondegenerate P L] : ∃ (l : L) (p q : P), p ∈ l → q ∈ l → (∀ r : P, r ∈ l → r = p ∨ r = q) ",
+    "grouped": [
+      [
+        "{P : Type u_1} {L : Type u_2} [HasMem P L] [Fintype P] [Fintype L] (h : Fintype.card P > 2)  : Fintype L "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "If each of two types can be mapped injectively into the other, then there is a bijection between them.",
+    "answer": "{α β : Type _} (f : α → β) (g : β → α) : Function.Injective f → Function.Injective g → (∃ h : α → β, Function.Bijective h) ",
+    "grouped": [
+      [
+        "{α : Type u} {β : Type v} (f : α → β) (g : β → α) : (∀ x, Function.Surjective f) → (∀ x, Function.Surjective g) → ∃ (h : α → β), Function.bijective h "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "If a function from the unit interval to itself has a point of period three, then it has points of all positive periods.",
+    "answer": ": ∀ f : Set.Icc 0 1 → Set.Icc 0 1, (∃ x : Set.Icc 0 1, Function.IsPeriodicPt f 3 x) → (∀ n : ℕ, n > 0 → ∃ y : Set.Icc 0 1, Function.IsPeriodicPt f n y) ",
+    "grouped": [
+      [
+        "{f : Set.Icc 0 1 → Set.Icc 0 1} (h : ∃ (x : Set.Icc 0 1), Function.IsPeriodicPt f 3 x) : ∀ (n : ℕ), ∃ (xn : Set.Icc 0 1), Function.IsPeriodicPt f n xn "
+      ],
+      [
+        "{f : ℕ → ℕ} (H : ∃ x : ℕ, Function.IsPeriodicPt f 3 x) : ∀ m : ℕ, ∃ x : ℕ, Function.IsPeriodicPt f m x "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "A terminal object in a category is unique up to unique isomorphism.",
+    "answer": "{C : Type _} [CategoryTheory.Category C] : ∀ T₁ T₂ : C, CategoryTheory.Limits.IsTerminal T₁ → CategoryTheory.Limits.IsTerminal T₂ → (∃ ι : CategoryTheory.Iso T₁ T₂, ∀ ι' : CategoryTheory.Iso T₁ T₂, ι = ι') ",
+    "grouped": [
+      [
+        "{C : Type u₁} [CategoryTheory.Category C] {T T' : C} (hT : CategoryTheory.Limits.IsTerminal T) (hT' : CategoryTheory.Limits.IsTerminal T') : T ≅ T' "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "The sum of the cubes of two positive integers is never equal to the cube of a third integer.",
+    "answer": ": ∀ a b c : ℕ, a > 0 → b > 0 → ¬(a^3 + b^3 = c^3) ",
+    "grouped": [
+      [
+        "{x y z : ℤ} (hxz : 0 < x + y) (hyz : 0 < y + z) (hxz : 0 < x + z) : (x ^ 3 + y ^ 3 = z ^ 3) → False "
+      ],
+      [
+        "{x y z : ℕ} (hx : x > 0) (hy : y > 0) (hz : z > 0) : x^3 + y^3 ≠ z^3 "
+      ],
+      [
+        "{x y z : ℤ} (hx : x > 0) (hy : y > 0) (hz : z > 0) : x ^ 3 + y ^ 3 ≠ z ^ 3 "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "If every element of a group `G` has order two, then every pair of elements of `G` commutes.",
+    "answer": "{G: Type _}[Group G] : (∀ x y : G, x * x = 1) → (∀ x y : G, Commute x y) ",
+    "grouped": [
+      [
+        "{G : Type u} {x y : G} [Monoidₓ G] (hx : IsOfFinOrder x) (hy : IsOfFinOrder y) : ∀ (h : orderOf x = 2) (h' : orderOf y = 2), Commute x y "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every prime number is either `2` or odd.",
+    "answer": "{n: Nat} : Prime n → n = 2 ∨ Odd n ",
+    "grouped": [
+      [
+        "{p : ℕ} (hp : Nat.Prime p) :  p = 2 ∨ p % 2 = 1 ",
+        "{p : ℕ} (hp : Nat.Prime p) : p = 2 ∨ p % 2 = 1 ",
+        "(n : ℕ) (hp : Nat.Prime n) : n = 2 ∨ n % 2 = 1 ",
+        "{p : ℕ} (hp : Nat.Prime p) : p = 2 ∨ p % 2 = 1 "
+      ],
+      [
+        "(p : ℕ) :  Nat.Prime p ↔ p = 2 ∨ p % 2 = 1 "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "The product of two consequitive natural numbers is odd",
+    "answer": "(n: Nat): Odd <| n * (n + 1) ",
+    "grouped": [
+      [
+        "{m : ℕ} : Even (m * (m + 1)) "
+      ],
+      [
+        "(n : ℕ+) {a b : ℕ+} : (a*(a+1) = b*(b+1)) → (b % 2 = 1) "
+      ],
+      [
+        "{m n : ℕ} : n = m + 1 → n * m % 2 = 1 "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every constant function `f x = c` from real numbers to real numbers is differentiable.",
+    "answer": "{f: ℝ → ℝ}: ∃ c: ℝ, (∀ x : ℝ, f x = c) → Differentiable ℝ f ",
+    "grouped": [
+      [
+        "differentiable_const (c : ℝ) : Differentiable ℝ (λ x:ℝ, c) "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every index 2 subgroup of a group is free",
+    "answer": "{G : Type _} [Groupₓ G] (H : Subgroup G): H.index = 2 → Subgroup.Normal H ",
+    "grouped": [
+      [
+        "{G : Type u_1} [Groupₓ G] (H : Subgroup G) (hi2 : H.index = 2) : FreeGroup ↥H "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every subgroup of a free group is free",
+    "answer": "{G : Type _} [Groupₓ G] : (K : Subgroup G) → Σ β, FreeGroup β ≃* ↥K ",
+    "grouped": [
+      [
+        "{G : Type u_1} [Groupₓ G] (fG : FreeGroup G) (H : Subgroup G) : FreeGroup ↥H "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every free group is torsion free",
+    "answer": "{α : Type} : Monoidₓ.IsTorsionFree (FreeGroup α) ",
+    "grouped": [
+      [
+        "{G : Type u_1} [Groupₓ G] (tG : FreeGroup G) : Monoidₓ.IsTorsionFree G "
+      ],
+      [
+        "{η : Type u_1} {G : Type u_2} [Groupₓ G] (H : ∀ (a : η), ∃ (g : G), g ≠ (1 : G)) : Monoidₓ.IsTorsionFree G "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "If the coefficients of a polynomial over rationals are integral, every rational root is integral.",
+    "answer": "int_poly_rat_zeros_int (p: Polynomial ℚ) : ∀ n: ℕ, IsIntegral ℚ (p.coeff n) →  ∀ x: ℚ, p.IsRoot x →  IsIntegral ℚ x ",
+    "grouped": [
+      [
+        "{R : Type u} [CommRingₓ R] [IsDomain R] [UniqueFactorizationMonoid R] [Field ℚ] [Algebra R ℚ] [IsFractionRing R ℚ] {p : Polynomial R} (h : (∀ i, IsLocalization.IsInteger R i)): (∀ r : ℚ, Polynomial.aeval r p = 0 → IsLocalization.IsInteger R r) "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every natural number greater than `1` is divisible by a prime number.",
+    "answer": "(n: ℕ) : n > 1 → ∃ p: ℕ, Prime p ∧ (∃ d: ℕ, p * d = n) ",
+    "grouped": [
+      [
+        "{n : ℕ} (h : n > 1) : ∃ p, Nat.Prime p ∧ p ∣ n ",
+        "{n : ℕ} (hn : n > 1) : ∃ p : ℕ, Nat.Prime p ∧ p ∣ n "
+      ],
+      [
+        "{a : ℕ} (ha : 2 ≤ a) :  ∃ p, p.prime ∧ ↑p ∣ a "
+      ],
+      [
+        ": ∀ {n : ℕ} (hn : 1 < n), ∃ (p : ℕ) (hp : Nat.Prime p), p ∣ n "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Six is not the sum of two prime numbers.",
+    "answer": ": ¬ (∃ n m: Nat, Prime n ∧ Prime m ∧ n ≠ m ∧ 6 = n + m) ",
+    "grouped": [
+      [
+        ": ¬ ∃ (a b : ℕ), Nat.Prime a ∧ Nat.Prime b ∧ a + b = 6 ",
+        ": ¬ ∃ (a b : ℕ), Nat.Prime a ∧ Nat.Prime b ∧ a + b = 6 ",
+        ": ¬ ∃ (a b : ℕ), Nat.Prime a ∧ Nat.Prime b ∧ a + b = 6 "
+      ],
+      [
+        ": ∀ p q : ℕ, Nat.Prime p → Nat.Prime q → p + q ≠ 6 "
+      ],
+      [
+        ": ¬ ((2 : ℕ) = (3 : ℕ)) ∧ ¬ ((2 : ℕ) = (3 : ℕ)) "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "A finite torsion-free group is trivial",
+    "answer": "{G: Type _}[Groupₓ G][Finite G] : Monoidₓ.IsTorsionFree G → IsSubgroup.Trivial G ",
+    "grouped": [
+      [
+        "{G : Type u_1} [Groupₓ G] (f : Fintype G) : Monoidₓ.IsTorsionFree G → Fintype.card G = 1 "
+      ],
+      [
+        "{G : Type u_1} [Groupₓ G] [Fintype G] : Monoidₓ.IsTorsionFree G → ¬ Nontrivial G "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Any homomorphism from the additive group of rational numbers to `ℤ` is trivial",
+    "answer": "(f : ℚ → ℤ) : IsAddGroupHom f →  ∀ x: ℚ, f x = 0 ",
+    "grouped": [
+      [
+        "{α : Type u} [AddCommGroupₓ α] [Group α] [CharZero α] (f : ℚ →+ α) : f 0 = 0 "
+      ],
+      [
+        "{α : Type u} [AddCommGroupₓ α] [Groupₓ α] [CharZero α] (f : ℚ →+ α) : f 0 = 0 "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every finite division ring is a field.",
+    "answer": "{R : Type _} [Ringₓ R][IsDomain R] [Finite R] : Field R ",
+    "grouped": [
+      [
+        "(K : Type u) [DivisionRing K] [Fintype K] : Field K "
+      ],
+      [
+        "{K : Type u} [DivisionRing K] [Fintype K] [DecidableEq K] : Field K "
+      ],
+      [
+        "{K : Type u} [DivisionRing K] (h : Finite K) : Field K "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every finite topological space is compact",
+    "answer": "{X : Type _}[TopologicalSpace X][Finite X] : CompactSpace X ",
+    "grouped": [
+      [
+        "{α : Type u} [TopologicalSpace α] (H : (Fintype α)) : IsCompact α "
+      ],
+      [
+        "{α : Type u} [TopologicalSpace α] (h₁ : Finite α) : IsCompact α "
+      ],
+      [
+        "{α : Type u} [TopologicalSpace α] (hαf : Fintype α) : IsCompact α "
+      ],
+      [
+        "{α : Type u} [TopologicalSpace α] (hα : Nonempty α) : IsCompact α "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every surjective homomorphism from a finitely generated free group to itself is injective",
+    "answer": "{α : Type _} [Finite α]: (f: FreeGroup α → FreeGroup α) → (IsGroupHom f) → f.Surjective → f.Injective ",
+    "grouped": [
+      [
+        "{α : Type u} {β : Type v} [Groupₓ β] {f : FreeGroup α →* β} (hf : Function.Surjective ⇑f) : Function.Injective ⇑f "
+      ],
+      [
+        "{α : Type u} {G : Type u_1} [Groupₓ G] (f : FreeGroup α →* G) (hf : Function.Surjective ⇑f) : Function.Injective ⇑f "
+      ],
+      [
+        "{α : Type u_1} [Fintype α] {f : FreeGroup α →* FreeGroup α} (hf : Function.Surjective ⇑f) : Function.Injective f "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "A homomorphism between fields is either injective or trivial.",
+    "answer": "{F F' : Type _} [Field F] [Field F'] : ∀ ϕ : F →+* F', ϕ.toFun.Injective ∨ (∀ x : F, ϕ x = 0) ",
+    "grouped": [
+      [
+        "{F : Type u} {F₂ : Type v} [Field F] [Field F₂] {τ : F →+* F₂} (h : ∀ (u v : ↥(τ.ker) →ₗ[F] F), τ.comp u = τ.comp v → u = v) : Function.Injective τ ∨ τ = 0 "
+      ],
+      [
+        "{α : Type u} {β : Type v} [Field α] [Field β] {f : α →+* β} : Function.Injective f ∨ f = 0 "
+      ],
+      [
+        "{K : Type u} {L : Type v} [Field K] [Field L] {f : K →+* L} : Function.Injective f ∨ f = 0 "
+      ],
+      [
+        "{α : Type u} {β : Type v} [Field α] [Field β] {f : α → β} (hf : IsMonoidHom f) : Function.Injective f ∨ ∀ (a : α), f a = 0 "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every ascending chain of sub-modules of a Noetherian module eventually stabilises.",
+    "answer": "{R M : Type _} [Ringₓ R] [AddCommMonoidₓ M] [Module R M] : IsNoetherian R M → ∀ (f : ℕ →o Submodule R M), ∃ n : ℕ, ∀ m : ℕ, n < m → f n = f m ",
+    "grouped": [
+      [
+        "{R : Type u_1} {M : Type u_2} [Semiringₓ R] [AddCommMonoidₓ M] [Module R M] (h : IsNoetherian R M) (f : ℕ →o Submodule R M) : ∃ (n : ℕ), ∀ (m : ℕ), n ≤ m → ⇑f n = ⇑f m ",
+        "{R : Type u_1} {M : Type u_2} [Semiringₓ R] [AddCommMonoidₓ M] [Module R M] : IsNoetherian R M → ∀ (f : ℕ →o Submodule R M), ∃ (n : ℕ), ∀ (m : ℕ), n ≤ m → ⇑f n = ⇑f m ",
+        "{R : Type u_1} {M : Type u_2} [Semiringₓ R] [AddCommMonoidₓ M] [Module R M] (h : IsNoetherian R M) (f : ℕ →o Submodule R M) : ∃ (n : ℕ), ∀ (m : ℕ), n ≤ m → ⇑f n = ⇑f m "
+      ],
+      [
+        "{R : Type u_1} {M : Type u_2} [Semiringₓ R] [AddCommMonoidₓ M] [Module R M] (h : IsNoetherian R M) (f : ℕ → Submodule R M) : ∃ (n : ℕ) (x y : Submodule R M), ∀ (m : ℕ), n ≤ m → x = y "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "The angles of a triangle add up to two right angles.",
+    "answer": "{p q r : EuclideanSpace ℝ (Finₓ 2)} : EuclideanGeometry.angle p q r + EuclideanGeometry.angle q r p + EuclideanGeometry.angle r p q = Real.pi ",
+    "grouped": [
+      [
+        "{V : Type u_1} [InnerProductSpace ℝ V] {x y z : V} (h : InnerProductGeometry.angle x y + InnerProductGeometry.angle y z + InnerProductGeometry.angle z x = 2 * Real.pi) : True "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every positive even integer can be written as the sum of two primes.",
+    "answer": ": ∀ n : ℕ, n > 0 → Even n → ∃ p q : ℕ, Prime p → Prime q → n = p + q ",
+    "grouped": [
+      [
+        "{n : ℕ}(hn : n ≠ 0) : ∃ p q : ℕ, p + q = n ∧ (Fact (Prime p)) ∧ (Fact (Prime q)) ∧ (Even n) "
+      ],
+      [
+        "(n p q : ℕ) (h : 0 < n ∧ n % 2 = 0) : n = p + q ∧ (Nat.Prime p) ∧ (Nat.Prime q) "
+      ],
+      [
+        "(n : ℕ) (h : n ≥ 2 ∧ n % 2 = 0) : ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ p + q = n "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "The square root of an irrational number is irrational.",
+    "answer": "(x : ℝ) : Irrational x → Irrational (Real.sqrt x) ",
+    "grouped": [
+      [
+        "{x : ℝ} (irx : Irrational x) : Irrational (Real.sqrt x) ",
+        "{x : ℝ} (hxr : Irrational x) : Irrational (Real.sqrt x) ",
+        "{x : ℝ} (hxr : Irrational x) : Irrational (Real.sqrt x) ",
+        "{x : ℝ} (irr : Irrational x) : Irrational (Real.sqrt x) "
+      ]
+    ],
+    "equivalent": [
+      "{x : ℝ} (irx : Irrational x) : Irrational (Real.sqrt x) ",
+      "{x : ℝ} (hxr : Irrational x) : Irrational (Real.sqrt x) ",
+      "{x : ℝ} (hxr : Irrational x) : Irrational (Real.sqrt x) ",
+      "{x : ℝ} (irr : Irrational x) : Irrational (Real.sqrt x) "
+    ]
+  },
+  {
+    "main-prompt": "If the square of a number is even, the number itself is even.",
+    "answer": ": ∀ n : ℕ, Even (n^2) → Even n ",
+    "grouped": [
+      [
+        "{m : ℕ} (h : Even (m * m)) : Even m "
+      ],
+      [
+        "{α : Type u_1} {m n : ℕ} [LinearOrderedSemiring α] (hmn : (m ^ 2) * (n ^ (2 : ℕ)) = 0) : 2 ∣ m ^ 2 ∧ 2 ∣ n ^ 2 "
+      ]
+    ],
+    "equivalent": [
+      "{m : ℕ} (h : Even (m * m)) : Even m "
+    ]
+  },
+  {
+    "main-prompt": "If every point of a subset of a topological space is contained in some open set, the subset itself is open.",
+    "answer": "{X : Type _} [TopologicalSpace X] (S : Set X) : (∀ x ∈ S, ∃ U : Set X, IsOpen U) → IsOpen S ",
+    "grouped": [
+      [
+        "{α : Type u} [TopologicalSpace α] {s : Set α} (h : ∀ (x : α), x ∈ s → ∃ (u : Set α), u ⊆ s ∧ IsOpen u) : IsOpen s "
+      ],
+      [
+        "{α : Type*} [TopologicalSpace α] {s : Set α} (h : ∀ (x : α), x ∈ s → ∃ (t : Set α), (∀ (y : α), y ∈ t → y ∈ s) ∧ IsOpen t ∧ x ∈ t) :  IsOpen s "
+      ],
+      [
+        "{α : Type u} [TopologicalSpace α] {s : Set α} (h : ∀ (x : α), x ∈ s → ∃ (u : Set α), IsOpen u ∧ x ∈ u) : IsOpen s "
+      ],
+      [
+        "{α : Type u} [TopologicalSpace α] {s : Set α} (h : ∀ (x : α), x ∈ s → ∃ (t : Set α), x ∈ t ∧ IsOpen t) : IsOpen s "
+      ],
+      [
+        "{α : Type u} [TopologicalSpace α] {s : Set α} {p : α → Prop} (h : ∀ (x : α), (x ∈ s) → ∃ (V : Set α), IsOpen V ∧ x ∈ V): IsOpen s "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "The product of a complex number with its conjugate is a real number.",
+    "answer": ": ∀ z : ℂ, ∃ r : ℝ, z * (starRingEnd ℂ $ z) = (r : ℂ) ",
+    "grouped": [
+      [
+        "(z : ℂ) : ↑(⇑(starRingEnd ℂ) z * z) = ↑(z * ⋆z) "
+      ],
+      [
+        "(z : ℂ) : ↑(⇑(starRingEnd ℂ) z) = (↑z) * (↑z) "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "Every non-identity element of a free group is of infinite order.",
+    "answer": "{G : Type _} [Groupₓ G] : FreeGroup G → (∀ g : G, g ≠ 1 → orderOf g = 0) ",
+    "grouped": [
+      [
+        "{α : Type u} [DecidableEq α] (x : FreeGroup α) : x ≠ 1 → ¬IsOfFinOrder x "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "An element of a discrete valuation ring is a unit if and only if it has a valuation of zero.",
+    "answer": "{R : Type _} [CommRingₓ R] [IsDomain R] [DiscreteValuationRing R] : ∀ r : R, IsUnit r → DiscreteValuationRing.addVal R r = 0 ",
+    "grouped": [
+      [
+        "{R : Type u} [CommRingₓ R] [IsDomain R] [DiscreteValuationRing R] (x : R) : IsUnit x ↔ ∃ s : R, s * x = 1 "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  },
+  {
+    "main-prompt": "The exponential function is convex.",
+    "answer": ": ConvexOn ℝ Set.univ Real.exp ",
+    "grouped": [
+      [
+        " : ConvexOn ℝ Set.Univ Real.exp ",
+        ": ConvexOn ℝ Set.Univ Real.exp "
+      ],
+      [
+        " : ConvexOn ℝ Set.Univ (λ (x : ℝ), exp x) "
+      ]
+    ],
+    "equivalent": [
+      " : ConvexOn ℝ Set.Univ Real.exp ",
+      ": ConvexOn ℝ Set.Univ Real.exp "
+    ]
+  },
+  {
+    "main-prompt": "For any two relatively prime positive integers $a$ and $b$, every sufficiently large natural number $N$ can be written as a linear combination $ax + by$ of $a$ and $b$, where both $x$ and $y$ are natural numbers.",
+    "answer": ": ∀ a b : ℕ, a > 0 → b > 0 → Nat.coprime a b → ∃ m : ℕ, ∀ N : ℕ, N > m → ∃ x y : ℕ, N = a*x + b*y ",
+    "grouped": [
+      [
+        "(x a b : ℕ) (hab : a.gcd b = 1) : ∃ (y : ℕ), a * x + b * y = ↑x * ↑b "
+      ],
+      [
+        "{a b : ℕ} (hab : IsCoprime a b) : ∃ k : ℕ, ∀ (n : ℕ), n < k → ∃ (x y : ℕ), n = a * x + b * y "
+      ],
+      [
+        "{n a b : ℕ} (hab : a.coprime b) : ∃ (x y : ℕ), n = a * x + b * y ∧ y < b "
+      ]
+    ],
+    "equivalent": [
+      
+    ]
+  }
+]
