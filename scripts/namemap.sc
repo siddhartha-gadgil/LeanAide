@@ -3,7 +3,7 @@ import $ivy.`org.scala-lang.modules::scala-parallel-collections:1.0.4`
 import scala.collection.parallel.CollectionConverters._ 
 
 def wordMatch(w: String) = new Regex("(?<![a-zA-Z\\._]+)" + w + "(?![a-zA-Z\\._]+)")
-def segmentMatch(w: String) = new Regex("(?<![a-zA-Z_]+)" + w + "(?![a-zA-Z_]+)")
+def segmentMatch(w: String) = new Regex("(?<![a-zA-Z_]+)" + w + "(?![a-zA-Z_\u2093]+)")
 def dotMatch(w: String) = new Regex("(?<=\\.)" + w + "(?![a-zA-Z\\._]+)")
 
 def capSegments(s: String) = {
