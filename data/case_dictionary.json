@@ -1016,6 +1016,10 @@
     "camelcase": "LocalRing"
   },
   {
+    "snakecase": "char_p",
+    "camelcase": "CharP"
+  },
+  {
     "snakecase": "is_prime_pow",
     "camelcase": "IsPrimePow"
   },
@@ -5192,6 +5196,10 @@
     "camelcase": "Algebra.FiniteType"
   },
   {
+    "snakecase": "matrix.mv_polynomial_X",
+    "camelcase": "Matrix.mvPolynomialX"
+  },
+  {
     "snakecase": "mv_polynomial.eval",
     "camelcase": "MvPolynomial.eval"
   },
@@ -6208,6 +6216,10 @@
     "camelcase": "PseudoMetricSpace.toHasDist"
   },
   {
+    "snakecase": "padic_norm_e",
+    "camelcase": "padicNormE"
+  },
+  {
     "snakecase": "is_fraction_ring.denom",
     "camelcase": "IsFractionRing.denom"
   },
@@ -6864,6 +6876,10 @@
     "camelcase": "ContinuousMap.Homotopy.hcast"
   },
   {
+    "snakecase": "continuous_map.homotopy.prod_to_prod_Top_I",
+    "camelcase": "ContinuousMap.Homotopy.prodToProdTopI"
+  },
+  {
     "snakecase": "category_theory.limits.pushout",
     "camelcase": "CategoryTheory.Limits.pushout"
   },
@@ -6964,6 +6980,10 @@
     "camelcase": "ContinuousMap.compRightAlgHom"
   },
   {
+    "snakecase": "Icc_homeo_I",
+    "camelcase": "iccHomeoI"
+  },
+  {
     "snakecase": "uniform_cauchy_seq_on",
     "camelcase": "UniformCauchySeqOn"
   },
@@ -7030,10 +7050,6 @@
   {
     "snakecase": "exterior_algebra.",
     "camelcase": "ExteriorAlgebra"
-  },
-  {
-    "snakecase": "Gromov_Hausdorff.HD",
-    "camelcase": "GromovHausdorff.hD"
   },
   {
     "snakecase": "antisymm_rel",
@@ -7390,6 +7406,10 @@
   {
     "snakecase": "lower_semicontinuous",
     "camelcase": "LowerSemicontinuous"
+  },
+  {
+    "snakecase": "algebraic_topology.alternating_face_map_complex.obj_d",
+    "camelcase": "AlgebraicTopology.AlternatingFaceMapComplex.objD"
   },
   {
     "snakecase": "mul_hom_class",
@@ -8048,6 +8068,10 @@
     "camelcase": "CategoryTheory.Limits.HasWideCoequalizers"
   },
   {
+    "snakecase": "list.split_on_p",
+    "camelcase": "List.splitOnP"
+  },
+  {
     "snakecase": "mul_action.stabilizer",
     "camelcase": "MulAction.stabilizer"
   },
@@ -8554,6 +8578,14 @@
   {
     "snakecase": "euclidean_domain.gcd",
     "camelcase": "EuclideanDomain.gcd"
+  },
+  {
+    "snakecase": "euclidean_domain.gcd_a",
+    "camelcase": "EuclideanDomain.gcdA"
+  },
+  {
+    "snakecase": "euclidean_domain.gcd_b",
+    "camelcase": "EuclideanDomain.gcdB"
   },
   {
     "snakecase": "add_monoid_hom.mul_left",
@@ -9276,6 +9308,10 @@
     "camelcase": "Module.End.HasEigenvector"
   },
   {
+    "snakecase": "complex.basis_one_I",
+    "camelcase": "Complex.basisOneI"
+  },
+  {
     "snakecase": "matrix.plane_conformal_matrix",
     "camelcase": "Matrix.planeConformalMatrix"
   },
@@ -9758,6 +9794,10 @@
   {
     "snakecase": "category_theory.frobenius_morphism",
     "camelcase": "CategoryTheory.frobeniusMorphism"
+  },
+  {
+    "snakecase": "has_coe_t",
+    "camelcase": "CoeT"
   },
   {
     "snakecase": "category_theory.colimit_adj.restrict_yoneda_hom_equiv",

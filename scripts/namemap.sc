@@ -11,7 +11,7 @@ def segmentMatch(w: String) = new Regex(
 def dotMatch(w: String) = new Regex("(?<=\\.)" + w + "(?![a-zA-Z\\._]+)")
 
 def capSegments(s: String) = {
-  val pieces = "[A-Z]+[a-z0-9]+".r.findAllIn(s).toVector
+  val pieces = "[A-Z]+[a-z0-9]*".r.findAllIn(s).toVector
   if (pieces.mkString("") == s) pieces
   else if (pieces.nonEmpty && s.endsWith(pieces.mkString("")))(s.dropRight(
     pieces.map(_.length()).sum
