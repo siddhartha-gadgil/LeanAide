@@ -12804,21 +12804,22 @@
   "equivalent": [],
   "answer":
   "theorem coprime_integer_span_sylvester_coin : ∀ a b : ℕ, a > 0 → b > 0 → Nat.coprime a b → ∃ m : ℕ, ∀ N : ℕ, N > m → ∃ x y : ℕ, N = a*x + b*y "},
- {"parsed": [],
+ {"parsed":
+  ["theorem prime_pow_add (R : Type*) [CommRingₓ R] [Fintype R]  (p : ℕ) (hp : Nat.Prime p) (hprime : ¬ CharP R p)  (x y : R) :  x ^ p + y ^ p = (x + y) ^ p "],
   "parse-checks":
   [{"success": false,
     "statement":
-    "theorem sum_p_powers_prime_p_power_eq_sum_p_power  (R : Type*) [CommRing R] (p : ℕ) [hp : Nat.Prime p] (hchar : p.nat_abs = char_p R)  (a b : R) : (a + b) ^ p = a ^ p + b ^ p ",
+    "theorem sum_p_powers_prime_p_power_eq_sum_p_power  (R : Type*) [CommRing R] (p : ℕ) [hp : Nat.Prime p] (hchar : p.nat_abs = CharP R)  (a b : R) : (a + b) ^ p = a ^ p + b ^ p ",
     "parse-message":
     "invalid binder annotation, type is not a class instance\n  Nat.Prime p\nuse the command `set_option checkBinderAnnotations false` to disable the check (during elaboration)"},
    {"success": false,
     "statement":
-    "theorem sum_p_powers_prime_p_power_eq_sum_p_power  (R : Type*) [CommRingₓₓ R] (p : ℕ) [hp : Nat.Prime p] (hchar : p.nat_abs = char_p R)  (a b : R) : (a + b) ^ p = a ^ p + b ^ p ",
+    "theorem sum_p_powers_prime_p_power_eq_sum_p_power  (R : Type*) [CommRingₓₓ R] (p : ℕ) [hp : Nat.Prime p] (hchar : p.nat_abs = CharP R)  (a b : R) : (a + b) ^ p = a ^ p + b ^ p ",
     "parse-message":
     "function expected at\n  CommRingₓₓ\nterm has type\n  Type (?u.6 + 1) (during elaboration)"},
    {"success": false,
     "statement":
-    "theorem sum_p_powers_prime_p_power_eq_sum_p_power  (R : Type*) [CommRingₓ R] (p : ℕ) [hp : Nat.Prime p] (hchar : p.nat_abs = char_p R)  (a b : R) : (a + b) ^ p = a ^ p + b ^ p ",
+    "theorem sum_p_powers_prime_p_power_eq_sum_p_power  (R : Type*) [CommRingₓ R] (p : ℕ) [hp : Nat.Prime p] (hchar : p.nat_abs = CharP R)  (a b : R) : (a + b) ^ p = a ^ p + b ^ p ",
     "parse-message":
     "invalid binder annotation, type is not a class instance\n  Nat.Prime p\nuse the command `set_option checkBinderAnnotations false` to disable the check (during elaboration)"},
    {"success": false,
@@ -12836,16 +12837,16 @@
     "parse-message": "unknown identifier 'nat.fact' (during elaboration)"},
    {"success": false,
     "statement":
-    "theorem power_add_eq (p : ℕ) [CommRing R] [char_p R p] (a b : R) : (a + b)^p = a^p + b^p ",
+    "theorem power_add_eq (p : ℕ) [CommRing R] [CharP R p] (a b : R) : (a + b)^p = a^p + b^p ",
     "parse-message": "unknown identifier 'R' (during elaboration)"},
    {"success": false,
     "statement":
-    "theorem power_add_eq (p : ℕ) [CommRingₓₓ R] [char_p R p] (a b : R) : (a + b)^p = a^p + b^p ",
+    "theorem power_add_eq (p : ℕ) [CommRingₓₓ R] [CharP R p] (a b : R) : (a + b)^p = a^p + b^p ",
     "parse-message":
     "function expected at\n  CommRingₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"},
    {"success": false,
     "statement":
-    "theorem power_add_eq (p : ℕ) [CommRingₓ R] [char_p R p] (a b : R) : (a + b)^p = a^p + b^p ",
+    "theorem power_add_eq (p : ℕ) [CommRingₓ R] [CharP R p] (a b : R) : (a + b)^p = a^p + b^p ",
     "parse-message": "unknown identifier 'R' (during elaboration)"},
    {"success": false,
     "statement":
@@ -12864,33 +12865,35 @@
     "function expected at\n  Charₓ\nterm has type\n  Type (during elaboration)"},
    {"success": false,
     "statement":
-    "theorem prime_pow_add (R : Type*) [CommRing R] [Fintype R]  (p : ℕ) (hp : Nat.Prime p) (hprime : ¬ char_p R p)  (x y : R) :  x ^ p + y ^ p = (x + y) ^ p ",
-    "parse-message": "unknown identifier 'char_p' (during elaboration)"},
+    "theorem prime_pow_add (R : Type*) [CommRing R] [Fintype R]  (p : ℕ) (hp : Nat.Prime p) (hprime : ¬ CharP R p)  (x y : R) :  x ^ p + y ^ p = (x + y) ^ p ",
+    "parse-message":
+    "failed to synthesize instance\n  AddMonoidₓ R (during elaboration)"},
    {"success": false,
     "statement":
-    "theorem prime_pow_add (R : Type*) [CommRingₓₓ R] [Fintype R]  (p : ℕ) (hp : Nat.Prime p) (hprime : ¬ char_p R p)  (x y : R) :  x ^ p + y ^ p = (x + y) ^ p ",
+    "theorem prime_pow_add (R : Type*) [CommRingₓₓ R] [Fintype R]  (p : ℕ) (hp : Nat.Prime p) (hprime : ¬ CharP R p)  (x y : R) :  x ^ p + y ^ p = (x + y) ^ p ",
     "parse-message":
     "function expected at\n  CommRingₓₓ\nterm has type\n  Type (?u.6 + 1) (during elaboration)"},
+   {"success": true,
+    "statement":
+    "theorem prime_pow_add (R : Type*) [CommRingₓ R] [Fintype R]  (p : ℕ) (hp : Nat.Prime p) (hprime : ¬ CharP R p)  (x y : R) :  x ^ p + y ^ p = (x + y) ^ p ",
+    "code":
+    "forall (R : Type.{?_uniq.2}) [inst._@._hyg.7 : CommRingₓ.{?_uniq.6} R] [inst._@._hyg.11 : Fintype.{?_uniq.10} R] (p : Nat), (Nat.Prime p) -> (Not (CharP.{?_uniq.20} R (SubNegMonoidₓ.toAddMonoid.{?_uniq.2} R (AddGroupₓ.toSubNegMonoid.{?_uniq.2} R (AddCommGroupₓ.toAddGroup.{?_uniq.2} R (LieRing.toAddCommGroup.{?_uniq.2} R (LieRing.ofAssociativeRing.{?_uniq.2} R (CommRingₓ.toRing.{?_uniq.2} R inst._@._hyg.7)))))) (MulOneClassₓ.toHasOne.{?_uniq.2} R (MulZeroOneClassₓ.toMulOneClass.{?_uniq.2} R (NonAssocSemiringₓ.toMulZeroOneClass.{?_uniq.2} R (NonAssocRing.toNonAssocSemiring.{?_uniq.2} R (Ringₓ.toNonAssocRing.{?_uniq.2} R (CommRingₓ.toRing.{?_uniq.2} R inst._@._hyg.7)))))) p)) -> (forall (x : R) (y : R), Eq.{?_uniq.541} R (HAdd.hAdd.{?_uniq.544 ?_uniq.543 ?_uniq.542} R R R (instHAdd.{?_uniq.2} R (Distribₓ.toHasAdd.{?_uniq.2} R (Ringₓ.toDistrib.{?_uniq.2} R (CommRingₓ.toRing.{?_uniq.2} R inst._@._hyg.7)))) (HPow.hPow.{?_uniq.547 ?_uniq.546 ?_uniq.545} R Nat R (instHPow.{?_uniq.2 0} R Nat (Monoidₓ.hasPow.{?_uniq.2} R (Ringₓ.toMonoid.{?_uniq.2} R (CommRingₓ.toRing.{?_uniq.2} R inst._@._hyg.7)))) x p) (HPow.hPow.{?_uniq.761 ?_uniq.760 ?_uniq.759} R Nat R (instHPow.{?_uniq.2 0} R Nat (Monoidₓ.hasPow.{?_uniq.2} R (Ringₓ.toMonoid.{?_uniq.2} R (CommRingₓ.toRing.{?_uniq.2} R inst._@._hyg.7)))) y p)) (HPow.hPow.{?_uniq.969 ?_uniq.968 ?_uniq.967} R Nat R (instHPow.{?_uniq.2 0} R Nat (Monoidₓ.hasPow.{?_uniq.2} R (Ringₓ.toMonoid.{?_uniq.2} R (CommRingₓ.toRing.{?_uniq.2} R inst._@._hyg.7)))) (HAdd.hAdd.{?_uniq.976 ?_uniq.975 ?_uniq.974} R R R (instHAdd.{?_uniq.2} R (Distribₓ.toHasAdd.{?_uniq.2} R (Ringₓ.toDistrib.{?_uniq.2} R (CommRingₓ.toRing.{?_uniq.2} R inst._@._hyg.7)))) x y) p))"},
    {"success": false,
     "statement":
-    "theorem prime_pow_add (R : Type*) [CommRingₓ R] [Fintype R]  (p : ℕ) (hp : Nat.Prime p) (hprime : ¬ char_p R p)  (x y : R) :  x ^ p + y ^ p = (x + y) ^ p ",
-    "parse-message": "unknown identifier 'char_p' (during elaboration)"},
-   {"success": false,
-    "statement":
-    "theorem prime_pow_add (R : Type*) [CommRing R] [Fintypeₓ R]  (p : ℕ) (hp : Nat.Prime p) (hprime : ¬ char_p R p)  (x y : R) :  x ^ p + y ^ p = (x + y) ^ p ",
+    "theorem prime_pow_add (R : Type*) [CommRing R] [Fintypeₓ R]  (p : ℕ) (hp : Nat.Prime p) (hprime : ¬ CharP R p)  (x y : R) :  x ^ p + y ^ p = (x + y) ^ p ",
     "parse-message":
     "function expected at\n  Fintypeₓ\nterm has type\n  Type (?u.10 + 1) (during elaboration)"},
    {"success": false,
     "statement":
-    "theorem prime_pow_add (R : Type*) [CommRingₓₓ R] [Fintypeₓ R]  (p : ℕ) (hp : Nat.Prime p) (hprime : ¬ char_p R p)  (x y : R) :  x ^ p + y ^ p = (x + y) ^ p ",
+    "theorem prime_pow_add (R : Type*) [CommRingₓₓ R] [Fintypeₓ R]  (p : ℕ) (hp : Nat.Prime p) (hprime : ¬ CharP R p)  (x y : R) :  x ^ p + y ^ p = (x + y) ^ p ",
     "parse-message":
     "function expected at\n  CommRingₓₓ\nterm has type\n  Type (?u.6 + 1) (during elaboration)"},
    {"success": false,
     "statement":
-    "theorem prime_pow_add (R : Type*) [CommRingₓ R] [Fintypeₓ R]  (p : ℕ) (hp : Nat.Prime p) (hprime : ¬ char_p R p)  (x y : R) :  x ^ p + y ^ p = (x + y) ^ p ",
+    "theorem prime_pow_add (R : Type*) [CommRingₓ R] [Fintypeₓ R]  (p : ℕ) (hp : Nat.Prime p) (hprime : ¬ CharP R p)  (x y : R) :  x ^ p + y ^ p = (x + y) ^ p ",
     "parse-message":
     "function expected at\n  Fintypeₓ\nterm has type\n  Type (?u.10 + 1) (during elaboration)"}],
-  "number-parsed": 0,
+  "number-parsed": 1,
   "number-equivalent": 0,
   "metadata":
   {"use_theorem_name": true,
@@ -12901,7 +12904,8 @@
    "main_prompt":
    "In a commutative ring with prime characteristic $p$, the $p$th power of the sum of two elements is equal to the sum of the $p$th powers of the elements.",
    "codex_time": "8.516061720001744"},
-  "grouped": [],
+  "grouped":
+  [["theorem prime_pow_add (R : Type*) [CommRingₓ R] [Fintype R]  (p : ℕ) (hp : Nat.Prime p) (hprime : ¬ CharP R p)  (x y : R) :  x ^ p + y ^ p = (x + y) ^ p "]],
   "equivalent": [],
   "answer":
   "theorem frobenius_pow_sum_eq_sum_pow {R : Type _} [CommRingₓ R] : (p : ℕ) → Prime p → CharP R p → ∀ a b : R, (a + b)^p = a^p + b^p "},
@@ -12986,40 +12990,40 @@
   "parse-checks":
   [{"success": false,
     "statement":
-    "theorem pow_sum_r (α : Type u) [CommRing α] [DecidableEq α] [char_p α] (a b : α) : (a+b)^p = a^p+b^p Use tactic mode to prove the Lean version in Lean's mathlib. You can copy the statement into VS Code and delete the \": Prop\" part. You can see that Lean already knows that $p=char_p(R)$, and we have variables $a,b$ in variable context. You should find that all you need to use is the Ring axioms and the \"frobenius map\" axiom:   fpow f a p",
-    "parse-message": "<input>:1:117: expected end of input"},
+    "theorem pow_sum_r (α : Type u) [CommRing α] [DecidableEq α] [CharP α] (a b : α) : (a+b)^p = a^p+b^p Use tactic mode to prove the Lean version in Lean's mathlib. You can copy the statement into VS Code and delete the \": Prop\" part. You can see that Lean already knows that $p=CharP(R)$, and we have variables $a,b$ in variable context. You should find that all you need to use is the Ring axioms and the \"frobenius map\" axiom:   fpow f a p",
+    "parse-message": "<input>:1:116: expected end of input"},
    {"success": false,
     "statement":
-    "theorem pow_sum_r (α : Type u) [CommRingₓₓ α] [DecidableEq α] [char_p α] (a b : α) : (a+b)^p = a^p+b^p Use tactic mode to prove the Lean version in Lean's mathlib. You can copy the statement into VS Code and delete the \": Prop\" part. You can see that Lean already knows that $p=char_p(R)$, and we have variables $a,b$ in variable context. You should find that all you need to use is the Ring axioms and the \"frobenius map\" axiom:   fpow f a p",
-    "parse-message": "<input>:1:119: expected end of input"},
-   {"success": false,
-    "statement":
-    "theorem pow_sum_r (α : Type u) [CommRing α] [DecidableEq α] [char_p α] (a b : α) : (a+b)^p = a^p+b^p Use tactic mode to prove the Lean version in Lean's mathlib. You can copy the statement into VS Code and delete the \": Prop\" part. You can see that Lean already knows that $p=char_p(R)$, and we have variables $a,b$ in variable context. You should find that all you need to use is the Ringₓₓ axioms and the \"frobenius map\" axiom:   fpow f a p",
-    "parse-message": "<input>:1:117: expected end of input"},
-   {"success": false,
-    "statement":
-    "theorem pow_sum_r (α : Type u) [CommRingₓₓ α] [DecidableEq α] [char_p α] (a b : α) : (a+b)^p = a^p+b^p Use tactic mode to prove the Lean version in Lean's mathlib. You can copy the statement into VS Code and delete the \": Prop\" part. You can see that Lean already knows that $p=char_p(R)$, and we have variables $a,b$ in variable context. You should find that all you need to use is the Ringₓₓ axioms and the \"frobenius map\" axiom:   fpow f a p",
-    "parse-message": "<input>:1:119: expected end of input"},
-   {"success": false,
-    "statement":
-    "theorem pow_sum_r (α : Type u) [CommRing α] [DecidableEq α] [char_p α] (a b : α) : (a+b)^p = a^p+b^p Use tactic mode to prove the Lean version in Lean's mathlib. You can copy the statement into VS Code and delete the \": Prop\" part. You can see that Lean already knows that $p=char_p(R)$, and we have variables $a,b$ in variable context. You should find that all you need to use is the Ringₓ axioms and the \"frobenius map\" axiom:   fpow f a p",
-    "parse-message": "<input>:1:117: expected end of input"},
-   {"success": false,
-    "statement":
-    "theorem pow_sum_r (α : Type u) [CommRingₓₓ α] [DecidableEq α] [char_p α] (a b : α) : (a+b)^p = a^p+b^p Use tactic mode to prove the Lean version in Lean's mathlib. You can copy the statement into VS Code and delete the \": Prop\" part. You can see that Lean already knows that $p=char_p(R)$, and we have variables $a,b$ in variable context. You should find that all you need to use is the Ringₓ axioms and the \"frobenius map\" axiom:   fpow f a p",
-    "parse-message": "<input>:1:119: expected end of input"},
-   {"success": false,
-    "statement":
-    "theorem pow_sum_r (α : Type u) [CommRingₓ α] [DecidableEq α] [char_p α] (a b : α) : (a+b)^p = a^p+b^p Use tactic mode to prove the Lean version in Lean's mathlib. You can copy the statement into VS Code and delete the \": Prop\" part. You can see that Lean already knows that $p=char_p(R)$, and we have variables $a,b$ in variable context. You should find that all you need to use is the Ring axioms and the \"frobenius map\" axiom:   fpow f a p",
+    "theorem pow_sum_r (α : Type u) [CommRingₓₓ α] [DecidableEq α] [CharP α] (a b : α) : (a+b)^p = a^p+b^p Use tactic mode to prove the Lean version in Lean's mathlib. You can copy the statement into VS Code and delete the \": Prop\" part. You can see that Lean already knows that $p=CharP(R)$, and we have variables $a,b$ in variable context. You should find that all you need to use is the Ring axioms and the \"frobenius map\" axiom:   fpow f a p",
     "parse-message": "<input>:1:118: expected end of input"},
    {"success": false,
     "statement":
-    "theorem pow_sum_r (α : Type u) [CommRingₓ α] [DecidableEq α] [char_p α] (a b : α) : (a+b)^p = a^p+b^p Use tactic mode to prove the Lean version in Lean's mathlib. You can copy the statement into VS Code and delete the \": Prop\" part. You can see that Lean already knows that $p=char_p(R)$, and we have variables $a,b$ in variable context. You should find that all you need to use is the Ringₓₓ axioms and the \"frobenius map\" axiom:   fpow f a p",
+    "theorem pow_sum_r (α : Type u) [CommRing α] [DecidableEq α] [CharP α] (a b : α) : (a+b)^p = a^p+b^p Use tactic mode to prove the Lean version in Lean's mathlib. You can copy the statement into VS Code and delete the \": Prop\" part. You can see that Lean already knows that $p=CharP(R)$, and we have variables $a,b$ in variable context. You should find that all you need to use is the Ringₓₓ axioms and the \"frobenius map\" axiom:   fpow f a p",
+    "parse-message": "<input>:1:116: expected end of input"},
+   {"success": false,
+    "statement":
+    "theorem pow_sum_r (α : Type u) [CommRingₓₓ α] [DecidableEq α] [CharP α] (a b : α) : (a+b)^p = a^p+b^p Use tactic mode to prove the Lean version in Lean's mathlib. You can copy the statement into VS Code and delete the \": Prop\" part. You can see that Lean already knows that $p=CharP(R)$, and we have variables $a,b$ in variable context. You should find that all you need to use is the Ringₓₓ axioms and the \"frobenius map\" axiom:   fpow f a p",
     "parse-message": "<input>:1:118: expected end of input"},
    {"success": false,
     "statement":
-    "theorem pow_sum_r (α : Type u) [CommRingₓ α] [DecidableEq α] [char_p α] (a b : α) : (a+b)^p = a^p+b^p Use tactic mode to prove the Lean version in Lean's mathlib. You can copy the statement into VS Code and delete the \": Prop\" part. You can see that Lean already knows that $p=char_p(R)$, and we have variables $a,b$ in variable context. You should find that all you need to use is the Ringₓ axioms and the \"frobenius map\" axiom:   fpow f a p",
+    "theorem pow_sum_r (α : Type u) [CommRing α] [DecidableEq α] [CharP α] (a b : α) : (a+b)^p = a^p+b^p Use tactic mode to prove the Lean version in Lean's mathlib. You can copy the statement into VS Code and delete the \": Prop\" part. You can see that Lean already knows that $p=CharP(R)$, and we have variables $a,b$ in variable context. You should find that all you need to use is the Ringₓ axioms and the \"frobenius map\" axiom:   fpow f a p",
+    "parse-message": "<input>:1:116: expected end of input"},
+   {"success": false,
+    "statement":
+    "theorem pow_sum_r (α : Type u) [CommRingₓₓ α] [DecidableEq α] [CharP α] (a b : α) : (a+b)^p = a^p+b^p Use tactic mode to prove the Lean version in Lean's mathlib. You can copy the statement into VS Code and delete the \": Prop\" part. You can see that Lean already knows that $p=CharP(R)$, and we have variables $a,b$ in variable context. You should find that all you need to use is the Ringₓ axioms and the \"frobenius map\" axiom:   fpow f a p",
     "parse-message": "<input>:1:118: expected end of input"},
+   {"success": false,
+    "statement":
+    "theorem pow_sum_r (α : Type u) [CommRingₓ α] [DecidableEq α] [CharP α] (a b : α) : (a+b)^p = a^p+b^p Use tactic mode to prove the Lean version in Lean's mathlib. You can copy the statement into VS Code and delete the \": Prop\" part. You can see that Lean already knows that $p=CharP(R)$, and we have variables $a,b$ in variable context. You should find that all you need to use is the Ring axioms and the \"frobenius map\" axiom:   fpow f a p",
+    "parse-message": "<input>:1:117: expected end of input"},
+   {"success": false,
+    "statement":
+    "theorem pow_sum_r (α : Type u) [CommRingₓ α] [DecidableEq α] [CharP α] (a b : α) : (a+b)^p = a^p+b^p Use tactic mode to prove the Lean version in Lean's mathlib. You can copy the statement into VS Code and delete the \": Prop\" part. You can see that Lean already knows that $p=CharP(R)$, and we have variables $a,b$ in variable context. You should find that all you need to use is the Ringₓₓ axioms and the \"frobenius map\" axiom:   fpow f a p",
+    "parse-message": "<input>:1:117: expected end of input"},
+   {"success": false,
+    "statement":
+    "theorem pow_sum_r (α : Type u) [CommRingₓ α] [DecidableEq α] [CharP α] (a b : α) : (a+b)^p = a^p+b^p Use tactic mode to prove the Lean version in Lean's mathlib. You can copy the statement into VS Code and delete the \": Prop\" part. You can see that Lean already knows that $p=CharP(R)$, and we have variables $a,b$ in variable context. You should find that all you need to use is the Ringₓ axioms and the \"frobenius map\" axiom:   fpow f a p",
+    "parse-message": "<input>:1:117: expected end of input"},
    {"success": false,
     "statement":
     "theorem sum_pow_p : ∀ (R : Type*) [CommRing R] (p : ℕ), ∀ a b : R, function . comp has_pow . pow p a + b = has_pow . pow p a + has_pow . pow p b ",
@@ -26281,37 +26285,42 @@
   "answer":
   ": ∀ a b : ℕ, a > 0 → b > 0 → Nat.coprime a b → ∃ m : ℕ, ∀ N : ℕ, N > m → ∃ x y : ℕ, N = a*x + b*y "},
  {"parsed":
-  ["(A : Type*) [CommRing A] (p : ℕ) (hp : Prime p)  (f g : A) : (f + g) ^ p = f ^ p + g ^ p ",
+  ["(p : ℕ) (p_is_prime : Prime p)  (R : Type*)  [CommRingₓ R] [CharP R p] (n m : R) :  (n + m)^p = n^p + m^p ",
+   "(A : Type*) [CommRing A] (p : ℕ) (hp : Prime p)  (f g : A) : (f + g) ^ p = f ^ p + g ^ p ",
    "(A : Type*) [CommRingₓ A] (p : ℕ) (hp : Prime p)  (f g : A) : (f + g) ^ p = f ^ p + g ^ p ",
    "(R : Type*) [CommRing R] (p : ℕ) (hp : Nat.Prime p)  (x y : R) :  (x + y)^p = x^p + y^p ",
    "(R : Type*) [CommRingₓ R] (p : ℕ) (hp : Nat.Prime p)  (x y : R) :  (x + y)^p = x^p + y^p "],
   "parse-checks":
   [{"success": false,
     "statement":
-    "(p : ℕ) (p_is_prime : Prime p)  (R : Type*)  [CommRing R] [char_p R p] (n m : R) :  (n + m)^p = n^p + m^p ",
-    "parse-message": "unknown identifier 'char_p' (during elaboration)"},
+    "(p : ℕ) (p_is_prime : Prime p)  (R : Type*)  [CommRing R] [CharP R p] (n m : R) :  (n + m)^p = n^p + m^p ",
+    "parse-message":
+    "failed to synthesize instance\n  AddMonoidₓ R (during elaboration)"},
    {"success": false,
     "statement":
-    "(p : ℕ) (p_is_prime : Prime p)  (R : Type*)  [CommRingₓₓ R] [char_p R p] (n m : R) :  (n + m)^p = n^p + m^p ",
+    "(p : ℕ) (p_is_prime : Prime p)  (R : Type*)  [CommRingₓₓ R] [CharP R p] (n m : R) :  (n + m)^p = n^p + m^p ",
     "parse-message":
     "function expected at\n  CommRingₓₓ\nterm has type\n  Type (?u.27 + 1) (during elaboration)"},
+   {"success": true,
+    "statement":
+    "(p : ℕ) (p_is_prime : Prime p)  (R : Type*)  [CommRingₓ R] [CharP R p] (n m : R) :  (n + m)^p = n^p + m^p ",
+    "code":
+    "forall (p : Nat), (Prime.{?_uniq.5} Nat (LinearOrderedCommMonoidWithZero.toCommMonoidWithZero.{0} Nat Nat.linearOrderedCommMonoidWithZero) p) -> (forall (R : Type.{?_uniq.23}) [inst._@._hyg.14 : CommRingₓ.{?_uniq.27} R] [inst._@._hyg.18 : CharP.{?_uniq.31} R (SubNegMonoidₓ.toAddMonoid.{?_uniq.23} R (AddGroupₓ.toSubNegMonoid.{?_uniq.23} R (AddCommGroupₓ.toAddGroup.{?_uniq.23} R (LieRing.toAddCommGroup.{?_uniq.23} R (LieRing.ofAssociativeRing.{?_uniq.23} R (CommRingₓ.toRing.{?_uniq.23} R inst._@._hyg.14)))))) (MulOneClassₓ.toHasOne.{?_uniq.23} R (MulZeroOneClassₓ.toMulOneClass.{?_uniq.23} R (NonAssocSemiringₓ.toMulZeroOneClass.{?_uniq.23} R (NonAssocRing.toNonAssocSemiring.{?_uniq.23} R (Ringₓ.toNonAssocRing.{?_uniq.23} R (CommRingₓ.toRing.{?_uniq.23} R inst._@._hyg.14)))))) p] (n : R) (m : R), Eq.{?_uniq.552} R (HPow.hPow.{?_uniq.555 ?_uniq.554 ?_uniq.553} R Nat R (instHPow.{?_uniq.23 0} R Nat (Monoidₓ.hasPow.{?_uniq.23} R (Ringₓ.toMonoid.{?_uniq.23} R (CommRingₓ.toRing.{?_uniq.23} R inst._@._hyg.14)))) (HAdd.hAdd.{?_uniq.562 ?_uniq.561 ?_uniq.560} R R R (instHAdd.{?_uniq.23} R (Distribₓ.toHasAdd.{?_uniq.23} R (Ringₓ.toDistrib.{?_uniq.23} R (CommRingₓ.toRing.{?_uniq.23} R inst._@._hyg.14)))) n m) p) (HAdd.hAdd.{?_uniq.1022 ?_uniq.1021 ?_uniq.1020} R R R (instHAdd.{?_uniq.23} R (Distribₓ.toHasAdd.{?_uniq.23} R (Ringₓ.toDistrib.{?_uniq.23} R (CommRingₓ.toRing.{?_uniq.23} R inst._@._hyg.14)))) (HPow.hPow.{?_uniq.1025 ?_uniq.1024 ?_uniq.1023} R Nat R (instHPow.{?_uniq.23 0} R Nat (Monoidₓ.hasPow.{?_uniq.23} R (Ringₓ.toMonoid.{?_uniq.23} R (CommRingₓ.toRing.{?_uniq.23} R inst._@._hyg.14)))) n p) (HPow.hPow.{?_uniq.1233 ?_uniq.1232 ?_uniq.1231} R Nat R (instHPow.{?_uniq.23 0} R Nat (Monoidₓ.hasPow.{?_uniq.23} R (Ringₓ.toMonoid.{?_uniq.23} R (CommRingₓ.toRing.{?_uniq.23} R inst._@._hyg.14)))) m p)))"},
    {"success": false,
     "statement":
-    "(p : ℕ) (p_is_prime : Prime p)  (R : Type*)  [CommRingₓ R] [char_p R p] (n m : R) :  (n + m)^p = n^p + m^p ",
-    "parse-message": "unknown identifier 'char_p' (during elaboration)"},
+    "(R : Type*) [CommRing R]  [CharP R] (p : ℕ) [Fact (CharP R) = some p]     (i j : R) : i ^ p + j ^ p = (i + j) ^ p ",
+    "parse-message":
+    "failed to synthesize instance\n  AddMonoidₓ R (during elaboration)"},
    {"success": false,
     "statement":
-    "(R : Type*) [CommRing R]  [char_p R] (p : ℕ) [Fact (char_p R) = some p]     (i j : R) : i ^ p + j ^ p = (i + j) ^ p ",
-    "parse-message": "unknown identifier 'char_p' (during elaboration)"},
-   {"success": false,
-    "statement":
-    "(R : Type*) [CommRingₓₓ R]  [char_p R] (p : ℕ) [Fact (char_p R) = some p]     (i j : R) : i ^ p + j ^ p = (i + j) ^ p ",
+    "(R : Type*) [CommRingₓₓ R]  [CharP R] (p : ℕ) [Fact (CharP R) = some p]     (i j : R) : i ^ p + j ^ p = (i + j) ^ p ",
     "parse-message":
     "function expected at\n  CommRingₓₓ\nterm has type\n  Type (?u.6 + 1) (during elaboration)"},
    {"success": false,
     "statement":
-    "(R : Type*) [CommRingₓ R]  [char_p R] (p : ℕ) [Fact (char_p R) = some p]     (i j : R) : i ^ p + j ^ p = (i + j) ^ p ",
-    "parse-message": "unknown identifier 'char_p' (during elaboration)"},
+    "(R : Type*) [CommRingₓ R]  [CharP R] (p : ℕ) [Fact (CharP R) = some p]     (i j : R) : i ^ p + j ^ p = (i + j) ^ p ",
+    "parse-message":
+    "type expected\nfailed to synthesize instance\n  CoeSort (ℕ → Prop) ?m.529 (during elaboration)"},
    {"success": true,
     "statement":
     "(A : Type*) [CommRing A] (p : ℕ) (hp : Prime p)  (f g : A) : (f + g) ^ p = f ^ p + g ^ p ",
@@ -26357,7 +26366,7 @@
     "(p : ℕ) (h : p > 0) (hp : p.prime)  (R : Type*) [CommRingₓ R] (hp' : characteristic R = p)  (x y : R) : (x + y) ^ p = x ^ p + y ^ p ",
     "parse-message":
     "invalid field 'prime', the environment does not contain 'Nat.prime'\n  p\nhas type\n  ℕ (during elaboration)"}],
-  "number-parsed": 4,
+  "number-parsed": 5,
   "number-equivalent": 0,
   "metadata":
   {"use_theorem_name": false,
@@ -26369,14 +26378,16 @@
    "In a commutative ring with prime characteristic $p$, the $p$th power of the sum of two elements is equal to the sum of the $p$th powers of the elements.",
    "codex_time": "4.085696828988148"},
   "grouped":
-  [["(A : Type*) [CommRing A] (p : ℕ) (hp : Prime p)  (f g : A) : (f + g) ^ p = f ^ p + g ^ p "],
+  [["(p : ℕ) (p_is_prime : Prime p)  (R : Type*)  [CommRingₓ R] [CharP R p] (n m : R) :  (n + m)^p = n^p + m^p "],
+   ["(A : Type*) [CommRing A] (p : ℕ) (hp : Prime p)  (f g : A) : (f + g) ^ p = f ^ p + g ^ p "],
    ["(A : Type*) [CommRingₓ A] (p : ℕ) (hp : Prime p)  (f g : A) : (f + g) ^ p = f ^ p + g ^ p "],
    ["(R : Type*) [CommRing R] (p : ℕ) (hp : Nat.Prime p)  (x y : R) :  (x + y)^p = x^p + y^p "],
    ["(R : Type*) [CommRingₓ R] (p : ℕ) (hp : Nat.Prime p)  (x y : R) :  (x + y)^p = x^p + y^p "]],
   "equivalent": [],
   "answer":
   "{R : Type _} [CommRingₓ R] : (p : ℕ) → Prime p → CharP R p → ∀ a b : R, (a + b)^p = a^p + b^p "},
- {"parsed": [],
+ {"parsed":
+  ["{α : Type u_1} [CommRingₓ α] (p : ℕ) (hp : Prime p) (hchar : CharP α p) {a b : α} : (a + b)^p = a^p + b^p "],
   "parse-checks":
   [{"success": false,
     "statement":
@@ -26395,55 +26406,61 @@
     "unknown identifier 'h.characteristic' (during elaboration)"},
    {"success": false,
     "statement":
-    "{α : Type u_1} [CommRing α] (p : ℕ) (p_prime : Prime p) [char_p α p] (a b : α) : (a + b)^[p] = a^[p] + b^[p] ",
+    "{α : Type u_1} [CommRing α] (p : ℕ) (p_prime : Prime p) [CharP α p] (a b : α) : (a + b)^[p] = a^[p] + b^[p] ",
     "parse-message":
-    "parsed to  {  α :  Type  u_1 } ->  [  CommRing  α ] ->  (  p :  ℕ ) ->  (  p_prime :  Prime  p ) ->  [  char_p  α p ] ->  (  a b : α ) ->     (   a + b  ) ^[ p ]   (   a + b  ) ^[ p ] =    a ^[ p ]  a ^[ p ] +   b ^[ p ]  b ^[ p ]; error while parsing as theorem: <input>:1:154: expected end of input"},
+    "parsed to  {  α :  Type  u_1 } ->  [  CommRing  α ] ->  (  p :  ℕ ) ->  (  p_prime :  Prime  p ) ->  [  CharP  α p ] ->  (  a b : α ) ->     (   a + b  ) ^[ p ]   (   a + b  ) ^[ p ] =    a ^[ p ]  a ^[ p ] +   b ^[ p ]  b ^[ p ]; error while parsing as theorem: <input>:1:153: expected end of input"},
    {"success": false,
     "statement":
-    "{α : Type u_1} [CommRingₓₓ α] (p : ℕ) (p_prime : Prime p) [char_p α p] (a b : α) : (a + b)^[p] = a^[p] + b^[p] ",
+    "{α : Type u_1} [CommRingₓₓ α] (p : ℕ) (p_prime : Prime p) [CharP α p] (a b : α) : (a + b)^[p] = a^[p] + b^[p] ",
     "parse-message":
-    "parsed to  {  α :  Type  u_1 } ->  [  CommRingₓₓ  α ] ->  (  p :  ℕ ) ->  (  p_prime :  Prime  p ) ->  [  char_p  α p ] ->  (  a b : α ) ->     (   a + b  ) ^[ p ]   (   a + b  ) ^[ p ] =    a ^[ p ]  a ^[ p ] +   b ^[ p ]  b ^[ p ]; error while parsing as theorem: <input>:1:156: expected end of input"},
+    "parsed to  {  α :  Type  u_1 } ->  [  CommRingₓₓ  α ] ->  (  p :  ℕ ) ->  (  p_prime :  Prime  p ) ->  [  CharP  α p ] ->  (  a b : α ) ->     (   a + b  ) ^[ p ]   (   a + b  ) ^[ p ] =    a ^[ p ]  a ^[ p ] +   b ^[ p ]  b ^[ p ]; error while parsing as theorem: <input>:1:155: expected end of input"},
    {"success": false,
     "statement":
-    "{α : Type u_1} [CommRingₓ α] (p : ℕ) (p_prime : Prime p) [char_p α p] (a b : α) : (a + b)^[p] = a^[p] + b^[p] ",
+    "{α : Type u_1} [CommRingₓ α] (p : ℕ) (p_prime : Prime p) [CharP α p] (a b : α) : (a + b)^[p] = a^[p] + b^[p] ",
     "parse-message":
-    "parsed to  {  α :  Type  u_1 } ->  [  CommRingₓ  α ] ->  (  p :  ℕ ) ->  (  p_prime :  Prime  p ) ->  [  char_p  α p ] ->  (  a b : α ) ->     (   a + b  ) ^[ p ]   (   a + b  ) ^[ p ] =    a ^[ p ]  a ^[ p ] +   b ^[ p ]  b ^[ p ]; error while parsing as theorem: <input>:1:155: expected end of input"},
+    "parsed to  {  α :  Type  u_1 } ->  [  CommRingₓ  α ] ->  (  p :  ℕ ) ->  (  p_prime :  Prime  p ) ->  [  CharP  α p ] ->  (  a b : α ) ->     (   a + b  ) ^[ p ]   (   a + b  ) ^[ p ] =    a ^[ p ]  a ^[ p ] +   b ^[ p ]  b ^[ p ]; error while parsing as theorem: <input>:1:154: expected end of input"},
    {"success": false,
     "statement":
-    "{α : Type u_1} [CommRing α] [DecidableEq α] (hp : char_p α) {a b : α} : (↑a + ↑b) ^ p = ↑a ^ p + ↑b ^ p ",
-    "parse-message": "unknown identifier 'char_p' (during elaboration)"},
-   {"success": false,
-    "statement":
-    "{α : Type u_1} [CommRingₓₓ α] [DecidableEq α] (hp : char_p α) {a b : α} : (↑a + ↑b) ^ p = ↑a ^ p + ↑b ^ p ",
+    "{α : Type u_1} [CommRing α] [DecidableEq α] (hp : CharP α) {a b : α} : (↑a + ↑b) ^ p = ↑a ^ p + ↑b ^ p ",
     "parse-message":
-    "function expected at\n  CommRingₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"},
+    "failed to synthesize instance\n  AddMonoidₓ α (during elaboration)"},
    {"success": false,
     "statement":
-    "{α : Type u_1} [CommRingₓ α] [DecidableEq α] (hp : char_p α) {a b : α} : (↑a + ↑b) ^ p = ↑a ^ p + ↑b ^ p ",
-    "parse-message": "unknown identifier 'char_p' (during elaboration)"},
-   {"success": false,
-    "statement":
-    "{α : Type u_1} [CommSemiring α] (p : ℕ) (hp : Nat.Prime p) [char_p α p hp] {a b : α} : a ^ p + b ^ p = (a + b) ^ p ",
-    "parse-message": "unknown identifier 'char_p' (during elaboration)"},
-   {"success": false,
-    "statement":
-    "{α : Type u_1} [CommSemiringₓ α] (p : ℕ) (hp : Nat.Prime p) [char_p α p hp] {a b : α} : a ^ p + b ^ p = (a + b) ^ p ",
-    "parse-message": "unknown identifier 'char_p' (during elaboration)"},
-   {"success": false,
-    "statement":
-    "{α : Type u_1} [CommRing α] (p : ℕ) (hp : Prime p) (hchar : char_p α p) {a b : α} : (a + b)^p = a^p + b^p ",
-    "parse-message": "unknown identifier 'char_p' (during elaboration)"},
-   {"success": false,
-    "statement":
-    "{α : Type u_1} [CommRingₓₓ α] (p : ℕ) (hp : Prime p) (hchar : char_p α p) {a b : α} : (a + b)^p = a^p + b^p ",
+    "{α : Type u_1} [CommRingₓₓ α] [DecidableEq α] (hp : CharP α) {a b : α} : (↑a + ↑b) ^ p = ↑a ^ p + ↑b ^ p ",
     "parse-message":
     "function expected at\n  CommRingₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"},
    {"success": false,
     "statement":
-    "{α : Type u_1} [CommRingₓ α] (p : ℕ) (hp : Prime p) (hchar : char_p α p) {a b : α} : (a + b)^p = a^p + b^p ",
-    "parse-message": "unknown identifier 'char_p' (during elaboration)"}],
-  "number-parsed": 0,
-  "number-equivalent": 0,
+    "{α : Type u_1} [CommRingₓ α] [DecidableEq α] (hp : CharP α) {a b : α} : (↑a + ↑b) ^ p = ↑a ^ p + ↑b ^ p ",
+    "parse-message":
+    "type expected\nfailed to synthesize instance\n  CoeSort (ℕ → Prop) ?m.536 (during elaboration)"},
+   {"success": false,
+    "statement":
+    "{α : Type u_1} [CommSemiring α] (p : ℕ) (hp : Nat.Prime p) [CharP α p hp] {a b : α} : a ^ p + b ^ p = (a + b) ^ p ",
+    "parse-message":
+    "failed to synthesize instance\n  AddMonoidₓ α (during elaboration)"},
+   {"success": false,
+    "statement":
+    "{α : Type u_1} [CommSemiringₓ α] (p : ℕ) (hp : Nat.Prime p) [CharP α p hp] {a b : α} : a ^ p + b ^ p = (a + b) ^ p ",
+    "parse-message":
+    "function expected at\n  CharP α p\nterm has type\n  Prop (during elaboration)"},
+   {"success": false,
+    "statement":
+    "{α : Type u_1} [CommRing α] (p : ℕ) (hp : Prime p) (hchar : CharP α p) {a b : α} : (a + b)^p = a^p + b^p ",
+    "parse-message":
+    "failed to synthesize instance\n  AddMonoidₓ α (during elaboration)"},
+   {"success": false,
+    "statement":
+    "{α : Type u_1} [CommRingₓₓ α] (p : ℕ) (hp : Prime p) (hchar : CharP α p) {a b : α} : (a + b)^p = a^p + b^p ",
+    "parse-message":
+    "function expected at\n  CommRingₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"},
+   {"success": true,
+    "statement":
+    "{α : Type u_1} [CommRingₓ α] (p : ℕ) (hp : Prime p) (hchar : CharP α p) {a b : α} : (a + b)^p = a^p + b^p ",
+    "code":
+    "forall {α : Type.{u_1}} [inst._@._hyg.5 : CommRingₓ.{?_uniq.5} α] (p : Nat), (Prime.{?_uniq.12} Nat (LinearOrderedCommMonoidWithZero.toCommMonoidWithZero.{0} Nat Nat.linearOrderedCommMonoidWithZero) p) -> (CharP.{?_uniq.30} α (SubNegMonoidₓ.toAddMonoid.{u_1} α (AddGroupₓ.toSubNegMonoid.{u_1} α (AddCommGroupₓ.toAddGroup.{u_1} α (LieRing.toAddCommGroup.{u_1} α (LieRing.ofAssociativeRing.{u_1} α (CommRingₓ.toRing.{u_1} α inst._@._hyg.5)))))) (MulOneClassₓ.toHasOne.{u_1} α (MulZeroOneClassₓ.toMulOneClass.{u_1} α (NonAssocSemiringₓ.toMulZeroOneClass.{u_1} α (NonAssocRing.toNonAssocSemiring.{u_1} α (Ringₓ.toNonAssocRing.{u_1} α (CommRingₓ.toRing.{u_1} α inst._@._hyg.5)))))) p) -> (forall {a : α} {b : α}, Eq.{?_uniq.551} α (HPow.hPow.{?_uniq.554 ?_uniq.553 ?_uniq.552} α Nat α (instHPow.{u_1 0} α Nat (Monoidₓ.hasPow.{u_1} α (Ringₓ.toMonoid.{u_1} α (CommRingₓ.toRing.{u_1} α inst._@._hyg.5)))) (HAdd.hAdd.{?_uniq.561 ?_uniq.560 ?_uniq.559} α α α (instHAdd.{u_1} α (Distribₓ.toHasAdd.{u_1} α (Ringₓ.toDistrib.{u_1} α (CommRingₓ.toRing.{u_1} α inst._@._hyg.5)))) a b) p) (HAdd.hAdd.{?_uniq.1021 ?_uniq.1020 ?_uniq.1019} α α α (instHAdd.{u_1} α (Distribₓ.toHasAdd.{u_1} α (Ringₓ.toDistrib.{u_1} α (CommRingₓ.toRing.{u_1} α inst._@._hyg.5)))) (HPow.hPow.{?_uniq.1024 ?_uniq.1023 ?_uniq.1022} α Nat α (instHPow.{u_1 0} α Nat (Monoidₓ.hasPow.{u_1} α (Ringₓ.toMonoid.{u_1} α (CommRingₓ.toRing.{u_1} α inst._@._hyg.5)))) a p) (HPow.hPow.{?_uniq.1232 ?_uniq.1231 ?_uniq.1230} α Nat α (instHPow.{u_1 0} α Nat (Monoidₓ.hasPow.{u_1} α (Ringₓ.toMonoid.{u_1} α (CommRingₓ.toRing.{u_1} α inst._@._hyg.5)))) b p)))"}],
+  "number-parsed": 1,
+  "number-equivalent": 1,
   "metadata":
   {"use_theorem_name": false,
    "theorem_name": "frobenius_pow_sum_eq_sum_pow",
@@ -26475,51 +26492,53 @@
    "main_prompt":
    "In a commutative ring with prime characteristic $p$, the $p$th power of the sum of two elements is equal to the sum of the $p$th powers of the elements.",
    "codex_time": "7.542835899017518"},
-  "grouped": [],
-  "equivalent": [],
+  "grouped":
+  [["{α : Type u_1} [CommRingₓ α] (p : ℕ) (hp : Prime p) (hchar : CharP α p) {a b : α} : (a + b)^p = a^p + b^p "]],
+  "equivalent":
+  ["{α : Type u_1} [CommRingₓ α] (p : ℕ) (hp : Prime p) (hchar : CharP α p) {a b : α} : (a + b)^p = a^p + b^p "],
   "answer":
   "{R : Type _} [CommRingₓ R] : (p : ℕ) → Prime p → CharP R p → ∀ a b : R, (a + b)^p = a^p + b^p "},
  {"parsed": [],
   "parse-checks":
   [{"success": false,
     "statement":
-    "sum_pow_swap_p : ∀ (R : Type) [CommRing R] [char_p R p] (a b : R), (a + b) ^ p = a ^ p + b ^ p Proof. Abort.  -- Exercises at the end of chapter 3 -- 3.7. Recall that the Ring of Polynomial functions $R ",
-    "parse-message": "unknown identifier 'char_p' (during elaboration)"},
+    "sum_pow_swap_p : ∀ (R : Type) [CommRing R] [CharP R p] (a b : R), (a + b) ^ p = a ^ p + b ^ p Proof. Abort.  -- Exercises at the end of chapter 3 -- 3.7. Recall that the Ring of Polynomial functions $R ",
+    "parse-message": "unknown identifier 'p' (during elaboration)"},
    {"success": false,
     "statement":
-    "sum_pow_swap_p : ∀ (R : Type) [CommRingₓₓ R] [char_p R p] (a b : R), (a + b) ^ p = a ^ p + b ^ p Proof. Abort.  -- Exercises at the end of chapter 3 -- 3.7. Recall that the Ring of Polynomial functions $R ",
+    "sum_pow_swap_p : ∀ (R : Type) [CommRingₓₓ R] [CharP R p] (a b : R), (a + b) ^ p = a ^ p + b ^ p Proof. Abort.  -- Exercises at the end of chapter 3 -- 3.7. Recall that the Ring of Polynomial functions $R ",
     "parse-message":
     "function expected at\n  CommRingₓₓ\nterm has type\n  Type (?u.4 + 1) (during elaboration)"},
    {"success": false,
     "statement":
-    "sum_pow_swap_p : ∀ (R : Type) [CommRing R] [char_p R p] (a b : R), (a + b) ^ p = a ^ p + b ^ p Proof. Abort.  -- Exercises at the end of chapter 3 -- 3.7. Recall that the Ringₓₓ of Polynomial functions $R ",
-    "parse-message": "unknown identifier 'char_p' (during elaboration)"},
+    "sum_pow_swap_p : ∀ (R : Type) [CommRing R] [CharP R p] (a b : R), (a + b) ^ p = a ^ p + b ^ p Proof. Abort.  -- Exercises at the end of chapter 3 -- 3.7. Recall that the Ringₓₓ of Polynomial functions $R ",
+    "parse-message": "unknown identifier 'p' (during elaboration)"},
    {"success": false,
     "statement":
-    "sum_pow_swap_p : ∀ (R : Type) [CommRingₓₓ R] [char_p R p] (a b : R), (a + b) ^ p = a ^ p + b ^ p Proof. Abort.  -- Exercises at the end of chapter 3 -- 3.7. Recall that the Ringₓₓ of Polynomial functions $R ",
+    "sum_pow_swap_p : ∀ (R : Type) [CommRingₓₓ R] [CharP R p] (a b : R), (a + b) ^ p = a ^ p + b ^ p Proof. Abort.  -- Exercises at the end of chapter 3 -- 3.7. Recall that the Ringₓₓ of Polynomial functions $R ",
     "parse-message":
     "function expected at\n  CommRingₓₓ\nterm has type\n  Type (?u.4 + 1) (during elaboration)"},
    {"success": false,
     "statement":
-    "sum_pow_swap_p : ∀ (R : Type) [CommRing R] [char_p R p] (a b : R), (a + b) ^ p = a ^ p + b ^ p Proof. Abort.  -- Exercises at the end of chapter 3 -- 3.7. Recall that the Ringₓ of Polynomial functions $R ",
-    "parse-message": "unknown identifier 'char_p' (during elaboration)"},
+    "sum_pow_swap_p : ∀ (R : Type) [CommRing R] [CharP R p] (a b : R), (a + b) ^ p = a ^ p + b ^ p Proof. Abort.  -- Exercises at the end of chapter 3 -- 3.7. Recall that the Ringₓ of Polynomial functions $R ",
+    "parse-message": "unknown identifier 'p' (during elaboration)"},
    {"success": false,
     "statement":
-    "sum_pow_swap_p : ∀ (R : Type) [CommRingₓₓ R] [char_p R p] (a b : R), (a + b) ^ p = a ^ p + b ^ p Proof. Abort.  -- Exercises at the end of chapter 3 -- 3.7. Recall that the Ringₓ of Polynomial functions $R ",
+    "sum_pow_swap_p : ∀ (R : Type) [CommRingₓₓ R] [CharP R p] (a b : R), (a + b) ^ p = a ^ p + b ^ p Proof. Abort.  -- Exercises at the end of chapter 3 -- 3.7. Recall that the Ringₓ of Polynomial functions $R ",
     "parse-message":
     "function expected at\n  CommRingₓₓ\nterm has type\n  Type (?u.4 + 1) (during elaboration)"},
    {"success": false,
     "statement":
-    "sum_pow_swap_p : ∀ (R : Type) [CommRingₓ R] [char_p R p] (a b : R), (a + b) ^ p = a ^ p + b ^ p Proof. Abort.  -- Exercises at the end of chapter 3 -- 3.7. Recall that the Ring of Polynomial functions $R ",
-    "parse-message": "unknown identifier 'char_p' (during elaboration)"},
+    "sum_pow_swap_p : ∀ (R : Type) [CommRingₓ R] [CharP R p] (a b : R), (a + b) ^ p = a ^ p + b ^ p Proof. Abort.  -- Exercises at the end of chapter 3 -- 3.7. Recall that the Ring of Polynomial functions $R ",
+    "parse-message": "unknown identifier 'p' (during elaboration)"},
    {"success": false,
     "statement":
-    "sum_pow_swap_p : ∀ (R : Type) [CommRingₓ R] [char_p R p] (a b : R), (a + b) ^ p = a ^ p + b ^ p Proof. Abort.  -- Exercises at the end of chapter 3 -- 3.7. Recall that the Ringₓₓ of Polynomial functions $R ",
-    "parse-message": "unknown identifier 'char_p' (during elaboration)"},
+    "sum_pow_swap_p : ∀ (R : Type) [CommRingₓ R] [CharP R p] (a b : R), (a + b) ^ p = a ^ p + b ^ p Proof. Abort.  -- Exercises at the end of chapter 3 -- 3.7. Recall that the Ringₓₓ of Polynomial functions $R ",
+    "parse-message": "unknown identifier 'p' (during elaboration)"},
    {"success": false,
     "statement":
-    "sum_pow_swap_p : ∀ (R : Type) [CommRingₓ R] [char_p R p] (a b : R), (a + b) ^ p = a ^ p + b ^ p Proof. Abort.  -- Exercises at the end of chapter 3 -- 3.7. Recall that the Ringₓ of Polynomial functions $R ",
-    "parse-message": "unknown identifier 'char_p' (during elaboration)"},
+    "sum_pow_swap_p : ∀ (R : Type) [CommRingₓ R] [CharP R p] (a b : R), (a + b) ^ p = a ^ p + b ^ p Proof. Abort.  -- Exercises at the end of chapter 3 -- 3.7. Recall that the Ringₓ of Polynomial functions $R ",
+    "parse-message": "unknown identifier 'p' (during elaboration)"},
    {"success": false,
     "statement":
     "my_lemma :  CommRing α → Prime p → a ∈ α → b ∈ α → (a + b)^p = a^p + b^p ",
@@ -26535,30 +26554,34 @@
     "parse-message": "unknown identifier 'α' (during elaboration)"},
    {"success": false,
     "statement":
-    "pang1 (R : Type) [CommRing R] [char_p R.prime p] {a b:R}: (a+b)^p = a^p + b^p ",
-    "parse-message": "unknown identifier 'char_p' (during elaboration)"},
+    "pang1 (R : Type) [CommRing R] [CharP R.prime p] {a b:R}: (a+b)^p = a^p + b^p ",
+    "parse-message":
+    "invalid field notation, type is not of the form (C ...) where C is a constant\n  R\nhas type\n  Type (during elaboration)"},
    {"success": false,
     "statement":
-    "pang1 (R : Type) [CommRingₓₓ R] [char_p R.prime p] {a b:R}: (a+b)^p = a^p + b^p ",
+    "pang1 (R : Type) [CommRingₓₓ R] [CharP R.prime p] {a b:R}: (a+b)^p = a^p + b^p ",
     "parse-message":
     "function expected at\n  CommRingₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"},
    {"success": false,
     "statement":
-    "pang1 (R : Type) [CommRingₓ R] [char_p R.prime p] {a b:R}: (a+b)^p = a^p + b^p ",
-    "parse-message": "unknown identifier 'char_p' (during elaboration)"},
+    "pang1 (R : Type) [CommRingₓ R] [CharP R.prime p] {a b:R}: (a+b)^p = a^p + b^p ",
+    "parse-message":
+    "invalid field notation, type is not of the form (C ...) where C is a constant\n  R\nhas type\n  Type (during elaboration)"},
    {"success": false,
     "statement":
-    "nat_lang_problem2 : ∀ { R : Type } [ CommRing R ] [ hp : Prime ( char_p R ) ] { a b : R }, (a + b) ^ char_p R = a^char_p R + b^char_p R ",
-    "parse-message": "unknown identifier 'char_p' (during elaboration)"},
+    "nat_lang_problem2 : ∀ { R : Type } [ CommRing R ] [ hp : Prime ( CharP R ) ] { a b : R }, (a + b) ^ CharP R = a^CharP R + b^CharP R ",
+    "parse-message":
+    "failed to synthesize instance\n  AddMonoidₓ R (during elaboration)"},
    {"success": false,
     "statement":
-    "nat_lang_problem2 : ∀ { R : Type } [ CommRingₓₓ R ] [ hp : Prime ( char_p R ) ] { a b : R }, (a + b) ^ char_p R = a^char_p R + b^char_p R ",
+    "nat_lang_problem2 : ∀ { R : Type } [ CommRingₓₓ R ] [ hp : Prime ( CharP R ) ] { a b : R }, (a + b) ^ CharP R = a^CharP R + b^CharP R ",
     "parse-message":
     "function expected at\n  CommRingₓₓ\nterm has type\n  Type (?u.4 + 1) (during elaboration)"},
    {"success": false,
     "statement":
-    "nat_lang_problem2 : ∀ { R : Type } [ CommRingₓ R ] [ hp : Prime ( char_p R ) ] { a b : R }, (a + b) ^ char_p R = a^char_p R + b^char_p R ",
-    "parse-message": "unknown identifier 'char_p' (during elaboration)"},
+    "nat_lang_problem2 : ∀ { R : Type } [ CommRingₓ R ] [ hp : Prime ( CharP R ) ] { a b : R }, (a + b) ^ CharP R = a^CharP R + b^CharP R ",
+    "parse-message":
+    "failed to synthesize instance\n  CommMonoidWithZero (ℕ → Prop) (during elaboration)"},
    {"success": false,
     "statement":
     "Multiset . map_eq_of_equiv_on_image ( interv al : Set ℤ) ( Equiv : Equivalence interv al) : ∀( f g : ℤ → ℤ), ( ∀x∈interv al, fx ≡ gx mod a ) → Multiset . map f ( interv al . to_multiset ) = Multiset . map g ( interv al . to_multiset ) ",
