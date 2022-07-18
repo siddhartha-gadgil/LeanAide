@@ -1280,12 +1280,12 @@
       },
       {
         "success": false,
-        "statement": "[TopologicalSpace α] (ht : t2_space α) : Hausdorff_space α ↔ IsClosed (diagonal : Set (α × α)) ",
+        "statement": "[TopologicalSpace α] (ht : T2Space α) : Hausdorff_space α ↔ IsClosed (diagonal : Set (α × α)) ",
         "parse-message": "unknown identifier 'α' (during elaboration)"
       },
       {
         "success": false,
-        "statement": "[TopologicalSpace α] (ht : t2_space α) : Hausdorff_space α ↔ IsClosed (diagonal : Setₓ (α × α)) ",
+        "statement": "[TopologicalSpace α] (ht : T2Space α) : Hausdorff_space α ↔ IsClosed (diagonal : Setₓ (α × α)) ",
         "parse-message": "unknown identifier 'α' (during elaboration)"
       },
       {
