@@ -1257,7 +1257,7 @@
         "parse-message": "function expected at\n  Fintypeₓ\nterm has type\n  Type (?u.9 + 1) (during elaboration)"
       }
     ],
-    "remarks": ""
+    "remarks": "This is a limitation of dot notation not being mapped. If it was even for single letter identifiers, then we get P.isPrime and P.isMaximal which is elaborated"
   },
   {
     "main-prompt": "A topological space $X$ is Hausdorff if and only if the diagonal is a closed set in $X × X$.",

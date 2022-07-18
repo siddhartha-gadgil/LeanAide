@@ -28,10 +28,6 @@
     "camelcase": "Module.rank"
   },
   {
-    "snakecase": "cardinal.aleph_",
-    "camelcase": "Cardinal.aleph"
-  },
-  {
     "snakecase": "decidable_eq",
     "camelcase": "DecidableEq"
   },
@@ -380,8 +376,8 @@
     "camelcase": "SimpleGraph"
   },
   {
-    "snakecase": "sym",
-    "camelcase": "Sym"
+    "snakecase": "sym2",
+    "camelcase": "Sym2"
   },
   {
     "snakecase": "ordered_semiring",
@@ -1198,6 +1194,10 @@
   {
     "snakecase": "finset.Ico",
     "camelcase": "Finset.ico"
+  },
+  {
+    "snakecase": "function.injective2",
+    "camelcase": "Function.Injective2"
   },
   {
     "snakecase": "function.is_periodic_pt",
@@ -2328,6 +2328,10 @@
     "camelcase": "Mon.FilteredColimits.colimitMulAux"
   },
   {
+    "snakecase": "t2_space",
+    "camelcase": "T2Space"
+  },
+  {
     "snakecase": "proper_space",
     "camelcase": "ProperSpace"
   },
@@ -2702,6 +2706,10 @@
   {
     "snakecase": "uniform_add_group",
     "camelcase": "UniformAddGroup"
+  },
+  {
+    "snakecase": "t1_space",
+    "camelcase": "T1Space"
   },
   {
     "snakecase": "lipschitz_with",
@@ -3556,6 +3564,10 @@
     "camelcase": "LaurentPolynomial.t"
   },
   {
+    "snakecase": "continuous_multilinear_curry_fin1",
+    "camelcase": "continuousMultilinearCurryFin1"
+  },
+  {
     "snakecase": "left_inv",
     "camelcase": "IsLeftInv"
   },
@@ -4172,6 +4184,10 @@
     "camelcase": "Ordering"
   },
   {
+    "snakecase": "sym2.map",
+    "camelcase": "Sym2.map"
+  },
+  {
     "snakecase": "add_le_cancellable",
     "camelcase": "AddLeCancellable"
   },
@@ -4500,6 +4516,10 @@
     "camelcase": "Cycle.nil"
   },
   {
+    "snakecase": "circle_deg1_lift",
+    "camelcase": "CircleDeg1Lift"
+  },
+  {
     "snakecase": "function.semiconj",
     "camelcase": "Function.Semiconj"
   },
@@ -4530,6 +4550,10 @@
   {
     "snakecase": "category_theory.abelian.app",
     "camelcase": "CategoryTheory.Abelian.app"
+  },
+  {
+    "snakecase": "set.image2",
+    "camelcase": "Set.Image2"
   },
   {
     "snakecase": "has_set_prod.prod",
@@ -5320,8 +5344,8 @@
     "camelcase": "MvPolynomial.x"
   },
   {
-    "snakecase": "list.permutations_aux",
-    "camelcase": "List.permutationsAux"
+    "snakecase": "list.permutations_aux2",
+    "camelcase": "List.permutationsAux2"
   },
   {
     "snakecase": "szemeredi_regularity.step_bound",
@@ -5712,6 +5736,18 @@
     "camelcase": "AddEquivClass.inv"
   },
   {
+    "snakecase": "turing.TM2.supports",
+    "camelcase": "Turing.TM2.Supports"
+  },
+  {
+    "snakecase": "turing.partrec_to_TM2.tr",
+    "camelcase": "Turing.PartrecToTM2.tr"
+  },
+  {
+    "snakecase": "turing.partrec_to_TM2.code_supp",
+    "camelcase": "Turing.PartrecToTM2.codeSupp"
+  },
+  {
     "snakecase": "clifford_algebra.even_odd",
     "camelcase": "CliffordAlgebra.evenOdd"
   },
@@ -6058,6 +6094,10 @@
   {
     "snakecase": "polynomial.chebyshev.U",
     "camelcase": "Polynomial.Chebyshev.u"
+  },
+  {
+    "snakecase": "modular_group.lc_row0",
+    "camelcase": "ModularGroup.lcRow0"
   },
   {
     "snakecase": "measure_theory.analytic_set",
@@ -6508,8 +6548,8 @@
     "camelcase": "IsCauSeq"
   },
   {
-    "snakecase": "units.mk",
-    "camelcase": "Units.mk"
+    "snakecase": "units.mk0",
+    "camelcase": "Units.mk0"
   },
   {
     "snakecase": "holder_on_with",
@@ -6610,6 +6650,10 @@
   {
     "snakecase": "measure_theory.measure.add_haar_measure",
     "camelcase": "MeasureTheory.Measure.addHaarMeasure"
+  },
+  {
+    "snakecase": "topological_space.positive_compacts.pi_Icc01",
+    "camelcase": "TopologicalSpace.PositiveCompacts.piIcc01"
   },
   {
     "snakecase": "equivalence",
@@ -7712,6 +7756,18 @@
     "camelcase": "Tree"
   },
   {
+    "snakecase": "tactic.ring2.csring_expr",
+    "camelcase": "Tactic.Ring2.CsringExpr"
+  },
+  {
+    "snakecase": "tactic.ring2.horner_expr.of_csexpr",
+    "camelcase": "Tactic.Ring2.HornerExpr.ofCsexpr"
+  },
+  {
+    "snakecase": "tactic.ring2.csring_expr.eval",
+    "camelcase": "Tactic.Ring2.CsringExpr.eval"
+  },
+  {
     "snakecase": "lie_module.to_endomorphism",
     "camelcase": "LieModule.toEndomorphism"
   },
@@ -8132,6 +8188,10 @@
     "camelcase": "Prod.mk"
   },
   {
+    "snakecase": "sym2.card",
+    "camelcase": "Sym2.card"
+  },
+  {
     "snakecase": "add_action.orbit",
     "camelcase": "AddAction.Orbit"
   },
@@ -8256,6 +8316,10 @@
     "camelcase": "MeasureTheory.SimpleFunc.const"
   },
   {
+    "snakecase": "set.image3",
+    "camelcase": "Set.Image3"
+  },
+  {
     "snakecase": "polynomial.erase",
     "camelcase": "Polynomial.erase"
   },
@@ -8328,10 +8392,6 @@
     "camelcase": "Setoidₓ.comap"
   },
   {
-    "snakecase": "eq_",
-    "camelcase": "Eq"
-  },
-  {
     "snakecase": "category_theory.limits.walking_multispan.right",
     "camelcase": "CategoryTheory.Limits.WalkingMultispan.right"
   },
@@ -8346,6 +8406,10 @@
   {
     "snakecase": "finset.Ioo",
     "camelcase": "Finset.ioo"
+  },
+  {
+    "snakecase": "generalized_continued_fraction.int_fract_pair.seq1",
+    "camelcase": "GeneralizedContinuedFraction.IntFractPair.seq1"
   },
   {
     "snakecase": "continuous_multilinear_curry_left_equiv",
@@ -8730,6 +8794,10 @@
   {
     "snakecase": "graded_monoid.mk",
     "camelcase": "GradedMonoid.mk"
+  },
+  {
+    "snakecase": "sym",
+    "camelcase": "Sym"
   },
   {
     "snakecase": "sym.map",
@@ -9308,6 +9376,10 @@
     "camelcase": "Module.End.HasEigenvector"
   },
   {
+    "snakecase": "topological_space.positive_compacts.Icc01",
+    "camelcase": "TopologicalSpace.PositiveCompacts.icc01"
+  },
+  {
     "snakecase": "complex.basis_one_I",
     "camelcase": "Complex.basisOneI"
   },
@@ -9378,6 +9450,10 @@
   {
     "snakecase": "category_theory.limits.pullback.lift",
     "camelcase": "CategoryTheory.Limits.pullback.lift"
+  },
+  {
+    "snakecase": "algebraic_geometry.Scheme.pullback.p2",
+    "camelcase": "AlgebraicGeometry.Scheme.Pullback.p2"
   },
   {
     "snakecase": "algebraic_geometry.Scheme.pullback.gluing",
@@ -9496,6 +9572,10 @@
     "camelcase": "CategoryTheory.Subobject.pullback"
   },
   {
+    "snakecase": "t0_space",
+    "camelcase": "T0Space"
+  },
+  {
     "snakecase": "direct_sum.coe_alg_hom",
     "camelcase": "DirectSum.coeAlgHom"
   },
@@ -9514,6 +9594,10 @@
   {
     "snakecase": "category_theory.idempotents.karoubi_functor_category_embedding",
     "camelcase": "CategoryTheory.Idempotents.karoubiFunctorCategoryEmbedding"
+  },
+  {
+    "snakecase": "tactic.ring2.horner_expr.cseval",
+    "camelcase": "Tactic.Ring2.HornerExpr.cseval"
   },
   {
     "snakecase": "wf_dvd_monoid",
@@ -9598,6 +9682,10 @@
   {
     "snakecase": "linear_map.single",
     "camelcase": "LinearMap.single"
+  },
+  {
+    "snakecase": "unit_interval.uhpath01",
+    "camelcase": "UnitInterval.uhpath01"
   },
   {
     "snakecase": "algebra.embeddings_matrix_reindex",

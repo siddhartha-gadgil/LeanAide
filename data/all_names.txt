@@ -6,7 +6,7 @@ add_comm_group
 module
 is_noetherian
 module.rank
-cardinal.aleph_
+cardinal.aleph_0
 decidable_eq
 finset
 finset.filter
@@ -62,6 +62,7 @@ preorder
 zero_lt.pos_mul_mono
 ha
 hb
+a0
 comm_ring
 hpos
 hm
@@ -107,6 +108,9 @@ category_theory.sieve
 inner_product_space
 metric_space
 normed_add_torsor
+p1
+p2
+p3
 has_dist.dist
 euclidean_geometry.angle
 real.pi
@@ -125,7 +129,7 @@ category_theory.limits.preserves_finite_limits
 category_theory.limits.has_kernels
 simple_graph
 adj
-sym
+sym2
 edge_set
 ordered_semiring
 nonempty
@@ -175,6 +179,7 @@ category_theory.limits.colimit_limit_to_limit_colimit
 category_theory.limits.limit.
 category_theory.limits.colim
 obj
+h2
 real.exp
 algebra
 is_integral
@@ -314,11 +319,12 @@ leading_coeff
 hfP
 degree
 coeff
-hfd
+hfd0
+h0
 is_primitive
 irreducible
 emetric.inf_edist
-hd
+hd2
 finite_dimensional.finrank
 orientation
 hx
@@ -334,6 +340,7 @@ add_zero_class
 Prop
 add_submonoid.closure
 Hs
+H1
 Hmul
 inner_product_geometry.angle
 hD
@@ -346,6 +353,7 @@ padic_val_rat
 hw
 affine_combination
 antitone
+h1
 hR
 hc
 continuous_on
@@ -405,6 +413,7 @@ basis.repr
 conditionally_complete_linear_order
 has_one
 has_compact_mul_support
+n0
 is_right_regular
 has_norm
 is_fraction_ring
@@ -425,6 +434,7 @@ category_theory.is_reflexive_pair
 pseudo_emetric_space
 has_edist.edist
 finset.Ico
+function.injective2
 function.is_periodic_pt
 hr
 linear_ordered_add_comm_monoid_with_top
@@ -606,6 +616,9 @@ polynomial.eval
 is_integral_elem
 has_fderiv_at
 hfg
+hd
+s1
+s2
 affine_subspace
 is_dedekind_domain
 is_dedekind_domain.height_one_spectrum
@@ -636,6 +649,7 @@ rank_condition
 hJ
 cardinal.mk
 subring.closure
+H0
 Hadd
 Hneg
 erased
@@ -789,6 +803,7 @@ cccr.snd
 succ_order
 is_max
 order.succ
+i1
 summable
 ne_bot
 tendsto_uniformly
@@ -833,7 +848,7 @@ category_theory.is_filtered
 hyy
 category_theory.limits.types.filtered_colimit.rel
 Mon.filtered_colimits.colimit_mul_aux
-space
+t2_space
 proper_space
 is_compact
 has_deriv_at
@@ -853,6 +868,7 @@ is_add_group_hom
 metric.closed_ball
 differentiable_at
 complex.I
+H2
 hMp
 hM
 normed_space.dual
@@ -870,10 +886,13 @@ pos
 fin.last
 fin.snoc
 zero_lt.mul_pos_mono
+b0
 pmonic
 monic
 polynomial.aeval
 padic_seq
+v2
+v3
 padic_seq.stationary_point
 regular_expression
 regular_expression.map
@@ -945,6 +964,8 @@ dense_embedding
 has_pure.pure
 is_bounded_linear_map
 factorization
+s1.direction
+s2.direction
 list.map
 cramer
 lt
@@ -979,7 +1000,7 @@ hT
 convex_on
 hZd
 hZn
-hZ
+hZ0
 hZcl
 is_localization.sec
 comm_semigroup
@@ -1000,6 +1021,7 @@ mY
 mf
 category_theory.is_cofiltered.inf_to
 uniform_add_group
+t1_space
 hN
 add_monoid.is_torsion
 add_monoid.is_torsion_free
@@ -1114,6 +1136,8 @@ orthogonal_projection
 mono
 infinite
 is_complete
+g1
+g2
 center
 lower_semicontinuous_on
 pnz
@@ -1159,6 +1183,7 @@ category_theory.adjunction.of_right_adjoint
 unit.app
 category_theory.left_adjoint
 multiset.nat.antidiagonal
+h2K
 add_cancel_comm_monoid
 uniform_group
 monoid_hom_class
@@ -1169,6 +1194,7 @@ has_basis
 has_antitone_basis
 unique_mdiff_within_at
 covers
+a1
 pell.xn
 pell.yn
 well_founded
@@ -1186,10 +1212,20 @@ is_maximal
 ideal.quotient.mk
 hcont
 hderiv
+V1
+P1
+V2
+P2
+V3
+P3
 disj
 list.length
 join
 subsemiring.closure
+H0_left
+H0_right
+H1_left
+H1_right
 Hadd_left
 Hadd_right
 Hmul_left
@@ -1257,6 +1293,7 @@ category_theory.equalizer.first_obj_eq_family
 compatible
 category_theory.equalizer.presieve.first_map
 category_theory.equalizer.presieve.second_map
+hp1
 divisors.sum
 divisors_antidiagonal.sum
 nat.arithmetic_function.moebius
@@ -1275,6 +1312,8 @@ finset.map
 function.embedding.subtype
 totally_separated_space
 is_local_max
+h4v
+h4w
 polynomial.derivative
 closure_operator
 valuation.comap
@@ -1287,6 +1326,7 @@ monoid_algebra.of
 uniformity
 linear_map.id
 eqv_gen.setoid
+v1
 is_upper_set
 is_lower_set
 erase
@@ -1308,6 +1348,7 @@ category_theory.presieve.yoneda_sheaf_condition
 add_action
 add_action.fixed_by
 add_action.orbit_rel
+h2i
 hhf
 hh
 is_trivial_topological_fiber_bundle
@@ -1329,7 +1370,9 @@ add
 mul_T
 laurent_polynomial.C
 laurent_polynomial.T
-continuous_multilinear_curry_fin
+hp1p2
+hp3p2
+continuous_multilinear_curry_fin1
 left_inv
 right_inv
 hkn
@@ -1389,8 +1432,17 @@ category_theory.has_left_dual
 is_lub
 hfield
 gcd_monoid.gcd
-indicator
+w1
+w2
+s1.sum
+s2.sum
+s1.affine_combination
+s2.affine_combination
+s1.indicator
+s2.indicator
+hf1
 ker.fg
+hf2
 hsur
 is_bot
 is_top
@@ -1402,7 +1454,8 @@ finsupp.map_domain
 finset.univ.affine_combination
 dfinsupp.lift_add_hom
 free_algebra
-grade
+grade0
+grade1
 free_algebra.
 no_min_order
 nonem
@@ -1481,6 +1534,7 @@ AddMon
 AddMon.filtered_colimits.colimit_add_aux
 vector
 finset.centroid_weights_indicator
+indicator
 val.is_gluing
 small_sets
 sm
@@ -1523,7 +1577,7 @@ is_R_or_C.re
 hba
 linear_ordered_add_comm_group
 encodable
-bit
+bit1
 poly
 non_assoc_ring
 continuous_multilinear_map
@@ -1570,6 +1624,7 @@ monoid.is_torsion_free
 ordering
 swap.compares
 compares
+sym2.map
 add_le_cancellable
 part
 dom
@@ -1674,6 +1729,7 @@ category_theory.limits.image.eq_to_iso
 normalization_monoid
 de
 to_real
+C0
 has_mem
 configuration.has_points
 tail
@@ -1701,7 +1757,7 @@ HI
 comm_monoid.torsion
 wE
 wG
-circle_deg
+circle_deg1_lift
 translation_number
 function.semiconj
 non_zero_divisors
@@ -1716,6 +1772,7 @@ hmono
 hunion
 hnhds
 category_theory.abelian.app
+set.image2
 has_set_prod.prod
 prod.measurable_space
 Top.local_predicate
@@ -1778,9 +1835,13 @@ exp_neg_inv_glue
 padic_val_int
 pb
 pb.gen
+E1
+E2
 add_torsion
 to_add_submonoid
 polish_space
+hj1
+hk1
 hjm
 hkm
 directed_on
@@ -1855,8 +1916,9 @@ category_theory.limits.is_limit.of_nat_iso.cone_of_hom
 category_theory.limits.is_limit.of_nat_iso.limit_cone
 separated_space
 uniform_continuous_on
-fermat_
-minimal
+fermat_42
+c0
+fermat_42.minimal
 infi
 CommRing
 localization
@@ -1875,6 +1937,7 @@ generalized_boolean_algebra
 uv.compression
 hva
 hua
+hp2
 category_theory.zigzag
 category_theory.is_connected
 category_theory.limits.cokernel.map
@@ -2038,7 +2101,7 @@ mv_polynomial
 mv_polynomial.X
 hbn
 ts
-list.permutations_aux
+list.permutations_aux2
 anti
 szemeredi_regularity.step_bound
 is_image
@@ -2077,6 +2140,8 @@ bS.repr
 class_group.norm_bound
 coords
 is_R_or_C.I
+s1.points
+s2.points
 maps
 add_con_gen
 is_empty
@@ -2123,11 +2188,15 @@ splitting_field
 polynomial.map_ring_hom
 ideal.le_comap_map
 approximates_linear_on
+hq0
 is_semiring_hom
 option
 option.elim
 huniv
-inst_
+inst_8
+inst_9
+inst_10
+inst_11
 module.projective
 category_theory.well_powered
 linear_recurrence
@@ -2145,6 +2214,8 @@ cop
 is_frobenius_number
 hp_prime
 compat
+k1
+k2
 zmod.cast_hom
 padic_int.to_zmod_pow
 padic_int.lift
@@ -2194,12 +2265,12 @@ hf_zero
 ess_image
 add_equiv_class
 add_equiv_class.inv
-turing.partrec_to_TM
-turing.TM
-supports
-tr
-code_supp
+turing.partrec_to_TM2.cont
+turing.TM2.supports
+turing.partrec_to_TM2.tr
+turing.partrec_to_TM2.code_supp
 clifford_algebra.even_odd
+bit0
 equiv.point_reflection
 is_ring_hom
 discrete_valuation_ring
@@ -2260,6 +2331,7 @@ Fq
 finset.up_shadow
 semigroup_with_zero
 topological_space.is_separable
+ha0
 cycle_factors_finset
 hapb
 hcpd
@@ -2343,6 +2415,7 @@ int.fract
 mv_polynomial.aeval
 add_monoid_algebra.of
 hft
+g0
 category_theory.limits.has_colimits_of_size
 pgame.pow_half
 projectivization.mk
@@ -2360,7 +2433,7 @@ hnps
 ps.nonempty
 cd
 hcd
-modular_group.lc_row
+modular_group.lc_row0
 measure_theory.analytic_set
 equiv.perm_congr
 is_total
@@ -2384,6 +2457,8 @@ bind
 uv.is_compressed
 hall_matchings_on
 incl
+P0
+m0
 measure_theory.induced_outer_measure
 factorization.support
 category_theory.is_idempotent_complete
@@ -2532,16 +2607,24 @@ hT.eigenvalues
 maximals
 fin.init
 topological_space.is_topological_basis
+h12
+E2.fixing_subgroup
+E1.fixing_subgroup
 false
 alg_hom.id
 add_con.ker_lift
 quadratic_form.pi
 anisotropic
 nat.sqrt
+s1.nonempty
 torus_map
 mul_pow
 mjoin
 witt_vector.map
+inst_4
+inst_5
+inst_6
+inst_7
 bounded_continuous_function.const
 hmem
 normed_group_hom.id
@@ -2560,7 +2643,7 @@ domain
 hintg
 is_cau_seq
 map_matrix
-units.mk
+units.mk0
 fs.weighted_vsub_of_point
 left_comm
 holder_on_with
@@ -2577,6 +2660,7 @@ category_theory.essentially_small
 power_series.monomial
 points_with_circumcenter
 affine.simplex.monge_point_weights_with_circumcenter
+hfd
 hgd
 hfexp
 hgexp
@@ -2605,7 +2689,7 @@ factor_multiset
 nat.bitwise
 relation.join
 measure_theory.measure.add_haar_measure
-topological_space.positive_compacts.pi_Icc
+topological_space.positive_compacts.pi_Icc01
 lra
 lrb
 equivalence
@@ -2641,6 +2725,7 @@ category_theory.limits.prod_comparison
 hss
 hai
 subgroup.right_transversals
+hR1
 subgroup.mem_right_transversals.to_fun
 has_continuous_sub
 counit.app
@@ -2724,12 +2809,17 @@ Set
 Class.iota
 Class.univ
 hY
+E1.map
 to_alg_hom
+E2.map
+hs1
+hs2
 get_or_else
 continuous_map.compact_open
 topological_space.induced
 cstar_ring
 self_adjoint
+s2.nonempty
 matrix.reindex
 filter.is_cobounded
 hs_nonempty
@@ -2745,6 +2835,7 @@ succ.succ_above
 exp_neg_inv_glue.P_aux
 order.partial_iso
 cmp
+hn0
 map_iso
 category_theory.eq_to_iso
 lucas_lehmer.lucas_lehmer_residue
@@ -2794,6 +2885,8 @@ balanced_hull
 measure_theory.Lp
 haar_circle
 fourier_series.repr
+u1
+u2
 exterior_algebra
 exterior_algebra.
 hp_mul
@@ -2820,7 +2913,7 @@ chain_complex.single
 smooth
 order.pfilter
 has_ftaylor_series_up_to
-uncurry
+uncurry0
 shift
 Hg
 hprime
@@ -2881,7 +2974,9 @@ central_binom
 of_equiv
 empty
 pempty
+inst_1
 category_theory.normal_epi_category
+inst_3
 multiset.Ioc
 dtop
 cdlim
@@ -2908,6 +3003,7 @@ mdifferentiable
 min
 hxr
 hnpos
+i0
 is_conformal_map
 hdg
 add_subgroup.pi
@@ -2948,6 +3044,7 @@ list.split_on
 intercalate
 category_theory.limits.preserves_finite_colimits
 ex
+h3
 hO
 is_closed_map
 ftaylor_series
@@ -2981,6 +3078,8 @@ algebraic_topology.alternating_face_map_complex.obj_d
 mul_hom_class
 irr
 deg
+roots1
+roots2
 liouville.liouville_number_initial_terms
 category_theory.limits.trident
 category_theory.limits.trident.is_limit.hom_iso
@@ -3009,6 +3108,8 @@ to_real.is_conjugate_exponent
 add_left_cancel_semigroup
 partial_Gamma
 linear_isometry_equiv.neg
+D1
+D2
 derivation
 orientation.map
 fourier_subalgebra.topological_closure
@@ -3079,6 +3180,7 @@ algebra.trace
 relation.fibration
 Hcont
 Hdiff
+p4
 is_sheaf_preserves_limit_pairwise_intersections
 Gromov_Hausdorff.candidates_b_dist
 category_theory.abelian.factor_thru_image
@@ -3121,10 +3223,9 @@ to_PresheafedSpace.presheaf.obj
 to_PresheafedSpace.presheaf.map
 category_theory.hom_of_le
 tree
-tactic.ring
-csring_expr
-horner_expr.of_csexpr
-csring_expr.eval
+tactic.ring2.csring_expr
+tactic.ring2.horner_expr.of_csexpr
+tactic.ring2.csring_expr.eval
 lie_module.to_endomorphism
 category_theory.limits.has_pushout
 category_theory.limits.pushout.inl
@@ -3181,6 +3282,7 @@ carries
 final
 relation.refl_gen
 is_sheaf_pairwise_intersections
+h01
 right_distrib_class
 hqr
 linear_map.ker
@@ -3269,6 +3371,7 @@ liouville.liouville_number_tail
 det.to_multilinear_map.to_linear_map
 category_theory.limits.pi.map
 antidiagonal
+f0
 Pbot
 Psup
 basis_repr
@@ -3312,10 +3415,12 @@ Top.presheaf.sheaf_condition_equalizer_products.res
 Top.presheaf.covering_of_presieve
 odd
 hind
+heq1
 category_theory.limits.initial.to
 classical.some
 measure_theory.is_finite_measure
 prod.mk
+sym2.card
 add_action.orbit
 ray_vector
 qpf
@@ -3323,6 +3428,8 @@ qpf.P
 qpf.Wequiv
 qpf.recF
 local_ring.maximal_ideal
+p0
+hp0
 sub_neg_monoid
 has_measurable_add
 graded_algebra
@@ -3358,6 +3465,7 @@ matrix.det
 measure_theory.simple_func
 measure_theory.simple_func.piecewise
 measure_theory.simple_func.const
+set.image3
 polynomial.erase
 unitization
 unitization.inl
@@ -3376,6 +3484,7 @@ fg.fst
 fg.snd
 hs.quotient
 cluster_pt
+hf0
 htp
 is_nilpotent
 uc
@@ -3383,6 +3492,7 @@ bernstein_polynomial
 modular_group.S
 hsymm
 continuous_linear_map.id
+h2h
 seq_continuous
 omega_complete_partial_order.continuous
 irreflexive
@@ -3393,14 +3503,14 @@ hzb
 tail.prod
 cyclic_permutations.nodup
 setoid.comap
-eq_
+eq_1
 to_glue_data.diagram.multispan
 category_theory.limits.walking_multispan.right
 orthogonal_bilin
 universal_enveloping_algebra
 universal_enveloping_algebra.
 finset.Ioo
-generalized_continued_fraction.int_fract_pair.seq
+generalized_continued_fraction.int_fract_pair.seq1
 continuous_multilinear_curry_left_equiv
 category_theory.iso.refl
 category_theory.is_cofiltered.eq_hom
@@ -3553,6 +3663,12 @@ flip.ker
 category_theory.regular_mono
 of_add_equiv_of_dom
 update_nth
+ta1
+ta2
+tb1
+tb2
+tc1
+m1
 dec_dvd
 normalize
 unique_factorization_monoid.normalized_factors
@@ -3589,6 +3705,7 @@ graded_monoid.gmonoid
 graded_monoid
 graded_monoid.mk
 dprod_index
+sym
 sym.map
 character
 is_directed
@@ -3600,6 +3717,7 @@ free_abelian_group
 free_abelian_group.of
 nth_stream_eq_none
 filter.cofinite.coprod
+h5
 hto
 sum_congr
 algebraic_geometry.to_Spec_
@@ -3615,6 +3733,12 @@ IH
 topological_space.nonempty_compacts
 category_theory.creates_limits_of_shape
 fin.add_nat
+f1
+f2
+f1.support
+f2.support
+f1.prod
+f2.prod
 mvfunctor.map
 typevec.id
 subtypeL.comp
@@ -3623,6 +3747,7 @@ omega.nat.preterm
 fresh_index
 omega.nat.preterm.val
 card.lift
+h4
 elementary_substructure
 ee
 omega.ee
@@ -3663,6 +3788,7 @@ pnat.xgcd_type
 step.v
 swap
 hvu
+a2
 rs
 stream.drop
 convex.to_cone
@@ -3687,6 +3813,8 @@ free_product.word
 free_product.word.empty
 free_product.neword
 to_word
+b1
+x0
 ordinal.log
 submodule.torsion_by_set
 is_transcendence_basis
@@ -3727,6 +3855,9 @@ is_finitely_satisfiable
 base_set
 tensor_product.mk
 compr
+x1
+x2
+b2
 denom
 ratfunc.eval
 category_theory.idempotents.karoubi
@@ -3734,6 +3865,7 @@ decomp_id_i
 decomp_id_p
 fst.smul_right
 list.Ico
+p5
 hdom
 fs.nonempty
 affine.simplex.centroid_weights_with_circumcenter
@@ -3752,6 +3884,10 @@ category_theory.shift_functor
 category_theory.shift_comm
 univ
 inter
+U1
+U2
+hx0
+hy0
 linear_ordered_comm_group_with_zero.nhds_fun
 hroots
 pi_Lp.linear_equiv
@@ -3833,6 +3969,8 @@ local_min
 free_product
 free_product.of
 setoid.classes_eqv_classes
+h2C
+h2D
 continuous_multilinear_map.comp_along_composition
 polynomial.hasse_deriv
 nat.upto.gt
@@ -3880,7 +4018,7 @@ category_theory.over.construct_products.wide_pullback_diagram_of_diagram_over
 hextr
 is_local_extr_on
 module.End.has_eigenvector
-topological_space.positive_compacts.Icc
+topological_space.positive_compacts.Icc01
 hwf
 hwf.fix
 complex.basis_one_I
@@ -3907,7 +4045,7 @@ category_theory.cover_dense.types.pushforward_family
 algebraic_geometry.Scheme
 open_cover
 category_theory.limits.pullback.lift
-algebraic_geometry.Scheme.pullback.p
+algebraic_geometry.Scheme.pullback.p2
 algebraic_geometry.Scheme.pullback.gluing
 join.nth_le
 is_local_ring_hom
@@ -3934,6 +4072,8 @@ ap
 equiv_functor
 ab.trans
 Model
+ht1
+ht2
 dGamma_integrand
 dGamma_integrand_real
 nonarchimedean_group
@@ -3953,6 +4093,7 @@ join.length
 join.split_wrt_composition
 category_theory.zag
 category_theory.subobject.pullback
+t0_space
 mul_opposite.op_add_equiv.to_add_monoid_hom
 direct_sum.coe_alg_hom
 range.to_submodule
@@ -3963,7 +4104,7 @@ rat.mk
 category_theory.idempotents.to_karoubi
 category_theory.idempotents.karoubi_functor_category_embedding
 is_cs
-horner_expr.cseval
+tactic.ring2.horner_expr.cseval
 hCF
 wf_dvd_monoid
 category_theory.skeleton
@@ -3995,7 +4136,7 @@ to_matrix.mul
 ab.fst
 linear_map.single
 eval_at
-unit_interval.uhpath
+unit_interval.uhpath01
 algebra.embeddings_matrix_reindex
 add_con.comap
 gp_n
@@ -4031,9 +4172,11 @@ matrix.col
 matrix.row
 seq_pos
 thickened_indicator
+sym2.nonempty
 continuous_linear_map.restrict_scalars
 complex.conj_cle
 hcyc
+hZ
 topological_space.compacts.map
 nat.partrec
 category_theory.limits.binary_fan
@@ -4042,6 +4185,7 @@ pi_nat.longest_prefix
 pi_nat.first_diff
 continuous_map.uncurry
 category_theory.free_bicategory.normalize_aux
+tr
 iM
 elementary_embedding
 module.End
@@ -4058,7 +4202,10 @@ nth_eq_some
 color
 his
 hwi
+hw0
+i2
 multiplicity.finite
+hg2
 map_cluster_pt
 curry
 has_div
@@ -4097,6 +4244,7 @@ star_module.im
 hAconv
 hb.conj_lie.symm
 transitive
+hq1
 probability_theory.cond_count
 common_neighbors
 nat.factorization
@@ -4159,4 +4307,6 @@ add_right_cancel_semigroup
 flow
 bM.coord
 matrix.std_basis_matrix
+r1
+r2
 left_distrib_class

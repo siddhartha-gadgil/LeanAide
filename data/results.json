@@ -16931,28 +16931,28 @@
   "parse-checks":
   [{"success": false,
     "statement":
-    "has_homs_to_all_ints_of_period_three (f : α → α) [AddGroup α] [TopologicalSpace α] [TopologicalAddGroup α] [TopologicalSemiring α] [t1_space α] [metrizable_space α] [MetricSpace α] [UniformSpace α] [CompleteSpace α] [unique_periodic_hom f] [unique_monotonicity ⊥] [unique_periodic_hom f] [unique_monotonicity ⊥] [unique_periodic_hom ⊥] :    ∃ (η : ℕ),",
+    "has_homs_to_all_ints_of_period_three (f : α → α) [AddGroup α] [TopologicalSpace α] [TopologicalAddGroup α] [TopologicalSemiring α] [T1Space α] [metrizable_space α] [MetricSpace α] [UniformSpace α] [CompleteSpace α] [unique_periodic_hom f] [unique_monotonicity ⊥] [unique_periodic_hom f] [unique_monotonicity ⊥] [unique_periodic_hom ⊥] :    ∃ (η : ℕ),",
+    "parse-message": "<input>:1:350: unexpected end of input"},
+   {"success": false,
+    "statement":
+    "has_homs_to_all_ints_of_period_three (f : α → α) [AddGroupₓₓ α] [TopologicalSpace α] [TopologicalAddGroup α] [TopologicalSemiring α] [T1Space α] [metrizable_space α] [MetricSpace α] [UniformSpace α] [CompleteSpace α] [unique_periodic_hom f] [unique_monotonicity ⊥] [unique_periodic_hom f] [unique_monotonicity ⊥] [unique_periodic_hom ⊥] :    ∃ (η : ℕ),",
+    "parse-message": "<input>:1:352: unexpected end of input"},
+   {"success": false,
+    "statement":
+    "has_homs_to_all_ints_of_period_three (f : α → α) [AddGroupₓ α] [TopologicalSpace α] [TopologicalAddGroup α] [TopologicalSemiring α] [T1Space α] [metrizable_space α] [MetricSpace α] [UniformSpace α] [CompleteSpace α] [unique_periodic_hom f] [unique_monotonicity ⊥] [unique_periodic_hom f] [unique_monotonicity ⊥] [unique_periodic_hom ⊥] :    ∃ (η : ℕ),",
     "parse-message": "<input>:1:351: unexpected end of input"},
    {"success": false,
     "statement":
-    "has_homs_to_all_ints_of_period_three (f : α → α) [AddGroupₓₓ α] [TopologicalSpace α] [TopologicalAddGroup α] [TopologicalSemiring α] [t1_space α] [metrizable_space α] [MetricSpace α] [UniformSpace α] [CompleteSpace α] [unique_periodic_hom f] [unique_monotonicity ⊥] [unique_periodic_hom f] [unique_monotonicity ⊥] [unique_periodic_hom ⊥] :    ∃ (η : ℕ),",
+    "has_homs_to_all_ints_of_period_three (f : α → α) [AddGroup α] [TopologicalSpace α] [TopologicalAddGroup α] [TopologicalSemiring α] [T1Space α] [metrizable_space α] [MetricSpace α] [UniformSpaceₓ α] [CompleteSpace α] [unique_periodic_hom f] [unique_monotonicity ⊥] [unique_periodic_hom f] [unique_monotonicity ⊥] [unique_periodic_hom ⊥] :    ∃ (η : ℕ),",
+    "parse-message": "<input>:1:351: unexpected end of input"},
+   {"success": false,
+    "statement":
+    "has_homs_to_all_ints_of_period_three (f : α → α) [AddGroupₓₓ α] [TopologicalSpace α] [TopologicalAddGroup α] [TopologicalSemiring α] [T1Space α] [metrizable_space α] [MetricSpace α] [UniformSpaceₓ α] [CompleteSpace α] [unique_periodic_hom f] [unique_monotonicity ⊥] [unique_periodic_hom f] [unique_monotonicity ⊥] [unique_periodic_hom ⊥] :    ∃ (η : ℕ),",
     "parse-message": "<input>:1:353: unexpected end of input"},
    {"success": false,
     "statement":
-    "has_homs_to_all_ints_of_period_three (f : α → α) [AddGroupₓ α] [TopologicalSpace α] [TopologicalAddGroup α] [TopologicalSemiring α] [t1_space α] [metrizable_space α] [MetricSpace α] [UniformSpace α] [CompleteSpace α] [unique_periodic_hom f] [unique_monotonicity ⊥] [unique_periodic_hom f] [unique_monotonicity ⊥] [unique_periodic_hom ⊥] :    ∃ (η : ℕ),",
+    "has_homs_to_all_ints_of_period_three (f : α → α) [AddGroupₓ α] [TopologicalSpace α] [TopologicalAddGroup α] [TopologicalSemiring α] [T1Space α] [metrizable_space α] [MetricSpace α] [UniformSpaceₓ α] [CompleteSpace α] [unique_periodic_hom f] [unique_monotonicity ⊥] [unique_periodic_hom f] [unique_monotonicity ⊥] [unique_periodic_hom ⊥] :    ∃ (η : ℕ),",
     "parse-message": "<input>:1:352: unexpected end of input"},
-   {"success": false,
-    "statement":
-    "has_homs_to_all_ints_of_period_three (f : α → α) [AddGroup α] [TopologicalSpace α] [TopologicalAddGroup α] [TopologicalSemiring α] [t1_space α] [metrizable_space α] [MetricSpace α] [UniformSpaceₓ α] [CompleteSpace α] [unique_periodic_hom f] [unique_monotonicity ⊥] [unique_periodic_hom f] [unique_monotonicity ⊥] [unique_periodic_hom ⊥] :    ∃ (η : ℕ),",
-    "parse-message": "<input>:1:352: unexpected end of input"},
-   {"success": false,
-    "statement":
-    "has_homs_to_all_ints_of_period_three (f : α → α) [AddGroupₓₓ α] [TopologicalSpace α] [TopologicalAddGroup α] [TopologicalSemiring α] [t1_space α] [metrizable_space α] [MetricSpace α] [UniformSpaceₓ α] [CompleteSpace α] [unique_periodic_hom f] [unique_monotonicity ⊥] [unique_periodic_hom f] [unique_monotonicity ⊥] [unique_periodic_hom ⊥] :    ∃ (η : ℕ),",
-    "parse-message": "<input>:1:354: unexpected end of input"},
-   {"success": false,
-    "statement":
-    "has_homs_to_all_ints_of_period_three (f : α → α) [AddGroupₓ α] [TopologicalSpace α] [TopologicalAddGroup α] [TopologicalSemiring α] [t1_space α] [metrizable_space α] [MetricSpace α] [UniformSpaceₓ α] [CompleteSpace α] [unique_periodic_hom f] [unique_monotonicity ⊥] [unique_periodic_hom f] [unique_monotonicity ⊥] [unique_periodic_hom ⊥] :    ∃ (η : ℕ),",
-    "parse-message": "<input>:1:353: unexpected end of input"},
    {"success": false,
     "statement":
     "pr : (∀ (f : Nat → Nat) (n : Nat), (∃ (i j : Nat), ((i ≤ j) ∧ period f j = 0) ∧ period f i = n) → (∃ (i j : Nat), ((i ≤ j) ∧ period f j = 0) ∧ period f i = n)) → ∀ (i j : Nat), ((i ≤ j) ∧ period f j = 0) ∧ period f i = n. Show what the hypotheses are, Yes f -> ∃n i j, i <= j ip f j = 0 ∧ period f i = n. Yes, great! I think we will",
@@ -24771,11 +24771,11 @@
     "parse-message": "unknown identifier 'diagonal' (during elaboration)"},
    {"success": false,
     "statement":
-    "[TopologicalSpace α] (ht : t2_space α) : Hausdorff_space α ↔ IsClosed (diagonal : Set (α × α)) ",
+    "[TopologicalSpace α] (ht : T2Space α) : Hausdorff_space α ↔ IsClosed (diagonal : Set (α × α)) ",
     "parse-message": "unknown identifier 'α' (during elaboration)"},
    {"success": false,
     "statement":
-    "[TopologicalSpace α] (ht : t2_space α) : Hausdorff_space α ↔ IsClosed (diagonal : Setₓ (α × α)) ",
+    "[TopologicalSpace α] (ht : T2Space α) : Hausdorff_space α ↔ IsClosed (diagonal : Setₓ (α × α)) ",
     "parse-message": "unknown identifier 'α' (during elaboration)"},
    {"success": false,
     "statement":
