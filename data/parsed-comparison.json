@@ -12,7 +12,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every prime that is one greater than a multiple of four can be expressed as the sum of two squares.",
@@ -33,7 +34,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "For every subset of the Euclidean plane, there is a line segment of unit length whose endpoints are either both inside the subset or both outside it.",
@@ -45,7 +47,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "A ring with all elements idempotent is commutative.",
@@ -82,7 +85,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "There are infinitely many pairs of primes that differ exactly by two.",
@@ -103,7 +107,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every finite division ring is a field.",
@@ -121,7 +126,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "The product of two positive numbers is at most the square of their average.",
@@ -139,7 +145,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "If each of two types can be mapped injectively into the other, then there is a bijection between them.",
@@ -163,7 +170,8 @@
     ],
     "equivalent": [
       "theorem function.embedding.schroeder_bernstein{α : Type u} {β : Type v} {f : α → β} {g : β → α} (hf : Function.Injective f) (hg : Function.Injective g) : ∃ (h : α → β), Function.bijective h "
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every non-empty poset in which every chain has an upper bound contains a maximal element.",
@@ -181,7 +189,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "A topological space is normal if and only if any two disjoint closed subsets can be separated by a continuous function.",
@@ -196,7 +205,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "If a function from the unit interval to itself has a point of period three, then it has points of all positive periods.",
@@ -211,7 +221,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "A terminal object in a category is unique up to unique isomorphism.",
@@ -223,7 +234,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "The sum of the cubes of two positive integers is never equal to the cube of a third integer.",
@@ -238,7 +250,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every prime number is either `2` or odd.",
@@ -260,7 +273,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "The product of two consequitive natural numbers is odd",
@@ -272,7 +286,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every constant function `f x = c` from real numbers to real numbers is differentiable.",
@@ -290,7 +305,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every subgroup of a free group is free",
@@ -302,7 +318,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every free group is torsion free",
@@ -314,7 +331,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every natural number greater than `1` is divisible by a prime number.",
@@ -334,7 +352,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Six is not the sum of two prime numbers.",
@@ -355,7 +374,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "A finite torsion-free group is trivial",
@@ -367,7 +387,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every finite division ring is a field.",
@@ -380,7 +401,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every finite topological space is compact",
@@ -404,7 +426,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every surjective homomorphism from a finitely generated free group to itself is injective",
@@ -419,7 +442,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "A homomorphism between fields is either injective or trivial.",
@@ -431,7 +455,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every ascending chain of sub-modules of a Noetherian module eventually stabilises.",
@@ -446,7 +471,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "The angles of a triangle add up to two right angles.",
@@ -461,7 +487,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every positive even integer can be written as the sum of two primes.",
@@ -476,7 +503,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every matrix satisfies its own characteristic polynomial.",
@@ -493,7 +521,8 @@
     "equivalent": [
       "theorem matrix.charpoly_eq_aeval_charpoly{R : Type u} [CommRingₓ R] {n : Type v} [DecidableEq n] [Fintype n] (M : Matrix n n R) : ⇑(Polynomial.aeval M) M.charpoly = 0 ",
       "theorem matrix.aeval_char_poly{R : Type u} [CommRingₓ R] {n : Type v} [DecidableEq n] [Fintype n] (M : Matrix n n R) : ⇑(Polynomial.aeval M) M.charpoly = 0 "
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "The square root of an irrational number is irrational.",
@@ -515,7 +544,8 @@
       "theorem irrational_sqrt_of_irrational{r : ℝ} : Irrational r → Irrational (Real.sqrt r) ",
       "theorem irrational_real_sqrt{x : ℝ} (h : Irrational x) : Irrational (Real.sqrt x) ",
       "theorem irrational_sqrt_of_irrational{r : ℝ} (irr : Irrational r) : Irrational (Real.sqrt r) "
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "If the square of a number is even, the number itself is even.",
@@ -536,7 +566,8 @@
     ],
     "equivalent": [
       "theorem mul_self_even{m: ℕ} : Even (m * m) → Even m "
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "If every point of a subset of a topological space is contained in some open set, the subset itself is open.",
@@ -554,7 +585,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every non-identity element of a free group is of infinite order.",
@@ -572,7 +604,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "For any two relatively prime positive integers $a$ and $b$, every sufficiently large natural number $N$ can be written as a linear combination $ax + by$ of $a$ and $b$, where both $x$ and $y$ are natural numbers.",
@@ -587,7 +620,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "If every proper closed set of a topological space is compact, then the space itself is compact.",
@@ -599,7 +633,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every prime that is one greater than a multiple of four can be expressed as the sum of two squares.",
@@ -620,7 +655,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "A ring with all elements idempotent is commutative.",
@@ -647,7 +683,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "There are infinitely many pairs of primes that differ exactly by two.",
@@ -668,7 +705,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every finite division ring is a field.",
@@ -684,7 +722,8 @@
     ],
     "equivalent": [
       "{K : Type u} [DivisionRing K] (h : Finite K) : Field K "
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "The product of two positive numbers is at most the square of their average.",
@@ -706,7 +745,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "In any configuration of points on the plane, not all on a line, there is a line which contains exactly two of the points.",
@@ -718,7 +758,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "If each of two types can be mapped injectively into the other, then there is a bijection between them.",
@@ -730,7 +771,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "If a function from the unit interval to itself has a point of period three, then it has points of all positive periods.",
@@ -745,7 +787,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "A terminal object in a category is unique up to unique isomorphism.",
@@ -757,7 +800,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "The sum of the cubes of two positive integers is never equal to the cube of a third integer.",
@@ -775,7 +819,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "If every element of a group `G` has order two, then every pair of elements of `G` commutes.",
@@ -787,7 +832,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every prime number is either `2` or odd.",
@@ -805,7 +851,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "The product of two consequitive natural numbers is odd",
@@ -823,7 +870,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every constant function `f x = c` from real numbers to real numbers is differentiable.",
@@ -835,7 +883,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every index 2 subgroup of a group is free",
@@ -847,7 +896,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every subgroup of a free group is free",
@@ -859,7 +909,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every free group is torsion free",
@@ -874,7 +925,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "If the coefficients of a polynomial over rationals are integral, every rational root is integral.",
@@ -886,7 +938,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every natural number greater than `1` is divisible by a prime number.",
@@ -905,7 +958,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Six is not the sum of two prime numbers.",
@@ -925,7 +979,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "A finite torsion-free group is trivial",
@@ -940,7 +995,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Any homomorphism from the additive group of rational numbers to `ℤ` is trivial",
@@ -955,7 +1011,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every finite division ring is a field.",
@@ -973,7 +1030,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every finite topological space is compact",
@@ -994,7 +1052,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every surjective homomorphism from a finitely generated free group to itself is injective",
@@ -1012,7 +1071,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "A homomorphism between fields is either injective or trivial.",
@@ -1033,7 +1093,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every ascending chain of sub-modules of a Noetherian module eventually stabilises.",
@@ -1050,7 +1111,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "The angles of a triangle add up to two right angles.",
@@ -1062,7 +1124,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every positive even integer can be written as the sum of two primes.",
@@ -1080,7 +1143,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "The square root of an irrational number is irrational.",
@@ -1098,7 +1162,8 @@
       "{x : ℝ} (hxr : Irrational x) : Irrational (Real.sqrt x) ",
       "{x : ℝ} (hxr : Irrational x) : Irrational (Real.sqrt x) ",
       "{x : ℝ} (irr : Irrational x) : Irrational (Real.sqrt x) "
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "If the square of a number is even, the number itself is even.",
@@ -1113,7 +1178,8 @@
     ],
     "equivalent": [
       "{m : ℕ} (h : Even (m * m)) : Even m "
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "If every point of a subset of a topological space is contained in some open set, the subset itself is open.",
@@ -1137,7 +1203,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "The product of a complex number with its conjugate is a real number.",
@@ -1152,7 +1219,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "Every non-identity element of a free group is of infinite order.",
@@ -1164,7 +1232,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "An element of a discrete valuation ring is a unit if and only if it has a valuation of zero.",
@@ -1176,7 +1245,8 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "The exponential function is convex.",
@@ -1193,7 +1263,8 @@
     "equivalent": [
       " : ConvexOn ℝ Set.Univ Real.exp ",
       ": ConvexOn ℝ Set.Univ Real.exp "
-    ]
+    ],
+    "remarks": ""
   },
   {
     "main-prompt": "For any two relatively prime positive integers $a$ and $b$, every sufficiently large natural number $N$ can be written as a linear combination $ax + by$ of $a$ and $b$, where both $x$ and $y$ are natural numbers.",
@@ -1211,6 +1282,7 @@
     ],
     "equivalent": [
       
-    ]
+    ],
+    "remarks": ""
   }
 ]
