@@ -131,7 +131,7 @@
         "parse-message": "function expected at\n  Fintypeₓ\nterm has type\n  Type (?u.9 + 1) (during elaboration)"
       }
     ],
-    "remarks": ""
+    "remarks": "Seems to depend on using a field called `adj`"
   },
   {
     "main-prompt": "The number of partitions with odd parts is equal to the number of partitions with distinct parts.",
@@ -1021,7 +1021,7 @@
         "parse-message": "<input>:1:70: expected '}'"
       }
     ],
-    "remarks": ""
+    "remarks": "Wrong in various ways"
   },
   {
     "main-prompt": "Every polynomial of positive degree over reals is unbounded.",
@@ -1058,7 +1058,7 @@
         "parse-message": "unknown identifier 'decidable_linear_ordered_comm_ring' (during elaboration)"
       }
     ],
-    "remarks": ""
+    "remarks": "Wrong in various ways; imagined names, using a general case instead of reals, etc."
   },
   {
     "main-prompt": "Differentiability implies continuity.",
@@ -1294,7 +1294,7 @@
         "parse-message": "invalid field 'is_Hausdorff', the environment does not contain 'TopologicalSpace.is_Hausdorff'\n  t\nhas type\n  TopologicalSpace α (during elaboration)"
       }
     ],
-    "remarks": ""
+    "remarks": "Used a lot of incorrect names"
   },
   {
     "main-prompt": "Any sub-ring of a field that contains the identity is an integral domain",
@@ -1341,6 +1341,6 @@
         "parse-message": "failed to synthesize instance\n  Membership ?m.102 (Subring K) (during elaboration)"
       }
     ],
-    "remarks": ""
+    "remarks": "Wrong in various ways"
   }
 ]
