@@ -23711,25 +23711,29 @@
   "equivalent": [],
   "answer":
   "{R : Type _} [CommRingₓ R] {n : Type _} [DecidableEq n] [Fintype n] (M : Matrix n n R) : (Polynomial.aeval M) M.charpoly = 0 "},
- {"parsed": [],
+ {"parsed":
+  ["{R : Type u} [CommRingₓ R] {n : Type w} [DecidableEq n] [Fintype n] (M : Matrix n n R) : M.charpoly.eval₂ M = 0 "],
   "parse-checks":
   [{"success": false,
     "statement":
     "{R : Type u} [CommRing R] {n : Type w} [DecidableEq n] [Fintype n] (M : Matrix n n R) : M.charpoly.eval₂ M = 0 ",
-    "parse-message": "unknown universe level 'w' (during elaboration)"},
+    "parse-message":
+    "failed to synthesize instance\n  CommRingₓ R (during elaboration)"},
    {"success": false,
     "statement":
     "{R : Type u} [CommRingₓₓ R] {n : Type w} [DecidableEq n] [Fintype n] (M : Matrix n n R) : M.charpoly.eval₂ M = 0 ",
     "parse-message":
     "function expected at\n  CommRingₓₓ\nterm has type\n  Type (?u.5 + 1) (during elaboration)"},
-   {"success": false,
+   {"success": true,
     "statement":
     "{R : Type u} [CommRingₓ R] {n : Type w} [DecidableEq n] [Fintype n] (M : Matrix n n R) : M.charpoly.eval₂ M = 0 ",
-    "parse-message": "unknown universe level 'w' (during elaboration)"},
+    "code":
+    "forall {R : Type.{u}} [inst._@._hyg.5 : CommRingₓ.{?_uniq.5} R] {n : Type.{w}} [inst._@._hyg.11 : DecidableEq.{?_uniq.12} n] [inst._@._hyg.15 : Fintype.{?_uniq.20} n] (M : Matrix.{?_uniq.26 ?_uniq.25 ?_uniq.24} n n R), Eq.{?_uniq.29} ((?_uniq.5442 R inst._@._hyg.5 n inst._@._hyg.11 inst._@._hyg.15 M) -> (?_uniq.5442 R inst._@._hyg.5 n inst._@._hyg.11 inst._@._hyg.15 M)) (fun (x : ?_uniq.5442 R inst._@._hyg.5 n inst._@._hyg.11 inst._@._hyg.15 M) => Polynomial.eval₂.{?_uniq.103 ?_uniq.102} R (?_uniq.5442 R inst._@._hyg.5 n inst._@._hyg.11 inst._@._hyg.15 M) (Ringₓ.toSemiring.{u} R (CommRingₓ.toRing.{u} R inst._@._hyg.5)) (?_uniq.5443 R inst._@._hyg.5 n inst._@._hyg.11 inst._@._hyg.15 M) (?_uniq.5444 R inst._@._hyg.5 n inst._@._hyg.11 inst._@._hyg.15 M) x (Matrix.charpoly.{?_uniq.31 ?_uniq.30} R inst._@._hyg.5 n (fun (a : n) (b : n) => inst._@._hyg.11 a b) inst._@._hyg.15 M)) (OfNat.ofNat.{?_uniq.2821} ((?_uniq.5442 R inst._@._hyg.5 n inst._@._hyg.11 inst._@._hyg.15 M) -> (?_uniq.5442 R inst._@._hyg.5 n inst._@._hyg.11 inst._@._hyg.15 M)) 0 (?_uniq.5445 R inst._@._hyg.5 n inst._@._hyg.11 inst._@._hyg.15 M))"},
    {"success": false,
     "statement":
     "{R : Type u} [CommRing R] {n : Type w} [DecidableEq n] [Fintypeₓ n] (M : Matrix n n R) : M.charpoly.eval₂ M = 0 ",
-    "parse-message": "unknown universe level 'w' (during elaboration)"},
+    "parse-message":
+    "function expected at\n  Fintypeₓ\nterm has type\n  Type (?u.20 + 1) (during elaboration)"},
    {"success": false,
     "statement":
     "{R : Type u} [CommRingₓₓ R] {n : Type w} [DecidableEq n] [Fintypeₓ n] (M : Matrix n n R) : M.charpoly.eval₂ M = 0 ",
@@ -23738,7 +23742,8 @@
    {"success": false,
     "statement":
     "{R : Type u} [CommRingₓ R] {n : Type w} [DecidableEq n] [Fintypeₓ n] (M : Matrix n n R) : M.charpoly.eval₂ M = 0 ",
-    "parse-message": "unknown universe level 'w' (during elaboration)"},
+    "parse-message":
+    "function expected at\n  Fintypeₓ\nterm has type\n  Type (?u.20 + 1) (during elaboration)"},
    {"success": false,
     "statement":
     "{R : Type u} [CommRing R] {n : Type v} [DecidableEq n] [Fintype n] (M : Matrix n n R) (p : Polynomial R) : p = 0 ∨ p = M.charpoly ↔ (p %ₘ M.charpoly).eval M = 0 ",
@@ -23853,7 +23858,7 @@
     "statement":
     "{R : Type u} [CommRingₓ R] {n : Type v} [DecidableEq n] [Fintypeₓ n] (M : Matrix n n R) {p : Polynomial R} : M.charpoly = p ↔ matrix_mx R M (p.eval₂ = *(≠)) M ",
     "parse-message": "<input>:1:151: expected term"}],
-  "number-parsed": 0,
+  "number-parsed": 1,
   "number-equivalent": 0,
   "metadata":
   {"use_theorem_name": false,
@@ -23885,7 +23890,8 @@
    "Natural language version: \" The **Cayley-Hamilton Theorem**, that the characteristic polynomial of a linear map, applied to the linear map itself, is zero.  See `matrix.aeval_self_charpoly` for the equivalent statement about matrices.\" Translate the natural language version to a Lean mathlib version:\n theorem {R : Type u} {M : Type v} [comm_ring R] [nontrivial R] [add_comm_group M] [module R M] [module.free R M] [module.finite R M] (f : M →ₗ[R] M) :\n⇑(polynomial.aeval f) f.charpoly = 0 := \n\nNatural language version: \"The **Cayley-Hamilton Theorem**, that the characteristic polynomial of a matrix, applied to the matrix itself, is zero.  This holds over any commutative ring.  See `linear_map.aeval_self_charpoly` for the equivalent statement about endomorphisms.\" Translate the natural language version to a Lean mathlib version:\n theorem {R : Type u} [comm_ring R] {n : Type w} [decidable_eq n] [fintype n] (M : matrix n n R) :\n⇑(polynomial.aeval M) M.charpoly = 0 := \n\nNatural language version: \"`charpoly f` is the characteristic polynomial of the matrix of `f` in any basis.\" Translate the natural language version to a Lean mathlib version:\n theorem {R : Type u} {M : Type v} [comm_ring R] [nontrivial R] [add_comm_group M] [module R M] [module.free R M] [module.finite R M] (f : M →ₗ[R] M) {ι : Type w} [fintype ι] (b : basis ι R M) :\n(⇑(linear_map.to_matrix b b) f).charpoly = f.charpoly := \n\nNatural language version: \" Any matrix polynomial `p` is equivalent under evaluation to `p %ₘ M.charpoly`; that is, `p` is equivalent to a polynomial with degree less than the dimension of the matrix.\" Translate the natural language version to a Lean mathlib version:\n theorem {R : Type u} [comm_ring R] {n : Type v} [decidable_eq n] [fintype n] (M : matrix n n R) (p : polynomial R) :\n⇑(polynomial.aeval M) p = ⇑(polynomial.aeval M) (p %ₘ M.charpoly) := \n\nNatural language version: \"Every matrix satisfies its own characteristic polynomial.\" Translate the natural language version to a Lean mathlib version:\n theorem ",
    "main_prompt": "Every matrix satisfies its own characteristic polynomial.",
    "codex_time": "5.290859720989829"},
-  "grouped": [],
+  "grouped":
+  [["{R : Type u} [CommRingₓ R] {n : Type w} [DecidableEq n] [Fintype n] (M : Matrix n n R) : M.charpoly.eval₂ M = 0 "]],
   "equivalent": [],
   "answer":
   "{R : Type _} [CommRingₓ R] {n : Type _} [DecidableEq n] [Fintype n] (M : Matrix n n R) : (Polynomial.aeval M) M.charpoly = 0 "},
