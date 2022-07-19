@@ -13,7 +13,7 @@
     "equivalent": [
       
     ],
-    "remarks": "The second appears to be correct, the first missed part of the hypothesis."
+    "remarks": "The second appears to be correct, the first missed part of the hypothesis. The first also uses `iff` when the given statement uses just `if`."
   },
   {
     "main-prompt": "Every prime that is one greater than a multiple of four can be expressed as the sum of two squares.",
@@ -48,7 +48,7 @@
     "equivalent": [
       
     ],
-    "remarks": "May be correct"
+    "remarks": "The hypothesis of the segment being unit length is not used anywhere."
   },
   {
     "main-prompt": "A ring with all elements idempotent is commutative.",
@@ -86,7 +86,7 @@
     "equivalent": [
       
     ],
-    "remarks": "The answers seem correct, just having output being a commutative ring rather than commuting (as in the model answer)."
+    "remarks": "The answers seem correct, just having output being a commutative ring rather than commuting (as in the model answer). This is also an issue with the input statement, which uses the word `idempotent` instead of `order 2` or something similar."
   },
   {
     "main-prompt": "There are infinitely many pairs of primes that differ exactly by two.",
@@ -171,7 +171,7 @@
     "equivalent": [
       "theorem function.embedding.schroeder_bernstein{α : Type u} {β : Type v} {f : α → β} {g : β → α} (hf : Function.Injective f) (hg : Function.Injective g) : ∃ (h : α → β), Function.bijective h "
     ],
-    "remarks": "Success!"
+    "remarks": "Success! The second one adds the unnecessary assumption that `g` is a right-inverse of `f`."
   },
   {
     "main-prompt": "Every non-empty poset in which every chain has an upper bound contains a maximal element.",
@@ -222,7 +222,7 @@
     "equivalent": [
       
     ],
-    "remarks": "Wrong, got quantifiers in the wrong place"
+    "remarks": "Wrong, got quantifiers in the wrong place. The second one replaces the unit interval with an arbitrary type."
   },
   {
     "main-prompt": "A terminal object in a category is unique up to unique isomorphism.",
@@ -251,7 +251,7 @@
     "equivalent": [
       
     ],
-    "remarks": "Both are correct though the second has a redundant assumption"
+    "remarks": "The second has a redundant assumption. The first is not a true proposition since (0, 0, 0) is a solution."
   },
   {
     "main-prompt": "Every prime number is either `2` or odd.",
@@ -375,7 +375,7 @@
     "equivalent": [
       
     ],
-    "remarks": "The third is correct. The other cases the role of 2 was partly misunderstood."
+    "remarks": "The third is correct. The other cases the role of 2 was partly misunderstood. The last one somehow states Fermat's Little theorem instead."
   },
   {
     "main-prompt": "A finite torsion-free group is trivial",
@@ -402,7 +402,7 @@
     "equivalent": [
       
     ],
-    "remarks": "Correct"
+    "remarks": "Correct. The difference is a `Fintype` versus a `Finite` typeclass instance, both of which are valid here."
   },
   {
     "main-prompt": "Every finite topological space is compact",
@@ -427,7 +427,7 @@
     "equivalent": [
       
     ],
-    "remarks": "Some correct, some roughly correct"
+    "remarks": "Some correct, some roughly correct. There are a few persistent cases of the `Type*` syntax. Some state it as an  `iff` condition, which is wrong."
   },
   {
     "main-prompt": "Every surjective homomorphism from a finitely generated free group to itself is injective",
@@ -456,7 +456,7 @@
     "equivalent": [
       
     ],
-    "remarks": "Wrong"
+    "remarks": "Wrong. It might be worthwhile rephrasing the prompt as 'Every non-trivial homomorphism of fields is injective' and seeing how the model performs."
   },
   {
     "main-prompt": "Every ascending chain of sub-modules of a Noetherian module eventually stabilises.",
@@ -586,7 +586,7 @@
     "equivalent": [
       
     ],
-    "remarks": "The first two seem to be correct"
+    "remarks": "The first two seem to be correct. The model answer in this case is missing the condition that the point `x` is in the open set `U`."
   },
   {
     "main-prompt": "Every non-identity element of a free group is of infinite order.",
@@ -621,7 +621,7 @@
     "equivalent": [
       
     ],
-    "remarks": ""
+    "remarks": "The assumptions of positivity are missing, without which the theorem is wrong. The model seems to be aware of this result already (Sylvester's coin problem), since it has constructed some lower bounds on `N` automatically."
   },
   {
     "main-prompt": "If every proper closed set of a topological space is compact, then the space itself is compact.",
