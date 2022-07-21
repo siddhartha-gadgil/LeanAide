@@ -111,9 +111,9 @@ def withDotMatch(s: String): Vector[String] = {
   }
 }
 
-def withXRep(s: String) = xNames.foldLeft(Vector(s))(withAppend(1))
+def withXRep(s: String) : Vector[String] = xNames.foldLeft(Vector(s))(withAppend(1))
 
-def withXXRep(s: String) = xxNames.foldLeft(Vector(s))(withAppend(2))
+def withXXRep(s: String) : Vector[String] = xxNames.foldLeft(Vector(s))(withAppend(2))
 
 lazy val blob = os.read(os.pwd / "data" / "output.json")
 
@@ -154,6 +154,13 @@ def cleanOutputExtend(jsBlob: ujson.Arr): Unit = {
     println(s"group: $i, size: ${mappedNewval3.size}")
     jsBlob(i)("outputs") = ujson.Arr(mappedNewval3.seq: _*)
   }
+}
+
+def polyMap(s: String) : Vector[String]= {
+  val ss : String = mapDict(s)
+  val x = withXRep(ss).toVector
+  val xx = x.flatMap(withXXRep(_))
+  (ss +: (x ++ xx)).distinct.toVector
 }
 
 def lastPiecesMap(ss: Vector[String]) = ss
