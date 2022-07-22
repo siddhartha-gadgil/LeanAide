@@ -55,13 +55,13 @@ def segmentMap(ss: Vector[String]) = ss
 def piecesMap(ss: Vector[String]) =
   ss.map(s => segmentsNoIs(s) -> s).toMap ++ ss.map(s => segments(s) -> s).toMap
 
-val binNames = os.read.lines(os.pwd / "data" / "binport_names.txt")
-val allNames = os.read.lines(os.pwd / "data" / "all_names.txt")
-val allNamesPieces = allNames.flatMap(_.split("\\.")).distinct
-val allNamePieceSegs = piecesMap(allNamesPieces.toVector)
-val binNamesPieces = binNames.flatMap(_.split("\\.")).distinct
-val binSegs = segmentMap(binNames.toVector)
-val nameMatch = allNames.flatMap(s1 =>
+lazy val binNames = os.read.lines(os.pwd / "data" / "binport_names.txt")
+lazy val allNames = os.read.lines(os.pwd / "data" / "all_names.txt")
+lazy val allNamesPieces = allNames.flatMap(_.split("\\.")).distinct
+lazy val allNamePieceSegs = piecesMap(allNamesPieces.toVector)
+lazy val binNamesPieces = binNames.flatMap(_.split("\\.")).distinct
+lazy val binSegs = segmentMap(binNames.toVector)
+lazy val nameMatch = allNames.flatMap(s1 =>
   binSegs
     .get(piecesSegments(s1))
     .orElse(binSegs.get(piecesSegmentsNoIs(s1)))
@@ -78,27 +78,27 @@ lazy val namePieceMatch = allNamesPieces.flatMap(s1 =>
 lazy val nameMatchAll = (namePieceMatch ++ nameMatch).distinct
 
 import $ivy.`com.lihaoyi::upickle:1.6.0`
-val reps =
+lazy val reps =
   nameMatch.filter { case (a, b) => a != b && b != "" && b != "type" }.map {
     case (a, b) =>
       ujson.Obj("snakecase" -> a, "camelcase" -> b)
   }
-val jsreps = ujson.write(reps, 2)
+lazy val jsreps = ujson.write(reps, 2)
 
-val xxNames =
+lazy val xxNames =
   binNames.filter(w => w.endsWith("\u2093\u2093") && !w.contains("."))
-val xNames = binNames.filter(w =>
+lazy val xNames = binNames.filter(w =>
   w.endsWith("\u2093") && !w.contains(".") && !xxNames.contains(w)
 )
 
-val dotPairs = nameMatch
+lazy val dotPairs = nameMatch
   .filter(_._2.contains("."))
   .map { case (a, b) => (a.split("\\.").last, b.split("\\.").last) }
   .groupMap(_._1)(_._2)
   .map { case (a, v) => a -> v.toVector.distinct.filterNot(_ == a) }
   .filterNot(_._2.isEmpty)
 
-val dotPairVector = dotPairs.toVector.sortBy(_._1.length()).reverse
+lazy val dotPairVector = dotPairs.toVector.sortBy(_._1.length()).reverse
 
 def withAppend(t: Int)(accum: Vector[String], rep: String): Vector[String] = {
   val r = segmentMatch(rep.dropRight(t))
@@ -119,9 +119,9 @@ lazy val blob = os.read(os.pwd / "data" / "output.json")
 
 lazy val jsBlob = upickle.default.read[ujson.Arr](blob)
 
-val dictBlob = os.read(os.pwd / "data" / "case_dictionary.json")
-val dictJson = upickle.default.read[Vector[ujson.Obj]](dictBlob)
-val dictMapper = dictJson
+lazy val dictBlob = os.read(os.pwd / "data" / "case_dictionary.json")
+lazy val dictJson = upickle.default.read[Vector[ujson.Obj]](dictBlob)
+lazy val dictMapper = dictJson
   .map(obj => (wordMatch(obj("snakecase").str), obj("camelcase").str))
   .filter(_._2.length() > 1)
   .sortBy(_._1.toString.length())
@@ -171,11 +171,11 @@ def lastPiecesMap(ss: Vector[String]) = ss
   .map(s => segments(s.split("\\.").last) -> s)
   .toMap
 
-val lastPieceSegs = lastPiecesMap(binNames.toVector)
+lazy val lastPieceSegs = lastPiecesMap(binNames.toVector)
 
-val pureNames = allNames.filterNot(_.contains("."))
+lazy val pureNames = allNames.filterNot(_.contains("."))
 
-val lastPiecesMatch = pureNames
+lazy val lastPiecesMatch = pureNames
   .flatMap(s1 =>
     lastPieceSegs
       .get(segments(s1))
@@ -185,11 +185,11 @@ val lastPiecesMatch = pureNames
   .toVector
   .filter(_._1 != "Type")
 
-val repsLonger = lastPiecesMatch.filter { case (a, b) => a != b }.map {
+lazy val repsLonger = lastPiecesMatch.filter { case (a, b) => a != b }.map {
   case (a, b) => ujson.Obj("snakecase" -> a, "camelcase" -> b)
 }
 
-val jsrepsLonger = ujson.write(repsLonger, 2)
+lazy val jsrepsLonger = ujson.write(repsLonger, 2)
 
 def seeOut(): Unit = {
   val blob = os.read(os.pwd / "data" / "output.json")
@@ -201,9 +201,9 @@ def seeOut(): Unit = {
     println(jsBlob(i)("outputs")(j))
 }
 
-val dictBlobExt = os.read(os.pwd / "data" / "case_dictionary_extend.json")
-val dictJsonExt = upickle.default.read[Vector[ujson.Obj]](dictBlobExt)
-val dictMapperExt = dictJsonExt.map(obj =>
+lazy val dictBlobExt = os.read(os.pwd / "data" / "case_dictionary_extend.json")
+lazy val dictJsonExt = upickle.default.read[Vector[ujson.Obj]](dictBlobExt)
+lazy val dictMapperExt = dictJsonExt.map(obj =>
   (wordMatch(obj("snakecase").str), obj("camelcase").str)
 )
 def mapDictExt(s: String) = dictMapperExt.foldLeft(s) {
@@ -227,4 +227,12 @@ def identifiersMult(blob: String) = {
     .toVector
     .sortBy(_._2)
     .reverse
+}
+
+@main
+def caseMap(path: os.Path = os.pwd) : Unit = {
+  val blob = os.read(path / "output.json")
+  val jsBlob = upickle.default.read[ujson.Arr](blob)
+  cleanOutputExtend(jsBlob)
+  os.write.over(path / "output_casemap.json", ujson.write(jsBlob, 2))
 }

@@ -74,7 +74,7 @@
         "parse-message": "<input>:1:281: unexpected end of input"
       }
     ],
-    "remarks": ""
+    "remarks": "Lot of bad syntax"
   },
   {
     "main-prompt": "A finite graph in which every two vertices have precisely one common neighbour contains a vertex that is adjacent to all other vertices.",

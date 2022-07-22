@@ -20,9 +20,18 @@ def main (args: List String) : IO Unit := do
     {module:= `LeanCodePrompts.ParseJson},
     {module := `Mathbin.All}] {}
 
-  let inpfile :=  System.mkFilePath [args.head!]
+  let (inpName, outName) := 
+    match args with
+    | [] => ("data/output_casemap.json", "data/results.json")
+    | p :: [] => 
+        if p.endsWith "/" then 
+          (p ++ "output_casemap.json", p ++ "results.json")
+       else  
+          (p++ "/output_casemap.json", p++ "/results.json")
+    | inp :: out :: _ => (inp, out) 
+  let inpfile :=  System.mkFilePath [inpName]
   let inp ←  IO.FS.readFile inpfile
-  let outfile :=  System.mkFilePath [args.tail!.head!]
+  let outfile :=  System.mkFilePath [outName]
   let mut out : Json := Json.null
   let core := readJsonCore inp
   let io? := 
