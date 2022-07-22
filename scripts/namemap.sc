@@ -230,7 +230,7 @@ def identifiersMult(blob: String) = {
 }
 
 @main
-def caseMap(path: os.Path = os.pwd) : Unit = {
+def caseMap(path: os.Path = os.pwd / "data") : Unit = {
   val blob = os.read(path / "output.json")
   val jsBlob = upickle.default.read[ujson.Arr](blob)
   cleanOutputExtend(jsBlob)
