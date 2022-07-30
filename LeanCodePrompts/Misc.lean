@@ -43,3 +43,9 @@ Text: $\ker \phi$ is the set of all $a\in A$ that map to the identity element in
 def ker :=  {a : A // φ a = e}
 
 example : 1 = 1 := by simp_arith
+
+def egProc : IO String := do
+  let out ←  IO.Process.output {cmd:= "curl", args:= #["example.com"]}
+  return out.stdout
+
+#eval egProc
