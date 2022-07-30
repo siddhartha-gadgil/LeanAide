@@ -81,14 +81,14 @@ open Lean Parser Command
 
 #check commentBody
 
-elab "//-" cb:commentBody : term => do
+elab "//--" cb:commentBody : term => do
   let s := cb.getAtomVal!
   let s := s.dropRight 2
   logInfo m!"{s}"
   return mkConst ``Unit
 
 set_option pp.rawOnError true
-#check //- Every prime is nice-/
+#check //-- Every prime is nice-/
 
 def egProc : IO String := do
   let out ←  IO.Process.output {cmd:= "curl", args:= #["example.com"]}
