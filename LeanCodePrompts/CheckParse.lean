@@ -273,7 +273,16 @@ def groupTheoremsCore(ss: Array String)(opens: List String := [])
   : CoreM (Array (Array String)) := 
     (groupThms ss opens levelNames).run'.run'
 
+def groupThmsSort(ss: Array String)(opens: List String := []) 
+  (levelNames : List Lean.Name := levelNames)
+  : TermElabM (Array (Array String)) := do
+  let gps ← groupThms ss opens levelNames
+  return gps.qsort (fun xs ys => xs.size > ys.size)
 
+def groupThmsSortCore(ss: Array String)(opens: List String := []) 
+  (levelNames : List Lean.Name := levelNames)
+  : CoreM (Array (Array String)) := 
+    (groupThmsSort ss opens levelNames).run'.run'
 
 -- Tests
 
