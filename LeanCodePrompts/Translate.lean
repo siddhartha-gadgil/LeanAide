@@ -15,11 +15,15 @@ def egOut := #["{p : ℕ} (hp : Nat.Prime p) :  p = 2 ∨ p % 2 = 1 ",
    "{p : ℕ} (hp : Nat.Prime p) : p = 2 ∨ p % 2 = 1 ",
    "Nonsense output to test filtering"]
 
-#check Bool.true
+def egBlob := "[\"{p : ℕ} (hp : Nat.Prime p) :  p = 2 ∨ p % 2 = 1 \",
+   \"(p : ℕ) :  Nat.Prime p ↔ p = 2 ∨ p % 2 = 1 \",
+   \"{p : ℕ} (hp : Nat.Prime p) : p = 2 ∨ p % 2 = 1 \",
+   \"(n : ℕ) (hp : Nat.Prime n) : n = 2 ∨ n % 2 = 1 \",
+   \"{p : ℕ} (hp : Nat.Prime p) : p = 2 ∨ p % 2 = 1 \",
+   \"Nonsense output to test filtering\"]"
 
-def textToExpr (s: String) : TermElabM Expr := do
-  -- logInfo m!"text: {s}"
-  let output := egOut
+
+def arrayToExpr (output: Array String) : TermElabM Expr := do
   let elaborated ← output.filterM  <| 
       fun s => do
         let chk ← elabThm s
@@ -36,10 +40,27 @@ def textToExpr (s: String) : TermElabM Expr := do
   let thm := thmExc.toOption.get!
   return thm
 
-elab "/---" cb:commentBody : term => do
+def textToExpr (s: String) : TermElabM Expr := do
+  let json ← readJson s
+  let outArr : Array String ← 
+    match json.getArr? with
+    | Except.ok arr => 
+        let parsedArr : Array String ← 
+          arr.filterMapM <| fun js =>
+          match js.getStr? with
+          | Except.ok str => pure (some str)
+          | Except.error e => 
+            throwError m!"json string expected but got {js}, error: {e}"
+        pure parsedArr
+    | Except.error e => throwError m!"json parsing error: {e}"
+  let output := outArr
+  arrayToExpr output
+
+
+elab "//-" cb:commentBody : term => do
   let s := cb.getAtomVal!
   let s := s.dropRight 2
-  let e ← textToExpr s
+  let e ← textToExpr egBlob
   logInfo m!"{e}"
   return e
 
