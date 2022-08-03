@@ -43,9 +43,11 @@ def index():
 # ...
 @app.route('/post_json', methods=['POST'])
 def process_json():
-    data = request.json
-    main_prompt = data["prompt"]
-    k = data["k"]
+    main_prompt = str(request.data)
+    #return main_prompt
+    # data = request.json
+    # main_prompt = data["prompt"]
+    #k = data["k"]
     #lis = similar_from(main_prompt,k)
     corpus_embeddings = None
     embedding_path = "F:/ATP_WORK/ATP-Project/SentenceSimilarityTask/embeddings_store/all-mpnet-base-v2.pkl"
@@ -55,21 +57,24 @@ def process_json():
 
     query = prompt_design.retrieve_k_few_shot_prompts(main_prompt,
         corpus_path="F:/ATP_WORK/ATP-Project/data/clean_prompts.json",
-        top_k=k,
+        top_k=4,
         model_name = 'sentence-transformers/all-mpnet-base-v2',
         use_precomputed_embeddings=True,
         use_theorem_name=False,
         corpus_embeddings=corpus_embeddings)
     
+    #return query
     query_parameters = {'model': 'code-davinci-002','temperature':0.2,'max_tokens':150,'stop': ':=','n':3}
+    #return query_parameters
     query_parameters["prompt"] = query[0]
     ret = codex_access_utils.codex_run(query_parameters)
-
+    output = json.loads(ret.stdout.decode("utf-8"))
+    return str(output["choices"])
 
     
 
 
-    return json.loads(ret.stdout.decode("utf-8"))
+    #return json.loads(ret.stdout.decode("utf-8"))
 
 def process(lis):
     ans = ""
