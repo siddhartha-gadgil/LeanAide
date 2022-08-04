@@ -34,8 +34,8 @@ macro_rules
 | `(λ $x:ident, $y:term) => `(fun $x => $y)
 | `(λ $x:ident : $type:term , $y:term) => 
   `(fun ($x : $type)  => $y)
-| `(λ $xs:typed_ident* , $y:term) => 
-    xs.foldrM (fun x acc => `(fun $x => $acc)) y
+-- | `(λ $xs:typed_ident* , $y:term) =>
+--    xs.foldrM (fun x acc => `(fun $x => $acc)) y
 | `(fun $x:ident : $type:term , $y:term) => 
   `(fun ($x : $type)  => $y)
 | `(fun  $x:ident : $type:term  , $y:term) => 
@@ -193,7 +193,7 @@ macro_rules
 | `(tactic| lynx) => 
   `(tactic|try(repeat rw [true_true_iff_True]);try (repeat (rw [true_false_iff_false])))
 | `(tactic| lynx at $t:ident) => 
-  `(tactic|try(repeat rw [true_true_iff_True] at $t);try (repeat (rw [true_false_iff_false] at $t)))
+  `(tactic| admit) -- try(repeat rw [true_true_iff_True] at $t);try (repeat (rw [true_false_iff_false] at $t)))
 | `(tactic| lynx at *) => 
   `(tactic|try(repeat rw [true_true_iff_True] at *);try (repeat (rw [true_false_iff_false] at *)))
 
@@ -261,11 +261,11 @@ def groupThms(ss: Array String)(opens: List String := [])
     let mut groups: Array (Array String) := Array.empty
     for s in ss do
       match ← groups.findIdxM? (fun g => 
-          equalThms s g[0] opens levelNames) with
+          equalThms s g[0]! opens levelNames) with
       |none  => 
         groups := groups.push #[s]
       | some j => 
-        groups := groups.set! j (groups[j].push s)
+        groups := groups.set! j (groups[j]!.push s)
     return groups
 
 def groupTheoremsCore(ss: Array String)(opens: List String := []) 
