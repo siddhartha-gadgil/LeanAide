@@ -89,4 +89,12 @@ elab "//-" cb:commentBody : term => do
   logInfo m!"{e}"
   return e
 
+elab "-#-" cb:commentBody : command => do
+  let s := cb.raw.getAtomVal!
+  let s := s.dropRight 2
+  logInfo m!"{s}"
+
 #check TSyntax
+
+-- The `-/` at the end is still needed since it is treated as a `commentBody`
+-#- Every field is a ring -/
