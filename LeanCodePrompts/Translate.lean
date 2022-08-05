@@ -41,7 +41,7 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
       logWarning m!"{out}"
     throwError "No valid output from codex"  
   let groupSorted ← groupThms elaborated
-  let topStr := groupSorted[0][0]
+  let topStr := groupSorted[0]![0]!
   let thmExc ← elabThm topStr
   let thm := thmExc.toOption.get!
   return thm
@@ -83,9 +83,10 @@ def textToExpr' (s: String) : TermElabM Expr := do
   arrayToExpr output
 
 elab "//-" cb:commentBody : term => do
-  let s := cb.getAtomVal!
+  let s := cb.raw.getAtomVal!
   let s := s.dropRight 2
   let e ← textToExpr' egBlob'
   logInfo m!"{e}"
   return e
 
+#check TSyntax
