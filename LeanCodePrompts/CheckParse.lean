@@ -20,6 +20,16 @@ declare_syntax_cat typed_ident
 syntax "(" ident ":" term ")" : typed_ident
 syntax "{" ident ":" term "}" : typed_ident
 
+#check Array.foldrM
+#check TSyntaxArray.rawImpl
+#check TSyntax.mk
+
+instance : Coe (Syntax) (TSyntax n) where
+  coe := TSyntax.mk
+
+instance : Coe (Array Syntax) (Array (TSyntax n)) where
+  coe := Array.map Coe.coe
+
 syntax "λ" ident "," term : term
 syntax "λ"  ident ":" term  "," term : term
 syntax "fun" ident "," term : term
@@ -34,8 +44,8 @@ macro_rules
 | `(λ $x:ident, $y:term) => `(fun $x => $y)
 | `(λ $x:ident : $type:term , $y:term) => 
   `(fun ($x : $type)  => $y)
--- | `(λ $xs:typed_ident* , $y:term) =>
---    xs.foldrM (fun x acc => `(fun $x => $acc)) y
+| `(λ $xs:typed_ident* , $y) =>
+   Array.foldrM (fun x acc => `(fun $x => $acc)) y xs.raw
 | `(fun $x:ident : $type:term , $y:term) => 
   `(fun ($x : $type)  => $y)
 | `(fun  $x:ident : $type:term  , $y:term) => 
@@ -193,7 +203,7 @@ macro_rules
 | `(tactic| lynx) => 
   `(tactic|try(repeat rw [true_true_iff_True]);try (repeat (rw [true_false_iff_false])))
 | `(tactic| lynx at $t:ident) => 
-  `(tactic| admit) -- try(repeat rw [true_true_iff_True] at $t);try (repeat (rw [true_false_iff_false] at $t)))
+  `(tactic| try(repeat rw [true_true_iff_True] at $t:ident);try (repeat (rw [true_false_iff_false] at $t:ident)))
 | `(tactic| lynx at *) => 
   `(tactic|try(repeat rw [true_true_iff_True] at *);try (repeat (rw [true_false_iff_false] at *)))
 
