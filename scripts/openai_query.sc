@@ -3,13 +3,13 @@ import $ivy.`com.lihaoyi::upickle:1.6.0`
 
 val key = sys.env("OPENAI_API_KEY")
 
-def postCode(prompt: String, temp: Float = 0.2F) = 
-    requests.post("https://api.openai.com/v1/completions", data=ujson.Obj("model" -> "code-davinci-002", "prompt" -> prompt, "temperature" -> temp, "max_tokens" -> 150), headers = Map("content-type" -> "application/json", "authorization" -> s"Bearer $key"))
+def postCode(prompt: String, stopTokens: List[String] = List(":=", "-/"), temp: Float = 0.2F) = 
+    requests.post("https://api.openai.com/v1/completions", data=ujson.Obj("model" -> "code-davinci-002", "prompt" -> prompt, "temperature" -> temp, "max_tokens" -> 150, "stop" -> stopTokens), headers = Map("content-type" -> "application/json", "authorization" -> s"Bearer $key"))
 
-def responseText(r: requests.Response, stopToken: String) : String = {
+def responseText(r: requests.Response) : String = {
     val js = upickle.default.read[ujson.Obj](r.data.array)
     val text = js("choices")(0)("text").str
-    text.split(stopToken).head 
+    text
 }
 
 // An example for code generation
