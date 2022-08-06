@@ -5,8 +5,9 @@
 .ammonite/
 .metals/
 .vscode/
-OpenaiModelPrompting/Some_prac_work/Open_ai_key.py
+OpenaiModelPrompting/Open_ai_key.py
 __pycache__
 OpenaiModelPrompting/*/.ipynb_checkpoints
 SentenceSimilarityTask/embeddings_store
 /_target/
+/OpenaiModelPrompting/easy_to_hard

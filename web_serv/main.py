@@ -1,20 +1,15 @@
 import sys
-sys.path.append("F:/ATP_WORK/ATP-Project/SentenceSimilarityTask/")
-sys.path.append("F:/ATP_WORK/ATP-Project/OpenaiModelPrompting/NL_to_Lean_exp1/")
+sys.path.append("../../ATP-Project/OpenaiModelPrompting/")
 import json
-import prompt_design
+import NL_to_Lean_exp1.prompt_design
 import codex_access_utils
 from flask import Flask,render_template
 from flask import request
 import pickle
 from sentence_similarity import *
+import copy
 
 app = Flask(__name__)
-
-# class ItemTable(Table):
-#     name = Col('score')
-#     description = Col('dct')
-
 
 @app.route("/")
 def index():
@@ -50,13 +45,13 @@ def process_json():
     #k = data["k"]
     #lis = similar_from(main_prompt,k)
     corpus_embeddings = None
-    embedding_path = "F:/ATP_WORK/ATP-Project/SentenceSimilarityTask/embeddings_store/all-mpnet-base-v2.pkl"
+    embedding_path = "../../ATP-Project/SentenceSimilarityTask/embeddings_store/all-mpnet-base-v2.pkl"
     with open(embedding_path, "rb") as fIn:
             stored_data = pickle.load(fIn)
             corpus_embeddings = stored_data['embeddings'] 
 
-    query = prompt_design.retrieve_k_few_shot_prompts(main_prompt,
-        corpus_path="F:/ATP_WORK/ATP-Project/data/clean_prompts.json",
+    query = NL_to_Lean_exp1.prompt_design.retrieve_k_few_shot_prompts(main_prompt,
+        corpus_path="../../ATP-Project/data/clean_prompts.json",
         top_k=4,
         model_name = 'sentence-transformers/all-mpnet-base-v2',
         use_precomputed_embeddings=True,
@@ -64,12 +59,18 @@ def process_json():
         corpus_embeddings=corpus_embeddings)
     
     #return query
-    query_parameters = {'model': 'code-davinci-002','temperature':0.2,'max_tokens':150,'stop': ':=','n':3}
+    query_parameters = {'model': 'code-davinci-002','temperature':0.9,'max_tokens':150,'stop': ':=','n':3}
     #return query_parameters
     query_parameters["prompt"] = query[0]
     ret = codex_access_utils.codex_run(query_parameters)
     output = json.loads(ret.stdout.decode("utf-8"))
-    return str(output["choices"])
+    ans = copy.deepcopy(output["choices"])
+    # for i,line in enumerate(ans):
+    #     ans[i]["text"] = line["text"].replace("\'","\"")
+
+
+    return str(json.dumps(output["choices"],ensure_ascii=False))
+    #return str(ans)
 
     
 
