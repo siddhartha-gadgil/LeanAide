@@ -89,12 +89,22 @@ elab "//-" cb:commentBody : term => do
   logInfo m!"{e}"
   return e
 
-elab "#/-" cb:commentBody : command => do
-  let s := cb.raw.getAtomVal!
-  let s := s.dropRight 2
-  logInfo m!"{s}"
+/- A function that autoformalises a statement passed as a string (set to a dummy function for now) -/
+def formalizeStmt : String → CommandElabM (TSyntax `term) :=
+  λ _ => do pure $ ← `(∀ n : Nat, n = n)
 
-#check TSyntax
+elab "#theorem" name:ident " : " stmt:str ":=" prf:term : command => do
+  let fmlstmt ← formalizeStmt stmt.getString
+  logInfoAt stmt m!"{fmlstmt}"
+  elabCommand $ ← `(theorem $name:ident : $fmlstmt:term := $prf:term)
 
--- The `-/` at the end is still needed since it is treated as a `commentBody`
-#/- Every field is a ring -/
+elab "#example" stmt:str ":=" prf:term : command => do
+  let fmlstmt ← formalizeStmt stmt.getString
+  logInfoAt stmt m!"{fmlstmt}"
+  elabCommand $ ← `(example : $fmlstmt:term := $prf:term)
+
+#theorem test : "Every field is a ring" := by
+  intro; rfl
+
+#example "The sum of any two natural numbers is prime" := by
+  simp
