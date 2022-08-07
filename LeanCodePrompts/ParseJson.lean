@@ -100,6 +100,8 @@ set_option pp.rawOnError true
 
 def egProc : IO String := do
   let out ←  IO.Process.output {cmd:= "curl", args:= #["example.com"]}
+  let key ← IO.getEnv "OPENAI_API_KEY"
+  IO.println key
   return out.stdout
 
 #eval egProc
