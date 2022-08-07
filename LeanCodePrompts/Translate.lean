@@ -82,6 +82,11 @@ def textToExpr' (s: String) : TermElabM Expr := do
   let output := outArr
   arrayToExpr output
 
+def textToExprStx' (s : String) : TermElabM (Expr × TSyntax `term) := do
+  let e ← textToExpr' s
+  let (stx : Term) ← (PrettyPrinter.delab e)
+  return (e, stx)
+
 elab "//-" cb:commentBody : term => do
   let s := cb.raw.getAtomVal!
   let s := s.dropRight 2
@@ -89,22 +94,13 @@ elab "//-" cb:commentBody : term => do
   logInfo m!"{e}"
   return e
 
-/- A function that autoformalises a statement passed as a string (set to a dummy function for now) -/
-def formalizeStmt : String → CommandElabM (TSyntax `term) :=
-  λ _ => do pure $ ← `(∀ n : Nat, n = n)
 
 elab "#theorem" name:ident " : " stmt:str ":=" prf:term : command => do
-  let fmlstmt ← formalizeStmt stmt.getString
+  let (fmlstmt, fmlstx) ← liftTermElabM none $ textToExprStx' egBlob' -- stmt.getString
   logInfoAt stmt m!"{fmlstmt}"
-  elabCommand $ ← `(theorem $name:ident : $fmlstmt:term := $prf:term)
+  elabCommand $ ← `(theorem $name:ident : $fmlstx:term := $prf:term)
 
 elab "#example" stmt:str ":=" prf:term : command => do
-  let fmlstmt ← formalizeStmt stmt.getString
+  let (fmlstmt, fmlstx) ← liftTermElabM none $ textToExprStx' egBlob' -- stmt.getString
   logInfoAt stmt m!"{fmlstmt}"
-  elabCommand $ ← `(example : $fmlstmt:term := $prf:term)
-
-#theorem test : "Every field is a ring" := by
-  intro; rfl
-
-#example "The sum of any two natural numbers is prime" := by
-  simp
+  elabCommand $ ← `(example : $fmlstx:term := $prf:term)
