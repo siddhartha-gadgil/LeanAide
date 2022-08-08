@@ -39,6 +39,8 @@ def index():
 @app.route('/post_json', methods=['POST'])
 def process_json():
     main_prompt = str(request.data, 'utf-8')
+    print
+    print("\nNatural language for term/type/prop:") 
     print (main_prompt)
     #return main_prompt
     # data = request.json
@@ -58,6 +60,7 @@ def process_json():
         use_precomputed_embeddings=True,
         use_theorem_name=False,
         corpus_embeddings=corpus_embeddings)
+    print("\nQuery to Codex (with input-dependent prompts):")
     print (query[0])
     #return query
     query_parameters = {'model': 'code-davinci-002','temperature':0.9,'max_tokens':150,'stop': ':=','n':5}
@@ -69,8 +72,11 @@ def process_json():
     # for i,line in enumerate(ans):
     #     ans[i]["text"] = line["text"].replace("\'","\"")
 
-
-    return str(json.dumps(output["choices"],ensure_ascii=False))
+    jsBlob = str(json.dumps(output["choices"],ensure_ascii=False))
+    print
+    print("\nOutput:")
+    print (jsBlob)
+    return jsBlob
     #return str(ans)
 
     

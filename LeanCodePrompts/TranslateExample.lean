@@ -9,6 +9,7 @@ example : //- Every field is a ring -// := by
                         
             sorry
 
+example  {K : Type u} [Field K] : Ring K := by sorry
 
 
 #theorem test : "Every field is a ring" := by
