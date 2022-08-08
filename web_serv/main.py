@@ -38,7 +38,8 @@ def index():
 # ...
 @app.route('/post_json', methods=['POST'])
 def process_json():
-    main_prompt = str(request.data)
+    main_prompt = str(request.data, 'utf-8')
+    print (main_prompt)
     #return main_prompt
     # data = request.json
     # main_prompt = data["prompt"]
@@ -57,9 +58,9 @@ def process_json():
         use_precomputed_embeddings=True,
         use_theorem_name=False,
         corpus_embeddings=corpus_embeddings)
-    
+    print (query[0])
     #return query
-    query_parameters = {'model': 'code-davinci-002','temperature':0.9,'max_tokens':150,'stop': ':=','n':3}
+    query_parameters = {'model': 'code-davinci-002','temperature':0.9,'max_tokens':150,'stop': ':=','n':5}
     #return query_parameters
     query_parameters["prompt"] = query[0]
     ret = codex_access_utils.codex_run(query_parameters)
