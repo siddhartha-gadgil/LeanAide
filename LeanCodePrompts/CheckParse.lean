@@ -322,6 +322,12 @@ def tryParseThm (s : String) : MetaM String := do
           argS := argS ++ (showSyntax arg) ++ " -> "
         let funStx := s!"{argS}{showSyntax type}"
         pure s!"match: {funStx}"
+      | `(thmStat|$args:argument* : $type:term) =>
+        let mut argS := ""
+        for arg in args do
+          argS := argS ++ (showSyntax arg) ++ " -> "
+        let funStx := s!"{argS}{showSyntax type}"
+        pure s!"match: {funStx}"
       | _ => pure s!"parsed to mysterious {stx}"
   | Except.error e  => pure s!"error: {e}"
 
@@ -351,7 +357,22 @@ def checkElabThm (s : String) : TermElabM String := do
                 Term.elabTerm termStx none
             pure s!"elaborated: {← expr.view} from {funStx}"
           catch e => 
-            pure s!"{← e.toMessageData.toString} during elaboaration"
+            pure s!"{← e.toMessageData.toString} during elaboration"
+        | Except.error e => 
+            pure s!"parsed to {funStx}; error while parsing: {e}"
+      | `(thmStat|$args:argument* : $type:term) =>
+        let mut argS := ""
+        for arg in args do
+          argS := argS ++ (showSyntax arg) ++ " -> "
+        let funStx := s!"{argS}{showSyntax type}"
+        match Lean.Parser.runParserCategory env `term funStx with
+        | Except.ok termStx => Term.withLevelNames levelNames <|
+          try 
+            let expr ← Term.withoutErrToSorry <| 
+                Term.elabTerm termStx none
+            pure s!"elaborated: {← expr.view} from {funStx}"
+          catch e => 
+            pure s!"{← e.toMessageData.toString} during elaboration"
         | Except.error e => 
             pure s!"parsed to {funStx}; error while parsing: {e}"
       | _ => pure s!"parsed to mysterious {stx}"
