@@ -29,11 +29,21 @@ def egBlob' := "[{ \"text\" : \"{p : ℕ} (hp : Nat.Prime p) :  p = 2 ∨ p % 2 
    { \"text\" : \"{p : ℕ} (hp : Nat.Prime p) : p = 2 ∨ p % 2 = 1 \"},
    { \"text\" : \"Nonsense output to test filtering\"}]"
 
+def caseMapProc (s: String) : IO String := do
+  let tmpFile := System.mkFilePath ["web_serv/tmp.json"]
+  IO.FS.writeFile tmpFile s
+  let out ← 
+    IO.Process.output {cmd:= "./amm", args := #["scripts/simplemap.sc"]}
+  return out.stdout
+
 def getCodeJson (s: String) : IO String := do
   let out ←  
     IO.Process.output {cmd:= "curl", args:= 
       #["-X", "POST", "-H", "Content-type: application/json", "-d", s, "localhost:8080/post_json"]}
-  return out.stdout
+  caseMapProc out.stdout
+  -- return out.stdout
+
+
 
 def arrayToExpr (output: Array String) : TermElabM Expr := do
   let elaborated ← output.filterM  <| 
@@ -111,4 +121,4 @@ elab "#example" stmt:str ":=" prf:term : command => do
   logInfoAt stmt m!"{fmlstmt}"
   elabCommand $ ← `(example : $fmlstx:term := $prf:term)
 
--- #eval getCodeJson egPrompt
+#eval getCodeJson egPrompt
