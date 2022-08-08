@@ -96,7 +96,7 @@ partial def recExprNames (depth: Nat): Expr → MetaM (Array Name) :=
     let res ← match e with
       | Expr.bvar ..       => return #[]
       | Expr.fvar ..       => return #[]
-      | Expr.const name _ _  =>
+      | Expr.const name ..  =>
         do
         if ← (isWhiteListed name) 
           then return #[name] 
@@ -106,7 +106,7 @@ partial def recExprNames (depth: Nat): Expr → MetaM (Array Name) :=
             | some e => recExprNames k e
             | none => return #[]
           else pure #[]        
-      | Expr.app f a _ => 
+      | Expr.app f a .. => 
           do  
             -- IO.println "app"
             let ftype? ← inferType? f 
@@ -120,7 +120,7 @@ partial def recExprNames (depth: Nat): Expr → MetaM (Array Name) :=
               if !expl then 
                 -- IO.println a
                 match a with
-                | Expr.const name _ _  =>
+                | Expr.const name ..  =>
                     do
                     if ← (isWhiteListed name) 
                       then

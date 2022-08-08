@@ -1,8 +1,10 @@
 import Lean
 import Lean.Meta
 import Lean.Parser
+import Std
 import LeanCodePrompts.CheckParse
 import LeanCodePrompts.ParseJson
+open Std
 
 open Lean Elab Parser Command
 
@@ -36,11 +38,27 @@ def caseMapProc (s: String) : IO String := do
     IO.Process.output {cmd:= "./amm", args := #["scripts/simplemap.sc"]}
   return out.stdout
 
+initialize webCache : IO.Ref (HashMap String String) ← IO.mkRef (HashMap.empty)
+
+def getCached? (s: String) : IO (Option String) := do
+  let cache ← webCache.get
+  return cache.find? s
+
+def cache (s jsBlob: String)  : IO Unit := do
+  let cache ← webCache.get
+  webCache.set (cache.insert s jsBlob)
+  return ()
+
 def getCodeJson (s: String) : IO String := do
-  let out ←  
-    IO.Process.output {cmd:= "curl", args:= 
-      #["-X", "POST", "-H", "Content-type: application/json", "-d", s, "localhost:8080/post_json"]}
-  caseMapProc out.stdout
+  match ← getCached? s with
+  | some s => return s
+  | none =>
+    let out ←  
+      IO.Process.output {cmd:= "curl", args:= 
+        #["-X", "POST", "-H", "Content-type: application/json", "-d", s, "localhost:8080/post_json"]}
+    let res ← caseMapProc out.stdout
+    cache s res
+    return res
   -- return out.stdout
 
 
@@ -103,14 +121,13 @@ def textToExprStx' (s : String) : TermElabM (Expr × TSyntax `term) := do
   let (stx : Term) ← (PrettyPrinter.delab e)
   return (e, stx)
 
-elab "//-" cb:commentBody : term => do
+elab "//-" cb:commentBody "/" : term => do
   let s := cb.raw.getAtomVal!
-  let s := s.dropRight 2  
+  let s := (s.dropRight 2).trim  
   let jsBlob ← getCodeJson  s
   let e ← textToExpr' jsBlob
   logInfo m!"{e}"
   return e
-
 
 elab "#theorem" name:ident " : " stmt:str ":=" prf:term : command => do
   let (fmlstmt, fmlstx) ← liftTermElabM none $ textToExprStx' egBlob' -- stmt.getString
