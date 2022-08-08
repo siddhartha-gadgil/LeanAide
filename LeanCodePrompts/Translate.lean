@@ -105,8 +105,9 @@ def textToExprStx' (s : String) : TermElabM (Expr × TSyntax `term) := do
 
 elab "//-" cb:commentBody : term => do
   let s := cb.raw.getAtomVal!
-  let s := s.dropRight 2
-  let e ← textToExpr' egBlob'
+  let s := s.dropRight 2  
+  let jsBlob ← getCodeJson  s
+  let e ← textToExpr' jsBlob
   logInfo m!"{e}"
   return e
 
@@ -121,4 +122,4 @@ elab "#example" stmt:str ":=" prf:term : command => do
   logInfoAt stmt m!"{fmlstmt}"
   elabCommand $ ← `(example : $fmlstx:term := $prf:term)
 
-#eval getCodeJson egPrompt
+-- #eval getCodeJson egPrompt

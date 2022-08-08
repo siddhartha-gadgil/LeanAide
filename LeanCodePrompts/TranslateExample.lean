@@ -1,13 +1,13 @@
 import Mathbin.All
 import LeanCodePrompts.Translate
 
-example : //- Does not matter what is typed -/ := by
+example : //- Every prime number is either `2` or odd. -/ := by
           
           sorry
 
-example : //- something else -/ := by
+-- example : //- something else -/ := by
             
-            sorry
+--             sorry
 
 
 #theorem test : "Every field is a ring" := by
