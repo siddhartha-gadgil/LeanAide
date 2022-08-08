@@ -29,6 +29,12 @@ def egBlob' := "[{ \"text\" : \"{p : ℕ} (hp : Nat.Prime p) :  p = 2 ∨ p % 2 
    { \"text\" : \"{p : ℕ} (hp : Nat.Prime p) : p = 2 ∨ p % 2 = 1 \"},
    { \"text\" : \"Nonsense output to test filtering\"}]"
 
+def getCodeJson (s: String) : IO String := do
+  let out ←  
+    IO.Process.output {cmd:= "curl", args:= 
+      #["-X", "POST", "-H", "Content-type: application/json", "-d", s, "localhost:8080/post_json"]}
+  return out.stdout
+
 def arrayToExpr (output: Array String) : TermElabM Expr := do
   let elaborated ← output.filterM  <| 
       fun s => do
@@ -104,3 +110,5 @@ elab "#example" stmt:str ":=" prf:term : command => do
   let (fmlstmt, fmlstx) ← liftTermElabM none $ textToExprStx' egBlob' -- stmt.getString
   logInfoAt stmt m!"{fmlstmt}"
   elabCommand $ ← `(example : $fmlstx:term := $prf:term)
+
+-- #eval getCodeJson egPrompt
