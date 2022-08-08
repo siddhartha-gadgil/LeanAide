@@ -1,5 +1,5 @@
 import sys
-sys.path.append("../../ATP-Project/OpenaiModelPrompting/")
+sys.path.append("../OpenaiModelPrompting/")
 import json
 import NL_to_Lean_exp1.prompt_design
 import codex_access_utils
@@ -48,13 +48,13 @@ def process_json():
     #k = data["k"]
     #lis = similar_from(main_prompt,k)
     corpus_embeddings = None
-    embedding_path = "../../ATP-Project/SentenceSimilarityTask/embeddings_store/all-mpnet-base-v2.pkl"
+    embedding_path = "../SentenceSimilarityTask/embeddings_store/all-mpnet-base-v2.pkl"
     with open(embedding_path, "rb") as fIn:
             stored_data = pickle.load(fIn)
             corpus_embeddings = stored_data['embeddings'] 
 
     query = NL_to_Lean_exp1.prompt_design.retrieve_k_few_shot_prompts(main_prompt,
-        corpus_path="../../ATP-Project/data/clean_prompts.json",
+        corpus_path="../data/clean_prompts.json",
         top_k=4,
         model_name = 'sentence-transformers/all-mpnet-base-v2',
         use_precomputed_embeddings=True,
@@ -99,13 +99,13 @@ def similar_from(main_prompt,k):
 
     try:
         corpus_embeddings = None
-        embedding_path = "F:/ATP_WORK/ATP-Project/SentenceSimilarityTask/embeddings_store/all-mpnet-base-v2.pkl"
+        embedding_path = "../SentenceSimilarityTask/embeddings_store/all-mpnet-base-v2.pkl"
         with open(embedding_path, "rb") as fIn:
             stored_data = pickle.load(fIn)
             corpus_embeddings = stored_data['embeddings'] 
 
         lis = retrieve_similar_k_stats(main_prompt,
-        corpus_path="F:/ATP_WORK/ATP-Project/data/clean_prompts.json",
+        corpus_path="../data/clean_prompts.json",
         top_k=k,
         model_name = 'sentence-transformers/all-mpnet-base-v2',
         use_precomputed_embeddings=True,
