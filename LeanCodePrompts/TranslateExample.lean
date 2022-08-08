@@ -5,9 +5,9 @@ example : //- Every prime number is either `2` or odd. -//  := by
           
           sorry
 
-example : //- Every field is a ring -// := by
+-- example : //- Every field is a ring -// := by
                         
-            sorry
+--             sorry
 
 example  {K : Type u} [Field K] : Ring K := by sorry
 
