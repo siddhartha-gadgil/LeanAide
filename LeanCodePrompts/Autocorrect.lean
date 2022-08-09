@@ -50,11 +50,24 @@ def binNameMap : IO (HashMap (List String) String) := do
   else
     return cacheMap
 
+def withoutIs : List String → List String
+| x :: ys => if x = "is" || x = "has" then ys else x :: ys
+| [] => []
+
 def getBinName(s : String) : IO <| Option String := do
   let all ← binNames
   let split := fullSplit s
   -- let all := #[]
   let res := all.find? (fun s => split = fullSplit s)
-  return res
+  match res with
+  | some s => return some s
+  | none =>
+    match split with
+    | x :: ys => 
+      if x = "is" || x = "has" 
+      then return  all.find? (fun s => ys = withoutIs (fullSplit s))
+      else return none
+    | _ => return none
+
 
 
