@@ -64,6 +64,9 @@ macro_rules
 macro x:term "*" y:term "*" z:term : term => do
   `(($x * $y) * $z)
 
+elab "ℝ" : term => do
+  return mkConst `Real
+
 /-- check whether a string parses as a term -/
 def checkTerm (s : String) : MetaM Bool := do
   let env ← getEnv

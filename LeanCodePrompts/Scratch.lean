@@ -1,4 +1,9 @@
 import Mathbin.All
+import LeanCodePrompts.CheckParse
+
+#check Real
+#check ℝ 
+
 
 /-
 If every proper closed set of a topological space is compact, then the space itself is compact.

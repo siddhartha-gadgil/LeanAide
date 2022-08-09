@@ -58,7 +58,7 @@ def getCodeJson (s: String) : IO String := do
       IO.Process.output {cmd:= "curl", args:= 
         #["-X", "POST", "-H", "Content-type: application/json", "-d", s, "localhost:5000/post_json"]}
     let res ← caseMapProc out.stdout
-    cache s res
+    if out.exitCode = 0 then cache s res
     return res
   -- return out.stdout
 
