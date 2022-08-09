@@ -40,6 +40,7 @@ syntax "Π"  ident ":" term  "," term : term
 syntax "Π" "(" ident ":" term ")" "," term : term
 syntax "⇑" term : term
 syntax "Type*" : term
+syntax "Sort*" : term
 macro_rules
 | `(λ $x:ident, $y:term) => `(fun $x => $y)
 | `(λ $x:ident : $type:term , $y:term) => 
@@ -58,6 +59,10 @@ macro_rules
   `(($x : $type) →  $y)
 | `(⇑ $x:term) => `(↑ $x)
 | `(Type*) => `(Type _)
+| `(Sort*) => `(Sort _)
+
+macro x:term "*" y:term "*" z:term : term => do
+  `(($x * $y) * $z)
 
 /-- check whether a string parses as a term -/
 def checkTerm (s : String) : MetaM Bool := do
