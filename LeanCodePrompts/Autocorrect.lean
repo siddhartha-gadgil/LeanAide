@@ -88,6 +88,8 @@ def identCorrection(s err: String) : IO (Option String) := do
     | none => return none
     | some name => return some (s.replace id name)
 
+
+
 def elabCorrected(depth: Nat)(ss : Array String) : 
   TermElabM (Array String) := do
   let mut elabs : Array String := #[]
@@ -95,7 +97,14 @@ def elabCorrected(depth: Nat)(ss : Array String) :
   for s  in ss do
     match ← elabThm s with
     | Except.ok _ => elabs := elabs.push s
-    | Except.error err => match ← identCorrection s err with
+    | Except.error err => do
+      logInfo m!"s: {s}, err: {err}"
+      -- if err.endsWith "(during elaboration)" then
+      --     let parsed : Except String Syntax := 
+      --         Lean.Parser.runParserCategory (← getEnv) `term s
+      --     let p? := parsed.toOption
+      --     logInfo m!"identifiers: {p?} in {s}"
+      match ← identCorrection s err with
       | none => pure ()
       | some s' => corrected := corrected.push s'
   if elabs.isEmpty then 
@@ -104,3 +113,4 @@ def elabCorrected(depth: Nat)(ss : Array String) :
     | d + 1 => if corrected.isEmpty then return #[] else do
       elabCorrected d corrected
   else return elabs
+

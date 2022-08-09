@@ -148,6 +148,11 @@ partial def showSyntax : Syntax → String
 def levelNames := 
   [`u, `v, `u_1, `u_2, `u_3, `u_4, `u_5, `u_6, `u_7, `u_8, `u_9, `u_10, `u_11, `u₁, `u₂, `W₁, `W₂, `w₁, `w₂, `u', `v', `uu, `w, `wE]
 
+partial def idents : Syntax → List String
+| Syntax.ident _ s .. => [s.toString]
+| Syntax.node _ _ ss => ss.toList.bind idents
+| _ => []
+
 def elabThm (s : String)(opens: List String := []) 
   (levelNames : List Lean.Name := levelNames)
   : TermElabM <| Except String Expr := do
@@ -181,7 +186,7 @@ def elabThm (s : String)(opens: List String := [])
                 Term.elabTerm termStx none
             return Except.ok expr
           catch e => 
-            return Except.error s!"{← e.toMessageData.toString} (during elaboration)"
+            return Except.error s!"{← e.toMessageData.toString} ; identifiers {idents termStx} (during elaboration)"
         | Except.error e => 
             return Except.error s!"parsed to {funStx}; error while parsing as theorem: {e}" 
 
