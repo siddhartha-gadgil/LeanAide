@@ -4,6 +4,7 @@ import Lean.Parser
 import Std
 import LeanCodePrompts.CheckParse
 import LeanCodePrompts.ParseJson
+import LeanCodePrompts.Autocorrect
 open Std
 
 open Lean Elab Parser Command
@@ -64,10 +65,7 @@ def getCodeJson (s: String) : IO String := do
 
 
 def arrayToExpr (output: Array String) : TermElabM Expr := do
-  let elaborated ← output.filterM  <| 
-      fun s => do
-        let chk ← elabThm s
-        return chk.toBool
+  let elaborated ← elabCorrected 2 output
   logInfo m!"elaborated: {elaborated.size} out of {output.size}"
   if elaborated.isEmpty then do
     logWarning m!"No elaborated output found"
