@@ -19,9 +19,3 @@ example  {K : Type u} [Field K] : Ring K := by sorry
 
 #example "The sum of any two natural numbers is prime" := by admit
 
-
-#eval checkElabThm "{K : Type u} [Field K] : is_ring K"
-
-#eval getBinName "ring"
-
-#eval getBinName "is_ring"

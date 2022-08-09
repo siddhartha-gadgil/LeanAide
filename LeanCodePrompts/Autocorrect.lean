@@ -1,5 +1,7 @@
 import Lean
-open Lean Std
+import Lean.Meta
+import LeanCodePrompts.CheckParse
+open Lean Std Meta Elab
 
 partial def camelSplitAux (s : String)(accum: List String) : List String :=
   if s.length == 0 then accum
@@ -70,4 +72,35 @@ def getBinName(s : String) : IO <| Option String := do
     | _ => return none
 
 
+def identErr (err: String) : Option String :=
+  let head := "unknown identifier '"
+  let tail := "' (during elaboration)"
+  if err.startsWith head && err.endsWith tail then
+    some <| (err.drop (head.length)).dropRight (tail.length)
+  else
+    none
 
+
+def identCorrection(s err: String) : IO (Option String) := do
+  match identErr err with
+  | none => return none 
+  | some id => match ←  getBinName id with
+    | none => return none
+    | some name => return some (s.replace id name)
+
+def elabCorrected(depth: Nat)(ss : Array String) : 
+  TermElabM (Array String) := do
+  let mut elabs : Array String := #[]
+  let mut corrected : Array String := #[]
+  for s  in ss do
+    match ← elabThm s with
+    | Except.ok _ => elabs := elabs.push s
+    | Except.error err => match ← identCorrection s err with
+      | none => pure ()
+      | some s' => corrected := corrected.push s'
+  if elabs.isEmpty then 
+    match depth with 
+    | 0 => return #[]
+    | d + 1 => if corrected.isEmpty then return #[] else do
+      elabCorrected d corrected
+  else return elabs
