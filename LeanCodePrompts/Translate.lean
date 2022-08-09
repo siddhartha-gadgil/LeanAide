@@ -50,7 +50,7 @@ def cache (s jsBlob: String)  : IO Unit := do
   webCache.set (cache.insert s jsBlob)
   return ()
 
-def getCodeJson (s: String) : IO String := do
+def getCodeJson (s: String) : TermElabM String := do
   match ← getCached? s with
   | some s => return s
   | none =>
@@ -58,7 +58,8 @@ def getCodeJson (s: String) : IO String := do
       IO.Process.output {cmd:= "curl", args:= 
         #["-X", "POST", "-H", "Content-type: application/json", "-d", s, "localhost:5000/post_json"]}
     let res ← caseMapProc out.stdout
-    if out.exitCode = 0 then cache s res
+    if out.exitCode = 0 then cache s res 
+      else throwError m!"Web query error: {out.stderr}"
     return res
   -- return out.stdout
 
