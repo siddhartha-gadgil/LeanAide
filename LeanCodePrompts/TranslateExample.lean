@@ -1,5 +1,6 @@
 import Mathbin.All
 import LeanCodePrompts.Translate
+import LeanCodePrompts.Autocorrect
 
 example : //- Every prime number is either `2` or odd. -//  := by
           
@@ -20,3 +21,7 @@ example  {K : Type u} [Field K] : Ring K := by sorry
 
 
 #eval checkElabThm "{K : Type u} [Field K] : is_ring K"
+
+#eval getBinName "ring"
+
+#eval getBinName "is_ring"
