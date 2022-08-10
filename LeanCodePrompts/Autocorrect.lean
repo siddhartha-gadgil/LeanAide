@@ -118,7 +118,7 @@ def interLeave(full: Substring)(idents: List Substring) :
 
 #check Substring.extract
 
-def identsSegments (s : String)
+def identThmSegments (s : String)
   : TermElabM <| Option ((Array (String × String)) × String) := do
   let env ← getEnv
   let chk := Lean.Parser.runParserCategory env `thmStat  s
@@ -165,16 +165,38 @@ def identsSegments (s : String)
               return some (segments, tail)
         | Except.error _ => return none
 
--- def identsSegments(s : String)
---   : TermElabM <| Option ((List (Substring × Substring)) × Substring) := do
---       let idents ← identsThm s
---       return idents.map (interLeave s.toSubstring)
+def transformBuild (segs: (Array (String × String)) × String)
+        (transf : String → IO (Option String)) : IO (Option String) := do
+        let (pairs, tail) := segs
+        let res : Array (String × String) ←  
+          pairs.mapM (fun (pred, ident) => do
+            let ident'? ← transf ident 
+            let ident' := ident'?.getD ident
+            return (pred, ident'))
+        let out : String := 
+          res.foldr (fun (init, ident) acc => (init ++ ident ++ acc)) tail
+        return out
 
--- #eval identsThm "{K : Type u} [Field K] : is_ring K"
+def identMapped (s: String) : TermElabM (Option String) := do
+    let corr?  ← identThmSegments s 
+    corr?.mapM <| fun corr => do
+          let t? ← transformBuild corr getBinName
+          return t?.getD s
 
-#eval identsSegments "{K : Type u} [Field K] : is_ring K"
+#eval identThmSegments "{K : Type u} [Field K] : is_ring K"
 
-#check String.endPos
+def elabFuncTyp (funStx : String) : TermElabM (Except String Expr) := do
+    match Lean.Parser.runParserCategory (← getEnv) `term funStx with
+        | Except.ok termStx => Term.withLevelNames levelNames <|
+          try 
+            let expr ← Term.withoutErrToSorry <| 
+                Term.elabTerm termStx none
+            return Except.ok expr
+          catch e => 
+            return Except.error s!"{← e.toMessageData.toString} ; identifiers {idents termStx} (during elaboration)"
+        | Except.error e => 
+            return Except.error s!"parsed to {funStx}; error while parsing as theorem: {e}" 
+
 
 def elabCorrected(depth: Nat)(ss : Array String) : 
   TermElabM (Array String) := do
