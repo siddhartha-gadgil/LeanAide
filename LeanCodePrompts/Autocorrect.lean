@@ -118,8 +118,8 @@ def interLeave(full: Substring)(idents: List Substring) :
 
 #check Substring.extract
 
-def identsThm (s : String)
-  : TermElabM <| Option (List Substring) := do
+def identsSegments (s : String)
+  : TermElabM <| Option ((Array (String × String)) × String) := do
   let env ← getEnv
   let chk := Lean.Parser.runParserCategory env `thmStat  s
   match chk with
@@ -136,30 +136,41 @@ def identsThm (s : String)
       | _ => return none
   | Except.error _  => return none
   where identsAux (type: Syntax)(args: Array Syntax) : 
-        TermElabM <| Option (List Substring) := do
-        let header := ""
+        TermElabM <| Option ((Array (String × String)) × String) := do
         let mut argS := ""
         for arg in args do
           argS := argS ++ (showSyntax arg) ++ " -> "
-        let funStx := s!"{header}{argS}{showSyntax type}"
+        let funStx := s!"{argS}{showSyntax type}"
+        
         match Lean.Parser.runParserCategory (← getEnv) `term funStx with
         | Except.ok termStx => 
+              let mut fullString := funStx 
+              let mut segments : Array (String × String) := #[]
+              let mut cursor : String.Pos := 0
               let res := identSubs termStx
-              logInfo m!"{termStx}"
+              -- logInfo m!"{termStx}"
               for ss in res do 
-                logInfo m!"{ss}"
-                logInfo m!"{ss.str}"
-                logInfo m!"{ss.startPos}"
-                logInfo m!"{ss.stopPos}"
-              return some res
+                fullString := ss.str
+                let pred := fullString.extract cursor ss.startPos
+                segments := segments.push (pred, ss.toString)
+                cursor := ss.stopPos
+                -- logInfo m!"{ss}"
+                -- logInfo m!"{ss.str}"
+                -- logInfo m!"{ss.startPos}"
+                -- logInfo m!"{ss.stopPos}"
+              let tail := fullString.extract cursor fullString.endPos
+              let chk : String := 
+                  segments.foldl (fun acc (s, t) => acc ++ s ++ t) tail
+              logInfo m!"{chk}"
+              return some (segments, tail)
         | Except.error _ => return none
 
-def identsSegments(s : String)
-  : TermElabM <| Option ((List (Substring × Substring)) × Substring) := do
-      let idents ← identsThm s
-      return idents.map (interLeave s.toSubstring)
+-- def identsSegments(s : String)
+--   : TermElabM <| Option ((List (Substring × Substring)) × Substring) := do
+--       let idents ← identsThm s
+--       return idents.map (interLeave s.toSubstring)
 
-#eval identsThm "{K : Type u} [Field K] : is_ring K"
+-- #eval identsThm "{K : Type u} [Field K] : is_ring K"
 
 #eval identsSegments "{K : Type u} [Field K] : is_ring K"
 
