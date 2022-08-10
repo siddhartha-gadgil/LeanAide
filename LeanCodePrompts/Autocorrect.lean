@@ -15,14 +15,14 @@ partial def camelSplitAux (s : String)(accum: List String) : List String :=
 def camelSplit(s : String) : List String :=
   camelSplitAux s []
 
-#eval camelSplit "CamelCaseWord"
+-- #eval camelSplit "CamelCaseWord"
 
 def fullSplit (s : String) : List String :=
   let parts := s.splitOn "_"
   parts.bind (fun s => camelSplit s)
 
-#eval fullSplit "CamelCaseWord"
-#eval fullSplit "snake_caseBut_wordWithCamel"
+-- #eval fullSplit "CamelCaseWord"
+-- #eval fullSplit "snake_caseBut_wordWithCamel"
 
 initialize binNamesCache : IO.Ref (Array String) ← IO.mkRef (#[])
 
@@ -88,7 +88,82 @@ def identCorrection(s err: String) : IO (Option String) := do
     | none => return none
     | some name => return some (s.replace id name)
 
+partial def identSubs : Syntax → List Substring
+| Syntax.ident _ s .. => [s]
+| Syntax.node _ _ ss => ss.toList.bind identSubs
+| _ => []
 
+partial def extractByteAux (s: String) (start stop : String.Pos) (accum: String) 
+    := if start ≥  stop then accum else
+        let h := s.get start
+        extractByteAux s (s.next start) stop (accum ++ h.toString)
+
+def extractBytes (s: String) (start stop : String.Pos) := 
+      extractByteAux s start stop ""
+
+def interleaveAux (full: Substring)(cursor: String.Pos)
+  (accum: List (Substring × Substring))(idents: List Substring) :
+      (List (Substring × Substring)) × Substring :=
+  match idents with
+  | [] => (accum, full.extract cursor full.stopPos)
+  | h :: ts => 
+      let pred := full.extract cursor h.startPos
+      interleaveAux full (h.stopPos) 
+          (accum ++ [(pred, h)]) ts
+      
+def interLeave(full: Substring)(idents: List Substring) :
+      (List (Substring × Substring)) × Substring := 
+          interleaveAux full 0 [] idents
+
+
+#check Substring.extract
+
+def identsThm (s : String)
+  : TermElabM <| Option (List Substring) := do
+  let env ← getEnv
+  let chk := Lean.Parser.runParserCategory env `thmStat  s
+  match chk with
+  | Except.ok stx  =>
+      match stx with
+      | `(thmStat|theorem $_ $args:argument* : $type:term) =>
+        identsAux type args
+      | `(thmStat|def $_ $args:argument* : $type:term) =>
+        identsAux type args
+      | `(thmStat|$args:argument* : $type:term) =>
+        identsAux type args
+      | `(thmStat|$_:ident $args:argument* : $type:term) =>
+        identsAux type args
+      | _ => return none
+  | Except.error _  => return none
+  where identsAux (type: Syntax)(args: Array Syntax) : 
+        TermElabM <| Option (List Substring) := do
+        let header := ""
+        let mut argS := ""
+        for arg in args do
+          argS := argS ++ (showSyntax arg) ++ " -> "
+        let funStx := s!"{header}{argS}{showSyntax type}"
+        match Lean.Parser.runParserCategory (← getEnv) `term funStx with
+        | Except.ok termStx => 
+              let res := identSubs termStx
+              logInfo m!"{termStx}"
+              for ss in res do 
+                logInfo m!"{ss}"
+                logInfo m!"{ss.str}"
+                logInfo m!"{ss.startPos}"
+                logInfo m!"{ss.stopPos}"
+              return some res
+        | Except.error _ => return none
+
+def identsSegments(s : String)
+  : TermElabM <| Option ((List (Substring × Substring)) × Substring) := do
+      let idents ← identsThm s
+      return idents.map (interLeave s.toSubstring)
+
+#eval identsThm "{K : Type u} [Field K] : is_ring K"
+
+#eval identsSegments "{K : Type u} [Field K] : is_ring K"
+
+#check String.endPos
 
 def elabCorrected(depth: Nat)(ss : Array String) : 
   TermElabM (Array String) := do
