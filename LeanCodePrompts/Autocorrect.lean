@@ -250,18 +250,54 @@ def elabFuncTyp (funTypeStr : String) (levelNames : List Lean.Name := levelNames
           catch e => 
             return Except.error s!"{← e.toMessageData.toString} for {termStx} (during elaboration)"
         | Except.error e => 
-            return Except.error s!"parsed to {funTypeStr}; error while parsing as theorem: {e}" 
+            return Except.error s!"parsed func-type to {funTypeStr}; error while parsing as theorem: {e}" 
 
 
 def elabThmTrans (s : String)
   (transf : String → IO (Option String) := binName?)
   (opens: List String := []) 
   (levelNames : List Lean.Name := levelNames)
-  : TermElabM <| Except String Expr := do
+  : TermElabM <| Except String (Expr × String) := do
   match ← identMappedFunStx s transf opens with
   | Except.ok funTypeStr => do
-    elabFuncTyp funTypeStr levelNames
+    match (← elabFuncTyp funTypeStr levelNames) with
+    | Except.ok expr => return Except.ok (expr, funTypeStr)
+    | Except.error e => return Except.error e
   | Except.error e => return Except.error e
+
+def compareFuncStrs(s₁ s₂ : String) 
+  (levelNames : List Lean.Name := levelNames)
+  : TermElabM <| Except String Bool := do
+  let e₁ ← elabFuncTyp s₁  levelNames
+  let e₂ ← elabFuncTyp s₂ levelNames
+  match e₁ with
+  | Except.ok e₁ => match e₂ with
+    | Except.ok e₂ => 
+        let p := (← provedEqual e₁ e₂) || 
+          (← provedEquiv e₁ e₂)
+        return Except.ok p
+    | Except.error e₂ => return Except.error e₂
+  | Except.error e₁ => return Except.error e₁
+
+def equalFuncStrs(s₁ s₂ : String) 
+  (levelNames : List Lean.Name := levelNames): TermElabM Bool := do
+  match ← compareFuncStrs s₁ s₂  levelNames with
+  | Except.ok p => return p
+  | Except.error _ => return Bool.false
+
+
+def groupFuncStrs(ss: Array String)
+  (levelNames : List Lean.Name := levelNames)
+  : TermElabM (Array (Array String)) := do
+    let mut groups: Array (Array String) := Array.empty
+    for s in ss do
+      match ← groups.findIdxM? (fun g => 
+          equalFuncStrs s g[0]!  levelNames) with
+      |none  => 
+        groups := groups.push #[s]
+      | some j => 
+        groups := groups.set! j (groups[j]!.push s)
+    return groups
 
 def elabCorrected(depth: Nat)(ss : Array String) : 
   TermElabM (Array String) := do

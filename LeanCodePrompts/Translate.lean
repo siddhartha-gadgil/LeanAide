@@ -67,19 +67,21 @@ def getCodeJson (s: String) : TermElabM String := do
 
 
 def arrayToExpr (output: Array String) : TermElabM Expr := do
-  let elaborated ← output.filterM (
-    fun s => do return (← elabThmTrans s).toBool)
+  let elaborated ← output.filterMapM (
+    fun s => do 
+      return (← elabThmTrans s).toOption.map (fun (_, s) => s))
   logInfo m!"elaborated: {elaborated.size} out of {output.size}"
   if elaborated.isEmpty then do
     logWarning m!"No elaborated output found"
     for out in output do
       logWarning m!"{out}"
     throwError "No valid output from codex"  
-  let groupSorted ← groupThms elaborated
+  let groupSorted ← groupFuncStrs elaborated
   let topStr := groupSorted[0]![0]!
-  let thmExc ← elabThm topStr
-  let thm := thmExc.toOption.get!
-  return thm
+  let thmExc ← elabFuncTyp topStr
+  match thmExc with
+  | Except.ok thm => return thm
+  | Except.error s => throwError s
 
 def textToExpr (s: String) : TermElabM Expr := do
   let json ← readJson s
