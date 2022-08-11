@@ -15,4 +15,4 @@ import LeanCodePrompts.Autocorrect
 
 #eval elabCorrected 1 #["{K : Type u} [Field K] : is_ring K"]
 
-#eval identMapped "{K : Type u} [Field K] : is_ring K"
+#eval identMappedFunStx "{K : Type u} [Field K] : is_ring K"

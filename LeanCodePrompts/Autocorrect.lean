@@ -29,6 +29,9 @@ initialize binNamesCache : IO.Ref (Array String) ← IO.mkRef (#[])
 initialize binNameMapCache : IO.Ref (HashMap (List String) String) 
   ← IO.mkRef (HashMap.empty)
 
+initialize binNameNoIsMapCache : IO.Ref (HashMap (List String) String) 
+  ← IO.mkRef (HashMap.empty)
+
 def binNames : IO (Array String) := do 
   let cacheStr ← binNamesCache.get
   if cacheStr.size > 0 then 
@@ -55,6 +58,25 @@ def binNameMap : IO (HashMap (List String) String) := do
 def withoutIs : List String → List String
 | x :: ys => if x = "is" || x = "has" then ys else x :: ys
 | [] => []
+
+def withoutIs? : List String → Option (List String)
+| x :: ys => if x = "is" || x = "has" then some ys else none
+| [] => none
+
+def binNameNoIsMap : IO (HashMap (List String) String) := do
+  let cacheMap ← binNameNoIsMapCache.get
+  if cacheMap.isEmpty then 
+    let names ← binNames
+    let res := names.foldl 
+      (fun m s => 
+        match withoutIs? (fullSplit s) with
+        | some ys => m.insert ys s
+        | none => m
+          ) (HashMap.empty)
+    binNameNoIsMapCache.set res
+    return res
+  else
+    return cacheMap
 
 def getBinName(s : String) : IO <| Option String := do
   let all ← binNames
@@ -118,8 +140,8 @@ def interLeave(full: Substring)(idents: List Substring) :
 
 #check Substring.extract
 
-def identThmSegments (s : String)
-  : TermElabM <| Option ((Array (String × String)) × String) := do
+def identThmSegments (s : String)(opens: List String := [])
+  : TermElabM <| Except String ((Array (String × String)) × String) := do
   let env ← getEnv
   let chk := Lean.Parser.runParserCategory env `thmStat  s
   match chk with
@@ -133,18 +155,20 @@ def identThmSegments (s : String)
         identsAux type args
       | `(thmStat|$_:ident $args:argument* : $type:term) =>
         identsAux type args
-      | _ => return none
-  | Except.error _  => return none
+      | _ => return Except.error "not a theorem statement"
+  | Except.error _  => return Except.error "not a theorem statement"
   where identsAux (type: Syntax)(args: Array Syntax) : 
-        TermElabM <| Option ((Array (String × String)) × String) := do
+        TermElabM <| Except String ((Array (String × String)) × String) := do
+        let header := if opens.isEmpty then "" else 
+          (opens.foldl (fun acc s => acc ++ " " ++ s) "open ") ++ " in "
         let mut argS := ""
         for arg in args do
           argS := argS ++ (showSyntax arg) ++ " -> "
-        let funStx := s!"{argS}{showSyntax type}"
+        let funTypeStr := s!"{header}{argS}{showSyntax type}"
         
-        match Lean.Parser.runParserCategory (← getEnv) `term funStx with
+        match Lean.Parser.runParserCategory (← getEnv) `term funTypeStr with
         | Except.ok termStx => 
-              let mut fullString := funStx 
+              let mut fullString := funTypeStr 
               let mut segments : Array (String × String) := #[]
               let mut cursor : String.Pos := 0
               let res := identSubs termStx
@@ -162,8 +186,8 @@ def identThmSegments (s : String)
               let chk : String := 
                   segments.foldl (fun acc (s, t) => acc ++ s ++ t) tail
               logInfo m!"{chk}"
-              return some (segments, tail)
-        | Except.error _ => return none
+              return Except.ok (segments, tail)
+        | Except.error e => return Except.error e
 
 def transformBuild (segs: (Array (String × String)) × String)
         (transf : String → IO (Option String)) : IO (Option String) := do
@@ -177,25 +201,27 @@ def transformBuild (segs: (Array (String × String)) × String)
           res.foldr (fun (init, ident) acc => (init ++ ident ++ acc)) tail
         return out
 
-def identMapped (s: String) : TermElabM (Option String) := do
-    let corr?  ← identThmSegments s 
-    corr?.mapM <| fun corr => do
+def identMappedFunStx (s: String)(opens: List String := [])  : TermElabM (Except String String) := do
+    let corr?  ← identThmSegments s opens
+    match corr? with
+    | Except.ok corr => do
           let t? ← transformBuild corr getBinName
-          return t?.getD s
+          return Except.ok (t?.getD s)
+    | Except.error e => return Except.error e
 
 #eval identThmSegments "{K : Type u} [Field K] : is_ring K"
 
-def elabFuncTyp (funStx : String) : TermElabM (Except String Expr) := do
-    match Lean.Parser.runParserCategory (← getEnv) `term funStx with
+def elabFuncTyp (funTypeStr : String) (levelNames : List Lean.Name := levelNames) : TermElabM (Except String Expr) := do
+    match Lean.Parser.runParserCategory (← getEnv) `term funTypeStr with
         | Except.ok termStx => Term.withLevelNames levelNames <|
           try 
             let expr ← Term.withoutErrToSorry <| 
                 Term.elabTerm termStx none
             return Except.ok expr
           catch e => 
-            return Except.error s!"{← e.toMessageData.toString} ; identifiers {idents termStx} (during elaboration)"
+            return Except.error s!"{← e.toMessageData.toString} for {termStx} (during elaboration)"
         | Except.error e => 
-            return Except.error s!"parsed to {funStx}; error while parsing as theorem: {e}" 
+            return Except.error s!"parsed to {funTypeStr}; error while parsing as theorem: {e}" 
 
 
 def elabCorrected(depth: Nat)(ss : Array String) : 
