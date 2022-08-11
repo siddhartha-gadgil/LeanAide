@@ -1,6 +1,7 @@
 import Lean
 import Lean.Meta
 import LeanCodePrompts.CheckParse
+import LeanCodePrompts.ParseJson
 open Lean Std Meta Elab
 
 partial def camelSplitAux (s : String)(accum: List String) : List String :=
@@ -24,6 +25,9 @@ def fullSplit (s : String) : List String :=
 -- #eval fullSplit "CamelCaseWord"
 -- #eval fullSplit "snake_caseBut_wordWithCamel"
 
+initialize caseNameCache : IO.Ref (HashMap String String) 
+  ← IO.mkRef (HashMap.empty)
+
 initialize binNamesCache : IO.Ref (Array String) ← IO.mkRef (#[])
 
 initialize binNameMapCache : IO.Ref (HashMap (List String) String) 
@@ -31,6 +35,34 @@ initialize binNameMapCache : IO.Ref (HashMap (List String) String)
 
 initialize binNameNoIsMapCache : IO.Ref (HashMap (List String) String) 
   ← IO.mkRef (HashMap.empty)
+
+def caseNames : TermElabM (HashMap String String) := do
+  let cache ← caseNameCache.get
+  if cache.isEmpty then 
+      let jsBlob ← 
+        IO.FS.readFile (System.mkFilePath ["data", "case_dictionary.json"])
+      let json ← readJson jsBlob
+      match json.getArr? with
+      | Except.error e => throwError e
+      | Except.ok arr => do
+        let mut m : HashMap String String := HashMap.empty
+        for js in arr do
+          let snakeCase? := 
+            (js.getObjVal? "snakecase").toOption.bind (fun s => 
+                s.getStr?.toOption)
+          let camelCase? :=
+            (js.getObjVal? "camelcase").toOption.bind (fun s => 
+                s.getStr?.toOption)
+          m := match (snakeCase?, camelCase?) with
+            | (some sc, some cc) =>  m.insert sc cc
+            | _ =>  m
+        caseNameCache.set m
+        return m
+  else return cache
+
+def caseName?(s: String) : TermElabM (Option String) := do
+  let cache ← caseNames
+  return cache.find? s
 
 def binNames : IO (Array String) := do 
   let cacheStr ← binNamesCache.get
@@ -78,7 +110,7 @@ def binNameNoIsMap : IO (HashMap (List String) String) := do
   else
     return cacheMap
 
-def getBinName(s : String) : IO <| Option String := do
+def binName?(s : String) : IO <| Option String := do
   let map ← binNameMap
   let mapNoIs ← binNameNoIsMap
   let split := fullSplit s
@@ -88,18 +120,6 @@ def getBinName(s : String) : IO <| Option String := do
               (fun _ => splitNoIs?.bind (
                   fun splitNoIs => map.find? splitNoIs))
   return res
-  -- let all ← binNames
-  -- -- let all := #[]
-  -- let res := all.find? (fun s => split = fullSplit s)
-  -- match res with
-  -- | some s => return some s
-  -- | none =>
-  --   match split with
-  --   | x :: ys => 
-  --     if x = "is" || x = "has" 
-  --     then return  all.find? (fun s => ys = withoutIs (fullSplit s))
-  --     else return none
-  --   | _ => return none
 
 
 def identErr (err: String) : Option String :=
@@ -114,7 +134,7 @@ def identErr (err: String) : Option String :=
 def identCorrection(s err: String) : IO (Option String) := do
   match identErr err with
   | none => return none 
-  | some id => match ←  getBinName id with
+  | some id => match ←  binName? id with
     | none => return none
     | some name => return some (s.replace id name)
 
@@ -210,7 +230,7 @@ def transformBuild (segs: (Array (String × String)) × String)
         return out
 
 def identMappedFunStx (s: String)
-    (transf : String → IO (Option String) := getBinName)(opens: List String := [])  : TermElabM (Except String String) := do
+    (transf : String → IO (Option String) := binName?)(opens: List String := [])  : TermElabM (Except String String) := do
     let corr?  ← identThmSegments s opens
     match corr? with
     | Except.ok corr => do
@@ -230,18 +250,54 @@ def elabFuncTyp (funTypeStr : String) (levelNames : List Lean.Name := levelNames
           catch e => 
             return Except.error s!"{← e.toMessageData.toString} for {termStx} (during elaboration)"
         | Except.error e => 
-            return Except.error s!"parsed to {funTypeStr}; error while parsing as theorem: {e}" 
+            return Except.error s!"parsed func-type to {funTypeStr}; error while parsing as theorem: {e}" 
 
 
 def elabThmTrans (s : String)
-  (transf : String → IO (Option String) := getBinName)
+  (transf : String → IO (Option String) := binName?)
   (opens: List String := []) 
   (levelNames : List Lean.Name := levelNames)
-  : TermElabM <| Except String Expr := do
+  : TermElabM <| Except String (Expr × String) := do
   match ← identMappedFunStx s transf opens with
   | Except.ok funTypeStr => do
-    elabFuncTyp funTypeStr levelNames
+    match (← elabFuncTyp funTypeStr levelNames) with
+    | Except.ok expr => return Except.ok (expr, funTypeStr)
+    | Except.error e => return Except.error e
   | Except.error e => return Except.error e
+
+def compareFuncStrs(s₁ s₂ : String) 
+  (levelNames : List Lean.Name := levelNames)
+  : TermElabM <| Except String Bool := do
+  let e₁ ← elabFuncTyp s₁  levelNames
+  let e₂ ← elabFuncTyp s₂ levelNames
+  match e₁ with
+  | Except.ok e₁ => match e₂ with
+    | Except.ok e₂ => 
+        let p := (← provedEqual e₁ e₂) || 
+          (← provedEquiv e₁ e₂)
+        return Except.ok p
+    | Except.error e₂ => return Except.error e₂
+  | Except.error e₁ => return Except.error e₁
+
+def equalFuncStrs(s₁ s₂ : String) 
+  (levelNames : List Lean.Name := levelNames): TermElabM Bool := do
+  match ← compareFuncStrs s₁ s₂  levelNames with
+  | Except.ok p => return p
+  | Except.error _ => return Bool.false
+
+
+def groupFuncStrs(ss: Array String)
+  (levelNames : List Lean.Name := levelNames)
+  : TermElabM (Array (Array String)) := do
+    let mut groups: Array (Array String) := Array.empty
+    for s in ss do
+      match ← groups.findIdxM? (fun g => 
+          equalFuncStrs s g[0]!  levelNames) with
+      |none  => 
+        groups := groups.push #[s]
+      | some j => 
+        groups := groups.set! j (groups[j]!.push s)
+    return groups
 
 def elabCorrected(depth: Nat)(ss : Array String) : 
   TermElabM (Array String) := do

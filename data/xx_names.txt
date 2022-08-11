@@ -1,0 +1,13 @@
+AddGroupₓₓ
+PartialOrderₓₓ
+LinearOrderₓₓ
+Semigroupₓₓ
+Groupₓₓ
+GroupWithZeroₓₓ
+Ringₓₓ
+AddSemigroupₓₓ
+CommRingₓₓ
+Preorderₓₓ
+CommGroupₓₓ
+AddCommGroupₓₓ
+Seqₓₓ
