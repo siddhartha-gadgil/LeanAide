@@ -79,19 +79,27 @@ def binNameNoIsMap : IO (HashMap (List String) String) := do
     return cacheMap
 
 def getBinName(s : String) : IO <| Option String := do
-  let all ← binNames
+  let map ← binNameMap
+  let mapNoIs ← binNameNoIsMap
   let split := fullSplit s
-  -- let all := #[]
-  let res := all.find? (fun s => split = fullSplit s)
-  match res with
-  | some s => return some s
-  | none =>
-    match split with
-    | x :: ys => 
-      if x = "is" || x = "has" 
-      then return  all.find? (fun s => ys = withoutIs (fullSplit s))
-      else return none
-    | _ => return none
+  let splitNoIs? := withoutIs? split
+  let res := ((map.find? split).orElse 
+              (fun _ => mapNoIs.find? split)).orElse 
+              (fun _ => splitNoIs?.bind (
+                  fun splitNoIs => map.find? splitNoIs))
+  return res
+  -- let all ← binNames
+  -- -- let all := #[]
+  -- let res := all.find? (fun s => split = fullSplit s)
+  -- match res with
+  -- | some s => return some s
+  -- | none =>
+  --   match split with
+  --   | x :: ys => 
+  --     if x = "is" || x = "has" 
+  --     then return  all.find? (fun s => ys = withoutIs (fullSplit s))
+  --     else return none
+  --   | _ => return none
 
 
 def identErr (err: String) : Option String :=
@@ -185,7 +193,7 @@ def identThmSegments (s : String)(opens: List String := [])
               let tail := fullString.extract cursor fullString.endPos
               let chk : String := 
                   segments.foldl (fun acc (s, t) => acc ++ s ++ t) tail
-              logInfo m!"{chk}"
+              -- logInfo m!"{chk}"
               return Except.ok (segments, tail)
         | Except.error e => return Except.error e
 

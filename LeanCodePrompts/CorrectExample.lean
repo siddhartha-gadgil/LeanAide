@@ -13,6 +13,9 @@ import LeanCodePrompts.Autocorrect
 
 -- #eval getBinName "is_ring"
 
-#eval elabCorrected 1 #["{K : Type u} [Field K] : is_ring K"]
+#eval elabCorrected 2 #["{K : Type u} [Field K] : is_ring K"]
 
 #eval identMappedFunStx "{K : Type u} [Field K] : is_ring K"
+
+
+#eval identMappedFunStx "{K : Type u} [Field K] : ring K"
