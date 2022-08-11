@@ -209,11 +209,12 @@ def transformBuild (segs: (Array (String × String)) × String)
           res.foldr (fun (init, ident) acc => (init ++ ident ++ acc)) tail
         return out
 
-def identMappedFunStx (s: String)(opens: List String := [])  : TermElabM (Except String String) := do
+def identMappedFunStx (s: String)
+    (transf : String → IO (Option String) := getBinName)(opens: List String := [])  : TermElabM (Except String String) := do
     let corr?  ← identThmSegments s opens
     match corr? with
     | Except.ok corr => do
-          let t? ← transformBuild corr getBinName
+          let t? ← transformBuild corr transf
           return Except.ok (t?.getD s)
     | Except.error e => return Except.error e
 
@@ -231,6 +232,16 @@ def elabFuncTyp (funTypeStr : String) (levelNames : List Lean.Name := levelNames
         | Except.error e => 
             return Except.error s!"parsed to {funTypeStr}; error while parsing as theorem: {e}" 
 
+
+def elabThmTrans (s : String)
+  (transf : String → IO (Option String) := getBinName)
+  (opens: List String := []) 
+  (levelNames : List Lean.Name := levelNames)
+  : TermElabM <| Except String Expr := do
+  match ← identMappedFunStx s transf opens with
+  | Except.ok funTypeStr => do
+    elabFuncTyp funTypeStr levelNames
+  | Except.error e => return Except.error e
 
 def elabCorrected(depth: Nat)(ss : Array String) : 
   TermElabM (Array String) := do

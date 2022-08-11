@@ -57,7 +57,8 @@ def getCodeJson (s: String) : TermElabM String := do
     let out ←  
       IO.Process.output {cmd:= "curl", args:= 
         #["-X", "POST", "-H", "Content-type: application/json", "-d", s, "localhost:5000/post_json"]}
-    let res ← caseMapProc out.stdout
+    let res := -- out.stdout  
+        ← caseMapProc out.stdout
     if out.exitCode = 0 then cache s res 
       else throwError m!"Web query error: {out.stderr}"
     return res
@@ -66,7 +67,8 @@ def getCodeJson (s: String) : TermElabM String := do
 
 
 def arrayToExpr (output: Array String) : TermElabM Expr := do
-  let elaborated ← elabCorrected 2 output
+  let elaborated ← output.filterM (
+    fun s => do return (← elabThmTrans s).toBool)
   logInfo m!"elaborated: {elaborated.size} out of {output.size}"
   if elaborated.isEmpty then do
     logWarning m!"No elaborated output found"
