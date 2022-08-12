@@ -211,14 +211,14 @@ def identThmSegments (s : String)(opens: List String := [])
                 -- logInfo m!"{ss.startPos}"
                 -- logInfo m!"{ss.stopPos}"
               let tail := fullString.extract cursor fullString.endPos
-              let chk : String := 
-                  segments.foldl (fun acc (s, t) => acc ++ s ++ t) tail
+              -- let chk : String := 
+              --     segments.foldl (fun acc (s, t) => acc ++ s ++ t) tail
               -- logInfo m!"{chk}"
               return Except.ok (segments, tail)
         | Except.error e => return Except.error e
 
 def transformBuild (segs: (Array (String × String)) × String)
-        (transf : String → IO (Option String)) : IO (Option String) := do
+        (transf : String → IO (Option String)) : IO (String) := do
         let (pairs, tail) := segs
         let res : Array (String × String) ←  
           pairs.mapM (fun (pred, ident) => do
@@ -229,13 +229,51 @@ def transformBuild (segs: (Array (String × String)) × String)
           res.foldr (fun (init, ident) acc => (init ++ ident ++ acc)) tail
         return out
 
+def polyTransform (pairs: (List (String × String)))
+        (transf : String → IO (Option String))
+        (extraTransf : List (String → IO (Option String))) : 
+            IO (List (List (String × String))) := do
+        match pairs with
+        | [] => return []
+        | h :: ts =>
+          let (pred, ident) := h
+          let ident' :=  (← transf ident).getD ident
+          let extraIdents ← 
+              extraTransf.filterMapM (fun f => f ident)
+          let h' := (ident' :: extraIdents).map ((pred, .))
+          let prev ← polyTransform ts  transf extraTransf
+          return h'.bind (fun x => prev.map (x :: .))
+
+def polyTransformBuild (segs: (Array (String × String)) × String)
+        (transf : String → IO (Option String))
+        (extraTransf : List (String → IO (Option String))) : 
+        IO (List String) := do
+        let (pairs, tail) := segs
+        let transformed ← polyTransform pairs.toList transf extraTransf
+        let strings := 
+          transformed.map (fun res => 
+            res.foldr (fun (init, ident) acc => (init ++ ident ++ acc)) tail)
+        return strings
+
+
 def identMappedFunStx (s: String)
     (transf : String → IO (Option String) := binName?)(opens: List String := [])  : TermElabM (Except String String) := do
     let corr?  ← identThmSegments s opens
     match corr? with
     | Except.ok corr => do
-          let t? ← transformBuild corr transf
-          return Except.ok (t?.getD s)
+          let t ← transformBuild corr transf
+          return Except.ok t
+    | Except.error e => return Except.error e
+
+def polyIdentMappedFunStx (s: String)
+    (transf : String → IO (Option String) := binName?)
+    (extraTransf : List (String → IO (Option String)))
+    (opens: List String := [])  : TermElabM (Except String (List String)) := do
+    let corr?  ← identThmSegments s opens
+    match corr? with
+    | Except.ok corr => do
+          let t ← polyTransformBuild corr transf extraTransf
+          return Except.ok t
     | Except.error e => return Except.error e
 
 #eval identThmSegments "{K : Type u} [Field K] : is_ring K"
@@ -252,6 +290,23 @@ def elabFuncTyp (funTypeStr : String) (levelNames : List Lean.Name := levelNames
         | Except.error e => 
             return Except.error s!"parsed func-type to {funTypeStr}; error while parsing as theorem: {e}" 
 
+
+def polyElabThmTrans (s : String)
+  (transf : String → IO (Option String) := binName?)
+  (extraTransf : List (String → IO (Option String)))
+  (opens: List String := []) 
+  (levelNames : List Lean.Name := levelNames)
+  : TermElabM <| Except String (List (Expr × String)) := do
+  match ← polyIdentMappedFunStx s transf extraTransf opens with
+  | Except.ok funTypeStrList => do
+    let pairs: List (Expr × String) ← 
+      funTypeStrList.filterMapM (fun funTypeStr => do
+      
+      let expE? ← elabFuncTyp funTypeStr levelNames
+      let exp? := expE?.toOption
+      return exp?.map (. , funTypeStr))
+    return Except.ok pairs
+  | Except.error e => return Except.error e
 
 def elabThmTrans (s : String)
   (transf : String → IO (Option String) := binName?)

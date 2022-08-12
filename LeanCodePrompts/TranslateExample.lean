@@ -10,13 +10,3 @@ example : //- Every field is a ring -// := by
                         
             sorry
 
-example  {K : Type u} [Field K] : Ring K := by sorry
-
-
-
-#theorem test : "Every field is a ring" := by
-  intro p hp
-  sorry
-
-#example "The sum of any two natural numbers is prime" := by admit
-
