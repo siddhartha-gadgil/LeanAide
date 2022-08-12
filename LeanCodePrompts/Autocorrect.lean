@@ -28,6 +28,13 @@ def fullSplit (s : String) : List String :=
 initialize caseNameCache : IO.Ref (HashMap String String) 
   ← IO.mkRef (HashMap.empty)
 
+initialize xNameCache : IO.Ref (HashMap String String) 
+  ← IO.mkRef (HashMap.empty)
+
+initialize xxNameCache : IO.Ref (HashMap String String) 
+  ← IO.mkRef (HashMap.empty)
+
+
 initialize binNamesCache : IO.Ref (Array String) ← IO.mkRef (#[])
 
 initialize binNameMapCache : IO.Ref (HashMap (List String) String) 
@@ -36,7 +43,7 @@ initialize binNameMapCache : IO.Ref (HashMap (List String) String)
 initialize binNameNoIsMapCache : IO.Ref (HashMap (List String) String) 
   ← IO.mkRef (HashMap.empty)
 
-def caseNames : TermElabM (HashMap String String) := do
+def caseNames : MetaM (HashMap String String) := do
   let cache ← caseNameCache.get
   if cache.isEmpty then 
       let jsBlob ← 
@@ -60,8 +67,40 @@ def caseNames : TermElabM (HashMap String String) := do
         return m
   else return cache
 
-def caseName?(s: String) : TermElabM (Option String) := do
+def xNames : MetaM (HashMap String String) := do
+  let cache ← xNameCache.get
+  if cache.isEmpty then 
+      let lines ← 
+        IO.FS.lines (System.mkFilePath ["data", "x_names.txt"])
+      let mut m : HashMap String String := HashMap.empty
+      for xname in lines do
+        m := m.insert (xname.dropRight 1) xname
+      xNameCache.set m
+      return m
+  else return cache
+
+def xxNames : MetaM (HashMap String String) := do
+  let cache ← xxNameCache.get
+  if cache.isEmpty then 
+      let lines ← 
+        IO.FS.lines (System.mkFilePath ["data", "xx_names.txt"])
+      let mut m : HashMap String String := HashMap.empty
+      for xxname in lines do
+        m := m.insert (xxname.dropRight 2) xxname
+      xxNameCache.set m
+      return m
+  else return cache
+
+def caseName?(s: String) : MetaM (Option String) := do
   let cache ← caseNames
+  return cache.find? s
+
+def xName?(s: String) : MetaM (Option String) := do
+  let cache ← xNames
+  return cache.find? s
+
+def xxName?(s: String) : MetaM (Option String) := do
+  let cache ← xxNames
   return cache.find? s
 
 def binNames : IO (Array String) := do 
@@ -110,7 +149,7 @@ def binNameNoIsMap : IO (HashMap (List String) String) := do
   else
     return cacheMap
 
-def binName?(s : String) : IO <| Option String := do
+def binName?(s : String) : MetaM <| Option String := do
   let map ← binNameMap
   let mapNoIs ← binNameNoIsMap
   let split := fullSplit s
@@ -122,6 +161,13 @@ def binName?(s : String) : IO <| Option String := do
   return res
 
 
+def caseOrBinName?(s : String) : MetaM (Option String) := do
+  let res ← caseName? s
+  if res.isNone then do
+    let res ← binName? s
+    return res
+  else return res
+
 def identErr (err: String) : Option String :=
   let head := "unknown identifier '"
   let tail := "' (during elaboration)"
@@ -131,7 +177,7 @@ def identErr (err: String) : Option String :=
     none
 
 
-def identCorrection(s err: String) : IO (Option String) := do
+def identCorrection(s err: String) : MetaM (Option String) := do
   match identErr err with
   | none => return none 
   | some id => match ←  binName? id with
@@ -169,7 +215,7 @@ def interLeave(full: Substring)(idents: List Substring) :
 #check Substring.extract
 
 def identThmSegments (s : String)(opens: List String := [])
-  : TermElabM <| Except String ((Array (String × String)) × String) := do
+  : MetaM <| Except String ((Array (String × String)) × String) := do
   let env ← getEnv
   let chk := Lean.Parser.runParserCategory env `thmStat  s
   match chk with
@@ -186,7 +232,7 @@ def identThmSegments (s : String)(opens: List String := [])
       | _ => return Except.error "not a theorem statement"
   | Except.error _  => return Except.error "not a theorem statement"
   where identsAux (type: Syntax)(args: Array Syntax) : 
-        TermElabM <| Except String ((Array (String × String)) × String) := do
+        MetaM <| Except String ((Array (String × String)) × String) := do
         let header := if opens.isEmpty then "" else 
           (opens.foldl (fun acc s => acc ++ " " ++ s) "open ") ++ " in "
         let mut argS := ""
@@ -218,7 +264,7 @@ def identThmSegments (s : String)(opens: List String := [])
         | Except.error e => return Except.error e
 
 def transformBuild (segs: (Array (String × String)) × String)
-        (transf : String → IO (Option String)) : IO (String) := do
+        (transf : String → MetaM (Option String)) : MetaM (String) := do
         let (pairs, tail) := segs
         let res : Array (String × String) ←  
           pairs.mapM (fun (pred, ident) => do
@@ -230,9 +276,9 @@ def transformBuild (segs: (Array (String × String)) × String)
         return out
 
 def polyTransform (pairs: (List (String × String)))
-        (transf : String → IO (Option String))
-        (extraTransf : List (String → IO (Option String))) : 
-            IO (List (List (String × String))) := do
+        (transf : String → MetaM (Option String))
+        (extraTransf : List (String → MetaM (Option String))) : 
+            MetaM (List (List (String × String))) := do
         match pairs with
         | [] => return []
         | h :: ts =>
@@ -245,9 +291,9 @@ def polyTransform (pairs: (List (String × String)))
           return h'.bind (fun x => prev.map (x :: .))
 
 def polyTransformBuild (segs: (Array (String × String)) × String)
-        (transf : String → IO (Option String))
-        (extraTransf : List (String → IO (Option String))) : 
-        IO (List String) := do
+        (transf : String → MetaM (Option String))
+        (extraTransf : List (String → MetaM (Option String))) : 
+        MetaM (List String) := do
         let (pairs, tail) := segs
         let transformed ← polyTransform pairs.toList transf extraTransf
         let strings := 
@@ -257,7 +303,7 @@ def polyTransformBuild (segs: (Array (String × String)) × String)
 
 
 def identMappedFunStx (s: String)
-    (transf : String → IO (Option String) := binName?)(opens: List String := [])  : TermElabM (Except String String) := do
+    (transf : String → MetaM (Option String) := binName?)(opens: List String := [])  : MetaM (Except String String) := do
     let corr?  ← identThmSegments s opens
     match corr? with
     | Except.ok corr => do
@@ -266,9 +312,10 @@ def identMappedFunStx (s: String)
     | Except.error e => return Except.error e
 
 def polyIdentMappedFunStx (s: String)
-    (transf : String → IO (Option String) := binName?)
-    (extraTransf : List (String → IO (Option String)))
-    (opens: List String := [])  : TermElabM (Except String (List String)) := do
+    (transf : String → MetaM (Option String) := caseOrBinName?)
+    (extraTransf : List (String → MetaM (Option String)) 
+        := [xName?, xxName?])
+    (opens: List String := [])  : MetaM (Except String (List String)) := do
     let corr?  ← identThmSegments s opens
     match corr? with
     | Except.ok corr => do
@@ -292,8 +339,9 @@ def elabFuncTyp (funTypeStr : String) (levelNames : List Lean.Name := levelNames
 
 
 def polyElabThmTrans (s : String)
-  (transf : String → IO (Option String) := binName?)
-  (extraTransf : List (String → IO (Option String)))
+  (transf : String → MetaM (Option String) := caseOrBinName?)
+  (extraTransf : List (String → MetaM (Option String))
+        := [xName?, xxName?])
   (opens: List String := []) 
   (levelNames : List Lean.Name := levelNames)
   : TermElabM <| Except String (List (Expr × String)) := do
@@ -309,7 +357,7 @@ def polyElabThmTrans (s : String)
   | Except.error e => return Except.error e
 
 def elabThmTrans (s : String)
-  (transf : String → IO (Option String) := binName?)
+  (transf : String → MetaM (Option String) := binName?)
   (opens: List String := []) 
   (levelNames : List Lean.Name := levelNames)
   : TermElabM <| Except String (Expr × String) := do
