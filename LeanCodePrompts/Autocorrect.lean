@@ -285,7 +285,7 @@ def polyTransform (pairs: (List (String × String)))
           let (pred, ident) := h
           let ident' :=  (← transf ident).getD ident
           let extraIdents ← 
-              extraTransf.filterMapM (fun f => f ident)
+              extraTransf.filterMapM (fun f => f ident')
           let h' := (ident' :: extraIdents).map ((pred, .))
           let prev ← polyTransform ts  transf extraTransf
           return h'.bind (fun x => prev.map (x :: .))

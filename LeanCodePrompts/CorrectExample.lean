@@ -24,3 +24,7 @@ import LeanCodePrompts.Autocorrect
 #eval polyIdentMappedFunStx "{p : ℕ} (hp : nat.prime p) : p = 2 ∨ p % 2 = 1"
 
 #eval identThmSegments "{p : ℕ} (hp : nat.prime p) : p = 2 ∨ p % 2 = 1"
+
+#eval xName? "Ring"
+
+#eval polyIdentMappedFunStx "{K : Type u} [Field K] : ring K"
