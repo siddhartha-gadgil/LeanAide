@@ -280,7 +280,7 @@ def polyTransform (pairs: (List (String × String)))
         (extraTransf : List (String → MetaM (Option String))) : 
             MetaM (List (List (String × String))) := do
         match pairs with
-        | [] => return []
+        | [] => return [[]]
         | h :: ts =>
           let (pred, ident) := h
           let ident' :=  (← transf ident).getD ident

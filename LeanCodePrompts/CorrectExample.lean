@@ -9,11 +9,8 @@ import LeanCodePrompts.Autocorrect
 
 #eval identErr "unknown identifier 'is_ring' (during elaboration)"
 
--- #eval binName? "ring"
 
--- #eval binName? "is_ring"
-
-#eval elabCorrected 2 #["{K : Type u} [Field K] : is_ring K"]
+#eval caseOrBinName? "nat.prime"
 
 #eval identMappedFunStx "{K : Type u} [Field K] : is_ring K"
 
@@ -21,3 +18,9 @@ import LeanCodePrompts.Autocorrect
 #eval identMappedFunStx "{K : Type u} [Field K] : ring K"
 
 #eval caseName? "division_ring"
+
+#eval polyElabThmTrans "{p : ℕ} (hp : nat.prime p) : p = 2 ∨ p % 2 = 1"
+
+#eval polyIdentMappedFunStx "{p : ℕ} (hp : nat.prime p) : p = 2 ∨ p % 2 = 1"
+
+#eval identThmSegments "{p : ℕ} (hp : nat.prime p) : p = 2 ∨ p % 2 = 1"
