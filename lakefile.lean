@@ -1,7 +1,9 @@
 import Lake
 open Lake DSL
 
-package LeanCodePrompts
+package LeanCodePrompts{
+  precompileModules := true
+}
 
 lean_exe datagen{
   supportInterpreter := true
