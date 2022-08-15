@@ -41,6 +41,9 @@ def caseMapProc (s: String) : IO String := do
 
 initialize webCache : IO.Ref (HashMap String String) ← IO.mkRef (HashMap.empty)
 
+initialize pendingQueries : IO.Ref (HashSet String) 
+    ← IO.mkRef (HashSet.empty)
+
 def getCached? (s: String) : IO (Option String) := do
   let cache ← webCache.get
   return cache.find? s
@@ -50,20 +53,34 @@ def cache (s jsBlob: String)  : IO Unit := do
   webCache.set (cache.insert s jsBlob)
   return ()
 
+partial def pollCache (s : String) : IO String := do
+  let cache ← webCache.get
+  match cache.find? s with
+  | some jsBlob => return jsBlob
+  | none => do
+    IO.sleep 200
+    pollCache s
+
 def getCodeJson (s: String) : TermElabM String := do
   match ← getCached? s with
   | some s => return s
-  | none =>
-    let out ←  
-      IO.Process.output {cmd:= "curl", args:= 
-        #["-X", "POST", "-H", "Content-type: application/json", "-d", s, "localhost:5000/post_json"]}
-    let res := out.stdout  
-        -- ← caseMapProc out.stdout
-    if out.exitCode = 0 then cache s res 
-      else throwError m!"Web query error: {out.stderr}"
-    return res
+  | none =>    
+    let pending ←  pendingQueries.get
+    if pending.contains s then pollCache s
+    else 
+      let pending ←  pendingQueries.get
+      pendingQueries.set (pending.insert s)
+      let out ←  
+        IO.Process.output {cmd:= "curl", args:= 
+          #["-X", "POST", "-H", "Content-type: application/json", "-d", s, "localhost:5000/post_json"]}
+      let pending ←  pendingQueries.get
+      pendingQueries.set (pending.erase s)
+      let res := out.stdout  
+          -- ← caseMapProc out.stdout
+      if out.exitCode = 0 then cache s res 
+        else throwError m!"Web query error: {out.stderr}"
+      return res
   -- return out.stdout
-
 
 
 def arrayToExpr (output: Array String) : TermElabM Expr := do
@@ -134,7 +151,7 @@ def textToExprStx' (s : String) : TermElabM (Expr × TSyntax `term) := do
   let (stx : Term) ← (PrettyPrinter.delab e)
   return (e, stx)
 
-elab "//-" cb:commentBody "/" : term => do
+elab "//-" cb:commentBody  : term => do
   let s := cb.raw.getAtomVal!
   let s := (s.dropRight 2).trim  
   let jsBlob ← getCodeJson  s
