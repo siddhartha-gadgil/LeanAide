@@ -5,7 +5,7 @@ import Std
 import LeanCodePrompts.CheckParse
 import LeanCodePrompts.ParseJson
 import LeanCodePrompts.Autocorrect
-open Std
+open Lean Meta Std
 
 open Lean Elab Parser Command
 
@@ -81,16 +81,17 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
   --     return (← elabThmTrans s).toOption.map (fun (_, s) => s))
   -- logInfo m!"elaborated: {elaborated.size} out of {output.size}, failed {failed}"
   if elaborated.isEmpty then do
-    logWarning m!"No elaborated output found"
+    logWarning m!"No valid output from Codex; outputs below"
     for out in output do
       logWarning m!"{out}"
-    throwError "No valid output from codex"  
-  let groupSorted ← groupFuncStrs elaborated
-  let topStr := groupSorted[0]![0]!
-  let thmExc ← elabFuncTyp topStr
-  match thmExc with
-  | Except.ok thm => return thm
-  | Except.error s => throwError s
+    mkSyntheticSorry (mkSort levelZero)
+  else    
+    let groupSorted ← groupFuncStrs elaborated
+    let topStr := groupSorted[0]![0]!
+    let thmExc ← elabFuncTyp topStr
+    match thmExc with
+    | Except.ok thm => return thm
+    | Except.error s => throwError s
 
 def textToExpr (s: String) : TermElabM Expr := do
   let json ← readJson s
