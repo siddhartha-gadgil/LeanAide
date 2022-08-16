@@ -100,7 +100,9 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
   if elaborated.isEmpty then do
     logWarning m!"No valid output from Codex; outputs below"
     for out in output do
-      logWarning m!"{out}"
+      let polyOut ←  polyStrThmTrans out
+      for str in polyOut do
+        logWarning m!"{str}"
     mkSyntheticSorry (mkSort levelZero)
   else    
     let groupSorted ← groupFuncStrs elaborated
