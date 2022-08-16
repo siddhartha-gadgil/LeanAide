@@ -348,13 +348,23 @@ def polyElabThmTrans (s : String)
   match ← polyIdentMappedFunStx s transf extraTransf opens with
   | Except.ok funTypeStrList => do
     let pairs: List (Expr × String) ← 
-      funTypeStrList.filterMapM (fun funTypeStr => do
-      
-      let expE? ← elabFuncTyp funTypeStr levelNames
-      let exp? := expE?.toOption
-      return exp?.map (. , funTypeStr))
+      funTypeStrList.filterMapM (fun funTypeStr => do      
+        let expE? ← elabFuncTyp funTypeStr levelNames
+        let exp? := expE?.toOption
+        return exp?.map (. , funTypeStr))
     return Except.ok pairs
   | Except.error e => return Except.error e
+
+def polyStrThmTrans (s : String)
+  (transf : String → MetaM (Option String) := caseOrBinName?)
+  (extraTransf : List (String → MetaM (Option String))
+        := [xName?, xxName?])
+  (opens: List String := []) 
+  : TermElabM (List String) := do
+  match ← polyIdentMappedFunStx s transf extraTransf opens with
+  | Except.ok funTypeStrList => do
+    return funTypeStrList
+  | Except.error _ => return [s]
 
 def elabThmTrans (s : String)
   (transf : String → MetaM (Option String) := binName?)
