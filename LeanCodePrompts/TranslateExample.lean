@@ -52,3 +52,20 @@ example : //- Every field is a ring -/ := by
 -/
 
 example : //- Every ring is a boojum -/ := by sorry
+
+/-!
+## Workpoints
+
+* Hyperparameter tuning.
+* Round trip to select and validate translations.
+* Two stage translation via an intermediate prompt.
+* Diverse prompts via repulsion.
+* Hybrid prompts: fixed, input domain based and sentence similarity based. 
+* Prompts using other definitions in the environments, especially ones nearby.
+* Better recognition of equality/equivalence, for example using Aesop.
+* Allow users to give sample prompts.
+* Allow for crowdsourcing sample prompts.
+* Expand __auto-correction__, in particular allowing reordering of arguments.
+* Suggest imports.
+* Port more code to Lean.
+-/
