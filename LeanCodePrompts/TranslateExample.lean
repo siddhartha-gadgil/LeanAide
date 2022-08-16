@@ -20,12 +20,12 @@ example : //- Every prime number is either `2` or odd -/ := by
 ## Input dependent prompting
 
 * The prompt has examples of docstrings and translation to lean.
-* The examples are from a database extracted from mathlib using Docgen.
-* We choose prompts based on sentence similarity.
+* The examples are from a database extracted from `mathlib` using `docgen`.
+* We choose prompts based on __sentence similarity__.
 
 ## Post-processing and Lean 4
 
-* The examples and codex output are in lean 3.
+* The examples and codex output are in Lean 3.
 * Some macros are used to bridge syntactic differences.
 * Identifiers are mapped using a database of correspondence between `mathlib` and `binport`:
     - names were extracted from mathlib and binport (the latter as constants in the environment).
@@ -34,8 +34,8 @@ example : //- Every prime number is either `2` or odd -/ := by
 ## Filtering and Selection
 
 * We filter only valid responses.
+* If there are no valid answers, we return a sorry `Prop` and also give translations in the infoview.
 * We attempt to group by equality (a little more than definitional equality) and choose the largest group.
-* If there are no valid answers, we return a sorry `Prop`.
 -/
 
 
@@ -46,8 +46,8 @@ example : //- Every field is a ring -/ := by
 ## Auto-correction
 
 * We attempt to map unknown identifiers to known ones.
-* For now, this is by case transformations, and adding/removng "is" and "has"
+* For now, this is by case transformations, and adding/removing "is" and "has"
 * These are the most common errors we see. The other common error is using shorter or longer forms (e.g. `adj` vs `adjacency`).
-* This (and the lean 3  -> lean 4 name mapping) are done in lean.
-
+* This and the Lean 3  -> Lean 4 name mapping (here) are done in Lean.
 -/
+
