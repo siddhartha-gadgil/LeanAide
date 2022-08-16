@@ -32,10 +32,10 @@ def getFileThmInfo : MetaM (List $ Name × Option String) := do
 
 section Testing
 
-/- Addition of two on the left is equal to addition of two on the right. -/
+/-- Addition of two on the left is equal to addition of two on the right. -/
 theorem add_two_comm : ∀ n : Nat, n + 2 = 2 + n := sorry
 
-/- Fermat's Last theorem, stated in the special case of `n = 3` -/
+/-- Fermat's Last theorem, stated in the special case of `n = 3`. -/
 theorem flt3 : a^3 + b^3 = c^3 → a * b * c = 0 := sorry
 
 
