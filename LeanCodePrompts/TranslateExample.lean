@@ -14,7 +14,7 @@ example : //- Every prime number is either `2` or odd -/ := by
 ## Interface
 
 * Based on an elaborator.
-* In the longer run, we would like to edit the source code (using widgets).
+* In the longer run, we would like to edit the source code (using widgets/code-actions).
 * Caching of results and polling for pending queries is done to reduce server calls.
 
 ## Input dependent prompting
@@ -51,7 +51,7 @@ example : //- Every field is a ring -/ := by
 * This and the Lean 3  -> Lean 4 name mapping (here) are done in Lean.
 -/
 
-example : //- Every ring is a boojum -/ := by sorry
+example : //- Every Ring is a Boojum -/ := by sorry
 
 /-!
 ## Workpoints
