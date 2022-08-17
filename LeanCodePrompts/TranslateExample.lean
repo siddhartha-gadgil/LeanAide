@@ -51,7 +51,9 @@ example : //- Every field is a ring -/ := by
 * This and the Lean 3  -> Lean 4 name mapping (here) are done in Lean.
 -/
 
-example : //- Every Ring is a Boojum -/ := by sorry
+example : //- Every Ring is a boojum -/ := by sorry
+
+example : //- There are infinitely odd numbers -/ := by sorry
 
 /-!
 ## Workpoints

@@ -63,7 +63,7 @@ def process_json():
     print("\nQuery to Codex (with input-dependent prompts):")
     print (query[0])
     #return query
-    query_parameters = {'model': 'code-davinci-002','temperature':0.9,'max_tokens':150,'stop': ':=','n':5}
+    query_parameters = {'model': 'code-davinci-002','temperature':0.3,'max_tokens':150,'stop': ':=','n':5}
     #return query_parameters
     query_parameters["prompt"] = query[0]
     ret = codex_access_utils.codex_run(query_parameters)
