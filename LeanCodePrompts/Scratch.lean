@@ -1,5 +1,5 @@
 import Mathbin.All
-import LeanCodePrompts.CheckParse
+-- import LeanCodePrompts.CheckParse
 
 #check Real
 #check ℝ 
