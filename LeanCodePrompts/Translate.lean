@@ -9,21 +9,38 @@ open Lean Meta Std
 
 open Lean Elab Parser Command
 
-def egPrompt:= "Every prime number is either `2` or odd."
+def egPrompt := "/-- A prime `p` satisfies `p % 2 = 1` if and only if `p ≠ 2`.-/
+theorem {p : ℕ} [fact (nat.prime p)] : p % 2 = 1 ↔ p ≠ 2 :=
 
-def egOut := #["{p : ℕ} (hp : Nat.Prime p) :  p = 2 ∨ p % 2 = 1 ",
-   "(p : ℕ) :  Nat.Prime p ↔ p = 2 ∨ p % 2 = 1 ",
-   "{p : ℕ} (hp : Nat.Prime p) : p = 2 ∨ p % 2 = 1 ",
-   "(n : ℕ) (hp : Nat.Prime n) : n = 2 ∨ n % 2 = 1 ",
-   "{p : ℕ} (hp : Nat.Prime p) : p = 2 ∨ p % 2 = 1 ",
-   "Nonsense output to test filtering"]
+/-- A natural number is odd iff it has residue `1` or `3` mod `4`-/
+theorem {n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3 := 
 
-def egBlob := "[\"{p : ℕ} (hp : Nat.Prime p) :  p = 2 ∨ p % 2 = 1 \",
-   \"(p : ℕ) :  Nat.Prime p ↔ p = 2 ∨ p % 2 = 1 \",
-   \"{p : ℕ} (hp : Nat.Prime p) : p = 2 ∨ p % 2 = 1 \",
-   \"(n : ℕ) (hp : Nat.Prime n) : n = 2 ∨ n % 2 = 1 \",
-   \"{p : ℕ} (hp : Nat.Prime p) : p = 2 ∨ p % 2 = 1 \",
-   \"Nonsense output to test filtering\"]"
+/-- The only numbers with empty prime factorization are `0` and `1`-/
+theorem (n : ℕ) : n.factorization = 0 ↔ n = 0 ∨ n = 1 := 
+
+/-- The only prime factor of prime `p` is `p` itself, with multiplicity `1` -/
+theorem {p : ℕ} (hp : nat.prime p) : p.factorization = finsupp.single p 1 := 
+
+/-- Every prime number is either `2` or odd.-/
+theorem"
+
+def openAIKey : IO (Option String) := IO.getEnv "OPENAI_API_KEY"
+
+def openAIQuery(prompt: String)(n: Nat := 1)(temp : JsonNumber := ⟨2, 1⟩) : MetaM Json := do
+  let key? ← openAIKey
+  let key := key?.get!
+  let dataJs := Json.mkObj [("model", "code-davinci-002"), ("prompt", prompt), ("temperature", Json.num temp), ("n", n), ("max_tokens", 150), ("stop", Json.arr #[":=", "-/"])]
+  let data := dataJs.pretty
+  let out ←  IO.Process.output {
+        cmd:= "curl", 
+        args:= #["https://api.openai.com/v1/completions",
+        "-X", "POST",
+        "-H", "Authorization: Bearer " ++ key,
+        "-H", "Content-Type: application/json",
+        "--data", data]}
+  readJson out.stdout
+
+-- #eval openAIQuery egPrompt 5
 
 def egBlob' := "[{ \"text\" : \"{p : ℕ} (hp : Nat.Prime p) :  p = 2 ∨ p % 2 = 1 \"},
    { \"text\" : \"(p : ℕ) :  Nat.Prime p ↔ p = 2 ∨ p % 2 = 1 \"},
