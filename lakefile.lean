@@ -18,7 +18,7 @@ lean_exe lib4chk{
 }
 
 
---@[defaultTarget]
+@[defaultTarget]
 lean_exe batchcheck{
   supportInterpreter := true
 }
@@ -32,12 +32,12 @@ lean_exe depnames{
 }
 
 
---@[defaultTarget]
+@[defaultTarget]
 lean_exe chkthms{
   supportInterpreter := true
 }
 
---@[defaultTarget]
+@[defaultTarget]
 lean_lib examples
 
 require mathlib from git
@@ -46,5 +46,5 @@ require mathlib from git
 require mathlib3port from git
   "https://github.com/leanprover-community/mathlib3port.git"@"master"
 
--- require aesop from git
---  "https://github.com/JLimperg/aesop.git"@"master"
+require aesop from git
+  "https://github.com/JLimperg/aesop.git"@"master"
