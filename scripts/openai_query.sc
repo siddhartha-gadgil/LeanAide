@@ -44,3 +44,31 @@ val ppp = """theorem {p : ℕ} [fact (nat.prime p)] : p % 2 = 1 ↔ p ≠ 2 :=
   
   theorem {p : ℕ} (hp : nat.prime p) : p = 2 ∨ p % 2 = 1 :=
   /-"""
+
+val freeGroupPrompt = """/--Subgroups of torsion-free groups are torsion-free.-/
+theorem {G : Type u_1} [group G] (tG : monoid.is_torsion_free G) (H : subgroup G) : monoid.is_torsion_free ↥H :=
+
+
+/--Quotienting a group by its torsion subgroup yields a torsion free group.-/
+theorem (G : Type u_1) [comm_group G] : monoid.is_torsion_free (G ⧸ torsion G) :=
+
+
+/--Subgroups of additive torsion-free groups are additively torsion-free.-/
+theorem {G : Type u_1} [add_group G] (tG : add_monoid.is_torsion_free G) (H : add_subgroup G) : add_monoid.is_torsion_free ↥H :=
+
+
+/--The canonical injection from the type to the free group is an injection.-/
+theorem {α : Type u} : function.injective free_group.of :=
+
+/--  If two words correspond to the same element in the free group, then they have a common maximal reduction. This is the proof that the function that sends an element of the free group to its maximal reduction is well-defined. -/
+theorem {α : Type u} {L₁ L₂ : list (α × bool)} [decidable_eq α] (H : free_group.mk L₁ = free_group.mk L₂) : free_group.reduce L₁ = free_group.reduce L₂ :=
+
+/-- A word and its maximal reduction correspond to the same element of the free group.-/
+theorem {α : Type u} {L : list (α × bool)} [decidable_eq α] : free_group.mk (free_group.reduce L) = free_group.mk L :=
+
+/--  If two words have a common maximal reduction, then they correspond to the same element in the free group.-/
+theorem {α : Type u} {L₁ L₂ : list (α × bool)} [decidable_eq α] (H : free_group.reduce L₁ = free_group.reduce L₂) : free_group.mk L₁ = free_group.mk L₂
+
+/-- Every subgroup of a free group is a free group -/
+theorem """
+
