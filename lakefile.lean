@@ -44,10 +44,10 @@ lean_exe chkthms{
 lean_lib examples
 
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git"@"master"
+  "https://github.com/leanprover-community/mathlib4.git"@"aa176e5da516f57b502ebdfb633f39b392dda333"
 
 require mathlib3port from git
-  "https://github.com/leanprover-community/mathlib3port.git"@"master"
+  "https://github.com/leanprover-community/mathlib3port.git"@"1749724b7917aeea55830be63bdc0aee6587451c"
 
 require aesop from git
-  "https://github.com/JLimperg/aesop.git"@"master"
+  "https://github.com/JLimperg/aesop.git"@"3fb480b3d7b1e70e488e479e94875bb94d7c8ade"
