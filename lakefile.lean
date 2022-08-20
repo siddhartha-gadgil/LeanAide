@@ -17,6 +17,9 @@ lean_exe lib4chk{
   supportInterpreter := true
 }
 
+lean_exe annotatekwds{
+  supportInterpreter := false
+}
 
 @[defaultTarget]
 lean_exe batchcheck{
