@@ -49,8 +49,6 @@ macro_rules
    Array.foldrM (fun x acc => `(fun $x => $acc)) y xs.raw
 | `(fun $x:ident : $type:term , $y:term) => 
   `(fun ($x : $type)  => $y)
-| `(fun  $x:ident : $type:term  , $y:term) => 
-  `(fun ($x : $type)  => $y)
 | `(λ _ , $y:term) => 
   `(fun _  => $y)
 | `(Π $x:ident : $type:term , $y:term) => 
