@@ -1,9 +1,6 @@
 {"version": 1,
  "packages":
- [{"url": "https://github.com/JLimperg/aesop.git",
-   "rev": "3fb480b3d7b1e70e488e479e94875bb94d7c8ade",
-   "name": "aesop"},
-  {"url": "https://github.com/leanprover-community/mathlib3port.git",
+ [{"url": "https://github.com/leanprover-community/mathlib3port.git",
    "rev": "1749724b7917aeea55830be63bdc0aee6587451c",
    "name": "mathlib3port"},
   {"url": "https://github.com/leanprover-community/mathlib4.git",

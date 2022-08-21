@@ -49,5 +49,3 @@ require mathlib from git
 require mathlib3port from git
   "https://github.com/leanprover-community/mathlib3port.git"@"1749724b7917aeea55830be63bdc0aee6587451c"
 
-require aesop from git
-  "https://github.com/JLimperg/aesop.git"@"3fb480b3d7b1e70e488e479e94875bb94d7c8ade"
