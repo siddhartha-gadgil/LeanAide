@@ -1,0 +1,5109 @@
+set, 607
+function, 559
+Alias, 486
+iff, 441
+direction, 326
+element, 293
+product, 290
+continuous, 277
+space, 275
+sum, 266
+equal, 256
+point, 252
+map, 250
+elements, 238
+version, 237
+finite, 232
+vector, 195
+bounded, 192
+reverse, 186
+closed, 186
+left, 182
+reverse direction, 180
+functions, 178
+mul, 162
+points, 161
+add, 156
+equals, 156
+norm, 154
+closure, 154
+positive, 152
+derivative, 149
+sets, 149
+order, 147
+lemma, 138
+ring, 137
+linear, 135
+monoid, 134
+open, 132
+convex, 127
+group, 125
+strictly, 123
+forward direction, 123
+forward, 123
+exists, 117
+additive, 116
+theorem, 115
+distance, 114
+terms, 114
+compact, 113
+case, 111
+number, 111
+nonzero, 111
+vectors, 109
+nonempty, 109
+field, 109
+angle, 107
+multiplication, 106
+finset, 105
+inequality, 103
+series, 103
+real, 101
+form, 98
+differentiable, 98
+subset, 97
+measure, 92
+polynomial, 92
+basis, 87
+measurable, 87
+prime, 85
+filter, 81
+relation, 81
+monotone, 79
+inverse, 79
+injective, 79
+power, 78
+list, 77
+principle, 77
+sequence, 76
+inv, 75
+scalar, 73
+constant, 73
+submonoid, 73
+type, 71
+equivalent, 69
+domain, 69
+identity, 69
+covariance, 68
+local, 68
+neighborhood, 68
+natural, 67
+normed, 67
+indexed, 66
+range, 66
+holds, 66
+family, 65
+minimal, 65
+Assumes, 64
+ordered, 64
+unique, 64
+fin, 63
+affine, 63
+composition, 63
+commutative, 62
+generated, 62
+algebra, 62
+interval, 60
+integral, 59
+comm, 59
+cardinality, 59
+disjoint, 59
+maps, 58
+matrix, 58
+characteristic, 56
+contained, 56
+neg, 55
+empty, 55
+definition, 55
+topological, 54
+nontrivial, 53
+independent, 53
+congruence, 53
+Pointwise, 52
+numbers, 52
+topology, 52
+image, 52
+degree, 52
+Theorem, 51
+root, 51
+suffices, 51
+multilinear, 50
+cyclotomic, 50
+strict, 50
+coefficient, 50
+induction, 50
+nonnegative, 49
+Rearrangement, 49
+span, 49
+limit, 49
+Hausdorff, 49
+Rearrangement Inequality, 48
+Stated by permuting, 48
+subgroup, 48
+finitely, 48
+locally, 48
+regular, 47
+property, 47
+module, 46
+preserves, 46
+top, 46
+dual, 46
+binary, 45
+dense, 45
+complete, 45
+respect, 45
+maximal, 45
+radius, 45
+convex set, 44
+spaces, 44
+provided, 43
+complex, 43
+prove, 43
+vector space, 43
+linearly, 43
+Cauchy, 42
+line, 42
+projection, 41
+fixed, 41
+exp, 41
+ball, 41
+dimension, 40
+divides, 40
+norms, 40
+base, 40
+homomorphism, 39
+scalar multiplication, 39
+permuting the entries, 39
+coincide, 39
+powers, 39
+square, 38
+original, 38
+ray, 38
+show, 38
+bound, 37
+continuous function, 37
+converges, 37
+weights, 37
+variant, 37
+embedding, 37
+compact set, 37
+belongs, 36
+negation, 36
+dist, 36
+condition, 36
+true, 36
+interior, 36
+natural number, 36
+greater, 36
+comp, 36
+union, 36
+countable, 36
+minimal polynomial, 36
+equivalence, 36
+times, 35
+mem, 35
+satisfies, 35
+quotient, 35
+change, 35
+addition, 35
+category, 35
+multiple, 35
+power series, 35
+relations, 35
+sums, 34
+includes, 34
+simp, 34
+deriv, 34
+negative, 33
+instance, 33
+formal, 33
+integer, 33
+polynomials, 33
+commutes, 33
+succ, 32
+Assumes left covariance, 32
+Assumes left, 32
+left covariance, 32
+support, 32
+Inequality, 32
+permutation, 32
+upper, 32
+max, 32
+induction principle, 32
+Assumes right covariance, 32
+semiring, 32
+diagonal, 31
+Note, 31
+Shows, 31
+equiv, 31
+ideal, 31
+triangle, 31
+results, 31
+card, 31
+uniform, 31
+smul, 31
+fintype, 31
+segment, 31
+single, 31
+equality, 30
+padic, 30
+integrable, 30
+partial, 30
+pigeonhole principle, 30
+pigeons, 30
+exponential, 30
+subspace, 30
+primitive, 30
+sends, 30
+multiset, 30
+unit, 30
+Lipschitz, 30
+combination, 30
+division, 29
+finite set, 29
+isometry, 29
+products, 29
+principle for finitely, 29
+finitely many pigeons, 29
+uniformly, 29
+implies, 29
+induced, 29
+open set, 29
+quadratic, 29
+edist, 29
+concave, 28
+argument, 28
+class, 28
+determinant, 28
+unity, 28
+defined, 28
+preserve, 28
+congruence relation, 28
+general, 27
+convergence, 27
+matrices, 27
+irreducible, 27
+circumcenter, 27
+pos, 27
+factors, 27
+slope, 27
+arguments, 26
+target, 26
+smaller, 26
+linearly ordered, 26
+extension, 26
+predicate, 26
+localization, 26
+pigeonhole, 26
+part, 26
+pair, 26
+index, 26
+strongly, 26
+trivial, 26
+metric, 26
+length, 26
+monotone function, 26
+infinite, 25
+continuous linear, 25
+Pointwise scalar multiplication, 25
+Pointwise scalar, 25
+non-zero, 25
+strictly convex, 25
+special case, 25
+special, 25
+antitone, 25
+pow, 25
+centroid, 25
+root of unity, 25
+bot, 25
+linear order, 25
+homomorphisms, 25
+intermediate, 25
+taking, 25
+measures, 25
+structure, 25
+finrank, 25
+apply, 25
+antivary, 24
+applied, 24
+p-adic, 24
+Product, 24
+finite sets, 24
+fderiv, 24
+univ, 24
+monovary, 24
+separable, 24
+metric space, 24
+coefficients, 24
+strictly monotone, 24
+diff, 23
+affine span, 23
+maximum, 23
+multiplicative, 23
+Sum, 23
+result, 23
+val, 23
+cone, 23
+Pointwise multiplication, 23
+connected, 23
+fun, 23
+weighted, 23
+valuation, 23
+fraction, 23
+edistance, 23
+suffices to show, 23
+congruence relations, 23
+operator, 23
+diameter, 23
+normed space, 23
+minimum, 23
+center, 23
+linear map, 23
+Composition, 22
+valued, 22
+difference, 22
+lower, 22
+insert, 22
+lies, 22
+differentiability, 22
+thickening, 22
+nat, 22
+min, 22
+multiplicity, 22
+prod, 22
+tendsto, 22
+tsub, 22
+object, 22
+bundle, 21
+Equality, 21
+multiples, 21
+restriction, 21
+div, 21
+commute, 21
+membership, 21
+controlled, 21
+agree, 21
+adding, 21
+empty set, 21
+subsets, 21
+strongly measurable, 21
+vanishes, 21
+statement, 21
+term, 21
+coordinates, 21
+symmetric, 21
+additive monoid, 20
+intersection, 20
+multiplied, 20
+Hausdorff distance, 20
+valued functions, 20
+conjugate, 20
+source, 20
+closure membership, 20
+position, 20
+transitive, 20
+auxiliary, 20
+endpoints, 20
+formula, 20
+rule, 20
+left.add, 20
+coprime, 20
+assumption, 20
+cancel, 20
+direction of asymptotics.is, 20
+asymptotics.is, 20
+generalized, 20
+closed set, 20
+left.one, 20
+morphism, 20
+proper, 19
+unchanged, 19
+finset.prod, 19
+sequences, 19
+nonzero vector, 19
+Multiplying, 19
+proof, 19
+torsion, 19
+left inverse, 19
+obtained, 19
+infimum, 19
+chain, 19
+Lemma, 19
+explicit, 19
+additive congruence, 19
+finsets, 18
+divisors, 18
+subsingleton, 18
+test, 18
+simplex, 18
+expressed, 18
+equals the sum, 18
+assumes, 18
+equals the product, 18
+list of elements, 18
+integral domain, 18
+find, 18
+admits, 18
+roots, 18
+locally compact, 18
+bilinear, 18
+orthogonal, 18
+preconnected, 18
+Ico, 18
+set is bounded, 18
+antidiagonal, 18
+topological space, 18
+ratio, 18
+hom, 18
+size, 18
+types, 17
+additive group, 17
+requires, 17
+Liouville, 17
+exponent, 17
+global, 17
+subfield, 17
+vector angle, 17
+preorder, 17
+injective function, 17
+Strict, 17
+p-adic norm, 17
+submodules, 17
+surjective, 17
+variables, 17
+free, 17
+Composing, 17
+reflexive, 17
+supremum, 17
+normed field, 17
+dependent, 17
+coincides, 17
+formal power series, 17
+formal power, 17
+invertible, 17
+solution, 17
+finite family, 17
+subring, 17
+const, 17
+total, 17
+RHS, 17
+Symmetric, 17
+multilinear map, 17
+tangent, 16
+possibly, 16
+step, 16
+Equality case, 16
+angles, 16
+Strict inequality case, 16
+Strict inequality, 16
+inequality case, 16
+strictly decreased, 16
+decreased, 16
+linearly independent, 16
+subsemigroup, 16
+pigeons counted, 16
+back, 16
+natural numbers, 16
+invariant, 16
+Stated, 16
+case of Rearrangement, 16
+measurable set, 16
+smallest, 16
+factor, 16
+Additive, 16
+dimensional, 16
+semicontinuous functions, 16
+semicontinuous, 16
+kernel, 16
+multiset of elements, 16
+assuming left covariance, 16
+underlying, 16
+oangle, 16
+passed, 16
+action, 16
+suffices to prove, 16
+larger, 16
+closed ball, 16
+pointwise, 16
+parts, 16
+vector angle form, 16
+angle form, 16
+hull, 15
+normal, 15
+central, 15
+Fermat, 15
+correspond, 15
+open sets, 15
+odd, 15
+adic, 15
+rank, 15
+row, 15
+algebraic, 15
+multilinear series, 15
+nonzero element, 15
+singleton, 15
+indices, 15
+closed interval, 15
+pre-games, 15
+ite, 15
+cont, 15
+closed under addition, 15
+minimal distance, 15
+exist, 15
+multiplying, 15
+uniformity, 15
+Prop, 15
+direct, 15
+constructed, 15
+subsemiring, 15
+analytic, 15
+operation, 14
+Pythagorean, 14
+ssubset, 14
+reduces, 14
+general version, 14
+non-trivial, 14
+rat, 14
+lie, 14
+iterated, 14
+cosine, 14
+periodic, 14
+positive constant, 14
+common, 14
+cast, 14
+nonpos, 14
+strong, 14
+Banach-algebra, 14
+integers, 14
+continued, 14
+formal multilinear series, 14
+formal multilinear, 14
+coercion, 14
+complex differentiable, 14
+inside, 14
+zmod, 14
+variable, 14
+Definition, 14
+semigroup, 14
+finite dimensional, 14
+mdiff, 14
+codomain, 14
+classes, 14
+det, 14
+monoid homomorphism, 14
+finset.sum, 14
+separated, 14
+subtraction, 14
+cyclic, 14
+nonzero vectors, 14
+nondegenerate, 14
+weight, 14
+mass, 14
+Polish, 14
+disk, 14
+factorization, 14
+additive congruence relation, 14
+belong, 13
+outer, 13
+stronger, 13
+strict derivative, 13
+fixed point, 13
+exponents, 13
+commutative monoid, 13
+domains, 13
+set of natural, 13
+real line, 13
+Lean, 13
+dvd, 13
+trace, 13
+uniformly continuous, 13
+adic valuation, 13
+conj, 13
+star, 13
+principle for closure, 13
+Induction principle, 13
+Induction, 13
+Schwarz, 13
+trans, 13
+open interval, 13
+orthonormal, 13
+initial, 13
+group homomorphism, 13
+partition, 13
+squares, 13
+lists, 13
+countable topology, 13
+distinct, 13
+fiber, 13
+Taylor series, 13
+Taylor, 13
+operations, 13
+shadow, 13
+continuous multilinear, 13
+coeff, 13
+reduction, 13
+total weight, 13
+Fréchet derivative, 13
+Fréchet, 13
+intermediate field, 13
+sheaf, 13
+coe, 13
+ordered field, 13
+vertices, 12
+respects, 12
+Precomposing, 12
+prod.fst, 12
+bij, 12
+prod.snd, 12
+divided, 12
+equivalently, 12
+submodule, 12
+blocks, 12
+Fermat Theorem, 12
+mod, 12
+converging, 12
+bounded set, 12
+preserved under addition, 12
+abs, 12
+left.mul, 12
+intervals, 12
+conditionally complete, 12
+lattice, 12
+simple, 12
+neighbourhood, 12
+exponential map, 12
+bilinear form, 12
+pred, 12
+continuous map, 12
+Ioo, 12
+char, 12
+congr, 12
+finitely generated, 12
+nonneg, 12
+finite-dimensional, 12
+countably, 12
+sublists, 12
+compact space, 12
+Lebesgue, 12
+origin, 12
+totally, 12
+subtype, 12
+topological fiber bundle, 12
+topological fiber, 12
+fiber bundle, 12
+equivalence relation, 12
+vector passed, 12
+superset, 12
+finite type, 12
+Expand, 12
+tail, 12
+secant line, 12
+secant, 12
+homomorphisms preserve, 12
+inequality version, 12
+tangent cone, 12
+Polish space, 12
+evaluation, 12
+order topology, 12
+Galois, 12
+permutations, 12
+fractional, 12
+inclusion, 12
+mono, 12
+small, 12
+included, 12
+continuous functions, 12
+Cauchy sequence, 12
+isomorphism, 12
+distrib, 12
+units, 11
+lower bound, 11
+linear equiv, 11
+opposite, 11
+left-regular, 11
+right-regular, 11
+closed under multiplication, 11
+satisfy, 11
+Deprecated, 11
+second-countable, 11
+closed thickening, 11
+target is commutative, 11
+additive closure, 11
+preadditive category, 11
+preadditive, 11
+universe, 11
+continued fraction, 11
+nth, 11
+fixed points, 11
+rings, 11
+Borel, 11
+affinely independent, 11
+circumradius, 11
+affinely, 11
+summable, 11
+Cauchy sequences, 11
+character, 11
+monic, 11
+strictly concave, 11
+extended, 11
+forall, 11
+transitive closure, 11
+pairwise, 11
+totient, 11
+linear ordered, 11
+direction of inv, 11
+dense range, 11
+Elements, 11
+sense, 11
+uniform space, 11
+ereal, 11
+linear combination, 11
+monotone functions, 11
+fundamental, 11
+cross, 11
+increasing, 11
+circle, 11
+vertex, 11
+indicator, 11
+check, 11
+Auxiliary, 11
+indicator function, 11
+neighborhoods, 11
+emetric, 11
+product of polynomials, 11
+weaker, 11
+multilinear maps, 10
+Pythagorean theorem, 10
+additive commutative, 10
+finprod, 10
+upper bound, 10
+cos, 10
+finite measure, 10
+bounded continuous, 10
+divide, 10
+antitone function, 10
+bijective, 10
+function multiplied, 10
+orientation, 10
+connection, 10
+set includes, 10
+includes the set, 10
+rewriting, 10
+average, 10
+depend, 10
+smooth, 10
+ntra, 10
+open ball, 10
+balls, 10
+version assuming, 10
+positive multiple, 10
+canonical, 10
+sine, 10
+strictly differentiable, 10
+TODO, 10
+inverses, 10
+Ioc, 10
+ext, 10
+indep, 10
+affine subspace, 10
+partial order, 10
+assumptions, 10
+tuple, 10
+characterization, 10
+meets, 10
+number of points, 10
+subspaces, 10
+source space, 10
+cospherical, 10
+congruence relations preserve, 10
+relations preserve, 10
+rotation, 10
+real numbers, 10
+left.inv, 10
+cover, 10
+maximal ideal, 10
+predicates, 10
+set is contained, 10
+Borel-measurable, 10
+transvec, 10
+vsub, 10
+Taking, 10
+word, 10
+Ioi, 10
+binomial, 10
+derivatives, 10
+groupoid, 10
+geometric, 10
+strictly monotone function, 10
+injection, 10
+splits, 10
+approximated, 10
+iso, 10
+Auxiliary lemma, 10
+cons, 10
+covering, 10
+naturals, 10
+Hausdorff edistance, 10
+form a basis, 10
+satisfying, 10
+measurable function, 10
+sinh, 10
+terminal object, 10
+terminal, 10
+extensionality, 10
+finite order, 10
+polynomials is equal, 10
+finset.image, 10
+strictly smaller, 10
+triangle inequality, 10
+right.add, 10
+summands, 10
+side, 10
+open map, 9
+linear maps, 9
+commutative group, 9
+explicitly, 9
+finsum, 9
+leading, 9
+algebraic structures, 9
+Hölder, 9
+nnreal, 9
+differential, 9
+compact support, 9
+collection, 9
+system, 9
+unique differentiability, 9
+eventually, 9
+strictly antitone, 9
+quotient map, 9
+unbounded, 9
+local extremum, 9
+count, 9
+Embedding, 9
+int, 9
+stronger statement, 9
+characteristic zero case, 9
+complete normed, 9
+product space, 9
+ord, 9
+mapping, 9
+squashed, 9
+finite product, 9
+disk of convergence, 9
+function is bounded, 9
+group homomorphisms, 9
+assuming, 9
+auxiliary lemma, 9
+dependent version, 9
+colex, 9
+open neighborhood, 9
+prime factor, 9
+Negating, 9
+component, 9
+scalars, 9
+groups, 9
+swap, 9
+frontier, 9
+idempotent, 9
+starting, 9
+Noetherian, 9
+ideals, 9
+real normed space, 9
+real normed, 9
+block, 9
+locally finite, 9
+list.prod, 9
+commutative ring, 9
+disconnected, 9
+main, 9
+semiconjugates, 9
+written, 9
+equivalence classes, 9
+lipschitz, 9
+hold, 9
+Iio, 9
+orthocenter, 9
+fact, 9
+point belongs, 9
+associative, 9
+iterated derivative, 9
+bump, 9
+irrational, 9
+degrees, 9
+family of elements, 9
+solutions, 9
+sheaf condition, 9
+fintype.card, 9
+entries, 9
+assume, 9
+rearrangement, 9
+dimensional space, 9
+coproducts, 9
+inductive, 9
+positive radius, 9
+equivs, 9
+alternating, 9
+direction of strict, 9
+sbtw, 9
+summing, 9
+identity map, 9
+typeclass, 9
+convergent, 9
+prove a property, 9
+recurrence, 9
+set of points, 9
+division ring, 8
+cardinal, 8
+sizes, 8
+balanced, 8
+divisor, 8
+continuous linear maps, 8
+central series, 8
+sequential, 8
+period, 8
+real vector space, 8
+real vector, 8
+pseudometric, 8
+limsup, 8
+natural number multiples, 8
+number multiples, 8
+function continuous, 8
+independent family, 8
+ordinals, 8
+extremum, 8
+negative constant, 8
+counted by heads, 8
+heads, 8
+counted, 8
+weighted sum, 8
+rational, 8
+rows, 8
+pseudoemetric, 8
+bundled, 8
+discrete, 8
+fraction field, 8
+finite measures, 8
+conditionally complete linear, 8
+complete linear order, 8
+complete linear, 8
+minimized, 8
+direction of complete, 8
+partial sums, 8
+expansion, 8
+exponentially, 8
+close, 8
+dim, 8
+field extension, 8
+Fréchet-derivative, 8
+long, 8
+build, 8
+maximized, 8
+default, 8
+numeric, 8
+ultrafilter, 8
+produces, 8
+seminorm, 8
+extreme, 8
+function is continuous, 8
+Additive congruence relations, 8
+Additive congruence, 8
+compact sets, 8
+conditionally, 8
+direction of cont, 8
+strong pigeonhole principle, 8
+strong pigeonhole, 8
+lower semicontinuous functions, 8
+lower semicontinuous, 8
+functions is lower, 8
+set vanishes, 8
+digits, 8
+fewer, 8
+finite field, 8
+indexed family, 8
+direction of mdifferentiable, 8
+scaled, 8
+inversion, 8
+complete space, 8
+totally disconnected, 8
+upper semicontinuous functions, 8
+upper semicontinuous, 8
+functions is upper, 8
+explicit continuity assumption, 8
+assumption on addition, 8
+explicit continuity, 8
+continuity assumption, 8
+constant coefficient, 8
+choose, 8
+Product of elements, 8
+adjoint, 8
+decomposition, 8
+binomial coefficient, 8
+Suppose, 8
+LHS, 8
+real-valued, 8
+Expand the square, 8
+equal iff, 8
+suffices to check, 8
+ball of radius, 8
+ranges, 8
+pseudo, 8
+inducing, 8
+sin, 8
+absolute, 8
+maximal reduction, 8
+counted by weight, 8
+set of pigeons, 8
+formulated, 8
+powerset, 8
+diagonal form, 8
+boxes, 8
+aux, 8
+Adding, 8
+clopen, 8
+positive tangent cone, 8
+positive tangent, 8
+directed, 8
+convex combination, 8
+number powers, 8
+initial object, 8
+nonempty set, 8
+condition in terms, 8
+Galois connection, 8
+unique derivatives, 8
+Alternative, 8
+continuous multilinear map, 8
+strictly greater, 8
+rearrangement inequality, 8
+Binary, 8
+simp lemma, 8
+linearly ordered field, 8
+fractional parts, 8
+stream, 8
+quadratic form, 8
+lift, 8
+dense set, 8
+representation, 8
+Monge, 8
+conformal, 8
+operator norm, 8
+Postcomposing, 8
+ambient order, 8
+ambient, 8
+non-dependent, 8
+binary relation, 8
+space structure, 8
+usual, 8
+filter.map, 8
+split, 8
+Composition by continuous, 7
+finite additive, 7
+local homeomorphisms, 7
+homeomorphisms, 7
+ABC, 7
+strictly positive, 7
+rewrite, 7
+conjugate exponents, 7
+prime power, 7
+convenient, 7
+minpoly, 7
+function with compact, 7
+distances, 7
+Lagrange, 7
+liminf, 7
+comap, 7
+localization map, 7
+bijection, 7
+submonoid generated, 7
+exponential characteristic, 7
+normed ring, 7
+uniform embedding, 7
+controlled in terms, 7
+primitive root, 7
+quadratic character, 7
+continuity, 7
+Closure, 7
+filters, 7
+antisymm, 7
+converted, 7
+tower, 7
+embeddings, 7
+estimate, 7
+replaced, 7
+random, 7
+non-negative, 7
+Rotating, 7
+functor, 7
+n-ary, 7
+implicit, 7
+well-founded, 7
+join, 7
+sum of weights, 7
+Lebesgue measure, 7
+positive real, 7
+list.nodup, 7
+preserving, 7
+seq, 7
+topological vector, 7
+core, 7
+absolutely, 7
+sending, 7
+families, 7
+gcd, 7
+sequentially, 7
+prime factors, 7
+Ici, 7
+function is differentiable, 7
+face, 7
+additive closure membership, 7
+principle for additive, 7
+Iic, 7
+preconnected set, 7
+continuously, 7
+closed embedding, 7
+graph, 7
+convex hull, 7
+Polarization identity, 7
+Polarization, 7
+negations, 7
+large, 7
+strictly convex space, 7
+convex space, 7
+show a property, 7
+trim, 7
+auxiliary function, 7
+terminated, 7
+subtracting, 7
+natural number powers, 7
+finitely many variables, 7
+related, 7
+hypothesis, 7
+form a Galois, 7
+positive numbers, 7
+Sum of elements, 7
+meas, 7
+extend, 7
+function applied, 7
+applies, 7
+box, 7
+cofinite, 7
+finite dimensional space, 7
+bottom, 7
+nndist, 7
+commutative Banach-algebra, 7
+Schwarz Lemma, 7
+local equivs, 7
+unique morphism, 7
+monomorphism, 7
+states, 7
+field is closed, 7
+times the product, 7
+preserves addition, 7
+greatest, 7
+fib, 7
+frequently, 7
+sublist, 7
+Bernoulli, 7
+stronger version, 7
+closed sets, 7
+Haar measure, 7
+Haar, 7
+constructor, 7
+works, 7
+alternative, 7
+Liouville number, 7
+s.filter, 7
+element belongs, 6
+vec, 6
+dividing, 6
+additive commutative group, 6
+top element, 6
+denominators, 6
+inequalities, 6
+concave function, 6
+local maximum, 6
+Legendre, 6
+symbol, 6
+suffices to verify, 6
+compatible, 6
+rewrite lemma, 6
+bounded continuous function, 6
+scalar product, 6
+modified, 6
+B.gen, 6
+generates, 6
+forms, 6
+s.subtype, 6
+like.congr, 6
+sigma, 6
+prime powers, 6
+pivot, 6
+subfield is closed, 6
+spanning, 6
+Jacobson, 6
+free module, 6
+preserves multiplication, 6
+mfderiv, 6
+real part, 6
+principal, 6
+divides the sum, 6
+base ring, 6
+squashed position, 6
+filter.tendsto, 6
+Schwarz inequality, 6
+lattice.independent, 6
+haar, 6
+complex numbers, 6
+triple, 6
+law, 6
+denominator, 6
+makes, 6
+Updating, 6
+normal closure, 6
+specific case, 6
+spaces indexed, 6
+build an element, 6
+express directly, 6
+maps on spaces, 6
+specific, 6
+directly, 6
+monic polynomial, 6
+open segment, 6
+closed subset, 6
+moves, 6
+application, 6
+fields, 6
+reduced, 6
+compact Hausdorff, 6
+set of fixed, 6
+dom, 6
+specialization, 6
+automatically, 6
+average number, 6
+finite additive order, 6
+elements of finite, 6
+additive order, 6
+Chebyshev, 6
+modulo, 6
+admitting, 6
+bounds, 6
+surjective function, 6
+resulting, 6
+hole, 6
+bdd, 6
+factorial, 6
+equals the set, 6
+nilpotency class, 6
+nilpotency, 6
+setoid, 6
+countably generated, 6
+expand, 6
+block matrix, 6
+matrix.det, 6
+Hahn-Banach, 6
+implications, 6
+lengths, 6
+membership for predicates, 6
+reflexive-transitive closure, 6
+reflexive-transitive, 6
+positive length, 6
+non-strictly, 6
+direction of list.nodup, 6
+single point, 6
+created, 6
+absorbent, 6
+left-invariant, 6
+col, 6
+agrees, 6
+uniformity filter, 6
+monomials, 6
+log, 6
+words, 6
+computed, 6
+fin.cast, 6
+directions, 6
+mutually singular, 6
+column, 6
+Intermediate, 6
+discriminant, 6
+cross terms, 6
+Finite, 6
+n-ary version, 6
+instances, 6
+minus, 6
+Hall Marriage Theorem, 6
+Hall Marriage, 6
+Marriage Theorem, 6
+Hall, 6
+Marriage, 6
+nonnegative multiple, 6
+vector spaces, 6
+maps between vector, 6
+decidable, 6
+exists a strictly, 6
+proper space, 6
+stated, 6
+upper shadow, 6
+uniformly approximated, 6
+additive group homomorphism, 6
+countable set, 6
+Convex, 6
+strict inequality version, 6
+strict inequality, 6
+Hausdorff dimension, 6
+grows, 6
+inside an open, 6
+convex function, 6
+local minimum, 6
+Congruence, 6
+zpow, 6
+successive, 6
+meets every interval, 6
+pgame.lf, 6
+mutually, 6
+orthocentric system, 6
+orthocentric, 6
+case for Cauchy-Schwarz, 6
+equality case, 6
+binary products, 6
+pullbacks, 6
+glue, 6
+cyclotomic polyomial, 6
+polyomial, 6
+direction of order.pred, 6
+order.pred, 6
+topological group, 6
+morphisms, 6
+adds, 6
+nilpotent, 6
+lemmas, 6
+depends, 6
+v.lim, 6
+characterized, 6
+time, 6
+weaker statement, 6
+locally uniformly, 6
+clifford, 6
+nonempty preorder, 6
+back the original, 6
+Conjugation, 6
+Dedekind domain, 6
+integrally closed, 6
+composed, 6
+sends an open, 6
+open disk, 6
+branches, 6
+Weighted generalized, 6
+generalized mean inequality, 6
+Weighted, 6
+ODE, 6
+non-strict inequality version, 6
+non-strict inequality, 6
+nhds, 6
+subterminal, 6
+Type, 6
+differentiable function, 6
+outer measure, 6
+finitely presented, 6
+presented, 6
+btw, 6
+Monge point, 6
+made, 6
+real function, 6
+floor, 6
+archimedean, 6
+continuous linear map, 6
+measurable functions, 6
+set.finite, 6
+non-dependent functions, 6
+construct, 6
+define, 6
+separable space, 6
+expression, 6
+reformulation, 6
+sides, 6
+finite products, 6
+limits, 6
+game, 6
+reformulated, 6
+relies, 6
+pullback, 6
+thickening radius, 6
+bounded function, 6
+Version for sums, 6
+submonoids, 6
+direction of left.one, 6
+complete normed field, 6
+possibly degenerate, 6
+degenerate, 6
+corresponds, 6
+dsimp, 6
+update, 6
+conditions, 6
+diag, 6
+noetherian, 5
+basis vectors, 5
+list.sum, 5
+dot, 5
+exists an element, 5
+equivalent local, 5
+std, 5
+deduce, 5
+basic, 5
+global maximum, 5
+restricted, 5
+currying, 5
+Legendre symbol, 5
+leading coefficient, 5
+lexicographic order, 5
+vectors equals, 5
+open convex set, 5
+open convex, 5
+affine space, 5
+combinations, 5
+modelled, 5
+Hölder inequality, 5
+functions is bounded, 5
+subgroup is closed, 5
+intersects, 5
+GCD, 5
+finite subset, 5
+homeomorph, 5
+σ-algebra, 5
+strictly antitone function, 5
+satisfy the predicate, 5
+sigma type, 5
+second-countable space, 5
+general filter, 5
+opens, 5
+Jacobson ring, 5
+set is nonempty, 5
+base point, 5
+uniform convergence, 5
+smooth algebraic structures, 5
+Design choices, 5
+technical reasons, 5
+Design, 5
+nsmul, 5
+element a divides, 5
+predicate is true, 5
+ordered type, 5
+vector inner product, 5
+product form, 5
+previous, 5
+pseudoemetric spaces, 5
+category with finite, 5
+biproducts, 5
+division rings, 5
+multiplications, 5
+arithmetic, 5
+sets is bounded, 5
+Prefer, 5
+complement, 5
+asinorum, 5
+direction of order.succ, 5
+order.succ, 5
+constant function, 5
+characterization of Cauchy, 5
+set is compact, 5
+beginning, 5
+arrow, 5
+distributes, 5
+coproduct, 5
+function.update, 5
+precise, 5
+express, 5
+defining, 5
+simplices, 5
+pre, 5
+Banach, 5
+cardinality equal, 5
+pure, 5
+nonempty compact, 5
+tensor, 5
+direction of neg, 5
+space is second-countable, 5
+additive torsion, 5
+torsion-free, 5
+Lipschitz map, 5
+dite, 5
+end, 5
+columns, 5
+right.mul, 5
+Multiplicative congruence relations, 5
+Multiplicative congruence, 5
+Multiplicative, 5
+slice, 5
+Chebyshev polynomial, 5
+kind, 5
+antilipschitz, 5
+cartesian product, 5
+cartesian, 5
+orthogonal projection, 5
+Formula, 5
+ordered additive commutative, 5
+ordered additive, 5
+orthonormal vectors, 5
+set of orthonormal, 5
+pairwise disjoint, 5
+Maximum, 5
+modulus, 5
+produced, 5
+ordered commutative, 5
+Möbius inversion, 5
+Möbius, 5
+regular element, 5
+differentiability points, 5
+Balls, 5
+components, 5
+absolutely continuous, 5
+implication, 5
+binary relations, 5
+map sending, 5
+carries, 5
+Euclid, 5
+signed, 5
+central binomial coefficient, 5
+central binomial, 5
+Icc, 5
+normal form, 5
+find two finsets, 5
+independent set, 5
+gauge, 5
+chain rule, 5
+series at order, 5
+infinite type, 5
+binary operations, 5
+reflexive relation, 5
+closed under subtraction, 5
+continuous maps, 5
+barycentric coordinates, 5
+Euler, 5
+unit ball, 5
+negative multiple, 5
+maximal elements, 5
+Introduction rule, 5
+rule to prove, 5
+Introduction, 5
+iff its infimum, 5
+disjoint union, 5
+multilinearity by expanding, 5
+expanding successively, 5
+successively with respect, 5
+atlas, 5
+metrizable, 5
+uniqueness, 5
+integrable with respect, 5
+Write, 5
+Lipschitz continuous, 5
+faster, 5
+additive subgroup, 5
+match, 5
+global minimum, 5
+subsequence, 5
+refl, 5
+cycle, 5
+exists a point, 5
+polynomial.nat, 5
+pigeons and pigeonholes, 5
+finite types, 5
+emetric space, 5
+vector equals, 5
+boundedness, 5
+unit vectors, 5
+clopen set, 5
+local max, 5
+spectrum, 5
+additive congruence relations, 5
+returns, 5
+midpoint, 5
+weaker version, 5
+negates, 5
+equalizer, 5
+Polish topology, 5
+finer, 5
+binom, 5
+additively, 5
+fraction.of, 5
+set of positive, 5
+presheaf, 5
+compact subset, 5
+collinear, 5
+set with respect, 5
+required, 5
+set with unique, 5
+property is true, 5
+direction of lipschitz, 5
+quaternion, 5
+strongly measurable function, 5
+binary coproducts, 5
+right.one, 5
+helper lemma, 5
+helper, 5
+circulant, 5
+Express, 5
+Test, 5
+colimits, 5
+head, 5
+Show, 5
+cthickening, 5
+Dedekind, 5
+integrally, 5
+real exponents, 5
+sums over finite, 5
+submodule.span, 5
+approximate, 5
+additive monoid homomorphism, 5
+semiring homomorphism, 5
+leading coefficients, 5
+integral domains, 5
+subadditive, 5
+preimage, 5
+non-strict, 5
+arbitrarily, 5
+Non-dependent version, 5
+Non-dependent, 5
+Halmos, 5
+local homeomorphism, 5
+homeomorphism, 5
+evaluated, 5
+exact, 5
+strictly monotone functions, 5
+witt, 5
+diagram, 5
+elementary, 5
+general case, 5
+eigenspace, 5
+appending, 5
+rec, 5
+arbitrary, 5
+relations are equal, 5
+polar, 5
+torus, 5
+fractions, 5
+convolution, 5
+rel, 5
+contraction, 5
+legendre, 5
+sym, 5
+wide, 5
+analogous, 5
+zeroth, 5
+anticomm, 5
+space is non-trivial, 5
+Minkowski inequality, 5
+seminorms, 5
+Minkowski, 5
+Variant, 5
+return, 5
+convergents, 5
+positive natural, 5
+one-dimensional, 5
+increasing function, 5
+s.card, 5
+set.range, 5
+minimal solution, 5
+underlying binary, 5
+recurrence relation, 5
+assoc, 5
+fract, 5
+chosen, 5
+emb, 5
+singletons, 5
+unaffected, 5
+hypotheses, 5
+remove, 5
+pigeonholes, 5
+path, 5
+possibly degenerate triangle, 5
+degenerate triangle, 5
+sides are nonzero, 5
+Triangle, 4
+tangent bundle, 4
+balanced set, 4
+left preserves, 4
+add-regular, 4
+adjacent, 4
+sqrt, 4
+currying linear equiv, 4
+Writing explicitly, 4
+currying linear, 4
+Writing, 4
+Helper, 4
+strict covariance, 4
+supports, 4
+prime ideal, 4
+represented, 4
+linearly ordered space, 4
+ordered space, 4
+necessarily compatible, 4
+verify the inequality, 4
+order to prove, 4
+non-zero vectors equals, 4
+non-zero vectors, 4
+require twice differentiability, 4
+differentiability explicitly, 4
+space modelled, 4
+linear combinations, 4
+Viewing, 4
+sequential limit, 4
+functions is measurable, 4
+left-regular element, 4
+iterated differential, 4
+fintype.prod, 4
+positive power, 4
+Transfer, 4
+polygon, 4
+inequality for sequences, 4
+sequences of points, 4
+nonempty interior, 4
+set with nonempty, 4
+seminormed ring, 4
+seminormed, 4
+eventually bounded, 4
+matrix.is, 4
+cardinals, 4
+local extremum equals, 4
+extremum equals, 4
+make, 4
+sequence converges, 4
+centroid lies, 4
+endomorphism, 4
+map which preserves, 4
+direction of mul, 4
+zsmul, 4
+biproduct, 4
+linearly ordered type, 4
+module.rank, 4
+module structure, 4
+rational number, 4
+terminates, 4
+product map, 4
+bundled derivative, 4
+bornology.cobounded, 4
+Borel space, 4
+space are equal, 4
+extensionality lemma, 4
+subobject lattice, 4
+subobject, 4
+list.reverse, 4
+exponential function, 4
+power series expansion, 4
+function admits, 4
+series expansion, 4
+admits a power, 4
+mathlib, 4
+boundary, 4
+putting, 4
+constants, 4
+orthogonal complement, 4
+notation, 4
+expanding, 4
+Hausdorff space, 4
+sine function, 4
+complex.continuous, 4
+cpow, 4
+version that assumes, 4
+precisely, 4
+topological spaces, 4
+normal subgroup, 4
+process, 4
+slightly, 4
+case of multilinear, 4
+preserved under multiplication, 4
+segment is strictly, 4
+lower-bounded, 4
+inter, 4
+top.map, 4
+direction of smul, 4
+enum, 4
+finite dimension, 4
+index type, 4
+centroid sum, 4
+affine subspaces, 4
+nonempty intersection, 4
+additive subsemigroup, 4
+set is empty, 4
+index types, 4
+target space, 4
+Bounding the Hausdorff, 4
+Bounding, 4
+n-simplices among cospherical, 4
+cospherical points, 4
+points in n-space, 4
+n-simplices, 4
+n-space, 4
+restrict, 4
+scaling, 4
+torsion group, 4
+set is closed, 4
+intermediate distance replaced, 4
+upper estimate, 4
+intermediate distance, 4
+distance replaced, 4
+Tychonoff, 4
+unique point, 4
+ending, 4
+buffer, 4
+ending at position, 4
+successful, 4
+self-maps, 4
+pts, 4
+random variables, 4
+asymm, 4
+order are closed, 4
+direction of antilipschitz, 4
+admitting a left, 4
+densely ordered, 4
+ordered codomain, 4
+densely, 4
+additive commutative monoid, 4
+finite sum, 4
+nonpositive, 4
+equivalence class, 4
+Maximum modulus principle, 4
+Maximum modulus, 4
+modulus principle, 4
+direction of unique, 4
+Closed, 4
+equation, 4
+cut, 4
+Equivalence, 4
+derivative equal, 4
+Expressing, 4
+disjoint convex sets, 4
+continuous linear functional, 4
+convex sets, 4
+disjoint convex, 4
+linear functional, 4
+functional, 4
+fewer assumptions, 4
+single implications, 4
+implications with fewer, 4
+dropping, 4
+locally finite family, 4
+verify, 4
+rotated, 4
+neighborhood filter, 4
+iff a divides, 4
+sigma-finite, 4
+family of sets, 4
+inversion for functions, 4
+bundle created, 4
+created from core, 4
+space is Borel-measurable, 4
+origin are absorbent, 4
+space is totally, 4
+nonzero left-invariant, 4
+fintype.sum, 4
+main type, 4
+local maximum equals, 4
+maximum equals, 4
+Assume, 4
+support is bounded, 4
+preserves the determinant, 4
+fewer assumption, 4
+trivial topological fiber, 4
+turns, 4
+trivial topological, 4
+relation is injective, 4
+vectors picks, 4
+picks, 4
+bound greater, 4
+Bézout lemma, 4
+Bézout, 4
+closed iff, 4
+sequentially closed, 4
+Converse, 4
+fundamental property, 4
+direction of antitone, 4
+Euclid lemma, 4
+coprime.dvd, 4
+spanned, 4
+kills, 4
+Intermediate value theorem, 4
+q.comp, 4
+addition and muliplication, 4
+linearly independent set, 4
+maximal linearly independent, 4
+maximal linearly, 4
+term of order, 4
+set.mem, 4
+unital binary operations, 4
+type carries, 4
+carries two unital, 4
+unital binary, 4
+operations that distribute, 4
+eckmann, 4
+hilton.comm, 4
+unital, 4
+distribute, 4
+commutative monoid structure, 4
+Seminorm-balls, 4
+scalar action, 4
+imaginary, 4
+inserting, 4
+lemma to control, 4
+control, 4
+golden ratio, 4
+golden, 4
+garbage, 4
+requiring, 4
+necessarily, 4
+subring is closed, 4
+diagonal matrix, 4
+Tietze extension theorem, 4
+Tietze extension, 4
+bounded continuous maps, 4
+extension theorem, 4
+real-valued bounded continuous, 4
+Tietze, 4
+generally, 4
+mdifferentiable, 4
+equals the angle, 4
+affine basis, 4
+Additive group homomorphisms, 4
+group homomorphisms preserve, 4
+Additive group, 4
+preserve integer, 4
+additional, 4
+change the angle, 4
+complete lattices, 4
+lattices, 4
+conjugation, 4
+sets are finite, 4
+regular measure, 4
+infimum distance, 4
+Lagrange multipliers theorem, 4
+Lagrange multipliers, 4
+multipliers theorem, 4
+multipliers, 4
+countable dense, 4
+orders, 4
+poly, 4
+coordinate, 4
+multilinearity, 4
+structure groupoid, 4
+element admitting, 4
+approximated by functions, 4
+metrizable space, 4
+ease, 4
+simplify, 4
+Special case, 4
+Special, 4
+Colex, 4
+ordering, 4
+group homomorphism sends, 4
+homomorphism sends, 4
+cosine function, 4
+first-order, 4
+Convex hull, 4
+pigeons is greater, 4
+iterated Fréchet derivative, 4
+continuous linear equiv, 4
+iterated Fréchet, 4
+Write the iterated, 4
+inverse function, 4
+symm, 4
+measures are equal, 4
+restrictions, 4
+change the Hausdorff, 4
+Replacing a set, 4
+Replacing, 4
+equal norms, 4
+measure gives positive, 4
+positive mass, 4
+sufficiently, 4
+Hölder continuous, 4
+statements are equivalent, 4
+statements, 4
+configuration, 4
+show it holds, 4
+infty, 4
+frac, 4
+iff there exists, 4
+usable version, 4
+founded, 4
+Vieta formula, 4
+Vieta, 4
+maximal element, 4
+right-regular element, 4
+topological vector space, 4
+model, 4
+group exponent exists, 4
+exponent exists, 4
+group exponent, 4
+canonically, 4
+convex iff, 4
+Rolle Theorem, 4
+Rolle, 4
+minpoly K pb.gen, 4
+pb.gen, 4
+concave iff, 4
+abelian group, 4
+abelian, 4
+measurable embedding, 4
+free group, 4
+terminated at position, 4
+gcf, 4
+submultiplicative, 4
+sets partitioning, 4
+partitioning, 4
+sign, 4
+separable degree, 4
+sieve, 4
+center of mass, 4
+total number, 4
+pigeonholes times, 4
+number of pigeonholes, 4
+weight of pigeons, 4
+angle negated, 4
+negated, 4
+aleph, 4
+infi, 4
+number of pigeons, 4
+manifold, 4
+formulated in terms, 4
+direct sum, 4
+simpler, 4
+p.leading, 4
+linearly ordered additive, 4
+Construct, 4
+unique gluings, 4
+terms of unique, 4
+finer Polish, 4
+Determinant, 4
+level, 4
+content, 4
+positive numbers accumulating, 4
+numbers accumulating, 4
+accumulating, 4
+finite cancellative, 4
+automatic, 4
+cancellative, 4
+prepartition, 4
+members, 4
+duplicate, 4
+regular space, 4
+topologies, 4
+hfs, 4
+unconditionally, 4
+μ.with, 4
+Alternative definition, 4
+measurable with respect, 4
+present, 4
+removing, 4
+writing, 4
+locally uniformly approximated, 4
+optimal coupling, 4
+optimal, 4
+coupling, 4
+closed under division, 4
+Inverses of elements, 4
+Inverses, 4
+order have finite, 4
+reversed, 4
+images, 4
+equalizers, 4
+Test for convergence, 4
+real-valued series, 4
+supr, 4
+Compressing, 4
+finite coproducts, 4
+element has finite, 4
+Young inequality, 4
+Young, 4
+family of vectors, 4
+pair of elements, 4
+integral element, 4
+strict Fréchet-derivative, 4
+disk with center, 4
+ball with center, 4
+antidistrib, 4
+centroid indexed, 4
+noncommutative, 4
+closure operator, 4
+faster than exponentially, 4
+grow faster, 4
+Grönwall inequality, 4
+Grönwall, 4
+grow, 4
+corollary of Grönwall, 4
+call this Grönwall, 4
+simple corollary, 4
+people call, 4
+formed, 4
+splitting, 4
+characteristic polynomial, 4
+automatically satisfied, 4
+version for integral, 4
+condition is automatically, 4
+extended distance, 4
+dimH, 4
+polynomial is irreducible, 4
+bump function, 4
+state, 4
+left-multiplication, 4
+bottom element, 4
+lemma requires, 4
+subtracting vectors, 4
+space is complete, 4
+fully, 4
+obtain, 4
+map.dom, 4
+coprod, 4
+specialized, 4
+locally finite measure, 4
+Cardinality, 4
+non-empty, 4
+anti, 4
+measurable superset, 4
+erase, 4
+number of digits, 4
+Group homomorphisms preserve, 4
+Group homomorphisms, 4
+Group, 4
+function converges, 4
+zmod.cast, 4
+elementary operations, 4
+form by elementary, 4
+fixed element, 4
+Dividing, 4
+upper-bounded, 4
+real differentiable, 4
+extr, 4
+Reorder, 4
+surjective injection, 4
+power basis, 4
+π-system, 4
+greatest element, 4
+Subsets, 4
+prime factorization, 4
+subfamily, 4
+covering sets, 4
+local minimum equals, 4
+minimum equals, 4
+equivalence relations, 4
+sets are equal, 4
+function is strictly, 4
+torus integrable, 4
+description, 4
+games, 4
+field of fractions, 4
+pi.single, 4
+reduce, 4
+structures, 4
+original ring, 4
+prime ideals, 4
+linear map correspond, 4
+map correspond, 4
+contraction pairing, 4
+End, 4
+pairing, 4
+non-commutative, 4
+respects equivalence, 4
+E.order, 4
+E.mk, 4
+init, 4
+sol, 4
+summation, 4
+list coincides, 4
+Version designed, 4
+small list, 4
+big list, 4
+designed to rewrite, 4
+scanl, 4
+satisfied, 4
+smallest congruence relation, 4
+smallest congruence, 4
+non-zero elements, 4
+conditional, 4
+complex hyperbolic, 4
+hyperbolic, 4
+antichain, 4
+subgroups, 4
+anisotropic, 4
+Jensen inequality, 4
+Jensen, 4
+identity equals, 4
+implicit arguments, 4
+metric space structure, 4
+direction of monotone, 4
+original list, 4
+quotients, 4
+equivalent expression, 4
+polynomial.leading, 4
+edistance coincide, 4
+actions, 4
+variation, 4
+smallest additive congruence, 4
+smallest additive, 4
+inductively, 4
+alternative version, 4
+extreme value theorem, 4
+cancel semigroup, 4
+formulas, 4
+square matrices, 4
+semi, 4
+linear ordered field, 4
+convex.combo, 4
+intersect, 4
+Riesz, 4
+norm.padic, 4
+coercions, 4
+Unlike, 4
+unfolds, 4
+additive and holds, 4
+property is additive, 4
+multiplicative and holds, 4
+property is multiplicative, 4
+continuous in point, 4
+uncurried version, 4
+uncurried, 4
+bounded linear, 4
+property holds, 4
+nonnegative real, 4
+nonempty finite family, 4
+nonempty finite, 4
+defined in terms, 4
+quotient.mk, 4
+integer and fractional, 4
+preserve subtraction, 4
+Liouville theorem, 4
+algebraically closed field, 4
+algebraically closed, 4
+closed field, 4
+standard, 4
+algebraically, 4
+instance to avoid, 4
+positive period, 4
+dot notation, 4
+Bernoulli inequality, 4
+laws, 4
+nil, 4
+normed vector space, 4
+normed vector, 4
+swapped, 4
+reaches, 4
+compl, 4
+diagrams, 4
+direction of measurable, 4
+DVR, 4
+charts, 4
+A.from, 4
+Extra simp lemma, 4
+Extra simp, 4
+Extra, 4
+embedding.subtype, 4
+Negation, 4
+cases, 4
+base field, 4
+simp-normal, 4
+reformulation in terms, 4
+oriented vector angle, 4
+oriented vector, 4
+oriented, 4
+localize, 4
+cross product, 4
+module has dimension, 4
+accessible, 4
+prod.map, 4
+sum is unaffected, 4
+bases, 4
+direction of left.inv, 4
+comparable, 4
+disjoint sets, 4
+affine combination, 4
+equivalence closure, 4
+cluster, 4
+alternating series test, 4
+alternating series, 4
+series test, 4
+bounded bilinear, 4
+null, 4
+locally compact space, 4
+divisible, 4
+turn, 4
+lifts, 4
+pigeonholes the total, 4
+hermitian, 4
+pseudometric space, 4
+Ring homomorphisms, 4
+Ring, 4
+shorter, 4
+Triangle inequality, 3
+nonnegative distance, 3
+maps indexed, 3
+Scalar multiplication, 3
+Scalar, 3
+direction of convex, 3
+valued function reduces, 3
+valued function, 3
+function reduces, 3
+telescoping, 3
+triv, 3
+Comparison test, 3
+test of convergence, 3
+Comparison, 3
+embedded, 3
+p.support, 3
+showing, 3
+contracting, 3
+ennreal, 3
+descending central series, 3
+lower central series, 3
+descending central, 3
+lower central, 3
+descending, 3
+affine space modelled, 3
+Viewing a module, 3
+affine combinations, 3
+limit of measurable, 3
+ordered module, 3
+integral R B.gen, 3
+minpoly R B.gen, 3
+GCD domain, 3
+S.normed, 3
+finset.Ico, 3
+left argument, 3
+varies, 3
+function is injective, 3
+set of unique, 3
+atom, 3
+pseudometric spaces, 3
+nonarchimedean, 3
+lim, 3
+linearly independent family, 3
+surjection, 3
+orientation equals, 3
+yielding, 3
+closed under negation, 3
+set of Liouville, 3
+Liouville numbers, 3
+function preserves uniform, 3
+preserves uniform convergence, 3
+function preserves, 3
+preserves uniform, 3
+smooth algebraic, 3
+instance for technical, 3
+metric.ball, 3
+int.nat, 3
+coarser, 3
+isometry preserves, 3
+add multiples, 3
+sends fixed points, 3
+sends fixed, 3
+finite biproducts, 3
+binary biproducts, 3
+squashed position stay, 3
+position stay, 3
+stay, 3
+representing, 3
+Multiplication, 3
+norm.norm filter.at, 3
+rectangles, 3
+integral closure, 3
+inequality with norm, 3
+scalar multiplications agree, 3
+scalar multiplications, 3
+multiplications agree, 3
+positive measure, 3
+direction of list.reverse, 3
+real exponential function, 3
+real exponential, 3
+induced topology, 3
+Fundamental, 3
+bounded sets, 3
+differentiable functions, 3
+Prefer putting constants, 3
+Prefer putting, 3
+putting constants, 3
+function.bijective, 3
+Pons asinorum, 3
+Pons, 3
+indexed supremum, 3
+family of points, 3
+snoc, 3
+Tower law, 3
+Tower, 3
+Witt, 3
+Borel theorem, 3
+Heine, 3
+additive group homomorphisms, 3
+characterization of uniform, 3
+controls the norm, 3
+controls, 3
+Compare, 3
+cocompact, 3
+finset.range, 3
+directly the additivity, 3
+manipulating sequence indices, 3
+sequence indices, 3
+lemma for manipulating, 3
+manipulating sequence, 3
+manipulating, 3
+continuous induction principle, 3
+continuous induction, 3
+Banach algebra, 3
+spectral, 3
+numeric pre-games, 3
+direction of dense, 3
+sufficient condition, 3
+limit points, 3
+def, 3
+type has cardinality, 3
+angle as negating, 3
+Cramer rule, 3
+Cramer, 3
+Additive closure, 3
+extreme point, 3
+infinitely, 3
+coerced, 3
+composition operator, 3
+Tychonoff theorem, 3
+inclusive, 3
+finsupp.single, 3
+coefficient is nonzero, 3
+sufficient, 3
+repeated, 3
+like.ext, 3
+criterion, 3
+Noetherian iff, 3
+finitely-generated, 3
+numerators, 3
+evaluates, 3
+bounds the diameter, 3
+constant bounds, 3
+root theorem, 3
+f.codomain, 3
+ufd, 3
+sphere, 3
+embeds, 3
+essentially, 3
+Closed balls, 3
+triangular, 3
+empty set vanishes, 3
+reasonable, 3
+function is nonnegative, 3
+automatically integrable, 3
+Hahn-Banach theorem, 3
+ultrafilters, 3
+family of nonempty, 3
+field of characteristic, 3
+block-diagonal, 3
+list with product, 3
+divides another element, 3
+sigma-finite measure, 3
+remaining product, 3
+remaining, 3
+function taking, 3
+reals, 3
+slices, 3
+totally separated, 3
+points are equal, 3
+countable basis, 3
+single element, 3
+additive semigroup, 3
+complex.re, 3
+Split, 3
+monotone.covariant, 3
+filtering, 3
+cancels, 3
+classes are equal, 3
+letter, 3
+Euclidean, 3
+gram, 3
+schmidt, 3
+sequential space, 3
+nonempty open set, 3
+nonempty open, 3
+set is dense, 3
+endpoint, 3
+decomposition theorem, 3
+Jordan, 3
+signed measure, 3
+acts, 3
+locally integrable, 3
+measurable sets, 3
+infinite basis, 3
+groups are torsion, 3
+orthonormal set, 3
+exists a maximal, 3
+field structure, 3
+Generalized, 3
+Grothendieck topology, 3
+Grothendieck, 3
+largest, 3
+closures, 3
+faithful, 3
+times continuously differentiable, 3
+times continuously, 3
+continuously differentiable, 3
+weighted version, 3
+nonnegative functions, 3
+obtained by inserting, 3
+prove a proposition, 3
+proposition, 3
+sum of powers, 3
+Bound, 3
+replace, 3
+finite group, 3
+preirreducible, 3
+cardinalities, 3
+normal topological space, 3
+Note the assumption, 3
+barycentric, 3
+Euler product formula, 3
+Euler product, 3
+totient function, 3
+product formula, 3
+vectors passed, 3
+prescribed, 3
+complex conjugation, 3
+group action, 3
+direction of measure, 3
+Extensionality, 3
+maximal atlas, 3
+preserve multiplication, 3
+set is continuous, 3
+inducing map, 3
+goal, 3
+reflexive bilinear form, 3
+reflexive bilinear, 3
+Composition of first-order, 3
+homomorphisms is associative, 3
+pigeonhole is greater, 3
+Note the converse, 3
+subordinate, 3
+function is integrable, 3
+subgroup is normal, 3
+sUnion, 3
+LYM, 3
+Bisimulation principle, 3
+Bisimulation, 3
+closed balls, 3
+non-negative real numbers, 3
+series of non-negative, 3
+non-negative real, 3
+function is uniformly, 3
+Congruence lemma, 3
+lemma for constructing, 3
+constructing, 3
+determined, 3
+nondegenerate configuration, 3
+lines, 3
+precise version, 3
+holder, 3
+integer powers, 3
+monoid homomorphisms, 3
+composite, 3
+non-trivial ring, 3
+typeclasses, 3
+stable, 3
+linear terms, 3
+binary functions, 3
+limiting, 3
+definition of subtraction, 3
+singular, 3
+Lebesgue decomposition, 3
+convergent series, 3
+model space, 3
+vectors are equal, 3
+localization maps, 3
+adapted, 3
+maximum degree, 3
+group equals, 3
+common maximal reduction, 3
+common maximal, 3
+pseudoemetric space, 3
+equivalence relation defined, 3
+relation defined, 3
+set of sets, 3
+pseudo emetric space, 3
+pseudo emetric, 3
+cyclic order, 3
+adding the angles, 3
+Relation, 3
+space is uniformly, 3
+Heine-Cantor, 3
+non-trivial filter, 3
+code, 3
+finite dimensional real, 3
+dimensional real, 3
+Swapping, 3
+zigzag, 3
+objects, 3
+generate, 3
+finite ring, 3
+converges uniformly, 3
+gluings, 3
+finer Polish topology, 3
+additively torsion, 3
+minimal element, 3
+closed-open intervals, 3
+closed-open, 3
+set in dimension, 3
+sieves, 3
+converse is true, 3
+duplicate entries, 3
+inputs, 3
+Generalization, 3
+unconditionally summable, 3
+Harmonic, 3
+density, 3
+series are equal, 3
+convexity, 3
+cosh, 3
+μ.restrict, 3
+transvections, 3
+based, 3
+Adding the angles, 3
+Converting, 3
+realizes, 3
+pairs, 3
+inverse images, 3
+equality of points, 3
+vanishing, 3
+pointwise equicontinuity, 3
+equicontinuity and range, 3
+equicontinuity, 3
+pushouts, 3
+muliplication, 3
+preserved, 3
+multiplicative submonoid, 3
+double, 3
+local equiv, 3
+adjacency matrix, 3
+adjacency, 3
+positive characteristic, 3
+finset.sup, 3
+coequalizers, 3
+Borel sets, 3
+continuous multilinear maps, 3
+directly the multiplicativity, 3
+holds for nonempty, 3
+domain iff, 3
+upper central series, 3
+ascending central series, 3
+upper central, 3
+ascending central, 3
+ascending, 3
+remainders are close, 3
+remainders, 3
+composed functions, 3
+basis.to, 3
+change of basis, 3
+primes, 3
+possibly larger, 3
+version for sums, 3
+functions and real, 3
+subgroup.closure, 3
+generating, 3
+generated filter, 3
+finite commutative ring, 3
+finite commutative, 3
+approximates, 3
+triangles, 3
+respect to inclusion, 3
+geometric sequence, 3
+original function, 3
+Continuity, 3
+supp, 3
+finite basis, 3
+equivalent local equivs, 3
+Frobenius, 3
+stating, 3
+pdf, 3
+random variable, 3
+subadditive function, 3
+ring.inverse, 3
+universal, 3
+open neighborhoods, 3
+direction of set.not, 3
+set.not, 3
+arbitrarily small, 3
+sequences are characterized, 3
+irreducible iff, 3
+prod.swap, 3
+strictly negative, 3
+pair of vectors, 3
+reflection, 3
+ring homomorphism, 3
+filtered, 3
+real-valued bounded, 3
+recursive, 3
+Coercing, 3
+composition of functions, 3
+pieces, 3
+sum of squares, 3
+commutes with taking, 3
+Gauss', 3
+Intersecting, 3
+required orientation, 3
+infinite loops, 3
+exists a measurable, 3
+function is analytic, 3
+finset.card, 3
+preserve division, 3
+Monge planes, 3
+altitudes, 3
+planes, 3
+unique factorization domain, 3
+factorization domain, 3
+unique factorization, 3
+c.length, 3
+normed spaces, 3
+shell, 3
+normed group, 3
+Rectangles, 3
+eigenvalues, 3
+odd characteristic, 3
+real differentiable map, 3
+differentiable map, 3
+map.to, 3
+integrally closed domain, 3
+integral power basis, 3
+closed domain, 3
+field of fraction, 3
+separable extension, 3
+integral power, 3
+Eisenstein, 3
+sandwich theorem, 3
+Law, 3
+give, 3
+generalized eigenspace, 3
+perm, 3
+write, 3
+sort, 3
+complex function, 3
+Embed, 3
+Section, 3
+consecutive, 3
+distinguished triangle, 3
+distinguished, 3
+transformed, 3
+dual element, 3
+strong rank condition, 3
+satisfying the strong, 3
+rank condition, 3
+strong rank, 3
+explicit description, 3
+internal, 3
+Nonzero, 3
+Engel theorem, 3
+Engel, 3
+Bernoulli numbers, 3
+relating, 3
+Binary strict, 3
+Verschiebung, 3
+equivalent theorems, 3
+Theorems, 3
+named, 3
+conflict, 3
+Rational, 3
+typeclass assumptions, 3
+general relation isomorphism, 3
+sol init, 3
+closeds, 3
+member, 3
+Polynomial evaluation commutes, 3
+Polynomial evaluation, 3
+evaluation commutes, 3
+Polynomial, 3
+cramer, 3
+updating, 3
+quotient map induced, 3
+map induced, 3
+square root, 3
+continuous image, 3
+divides the ideal, 3
+multiplicative.of, 3
+original element, 3
+finite-dimensional normed, 3
+basis sets, 3
+Mapping, 3
+higher, 3
+distance is controlled, 3
+monomial, 3
+key, 3
+instance arguments, 3
+matrix.mv, 3
+eval, 3
+acting, 3
+specific bases, 3
+matrix.to, 3
+lin, 3
+metric spaces, 3
+swapping, 3
+normed bump function, 3
+normed bump, 3
+element adjoined, 3
+adjoined, 3
+commutative semirings, 3
+version for commutative, 3
+subalgebra, 3
+remains, 3
+inductively defined, 3
+left neighborhood, 3
+weaker assumption, 3
+Cauchy integral formulas, 3
+Cauchy integral, 3
+integral formulas, 3
+fed, 3
+typeclass search, 3
+requires less typeclass, 3
+theory, 3
+quotient.induction, 3
+Lie, 3
+additive submonoid, 3
+binomial theorem, 3
+charted, 3
+wide pullbacks, 3
+prime divisors, 3
+map with dense, 3
+geometric series, 3
+nat.cast, 3
+input, 3
+empty list, 3
+Reindexing both indices, 3
+equivalence preserves, 3
+Reindexing, 3
+minor, 3
+witness, 3
+holds on summands, 3
+holds on factors, 3
+finite extension, 3
+simplification, 3
+elements invertible, 3
+unit.map, 3
+adjoin, 3
+finset.center, 3
+inverse of matrix, 3
+vectors is equal, 3
+weaker hypothesis, 3
+arg, 3
+moved, 3
+rev, 3
+splits a list, 3
+len, 3
+esymm, 3
+local min, 3
+module is Noetherian, 3
+Series, 3
+element b iff, 3
+nondiscrete normed field, 3
+nondiscrete normed, 3
+nondiscrete, 3
+complex differentiable bounded, 3
+differentiable bounded function, 3
+differentiable bounded, 3
+bounded continuous functions, 3
+nontrivial monoid, 3
+iff locally, 3
+constant times, 3
+times the sum, 3
+complete lattice, 3
+product equals, 3
+hand side, 3
+hand, 3
+Moving, 3
+require, 3
+compute, 3
+integer parts, 3
+homomorphisms preserve subtraction, 3
+nontrivial ring, 3
+ring is nontrivial, 3
+underlying ring, 3
+subspace spanned, 3
+closed map, 3
+generic, 3
+finite subsets, 3
+valuation ring, 3
+iff their underlying, 3
+unique maximal ideal, 3
+ring structure, 3
+unique maximal, 3
+retrieved, 3
+countable dense set, 3
+eigenvalue, 3
+separated set, 3
+perfect, 3
+lebesgue, 3
+commutative additive, 3
+categories, 3
+multivariate, 3
+centers, 3
+compact closure, 3
+irreducible element, 3
+pair.stream, 3
+singular with respect, 3
+equalizer diagram, 3
+diagram is equivalent, 3
+symmetric relation, 3
+Commutativity, 3
+Besicovitch, 3
+s.piecewise, 3
+joins, 3
+strictly smaller radius, 3
+smaller radius, 3
+regular topological space, 3
+regular topological, 3
+valuations, 3
+divides an element, 3
+associates, 3
+smaller or equal, 3
+norm is bounded, 3
+expressions, 3
+modified cyclotomic polyomial, 3
+modified cyclotomic, 3
+divisibility, 3
+limit diagram, 3
+subsingleton type, 3
+underlying sets, 3
+space has positive, 3
+Fibonacci, 3
+unaffected by changing, 3
+changing the weights, 3
+function and adding, 3
+adding points, 3
+changing, 3
+maps provided, 3
+predicate on functions, 3
+torsion free, 3
+ω-limit, 3
+polynomials in finitely, 3
+Pullback, 3
+affine subspace constructed, 3
+subspace constructed, 3
+Vitali, 3
+common special case, 3
+common special, 3
+integer number, 3
+show a category, 3
+finite number, 3
+cycles, 3
+Summing, 3
+Cantor, 3
+monotone sequences, 3
+greatest lower bound, 3
+greatest lower, 3
+antitone sequences, 3
+simplex are equal, 3
+Helper lemma, 3
+substructure, 3
+open disc, 3
+disc, 3
+plane, 3
+built, 3
+set are independent, 3
+insertion, 3
+Open, 3
+Alternative version, 3
+alg, 3
+number of times, 3
+normalized, 3
+bounded bilinear map, 3
+bilinear map, 3
+associating, 3
+measurable implies, 3
+conservative, 3
+working, 3
+construction, 3
+open domain, 3
+numerator, 3
+space is finite-dimensional, 3
+lemma is specifically, 3
+fintype.of, 3
+statement about arbitrary, 3
+specifically, 3
+Number, 3
+equals zero iff, 3
+Ring homomorphisms preserve, 3
+self-adjoint, 3
+direct path, 3
+inserted, 3
+Congruence relations, 3
+index set, 3
+auxiliary statement, 3
+infinite cardinal, 2
+ring is noetherian, 2
+multilinear maps indexed, 2
+arguments are basis, 2
+tangent bundle projection, 2
+bundle projection, 2
+Counterpart, 2
+dividing the order, 2
+Cauchy theorem, 2
+element of order, 2
+commutative group valued, 2
+group valued function, 2
+telescoping sum, 2
+group valued, 2
+equivalent local homeomorphisms, 2
+valued series, 2
+function respects, 2
+embedded machines move, 2
+embedded machine reaches, 2
+embedded machines, 2
+exact equality, 2
+halt state, 2
+machines move, 2
+machine reaches, 2
+move in lock-step, 2
+reaches the halt, 2
+original and embedded, 2
+simulation, 2
+Lemmas showing projection, 2
+Lemmas showing, 2
+showing projection, 2
+Lemmas, 2
+basic trigonometric, 2
+trigonometric, 2
+left strict covariance, 2
+assumes left strict, 2
+assumes left, 2
+left strict, 2
+multiplicative supports, 2
+element is regular, 2
+matrix.diagonal, 2
+concave it suffices, 2
+main use case, 2
+namespace, 2
+group is bounded, 2
+depending, 2
+local ring, 2
+element is left-regular, 2
+closed under inverse, 2
+positive cone, 2
+salient, 2
+result for cosine, 2
+fraction ring, 2
+collection of sets, 2
+binary injective function, 2
+argument varies, 2
+binary injective, 2
+periodic point, 2
+function divided, 2
+coatom, 2
+preserves distances, 2
+Lean will unify, 2
+family of submodules, 2
+choice, 2
+spec, 2
+extension being injective, 2
+ker, 2
+slight generalization, 2
+cardinals are unbounded, 2
+sigma type equals, 2
+type equals, 2
+fiberwise, 2
+equals the negation, 2
+n-digit number, 2
+number in base, 2
+n-digit, 2
+divisors of prime, 2
+powers are prime, 2
+filter is measurable, 2
+finite spanning, 2
+converging sequence converges, 2
+Cesaro average, 2
+converging sequence, 2
+Cesaro, 2
+borel, 2
+identity endomorphism, 2
+uniformly continuous function, 2
+continuous function preserves, 2
+complex number, 2
+transpose, 2
+complete normed ring, 2
+open subset, 2
+principal ideal domain, 2
+ideal domain, 2
+class number, 2
+principal ideal, 2
+denoted, 2
+open balls, 2
+product of open, 2
+Convert back, 2
+back any exotic, 2
+canonical instance, 2
+Convert, 2
+exotic, 2
+structure by design, 2
+multiples of previous, 2
+product set, 2
+product point, 2
+algebraic extension, 2
+multilinear series representing, 2
+function are equal, 2
+series representing, 2
+p.fst, 2
+normed division ring, 2
+normed division, 2
+finite product space, 2
+product space equals, 2
+space equals, 2
+equal on rectangles, 2
+product measure, 2
+agree on inverses, 2
+inverses of natural, 2
+open-closed intervals, 2
+open-closed, 2
+left multiplication, 2
+multiplication by elements, 2
+simple iff, 2
+locally compact group, 2
+Steinhaus Theorem, 2
+compact group, 2
+haar measure, 2
+Steinhaus, 2
+exponentially close, 2
+strict subdisks, 2
+equipped, 2
+Fundamental theorem, 2
+semiconjugate, 2
+complex differentiable functions, 2
+projection notation, 2
+multiply, 2
+affinely independent family, 2
+partial denominator, 2
+Dickson, 2
+partially, 2
+sequences on integers, 2
+metric characterization, 2
+complex sine function, 2
+complex sine, 2
+makes no assumptions, 2
+Updating a tuple, 2
+beginning commute, 2
+tuple and adding, 2
+adding an element, 2
+preconnected sets, 2
+uniform continuity, 2
+map.op, 2
+function spaces, 2
+map between function, 2
+defining property, 2
+language, 2
+real.Inf, 2
+connected set, 2
+equivalent to binary, 2
+show that colex, 2
+colex is equivalent, 2
+strictly concave function, 2
+strictly lower-bounded, 2
+p.roots, 2
+complex Banach algebra, 2
+complex Banach, 2
+at.Ioi, 2
+condition for comparison, 2
+similar set, 2
+defines a dense, 2
+defines, 2
+intersection are equal, 2
+matrix.mul, 2
+Version, 2
+LCTVS, 2
+Krein-Milman, 2
+scalar tower, 2
+Artinian, 2
+algebra are disjoint, 2
+generators, 2
+Addition, 2
+affect, 2
+localization.sec, 2
+commutativity, 2
+finite index types, 2
+finite index, 2
+subgroup.pi, 2
+relations preserve natural, 2
+preserve natural, 2
+additive torsion group, 2
+intermediate fields, 2
+compositions, 2
+product of compact, 2
+sets is compact, 2
+nonempty compact Hausdorff, 2
+right-multiplication, 2
+starting at position, 2
+parser.nat, 2
+part of proving, 2
+function.bij, 2
+natural powers, 2
+sigma types, 2
+maps are equal, 2
+applying, 2
+automatically fills, 2
+fills, 2
+partial numerators, 2
+Commuting elements, 2
+Commuting, 2
+kind evaluates, 2
+GCD domains, 2
+nonzero iff, 2
+Formula for orthogonal, 2
+single vector, 2
+densely ordered codomain, 2
+summand, 2
+i.cast, 2
+pairwise disjoint finite, 2
+disjoint finite sets, 2
+disjoint finite, 2
+set of pairwise, 2
+preorders is called, 2
+version for preorders, 2
+called, 2
+inverse equals, 2
+ℕ-division, 2
+functor Compactum, 2
+Compactum, 2
+CompHaus, 2
+nilpotency classes, 2
+covered, 2
+R-algebra, 2
+A-algebra, 2
+elements are integral, 2
+implicit argument, 2
+instance argument, 2
+quotient.ind, 2
+family of continuous, 2
+applications, 2
+balls are bounded, 2
+recursively, 2
+kernel is trivial, 2
+homomorphism is injective, 2
+block equal, 2
+diagonal blocks, 2
+parsing position, 2
+decimal digits, 2
+possibly padded, 2
+successful parse, 2
+numerical value represented, 2
+string of decimal, 2
+parse, 2
+functional which strongly, 2
+strongly separates, 2
+taking the join, 2
+basic open sets, 2
+basic open, 2
+topology on ultrafilters, 2
+nonempty sets, 2
+direction of matrix.nondegenerate, 2
+matrix.nondegenerate, 2
+matrix block-diagonal, 2
+exist two lists, 2
+makes a matrix, 2
+transvection, 2
+struct, 2
+axiom, 2
+Gromov-Hausdorff distance, 2
+Gromov-Hausdorff, 2
+isometric, 2
+measurable are equivalent, 2
+measurable and measurable, 2
+set is balanced, 2
+product satisfies, 2
+considered, 2
+commutative multiplicative monoid, 2
+ordered commutative multiplicative, 2
+multiplicative monoid, 2
+commutative multiplicative, 2
+group preserving, 2
+emetric.diam, 2
+Lipschitz in point, 2
+point with constant, 2
+topological vector bundle, 2
+vector bundle created, 2
+vector bundle, 2
+set of differentiability, 2
+totally disconnected iff, 2
+disconnected iff, 2
+iff its connected, 2
+connected components, 2
+nonzero left-invariant measures, 2
+left-invariant measures, 2
+measures are absolutely, 2
+coprime.prod, 2
+equiv.sum, 2
+subtype equals, 2
+function that agrees, 2
+compact Hausdorff space, 2
+differentiable inside, 2
+inside a convex, 2
+analysis sense, 2
+p.derivative, 2
+analysis, 2
+extensivity or inflationarity, 2
+set.inj, 2
+countably generated uniformity, 2
+generated uniformity filter, 2
+separable uniform space, 2
+generated uniformity, 2
+separable uniform, 2
+Equivalence closure, 2
+s.erase, 2
+orthogonal columns, 2
+orthogonal rows, 2
+order on subspaces, 2
+underlying equivalence relation, 2
+sending a congruence, 2
+underlying equivalence, 2
+Dual, 2
+Laurent polynomials, 2
+taking sums, 2
+holds for monomials, 2
+condition is closed, 2
+closed under taking, 2
+Laurent, 2
+Pointwise maximum, 2
+expressed by filtering, 2
+set is expressed, 2
+subsets that cancel, 2
+nonzero arguments, 2
+system of vectors, 2
+Gram-Schmidt, 2
+norm bounded, 2
+Sophie Germain identity, 2
+Sophie Germain, 2
+Germain identity, 2
+Germain, 2
+Sophie, 2
+common prime factors, 2
+common prime, 2
+set or sets, 2
+set is cospherical, 2
+power series ring, 2
+series ring, 2
+s.to, 2
+Jordan decomposition, 2
+derivative also converges, 2
+subspace of invariants, 2
+invariants, 2
+subgroup is finitely, 2
+order-connected set, 2
+order-connected, 2
+family is affinely, 2
+evaluate, 2
+Kronecker delta, 2
+spanning sets, 2
+σ-finite, 2
+dense linear order, 2
+dense linear, 2
+square roots, 2
+quadratic has roots, 2
+linear independent, 2
+proving, 2
+properties, 2
+strict differentiability, 2
+sense of strict, 2
+idempotent lies, 2
+torsion groups, 2
+eigenspaces, 2
+operations are equal, 2
+pretopology, 2
+origin are balanced, 2
+inferred, 2
+imaginary part, 2
+real-valued nonnegative functions, 2
+AM-GM, 2
+technical lemma, 2
+control the growth, 2
+growth of coefficients, 2
+Bound the explicit, 2
+technical, 2
+growth, 2
+explicit expression, 2
+raise, 2
+strictly increasing, 2
+space is convex, 2
+seminorm.convex, 2
+garbage complication, 2
+complication by requiring, 2
+requiring the list, 2
+list.head, 2
+avoiding, 2
+complication, 2
+yielding triangle, 2
+necessarily listed, 2
+vertices not necessarily, 2
+listed, 2
+Primes greater, 2
+Primes, 2
+group of prime, 2
+prime order, 2
+subspace is dense, 2
+resulting matrix, 2
+reindexing, 2
+bounded continuous real-valued, 2
+continuous real-valued function, 2
+nonempty topological space, 2
+lemma matches, 2
+matches more generally, 2
+matches, 2
+minimum degree, 2
+nonempty graph, 2
+preserves division, 2
+multiplication is commutative, 2
+minus the angle, 2
+shadow is monotone, 2
+preserve integer scaling, 2
+homomorphisms preserve integer, 2
+integer scaling, 2
+version in complete, 2
+equals the number, 2
+preimages, 2
+theory.measure, 2
+tag, 2
+limsup coincides, 2
+successively, 2
+associative operations, 2
+Composing two associative, 2
+set is sequentially, 2
+polynomial that splits, 2
+due, 2
+maps which preserve, 2
+biprod.unique, 2
+Abbreviation, 2
+h.symm, 2
+direction of ordering.compares, 2
+ordering.compares, 2
+base ordering, 2
+achieves its goal, 2
+implies the uniqueness, 2
+achieves, 2
+complex cosine function, 2
+complex cosine, 2
+first-order homomorphisms, 2
+contravariant, 2
+locally-finite measure, 2
+locally-finite, 2
+colex order, 2
+direction of smooth, 2
+interval integrable, 2
+Composing two additions, 2
+additions, 2
+minimal polynomials, 2
+invertible derivative, 2
+separated by open, 2
+functions on domains, 2
+topological closure, 2
+falling, 2
+linear equivalence, 2
+reexpress a sum, 2
+p.nat, 2
+reexpress, 2
+norms are equal, 2
+nonzero left-invariant regular, 2
+left-invariant regular measure, 2
+left-invariant regular, 2
+affine map acts, 2
+identity affine map, 2
+affine map, 2
+map acts, 2
+identity affine, 2
+liftr, 2
+match and relate, 2
+relate children, 2
+trees, 2
+relate, 2
+children, 2
+altitude, 2
+linearly dependent, 2
+direction of multiset.nodup, 2
+multiset.nodup, 2
+direction of linear, 2
+closed neighborhoods, 2
+rack, 2
+Dropping the elements, 2
+Dropping, 2
+real numbers converges, 2
+partial sum converges, 2
+sequence of partial, 2
+numbers converges, 2
+partial sum, 2
+sum converges, 2
+Hölder continuous function, 2
+proper metric space, 2
+version of Bolzano-Weistrass, 2
+proper metric, 2
+Bolzano-Weistrass, 2
+irrational number, 2
+exists a vertex, 2
+implies there exists, 2
+taking the tail, 2
+property hold, 2
+holds on terms, 2
+inl, 2
+closed nonempty subset, 2
+nonempty subset, 2
+closed nonempty, 2
+map with range, 2
+range equal, 2
+retraction, 2
+conditionally complete lattices, 2
+version in conditionally, 2
+cSup, 2
+partial application, 2
+covariant operator, 2
+covariant, 2
+successive integer powers, 2
+successive integer, 2
+radii, 2
+direction of polynomial.nat, 2
+version of Vieta, 2
+sum version, 2
+general differentiability extension, 2
+differentiability extension theorems, 2
+general differentiability, 2
+differentiability extension, 2
+extension theorems, 2
+Deduce, 2
+behavior, 2
+theorems, 2
+distributivity in rings, 2
+distributivity, 2
+unbounded set, 2
+Zorn lemma, 2
+Zorn, 2
+set.eq, 2
+on.of, 2
+preserve negation, 2
+element is right-regular, 2
+set is convex, 2
+family of functions, 2
+measure mutually singular, 2
+Lebesgue decomposition theorem, 2
+measure mutually, 2
+supported, 2
+theorem establishes, 2
+Leibniz, 2
+absolutely convergent, 2
+establishes, 2
+chart, 2
+additive opposite, 2
+perfection, 2
+orthonormal family, 2
+Adding a point, 2
+set preserves, 2
+preserves its boundedness, 2
+uniform structure, 2
+adapted process, 2
+Preconnected sets, 2
+Preconnected, 2
+category with pullbacks, 2
+object has binary, 2
+Jacobson radical, 2
+radical, 2
+abelian group equals, 2
+torsion subgroup, 2
+torsion submonoid, 2
+equals the torsion, 2
+Iff version, 2
+version of extensionality, 2
+extensionality rule, 2
+rule for additive, 2
+Iff, 2
+adjacent terms, 2
+theorem of calculus, 2
+checking, 2
+discrete analogue, 2
+fundamental theorem, 2
+calculus, 2
+submultiplicative function, 2
+Sending, 2
+gap, 2
+positive coefficients, 2
+norm strictly, 2
+monoid equals, 2
+additive topological group, 2
+additive topological, 2
+multiple is positive, 2
+separable degree divides, 2
+degree divides, 2
+divides the degree, 2
+graded, 2
+congruent, 2
+notions, 2
+vectors add, 2
+monoid are equal, 2
+prime number, 2
+number of vertices, 2
+separated uniform space, 2
+separated uniform, 2
+cardinal.nsmul, 2
+tend, 2
+element commutes, 2
+ceiling, 2
+computable, 2
+interpretation, 2
+dimensional real vector, 2
+corners, 2
+non-trivial module, 2
+negates the angle, 2
+Warning theorem, 2
+Chevalley, 2
+Warning, 2
+multivariate polynomial, 2
+nonempty category, 2
+ranks, 2
+int.induction, 2
+lemma is true, 2
+force the polynomial, 2
+explicitly stated, 2
+assumptions of lemma, 2
+force, 2
+segment is lower-bounded, 2
+entry, 2
+entourages form, 2
+entourages, 2
+int.log, 2
+exists a finer, 2
+clopenable, 2
+nat.factorization, 2
+level sets, 2
+measurable supersets, 2
+almost-everywhere measurable, 2
+supersets, 2
+almost-everywhere, 2
+lattice of submodules, 2
+subset is compact, 2
+cancellative additive monoid, 2
+finite cancellative additive, 2
+cancellative additive, 2
+finite on closed-open, 2
+intervals are equal, 2
+set of boxes, 2
+function is locally, 2
+natural map, 2
+Finite product, 2
+product of finite, 2
+sets is finite, 2
+closed sieves, 2
+finite collection, 2
+converging power series, 2
+converging power, 2
+Cyclotomic polynomials, 2
+Cyclotomic, 2
+matrix.has, 2
+open thickening, 2
+compact regular space, 2
+locally compact regular, 2
+compact regular, 2
+points are collinear, 2
+counter-example, 2
+obtained by differentiating, 2
+differentiating, 2
+set depends continuously, 2
+depends continuously, 2
+set depends, 2
+Harmonic series, 2
+intermediate step, 2
+step to show, 2
+coefficients are equal, 2
+pointwise set operations, 2
+set convexity, 2
+set operations, 2
+terms of pointwise, 2
+pointwise set, 2
+definition of set, 2
+Binet formula, 2
+Binet, 2
+nat.succ, 2
+minimal degree, 2
+unchanged by removing, 2
+removing that point, 2
+conjugates, 2
+Characteristic, 2
+stable under product, 2
+diagonal matrices, 2
+matrices based, 2
+based on transvections, 2
+applies either branch, 2
+producing, 2
+branch, 2
+B.basis, 2
+integral coordinates, 2
+Multiplicativity, 2
+order results, 2
+Strictly monotone functions, 2
+monotone functions preserve, 2
+Strictly monotone, 2
+colex ordering, 2
+functions preserve, 2
+preserve the colex, 2
+Strictly, 2
+point is continuous, 2
+cycle decomposition, 2
+consists, 2
+topological bundle created, 2
+topological bundle, 2
+involute, 2
+clifford conjugate, 2
+aka, 2
+quaternion conjugate, 2
+unfolded, 2
+unapplied, 2
+analogue, 2
+identity linear map, 2
+identity linear, 2
+compact separated, 2
+hyperplanes, 2
+filter.comap, 2
+multisets, 2
+space is nontrivial, 2
+successor, 2
+left-invariant measure, 2
+minimal or maximal, 2
+equals that vector, 2
+double sum, 2
+discrete topology, 2
+integral extension, 2
+induced map, 2
+graph induced, 2
+vanish, 2
+filter is converging, 2
+liminf coincides, 2
+semiconj, 2
+tail gives back, 2
+original tuple, 2
+Concatenating, 2
+expansions, 2
+circulant matrices, 2
+embedding map, 2
+binder, 2
+omits the useless, 2
+useless, 2
+omits, 2
+Compressing a family, 2
+change its size, 2
+space is separable, 2
+identically distributed, 2
+identically, 2
+distributed, 2
+R-modules, 2
+cokernels, 2
+eliminated, 2
+element natural number, 2
+element natural, 2
+complex.exp, 2
+finite colimits, 2
+coproducts and coequalizers, 2
+group element, 2
+order iff, 2
+order is positive, 2
+iff its order, 2
+Conjugation is jointly, 2
+jointly continuous, 2
+jointly, 2
+Constant, 2
+Lusin separation theorem, 2
+disjoint Borel sets, 2
+Lusin separation, 2
+disjoint Borel, 2
+separation theorem, 2
+analytic sets, 2
+sets are contained, 2
+Lusin, 2
+contained in disjoint, 2
+case of continuous, 2
+finite cancellative monoid, 2
+cancellative monoid, 2
+functions are mutually, 2
+mutually inverse, 2
+nonempty lists, 2
+unlike, 2
+linearly ordered commutative, 2
+version assumes, 2
+real conjugate exponents, 2
+version with real, 2
+real conjugate, 2
+large enough family, 2
+elements whose remainders, 2
+Hilbert basis, 2
+Hilbert, 2
+list.map, 2
+bound abv, 2
+abv, 2
+formula for barycentric, 2
+basis formula, 2
+simplices are equal, 2
+image ₂_ antidistrib, 2
+shear mapping preserves, 2
+preserves the measure, 2
+shear mapping, 2
+mapping preserves, 2
+μ.prod, 2
+shear, 2
+open subgroup, 2
+nonarchimedean ring, 2
+nat.exists, 2
+CHSH tuple, 2
+CHSH, 2
+multiplicative indicator function, 2
+main characterization theorem, 2
+principal ordinals, 2
+main characterization, 2
+characterization theorem, 2
+transitive relation, 2
+approximate solutions, 2
+countably spanning, 2
+sets are countably, 2
+σ-algebras, 2
+countably generated filter, 2
+characterise, 2
+independence, 2
+Galois group, 2
+separable polynomial, 2
+splitting field, 2
+direction of approximates, 2
+on.approximates, 2
+Lemma to normalize, 2
+normalize a vector, 2
+normalize, 2
+result of dividing, 2
+functions continuous, 2
+quotient valuation, 2
+support supp, 2
+coefficients is nonzero, 2
+product of leading, 2
+number of positive, 2
+Characterize the equality, 2
+Characterize, 2
+fundamental domains, 2
+needed to prove, 2
+relations are symmetric, 2
+coord, 2
+bilinear form restricted, 2
+subspace is nondegenerate, 2
+form restricted, 2
+complement with respect, 2
+subspace is complement, 2
+convex independent, 2
+universal quantifiers tolerated, 2
+quantifiers tolerated, 2
+universal quantifiers, 2
+tolerated, 2
+meta-programming adjacent, 2
+quantifiers, 2
+elements is arbitrarily, 2
+figure, 2
+nondegenerate quadratic, 2
+iff every nonempty, 2
+set of submodules, 2
+Gauss Lemma, 2
+primitive polynomial, 2
+Gauss, 2
+total space, 2
+property on elements, 2
+holds for scalars, 2
+eigenvector, 2
+cantor, 2
+Harder inclusion, 2
+Harder, 2
+two-argument function applied, 2
+two-argument function, 2
+two-argument, 2
+Lean fails, 2
+function.injective, 2
+locally compact Hausdorff, 2
+explicit argument, 2
+equals the outer, 2
+alternate version, 2
+measure.restrict, 2
+coming, 2
+ordinal.induction, 2
+ordinal, 2
+nonzero real, 2
+union that requires, 2
+interval of length, 2
+predicate of period, 2
+periodic predicate, 2
+number naturals, 2
+Composing two multiplications, 2
+sets of unique, 2
+criterion to show, 2
+arbitrary Cauchy sequences, 2
+satisfy a bound, 2
+converging series, 2
+sequences which satisfy, 2
+arbitrary Cauchy, 2
+fast convergence, 2
+general for arbitrary, 2
+inverse is equivalent, 2
+vector bundles, 2
+additive supports, 2
+fully applied, 2
+product of closed, 2
+metric.closed, 2
+real quadratic form, 2
+Sylvester law, 2
+law of inertia, 2
+real quadratic, 2
+form is equivalent, 2
+Sylvester, 2
+inertia, 2
+map.alternatization, 2
+kind evaluated, 2
+nonempty type, 2
+low-degree polynomials, 2
+equal elements, 2
+low-degree, 2
+element additive inverse, 2
+additive inverse, 2
+element additive, 2
+function between finite, 2
+signed measures, 2
+Radon-Nikodym theorem, 2
+Radon-Nikodym, 2
+metavariables, 2
+loops, 2
+Defining, 2
+non-zero natural number, 2
+non-zero natural, 2
+functions is strictly, 2
+homomorphisms preserve division, 2
+thing, 2
+inverse converges, 2
+tendsto.inv, 2
+simpler RHS, 2
+increasing bijection, 2
+Hausdorff measure, 2
+algebra.norm, 2
+direction of bounded, 2
+preconnected subset, 2
+original set, 2
+set is preconnected, 2
+joined, 2
+Monge point lies, 2
+point lies, 2
+horizontal arrow, 2
+diagram commutes, 2
+vertical arrows, 2
+truncated, 2
+horizontal, 2
+vector.zmod, 2
+trunc, 2
+vector.truncate, 2
+text, 2
+vertical, 2
+reduced to diagonal, 2
+transposed matrix, 2
+transposed, 2
+element is continuous, 2
+set equals, 2
+holds for elements, 2
+function is measurable, 2
+images of compact, 2
+strictly convex function, 2
+strictly upper-bounded, 2
+generalized eigenvalues, 2
+positive scalar, 2
+point scales, 2
+conformal at point, 2
+scales, 2
+operator norm satisfies, 2
+norm satisfies, 2
+satisfies the triangle, 2
+unnecessary type-class assumptions, 2
+avoid unnecessary type-class, 2
+type-class assumptions, 2
+nice to avoid, 2
+avoid unnecessary, 2
+unnecessary type-class, 2
+Reorder a sum, 2
+filtrations indexed, 2
+filtrations, 2
+direction of finset.inv, 2
+finset.inv, 2
+identity map preserves, 2
+map preserves, 2
+fast, 2
+smallest prime factor, 2
+smallest prime, 2
+sandwich, 2
+cosine rule, 2
+Law of cosines, 2
+cosines, 2
+strictly concave iff, 2
+group structure, 2
+approximated by continuous, 2
+functions is continuous, 2
+list.sorted, 2
+functions at points, 2
+induced real function, 2
+real point, 2
+induced real, 2
+complex derivative, 2
+negative real produces, 2
+negative real, 2
+real produces, 2
+negating that vector, 2
+negating, 2
+submonoid.closure, 2
+locally uniform convergence, 2
+locally uniform, 2
+fin.last, 2
+Cayley-Hamilton theorem, 2
+Cayley-Hamilton, 2
+arrows, 2
+identical, 2
+version working, 2
+infimum edistance, 2
+lying, 2
+decidable linearly ordered, 2
+decidable linearly, 2
+false, 2
+integrally closed iff, 2
+norm vanishes, 2
+iff its norm, 2
+injective map, 2
+locally constant, 2
+uniform bound, 2
+quotient norm, 2
+monoid.dvd, 2
+mul.to, 2
+level set, 2
+product commutes, 2
+cospherical set, 2
+abbreviated, 2
+equals the emetric, 2
+emetric diameter, 2
+additive monoid morphism, 2
+monoid morphism, 2
+Left, 2
+measurable functions valued, 2
+functions valued, 2
+space is measurable, 2
+Nonzero fractional ideals, 2
+fractional ideals, 2
+Nonzero fractional, 2
+convolution is continuous, 2
+sublists of index, 2
+join of sublists, 2
+Faulhaber theorem, 2
+p-th powers, 2
+Faulhaber, 2
+Alternate, 2
+p-th, 2
+refinement, 2
+c.size, 2
+asserts, 2
+tactic, 2
+determine, 2
+characterises the function, 2
+theorem that characterises, 2
+word reduces, 2
+characterises, 2
+Frobenius and Verschiebung, 2
+metric space structures, 2
+space structures, 2
+Rational root theorem, 2
+root theorem part, 2
+theorem part, 2
+Rational root, 2
+correspond to prime, 2
+relation isomorphism, 2
+general relation, 2
+sum and difference, 2
+non-commutative version, 2
+ratio is irrational, 2
+direction of int.nat, 2
+Extensionality rule, 2
+rule for congruence, 2
+homeomorphisms respects equivalence, 2
+local homeomorphisms respects, 2
+Composition of local, 2
+homeomorphisms respects, 2
+polynomial in finitely, 2
+approximated from inside, 2
+inside by closed, 2
+normed algebra, 2
+designates, 2
+theory.outer, 2
+measure.mk, 2
+trimmed, 2
+compact Hausdorff totally, 2
+Hausdorff totally disconnected, 2
+totally disconnected space, 2
+Hausdorff totally, 2
+disconnected space, 2
+linearity, 2
+prefixes of length, 2
+prefixes, 2
+finite dimensional vector, 2
+dimensional vector space, 2
+dimensional vector, 2
+map.continuous, 2
+Finite wide, 2
+lemma stating, 2
+direction of closure, 2
+relation r equals, 2
+algebra.involute, 2
+complex.conj, 2
+zeroth coefficient, 2
+functions is monotone, 2
+list.scanl, 2
+fundamental space, 2
+nonzero vector equals, 2
+equals a rotation, 2
+Restriction of local, 2
+Restriction, 2
+reducible non-instances, 2
+s.image, 2
+fibre, 2
+conditional probability, 2
+probability, 2
+biproduct.unique, 2
+polynomial of degree, 2
+finite-dimensional normed spaces, 2
+continuously linearly equivalent, 2
+spaces are continuously, 2
+continuously linearly, 2
+linearly equivalent, 2
+monoid homomorphism preserves, 2
+homomorphism preserves, 2
+finset.image ₂_ image, 2
+complex hyperbolic sine, 2
+hyperbolic sine function, 2
+hyperbolic sine, 2
+edistances, 2
+lean, 2
+shadows, 2
+real square root, 2
+natural square root, 2
+real square, 2
+natural square, 2
+nonempty affine, 2
+element and taking, 2
+Pythagorean triple, 2
+set.mul, 2
+Pointwise minimum, 2
+in-range number, 2
+in-range, 2
+Concave, 2
+element with norm, 2
+working with seminorms, 2
+seminorms supposing, 2
+set is controlled, 2
+base b representation, 2
+enumerates, 2
+evaluation map, 2
+subsemigroup.closure, 2
+direction of continuous, 2
+pointed, 2
+algebraic algebra, 2
+int.cast, 2
+So-named, 2
+arbitrary ring, 2
+notion, 2
+Conjugation acting, 2
+acting on fixed, 2
+group is continuous, 2
+empty types, 2
+topological spaces sends, 2
+spaces sends open, 2
+sends open sets, 2
+product of topological, 2
+spaces sends, 2
+sends open, 2
+sets to open, 2
+map ₂_ distrib, 2
+map.comp, 2
+Shortcut lemma, 2
+Shortcut, 2
+kernels, 2
+monoid are regular, 2
+cancel monoid, 2
+separable degree equals, 2
+degree equals, 2
+equals the degree, 2
+vectors results, 2
+residual, 2
+submonoid.fg, 2
+terminated at step, 2
+envel, 2
+left.neg, 2
+nonvanishing differential, 2
+holomorphic, 2
+nonvanishing, 2
+subgroup generated, 2
+linearly ordered group, 2
+ordered group, 2
+Balls defined, 2
+nontrivial linear relation, 2
+finset has cardinality, 2
+cardinality larger, 2
+nontrivial linear, 2
+linear relation, 2
+lemma to show, 2
+separates, 2
+obtained by taking, 2
+emetric characterization, 2
+archimedean assumption, 2
+assumption is convenient, 2
+statement that works, 2
+version in ordered, 2
+ordered fields, 2
+inductively defined smallest, 2
+equals the infimum, 2
+defined smallest, 2
+Convenience, 2
+infinite sum, 2
+sums both exist, 2
+Church-Rosser, 2
+Haar measure equals, 2
+equals the Lebesgue, 2
+measure equals, 2
+nat.desc, 2
+left cancel semigroup, 2
+left cancel, 2
+noetherian ring, 2
+biproducts exist, 2
+space is strictly, 2
+ball of positive, 2
+balanced core, 2
+finite limits, 2
+products and equalizers, 2
+lsmul, 2
+prefix, 2
+mathematically, 2
+complementary, 2
+additive groups, 2
+metric.bounded, 2
+integral defining, 2
+lemma that requires, 2
+search, 2
+jacobson, 2
+file, 2
+subrelation, 2
+core is continuous, 2
+Abelian, 2
+triple product, 2
+product of sets, 2
+continuous injective, 2
+Lipschitz constant, 2
+segment is upper-bounded, 2
+strictly convex iff, 2
+sets are bounded, 2
+segment belongs, 2
+version that works, 2
+Riesz lemma, 2
+resp, 2
+discovery alongside, 2
+ease of discovery, 2
+inj, 2
+alongside, 2
+discovery, 2
+functions coincide, 2
+algebraic field extension, 2
+algebraic field, 2
+signs, 2
+L.head, 2
+inhabited instance, 2
+instance to return, 2
+return a garbage, 2
+L.nth, 2
+inhabited, 2
+reindex, 2
+atoms, 2
+frequently bounded, 2
+admissible set, 2
+admissible, 2
+point iff, 2
+restatement, 2
+exact solutions, 2
+time-dependent set, 2
+p-adic valuation, 2
+rationals, 2
+monotone.map, 2
+stars and bars, 2
+stars, 2
+bars, 2
+strongly measurable functions, 2
+Intermediate Value Theorem, 2
+connected spaces, 2
+functions on connected, 2
+specialized ext lemma, 2
+indexed subtype, 2
+specialized ext, 2
+ext lemma, 2
+lemma for equality, 2
+bounded linear operation, 2
+linear operation, 2
+coercion equals, 2
+proved, 2
+holds for sets, 2
+nonnegative real multiples, 2
+real multiples, 2
+vectors are nonnegative, 2
+uniformly Cauchy, 2
+sequence that converges, 2
+alternative definition, 2
+drop, 2
+shell of width, 2
+moved by scalar, 2
+width, 2
+rescaling element, 2
+recap information, 2
+unbundled, 2
+prefer, 2
+Version assuming, 2
+sublists thus created, 2
+finset.univ, 2
+embeddings is associative, 2
+exterior, 2
+carefully, 2
+Krull, 2
+initially defined, 2
+reformulated in terms, 2
+one-dimensional derivative, 2
+initially, 2
+uniformity in terms, 2
+Characterization, 2
+smallest normal subgroup, 2
+smallest normal, 2
+p.shift, 2
+ordered semiring, 2
+sequentially complete, 2
+fixed subset, 2
+matrix.ext, 2
+matrix.transpose, 2
+RHS is Lipschitz, 2
+provided that RHS, 2
+initial value provided, 2
+filter.map ₂_ map, 2
+Gauss' summation formula, 2
+Gauss' summation, 2
+summation formula, 2
+computed continued fraction, 2
+computed continued, 2
+stream of integer, 2
+orthocenter lies, 2
+distributive negation divides, 2
+distributive negation, 2
+negation divides, 2
+distributive, 2
+∥⁻¹, 2
+middle, 2
+similar statement, 2
+exists a sequence, 2
+torus integrable functions, 2
+integrable functions, 2
+Aronszajn identity, 2
+Weinstein, 2
+Aronszajn, 2
+monge, 2
+nontrivial element, 2
+exponential lower bound, 2
+exponential lower, 2
+Erdős proof, 2
+Bertrand postulate, 2
+Bertrand, 2
+Erdős, 2
+inductive step, 2
+s.bUnion, 2
+domain iff locally, 2
+element is infinite, 2
+avoid a cycle, 2
+conditionally complete lattice, 2
+mersenne, 2
+ordered archimedean, 2
+obtained by dropping, 2
+list obtained, 2
+conformal map, 2
+Carathéodory, 2
+function has derivatives, 2
+basis vector, 2
+adjust, 2
+sufficiently large, 2
+real number, 2
+commutes with summing, 2
+monoid commutes, 2
+sets of subsets, 2
+expected, 2
+discriminant equals, 2
+recurrence to compute, 2
+sequence of integer, 2
+Morgan laws, 2
+logically equivalent, 2
+Morgan, 2
+conjunction, 2
+logically, 2
+disjunction, 2
+complex hyperbolic cosine, 2
+hyperbolic cosine function, 2
+hyperbolic cosine, 2
+stopping, 2
+real.cosh, 2
+multiplicities, 2
+Swapping elements, 2
+family is injective, 2
+vector.map, 2
+frobenius, 2
+needed, 2
+intercalate, 2
+list of lists, 2
+consisting, 2
+prime power iff, 2
+equivalent definition, 2
+power iff, 2
+unique prime, 2
+definition for prime, 2
+ftaylor, 2
+order to apply, 2
+continuous with respect, 2
+finite free, 2
+arsinh, 2
+central series reaches, 2
+series reaches, 2
+function is strongly, 2
+partially-applied ext lemmas, 2
+module.ext, 2
+ext lemmas, 2
+partially-applied ext, 2
+finset is bounded, 2
+original permutation, 2
+closed under inverses, 2
+measurable.piecewise, 2
+measurable.ite, 2
+underlying binary relations, 2
+section, 2
+direct product, 2
+product has finite, 2
+I.prime, 2
+equalizer diagrams, 2
+terms of equalizer, 2
+forgetful functor, 2
+reflects isomorphisms, 2
+gluings is equivalent, 2
+ease of application, 2
+specialized version, 2
+partial denominators, 2
+set equal, 2
+top elements, 2
+generalized eigenvalue, 2
+ring of Witt, 2
+cardinal.aleph, 2
+real-valued random variable, 2
+real-valued random, 2
+probability measure, 2
+submodule.map, 2
+charted space, 2
+Negating the orientation, 2
+orientation negates, 2
+commutative additive monoid, 2
+group is finitely, 2
+real inner product, 2
+rigid categories, 2
+lemma corresponds, 2
+coherence laws, 2
+laws for duals, 2
+duals in rigid, 2
+coherence, 2
+duals, 2
+rigid, 2
+object and binary, 2
+valued nonnegative functions, 2
+valued nonnegative, 2
+original subspace, 2
+linear ordered codomain, 2
+function with linear, 2
+stronger version assuming, 2
+prove a stronger, 2
+polynomial ring, 2
+typeclass that restricts, 2
+restricts all terms, 2
+linarith in inequalities, 2
+lemma to automate, 2
+automate linarith, 2
+centers of mass, 2
+version works, 2
+neighborhood with compact, 2
+subtype is converted, 2
+form is nondegenerate, 2
+points are equidistant, 2
+equidistant, 2
+indexed set, 2
+lemma is analogous, 2
+option, 2
+space admits, 2
+metric outer measure, 2
+metric outer, 2
+bound reads, 2
+function which tendsto, 2
+densityᵥ, 2
+form a π-system, 2
+centered, 2
+fibration, 2
+n.factorization, 2
+BCD, 2
+int.clog, 2
+previously chosen points, 2
+build a sequence, 2
+principle to build, 2
+previously chosen, 2
+time satisfying, 2
+chosen points, 2
+relation with respect, 2
+point satisfying, 2
+ν.with, 2
+circle equals, 2
+angle at circumference, 2
+Angle at center, 2
+Angle, 2
+equals twice angle, 2
+circumference, 2
+instance search graph, 2
+search graph, 2
+good, 2
+inductive construction, 2
+p-adic norm respects, 2
+norm respects, 2
+isolated, 2
+Additivity, 2
+measurably, 2
+proper space includes, 2
+space includes, 2
+includes a closed, 2
+radius that includes, 2
+sends two periodic, 2
+periodic points, 2
+left associates, 2
+integer part, 2
+fractional part, 2
+prod.lex, 2
+open dense set, 2
+open dense, 2
+additively semiconjugates, 2
+projective, 2
+tan, 2
+Horner, 2
+discrete valuation ring, 2
+discrete valuation, 2
+nontrivial normed, 2
+domain with unique, 2
+volume, 2
+positive natural numbers, 2
+simp-normal inequalities, 2
+localization.r, 2
+expressed equivalently, 2
+vectors is perpendicular, 2
+perpendicular, 2
+ennreal.of, 2
+response, 2
+nonnegative real numbers, 2
+provided its linear, 2
+term is invertible, 2
+linear term, 2
+semiconjugates any element, 2
+induced metric space, 2
+isometry with respect, 2
+induced metric, 2
+norm is nonnegative, 2
+pairwise distances, 2
+counting, 2
+yields, 2
+function with dense, 2
+range has dense, 2
+Hausdorff maximality principle, 2
+Hausdorff maximality, 2
+maximality principle, 2
+predicate true, 2
+rise, 2
+Indexed version, 2
+Indexed, 2
+one-sided implication, 2
+π.Union, 2
+covers, 2
+Generalise, 2
+Lipschitz extension, 2
+directed set, 2
+Converse of pons, 2
+pons asinorum, 2
+pons, 2
+image ₂_ distrib, 2
+explicit version, 2
+fixed thickening radius, 2
+fixed thickening, 2
+satisfies a boundedness, 2
+boundedness property, 2
+deduce a bound, 2
+Elements of finite, 2
+map ₂_ antidistrib, 2
+binary biproduct, 2
+minus the sum, 2
+product type, 2
+f.lift, 2
+order to formulate, 2
+formulate this fact, 2
+basis is parametrized, 2
+Easy inclusion, 2
+differentiability point, 2
+point with derivative, 2
+Easy, 2
+torsion free groups, 2
+Direct products, 2
+free groups, 2
+Direct, 2
+relevant bits, 2
+relevant, 2
+bits, 2
+direct evaluation, 2
+constant term, 2
+compacts.to, 2
+orthogonal vectors, 2
+summable series, 2
+distance between consecutive, 2
+consecutive points, 2
+original sequence, 2
+sequence is estimated, 2
+estimated, 2
+Summation by parts, 2
+Summation, 2
+bases are equal, 2
+open neighbourhood, 2
+carried, 2
+rest, 2
+conditional whose condition, 2
+equality test, 2
+Multivariate polynomials, 2
+form an integral, 2
+Multivariate, 2
+prove the general, 2
+nonzero coefficient, 2
+Cauchy condensation test, 2
+Cauchy condensation, 2
+condensation test, 2
+condensation, 2
+support.continuous, 2
+compact but requires, 2
+inductive principle, 2
+prove propositions, 2
+propositions, 2
+nat.divisors, 2
+Subtracting, 2
+subtypes, 2
+irreducible polynomial, 2
+product topology, 2
+δ-thickened indicator, 2
+δ-thickened, 2
+subgroup.fg, 2
+direction of holder, 2
+outer variable, 2
+Frac, 2
+non-null vector, 2
+vector with respect, 2
+exists a non-null, 2
+non-null, 2
+union is controlled, 2
+reflexive transitive closure, 2
+reflexive transitive, 2
+chain starting, 2
+gen, 2
+set contains endpoints, 2
+converts back, 2
+converts, 2
+semistrict convex combination, 2
+semistrict convex, 2
+semistrict, 2
+rotation number, 2
+maps into independent, 2
+independent subgroups, 2
+finset.noncomm, 2
+subgroup.disjoint, 2
+elements are related, 2
+fundamental domain, 2
+points have distance, 2
+circumcenter equal, 2
+finite disjoint sets, 2
+finite disjoint, 2
+underlying binary relation, 2
+Rewriting equality, 2
+dependent type, 2
+terms with lists, 2
+blocks coincide, 2
+non-dependent terms, 2
+Rewriting, 2
+produced from taking, 2
+taking a finite, 2
+number of non-zero, 2
+coercing, 2
+subsemiring is closed, 2
+weak, 2
+prepended arrow, 2
+prepended, 2
+easier, 2
+diameters, 2
+ensure, 2
+empty word, 2
+times the power, 2
+ratfunc, 2
+recursion principle defined, 2
+recursion principle, 2
+principle defined, 2
+ratfunc.mk, 2
+multiset.map, 2
+rotate, 2
+quotient.out, 2
+totally bounded set, 2
+totally bounded, 2
+bound for sets, 2
+indepedendent, 2
+irreflexive, 2
+outer measures, 2
+natural degree, 2
+expressed in terms, 2
+Fekete lemma, 2
+Fekete, 2
+Dirichlet, 2
+monotonous with respect, 2
+monotonous, 2
+reduction modulo, 2
+terms of indexed, 2
+indexed families, 2
+families of finite, 2
+distinct representatives, 2
+taking powers, 2
+Bernoulli inequality reformulated, 2
+reformulated to estimate, 2
+inequality reformulated, 2
+III, 2
+number with exponent, 2
+pi.mul, 2
+analysis.normed, 2
+space.finite, 2
+multivariate polynomials, 2
+Reorder a product, 2
+lattice.is, 2
+prec, 2
+push-forward, 2
+advancing one step, 2
+leads, 2
+f.fix, 2
+advancing, 2
+avoid assumption, 2
+lemma uses classical, 2
+classical logic, 2
+logic to avoid, 2
+periodic function, 2
+rpow, 2
+positive real powers, 2
+real powers exists, 2
+vectors is linearly, 2
+avoid a loop, 2
+controlled distance, 2
+exhibiting, 2
+set at controlled, 2
+infinite order, 2
+element of infinite, 2
+torsion monoid, 2
+Root, 2
+yoneda.obj, 2
+converse statement requires, 2
+statement requires, 2
+converse statement, 2
+additional hypotheses, 2
+I.Icc, 2
+properties hold true, 2
+topological ring, 2
+Representation, 2
+pre-games built, 2
+two-element set, 2
+two-element, 2
+measure is unique, 2
+invariant measure, 2
+order-preserving embedding, 2
+order-preserving, 2
+resulting finset, 2
+standard basis, 2
+pi.basis, 2
+set is disjoint, 2
+sum.is, 2
+real.Sup, 2
+null measurable, 2
+effect, 2
+composition of formal, 2
+continuous linear equivs, 2
+left respects higher, 2
+respects higher differentiability, 2
+differentiability on domains, 2
+linear equivs, 2
+left respects, 2
+respects higher, 2
+higher differentiability, 2
+exists a list, 2
+indexed infimum, 2
+polynomial.sum, 2
+bernoulli, 2
+surjective map, 2
+Galois insertion, 2
+finitely many options, 2
+options, 2
+specialized to integers, 2
+complements, 2
+ensuring, 2
+Bind operation, 2
+Bind, 2
+remove one element, 2
+differences, 2
+updating it amounts, 2
+adding it directly, 2
+amounts to adding, 2
+Adding an element, 2
+amounts, 2
+finset.induction, 2
+exists a finite, 2
+Uniformisers exist, 2
+Uniformisers, 2
+projection is smaller, 2
+irreducible factor, 2
+Nakayama Lemma, 2
+Nakayama, 2
+Stacks, 2
+Lean cannot figure, 2
+derivatives are differentiable, 2
+discussion of continuity, 2
+slightly too strong, 2
+condition we require, 2
+advantage of avoiding, 2
+avoiding the discussion, 2
+derivative is differentiability, 2
+Rotation, 2
+apply a generic, 2
+generic theorem, 2
+equiv.cast, 2
+space of functions, 2
+finrank equal, 2
+non-commutative variant, 2
+numbers are equal, 2
+augmenting the set, 2
+constructed by augmenting, 2
+set of permutations, 2
+augmenting, 2
+direct comparison test, 2
+direct comparison, 2
+comparison test, 2
+cauchy, 2
+comparison, 2
+set.add, 2
+prop, 2
+lowered, 2
+local instance, 2
+Open elements, 2
+Cantor diagonal argument, 2
+Cantor diagonal, 2
+diagonal argument, 2
+test for series, 2
+map is constructed, 2
+entourage, 2
+series is invertible, 2
+i.succ, 2
+measurable implies strongly, 2
+implies strongly measurable, 2
+implies strongly, 2
+handshaking lemma, 2
+lemma to prove, 2
+Path composition commutes, 2
+Path composition, 2
+commutes with products, 2
+composition commutes, 2
+Path, 2
+commutes by scalar, 2
+multiplication of inverses, 2
+monoid action, 2
+action commutes, 2
+eigenrange, 2
+points are affinely, 2
+Wikipedia, 2
+cInf, 2
+product is nonzero, 2
+accepts, 2
+sending an additive, 2
+nontrivial torsion-free, 2
+relation is well-founded, 2
+normed fields, 2
+convergent subsequence, 2
+complex plane, 2
+attach, 2
+Variant of Hahn-Banach, 2
+eliminating the hypothesis, 2
+eliminating, 2
+Fréchet derivative applied, 2
+derivative applied, 2
+derivative multiplied, 2
+derivative is symmetric, 2
+natural homomorphism, 2
+shrink., 2
+size., 2
+dvd.intro, 2
+order isomorphism, 2
+pulls, 2
+con.induction, 2
+typeclass argument, 2
+split hypotheses, 2
+relations are transitive, 2
+Bessel inequality, 2
+Bessel, 2
+necessarily commutative, 2
+congruence relation commutes, 2
+relation commutes, 2
+subterminal.mono, 2
+vectors are multiples, 2
+tensor product, 2
+pseudo metric space, 2
+function coincide, 2
+pseudo metric, 2
+Riesz theorem, 2
+radius is compact, 2
+lattice case, 2
+essentially an iff, 2
+nonemptiness and linear, 2
+formulate separately, 2
+implications are slightly, 2
+nonemptiness, 2
+contrary, 2
+chaar, 2
+cluster point, 2
+nat.factorial, 2
+Avoid in favor, 2
+Avoid, 2
+ring is algebraic, 2
+Closed balls defined, 2
+balls defined, 2
+convince Lean, 2
+non-dependent setting, 2
+types are equal, 2
+making it harder, 2
+state this lemma, 2
+involve a cast, 2
+cast to convince, 2
+mass of points, 2
+Bochner, 2
+integrals, 2
+relations preserve integer, 2
+scalar or usual, 2
+flip, 2
+binary operation, 2
+lemma is formulated, 2
+Pushforward, 2
+care, 2
+semiring is local, 2
+Number of Combinations, 2
+Combinations, 2
+single basis, 2
+shrink, 2
+finite-dimensional vector space, 2
+finite-dimensional vector, 2
+Liouville condition, 2
+Lie group, 2
+closure coincide, 2
+Picard-Lindelöf, 2
+Cauchy-Lipschitz, 2
+nonnegative multiples, 2
+loop, 2
+indexed differently, 2
+two-sided inverse, 2
+differently, 2
+two-sided, 2
+elements equals, 2
+local LYM inequality, 2
+local LYM, 2
+LYM inequality, 2
+downward, 2
+finsets of card, 2
+direction of nat.count, 2
+nat.count, 2
+disc of positive, 2
+discrete topological, 2
+opposite direction, 2
+constant terms, 2
+product of linear, 2
+symmetric polynomial, 2
+map is continuous, 2
+self-adjoint operator, 2
+data, 2
+nonsing, 2
+binary product, 2
+conversely, 2
+suitable for dot, 2
+suitable, 2
+squarefree, 2
+function is interval, 2
+complete set, 2
+neighbourhoods, 2
+function defined, 2
+express this property, 2
+presence, 2
+homotopic, 2
+characteristic-zero division ring, 2
+characteristic-zero division, 2
+subset of points, 2
+characteristic-zero, 2
+centroids, 2
+faces, 2
+assumes right strict, 2
+exists a positive, 2
+regularity, 2
+fewer explicit assumption, 2
+fewer explicit, 2
+explicit assumption, 2
+automatic in case, 2
+pos', 2
+like.coe, 2
+direction of real.convex, 2
+real.convex, 2
+direction of order, 2
+dual.to, 2
+Main, 2
+lemma shows, 2
+shows, 2
+continuous function realizes, 2
+function realizes, 2
+statement to prove, 2
+prove the result, 2
+require the index, 2
+circulant matrix, 2
+maximal ideals, 2
+correspond to maximal, 2
+reconstruct, 2
+tree, 2
+definition of star-convexity, 2
+star-convexity, 2
+image prod.snd, 2
+iterating this lemma, 2
+unique when existing, 2
+existing, 2
+restricts, 2
+relations are reflexive, 2
+Vitali covering theorem, 2
+Vitali covering, 2
+covering theorem, 2
+disjoint subfamily, 2
+extract a disjoint, 2
+diagonal morphism, 2
+finranks, 2
+pointwise convergence, 2
+equivs respects equivalence, 2
+local equivs respects, 2
+equivs respects, 2
+linear operator, 2
+ε-characterization, 2
+negative product, 2
+equals the negative, 2
+control elements, 2
+recovered, 2
+dedekind, 2
+finite and free, 2
+decomposed, 2
+functions are pointwise, 2
+pointwise comparable, 2
+functions are comparable, 2
+nonempty fiber, 2
+seed element, 2
+relying on typeclass, 2
+typeclass idempotency, 2
+finset.fold, 2
+idempotency, 2
+seed, 2
+relying, 2
+Lipschitz function, 2
+swapping the branches, 2
