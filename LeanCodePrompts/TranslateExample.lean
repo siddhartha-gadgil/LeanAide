@@ -2,8 +2,8 @@ import Mathbin.All
 import LeanCodePrompts.Translate
 import LeanCodePrompts.Autocorrect
 
-example : //- Every prime number is either `2` or odd -/ := by
-      sorry
+-- example : //- Every prime number is either `2` or odd -/ := by
+--       sorry
 
 /-!
 ## Codex responses
@@ -39,8 +39,8 @@ example : //- Every prime number is either `2` or odd -/ := by
 -/
 
 
-example : //- Every field is a ring -/ := by 
-      sorry
+-- example : //- Every field is a ring -/ := by 
+--       sorry
 
 /-!
 ## Auto-correction
@@ -51,7 +51,7 @@ example : //- Every field is a ring -/ := by
 * This and the Lean 3  -> Lean 4 name mapping (here) are done in Lean.
 -/
 
-example : //- There are infinitely many odd natural numbers -/ := by sorry
+-- example : //- There are infinitely many odd natural numbers -/ := by sorry
 
 /-!
 ## Workpoints
