@@ -63,7 +63,7 @@ def openAIQuery(prompt: String)(n: Nat := 1)(temp : JsonNumber := ⟨2, 1⟩) : 
         "-H", "Authorization: Bearer " ++ key,
         "-H", "Content-Type: application/json",
         "--data", data]}
-  logInfo "OpenAI query answered"
+  -- logInfo "OpenAI query answered"
   readJson out.stdout
 
 def egBlob' := "[{ \"text\" : \"{p : ℕ} (hp : Nat.Prime p) :  p = 2 ∨ p % 2 = 1 \"},
@@ -198,11 +198,16 @@ def getCodeJson (s: String) : TermElabM Json := do
       pendingQueries.set (pending.insert s)
       let simJsonOut ←  
         IO.Process.output {cmd:= "curl", args:= 
-          #["-X", "POST", "-H", "Content-type: application/json", "-d", s ++" top_K 5", "localhost:5000/similar_json"]}
+          #["-X", "POST", "-H", "Content-type: application/json", "-d", s ++" top_K 10", "localhost:5000/similar_json"]}
       let pairs? ← sentenceSimPairs simJsonOut.stdout
       let allPairs := pairs?.toOption.get!
-      let pairs := allPairs -- ←  allPairs.filterM (fun (_, s) => hasElab s (some 20))
+      let pairs -- := allPairs -- 
+        ←  allPairs.filterM (fun (_, s) => do
+            -- logInfo s
+            isElabPrompt s )
+      -- IO.println s!"pairs: {pairs.size}"
       let prompt := makePrompt s pairs
+      IO.println prompt
       let fullJson ← openAIQuery prompt 5 0
       let outJson := (fullJson.getObjVal? "choices").toOption.get!
       -- logInfo s!"query gave: {outJson}"
@@ -295,6 +300,7 @@ def jsonToExpr' (json: Json) : TermElabM Expr := do
         pure parsedArr
     | Except.error e => throwError m!"json parsing error: {e}"
   let output := outArr
+  -- logInfo s!"output: {output}"
   arrayToExpr output
 
 

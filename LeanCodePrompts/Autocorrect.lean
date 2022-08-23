@@ -43,6 +43,8 @@ initialize binNameMapCache : IO.Ref (HashMap (List String) String)
 initialize binNameNoIsMapCache : IO.Ref (HashMap (List String) String) 
   ← IO.mkRef (HashMap.empty)
 
+initialize elabPromptsCache : IO.Ref (HashSet String) ← IO.mkRef (HashSet.empty)
+
 def caseNames : MetaM (HashMap String String) := do
   let cache ← caseNameCache.get
   if cache.isEmpty then 
@@ -125,6 +127,19 @@ def binNameMap : IO (HashMap (List String) String) := do
     return res
   else
     return cacheMap
+
+def elabPrompts : IO (HashSet String) := do 
+  let cacheStr ← elabPromptsCache.get
+  if !cacheStr.isEmpty then 
+    return cacheStr
+  else 
+    let arr ← 
+      IO.FS.lines (System.mkFilePath ["data", "elab_thms.txt"])
+    return arr.foldl (fun acc n => acc.insert n) HashSet.empty
+
+def isElabPrompt(s: String) : IO Bool := do
+  let prompts ← elabPrompts
+  return prompts.contains s
 
 def withoutIs : List String → List String
 | x :: ys => if x = "is" || x = "has" then ys else x :: ys
@@ -295,7 +310,7 @@ def polyTransformBuild (segs: (Array (String × String)) × String)
         (extraTransf : List (String → MetaM (Option String))) (limit : Option Nat := none) : 
         MetaM (List String) := do
         let (pairs, tail) := segs
-        if (pairs.size + 1 ≥  limit.getD (pairs.size)) then return []
+        if (pairs.size ≥  limit.getD (pairs.size + 1)) then return []
         else 
         -- IO.println s!"building {pairs.size} segments"
         let transformed ← polyTransform pairs.toList transf extraTransf

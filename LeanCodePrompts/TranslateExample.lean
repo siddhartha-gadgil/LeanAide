@@ -4,24 +4,6 @@ import LeanCodePrompts.Translate
 -- import LeanCodePrompts.Autocorrect
 open Lean Meta Elab Term
 
-
-def egPrompt' : TermElabM String := do
-    let pairs? ← sentenceSimPairs egSen
-    let pairs := pairs?.toOption.get!
-    logInfo m!"{pairs.size}"
-    let pairs ← pairs.filterM (fun (_, s) => hasElab s (some 50))
-    logInfo m!"{pairs.size}"
-    return makePrompt "Every prime number is either `2` or odd" pairs 
-
--- #eval egPrompt'
-
-
-def egQuery : TermElabM Json := do
-  let prompt ← egPrompt'
-  openAIQuery prompt 5
-
--- #eval egQuery
-
 example : //- Every prime number is either `2` or odd -/ := by
       sorry
 
@@ -59,8 +41,8 @@ example : //- Every prime number is either `2` or odd -/ := by
 -/
 
 
--- example : //- Every field is a ring -/ := by 
---       sorry
+example : //- Every field is a ring -/ := by 
+      sorry
 
 /-!
 ## Auto-correction
@@ -71,7 +53,7 @@ example : //- Every prime number is either `2` or odd -/ := by
 * This and the Lean 3  -> Lean 4 name mapping (here) are done in Lean.
 -/
 
--- example : //- There are infinitely many odd natural numbers -/ := by sorry
+example : //- There are infinitely many odd natural numbers -/ := by sorry
 
 /-!
 ## Workpoints
