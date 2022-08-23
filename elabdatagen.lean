@@ -17,22 +17,25 @@ def main (args: List String) : IO Unit := do
     {module:= `LeanCodePrompts.ParseJson},
     {module:= `LeanCodePrompts.Translate},
     {module := `Mathbin.All}] {}
-  let core := elabThmSplitCore
-  let io? := 
-    core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} 
-    {env := env}
-  match ← io?.toIO' with
-  | Except.ok (succ, fail) =>
-    IO.println "Success"
-    IO.println s!"parsed : {succ.size}"
-    IO.println s!"failed to parse: {fail.size}"
-    let succFile := System.mkFilePath ["data/elab_thms.txt"]
-    IO.FS.writeFile succFile <| 
-      succ.foldl (fun acc x => acc ++ s!"{x}\n") ""
-    let failFile := System.mkFilePath ["data/unelab_thms.txt"]
-    IO.FS.writeFile failFile <| 
-      fail.foldl (fun acc x => acc ++ s!"{x}\n") ""
-  | Except.error e =>
-    do
-          let msg ← e.toMessageData.toString
-          IO.println msg
+  let file := System.mkFilePath ["data/parsed_thms.txt"]
+  let thms ←  IO.FS.lines file
+  for thm in thms do
+    -- IO.println s!"processing: {thm}"
+    let core := hasElabCore thm
+    let io? := 
+      core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000, maxRecDepth := 1000000} 
+      {env := env}
+    -- IO.println "creating task"
+    let ioTask? ←  io?.asTask
+    -- IO.println "task made"
+    match ioTask?.get with
+    | Except.ok res =>
+      if res then 
+        IO.println thm
+      else
+        IO.eprintln thm
+    | Except.error e =>
+      do
+            let msg ← e.toMessageData.toString
+            IO.eprintln msg
+  return ()
