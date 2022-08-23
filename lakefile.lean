@@ -12,6 +12,10 @@ lean_exe datagen{
   supportInterpreter := true
 }
 
+lean_exe elabdatagen{
+  supportInterpreter := true
+}
+
 lean_exe bulkchk{
   supportInterpreter := true
 }

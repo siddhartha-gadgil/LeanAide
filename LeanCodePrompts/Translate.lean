@@ -152,6 +152,36 @@ def hasElab (s: String) : TermElabM Bool := do
   | Except.error _ => return Bool.false
   | Except.ok els => return !els.isEmpty
 
+def hasElabCore (s: String) : CoreM Bool := 
+  (hasElab s).run'.run'
+
+def parsedThmsPrompt : IO (Array String) := do
+  let file := System.mkFilePath ["data/parsed_thms.txt"]
+  IO.FS.lines file
+
+
+def elabThmSplit : TermElabM ((Array String) × (Array String)) := do 
+  let deps ← parsedThmsPrompt
+  let mut succ: Array String := Array.empty
+  let mut fail: Array String := Array.empty
+  let mut count := 0
+  IO.println s!"total: {deps.size}"
+  for thm in deps do
+    IO.println s!"theorem {thm}"
+    let chk ←  hasElab thm
+    count := count + 1
+    IO.println s!"parsed: {count}"
+    if chk then
+      succ := succ.push thm
+    else
+      fail := fail.push thm
+    IO.println s!"parsed: {count}"
+    IO.println s!"elaborated: {succ.size}"
+  return (succ, fail)
+
+def elabThmSplitCore : CoreM ((Array String) × (Array String)) := 
+  elabThmSplit.run'.run'
+
 def getCodeJson (s: String) : TermElabM Json := do
   match ← getCachedJson? s with
   | some js => return js
