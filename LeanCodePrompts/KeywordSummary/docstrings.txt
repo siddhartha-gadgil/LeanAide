@@ -1,0 +1,57 @@
+If every proper closed set of a topological space is compact, then the space itself is compact.
+Every prime that is one greater than a multiple of four can be expressed as the sum of two squares.
+For every subset of the Euclidean plane, there is a line segment of unit length whose endpoints are either both inside the subset or both outside it.
+A ring with all elements idempotent is commutative.
+There are infinitely many pairs of primes that differ exactly by two.
+Every finite division ring is a field.
+The product of two positive numbers is at most the square of their average.
+In any configuration of points on the plane, not all on a line, there is a line which contains exactly two of the points.
+If each of two types can be mapped injectively into the other, then there is a bijection between them.
+A finite graph in which every two vertices have precisely one common neighbour contains a vertex that is adjacent to all other vertices.
+The number of partitions with odd parts is equal to the number of partitions with distinct parts.
+Every non-empty poset in which every chain has an upper bound contains a maximal element.
+A group whose automorphism group is cyclic is Abelian.
+The image of a union of sets is the union of the images.
+A topological space is normal if and only if any two disjoint closed subsets can be separated by a continuous function.
+The only field automorphism of the reals is the identity.
+If a function from the unit interval to itself has a point of period three, then it has points of all positive periods.
+A terminal object in a category is unique up to unique isomorphism.
+A finitely-presented group containing a torsion element is finite.
+The complement of the union of two sets is the intersection of their complements.
+The sum of the cubes of two positive integers is never equal to the cube of a third integer.
+If every element of a group `G` has order two, then every pair of elements of `G` commutes.
+Every prime number is either `2` or odd.
+Every odd degree polynomial over `ℝ` has a zero
+The product of two consequitive natural numbers is odd
+Every constant function `f x = c` from real numbers to real numbers is differentiable.
+Every index 2 subgroup of a group is free
+Every subgroup of a free group is free
+Every free group is torsion free
+Every non-empty subgroup of `ℤ` is isomorphic to `ℤ`
+If the coefficients of a polynomial over rationals are integral, every rational root is integral.
+Every natural number greater than `1` is divisible by a prime number.
+Six is not the sum of two prime numbers.
+A finite torsion-free group is trivial
+Any homomorphism from the additive group of rational numbers to `ℤ` is trivial
+Every finite division ring is a field.
+Every finite topological space is compact
+Every surjective homomorphism from a finitely generated free group to itself is injective
+Every polynomial of positive degree over reals is unbounded.
+A homomorphism between fields is either injective or trivial.
+Every ascending chain of sub-modules of a Noetherian module eventually stabilises.
+Differentiability implies continuity.
+The angles of a triangle add up to two right angles.
+Every positive even integer can be written as the sum of two primes.
+Every matrix satisfies its own characteristic polynomial.
+The square root of an irrational number is irrational.
+If the square of a number is even, the number itself is even.
+In a finite commutative ring, all prime ideals are maximal.
+A topological space $X$ is Hausdorff if and only if the diagonal is a closed set in $X × X$.
+If every point of a subset of a topological space is contained in some open set, the subset itself is open.
+The product of a complex number with its conjugate is a real number.
+Every non-identity element of a free group is of infinite order.
+Any sub-ring of a field that contains the identity is an integral domain
+An element of a discrete valuation ring is a unit if and only if it has a valuation of zero.
+The exponential function is convex.
+For any two relatively prime positive integers $a$ and $b$, every sufficiently large natural number $N$ can be written as a linear combination $ax + by$ of $a$ and $b$, where both $x$ and $y$ are natural numbers.
+In a commutative ring with prime characteristic $p$, the $p$th power of the sum of two elements is equal to the sum of the $p$th powers of the elements.
