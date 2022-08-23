@@ -83,7 +83,6 @@ def process_json():
 @app.route('/similar_json', methods=['POST'])
 def similar_from():
     data = str(request.data, 'utf-8')
-    #main_prompt = "Every prime number is either two or odd"
     inp = data.split("top_K")
     main_prompt = inp[0]
     k = int(inp[1])
