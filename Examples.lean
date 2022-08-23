@@ -1,8 +1,8 @@
-import LeanCodePrompts.Algebra
-import LeanCodePrompts.ContestProblems
-import LeanCodePrompts.DiscreteMathematics
-import LeanCodePrompts.Foundations
-import LeanCodePrompts.FunctionsRelations
-import LeanCodePrompts.LogicPuzzles
-import LeanCodePrompts.Misc
-import LeanCodePrompts.NumberTheory
+-- import LeanCodePrompts.Algebra
+-- import LeanCodePrompts.ContestProblems
+-- import LeanCodePrompts.DiscreteMathematics
+-- import LeanCodePrompts.Foundations
+-- import LeanCodePrompts.FunctionsRelations
+-- import LeanCodePrompts.LogicPuzzles
+-- import LeanCodePrompts.Misc
+-- import LeanCodePrompts.NumberTheory

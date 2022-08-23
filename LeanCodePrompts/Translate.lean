@@ -9,37 +9,38 @@ open Lean Meta Std
 
 open Lean Elab Parser Command
 
-def egJsonSentenceSim : String := "[{\"score\": 0.7298493385314941, \"dct\": {\"name\": \"nat.prime.mod_two_eq_one_iff_ne_two\", \"statement\": \"theorem nat.prime.mod_two_eq_one_iff_ne_two {p : ℕ} [fact (nat.prime p)] : p % 2 = 1 ↔ p ≠ 2\", \"theorem\": \"{p : ℕ} [fact (nat.prime p)] : p % 2 = 1 ↔ p ≠ 2\", \"args\": \"{p : ℕ} [fact (nat.prime p)]\", \"doc_string\": \"A prime `p` satisfies `p % 2 = 1` if and only if `p ≠ 2`.\", \"type\": \"p % 2 = 1 ↔ p ≠ 2\"}}, {\"score\": 0.57069331407547, \"dct\": {\"name\": \"nat.odd_mod_four_iff\", \"statement\": \"theorem nat.odd_mod_four_iff {n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3\", \"theorem\": \"{n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3\", \"args\": \"{n : ℕ}\", \"doc_string\": \"A natural number is odd iff it has residue `1` or `3` mod `4`\", \"type\": \"n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3\"}}, {\"score\": 0.5074306726455688, \"dct\": {\"name\": \"nat.factorization_eq_zero_iff\", \"statement\": \"theorem nat.factorization_eq_zero_iff (n : ℕ) : n.factorization = 0 ↔ n = 0 ∨ n = 1\", \"theorem\": \"(n : ℕ) : n.factorization = 0 ↔ n = 0 ∨ n = 1\", \"args\": \"(n : ℕ)\", \"doc_string\": \"The only numbers with empty prime factorization are `0` and `1`\", \"type\": \"n.factorization = 0 ↔ n = 0 ∨ n = 1\"}}, {\"score\": 0.4935227930545807, \"dct\": {\"name\": \"nat.prime.factorization\", \"statement\": \"theorem nat.prime.factorization {p : ℕ} (hp : nat.prime p) : p.factorization = finsupp.single p 1\", \"theorem\": \"{p : ℕ} (hp : nat.prime p) : p.factorization = finsupp.single p 1\", \"args\": \"{p : ℕ} (hp : nat.prime p)\", \"doc_string\": \"The only prime factor of prime `p` is `p` itself, with multiplicity `1`\", \"type\": \"p.factorization = finsupp.single p 1\"}}]"
+def egJsonSentenceSim : String := "[{'theorem': '{p : ℕ} [fact (nat.prime p)] : p % 2 = 1 ↔ p ≠ 2', 'doc_string': 'A prime `p` satisfies `p % 2 = 1` if and only if `p ≠ 2`.'}, {'theorem': '{n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3', 'doc_string': 'A natural number is odd iff it has residue `1` or `3` mod `4`'}, {'theorem': '{p : ℕ} (hp : nat.prime p) : p.factorization = finsupp.single p 1', 'doc_string': 'The only prime factor of prime `p` is `p` itself, with multiplicity `1`'}, {'theorem': '{m n : ℕ} : even (m ^ n) ↔ even m ∧ n ≠ 0', 'doc_string': ' If `m` and `n` are natural numbers, then the natural number `m^n` is even if and only if `m` is even and `n` is positive.'}]"
 
 def sentenceSimPairs(s: String) : MetaM  <| Except String (Array (String × String)) := do
-  let json ← readJson s
+  let json ← readJson (s.replace "'" "\"") 
   match json.getArr? with
   | Except.ok jsonArr => do
     let pairs ←  jsonArr.mapM fun json => do
-      let dict? := json.getObjVal? "dct"
-      let dict := dict?.toOption.get!
-      let docstring := (dict.getObjVal? "doc_string").toOption.get!.getStr?.toOption.get!
-      let thm := (dict.getObjVal? "theorem").toOption.get!.getStr?.toOption.get!
+      let docstring := (json.getObjVal? "doc_string").toOption.get!.getStr?.toOption.get!
+      let thm := (json.getObjVal? "theorem").toOption.get!.getStr?.toOption.get!
       return (docstring, thm)
     return Except.ok pairs
   | Except.error e => return Except.error e
 
 #eval sentenceSimPairs egJsonSentenceSim
 
-def egPrompt := "/-- A prime `p` satisfies `p % 2 = 1` if and only if `p ≠ 2`.-/
-theorem {p : ℕ} [fact (nat.prime p)] : p % 2 = 1 ↔ p ≠ 2 :=
+def makePrompt(pairs: Array (String × String))(prompt : String) : String := 
+      pairs.foldr (fun  (ds, thm) acc => 
+        -- acc ++ "/-- " ++ ds ++" -/\ntheorem" ++ thm ++ "\n" ++ "\n"
+s!"/-- {ds} -/
+theorem {thm} :=
 
-/-- A natural number is odd iff it has residue `1` or `3` mod `4`-/
-theorem {n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3 := 
+{acc}"
+          ) s!"/-- {prompt} -/
+theorem "
 
-/-- The only numbers with empty prime factorization are `0` and `1`-/
-theorem (n : ℕ) : n.factorization = 0 ↔ n = 0 ∨ n = 1 := 
+def egPrompt' : MetaM String := do
+    let pairs? ← sentenceSimPairs egJsonSentenceSim
+    let pairs := pairs?.toOption.get!
+    return makePrompt pairs "Every prime number is either `2` or odd"
 
-/-- The only prime factor of prime `p` is `p` itself, with multiplicity `1` -/
-theorem {p : ℕ} (hp : nat.prime p) : p.factorization = finsupp.single p 1 := 
+#eval egPrompt'
 
-/-- Every prime number is either `2` or odd.-/
-theorem"
 
 def openAIKey : IO (Option String) := IO.getEnv "OPENAI_API_KEY"
 
@@ -57,7 +58,12 @@ def openAIQuery(prompt: String)(n: Nat := 1)(temp : JsonNumber := ⟨2, 1⟩) : 
         "--data", data]}
   readJson out.stdout
 
--- #eval openAIQuery egPrompt 5
+def egQuery : MetaM Json := do
+  let prompt ← egPrompt'
+  openAIQuery prompt 5
+
+-- #eval egQuery
+
 
 def egBlob' := "[{ \"text\" : \"{p : ℕ} (hp : Nat.Prime p) :  p = 2 ∨ p % 2 = 1 \"},
    { \"text\" : \"(p : ℕ) :  Nat.Prime p ↔ p = 2 ∨ p % 2 = 1 \"},
