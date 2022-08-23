@@ -34,13 +34,6 @@ theorem {thm} :=
           ) s!"/-- {prompt} -/
 theorem "
 
-def egPrompt' : MetaM String := do
-    let pairs? ← sentenceSimPairs egJsonSentenceSim
-    let pairs := pairs?.toOption.get!
-    return makePrompt "Every prime number is either `2` or odd" pairs 
-
-#eval egPrompt'
-
 
 def openAIKey : IO (Option String) := IO.getEnv "OPENAI_API_KEY"
 
@@ -57,13 +50,6 @@ def openAIQuery(prompt: String)(n: Nat := 1)(temp : JsonNumber := ⟨2, 1⟩) : 
         "-H", "Content-Type: application/json",
         "--data", data]}
   readJson out.stdout
-
-def egQuery : MetaM Json := do
-  let prompt ← egPrompt'
-  openAIQuery prompt 5
-
--- #eval egQuery
-
 
 def egBlob' := "[{ \"text\" : \"{p : ℕ} (hp : Nat.Prime p) :  p = 2 ∨ p % 2 = 1 \"},
    { \"text\" : \"(p : ℕ) :  Nat.Prime p ↔ p = 2 ∨ p % 2 = 1 \"},
@@ -167,11 +153,26 @@ def getCodeJson (s: String) : TermElabM Json := do
         else throwError m!"Web query error: {simJsonOut.stderr}"
       return outJson
 
-def hasElab? (s: String) : TermElabM Bool := do
+def hasElab (s: String) : TermElabM Bool := do
   let ployElab? ← polyElabThmTrans s
   match ployElab? with
   | Except.error _ => pure Bool.false
   | Except.ok es => return !es.isEmpty
+
+def egPrompt' : TermElabM String := do
+    let pairs? ← sentenceSimPairs egJsonSentenceSim
+    let pairs := pairs?.toOption.get!
+    let pairs ← pairs.filterM (fun (_, s) => hasElab s)
+    return makePrompt "Every prime number is either `2` or odd" pairs 
+
+#eval egPrompt'
+
+
+def egQuery : TermElabM Json := do
+  let prompt ← egPrompt'
+  openAIQuery prompt 5
+
+-- #eval egQuery
 
 def arrayToExpr (output: Array String) : TermElabM Expr := do
   let mut elaborated : Array String := Array.empty
