@@ -19,23 +19,42 @@ def main (args: List String) : IO Unit := do
     {module := `Mathbin.All}] {}
   let file := System.mkFilePath ["data/parsed_thms.txt"]
   let thms ←  IO.FS.lines file
-  for thm in thms do
-    -- IO.println s!"processing: {thm}"
-    let core := hasElabCore thm
-    let io? := 
-      core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000, maxRecDepth := 1000000} 
-      {env := env}
-    -- IO.println "creating task"
-    let ioTask? ←  io?.asTask
-    -- IO.println "task made"
-    match ioTask?.get with
-    | Except.ok res =>
-      if res then 
-        IO.println thm
-      else
-        IO.eprintln thm
-    | Except.error e =>
-      do
-            let msg ← e.toMessageData.toString
-            IO.eprintln msg
+  let mut count := 0
+  let mut elaborated := 0
+  let thm := ": ∀ {p : ℕ}, Nat.Prime p → p = 2 ∨ p % 2 = 1"
+  let core := elabThmTransCore thm 
+  let io? := 
+    core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 10000000, maxRecDepth := 1000} 
+    {env := env}
+  match ← io?.toIO' with
+  | Except.ok res =>
+    IO.println res
+  | Except.error e =>
+    do
+          let msg ← e.toMessageData.toString
+          IO.eprintln msg
+
+  -- for thm in thms do
+  --   -- IO.println s!"processing: {thm}"
+  --   let core := hasElabCore thm (some 50)
+  --   let io? := 
+  --     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 1000000, maxRecDepth := 1000} 
+  --     {env := env}
+  --   -- IO.println "creating task"
+  --   let ioTask? ←  io?.asTask
+  --   count := count + 1
+  --   -- IO.println "task made"
+  --   IO.eprintln count
+  --   IO.eprintln elaborated
+  --   match ioTask?.get with
+  --   | Except.ok res =>
+  --     if res then 
+  --       elaborated := elaborated + 1
+  --       IO.println thm
+  --     else
+  --       IO.eprintln thm
+  --   | Except.error e =>
+  --     do
+  --           let msg ← e.toMessageData.toString
+  --           IO.eprintln msg
   return ()

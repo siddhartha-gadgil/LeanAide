@@ -145,15 +145,15 @@ def getCodeJsonBlob (s: String) : TermElabM String := do
       return res
   -- return out.stdout
 
-def hasElab (s: String) : TermElabM Bool := do
+def hasElab (s: String)(limit : Option Nat := none) : TermElabM Bool := do
     -- (elabThmTrans s).map (fun e => e.toBool)
-  let elab? ← polyElabThmTrans s
+  let elab? ← polyElabThmTrans s limit
   match elab? with
   | Except.error _ => return Bool.false
   | Except.ok els => return !els.isEmpty
 
-def hasElabCore (s: String) : CoreM Bool := 
-  (hasElab s).run'.run'
+def hasElabCore (s: String)(limit : Option Nat := none) : CoreM Bool := 
+  (hasElab s limit).run'.run'
 
 def parsedThmsPrompt : IO (Array String) := do
   let file := System.mkFilePath ["data/parsed_thms.txt"]
@@ -196,7 +196,7 @@ def getCodeJson (s: String) : TermElabM Json := do
           #["-X", "POST", "-H", "Content-type: application/json", "-d", s ++" top_K 5", "localhost:5000/similar_json"]}
       let pairs? ← sentenceSimPairs simJsonOut.stdout
       let allPairs := pairs?.toOption.get!
-      let pairs := allPairs -- ←  allPairs.filterM (fun (_, s) => hasElab s)
+      let pairs := allPairs -- ←  allPairs.filterM (fun (_, s) => hasElab s (some 20))
       let prompt := makePrompt s pairs
       let fullJson ← openAIQuery prompt 5 0
       let outJson := (fullJson.getObjVal? "choices").toOption.get!

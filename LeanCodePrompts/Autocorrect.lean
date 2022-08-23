@@ -292,13 +292,18 @@ def polyTransform (pairs: (List (String × String)))
 
 def polyTransformBuild (segs: (Array (String × String)) × String)
         (transf : String → MetaM (Option String))
-        (extraTransf : List (String → MetaM (Option String))) : 
+        (extraTransf : List (String → MetaM (Option String))) (limit : Option Nat := none) : 
         MetaM (List String) := do
         let (pairs, tail) := segs
+        -- if (pairs.size + 1 ≥  limit.getD (pairs.size)) then return []
+        -- else 
+        IO.println s!"building {pairs.size} segments"
         let transformed ← polyTransform pairs.toList transf extraTransf
+        IO.println s!"transformed to {transformed.length} pieces"
         let strings := 
           transformed.map (fun res => 
             res.foldr (fun (init, ident) acc => (init ++ ident ++ acc)) tail)
+        IO.println "built strings"
         return strings
 
 
@@ -315,20 +320,22 @@ def polyIdentMappedFunStx (s: String)
     (transf : String → MetaM (Option String) := caseOrBinName?)
     (extraTransf : List (String → MetaM (Option String)) 
         := [xName?, xxName?])
-    (opens: List String := [])  : MetaM (Except String (List String)) := do
+    (opens: List String := [])(limit : Option Nat := none)  : MetaM (Except String (List String)) := do
     let corr?  ← identThmSegments s opens
     match corr? with
     | Except.ok corr => do
-          let t ← polyTransformBuild corr transf extraTransf
+          let t ← polyTransformBuild corr transf extraTransf limit
           return Except.ok t
     | Except.error e => return Except.error e
 
 #eval identThmSegments "{K : Type u} [Field K] : is_ring K"
 
 def elabFuncTyp (funTypeStr : String) (levelNames : List Lean.Name := levelNames) : TermElabM (Except String Expr) := do
+    -- IO.println s!"matching syntax {funTypeStr}"
     match Lean.Parser.runParserCategory (← getEnv) `term funTypeStr with
         | Except.ok termStx => Term.withLevelNames levelNames <|
           try 
+            -- IO.println "elaborating"
             let expr ← Term.withoutErrToSorry <| 
                 Term.elabTerm termStx none
             return Except.ok expr
@@ -338,15 +345,16 @@ def elabFuncTyp (funTypeStr : String) (levelNames : List Lean.Name := levelNames
             return Except.error s!"parsed func-type to {funTypeStr}; error while parsing as theorem: {e}" 
 
 
-def polyElabThmTrans (s : String)
+def polyElabThmTrans (s : String)(limit : Option Nat := none)
   (transf : String → MetaM (Option String) := caseOrBinName?)
   (extraTransf : List (String → MetaM (Option String))
         := [xName?, xxName?])
   (opens: List String := []) 
   (levelNames : List Lean.Name := levelNames)
   : TermElabM <| Except String (List (Expr × String)) := do
-  match ← polyIdentMappedFunStx s transf extraTransf opens with
+  match ← polyIdentMappedFunStx s transf extraTransf opens limit with
   | Except.ok funTypeStrList => do
+    -- IO.println s!"elaborating {funTypeStrList.length} strings"
     let pairs: List (Expr × String) ← 
       funTypeStrList.filterMapM (fun funTypeStr => do      
         let expE? ← elabFuncTyp funTypeStr levelNames
@@ -377,6 +385,13 @@ def elabThmTrans (s : String)
     | Except.ok expr => return Except.ok (expr, funTypeStr)
     | Except.error e => return Except.error e
   | Except.error e => return Except.error e
+
+def elabThmTransCore(s : String)
+  (transf : String → MetaM (Option String) := caseOrBinName?)
+  (opens: List String := []) 
+  (levelNames : List Lean.Name := levelNames)
+  : CoreM <| Except String (Expr × String) :=
+    (elabThmTrans s transf opens levelNames).run'.run'
 
 def compareFuncStrs(s₁ s₂ : String) 
   (levelNames : List Lean.Name := levelNames)
