@@ -146,8 +146,11 @@ def getCodeJsonBlob (s: String) : TermElabM String := do
   -- return out.stdout
 
 def hasElab (s: String) : TermElabM Bool := do
-  let elab? ← elabThmTrans s
-  return elab?.toBool
+    -- (elabThmTrans s).map (fun e => e.toBool)
+  let elab? ← polyElabThmTrans s
+  match elab? with
+  | Except.error _ => return Bool.false
+  | Except.ok els => return !els.isEmpty
 
 def getCodeJson (s: String) : TermElabM Json := do
   match ← getCachedJson? s with
@@ -174,21 +177,6 @@ def getCodeJson (s: String) : TermElabM Json := do
         else throwError m!"Web query error: {simJsonOut.stderr}"
       return outJson
 
-
-def egPrompt' : TermElabM String := do
-    let pairs? ← sentenceSimPairs egSen
-    let pairs := pairs?.toOption.get!
-    let pairs ← pairs.filterM (fun (_, s) => hasElab s)
-    return makePrompt "Every prime number is either `2` or odd" pairs 
-
-#eval egPrompt'
-
-
-def egQuery : TermElabM Json := do
-  let prompt ← egPrompt'
-  openAIQuery prompt 5
-
--- #eval egQuery
 
 def arrayToExpr (output: Array String) : TermElabM Expr := do
   let mut elaborated : Array String := Array.empty
