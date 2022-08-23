@@ -9,6 +9,8 @@ set_option compiler.extract_closed false
 
 
 def main (args: List String) : IO Unit := do
+  let start? := (args.get? 0).bind (fun x => x.toNat?)
+  let size? := (args.get? 0).bind (fun x => x.toNat?)
   initSearchPath (← Lean.findSysroot) ["build/lib", "lean_packages/mathlib/build/lib/", "lean_packages/lean3port/build/lib/", "lean_packages/mathlib3port/build/lib/"]
   let env ← 
     importModules [{module := `Mathlib},
@@ -17,7 +19,7 @@ def main (args: List String) : IO Unit := do
     {module:= `LeanCodePrompts.ParseJson},
     {module:= `LeanCodePrompts.Translate},
     {module := `Mathbin.All}] {}
-  let core := elabThmSplitCore
+  let core := elabThmSplitCore start? size?
   let io? := 
     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} 
     {env := env}
@@ -26,12 +28,10 @@ def main (args: List String) : IO Unit := do
     IO.println "Success"
     IO.println s!"parsed : {succ.size}"
     IO.println s!"failed to parse: {fail.size}"
-    let succFile := System.mkFilePath ["data/elab_thms.txt"]
-    IO.FS.writeFile succFile <| 
-      succ.foldl (fun acc x => acc ++ s!"{x}\n") ""
-    let failFile := System.mkFilePath ["data/unelab_thms.txt"]
-    IO.FS.writeFile failFile <| 
-      fail.foldl (fun acc x => acc ++ s!"{x}\n") ""
+    -- let succFile := System.mkFilePath ["data/elab_thms.txt"]
+    -- let h ← IO.FS.Handle.mk succFile IO.FS.Mode.append Bool.false
+    -- h.putStr <| 
+    --   succ.foldl (fun acc x => acc ++ s!"{x}\n") ""
   | Except.error e =>
     do
           let msg ← e.toMessageData.toString

@@ -160,27 +160,32 @@ def parsedThmsPrompt : IO (Array String) := do
   IO.FS.lines file
 
 
-def elabThmSplit : TermElabM ((Array String) × (Array String)) := do 
+def elabThmSplit(start? size?: Option Nat := none) : TermElabM ((Array String) × (Array String)) := do 
   let deps ← parsedThmsPrompt
+  let deps := deps.toList.drop (start?.getD 0)
+  let deps := deps.take (size?.getD (deps.length))
+  let deps := deps.toArray
   let mut succ: Array String := Array.empty
   let mut fail: Array String := Array.empty
-  let mut count := 0
+  let mut count := start?.getD 0
+  let succFile := System.mkFilePath ["data/elab_thms.txt"]
+  let h ← IO.FS.Handle.mk succFile IO.FS.Mode.append Bool.false
   IO.println s!"total: {deps.size}"
   for thm in deps do
-    IO.println s!"theorem {thm}"
+    IO.println s!"parsing theorem {thm}"
     let chk ←  hasElab thm (some 25)
     count := count + 1
-    IO.println s!"parsed: {count}"
     if chk then
       succ := succ.push thm
+      h.putStrLn thm
     else
       fail := fail.push thm
     IO.println s!"parsed: {count}"
     IO.println s!"elaborated: {succ.size}"
   return (succ, fail)
 
-def elabThmSplitCore : CoreM ((Array String) × (Array String)) := 
-  elabThmSplit.run'.run'
+def elabThmSplitCore(start? size?: Option Nat := none) : CoreM ((Array String) × (Array String)) := 
+  (elabThmSplit start? size?).run'.run'
 
 def getCodeJson (s: String) : TermElabM Json := do
   match ← getCachedJson? s with
