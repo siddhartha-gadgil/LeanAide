@@ -17,44 +17,22 @@ def main (args: List String) : IO Unit := do
     {module:= `LeanCodePrompts.ParseJson},
     {module:= `LeanCodePrompts.Translate},
     {module := `Mathbin.All}] {}
-  let file := System.mkFilePath ["data/parsed_thms.txt"]
-  let thms ←  IO.FS.lines file
-  let mut count := 0
-  let mut elaborated := 0
-  let thm := ": ∀ {p : ℕ}, Nat.Prime p → p = 2 ∨ p % 2 = 1"
-  let core := elabThmTransCore thm 
+  let core := elabThmSplitCore
   let io? := 
-    core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 10000000, maxRecDepth := 1000} 
+    core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} 
     {env := env}
   match ← io?.toIO' with
-  | Except.ok res =>
-    IO.println res
+  | Except.ok (succ, fail) =>
+    IO.println "Success"
+    IO.println s!"parsed : {succ.size}"
+    IO.println s!"failed to parse: {fail.size}"
+    let succFile := System.mkFilePath ["data/elab_thms.txt"]
+    IO.FS.writeFile succFile <| 
+      succ.foldl (fun acc x => acc ++ s!"{x}\n") ""
+    let failFile := System.mkFilePath ["data/unelab_thms.txt"]
+    IO.FS.writeFile failFile <| 
+      fail.foldl (fun acc x => acc ++ s!"{x}\n") ""
   | Except.error e =>
     do
           let msg ← e.toMessageData.toString
-          IO.eprintln msg
-
-  -- for thm in thms do
-  --   -- IO.println s!"processing: {thm}"
-  --   let core := hasElabCore thm (some 50)
-  --   let io? := 
-  --     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 1000000, maxRecDepth := 1000} 
-  --     {env := env}
-  --   -- IO.println "creating task"
-  --   let ioTask? ←  io?.asTask
-  --   count := count + 1
-  --   -- IO.println "task made"
-  --   IO.eprintln count
-  --   IO.eprintln elaborated
-  --   match ioTask?.get with
-  --   | Except.ok res =>
-  --     if res then 
-  --       elaborated := elaborated + 1
-  --       IO.println thm
-  --     else
-  --       IO.eprintln thm
-  --   | Except.error e =>
-  --     do
-  --           let msg ← e.toMessageData.toString
-  --           IO.eprintln msg
-  return ()
+          IO.println msg

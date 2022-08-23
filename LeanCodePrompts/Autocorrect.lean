@@ -295,15 +295,15 @@ def polyTransformBuild (segs: (Array (String × String)) × String)
         (extraTransf : List (String → MetaM (Option String))) (limit : Option Nat := none) : 
         MetaM (List String) := do
         let (pairs, tail) := segs
-        -- if (pairs.size + 1 ≥  limit.getD (pairs.size)) then return []
-        -- else 
-        IO.println s!"building {pairs.size} segments"
+        if (pairs.size + 1 ≥  limit.getD (pairs.size)) then return []
+        else 
+        -- IO.println s!"building {pairs.size} segments"
         let transformed ← polyTransform pairs.toList transf extraTransf
-        IO.println s!"transformed to {transformed.length} pieces"
+        -- IO.println s!"transformed to {transformed.length} pieces"
         let strings := 
           transformed.map (fun res => 
             res.foldr (fun (init, ident) acc => (init ++ ident ++ acc)) tail)
-        IO.println "built strings"
+        -- IO.println "built strings"
         return strings
 
 

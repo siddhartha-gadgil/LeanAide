@@ -168,7 +168,7 @@ def elabThmSplit : TermElabM ((Array String) × (Array String)) := do
   IO.println s!"total: {deps.size}"
   for thm in deps do
     IO.println s!"theorem {thm}"
-    let chk ←  hasElab thm
+    let chk ←  hasElab thm (some 25)
     count := count + 1
     IO.println s!"parsed: {count}"
     if chk then
