@@ -24,7 +24,7 @@ def sentenceSimPairs(s: String) : MetaM  <| Except String (Array (String × Stri
 
 #eval sentenceSimPairs egJsonSentenceSim
 
-def makePrompt(pairs: Array (String × String))(prompt : String) : String := 
+def makePrompt(prompt : String)(pairs: Array (String × String)) : String := 
       pairs.foldr (fun  (ds, thm) acc => 
         -- acc ++ "/-- " ++ ds ++" -/\ntheorem" ++ thm ++ "\n" ++ "\n"
 s!"/-- {ds} -/
@@ -37,7 +37,7 @@ theorem "
 def egPrompt' : MetaM String := do
     let pairs? ← sentenceSimPairs egJsonSentenceSim
     let pairs := pairs?.toOption.get!
-    return makePrompt pairs "Every prime number is either `2` or odd"
+    return makePrompt "Every prime number is either `2` or odd" pairs 
 
 #eval egPrompt'
 
@@ -101,7 +101,29 @@ partial def pollCache (s : String) : IO String := do
     IO.sleep 200
     pollCache s
 
-def getCodeJson (s: String) : TermElabM String := do
+initialize webCacheJson : IO.Ref (HashMap String Json) ← IO.mkRef (HashMap.empty)
+
+initialize pendingJsonQueries : IO.Ref (HashSet String) 
+    ← IO.mkRef (HashSet.empty)
+
+def getCachedJson? (s: String) : IO (Option Json) := do
+  let cache ← webCacheJson.get
+  return cache.find? s
+
+def cacheJson (s: String)(js: Json)  : IO Unit := do
+  let cache ← webCacheJson.get
+  webCacheJson.set (cache.insert s js)
+  return ()
+
+partial def pollCacheJson (s : String) : IO Json := do
+  let cache ← webCacheJson.get
+  match cache.find? s with
+  | some jsBlob => return jsBlob
+  | none => do
+    IO.sleep 200
+    pollCache s
+
+def getCodeJsonBlob (s: String) : TermElabM String := do
   match ← getCached? s with
   | some s => return s
   | none =>    
@@ -122,6 +144,34 @@ def getCodeJson (s: String) : TermElabM String := do
       return res
   -- return out.stdout
 
+def getCodeJson (s: String) : TermElabM Json := do
+  match ← getCachedJson? s with
+  | some js => return js
+  | none =>    
+    let pending ←  pendingQueries.get
+    if pending.contains s then pollCache s
+    else 
+      let pending ←  pendingQueries.get
+      pendingQueries.set (pending.insert s)
+      let simJsonOut ←  
+        IO.Process.output {cmd:= "curl", args:= 
+          #["-X", "POST", "-H", "Content-type: application/json", "-d", s, "localhost:5000/similar_json"]}
+      let pairs? ← sentenceSimPairs simJsonOut.stdout
+      let allPairs := pairs?.toOption.get!
+      let pairs := allPairs
+      let prompt := makePrompt s pairs
+      let outJson ← openAIQuery prompt 5 0
+      let pending ←  pendingJsonQueries.get
+      pendingJsonQueries.set (pending.erase s)
+      if simJsonOut.exitCode = 0 then cacheJson s outJson 
+        else throwError m!"Web query error: {simJsonOut.stderr}"
+      return outJson
+
+def hasElab? (s: String) : TermElabM Bool := do
+  let ployElab? ← polyElabThmTrans s
+  match ployElab? with
+  | Except.error _ => pure Bool.false
+  | Except.ok es => return !es.isEmpty
 
 def arrayToExpr (output: Array String) : TermElabM Expr := do
   let mut elaborated : Array String := Array.empty
@@ -188,6 +238,26 @@ def textToExpr' (s: String) : TermElabM Expr := do
   let output := outArr
   arrayToExpr output
 
+def jsonToExpr' (json: Json) : TermElabM Expr := do
+  let outArr : Array String ← 
+    match json.getArr? with
+    | Except.ok arr => 
+        let parsedArr : Array String ← 
+          arr.filterMapM <| fun js =>
+            match js.getObjVal? "text" with
+              | Except.ok jsstr =>
+                match jsstr.getStr? with
+                | Except.ok str => pure (some str)
+                | Except.error e => 
+                  throwError m!"json string expected but got {js}, error: {e}"
+              | Except.error _ =>
+                throwError m!"no text field"
+        pure parsedArr
+    | Except.error e => throwError m!"json parsing error: {e}"
+  let output := outArr
+  arrayToExpr output
+
+
 def textToExprStx' (s : String) : TermElabM (Expr × TSyntax `term) := do
   let e ← textToExpr' s
   let (stx : Term) ← (PrettyPrinter.delab e)
@@ -196,7 +266,7 @@ def textToExprStx' (s : String) : TermElabM (Expr × TSyntax `term) := do
 elab "//-" cb:commentBody  : term => do
   let s := cb.raw.getAtomVal!
   let s := (s.dropRight 2).trim  
-  let jsBlob ← getCodeJson  s
+  let jsBlob ← getCodeJsonBlob  s
   let e ← textToExpr' jsBlob
   logInfo m!"{e}"
   return e
@@ -211,4 +281,4 @@ elab "#example" stmt:str ":=" prf:term : command => do
   logInfoAt stmt m!"{fmlstmt}"
   elabCommand $ ← `(example : $fmlstx:term := $prf:term)
 
--- #eval getCodeJson egPrompt
+-- #eval getCodeJsonBlob egPrompt
