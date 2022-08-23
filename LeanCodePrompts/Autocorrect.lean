@@ -367,7 +367,7 @@ def polyStrThmTrans (s : String)
   | Except.error _ => return [s]
 
 def elabThmTrans (s : String)
-  (transf : String → MetaM (Option String) := binName?)
+  (transf : String → MetaM (Option String) := caseOrBinName?)
   (opens: List String := []) 
   (levelNames : List Lean.Name := levelNames)
   : TermElabM <| Except String (Expr × String) := do

@@ -11,18 +11,32 @@ open Lean Elab Parser Command
 
 def egJsonSentenceSim : String := "[{'theorem': '{p : ℕ} [fact (nat.prime p)] : p % 2 = 1 ↔ p ≠ 2', 'doc_string': 'A prime `p` satisfies `p % 2 = 1` if and only if `p ≠ 2`.'}, {'theorem': '{n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3', 'doc_string': 'A natural number is odd iff it has residue `1` or `3` mod `4`'}, {'theorem': '{p : ℕ} (hp : nat.prime p) : p.factorization = finsupp.single p 1', 'doc_string': 'The only prime factor of prime `p` is `p` itself, with multiplicity `1`'}, {'theorem': '{m n : ℕ} : even (m ^ n) ↔ even m ∧ n ≠ 0', 'doc_string': ' If `m` and `n` are natural numbers, then the natural number `m^n` is even if and only if `m` is even and `n` is positive.'}]"
 
+def egSen := "[{\"statement\": \"theorem nat.prime.mod_two_eq_one_iff_ne_two {p : ℕ} [fact (nat.prime p)] : p % 2 = 1 ↔ p ≠ 2\", \"doc_string\": \"A prime `p` satisfies `p % 2 = 1` if and only if `p ≠ 2`.\", \"theorem\": \"{p : ℕ} [fact (nat.prime p)] : p % 2 = 1 ↔ p ≠ 2\"}, {\"statement\": \"theorem nat.odd_mod_four_iff {n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3\", \"doc_string\": \"A natural number is odd iff it has residue `1` or `3` mod `4`\", \"theorem\": \"{n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3\"}, {\"statement\": \"theorem nat.factorization_eq_zero_iff (n : ℕ) : n.factorization = 0 ↔ n = 0 ∨ n = 1\", \"doc_string\": \"The only numbers with empty prime factorization are `0` and `1`\", \"theorem\": \"(n : ℕ) : n.factorization = 0 ↔ n = 0 ∨ n = 1\"}, {\"statement\": \"theorem nat.prime.factorization {p : ℕ} (hp : nat.prime p) : p.factorization = finsupp.single p 1\", \"doc_string\": \"The only prime factor of prime `p` is `p` itself, with multiplicity `1`\", \"theorem\": \"{p : ℕ} (hp : nat.prime p) : p.factorization = finsupp.single p 1\"}, {\"statement\": \"theorem nat.even_pow {m n : ℕ} : even (m ^ n) ↔ even m ∧ n ≠ 0\", \"doc_string\": \" If `m` and `n` are natural numbers, then the natural number `m^n` is even if and only if `m` is even and `n` is positive.\", \"theorem\": \"{m n : ℕ} : even (m ^ n) ↔ even m ∧ n ≠ 0\"}, {\"statement\": \"theorem is_prime_pow_iff_unique_prime_dvd {n : ℕ} : is_prime_pow n ↔ ∃! (p : ℕ), nat.prime p ∧ p ∣ n\", \"doc_string\": \" An equivalent definition for prime powers: `n` is a prime power iff there is a unique prime dividing it.\", \"theorem\": \"{n : ℕ} : is_prime_pow n ↔ ∃! (p : ℕ), nat.prime p ∧ p ∣ n\"}, {\"statement\": \"theorem nat.factorization_inj  : set.inj_on nat.factorization {x : ℕ | x ≠ 0}\", \"doc_string\": \"Every nonzero natural number has a unique prime factorization\", \"theorem\": \" : set.inj_on nat.factorization {x : ℕ | x ≠ 0}\"}, {\"statement\": \"theorem nat.mem_factors_mul_left {p a b : ℕ} (hpa : p ∈ a.factors) (hb : b ≠ 0) : p ∈ (a * b).factors\", \"doc_string\": \"If `p` is a prime factor of `a` then `p` is also a prime factor of `a * b` for any `b > 0`\", \"theorem\": \"{p a b : ℕ} (hpa : p ∈ a.factors) (hb : b ≠ 0) : p ∈ (a * b).factors\"}, {\"statement\": \"theorem gaussian_int.prime_iff_mod_four_eq_three_of_nat_prime (p : ℕ) [hp : fact (nat.prime p)] : prime ↑p ↔ p % 4 = 3\", \"doc_string\": \"A prime natural number is prime in `ℤ[i]` if and only if it is `3` mod `4`\", \"theorem\": \"(p : ℕ) [hp : fact (nat.prime p)] : prime ↑p ↔ p % 4 = 3\"}]"
+
 def sentenceSimPairs(s: String) : MetaM  <| Except String (Array (String × String)) := do
-  let json ← readJson (s.replace "'" "\"") 
+  let json ← readJson (s) 
+  -- logInfo "obtained json"
   match json.getArr? with
   | Except.ok jsonArr => do
     let pairs ←  jsonArr.mapM fun json => do
-      let docstring := (json.getObjVal? "doc_string").toOption.get!.getStr?.toOption.get!
-      let thm := (json.getObjVal? "theorem").toOption.get!.getStr?.toOption.get!
+      let docstring : String ←  
+        match (json.getObjVal? "doc_string") with
+        | Except.error e => throwError s!"Error {e} while getting doc_string"
+        | Except.ok js => 
+          match js.getStr? with
+          | Except.error e => throwError s!"Error {e} while processing {js} as string"  
+          | Except.ok s => pure s
+      let thm ←  match (json.getObjVal? "theorem") with
+        | Except.error e => throwError s!"Error {e} while getting doc_string"
+        | Except.ok js => 
+          match js.getStr? with
+          | Except.error e => throwError s!"Error {e} while processing {js} as string"  
+          | Except.ok s => pure s
       return (docstring, thm)
     return Except.ok pairs
   | Except.error e => return Except.error e
 
-#eval sentenceSimPairs egJsonSentenceSim
+#eval sentenceSimPairs egSen
 
 def makePrompt(prompt : String)(pairs: Array (String × String)) : String := 
       pairs.foldr (fun  (ds, thm) acc => 
@@ -33,13 +47,6 @@ theorem {thm} :=
 {acc}"
           ) s!"/-- {prompt} -/
 theorem "
-
-def egPrompt' : MetaM String := do
-    let pairs? ← sentenceSimPairs egJsonSentenceSim
-    let pairs := pairs?.toOption.get!
-    return makePrompt "Every prime number is either `2` or odd" pairs 
-
-#eval egPrompt'
 
 
 def openAIKey : IO (Option String) := IO.getEnv "OPENAI_API_KEY"
@@ -56,14 +63,8 @@ def openAIQuery(prompt: String)(n: Nat := 1)(temp : JsonNumber := ⟨2, 1⟩) : 
         "-H", "Authorization: Bearer " ++ key,
         "-H", "Content-Type: application/json",
         "--data", data]}
+  logInfo "OpenAI query answered"
   readJson out.stdout
-
-def egQuery : MetaM Json := do
-  let prompt ← egPrompt'
-  openAIQuery prompt 5
-
--- #eval egQuery
-
 
 def egBlob' := "[{ \"text\" : \"{p : ℕ} (hp : Nat.Prime p) :  p = 2 ∨ p % 2 = 1 \"},
    { \"text\" : \"(p : ℕ) :  Nat.Prime p ↔ p = 2 ∨ p % 2 = 1 \"},
@@ -144,6 +145,13 @@ def getCodeJsonBlob (s: String) : TermElabM String := do
       return res
   -- return out.stdout
 
+def hasElab (s: String) : TermElabM Bool := do
+    -- (elabThmTrans s).map (fun e => e.toBool)
+  let elab? ← polyElabThmTrans s
+  match elab? with
+  | Except.error _ => return Bool.false
+  | Except.ok els => return !els.isEmpty
+
 def getCodeJson (s: String) : TermElabM Json := do
   match ← getCachedJson? s with
   | some js => return js
@@ -155,23 +163,20 @@ def getCodeJson (s: String) : TermElabM Json := do
       pendingQueries.set (pending.insert s)
       let simJsonOut ←  
         IO.Process.output {cmd:= "curl", args:= 
-          #["-X", "POST", "-H", "Content-type: application/json", "-d", s, "localhost:5000/similar_json"]}
+          #["-X", "POST", "-H", "Content-type: application/json", "-d", s ++" top_K 5", "localhost:5000/similar_json"]}
       let pairs? ← sentenceSimPairs simJsonOut.stdout
       let allPairs := pairs?.toOption.get!
-      let pairs := allPairs
+      let pairs := allPairs -- ←  allPairs.filterM (fun (_, s) => hasElab s)
       let prompt := makePrompt s pairs
-      let outJson ← openAIQuery prompt 5 0
+      let fullJson ← openAIQuery prompt 5 0
+      let outJson := (fullJson.getObjVal? "choices").toOption.get!
+      -- logInfo s!"query gave: {outJson}"
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.erase s)
       if simJsonOut.exitCode = 0 then cacheJson s outJson 
         else throwError m!"Web query error: {simJsonOut.stderr}"
       return outJson
 
-def hasElab? (s: String) : TermElabM Bool := do
-  let ployElab? ← polyElabThmTrans s
-  match ployElab? with
-  | Except.error _ => pure Bool.false
-  | Except.ok es => return !es.isEmpty
 
 def arrayToExpr (output: Array String) : TermElabM Expr := do
   let mut elaborated : Array String := Array.empty
@@ -266,8 +271,8 @@ def textToExprStx' (s : String) : TermElabM (Expr × TSyntax `term) := do
 elab "//-" cb:commentBody  : term => do
   let s := cb.raw.getAtomVal!
   let s := (s.dropRight 2).trim  
-  let jsBlob ← getCodeJsonBlob  s
-  let e ← textToExpr' jsBlob
+  let js ← getCodeJson  s
+  let e ← jsonToExpr' js
   logInfo m!"{e}"
   return e
 

@@ -1,6 +1,26 @@
 import Mathbin.All
+import Lean.Meta
 import LeanCodePrompts.Translate
 import LeanCodePrompts.Autocorrect
+open Lean Meta Elab Term
+
+
+def egPrompt' : TermElabM String := do
+    let pairs? ← sentenceSimPairs egSen
+    let pairs := pairs?.toOption.get!
+    logInfo m!"{pairs.size}"
+    let pairs ← pairs.filterM (fun (_, s) => hasElab s)
+    logInfo m!"{pairs.size}"
+    return makePrompt "Every prime number is either `2` or odd" pairs 
+
+#eval egPrompt'
+
+
+def egQuery : TermElabM Json := do
+  let prompt ← egPrompt'
+  openAIQuery prompt 5
+
+-- #eval egQuery
 
 -- example : //- Every prime number is either `2` or odd -/ := by
 --       sorry

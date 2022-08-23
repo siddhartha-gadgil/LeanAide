@@ -61,7 +61,9 @@ partial def parseJsonSyntax (s: Syntax) : MetaM Json := do
   | _ => throwError "invalid json syntax"
 
 def readJson(s: String) : MetaM Json := do
+  -- logInfo "parsing json"
   let stx ← getJsonSyntax s
+  -- logInfo "got syntax"
   parseJsonSyntax stx
 
 #eval readJson "[{hello: 1}, [2, 3], {\"x\": 3}]"

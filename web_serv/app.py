@@ -104,7 +104,7 @@ def similar_from():
 
     output = [{"statement" : info["dct"]["statement"],"doc_string": info["dct"]["doc_string"], "theorem" : info["dct"]["theorem"]} for info in lis]
     jsBlob = str(json.dumps(output,ensure_ascii=False))
-
+    print (jsBlob)
     return jsBlob
 
 def process(lis):
