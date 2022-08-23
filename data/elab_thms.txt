@@ -220,4 +220,616 @@
 (p : ℕ) [fact (nat.prime p)] (hp : p ≠ 2) (a : ℤ) : ↑({x : zmod p | x ^ 2 = ↑a}.to_finset.card) = zmod.legendre_sym p a + 1
 {α : Type u} [preorder α] {a : α} : a ≤ a
 (P L : Type u) [has_mem P L] [configuration.has_points P L] [fintype P] [fintype L] : fintype.card L ≤ fintype.card P
-{R : Type u_1} {a : R} [monoid R] {n 
+{R : Type u_1} {a : R} [monoid R] {n {α : Type u} [non_unital_non_assoc_ring α] {a b c d e : α} : a * e + c = b * e + d ↔ (a - b) * e + c = d
+{f : ordinal → ordinal} (H : ordinal.is_normal f) : set.unbounded has_lt.lt (function.fixed_points f)
+{α : Type u} [pseudo_emetric_space α] {x y : α} {s : set α} : emetric.inf_edist x s ≤ emetric.inf_edist y s + has_edist.edist x y
+{M : Type u_1} [add_group M] (c : add_con M) {w x : M} : ⇑c w x → ⇑c (-w) (-x)
+{R : Type u_1} {a : R} [monoid R] (n : ℕ) (rra : is_right_regular a) : is_right_regular (a ^ n)
+{β : Type v} [pseudo_emetric_space β] {α : Type u} [emetric_space α] {f : α → β} (h : isometry f) : function.injective f
+{H : Type u_1} [topological_space H] {x : H} : charted_space.chart_at H x = local_homeomorph.refl H
+{R : Type u_1} {a b : R} [add_monoid R] (h : b + a = 0) : is_add_left_regular a
+{α : Type u} [preorder α] {s : set α} {a : α} (h : is_least s a) : bdd_below s
+(p : ℕ) [fact (nat.prime p)] (R : Type u₁) [comm_semiring R] [char_p R p] : perfection_map p (perfection.coeff R p 0)
+{C : Type u} [category_theory.category C] [category_theory.limits.has_zero_morphisms C] [category_theory.limits.has_zero_object C] {X : C} (Y : category_theory.subobject X) : category_theory.simple ↑Y ↔ is_atom Y
+{α : Type u} [canonically_ordered_comm_semiring α] [nontrivial α] : 0 < 1
+{G : Type u_2} [add_group G] {a b : G} : a = b → a - b = 0
+ : function.bijective real.sinh
+(p : ℕ) [fact (nat.prime p)] {a : zmod p} (ha : a ≠ 0) : is_square a ↔ a ^ (p / 2) = 1
+{γ : Type w} [semilattice_sup γ] (a : γ) {s : set γ} : bdd_above (has_insert.insert a s) ↔ bdd_above s
+{R : Type u₁} [monoid R] [has_distrib_neg R] : (-1) ^ 2 = 1
+{α : Type u} [preorder α] {a b c : α} : b ≤ c → a < b → a < c
+(C : Type u) [category_theory.category C] [category_theory.limits.has_terminal C] [category_theory.limits.has_pullbacks C] : category_theory.limits.has_binary_products C
+{α : Type u} [preorder α] {s t : set α} (h : bdd_above s) : bdd_above (s ∩ t)
+{α : Type u_1} [uniform_space α] (x : α) : nhds (x, x) ≤ uniformity α
+{p : ℕ} : padic_val_int p 1 = 0
+{α : Type u_1} [mul_one_class α] [preorder α] [covariant_class α α has_mul.mul has_le.le] {a b : α} (ha : a < 1) (hb : b ≤ 1) : a * b < 1
+{α : Type u} [topological_space α] {S : set (set α)} (K : directed_on has_subset.subset S) (H : ∀ (s : set α), s ∈ S → is_preconnected s) : is_preconnected (⋃₀S)
+{α : Type u_1} [partial_order α] [pred_order α] {a : α} : is_min a → order.pred a = a
+{M : Type u_1} [has_add M] {c d : add_con M} : (∀ (x y : M), ⇑c x y ↔ ⇑d x y) ↔ c = d
+{α : Type u} {L₁ L₂ : list (α × bool)} [decidable_eq α] (H : free_group.mk L₁ = free_group.mk L₂) : free_group.reduce L₁ = free_group.reduce L₂
+{α : Type u} [pseudo_emetric_space α] {p : α → Prop} (x y : subtype p) : has_edist.edist x y = has_edist.edist ↑x ↑y
+{α : Type u} [topological_space α] [linear_order α] [order_topology α] [densely_ordered α] {a b : α} (hab : a ≠ b) : closure (set.Ioc a b) = set.Icc a b
+{α : Type u} {a b : α} [mul_one_class α] [has_zero α] [preorder α] [zero_lt.mul_pos_mono α] (ha : 1 ≤ a) (hb : 1 < b) (b0 : 0 < b) : 1 < a * b
+{α : Type u} [pseudo_metric_space α] {s : set α} : 0 ≤ metric.diam s
+{G : Type u_1} [add_group G] [topological_space G] [topological_add_group G] {H : add_subgroup G} (h_1_int : 0 ∈ interior ↑H) : is_open ↑H
+{R : Type u} [comm_group R] [star_semigroup R] (x y : R) : has_star.star (x / y) = has_star.star x / has_star.star y
+{R : Type u_1} {M : Type u_3} [monoid_with_zero R] [has_zero M] [mul_action_with_zero R M] [sM : subsingleton M] : is_smul_regular M 0
+{B : Type u_2} {F : Type u_3} [topological_space B] [topological_space F] : is_trivial_topological_fiber_bundle F prod.snd
+(R : Type u) [semiring R] [nontrivial R] (p : ℕ) [hp : char_p R p] [hq : exp_char R 1] : p = 0
+{M : Type u_1} [monoid M] {x : M} : 1 ∈ powers x
+{α : Type u} [preorder α] {a b c : α} : b ≤ c → a ≤ b → a ≤ c
+{C : Type u} [category_theory.category C] [category_theory.limits.has_zero_morphisms C] [category_theory.limits.has_initial C] : category_theory.limits.has_zero_object C
+{τ : Type u_1} {α : Type u_2} [canonically_ordered_add_monoid τ] {ϕ : τ → α → α} {s : set α} : is_fw_invariant ϕ s ↔ is_invariant ϕ s
+{α : Type u} [pseudo_emetric_space α] {s : set α} : emetric.Hausdorff_edist s s = 0
+(n : ℕ) : ∃ (p : ℕ), n ≤ p ∧ nat.prime p
+{α : Type u} [mul_zero_class α] [has_distrib_neg α] : -0 = 0
+{S : Type u_1} [has_add S] (a : S) : add_commute a a
+{M : Type u_1} [monoid M] {γ : Type u_2} [monoid γ] {f : M → γ} (hf : is_monoid_hom f) : is_submonoid (set.range f)
+{α : Type u} [add_group α] [has_le α] [covariant_class α α has_add.add has_le.le] {a b c : α} : b ≤ -a + c → a + b ≤ c
+{R : Type u_1} {M : Type u_3} [monoid_with_zero R] [has_zero M] [mul_action_with_zero R M] [nM : nontrivial M] : ¬is_smul_regular M 0
+{J : Type u₁} [category_theory.category J] [nonempty J] (h : ∀ (j₁ j₂ : J), category_theory.zigzag j₁ j₂) : category_theory.is_connected J
+(R : Type u) [non_assoc_ring R] (p : ℕ) [hc : char_p R p] [fintype R] : p ≠ 0
+{P : ℤ → Prop} {m : ℤ} (h0 : P m) (h1 : ∀ (n : ℤ), n ≤ m → P n → P (n - 1)) (n : ℤ) : n ≤ m → P n
+{R : Type u_1} [linear_ordered_field R] [floor_ring R] {b : ℕ} (hb : 1 < b) {x : ℤ} {r : R} (hr : 0 < r) : r < ↑b ^ x ↔ int.log b r < x
+{α : Type u_1} [topological_space α] [polish_space α] [measurable_space α] [borel_space α] {s : set α} (hs : measurable_set s) : polish_space.is_clopenable s
+{p n : ℕ} (h_pos : 0 < ⇑(n.central_binom.factorization) p) : p ≤ 2 * n
+{G : Type u_1} [hG : group G] [hf : fintype G] {p : ℕ} [hp : fact (nat.prime p)] (h : is_p_group p G) : group.is_nilpotent G
+{R : Type u_1} (M : Type u_3) {a : R} [monoid R] [mul_action R M] (ua : is_unit a) : is_smul_regular M a
+{α : Type u_1} {β : Type u_2} (f : α → β) : function.injective (quotient.lift f _)
+{α : Type u_1} {β : Type u_2} [uniform_space α] (f : β → α) (l : filter β) : filter.tendsto (λ (x : β), (f x, f x)) l (uniformity α)
+{C : Type u} [category_theory.category C] {J₁ J₂ : category_theory.grothendieck_topology C} (h : category_theory.presieve.is_sheaf J₁ (category_theory.functor.closed_sieves J₂)) : J₁ ≤ J₂
+(n : ℕ) {R : Type u_1} [linear_ordered_comm_ring R] {x : R} (hx : 1 ≤ x) : 0 ≤ polynomial.eval x (polynomial.cyclotomic n R)
+{α : Type u} [emetric_space α] : continuous (λ (p : α × topological_space.closeds α), emetric.inf_edist p.fst ↑(p.snd))
+{M : Type u_3} [monoid M] [preorder M] (L : list M) (h : L.prod < 1) : 0 < L.length
+{α : Type u_1} [topological_space α] {s t : set α} (hs : is_Gδ s) (ht : is_Gδ t) : is_Gδ (s ∪ t)
+ : ¬summable (λ (n : ℕ), 1 / ↑n)
+{α : Type u} [partial_order α] {a b : α} (h : a ≤ b) : b = a ∨ a < b
+{S : set ℕ} (hb : 0 ∈ S) (h_ind : ∀ (k : ℕ), k ∈ S → k + 1 ∈ S) (n : ℕ) : n ∈ S
+{α : Type u} [group α] [has_le α] [covariant_class α α has_mul.mul has_le.le] {a b c : α} : a ≤ b * c → b⁻¹ * a ≤ c
+{R : Type u_1} [non_assoc_ring R] [nontrivial R] [no_zero_divisors R] (hR : ring_char R ≠ 2) {a : R} : -a = a ↔ a = 0
+{F : Type u_1} [field F] [fintype F] [decidable_eq F] {a : F} (ha : a ≠ 0) : char.quadratic_char F (a ^ 2) = 1
+{α : Type u} [pseudo_emetric_space α] {s : set α} : continuous (λ (x : α), emetric.inf_edist x s)
+{α : Type u_1} [linear_ordered_field α] {a b c d : α} (hc : c ≠ 0) (hd : d ≠ 0) : (a * d - b * c) / (c * d) ≤ 0 → a / c ≤ b / d
+{α : Type u_1} [topological_space α] {U : set α} {hU : is_open U} : ↑⟨U, hU⟩ = U
+{n : ℕ} (a : fin (n + 1)) : ↑(a.val) = a
+{ι : Type u_1} {B : Type u_2} {F : Type u_3} [topological_space B] [topological_space F] (Z : topological_fiber_bundle_core ι B F) : is_open_map Z.proj
+{R : Type u} {A : Type v} [comm_ring R] [ring A] [algebra R A] [nontrivial R] (x : R) : is_algebraic R (⇑(algebra_map R A) x)
+{G : Type u} [group G] {x : G} (hx : is_of_fin_order x) : is_of_fin_order x⁻¹ : ⇑linear_map.det complex.conj_ae.to_linear_map = -1
+{α : Type u_1} [add_semigroup α] (x y : α) : has_add.add x ∘ has_add.add y = has_add.add (x + y)
+{b : ℕ} {S : set ℕ} (hb : b ∈ S) (h_ind : ∀ (k : ℕ), k ∈ S → k + 1 ∈ S) {n : ℕ} (hbn : b ≤ n) : n ∈ S
+{n : ℕ} : 0 < n → 0 < szemeredi_regularity.step_bound n
+{M : Type u_1} [add_monoid M] {x : M} : x ∈ multiples x
+ : filter.tendsto complex.exp (filter.comap complex.re filter.at_top) (filter.comap complex.abs filter.at_top)
+{α : Type u_1} {β : Type u_2} {r : α → α → Prop} {s : β → β → Prop} : function.injective coe_fn
+{C : Type u} [category_theory.category C] [category_theory.limits.has_finite_coproducts C] [category_theory.limits.has_coequalizers C] : category_theory.limits.has_finite_colimits C
+{G : Type u} {x : G} [add_monoid G] : 0 < add_order_of x ↔ is_of_fin_add_order x
+{R : Type u} [comm_semiring R] [star_ring R] {x : R} : ⇑(star_ring_end R) x = has_star.star x
+{G : Type w} [topological_space G] [has_inv G] [has_mul G] [has_continuous_mul G] [has_continuous_inv G] : continuous (λ (g : G × G), g.fst * g.snd * (g.fst)⁻¹)
+{α : Type u_1} {β : Type u_2} [add_comm_monoid α] [topological_space α] : has_sum (λ (b : β), 0) 0
+{α : Type u_1} {β : Type u_2} [topological_space α] [topological_space β] [polish_space β] {f : α → β} (hf : closed_embedding f) : polish_space α
+{Γ : Type u_1} [inhabited Γ] (l : turing.list_blank Γ) : ∃ (a : Γ) (l' : turing.list_blank Γ), l = turing.list_blank.cons a l'
+{α : Sort u_1} {p : α → Prop} (P : ∃ (a : α), p a) : p P.some
+{α : Type u_1} [generalized_boolean_algebra α] [decidable_rel disjoint] [decidable_rel has_le.le] (u v a : α) : uv.compress u v (uv.compress u v a) = uv.compress u v a
+{α : Type u_1} {r : α → α → Prop} (h : reflexive r) {x y : α} : x ≠ y → r x y ↔ r x y
+(G : Type u_1) [group G] : is_ascending_central_series (upper_central_series G)
+{p : ℕ} [fact (nat.prime p)] : p % 2 = 1 ↔ p ≠ 2
+ : ⇑fourier_series = fourier_Lp 2
+{α : Type u} {β : Type v} {γ : Type w} (g : β → γ) (f : α → β) : list.map g ∘ list.map f = list.map (g ∘ f)
+{R : Type u_1} [mul_zero_class R] : ¬is_right_regular 0 ↔ nontrivial R
+{α : Type u} [pseudo_metric_space α] {s : set α} {x y : α} (h : y ∈ s) : metric.inf_dist x s ≤ has_dist.dist x y
+{α : Type u_1} [is_empty α] (s : finset α) : s = ∅
+{R : Type u_1} [ring R] [topological_space R] [nonarchimedean_ring R] (U : open_add_subgroup R) : ∃ (V : open_add_subgroup R), ↑V * ↑V ⊆ ↑U
+{α : Type u_1} [has_le α] {a : α} : is_bot a → is_top (⇑order_dual.to_dual a)
+{α : Type u} [preorder α] {s : set α} {a : α} (h : is_lub s a) : bdd_above s
+{α : Sort u_1} {β : Sort u_2} {γ : Sort u_3} {f : α → β → γ} (hf : function.injective2 f) [nonempty β] : function.injective f
+{α : Type u_1} [linear_order α] [topological_space α] [compact_Icc_space α] {a b : α} : is_compact (set.interval a b)
+{M : Type u_1} [has_mul M] {c d : con M} : c ≤ d ↔ ∀ {x y : M}, ⇑c x y → ⇑d x y
+{o : ordinal} : ordinal.principal has_add.add o ↔ o = 0 ∨ ∃ (a : ordinal), o = ordinal.omega ^ a
+{n : ℕ} (p : fin (n + 1)) (i : fin n) : ⇑fin.cast_succ i < p ∨ p < i.succ
+{K : Type u_1} {v : K} {n : ℕ} [linear_ordered_field K] [floor_ring K] {ifp_n : generalized_continued_fraction.int_fract_pair K} (nth_stream_eq : generalized_continued_fraction.int_fract_pair.stream v n = option.some ifp_n) : ifp_n.fr < 1
+{M : Type u} [monoid M] (a : M) : a ^ 2 = a * a
+(k : Type u_1) [division_ring k] {ι : Type u_4} (s : finset ι) [char_zero k] (h : s.card ≠ 0) : s.sum (λ (i : ι), finset.centroid_weights k s i) = 1
+{R : Type u_1} [comm_ring R] [fintype R] (p : ℕ) [fact (nat.prime p)] (hp : p ∣ fintype.card R) : ¬is_unit ↑p
+{α : Type u} [add_group α] [has_le α] [covariant_class α α has_add.add has_le.le] {a : α} : -a ≤ 0 ↔ 0 ≤ a
+{n p k : ℕ} (hn : n ≠ 0) (h : n.factorization = finsupp.single p k) : n = p ^ k
+{α : Type u} {β : Type v} [semiring α] [semiring β] {f : α → β} (hf : is_semiring_hom f) : is_add_monoid_hom f
+{α : Type u} [pseudo_emetric_space α] {x : α} {s t : set α} (h : s ⊆ t) : emetric.inf_edist x t ≤ emetric.inf_edist x s
+{α : Type u_1} [preorder α] [locally_finite_order α] {a b : α} : ¬a ≤ b → finset.Icc a b = ∅
+ : well_founded nat.lt
+{M : Type u_3} [add_monoid M] (L : list M) (h : L.sum ≠ 0) : 0 < L.length
+{α : Type u_1} [mul_one_class α] [preorder α] [covariant_class α α has_mul.mul has_lt.lt] {a b : α} (ha : 1 < a) (hb : 1 < b) : 1 < a * b
+{k : Type u} [linear_ordered_field k] {a : k} (ha : 0 < a) : (set.Ioo 0 a)⁻¹ = set.Ioi a⁻¹
+{α : Type u_1} {s t : set α} : s = t → s ⊆ t
+{γ : Type w} [emetric_space γ] {x y : γ} : has_edist.edist x y = 0 ↔ x = y
+{α : Type u_1} [decidable_eq α] (s : multiset α) : s - 0 = s
+(R : Type u) [field R] : is_field R
+{M : Type u_1} [has_add M] (c : add_con M) {x y : M} : ⇑c x y → ⇑c y x
+{n : Type u'} {α : Type v} [fintype n] [decidable_eq n] [comm_ring α] (A : matrix n n α) : A⁻¹ = ring.inverse A
+{α : Type u_1} {β : Type u_4} [preorder α] [preorder β] {u : β → α} (l : lower_adjoint u) (x : α) : x ≤ u (⇑l x)
+{M₀ : Type u_1} [monoid_with_zero M₀] (x : M₀) (h : ¬is_unit x) : ring.inverse x = 0
+{𝕜 : Type u_1} {E : Type u_2} {ι : Type u_3} [ordered_semiring 𝕜] [add_comm_group E] [module 𝕜 E] [subsingleton ι] (p : ι → E) : convex_independent 𝕜 p
+{α : Type u_2} [monoid α] (m : α) : (∃ (c : α), m = c ^ 2) → is_square m
+{C : Type u} [category_theory.category C] [category_theory.preadditive C] {J : Type v} [fintype J] (f : J → C) [category_theory.limits.has_coproduct f] : category_theory.limits.has_biproduct f
+ : golden_conj⁻¹ = -golden_ratio
+{α : Type u} [preorder α] [no_min_order α] (a : α) : ∃ (f : ℕ → α), strict_anti f ∧ f 0 = a
+{α : Type u} [add_group α] [has_lt α] [covariant_class α α has_add.add has_lt.lt] {a : α} : 0 < -a ↔ a < 0
+{C : Type u₁} [category_theory.category C] {A : C} (hA : category_theory.is_subterminal A) {T : C} (hT : category_theory.limits.is_terminal T) : category_theory.mono (hT.from A)
+{R : Type u_1} {a b : R} [add_semigroup R] (ab : is_add_right_regular (b + a)) : is_add_right_regular b
+{ι : Type u_1} {B : Type u_2} {F : Type u_3} [topological_space B] [topological_space F] (Z : topological_fiber_bundle_core ι B F) (b : B) : continuous (bundle.total_space_mk b)
+(α : Type u) [preorder α] [nonempty α] [no_min_order α] [no_max_order α] : ∃ (f : ℤ → α), strict_mono f
+{α : Sort u_1} {β : Sort u_2} (f : α → β) : nonempty α → nonempty β
+{b : ℕ} {l : list ℕ} (hb : 2 ≤ b) (hl : ∀ (x : ℕ), x ∈ l → x < b) : nat.of_digits b l < b ^ l.length
+{G : Type u} [add_group G] (a x : G) : add_semiconj_by a x (a + x + -a)
+{α : Type u_1} {β : Type u_2} {r : α → α → Prop} {s : β → β → Prop} : function.injective coe_fn
+{H : Type u_1} [topological_space H] [locally_compact_space H] [t2_space H] : totally_disconnected_space H ↔ totally_separated_space H
+{G : Type u_1} {P : Type u_2} [add_group G] [add_torsor G P] {x y : P} (h : function.injective bit0) : ⇑(equiv.point_reflection x) y = y ↔ y = x
+{C : Type u} [category_theory.category C] {J₁ J₂ : category_theory.grothendieck_topology C} (h : ⇑J₁ = ⇑J₂) : J₁ = J₂
+{α : Type u} {β : Type v} [ring α] [ring β] {f : α → β} (hf : is_ring_hom f) : is_semiring_hom f
+ : is_absolute_value.uniform_space has_abs.abs = pseudo_metric_space.to_uniform_space
+{p : nat_ordinal → Prop} (i : nat_ordinal) (h : ∀ (j : nat_ordinal), (∀ (k : nat_ordinal), k < j → p k) → p j) : p i
+{R : Type u_1} [comm_ring R] {x₁ x₂ y₁ y₂ : R} : (x₁ ^ 2 + x₂ ^ 2) * (y₁ ^ 2 + y₂ ^ 2) = (x₁ * y₁ - x₂ * y₂) ^ 2 + (x₁ * y₂ + x₂ * y₁) ^ 2
+(n a : ℕ) (p : ℕ → Prop) [decidable_pred p] (pp : function.periodic p a) : ⇑multiset.card (multiset.filter p (multiset.Ico n (n + a))) = nat.count p a
+{α : Type u_1} [semigroup α] (x y : α) : ((λ (_x : α), _x * x) ∘ λ (_x : α), _x * y) = λ (_x : α), _x * (y * x)
+{K : Type u} {V : Type v} [division_ring K] [add_comm_group V] [module K V] [h : subsingleton V] : finite_dimensional.finrank K V = 0
+ : primrec (λ (a : (ℕ × nat.partrec.code) × ℕ), nat.partrec.code.evaln a.fst.fst a.fst.snd a.snd)
+{n : Type u} [decidable_eq n] [fintype n] {R : Type v} [linear_ordered_comm_ring R] (g : matrix.special_linear_group n R) : ↑↑↑g = ↑g
+{α : Type u_1} [add_zero_class α] [preorder α] [covariant_class α α (function.swap has_add.add) has_le.le] {a b : α} (ha : 0 < a) (hb : 0 < b) : 0 < a + b
+{α : Type u_1} {R : α → α → Prop} [decidable_rel R] {l : list α} : list.pairwise R l → list.pw_filter R l = l
+{𝒜 : Type u_1} [category_theory.category 𝒜] [category_theory.preadditive 𝒜] [category_theory.limits.has_kernels 𝒜] [category_theory.limits.has_images 𝒜] [category_theory.limits.has_binary_biproducts 𝒜] (A B : 𝒜) : category_theory.exact category_theory.limits.biprod.inl category_theory.limits.biprod.snd
+{α : Type u_1} [decidable_eq α] [fintype α] : monotone finset.up_shadow
+{α : Type u} [mul_one_class α] [has_distrib_neg α] (a : α) : (-1) * a = -a
+{α : Type u_1} [semigroup_with_zero α] {a : α} : 0 ∣ a ↔ a = 0
+{α : Type u_1} {β : Type u_2} {f : α → β} {m : measurable_space α} [topological_space β] (hf : measure_theory.strongly_measurable f) : topological_space.is_separable (set.range f)
+{α : Type u} {β : Type v} [preorder α] [preorder β] {f : α → β} {s : set α} : strict_mono_on f s → strict_anti_on (⇑order_dual.to_dual ∘ f) s
+{α : Type u} [add_group α] [has_lt α] [covariant_class α α has_add.add has_lt.lt] {a b c : α} : -b + a < c → a < b + c
+{α : Type u} {a b : α} [mul_zero_class α] [partial_order α] [zero_lt.mul_pos_mono α] (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a * b
+{α : Type u_1} [circular_preorder α] {a b c : α} (h : has_sbtw.sbtw a b c) : ¬has_btw.btw c b a
+{α : Type u_1} [has_add α] [has_le α] [contravariant_class α α has_add.add has_le.le] {a b c : α} (bc : a + b ≤ a + c) : b ≤ c
+{α : Type u} {L : list (α × bool)} [decidable_eq α] : free_group.mk (free_group.reduce L) = free_group.mk L
+{X : Type u_1} [topological_space X] {s : set X} (hs : is_closed s) : is_seq_closed s
+{K : Type u_4} {L : Type u_5} [field K] [field L] [algebra K L] [finite_dimensional K L] {x : L} : ⇑linear_map.det (⇑(algebra.lmul K L) x) = 0 ↔ x = 0
+{p : ℕ} : padic_val_nat p 1 = 0
+{α : Sort u_1} {p : α → Prop} (x : subtype p) : p ↑x
+{α : Type u_1} {β : Type u_2} [topological_space α] [topological_space β] (s : set α) : continuous (λ (F : C(α, β)), continuous_map.restrict s F)
+{m : Type u_2} {n : Type u_3} {α : Type v} (M : matrix m n α) (i : m) (j : n) : M.transpose j i = M i j
+{G : Type w} [topological_space G] [has_neg G] [has_add G] [has_continuous_add G] (g : G) : continuous (λ (h : G), g + h + -g)
+{α : Type u_1} {M : Type u_5} [comm_monoid M] (s : set α) : finprod (λ (i : α), finprod (λ (H : i ∈ s), 1)) = 1
+{M : Type u_1} [add_monoid M] {x : M} : 0 ∈ multiples x
+{α : Type u_1} [semigroup α] (x y : α) : has_mul.mul x ∘ has_mul.mul y = has_mul.mul (x * y)
+{G₀ : Type u_2} [group_with_zero G₀] (a : G₀) : a / (a / a) = a
+{α : Type u} {β : Type v} [topological_space α] [topological_space β] {f : α → β} (hf : closed_embedding f) : filter.tendsto f (filter.cocompact α) (filter.cocompact β)
+{α : Type u_1} {β : Type u_3} {C : set (set α)} {D : set (set β)} (hC : is_countably_spanning C) (hD : is_countably_spanning D) : is_countably_spanning (set.image2 has_set_prod.prod C D)
+{F : Type u_3} [field F] [fintype F] (hF : ring_char F ≠ 2) : ∃ (a : F), ¬is_square a
+{α : Type u} {β : Type v} [preorder β] {f : α → β} {s : set α} {a : α} : is_extr_on f s a → is_extr_on (⇑order_dual.to_dual ∘ f) s a
+{G : Type u_1} [div_inv_monoid G] [measurable_space G] [has_measurable_mul G] (g : G) : measurable (λ (h : G), h / g)
+{α : Type u} [pseudo_emetric_space α] : emetric.diam ∅ = 0
+{α : Type u_1} {β : Type u_2} {r : α → α → Prop} {s : β → β → Prop} : function.injective coe_fn
+{α : Type u} [has_add α] : is_add_hom id
+(R : Type u) [semiring R] [nontrivial R] [no_zero_divisors R] {p : ℕ} [hp : char_p R p] (p_ne_zero : p ≠ 0) : nat.prime p
+{α : Type u_1} [semigroup α] {a b c : α} : a ∣ b → b ∣ c → a ∣ c
+{R : Type u} [ring R] : ¬is_field (polynomial R)
+{α : Type uu} (r : α → α → Prop) [decidable_rel r] [is_total α r] [is_trans α r] (l : list α) : list.sorted r (list.insertion_sort r l)
+{α : Type u} {β : Type v} (f : α → β) (g : β → α) : set.inv_on f g (function.fixed_points (f ∘ g)) (function.fixed_points (g ∘ f))
+{a b c : ℤ} (h : a % b = c) : b ∣ a - c
+{R : Type u} [comm_ring R] (S : submonoid R) {L : Type u} [comm_ring L] [algebra R L] [is_localization S L] : cardinal.mk L ≤ cardinal.mk R
+{c c' : Σ (n : ℕ), composition n} : c = c' ↔ c.snd.blocks = c'.snd.blocks
+{α : Type u_1} [semiring α] {m n : ℕ} (h : m ∣ n) : ↑m ∣ ↑n
+{α : Type u_1} [generalized_boolean_algebra α] [decidable_rel disjoint] [decidable_rel has_le.le] (u : α) (s : finset α) : uv.is_compressed u u s
+{α : Type u} [pseudo_metric_space α] {s t : set α} (incl : s ⊆ t) : metric.bounded t → metric.bounded s
+{G : Type u} [add_group G] {x : G} (hx : is_of_fin_add_order x) : is_of_fin_add_order (-x)
+(p : ℕ) [hp : fact (nat.prime p)] : prime ↑p ↔ p % 4 = 3
+(R : Type u_1) [comm_ring R] [fintype R] (p : ℕ) [fact (nat.prime p)] : is_unit ↑p ↔ ¬p ∣ ring_char R
+{α : Type u} [topological_space α] {s : set α} : dense (closure s) → dense s
+{X : Type u_1} [topological_space X] {α : Type u_2} {β : Type u_3} (f : X → α) (g : α → β) (h : is_locally_constant (g ∘ f)) (inj : function.injective g) : is_locally_constant f
+{α : Type u_1} {ι : Sort u_3} [conditionally_complete_lattice α] [nonempty ι] {f : ι → α} {c : α} (H : ∀ (x : ι), f x ≤ c) : supr f ≤ c
+(w₁ w₂ p₁ p₂ : nnreal) : w₁ + w₂ = 1 → p₁ ^ ↑w₁ * p₂ ^ ↑w₂ ≤ w₁ * p₁ + w₂ * p₂
+{a b c : ℤ} (habc : a ∣ b * c) (hab : a.gcd b = 1) : a ∣ c
+ : real.sin (real.pi / 3) ^ 2 = 3 / 4
+{α : Type u} [linear_ordered_field α] [topological_space α] [order_topology α] : filter.tendsto (λ (r : α), r⁻¹) filter.at_top (nhds_within 0 (set.Ioi 0))
+ : is_cyclic (quaternion_group 1)
+(R : Type u) [semiring R] [nontrivial R] [no_zero_divisors R] (q : ℕ) [hq : exp_char R q] : nat.prime q ∨ q = 1
+{S : Type u_1} [semigroup S] {a b c : S} (hac : commute a c) (hbc : commute b c) : commute (a * b) c
+{α : Type u_1} [add_zero_class α] [preorder α] [covariant_class α α has_add.add has_le.le] {a b : α} (ha : 0 < a) (hb : 0 ≤ b) : 0 < a + b
+{α : Type u_1} [canonically_ordered_add_monoid α] [has_sub α] [has_ordered_sub α] {a b : α} [contravariant_class α α has_add.add has_le.le] (h : a ≤ b) : b - (b - a) = a
+{P : Type u_2} [metric_space P] {ps₁ ps₂ : set P} (hs : ps₁ ⊆ ps₂) (hc : euclidean_geometry.cospherical ps₂) : euclidean_geometry.cospherical ps₁
+{a b : ennreal} (h : a < b) : add_le_cancellable a
+{α : Sort u_1} (r : α → α → Prop) : function.surjective (quot.mk r)
+{M : Type u_1} [monoid M] {x : M} (m : ℕ) {n : ℕ} (h : x ^ n = 1) : x ^ m = x ^ (m % n)
+{γ : Type u_1} [non_unital_non_assoc_semiring γ] (x : γ) : is_add_monoid_hom (λ (y : γ), x * y)
+{α : Type u} [topological_space α] [linear_order α] [order_topology α] [densely_ordered α] (a : α) [no_min_order α] : closure (set.Iio a) = set.Iic a
+{α : Type u_1} [add_zero_class α] [preorder α] [covariant_class α α has_add.add has_lt.lt] {a b : α} (ha : a ≤ 0) (hb : b < 0) : a + b < 0
+{α : Type u} [topological_space α] {s : set α} : is_clopen s → frontier s = ∅
+{R : Type u_1} [comm_ring R] [is_domain R] (K : Type u_2) [field K] [algebra R K] [is_fraction_ring R K] : is_integrally_closed R ↔ is_integral_closure R R K
+{R : Type u₁} {L : Type u₂} [comm_ring R] [lie_ring L] [lie_algebra R L] [is_noetherian R L] : lie_algebra.is_engelian R L
+{R : Type v} [comm_ring R] (A : matrix (fin 1) (fin 1) R) : A.det = A 0 0
+{R : Type u_1} {A : Type u_2} [comm_ring R] [comm_ring A] [algebra R A] [is_noetherian_ring R] : algebra.finite_type R A ↔ algebra.finite_presentation R A
+{α : Type u_1} [topological_space α] [polish_space α] {s : set α} (hs : is_closed s) : polish_space.is_clopenable s
+{α : Type u_1} [preorder α] [order_bot α] {a : α} : is_atom a → is_coatom (⇑order_dual.to_dual a)
+ : strict_mono real.sinh
+{G : Type u_1} {P : Type u_2} [add_group G] [T : add_torsor G P] (p : P) : function.injective (λ (_x : G), _x +ᵥ p)
+{α : Type u} [decidable_eq α] (i j : α) : function.involutive (has_mul.mul (equiv.swap i j))
+{α : Type u} {L : list (α × bool)} [decidable_eq α] : free_group.red L (free_group.reduce L)
+{α : Type u_1} {m m' : metric_space α} (h : pseudo_metric_space.to_has_dist = pseudo_metric_space.to_has_dist) : m = m'
+{n : ℕ} (a : fin (n + 1)) : ↑↑a = a
+{α : Type u_1} {r : α → α → Prop} (h : reflexive r) {x y : α} (hr : x ≠ y → r x y) : r x y
+ : irrational golden_ratio
+{M : Type u_1} [monoid M] {x y z : M} : y ∈ powers x → z ∈ powers x → y * z ∈ powers x
+{M : Type u_1} [has_mul M] {c d : con M} (H : ∀ (x y : M), ⇑c x y ↔ ⇑d x y) : c = d
+{R : Type u} {A : Type v} [comm_semiring R] [ring A] [algebra R A] {r : R} {a : A} : r ∈ resolvent_set R a ↔ is_unit (resolvent a r)
+{α : Type u} [preorder α] {a b c : α} (hab : a = b) (hbc : b < c) : a < c
+(a b : nnreal) {p q : nnreal} (hp : 1 < p) (hpq : 1 / p + 1 / q = 1) : a * b ≤ a ^ ↑p / p + b ^ ↑q / q
+(L : list ℕ) (h : ∀ (i : ℕ), i ∈ L → 1 ≤ i) : L.length ≤ L.sum
+{α : Type u_1} {β : Type u_2} [add_group α] [add_comm_group β] {f : α → β} (hf : is_add_group_hom f) : is_add_group_hom (λ (a : α), -f a)
+{α : Type u_1} [mul_one_class α] [preorder α] [covariant_class α α has_mul.mul has_le.le] {a b : α} (ha : 1 ≤ a) (hb : 1 ≤ b) : 1 ≤ a * b
+(p : ℕ) [fact (nat.prime p)] {a : ℤ} : zmod.legendre_sym p a = -1 ↔ ¬is_square ↑a
+{α : Type u_1} [circular_preorder α] {a b c : α} (h : has_btw.btw a b c) : ¬has_sbtw.sbtw c b a
+{E : Type u_2} [semi_normed_group E] [star_add_monoid E] [normed_star_group E] : isometry has_star.star
+{α : Type u_1} {β : Type u_2} [topological_space α] [compact_space α] [metric_space β] : continuous coe_fn
+{α : Type u_1} [add_zero_class α] [preorder α] [covariant_class α α has_add.add has_le.le] {a b : α} (ha : 0 < a) (hb : 0 < b) : 0 < a + b
+(C : Type u) [category_theory.category C] [category_theory.limits.has_finite_colimits C] : category_theory.limits.has_finite_wide_pushouts C
+{n : ℕ} (p : fin n → Prop) [decidable_pred p] {i : fin n} (hi : i ∈ fin.find p) : p i
+{α : Type u} [ring α] : is_ring_hom id
+(c : clifford_algebra clifford_algebra_complex.Q) : ⇑clifford_algebra_complex.to_complex (⇑clifford_algebra.involute c) = ⇑(star_ring_end ℂ) (⇑clifford_algebra_complex.to_complex c)
+{α : Sort u} {β : Sort v} {γ : Sort w} {g : β → γ} (hg : function.bijective g) : function.bijective (function.comp g)
+(b : ℤ) : b ≤ b ^ 2
+{z : upper_half_plane} (hz : z ∈ modular_group.fdo) (n : ℤ) : 1 < ⇑complex.norm_sq ↑(modular_group.T ^ n • z)
+{C : Type u} [category_theory.category C] [category_theory.limits.coproducts_disjoint C] : category_theory.limits.initial_mono_class C
+(n : ℕ) {R : Type u_1} [linear_ordered_comm_ring R] {x : R} (hx : 1 < x) : 0 < polynomial.eval x (polynomial.cyclotomic n R)
+{M : Type u_1} [monoid M] {s t : set M} (h : s ⊆ t) : monoid.closure s ⊆ monoid.closure t
+{C : Type u} [category_theory.category C] [category_theory.preadditive C] [category_theory.limits.has_cokernels C] : category_theory.limits.has_coequalizers C
+{α : Type u_1} [fintype α] : nonempty (field α) ↔ is_prime_pow (fintype.card α)
+{γ : Type w} [preorder γ] [order_top γ] (s : set γ) : bdd_above s
+{α : Type u} [pseudo_emetric_space α] {s t : set α} : emetric.Hausdorff_edist s t = emetric.Hausdorff_edist t s
+{α : Type u_1} [mul_one_class α] [preorder α] [covariant_class α α has_mul.mul has_le.le] {a b : α} (ha : 1 ≤ a) (hb : 1 ≤ b) : 1 ≤ a * b
+{n : ℕ} {α : fin (n + 1) → Type u} (q : Π (i : fin (n + 1)), α i) (z : α (fin.last n)) : fin.init (function.update q (fin.last n) z) = fin.init q
+{α : Type u} [preorder α] {a b : α} (h : a < b) : a ≠ b
+{α : Type u_1} [mul_one_class α] [preorder α] [covariant_class α α (function.swap has_mul.mul) has_le.le] {a b : α} (ha : a ≤ 1) (hb : b < 1) : a * b < 1
+{K : Type u_1} {L : Type u_2} [field K] [field L] [algebra K L] (E : intermediate_field K L) : E.map (alg_hom.id K L) = E
+{ι : Type u} (f : ι → cardinal) : bdd_above (set.range f)
+{S : Type u} [has_add S] {a x y : S} (h : add_semiconj_by a x y) : a + x = y + a
+{α : Type u} {u : ultrafilter (ultrafilter α)} {x : ultrafilter α} : ↑u ≤ nhds x ↔ x = mjoin u
+{Γ : Type u_4} [group Γ] {T : Type u_5} [topological_space T] [mul_action Γ T] [has_continuous_const_smul Γ T] : is_open_map quotient.mk
+{x y z : ℤ} (k : ℤ) (hk : k ≠ 0) : pythagorean_triple (k * x) (k * y) (k * z) ↔ pythagorean_triple x y z
+{n a : ℕ} (h : a < n + 1) : ↑a.val = a
+{α : Type u} [pseudo_emetric_space α] {x : α} {s t : set α} (h : x ∈ s) : emetric.inf_edist x t ≤ emetric.Hausdorff_edist s t
+ : cardinal.ord ∘ cardinal.aleph = ordinal.enum_ord {b : ordinal | b.card.ord = b ∧ ordinal.omega ≤ b}
+{C : Type u} [category_theory.category C] [category_theory.preadditive C] [category_theory.limits.has_finite_coproducts C] : category_theory.limits.has_finite_biproducts C
+{α : Type u_1} (f : α → nnreal) : filter.tendsto (λ (s : finset α), ∑' (b : {x // x ∉ s}), f ↑b) filter.at_top (nhds 0)
+{n : ℕ} (a : zmod n) : ↑↑a = a
+{α : Type u_1} [linear_ordered_field α] {a b c d : α} (hc : c ≠ 0) (hd : d ≠ 0) : a / c < b / d → (a * d - b * c) / (c * d) < 0
+{R : Type u_1} {a : R} [mul_zero_class R] [nontrivial R] (la : is_regular a) : a ≠ 0
+(R : Type u) [ring R] (hf : is_field R) (x : R) : x ≠ 0 → (∃! (y : R), x * y = 1)
+{G : Type w} [topological_space G] [has_neg G] [has_add G] [has_continuous_add G] [has_continuous_neg G] (h : G) : continuous (λ (g : G), g + h + -g)
+{α : Type u_1} {β : Type u_2} [measurable_space α] [measurable_space β] {f : β → α} (hf : ∀ (x y : β), f x = f y) : measurable f
+{α : Type u} {β : Type v} [topological_space α] [topological_space β] : is_open_map prod.fst
+{X : Type u_1} [topological_space X] [sequential_space X] {s : set X} : is_seq_closed s → is_closed s
+(k : Type u_1) [division_ring k] {ι : Type u_4} (s : finset ι) [char_zero k] {n : ℕ} (h : s.card = n + 1) : s.sum (λ (i : ι), finset.centroid_weights k s i) = 1
+{α : Type u_3} [linear_ordered_add_comm_group α] : filter.tendsto has_abs.abs filter.at_bot filter.at_top
+{C : Type u} [category_theory.category C] [category_theory.preadditive C] [category_theory.limits.has_kernels C] : category_theory.limits.has_equalizers C
+{α : Type u} {β : Type v} [preorder α] [preorder β] {f : α → β} {s : set α} : antitone_on f s → monotone_on (⇑order_dual.to_dual ∘ f) s
+{R : Type u_1} [cancel_monoid R] (g : R) : is_regular g
+{α : Type u_1} {β : Type u_2} [add_zero_class α] [add_comm_group β] {f : α → β} (hf : is_add_monoid_hom f) : is_add_monoid_hom (λ (a : α), -f a)
+{α : Type u_1} {β : Type u_2} [topological_space α] [topological_space β] {i : α → β} (di : dense_inducing i) [topological_space.separable_space α] : topological_space.separable_space β
+{M : Type u_3} {N : Type u_4} [has_zero M] [has_zero N] {f g : zero_hom M N} : f = g ↔ ∀ (x : M), ⇑f x = ⇑g x
+{α : Sort u} {β : α → Sort v} {f₁ f₂ : Π (x : α), β x} (h : ∀ (x : α), f₁ x = f₂ x) : f₁ = f₂
+(p : ℕ) (a : ℤ) [hp : fact (nat.prime p)] : ↑(zmod.legendre_sym p a) = ↑a ^ (p / 2)
+{α : Type u_1} [mul_one_class α] [preorder α] [covariant_class α α (function.swap has_mul.mul) has_lt.lt] {a b : α} (ha : 1 < a) (hb : 1 ≤ b) : 1 < a * b
+{α : Type u} [add_group α] [preorder α] [covariant_class α α has_add.add has_le.le] {a : α} (h : 0 ≤ a) : -a ≤ a
+{p : ℕ} : padic_val_nat p 0 = 0
+{R : Type u_1} [semiring R] [nontrivial R] (n : ℕ) : (power_series.X ^ n).order = ↑n
+{𝒜 : Type u_1} [category_theory.category 𝒜] [category_theory.preadditive 𝒜] [category_theory.limits.has_kernels 𝒜] [category_theory.limits.has_images 𝒜] [category_theory.limits.has_binary_biproducts 𝒜] (A B : 𝒜) : category_theory.exact category_theory.limits.biprod.inr category_theory.limits.biprod.fst
+(R : Type u_1) (M : Type u_2) [semiring R] [subsingleton R] [add_comm_monoid M] [module R M] : subsingleton M
+{R : Type u_1} [semiring R] (n : ℕ) (a : R) (h : a ≠ 0) : (⇑(power_series.monomial R n) a).order = ↑n
+{G : Type w} [topological_space G] [group G] [topological_group G] [t2_space G] (K : topological_space.positive_compacts G) : locally_compact_space G
+{α : Type u} [preorder α] {a b : α} (h : a < b) : ¬b < a
+(n : ℕ) (R : Type u_1) [ring R] [nontrivial R] : polynomial.cyclotomic n R ≠ 0
+{α : Type u} [add_group α] [has_lt α] [covariant_class α α has_add.add has_lt.lt] {a : α} : -a < 0 ↔ 0 < a
+{R : Type u_1} {a b : R} [add_semigroup R] (ab : is_add_left_regular (a + b)) : is_add_left_regular b
+(p : ℕ) {R : Type u_1} [hp : fact (nat.prime p)] [comm_ring R] (r : R) (n : ℕ) : ⇑(witt_vector.ghost_component n) (⇑(witt_vector.teichmuller p) r) = r ^ p ^ n
+(α : Type u) [preorder α] [nonempty α] [no_min_order α] : ∃ (f : ℕ → α), strict_anti f
+{α : Type u} {L₁ L₂ L₃ : list (α × bool)} : free_group.red L₁ L₂ → free_group.red L₁ L₃ → relation.join free_group.red L₂ L₃
+{R : Type u_1} {a b : R} [semigroup R] (lra : is_left_regular a) (lrb : is_left_regular b) : is_left_regular (a * b)
+(k : Type u_1) (V : Type u_2) (P : Type u_3) [ring k] [add_comm_group V] [module k V] [S : add_torsor V P] : ↑⊤ = set.univ
+{R : Type u_1} [left_cancel_semigroup R] (g : R) : is_left_regular g
+{B : Type u_2} {F : Type u_3} {Z : Type u_4} [topological_space B] [topological_space F] {proj : Z → B} [topological_space Z] (h : is_topological_fiber_bundle F proj) : is_open_map proj
+{C : Type u} [category_theory.category C] [category_theory.preadditive C] [category_theory.limits.has_binary_products C] : category_theory.limits.has_binary_biproducts C
+{α : Type u_1} [add_zero_class α] [preorder α] [covariant_class α α has_add.add has_le.le] {a b : α} (ha : a < 0) (hb : b < 0) : a + b < 0
+{α : Type u} [pseudo_metric_space α] (x y : α) : has_edist.edist x y = ↑(has_nndist.nndist x y)
+{C : Type u} [category_theory.category C] [category_theory.limits.has_finite_products C] [category_theory.limits.has_equalizers C] : category_theory.limits.has_finite_limits C
+{M : Type u_1} [monoid M] {s : set M} {a : M} (hs : is_submonoid s) (h : a ∈ s) : powers a ⊆ s
+{α : Type u} [preorder α] {a b c : α} : a < b → b < c → a < c
+{α : Type u_2} [subtraction_monoid α] {a : α} : even a → even (-a)
+{α : Type u} {L : list (α × bool)} [decidable_eq α] : free_group.reduce (free_group.reduce L) = free_group.reduce L
+{E : Type u_3} [semi_normed_group E] : filter.tendsto has_neg.neg (filter.comap has_norm.norm filter.at_top) (filter.comap has_norm.norm filter.at_top)
+{α : Type u} : nonempty (field α) ↔ is_prime_pow (cardinal.mk α)
+{S : Type u_1} [add_semigroup S] {a b c : S} (hac : add_commute a c) (hbc : add_commute b c) : add_commute (a + b) c
+{E : Type u_1} [add_comm_group E] [has_norm E] (C : normed_group.core E) : semi_normed_group.core E
+{α : Type u_2} [has_add α] {a : α} : even a → (∃ (b : α), a = bit0 b)
+{α : Type u} [pseudo_emetric_space α] {s t u : set α} : emetric.Hausdorff_edist s u ≤ emetric.Hausdorff_edist s t + emetric.Hausdorff_edist t u
+{ι : Type u_1} {B : Type u_2} {F : Type u_3} [topological_space B] [topological_space F] (Z : topological_fiber_bundle_core ι B F) : continuous Z.proj
+{a : nnreal} : add_le_cancellable ↑a
+(R : Type u) (L : Type v) [comm_ring R] [lie_ring L] [lie_algebra R L] [lie_algebra.is_semisimple R L] [h : is_lie_abelian L] : subsingleton L
+{R : Type u_1} [comm_ring R] (u v w : fin 3 → R) : matrix.dot_product u (⇑(⇑cross_product v) w) = matrix.dot_product v (⇑(⇑cross_product w) u)
+{p : ℕ} (hp : 1 < p) : padic_val_nat p p = 1
+{R : Type u_1} [mul_zero_class R] (h : is_right_regular 0) : subsingleton R
+{α : Type u} {β : Type v} [preorder α] [preorder β] {f : α → β} : antitone f → monotone (⇑order_dual.to_dual ∘ f)
+{H : Type u_1} [topological_space H] {e : local_homeomorph H H} : e ∈ charted_space.atlas H H ↔ e = local_homeomorph.refl H
+(C : Type u) [category_theory.category C] [category_theory.limits.has_finite_limits C] : category_theory.limits.has_finite_wide_pullbacks C
+{α : Type u_1} [conditionally_complete_lattice α] (a : α) : has_Inf.Inf {a} = a
+{R : Type u_1} [mul_zero_class R] : is_regular 0 ↔ subsingleton R
+(C : Type u) [category_theory.category C] [category_theory.limits.has_products C] : category_theory.limits.has_finite_products C
+{α : Type} {d : ℕ} {ds : list ℕ} (x y : holor α (d :: ds)) (h : x.slice = y.slice) : x = y
+{α : Type u_1} [has_mul α] [has_le α] [contravariant_class α α has_mul.mul has_le.le] {a b c : α} (bc : a * b ≤ a * c) : b ≤ c
+{K : Type u_1} {S : Type u_2} [field K] [comm_ring S] [algebra K S] (h : power_basis K S) : (⇑(algebra.left_mul_matrix h.basis) h.gen).charpoly = minpoly K h.gen
+{α : Type u} [pseudo_metric_space α] : metric.diam ∅ = 0
+{α : Type u_1} {β : Type u_2} [topological_space α] [topological_space.separable_space α] [topological_space β] {f : α → β} (h : dense_range f) (h' : continuous f) : topological_space.separable_space β
+{p : ℕ} [fact (nat.prime p)] {a : zmod p} (ha : a ≠ 0) : a ^ (p - 1) = 1
+{G : Type w} [topological_space G] [has_neg G] [has_add G] [has_continuous_add G] [has_continuous_neg G] : continuous (λ (g : G × G), g.fst + g.snd + -g.fst)
+{α : Type u_1} [linear_ordered_comm_group α] {n : ℤ} {a b : α} (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b
+(n : ℕ) : ⇑multiset.card (multiset.nat.antidiagonal n) = n + 1
+{S : Type u_1} [has_add S] {a b : S} (h : add_commute a b) : add_commute b a
+{α : Type u} : dense_range has_pure.pure
+{α : Type u} [pseudo_metric_space α] (s : set α) : continuous (λ (x : α), metric.inf_nndist x s)
+{α : Type u_1} [circular_preorder α] {a b c : α} (h : has_sbtw.sbtw a b c) : ¬has_sbtw.sbtw c b a
+(n : ℕ) : filter.tendsto (λ (x : ℝ), polynomial.eval x (exp_neg_inv_glue.P_aux n) * real.exp (-x⁻¹) / x ^ (2 * n)) (nhds_within 0 (set.Ioi 0)) (nhds 0)
+(n : ℕ) : n.factorization = 0 ↔ n = 0 ∨ n = 1
+{α : Type u_1} [partial_order α] [succ_order α] {a b : α} [no_max_order α] : a ≠ b → order.succ a ≠ order.succ b
+{α : Type u_1} [preorder α] [add_comm_semigroup α] [has_sub α] [has_ordered_sub α] {a b : α} : b - (b - a) ≤ a
+{α : Type u_1} {β : Type u_2} {p : α → β → Prop} {x₀ x₁ : Σ (a : α), subtype (p a)} : x₀.fst = x₁.fst → ↑(x₀.snd) = ↑(x₁.snd) → x₀ = x₁
+{α : Type u_1} [bornology α] {p : α → Prop} : bornology.is_bounded {x : α | p x} → bounded_space (subtype p)
+{M₀ : Type u_1} [mul_zero_one_class M₀] : 0 ≠ 1 ∨ ∀ (a : M₀), a = 0
+{α : Type u_1} {β : Type u_2} [topological_space α] [topological_space β] {e : α → β} (de : dense_embedding e) [topological_space.separable_space α] : topological_space.separable_space β
+{α : Type u} [topological_space α] [t2_space α] {s : set α} (hs : is_compact s) : is_closed s
+(S : Type u_1) [ring S] (a : ℕ) : ↑(a.desc_factorial 2) = ↑a * (↑a - 1)
+{α : Type u_1} [circular_preorder α] {a b c d : α} (hbc : has_sbtw.sbtw a b c) (hcd : has_sbtw.sbtw a c d) : has_sbtw.sbtw a b d
+{M : Type u_3} {N : Type u_4} [has_one M] [has_one N] (f : one_hom M N) {x y : M} (h : x = y) : ⇑f x = ⇑f y
+{F : Type u_1} [field F] [fintype F] [decidable_eq F] (hF : ring_char F ≠ 2) (a : F) : ↑({x : F | x ^ 2 = a}.to_finset.card) = char.quadratic_char F a + 1
+(N i : ℕ) : polynomial.rev_at_fun N i = ⇑(polynomial.rev_at N) i
+{α : Type u} [group α] [has_lt α] [covariant_class α α has_mul.mul has_lt.lt] {a b c : α} : a * b < c → b < a⁻¹ * c
+{α : Type u_1} (n : ℕ) (x : α) : function.is_periodic_pt id n x
+{α : Type u_1} [add_zero_class α] [preorder α] [covariant_class α α (function.swap has_add.add) has_lt.lt] {a b : α} (ha : a < 0) (hb : b < 0) : a + b < 0
+{α : Type u} [pseudo_metric_space α] : uniform_continuous (λ (p : uniform_space.completion α × uniform_space.completion α), has_dist.dist p.fst p.snd)
+ : irrational golden_conj
+{a b : ℕ} (hab : a.coprime b) : a.factors.disjoint b.factors
+(ι : Type u_3) : well_founded has_lt.lt
+{a b : ℤ} (ha : a ≠ 0) : is_least {n : ℕ | 0 < n ∧ ∃ (x y : ℤ), ↑n = a * x + b * y} (a.gcd b)
+{α : Type u} {a b : α} [mul_one_class α] [has_zero α] [preorder α] [zero_lt.mul_pos_strict_mono α] (ha : 1 < a) (hb : 1 ≤ b) (b0 : 0 < b) : 1 < a * b
+{α : Type u_1} {r : α → α → Prop} [is_refl α r] [is_antisymm α r] {a b : α} : antisymm_rel r a b → a = b
+{n : ℕ} {a b : fin n} : ↑a ≤ ↑b ↔ a ≤ b
+{α : Type u_1} [preorder α] [pred_order α] {a b : α} [no_min_order α] : a < b → order.pred a < order.pred b
+{K : Type u_1} {L : Type u_2} [field K] [field L] [algebra K L] (h_int : algebra.is_integral K L) : is_totally_disconnected set.univ
+{G : Type u} [add_monoid G] : is_of_fin_add_order 0
+{R : Type u_1} {a b : R} [add_semigroup R] (lra : is_add_left_regular a) (lrb : is_add_left_regular b) : is_add_left_regular (a + b)
+{α : Type u_1} [has_mul α] [has_lt α] [contravariant_class α α has_mul.mul has_lt.lt] {a b c : α} (bc : a * b < a * c) : b < c
+{p : ordinal → Prop} (i : ordinal) (h : ∀ (j : ordinal), (∀ (k : ordinal), k < j → p k) → p j) : p i
+ : function.injective real.sinh
+{α : Type u} [add_group α] [has_lt α] [covariant_class α α (function.swap has_add.add) has_lt.lt] {a : α} : 0 < -a ↔ a < 0
+{M : Type u_1} [group M] (c : con M) {w x : M} : ⇑c w x → ⇑c w⁻¹ x⁻¹
+(α : Sort u_1) [s : setoid α] : function.surjective quotient.mk
+{G : Type u_1} [group G] {s t : set G} (ht : is_normal_subgroup t) (h : s ⊆ t) : group.normal_closure s ⊆ t
+{α : Type u_1} [linear_ordered_semiring α] : subsingleton (floor_semiring α)
+{r : nnreal} (hr : r < 1) : has_sum (λ (n : ℕ), r ^ n) (1 - r)⁻¹
+{S : Type u_1} [has_mul S] (a : S) : commute a a
+{α : Type u} [add_group α] [has_lt α] [covariant_class α α (function.swap has_add.add) has_lt.lt] {a : α} : -a < 0 ↔ 0 < a
+{α : Type u} [semigroup α] [has_distrib_neg α] (a b : α) : a ∣ -b ↔ a ∣ b
+{α : Type u_1} [add_zero_class α] [preorder α] [covariant_class α α has_add.add has_le.le] {a b : α} (ha : a < 0) (hb : b ≤ 0) : a + b < 0
+{M : Type u_1} [add_group M] (c : add_con M) {w x y z : M} : ⇑c w x → ⇑c y z → ⇑c (w - y) (x - z)
+{G : Type w} [topological_space G] [has_inv G] [has_mul G] [has_continuous_mul G] [has_continuous_inv G] (h : G) : continuous (λ (g : G), g * h * g⁻¹)
+{α : Type u} {β : Type v} [topological_space α] [pseudo_metric_space β] {f g : bounded_continuous_function α β} [is_empty α] : has_dist.dist f g = 0
+{α : Type u} {β : Type v} [pseudo_emetric_space α] [pseudo_emetric_space β] {f : α → β} {g : β → α} (h : isometry f) (hg : function.right_inverse g f) : isometry g
+{α : Type u} [add_comm_group α] [has_le α] [covariant_class α α has_add.add has_le.le] {a b c : α} : b ≤ c - a → a + b ≤ c
+{R : Type u_1} {M : Type u_2} [comm_monoid M] [comm_ring R] [nontrivial R] : algebra.finite_type R (monoid_algebra R M) ↔ monoid.fg M
+(R : Type u) {A : Type v} [comm_ring R] [ring A] [algebra R A] [nontrivial R] {x : A} : is_integral R x → is_algebraic R x
+{α : Type u} [add_group α] [has_le α] [covariant_class α α (function.swap has_add.add) has_le.le] {a b c : α} : a ≤ c - b → a + b ≤ c
+{p : ℕ} (hp : 1 < p) : padic_val_int p ↑p = 1
+(G : Type u_1) [monoid G] : ¬monoid.is_torsion_free G ↔ ∃ (g : G), g ≠ 1 ∧ is_of_fin_order g
+{α : Type u_1} [preorder α] [nonempty α] [no_max_order α] : infinite α
+{α : Type u} [non_unital_non_assoc_ring α] (a b c : α) : a * (b - c) = a * b - a * c
+{α : Type u_1} [preorder α] [locally_finite_order α] {a b : α} : ¬a < b → multiset.Ioc a b = 0
+{M : Type u_1} [monoid M] : is_submonoid set.univ
+{α : Type u_1} {a b c : α} [linear_order α] [add_comm_semigroup α] [has_sub α] [has_ordered_sub α] : a < b - c ↔ c + a < b
+{α : Type u} [preorder α] {a b c : α} : a < b → b ≤ c → a < c
+{α : Type u_1} [linear_ordered_field α] [archimedean α] {x y : α} (hx : 0 < x) (hy : y < 1) : ∃ (n : ℕ), y ^ n < x
+{α : Type u} [preorder α] {s t : set α} (h : bdd_below s) : bdd_below (s ∩ t)
+(p' : ℕ) : 2 < lucas_lehmer.q (p' + 2)
+{α : Type u} {β : Type v} [pseudo_emetric_space α] [pseudo_emetric_space β] {f : α → β} [subsingleton α] : isometry f
+{α : Type u} [topological_space α] [linear_order α] [order_topology α] [densely_ordered α] (a : α) [no_max_order α] : closure (set.Ioi a) = set.Ici a
+{n : ℕ} (hpos : 0 < n) : irreducible (polynomial.cyclotomic n ℤ)
+{Γ₀ : Type u_3} [linear_ordered_comm_monoid_with_zero Γ₀] [nontrivial Γ₀] {K : Type u_1} [division_ring K] (v : valuation K Γ₀) {x : K} : ⇑v x = 0 ↔ x = 0
+{R : Type u_1} [ordered_comm_ring R] {M : Type u_2} [add_comm_group M] [module R M] [no_zero_smul_divisors R M] (x : module.ray R M) : x ≠ -x
+{α : Type u_1} [linear_order α] (a : α) : {a}.min' _ = a
+{M : Type u_3} [add_monoid M] [preorder M] (L : list M) (h : L.sum < 0) : 0 < L.length
+{α : Type u} [preorder α] {s : set α} {a : α} (h : is_greatest s a) : bdd_above s
+{α : Type u_1} [add_zero_class α] [preorder α] [covariant_class α α has_add.add has_lt.lt] {a b : α} (ha : 0 < a) (hb : 0 < b) : 0 < a + b
+{M : Type u_1} [add_monoid M] : is_add_submonoid set.univ
+{α : Type u_1} {β : Type u_2} {f : α → β} (Hf : function.injective f) : function.injective (option.map f)
+{G : Type u_2} [group G] : mul_action.fixed_points (conj_act G) G = ↑(subgroup.center G)
+{α : Type u} {β : Type v} [preorder α] [preorder β] {f : α → β} : strict_mono f → strict_anti (⇑order_dual.to_dual ∘ f)
+{α : Type u} [preorder α] {a b c : α} : b ≤ c → a = b → a ≤ c
+{R : Type u₁} [linear_ordered_ring R] {a : R} (H : -2 ≤ a) (n : ℕ) : 1 + ↑n * a ≤ (1 + a) ^ n
+{α : Type u} [group α] [has_le α] [covariant_class α α has_mul.mul has_le.le] {a : α} : 1 ≤ a⁻¹ → a ≤ 1
+{α : Type u_1} {M : Type u_4} [has_zero M] {s : set α} {f : α → M} {a : α} (h : s.indicator f a ≠ 0) : a ∈ s
+{α : Type u_1} (f : α → α → α) [is_associative α f] (x y : α) : f x ∘ f y = f (f x y)
+{M₀ : Type u_1} [mul_zero_class M₀] : (λ (_x : M₀), _x * 0) = function.const M₀ 0
+{a b : Prop} : ¬(a ∧ b) ↔ ¬a ∨ ¬b
+{R : Type u_1} [comm_ring R] : set.surj_on (λ (g : matrix.special_linear_group (fin 2) R), ↑g 1) set.univ {cd : fin 2 → R | is_coprime (cd 0) (cd 1)}
+{α : Type u_1} [mul_one_class α] [preorder α] [covariant_class α α has_mul.mul has_le.le] {a b : α} (ha : 1 < a) (hb : 1 < b) : 1 < a * b
+{M : Type u_1} [has_add M] {r s : M → M → Prop} (h : ∀ (x y : M), r x y → s x y) : add_con_gen r ≤ add_con_gen s
+{α : Type u_1} [linear_order α] {s : set α} : ¬bdd_below s ↔ ∀ (x : α), ∃ (y : α) (H : y ∈ s), y < x
+{k : ℕ} : fact (even (fintype.card (fin (bit0 k))))
+(l : list ℕ) (n : ℕ) : list.sorted has_le.le (denumerable.raise l n)
+{R : Type u_1} {a : R} [mul_zero_class R] [nontrivial R] (ra : is_right_regular a) : a ≠ 0
+{α : Type u} [topological_space α] [t2_space α] (h : topological_space.is_topological_basis {s : set α | is_clopen s}) : totally_separated_space α
+{α : Type u_1} [preorder α] [locally_finite_order α] {a b : α} : ¬a < b → finset.Ioc a b = ∅
+{α : Type u} [group α] [has_lt α] [covariant_class α α has_mul.mul has_lt.lt] {a b c : α} : b < a⁻¹ * c → a * b < c
+{R : Type u_1} [mul_one_class R] : is_regular 1
+{C : Type u} [category_theory.category C] (P Q : C) [category_theory.limits.has_binary_product P Q] : category_theory.limits.has_binary_product Q P
+{X : Type u_1} [topological_space X] [compact_space X] {Y : Type u_2} [topological_space Y] : is_closed_map prod.snd
+{n : ℕ} : is_prime_pow n ↔ ∃! (p : ℕ), nat.prime p ∧ p ∣ n
+{α : Type u} (x : α) : function.is_fixed_pt id x
+{M : Type u_1} [has_add M] {c d : add_con M} (H : ∀ (x y : M), ⇑c x y ↔ ⇑d x y) : c = d
+{K : Type u_4} {L : Type u_5} [field K] [field L] [algebra K L] [finite_dimensional K L] {x : L} : ⇑(algebra.norm K) x = 0 ↔ x = 0
+{γ : Type w} [metric_space γ] {x y : γ} : has_nndist.nndist x y = 0 ↔ x = y
+{α : Type u} [add_group α] [has_lt α] [covariant_class α α (function.swap has_add.add) has_lt.lt] {a b : α} : 0 < a - b → b < a
+(p : ℕ) [fact (nat.prime p)] (a : ℤ) (ha : ↑a ≠ 0) : zmod.legendre_sym p (a ^ 2) = 1
+(G : Type u_1) [monoid G] (L : Type u_2) [comm_ring L] [no_zero_divisors L] : linear_independent L (λ (f : G →* L), ⇑f)
+{α : Type u_1} {M : Type u_5} [comm_monoid M] {f : α → M} : finprod (λ (i : α), finprod (λ (H : i ∈ ∅), f i)) = 1
+{α : Type u} [linear_ordered_field α] [topological_space α] [order_topology α] : filter.tendsto (λ (x : α), x⁻¹) (nhds_within 0 (set.Ioi 0)) filter.at_top
+{α : Sort u_1} {β : Sort u_2} {γ : Sort u_3} {g : β → γ} (hg : function.injective g) : function.injective (function.comp g)
+{α : Sort u} {β : Sort v} {f : α → β} (hf : function.injective f) [subsingleton β] : subsingleton α
+{G : Type u_1} {P : Type u_2} [add_group G] [T : add_torsor G P] (p : P) : function.injective (λ (_x : P), _x -ᵥ p)
+{α : Type u_1} [preorder α] {a b : α} (h : a < b) : ¬is_max a
+{n : ℕ} : order_of (quaternion_group.a 1) = 2 * n
+{α : Type u} [semilattice_sup α] [nonempty α] (s : finset α) : bdd_above ↑s
+{α : Sort u_1} (x : α) (h : ∀ (y : α), y = x) : subsingleton α
+{α : Type u_1} [mul_one_class α] [preorder α] [covariant_class α α has_mul.mul has_le.le] {a b : α} (ha : 1 < a) (hb : 1 ≤ b) : 1 < a * b
+{M : Type u_1} [add_monoid M] {s₁ s₂ : set M} (is₁ : is_add_submonoid s₁) (is₂ : is_add_submonoid s₂) : is_add_submonoid (s₁ ∩ s₂)
+{R : Type u_1} [ordered_comm_ring R] {M : Type u_2} [add_comm_group M] [module R M] {x y : M} : same_ray R (-x) (-y) ↔ same_ray R x y
+{α : Type u_1} [add_zero_class α] [preorder α] [covariant_class α α has_add.add has_lt.lt] {a b : α} (ha : a < 0) (hb : b < 0) : a + b < 0
+{η : Type u_1} {Gs : η → Type u_2} [Π (i : η), monoid (Gs i)] {x : Π (i : η), Gs i} (h : is_of_fin_order x) (i : η) : is_of_fin_order (x i)
+{X : Type u_1} [topological_space X] {x y : X} {F : set X} (h : joined_in F x y) : joined ⟨x, _⟩ ⟨y, _⟩
+{α : Type u_1} {β : Type u_2} {m₁ : measurable_space α} {m₂ : measurable_space β} {f : α → β} : measurable f → measurable_space.comap f m₂ ≤ m₁
+{α : Type u} [add_comm_group α] [has_le α] [covariant_class α α has_add.add has_le.le] {a b c : α} : a + b ≤ c → b ≤ c - a
+{R : Type u_1} {a b : R} [semigroup R] (rra : is_right_regular a) (rrb : is_right_regular b) : is_right_regular (a * b)
+{α : Type u} [pseudo_emetric_space α] {x y : α} {s : set α} (hx : x ∈ s) (hy : y ∈ s) : has_edist.edist x y ≤ emetric.diam s
+(f : ℕ → nnreal) : filter.tendsto (λ (i : ℕ), ∑' (k : ℕ), f (k + i)) filter.at_top (nhds 0)
+{R : Type u_1} [add_left_cancel_semigroup R] (g : R) : is_add_left_regular g
+{α : Type u} [linear_order α] {a b c : α} : set.interval a c ⊆ set.interval a b ∪ set.interval b c
+{α : Type u_1} [add_zero_class α] [preorder α] [covariant_class α α has_add.add has_lt.lt] {a b : α} (ha : a < 0) (hb : b < 0) : a + b < 0
+{α : Type u_1} [fintype α] [field α] : is_prime_pow (fintype.card α)
+{G : Type u_3} [group G] : group.fg G ↔ monoid.fg G
+{α : Type u} [add_group α] [has_lt α] [covariant_class α α has_add.add has_lt.lt] {a : α} : 0 < -a → a < 0
+{B : Type u_2} {F : Type u_3} [topological_space B] [topological_space F] : is_topological_fiber_bundle F prod.snd
+ : filter.tendsto (λ (x : ℝ), x ^ (1 / x)) filter.at_top (nhds 1)
+{𝕜 : Type u_1} [linear_ordered_field 𝕜] [topological_space 𝕜] [order_topology 𝕜] {s : set 𝕜} : strict_convex 𝕜 s ↔ convex 𝕜 s
+{C : Type u} [category_theory.category C] [category_theory.limits.has_binary_products C] [category_theory.limits.has_terminal C] : category_theory.limits.has_finite_products C
+{G : Type u_10} [add_group G] (a : G) : ⇑(equiv.symm (equiv.add_right a)) = λ (x : G), x + -a
+{α : Type u} [preorder α] {a b : α} : a ≤ b → ¬b ≤ a → a < b
+{α : Type u} [decidable_eq α] (i j : α) : function.involutive (λ (_x : equiv.perm α), _x * equiv.swap i j)
+{ι : Type u_1} {α : Type u_3} [preorder ι] [linear_order α] {u : ι → α} (h : monotone u) (H : ¬bdd_below (set.range u)) : filter.tendsto u filter.at_bot filter.at_bot
+{α : Type u} [non_unital_non_assoc_ring α] (k : α) (h : ∀ (x : α), x * k = 0 → x = 0) : is_right_regular k
+{α : Type u_1} [circular_preorder α] {a b c : α} (h : has_btw.btw a b c) : has_btw.btw c a b
+{α : Type u_1} {a b c : α} [linear_order α] [add_comm_semigroup α] [has_sub α] [has_ordered_sub α] (h : a - c < b - c) : a < b
+{α : Type u} [topological_space α] [locally_compact_space α] [t2_space α] (x : α) : ∃ (U : set α), is_open U ∧ x ∈ U ∧ is_compact (closure U)
+ : filter.tendsto real.log filter.at_top filter.at_top
+{R : Type u_1} [comm_ring R] (hR : discrete_valuation_ring.has_unit_mul_pow_irreducible_factorization R) [is_domain R] : unique_factorization_monoid R
+{p : ℕ} [p_prime : fact (nat.prime p)] {b : ℕ} (dvd : p ∣ b) : padic_val_nat p (b / p) = padic_val_nat p b - 1
+{α : Type u_1} {β : Type u_2} {f : α → β} {c : α} [semiring α] [add_group β] (h : function.antiperiodic f c) : function.periodic f (2 * c)
+{M : Type u_1} [monoid M] {ι : Sort u_2} {s : ι → set M} (h : ∀ (y : ι), is_submonoid (s y)) : is_submonoid (set.Inter s)
+{R : Type u_1} [ordered_comm_semiring R] {M : Type u_2} [add_comm_monoid M] [module R M] (x : M) : same_ray R x x
+{ι : Type u_1} {α : Type u_2} {s : ι → set α} (hs : indexed_partition s) (x : α) : ⇑(hs.out) (hs.proj x) = hs.some (hs.index x)
+{α : Type u_1} : subsingleton (option α) ↔ is_empty α
+{ι : Type u_1} (f g : ι → cardinal) (H : ∀ (i : ι), f i < g i) : cardinal.sum f < cardinal.prod g
+{α : Type u_1} [add_zero_class α] [preorder α] [covariant_class α α has_add.add has_le.le] {a b : α} (ha : 0 < a) (hb : 0 < b) : 0 < a + b
+{R : Type u_1} [rack R] {x y z : R} : shelf.act x (shelf.act y z) = shelf.act (shelf.act x y) z ↔ shelf.act x z = z
+{a : Prop} : ¬¬a ↔ a
+(α : Type u) [t : topological_space α] [topological_space.separable_space α] [nonempty α] : ∃ (u : ℕ → α), dense_range u
+{G : Type u} [group G] {x : G} : is_of_fin_order x⁻¹ ↔ is_of_fin_order x
+{α : Type u_1} {M : Type u_5} [has_zero M] (a : α) : function.injective (finsupp.single a)
+{α : Type u_1} {β : Type u_3} {C : set (set α)} {D : set (set β)} (hC : is_pi_system C) (hD : is_pi_system D) : is_pi_system (set.image2 has_set_prod.prod C D)
+{n p : ℕ} : list.count p n.factors = ⇑(n.factorization) p
+{α : Type u} [preorder α] {s : set α} : ¬bdd_above s ↔ ∀ (x : α), ∃ (y : α) (H : y ∈ s), ¬y ≤ x
+{x y z : ℤ} : pythagorean_triple x y z ↔ pythagorean_triple y x z
+{R : Type u_1} [linear_ordered_field R] [floor_ring R] {b : ℕ} (hb : 1 < b) {x : ℤ} {r : R} (hr : 0 < r) : r ≤ ↑b ^ x ↔ int.clog b r ≤ x
+{P : ℕ → Prop} {m : ℕ} (h0 : P m) (h1 : ∀ (n : ℕ), m ≤ n → P n → P (n + 1)) (n : ℕ) : m ≤ n → P n
+{G : Type u} [add_group G] {x : G} : is_of_fin_add_order (-x) ↔ is_of_fin_add_order x
+{α : Type u} [pseudo_metric_space α] (s : set α) : continuous (λ (x : α), metric.inf_dist x s)
+{α : Type u_1} {β : Type u_2} {m₁ : measurable_space α} {m₂ : measurable_space β} {f : α → β} : measurable_space.comap f m₂ ≤ m₁ → measurable f
+{α : Type u} {a b : α} [mul_zero_class α] [partial_order α] [zero_lt.pos_mul_mono α] (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a * b
+ : filter.tendsto (λ (N : ℕ), formal_multilinear_series.comp_partial_sum_target 0 N N) filter.at_top filter.at_top
+{R : Type u_1} {A : Type u_2} [comm_ring R] [comm_ring A] [algebra R A] : algebra.finite_presentation R A → algebra.finite_type R A
+{n : ℕ} {a b : fin n} : ↑a < ↑b ↔ a < b
+{γ : Type u_1} [non_unital_non_assoc_semiring γ] (x : γ) : is_add_monoid_hom (λ (y : γ), y * x)
+{α : Type u} [partial_order α] {a b : α} : a ≤ b → a < b ∨ a = b
+{α : Type u_1} {β : Type u_2} [topological_space α] [topological_space β] [locally_compact_space α] (a : α) : continuous (λ (f : C(α, β)), ⇑f a)
+{α : Type u_1} [preorder α] [pred_order α] {a b : α} [no_min_order α] : order.pred a < order.pred b → a < b
+{α : Type u_1} [cancel_monoid_with_zero α] {a b c : α} (ha : a ≠ 0) : a * b ∣ a * c ↔ b ∣ c
+(M : Type u_1) (N : Type u_2) (α : Type u_3) [has_vadd M α] [has_vadd N α] [vadd_comm_class M N α] : vadd_comm_class N M α
+{α : Type u_1} [comm_monoid α] (a b u : α) (hu : is_unit u) : a ∣ u * b ↔ a ∣ b
+{α : Type u} {a b : α} [mul_one_class α] [has_zero α] [preorder α] [zero_lt.pos_mul_mono α] (ha : 1 ≤ a) (hb : 1 ≤ b) (a0 : 0 < a) : 1 ≤ a * b
+{α : Type u} [topological_space α] {s t : set α} (hs : dense s) (ht : dense t) (hso : is_open s) : dense (s ∩ t)
+{R : Type u_1} {M : Type u_3} {a : R} [monoid R] [mul_action R M] {n : ℕ} (n0 : 0 < n) : is_smul_regular M (a ^ n) ↔ is_smul_regular M a
+{R : Type u_1} [comm_ring R] (f : polynomial R) (r : R) : (⇑(polynomial.taylor r) f).sum (λ (i : ℕ) (a : R), ⇑polynomial.C a * (polynomial.X - ⇑polynomial.C r) ^ i) = f
+{M : Type u} [add_zero_class M] (a : M) : add_semiconj_by a 0 0
+{𝕜 : Type u_1} [nondiscrete_normed_field 𝕜] {F : Type u_2} [normed_group F] [normed_space 𝕜 F] {n : ℕ} {f : 𝕜 → F} : iterated_deriv (n + 1) f = iterated_deriv n (deriv f)
+{α : Type u} {a b : α} [mul_zero_one_class α] [partial_order α] [zero_lt.pos_mul_mono α] (ha : 1 ≤ a) (hb : 1 ≤ b) (a0 : 0 ≤ a) : 1 ≤ a * b
+{α : Type u_1} [add_zero_class α] [preorder α] [covariant_class α α (function.swap has_add.add) has_le.le] {a b : α} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a + b
+{α : Type u_1} [comm_semiring α] (t : tree α) (r₁ r₂ : tactic.ring2.csring_expr) (H : tactic.ring2.horner_expr.of_csexpr r₁ = tactic.ring2.horner_expr.of_csexpr r₂) : tactic.ring2.csring_expr.eval t r₁ = tactic.ring2.csring_expr.eval t r₂
+{R : Type u} [comm_ring R] [is_domain R] (hR : discrete_valuation_ring.has_unit_mul_pow_irreducible_factorization R) : discrete_valuation_ring R
+{R : Type u_1} [non_assoc_semiring R] [nontrivial R] (hR : ring_char R ≠ 2) : 2 ≠ 0
+{α : Type u} (f : fin 0 → α) : list.of_fn f = list.nil
+{α : Type u_1} [comm_monoid α] (a b u : α) (hu : is_unit u) : u * a ∣ b ↔ a ∣ b
+ : ¬summable (λ (n : ℕ), (↑n)⁻¹)
+(R : Type u) [semiring R] (p q : ℕ) [hp : char_p R p] [hq : exp_char R q] : p = q ↔ nat.prime p
+{C : Type u} [category_theory.category C] [category_theory.limits.has_zero_morphisms C] [category_theory.limits.has_zero_object C] (X : C) [is_simple_order (category_theory.subobject X)] : category_theory.simple X
+(C : Type u) [𝒞 : category_theory.category C] [category_theory.limits.has_binary_coproducts C] [category_theory.limits.has_coequalizers C] : category_theory.limits.has_pushouts C
+{α : Type u_1} {β : Type u_2} [group α] [comm_group β] {f : α → β} (hf : is_group_hom f) : is_group_hom (λ (a : α), (f a)⁻¹)
+{R : Type u_8} [ordered_semiring R] [nontrivial R] (l : list R) (h : ∀ (a : R), a ∈ l → 0 < a) : 0 < l.prod
+{G : Type u_1} [group G] [topological_space G] [topological_group G] {H : subgroup G} (h_1_int : 1 ∈ interior ↑H) : is_open ↑H
+{R : Type u_1} [comm_ring R] (v w : fin 3 → R) : matrix.dot_product v (⇑(⇑cross_product v) w) = 0
+{α : Type u} [topological_space α] {s : set α} : is_compact s → ∀ (f : ultrafilter α), ↑f ≤ filter.principal s → (∃ (a : α) (H : a ∈ s), ↑f ≤ nhds a)
+{α : Type u} (f : α → Type (max u v)) : ¬function.surjective f
+{α : Type u_1} {β : Type u_2} [topological_space α] [compact_space α] [metric_space β] : continuous (λ (p : C(α, β) × α), ⇑(p.fst) p.snd)
+{α : Type u_1} {β : Type u_2} [has_mul α] [comm_group β] {f : α → β} (hf : is_mul_hom f) : is_mul_hom (λ (a : α), (f a)⁻¹)
+{M : Type u_1} [monoid M] (x : M) : is_submonoid (powers x)
+{M : Type u} [add_zero_class M] (x : M) : add_semiconj_by 0 x x
+{R : Type u_1} [linear_ordered_field R] [floor_ring R] {b : ℕ} (hb : 1 < b) {x : ℤ} {r : R} (hr : 0 < r) : ↑b ^ x < r ↔ x < int.clog b r
+{α : Type u} [preorder α] {s t : set α} (h : bdd_below t) : bdd_below (s ∩ t)
+{C : Type u₁} [category_theory.category C] {A : C} [category_theory.limits.has_terminal C] (hA : category_theory.is_subterminal A) : category_theory.mono (category_theory.limits.terminal.from A)
+{M : Type u_1} [add_monoid M] {γ : Type u_2} [add_monoid γ] {f : M → γ} (hf : is_add_monoid_hom f) : is_add_submonoid (set.range f)
+{S : Type u_1} [has_mul S] {a b : S} (h : commute a b) : a * b = b * a
+ : ⇑linear_map.det ↑(complex.conj_lie.to_linear_equiv) = -1
+ : function.injective has_dvd.dvd
+{X : Type u_1} [topological_space X] (s : set X) : seq_closure s ⊆ closure s
+{α : Type u} {β : Type v} [setoid α] [topological_space α] {f : β → α} (hf : dense_range f) : dense_range (quotient.mk ∘ f)
+{α : Type u_1} [add_zero_class α] [preorder α] [covariant_class α α has_add.add has_lt.lt] {a b : α} (ha : 0 ≤ a) (hb : 0 < b) : 0 < a + b
+{α : Type u_1} {r : α → α → Prop} : is_max_chain r (max_chain r)
+{α : Type u} {a b : α} [mul_one_class α] [has_zero α] [preorder α] [zero_lt.pos_mul_mono α] (ha : a < 1) (hb : b ≤ 1) (a0 : 0 < a) : a * b < 1
+{α : Type u_1} [has_le α] {a : α} : is_max a → is_min (⇑order_dual.to_dual a)
+{α : Type u_1} {ι : Sort u_3} [conditionally_complete_linear_order α] {b : α} [nonempty ι] {f : ι → α} (h : b < supr f) : ∃ (i : ι), b < f i
+{α : Type u} [conditionally_complete_linear_order α] [topological_space α] [order_topology α] [densely_ordered α] {a b : α} : is_preconnected (set.Icc a b)
+{P : Type u_1} [preorder P] (s t : order.pfilter P) (h : ↑s = ↑t) : s = t
+{α : Type u_1} [linear_ordered_field α] {a b : α} (ha : 0 < a) (hb : 0 < b) : a⁻¹ ≤ b ↔ b⁻¹ ≤ a
+{α : Type u_1} [add_zero_class α] [preorder α] [covariant_class α α has_add.add has_le.le] {a b : α} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a + b
+{K : Type u} {V : Type v} [division_ring K] [add_comm_group V] [module K V] [finite_dimensional K V] : 0 < finite_dimensional.finrank K V ↔ nontrivial V
+{ι : Type u} (f : ι → ordinal) : bdd_above (set.range f)
+{α : Type u} {β : Type v} [preorder β] {f : α → β} {l : filter α} {a : α} : is_extr_filter (⇑order_dual.to_dual ∘ f) l a → is_extr_filter f l a
+{α : Type u_1} [cancel_comm_monoid_with_zero α] {a b c : α} (hc : c ≠ 0) : a * c ∣ b * c ↔ a ∣ b
+{α : Type u} (r : α → α → Prop) [is_partial_order α r] : ∃ (s : α → α → Prop) (_x : is_linear_order α s), r ≤ s
+{S : Type u_1} [semigroup S] {a b c : S} (hab : commute a b) (hac : commute a c) : commute a (b * c)
+{α : Type u_1} {M : Type u_5} [add_comm_monoid M] {f : α → M} : finsum (λ (i : α), finsum (λ (H : i ∈ ∅), f i)) = 0
+ : pythagorean_triple 0 0 0
+{R : Type u} [comm_semiring R] [nontrivial R] {p : fin 2 → R} (h : is_coprime (p 0) (p 1)) : p ≠ 0
+{γ : Type w} [semilattice_inf γ] (a : γ) {s : set γ} : bdd_below (has_insert.insert a s) ↔ bdd_below s
+{α : Type u} [group α] [fintype α] {p : ℕ} [hp : fact (nat.prime p)] (h : fintype.card α = p) : is_simple_group α
+(f : bool → bool) (x : bool) : f (f (f x)) = f x
+{α : Type u} [partial_order α] {a b : α} : a ≤ b → b ≤ a → b = a
+{G : Type u} {x : G} {n : ℕ} [fintype G] [group G] : x ^ n = 1 ↔ x ^ n.gcd (fintype.card G) = 1
+{p n : ℕ} (hp : nat.prime p) (hdiv : p ∣ n) (R : Type u_1) [comm_ring R] : ⇑(polynomial.expand R p) (polynomial.cyclotomic n R) = polynomial.cyclotomic (n * p) R
+{R : Type u_1} {M : Type u_3} [monoid_with_zero R] [has_zero M] [mul_action_with_zero R M] (h : is_smul_regular M 0) : subsingleton M
+{K : Type u} {V : Type v} [division_ring K] [add_comm_group V] [module K V] (ι : Type u_1) [unique ι] : finite_dimensional.finrank K V = 1 ↔ nonempty (basis ι K V)
+{G : Type u} {x y : G} [comm_monoid G] (hx : is_of_fin_order x) (hy : is_of_fin_order y) : is_of_fin_order (x * y)
+{A : Type u_6} [comm_ring A] [is_domain A] {M : submonoid A} (hM : M ≤ non_zero_divisors A) : is_domain (localization M)
+{α : Type u} [non_unital_non_assoc_ring α] (a b c : α) : (a - b) * c = a * c - b * c
+{α : Type u} {β : Type v} [ring α] [ring β] {f : α → β} (H : is_semiring_hom f) : is_ring_hom f
+{α : Type u_1} [preorder α] [add_comm_monoid α] [has_sub α] [has_ordered_sub α] {a b : α} : a ≤ b → a - b ≤ 0
+{C : Type u} [category_theory.category C] [category_theory.preadditive C] (X Y : C) [category_theory.limits.has_binary_product X Y] : category_theory.limits.has_binary_biproduct X Y
+{K : Type u} {V : Type v} [division_ring K] [add_comm_group V] [module K V] [finite_dimensional K V] [h : nontrivial V] : 0 < finite_dimensional.finrank K V
+{α : Type u} {β : Type v} [topological_space α] [topological_space β] : is_open_map prod.snd
+{η : Type u_1} {Gs : η → Type u_2} [Π (i : η), group (Gs i)] (tfGs : ∀ (i : η), monoid.is_torsion_free (Gs i)) : monoid.is_torsion_free (Π (i : η), Gs i)
+{K : Type u_1} [linear_ordered_field K] {c : continued_fraction K} : ↑c.convergents = ↑c.convergents'
+{α : Type u} [group α] [has_lt α] [covariant_class α α has_mul.mul has_lt.lt] {a : α} : a < 1 → 1 < a⁻¹
+{α : Type u} [pseudo_metric_space α] {s t : set α} (hs : metric.bounded s) (ht : metric.bounded t) : metric.bounded (s ∪ t)
+ : ¬bdd_above {p : ℕ | nat.prime p}
+{α : Type u} [group α] [has_lt α] [covariant_class α α has_mul.mul has_lt.lt] {a : α} : a⁻¹ < 1 → 1 < a
+{α : Type u} {β : Type v} [preorder β] {f : α → β} {s : set α} {a : α} : is_extr_on (⇑order_dual.to_dual ∘ f) s a → is_extr_on f s a
+{p : ℕ} [fact (nat.prime p)] : padic_norm_e 1 = 1
+{α : Type u} (r : α → α → Prop) [is_symm α r] {a b : α} : r a b ↔ r b a
+ : filter.cofinite = filter.at_top
+{F : Type u_1} [field F] [fintype F] [decidable_eq F] {a : F} (ha : a ≠ 0) : char.quadratic_char F a = -1 ↔ ¬char.quadratic_char F a = 1
+{α : Type u_2} [monoid α] (m : α) : is_square m → (∃ (c : α), m = c ^ 2)
+{α : Type u_1} [mul_one_class α] [preorder α] [covariant_class α α has_mul.mul has_lt.lt] {a b : α} (ha : 1 ≤ a) (hb : 1 < b) : 1 < a * b
+{R : Type u_1} (c₁ c₂ : R) : cardinal.mk (quaternion_algebra R c₁ c₂) = cardinal.mk R ^ 4
+{α : Type u_1} {β : Type u_2} {f : α → β} {m : measurable_space α} [topological_space β] [topological_space.pseudo_metrizable_space β] [measurable_space β] [borel_space β] (hf : measure_theory.strongly_measurable f) : measurable f
+{f : ℕ → nnreal} (hf : ∀ ⦃m n : ℕ⦄, 0 < m → m ≤ n → f n ≤ f m) : summable (λ (k : ℕ), 2 ^ k * f (2 ^ k)) ↔ summable f
+{α : Type u_1} [preorder α] {a b : α} (h : a ≤ b) : set.Iio a ⊆ se
