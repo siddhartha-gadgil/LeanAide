@@ -22,12 +22,25 @@ def fetchStatementsWithKeyword (mod : Json → α) (kw : String) : MetaM <| Arra
 #eval fetchStatementsWithKeyword (·["keywords"]!["free group"]!) "free group" -- extracting the scores associated with the keyword "free group"
 
 
+#eval fetchStatementsWithKeyword (·["doc_string"]!) "free group"
+
+#eval fetchStatementsWithKeyword (·["doc_string"]!) "free"
+
+def docPair (js: Json) : String × String := 
+  ((js["doc_string"]!).getStr?.toOption.get!, (js["theorem"]!).getStr?.toOption.get!)
+
+def pair :=  fetchStatementsWithKeyword docPair "free group"
+
+#eval pair
+
 def keywordBasedPrompts (mod : Json → α) (s : String) : MetaM <| Array α := do
   let kwdsScores ← extractKeywordsWithScores s
   let prompts ← kwdsScores.mapM (λ ⟨kw, score⟩ => do
     -- getting the top 3 entries
     -- the number of entries fetched can be a function of the relevance
-    return (← fetchStatementsWithKeyword mod kw).extract 0 2)
+    return (← fetchStatementsWithKeyword mod kw).extract 0 4)
   return prompts.foldl Array.append #[]
 
-#eval keywordBasedPrompts (·["doc_string"]!) "Every free group is free"
+#eval keywordBasedPrompts (·["doc_string"]!) "Every subgroup of a free group is a free group" 
+
+#eval extractKeywordsWithScores "Every subgroup of a free group is a free group"
