@@ -7,12 +7,21 @@ def MathlibKeywordLookup : MetaM Json := do
   readJson $ ← IO.FS.readFile 
     "LeanCodePrompts/KeywordSummary/mathlib_keyword_lookup.json"
 
+#check liftOption
 
 def fetchStatementsWithKeyword (mod : Json → α) (kw : String) : MetaM <| Array α := do
   let mathlibStmts ← MathlibStatements
-  match (← MathlibKeywordLookup)[kw]? >>= (·.getArr?.toOption) with
-    | some idxs => return idxs.filterMap $ λ idx => 
-        idx.getNat?.toOption >>= mathlibStmts.get? >>= (some <| mod ·)
+  let mathlibKwds ← MathlibKeywordLookup
+  let arr : Option <| Array α := do
+    let idxsJ ← mathlibKwds[kw]?
+    let idxs ← idxsJ.getArr?.toOption
+    idxs.mapM $ λ idxJ => do
+      let idx ← idxJ.getNat?.toOption
+      let stmt ← mathlibStmts.get? idx
+      return mod stmt
+
+  match arr with
+    | some arr => return arr
     | none => return #[]
 
 #eval fetchStatementsWithKeyword id "vector bundle" -- the `id` is to perform no modification to the output
