@@ -10,10 +10,10 @@ def MathlibKeywordLookup : MetaM Json := do
 
 def fetchStatementsWithKeyword (mod : Json → α) (kw : String) : MetaM <| Array α := do
   let mathlibStmts ← MathlibStatements
-  match (← MathlibKeywordLookup)[kw]!.getArr? with
-    | .ok idxs => return idxs.filterMap $ λ idx => 
+  match (← MathlibKeywordLookup)[kw]? >>= (·.getArr?.toOption) with
+    | some idxs => return idxs.filterMap $ λ idx => 
         idx.getNat?.toOption >>= mathlibStmts.get? >>= (some <| mod ·)
-    | .error _ => return #[]
+    | none => return #[]
 
 #eval fetchStatementsWithKeyword id "vector bundle" -- the `id` is to perform no modification to the output
 
