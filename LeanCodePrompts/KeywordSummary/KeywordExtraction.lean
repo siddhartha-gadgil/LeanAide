@@ -120,18 +120,54 @@ abbrev fetchAllRelevantDocstrings :=
 end Yake
 
 
-section Experiments
+section KeywordExtraction
 
-def keyword := "abelian group"
+def MathlibKeywordLookup : IO Json := do
+  let file ← IO.FS.readFile 
+    "LeanCodePrompts/KeywordSummary/mathlib_keyword_lookup.json"
+  IO.ofExcept <| Json.parse file
 
--- #eval do
---  for docstr in (← fetchRelevantDocstrings keyword) do
---    IO.println docstr
+initialize keywordCache : IO.Ref (Std.HashMap String (Array Nat)) ← do
+  let mathlibKwdsJson ← IO.ofExcept (← MathlibKeywordLookup).getObj?
+  
+  let mathlibKwds : List (String × Array Nat) :=
+    mathlibKwdsJson.fold ( λ l kw idxsJ =>
+
+      let idxs : Array Nat := Option.get! do
+        let idxs? ← idxsJ.getArr?.toOption
+        idxs?.mapM (·.getNat?.toOption)
+
+      (kw, idxs) :: l ) []
+
+  IO.mkRef (Std.HashMap.ofList mathlibKwds)
+
+def getKeywordIndices? (kw : String) : IO <| Option (Array Nat) := do
+  let cache ← keywordCache.get
+  return cache.find? kw
 
 
+def fetchStatementsWithKeyword (mod : Json → α) (kw : String) : IO <| Array α := do
+  let mathlibStmts ← MathlibStatements
+  match ← getKeywordIndices? kw with
+    | some idxs => return idxs.map <| (mathlibStmts.get! · |> mod)
+    | none => return #[]
 
-def statement := "Every finite integral domain is a field."
+def fetchStatementsWithKeywordM (mod : Json → IO α) (kw : String) : IO <| Array α := do
+  let mathlibStmts ← MathlibStatements
+  match ← getKeywordIndices? kw with
+    | some idxs => idxs.mapM <| (mathlibStmts.get! · |> mod)
+    | none => return #[]
 
-#eval yakeOutput statement
+def docPair (js: Json) : String × String := 
+  (js["doc_string"]!.getStr?.toOption.get!, js["theorem"]!.getStr?.toOption.get!)
 
-end Experiments
+def keywordBasedPrompts (mod : Json → α) (s : String) : MetaM <| Array α := do
+  let kwdsScores ← extractKeywordsWithScores s
+  let prompts ← kwdsScores.mapM (λ ⟨kw, score⟩ => do
+    -- getting the top 3 entries
+    -- the number of entries fetched can be a function of the relevance
+    return (← fetchStatementsWithKeyword mod kw).extract 0 4)
+  return prompts.foldl Array.append #[]
+
+end KeywordExtraction
+
