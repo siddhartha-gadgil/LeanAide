@@ -94,17 +94,22 @@ def extractKeywordsToJson (s : String) : IO Json := do
 
   return processOutput <| ← yakeResults s
 
-def extractKeywords (s : String) : IO <| List String := do
-  let kws := (← yakeResults s) |>.tail! |>.tail! |>.dropLast
-  return kws.map $ λ l =>
-    String.splitOn l "0." |>.head! |>.trim
+def extractKeywordsWithScores (s : String) (out : Bool := false) : IO <| List (String × Float) := do
+  let kwds ← yakeResults s
 
-def extractKeywordsWithScores (s : String) : IO <| List (String × Float) := do
-  let kws := (← yakeResults s) |>.tail! |>.tail! |>.dropLast
-  return kws.map $ λ l =>
+  if out then
+    for l in kwds do
+      IO.println l
+
+  let kwds := kwds |>.tail! |>.tail! |>.dropLast
+  return kwds.map $ λ l =>
     match l.splitOn "0." with
       | [stmt, score] => (stmt.trim, ("0." ++ score).toFloat!)
       | _ => panic! "Invalid format."
+
+def extractKeywords (s : String) (out : Bool := false) : IO <| List String := do
+  let kwdsWithScores ← extractKeywordsWithScores s out
+  return kwdsWithScores.map Prod.fst
 
 /-- This function is meant for rapid visualisation of the `yake` output.
 The keywords here *are* arranged in the order of relevance. -/
@@ -169,8 +174,8 @@ def fetchStatementsWithKeywordM (mod : Json → IO α) (kw : String) : IO <| Arr
 def docPair (js: Json) : String × String := 
   (js["doc_string"]!.getStr!, js["theorem"]!.getStr!)
 
-def keywordBasedPrompts (mod : Json → α) (s : String) : MetaM <| Array α := do
-  let kwdsScores ← extractKeywordsWithScores s
+def keywordBasedPrompts (mod : Json → α) (s : String) (kwds : Bool := false) : IO <| Array α := do
+  let kwdsScores ← extractKeywordsWithScores s (out := kwds)
   let prompts ← kwdsScores.mapM (λ ⟨kw, score⟩ => do
     -- getting the top 3 entries
     -- the number of entries fetched can be a function of the relevance
