@@ -28,8 +28,13 @@ section MathlibStatements
 def MathlibStatements : IO <| Array Json := 
   Json.parseFile "LeanCodePrompts/KeywordSummary/full_mathlib_keyword_summary.json"
 
+initialize mathlibCache : IO.Ref (Array Json) ← IO.mkRef (← MathlibStatements)
+
+def getMathlibStatements : IO (Array Json) := do mathlibCache.get
+
+
 def fetchRelevantStatements (kw : String) : IO <| Array Json := do
-  return (← MathlibStatements).filter $ (Option.toBool <| ·["keywords"]? >>= (·[kw]?))
+  return (← getMathlibStatements).filter $ (Option.toBool <| ·["keywords"]? >>= (·[kw]?))
 
 def fetchModifiedStatements (mod : Json → α) (kw : String) : IO <| Array α := do
   return (← fetchRelevantStatements kw).map mod
@@ -123,7 +128,7 @@ abbrev fetchAllRelevantDocstrings :=
 end Yake
 
 
-section KeywordExtraction
+section KeywordLookup
 
 def MathlibKeywordLookup : IO Json := do
   let file ← IO.FS.readFile 
@@ -150,13 +155,13 @@ def getKeywordIndices? (kw : String) : IO <| Option (Array Nat) := do
 
 
 def fetchStatementsWithKeyword (mod : Json → α) (kw : String) : IO <| Array α := do
-  let mathlibStmts ← MathlibStatements
+  let mathlibStmts ← getMathlibStatements
   match ← getKeywordIndices? kw with
     | some idxs => return idxs.map <| (mathlibStmts.get! · |> mod)
     | none => return #[]
 
 def fetchStatementsWithKeywordM (mod : Json → IO α) (kw : String) : IO <| Array α := do
-  let mathlibStmts ← MathlibStatements
+  let mathlibStmts ← getMathlibStatements
   match ← getKeywordIndices? kw with
     | some idxs => idxs.mapM <| (mathlibStmts.get! · |> mod)
     | none => return #[]
@@ -172,5 +177,5 @@ def keywordBasedPrompts (mod : Json → α) (s : String) : MetaM <| Array α := 
     return (← fetchStatementsWithKeyword mod kw).extract 0 4)
   return prompts.foldl Array.append #[]
 
-end KeywordExtraction
+end KeywordLookup
 
