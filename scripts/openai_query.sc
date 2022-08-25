@@ -12,6 +12,9 @@ def responseText(r: requests.Response) : String = {
     text
 }
 
+def getResponse(prompt: String, temp: Float = 0F) =
+  responseText(postCode(prompt, temp = temp))
+
 // An example for code generation
 val pp = 
 """/-- A prime `p` satisfies `p % 2 = 1` if and only if `p ≠ 2`.-/
@@ -72,3 +75,17 @@ theorem {α : Type u} {L₁ L₂ : list (α × bool)} [decidable_eq α] (H : fre
 /-- Every subgroup of a free group is a free group -/
 theorem """
 
+val oddEg = """/--  If `m` and `n` are natural numbers, then the natural number `m^n` is even if and only if `m` is even and `n` is positive. -/
+theorem {m n : ℕ} : even (m ^ n) ↔ even m ∧ n ≠ 0 :=
+
+/-- Odd Bernoulli numbers (greater than 1) are zero. -/
+theorem {n : ℕ} (h_odd : odd n) (hlt : 1 < n) : bernoulli' n = 0 :=
+
+/-- A natural number is odd iff it has residue `1` or `3` mod `4` -/
+theorem {n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3 :=
+
+/-- The cardinality of the antidiagonal of `n` is `n+1`. -/
+theorem (n : ℕ) : ⇑multiset.card (multiset.nat.antidiagonal n) = n + 1 :=
+
+/-- There are infinitely many odd natural numbers -/
+theorem """
