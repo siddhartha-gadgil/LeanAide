@@ -5,6 +5,7 @@ import Std
 import LeanCodePrompts.CheckParse
 import LeanCodePrompts.ParseJson
 import LeanCodePrompts.Autocorrect
+import LeanCodePrompts.KeywordSummary.KeywordExtraction
 open Lean Meta Std
 
 open Lean Elab Parser Command
@@ -206,9 +207,11 @@ def getCodeJson (s: String) : TermElabM Json := do
             -- logInfo s
             isElabPrompt s )
       -- IO.println s!"pairs: {pairs.size}"
+      let kwPairs ←  keywordBasedPrompts docPair s
+      let pairs := (pairs ++ kwPairs).toList.eraseDups.toArray
       let prompt := makePrompt s pairs
       IO.println prompt
-      let fullJson ← openAIQuery prompt 5 0
+      let fullJson ← openAIQuery prompt 5 
       let outJson := (fullJson.getObjVal? "choices").toOption.get!
       -- logInfo s!"query gave: {outJson}"
       let pending ←  pendingJsonQueries.get

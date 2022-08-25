@@ -45,10 +45,10 @@ def fetchModifiedStatementsM (mod : Json → IO α) (kw : String) : IO <| Array 
 abbrev fetchRelevantDocstrings := 
   fetchModifiedStatements (·["doc_string"]!.getStr!)
 
-def sentenceSimPairs (s : String) : IO <| Array (String × String) := do
-  (← Json.parseArrIO s).mapM (
-    let dict := ·["dct"]!
-    return (dict["doc_string"]!.getStr!, dict["theorem"]!.getStr!) )
+-- def sentenceSimPairs (s : String) : IO <| Array (String × String) := do
+--   (← Json.parseArrIO s).mapM (
+--     let dict := ·["dct"]!
+--     return (dict["doc_string"]!.getStr!, dict["theorem"]!.getStr!) )
 
 end MathlibStatements
 
