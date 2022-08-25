@@ -202,6 +202,8 @@ def getCodeJson (s: String) : TermElabM Json := do
           #["-X", "POST", "-H", "Content-type: application/json", "-d", s ++" top_K 10", "localhost:5000/similar_json"]}
       let pairs? ← sentenceSimPairs simJsonOut.stdout
       let allPairs := pairs?.toOption.get!
+      let kwPairs ←  keywordBasedPrompts docPair s
+      let allPairs := (allPairs ++ kwPairs).toList.eraseDups.toArray
       let pairs -- := allPairs -- 
         ←  allPairs.filterM (fun (_, s) => do
             -- logInfo s
@@ -222,6 +224,7 @@ def getCodeJson (s: String) : TermElabM Json := do
 
 
 def arrayToExpr (output: Array String) : TermElabM Expr := do
+  let output := output.toList.eraseDups.toArray
   let mut elaborated : Array String := Array.empty
   -- let mut failed: Nat := 0
   for out in output do
