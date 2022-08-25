@@ -14,6 +14,9 @@ instance : GetElem Json String Json (λ j k => Except.toBool <| j.getObjVal? k) 
       | .ok j, _ => j
       | .error _, h => by simp [Except.toBool] at h
 
+def getStr! (j : Json) : String :=
+  j.getStr?.toOption.get!
+
 end Lean.Json
 
 
@@ -35,12 +38,12 @@ def fetchModifiedStatementsM (mod : Json → IO α) (kw : String) : IO <| Array 
   (← fetchRelevantStatements kw).mapM mod
 
 abbrev fetchRelevantDocstrings := 
-  fetchModifiedStatementsM (ofExcept <| Json.getStr? ·["doc_string"]!)
+  fetchModifiedStatements (·["doc_string"]!.getStr!)
 
 def sentenceSimPairs (s : String) : IO <| Array (String × String) := do
   (← Json.parseArrIO s).mapM (
     let dict := ·["dct"]!
-    return (← IO.ofExcept <| dict["doc_string"]!.getStr?, ← IO.ofExcept <| dict["theorem"]!.getStr?) )
+    return (dict["doc_string"]!.getStr!, dict["theorem"]!.getStr!) )
 
 end MathlibStatements
 
@@ -115,7 +118,7 @@ def fetchAllModifiedStatementsM (mod : Json → IO α) (s : String) : IO <| Arra
   return stmts.foldl .append .empty
 
 abbrev fetchAllRelevantDocstrings :=
-  fetchAllModifiedStatementsM (ofExcept <| Json.getStr? ·["doc_string"]!)
+  fetchAllModifiedStatementsM (IO.ofExcept <| Json.getStr? ·["doc_string"]!)
 
 end Yake
 
@@ -159,7 +162,7 @@ def fetchStatementsWithKeywordM (mod : Json → IO α) (kw : String) : IO <| Arr
     | none => return #[]
 
 def docPair (js: Json) : String × String := 
-  (js["doc_string"]!.getStr?.toOption.get!, js["theorem"]!.getStr?.toOption.get!)
+  (js["doc_string"]!.getStr!, js["theorem"]!.getStr!)
 
 def keywordBasedPrompts (mod : Json → α) (s : String) : MetaM <| Array α := do
   let kwdsScores ← extractKeywordsWithScores s
