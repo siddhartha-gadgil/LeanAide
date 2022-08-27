@@ -55,12 +55,12 @@ example : //- Every field is a ring -/ := by
 
 example : //- There are infinitely many odd natural numbers -/ := by sorry
 
-example : //- Every subgroup of a free group is a free group -/ := by
-            sorry
+-- example : //- Every subgroup of a free group is a free group -/ := by
+--             sorry
 
-universe u v
+-- universe u v
 
-#check {  α :  Type  u } ->  {  G :  Type  v } ->  [  Groupₓ  G ] ->  [  IsFreeGroup   G] ->  (  H :  Subgroup  G ) ->  FreeGroup  G
+-- #check {  α :  Type  u } ->  {  G :  Type  v } ->  [  Groupₓ  G ] ->  [  IsFreeGroup   G] ->  (  H :  Subgroup  G ) ->  FreeGroup  G
 
 /-!
 ## Workpoints
