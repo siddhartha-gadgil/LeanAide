@@ -1,0 +1,33 @@
+Every prime number is `2` or odd.
+There are infinitely many odd natural numbers.
+The smallest odd prime is `3`.
+There are infinitely many odd prime numbers.
+Every ring is a field.
+Every field is a ring.
+The set of units in a ring forms a group.
+Every vector space is finite dimensional.
+If a vector space has dimension `2` then it is finite dimensional.
+Every field is a division ring.
+If a space has dimension `2` then it is finite dimensional.
+Every group is a torsion monoid.
+Every natural number has a successor.
+Every natural number is less than its successor.
+If the direct product of two groups is torsion free then each of the groups is torsion free.
+Every finite simple group has prime order.
+Every finite group is simple.
+Every finite group has prime order.
+There are infinitely many Pythagorean triples.
+Every set is Lebesgue measurable.
+Every set of Borel measure zero is Lebesgue measurable.
+Every set has Lebesgue measure zero.
+If every proper closed set of a topological space is compact, then the space itself is compact.
+If a topological space is compact, then every subset is compact.
+Every prime that is one greater than a multiple of four can be expressed as the sum of two squares.
+No prime number is a perfect square.
+Every odd prime number is greater than `2`.
+For every subset of the Euclidean plane, there is a line segment of unit length whose endpoints are either both inside the subset or both outside it.
+Every line segments whose endpoints are in a convex set `C` is contained in `C`.
+Every set that is Lebesgue measurable but not Borel measurable has Lebesgue measure zero.
+The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares.
+Every compact topological space is locally compact.
+Every continuous function is uniformly continuous.
