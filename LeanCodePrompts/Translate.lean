@@ -123,24 +123,26 @@ partial def pollCacheJson (s : String) : IO Json := do
   | some jsBlob => return jsBlob
   | none => do
     IO.sleep 200
-    pollCache s
+    pollCacheJson s
 
 def getCodeJsonBlob (s: String) : TermElabM String := do
   match ← getCached? s with
   | some s => return s
   | none =>    
     let pending ←  pendingQueries.get
-    if pending.contains s then pollCache s
+    if pending.contains s then
+      IO.println "Polling" 
+      pollCache s
     else 
       let pending ←  pendingQueries.get
       pendingQueries.set (pending.insert s)
       let out ←  
         IO.Process.output {cmd:= "curl", args:= 
           #["-X", "POST", "-H", "Content-type: application/json", "-d", s, "localhost:5000/post_json"]}
-      let pending ←  pendingQueries.get
-      pendingQueries.set (pending.erase s)
       let res := out.stdout  
           -- ← caseMapProc out.stdout
+      let pending ←  pendingQueries.get
+      pendingQueries.set (pending.erase s)
       if out.exitCode = 0 then cache s res 
         else throwError m!"Web query error: {out.stderr}"
       return res
@@ -188,39 +190,44 @@ def elabThmSplit(start? size?: Option Nat := none) : TermElabM ((Array String) �
 def elabThmSplitCore(start? size?: Option Nat := none) : CoreM ((Array String) × (Array String)) := 
   (elabThmSplit start? size?).run'.run'
 
-def getCodeJson (s: String) : TermElabM Json := do
+def getCodeJson (s: String)(numSim : Nat:= 10)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM Json := do
+  -- IO.println s!"initially pending : {(← pendingJsonQueries.get).size}"
   match ← getCachedJson? s with
   | some js => return js
   | none =>    
-    let pending ←  pendingQueries.get
-    if pending.contains s then pollCache s
+    -- IO.println s!"poll-check pending : {(← pendingJsonQueries.get).size}"
+    let pending ←  pendingJsonQueries.get
+    if pending.contains s then pollCacheJson s 
     else 
-      let pending ←  pendingQueries.get
-      pendingQueries.set (pending.insert s)
-      let simJsonOut ←  
-        IO.Process.output {cmd:= "curl", args:= 
-          #["-X", "POST", "-H", "Content-type: application/json", "-d", s ++" top_K 10", "localhost:5000/similar_json"]}
-      let pairs? ← sentenceSimPairs simJsonOut.stdout
-      let allPairs := pairs?.toOption.get!
-      let kwPairs ←  keywordBasedPrompts docPair s
-      let allPairs := (allPairs ++ kwPairs).toList.eraseDups.toArray
-      let pairs -- := allPairs -- 
-        ←  allPairs.filterM (fun (_, s) => do
-            -- logInfo s
-            isElabPrompt s )
-      -- IO.println s!"pairs: {pairs.size}"
-      let kwPairs ←  keywordBasedPrompts docPair s
-      let pairs := (pairs ++ kwPairs).toList.eraseDups.toArray
+      let pending ←  pendingJsonQueries.get
+      pendingJsonQueries.set (pending.insert s)
+      let (pairs, IOOut) ← getPairs
       let prompt := makePrompt s pairs
-      IO.println prompt
+      dbg_trace prompt
+      -- IO.println s!"pending : {(← pendingJsonQueries.get).size}"
       let fullJson ← openAIQuery prompt 5 
       let outJson := (fullJson.getObjVal? "choices").toOption.get!
       -- logInfo s!"query gave: {outJson}"
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.erase s)
-      if simJsonOut.exitCode = 0 then cacheJson s outJson 
-        else throwError m!"Web query error: {simJsonOut.stderr}"
+      if IOOut.exitCode = 0 then cacheJson s outJson 
+        else throwError m!"Web query error: {IOOut.stderr}"
       return outJson
+  where getPairs : TermElabM (Array (String × String) × IO.Process.Output) := do
+      let simJsonOut ←  
+        IO.Process.output {cmd:= "curl", args:= 
+          #["-X", "POST", "-H", "Content-type: application/json", "-d", s ++ s!" top_K {numSim}", "localhost:5000/similar_json"]}
+      let pairs? ← sentenceSimPairs simJsonOut.stdout
+      let allPairs := pairs?.toOption.get!
+      let kwPairs ←  keywordBasedPrompts docPair s scoreBound matchBound
+      let allPairs := (allPairs ++ kwPairs).toList.eraseDups.toArray
+      let pairs -- := allPairs -- 
+        ←  allPairs.filterM (fun (_, s) => do
+            isElabPrompt s )
+      let kwPairs ←  keywordBasedPrompts docPair s
+      return (
+          (pairs ++ kwPairs).toList.eraseDups.toArray, simJsonOut)
+
 
 
 def arrayToExpr (output: Array String) : TermElabM Expr := do
@@ -253,8 +260,8 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
     | Except.ok thm => return thm
     | Except.error s => throwError s
 
-def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× Nat)) := do
-  let output := output.toList.eraseDups.toArray
+def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array String))) := do
+  -- erase duplicates before calling
   let mut elaborated : Array String := Array.empty
   for out in output do
     let ployElab? ← polyElabThmTrans out
@@ -269,7 +276,7 @@ def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× Nat)) := do
     let topStr := groupSorted[0]![0]!
     let thmExc ← elabFuncTyp topStr
     match thmExc with
-    | Except.ok thm => return some (thm, elaborated.size)
+    | Except.ok thm => return some (thm, elaborated)
     | Except.error s => throwError s
 
 
@@ -309,7 +316,7 @@ def textToExpr' (s: String) : TermElabM Expr := do
   let output := outArr
   arrayToExpr output
 
-def jsonToExpr' (json: Json) : TermElabM Expr := do
+def jsonToExprStrArray (json: Json) : TermElabM (Array String) := do
   let outArr : Array String ← 
     match json.getArr? with
     | Except.ok arr => 
@@ -325,7 +332,10 @@ def jsonToExpr' (json: Json) : TermElabM Expr := do
                 throwError m!"no text field"
         pure parsedArr
     | Except.error e => throwError m!"json parsing error: {e}"
-  let output := outArr
+  return outArr
+
+def jsonToExpr' (json: Json) : TermElabM Expr := do
+  let output ← jsonToExprStrArray json
   -- logInfo s!"output: {output}"
   arrayToExpr output
 
@@ -342,6 +352,15 @@ elab "//-" cb:commentBody  : term => do
   let e ← jsonToExpr' js
   logInfo m!"{e}"
   return e
+
+def promptToExpr? (s: String) : 
+  TermElabM (Option (Expr × (Array String) )) := do
+  let js ← getCodeJson  s
+  let output ← jsonToExprStrArray js
+  let output := output.toList.eraseDups.toArray
+  let res ← arrayToExpr? output
+  return res
+  
 
 elab "#theorem" name:ident " : " stmt:str ":=" prf:term : command => do
   let (fmlstmt, fmlstx) ← liftTermElabM none $ textToExprStx' egBlob' -- stmt.getString

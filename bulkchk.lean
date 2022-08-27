@@ -58,8 +58,8 @@ def main : IO Unit := do
   for i in [0:elabs.size - 1] do
     for j' in [0: elabs.size/20] do
       let j := j' * 20
-      let s₁ := elabs[i]
-      let s₂ := elabs[j]
+      let s₁ := elabs[i]!
+      let s₂ := elabs[j]!
       if s₁ = s₂ then ids := ids + 1
       let core := compareThmsCore s₁ s₂
       let io? := 
