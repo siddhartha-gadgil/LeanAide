@@ -174,7 +174,7 @@ def fetchStatementsWithKeywordM (mod : Json → IO α) (kw : String) : IO <| Arr
 def docPair (js: Json) : String × String := 
   (js["doc_string"]!.getStr!, js["theorem"]!.getStr!)
 
-def keywordBasedPrompts (mod : Json → α) (s : String)(scoreBound: Float := 0.2)(matchBound: Nat := 15) (kwds : Bool := false) : IO <| Array α := do
+def keywordBasedPrompts (mod : Json → α) (s : String) (number : Nat := 4)(scoreBound: Float := 0.2)(matchBound: Nat := 15) (kwds : Bool := false) : IO <| Array α := do
   let kwdsScores ← extractKeywordsWithScores s (out := kwds)
   let prompts ← kwdsScores.mapM (λ ⟨kw, score⟩ => do
     if score > scoreBound then return #[]
@@ -182,7 +182,7 @@ def keywordBasedPrompts (mod : Json → α) (s : String)(scoreBound: Float := 0.
     let statements ← fetchStatementsWithKeyword mod kw
     if statements.size > matchBound then return #[]
     else
-    return statements.extract 0 4)
+    return statements.extract 0 number)
   return prompts.foldl Array.append #[]
 
 end KeywordLookup

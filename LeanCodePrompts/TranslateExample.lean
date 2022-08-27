@@ -4,8 +4,12 @@ import LeanCodePrompts.Translate
 -- import LeanCodePrompts.Autocorrect
 open Lean Meta Elab Term
 
-example : //- Every prime number is either `2` or even -/  := by     
+example : //- Every prime number is either `2` or even -/  := by      
     sorry 
+
+#eval showLogs 2
+
+#check repr
 
 /-!
 ## Codex responses
@@ -43,6 +47,8 @@ example : //- Every prime number is either `2` or even -/  := by
 
 example : //- Every field is a ring -/ := by 
        sorry
+
+#eval showLogs 2
 
 /-!
 ## Auto-correction

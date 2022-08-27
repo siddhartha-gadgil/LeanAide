@@ -108,6 +108,23 @@ initialize webCacheJson : IO.Ref (HashMap String Json) ← IO.mkRef (HashMap.emp
 initialize pendingJsonQueries : IO.Ref (HashSet String) 
     ← IO.mkRef (HashSet.empty)
 
+initialize logCache : IO.Ref (Array String) ← IO.mkRef (#[])
+
+def mkLog{α : Type _}[ToString α](msg: α) : IO Unit := do
+  let cache ← logCache.get
+  logCache.set (cache.push (toString msg))
+
+def logs (num: Nat) : IO (List String) := do
+  let cache ← logCache.get
+  return cache.reverse.toList.take num
+
+def showLogs (num: Nat) : IO Unit := do
+  let cache ← logCache.get
+  let ls := cache.reverse.toList.take num
+  for lines in ls do
+  for l in lines.splitOn "¬" do
+    IO.println l
+
 def getCachedJson? (s: String) : IO (Option Json) := do
   let cache ← webCacheJson.get
   return cache.find? s
@@ -190,7 +207,7 @@ def elabThmSplit(start? size?: Option Nat := none) : TermElabM ((Array String) �
 def elabThmSplitCore(start? size?: Option Nat := none) : CoreM ((Array String) × (Array String)) := 
   (elabThmSplit start? size?).run'.run'
 
-def getCodeJson (s: String)(numSim : Nat:= 10)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM Json := do
+def getCodeJson (s: String)(numSim : Nat:= 10)(numKW: Nat := 4)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM Json := do
   -- IO.println s!"initially pending : {(← pendingJsonQueries.get).size}"
   match ← getCachedJson? s with
   | some js => return js
@@ -203,7 +220,7 @@ def getCodeJson (s: String)(numSim : Nat:= 10)(scoreBound: Float := 0.2)(matchBo
       pendingJsonQueries.set (pending.insert s)
       let (pairs, IOOut) ← getPairs
       let prompt := makePrompt s pairs
-      dbg_trace prompt
+      mkLog prompt
       -- IO.println s!"pending : {(← pendingJsonQueries.get).size}"
       let fullJson ← openAIQuery prompt 5 
       let outJson := (fullJson.getObjVal? "choices").toOption.get!
@@ -219,7 +236,7 @@ def getCodeJson (s: String)(numSim : Nat:= 10)(scoreBound: Float := 0.2)(matchBo
           #["-X", "POST", "-H", "Content-type: application/json", "-d", s ++ s!" top_K {numSim}", "localhost:5000/similar_json"]}
       let pairs? ← sentenceSimPairs simJsonOut.stdout
       let allPairs := pairs?.toOption.get!
-      let kwPairs ←  keywordBasedPrompts docPair s scoreBound matchBound
+      let kwPairs ←  keywordBasedPrompts docPair s numKW scoreBound matchBound
       let allPairs := (allPairs ++ kwPairs).toList.eraseDups.toArray
       let pairs -- := allPairs -- 
         ←  allPairs.filterM (fun (_, s) => do
@@ -232,6 +249,7 @@ def getCodeJson (s: String)(numSim : Nat:= 10)(scoreBound: Float := 0.2)(matchBo
 
 def arrayToExpr (output: Array String) : TermElabM Expr := do
   let output := output.toList.eraseDups.toArray
+  mkLog output
   let mut elaborated : Array String := Array.empty
   -- let mut failed: Nat := 0
   for out in output do
@@ -371,5 +389,3 @@ elab "#example" stmt:str ":=" prf:term : command => do
   let (fmlstmt, fmlstx) ← liftTermElabM none $ textToExprStx' egBlob' -- stmt.getString
   logInfoAt stmt m!"{fmlstmt}"
   elabCommand $ ← `(example : $fmlstx:term := $prf:term)
-
--- #eval getCodeJsonBlob egPrompt
