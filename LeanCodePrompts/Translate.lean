@@ -122,7 +122,7 @@ def showLogs (num: Nat) : IO Unit := do
   let cache ← logCache.get
   let ls := cache.reverse.toList.take num
   for lines in ls do
-  for l in lines.splitOn "¬" do
+  for l in lines.splitOn "\n" do
     IO.println l
 
 def getCachedJson? (s: String) : IO (Option Json) := do
