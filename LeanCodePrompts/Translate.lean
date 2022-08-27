@@ -253,6 +253,26 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
     | Except.ok thm => return thm
     | Except.error s => throwError s
 
+def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× Nat)) := do
+  let output := output.toList.eraseDups.toArray
+  let mut elaborated : Array String := Array.empty
+  for out in output do
+    let ployElab? ← polyElabThmTrans out
+    match ployElab? with
+      | Except.error _ => pure ()
+      | Except.ok es =>
+        for (_, s) in es do
+          elaborated := elaborated.push s 
+  if elaborated.isEmpty then return none
+  else    
+    let groupSorted ← groupFuncStrs elaborated
+    let topStr := groupSorted[0]![0]!
+    let thmExc ← elabFuncTyp topStr
+    match thmExc with
+    | Except.ok thm => return some (thm, elaborated.size)
+    | Except.error s => throwError s
+
+
 def textToExpr (s: String) : TermElabM Expr := do
   let json ← readJson s
   let outArr : Array String ← 
