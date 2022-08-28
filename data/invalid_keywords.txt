@@ -1,6 +1,4 @@
-Triangle inequality
 nonnegative distance
-Triangle
 infinite cardinal
 ring is noetherian
 element belongs
@@ -33,12 +31,9 @@ list.sum
 negation operation
 Counterpart
 negation
-Alias
-Scalar multiplication
 possibly different types
 set is monotone
 balanced set
-Scalar
 types
 possibly
 source is initial
@@ -66,7 +61,6 @@ Composition by continuous
 left preserves
 continuous linear
 linear maps
-Composition
 additive monoid
 units
 add-regular
@@ -82,18 +76,17 @@ covered
 subsingleton is diagonal
 matrix indexed
 subsingleton
-Fundamental theorem
 theorem of calculus
 finite limit
 resp.
 equals
-Fundamental
 identity arrow
 sieve is maximal
+Pythagorean theorem
+Pythagorean
 map vanishes
 vanishes
 Associate the dot
-Associate
 point making
 instance
 requires
@@ -119,6 +112,7 @@ version of Cauchy
 dividing
 additive version
 exists
+Cauchy
 ssubset
 kernel is injective
 induced map
@@ -164,7 +158,6 @@ case the sum
 sum is equal
 lemma characterises
 characterises
-Integral
 field extensions
 finset
 splits
@@ -238,6 +231,7 @@ strict derivative
 number is Liouville
 Liouville with exponent
 smaller exponent
+Liouville
 smaller
 affine span
 upper continuous
@@ -297,6 +291,8 @@ currying linear
 Writing
 explicitly
 currying
+Legendre symbol
+Legendre
 Helper
 c.rel
 shape.down
@@ -315,6 +311,7 @@ multiplied
 supports
 Hausdorff distance
 distance is nonnegative
+Hausdorff
 list of elements
 non-trivial integral domain
 non-trivial integral
@@ -327,7 +324,6 @@ matrix.diagonal
 matrix.diag
 Diagonal matrices
 matrices are generated
-Diagonal
 matrices
 generated
 constant polynomial
@@ -353,7 +349,6 @@ angles mod
 oriented angles
 Oriented
 represented
-ABC
 linearly ordered space
 ordered space
 necessarily compatible
@@ -451,8 +446,6 @@ dense range
 map with dense
 range is dense
 equality version
-Union
-Inter
 fintype.prod
 finset.prod
 result for cosine
@@ -464,7 +457,6 @@ minpoly R B.gen
 minpoly
 GCD domain
 fraction ring
-GCD
 function with compact
 compact support
 Van der Waerden
@@ -483,11 +475,9 @@ colored commutative
 exists a monochromatic
 monochromatic homothetic
 homothetic copy
-Van
 Waerden
 positive power
 right-regular
-Transfer
 consisting of integral
 integral elements
 finite extension
@@ -504,6 +494,7 @@ Dynkin π-λ theorem
 collection of sets
 sets closed
 closed under binary
+Dynkin
 generates is equal
 generates
 binary intersections
@@ -518,7 +509,6 @@ Affine equivalences
 preserve affine
 affine independence
 points
-Affine
 equivalences
 preserve
 families
@@ -574,13 +564,11 @@ seminormed ring
 seminormed
 applied to convex
 convex domains
+Lagrange
 domains
 norm is nonarchimedean
 nonarchimedean
-Spec
 Stacks Project
-Lemma
-Project
 Stacks
 group are equal
 equal on generators
@@ -612,7 +600,6 @@ strictly antitone function
 equivalently
 strictly antitone
 Lean will unify
-Lean
 formulate this lemma
 proof irrelevance
 built-in proof irrelevance
@@ -656,13 +643,13 @@ diag.from
 blocks
 Infinite ordinals
 cardinals are unbounded
-Infinite
 ordinals
 cardinals
 Fermat Theorem
 local extremum equals
 local extremum
 extremum equals
+Fermat
 square open neighborhood
 square open
 open neighborhood
@@ -693,7 +680,6 @@ function multiplied
 Deprecated
 like.congr
 Reflection is involutive
-Reflection
 orientation equals
 equals the negation
 n-digit number
@@ -713,7 +699,6 @@ dvd
 p-power
 explicit expression
 lesser results
-Embedding
 lesser
 results
 yielding equal sums
@@ -737,7 +722,6 @@ general filter
 filter is measurable
 angle negated
 Adding the angles
-Adding
 negated
 closed thickening
 thickening
@@ -842,6 +826,7 @@ Banach spaces
 graph theorem
 closed is continuous
 closed graph
+Banach
 spaces whose graph
 graph is closed
 bounded set
@@ -874,11 +859,9 @@ linearly ordered type
 predicate is true
 Induction principle
 ordered type
-Induction
 denoted
 Bind operation
 set.pairwise
-Bind
 disjoint.bUnion
 int.nat
 module.rank
@@ -919,7 +902,6 @@ spaces is open
 triangle below commutes
 S.functor
 fact an extension
-Show
 yoneda.obj
 rational number terminates
 number terminates
@@ -928,8 +910,6 @@ add multiples
 multiples of previous
 previous rows
 Divergence theorem
-Icc
-Divergence
 plane along rectangles
 iterated interval integral
 single function
@@ -980,7 +960,6 @@ Fixed points
 submonoids is intersection
 points of supr
 supr of submonoids
-Fixed
 squashed position stay
 squashed position
 position stay
@@ -994,7 +973,6 @@ function are equal
 formal multilinear
 multilinear series
 series representing
-One-dimensional
 representing
 positive natural numbers
 positive natural
@@ -1018,7 +996,6 @@ normed division ring
 nonzero element
 normed division
 TODO
-Multiplication
 norm.norm filter.at
 bornology.cobounded
 filter.comap
@@ -1029,7 +1006,9 @@ equals the angle
 integral closure
 fraction field
 preorder is reflexive
+Schwarz inequality
 inequality with norm
+Schwarz
 bijective isometry sends
 isometry sends midpoints
 bijective isometry
@@ -1105,7 +1084,6 @@ complex differentiable
 Prefer putting constants
 Prefer putting
 putting constants
-Prefer
 putting
 constants
 loop-avoiding
@@ -1119,16 +1097,11 @@ function.bijective
 projection notation
 Shorthand
 Isosceles Triangle Theorem
-Isosceles Triangle
 Triangle Theorem
-Pons asinorum
-Isosceles
-Pons
 indexed supremum
 function is bounded
 Extract the equation
 locally discrete
-Extract
 convex open set
 convex open
 set and continuous
@@ -1162,8 +1135,6 @@ key property
 establish properties
 establish
 property of connected
-Pigeonhole principle
-Pigeonhole
 subgroup embedding
 trivial orthogonal complement
 direct sum decomposition
@@ -1191,7 +1162,6 @@ s.bot
 inside
 snoc
 Tower law
-Tower
 normed field
 Fréchet-derivative
 partial denominator
@@ -1215,6 +1185,7 @@ preconnected
 neighboring
 Witt polynomial
 polynomial by expanding
+Witt
 zmod
 expanding
 characterization of Cauchy
@@ -1223,9 +1194,12 @@ sequences on integers
 metric characterization
 colimit is well-defined
 proper Hausdorff space
+Borel theorem
+Hausdorff space
 proper Hausdorff
 closed and bounded
 set is compact
+Heine
 complex sine function
 complex sine
 sine function
@@ -1260,7 +1234,6 @@ common point
 preconnected sets
 family of preconnected
 point is preconnected
-Closure
 controls the norm
 controls
 Compare
@@ -1344,7 +1317,6 @@ show that colex
 colex is equivalent
 colex
 Gram operator
-Gram
 strictly concave function
 open segment
 strictly concave
@@ -1391,7 +1363,6 @@ Gelfand
 odd prime
 separable iff
 numeric pre-games
-Definition
 pre-games
 Ioo
 at.Ioi
@@ -1432,6 +1403,7 @@ angle as negating
 Negating
 produces
 Cramer rule
+Cramer
 matrix.mul
 stronger form
 local version
@@ -1442,7 +1414,6 @@ constructor
 constructed
 additive subsemigroup
 Additive closure
-Additive
 convex independent iff
 injective indexed family
 injective indexed
@@ -1456,7 +1427,9 @@ Krein-Milman lemma
 nonempty compact
 compact set
 LCTVS
+Krein-Milman
 Apollonius Theorem
+Apollonius
 congruence relation induced
 quotient homomorphism composed
 equals the kernel
@@ -1474,7 +1447,6 @@ attached
 tensor algebra
 algebra are disjoint
 infinitely smooth
-Addition
 left.add
 assuming left covariance
 lemma assuming left
@@ -1495,6 +1467,7 @@ replace
 advisable to introduce
 vectors results
 Makes a Galois
+Galois connection
 order-preserving bijection
 Makes
 topological module
@@ -1513,6 +1486,7 @@ closed sets
 intersection theorem
 sequences indexed
 decreasing sequence
+Cantor
 theorem for sequences
 sets is nonempty
 localization.sec
@@ -1576,6 +1550,7 @@ torsion-free
 Lipschitz map
 composition operator
 map is uniformly
+Lipschitz
 symmetric product
 product of vectors
 induces an injective
@@ -1590,7 +1565,6 @@ trivial subgroup
 continuous.comp
 intermediate distance replaced
 upper estimate
-Ico
 intermediate distance
 distance replaced
 replaced
@@ -1653,7 +1627,6 @@ Multiplicative congruence relations
 preserve natural powers
 Multiplicative congruence
 natural powers
-Multiplicative
 finsupp.single
 retraction is mono
 mono whose retraction
@@ -1662,7 +1635,6 @@ sigma types
 Equality of sigma
 show equality
 dfinsupp
-Equality
 repeated row
 repeated
 RHS equals
@@ -1706,6 +1678,7 @@ injective map
 R-module is Noetherian
 Noetherian iff
 submodules are finitely-generated
+R-module
 finitely-generated
 bounded connected subset
 conditionally complete linear
@@ -1753,9 +1726,9 @@ closed under addition
 elements of finite
 additive order
 order are closed
-Commuting
 Chebyshev polynomial
 kind evaluates
+Chebyshev
 evaluates
 Composing a basis
 determinant is positive
@@ -1849,7 +1822,6 @@ direct comparison test
 test for series
 direct comparison
 comparison test
-Variant
 subfield generated
 canonical ring isomorphism
 canonical ring
@@ -1890,7 +1862,6 @@ subtracts
 functor Compactum
 CompHaus is essentially
 essentially surjective
-Compactum
 CompHaus
 essentially
 finite affinely independent
@@ -1949,7 +1920,6 @@ taking
 Maximum modulus principle
 Maximum modulus
 modulus principle
-Maximum
 equivalence is essentially
 decreasing basis enumerated
 countably generated
@@ -1963,7 +1933,6 @@ Left translation preserves
 translation preserves convexity
 Left translation
 preserves convexity
-Left
 direction of unique
 transitivity axiom
 family of continuous
@@ -1971,7 +1940,6 @@ maps is continuous
 applications
 Closed balls
 balls are bounded
-Closed
 Pell equation
 recursively obtained
 initial solution
@@ -1992,7 +1960,6 @@ Equivalence classes partition
 Equivalence classes
 partition the type
 classes partition
-Equivalence
 derivative equal
 empty set vanishes
 set vanishes
@@ -2061,6 +2028,8 @@ finite field
 direction of matrix.nondegenerate
 matrix.nondegenerate
 numbers has Lebesgue
+Lebesgue measure
+Lebesgue
 algebra homomorphism
 uniquely defined
 matrix block-diagonal
@@ -2120,7 +2089,6 @@ neighborhood filter
 principal filter
 show a filter
 Recurrent formula
-Recurrent
 Phragmen-Lindelöf principle
 open third quadrant
 Phragmen-Lindelöf
@@ -2170,6 +2138,7 @@ produces a result
 Subtracting
 Möbius inversion
 inversion for functions
+Möbius
 topological vector bundle
 vector bundle created
 bundle created
@@ -2200,7 +2169,6 @@ connected components
 subsingletons
 components
 coprime.prod
-Continuum
 Non-Denumerability
 reals
 fintype.sum
@@ -2307,7 +2275,9 @@ orthogonal rows
 inclusion is epi
 fork whose inclusion
 formal Taylor series
+Taylor series
 formal Taylor
+Taylor
 nat.mul
 equal mod
 infinite set
@@ -2348,7 +2318,6 @@ complex.re
 trivial topological
 topological fiber
 infinitely many primes
-MOD
 primes
 point orthogonal projection
 produces the original
@@ -2369,6 +2338,7 @@ nilpotent Lie algebra
 non-trivial nilpotent Lie
 nilpotent Lie module
 nilpotent Lie
+Lie algebra
 Lie subalgebra
 Lie module
 weight with respect
@@ -2383,6 +2353,7 @@ closed sets cover
 interiors are dense
 countably many closed
 sets cover
+Baire
 interiors
 semiconjugates
 vector passed
@@ -2397,6 +2368,7 @@ taking sums
 holds for monomials
 condition is closed
 closed under taking
+Laurent
 polynomials
 monomials
 non-empty directed
@@ -2409,7 +2381,6 @@ nontrivial module
 exists a nontrivial
 Pointwise maximum
 monotone functions
-Pointwise
 multilinear series coincide
 series coincide
 fact that composition
@@ -2457,7 +2428,9 @@ nonzero arguments
 trivial submodule
 extended Euclidean algorithm
 Bézout lemma
+Euclidean algorithm
 extended Euclidean
+Bézout
 Gram-Schmidt Orthogonalisation
 schmidt
 produces an orthogonal
@@ -2483,7 +2456,6 @@ Sophie
 copy
 Product of elements
 subfield indexed
-Product
 fundamental property
 finite basis
 dimension is equal
@@ -2515,8 +2487,6 @@ orthonormal subset
 set or sets
 complete and contained
 n-dimensional subspace
-Ioi
-Ici
 set is cospherical
 half-open intervals
 intervals are disjoint
@@ -2533,6 +2503,7 @@ s.to
 exists a pair
 pair of mutually
 mutually singular
+Jordan
 Jordan decomposition
 singular measures
 signed measure
@@ -2557,9 +2528,7 @@ iff its vertices
 constant on objects
 category is constant
 connected.of
-Intermediate value theorem
 order-connected set
-Intermediate
 order-connected
 left adjoint mates
 adjoint mates
@@ -2586,9 +2555,11 @@ top elements
 q.comp
 direct equality
 elements is nonzero
+Kronecker delta
 equals Kronecker delta
 equals Kronecker
 vectors being orthonormal
+Kronecker
 product equals Kronecker
 set of vectors
 product equals
@@ -2598,7 +2569,6 @@ Additive group homomorphisms
 preserve integer scaling
 group homomorphisms preserve
 homomorphisms preserve integer
-Additive group
 integer scaling
 homomorphisms preserve
 preserve integer
@@ -2635,6 +2605,7 @@ maximal linear
 linear independent
 left-regular after multiplying
 proving many properties
+Noetherian module
 module is bijective
 surjective endomorphism
 x.succ
@@ -2665,7 +2636,6 @@ space is unbounded
 set is Lipschitz
 Finite groups
 torsion groups
-Finite
 groups are torsion
 maximal orthonormal set
 orthonormal set
@@ -2704,8 +2674,10 @@ series eventually
 eventually reaches
 reaches the trivial
 generates the Grothendieck
+Grothendieck topology
 largest pretopology
 pretopology that generates
+Grothendieck
 largest
 reflexive relation
 solve some instances
@@ -2738,7 +2710,6 @@ technical
 general abstract
 sum of powers
 sum one step
-Bound
 setup
 strictly increasing sequence
 increasing sequence
@@ -2747,7 +2718,6 @@ Hall Marriage Theorem
 Hall Marriage
 Marriage Theorem
 finite type
-Hall
 Marriage
 iff every subset
 fintype.all
@@ -2776,7 +2746,6 @@ continuous.Icc
 module is injective
 charpoly
 Expand the square
-Expand
 garbage complication
 complication by requiring
 requiring the list
@@ -2790,16 +2759,15 @@ necessarily listed
 vertices not necessarily
 necessarily
 listed
+Minkowski inequality
 seminorms
+Minkowski
 summands
 sums both exist
 converges locally uniformly
 converges locally
 locally uniformly
 integral extension
-Infimum
-Type
-Sort
 version assumes
 works
 version that works
@@ -2931,7 +2899,6 @@ Approximation Theorem
 Stone-Weierstrass Approximation
 separates points
 compact topological
-Approximation
 Stone-Weierstrass
 separates
 secant line
@@ -2940,6 +2907,7 @@ Weierstrass Approximation
 Stone-Weierstrass theorem
 polynomials functions
 closure of polynomials
+Weierstrass
 relies
 Weierstrass' theorem
 statement of Weierstrass'
@@ -2966,6 +2934,7 @@ permits
 Euler product formula
 Euler product
 product formula
+Euler
 unit ball
 seminorm arises
 arises
@@ -3048,7 +3017,6 @@ endpoints are order
 orders
 Ring homomorphisms preserve
 Ring homomorphisms
-Extensionality
 homomorphisms preserve subtraction
 preserve subtraction
 continuous multilinear
@@ -3079,10 +3047,10 @@ inverse is left-regular
 element admitting
 polynomial that splits
 Chapter VII
-Proposition
 Chapter
 VII
 Wilson Lemma
+Wilson
 monoid is regular
 approaching a real
 situation
@@ -3124,7 +3092,6 @@ ordering.compares
 simplify
 space.eq
 Special case
-Special
 abbreviated
 decrease lengths
 decrease
@@ -3161,13 +3128,12 @@ Fréchet derivative
 domain has dimension
 derivative is equivalent
 classical definition
+Fréchet
 slope equals
 equals zero due
 convention
 Composition of first-order
 first-order homomorphisms
-Convex hull
-Convex
 tsub
 Euclidean absolute
 direction of simple
@@ -3195,6 +3161,7 @@ paths
 colex order
 Note the converse
 Lipschitz continuous map
+Hausdorff dimension
 Lipschitz continuous
 grows faster
 faster
@@ -3206,7 +3173,6 @@ pi.lift
 restatement
 hf.local
 separated by open
-Version
 cardinality bound
 sigma-algebra is generated
 sigma algebra
@@ -3219,7 +3185,6 @@ subgroup is normal
 sum in LYM
 LYM in terms
 top part
-LYM
 falling
 finite direct product
 finite direct
@@ -3266,7 +3231,6 @@ vertex lies
 dense conditionally complete
 dense conditionally
 set of preconnected
-Ioc
 space is proper
 closed balls
 balls of large
@@ -3298,7 +3262,6 @@ decomposing
 canonical basis
 strongly regular
 Empty graphs
-Empty
 graphs
 graphs are strongly
 adjacent vertices
@@ -3308,7 +3271,6 @@ compact-open topology
 sequences of continuous
 continuous functions
 convergence for sequences
-Convergence
 compact-open
 global minimum
 arguments are linearly
@@ -3338,12 +3300,11 @@ function is uniformly
 ex.exp
 Congruence lemma
 lemma for constructing
-Congruence
 constructing
+Galois extension
 Equivalent characterizations
 finite degree
 extension of finite
-Equivalent
 characterizations
 conves set
 conves
@@ -3440,7 +3401,6 @@ exists a point
 dimension greater
 Torsion submonoids
 submonoids are torsion
-Torsion
 iff there exists
 set at edistance
 controlled in terms
@@ -3477,7 +3437,6 @@ non-trivial ring
 typeclasses
 restriction and union
 stable under restriction
-Prop
 homomorphism sends inverses
 sends inverses
 inverses to inverses
@@ -3508,10 +3467,12 @@ predicate satisfy
 satisfy the sheaf
 Hilbert space admits
 Hilbert basis extending
+Hilbert space
 admits a Hilbert
 Hilbert basis
 space admits
 basis extending
+Hilbert
 extending
 continuous linear functions
 theorem for continuous
@@ -3545,6 +3506,7 @@ meets every interval
 pgame.lf
 Zorn lemma
 maximal element
+Zorn
 maps are equal
 set.eq
 on.of
@@ -3560,9 +3522,9 @@ supported
 Leibniz series
 odd numbers
 theorem establishes
-Fundamental Theorem
 absolutely convergent series
 alternating sum
+Leibniz
 theorem holds
 avoiding the Fundamental
 establishes
@@ -3603,7 +3565,6 @@ vectors is orthonormal
 family of vectors
 injective and surjective
 Euler Criterion
-Criterion
 Adding a point
 set preserves
 preserves its boundedness
@@ -3619,6 +3580,7 @@ unit vectors
 vectors are equal
 case for Cauchy-Schwarz
 equality case
+Cauchy-Schwarz
 progressively measurable
 continuous and adapted
 adapted process
@@ -3633,7 +3595,6 @@ Preconnected
 admits a Taylor
 induced by localization
 algebra induced
-Injectivity
 descends
 torsion module
 torsion submodule
@@ -3683,7 +3644,9 @@ group equals
 torsion submonoid
 equals the torsion
 injective continuous function
+Polish space
 injective continuous
+Polish
 show they agree
 directed sUnion
 preconnected subsets
@@ -3698,7 +3661,6 @@ version of extensionality
 extensionality rule
 rule for additive
 additive congruence
-Iff
 adjacent terms
 checking ratios
 ratios of adjacent
@@ -3719,11 +3681,13 @@ pseudoemetric space
 psuedodistance
 pseudoemetric
 returns
+Dedekind domain
 collection of elements
 finite collection
 completely contained
 find a collection
 multiply the elements
+Dedekind
 localization.exist
 Strengthening
 terminated at position
@@ -3784,7 +3748,6 @@ graded algebra
 internally graded
 internally
 prove the equality
-CMA
 convex set belongs
 center of mass
 set belongs
@@ -3833,7 +3796,6 @@ separates points strongly
 points strongly
 Working in continuous
 points also separates
-Working
 subalgebra of functions
 functions that separates
 notions
@@ -3847,7 +3809,6 @@ ring isomorphism preserves
 preserves addition
 isomorphism preserves
 monoid are equal
-Relation
 binary biproduct satsifies
 binary biproduct
 biprod.fst
@@ -3946,7 +3907,6 @@ commutative triangle
 group.univ
 group.map
 fits
-Construct
 unique gluings
 terms of unique
 condition in terms
@@ -3959,9 +3919,9 @@ Symmetric entourages form
 Symmetric entourages
 entourages form
 form a basis
-Symmetric
 entourages
 Ptolemy ’s Theorem
+Ptolemy
 form a Galois
 int.log
 finer Polish topology
@@ -3981,7 +3941,6 @@ basis evaluates
 Contrapositive form
 nat.factorization
 Contrapositive
-Determinant
 module whose scalars
 scalars are additively
 torsion is additively
@@ -4044,7 +4003,6 @@ series is continuous
 finite diagram
 Cyclotomic polynomials
 nonnegative on inputs
-Cyclotomic
 inputs
 matrix.has
 properly contained
@@ -4118,13 +4076,10 @@ multiplication commutes
 commutes with direct
 regular after multiplying
 coreflexive
-Generalization
 bootstrapped
 creates limits
 creates
-Harmonic series
 unconditionally summable
-Harmonic
 unconditionally
 submodule is contained
 pointwise set operations
@@ -4133,7 +4088,6 @@ set convexity
 set operations
 terms of pointwise
 definition of set
-Alternative
 Binet formula
 dependent equality
 Binet
@@ -4157,7 +4111,6 @@ closed under conjugation
 set of conjugates
 conjugates
 domain implies
-Characteristic
 invertible diagonal matrices
 invertible matrices based
 property is true
@@ -4195,7 +4148,6 @@ Strictly monotone
 colex ordering
 functions preserve
 preserve the colex
-Strictly
 locally uniformly approximated
 point is continuous
 type with discrete
@@ -4233,7 +4185,6 @@ constructed above realizes
 coupling
 realizes
 rearrangement inequality
-Binary
 rearrangement
 thickening equals
 equals the preimage
@@ -4276,10 +4227,8 @@ solved
 homomorphism induced
 multisets
 function.inv
-ABB
 dense linear orders
 equivalence in dense
-Pullback
 continuous monotone function
 monotone function sends
 function sends indexed
@@ -4321,6 +4270,7 @@ key fact wich
 fact wich makes
 linear map pointwise
 linear map converges
+Cauchy sequence
 map pointwise
 map converges
 sequence of continuous
@@ -4338,7 +4288,6 @@ coinciding
 Natural division
 floor of field
 field division
-Natural
 uncountable algebraically closed
 algebraically closed fields
 uncountable algebraically
@@ -4421,7 +4370,6 @@ circulant matrices commutes
 Multiplication of circulant
 circulant matrices
 matrices commutes
-Express
 nndist
 monotone chain condition
 monotone chain
@@ -4436,7 +4384,6 @@ polarization
 bilinear maps
 Test for convergence
 real-valued series
-Test
 const applied
 embedding map
 semi-contraction
@@ -4469,9 +4416,11 @@ infinitary Erdős
 important lemma
 usual proof
 proof of Bolzano-Weierstrass
+Erdős
 Szekeres
 important
 usual
+Bolzano-Weierstrass
 element natural number
 element natural
 complex.abs
@@ -4493,14 +4442,12 @@ bare
 iff every vector
 Conjugation is jointly
 jointly continuous
-Conjugation
 jointly
 direct path
 inserted
 shorter
 Constant zero function
 function has sum
-Constant
 hom.map
 algebra tower
 entire tower
@@ -4560,7 +4507,6 @@ Compressing an element
 element is idempotent
 submodule.map
 Orthogonal projection
-Orthogonal
 checked on ultrafilters
 checked
 closed annulus
@@ -4580,6 +4526,7 @@ real conjugate exponents
 Young inequality
 version with real
 real conjugate
+Young
 circle considered
 fourier
 considered as elements
@@ -4684,7 +4631,6 @@ version for sums
 real exponents
 sums over finite
 functions and real
-Weighted
 additive principal ordinals
 main characterization theorem
 principal ordinals
@@ -4749,6 +4695,7 @@ independence in terms
 terms of linear
 characterise affine
 characterise
+Galois group
 group has cardinality
 direction of approximates
 on.approximates
@@ -4795,7 +4742,6 @@ denominator is nonzero
 result of dividing
 dividing two functions
 functions continuous
-Continuity
 quotient valuation
 support supp
 closure vanishes
@@ -4815,16 +4761,15 @@ map is continuous
 line map
 eq.subset
 elaboration problems
-Duplicate
 elaboration
 Chicken Mcnugget theorem
 Chicken Mcnugget
 Mcnugget theorem
 Frobenius number
 positive numbers
-Chicken
 number of positive
 Mcnugget
+Frobenius
 stating
 Characterize the equality
 projective limit
@@ -4840,7 +4785,6 @@ Homotopic maps induce
 Homotopic maps
 maps induce
 map on homology
-Homotopic
 subadditive function
 subadditive
 isometric equivalence preserves
@@ -4972,7 +4916,6 @@ Isomorphic functors
 essential images
 functors have equal
 equal essential
-Isomorphic
 functions at points
 points in domains
 summable.map
@@ -4980,6 +4923,7 @@ Turing machine
 witnesses the effective
 effective finiteness
 finite state machine
+Turing
 set that witnesses
 state machine
 finite state
@@ -5045,6 +4989,7 @@ union that requires
 Diophantus identity
 Brahmagupta-Fibonacci identity
 identity or Diophantus
+Diophantus
 Brahmagupta-Fibonacci
 multiplying two complex
 interval of length
@@ -5114,7 +5059,6 @@ functions is equal
 equal to composing
 fully
 finest topology
-Check
 finest
 Cᵒᵖ
 coproducts indexed
@@ -5135,6 +5079,7 @@ Schreier
 group is finitely
 establishes the Wallis
 Wallis Product
+Wallis
 pieces
 Pieces involving
 Pieces involving general
@@ -5153,6 +5098,7 @@ Sylvester law
 law of inertia
 real quadratic
 form is equivalent
+Sylvester
 nontrivial subgroup
 ideals are nontrivial
 maximal ideals
@@ -5197,7 +5143,6 @@ iff a fraction
 commutative semigroup
 element whose product
 exists another element
-Cardinality
 strongly measurable function
 function is separable
 Gauss' lemma
@@ -5260,7 +5205,6 @@ number of digits
 circle equals
 angle at circumference
 Angle at center
-Angle
 equals twice angle
 maximal reduction correspond
 reduction correspond
@@ -5434,7 +5378,6 @@ iff the unit
 algebraically independent set
 set is algebraically
 Reorder a sum
-Reorder
 surjective injection
 sets of points
 times the product
@@ -5448,6 +5391,7 @@ integral power basis
 closed domain
 integral power
 aeval B.gen
+Eisenstein
 Q.coeff
 filtered category
 collection of objects
@@ -5470,8 +5414,6 @@ reflective subcategory
 subcategory has colimits
 Additive torsion groups
 characteristic is prime
-Law of cosines
-Law
 action.zero
 needed to apply
 lemma is needed
@@ -5490,7 +5432,6 @@ finitely generated kernel
 generated kernel
 surjective with finitely
 strictly concave iff
-Distance
 induction step
 existence and uniqueness
 nonempty affine subspace
@@ -5532,7 +5473,6 @@ equalizer diagram
 compatibility of sections
 compatibility
 equalized
-Embed
 fin.last
 appending
 version explicitly
@@ -5541,12 +5481,10 @@ sequence of blocks
 nat.coe
 Darij Grinberg
 trace Cayley-Hamilton theorem
-Section
 Cayley-Hamilton theorem
 Grinberg
 trace Cayley-Hamilton
 Darij
-Proof
 Cayley-Hamilton
 arrows pseudo-equal
 morphism are precisely
@@ -5588,6 +5526,7 @@ invertible top
 top left
 left element
 element in terms
+Schur
 expanded
 CMB
 chosen base point
@@ -5659,7 +5598,6 @@ products of nilpotent
 groups are nilpotent
 nipotency
 Tangent cone
-Tangent
 product commutes
 liouville
 equal the nilpotency
@@ -5684,7 +5622,6 @@ natural homomorphism
 nonzero valuation
 Nonzero divisors
 divisors have nonzero
-Nonzero
 strong rank condition
 satisfying the strong
 strong rank
@@ -5707,9 +5644,7 @@ subtle
 postcompose
 equals the emetric
 emetric diameter
-Diameter
 reduces the nilpotency
-Quotienting
 Rotating a vector
 explicit description
 description
@@ -5752,12 +5687,14 @@ Faulhaber theorem
 Bernoulli numbers
 Alternate form
 p-th powers
+Faulhaber
 Deduced
+Bernoulli
 relating the sum
 sum of p-th
-Alternate
 relating
 p-th
+Noetherian ring
 ring is finitely
 construct a finer
 open and closed
@@ -5820,7 +5757,6 @@ root theorem part
 theorem part
 divides the leading
 Rational root
-Rational
 indexed orthogonal family
 indexed orthogonal
 finitely-supported vector
@@ -5841,7 +5777,6 @@ corepresented
 linear map correspond
 map correspond
 contraction pairing
-End
 contraction
 sum and difference
 vectors are orthogonal
@@ -5918,7 +5853,6 @@ matrix in Smith
 Smith normal
 finite free
 find a basis
-Smith
 compact Hausdorff totally
 Hausdorff totally disconnected
 totally disconnected space
@@ -5933,7 +5867,6 @@ order isomorphisms
 lattice by order
 series on strict
 nonsquare mod
-Variation
 strictly stronger assumption
 strictly stronger
 stronger assumption
@@ -6046,7 +5979,6 @@ future version
 future
 unit is negation
 negative unit
-Scaling
 gcf.of
 typeclass arguments
 Monomials generate
@@ -6101,7 +6033,6 @@ opposite orientations
 orientations are related
 inputs larger
 positive on inputs
-Similar
 input
 polynomials that lift
 subring of polynomials
@@ -6122,7 +6053,6 @@ term is nonzero
 quadratic term
 finite.bUnion
 Dependent version
-Dependent
 finite-dimensional normed spaces
 continuously linearly equivalent
 finite-dimensional normed
@@ -6160,9 +6090,9 @@ Euclidean space induced
 Diagonalization theorem
 self-adjoint operator
 acts diagonally
+Euclidean space
 basis of eigenvectors
 space induced
-Diagonalization
 shadows
 maximals
 change the beginning
@@ -6176,7 +6106,6 @@ lemma exists
 exists more generally
 Mapping intermediate fields
 Mapping intermediate
-Mapping
 induced homomorphism
 indexed cardinal function
 cardinal function
@@ -6212,6 +6141,7 @@ exist positive numbers
 exist positive
 sets are disjoint
 verschiebung
+Pythagorean triple
 set.mul
 Pointwise minimum
 containined
@@ -6219,12 +6149,11 @@ requires quantifying
 quantifying over modules
 quantifying
 modules
-Norm
 Converting an in-range
 in-range number
 in-range
 Jensen inequality
-Concave
+Jensen
 distance is controlled
 identity equals
 element with norm
@@ -6264,7 +6193,6 @@ points within distance
 metric space structure
 space structure
 Quantitative result
-Quantitative
 linear map defined
 sublinear map
 map defined
@@ -6393,9 +6321,7 @@ basis is indexed
 direction of bot
 subgroup generated
 Primitive element theorem
-Primitive element
 element theorem
-Primitive
 expressed directly
 directly as adding
 adding a vector
@@ -6507,10 +6433,13 @@ bitwise
 bools
 cdot
 reformulation
+Church-Rosser theorem
 word reduction
 Newman diamond lemma
 Newman diamond
+Church-Rosser
 diamond lemma
+Newman
 Haar measure equals
 equals the Lebesgue
 Haar measure
@@ -6541,7 +6470,6 @@ left cancel
 semigroup are left
 Transitivity of cyclotomic
 cyclotomic extensions
-Transitivity
 Formula for Pythagorean
 Pythagorean Triples
 Triples
@@ -6571,10 +6499,10 @@ ball with coefficients
 formulas
 pointwise limit
 bounded sequence
-Naturality
 Carathéodory convexity theorem
 Carathéodory convexity
 convexity theorem
+Carathéodory
 nonzero continuous linear
 functional is open
 nonzero continuous
@@ -6601,7 +6529,6 @@ additive groups
 groups are additive
 metric.bounded
 lsum
-Independence
 quantifier
 intermediate result
 list converted
@@ -6666,6 +6593,7 @@ core is continuous
 Subgroups of torsion
 ssuperset
 Matiyasevic theorem
+Matiyasevic
 semisimple Abelian Lie
 Abelian Lie algebra
 Abelian Lie
@@ -6675,7 +6603,6 @@ additive submonoid
 Cyclic permutations preserve
 Cyclic permutations
 permutations preserve
-Cyclic
 preserve the triple
 solution set condition
 set condition
@@ -6712,6 +6639,7 @@ technical statement
 trivial charted
 atlas members
 charted
+Carathéodory theorem
 version of Carathéodory
 Finite wide pullbacks
 wide pullbacks
@@ -6720,7 +6648,6 @@ uniqueness part
 Change of variables
 common version
 continuous derivative
-Change
 substitute
 linear ordered field
 continuous injective
@@ -6815,7 +6742,6 @@ nat.cast
 functions coincide
 groups is Lipschitz
 Emetric diameter
-Emetric
 definite descriptor
 set constructors
 set input
@@ -6857,6 +6783,7 @@ basis.le
 basis is finite
 direction of disjoint
 Brahmagupta identity
+Brahmagupta
 intermediate subalgebra
 point equals
 equals its orthogonal
@@ -6943,7 +6870,6 @@ special case assuming
 case assuming
 independent.map
 uncurried version
-Intermediate Value Theorem
 connected spaces
 functions on connected
 Roots
@@ -7014,7 +6940,6 @@ s.pimage
 splits a list
 number of sublists
 sublists thus created
-Supremum
 nontrivial weighted subtractions
 family indexed
 nontrivial weighted
@@ -7116,9 +7041,6 @@ smallest normal
 p.shift
 linear ordered semiring
 ordered semiring
-Geometric Series
-Series
-Geometric
 sequentially complete pseudoemetric
 complete pseudoemetric space
 sequentially complete
@@ -7163,7 +7085,6 @@ distributive negation
 negation divides
 element b iff
 divides the negation
-BAC
 path connected
 pp.all
 enormous TC subproblems
@@ -7229,7 +7150,6 @@ field admits
 admits an isomorphism
 one-dimensional isocrystal
 monge
-Choose
 direction of finset.card
 limit inferior
 limit superior
@@ -7259,10 +7179,9 @@ Erdős proof
 Tochiori
 Tochiori refinement
 Bertrand postulate
+Bertrand
 Partial function extensionality
-Partial function
 function extensionality
-Partial
 principle for finite
 nat.rec
 effectively
@@ -7337,7 +7256,6 @@ mersenne
 limit cone iff
 cone iff
 sheaf of types
-Hom
 multilinear series assuming
 series assuming summability
 series assuming
@@ -7347,7 +7265,6 @@ family is convex
 subfamily indexed
 ordered archimedean field
 linear ordered archimedean
-Rational numbers
 archimedean field
 numbers are dense
 ordered archimedean
@@ -7397,7 +7314,6 @@ commutative monoid commutes
 commutes with summing
 opposite additive
 monoid commutes
-Moving
 dot notation
 tendsto.comp
 at.comp
@@ -7429,6 +7345,7 @@ creates the limit
 Morgan laws
 conjunction is logically
 logically equivalent
+Morgan
 laws
 logically
 complex hyperbolic cosine
@@ -7456,7 +7373,6 @@ non-decreasing
 integer parts
 Gram-Schmidt Orthonormalization
 produces an orthornormal
-Orthonormalization
 orthornormal system
 orthornormal
 surjective monoid homomorphism
@@ -7514,6 +7430,7 @@ approximation theorem
 Bernstein approximations
 matter of unravelling
 unravelling definitions
+Bernstein
 matter
 unravelling
 definitions
@@ -7576,7 +7493,6 @@ equals the Monge
 orthocenter equals
 Ordinal games
 games are numeric
-Ordinal
 Ioc version
 property satisfied
 subgroup.supr
@@ -7638,6 +7554,7 @@ linearly ordered archimedean
 ordered archimedean abelian
 archimedean abelian
 exists a minimal
+Liouville number
 initial terms
 ratio of natural
 number to base
@@ -7791,6 +7708,7 @@ duals
 union of finsets
 finite union
 finsets is finite
+Lebesgue integral
 integral is measurable
 theorem is measurable
 Tonelli theorem
@@ -7825,7 +7743,6 @@ A.from
 Extra simp lemma
 dsimp
 Extra simp
-Extra
 equals an affine
 points and weights
 monotone function continuous
@@ -7859,7 +7776,6 @@ share the set
 set of original
 compact closure
 neighborhood with compact
-Lim
 majorated
 preconnected sets indexed
 Union of preconnected
@@ -7911,7 +7827,6 @@ series have positive
 appearing
 Associative racks
 racks are uninteresting
-Associative
 uninteresting
 racks
 Ring homomorphisms map
@@ -7931,7 +7846,6 @@ Negation Theorem
 double negation elimination
 Double Negation
 negation elimination
-Double
 Negation
 classically true
 classically
@@ -7962,10 +7876,11 @@ chain of subrings
 subrings of commutative
 Macdonald Proposition
 algebra-finite
-Tate
+Atiyah
 Altman
 Kleiman
 module-finite
+Macdonald
 homomorphisms preserve negation
 ucs
 open disjoint convex
@@ -7997,7 +7912,6 @@ derivatives are differentiable
 equivalence in general
 set has unique
 BCD
-ABD
 measure.ext
 measure.empty
 reformulation in terms
@@ -8010,7 +7924,6 @@ congruent mod
 normalizer is congruent
 primes is equal
 Explicit bound
-Explicit
 canonical morphism
 orders is called
 version only assumes
@@ -8052,7 +7965,6 @@ covered by chosen
 open embeddings
 Commutativity of actions
 symmetric relation
-Commutativity
 instance search graph
 search graph
 instance search
@@ -8087,7 +7999,6 @@ show the condition
 redefine
 space is second-countable
 left is countable
-Additivity
 s.piecewise
 decode ₂` specialized
 lattice of sets
@@ -8150,6 +8061,7 @@ regular topological
 exists a metric
 structure that generates
 Urysohn
+Tychonoff
 sum is bounded
 valuations
 subsemigroups are equal
@@ -8194,7 +8106,6 @@ arguably
 weaker notion
 Free modules
 modules are projective
-Free
 non-negative derivative
 proved by checking
 finer Polish topologies
@@ -8210,6 +8121,7 @@ ennreal.infi
 Horner normal form
 Horner normal
 expressions
+Horner
 reflected csring expressions
 original non-reflected expressions
 reflected csring
@@ -8235,6 +8147,7 @@ downstream
 ring whose characteristic
 linear map add
 map add
+Baire space
 principal filters
 pushout provided
 algebra is finitely
@@ -8435,7 +8348,6 @@ sends elements
 metric space belongs
 space belongs
 images of cycles
-Rotation
 construct limits
 field embedding
 Changing coordinates
@@ -8443,6 +8355,7 @@ atlas gives rise
 Changing
 Indexed version
 Indexed
+Banach space
 identity permutation
 principle for permutations
 non-trivial swap
@@ -8468,7 +8381,6 @@ ideal it suffices
 space has positive
 Cancellation adding
 adding the results
-Cancellation
 finsupp.prod
 family of ordinals
 ordinals is bounded
@@ -8487,7 +8399,6 @@ zeroth Pythagorean triple
 zeroth Pythagorean
 left-neighbourhoods filter
 left-neighbourhoods
-Simplification
 A.adjugate
 inductive property
 Coercing a dependent
@@ -8515,11 +8426,9 @@ Subsequent Fibonacci numbers
 Subsequent Fibonacci
 Fibonacci numbers
 numbers are coprime
-Subsequent
 order is simple
 Kaminski Equation
 Kaminski
-Equation
 Alternative phrasing
 group is self-normalizing
 full group
@@ -8560,6 +8469,7 @@ Hindman theorem
 strong form
 finite cover
 FP-set
+Hindman
 admits the power
 Converse of pons
 Create
@@ -8615,14 +8525,12 @@ sending a binary
 Easy inclusion
 differentiability point
 point with derivative
-Easy
 Vandermonde identity
 Vandermonde
 torsion free groups
 Direct products
 free groups
 products of torsion
-Direct
 relevant bits
 relevant
 unbundled version
@@ -8656,7 +8564,6 @@ presheaves
 functor from sheaves
 sheaves to presheaves
 Summation by parts
-Summation
 typeclass inference
 topology is picked
 picked
@@ -8697,7 +8604,6 @@ previous lemma
 definining a Liouville
 Split the sum
 sum definining
-Split
 definining
 equals a weighted
 vectors satisfy
@@ -8755,7 +8661,6 @@ graph.is
 Directional derivative agrees
 Directional derivative
 derivative agrees
-Directional
 anisotropic quadratic form
 anisotropic quadratic
 δ-thickened indicator
@@ -8824,7 +8729,6 @@ exists a non-null
 union is controlled
 completely determine
 Positive integer
-Positive
 quadruple product identity
 scalar quadruple product
 product identity
@@ -8847,7 +8751,9 @@ f.nat
 coefficients are noncommutative
 symmetric block matrix
 symmetric block
+Jacobi identity
 permutations is equal
+Jacobi
 partial refinements
 refinements
 carriers
@@ -8919,6 +8825,7 @@ prescribed period
 Pascal triangle
 row of Pascal
 sum of entries
+Pascal
 strictly more general
 infinite-dimensional normed space
 infinite-dimensional normed
@@ -8935,8 +8842,6 @@ inferred implicit arguments
 inferred implicit
 Finset
 iff all basis
-Orbit-stabilizer theorem
-Orbit-stabilizer
 vectors are equivalent
 recF is insensitive
 recF
@@ -9066,6 +8971,7 @@ monotone with respect
 finset.mul
 multiplication swapped
 Bessel inequality
+Bessel
 closed convex set
 closed convex
 halfspaces
@@ -9078,7 +8984,6 @@ limit of profinite
 profinite sets
 sets factors
 point is Lipschitz
-Evaluation
 Taking the reverse
 equivalent to taking
 induced charted space
@@ -9122,11 +9027,9 @@ nondegenerate real quadratic
 nondegenerate real
 Ran G.op
 pushes sheaves
-Ran
 pushes
 sheaves to sheaves
 trivial bound
-Roth number
 nontrivial homomorphism
 times the power
 Pushforwards of submodules
@@ -9198,13 +9101,11 @@ Converts
 divisors have valuation
 valuation greater
 quotient.out
-Inversion
 totally bounded set
 totally bounded
 set is totally
 function integrand
 Asymptotic bound
-Asymptotic
 filter is closed
 set of cluster
 cluster points
@@ -9230,7 +9131,6 @@ independent indexed
 indepedendent
 Minimum principle
 principle for concave
-Minimum
 eventual minimum
 Ordinals
 strictly decreases
@@ -9253,9 +9153,7 @@ lattice structures
 order induced
 regard
 ω-complete
-Uniform convergence
 function is equivalent
-Uniform
 equivalent to convergence
 multiset is accessible
 singleton subsets
@@ -9291,6 +9189,7 @@ lemma this shows
 stronger result
 Dirichlet test
 antitone sequences
+Dirichlet
 diameter is monotonous
 monotonous with respect
 sets intersect
@@ -9318,7 +9217,6 @@ affine maps preserve
 maps preserve affine
 Injective affine
 maps preserve
-Injective
 real exponent
 product of transvections
 equivalence relation induced
@@ -9370,7 +9268,6 @@ global simp lemma
 global simp
 works with dsimp
 Corollary of Hahn-Banach
-Corollary
 number with exponent
 combination is unaffected
 induced algebra morphism
@@ -9414,7 +9311,6 @@ open defined
 Reduction to diagonal
 invariant under reindexing
 operations is invariant
-Reduction
 theory.nat
 iso.is
 compact interval
@@ -9526,7 +9422,6 @@ element of infinite
 identity in terms
 required to sum
 family corresponds
-Root
 boundary circle
 disc are bounded
 adding the group
@@ -9543,7 +9438,6 @@ iff all elements
 canonical topology
 Turning an edge
 indentity loop
-Turning
 indentity
 possibly infinite type
 possibly infinite
@@ -9552,13 +9446,14 @@ Parseval identity
 Fourier coefficients
 squared norms
 coefficients equals
+Parseval
+Fourier
 Locally uniform convergence
 uniform convergence implies
 convergence implies convergence
 Locally uniform
 convergence implies
 implies convergence
-Locally
 simps
 rfl lemmas
 converse statement requires
@@ -9610,7 +9505,6 @@ admits the powers
 basis of open
 squares of commuting
 commuting elements
-Representation
 fact the linear
 Monge plane
 similar principles
@@ -9674,7 +9568,6 @@ Updating a nonzero
 tail commute
 greater results
 points has dimension
-Decomposition
 sieve is smaller
 composition of formal
 topological ring structure
@@ -9722,6 +9615,7 @@ map preserves multiplication
 nonzero rational number
 nonzero rational
 infimum to infimum
+Fibonacci sequence
 arrow category
 involve the arrow
 preadditive.exact
@@ -9805,7 +9699,6 @@ deduced
 convergence and commute
 P.next
 Open balls
-Open
 precise but hard
 give a precise
 remove one element
@@ -9829,8 +9722,6 @@ weighted sums
 sum add
 Seminorm-balls are convex
 Parallelogram law
-Parallelogram
-Closing
 cobounded
 updating it amounts
 adding it directly
@@ -9877,7 +9768,6 @@ Uniformisers exist
 Uniformisers
 projection is smaller
 clopen subset
-Specialization
 number of times
 normalized factor occurs
 irreducible factor
@@ -9948,7 +9838,6 @@ agree when restricted
 natural transformations
 transformations
 singleton is dense
-Complement
 non-commutative variant
 removed
 blunt cone
@@ -10139,7 +10028,6 @@ Path composition commutes
 Path composition
 commutes with products
 composition commutes
-Path
 complete subset
 cauchy sequence
 topological basis
@@ -10154,7 +10042,6 @@ action commutes
 alternate version
 suppose
 positive naturals
-Prime
 iff it divides
 divides the product
 small neighborhood
@@ -10363,10 +10250,8 @@ Artinian module
 injective endomorphism
 origin is absorbent
 Bilinear functions
-Bilinear
 shrink.
 size.
-Precomposition
 eligible
 dvd.intro
 function is countably
@@ -10375,11 +10260,9 @@ binary sub-additive
 sub-additive
 complex.norm
 dslope
-Chain rule
 derivative of polynomials
 rule for formal
 formal derivative
-Chain
 open subgroups
 ring determined
 direction of inseparable
@@ -10390,6 +10273,7 @@ iff it small
 ZFC set
 cardinals is bounded
 bounded above iff
+ZFC
 set of cardinals
 convenient for term-mode
 term-mode
@@ -10450,7 +10334,6 @@ Boundedness Principle
 Uniform Boundedness
 Banach-Steinhaus theorem
 standard Banach-Steinhaus
-Principle
 Boundedness
 pointwise bounded
 open subsets
@@ -10475,12 +10358,10 @@ commutes with multiplication
 relation commutes
 Odd Bernoulli numbers
 Odd Bernoulli
-Odd
 Compactness Theorem
 Theorem of first-order
 first-order logic
 finitely satisfiable
-Compactness
 theory is satisfiable
 satisfiable
 vector-valued function
@@ -10543,8 +10424,6 @@ Vertical Angles
 straight lines
 angles opposite
 intersecting straight
-Angles
-Vertical
 intersecting
 Induction step
 Riesz extension theorem
@@ -10690,7 +10569,6 @@ includes a dense
 set is residual
 filter lies
 Expansion is injective
-Expansion
 ex.prod
 equals its reverse
 symmetric iff
@@ -10751,7 +10629,6 @@ lemma for length
 special lemma
 simplifier
 direction of finset.sup
-Pushforward
 care
 maximised
 semiring is local
@@ -10790,9 +10667,11 @@ backwards
 n.totient
 self-centralizing Lie submodule
 self-centralizing Lie
+Cartan subalgebra
 self-centralizing
 important instance
 situation arises
+Cartan
 module.ray
 satisfying the Liouville
 Liouville condition
@@ -10827,6 +10706,7 @@ occurrences
 non-square
 distance equals
 norm of subtracting
+Picard-Lindelöf
 Cauchy-Lipschitz
 homeomorphism is continuous
 ultrafilter lemma
@@ -10846,7 +10726,6 @@ Rotating both vectors
 final modules
 middle module
 sequence are noetherian
-Module
 pseudoequal
 map has determinant
 extended field
@@ -10862,7 +10741,7 @@ converge uniformly
 Richard Beals'
 n.choose
 reproduced on wikipedia
-Analysis
+Richard
 Beals'
 beals-analysis
 introduction
@@ -10880,6 +10759,7 @@ Sprague-Grundy theorem
 theorem which states
 impartial game
 game of nim
+Grundy
 game is equivalent
 Sprague-Grundy
 impartial
@@ -10889,7 +10769,6 @@ kernel is closed
 bootstraps
 Top.nonempty
 easy corollary
-BCA
 forming a loop
 risk forming
 forming
@@ -10952,8 +10831,9 @@ nat.sub
 nat.pred
 discrete topological space
 discrete topological
+Dickson polynomial
+Dickson
 Frattini Argument
-Argument
 Frattini
 Combining
 nonempty ball
@@ -10972,7 +10852,6 @@ Notice
 involution commutes
 zmod.nat
 Infinitely many natural
-Infinitely
 assign
 infinitely differentiable
 function is infinitely
@@ -11021,6 +10900,7 @@ Vieta formula
 monic quadratic polynomial
 quadratic polynomial
 relating the coefficients
+Vieta
 monic quadratic
 version states
 equivalence relation made
@@ -11046,7 +10926,6 @@ classes induce
 Surjective monoid
 homomorphisms constant
 induce a surjective
-Surjective
 naturak
 linear independent iff
 map that sends
@@ -11097,7 +10976,6 @@ solution iff
 Multivariate polynomials
 form an integral
 variables indexed
-Multivariate
 prove the general
 proven inductively
 default base point
@@ -11200,7 +11078,9 @@ injective function defined
 Lusin-Souslin theorem
 function defined
 Lusin-Souslin
+Rayleigh quotient
 sphere centred
+Rayleigh
 centred
 respects the triangle
 Localizing a finite
@@ -11215,7 +11095,6 @@ Well-founded fixpoint
 fixpoint equation
 fixpoint satisfies
 satisfies fixpoint
-Well-founded
 matrix representation
 conformal matrix
 injective ring extension
@@ -11224,7 +11103,6 @@ mutually commute
 express this property
 pmap.sup
 g.domain
-Hypothesis
 respective pieces
 defined piecewise
 piecewise in terms
@@ -11236,9 +11114,7 @@ Vasconcelos
 Noetherian hypothesis
 commutative case
 noetherian.injective
-Based
 true provided
-ABA
 improve readability
 previous columns
 completely determined
@@ -11298,7 +11174,6 @@ torsion-free additive group
 torsion-free additive
 coincide for local
 preimage coincide
-Preimage
 Preimage of interior
 interior or interior
 interior of preimage
@@ -11309,9 +11184,7 @@ Closed entourages
 basis is equal
 find a open
 Algebraically closed fields
-Algebraically closed
 fields are cyclotomic
-Algebraically
 minimum of concave
 functions is concave
 finsupp.add
@@ -11335,7 +11208,6 @@ powers phrased
 statement for negative
 family cardinality
 iff the family
-AMB
 direction of real.convex
 real.convex
 version uses arguments
@@ -11344,7 +11216,6 @@ good idea
 lose the ability
 results that interact
 interact
-Harmonic Series
 normalized set
 choice of factors
 set of factors
@@ -11383,8 +11254,6 @@ Main Fundamental Domain
 Main Fundamental
 Domain Lemma
 Fundamental Domain
-Domain
-Main
 map agrees
 agrees when restricted
 maps factor
@@ -11419,7 +11288,6 @@ factors are included
 local ring hom
 Absolute convergence
 give the derivative
-Absolute
 times it divides
 times an irreducible
 closure operator built
@@ -11620,7 +11488,6 @@ submodules are complementary
 arrow set
 intersections of finite
 finite subfamilies
-Intersection
 subfamilies
 change a vector
 rat.mk
@@ -11640,7 +11507,6 @@ complex.countable
 diag.diagonal
 sufficiently large elements
 large elements
-Semicontinuity
 map is smooth
 antipodal map
 antipodal
@@ -11679,10 +11545,8 @@ unordered intervals
 key property defining
 defining the map
 property defining
-Impl
 map.surj
 Represent a divisor
-Represent
 highly non-unique
 representation is highly
 non-unique
@@ -11701,7 +11565,6 @@ style induction principles
 General theorem
 style induction
 induction principles
-General
 principles
 reflects isos
 transformation is affine
@@ -11825,6 +11688,7 @@ extract a disjoint
 family covers
 enlargment
 covers all elements
+Vitali
 multiset.prod
 arbitrary type
 set is strictly
@@ -11844,7 +11708,6 @@ exploiting
 Theorem of Calculus
 Degen eight squares
 squares identity
-Degen
 multiplying two octonions
 octonions
 distinct basis vectors
@@ -11863,9 +11726,6 @@ family version
 dense set cover
 uniform neighborhoods
 set cover
-Square Root
-Irrationality
-Square
 finset.inf
 compact-convergence topology
 topology is equal
@@ -11895,7 +11755,6 @@ convex independent family
 Matrix determinant lemma
 Matrix determinant
 determinant lemma
-Matrix
 circumradius is non-negative
 product comparison morphism
 product comparison
@@ -12024,7 +11883,6 @@ generalizes to arbitrary
 arbitrary commutative
 auxiliary lemmas
 ACB
-ACD
 colimit.pre
 s.nth
 perfect squares strictly
@@ -12151,8 +12009,10 @@ make sense
 ordinals in universe
 type of ordinals
 small.
+Burali-Forti paradox
 type-theoretic analog
 type-theoretic
+Burali-Forti
 positive radii
 equals the intersection
 closed thickenings
@@ -12205,15 +12065,14 @@ respect to simple
 match when part
 coercion transitivity
 simple coercions
-Add
 successive natural-number powers
 successive natural-number
 natural-number powers
 natural-number
 Strict convexity
 convexity is equivalent
-Strict
 Moivre formula
+Moivre
 Composition of elementary
 elementary embeddings
 map is invertible
@@ -12246,6 +12105,7 @@ real.add
 p-adic norms
 additive topological monoid
 compact convex set
+Krein-Milman theorem
 extreme points
 compact convex
 Pseudoequality is transitive
@@ -12261,9 +12121,7 @@ depending
 find neighbourhoods
 relations preserve division
 Quadratic reciprocity theorem
-Quadratic reciprocity
 reciprocity theorem
-Quadratic
 field is algebraic
 counting probabilites
 law of total
@@ -12343,6 +12201,7 @@ idempotency
 seed
 relying
 interpretation in terms
+Fourier series
 convergents returns
 squashed gcf
 continuous the closed
@@ -12381,7 +12240,6 @@ module is finite
 monomial function
 disk of positive
 change the leading
-Division
 subsemiring generated
 encode the idea
 idea that inequality
@@ -12408,7 +12266,6 @@ precisely compact
 compact elements
 generated submodules
 submodules are precisely
-Finitely
 homomorphism between groups
 isomorphism of cones
 increasing intersection distributes
@@ -12420,7 +12277,6 @@ epi whose section
 basic API lemmas
 API lemmas
 basic API
-API
 Adding the result
 produces that point
 unique line
@@ -12443,7 +12299,6 @@ Secants Theorem
 Secants
 Factoring a prime
 one-element multiset
-Factoring
 one-element
 nontrivial densely linear
 densely linear ordered
@@ -12499,6 +12354,7 @@ edistance by bounding
 alternatization are equivalent
 alternatization
 Sperner theorem
+Sperner
 Sperner order
 maximal layer
 layer
