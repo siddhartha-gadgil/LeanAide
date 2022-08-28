@@ -420,7 +420,7 @@ def checkTranslatedThmsM(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool 
   let prompts ←  IO.FS.lines file
   let mut count := 0
   let mut elaborated := 0
-  let mut elabPairs: Array (String × String) := #[]
+  let mut elabPairs: Array (String × String × (Array String)) := #[]
   let mut failed : Array String := #[]
   for prompt in prompts do 
     IO.println ""
@@ -430,12 +430,12 @@ def checkTranslatedThmsM(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool 
           numSim numKW includeFixed queryNum temp
     count := count + 1
     match res? with
-    | some (e, _) =>
+    | some (e, thms) =>
       IO.println "success"
       let v ← view e
       IO.println s!"theorem {v}"
       elaborated := elaborated + 1
-      elabPairs := elabPairs.push (prompt, v) 
+      elabPairs := elabPairs.push (prompt, v, thms) 
     | none =>
       IO.println "failed to elaborate"
       failed := failed.push prompt
@@ -453,8 +453,9 @@ def checkTranslatedThmsM(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool 
        ("temperature", Json.num temp),
        ("elaborated-prompts", 
         Json.arr <| elabPairs.map <| 
-          fun (p, s) => Json.mkObj [
-            ("prompt", p), ("theorem", s)]),
+          fun (p, s, thms) => Json.mkObj [
+            ("prompt", p), ("theorem", s), 
+            ("all-elabs", Json.arr <| thms.map (Json.str))]),
         ("failures", Json.arr <| failed.map (Json.str))
             ]
   return js
