@@ -209,7 +209,7 @@ def elabThmSplitCore(start? size?: Option Nat := none) : CoreM ((Array String) �
 
 def fixedPrompts:= #[("If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.", "theorem (n : ℕ) (f : ℕ → ℂ) :\n abs (∑ i in finset.range n, f i) ≤ ∑ i in finset.range n, abs (f i) :="), ("If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.", "theorem (n : ℕ) (x y : euclidean_space ℝ (fin n)) :\n ∥x + y∥^2 + ∥x - y∥^2 = 2*∥x∥^2 + 2*∥y∥^2 :="), ("If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.", "theorem (G : Type*) [group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :="), ("Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.", "theorem (X : Type*) [topological_space X]\n (A : set X) (hA : ∀ x ∈ A, ∃ U : set X, is_open U ∧ x ∈ U ∧ U ⊆ A):\n is_open A :=")]
 
-def getCodeJson (s: String)(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM Json := do
+def getCodeJson (s: String)(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM Json := do
   -- IO.println s!"initially pending : {(← pendingJsonQueries.get).size}"
   match ← getCachedJson? s with
   | some js => return js
@@ -226,8 +226,9 @@ def getCodeJson (s: String)(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bo
       let prompt := makePrompt s pairs
       mkLog prompt
       -- IO.println s!"pending : {(← pendingJsonQueries.get).size}"
-      let fullJson ← openAIQuery prompt queryNum
-      let outJson := (fullJson.getObjVal? "choices").toOption.get!
+      let fullJson ← openAIQuery prompt queryNum temp
+      let outJson := 
+        (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
       -- logInfo s!"query gave: {outJson}"
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.erase s)
@@ -239,7 +240,7 @@ def getCodeJson (s: String)(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bo
         IO.Process.output {cmd:= "curl", args:= 
           #["-X", "POST", "-H", "Content-type: application/json", "-d", s ++ s!" top_K {numSim}", "localhost:5000/similar_json"]}
       let pairs? ← sentenceSimPairs simJsonOut.stdout
-      let allPairs := pairs?.toOption.get!        
+      let allPairs := pairs?.toOption.getD #[]        
       let kwPairs :=
         if numKW >0 
         then ←  keywordBasedPrompts docPair s numKW scoreBound matchBound
@@ -295,7 +296,13 @@ def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array Strin
       | Except.ok es =>
         for (_, s) in es do
           elaborated := elaborated.push s 
-  if elaborated.isEmpty then return none
+  if elaborated.isEmpty then 
+    IO.println "No valid output from Codex; outputs below"
+    for out in output do
+      let polyOut ←  polyStrThmTrans out
+      for str in polyOut do
+        IO.println s!"{str}"
+    return none
   else    
     let groupSorted ← groupFuncStrs elaborated
     let topStr := groupSorted[0]![0]!
@@ -378,14 +385,21 @@ elab "//-" cb:commentBody  : term => do
   logInfo m!"{e}"
   return e
 
-def promptToExpr? (s: String) : 
-  TermElabM (Option (Expr × (Array String) )) := do
-  let js ← getCodeJson  s
+def translateWithDataM (s: String)(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : 
+  TermElabM ((Option (Expr × (Array String) )) × Array String) := do
+  let js ← 
+    getCodeJson s numSim numKW includeFixed queryNum temp scoreBound matchBound
   let output ← jsonToExprStrArray js
   let output := output.toList.eraseDups.toArray
   let res ← arrayToExpr? output
-  return res
+  return (res, output)
   
+def translateWithDataCore (s: String)(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : 
+  CoreM ((Option (Expr × (Array String) )) × Array String) := 
+    (translateWithDataM s 
+      numSim numKW includeFixed 
+        queryNum temp scoreBound matchBound).run'.run'
+
 
 elab "#theorem" name:ident " : " stmt:str ":=" prf:term : command => do
   let (fmlstmt, fmlstx) ← liftTermElabM none $ textToExprStx' egBlob' -- stmt.getString
@@ -396,3 +410,27 @@ elab "#example" stmt:str ":=" prf:term : command => do
   let (fmlstmt, fmlstx) ← liftTermElabM none $ textToExprStx' egBlob' -- stmt.getString
   logInfoAt stmt m!"{fmlstmt}"
   elabCommand $ ← `(example : $fmlstx:term := $prf:term)
+
+def checkTranslatedThmsM(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : TermElabM Unit := do
+  let file := System.mkFilePath ["data/prompts.txt"]
+  let prompts ←  IO.FS.lines file
+  let mut count := 0
+  let mut elaborated := 0
+  for prompt in prompts do 
+    IO.println ""
+    IO.println prompt
+    let (res?, outputs) ← translateWithDataM prompt
+    count := count + 1
+    match res? with
+    | some (e, _) =>
+      IO.println "success"
+      IO.println s!"theorem {e}"
+      elaborated := elaborated + 1
+    | none =>
+      IO.println "failed to elaborate"
+      IO.println s!"outputs: {outputs}"
+    IO.println s!"total : {count}"
+    IO.println s!"elaborated: {elaborated}"
+
+def checkTranslatedThmsCore : CoreM Unit :=
+    (checkTranslatedThmsM).run'.run'

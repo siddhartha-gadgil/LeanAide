@@ -16,6 +16,11 @@ lean_exe elabdatagen{
   supportInterpreter := true
 }
 
+lean_exe bulkelab {
+  supportInterpreter := true
+}
+
+
 lean_exe bulkchk{
   supportInterpreter := true
 }
