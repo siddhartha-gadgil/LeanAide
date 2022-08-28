@@ -415,11 +415,12 @@ elab "#example" stmt:str ":=" prf:term : command => do
   logInfoAt stmt m!"{fmlstmt}"
   elabCommand $ ← `(example : $fmlstx:term := $prf:term)
 
-def checkTranslatedThmsM(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : TermElabM Unit := do
+def checkTranslatedThmsM(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : TermElabM Json := do
   let file := System.mkFilePath ["data/prompts.txt"]
   let prompts ←  IO.FS.lines file
   let mut count := 0
   let mut elaborated := 0
+  let mut elabPairs: Array (String × String) := #[]
   for prompt in prompts do 
     IO.println ""
     IO.println prompt
@@ -430,14 +431,30 @@ def checkTranslatedThmsM(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool 
     match res? with
     | some (e, _) =>
       IO.println "success"
-      IO.println s!"theorem {← view e}"
+      let v ← view e
+      IO.println s!"theorem {v}"
       elaborated := elaborated + 1
+      elabPairs := elabPairs.push (prompt, v) 
     | none =>
       IO.println "failed to elaborate"
       IO.println s!"outputs: {outputs}"
     IO.println s!"total : {count}"
     IO.println s!"elaborated: {elaborated}"
+  let js := 
+    Json.mkObj 
+      [("total-prompts", count),
+        ("elaborated", elaborated),
+        ("number-similar-sentences", numSim),
+       ("number-keyword-sentences", numKW),
+       ("include-fixed", includeFixed),
+       ("query-number", queryNum),
+       ("temperature", Json.num temp),
+       ("elaborated-prompts", 
+        Json.arr <| elabPairs.map <| 
+          fun (p, s) => Json.mkObj [
+            ("prompt", p), ("theorem", s)] )]
+  return js
 
-def checkTranslatedThmsCore(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : CoreM Unit :=
+def checkTranslatedThmsCore(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : CoreM Json :=
     (checkTranslatedThmsM 
       numSim numKW includeFixed queryNum temp).run'.run'

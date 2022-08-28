@@ -6,7 +6,7 @@ open Lean Meta Elab Term
 
 example : //- Every prime number is either `2` or odd -/ := by
                 sorry
-
+ 
 example : //- There are infinitely many odd numbers -/ := by
             sorry
 

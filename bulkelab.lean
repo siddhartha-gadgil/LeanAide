@@ -18,8 +18,11 @@ def main (args: List String) : IO Unit := do
   let queryNum := 
     (args.get? 0 >>= fun s => s.toNat?).getD 5
   let temp10 :=
-    (args.get? 0 >>= fun s => s.toNat?).getD 4
+    (args.get? 0 >>= fun s => s.toNat?).getD 2
   let temp : JsonNumber := ⟨temp10, 1⟩
+  let outFile := System.mkFilePath 
+      ["data", 
+      s!"elab-{numSim}-{numKW}-{includeFixed}-{queryNum}-{temp10}.json"]
   let env ← 
     importModules [{module := `Mathlib},
     {module := `LeanCodePrompts.Basic},
@@ -34,12 +37,9 @@ def main (args: List String) : IO Unit := do
     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} 
     {env := env}
   match ← io?.toIO' with
-  | Except.ok _ =>
+  | Except.ok js =>
     IO.println "Success"
-    -- let succFile := System.mkFilePath ["data/elab_thms.txt"]
-    -- let h ← IO.FS.Handle.mk succFile IO.FS.Mode.append Bool.false
-    -- h.putStr <| 
-    --   succ.foldl (fun acc x => acc ++ s!"{x}\n") ""
+    IO.FS.writeFile outFile js.pretty
   | Except.error e =>
     do
           let msg ← e.toMessageData.toString
