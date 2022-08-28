@@ -27,7 +27,9 @@ def main (args: List String) : IO Unit := do
     {module:= `LeanCodePrompts.ParseJson},
     {module:= `LeanCodePrompts.Translate},
     {module := `Mathbin.All}] {}
-  let core := checkTranslatedThmsCore
+  let core := 
+    checkTranslatedThmsCore
+      numSim numKW includeFixed queryNum temp
   let io? := 
     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} 
     {env := env}

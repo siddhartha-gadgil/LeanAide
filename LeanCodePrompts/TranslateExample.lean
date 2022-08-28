@@ -4,18 +4,17 @@ import LeanCodePrompts.Translate
 -- import LeanCodePrompts.Autocorrect
 open Lean Meta Elab Term
 
-example : //- Every prime number is either `2` or even -/  := by      
-    sorry 
-
-#eval showLogs 2
-
-example : //- Every field is a ring -/ := by 
-       sorry
-
-#eval showLogs 2
+example : //- Every prime number is either `2` or odd -/ := by
+                sorry
 
 example : //- There are infinitely many odd numbers -/ := by
-        sorry
+            sorry
+
+example : //- Every field is a ring -/ := by 
+            sorry
+
+example : //- Every ring is a field -/ := by
+                sorry
 
 #eval showLogs 2
 

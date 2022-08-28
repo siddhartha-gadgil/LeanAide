@@ -371,6 +371,10 @@ def jsonToExpr' (json: Json) : TermElabM Expr := do
   -- logInfo s!"output: {output}"
   arrayToExpr output
 
+def view(expr: Expr): MetaM String := do
+  let stx ← PrettyPrinter.delab  expr
+  let fmt ← PrettyPrinter.ppTerm stx
+  return fmt.pretty
 
 def textToExprStx' (s : String) : TermElabM (Expr × TSyntax `term) := do
   let e ← textToExpr' s
@@ -419,12 +423,14 @@ def checkTranslatedThmsM(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool 
   for prompt in prompts do 
     IO.println ""
     IO.println prompt
-    let (res?, outputs) ← translateWithDataM prompt
+    let (res?, outputs) ← 
+        translateWithDataM prompt
+          numSim numKW includeFixed queryNum temp
     count := count + 1
     match res? with
     | some (e, _) =>
       IO.println "success"
-      IO.println s!"theorem {e}"
+      IO.println s!"theorem {← view e}"
       elaborated := elaborated + 1
     | none =>
       IO.println "failed to elaborate"
@@ -432,5 +438,6 @@ def checkTranslatedThmsM(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool 
     IO.println s!"total : {count}"
     IO.println s!"elaborated: {elaborated}"
 
-def checkTranslatedThmsCore : CoreM Unit :=
-    (checkTranslatedThmsM).run'.run'
+def checkTranslatedThmsCore(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : CoreM Unit :=
+    (checkTranslatedThmsM 
+      numSim numKW includeFixed queryNum temp).run'.run'
