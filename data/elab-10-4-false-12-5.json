@@ -1,0 +1,81 @@
+{"total-prompts": 33,
+ "temperature": 0.5,
+ "query-number": 12,
+ "number-similar-sentences": 10,
+ "number-keyword-sentences": 4,
+ "include-fixed": false,
+ "elaborated-prompts":
+ [{"theorem": "∀ (p : ℕ) [inst : Fact (Nat.Prime p)], p = 2 ∨ p % 2 = 1",
+   "prompt": "Every prime number is `2` or odd."},
+  {"theorem": "∀ (n : ℕ), ∃ m, m > n ∧ Odd m",
+   "prompt": "There are infinitely many odd natural numbers."},
+  {"theorem": "Nat.Prime 3", "prompt": "The smallest odd prime is `3`."},
+  {"theorem": "∃ p, Odd p ∧ Nat.Prime p",
+   "prompt": "There are infinitely many odd prime numbers."},
+  {"theorem": "∀ {R : Type u} [inst : Ringₓ R], IsField R",
+   "prompt": "Every ring is a field."},
+  {"theorem": "(K : Type u) → [inst : Field K] → Ring K",
+   "prompt": "Every field is a ring."},
+  {"theorem": "{α : Type u} → [inst : Ringₓ α] → Group (Units α)",
+   "prompt": "The set of units in a ring forms a group."},
+  {"theorem":
+   "∀ {k : Type u_1} {V : Type u_2} [inst : DivisionRing k] [inst_1 : AddCommGroupₓ V] [inst_2 : Module k V],\n  FiniteDimensional k V",
+   "prompt": "Every vector space is finite dimensional."},
+  {"theorem":
+   "∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroupₓ V] [inst_2 : Module K V],\n  Module.rank K V = 2 → FiniteDimensional K V",
+   "prompt":
+   "If a vector space has dimension `2` then it is finite dimensional."},
+  {"theorem": "(K : Type u) → [inst : Field K] → DivisionRing K",
+   "prompt": "Every field is a division ring."},
+  {"theorem":
+   "∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroupₓ V] [inst_2 : Module K V],\n  Module.rank K V = 2 → FiniteDimensional K V",
+   "prompt": "If a space has dimension `2` then it is finite dimensional."},
+  {"theorem": "∀ {G : Type u_1} [inst : Groupₓ G], Monoidₓ.IsTorsion G",
+   "prompt": "Every group is a torsion monoid."},
+  {"theorem": "∀ {n : ℕ}, ∃ m, n < m",
+   "prompt": "Every natural number has a successor."},
+  {"theorem": "∀ {n : ℕ}, n < n + 1",
+   "prompt": "Every natural number is less than its successor."},
+  {"theorem":
+   "∀ {G : Type u} [inst : Groupₓ G] [inst_1 : Fintype G], IsSimpleGroup G → ∃ p, Fact (Nat.Prime p) ∧ Fintype.card G = p",
+   "prompt": "Every finite simple group has prime order."},
+  {"theorem":
+   "∀ {α : Type u} [inst : Groupₓ α] [inst_1 : Fintype α], IsSimpleGroup α",
+   "prompt": "Every finite group is simple."},
+  {"theorem":
+   "∀ {α : Type u_1} [inst : MeasurableSpace α] (s : Set α), MeasurableSet s",
+   "prompt": "Every set is Lebesgue measurable."},
+  {"theorem":
+   "∀ {α : Type u_1} [inst : MeasurableSpace α] (s : Set α), coeFn MeasureTheory.volume.toOuterMeasure s = 0",
+   "prompt": "Every set has Lebesgue measure zero."},
+  {"theorem":
+   "∀ {α : Type u} [inst : TopologicalSpace α], CompactSpace α → ∀ {s : Set α}, IsCompact s",
+   "prompt":
+   "If a topological space is compact, then every subset is compact."},
+  {"theorem":
+   "∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p % 4 = 1 → ∃ a b, p = a * a + b * b",
+   "prompt":
+   "Every prime that is one greater than a multiple of four can be expressed as the sum of two squares."},
+  {"theorem": "∀ {p : ℕ} [inst : Fact (Nat.Prime p)], ¬∃ a, a * a = p",
+   "prompt": "No prime number is a perfect square."},
+  {"theorem": "∀ {p : ℕ}, Nat.Prime p → p % 2 = 1 → 2 < p",
+   "prompt": "Every odd prime number is greater than `2`."},
+  {"theorem":
+   "∀ {𝕜 : Type u_1} {E : Type u_2} [inst : LinearOrderedField 𝕜] [inst_1 : AddCommGroupₓ E] [inst_2 : Module 𝕜 E]\n  {C : Set E}, Convex 𝕜 C → ∀ (x y : E), x ∈ C → y ∈ C → ∀ (z : E), z ∈ Segment 𝕜 x y → z ∈ C",
+   "prompt":
+   "Every line segments whose endpoints are in a convex set `C` is contained in `C`."},
+  {"theorem":
+   "∀ {α : Type u_1} [inst : MeasurableSpace α] {s : Set α},\n  MeasurableSet s → ¬MeasurableSet s → coeFn MeasureTheory.volume.toOuterMeasure s = 0",
+   "prompt":
+   "Every set that is Lebesgue measurable but not Borel measurable has Lebesgue measure zero."},
+  {"theorem":
+   "∀ {α : Type u} [inst : LinearOrderedRing α] {x y : α},\n  (∃ a b c d, x = a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2) →\n    (∃ a b c d, y = a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2) → ∃ a b c d, x * y = a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2",
+   "prompt":
+   "The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares."},
+  {"theorem":
+   "∀ {X : Type u_1} [inst : TopologicalSpace X] [inst_1 : CompactSpace X], LocallyCompactSpace X",
+   "prompt": "Every compact topological space is locally compact."},
+  {"theorem":
+   "∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β},\n  Continuous f → UniformContinuous f",
+   "prompt": "Every continuous function is uniformly continuous."}],
+ "elaborated": 27}

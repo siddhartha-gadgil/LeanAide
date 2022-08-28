@@ -12,13 +12,13 @@ def main (args: List String) : IO Unit := do
   let numSim := 
     (args.get? 0 >>= fun s => s.toNat?).getD 10 
   let numKW := 
-    (args.get? 0 >>= fun s => s.toNat?).getD 4
+    (args.get? 1 >>= fun s => s.toNat?).getD 4
   let includeFixed := 
-    (args.get? 0 >>= fun s => s.toLower.startsWith "t").getD Bool.false
+    (args.get? 2 >>= fun s => s.toLower.startsWith "t").getD Bool.false
   let queryNum := 
-    (args.get? 0 >>= fun s => s.toNat?).getD 5
+    (args.get? 3 >>= fun s => s.toNat?).getD 5
   let temp10 :=
-    (args.get? 0 >>= fun s => s.toNat?).getD 2
+    (args.get? 4 >>= fun s => s.toNat?).getD 2
   let temp : JsonNumber := ⟨temp10, 1⟩
   let outFile := System.mkFilePath 
       ["data", 

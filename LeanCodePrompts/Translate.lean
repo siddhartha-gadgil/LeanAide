@@ -421,6 +421,7 @@ def checkTranslatedThmsM(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool 
   let mut count := 0
   let mut elaborated := 0
   let mut elabPairs: Array (String × String) := #[]
+  let mut failed : Array String := #[]
   for prompt in prompts do 
     IO.println ""
     IO.println prompt
@@ -437,6 +438,7 @@ def checkTranslatedThmsM(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool 
       elabPairs := elabPairs.push (prompt, v) 
     | none =>
       IO.println "failed to elaborate"
+      failed := failed.push prompt
       IO.println s!"outputs: {outputs}"
     IO.println s!"total : {count}"
     IO.println s!"elaborated: {elaborated}"
@@ -452,7 +454,9 @@ def checkTranslatedThmsM(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool 
        ("elaborated-prompts", 
         Json.arr <| elabPairs.map <| 
           fun (p, s) => Json.mkObj [
-            ("prompt", p), ("theorem", s)] )]
+            ("prompt", p), ("theorem", s)]),
+        ("failures", Json.arr <| failed.map (Json.str))
+            ]
   return js
 
 def checkTranslatedThmsCore(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : CoreM Json :=
