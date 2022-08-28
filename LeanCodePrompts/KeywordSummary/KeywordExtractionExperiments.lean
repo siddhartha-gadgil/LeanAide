@@ -10,3 +10,6 @@ import LeanCodePrompts.KeywordSummary.KeywordExtraction
 
 
 #eval fetchStatementsWithKeyword (·["statement"]!) "free"
+
+
+#eval (do return (← keywordCache.get).size : IO Nat) -- 14383

@@ -12,7 +12,7 @@ invalid_keywords = open("../../data/invalid_keywords.txt", "w")
 
 
 for kw in mathlib_keywords:
-    if '_'.join(kw.split(' ')) in wiktionary_keywords:
+    if ('_'.join(map(lambda s: str.lower(s), kw.split(' '))) in wiktionary_keywords) or ('_'.join(kw.split(' ')) in wiktionary_keywords):
         valid_keywords.write(kw + '\n')
     else:
         invalid_keywords.write(kw + '\n')
