@@ -5,10 +5,9 @@ import LeanCodePrompts.Translate
 open Lean Meta Elab Term
 
 example : //- Every prime number is either `2` or odd -/ := by
-                sorry
+            sorry
 
-/-!
- 
+/-! 
 ```
 example : //- There are infinitely many odd numbers -/ := by
             sorry
@@ -31,7 +30,7 @@ example : //- If a vector space has dimension `2` then it is finite dimensional.
 * Integrated interface using elaboration; caching, polling.
 * Input-dependent prompting:
     - database of doc-strings from Mathlib
-    - selected using: sentence similarity, keywords
+    - selected using: sentence similarity, keywords,(proximity)
 * Post-processing:
     - Lean 3 to Lean 4 translation, auto-correction.
         - based on case-transformations, adding/dropping "is" and "has"
@@ -40,7 +39,7 @@ example : //- If a vector space has dimension `2` then it is finite dimensional.
 
 ## Possible improvements
 
-* Interface: code actions
+* Interface: code actions, elaborate on removing focus
 * Prompting:
     - better selection of prompts
     - better/larger database of prompts
@@ -53,4 +52,5 @@ example : //- If a vector space has dimension `2` then it is finite dimensional.
 * Codex improvements:
     - hyper-parameters
     - fine-tuning
+* May be able to repurpose to looking up theorem names from descriptions.
 -/
