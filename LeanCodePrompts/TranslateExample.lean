@@ -6,7 +6,12 @@ open Lean Meta Elab Term
 
 example : //- Every prime number is either `2` or odd -/ := by
                 sorry
+
+/-!
  
+```
+#eval showLogs 2
+
 example : //- There are infinitely many odd numbers -/ := by
             sorry
 
@@ -16,9 +21,10 @@ example : //- Every field is a ring -/ := by
 example : //- Every ring is a field -/ := by
                 sorry
 
-#eval showLogs 2
+example : //- If a vector space has dimension `2` then it is finite dimensional. -/ := by 
+        sorry
+```
 
-/-!
 ## Features
 
 * Integrated interface using elaboration; caching, polling.
