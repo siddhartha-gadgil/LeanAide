@@ -10,10 +10,11 @@ example : //- Every prime number is either `2` or odd -/ := by
 /-!
  
 ```
-#eval showLogs 2
-
 example : //- There are infinitely many odd numbers -/ := by
             sorry
+
+#eval showLogs 2
+
 
 example : //- Every field is a ring -/ := by 
             sorry
