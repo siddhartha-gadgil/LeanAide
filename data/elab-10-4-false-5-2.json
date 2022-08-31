@@ -4,62 +4,166 @@
  "number-similar-sentences": 10,
  "number-keyword-sentences": 4,
  "include-fixed": false,
+ "failures":
+ ["Every natural number has a successor.",
+  "If the direct product of two groups is torsion free then each of the groups is torsion free.",
+  "Every finite simple group has prime order.",
+  "There are infinitely many Pythagorean triples.",
+  "Every set of Borel measure zero is Lebesgue measurable.",
+  "If every proper closed set of a topological space is compact, then the space itself is compact.",
+  "For every subset of the Euclidean plane, there is a line segment of unit length whose endpoints are either both inside the subset or both outside it.",
+  "Every set that is Lebesgue measurable but not Borel measurable has Lebesgue measure zero."],
  "elaborated-prompts":
- [{"theorem": "∀ (p : ℕ) [hp : Fact (Nat.Prime p)], p = 2 ∨ p % 2 = 1",
-   "prompt": "Every prime number is `2` or odd."},
-  {"theorem": "∀ (n : ℕ), ∃ m, m > n ∧ Odd m",
-   "prompt": "There are infinitely many odd natural numbers."},
-  {"theorem": "Nat.Prime 3", "prompt": "The smallest odd prime is `3`."},
-  {"theorem": "∀ (n : ℕ), ∃ p, n < p ∧ Nat.Prime p ∧ p % 2 = 1",
-   "prompt": "There are infinitely many odd prime numbers."},
+ [{"theorem": "∀ (p : ℕ) [inst : Fact (Nat.Prime p)], p = 2 ∨ p % 2 = 1",
+   "prompt": "Every prime number is `2` or odd.",
+   "all-elabs":
+   [" (  p :  ℕ ) ->  [  Fact   (   Nat.Prime  p  ) ] ->   p =  2 ∨   p %  2 =  1",
+    " {  p :  ℕ } ->  [  Fact   (   Nat.Prime  p  ) ] ->   p =  2 ∨   p %  2 =  1",
+    " (  p :  ℕ ) ->  [ hp :  Fact   (   Nat.Prime  p  ) ] ->   p =  2 ∨   p %  2 =  1"]},
+  {"theorem": "∀ (n : ℕ), ∃ m, n < m ∧ Odd m",
+   "prompt": "There are infinitely many odd natural numbers.",
+   "all-elabs":
+   [" ∀   (  n  :  ℕ  )  ,  ∃    (   m :  ℕ ) ,   n < m ∧  Odd  m",
+    " ∀   (  n  :  ℕ  )  ,  ∃    (   m :  ℕ ) ,   m > n ∧  Odd  m",
+    " ∀  n   :  ℕ ,  ∃     m  :  ℕ ,   n < m ∧  Odd  m"]},
+  {"theorem": "Nat.Prime 3",
+   "prompt": "The smallest odd prime is `3`.",
+   "all-elabs": [" Nat.Prime   3"]},
+  {"theorem": "∀ (n : ℕ), ∃ p, n < p ∧ Nat.Prime p ∧ Odd p",
+   "prompt": "There are infinitely many odd prime numbers.",
+   "all-elabs":
+   [" ∀   (  n  :  ℕ  )  ,  ∃    (   p :  ℕ ) ,   n < p ∧   Nat.Prime  p ∧  Odd  p",
+    " ∀   (  n  :  ℕ  )  ,  ∃    (   p :  ℕ ) ,   n < p ∧   Nat.Prime  p ∧   p %  2 =  1"]},
   {"theorem": "∀ {R : Type u} [inst : Ringₓ R], IsField R",
-   "prompt": "Every ring is a field."},
-  {"theorem": "(K : Type u) → [inst : Field K] → Ring K",
-   "prompt": "Every field is a ring."},
+   "prompt": "Every ring is a field.",
+   "all-elabs": [" {  R :  Type  u } ->  [  Ringₓ  R ] ->  IsField  R"]},
+  {"theorem": "(F : Type u) → [inst : Field F] → Ring F",
+   "prompt": "Every field is a ring.",
+   "all-elabs":
+   [" (  F :  Type  u ) ->  [  Field  F ] ->  Ring  F",
+    " (  F :  Type  u ) ->  [  Field  F ] ->  Ringₓ  F",
+    " (  F :  Type  u ) ->  [  Field  F ] ->  Ring  F",
+    " (  F :  Type  u ) ->  [  Field  F ] ->  Ringₓ  F",
+    " (  R :  Type  u ) ->  [  Field  R ] ->  Ring  R",
+    " (  R :  Type  u ) ->  [  Field  R ] ->  Ringₓ  R",
+    " (  K :  Type  u ) ->  [  Field  K ] ->  Ring  K",
+    " (  K :  Type  u ) ->  [  Field  K ] ->  Ringₓ  K"]},
   {"theorem": "{α : Type u} → [inst : Ringₓ α] → Group (Units α)",
-   "prompt": "The set of units in a ring forms a group."},
+   "prompt": "The set of units in a ring forms a group.",
+   "all-elabs":
+   [" {  α :  Type  u } ->  [  Ringₓ  α ] ->  Group   (   Units  α  )",
+    " {  α :  Type  u } ->  [  Ringₓ  α ] ->  Groupₓ   (   Units  α  )",
+    " {  R :  Type  u_1 } ->  [  Ringₓ  R ] ->  Group   (   Units  R  )",
+    " {  R :  Type  u_1 } ->  [  Ringₓ  R ] ->  Groupₓ   (   Units  R  )"]},
   {"theorem":
-   "∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroupₓ V] [inst_2 : Module K V],\n  FiniteDimensional K V",
-   "prompt": "Every vector space is finite dimensional."},
+   "∀ (k : Type u_1) {V : Type u_2} [inst : DivisionRing k] [inst_1 : AddCommGroupₓ V] [inst_2 : Module k V],\n  FiniteDimensional k V",
+   "prompt": "Every vector space is finite dimensional.",
+   "all-elabs":
+   [" (  k :  Type  u_1 ) ->  {  V :  Type  u_2 } ->  [  DivisionRing  k ] ->  [  AddCommGroupₓ  V ] ->  [  Module  k V ] ->  FiniteDimensional  k V",
+    " {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  FiniteDimensional  K V"]},
   {"theorem":
    "∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroupₓ V] [inst_2 : Module K V],\n  Module.rank K V = 2 → FiniteDimensional K V",
    "prompt":
-   "If a vector space has dimension `2` then it is finite dimensional."},
+   "If a vector space has dimension `2` then it is finite dimensional.",
+   "all-elabs":
+   [" {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  (  h :   Module.rank  K V =  2 ) ->  FiniteDimensional  K V",
+    " {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->    Module.rank  K V =  2 →  FiniteDimensional  K V",
+    " {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->    Module.rank  K V ≤  2 →  FiniteDimensional  K V"]},
   {"theorem": "{K : Type u} → [inst : Field K] → DivisionRing K",
-   "prompt": "Every field is a division ring."},
+   "prompt": "Every field is a division ring.",
+   "all-elabs":
+   [" {  K :  Type  u } ->  [  Field  K ] ->  DivisionRing  K",
+    " (  K :  Type  u ) ->  [  Field  K ] ->  DivisionRing  K",
+    " {  α :  Type  u } ->  [  Field  α ] ->  DivisionRing  α"]},
   {"theorem":
    "∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroupₓ V] [inst_2 : Module K V],\n  Module.rank K V = 2 → FiniteDimensional K V",
-   "prompt": "If a space has dimension `2` then it is finite dimensional."},
-  {"theorem": "∀ {n : ℕ}, ∃ m, n < m",
-   "prompt": "Every natural number has a successor."},
+   "prompt": "If a space has dimension `2` then it is finite dimensional.",
+   "all-elabs":
+   [" {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->    Module.rank  K V =  2 →  FiniteDimensional  K V"]},
+  {"theorem": "∀ {G : Type u_1} [inst : Groupₓ G], Monoidₓ.IsTorsion G",
+   "prompt": "Every group is a torsion monoid.",
+   "all-elabs":
+   [" {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  Monoidₓ.IsTorsion  G"]},
+  {"theorem": "∀ (n : ℕ), n < n + 1",
+   "prompt": "Every natural number is less than its successor.",
+   "all-elabs":
+   [" (  n :  ℕ ) ->  n <  n +  1", " {  n :  ℕ } ->  n <  n +  1"]},
   {"theorem":
-   "∀ {G : Type u_1} [inst : Groupₓ G] [inst_1 : Fintype G], IsSimpleGroup G → ∃ p, Fact (Nat.Prime p) ∧ Fintype.card G = p",
-   "prompt": "Every finite simple group has prime order."},
+   "∀ {G : Type u_1} [inst : Groupₓ G] [inst_1 : Fintype G], IsSimpleGroup G",
+   "prompt": "Every finite group is simple.",
+   "all-elabs":
+   [" {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  [  Fintype  G ] ->  IsSimpleGroup  G",
+    " {  α :  Type  u } ->  [  Groupₓ  α ] ->  [  Fintype  α ] ->  IsSimpleGroup  α"]},
   {"theorem":
-   "∀ {α : Type u} [inst : Groupₓ α] [inst_1 : Fintype α], IsSimpleGroup α",
-   "prompt": "Every finite group is simple."},
-  {"theorem":
-   "∀ {G : Type u} [inst : Group G] [inst : Fintype G], ∃ p, Fact (Nat.Prime p) ∧ Fintype.card G = p",
-   "prompt": "Every finite group has prime order."},
+   "∀ {G : Type u} [inst : Group G] [inst : Fintype G], ∃ p, Nat.Prime p ∧ Fintype.card G = p",
+   "prompt": "Every finite group has prime order.",
+   "all-elabs":
+   [" {  G :  Type  u } ->  [  Group  G ] ->  [  Fintype  G ] ->  ∃    (   p :  ℕ ) ,   Nat.Prime  p ∧   Fintype.card  G = p",
+    " {  G :  Type  u } ->  [  Groupₓ  G ] ->  [  Fintype  G ] ->  ∃    (   p :  ℕ ) ,   Nat.Prime  p ∧   Fintype.card  G = p",
+    " {  α :  Type  u } ->  [  Group  α ] ->  [  Fintype  α ] ->  ∃    (   p :  ℕ ) ,   Nat.Prime  p ∧   Fintype.card  α = p",
+    " {  α :  Type  u } ->  [  Groupₓ  α ] ->  [  Fintype  α ] ->  ∃    (   p :  ℕ ) ,   Nat.Prime  p ∧   Fintype.card  α = p",
+    " {  α :  Type  u } ->  [  Group  α ] ->  [  Fintype  α ] ->  ∃    (   p :  ℕ ) ,   Fact   (   Nat.Prime  p  ) ∧   Fintype.card  α = p",
+    " {  α :  Type  u } ->  [  Groupₓ  α ] ->  [  Fintype  α ] ->  ∃    (   p :  ℕ ) ,   Fact   (   Nat.Prime  p  ) ∧   Fintype.card  α = p"]},
   {"theorem":
    "∀ {α : Type u_1} {m : MeasurableSpace α} (s : Set α), MeasurableSet s",
-   "prompt": "Every set is Lebesgue measurable."},
+   "prompt": "Every set is Lebesgue measurable.",
+   "all-elabs":
+   [" {  α :  Type  u_1 } ->  {  m :  MeasurableSpace  α } ->  (  s :  Set  α ) ->  MeasurableSet  s",
+    " {  α :  Type  u_1 } ->  MeasurableSpace  α"]},
   {"theorem":
    "∀ {α : Type u_1} [inst : MeasurableSpace α] {s : Set α}, coeFn MeasureTheory.volume.toOuterMeasure s = 0",
-   "prompt": "Every set has Lebesgue measure zero."},
+   "prompt": "Every set has Lebesgue measure zero.",
+   "all-elabs":
+   [" {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  {  s :  Set  α } ->   MeasureTheory.MeasureSpace.volume  s =  0",
+    " {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  (  s :  Set  α ) ->   MeasureTheory.MeasureSpace.volume  s =  0"]},
+  {"theorem":
+   "∀ {α : Type u} [inst : TopologicalSpace α], IsCompact ?m.85002 → ∀ (s : Set α), IsCompact s",
+   "prompt": "If a topological space is compact, then every subset is compact.",
+   "all-elabs":
+   [" {  α :  Type  u } ->  [  TopologicalSpace  α ] ->  (  h :  IsCompact  α ) ->  (  s :  Set  α ) ->  IsCompact  s",
+    " {  α :  Type  u } ->  [  TopologicalSpace  α ] ->  (  h :  IsCompact  α ) ->  ∀  s   :  Set  α ,  IsCompact  s"]},
   {"theorem":
    "∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p % 4 = 1 → ∃ a b, a ^ 2 + b ^ 2 = p",
    "prompt":
-   "Every prime that is one greater than a multiple of four can be expressed as the sum of two squares."},
+   "Every prime that is one greater than a multiple of four can be expressed as the sum of two squares.",
+   "all-elabs":
+   [" {  p :  ℕ } ->  [  Fact   (   Nat.Prime  p  ) ] ->  (  hp :   p %  4 =  1 ) ->  ∃    (   a  b :  ℕ ) ,    a ^  2 +  b ^  2 = p",
+    " (  p :  ℕ ) ->  [  Fact   (   Nat.Prime  p  ) ] ->  (  hp :   p %  4 =  1 ) ->  ∃    (   a  b :  ℕ ) ,    a ^  2 +  b ^  2 = p"]},
   {"theorem": "∀ {p : ℕ} [inst : Fact (Nat.Prime p)], ¬∃ n, n * n = p",
-   "prompt": "No prime number is a perfect square."},
+   "prompt": "No prime number is a perfect square.",
+   "all-elabs":
+   [" {  p :  ℕ } ->  [  Fact   (   Nat.Prime  p  ) ] ->  ¬  ∃    (   n :  ℕ ) ,   n * n = p",
+    " {  p :  ℕ } ->  [  Fact   (   Nat.Prime  p  ) ] ->  ¬  ∃    (   m :  ℕ ) ,   m * m = p"]},
   {"theorem": "∀ (p : ℕ) [inst : Fact (Nat.Prime p)], p % 2 = 1 → 2 < p",
-   "prompt": "Every odd prime number is greater than `2`."},
+   "prompt": "Every odd prime number is greater than `2`.",
+   "all-elabs":
+   [" (  p :  ℕ ) ->  [  Fact   (   Nat.Prime  p  ) ] ->  (  h :   p %  2 =  1 ) ->   2 < p"]},
   {"theorem":
-   "∀ {α : Type u} [inst : Ring α] {x y : α},\n  (∃ a b c d, x = a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2) →\n    (∃ a b c d, y = a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2) → ∃ a b c d, x * y = a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2",
+   "∀ {𝕜 : Type u_1} {E : Type u_2} [inst : LinearOrderedRing 𝕜] [inst_1 : AddCommGroupₓ E] [inst_2 : Module 𝕜 E]\n  [inst_3 : DenselyOrdered 𝕜] [inst_4 : NoZeroSmulDivisors 𝕜 E] {A : Set E} {x₁ x₂ : E},\n  x₁ ∈ A → x₂ ∈ A → Segment 𝕜 x₁ x₂ ⊂ A",
    "prompt":
-   "The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares."},
+   "Every line segments whose endpoints are in a convex set `C` is contained in `C`.",
+   "all-elabs":
+   [" {  𝕜 :  Type  u_1 } ->  {  E :  Type  u_2 } ->  [  LinearOrderedRing  𝕜 ] ->  [  AddCommGroupₓ  E ] ->  [  Module  𝕜 E ] ->  [  DenselyOrdered  𝕜 ] ->  [  NoZeroSmulDivisors  𝕜 E ] ->  {  A :  Set  E } ->  {  x₁ x₂ : E } ->   x₁ ∈ A →   x₂ ∈ A →   Segment  𝕜 x₁ x₂ ⊆ A"]},
+  {"theorem":
+   "∀ {α : Type u} [inst : Ring α] {a b : α},\n  (∃ x y z w, a = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) →\n    (∃ x y z w, b = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) → ∃ x y z w, a * b = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2",
+   "prompt":
+   "The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares.",
+   "all-elabs":
+   [" {  α :  Type  u } ->  [  Ring  α ] ->  {  a b : α } ->  (  ha :  ∃    (   x  y  z  w : α ) ,  a =     x ^  2 +  y ^  2 +  z ^  2 +  w ^  2 ) ->  (  hb :  ∃    (   x  y  z  w : α ) ,  b =     x ^  2 +  y ^  2 +  z ^  2 +  w ^  2 ) ->  ∃    (   x  y  z  w : α ) ,   a * b =     x ^  2 +  y ^  2 +  z ^  2 +  w ^  2",
+    " {  α :  Type  u } ->  [  Ringₓ  α ] ->  {  a b : α } ->  (  ha :  ∃    (   x  y  z  w : α ) ,  a =     x ^  2 +  y ^  2 +  z ^  2 +  w ^  2 ) ->  (  hb :  ∃    (   x  y  z  w : α ) ,  b =     x ^  2 +  y ^  2 +  z ^  2 +  w ^  2 ) ->  ∃    (   x  y  z  w : α ) ,   a * b =     x ^  2 +  y ^  2 +  z ^  2 +  w ^  2",
+    " {  α :  Type  u } ->  [  Ring  α ] ->  {  a b : α } ->  (  h :  ∃    (   x  y  z  w : α ) ,   a =     x ^  2 +  y ^  2 +  z ^  2 +  w ^  2 ∧  b =     x ^  2 +  y ^  2 +  z ^  2 +  w ^  2 ) ->  ∃    (   x  y  z  w : α ) ,   a * b =     x ^  2 +  y ^  2 +  z ^  2 +  w ^  2",
+    " {  α :  Type  u } ->  [  Ringₓ  α ] ->  {  a b : α } ->  (  h :  ∃    (   x  y  z  w : α ) ,   a =     x ^  2 +  y ^  2 +  z ^  2 +  w ^  2 ∧  b =     x ^  2 +  y ^  2 +  z ^  2 +  w ^  2 ) ->  ∃    (   x  y  z  w : α ) ,   a * b =     x ^  2 +  y ^  2 +  z ^  2 +  w ^  2",
+    " {  α :  Type  u } ->  [  LinearOrderedRing  α ] ->  {  x y : α } ->  (  hx :  ∃    (   a  b  c  d : α ) ,  x =     a ^  2 +  b ^  2 +  c ^  2 +  d ^  2 ) ->  (  hy :  ∃    (   a  b  c  d : α ) ,  y =     a ^  2 +  b ^  2 +  c ^  2 +  d ^  2 ) ->  ∃    (   a  b  c  d : α ) ,   x * y =     a ^  2 +  b ^  2 +  c ^  2 +  d ^  2",
+    " {  α :  Type  u } ->  [  Ring  α ] ->  {  x y : α } ->  (  hx :  ∃    (   a  b  c  d : α ) ,  x =     a ^  2 +  b ^  2 +  c ^  2 +  d ^  2 ) ->  (  hy :  ∃    (   a  b  c  d : α ) ,  y =     a ^  2 +  b ^  2 +  c ^  2 +  d ^  2 ) ->  ∃    (   a  b  c  d : α ) ,   x * y =     a ^  2 +  b ^  2 +  c ^  2 +  d ^  2",
+    " {  α :  Type  u } ->  [  Ringₓ  α ] ->  {  x y : α } ->  (  hx :  ∃    (   a  b  c  d : α ) ,  x =     a ^  2 +  b ^  2 +  c ^  2 +  d ^  2 ) ->  (  hy :  ∃    (   a  b  c  d : α ) ,  y =     a ^  2 +  b ^  2 +  c ^  2 +  d ^  2 ) ->  ∃    (   a  b  c  d : α ) ,   x * y =     a ^  2 +  b ^  2 +  c ^  2 +  d ^  2"]},
   {"theorem":
    "∀ {X : Type u_1} [inst : TopologicalSpace X] [inst_1 : CompactSpace X], LocallyCompactSpace X",
-   "prompt": "Every compact topological space is locally compact."}],
- "elaborated": 22}
+   "prompt": "Every compact topological space is locally compact.",
+   "all-elabs":
+   [" {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->  [  CompactSpace  X ] ->  LocallyCompactSpace  X"]},
+  {"theorem":
+   "∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β},\n  Continuous f → UniformContinuous f",
+   "prompt": "Every continuous function is uniformly continuous.",
+   "all-elabs":
+   [" {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpace  α ] ->  [  UniformSpace  β ] ->  {  f :  α → β } ->  (  hf :  Continuous  f ) ->  UniformContinuous  f"]}],
+ "elaborated": 25}
