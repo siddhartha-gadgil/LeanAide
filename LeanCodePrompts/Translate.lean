@@ -405,15 +405,15 @@ def translateWithDataCore (s: String)(numSim : Nat:= 10)(numKW: Nat := 4)(includ
         queryNum temp scoreBound matchBound).run'.run'
 
 
-elab "#theorem" name:ident " : " stmt:str ":=" prf:term : command => do
-  let (fmlstmt, fmlstx) ← liftTermElabM none $ textToExprStx' egBlob' -- stmt.getString
-  logInfoAt stmt m!"{fmlstmt}"
-  elabCommand $ ← `(theorem $name:ident : $fmlstx:term := $prf:term)
+-- elab "#theorem" name:ident " : " stmt:str ":=" prf:term : command => do
+--   let (fmlstmt, fmlstx) ← liftTermElabM none $ textToExprStx' egBlob' -- stmt.getString
+--   logInfoAt stmt m!"{fmlstmt}"
+--   elabCommand $ ← `(theorem $name:ident : $fmlstx:term := $prf:term)
 
-elab "#example" stmt:str ":=" prf:term : command => do
-  let (fmlstmt, fmlstx) ← liftTermElabM none $ textToExprStx' egBlob' -- stmt.getString
-  logInfoAt stmt m!"{fmlstmt}"
-  elabCommand $ ← `(example : $fmlstx:term := $prf:term)
+-- elab "#example" stmt:str ":=" prf:term : command => do
+--   let (fmlstmt, fmlstx) ← liftTermElabM none $ textToExprStx' egBlob' -- stmt.getString
+--   logInfoAt stmt m!"{fmlstmt}"
+--   elabCommand $ ← `(example : $fmlstx:term := $prf:term)
 
 def checkTranslatedThmsM(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : TermElabM Json := do
   let file := System.mkFilePath ["data/prompts.txt"]
