@@ -1,5 +1,5 @@
 import Mathbin.All
--- import LeanCodePrompts.CheckParse
+import LeanCodePrompts.CheckParse
 
 #check Real
 #check ℝ 
@@ -18,7 +18,7 @@ theorem fermat_two_square : ∀ p : ℕ, Prime p → (p % 4 = 1) → ∃ a b : �
 /-
 For every subset of the Euclidean plane, there is a line segment of unit length whose endpoints are either both inside the subset or both outside it.
 -/
-theorem unit_line_in_or_out_of_euclidean_plane_subset : ∀ (S : Set $ EuclideanSpace ℝ (Finₓ 2)), ∃ (x y : EuclideanSpace ℝ (Finₓ 2)), (∥x - y∥ = (1 : ℝ)) → (x ∈ S ∧ y ∈ S) ∨ (x ∉ S ∧ y ∉ S) := sorry
+-- theorem unit_line_in_or_out_of_euclidean_plane_subset : ∀ (S : Set $ EuclideanSpace ℝ (Finₓ 2)), ∃ (x y : EuclideanSpace ℝ (Finₓ 2)), (∥x - y∥ = (1 : ℝ)) → (x ∈ S ∧ y ∈ S) ∨ (x ∉ S ∧ y ∉ S) := sorry
 
 /-
 The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares.
@@ -49,12 +49,12 @@ theorem fin_div_ring_is_field {R : Type _} [DivisionRing R] [Finite R] : Field R
 /-
 The product of two positive numbers is at most the square of their average.
 -/
-theorem am_gm_ineq : ∀ (a b : ℝ), a > 0 → b > 0 → a * b ≤ ((a + b)/(1 + 1))^2 := sorry
+-- theorem am_gm_ineq : ∀ (a b : ℝ), a > 0 → b > 0 → a * b ≤ ((a + b)/(1 + 1))^2 := sorry
 
 /-
 In any configuration of points on the plane, not all on a line, there is a line which contains exactly two of the points.
 -/
-theorem sylvester_gallai {P L : Type _} [HasMem P L] [Membership P L] [Configuration.Nondegenerate P L] : ∃ (l : L) (p q : P), p ∈ l → q ∈ l → (∀ r : P, r ∈ l → r = p ∨ r = q) := sorry
+-- theorem sylvester_gallai {P L : Type _} [HasMem P L] [Membership P L] [Configuration.Nondegenerate P L] : ∃ (l : L) (p q : P), p ∈ l → q ∈ l → (∀ r : P, r ∈ l → r = p ∨ r = q) := sorry
 
 /-
 If each of two types can be mapped injectively into the other, then there is a bijection between them.
@@ -101,7 +101,7 @@ lemma urysohn {X : Type _} [TopologicalSpace X] [TopologicalSpace ℝ] : NormalS
 /-
 The only field automorphism of the reals is the identity.
 -/
-theorem real_field_aut_trivial : ∀ (f : ℝ ≃+* ℝ), (∀ x : ℝ, f x = x) := sorry
+-- theorem real_field_aut_trivial : ∀ (f : ℝ ≃+* ℝ), (∀ x : ℝ, f x = x) := sorry
 
 /-
 If a function from the unit interval to itself has a point of period three, then it has points of all positive periods.
@@ -145,18 +145,17 @@ Every odd degree polynomial over `ℝ` has a zero
 theorem poly_odd_degree_has_zero {α : Type _} [Field α] (p : Polynomial α) : Odd (p.degree) → ∃ x, p.IsRoot x := sorry
 
 /-
-The product of two consequitive natural numbers is odd
+The product of two consequitive natural numbers is even.
 -/
-theorem product_conseq_odd (n: Nat): Odd <| n * (n + 1) := sorry
+theorem product_conseq_odd (n: Nat): Even <| n * (n + 1) := sorry
 
 /-
 Every constant function `f x = c` from real numbers to real numbers is differentiable.
 -/
-theorem constant_is_differentiable 
-  {f: ℝ → ℝ}: ∃ c: ℝ, (∀ x : ℝ, f x = c) → Differentiable ℝ f := sorry 
+-- theorem constant_is_differentiable  {f: ℝ → ℝ}: ∃ c: ℝ, (∀ x : ℝ, f x = c) → Differentiable ℝ f := sorry 
 
 /-
-Every index 2 subgroup of a group is free
+Every index 2 subgroup of a group is normal
 -/
 theorem index_two_subgroup {G : Type _} [Groupₓ G] (H : Subgroup G): 
       H.index = 2 → Subgroup.Normal H := sorry
@@ -164,8 +163,7 @@ theorem index_two_subgroup {G : Type _} [Groupₓ G] (H : Subgroup G):
 /-
 Every subgroup of a free group is free
 -/
-theorem subgpFree {G : Type _} [Groupₓ G] : 
-      (K : Subgroup G) → Σ β, FreeGroup β ≃* ↥K := sorry
+-- theorem subgpFree {G : Type _} [Groupₓ G] :       (K : Subgroup G) → Σ β, FreeGroup β ≃* ↥K := sorry
 
 /-
 Every free group is torsion free
@@ -176,13 +174,12 @@ theorem free_group_torsion_free {α : Type} :
 /-
 Every non-empty subgroup of `ℤ` is isomorphic to `ℤ`
 -/
-theorem integer_subgroups (H : AddSubgroup ℤ) :
-    H.Carrier.Nonempty  →   ↥H ≃+ ℤ := sorry
+-- theorem integer_subgroups (H : AddSubgroup ℤ) : H.Carrier.Nonempty  →   ↥H ≃+ ℤ := sorry
 
 /- If the coefficients of a polynomial over rationals are integral, every rational root is integral.-/
-theorem int_poly_rat_zeros_int (p: Polynomial ℚ) :
-  ∀ n: ℕ, IsIntegral ℚ (p.coeff n) →  
-  ∀ x: ℚ, p.IsRoot x →  IsIntegral ℚ x := sorry
+-- theorem int_poly_rat_zeros_int (p: Polynomial ℚ) :
+--   ∀ n: ℕ, IsIntegral ℚ (p.coeff n) →  
+--   ∀ x: ℚ, p.IsRoot x →  IsIntegral ℚ x := sorry
 
 /-
 Every natural number greater than `1` is divisible by a prime number. 
@@ -205,8 +202,8 @@ theorem fin_torsionfree {G: Type _}[Groupₓ G][Finite G] :
 /-
 Any homomorphism from the additive group of rational numbers to `ℤ` is trivial
 -/
-theorem hom_rat_Z_trivial (f : ℚ → ℤ) : 
-  IsAddGroupHom f →  ∀ x: ℚ, f x = 0 := sorry
+-- theorem hom_rat_Z_trivial (f : ℚ → ℤ) : 
+--   IsAddGroupHom f →  ∀ x: ℚ, f x = 0 := sorry
 
 /-
 Every finite division ring is a field.
@@ -234,7 +231,7 @@ theorem polys_unbounded(p: Polynomial ℝ) : p.degree > 0 →
 /-
 A homomorphism between fields is either injective or trivial.
 -/
-theorem field_hom_inj_or_trivial {F F' : Type _} [Field F] [Field F'] : ∀ ϕ : F →+* F', ϕ.toFun.Injective ∨ (∀ x : F, ϕ x = 0) := sorry
+-- theorem field_hom_inj_or_trivial {F F' : Type _} [Field F] [Field F'] : ∀ ϕ : F →+* F', ϕ.toFun.Injective ∨ (∀ x : F, ϕ x = 0) := sorry
 
 /-
 Any homomorphism from a group $G$ to an Abelian group factors through the Abelianisation of $G$.
@@ -245,24 +242,24 @@ Any homomorphism from a group $G$ to an Abelian group factors through the Abelia
 /-
 Every ascending chain of sub-modules of a Noetherian module eventually stabilises.
 -/
-theorem noetherian_implies_ascending_chain_condition {R M : Type _} [Ringₓ R] [AddCommMonoidₓ M] [Module R M] : IsNoetherian R M → ∀ (f : ℕ →o Submodule R M), ∃ n : ℕ, ∀ m : ℕ, n < m → f n = f m := sorry
+-- theorem noetherian_implies_ascending_chain_condition {R M : Type _} [Ringₓ R] [AddCommMonoidₓ M] [Module R M] : IsNoetherian R M → ∀ (f : ℕ →o Submodule R M), ∃ n : ℕ, ∀ m : ℕ, n < m → f n = f m := sorry
 
 /-
 Differentiability implies continuity.
 -/
-theorem differentiability_implies_continuity [TopologicalSpace ℝ] : ∀ f : ℝ → ℝ, Differentiable ℝ f → Continuous f := sorry
+-- theorem differentiability_implies_continuity [TopologicalSpace ℝ] : ∀ f : ℝ → ℝ, Differentiable ℝ f → Continuous f := sorry
 
 /-
 Left adjoint functors preserve colimits.
 -/
-open CategoryTheory in
-theorem left_adjoints_preserve_colimits {C D J : Type _} [Category C] [Category D] [Category J] (F : Functor C D) [IsLeftAdjoint F] (K : Functor J C) :
-∀ c : Limits.Cocone K, Limits.IsColimit c → ( Limits.IsColimit $ Functor.mapCocone F c) := sorry
+-- open CategoryTheory in
+-- theorem left_adjoints_preserve_colimits {C D J : Type _} [Category C] [Category D] [Category J] (F : Functor C D) [IsLeftAdjoint F] (K : Functor J C) :
+-- ∀ c : Limits.Cocone K, Limits.IsColimit c → ( Limits.IsColimit $ Functor.mapCocone F c) := sorry
 
 /-
 The angles of a triangle add up to two right angles.
 -/
-theorem angle_sum_pi {p q r : EuclideanSpace ℝ (Finₓ 2)} : EuclideanGeometry.angle p q r + EuclideanGeometry.angle q r p + EuclideanGeometry.angle r p q = Real.pi := sorry
+-- theorem angle_sum_pi {p q r : EuclideanSpace ℝ (Finₓ 2)} : EuclideanGeometry.angle p q r + EuclideanGeometry.angle q r p + EuclideanGeometry.angle r p q = Real.pi := sorry
 
 /-
 Every Lebesgue measurable function is equal almost everywhere to a Borel measurable function.
@@ -362,7 +359,7 @@ theorem open_iff_open_nhd_all_pt {X : Type _} [TopologicalSpace X] (S : Set X) :
 /-
 The product of a complex number with its conjugate is a real number.
 -/
-theorem complex_conj_prod_real : ∀ z : ℂ, ∃ r : ℝ, z * (starRingEnd ℂ $ z) = (r : ℂ) := sorry
+-- theorem complex_conj_prod_real : ∀ z : ℂ, ∃ r : ℝ, z * (starRingEnd ℂ $ z) = (r : ℂ) := sorry
 
 /-
 Every non-identity element of a free group is of infinite order.
@@ -372,7 +369,7 @@ theorem non_id_implies_infinite_order {G : Type _} [Groupₓ G] : FreeGroup G �
 /-
 Any sub-ring of a field that contains the identity is an integral domain.
 -/
-theorem sub_ring_field_with_id_is_int_domain {F : Type _} [Field F] : ∀ R : Subring F, 1 ∈ R.Carrier → IsDomain ↥R := sorry
+-- theorem sub_ring_field_with_id_is_int_domain {F : Type _} [Field F] : ∀ R : Subring F, 1 ∈ R.Carrier → IsDomain ↥R := sorry
 
 /-
 An element of a discrete valuation ring is a unit if and only if it has a valuation of zero.
@@ -429,7 +426,7 @@ The eigenvalues of an orthogonal matrix have absolute value $1$.
 /-
 In a commutative ring with prime characteristic $p$, the $p$th power of the sum of two elements is equal to the sum of the $p$th powers of the elements.
 -/
-theorem frobenius_pow_sum_eq_sum_pow {R : Type _} [CommRingₓ R] : (p : ℕ) → Prime p → CharP R p → ∀ a b : R, (a + b)^p = a^p + b^p := sorry
+-- theorem frobenius_pow_sum_eq_sum_pow {R : Type _} [CommRingₓ R] : (p : ℕ) → Prime p → CharP R p → ∀ a b : R, (a + b)^p = a^p + b^p := sorry
 
 /-
 Every alternating $n$ tensor over a vector space of dimension $n$ is a scalar multiple of the determinant.

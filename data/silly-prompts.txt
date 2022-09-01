@@ -1,0 +1,17 @@
+Every prime number is `2` or odd.
+There are infinitely many odd natural numbers.
+The smallest odd prime is `3`.
+There are infinitely many odd prime numbers.
+If a vector space has dimension `2` then it is finite dimensional.
+Every field is a division ring.
+If a space has dimension `2` then it is finite dimensional.
+Every natural number has a successor.
+Every natural number is less than its successor.
+Every set is Lebesgue measurable.
+Every set of Borel measure zero is Lebesgue measurable.
+No prime number is a perfect square.
+Every odd prime number is greater than `2`.
+The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares.
+Every compact topological space is locally compact.
+Every continuous function is uniformly continuous.
+`6` is not the sum of two distinct prime numbers.

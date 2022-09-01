@@ -1,0 +1,42 @@
+If every proper closed set of a topological space is compact, then the space itself is compact.
+Every prime that is one greater than a multiple of four can be expressed as the sum of two squares.
+The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares.
+A ring with all elements idempotent is commutative.
+There are infinitely many pairs of primes that differ exactly by two.
+Every finite division ring is a field.
+If each of two types can be mapped injectively into the other, then there is a bijection between them.
+A finite graph in which every two vertices have precisely one common neighbour contains a vertex that is adjacent to all other vertices.
+The number of partitions with odd parts is equal to the number of partitions with distinct parts.
+Every non-empty poset in which every chain has an upper bound contains a maximal element.
+A group whose automorphism group is cyclic is Abelian.
+A uniformly continuous function of a uniformly continuous function is uniformly continuous.
+A uniformly continuous function of a uniformly continuous function is uniformly continuous.
+A topological space is normal if and only if any two disjoint closed subsets can be separated by a continuous function.
+If a function from the unit interval to itself has a point of period three, then it has points of all positive periods.
+A terminal object in a category is unique up to unique isomorphism.
+A finitely-presented group containing a torsion element is finite.
+The complement of the union of two sets is the intersection of their complements.
+The sum of the cubes of two positive integers is never equal to the cube of a third integer.
+If every element of a group `G` has order two, then every pair of elements of `G` commutes.
+The product of two consequitive natural numbers is even.
+Every index 2 subgroup of a group is normal.
+Every free group is torsion free.
+Every natural number greater than `1` is divisible by a prime number. 
+A finite torsion-free group is trivial
+Every finite division ring is a field.
+Every finite topological space is compact
+Every surjective homomorphism from a finitely generated free group to itself is injective
+Every positive even integer can be written as the sum of two primes.
+Every matrix satisfies its own characteristic polynomial.
+The square root of an irrational number is irrational.
+If the square of a number is even, the number itself is even.
+In a finite commutative ring, all prime ideals are maximal.
+A topological space $X$ is Hausdorff if and only if the diagonal is a closed set in $X × X$.
+If every point of a subset of a topological space is contained in some open set, the subset itself is open.
+Every non-identity element of a free group is of infinite order.
+An element of a discrete valuation ring is a unit if and only if it has a valuation of zero.
+For any two relatively prime positive integers $a$ and $b$, every sufficiently large natural number $N$ can be written as a linear combination $ax + by$ of $a$ and $b$, where both $x$ and $y$ are natural numbers.
+Every field is a ring.
+The set of units in a ring forms a group.
+If the direct product of two groups is torsion free then each of the groups is torsion free.
+There are infinitely many Pythagorean triples.

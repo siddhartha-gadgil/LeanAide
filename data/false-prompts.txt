@@ -1,0 +1,9 @@
+Every ring is a field.
+Every vector space is finite dimensional.
+Every group is a torsion monoid.
+Every finite simple group has prime order.
+Every finite group is simple.
+Every finite group has prime order.
+Every set has Lebesgue measure zero.
+If a topological space is compact, then every subset is compact.
+Every set that is Lebesgue measurable but not Borel measurable has Lebesgue measure zero.

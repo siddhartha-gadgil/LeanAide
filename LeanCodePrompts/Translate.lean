@@ -372,9 +372,11 @@ def jsonToExpr' (json: Json) : TermElabM Expr := do
   arrayToExpr output
 
 def view(expr: Expr): MetaM String := do
-  let stx ← PrettyPrinter.delab  expr
-  let fmt ← PrettyPrinter.ppTerm stx
-  return fmt.pretty
+  try 
+    let stx ← PrettyPrinter.delab  expr
+    let fmt ← PrettyPrinter.ppTerm stx
+    return fmt.pretty
+  catch _ => return s!"{expr}"
 
 def textToExprStx' (s : String) : TermElabM (Expr × TSyntax `term) := do
   let e ← textToExpr' s
@@ -415,8 +417,8 @@ def translateWithDataCore (s: String)(numSim : Nat:= 10)(numKW: Nat := 4)(includ
 --   logInfoAt stmt m!"{fmlstmt}"
 --   elabCommand $ ← `(example : $fmlstx:term := $prf:term)
 
-def checkTranslatedThmsM(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : TermElabM Json := do
-  let file := System.mkFilePath ["data/prompts.txt"]
+def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : TermElabM Json := do
+  let file := System.mkFilePath [s!"data/{type}-prompts.txt"]
   let prompts ←  IO.FS.lines file
   let mut count := 0
   let mut elaborated := 0
@@ -460,6 +462,6 @@ def checkTranslatedThmsM(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool 
             ]
   return js
 
-def checkTranslatedThmsCore(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : CoreM Json :=
-    (checkTranslatedThmsM 
+def checkTranslatedThmsCore(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : CoreM Json :=
+    (checkTranslatedThmsM type
       numSim numKW includeFixed queryNum temp).run'.run'
