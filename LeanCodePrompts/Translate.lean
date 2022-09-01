@@ -457,7 +457,10 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat :=
         Json.arr <| elabPairs.map <| 
           fun (p, s, thms) => Json.mkObj [
             ("prompt", p), ("theorem", s), 
-            ("all-elabs", Json.arr <| thms.map (Json.str))]),
+            ("all-elabs", Json.arr <| thms.map (Json.str)),
+            ("comments", ""), ("correct", Json.null), 
+            ("some-correct", Json.null)   
+            ]),
         ("failures", Json.arr <| failed.map (Json.str))
             ]
   return js
