@@ -265,8 +265,9 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
     match ployElab? with
       | Except.error _ => pure ()
       | Except.ok es =>
-        for (_, s) in es do
-          elaborated := elaborated.push s 
+        for (expr, s) in es do
+          if !expr.hasExprMVar then
+            elaborated := elaborated.push s 
   -- let elaborated ← output.filterMapM (
   --   fun s => do 
   --     return (← elabThmTrans s).toOption.map (fun (_, s) => s))
@@ -294,8 +295,9 @@ def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array Strin
     match ployElab? with
       | Except.error _ => pure ()
       | Except.ok es =>
-        for (_, s) in es do
-          elaborated := elaborated.push s 
+        for (expr, s) in es do
+          if !expr.hasExprMVar then
+            elaborated := elaborated.push s 
   if elaborated.isEmpty then 
     IO.println "No valid output from Codex; outputs below"
     for out in output do
