@@ -96,7 +96,7 @@ def similar_from():
             corpus_embeddings = stored_data['embeddings'] 
 
     lis = retrieve_similar_k_stats(main_prompt,
-    corpus_path="../data/clean_prompts.json",
+    corpus_path="../data/safe_prompts.json",
     top_k=k,
     model_name = 'sentence-transformers/all-mpnet-base-v2',
     use_precomputed_embeddings=True,
