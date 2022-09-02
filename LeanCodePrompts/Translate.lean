@@ -266,7 +266,7 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
       | Except.error _ => pure ()
       | Except.ok es =>
         for (expr, s) in es do
-          if !expr.hasExprMVar then
+          -- if !expr.hasExprMVar then
             elaborated := elaborated.push s 
   -- let elaborated ← output.filterMapM (
   --   fun s => do 
@@ -290,14 +290,16 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
 def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array String))) := do
   -- erase duplicates before calling
   let mut elaborated : Array String := Array.empty
+  let mut fullElaborated : Array String := Array.empty
   for out in output do
     let ployElab? ← polyElabThmTrans out
     match ployElab? with
       | Except.error _ => pure ()
       | Except.ok es =>
         for (expr, s) in es do
+          elaborated := elaborated.push s 
           if !expr.hasExprMVar then
-            elaborated := elaborated.push s 
+            fullElaborated := fullElaborated.push s
   if elaborated.isEmpty then 
     IO.println "No valid output from Codex; outputs below"
     for out in output do
@@ -306,12 +308,16 @@ def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array Strin
         IO.println s!"{str}"
     return none
   else    
-    let groupSorted ← groupFuncStrs elaborated
+    let priority := 
+        if fullElaborated.isEmpty then elaborated else fullElaborated
+    let groupSorted ← groupFuncStrs priority
     let topStr := groupSorted[0]![0]!
     let thmExc ← elabFuncTyp topStr
     match thmExc with
     | Except.ok thm => return some (thm, elaborated)
-    | Except.error s => throwError s
+    | Except.error s =>
+        IO.println s!"Second round error : {s}"
+        return none
 
 
 def textToExpr (s: String) : TermElabM Expr := do
