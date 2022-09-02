@@ -50,11 +50,23 @@ theorem {thm} :=
 theorem "
 
 
+def makeFlipPrompt(statement : String)(pairs: Array (String × String)) : String := 
+      pairs.foldr (fun  (ds, thm) acc => 
+s!"theorem {thm} := 
+/- {ds} -/
+
+{acc}"
+          ) s!"theorem {statement} := 
+/- "
+
 def openAIKey : IO (Option String) := IO.getEnv "OPENAI_API_KEY"
 
 def openAIQuery(prompt: String)(n: Nat := 1)(temp : JsonNumber := ⟨2, 1⟩) : MetaM Json := do
   let key? ← openAIKey
-  let key := key?.get!
+  let key := 
+    match key? with
+    | some k => k
+    | none => panic! "OPENAI_API_KEY not set"
   let dataJs := Json.mkObj [("model", "code-davinci-002"), ("prompt", prompt), ("temperature", Json.num temp), ("n", n), ("max_tokens", 150), ("stop", Json.arr #[":=", "-/"])]
   let data := dataJs.pretty
   let out ←  IO.Process.output {
@@ -209,33 +221,9 @@ def elabThmSplitCore(start? size?: Option Nat := none) : CoreM ((Array String) �
 
 def fixedPrompts:= #[("If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.", "theorem (n : ℕ) (f : ℕ → ℂ) :\n abs (∑ i in finset.range n, f i) ≤ ∑ i in finset.range n, abs (f i) :="), ("If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.", "theorem (n : ℕ) (x y : euclidean_space ℝ (fin n)) :\n ∥x + y∥^2 + ∥x - y∥^2 = 2*∥x∥^2 + 2*∥y∥^2 :="), ("If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.", "theorem (G : Type*) [group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :="), ("Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.", "theorem (X : Type*) [topological_space X]\n (A : set X) (hA : ∀ x ∈ A, ∃ U : set X, is_open U ∧ x ∈ U ∧ U ⊆ A):\n is_open A :=")]
 
-def getCodeJson (s: String)(numSim : Nat:= 5)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM Json := do
-  -- IO.println s!"initially pending : {(← pendingJsonQueries.get).size}"
-  match ← getCachedJson? s with
-  | some js => return js
-  | none =>    
-    -- IO.println s!"poll-check pending : {(← pendingJsonQueries.get).size}"
-    let pending ←  pendingJsonQueries.get
-    if pending.contains s then pollCacheJson s 
-    else 
-      let pending ←  pendingJsonQueries.get
-      pendingJsonQueries.set (pending.insert s)
-      let (pairs, IOOut) := 
-        if numSim > 0 then  ← getPairs else (#[], ⟨0, "", ""⟩)
-      let pairs := if includeFixed then pairs ++ fixedPrompts else pairs 
-      let prompt := makePrompt s pairs
-      mkLog prompt
-      -- IO.println s!"pending : {(← pendingJsonQueries.get).size}"
-      let fullJson ← openAIQuery prompt queryNum temp
-      let outJson := 
-        (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
-      -- logInfo s!"query gave: {outJson}"
-      let pending ←  pendingJsonQueries.get
-      pendingJsonQueries.set (pending.erase s)
-      if IOOut.exitCode = 0 then cacheJson s outJson 
-        else throwError m!"Web query error: {IOOut.stderr}"
-      return outJson
-  where getPairs : TermElabM (Array (String × String) × IO.Process.Output) := do
+def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
+    (scoreBound: Float)(matchBound: Nat)
+   : TermElabM (Array (String × String) × IO.Process.Output) := do
       let simJsonOut ←  
         IO.Process.output {cmd:= "curl", args:= 
           #["-X", "POST", "-H", "Content-type: application/json", "-d", s ++ s!" top_K {numSim}", "localhost:5000/similar_json"]}
@@ -254,6 +242,34 @@ def getCodeJson (s: String)(numSim : Nat:= 5)(numKW: Nat := 4)(includeFixed: Boo
           (pairs ++ kwPairs).toList.eraseDups.toArray, simJsonOut)
 
 
+def getCodeJson (s: String)(numSim : Nat:= 5)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM Json := do
+  -- IO.println s!"initially pending : {(← pendingJsonQueries.get).size}"
+  match ← getCachedJson? s with
+  | some js => return js
+  | none =>    
+    -- IO.println s!"poll-check pending : {(← pendingJsonQueries.get).size}"
+    let pending ←  pendingJsonQueries.get
+    if pending.contains s then pollCacheJson s 
+    else 
+      let pending ←  pendingJsonQueries.get
+      pendingJsonQueries.set (pending.insert s)
+      let (pairs, IOOut) ←  
+        if numSim > 0 then  
+          getPromptPairs s numSim numKW scoreBound matchBound 
+        else pure (#[], ⟨0, "", ""⟩)
+      let pairs := if includeFixed then pairs ++ fixedPrompts else pairs 
+      let prompt := makePrompt s pairs
+      mkLog prompt
+      -- IO.println s!"pending : {(← pendingJsonQueries.get).size}"
+      let fullJson ← openAIQuery prompt queryNum temp
+      let outJson := 
+        (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
+      -- logInfo s!"query gave: {outJson}"
+      let pending ←  pendingJsonQueries.get
+      pendingJsonQueries.set (pending.erase s)
+      if IOOut.exitCode = 0 then cacheJson s outJson 
+        else throwError m!"Web query error: {IOOut.stderr}"
+      return outJson
 
 def arrayToExpr (output: Array String) : TermElabM Expr := do
   let output := output.toList.eraseDups.toArray
@@ -265,7 +281,7 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
     match ployElab? with
       | Except.error _ => pure ()
       | Except.ok es =>
-        for (expr, s) in es do
+        for (_ , s) in es do
           -- if !expr.hasExprMVar then
             elaborated := elaborated.push s 
   -- let elaborated ← output.filterMapM (
@@ -319,6 +335,24 @@ def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array Strin
         IO.println s!"Second round error : {s}"
         return none
 
+def leanToPrompt (thm: String)(numSim : Nat:= 5)(numKW: Nat := 4)(temp : JsonNumber := 0)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM String := do
+    let (pairs, _) ← getPromptPairs thm numSim numKW scoreBound matchBound
+    let prompt := makeFlipPrompt thm pairs
+    let fullJson ← openAIQuery prompt 1 temp
+    let outJson := 
+      (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
+    let out? := (outJson.getArrVal? 0).bind fun js => js.getObjVal? "text"
+    let outJson := 
+        match (out?) with
+        | Except.error s => Json.str s!"query for translation failed: {s}" 
+        | Except.ok js => js
+    return outJson.getStr!
+
+-- #eval leanToPrompt "∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p = 2 ∨ p % 2 = 1"
+
+-- #eval leanToPrompt "∀ {α : Type u} {x : FreeGroup α}, x ≠ 1 → ¬IsOfFinOrder x"
+
+-- #eval leanToPrompt "{  n :  ℕ } ->  Even   (    (   n +  1  ) * n  )"
 
 def textToExpr (s: String) : TermElabM Expr := do
   let json ← readJson s
@@ -462,9 +496,11 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat :=
        ("query-number", queryNum),
        ("temperature", Json.num temp),
        ("elaborated-prompts", 
-        Json.arr <| elabPairs.map <| 
-          fun (p, s, thms) => Json.mkObj [
-            ("prompt", p), ("theorem", s), 
+        Json.arr <| ←  elabPairs.mapM <| 
+          fun (p, s, thms) => do 
+            let reverse ←  leanToPrompt s 
+            return Json.mkObj [
+            ("prompt", p), ("theorem", s), ("round-trip", reverse),
             ("all-elabs", Json.arr <| thms.map (Json.str)),
             ("comments", ""), ("correct", Json.null), 
             ("some-correct", Json.null)   
