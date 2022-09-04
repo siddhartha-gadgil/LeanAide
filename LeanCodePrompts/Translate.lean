@@ -219,6 +219,12 @@ def elabThmSplit(start? size?: Option Nat := none) : TermElabM ((Array String) �
 def elabThmSplitCore(start? size?: Option Nat := none) : CoreM ((Array String) × (Array String)) := 
   (elabThmSplit start? size?).run'.run'
 
+def elabLog (s: String) : IO Unit := do
+  let logFile := System.mkFilePath ["results/elab_logs.txt"]
+  let h ← IO.FS.Handle.mk logFile IO.FS.Mode.append Bool.false
+  h.putStrLn s
+  h.putStrLn ""
+
 def fixedPrompts:= #[("If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.", "(n : ℕ) (f : ℕ → ℂ) :\n abs (∑ i in finset.range n, f i) ≤ ∑ i in finset.range n, abs (f i) :="), ("If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.", "(n : ℕ) (x y : euclidean_space ℝ (fin n)) :\n ∥x + y∥^2 + ∥x - y∥^2 = 2*∥x∥^2 + 2*∥y∥^2 :="), ("If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.", "(G : Type*) [group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :="), ("Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.", "(X : Type*) [topological_space X]\n (A : set X) (hA : ∀ x ∈ A, ∃ U : set X, is_open U ∧ x ∈ U ∧ U ⊆ A):\n is_open A :=")]
 
 def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
@@ -260,8 +266,8 @@ def getCodeJson (s: String)(numSim : Nat:= 5)(numKW: Nat := 4)(includeFixed: Boo
       let pairs := if includeFixed then pairs ++ fixedPrompts else pairs 
       let prompt := makePrompt s pairs
       mkLog prompt
-      IO.println prompt
-      -- IO.println s!"pending : {(← pendingJsonQueries.get).size}"
+      elabLog prompt
+      -- elabLog s!"pending : {(← pendingJsonQueries.get).size}"
       let fullJson ← openAIQuery prompt queryNum temp
       let outJson := 
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
@@ -318,11 +324,11 @@ def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array Strin
           if !expr.hasExprMVar then
             fullElaborated := fullElaborated.push s
   if elaborated.isEmpty then 
-    IO.println "No valid output from Codex; outputs below"
+    elabLog "No valid output from Codex; outputs below"
     for out in output do
       let polyOut ←  polyStrThmTrans out
       for str in polyOut do
-        IO.println s!"{str}"
+        elabLog s!"{str}"
     return none
   else    
     let priority := 
@@ -333,12 +339,13 @@ def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array Strin
     match thmExc with
     | Except.ok thm => return some (thm, elaborated)
     | Except.error s =>
-        IO.println s!"Second round error : {s}"
+        elabLog s!"Second round error : {s}"
         return none
 
 def leanToPrompt (thm: String)(numSim : Nat:= 5)(numKW: Nat := 4)(temp : JsonNumber := 0)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM String := do
     let (pairs, _) ← getPromptPairs thm numSim numKW scoreBound matchBound
     let prompt := makeFlipPrompt thm pairs
+    elabLog prompt
     let fullJson ← openAIQuery prompt 1 temp
     let outJson := 
       (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
@@ -461,6 +468,7 @@ def translateWithDataCore (s: String)(numSim : Nat:= 10)(numKW: Nat := 4)(includ
 --   elabCommand $ ← `(example : $fmlstx:term := $prf:term)
 
 def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : TermElabM Json := do
+  elabLog s!"Writing to file: {type}-elab-{numSim}-{numKW}-{includeFixed}-{queryNum}-{temp.mantissa}.json"
   let file := System.mkFilePath [s!"data/{type}-prompts.txt"]
   let prompts ←  IO.FS.lines file
   let mut count := 0
@@ -468,6 +476,7 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat :=
   let mut elabPairs: Array (String × String × (Array String)) := #[]
   let mut failed : Array String := #[]
   for prompt in prompts do 
+    elabLog prompt
     IO.println ""
     IO.println prompt
     let (res?, outputs) ← 
@@ -476,17 +485,22 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat :=
     count := count + 1
     match res? with
     | some (e, thms) =>
-      IO.println "success"
+      elabLog "success"
       let v ← view e
+      elabLog s!"theorem {v}"
       IO.println s!"theorem {v}"
       elaborated := elaborated + 1
       elabPairs := elabPairs.push (prompt, v, thms) 
     | none =>
+      elabLog "failed to elaborate"
       IO.println "failed to elaborate"
       failed := failed.push prompt
-      IO.println s!"outputs: {outputs}"
+      elabLog s!"outputs: {outputs}"
+    elabLog s!"total : {count}"
+    elabLog s!"elaborated: {elaborated}"
     IO.println s!"total : {count}"
     IO.println s!"elaborated: {elaborated}"
+
   let js := 
     Json.mkObj 
       [("total-prompts", count),
@@ -500,6 +514,7 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat :=
         Json.arr <| ←  elabPairs.mapM <| 
           fun (p, s, thms) => do 
             let reverse ←  leanToPrompt s 
+            elabLog reverse
             return Json.mkObj [
             ("prompt", p), ("theorem", s), ("round-trip", reverse),
             ("all-elabs", Json.arr <| thms.map (Json.str)),
