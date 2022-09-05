@@ -1,0 +1,24 @@
+Theorem (“The Fifteen Theorem”). If a positive-definite quadratic form having integer matrix represents every positive integer up to 15 then it represents every positive integer.
+
+On the Conway-Schneeberger Fifteen Theorem Manjul Bhargava
+https://www.maths.ed.ac.uk/~v1ranick/books/dublin.pdf (page 36 of PDF)
+[While the proof is short and simple, it doesn't seem suitable for direct autoformalization.]
+
+
+Theorem (“The 290-Theorem”) If a positive-definite quadratic form with integer coefficients represents the twenty-nine integers 1, 2, 3, 5, 6, 7, 10, 13, 14, 15, 17, 19, 21, 22, 23, 26, 29, 30, 31, 34, 35, 37, 42, 58, 93, 110, 145, 203, and 290 then it represents all positive integers.
+
+Universal quadratic forms and the 290-Theorem Manjul Bhargava and Jonathan Hanke
+http://www.wordpress.jonhanke.com/wp-content/uploads/2011/09/290-Theorem-preprint.pdf
+https://en.wikipedia.org/wiki/15_and_290_theorems
+
+
+Sylvester's strengthening of Bertrand's postulate:
+Theorem. If n \geq 2k, then at least one of the numbers n, n - 1, . . . , n - k + 1 has a prime divisor p greater than k. 
+
+P. Erdos:
+Theorem. The equation (n \choose k) = m^\ell has no integer solutions with \ell \geq 2 and 4 \leq k \leq n - 4. 
+
+Fermat:
+Theorem. A natural number n can be represented as a sum of two squares if and only if every prime factor of the form p=4m+3 appears with an even exponent in the prime decomposition of n. 
+
+
