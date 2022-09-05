@@ -22,3 +22,32 @@ Fermat:
 Theorem. A natural number n can be represented as a sum of two squares if and only if every prime factor of the form p=4m+3 appears with an even exponent in the prime decomposition of n. 
 
 
+
+Dirichlet's approximation theorem:
+Theorem. For any real numbers \alpha and N, with 1\leq N, there exist integers p and q such that 1 \leq q \leq N and
+$$ \left|q\alpha -p\right| \leq {\frac{1}{[N]+1}} < \frac{1}{N}.$$
+Here [N] represents the integer part of N. 
+
+Slightly simplified version:
+Theorem. For any real numbers \alpha and N, with 1\leq N, there exist integers p and q such that 1 \leq q \leq N and
+$$ \left|q\alpha -p\right| < \frac {1}{N}.$$
+
+https://en.wikipedia.org/wiki/Dirichlet%27s_approximation_theorem
+
+
+Hurwitz's theorem:
+Theorem. For every irrational number \xi there are infinitely many relatively prime integers m, n such that
+$$\left|\xi -{\frac {m}{n}}\right| < \frac {1}{{\sqrt{5}} \, n^{2}}.$$
+
+
+Roth's theorem:
+Theorem. For every irrational number \alpha and for every \varepsilon >0, the inequality
+$$\left|\alpha - {\frac{p}{q}}\right| < {\frac{1}{q^{2+\varepsilon}}}$$
+can have only finitely many solutions in coprime integers p and q.
+
+https://en.wikipedia.org/wiki/Roth%27s_theorem
+
+
+
+
+ 
