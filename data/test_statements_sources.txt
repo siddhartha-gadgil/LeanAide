@@ -1,3 +1,5 @@
+Number Theory
+
 Theorem (“The Fifteen Theorem”). If a positive-definite quadratic form having integer matrix represents every positive integer up to 15 then it represents every positive integer.
 
 On the Conway-Schneeberger Fifteen Theorem Manjul Bhargava
@@ -45,7 +47,26 @@ Theorem. For every irrational number \alpha and for every \varepsilon >0, the in
 $$\left|\alpha - {\frac{p}{q}}\right| < {\frac{1}{q^{2+\varepsilon}}}$$
 can have only finitely many solutions in coprime integers p and q.
 
+Theorem. Every irrational algebraic number \alpha satisfies
+$$\left|\alpha -{\frac {p}{q}}\right|>{\frac {C(\alpha ,\varepsilon )}{q^{2+\varepsilon }}}$$
+with C(\alpha ,\varepsilon) a positive number depending only on \varepsilon > 0 and \alpha .
+
 https://en.wikipedia.org/wiki/Roth%27s_theorem
+
+
+
+
+
+
+
+
+Geometry
+
+
+Let X1, ..., Xn be a finite collection of convex subsets of Rd, with n ≥ d + 1. If the intersection of every d + 1 of these sets is nonempty, then the whole collection has a nonempty intersection; that is,
+
+\bigcap _{{j=1}}^{n}X_{j}\neq \varnothing .
+
 
 
 
