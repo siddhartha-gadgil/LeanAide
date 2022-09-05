@@ -15,3 +15,26 @@ The product of two numbers, each of which is the sum of four squares, is itself 
 Every compact topological space is locally compact.
 Every continuous function is uniformly continuous.
 `6` is not the sum of two distinct prime numbers.
+No integer is irrational.
+The identity element in a ring is a unit.
+Every subgroup of a group is a group.
+The sum of two natural numbers is a natural number.
+The identity element of a group has finite order.
+`7` is a prime number.
+There are `3` prime numbers below `8`.
+The empty set is contained in every finite set.
+Every infinite set contains a finite set.
+Every commutative ring is a monoid.
+There is no field of order `10`.
+Every odd natural number is the sum of two distinct natural numbers.
+Every element in the trivial group has finite order.
+The square of an even number is even.
+Every commutative division ring is a field.
+The image of the identity element under the identity map is the identity element.
+Every point is a fixed point of the identity function on a space.
+The diameter of a singleton space is `0`.
+Every group is non-empty.
+All connected components of a topological space are connected.
+The ring of integers has a maximal ideal.
+The numbers `3`, `4` and `5` form a Pythagorean triple.
+A vector space with the empty set as basis is trivial. 

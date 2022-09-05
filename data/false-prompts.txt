@@ -7,3 +7,4 @@ Every finite group has prime order.
 Every set has Lebesgue measure zero.
 If a topological space is compact, then every subset is compact.
 Every set that is Lebesgue measurable but not Borel measurable has Lebesgue measure zero.
+A finitely-presented group containing a torsion element is finite.

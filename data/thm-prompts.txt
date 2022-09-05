@@ -14,7 +14,6 @@ A uniformly continuous function of a uniformly continuous function is uniformly 
 A topological space is normal if and only if any two disjoint closed subsets can be separated by a continuous function.
 If a function from the unit interval to itself has a point of period three, then it has points of all positive periods.
 A terminal object in a category is unique up to unique isomorphism.
-A finitely-presented group containing a torsion element is finite.
 The complement of the union of two sets is the intersection of their complements.
 The sum of the cubes of two positive integers is never equal to the cube of a third integer.
 If every element of a group `G` has order `2`, then every pair of elements of `G` commutes.
@@ -24,7 +23,7 @@ Every free group is torsion free.
 Every natural number greater than `1` is divisible by a prime number. 
 A finite torsion-free group is trivial
 Every finite division ring is a field.
-Every finite topological space is compact
+Every finite topological space is compact.
 Every surjective homomorphism from a finitely generated free group to itself is injective
 Every positive even integer can be written as the sum of two primes.
 Every matrix satisfies its own characteristic polynomial.
@@ -39,4 +38,3 @@ For any two relatively prime positive integers $a$ and $b$, every sufficiently l
 Every field is a ring.
 The set of units in a ring forms a group.
 If the direct product of two groups is torsion free then each of the groups is torsion free.
-There are infinitely many Pythagorean triples.
