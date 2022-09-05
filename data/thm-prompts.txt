@@ -24,7 +24,7 @@ Every natural number greater than `1` is divisible by a prime number.
 A finite torsion-free group is trivial
 Every finite division ring is a field.
 Every finite topological space is compact.
-Every surjective homomorphism from a finitely generated free group to itself is injective
+Every surjective homomorphism from a finitely generated free group to itself is injective.
 Every positive even integer can be written as the sum of two primes.
 Every matrix satisfies its own characteristic polynomial.
 The square root of an irrational number is irrational.
