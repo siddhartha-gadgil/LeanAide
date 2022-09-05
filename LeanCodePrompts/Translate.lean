@@ -266,7 +266,7 @@ def getCodeJson (s: String)(numSim : Nat:= 5)(numKW: Nat := 4)(includeFixed: Boo
       let pairs := if includeFixed then pairs ++ fixedPrompts else pairs 
       let prompt := makePrompt s pairs
       mkLog prompt
-      elabLog prompt
+      -- elabLog prompt
       -- elabLog s!"pending : {(← pendingJsonQueries.get).size}"
       let fullJson ← openAIQuery prompt queryNum temp
       let outJson := 
@@ -345,7 +345,7 @@ def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array Strin
 def leanToPrompt (thm: String)(numSim : Nat:= 5)(numKW: Nat := 4)(temp : JsonNumber := 0)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM String := do
     let (pairs, _) ← getPromptPairs thm numSim numKW scoreBound matchBound
     let prompt := makeFlipPrompt thm pairs
-    elabLog prompt
+    -- elabLog prompt
     let fullJson ← openAIQuery prompt 1 temp
     let outJson := 
       (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
