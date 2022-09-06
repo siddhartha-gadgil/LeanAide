@@ -1,6 +1,6 @@
 # LeanAide 
 
-LeanAide or LeanAIde (accidental pun) is work in progress to build AI based tools to help development with the Lean Theorem Prover. For now it has one tool under development, which translates statements written in natural language is a doc-string like format to Lean types (including theorem statements).
+LeanAide or Lean**AI**de (accidental pun) is work in progress to build AI based tools to help development with the Lean Theorem Prover. For now it has one tool under development, which translates statements written in natural language is a doc-string like format to Lean types (including theorem statements).
 
 ## Setup
 
@@ -27,7 +27,7 @@ For `lean 4/lake` experts any help with streamlining this will be appreciated.
 
 Some Python code is needed for the prompt engineering. The following installation steps may be needed before running (you may need to use `pip3` instead of `pip`).
 
-```
+```bash
 pip install -U sentence-transformers
 
 pip install flask
@@ -37,13 +37,14 @@ pip install yake
 
 In addition, embeddings for mathlib prompts are precomputed. To do this, from the base directory, run the following.
 
-```
+```bash
 cd SentenceSimilarityTask
 python
 ```
 
 and from Python, run the following
-```
+
+```python
 from sentence_similarity import *
 save_corpus_embeddings()
 ```
@@ -54,7 +55,7 @@ Hopefully this should complete the setup. If not please ask the maintainers for 
 
 The Lean code assumes that a Python server is running. To start this, from the base directory run the following.
 
-```
+```bash
 cd web_serv
 flask run
 ```
