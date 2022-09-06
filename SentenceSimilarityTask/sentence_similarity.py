@@ -145,7 +145,7 @@ def retrieve_similar_k_stats(main_prompt,
 
     return result_lis
 
-def save_corpus_embeddings(corpus_path="/home/t-agrawala/Desktop/ATP-Project/data/clean_prompts.json",out_path = "/home/t-agrawala/Desktop/ATP-Project/SentenceSimilarityTask/embeddings_store/",model_name='sentence-transformers/all-mpnet-base-v2'):
+def save_corpus_embeddings(corpus_path="../data/safe_prompts.json",out_path = "embeddings_store/",model_name='sentence-transformers/all-mpnet-base-v2'):
     out_path = out_path + model_name.split('/')[-1]+".pkl"
     fread = open(corpus_path,"r",encoding="utf-8")
     prompt_corpus = json.load(fread) #Do we need to worry about the order?

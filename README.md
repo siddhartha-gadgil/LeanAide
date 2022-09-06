@@ -1,47 +1,62 @@
-# ATP-Project
-Notes etc for the ATP project
+# LeanAide 
 
-## Checking and Comparing theorems as strings
+LeanAide or LeanAIde (accidental pun) is work in progress to build AI based tools to help development with the Lean Theorem Prover. For now it has one tool under development, which translates statements written in natural language is a doc-string like format to Lean types (including theorem statements).
 
-The `lean` utility `chkthms` can check if strings can be parsed (and elaborated) in `lean`, and also check if two such strings give  _definitionally equal_ terms. 
+## Setup
 
-The strings are passed as arguments, with the task depending on the number of arguments. First, some examples, starting with building the script.
+The code uses `mathlib` as well as `mathlib3port` (i.e., "binport") in Lean and involves meta-programming. Getting all components working together is currently fiddly (though has been done successfully with fresh clones a few times). It also needs some Python code and some Python embedding data to be generated (embeddings are precomputed for efficiency).
 
-```bash
-$ lake build
+### Lean Setup
 
-$ build/bin/chkthms "theorem nonsense(n : Nat) (m : Nat) : n = m" 
-success
-forall (n : Nat) (m : Nat), Eq.{?_uniq.7} Nat n m
+The code has to be built using `lake build`, and `mathlib` and `mathlib3port` have to be built separately. Ideally the following sequences of commands should suffice.
 
-$ build/bin/chkthms "theorem nonsense(n : Nat) (m : Nat) : n = m" "(p : Nat)(q: Nat) : p = q"
-success
-true
+* `lake build`
+* `lake build mathlib`
+* `lake build mathlib3port`
 
-$ build/bin/chkthms "theorem nonsense(n : Nat) (m : Nat) : n = m" "(p : Nat)(q: Nat) : p = q + 1"
-success
-false
+However, in practice one may have to do some combination of the following:
+
+* change the directory to `lean_packages/mathlib` and run `lake build` from there.
+* change the directory to `lean_packages/mathlib3port` and run lake build from there.
+* change the directory to `lean_packages/mathlib3port` and run lake build from there after deleting the subdirectory `lean_packages` (i.e., the directory `lean_packages/mathlib3port/lean_packages` relative to the base of this repository).
+* Rerun `lake build`.
+
+For `lean 4/lake` experts any help with streamlining this will be appreciated.
+
+### Python Setup
+
+Some Python code is needed for the prompt engineering. The following installation steps may be needed before running (you may need to use `pip3` instead of `pip`).
+
+```
+pip install -U sentence-transformers
+
+pip install flask
+
+pip install yake
 ```
 
-More detailed instructions are below, and call also be obtained by running the script with no arguments.
+In addition, embeddings for mathlib prompts are precomputed. To do this, from the base directory, run the following.
 
-### Detailed instructions
+```
+cd SentenceSimilarityTask
+python
+```
 
-`chkthms` is a utility to check whether a theorem string can be parsed (and elaborated) in lean.
+and from Python, run the following
+```
+from sentence_similarity import *
+save_corpus_embeddings()
+```
 
-- Give a single argument to check parsing.
-- Give two arguments to compare results (if parsing is successful).
+Hopefully this should complete the setup. If not please ask the maintainers for help (the setup has not been thoroughly tested).
 
-A theorem can be given in one of two forms
+### Running
 
-- the word `theorem` followed by a name, then the arguments, a `:`, finally the statement, or
-- the arguments, a `:`, and the statement. 
+The Lean code assumes that a Python server is running. To start this, from the base directory run the following.
 
-The following examples are of these two forms:
+```
+cd web_serv
+flask run
+```
 
-- `theorem nonsense(n : Nat) (m : Nat) : n = m` 
-- `(p : Nat)(q: Nat) : p = q`
-
-Note that the arguments can be implicit or explicit. 
-
-The underlying code also supports `open` for namespaces but this demo version does not use these. 
+Then open `code` from the base directory. Navigate to the file `TranslateExample.lean` to see an example translation (which will run automatically after compilation). More examples are in the comments.

@@ -8,6 +8,6 @@
 OpenaiModelPrompting/Open_ai_key.py
 __pycache__
 OpenaiModelPrompting/*/.ipynb_checkpoints
-SentenceSimilarityTask/embeddings_store
+SentenceSimilarityTask/embeddings_store/*.pkl
 /_target/
 /OpenaiModelPrompting/easy_to_hard
