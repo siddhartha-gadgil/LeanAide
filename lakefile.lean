@@ -56,7 +56,7 @@ lean_exe chkthms{
 lean_lib examples
 
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git"@"3d525b8da3d7db985860a51a3b8d050ad62f5207"
+  "https://github.com/leanprover-community/mathlib4.git"@"380fbe124708314e7dcd6c3b8f41adffd5046c44"
 
 require mathlib3port from git
-  "https://github.com/leanprover-community/mathlib3port.git"@"cce383df712a48f0c773a10e8c3295164fbb9f57"
+  "https://github.com/leanprover-community/mathlib3port.git"@"04ead7ffe5221b7c752fd2a7256244d61b01ac83"

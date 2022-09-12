@@ -1,7 +1,6 @@
 import Lean
 import Lean.Meta
 import Lean.Parser
-import Std
 import LeanCodePrompts.CheckParse
 import LeanCodePrompts.ParseJson
 import LeanCodePrompts.Autocorrect

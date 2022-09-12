@@ -3,7 +3,6 @@ import Lean.Meta
 import Lean.Elab
 import Lean.Parser
 import Lean.Parser.Extension
-import Std
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Init.Set
 import LeanCodePrompts.Basic
@@ -46,7 +45,7 @@ macro_rules
 | `(λ $x:ident : $type:term , $y:term) => 
   `(fun ($x : $type)  => $y)
 | `(λ $xs:typed_ident* , $y) =>
-   Array.foldrM (fun x acc => `(fun $x => $acc)) y xs.raw
+   Array.foldrM (fun x acc => `(fun $x => $acc)) y xs
 | `(fun $x:ident : $type:term , $y:term) => 
   `(fun ($x : $type)  => $y)
 | `(λ _ , $y:term) => 
@@ -55,7 +54,7 @@ macro_rules
   `(($x : $type) →  $y)
 | `(Π ( $x:ident : $type:term ) , $y:term) => 
   `(($x : $type) →  $y)
-| `(⇑ $x:term) => `(↑ $x)
+-- | `(⇑ $x:term) => `(↑ $x)
 | `(Type*) => `(Type _)
 | `(Sort*) => `(Sort _)
 
