@@ -4,24 +4,27 @@ LeanAide or Lean**AI**de (accidental pun) is work in progress to build AI based 
 
 ## Setup
 
-The code uses `mathlib` as well as `mathlib3port` (i.e., "binport") in Lean and involves meta-programming. Getting all components working together is currently fiddly (though has been done successfully with fresh clones a few times). It also needs some Python code and some Python embedding data to be generated (embeddings are precomputed for efficiency).
+The main code we use is in `Lean 4`. It also needs some Python code and some Python embedding data to be generated (embeddings are precomputed for efficiency).
 
 ### Lean Setup
 
-The code has to be built using `lake build`, and `mathlib` and `mathlib3port` have to be built separately. Ideally the following sequences of commands should suffice.
+The following sequences of commands should suffice for building the lean code.
 
-* `lake build`
 * `lake build mathlib`
+* `lake build`
+
+### Troubleshooting
+
+The present configuration seems to work reliably with the above instructions. If the above does not suffice, running the following command may be needed.
+
 * `lake build mathlib3port`
 
-However, in practice one may have to do some combination of the following:
+However, since there are compatibility issues in the porting of `Lean`, if the above does not work one may have to do some combination of the following:
 
 * change the directory to `lean_packages/mathlib` and run `lake build` from there.
 * change the directory to `lean_packages/mathlib3port` and run lake build from there.
 * change the directory to `lean_packages/mathlib3port` and run lake build from there after deleting the subdirectory `lean_packages` (i.e., the directory `lean_packages/mathlib3port/lean_packages` relative to the base of this repository).
 * Rerun `lake build`.
-
-For `lean 4/lake` experts any help with streamlining this will be appreciated.
 
 ### Python Setup
 

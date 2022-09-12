@@ -5,6 +5,7 @@ package LeanCodePrompts{
   precompileModules := true
 }
 
+@[defaultTarget]
 lean_lib LeanCodePrompts {
 }
 
@@ -33,7 +34,7 @@ lean_exe annotatekwds{
   supportInterpreter := false
 }
 
-@[defaultTarget]
+
 lean_exe batchcheck{
   supportInterpreter := true
 }
@@ -47,12 +48,10 @@ lean_exe depnames{
 }
 
 
-@[defaultTarget]
 lean_exe chkthms{
   supportInterpreter := true
 }
 
-@[defaultTarget]
 lean_lib examples
 
 require mathlib from git
