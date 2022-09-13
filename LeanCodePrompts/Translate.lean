@@ -58,6 +58,7 @@ s!"theorem {thm} :=
 
 def openAIKey : IO (Option String) := IO.getEnv "OPENAI_API_KEY"
 
+/--query open-ai with given prompt and parameters -/
 def openAIQuery(prompt: String)(n: Nat := 1)(temp : JsonNumber := ⟨2, 1⟩) : MetaM Json := do
   let key? ← openAIKey
   let key := 
@@ -73,7 +74,6 @@ def openAIQuery(prompt: String)(n: Nat := 1)(temp : JsonNumber := ⟨2, 1⟩) : 
         "-H", "Authorization: Bearer " ++ key,
         "-H", "Content-Type: application/json",
         "--data", data]}
-  -- logInfo "OpenAI query answered"
   readJson out.stdout
 
 initialize webCacheJson : IO.Ref (HashMap String Json) ← IO.mkRef (HashMap.empty)
@@ -179,6 +179,7 @@ def getCodeJson (s: String)(numSim : Nat:= 5)(numKW: Nat := 4)(includeFixed: Boo
         else throwError m!"Web query error: {IOOut.stderr}"
       return outJson
 
+/-- Given an array of outputs, tries to elaborate them with translation and autocorrection and returns the best choice, throwing an error if nothing elaborates.  -/
 def arrayToExpr (output: Array String) : TermElabM Expr := do
   let output := output.toList.eraseDups.toArray
   mkLog output
@@ -206,8 +207,8 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
     | Except.ok thm => return thm
     | Except.error s => throwError s
 
+/-- Given an array of outputs, tries to elaborate them with translation and autocorrection and optionally returns the best choice as well as all elaborated terms  -/
 def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array String))) := do
-  -- erase duplicates before calling
   let mut elaborated : Array String := Array.empty
   let mut fullElaborated : Array String := Array.empty
   for out in output do
@@ -238,6 +239,7 @@ def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array Strin
         elabLog s!"Second round error : {s}"
         return none
 
+/-- reverse translation from `Lean` to natural language -/
 def leanToPrompt (thm: String)(numSim : Nat:= 5)(numKW: Nat := 4)(temp : JsonNumber := 0)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM String := do
     let (pairs, _) ← getPromptPairs thm numSim numKW scoreBound matchBound
     let prompt := makeFlipPrompt thm pairs
@@ -258,6 +260,7 @@ def leanToPrompt (thm: String)(numSim : Nat:= 5)(numKW: Nat := 4)(temp : JsonNum
 
 -- #eval leanToPrompt "{  n :  ℕ } ->  Even   (    (   n +  1  ) * n  )"
 
+/-- array of outputs extracted from json -/
 def jsonToExprStrArray (json: Json) : TermElabM (Array String) := do
   let outArr : Array String ← 
     match json.getArr? with
@@ -276,11 +279,12 @@ def jsonToExprStrArray (json: Json) : TermElabM (Array String) := do
     | Except.error e => throwError m!"json parsing error: {e}"
   return outArr
 
+/-- given json returned by open-ai obtain the best translation -/
 def jsonToExpr' (json: Json) : TermElabM Expr := do
   let output ← jsonToExprStrArray json
   arrayToExpr output
 
-
+/-- translation from a comment-like syntax to a theorem statement -/
 elab "//-" cb:commentBody  : term => do
   let s := cb.raw.getAtomVal!
   let s := (s.dropRight 2).trim  

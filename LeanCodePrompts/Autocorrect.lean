@@ -199,6 +199,7 @@ def identCorrection(s err: String) : MetaM (Option String) := do
     | none => return none
     | some name => return some (s.replace id name)
 
+/-- identifier substrings -/
 partial def identSubs : Syntax → List Substring
 | Syntax.ident _ s .. => [s]
 | Syntax.node _ _ ss => ss.toList.bind identSubs
@@ -226,9 +227,7 @@ def interLeave(full: Substring)(idents: List Substring) :
       (List (Substring × Substring)) × Substring := 
           interleaveAux full 0 [] idents
 
-
-#check Substring.extract
-
+/-- given a string expected to be a *theorem statement* such as `{A: Type} (a : A) : P a`, transforms to one of the type `{A: Type} → (a : A) → P a`, parses this as a term and returns segments and a tail, with each segment a pair with the second part an identifier and the first an identifier-free part preceding it. -/
 def identThmSegments (s : String)(opens: List String := [])
   : MetaM <| Except String ((Array (String × String)) × String) := do
   let env ← getEnv
@@ -261,20 +260,12 @@ def identThmSegments (s : String)(opens: List String := [])
               let mut segments : Array (String × String) := #[]
               let mut cursor : String.Pos := 0
               let res := identSubs termStx
-              -- logInfo m!"{termStx}"
               for ss in res do 
                 fullString := ss.str
                 let pred := fullString.extract cursor ss.startPos
                 segments := segments.push (pred, ss.toString)
                 cursor := ss.stopPos
-                -- logInfo m!"{ss}"
-                -- logInfo m!"{ss.str}"
-                -- logInfo m!"{ss.startPos}"
-                -- logInfo m!"{ss.stopPos}"
               let tail := fullString.extract cursor fullString.endPos
-              -- let chk : String := 
-              --     segments.foldl (fun acc (s, t) => acc ++ s ++ t) tail
-              -- logInfo m!"{chk}"
               return Except.ok (segments, tail)
         | Except.error e => return Except.error e
 
@@ -290,6 +281,7 @@ def transformBuild (segs: (Array (String × String)) × String)
           res.foldr (fun (init, ident) acc => (init ++ ident ++ acc)) tail
         return out
 
+/-- given a string like `{A: Type} → (a : A) → P a` broken up into identifiers and intermediate segments, transforms this by translating identifiers using a given one-one and a given one-many transformation and returns corresponding lists of segments -/
 def polyTransform (pairs: (List (String × String)))
         (transf : String → MetaM (Option String))
         (extraTransf : List (String → MetaM (Option String))) : 
@@ -305,6 +297,7 @@ def polyTransform (pairs: (List (String × String)))
           let prev ← polyTransform ts  transf extraTransf
           return h'.bind (fun x => prev.map (x :: .))
 
+/-- given a string like `{A: Type} → (a : A) → P a` broken up into identifiers and intermediate segments, transforms this by translating identifiers using a given one-one and a given one-many transformation and builds strings from the results -/
 def polyTransformBuild (segs: (Array (String × String)) × String)
         (transf : String → MetaM (Option String))
         (extraTransf : List (String → MetaM (Option String))) (limit : Option Nat := none) : 
@@ -331,6 +324,7 @@ def identMappedFunStx (s: String)
           return Except.ok t
     | Except.error e => return Except.error e
 
+/-- transforms a string expected to be of a form like `{A: Type} → (a : A) → P a` by translating identifiers using a given one-one and a given one-many transformation  -/
 def polyIdentMappedFunStx (s: String)
     (transf : String → MetaM (Option String) := caseOrBinName?)
     (extraTransf : List (String → MetaM (Option String)) 
@@ -345,6 +339,7 @@ def polyIdentMappedFunStx (s: String)
 
 -- #eval identThmSegments "{K : Type u} [Field K] : is_ring K"
 
+/-- attempts to elaborate a string expected to be of a form like  `{A: Type} → (a : A) → P a` via parsing to a term; in principle any term is parsed -/
 def elabFuncTyp (funTypeStr : String) (levelNames : List Lean.Name := levelNames) : TermElabM (Except String Expr) := do
     -- IO.println s!"matching syntax {funTypeStr}"
     match Lean.Parser.runParserCategory (← getEnv) `term funTypeStr with
@@ -359,7 +354,7 @@ def elabFuncTyp (funTypeStr : String) (levelNames : List Lean.Name := levelNames
         | Except.error e => 
             return Except.error s!"parsed func-type to {funTypeStr}; error while parsing as theorem: {e}" 
 
-
+/-- elaborates the string with translations and auto-corrections, including the one-to-many compatibility transformations and (optionally) returns a list of translations and translated strings -/
 def polyElabThmTrans (s : String)(limit : Option Nat := none)
   (transf : String → MetaM (Option String) := caseOrBinName?)
   (extraTransf : List (String → MetaM (Option String))
@@ -400,13 +395,6 @@ def elabThmTrans (s : String)
     | Except.ok expr => return Except.ok (expr, funTypeStr)
     | Except.error e => return Except.error e
   | Except.error e => return Except.error e
-
-def elabThmTransCore(s : String)
-  (transf : String → MetaM (Option String) := caseOrBinName?)
-  (opens: List String := []) 
-  (levelNames : List Lean.Name := levelNames)
-  : CoreM <| Except String (Expr × String) :=
-    (elabThmTrans s transf opens levelNames).run'.run'
 
 def compareFuncStrs(s₁ s₂ : String) 
   (levelNames : List Lean.Name := levelNames)
@@ -460,4 +448,3 @@ def elabCorrected(depth: Nat)(ss : Array String) :
     | d + 1 => if corrected.isEmpty then return #[] else do
       elabCorrected d corrected
   else return elabs
-
