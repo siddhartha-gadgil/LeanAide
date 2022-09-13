@@ -1,6 +1,6 @@
 import Lean.Meta
 import LeanCodePrompts
-import LeanCodePrompts.Translate
+import LeanCodePrompts.BatchTranslate
 open Lean
 
 set_option maxHeartbeats 10000000

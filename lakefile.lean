@@ -17,6 +17,7 @@ lean_exe elabdatagen{
   supportInterpreter := true
 }
 
+@[defaultTarget]
 lean_exe bulkelab {
   supportInterpreter := true
 }
@@ -47,7 +48,7 @@ lean_exe depnames{
   supportInterpreter := true
 }
 
-
+@[defaultTarget]
 lean_exe chkthms{
   supportInterpreter := true
 }
