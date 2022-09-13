@@ -280,13 +280,6 @@ def jsonToExpr' (json: Json) : TermElabM Expr := do
   let output ← jsonToExprStrArray json
   arrayToExpr output
 
-def view(expr: Expr): MetaM String := do
-  try 
-    let stx ← PrettyPrinter.delab  expr
-    let fmt ← PrettyPrinter.ppTerm stx
-    return fmt.pretty
-  catch _ => return s!"{expr}"
-
 
 elab "//-" cb:commentBody  : term => do
   let s := cb.raw.getAtomVal!

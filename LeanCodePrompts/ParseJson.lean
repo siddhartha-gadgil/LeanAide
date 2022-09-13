@@ -1,6 +1,6 @@
 import Lean
 import Lean.Parser
-import LeanCodePrompts.CheckParse
+import LeanCodePrompts.Utils
 
 open Lean Parser
 

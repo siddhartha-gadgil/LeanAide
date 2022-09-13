@@ -6,6 +6,7 @@ import Lean.Parser.Extension
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Init.Set
 import LeanCodePrompts.Basic
+import LeanCodePrompts.Utils
 open Lean Meta Std Elab Parser Mathlib Set Tactic
  
 def s : Set Nat := fun _ => true
@@ -85,14 +86,6 @@ def promptsSplit : MetaM ((Array String) × (Array String)) := do
       fail := fail.push type
   return (succ, fail)
 
-def promptsSplitCore : CoreM ((Array String) × (Array String)) :=
-  promptsSplit.run'
-
-
-
-def Lean.Expr.view (expr: Expr) : MetaM String := do
-  let fmt ← PrettyPrinter.ppExpr expr
-  return fmt.pretty
 
 declare_syntax_cat argument
 syntax "(" ident+ " : " term ")" : argument
@@ -133,14 +126,6 @@ def promptsThmSplit : MetaM ((Array String) × (Array String)) := do
 
 def promptsThmSplitCore : CoreM ((Array String) × (Array String)) :=
   promptsThmSplit.run'
-
-
-partial def showSyntax : Syntax → String
-| Syntax.node _ _ args => 
-  (args.map <| fun s => showSyntax s).foldl (fun acc s => acc ++ " " ++ s) ""
-| Lean.Syntax.atom _ val => val
-| Lean.Syntax.ident _ _ val _ => val.toString
-| _ => ""
 
 def levelNames := 
   [`u, `v, `u_1, `u_2, `u_3, `u_4, `u_5, `u_6, `u_7, `u_8, `u_9, `u_10, `u_11, `u₁, `u₂, `W₁, `W₂, `w₁, `w₂, `u', `v', `uu, `w, `wE]
@@ -404,15 +389,15 @@ def checkElabThm (s : String) : TermElabM String := do
 
 -- #eval elabThm "theorem subfield.list_sum_mem {K : Type u} [field K] (s : subfield K) {l : list K} : (∀ (x : K), x ∈ l → x ∈ s) → l.sum ∈ s"
 
-#eval compareThms "theorem nonsense(n : Nat) (m : Nat) : n = m" "(p : Nat)(q: Nat) : p = q"
+-- #eval compareThms "theorem nonsense(n : Nat) (m : Nat) : n = m" "(p : Nat)(q: Nat) : p = q"
 
-#eval compareThms ": True" ": true = true"
+-- #eval compareThms ": True" ": true = true"
 
-#eval compareThms "{A: Type} : A →  True" "{A: Type}: A →  true"
+-- #eval compareThms "{A: Type} : A →  True" "{A: Type}: A →  true"
 
-#eval compareThms ": False" ": false = true"
+-- #eval compareThms ": False" ": false = true"
 
-#eval compareThms "{A: Sort} : False →  A" "{A: Sort} : false = true →  A"
+-- #eval compareThms "{A: Sort} : False →  A" "{A: Sort} : false = true →  A"
 
 example : (∀ {A: Sort}, False → A) ↔ (∀ {A: Sort}, false = true → A) := by
   intros; lynx at *<;> apply Iff.intro <;> intro hyp  <;> (lynx at *) <;> (try assumption) <;> try (intros; apply Eq.symm; apply hyp)
@@ -422,4 +407,4 @@ example : (∀ (a b c: Nat),
   a + (b + c) = (a + b) + c) ↔ (∀ (a b c: Nat), (a + b) + c = a + (b + c)) := by 
   intros; apply Iff.intro <;> intro hyp  <;> (try assumption) <;> try (intros; apply Eq.symm; apply hyp)
   
-#eval compareThms "(a b c: Nat): a + (b + c) = (a + b) + c" "(a b c: Nat): (a + b) + c = a + (b + c)"
+-- #eval compareThms "(a b c: Nat): a + (b + c) = (a + b) + c" "(a b c: Nat): (a + b) + c = a + (b + c)"

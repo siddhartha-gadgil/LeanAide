@@ -343,7 +343,7 @@ def polyIdentMappedFunStx (s: String)
           return Except.ok t
     | Except.error e => return Except.error e
 
-#eval identThmSegments "{K : Type u} [Field K] : is_ring K"
+-- #eval identThmSegments "{K : Type u} [Field K] : is_ring K"
 
 def elabFuncTyp (funTypeStr : String) (levelNames : List Lean.Name := levelNames) : TermElabM (Except String Expr) := do
     -- IO.println s!"matching syntax {funTypeStr}"
@@ -451,11 +451,6 @@ def elabCorrected(depth: Nat)(ss : Array String) :
     | Except.ok _ => elabs := elabs.push s
     | Except.error err => do
       logInfo m!"s: {s}, err: {err}"
-      -- if err.endsWith "(during elaboration)" then
-      --     let parsed : Except String Syntax := 
-      --         Lean.Parser.runParserCategory (← getEnv) `term s
-      --     let p? := parsed.toOption
-      --     logInfo m!"identifiers: {p?} in {s}"
       match ← identCorrection s err with
       | none => pure ()
       | some s' => corrected := corrected.push s'

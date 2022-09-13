@@ -37,7 +37,7 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat :=
     match res? with
     | some (e, thms) =>
       elabLog "success"
-      let v ← view e
+      let v ← e.view
       elabLog s!"theorem {v}"
       IO.println s!"theorem {v}"
       elaborated := elaborated + 1
