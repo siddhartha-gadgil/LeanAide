@@ -10,7 +10,7 @@ open Lean Meta Std
 
 open Lean Elab Parser Command
 
-
+/-- extrct prompt pairs from JSON response to local server -/
 def sentenceSimPairs(s: String) : MetaM  <| Except String (Array (String × String)) := do
   let json ← readJson (s) 
   -- logInfo "obtained json"
@@ -36,6 +36,7 @@ def sentenceSimPairs(s: String) : MetaM  <| Except String (Array (String × Stri
 
 -- #eval sentenceSimPairs egSen
 
+/-- make prompt from prompt pairs -/
 def makePrompt(prompt : String)(pairs: Array (String × String)) : String := 
       pairs.foldr (fun  (ds, thm) acc => 
         -- acc ++ "/-- " ++ ds ++" -/\ntheorem" ++ thm ++ "\n" ++ "\n"
@@ -46,7 +47,7 @@ theorem {thm} :=
           ) s!"/-- {prompt} -/
 theorem "
 
-
+/-- make prompt for reverse translation from prompt pairs -/
 def makeFlipPrompt(statement : String)(pairs: Array (String × String)) : String := 
       pairs.foldr (fun  (ds, thm) acc => 
 s!"theorem {thm} := 
@@ -75,6 +76,10 @@ def openAIQuery(prompt: String)(n: Nat := 1)(temp : JsonNumber := ⟨2, 1⟩) : 
         "-H", "Content-Type: application/json",
         "--data", data]}
   readJson out.stdout
+
+/-!
+Caching, polling etc to avoid repeatedly calling servers
+-/
 
 initialize webCacheJson : IO.Ref (HashMap String Json) ← IO.mkRef (HashMap.empty)
 
@@ -115,7 +120,7 @@ partial def pollCacheJson (s : String) : IO Json := do
     IO.sleep 200
     pollCacheJson s
 
-
+/-- check if there is a valid elaboration after translation, autocorrection -/
 def hasElab (s: String)(limit : Option Nat := none) : TermElabM Bool := do
     -- (elabThmTrans s).map (fun e => e.toBool)
   let elab? ← polyElabThmTrans s limit
@@ -123,8 +128,7 @@ def hasElab (s: String)(limit : Option Nat := none) : TermElabM Bool := do
   | Except.error _ => return Bool.false
   | Except.ok els => return !els.isEmpty
 
-
-
+/-- log to file -/
 def elabLog (s: String) : IO Unit := do
   let logFile := System.mkFilePath ["results/elab_logs.txt"]
   let h ← IO.FS.Handle.mk logFile IO.FS.Mode.append Bool.false
@@ -133,6 +137,7 @@ def elabLog (s: String) : IO Unit := do
 
 def fixedPrompts:= #[("If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.", "(n : ℕ) (f : ℕ → ℂ) :\n abs (∑ i in finset.range n, f i) ≤ ∑ i in finset.range n, abs (f i) :="), ("If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.", "(n : ℕ) (x y : euclidean_space ℝ (fin n)) :\n ∥x + y∥^2 + ∥x - y∥^2 = 2*∥x∥^2 + 2*∥y∥^2 :="), ("If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.", "(G : Type*) [group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :="), ("Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.", "(X : Type*) [topological_space X]\n (A : set X) (hA : ∀ x ∈ A, ∃ U : set X, is_open U ∧ x ∈ U ∧ U ⊆ A):\n is_open A :=")]
 
+/-- choosing pairs to build a prompt -/
 def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
     (scoreBound: Float)(matchBound: Nat)
    : TermElabM (Array (String × String) × IO.Process.Output) := do
@@ -153,7 +158,8 @@ def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
       return (
           (pairs ++ kwPairs).toList.eraseDups.toArray, simJsonOut)
 
-
+/-- given string to translate, build prompt and query OpenAI; returns JSON response
+-/
 def getCodeJson (s: String)(numSim : Nat:= 5)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM Json := do
   match ← getCachedJson? s with
   | some js => return js
@@ -163,6 +169,7 @@ def getCodeJson (s: String)(numSim : Nat:= 5)(numKW: Nat := 4)(includeFixed: Boo
     else 
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.insert s)
+      -- work starts here; before this was caching, polling etc
       let (pairs, IOOut) ←  
         if numSim > 0 then  
           getPromptPairs s numSim numKW scoreBound matchBound 
@@ -184,7 +191,7 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
   let output := output.toList.eraseDups.toArray
   mkLog output
   let mut elaborated : Array String := Array.empty
-  -- let mut failed: Nat := 0
+  -- translation, autocorrection and filtering by elaboration
   for out in output do
     let ployElab? ← polyElabThmTrans out
     match ployElab? with
@@ -193,6 +200,7 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
         for (_ , s) in es do
             elaborated := elaborated.push s 
   if elaborated.isEmpty then do
+    -- information with failed logs
     logWarning m!"No valid output from Codex; outputs below"
     for out in output do
       let polyOut ←  polyStrThmTrans out
@@ -200,6 +208,7 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
         logWarning m!"{str}"
     mkSyntheticSorry (mkSort levelZero)
   else    
+    -- grouping by trying to prove equality and selecting
     let groupSorted ← groupFuncStrs elaborated
     let topStr := groupSorted[0]![0]!
     let thmExc ← elabFuncTyp topStr
@@ -207,7 +216,7 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
     | Except.ok thm => return thm
     | Except.error s => throwError s
 
-/-- Given an array of outputs, tries to elaborate them with translation and autocorrection and optionally returns the best choice as well as all elaborated terms  -/
+/-- Given an array of outputs, tries to elaborate them with translation and autocorrection and optionally returns the best choice as well as all elaborated terms (used for batch processing, interactive code uses `arrayToExpr` instead)  -/
 def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array String))) := do
   let mut elaborated : Array String := Array.empty
   let mut fullElaborated : Array String := Array.empty
@@ -288,7 +297,9 @@ def jsonToExpr' (json: Json) : TermElabM Expr := do
 elab "//-" cb:commentBody  : term => do
   let s := cb.raw.getAtomVal!
   let s := (s.dropRight 2).trim  
+  -- querying codex
   let js ← getCodeJson  s
+  -- filtering, autocorrection and selection
   let e ← jsonToExpr' js
   logInfo m!"{e}"
   return e
