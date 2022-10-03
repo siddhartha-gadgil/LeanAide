@@ -237,6 +237,10 @@ def identThmSegments (s : String)(opens: List String := [])
       match stx with
       | `(thmStat|theorem $_ $args:argument* : $type:term) =>
         identsAux type args
+      | `(thmStat|section variable $vars:argument* $_:docComment theorem $_ $args:argument* : $type:term ) =>
+        identsAux type (vars ++ args)
+      | `(thmStat|section variable $vars:argument*  theorem $_ $args:argument* : $type:term ) =>
+        identsAux type (vars ++ args)
       | `(thmStat|def $_ $args:argument* : $type:term) =>
         identsAux type args
       | `(thmStat|$args:argument* : $type:term) =>

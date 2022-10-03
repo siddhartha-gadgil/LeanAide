@@ -98,6 +98,10 @@ syntax "theorem" ident argument*  ":" term : thmStat
 syntax "def" ident argument*  ":" term : thmStat
 syntax argument*  ":" term : thmStat
 syntax ident argument*  ":" term : thmStat
+syntax "section" 
+    "variable" (colGt argument*) 
+    (docComment)?
+      "theorem" (ident)? argument*  ":" term  : thmStat
 
 def thmsPrompt : IO (Array String) := do
   let file := System.mkFilePath ["data/thms.txt"]
@@ -145,6 +149,10 @@ def elabThm (s : String)(opens: List String := [])
       match stx with
       | `(thmStat|theorem $_ $args:argument* : $type:term) =>
         elabAux type args
+      | `(thmStat|section variable $vars:argument* $_:docComment  theorem $_ $args:argument* : $type:term ) =>
+        elabAux type (vars ++ args)
+      | `(thmStat|section variable $vars:argument*  theorem $_ $args:argument* : $type:term ) =>
+        elabAux type (vars ++ args)
       | `(thmStat|def $_ $args:argument* : $type:term) =>
         elabAux type args
       | `(thmStat|$args:argument* : $type:term) =>
@@ -328,7 +336,15 @@ def tryParseThm (s : String) : MetaM String := do
 
 -- #eval tryParseThm "theorem blah (n : Nat) {m: Type} : n  = n"
 
--- #eval checkThm "theorem blah (n : Nat) {m: Type} : n  = n"
+#eval checkThm "theorem blah (n : Nat) {m: Type} : n  = n"
+
+def eg :=
+"section 
+variable (α : Type) {n : Nat}
+/-- A doc that should be ignored -/
+theorem blah (m: Nat) : n  = m "
+
+#eval checkThm eg
 
 -- #eval checkThm "(n : Nat) {m: Type} : n  = n"
 
@@ -343,6 +359,36 @@ def checkElabThm (s : String) : TermElabM String := do
       | `(thmStat|theorem $_ $args:argument* : $type:term) =>
         let mut argS := ""
         for arg in args do
+          argS := argS ++ (showSyntax arg) ++ " -> "
+        let funStx := s!"{argS}{showSyntax type}"
+        match Lean.Parser.runParserCategory env `term funStx with
+        | Except.ok termStx => Term.withLevelNames levelNames <|
+          try 
+            let expr ← Term.withoutErrToSorry <| 
+                Term.elabTerm termStx none
+            pure s!"elaborated: {← expr.view} from {funStx}"
+          catch e => 
+            pure s!"{← e.toMessageData.toString} during elaboration"
+        | Except.error e => 
+            pure s!"parsed to {funStx}; error while parsing: {e}"
+      | `(thmStat|section variable $vars:argument* $_:docComment theorem $_ $args:argument* : $type:term ) =>
+        let mut argS := ""
+        for arg in vars ++ args do
+          argS := argS ++ (showSyntax arg) ++ " -> "
+        let funStx := s!"{argS}{showSyntax type}"
+        match Lean.Parser.runParserCategory env `term funStx with
+        | Except.ok termStx => Term.withLevelNames levelNames <|
+          try 
+            let expr ← Term.withoutErrToSorry <| 
+                Term.elabTerm termStx none
+            pure s!"elaborated: {← expr.view} from {funStx}"
+          catch e => 
+            pure s!"{← e.toMessageData.toString} during elaboration"
+        | Except.error e => 
+            pure s!"parsed to {funStx}; error while parsing: {e}"
+      | `(thmStat|section variable $vars:argument* theorem $_ $args:argument* : $type:term ) =>
+        let mut argS := ""
+        for arg in vars ++ args do
           argS := argS ++ (showSyntax arg) ++ " -> "
         let funStx := s!"{argS}{showSyntax type}"
         match Lean.Parser.runParserCategory env `term funStx with
@@ -374,6 +420,8 @@ def checkElabThm (s : String) : TermElabM String := do
   | Except.error e  => pure s!"error: {e}"
 
 -- #eval checkElabThm "theorem blah (n : Nat) {m : Nat} : n  = m"
+
+#eval checkElabThm eg
 
 -- #eval checkElabThm "theorem subfield.list_sum_mem {K : Type u} [field K] (s : subfield K) {l : list K} : (∀ (x : K), x ∈ l → x ∈ s) → l.sum ∈ s"
 
