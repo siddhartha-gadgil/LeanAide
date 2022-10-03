@@ -21,7 +21,7 @@ def getContinuationExprs (s: String)(context: String := "")(numSim : Nat:= 10)(n
       else throwError m!"Web query error: {IOOut.stderr}"
     jsonToExprStrArray outJson
 
-def getDocContinuationExprs (s: String)(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 20)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Array String := do
+def getDocContinuationExprs (s: String)(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 8)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Array String := do
       -- work starts here; before this was caching, polling etc
     let (pairs, IOOut) ←  
       if numSim > 0 then  
@@ -37,9 +37,11 @@ def getDocContinuationExprs (s: String)(numSim : Nat:= 10)(numKW: Nat := 4)(incl
     pendingJsonQueries.set (pending.erase s)
     if IOOut.exitCode = 0 then cacheJson s outJson 
       else throwError m!"Web query error: {IOOut.stderr}"
-    jsonToExprStrArray outJson
+    let completions ← jsonToExprStrArray outJson
+    let padded := completions.map (fun c => "/-- " ++ c)
+    return padded
 
-def showContinuationExprs (s: String)(context: String := "")(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 20)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Array (String × (List String)) := do
+def showContinuationExprs (s: String)(context: String := "")(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 8)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Array (String × (List String)) := do
   let exprs ← 
     getContinuationExprs s context numSim numKW includeFixed queryNum temp scoreBound matchBound
   exprs.mapM (fun s => do
@@ -58,18 +60,3 @@ def showDocContinuationExprs (s: String)(numSim : Nat:= 10)(numKW: Nat := 4)(inc
   )
 
 
-def statement := "Every subgroup of a group is normal."
-
-#eval showContinuationExprs statement "(G: Type u)[group G]"
-
-#eval showLogs 1
-
-def statement2 := "Every two prime numbers are coprime."
-
-#eval showContinuationExprs statement "(n m: Nat)(h: n < m)"
-
-#eval showLogs 1
-
--- #eval showDocContinuationExprs statement 
-
--- #eval showLogs 1

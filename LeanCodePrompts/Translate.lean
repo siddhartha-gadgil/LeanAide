@@ -65,7 +65,7 @@ s!"/-- {ds} -/
 theorem {thm} := sorry
 
 {acc}") s!"
-"
+/--"
 
 
 /-- make prompt for reverse translation from prompt pairs -/
