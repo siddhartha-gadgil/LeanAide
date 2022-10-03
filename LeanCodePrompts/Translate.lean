@@ -60,13 +60,14 @@ s!"theorem {thm} :=
 def openAIKey : IO (Option String) := IO.getEnv "OPENAI_API_KEY"
 
 /--query open-ai with given prompt and parameters -/
-def openAIQuery(prompt: String)(n: Nat := 1)(temp : JsonNumber := ⟨2, 1⟩) : MetaM Json := do
+def openAIQuery(prompt: String)(n: Nat := 1)
+  (temp : JsonNumber := ⟨2, 1⟩)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json := do
   let key? ← openAIKey
   let key := 
     match key? with
     | some k => k
     | none => panic! "OPENAI_API_KEY not set"
-  let dataJs := Json.mkObj [("model", "code-davinci-002"), ("prompt", prompt), ("temperature", Json.num temp), ("n", n), ("max_tokens", 150), ("stop", Json.arr #[":=", "-/"])]
+  let dataJs := Json.mkObj [("model", "code-davinci-002"), ("prompt", prompt), ("temperature", Json.num temp), ("n", n), ("max_tokens", 150), ("stop", Json.arr <| stopTokens |>.map Json.str)]
   let data := dataJs.pretty
   let out ←  IO.Process.output {
         cmd:= "curl", 

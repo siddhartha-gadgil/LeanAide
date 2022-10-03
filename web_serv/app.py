@@ -56,7 +56,7 @@ def similar_from():
     use_precomputed_embeddings=True,
     corpus_embeddings=corpus_embeddings)
 
-    output = [{"statement" : info["dct"]["statement"],"doc_string": info["dct"]["doc_string"], "theorem" : info["dct"]["theorem"]} for info in lis]
+    output = [{"statement" : info["dct"]["statement"],"doc_string": info["dct"]["doc_string"], "theorem" : info["dct"]["theorem"], "args" : info["dct"]["args"], "name" : info["dct"]["name"], "type" : info["dct"]["type"]} for info in lis]
     jsBlob = str(json.dumps(output,ensure_ascii=False))
     print (jsBlob)
     return jsBlob
