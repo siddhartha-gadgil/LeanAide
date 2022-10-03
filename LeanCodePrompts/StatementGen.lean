@@ -39,10 +39,7 @@ def getDocContinuationExprs (s: String)(numSim : Nat:= 10)(numKW: Nat := 4)(incl
       else throwError m!"Web query error: {IOOut.stderr}"
     jsonToExprStrArray outJson
 
-
-def statement := "Every subgroup of a group is normal."
-
-def showContinuationExprs (s: String)(context: String := "")(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 10)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Array (String × (List String)) := do
+def showContinuationExprs (s: String)(context: String := "")(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 20)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Array (String × (List String)) := do
   let exprs ← 
     getContinuationExprs s context numSim numKW includeFixed queryNum temp scoreBound matchBound
   exprs.mapM (fun s => do
@@ -60,16 +57,19 @@ def showDocContinuationExprs (s: String)(numSim : Nat:= 10)(numKW: Nat := 4)(inc
     return (s, exps.map (fun (_, s) => s))
   )
 
--- #eval showContinuationExprs statement "(G: Type u)"
 
--- #eval showLogs 10
+def statement := "Every subgroup of a group is normal."
 
--- def statement2 := "Every two prime numbers are coprime."
+#eval showContinuationExprs statement "(G: Type u)[group G]"
 
--- #eval showContinuationExprs statement "(n: Nat)"
+#eval showLogs 1
 
--- #eval showLogs 10
+def statement2 := "Every two prime numbers are coprime."
 
-#eval showDocContinuationExprs statement 
+#eval showContinuationExprs statement "(n m: Nat)(h: n < m)"
 
-#eval showLogs 10
+#eval showLogs 1
+
+-- #eval showDocContinuationExprs statement 
+
+-- #eval showLogs 1
