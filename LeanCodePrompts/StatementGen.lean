@@ -32,7 +32,7 @@ def showContinuationExprs (s: String)(context: String := "")(numSim : Nat:= 10)(
     return (s!"theorem {context} {s} := sorry",exps.map (fun (_, s) => s))
   )
 
-#eval showContinuationExprs statement "(g: Type u)"
+#eval showContinuationExprs statement "(G: Type u)"
 
 #eval showLogs 10
 
