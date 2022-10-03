@@ -25,7 +25,7 @@ def sentenceSimPairs(s: String) : MetaM  <| Except String (Array (String × Stri
           | Except.error e => throwError s!"Error {e} while processing {js} as string"  
           | Except.ok s => pure s
       let thm ←  match (json.getObjVal? "theorem") with
-        | Except.error e => throwError s!"Error {e} while getting doc_string"
+        | Except.error e => throwError s!"Error {e} while getting theorem"
         | Except.ok js => 
           match js.getStr? with
           | Except.error e => throwError s!"Error {e} while processing {js} as string"  
@@ -46,6 +46,17 @@ theorem {thm} :=
 {acc}"
           ) s!"/-- {prompt} -/
 theorem "
+
+/-- make prompt for continuing statements-/
+def makeThmsPrompt(pairs: Array (String × String))(context: String := "") : String := 
+pairs.foldr (fun  (_, thm) acc => 
+        -- acc ++ "/-- " ++ ds ++" -/\ntheorem" ++ thm ++ "\n" ++ "\n"
+s!"theorem {thm} :=
+
+{acc}"
+          ) s!"
+theorem {context}"
+
 
 /-- make prompt for reverse translation from prompt pairs -/
 def makeFlipPrompt(statement : String)(pairs: Array (String × String)) : String := 
