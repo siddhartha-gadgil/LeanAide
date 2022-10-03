@@ -14,12 +14,18 @@ def statement2 := "Every two prime numbers are coprime."
 
 #eval showLogs 1
 
+#eval showContinuationExprs statement2 "(n m: Nat)(h: nat.prime n) (h' : nat.prime m)"
+
+#eval showContinuationExprs statement2 "(n m: Nat)(h: nat.prime n) (h' : odd m)"
+
 #eval showDocContinuationExprs statement2 
 
 #eval showLogs 1
+
+#eval showDocContinuationExprs statement
 
 def egThm := "{a b c : ℕ} (hp : nat.prime a) (habc : a * b * c = 1) : b * c = 1 "
 
 #eval polyElabThmTrans egThm
 
-#eval showContinuationExprs statement2 "(n m: Nat)(h: nat.prime n) (h' : nat.prime m)"
+
