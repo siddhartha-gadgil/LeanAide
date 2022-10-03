@@ -60,12 +60,12 @@ theorem {context}"
 
 /-- make prompt for continuing statements with docs-/
 def makeDocsThmsPrompt(pairs: Array (String × String)) : String := 
-pairs.foldr (fun  (_, thm) acc => 
-        -- acc ++ "/-- " ++ ds ++" -/\ntheorem" ++ thm ++ "\n" ++ "\n"
-s!"theorem {thm} :=
+pairs.foldr (fun  (ds, thm) acc => 
+s!"/-- {ds} -/
+theorem {thm} := sorry
 
-{acc}"
-          ) s!"\n"
+{acc}") s!"
+"
 
 
 /-- make prompt for reverse translation from prompt pairs -/

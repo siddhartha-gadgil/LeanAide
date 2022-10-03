@@ -94,6 +94,7 @@ syntax "[" ident " : " term "]" : argument
 syntax "[" term "]" : argument
 
 declare_syntax_cat thmStat
+syntax docComment "theorem" ident argument*  ":" term : thmStat
 syntax "theorem" ident argument*  ":" term : thmStat
 syntax "def" ident argument*  ":" term : thmStat
 syntax argument*  ":" term : thmStat
@@ -147,6 +148,8 @@ def elabThm (s : String)(opens: List String := [])
   match chk with
   | Except.ok stx  =>
       match stx with
+      | `(thmStat|$_:docComment theorem $_ $args:argument* : $type:term) =>
+        elabAux type args
       | `(thmStat|theorem $_ $args:argument* : $type:term) =>
         elabAux type args
       | `(thmStat|section variable $vars:argument* $_:docComment  theorem $_ $args:argument* : $type:term ) =>
