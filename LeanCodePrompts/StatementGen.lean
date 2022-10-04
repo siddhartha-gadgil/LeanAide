@@ -136,8 +136,7 @@ def getSectionContinuationExprs (s: String)(context: String)(numSim : Nat:= 10)(
       else throwError m!"Web query error: {IOOut.stderr}"
     let completions ← jsonToExprStrArray outJson
     let padded := completions.map (fun c => 
-    s!"section
-variable {context}
+    s!"{context}
 /-- " ++ c)
     return padded
 

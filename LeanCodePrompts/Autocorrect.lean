@@ -235,21 +235,15 @@ def identThmSegments (s : String)(opens: List String := [])
   match chk with
   | Except.ok stx  =>
       match stx with
-      | `(thmStat|$_: docComment theorem $_ $args:argument* : $type:term) =>
+      | `(thmStat|$_: docComment theorem  $args:argument* : $type:term) =>
         identsAux type args
-      | `(thmStat|$_: docComment $args:argument* : $type:term) =>
-        identsAux type args
+      | `(thmStat|$vars:argument* $_: docComment theorem $args:argument* : $type:term) =>
+        identsAux type (vars ++ args)
       | `(thmStat|theorem $_ $args:argument* : $type:term) =>
         identsAux type args
-      | `(thmStat|section variable $vars:argument* $_:docComment theorem $_ $args:argument* : $type:term ) =>
-        identsAux type (vars ++ args)
-      | `(thmStat|section variable $vars:argument*  theorem $_ $args:argument* : $type:term ) =>
-        identsAux type (vars ++ args)
       | `(thmStat|def $_ $args:argument* : $type:term) =>
         identsAux type args
       | `(thmStat|$args:argument* : $type:term) =>
-        identsAux type args
-      | `(thmStat|$_:ident $args:argument* : $type:term) =>
         identsAux type args
       | _ => return Except.error "not a theorem statement"
   | Except.error _  => return Except.error "not a theorem statement"

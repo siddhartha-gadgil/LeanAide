@@ -30,4 +30,4 @@ def egThm := "{a b c : ℕ} (hp : nat.prime a) (habc : a * b * c = 1) : b * c = 
 
 #eval showSectionContinuationExprs statement2 "(n m: Nat)(h: nat.prime n) (h' : nat.prime m)"
 
-#eval elabThm "/-- A product of primes is not zero -/  : n * m ≠ 0 "
+#eval elabThm "(n m: Nat)/-- A product of primes is not zero -/ theorem  : n * m ≠ 0 "

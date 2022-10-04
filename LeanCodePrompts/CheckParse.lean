@@ -94,16 +94,10 @@ syntax "[" ident " : " term "]" : argument
 syntax "[" term "]" : argument
 
 declare_syntax_cat thmStat
-syntax docComment "theorem" ident argument*  ":" term : thmStat
-syntax docComment  argument*  ":" term : thmStat
-syntax "theorem" ident argument*  ":" term : thmStat
+syntax argument* docComment "theorem"  argument*  ":" term : thmStat
+syntax "theorem" (ident)? argument*  ":" term : thmStat
 syntax "def" ident argument*  ":" term : thmStat
 syntax argument*  ":" term : thmStat
-syntax ident argument*  ":" term : thmStat
-syntax "section" 
-    "variable" (colGt argument*) 
-    (docComment)?
-      "theorem" (ident)? argument*  ":" term  : thmStat
 
 def thmsPrompt : IO (Array String) := do
   let file := System.mkFilePath ["data/thms.txt"]
@@ -149,21 +143,17 @@ def elabThm (s : String)(opens: List String := [])
   match chk with
   | Except.ok stx  =>
       match stx with
-      | `(thmStat|$_:docComment theorem $_ $args:argument* : $type:term) =>
-        elabAux type args
-      | `(thmStat|$_:docComment $args:argument* : $type:term) =>
+      | `(thmStat| $_:docComment theorem  $args:argument* : $type:term) =>
         elabAux type args
       | `(thmStat|theorem $_ $args:argument* : $type:term) =>
         elabAux type args
-      | `(thmStat|section variable $vars:argument* $_:docComment  theorem $_ $args:argument* : $type:term ) =>
-        elabAux type (vars ++ args)
-      | `(thmStat|section variable $vars:argument*  theorem $_ $args:argument* : $type:term ) =>
+      | `(thmStat|theorem $args:argument* : $type:term) =>
+        elabAux type args
+      | `(thmStat|$vars:argument* $_:docComment  theorem $args:argument* : $type:term ) =>
         elabAux type (vars ++ args)
       | `(thmStat|def $_ $args:argument* : $type:term) =>
         elabAux type args
       | `(thmStat|$args:argument* : $type:term) =>
-        elabAux type args
-      | `(thmStat|$_:ident $args:argument* : $type:term) =>
         elabAux type args
       | _ => return Except.error s!"parsed incorrectly to {stx}"
   | Except.error e  => return Except.error e
@@ -342,7 +332,7 @@ def tryParseThm (s : String) : MetaM String := do
 
 -- #eval tryParseThm "theorem blah (n : Nat) {m: Type} : n  = n"
 
-#eval elabThm "/-- blah test -/  (n : Nat) {m: Type} : n  = n"
+#eval elabThm "(p: Nat)/-- blah test -/ theorem  (n : Nat) {m: Type} : n  = p"
 
 def eg :=
 "section 
@@ -377,22 +367,7 @@ def checkElabThm (s : String) : TermElabM String := do
             pure s!"{← e.toMessageData.toString} during elaboration"
         | Except.error e => 
             pure s!"parsed to {funStx}; error while parsing: {e}"
-      | `(thmStat|section variable $vars:argument* $_:docComment theorem $_ $args:argument* : $type:term ) =>
-        let mut argS := ""
-        for arg in vars ++ args do
-          argS := argS ++ (showSyntax arg) ++ " -> "
-        let funStx := s!"{argS}{showSyntax type}"
-        match Lean.Parser.runParserCategory env `term funStx with
-        | Except.ok termStx => Term.withLevelNames levelNames <|
-          try 
-            let expr ← Term.withoutErrToSorry <| 
-                Term.elabTerm termStx none
-            pure s!"elaborated: {← expr.view} from {funStx}"
-          catch e => 
-            pure s!"{← e.toMessageData.toString} during elaboration"
-        | Except.error e => 
-            pure s!"parsed to {funStx}; error while parsing: {e}"
-      | `(thmStat|section variable $vars:argument* theorem $_ $args:argument* : $type:term ) =>
+      | `(thmStat|$vars:argument* $_:docComment theorem $args:argument* : $type:term ) =>
         let mut argS := ""
         for arg in vars ++ args do
           argS := argS ++ (showSyntax arg) ++ " -> "
@@ -431,7 +406,9 @@ def checkElabThm (s : String) : TermElabM String := do
 
 -- #eval checkElabThm "theorem subfield.list_sum_mem {K : Type u} [field K] (s : subfield K) {l : list K} : (∀ (x : K), x ∈ l → x ∈ s) → l.sum ∈ s"
 
--- #eval elabThm "theorem blah (n : Nat) {m : Nat} : n  = m" 
+#eval elabThm "theorem blah (n : Nat) {m : Nat} : n  = m" 
+
+#eval elabThm "theorem (n : Nat) {m : Nat} : n  = m"
 
 -- #eval elabThm "theorem blah (n : Nat) {m : Nat} : n  = succ n" ["Nat"]
 
