@@ -95,6 +95,7 @@ syntax "[" term "]" : argument
 
 declare_syntax_cat thmStat
 syntax docComment "theorem" ident argument*  ":" term : thmStat
+syntax docComment  argument*  ":" term : thmStat
 syntax "theorem" ident argument*  ":" term : thmStat
 syntax "def" ident argument*  ":" term : thmStat
 syntax argument*  ":" term : thmStat
@@ -149,6 +150,8 @@ def elabThm (s : String)(opens: List String := [])
   | Except.ok stx  =>
       match stx with
       | `(thmStat|$_:docComment theorem $_ $args:argument* : $type:term) =>
+        elabAux type args
+      | `(thmStat|$_:docComment $args:argument* : $type:term) =>
         elabAux type args
       | `(thmStat|theorem $_ $args:argument* : $type:term) =>
         elabAux type args
@@ -339,7 +342,7 @@ def tryParseThm (s : String) : MetaM String := do
 
 -- #eval tryParseThm "theorem blah (n : Nat) {m: Type} : n  = n"
 
-#eval checkThm "theorem blah (n : Nat) {m: Type} : n  = n"
+#eval elabThm "/-- blah test -/  (n : Nat) {m: Type} : n  = n"
 
 def eg :=
 "section 
