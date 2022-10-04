@@ -10,7 +10,7 @@ open Lean Meta Std
 
 open Lean Elab Parser Command
 
-/-- extrct prompt pairs from JSON response to local server -/
+/-- extract prompt pairs from JSON response to local server -/
 def sentenceSimPairs(s: String) : MetaM  <| Except String (Array (String × String)) := do
   let json ← readJson (s) 
   -- logInfo "obtained json"
@@ -46,26 +46,6 @@ theorem {thm} :=
 {acc}"
           ) s!"/-- {prompt} -/
 theorem "
-
-/-- make prompt for continuing statements-/
-def makeThmsPrompt(pairs: Array (String × String))(context: String := "") : String := 
-pairs.foldr (fun  (_, thm) acc => 
-        -- acc ++ "/-- " ++ ds ++" -/\ntheorem" ++ thm ++ "\n" ++ "\n"
-s!"theorem {thm} :=
-
-{acc}"
-          ) s!"
-theorem {context}"
-
-
-/-- make prompt for continuing statements with docs-/
-def makeDocsThmsPrompt(pairs: Array (String × String)) : String := 
-pairs.foldr (fun  (ds, thm) acc => 
-s!"/-- {ds} -/
-theorem {thm} := sorry
-
-{acc}") s!"
-/--"
 
 
 /-- make prompt for reverse translation from prompt pairs -/
