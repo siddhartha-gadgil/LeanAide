@@ -352,7 +352,7 @@ def elabFuncTyp (funTypeStr : String) (levelNames : List Lean.Name := levelNames
                 Term.elabTerm termStx none
             return Except.ok expr
           catch e => 
-            return Except.error s!"{← e.toMessageData.toString} for {termStx} (during elaboration)"
+            return Except.error s!"{← e.toMessageData.toString} for {termStx.reprint} (during elaboration)"
         | Except.error e => 
             return Except.error s!"parsed func-type to {funTypeStr}; error while parsing as theorem: {e}" 
 

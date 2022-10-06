@@ -4,7 +4,7 @@ open Lean Meta Elab
 
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
-def getCodeCustomJson (s: String)(customPrompts : Array (String × String) := #[])(numSim : Nat:= 5)(numKW: Nat := 4)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM Json := do
+def getCodeCustomJson (s: String)(customPrompts : Array (String × String) := #[])(numSim : Nat:= 5)(numKW: Nat := 4)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Json := do
   match ← getCachedJson? s with
   | some js => return js
   | none =>    
@@ -77,7 +77,7 @@ def arrayToExprWithErr? (outputs: Array String) : TermElabM <| Except String (St
     let topStr := groupSorted[0]![0]!
     return Except.ok (topStr, elaborated)
 
-def translate (s: String)(customPrompts : Array (String × String) := #[])(numSim : Nat:= 5)(numKW: Nat := 4)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM (Except String (String × (Array String))) := do
+def translate (s: String)(customPrompts : Array (String × String) := #[])(numSim : Nat:= 5)(numKW: Nat := 4)(queryNum: Nat := 15)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM (Except String (String × (Array String))) := do
   let json ← getCodeCustomJson s customPrompts numSim numKW queryNum temp scoreBound matchBound
   let outputs ← jsonToExprStrArray json
   let out? ← arrayToExprWithErr? outputs
