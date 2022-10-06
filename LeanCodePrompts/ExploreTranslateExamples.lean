@@ -1,7 +1,7 @@
 import LeanCodePrompts.ExploreTranslate
 import Mathbin.All
 
-def eg1 := "There are infinitely many primes."
+def eg1 := "There are infinitely odd numbers."
 
 #eval translate eg1
 
