@@ -62,13 +62,13 @@ def arrayToExprWithErr? (outputs: Array String) : TermElabM <| Except String (St
     let ployElab? ← polyElabThmTransWithErr out
     match ployElab? with
       | Except.error msg =>
-          errorLog := errorLog ++ s!"completion: {out}, error: {msg}; "
+          errorLog := errorLog ++ s!"Completion: {out}, Error: {msg}; "
           pure ()
       | Except.ok (es, errs) =>
         for (_ , s) in es do
             elaborated := elaborated.push s
         for (msg, s) in errs do
-            errorLog := errorLog ++ s!"completion: {out}, parsed-to: {s},failure: {msg}; " 
+            errorLog := errorLog ++ s!"Completion: {out}, Parsed-to: {s}, Failure: {msg}; " 
   if elaborated.isEmpty then 
       return Except.error errorLog
   else    
@@ -77,3 +77,8 @@ def arrayToExprWithErr? (outputs: Array String) : TermElabM <| Except String (St
     let topStr := groupSorted[0]![0]!
     return Except.ok (topStr, elaborated)
 
+def translate (s: String)(customPrompts : Array (String × String) := #[])(numSim : Nat:= 5)(numKW: Nat := 4)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM (Except String (String × (Array String))) := do
+  let json ← getCodeCustomJson s customPrompts numSim numKW queryNum temp scoreBound matchBound
+  let outputs ← jsonToExprStrArray json
+  let out? ← arrayToExprWithErr? outputs
+  return out?
