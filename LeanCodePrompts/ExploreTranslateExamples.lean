@@ -29,8 +29,10 @@ def eg6 := "Every finite sequence `x_1, x_2, ..., x_n` of natural numbers is bou
 
 #eval showLogs 1
 
-def eg7 := "If a set `S` contains `0` and `1`, and the mean of every finite nonempty subset of `S`, then `S` is non-empty."
+def eg7 := "If a set of natural numbers `S` contains `0` and `1`, and the mean of every finite nonempty subset of `S`, then `S` is non-empty."
 
 #eval translate eg7
 
-#eval showLogs 1
+-- #eval showLogs 1
+
+#eval dotName? "S.nonempty"

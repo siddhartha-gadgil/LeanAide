@@ -34,6 +34,9 @@ initialize xNameCache : IO.Ref (HashMap String String)
 initialize xxNameCache : IO.Ref (HashMap String String) 
   ← IO.mkRef (HashMap.empty)
 
+initialize dotNameCache : IO.Ref (HashMap String String) 
+  ← IO.mkRef (HashMap.empty)
+
 
 initialize binNamesCache : IO.Ref (Array String) ← IO.mkRef (#[])
 
@@ -93,6 +96,18 @@ def xxNames : MetaM (HashMap String String) := do
       return m
   else return cache
 
+def dotNames : MetaM (HashMap String String) := do
+  let cache ← dotNameCache.get
+  if cache.isEmpty then 
+      let lines ← 
+        IO.FS.lines (System.mkFilePath ["data", "simple_dot_names.txt"])
+      let mut m : HashMap String String := HashMap.empty
+      for name in lines do
+        m := m.insert (name.toLower) name
+      dotNameCache.set m
+      return m
+  else return cache
+
 def caseName?(s: String) : MetaM (Option String) := do
   let cache ← caseNames
   return cache.find? s
@@ -104,6 +119,15 @@ def xName?(s: String) : MetaM (Option String) := do
 def xxName?(s: String) : MetaM (Option String) := do
   let cache ← xxNames
   return cache.find? s
+
+def dotName?(s: String) : MetaM (Option String) := do
+match s.splitOn "." with
+| [head, field] =>
+  if head.length ≤ 2 then
+    let cache ← dotNames
+    return cache.find? field |>.map (fun s => head ++ "." ++ s)
+  else return none
+| _ => return none
 
 def binNames : IO (Array String) := do 
   let cacheStr ← binNamesCache.get

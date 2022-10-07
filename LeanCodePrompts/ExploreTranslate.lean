@@ -34,7 +34,7 @@ def getCodeCustomJson (s: String)(customPrompts : Array (String × String) := #[
 def polyElabThmTransWithErr (s : String)(limit : Option Nat := none)
   (transf : String → MetaM (Option String) := caseOrBinName?)
   (extraTransf : List (String → MetaM (Option String))
-        := [xName?, xxName?])
+        := [xName?, xxName?, dotName?])
   (opens: List String := []) 
   (levelNames : List Lean.Name := levelNames)
   : TermElabM <| Except String <| 
