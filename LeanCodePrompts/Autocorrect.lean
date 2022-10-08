@@ -338,7 +338,7 @@ def polyTransformBuild (segs: (Array (String × String)) × String)
           transformed.map (fun res => 
             res.foldr (fun (init, ident) acc => (init ++ ident ++ acc)) tail)
         -- IO.println "built strings"
-        return strings
+        return strings.eraseDups
 
 
 def identMappedFunStx (s: String)

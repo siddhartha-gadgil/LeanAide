@@ -5,6 +5,8 @@ def eg1 := "There are infinitely many odd numbers."
 
 #eval translate eg1
 
+#eval showLogs 1
+
 def eg2 := "Every set of `10` distinct numbers between `1` and `100` contains two disjoint nonempty subsets with the same sum."
 
 #eval translate eg2
