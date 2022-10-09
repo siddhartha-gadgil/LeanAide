@@ -18,6 +18,7 @@ def getCodeCustomJson (s: String)(customPrompts : Array (String × String) := #[
         if numSim > 0 then  
           getPromptPairs s numSim numKW scoreBound matchBound 
         else pure (#[], ⟨0, "", ""⟩)
+      let pairs := pairs.reverse
       let pairs := pairs ++ customPrompts 
       let prompt := makePrompt s pairs
       mkLog prompt
