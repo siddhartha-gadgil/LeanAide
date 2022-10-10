@@ -43,14 +43,16 @@ def promptJs(js: Value): Value = {
   val name = obj("name").str.replace("\n", " ")
   val argSeq = obj("args").arr.toVector.map(js => exprString(js("arg")))
   val args = argSeq.mkString(" ")
+  val kind = obj("kind").str
   val typeExpr = exprString(obj("type"))
   val statement =
-    s"theorem ${name} ${args} : ${typeExpr}"
+    s"${kind} ${name} ${args} : ${typeExpr}"
   val theorem =
     s"${args} : ${typeExpr}"
   Obj(
     "doc_string" -> obj("doc_string").str.replace("\n", " "),
     "theorem" -> theorem,
+    "kind" -> kind,
     "statement" -> statement,
     "name" -> name,
     "args" -> args,
@@ -60,7 +62,7 @@ def promptJs(js: Value): Value = {
 
 def allPrompts(js: Value) = {
   val promptSeq = js.arr.toVector
-    .filter(js => js("kind").str == "theorem" && js("doc_string").str.nonEmpty)
+    .filter(js => js("doc_string").str.nonEmpty)
     .map(promptJs)
   Arr(promptSeq: _*)
 }

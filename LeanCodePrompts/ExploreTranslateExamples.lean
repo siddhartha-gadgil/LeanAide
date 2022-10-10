@@ -38,3 +38,16 @@ def eg7 := "If a set of natural numbers `S` contains `0` and `1`, and the mean o
 -- #eval showLogs 1
 
 #eval dotName? "S.nonempty"
+
+def eg8 := "Every finite group is isomorphic to a subgroup of a symmetric group."
+
+#eval translate eg8
+
+def eg9 := "If a positive-definite quadratic form having integer matrix represents every positive integer up to `15` then it represents every po
+sitive integer."
+
+#eval translate eg9
+
+#eval showLogs 1
+
+#check @QuadraticForm.toMatrix'
