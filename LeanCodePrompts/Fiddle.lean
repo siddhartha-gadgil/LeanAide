@@ -48,3 +48,41 @@ open Command
 #eval runParserPartial «variable» "variable (x : Nat) [h: Group x] and something else"
 
 variable (x : Nat)
+
+#eval runParserCategoryPartial `tactic "have x : N := 2 := 3 ; simp"
+
+declare_syntax_cat hellotac
+
+declare_syntax_cat defhead
+syntax "theorem" : defhead
+syntax "def" : defhead
+syntax "lemma" : defhead
+
+syntax defhead ident ":" term ":=" "by" tactic : hellotac
+
+#eval runParserCategoryPartial `hellotac "theorem blah : Nat := by let x : N := 2 := 3 ; simp"
+
+def getName (stx: Syntax) : MetaM Name := do
+match stx with
+| `(hellotac|theorem $name:ident : $_:term := by $_) => pure name.getId
+| _ => throwUnsupportedSyntax
+
+def parseName(s: String) : MetaM Name := do
+match ← runParserCategoryPartial `hellotac s with
+| Except.ok stx => getName stx
+| Except.error msg => throwError msg
+
+#eval parseName "theorem blah : Nat := by let x : N := 2 := 3 ; simp"
+
+def getPieces (stx: Syntax) : MetaM (String × String × String) := do
+match stx with
+| `(hellotac|theorem $name:ident : $t:term := by $tac) => 
+    pure (name.raw.reprint.get!, t.raw.reprint.get!, tac.raw.reprint.get!)
+| _ => throwUnsupportedSyntax
+
+def parsePieces(s: String) : MetaM (String × String × String) := do
+match ← runParserCategoryPartial `hellotac s with
+| Except.ok stx => getPieces stx
+| Except.error msg => throwError msg
+
+#eval parsePieces "theorem blah : Nat := by let x : N := 2 := 3 ; simp"
