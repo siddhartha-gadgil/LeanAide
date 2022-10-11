@@ -2,62 +2,92 @@ import Lean
 import Lean.Data.Json.Basic
 import Lean.Data.Json.FromToJson
 import LeanCodePrompts.ParseJson
+import LeanCodePrompts.Utils
 
 open Std Lean
 
-example : FromJson <| List (String × String) := inferInstance 
+initialize texCommandCache : IO.Ref (HashMap String String) ← do
+  let js ← Json.parseFile "data/texcmds.json"
+  let l := js.map $ fun j => (j[0]!.getStr!, j[1]!.getStr!)
+  IO.mkRef $ HashMap.ofList l.toList
+
+/-- Replaces the TeX sequences in a string with their 
+  corresponding Unicode characters using the `texcmds` list. -/
+def teXToUnicode (s : String) : IO String := do
+  match s.splitOn "\\" with
+  | [] => return s
+  | h :: ls =>  
+    let us ← ls.mapM $ fun l => do
+      match l.splitOn " " with
+      | [] => pure ""
+      | cmd :: ws =>
+        let s ← findUnicodeReplacement cmd
+        pure $ ws.foldl (· ++ " " ++ ·) s
+
+    return .join (h :: us)
+
+  where
+    findUnicodeReplacement (cmd : String) : IO String := do
+      if let .some u :=
+          (← texCommandCache.get).find? cmd then
+        pure u else
+        pure <| "\\" ++ cmd
 
 
-initialize texCommandCache : IO.Ref (HashMap String String) 
-  ← IO.mkRef (HashMap.empty)
+namespace List
 
-def teXCommands : MetaM (HashMap String String)  := do
-  let cache ← texCommandCache.get
-  if cache.isEmpty then 
-      let jsBlob ← 
-        IO.FS.readFile (System.mkFilePath ["data", "texcmds.json"])
-      let js ← readJson jsBlob
-      let jsArr := js.getArr?.toOption.get!
-      -- IO.println jsArr
-      -- let l? : Except String (List (String × String)) := fromJson? jsBlob
-      -- IO.println l?
-      let l := jsArr.map (fun js => 
-        let tex := js.getArrVal? 0 |>.toOption.get!.getStr?.toOption.get!
-        let unicode := 
-          js.getArrVal? 1 |>.toOption.get!.getStr?.toOption.get!
-        (tex, unicode)
-      )
-      -- let l := l?.toOption.getD []
-      let m := HashMap.ofList l.toList
-      texCommandCache.set m
-      return m
-  else return cache
+def alternate : List α → List α × List α
+  | [] => ([], [])
+  | a :: as =>
+    match alternate as with
+      | (odds, evens) => (a :: evens, odds)
 
-#check Json.obj
+def interleave : List α → List α → List α
+  | [], bs => bs
+  | as, [] => as
+  | a :: as, b :: bs =>
+    a :: b :: interleave as bs
 
--- placeholder for testing
--- def texCommands : HashMap String String := 
---       HashMap.ofList [("alpha", "α"), ("to", "→"), ("beta", "β")]
+theorem alternate_interleave : (l : List α) → 
+  let (odds, evens) := l.alternate
+  .interleave odds evens = l
+  | [] => rfl
+  | [a] => rfl
+  | a :: a' :: as => by
+    dsimp only [alternate, interleave]
+    congr
+    apply alternate_interleave
 
-partial def teXToUnicodeAux(s accum: String) : MetaM String := do
-  if s.isEmpty then pure accum
-  else
-  if s.startsWith "\\\\" then 
-      teXToUnicodeAux (s.drop 2) (accum ++ "\\\\")
-  else
-    if s.startsWith "\\" then
-    let cmd := s.drop 1 |>.takeWhile (fun c =>('A' ≤ c ∧ c ≤ 'Z') ∨ ('a' ≤ c ∧ c ≤ 'z')) 
-    let m ← teXCommands
-    match m.find? cmd with
-    | some u => teXToUnicodeAux (s.drop (cmd.length + 1)) (accum ++ u)
-    | none => teXToUnicodeAux (s.drop (cmd.length + 1)) (accum ++ "\\" ++ cmd)
-    else
-      let beforeSlash := s.takeWhile (fun c => c ≠ '\\')
-      teXToUnicodeAux (s.drop beforeSlash.length) (accum ++ beforeSlash)
+#eval [1, 2, 3, 4, 5, 6].alternate
 
-def teXToUnicode(s: String) : MetaM String := do 
-   teXToUnicodeAux (s.replace "$$" "`" |>.replace "$" "`") ""
+end List
 
-#eval "\\".length
+/-- Translates a string representing a TeX formula to the corresponding Lean code. -/
+def teXToLean (s : String) : IO String := do
+  -- a placeholder for actual code
+  return "`formula`" 
 
-#eval toJson ([("a", "b")])
+/-- Extracts the TeX formulas within `$` or `$$` in the given string,
+  translates them individually to Lean code, and then
+  replaces them back with `\`` (backticks).
+ -/
+def translateTeX : String → IO String :=
+  translateTeXAux "$$"
+    (translateTeXAux "$" 
+      pure 
+      teXToLean)
+    teXToLean
+  where
+    /-- Splits a string according to the delimiter.
+        The substrings in the odd positions are processed as text,
+        while those in the even positions are processed as formulas.
+    -/
+    translateTeXAux (teXDelimiter : String) 
+      (modText : String → IO String) 
+      (modFormula : String → IO String) :
+          String → IO String := fun s => do
+        let (text, formulas) := s.splitOn teXDelimiter |>.alternate
+        let text' ← text.mapM modText
+        let formulas' ← formulas.mapM modFormula
+        let s' := .interleave text' formulas'
+        return .join s'
