@@ -62,15 +62,67 @@ theorem alternate_interleave : (l : List α) →
 
 end List
 
+
+def openAIKey : IO (Option String) := IO.getEnv "OPENAI_API_KEY"
+
+/-- Query open-ai with given prompt and parameters -/
+-- this is delibrately different from the one in `Translate.lean`
+-- this is to keep everything at the `IO` level without disturbing the rest of the code
+def openAIQuery (prompt : String)
+  (n : Nat := 1)
+  (temp : JsonNumber := ⟨2, 1⟩)
+  (stopTokens : Array String :=  #[":=", "-/"]) : IO Json := do
+
+  let .some key ← openAIKey | panic! "OPENAI_API_KEY not set"
+  
+  let data := Json.mkObj [
+    ("model", "code-davinci-002"), 
+    ("prompt", prompt), 
+    ("temperature", Json.num temp), 
+    ("n", n), 
+    ("max_tokens", 150), 
+    ("stop", Json.arr <| stopTokens |>.map Json.str)
+    ] |>.pretty
+  
+  let out ←  IO.Process.output {
+        cmd:= "curl", 
+        args:= #["https://api.openai.com/v1/completions",
+        "-X", "POST",
+        "-H", "Authorization: Bearer " ++ key,
+        "-H", "Content-Type: application/json",
+        "--data", data]}
+  
+  IO.ofExcept $ Json.parse out.stdout
+
+def makePrompt (s : String) : IO String := do
+  let promptPrefix := "
+TeX: $a \\leq b \\leq c$
+Lean: `a ≤ b ∧ b ≤ c`
+
+TeX: $0, 1, 2, ..., 10$
+Lean: `List.range 11`
+
+TeX: $\\[0, 1\\]$
+Lean: `Set.Icc 0 1`
+
+TeX: $\\sum_{i=0}^1000 i^2$
+Lean: `Finset.sum (Finset.range 1001) (fun x => x^2)`"
+
+  return s!"{promptPrefix}\n\nTeX: ${s}$\n\nLean: `"
+
+#eval makePrompt "\\frac{1}{2}"
+
 /-- Translates a string representing a TeX formula to the corresponding Lean code. -/
 def teXToLean (s : String) : IO String := do
   -- a placeholder for actual code
-  return "`formula`" 
+  let prompt ← makePrompt s
+  let codexOutput ← openAIQuery prompt (stopTokens := #["$", "$$", "\\[", "\n"])
+  let translation := codexOutput["choices"]![0]!["text"]!.getStr!
+  return s!"`{translation}" 
 
 /-- Extracts the TeX formulas within `$` or `$$` in the given string,
   translates them individually to Lean code, and then
-  replaces them back with `\`` (backticks).
- -/
+  replaces them back with `\`` (backticks). -/
 def translateTeX : String → IO String :=
   translateTeXAux "$$"
     (translateTeXAux "$" 
@@ -80,8 +132,7 @@ def translateTeX : String → IO String :=
   where
     /-- Splits a string according to the delimiter.
         The substrings in the odd positions are processed as text,
-        while those in the even positions are processed as formulas.
-    -/
+        while those in the even positions are processed as formulas. -/
     translateTeXAux (teXDelimiter : String) 
       (modText : String → IO String) 
       (modFormula : String → IO String) :
