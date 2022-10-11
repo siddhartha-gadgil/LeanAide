@@ -1,10 +1,11 @@
 import $ivy.`com.lihaoyi::upickle:1.6.0`
 import $ivy.`com.lihaoyi::os-lib:0.8.0`
 import scala.util.matching.Regex
+import scala.util._
 
 val regex = "\ue000([^\ue001]*)\ue001([^\ue002]*)\ue002".r
 
-def clean(s: String): String = regex.replaceAllIn(s, _.group(2))
+def clean(s: String): String = Try(regex.replaceAllIn(s, _.group(2))).getOrElse(s)
 
 import ujson._
 val filename = "decls200.json"
