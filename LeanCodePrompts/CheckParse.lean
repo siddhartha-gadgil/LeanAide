@@ -109,7 +109,7 @@ def checkThm (s : String) : MetaM Bool := do
   let chk := Lean.Parser.runParserCategory env `thmStat  s
   match chk with
   | Except.ok stx  =>
-      IO.println stx 
+      IO.println stx.reprint 
       pure true
   | Except.error _  => pure false
 
