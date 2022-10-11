@@ -48,6 +48,50 @@ theorem {thm} :=
 theorem "
 
 
+/-- extract prompt pairs from JSON response to local server -/
+def sentenceSimTriples(s: String) : MetaM  <| Except String (Array (String × String × String)) := do
+  let json ← readJson (s) 
+  -- logInfo "obtained json"
+  match json.getArr? with
+  | Except.ok jsonArr => do
+    let pairs ←  jsonArr.mapM fun json => do
+      let docstring : String ←  
+        match (json.getObjVal? "doc_string") with
+        | Except.error e => throwError s!"Error {e} while getting doc_string"
+        | Except.ok js => 
+          match js.getStr? with
+          | Except.error e => throwError s!"Error {e} while processing {js} as string"  
+          | Except.ok s => pure s
+      let thm ←  match (json.getObjVal? "theorem") with
+        | Except.error e => throwError s!"Error {e} while getting theorem"
+        | Except.ok js => 
+          match js.getStr? with
+          | Except.error e => throwError s!"Error {e} while processing {js} as string"  
+          | Except.ok s => pure s
+      let kind ←  match (json.getObjVal? "kind") with
+        | Except.error e => throwError s!"Error {e} while getting kind"
+        | Except.ok js => 
+          match js.getStr? with
+          | Except.error e => throwError s!"Error {e} while processing {js} as string"  
+          | Except.ok s => pure s
+      return (docstring, thm, kind)
+    return Except.ok pairs
+  | Except.error e => return Except.error e
+
+-- #eval sentenceSimPairs egSen
+
+/-- make prompt from prompt pairs -/
+def makePromptFromTriple(prompt : String)(triples: Array (String × String × String))(targetKind: String := "theorem") : String := 
+      triples.foldr (fun  (ds, thm, kind) acc => 
+        -- acc ++ "/-- " ++ ds ++" -/\ntheorem" ++ thm ++ "\n" ++ "\n"
+s!"/-- {ds} -/
+{kind} {thm} :=
+
+{acc}"
+          ) s!"/-- {prompt} -/
+{targetKind} "
+
+
 /-- make prompt for reverse translation from prompt pairs -/
 def makeFlipPrompt(statement : String)(pairs: Array (String × String)) : String := 
       pairs.foldr (fun  (ds, thm) acc => 
