@@ -42,3 +42,9 @@ def runParserPartial  (parser : Parser) (input : String) (fileName := "<input>")
 #eval runParserPartial ident "x y z 3"
 
 #eval runParserCategoryPartial `tactic "repeat (simp [x, Nat]; skip)  1 + 2  3"
+
+open Command
+
+#eval runParserPartial «variable» "variable (x : Nat) [h: Group x] and something else"
+
+variable (x : Nat)
