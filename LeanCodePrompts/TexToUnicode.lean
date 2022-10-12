@@ -7,9 +7,12 @@ import LeanCodePrompts.Utils
 open Std Lean
 
 initialize texCommandCache : IO.Ref (HashMap String String) ← do
-  let js ← Json.parseFile "data/texcmds.json"
-  let l := js.map $ fun j => (j[0]!.getStr!, j[1]!.getStr!)
-  IO.mkRef $ HashMap.ofList l.toList
+  -- IO.println "Initialising TeX Command cache..."
+  -- let js ← Json.parseFile "data/texcmds.json"
+  -- let l := js.map $ fun j => (j[0]!.getStr!, j[1]!.getStr!)
+  let .obj js ← IO.ofExcept $ Json.parse $ ← IO.FS.readFile "data/full-tex.json" | panic! "Invalid JSON format"
+  let l : List (String × String) := js.fold (λ as s j => (s, j.getStr!) :: as) []
+  IO.mkRef $ HashMap.ofList l
 
 /-- Replaces the TeX sequences in a string with their 
   corresponding Unicode characters using the `texcmds` list. -/
@@ -108,17 +111,23 @@ Lean: `Set.Icc 0 1`
 TeX: $\\sum_{i=0}^1000 i^2$
 Lean: `Finset.sum (Finset.range 1001) (fun x => x^2)`"
 
-  return s!"{promptPrefix}\n\nTeX: ${s}$\n\nLean: `"
+  return s!"{promptPrefix}\n\nTeX: ${s}$\nLean: `"
 
-#eval makePrompt "\\frac{1}{2}"
+#eval do IO.println $ ← makePrompt "\\frac{1}{2}"
 
 /-- Translates a string representing a TeX formula to the corresponding Lean code. -/
 def teXToLean (s : String) : IO String := do
-  -- a placeholder for actual code
-  let prompt ← makePrompt s
-  let codexOutput ← openAIQuery prompt (stopTokens := #["$", "$$", "\\[", "\n"])
-  let translation := codexOutput["choices"]![0]!["text"]!.getStr!
-  return s!"`{translation}" 
+  let t ← teXToUnicode s
+  -- needs a better heuristic for triggering Codex-based translation
+  if t.contains '\\' then
+    IO.println s!"Translating with Codex: {t}"
+    let prompt ← makePrompt s
+    let codexOutput ← openAIQuery prompt (stopTokens := #["$", "$$", "\\[", "\n"])
+    let translation := codexOutput["choices"]![0]!["text"]!.getStr!
+    return s!"`{translation}"
+  else
+    IO.println s!"Translated via Unicode mapping: {t}"
+    return s!"`{t}`" 
 
 /-- Extracts the TeX formulas within `$` or `$$` in the given string,
   translates them individually to Lean code, and then
