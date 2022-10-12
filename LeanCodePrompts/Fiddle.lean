@@ -86,3 +86,21 @@ match ← runParserCategoryPartial `hellotac s with
 | Except.error msg => throwError msg
 
 #eval parsePieces "theorem blah : Nat := by let x : N := 2 := 3 ; simp"
+
+#check IO.FS.readFile
+
+#eval (searchPathRef.get : IO _)
+
+def oleanFiles : IO (Array System.FilePath) := do 
+  let paths ← searchPathRef.get
+  IO.println paths
+  Lean.SearchPath.findAllWithExt paths "olean"
+
+#eval oleanFiles
+
+#check System.mkFilePath ["."]
+
+def leanFiles : IO (Array System.FilePath) := do 
+  Lean.SearchPath.findAllWithExt [System.mkFilePath ["./LeanCodePrompts"]] "lean"
+
+#eval leanFiles
