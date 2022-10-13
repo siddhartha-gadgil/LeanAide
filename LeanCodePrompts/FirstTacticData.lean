@@ -23,6 +23,7 @@ def partialParser  (parser : Parser) (input : String) (fileName := "<input>") : 
   if stack.isEmpty &&  s.hasError then
     return    none
   else 
+    IO.println s!"errors: {s.errorMsg}"
     let head := input.extract 0 s.pos
     let stx := stack.back
     return some (stx, head, input.drop head.length)
@@ -39,19 +40,65 @@ declare_syntax_cat theoremAndTactic
 syntax 
   defHead ident (argument)* ":" term ":=" "by" tactic : theoremAndTactic
 
+def ml := "theorem blah : Nat := by 
+simp
+decide
+skip"
+
+def runParserCategoryPartial  (catName : Name) (input : String) (fileName := "<input>") : MetaM <| Except String Syntax := do
+  let env ← getEnv
+  let c := mkParserContext (mkInputContext input fileName) { env := env, options := {} }
+  let s := mkParserState input
+  let s := whitespace c s
+  let parser := categoryParser catName 0
+  let parserFn := parser.fn
+  let s : ParserState := parserFn c s
+  let stack := s.stxStack.filter fun s => !s.hasMissing
+  -- let s := categoryParserFnImpl catName c s
+  if stack.isEmpty &&  s.hasError then
+    return    Except.error (s.toErrorMsg c)
+  else 
+    IO.println <| input.extract 0 s.pos
+    return Except.ok stack.back
+
+#eval runParserCategoryPartial `theoremAndTactic ml
+
 def egThm1 := "theorem egIsAction: ∀ (x y: Fin 2), 
   (egAction' x) ∘ (egAction' y) = egAction' (x + y) := by 
     decide
     skip"
 
-def tacEg := "
-  apply f 
-  skip
-  decide"
+def tacEg := 
+"apply f
+skip
+decide"
+
+def mlParse : MetaM <| Except String String := do
+  return runParserCategory (← getEnv) `tactic tacEg |>.map 
+    fun s => s.reprint.get!
+
+#eval mlParse
 
 #eval partialParser (categoryParser `tactic 0) tacEg
 
-#eval partialParser (categoryParser `theoremAndTactics 0) egThm1
+#eval partialParser (categoryParser `theoremAndTactic 0) egThm1
+
+def egThm2 := "theorem unique_morphism_nat (f g : ℤ → A)[AddCommGroup.Homomorphism f]
+        [AddCommGroup.Homomorphism g]: 
+          f 1 = g 1  → ∀ n: ℕ, f (n + 1) = g (n + 1) := by
+          intro hyp
+          decide
+          intro n
+          induction n with
+          | zero =>
+            simp [hyp]            
+          | succ k ih => 
+            simp [hyp] at *
+            assumption"
+
+#eval partialParser (categoryParser `theoremAndTactic 0) egThm2
+
+#eval partialParser (categoryParser `theoremAndTactic 0) ml
 
 def getTactics (s : TSyntax ``tacticSeq) : Array Syntax :=
   match s with

@@ -73,6 +73,12 @@ lemma "
 
 #eval runParserCategoryPartial `hellotac "theorem blah : Nat := by let x : N := 2 := 3 ; simp"
 
+def ml := "theorem blah : Nat := by 
+let x : N := 2 := 3
+simp"
+
+#eval runParserCategoryPartial `hellotac ml
+
 def getName (stx: Syntax) : MetaM Name := do
 match stx with
 | `(hellotac|theorem $name:ident : $_:term := by $_) => pure name.getId
