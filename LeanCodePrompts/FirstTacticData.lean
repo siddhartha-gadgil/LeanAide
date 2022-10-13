@@ -23,7 +23,7 @@ def partialParser  (parser : Parser) (input : String) (fileName := "<input>") : 
   if stack.isEmpty &&  s.hasError then
     return    none
   else 
-    IO.println s!"errors: {s.errorMsg}"
+    -- IO.println s!"errors: {s.errorMsg}"
     let head := input.extract 0 s.pos
     let stx := stack.back
     return some (stx, head, input.drop head.length)
@@ -38,13 +38,14 @@ syntax "instance" : defHead
 declare_syntax_cat theoremAndTactic
 
 syntax 
-  defHead ident (argument)* ":" term ":=" "by" tactic : theoremAndTactic
+  defHead ident (argument)* ":" term ":=" "by" tacticSeq : theoremAndTactic
 
 def ml := "theorem blah : Nat := by 
 simp
 decide
 skip"
 
+-- for testing
 def runParserCategoryPartial  (catName : Name) (input : String) (fileName := "<input>") : MetaM <| Except String Syntax := do
   let env ← getEnv
   let c := mkParserContext (mkInputContext input fileName) { env := env, options := {} }
@@ -126,32 +127,47 @@ structure TheoremAndTactic where
   firstTactic : String
 deriving Repr
 
-def parseTheoremAndTactic! (input : Syntax) : 
+def getTheoremAndTactic! (input : Syntax) : 
       MetaM TheoremAndTactic := do
     match input with
-    | `(theoremAndTactic|$kind:defHead $name $args : $type := by $tac:tactic) =>
-        let tac ← contractInductionStx (tac)
-        return ⟨kind.raw.reprint.getD "", name.raw.reprint.getD "", args.raw.reprint.getD "", type.raw.reprint.getD "", tac.reprint.getD ""⟩ 
+    | `(theoremAndTactic|$kind:defHead $name:ident $args:argument* : $type := by $tac:tacticSeq) =>
+        let seq := getTactics tac
+        let tac ← contractInductionStx (seq[0]!)
+        let argString := 
+          (args.map fun a => a.raw.reprint.get!).foldl (fun a b => a ++ " " ++ b) ""
+        let argString := argString.replace "\n" " " |>.trim
+        return ⟨kind.raw.reprint.get!.trim, name.raw.reprint.get!.trim,
+        argString, type.raw.reprint.get!.trim, tac.reprint.get!.trim⟩ 
     | _ =>
       IO.println s!"could not parse theorem ${input.reprint}"
       throwUnsupportedSyntax
+
+def parseTheoremAndTactic! (input: String) : MetaM TheoremAndTactic := do
+  match ← partialParser (categoryParser `theoremAndTactic 0) input with
+  | some (stx, _, _) => 
+      getTheoremAndTactic! stx
+  | none => 
+    IO.println s!"could not parse theorem ${input}"
+    throwUnsupportedSyntax
+
+#eval parseTheoremAndTactic! egThm2
 
 partial def getTheoremsTacticsAux (text: String) (vars : Array String)
                         (accum : Array TheoremAndTactic) : MetaM (Array TheoremAndTactic) := do
   if text.isEmpty then 
       return accum
   else
-      match (← partialParser (categoryParser `theoremAndTactics 0) text) with
+      match (← partialParser (categoryParser `theoremAndTactic 0) text) with
       | none => getTheoremsTacticsAux (text.drop 1) vars accum
-      | some (stx, head, tail) => 
+      | some (stx, _, tail) => 
           -- IO.println head
-          IO.println s!"parsing"
+          -- IO.println s!"parsing"
           -- IO.println tail
-          try 
-            let entry ← parseTheoremAndTactic! stx
-            IO.println s!"entry: {entry.firstTactic}"
-          catch err => IO.println s!"error: {← err.toMessageData.format}"
-          getTheoremsTacticsAux tail vars (accum)
+          -- try 
+          let entry ← getTheoremAndTactic! stx
+            -- IO.println s!"entry: {entry.firstTactic}"
+          -- catch err => IO.println s!"error: {← err.toMessageData.format}"
+          getTheoremsTacticsAux tail vars (accum.push entry)
 
 def n : Nat := Nat.add 
           3 4
