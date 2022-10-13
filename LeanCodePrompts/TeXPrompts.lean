@@ -12,6 +12,7 @@ def teXPrompts := #[
   ("\\left|exp^{a\\left(e^{z}+e^{-z}\right)}\\right| \\le e^{a\\cos b \\exp^{|re z|}}", "abs (exp (a * (exp z + exp (-z)))) ≤ real.exp (a * real.cos b * real.exp (|z.re|))"),
   ("d + 1) (1 + y)^d - (d + 1)y^d = \\sum_{i = 0}^d {d + 1 \\choose i} \\cdot i \\cdot y^{i - 1}", "eval (1 + y) (monomial d (d + 1 : S)) - eval y (monomial d (d + 1 : S)) =
   ∑ (i : ℕ) in range (d + 1), ↑((d + 1).choose i) * (↑i * y ^ (i - 1))"),
-  ("\\left| ab(a^2 - b^2) + bc(b^2 - c^2) + ca(c^2 - a^2) \\right|
-≤ M (a^2 + b^2 + c^2)^2", "|a * b * (a^2 - b^2) + b * c * (b^2 - c^2) + c * a * (c^2 - a^2)| ≤ M * (a^2 + b^2 + c^2)^2)")
+  ("\\left| ab(a^2 - b^2) + bc(b^2 - c^2) + ca(c^2 - a^2) \\right| ≤ M (a^2 + b^2 + c^2)^2", "|a * b * (a^2 - b^2) + b * c * (b^2 - c^2) + c * a * (c^2 - a^2)| ≤ M * (a^2 + b^2 + c^2)^2)"),
+  ("\\sum_{k=-10}^{10} k^2", "∑ (i : ℤ) in  (finset.Icc (-10) 10), i^2"),
+  ("$\\sum_{i=0}^1000 i^2$", "finset.sum (finset.range 1001) (λ i, i^2)")
 ]
