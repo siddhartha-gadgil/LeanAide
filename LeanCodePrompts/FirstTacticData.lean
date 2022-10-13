@@ -81,6 +81,8 @@ def mlParse : MetaM <| Except String String := do
 
 #eval partialParser (categoryParser `tactic 0) tacEg
 
+#eval partialParser tacticSeq tacEg
+
 #eval partialParser (categoryParser `theoremAndTactic 0) egThm1
 
 def egThm2 := "theorem unique_morphism_nat (f g : ℤ → A)[AddCommGroup.Homomorphism f]
@@ -100,11 +102,21 @@ def egThm2 := "theorem unique_morphism_nat (f g : ℤ → A)[AddCommGroup.Homomo
 
 #eval partialParser (categoryParser `theoremAndTactic 0) ml
 
-def getTactics (s : TSyntax ``tacticSeq) : Array Syntax :=
+def getTactics (s : Syntax) : Array Syntax :=
   match s with
   | `(tacticSeq| { $[$t:tactic $[;]?]* }) => t
   | `(tacticSeq| $[$t:tactic $[;]?]*) => t
   | _ => #[]
+
+def parseTactics (s: String) : MetaM <| Array Syntax := do
+  match ← partialParser tacticSeq s with
+  | some (stx, _, _) => 
+    let seq := getTactics stx
+    IO.println seq[0]!.reprint.get!
+    return seq
+  | none => return #[]
+
+#eval parseTactics tacEg
 
 structure TheoremAndTactic where
   kind: String
@@ -140,3 +152,7 @@ partial def getTheoremsTacticsAux (text: String) (vars : Array String)
             IO.println s!"entry: {entry.firstTactic}"
           catch err => IO.println s!"error: {← err.toMessageData.format}"
           getTheoremsTacticsAux tail vars (accum)
+
+def n : Nat := Nat.add 
+          3 4
+        
