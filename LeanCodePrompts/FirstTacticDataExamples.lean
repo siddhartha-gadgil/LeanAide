@@ -1,5 +1,5 @@
 import LeanCodePrompts.FirstTacticData
-open Lean Parser
+open Lean Parser Tactic
 
 -- for testing
 partial def allTheoremSyntaxes (text: String) 
@@ -422,3 +422,45 @@ end Z3
 #eval allTheoremSyntaxes egFile #[]
 
 #eval getTheoremsTacticsAux egFile #[] #[]
+
+-- Extra example during debugging
+
+def tacEg := 
+"apply f
+skip
+decide"
+
+def mlParse : MetaM <| Except String String := do
+  return runParserCategory (← getEnv) `tactic tacEg |>.map 
+    fun s => s.reprint.get!
+
+#eval mlParse
+
+#eval partialParser (categoryParser `tactic 0) tacEg
+
+#eval partialParser tacticSeq tacEg
+
+#eval partialParser (categoryParser `theoremAndTactic 0) egThm1
+
+def egThm2 := "theorem unique_morphism_nat (f g : ℤ → A)[AddCommGroup.Homomorphism f]
+        [AddCommGroup.Homomorphism g]: 
+          f 1 = g 1  → ∀ n: ℕ, f (n + 1) = g (n + 1) := by
+          intro hyp
+          decide
+          intro n
+          induction n with
+          | zero =>
+            simp [hyp]            
+          | succ k ih => 
+            simp [hyp] at *
+            assumption"
+
+#eval partialParser (categoryParser `theoremAndTactic 0) egThm2
+
+#eval partialParser (categoryParser `theoremAndTactic 0) ml
+
+#eval parseTactics tacEg
+
+#eval parseTheoremAndTactic! egThm2
+
+
