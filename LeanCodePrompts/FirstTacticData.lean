@@ -140,11 +140,30 @@ partial def getTheoremsTacticsAux (text: String) (vars : Array String)
 def getTheoremsTactics (text: String) : MetaM (Array TheoremAndTactic) := do
   getTheoremsTacticsAux text #[""] #[]
 
+def exprPieces (e: Expr) : Array Expr :=
+  match e with
+  | Expr.forallE _ d b _ => exprPieces d ++ exprPieces b
+  | Expr.lam _ d b _ => exprPieces d ++ exprPieces b
+  | Expr.mdata _ b  => exprPieces b
+  | Expr.letE _ t v b _ => exprPieces t ++ exprPieces v ++ exprPieces b
+  | Expr.app f a .. => exprPieces f ++ exprPieces a
+  | Expr.proj _ _ e .. => exprPieces e
+  | Expr.sort _ => #[]
+  | Expr.const .. => #[]
+  -- | Expr.mvar .. => #[e]
+  | Expr.fvar .. => #[e]
+  | _ => #[]
+
+
 def getTacticString : TacticM String := do
-  let e ← getMainTarget
+  let target ← getMainTarget
+  logInfo <| exprPieces target
   let lctx ←  getLCtx
   let mctx ← getMCtx
-  let userNames := mctx.userNames
+  logInfo m!"{mctx.decls.size}"
+  -- for (id, d) in mctx.decls do
+  --   logInfo m!"mvar: {id.name}"
+  --   -- logInfo m!"mvar-name:{d.userName}"
   let decls := lctx.decls
   let mut statement := ""
   for decl in decls do
@@ -165,11 +184,12 @@ def getTacticString : TacticM String := do
       statement := statement ++ argString ++ " " 
       pure ()
     | none => pure ()
-  statement := statement ++ ": " ++ (←  e.view)
+  statement := statement ++ ": " ++ (←  target.view)
   return statement
 
 
-elab "show_goal" : tactic => do  
+elab "show_goal" : tactic => 
+  withMainContext do  
     let view ← getTacticString
     logInfo view
     return ()
@@ -178,7 +198,10 @@ def silly {α  : Type}(n m : ℕ)[DecidableEq α] : n + m = n +m := by
     show_goal
     rfl
 
-def silly' {α  : Type}: (n m : ℕ) → [DecidableEq α] →  n + m = n +m := by
+
+def silly' : (n m : ℕ)  →  n + m = n +m := by
     intros
-    show_goal -- works badly
+    show_goal  
     rfl
+
+#check MVarId.name
