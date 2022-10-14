@@ -140,38 +140,18 @@ partial def getTheoremsTacticsAux (text: String) (vars : Array String)
 def getTheoremsTactics (text: String) : MetaM (Array TheoremAndTactic) := do
   getTheoremsTacticsAux text #[""] #[]
 
-def exprPieces (e: Expr) : Array Expr :=
-  match e with
-  | Expr.forallE _ d b _ => exprPieces d ++ exprPieces b
-  | Expr.lam _ d b _ => exprPieces d ++ exprPieces b
-  | Expr.mdata _ b  => exprPieces b
-  | Expr.letE _ t v b _ => exprPieces t ++ exprPieces v ++ exprPieces b
-  | Expr.app f a .. => exprPieces f ++ exprPieces a
-  | Expr.proj _ _ e .. => exprPieces e
-  | Expr.sort _ => #[]
-  | Expr.const .. => #[]
-  -- | Expr.mvar .. => #[e]
-  | Expr.fvar .. => #[e]
-  | _ => #[]
-
-
 def getTacticString : TacticM String := do
   let target ← getMainTarget
-  logInfo <| exprPieces target
   let lctx ←  getLCtx
-  let mctx ← getMCtx
-  logInfo m!"{mctx.decls.size}"
-  -- for (id, d) in mctx.decls do
-  --   logInfo m!"mvar: {id.name}"
-  --   -- logInfo m!"mvar-name:{d.userName}"
   let decls := lctx.decls
   let mut statement := ""
   for decl in decls do
     match decl with
-    | some <| LocalDecl.ldecl .. => 
-        pure ()
+    | some <| LocalDecl.ldecl _ _ n t .. => 
+      statement := statement ++ s!"({n.eraseMacroScopes} : {← t.view}) "
+      pure ()
     | some <| LocalDecl.cdecl _ _ n t bi => do
-      let core := s!"{n} : {← t.view}"
+      let core := s!"{n.eraseMacroScopes} : {← t.view}"
       let typeString :=s!"{← t.view}"
       let argString := match bi with
       | BinderInfo.implicit => "{"++ core ++ "}"
@@ -185,7 +165,7 @@ def getTacticString : TacticM String := do
       pure ()
     | none => pure ()
   statement := statement ++ ": " ++ (←  target.view)
-  return statement
+  return statement.replace "✝" ""
 
 
 elab "show_goal" : tactic => 
@@ -195,6 +175,7 @@ elab "show_goal" : tactic =>
     return ()
 
 def silly {α  : Type}(n m : ℕ)[DecidableEq α] : n + m = n +m := by 
+    let a  := n
     show_goal
     rfl
 
@@ -204,4 +185,3 @@ def silly' : (n m : ℕ)  →  n + m = n +m := by
     show_goal  
     rfl
 
-#check MVarId.name
