@@ -3,6 +3,7 @@ import Lean.Data.Json.Basic
 import Lean.Data.Json.FromToJson
 import LeanCodePrompts.ParseJson
 import LeanCodePrompts.Utils
+import LeanCodePrompts.TeXPrompts
 
 open Std Lean
 
@@ -19,14 +20,14 @@ initialize texCommandCache : IO.Ref (HashMap String String) ← do
 def teXToUnicode (s : String) : IO String := do
   match s.splitOn "\\" with
   | [] => return s
-  | h :: ls =>  
-    let us ← ls.mapM $ fun l => do
-      match l.splitOn " " with
-      | [] => pure ""
-      | cmd :: ws =>
-        let s ← findUnicodeReplacement cmd
-        pure $ ws.foldl (· ++ " " ++ ·) s
-
+  | h :: ls =>
+    -- filtering instances of `\\\\`
+    let ls' := ls.filter (· != "")
+    let us ← ls'.mapM $ fun l => do
+      let cmd := l.takeWhile (· ∉ teXDelimiters)
+      let s ← findUnicodeReplacement cmd
+      pure $ s ++ l.dropWhile (· ∉ teXDelimiters)
+    
     return .join (h :: us)
 
   where
@@ -35,6 +36,8 @@ def teXToUnicode (s : String) : IO String := do
           (← texCommandCache.get).find? cmd then
         pure u else
         pure <| "\\" ++ cmd
+
+    teXDelimiters := [' ', '_', '^', '{', '}', '[', ']', '(', ')']
 
 
 namespace List
@@ -97,23 +100,14 @@ def openAIQuery (prompt : String)
   
   IO.ofExcept $ Json.parse out.stdout
 
-def makePrompt (s : String) : IO String := do
-  let promptPrefix := "
-TeX: $a \\leq b \\leq c$
-Lean: `a ≤ b ∧ b ≤ c`
+def makePrompt (formula : String) : IO String := do
 
-TeX: $0, 1, 2, ..., 10$
-Lean: `List.range 11`
+  let teXPromptsProcessed ← teXPrompts.mapM $ λ (teXFormula, leanFormula) => do
+        return s!"TeX: ${← teXToUnicode teXFormula}$\nLean: `{leanFormula}`\n\n"
 
-TeX: $\\[0, 1\\]$
-Lean: `Set.Icc 0 1`
+  let promptPrefix := String.join teXPromptsProcessed.toList 
 
-TeX: $\\sum_{i=0}^1000 i^2$
-Lean: `Finset.sum (Finset.range 1001) (fun x => x^2)`"
-
-  return s!"{promptPrefix}\n\nTeX: ${s}$\nLean: `"
-
-#eval do IO.println $ ← makePrompt "\\frac{1}{2}"
+  return s!"{promptPrefix}TeX: ${formula}$\nLean: `"
 
 /-- Translates a string representing a TeX formula to the corresponding Lean code. -/
 def teXToLean (s : String) : IO String := do
@@ -124,7 +118,7 @@ def teXToLean (s : String) : IO String := do
     let prompt ← makePrompt s
     let codexOutput ← openAIQuery prompt (stopTokens := #["$", "$$", "\\[", "\n"])
     let translation := codexOutput["choices"]![0]!["text"]!.getStr!
-    return s!"`{translation}"
+    return s!"`{translation}`"
   else
     IO.println s!"Translated via Unicode mapping: {t}"
     return s!"`{t}`" 
@@ -135,7 +129,9 @@ def teXToLean (s : String) : IO String := do
 def translateTeX : String → IO String :=
   translateTeXAux "$$"
     (translateTeXAux "$" 
-      pure 
+      (translateTeXAux "`"
+          pure
+          pure)
       teXToLean)
     teXToLean
   where
