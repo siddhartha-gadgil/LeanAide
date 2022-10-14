@@ -15,6 +15,8 @@ def egTeX := "A formula is $\\alpha \\to \\beta := \\unknown$"
 -- #eval translateTeX egTeX''
 #eval teXToUnicode "\\pi"
 
-def baselProblem := "The sum of the infinite series $$∑_{n=1}^\\infty \\frac{1}{n^2}$$ is $(\\pi ^ 2)/6$, which is approximately $1.644934$."
+def baselProblem := "The infinite series $$\\sum_{n=1}^\\infty \\frac{1}{n^2}$$ is $(\\pi ^ 2)/6$, which is approximately $1.644934$."
 
 #eval translateTeX baselProblem
+
+#eval do IO.println $ ← makePrompt "\\frac{1}{2}"

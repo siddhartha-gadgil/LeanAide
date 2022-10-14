@@ -7,6 +7,7 @@ import Lean.Parser.Extension
 open Lean Meta Std Elab Parser Tactic
 
 def Lean.Expr.view (expr: Expr) : MetaM String := do
+  let expr ← instantiateMVars expr
   let fmt ← PrettyPrinter.ppExpr expr
   return fmt.pretty
 

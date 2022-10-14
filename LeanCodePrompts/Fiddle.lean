@@ -60,7 +60,24 @@ syntax "lemma" : defhead
 
 syntax defhead ident ":" term ":=" "by" tactic : hellotac
 
+declare_syntax_cat sectionHead
+
+syntax "section" (colGt ident)? : sectionHead
+
+#eval runParserCategoryPartial `sectionHead "section blah"
+
+def multiline := "section
+lemma "
+
+#eval runParserCategoryPartial `sectionHead multiline
+
 #eval runParserCategoryPartial `hellotac "theorem blah : Nat := by let x : N := 2 := 3 ; simp"
+
+def ml := "theorem blah : Nat := by 
+let x : N := 2 := 3
+simp"
+
+#eval runParserCategoryPartial `hellotac ml
 
 def getName (stx: Syntax) : MetaM Name := do
 match stx with
@@ -86,3 +103,61 @@ match ← runParserCategoryPartial `hellotac s with
 | Except.error msg => throwError msg
 
 #eval parsePieces "theorem blah : Nat := by let x : N := 2 := 3 ; simp"
+
+#check IO.FS.readFile
+
+#eval (searchPathRef.get : IO _)
+
+def oleanFiles : IO (Array System.FilePath) := do 
+  let paths ← searchPathRef.get
+  IO.println paths
+  Lean.SearchPath.findAllWithExt paths "olean"
+
+#eval oleanFiles
+
+#check System.mkFilePath ["."]
+
+def leanFiles : IO (Array System.FilePath) := do 
+  Lean.SearchPath.findAllWithExt [System.mkFilePath ["./LeanCodePrompts"]] "lean"
+
+#eval leanFiles
+
+def inducEg := "induction m with
+    | zero =>
+      simp [zhom]
+    | succ k ih =>
+      simp [zhom]
+      simp [zhom] at ih
+      rw [← add_assoc]
+      simp
+      simp
+      let l₂ := gsmul_succ (n + k) x
+      simp at l₂
+      rw [l₂] 
+      rw [ih]
+      simp
+      conv =>
+        lhs
+        rw [← add_assoc]
+        arg 1
+        rw [add_comm]
+      rw [← add_assoc]"
+
+#eval runParserCategoryPartial `tactic inducEg
+
+def contractInductionStx (induction : Syntax) : MetaM Syntax := do
+match induction with
+| `(tactic| induction $name $_:inductionAlts) => 
+  `(tactic| induction $name)
+| `(tactic| cases $name $_:inductionAlts) => 
+  `(tactic| cases $name)
+| _ => return induction
+
+def contractInduction (s: String) : MetaM String := do
+match ← runParserCategoryPartial `tactic s with
+| Except.ok stx => do
+    let stx ←  contractInductionStx stx 
+    pure stx.reprint.get!
+| Except.error _ => pure s
+
+#eval contractInduction inducEg
