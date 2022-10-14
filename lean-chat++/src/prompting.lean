@@ -1,3 +1,6 @@
+import tactic
+import system.io
+
 meta def few_shot_prompt : string := "Natural language version: \"If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.\" Translate the natural language version to a Lean mathlib version:
 theorem abs_sum_leq_sum_abs (n : ℕ) (f : ℕ → ℂ) :
   abs (∑ i in finset.range n, f i) ≤ ∑ i in finset.range n, abs (f i) :=
@@ -22,3 +25,15 @@ few_shot_prompt ++ "\n\nNatural language version: \"" ++ nl ++ "\" Translate the
 meta def example_nl := "Let $a,b\\in G$, Show that $ab$ and $ba$ have the same order."
 
 meta def example_prompt := prompt_of_nl_statement example_nl few_shot_prompt
+
+meta def cmd_of_json_sim (s : string) : io io.process.spawn_args :=
+return {
+  cmd := "curl", 
+  args := ["-X", "POST", "-H", "Content-type: application/json", "-d", s ++ " top_K " ++ "15", "localhost:5000/process_json"]}
+
+
+meta def sim_prompt : string → io string :=
+λ s, do {
+proc_cmds ← cmd_of_json_sim s, 
+io.cmd proc_cmds
+}

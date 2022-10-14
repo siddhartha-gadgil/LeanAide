@@ -1,6 +1,7 @@
 import system.io
 import query_api
 import parse
+--import prompting
 
 open widget tactic
 section json
@@ -48,6 +49,7 @@ meta def run_except {α} : except string α → io α
 @[derive inhabited]
 meta structure bubble :=
   (body : string) -- [todo] add formatting etc
+  (prompt : string)
   (user : string)
 
 meta def chat_props := unit
@@ -71,13 +73,17 @@ meta def get_response : chat_state → io string
       | tail := (string.intercalate "\n" $  list.map bubble.body $ list.tail $ list.reverse $ bubbles) ++ " Try again:\ntheorem"
         -- want this python command: "\n".join([x.body for x in state.bubbles].reverse[1:])
       end,
-    let prompt := prompt_of_nl_statement statement few_shot_prompt ++ rest_of_context,
-    --io.put_str_ln (prompt ++ "<endoftext>"),
-    return_json ← get_completion_of_request {prompt:=prompt},
+    prompt ← sim_prompt statement,
+    let main_prompt := prompt ++ rest_of_context,
+    --let prompt := prompt_of_nl_statement statement few_shot_prompt ++ rest_of_context,
+    --let prompt := sim_prompt statement ++ rest_of_context,
+    --io.put_str_ln (prompt),
+    return_json ← get_completion_of_request {prompt:=main_prompt},
     (some maybe_return_parsed) ← pure (json.parse return_json) | io.fail "not json",
     t : string ← run_except $ text_of_return_json maybe_return_parsed,
     return (t ++ " :=")
   }
+
 
 /-- Use when testing formatting etc to avoid having to call api. -/
 meta def get_response_dummy : chat_state → io string
@@ -96,6 +102,13 @@ match (cast undefined m : unit → sum α io.error) () with
 | sum.inr err := except.error err
 end
 
+meta def ret_prompt (statement : string) : string :=
+ match unsafe_perform_io (sim_prompt statement) with
+ | except.ok a := a
+ | except.error e := "error"
+ end
+
+
 meta def unsafe_get_response (input : chat_state) : string :=
   match unsafe_perform_io (get_response input) with
   | except.ok a := a
@@ -110,13 +123,16 @@ meta inductive chat_action
   | copy_to_script (s : string)
   | clear
 
-meta def code_content (code : string) : html chat_action :=
+meta def code_content (code prompt : string) : html chat_action :=
   h "div" [] [
     h "code" [className "font-code", attr.style [("white-space", "break-spaces")]] [
       code
     ],
     h "div" [] [
       button "paste" (chat_action.copy_to_script ("theorem " ++ code))
+    ],
+    h "div" [] [
+      button "prompts" (chat_action.copy_to_script ("/--Example prompts shown to Codex\n" ++ prompt ++ "\n-/\n"))
     ]
   ]
 
@@ -147,7 +163,7 @@ meta def chat_view (props : chat_props) (state : chat_state) : list (html chat_a
         h "div" [className "pa2 ma2 bg-lightest-blue"] [
           h "div" [className "mr2"] [bubble.user, ": "],
           if bubble.user ≠ "self" then
-            code_content bubble.body
+            code_content bubble.body bubble.prompt
           else
             nl_content bubble.body
         ]
@@ -181,14 +197,16 @@ meta def chat_update (props : chat_props)  : chat_state → chat_action → (cha
   | state (chat_action.submit) :=
     let text := state.current_text,
         state := {current_text := "", ..state},
-        state := push_bubble {body := text, user := "self"} state,
+        state := push_bubble {body := text, prompt := "hi", user := "self"} state,
         response := unsafe_get_response state,
-        state := push_bubble {body := response, user := "codex"} state,
+        prompts := ret_prompt text,
+        state := push_bubble {body := response,prompt := prompts,user := "codex"} state,
         state := push_bubble {
           body := match unsafe_parse_result ("def " ++ response) with
                   | (some msg) := "error:\n" ++ msg
                   | none := "check passes!"
                   end,
+          prompt := "hi",
           user := "lean"} state
         in
     (state, none)
