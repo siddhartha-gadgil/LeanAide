@@ -40,6 +40,15 @@ declare_syntax_cat theoremAndTactic
 syntax 
   defHead ident (argument)* ":" term ":=" "by" tacticSeq : theoremAndTactic
 
+declare_syntax_cat variableStatement
+syntax "variable" (argument)* : variableStatement
+
+declare_syntax_cat sectionHead
+syntax "section" (colGt ident)? : sectionHead
+
+declare_syntax_cat sectionEnd
+syntax "end" (ident)? : sectionEnd
+
 -- code from Leo de Moura
 def getTactics (s : Syntax) : Array Syntax :=
   match s with
@@ -64,14 +73,14 @@ structure TheoremAndTactic where
   firstTactic : String
 deriving Repr
 
-def getTheoremAndTactic! (input : Syntax) : 
+def getTheoremAndTactic! (input : Syntax)(vars : String) : 
       MetaM TheoremAndTactic := do
     match input with
     | `(theoremAndTactic|$kind:defHead $name:ident $args:argument* : $type := by $tac:tacticSeq) =>
         let seq := getTactics tac
         let tac ← contractInductionStx (seq[0]!)
         let argString := 
-          (args.map fun a => a.raw.reprint.get!).foldl (fun a b => a ++ " " ++ b) ""
+          (args.map fun a => a.raw.reprint.get!).foldl (fun a b => a ++ " " ++ b) (vars)
         let argString := argString.replace "\n" " " |>.trim
         return ⟨kind.raw.reprint.get!.trim, name.raw.reprint.get!.trim,
         argString, type.raw.reprint.get!.trim, tac.reprint.get!.trim⟩ 
@@ -82,10 +91,22 @@ def getTheoremAndTactic! (input : Syntax) :
 def parseTheoremAndTactic! (input: String) : MetaM TheoremAndTactic := do
   match ← partialParser (categoryParser `theoremAndTactic 0) input with
   | some (stx, _, _) => 
-      getTheoremAndTactic! stx
+      getTheoremAndTactic! stx ""
   | none => 
     IO.println s!"could not parse theorem ${input}"
     throwUnsupportedSyntax
+
+def getVariables! (input : Syntax) : 
+      MetaM String := do
+    match input with
+    | `(variableStatement|variable $args:argument*) =>
+        let argString := 
+          (args.map fun a => a.raw.reprint.get!).foldl (fun a b => a ++ " " ++ b) ""
+        return argString.replace "\n" " " |>.trim 
+    | _ =>
+      IO.println s!"could not parse theorem ${input.reprint}"
+      throwUnsupportedSyntax
+
 
 partial def getTheoremsTacticsAux (text: String) (vars : Array String)
                         (accum : Array TheoremAndTactic) : MetaM (Array TheoremAndTactic) := do
@@ -93,10 +114,18 @@ partial def getTheoremsTacticsAux (text: String) (vars : Array String)
       return accum
   else
       match (← partialParser (categoryParser `theoremAndTactic 0) text) with
-      | none => getTheoremsTacticsAux (text.drop 1) vars accum
+      | none => 
+        match 
+          (← partialParser (categoryParser `variableStatement 0) text) with
+        | none =>
+          getTheoremsTacticsAux (text.drop 1) vars accum
+        | some (stx, _, tail) =>
+          let newVars ← getVariables! stx
+          let innerVars := vars.back
+          getTheoremsTacticsAux tail (vars.pop.push (innerVars ++ " " ++ newVars)) accum
       | some (stx, _, tail) => 
-          let entry ← getTheoremAndTactic! stx
+          let entry ← getTheoremAndTactic! stx (vars.foldl (fun a b => a ++ " " ++ b) "")
           getTheoremsTacticsAux tail vars (accum.push entry)
 
 def getTheoremsTactics (text: String) : MetaM (Array TheoremAndTactic) := do
-  getTheoremsTacticsAux text #[] #[]
+  getTheoremsTacticsAux text #[""] #[]

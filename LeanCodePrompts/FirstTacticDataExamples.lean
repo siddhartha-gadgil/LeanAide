@@ -421,7 +421,7 @@ end Z3
 
 #eval allTheoremSyntaxes egFile #[]
 
-#eval getTheoremsTacticsAux egFile #[] #[]
+#eval getTheoremsTactics egFile
 
 -- Extra example during debugging
 
@@ -440,7 +440,6 @@ def mlParse : MetaM <| Except String String := do
 
 #eval partialParser tacticSeq tacEg
 
-#eval partialParser (categoryParser `theoremAndTactic 0) egThm1
 
 def egThm2 := "theorem unique_morphism_nat (f g : ℤ → A)[AddCommGroup.Homomorphism f]
         [AddCommGroup.Homomorphism g]: 
@@ -457,7 +456,6 @@ def egThm2 := "theorem unique_morphism_nat (f g : ℤ → A)[AddCommGroup.Homomo
 
 #eval partialParser (categoryParser `theoremAndTactic 0) egThm2
 
-#eval partialParser (categoryParser `theoremAndTactic 0) ml
 
 #eval parseTactics tacEg
 
