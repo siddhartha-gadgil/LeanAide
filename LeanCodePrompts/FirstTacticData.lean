@@ -114,18 +114,28 @@ partial def getTheoremsTacticsAux (text: String) (vars : Array String)
       return accum
   else
       match (← partialParser (categoryParser `theoremAndTactic 0) text) with
+      | some (stx, _, tail) => 
+          let entry ← getTheoremAndTactic! stx (vars.foldl (fun a b => a ++ " " ++ b) "")
+          getTheoremsTacticsAux tail vars (accum.push entry)
       | none => 
         match 
           (← partialParser (categoryParser `variableStatement 0) text) with
-        | none =>
-          getTheoremsTacticsAux (text.drop 1) vars accum
         | some (stx, _, tail) =>
           let newVars ← getVariables! stx
           let innerVars := vars.back
           getTheoremsTacticsAux tail (vars.pop.push (innerVars ++ " " ++ newVars)) accum
-      | some (stx, _, tail) => 
-          let entry ← getTheoremAndTactic! stx (vars.foldl (fun a b => a ++ " " ++ b) "")
-          getTheoremsTacticsAux tail vars (accum.push entry)
+        | none =>
+          match 
+            (← partialParser (categoryParser `sectionHead 0) text) with
+          | some (_, _, tail) =>
+            getTheoremsTacticsAux tail (vars.push "") accum
+          | none =>
+            match 
+              (← partialParser (categoryParser `sectionEnd 0) text) with
+            | some (_, _, tail) =>
+              getTheoremsTacticsAux tail (vars.pop) accum
+            | none =>             
+              getTheoremsTacticsAux (text.drop 1) vars accum
 
 def getTheoremsTactics (text: String) : MetaM (Array TheoremAndTactic) := do
   getTheoremsTacticsAux text #[""] #[]
