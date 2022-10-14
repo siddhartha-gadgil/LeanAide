@@ -140,8 +140,45 @@ partial def getTheoremsTacticsAux (text: String) (vars : Array String)
 def getTheoremsTactics (text: String) : MetaM (Array TheoremAndTactic) := do
   getTheoremsTacticsAux text #[""] #[]
 
-partial def identSubs : Syntax → List Substring
-| Syntax.ident _ s .. => [s]
-| Syntax.node _ _ ss => ss.toList.bind identSubs
-| _ => []
+def getTacticString : TacticM String := do
+  let e ← getMainTarget
+  let lctx ←  getLCtx
+  let mctx ← getMCtx
+  let userNames := mctx.userNames
+  let decls := lctx.decls
+  let mut statement := ""
+  for decl in decls do
+    match decl with
+    | some <| LocalDecl.ldecl .. => 
+        pure ()
+    | some <| LocalDecl.cdecl _ _ n t bi => do
+      let core := s!"{n} : {← t.view}"
+      let typeString :=s!"{← t.view}"
+      let argString := match bi with
+      | BinderInfo.implicit => "{"++ core ++ "}"
+      | BinderInfo.strictImplicit => "{{ "++ core ++ "}}"
+      | BinderInfo.instImplicit =>
+        if (`inst).isPrefixOf n then s!"[{typeString}]"
+          else s!"[{core}]"
+      | BinderInfo.default => s!"({core})" 
+      | _ => ""
+      statement := statement ++ argString ++ " " 
+      pure ()
+    | none => pure ()
+  statement := statement ++ ": " ++ (←  e.view)
+  return statement
 
+
+elab "show_goal" : tactic => do  
+    let view ← getTacticString
+    logInfo view
+    return ()
+
+def silly {α  : Type}(n m : ℕ)[DecidableEq α] : n + m = n +m := by 
+    show_goal
+    rfl
+
+def silly' {α  : Type}: (n m : ℕ) → [DecidableEq α] →  n + m = n +m := by
+    intros
+    show_goal -- works badly
+    rfl
