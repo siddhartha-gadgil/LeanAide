@@ -140,62 +140,8 @@ partial def getTheoremsTacticsAux (text: String) (vars : Array String)
 def getTheoremsTactics (text: String) : MetaM (Array TheoremAndTactic) := do
   getTheoremsTacticsAux text #[""] #[]
 
+partial def identSubs : Syntax → List Substring
+| Syntax.ident _ s .. => [s]
+| Syntax.node _ _ ss => ss.toList.bind identSubs
+| _ => []
 
-def isBlackListed  (declName : Name) : MetaM  Bool := do
-  let env ← getEnv
-  return (declName.isInternal
-  || isAuxRecursor env declName
-  || isNoConfusion env declName
-  || isRecCore env declName
-  || isMatcherCore env declName)
-
-def isAux (declName : Name) : MetaM  Bool := do
-  let env ← getEnv
-  return (isAuxRecursor env declName
-          || isNoConfusion env declName)
-  
-def isNotAux  (declName : Name) : MetaM  Bool := do
-  let nAux ← isAux declName
-  return (not nAux)
-
-def isWhiteListed (declName : Name) : TermElabM Bool := do
-  let bl ← isBlackListed  declName
-  return !bl
-
-def inferType?(e: Expr) : MetaM (Option Expr) := do
-  try
-    let type ← inferType e
-    return some type
-  catch _ => return none
-
-partial def recExprNames: Expr → TermElabM (Array Name) :=
-  fun e =>
-  do 
-    let res ← match e with
-      | Expr.const name ..  =>
-        do
-        if ← (isWhiteListed name) 
-          then return #[name] 
-          else pure #[]        
-      | Expr.app f a  => 
-          do  
-            return (← recExprNames f) ++ (← recExprNames a)
-      | Expr.lam _ t b _ => 
-          do
-            return (← recExprNames t) ++ (← recExprNames b)
-      | Expr.forallE _ t b _ => do
-          return (← recExprNames t) ++ (← recExprNames b)
-      | Expr.letE _  t v b _ => 
-            return (← recExprNames t) ++ (← recExprNames b) ++ (← recExprNames v)
-      | _ => pure #[]
-    return res
-
-elab "consts" x:term : term => do
-  let t ← Term.elabTerm x none
-  let names ← recExprNames t
-  let names ← names.filterM isWhiteListed
-  for name in names do
-    IO.println name
-  return t
-
-#check consts (fun n: Nat => n + n)
