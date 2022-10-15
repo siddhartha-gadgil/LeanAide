@@ -461,4 +461,7 @@ def egThm2 := "theorem unique_morphism_nat (f g : ℤ → A)[AddCommGroup.Homomo
 
 #eval parseTheoremAndTactic! egThm2
 
+#eval getTheoremsTacticsFromPolyLean
 
+
+#eval polyLeanFiles

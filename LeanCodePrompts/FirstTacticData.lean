@@ -122,6 +122,7 @@ def getVariables! (input : Syntax) :
 
 
 partial def getTheoremsTacticsAux (text: String) (vars : Array String)
+                        (sections : Array String)
                         (accum : Array TheoremAndTactic) : MetaM (Array TheoremAndTactic) := do
   if text.isEmpty then 
       return accum
@@ -129,29 +130,41 @@ partial def getTheoremsTacticsAux (text: String) (vars : Array String)
       match (← partialParser (categoryParser `theoremAndTactic 0) text) with
       | some (stx, _, tail) => 
           let entry ← getTheoremAndTactic! stx (vars.foldl (fun a b => a ++ " " ++ b) "")
-          getTheoremsTacticsAux tail vars (accum.push entry)
+          getTheoremsTacticsAux tail vars sections (accum.push entry)
       | none => 
         match 
           (← partialParser (categoryParser `variableStatement 0) text) with
         | some (stx, _, tail) =>
           let newVars ← getVariables! stx
           let innerVars := vars.back
-          getTheoremsTacticsAux tail (vars.pop.push (innerVars ++ " " ++ newVars)) accum
+          getTheoremsTacticsAux tail (vars.pop.push (innerVars ++ " " ++ newVars)) sections accum
         | none =>
           match 
             (← partialParser (categoryParser `sectionHead 0) text) with
-          | some (_, _, tail) =>
-            getTheoremsTacticsAux tail (vars.push "") accum
+          | some (stx, _, tail) =>
+            match stx with
+            | `(sectionHead|section $name) =>
+            getTheoremsTacticsAux tail (vars.push "") 
+              (sections.push name.raw.reprint.get!.trim) accum
+            | _ => 
+              getTheoremsTacticsAux tail vars (sections.push "") accum
           | none =>
             match 
               (← partialParser (categoryParser `sectionEnd 0) text) with
-            | some (_, _, tail) =>
-              getTheoremsTacticsAux tail (vars.pop) accum
+            | some (stx, _, tail) =>
+              match stx with
+              | `(sectionEnd|end $name) =>
+                if sections.back? == name.raw.reprint.get!.trim then
+                  getTheoremsTacticsAux tail (vars.pop) (sections.pop) accum
+                else
+                  getTheoremsTacticsAux tail vars sections accum
+              | _ => 
+                getTheoremsTacticsAux tail (vars.pop) sections accum
             | none =>             
-              getTheoremsTacticsAux (text.drop 1) vars accum
+              getTheoremsTacticsAux (text.drop 1) vars sections accum
 
 def getTheoremsTactics (text: String) : MetaM (Array TheoremAndTactic) := do
-  getTheoremsTacticsAux text #[""] #[]
+  getTheoremsTacticsAux text #[""] #[] #[]
 
 def leanFiles (paths: List String) : IO (Array System.FilePath) := do 
   Lean.SearchPath.findAllWithExt [System.mkFilePath paths] "lean"
@@ -171,8 +184,3 @@ def getTheoremsTacticsFromPolyLean : MetaM (Array TheoremAndTactic) := do
   logInfo m!"found {files.size} files"
   let files := files.toList.take 12 |>.toArray
   getTheoremsTacticsFromFiles files
-
-#eval getTheoremsTacticsFromPolyLean
-
-
-#eval polyLeanFiles
