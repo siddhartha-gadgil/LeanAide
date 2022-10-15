@@ -98,17 +98,13 @@ def firstEffectiveTactic (tacStrings: List String) : TacticM Unit :=
   withMainContext do
   let env ← getEnv
   let s ← saveState
-  -- logInfo m!"Trying tactics {tacStrings}"
   let s₁? ← getTacticStateProxy
-  -- logInfo "Saved proxy"
   for tacString in tacStrings do
     -- logInfo m!"Trying tactic {tacString}"
-    let tac? := runParserCategory env `tactic tacString
-    -- logInfo m!"Trying parsed tactic {tacString}"
-    match tac? with
-    | Except.ok tac => do
-      -- logInfo tacString
-      try 
+    try
+      let tac? := runParserCategory env `tactic tacString
+      match tac? with
+      | Except.ok tac => do
           evalTactic tac
           let check : Bool ← 
           try 
@@ -121,23 +117,20 @@ def firstEffectiveTactic (tacStrings: List String) : TacticM Unit :=
               m!"Failed to check state after {tacString}; error : {e.toMessageData}" 
             pure false
           if check then
-            logWarning m!"{tacString} did not change the goal"
             s.restore
           else
-            logInfo m!"{tacString} changed the goal"
+            logInfo m!"tactic `{tacString}` was effective"
             return 
-      catch e =>
-        logWarning m!"{tacString} failed with error {e.toMessageData}" 
-        s.restore
-    | Except.error e => 
-        logWarning m!"could not parse{e}"
+      | Except.error e => 
         pure ()
+    catch _ =>
+      s.restore
   logWarning "No tactic in the list was effective" 
 
  
 elab "first_effective_tactic" : tactic => 
   withMainContext do
-    firstEffectiveTactic ["intros", "rfl"]
+    firstEffectiveTactic ["unparsable", "intros", "rfl"]
 
 
 def silly'' (n m : ℕ)  : n + m = n + m := by
@@ -146,3 +139,6 @@ def silly'' (n m : ℕ)  : n + m = n + m := by
 def silly''' : (n m : ℕ)  →  n + m = n + m := by
     first_effective_tactic 
     rfl
+
+def silly'''' : (n m : ℕ)  →  n + m = n + m := by
+    repeat (first_effective_tactic)
