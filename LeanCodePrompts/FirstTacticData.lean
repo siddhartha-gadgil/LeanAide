@@ -81,11 +81,11 @@ deriving Repr
 namespace TheoremAndTactic 
 
 def corePrompt (x: TheoremAndTactic) : String := 
-  s!"{x.name} : {x.type}"
+  s!"{x.args} : {x.type}"
 
 def tacticPrompt (x: TheoremAndTactic) : String := 
   s!"{x.kind} {x.corePrompt} := by {x.firstTactic}; sorry"
-
+ 
 def toJson (x: TheoremAndTactic) : Json := 
   Json.mkObj [
     ("kind", x.kind),
@@ -93,7 +93,7 @@ def toJson (x: TheoremAndTactic) : Json :=
     ("args", x.args),
     ("type", x.type),
     ("first-tactic", x.firstTactic),
-    ("core-promt", x.corePrompt),
+    ("core-prompt", x.corePrompt),
     ("tactic-prompt", x.tacticPrompt)
   ]
 
@@ -194,12 +194,30 @@ def polyLeanFiles := leanFiles (["/home/gadgil/code/polylean/Polylean"])
 
 def getTheoremsTacticsFromFiles (files: Array System.FilePath) : MetaM (Array TheoremAndTactic) := do
   let mut accum := #[]
+  IO.println s!"parsing {files.size} lean files"
+  let mut parsedCount := 0
   for file in files do
+    IO.println s!"parsing {file}"
     let text ← IO.FS.readFile file
     let theorems ← getTheoremsTactics text
+    IO.println s!"parsed {theorems.size} theorems with tactics"
+    parsedCount := parsedCount + 1
+    IO.println s!"parsed {parsedCount} files out of {files.size}"
     accum := accum ++ theorems
   return accum
 
+def readAndSaveTheoremTacticsM (inps: List String ) : MetaM String := do
+  let files ← leanFiles inps
+  IO.println s!"found {files.size} files"
+  let all ← getTheoremsTacticsFromFiles files
+  let js := Json.arr <| all.map fun a => a.toJson
+  return js.pretty
+
+def readAndSaveTheoremTacticsCore 
+  (inps: List String ) : CoreM String :=
+  readAndSaveTheoremTacticsM inps |>.run'
+
+-- example
 def getTheoremsTacticsFromPolyLean : MetaM (Array TheoremAndTactic) := do
   let files ← polyLeanFiles
   logInfo m!"found {files.size} files"
