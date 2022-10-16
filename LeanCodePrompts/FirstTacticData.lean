@@ -78,6 +78,27 @@ structure TheoremAndTactic where
   firstTactic : String
 deriving Repr
 
+namespace TheoremAndTactic 
+
+def corePrompt (x: TheoremAndTactic) : String := 
+  s!"{x.name} : {x.type}"
+
+def tacticPrompt (x: TheoremAndTactic) : String := 
+  s!"{x.kind} {x.corePrompt} := by {x.firstTactic}; sorry"
+
+def toJson (x: TheoremAndTactic) : Json := 
+  Json.mkObj [
+    ("kind", x.kind),
+    ("name", x.name),
+    ("args", x.args),
+    ("type", x.type),
+    ("first-tactic", x.firstTactic),
+    ("core-promt", x.corePrompt),
+    ("tactic-prompt", x.tacticPrompt)
+  ]
+
+end TheoremAndTactic
+
 def getTheoremAndTactic! (input : Syntax)(vars : String) : 
       MetaM TheoremAndTactic := do
     match input with

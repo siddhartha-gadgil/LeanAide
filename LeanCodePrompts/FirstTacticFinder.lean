@@ -39,7 +39,7 @@ elab "show_goal" : tactic =>
     logInfo view
     return ()
 
-def silly {α  : Type}(n m : ℕ)[DecidableEq α] : n + m = n +m := by 
+def silly {α  : Type}(n m : ℕ)[DecidableEq α] : n + m = n + m := by 
     show_goal
     let a  := n
     let h : a = a := rfl
@@ -47,7 +47,7 @@ def silly {α  : Type}(n m : ℕ)[DecidableEq α] : n + m = n +m := by
     rfl
 
 
-def silly' : (n m : ℕ)  →  n + m = n +m := by
+def silly' : (n m : ℕ)  →  n + m = n + m := by
     intros
     show_goal  
     rfl
@@ -97,6 +97,9 @@ def equalStates (s₁ s₂ : TacticStateProxy) : TacticM Bool :=
 def firstEffectiveTactic (tacStrings: List String) : TacticM Unit :=
   withMainContext do
   let env ← getEnv
+  let goal ← getTacticString
+  logInfo m!"goal: {goal}"
+  logInfo m!"trying tactics: {tacStrings}"
   let s ← saveState
   let s₁? ← getTacticStateProxy
   for tacString in tacStrings do
@@ -132,8 +135,9 @@ elab "first_effective_tactic" : tactic =>
   withMainContext do
     firstEffectiveTactic ["unparsable", "intros", "rfl"]
 
-
+-- proved by reflexivity
 def silly'' (n m : ℕ)  : n + m = n + m := by
+    intros -- legal but no effect
     first_effective_tactic
 
 def silly''' : (n m : ℕ)  →  n + m = n + m := by
