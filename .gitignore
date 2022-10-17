@@ -12,3 +12,4 @@ SentenceSimilarityTask/embeddings_store/*.pkl
 /_target/
 /OpenaiModelPrompting/easy_to_hard
 data/tagged_nl2.json
+*.npy
