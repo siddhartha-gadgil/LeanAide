@@ -164,19 +164,20 @@ partial def getTheoremsTacticsAux (text: String) (vars : Array String)
           match 
             (← partialParser (categoryParser `sectionHead 0) text) with
           | some (stx, _, tail) =>
+            -- IO.println s!"\nsection head found {stx.reprint.get!} followed by {tail.take 30}"
             match stx with
             | `(sectionHead|section $name) =>
             getTheoremsTacticsAux tail (vars.push "") 
               (sections.push name.raw.reprint.get!.trim) accum
             | `(sectionHead|section) => 
-              getTheoremsTacticsAux tail vars (sections.push "") accum
+              getTheoremsTacticsAux tail (vars.push "") (sections.push "") accum
             | _ => 
-              getTheoremsTacticsAux tail vars (sections) accum
+              getTheoremsTacticsAux tail vars sections accum
           | none =>
             match 
               (← partialParser (categoryParser `sectionEnd 0) text) with
             | some (stx, _, tail) =>
-              -- IO.println s!"end found {stx.reprint.get!} followed by {tail}"
+              -- IO.println s!"\nend found {stx.reprint.get!} with sections {sections} and vars {vars} followed by {tail.take 30}"
               match stx with
               | `(sectionEnd|end $name) =>
                 if sections.back? == some name.raw.reprint.get!.trim then
