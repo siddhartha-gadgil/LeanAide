@@ -168,8 +168,10 @@ partial def getTheoremsTacticsAux (text: String) (vars : Array String)
             | `(sectionHead|section $name) =>
             getTheoremsTacticsAux tail (vars.push "") 
               (sections.push name.raw.reprint.get!.trim) accum
-            | _ => 
+            | `(sectionHead|section) => 
               getTheoremsTacticsAux tail vars (sections.push "") accum
+            | _ => 
+              getTheoremsTacticsAux tail vars (sections) accum
           | none =>
             match 
               (← partialParser (categoryParser `sectionEnd 0) text) with
@@ -180,8 +182,10 @@ partial def getTheoremsTacticsAux (text: String) (vars : Array String)
                   getTheoremsTacticsAux tail (vars.pop) (sections.pop) accum
                 else
                   getTheoremsTacticsAux tail vars sections accum
-              | _ => 
+              | `(sectionEnd|end) =>
                 getTheoremsTacticsAux tail (vars.pop) sections accum
+              | _ => 
+                getTheoremsTacticsAux tail (vars) sections accum
             | none =>             
               getTheoremsTacticsAux (text.drop 1) vars sections accum
 
