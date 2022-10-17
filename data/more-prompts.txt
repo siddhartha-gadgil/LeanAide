@@ -1,0 +1,4 @@
+If a function $f:\mathbb{C} \to \mathbb C}$ is entire and non-constant, then the set of values that $f(z)$ assumes is either the whole complex plane or the plane minus a single point. 
+Functors between categories preserve composition of morphisms.
+Let $A$ and $B$ be non-empty convex subsets of a real locally convex topological vector space $X$. If $\operatorname{Int} A \neq \varnothing$ and $B \cap \operatorname{Int} A = \varnothing$ then there exists a continuous linear functional $f$ on $X$ such that $\sup f(A) \leq \inf f(B)$ and $f(a) < \inf f(B)$ for all $a \in \operatorname{Int} A$ (such an $f$ is necessarily non-zero).
+Every finite field has non-zero characteristic.
