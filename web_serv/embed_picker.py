@@ -12,8 +12,8 @@ def sentences(filename, field):
     return json.loads(blob)
 
 def embeddings(filename, field):
-    sentences = sentences(filename, field)
-    return model.encode(sentences)
+    sents = sentences(filename, field)
+    return model.encode(sents)
 
 def save_embeddings(filename, field):
     embs = embeddings(filename, field)
