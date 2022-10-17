@@ -465,3 +465,9 @@ def egThm2 := "theorem unique_morphism_nat (f g : ℤ → A)[AddCommGroup.Homomo
 
 
 #eval polyLeanFiles
+
+def egBugFile := "2.elim $ fun g2 => ⟨⟨g, g2⟩⟩"
+
+#eval getTheoremsTactics egBugFile
+
+#eval partialParser (categoryParser `theoremAndTactic 0) egBugFile

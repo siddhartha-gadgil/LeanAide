@@ -39,9 +39,7 @@ syntax "example" : defHead
 declare_syntax_cat theoremAndTactic
 
 syntax 
-  defHead ident (argument)* ":" term ":=" "by" tacticSeq : theoremAndTactic
-syntax 
-  "example" (argument)* ":" term ":=" "by" tacticSeq : theoremAndTactic
+  defHead (ident)? (argument)* ":" term ":=" "by" tacticSeq : theoremAndTactic
 
 
 
@@ -99,8 +97,8 @@ def toJson (x: TheoremAndTactic) : Json :=
 
 end TheoremAndTactic
 
-def getTheoremAndTactic! (input : Syntax)(vars : String) : 
-      MetaM TheoremAndTactic := do
+def getTheoremAndTactic? (input : Syntax)(vars : String) : 
+      MetaM <| Option TheoremAndTactic := do
     match input with
     | `(theoremAndTactic|$kind:defHead $name:ident $args:argument* : $type := by $tac:tacticSeq) =>
         let seq := getTactics tac
@@ -108,26 +106,26 @@ def getTheoremAndTactic! (input : Syntax)(vars : String) :
         let argString := 
           (args.map fun a => a.raw.reprint.get!).foldl (fun a b => a ++ " " ++ b) (vars)
         let argString := argString.replace "\n" " " |>.trim
-        return ⟨kind.raw.reprint.get!.trim, name.raw.reprint.get!.trim,
+        return some ⟨kind.raw.reprint.get!.trim, name.raw.reprint.get!.trim,
         argString, type.raw.reprint.get!.trim, tac.reprint.get!.trim⟩
-    | `(theoremAndTactic|example  $args:argument* : $type := by $tac:tacticSeq) =>
+    | `(theoremAndTactic|$kind:defHead  $args:argument* : $type := by $tac:tacticSeq) =>
         let seq := getTactics tac
         let tac ← contractInductionStx (seq[0]!)
         let argString := 
           (args.map fun a => a.raw.reprint.get!).foldl (fun a b => a ++ " " ++ b) (vars)
         let argString := argString.replace "\n" " " |>.trim
-        return ⟨"example","",
+        return some ⟨kind.raw.reprint.get!.trim,"",
         argString, type.raw.reprint.get!.trim, tac.reprint.get!.trim⟩ 
     | _ =>
-      IO.println s!"could not parse theorem ${input.reprint}"
-      throwUnsupportedSyntax
+      IO.println s!"could not parse theorem {input.reprint.get!} to get tactic"
+      return none
 
-def parseTheoremAndTactic! (input: String) : MetaM TheoremAndTactic := do
+def parseTheoremAndTactic? (input: String) : MetaM <| Option TheoremAndTactic := do
   match ← partialParser (categoryParser `theoremAndTactic 0) input with
   | some (stx, _, _) => 
-      getTheoremAndTactic! stx ""
+      getTheoremAndTactic? stx ""
   | none => 
-    IO.println s!"could not parse theorem ${input}"
+    IO.println s!"could not parse theorem {input}"
     throwUnsupportedSyntax
 
 def getVariables! (input : Syntax) : 
@@ -138,7 +136,7 @@ def getVariables! (input : Syntax) :
           (args.map fun a => a.raw.reprint.get!).foldl (fun a b => a ++ " " ++ b) ""
         return argString.replace "\n" " " |>.trim 
     | _ =>
-      IO.println s!"could not parse theorem ${input.reprint}"
+      IO.println s!"could not parse theorem {input.reprint.get!}"
       throwUnsupportedSyntax
 
 
@@ -150,8 +148,11 @@ partial def getTheoremsTacticsAux (text: String) (vars : Array String)
   else
       match (← partialParser (categoryParser `theoremAndTactic 0) text) with
       | some (stx, _, tail) => 
-          let entry ← getTheoremAndTactic! stx (vars.foldl (fun a b => a ++ " " ++ b) "")
-          getTheoremsTacticsAux tail vars sections (accum.push entry)
+          let entry? ← getTheoremAndTactic? stx (vars.foldl (fun a b => a ++ " " ++ b) "")
+          let accum := match entry? with
+            | some entry => accum.push entry
+            | none => accum 
+          getTheoremsTacticsAux tail vars sections (accum)
       | none => 
         match 
           (← partialParser (categoryParser `variableStatement 0) text) with
@@ -207,7 +208,10 @@ def getTheoremsTacticsFromFiles (files: Array System.FilePath) : MetaM (Array Th
   return accum
 
 def readAndSaveTheoremTacticsM (inps: List String ) : MetaM String := do
-  let files ← leanFiles inps
+  let mut files := #[]
+  for inp in inps do
+    let fs ←  leanFiles [inp]
+    files := files ++ fs
   IO.println s!"found {files.size} files"
   let all ← getTheoremsTacticsFromFiles files
   let js := Json.arr <| all.map fun a => a.toJson
