@@ -33,7 +33,8 @@ from numpy import dot
 from numpy.linalg import norm
 
 def closest_embeddings(sentence, embeddings, data, n):
-    distances = np.array([dot(sentence, emb)/(norm(sentence)*norm(emb)) for emb in embeddings])
+    sentence_embedding = model.encode(sentence)
+    distances = torch.tensor([dot(sentence_embedding, emb)/(norm(sentence_embedding)*norm(emb)) for emb in embeddings])
     _, indices = torch.topk(distances, n)
     return [data[i] for i in indices]
 
