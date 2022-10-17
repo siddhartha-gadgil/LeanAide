@@ -1,5 +1,6 @@
 import Lean
 import LeanCodePrompts.Utils
+import Lean.Data.HashMap
 
 open Lean IO
 
@@ -120,7 +121,7 @@ def MathlibKeywordLookup : IO Json := do
     "LeanCodePrompts/KeywordSummary/mathlib_keyword_lookup.json"
   IO.ofExcept <| Json.parse file
 
-initialize keywordCache : IO.Ref (Std.HashMap String (Array Nat)) ← do
+initialize keywordCache : IO.Ref (HashMap String (Array Nat)) ← do
   let mathlibKwdsJson ← IO.ofExcept (← MathlibKeywordLookup).getObj?
   
   let mathlibKwds : List (String × Array Nat) :=
@@ -132,7 +133,7 @@ initialize keywordCache : IO.Ref (Std.HashMap String (Array Nat)) ← do
 
       (kw, idxs) :: l ) []
 
-  IO.mkRef (Std.HashMap.ofList mathlibKwds)
+  IO.mkRef (HashMap.ofList mathlibKwds)
 
 def getKeywordIndices? (kw : String) : IO <| Option (Array Nat) := do
   let cache ← keywordCache.get

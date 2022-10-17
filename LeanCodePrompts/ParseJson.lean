@@ -81,10 +81,8 @@ def readJsonCore(s: String) : CoreM Json :=
 
 open Lean Parser Command
 
-#check commentBody
-
 elab "//--" cb:commentBody : term => do
-  let s := cb.raw.getAtomVal!
+  let s := cb.raw.getAtomVal
   let s := s.dropRight 2
   logInfo m!"{s}"
   return mkConst ``Unit
