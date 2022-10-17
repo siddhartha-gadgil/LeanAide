@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Init.Set
 import LeanCodePrompts.Basic
 import LeanCodePrompts.Utils
-open Lean Meta Elab Parser Set Tactic
+open Lean Meta Std Elab Parser Mathlib Set Tactic
  
 def s : Set Nat := fun _ => true
 -- #check s ∩ s
@@ -19,6 +19,10 @@ def depsPrompt : IO (Array String) := do
 declare_syntax_cat typed_ident
 syntax "(" ident ":" term ")" : typed_ident
 syntax "{" ident ":" term "}" : typed_ident
+
+#check Array.foldrM
+#check TSyntaxArray.rawImpl
+#check TSyntax.mk
 
 instance : Coe (Syntax) (TSyntax n) where
   coe := TSyntax.mk

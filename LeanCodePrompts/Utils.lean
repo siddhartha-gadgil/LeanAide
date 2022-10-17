@@ -4,7 +4,7 @@ import Lean.Elab
 import Lean.Parser
 import Lean.Parser.Extension
 
-open Lean Meta Elab Parser Tactic
+open Lean Meta Std Elab Parser Tactic
 
 def Lean.Expr.view (expr: Expr) : MetaM String := do
   let expr ← instantiateMVars expr
