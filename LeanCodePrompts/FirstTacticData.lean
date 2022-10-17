@@ -176,9 +176,10 @@ partial def getTheoremsTacticsAux (text: String) (vars : Array String)
             match 
               (← partialParser (categoryParser `sectionEnd 0) text) with
             | some (stx, _, tail) =>
+              -- IO.println s!"end found {stx.reprint.get!} followed by {tail}"
               match stx with
               | `(sectionEnd|end $name) =>
-                if sections.back? == name.raw.reprint.get!.trim then
+                if sections.back? == some name.raw.reprint.get!.trim then
                   getTheoremsTacticsAux tail (vars.pop) (sections.pop) accum
                 else
                   getTheoremsTacticsAux tail vars sections accum
@@ -186,8 +187,24 @@ partial def getTheoremsTacticsAux (text: String) (vars : Array String)
                 getTheoremsTacticsAux tail (vars.pop) sections accum
               | _ => 
                 getTheoremsTacticsAux tail (vars) sections accum
-            | none =>             
-              getTheoremsTacticsAux (text.drop 1) vars sections accum
+            | none =>        
+              match ← partialParser Command.docComment text with
+              | some (_, _, tail) =>
+                getTheoremsTacticsAux tail vars sections accum
+              | none =>      
+                match ← partialParser Command.moduleDoc text with
+              | some (_, _, tail) =>
+                getTheoremsTacticsAux tail vars sections accum
+              | none =>
+                let head := text.get 0
+                if ('a' ≤ head && head ≤ 'z') || 
+                  ('A' ≤ head && head ≤ 'Z') then
+                  let tail := text.dropWhile fun c => 
+                    ('a' ≤ c && c ≤ 'z') || 
+                  ('A' ≤ c && c ≤ 'Z')
+                  getTheoremsTacticsAux tail vars sections accum
+                else
+                  getTheoremsTacticsAux (text.drop 1) vars sections accum
 
 def getTheoremsTactics (text: String) : MetaM (Array TheoremAndTactic) := do
   getTheoremsTacticsAux text #[""] #[] #[]
