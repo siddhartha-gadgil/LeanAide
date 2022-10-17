@@ -6,6 +6,7 @@ from flask import request
 import pickle
 from sentence_similarity import *
 import copy
+from embed_picker import *
 
 app = Flask(__name__)
 
@@ -60,6 +61,17 @@ def similar_from():
     jsBlob = str(json.dumps(output,ensure_ascii=False))
     print (jsBlob)
     return jsBlob
+
+@app.route('/tactic_prompts', methods=['POST'])
+def tactic_prompts():
+    data = str(request.data, 'utf-8')
+    js_query = json.loads(data)
+    print(js_query)
+    prompt_core = js_query["prompt_core"]
+    n = js_query["n"]
+    embs, data = load_embeddings('../data/mathlib-thms.json')
+    choices = closest_embeddings(prompt_core, embs, data, n)
+    return json.dumps(choices, ensure_ascii=False)
 
 def process(lis):
     ans = ""
