@@ -16,10 +16,10 @@ def embeddings(filename, field):
     return model.encode(sentences)
 
 def save_embeddings(filename, field):
-    embeddings = embeddings(filename, field)
+    embs = embeddings(filename, field)
     # drop json extension
     filename = filename[:-5]
-    np.save(filename + '.npy', embeddings)
+    np.save(filename + '.npy', embs)
 
 def load_embeddings(filename):
     f = open(filename, 'r')
