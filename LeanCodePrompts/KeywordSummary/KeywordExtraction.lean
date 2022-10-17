@@ -1,28 +1,8 @@
 import Lean
+import LeanCodePrompts.Utils
 import Lean.Data.HashMap
 
-namespace Lean.Json
-
-def parseArrIO (s : String) : IO <| Array Json := do
-  IO.ofExcept $ Json.parse s >>= Json.getArr?
-
-def parseFile (path : System.FilePath) : IO <| Array Json :=
-  IO.FS.readFile path >>= Json.parseArrIO
-
-instance : GetElem Json String Json (λ j k => Except.toBool <| j.getObjVal? k) where
-  getElem := λ j key h =>
-    match j.getObjVal? key, h with
-      | .ok j, _ => j
-      | .error _, h => by simp [Except.toBool] at h
-
-def getStr! (j : Json) : String :=
-  j.getStr?.toOption.get!
-
-end Lean.Json
-
-
 open Lean IO
-
 
 section MathlibStatements
 

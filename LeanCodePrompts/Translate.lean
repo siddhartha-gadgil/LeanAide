@@ -147,11 +147,13 @@ def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
         IO.Process.output {cmd:= "curl", args:= 
           #["-X", "POST", "-H", "Content-type: application/json", "-d", s ++ s!" top_K {numSim}", "localhost:5000/similar_json"]}
       let pairs? ← sentenceSimPairs simJsonOut.stdout
+      -- IO.println s!"obtained sentence similarity; time : {← IO.monoMsNow}"
       let allPairs := pairs?.toOption.getD #[]        
       let kwPairs :=
         if numKW >0 
         then ←  keywordBasedPrompts docPair s numKW scoreBound matchBound
         else #[]
+      -- IO.println s!"obtained keyword pairs; time : {← IO.monoMsNow}"
       let allPairs := (allPairs ++ kwPairs).toList.eraseDups.toArray
       let pairs -- := allPairs -- 
         ←  allPairs.filterM (fun (_, s) => do
