@@ -205,6 +205,7 @@ def tacticList : TacticM <| List String := do
 elab "aide" : tactic =>
   withMainContext do
     let tacStrings ← tacticList
+    let tacStrings := tacStrings.filter (fun s => s != "sorry" && s != "admit")
     firstEffectiveTactic tacStrings
 
 elab "show_tactic_prompt" : tactic => 
