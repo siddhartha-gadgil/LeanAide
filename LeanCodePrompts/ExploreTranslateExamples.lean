@@ -88,4 +88,4 @@ def eg16 := "Functors between categories preserve composition of morphisms."
 
 def eg17 := "If a function $f:\mathbb{C} \to \mathbb C}$ is entire and non-constant, then the set of values that $f(z)$ assumes is either the whole complex plane or the plane minus a single point."
 
-#eval translate eg17
+-- #eval translate eg17

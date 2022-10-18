@@ -4,7 +4,7 @@ open Lean Meta Elab
 
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
-def getCodeCustomJson (s: String)(customPrompts : Array (String × String) := #[])(numSim : Nat:= 5)(numKW: Nat := 4)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Json := do
+def getCodeCustomJson (s: String)(customPrompts : Array (String × String × String) := #[])(numSim : Nat:= 5)(numKW: Nat := 4)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Json := do
   match ← getCachedJson? s with
   | some js => return js
   | none =>    
@@ -14,13 +14,13 @@ def getCodeCustomJson (s: String)(customPrompts : Array (String × String) := #[
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.insert s)
       -- work starts here; before this was caching, polling etc
-      let (pairs, IOOut) ←  
+      let (triples, IOOut) ←  
         if numSim > 0 then  
-          getPromptPairs s numSim numKW scoreBound matchBound 
+          getPromptTriples s numSim numKW scoreBound matchBound 
         else pure (#[], ⟨0, "", ""⟩)
-      let pairs := pairs.reverse
-      let pairs := pairs ++ customPrompts 
-      let prompt := makePrompt s pairs
+      let triples := triples.reverse
+      let triples := triples ++ customPrompts 
+      let prompt := makePromptFromTriple s triples
       mkLog prompt
       -- IO.println s!"seeking Codex completions; time : {← IO.monoMsNow}"
       let fullJson ← openAIQuery prompt queryNum temp
@@ -87,7 +87,7 @@ def arrayToExprWithErr? (outputs: Array String) : TermElabM <| Except String (St
     -- IO.println s!"chosen best result; time : {← IO.monoMsNow}"
     return Except.ok (topStr, elaborated)
 
-def translate (s: String)(customPrompts : Array (String × String) := #[])(numSim : Nat:= 5)(numKW: Nat := 4)(queryNum: Nat := 15)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM (Except String (String × (Array String))) := do
+def translate (s: String)(customPrompts : Array (String × String × String) := #[])(numSim : Nat:= 5)(numKW: Nat := 4)(queryNum: Nat := 15)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM (Except String (String × (Array String))) := do
   -- IO.println s!"started translating {s}; time : {← IO.monoMsNow}"
   let json ← getCodeCustomJson s customPrompts numSim numKW queryNum temp scoreBound matchBound
   let outputs ← jsonToExprStrArray json

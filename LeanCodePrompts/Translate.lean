@@ -183,6 +183,8 @@ def elabLog (s: String) : IO Unit := do
 
 def fixedPrompts:= #[("If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.", "(n : ℕ) (f : ℕ → ℂ) :\n abs (∑ i in finset.range n, f i) ≤ ∑ i in finset.range n, abs (f i) :="), ("If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.", "(n : ℕ) (x y : euclidean_space ℝ (fin n)) :\n ∥x + y∥^2 + ∥x - y∥^2 = 2*∥x∥^2 + 2*∥y∥^2 :="), ("If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.", "(G : Type*) [group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :="), ("Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.", "(X : Type*) [topological_space X]\n (A : set X) (hA : ∀ x ∈ A, ∃ U : set X, is_open U ∧ x ∈ U ∧ U ⊆ A):\n is_open A :=")]
 
+def fixedPromptTriples := fixedPrompts.map (fun (ds, thm) => (ds, thm, "theorem"))
+
 /-- choosing pairs to build a prompt -/
 def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
     (scoreBound: Float)(matchBound: Nat)
@@ -202,9 +204,27 @@ def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
       let pairs -- := allPairs -- 
         ←  allPairs.filterM (fun (_, s) => do
             isElabPrompt s )
-      let kwPairs ←  keywordBasedPrompts docPair s
       return (
           (pairs ++ kwPairs).toList.eraseDups.toArray, simJsonOut)
+
+/-- choosing triples to build a prompt -/
+def getPromptTriples(s: String)(numSim : Nat)(numKW: Nat)
+    (scoreBound: Float)(matchBound: Nat)
+   : TermElabM (Array (String × String × String) × IO.Process.Output) := do
+      let simJsonOut ←  
+        IO.Process.output {cmd:= "curl", args:= 
+          #["-X", "POST", "-H", "Content-type: application/json", "-d", s ++ s!" top_K {numSim}", "localhost:5000/similar_json"]}
+      let triples? ← sentenceSimTriples simJsonOut.stdout
+      let allTriples := triples?.toOption.getD #[]
+      let kwTriples :=
+        if numKW >0 
+        then ←  keywordBasedPrompts docTriple s numKW scoreBound matchBound
+        else #[]        
+      let allTriples := (allTriples ++ kwTriples).toList.eraseDups.toArray
+      let triples ←  allTriples.filterM (fun (_, s, _) => do
+            isElabPrompt s )
+      return (
+          triples, simJsonOut)
 
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
@@ -218,12 +238,12 @@ def getCodeJson (s: String)(numSim : Nat:= 5)(numKW: Nat := 4)(includeFixed: Boo
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.insert s)
       -- work starts here; before this was caching, polling etc
-      let (pairs, IOOut) ←  
+      let (triples, IOOut) ←  
         if numSim > 0 then  
-          getPromptPairs s numSim numKW scoreBound matchBound 
+          getPromptTriples s numSim numKW scoreBound matchBound 
         else pure (#[], ⟨0, "", ""⟩)
-      let pairs := if includeFixed then pairs ++ fixedPrompts else pairs 
-      let prompt := makePrompt s pairs
+      let triples := if includeFixed then triples ++ fixedPromptTriples else triples
+      let prompt := makePromptFromTriple s triples
       mkLog prompt
       let fullJson ← openAIQuery prompt queryNum temp
       let outJson := 

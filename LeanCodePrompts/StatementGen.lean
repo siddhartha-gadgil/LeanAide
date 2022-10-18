@@ -3,48 +3,6 @@ import Lean
 import Lean.Meta
 open Lean Meta Elab
 
-/-- extract prompt pairs from JSON response to local server -/
-def sentenceSimTriples(s: String) : MetaM  <| Except String (Array (String × String × String)) := do
-  let json ← readJson (s) 
-  -- logInfo "obtained json"
-  match json.getArr? with
-  | Except.ok jsonArr => do
-    let pairs ←  jsonArr.mapM fun json => do
-      let docstring : String ←  
-        match (json.getObjVal? "doc_string") with
-        | Except.error e => throwError s!"Error {e} while getting doc_string"
-        | Except.ok js => 
-          match js.getStr? with
-          | Except.error e => throwError s!"Error {e} while processing {js} as string"  
-          | Except.ok s => pure s
-      let args ←  match (json.getObjVal? "args") with
-        | Except.error e => throwError s!"Error {e} while getting theorem"
-        | Except.ok js => 
-          match js.getStr? with
-          | Except.error e => throwError s!"Error {e} while processing {js} as string"  
-          | Except.ok s => pure s
-      let type ←  match (json.getObjVal? "type") with
-        | Except.error e => throwError s!"Error {e} while getting theorem"
-        | Except.ok js => 
-          match js.getStr? with
-          | Except.error e => throwError s!"Error {e} while processing {js} as string"  
-          | Except.ok s => pure s
-      return (docstring, args, type)
-    return Except.ok pairs
-  | Except.error e => return Except.error e
-
-/-- choosing pairs to build a prompt -/
-def getPromptTriples(s: String)(numSim : Nat)
-   : TermElabM (Array (String × String × String) × IO.Process.Output) := do
-      let simJsonOut ←  
-        IO.Process.output {cmd:= "curl", args:= 
-          #["-X", "POST", "-H", "Content-type: application/json", "-d", s ++ s!" top_K {numSim}", "localhost:5000/similar_json"]}
-      let triples? ← sentenceSimTriples simJsonOut.stdout
-      let allTriples := triples?.toOption.getD #[]        
-        -- ←  allPairs.filterM (fun (_, s) => do
-        --     isElabPrompt s )
-      return (
-          allTriples.toList.eraseDups.toArray, simJsonOut)
 
 
 /-- make prompt for continuing statements-/

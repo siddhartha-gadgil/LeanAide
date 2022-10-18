@@ -154,6 +154,10 @@ def fetchStatementsWithKeywordM (mod : Json → IO α) (kw : String) : IO <| Arr
 def docPair (js: Json) : String × String := 
   (js["doc_string"]!.getStr!, js["theorem"]!.getStr!)
 
+def docTriple (js: Json) : String × String × String := 
+  (js["doc_string"]!.getStr!, js["theorem"]!.getStr!, 
+    js["kind"]!.getStr!)
+
 def keywordBasedPrompts (mod : Json → α) (s : String) (number : Nat := 4)(scoreBound: Float := 0.2)(matchBound: Nat := 15) (kwds : Bool := false) : IO <| Array α := do
   let kwdsScores ← extractKeywordsWithScores s (out := kwds)
   let prompts ← kwdsScores.mapM (λ ⟨kw, score⟩ => do
