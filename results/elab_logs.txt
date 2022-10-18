@@ -1,0 +1,1418 @@
+Writing to file: silly-elab-15-0-false-15-8.json
+
+Every prime number is `2` or odd.
+
+success
+
+theorem ∀ (n : ℕ) [h : Fact (Nat.Prime n)], n = 2 ∨ n % 2 = 1
+
+total : 1
+
+elaborated: 1
+
+There are infinitely many odd natural numbers.
+
+success
+
+theorem ∀ (n : ℕ), ∃ m, m > n ∧ Odd m
+
+total : 2
+
+elaborated: 2
+
+The smallest odd prime is `3`.
+
+success
+
+theorem ∀ (n : ℕ) [inst : Fact (Nat.Prime n)], n = 3 ∨ 2 ≤ n
+
+total : 3
+
+elaborated: 3
+
+There are infinitely many odd prime numbers.
+
+success
+
+theorem ∀ (p : ℕ), ∃ p', p' > p ∧ p' % 2 = 1 ∧ Nat.Prime p'
+
+total : 4
+
+elaborated: 4
+
+If a vector space has dimension `2` then it is finite dimensional.
+
+success
+
+theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroupₓ V] [inst_2 : Module K V],
+  Nonempty (Basis ℕ K V) ↔ FiniteDimensional K V
+
+total : 5
+
+elaborated: 5
+
+Every field is a division ring.
+
+success
+
+theorem {K : Type u} → [inst : Field K] → DivisionRing K
+
+total : 6
+
+elaborated: 6
+
+If a space has dimension `2` then it is finite dimensional.
+
+success
+
+theorem ∀ (K : Type u_1) (V : Type u_2) [inst : DivisionRing K] [inst_1 : AddCommGroupₓ V] [inst_2 : Module K V]
+  [inst_3 : Module.Finite K V] [inst_4 : Nontrivial K] [inst_5 : Nontrivial V], FiniteDimensional K V
+
+total : 7
+
+elaborated: 7
+
+Every natural number has a successor.
+
+success
+
+theorem ∀ (n : ℕ), ∃ m, m > n
+
+total : 8
+
+elaborated: 8
+
+Every natural number is less than its successor.
+
+success
+
+theorem ∀ (n : ℕ), n < Nat.succ n
+
+total : 9
+
+elaborated: 9
+
+Every set is Lebesgue measurable.
+
+success
+
+theorem ∀ {α : Type u_1} {m : MeasurableSpace α} (s : Set α), MeasurableSet s
+
+total : 10
+
+elaborated: 10
+
+Every set of Borel measure zero is Lebesgue measurable.
+
+No valid output from Codex; outputs below
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  hs :  borel_measurable_set  s ) ->  MeasurableSet  s.measurable
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  hs :  borel_measurable_set  s ) ->  MeasurableSet  s.measurable
+
+ {  α :  Type  u_1 } ->  [  BorelSpace  α ] ->  [  MeasurableSpace  α ] ->  {  s :  Set  α } ->  (  h :   ennreal.to_real   (   MeasureTheory.Measure  s  ) =  0 ) ->  measure_theory.measurable_set  s
+
+ {  α :  Type  u_1 } ->  [  BorelSpace  α ] ->  [  MeasurableSpace  α ] ->  {  s :  Setₓ  α } ->  (  h :   ennreal.to_real   (   MeasureTheory.Measure  s  ) =  0 ) ->  measure_theory.measurable_set  s
+
+ {  α :  Type  u_1 } ->  {  s :  Set  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  (  hs :  borel_measure_zero  s ) ->  lebesgue_measurable  s
+
+ {  α :  Type  u_1 } ->  {  s :  Setₓ  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  (  hs :  borel_measure_zero  s ) ->  lebesgue_measurable  s
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  hs :   borel_space.measure  α s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  hs :   borel_space.measure  α s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  hs :  borel.is_measurable_le  s  0 ) ->  lebesgue_measurable  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  hs :  borel.is_measurable_le  s  0 ) ->  lebesgue_measurable  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->   Measurable  s ↔  borel_measurable  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->   Measurable  s ↔  borel_measurable  s
+
+ {  α :  Type  u_1 } ->  {  s :  Set  α } ->  {  m :  MeasureTheory.Measure  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  (  hs :   m  s =  0 ) ->  Measurable  s
+
+ {  α :  Type  u_1 } ->  {  s :  Setₓ  α } ->  {  m :  MeasureTheory.Measure  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  (  hs :   m  s =  0 ) ->  Measurable  s
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  (  s :  Set  α ) ->    borel_measure  α s =  0 →  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  (  s :  Setₓ  α ) ->    borel_measure  α s =  0 →  MeasurableSet  s
+
+{α : Type u_1} {γ : Type u_3} [tα : topological_space α] [measurable_space α] [measurable_space γ] [borel_space γ] {f : α → γ} (hf : measurable_set (f ⁻¹' {a | a ∈ borel_measurable.measurable_set' γ})) (m : measure_theory.measure γ) (hfm : m (f ⁻¹' borel_measurable.measurable_set' γ) = 0) : measurable_set (f
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  (  s :  Set  α ) ->    borel_measure  α s =  0 →  lebesgue_measurable  α s
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  (  s :  Setₓ  α ) ->    borel_measure  α s =  0 →  lebesgue_measurable  α s
+
+ {  α :  Type  u } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  (  s :  Set  α ) ->    measure_theory.measure_theory.borel_measure  α s =  0 →  measure_theory.measurable_set  s
+
+ {  α :  Type  u } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  (  s :  Setₓ  α ) ->    measure_theory.measure_theory.borel_measure  α s =  0 →  measure_theory.measurable_set  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasureTheory.Measure  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  h :   measure_theory.measure_of  f =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasureTheory.Measure  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  h :   measure_theory.measure_of  f =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  hs :   borel_measure  s =  0 ) ->  Measurable  s
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  hs :   borel_measure  s =  0 ) ->  Measurable  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->   borel_measurable  s →  Measurable  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->   borel_measurable  s →  Measurable  s
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  hs :  measure_theory.borel_measurable  s ) ->  (  hzero :  measure_theory.measure_theory.ae  s ) ->  measure_theory.measurable_set  s
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  hs :  measure_theory.borel_measurable  s ) ->  (  hzero :  measure_theory.measure_theory.ae  s ) ->  measure_theory.measurable_set  s
+
+failed to elaborate
+
+outputs: #[{α : Type u_1} [measurable_space α] [borel_space α] {s : set α} (hs : borel_measurable_set s) : measurable_set s.measurable , {α : Type u_1} [borel_space α] [measurable_space α] {s : set α} (h : ennreal.to_real (measure_theory.measure s) = 0) : measure_theory.measurable_set s , {α : Type u_1} {s : set α} [measurable_space α] [borel_space α] (hs : borel_measure_zero s) : lebesgue_measurable s , {α : Type u_1} [topological_space α] [measurable_space α] [borel_space α] {s : set α} (hs : borel_space.measure α s = 0) : measurable_set s , {α : Type u_1} [measurable_space α] [borel_space α] {s : set α} (hs : borel.is_measurable_le s 0) : lebesgue_measurable s , {α : Type u_1} [measurable_space α] [borel_space α] {s : set α} : is_measurable s ↔ borel_measurable s , {α : Type u_1} {s : set α} {m : measure_theory.measure α} [measurable_space α] [borel_space α] (hs : m s = 0) : is_measurable s , {α : Type u_1} [topological_space α] [measurable_space α] [borel_space α] (s : set α) : borel_measure α s = 0 → measurable_set s , {α : Type u_1} {γ : Type u_3} [tα : topological_space α] [measurable_space α] [measurable_space γ] [borel_space γ] {f : α → γ} (hf : measurable_set (f ⁻¹' {a | a ∈ borel_measurable.measurable_set' γ})) (m : measure_theory.measure γ) (hfm : m (f ⁻¹' borel_measurable.measurable_set' γ) = 0) : measurable_set (f, {α : Type u_1} [topological_space α] [measurable_space α] (s : set α) : borel_measure α s = 0 → lebesgue_measurable α s , {α : Type u} [measurable_space α] [borel_space α] (s : set α) : measure_theory.measure_theory.borel_measure α s = 0 → measure_theory.measurable_set s , {α : Type u_1} {m : measure_theory.measure α} [measurable_space α] [borel_space α] {s : set α} (h : measure_theory.measure_of f = 0) : measurable_set s , {α : Type u_1} [topological_space α] [measurable_space α] [borel_space α] {s : set α} (hs : borel_measure s = 0) : measurable s , {α : Type u_1} [measurable_space α] [borel_space α] {s : set α} : borel_measurable s → is_measurable s , {α : Type u_1} [topological_space α] [measurable_space α] [borel_space α] {s : set α} (hs : measure_theory.borel_measurable s) (hzero : measure_theory.measure_theory.ae s) : measure_theory.measurable_set s ]
+
+total : 11
+
+elaborated: 10
+
+No prime number is a perfect square.
+
+success
+
+theorem ∀ {p : ℕ} [inst : Fact (Nat.Prime p)], ¬∃ t, t * t = p
+
+total : 12
+
+elaborated: 11
+
+Every odd prime number is greater than `2`.
+
+success
+
+theorem ∀ (p : ℕ) [inst : Fact (Nat.Prime p)], Odd p → 3 ≤ p
+
+total : 13
+
+elaborated: 12
+
+The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares.
+
+No valid output from Codex; outputs below
+
+failed to elaborate
+
+outputs: #[]
+
+total : 14
+
+elaborated: 12
+
+Every compact topological space is locally compact.
+
+No valid output from Codex; outputs below
+
+failed to elaborate
+
+outputs: #[]
+
+total : 15
+
+elaborated: 12
+
+Every continuous function is uniformly continuous.
+
+success
+
+theorem ∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β},
+  Continuous f → UniformContinuous f
+
+total : 16
+
+elaborated: 13
+
+`6` is not the sum of two distinct prime numbers.
+
+success
+
+theorem ∀ {p q : ℕ}, Nat.Prime p → Nat.Prime q → p + q ≠ 6
+
+total : 17
+
+elaborated: 14
+
+No integer is irrational.
+
+No valid output from Codex; outputs below
+
+ (  z :  ℤ ) ->  Irrational  z
+
+ {  a :  ℤ } ->  ¬  Irrational  a
+
+{n : ℤ} (h : irrational n) : false 
+
+ {  a :  ℤ } ->  ¬  Irrational  a
+
+ {  α :  Type  u_1 } ->  [  LinearOrderedField  α ] ->  (  a :  ℤ ) ->  Irrational  a
+
+{a : ℤ} : irrational a ↔ false 
+
+ ∀   (  z  :  ℤ  )  ,  ¬  Irrational  z
+
+ {  α :  Type  u_1 } ->  [  LinearOrderedField  α ] ->  (  a : α ) ->   Irrational  a →  ¬  Int  a
+
+ {  α :  Type  u_1 } ->  [  LinearOrderedField  α ] ->  {  x : α } ->  (  h :  ¬  Int  x ) ->  ¬  Int   (   - x  )
+
+ {  α :  Type  u_1 } ->  [  Ring  α ] ->  (  a : α ) ->   ¬  (   Irrational  a  ) ↔   (  a   :  ℚ ) ∈   @ Set.Range  int.cast  ℚ
+
+ {  α :  Type  u_1 } ->  [  Ringₓ  α ] ->  (  a : α ) ->   ¬  (   Irrational  a  ) ↔   (  a   :  ℚ ) ∈   @ Set.Range  int.cast  ℚ
+
+ {  α :  Type  u_1 } ->  [  Ringₓₓ  α ] ->  (  a : α ) ->   ¬  (   Irrational  a  ) ↔   (  a   :  ℚ ) ∈   @ Set.Range  int.cast  ℚ
+
+ {  α :  Type  u_1 } ->  [  LinearOrderedField  α ] ->  (  x : α ) ->  (  h :  Irrational  x ) ->  ¬  Int  x
+
+ {  a :  ℤ } ->  (  h :  Irrational  a ) ->  ¬  ∃    (   b :  ℤ ) ,  a = b
+
+ (  z :  ℤ ) ->  Irrational  z
+
+ {  α :  Type  u } ->  [  OrderedSemiring  α ] ->  (  x : α ) ->   Irrational  x →  ¬  (   ∃     y  :  ℤ ,  x = y  )
+
+{z : ℤ} (h : irrational z) : false 
+
+failed to elaborate
+
+outputs: #[(z : ℤ) : irrational z , {a : ℤ} : ¬irrational a , {n : ℤ} (h : irrational n) : false , {a : ℤ} : ¬is_irrational a , {α : Type u_1} [linear_ordered_field α] (a : ℤ) : irrational a , {a : ℤ} : irrational a ↔ false ,  : ∀ (z : ℤ), ¬irrational z , {α : Type u_1} [linear_ordered_field α] (a : α) : irrational a → ¬ is_int a , {α : Type u_1} [linear_ordered_field α] {x : α} (h : ¬is_int x) : ¬is_int (-x) , {α : Type u_1} [ring α] (a : α) : ¬(irrational a) ↔ (a : ℚ) ∈ @set.range int.cast ℚ , {α : Type u_1} [linear_ordered_field α] (x : α) (h : irrational x) : ¬int x , {a : ℤ} (h : irrational a) : ¬∃ (b : ℤ), a = b ,  (z : ℤ) : irrational z , {α : Type u} [ordered_semiring α] (x : α) : irrational x → ¬(∃ y : ℤ, x = y) , {z : ℤ} (h : irrational z) : false ]
+
+total : 18
+
+elaborated: 14
+
+The identity element in a ring is a unit.
+
+success
+
+theorem ∀ {R : Type u} [inst : Semiringₓ R], IsUnit 1
+
+total : 19
+
+elaborated: 15
+
+Every subgroup of a group is a group.
+
+success
+
+theorem {G : Type u_1} → [inst : Groupₓ G] → Group (Subgroup G)
+
+total : 20
+
+elaborated: 16
+
+The sum of two natural numbers is a natural number.
+
+success
+
+theorem Add ℕ
+
+total : 21
+
+elaborated: 17
+
+The identity element of a group has finite order.
+
+success
+
+theorem ∀ {G : Type u} [inst : Groupₓ G], IsOfFinOrder 1
+
+total : 22
+
+elaborated: 18
+
+`7` is a prime number.
+
+success
+
+theorem Fact (Prime 7)
+
+total : 23
+
+elaborated: 19
+
+There are `3` prime numbers below `8`.
+
+success
+
+theorem Fact (3 = 3)
+
+total : 24
+
+elaborated: 20
+
+The empty set is contained in every finite set.
+
+success
+
+theorem ∀ {α : Type u_1} [inst : DecidableEq α] [inst : Fintype α], ∅ ≤ s
+
+total : 25
+
+elaborated: 21
+
+Every infinite set contains a finite set.
+
+No valid output from Codex; outputs below
+
+{α : Type*} {s : set α} : ∃ f:finset α, s = ⋃ f 
+
+ {  α :  Type  u } ->  [  Fintype  α ] ->  {  x :  Set  α } ->  (  h :  Infinite  x ) ->  ∃     s  :  set.finite  α ,   s .  1 ⊆ x
+
+ {  α :  Type  u } ->  [  Fintype  α ] ->  {  x :  Setₓ  α } ->  (  h :  Infinite  x ) ->  ∃     s  :  set.finite  α ,   s .  1 ⊆ x
+
+ {  α :  Type  u } ->  [  Fintypeₓ  α ] ->  {  x :  Set  α } ->  (  h :  Infinite  x ) ->  ∃     s  :  set.finite  α ,   s .  1 ⊆ x
+
+ {  α :  Type  u } ->  [  Fintypeₓ  α ] ->  {  x :  Setₓ  α } ->  (  h :  Infinite  x ) ->  ∃     s  :  set.finite  α ,   s .  1 ⊆ x
+
+ {  α :  Type  u } ->  {  s :  Set  α } ->  (  h :  Infinite  s ) ->  ∃     t  :  Set  α ,   Fintype  t ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Set  α } ->  (  h :  Infinite  s ) ->  ∃     t  :  Set  α ,   Fintypeₓ  t ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Set  α } ->  (  h :  Infinite  s ) ->  ∃     t  :  Setₓ  α ,   Fintype  t ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Set  α } ->  (  h :  Infinite  s ) ->  ∃     t  :  Setₓ  α ,   Fintypeₓ  t ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Setₓ  α } ->  (  h :  Infinite  s ) ->  ∃     t  :  Set  α ,   Fintype  t ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Setₓ  α } ->  (  h :  Infinite  s ) ->  ∃     t  :  Set  α ,   Fintypeₓ  t ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Setₓ  α } ->  (  h :  Infinite  s ) ->  ∃     t  :  Setₓ  α ,   Fintype  t ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Setₓ  α } ->  (  h :  Infinite  s ) ->  ∃     t  :  Setₓ  α ,   Fintypeₓ  t ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Set  α } ->   Infinite  s →  ∃     t  :  Finset  α ,  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Setₓ  α } ->   Infinite  s →  ∃     t  :  Finset  α ,  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Set  α } ->  (  h :  Infinite  s ) ->  ∃     t  :  Set  α ,   Finite  t ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Set  α } ->  (  h :  Infinite  s ) ->  ∃     t  :  Setₓ  α ,   Finite  t ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Setₓ  α } ->  (  h :  Infinite  s ) ->  ∃     t  :  Set  α ,   Finite  t ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Setₓ  α } ->  (  h :  Infinite  s ) ->  ∃     t  :  Setₓ  α ,   Finite  t ∧  t ⊆ s
+
+ {  α :  Type  u_1 } ->  (  s :  Set  α ) ->  (  h :  Infinite  s ) ->  ∃     t  :  Set  α ,   Finite  t ∧  t ⊆ s
+
+ {  α :  Type  u_1 } ->  (  s :  Set  α ) ->  (  h :  Infinite  s ) ->  ∃     t  :  Setₓ  α ,   Finite  t ∧  t ⊆ s
+
+ {  α :  Type  u_1 } ->  (  s :  Setₓ  α ) ->  (  h :  Infinite  s ) ->  ∃     t  :  Set  α ,   Finite  t ∧  t ⊆ s
+
+ {  α :  Type  u_1 } ->  (  s :  Setₓ  α ) ->  (  h :  Infinite  s ) ->  ∃     t  :  Setₓ  α ,   Finite  t ∧  t ⊆ s
+
+ {  α :  Type  u } ->  (  s :  Set  α ) ->  (  h :  Infinite  s ) ->  ∃     t  :  Set  α ,   Finite  t ∧  s ⊆ t
+
+ {  α :  Type  u } ->  (  s :  Set  α ) ->  (  h :  Infinite  s ) ->  ∃     t  :  Setₓ  α ,   Finite  t ∧  s ⊆ t
+
+ {  α :  Type  u } ->  (  s :  Setₓ  α ) ->  (  h :  Infinite  s ) ->  ∃     t  :  Set  α ,   Finite  t ∧  s ⊆ t
+
+ {  α :  Type  u } ->  (  s :  Setₓ  α ) ->  (  h :  Infinite  s ) ->  ∃     t  :  Setₓ  α ,   Finite  t ∧  s ⊆ t
+
+ {  α :  Type  u } ->  (  s :  Set  α ) ->   Infinite  s →  ∃     t  :  Set  α ,   Finite  t ∧   s ⊇ t  ss ⊇ t  s ⊇ t
+
+ {  α :  Type  u } ->  (  s :  Set  α ) ->   Infinite  s →  ∃     t  :  Setₓ  α ,   Finite  t ∧   s ⊇ t  ss ⊇ t  s ⊇ t
+
+ {  α :  Type  u } ->  (  s :  Setₓ  α ) ->   Infinite  s →  ∃     t  :  Set  α ,   Finite  t ∧   s ⊇ t  ss ⊇ t  s ⊇ t
+
+ {  α :  Type  u } ->  (  s :  Setₓ  α ) ->   Infinite  s →  ∃     t  :  Setₓ  α ,   Finite  t ∧   s ⊇ t  ss ⊇ t  s ⊇ t
+
+ {  α :  Type  u } ->  {  s :  Set  α } ->   Infinite  s →  ∃     t  :  Set  α ,   Finite  t ∧  s.nonempty ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Set  α } ->   Infinite  s →  ∃     t  :  Setₓ  α ,   Finite  t ∧  s.nonempty ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Setₓ  α } ->   Infinite  s →  ∃     t  :  Set  α ,   Finite  t ∧  s.nonempty ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Setₓ  α } ->   Infinite  s →  ∃     t  :  Setₓ  α ,   Finite  t ∧  s.nonempty ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Set  α } ->  (  h :  Infinite  s ) ->  Nonempty   (   finite_subset  s  )
+
+ {  α :  Type  u } ->  {  s :  Setₓ  α } ->  (  h :  Infinite  s ) ->  Nonempty   (   finite_subset  s  )
+
+ {  α :  Type  u } ->  {  s :  Set  α } ->  (  h :  Infinite  s ) ->  ∃     t  :  Set  α ,   Finite  t ∧   s ⊇ t  ss ⊇ t  s ⊇ t
+
+ {  α :  Type  u } ->  {  s :  Set  α } ->  (  h :  Infinite  s ) ->  ∃     t  :  Setₓ  α ,   Finite  t ∧   s ⊇ t  ss ⊇ t  s ⊇ t
+
+ {  α :  Type  u } ->  {  s :  Setₓ  α } ->  (  h :  Infinite  s ) ->  ∃     t  :  Set  α ,   Finite  t ∧   s ⊇ t  ss ⊇ t  s ⊇ t
+
+ {  α :  Type  u } ->  {  s :  Setₓ  α } ->  (  h :  Infinite  s ) ->  ∃     t  :  Setₓ  α ,   Finite  t ∧   s ⊇ t  ss ⊇ t  s ⊇ t
+
+ {  α :  Type  u_2 } ->  (  s :  Set  α ) ->   Infinite  s →  ∃     t  :  Set  α ,   Finite  t ∧  Nonempty   (   t ⊆ s  )
+
+ {  α :  Type  u_2 } ->  (  s :  Set  α ) ->   Infinite  s →  ∃     t  :  Setₓ  α ,   Finite  t ∧  Nonempty   (   t ⊆ s  )
+
+ {  α :  Type  u_2 } ->  (  s :  Setₓ  α ) ->   Infinite  s →  ∃     t  :  Set  α ,   Finite  t ∧  Nonempty   (   t ⊆ s  )
+
+ {  α :  Type  u_2 } ->  (  s :  Setₓ  α ) ->   Infinite  s →  ∃     t  :  Setₓ  α ,   Finite  t ∧  Nonempty   (   t ⊆ s  )
+
+ {  α :  Type  u } ->  (  s :  Set  α ) ->  (  h :  Infinite  s ) ->  ∃    (   f :  Set  α ) ,   Finite  f ∧  s.nonempty ∧   s ⊇ f  ss ⊇ f  s ⊇ f
+
+ {  α :  Type  u } ->  (  s :  Set  α ) ->  (  h :  Infinite  s ) ->  ∃    (   f :  Setₓ  α ) ,   Finite  f ∧  s.nonempty ∧   s ⊇ f  ss ⊇ f  s ⊇ f
+
+ {  α :  Type  u } ->  (  s :  Setₓ  α ) ->  (  h :  Infinite  s ) ->  ∃    (   f :  Set  α ) ,   Finite  f ∧  s.nonempty ∧   s ⊇ f  ss ⊇ f  s ⊇ f
+
+ {  α :  Type  u } ->  (  s :  Setₓ  α ) ->  (  h :  Infinite  s ) ->  ∃    (   f :  Setₓ  α ) ,   Finite  f ∧  s.nonempty ∧   s ⊇ f  ss ⊇ f  s ⊇ f
+
+ {  α :  Type  u } ->  (  s :  Set  α ) ->   set.infinite  s →  ∃     t  :  Set  α ,  t.finite ∧  t ⊆ s
+
+ {  α :  Type  u } ->  (  s :  Set  α ) ->   set.infinite  s →  ∃     t  :  Setₓ  α ,  t.finite ∧  t ⊆ s
+
+ {  α :  Type  u } ->  (  s :  Setₓ  α ) ->   set.infinite  s →  ∃     t  :  Set  α ,  t.finite ∧  t ⊆ s
+
+ {  α :  Type  u } ->  (  s :  Setₓ  α ) ->   set.infinite  s →  ∃     t  :  Setₓ  α ,  t.finite ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Set  α } ->   Infinite  s →  ∃     t  ,   Finite  t ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Setₓ  α } ->   Infinite  s →  ∃     t  ,   Finite  t ∧  t ⊆ s
+
+failed to elaborate
+
+outputs: #[{α : Type*} {s : set α} : ∃ f:finset α, s = ⋃ f , {α : Type u} [fintype α] {x : set α} (h : infinite x) : ∃ s : set.finite α, s.1 ⊆ x , {α : Type u} {s : set α} (h : infinite s) : ∃ t : set α, fintype t ∧ t ⊆ s , {α : Type u} {s : set α} : infinite s → ∃t:finset α, t ⊆ s , {α : Type u} {s : set α} (h : infinite s) : ∃t : set α, finite t ∧ t ⊆ s , {α : Type u_1} (s : set α) (h : infinite s) : ∃ t : set α, finite t ∧ t ⊆ s , {α : Type u} (s : set α) (h : infinite s) : ∃ t : set α, finite t ∧ s ⊆ t , {α : Type u} (s : set α) : infinite s → ∃ t : set α, finite t ∧ s ⊇ t , {α : Type u} {s : set α} : infinite s → ∃ t : set α, finite t ∧ s.nonempty ∧ t ⊆ s , {α : Type u} {s : set α} (h : infinite s) : nonempty (finite_subset s) , {α : Type u} {s : set α} (h : infinite s) : ∃ t : set α, finite t ∧ s ⊇ t , {α : Type u_2} (s : set α) : infinite s → ∃ t : set α, finite t ∧ nonempty (t ⊆ s) , {α : Type u} (s : set α) (h : infinite s) : ∃ (f : set α), finite f ∧ s.nonempty ∧ s ⊇ f , {α : Type u} (s : set α) : set.infinite s → ∃ t : set α, t.finite ∧ t ⊆ s , {α : Type u} {s : set α} : infinite s → ∃ t, finite t ∧ t ⊆ s ]
+
+total : 26
+
+elaborated: 21
+
+Every commutative ring is a monoid.
+
+success
+
+theorem {R : Type u_1} → [inst : CommRing R] → Monoid R
+
+total : 27
+
+elaborated: 22
+
+There is no field of order `10`.
+
+success
+
+theorem ∀ {α : Type u} [inst : Fintype α], Fintype.card α = 10 → ¬Nonempty (Field α)
+
+total : 28
+
+elaborated: 23
+
+Every odd natural number is the sum of two distinct natural numbers.
+
+success
+
+theorem ∀ {n : ℕ}, Odd n → ∃ m k, 2 * m + 1 + (2 * k + 1) = n ∧ m ≠ k
+
+total : 29
+
+elaborated: 24
+
+Every element in the trivial group has finite order.
+
+success
+
+theorem ∀ {G : Type u} [inst : Groupₓ G] {x : G}, IsOfFinOrder x
+
+total : 30
+
+elaborated: 25
+
+The square of an even number is even.
+
+success
+
+theorem ∀ (m : ℕ), Even m → Even (m * m)
+
+total : 31
+
+elaborated: 26
+
+Every commutative division ring is a field.
+
+success
+
+theorem (K : Type u) → [inst : CommRing K] → [inst : DivisionRing K] → Field K
+
+total : 32
+
+elaborated: 27
+
+The image of the identity element under the identity map is the identity element.
+
+success
+
+theorem ∀ {α : Type u} [inst : Group α] (x : α), id (id x) = x
+
+total : 33
+
+elaborated: 28
+
+Every point is a fixed point of the identity function on a space.
+
+success
+
+theorem ∀ {α : Type u_1} [inst : TopologicalSpace α] (x : α), Function.IsFixedPt id x
+
+total : 34
+
+elaborated: 29
+
+The diameter of a singleton space is `0`.
+
+success
+
+theorem ∀ {α : Type u} [inst : PseudoEmetricSpace α] {x : α}, Emetric.diam ?m.3278535 = 0
+
+total : 35
+
+elaborated: 30
+
+Every group is non-empty.
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G], Nonempty G
+
+total : 36
+
+elaborated: 31
+
+All connected components of a topological space are connected.
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] (x : α), IsConnected (ConnectedComponent x)
+
+total : 37
+
+elaborated: 32
+
+The ring of integers has a maximal ideal.
+
+No valid output from Codex; outputs below
+
+ {  R :  Type  u } ->  {  Γ₀ :  Type  v } ->  [  CommRing  R ] ->  [  LinearOrderedCommGroupWithZero  Γ₀ ] ->  (  v :  Valuation  R Γ₀ ) ->  ideal.is_maximal   (  v.int_coe   :  ideal.prime  R )
+
+ {  R :  Type  u } ->  {  Γ₀ :  Type  v } ->  [  CommRingₓ  R ] ->  [  LinearOrderedCommGroupWithZero  Γ₀ ] ->  (  v :  Valuation  R Γ₀ ) ->  ideal.is_maximal   (  v.int_coe   :  ideal.prime  R )
+
+ {  R :  Type  u } ->  {  Γ₀ :  Type  v } ->  [  CommRingₓₓ  R ] ->  [  LinearOrderedCommGroupWithZero  Γ₀ ] ->  (  v :  Valuation  R Γ₀ ) ->  ideal.is_maximal   (  v.int_coe   :  ideal.prime  R )
+
+ (  K :  Type  u_1 ) ->  [  Field  K ] ->  Nonempty   (   maximal_ideal   (   ring_of_integers  K  )  )
+
+ {  R :  Type  u } ->  [  CommRing  R ] ->  [  LocalRing  R ] ->   (   LocalRing.maximalIdeal  R  ) . is_maximal
+
+ {  R :  Type  u } ->  [  CommRingₓ  R ] ->  [  LocalRing  R ] ->   (   LocalRing.maximalIdeal  R  ) . is_maximal
+
+ {  R :  Type  u } ->  [  CommRingₓₓ  R ] ->  [  LocalRing  R ] ->   (   LocalRing.maximalIdeal  R  ) . is_maximal
+
+ {  A :  Type  u } ->  [  integral_domain  A ] ->   Ideal   (   ring_of_integers  A  ) ≠  ⊥
+
+ {  R :  Type  u_1 } ->  {  Γ₀ :  Type  v } ->  [  Ring  R ] ->  [  LinearOrderedCommGroupWithZero  Γ₀ ] ->  (  v :  Valuation  R Γ₀ ) ->  v.valuation_monoid.is_noetherian  R
+
+ {  R :  Type  u_1 } ->  {  Γ₀ :  Type  v } ->  [  Ringₓ  R ] ->  [  LinearOrderedCommGroupWithZero  Γ₀ ] ->  (  v :  Valuation  R Γ₀ ) ->  v.valuation_monoid.is_noetherian  R
+
+ {  R :  Type  u_1 } ->  {  Γ₀ :  Type  v } ->  [  Ringₓₓ  R ] ->  [  LinearOrderedCommGroupWithZero  Γ₀ ] ->  (  v :  Valuation  R Γ₀ ) ->  v.valuation_monoid.is_noetherian  R
+
+ (  R :  Type  u_2 ) ->  [  CommRing  R ] ->  [  IsDomain  R ] ->  is_maximal_ideal   (   ℤ   :  Subring  R )
+
+ (  R :  Type  u_2 ) ->  [  CommRingₓ  R ] ->  [  IsDomain  R ] ->  is_maximal_ideal   (   ℤ   :  Subring  R )
+
+ (  R :  Type  u_2 ) ->  [  CommRingₓₓ  R ] ->  [  IsDomain  R ] ->  is_maximal_ideal   (   ℤ   :  Subring  R )
+
+{R : Type u_1} [ring R] [is_integral_domain R] (I : ideal R) (hI : I.nonzero) : ∃ p : ideal R, p.prime ∧ p ≤ I 
+
+ {  R :  Type  u_1 } ->  [  CommRing  R ] ->  (  v :  Valuation  R  ℚ ) ->  (  h : v.is_discrete ) ->  is_maximal_ideal   (   valuation.maximal_ideal  v  )
+
+ {  R :  Type  u_1 } ->  [  CommRingₓ  R ] ->  (  v :  Valuation  R  ℚ ) ->  (  h : v.is_discrete ) ->  is_maximal_ideal   (   valuation.maximal_ideal  v  )
+
+ {  R :  Type  u_1 } ->  [  CommRingₓₓ  R ] ->  (  v :  Valuation  R  ℚ ) ->  (  h : v.is_discrete ) ->  is_maximal_ideal   (   valuation.maximal_ideal  v  )
+
+ (  R :  Type  u ) ->  [  DiscreteValuationRing  R ] ->   (   ring_of_integers  R  ) . is_maximal_ideal
+
+ (  R :  Type  u_1 ) ->  [  CommRing  R ] ->  [  IsIntegrallyClosed  R  ℤ ] ->  IsNoetherianRing   (  Subtype.val   :   Ideal  R → R )
+
+ (  R :  Type  u_1 ) ->  [  CommRingₓ  R ] ->  [  IsIntegrallyClosed  R  ℤ ] ->  IsNoetherianRing   (  Subtype.val   :   Ideal  R → R )
+
+ (  R :  Type  u_1 ) ->  [  CommRingₓₓ  R ] ->  [  IsIntegrallyClosed  R  ℤ ] ->  IsNoetherianRing   (  Subtype.val   :   Ideal  R → R )
+
+{R : Type u_1} [comm_ring R] [integral_domain R] [is_noetherian R] (O : subring R) [is_subring_ring_of_integers O] : ∃ (I : ideal R), is_maximal_ideal I 
+
+ {  R :  Type  u } ->  {  Γ₀ :  Type  v } ->  [  CommRing  R ] ->  [  LinearOrderedCommGroupWithZero  Γ₀ ] ->  [  Nontrivial  Γ₀ ] ->  (  v :  Valuation  R Γ₀ ) ->  (  h :  IsRingHom   (   valuation.to_valuation_hom  v  )  . valuation.to_valuation_hom v.property.domain ) ->  ∃     m  :  Ideal  R ,  ideal.is_maximal  m
+
+ {  R :  Type  u } ->  {  Γ₀ :  Type  v } ->  [  CommRingₓ  R ] ->  [  LinearOrderedCommGroupWithZero  Γ₀ ] ->  [  Nontrivial  Γ₀ ] ->  (  v :  Valuation  R Γ₀ ) ->  (  h :  IsRingHom   (   valuation.to_valuation_hom  v  )  . valuation.to_valuation_hom v.property.domain ) ->  ∃     m  :  Ideal  R ,  ideal.is_maximal  m
+
+ {  R :  Type  u } ->  {  Γ₀ :  Type  v } ->  [  CommRingₓₓ  R ] ->  [  LinearOrderedCommGroupWithZero  Γ₀ ] ->  [  Nontrivial  Γ₀ ] ->  (  v :  Valuation  R Γ₀ ) ->  (  h :  IsRingHom   (   valuation.to_valuation_hom  v  )  . valuation.to_valuation_hom v.property.domain ) ->  ∃     m  :  Ideal  R ,  ideal.is_maximal  m
+
+ {  R :  Type  u_1 } ->  [  LocalRing  R ] ->  [  int_domain  R ] ->  principal_ideal_ring.is_maximal_ideal  R int_ring.is_subring
+
+ (  R :  Type  u_1 ) ->  [  CommRing  R ] ->  ideal.is_maximal   (   ring_of_integers  R  )  (   principal  Ideal.span  1  )
+
+ (  R :  Type  u_1 ) ->  [  CommRingₓ  R ] ->  ideal.is_maximal   (   ring_of_integers  R  )  (   principal  Ideal.span  1  )
+
+ (  R :  Type  u_1 ) ->  [  CommRingₓₓ  R ] ->  ideal.is_maximal   (   ring_of_integers  R  )  (   principal  Ideal.span  1  )
+
+ {  R :  Type  u_2 } ->  [  CommRing  R ] ->  [  IsNoetherianRing  R ] ->  (  H :  is_integral_domain  R ) ->  Nonempty   (   maximal_ideal  R  )
+
+ {  R :  Type  u_2 } ->  [  CommRingₓ  R ] ->  [  IsNoetherianRing  R ] ->  (  H :  is_integral_domain  R ) ->  Nonempty   (   maximal_ideal  R  )
+
+ {  R :  Type  u_2 } ->  [  CommRingₓₓ  R ] ->  [  IsNoetherianRing  R ] ->  (  H :  is_integral_domain  R ) ->  Nonempty   (   maximal_ideal  R  )
+
+failed to elaborate
+
+outputs: #[{R : Type u} {Γ₀ : Type v} [comm_ring R] [linear_ordered_comm_group_with_zero Γ₀] (v : valuation R Γ₀) :
+  ideal.is_maximal (v.int_coe : ideal.prime R) , (K : Type u_1) [field K] : nonempty (maximal_ideal (ring_of_integers K)) , {R : Type u} [comm_ring R] [local_ring R] : (local_ring.maximal_ideal R).is_maximal , {A : Type u} [integral_domain A] : ideal (ring_of_integers A) ≠ ⊥ , {R : Type u_1} {Γ₀ : Type v} [ring R] [linear_ordered_comm_group_with_zero Γ₀] (v : valuation R Γ₀) : v.valuation_monoid.is_noetherian R , (R : Type u_2) [comm_ring R] [is_domain R] : is_maximal_ideal (ℤ : subring R) , {R : Type u_1} [ring R] [is_integral_domain R] (I : ideal R) (hI : I.nonzero) : ∃ p : ideal R, p.prime ∧ p ≤ I , {R : Type u_1} [comm_ring R] (v : valuation R ℚ) (h : v.is_discrete) : is_maximal_ideal (valuation.maximal_ideal v) , (R : Type u) [discrete_valuation_ring R] : (ring_of_integers R).is_maximal_ideal , (R : Type u_1) [comm_ring R] [is_integrally_closed R ℤ] : is_noetherian_ring (subtype.val : ideal R → R) , {R : Type u_1} [comm_ring R] [integral_domain R] [is_noetherian R] (O : subring R) [is_subring_ring_of_integers O] : ∃ (I : ideal R), is_maximal_ideal I , {R : Type u} {Γ₀ : Type v} [comm_ring R] [linear_ordered_comm_group_with_zero Γ₀] [nontrivial Γ₀] (v : valuation R Γ₀) (h : is_ring_hom (valuation.to_valuation_hom v) . valuation.to_valuation_hom v.property.domain) : ∃ m : ideal R, ideal.is_maximal m , {R : Type u_1} [local_ring R] [int_domain R] : principal_ideal_ring.is_maximal_ideal R int_ring.is_subring , (R : Type u_1) [comm_ring R] : ideal.is_maximal (ring_of_integers R) (principal ideal.span 1) , {R : Type u_2} [comm_ring R] [noetherian_ring R] (H : is_integral_domain R) : nonempty (maximal_ideal R) ]
+
+total : 38
+
+elaborated: 32
+
+The numbers `3`, `4` and `5` form a Pythagorean triple.
+
+success
+
+theorem PythagoreanTriple 3 4 5
+
+total : 39
+
+elaborated: 33
+
+A vector space with the empty set as basis is trivial. 
+
+success
+
+theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroupₓ V] [inst_2 : Module K V] {ι : Type w},
+  Basis ι K V → Nontrivial V
+
+total : 40
+
+elaborated: 34
+
+A prime `n` is either `2` or odd. 
+
+There is an odd number greater than any given natural number. 
+
+If `n : ℕ` is prime, then `n = 3` or `n ≥ 2`. 
+
+query for translation failed: index out of bounds: 0
+
+query for translation failed: index out of bounds: 0
+
+ A field is a division ring. 
+
+ A finite-dimensional vector space over a division ring is finite-dimensional. 
+
+`∃ m, m > n` 
+
+`n < Nat.succ n` for all `n : ℕ`. 
+
+query for translation failed: index out of bounds: 0
+
+ A prime number is not a square. 
+
+If `p` is an odd prime, then `p` is at least `3`. 
+
+If `f : α → β` is continuous, then it is uniformly continuous. 
+
+The sum of two primes is never 6. 
+
+query for translation failed: index out of bounds: 0
+
+The subgroups of a group form a group. 
+
+query for translation failed: index out of bounds: 0
+
+query for translation failed: index out of bounds: 0
+
+The primorial of 7 is 210 
+
+The fact that `3 = 3`. 
+
+query for translation failed: index out of bounds: 0
+
+query for translation failed: index out of bounds: 0
+
+query for translation failed: index out of bounds: 0
+
+If `n` is odd, then there exist `m` and `k` such that `n = 2*m + 1 + (2*k + 1)` and `m ≠ k`. 
+
+`IsOfFinOrder x` states that `x` is of finite order. 
+
+If `m` is even, then `m * m` is even. 
+
+query for translation failed: index out of bounds: 0
+
+query for translation failed: index out of bounds: 0
+
+query for translation failed: index out of bounds: 0
+
+query for translation failed: index out of bounds: 0
+
+query for translation failed: index out of bounds: 0
+
+query for translation failed: index out of bounds: 0
+
+ The triple `3, 4, 5` is a pythagorean triple. 
+
+query for translation failed: index out of bounds: 0
+
+Writing to file: silly-elab-21-0-false-15-8.json
+
+Every prime number is `2` or odd.
+
+No valid output from Codex; outputs below
+
+failed to elaborate
+
+outputs: #[]
+
+total : 1
+
+elaborated: 0
+
+There are infinitely many odd natural numbers.
+
+No valid output from Codex; outputs below
+
+failed to elaborate
+
+outputs: #[]
+
+total : 2
+
+elaborated: 0
+
+The smallest odd prime is `3`.
+
+No valid output from Codex; outputs below
+
+failed to elaborate
+
+outputs: #[]
+
+total : 3
+
+elaborated: 0
+
+There are infinitely many odd prime numbers.
+
+No valid output from Codex; outputs below
+
+failed to elaborate
+
+outputs: #[]
+
+total : 4
+
+elaborated: 0
+
+If a vector space has dimension `2` then it is finite dimensional.
+
+success
+
+theorem ∀ (K : Type u) (V : Type v) [inst : DivisionRing K] [inst_1 : AddCommGroupₓ V] [inst_2 : Module K V],
+  FiniteDimensional.finrank K V = 2 → FiniteDimensional K V
+
+total : 5
+
+elaborated: 1
+
+Every field is a division ring.
+
+No valid output from Codex; outputs below
+
+failed to elaborate
+
+outputs: #[]
+
+total : 6
+
+elaborated: 1
+
+If a space has dimension `2` then it is finite dimensional.
+
+No valid output from Codex; outputs below
+
+failed to elaborate
+
+outputs: #[]
+
+total : 7
+
+elaborated: 1
+
+Every natural number has a successor.
+
+success
+
+theorem ∀ {n : ℕ}, ∃ n', n' > n
+
+total : 8
+
+elaborated: 2
+
+Every natural number is less than its successor.
+
+No valid output from Codex; outputs below
+
+failed to elaborate
+
+outputs: #[]
+
+total : 9
+
+elaborated: 2
+
+Every set is Lebesgue measurable.
+
+success
+
+theorem ∀ {α : Type u_1} {s : Set α} [inst : MeasurableSpace α], MeasurableSet s
+
+total : 10
+
+elaborated: 3
+
+Every set of Borel measure zero is Lebesgue measurable.
+
+No valid output from Codex; outputs below
+
+ {  α :  Type  u_1 } ->  {  m :  MeasureTheory.Measure  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  hs :   m  s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasureTheory.Measure  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  hs :   m  s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  BorelSpace  α ] ->  {  m :  measure  α } ->  {  s :  Set  α } ->  (  hs :  is_null  s ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  BorelSpace  α ] ->  {  m :  measure  α } ->  {  s :  Setₓ  α } ->  (  hs :  is_null  s ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  hs :  lebesgue_measure.has_measure_zero  s ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  hs :  lebesgue_measure.has_measure_zero  s ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasurableSpace  α } ->  [  TopologicalSpace  α ] ->  [  TopologicalSpace.PseudoMetrizableSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  [  lebesgue_measure_on_coords  α ] ->  {  s :  Set  α } ->  (  hs :   borel_measure  m s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasurableSpace  α } ->  [  TopologicalSpace  α ] ->  [  TopologicalSpace.PseudoMetrizableSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  [  lebesgue_measure_on_coords  α ] ->  {  s :  Setₓ  α } ->  (  hs :   borel_measure  m s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  h :   borel_measure  s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  h :   borel_measure  s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasureTheory.Measure  α } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  hf :   m.to_outer_measure  s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasureTheory.Measure  α } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  hf :   m.to_outer_measure  s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  {  s :  Set  α } ->  (  hs :  borel_measure_zero  s ) ->  lebesgue_measurable  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  {  s :  Setₓ  α } ->  (  hs :  borel_measure_zero  s ) ->  lebesgue_measurable  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasureTheory.Measure  α } ->  (  s :  Set  α ) ->  (  h :   measure  m s =  0 ) ->  lebesgue_measurable  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasureTheory.Measure  α } ->  (  s :  Setₓ  α ) ->  (  h :   measure  m s =  0 ) ->  lebesgue_measurable  s
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  h :   borel_measure   (   borel_measure_of  α  ) s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  h :   borel_measure   (   borel_measure_of  α  ) s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  hs :   measure_theory.borel.measure  s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  hs :   measure_theory.borel.measure  s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  h :   borel_measure  α s =  0 ) ->  Lebesgue_measurable  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  h :   borel_measure  α s =  0 ) ->  Lebesgue_measurable  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasureTheory.OuterMeasure  α } ->  [  MeasurableSpace  α ] ->  {  s :  Set  α } ->  (  h_le :   measure_theory.borel_measurable_space  m ≤   @ measure_theory.lebesgue_measurable_space  α ) ->  (  h_ms :  m.caratheodory   (  s   :  Set  α ) ) ->  (  h_s_m :   m  s =  0 ) ->  m.is_measurable  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasureTheory.OuterMeasure  α } ->  [  MeasurableSpace  α ] ->  {  s :  Set  α } ->  (  h_le :   measure_theory.borel_measurable_space  m ≤   @ measure_theory.lebesgue_measurable_space  α ) ->  (  h_ms :  m.caratheodory   (  s   :  Setₓ  α ) ) ->  (  h_s_m :   m  s =  0 ) ->  m.is_measurable  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasureTheory.OuterMeasure  α } ->  [  MeasurableSpace  α ] ->  {  s :  Setₓ  α } ->  (  h_le :   measure_theory.borel_measurable_space  m ≤   @ measure_theory.lebesgue_measurable_space  α ) ->  (  h_ms :  m.caratheodory   (  s   :  Set  α ) ) ->  (  h_s_m :   m  s =  0 ) ->  m.is_measurable  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasureTheory.OuterMeasure  α } ->  [  MeasurableSpace  α ] ->  {  s :  Setₓ  α } ->  (  h_le :   measure_theory.borel_measurable_space  m ≤   @ measure_theory.lebesgue_measurable_space  α ) ->  (  h_ms :  m.caratheodory   (  s   :  Setₓ  α ) ) ->  (  h_s_m :   m  s =  0 ) ->  m.is_measurable  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasureTheory.Measure  α } ->  [ tα :  TopologicalSpace  α ] ->  [  CompleteSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  hs :  measure_theory.measure.is_null  m s ) ->  measure_theory.measurable  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasureTheory.Measure  α } ->  [ tα :  TopologicalSpace  α ] ->  [  CompleteSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  hs :  measure_theory.measure.is_null  m s ) ->  measure_theory.measurable  s
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->    borel_measure.measure  s =  0 →   lebesgue_measure.measure  s =  0
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->    borel_measure.measure  s =  0 →   lebesgue_measure.measure  s =  0
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  (  s :  Set  α ) ->  [  BorelSpace  α ] ->  [  lebesgue_measurable_space  α ] ->  (  h :  borel_measure_zero   (   measure_theory.borel  α  ) s ) ->  lebesgue_measurable_set  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  (  s :  Setₓ  α ) ->  [  BorelSpace  α ] ->  [  lebesgue_measurable_space  α ] ->  (  h :  borel_measure_zero   (   measure_theory.borel  α  ) s ) ->  lebesgue_measurable_set  s
+
+failed to elaborate
+
+outputs: #[{α : Type u_1} {m : measure_theory.measure α} [measurable_space α] [borel_space α] {s : set α} (hs : m s = 0) : measurable_set s , {α : Type u_1} [borel_space α] {m : measure α} {s : set α} (hs : is_null s) : measurable_set s , {α : Type u_1} [measurable_space α] [borel_space α] {s : set α} (hs : lebesgue_measure.has_measure_zero s) : measurable_set s , {α : Type u_1} {m : measurable_space α} [topological_space α] [topological_space.pseudo_metrizable_space α] [measurable_space α] [borel_space α] [lebesgue_measure_on_coords α] {s : set α} (hs : borel_measure m s = 0) : measurable_set s , {α : Type u_1} [measurable_space α] [borel_space α] {s : set α} (h : borel_measure s = 0) : measurable_set s , {α : Type u_1} {m : measure_theory.measure α} [topological_space α] [measurable_space α] [borel_space α] {s : set α} (hf : m.to_outer_measure s = 0) : measurable_set s , {α : Type u_1} [measurable_space α] {s : set α} (hs : borel_measure_zero s) : lebesgue_measurable s , {α : Type u_1} {m : measure_theory.measure α} (s : set α) (h : measure m s = 0) : lebesgue_measurable s , {α : Type u_1} [topological_space α] [measurable_space α] [borel_space α] {s : set α} (h : borel_measure (borel_measure_of α) s = 0) : measurable_set s , {α : Type u_1} [topological_space α] [measurable_space α] [borel_space α] {s : set α} (hs : measure_theory.borel.measure s = 0) : measurable_set s , {α : Type u_1} [measurable_space α] [borel_space α] {s : set α} (h : borel_measure α s = 0) : Lebesgue_measurable s , {α : Type u_1} {m : measure_theory.outer_measure α} [measurable_space α] {s : set α} (h_le : measure_theory.borel_measurable_space m ≤ @measure_theory.lebesgue_measurable_space α) (h_ms : m.caratheodory (s : set α)) (h_s_m : m s = 0) : m.is_measurable s , {α : Type u_1} {m : measure_theory.measure α} [tα : topological_space α] [complete_space α] [measurable_space α] [borel_space α] {s : set α} (hs : measure_theory.measure.is_null m s) : measure_theory.measurable s , {α : Type u_1} [topological_space α] [measurable_space α] [borel_space α] {s : set α} : borel_measure.measure s = 0 → lebesgue_measure.measure s = 0 , {α : Type u_1} [measurable_space α] (s : set α) [borel_space α] [lebesgue_measurable_space α] (h : borel_measure_zero (measure_theory.borel α) s) : lebesgue_measurable_set s ]
+
+total : 11
+
+elaborated: 3
+
+No prime number is a perfect square.
+
+success
+
+theorem ∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p ≠ 2 → ¬∃ t, t * t = p
+
+total : 12
+
+elaborated: 4
+
+Every odd prime number is greater than `2`.
+
+No valid output from Codex; outputs below
+
+failed to elaborate
+
+outputs: #[]
+
+total : 13
+
+elaborated: 4
+
+The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares.
+
+No valid output from Codex; outputs below
+
+failed to elaborate
+
+outputs: #[]
+
+total : 14
+
+elaborated: 4
+
+Every compact topological space is locally compact.
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : CompactSpace α], LocallyCompactSpace α
+
+total : 15
+
+elaborated: 5
+
+Every continuous function is uniformly continuous.
+
+Writing to file: silly-elab-21-0-false-15-8.json
+
+Every prime number is `2` or odd.
+
+success
+
+theorem ∀ (n : ℕ) [inst : Fact (Nat.Prime n)], n = 2 ∨ n % 2 = 1
+
+total : 1
+
+elaborated: 1
+
+There are infinitely many odd natural numbers.
+
+success
+
+theorem ∀ (n : ℕ), ∃ m, m > n ∧ m % 2 = 1
+
+total : 2
+
+elaborated: 2
+
+The smallest odd prime is `3`.
+
+success
+
+theorem Nat.Prime 3
+
+total : 3
+
+elaborated: 3
+
+There are infinitely many odd prime numbers.
+
+success
+
+theorem ∀ (n : ℕ), ∃ p, Nat.Prime p ∧ 3 ≤ p ∧ p < 2 * n + 1
+
+total : 4
+
+elaborated: 4
+
+If a vector space has dimension `2` then it is finite dimensional.
+
+success
+
+theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroupₓ V] [inst_2 : Module K V],
+  FiniteDimensional.finrank K V = 2 → FiniteDimensional K V
+
+total : 5
+
+elaborated: 5
+
+Every field is a division ring.
+
+success
+
+theorem {K : Type u} → [inst : Field K] → DivisionRing K
+
+total : 6
+
+elaborated: 6
+
+If a space has dimension `2` then it is finite dimensional.
+
+success
+
+theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroupₓ V] [inst_2 : Module K V],
+  FiniteDimensional.finrank K V = 2 → FiniteDimensional K V
+
+total : 7
+
+elaborated: 7
+
+Every natural number has a successor.
+
+success
+
+theorem ∀ {n : ℕ}, ∃ m, m = n + 1
+
+total : 8
+
+elaborated: 8
+
+Every natural number is less than its successor.
+
+success
+
+theorem ∀ (n : ℕ), n < n + 1
+
+total : 9
+
+elaborated: 9
+
+Every set is Lebesgue measurable.
+
+success
+
+theorem ∀ {α : Type u_1} [inst : MeasurableSpace α] (s : Set α), MeasurableSet s
+
+total : 10
+
+elaborated: 10
+
+Every set of Borel measure zero is Lebesgue measurable.
+
+No valid output from Codex; outputs below
+
+ {  α :  Type  u_1 } ->  {  m :  MeasureTheory.OuterMeasure  α } ->  [  MeasurableSpace  α ] ->  (  h :  m ≤  lint.borel_outer_measure  α ) ->  (  s :  Set  α ) ->    m  s =  0 →  Measurable  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasureTheory.OuterMeasure  α } ->  [  MeasurableSpace  α ] ->  (  h :  m ≤  lint.borel_outer_measure  α ) ->  (  s :  Setₓ  α ) ->    m  s =  0 →  Measurable  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasureTheory.Measure  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  hs :  m.borel.is_null  s ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasureTheory.Measure  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  hs :  m.borel.is_null  s ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  [  RegularSpace  α ] ->  (  s :  Set  α ) ->  (  hs :   measure_theory.borel_measure  α s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  [  RegularSpace  α ] ->  (  s :  Setₓ  α ) ->  (  hs :   measure_theory.borel_measure  α s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [ tα :  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  has_borel_measure_of_nnreal  α ] ->  ∀   (  s  :  Set  α  )  (  m  : Ennreal  )  ,    borel_measure_of_nnreal  s m =  0 →  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [ tα :  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  has_borel_measure_of_nnreal  α ] ->  ∀   (  s  :  Setₓ  α  )  (  m  : Ennreal  )  ,    borel_measure_of_nnreal  s m =  0 →  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasureTheory.Measure  α } ->  {  ms :  MeasurableSpace  α } ->  [ m.borel :  BorelSpace  α ] ->  (  s :  Set  α ) ->    m  s =  0 →  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasureTheory.Measure  α } ->  {  ms :  MeasurableSpace  α } ->  [ m.borel :  BorelSpace  α ] ->  (  s :  Setₓ  α ) ->    m  s =  0 →  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasureTheory.Measure  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  h :  MeasurableSet  s ) ->  (  h2 :   m  s =  0 ) ->  is_lebesgue_measurable  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasureTheory.Measure  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  h :  MeasurableSet  s ) ->  (  h2 :   m  s =  0 ) ->  is_lebesgue_measurable  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasureTheory.Measure  α } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  h :   m.to_outer_measure  s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasureTheory.Measure  α } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  h :   m.to_outer_measure  s =  0 ) ->  MeasurableSet  s
+
+{α : Type u_1} {m : measurable_space α} [topological_space α] [topological_space.pseudo_metrizable_space α] [borel_space α] {s : set α} (hs : measure_theory.measure m (λ (a : α), s a ∧ true) = 0) : measurable_set s 
+
+ {  α :  Type  u_1 } ->  {  m :  MeasurableSpace  α } ->  [  TopologicalSpace  α ] ->  [  TopologicalSpace.PseudoMetrizableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  h :   lebesgue_measure  m s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasurableSpace  α } ->  [  TopologicalSpace  α ] ->  [  TopologicalSpace.PseudoMetrizableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  h :   lebesgue_measure  m s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  (  h :   measure_theory.borel_measure  α =  lebesgue_measure  α ) ->  {  s :  Set  α } ->  (  hs :   measure_theory.borel_measure  α s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  (  h :   measure_theory.borel_measure  α =  lebesgue_measure  α ) ->  {  s :  Setₓ  α } ->  (  hs :   measure_theory.borel_measure  α s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  measure_space  α ] ->  [  has_borel_set  α ] ->  (  s :  Set  α ) ->    measure  s =  0 →  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  measure_space  α ] ->  [  has_borel_set  α ] ->  (  s :  Setₓ  α ) ->    measure  s =  0 →  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasurableSpace  α } ->  [  BorelSpace  α ] ->  (  s :  Set  α ) ->  (  h :   borel_measure  m ≤  lebesgue_measure  m ) ->    borel_measure  m s =  0 →   lebesgue_measure  m s =  0
+
+ {  α :  Type  u_1 } ->  {  m :  MeasurableSpace  α } ->  [  BorelSpace  α ] ->  (  s :  Setₓ  α ) ->  (  h :   borel_measure  m ≤  lebesgue_measure  m ) ->    borel_measure  m s =  0 →   lebesgue_measure  m s =  0
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  h :   measure  s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  h :   measure  s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasurableSpace  α } ->  [  TopologicalSpace  α ] ->  [  TopologicalSpace.SeparableSpace  α ] ->  (  s :  Set  α ) ->  (  hs :  MeasurableSet   (   lebesgue_measure  α  ) s ) ->  MeasurableSet  m s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasurableSpace  α } ->  [  TopologicalSpace  α ] ->  [  TopologicalSpace.SeparableSpace  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  MeasurableSet   (   lebesgue_measure  α  ) s ) ->  MeasurableSet  m s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  {  s :  Set  α } ->  [ hb :  borel_measurable  s ] ->  (  h :   measure_theory.measure.borel  α s =  0 ) ->  s ∈   @ measure_theory.measure.is_measurable  α  (   measurable_space.to_measure_theory   _  )
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  {  s :  Setₓ  α } ->  [ hb :  borel_measurable  s ] ->  (  h :   measure_theory.measure.borel  α s =  0 ) ->  s ∈   @ measure_theory.measure.is_measurable  α  (   measurable_space.to_measure_theory   _  )
+
+failed to elaborate
+
+outputs: #[{α : Type u_1} {m : measure_theory.outer_measure α} [measurable_space α] (h : m ≤ lint.borel_outer_measure α) (s : set α) : m s = 0 → is_measurable s , {α : Type u_1} {m : measure_theory.measure α} [measurable_space α] [borel_space α] {s : set α} (hs : m.borel.is_null s) : measurable_set s , {α : Type u_1} [topological_space α] [measurable_space α] [borel_space α] [regular_space α] (s : set α) (hs : measure_theory.borel_measure α s = 0) : measurable_set s , {α : Type u_1} [tα : topological_space α] [measurable_space α] [has_borel_measure_of_nnreal α] :
+  ∀ (s : set α) (m : ennreal), borel_measure_of_nnreal s m = 0 → measurable_set s , {α : Type u_1} {m : measure_theory.measure α} {ms : measurable_space α} [m.borel : borel_space α] (s : set α) : m s = 0 → measurable_set s , {α : Type u_1} {m : measure_theory.measure α} [measurable_space α] [borel_space α] {s : set α} (h : measurable_set s) (h2 : m s = 0) : is_lebesgue_measurable s , {α : Type u_1} {m : measure_theory.measure α} [topological_space α] [measurable_space α] [borel_space α] {s : set α} (h : m.to_outer_measure s = 0) : measurable_set s , {α : Type u_1} {m : measurable_space α} [topological_space α] [topological_space.pseudo_metrizable_space α] [borel_space α] {s : set α} (hs : measure_theory.measure m (λ (a : α), s a ∧ true) = 0) : measurable_set s , {α : Type u_1} {m : measurable_space α} [topological_space α] [topological_space.pseudo_metrizable_space α] [borel_space α] {s : set α} (h : lebesgue_measure m s = 0) : measurable_set s , {α : Type u_1} [measurable_space α] (h : measure_theory.borel_measure α = lebesgue_measure α) {s : set α} (hs : measure_theory.borel_measure α s = 0) : measurable_set s , {α : Type u_1} [measurable_space α] [measure_space α] [has_borel_set α] (s : set α) : measure s = 0 → measurable_set s , {α : Type u_1} {m : measurable_space α} [borel_space α] (s : set α) (h : borel_measure m ≤ lebesgue_measure m) : borel_measure m s = 0 → lebesgue_measure m s = 0 , {α : Type u_1} [topological_space α] [measurable_space α] [borel_space α] {s : set α} (h : measure s = 0) : measurable_set s , {α : Type u_1} {m : measurable_space α} [topological_space α] [topological_space.separable_space α] (s : set α) (hs : measurable_set (lebesgue_measure α) s) : measurable_set m s , {α : Type u_1} [measurable_space α] {s : set α} [hb : borel_measurable s] (h : measure_theory.measure.borel α s = 0) : s ∈ @measure_theory.measure.is_measurable α (measurable_space.to_measure_theory _) ]
+
+total : 11
+
+elaborated: 10
+
+No prime number is a perfect square.
+
+success
+
+theorem ∀ (p : ℕ) [inst : Fact (Nat.Prime p)], ¬∃ n, n ^ 2 = p
+
+total : 12
+
+elaborated: 11
+
+Every odd prime number is greater than `2`.
+
+success
+
+theorem ∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p % 2 = 1 → 2 < p
+
+total : 13
+
+elaborated: 12
+
+The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares.
+
+No valid output from Codex; outputs below
+
+failed to elaborate
+
+outputs: #[]
+
+total : 14
+
+elaborated: 12
+
+Every compact topological space is locally compact.
+
+No valid output from Codex; outputs below
+
+failed to elaborate
+
+outputs: #[]
+
+total : 15
+
+elaborated: 12
+
+Every continuous function is uniformly continuous.
+
+success
+
+theorem ∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β},
+  Continuous f → UniformContinuous f
+
+total : 16
+
+elaborated: 13
+
+`6` is not the sum of two distinct prime numbers.
+
+No valid output from Codex; outputs below
+
+failed to elaborate
+
+outputs: #[]
+
+total : 17
+
+elaborated: 13
+
+No integer is irrational.
+
+No valid output from Codex; outputs below
+
+failed to elaborate
+
+outputs: #[]
+
+total : 18
+
+elaborated: 13
+
+The identity element in a ring is a unit.
+
+No valid output from Codex; outputs below
+
+failed to elaborate
+
+outputs: #[]
+
+total : 19
+
+elaborated: 13
+
+Every subgroup of a group is a group.
+
+No valid output from Codex; outputs below
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  H :  Subgroup  G ) ->  Group  H
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  H :  Subgroup  G ) ->  Groupₓ  H
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  H :  Subgroup  G ) ->  Groupₓₓ  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  H :  Subgroup  G ) ->  Group  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  H :  Subgroup  G ) ->  Groupₓ  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  H :  Subgroup  G ) ->  Groupₓₓ  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  H :  Subgroup  G ) ->  Group  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  H :  Subgroup  G ) ->  Groupₓ  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  H :  Subgroup  G ) ->  Groupₓₓ  H
+
+{G : Type u_1} [group G] (H : subgroup G) : group.{max u_2 u_3} H.to_set 
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  K :  Subgroup  G ) ->  IsGroupHom   (  K   :  G →  Set  G )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  K :  Subgroup  G ) ->  IsGroupHom   (  K   :  G →  Setₓ  G )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  K :  Subgroup  G ) ->  IsGroupHom   (  K   :  G →  Set  G )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  K :  Subgroup  G ) ->  IsGroupHom   (  K   :  G →  Setₓ  G )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  K :  Subgroup  G ) ->  IsGroupHom   (  K   :  G →  Set  G )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  K :  Subgroup  G ) ->  IsGroupHom   (  K   :  G →  Setₓ  G )
+
+ {  G H :  Type  u_1 } ->  [  Group  G ] ->  [  Group  H ] ->  {  f :  G → H } ->  (  hf :  IsGroupHom  f ) ->  (  H :  Subgroup  G ) ->  Subgroup  H
+
+ {  G H :  Type  u_1 } ->  [  Group  G ] ->  [  Groupₓ  H ] ->  {  f :  G → H } ->  (  hf :  IsGroupHom  f ) ->  (  H :  Subgroup  G ) ->  Subgroup  H
+
+ {  G H :  Type  u_1 } ->  [  Group  G ] ->  [  Groupₓₓ  H ] ->  {  f :  G → H } ->  (  hf :  IsGroupHom  f ) ->  (  H :  Subgroup  G ) ->  Subgroup  H
+
+ {  G H :  Type  u_1 } ->  [  Groupₓ  G ] ->  [  Group  H ] ->  {  f :  G → H } ->  (  hf :  IsGroupHom  f ) ->  (  H :  Subgroup  G ) ->  Subgroup  H
+
+ {  G H :  Type  u_1 } ->  [  Groupₓ  G ] ->  [  Groupₓ  H ] ->  {  f :  G → H } ->  (  hf :  IsGroupHom  f ) ->  (  H :  Subgroup  G ) ->  Subgroup  H
+
+ {  G H :  Type  u_1 } ->  [  Groupₓ  G ] ->  [  Groupₓₓ  H ] ->  {  f :  G → H } ->  (  hf :  IsGroupHom  f ) ->  (  H :  Subgroup  G ) ->  Subgroup  H
+
+ {  G H :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  [  Group  H ] ->  {  f :  G → H } ->  (  hf :  IsGroupHom  f ) ->  (  H :  Subgroup  G ) ->  Subgroup  H
+
+ {  G H :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  [  Groupₓ  H ] ->  {  f :  G → H } ->  (  hf :  IsGroupHom  f ) ->  (  H :  Subgroup  G ) ->  Subgroup  H
+
+ {  G H :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  [  Groupₓₓ  H ] ->  {  f :  G → H } ->  (  hf :  IsGroupHom  f ) ->  (  H :  Subgroup  G ) ->  Subgroup  H
+
+ {  G :  Type  u_3 } ->  [  Group  G ] ->  (  H :  Subgroup  G ) ->  Group  H
+
+ {  G :  Type  u_3 } ->  [  Group  G ] ->  (  H :  Subgroup  G ) ->  Groupₓ  H
+
+ {  G :  Type  u_3 } ->  [  Group  G ] ->  (  H :  Subgroup  G ) ->  Groupₓₓ  H
+
+ {  G :  Type  u_3 } ->  [  Groupₓ  G ] ->  (  H :  Subgroup  G ) ->  Group  H
+
+ {  G :  Type  u_3 } ->  [  Groupₓ  G ] ->  (  H :  Subgroup  G ) ->  Groupₓ  H
+
+ {  G :  Type  u_3 } ->  [  Groupₓ  G ] ->  (  H :  Subgroup  G ) ->  Groupₓₓ  H
+
+ {  G :  Type  u_3 } ->  [  Groupₓₓ  G ] ->  (  H :  Subgroup  G ) ->  Group  H
+
+ {  G :  Type  u_3 } ->  [  Groupₓₓ  G ] ->  (  H :  Subgroup  G ) ->  Groupₓ  H
+
+ {  G :  Type  u_3 } ->  [  Groupₓₓ  G ] ->  (  H :  Subgroup  G ) ->  Groupₓₓ  H
+
+failed to elaborate
+
+outputs: #[{G : Type u_1} [group G] (H : subgroup G) : group H , {G : Type u_1} [group G] (H : subgroup G) : group.{max u_2 u_3} H.to_set , {G : Type u_1} [group G] (K : subgroup G) : is_group_hom (K : G → set G) , {G H : Type u_1} [group G] [group H] {f : G → H} (hf : is_group_hom f) (H : subgroup G) : subgroup H , {G : Type u_3} [group G] (H : subgroup G) : group H ]
+
+total : 20
+
+elaborated: 13
+
+The sum of two natural numbers is a natural number.
+
+No valid output from Codex; outputs below
+
+failed to elaborate
+
+outputs: #[]
+
+total : 21
+
+elaborated: 13
+
+The identity element of a group has finite order.
+
+success
+
+theorem ∀ {G : Type u} [inst : Groupₓ G], IsOfFinOrder 1
+
+total : 22
+
+elaborated: 14
+
+`7` is a prime number.
+
+success
+
+theorem Fact (Nat.Prime 7)
+
+total : 23
+
+elaborated: 15
+
+There are `3` prime numbers below `8`.
+
+success
+
+theorem primorial 7 = 210
+
+total : 24
+
+elaborated: 16
+
+The empty set is contained in every finite set.
+
+No valid output from Codex; outputs below
+
+failed to elaborate
+
+outputs: #[]
+
+total : 25
+
+elaborated: 16
+
+Every infinite set contains a finite set.
+
+No valid output from Codex; outputs below
+
+failed to elaborate
+
+outputs: #[]
+
+total : 26
+
+elaborated: 16
+
+Every commutative ring is a monoid.
+
+success
+
+theorem {α : Type u_1} → [inst : CommRing α] → Monoid α
+
+total : 27
+
+elaborated: 17
+
+There is no field of order `10`.
+
