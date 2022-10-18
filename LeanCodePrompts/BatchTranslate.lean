@@ -1,4 +1,5 @@
 import LeanCodePrompts.Translate
+import LeanCodePrompts.Utils
 
 open Lean Meta Std Elab
 
@@ -22,6 +23,8 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat :=
   elabLog s!"Writing to file: {type}-elab-{numSim}-{numKW}-{includeFixed}-{queryNum}-{temp.mantissa}.json"
   let file := System.mkFilePath [s!"data/{type}-prompts.txt"]
   let prompts ←  IO.FS.lines file
+  let prompts := 
+      prompts.map <| fun s => s.replace "<br>" "\n"
   let mut count := 0
   let mut elaborated := 0
   let mut elabPairs: Array (String × String × (Array String)) := #[]
@@ -51,6 +54,7 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat :=
     elabLog s!"elaborated: {elaborated}"
     IO.println s!"total : {count}"
     IO.println s!"elaborated: {elaborated}"
+    IO.sleep 20000
 
   let js := 
     Json.mkObj 
@@ -64,10 +68,8 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat :=
        ("elaborated-prompts", 
         Json.arr <| ←  elabPairs.mapM <| 
           fun (p, s, thms) => do 
-            let reverse ←  leanToPrompt s 
-            elabLog reverse
             return Json.mkObj [
-            ("prompt", p), ("theorem", s), ("round-trip", reverse),
+            ("prompt", p), ("theorem", s),
             ("all-elabs", Json.arr <| thms.map (Json.str)),
             ("comments", ""), ("correct", Json.null), 
             ("some-correct", Json.null)   
