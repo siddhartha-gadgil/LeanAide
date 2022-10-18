@@ -2583,7 +2583,6 @@ cubed
 semi-complete
 modular
 straight_angle
-Category:Thesaurus:Mathematics
 braid_statistics
 pentation
 Knaster-Tarski_theorem
@@ -2857,23 +2856,6 @@ hyperring
 Hermite_interpolation
 Gibbs_phenomenon
 Runge's_phenomenon
-Category:en:Geometry
-Category:en:Combinatorics
-Category:en:Trigonometry
-Category:en:Set_theory
-Category:en:Cryptography
-Category:en:Applied_mathematics
-Category:en:Complex_analysis
-Category:en:Graph_theory
-Category:en:Category_theory
-Category:en:Algebra
-Category:en:Topology
-Category:en:Arithmetic
-Category:en:Number_theory
-Category:en:Statistics
-Category:en:Game_theory
-Category:en:Measure_theory
-Category:en:Mathematical_analysis
 equalizer
 leafwise
 factoring
@@ -5159,10 +5141,6 @@ presemifield
 plethysm
 inversion
 localization
-Category:en:Group_theory
-Category:en:Algebraic_geometry
-Category:en:Linear_algebra
-Category:en:Ring_theory
 algebraic_notation
 vertex_form
 Galois_field
@@ -5351,8 +5329,6 @@ associate
 indeterminate
 idealizer
 torsion_subgroup
-Category:en:Algebraic_topology
-Category:en:Functions
 algebraic_geometry
 tropical_geometry
 fano
@@ -5636,7 +5612,6 @@ integral_transform
 cologarithm
 hyperbola
 parabola
-Category:en:Polynomials
 Euler's_totient_function
 totient
 logit
@@ -5708,8 +5683,6 @@ d'Alembert_operator
 Laplace_operator
 surjective_function
 onto_function
-Category:en:Hyperbolic_functions
-Category:en:Trigonometric_functions
 Appendix:Glossary_of_group_theory
 right_coset
 left_coset
@@ -5926,7 +5899,6 @@ teleogenetic
 teleogenesis
 electrolocation
 self-organization
-Category:en:Artificial_intelligence
 feedback
 economic_cybernetics
 cyber-
@@ -5947,7 +5919,6 @@ decodable
 erasure_code
 dit
 Hamming_distance
-Category:en:Coding_theory
 bit
 negentropy
 MI
@@ -6493,7 +6464,6 @@ split_key
 cold_boot_attack
 self-signed
 self-signing
-Category:en:Cryptocurrency
 bit
 Threefish
 encryption
@@ -7254,8 +7224,6 @@ parallelohedron
 Hilbert_curve
 hyperball
 tiling
-Category:en:Shapes
-Category:en:Algebraic_geometry
 tesseractic
 trisector
 spinode
@@ -7610,7 +7578,6 @@ icosidigon
 tetracontakaihexagon
 triacontakaitetragon
 triacontatetragon
-Category:en:Differential_geometry
 linear_triplet
 hypercycle
 1-D
@@ -7644,7 +7611,6 @@ Reuleaux_polygon
 complementary_angle
 supplementary_angle
 trisection_point
-Category:en:Non-Euclidean_geometry
 pentalateral
 hyperbolic_geometry
 cocked_hat_curve
@@ -7708,9 +7674,7 @@ deltoid
 funicular
 isosurface
 arithmetic_geometry
-Category:en:Higher-dimensional_geometry
 gyration
-Category:en:Functions
 nonagonal
 square
 50-gon
@@ -7730,7 +7694,6 @@ bispherical
 π_Day
 equidiagonal
 Varignon's_theorem
-Category:en:Trigonometry
 planigon
 stellate
 compass_error
@@ -7860,7 +7823,6 @@ trig
 triangle
 trigonometry
 trigonometric
-Category:en:Trigonometric_functions
 linear_function
 identity_function
 quadratic_function
@@ -8061,7 +8023,6 @@ integral_transform
 cologarithm
 hyperbola
 parabola
-Category:en:Polynomials
 Euler's_totient_function
 totient
 logit
@@ -8133,8 +8094,6 @@ d'Alembert_operator
 Laplace_operator
 surjective_function
 onto_function
-Category:en:Hyperbolic_functions
-Category:en:Trigonometric_functions
 trigonometric_function
 sine
 arcsine
@@ -8607,8 +8566,6 @@ triskaidecagram
 rhomboid
 solid_of_revolution
 long_line
-Category:en:Fractals
-Category:en:Tesselation
 blobular
 circle
 catenary
@@ -9137,7 +9094,6 @@ superreal
 limitless
 unlimited
 apeiro-
-Category:English_words_prefixed_with_apeiro-
 supertask
 hypertask
 Galileo's_paradox
@@ -9264,9 +9220,6 @@ positive_measure
 perfect_set
 Hausdorff_metric
 Peano_curve
-Category:en:Calculus
-Category:en:Functional_analysis
-Category:en:Probability_theory
 complete_measure
 complex_measure
 countable_additivity
@@ -9347,7 +9300,6 @@ ODE
 DWT
 CWT
 regular
-Category:en:Differential_geometry
 transcendental_function
 accumulation_point
 complex
@@ -9370,8 +9322,6 @@ measurable_function
 implicit_function
 norming
 renorming
-Category:en:Functions
-Category:en:Numerical_analysis
 curl
 integration
 differential_calculus
@@ -9437,9 +9387,6 @@ inviscid
 incompressible
 BSDE
 kernel
-Category:en:Functions
-Category:en:Chaos_theory
-Category:en:Differential_equations
 strange_attractor
 chaos_theory
 chaotic
@@ -9593,26 +9540,6 @@ negligible_set
 round_number
 cardinal
 ordinal
-Category:en:Three
-Category:en:Five
-Category:en:Two
-Category:en:Eight
-Category:en:Thirteen
-Category:en:Nine
-Category:en:Twenty
-Category:en:One
-Category:en:Four
-Category:en:Ten
-Category:en:Six
-Category:en:Twelve
-Category:en:Sixteen
-Category:en:Hundred
-Category:en:Thousand
-Category:en:Eighteen
-Category:en:Fourteen
-Category:en:Historical_numbers
-Category:en:Seven
-Category:en:Fifteen
 natural_number
 counting_number
 cardinal_number
@@ -9646,11 +9573,6 @@ Eisenstein_integer
 binomial
 polynomial
 quadrinomial
-Category:en:Nineteen
-Category:en:Seventeen
-Category:en:Zero
-Category:en:Distributive_numbers
-Category:en:Collective_numbers
 fraction
 multiplicative_number
 Eisenstein_prime
@@ -9672,16 +9594,7 @@ limit_cardinal
 tetrakaideka-
 line_number
 million
-Category:English_numbers
 thirtie
-Category:en:Eighty
-Category:en:Seventy
-Category:en:Ninety
-Category:en:Fifty
-Category:en:Sixty
-Category:en:Forty
-Category:en:Eleven
-Category:en:Infinity
 abstract_number
 concrete_number
 collective_numeral
@@ -9743,8 +9656,6 @@ two_bits
 digraph
 two-percent_milk
 second_wind
-Category:English_words_prefixed_with_duo-
-Category:English_words_prefixed_with_di-
 WW2
 Dwitiya
 two
@@ -9781,8 +9692,6 @@ twoer
 every_second
 every_other
 two_heads_are_better_than_one
-Category:English_words_prefixed_with_bi-
-bidirectional
 docosa-
 redouble
 penult
@@ -9791,15 +9700,11 @@ dualist
 it_takes_two_to_tango
 disyllabic
 bisyllabic
-Category:English_words_prefixed_with_dichloro-
-Category:English_words_prefixed_with_dihydro-
-Category:English_words_prefixed_with_diphy-
 two-hand_sword
 double_copula
 every_day_of_the_week_and_twice_on_Sundays
 in_two
 secondmost
-Category:English_words_prefixed_with_bis-
 two_steps_ahead
 double-handedness
 a_bird_in_the_hand_is_worth_two_in_the_bush
@@ -9874,7 +9779,6 @@ Prathama
 solo
 unity
 one-of
-Category:English_words_prefixed_with_mono-
 first
 first-degree
 unicameral
@@ -9895,10 +9799,8 @@ one
 one_for_all,_all_for_one
 oneness
 monolatrism
-Category:English_words_prefixed_with_uni-
 monist
 singular
-User:Scottmacstra/united
 Kelly's_eye
 legs_eleven
 monocular
@@ -9907,16 +9809,11 @@ henism
 unidirectional
 singulative
 monosyllabic
-Category:English_words_prefixed_with_mon-
-monoptote
-with_one_arm_tied_behind_one's_back
 ones_and_zeros
 all_as_one
 one-seventh
 one_or_two
 resingularization
-going_once,_going_twice,_sold
-one_for_the_money,_two_for_the_show,_three_to_make_ready,_and_four_to_go
 Big_Red_One
 onety-one
 singlet
@@ -10324,7 +10221,6 @@ membership_function
 left_total
 right_total
 choice
-Category:en:Infinity
 diagonal_argument
 ramified_forcing
 negligible_set
@@ -10660,7 +10556,6 @@ polyserial
 crossbreak
 pseudolikelihood
 mean_absolute_deviation
-Category:en:Demography
 gamma_distribution
 confidence_interval
 overdispersive
@@ -10777,7 +10672,6 @@ Sørensen-Dice_coefficient
 Jaccard_index
 disattenuation
 disconcordance
-68-95-99.7_rule
 Z_score
 class
 counts
@@ -11108,7 +11002,6 @@ bicontinuous
 open
 vector_space
 closure
-Hauptvermutung
 quasireflexive
 chessboard
 pseudo-Anosov
@@ -11191,4 +11084,3 @@ surgery
 isotopological
 Alexander_horned_sphere
 long_line
-lake_of_Wada
