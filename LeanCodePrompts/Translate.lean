@@ -217,9 +217,8 @@ def getPromptTriples(s: String)(numSim : Nat)(numKW: Nat := 0)
       let triples? ← sentenceSimTriples simJsonOut.stdout
       let allTriples := triples?.toOption.getD #[]
       let kwTriples :=
-        if numKW >0 
-        then ←  keywordBasedPrompts docTriple s numKW scoreBound matchBound
-        else #[]        
+        if numKW = 0 then #[]
+        else ←  keywordBasedPrompts docTriple s numKW scoreBound matchBound        
       let allTriples := (allTriples ++ kwTriples).toList.eraseDups.toArray
       let triples ←  allTriples.filterM (fun (_, s, _) => do
             isElabPrompt s )
