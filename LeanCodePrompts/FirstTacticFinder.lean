@@ -213,7 +213,7 @@ def tacticList : TacticM <| List String := do
   let arr ← jsonToExprStrArray outJson
   let arr := arr.map (fun s => 
       if s.endsWith "<" then s.dropRight 1 |>.trim else s.trim)
-  return arr.toList
+  return arr.toList.eraseDups
 
 elab "aide?" : tactic =>
   withMainContext do
