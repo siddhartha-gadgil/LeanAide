@@ -96,7 +96,7 @@ def equalStates (s₁ s₂ : TacticStateProxy) : TacticM Bool :=
               let (n₂, t₂, b₂) := s₂.letData.get! i
               return n₁ == n₂ && (← isDefEq t₁ t₂) && (← isDefEq b₁ b₂)))
 
-def firstEffectiveTactic (tacStrings: List String) : TacticM Unit :=
+def firstEffectiveTactic (tacStrings: List String)(warnOnly: Bool := Bool.true) : TacticM Unit :=
   withMainContext do
   let env ← getEnv
   let goal ← getTacticString
@@ -130,6 +130,8 @@ def firstEffectiveTactic (tacStrings: List String) : TacticM Unit :=
         pure ()
     catch _ =>
       s.restore
+  unless warnOnly do
+    throwError m!"No effective tactic found for {goal} in {tacStrings}"
   logWarning "No tactic in the list was effective" 
 
  
@@ -202,11 +204,18 @@ def tacticList : TacticM <| List String := do
   let arr ← jsonToExprStrArray outJson
   return arr.toList
 
-elab "aide" : tactic =>
+elab "aide?" : tactic =>
   withMainContext do
     let tacStrings ← tacticList
     let tacStrings := tacStrings.filter (fun s => s != "sorry" && s != "admit")
     firstEffectiveTactic tacStrings
+
+elab "aide!" : tactic =>
+  withMainContext do
+    let tacStrings ← tacticList
+    let tacStrings := tacStrings.filter (fun s => s != "sorry" && s != "admit")
+    firstEffectiveTactic tacStrings
+
 
 elab "show_tactic_prompt" : tactic => 
   withMainContext do  
