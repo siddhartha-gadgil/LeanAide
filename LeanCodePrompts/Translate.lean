@@ -208,8 +208,8 @@ def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
           (pairs ++ kwPairs).toList.eraseDups.toArray, simJsonOut)
 
 /-- choosing triples to build a prompt -/
-def getPromptTriples(s: String)(numSim : Nat)(numKW: Nat)
-    (scoreBound: Float)(matchBound: Nat)
+def getPromptTriples(s: String)(numSim : Nat)(numKW: Nat := 0)
+   (scoreBound: Float := 0.2)(matchBound: Nat := 15)
    : TermElabM (Array (String × String × String) × IO.Process.Output) := do
       let simJsonOut ←  
         IO.Process.output {cmd:= "curl", args:= 
@@ -228,7 +228,7 @@ def getPromptTriples(s: String)(numSim : Nat)(numKW: Nat)
 
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
-def getCodeJson (s: String)(numSim : Nat:= 5)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM Json := do
+def getCodeJson (s: String)(numSim : Nat:= 5)(numKW: Nat := 0)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM Json := do
   match ← getCachedJson? s with
   | some js => return js
   | none =>    
