@@ -1416,3 +1416,782 @@ elaborated: 17
 
 There is no field of order `10`.
 
+Writing to file: silly-elab-21-0-false-15-8.json
+
+Every prime number is `2` or odd.
+
+success
+
+theorem ∀ (n : ℕ) [inst : Fact (Nat.Prime n)], n = 2 ∨ n % 2 = 1
+
+total : 1
+
+elaborated: 1
+
+There are infinitely many odd natural numbers.
+
+success
+
+theorem ∀ (n : ℕ), ∃ m, n < m ∧ Odd m
+
+total : 2
+
+elaborated: 2
+
+The smallest odd prime is `3`.
+
+success
+
+theorem ∀ (p : ℕ), Prime p → 3 ≤ p → 3 = p
+
+total : 3
+
+elaborated: 3
+
+There are infinitely many odd prime numbers.
+
+success
+
+theorem ∀ (n : ℕ), ∃ p, p > n ∧ p % 2 = 1
+
+total : 4
+
+elaborated: 4
+
+If a vector space has dimension `2` then it is finite dimensional.
+
+success
+
+theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroupₓ V] [inst_2 : Module K V],
+  FiniteDimensional.finrank K V = 2 → FiniteDimensional K V
+
+total : 5
+
+elaborated: 5
+
+Every field is a division ring.
+
+success
+
+theorem {K : Type u_1} → [inst : Field K] → DivisionRing K
+
+total : 6
+
+elaborated: 6
+
+If a space has dimension `2` then it is finite dimensional.
+
+success
+
+theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroupₓ V] [inst_2 : Module K V]
+  [inst_3 : Nontrivial K] [inst_4 : Nontrivial V], FiniteDimensional K V
+
+total : 7
+
+elaborated: 7
+
+Every natural number has a successor.
+
+success
+
+theorem ∀ (n : ℕ), ∃ m, n < m
+
+total : 8
+
+elaborated: 8
+
+Every natural number is less than its successor.
+
+success
+
+theorem ∀ (n : ℕ), n < n + 1
+
+total : 9
+
+elaborated: 9
+
+Every set is Lebesgue measurable.
+
+success
+
+theorem ∀ {α : Type u_1} {m : MeasurableSpace α} (s : Set α), MeasurableSet s
+
+total : 10
+
+elaborated: 10
+
+Every set of Borel measure zero is Lebesgue measurable.
+
+No valid output from Codex; outputs below
+
+{α : Type u_1} [measurable_space α] [topological_space α] [topological_space.pseudo_metrizable_space α] [borel_space α] {s : set α} : s ∈ @borel_measurable.caratheodory α _ _ _ _ _ _ _ _ ⊆ lebesgue_measurable.caratheodory 
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  h :   measure_theory.measure_of  α  (   λ   ( a : α ) ,  ⊤  ) s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  h :   measure_theory.measure_of  α  (   λ   ( a : α ) ,  ⊤  ) s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasurableSpace  α } ->  [  TopologicalSpace  α ] ->  [  TopologicalSpace.PseudoMetrizableSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  [  lebesgue_measure_space  α ] ->  {  s :  Set  α } ->  (  h :   measure  m s =  0 ) ->  lebesgue_measure_space.measurable_set  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasurableSpace  α } ->  [  TopologicalSpace  α ] ->  [  TopologicalSpace.PseudoMetrizableSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  [  lebesgue_measure_space  α ] ->  {  s :  Setₓ  α } ->  (  h :   measure  m s =  0 ) ->  lebesgue_measure_space.measurable_set  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  hs :   measure_theory.measure.borel.borel_measure_eq_lebesgue_measure  s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  hs :   measure_theory.measure.borel.borel_measure_eq_lebesgue_measure  s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasurableSpace  α } ->  [  TopologicalSpace  α ] ->  [  TopologicalSpace.SecondCountableTopology  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  (  s :  Set  α ) ->  (  h :   MeasureTheory.Measure  s =  0 ) ->  Measurable  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasurableSpace  α } ->  [  TopologicalSpace  α ] ->  [  TopologicalSpace.SecondCountableTopology  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  (  s :  Setₓ  α ) ->  (  h :   MeasureTheory.Measure  s =  0 ) ->  Measurable  s
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  hs :   measure_theory.borel_measure  α s =  0 ) ->  measure_theory.measurable_set  s
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  hs :   measure_theory.borel_measure  α s =  0 ) ->  measure_theory.measurable_set  s
+
+{γ : Type u_3} [tγ : topological_space γ] [polish_space γ] {μ : measure_theory.measure γ} (borel : measurable_set μ) {s : set γ} (h : μ s = 0) : measurable_set s 
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->   s ∈ borel_measure_zero.measurable_space →  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->   s ∈ borel_measure_zero.measurable_space →  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  TopologicalSpace  α ] ->  [  TopologicalSpace.PseudoMetrizableSpace  α ] ->  [  topological_space.borel_space  α ] ->  measure_theory.borel_measure_zero ≤ measure_theory.lebesgue_measure
+
+ {  α :  Type  u_1 } ->  {  s :  Set  α } ->  {  m :  MeasureTheory.Measure  α } ->  (  hs :  m.borel_measurable  s ) ->  (  h :   m  s =  0 ) ->  lebesgue_measurable  s
+
+ {  α :  Type  u_1 } ->  {  s :  Setₓ  α } ->  {  m :  MeasureTheory.Measure  α } ->  (  hs :  m.borel_measurable  s ) ->  (  h :   m  s =  0 ) ->  lebesgue_measurable  s
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->    (   lintegral  α  (   λ x ,  indicator  s x  )  ) =  0 →  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->    (   lintegral  α  (   λ x ,  indicator  s x  )  ) =  0 →  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  hs :   borel_measure  α  (    𝓝  s  ) =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  hs :   borel_measure  α  (    𝓝  s  ) =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u } ->  {  S :  Set  α } ->   borel_measure_zero  S →  lebesgue_measurable  S
+
+ {  α :  Type  u } ->  {  S :  Setₓ  α } ->   borel_measure_zero  S →  lebesgue_measurable  S
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  h :   measure_theory.borel_measure  α s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  h :   measure_theory.borel_measure  α s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  lebesgue_measure_space  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->    lebesgue_measure  s =  0 →  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  lebesgue_measure_space  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->    lebesgue_measure  s =  0 →  MeasurableSet  s
+
+failed to elaborate
+
+outputs: #[{α : Type u_1} [measurable_space α] [topological_space α] [topological_space.pseudo_metrizable_space α] [borel_space α] {s : set α} : s ∈ @borel_measurable.caratheodory α _ _ _ _ _ _ _ _ ⊆ lebesgue_measurable.caratheodory , {α : Type u_1} [measurable_space α] [borel_space α] {s : set α} (h : measure_theory.measure_of α (λ (a : α), ⊤) s = 0) : measurable_set s , {α : Type u_1} {m : measurable_space α} [topological_space α] [topological_space.pseudo_metrizable_space α] [measurable_space α] [borel_space α] [lebesgue_measure_space α] {s : set α} (h : measure m s = 0) : lebesgue_measure_space.measurable_set s , {α : Type u_1} [measurable_space α] [borel_space α] {s : set α}  (hs : measure_theory.measure.borel.borel_measure_eq_lebesgue_measure s = 0) : measurable_set s , {α : Type u_1} {m : measurable_space α} [topological_space α] [topological_space.second_countable_topology α] [measurable_space α] [borel_space α] (s : set α) (h : measure_theory.measure s = 0) : is_measurable s , {α : Type u_1} [topological_space α] [measurable_space α] [borel_space α] {s : set α} (hs : measure_theory.borel_measure α s = 0) : measure_theory.measurable_set s , {γ : Type u_3} [tγ : topological_space γ] [polish_space γ] {μ : measure_theory.measure γ} (borel : measurable_set μ) {s : set γ} (h : μ s = 0) : measurable_set s , {α : Type u_1} [topological_space α] [measurable_space α] [borel_space α] {s : set α} : s ∈ borel_measure_zero.measurable_space → measurable_set s , {α : Type u_1} [measurable_space α] [topological_space α] [topological_space.pseudo_metrizable_space α] [topological_space.borel_space α] : measure_theory.borel_measure_zero ≤ measure_theory.lebesgue_measure , {α : Type u_1} {s : set α} {m : measure_theory.measure α} (hs : m.borel_measurable s) (h : m s = 0) : lebesgue_measurable s , {α : Type u_1} [topological_space α] [measurable_space α] [borel_space α] {s : set α} : (lintegral α (λ x, indicator s x)) = 0 → measurable_set s , {α : Type u_1} [measurable_space α] [borel_space α] {s : set α} (hs : borel_measure α (𝓝 s) = 0) : measurable_set s , {α : Type u} {S : set α} : borel_measure_zero S → lebesgue_measurable S , {α : Type u_1} [topological_space α] [measurable_space α] [borel_space α] {s : set α} (h : measure_theory.borel_measure α s = 0) : measurable_set s , {α : Type u_1} [measurable_space α] [lebesgue_measure_space α] [borel_space α] {s : set α} : lebesgue_measure s = 0 → measurable_set s ]
+
+total : 11
+
+elaborated: 10
+
+No prime number is a perfect square.
+
+success
+
+theorem ∀ {p : ℕ} [inst : Fact (Nat.Prime p)], ¬∃ t, t * t = p
+
+total : 12
+
+elaborated: 11
+
+Every odd prime number is greater than `2`.
+
+success
+
+theorem ∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p % 2 = 1 → p > 2
+
+total : 13
+
+elaborated: 12
+
+The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares.
+
+success
+
+theorem ∀ {n m : ℕ},
+  (∃ a b c d, a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = n) →
+    (∃ e f g h, e ^ 2 + f ^ 2 + g ^ 2 + h ^ 2 = m) → ∃ i j k l, i ^ 2 + j ^ 2 + k ^ 2 + l ^ 2 = m * n
+
+total : 14
+
+elaborated: 13
+
+Every compact topological space is locally compact.
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : CompactSpace α], LocallyCompactSpace α
+
+total : 15
+
+elaborated: 14
+
+Every continuous function is uniformly continuous.
+
+success
+
+theorem ∀ {α : Type u} {β : Type v} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β},
+  Continuous f → UniformContinuous f
+
+total : 16
+
+elaborated: 15
+
+`6` is not the sum of two distinct prime numbers.
+
+success
+
+theorem ¬∃ a b, Nat.Prime a ∧ Nat.Prime b ∧ 2 < a ∧ 2 < b ∧ a ≠ b ∧ a + b = 6
+
+total : 17
+
+elaborated: 16
+
+No integer is irrational.
+
+No valid output from Codex; outputs below
+
+ {  n :  ℤ } ->  Irrational  n
+
+ {  i :  ℤ } ->  (  hi :  Irrational  i ) ->  i ≠  ℤ.of_rat   (  i.to_rat  )
+
+ {  z :  ℤ } ->  Irrational  z
+
+ (  q :  ℚ ) ->   Irrational  q →  ¬  int.exists_eq  q
+
+ {  x :  ℤ } ->  Irrational  x
+
+ {  α :  Type  u } ->  [ _inst_1 :  Field  α ] ->  {  n :  ℤ } ->  ¬  Irrational  n
+
+ {  x :  ℤ } ->  ¬  Irrational  x
+
+ (  a :  ℤ ) ->  ¬  Irrational  a
+
+ (  x :  ℤ ) ->  ¬  Irrational  x
+
+{x : ℤ} : irrational x → false 
+
+ {  α :  Type  u_1 } ->  [  LinearOrderedField  α ] ->  (  q : α ) ->   Irrational  q →  ¬  Int  q
+
+ {  a :  ℤ } ->  ¬  Irrational  a
+
+ {  α :  Type  u_1 } ->  [  LinearOrderedField  α ] ->  (  n :  ℤ ) ->  Irrational  n
+
+ ∀   (  n  :  ℤ  )  ,  ¬  Irrational  n
+
+ {  x :  ℤ } ->   Irrational  x ↔  x ∉  ℤ
+
+failed to elaborate
+
+outputs: #[{n : ℤ} : irrational n , {i : ℤ} (hi : irrational i) : i ≠ ℤ.of_rat (i.to_rat) , {z : ℤ} : irrational z , (q : ℚ) : irrational q → ¬int.exists_eq q , {x : ℤ} : irrational x , {α : Type u} [_inst_1 : field α] {n : ℤ} : ¬irrational n , {x : ℤ} : ¬irrational x , (a : ℤ) : ¬irrational a , (x : ℤ) : ¬irrational x , {x : ℤ} : irrational x → false , {α : Type u_1} [linear_ordered_field α] (q : α) : irrational q → ¬int q , {a : ℤ} : ¬irrational a , {α : Type u_1} [linear_ordered_field α] (n : ℤ) : irrational n ,  : ∀ (n : ℤ), ¬ irrational n , {x : ℤ} : irrational x ↔ x ∉ ℤ ]
+
+total : 18
+
+elaborated: 16
+
+The identity element in a ring is a unit.
+
+success
+
+theorem ∀ {R : Type u} [inst : Ringₓ R], IsUnit 1
+
+total : 19
+
+elaborated: 17
+
+Every subgroup of a group is a group.
+
+success
+
+theorem {G : Type u_1} → [inst : Groupₓ G] → Group (Subgroup G)
+
+total : 20
+
+elaborated: 18
+
+The sum of two natural numbers is a natural number.
+
+success
+
+theorem {m n : ℕ} → Add ℕ
+
+total : 21
+
+elaborated: 19
+
+The identity element of a group has finite order.
+
+success
+
+theorem ∀ {G : Type u} [inst : Groupₓ G], IsOfFinOrder 1
+
+total : 22
+
+elaborated: 20
+
+`7` is a prime number.
+
+success
+
+theorem ∀ {p : ℕ}, Nat.Prime 7
+
+total : 23
+
+elaborated: 21
+
+There are `3` prime numbers below `8`.
+
+No valid output from Codex; outputs below
+
+  nat.primes_below   8 =  3
+
+  prime_count   7 =  3
+
+ Fact   (    primes_below   8 =  3  )
+
+  prime_count   8 =  3
+
+   (   8   :  ℕ ) . prime_count =  3
+
+  prime_pi   7 =  3
+
+  prime_check_list.prime_count   7 =  3
+
+   (   primes_below   8  ) . length =  3
+
+  prime_list_below   8 =   [   2 ,  3 ,  5 ,  7 ]  [   2 ,  3 ,  5 ,  7 ]
+
+  nat.pi   8 =  3
+
+ Fact   (    prime_sum   8 =  3  )
+
+  primepi   8 =  3
+
+  List.length   (  p_of_8  ) =  3
+
+failed to elaborate
+
+outputs: #[: nat.primes_below 8 = 3 , : prime_count 7 = 3 , : fact (primes_below 8 = 3) , : prime_count 8 = 3 , : (8 : ℕ).prime_count = 3 , : prime_pi 7 = 3 , : prime_check_list.prime_count 7 = 3 , : (primes_below 8).length = 3 , : prime_list_below 8 = [2, 3, 5, 7] , : nat.pi 8 = 3 , : fact (prime_sum 8 = 3) , : primepi 8 = 3 , : list.length (p_of_8) = 3 ]
+
+total : 24
+
+elaborated: 21
+
+The empty set is contained in every finite set.
+
+success
+
+theorem ∀ {α : Type u_1}, ∅ ⊂ ∅
+
+total : 25
+
+elaborated: 22
+
+Every infinite set contains a finite set.
+
+success
+
+theorem ∀ {α : Type u_1} {β : Type u_2} (f : α → β), Function.Injective f → Infinite β → Infinite α
+
+total : 26
+
+elaborated: 23
+
+Every commutative ring is a monoid.
+
+success
+
+theorem {α : Type u} → [inst : CommRing α] → Monoid α
+
+total : 27
+
+elaborated: 24
+
+There is no field of order `10`.
+
+success
+
+theorem ∀ (n : ℕ), n = 10 → ¬Nonempty (Field (Fin n))
+
+total : 28
+
+elaborated: 25
+
+Every odd natural number is the sum of two distinct natural numbers.
+
+success
+
+theorem ∀ {n : ℕ}, n % 2 = 1 → ∃ m k, n = m + k ∧ m ≠ k
+
+total : 29
+
+elaborated: 26
+
+Every element in the trivial group has finite order.
+
+success
+
+theorem ∀ {G : Type u} [inst : Groupₓ G] (x : G), IsOfFinOrder x
+
+total : 30
+
+elaborated: 27
+
+The square of an even number is even.
+
+success
+
+theorem ∀ {n : ℕ}, Even n → Even (n * n)
+
+total : 31
+
+elaborated: 28
+
+Every commutative division ring is a field.
+
+success
+
+theorem ∀ {K : Type u} [inst : DivisionRing K] [inst_1 : CommRing K], IsField K
+
+total : 32
+
+elaborated: 29
+
+The image of the identity element under the identity map is the identity element.
+
+success
+
+theorem ∀ {α : Type u} [inst : Monoid α], id 1 = 1
+
+total : 33
+
+elaborated: 30
+
+Every point is a fixed point of the identity function on a space.
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] (x : α), Function.IsFixedPt id x
+
+total : 34
+
+elaborated: 31
+
+The diameter of a singleton space is `0`.
+
+success
+
+theorem ∀ {α : Type u} [inst : PseudoEmetricSpace α] (a : α), Emetric.diam (?m.3084900 a) = 0
+
+total : 35
+
+elaborated: 32
+
+Every group is non-empty.
+
+success
+
+theorem ∀ (G : Type u_1) [inst : Group G], Nonempty G
+
+total : 36
+
+elaborated: 33
+
+All connected components of a topological space are connected.
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] (x : α), IsConnected (ConnectedComponent x)
+
+total : 37
+
+elaborated: 34
+
+The ring of integers has a maximal ideal.
+
+No valid output from Codex; outputs below
+
+ {  R :  Type  u } ->  [  CommRing  R ] ->  [  LocalRing  R ] ->  (  O :  Subring  R ) ->  [  int.is_integral  O R ] ->  ideal.is_maximal   (   O.val  R  )
+
+ {  R :  Type  u } ->  [  CommRingₓ  R ] ->  [  LocalRing  R ] ->  (  O :  Subring  R ) ->  [  int.is_integral  O R ] ->  ideal.is_maximal   (   O.val  R  )
+
+ {  R :  Type  u } ->  [  CommRingₓₓ  R ] ->  [  LocalRing  R ] ->  (  O :  Subring  R ) ->  [  int.is_integral  O R ] ->  ideal.is_maximal   (   O.val  R  )
+
+ (  O :  Type  u_1 ) ->  [  CommRing  O ] ->  [  is_integral_domain  O ] ->  is_maximal_ideal  O.maximal_ideal
+
+ (  O :  Type  u_1 ) ->  [  CommRingₓ  O ] ->  [  is_integral_domain  O ] ->  is_maximal_ideal  O.maximal_ideal
+
+ (  O :  Type  u_1 ) ->  [  CommRingₓₓ  O ] ->  [  is_integral_domain  O ] ->  is_maximal_ideal  O.maximal_ideal
+
+ {  R :  Type  u } ->  {  Γ₀ :  Type  v } ->  [  CommRing  R ] ->  [  LinearOrderedCommGroupWithZero  Γ₀ ] ->  (  v :  Valuation  R Γ₀ ) ->  (  O :  Type  w ) ->  [  CommRing  O ] ->  [  Algebra  O R ] ->  [  v.integers  O ] ->  maximal_ideal  O
+
+ {  R :  Type  u } ->  {  Γ₀ :  Type  v } ->  [  CommRing  R ] ->  [  LinearOrderedCommGroupWithZero  Γ₀ ] ->  (  v :  Valuation  R Γ₀ ) ->  (  O :  Type  w ) ->  [  CommRingₓ  O ] ->  [  Algebra  O R ] ->  [  v.integers  O ] ->  maximal_ideal  O
+
+ {  R :  Type  u } ->  {  Γ₀ :  Type  v } ->  [  CommRing  R ] ->  [  LinearOrderedCommGroupWithZero  Γ₀ ] ->  (  v :  Valuation  R Γ₀ ) ->  (  O :  Type  w ) ->  [  CommRingₓₓ  O ] ->  [  Algebra  O R ] ->  [  v.integers  O ] ->  maximal_ideal  O
+
+ {  R :  Type  u } ->  {  Γ₀ :  Type  v } ->  [  CommRingₓ  R ] ->  [  LinearOrderedCommGroupWithZero  Γ₀ ] ->  (  v :  Valuation  R Γ₀ ) ->  (  O :  Type  w ) ->  [  CommRing  O ] ->  [  Algebra  O R ] ->  [  v.integers  O ] ->  maximal_ideal  O
+
+ {  R :  Type  u } ->  {  Γ₀ :  Type  v } ->  [  CommRingₓ  R ] ->  [  LinearOrderedCommGroupWithZero  Γ₀ ] ->  (  v :  Valuation  R Γ₀ ) ->  (  O :  Type  w ) ->  [  CommRingₓ  O ] ->  [  Algebra  O R ] ->  [  v.integers  O ] ->  maximal_ideal  O
+
+ {  R :  Type  u } ->  {  Γ₀ :  Type  v } ->  [  CommRingₓ  R ] ->  [  LinearOrderedCommGroupWithZero  Γ₀ ] ->  (  v :  Valuation  R Γ₀ ) ->  (  O :  Type  w ) ->  [  CommRingₓₓ  O ] ->  [  Algebra  O R ] ->  [  v.integers  O ] ->  maximal_ideal  O
+
+ {  R :  Type  u } ->  {  Γ₀ :  Type  v } ->  [  CommRingₓₓ  R ] ->  [  LinearOrderedCommGroupWithZero  Γ₀ ] ->  (  v :  Valuation  R Γ₀ ) ->  (  O :  Type  w ) ->  [  CommRing  O ] ->  [  Algebra  O R ] ->  [  v.integers  O ] ->  maximal_ideal  O
+
+ {  R :  Type  u } ->  {  Γ₀ :  Type  v } ->  [  CommRingₓₓ  R ] ->  [  LinearOrderedCommGroupWithZero  Γ₀ ] ->  (  v :  Valuation  R Γ₀ ) ->  (  O :  Type  w ) ->  [  CommRingₓ  O ] ->  [  Algebra  O R ] ->  [  v.integers  O ] ->  maximal_ideal  O
+
+ {  R :  Type  u } ->  {  Γ₀ :  Type  v } ->  [  CommRingₓₓ  R ] ->  [  LinearOrderedCommGroupWithZero  Γ₀ ] ->  (  v :  Valuation  R Γ₀ ) ->  (  O :  Type  w ) ->  [  CommRingₓₓ  O ] ->  [  Algebra  O R ] ->  [  v.integers  O ] ->  maximal_ideal  O
+
+ {  R :  Type  u_1 } ->  [  CommRing  R ] ->  [  IsNoetherian  R ] ->  has_maximal_ideal  R
+
+ {  R :  Type  u_1 } ->  [  CommRingₓ  R ] ->  [  IsNoetherian  R ] ->  has_maximal_ideal  R
+
+ {  R :  Type  u_1 } ->  [  CommRingₓₓ  R ] ->  [  IsNoetherian  R ] ->  has_maximal_ideal  R
+
+ (  A :  Type  u_1 ) ->  [  CommRing  A ] ->  [  is_integral_domain  A ] ->  [  IsNoetherian  A ] ->  ∃     m  :  Ideal  A ,  Prime  m
+
+ (  A :  Type  u_1 ) ->  [  CommRingₓ  A ] ->  [  is_integral_domain  A ] ->  [  IsNoetherian  A ] ->  ∃     m  :  Ideal  A ,  Prime  m
+
+ (  A :  Type  u_1 ) ->  [  CommRingₓₓ  A ] ->  [  is_integral_domain  A ] ->  [  IsNoetherian  A ] ->  ∃     m  :  Ideal  A ,  Prime  m
+
+ (  R :  Type  u_1 ) ->  [  CommRing  R ] ->  [  is_integral_domain  R ] ->  (  O :  Subring  R ) ->  [  is_ring_of_integers  O R ] ->  is_maximal_ideal  O.O_max
+
+ (  R :  Type  u_1 ) ->  [  CommRingₓ  R ] ->  [  is_integral_domain  R ] ->  (  O :  Subring  R ) ->  [  is_ring_of_integers  O R ] ->  is_maximal_ideal  O.O_max
+
+ (  R :  Type  u_1 ) ->  [  CommRingₓₓ  R ] ->  [  is_integral_domain  R ] ->  (  O :  Subring  R ) ->  [  is_ring_of_integers  O R ] ->  is_maximal_ideal  O.O_max
+
+ (  K :  Type  u_1 ) ->  [  Field  K ] ->  Nonempty   (   maximal_ideal   (   ring_of_integers  K  )  )
+
+ (  K :  Type  u_1 ) ->  [  Field  K ] ->  max_ideal.is_maximal   (   ring_of_integers   ℤ K  )
+
+ {  R :  Type  u } ->  [  CommRing  R ] ->  [  has_maximal_ideal  R ] ->  has_maximal_ideal   (   ring_of_integers  R  )
+
+ {  R :  Type  u } ->  [  CommRingₓ  R ] ->  [  has_maximal_ideal  R ] ->  has_maximal_ideal   (   ring_of_integers  R  )
+
+ {  R :  Type  u } ->  [  CommRingₓₓ  R ] ->  [  has_maximal_ideal  R ] ->  has_maximal_ideal   (   ring_of_integers  R  )
+
+{R} [ring R] : ideal.is_maximal R (localization.univ R) 
+
+ {  R :  Type  u } ->  [  Ring  R ] ->  [  is_integral_domain  R ] ->  ideal.exists_maximal   (   ring_of_integers  R  )
+
+ {  R :  Type  u } ->  [  Ringₓ  R ] ->  [  is_integral_domain  R ] ->  ideal.exists_maximal   (   ring_of_integers  R  )
+
+ {  R :  Type  u } ->  [  Ringₓₓ  R ] ->  [  is_integral_domain  R ] ->  ideal.exists_maximal   (   ring_of_integers  R  )
+
+ {  R :  Type  u } ->  [  Ring  R ] ->  [  Int  R ] ->  ideal.is_maximal   (   has_int.int  R  )  (  int.ker   :  Ideal  R )
+
+ {  R :  Type  u } ->  [  Ringₓ  R ] ->  [  Int  R ] ->  ideal.is_maximal   (   has_int.int  R  )  (  int.ker   :  Ideal  R )
+
+ {  R :  Type  u } ->  [  Ringₓₓ  R ] ->  [  Int  R ] ->  ideal.is_maximal   (   has_int.int  R  )  (  int.ker   :  Ideal  R )
+
+ {  R :  Type  u_1 } ->  [  Ring  R ] ->  [  is_subring_of_rings   ℤ R ] ->  ideal.is_maximal   (   int.ring  R  )
+
+ {  R :  Type  u_1 } ->  [  Ringₓ  R ] ->  [  is_subring_of_rings   ℤ R ] ->  ideal.is_maximal   (   int.ring  R  )
+
+ {  R :  Type  u_1 } ->  [  Ringₓₓ  R ] ->  [  is_subring_of_rings   ℤ R ] ->  ideal.is_maximal   (   int.ring  R  )
+
+ {  R :  Type  u } ->  [  CommRing  R ] ->  [  LocalRing  R ] ->  ideal.is_maximal   (   ring_of_integers  R  )
+
+ {  R :  Type  u } ->  [  CommRingₓ  R ] ->  [  LocalRing  R ] ->  ideal.is_maximal   (   ring_of_integers  R  )
+
+ {  R :  Type  u } ->  [  CommRingₓₓ  R ] ->  [  LocalRing  R ] ->  ideal.is_maximal   (   ring_of_integers  R  )
+
+ {  R :  Type  u } ->  [  Ring  R ] ->  [  has_maximal_ideal  R ] ->  has_maximal_ideal   (   integers  R  )
+
+ {  R :  Type  u } ->  [  Ringₓ  R ] ->  [  has_maximal_ideal  R ] ->  has_maximal_ideal   (   integers  R  )
+
+ {  R :  Type  u } ->  [  Ringₓₓ  R ] ->  [  has_maximal_ideal  R ] ->  has_maximal_ideal   (   integers  R  )
+
+failed to elaborate
+
+outputs: #[{R : Type u} [comm_ring R] [is_local_ring R] (O : subring R) [int.is_integral O R] : ideal.is_maximal (O.val R) , (O : Type u_1) [comm_ring O] [is_integral_domain O] : is_maximal_ideal O.maximal_ideal , {R : Type u} {Γ₀ : Type v} [comm_ring R] [linear_ordered_comm_group_with_zero Γ₀] (v : valuation R Γ₀) (O : Type w) [comm_ring O] [algebra O R] [v.integers O] : maximal_ideal O , {R : Type u_1} [comm_ring R] [is_noetherian R] : has_maximal_ideal R , (A : Type u_1) [comm_ring A] [is_integral_domain A] [is_noetherian A] : ∃ m : ideal A, prime m , (R : Type u_1) [comm_ring R] [is_integral_domain R] (O : subring R) [is_ring_of_integers O R] : is_maximal_ideal O.O_max , (K : Type u_1) [field K] : nonempty (maximal_ideal (ring_of_integers K)) , (K : Type u_1) [field K] : max_ideal.is_maximal (ring_of_integers ℤ K) , {R : Type u} [comm_ring R] [has_maximal_ideal R] : has_maximal_ideal (ring_of_integers R) , {R} [ring R] : ideal.is_maximal R (localization.univ R) , {R : Type u} [ring R] [is_integral_domain R] : ideal.exists_maximal (ring_of_integers R) , {R : Type u} [ring R] [has_int R] : ideal.is_maximal (has_int.int R) (int.ker : ideal R) , {R : Type u_1} [ring R] [is_subring_of_rings ℤ R] : ideal.is_maximal (int.ring R) , {R : Type u} [comm_ring R] [is_local_ring R] : ideal.is_maximal (ring_of_integers R) , {R : Type u} [ring R] [has_maximal_ideal R] : has_maximal_ideal (integers R) ]
+
+total : 38
+
+elaborated: 34
+
+The numbers `3`, `4` and `5` form a Pythagorean triple.
+
+success
+
+theorem PythagoreanTriple 3 4 5
+
+total : 39
+
+elaborated: 35
+
+A vector space with the empty set as basis is trivial. 
+
+No valid output from Codex; outputs below
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  (  h :  Basis   (   ∅   :  Set  V ) K V ) ->   Module.rank  K V =  0
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  (  h :  Basis   (   ∅   :  Setₓ  V ) K V ) ->   Module.rank  K V =  0
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  (  h :  Basis   (   ∅   :  Set  V ) K V ) ->   Module.rank  K V =  0
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  (  h :  Basis   (   ∅   :  Setₓ  V ) K V ) ->   Module.rank  K V =  0
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  (  h :  Basis   (   ∅   :  Set  V ) K V ) ->   Module.rank  K V =  0
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  (  h :  Basis   (   ∅   :  Setₓ  V ) K V ) ->   Module.rank  K V =  0
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  discrete_field  K ] ->  [  AddCommGroup  V ] ->  [  vector_space  K V ] ->  {  ι :  Type  u_1 } ->  [  IsEmpty  ι ] ->  (  h :  Basis  ι K V ) ->  trivial  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  discrete_field  K ] ->  [  AddCommGroup  V ] ->  [  vector_space  K V ] ->  {  ι :  Type  u_1 } ->  [  IsEmpty  ι ] ->  (  h :  Basis  ι K V ) ->  trivialₓ  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  discrete_field  K ] ->  [  AddCommGroupₓ  V ] ->  [  vector_space  K V ] ->  {  ι :  Type  u_1 } ->  [  IsEmpty  ι ] ->  (  h :  Basis  ι K V ) ->  trivial  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  discrete_field  K ] ->  [  AddCommGroupₓ  V ] ->  [  vector_space  K V ] ->  {  ι :  Type  u_1 } ->  [  IsEmpty  ι ] ->  (  h :  Basis  ι K V ) ->  trivialₓ  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  discrete_field  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  vector_space  K V ] ->  {  ι :  Type  u_1 } ->  [  IsEmpty  ι ] ->  (  h :  Basis  ι K V ) ->  trivial  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  discrete_field  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  vector_space  K V ] ->  {  ι :  Type  u_1 } ->  [  IsEmpty  ι ] ->  (  h :  Basis  ι K V ) ->  trivialₓ  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  [  Nontrivial  K ] ->  (  h :  Basis   (   ∅   :  Set  V ) K V ) ->  trivial  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  [  Nontrivial  K ] ->  (  h :  Basis   (   ∅   :  Set  V ) K V ) ->  trivialₓ  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  [  Nontrivial  K ] ->  (  h :  Basis   (   ∅   :  Setₓ  V ) K V ) ->  trivial  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  [  Nontrivial  K ] ->  (  h :  Basis   (   ∅   :  Setₓ  V ) K V ) ->  trivialₓ  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  [  Nontrivial  K ] ->  (  h :  Basis   (   ∅   :  Set  V ) K V ) ->  trivial  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  [  Nontrivial  K ] ->  (  h :  Basis   (   ∅   :  Set  V ) K V ) ->  trivialₓ  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  [  Nontrivial  K ] ->  (  h :  Basis   (   ∅   :  Setₓ  V ) K V ) ->  trivial  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  [  Nontrivial  K ] ->  (  h :  Basis   (   ∅   :  Setₓ  V ) K V ) ->  trivialₓ  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  [  Nontrivial  K ] ->  (  h :  Basis   (   ∅   :  Set  V ) K V ) ->  trivial  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  [  Nontrivial  K ] ->  (  h :  Basis   (   ∅   :  Set  V ) K V ) ->  trivialₓ  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  [  Nontrivial  K ] ->  (  h :  Basis   (   ∅   :  Setₓ  V ) K V ) ->  trivial  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  [  Nontrivial  K ] ->  (  h :  Basis   (   ∅   :  Setₓ  V ) K V ) ->  trivialₓ  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  {  ι :  Type  u_1 } ->  (  h :  Basis  ι K V ) ->  (  hI :   ι ≃  ⊥  ιι ≃  ⊥  ι ≃  ⊥ ) ->   V ≃  (   0   :  Type  u_2 )  VV ≃  (   0   :  Type  u_2 )  V ≃  (   0   :  Type  u_2 )
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  {  ι :  Type  u_1 } ->  (  h :  Basis  ι K V ) ->  (  hI :   ι ≃  ⊥  ιι ≃  ⊥  ι ≃  ⊥ ) ->   V ≃  (   0   :  Type  u_2 )  VV ≃  (   0   :  Type  u_2 )  V ≃  (   0   :  Type  u_2 )
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  {  ι :  Type  u_1 } ->  (  h :  Basis  ι K V ) ->  (  hI :   ι ≃  ⊥  ιι ≃  ⊥  ι ≃  ⊥ ) ->   V ≃  (   0   :  Type  u_2 )  VV ≃  (   0   :  Type  u_2 )  V ≃  (   0   :  Type  u_2 )
+
+{K : Type u} {V : Type v} [division_ring K] [add_comm_group V] [module K V] (h : basis empty K V) : (λ (_ : K), 0) = 0 
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  [  Fintype  K ] ->  [  FiniteDimensional  K V ] ->  (  ι :  Type  u_1 ) ->  [  IsEmpty  ι ] ->  (  h :  Basis  ι K V ) ->  V =  ⟦  0 ⟧
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  [  Fintypeₓ  K ] ->  [  FiniteDimensional  K V ] ->  (  ι :  Type  u_1 ) ->  [  IsEmpty  ι ] ->  (  h :  Basis  ι K V ) ->  V =  ⟦  0 ⟧
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  [  Fintype  K ] ->  [  FiniteDimensional  K V ] ->  (  ι :  Type  u_1 ) ->  [  IsEmpty  ι ] ->  (  h :  Basis  ι K V ) ->  V =  ⟦  0 ⟧
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  [  Fintypeₓ  K ] ->  [  FiniteDimensional  K V ] ->  (  ι :  Type  u_1 ) ->  [  IsEmpty  ι ] ->  (  h :  Basis  ι K V ) ->  V =  ⟦  0 ⟧
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  [  Fintype  K ] ->  [  FiniteDimensional  K V ] ->  (  ι :  Type  u_1 ) ->  [  IsEmpty  ι ] ->  (  h :  Basis  ι K V ) ->  V =  ⟦  0 ⟧
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  [  Fintypeₓ  K ] ->  [  FiniteDimensional  K V ] ->  (  ι :  Type  u_1 ) ->  [  IsEmpty  ι ] ->  (  h :  Basis  ι K V ) ->  V =  ⟦  0 ⟧
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  {  ι :  Type  u_1 } ->  (  h :  Basis  ι K V ) ->  trivial  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  {  ι :  Type  u_1 } ->  (  h :  Basis  ι K V ) ->  trivialₓ  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  {  ι :  Type  u_1 } ->  (  h :  Basis  ι K V ) ->  trivial  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  {  ι :  Type  u_1 } ->  (  h :  Basis  ι K V ) ->  trivialₓ  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  {  ι :  Type  u_1 } ->  (  h :  Basis  ι K V ) ->  trivial  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  {  ι :  Type  u_1 } ->  (  h :  Basis  ι K V ) ->  trivialₓ  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  (  h :  Basis   (   ∅   :  Set  V ) K V ) ->  trivial  K V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  (  h :  Basis   (   ∅   :  Set  V ) K V ) ->  trivialₓ  K V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  (  h :  Basis   (   ∅   :  Setₓ  V ) K V ) ->  trivial  K V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  (  h :  Basis   (   ∅   :  Setₓ  V ) K V ) ->  trivialₓ  K V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  (  h :  Basis   (   ∅   :  Set  V ) K V ) ->  trivial  K V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  (  h :  Basis   (   ∅   :  Set  V ) K V ) ->  trivialₓ  K V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  (  h :  Basis   (   ∅   :  Setₓ  V ) K V ) ->  trivial  K V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  (  h :  Basis   (   ∅   :  Setₓ  V ) K V ) ->  trivialₓ  K V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  (  h :  Basis   (   ∅   :  Set  V ) K V ) ->  trivial  K V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  (  h :  Basis   (   ∅   :  Set  V ) K V ) ->  trivialₓ  K V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  (  h :  Basis   (   ∅   :  Setₓ  V ) K V ) ->  trivial  K V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  (  h :  Basis   (   ∅   :  Setₓ  V ) K V ) ->  trivialₓ  K V
+
+ (  ι :  Type  u_1 ) ->  (  h :  Basis  ι K V ) ->  V ≃ₗ[ K ]  (   {   0 }   :  Set  V )
+
+ (  ι :  Type  u_1 ) ->  (  h :  Basis  ι K V ) ->  V ≃ₗ[ K ]  (   {   0 }   :  Setₓ  V )
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  (  h :  basis.of_type   0 K V ) ->  Nontrivial  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  (  h :  basis.of_type   0 K V ) ->  Nontrivial  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  (  h :  basis.of_type   0 K V ) ->  Nontrivial  V
+
+ {  ι :  Type  u } ->  {  K :  Type  v } ->  {  V :  Type   _ } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  [  IsEmpty  ι ] ->  (  hV :  Basis  ι K V ) ->  V =  ⊥
+
+ {  ι :  Type  u } ->  {  K :  Type  v } ->  {  V :  Type   _ } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  [  IsEmpty  ι ] ->  (  hV :  Basis  ι K V ) ->  V =  ⊥
+
+ {  ι :  Type  u } ->  {  K :  Type  v } ->  {  V :  Type   _ } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  [  IsEmpty  ι ] ->  (  hV :  Basis  ι K V ) ->  V =  ⊥
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  (  h :  Basis  w K V ) ->  trivial  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  (  h :  Basis  w K V ) ->  trivialₓ  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  (  h :  Basis  w K V ) ->  trivial  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  (  h :  Basis  w K V ) ->  trivialₓ  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  (  h :  Basis  w K V ) ->  trivial  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  (  h :  Basis  w K V ) ->  trivialₓ  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  (  ι :  Type  u_1 ) ->  [  IsEmpty  ι ] ->  (  h :  Basis  ι K V ) ->  trivial  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  (  ι :  Type  u_1 ) ->  [  IsEmpty  ι ] ->  (  h :  Basis  ι K V ) ->  trivialₓ  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  (  ι :  Type  u_1 ) ->  [  IsEmpty  ι ] ->  (  h :  Basis  ι K V ) ->  trivial  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  (  ι :  Type  u_1 ) ->  [  IsEmpty  ι ] ->  (  h :  Basis  ι K V ) ->  trivialₓ  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  (  ι :  Type  u_1 ) ->  [  IsEmpty  ι ] ->  (  h :  Basis  ι K V ) ->  trivial  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  (  ι :  Type  u_1 ) ->  [  IsEmpty  ι ] ->  (  h :  Basis  ι K V ) ->  trivialₓ  V
+
+ {  V :  Type  u_1 } ->  [  AddCommGroup  V ] ->  {  ι :  Type  w } ->  (  h :  Basis  ι  ℤ V ) ->  V =  ⊥
+
+ {  V :  Type  u_1 } ->  [  AddCommGroupₓ  V ] ->  {  ι :  Type  w } ->  (  h :  Basis  ι  ℤ V ) ->  V =  ⊥
+
+ {  V :  Type  u_1 } ->  [  AddCommGroupₓₓ  V ] ->  {  ι :  Type  w } ->  (  h :  Basis  ι  ℤ V ) ->  V =  ⊥
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  {  ι :  Type  u_1 } ->  [  IsEmpty  ι ] ->  (  h :  Basis  ι K V ) ->  trivial  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  {  ι :  Type  u_1 } ->  [  IsEmpty  ι ] ->  (  h :  Basis  ι K V ) ->  trivialₓ  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  {  ι :  Type  u_1 } ->  [  IsEmpty  ι ] ->  (  h :  Basis  ι K V ) ->  trivial  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  {  ι :  Type  u_1 } ->  [  IsEmpty  ι ] ->  (  h :  Basis  ι K V ) ->  trivialₓ  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  {  ι :  Type  u_1 } ->  [  IsEmpty  ι ] ->  (  h :  Basis  ι K V ) ->  trivial  V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  {  ι :  Type  u_1 } ->  [  IsEmpty  ι ] ->  (  h :  Basis  ι K V ) ->  trivialₓ  V
+
+failed to elaborate
+
+outputs: #[{K : Type u} {V : Type v} [division_ring K] [add_comm_group V] [module K V] (h : basis (∅ : set V) K V) : module.rank K V = 0 , {K : Type u} {V : Type v} [discrete_field K] [add_comm_group V] [vector_space K V] {ι : Type u_1} [is_empty ι] (h : basis ι K V) : trivial V , {K : Type u} {V : Type v} [division_ring K] [add_comm_group V] [module K V] [nontrivial K] (h : basis (∅ : set V) K V) : trivial V , {K : Type u} {V : Type v} [division_ring K] [add_comm_group V] [module K V] {ι : Type u_1} (h : basis ι K V) (hI : ι ≃ ⊥) : V ≃ (0:Type u_2) , {K : Type u} {V : Type v} [division_ring K] [add_comm_group V] [module K V] (h : basis empty K V) : (λ (_ : K), 0) = 0 , {K : Type u} {V : Type v} [division_ring K] [add_comm_group V] [module K V] [fintype K] [finite_dimensional K V] (ι : Type u_1) [is_empty ι] (h : basis ι K V) : V = ⟦0⟧ , {K : Type u} {V : Type v} [division_ring K] [add_comm_group V] [module K V] {ι : Type u_1} (h : basis ι K V) : trivial V , {K : Type u} {V : Type v} [division_ring K] [add_comm_group V] [module K V] (h : basis (∅ : set V) K V) : trivial K V , (ι : Type u_1) (h : basis ι K V) : V ≃ₗ[K] ({0} : set V) , {K : Type u} {V : Type v} [division_ring K] [add_comm_group V] [module K V] (h : basis.of_type 0 K V) : nontrivial V , {ι : Type u} {K : Type v} {V : Type _} [division_ring K] [add_comm_group V] [module K V] [is_empty ι] (hV : basis ι K V) : V = ⊥ , {K : Type u} {V : Type v} [division_ring K] [add_comm_group V] [module K V] (h : basis w K V) : is_trivial V , {K : Type u} {V : Type v} [division_ring K] [add_comm_group V] [module K V] (ι : Type u_1) [is_empty ι] (h : basis ι K V) : trivial V , {V : Type u_1} [add_comm_group V] {ι : Type w} (h : basis ι ℤ V) : V = ⊥ , {K : Type u} {V : Type v} [division_ring K] [add_comm_group V] [module K V] {ι : Type u_1} [is_empty ι] (h : basis ι K V) : trivial V ]
+
+total : 40
+
+elaborated: 35
+
