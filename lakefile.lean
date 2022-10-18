@@ -22,6 +22,10 @@ lean_exe bulkelab {
   supportInterpreter := true
 }
 
+lean_exe thmextract {
+  supportInterpreter := true
+}
+
 
 lean_exe bulkchk{
   supportInterpreter := true

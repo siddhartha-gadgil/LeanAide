@@ -1,0 +1,2040 @@
+[{"type": "HEq f f'",
+  "tactic-prompt":
+  "lemma {α β γ : Sort _}  {f : α → β} {α α': Sort u}  {β : α → Sort v}  {β' : α' → Sort v}  {f : ∀a, β a}  {f' : ∀a, β' a}    (hα : α = α')  (h : ∀a a', HEq a a' → HEq (f a) (f' a')) : HEq f f' := by subst hα; sorry",
+  "name": "hfunext",
+  "kind": "lemma",
+  "first-tactic": "subst hα",
+  "core-prompt":
+  "{α β γ : Sort _}  {f : α → β} {α α': Sort u}  {β : α → Sort v}  {β' : α' → Sort v}  {f : ∀a, β a}  {f' : ∀a, β' a}    (hα : α = α')  (h : ∀a a', HEq a a' → HEq (f a) (f' a')) : HEq f f'",
+  "args":
+  "{α β γ : Sort _}  {f : α → β} {α α': Sort u}  {β : α → Sort v}  {β' : α' → Sort v}  {f : ∀a, β a}  {f' : ∀a, β' a}    (hα : α = α')  (h : ∀a a', HEq a a' → HEq (f a) (f' a'))"},
+ {"type": "Function.injective (λ x => if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩)",
+  "tactic-prompt":
+  "lemma {α β γ : Sort _}  {f : α → β} (p : α → Prop)  [DecidablePred p]    {f : {a : α // p a} → β}  {f' : {a : α // ¬ p a} → β}    (hf : injective f)  (hf' : injective f')    (im_disj : ∀ {x x' : α} {hx : p x} {hx' : ¬ p x'}, f ⟨x, hx⟩ ≠ f' ⟨x', hx'⟩) : Function.injective (λ x => if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) := by intros x₁ x₂ h; sorry",
+  "name": "injective.dite",
+  "kind": "lemma",
+  "first-tactic": "intros x₁ x₂ h",
+  "core-prompt":
+  "{α β γ : Sort _}  {f : α → β} (p : α → Prop)  [DecidablePred p]    {f : {a : α // p a} → β}  {f' : {a : α // ¬ p a} → β}    (hf : injective f)  (hf' : injective f')    (im_disj : ∀ {x x' : α} {hx : p x} {hx' : ¬ p x'}, f ⟨x, hx⟩ ≠ f' ⟨x', hx'⟩) : Function.injective (λ x => if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩)",
+  "args":
+  "{α β γ : Sort _}  {f : α → β} (p : α → Prop)  [DecidablePred p]    {f : {a : α // p a} → β}  {f' : {a : α // ¬ p a} → β}    (hf : injective f)  (hf' : injective f')    (im_disj : ∀ {x x' : α} {hx : p x} {hx' : ¬ p x'}, f ⟨x, hx⟩ ≠ f' ⟨x', hx'⟩)"},
+ {"type": "g₁ = g₂",
+  "tactic-prompt":
+  "theorem {α β γ : Sort _}  {f : α → β} {f : α → β}  {g₁ g₂ : β → α}  (h₁ : LeftInverse g₁ f)    (h₂ : Function.RightInverse g₂ f) : g₁ = g₂ := by have h₃ : g₁ = g₁ ∘ f ∘ g₂ := by rw [h₂.comp_eq_id, comp.right_id]; sorry",
+  "name": "LeftInverse.eq_RightInverse",
+  "kind": "theorem",
+  "first-tactic":
+  "have h₃ : g₁ = g₁ ∘ f ∘ g₂ := by rw [h₂.comp_eq_id, comp.right_id]",
+  "core-prompt":
+  "{α β γ : Sort _}  {f : α → β} {f : α → β}  {g₁ g₂ : β → α}  (h₁ : LeftInverse g₁ f)    (h₂ : Function.RightInverse g₂ f) : g₁ = g₂",
+  "args":
+  "{α β γ : Sort _}  {f : α → β} {f : α → β}  {g₁ g₂ : β → α}  (h₁ : LeftInverse g₁ f)    (h₂ : Function.RightInverse g₂ f)"},
+ {"type": "inv_fun_on f s b ∈ s ∧ f (inv_fun_on f s b) = b",
+  "tactic-prompt":
+  "theorem {α : Type u}  [n : Nonempty α]  {β : Sort v}  {f : α → β}  {s : Set α}  {a : α}  {b : β} (h : ∃a∈s, f a = b) : inv_fun_on f s b ∈ s ∧ f (inv_fun_on f s b) = b := by have h1 : inv_fun_on f s b =\n     if h : ∃a, a ∈ s ∧ f a = b then Classical.choose h else Classical.choice n := rfl; sorry",
+  "name": "inv_fun_on_pos",
+  "kind": "theorem",
+  "first-tactic":
+  "have h1 : inv_fun_on f s b =\n     if h : ∃a, a ∈ s ∧ f a = b then Classical.choose h else Classical.choice n := rfl",
+  "core-prompt":
+  "{α : Type u}  [n : Nonempty α]  {β : Sort v}  {f : α → β}  {s : Set α}  {a : α}  {b : β} (h : ∃a∈s, f a = b) : inv_fun_on f s b ∈ s ∧ f (inv_fun_on f s b) = b",
+  "args":
+  "{α : Type u}  [n : Nonempty α]  {β : Sort v}  {f : α → β}  {s : Set α}  {a : α}  {b : β} (h : ∃a∈s, f a = b)"},
+ {"type": "inv_fun_on f s b = Classical.choice n",
+  "tactic-prompt":
+  "theorem {α : Type u}  [n : Nonempty α]  {β : Sort v}  {f : α → β}  {s : Set α}  {a : α}  {b : β} (h : ¬ ∃a∈s, f a = b) : inv_fun_on f s b = Classical.choice n := by have h1 : inv_fun_on f s b =\n     if h : ∃a, a ∈ s ∧ f a = b then Classical.choose h else Classical.choice n := rfl; sorry",
+  "name": "inv_fun_on_neg",
+  "kind": "theorem",
+  "first-tactic":
+  "have h1 : inv_fun_on f s b =\n     if h : ∃a, a ∈ s ∧ f a = b then Classical.choose h else Classical.choice n := rfl",
+  "core-prompt":
+  "{α : Type u}  [n : Nonempty α]  {β : Sort v}  {f : α → β}  {s : Set α}  {a : α}  {b : β} (h : ¬ ∃a∈s, f a = b) : inv_fun_on f s b = Classical.choice n",
+  "args":
+  "{α : Type u}  [n : Nonempty α]  {β : Sort v}  {f : α → β}  {s : Set α}  {a : α}  {b : β} (h : ¬ ∃a∈s, f a = b)"},
+ {"type": "inv_fun f b = Classical.choice n",
+  "tactic-prompt":
+  "lemma {α : Type u}  [n : Nonempty α]  {β : Sort v}  {f : α → β}  {s : Set α}  {a : α}  {b : β} (h : ¬ ∃ a, f a = b) : inv_fun f b = Classical.choice n := by refine inv_fun_on_neg (mt ?_ h); sorry",
+  "name": "inv_fun_neg",
+  "kind": "lemma",
+  "first-tactic": "refine inv_fun_on_neg (mt ?_ h)",
+  "core-prompt":
+  "{α : Type u}  [n : Nonempty α]  {β : Sort v}  {f : α → β}  {s : Set α}  {a : α}  {b : β} (h : ¬ ∃ a, f a = b) : inv_fun f b = Classical.choice n",
+  "args":
+  "{α : Type u}  [n : Nonempty α]  {β : Sort v}  {f : α → β}  {s : Set α}  {a : α}  {b : β} (h : ¬ ∃ a, f a = b)"},
+ {"type": "update f a' b a = if a = a' then b else f a",
+  "tactic-prompt":
+  "lemma {α : Sort u}  {β : α → Sort v}  {α' : Sort w}  [DecidableEq α]  [DecidableEq α'] {β : Sort _}  (f : α → β)  (a' : α)  (b : β)  (a : α) : update f a' b a = if a = a' then b else f a := by have h2 : (h : a = a') → Eq.rec (motive := λ _ _ => β) b h.symm = b :=\n     by intro h\n        rw [eq_rec_constant]; sorry",
+  "name": "update_apply",
+  "kind": "lemma",
+  "first-tactic":
+  "have h2 : (h : a = a') → Eq.rec (motive := λ _ _ => β) b h.symm = b :=\n     by intro h\n        rw [eq_rec_constant]",
+  "core-prompt":
+  "{α : Sort u}  {β : α → Sort v}  {α' : Sort w}  [DecidableEq α]  [DecidableEq α'] {β : Sort _}  (f : α → β)  (a' : α)  (b : β)  (a : α) : update f a' b a = if a = a' then b else f a",
+  "args":
+  "{α : Sort u}  {β : α → Sort v}  {α' : Sort w}  [DecidableEq α]  [DecidableEq α'] {β : Sort _}  (f : α → β)  (a' : α)  (b : β)  (a : α)"},
+ {"type": "injective (update f a')",
+  "tactic-prompt":
+  "lemma {α : Sort u}  {β : α → Sort v}  {α' : Sort w}  [DecidableEq α]  [DecidableEq α'] (f : ∀a, β a)  (a' : α) : injective (update f a') := by intros v v' h; sorry",
+  "name": "update_injective",
+  "kind": "lemma",
+  "first-tactic": "intros v v' h",
+  "core-prompt":
+  "{α : Sort u}  {β : α → Sort v}  {α' : Sort w}  [DecidableEq α]  [DecidableEq α'] (f : ∀a, β a)  (a' : α) : injective (update f a')",
+  "args":
+  "{α : Sort u}  {β : α → Sort v}  {α' : Sort w}  [DecidableEq α]  [DecidableEq α'] (f : ∀a, β a)  (a' : α)"},
+ {"type": "f j (update g i v j) = update (λ k => f k (g k)) i (f i v) j",
+  "tactic-prompt":
+  "lemma {α : Sort u}  {β : α → Sort v}  {α' : Sort w}  [DecidableEq α]  [DecidableEq α'] {ι : Sort _}  [DecidableEq ι]  {α β : ι → Sort _}    (f : ∀i, α i → β i)  (g : ∀i, α i)  (i : ι)  (v : α i)  (j : ι) : f j (update g i v j) = update (λ k => f k (g k)) i (f i v) j := by by_cases h : j = i; sorry",
+  "name": "apply_update",
+  "kind": "lemma",
+  "first-tactic": "by_cases h : j = i",
+  "core-prompt":
+  "{α : Sort u}  {β : α → Sort v}  {α' : Sort w}  [DecidableEq α]  [DecidableEq α'] {ι : Sort _}  [DecidableEq ι]  {α β : ι → Sort _}    (f : ∀i, α i → β i)  (g : ∀i, α i)  (i : ι)  (v : α i)  (j : ι) : f j (update g i v j) = update (λ k => f k (g k)) i (f i v) j",
+  "args":
+  "{α : Sort u}  {β : α → Sort v}  {α' : Sort w}  [DecidableEq α]  [DecidableEq α'] {ι : Sort _}  [DecidableEq ι]  {α β : ι → Sort _}    (f : ∀i, α i → β i)  (g : ∀i, α i)  (i : ι)  (v : α i)  (j : ι)"},
+ {"type":
+  "extend f g e' b = if h : ∃ a, f a = b then g (Classical.choose h) else e' b",
+  "tactic-prompt":
+  "lemma {α β γ : Type _}  {f : α → β} (f : α → β)  (g : α → γ)  (e' : β → γ)  (b : β)  [hd : Decidable (∃ a, f a = b)] : extend f g e' b = if h : ∃ a, f a = b then g (Classical.choose h) else e' b := by rw [Subsingleton.elim hd] -- align the Decidable instances implicitly used by `dite`; sorry",
+  "name": "extend_def",
+  "kind": "lemma",
+  "first-tactic":
+  "rw [Subsingleton.elim hd] -- align the Decidable instances implicitly used by `dite`",
+  "core-prompt":
+  "{α β γ : Type _}  {f : α → β} (f : α → β)  (g : α → γ)  (e' : β → γ)  (b : β)  [hd : Decidable (∃ a, f a = b)] : extend f g e' b = if h : ∃ a, f a = b then g (Classical.choose h) else e' b",
+  "args":
+  "{α β γ : Type _}  {f : α → β} (f : α → β)  (g : α → γ)  (e' : β → γ)  (b : β)  [hd : Decidable (∃ a, f a = b)]"},
+ {"type": "extend f g e' (f a) = g a",
+  "tactic-prompt":
+  "lemma {α β γ : Type _}  {f : α → β} (hf : injective f)  (g : α → γ)  (e' : β → γ)  (a : α) : extend f g e' (f a) = g a := by simp only [extend_def, dif_pos, exists_apply_eq_apply]; sorry",
+  "name": "extend_apply",
+  "kind": "lemma",
+  "first-tactic": "simp only [extend_def, dif_pos, exists_apply_eq_apply]",
+  "core-prompt":
+  "{α β γ : Type _}  {f : α → β} (hf : injective f)  (g : α → γ)  (e' : β → γ)  (a : α) : extend f g e' (f a) = g a",
+  "args":
+  "{α β γ : Type _}  {f : α → β} (hf : injective f)  (g : α → γ)  (e' : β → γ)  (a : α)"},
+ {"type": "uncurry (bicompl f g h) = (uncurry f) ∘ (Prod.map g h)",
+  "tactic-prompt":
+  "lemma (f : γ → δ → ε)  (g : α → γ)  (h : β → δ) : uncurry (bicompl f g h) = (uncurry f) ∘ (Prod.map g h) := by ext ⟨x, y⟩; sorry",
+  "name": "uncurry_bicompl",
+  "kind": "lemma",
+  "first-tactic": "ext ⟨x, y⟩",
+  "core-prompt":
+  "(f : γ → δ → ε)  (g : α → γ)  (h : β → δ) : uncurry (bicompl f g h) = (uncurry f) ∘ (Prod.map g h)",
+  "args": "(f : γ → δ → ε)  (g : α → γ)  (h : β → δ)"},
+ {"type": "f (ite P x (f x)) = ite (¬ P) x (f x)",
+  "tactic-prompt":
+  "lemma {α : Sort u}  {f : α → α}  (h : involutive f) (P : Prop)  [Decidable P]  (x : α) : f (ite P x (f x)) = ite (¬ P) x (f x) := by rw [apply_ite f, h, ite_not]; sorry",
+  "name": "ite_not",
+  "kind": "lemma",
+  "first-tactic": "rw [apply_ite f, h, ite_not]",
+  "core-prompt":
+  "{α : Sort u}  {f : α → α}  (h : involutive f) (P : Prop)  [Decidable P]  (x : α) : f (ite P x (f x)) = ite (¬ P) x (f x)",
+  "args":
+  "{α : Sort u}  {f : α → α}  (h : involutive f) (P : Prop)  [Decidable P]  (x : α)"},
+ {"type": "xor True = Not",
+  "tactic-prompt":
+  "theorem {a b c d : Prop} : xor True = Not := by simp [xor]; sorry",
+  "name": "xor_true",
+  "kind": "theorem",
+  "first-tactic": "simp [xor]",
+  "core-prompt": "{a b c d : Prop} : xor True = Not",
+  "args": "{a b c d : Prop}"},
+ {"type": "xor False = id",
+  "tactic-prompt": "theorem {a b c d : Prop} : xor False = id := by ext; sorry",
+  "name": "xor_false",
+  "kind": "theorem",
+  "first-tactic": "ext",
+  "core-prompt": "{a b c d : Prop} : xor False = id",
+  "args": "{a b c d : Prop}"},
+ {"type": "xor a a = False",
+  "tactic-prompt":
+  "theorem {a b c d : Prop} (a : Prop) : xor a a = False := by simp [xor]; sorry",
+  "name": "xor_self",
+  "kind": "theorem",
+  "first-tactic": "simp [xor]",
+  "core-prompt": "{a b c d : Prop} (a : Prop) : xor a a = False",
+  "args": "{a b c d : Prop} (a : Prop)"},
+ {"type": "p ∧ a = b ↔ p ∧ b = a",
+  "tactic-prompt":
+  "theorem {a b c d : Prop} (a b : α)  (p : Prop) : p ∧ a = b ↔ p ∧ b = a := by simp [eq_comm]; sorry",
+  "name": "and_symm_right",
+  "kind": "theorem",
+  "first-tactic": "simp [eq_comm]",
+  "core-prompt":
+  "{a b c d : Prop} (a b : α)  (p : Prop) : p ∧ a = b ↔ p ∧ b = a",
+  "args": "{a b c d : Prop} (a b : α)  (p : Prop)"},
+ {"type": "a = b ∧ p ↔ b = a ∧ p",
+  "tactic-prompt":
+  "theorem {a b c d : Prop} (a b : α)  (p : Prop) : a = b ∧ p ↔ b = a ∧ p := by simp [eq_comm]; sorry",
+  "name": "and_symm_left",
+  "kind": "theorem",
+  "first-tactic": "simp [eq_comm]",
+  "core-prompt":
+  "{a b c d : Prop} (a b : α)  (p : Prop) : a = b ∧ p ↔ b = a ∧ p",
+  "args": "{a b c d : Prop} (a b : α)  (p : Prop)"},
+ {"type": "c → t",
+  "tactic-prompt":
+  "lemma {a b c d : Prop} {p q : Prop}    -- TODO: rec_on_true and rec_on_false {c t e : Prop}  [Decidable c]  (h : ite c t e) : c → t := by intro hc; sorry",
+  "name": "imp_of_if_pos",
+  "kind": "lemma",
+  "first-tactic": "intro hc",
+  "core-prompt":
+  "{a b c d : Prop} {p q : Prop}    -- TODO: rec_on_true and rec_on_false {c t e : Prop}  [Decidable c]  (h : ite c t e) : c → t",
+  "args":
+  "{a b c d : Prop} {p q : Prop}    -- TODO: rec_on_true and rec_on_false {c t e : Prop}  [Decidable c]  (h : ite c t e)"},
+ {"type": "¬c → e",
+  "tactic-prompt":
+  "lemma {a b c d : Prop} {p q : Prop}    -- TODO: rec_on_true and rec_on_false {c t e : Prop}  [Decidable c]  (h : ite c t e) : ¬c → e := by intro hnc; sorry",
+  "name": "imp_of_if_neg",
+  "kind": "lemma",
+  "first-tactic": "intro hnc",
+  "core-prompt":
+  "{a b c d : Prop} {p q : Prop}    -- TODO: rec_on_true and rec_on_false {c t e : Prop}  [Decidable c]  (h : ite c t e) : ¬c → e",
+  "args":
+  "{a b c d : Prop} {p q : Prop}    -- TODO: rec_on_true and rec_on_false {c t e : Prop}  [Decidable c]  (h : ite c t e)"},
+ {"type": "a₁ = a₂ → HEq (let x : α := a₁; b x) (let x : α := a₂; b x)",
+  "tactic-prompt":
+  "lemma {a b c d : Prop} {p q : Prop}    -- TODO: rec_on_true and rec_on_false {α : Sort v}  {β : α → Sort u}  {a₁ a₂ : α}  (b : ∀ x : α, β x) : a₁ = a₂ → HEq (let x : α := a₁; b x) (let x : α := a₂; b x) := by intro h; sorry",
+  "name": "let_value_heq",
+  "kind": "lemma",
+  "first-tactic": "intro h",
+  "core-prompt":
+  "{a b c d : Prop} {p q : Prop}    -- TODO: rec_on_true and rec_on_false {α : Sort v}  {β : α → Sort u}  {a₁ a₂ : α}  (b : ∀ x : α, β x) : a₁ = a₂ → HEq (let x : α := a₁; b x) (let x : α := a₂; b x)",
+  "args":
+  "{a b c d : Prop} {p q : Prop}    -- TODO: rec_on_true and rec_on_false {α : Sort v}  {β : α → Sort u}  {a₁ a₂ : α}  (b : ∀ x : α, β x)"},
+ {"type":
+  "(∀ x, b₁ x = b₂ x) → (let x : α := a; b₁ x) = (let x : α := a; b₂ x)",
+  "tactic-prompt":
+  "lemma {a b c d : Prop} {p q : Prop}    -- TODO: rec_on_true and rec_on_false {α : Sort v}  {β : α → Sort u}  (a : α)  {b₁ b₂ : ∀ x : α, β x} : (∀ x, b₁ x = b₂ x) → (let x : α := a; b₁ x) = (let x : α := a; b₂ x) := by intro h; sorry",
+  "name": "let_body_eq",
+  "kind": "lemma",
+  "first-tactic": "intro h",
+  "core-prompt":
+  "{a b c d : Prop} {p q : Prop}    -- TODO: rec_on_true and rec_on_false {α : Sort v}  {β : α → Sort u}  (a : α)  {b₁ b₂ : ∀ x : α, β x} : (∀ x, b₁ x = b₂ x) → (let x : α := a; b₁ x) = (let x : α := a; b₂ x)",
+  "args":
+  "{a b c d : Prop} {p q : Prop}    -- TODO: rec_on_true and rec_on_false {α : Sort v}  {β : α → Sort u}  (a : α)  {b₁ b₂ : ∀ x : α, β x}"},
+ {"type": "min (min a b) c = min a (min b c)",
+  "tactic-prompt":
+  "lemma {α : Type u}  [LinearOrder α] (a b c : α) : min (min a b) c = min a (min b c) := by apply eq_min; sorry",
+  "name": "min_assoc",
+  "kind": "lemma",
+  "first-tactic": "apply eq_min",
+  "core-prompt":
+  "{α : Type u}  [LinearOrder α] (a b c : α) : min (min a b) c = min a (min b c)",
+  "args": "{α : Type u}  [LinearOrder α] (a b c : α)"},
+ {"type": "min a a = a",
+  "tactic-prompt":
+  "lemma {α : Type u}  [LinearOrder α] (a : α) : min a a = a := by simp[min]; sorry",
+  "name": "min_self",
+  "kind": "lemma",
+  "first-tactic": "simp[min]",
+  "core-prompt": "{α : Type u}  [LinearOrder α] (a : α) : min a a = a",
+  "args": "{α : Type u}  [LinearOrder α] (a : α)"},
+ {"type": "min a b = a",
+  "tactic-prompt":
+  "lemma {α : Type u}  [LinearOrder α] {a b : α}  (h : a ≤ b) : min a b = a := by apply Eq.symm; sorry",
+  "name": "min_eq_left",
+  "kind": "lemma",
+  "first-tactic": "apply Eq.symm",
+  "core-prompt":
+  "{α : Type u}  [LinearOrder α] {a b : α}  (h : a ≤ b) : min a b = a",
+  "args": "{α : Type u}  [LinearOrder α] {a b : α}  (h : a ≤ b)"},
+ {"type": "min a b = b",
+  "tactic-prompt":
+  "lemma {α : Type u}  [LinearOrder α] {a b : α}  (h : b ≤ a) : min a b = b := by rw [min_comm]; sorry",
+  "name": "min_eq_right",
+  "kind": "lemma",
+  "first-tactic": "rw [min_comm]",
+  "core-prompt":
+  "{α : Type u}  [LinearOrder α] {a b : α}  (h : b ≤ a) : min a b = b",
+  "args": "{α : Type u}  [LinearOrder α] {a b : α}  (h : b ≤ a)"},
+ {"type": "max (max a b) c = max a (max b c)",
+  "tactic-prompt":
+  "lemma {α : Type u}  [LinearOrder α] (a b c : α) : max (max a b) c = max a (max b c) := by apply eq_max; sorry",
+  "name": "max_assoc",
+  "kind": "lemma",
+  "first-tactic": "apply eq_max",
+  "core-prompt":
+  "{α : Type u}  [LinearOrder α] (a b c : α) : max (max a b) c = max a (max b c)",
+  "args": "{α : Type u}  [LinearOrder α] (a b c : α)"},
+ {"type": "max a a = a",
+  "tactic-prompt":
+  "lemma {α : Type u}  [LinearOrder α] (a : α) : max a a = a := by simp[max]; sorry",
+  "name": "max_self",
+  "kind": "lemma",
+  "first-tactic": "simp[max]",
+  "core-prompt": "{α : Type u}  [LinearOrder α] (a : α) : max a a = a",
+  "args": "{α : Type u}  [LinearOrder α] (a : α)"},
+ {"type": "max a b = a",
+  "tactic-prompt":
+  "lemma {α : Type u}  [LinearOrder α] {a b : α}  (h : b ≤ a) : max a b = a := by apply Eq.symm; sorry",
+  "name": "max_eq_left",
+  "kind": "lemma",
+  "first-tactic": "apply Eq.symm",
+  "core-prompt":
+  "{α : Type u}  [LinearOrder α] {a b : α}  (h : b ≤ a) : max a b = a",
+  "args": "{α : Type u}  [LinearOrder α] {a b : α}  (h : b ≤ a)"},
+ {"type": "max a b = b",
+  "tactic-prompt":
+  "lemma {α : Type u}  [LinearOrder α] {a b : α}  (h : a ≤ b) : max a b = b := by rw [←max_comm b a]; sorry",
+  "name": "max_eq_right",
+  "kind": "lemma",
+  "first-tactic": "rw [←max_comm b a]",
+  "core-prompt":
+  "{α : Type u}  [LinearOrder α] {a b : α}  (h : a ≤ b) : max a b = b",
+  "args": "{α : Type u}  [LinearOrder α] {a b : α}  (h : a ≤ b)"},
+ {"type": "WellFounded (lbp p)",
+  "tactic-prompt":
+  "def (p : ℕ → Prop) [DecidablePred p]  (H : ∃ n, p n) : WellFounded (lbp p) := by refine ⟨let ⟨n, pn⟩ := H; ?_⟩; sorry",
+  "name": "wf_lbp",
+  "kind": "def",
+  "first-tactic": "refine ⟨let ⟨n, pn⟩ := H; ?_⟩",
+  "core-prompt":
+  "(p : ℕ → Prop) [DecidablePred p]  (H : ∃ n, p n) : WellFounded (lbp p)",
+  "args": "(p : ℕ → Prop) [DecidablePred p]  (H : ∃ n, p n)"},
+ {"type":
+  "∀ (n : Nat) (l1 l2 : List Char), l1.length = l2.length →\n    (Nat.toDigitsCore b f n l1).length = (Nat.toDigitsCore b f n l2).length",
+  "tactic-prompt":
+  "lemma (p : ℕ → Prop) [DecidablePred p]  (H : ∃ n, p n) (b f : Nat) : ∀ (n : Nat) (l1 l2 : List Char), l1.length = l2.length →\n    (Nat.toDigitsCore b f n l1).length = (Nat.toDigitsCore b f n l2).length := by induction f; sorry",
+  "name": "to_digits_core_lens_eq_aux",
+  "kind": "lemma",
+  "first-tactic": "induction f",
+  "core-prompt":
+  "(p : ℕ → Prop) [DecidablePred p]  (H : ∃ n, p n) (b f : Nat) : ∀ (n : Nat) (l1 l2 : List Char), l1.length = l2.length →\n    (Nat.toDigitsCore b f n l1).length = (Nat.toDigitsCore b f n l2).length",
+  "args": "(p : ℕ → Prop) [DecidablePred p]  (H : ∃ n, p n) (b f : Nat)"},
+ {"type":
+  "∀ (n : Nat) (c : Char) (tl : List Char),\n    (Nat.toDigitsCore b f n (c :: tl)).length = (Nat.toDigitsCore b f n tl).length + 1",
+  "tactic-prompt":
+  "lemma (p : ℕ → Prop) [DecidablePred p]  (H : ∃ n, p n) (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Char),\n    (Nat.toDigitsCore b f n (c :: tl)).length = (Nat.toDigitsCore b f n tl).length + 1 := by induction f; sorry",
+  "name": "to_digits_core_lens_eq",
+  "kind": "lemma",
+  "first-tactic": "induction f",
+  "core-prompt":
+  "(p : ℕ → Prop) [DecidablePred p]  (H : ∃ n, p n) (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Char),\n    (Nat.toDigitsCore b f n (c :: tl)).length = (Nat.toDigitsCore b f n tl).length + 1",
+  "args": "(p : ℕ → Prop) [DecidablePred p]  (H : ∃ n, p n) (b f : Nat)"},
+ {"type": "n < b ^ e.succ → n / b < b ^ e",
+  "tactic-prompt":
+  "lemma (p : ℕ → Prop) [DecidablePred p]  (H : ∃ n, p n) (n b e : Nat)  (h_b_pos : 0 < b) : n < b ^ e.succ → n / b < b ^ e := by simp only [Nat.pow_succ]; sorry",
+  "name": "nat_repr_len_aux",
+  "kind": "lemma",
+  "first-tactic": "simp only [Nat.pow_succ]",
+  "core-prompt":
+  "(p : ℕ → Prop) [DecidablePred p]  (H : ∃ n, p n) (n b e : Nat)  (h_b_pos : 0 < b) : n < b ^ e.succ → n / b < b ^ e",
+  "args":
+  "(p : ℕ → Prop) [DecidablePred p]  (H : ∃ n, p n) (n b e : Nat)  (h_b_pos : 0 < b)"},
+ {"type": "0 < e → n < 10 ^ e → (Nat.repr n).length <= e",
+  "tactic-prompt":
+  "lemma (p : ℕ → Prop) [DecidablePred p]  (H : ∃ n, p n) (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length <= e := by cases n; sorry",
+  "name": "repr_length",
+  "kind": "lemma",
+  "first-tactic": "cases n",
+  "core-prompt":
+  "(p : ℕ → Prop) [DecidablePred p]  (H : ∃ n, p n) (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length <= e",
+  "args": "(p : ℕ → Prop) [DecidablePred p]  (H : ∃ n, p n) (n e : Nat)"},
+ {"type": "(m * n).cast = (m.cast * n.cast : R)",
+  "tactic-prompt":
+  "lemma [Semiring R]  {m n : ℕ} : (m * n).cast = (m.cast * n.cast : R) := by induction n generalizing m <;> simp_all [mul_succ, mul_add]; sorry",
+  "name": "Nat.cast_mul",
+  "kind": "lemma",
+  "first-tactic": "induction n generalizing m <;> simp_all [mul_succ, mul_add]",
+  "core-prompt":
+  "[Semiring R]  {m n : ℕ} : (m * n).cast = (m.cast * n.cast : R)",
+  "args": "[Semiring R]  {m n : ℕ}"},
+ {"type": "(m ^ n).cast = (m.cast ^ n : R)",
+  "tactic-prompt":
+  "lemma [Semiring R]  {m n : ℕ} : (m ^ n).cast = (m.cast ^ n : R) := by induction n generalizing m <;> simp_all [Nat.pow_succ', _root_.pow_succ'', pow_zero]; sorry",
+  "name": "Nat.cast_pow",
+  "kind": "lemma",
+  "first-tactic":
+  "induction n generalizing m <;> simp_all [Nat.pow_succ', _root_.pow_succ'', pow_zero]",
+  "core-prompt": "[Semiring R]  {m n : ℕ} : (m ^ n).cast = (m.cast ^ n : R)",
+  "args": "[Semiring R]  {m n : ℕ}"},
+ {"type": "∀ ⦃m₁ m₂ : MulOneClass M⦄, m₁.mul = m₂.mul → m₁ = m₂",
+  "tactic-prompt":
+  "theorem {G : Type _} {M : Type u} : ∀ ⦃m₁ m₂ : MulOneClass M⦄, m₁.mul = m₂.mul → m₁ = m₂ := by rintro ⟨⟨one₁⟩, ⟨mul₁⟩, one_mul₁, mul_one₁⟩ ⟨⟨one₂⟩, ⟨mul₂⟩, one_mul₂, mul_one₂⟩ ⟨rfl⟩\n  -- FIXME:\n  -- congr; sorry",
+  "name": "MulOneClass.ext",
+  "kind": "theorem",
+  "first-tactic":
+  "rintro ⟨⟨one₁⟩, ⟨mul₁⟩, one_mul₁, mul_one₁⟩ ⟨⟨one₂⟩, ⟨mul₂⟩, one_mul₂, mul_one₂⟩ ⟨rfl⟩\n  -- FIXME:\n  -- congr",
+  "core-prompt":
+  "{G : Type _} {M : Type u} : ∀ ⦃m₁ m₂ : MulOneClass M⦄, m₁.mul = m₂.mul → m₁ = m₂",
+  "args": "{G : Type _} {M : Type u}"},
+ {"type": "b = c",
+  "tactic-prompt":
+  "theorem {G : Type _}  {M : Type u}  [Monoid M] {a b c : M}  (hba : b * a = 1)  (hac : a * c = 1) : b = c := by rw [← one_mul c, ← hba, mul_assoc, hac, mul_one b]; sorry",
+  "name": "left_inv_eq_right_inv",
+  "kind": "theorem",
+  "first-tactic": "rw [← one_mul c, ← hba, mul_assoc, hac, mul_one b]",
+  "core-prompt":
+  "{G : Type _}  {M : Type u}  [Monoid M] {a b c : M}  (hba : b * a = 1)  (hac : a * c = 1) : b = c",
+  "args":
+  "{G : Type _}  {M : Type u}  [Monoid M] {a b c : M}  (hba : b * a = 1)  (hac : a * c = 1)"},
+ {"type": "a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹",
+  "tactic-prompt":
+  "theorem {G : Type _}  [DivInvMonoid G]  {a b : G}  -- TODO restore @[to_additive zsmul_eq_smul] (a : G)  (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by rw [← zpow_coe_nat]; sorry",
+  "name": "zpow_neg_succ_of_nat",
+  "kind": "theorem",
+  "first-tactic": "rw [← zpow_coe_nat]",
+  "core-prompt":
+  "{G : Type _}  [DivInvMonoid G]  {a b : G}  -- TODO restore @[to_additive zsmul_eq_smul] (a : G)  (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹",
+  "args":
+  "{G : Type _}  [DivInvMonoid G]  {a b : G}  -- TODO restore @[to_additive zsmul_eq_smul] (a : G)  (n : ℕ)"},
+ {"type": "a * a⁻¹ = 1",
+  "tactic-prompt":
+  "theorem {G : Type _}  [Group G]  {a b c : G} (a : G) : a * a⁻¹ = 1 := by rw [← mul_left_inv a⁻¹, inv_eq_of_mul (mul_left_inv a)]; sorry",
+  "name": "mul_right_inv",
+  "kind": "theorem",
+  "first-tactic": "rw [← mul_left_inv a⁻¹, inv_eq_of_mul (mul_left_inv a)]",
+  "core-prompt": "{G : Type _}  [Group G]  {a b c : G} (a : G) : a * a⁻¹ = 1",
+  "args": "{G : Type _}  [Group G]  {a b c : G} (a : G)"},
+ {"type": "a⁻¹ * (a * b) = b",
+  "tactic-prompt":
+  "theorem {G : Type _}  [Group G]  {a b c : G} (a b : G) : a⁻¹ * (a * b) = b := by rw [← mul_assoc, mul_left_inv, one_mul]; sorry",
+  "name": "inv_mul_cancel_left",
+  "kind": "theorem",
+  "first-tactic": "rw [← mul_assoc, mul_left_inv, one_mul]",
+  "core-prompt":
+  "{G : Type _}  [Group G]  {a b c : G} (a b : G) : a⁻¹ * (a * b) = b",
+  "args": "{G : Type _}  [Group G]  {a b c : G} (a b : G)"},
+ {"type": "a * (a⁻¹ * b) = b",
+  "tactic-prompt":
+  "theorem {G : Type _}  [Group G]  {a b c : G} (a b : G) : a * (a⁻¹ * b) = b := by rw [← mul_assoc, mul_right_inv, one_mul]; sorry",
+  "name": "mul_inv_cancel_left",
+  "kind": "theorem",
+  "first-tactic": "rw [← mul_assoc, mul_right_inv, one_mul]",
+  "core-prompt":
+  "{G : Type _}  [Group G]  {a b c : G} (a b : G) : a * (a⁻¹ * b) = b",
+  "args": "{G : Type _}  [Group G]  {a b c : G} (a b : G)"},
+ {"type": "a * b * b⁻¹ = a",
+  "tactic-prompt":
+  "theorem {G : Type _}  [Group G]  {a b c : G} (a b : G) : a * b * b⁻¹ = a := by rw [mul_assoc, mul_right_inv, mul_one]; sorry",
+  "name": "mul_inv_cancel_right",
+  "kind": "theorem",
+  "first-tactic": "rw [mul_assoc, mul_right_inv, mul_one]",
+  "core-prompt":
+  "{G : Type _}  [Group G]  {a b c : G} (a b : G) : a * b * b⁻¹ = a",
+  "args": "{G : Type _}  [Group G]  {a b c : G} (a b : G)"},
+ {"type": "a * b⁻¹ * b = a",
+  "tactic-prompt":
+  "theorem {G : Type _}  [Group G]  {a b c : G} (a b : G) : a * b⁻¹ * b = a := by rw [mul_assoc, mul_left_inv, mul_one]; sorry",
+  "name": "inv_mul_cancel_right",
+  "kind": "theorem",
+  "first-tactic": "rw [mul_assoc, mul_left_inv, mul_one]",
+  "core-prompt":
+  "{G : Type _}  [Group G]  {a b c : G} (a b : G) : a * b⁻¹ * b = a",
+  "args": "{G : Type _}  [Group G]  {a b c : G} (a b : G)"},
+ {"type": "Function.injective (@Group.toDivInvMonoid G)",
+  "tactic-prompt":
+  "theorem {G : Type _} {G : Type _} : Function.injective (@Group.toDivInvMonoid G) := by rintro ⟨⟩ ⟨⟩ ⟨⟩; sorry",
+  "name": "Group.toDivInvMonoid_injective",
+  "kind": "theorem",
+  "first-tactic": "rintro ⟨⟩ ⟨⟩ ⟨⟩",
+  "core-prompt":
+  "{G : Type _} {G : Type _} : Function.injective (@Group.toDivInvMonoid G)",
+  "args": "{G : Type _} {G : Type _}"},
+ {"type": "Function.injective (@CommGroup.toGroup G)",
+  "tactic-prompt":
+  "theorem {G : Type _} {G : Type u} : Function.injective (@CommGroup.toGroup G) := by rintro ⟨⟩ ⟨⟩ ⟨⟩; sorry",
+  "name": "CommGroup.toGroup_injective",
+  "kind": "theorem",
+  "first-tactic": "rintro ⟨⟩ ⟨⟩ ⟨⟩",
+  "core-prompt":
+  "{G : Type _} {G : Type u} : Function.injective (@CommGroup.toGroup G)",
+  "args": "{G : Type _} {G : Type u}"},
+ {"type": "SemiconjBy a (x * x') (y * y')",
+  "tactic-prompt":
+  "theorem {G : Type _}  {S : Type u}  [Semigroup S]  {a b x y z x' y' : S} (h : SemiconjBy a x y)  (h' : SemiconjBy a x' y') : SemiconjBy a (x * x') (y * y') := by unfold SemiconjBy\n  -- TODO this could be done using `assoc_rw` if/when this is ported to mathlib4; sorry",
+  "name": "mul_right",
+  "kind": "theorem",
+  "first-tactic":
+  "unfold SemiconjBy\n  -- TODO this could be done using `assoc_rw` if/when this is ported to mathlib4",
+  "core-prompt":
+  "{G : Type _}  {S : Type u}  [Semigroup S]  {a b x y z x' y' : S} (h : SemiconjBy a x y)  (h' : SemiconjBy a x' y') : SemiconjBy a (x * x') (y * y')",
+  "args":
+  "{G : Type _}  {S : Type u}  [Semigroup S]  {a b x y z x' y' : S} (h : SemiconjBy a x y)  (h' : SemiconjBy a x' y')"},
+ {"type": "SemiconjBy (a * b) x z",
+  "tactic-prompt":
+  "theorem {G : Type _}  {S : Type u}  [Semigroup S]  {a b x y z x' y' : S} (ha : SemiconjBy a y z)  (hb : SemiconjBy b x y) : SemiconjBy (a * b) x z := by unfold SemiconjBy; sorry",
+  "name": "mul_left",
+  "kind": "theorem",
+  "first-tactic": "unfold SemiconjBy",
+  "core-prompt":
+  "{G : Type _}  {S : Type u}  [Semigroup S]  {a b x y z x' y' : S} (ha : SemiconjBy a y z)  (hb : SemiconjBy b x y) : SemiconjBy (a * b) x z",
+  "args":
+  "{G : Type _}  {S : Type u}  [Semigroup S]  {a b x y z x' y' : S} (ha : SemiconjBy a y z)  (hb : SemiconjBy b x y)"},
+ {"type": "SemiconjBy a 1 1",
+  "tactic-prompt":
+  "theorem {G : Type _}  {M : Type u}  [MulOneClass M] (a : M) : SemiconjBy a 1 1 := by rw [SemiconjBy, mul_one, one_mul]; sorry",
+  "name": "one_right",
+  "kind": "theorem",
+  "first-tactic": "rw [SemiconjBy, mul_one, one_mul]",
+  "core-prompt":
+  "{G : Type _}  {M : Type u}  [MulOneClass M] (a : M) : SemiconjBy a 1 1",
+  "args": "{G : Type _}  {M : Type u}  [MulOneClass M] (a : M)"},
+ {"type": "SemiconjBy a (x ^ n) (y ^ n)",
+  "tactic-prompt":
+  "theorem {G : Type _}  {M : Type u}  [Monoid M] {a x y : M}  (h : SemiconjBy a x y)  (n : ℕ) : SemiconjBy a (x ^ n) (y ^ n) := by induction' n with n ih; sorry",
+  "name": "pow_right",
+  "kind": "theorem",
+  "first-tactic": "induction' n with n ih",
+  "core-prompt":
+  "{G : Type _}  {M : Type u}  [Monoid M] {a x y : M}  (h : SemiconjBy a x y)  (n : ℕ) : SemiconjBy a (x ^ n) (y ^ n)",
+  "args":
+  "{G : Type _}  {M : Type u}  [Monoid M] {a x y : M}  (h : SemiconjBy a x y)  (n : ℕ)"},
+ {"type": "a * b * c = a * c * b",
+  "tactic-prompt":
+  "theorem {G : Type _}  {S : Type _}  [Semigroup S]  {a b c : S} (h : Commute b c)  (a : S) : a * b * c = a * c * b := by simp only [mul_assoc, h.eq]; sorry",
+  "name": "right_comm",
+  "kind": "theorem",
+  "first-tactic": "simp only [mul_assoc, h.eq]",
+  "core-prompt":
+  "{G : Type _}  {S : Type _}  [Semigroup S]  {a b c : S} (h : Commute b c)  (a : S) : a * b * c = a * c * b",
+  "args":
+  "{G : Type _}  {S : Type _}  [Semigroup S]  {a b c : S} (h : Commute b c)  (a : S)"},
+ {"type": "(x * ·) ∘ (y * ·) = (x * y * ·)",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Semigroup α]  (x y : α) : (x * ·) ∘ (y * ·) = (x * y * ·) := by ext z; sorry",
+  "name": "comp_mul_left",
+  "kind": "theorem",
+  "first-tactic": "ext z",
+  "core-prompt":
+  "{α β G : Type _}  [Semigroup α]  (x y : α) : (x * ·) ∘ (y * ·) = (x * y * ·)",
+  "args": "{α β G : Type _}  [Semigroup α]  (x y : α)"},
+ {"type": "(· * x) ∘ (· * y) = (· * (y * x))",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Semigroup α]  (x y : α) : (· * x) ∘ (· * y) = (· * (y * x)) := by ext z; sorry",
+  "name": "comp_mul_right",
+  "kind": "theorem",
+  "first-tactic": "ext z",
+  "core-prompt":
+  "{α β G : Type _}  [Semigroup α]  (x y : α) : (· * x) ∘ (· * y) = (· * (y * x))",
+  "args": "{α β G : Type _}  [Semigroup α]  (x y : α)"},
+ {"type": "ite P (a * b) 1 = ite P a 1 * ite P b 1",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  {M : Type u}  [MulOneClass M] {P : Prop}  [Decidable P]  {a b : M} : ite P (a * b) 1 = ite P a 1 * ite P b 1 := by by_cases h:P <;> simp [h]; sorry",
+  "name": "ite_mul_one",
+  "kind": "theorem",
+  "first-tactic": "by_cases h:P <;> simp [h]",
+  "core-prompt":
+  "{α β G : Type _}  {M : Type u}  [MulOneClass M] {P : Prop}  [Decidable P]  {a b : M} : ite P (a * b) 1 = ite P a 1 * ite P b 1",
+  "args":
+  "{α β G : Type _}  {M : Type u}  [MulOneClass M] {P : Prop}  [Decidable P]  {a b : M}"},
+ {"type": "ite P 1 (a * b) = ite P 1 a * ite P 1 b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  {M : Type u}  [MulOneClass M] {P : Prop}  [Decidable P]  {a b : M} : ite P 1 (a * b) = ite P 1 a * ite P 1 b := by by_cases h:P <;> simp [h]; sorry",
+  "name": "ite_one_mul",
+  "kind": "theorem",
+  "first-tactic": "by_cases h:P <;> simp [h]",
+  "core-prompt":
+  "{α β G : Type _}  {M : Type u}  [MulOneClass M] {P : Prop}  [Decidable P]  {a b : M} : ite P 1 (a * b) = ite P 1 a * ite P 1 b",
+  "args":
+  "{α β G : Type _}  {M : Type u}  [MulOneClass M] {P : Prop}  [Decidable P]  {a b : M}"},
+ {"type": "a = 1 ↔ b = 1",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  {M : Type u}  [MulOneClass M] {a b : M}  (h : a * b = 1) : a = 1 ↔ b = 1 := by constructor <;> (rintro rfl; simpa using h); sorry",
+  "name": "eq_one_iff_eq_one_of_mul_eq_one",
+  "kind": "theorem",
+  "first-tactic": "constructor <;> (rintro rfl; simpa using h)",
+  "core-prompt":
+  "{α β G : Type _}  {M : Type u}  [MulOneClass M] {a b : M}  (h : a * b = 1) : a = 1 ↔ b = 1",
+  "args":
+  "{α β G : Type _}  {M : Type u}  [MulOneClass M] {a b : M}  (h : a * b = 1)"},
+ {"type": "a * b * (c * d) = a * c * (b * d)",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [CommSemigroup G] (a b c d : G) : a * b * (c * d) = a * c * (b * d) := by simp only [mul_left_comm, mul_assoc]; sorry",
+  "name": "mul_mul_mul_comm",
+  "kind": "theorem",
+  "first-tactic": "simp only [mul_left_comm, mul_assoc]",
+  "core-prompt":
+  "{α β G : Type _}  [CommSemigroup G] (a b c d : G) : a * b * (c * d) = a * c * (b * d)",
+  "args": "{α β G : Type _}  [CommSemigroup G] (a b c d : G)"},
+ {"type": "a * b * c = b * c * a",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [CommSemigroup G] (a b c : G) : a * b * c = b * c * a := by simp only [mul_left_comm, mul_comm]; sorry",
+  "name": "mul_rotate",
+  "kind": "theorem",
+  "first-tactic": "simp only [mul_left_comm, mul_comm]",
+  "core-prompt":
+  "{α β G : Type _}  [CommSemigroup G] (a b c : G) : a * b * c = b * c * a",
+  "args": "{α β G : Type _}  [CommSemigroup G] (a b c : G)"},
+ {"type": "a * (b * c) = b * (c * a)",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [CommSemigroup G] (a b c : G) : a * (b * c) = b * (c * a) := by simp only [mul_left_comm, mul_comm]; sorry",
+  "name": "mul_rotate'",
+  "kind": "theorem",
+  "first-tactic": "simp only [mul_left_comm, mul_comm]",
+  "core-prompt":
+  "{α β G : Type _}  [CommSemigroup G] (a b c : G) : a * (b * c) = b * (c * a)",
+  "args": "{α β G : Type _}  [CommSemigroup G] (a b c : G)"},
+ {"type": "b = a⁻¹",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [HasInvolutiveInv G]  {a b : G} (h : a = b⁻¹) : b = a⁻¹ := by simp [h]; sorry",
+  "name": "eq_inv_of_eq_inv",
+  "kind": "theorem",
+  "first-tactic": "simp [h]",
+  "core-prompt":
+  "{α β G : Type _}  [HasInvolutiveInv G]  {a b : G} (h : a = b⁻¹) : b = a⁻¹",
+  "args": "{α β G : Type _}  [HasInvolutiveInv G]  {a b : G} (h : a = b⁻¹)"},
+ {"type": "x⁻¹ = 1 / x",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivInvMonoid G]  {a b c : G} (x : G) : x⁻¹ = 1 / x := by rw [div_eq_mul_inv, one_mul]; sorry",
+  "name": "inv_eq_one_div",
+  "kind": "theorem",
+  "first-tactic": "rw [div_eq_mul_inv, one_mul]",
+  "core-prompt":
+  "{α β G : Type _}  [DivInvMonoid G]  {a b c : G} (x : G) : x⁻¹ = 1 / x",
+  "args": "{α β G : Type _}  [DivInvMonoid G]  {a b c : G} (x : G)"},
+ {"type": "x * (1 / y) = x / y",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivInvMonoid G]  {a b c : G} (x y : G) : x * (1 / y) = x / y := by rw [div_eq_mul_inv, one_mul, div_eq_mul_inv]; sorry",
+  "name": "mul_one_div",
+  "kind": "theorem",
+  "first-tactic": "rw [div_eq_mul_inv, one_mul, div_eq_mul_inv]",
+  "core-prompt":
+  "{α β G : Type _}  [DivInvMonoid G]  {a b c : G} (x y : G) : x * (1 / y) = x / y",
+  "args": "{α β G : Type _}  [DivInvMonoid G]  {a b c : G} (x y : G)"},
+ {"type": "a * b / c = a * (b / c)",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivInvMonoid G]  {a b c : G} (a b c : G) : a * b / c = a * (b / c) := by rw [div_eq_mul_inv, div_eq_mul_inv, mul_assoc _ _ _]; sorry",
+  "name": "mul_div_assoc",
+  "kind": "theorem",
+  "first-tactic": "rw [div_eq_mul_inv, div_eq_mul_inv, mul_assoc _ _ _]",
+  "core-prompt":
+  "{α β G : Type _}  [DivInvMonoid G]  {a b c : G} (a b c : G) : a * b / c = a * (b / c)",
+  "args": "{α β G : Type _}  [DivInvMonoid G]  {a b c : G} (a b c : G)"},
+ {"type": "a * (b / c) = a * b / c",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivInvMonoid G]  {a b c : G} (a b c : G) : a * (b / c) = a * b / c := by simp only [mul_assoc, div_eq_mul_inv]; sorry",
+  "name": "mul_div",
+  "kind": "theorem",
+  "first-tactic": "simp only [mul_assoc, div_eq_mul_inv]",
+  "core-prompt":
+  "{α β G : Type _}  [DivInvMonoid G]  {a b c : G} (a b c : G) : a * (b / c) = a * b / c",
+  "args": "{α β G : Type _}  [DivInvMonoid G]  {a b c : G} (a b c : G)"},
+ {"type": "a / b = a * (1 / b)",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivInvMonoid G]  {a b c : G} (a b : G) : a / b = a * (1 / b) := by rw [div_eq_mul_inv, one_div]; sorry",
+  "name": "div_eq_mul_one_div",
+  "kind": "theorem",
+  "first-tactic": "rw [div_eq_mul_inv, one_div]",
+  "core-prompt":
+  "{α β G : Type _}  [DivInvMonoid G]  {a b c : G} (a b : G) : a / b = a * (1 / b)",
+  "args": "{α β G : Type _}  [DivInvMonoid G]  {a b c : G} (a b : G)"},
+ {"type": "a / 1 = a",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivInvOneMonoid G] (a : G) : a / 1 = a := by simp [div_eq_mul_inv]; sorry",
+  "name": "div_one",
+  "kind": "theorem",
+  "first-tactic": "simp [div_eq_mul_inv]",
+  "core-prompt": "{α β G : Type _}  [DivInvOneMonoid G] (a : G) : a / 1 = a",
+  "args": "{α β G : Type _}  [DivInvOneMonoid G] (a : G)"},
+ {"type": "b⁻¹ = a",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionMonoid α]  {a b c : α} (h : a * b = 1) : b⁻¹ = a := by rw [← inv_eq_of_mul_eq_one_right h, inv_inv]; sorry",
+  "name": "inv_eq_of_mul_eq_one_left",
+  "kind": "theorem",
+  "first-tactic": "rw [← inv_eq_of_mul_eq_one_right h, inv_inv]",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionMonoid α]  {a b c : α} (h : a * b = 1) : b⁻¹ = a",
+  "args": "{α β G : Type _}  [DivisionMonoid α]  {a b c : α} (h : a * b = 1)"},
+ {"type": "b = 1 / a",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionMonoid α]  {a b c : α} (h : b * a = 1) : b = 1 / a := by rw [eq_inv_of_mul_eq_one_left h, one_div]; sorry",
+  "name": "eq_one_div_of_mul_eq_one_left",
+  "kind": "theorem",
+  "first-tactic": "rw [eq_inv_of_mul_eq_one_left h, one_div]",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionMonoid α]  {a b c : α} (h : b * a = 1) : b = 1 / a",
+  "args": "{α β G : Type _}  [DivisionMonoid α]  {a b c : α} (h : b * a = 1)"},
+ {"type": "b = 1 / a",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionMonoid α]  {a b c : α} (h : a * b = 1) : b = 1 / a := by rw [eq_inv_of_mul_eq_one_right h, one_div]; sorry",
+  "name": "eq_one_div_of_mul_eq_one_right",
+  "kind": "theorem",
+  "first-tactic": "rw [eq_inv_of_mul_eq_one_right h, one_div]",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionMonoid α]  {a b c : α} (h : a * b = 1) : b = 1 / a",
+  "args": "{α β G : Type _}  [DivisionMonoid α]  {a b c : α} (h : a * b = 1)"},
+ {"type": "1 / a * (1 / b) = 1 / (b * a)",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionMonoid α]  {a b c : α} : 1 / a * (1 / b) = 1 / (b * a) := by simp; sorry",
+  "name": "one_div_mul_one_div_rev",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionMonoid α]  {a b c : α} : 1 / a * (1 / b) = 1 / (b * a)",
+  "args": "{α β G : Type _}  [DivisionMonoid α]  {a b c : α}"},
+ {"type": "a⁻¹ / b = (b * a)⁻¹",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionMonoid α]  {a b c : α} : a⁻¹ / b = (b * a)⁻¹ := by simp; sorry",
+  "name": "inv_div_left",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionMonoid α]  {a b c : α} : a⁻¹ / b = (b * a)⁻¹",
+  "args": "{α β G : Type _}  [DivisionMonoid α]  {a b c : α}"},
+ {"type": "(a / b)⁻¹ = b / a",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionMonoid α]  {a b c : α} : (a / b)⁻¹ = b / a := by simp; sorry",
+  "name": "inv_div",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionMonoid α]  {a b c : α} : (a / b)⁻¹ = b / a",
+  "args": "{α β G : Type _}  [DivisionMonoid α]  {a b c : α}"},
+ {"type": "1 / (a / b) = b / a",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionMonoid α]  {a b c : α} : 1 / (a / b) = b / a := by simp; sorry",
+  "name": "one_div_div",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionMonoid α]  {a b c : α} : 1 / (a / b) = b / a",
+  "args": "{α β G : Type _}  [DivisionMonoid α]  {a b c : α}"},
+ {"type": "1 / (1 / a) = a",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionMonoid α]  {a b c : α} : 1 / (1 / a) = a := by simp; sorry",
+  "name": "one_div_one_div",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionMonoid α]  {a b c : α} : 1 / (1 / a) = a",
+  "args": "{α β G : Type _}  [DivisionMonoid α]  {a b c : α}"},
+ {"type": "a = b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionMonoid α]  {a b c : α} (h : 1 / a = 1 / b) : a = b := by rw [← one_div_one_div a, h, one_div_one_div]; sorry",
+  "name": "eq_of_one_div_eq_one_div",
+  "kind": "theorem",
+  "first-tactic": "rw [← one_div_one_div a, h, one_div_one_div]",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionMonoid α]  {a b c : α} (h : 1 / a = 1 / b) : a = b",
+  "args":
+  "{α β G : Type _}  [DivisionMonoid α]  {a b c : α} (h : 1 / a = 1 / b)"},
+ {"type": "a / (b / c) = a * c / b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionMonoid α]  {a b c : α} : a / (b / c) = a * c / b := by simp; sorry",
+  "name": "div_div_eq_mul_div",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionMonoid α]  {a b c : α} : a / (b / c) = a * c / b",
+  "args": "{α β G : Type _}  [DivisionMonoid α]  {a b c : α}"},
+ {"type": "a / b⁻¹ = a * b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionMonoid α]  {a b c : α} : a / b⁻¹ = a * b := by simp; sorry",
+  "name": "div_inv_eq_mul",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionMonoid α]  {a b c : α} : a / b⁻¹ = a * b",
+  "args": "{α β G : Type _}  [DivisionMonoid α]  {a b c : α}"},
+ {"type": "a / (b * c) = a / c / b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionMonoid α]  {a b c : α} : a / (b * c) = a / c / b := by simp only [mul_assoc, mul_inv_rev, div_eq_mul_inv]; sorry",
+  "name": "div_mul_eq_div_div_swap",
+  "kind": "theorem",
+  "first-tactic": "simp only [mul_assoc, mul_inv_rev, div_eq_mul_inv]",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionMonoid α]  {a b c : α} : a / (b * c) = a / c / b",
+  "args": "{α β G : Type _}  [DivisionMonoid α]  {a b c : α}"},
+ {"type": "(a * b)⁻¹ = a⁻¹ * b⁻¹",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by simp; sorry",
+  "name": "mul_inv",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : (a * b)⁻¹ = a⁻¹ * b⁻¹",
+  "args": "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α)"},
+ {"type": "(a / b)⁻¹ = a⁻¹ / b⁻¹",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : (a / b)⁻¹ = a⁻¹ / b⁻¹ := by simp; sorry",
+  "name": "inv_div'",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : (a / b)⁻¹ = a⁻¹ / b⁻¹",
+  "args": "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α)"},
+ {"type": "a / b = b⁻¹ * a",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a / b = b⁻¹ * a := by simp; sorry",
+  "name": "div_eq_inv_mul",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a / b = b⁻¹ * a",
+  "args": "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α)"},
+ {"type": "a⁻¹ * b = b / a",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a⁻¹ * b = b / a := by simp; sorry",
+  "name": "inv_mul_eq_div",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a⁻¹ * b = b / a",
+  "args": "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α)"},
+ {"type": "(a * b)⁻¹ = a⁻¹ / b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : (a * b)⁻¹ = a⁻¹ / b := by simp; sorry",
+  "name": "inv_mul'",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : (a * b)⁻¹ = a⁻¹ / b",
+  "args": "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α)"},
+ {"type": "a⁻¹ / b⁻¹ = b / a",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a⁻¹ / b⁻¹ = b / a := by simp; sorry",
+  "name": "inv_div_inv",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a⁻¹ / b⁻¹ = b / a",
+  "args": "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α)"},
+ {"type": "(a⁻¹ / b⁻¹)⁻¹ = a / b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : (a⁻¹ / b⁻¹)⁻¹ = a / b := by simp; sorry",
+  "name": "inv_inv_div_inv",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : (a⁻¹ / b⁻¹)⁻¹ = a / b",
+  "args": "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α)"},
+ {"type": "1 / a * (1 / b) = 1 / (a * b)",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : 1 / a * (1 / b) = 1 / (a * b) := by simp; sorry",
+  "name": "one_div_mul_one_div",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : 1 / a * (1 / b) = 1 / (a * b)",
+  "args": "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α)"},
+ {"type": "a / b / c = a / c / b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a / b / c = a / c / b := by simp; sorry",
+  "name": "div_right_comm",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a / b / c = a / c / b",
+  "args": "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α)"},
+ {"type": "a / b / c = a / (b * c)",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a / b / c = a / (b * c) := by simp; sorry",
+  "name": "div_div",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a / b / c = a / (b * c)",
+  "args": "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α)"},
+ {"type": "a / b * c = a / (b / c)",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a / b * c = a / (b / c) := by simp; sorry",
+  "name": "div_mul",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a / b * c = a / (b / c)",
+  "args": "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α)"},
+ {"type": "a * (b / c) = b * (a / c)",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a * (b / c) = b * (a / c) := by simp; sorry",
+  "name": "mul_div_left_comm",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a * (b / c) = b * (a / c)",
+  "args": "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α)"},
+ {"type": "a * b / c = a / c * b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a * b / c = a / c * b := by simp; sorry",
+  "name": "mul_div_right_comm",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a * b / c = a / c * b",
+  "args": "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α)"},
+ {"type": "a / (b * c) = a / b / c",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a / (b * c) = a / b / c := by simp; sorry",
+  "name": "div_mul_eq_div_div",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a / (b * c) = a / b / c",
+  "args": "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α)"},
+ {"type": "a / b * c = a * c / b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a / b * c = a * c / b := by simp; sorry",
+  "name": "div_mul_eq_mul_div",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a / b * c = a * c / b",
+  "args": "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α)"},
+ {"type": "a / b * c = a * (c / b)",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a / b * c = a * (c / b) := by simp; sorry",
+  "name": "mul_comm_div",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a / b * c = a * (c / b)",
+  "args": "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α)"},
+ {"type": "a / b * c = c / b * a",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a / b * c = c / b * a := by simp; sorry",
+  "name": "div_mul_comm",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a / b * c = c / b * a",
+  "args": "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α)"},
+ {"type": "a / (b * c) = a / b * (1 / c)",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a / (b * c) = a / b * (1 / c) := by simp; sorry",
+  "name": "div_mul_eq_div_mul_one_div",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a / (b * c) = a / b * (1 / c)",
+  "args": "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α)"},
+ {"type": "a / b / (c / d) = a * d / (b * c)",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a / b / (c / d) = a * d / (b * c) := by simp; sorry",
+  "name": "div_div_div_eq",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a / b / (c / d) = a * d / (b * c)",
+  "args": "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α)"},
+ {"type": "a / b / (c / d) = a / c / (b / d)",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a / b / (c / d) = a / c / (b / d) := by simp; sorry",
+  "name": "div_div_div_comm",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a / b / (c / d) = a / c / (b / d)",
+  "args": "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α)"},
+ {"type": "a / b * (c / d) = a * c / (b * d)",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a / b * (c / d) = a * c / (b * d) := by simp; sorry",
+  "name": "div_mul_div_comm",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a / b * (c / d) = a * c / (b * d)",
+  "args": "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α)"},
+ {"type": "a * b / (c * d) = a / c * (b / d)",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a * b / (c * d) = a / c * (b / d) := by simp; sorry",
+  "name": "mul_div_mul_comm",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α) : a * b / (c * d) = a / c * (b / d)",
+  "args": "{α β G : Type _}  [DivisionCommMonoid α]  (a b c d : α)"},
+ {"type": "a / b = b⁻¹ ↔ a = 1",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} : a / b = b⁻¹ ↔ a = 1 := by rw [div_eq_mul_inv, mul_left_eq_self]; sorry",
+  "name": "div_eq_inv_self",
+  "kind": "theorem",
+  "first-tactic": "rw [div_eq_mul_inv, mul_left_eq_self]",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} : a / b = b⁻¹ ↔ a = 1",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G}"},
+ {"type": "a = b * c⁻¹",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} (h : a * c = b) : a = b * c⁻¹ := by simp [h.symm]; sorry",
+  "name": "eq_mul_inv_of_mul_eq",
+  "kind": "theorem",
+  "first-tactic": "simp [h.symm]",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} (h : a * c = b) : a = b * c⁻¹",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G} (h : a * c = b)"},
+ {"type": "a = b⁻¹ * c",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} (h : b * a = c) : a = b⁻¹ * c := by simp [h.symm]; sorry",
+  "name": "eq_inv_mul_of_mul_eq",
+  "kind": "theorem",
+  "first-tactic": "simp [h.symm]",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} (h : b * a = c) : a = b⁻¹ * c",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G} (h : b * a = c)"},
+ {"type": "a⁻¹ * b = c",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} (h : b = a * c) : a⁻¹ * b = c := by simp [h]; sorry",
+  "name": "inv_mul_eq_of_eq_mul",
+  "kind": "theorem",
+  "first-tactic": "simp [h]",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} (h : b = a * c) : a⁻¹ * b = c",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G} (h : b = a * c)"},
+ {"type": "a * b⁻¹ = c",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} (h : a = c * b) : a * b⁻¹ = c := by simp [h]; sorry",
+  "name": "mul_inv_eq_of_eq_mul",
+  "kind": "theorem",
+  "first-tactic": "simp [h]",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} (h : a = c * b) : a * b⁻¹ = c",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G} (h : a = c * b)"},
+ {"type": "a = b * c",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} (h : a * c⁻¹ = b) : a = b * c := by simp [h.symm]; sorry",
+  "name": "eq_mul_of_mul_inv_eq",
+  "kind": "theorem",
+  "first-tactic": "simp [h.symm]",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} (h : a * c⁻¹ = b) : a = b * c",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G} (h : a * c⁻¹ = b)"},
+ {"type": "a = b * c",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} (h : b⁻¹ * a = c) : a = b * c := by simp [h.symm, mul_inv_cancel_left]; sorry",
+  "name": "eq_mul_of_inv_mul_eq",
+  "kind": "theorem",
+  "first-tactic": "simp [h.symm, mul_inv_cancel_left]",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} (h : b⁻¹ * a = c) : a = b * c",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G} (h : b⁻¹ * a = c)"},
+ {"type": "a * b = c",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} (h : b = a⁻¹ * c) : a * b = c := by rw [h, mul_inv_cancel_left]; sorry",
+  "name": "mul_eq_of_eq_inv_mul",
+  "kind": "theorem",
+  "first-tactic": "rw [h, mul_inv_cancel_left]",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} (h : b = a⁻¹ * c) : a * b = c",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G} (h : b = a⁻¹ * c)"},
+ {"type": "a * b = c",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} (h : a = c * b⁻¹) : a * b = c := by simp [h]; sorry",
+  "name": "mul_eq_of_eq_mul_inv",
+  "kind": "theorem",
+  "first-tactic": "simp [h]",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} (h : a = c * b⁻¹) : a * b = c",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G} (h : a = c * b⁻¹)"},
+ {"type": "a * b = 1 ↔ a⁻¹ = b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} : a * b = 1 ↔ a⁻¹ = b := by rw [mul_eq_one_iff_eq_inv, eq_inv_iff_eq_inv, eq_comm]; sorry",
+  "name": "mul_eq_one_iff_inv_eq",
+  "kind": "theorem",
+  "first-tactic": "rw [mul_eq_one_iff_eq_inv, eq_inv_iff_eq_inv, eq_comm]",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} : a * b = 1 ↔ a⁻¹ = b",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G}"},
+ {"type": "a * b⁻¹ = 1 ↔ a = b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} : a * b⁻¹ = 1 ↔ a = b := by rw [mul_eq_one_iff_eq_inv, inv_inv]; sorry",
+  "name": "mul_inv_eq_one",
+  "kind": "theorem",
+  "first-tactic": "rw [mul_eq_one_iff_eq_inv, inv_inv]",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} : a * b⁻¹ = 1 ↔ a = b",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G}"},
+ {"type": "a⁻¹ * b = 1 ↔ a = b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} : a⁻¹ * b = 1 ↔ a = b := by rw [mul_eq_one_iff_eq_inv, inv_inj]; sorry",
+  "name": "inv_mul_eq_one",
+  "kind": "theorem",
+  "first-tactic": "rw [mul_eq_one_iff_eq_inv, inv_inj]",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} : a⁻¹ * b = 1 ↔ a = b",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G}"},
+ {"type": "Function.injective fun a => a / b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} : Function.injective fun a => a / b := by simp only [div_eq_mul_inv]; sorry",
+  "name": "div_left_injective",
+  "kind": "theorem",
+  "first-tactic": "simp only [div_eq_mul_inv]",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} : Function.injective fun a => a / b",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G}"},
+ {"type": "Function.injective fun a => b / a",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} : Function.injective fun a => b / a := by simp only [div_eq_mul_inv]; sorry",
+  "name": "div_right_injective",
+  "kind": "theorem",
+  "first-tactic": "simp only [div_eq_mul_inv]",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} : Function.injective fun a => b / a",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G}"},
+ {"type": "a / b * b = a",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} (a b : G) : a / b * b = a := by rw [div_eq_mul_inv, inv_mul_cancel_right a b]; sorry",
+  "name": "div_mul_cancel'",
+  "kind": "theorem",
+  "first-tactic": "rw [div_eq_mul_inv, inv_mul_cancel_right a b]",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} (a b : G) : a / b * b = a",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G} (a b : G)"},
+ {"type": "a / a = 1",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} (a : G) : a / a = 1 := by rw [div_eq_mul_inv, mul_right_inv a]; sorry",
+  "name": "div_self'",
+  "kind": "theorem",
+  "first-tactic": "rw [div_eq_mul_inv, mul_right_inv a]",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} (a : G) : a / a = 1",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G} (a : G)"},
+ {"type": "a * b / b = a",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} (a b : G) : a * b / b = a := by rw [div_eq_mul_inv, mul_inv_cancel_right a b]; sorry",
+  "name": "mul_div_cancel''",
+  "kind": "theorem",
+  "first-tactic": "rw [div_eq_mul_inv, mul_inv_cancel_right a b]",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} (a b : G) : a * b / b = a",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G} (a b : G)"},
+ {"type": "a * c / (b * c) = a / b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} (a b c : G) : a * c / (b * c) = a / b := by rw [div_mul_eq_div_div_swap] <;> simp only [mul_left_inj, eq_self_iff_true, mul_div_cancel'']; sorry",
+  "name": "mul_div_mul_right_eq_div",
+  "kind": "theorem",
+  "first-tactic":
+  "rw [div_mul_eq_div_div_swap] <;> simp only [mul_left_inj, eq_self_iff_true, mul_div_cancel'']",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} (a b c : G) : a * c / (b * c) = a / b",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G} (a b c : G)"},
+ {"type": "a = b / c",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} (h : a * c = b) : a = b / c := by simp [← h]; sorry",
+  "name": "eq_div_of_mul_eq'",
+  "kind": "theorem",
+  "first-tactic": "simp [← h]",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} (h : a * c = b) : a = b / c",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G} (h : a * c = b)"},
+ {"type": "a / b = c",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} (h : a = c * b) : a / b = c := by simp [h]; sorry",
+  "name": "div_eq_of_eq_mul''",
+  "kind": "theorem",
+  "first-tactic": "simp [h]",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} (h : a = c * b) : a / b = c",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G} (h : a = c * b)"},
+ {"type": "a = b * c",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} (h : a / c = b) : a = b * c := by simp [← h]; sorry",
+  "name": "eq_mul_of_div_eq",
+  "kind": "theorem",
+  "first-tactic": "simp [← h]",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} (h : a / c = b) : a = b * c",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G} (h : a / c = b)"},
+ {"type": "a * b = c",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} (h : a = c / b) : a * b = c := by simp [h]; sorry",
+  "name": "mul_eq_of_eq_div",
+  "kind": "theorem",
+  "first-tactic": "simp [h]",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} (h : a = c / b) : a * b = c",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G} (h : a = c / b)"},
+ {"type": "b / a = c / a ↔ b = c",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} : b / a = c / a ↔ b = c := by rw [div_eq_mul_inv, div_eq_mul_inv]; sorry",
+  "name": "div_left_inj",
+  "kind": "theorem",
+  "first-tactic": "rw [div_eq_mul_inv, div_eq_mul_inv]",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} : b / a = c / a ↔ b = c",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G}"},
+ {"type": "a / b * (b / c) = a / c",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} (a b c : G) : a / b * (b / c) = a / c := by rw [← mul_div_assoc, div_mul_cancel']; sorry",
+  "name": "div_mul_div_cancel'",
+  "kind": "theorem",
+  "first-tactic": "rw [← mul_div_assoc, div_mul_cancel']",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} (a b c : G) : a / b * (b / c) = a / c",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G} (a b c : G)"},
+ {"type": "a / c / (b / c) = a / b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} (a b c : G) : a / c / (b / c) = a / b := by rw [← inv_div c b, div_inv_eq_mul, div_mul_div_cancel']; sorry",
+  "name": "div_div_div_cancel_right'",
+  "kind": "theorem",
+  "first-tactic": "rw [← inv_div c b, div_inv_eq_mul, div_mul_div_cancel']",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} (a b c : G) : a / c / (b / c) = a / b",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G} (a b c : G)"},
+ {"type": "a / b = a ↔ b = 1",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} : a / b = a ↔ b = 1 := by rw [div_eq_mul_inv, mul_right_eq_self, inv_eq_one]; sorry",
+  "name": "div_eq_self",
+  "kind": "theorem",
+  "first-tactic": "rw [div_eq_mul_inv, mul_right_eq_self, inv_eq_one]",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} : a / b = a ↔ b = 1",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G}"},
+ {"type": "a = b / c ↔ a * c = b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} : a = b / c ↔ a * c = b := by rw [div_eq_mul_inv, eq_mul_inv_iff_mul_eq]; sorry",
+  "name": "eq_div_iff_mul_eq'",
+  "kind": "theorem",
+  "first-tactic": "rw [div_eq_mul_inv, eq_mul_inv_iff_mul_eq]",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} : a = b / c ↔ a * c = b",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G}"},
+ {"type": "a / b = c ↔ a = c * b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} : a / b = c ↔ a = c * b := by rw [div_eq_mul_inv, mul_inv_eq_iff_eq_mul]; sorry",
+  "name": "div_eq_iff_eq_mul",
+  "kind": "theorem",
+  "first-tactic": "rw [div_eq_mul_inv, mul_inv_eq_iff_eq_mul]",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} : a / b = c ↔ a = c * b",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G}"},
+ {"type": "a = b ↔ c = d",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} (H : a / b = c / d) : a = b ↔ c = d := by rw [← div_eq_one, H, div_eq_one]; sorry",
+  "name": "eq_iff_eq_of_div_eq_div",
+  "kind": "theorem",
+  "first-tactic": "rw [← div_eq_one, H, div_eq_one]",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} (H : a / b = c / d) : a = b ↔ c = d",
+  "args": "{α β G : Type _}  [Group G]  {a b c d : G} (H : a / b = c / d)"},
+ {"type": "∃ n : ℕ, 0 < n ∧ x ^ n = 1",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [Group G]  {a b c d : G} {n : ℤ}  (hn : n ≠ 0)  {x : G}  (h : x ^ n = 1) : ∃ n : ℕ, 0 < n ∧ x ^ n = 1 := by cases' n with n n; sorry",
+  "name": "exists_npow_eq_one_of_zpow_eq_one",
+  "kind": "theorem",
+  "first-tactic": "cases' n with n n",
+  "core-prompt":
+  "{α β G : Type _}  [Group G]  {a b c d : G} {n : ℤ}  (hn : n ≠ 0)  {x : G}  (h : x ^ n = 1) : ∃ n : ℕ, 0 < n ∧ x ^ n = 1",
+  "args":
+  "{α β G : Type _}  [Group G]  {a b c d : G} {n : ℤ}  (hn : n ≠ 0)  {x : G}  (h : x ^ n = 1)"},
+ {"type": "a / b = c",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [CommGroup G]  {a b c d : G} {a b c : G}  (h : a = b * c) : a / b = c := by rw [h, div_eq_mul_inv, mul_comm, inv_mul_cancel_left]; sorry",
+  "name": "div_eq_of_eq_mul'",
+  "kind": "theorem",
+  "first-tactic": "rw [h, div_eq_mul_inv, mul_comm, inv_mul_cancel_left]",
+  "core-prompt":
+  "{α β G : Type _}  [CommGroup G]  {a b c d : G} {a b c : G}  (h : a = b * c) : a / b = c",
+  "args":
+  "{α β G : Type _}  [CommGroup G]  {a b c d : G} {a b c : G}  (h : a = b * c)"},
+ {"type": "c * a / (c * b) = a / b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [CommGroup G]  {a b c d : G} (a b c : G) : c * a / (c * b) = a / b := by rw [div_eq_mul_inv, mul_inv_rev, mul_comm b⁻¹ c⁻¹, mul_comm c a, mul_assoc, ←mul_assoc c,\n    mul_right_inv, one_mul, div_eq_mul_inv]; sorry",
+  "name": "mul_div_mul_left_eq_div",
+  "kind": "theorem",
+  "first-tactic":
+  "rw [div_eq_mul_inv, mul_inv_rev, mul_comm b⁻¹ c⁻¹, mul_comm c a, mul_assoc, ←mul_assoc c,\n    mul_right_inv, one_mul, div_eq_mul_inv]",
+  "core-prompt":
+  "{α β G : Type _}  [CommGroup G]  {a b c d : G} (a b c : G) : c * a / (c * b) = a / b",
+  "args": "{α β G : Type _}  [CommGroup G]  {a b c d : G} (a b c : G)"},
+ {"type": "a = b / c",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [CommGroup G]  {a b c d : G} (h : c * a = b) : a = b / c := by simp [h.symm]; sorry",
+  "name": "eq_div_of_mul_eq''",
+  "kind": "theorem",
+  "first-tactic": "simp [h.symm]",
+  "core-prompt":
+  "{α β G : Type _}  [CommGroup G]  {a b c d : G} (h : c * a = b) : a = b / c",
+  "args": "{α β G : Type _}  [CommGroup G]  {a b c d : G} (h : c * a = b)"},
+ {"type": "a = b * c",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [CommGroup G]  {a b c d : G} (h : a / b = c) : a = b * c := by simp [h.symm]; sorry",
+  "name": "eq_mul_of_div_eq'",
+  "kind": "theorem",
+  "first-tactic": "simp [h.symm]",
+  "core-prompt":
+  "{α β G : Type _}  [CommGroup G]  {a b c d : G} (h : a / b = c) : a = b * c",
+  "args": "{α β G : Type _}  [CommGroup G]  {a b c d : G} (h : a / b = c)"},
+ {"type": "a * b = c",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [CommGroup G]  {a b c d : G} (h : b = c / a) : a * b = c := by simp [h]; sorry",
+  "name": "mul_eq_of_eq_div'",
+  "kind": "theorem",
+  "first-tactic": "simp [h]",
+  "core-prompt":
+  "{α β G : Type _}  [CommGroup G]  {a b c d : G} (h : b = c / a) : a * b = c",
+  "args": "{α β G : Type _}  [CommGroup G]  {a b c d : G} (h : b = c / a)"},
+ {"type": "a / (a / b) = b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [CommGroup G]  {a b c d : G} (a b : G) : a / (a / b) = b := by simpa using mul_inv_cancel_left a b; sorry",
+  "name": "div_div_self'",
+  "kind": "theorem",
+  "first-tactic": "simpa using mul_inv_cancel_left a b",
+  "core-prompt":
+  "{α β G : Type _}  [CommGroup G]  {a b c d : G} (a b : G) : a / (a / b) = b",
+  "args": "{α β G : Type _}  [CommGroup G]  {a b c d : G} (a b : G)"},
+ {"type": "a / b = c / b * (a / c)",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [CommGroup G]  {a b c d : G} (a b c : G) : a / b = c / b * (a / c) := by simp [mul_left_comm c]; sorry",
+  "name": "div_eq_div_mul_div",
+  "kind": "theorem",
+  "first-tactic": "simp [mul_left_comm c]",
+  "core-prompt":
+  "{α β G : Type _}  [CommGroup G]  {a b c d : G} (a b c : G) : a / b = c / b * (a / c)",
+  "args": "{α β G : Type _}  [CommGroup G]  {a b c d : G} (a b c : G)"},
+ {"type": "a / b / a = b⁻¹",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [CommGroup G]  {a b c d : G} (a b : G) : a / b / a = b⁻¹ := by simp; sorry",
+  "name": "div_div_cancel_left",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α β G : Type _}  [CommGroup G]  {a b c d : G} (a b : G) : a / b / a = b⁻¹",
+  "args": "{α β G : Type _}  [CommGroup G]  {a b c d : G} (a b : G)"},
+ {"type": "a = b / c ↔ c * a = b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [CommGroup G]  {a b c d : G} : a = b / c ↔ c * a = b := by rw [eq_div_iff_mul_eq', mul_comm]; sorry",
+  "name": "eq_div_iff_mul_eq''",
+  "kind": "theorem",
+  "first-tactic": "rw [eq_div_iff_mul_eq', mul_comm]",
+  "core-prompt":
+  "{α β G : Type _}  [CommGroup G]  {a b c d : G} : a = b / c ↔ c * a = b",
+  "args": "{α β G : Type _}  [CommGroup G]  {a b c d : G}"},
+ {"type": "a / b = c ↔ a = b * c",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [CommGroup G]  {a b c d : G} : a / b = c ↔ a = b * c := by rw [div_eq_iff_eq_mul, mul_comm]; sorry",
+  "name": "div_eq_iff_eq_mul'",
+  "kind": "theorem",
+  "first-tactic": "rw [div_eq_iff_eq_mul, mul_comm]",
+  "core-prompt":
+  "{α β G : Type _}  [CommGroup G]  {a b c d : G} : a / b = c ↔ a = b * c",
+  "args": "{α β G : Type _}  [CommGroup G]  {a b c d : G}"},
+ {"type": "a * b / a = b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [CommGroup G]  {a b c d : G} (a b : G) : a * b / a = b := by rw [div_eq_inv_mul, inv_mul_cancel_left]; sorry",
+  "name": "mul_div_cancel'''",
+  "kind": "theorem",
+  "first-tactic": "rw [div_eq_inv_mul, inv_mul_cancel_left]",
+  "core-prompt":
+  "{α β G : Type _}  [CommGroup G]  {a b c d : G} (a b : G) : a * b / a = b",
+  "args": "{α β G : Type _}  [CommGroup G]  {a b c d : G} (a b : G)"},
+ {"type": "a * (b / a) = b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [CommGroup G]  {a b c d : G} (a b : G) : a * (b / a) = b := by rw [← mul_div_assoc, mul_div_cancel''']; sorry",
+  "name": "mul_div_cancel'_right",
+  "kind": "theorem",
+  "first-tactic": "rw [← mul_div_assoc, mul_div_cancel''']",
+  "core-prompt":
+  "{α β G : Type _}  [CommGroup G]  {a b c d : G} (a b : G) : a * (b / a) = b",
+  "args": "{α β G : Type _}  [CommGroup G]  {a b c d : G} (a b : G)"},
+ {"type": "a / (a * b) = b⁻¹",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [CommGroup G]  {a b c d : G} (a b : G) : a / (a * b) = b⁻¹ := by rw [← inv_div, mul_div_cancel''']\n\n-- This lemma is in the `simp` set under the name `mul_inv_cancel_comm_assoc`,\n-- along with the additive version `add_neg_cancel_comm_assoc`,\n-- defined  in `algebra/group/commute`; sorry",
+  "name": "div_mul_cancel''",
+  "kind": "theorem",
+  "first-tactic":
+  "rw [← inv_div, mul_div_cancel''']\n\n-- This lemma is in the `simp` set under the name `mul_inv_cancel_comm_assoc`,\n-- along with the additive version `add_neg_cancel_comm_assoc`,\n-- defined  in `algebra/group/commute`",
+  "core-prompt":
+  "{α β G : Type _}  [CommGroup G]  {a b c d : G} (a b : G) : a / (a * b) = b⁻¹",
+  "args": "{α β G : Type _}  [CommGroup G]  {a b c d : G} (a b : G)"},
+ {"type": "a * (b * a⁻¹) = b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [CommGroup G]  {a b c d : G} (a b : G) : a * (b * a⁻¹) = b := by rw [← div_eq_mul_inv, mul_div_cancel'_right a b]; sorry",
+  "name": "mul_mul_inv_cancel'_right",
+  "kind": "theorem",
+  "first-tactic": "rw [← div_eq_mul_inv, mul_div_cancel'_right a b]",
+  "core-prompt":
+  "{α β G : Type _}  [CommGroup G]  {a b c d : G} (a b : G) : a * (b * a⁻¹) = b",
+  "args": "{α β G : Type _}  [CommGroup G]  {a b c d : G} (a b : G)"},
+ {"type": "a * c * (b / c) = a * b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [CommGroup G]  {a b c d : G} (a b c : G) : a * c * (b / c) = a * b := by rw [mul_assoc, mul_div_cancel'_right]; sorry",
+  "name": "mul_mul_div_cancel",
+  "kind": "theorem",
+  "first-tactic": "rw [mul_assoc, mul_div_cancel'_right]",
+  "core-prompt":
+  "{α β G : Type _}  [CommGroup G]  {a b c d : G} (a b c : G) : a * c * (b / c) = a * b",
+  "args": "{α β G : Type _}  [CommGroup G]  {a b c d : G} (a b c : G)"},
+ {"type": "a / c * (b * c) = a * b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [CommGroup G]  {a b c d : G} (a b c : G) : a / c * (b * c) = a * b := by rw [mul_left_comm, div_mul_cancel', mul_comm]; sorry",
+  "name": "div_mul_mul_cancel",
+  "kind": "theorem",
+  "first-tactic": "rw [mul_left_comm, div_mul_cancel', mul_comm]",
+  "core-prompt":
+  "{α β G : Type _}  [CommGroup G]  {a b c d : G} (a b c : G) : a / c * (b * c) = a * b",
+  "args": "{α β G : Type _}  [CommGroup G]  {a b c d : G} (a b c : G)"},
+ {"type": "a / b * (c / a) = c / b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [CommGroup G]  {a b c d : G} (a b c : G) : a / b * (c / a) = c / b := by rw [mul_comm] <;> apply div_mul_div_cancel'; sorry",
+  "name": "div_mul_div_cancel''",
+  "kind": "theorem",
+  "first-tactic": "rw [mul_comm] <;> apply div_mul_div_cancel'",
+  "core-prompt":
+  "{α β G : Type _}  [CommGroup G]  {a b c d : G} (a b c : G) : a / b * (c / a) = c / b",
+  "args": "{α β G : Type _}  [CommGroup G]  {a b c d : G} (a b c : G)"},
+ {"type": "a * b / (a / c) = b * c",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [CommGroup G]  {a b c d : G} (a b c : G) : a * b / (a / c) = b * c := by rw [← div_mul, mul_div_cancel''']; sorry",
+  "name": "mul_div_div_cancel",
+  "kind": "theorem",
+  "first-tactic": "rw [← div_mul, mul_div_cancel''']",
+  "core-prompt":
+  "{α β G : Type _}  [CommGroup G]  {a b c d : G} (a b c : G) : a * b / (a / c) = b * c",
+  "args": "{α β G : Type _}  [CommGroup G]  {a b c d : G} (a b c : G)"},
+ {"type": "c / a / (c / b) = b / a",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [CommGroup G]  {a b c d : G} (a b c : G) : c / a / (c / b) = b / a := by rw [← inv_div b c, div_inv_eq_mul, mul_comm, div_mul_div_cancel']; sorry",
+  "name": "div_div_div_cancel_left",
+  "kind": "theorem",
+  "first-tactic":
+  "rw [← inv_div b c, div_inv_eq_mul, mul_comm, div_mul_div_cancel']",
+  "core-prompt":
+  "{α β G : Type _}  [CommGroup G]  {a b c d : G} (a b c : G) : c / a / (c / b) = b / a",
+  "args": "{α β G : Type _}  [CommGroup G]  {a b c d : G} (a b c : G)"},
+ {"type": "a / b = c / d ↔ a * d = c * b",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [CommGroup G]  {a b c d : G} : a / b = c / d ↔ a * d = c * b := by rw [div_eq_iff_eq_mul, div_mul_eq_mul_div, eq_comm, div_eq_iff_eq_mul']; sorry",
+  "name": "div_eq_div_iff_mul_eq_mul",
+  "kind": "theorem",
+  "first-tactic":
+  "rw [div_eq_iff_eq_mul, div_mul_eq_mul_div, eq_comm, div_eq_iff_eq_mul']",
+  "core-prompt":
+  "{α β G : Type _}  [CommGroup G]  {a b c d : G} : a / b = c / d ↔ a * d = c * b",
+  "args": "{α β G : Type _}  [CommGroup G]  {a b c d : G}"},
+ {"type": "a / b = c / d ↔ a / c = b / d",
+  "tactic-prompt":
+  "theorem {α β G : Type _}  [CommGroup G]  {a b c d : G} : a / b = c / d ↔ a / c = b / d := by rw [div_eq_iff_eq_mul, div_mul_eq_mul_div, div_eq_iff_eq_mul', mul_div_assoc]; sorry",
+  "name": "div_eq_div_iff_div_eq_div",
+  "kind": "theorem",
+  "first-tactic":
+  "rw [div_eq_iff_eq_mul, div_mul_eq_mul_div, div_eq_iff_eq_mul', mul_div_assoc]",
+  "core-prompt":
+  "{α β G : Type _}  [CommGroup G]  {a b c d : G} : a / b = c / d ↔ a / c = b / d",
+  "args": "{α β G : Type _}  [CommGroup G]  {a b c d : G}"},
+ {"type": "a ^ 1 = a",
+  "tactic-prompt":
+  "theorem [Monoid M] (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, mul_one]; sorry",
+  "name": "pow_one",
+  "kind": "theorem",
+  "first-tactic": "rw [pow_succ, pow_zero, mul_one]",
+  "core-prompt": "[Monoid M] (a : M) : a ^ 1 = a",
+  "args": "[Monoid M] (a : M)"},
+ {"type": "a ^ (m + n) = a ^ m * a ^ n",
+  "tactic-prompt":
+  "theorem [Monoid M] (a : M)  (m n : ℕ) : a ^ (m + n) = a ^ m * a ^ n := by induction' n with n ih; sorry",
+  "name": "pow_add",
+  "kind": "theorem",
+  "first-tactic": "induction' n with n ih",
+  "core-prompt": "[Monoid M] (a : M)  (m n : ℕ) : a ^ (m + n) = a ^ m * a ^ n",
+  "args": "[Monoid M] (a : M)  (m n : ℕ)"},
+ {"type": "a ^ (m * n) = (a ^ m) ^ n",
+  "tactic-prompt":
+  "theorem [Monoid M] (a : M)  (m n : ℕ) : a ^ (m * n) = (a ^ m) ^ n := by induction' n with n ih; sorry",
+  "name": "pow_mul",
+  "kind": "theorem",
+  "first-tactic": "induction' n with n ih",
+  "core-prompt": "[Monoid M] (a : M)  (m n : ℕ) : a ^ (m * n) = (a ^ m) ^ n",
+  "args": "[Monoid M] (a : M)  (m n : ℕ)"},
+ {"type": "(a * b) ^ n = a ^ n * b ^ n",
+  "tactic-prompt":
+  "theorem [Monoid M] {a b : M}  (h : Commute a b)  (n : ℕ) : (a * b) ^ n = a ^ n * b ^ n := by induction' n with n ih; sorry",
+  "name": "Commute.mul_pow",
+  "kind": "theorem",
+  "first-tactic": "induction' n with n ih",
+  "core-prompt":
+  "[Monoid M] {a b : M}  (h : Commute a b)  (n : ℕ) : (a * b) ^ n = a ^ n * b ^ n",
+  "args": "[Monoid M] {a b : M}  (h : Commute a b)  (n : ℕ)"},
+ {"type": "((1 : ℕ) : R) = 1",
+  "tactic-prompt":
+  "theorem [AddMonoidWithOne R] : ((1 : ℕ) : R) = 1 := by simp; sorry",
+  "name": "Nat.cast_one",
+  "kind": "theorem",
+  "first-tactic": "simp",
+  "core-prompt": "[AddMonoidWithOne R] : ((1 : ℕ) : R) = 1",
+  "args": "[AddMonoidWithOne R]"},
+ {"type": "((m + n : ℕ) : R) = (m : R) + n",
+  "tactic-prompt":
+  "theorem [AddMonoidWithOne R] : ((m + n : ℕ) : R) = (m : R) + n := by induction n <;> simp_all [add_succ, add_assoc]; sorry",
+  "name": "Nat.cast_add",
+  "kind": "theorem",
+  "first-tactic": "induction n <;> simp_all [add_succ, add_assoc]",
+  "core-prompt": "[AddMonoidWithOne R] : ((m + n : ℕ) : R) = (m : R) + n",
+  "args": "[AddMonoidWithOne R]"},
+ {"type": "((0 : ℤ) : R) = 0",
+  "tactic-prompt":
+  "theorem [AddGroupWithOne R] : ((0 : ℤ) : R) = 0 := by erw [Int.cast_ofNat, Nat.cast_zero]; sorry",
+  "name": "Int.cast_zero",
+  "kind": "theorem",
+  "first-tactic": "erw [Int.cast_ofNat, Nat.cast_zero]",
+  "core-prompt": "[AddGroupWithOne R] : ((0 : ℤ) : R) = 0",
+  "args": "[AddGroupWithOne R]"},
+ {"type": "((1 : ℤ) : R) = 1",
+  "tactic-prompt":
+  "theorem [AddGroupWithOne R] : ((1 : ℤ) : R) = 1 := by erw [Int.cast_ofNat, Nat.cast_one]; sorry",
+  "name": "Int.cast_one",
+  "kind": "theorem",
+  "first-tactic": "erw [Int.cast_ofNat, Nat.cast_one]",
+  "core-prompt": "[AddGroupWithOne R] : ((1 : ℤ) : R) = 1",
+  "args": "[AddGroupWithOne R]"},
+ {"type": "Fmla.reify v (f₁.and f₂) (a ∨ b)",
+  "tactic-prompt":
+  "theorem (h₁ : Fmla.reify v f₁ a)  (h₂ : Fmla.reify v f₂ b) : Fmla.reify v (f₁.and f₂) (a ∨ b) := by refine ⟨fun H => by_contra fun hn => H ⟨fun c h => by_contra fun hn' => ?_⟩⟩; sorry",
+  "name": "Fmla.reify_or",
+  "kind": "theorem",
+  "first-tactic":
+  "refine ⟨fun H => by_contra fun hn => H ⟨fun c h => by_contra fun hn' => ?_⟩⟩",
+  "core-prompt":
+  "(h₁ : Fmla.reify v f₁ a)  (h₂ : Fmla.reify v f₂ b) : Fmla.reify v (f₁.and f₂) (a ∨ b)",
+  "args": "(h₁ : Fmla.reify v f₁ a)  (h₂ : Fmla.reify v f₂ b)"},
+ {"type": "True",
+  "tactic-prompt": "example  : True := by find; sorry",
+  "name": "",
+  "kind": "example",
+  "first-tactic": "find",
+  "core-prompt": " : True",
+  "args": ""},
+ {"type": "HEq a b ↔ HEq (a : α) (b : β)",
+  "tactic-prompt":
+  "lemma {α : Sort _}  {β : Sort _}  {γ : Sort _}  {p : α → Prop}  {q : α → Prop} {α β : Sort _}  {p : α → Prop}  {q : β → Prop}  {a : {x // p x}}    {b : {y // q y}}  (h : α = β)  (h' : HEq p q) : HEq a b ↔ HEq (a : α) (b : β) := by subst h; sorry",
+  "name": "heq_iff_coe_heq",
+  "kind": "lemma",
+  "first-tactic": "subst h",
+  "core-prompt":
+  "{α : Sort _}  {β : Sort _}  {γ : Sort _}  {p : α → Prop}  {q : α → Prop} {α β : Sort _}  {p : α → Prop}  {q : β → Prop}  {a : {x // p x}}    {b : {y // q y}}  (h : α = β)  (h' : HEq p q) : HEq a b ↔ HEq (a : α) (b : β)",
+  "args":
+  "{α : Sort _}  {β : Sort _}  {γ : Sort _}  {p : α → Prop}  {q : α → Prop} {α β : Sort _}  {p : α → Prop}  {q : β → Prop}  {a : {x // p x}}    {b : {y // q y}}  (h : α = β)  (h' : HEq p q)"},
+ {"type": "injective ((↑·) : Subtype p → α)",
+  "tactic-prompt":
+  "theorem {α : Sort _}  {β : Sort _}  {γ : Sort _}  {p : α → Prop}  {q : α → Prop} : injective ((↑·) : Subtype p → α) := by intros a b hab; sorry",
+  "name": "coe_injective",
+  "kind": "theorem",
+  "first-tactic": "intros a b hab",
+  "core-prompt":
+  "{α : Sort _}  {β : Sort _}  {γ : Sort _}  {p : α → Prop}  {q : α → Prop} : injective ((↑·) : Subtype p → α)",
+  "args":
+  "{α : Sort _}  {β : Sort _}  {γ : Sort _}  {p : α → Prop}  {q : α → Prop}"},
+ {"type": "n = arr.size",
+  "tactic-prompt":
+  "theorem {arr : Array α}  {m : Fin n → β}  (H : Agrees arr f m) : n = arr.size := by cases H; sorry",
+  "name": "size_eq",
+  "kind": "theorem",
+  "first-tactic": "cases H",
+  "core-prompt":
+  "{arr : Array α}  {m : Fin n → β}  (H : Agrees arr f m) : n = arr.size",
+  "args": "{arr : Array α}  {m : Fin n → β}  (H : Agrees arr f m)"},
+ {"type": "∃ (m : UFModel self.arr.size), m.Models self.arr",
+  "tactic-prompt":
+  "theorem (self : UnionFind α) : ∃ (m : UFModel self.arr.size), m.Models self.arr := by let ⟨n, m, hm⟩ := self.model; sorry",
+  "name": "model'",
+  "kind": "theorem",
+  "first-tactic": "let ⟨n, m, hm⟩ := self.model",
+  "core-prompt":
+  "(self : UnionFind α) : ∃ (m : UFModel self.arr.size), m.Models self.arr",
+  "args": "(self : UnionFind α)"},
+ {"type": "self.rank i < self.rankMax",
+  "tactic-prompt":
+  "theorem (self : UnionFind α)  (i : Nat) : self.rank i < self.rankMax := by simp [rank]; sorry",
+  "name": "lt_rankMax",
+  "kind": "theorem",
+  "first-tactic": "simp [rank]",
+  "core-prompt": "(self : UnionFind α)  (i : Nat) : self.rank i < self.rankMax",
+  "args": "(self : UnionFind α)  (i : Nat)"},
+ {"type": "a.val = b.val → a = b",
+  "tactic-prompt":
+  "lemma {a b : Fin n} : a.val = b.val → a = b := by cases a; sorry",
+  "name": "Fin.ext",
+  "kind": "lemma",
+  "first-tactic": "cases a",
+  "core-prompt": "{a b : Fin n} : a.val = b.val → a = b",
+  "args": "{a b : Fin n}"},
+ {"type": "(⟨(a : ℕ), h⟩ : Fin n) = a",
+  "tactic-prompt":
+  "theorem (a : Fin n)  (h : (a : ℕ) < n) : (⟨(a : ℕ), h⟩ : Fin n) = a := by cases a <;> rfl; sorry",
+  "name": "Fin.eta",
+  "kind": "theorem",
+  "first-tactic": "cases a <;> rfl",
+  "core-prompt": "(a : Fin n)  (h : (a : ℕ) < n) : (⟨(a : ℕ), h⟩ : Fin n) = a",
+  "args": "(a : Fin n)  (h : (a : ℕ) < n)"},
+ {"type": "(Fin.ofNat' a (zero_lt_of_lt h)).val = a",
+  "tactic-prompt":
+  "lemma {n a : Nat}  (h : a < n) : (Fin.ofNat' a (zero_lt_of_lt h)).val = a := by simp only [Fin.ofNat', Nat.mod_eq_of_lt h]; sorry",
+  "name": "Fin.val_eq_of_lt",
+  "kind": "lemma",
+  "first-tactic": "simp only [Fin.ofNat', Nat.mod_eq_of_lt h]",
+  "core-prompt":
+  "{n a : Nat}  (h : a < n) : (Fin.ofNat' a (zero_lt_of_lt h)).val = a",
+  "args": "{n a : Nat}  (h : a < n)"},
+ {"type": "(1 : Fin (n + 2)).val = 1",
+  "tactic-prompt":
+  "lemma  : (1 : Fin (n + 2)).val = 1 := by simp only [OfNat.ofNat, Fin.ofNat]; sorry",
+  "name": "Fin.one_val",
+  "kind": "lemma",
+  "first-tactic": "simp only [OfNat.ofNat, Fin.ofNat]",
+  "core-prompt": " : (1 : Fin (n + 2)).val = 1",
+  "args": ""},
+ {"type": "a % b = a",
+  "tactic-prompt":
+  "theorem {a b : Fin n}  (h : a < b) : a % b = a := by apply Fin.eq_of_val_eq; sorry",
+  "name": "Fin.mod_eq_of_lt",
+  "kind": "theorem",
+  "first-tactic": "apply Fin.eq_of_val_eq",
+  "core-prompt": "{a b : Fin n}  (h : a < b) : a % b = a",
+  "args": "{a b : Fin n}  (h : a < b)"},
+ {"type": "(Fin.checkedAdd a b).isSome = true ↔ a.val + b.val < n",
+  "tactic-prompt":
+  "lemma {n : Nat}  [Nonempty (Fin n)] (a b : Fin n) : (Fin.checkedAdd a b).isSome = true ↔ a.val + b.val < n := by by_cases n <= a.val + b.val <;>\n    simp_all [checkedAdd, Option.isSome, overflowingAdd, decide_eq_true, decide_eq_false]; sorry",
+  "name": "Fin.checked_add_spec",
+  "kind": "lemma",
+  "first-tactic":
+  "by_cases n <= a.val + b.val <;>\n    simp_all [checkedAdd, Option.isSome, overflowingAdd, decide_eq_true, decide_eq_false]",
+  "core-prompt":
+  "{n : Nat}  [Nonempty (Fin n)] (a b : Fin n) : (Fin.checkedAdd a b).isSome = true ↔ a.val + b.val < n",
+  "args": "{n : Nat}  [Nonempty (Fin n)] (a b : Fin n)"},
+ {"type": "a * 1 = a",
+  "tactic-prompt":
+  "theorem {n : Nat}  [Nonempty (Fin n)] (a : Fin n) : a * 1 = a := by apply Fin.eq_of_val_eq; sorry",
+  "name": "Fin.mul_one",
+  "kind": "theorem",
+  "first-tactic": "apply Fin.eq_of_val_eq",
+  "core-prompt": "{n : Nat}  [Nonempty (Fin n)] (a : Fin n) : a * 1 = a",
+  "args": "{n : Nat}  [Nonempty (Fin n)] (a : Fin n)"},
+ {"type": "a * (b + c) = a * b + a * c",
+  "tactic-prompt":
+  "theorem {n : Nat}  [Nonempty (Fin n)] (a b c : Fin n) : a * (b + c) = a * b + a * c := by apply Fin.eq_of_val_eq; sorry",
+  "name": "Fin.mul_add",
+  "kind": "theorem",
+  "first-tactic": "apply Fin.eq_of_val_eq",
+  "core-prompt":
+  "{n : Nat}  [Nonempty (Fin n)] (a b c : Fin n) : a * (b + c) = a * b + a * c",
+  "args": "{n : Nat}  [Nonempty (Fin n)] (a b c : Fin n)"},
+ {"type": "∀ (a b : Fin n), a - b = a + -b",
+  "tactic-prompt":
+  "theorem {n : Nat}  [Nonempty (Fin n)] : ∀ (a b : Fin n), a - b = a + -b := by simp [Fin.add_def, Fin.sub_def, Neg.neg]; sorry",
+  "name": "Fin.sub_eq_add_neg",
+  "kind": "theorem",
+  "first-tactic": "simp [Fin.add_def, Fin.sub_def, Neg.neg]",
+  "core-prompt":
+  "{n : Nat}  [Nonempty (Fin n)] : ∀ (a b : Fin n), a - b = a + -b",
+  "args": "{n : Nat}  [Nonempty (Fin n)]"},
+ {"type": "-a + a = 0",
+  "tactic-prompt":
+  "theorem {n : Nat}  [Nonempty (Fin n)] (a : Fin n) : -a + a = 0 := by rw [add_comm, ← Fin.sub_eq_add_neg]; sorry",
+  "name": "Fin.add_left_neg",
+  "kind": "theorem",
+  "first-tactic": "rw [add_comm, ← Fin.sub_eq_add_neg]",
+  "core-prompt": "{n : Nat}  [Nonempty (Fin n)] (a : Fin n) : -a + a = 0",
+  "args": "{n : Nat}  [Nonempty (Fin n)] (a : Fin n)"},
+ {"type": "a ≤ b → b ≤ a → a = b",
+  "tactic-prompt":
+  "lemma {n : Nat}  [Nonempty (Fin n)] (a b : Fin n) : a ≤ b → b ≤ a → a = b := by intro h1 h2; sorry",
+  "name": "Fin.le_antisymm",
+  "kind": "lemma",
+  "first-tactic": "intro h1 h2",
+  "core-prompt":
+  "{n : Nat}  [Nonempty (Fin n)] (a b : Fin n) : a ≤ b → b ≤ a → a = b",
+  "args": "{n : Nat}  [Nonempty (Fin n)] (a b : Fin n)"},
+ {"type": "(replicate n c).length = n",
+  "tactic-prompt":
+  "lemma (n : ℕ)  (c : Char) : (replicate n c).length = n := by simp only [String.length, String.replicate, List.length_replicate]; sorry",
+  "name": "length_replicate",
+  "kind": "lemma",
+  "first-tactic":
+  "simp only [String.length, String.replicate, List.length_replicate]",
+  "core-prompt": "(n : ℕ)  (c : Char) : (replicate n c).length = n",
+  "args": "(n : ℕ)  (c : Char)"},
+ {"type": "(String.mk l).length = l.length",
+  "tactic-prompt":
+  "lemma (l : List Char) : (String.mk l).length = l.length := by simp only [String.length]; sorry",
+  "name": "length_eq_list_length",
+  "kind": "lemma",
+  "first-tactic": "simp only [String.length]",
+  "core-prompt": "(l : List Char) : (String.mk l).length = l.length",
+  "args": "(l : List Char)"},
+ {"type": "Prod.map f g p = (f p.1, g p.2)",
+  "tactic-prompt":
+  "lemma {α : Type _}  {β : Type _}  {γ : Type _}  {δ : Type _} (f : α → γ)  (g : β → δ)  (p : α × β) : Prod.map f g p = (f p.1, g p.2) := by cases p; sorry",
+  "name": "prod_map",
+  "kind": "lemma",
+  "first-tactic": "cases p",
+  "core-prompt":
+  "{α : Type _}  {β : Type _}  {γ : Type _}  {δ : Type _} (f : α → γ)  (g : β → δ)  (p : α × β) : Prod.map f g p = (f p.1, g p.2)",
+  "args":
+  "{α : Type _}  {β : Type _}  {γ : Type _}  {δ : Type _} (f : α → γ)  (g : β → δ)  (p : α × β)"},
+ {"type": "(map f g p).1 = f (p.1)",
+  "tactic-prompt":
+  "lemma {α : Type _}  {β : Type _}  {γ : Type _}  {δ : Type _} (f : α → γ)  (g : β → δ)  (p : α × β) : (map f g p).1 = f (p.1) := by simp; sorry",
+  "name": "map_fst",
+  "kind": "lemma",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α : Type _}  {β : Type _}  {γ : Type _}  {δ : Type _} (f : α → γ)  (g : β → δ)  (p : α × β) : (map f g p).1 = f (p.1)",
+  "args":
+  "{α : Type _}  {β : Type _}  {γ : Type _}  {δ : Type _} (f : α → γ)  (g : β → δ)  (p : α × β)"},
+ {"type": "(map f g p).2 = g (p.2)",
+  "tactic-prompt":
+  "lemma {α : Type _}  {β : Type _}  {γ : Type _}  {δ : Type _} (f : α → γ)  (g : β → δ)  (p : α × β) : (map f g p).2 = g (p.2) := by simp; sorry",
+  "name": "map_snd",
+  "kind": "lemma",
+  "first-tactic": "simp",
+  "core-prompt":
+  "{α : Type _}  {β : Type _}  {γ : Type _}  {δ : Type _} (f : α → γ)  (g : β → δ)  (p : α × β) : (map f g p).2 = g (p.2)",
+  "args":
+  "{α : Type _}  {β : Type _}  {γ : Type _}  {δ : Type _} (f : α → γ)  (g : β → δ)  (p : α × β)"},
+ {"type": "p = q ↔ p.1 = q.1 ∧ p.2 = q.2",
+  "tactic-prompt":
+  "lemma {α : Type _}  {β : Type _}  {γ : Type _}  {δ : Type _} {p q : α × β} : p = q ↔ p.1 = q.1 ∧ p.2 = q.2 := by rw [← @mk.eta _ _ p, ← @mk.eta _ _ q, mk.inj_iff]\n\n-- Port note: in mathlib this is named `ext`, but Lean4 has already defined that to be something\n-- with a slightly different signature.; sorry",
+  "name": "ext_iff",
+  "kind": "lemma",
+  "first-tactic":
+  "rw [← @mk.eta _ _ p, ← @mk.eta _ _ q, mk.inj_iff]\n\n-- Port note: in mathlib this is named `ext`, but Lean4 has already defined that to be something\n-- with a slightly different signature.",
+  "core-prompt":
+  "{α : Type _}  {β : Type _}  {γ : Type _}  {δ : Type _} {p q : α × β} : p = q ↔ p.1 = q.1 ∧ p.2 = q.2",
+  "args":
+  "{α : Type _}  {β : Type _}  {γ : Type _}  {δ : Type _} {p q : α × β}"},
+ {"type": "Prod.map f g = λ p => (f p.1, g p.2)",
+  "tactic-prompt":
+  "lemma {α : Type _}  {β : Type _}  {γ : Type _}  {δ : Type _} {f : α → γ}  {g : β → δ} : Prod.map f g = λ p => (f p.1, g p.2) := by ext <;> simp; sorry",
+  "name": "map_def",
+  "kind": "lemma",
+  "first-tactic": "ext <;> simp",
+  "core-prompt":
+  "{α : Type _}  {β : Type _}  {γ : Type _}  {δ : Type _} {f : α → γ}  {g : β → δ} : Prod.map f g = λ p => (f p.1, g p.2)",
+  "args":
+  "{α : Type _}  {β : Type _}  {γ : Type _}  {δ : Type _} {f : α → γ}  {g : β → δ}"},
+ {"type": "injective (Prod.map f g)",
+  "tactic-prompt":
+  "lemma {α : Type _}  {β : Type _}  {γ : Type _}  {δ : Type _} {f : α → γ}  {g : β → δ}  (hf : injective f)  (hg : injective g) : injective (Prod.map f g) := by intros x y h; sorry",
+  "name": "Function.injective.prod_map",
+  "kind": "lemma",
+  "first-tactic": "intros x y h",
+  "core-prompt":
+  "{α : Type _}  {β : Type _}  {γ : Type _}  {δ : Type _} {f : α → γ}  {g : β → δ}  (hf : injective f)  (hg : injective g) : injective (Prod.map f g)",
+  "args":
+  "{α : Type _}  {β : Type _}  {γ : Type _}  {δ : Type _} {f : α → γ}  {g : β → δ}  (hf : injective f)  (hg : injective g)"},
+ {"type": "0 < UInt8.size",
+  "tactic-prompt": "lemma  : 0 < UInt8.size := by decide; sorry",
+  "name": "UInt8.size_positive",
+  "kind": "lemma",
+  "first-tactic": "decide",
+  "core-prompt": " : 0 < UInt8.size",
+  "args": ""},
+ {"type": "0 < UInt16.size",
+  "tactic-prompt": "lemma  : 0 < UInt16.size := by decide; sorry",
+  "name": "UInt16.size_positive",
+  "kind": "lemma",
+  "first-tactic": "decide",
+  "core-prompt": " : 0 < UInt16.size",
+  "args": ""},
+ {"type": "0 < UInt32.size",
+  "tactic-prompt": "lemma  : 0 < UInt32.size := by decide; sorry",
+  "name": "UInt32.size_positive",
+  "kind": "lemma",
+  "first-tactic": "decide",
+  "core-prompt": " : 0 < UInt32.size",
+  "args": ""},
+ {"type": "0 < UInt64.size",
+  "tactic-prompt": "lemma  : 0 < UInt64.size := by decide; sorry",
+  "name": "UInt64.size_positive",
+  "kind": "lemma",
+  "first-tactic": "decide",
+  "core-prompt": " : 0 < UInt64.size",
+  "args": ""},
+ {"type": "Nat.isValidChar (UInt32.ofNat n).1",
+  "tactic-prompt":
+  "theorem (n : Nat)  (h : n < size) : Nat.isValidChar (UInt32.ofNat n).1 := by rw [UInt32.val_eq_of_lt]; sorry",
+  "name": "toChar_aux",
+  "kind": "theorem",
+  "first-tactic": "rw [UInt32.val_eq_of_lt]",
+  "core-prompt":
+  "(n : Nat)  (h : n < size) : Nat.isValidChar (UInt32.ofNat n).1",
+  "args": "(n : Nat)  (h : n < size)"},
+ {"type": "0 < c.utf8Size",
+  "tactic-prompt":
+  "theorem (c : Char) : 0 < c.utf8Size := by simp only [utf8Size]; sorry",
+  "name": "Char.utf8Size_pos",
+  "kind": "theorem",
+  "first-tactic": "simp only [utf8Size]",
+  "core-prompt": "(c : Char) : 0 < c.utf8Size",
+  "args": "(c : Char)"},
+ {"type": "m ∈ range n ↔ m < n",
+  "tactic-prompt":
+  "theorem {m n : ℕ} : m ∈ range n ↔ m < n := by simp only [range_eq_range', mem_range', Nat.zero_le, true_and, Nat.zero_add]; sorry",
+  "name": "mem_range",
+  "kind": "theorem",
+  "first-tactic":
+  "simp only [range_eq_range', mem_range', Nat.zero_le, true_and, Nat.zero_add]",
+  "core-prompt": "{m n : ℕ} : m ∈ range n ↔ m < n",
+  "args": "{m n : ℕ}"},
+ {"type": "Nodup (range n)",
+  "tactic-prompt":
+  "theorem (n : ℕ) : Nodup (range n) := by simp only [range_eq_range', nodup_range']; sorry",
+  "name": "nodup_range",
+  "kind": "theorem",
+  "first-tactic": "simp only [range_eq_range', nodup_range']",
+  "core-prompt": "(n : ℕ) : Nodup (range n)",
+  "args": "(n : ℕ)"},
+ {"type": "a ∈ toList o ↔ a ∈ o",
+  "tactic-prompt":
+  "theorem {a : α}  {o : Option α} : a ∈ toList o ↔ a ∈ o := by cases o <;> simp [toList, eq_comm]; sorry",
+  "name": "Option.mem_toList",
+  "kind": "theorem",
+  "first-tactic": "cases o <;> simp [toList, eq_comm]",
+  "core-prompt": "{a : α}  {o : Option α} : a ∈ toList o ↔ a ∈ o",
+  "args": "{a : α}  {o : Option α}"},
+ {"type": "∃ s t : List α, l = s ++ a :: t",
+  "tactic-prompt":
+  "theorem {a : α}  {l : List α}  (h : a ∈ l) : ∃ s t : List α, l = s ++ a :: t := by induction l; sorry",
+  "name": "mem_split",
+  "kind": "theorem",
+  "first-tactic": "induction l",
+  "core-prompt":
+  "{a : α}  {l : List α}  (h : a ∈ l) : ∃ s t : List α, l = s ++ a :: t",
+  "args": "{a : α}  {l : List α}  (h : a ∈ l)"},
+ {"type": "injective (List.length : List α → ℕ) ↔ Subsingleton α",
+  "tactic-prompt":
+  "lemma  : injective (List.length : List α → ℕ) ↔ Subsingleton α := by constructor; sorry",
+  "name": "length_injective_iff",
+  "kind": "lemma",
+  "first-tactic": "constructor",
+  "core-prompt": " : injective (List.length : List α → ℕ) ↔ Subsingleton α",
+  "args": ""},
+ {"type": "i = j",
+  "tactic-prompt":
+  "theorem {α : Type u}  {xs : List α}  {i j : ℕ}    (h₀ : i < xs.length)    (h₁ : Nodup xs)    (h₂ : xs.get? i = xs.get? j) : i = j := by induction xs generalizing i j with\n  | nil => cases h₀\n  | cons x xs ih =>\n    match i, j with\n    | 0, 0 => rfl\n    | i+1, j+1 => simp; cases h₁ with\n      | cons ha h₁ => exact ih (Nat.lt_of_succ_lt_succ h₀) h₁ h₂\n    | i+1, 0 => ?_ | 0, j+1 => ?_\n    all_goals\n      simp at h₂\n      cases h₁; rename_i h' h\n      have := h x ?_ rfl; cases this\n      rw [mem_iff_get?]\n    exact ⟨_, h₂⟩; exact ⟨_ , h₂.symm⟩; sorry",
+  "name": "get?_injective",
+  "kind": "theorem",
+  "first-tactic":
+  "induction xs generalizing i j with\n  | nil => cases h₀\n  | cons x xs ih =>\n    match i, j with\n    | 0, 0 => rfl\n    | i+1, j+1 => simp; cases h₁ with\n      | cons ha h₁ => exact ih (Nat.lt_of_succ_lt_succ h₀) h₁ h₂\n    | i+1, 0 => ?_ | 0, j+1 => ?_\n    all_goals\n      simp at h₂\n      cases h₁; rename_i h' h\n      have := h x ?_ rfl; cases this\n      rw [mem_iff_get?]\n    exact ⟨_, h₂⟩; exact ⟨_ , h₂.symm⟩",
+  "core-prompt":
+  "{α : Type u}  {xs : List α}  {i j : ℕ}    (h₀ : i < xs.length)    (h₁ : Nodup xs)    (h₂ : xs.get? i = xs.get? j) : i = j",
+  "args":
+  "{α : Type u}  {xs : List α}  {i j : ℕ}    (h₀ : i < xs.length)    (h₁ : Nodup xs)    (h₂ : xs.get? i = xs.get? j)"},
+ {"type": "(x, y) ∈ product xs ys ↔ x ∈ xs ∧ y ∈ ys",
+  "tactic-prompt":
+  "theorem (xs : List α)  (ys : List β)  (x : α)  (y : β) : (x, y) ∈ product xs ys ↔ x ∈ xs ∧ y ∈ ys := by constructor; sorry",
+  "name": "product_spec",
+  "kind": "theorem",
+  "first-tactic": "constructor",
+  "core-prompt":
+  "(xs : List α)  (ys : List β)  (x : α)  (y : β) : (x, y) ∈ product xs ys ↔ x ∈ xs ∧ y ∈ ys",
+  "args": "(xs : List α)  (ys : List β)  (x : α)  (y : β)"},
+ {"type": "l.attach.map Subtype.val = l",
+  "tactic-prompt":
+  "theorem (l : List α) : l.attach.map Subtype.val = l := by rw [attach, map_pmap] <;> exact (pmap_eq_map _ _ _ _).trans (map_id l); sorry",
+  "name": "attach_map_val",
+  "kind": "theorem",
+  "first-tactic":
+  "rw [attach, map_pmap] <;> exact (pmap_eq_map _ _ _ _).trans (map_id l)",
+  "core-prompt": "(l : List α) : l.attach.map Subtype.val = l",
+  "args": "(l : List α)"},
+ {"type": "l₂ ~ l₁",
+  "tactic-prompt":
+  "theorem {l₁ l₂ : List α}  (p : l₁ ~ l₂) : l₂ ~ l₁ := by induction p; sorry",
+  "name": "Perm.symm",
+  "kind": "theorem",
+  "first-tactic": "induction p",
+  "core-prompt": "{l₁ l₂ : List α}  (p : l₁ ~ l₂) : l₂ ~ l₁",
+  "args": "{l₁ l₂ : List α}  (p : l₁ ~ l₂)"},
+ {"type": "l₁ ⊆ l₂",
+  "tactic-prompt":
+  "theorem {α : Type u}  {l₁ l₂ : List α}  (p : l₁ ~ l₂) : l₁ ⊆ l₂ := by induction p; sorry",
+  "name": "Perm.subset",
+  "kind": "theorem",
+  "first-tactic": "induction p",
+  "core-prompt": "{α : Type u}  {l₁ l₂ : List α}  (p : l₁ ~ l₂) : l₁ ⊆ l₂",
+  "args": "{α : Type u}  {l₁ l₂ : List α}  (p : l₁ ~ l₂)"},
+ {"type": "length l₁ = length l₂",
+  "tactic-prompt":
+  "theorem {l₁ l₂ : List α}  (p : l₁ ~ l₂) : length l₁ = length l₂ := by induction p; sorry",
+  "name": "Perm.length_eq",
+  "kind": "theorem",
+  "first-tactic": "induction p",
+  "core-prompt": "{l₁ l₂ : List α}  (p : l₁ ~ l₂) : length l₁ = length l₂",
+  "args": "{l₁ l₂ : List α}  (p : l₁ ~ l₂)"},
+ {"type": "∀ {l₁ l₂ : List α}, l₁ ~ l₂ → (Pairwise R l₁ ↔ Pairwise R l₂)",
+  "tactic-prompt":
+  "theorem {R : α → α → Prop}  (S : symmetric R) : ∀ {l₁ l₂ : List α}, l₁ ~ l₂ → (Pairwise R l₁ ↔ Pairwise R l₂) := by suffices ∀ {l₁ l₂}, l₁ ~ l₂ → Pairwise R l₁ → Pairwise R l₂ from\n    fun l₁ l₂ p => ⟨this p, this p.symm⟩; sorry",
+  "name": "Perm.pairwise_iff",
+  "kind": "theorem",
+  "first-tactic":
+  "suffices ∀ {l₁ l₂}, l₁ ~ l₂ → Pairwise R l₁ → Pairwise R l₂ from\n    fun l₁ l₂ p => ⟨this p, this p.symm⟩",
+  "core-prompt":
+  "{R : α → α → Prop}  (S : symmetric R) : ∀ {l₁ l₂ : List α}, l₁ ~ l₂ → (Pairwise R l₁ ↔ Pairwise R l₂)",
+  "args": "{R : α → α → Prop}  (S : symmetric R)"},
+ {"type": "Pairwise R (l₁ ++ l₂) ↔ Pairwise R (l₂ ++ l₁)",
+  "tactic-prompt":
+  "theorem {α β : Type _}  {R S T : α → α → Prop}  {a : α}  {l : List α} (s : symmetric R)  {l₁ l₂ : List α} : Pairwise R (l₁ ++ l₂) ↔ Pairwise R (l₂ ++ l₁) := by have : ∀ l₁ l₂ : List α, (∀ x : α, x ∈ l₁ → ∀ y : α, y ∈ l₂ → R x y) →\n    ∀ x : α, x ∈ l₂ → ∀ y : α, y ∈ l₁ → R x y := fun l₁ l₂ a x xm y ym => s (a y ym x xm); sorry",
+  "name": "pairwise_append_comm",
+  "kind": "theorem",
+  "first-tactic":
+  "have : ∀ l₁ l₂ : List α, (∀ x : α, x ∈ l₁ → ∀ y : α, y ∈ l₂ → R x y) →\n    ∀ x : α, x ∈ l₂ → ∀ y : α, y ∈ l₁ → R x y := fun l₁ l₂ a x xm y ym => s (a y ym x xm)",
+  "core-prompt":
+  "{α β : Type _}  {R S T : α → α → Prop}  {a : α}  {l : List α} (s : symmetric R)  {l₁ l₂ : List α} : Pairwise R (l₁ ++ l₂) ↔ Pairwise R (l₂ ++ l₁)",
+  "args":
+  "{α β : Type _}  {R S T : α → α → Prop}  {a : α}  {l : List α} (s : symmetric R)  {l₁ l₂ : List α}"},
+ {"type": "Pairwise S l",
+  "tactic-prompt":
+  "theorem {α β : Type _}  {R S T : α → α → Prop}  {a : α}  {l : List α} {S : α → α → Prop}  {l : List α}      (H : ∀ {a b}, a ∈ l → b ∈ l → R a b → S a b)  (p : Pairwise R l) : Pairwise S l := by induction p; sorry",
+  "name": "Pairwise.imp_of_mem",
+  "kind": "theorem",
+  "first-tactic": "induction p",
+  "core-prompt":
+  "{α β : Type _}  {R S T : α → α → Prop}  {a : α}  {l : List α} {S : α → α → Prop}  {l : List α}      (H : ∀ {a b}, a ∈ l → b ∈ l → R a b → S a b)  (p : Pairwise R l) : Pairwise S l",
+  "args":
+  "{α β : Type _}  {R S T : α → α → Prop}  {a : α}  {l : List α} {S : α → α → Prop}  {l : List α}      (H : ∀ {a b}, a ∈ l → b ∈ l → R a b → S a b)  (p : Pairwise R l)"},
+ {"type": "b ∈ remove a as ↔ b ∈ as ∧ b ≠ a",
+  "tactic-prompt":
+  "theorem [DecidableEq α]  [DecidableEq β]  /- remove -/ {a b : α}  {as : List α} : b ∈ remove a as ↔ b ∈ as ∧ b ≠ a := by induction as; sorry",
+  "name": "mem_remove_iff",
+  "kind": "theorem",
+  "first-tactic": "induction as",
+  "core-prompt":
+  "[DecidableEq α]  [DecidableEq β]  /- remove -/ {a b : α}  {as : List α} : b ∈ remove a as ↔ b ∈ as ∧ b ≠ a",
+  "args":
+  "[DecidableEq α]  [DecidableEq β]  /- remove -/ {a b : α}  {as : List α}"},
+ {"type": "b ∈ as",
+  "tactic-prompt":
+  "theorem [DecidableEq α]  [DecidableEq β]  /- remove -/ {a b : α}  {as : List α}  (h : b ∈ remove a as) : b ∈ as := by rw [mem_remove_iff] at h; sorry",
+  "name": "mem_of_mem_remove",
+  "kind": "theorem",
+  "first-tactic": "rw [mem_remove_iff] at h",
+  "core-prompt":
+  "[DecidableEq α]  [DecidableEq β]  /- remove -/ {a b : α}  {as : List α}  (h : b ∈ remove a as) : b ∈ as",
+  "args":
+  "[DecidableEq α]  [DecidableEq β]  /- remove -/ {a b : α}  {as : List α}  (h : b ∈ remove a as)"},
+ {"type": "card (a :: as) = card as",
+  "tactic-prompt":
+  "theorem [DecidableEq α]  [DecidableEq β]  /- remove -/ {a : α}  {as : List α}  (h : a ∈ as) : card (a :: as) = card as := by simp [card]; sorry",
+  "name": "card_cons_of_mem",
+  "kind": "theorem",
+  "first-tactic": "simp [card]",
+  "core-prompt":
+  "[DecidableEq α]  [DecidableEq β]  /- remove -/ {a : α}  {as : List α}  (h : a ∈ as) : card (a :: as) = card as",
+  "args":
+  "[DecidableEq α]  [DecidableEq β]  /- remove -/ {a : α}  {as : List α}  (h : a ∈ as)"},
+ {"type": "card (a :: as) = card as + 1",
+  "tactic-prompt":
+  "theorem [DecidableEq α]  [DecidableEq β]  /- remove -/ {a : α}  {as : List α}  (h : a ∉ as) : card (a :: as) = card as + 1 := by simp [card]; sorry",
+  "name": "card_cons_of_not_mem",
+  "kind": "theorem",
+  "first-tactic": "simp [card]",
+  "core-prompt":
+  "[DecidableEq α]  [DecidableEq β]  /- remove -/ {a : α}  {as : List α}  (h : a ∉ as) : card (a :: as) = card as + 1",
+  "args":
+  "[DecidableEq α]  [DecidableEq β]  /- remove -/ {a : α}  {as : List α}  (h : a ∉ as)"},
+ {"type": "card as ≤ card (a :: as)",
+  "tactic-prompt":
+  "theorem [DecidableEq α]  [DecidableEq β]  /- remove -/ (a : α)  (as : List α) : card as ≤ card (a :: as) := by cases Decidable.em (a ∈ as); sorry",
+  "name": "card_le_card_cons",
+  "kind": "theorem",
+  "first-tactic": "cases Decidable.em (a ∈ as)",
+  "core-prompt":
+  "[DecidableEq α]  [DecidableEq β]  /- remove -/ (a : α)  (as : List α) : card as ≤ card (a :: as)",
+  "args":
+  "[DecidableEq α]  [DecidableEq β]  /- remove -/ (a : α)  (as : List α)"},
+ {"type": "card (as.insert a) = card as",
+  "tactic-prompt":
+  "theorem [DecidableEq α]  [DecidableEq β]  /- remove -/ {a : α}  {as : List α}  (h : a ∈ as) : card (as.insert a) = card as := by simp [h]; sorry",
+  "name": "card_insert_of_mem",
+  "kind": "theorem",
+  "first-tactic": "simp [h]",
+  "core-prompt":
+  "[DecidableEq α]  [DecidableEq β]  /- remove -/ {a : α}  {as : List α}  (h : a ∈ as) : card (as.insert a) = card as",
+  "args":
+  "[DecidableEq α]  [DecidableEq β]  /- remove -/ {a : α}  {as : List α}  (h : a ∈ as)"},
+ {"type": "card (as.insert a) = card as + 1",
+  "tactic-prompt":
+  "theorem [DecidableEq α]  [DecidableEq β]  /- remove -/ {a : α}  {as : List α}  (h : a ∉ as) : card (as.insert a) = card as + 1 := by simp [h]; sorry",
+  "name": "card_insert_of_not_mem",
+  "kind": "theorem",
+  "first-tactic": "simp [h]",
+  "core-prompt":
+  "[DecidableEq α]  [DecidableEq β]  /- remove -/ {a : α}  {as : List α}  (h : a ∉ as) : card (as.insert a) = card as + 1",
+  "args":
+  "[DecidableEq α]  [DecidableEq β]  /- remove -/ {a : α}  {as : List α}  (h : a ∉ as)"},
+ {"type": "card (as.map f) ≤ card as",
+  "tactic-prompt":
+  "theorem [DecidableEq α]  [DecidableEq β]  /- remove -/ (f : α → β)  (as : List α) : card (as.map f) ≤ card as := by induction as; sorry",
+  "name": "card_map_le",
+  "kind": "theorem",
+  "first-tactic": "induction as",
+  "core-prompt":
+  "[DecidableEq α]  [DecidableEq β]  /- remove -/ (f : α → β)  (as : List α) : card (as.map f) ≤ card as",
+  "args":
+  "[DecidableEq α]  [DecidableEq β]  /- remove -/ (f : α → β)  (as : List α)"},
+ {"type": "inj_on f as →  card (as.map f) = card as",
+  "tactic-prompt":
+  "theorem [DecidableEq α]  [DecidableEq β]  /- remove -/ {f : α → β}  {as : List α} : inj_on f as →  card (as.map f) = card as := by induction as; sorry",
+  "name": "card_map_eq_of_inj_on",
+  "kind": "theorem",
+  "first-tactic": "induction as",
+  "core-prompt":
+  "[DecidableEq α]  [DecidableEq β]  /- remove -/ {f : α → β}  {as : List α} : inj_on f as →  card (as.map f) = card as",
+  "args":
+  "[DecidableEq α]  [DecidableEq β]  /- remove -/ {f : α → β}  {as : List α}"},
+ {"type": "card (as.union bs) = card as + card bs",
+  "tactic-prompt":
+  "theorem [DecidableEq α]  [DecidableEq β]  /- remove -/ {as bs : List α}  (h : Disjoint as bs) : card (as.union bs) = card as + card bs := by rw [card_eq_of_equiv (union_equiv_append as bs), card_append_disjoint h]; sorry",
+  "name": "card_union_disjoint",
+  "kind": "theorem",
+  "first-tactic":
+  "rw [card_eq_of_equiv (union_equiv_append as bs), card_append_disjoint h]",
+  "core-prompt":
+  "[DecidableEq α]  [DecidableEq β]  /- remove -/ {as bs : List α}  (h : Disjoint as bs) : card (as.union bs) = card as + card bs",
+  "args":
+  "[DecidableEq α]  [DecidableEq β]  /- remove -/ {as bs : List α}  (h : Disjoint as bs)"},
+ {"type": "Chain S b l",
+  "tactic-prompt":
+  "theorem {R S : α → α → Prop}  (HRS : ∀ ⦃a b⦄, R a b → S a b)  {a b : α}      (Hab : ∀ ⦃c⦄, R a c → S b c)  {l : List α}  (p : Chain R a l) : Chain S b l := by induction p generalizing b with\n  | nil => constructor\n  | cons r _ ih =>\n    constructor\n    · exact Hab r\n    · exact ih (@HRS _); sorry",
+  "name": "Chain.imp'",
+  "kind": "theorem",
+  "first-tactic":
+  "induction p generalizing b with\n  | nil => constructor\n  | cons r _ ih =>\n    constructor\n    · exact Hab r\n    · exact ih (@HRS _)",
+  "core-prompt":
+  "{R S : α → α → Prop}  (HRS : ∀ ⦃a b⦄, R a b → S a b)  {a b : α}      (Hab : ∀ ⦃c⦄, R a c → S b c)  {l : List α}  (p : Chain R a l) : Chain S b l",
+  "args":
+  "{R S : α → α → Prop}  (HRS : ∀ ⦃a b⦄, R a b → S a b)  {a b : α}      (Hab : ∀ ⦃c⦄, R a c → S b c)  {l : List α}  (p : Chain R a l)"},
+ {"type": "Chain R a l",
+  "tactic-prompt":
+  "theorem (p : Pairwise R (a :: l)) : Chain R a l := by rcases Pairwise_cons.1 p with ⟨r,p'⟩; sorry",
+  "name": "Pairwise.chain",
+  "kind": "theorem",
+  "first-tactic": "rcases Pairwise_cons.1 p with ⟨r,p'⟩",
+  "core-prompt": "(p : Pairwise R (a :: l)) : Chain R a l",
+  "args": "(p : Pairwise R (a :: l))"},
+ {"type": "Function.injective (@LinearOrder.toPartialOrder α)",
+  "tactic-prompt":
+  "lemma {α : Type u}  {β : Type v}  {γ : Type w}  {r : α → α → Prop} [Preorder α]  {x y z : α} {α : Type _} : Function.injective (@LinearOrder.toPartialOrder α) := by intros A B h; sorry",
+  "name": "LinearOrder.to_partial_order_injective",
+  "kind": "lemma",
+  "first-tactic": "intros A B h",
+  "core-prompt":
+  "{α : Type u}  {β : Type v}  {γ : Type w}  {r : α → α → Prop} [Preorder α]  {x y z : α} {α : Type _} : Function.injective (@LinearOrder.toPartialOrder α)",
+  "args":
+  "{α : Type u}  {β : Type v}  {γ : Type w}  {r : α → α → Prop} [Preorder α]  {x y z : α} {α : Type _}"},
+ {"type": "x < y ↔ x ≤ y ∧ ∃ i, x i < y i",
+  "tactic-prompt":
+  "theorem {α : Type u}  {β : Type v}  {γ : Type w}  {r : α → α → Prop} [Preorder α]  {x y z : α} {ι : Type u}  {α: ι → Type v}  [∀ i, Preorder (α i)]  {x y : ∀ i, α i} : x < y ↔ x ≤ y ∧ ∃ i, x i < y i := by simp ( config := { contextual := true } ) [lt_iff_le_not_le, Pi.le_def]; sorry",
+  "name": "Pi.lt_def",
+  "kind": "theorem",
+  "first-tactic":
+  "simp ( config := { contextual := true } ) [lt_iff_le_not_le, Pi.le_def]",
+  "core-prompt":
+  "{α : Type u}  {β : Type v}  {γ : Type w}  {r : α → α → Prop} [Preorder α]  {x y z : α} {ι : Type u}  {α: ι → Type v}  [∀ i, Preorder (α i)]  {x y : ∀ i, α i} : x < y ↔ x ≤ y ∧ ∃ i, x i < y i",
+  "args":
+  "{α : Type u}  {β : Type v}  {γ : Type w}  {r : α → α → Prop} [Preorder α]  {x y z : α} {ι : Type u}  {α: ι → Type v}  [∀ i, Preorder (α i)]  {x y : ∀ i, α i}"},
+ {"type":
+  "Function.update x i a ≤ Function.update y i b ↔ a ≤ b ∧ ∀ j, j ≠ i → x j ≤ y j",
+  "tactic-prompt":
+  "lemma {α : Type u}  {β : Type v}  {γ : Type w}  {r : α → α → Prop} [Preorder α]  {x y z : α} {ι : Type u}  {α : ι → Type v}  [∀ i, Preorder (α i)]  [DecidableEq ι]    {x y : ∀ i, α i}  {i : ι}  {a b : α i} : Function.update x i a ≤ Function.update y i b ↔ a ≤ b ∧ ∀ j, j ≠ i → x j ≤ y j := by simp (config := {contextual := true}) [update_le_iff]; sorry",
+  "name": "update_le_update_iff",
+  "kind": "lemma",
+  "first-tactic": "simp (config := {contextual := true}) [update_le_iff]",
+  "core-prompt":
+  "{α : Type u}  {β : Type v}  {γ : Type w}  {r : α → α → Prop} [Preorder α]  {x y z : α} {ι : Type u}  {α : ι → Type v}  [∀ i, Preorder (α i)]  [DecidableEq ι]    {x y : ∀ i, α i}  {i : ι}  {a b : α i} : Function.update x i a ≤ Function.update y i b ↔ a ≤ b ∧ ∀ j, j ≠ i → x j ≤ y j",
+  "args":
+  "{α : Type u}  {β : Type v}  {γ : Type w}  {r : α → α → Prop} [Preorder α]  {x y z : α} {ι : Type u}  {α : ι → Type v}  [∀ i, Preorder (α i)]  [DecidableEq ι]    {x y : ∀ i, α i}  {i : ι}  {a b : α i}"},
+ {"type":
+  "(instPreorderProd _ _).lt x y ↔ x.1 < y.1 ∧ x.2 ≤ y.2 ∨ x.1 ≤ y.1 ∧ x.2 < y.2",
+  "tactic-prompt":
+  "lemma {α : Type u}  {β : Type v}  {γ : Type w}  {r : α → α → Prop} [Preorder α]  {x y z : α}  [Preorder α]  [Preorder β]  {a a₁ a₂ : α}  {b b₁ b₂ : β}  {x y : α × β} : (instPreorderProd _ _).lt x y ↔ x.1 < y.1 ∧ x.2 ≤ y.2 ∨ x.1 ≤ y.1 ∧ x.2 < y.2 := by refine Iff.intro ?_ ?; sorry",
+  "name": "lt_iff",
+  "kind": "lemma",
+  "first-tactic": "refine Iff.intro ?_ ?",
+  "core-prompt":
+  "{α : Type u}  {β : Type v}  {γ : Type w}  {r : α → α → Prop} [Preorder α]  {x y z : α}  [Preorder α]  [Preorder β]  {a a₁ a₂ : α}  {b b₁ b₂ : β}  {x y : α × β} : (instPreorderProd _ _).lt x y ↔ x.1 < y.1 ∧ x.2 ≤ y.2 ∨ x.1 ≤ y.1 ∧ x.2 < y.2",
+  "args":
+  "{α : Type u}  {β : Type v}  {γ : Type w}  {r : α → α → Prop} [Preorder α]  {x y z : α}  [Preorder α]  [Preorder β]  {a a₁ a₂ : α}  {b b₁ b₂ : β}  {x y : α × β}"}]
