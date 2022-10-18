@@ -12,7 +12,7 @@ Good sources of mathematical keywords include `Wiktionary`, `Wikipedia` and `arX
 
 ## Organising the database for search
 
-A [Trie](https://en.wikipedia.org/wiki/Trie) is a good data-structure to organise the database into for efficient search. This is reasonably straightforward to implement in `Lean4`. 
+A `HashSet` is sufficient to organise the database into for efficient search.  
 
 ## Extracting keywords from a sentence
 
