@@ -3,7 +3,9 @@ import LeanCodePrompts.ParseJson
 import LeanCodePrompts.Translate
 import Lean
 
-open Lean Meta Elab Tactic Parser
+open Lean Meta Elab Tactic Parser Std
+
+initialize cacheTacticJson : IO.Ref (HashMap String Json) ← IO.mkRef (HashMap.empty) 
 
 def getTacticString : TacticM String := do
   let s ← saveState
@@ -183,7 +185,7 @@ def getTacticPrompts(s: String)(numSim : Nat)
 
 def fourSquaresPrompt := ": ∀ p : ℕ, Prime p → (p % 4 = 1) → ∃ a b : ℕ, a ^ 2 + b ^ 2 = p"
 
-#eval getTacticPrompts fourSquaresPrompt 20 
+-- #eval getTacticPrompts fourSquaresPrompt 20 
 
 def makeTacticPrompt (n: Nat)  : TacticM String := do
   let core ← getTacticString
@@ -198,7 +200,14 @@ theorem {core} := by "
 
 def tacticList : TacticM <| List String := do
   let prompt ← makeTacticPrompt 20
-  let fullJson ← openAIQuery prompt 20 ⟨8, 1⟩ #[";", "sorry"]
+  let cache ← cacheTacticJson.get
+  let fullJson ←
+    match cache.find? prompt with
+    | some json => pure json
+    | none =>  
+      let res ← openAIQuery prompt 20 ⟨8, 1⟩ #[";", "sorry"]
+      cacheTacticJson.set <| cache.insert prompt res
+      pure res
   let outJson := 
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
   let arr ← jsonToExprStrArray outJson
