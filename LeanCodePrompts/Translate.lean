@@ -242,6 +242,7 @@ def getCodeJson (s: String)(numSim : Nat:= 5)(numKW: Nat := 0)(includeFixed: Boo
           getPromptTriples s numSim numKW scoreBound matchBound 
         else pure (#[], ⟨0, "", ""⟩)
       let triples := if includeFixed then triples ++ fixedPromptTriples else triples
+      let triples := triples.reverse
       let prompt := makePromptFromTriple s triples
       mkLog prompt
       let fullJson ← openAIQuery prompt queryNum temp
