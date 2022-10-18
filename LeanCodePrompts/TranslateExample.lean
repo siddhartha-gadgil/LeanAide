@@ -11,7 +11,16 @@ example : //- There are infinitely many odd numbers -/ := by
 
 #eval showLogs 2
 
+example : //- Every field is a ring -/ := by 
+            sorry
 
+example : //- Every ring is a field -/ := by
+                sorry
+
+example : //- If a vector space has dimension `2` then it is finite dimensional. -/ := by 
+        sorry
+
+#eval showLogs 2
 /-! 
 ```
 example : //- There are infinitely many odd numbers -/ := by
