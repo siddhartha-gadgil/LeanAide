@@ -67,7 +67,7 @@ def tactic_prompts():
     data = str(request.data, 'utf-8')
     js_query = json.loads(data)
     print(js_query)
-    prompt_core = js_query["prompt_core"]
+    prompt_core = js_query["core-prompt"]
     n = js_query["n"]
     embs, data = load_embeddings('../data/mathlib-thms.json')
     choices = closest_embeddings(prompt_core, embs, data, n)

@@ -1,4 +1,6 @@
 import LeanCodePrompts.FirstTacticData
+import LeanCodePrompts.ParseJson
+import LeanCodePrompts.Translate
 import Lean
 
 open Lean Meta Elab Tactic Parser
@@ -114,11 +116,11 @@ def firstEffectiveTactic (tacStrings: List String) : TacticM Unit :=
             let s₂? ← getTacticStateProxy  
             match s₁?, s₂? with
             | some s₁, some s₂ => equalStates s₁ s₂          
-            | _,_ => pure false
+            | _,_ => pure Bool.false
           catch e =>
             logWarning 
               m!"Failed to check state after {tacString}; error : {e.toMessageData}" 
-            pure false
+            pure Bool.false
           if check then
             s.restore
           else
@@ -146,3 +148,67 @@ def silly''' : (n m : ℕ)  →  n + m = n + m := by
 
 def silly'''' : (n m : ℕ)  →  n + m = n + m := by
     repeat (first_effective_tactic)
+
+def getTacticPrompts(s: String)(numSim : Nat)
+   : TermElabM (Array String) := do
+      let jsData := Json.mkObj [
+        ("core-prompt", s),
+        ("n", numSim)
+      ]
+      let simJsonOut ←   
+        IO.Process.output {cmd:= "curl", args:= 
+          #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, "localhost:5000/tactic_prompts"]}
+      if simJsonOut.exitCode > 0 then
+        throwError m!"Failed to get prompts from server: {simJsonOut.stderr}"
+      else
+        let json ← readJson simJsonOut.stdout 
+        match json.getArr? with
+        | Except.ok arr => 
+          let mut prompts := #[]
+          for j in arr do
+            match j.getObjVal? "tactic-prompt" with
+            | Except.ok s =>
+              match s.getStr? with
+              | Except.ok s => 
+                prompts := prompts.push s
+              | Except.error e => 
+                throwError m!"Failed to parse json {j}; error: {e}"
+            | Except.error e =>
+              throwError m!"Failed to parse json {j}; error: {e}"
+          return prompts
+        | Except.error e => 
+            throwError m!"Failed to parse json: {e}"
+
+def fourSquaresPrompt := ": ∀ p : ℕ, Prime p → (p % 4 = 1) → ∃ a b : ℕ, a ^ 2 + b ^ 2 = p"
+
+#eval getTacticPrompts fourSquaresPrompt 20 
+
+def makeTacticPrompt (n: Nat)  : TacticM String := do
+  let core ← getTacticString
+  let prompts ← getTacticPrompts core n
+  let prompt := prompts.foldr (fun  p acc => 
+s!"{p}
+
+{acc}"
+          ) s!"
+theorem {core} := by "
+  return prompt
+
+def tacticList : TacticM <| List String := do
+  let prompt ← makeTacticPrompt 20
+  let fullJson ← openAIQuery prompt 20 ⟨8, 1⟩ #[";", "sorry"]
+  let outJson := 
+        (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
+  let arr ← jsonToExprStrArray outJson
+  return arr.toList
+
+elab "aide" : tactic =>
+  withMainContext do
+    let tacStrings ← tacticList
+    firstEffectiveTactic tacStrings
+
+elab "show_tactic_prompt" : tactic => 
+  withMainContext do  
+    let view ← makeTacticPrompt 20
+    logInfo view
+    return ()
