@@ -115,7 +115,8 @@ def getTheoremAndTactic? (input : Syntax)(vars : String) :
           (args.map fun a => a.raw.reprint.get!).foldl (fun a b => a ++ " " ++ b) (vars)
         let argString := argString.replace "\n" " " |>.trim
         return some ⟨kind.raw.reprint.get!.trim,"",
-        argString, type.raw.reprint.get!.trim, tac.reprint.get!.trim⟩ 
+        argString, type.raw.reprint.get!.trim, 
+        tac.reprint.get!.splitOn "--" |>.head! |>.trim⟩ 
     | _ =>
       IO.println s!"could not parse theorem {input.reprint.get!} to get tactic"
       return none
