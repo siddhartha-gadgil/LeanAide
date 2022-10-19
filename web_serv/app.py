@@ -73,7 +73,7 @@ def tactic_prompts():
     model_name = js_query["model_name"]
     n = js_query["n"]
     embs, data = load_embeddings('../' + filename, field, model_name)
-    choices = closest_embeddings(prompt_core, embs, data, n)
+    choices = closest_embeddings(prompt_core, model_name, embs, data, n)
     return json.dumps(choices, ensure_ascii=False)
 
 def process(lis):

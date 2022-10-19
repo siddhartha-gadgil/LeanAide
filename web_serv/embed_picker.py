@@ -38,8 +38,8 @@ def load_embeddings(filename, field, model_name):
 from numpy import dot
 from numpy.linalg import norm
 
-def closest_embeddings(sentence, embeddings, data, n):
-    sentence_embedding = model.encode(sentence)
+def closest_embeddings(sentence, model_name, embeddings, data, n):
+    sentence_embedding = models[model_name].encode(sentence)
     distances = torch.tensor([dot(sentence_embedding, emb)/(norm(sentence_embedding)*norm(emb)) for emb in embeddings])
     _, indices = torch.topk(distances, n)
     return [data[i] for i in indices]

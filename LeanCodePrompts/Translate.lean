@@ -143,9 +143,16 @@ def fixedPrompts:= #[("If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\d
 def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
     (scoreBound: Float)(matchBound: Nat)
    : TermElabM (Array (String × String) × IO.Process.Output) := do
+      let jsData := Json.mkObj [
+        ("filename", "data/safe_prompts.json"),
+        ("field", "doc_string"),
+        ("doc_string", s),
+        ("n", numSim),
+        ("model_name", "all-mpnet-base-v2")
+      ]
       let simJsonOut ←  
         IO.Process.output {cmd:= "curl", args:= 
-          #["-X", "POST", "-H", "Content-type: application/json", "-d", s ++ s!" top_K {numSim}", "localhost:5000/similar_json"]}
+          #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, "localhost:5000/nearest_prompts"]}
       let pairs? ← sentenceSimPairs simJsonOut.stdout
       -- IO.println s!"obtained sentence similarity; time : {← IO.monoMsNow}"
       let allPairs := pairs?.toOption.getD #[]        
