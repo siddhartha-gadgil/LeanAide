@@ -28,12 +28,17 @@ def save_embeddings(filename, field, model_name):
     np.save(filename + '-' + field + '-' + model_name + '.npy', embs)
 
 def load_embeddings(filename, field, model_name):
-    f = open(filename, 'r')
-    blob = f.read() 
-    data = json.loads(blob)
-    f.close()
-    filename = filename[:-5]
-    return np.load(filename + '-' + field + '-' + model_name + '.npy'), data
+    try:
+        f = open(filename, 'r')
+        blob = f.read() 
+        data = json.loads(blob)
+        f.close()
+        filename = filename[:-5]
+        return np.load(filename + '-' + field + '-' + model_name + '.npy'), data
+    except OSError:
+        print ('Computing embeddings...')
+        save_embeddings(filename+'.json', field, model_name)
+        return load_embeddings(filename+'.json', field, model_name)
 
 from numpy import dot
 from numpy.linalg import norm
