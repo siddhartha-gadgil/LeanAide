@@ -36,9 +36,16 @@ def sentenceSimTriples(s: String) : MetaM  <| Except String (Array (String × St
 /-- choosing pairs to build a prompt -/
 def getPromptTriples(s: String)(numSim : Nat)
    : TermElabM (Array (String × String × String) × IO.Process.Output) := do
+      let jsData := Json.mkObj [
+        ("filename", "data/safe_prompts.json"),
+        ("field", "doc_string"),
+        ("doc_string", s),
+        ("n", numSim),
+        ("model_name", "all-mpnet-base-v2")
+      ]
       let simJsonOut ←  
         IO.Process.output {cmd:= "curl", args:= 
-          #["-X", "POST", "-H", "Content-type: application/json", "-d", s ++ s!" top_K {numSim}", "localhost:5000/similar_json"]}
+          #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, "localhost:5000/nearest_prompts"]}
       let triples? ← sentenceSimTriples simJsonOut.stdout
       let allTriples := triples?.toOption.getD #[]        
         -- ←  allPairs.filterM (fun (_, s) => do
