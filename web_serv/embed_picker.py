@@ -5,14 +5,15 @@ import json
 import numpy as np
 import torch
 
-def sentences(filename, field):
+def sentences(filename):
     f = open(filename, 'r')
     blob = f.read()
     f.close()
     return json.loads(blob)
 
 def embeddings(filename, field):
-    sents = sentences(filename, field)
+    blob = sentences(filename)
+    sents = [sent[field] for sent in blob]
     return model.encode(sents)
 
 def save_embeddings(filename, field):
