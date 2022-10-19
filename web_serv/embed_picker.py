@@ -1,6 +1,11 @@
 from sentence_transformers import SentenceTransformer
 model = SentenceTransformer('all-MiniLM-L6-v2')
 
+models = {
+    'all-MiniLM-L6-v2': SentenceTransformer('all-MiniLM-L6-v2'),
+    'all-mpnet-base-v2': SentenceTransformer('all-mpnet-base-v2')
+}
+
 import json
 import numpy as np
 import torch
@@ -11,24 +16,24 @@ def sentences(filename):
     f.close()
     return json.loads(blob)
 
-def embeddings(filename, field):
+def embeddings(filename, field, model_name):
     blob = sentences(filename)
     sents = [sent[field] for sent in blob]
-    return model.encode(sents)
+    return models[model_name].encode(sents)
 
-def save_embeddings(filename, field):
-    embs = embeddings(filename, field)
+def save_embeddings(filename, field, model_name):
+    embs = embeddings(filename, field, model_name)
     # drop json extension
     filename = filename[:-5]
-    np.save(filename + '.npy', embs)
+    np.save(filename + '-' + field + '-' + model_name + '.npy', embs)
 
-def load_embeddings(filename):
+def load_embeddings(filename, field, model_name):
     f = open(filename, 'r')
     blob = f.read() 
     data = json.loads(blob)
     f.close()
     filename = filename[:-5]
-    return np.load(filename + '.npy'), data
+    return np.load(filename + '-' + field + '-' + model_name + '.npy'), data
 
 from numpy import dot
 from numpy.linalg import norm

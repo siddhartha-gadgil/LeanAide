@@ -156,12 +156,15 @@ def silly'''' : (n m : ℕ)  →  n + m = n + m := by
 def getTacticPrompts(s: String)(numSim : Nat)
    : TermElabM (Array String) := do
       let jsData := Json.mkObj [
+        ("filename", "data/lean4-thms.json"),
+        ("field", "core-prompt"),
         ("core-prompt", s),
-        ("n", numSim)
+        ("n", numSim),
+        ("model_name", "all-MiniLM-L6-v2")
       ]
       let simJsonOut ←   
         IO.Process.output {cmd:= "curl", args:= 
-          #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, "localhost:5000/tactic_prompts"]}
+          #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, "localhost:5000/nearest_prompts"]}
       if simJsonOut.exitCode > 0 then
         throwError m!"Failed to get prompts from server: {simJsonOut.stderr}"
       else

@@ -62,15 +62,17 @@ def similar_from():
     print (jsBlob)
     return jsBlob
 
-@app.route('/tactic_prompts', methods=['POST'])
+@app.route('/nearest_prompts', methods=['POST'])
 def tactic_prompts():
     data = str(request.data, 'utf-8')
     js_query = json.loads(data)
     print(js_query)
-    prompt_core = js_query["core-prompt"]
+    field = js_query["field"]
+    prompt_core = js_query[field]
+    filename = js_query["filename"]
+    model_name = js_query["model_name"]
     n = js_query["n"]
-    # embs, data = load_embeddings('../data/mathlib-thms.json')
-    embs, data = load_embeddings('../data/lean4-thms.json')
+    embs, data = load_embeddings('../' + filename, field, model_name)
     choices = closest_embeddings(prompt_core, embs, data, n)
     return json.dumps(choices, ensure_ascii=False)
 
