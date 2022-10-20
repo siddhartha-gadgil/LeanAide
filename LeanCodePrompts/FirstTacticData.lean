@@ -10,6 +10,14 @@ match tac with
   `(tactic| cases $name)
 | _ => return tac
 
+def contractPolyTactic (tac: String): String := 
+  if tac.contains ',' then
+    let head := tac.splitOn "," |>.head!
+    if head.contains '[' 
+      then head ++ "]"
+      else tac
+  else tac
+
 def partialParser  (parser : Parser) (input : String) (fileName := "<input>") : MetaM <| Option (Syntax × String × String) := do
   let env ← getEnv
   let c := mkParserContext (mkInputContext input fileName) { env := env, options := {} }
@@ -105,6 +113,7 @@ def getTheoremAndTactic? (input : Syntax)(vars : String) :
         let tac ← contractInductionStx (seq[0]!)
         let tac := tac.reprint.get!.splitOn "--" |>.head! |>.trim
         let tac := tac.splitOn "<;>" |>.head! |>.trim
+        let tac := contractPolyTactic tac
         let argString := 
           (args.map fun a => a.raw.reprint.get!).foldl (fun a b => a ++ " " ++ b) (vars)
         let argString := argString.replace "\n" " " |>.trim
@@ -115,6 +124,7 @@ def getTheoremAndTactic? (input : Syntax)(vars : String) :
         let tac ← contractInductionStx (seq[0]!)
         let tac := tac.reprint.get!.splitOn "--" |>.head! |>.trim
         let tac := tac.splitOn "<;>" |>.head! |>.trim
+        let tac := contractPolyTactic tac
         let argString := 
           (args.map fun a => a.raw.reprint.get!).foldl (fun a b => a ++ " " ++ b) (vars)
         let argString := argString.replace "\n" " " |>.trim
