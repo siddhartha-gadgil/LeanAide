@@ -4,22 +4,22 @@ import LeanCodePrompts.Utils
 open Lean Meta Std Elab
 
 
-def translateWithDataM (s: String)(numSim : Nat:= 10)(numSimWithDef : Nat:= 5)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : 
+def translateWithDataM (s: String)(numSim : Nat:= 10)(numSimWithDef : Nat:= 5)(flipPrompts : Bool := Bool.false)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : 
   TermElabM ((Option (Expr × (Array String) )) × Array String) := do
   let js ← 
-    getCodeJson s numSim numSimWithDef numKW includeFixed queryNum temp scoreBound matchBound
+    getCodeJson s numSim numSimWithDef flipPrompts numKW includeFixed queryNum temp scoreBound matchBound
   let output ← jsonToExprStrArray js
   let output := output.toList.eraseDups.toArray
   let res ← arrayToExpr? output
   return (res, output)
   
-def translateWithDataCore (s: String)(numSim : Nat:= 10)(numSimWithDef : Nat:= 5)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : 
+def translateWithDataCore (s: String)(numSim : Nat:= 10)(numSimWithDef : Nat:= 5)(flipPrompts : Bool := Bool.false)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : 
   CoreM ((Option (Expr × (Array String) )) × Array String) := 
     (translateWithDataM s 
-      numSim numSimWithDef numKW includeFixed 
+      numSim numSimWithDef flipPrompts numKW includeFixed 
         queryNum temp scoreBound matchBound).run'.run'
 
-def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numSimWithDef : Nat:= 5)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : TermElabM Json := do
+def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numSimWithDef : Nat:= 5)(flipPrompts : Bool := Bool.false)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : TermElabM Json := do
   elabLog s!"Writing to file: {type}-elab-{numSim}-{numKW}-{includeFixed}-{queryNum}-{temp.mantissa}.json"
   let file := System.mkFilePath [s!"data/{type}-prompts.txt"]
   let prompts ←  IO.FS.lines file
@@ -35,7 +35,7 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numSimWithDef
     IO.println prompt
     let (res?, outputs) ← 
         translateWithDataM prompt
-          numSim numSimWithDef numKW includeFixed queryNum temp
+          numSim numSimWithDef flipPrompts numKW includeFixed queryNum temp
     count := count + 1
     match res? with
     | some (e, thms) =>
@@ -78,9 +78,9 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numSimWithDef
             ]
   return js
 
-def checkTranslatedThmsCore(type: String := "thm")(numSim : Nat:= 10)(numSimWithDef : Nat:= 5)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : CoreM Json :=
+def checkTranslatedThmsCore(type: String := "thm")(numSim : Nat:= 10)(numSimWithDef : Nat:= 5)(flipPrompts : Bool := Bool.false)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : CoreM Json :=
     (checkTranslatedThmsM type
-      numSim numSimWithDef numKW includeFixed queryNum temp).run'.run'
+      numSim numSimWithDef flipPrompts numKW includeFixed queryNum temp).run'.run'
 
 def parsedThmsPrompt : IO (Array String) := do
   let file := System.mkFilePath ["data/parsed_thms.txt"]
