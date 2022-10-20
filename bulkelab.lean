@@ -14,14 +14,16 @@ def main (args: List String) : IO Unit := do
     (args.get? 1 >>= fun s => s.toNat?).getD 10 
   let numSimWithDef := 
     (args.get? 2 >>= fun s => s.toNat?).getD 10
+  let flipPrompts := 
+    (args.get? 3 >>= fun s => s.toLower.startsWith "t").getD Bool.false
   let numKW := 
-    (args.get? 3 >>= fun s => s.toNat?).getD 4
+    (args.get? 4 >>= fun s => s.toNat?).getD 4
   let includeFixed := 
-    (args.get? 4 >>= fun s => s.toLower.startsWith "t").getD Bool.false
+    (args.get? 5 >>= fun s => s.toLower.startsWith "t").getD Bool.false
   let queryNum := 
-    (args.get? 5 >>= fun s => s.toNat?).getD 5
+    (args.get? 7 >>= fun s => s.toNat?).getD 5
   let temp10 :=
-    (args.get? 6 >>= fun s => s.toNat?).getD 2
+    (args.get? 7 >>= fun s => s.toNat?).getD 2
   let temp : JsonNumber := ⟨temp10, 1⟩
   let outFile := System.mkFilePath 
       ["results", 
@@ -35,7 +37,7 @@ def main (args: List String) : IO Unit := do
     {module := `Mathbin.All}] {}
   let core := 
     checkTranslatedThmsCore type
-      numSim numSimWithDef numKW includeFixed queryNum temp
+      numSim numSimWithDef flipPrompts numKW includeFixed queryNum temp
   let io? := 
     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} 
     {env := env}
