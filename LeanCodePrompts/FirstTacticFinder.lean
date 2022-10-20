@@ -126,8 +126,17 @@ def firstEffectiveTactic (tacStrings: List String)(warnOnly: Bool := Bool.true) 
           if check then
             s.restore
           else
-            logInfo m!"tactic `{tacString}` was effective"
-            return 
+            let checkForSorries : Bool ←
+              try
+                let target ← getMainTarget
+                pure target.hasSyntheticSorry
+              catch _ => pure Bool.false
+            -- logInfo m!"sorries? {checkForSorries}"
+            if checkForSorries then
+              s.restore
+            else
+              logInfo m!"tactic `{tacString}` was effective"
+              return 
       | Except.error e => 
         pure ()
     catch _ =>
