@@ -3,7 +3,9 @@ import LeanCodePrompts.ParseJson
 import LeanCodePrompts.Translate
 import Lean
 
-open Lean Meta Elab Tactic Parser
+open Lean Meta Elab Tactic Parser Std
+
+initialize cacheTacticJson : IO.Ref (HashMap String Json) ← IO.mkRef (HashMap.empty) 
 
 def getTacticString : TacticM String := do
   let s ← saveState
@@ -96,7 +98,7 @@ def equalStates (s₁ s₂ : TacticStateProxy) : TacticM Bool :=
               let (n₂, t₂, b₂) := s₂.letData.get! i
               return n₁ == n₂ && (← isDefEq t₁ t₂) && (← isDefEq b₁ b₂)))
 
-def firstEffectiveTactic (tacStrings: List String) : TacticM Unit :=
+def firstEffectiveTactic (tacStrings: List String)(warnOnly: Bool := Bool.true) : TacticM Unit :=
   withMainContext do
   let env ← getEnv
   let goal ← getTacticString
@@ -110,7 +112,8 @@ def firstEffectiveTactic (tacStrings: List String) : TacticM Unit :=
       let tac? := runParserCategory env `tactic tacString
       match tac? with
       | Except.ok tac => do
-          evalTactic tac
+          Term.withoutErrToSorry do 
+            evalTactic tac
           let check : Bool ← 
           try 
             let s₂? ← getTacticStateProxy  
@@ -124,18 +127,29 @@ def firstEffectiveTactic (tacStrings: List String) : TacticM Unit :=
           if check then
             s.restore
           else
-            logInfo m!"tactic `{tacString}` was effective"
-            return 
+            let checkForSorries : Bool ←
+              try
+                let target ← getMainTarget
+                pure target.hasSyntheticSorry
+              catch _ => pure Bool.false
+            -- logInfo m!"sorries? {checkForSorries}"
+            if checkForSorries then
+              s.restore
+            else
+              logInfo m!"tactic `{tacString}` was effective"
+              return 
       | Except.error e => 
         pure ()
     catch _ =>
       s.restore
+  unless warnOnly do
+    throwError m!"No effective tactic found for {goal} in {tacStrings}"
   logWarning "No tactic in the list was effective" 
 
  
 elab "first_effective_tactic" : tactic => 
   withMainContext do
-    firstEffectiveTactic ["unparsable", "intros", "rfl"]
+    firstEffectiveTactic ["unparsable", "exact blah", "intros", "rfl"]
 
 -- proved by reflexivity
 def silly'' (n m : ℕ)  : n + m = n + m := by
@@ -152,12 +166,15 @@ def silly'''' : (n m : ℕ)  →  n + m = n + m := by
 def getTacticPrompts(s: String)(numSim : Nat)
    : TermElabM (Array String) := do
       let jsData := Json.mkObj [
+        ("filename", "data/lean4-thms.json"),
+        ("field", "core-prompt"),
         ("core-prompt", s),
-        ("n", numSim)
+        ("n", numSim),
+        ("model_name", "all-MiniLM-L6-v2")
       ]
       let simJsonOut ←   
         IO.Process.output {cmd:= "curl", args:= 
-          #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, "localhost:5000/tactic_prompts"]}
+          #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, "localhost:5000/nearest_prompts"]}
       if simJsonOut.exitCode > 0 then
         throwError m!"Failed to get prompts from server: {simJsonOut.stderr}"
       else
@@ -181,7 +198,7 @@ def getTacticPrompts(s: String)(numSim : Nat)
 
 def fourSquaresPrompt := ": ∀ p : ℕ, Prime p → (p % 4 = 1) → ∃ a b : ℕ, a ^ 2 + b ^ 2 = p"
 
-#eval getTacticPrompts fourSquaresPrompt 20 
+-- #eval getTacticPrompts fourSquaresPrompt 20 
 
 def makeTacticPrompt (n: Nat)  : TacticM String := do
   let core ← getTacticString
@@ -196,17 +213,34 @@ theorem {core} := by "
 
 def tacticList : TacticM <| List String := do
   let prompt ← makeTacticPrompt 20
-  let fullJson ← openAIQuery prompt 20 ⟨8, 1⟩ #[";", "sorry"]
+  let cache ← cacheTacticJson.get
+  let fullJson ←
+    match cache.find? prompt with
+    | some json => pure json
+    | none =>  
+      let res ← openAIQuery prompt 20 ⟨8, 1⟩ #[";", "sorry"]
+      cacheTacticJson.set <| cache.insert prompt res
+      pure res
   let outJson := 
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
   let arr ← jsonToExprStrArray outJson
-  return arr.toList
+  let arr := arr.map (fun s => 
+      if s.endsWith "<" then s.dropRight 1 |>.trim else s.trim)
+  return arr.toList.eraseDups
 
-elab "aide" : tactic =>
+elab "aide?" : tactic =>
   withMainContext do
     let tacStrings ← tacticList
     let tacStrings := tacStrings.filter (fun s => s != "sorry" && s != "admit")
     firstEffectiveTactic tacStrings
+
+elab "aide!" : tactic =>
+  withMainContext do
+    let tacStrings ← tacticList
+    let tacStrings := tacStrings.filter (fun s => s != "sorry" && s != "admit")
+    firstEffectiveTactic tacStrings
+
+macro "aide" : tactic => `(checkpoint aide?)
 
 elab "show_tactic_prompt" : tactic => 
   withMainContext do  

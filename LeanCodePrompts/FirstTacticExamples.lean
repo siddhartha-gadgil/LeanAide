@@ -3,7 +3,13 @@ import LeanCodePrompts.FirstTacticFinder
 
 
 example : ∀ n : ℕ, ∃ m : ℕ, n < 2 * m + 1 := by 
-  -- show_tactic_prompt
+  show_tactic_prompt
   aide
   aide
+  aide
+
   repeat (sorry)
+
+-- example : ∀ n : ℕ, ∃ m : ℕ, n < 2 * m + 1 := by
+--   repeat (aide!)
+--   repeat (sorry)
