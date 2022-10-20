@@ -112,7 +112,8 @@ def firstEffectiveTactic (tacStrings: List String)(warnOnly: Bool := Bool.true) 
       let tac? := runParserCategory env `tactic tacString
       match tac? with
       | Except.ok tac => do
-          evalTactic tac
+          Term.withoutErrToSorry do 
+            evalTactic tac
           let check : Bool ← 
           try 
             let s₂? ← getTacticStateProxy  
@@ -148,7 +149,7 @@ def firstEffectiveTactic (tacStrings: List String)(warnOnly: Bool := Bool.true) 
  
 elab "first_effective_tactic" : tactic => 
   withMainContext do
-    firstEffectiveTactic ["unparsable", "intros", "rfl"]
+    firstEffectiveTactic ["unparsable", "exact blah", "intros", "rfl"]
 
 -- proved by reflexivity
 def silly'' (n m : ℕ)  : n + m = n + m := by

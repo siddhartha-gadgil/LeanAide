@@ -7,6 +7,7 @@ example : ∀ n : ℕ, ∃ m : ℕ, n < 2 * m + 1 := by
   aide
   aide
   aide
+
   repeat (sorry)
 
 -- example : ∀ n : ℕ, ∃ m : ℕ, n < 2 * m + 1 := by
