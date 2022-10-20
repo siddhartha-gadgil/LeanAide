@@ -91,6 +91,15 @@ s!"/-- {ds} -/
           ) s!"/-- {prompt} -/
 {targetKind} "
 
+def prependPromptFromTriple(triples: Array (String × String × String))(prev: String) : String := 
+      triples.foldr (fun  (ds, thm, kind) acc => 
+        -- acc ++ "/-- " ++ ds ++" -/\ntheorem" ++ thm ++ "\n" ++ "\n"
+s!"/-- {ds} -/
+{kind} {thm} :=
+
+{acc}"
+          ) prev
+
 
 /-- make prompt for reverse translation from prompt pairs -/
 def makeFlipPrompt(statement : String)(pairs: Array (String × String)) : String := 
@@ -251,13 +260,19 @@ def getCodeJson (s: String)(numSim : Nat:= 8)(numKW: Nat := 0)(includeFixed: Boo
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.insert s)
       -- work starts here; before this was caching, polling etc
-      let (triples, IOOut) ←  
+      let (triples, _) ←  
         if numSim > 0 then  
           getPromptTriples s numSim numKW scoreBound matchBound 
         else pure (#[], ⟨0, "", ""⟩)
-      let triples := if includeFixed then triples ++ fixedPromptTriples else triples
+      let (pairs, IOOut) ←  
+        if numSim > 0 then  
+          getPromptPairs s numSim numKW scoreBound matchBound 
+        else pure (#[], ⟨0, "", ""⟩)
+      let pairs := if includeFixed then pairs ++ fixedPrompts else pairs
+      let pairs := pairs.reverse 
+      let prompt := makePrompt s pairs
       let triples := triples.reverse
-      let prompt := makePromptFromTriple s triples
+      let prompt := prependPromptFromTriple triples prompt
       mkLog prompt
       let fullJson ← openAIQuery prompt queryNum temp
       let outJson := 

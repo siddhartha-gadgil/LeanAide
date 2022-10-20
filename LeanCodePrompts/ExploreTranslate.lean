@@ -14,13 +14,19 @@ def getCodeCustomJson (s: String)(customPrompts : Array (String × String × Str
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.insert s)
       -- work starts here; before this was caching, polling etc
-      let (triples, IOOut) ←  
+      let (triples, _) ←  
         if numSim > 0 then  
           getPromptTriples s numSim numKW scoreBound matchBound 
         else pure (#[], ⟨0, "", ""⟩)
+      let (pairs, IOOut) ←  
+        if numSim > 0 then  
+          getPromptPairs s numSim numKW scoreBound matchBound 
+        else pure (#[], ⟨0, "", ""⟩)
+      let pairs := pairs.reverse 
+      let prompt := makePrompt s pairs      
       let triples := triples.reverse
-      let triples := triples ++ customPrompts 
-      let prompt := makePromptFromTriple s triples
+      let triples := triples ++ customPrompts
+      let prompt := prependPromptFromTriple triples prompt 
       mkLog prompt
       -- IO.println s!"seeking Codex completions; time : {← IO.monoMsNow}"
       let fullJson ← openAIQuery prompt queryNum temp
