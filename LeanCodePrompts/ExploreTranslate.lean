@@ -2,9 +2,17 @@ import LeanCodePrompts.Translate
 import Lean.Meta
 open Lean Meta Elab
 
+def appendCustomPrompt(prompt : String)(pairs: Array (String × String)) : String := 
+      pairs.foldl (fun acc (ds, thm) => 
+s!"{acc}
+  
+/-- {ds} -/
+{thm} :=
+") prompt
+
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
-def getCodeCustomJson (s: String)(customPrompts : Array (String × String × String) := #[])(numSim : Nat:= 5)(numKW: Nat := 4)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Json := do
+def getCodeCustomJson (s: String)(customPrompts : Array (String × String) := #[])(numSim : Nat:= 5)(numSimWithDef : Nat:= 5)(numKW: Nat := 4)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Json := do
   match ← getCachedJson? s with
   | some js => return js
   | none =>    
@@ -16,7 +24,7 @@ def getCodeCustomJson (s: String)(customPrompts : Array (String × String × Str
       -- work starts here; before this was caching, polling etc
       let (triples, _) ←  
         if numSim > 0 then  
-          getPromptTriples s numSim numKW scoreBound matchBound 
+          getPromptTriples s numSimWithDef numKW scoreBound matchBound 
         else pure (#[], ⟨0, "", ""⟩)
       let (pairs, IOOut) ←  
         if numSim > 0 then  
@@ -25,8 +33,9 @@ def getCodeCustomJson (s: String)(customPrompts : Array (String × String × Str
       let pairs := pairs.reverse 
       let prompt := makePrompt s pairs      
       let triples := triples.reverse
-      let triples := triples ++ customPrompts
+      let triples := triples 
       let prompt := prependPromptFromTriple triples prompt 
+      let prompt := appendCustomPrompt prompt customPrompts
       mkLog prompt
       -- IO.println s!"seeking Codex completions; time : {← IO.monoMsNow}"
       let fullJson ← openAIQuery prompt queryNum temp
@@ -93,9 +102,9 @@ def arrayToExprWithErr? (outputs: Array String) : TermElabM <| Except String (St
     -- IO.println s!"chosen best result; time : {← IO.monoMsNow}"
     return Except.ok (topStr, elaborated)
 
-def translate (s: String)(customPrompts : Array (String × String × String) := #[])(numSim : Nat:= 5)(numKW: Nat := 4)(queryNum: Nat := 15)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM (Except String (String × (Array String))) := do
+def translate (s: String)(customPrompts : Array (String × String) := #[])(numSim : Nat:= 5)(numSimWithDef : Nat:= 5)(numKW: Nat := 4)(queryNum: Nat := 15)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM (Except String (String × (Array String))) := do
   -- IO.println s!"started translating {s}; time : {← IO.monoMsNow}"
-  let json ← getCodeCustomJson s customPrompts numSim numKW queryNum temp scoreBound matchBound
+  let json ← getCodeCustomJson s customPrompts numSim numSimWithDef numKW queryNum temp scoreBound matchBound
   let outputs ← jsonToExprStrArray json
   let out? ← arrayToExprWithErr? outputs
   return out?

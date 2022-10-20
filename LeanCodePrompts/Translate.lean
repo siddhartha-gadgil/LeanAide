@@ -250,7 +250,7 @@ def getPromptTriples(s: String)(numSim : Nat)(numKW: Nat := 0)
 
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
-def getCodeJson (s: String)(numSim : Nat:= 8)(numKW: Nat := 0)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM Json := do
+def getCodeJson (s: String)(numSim : Nat:= 8)(numSimWithDef : Nat:= 5)(numKW: Nat := 0)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM Json := do
   match ← getCachedJson? s with
   | some js => return js
   | none =>    
@@ -262,7 +262,7 @@ def getCodeJson (s: String)(numSim : Nat:= 8)(numKW: Nat := 0)(includeFixed: Boo
       -- work starts here; before this was caching, polling etc
       let (triples, _) ←  
         if numSim > 0 then  
-          getPromptTriples s numSim numKW scoreBound matchBound 
+          getPromptTriples s numSimWithDef numKW scoreBound matchBound 
         else pure (#[], ⟨0, "", ""⟩)
       let (pairs, IOOut) ←  
         if numSim > 0 then  
