@@ -45,7 +45,7 @@ def getPromptTriples(s: String)(numSim : Nat)
       ]
       let simJsonOut ←  
         IO.Process.output {cmd:= "curl", args:= 
-          #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, "localhost:5000/nearest_prompts"]}
+          #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, s!"{← leanAideIP}/nearest_prompts"]}
       let triples? ← sentenceSimTriples simJsonOut.stdout
       let allTriples := triples?.toOption.getD #[]        
         -- ←  allPairs.filterM (fun (_, s) => do

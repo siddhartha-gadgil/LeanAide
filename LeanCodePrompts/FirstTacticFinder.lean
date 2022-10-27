@@ -174,7 +174,7 @@ def getTacticPrompts(s: String)(numSim : Nat)
       ]
       let simJsonOut ←   
         IO.Process.output {cmd:= "curl", args:= 
-          #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, "localhost:5000/nearest_prompts"]}
+          #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, s!"{← leanAideIP}/nearest_prompts"]}
       if simJsonOut.exitCode > 0 then
         throwError m!"Failed to get prompts from server: {simJsonOut.stderr}"
       else

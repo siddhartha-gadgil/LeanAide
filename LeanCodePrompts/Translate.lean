@@ -60,6 +60,10 @@ s!"theorem {thm} :=
 
 def openAIKey : IO (Option String) := IO.getEnv "OPENAI_API_KEY"
 
+def leanAideIP : IO String := do
+  let key? ← IO.getEnv "LEANAIDE_IP"
+  return key?.getD "localhost:5000"
+
 /--query open-ai with given prompt and parameters -/
 def openAIQuery(prompt: String)(n: Nat := 1)
   (temp : JsonNumber := ⟨2, 1⟩)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json := do
@@ -152,7 +156,7 @@ def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
       ]
       let simJsonOut ←  
         IO.Process.output {cmd:= "curl", args:= 
-          #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, "localhost:5000/nearest_prompts"]}
+          #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, s!"{← leanAideIP}/nearest_prompts"]}
       let pairs? ← sentenceSimPairs simJsonOut.stdout
       -- IO.println s!"obtained sentence similarity; time : {← IO.monoMsNow}"
       let allPairs := pairs?.toOption.getD #[]        
