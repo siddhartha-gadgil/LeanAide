@@ -13,7 +13,7 @@ COPY data ./data
 
 # Install production dependencies.
 RUN pip install --no-cache-dir -r web_serv/requirements.txt
-
+RUN python setup.py
 EXPOSE 5000
 # Run the web service on container startup. Here we use the gunicorn
 # webserver, with one worker process and 8 threads.
