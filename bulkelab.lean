@@ -35,7 +35,7 @@ def main (args: List String) : IO Unit := do
     checkTranslatedThmsCore type
       numSim numKW includeFixed queryNum temp
   let io? := 
-    core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 1000000, maxRecDepth := 1000} 
+    core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} 
     {env := env}
   match ← io?.toIO' with
   | Except.ok js =>
