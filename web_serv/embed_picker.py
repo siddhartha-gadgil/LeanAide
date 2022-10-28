@@ -19,7 +19,7 @@ def sentences(filename):
 def embeddings(filename, field, model_name):
     blob = sentences(filename)
     sents = [sent[field] for sent in blob]
-    return models[model_name].encode(sents)
+    return models[model_name].encode(sents, normalize_embeddings=True)
 
 def save_embeddings(filename, field, model_name):
     embs = embeddings(filename, field, model_name)
@@ -45,8 +45,6 @@ from numpy.linalg import norm
 
 def closest_embeddings(sentence, model_name, embeddings, data, n):
     sentence_embedding = models[model_name].encode(sentence)
-    distances = torch.tensor([dot(sentence_embedding, emb)/(norm(sentence_embedding)*norm(emb)) for emb in embeddings])
+    distances = torch.tensor([dot(sentence_embedding, emb) for emb in embeddings])
     _, indices = torch.topk(distances, n)
     return [data[i] for i in indices]
-
-
