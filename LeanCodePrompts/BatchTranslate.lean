@@ -21,7 +21,7 @@ def translateWithDataCore (s: String)(numSim : Nat:= 10)(numKW: Nat := 4)(includ
 
 def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : TermElabM Json := do
   elabLog s!"Writing to file: {type}-elab-{numSim}-{numKW}-{includeFixed}-{queryNum}-{temp.mantissa}.json"
-  let promptsFile := System.mkFilePath [
+  let promptsFile := System.mkFilePath ["data",
     s!"prompts-{type}-{numSim}-{numKW}-{includeFixed}-{queryNum}-{temp.mantissa}.jsonl"]
   let h ← IO.FS.Handle.mk promptsFile IO.FS.Mode.append Bool.false
   let file := System.mkFilePath [s!"data/{type}-prompts.txt"]
@@ -40,7 +40,7 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat :=
         translateWithDataM prompt
           numSim numKW includeFixed queryNum temp
     let fullPrompt := (← logs 1).head! 
-    let js := Json.mkObj [("text", Json.str prompt), ("fullPrompt", Json.str fullPrompt)]
+    let js := Json.mkObj [("text", Json.str prompt), ("full-prompt", Json.str fullPrompt)]
     h.putStrLn <| js.pretty 10000
     count := count + 1
     match res? with
