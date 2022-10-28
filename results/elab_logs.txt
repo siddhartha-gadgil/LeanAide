@@ -75,3 +75,1767 @@ elaborated: 7
 
 A finite graph in which every pair of vertices have precisely one common neighbour contains a vertex that is adjacent to all other vertices.
 
+Writing to file: false-elab-12-8-false-20-8.json
+
+Every ring is a field.
+
+success
+
+theorem ∀ (R : Type u) [inst : Ringₓ R], IsField R
+
+total : 1
+
+elaborated: 1
+
+Every vector space is finite dimensional.
+
+success
+
+theorem ∀ (K : Type u) (V : Type v) [inst : DivisionRing K] [inst_1 : AddCommGroupₓ V] [inst_2 : Module K V],
+  FiniteDimensional K V
+
+total : 2
+
+elaborated: 2
+
+Every group is a torsion monoid.
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Groupₓ G], Monoidₓ.IsTorsion G
+
+total : 3
+
+elaborated: 3
+
+Every finite simple group has prime order.
+
+success
+
+theorem ∀ {G : Type u} [inst : Fintype G] [inst_1 : Groupₓ G], IsSimpleGroup G → IsPrimePow (Fintype.card G)
+
+total : 4
+
+elaborated: 4
+
+Every finite group is simple.
+
+success
+
+theorem ∀ {G : Type u} [inst : Groupₓ G] [inst_1 : Fintype G], IsSimpleGroup G
+
+total : 5
+
+elaborated: 5
+
+Every finite group has prime order.
+
+success
+
+theorem ∀ {G : Type u} [inst : Group G] [inst : Fintype G], IsPrimePow (Fintype.card G)
+
+total : 6
+
+elaborated: 6
+
+Every set has Lebesgue measure zero.
+
+success
+
+theorem ∀ {α : Type u_1} {m : MeasureTheory.MeasureSpace α} (s : Set α), coeFn MeasureTheory.volume.toOuterMeasure s = 0
+
+total : 7
+
+elaborated: 7
+
+If a topological space is compact, then every subset is compact.
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α], CompactSpace α → ∀ {s : Set α}, IsCompact s
+
+total : 8
+
+elaborated: 8
+
+Every set that is Lebesgue measurable but not Borel measurable has Lebesgue measure zero.
+
+No valid output from Codex; outputs below
+
+ {  α :  Type  u_1 } ->  {  s :  Set  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  (  hs :  measure_theory.measurable  s ) ->  (  hb :  ¬  borel  s ) ->   MeasureTheory.MeasureSpace.volume  s =  0
+
+ {  α :  Type  u_1 } ->  {  s :  Set  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  (  hs :  measure_theory.measurable  s ) ->  (  hb :  ¬  borelₓ  s ) ->   MeasureTheory.MeasureSpace.volume  s =  0
+
+ {  α :  Type  u_1 } ->  {  s :  Setₓ  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  (  hs :  measure_theory.measurable  s ) ->  (  hb :  ¬  borel  s ) ->   MeasureTheory.MeasureSpace.volume  s =  0
+
+ {  α :  Type  u_1 } ->  {  s :  Setₓ  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  (  hs :  measure_theory.measurable  s ) ->  (  hb :  ¬  borelₓ  s ) ->   MeasureTheory.MeasureSpace.volume  s =  0
+
+ {  α :  Type  u_1 } ->  {  s :  Set  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  (  h :  MeasurableSet  s ) ->  (  hn :  ¬  borel_measurable  s ) ->   MeasureTheory.MeasureSpace.volume  s =  0
+
+ {  α :  Type  u_1 } ->  {  s :  Setₓ  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  (  h :  MeasurableSet  s ) ->  (  hn :  ¬  borel_measurable  s ) ->   MeasureTheory.MeasureSpace.volume  s =  0
+
+ {  α :  Type  u_1 } ->  {  s :  Set  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  (  hs :   MeasurableSet  s ∧  ¬  borel_measurable  s ) ->   MeasureTheory.MeasureSpace.volume  s =  0
+
+ {  α :  Type  u_1 } ->  {  s :  Setₓ  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  (  hs :   MeasurableSet  s ∧  ¬  borel_measurable  s ) ->   MeasureTheory.MeasureSpace.volume  s =  0
+
+ {  α :  Type  u } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  hs :  MeasurableSet  s ) ->  (  h :  ¬  borel_measurable  s ) ->   MeasureTheory.MeasureSpace.volume  s =  0
+
+ {  α :  Type  u } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  hs :  MeasurableSet  s ) ->  (  h :  ¬  borel_measurable  s ) ->   MeasureTheory.MeasureSpace.volume  s =  0
+
+ {  α :  Type  u_1 } ->  {  s :  Set  α } ->  {  m :  MeasurableSpace  α } ->  [  BorelSpace  α ] ->  (  hs :  MeasurableSet  s ) ->  (  hn :  ¬  borel_measurable  s ) ->   MeasureTheory.MeasureSpace.volume  s =  0
+
+ {  α :  Type  u_1 } ->  {  s :  Setₓ  α } ->  {  m :  MeasurableSpace  α } ->  [  BorelSpace  α ] ->  (  hs :  MeasurableSet  s ) ->  (  hn :  ¬  borel_measurable  s ) ->   MeasureTheory.MeasureSpace.volume  s =  0
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  hs :  MeasurableSet  s ) ->  (  h :  ¬  borel_measurable  s ) ->   MeasureTheory.MeasureSpace.volume  s =  0
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  hs :  MeasurableSet  s ) ->  (  h :  ¬  borel_measurable  s ) ->   MeasureTheory.MeasureSpace.volume  s =  0
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  h :   MeasurableSet  s ∧  ¬  borel_measurable  s ) ->   MeasureTheory.MeasureSpace.volume  s =  0
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  h :   MeasurableSet  s ∧  ¬  borel_measurable  s ) ->   MeasureTheory.MeasureSpace.volume  s =  0
+
+: true → (∀ {A : set ℝ}, measurable_iff_lebesgue.1 A.is_measurable ∧ ¬borel_measurable A → measure_theory.measure_space.volume A = 0) 
+
+ (   ∀   (  s  :  Set    ℝ  ℝ  )  ,   (    MeasurableSet  s ∧  s ∉  borel_measurable_sets    ℝ  ℝ  ) →  (    ⇑   MeasureTheory.MeasureSpace.volume  s =  0  ⇑   MeasureTheory.MeasureSpace.volume  sMeasureTheory.MeasureSpace.volume  s =  0  ⇑   MeasureTheory.MeasureSpace.volume  s =  0  )  )
+
+ (   ∀   (  s  :  Setₓ    ℝ  ℝ  )  ,   (    MeasurableSet  s ∧  s ∉  borel_measurable_sets    ℝ  ℝ  ) →  (    ⇑   MeasureTheory.MeasureSpace.volume  s =  0  ⇑   MeasureTheory.MeasureSpace.volume  sMeasureTheory.MeasureSpace.volume  s =  0  ⇑   MeasureTheory.MeasureSpace.volume  s =  0  )  )
+
+ ∀   (  s  :  Set    ℝ  ℝ  )  ,    measure_theory.measurable  s ∧  ¬  measure_theory.measurable_set  s →   MeasureTheory.MeasureSpace.volume  s =  0
+
+ ∀   (  s  :  Setₓ    ℝ  ℝ  )  ,    measure_theory.measurable  s ∧  ¬  measure_theory.measurable_set  s →   MeasureTheory.MeasureSpace.volume  s =  0
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  hs :  MeasurableSet  s ) ->  (  h :  ¬  borel_measurable  s ) ->   measure_theory.measure.volume  s =  0
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  hs :  MeasurableSet  s ) ->  (  h :  ¬  borel_measurable  s ) ->   measure_theory.measure.volume  s =  0
+
+ {  α :  Type  u_1 } ->  (  s :  Set  α ) ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  (  h :   MeasurableSet  s ∧  ¬  (   borel_measurable_set  s  ) ) ->   MeasureTheory.MeasureSpace.volume  s =  0
+
+ {  α :  Type  u_1 } ->  (  s :  Setₓ  α ) ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  (  h :   MeasurableSet  s ∧  ¬  (   borel_measurable_set  s  ) ) ->   MeasureTheory.MeasureSpace.volume  s =  0
+
+ (  γ :  Type  u_3 ) ->  (  s :  Set  γ ) ->  [  MeasurableSpace  γ ] ->  [  BorelSpace  γ ] ->  (  hs :  Borel_measure_theory.is_measurable  s ) ->  (  hns :  ¬  Borel_measurable  s ) ->   volume  s =  0
+
+ (  γ :  Type  u_3 ) ->  (  s :  Setₓ  γ ) ->  [  MeasurableSpace  γ ] ->  [  BorelSpace  γ ] ->  (  hs :  Borel_measure_theory.is_measurable  s ) ->  (  hns :  ¬  Borel_measurable  s ) ->   volume  s =  0
+
+ {  α :  Type  u_1 } ->  {  m :  MeasurableSpace  α } ->  [  TopologicalSpace  α ] ->  [  topological_space.t2_space  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  hs :  MeasurableSet  s ) ->  (  hns :  ¬  borel_measurable  s ) ->   (   MeasureTheory.Measure  s  ) =  0
+
+ {  α :  Type  u_1 } ->  {  m :  MeasurableSpace  α } ->  [  TopologicalSpace  α ] ->  [  topological_space.t2_space  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  hs :  MeasurableSet  s ) ->  (  hns :  ¬  borel_measurable  s ) ->   (   MeasureTheory.Measure  s  ) =  0
+
+ {  α :  Type  u_1 } ->  {  s :  Set  α } ->  [  MeasurableSpace  α ] ->  {  ν :  MeasureTheory.Measure  α } ->  [  MeasureTheory.SigmaFinite  ν ] ->  [  BorelSpace  α ] ->  (  h :  MeasurableSet  s ) ->  (  h' :  ¬  borel_measurable  s ) ->   ν  s =  0
+
+ {  α :  Type  u_1 } ->  {  s :  Setₓ  α } ->  [  MeasurableSpace  α ] ->  {  ν :  MeasureTheory.Measure  α } ->  [  MeasureTheory.SigmaFinite  ν ] ->  [  BorelSpace  α ] ->  (  h :  MeasurableSet  s ) ->  (  h' :  ¬  borel_measurable  s ) ->   ν  s =  0
+
+ {  α :  Type  u_1 } ->  {  m :  MeasurableSpace  α } ->  (  s :  Set  α ) ->  [  BorelSpace  α ] ->  (  m₁ :  MeasurableSet  s ) ->  (  m₂ :  ¬  borel_measurable  s ) ->   MeasureTheory.MeasureSpace.volume  s =  0
+
+ {  α :  Type  u_1 } ->  {  m :  MeasurableSpace  α } ->  (  s :  Setₓ  α ) ->  [  BorelSpace  α ] ->  (  m₁ :  MeasurableSet  s ) ->  (  m₂ :  ¬  borel_measurable  s ) ->   MeasureTheory.MeasureSpace.volume  s =  0
+
+ {  α :  Type  u_1 } ->  {  s :  Set  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->   MeasurableSet  s →   ¬  borel_measurable  s →   volume  s =  0
+
+ {  α :  Type  u_1 } ->  {  s :  Setₓ  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->   MeasurableSet  s →   ¬  borel_measurable  s →   volume  s =  0
+
+ {  α :  Type  u_1 } ->  {  s :  Set  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  (  hs :  Measurable  s ) ->  (  h :  ¬  MeasurableSet  s ) ->   MeasureTheory.MeasureSpace.volume  s =  0
+
+ {  α :  Type  u_1 } ->  {  s :  Setₓ  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  (  hs :  Measurable  s ) ->  (  h :  ¬  MeasurableSet  s ) ->   MeasureTheory.MeasureSpace.volume  s =  0
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  hs :  MeasurableSet  s ) ->  (  hb :  ¬  borel_measurable  s ) ->   MeasureTheory.MeasureSpace.volume  s =  0
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  hs :  MeasurableSet  s ) ->  (  hb :  ¬  borel_measurable  s ) ->   MeasureTheory.MeasureSpace.volume  s =  0
+
+ {  α :  Type  u_1 } ->  {  s :  Set  α } ->  [  MeasurableSpace  α ] ->  {  m :  measure  α } ->  [  MeasureTheory.SigmaFinite  m ] ->  (  hs :  MeasurableSet  s ) ->  (  hB :  ¬  MeasurableSet  s ) ->   m  s =  0
+
+ {  α :  Type  u_1 } ->  {  s :  Setₓ  α } ->  [  MeasurableSpace  α ] ->  {  m :  measure  α } ->  [  MeasureTheory.SigmaFinite  m ] ->  (  hs :  MeasurableSet  s ) ->  (  hB :  ¬  MeasurableSet  s ) ->   m  s =  0
+
+failed to elaborate
+
+outputs: #[{α : Type u_1} {s : set α} [measurable_space α] [borel_space α] (hs : measure_theory.measurable s) (hb : ¬borel s) : measure_theory.measure_space.volume s = 0 , {α : Type u_1} {s : set α} [measurable_space α] [borel_space α] (h : measurable_set s) (hn : ¬ borel_measurable s) : measure_theory.measure_space.volume s = 0 , {α : Type u_1} {s : set α} [measurable_space α] [borel_space α] (hs : measurable_set s ∧ ¬ borel_measurable s) : measure_theory.measure_space.volume s = 0 , {α : Type u} [measurable_space α] [borel_space α] {s : set α} (hs : measurable_set s) (h : ¬borel_measurable s) : measure_theory.measure_space.volume s = 0 , {α : Type u_1} {s : set α} {m : measurable_space α} [borel_space α] (hs : measurable_set s) (hn : ¬borel_measurable s) : measure_theory.measure_space.volume s = 0 , {α : Type u_1} [measurable_space α] [borel_space α] {s : set α} (hs : measurable_set s) (h : ¬ borel_measurable s) : measure_theory.measure_space.volume s = 0 , {α : Type u_1} [measurable_space α] [borel_space α] {s : set α} (h : measurable_set s ∧ ¬borel_measurable s) : measure_theory.measure_space.volume s = 0 , : true → (∀ {A : set ℝ}, measurable_iff_lebesgue.1 A.is_measurable ∧ ¬borel_measurable A → measure_theory.measure_space.volume A = 0) , : (∀ (s : set ℝ), (measurable_set s ∧ s ∉ borel_measurable_sets ℝ) → (⇑measure_theory.measure_space.volume s = 0)) ,  : ∀ (s : set ℝ),  measure_theory.measurable s ∧ ¬measure_theory.measurable_set s → measure_theory.measure_space.volume s = 0 , {α : Type u_1} [measurable_space α] [borel_space α] {s : set α} (hs : measurable_set s) (h : ¬ borel_measurable s) : measure_theory.measure.volume s = 0 , {α : Type u_1} (s : set α) [measurable_space α] [borel_space α] (h : measurable_set s ∧ ¬(borel_measurable_set s)) : measure_theory.measure_space.volume s = 0 ,  (γ : Type u_3) (s : set γ) [measurable_space γ] [borel_space γ] (hs : Borel_measure_theory.is_measurable s) (hns : ¬ Borel_measurable s) : volume s = 0 , {α : Type u_1} {m : measurable_space α} [topological_space α] [topological_space.t2_space α] [borel_space α] {s : set α} (hs : measurable_set s) (hns : ¬ borel_measurable s) : (measure_theory.measure s) = 0 , {α : Type u_1} {s : set α} [measurable_space α] {ν : measure_theory.measure α} [measure_theory.sigma_finite ν] [borel_space α] (h : measurable_set s) (h' : ¬ borel_measurable s) : ν s = 0 , {α : Type u_1} {m : measurable_space α} (s : set α) [borel_space α] (m₁ : measurable_set s) (m₂ : ¬borel_measurable s) : measure_theory.measure_space.volume s = 0 , {α : Type u_1} {s : set α} [measurable_space α] [borel_space α] : measurable_set s → ¬ borel_measurable s → volume s = 0 , {α : Type u_1} {s : set α} [measurable_space α] [borel_space α] (hs : measurable s) (h : ¬ measurable_set s) : measure_theory.measure_space.volume s = 0 , {α : Type u_1} [measurable_space α] [borel_space α] {s : set α} (hs : measurable_set s) (hb : ¬ borel_measurable s) : measure_theory.measure_space.volume s = 0 , {α : Type u_1} {s : set α} [measurable_space α] {m : measure α} [measure_theory.sigma_finite m] (hs : measurable_set s) (hB : ¬ measurable_set s) : m s = 0 ]
+
+total : 9
+
+elaborated: 8
+
+A finitely-presented group containing a torsion element is finite.
+
+success
+
+theorem ∀ {G : Type u} [inst : Groupₓ G] [inst_1 : Fintype G], Groupₓ.Fg G → ∃ a, a ≠ 1 ∧ IsOfFinOrder a → Monoidₓ.IsTorsion G
+
+total : 10
+
+elaborated: 9
+
+If every point of a subset of a topological space is contained in some closed set, the subset itself is closed.
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] {s : Set α},
+  (∀ (x : α), x ∈ s → ∃ t, t ⊂ s ∧ IsClosed t ∧ x ∈ t) → IsClosed s
+
+total : 11
+
+elaborated: 10
+
+A topological space $X$ is Hausdorff if and only if the diagonal map is an open map from $X$ to $X × X$.
+
+success
+
+theorem ∀ {X : Type u_1} [inst : TopologicalSpace X], T2Space X ↔ IsOpenMap fun x => (x, x)
+
+total : 12
+
+elaborated: 11
+
+Any finite order element in a group is equal to the identity.
+
+success
+
+theorem ∀ {G : Type u} [inst : Monoidₓ G] {x : G} [inst_1 : Fintype G], IsOfFinOrder x → x = 1
+
+total : 13
+
+elaborated: 12
+
+If a subgroup of a group is torsion-free, then the group itself is torsion free.
+
+No valid output from Codex; outputs below
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  H :  Subgroup  G ) ->  (  torsion_free_H :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  H :  Subgroup  G ) ->  (  torsion_free_H :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  H :  Subgroup  G ) ->  (  torsion_free_H :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  H :  Subgroup  G ) ->  (  h :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  H :  Subgroup  G ) ->  (  h :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  H :  Subgroup  G ) ->  (  h :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Set  G } ->  [  IsSubgroup  H ] ->  (  h :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Setₓ  G } ->  [  IsSubgroup  H ] ->  (  h :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Set  G } ->  [  IsSubgroup  H ] ->  (  h :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Setₓ  G } ->  [  IsSubgroup  H ] ->  (  h :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Set  G } ->  [  IsSubgroup  H ] ->  (  h :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Setₓ  G } ->  [  IsSubgroup  H ] ->  (  h :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Set  G } ->  [  IsSubgroup  H ] ->  (  hN :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Setₓ  G } ->  [  IsSubgroup  H ] ->  (  hN :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Set  G } ->  [  IsSubgroup  H ] ->  (  hN :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Setₓ  G } ->  [  IsSubgroup  H ] ->  (  hN :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Set  G } ->  [  IsSubgroup  H ] ->  (  hN :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Setₓ  G } ->  [  IsSubgroup  H ] ->  (  hN :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  [ hN :  Nontrivial  G ] ->  {  S :  Set  G } ->   IsSubgroup  S →   Monoidₓ.IsTorsionFree  S →  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  [ hN :  Nontrivial  G ] ->  {  S :  Setₓ  G } ->   IsSubgroup  S →   Monoidₓ.IsTorsionFree  S →  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  [ hN :  Nontrivial  G ] ->  {  S :  Set  G } ->   IsSubgroup  S →   Monoidₓ.IsTorsionFree  S →  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  [ hN :  Nontrivial  G ] ->  {  S :  Setₓ  G } ->   IsSubgroup  S →   Monoidₓ.IsTorsionFree  S →  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  [ hN :  Nontrivial  G ] ->  {  S :  Set  G } ->   IsSubgroup  S →   Monoidₓ.IsTorsionFree  S →  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  [ hN :  Nontrivial  G ] ->  {  S :  Setₓ  G } ->   IsSubgroup  S →   Monoidₓ.IsTorsionFree  S →  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Set  G } ->  (  hH :  Normal  subgroup.is_torsion_free H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Setₓ  G } ->  (  hH :  Normal  subgroup.is_torsion_free H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Set  G } ->  (  hH :  Normal  subgroup.is_torsion_free H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Setₓ  G } ->  (  hH :  Normal  subgroup.is_torsion_free H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Set  G } ->  (  hH :  Normal  subgroup.is_torsion_free H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Setₓ  G } ->  (  hH :  Normal  subgroup.is_torsion_free H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u } ->  [  Group  G ] ->  {  H :  Set  G } ->  (  hH :  H ⊆  torsion_free  G ) ->   torsion_free  G = G
+
+ {  G :  Type  u } ->  [  Group  G ] ->  {  H :  Setₓ  G } ->  (  hH :  H ⊆  torsion_free  G ) ->   torsion_free  G = G
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  {  H :  Set  G } ->  (  hH :  H ⊆  torsion_free  G ) ->   torsion_free  G = G
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  {  H :  Setₓ  G } ->  (  hH :  H ⊆  torsion_free  G ) ->   torsion_free  G = G
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  {  H :  Set  G } ->  (  hH :  H ⊆  torsion_free  G ) ->   torsion_free  G = G
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  {  H :  Setₓ  G } ->  (  hH :  H ⊆  torsion_free  G ) ->   torsion_free  G = G
+
+ (  H :  Type  u_1 ) ->  [  Group  H ] ->  (  G :  Type  u_2 ) ->  [  Group  G ] ->  [ hG :  group.is_torsion_free   (    G ⊓ H  G ⊓ H  ) ] ->  group.is_torsion_free  G
+
+ (  H :  Type  u_1 ) ->  [  Group  H ] ->  (  G :  Type  u_2 ) ->  [  Groupₓ  G ] ->  [ hG :  group.is_torsion_free   (    G ⊓ H  G ⊓ H  ) ] ->  group.is_torsion_free  G
+
+ (  H :  Type  u_1 ) ->  [  Group  H ] ->  (  G :  Type  u_2 ) ->  [  Groupₓₓ  G ] ->  [ hG :  group.is_torsion_free   (    G ⊓ H  G ⊓ H  ) ] ->  group.is_torsion_free  G
+
+ (  H :  Type  u_1 ) ->  [  Groupₓ  H ] ->  (  G :  Type  u_2 ) ->  [  Group  G ] ->  [ hG :  group.is_torsion_free   (    G ⊓ H  G ⊓ H  ) ] ->  group.is_torsion_free  G
+
+ (  H :  Type  u_1 ) ->  [  Groupₓ  H ] ->  (  G :  Type  u_2 ) ->  [  Groupₓ  G ] ->  [ hG :  group.is_torsion_free   (    G ⊓ H  G ⊓ H  ) ] ->  group.is_torsion_free  G
+
+ (  H :  Type  u_1 ) ->  [  Groupₓ  H ] ->  (  G :  Type  u_2 ) ->  [  Groupₓₓ  G ] ->  [ hG :  group.is_torsion_free   (    G ⊓ H  G ⊓ H  ) ] ->  group.is_torsion_free  G
+
+ (  H :  Type  u_1 ) ->  [  Groupₓₓ  H ] ->  (  G :  Type  u_2 ) ->  [  Group  G ] ->  [ hG :  group.is_torsion_free   (    G ⊓ H  G ⊓ H  ) ] ->  group.is_torsion_free  G
+
+ (  H :  Type  u_1 ) ->  [  Groupₓₓ  H ] ->  (  G :  Type  u_2 ) ->  [  Groupₓ  G ] ->  [ hG :  group.is_torsion_free   (    G ⊓ H  G ⊓ H  ) ] ->  group.is_torsion_free  G
+
+ (  H :  Type  u_1 ) ->  [  Groupₓₓ  H ] ->  (  G :  Type  u_2 ) ->  [  Groupₓₓ  G ] ->  [ hG :  group.is_torsion_free   (    G ⊓ H  G ⊓ H  ) ] ->  group.is_torsion_free  G
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Set  G } ->  (  h :  IsSubgroup  N ) ->  (  ntf :  Monoidₓ.IsTorsionFree  N ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Setₓ  G } ->  (  h :  IsSubgroup  N ) ->  (  ntf :  Monoidₓ.IsTorsionFree  N ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Set  G } ->  (  h :  IsSubgroup  N ) ->  (  ntf :  Monoidₓ.IsTorsionFree  N ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Setₓ  G } ->  (  h :  IsSubgroup  N ) ->  (  ntf :  Monoidₓ.IsTorsionFree  N ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Set  G } ->  (  h :  IsSubgroup  N ) ->  (  ntf :  Monoidₓ.IsTorsionFree  N ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Setₓ  G } ->  (  h :  IsSubgroup  N ) ->  (  ntf :  Monoidₓ.IsTorsionFree  N ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  {  S :  Set  G } ->  [  Group  G ] ->  (  H :  IsSubgroup  S ) ->  (  hf :  Monoidₓ.IsTorsionFree  S ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  {  S :  Set  G } ->  [  Groupₓ  G ] ->  (  H :  IsSubgroup  S ) ->  (  hf :  Monoidₓ.IsTorsionFree  S ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  {  S :  Set  G } ->  [  Groupₓₓ  G ] ->  (  H :  IsSubgroup  S ) ->  (  hf :  Monoidₓ.IsTorsionFree  S ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  {  S :  Setₓ  G } ->  [  Group  G ] ->  (  H :  IsSubgroup  S ) ->  (  hf :  Monoidₓ.IsTorsionFree  S ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  {  S :  Setₓ  G } ->  [  Groupₓ  G ] ->  (  H :  IsSubgroup  S ) ->  (  hf :  Monoidₓ.IsTorsionFree  S ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  {  S :  Setₓ  G } ->  [  Groupₓₓ  G ] ->  (  H :  IsSubgroup  S ) ->  (  hf :  Monoidₓ.IsTorsionFree  S ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  {  H :  Set  G } ->  [  Group  G ] ->  (  H_torsion_free :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  {  H :  Set  G } ->  [  Groupₓ  G ] ->  (  H_torsion_free :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  {  H :  Set  G } ->  [  Groupₓₓ  G ] ->  (  H_torsion_free :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  {  H :  Setₓ  G } ->  [  Group  G ] ->  (  H_torsion_free :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  {  H :  Setₓ  G } ->  [  Groupₓ  G ] ->  (  H_torsion_free :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  {  H :  Setₓ  G } ->  [  Groupₓₓ  G ] ->  (  H_torsion_free :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  (  H :  Type  u_2 ) ->  [  Group  G ] ->  [  Group  H ] ->  [ hS :  IsSubgroup  H ] ->  (  Htf :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  (  H :  Type  u_2 ) ->  [  Group  G ] ->  [  Groupₓ  H ] ->  [ hS :  IsSubgroup  H ] ->  (  Htf :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  (  H :  Type  u_2 ) ->  [  Group  G ] ->  [  Groupₓₓ  H ] ->  [ hS :  IsSubgroup  H ] ->  (  Htf :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  (  H :  Type  u_2 ) ->  [  Groupₓ  G ] ->  [  Group  H ] ->  [ hS :  IsSubgroup  H ] ->  (  Htf :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  (  H :  Type  u_2 ) ->  [  Groupₓ  G ] ->  [  Groupₓ  H ] ->  [ hS :  IsSubgroup  H ] ->  (  Htf :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  (  H :  Type  u_2 ) ->  [  Groupₓ  G ] ->  [  Groupₓₓ  H ] ->  [ hS :  IsSubgroup  H ] ->  (  Htf :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  (  H :  Type  u_2 ) ->  [  Groupₓₓ  G ] ->  [  Group  H ] ->  [ hS :  IsSubgroup  H ] ->  (  Htf :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  (  H :  Type  u_2 ) ->  [  Groupₓₓ  G ] ->  [  Groupₓ  H ] ->  [ hS :  IsSubgroup  H ] ->  (  Htf :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  (  H :  Type  u_2 ) ->  [  Groupₓₓ  G ] ->  [  Groupₓₓ  H ] ->  [ hS :  IsSubgroup  H ] ->  (  Htf :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [ hG :  Group  G ] ->  {  H :  Set  G } ->  (  hH :  IsSubgroup  H ) ->  (  hFT :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [ hG :  Group  G ] ->  {  H :  Setₓ  G } ->  (  hH :  IsSubgroup  H ) ->  (  hFT :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [ hG :  Groupₓ  G ] ->  {  H :  Set  G } ->  (  hH :  IsSubgroup  H ) ->  (  hFT :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [ hG :  Groupₓ  G ] ->  {  H :  Setₓ  G } ->  (  hH :  IsSubgroup  H ) ->  (  hFT :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [ hG :  Groupₓₓ  G ] ->  {  H :  Set  G } ->  (  hH :  IsSubgroup  H ) ->  (  hFT :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [ hG :  Groupₓₓ  G ] ->  {  H :  Setₓ  G } ->  (  hH :  IsSubgroup  H ) ->  (  hFT :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [ hG :  Group  G ] ->  [ hN :  Nontrivial  G ] ->  {  H :  Set  G } ->  (  hH :  IsSubgroup  H ) ->  (  tH :  Monoidₓ.IsTorsionFree  H ) ->  (  N :  H ≠  ∅ ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [ hG :  Group  G ] ->  [ hN :  Nontrivial  G ] ->  {  H :  Setₓ  G } ->  (  hH :  IsSubgroup  H ) ->  (  tH :  Monoidₓ.IsTorsionFree  H ) ->  (  N :  H ≠  ∅ ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [ hG :  Groupₓ  G ] ->  [ hN :  Nontrivial  G ] ->  {  H :  Set  G } ->  (  hH :  IsSubgroup  H ) ->  (  tH :  Monoidₓ.IsTorsionFree  H ) ->  (  N :  H ≠  ∅ ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [ hG :  Groupₓ  G ] ->  [ hN :  Nontrivial  G ] ->  {  H :  Setₓ  G } ->  (  hH :  IsSubgroup  H ) ->  (  tH :  Monoidₓ.IsTorsionFree  H ) ->  (  N :  H ≠  ∅ ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [ hG :  Groupₓₓ  G ] ->  [ hN :  Nontrivial  G ] ->  {  H :  Set  G } ->  (  hH :  IsSubgroup  H ) ->  (  tH :  Monoidₓ.IsTorsionFree  H ) ->  (  N :  H ≠  ∅ ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [ hG :  Groupₓₓ  G ] ->  [ hN :  Nontrivial  G ] ->  {  H :  Setₓ  G } ->  (  hH :  IsSubgroup  H ) ->  (  tH :  Monoidₓ.IsTorsionFree  H ) ->  (  N :  H ≠  ∅ ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [ hG :  Group  G ] ->  {  H :  Set  G } ->  [ hH :  IsSubgroup  H ] ->   Monoidₓ.IsTorsionFree  H →  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [ hG :  Group  G ] ->  {  H :  Setₓ  G } ->  [ hH :  IsSubgroup  H ] ->   Monoidₓ.IsTorsionFree  H →  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [ hG :  Groupₓ  G ] ->  {  H :  Set  G } ->  [ hH :  IsSubgroup  H ] ->   Monoidₓ.IsTorsionFree  H →  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [ hG :  Groupₓ  G ] ->  {  H :  Setₓ  G } ->  [ hH :  IsSubgroup  H ] ->   Monoidₓ.IsTorsionFree  H →  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [ hG :  Groupₓₓ  G ] ->  {  H :  Set  G } ->  [ hH :  IsSubgroup  H ] ->   Monoidₓ.IsTorsionFree  H →  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [ hG :  Groupₓₓ  G ] ->  {  H :  Setₓ  G } ->  [ hH :  IsSubgroup  H ] ->   Monoidₓ.IsTorsionFree  H →  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Set  G } ->  [  IsSubgroup  H ] ->  (  torsion_free_H :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Setₓ  G } ->  [  IsSubgroup  H ] ->  (  torsion_free_H :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Set  G } ->  [  IsSubgroup  H ] ->  (  torsion_free_H :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Setₓ  G } ->  [  IsSubgroup  H ] ->  (  torsion_free_H :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Set  G } ->  [  IsSubgroup  H ] ->  (  torsion_free_H :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Setₓ  G } ->  [  IsSubgroup  H ] ->  (  torsion_free_H :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  CommGroup  G ] ->  {  H :  Set  G } ->  (  h :  H ⊆ G ) ->  (  Ht :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  CommGroup  G ] ->  {  H :  Setₓ  G } ->  (  h :  H ⊆ G ) ->  (  Ht :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  CommGroupₓ  G ] ->  {  H :  Set  G } ->  (  h :  H ⊆ G ) ->  (  Ht :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  CommGroupₓ  G ] ->  {  H :  Setₓ  G } ->  (  h :  H ⊆ G ) ->  (  Ht :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  CommGroupₓₓ  G ] ->  {  H :  Set  G } ->  (  h :  H ⊆ G ) ->  (  Ht :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  CommGroupₓₓ  G ] ->  {  H :  Setₓ  G } ->  (  h :  H ⊆ G ) ->  (  Ht :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [ hG :  Group  G ] ->  {  H :  Set  G } ->  (  hH :  IsSubgroup  H ) ->  (  hHF :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [ hG :  Group  G ] ->  {  H :  Setₓ  G } ->  (  hH :  IsSubgroup  H ) ->  (  hHF :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [ hG :  Groupₓ  G ] ->  {  H :  Set  G } ->  (  hH :  IsSubgroup  H ) ->  (  hHF :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [ hG :  Groupₓ  G ] ->  {  H :  Setₓ  G } ->  (  hH :  IsSubgroup  H ) ->  (  hHF :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [ hG :  Groupₓₓ  G ] ->  {  H :  Set  G } ->  (  hH :  IsSubgroup  H ) ->  (  hHF :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [ hG :  Groupₓₓ  G ] ->  {  H :  Setₓ  G } ->  (  hH :  IsSubgroup  H ) ->  (  hHF :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  H :  Subgroup  G ) ->  (  hH :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  H :  Subgroup  G ) ->  (  hH :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  H :  Subgroup  G ) ->  (  hH :  Monoidₓ.IsTorsionFree  H ) ->  Monoidₓ.IsTorsionFree  G
+
+failed to elaborate
+
+outputs: #[{G : Type u_1} [group G] (H : subgroup G) (torsion_free_H : monoid.is_torsion_free H) : monoid.is_torsion_free G , {G : Type u_1} [group G] (H : subgroup G) (h : monoid.is_torsion_free H) : monoid.is_torsion_free G , {G : Type u_1} [group G] {H : set G} [is_subgroup H] (h : monoid.is_torsion_free H) : monoid.is_torsion_free G , {G : Type u_1} [group G] {H : set G} [is_subgroup H] (hN : monoid.is_torsion_free H) : monoid.is_torsion_free G , {G : Type u_1} [group G] [hN : nontrivial G] {S : set G} : is_subgroup S → monoid.is_torsion_free S → monoid.is_torsion_free G , {G : Type u_1} [group G] {H : set G} (hH : normal subgroup.is_torsion_free H) : monoid.is_torsion_free G , {G : Type u} [group G] {H : set G} (hH : H ⊆ torsion_free G) : torsion_free G = G , (H : Type u_1) [group H] (G : Type u_2) [group G] [hG : group.is_torsion_free (G ⊓ H)]: group.is_torsion_free G , {G : Type u_1} [group G] {N : set G} (h : is_subgroup N) (ntf : monoid.is_torsion_free N) : monoid.is_torsion_free G , {G : Type u_1} {S : set G} [group G] (H : is_subgroup S) (hf : monoid.is_torsion_free S) : monoid.is_torsion_free G , {G : Type u_1} {H : set G} [group G] (H_torsion_free : monoid.is_torsion_free H) : monoid.is_torsion_free G , {G : Type u_1} (H : Type u_2) [group G] [group H] [hS : is_subgroup H] (Htf : monoid.is_torsion_free H) : monoid.is_torsion_free G , {G : Type u_1} [hG:group G] {H : set G} (hH : is_subgroup H) (hFT : monoid.is_torsion_free H) : monoid.is_torsion_free G , {G : Type u_1} [hG : group G] [hN : nontrivial G] {H : set G} (hH : is_subgroup H) (tH : monoid.is_torsion_free H) (N : H ≠ ∅) : monoid.is_torsion_free G , {G : Type u_1} [hG : group G] {H : set G} [hH : is_subgroup H] : monoid.is_torsion_free H → monoid.is_torsion_free G , {G : Type u_1} [group G] {H : set G} [is_subgroup H] (torsion_free_H : monoid.is_torsion_free H) : monoid.is_torsion_free G , {G : Type u_1} [comm_group G] {H : set G} (h : H ⊆ G) (Ht : monoid.is_torsion_free H) : monoid.is_torsion_free G , {G : Type u_1} [hG : group G] {H : set G} (hH : is_subgroup H) (hHF : monoid.is_torsion_free H) : monoid.is_torsion_free G , {G : Type u_1} [group G] (H : subgroup G) (hH : monoid.is_torsion_free H) : monoid.is_torsion_free G ]
+
+total : 14
+
+elaborated: 12
+
+Every injective homomorphism from a finitely generated free group to itself is surjective.
+
+success
+
+theorem ∀ {n : ℕ} {α : Type u} [inst : Fintype α] [inst : DecidableEq α] {f : FreeGroup α → FreeGroup α},
+  Function.Injective f → Function.Surjective f
+
+total : 15
+
+elaborated: 13
+
+Every division ring is either a field or finite.
+
+success
+
+theorem ∀ (K : Type u) [inst : DivisionRing K], IsField K ∨ Finite K
+
+total : 16
+
+elaborated: 14
+
+Every natural number is the product of two primes.
+
+success
+
+theorem ∀ {n : ℕ}, n ≠ 0 → ∃ a b, Nat.Prime a ∧ Nat.Prime b ∧ n = a * b
+
+total : 17
+
+elaborated: 15
+
+Every even number is the square of a natural number.
+
+success
+
+theorem ∀ (n : ℕ), n % 2 = 0 → ∃ m, n = m ^ 2
+
+total : 18
+
+elaborated: 16
+
+Every normal subgroup of a group has finite index.
+
+No valid output from Codex; outputs below
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Subgroup  G } ->  [ H.normal ] ->  Fintype  G
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Subgroup  G } ->  [ H.normal ] ->  Fintypeₓ  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Subgroup  G } ->  [ H.normal ] ->  Fintype  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Subgroup  G } ->  [ H.normal ] ->  Fintypeₓ  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Subgroup  G } ->  [ H.normal ] ->  Fintype  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Subgroup  G } ->  [ H.normal ] ->  Fintypeₓ  G
+
+ {  G :  Type  u_1 } ->  [ hG :  Group  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype   (   quotient_group.quotient  N.normalizer  )
+
+ {  G :  Type  u_1 } ->  [ hG :  Group  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ   (   quotient_group.quotient  N.normalizer  )
+
+ {  G :  Type  u_1 } ->  [ hG :  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype   (   quotient_group.quotient  N.normalizer  )
+
+ {  G :  Type  u_1 } ->  [ hG :  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ   (   quotient_group.quotient  N.normalizer  )
+
+ {  G :  Type  u_1 } ->  [ hG :  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype   (   quotient_group.quotient  N.normalizer  )
+
+ {  G :  Type  u_1 } ->  [ hG :  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ   (   quotient_group.quotient  N.normalizer  )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype   (   subgroup.quotient  G N  )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ   (   subgroup.quotient  G N  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype   (   subgroup.quotient  G N  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ   (   subgroup.quotient  G N  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype   (   subgroup.quotient  G N  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ   (   subgroup.quotient  G N  )
+
+ {  G :  Type  u } ->  [  Group  G ] ->  {  U :  Subgroup  G } ->  [ U.normal ] ->  U.index ∈  Fintype.card  G.carrier_type
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  {  U :  Subgroup  G } ->  [ U.normal ] ->  U.index ∈  Fintype.card  G.carrier_type
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  {  U :  Subgroup  G } ->  [ U.normal ] ->  U.index ∈  Fintype.card  G.carrier_type
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  (  h :  group.fintype  G ) ->  Fintype   ↥  (   N.normalizer / N  )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  (  h :  group.fintype  G ) ->  Fintypeₓ   ↥  (   N.normalizer / N  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  (  h :  group.fintype  G ) ->  Fintype   ↥  (   N.normalizer / N  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  (  h :  group.fintype  G ) ->  Fintypeₓ   ↥  (   N.normalizer / N  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  (  h :  group.fintype  G ) ->  Fintype   ↥  (   N.normalizer / N  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  (  h :  group.fintype  G ) ->  Fintypeₓ   ↥  (   N.normalizer / N  )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  ∃     n  :  ℕ ,  N.index = n
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  ∃     n  :  ℕ ,  N.index = n
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  ∃     n  :  ℕ ,  N.index = n
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  N :  Subgroup  G ) ->  [ N.normal ] ->   Fintype.card  G ≠  0
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  N :  Subgroup  G ) ->  [ N.normal ] ->   Fintype.card  G ≠  0
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  N :  Subgroup  G ) ->  [ N.normal ] ->   Fintype.card  G ≠  0
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->   (  N.index   :  ℕ ) ≠  0
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->   (  N.index   :  ℕ ) ≠  0
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->   (  N.index   :  ℕ ) ≠  0
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype   (   quotient_group.quotient   (   ↑ N  )  )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ   (   quotient_group.quotient   (   ↑ N  )  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype   (   quotient_group.quotient   (   ↑ N  )  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ   (   quotient_group.quotient   (   ↑ N  )  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype   (   quotient_group.quotient   (   ↑ N  )  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ   (   quotient_group.quotient   (   ↑ N  )  )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  H :  Subgroup  G ) ->  [ H.normal ] ->   Fintype.card  H.quotient = H.index
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  H :  Subgroup  G ) ->  [ H.normal ] ->   Fintype.card  H.quotient = H.index
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  H :  Subgroup  G ) ->  [ H.normal ] ->   Fintype.card  H.quotient = H.index
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  ∃    (   s :  Fintype  N ) ,   s.card * s.card =  card  G
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  ∃    (   s :  Fintypeₓ  N ) ,   s.card * s.card =  card  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  ∃    (   s :  Fintype  N ) ,   s.card * s.card =  card  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  ∃    (   s :  Fintypeₓ  N ) ,   s.card * s.card =  card  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  ∃    (   s :  Fintype  N ) ,   s.card * s.card =  card  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  ∃    (   s :  Fintypeₓ  N ) ,   s.card * s.card =  card  G
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype  N.coset_stabilizer.fixed_points
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ  N.coset_stabilizer.fixed_points
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype  N.coset_stabilizer.fixed_points
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ  N.coset_stabilizer.fixed_points
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype  N.coset_stabilizer.fixed_points
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ  N.coset_stabilizer.fixed_points
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype   (   G /  (  N   :  Set  G )  )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype   (   G /  (  N   :  Setₓ  G )  )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ   (   G /  (  N   :  Set  G )  )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ   (   G /  (  N   :  Setₓ  G )  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype   (   G /  (  N   :  Set  G )  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype   (   G /  (  N   :  Setₓ  G )  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ   (   G /  (  N   :  Set  G )  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ   (   G /  (  N   :  Setₓ  G )  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype   (   G /  (  N   :  Set  G )  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype   (   G /  (  N   :  Setₓ  G )  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ   (   G /  (  N   :  Set  G )  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ   (   G /  (  N   :  Setₓ  G )  )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  (  hN :  N ≠  ⊥ ) ->  N.index ≠  0
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  (  hN :  N ≠  ⊥ ) ->  N.index ≠  0
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  (  hN :  N ≠  ⊥ ) ->  N.index ≠  0
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Subgroup  G } ->  [ H.normal ] ->   0 < H.index
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Subgroup  G } ->  [ H.normal ] ->   0 < H.index
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Subgroup  G } ->  [ H.normal ] ->   0 < H.index
+
+{G : Type u_1} [group G] {N : subgroup G} [N.normal] : fintype ∥N.quotient : G / N∥ 
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  ∃     m  :  ℕ ,  ∀  g   : G ,   m * g ∈ N
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  ∃     m  :  ℕ ,  ∀  g   : G ,   m * g ∈ N
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  ∃     m  :  ℕ ,  ∀  g   : G ,   m * g ∈ N
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Subgroup  G } ->  [ hN : N.normal ] ->  ∃    (   d :  ℕ ) ,  N.index = d
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ hN : N.normal ] ->  ∃    (   d :  ℕ ) ,  N.index = d
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ hN : N.normal ] ->  ∃    (   d :  ℕ ) ,  N.index = d
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype  G
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ  G
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype   (   Quotient  N  )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype   (   Quotientₓ  N  )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ   (   Quotient  N  )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ   (   Quotientₓ  N  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype   (   Quotient  N  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype   (   Quotientₓ  N  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ   (   Quotient  N  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ   (   Quotientₓ  N  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype   (   Quotient  N  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintype   (   Quotientₓ  N  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ   (   Quotient  N  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  N :  Subgroup  G } ->  [ N.normal ] ->  Fintypeₓ   (   Quotientₓ  N  )
+
+failed to elaborate
+
+outputs: #[{G : Type u_1} [group G] {H : subgroup G} [H.normal] : fintype G , {G : Type u_1} [hG : group G] {N : subgroup G} [N.normal] : fintype (quotient_group.quotient N.normalizer) , {G : Type u_1} [group G] {N : subgroup G} [N.normal] : fintype (subgroup.quotient G N) , {G : Type u} [group G] {U : subgroup G} [U.normal] : U.index ∈ fintype.card G.carrier_type , {G : Type u_1} [group G] {N : subgroup G} [N.normal] (h : group.fintype G) : fintype ↥(N.normalizer / N) , {G : Type u_1} [group G] {N : subgroup G} [N.normal] : ∃ n : ℕ, N.index = n , {G : Type u_1} [group G] (N : subgroup G) [N.normal] : fintype.card G ≠ 0 , {G : Type u_1} [group G] {N : subgroup G} [N.normal] : (N.index : ℕ) ≠ 0 , {G : Type u_1} [group G] {N : subgroup G} [N.normal] : fintype (quotient_group.quotient (↑N)) , {G : Type u_1} [group G] (H : subgroup G) [H.normal] : fintype.card H.quotient = H.index , {G : Type u_1} [group G] {N : subgroup G} [N.normal] : ∃ (s : fintype N), s.card * s.card = card G , {G : Type u_1} [group G] {N : subgroup G} [N.normal] : fintype N.coset_stabilizer.fixed_points , {G : Type u_1} [group G] {N : subgroup G} [N.normal] : fintype (G / (N : set G)) , {G : Type u_1} [group G] {N : subgroup G} [N.normal] (hN : N ≠ ⊥) : N.index ≠ 0 , {G : Type u_1} [group G] {H : subgroup G} [H.normal] : 0 < H.index , {G : Type u_1} [group G] {N : subgroup G} [N.normal] : fintype ∥N.quotient : G / N∥ , {G : Type u_1} [group G] {N : subgroup G} [N.normal] : ∃ m : ℕ, ∀ g : G, m * g ∈ N , {G : Type u_1} [group G] {N : subgroup G} [hN : N.normal] : ∃ (d : ℕ), N.index = d , {G : Type u_1} [group G] {N : subgroup G} [N.normal] : fintype G , {G : Type u_1} [group G] {N : subgroup G} [N.normal] : fintype (quotient N) ]
+
+total : 19
+
+elaborated: 16
+
+The characteristic polynomial of every matrix has real roots.
+
+No valid output from Codex; outputs below
+
+ {  n :  Type  u_1 } ->  [  DecidableEq  n ] ->  [  Fintype  n ] ->  {  R :  Type  u_2 } ->  [  CommRing  R ] ->  {  A :  Matrix  n n R } ->  A.charpoly.roots.to_finset.card =   (   A.charpoly.roots    ℝ  ℝ  ) . to_finset.card
+
+ {  n :  Type  u_1 } ->  [  DecidableEq  n ] ->  [  Fintype  n ] ->  {  R :  Type  u_2 } ->  [  CommRingₓ  R ] ->  {  A :  Matrix  n n R } ->  A.charpoly.roots.to_finset.card =   (   A.charpoly.roots    ℝ  ℝ  ) . to_finset.card
+
+ {  n :  Type  u_1 } ->  [  DecidableEq  n ] ->  [  Fintype  n ] ->  {  R :  Type  u_2 } ->  [  CommRingₓₓ  R ] ->  {  A :  Matrix  n n R } ->  A.charpoly.roots.to_finset.card =   (   A.charpoly.roots    ℝ  ℝ  ) . to_finset.card
+
+ {  n :  Type  u_1 } ->  [  DecidableEq  n ] ->  [  Fintypeₓ  n ] ->  {  R :  Type  u_2 } ->  [  CommRing  R ] ->  {  A :  Matrix  n n R } ->  A.charpoly.roots.to_finset.card =   (   A.charpoly.roots    ℝ  ℝ  ) . to_finset.card
+
+ {  n :  Type  u_1 } ->  [  DecidableEq  n ] ->  [  Fintypeₓ  n ] ->  {  R :  Type  u_2 } ->  [  CommRingₓ  R ] ->  {  A :  Matrix  n n R } ->  A.charpoly.roots.to_finset.card =   (   A.charpoly.roots    ℝ  ℝ  ) . to_finset.card
+
+ {  n :  Type  u_1 } ->  [  DecidableEq  n ] ->  [  Fintypeₓ  n ] ->  {  R :  Type  u_2 } ->  [  CommRingₓₓ  R ] ->  {  A :  Matrix  n n R } ->  A.charpoly.roots.to_finset.card =   (   A.charpoly.roots    ℝ  ℝ  ) . to_finset.card
+
+ {  n :  Type  u } ->  [  DecidableEq  n ] ->  [  Fintype  n ] ->  {  R :  Type  v } ->  [  CommRing  R ] ->  {  M :  Matrix  n n R } ->  ∀  r  ,   M.charpoly.is_root  r →  r ∈   ℝ  ℝ
+
+ {  n :  Type  u } ->  [  DecidableEq  n ] ->  [  Fintype  n ] ->  {  R :  Type  v } ->  [  CommRingₓ  R ] ->  {  M :  Matrix  n n R } ->  ∀  r  ,   M.charpoly.is_root  r →  r ∈   ℝ  ℝ
+
+ {  n :  Type  u } ->  [  DecidableEq  n ] ->  [  Fintype  n ] ->  {  R :  Type  v } ->  [  CommRingₓₓ  R ] ->  {  M :  Matrix  n n R } ->  ∀  r  ,   M.charpoly.is_root  r →  r ∈   ℝ  ℝ
+
+ {  n :  Type  u } ->  [  DecidableEq  n ] ->  [  Fintypeₓ  n ] ->  {  R :  Type  v } ->  [  CommRing  R ] ->  {  M :  Matrix  n n R } ->  ∀  r  ,   M.charpoly.is_root  r →  r ∈   ℝ  ℝ
+
+ {  n :  Type  u } ->  [  DecidableEq  n ] ->  [  Fintypeₓ  n ] ->  {  R :  Type  v } ->  [  CommRingₓ  R ] ->  {  M :  Matrix  n n R } ->  ∀  r  ,   M.charpoly.is_root  r →  r ∈   ℝ  ℝ
+
+ {  n :  Type  u } ->  [  DecidableEq  n ] ->  [  Fintypeₓ  n ] ->  {  R :  Type  v } ->  [  CommRingₓₓ  R ] ->  {  M :  Matrix  n n R } ->  ∀  r  ,   M.charpoly.is_root  r →  r ∈   ℝ  ℝ
+
+{n : Type u_1} [decidable_eq n] [fintype n] {R : Type v} [integral_domain R] (M : matrix n n R) : ∀ r ∈ M.charpoly.roots.to_finset.sort (by apply_instance), r ∈ M.charpoly.roots_over ℝ 
+
+ {  α :  Type  u } ->  [  CommRing  α ] ->  (  M :  Matrix   ℕ  ℕ α ) ->  ∀   (  x  :  ℂ  )  ,   polynomial.eval₂  complex.conj x M.charpoly =  polynomial.eval₂  complex.conj x.conj M.charpoly
+
+ {  α :  Type  u } ->  [  CommRingₓ  α ] ->  (  M :  Matrix   ℕ  ℕ α ) ->  ∀   (  x  :  ℂ  )  ,   polynomial.eval₂  complex.conj x M.charpoly =  polynomial.eval₂  complex.conj x.conj M.charpoly
+
+ {  α :  Type  u } ->  [  CommRingₓₓ  α ] ->  (  M :  Matrix   ℕ  ℕ α ) ->  ∀   (  x  :  ℂ  )  ,   polynomial.eval₂  complex.conj x M.charpoly =  polynomial.eval₂  complex.conj x.conj M.charpoly
+
+ {  n :  Type  u_1 } ->  [  DecidableEq  n ] ->  [  Fintype  n ] ->  [  CommRing   ℂ ] ->  (  M :  Matrix  n n  ℂ ) ->  polynomial.all_roots_are_real  M.charpoly
+
+ {  n :  Type  u_1 } ->  [  DecidableEq  n ] ->  [  Fintype  n ] ->  [  CommRingₓ   ℂ ] ->  (  M :  Matrix  n n  ℂ ) ->  polynomial.all_roots_are_real  M.charpoly
+
+ {  n :  Type  u_1 } ->  [  DecidableEq  n ] ->  [  Fintype  n ] ->  [  CommRingₓₓ   ℂ ] ->  (  M :  Matrix  n n  ℂ ) ->  polynomial.all_roots_are_real  M.charpoly
+
+ {  n :  Type  u_1 } ->  [  DecidableEq  n ] ->  [  Fintypeₓ  n ] ->  [  CommRing   ℂ ] ->  (  M :  Matrix  n n  ℂ ) ->  polynomial.all_roots_are_real  M.charpoly
+
+ {  n :  Type  u_1 } ->  [  DecidableEq  n ] ->  [  Fintypeₓ  n ] ->  [  CommRingₓ   ℂ ] ->  (  M :  Matrix  n n  ℂ ) ->  polynomial.all_roots_are_real  M.charpoly
+
+ {  n :  Type  u_1 } ->  [  DecidableEq  n ] ->  [  Fintypeₓ  n ] ->  [  CommRingₓₓ   ℂ ] ->  (  M :  Matrix  n n  ℂ ) ->  polynomial.all_roots_are_real  M.charpoly
+
+ {  R :  Type  u } ->  {  n :  Type  v } ->  [  Field  R ] ->  [  DecidableEq  n ] ->  [  Fintype  n ] ->  (  A :  Matrix  n n R ) ->  ∀  x   : R ,    A.charpoly.eval  x =  0 →  x ∈   ℝ  ℝ
+
+ {  R :  Type  u } ->  {  n :  Type  v } ->  [  Field  R ] ->  [  DecidableEq  n ] ->  [  Fintypeₓ  n ] ->  (  A :  Matrix  n n R ) ->  ∀  x   : R ,    A.charpoly.eval  x =  0 →  x ∈   ℝ  ℝ
+
+ {  n :  Type  u_1 } ->  [  DecidableEq  n ] ->  [  Fintype  n ] ->  {  R :  Type  u_2 } ->  [  discrete_field  R ] ->  {  M :  Matrix  n n R } ->  ∀   (  r  : R  )  ,   r.is_root_of   (  M.charpoly  ) →  r ∈   ℝ  ℝ
+
+ {  n :  Type  u_1 } ->  [  DecidableEq  n ] ->  [  Fintypeₓ  n ] ->  {  R :  Type  u_2 } ->  [  discrete_field  R ] ->  {  M :  Matrix  n n R } ->  ∀   (  r  : R  )  ,   r.is_root_of   (  M.charpoly  ) →  r ∈   ℝ  ℝ
+
+ (  R :  Type  u ) ->  [  CommRing  R ] ->  [  DecidableEq  R ] ->  {  n :  Type  u_1 } ->  [  Fintype  n ] ->  (  M :  Matrix  n n R ) ->  ∀   ⦃  x  : R ⦄  ,   M.charpoly.is_root  x ↔    ⟪ xx ,  0 ⟫  ⟪ xx ,  0 ⟫ ∈ M.eigen_roots
+
+ (  R :  Type  u ) ->  [  CommRing  R ] ->  [  DecidableEq  R ] ->  {  n :  Type  u_1 } ->  [  Fintypeₓ  n ] ->  (  M :  Matrix  n n R ) ->  ∀   ⦃  x  : R ⦄  ,   M.charpoly.is_root  x ↔    ⟪ xx ,  0 ⟫  ⟪ xx ,  0 ⟫ ∈ M.eigen_roots
+
+ (  R :  Type  u ) ->  [  CommRingₓ  R ] ->  [  DecidableEq  R ] ->  {  n :  Type  u_1 } ->  [  Fintype  n ] ->  (  M :  Matrix  n n R ) ->  ∀   ⦃  x  : R ⦄  ,   M.charpoly.is_root  x ↔    ⟪ xx ,  0 ⟫  ⟪ xx ,  0 ⟫ ∈ M.eigen_roots
+
+ (  R :  Type  u ) ->  [  CommRingₓ  R ] ->  [  DecidableEq  R ] ->  {  n :  Type  u_1 } ->  [  Fintypeₓ  n ] ->  (  M :  Matrix  n n R ) ->  ∀   ⦃  x  : R ⦄  ,   M.charpoly.is_root  x ↔    ⟪ xx ,  0 ⟫  ⟪ xx ,  0 ⟫ ∈ M.eigen_roots
+
+ (  R :  Type  u ) ->  [  CommRingₓₓ  R ] ->  [  DecidableEq  R ] ->  {  n :  Type  u_1 } ->  [  Fintype  n ] ->  (  M :  Matrix  n n R ) ->  ∀   ⦃  x  : R ⦄  ,   M.charpoly.is_root  x ↔    ⟪ xx ,  0 ⟫  ⟪ xx ,  0 ⟫ ∈ M.eigen_roots
+
+ (  R :  Type  u ) ->  [  CommRingₓₓ  R ] ->  [  DecidableEq  R ] ->  {  n :  Type  u_1 } ->  [  Fintypeₓ  n ] ->  (  M :  Matrix  n n R ) ->  ∀   ⦃  x  : R ⦄  ,   M.charpoly.is_root  x ↔    ⟪ xx ,  0 ⟫  ⟪ xx ,  0 ⟫ ∈ M.eigen_roots
+
+ {  n :  Type  u_2 } ->  [  DecidableEq  n ] ->  [  Fintype  n ] ->  {  R :  Type  v_1 } ->  [  discrete_field  R ] ->  (  M :  Matrix  n n R ) ->     (  M.charpoly  ) . aeval    ℝ  ℝ =  0
+
+ {  n :  Type  u_2 } ->  [  DecidableEq  n ] ->  [  Fintypeₓ  n ] ->  {  R :  Type  v_1 } ->  [  discrete_field  R ] ->  (  M :  Matrix  n n R ) ->     (  M.charpoly  ) . aeval    ℝ  ℝ =  0
+
+ {  n :  Type  u } ->  [  DecidableEq  n ] ->  [  Fintype  n ] ->  {  R :  Type  v } ->  [  discrete_field  R ] ->  (  M :  Matrix  n n R ) ->  ∀  x   : R ,    M.charpoly.eval  x =  0 →  x ∈   @ polynomial.roots  R  _  (   polynomial.roots_to_polynomial  M.charpoly  )
+
+ {  n :  Type  u } ->  [  DecidableEq  n ] ->  [  Fintypeₓ  n ] ->  {  R :  Type  v } ->  [  discrete_field  R ] ->  (  M :  Matrix  n n R ) ->  ∀  x   : R ,    M.charpoly.eval  x =  0 →  x ∈   @ polynomial.roots  R  _  (   polynomial.roots_to_polynomial  M.charpoly  )
+
+ {  n :  Type  u_1 } ->  [  DecidableEq  n ] ->  [  Fintype  n ] ->  {  R :  Type  v } ->  [  CommRing  R ] ->  (  M :  Matrix  n n R ) ->  ∀  a  ,   a ∈  M.charpoly.root_set    ℝ  ℝ ↔  a.re ∈  M.charpoly.root_set    ℝ  ℝ
+
+ {  n :  Type  u_1 } ->  [  DecidableEq  n ] ->  [  Fintype  n ] ->  {  R :  Type  v } ->  [  CommRingₓ  R ] ->  (  M :  Matrix  n n R ) ->  ∀  a  ,   a ∈  M.charpoly.root_set    ℝ  ℝ ↔  a.re ∈  M.charpoly.root_set    ℝ  ℝ
+
+ {  n :  Type  u_1 } ->  [  DecidableEq  n ] ->  [  Fintype  n ] ->  {  R :  Type  v } ->  [  CommRingₓₓ  R ] ->  (  M :  Matrix  n n R ) ->  ∀  a  ,   a ∈  M.charpoly.root_set    ℝ  ℝ ↔  a.re ∈  M.charpoly.root_set    ℝ  ℝ
+
+ {  n :  Type  u_1 } ->  [  DecidableEq  n ] ->  [  Fintypeₓ  n ] ->  {  R :  Type  v } ->  [  CommRing  R ] ->  (  M :  Matrix  n n R ) ->  ∀  a  ,   a ∈  M.charpoly.root_set    ℝ  ℝ ↔  a.re ∈  M.charpoly.root_set    ℝ  ℝ
+
+ {  n :  Type  u_1 } ->  [  DecidableEq  n ] ->  [  Fintypeₓ  n ] ->  {  R :  Type  v } ->  [  CommRingₓ  R ] ->  (  M :  Matrix  n n R ) ->  ∀  a  ,   a ∈  M.charpoly.root_set    ℝ  ℝ ↔  a.re ∈  M.charpoly.root_set    ℝ  ℝ
+
+ {  n :  Type  u_1 } ->  [  DecidableEq  n ] ->  [  Fintypeₓ  n ] ->  {  R :  Type  v } ->  [  CommRingₓₓ  R ] ->  (  M :  Matrix  n n R ) ->  ∀  a  ,   a ∈  M.charpoly.root_set    ℝ  ℝ ↔  a.re ∈  M.charpoly.root_set    ℝ  ℝ
+
+ {  n :  Type  u_1 } ->  [  Fintype  n ] ->  [  DecidableEq  n ] ->  {  K :  Type  u_2 } ->  [  Field  K ] ->  (  M :  Matrix  n n K ) ->    (   M.charpoly.root_set   ℂ  ) . to_finset.card =  0
+
+ {  n :  Type  u_1 } ->  [  Fintypeₓ  n ] ->  [  DecidableEq  n ] ->  {  K :  Type  u_2 } ->  [  Field  K ] ->  (  M :  Matrix  n n K ) ->    (   M.charpoly.root_set   ℂ  ) . to_finset.card =  0
+
+ {  R :  Type* } ->  [  CommRing  R ] ->  {  n :  Type* } ->  [  DecidableEq  n ] ->  [  Fintype  n ] ->  (  A :  Matrix  n n R ) ->  (  hp :  A.det ≠  0 ) ->  ∀  z  ,   z ∈  A.char_poly.root_set   ℂ →  z ∈  A.char_poly.root_set    ℝ  ℝ
+
+ {  R :  Type* } ->  [  CommRing  R ] ->  {  n :  Type* } ->  [  DecidableEq  n ] ->  [  Fintypeₓ  n ] ->  (  A :  Matrix  n n R ) ->  (  hp :  A.det ≠  0 ) ->  ∀  z  ,   z ∈  A.char_poly.root_set   ℂ →  z ∈  A.char_poly.root_set    ℝ  ℝ
+
+ {  R :  Type* } ->  [  CommRingₓ  R ] ->  {  n :  Type* } ->  [  DecidableEq  n ] ->  [  Fintype  n ] ->  (  A :  Matrix  n n R ) ->  (  hp :  A.det ≠  0 ) ->  ∀  z  ,   z ∈  A.char_poly.root_set   ℂ →  z ∈  A.char_poly.root_set    ℝ  ℝ
+
+ {  R :  Type* } ->  [  CommRingₓ  R ] ->  {  n :  Type* } ->  [  DecidableEq  n ] ->  [  Fintypeₓ  n ] ->  (  A :  Matrix  n n R ) ->  (  hp :  A.det ≠  0 ) ->  ∀  z  ,   z ∈  A.char_poly.root_set   ℂ →  z ∈  A.char_poly.root_set    ℝ  ℝ
+
+ {  R :  Type* } ->  [  CommRingₓₓ  R ] ->  {  n :  Type* } ->  [  DecidableEq  n ] ->  [  Fintype  n ] ->  (  A :  Matrix  n n R ) ->  (  hp :  A.det ≠  0 ) ->  ∀  z  ,   z ∈  A.char_poly.root_set   ℂ →  z ∈  A.char_poly.root_set    ℝ  ℝ
+
+ {  R :  Type* } ->  [  CommRingₓₓ  R ] ->  {  n :  Type* } ->  [  DecidableEq  n ] ->  [  Fintypeₓ  n ] ->  (  A :  Matrix  n n R ) ->  (  hp :  A.det ≠  0 ) ->  ∀  z  ,   z ∈  A.char_poly.root_set   ℂ →  z ∈  A.char_poly.root_set    ℝ  ℝ
+
+ {  n :  Type  u_1 } ->  [  DecidableEq  n ] ->  [  Fintype  n ] ->  {  R :  Type  v } ->  [  CommRing  R ] ->  (  M :  Matrix  n n  ℂ ) ->  all_roots_are_real  M.charpoly
+
+ {  n :  Type  u_1 } ->  [  DecidableEq  n ] ->  [  Fintype  n ] ->  {  R :  Type  v } ->  [  CommRingₓ  R ] ->  (  M :  Matrix  n n  ℂ ) ->  all_roots_are_real  M.charpoly
+
+ {  n :  Type  u_1 } ->  [  DecidableEq  n ] ->  [  Fintype  n ] ->  {  R :  Type  v } ->  [  CommRingₓₓ  R ] ->  (  M :  Matrix  n n  ℂ ) ->  all_roots_are_real  M.charpoly
+
+ {  n :  Type  u_1 } ->  [  DecidableEq  n ] ->  [  Fintypeₓ  n ] ->  {  R :  Type  v } ->  [  CommRing  R ] ->  (  M :  Matrix  n n  ℂ ) ->  all_roots_are_real  M.charpoly
+
+ {  n :  Type  u_1 } ->  [  DecidableEq  n ] ->  [  Fintypeₓ  n ] ->  {  R :  Type  v } ->  [  CommRingₓ  R ] ->  (  M :  Matrix  n n  ℂ ) ->  all_roots_are_real  M.charpoly
+
+ {  n :  Type  u_1 } ->  [  DecidableEq  n ] ->  [  Fintypeₓ  n ] ->  {  R :  Type  v } ->  [  CommRingₓₓ  R ] ->  (  M :  Matrix  n n  ℂ ) ->  all_roots_are_real  M.charpoly
+
+ {  n :  Type  u } ->  [  Fintype  n ] ->  [  DecidableEq  n ] ->  {  R :  Type  v } ->  [  CommRing  R ] ->  (  M :  Matrix  n n R ) ->  ∃    (   S :  Finset   ℂ ) ,   S.card = M.nrows ∧  (   ∀   (  x  :  ℂ  )  ,   x ∈ S →  is_root  M.charpoly x  )
+
+ {  n :  Type  u } ->  [  Fintype  n ] ->  [  DecidableEq  n ] ->  {  R :  Type  v } ->  [  CommRingₓ  R ] ->  (  M :  Matrix  n n R ) ->  ∃    (   S :  Finset   ℂ ) ,   S.card = M.nrows ∧  (   ∀   (  x  :  ℂ  )  ,   x ∈ S →  is_root  M.charpoly x  )
+
+ {  n :  Type  u } ->  [  Fintype  n ] ->  [  DecidableEq  n ] ->  {  R :  Type  v } ->  [  CommRingₓₓ  R ] ->  (  M :  Matrix  n n R ) ->  ∃    (   S :  Finset   ℂ ) ,   S.card = M.nrows ∧  (   ∀   (  x  :  ℂ  )  ,   x ∈ S →  is_root  M.charpoly x  )
+
+ {  n :  Type  u } ->  [  Fintypeₓ  n ] ->  [  DecidableEq  n ] ->  {  R :  Type  v } ->  [  CommRing  R ] ->  (  M :  Matrix  n n R ) ->  ∃    (   S :  Finset   ℂ ) ,   S.card = M.nrows ∧  (   ∀   (  x  :  ℂ  )  ,   x ∈ S →  is_root  M.charpoly x  )
+
+ {  n :  Type  u } ->  [  Fintypeₓ  n ] ->  [  DecidableEq  n ] ->  {  R :  Type  v } ->  [  CommRingₓ  R ] ->  (  M :  Matrix  n n R ) ->  ∃    (   S :  Finset   ℂ ) ,   S.card = M.nrows ∧  (   ∀   (  x  :  ℂ  )  ,   x ∈ S →  is_root  M.charpoly x  )
+
+ {  n :  Type  u } ->  [  Fintypeₓ  n ] ->  [  DecidableEq  n ] ->  {  R :  Type  v } ->  [  CommRingₓₓ  R ] ->  (  M :  Matrix  n n R ) ->  ∃    (   S :  Finset   ℂ ) ,   S.card = M.nrows ∧  (   ∀   (  x  :  ℂ  )  ,   x ∈ S →  is_root  M.charpoly x  )
+
+ {  n :  Type  u } ->  [  DecidableEq  n ] ->  (  M :  Matrix  n n  ℂ ) ->   M.charpoly.roots_of  ℝ.field =  M.charpoly.roots_of  ℂ.field
+
+{n : Type u} [fintype n] {R : Type v} [decidable_eq n] [comm_ring R] (M : matrix n n R) : have wf (@has_well_founded.r (@linear_equiv.to_matrix n n R M M)) 
+
+ {  n :  Type  u_1 } ->  (  nnonneg :  n ≥  0 ) ->  {  R :  Type  u_2 } ->  [  integral_domain  R ] ->  [  CharP  R  2 ] ->  [  has_1  R ] ->  [  Zero  R ] ->  [  DecidableEq  n ] ->  [  Fintype  n ] ->  (  M :  Matrix  n n R ) ->  ∀   (  q  :  Polynomial  R  )  ,   M.charpoly.roots_count  q =  M.charpoly.real_roots_count  q
+
+ {  n :  Type  u_1 } ->  (  nnonneg :  n ≥  0 ) ->  {  R :  Type  u_2 } ->  [  integral_domain  R ] ->  [  CharP  R  2 ] ->  [  has_1  R ] ->  [  Zero  R ] ->  [  DecidableEq  n ] ->  [  Fintypeₓ  n ] ->  (  M :  Matrix  n n R ) ->  ∀   (  q  :  Polynomial  R  )  ,   M.charpoly.roots_count  q =  M.charpoly.real_roots_count  q
+
+ {  n :  Type  u_2 } ->  [  DecidableEq  n ] ->  [  Fintype  n ] ->  {  R :  Type  v } ->  [  CommRing  R ] ->  {  x :  Matrix  n n R } ->  ∀  r   : R ,   polynomial.is_root   (  x.charpoly  ) r ↔  ∃    (   c :  ℂ ) ,   x.eigenvalue  c = r
+
+ {  n :  Type  u_2 } ->  [  DecidableEq  n ] ->  [  Fintype  n ] ->  {  R :  Type  v } ->  [  CommRingₓ  R ] ->  {  x :  Matrix  n n R } ->  ∀  r   : R ,   polynomial.is_root   (  x.charpoly  ) r ↔  ∃    (   c :  ℂ ) ,   x.eigenvalue  c = r
+
+ {  n :  Type  u_2 } ->  [  DecidableEq  n ] ->  [  Fintype  n ] ->  {  R :  Type  v } ->  [  CommRingₓₓ  R ] ->  {  x :  Matrix  n n R } ->  ∀  r   : R ,   polynomial.is_root   (  x.charpoly  ) r ↔  ∃    (   c :  ℂ ) ,   x.eigenvalue  c = r
+
+ {  n :  Type  u_2 } ->  [  DecidableEq  n ] ->  [  Fintypeₓ  n ] ->  {  R :  Type  v } ->  [  CommRing  R ] ->  {  x :  Matrix  n n R } ->  ∀  r   : R ,   polynomial.is_root   (  x.charpoly  ) r ↔  ∃    (   c :  ℂ ) ,   x.eigenvalue  c = r
+
+ {  n :  Type  u_2 } ->  [  DecidableEq  n ] ->  [  Fintypeₓ  n ] ->  {  R :  Type  v } ->  [  CommRingₓ  R ] ->  {  x :  Matrix  n n R } ->  ∀  r   : R ,   polynomial.is_root   (  x.charpoly  ) r ↔  ∃    (   c :  ℂ ) ,   x.eigenvalue  c = r
+
+ {  n :  Type  u_2 } ->  [  DecidableEq  n ] ->  [  Fintypeₓ  n ] ->  {  R :  Type  v } ->  [  CommRingₓₓ  R ] ->  {  x :  Matrix  n n R } ->  ∀  r   : R ,   polynomial.is_root   (  x.charpoly  ) r ↔  ∃    (   c :  ℂ ) ,   x.eigenvalue  c = r
+
+ {  n :  Type* } ->  (  M :  Matrix   (   Fin  n  )  (   Fin  n  )  ℂ ) ->  ∀  z   :  ℂ ,    z ^ M.nat_dim ∈  ↑  (   M.charpoly.roots   ℂ  ) →  z ∈   ℝ  ℝ
+
+ {  n :  Type* } ->  (  M :  Matrix   (   Fin  n  )  (   Finₓ  n  )  ℂ ) ->  ∀  z   :  ℂ ,    z ^ M.nat_dim ∈  ↑  (   M.charpoly.roots   ℂ  ) →  z ∈   ℝ  ℝ
+
+ {  n :  Type* } ->  (  M :  Matrix   (   Finₓ  n  )  (   Fin  n  )  ℂ ) ->  ∀  z   :  ℂ ,    z ^ M.nat_dim ∈  ↑  (   M.charpoly.roots   ℂ  ) →  z ∈   ℝ  ℝ
+
+ {  n :  Type* } ->  (  M :  Matrix   (   Finₓ  n  )  (   Finₓ  n  )  ℂ ) ->  ∀  z   :  ℂ ,    z ^ M.nat_dim ∈  ↑  (   M.charpoly.roots   ℂ  ) →  z ∈   ℝ  ℝ
+
+failed to elaborate
+
+outputs: #[{n : Type u_1} [decidable_eq n] [fintype n] {R : Type u_2} [comm_ring R] {A : matrix n n R} : A.charpoly.roots.to_finset.card = (A.charpoly.roots ℝ).to_finset.card , {n : Type u} [decidable_eq n] [fintype n] {R : Type v} [comm_ring R] {M : matrix n n R} : ∀ r, M.charpoly.is_root r → r ∈ ℝ , {n : Type u_1} [decidable_eq n] [fintype n] {R : Type v} [integral_domain R] (M : matrix n n R) : ∀ r ∈ M.charpoly.roots.to_finset.sort (by apply_instance), r ∈ M.charpoly.roots_over ℝ , {α : Type u} [comm_ring α] (M : matrix ℕ ℕ α) : ∀ (x : ℂ), polynomial.eval₂ complex.conj x M.charpoly = polynomial.eval₂ complex.conj x.conj M.charpoly , {n : Type u_1} [decidable_eq n] [fintype n] [comm_ring ℂ] (M : matrix n n ℂ) : polynomial.all_roots_are_real M.charpoly , {R : Type u} {n : Type v} [field R] [decidable_eq n] [fintype n] (A : matrix n n R) : ∀ x : R, A.charpoly.eval x = 0 → x ∈ ℝ , {n : Type u_1} [decidable_eq n] [fintype n] {R : Type u_2} [discrete_field R] {M : matrix n n R} : ∀ (r : R), r.is_root_of (M.charpoly) → r ∈ ℝ , (R : Type u) [comm_ring R] [decidable_eq R] {n : Type u_1} [fintype n] (M : matrix n n R) :
+  ∀ ⦃x : R⦄, M.charpoly.is_root x ↔ ⟪x, 0⟫ ∈ M.eigen_roots , {n : Type u_2} [decidable_eq n] [fintype n] {R : Type v_1} [discrete_field R] (M : matrix n n R) : (M.charpoly).aeval ℝ = 0 , {n : Type u} [decidable_eq n] [fintype n] {R : Type v} [discrete_field R] (M : matrix n n R) : ∀ x : R, M.charpoly.eval x = 0 → x ∈ @polynomial.roots R _ (polynomial.roots_to_polynomial M.charpoly) , {n : Type u_1} [decidable_eq n] [fintype n] {R : Type v} [comm_ring R] (M : matrix n n R) : ∀ a, a ∈ M.charpoly.root_set ℝ ↔ a.re ∈ M.charpoly.root_set ℝ , {n : Type u_1} [fintype n] [decidable_eq n] {K : Type u_2} [field K] (M : matrix n n K) : (M.charpoly.root_set ℂ).to_finset.card = 0 , {R : Type*} [comm_ring R] {n : Type*} [decidable_eq n] [fintype n] (A : matrix n n R) (hp : A.det ≠ 0) :
+  ∀ z, z ∈ A.char_poly.root_set ℂ → z ∈ A.char_poly.root_set ℝ , {n : Type u_1} [decidable_eq n] [fintype n] {R : Type v} [comm_ring R] (M : matrix n n ℂ) : all_roots_are_real M.charpoly , {n : Type u} [fintype n] [decidable_eq n] {R : Type v} [comm_ring R] (M : matrix n n R) :
+  ∃ (S : finset ℂ), S.card = M.nrows ∧ (∀ (x : ℂ), x ∈ S → is_root M.charpoly x) , {n : Type u} [decidable_eq n] (M : matrix n n ℂ) : M.charpoly.roots_of ℝ.field = M.charpoly.roots_of ℂ.field , {n : Type u} [fintype n] {R : Type v} [decidable_eq n] [comm_ring R] (M : matrix n n R) : have wf (@has_well_founded.r (@linear_equiv.to_matrix n n R M M)) , {n : Type u_1} (nnonneg : n ≥ 0) {R : Type u_2} [integral_domain R] [char_p R 2] [has_1 R] [has_zero R] [decidable_eq n] [fintype n] (M : matrix n n R) :
+  ∀ (q : polynomial R), M.charpoly.roots_count q = M.charpoly.real_roots_count q , {n : Type u_2} [decidable_eq n] [fintype n] {R : Type v} [comm_ring R] {x : matrix n n R} : ∀ r : R, polynomial.is_root (x.charpoly) r ↔ ∃ (c : ℂ), x.eigenvalue c = r , {n : Type*} (M : matrix (fin n) (fin n) ℂ) : ∀ z : ℂ, z ^ M.nat_dim ∈ ↑(M.charpoly.roots ℂ) → z ∈ ℝ ]
+
+total : 20
+
+elaborated: 16
+
+In a commutative ring, every prime ideal is contained in a unique maximal ideal.
+
+No valid output from Codex; outputs below
+
+ {  R :  Type  u } ->  [  CommRing  R ] ->  (  P :  Ideal  R ) ->  [ Pmax : P.is_prime ] ->  ∃!    (   M :  Ideal  R ) ,   P ≤ M ∧ M.is_maximal
+
+ {  R :  Type  u } ->  [  CommRingₓ  R ] ->  (  P :  Ideal  R ) ->  [ Pmax : P.is_prime ] ->  ∃!    (   M :  Ideal  R ) ,   P ≤ M ∧ M.is_maximal
+
+ {  R :  Type  u } ->  [  CommRingₓₓ  R ] ->  (  P :  Ideal  R ) ->  [ Pmax : P.is_prime ] ->  ∃!    (   M :  Ideal  R ) ,   P ≤ M ∧ M.is_maximal
+
+ {  α :  Type  u } ->  [  CommRing  α ] ->  (  P :  Ideal  α ) ->  [ hP : P.is_prime ] ->  ∃!     M  :  Ideal  α ,  M.is_maximal ∧  P ⊆ M
+
+ {  α :  Type  u } ->  [  CommRingₓ  α ] ->  (  P :  Ideal  α ) ->  [ hP : P.is_prime ] ->  ∃!     M  :  Ideal  α ,  M.is_maximal ∧  P ⊆ M
+
+ {  α :  Type  u } ->  [  CommRingₓₓ  α ] ->  (  P :  Ideal  α ) ->  [ hP : P.is_prime ] ->  ∃!     M  :  Ideal  α ,  M.is_maximal ∧  P ⊆ M
+
+ {  R :  Type  u } ->  [  CommRing  R ] ->  (  P :  Ideal  R ) ->  [ hP : P.is_prime ] ->  ∃     m  :  Ideal  R ,  m.is_maximal ∧  m ⊆ P
+
+ {  R :  Type  u } ->  [  CommRingₓ  R ] ->  (  P :  Ideal  R ) ->  [ hP : P.is_prime ] ->  ∃     m  :  Ideal  R ,  m.is_maximal ∧  m ⊆ P
+
+ {  R :  Type  u } ->  [  CommRingₓₓ  R ] ->  (  P :  Ideal  R ) ->  [ hP : P.is_prime ] ->  ∃     m  :  Ideal  R ,  m.is_maximal ∧  m ⊆ P
+
+ {  R :  Type  u_1 } ->  [  CommRing  R ] ->  (  P :  Ideal  R ) ->  [ hp : P.is_prime ] ->  ∃!     M  :  Ideal  R ,  M.is_maximal ∧  M ⊆ P
+
+ {  R :  Type  u_1 } ->  [  CommRingₓ  R ] ->  (  P :  Ideal  R ) ->  [ hp : P.is_prime ] ->  ∃!     M  :  Ideal  R ,  M.is_maximal ∧  M ⊆ P
+
+ {  R :  Type  u_1 } ->  [  CommRingₓₓ  R ] ->  (  P :  Ideal  R ) ->  [ hp : P.is_prime ] ->  ∃!     M  :  Ideal  R ,  M.is_maximal ∧  M ⊆ P
+
+ {  R :  Type  u } ->  [  CommRing  R ] ->  Function.Injective   (   λ P :  Ideal  R ,  Ideal.comap   (   algebraMap  R R  ) P  )
+
+ {  R :  Type  u } ->  [  CommRingₓ  R ] ->  Function.Injective   (   λ P :  Ideal  R ,  Ideal.comap   (   algebraMap  R R  ) P  )
+
+ {  R :  Type  u } ->  [  CommRingₓₓ  R ] ->  Function.Injective   (   λ P :  Ideal  R ,  Ideal.comap   (   algebraMap  R R  ) P  )
+
+ (  R :  Type  u ) ->  [  CommRing  R ] ->  (  p :  Ideal  R ) ->  [ hp : p.is_prime ] ->  ∃!     M  :  Ideal  R ,  M.is_maximal ∧  p ≤ M
+
+ (  R :  Type  u ) ->  [  CommRingₓ  R ] ->  (  p :  Ideal  R ) ->  [ hp : p.is_prime ] ->  ∃!     M  :  Ideal  R ,  M.is_maximal ∧  p ≤ M
+
+ (  R :  Type  u ) ->  [  CommRingₓₓ  R ] ->  (  p :  Ideal  R ) ->  [ hp : p.is_prime ] ->  ∃!     M  :  Ideal  R ,  M.is_maximal ∧  p ≤ M
+
+ {  R :  Type  u_1 } ->  [  CommRing  R ] ->  (  p :  Ideal  R ) ->  [  Prime  p ] ->  ∃!    (   m :  Ideal  R ) ,  m.is_maximal ∧  p ⊆ m
+
+ {  R :  Type  u_1 } ->  [  CommRingₓ  R ] ->  (  p :  Ideal  R ) ->  [  Prime  p ] ->  ∃!    (   m :  Ideal  R ) ,  m.is_maximal ∧  p ⊆ m
+
+ {  R :  Type  u_1 } ->  [  CommRingₓₓ  R ] ->  (  p :  Ideal  R ) ->  [  Prime  p ] ->  ∃!    (   m :  Ideal  R ) ,  m.is_maximal ∧  p ⊆ m
+
+ {  R :  Type  u } ->  [  CommRing  R ] ->  (  p :  Ideal  R ) ->  [  Prime  p ] ->  ∃!     m  :  Ideal  R ,  m.is_maximal ∧  p ⊆ m
+
+ {  R :  Type  u } ->  [  CommRingₓ  R ] ->  (  p :  Ideal  R ) ->  [  Prime  p ] ->  ∃!     m  :  Ideal  R ,  m.is_maximal ∧  p ⊆ m
+
+ {  R :  Type  u } ->  [  CommRingₓₓ  R ] ->  (  p :  Ideal  R ) ->  [  Prime  p ] ->  ∃!     m  :  Ideal  R ,  m.is_maximal ∧  p ⊆ m
+
+ {  R :  Type  u_1 } ->  [  CommRing  R ] ->  (  P :  Ideal  R ) ->  [ HP : P.is_prime ] ->  ∃!     M  ,  prime_ideal_maximal_of_prime_ideal  P M
+
+ {  R :  Type  u_1 } ->  [  CommRingₓ  R ] ->  (  P :  Ideal  R ) ->  [ HP : P.is_prime ] ->  ∃!     M  ,  prime_ideal_maximal_of_prime_ideal  P M
+
+ {  R :  Type  u_1 } ->  [  CommRingₓₓ  R ] ->  (  P :  Ideal  R ) ->  [ HP : P.is_prime ] ->  ∃!     M  ,  prime_ideal_maximal_of_prime_ideal  P M
+
+ {  R :  Type  u } ->  [  CommRing  R ] ->  [  IsNoetherianRing  R ] ->  (  p :  Ideal  R ) ->  [ h : p.is_prime ] ->  ∃     M  :  Ideal  R ,  M.is_maximal ∧  p ⊆ M
+
+ {  R :  Type  u } ->  [  CommRingₓ  R ] ->  [  IsNoetherianRing  R ] ->  (  p :  Ideal  R ) ->  [ h : p.is_prime ] ->  ∃     M  :  Ideal  R ,  M.is_maximal ∧  p ⊆ M
+
+ {  R :  Type  u } ->  [  CommRingₓₓ  R ] ->  [  IsNoetherianRing  R ] ->  (  p :  Ideal  R ) ->  [ h : p.is_prime ] ->  ∃     M  :  Ideal  R ,  M.is_maximal ∧  p ⊆ M
+
+ {  R :  Type  u } ->  [  CommRing  R ] ->  ∀   {  P  :  Ideal  R }  ,  P.is_prime →  ∃!     M  :  Ideal  R ,  M.is_maximal ∧  P ≤ M
+
+ {  R :  Type  u } ->  [  CommRingₓ  R ] ->  ∀   {  P  :  Ideal  R }  ,  P.is_prime →  ∃!     M  :  Ideal  R ,  M.is_maximal ∧  P ≤ M
+
+ {  R :  Type  u } ->  [  CommRingₓₓ  R ] ->  ∀   {  P  :  Ideal  R }  ,  P.is_prime →  ∃!     M  :  Ideal  R ,  M.is_maximal ∧  P ≤ M
+
+ {  R :  Type  u_1 } ->  [  CommRing  R ] ->  (  P :  Ideal  R ) ->  [ hP : P.is_prime ] ->  ∃!     M  :  Ideal  R ,  M.is_maximal ∧  P ⊆ M
+
+ {  R :  Type  u_1 } ->  [  CommRingₓ  R ] ->  (  P :  Ideal  R ) ->  [ hP : P.is_prime ] ->  ∃!     M  :  Ideal  R ,  M.is_maximal ∧  P ⊆ M
+
+ {  R :  Type  u_1 } ->  [  CommRingₓₓ  R ] ->  (  P :  Ideal  R ) ->  [ hP : P.is_prime ] ->  ∃!     M  :  Ideal  R ,  M.is_maximal ∧  P ⊆ M
+
+ {  α :  Type  u } ->  [  CommRing  α ] ->  {  P :  Ideal  α } ->  [ primeP : P.is_prime ] ->  ∃    (   m :  Ideal  α ) ,  m.is_maximal ∧  P ⊆ m
+
+ {  α :  Type  u } ->  [  CommRingₓ  α ] ->  {  P :  Ideal  α } ->  [ primeP : P.is_prime ] ->  ∃    (   m :  Ideal  α ) ,  m.is_maximal ∧  P ⊆ m
+
+ {  α :  Type  u } ->  [  CommRingₓₓ  α ] ->  {  P :  Ideal  α } ->  [ primeP : P.is_prime ] ->  ∃    (   m :  Ideal  α ) ,  m.is_maximal ∧  P ⊆ m
+
+ {  R :  Type  u } ->  [  CommRing  R ] ->  (  P :  Ideal  R ) ->  (  hP : P.is_prime ) ->  ∃!    (   M :  Ideal  R ) ,  M.is_maximal ∧  P ⊆ M
+
+ {  R :  Type  u } ->  [  CommRingₓ  R ] ->  (  P :  Ideal  R ) ->  (  hP : P.is_prime ) ->  ∃!    (   M :  Ideal  R ) ,  M.is_maximal ∧  P ⊆ M
+
+ {  R :  Type  u } ->  [  CommRingₓₓ  R ] ->  (  P :  Ideal  R ) ->  (  hP : P.is_prime ) ->  ∃!    (   M :  Ideal  R ) ,  M.is_maximal ∧  P ⊆ M
+
+ {  α :  Type  u } ->  [  CommRing  α ] ->  (  P :  Ideal  α ) ->  [ HP : P.is_prime ] ->  ∃     m  ,  (   ∀  j   :  Ideal  α ,  m.is_maximal →  (    P ⊆ m ↔  P = j  )  )
+
+ {  α :  Type  u } ->  [  CommRingₓ  α ] ->  (  P :  Ideal  α ) ->  [ HP : P.is_prime ] ->  ∃     m  ,  (   ∀  j   :  Ideal  α ,  m.is_maximal →  (    P ⊆ m ↔  P = j  )  )
+
+ {  α :  Type  u } ->  [  CommRingₓₓ  α ] ->  (  P :  Ideal  α ) ->  [ HP : P.is_prime ] ->  ∃     m  ,  (   ∀  j   :  Ideal  α ,  m.is_maximal →  (    P ⊆ m ↔  P = j  )  )
+
+ (  R :  Type  u ) ->  [  CommRing  R ] ->  (  P :  Ideal  R ) ->  [ hP : P.is_prime ] ->  ∃!     M  ,  M.is_maximal ∧  M ∈  ideal.nhds  P
+
+ (  R :  Type  u ) ->  [  CommRingₓ  R ] ->  (  P :  Ideal  R ) ->  [ hP : P.is_prime ] ->  ∃!     M  ,  M.is_maximal ∧  M ∈  ideal.nhds  P
+
+ (  R :  Type  u ) ->  [  CommRingₓₓ  R ] ->  (  P :  Ideal  R ) ->  [ hP : P.is_prime ] ->  ∃!     M  ,  M.is_maximal ∧  M ∈  ideal.nhds  P
+
+ (  R :  Type  u ) ->  [  CommRing  R ] ->  (  P :  Ideal  R ) ->  [ hP : P.is_prime ] ->  P ≤  (   unique_maximal_ideal  P  )
+
+ (  R :  Type  u ) ->  [  CommRingₓ  R ] ->  (  P :  Ideal  R ) ->  [ hP : P.is_prime ] ->  P ≤  (   unique_maximal_ideal  P  )
+
+ (  R :  Type  u ) ->  [  CommRingₓₓ  R ] ->  (  P :  Ideal  R ) ->  [ hP : P.is_prime ] ->  P ≤  (   unique_maximal_ideal  P  )
+
+ {  R :  Type* } ->  [  CommRing  R ] ->  {  P :  Ideal  R } ->  (  hP : P.is_prime ) ->  ∃     M  ,  M.is_maximal ∧  P ⊆ M
+
+ {  R :  Type* } ->  [  CommRingₓ  R ] ->  {  P :  Ideal  R } ->  (  hP : P.is_prime ) ->  ∃     M  ,  M.is_maximal ∧  P ⊆ M
+
+ {  R :  Type* } ->  [  CommRingₓₓ  R ] ->  {  P :  Ideal  R } ->  (  hP : P.is_prime ) ->  ∃     M  ,  M.is_maximal ∧  P ⊆ M
+
+ {  R :  Type* } ->  [  CommRing  R ] ->  (  p :  Ideal  R ) ->  [ hp : p.is_prime ] ->  ∃     m  :  Ideal  R ,  m.is_maximal ∧  p ⊆ m
+
+ {  R :  Type* } ->  [  CommRingₓ  R ] ->  (  p :  Ideal  R ) ->  [ hp : p.is_prime ] ->  ∃     m  :  Ideal  R ,  m.is_maximal ∧  p ⊆ m
+
+ {  R :  Type* } ->  [  CommRingₓₓ  R ] ->  (  p :  Ideal  R ) ->  [ hp : p.is_prime ] ->  ∃     m  :  Ideal  R ,  m.is_maximal ∧  p ⊆ m
+
+ {  R :  Type  u } ->  [  CommRing  R ] ->  ∀  P   :  Ideal  R ,  P.is_prime →  ∃!     M  :  Ideal  R ,  M.is_maximal ∧  ideal.subset  P M
+
+ {  R :  Type  u } ->  [  CommRingₓ  R ] ->  ∀  P   :  Ideal  R ,  P.is_prime →  ∃!     M  :  Ideal  R ,  M.is_maximal ∧  ideal.subset  P M
+
+ {  R :  Type  u } ->  [  CommRingₓₓ  R ] ->  ∀  P   :  Ideal  R ,  P.is_prime →  ∃!     M  :  Ideal  R ,  M.is_maximal ∧  ideal.subset  P M
+
+failed to elaborate
+
+outputs: #[{R : Type u} [comm_ring R] (P : ideal R) [Pmax : P.is_prime] : ∃! (M : ideal R), P ≤ M ∧ M.is_maximal , {α : Type u} [comm_ring α] (P : ideal α) [hP : P.is_prime] : ∃! M : ideal α, M.is_maximal ∧ P ⊆ M , {R : Type u} [comm_ring R] (P : ideal R) [hP : P.is_prime] : ∃ m : ideal R, m.is_maximal ∧ m ⊆ P , {R : Type u_1} [comm_ring R] (P : ideal R) [hp : P.is_prime] : ∃! M : ideal R, M.is_maximal ∧ M ⊆ P , {R : Type u} [comm_ring R] : function.injective (λ P : ideal R, ideal.comap (algebra_map R R) P) , (R : Type u) [comm_ring R] (p : ideal R) [hp : p.is_prime] : ∃! M : ideal R, M.is_maximal ∧ p ≤ M , {R : Type u_1} [comm_ring R] (p : ideal R) [is_prime p] : ∃! (m : ideal R), m.is_maximal ∧ p ⊆ m , {R : Type u} [comm_ring R] (p : ideal R) [is_prime p] : ∃! m : ideal R, m.is_maximal ∧ p ⊆ m , {R : Type u_1} [comm_ring R] (P : ideal R) [HP : P.is_prime] : ∃! M, prime_ideal_maximal_of_prime_ideal P M , {R : Type u} [comm_ring R] [is_noetherian_ring R] (p : ideal R) [h : p.is_prime] : ∃ M : ideal R, M.is_maximal ∧ p ⊆ M , {R : Type u} [comm_ring R] : ∀ {P : ideal R}, P.is_prime → ∃! M : ideal R, M.is_maximal ∧ P ≤ M , {R : Type u_1} [comm_ring R] (P : ideal R) [hP : P.is_prime] : ∃! M : ideal R, M.is_maximal ∧ P ⊆ M , {α : Type u} [comm_ring α] {P : ideal α} [primeP : P.is_prime] : ∃ (m : ideal α), m.is_maximal ∧ P ⊆ m , {R : Type u} [comm_ring R] (P : ideal R) (hP : P.is_prime) : ∃! (M : ideal R), M.is_maximal ∧ P ⊆ M , {α : Type u} [comm_ring α] (P : ideal α) [HP : P.is_prime] : ∃ m, (∀ j : ideal α, m.is_maximal → (P ⊆ m ↔ P = j)) , (R : Type u) [comm_ring R] (P : ideal R) [hP : P.is_prime] : ∃! M, M.is_maximal ∧ M ∈ ideal.nhds P , (R : Type u) [comm_ring R] (P : ideal R) [hP : P.is_prime] : P ≤ (unique_maximal_ideal P) , {R : Type*} [comm_ring R] {P : ideal R} (hP : P.is_prime) : ∃ M, M.is_maximal ∧ P ⊆ M , {R : Type*} [comm_ring R] (p : ideal R) [hp : p.is_prime] : ∃ m : ideal R, m.is_maximal ∧ p ⊆ m , {R : Type u} [comm_ring R] : ∀ P : ideal R, P.is_prime → ∃! M : ideal R, M.is_maximal ∧ ideal.subset P M ]
+
+total : 21
+
+elaborated: 16
+
+Every continuous function is uniformly continuous.
+
+success
+
+theorem ∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β},
+  Continuous f → UniformContinuous f
+
+total : 22
+
+elaborated: 17
+
+Every uniformly continuous function is bounded above.
+
+No valid output from Codex; outputs below
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpace  α ] ->  [  OrderTop  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  BddAbove   (   range  f  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpaceₓ  α ] ->  [  OrderTop  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  BddAbove   (   range  f  )
+
+ {  α :  Type  u } ->  {  β :  Type  v } ->  [  UniformSpace  α ] ->  [  TopologicalSpace  β ] ->  [  orderable_top  β ] ->  [  UniformAddGroup  β ] ->  {  f :  α → β } ->  (  hf :  uniformly_continuous  f ) ->  BddAbove   (   range  f  )
+
+ {  α :  Type  u } ->  {  β :  Type  v } ->  [  UniformSpaceₓ  α ] ->  [  TopologicalSpace  β ] ->  [  orderable_top  β ] ->  [  UniformAddGroup  β ] ->  {  f :  α → β } ->  (  hf :  uniformly_continuous  f ) ->  BddAbove   (   range  f  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpace  α ] ->  [  HasDist  α ] ->  [  ConditionallyCompleteLinearOrder  β ] ->  {  f :  α → β } ->  (  h :  UniformContinuous  f ) ->  BddAbove   (   range  f  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpaceₓ  α ] ->  [  HasDist  α ] ->  [  ConditionallyCompleteLinearOrder  β ] ->  {  f :  α → β } ->  (  h :  UniformContinuous  f ) ->  BddAbove   (   range  f  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpace  α ] ->  [  PseudoMetricSpace  β ] ->  {  f :  α → β } ->  (  h :  UniformContinuous  f ) ->  BddAbove   (   range  f  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpaceₓ  α ] ->  [  PseudoMetricSpace  β ] ->  {  f :  α → β } ->  (  h :  UniformContinuous  f ) ->  BddAbove   (   range  f  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpace  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  BddAbove   (   range  f  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpaceₓ  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  BddAbove   (   range  f  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpace  α ] ->  [  SemilatticeSup  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  BddAbove   (   Set.Range  f  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpaceₓ  α ] ->  [  SemilatticeSup  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  BddAbove   (   Set.Range  f  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpace  α ] ->  [  LinearOrder  β ] ->  [  OrderTop  β ] ->  [  SeparatedSpace  α ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  ∃     M  ,  ∀  x  ,   f  x ≤ M
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpace  α ] ->  [  LinearOrderₓ  β ] ->  [  OrderTop  β ] ->  [  SeparatedSpace  α ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  ∃     M  ,  ∀  x  ,   f  x ≤ M
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpace  α ] ->  [  LinearOrderₓₓ  β ] ->  [  OrderTop  β ] ->  [  SeparatedSpace  α ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  ∃     M  ,  ∀  x  ,   f  x ≤ M
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpaceₓ  α ] ->  [  LinearOrder  β ] ->  [  OrderTop  β ] ->  [  SeparatedSpace  α ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  ∃     M  ,  ∀  x  ,   f  x ≤ M
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpaceₓ  α ] ->  [  LinearOrderₓ  β ] ->  [  OrderTop  β ] ->  [  SeparatedSpace  α ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  ∃     M  ,  ∀  x  ,   f  x ≤ M
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpaceₓ  α ] ->  [  LinearOrderₓₓ  β ] ->  [  OrderTop  β ] ->  [  SeparatedSpace  α ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  ∃     M  ,  ∀  x  ,   f  x ≤ M
+
+ {  α :  Type  u } ->  {  β :  Type  v } ->  [  UniformSpace  α ] ->  [  TopologicalSpace  β ] ->  [  OrderTop  β ] ->  {  f :  α → β } ->  (  h :  UniformContinuous  f ) ->  ∃     c  : β ,  ∀  x  ,  c ≥  f  x
+
+ {  α :  Type  u } ->  {  β :  Type  v } ->  [  UniformSpaceₓ  α ] ->  [  TopologicalSpace  β ] ->  [  OrderTop  β ] ->  {  f :  α → β } ->  (  h :  UniformContinuous  f ) ->  ∃     c  : β ,  ∀  x  ,  c ≥  f  x
+
+ {  α :  Type  u } ->  {  β :  Type  v } ->  [  TopologicalSpace  α ] ->  [  UniformSpace  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  BddAbove  f
+
+ {  α :  Type  u } ->  {  β :  Type  v } ->  [  TopologicalSpace  α ] ->  [  UniformSpaceₓ  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  BddAbove  f
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpace  α ] ->  [  CompleteSpace  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  ∃     c  : β ,  ∀  x  ,   f  x ≤ c
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpaceₓ  α ] ->  [  CompleteSpace  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  ∃     c  : β ,  ∀  x  ,   f  x ≤ c
+
+ {  α :  Type  u } ->  {  β :  Type  v } ->  [  UniformSpace  α ] ->  [  LinearOrder  β ] ->  [  uniform_continuous_on_univ  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  ∃     C  : β ,  ∀  x  ,   f  x ≤ C
+
+ {  α :  Type  u } ->  {  β :  Type  v } ->  [  UniformSpace  α ] ->  [  LinearOrderₓ  β ] ->  [  uniform_continuous_on_univ  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  ∃     C  : β ,  ∀  x  ,   f  x ≤ C
+
+ {  α :  Type  u } ->  {  β :  Type  v } ->  [  UniformSpace  α ] ->  [  LinearOrderₓₓ  β ] ->  [  uniform_continuous_on_univ  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  ∃     C  : β ,  ∀  x  ,   f  x ≤ C
+
+ {  α :  Type  u } ->  {  β :  Type  v } ->  [  UniformSpaceₓ  α ] ->  [  LinearOrder  β ] ->  [  uniform_continuous_on_univ  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  ∃     C  : β ,  ∀  x  ,   f  x ≤ C
+
+ {  α :  Type  u } ->  {  β :  Type  v } ->  [  UniformSpaceₓ  α ] ->  [  LinearOrderₓ  β ] ->  [  uniform_continuous_on_univ  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  ∃     C  : β ,  ∀  x  ,   f  x ≤ C
+
+ {  α :  Type  u } ->  {  β :  Type  v } ->  [  UniformSpaceₓ  α ] ->  [  LinearOrderₓₓ  β ] ->  [  uniform_continuous_on_univ  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  ∃     C  : β ,  ∀  x  ,   f  x ≤ C
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpace  α ] ->  [  UniformSpace  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  BddAbove   (   Set.Range  f  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpace  α ] ->  [  UniformSpaceₓ  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  BddAbove   (   Set.Range  f  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpaceₓ  α ] ->  [  UniformSpace  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  BddAbove   (   Set.Range  f  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpaceₓ  α ] ->  [  UniformSpaceₓ  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  BddAbove   (   Set.Range  f  )
+
+ {  α :  Type  u } ->  {  β :  Type  v } ->  [  PseudoMetricSpace  α ] ->  [  PseudoMetricSpace  β ] ->  (  f :  α → β ) ->  (  h_f :  UniformContinuous  f ) ->  BddAbove   (   Set.Range  f  )
+
+ {  α :  Type  u } ->  {  β :  Type  v } ->  [  TopologicalSpace  α ] ->  [  PseudoMetricSpace  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  BddAbove   (   range  f  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpace  α ] ->  [  UniformSpace  β ] ->  [  Nonempty  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  BddAbove   (   range  f  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpace  α ] ->  [  UniformSpaceₓ  β ] ->  [  Nonempty  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  BddAbove   (   range  f  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpaceₓ  α ] ->  [  UniformSpace  β ] ->  [  Nonempty  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  BddAbove   (   range  f  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpaceₓ  α ] ->  [  UniformSpaceₓ  β ] ->  [  Nonempty  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  BddAbove   (   range  f  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpace  α ] ->  [  UniformSpace  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  TendstoUniformly  f  (   λ x ,  0  ) at_top
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpace  α ] ->  [  UniformSpaceₓ  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  TendstoUniformly  f  (   λ x ,  0  ) at_top
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpaceₓ  α ] ->  [  UniformSpace  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  TendstoUniformly  f  (   λ x ,  0  ) at_top
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpaceₓ  α ] ->  [  UniformSpaceₓ  β ] ->  {  f :  α → β } ->  (  hf :  UniformContinuous  f ) ->  TendstoUniformly  f  (   λ x ,  0  ) at_top
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpace  α ] ->  {  f :  α → β } ->  [  SemilatticeSup  β ] ->  [  ∀  a   : α ,  Decidable   (    f  a =  ⊤  ) ] ->  (  h :  UniformContinuous  f ) ->  ∃     c  : β ,  ∀  x   : α ,   f  x ≤ c
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpaceₓ  α ] ->  {  f :  α → β } ->  [  SemilatticeSup  β ] ->  [  ∀  a   : α ,  Decidable   (    f  a =  ⊤  ) ] ->  (  h :  UniformContinuous  f ) ->  ∃     c  : β ,  ∀  x   : α ,   f  x ≤ c
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpace  α ] ->  [  ConditionallyCompleteLinearOrder  β ] ->  (  f :  α → β ) ->  (  hf :  UniformContinuous  f ) ->  BddAbove   (   Set.Range  f  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpaceₓ  α ] ->  [  ConditionallyCompleteLinearOrder  β ] ->  (  f :  α → β ) ->  (  hf :  UniformContinuous  f ) ->  BddAbove   (   Set.Range  f  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpace  α ] ->  {  f :  α → β } ->  [  PartialOrder  β ] ->  [  OrderTop  β ] ->  [  DenselyOrdered  β ] ->  {  s :  Set  α } ->  (  h :  UniformContinuousOn  f s ) ->  BddAbove   (   range $  λ x ,  f  x  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpace  α ] ->  {  f :  α → β } ->  [  PartialOrder  β ] ->  [  OrderTop  β ] ->  [  DenselyOrdered  β ] ->  {  s :  Setₓ  α } ->  (  h :  UniformContinuousOn  f s ) ->  BddAbove   (   range $  λ x ,  f  x  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpace  α ] ->  {  f :  α → β } ->  [  PartialOrderₓ  β ] ->  [  OrderTop  β ] ->  [  DenselyOrdered  β ] ->  {  s :  Set  α } ->  (  h :  UniformContinuousOn  f s ) ->  BddAbove   (   range $  λ x ,  f  x  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpace  α ] ->  {  f :  α → β } ->  [  PartialOrderₓ  β ] ->  [  OrderTop  β ] ->  [  DenselyOrdered  β ] ->  {  s :  Setₓ  α } ->  (  h :  UniformContinuousOn  f s ) ->  BddAbove   (   range $  λ x ,  f  x  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpace  α ] ->  {  f :  α → β } ->  [  PartialOrderₓₓ  β ] ->  [  OrderTop  β ] ->  [  DenselyOrdered  β ] ->  {  s :  Set  α } ->  (  h :  UniformContinuousOn  f s ) ->  BddAbove   (   range $  λ x ,  f  x  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpace  α ] ->  {  f :  α → β } ->  [  PartialOrderₓₓ  β ] ->  [  OrderTop  β ] ->  [  DenselyOrdered  β ] ->  {  s :  Setₓ  α } ->  (  h :  UniformContinuousOn  f s ) ->  BddAbove   (   range $  λ x ,  f  x  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpaceₓ  α ] ->  {  f :  α → β } ->  [  PartialOrder  β ] ->  [  OrderTop  β ] ->  [  DenselyOrdered  β ] ->  {  s :  Set  α } ->  (  h :  UniformContinuousOn  f s ) ->  BddAbove   (   range $  λ x ,  f  x  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpaceₓ  α ] ->  {  f :  α → β } ->  [  PartialOrder  β ] ->  [  OrderTop  β ] ->  [  DenselyOrdered  β ] ->  {  s :  Setₓ  α } ->  (  h :  UniformContinuousOn  f s ) ->  BddAbove   (   range $  λ x ,  f  x  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpaceₓ  α ] ->  {  f :  α → β } ->  [  PartialOrderₓ  β ] ->  [  OrderTop  β ] ->  [  DenselyOrdered  β ] ->  {  s :  Set  α } ->  (  h :  UniformContinuousOn  f s ) ->  BddAbove   (   range $  λ x ,  f  x  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpaceₓ  α ] ->  {  f :  α → β } ->  [  PartialOrderₓ  β ] ->  [  OrderTop  β ] ->  [  DenselyOrdered  β ] ->  {  s :  Setₓ  α } ->  (  h :  UniformContinuousOn  f s ) ->  BddAbove   (   range $  λ x ,  f  x  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpaceₓ  α ] ->  {  f :  α → β } ->  [  PartialOrderₓₓ  β ] ->  [  OrderTop  β ] ->  [  DenselyOrdered  β ] ->  {  s :  Set  α } ->  (  h :  UniformContinuousOn  f s ) ->  BddAbove   (   range $  λ x ,  f  x  )
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  UniformSpaceₓ  α ] ->  {  f :  α → β } ->  [  PartialOrderₓₓ  β ] ->  [  OrderTop  β ] ->  [  DenselyOrdered  β ] ->  {  s :  Setₓ  α } ->  (  h :  UniformContinuousOn  f s ) ->  BddAbove   (   range $  λ x ,  f  x  )
+
+ {  α :  Type  u } ->  {  β :  Type  v } ->  [  UniformSpace  α ] ->  [  PseudoMetricSpace  β ] ->  {  f :  α → β } ->  (  h :  UniformContinuous  f ) ->  BddAbove   (   range  f  )
+
+ {  α :  Type  u } ->  {  β :  Type  v } ->  [  UniformSpaceₓ  α ] ->  [  PseudoMetricSpace  β ] ->  {  f :  α → β } ->  (  h :  UniformContinuous  f ) ->  BddAbove   (   range  f  )
+
+failed to elaborate
+
+outputs: #[{α : Type u_1} {β : Type u_2} [uniform_space α] [order_top β] {f : α → β} (hf : uniform_continuous f) : bdd_above (range f) , {α : Type u} {β : Type v}
+  [uniform_space α] [topological_space β] [orderable_top β] [uniform_add_group β]
+  {f : α → β} (hf : uniformly_continuous f) : bdd_above (range f) , {α : Type u_1} {β : Type u_2} [uniform_space α] [has_dist α] [conditionally_complete_linear_order β] {f : α → β} (h : uniform_continuous f) : bdd_above (range f) , {α : Type u_1} {β : Type u_2} [uniform_space α] [pseudo_metric_space β] {f : α → β} (h : uniform_continuous f) : bdd_above (range f) , {α : Type u_1} {β : Type u_2} [uniform_space β] {f : α → β} (hf : uniform_continuous f) : bdd_above (range f) , {α : Type u_1} {β : Type u_2} [uniform_space α] [semilattice_sup β] {f : α → β} (hf : uniform_continuous f) : bdd_above (set.range f) , {α : Type u_1} {β : Type u_2} [uniform_space α] [linear_order β] [order_top β] [separated_space α] {f : α → β} (hf : uniform_continuous f) : ∃ M, ∀ x, f x ≤ M , {α : Type u} {β : Type v} [uniform_space α] [topological_space β] [order_top β] {f : α → β} (h : uniform_continuous f) : ∃ c : β, ∀ x, c ≥ f x , {α : Type u} {β : Type v} [topological_space α] [uniform_space β] {f : α → β} (hf : uniform_continuous f) : bdd_above f , {α : Type u_1} {β : Type u_2} [uniform_space α] [complete_space β] {f : α → β} (hf : uniform_continuous f) : ∃ c : β, ∀ x, f x ≤ c , {α : Type u} {β : Type v} [uniform_space α] [linear_order β] [uniform_continuous_on_univ β] {f : α → β} (hf : uniform_continuous f) : ∃ C : β, ∀ x, f x ≤ C , {α : Type u_1} {β : Type u_2} [uniform_space α] [uniform_space β] {f : α → β} (hf : uniform_continuous f) : bdd_above (set.range f) , {α : Type u} {β : Type v} [pseudo_metric_space α] [pseudo_metric_space β] (f : α → β) (h_f : uniform_continuous f) : bdd_above (set.range f) , {α : Type u} {β : Type v} [topological_space α] [pseudo_metric_space β] {f : α → β} (hf : uniform_continuous f) : bdd_above (range f) , {α : Type u_1} {β : Type u_2} [uniform_space α] [uniform_space β] [nonempty β] {f : α → β} (hf : uniform_continuous f) : bdd_above (range f) , {α : Type u_1} {β : Type u_2} [uniform_space α] [uniform_space β] {f : α → β} (hf : uniform_continuous f) : tendsto_uniformly f (λ x, 0) at_top , {α : Type u_1} {β : Type u_2} [uniform_space α] {f : α → β} [semilattice_sup β] [∀ a:α, decidable (f a = ⊤)] (h : uniform_continuous f) : ∃ c : β, ∀ x : α, f x ≤ c , {α : Type u_1} {β : Type u_2} [uniform_space α] [conditionally_complete_linear_order β] (f : α → β) (hf : uniform_continuous f) : bdd_above (set.range f) , {α : Type u_1} {β : Type u_2} [uniform_space α] {f : α → β} [partial_order β] [order_top β] [densely_ordered β] {s : set α} (h : uniform_continuous_on f s) : bdd_above (range $ λ x, f x) , {α : Type u} {β : Type v} [uniform_space α] [pseudo_metric_space β] {f : α → β} (h : uniform_continuous f) : bdd_above (range f) ]
+
+total : 23
+
+elaborated: 17
+
+If every compact subset of a topological space is closed, then the space is compact.
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] {s : Set α},
+  (∀ (x : Set α), IsCompact x → IsClosed x) → IsCompact s → IsClosed s
+
+total : 24
+
+elaborated: 18
+
+In a commutative ring, the sum of idempotent elements is idempotent.
+
+success
+
+theorem ∀ {R : Type u_1} [inst : CommRing R] {a b : R}, a * a = a → b * b = b → (a + b) * (a + b) = a + b
+
+total : 25
+
+elaborated: 19
+
+The number of partitions of a finite set is a prime number.
+
+No valid output from Codex; outputs below
+
+ {  α :  Type  u_1 } ->  (  s :  Finset  α ) ->  Nat.Prime   (  s.partitions.card  )
+
+ (  s :  Finset  α ) ->  Nat.Prime   (  s.card.partitions  )
+
+ {  α :  Type  u_1 } ->  [  DecidableEq  α ] ->  (  s :  Finset  α ) ->  Nat.Prime  s.card_partitions
+
+ {  n :  ℕ } ->  (  H :  n >  0 ) ->  ∃    (   p :  ℕ ) ,   Nat.Prime  p ∧  p ∣  nat.partition  n
+
+ {  α :  Type  u } ->  [  Fintype  α ] ->  Nat.Prime   (   Fintype.card   (   partitions  α  )  )
+
+ {  α :  Type  u } ->  [  Fintypeₓ  α ] ->  Nat.Prime   (   Fintype.card   (   partitions  α  )  )
+
+ {  α :  Type  u } ->  {  L :  Finset  α } ->  [ hp :  Fintype  α ] ->  Nat.Prime   (  L.finset_partitions.card  )
+
+ {  α :  Type  u } ->  {  L :  Finset  α } ->  [ hp :  Fintypeₓ  α ] ->  Nat.Prime   (  L.finset_partitions.card  )
+
+ {  α :  Type* } ->  (  s :  Finset  α ) ->  ∃     p  :  ℕ ,   Nat.Prime  p ∧  p = s.card_partitions
+
+ (  R :  Type  u ) ->  [  Fintype  R ] ->  Nat.Prime  partitions.card
+
+ (  R :  Type  u ) ->  [  Fintypeₓ  R ] ->  Nat.Prime  partitions.card
+
+ {  α :  Type  u_1 } ->  [  Fintype  α ] ->  Nat.Prime    (   Fintype.card  α  ) . partitions.card
+
+ {  α :  Type  u_1 } ->  [  Fintypeₓ  α ] ->  Nat.Prime    (   Fintype.card  α  ) . partitions.card
+
+ {  α :  Type  u_1 } ->  (  s :  Finset  α ) ->  [  Fintype  α ] ->  Nat.Prime  s.card_partitions
+
+ {  α :  Type  u_1 } ->  (  s :  Finset  α ) ->  [  Fintypeₓ  α ] ->  Nat.Prime  s.card_partitions
+
+ {  α :  Type  u_1 } ->  [  Fintype  α ] ->  [  DecidableEq  α ] ->  ∃    (   p :  ℕ ) ,   Nat.Prime  p ∧  p =  Fintype.card  α.partitions
+
+ {  α :  Type  u_1 } ->  [  Fintypeₓ  α ] ->  [  DecidableEq  α ] ->  ∃    (   p :  ℕ ) ,   Nat.Prime  p ∧  p =  Fintype.card  α.partitions
+
+ {  α :  Type  u_1 } ->  (  s :  Finset  α ) ->  Prime   (  s.partitions.card  )
+
+ {  α :  Type  u_1 } ->  [  DecidableEq  α ] ->  (  s :  Finset  α ) ->  Fact   (   Nat.Prime  s.card.partitions  )
+
+ {  α :  Type  u_1 } ->  [  Fintype  α ] ->  Nat.Prime   (   Fintype.card   (   partitions  α  )  )
+
+ {  α :  Type  u_1 } ->  [  Fintypeₓ  α ] ->  Nat.Prime   (   Fintype.card   (   partitions  α  )  )
+
+ (  s :  Finset  α ) ->  Nat.Prime   (   partitions.card  s  )
+
+ {  α :  Type  u_1 } ->  (  s :  Finset  α ) -> s.card.partitions.card.prime
+
+ {  α :  Type  u_1 } ->  [  Fintype  α ] ->  Nat.Prime    (   partitions  α  ) . card
+
+ {  α :  Type  u_1 } ->  [  Fintypeₓ  α ] ->  Nat.Prime    (   partitions  α  ) . card
+
+ (  s :  Finset   ℕ ) ->  Nat.Prime  s.card_partition
+
+ {  α :  Type  u_1 } ->  (  s :  Finset  α ) ->  Nat.Prime   (  s.card_partitions  )
+
+ {  α :  Type  u_1 } ->  [  DecidableEq  α ] ->  (  s :  Finset  α ) ->  Nat.Prime   (   card_partitions  s  )
+
+failed to elaborate
+
+outputs: #[{α : Type u_1} (s : finset α) : nat.prime (s.partitions.card) , (s : finset α) : nat.prime (s.card.partitions) , {α : Type u_1} [decidable_eq α] (s : finset α) : nat.prime s.card_partitions , {n : ℕ} (H : n > 0) : ∃ (p : ℕ), nat.prime p ∧ p ∣ nat.partition n , {α : Type u} [fintype α] : nat.prime (fintype.card (partitions α)) , {α : Type u} {L : finset α} [hp : fintype α] : nat.prime (L.finset_partitions.card) , {α : Type*} (s : finset α) : ∃ p : ℕ, nat.prime p ∧ p = s.card_partitions , (R : Type u) [fintype R] : nat.prime partitions.card , {α : Type u_1} [fintype α] : nat.prime (fintype.card α).partitions.card , {α : Type u_1} (s : finset α) [fintype α] : nat.prime s.card_partitions , {α : Type u_1} [fintype α] [decidable_eq α] : ∃ (p : ℕ), nat.prime p ∧ p = fintype.card α.partitions , {α : Type u_1} (s : finset α) : prime (s.partitions.card) , {α : Type u_1} [decidable_eq α] (s : finset α) : fact (nat.prime s.card.partitions) , {α : Type u_1} [fintype α] : nat.prime (fintype.card (partitions α)) , (s : finset α) : nat.prime (partitions.card s) , {α : Type u_1} (s : finset α) : s.card.partitions.card.prime , {α : Type u_1} [fintype α] : nat.prime (partitions α).card , (s : finset ℕ) : nat.prime s.card_partition , {α : Type u_1} (s : finset α) : nat.prime (s.card_partitions) , {α : Type u_1} [decidable_eq α] (s : finset α) : nat.prime (card_partitions s) ]
+
+total : 26
+
+elaborated: 19
+
+If a poset has a maximal element, then it has a unique minimal element.
+
+success
+
+theorem ∀ {α : Type u_1} [inst : ConditionallyCompleteLattice α],
+  (∃ a, IsMax a) → (∃ a, IsLeast { a' | a ≤ a' } a) ∧ (∃ a, IsMax a) ∧ (∃ a, IsMin a) ∧ ∃ a, IsMax a
+
+total : 27
+
+elaborated: 20
+
+The automorphism group of an Abelian group is cyclic.
+
+No valid output from Codex; outputs below
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  [  Fintype  G ] ->  [ h :  is_abelian_group  G ] ->  IsCyclic   (    @ aut  G G  _ h  )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  [  Fintypeₓ  G ] ->  [ h :  is_abelian_group  G ] ->  IsCyclic   (    @ aut  G G  _ h  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  [  Fintype  G ] ->  [ h :  is_abelian_group  G ] ->  IsCyclic   (    @ aut  G G  _ h  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  [  Fintypeₓ  G ] ->  [ h :  is_abelian_group  G ] ->  IsCyclic   (    @ aut  G G  _ h  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  [  Fintype  G ] ->  [ h :  is_abelian_group  G ] ->  IsCyclic   (    @ aut  G G  _ h  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  [  Fintypeₓ  G ] ->  [ h :  is_abelian_group  G ] ->  IsCyclic   (    @ aut  G G  _ h  )
+
+ {  G :  Type  u_1 } ->  [  CommGroup  G ] ->  [  Fintype  G ] ->  {  a : G } ->  (  h :  ∃    (   b : G ) ,    (   auto  G  )  a =  ⟨   λ   ( b₁ : G ) ,  ∃    (   n :  ℤ ) ,  b₁ =  b ^ n ,   (   Fintype.card  G  ) ⁻¹ ⟩ ) ->  IsCyclic   (   auto  G  )
+
+ {  G :  Type  u_1 } ->  [  CommGroup  G ] ->  [  Fintypeₓ  G ] ->  {  a : G } ->  (  h :  ∃    (   b : G ) ,    (   auto  G  )  a =  ⟨   λ   ( b₁ : G ) ,  ∃    (   n :  ℤ ) ,  b₁ =  b ^ n ,   (   Fintype.card  G  ) ⁻¹ ⟩ ) ->  IsCyclic   (   auto  G  )
+
+ {  G :  Type  u_1 } ->  [  CommGroupₓ  G ] ->  [  Fintype  G ] ->  {  a : G } ->  (  h :  ∃    (   b : G ) ,    (   auto  G  )  a =  ⟨   λ   ( b₁ : G ) ,  ∃    (   n :  ℤ ) ,  b₁ =  b ^ n ,   (   Fintype.card  G  ) ⁻¹ ⟩ ) ->  IsCyclic   (   auto  G  )
+
+ {  G :  Type  u_1 } ->  [  CommGroupₓ  G ] ->  [  Fintypeₓ  G ] ->  {  a : G } ->  (  h :  ∃    (   b : G ) ,    (   auto  G  )  a =  ⟨   λ   ( b₁ : G ) ,  ∃    (   n :  ℤ ) ,  b₁ =  b ^ n ,   (   Fintype.card  G  ) ⁻¹ ⟩ ) ->  IsCyclic   (   auto  G  )
+
+ {  G :  Type  u_1 } ->  [  CommGroupₓₓ  G ] ->  [  Fintype  G ] ->  {  a : G } ->  (  h :  ∃    (   b : G ) ,    (   auto  G  )  a =  ⟨   λ   ( b₁ : G ) ,  ∃    (   n :  ℤ ) ,  b₁ =  b ^ n ,   (   Fintype.card  G  ) ⁻¹ ⟩ ) ->  IsCyclic   (   auto  G  )
+
+ {  G :  Type  u_1 } ->  [  CommGroupₓₓ  G ] ->  [  Fintypeₓ  G ] ->  {  a : G } ->  (  h :  ∃    (   b : G ) ,    (   auto  G  )  a =  ⟨   λ   ( b₁ : G ) ,  ∃    (   n :  ℤ ) ,  b₁ =  b ^ n ,   (   Fintype.card  G  ) ⁻¹ ⟩ ) ->  IsCyclic   (   auto  G  )
+
+ {  α :  Type  u } ->  [  Monoid  α ] ->  [  AddGroup  α ] ->  [  is_abelian_group  α ] ->  IsCyclic   (   monoid_aut  α  )
+
+ {  α :  Type  u } ->  [  Monoid  α ] ->  [  AddGroupₓ  α ] ->  [  is_abelian_group  α ] ->  IsCyclic   (   monoid_aut  α  )
+
+ {  α :  Type  u } ->  [  Monoid  α ] ->  [  AddGroupₓₓ  α ] ->  [  is_abelian_group  α ] ->  IsCyclic   (   monoid_aut  α  )
+
+ {  α :  Type  u } ->  [  Monoidₓ  α ] ->  [  AddGroup  α ] ->  [  is_abelian_group  α ] ->  IsCyclic   (   monoid_aut  α  )
+
+ {  α :  Type  u } ->  [  Monoidₓ  α ] ->  [  AddGroupₓ  α ] ->  [  is_abelian_group  α ] ->  IsCyclic   (   monoid_aut  α  )
+
+ {  α :  Type  u } ->  [  Monoidₓ  α ] ->  [  AddGroupₓₓ  α ] ->  [  is_abelian_group  α ] ->  IsCyclic   (   monoid_aut  α  )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  [  abelian  G ] ->  IsCyclic   (   group.aut  G  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  [  abelian  G ] ->  IsCyclic   (   group.aut  G  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  [  abelian  G ] ->  IsCyclic   (   group.aut  G  )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  [ h :  is_abelian  G ] ->  IsCyclic   (   group.aut  G  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  [ h :  is_abelian  G ] ->  IsCyclic   (   group.aut  G  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  [ h :  is_abelian  G ] ->  IsCyclic   (   group.aut  G  )
+
+ {  α :  Type  u } ->  [  Group  α ] ->  [ h :  IsLieAbelian  α ] ->  IsCyclic   (   aut  α  )
+
+ {  α :  Type  u } ->  [  Groupₓ  α ] ->  [ h :  IsLieAbelian  α ] ->  IsCyclic   (   aut  α  )
+
+ {  α :  Type  u } ->  [  Groupₓₓ  α ] ->  [ h :  IsLieAbelian  α ] ->  IsCyclic   (   aut  α  )
+
+ {  α :  Type  u } ->  [  Monoid  α ] ->  [  GroupWithZero  α ] ->  [  Fintype  α ] ->  [  DecidableEq  α ] ->  [  AddGroup  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoid  α ] ->  [  GroupWithZero  α ] ->  [  Fintype  α ] ->  [  DecidableEq  α ] ->  [  AddGroupₓ  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoid  α ] ->  [  GroupWithZero  α ] ->  [  Fintype  α ] ->  [  DecidableEq  α ] ->  [  AddGroupₓₓ  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoid  α ] ->  [  GroupWithZero  α ] ->  [  Fintypeₓ  α ] ->  [  DecidableEq  α ] ->  [  AddGroup  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoid  α ] ->  [  GroupWithZero  α ] ->  [  Fintypeₓ  α ] ->  [  DecidableEq  α ] ->  [  AddGroupₓ  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoid  α ] ->  [  GroupWithZero  α ] ->  [  Fintypeₓ  α ] ->  [  DecidableEq  α ] ->  [  AddGroupₓₓ  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoid  α ] ->  [  GroupWithZeroₓ  α ] ->  [  Fintype  α ] ->  [  DecidableEq  α ] ->  [  AddGroup  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoid  α ] ->  [  GroupWithZeroₓ  α ] ->  [  Fintype  α ] ->  [  DecidableEq  α ] ->  [  AddGroupₓ  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoid  α ] ->  [  GroupWithZeroₓ  α ] ->  [  Fintype  α ] ->  [  DecidableEq  α ] ->  [  AddGroupₓₓ  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoid  α ] ->  [  GroupWithZeroₓ  α ] ->  [  Fintypeₓ  α ] ->  [  DecidableEq  α ] ->  [  AddGroup  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoid  α ] ->  [  GroupWithZeroₓ  α ] ->  [  Fintypeₓ  α ] ->  [  DecidableEq  α ] ->  [  AddGroupₓ  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoid  α ] ->  [  GroupWithZeroₓ  α ] ->  [  Fintypeₓ  α ] ->  [  DecidableEq  α ] ->  [  AddGroupₓₓ  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoid  α ] ->  [  GroupWithZeroₓₓ  α ] ->  [  Fintype  α ] ->  [  DecidableEq  α ] ->  [  AddGroup  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoid  α ] ->  [  GroupWithZeroₓₓ  α ] ->  [  Fintype  α ] ->  [  DecidableEq  α ] ->  [  AddGroupₓ  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoid  α ] ->  [  GroupWithZeroₓₓ  α ] ->  [  Fintype  α ] ->  [  DecidableEq  α ] ->  [  AddGroupₓₓ  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoid  α ] ->  [  GroupWithZeroₓₓ  α ] ->  [  Fintypeₓ  α ] ->  [  DecidableEq  α ] ->  [  AddGroup  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoid  α ] ->  [  GroupWithZeroₓₓ  α ] ->  [  Fintypeₓ  α ] ->  [  DecidableEq  α ] ->  [  AddGroupₓ  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoid  α ] ->  [  GroupWithZeroₓₓ  α ] ->  [  Fintypeₓ  α ] ->  [  DecidableEq  α ] ->  [  AddGroupₓₓ  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoidₓ  α ] ->  [  GroupWithZero  α ] ->  [  Fintype  α ] ->  [  DecidableEq  α ] ->  [  AddGroup  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoidₓ  α ] ->  [  GroupWithZero  α ] ->  [  Fintype  α ] ->  [  DecidableEq  α ] ->  [  AddGroupₓ  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoidₓ  α ] ->  [  GroupWithZero  α ] ->  [  Fintype  α ] ->  [  DecidableEq  α ] ->  [  AddGroupₓₓ  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoidₓ  α ] ->  [  GroupWithZero  α ] ->  [  Fintypeₓ  α ] ->  [  DecidableEq  α ] ->  [  AddGroup  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoidₓ  α ] ->  [  GroupWithZero  α ] ->  [  Fintypeₓ  α ] ->  [  DecidableEq  α ] ->  [  AddGroupₓ  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoidₓ  α ] ->  [  GroupWithZero  α ] ->  [  Fintypeₓ  α ] ->  [  DecidableEq  α ] ->  [  AddGroupₓₓ  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoidₓ  α ] ->  [  GroupWithZeroₓ  α ] ->  [  Fintype  α ] ->  [  DecidableEq  α ] ->  [  AddGroup  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoidₓ  α ] ->  [  GroupWithZeroₓ  α ] ->  [  Fintype  α ] ->  [  DecidableEq  α ] ->  [  AddGroupₓ  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoidₓ  α ] ->  [  GroupWithZeroₓ  α ] ->  [  Fintype  α ] ->  [  DecidableEq  α ] ->  [  AddGroupₓₓ  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoidₓ  α ] ->  [  GroupWithZeroₓ  α ] ->  [  Fintypeₓ  α ] ->  [  DecidableEq  α ] ->  [  AddGroup  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoidₓ  α ] ->  [  GroupWithZeroₓ  α ] ->  [  Fintypeₓ  α ] ->  [  DecidableEq  α ] ->  [  AddGroupₓ  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoidₓ  α ] ->  [  GroupWithZeroₓ  α ] ->  [  Fintypeₓ  α ] ->  [  DecidableEq  α ] ->  [  AddGroupₓₓ  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoidₓ  α ] ->  [  GroupWithZeroₓₓ  α ] ->  [  Fintype  α ] ->  [  DecidableEq  α ] ->  [  AddGroup  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoidₓ  α ] ->  [  GroupWithZeroₓₓ  α ] ->  [  Fintype  α ] ->  [  DecidableEq  α ] ->  [  AddGroupₓ  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoidₓ  α ] ->  [  GroupWithZeroₓₓ  α ] ->  [  Fintype  α ] ->  [  DecidableEq  α ] ->  [  AddGroupₓₓ  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoidₓ  α ] ->  [  GroupWithZeroₓₓ  α ] ->  [  Fintypeₓ  α ] ->  [  DecidableEq  α ] ->  [  AddGroup  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoidₓ  α ] ->  [  GroupWithZeroₓₓ  α ] ->  [  Fintypeₓ  α ] ->  [  DecidableEq  α ] ->  [  AddGroupₓ  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  α :  Type  u } ->  [  Monoidₓ  α ] ->  [  GroupWithZeroₓₓ  α ] ->  [  Fintypeₓ  α ] ->  [  DecidableEq  α ] ->  [  AddGroupₓₓ  α ] ->  [  AddTorsor  α α ] ->  (  h :  IsLieAbelian  α ) ->  IsCyclic   (   group_with_zero.mop.to_group   (   subtype.range   (   λ   ( a : α ) ,  a ≠  0  )  )  )
+
+ {  G :  Type  u_1 } ->  [  CommGroup  G ] ->  IsCyclic   (   aut  G  )
+
+ {  G :  Type  u_1 } ->  [  CommGroupₓ  G ] ->  IsCyclic   (   aut  G  )
+
+ {  G :  Type  u_1 } ->  [  CommGroupₓₓ  G ] ->  IsCyclic   (   aut  G  )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  [  abelian  G ] ->  IsCyclic   (    ℤ ≃* G  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  [  abelian  G ] ->  IsCyclic   (    ℤ ≃* G  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  [  abelian  G ] ->  IsCyclic   (    ℤ ≃* G  )
+
+ {  α :  Type  u } ->  [  Group  α ] ->  [  abelian  α ] ->  IsCyclic   (   aut  α  )
+
+ {  α :  Type  u } ->  [  Groupₓ  α ] ->  [  abelian  α ] ->  IsCyclic   (   aut  α  )
+
+ {  α :  Type  u } ->  [  Groupₓₓ  α ] ->  [  abelian  α ] ->  IsCyclic   (   aut  α  )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  [  abelian  G ] ->  IsCyclic   (   group.automorphisms  G  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  [  abelian  G ] ->  IsCyclic   (   group.automorphisms  G  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  [  abelian  G ] ->  IsCyclic   (   group.automorphisms  G  )
+
+ {  G :  Type  u_1 } ->  (  G :  Type  u_2 ) ->  [  AddGroup  G ] ->  [  AddTorsor  G P ] ->  [  add_torsor.is_add_group_action  G P Add ] ->  (  p : P ) ->  ∃    (   g : G )  (   n :  ℕ ) ,  is_torsion_element  g n
+
+ {  G :  Type  u_1 } ->  (  G :  Type  u_2 ) ->  [  AddGroupₓ  G ] ->  [  AddTorsor  G P ] ->  [  add_torsor.is_add_group_action  G P Add ] ->  (  p : P ) ->  ∃    (   g : G )  (   n :  ℕ ) ,  is_torsion_element  g n
+
+ {  G :  Type  u_1 } ->  (  G :  Type  u_2 ) ->  [  AddGroupₓₓ  G ] ->  [  AddTorsor  G P ] ->  [  add_torsor.is_add_group_action  G P Add ] ->  (  p : P ) ->  ∃    (   g : G )  (   n :  ℕ ) ,  is_torsion_element  g n
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  [  abelian  G ] ->  IsCyclic   (   aut  G  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  [  abelian  G ] ->  IsCyclic   (   aut  G  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  [  abelian  G ] ->  IsCyclic   (   aut  G  )
+
+ {  α :  Type  u } ->  [  Group  α ] ->  [  CommGroup  α ] ->  IsCyclic   (   group.aut  α  )
+
+ {  α :  Type  u } ->  [  Group  α ] ->  [  CommGroupₓ  α ] ->  IsCyclic   (   group.aut  α  )
+
+ {  α :  Type  u } ->  [  Group  α ] ->  [  CommGroupₓₓ  α ] ->  IsCyclic   (   group.aut  α  )
+
+ {  α :  Type  u } ->  [  Groupₓ  α ] ->  [  CommGroup  α ] ->  IsCyclic   (   group.aut  α  )
+
+ {  α :  Type  u } ->  [  Groupₓ  α ] ->  [  CommGroupₓ  α ] ->  IsCyclic   (   group.aut  α  )
+
+ {  α :  Type  u } ->  [  Groupₓ  α ] ->  [  CommGroupₓₓ  α ] ->  IsCyclic   (   group.aut  α  )
+
+ {  α :  Type  u } ->  [  Groupₓₓ  α ] ->  [  CommGroup  α ] ->  IsCyclic   (   group.aut  α  )
+
+ {  α :  Type  u } ->  [  Groupₓₓ  α ] ->  [  CommGroupₓ  α ] ->  IsCyclic   (   group.aut  α  )
+
+ {  α :  Type  u } ->  [  Groupₓₓ  α ] ->  [  CommGroupₓₓ  α ] ->  IsCyclic   (   group.aut  α  )
+
+ {  α :  Type  u } ->  [  Group  α ] ->  [  is_abelian  α ] ->  IsCyclic   (   aut  α  )
+
+ {  α :  Type  u } ->  [  Groupₓ  α ] ->  [  is_abelian  α ] ->  IsCyclic   (   aut  α  )
+
+ {  α :  Type  u } ->  [  Groupₓₓ  α ] ->  [  is_abelian  α ] ->  IsCyclic   (   aut  α  )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  [  abel  G ] ->  {  n :  ℕ } ->  (  h :   Fintype.card   (   group_aut  G  ) = n ) ->  IsCyclic   (   group_aut  G  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  [  abel  G ] ->  {  n :  ℕ } ->  (  h :   Fintype.card   (   group_aut  G  ) = n ) ->  IsCyclic   (   group_aut  G  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  [  abel  G ] ->  {  n :  ℕ } ->  (  h :   Fintype.card   (   group_aut  G  ) = n ) ->  IsCyclic   (   group_aut  G  )
+
+ {  G :  Type  u_1 } ->  [  AddGroup  G ] ->  [  is_abelian  G ] ->  IsCyclic   (   auto_equiv  G  )
+
+ {  G :  Type  u_1 } ->  [  AddGroupₓ  G ] ->  [  is_abelian  G ] ->  IsCyclic   (   auto_equiv  G  )
+
+ {  G :  Type  u_1 } ->  [  AddGroupₓₓ  G ] ->  [  is_abelian  G ] ->  IsCyclic   (   auto_equiv  G  )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  [  CommGroup  G ] ->  IsCyclic   (   group.aut  G  )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  [  CommGroupₓ  G ] ->  IsCyclic   (   group.aut  G  )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  [  CommGroupₓₓ  G ] ->  IsCyclic   (   group.aut  G  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  [  CommGroup  G ] ->  IsCyclic   (   group.aut  G  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  [  CommGroupₓ  G ] ->  IsCyclic   (   group.aut  G  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  [  CommGroupₓₓ  G ] ->  IsCyclic   (   group.aut  G  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  [  CommGroup  G ] ->  IsCyclic   (   group.aut  G  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  [  CommGroupₓ  G ] ->  IsCyclic   (   group.aut  G  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  [  CommGroupₓₓ  G ] ->  IsCyclic   (   group.aut  G  )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  [  abelian  G ] ->  IsCyclic   (   automorphism_group  G  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  [  abelian  G ] ->  IsCyclic   (   automorphism_group  G  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  [  abelian  G ] ->  IsCyclic   (   automorphism_group  G  )
+
+ {  α :  Type  u } ->  [  AddGroup  α ] ->  [  is_abelian  α ] ->  IsCyclic   (   aut  α  )
+
+ {  α :  Type  u } ->  [  AddGroupₓ  α ] ->  [  is_abelian  α ] ->  IsCyclic   (   aut  α  )
+
+ {  α :  Type  u } ->  [  AddGroupₓₓ  α ] ->  [  is_abelian  α ] ->  IsCyclic   (   aut  α  )
+
+failed to elaborate
+
+outputs: #[{G : Type u_1} [group G] [fintype G] [h : is_abelian_group G] : is_cyclic (@aut G G _ h) , {G : Type u_1} [comm_group G] [fintype G] {a : G} (h : ∃ (b : G), (auto G) a = ⟨λ (b₁ : G), ∃ (n : ℤ), b₁ = b ^ n, (fintype.card G)⁻¹⟩) : is_cyclic (auto G) , {α : Type u} [monoid α] [add_group α] [is_abelian_group α] : is_cyclic (monoid_aut α) , {G : Type u_1} [group G] [abelian G] : is_cyclic (group.aut G) , {G : Type u_1} [group G] [h : is_abelian G] : is_cyclic (group.aut G) , {α : Type u} [group α] [h : is_lie_abelian α] : is_cyclic (aut α) , {α : Type u} [monoid α] [group_with_zero α] [fintype α] [decidable_eq α] [add_group α] [add_torsor α α] (h : is_lie_abelian α) : is_cyclic (group_with_zero.mop.to_group (subtype.range (λ (a : α), a ≠ 0))) , {G : Type u_1} [comm_group G] : is_cyclic (aut G) , {G : Type u_1} [group G] [abelian G] : is_cyclic (ℤ ≃* G) , {α : Type u} [group α] [abelian α] : is_cyclic (aut α) , {G : Type u_1} [group G] [abelian G] : is_cyclic (group.automorphisms G) , {G : Type u_1} (G : Type u_2) [add_group G] [add_torsor G P] [add_torsor.is_add_group_action G P add] (p : P) : ∃ (g : G) (n : ℕ), is_torsion_element g n , {G : Type u_1} [group G] [abelian G] : is_cyclic (aut G) , {α : Type u} [group α] [comm_group α] : is_cyclic (group.aut α) , {α : Type u} [group α] [is_abelian α] : is_cyclic (aut α) , {G : Type u_1} [group G] [abel G] {n : ℕ} (h : fintype.card (group_aut G) = n) : is_cyclic (group_aut G) , {G : Type u_1} [add_group G] [is_abelian G] : is_cyclic (auto_equiv G) , {G : Type u_1} [group G] [comm_group G] : is_cyclic (group.aut G) , {G : Type u_1} [group G] [abelian G] : is_cyclic (automorphism_group G) , {α : Type u} [add_group α] [is_abelian α] : is_cyclic (aut α) ]
+
+total : 28
+
+elaborated: 20
+
+If a function from the unit interval to itself has a fixed point, then it has points of all positive periods.
+
+success
+
+theorem ∀ {f : ℕ → ℕ} (x : ℕ), f x = x → ∀ {n : ℕ}, 0 < n → Function.IsPeriodicPt f n x
+
+total : 29
+
+elaborated: 21
+
+The complement of the union of two sets contains the union of their complements.
+
+No valid output from Codex; outputs below
+
+ {  α :  Type  u } ->  [  TopologicalSpace  α ] ->  {  s t :  Set  α } ->   -  (   s ∪ t  ) ⊆   - s ∩  - t
+
+ {  α :  Type  u } ->  [  TopologicalSpace  α ] ->  {  s t :  Setₓ  α } ->   -  (   s ∪ t  ) ⊆   - s ∩  - t
+
+ {  α :  Type  u } ->  {  s t :  Set  α } ->   -  (   s ∪ t  ) ⊆   (   - s  ) ∪  (   - t  )
+
+ {  α :  Type  u } ->  {  s t :  Setₓ  α } ->   -  (   s ∪ t  ) ⊆   (   - s  ) ∪  (   - t  )
+
+ {  α :  Type  u } ->  {  s t :  Set  α } ->   -  (   s ∪ t  ) ⊆   - s ∪  - t
+
+ {  α :  Type  u } ->  {  s t :  Setₓ  α } ->   -  (   s ∪ t  ) ⊆   - s ∪  - t
+
+ {  α :  Type  u_1 } ->  {  s t :  Set  α } ->   -  (   s ∪ t  ) ⊆   - s ∪  - t
+
+ {  α :  Type  u_1 } ->  {  s t :  Setₓ  α } ->   -  (   s ∪ t  ) ⊆   - s ∪  - t
+
+ {  α :  Type  u_1 } ->  {  s t :  Set  α } ->   set.compl   (   s ∪ t  ) ⊆   set.compl  s ∪  set.compl  t
+
+ {  α :  Type  u_1 } ->  {  s t :  Setₓ  α } ->   set.compl   (   s ∪ t  ) ⊆   set.compl  s ∪  set.compl  t
+
+ {  α :  Type  u_1 } ->  {  s t :  Set  α } ->   -  (   s ∪ t  ) ⊆  (    - s ∩  - t  )
+
+ {  α :  Type  u_1 } ->  {  s t :  Setₓ  α } ->   -  (   s ∪ t  ) ⊆  (    - s ∩  - t  )
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  {  s t :  Set  α } ->   -  (   s ∪ t  ) ⊆   - s ∪  - t
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  {  s t :  Setₓ  α } ->   -  (   s ∪ t  ) ⊆   - s ∪  - t
+
+{α : Type u_1} {s t : set α} : (s ∪ t)ᶜ ⊆ (sᶜ ∪ tᶜ) 
+
+ {  α :  Type  u } ->  {  s t :  Set  α } ->   (   -  (   s ∪ t  )  ) =   (   - s  ) ∩  (   - t  )
+
+ {  α :  Type  u } ->  {  s t :  Setₓ  α } ->   (   -  (   s ∪ t  )  ) =   (   - s  ) ∩  (   - t  )
+
+{α : Type u} {s t : set α} : (s ∪ t)ᶜ ⊆ sᶜ ∪ tᶜ 
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  {  s t :  Set  α } ->    -  (   s ∪ t  ) ⊇   - s ∪  - t   -  (   s ∪ ts ∪ t  ) ⊇   - s ∪  - t   -  (   s ∪ t  ) ⊇   - s ∪  - t
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  {  s t :  Setₓ  α } ->    -  (   s ∪ t  ) ⊇   - s ∪  - t   -  (   s ∪ ts ∪ t  ) ⊇   - s ∪  - t   -  (   s ∪ t  ) ⊇   - s ∪  - t
+
+{α : Type u_1} [topological_space α] {s t : set α} : sᶜ ∪ tᶜ = (s ∪ t)ᶜ 
+
+ {  α :  Type  u } ->  {  s t :  Set  α } ->   (   -  (   s ∪ t  )   :  Set  α ) ⊆   (   - s   :  Set  α ) ∪  (   - t   :  Set  α )
+
+ {  α :  Type  u } ->  {  s t :  Set  α } ->   (   -  (   s ∪ t  )   :  Set  α ) ⊆   (   - s   :  Set  α ) ∪  (   - t   :  Setₓ  α )
+
+ {  α :  Type  u } ->  {  s t :  Set  α } ->   (   -  (   s ∪ t  )   :  Set  α ) ⊆   (   - s   :  Setₓ  α ) ∪  (   - t   :  Set  α )
+
+ {  α :  Type  u } ->  {  s t :  Set  α } ->   (   -  (   s ∪ t  )   :  Set  α ) ⊆   (   - s   :  Setₓ  α ) ∪  (   - t   :  Setₓ  α )
+
+ {  α :  Type  u } ->  {  s t :  Set  α } ->   (   -  (   s ∪ t  )   :  Setₓ  α ) ⊆   (   - s   :  Set  α ) ∪  (   - t   :  Set  α )
+
+ {  α :  Type  u } ->  {  s t :  Set  α } ->   (   -  (   s ∪ t  )   :  Setₓ  α ) ⊆   (   - s   :  Set  α ) ∪  (   - t   :  Setₓ  α )
+
+ {  α :  Type  u } ->  {  s t :  Set  α } ->   (   -  (   s ∪ t  )   :  Setₓ  α ) ⊆   (   - s   :  Setₓ  α ) ∪  (   - t   :  Set  α )
+
+ {  α :  Type  u } ->  {  s t :  Set  α } ->   (   -  (   s ∪ t  )   :  Setₓ  α ) ⊆   (   - s   :  Setₓ  α ) ∪  (   - t   :  Setₓ  α )
+
+ {  α :  Type  u } ->  {  s t :  Setₓ  α } ->   (   -  (   s ∪ t  )   :  Set  α ) ⊆   (   - s   :  Set  α ) ∪  (   - t   :  Set  α )
+
+ {  α :  Type  u } ->  {  s t :  Setₓ  α } ->   (   -  (   s ∪ t  )   :  Set  α ) ⊆   (   - s   :  Set  α ) ∪  (   - t   :  Setₓ  α )
+
+ {  α :  Type  u } ->  {  s t :  Setₓ  α } ->   (   -  (   s ∪ t  )   :  Set  α ) ⊆   (   - s   :  Setₓ  α ) ∪  (   - t   :  Set  α )
+
+ {  α :  Type  u } ->  {  s t :  Setₓ  α } ->   (   -  (   s ∪ t  )   :  Set  α ) ⊆   (   - s   :  Setₓ  α ) ∪  (   - t   :  Setₓ  α )
+
+ {  α :  Type  u } ->  {  s t :  Setₓ  α } ->   (   -  (   s ∪ t  )   :  Setₓ  α ) ⊆   (   - s   :  Set  α ) ∪  (   - t   :  Set  α )
+
+ {  α :  Type  u } ->  {  s t :  Setₓ  α } ->   (   -  (   s ∪ t  )   :  Setₓ  α ) ⊆   (   - s   :  Set  α ) ∪  (   - t   :  Setₓ  α )
+
+ {  α :  Type  u } ->  {  s t :  Setₓ  α } ->   (   -  (   s ∪ t  )   :  Setₓ  α ) ⊆   (   - s   :  Setₓ  α ) ∪  (   - t   :  Set  α )
+
+ {  α :  Type  u } ->  {  s t :  Setₓ  α } ->   (   -  (   s ∪ t  )   :  Setₓ  α ) ⊆   (   - s   :  Setₓ  α ) ∪  (   - t   :  Setₓ  α )
+
+{α : Type u} [topological_space α] {s t : set α} : (s ∪ t)ᶜ ⊆ sᶜ ∪ tᶜ 
+
+ {  α :  Type  u } ->  [  TopologicalSpace  α ] ->  {  s t :  Set  α } ->   set.compl   (   s ∪ t  ) ⊆   set.compl  s ∪  set.compl  t
+
+ {  α :  Type  u } ->  [  TopologicalSpace  α ] ->  {  s t :  Setₓ  α } ->   set.compl   (   s ∪ t  ) ⊆   set.compl  s ∪  set.compl  t
+
+failed to elaborate
+
+outputs: #[{α : Type u} [topological_space α] {s t : set α} : -(s ∪ t) ⊆ -s ∩ -t , {α : Type u} {s t : set α} : -(s ∪ t) ⊆ (-s) ∪ (-t) , {α : Type u} {s t : set α} : -(s ∪ t) ⊆ -s ∪ -t , {α : Type u_1} {s t : set α} : -(s ∪ t) ⊆ -s ∪ -t , {α : Type u_1} {s t : set α} : set.compl (s ∪ t) ⊆ set.compl s ∪ set.compl t , {α : Type u_1} {s t : set α} : -(s ∪ t) ⊆ (-s ∩ -t) , {α : Type u_1} [topological_space α] {s t : set α} : - (s ∪ t) ⊆ - s ∪ - t , {α : Type u_1} {s t : set α} : (s ∪ t)ᶜ ⊆ (sᶜ ∪ tᶜ) , {α : Type u} {s t : set α} : (-(s ∪ t)) = (-s) ∩ (-t) , {α : Type u} {s t : set α} : (s ∪ t)ᶜ ⊆ sᶜ ∪ tᶜ , {α : Type u_1} [topological_space α] {s t : set α} : -(s ∪ t) ⊇ -s ∪ -t , {α : Type u_1} [topological_space α] {s t : set α} : sᶜ ∪ tᶜ = (s ∪ t)ᶜ , {α : Type u} {s t : set α} : (-(s ∪ t) : set α) ⊆ (-s : set α) ∪ (-t : set α) , {α : Type u} [topological_space α] {s t : set α} : (s ∪ t)ᶜ ⊆ sᶜ ∪ tᶜ , {α : Type u} [topological_space α] {s t : set α} : set.compl (s ∪ t) ⊆ set.compl s ∪ set.compl t ]
+
+total : 30
+
+elaborated: 21
+
+The square root of an rational number is rational.
+
+No valid output from Codex; outputs below
+
+ {  q :  ℚ } ->  (  hq :  q ≥  0 ) ->  ∃    (   p :  ℚ ) ,   p * p = q
+
+ (  a :  ℚ ) ->  ∃    (   b :  ℚ ) ,   b * b = a
+
+ (  q :  ℚ ) ->  ∃    (   r :  ℚ ) ,   r * r = q
+
+ (  x :  ℚ ) ->  ∃    (   y :  ℚ ) ,   IsSquare  y ∧  y = x
+
+ (  q :  ℚ ) ->  ∃    (   q' :  ℚ ) ,   q' * q' = q
+
+ {  q :  ℚ } ->  (  hq :  q ≥  0 ) ->  ∃    (   r :  ℚ ) ,   r * r = q
+
+ {  q :  ℚ } ->   IsSquare  q →  ∃    (   p :  ℚ ) ,  q =  p ^  2
+
+ (  q :  ℚ ) ->   IsSquare  q →  ∃    (   q' :  ℚ ) ,  q =  q' * q'
+
+ {  q :  ℚ } ->  (  hq :  q ≥  0 ) ->  ∃    (   r :  ℚ ) ,   r ^  2 = q
+
+ (  x :  ℚ ) ->  ∃    (   y :  ℚ ) ,   rat.sqrt  x =  (  y   :   ℝ  ℝ )
+
+ (  q :  ℚ ) ->   IsSquare  q →  ∃    (   r :  ℚ ) ,   r * r = q
+
+ (  q :  ℚ ) ->  ∃    (   p :  ℚ ) ,  q =  p * p
+
+ (  x :  ℚ ) ->  ∃    (   y :  ℚ ) ,   y * y = x
+
+ (  q :  ℚ ) ->  is_rational   (    (   ↑ q   :   ℝ  ℝ ) *  sqrt   2  )
+
+ (  q :  ℚ ) ->   IsSquare  q →  ∃    (   q :  ℚ ) ,   q * q = q
+
+ (  q :  ℚ ) ->  ∃     r  :  ℚ ,   r ^  2 = q
+
+{q : ℚ} : ∃ (r : ℚ), r*r = q 
+
+ (  x :  ℚ ) ->   IsSquare  x →  ∃    (   q :  ℚ ) ,   q * q = x
+
+ {  q :  ℚ } ->  ∃    (   r :  ℚ ) ,   r * r = q
+
+failed to elaborate
+
+outputs: #[{q : ℚ} (hq : q ≥ 0) : ∃ (p : ℚ), p * p = q , (a : ℚ) : ∃ (b : ℚ), b * b = a , (q : ℚ) : ∃ (r : ℚ), r * r = q , (x : ℚ) : ∃ (y : ℚ), is_square y ∧ y = x , (q : ℚ) : ∃ (q' : ℚ), q' * q' = q , {q : ℚ} (hq : q ≥ 0) : ∃ (r : ℚ), r * r = q , {q : ℚ} : is_square q → ∃ (p : ℚ), q = p ^ 2 , (q : ℚ) : is_square q → ∃ (q' : ℚ), q = q' * q' , {q : ℚ} (hq : q ≥ 0) : ∃ (r : ℚ), r ^ 2 = q , (x : ℚ) : ∃ (y : ℚ), rat.sqrt x = (y : ℝ) , (q : ℚ) : is_square q → ∃ (r : ℚ), r * r = q , (q : ℚ) : ∃ (p : ℚ), q = p * p , (x : ℚ) : ∃ (y : ℚ), y * y = x , (q : ℚ) : is_rational ((↑q : ℝ) * sqrt 2) , (q : ℚ) : is_square q → ∃ (q : ℚ), q * q = q , (q : ℚ) : ∃ r : ℚ, r ^ 2 = q , {q : ℚ} : ∃ (r : ℚ), r*r = q , (x : ℚ) : is_square x → ∃ (q : ℚ), q * q = x , {q : ℚ} : ∃ (r : ℚ), r * r = q ]
+
+total : 31
+
+elaborated: 21
+
+If a module over a ring is free, then the ring is commutative.
+
+success
+
+theorem {R : Type u} →
+  {M : Type v} → [inst : Ringₓ R] → [inst_1 : AddCommGroupₓ M] → [inst_2 : Module R M] → Module.Free R M → CommRing R
+
+total : 32
+
+elaborated: 22
+
+If the set of units of a ring forms a group then the ring is commutative.
+
+success
+
+theorem {α : Type u} → [inst : Ringₓ α] → Group (Units α) → CommRing α
+
+total : 33
+
+elaborated: 23
+
+Every natural number larger than `10` is the sum of a square and a prime.
+
+success
+
+theorem ∀ (n : ℕ), 10 < n → ∃ a b, a ^ 2 + b ^ 2 = n ∧ Nat.Prime b
+
+total : 34
+
+elaborated: 24
+
+The initial object of a category is isomorphic to its terminal object.
+
+No valid output from Codex; outputs below
+
+ {  C :  Type  u } ->  [  CategoryTheory.Category  C ] ->  [  CategoryTheory.Limits.HasInitial  C ] ->  [  CategoryTheory.Limits.HasTerminal  C ] ->  C ≌ C
+
+ {  C :  Type  u } ->  [  CategoryTheory.Category  C ] ->  [  CategoryTheory.Limits.HasInitial  C ] ->  [  CategoryTheory.Limits.HasTerminal  C ] ->  CategoryTheory.IsIso   (   CategoryTheory.Iso.refl   (   ⊥_ C  )  )
+
+{C : Type u} [category_theory.category C] [category_theory.limits.has_initial C] [category_theory.limits.has_terminal C] : category_theory.is_iso (category_theory.limits.initial.to (category_theory.limits.terminal.from ⊥_ C)) 
+
+ {  C :  Type  u } ->  [  CategoryTheory.Category  C ] ->  [  CategoryTheory.Limits.HasInitial  C ] ->  [  CategoryTheory.Limits.HasTerminal  C ] ->  category_theory.iso   (   ⊥_ C  )  (   ⊤_ C  )
+
+ {  C :  Type  u } ->  [  CategoryTheory.Category  C ] ->  [  CategoryTheory.Limits.HasInitial  C ] ->  [  CategoryTheory.Limits.HasTerminal  C ] ->  CategoryTheory.IsIso   (   CategoryTheory.Limits.initial.to   (   ⊤_ C  )  )
+
+ {  C :  Type  u₁ } ->  [  CategoryTheory.Category  C ] ->  [  CategoryTheory.Limits.HasInitial  C ] ->  [  CategoryTheory.Limits.HasTerminal  C ] ->  CategoryTheory.IsIso   (   CategoryTheory.Limits.initial.to   (   ⊤_ C  )  )
+
+ {  C :  Type  u } ->  [  CategoryTheory.Category  C ] ->  [  CategoryTheory.Limits.HasInitial  C ] ->  [  CategoryTheory.Limits.HasTerminal  C ] ->  [  category_theory.has_self_equiv  C ] ->  (  i : C ) ->  (  t : C ) ->  (  a :  i ⟶ t ) ->  [  category_theory.initial  a ] ->  [  category_theory.terminal  a ] ->  i ≅ t
+
+ {  C :  Type  u₁ } ->  [  CategoryTheory.Category  C ] ->  [  category_theory.limits.has_initial_terminal_object  C ] ->  CategoryTheory.IsIso   (   CategoryTheory.Limits.initial.to   (   ⊤_ C  )  )
+
+ {  C :  Type  u } ->  [  CategoryTheory.Category  C ] ->  [  CategoryTheory.Limits.HasBinaryProducts  C ] ->  [  CategoryTheory.Limits.HasBinaryCoproducts  C ] ->  [  CategoryTheory.Limits.HasTerminal  C ] ->  [  CategoryTheory.Limits.HasInitial  C ] ->  category_theory.iso   (   CategoryTheory.Limits.terminal.from   (   ⊥_ C  )  )  (   CategoryTheory.Limits.initial.to   (   {    X    :  C × C }  )  )
+
+{C : Type u} [category_theory.category C] [category_theory.limits.has_terminal C] [category_theory.limits.has_initial C] : category_theory.is_iso ⊤_ C 
+
+{C : Type u₁} [category_theory.category C] [category_theory.limits.has_initial C] [category_theory.limits.has_terminal C] : (⊥_ C).to ⟶ (⊤_ C) ≅ 𝟙 (⊥_ C) 
+
+ {  C :  Type  u } ->  [  CategoryTheory.Category  C ] ->  [  CategoryTheory.Limits.HasInitial  C ] ->  [  CategoryTheory.Limits.HasTerminal  C ] ->  (  h :  CategoryTheory.Limits.initial.to   (   ⊤_ C  ) ) ->  CategoryTheory.IsIso   (   CategoryTheory.Limits.initial.to   (   ⊤_ C  )  )
+
+failed to elaborate
+
+outputs: #[{C : Type u} [category_theory.category C] [category_theory.limits.has_initial C] [category_theory.limits.has_terminal C] : C ≌ C , {C : Type u} [category_theory.category C] [category_theory.limits.has_initial C] [category_theory.limits.has_terminal C] : category_theory.is_iso (category_theory.iso.refl (⊥_ C)) , {C : Type u} [category_theory.category C] [category_theory.limits.has_initial C] [category_theory.limits.has_terminal C] : category_theory.is_iso (category_theory.limits.initial.to (category_theory.limits.terminal.from ⊥_ C)) , {C : Type u} [category_theory.category C] [category_theory.limits.has_initial C] [category_theory.limits.has_terminal C] : category_theory.iso (⊥_ C) (⊤_ C) , {C : Type u} [category_theory.category C] [category_theory.limits.has_initial C] [category_theory.limits.has_terminal C] : category_theory.is_iso (category_theory.limits.initial.to (⊤_ C)) , {C : Type u₁} [category_theory.category C] [category_theory.limits.has_initial C] [category_theory.limits.has_terminal C] : category_theory.is_iso (category_theory.limits.initial.to (⊤_ C)) , {C : Type u} [category_theory.category C] [category_theory.limits.has_initial C] [category_theory.limits.has_terminal C] [category_theory.has_self_equiv C] (i : C) (t : C) (a : i ⟶ t) [category_theory.initial a] [category_theory.terminal a] : i ≅ t , {C : Type u₁} [category_theory.category C] [category_theory.limits.has_initial_terminal_object C] : category_theory.is_iso (category_theory.limits.initial.to (⊤_ C)) , {C : Type u} [category_theory.category C] [category_theory.limits.has_binary_products C] [category_theory.limits.has_binary_coproducts C] [category_theory.limits.has_terminal C] [category_theory.limits.has_initial C] : category_theory.iso (category_theory.limits.terminal.from (⊥_ C)) (category_theory.limits.initial.to ({X : C × C})) , {C : Type u} [category_theory.category C] [category_theory.limits.has_terminal C] [category_theory.limits.has_initial C] : category_theory.is_iso ⊤_ C , {C : Type u₁} [category_theory.category C] [category_theory.limits.has_initial C] [category_theory.limits.has_terminal C] : (⊥_ C).to ⟶ (⊤_ C) ≅ 𝟙 (⊥_ C) , {C : Type u} [category_theory.category C] [category_theory.limits.has_initial C] [category_theory.limits.has_terminal C] (h : category_theory.limits.initial.to (⊤_ C)) : category_theory.is_iso (category_theory.limits.initial.to (⊤_ C)) ]
+
+total : 35
+
+elaborated: 24
+
+If the composition of two functions is continuous, then each of them is continuous.
+
+success
+
+theorem ∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β]
+  [inst_2 : TopologicalSpace γ] {f : α → β} {g : β → γ}, Continuous (g ∘ f) → Continuous f ∧ Continuous g
+
+total : 36
+
+elaborated: 25
+
+If `a` commutes with `b` and `b` commutes with `c` then `a` commutes with `c`.
+
+success
+
+theorem ∀ {S : Type ?u.9708663} [inst : Mul S] {a b c : S}, Commute a b → Commute b c → Commute a c
+
+total : 37
+
+elaborated: 26
+
+If an element maps to zero under a ring homomorphism, then it is zero.
+
+success
+
+theorem ∀ {α : Type u} {β : Type v} [inst : Ringₓ α] [inst_1 : Ringₓ β] {f : α → β}, IsRingHom f → ∀ (x : α), f x = 0 → x = 0
+
+total : 38
+
+elaborated: 27
+
+Implication `→` is symmetric. If `P → Q` then `Q → P`.
+
+success
+
+theorem ∀ {p q : Prop}, (p → q) → q → p
+
+total : 39
+
+elaborated: 28
+
+Two natural numbers are equal if and only if they are both divisible by some prime number.
+
+success
+
+theorem ∀ {m n : ℕ}, m = n ↔ ∃ p, Nat.Prime p ∧ p ∣ m ∧ p ∣ n
+
+total : 40
+
+elaborated: 29
+
