@@ -21,7 +21,7 @@ def translateWithDataCore (s: String)(numSim : Nat:= 10)(numKW: Nat := 4)(includ
 
 def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : TermElabM Json := do
   elabLog s!"Writing to file: {type}-elab-{numSim}-{numKW}-{includeFixed}-{queryNum}-{temp.mantissa}.json"
-  let promptsFile := System.mkFilePath [
+  let promptsFile := System.mkFilePath ["data",
     s!"prompts-{type}-{numSim}-{numKW}-{includeFixed}-{queryNum}-{temp.mantissa}.jsonl"]
   let h ← IO.FS.Handle.mk promptsFile IO.FS.Mode.append Bool.false
   let file := System.mkFilePath [s!"data/{type}-prompts.txt"]

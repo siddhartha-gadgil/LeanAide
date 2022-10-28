@@ -1,0 +1,77 @@
+Writing to file: thm-elab-12-8-false-20-8.json
+
+If every proper closed set of a topological space is compact, then the space itself is compact.
+
+success
+
+theorem ∀ {X : Type u_1} [inst : TopologicalSpace X], (∀ (S : Set X), IsClosed S → IsCompact S) → CompactSpace X
+
+total : 1
+
+elaborated: 1
+
+Every prime that is `1` greater than a multiple of `4` can be expressed as the sum of two squares.
+
+success
+
+theorem ∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p % 4 = 1 → ∃ x y, x * x + y * y = p
+
+total : 2
+
+elaborated: 2
+
+The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares.
+
+success
+
+theorem ∀ {x y : ℤ},
+  (∃ x1 x2 x3 x4 y1 y2 y3 y4, x = x1 ^ 2 + x2 ^ 2 + x3 ^ 2 + x4 ^ 2 ∧ y = y1 ^ 2 + y2 ^ 2 + y3 ^ 2 + y4 ^ 2) →
+    ∃ x1 x2 x3 x4, x * y = x1 ^ 2 + x2 ^ 2 + x3 ^ 2 + x4 ^ 2
+
+total : 3
+
+elaborated: 3
+
+A ring with all elements idempotent is commutative.
+
+success
+
+theorem ∀ {α : Type u} [inst : Ring α] {a : α}, a ^ 2 = a → ∀ (b : α), Commute a b
+
+total : 4
+
+elaborated: 4
+
+There are infinitely many pairs of primes that differ exactly by `2`.
+
+success
+
+theorem ℕ → ∃ a b, Nat.Prime a ∧ Nat.Prime b ∧ b = a + 2
+
+total : 5
+
+elaborated: 5
+
+Every finite division ring is a field.
+
+success
+
+theorem ∀ (K : Type u) [inst : DivisionRing K] [inst_1 : Fintype K], IsField K
+
+total : 6
+
+elaborated: 6
+
+If each of two types can be mapped injectively into the other, then there is a bijection between them.
+
+success
+
+theorem ∀ {α : Type u} {β : Type v} [inst : Nonempty α] [inst : Nonempty β],
+  (∃ f, Function.Injective f) → (∃ g, Function.Injective g) → ∃ h, Function.bijective h
+
+total : 7
+
+elaborated: 7
+
+A finite graph in which every pair of vertices have precisely one common neighbour contains a vertex that is adjacent to all other vertices.
+
