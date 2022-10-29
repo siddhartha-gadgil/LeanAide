@@ -33,7 +33,12 @@ def tactic_prompts():
 def keywords():
     data = str(request.data, 'utf-8')
     print(data)
-    return extract_keywords(data)
+    keywords_with_scores = extract_keywords(data)
+    
+    for (kw, score) in keywords_with_scores:
+        print(kw, score)
+     
+    return json.dumps(keywords_with_scores, ensure_ascii=False) 
 
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5000, debug=True)
