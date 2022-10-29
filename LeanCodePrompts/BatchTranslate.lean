@@ -4,7 +4,7 @@ import LeanCodePrompts.Utils
 open Lean Meta Std Elab
 
 
-def translateWithDataM (s: String)(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : 
+def translateWithDataM (s: String)(numSim : Nat:= 10)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : 
   TermElabM ((Option (Expr × (Array String) )) × Array String) := do
   let js ← 
     getCodeJson s numSim numKW includeFixed queryNum temp scoreBound matchBound
@@ -13,13 +13,13 @@ def translateWithDataM (s: String)(numSim : Nat:= 10)(numKW: Nat := 4)(includeFi
   let res ← arrayToExpr? output
   return (res, output)
   
-def translateWithDataCore (s: String)(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : 
+def translateWithDataCore (s: String)(numSim : Nat:= 10)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : 
   CoreM ((Option (Expr × (Array String) )) × Array String) := 
     (translateWithDataM s 
       numSim numKW includeFixed 
         queryNum temp scoreBound matchBound).run'.run'
 
-def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : TermElabM Json := do
+def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : TermElabM Json := do
   elabLog s!"Writing to file: {type}-elab-{numSim}-{numKW}-{includeFixed}-{queryNum}-{temp.mantissa}.json"
   let promptsFile := System.mkFilePath ["data",
     s!"prompts-{type}-{numSim}-{numKW}-{includeFixed}-{queryNum}-{temp.mantissa}.jsonl"]
@@ -84,7 +84,7 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat :=
             ]
   return js
 
-def checkTranslatedThmsCore(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : CoreM Json :=
+def checkTranslatedThmsCore(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : CoreM Json :=
     (checkTranslatedThmsM type
       numSim numKW includeFixed queryNum temp).run'.run'
 
