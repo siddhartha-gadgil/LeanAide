@@ -1839,3 +1839,1660 @@ total : 40
 
 elaborated: 29
 
+Writing to file: silly-elab-12-8-false-20-8.json
+
+Every prime number is `2` or odd.
+
+success
+
+theorem ∀ (p : ℕ), Nat.Prime p → p = 2 ∨ 1 < p ∧ p % 2 = 1
+
+total : 1
+
+elaborated: 1
+
+There are infinitely many odd natural numbers.
+
+success
+
+theorem ∀ {n : ℕ}, ∃ m, m ≥ n ∧ Odd m
+
+total : 2
+
+elaborated: 2
+
+The smallest odd prime is `3`.
+
+success
+
+theorem ∀ {p : ℕ}, Fact (Nat.Prime p) ∧ p > 2 → p = 3
+
+total : 3
+
+elaborated: 3
+
+There are infinitely many odd prime numbers.
+
+success
+
+theorem ∀ (p : ℕ), ∃ q, q ≠ p ∧ q % 2 = 1 ∧ Nat.Prime q
+
+total : 4
+
+elaborated: 4
+
+If a vector space has dimension `2` then it is finite dimensional.
+
+success
+
+theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroupₓ V] [inst_2 : Module K V],
+  Module.rank K V = 2 → FiniteDimensional K V
+
+total : 5
+
+elaborated: 5
+
+Every field is a division ring.
+
+success
+
+theorem {α : Type u} → [inst : Field α] → DivisionRing α
+
+total : 6
+
+elaborated: 6
+
+If a space has dimension `2` then it is finite dimensional.
+
+success
+
+theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroupₓ V] [inst_2 : Module K V],
+  Module.rank K V = 2 → FiniteDimensional K V
+
+total : 7
+
+elaborated: 7
+
+Every natural number has a successor.
+
+success
+
+theorem ∀ {α : Type u} (a : ℕ), ∃ b, b > a
+
+total : 8
+
+elaborated: 8
+
+Every natural number is less than its successor.
+
+success
+
+theorem ∀ (n : ℕ), n < Nat.succ n
+
+total : 9
+
+elaborated: 9
+
+Every set is Lebesgue measurable.
+
+success
+
+theorem ∀ {α : Type u_1} [inst : MeasurableSpace α] (s : Set α), MeasurableSet s
+
+total : 10
+
+elaborated: 10
+
+Every set of Borel measure zero is Lebesgue measurable.
+
+No valid output from Codex; outputs below
+
+ {  α :  Type  u_1 } ->  {  m :  MeasurableSpace  α } ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  h :   borel_measure  s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasurableSpace  α } ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  h :   borel_measure  s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->    MeasureTheory.Measure  s =  0 →  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->    MeasureTheory.Measure  s =  0 →  MeasurableSet  s
+
+ {  α :  Type  u } ->  [  TopologicalSpace  α ] ->  [  T2Space  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  h :   MeasureTheory.MeasureSpace.volume  s =  0 ) ->  measure_theory.measurable  s
+
+ {  α :  Type  u } ->  [  TopologicalSpace  α ] ->  [  T2Space  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  h :   MeasureTheory.MeasureSpace.volume  s =  0 ) ->  measure_theory.measurable  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  hm :   borel_measure  s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  hm :   borel_measure  s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  hs :   MeasureTheory.MeasureSpace.volume  s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  hs :   MeasureTheory.MeasureSpace.volume  s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  s :  Set  α } ->  [  BorelSpace  α ] ->  [  measure_space  α ] ->  (  h :   volume  s =  0 ) ->  Measurable  s
+
+ {  α :  Type  u_1 } ->  {  s :  Setₓ  α } ->  [  BorelSpace  α ] ->  [  measure_space  α ] ->  (  h :   volume  s =  0 ) ->  Measurable  s
+
+ {  α :  Type  u_1 } ->  {  s :  Set  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->    ν  s =  0 →  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  s :  Setₓ  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->    ν  s =  0 →  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  s :  Set  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  m :  MeasureTheory.Measure  α } ->  (  h :   MeasureTheory.MeasureSpace.volume  s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  s :  Setₓ  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  m :  MeasureTheory.Measure  α } ->  (  h :   MeasureTheory.MeasureSpace.volume  s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  s :  Set  α } ->  {  ν :  MeasureTheory.Measure  α } ->  (  hν : ν.is_borel ) ->  (  hs :   ν  s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  s :  Setₓ  α } ->  {  ν :  MeasureTheory.Measure  α } ->  (  hν : ν.is_borel ) ->  (  hs :   ν  s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasureTheory.Measure  α } ->  [  MeasurableSpace  α ] ->  [  measure_theory.borel_space  α ] ->  {  s :  Set  α } ->  (  h :   measure_theory.volume  m s =  0 ) ->  measure_theory.measurable_set  s
+
+ {  α :  Type  u_1 } ->  {  m :  MeasureTheory.Measure  α } ->  [  MeasurableSpace  α ] ->  [  measure_theory.borel_space  α ] ->  {  s :  Setₓ  α } ->  (  h :   measure_theory.volume  m s =  0 ) ->  measure_theory.measurable_set  s
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  {  ν :  MeasureTheory.Measure  β } ->  [  MeasurableSpace  α ] ->  [  MeasurableSpace  β ] ->  [  BorelSpace  α ] ->  [  BorelSpace  β ] ->  {  s :  Set  α } ->  {  t :  Set  β } ->  (  hν :   measure_theory.measure.borel_measure  ν t =  0 ) ->  (  h :  s ⊆ t ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  {  ν :  MeasureTheory.Measure  β } ->  [  MeasurableSpace  α ] ->  [  MeasurableSpace  β ] ->  [  BorelSpace  α ] ->  [  BorelSpace  β ] ->  {  s :  Set  α } ->  {  t :  Setₓ  β } ->  (  hν :   measure_theory.measure.borel_measure  ν t =  0 ) ->  (  h :  s ⊆ t ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  {  ν :  MeasureTheory.Measure  β } ->  [  MeasurableSpace  α ] ->  [  MeasurableSpace  β ] ->  [  BorelSpace  α ] ->  [  BorelSpace  β ] ->  {  s :  Setₓ  α } ->  {  t :  Set  β } ->  (  hν :   measure_theory.measure.borel_measure  ν t =  0 ) ->  (  h :  s ⊆ t ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  {  ν :  MeasureTheory.Measure  β } ->  [  MeasurableSpace  α ] ->  [  MeasurableSpace  β ] ->  [  BorelSpace  α ] ->  [  BorelSpace  β ] ->  {  s :  Setₓ  α } ->  {  t :  Setₓ  β } ->  (  hν :   measure_theory.measure.borel_measure  ν t =  0 ) ->  (  h :  s ⊆ t ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  s :  Set  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  m :  MeasureTheory.Measure  α } ->  (  hs :   borel_measure  m s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  s :  Setₓ  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  m :  MeasureTheory.Measure  α } ->  (  hs :   borel_measure  m s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  s :  Set  α } ->  {  m :  MeasureTheory.Measure  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->    measure  m s =  0 →  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  s :  Setₓ  α } ->  {  m :  MeasureTheory.Measure  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->    measure  m s =  0 →  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  {  s :  Set  α } ->  {  m :  measure  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  (  h :   m  s =  0 ) ->  Measurable  s
+
+ {  α :  Type  u_1 } ->  {  s :  Setₓ  α } ->  {  m :  measure  α } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  (  h :   m  s =  0 ) ->  Measurable  s
+
+{α : Type u_1} {m : measurable_space α} [borel_space α] {s : set α} ⦃hn : measure_theory.volume s = 0⦄ : measurable_set s 
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  h :   borel_measure  s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  h :   borel_measure  s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->    MeasureTheory.Measure  α s =  0 →  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->    MeasureTheory.Measure  α s =  0 →  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Set  α } ->  (  hs :   MeasureTheory.Measure  α s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  [  MeasurableSpace  α ] ->  [  BorelSpace  α ] ->  {  s :  Setₓ  α } ->  (  hs :   MeasureTheory.Measure  α s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  MeasurableSet   ↑  {   x   : α |   MeasureTheory.MeasureSpace.volume    {  xx }  {    xx    } =  0 }
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  {  s :  Set  α } ->  (  h :   MeasureTheory.Measure  s =  0 ) ->  MeasurableSet  s
+
+ {  α :  Type  u_1 } ->  [  MeasurableSpace  α ] ->  {  s :  Setₓ  α } ->  (  h :   MeasureTheory.Measure  s =  0 ) ->  MeasurableSet  s
+
+failed to elaborate
+
+outputs: #[{α : Type u_1} {m : measurable_space α} [borel_space α] {s : set α} (h : borel_measure s = 0) : measurable_set s , {α : Type u_1} [measurable_space α] [borel_space α] {s : set α} : measure_theory.measure s = 0 → measurable_set s , {α : Type u} [topological_space α] [t2_space α] [measurable_space α] [borel_space α] {s : set α} (h : measure_theory.measure_space.volume s = 0) : measure_theory.measurable s , {α : Type u_1} [measurable_space α] [borel_space α] {s : set α} (hm : borel_measure s = 0) : measurable_set s , {α : Type u_1} [measurable_space α] [borel_space α] {s : set α} (hs : measure_theory.measure_space.volume s = 0) : measurable_set s , {α : Type u_1} {s : set α} [borel_space α] [measure_space α] (h : volume s = 0) : is_measurable s , {α : Type u_1} {s : set α} [measurable_space α] [borel_space α] : ν s = 0 → measurable_set s , {α : Type u_1} {s : set α} [measurable_space α] [borel_space α] {m : measure_theory.measure α} (h : measure_theory.measure_space.volume s = 0) : measurable_set s , {α : Type u_1} {s : set α} {ν : measure_theory.measure α} (hν : ν.is_borel) (hs : ν s = 0) : measurable_set s , {α : Type u_1} {m : measure_theory.measure α} [measurable_space α] [measure_theory.borel_space α] {s : set α} (h : measure_theory.volume m s = 0) : measure_theory.measurable_set s , {α : Type u_1} {β : Type u_2} {ν : measure_theory.measure β} [measurable_space α] [measurable_space β] [borel_space α] [borel_space β] {s : set α} {t : set β} (hν : measure_theory.measure.borel_measure ν t = 0) (h : s ⊆ t) : measurable_set s , {α : Type u_1} {s : set α} [measurable_space α] [borel_space α] {m : measure_theory.measure α} (hs : borel_measure m s = 0) : measurable_set s , {α : Type u_1} {s : set α} {m : measure_theory.measure α} [measurable_space α] [borel_space α] : measure m s = 0 → measurable_set s , {α : Type u_1} {s : set α} {m : measure α} [measurable_space α] [borel_space α] (h : m s = 0) : is_measurable s , {α : Type u_1} {m : measurable_space α} [borel_space α] {s : set α} ⦃hn : measure_theory.volume s = 0⦄ : measurable_set s , {α : Type u_1} [measurable_space α] [borel_space α] {s : set α} (h : borel_measure s = 0) : measurable_set s , {α : Type u_1} [measurable_space α] [borel_space α] {s : set α} : measure_theory.measure α s = 0 → measurable_set s , {α : Type u_1} [topological_space α] [measurable_space α] [borel_space α] {s : set α} (hs : measure_theory.measure α s = 0) : measurable_set s , {α : Type u_1} [measurable_space α] : measurable_set ↑{x : α | measure_theory.measure_space.volume {x} = 0} , {α : Type u_1} [measurable_space α] {s : set α} (h : measure_theory.measure s = 0) : measurable_set s ]
+
+total : 11
+
+elaborated: 10
+
+No prime number is a perfect square.
+
+success
+
+theorem ∀ {p : ℕ} [inst : Fact (Nat.Prime p)], ¬∃ n, n * n = p
+
+total : 12
+
+elaborated: 11
+
+Every odd prime number is greater than `2`.
+
+success
+
+theorem ∀ (p : ℕ) [inst : Fact (Nat.Prime p)], Odd p → p > 2
+
+total : 13
+
+elaborated: 12
+
+The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares.
+
+Writing to file: silly-elab-12-8-false-20-8.json
+
+Every prime number is `2` or odd.
+
+success
+
+theorem ∀ (p : ℕ) [inst : Fact (Nat.Prime p)], p = 2 ∨ p % 2 = 1
+
+total : 1
+
+elaborated: 1
+
+There are infinitely many odd natural numbers.
+
+success
+
+theorem ∀ (n : ℕ), ∃ n, n > n ∧ Odd n
+
+total : 2
+
+elaborated: 2
+
+The smallest odd prime is `3`.
+
+success
+
+theorem ∀ (n : ℕ), Fact (Nat.Prime n) → n ≠ 2 → n = 3
+
+total : 3
+
+elaborated: 3
+
+There are infinitely many odd prime numbers.
+
+success
+
+theorem ∀ (k : ℕ), ∃ n, 2 * k + 1 ≤ n ∧ Nat.Prime n
+
+total : 4
+
+elaborated: 4
+
+If a vector space has dimension `2` then it is finite dimensional.
+
+success
+
+theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroupₓ V] [inst_2 : Module K V],
+  Module.rank K V ≤ 2 → FiniteDimensional K V
+
+total : 5
+
+elaborated: 5
+
+Every field is a division ring.
+
+success
+
+theorem (K : Type u) → [inst : Field K] → DivisionRing K
+
+total : 6
+
+elaborated: 6
+
+If a space has dimension `2` then it is finite dimensional.
+
+success
+
+theorem {R : Type u_1} →
+  [inst : Ringₓ R] → (n m : ℕ) → (v : Fin m → Fin n → R) → m ≤ 2 → LinearIndependent R v → m ≤ n → Fin m → Fin n → R
+
+total : 7
+
+elaborated: 7
+
+Every natural number has a successor.
+
+success
+
+theorem ∀ {n : ℕ}, ∃ k, n < k
+
+total : 8
+
+elaborated: 8
+
+Every natural number is less than its successor.
+
+success
+
+theorem ∀ (n : ℕ), n < Nat.succ n
+
+total : 9
+
+elaborated: 9
+
+Every set is Lebesgue measurable.
+
+success
+
+theorem {α : Type u_1} → MeasurableSpace α
+
+total : 10
+
+elaborated: 10
+
+Every set of Borel measure zero is Lebesgue measurable.
+
+success
+
+theorem ∀ {α : Type u_1} {m : MeasurableSpace α} {s : Set α}, coeFn MeasureTheory.volume.toOuterMeasure s = 0 → MeasurableSet s
+
+total : 11
+
+elaborated: 11
+
+No prime number is a perfect square.
+
+success
+
+theorem ∀ {p : ℕ} [inst : Fact (Nat.Prime p)], ¬∃ m, p = m * m
+
+total : 12
+
+elaborated: 12
+
+Every odd prime number is greater than `2`.
+
+success
+
+theorem ∀ (p : ℕ) [hprime : Fact (Nat.Prime p)], Odd p → 2 < p
+
+total : 13
+
+elaborated: 13
+
+The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares.
+
+success
+
+theorem ∀ {a b : ℕ},
+  (∃ x y z w, a = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) →
+    (∃ x y z w, b = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) → ∃ x y z w, a * b = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2
+
+total : 14
+
+elaborated: 14
+
+Every compact topological space is locally compact.
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : CompactSpace α], LocallyCompactSpace α
+
+total : 15
+
+elaborated: 15
+
+Every continuous function is uniformly continuous.
+
+success
+
+theorem ∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β},
+  Continuous f → UniformContinuous f
+
+total : 16
+
+elaborated: 16
+
+`6` is not the sum of two distinct prime numbers.
+
+success
+
+theorem ∀ (a b : ℕ), Prime a → Prime b → 6 = a + b → a = 3 ∧ b = 3
+
+total : 17
+
+elaborated: 17
+
+No integer is irrational.
+
+No valid output from Codex; outputs below
+
+{x : ℤ} (hxr : irrational x) : false 
+
+ (  a :  ℤ ) ->  ¬  Irrational  a
+
+ ¬  ∃    (   n :  ℤ ) ,  Irrational  n
+
+ {  m :  ℤ } ->  Irrational  m
+
+ ∀   (  x  :  ℤ  )  ,  Irrational   (   ↑ x   :   ℝ  ℝ )
+
+ {  x :   ℝ  ℝ } ->  (  hx :  ∃    (   n :  ℤ ) ,  x = n ) ->  ¬  Irrational  x
+
+ {  x :   ℝ  ℝ } ->  (  hxr :  ∀   (  p  :  ℕ  )  ,  x ≠ p ) ->  Irrational  x
+
+ {  n :  ℤ } ->  ¬  Irrational   ↑ n
+
+ ∀   {  x  :  ℤ }  ,  Irrational  x
+
+ (  m :  ℤ ) ->  ¬  Irrational  m
+
+ {  x :  ℤ } ->  Irrational  x
+
+{x : ℤ} (hx : irrational x) : false 
+
+ {  x :   ℝ  ℝ } ->  (  hxr :  x =  (   ↑ x   :   ℝ  ℝ ) ) ->  ¬  Irrational  x
+
+ {  x :   ℝ  ℝ } ->  (  hx :  Int  x ) ->  ¬  Irrational  x
+
+{n : ℤ} : irrational n → false 
+
+ : ¬∃ : n : ℤ, irrational n 
+
+ (  x :  ℤ ) ->  ¬  Irrational  x
+
+ {  r :   ℝ  ℝ } ->  (  hirr :  Irrational  r ) ->  ¬  has_rat.of_rat  r
+
+failed to elaborate
+
+outputs: #[{x : ℤ} (hxr : irrational x) : false , (a : ℤ) : ¬irrational a , : ¬∃ (n : ℤ), irrational n , {m : ℤ} : irrational m ,  : ∀ (x : ℤ), irrational (↑x : ℝ) , {x : ℝ} (hx : ∃ (n : ℤ), x = n) : ¬irrational x , {x : ℝ} (hxr : ∀ (p : ℕ), x ≠ p) : irrational x , {n : ℤ} : ¬irrational ↑n ,  : ∀ {x : ℤ}, irrational x , (m : ℤ) : ¬ irrational m , {x : ℤ} : irrational x , {x : ℤ} (hx : irrational x) : false , {x : ℝ} (hxr : x = (↑x : ℝ)) : ¬irrational x , {x : ℝ} (hx : is_int x) : ¬irrational x , {n : ℤ} : irrational n → false ,  : ¬∃ : n : ℤ, irrational n , (x : ℤ) : ¬irrational x , {r : ℝ} (hirr : irrational r) : ¬has_rat.of_rat r ]
+
+total : 18
+
+elaborated: 17
+
+The identity element in a ring is a unit.
+
+success
+
+theorem ∀ {α : Type u} [inst : Ringₓ α], IsUnit 1
+
+total : 19
+
+elaborated: 18
+
+Every subgroup of a group is a group.
+
+No valid output from Codex; outputs below
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  H :  Subgroup  G ) ->  Group  H
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  H :  Subgroup  G ) ->  Groupₓ  H
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  H :  Subgroup  G ) ->  Groupₓₓ  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  H :  Subgroup  G ) ->  Group  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  H :  Subgroup  G ) ->  Groupₓ  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  H :  Subgroup  G ) ->  Groupₓₓ  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  H :  Subgroup  G ) ->  Group  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  H :  Subgroup  G ) ->  Groupₓ  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  H :  Subgroup  G ) ->  Groupₓₓ  H
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  {  s :  Set  α } ->  (  HSub :  IsSubgroup  s ) ->  group.group  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  {  s :  Setₓ  α } ->  (  HSub :  IsSubgroup  s ) ->  group.group  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  {  s :  Set  α } ->  (  HSub :  IsSubgroup  s ) ->  group.group  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  {  s :  Setₓ  α } ->  (  HSub :  IsSubgroup  s ) ->  group.group  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  {  s :  Set  α } ->  (  HSub :  IsSubgroup  s ) ->  group.group  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  {  s :  Setₓ  α } ->  (  HSub :  IsSubgroup  s ) ->  group.group  s
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Subgroup  G } ->  Group  H
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Subgroup  G } ->  Groupₓ  H
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Subgroup  G } ->  Groupₓₓ  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Subgroup  G } ->  Group  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Subgroup  G } ->  Groupₓ  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Subgroup  G } ->  Groupₓₓ  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Subgroup  G } ->  Group  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Subgroup  G } ->  Groupₓ  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Subgroup  G } ->  Groupₓₓ  H
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u } ->  {  G :  Group  α } ->  Group   (   ↑ G   :  Set  α )
+
+ {  α :  Type  u } ->  {  G :  Group  α } ->  Group   (   ↑ G   :  Setₓ  α )
+
+ {  α :  Type  u } ->  {  G :  Group  α } ->  Groupₓ   (   ↑ G   :  Set  α )
+
+ {  α :  Type  u } ->  {  G :  Group  α } ->  Groupₓ   (   ↑ G   :  Setₓ  α )
+
+ {  α :  Type  u } ->  {  G :  Group  α } ->  Groupₓₓ   (   ↑ G   :  Set  α )
+
+ {  α :  Type  u } ->  {  G :  Group  α } ->  Groupₓₓ   (   ↑ G   :  Setₓ  α )
+
+ {  α :  Type  u } ->  {  G :  Groupₓ  α } ->  Group   (   ↑ G   :  Set  α )
+
+ {  α :  Type  u } ->  {  G :  Groupₓ  α } ->  Group   (   ↑ G   :  Setₓ  α )
+
+ {  α :  Type  u } ->  {  G :  Groupₓ  α } ->  Groupₓ   (   ↑ G   :  Set  α )
+
+ {  α :  Type  u } ->  {  G :  Groupₓ  α } ->  Groupₓ   (   ↑ G   :  Setₓ  α )
+
+ {  α :  Type  u } ->  {  G :  Groupₓ  α } ->  Groupₓₓ   (   ↑ G   :  Set  α )
+
+ {  α :  Type  u } ->  {  G :  Groupₓ  α } ->  Groupₓₓ   (   ↑ G   :  Setₓ  α )
+
+ {  α :  Type  u } ->  {  G :  Groupₓₓ  α } ->  Group   (   ↑ G   :  Set  α )
+
+ {  α :  Type  u } ->  {  G :  Groupₓₓ  α } ->  Group   (   ↑ G   :  Setₓ  α )
+
+ {  α :  Type  u } ->  {  G :  Groupₓₓ  α } ->  Groupₓ   (   ↑ G   :  Set  α )
+
+ {  α :  Type  u } ->  {  G :  Groupₓₓ  α } ->  Groupₓ   (   ↑ G   :  Setₓ  α )
+
+ {  α :  Type  u } ->  {  G :  Groupₓₓ  α } ->  Groupₓₓ   (   ↑ G   :  Set  α )
+
+ {  α :  Type  u } ->  {  G :  Groupₓₓ  α } ->  Groupₓₓ   (   ↑ G   :  Setₓ  α )
+
+ {  α :  Type  u_1 } ->  [  Monoid  α ] ->  monoid.is_submonoid  α
+
+ {  α :  Type  u_1 } ->  [  Monoidₓ  α ] ->  monoid.is_submonoid  α
+
+ {  G :  Type  u } ->  [  Group  G ] ->  ∀   (  H  :  Subgroup  G  )  ,  Group  H
+
+ {  G :  Type  u } ->  [  Group  G ] ->  ∀   (  H  :  Subgroup  G  )  ,  Groupₓ  H
+
+ {  G :  Type  u } ->  [  Group  G ] ->  ∀   (  H  :  Subgroup  G  )  ,  Groupₓₓ  H
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  ∀   (  H  :  Subgroup  G  )  ,  Group  H
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  ∀   (  H  :  Subgroup  G  )  ,  Groupₓ  H
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  ∀   (  H  :  Subgroup  G  )  ,  Groupₓₓ  H
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  ∀   (  H  :  Subgroup  G  )  ,  Group  H
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  ∀   (  H  :  Subgroup  G  )  ,  Groupₓ  H
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  ∀   (  H  :  Subgroup  G  )  ,  Groupₓₓ  H
+
+ {  α :  Type  u } ->  [  Group  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u } ->  [  Group  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u } ->  [  Group  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u } ->  [  Group  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u } ->  [  Group  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u } ->  [  Group  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u } ->  [  Groupₓ  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u } ->  [  Groupₓ  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u } ->  [  Groupₓ  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u } ->  [  Groupₓ  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u } ->  [  Groupₓ  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u } ->  [  Groupₓ  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u } ->  [  Groupₓₓ  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u } ->  [  Groupₓₓ  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u } ->  [  Groupₓₓ  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u } ->  [  Groupₓₓ  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u } ->  [  Groupₓₓ  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u } ->  [  Groupₓₓ  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  Π ( H :  Subgroup  G ) ,  Group  H
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  Π ( H :  Subgroup  G ) ,  Groupₓ  H
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  Π ( H :  Subgroup  G ) ,  Groupₓₓ  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  Π ( H :  Subgroup  G ) ,  Group  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  Π ( H :  Subgroup  G ) ,  Groupₓ  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  Π ( H :  Subgroup  G ) ,  Groupₓₓ  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  Π ( H :  Subgroup  G ) ,  Group  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  Π ( H :  Subgroup  G ) ,  Groupₓ  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  Π ( H :  Subgroup  G ) ,  Groupₓₓ  H
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  {  s :  Subgroup  α } ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  {  s :  Subgroup  α } ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  {  s :  Subgroup  α } ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  {  s :  Subgroup  α } ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  {  s :  Subgroup  α } ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  {  s :  Subgroup  α } ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  {  s :  Subgroup  α } ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  {  s :  Subgroup  α } ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  {  s :  Subgroup  α } ->  Groupₓₓ  s
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  H :  Subgroup  G ) ->  group.group  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  H :  Subgroup  G ) ->  group.group  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  H :  Subgroup  G ) ->  group.group  H
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  s :  Subgroup  G ) ->  Group   (   Subtype  s  )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  s :  Subgroup  G ) ->  Groupₓ   (   Subtype  s  )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  s :  Subgroup  G ) ->  Groupₓₓ   (   Subtype  s  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  s :  Subgroup  G ) ->  Group   (   Subtype  s  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  s :  Subgroup  G ) ->  Groupₓ   (   Subtype  s  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  s :  Subgroup  G ) ->  Groupₓₓ   (   Subtype  s  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  s :  Subgroup  G ) ->  Group   (   Subtype  s  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  s :  Subgroup  G ) ->  Groupₓ   (   Subtype  s  )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  s :  Subgroup  G ) ->  Groupₓₓ   (   Subtype  s  )
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+failed to elaborate
+
+outputs: #[{G : Type u_1} [group G] (H : subgroup G) : group H , {α : Type u_1} [group α] {s : set α} (h_sub : is_subgroup s) : group.group s , {G : Type u_1} [group G] {H : subgroup G} : group H , {α : Type u_1} [group α] (s : set α) (hs : is_subgroup s) : group s , {α : Type u} {G : group α} : is_group (↑G : set α) , {α : Type u_1} [monoid α] : monoid.is_submonoid α , {G : Type u} [group G] : ∀ (H : subgroup G), group H , {α : Type u} [group α] {s : set α} (hs : is_subgroup s) : group s , {G : Type u_1} [group G] : Π (H : subgroup G), group H , {α : Type u_1} [group α] {s : subgroup α} : group s , {G : Type u_1} [group G] (H : subgroup G) : group.group H , {G : Type u_1} [group G] (s : subgroup G) : group (subtype s) , {α : Type u_1} [group α] {s : set α} (hs : is_subgroup s) : group s ]
+
+total : 20
+
+elaborated: 18
+
+The sum of two natural numbers is a natural number.
+
+Writing to file: silly-elab-12-8-false-20-8.json
+
+Every prime number is `2` or odd.
+
+success
+
+theorem ∀ (p : ℕ) [inst : Fact (Nat.Prime p)], p = 2 ∨ p % 2 = 1
+
+total : 1
+
+elaborated: 1
+
+There are infinitely many odd natural numbers.
+
+success
+
+theorem ∀ (n : ℕ), ∃ m, m % 2 = 1 ∧ m ≥ n
+
+total : 2
+
+elaborated: 2
+
+The smallest odd prime is `3`.
+
+success
+
+theorem ∀ (n : ℕ) [inst : Fact (Nat.Prime n)], n = 3 → n = 3 ∨ n = 5
+
+total : 3
+
+elaborated: 3
+
+There are infinitely many odd prime numbers.
+
+success
+
+theorem ∀ (n : ℕ), ∃ p, n < p ∧ Nat.Prime p ∧ p % 2 = 1
+
+total : 4
+
+elaborated: 4
+
+If a vector space has dimension `2` then it is finite dimensional.
+
+success
+
+theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroupₓ V] [inst_2 : Module K V],
+  Module.rank K V = 2 → FiniteDimensional K V
+
+total : 5
+
+elaborated: 5
+
+Every field is a division ring.
+
+success
+
+theorem (K : Type u) → [inst : Field K] → DivisionRing K
+
+total : 6
+
+elaborated: 6
+
+If a space has dimension `2` then it is finite dimensional.
+
+success
+
+theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroupₓ V] [inst_2 : Module K V] (ι : Type u_1)
+  [inst_3 : Unique ι], Nonempty (Basis ι K V) → FiniteDimensional K V
+
+total : 7
+
+elaborated: 7
+
+Every natural number has a successor.
+
+success
+
+theorem ∀ (n : ℕ), ∃ n', n' = Nat.succ n
+
+total : 8
+
+elaborated: 8
+
+Every natural number is less than its successor.
+
+success
+
+theorem ∀ (n : ℕ), n < Nat.succ n
+
+total : 9
+
+elaborated: 9
+
+Every set is Lebesgue measurable.
+
+success
+
+theorem ∀ {α : Type u_1} [inst : MeasurableSpace α] {s : Set α}, MeasurableSet s
+
+total : 10
+
+elaborated: 10
+
+Every set of Borel measure zero is Lebesgue measurable.
+
+success
+
+theorem ∀ {α : Type u_1} [inst : TopologicalSpace α] [inst_1 : T2Space α] [inst_2 : MeasurableSpace α] [inst_3 : BorelSpace α]
+  {s : Set α}, coeFn MeasureTheory.volume.toOuterMeasure s = 0 → MeasurableSet s
+
+total : 11
+
+elaborated: 11
+
+No prime number is a perfect square.
+
+success
+
+theorem ∀ {p : ℕ} [inst : Fact (Nat.Prime p)], ¬∃ a, a ^ 2 = p
+
+total : 12
+
+elaborated: 12
+
+Every odd prime number is greater than `2`.
+
+success
+
+theorem ∀ {p : ℕ}, Nat.Prime p → Odd p → 2 < p
+
+total : 13
+
+elaborated: 13
+
+The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares.
+
+success
+
+theorem ∀ {a b c d e f g h : ℤ},
+  a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = e ^ 2 + f ^ 2 + g ^ 2 + h ^ 2 →
+    (a + b) * (a + b) + (c + d) * (c + d) = (e + f) * (e + f) + (g + h) * (g + h)
+
+total : 14
+
+elaborated: 14
+
+Every compact topological space is locally compact.
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : CompactSpace α], LocallyCompactSpace α
+
+total : 15
+
+elaborated: 15
+
+Every continuous function is uniformly continuous.
+
+success
+
+theorem ∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] (f : α → β),
+  Continuous f → UniformContinuous f
+
+total : 16
+
+elaborated: 16
+
+`6` is not the sum of two distinct prime numbers.
+
+success
+
+theorem ∀ (p : ℕ) [inst : Fact (Nat.Prime p)] (q : ℕ) [inst : Fact (Nat.Prime q)], p < 6 ∧ q < 6 ∧ p ≠ q → p + q ≠ 6
+
+total : 17
+
+elaborated: 17
+
+No integer is irrational.
+
+No valid output from Codex; outputs below
+
+ {  x :  ℤ } ->  ¬  Irrational  x
+
+ ∀   (  z  :  ℤ  )  ,  Irrational  z
+
+ {  n :  ℤ } ->  Irrational  n
+
+{x : ℝ} (hxirr : irrational x) (hxint : ¬(∃ (n : ℤ), x = ↑n)) : false 
+
+ {  m :  ℤ } ->  (  hm :  m ≠  0 ) ->  ¬  Irrational   (   ↑ m   :   ℝ  ℝ )
+
+ {  x :   ℝ  ℝ } ->   Irrational  x →  ¬  ∃    (   m :  ℤ ) ,  x = m
+
+ (  z :  ℤ ) ->  Irrational  z
+
+ {  x :   ℝ  ℝ } ->  ∀   (  y  :  ℤ  )  ,   x =  ↑ y →  Irrational  x
+
+ {  x :   ℝ  ℝ } ->  (  hxr :  x ∈  ℤ ) ->  ¬  Irrational  x
+
+ {  x :   ℝ  ℝ } ->  x.nat_abs.irrational ↔  x ∉  Set.Range   (  Coe   :   ℤ →   ℝ  ℝ )
+
+{x : ℤ} : irrational x → false 
+
+ {  z :  ℤ } ->  Irrational  z
+
+ ∀   (  x  :  ℤ  )  ,  ¬  Irrational   (   ↑ x   :   ℝ  ℝ )
+
+ (  x :  ℤ ) ->  Irrational  x
+
+ {  x :   ℝ  ℝ } ->  (  hx :  x ∈  ℤ ) ->  ¬  Irrational  x
+
+{x : ℝ} (hx : ∃ (m : ℤ), x = m) : irrational x → false 
+
+failed to elaborate
+
+outputs: #[{x : ℤ} : ¬irrational x ,  : ∀ (z : ℤ), irrational z , {n : ℤ} : irrational n , {x : ℝ} (hxirr : irrational x) (hxint : ¬(∃ (n : ℤ), x = ↑n)) : false , {m : ℤ} (hm : m ≠ 0) : ¬irrational (↑m : ℝ) , {x : ℝ} : irrational x → ¬∃ (m : ℤ), x = m , (z : ℤ) : irrational z , {x : ℝ} : ∀ (y : ℤ), x = ↑y → irrational x , {x : ℝ} (hxr : x ∈ ℤ) : ¬irrational x , {x : ℝ} : x.nat_abs.irrational ↔ x ∉ set.range (coe : ℤ → ℝ) , {x : ℤ} : irrational x → false , {z : ℤ} : irrational z ,  : ∀ (x : ℤ), ¬irrational (↑x : ℝ) , (x : ℤ) : irrational x , {x : ℝ} (hx : x ∈ ℤ) : ¬ irrational x , {x : ℝ} (hx : ∃ (m : ℤ), x = m) : irrational x → false ]
+
+total : 18
+
+elaborated: 17
+
+The identity element in a ring is a unit.
+
+success
+
+theorem ∀ {X : Type u_1} [inst : Ringₓ X], IsUnit 1
+
+total : 19
+
+elaborated: 18
+
+Every subgroup of a group is a group.
+
+No valid output from Codex; outputs below
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Subgroup  G } ->  Group  H
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Subgroup  G } ->  Groupₓ  H
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Subgroup  G } ->  Groupₓₓ  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Subgroup  G } ->  Group  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Subgroup  G } ->  Groupₓ  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Subgroup  G } ->  Groupₓₓ  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Subgroup  G } ->  Group  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Subgroup  G } ->  Groupₓ  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Subgroup  G } ->  Groupₓₓ  H
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  s :  Subgroup  α ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  s :  Subgroup  α ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  s :  Subgroup  α ) ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  s :  Subgroup  α ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  s :  Subgroup  α ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  s :  Subgroup  α ) ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  s :  Subgroup  α ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  s :  Subgroup  α ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  s :  Subgroup  α ) ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  {  s :  Subgroup  α } ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  {  s :  Subgroup  α } ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  {  s :  Subgroup  α } ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  {  s :  Subgroup  α } ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  {  s :  Subgroup  α } ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  {  s :  Subgroup  α } ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  {  s :  Subgroup  α } ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  {  s :  Subgroup  α } ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  {  s :  Subgroup  α } ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubmonoid  s ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubmonoid  s ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubmonoid  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubmonoid  s ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubmonoid  s ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubmonoid  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubmonoid  s ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubmonoid  s ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubmonoid  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubmonoid  s ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubmonoid  s ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubmonoid  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubmonoid  s ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubmonoid  s ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubmonoid  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubmonoid  s ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubmonoid  s ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubmonoid  s ) ->  Groupₓₓ  s
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  H :  Subgroup  G ) ->  Group  H
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  H :  Subgroup  G ) ->  Groupₓ  H
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  H :  Subgroup  G ) ->  Groupₓₓ  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  H :  Subgroup  G ) ->  Group  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  H :  Subgroup  G ) ->  Groupₓ  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  H :  Subgroup  G ) ->  Groupₓₓ  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  H :  Subgroup  G ) ->  Group  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  H :  Subgroup  G ) ->  Groupₓ  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  H :  Subgroup  G ) ->  Groupₓₓ  H
+
+ {  α :  Type  u } ->  [  Group  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u } ->  [  Group  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u } ->  [  Group  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u } ->  [  Group  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u } ->  [  Group  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u } ->  [  Group  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u } ->  [  Groupₓ  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u } ->  [  Groupₓ  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u } ->  [  Groupₓ  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u } ->  [  Groupₓ  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u } ->  [  Groupₓ  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u } ->  [  Groupₓ  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u } ->  [  Groupₓₓ  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u } ->  [  Groupₓₓ  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u } ->  [  Groupₓₓ  α ] ->  {  s :  Set  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u } ->  [  Groupₓₓ  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u } ->  [  Groupₓₓ  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u } ->  [  Groupₓₓ  α ] ->  {  s :  Setₓ  α } ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u } ->  [  Group  α ] ->  {  s :  Set  α } ->  (  ssubg :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u } ->  [  Group  α ] ->  {  s :  Set  α } ->  (  ssubg :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u } ->  [  Group  α ] ->  {  s :  Set  α } ->  (  ssubg :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u } ->  [  Group  α ] ->  {  s :  Setₓ  α } ->  (  ssubg :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u } ->  [  Group  α ] ->  {  s :  Setₓ  α } ->  (  ssubg :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u } ->  [  Group  α ] ->  {  s :  Setₓ  α } ->  (  ssubg :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u } ->  [  Groupₓ  α ] ->  {  s :  Set  α } ->  (  ssubg :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u } ->  [  Groupₓ  α ] ->  {  s :  Set  α } ->  (  ssubg :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u } ->  [  Groupₓ  α ] ->  {  s :  Set  α } ->  (  ssubg :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u } ->  [  Groupₓ  α ] ->  {  s :  Setₓ  α } ->  (  ssubg :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u } ->  [  Groupₓ  α ] ->  {  s :  Setₓ  α } ->  (  ssubg :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u } ->  [  Groupₓ  α ] ->  {  s :  Setₓ  α } ->  (  ssubg :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u } ->  [  Groupₓₓ  α ] ->  {  s :  Set  α } ->  (  ssubg :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u } ->  [  Groupₓₓ  α ] ->  {  s :  Set  α } ->  (  ssubg :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u } ->  [  Groupₓₓ  α ] ->  {  s :  Set  α } ->  (  ssubg :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u } ->  [  Groupₓₓ  α ] ->  {  s :  Setₓ  α } ->  (  ssubg :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u } ->  [  Groupₓₓ  α ] ->  {  s :  Setₓ  α } ->  (  ssubg :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u } ->  [  Groupₓₓ  α ] ->  {  s :  Setₓ  α } ->  (  ssubg :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  s :  Set  G ) ->  [  IsSubgroup  s ] ->  Group  s
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  s :  Set  G ) ->  [  IsSubgroup  s ] ->  Groupₓ  s
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  s :  Set  G ) ->  [  IsSubgroup  s ] ->  Groupₓₓ  s
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  s :  Setₓ  G ) ->  [  IsSubgroup  s ] ->  Group  s
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  s :  Setₓ  G ) ->  [  IsSubgroup  s ] ->  Groupₓ  s
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  s :  Setₓ  G ) ->  [  IsSubgroup  s ] ->  Groupₓₓ  s
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  s :  Set  G ) ->  [  IsSubgroup  s ] ->  Group  s
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  s :  Set  G ) ->  [  IsSubgroup  s ] ->  Groupₓ  s
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  s :  Set  G ) ->  [  IsSubgroup  s ] ->  Groupₓₓ  s
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  s :  Setₓ  G ) ->  [  IsSubgroup  s ] ->  Group  s
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  s :  Setₓ  G ) ->  [  IsSubgroup  s ] ->  Groupₓ  s
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  s :  Setₓ  G ) ->  [  IsSubgroup  s ] ->  Groupₓₓ  s
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  s :  Set  G ) ->  [  IsSubgroup  s ] ->  Group  s
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  s :  Set  G ) ->  [  IsSubgroup  s ] ->  Groupₓ  s
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  s :  Set  G ) ->  [  IsSubgroup  s ] ->  Groupₓₓ  s
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  s :  Setₓ  G ) ->  [  IsSubgroup  s ] ->  Group  s
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  s :  Setₓ  G ) ->  [  IsSubgroup  s ] ->  Groupₓ  s
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  s :  Setₓ  G ) ->  [  IsSubgroup  s ] ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  s :  Subgroup  α ) ->  Group  s.carrier
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  s :  Subgroup  α ) ->  Groupₓ  s.carrier
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  s :  Subgroup  α ) ->  Groupₓₓ  s.carrier
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  s :  Subgroup  α ) ->  Group  s.carrier
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  s :  Subgroup  α ) ->  Groupₓ  s.carrier
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  s :  Subgroup  α ) ->  Groupₓₓ  s.carrier
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  s :  Subgroup  α ) ->  Group  s.carrier
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  s :  Subgroup  α ) ->  Groupₓ  s.carrier
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  s :  Subgroup  α ) ->  Groupₓₓ  s.carrier
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  s :  Set  α ) ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubgroup  s ) ->  Group  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubgroup  s ) ->  Groupₓ  s
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  s :  Setₓ  α ) ->  (  hs :  IsSubgroup  s ) ->  Groupₓₓ  s
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Subgroup  G } ->   @ Group  G  (   ↑ H   :  Set  G )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Subgroup  G } ->   @ Group  G  (   ↑ H   :  Setₓ  G )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Subgroup  G } ->   @ Groupₓ  G  (   ↑ H   :  Set  G )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Subgroup  G } ->   @ Groupₓ  G  (   ↑ H   :  Setₓ  G )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Subgroup  G } ->   @ Groupₓₓ  G  (   ↑ H   :  Set  G )
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Subgroup  G } ->   @ Groupₓₓ  G  (   ↑ H   :  Setₓ  G )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Subgroup  G } ->   @ Group  G  (   ↑ H   :  Set  G )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Subgroup  G } ->   @ Group  G  (   ↑ H   :  Setₓ  G )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Subgroup  G } ->   @ Groupₓ  G  (   ↑ H   :  Set  G )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Subgroup  G } ->   @ Groupₓ  G  (   ↑ H   :  Setₓ  G )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Subgroup  G } ->   @ Groupₓₓ  G  (   ↑ H   :  Set  G )
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Subgroup  G } ->   @ Groupₓₓ  G  (   ↑ H   :  Setₓ  G )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Subgroup  G } ->   @ Group  G  (   ↑ H   :  Set  G )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Subgroup  G } ->   @ Group  G  (   ↑ H   :  Setₓ  G )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Subgroup  G } ->   @ Groupₓ  G  (   ↑ H   :  Set  G )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Subgroup  G } ->   @ Groupₓ  G  (   ↑ H   :  Setₓ  G )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Subgroup  G } ->   @ Groupₓₓ  G  (   ↑ H   :  Set  G )
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Subgroup  G } ->   @ Groupₓₓ  G  (   ↑ H   :  Setₓ  G )
+
+ {  G :  Type  u } ->  [  Group  G ] ->  (  H :  Subgroup  G ) ->  Group  H
+
+ {  G :  Type  u } ->  [  Group  G ] ->  (  H :  Subgroup  G ) ->  Groupₓ  H
+
+ {  G :  Type  u } ->  [  Group  G ] ->  (  H :  Subgroup  G ) ->  Groupₓₓ  H
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  (  H :  Subgroup  G ) ->  Group  H
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  (  H :  Subgroup  G ) ->  Groupₓ  H
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  (  H :  Subgroup  G ) ->  Groupₓₓ  H
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  (  H :  Subgroup  G ) ->  Group  H
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  (  H :  Subgroup  G ) ->  Groupₓ  H
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  (  H :  Subgroup  G ) ->  Groupₓₓ  H
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  h :  Subgroup  α ) ->  Group   (  Subtype.val   :  h.carrier → α )
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  h :  Subgroup  α ) ->  Groupₓ   (  Subtype.val   :  h.carrier → α )
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  (  h :  Subgroup  α ) ->  Groupₓₓ   (  Subtype.val   :  h.carrier → α )
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  h :  Subgroup  α ) ->  Group   (  Subtype.val   :  h.carrier → α )
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  h :  Subgroup  α ) ->  Groupₓ   (  Subtype.val   :  h.carrier → α )
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  (  h :  Subgroup  α ) ->  Groupₓₓ   (  Subtype.val   :  h.carrier → α )
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  h :  Subgroup  α ) ->  Group   (  Subtype.val   :  h.carrier → α )
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  h :  Subgroup  α ) ->  Groupₓ   (  Subtype.val   :  h.carrier → α )
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  (  h :  Subgroup  α ) ->  Groupₓₓ   (  Subtype.val   :  h.carrier → α )
+
+failed to elaborate
+
+outputs: #[{G : Type u_1} [group G] {H : subgroup G} : group H , {α : Type u_1} [group α] (s : subgroup α) : group s , {α : Type u_1} [group α] {s : subgroup α} : group s , {α : Type u_1} [group α] (s : set α) (hs : is_submonoid s) : is_group s , {G : Type u_1} [group G] (H : subgroup G) : group H , {α : Type u} [group α] {s : set α} (hs : is_subgroup s) : group s , {α : Type u} [group α] {s : set α} (ssubg : is_subgroup s) : group s , {G : Type u_1} [group G] (s : set G) [is_subgroup s] : group s , {α : Type u_1} [group α] (s : subgroup α) : group s.carrier , {α : Type u_1} [group α] (s : set α) (hs : is_subgroup s) : group s , {G : Type u_1} [group G] {H : subgroup G} : @group G (↑H : set G) , {G : Type u} [group G] (H : subgroup G) : group H , {α : Type u_1} [group α] (h : subgroup α) : is_group (subtype.val : h.carrier → α) ]
+
+total : 20
+
+elaborated: 18
+
+The sum of two natural numbers is a natural number.
+
+success
+
+theorem ∀ {m n : ℕ}, m ≥ 0 → n ≥ 0 → m + n ≥ 0
+
+total : 21
+
+elaborated: 19
+
+The identity element of a group has finite order.
+
+success
+
+theorem ∀ {G : Type u} [inst : Groupₓ G], IsOfFinOrder 1
+
+total : 22
+
+elaborated: 20
+
+`7` is a prime number.
+
+success
+
+theorem ∀ (p : ℕ), Nat.Prime p ↔ p = 2 ∨ p = 3 ∨ p = 5 ∨ p = 7
+
+total : 23
+
+elaborated: 21
+
+There are `3` prime numbers below `8`.
+
+success
+
+theorem ∃ p q r, Prime p ∧ Prime q ∧ Prime r ∧ p < 8 ∧ q < 8 ∧ r < 8
+
+total : 24
+
+elaborated: 22
+
+The empty set is contained in every finite set.
+
+success
+
+theorem ∀ {α : Type u} [inst : DecidableEq α] (s : Finset α), ∅ ⊂ s
+
+total : 25
+
+elaborated: 23
+
+Every infinite set contains a finite set.
+
+No valid output from Codex; outputs below
+
+ {  α :  Type  u } ->  {  s :  Set  α } ->  (  hs : s.infinite ) ->  ∃    (   t :  Set  α ) ,    t ⊂ s  tt ⊂ s  tt ⊂ s  t ⊂ s  t ⊂ s ∧ t.finite
+
+ {  α :  Type  u } ->  {  s :  Set  α } ->  (  hs : s.infinite ) ->  ∃    (   t :  Setₓ  α ) ,    t ⊂ s  tt ⊂ s  tt ⊂ s  t ⊂ s  t ⊂ s ∧ t.finite
+
+ {  α :  Type  u } ->  {  s :  Setₓ  α } ->  (  hs : s.infinite ) ->  ∃    (   t :  Set  α ) ,    t ⊂ s  tt ⊂ s  tt ⊂ s  t ⊂ s  t ⊂ s ∧ t.finite
+
+ {  α :  Type  u } ->  {  s :  Setₓ  α } ->  (  hs : s.infinite ) ->  ∃    (   t :  Setₓ  α ) ,    t ⊂ s  tt ⊂ s  tt ⊂ s  t ⊂ s  t ⊂ s ∧ t.finite
+
+ {  α :  Type  u } ->  (  s :  Set  α ) ->  (  h : s.infinite ) ->  ∃     t  :  Set  α ,  t.finite ∧  t ⊆ s
+
+ {  α :  Type  u } ->  (  s :  Set  α ) ->  (  h : s.infinite ) ->  ∃     t  :  Setₓ  α ,  t.finite ∧  t ⊆ s
+
+ {  α :  Type  u } ->  (  s :  Setₓ  α ) ->  (  h : s.infinite ) ->  ∃     t  :  Set  α ,  t.finite ∧  t ⊆ s
+
+ {  α :  Type  u } ->  (  s :  Setₓ  α ) ->  (  h : s.infinite ) ->  ∃     t  :  Setₓ  α ,  t.finite ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Set  α } ->  (  h : s.infinite ) ->  ∃    (   t :  Set  α )  (   h :  Finite  t ) ,  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Set  α } ->  (  h : s.infinite ) ->  ∃    (   t :  Setₓ  α )  (   h :  Finite  t ) ,  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Setₓ  α } ->  (  h : s.infinite ) ->  ∃    (   t :  Set  α )  (   h :  Finite  t ) ,  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Setₓ  α } ->  (  h : s.infinite ) ->  ∃    (   t :  Setₓ  α )  (   h :  Finite  t ) ,  t ⊆ s
+
+ {  α :  Type  w } ->  (  s :  Set  α ) ->  (  h : s.infinite ) ->  ∃     t  :  Set  α ,   t ⊆ s ∧ t.finite
+
+ {  α :  Type  w } ->  (  s :  Set  α ) ->  (  h : s.infinite ) ->  ∃     t  :  Setₓ  α ,   t ⊆ s ∧ t.finite
+
+ {  α :  Type  w } ->  (  s :  Setₓ  α ) ->  (  h : s.infinite ) ->  ∃     t  :  Set  α ,   t ⊆ s ∧ t.finite
+
+ {  α :  Type  w } ->  (  s :  Setₓ  α ) ->  (  h : s.infinite ) ->  ∃     t  :  Setₓ  α ,   t ⊆ s ∧ t.finite
+
+ {  α :  Type  u } ->  {  s :  Set  α } ->  (  hs : s.infinite ) ->  ∃    (   t :  Set  α ) ,  t.finite ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Set  α } ->  (  hs : s.infinite ) ->  ∃    (   t :  Setₓ  α ) ,  t.finite ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Setₓ  α } ->  (  hs : s.infinite ) ->  ∃    (   t :  Set  α ) ,  t.finite ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Setₓ  α } ->  (  hs : s.infinite ) ->  ∃    (   t :  Setₓ  α ) ,  t.finite ∧  t ⊆ s
+
+ {  α :  Type  u } ->  (  s :  Set  α ) ->  (  hs : s.infinite ) ->  ∃     t  :  Set  α ,   Finite  t ∧  t ⊆ s
+
+ {  α :  Type  u } ->  (  s :  Set  α ) ->  (  hs : s.infinite ) ->  ∃     t  :  Setₓ  α ,   Finite  t ∧  t ⊆ s
+
+ {  α :  Type  u } ->  (  s :  Setₓ  α ) ->  (  hs : s.infinite ) ->  ∃     t  :  Set  α ,   Finite  t ∧  t ⊆ s
+
+ {  α :  Type  u } ->  (  s :  Setₓ  α ) ->  (  hs : s.infinite ) ->  ∃     t  :  Setₓ  α ,   Finite  t ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Set  α } ->  s.infinite →  ∃    (   t :  Set  α ) ,  t.finite ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Set  α } ->  s.infinite →  ∃    (   t :  Setₓ  α ) ,  t.finite ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Setₓ  α } ->  s.infinite →  ∃    (   t :  Set  α ) ,  t.finite ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Setₓ  α } ->  s.infinite →  ∃    (   t :  Setₓ  α ) ,  t.finite ∧  t ⊆ s
+
+ {  α :  Type  u } ->  (  s :  Set  α ) ->  s.infinite →  ∃     t  :  Set  α ,  t.finite ∧  t ⊆ s
+
+ {  α :  Type  u } ->  (  s :  Set  α ) ->  s.infinite →  ∃     t  :  Setₓ  α ,  t.finite ∧  t ⊆ s
+
+ {  α :  Type  u } ->  (  s :  Setₓ  α ) ->  s.infinite →  ∃     t  :  Set  α ,  t.finite ∧  t ⊆ s
+
+ {  α :  Type  u } ->  (  s :  Setₓ  α ) ->  s.infinite →  ∃     t  :  Setₓ  α ,  t.finite ∧  t ⊆ s
+
+ {  α :  Type  u } ->  (  s :  Set  α ) ->  (  i : s.infinite ) ->  ∃    (   t :  Finset  α ) ,  t ⊆ s
+
+ {  α :  Type  u } ->  (  s :  Setₓ  α ) ->  (  i : s.infinite ) ->  ∃    (   t :  Finset  α ) ,  t ⊆ s
+
+ {  α :  Type* } ->  {  f :  Set  α } ->  (  hf' : f.infinite ) ->  ∃    (   f' :  Finset  α ) ,  ∀  x  ,   x ∈ f' →  x ∈ f
+
+ {  α :  Type* } ->  {  f :  Setₓ  α } ->  (  hf' : f.infinite ) ->  ∃    (   f' :  Finset  α ) ,  ∀  x  ,   x ∈ f' →  x ∈ f
+
+ {  α :  Type  u } ->  (  s :  Set  α ) ->  (  h_inf : s.infinite ) ->  ∃    (   t :  Set  α ) ,  t.finite ∧  t ⊆ s
+
+ {  α :  Type  u } ->  (  s :  Set  α ) ->  (  h_inf : s.infinite ) ->  ∃    (   t :  Setₓ  α ) ,  t.finite ∧  t ⊆ s
+
+ {  α :  Type  u } ->  (  s :  Setₓ  α ) ->  (  h_inf : s.infinite ) ->  ∃    (   t :  Set  α ) ,  t.finite ∧  t ⊆ s
+
+ {  α :  Type  u } ->  (  s :  Setₓ  α ) ->  (  h_inf : s.infinite ) ->  ∃    (   t :  Setₓ  α ) ,  t.finite ∧  t ⊆ s
+
+{α : Type u} (s : set α) (h : s.infinite) : ∃ (t : set α) (h : s ⊆ t ∧ t.finite), true 
+
+ {  α :  Type  u } ->  (  s :  Set  α ) ->  (  h : s.infinite ) ->  ∃    (   t :  Set  α ) ,   t ⊆ s ∧ t.finite
+
+ {  α :  Type  u } ->  (  s :  Set  α ) ->  (  h : s.infinite ) ->  ∃    (   t :  Setₓ  α ) ,   t ⊆ s ∧ t.finite
+
+ {  α :  Type  u } ->  (  s :  Setₓ  α ) ->  (  h : s.infinite ) ->  ∃    (   t :  Set  α ) ,   t ⊆ s ∧ t.finite
+
+ {  α :  Type  u } ->  (  s :  Setₓ  α ) ->  (  h : s.infinite ) ->  ∃    (   t :  Setₓ  α ) ,   t ⊆ s ∧ t.finite
+
+ {  α :  Type  u } ->  (  s :  Set  α ) ->  (  h :  ∃    (   t :  Set  α ) ,  t.finite ∧  s ⊆ t ) -> s.infinite
+
+ {  α :  Type  u } ->  (  s :  Set  α ) ->  (  h :  ∃    (   t :  Setₓ  α ) ,  t.finite ∧  s ⊆ t ) -> s.infinite
+
+ {  α :  Type  u } ->  (  s :  Setₓ  α ) ->  (  h :  ∃    (   t :  Set  α ) ,  t.finite ∧  s ⊆ t ) -> s.infinite
+
+ {  α :  Type  u } ->  (  s :  Setₓ  α ) ->  (  h :  ∃    (   t :  Setₓ  α ) ,  t.finite ∧  s ⊆ t ) -> s.infinite
+
+ {  α :  Type  } ->  [  DecidableEq  α ] ->  (  s :  Set  α ) ->  (  hs : s.infinite ) ->  ∃    (   f :  Finset  α ) ,  f.infinite_to_finite  s
+
+ {  α :  Type  } ->  [  DecidableEq  α ] ->  (  s :  Setₓ  α ) ->  (  hs : s.infinite ) ->  ∃    (   f :  Finset  α ) ,  f.infinite_to_finite  s
+
+ {  α :  Type  u_1 } ->  (  s :  Set  α ) ->  (  h : s.infinite ) ->   s ∩   (   range  finset.card  ) . powerset.nonempty.to_set.finite.to_set ≠  ∅
+
+ {  α :  Type  u_1 } ->  (  s :  Setₓ  α ) ->  (  h : s.infinite ) ->   s ∩   (   range  finset.card  ) . powerset.nonempty.to_set.finite.to_set ≠  ∅
+
+ {  α :  Type  u } ->  {  s :  Set  α } ->  (  h : s.infinite ) ->  ∃     t  :  Set  α ,   Finite  t ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Set  α } ->  (  h : s.infinite ) ->  ∃     t  :  Setₓ  α ,   Finite  t ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Setₓ  α } ->  (  h : s.infinite ) ->  ∃     t  :  Set  α ,   Finite  t ∧  t ⊆ s
+
+ {  α :  Type  u } ->  {  s :  Setₓ  α } ->  (  h : s.infinite ) ->  ∃     t  :  Setₓ  α ,   Finite  t ∧  t ⊆ s
+
+ {  α :  Type  u } ->  (  s :  Set  α ) ->  (  h : s.infinite ) ->  ∃    (   t :  Set  α ) ,  t.finite ∧  s ⊆ t
+
+ {  α :  Type  u } ->  (  s :  Set  α ) ->  (  h : s.infinite ) ->  ∃    (   t :  Setₓ  α ) ,  t.finite ∧  s ⊆ t
+
+ {  α :  Type  u } ->  (  s :  Setₓ  α ) ->  (  h : s.infinite ) ->  ∃    (   t :  Set  α ) ,  t.finite ∧  s ⊆ t
+
+ {  α :  Type  u } ->  (  s :  Setₓ  α ) ->  (  h : s.infinite ) ->  ∃    (   t :  Setₓ  α ) ,  t.finite ∧  s ⊆ t
+
+ {  α :  Type  u } ->  (  s :  Set  α ) ->  (  h : s.infinite ) ->  ∃    (   t :  Finset  α ) ,  t ⊆ s
+
+ {  α :  Type  u } ->  (  s :  Setₓ  α ) ->  (  h : s.infinite ) ->  ∃    (   t :  Finset  α ) ,  t ⊆ s
+
+failed to elaborate
+
+outputs: #[{α : Type u} {s : set α} (hs : s.infinite) : ∃ (t : set α), t ⊂ s ∧ t.finite , {α : Type u} (s : set α) (h : s.infinite) : ∃ t : set α, t.finite ∧ t ⊆ s , {α : Type u} {s : set α} (h : s.infinite) : ∃ (t : set α) (h : finite t), t ⊆ s , {α : Type w} (s : set α) (h : s.infinite) : ∃ t : set α, t ⊆ s ∧ t.finite , {α : Type u} {s : set α} (hs : s.infinite) : ∃ (t : set α), t.finite ∧ t ⊆ s , {α : Type u} (s : set α) (hs : s.infinite) : ∃ t : set α, finite t ∧ t ⊆ s , {α : Type u} {s : set α} : s.infinite → ∃ (t : set α), t.finite ∧ t ⊆ s , {α : Type u} (s : set α) : s.infinite → ∃ t : set α, t.finite ∧ t ⊆ s , {α : Type u} (s : set α) (i : s.infinite) : ∃ (t : finset α), t ⊆ s , {α : Type*} {f : set α} (hf' : f.infinite) : ∃ (f' : finset α), ∀ x, x ∈ f' → x ∈ f , {α : Type u} (s : set α) (h_inf : s.infinite) : ∃ (t : set α), t.finite ∧ t ⊆ s , {α : Type u} (s : set α) (h : s.infinite) : ∃ (t : set α) (h : s ⊆ t ∧ t.finite), true , {α : Type u} (s : set α) (h : s.infinite) : ∃ (t : set α), t ⊆ s ∧ t.finite , {α : Type u} (s : set α) (h : ∃ (t : set α), t.finite ∧ s ⊆ t) : s.infinite , {α : Type} [decidable_eq α] (s : set α) (hs : s.infinite) :  ∃ (f : finset α), f.infinite_to_finite s , {α : Type u_1} (s : set α) (h : s.infinite) : s ∩ (range finset.card).powerset.nonempty.to_set.finite.to_set ≠ ∅ , {α : Type u} {s : set α} (h : s.infinite) : ∃ t : set α, finite t ∧ t ⊆ s , {α : Type u} (s : set α) (h : s.infinite) : ∃ (t : set α), t.finite ∧ s ⊆ t , {α : Type u} (s : set α) (h : s.infinite) : ∃ (t : finset α), t ⊆ s ]
+
+total : 26
+
+elaborated: 23
+
+Every commutative ring is a monoid.
+
+success
+
+theorem {α : Type u} → [inst : CommRing α] → CommMonoid α
+
+total : 27
+
+elaborated: 24
+
+There is no field of order `10`.
+
+success
+
+theorem ∀ (n : ℕ), n ≠ 2 → n ≠ 5 → Fintype.card (Finₓ n) ≠ 10
+
+total : 28
+
+elaborated: 25
+
+Every odd natural number is the sum of two distinct natural numbers.
+
+success
+
+theorem ∀ {n : ℕ}, Odd n → ∃ m k, k ≠ m ∧ k + m = n
+
+total : 29
+
+elaborated: 26
+
+Every element in the trivial group has finite order.
+
+success
+
+theorem ∀ (G : Type u_1) [inst : Groupₓ G], IsOfFinOrder 1
+
+total : 30
+
+elaborated: 27
+
+The square of an even number is even.
+
+success
+
+theorem ∀ {n : ℕ}, Even n → Even (n * n)
+
+total : 31
+
+elaborated: 28
+
+Every commutative division ring is a field.
+
+success
+
+theorem ∀ (K : Type u) [inst : CommGroup K] [inst : Semiring K] [inst : Monoid K] [inst : DivisionRing K], IsField K
+
+total : 32
+
+elaborated: 29
+
+The image of the identity element under the identity map is the identity element.
+
+success
+
+theorem ∀ {α : Type u} [inst : Group α] (a : α), id a = a
+
+total : 33
+
+elaborated: 30
+
+Every point is a fixed point of the identity function on a space.
+
+success
+
+theorem ∀ {α : Type u} (a : α), Function.IsFixedPt id a
+
+total : 34
+
+elaborated: 31
+
+The diameter of a singleton space is `0`.
+
+success
+
+theorem ∀ {α : Type u} [inst : PseudoMetricSpace α] (a : α), Metric.diam (?m.2691279 a) = 0
+
+total : 35
+
+elaborated: 32
+
+Every group is non-empty.
+
+success
+
+theorem ∀ {α : Type u} [inst : Group α], Nonempty α
+
+total : 36
+
+elaborated: 33
+
+All connected components of a topological space are connected.
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] {x : α}, IsConnected (ConnectedComponent x)
+
+total : 37
+
+elaborated: 34
+
+The ring of integers has a maximal ideal.
+
+success
+
+theorem ∀ {A : Type u_1} {B : Type u_2} [inst : Field A] [inst_1 : Ringₓ B] [inst_2 : IsDomain B] [inst_3 : Algebra A B] {x : B}
+  (hx : IsIntegral A x), ∃ p, ?m.2769709 hx p
+
+total : 38
+
+elaborated: 35
+
+The numbers `3`, `4` and `5` form a Pythagorean triple.
+
+success
+
+theorem PythagoreanTriple 3 4 5
+
+total : 39
+
+elaborated: 36
+
+A vector space with the empty set as basis is trivial. 
+
+success
+
+theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroupₓ V] [inst_2 : Module K V],
+  Basis Empty K V → Nontrivial V
+
+total : 40
+
+elaborated: 37
+
