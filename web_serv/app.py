@@ -2,6 +2,8 @@ import json
 from flask import Flask,render_template
 from flask import request
 from embed_picker import *
+from keyword_extractor import *
+
 
 app = Flask(__name__)
 
@@ -27,6 +29,11 @@ def tactic_prompts():
     choices = closest_embeddings(prompt_core, model_name, embs, data, n)
     return json.dumps(choices, ensure_ascii=False)
 
+@app.route('/keywords', methods=['POST'])
+def keywords():
+    data = str(request.data, 'utf-8')
+    print(data)
+    return extract_keywords(data)
 
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5000, debug=True)
