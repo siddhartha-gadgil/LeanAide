@@ -74,10 +74,10 @@ def extractKeywordsWithScores (s : String) (out : Bool := false) : IO <| List (S
     for l in kwds do
       IO.println l
 
-  return kwds.filterMap $ λ j => liftOption $ do
-    let j' ← Except.toOption j.getArr?
-    let kw ← j'[0]?
-    let score ← j'[1]?
+  return kwds.filterMap $ λ j =>
+    let j' := Except.toOption j.getArr? |>.get!
+    let kw := j'[0]!
+    let score := j'[1]!
     return (kw.getStr!, score.getStr!.toFloat!)
 
 def extractKeywords (s : String) (out : Bool := false) : IO <| List String := do
