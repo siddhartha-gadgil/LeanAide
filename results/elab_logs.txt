@@ -3496,3 +3496,1293 @@ total : 40
 
 elaborated: 37
 
+Writing to file: thm-elab-12-8-false-20-8.json
+
+If every proper closed set of a topological space is compact, then the space itself is compact.
+
+success
+
+theorem ∀ {X : Type u} [inst : TopologicalSpace X] {P : Set (Set X)} (h : ∀ (C : Set X), C ∈ P → IsClosed C)
+  (hp : ∀ (C : Set X), IsCompact C ∨ C ∈ P), IsCompact (?m.77360 h hp)
+
+total : 1
+
+elaborated: 1
+
+Every prime that is `1` greater than a multiple of `4` can be expressed as the sum of two squares.
+
+success
+
+theorem ∀ (p : ℕ) [inst : Fact (Nat.Prime p)], p % 4 = 1 → ∃ a b, p = a * a + b * b
+
+total : 2
+
+elaborated: 2
+
+The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares.
+
+success
+
+theorem ∀ {a b : ℕ},
+  (∃ x y z w, a = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) →
+    (∃ x y z w, b = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) → ∃ x y z w, a * b = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2
+
+total : 3
+
+elaborated: 3
+
+A ring with all elements idempotent is commutative.
+
+success
+
+theorem ∀ {R : Type u_1} [inst : Ring R], CommRing R → (∀ {a : R}, a * a = a) → ∀ {a b : R}, a * b = b * a
+
+total : 4
+
+elaborated: 4
+
+There are infinitely many pairs of primes that differ exactly by `2`.
+
+success
+
+theorem ∀ (n : ℕ), ∃ p q, Nat.Prime p ∧ Nat.Prime q ∧ p + 2 = q ∧ q ≤ n
+
+total : 5
+
+elaborated: 5
+
+Every finite division ring is a field.
+
+success
+
+theorem ∀ (K : Type u) [inst : Fintype K] [inst : DivisionRing K], IsField K
+
+total : 6
+
+elaborated: 6
+
+If each of two types can be mapped injectively into the other, then there is a bijection between them.
+
+success
+
+theorem ∀ {α : Type u_1} {β : Type u_2}, (∃ f, Function.Injective f) → (∃ g, Function.Injective g) → ∃ h, Function.bijective h
+
+total : 7
+
+elaborated: 7
+
+A finite graph in which every pair of vertices have precisely one common neighbour contains a vertex that is adjacent to all other vertices.
+
+No valid output from Codex; outputs below
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintype  V ] ->  [  DecidableRel  G.adj ] ->  (  hG :  ∀   (  v w  : V  )  ,   G.degree  v =  G.degree  w ) ->  (  H :  ∀   (  v w  : V  )  ,   G.degree   (   G.common_neighbours  v w  ) =  1 ) ->  ∃    (   v : V ) ,  ∀   (  w  : V  )  ,  G.adj  v w
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintypeₓ  V ] ->  [  DecidableRel  G.adj ] ->  (  hG :  ∀   (  v w  : V  )  ,   G.degree  v =  G.degree  w ) ->  (  H :  ∀   (  v w  : V  )  ,   G.degree   (   G.common_neighbours  v w  ) =  1 ) ->  ∃    (   v : V ) ,  ∀   (  w  : V  )  ,  G.adj  v w
+
+{V : Type u} (G : simple_graph V) [fintype V] [decidable_rel G.adj] (hp : ∀ (v₁ v₂ : V), G.degree v₁ = G.degree v₂ → ∃ (w : V), (v₁, w) ∈ G.adj ∧ (v₂, w) ∈ G.adj ∧ ∀ (z : V), (v₁, z) ∈ G.adj ∧ (v₂, z) ∈ G.adj → z = w) : ∃ (w : V), ∀ (
+
+ (  G :  SimpleGraph   ℕ ) ->  [  Fintype   ℕ ] ->  [  DecidableRel  G.adj ] ->  (  hG :  ∀   (  x y  :  ℕ  )  ,   Fintype.card   (   G.common_neighbours  x y  ) =  1 ) ->  ∃    (   x :  ℕ ) ,   G.degree  x =   Fintype.card   ℕ -  1
+
+ (  G :  SimpleGraph   ℕ ) ->  [  Fintypeₓ   ℕ ] ->  [  DecidableRel  G.adj ] ->  (  hG :  ∀   (  x y  :  ℕ  )  ,   Fintype.card   (   G.common_neighbours  x y  ) =  1 ) ->  ∃    (   x :  ℕ ) ,   G.degree  x =   Fintype.card   ℕ -  1
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintype  V ] ->  [  DecidableRel  G.adj ] ->  (  h :  ∀   (  v w  : V  )  ,   G.adj  v w ↔  ∃    (   z : V ) ,   G.adj  v z ∧  G.adj  w z ) ->  ∃    (   v : V ) ,  ∀   (  w  : V  )  ,   v ≠ w →  G.adj  v w
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintypeₓ  V ] ->  [  DecidableRel  G.adj ] ->  (  h :  ∀   (  v w  : V  )  ,   G.adj  v w ↔  ∃    (   z : V ) ,   G.adj  v z ∧  G.adj  w z ) ->  ∃    (   v : V ) ,  ∀   (  w  : V  )  ,   v ≠ w →  G.adj  v w
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintype  V ] ->  [  DecidableRel  G.adj ] ->  [  Fintype   (   V →  Prop  ) ] ->  (  H :  ∀   (  v₁ v₂  : V  )  ,   v₁ ≠ v₂ →   finite.card   (   G.common_neighbours  v₁ v₂  ) =  1 ) ->  ∃    (   v₀ : V ) ,  ∀   (  v  : V  )  ,   v ≠ v₀ →  G.adj  v₀ v
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintype  V ] ->  [  DecidableRel  G.adj ] ->  [  Fintypeₓ   (   V →  Prop  ) ] ->  (  H :  ∀   (  v₁ v₂  : V  )  ,   v₁ ≠ v₂ →   finite.card   (   G.common_neighbours  v₁ v₂  ) =  1 ) ->  ∃    (   v₀ : V ) ,  ∀   (  v  : V  )  ,   v ≠ v₀ →  G.adj  v₀ v
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintypeₓ  V ] ->  [  DecidableRel  G.adj ] ->  [  Fintype   (   V →  Prop  ) ] ->  (  H :  ∀   (  v₁ v₂  : V  )  ,   v₁ ≠ v₂ →   finite.card   (   G.common_neighbours  v₁ v₂  ) =  1 ) ->  ∃    (   v₀ : V ) ,  ∀   (  v  : V  )  ,   v ≠ v₀ →  G.adj  v₀ v
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintypeₓ  V ] ->  [  DecidableRel  G.adj ] ->  [  Fintypeₓ   (   V →  Prop  ) ] ->  (  H :  ∀   (  v₁ v₂  : V  )  ,   v₁ ≠ v₂ →   finite.card   (   G.common_neighbours  v₁ v₂  ) =  1 ) ->  ∃    (   v₀ : V ) ,  ∀   (  v  : V  )  ,   v ≠ v₀ →  G.adj  v₀ v
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintype  V ] ->  [  DecidableRel  G.adj ] ->  (  h :  ∀   (  v w  : V  )  ,   Fintype.card   {   x   : V |   G.adj  v x ∧  G.adj  w x } =  1 ) ->  ∃    (   v : V ) ,  ∀   (  w  : V  )  ,   v ≠ w →  G.adj  v w
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintypeₓ  V ] ->  [  DecidableRel  G.adj ] ->  (  h :  ∀   (  v w  : V  )  ,   Fintype.card   {   x   : V |   G.adj  v x ∧  G.adj  w x } =  1 ) ->  ∃    (   v : V ) ,  ∀   (  w  : V  )  ,   v ≠ w →  G.adj  v w
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintype  V ] ->  [  DecidableRel  G.adj ] ->  (  H :  ∀   (  v₁ v₂  : V  )  ,   Fintype.card   {   v   : V |   G.adj  v₁ v ∧  G.adj  v₂ v } =  1 ) ->  [  Nonempty  V ] ->  ∃    (   v : V ) ,  ∀   (  w  : V  )  ,   w ≠ v →  G.adj  v w
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintypeₓ  V ] ->  [  DecidableRel  G.adj ] ->  (  H :  ∀   (  v₁ v₂  : V  )  ,   Fintype.card   {   v   : V |   G.adj  v₁ v ∧  G.adj  v₂ v } =  1 ) ->  [  Nonempty  V ] ->  ∃    (   v : V ) ,  ∀   (  w  : V  )  ,   w ≠ v →  G.adj  v w
+
+ {  V :  Type  u } ->  [  Fintype  V ] ->  (  G :  SimpleGraph  V ) ->  [  DecidableRel  G.adj ] ->  (  hG :  ∀   (  v  : V  )  ,   G.degree  v =  card   (   G.neighbourhood  v  ) ) ->  (  H :  ∀   (  u v  : V  )  ,   G.degree   (   G.common_neighbourhood  u v  ) =  1 ) ->  ∃    (   v : V ) ,   G.degree  v =   card   (   G.neighbourhood  v  ) -  1
+
+ {  V :  Type  u } ->  [  Fintypeₓ  V ] ->  (  G :  SimpleGraph  V ) ->  [  DecidableRel  G.adj ] ->  (  hG :  ∀   (  v  : V  )  ,   G.degree  v =  card   (   G.neighbourhood  v  ) ) ->  (  H :  ∀   (  u v  : V  )  ,   G.degree   (   G.common_neighbourhood  u v  ) =  1 ) ->  ∃    (   v : V ) ,   G.degree  v =   card   (   G.neighbourhood  v  ) -  1
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  DecidableRel  G.adj ] ->  [  Fintype  V ] ->  (  h :  ∀   (  u v  : V  )  ,  ∀   (  w  : V  )  ,    G.adj  w u ∧  G.adj  w v ↔   w = u ∨  w = v ) ->  ∃    (   x : V ) ,  ∀   (  v  : V  )  ,   (   x ≠ v  ) →  G.adj  x v
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  DecidableRel  G.adj ] ->  [  Fintypeₓ  V ] ->  (  h :  ∀   (  u v  : V  )  ,  ∀   (  w  : V  )  ,    G.adj  w u ∧  G.adj  w v ↔   w = u ∨  w = v ) ->  ∃    (   x : V ) ,  ∀   (  v  : V  )  ,   (   x ≠ v  ) →  G.adj  x v
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintype  V ] ->  [  DecidableRel  G.adj ] ->   G.min_degree ≥  2 →  ∃    (   v : V ) ,  ∀   (  u  : V  )  ,   u ≠ v →  G.adj  u v
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintypeₓ  V ] ->  [  DecidableRel  G.adj ] ->   G.min_degree ≥  2 →  ∃    (   v : V ) ,  ∀   (  u  : V  )  ,   u ≠ v →  G.adj  u v
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintype  V ] ->  [  DecidableRel  G.adj ] ->  [  Nonempty  V ] ->  [  DecidableEq  V ] ->  (  h :  ∀   (  u v  : V  )  ,   G.adj  u v →   G.degree  u =  G.degree  v ) ->  ∃    (   v : V ) ,  ∀   (  w  : V  )  ,  G.adj  v w
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintypeₓ  V ] ->  [  DecidableRel  G.adj ] ->  [  Nonempty  V ] ->  [  DecidableEq  V ] ->  (  h :  ∀   (  u v  : V  )  ,   G.adj  u v →   G.degree  u =  G.degree  v ) ->  ∃    (   v : V ) ,  ∀   (  w  : V  )  ,  G.adj  v w
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintype  V ] ->  [  DecidableRel  G.adj ] ->  (  h :  ∀   (  x y  : V  )  ,   card  G.common_neighbours x y =  1 ) ->  ∃    (   x : V ) ,  ∀   (  y  : V  )  ,   x ≠ y →  y ∈  G.neighbourhood  x
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintypeₓ  V ] ->  [  DecidableRel  G.adj ] ->  (  h :  ∀   (  x y  : V  )  ,   card  G.common_neighbours x y =  1 ) ->  ∃    (   x : V ) ,  ∀   (  y  : V  )  ,   x ≠ y →  y ∈  G.neighbourhood  x
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintype  V ] ->  [  DecidableRel  G.adj ] ->  (  h :  ∀  v w   : V ,     G.degree  v =  1 ∧   G.degree  w =  1 →   G.common_neighbours  v w.val =  (   ⊤   :  Finset  V ) ) ->  ∃     v  : V ,  ∀  w   : V ,   w ≠ v →  G.adj  v w
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintypeₓ  V ] ->  [  DecidableRel  G.adj ] ->  (  h :  ∀  v w   : V ,     G.degree  v =  1 ∧   G.degree  w =  1 →   G.common_neighbours  v w.val =  (   ⊤   :  Finset  V ) ) ->  ∃     v  : V ,  ∀  w   : V ,   w ≠ v →  G.adj  v w
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintype  V ] ->  [  DecidableRel  G.adj ] ->  (  h :  ∀   (  v₁ v₂  : V  )  ,   Fintype.card   (   v₁.common_neighbours  v₂  ) =  1 ) ->  ∃    (   v : V ) ,  ∀   (  w  : V  )  ,   v ≠ w →  G.adj  v w
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintypeₓ  V ] ->  [  DecidableRel  G.adj ] ->  (  h :  ∀   (  v₁ v₂  : V  )  ,   Fintype.card   (   v₁.common_neighbours  v₂  ) =  1 ) ->  ∃    (   v : V ) ,  ∀   (  w  : V  )  ,   v ≠ w →  G.adj  v w
+
+ {  V :  Type  u_1 } ->  [  DecidableEq  V ] ->  (  G :  SimpleGraph  V ) ->  [  Fintype  V ] ->  (  h :  ∀   {  x y  }  ,   x ≠ y →    G.degree  x =  1 ∨   G.degree  y =  1 ) ->  ∃    (   v : V ) ,  ∀   (  w  : V  )  ,   w ≠ v →  G.adj  v w
+
+ {  V :  Type  u_1 } ->  [  DecidableEq  V ] ->  (  G :  SimpleGraph  V ) ->  [  Fintypeₓ  V ] ->  (  h :  ∀   {  x y  }  ,   x ≠ y →    G.degree  x =  1 ∨   G.degree  y =  1 ) ->  ∃    (   v : V ) ,  ∀   (  w  : V  )  ,   w ≠ v →  G.adj  v w
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  (  hf :   Fintype.card  V <   ∞  ∞  ∞ ) ->  (  hd :  ∀   (  v₁ v₂  : V  )  ,     G.degree  v₁ ≤  1 ∧   G.degree  v₂ ≤  1 →   G.degree   (   G.common_neighbour  v₁ v₂  ) ≤  1 ) ->  Nonempty  V
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintype  V ] ->  [  DecidableRel  G.adj ] ->  (  hG :   ∀   (  v₁ v₂ v₃  : V  )  ,   G.adj  v₁ v₂ ↔  G.adj  v₁ v₃ ↔  G.adj  v₂ v₃ ) ->  (  hG' :  ∀   (  v₁ v₂  : V  )  ,  ¬  (   G.adj  v₁ v₂  ) ) ->  ∃    (   v : V ) ,  ∀   (  x  : V  )  ,  G.adj  v x
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintypeₓ  V ] ->  [  DecidableRel  G.adj ] ->  (  hG :   ∀   (  v₁ v₂ v₃  : V  )  ,   G.adj  v₁ v₂ ↔  G.adj  v₁ v₃ ↔  G.adj  v₂ v₃ ) ->  (  hG' :  ∀   (  v₁ v₂  : V  )  ,  ¬  (   G.adj  v₁ v₂  ) ) ->  ∃    (   v : V ) ,  ∀   (  x  : V  )  ,  G.adj  v x
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintype  V ] ->  [  DecidableRel  G.adj ] ->  [  Nonempty  V ] ->  (  H :  ∀   (  a b   )  ,   card   (   G.common_neighbours  a b  ) =  1 ) -> G.has_universal
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintypeₓ  V ] ->  [  DecidableRel  G.adj ] ->  [  Nonempty  V ] ->  (  H :  ∀   (  a b   )  ,   card   (   G.common_neighbours  a b  ) =  1 ) -> G.has_universal
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintype  V ] ->  [  DecidableRel  G.adj ] ->  (  H :  ∀   (  u v  : V  )  ,   card   (     G.neighbourhood  u ⊓  G.neighbourhood  v   G.neighbourhood  u ⊓  G.neighbourhood  v  ) =  1 ) ->  ∃    (   u : V ) ,  ∀   (  v  : V  )  ,   u ≠ v →  u.adj  v
+
+ {  V :  Type  u } ->  (  G :  SimpleGraph  V ) ->  [  Fintypeₓ  V ] ->  [  DecidableRel  G.adj ] ->  (  H :  ∀   (  u v  : V  )  ,   card   (     G.neighbourhood  u ⊓  G.neighbourhood  v   G.neighbourhood  u ⊓  G.neighbourhood  v  ) =  1 ) ->  ∃    (   u : V ) ,  ∀   (  v  : V  )  ,   u ≠ v →  u.adj  v
+
+ {  V :  Type  u } ->  [  Fintype  V ] ->  {  G :  SimpleGraph  V } ->  [  DecidableRel  G.adj ] ->  (  hdeg :  ∀   (  v w  : V  )  ,   set.card   {   u  |   G.adj  u v ∧  G.adj  u w } =  1 ) ->  ∃    (   v : V ) ,  ∀   (  w  : V  )  ,   (    w ≠ v →  G.adj  v w  ) ∧  (    w = v →  ¬  G.adj  v w  )
+
+ {  V :  Type  u } ->  [  Fintypeₓ  V ] ->  {  G :  SimpleGraph  V } ->  [  DecidableRel  G.adj ] ->  (  hdeg :  ∀   (  v w  : V  )  ,   set.card   {   u  |   G.adj  u v ∧  G.adj  u w } =  1 ) ->  ∃    (   v : V ) ,  ∀   (  w  : V  )  ,   (    w ≠ v →  G.adj  v w  ) ∧  (    w = v →  ¬  G.adj  v w  )
+
+failed to elaborate
+
+outputs: #[{V : Type u} (G : simple_graph V) [fintype V] [decidable_rel G.adj] (hG : ∀ (v w : V), G.degree v = G.degree w) (H : ∀ (v w : V), G.degree (G.common_neighbours v w) = 1) : ∃ (v : V), ∀ (w : V), G.adj v w , {V : Type u} (G : simple_graph V) [fintype V] [decidable_rel G.adj] (hp : ∀ (v₁ v₂ : V), G.degree v₁ = G.degree v₂ → ∃ (w : V), (v₁, w) ∈ G.adj ∧ (v₂, w) ∈ G.adj ∧ ∀ (z : V), (v₁, z) ∈ G.adj ∧ (v₂, z) ∈ G.adj → z = w) : ∃ (w : V), ∀ (, (G : simple_graph ℕ) [fintype ℕ] [decidable_rel G.adj] (hG : ∀ (x y : ℕ), fintype.card (G.common_neighbours x y) = 1) : ∃ (x : ℕ), G.degree x = fintype.card ℕ - 1 , {V : Type u} (G : simple_graph V) [fintype V] [decidable_rel G.adj] (h : ∀ (v w : V), G.adj v w ↔ ∃ (z : V), G.adj v z ∧ G.adj w z) : ∃ (v : V), ∀ (w : V), v ≠ w → G.adj v w , {V : Type u} (G : simple_graph V) [fintype V] [decidable_rel G.adj] [fintype (V → Prop)] (H : ∀ (v₁ v₂ : V), v₁ ≠ v₂ → finite.card (G.common_neighbours v₁ v₂) = 1) : ∃ (v₀ : V), ∀ (v : V), v ≠ v₀ → G.adj v₀ v , {V : Type u} (G : simple_graph V) [fintype V] [decidable_rel G.adj] (h : ∀ (v w : V), fintype.card {x : V | G.adj v x ∧ G.adj w x} = 1) : ∃ (v : V), ∀ (w : V), v ≠ w → G.adj v w , {V : Type u} (G : simple_graph V) [fintype V] [decidable_rel G.adj] (H : ∀ (v₁ v₂ : V), fintype.card {v : V | G.adj v₁ v ∧ G.adj v₂ v} = 1) [nonempty V] : ∃ (v : V), ∀ (w : V), w ≠ v → G.adj v w , {V : Type u} [fintype V] (G : simple_graph V) [decidable_rel G.adj] (hG : ∀ (v : V), G.degree v = card (G.neighbourhood v)) (H : ∀ (u v : V), G.degree (G.common_neighbourhood u v) = 1) : ∃ (v : V), G.degree v = card (G.neighbourhood v) - 1 , {V : Type u} (G : simple_graph V) [decidable_rel G.adj] [fintype V] (h : ∀ (u v : V), ∀ (w : V), G.adj w u ∧ G.adj w v ↔ w = u ∨ w = v) : ∃ (x : V), ∀ (v : V), (x ≠ v) → G.adj x v , {V : Type u} (G : simple_graph V) [fintype V] [decidable_rel G.adj] : G.min_degree ≥ 2 → ∃ (v : V), ∀ (u : V), u ≠ v → G.adj u v , {V : Type u} (G : simple_graph V) [fintype V] [decidable_rel G.adj] [nonempty V] [decidable_eq V] (h : ∀ (u v : V), G.adj u v → G.degree u = G.degree v) : ∃ (v : V), ∀ (w : V), G.adj v w , {V : Type u} (G : simple_graph V) [fintype V] [decidable_rel G.adj] (h : ∀ (x y : V), card G.common_neighbours x y = 1) : ∃ (x : V), ∀ (y : V), x ≠ y → y ∈ G.neighbourhood x , {V : Type u} (G : simple_graph V) [fintype V] [decidable_rel G.adj] (h : ∀ v w : V, G.degree v = 1 ∧ G.degree w = 1 → G.common_neighbours v w.val = (⊤ : finset V)) : ∃ v : V, ∀ w : V, w ≠ v → G.adj v w , {V : Type u} (G : simple_graph V) [fintype V] [decidable_rel G.adj] (h : ∀ (v₁ v₂ : V), fintype.card (v₁.common_neighbours v₂) = 1) : ∃ (v : V), ∀ (w : V), v ≠ w → G.adj v w , {V : Type u_1} [decidable_eq V] (G : simple_graph V) [fintype V] (h : ∀ {x y}, x ≠ y → G.degree x = 1 ∨ G.degree y = 1) : ∃ (v : V), ∀ (w : V), w ≠ v → G.adj v w , {V : Type u} (G : simple_graph V) (hf : fintype.card V < ∞) (hd : ∀ (v₁ v₂ : V), G.degree v₁ ≤ 1 ∧ G.degree v₂ ≤ 1 → G.degree (G.common_neighbour v₁ v₂) ≤ 1): nonempty V , {V : Type u} (G : simple_graph V) [fintype V] [decidable_rel G.adj] (hG : ∀ (v₁ v₂ v₃ : V), G.adj v₁ v₂ ↔ G.adj v₁ v₃ ↔ G.adj v₂ v₃) (hG' : ∀ (v₁ v₂ : V), ¬(G.adj v₁ v₂)) : ∃ (v : V), ∀ (x : V), G.adj v x , {V : Type u} (G : simple_graph V) [fintype V] [decidable_rel G.adj] [nonempty V] (H : ∀ (a b), card (G.common_neighbours a b) = 1) : G.has_universal , {V : Type u} (G : simple_graph V) [fintype V] [decidable_rel G.adj] (H : ∀ (u v : V), card (G.neighbourhood u ⊓ G.neighbourhood v) = 1) : ∃ (u : V), ∀ (v : V), u ≠ v → u.adj v , {V : Type u} [fintype V] {G : simple_graph V} [decidable_rel G.adj] (hdeg : ∀ (v w : V), set.card {u | G.adj u v ∧ G.adj u w} = 1) : ∃ (v : V), ∀ (w : V), (w ≠ v → G.adj v w) ∧ (w = v → ¬G.adj v w) ]
+
+total : 8
+
+elaborated: 7
+
+The number of partitions with odd parts is equal to the number of partitions with distinct parts.
+
+No valid output from Codex; outputs below
+
+ (  n :  ℕ ) ->   partitions.restricted_compositions  n =  partitions.distinct_compositions  n
+
+ (  n :  ℕ ) ->   nat.partitions  n =  nat.partitions_with_distinct_odd_parts  n
+
+ (  n :  ℕ ) ->   partition.number_of_partitions_with_odd_parts  n =  partition.number_of_partitions_with_distinct_parts  n
+
+ (  n :  ℕ ) ->   partitions.odd  n =  partitions.distinct  n
+
+ (  n :  ℕ ) ->   partitions.filter   (   λ p : partition ,   p.parts.to_multiset.card %  2 =  1  ) n =  partitions.distinct  n
+
+ {  n :  ℕ } ->   partition.odd_part  n =  partition.distinct  n
+
+ (  n :  ℕ ) ->   partition.count_by_distinct   (   partition.odd  n  ) =  partition.count_by_distinct   (   partition.noduplicate  n  )
+
+{n : ℕ} : ∑ (p : partition (2*n+1)) ((2*n+1).has_odd_partition p), p.card = ∑ (p : partition (2*n+1)) ((2*n+1).has_distinct_partition p), p.card 
+
+ (  n :  ℕ ) ->   partition.odd  n =  partition.distinct  n
+
+ {  α :  Type  u_1 } ->  [  DecidableEq  α ] ->  (  s :  Finset  α ) ->  s.multiset.partitions_with_odd_parts.card = s.multiset.distinct_partitions.card
+
+ ∀   (  n  :  ℕ  )  ,   nnpart  n =  nnrdistpart  n
+
+ (  n :  ℕ ) ->    (   partition.setoid  n  ) . card =  partition.setoid.distinct_odd  n
+
+ {  n :  ℕ } ->  (  h :   0 < n ) ->   partition.fintype.card_odd_parts  n =  partition.fintype.card_distinct_parts  n
+
+ (  n :  ℕ ) ->   partitions.nat  n ~>  partitions.odd  n
+
+: Σ' (λ p : partition_on ℕ, p.odd_part = p) =
+  Σ' (λ q : partition_on ℕ, q.distinct_part) 
+
+ (  n :  ℕ ) ->    (   partitions.of_nat  n  ) . odd_parts.card =   (   partitions.of_nat  n  ) . distinct_parts.card
+
+ (  n :  ℕ ) ->   partitions.card   ⟨  n , partitions.nat.parts_gt_1 ⟩ =  partitions.card   ⟨  n , partitions.nat.parts_distinct ⟩
+
+ ∀   (  n  :  ℕ  )  ,   (   ∑     (   p   :  partition   (   n +  1  ) ) ,    (  p   :  Multiset   ℕ ) . card =  1  ) =  (   ∑     (   p   :  partition   (   n +  1  ) ) ,    (  p.odd_parts   :  Multiset   ℕ ) . card =  1  )
+
+ {  k :  ℕ } ->    (   partitions.odd_parts  k  ) . card =   (   partitions.distinct_parts  k  ) . card
+
+ (  n :  ℕ ) ->   card   (   partition.odd  n  ) =  card   (   partition.distinct  n  )
+
+failed to elaborate
+
+outputs: #[(n : ℕ) : partitions.restricted_compositions n = partitions.distinct_compositions n , (n : ℕ) : nat.partitions n = nat.partitions_with_distinct_odd_parts n , (n : ℕ) : partition.number_of_partitions_with_odd_parts n = partition.number_of_partitions_with_distinct_parts n , (n : ℕ) : partitions.odd n = partitions.distinct n , (n : ℕ) : partitions.filter (λ p : partition, p.parts.to_multiset.card % 2 = 1) n = partitions.distinct n , {n : ℕ} : partition.odd_part n = partition.distinct n , (n : ℕ) : partition.count_by_distinct (partition.odd n) = partition.count_by_distinct (partition.noduplicate n) , {n : ℕ} : ∑ (p : partition (2*n+1)) ((2*n+1).has_odd_partition p), p.card = ∑ (p : partition (2*n+1)) ((2*n+1).has_distinct_partition p), p.card , (n : ℕ) : partition.odd n = partition.distinct n , {α : Type u_1} [decidable_eq α] (s : finset α) : s.multiset.partitions_with_odd_parts.card = s.multiset.distinct_partitions.card , : ∀ (n : ℕ), nnpart n = nnrdistpart n , (n : ℕ) : (partition.setoid n).card = partition.setoid.distinct_odd n , {n : ℕ} (h : 0 < n) : partition.fintype.card_odd_parts n = partition.fintype.card_distinct_parts n , (n : ℕ) : partitions.nat n ~> partitions.odd n , : Σ' (λ p : partition_on ℕ, p.odd_part = p) =
+  Σ' (λ q : partition_on ℕ, q.distinct_part) , (n : ℕ) : (partitions.of_nat n).odd_parts.card = (partitions.of_nat n).distinct_parts.card , (n : ℕ) : partitions.card ⟨n, partitions.nat.parts_gt_1⟩ = partitions.card ⟨n, partitions.nat.parts_distinct⟩ , : ∀ (n : ℕ), (∑  (p : partition (n + 1)), (p : multiset ℕ).card = 1) = (∑  (p : partition (n + 1)), (p.odd_parts : multiset ℕ).card = 1) , {k : ℕ} : (partitions.odd_parts k).card = (partitions.distinct_parts k).card , (n : ℕ) : card (partition.odd n) = card (partition.distinct n) ]
+
+total : 9
+
+elaborated: 7
+
+Every non-empty poset in which every chain has an upper bound contains a maximal element.
+
+success
+
+theorem ∀ {α : Type u_1} {r : α → α → Prop},
+  (∀ (c : Set α) (a : IsChain r c), ∃ ub, ∀ (a : α), a ∈ c → r a ub) → Nonempty α → ∃ m, ∀ (a : α), r m a → r a m
+
+total : 10
+
+elaborated: 8
+
+A group whose automorphism group is cyclic is Abelian.
+
+No valid output from Codex; outputs below
+
+ {  G :  Type  u } ->  [  Group  G ] ->  (  h_cyclic :  IsCyclic   (   group_aut  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  (  h_cyclic :  IsCyclic   (   group_aut  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  (  h_cyclic :  IsCyclic   (   group_aut  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  h :  IsCyclic   (   automorphism_group  G  ) ) ->  CommGroup  G
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  h :  IsCyclic   (   automorphism_group  G  ) ) ->  CommGroupₓ  G
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  h :  IsCyclic   (   automorphism_group  G  ) ) ->  CommGroupₓₓ  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  h :  IsCyclic   (   automorphism_group  G  ) ) ->  CommGroup  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  h :  IsCyclic   (   automorphism_group  G  ) ) ->  CommGroupₓ  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  h :  IsCyclic   (   automorphism_group  G  ) ) ->  CommGroupₓₓ  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  h :  IsCyclic   (   automorphism_group  G  ) ) ->  CommGroup  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  h :  IsCyclic   (   automorphism_group  G  ) ) ->  CommGroupₓ  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  h :  IsCyclic   (   automorphism_group  G  ) ) ->  CommGroupₓₓ  G
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  h :  IsCyclic   (   aut  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  h :  IsCyclic   (   aut  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  h :  IsCyclic   (   aut  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  n :  ℕ } ->  (  hn :  IsCyclic   (   group_aut  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  n :  ℕ } ->  (  hn :  IsCyclic   (   group_aut  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  n :  ℕ } ->  (  hn :  IsCyclic   (   group_aut  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Group  G ] ->  {  H :  Type  w } ->  [  Group  H ] ->  (  f :  G ≃o H ) ->  (  h :  IsCyclic   (   automorphism_group  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Group  G ] ->  {  H :  Type  w } ->  [  Groupₓ  H ] ->  (  f :  G ≃o H ) ->  (  h :  IsCyclic   (   automorphism_group  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Group  G ] ->  {  H :  Type  w } ->  [  Groupₓₓ  H ] ->  (  f :  G ≃o H ) ->  (  h :  IsCyclic   (   automorphism_group  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  {  H :  Type  w } ->  [  Group  H ] ->  (  f :  G ≃o H ) ->  (  h :  IsCyclic   (   automorphism_group  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  {  H :  Type  w } ->  [  Groupₓ  H ] ->  (  f :  G ≃o H ) ->  (  h :  IsCyclic   (   automorphism_group  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  {  H :  Type  w } ->  [  Groupₓₓ  H ] ->  (  f :  G ≃o H ) ->  (  h :  IsCyclic   (   automorphism_group  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  {  H :  Type  w } ->  [  Group  H ] ->  (  f :  G ≃o H ) ->  (  h :  IsCyclic   (   automorphism_group  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  {  H :  Type  w } ->  [  Groupₓ  H ] ->  (  f :  G ≃o H ) ->  (  h :  IsCyclic   (   automorphism_group  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  {  H :  Type  w } ->  [  Groupₓₓ  H ] ->  (  f :  G ≃o H ) ->  (  h :  IsCyclic   (   automorphism_group  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Group  G ] ->  (  h :  IsCyclic  group_aut G ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  (  h :  IsCyclic  group_aut G ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  (  h :  IsCyclic  group_aut G ) ->  is_abelian  G
+
+ {  G :  Type  u_2 } ->  [  Group  G ] ->  (  h :  ∀   (  n  :  ℕ  )  ,   n ≠  0 →  ∀   (  H  :  groups.finset   (   perm  G  )  )  ,   (   ∀   (  x  : H  )  ,  is_automorphism  x  ) →   (   ∀   (  x  : H  )  ,  is_automorphism  x  ) →   H ≠  ∅ →    groups.finset.card  H = n →  ∃    (   x : H ) ,  H =  {   y  |  ∃    (   m :  ℕ ) ,  y =  Pow  x m } ) ->  CommGroup  G
+
+ {  G :  Type  u_2 } ->  [  Group  G ] ->  (  h :  ∀   (  n  :  ℕ  )  ,   n ≠  0 →  ∀   (  H  :  groups.finset   (   perm  G  )  )  ,   (   ∀   (  x  : H  )  ,  is_automorphism  x  ) →   (   ∀   (  x  : H  )  ,  is_automorphism  x  ) →   H ≠  ∅ →    groups.finset.card  H = n →  ∃    (   x : H ) ,  H =  {   y  |  ∃    (   m :  ℕ ) ,  y =  Pow  x m } ) ->  CommGroupₓ  G
+
+ {  G :  Type  u_2 } ->  [  Group  G ] ->  (  h :  ∀   (  n  :  ℕ  )  ,   n ≠  0 →  ∀   (  H  :  groups.finset   (   perm  G  )  )  ,   (   ∀   (  x  : H  )  ,  is_automorphism  x  ) →   (   ∀   (  x  : H  )  ,  is_automorphism  x  ) →   H ≠  ∅ →    groups.finset.card  H = n →  ∃    (   x : H ) ,  H =  {   y  |  ∃    (   m :  ℕ ) ,  y =  Pow  x m } ) ->  CommGroupₓₓ  G
+
+ {  G :  Type  u_2 } ->  [  Groupₓ  G ] ->  (  h :  ∀   (  n  :  ℕ  )  ,   n ≠  0 →  ∀   (  H  :  groups.finset   (   perm  G  )  )  ,   (   ∀   (  x  : H  )  ,  is_automorphism  x  ) →   (   ∀   (  x  : H  )  ,  is_automorphism  x  ) →   H ≠  ∅ →    groups.finset.card  H = n →  ∃    (   x : H ) ,  H =  {   y  |  ∃    (   m :  ℕ ) ,  y =  Pow  x m } ) ->  CommGroup  G
+
+ {  G :  Type  u_2 } ->  [  Groupₓ  G ] ->  (  h :  ∀   (  n  :  ℕ  )  ,   n ≠  0 →  ∀   (  H  :  groups.finset   (   perm  G  )  )  ,   (   ∀   (  x  : H  )  ,  is_automorphism  x  ) →   (   ∀   (  x  : H  )  ,  is_automorphism  x  ) →   H ≠  ∅ →    groups.finset.card  H = n →  ∃    (   x : H ) ,  H =  {   y  |  ∃    (   m :  ℕ ) ,  y =  Pow  x m } ) ->  CommGroupₓ  G
+
+ {  G :  Type  u_2 } ->  [  Groupₓ  G ] ->  (  h :  ∀   (  n  :  ℕ  )  ,   n ≠  0 →  ∀   (  H  :  groups.finset   (   perm  G  )  )  ,   (   ∀   (  x  : H  )  ,  is_automorphism  x  ) →   (   ∀   (  x  : H  )  ,  is_automorphism  x  ) →   H ≠  ∅ →    groups.finset.card  H = n →  ∃    (   x : H ) ,  H =  {   y  |  ∃    (   m :  ℕ ) ,  y =  Pow  x m } ) ->  CommGroupₓₓ  G
+
+ {  G :  Type  u_2 } ->  [  Groupₓₓ  G ] ->  (  h :  ∀   (  n  :  ℕ  )  ,   n ≠  0 →  ∀   (  H  :  groups.finset   (   perm  G  )  )  ,   (   ∀   (  x  : H  )  ,  is_automorphism  x  ) →   (   ∀   (  x  : H  )  ,  is_automorphism  x  ) →   H ≠  ∅ →    groups.finset.card  H = n →  ∃    (   x : H ) ,  H =  {   y  |  ∃    (   m :  ℕ ) ,  y =  Pow  x m } ) ->  CommGroup  G
+
+ {  G :  Type  u_2 } ->  [  Groupₓₓ  G ] ->  (  h :  ∀   (  n  :  ℕ  )  ,   n ≠  0 →  ∀   (  H  :  groups.finset   (   perm  G  )  )  ,   (   ∀   (  x  : H  )  ,  is_automorphism  x  ) →   (   ∀   (  x  : H  )  ,  is_automorphism  x  ) →   H ≠  ∅ →    groups.finset.card  H = n →  ∃    (   x : H ) ,  H =  {   y  |  ∃    (   m :  ℕ ) ,  y =  Pow  x m } ) ->  CommGroupₓ  G
+
+ {  G :  Type  u_2 } ->  [  Groupₓₓ  G ] ->  (  h :  ∀   (  n  :  ℕ  )  ,   n ≠  0 →  ∀   (  H  :  groups.finset   (   perm  G  )  )  ,   (   ∀   (  x  : H  )  ,  is_automorphism  x  ) →   (   ∀   (  x  : H  )  ,  is_automorphism  x  ) →   H ≠  ∅ →    groups.finset.card  H = n →  ∃    (   x : H ) ,  H =  {   y  |  ∃    (   m :  ℕ ) ,  y =  Pow  x m } ) ->  CommGroupₓₓ  G
+
+{G : Type u_1} [group G] [fintype G] (h : is_group_isomorphic (aut_group G) (ℤ/2ℤ)) : comm_group G 
+
+ {  G :  Type  u } ->  [  Group  G ] ->  (  H :  IsCyclic   (   aut  G  ) ) ->  CommGroup  G
+
+ {  G :  Type  u } ->  [  Group  G ] ->  (  H :  IsCyclic   (   aut  G  ) ) ->  CommGroupₓ  G
+
+ {  G :  Type  u } ->  [  Group  G ] ->  (  H :  IsCyclic   (   aut  G  ) ) ->  CommGroupₓₓ  G
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  (  H :  IsCyclic   (   aut  G  ) ) ->  CommGroup  G
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  (  H :  IsCyclic   (   aut  G  ) ) ->  CommGroupₓ  G
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  (  H :  IsCyclic   (   aut  G  ) ) ->  CommGroupₓₓ  G
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  (  H :  IsCyclic   (   aut  G  ) ) ->  CommGroup  G
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  (  H :  IsCyclic   (   aut  G  ) ) ->  CommGroupₓ  G
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  (  H :  IsCyclic   (   aut  G  ) ) ->  CommGroupₓₓ  G
+
+ {  α :  Type  u } ->  [  Group  α ] ->  {  f :  α ≃ₜ α } ->   IsCyclic   (   automorphism_group  α  ) →  commutative_group  α
+
+ {  α :  Type  u } ->  [  Groupₓ  α ] ->  {  f :  α ≃ₜ α } ->   IsCyclic   (   automorphism_group  α  ) →  commutative_group  α
+
+ {  α :  Type  u } ->  [  Groupₓₓ  α ] ->  {  f :  α ≃ₜ α } ->   IsCyclic   (   automorphism_group  α  ) →  commutative_group  α
+
+{α : Type u} [group α] {β} [group β] [fintype β] (h : Π (g h : β → β), (g ∘ h) ∈ automorphism_group β → g ∈ automorphism_group β → h ∈ automorphism_group β → g = h) : comm_group α 
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  [  Fintype   (   group_aut  α  ) ] ->  {  n :  ℕ } ->  (  h :  IsCyclic   (   group_aut  α  ) n ) ->  CommGroup  α
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  [  Fintype   (   group_aut  α  ) ] ->  {  n :  ℕ } ->  (  h :  IsCyclic   (   group_aut  α  ) n ) ->  CommGroupₓ  α
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  [  Fintype   (   group_aut  α  ) ] ->  {  n :  ℕ } ->  (  h :  IsCyclic   (   group_aut  α  ) n ) ->  CommGroupₓₓ  α
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  [  Fintypeₓ   (   group_aut  α  ) ] ->  {  n :  ℕ } ->  (  h :  IsCyclic   (   group_aut  α  ) n ) ->  CommGroup  α
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  [  Fintypeₓ   (   group_aut  α  ) ] ->  {  n :  ℕ } ->  (  h :  IsCyclic   (   group_aut  α  ) n ) ->  CommGroupₓ  α
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  [  Fintypeₓ   (   group_aut  α  ) ] ->  {  n :  ℕ } ->  (  h :  IsCyclic   (   group_aut  α  ) n ) ->  CommGroupₓₓ  α
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  [  Fintype   (   group_aut  α  ) ] ->  {  n :  ℕ } ->  (  h :  IsCyclic   (   group_aut  α  ) n ) ->  CommGroup  α
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  [  Fintype   (   group_aut  α  ) ] ->  {  n :  ℕ } ->  (  h :  IsCyclic   (   group_aut  α  ) n ) ->  CommGroupₓ  α
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  [  Fintype   (   group_aut  α  ) ] ->  {  n :  ℕ } ->  (  h :  IsCyclic   (   group_aut  α  ) n ) ->  CommGroupₓₓ  α
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  [  Fintypeₓ   (   group_aut  α  ) ] ->  {  n :  ℕ } ->  (  h :  IsCyclic   (   group_aut  α  ) n ) ->  CommGroup  α
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  [  Fintypeₓ   (   group_aut  α  ) ] ->  {  n :  ℕ } ->  (  h :  IsCyclic   (   group_aut  α  ) n ) ->  CommGroupₓ  α
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  [  Fintypeₓ   (   group_aut  α  ) ] ->  {  n :  ℕ } ->  (  h :  IsCyclic   (   group_aut  α  ) n ) ->  CommGroupₓₓ  α
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  [  Fintype   (   group_aut  α  ) ] ->  {  n :  ℕ } ->  (  h :  IsCyclic   (   group_aut  α  ) n ) ->  CommGroup  α
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  [  Fintype   (   group_aut  α  ) ] ->  {  n :  ℕ } ->  (  h :  IsCyclic   (   group_aut  α  ) n ) ->  CommGroupₓ  α
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  [  Fintype   (   group_aut  α  ) ] ->  {  n :  ℕ } ->  (  h :  IsCyclic   (   group_aut  α  ) n ) ->  CommGroupₓₓ  α
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  [  Fintypeₓ   (   group_aut  α  ) ] ->  {  n :  ℕ } ->  (  h :  IsCyclic   (   group_aut  α  ) n ) ->  CommGroup  α
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  [  Fintypeₓ   (   group_aut  α  ) ] ->  {  n :  ℕ } ->  (  h :  IsCyclic   (   group_aut  α  ) n ) ->  CommGroupₓ  α
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  [  Fintypeₓ   (   group_aut  α  ) ] ->  {  n :  ℕ } ->  (  h :  IsCyclic   (   group_aut  α  ) n ) ->  CommGroupₓₓ  α
+
+ {  G :  Type  u } ->  [  Group  G ] ->  (  h :  IsCyclic   (   automorphism_group  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  (  h :  IsCyclic   (   automorphism_group  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  (  h :  IsCyclic   (   automorphism_group  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  h :  IsCyclic  group.automorphism_group G ) ->  is_abelian  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  h :  IsCyclic  group.automorphism_group G ) ->  is_abelian  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  h :  IsCyclic  group.automorphism_group G ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Group  G ] ->  (  h :  IsCyclic   (   aut  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  (  h :  IsCyclic   (   aut  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  (  h :  IsCyclic   (   aut  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Group  G ] ->  [  is_cyclic_group   (   aut  G  ) ] ->  is_abelian_group  G
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  [  is_cyclic_group   (   aut  G  ) ] ->  is_abelian_group  G
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  [  is_cyclic_group   (   aut  G  ) ] ->  is_abelian_group  G
+
+ (  G :  Type  u ) ->  [  Group  G ] ->  (  h :  ∃    (   n :  ℕ ) ,  ∀   (  f  :  G ≃* G  )  ,  n ∣  nat_degree  f ) ->  is_abelian_group  G
+
+ (  G :  Type  u ) ->  [  Groupₓ  G ] ->  (  h :  ∃    (   n :  ℕ ) ,  ∀   (  f  :  G ≃* G  )  ,  n ∣  nat_degree  f ) ->  is_abelian_group  G
+
+ (  G :  Type  u ) ->  [  Groupₓₓ  G ] ->  (  h :  ∃    (   n :  ℕ ) ,  ∀   (  f  :  G ≃* G  )  ,  n ∣  nat_degree  f ) ->  is_abelian_group  G
+
+ {  G :  Type  u } ->  [  Group  G ] ->  [  Fintype   (   aut  G  ) ] ->  (  h :  IsCyclic   (   aut  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Group  G ] ->  [  Fintypeₓ   (   aut  G  ) ] ->  (  h :  IsCyclic   (   aut  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  [  Fintype   (   aut  G  ) ] ->  (  h :  IsCyclic   (   aut  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  [  Fintypeₓ   (   aut  G  ) ] ->  (  h :  IsCyclic   (   aut  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  [  Fintype   (   aut  G  ) ] ->  (  h :  IsCyclic   (   aut  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  [  Fintypeₓ   (   aut  G  ) ] ->  (  h :  IsCyclic   (   aut  G  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Group  G ] ->  [  Fintype   (   group_aut  G  ) ] ->   IsCyclic   (   group_aut  G  ) →  is_abelian  G
+
+ {  G :  Type  u } ->  [  Group  G ] ->  [  Fintypeₓ   (   group_aut  G  ) ] ->   IsCyclic   (   group_aut  G  ) →  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  [  Fintype   (   group_aut  G  ) ] ->   IsCyclic   (   group_aut  G  ) →  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  [  Fintypeₓ   (   group_aut  G  ) ] ->   IsCyclic   (   group_aut  G  ) →  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  [  Fintype   (   group_aut  G  ) ] ->   IsCyclic   (   group_aut  G  ) →  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  [  Fintypeₓ   (   group_aut  G  ) ] ->   IsCyclic   (   group_aut  G  ) →  is_abelian  G
+
+ {  G :  Type  u } ->  [  Group  G ] ->  {  α :  Type  v } ->  [  Group  α ] ->  (  f :  α →  G → G ) ->  (  hf :  is_group_action  f ) ->  (  h :  IsCyclic   (   automorphism_group  f  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Group  G ] ->  {  α :  Type  v } ->  [  Groupₓ  α ] ->  (  f :  α →  G → G ) ->  (  hf :  is_group_action  f ) ->  (  h :  IsCyclic   (   automorphism_group  f  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Group  G ] ->  {  α :  Type  v } ->  [  Groupₓₓ  α ] ->  (  f :  α →  G → G ) ->  (  hf :  is_group_action  f ) ->  (  h :  IsCyclic   (   automorphism_group  f  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  {  α :  Type  v } ->  [  Group  α ] ->  (  f :  α →  G → G ) ->  (  hf :  is_group_action  f ) ->  (  h :  IsCyclic   (   automorphism_group  f  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  {  α :  Type  v } ->  [  Groupₓ  α ] ->  (  f :  α →  G → G ) ->  (  hf :  is_group_action  f ) ->  (  h :  IsCyclic   (   automorphism_group  f  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓ  G ] ->  {  α :  Type  v } ->  [  Groupₓₓ  α ] ->  (  f :  α →  G → G ) ->  (  hf :  is_group_action  f ) ->  (  h :  IsCyclic   (   automorphism_group  f  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  {  α :  Type  v } ->  [  Group  α ] ->  (  f :  α →  G → G ) ->  (  hf :  is_group_action  f ) ->  (  h :  IsCyclic   (   automorphism_group  f  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  {  α :  Type  v } ->  [  Groupₓ  α ] ->  (  f :  α →  G → G ) ->  (  hf :  is_group_action  f ) ->  (  h :  IsCyclic   (   automorphism_group  f  ) ) ->  is_abelian  G
+
+ {  G :  Type  u } ->  [  Groupₓₓ  G ] ->  {  α :  Type  v } ->  [  Groupₓₓ  α ] ->  (  f :  α →  G → G ) ->  (  hf :  is_group_action  f ) ->  (  h :  IsCyclic   (   automorphism_group  f  ) ) ->  is_abelian  G
+
+failed to elaborate
+
+outputs: #[{G : Type u} [group G] (h_cyclic : is_cyclic (group_aut G)) : is_abelian G , {G : Type u_1} [group G] (h : is_cyclic (automorphism_group G)) : comm_group G , {G : Type u_1} [group G] (h : is_cyclic (aut G)) : is_abelian G , {G : Type u_1} [group G] {n : ℕ} (hn : is_cyclic (group_aut G)) : is_abelian G , {G : Type u} [group G] {H : Type w} [group H] (f : G ≃o H) (h : is_cyclic (automorphism_group G)) : is_abelian G , {G : Type u} [group G] (h : is_cyclic group_aut G) : is_abelian G , {G : Type u_2} [group G] (h : ∀ (n : ℕ), n ≠ 0 → ∀ (H : groups.finset (perm G)), (∀ (x : H), is_automorphism x) → (∀ (x : H), is_automorphism x) → H ≠ ∅ → groups.finset.card H = n → ∃ (x : H), H = {y | ∃ (m : ℕ), y = pow x m}) : comm_group G , {G : Type u_1} [group G] [fintype G] (h : is_group_isomorphic (aut_group G) (ℤ/2ℤ)) : comm_group G , {G : Type u} [group G] (H : is_cyclic (aut G)) : is_comm_group G , {α : Type u} [group α] {f : α ≃ₜ α} : is_cyclic (automorphism_group α) → commutative_group α , {α : Type u} [group α] {β} [group β] [fintype β] (h : Π (g h : β → β), (g ∘ h) ∈ automorphism_group β → g ∈ automorphism_group β → h ∈ automorphism_group β → g = h) : comm_group α , {α : Type u_1} [group α] [fintype (group_aut α)] {n : ℕ} (h : is_cyclic (group_aut α) n) : is_comm_group α , {G : Type u} [group G] (h : is_cyclic (automorphism_group G)) : is_abelian G , {G : Type u_1} [group G] (h : is_cyclic group.automorphism_group G) : is_abelian G , {G : Type u} [group G] (h : is_cyclic (aut G)) : is_abelian G , {G : Type u} [group G] [is_cyclic_group (aut G)] : is_abelian_group G , (G : Type u) [group G] (h : ∃ (n : ℕ), ∀ (f : G ≃* G), n ∣ nat_degree f) : is_abelian_group G , {G : Type u} [group G] [fintype (aut G)] (h : is_cyclic (aut G)) : is_abelian G , {G : Type u} [group G] [fintype (group_aut G)] : is_cyclic (group_aut G) → is_abelian G , {G : Type u} [group G] {α : Type v} [group α] (f : α → G → G) (hf : is_group_action f) (h : is_cyclic (automorphism_group f)) : is_abelian G ]
+
+total : 11
+
+elaborated: 8
+
+A uniformly continuous function of a uniformly continuous function is uniformly continuous.
+
+success
+
+theorem ∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} [inst : UniformSpace α] [inst_1 : UniformSpace β]
+  [inst_2 : UniformSpace γ] {f : α → β} {g : β → γ},
+  UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f)
+
+total : 12
+
+elaborated: 9
+
+A uniformly continuous function of a uniformly continuous function is uniformly continuous.
+
+success
+
+theorem ∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} [inst : UniformSpace α] [inst_1 : UniformSpace β]
+  [inst_2 : UniformSpace γ] {f : α → β} {g : β → γ},
+  UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f)
+
+total : 13
+
+elaborated: 10
+
+A topological space is normal if and only if any two disjoint closed subsets can be separated by a continuous function.
+
+No valid output from Codex; outputs below
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   NormalSpace  X ↔  (   ∀   (  s t  :  Set  X  )  ,   Disjoint  s t →   IsClosed  s →   IsClosed  t →  ∃    (   f :  X →   ℝ  ℝ ) ,   Continuous  f ∧   Set.EqOn  f  0 s ∧   Set.EqOn  f  1 t ∧  ∀   (  x  : X  )  ,   f  x ∈  Set.Icc   0  1  )
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   NormalSpace  X ↔  (   ∀   (  s t  :  Setₓ  X  )  ,   Disjoint  s t →   IsClosed  s →   IsClosed  t →  ∃    (   f :  X →   ℝ  ℝ ) ,   Continuous  f ∧   Set.EqOn  f  0 s ∧   Set.EqOn  f  1 t ∧  ∀   (  x  : X  )  ,   f  x ∈  Set.Icc   0  1  )
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   NormalSpace  X ↔  ∀   {  s t  :  Set  X }  (  hs  :  IsClosed  s  )  (  ht  :  IsClosed  t  )  (  hd  :  Disjoint  s t  )  ,  ∃    (   f :  C( X ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 s ∧   Set.EqOn   ⇑ f  1 t ∧  ∀   (  x  : X  )  ,   ⇑   f  x ∈  Set.Icc   0  1  ⇑   f  xf  x ∈  Set.Icc   0  1  ⇑   f  x ∈  Set.Icc   0  1
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   NormalSpace  X ↔  ∀   {  s t  :  Setₓ  X }  (  hs  :  IsClosed  s  )  (  ht  :  IsClosed  t  )  (  hd  :  Disjoint  s t  )  ,  ∃    (   f :  C( X ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 s ∧   Set.EqOn   ⇑ f  1 t ∧  ∀   (  x  : X  )  ,   ⇑   f  x ∈  Set.Icc   0  1  ⇑   f  xf  x ∈  Set.Icc   0  1  ⇑   f  x ∈  Set.Icc   0  1
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->  {  s t :  Set  X } ->  (  hs :  IsClosed  s ) ->  (  ht :  IsClosed  t ) ->  (  hd :  Disjoint  s t ) ->   NormalSpace  X ↔  ∃    (   f :  C( X ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 s ∧   Set.EqOn   ⇑ f  1 t ∧  ∀   (  x  : X  )  ,   ⇑   f  x ∈  Set.Icc   0  1  ⇑   f  xf  x ∈  Set.Icc   0  1  ⇑   f  x ∈  Set.Icc   0  1
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->  {  s t :  Setₓ  X } ->  (  hs :  IsClosed  s ) ->  (  ht :  IsClosed  t ) ->  (  hd :  Disjoint  s t ) ->   NormalSpace  X ↔  ∃    (   f :  C( X ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 s ∧   Set.EqOn   ⇑ f  1 t ∧  ∀   (  x  : X  )  ,   ⇑   f  x ∈  Set.Icc   0  1  ⇑   f  xf  x ∈  Set.Icc   0  1  ⇑   f  x ∈  Set.Icc   0  1
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->   NormalSpace  α ↔  ∀   (  s t  :  Set  α  )  (  hs  :  IsClosed  s  )  (  ht  :  IsClosed  t  )  (  hd  :  Disjoint  s t  )  ,  ∃    (   f :  BoundedContinuousFunction  α   ℝ  ℝ ) ,   Set.EqOn   ⇑ f  0 s ∧   Set.EqOn   ⇑ f  1 t ∧  ∀   (  x  : α  )  ,   ⇑   f  x ∈  Set.Icc   0  1  ⇑   f  xf  x ∈  Set.Icc   0  1  ⇑   f  x ∈  Set.Icc   0  1
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->   NormalSpace  α ↔  ∀   (  s t  :  Setₓ  α  )  (  hs  :  IsClosed  s  )  (  ht  :  IsClosed  t  )  (  hd  :  Disjoint  s t  )  ,  ∃    (   f :  BoundedContinuousFunction  α   ℝ  ℝ ) ,   Set.EqOn   ⇑ f  0 s ∧   Set.EqOn   ⇑ f  1 t ∧  ∀   (  x  : α  )  ,   ⇑   f  x ∈  Set.Icc   0  1  ⇑   f  xf  x ∈  Set.Icc   0  1  ⇑   f  x ∈  Set.Icc   0  1
+
+ {  X :  Type  u_1 } ->  [  T2Space  X ] ->   NormalSpace  X ↔  ∀  s t   :  Set  X ,   IsClosed  s →   IsClosed  t →   IsClosed  s →   Disjoint  s t →  ∃    (   f :  C( X ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 s ∧   Set.EqOn   ⇑ f  1 t ∧  ∀   (  x  : X  )  ,   ⇑   f  x ∈  Set.Icc   0  1  ⇑   f  xf  x ∈  Set.Icc   0  1  ⇑   f  x ∈  Set.Icc   0  1
+
+ {  X :  Type  u_1 } ->  [  T2Space  X ] ->   NormalSpace  X ↔  ∀  s t   :  Setₓ  X ,   IsClosed  s →   IsClosed  t →   IsClosed  s →   Disjoint  s t →  ∃    (   f :  C( X ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 s ∧   Set.EqOn   ⇑ f  1 t ∧  ∀   (  x  : X  )  ,   ⇑   f  x ∈  Set.Icc   0  1  ⇑   f  xf  x ∈  Set.Icc   0  1  ⇑   f  x ∈  Set.Icc   0  1
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->  (  hX :  NormalSpace  X ) ->  {  s t :  Set  X } ->  (  hs :  IsClosed  s ) ->  (  ht :  IsClosed  t ) ->  (  hdisj :  Disjoint  s t ) ->  ∃    (   f :  C( X ,   ℝ  ℝ ) )  (   hf :  local_homeomorph.is_open_map   (   f.comp  continuous_map.continuous_induced_r2l  ) ) ,   Set.EqOn   ⇑ f  0 s ∧  Set.EqOn   ⇑ f  1 t
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->  (  hX :  NormalSpace  X ) ->  {  s t :  Setₓ  X } ->  (  hs :  IsClosed  s ) ->  (  ht :  IsClosed  t ) ->  (  hdisj :  Disjoint  s t ) ->  ∃    (   f :  C( X ,   ℝ  ℝ ) )  (   hf :  local_homeomorph.is_open_map   (   f.comp  continuous_map.continuous_induced_r2l  ) ) ,   Set.EqOn   ⇑ f  0 s ∧  Set.EqOn   ⇑ f  1 t
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->  {  s t :  Set  X } ->  (  hs :  IsClosed  s ) ->  (  ht :  IsClosed  t ) ->  (  hd :  Disjoint  s t ) ->   NormalSpace  X ↔  ∃    (   f :  C( X ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 s ∧  Set.EqOn   ⇑ f  1 t
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->  {  s t :  Setₓ  X } ->  (  hs :  IsClosed  s ) ->  (  ht :  IsClosed  t ) ->  (  hd :  Disjoint  s t ) ->   NormalSpace  X ↔  ∃    (   f :  C( X ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 s ∧  Set.EqOn   ⇑ f  1 t
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   NormalSpace  X ↔  ∀   {  P Q  :  Set  X }  ,   IsClosed  P →   IsClosed  Q →   Disjoint  P Q →  ∃    (   f :  C( X ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 P ∧   Set.EqOn   ⇑ f  1 Q ∧  ∀   (  x  : X  )  ,   ⇑   f  x ∈  Set.Icc   0  1  ⇑   f  xf  x ∈  Set.Icc   0  1  ⇑   f  x ∈  Set.Icc   0  1
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   NormalSpace  X ↔  ∀   {  P Q  :  Setₓ  X }  ,   IsClosed  P →   IsClosed  Q →   Disjoint  P Q →  ∃    (   f :  C( X ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 P ∧   Set.EqOn   ⇑ f  1 Q ∧  ∀   (  x  : X  )  ,   ⇑   f  x ∈  Set.Icc   0  1  ⇑   f  xf  x ∈  Set.Icc   0  1  ⇑   f  x ∈  Set.Icc   0  1
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->   NormalSpace  α ↔  ∀   (  s t  :  Set  α  )  ,   IsClosed  s →   IsClosed  t →   Disjoint  s t →  ∃    (   f :  C( α ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 s ∧   Set.EqOn   ⇑ f  1 t ∧  ∀   (  x  : α  )  ,   ⇑   f  x ∈  Set.Icc   0  1  ⇑   f  xf  x ∈  Set.Icc   0  1  ⇑   f  x ∈  Set.Icc   0  1
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->   NormalSpace  α ↔  ∀   (  s t  :  Setₓ  α  )  ,   IsClosed  s →   IsClosed  t →   Disjoint  s t →  ∃    (   f :  C( α ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 s ∧   Set.EqOn   ⇑ f  1 t ∧  ∀   (  x  : α  )  ,   ⇑   f  x ∈  Set.Icc   0  1  ⇑   f  xf  x ∈  Set.Icc   0  1  ⇑   f  x ∈  Set.Icc   0  1
+
+ {  α :  Type  u } ->  [  TopologicalSpace  α ] ->   NormalSpace  α ↔  ∀   (  s t  :  Set  α  )  (  h1  :  IsClosed  s  )  (  h2  :  IsClosed  t  )  (  h3  :  Disjoint  s t  )  ,  ∃    (   f :  α →   ℝ  ℝ ) ,   Continuous  f ∧   Set.EqOn  f  0 s ∧  Set.EqOn  f  1 t
+
+ {  α :  Type  u } ->  [  TopologicalSpace  α ] ->   NormalSpace  α ↔  ∀   (  s t  :  Setₓ  α  )  (  h1  :  IsClosed  s  )  (  h2  :  IsClosed  t  )  (  h3  :  Disjoint  s t  )  ,  ∃    (   f :  α →   ℝ  ℝ ) ,   Continuous  f ∧   Set.EqOn  f  0 s ∧  Set.EqOn  f  1 t
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   NormalSpace  X ↔  ∀   {  s t  :  Set  X }  ,   IsClosed  s →   IsClosed  t →   Disjoint  s t →  ∃    (   f :  C( X ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 s ∧  Set.EqOn   ⇑ f  1 t
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   NormalSpace  X ↔  ∀   {  s t  :  Setₓ  X }  ,   IsClosed  s →   IsClosed  t →   Disjoint  s t →  ∃    (   f :  C( X ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 s ∧  Set.EqOn   ⇑ f  1 t
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   NormalSpace  X ↔  ∀   {  s t  :  Set  X }  ,   IsClosed  s →   IsClosed  t →   Disjoint  s t →  ∃    (   f :  C( X ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 s ∧   Set.EqOn   ⇑ f  1 t ∧  ∀   (  x  : X  )  ,   ⇑   f  x ∈  Set.Icc   0  1  ⇑   f  xf  x ∈  Set.Icc   0  1  ⇑   f  x ∈  Set.Icc   0  1
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   NormalSpace  X ↔  ∀   {  s t  :  Setₓ  X }  ,   IsClosed  s →   IsClosed  t →   Disjoint  s t →  ∃    (   f :  C( X ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 s ∧   Set.EqOn   ⇑ f  1 t ∧  ∀   (  x  : X  )  ,   ⇑   f  x ∈  Set.Icc   0  1  ⇑   f  xf  x ∈  Set.Icc   0  1  ⇑   f  x ∈  Set.Icc   0  1
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   NormalSpace  X ↔  ∀   (  c d  :  Set  X  )  ,   IsClosed  c →   IsClosed  d →   Disjoint  c d →  ∃    (   f :  C( X ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 c ∧   Set.EqOn   ⇑ f  1 d ∧  ∀   (  x  : X  )  ,   ⇑   f  x ∈  Set.Icc   0  1  ⇑   f  xf  x ∈  Set.Icc   0  1  ⇑   f  x ∈  Set.Icc   0  1
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   NormalSpace  X ↔  ∀   (  c d  :  Setₓ  X  )  ,   IsClosed  c →   IsClosed  d →   Disjoint  c d →  ∃    (   f :  C( X ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 c ∧   Set.EqOn   ⇑ f  1 d ∧  ∀   (  x  : X  )  ,   ⇑   f  x ∈  Set.Icc   0  1  ⇑   f  xf  x ∈  Set.Icc   0  1  ⇑   f  x ∈  Set.Icc   0  1
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   NormalSpace  X ↔  (   ∀   (  s t  :  Set  X  )  ,   IsClosed  s →   IsClosed  t →   Disjoint  s t →  ∃    (   f :  C( X ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 s ∧   Set.EqOn   ⇑ f  1 t ∧  ∀   (  x  : X  )  ,   ⇑   f  x ∈  Set.Icc   0  1  ⇑   f  xf  x ∈  Set.Icc   0  1  ⇑   f  x ∈  Set.Icc   0  1  )
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   NormalSpace  X ↔  (   ∀   (  s t  :  Setₓ  X  )  ,   IsClosed  s →   IsClosed  t →   Disjoint  s t →  ∃    (   f :  C( X ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 s ∧   Set.EqOn   ⇑ f  1 t ∧  ∀   (  x  : X  )  ,   ⇑   f  x ∈  Set.Icc   0  1  ⇑   f  xf  x ∈  Set.Icc   0  1  ⇑   f  x ∈  Set.Icc   0  1  )
+
+ {  X :  Type* } ->  [  TopologicalSpace  X ] ->   NormalSpace  X ↔  ∀   (  s t  :  Set  X  )  (  hs  :  IsClosed  s  )  (  ht  :  IsClosed  t  )  (  hd  :  Disjoint  s t  )  ,  ∃    (   f :  C( X ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 s ∧   Set.EqOn   ⇑ f  1 t ∧  ∀   (  x  : X  )  ,   ⇑   f  x ∈  Set.Icc   0  1  ⇑   f  xf  x ∈  Set.Icc   0  1  ⇑   f  x ∈  Set.Icc   0  1
+
+ {  X :  Type* } ->  [  TopologicalSpace  X ] ->   NormalSpace  X ↔  ∀   (  s t  :  Setₓ  X  )  (  hs  :  IsClosed  s  )  (  ht  :  IsClosed  t  )  (  hd  :  Disjoint  s t  )  ,  ∃    (   f :  C( X ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 s ∧   Set.EqOn   ⇑ f  1 t ∧  ∀   (  x  : X  )  ,   ⇑   f  x ∈  Set.Icc   0  1  ⇑   f  xf  x ∈  Set.Icc   0  1  ⇑   f  x ∈  Set.Icc   0  1
+
+ {  X :  Type  u } ->  [  TopologicalSpace  X ] ->   NormalSpace  X ↔  ∀   {  s t  :  Set  X }  (  h_closed_s  :  IsClosed  s  )  (  h_closed_t  :  IsClosed  t  )  (  h_disjoint  :  Disjoint  s t  )  ,  (   ∃    (   f :  C( X ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 s ∧   Set.EqOn   ⇑ f  1 t ∧  ∀   (  x  : X  )  ,   ⇑   f  x ∈  Set.Icc   0  1  ⇑   f  xf  x ∈  Set.Icc   0  1  ⇑   f  x ∈  Set.Icc   0  1  )
+
+ {  X :  Type  u } ->  [  TopologicalSpace  X ] ->   NormalSpace  X ↔  ∀   {  s t  :  Setₓ  X }  (  h_closed_s  :  IsClosed  s  )  (  h_closed_t  :  IsClosed  t  )  (  h_disjoint  :  Disjoint  s t  )  ,  (   ∃    (   f :  C( X ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 s ∧   Set.EqOn   ⇑ f  1 t ∧  ∀   (  x  : X  )  ,   ⇑   f  x ∈  Set.Icc   0  1  ⇑   f  xf  x ∈  Set.Icc   0  1  ⇑   f  x ∈  Set.Icc   0  1  )
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  {  s t :  Set  α } ->  (  hs :  IsClosed  s ) ->  (  ht :  IsClosed  t ) ->  (  hd :  Disjoint  s t ) ->   NormalSpace  α ↔  ∃    (   f :  C( α ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 s ∧   Set.EqOn   ⇑ f  1 t ∧  ∀   (  x  : α  )  ,   ⇑   f  x ∈  Set.Icc   0  1  ⇑   f  xf  x ∈  Set.Icc   0  1  ⇑   f  x ∈  Set.Icc   0  1
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  {  s t :  Setₓ  α } ->  (  hs :  IsClosed  s ) ->  (  ht :  IsClosed  t ) ->  (  hd :  Disjoint  s t ) ->   NormalSpace  α ↔  ∃    (   f :  C( α ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 s ∧   Set.EqOn   ⇑ f  1 t ∧  ∀   (  x  : α  )  ,   ⇑   f  x ∈  Set.Icc   0  1  ⇑   f  xf  x ∈  Set.Icc   0  1  ⇑   f  x ∈  Set.Icc   0  1
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   NormalSpace  X ↔  ∀   (  s t  :  Set  X  )  ,   IsClosed  s →   IsClosed  t →   Disjoint  s t →  ∃    (   f :  C( X ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 s ∧  Set.EqOn   ⇑ f  1 t
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   NormalSpace  X ↔  ∀   (  s t  :  Setₓ  X  )  ,   IsClosed  s →   IsClosed  t →   Disjoint  s t →  ∃    (   f :  C( X ,   ℝ  ℝ ) ) ,   Set.EqOn   ⇑ f  0 s ∧  Set.EqOn   ⇑ f  1 t
+
+failed to elaborate
+
+outputs: #[{X : Type u_1} [topological_space X] : normal_space X ↔ (∀ (s t : set X), disjoint s t → is_closed s → is_closed t → ∃ (f : X → ℝ), continuous f ∧ set.eq_on f 0 s ∧ set.eq_on f 1 t ∧ ∀ (x : X), f x ∈ set.Icc 0 1) , {X : Type u_1} [topological_space X] : normal_space X ↔ ∀ {s t : set X} (hs : is_closed s) (ht : is_closed t) (hd : disjoint s t), ∃ (f : C(X, ℝ)), set.eq_on ⇑f 0 s ∧ set.eq_on ⇑f 1 t ∧ ∀ (x : X), ⇑f x ∈ set.Icc 0 1 , {X : Type u_1} [topological_space X] {s t : set X} (hs : is_closed s) (ht : is_closed t) (hd : disjoint s t) : normal_space X ↔ ∃ (f : C(X, ℝ)), set.eq_on ⇑f 0 s ∧ set.eq_on ⇑f 1 t ∧ ∀ (x : X), ⇑f x ∈ set.Icc 0 1 , {α : Type u_1} [topological_space α] : normal_space α ↔ ∀ (s t : set α) (hs : is_closed s) (ht : is_closed t) (hd : disjoint s t), ∃ (f : bounded_continuous_function α ℝ), set.eq_on ⇑f 0 s ∧ set.eq_on ⇑f 1 t ∧ ∀ (x : α), ⇑f x ∈ set.Icc 0 1 , {X : Type u_1} [t2_space X] : normal_space X ↔ ∀ s t : set X, is_closed s → is_closed t → is_closed s → disjoint s t → ∃ (f : C(X, ℝ)), set.eq_on ⇑f 0 s ∧ set.eq_on ⇑f 1 t ∧ ∀ (x : X), ⇑f x ∈ set.Icc 0 1 , {X : Type u_1} [topological_space X] (hX : normal_space X) {s t : set X} (hs : is_closed s) (ht : is_closed t) (hdisj : disjoint s t) : ∃ (f : C(X, ℝ)) (hf : local_homeomorph.is_open_map (f.comp continuous_map.continuous_induced_r2l)), set.eq_on ⇑f 0 s ∧ set.eq_on ⇑f 1 t , {X : Type u_1} [topological_space X] {s t : set X} (hs : is_closed s) (ht : is_closed t) (hd : disjoint s t) : normal_space X ↔ ∃ (f : C(X, ℝ)), set.eq_on ⇑f 0 s ∧ set.eq_on ⇑f 1 t , {X : Type u_1} [topological_space X] : normal_space X ↔ ∀ {P Q : set X}, is_closed P → is_closed Q → disjoint P Q → ∃ (f : C(X, ℝ)), set.eq_on ⇑f 0 P ∧ set.eq_on ⇑f 1 Q ∧ ∀ (x : X), ⇑f x ∈ set.Icc 0 1 , {α : Type u_1} [topological_space α] : normal_space α ↔ ∀ (s t : set α), is_closed s → is_closed t → disjoint s t → ∃ (f : C(α, ℝ)), set.eq_on ⇑f 0 s ∧ set.eq_on ⇑f 1 t ∧ ∀ (x : α), ⇑f x ∈ set.Icc 0 1 , {α : Type u} [topological_space α] : normal_space α ↔ ∀ (s t : set α) (h1 : is_closed s) (h2 : is_closed t) (h3 : disjoint s t), ∃ (f : α → ℝ), continuous f ∧ set.eq_on f 0 s ∧ set.eq_on f 1 t , {X : Type u_1} [topological_space X] : normal_space X ↔ ∀ {s t : set X}, is_closed s → is_closed t → disjoint s t → ∃ (f : C(X, ℝ)), set.eq_on ⇑f 0 s ∧ set.eq_on ⇑f 1 t , {X : Type u_1} [topological_space X] : normal_space X ↔ ∀ {s t : set X}, is_closed s → is_closed t → disjoint s t → ∃ (f : C(X, ℝ)), set.eq_on ⇑f 0 s ∧ set.eq_on ⇑f 1 t ∧ ∀ (x : X), ⇑f x ∈ set.Icc 0 1 , {X : Type u_1} [topological_space X] : normal_space X ↔ ∀ (c d : set X), is_closed c → is_closed d → disjoint c d → ∃ (f : C(X, ℝ)), set.eq_on ⇑f 0 c ∧ set.eq_on ⇑f 1 d ∧ ∀ (x : X), ⇑f x ∈ set.Icc 0 1 , {X : Type u_1} [topological_space X] : normal_space X ↔ (∀ (s t : set X), is_closed s → is_closed t → disjoint s t → ∃ (f : C(X, ℝ)), set.eq_on ⇑f 0 s ∧ set.eq_on ⇑f 1 t ∧ ∀ (x : X), ⇑f x ∈ set.Icc 0 1) , {X : Type*} [topological_space X] : normal_space X ↔ ∀ (s t : set X) (hs : is_closed s) (ht : is_closed t) (hd : disjoint s t), ∃ (f : C(X, ℝ)), set.eq_on ⇑f 0 s ∧ set.eq_on ⇑f 1 t ∧ ∀ (x : X), ⇑f x ∈ set.Icc 0 1 , {X : Type u} [topological_space X] : normal_space X ↔ ∀ {s t : set X} (h_closed_s : is_closed s) (h_closed_t : is_closed t) (h_disjoint : disjoint s t),
+  (∃ (f : C(X, ℝ)), set.eq_on ⇑f 0 s ∧ set.eq_on ⇑f 1 t ∧ ∀ (x : X), ⇑f x ∈ set.Icc 0 1) , {α : Type u_1} [topological_space α] {s t : set α} (hs : is_closed s) (ht : is_closed t) (hd : disjoint s t) : normal_space α ↔ ∃ (f : C(α, ℝ)), set.eq_on ⇑f 0 s ∧ set.eq_on ⇑f 1 t ∧ ∀ (x : α), ⇑f x ∈ set.Icc 0 1 , {X : Type u_1} [topological_space X] : normal_space X ↔ ∀ (s t : set X), is_closed s → is_closed t → disjoint s t → ∃ (f : C(X, ℝ)), set.eq_on ⇑f 0 s ∧ set.eq_on ⇑f 1 t ]
+
+total : 14
+
+elaborated: 10
+
+If a function from the unit interval to itself has a point of period three, then it has points of all positive periods.
+
+success
+
+theorem ∀ {α : Type u_1} {f : α → α} {x : α}, Function.IsPeriodicPt f 3 x → ∀ {n : ℕ}, 0 < n → Function.IsPeriodicPt f n x
+
+total : 15
+
+elaborated: 11
+
+A terminal object in a category is unique up to unique isomorphism.
+
+success
+
+theorem ∀ {C : Type u} [inst : CategoryTheory.Category C] {A B : C} (hA : CategoryTheory.Limits.IsTerminal A),
+  CategoryTheory.Limits.IsTerminal B → CategoryTheory.IsIso (CategoryTheory.Limits.IsTerminal.from hA B)
+
+total : 16
+
+elaborated: 12
+
+The complement of the union of two sets is the intersection of their complements.
+
+No valid output from Codex; outputs below
+
+ {  α :  Type  u } ->  [  TopologicalSpace  α ] ->  {  s t :  Set  α } ->   -  (   s ∪ t  ) =   - s ∩  - t
+
+ {  α :  Type  u } ->  [  TopologicalSpace  α ] ->  {  s t :  Setₓ  α } ->   -  (   s ∪ t  ) =   - s ∩  - t
+
+ {  α :  Type  u } ->  [  TopologicalSpace  α ] ->  {  s t :  Set  α } ->   -  (   s ∪ t  ) =   (   - s  ) ∩  (   - t  )
+
+ {  α :  Type  u } ->  [  TopologicalSpace  α ] ->  {  s t :  Setₓ  α } ->   -  (   s ∪ t  ) =   (   - s  ) ∩  (   - t  )
+
+{α : Type u} {s t : set α} : (s ∪ t)ᶜ = sᶜ ∩ tᶜ 
+
+{α : Type u_1} [topological_space α] {s t : set α} : (s ∪ t)ᶜ = sᶜ ∩ tᶜ 
+
+ {  α :  Type  u_1 } ->  [  SemilatticeInf  α ] ->  {  s t :  Set  α } ->   -  (   s ∪ t  ) =   - s ∩  - t
+
+ {  α :  Type  u_1 } ->  [  SemilatticeInf  α ] ->  {  s t :  Setₓ  α } ->   -  (   s ∪ t  ) =   - s ∩  - t
+
+ {  α :  Type  u } ->  {  s t :  Set  α } ->   -  (   s ∪ t  ) =   - s ∩  - t
+
+ {  α :  Type  u } ->  {  s t :  Setₓ  α } ->   -  (   s ∪ t  ) =   - s ∩  - t
+
+ {  α :  Type  u } ->  [  TopologicalSpace  α ] ->  {  s t :  Set  α } ->   -  (   s ∪ t  ) =   - s ∩  - t
+
+ {  α :  Type  u } ->  [  TopologicalSpace  α ] ->  {  s t :  Setₓ  α } ->   -  (   s ∪ t  ) =   - s ∩  - t
+
+ {  α :  Type  u_1 } ->  (  s t :  Set  α ) ->   -  (   s ∪ t  ) =  (    - s ∩  - t  )
+
+ {  α :  Type  u_1 } ->  (  s t :  Setₓ  α ) ->   -  (   s ∪ t  ) =  (    - s ∩  - t  )
+
+ {  α :  Type  u } ->  [  SemilatticeInf  α ] ->  {  s t :  Set  α } ->   -  (   s ∪ t  ) =   - s ∩  - t
+
+ {  α :  Type  u } ->  [  SemilatticeInf  α ] ->  {  s t :  Setₓ  α } ->   -  (   s ∪ t  ) =   - s ∩  - t
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  {  s t :  Set  α } ->   -  (   s ∪ t  ) =   (   - s  ) ∩  (   - t  )
+
+ {  α :  Type  u_1 } ->  [  TopologicalSpace  α ] ->  {  s t :  Setₓ  α } ->   -  (   s ∪ t  ) =   (   - s  ) ∩  (   - t  )
+
+ {  α :  Type  u } ->  {  s t :  Set  α } ->   -  (   s ∪ t  ) =   - s ∩  - t
+
+ {  α :  Type  u } ->  {  s t :  Setₓ  α } ->   -  (   s ∪ t  ) =   - s ∩  - t
+
+{α : Type u_1} {s t : set α} : sᶜ ∪ tᶜ = (s ∩ t)ᶜ 
+
+ {  α :  Type  u_1 } ->  {  s t :  Set  α } ->   -  (   s ∪ t  ) =   - s ∩  - t
+
+ {  α :  Type  u_1 } ->  {  s t :  Setₓ  α } ->   -  (   s ∪ t  ) =   - s ∩  - t
+
+{α : Type u} {s t : set α} : (s ∪ t)ᶜ = (sᶜ) ∩ (tᶜ) 
+
+failed to elaborate
+
+outputs: #[{α : Type u} [topological_space α] {s t : set α} : -(s ∪ t) = -s ∩ -t , {α : Type u} [topological_space α] {s t : set α} : -(s ∪ t) = (-s) ∩ (-t) , {α : Type u} {s t : set α} : (s ∪ t)ᶜ = sᶜ ∩ tᶜ , {α : Type u_1} [topological_space α] {s t : set α} : (s ∪ t)ᶜ = sᶜ ∩ tᶜ , {α : Type u_1} [semilattice_inf α] {s t : set α} : -(s ∪ t) = -s ∩ -t , {α : Type u} {s t : set α} : - (s ∪ t) = -s ∩ -t , {α : Type u} [topological_space α] {s t : set α} : - (s ∪ t) = - s ∩ - t , {α : Type u_1} (s t : set α) : -(s ∪ t) = (-s ∩ -t) , {α : Type u} [semilattice_inf α] {s t : set α} : -(s ∪ t) = -s ∩ -t , {α : Type u_1} [topological_space α] {s t : set α} : -(s ∪ t) = (-s) ∩ (-t) , {α : Type u} {s t : set α} : -(s ∪ t) = -s ∩ -t , {α : Type u_1} {s t : set α} : sᶜ ∪ tᶜ = (s ∩ t)ᶜ , {α : Type u_1} {s t : set α} : - (s ∪ t) = - s ∩ - t , {α : Type u} {s t : set α} : (s ∪ t)ᶜ = (sᶜ) ∩ (tᶜ) ]
+
+total : 17
+
+elaborated: 12
+
+The sum of the cubes of two positive integers is never equal to the cube of a third integer.
+
+success
+
+theorem ∀ {a b : ℕ}, a ≥ 1 → b ≥ 1 → ¬∃ c, a ^ 3 + b ^ 3 = c ^ 3
+
+total : 18
+
+elaborated: 13
+
+If every element of a group `G` has order `2`, then every pair of elements of `G` commutes.
+
+success
+
+theorem ∀ {G : Type u} [inst : Groupₓ G] {a b : G}, (∀ (g : G), orderOf g = 2) → Commute a b
+
+total : 19
+
+elaborated: 14
+
+The product of two consecutive natural numbers is even.
+
+success
+
+theorem ∀ {m n : ℕ}, m = n + 1 → Even (m * n)
+
+total : 20
+
+elaborated: 15
+
+Every index 2 subgroup of a group is normal.
+
+No valid output from Codex; outputs below
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Subgroup  G } ->  (  h1 :  index  H  2 ) ->  H ≤  normalizer  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Subgroup  G } ->  (  h1 :  index  H  2 ) ->  H ≤  normalizer  G
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Subgroup  G } ->  (  h1 :  index  H  2 ) ->  H ≤  normalizer  G
+
+ {  G :  Type  u_1 } ->  (  H :  Subgroup  G ) ->  (  hG :   Fintype.card  G =   2 *  Fintype.card  H ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  {  s :  Subgroup  G } ->  [  Group  G ] ->  (  h :   s.index_pow   2 =  2 ) ->  IsNormalSubgroup  s
+
+ {  G :  Type  u_1 } ->  {  s :  Subgroup  G } ->  [  Groupₓ  G ] ->  (  h :   s.index_pow   2 =  2 ) ->  IsNormalSubgroup  s
+
+ {  G :  Type  u_1 } ->  {  s :  Subgroup  G } ->  [  Groupₓₓ  G ] ->  (  h :   s.index_pow   2 =  2 ) ->  IsNormalSubgroup  s
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Subgroup  G } ->  (  h :   index  G H =  2 ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Subgroup  G } ->  (  h :   index  G H =  2 ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Subgroup  G } ->  (  h :   index  G H =  2 ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  N :  Subgroup  G ) ->  (  hN :   Fintype.card   (   G / N  ) =  2 ) ->  IsNormalSubgroup  N
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  N :  Subgroup  G ) ->  (  hN :   Fintype.card   (   G / N  ) =  2 ) ->  IsNormalSubgroup  N
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  N :  Subgroup  G ) ->  (  hN :   Fintype.card   (   G / N  ) =  2 ) ->  IsNormalSubgroup  N
+
+ {  G H :  Type* } ->  [  Group  G ] ->  (  h :  H ⊆ G ) ->  (  card_hG :    @ Fintype.card  G H =  2 ) ->  IsNormalSubgroup  H
+
+ {  G H :  Type* } ->  [  Groupₓ  G ] ->  (  h :  H ⊆ G ) ->  (  card_hG :    @ Fintype.card  G H =  2 ) ->  IsNormalSubgroup  H
+
+ {  G H :  Type* } ->  [  Groupₓₓ  G ] ->  (  h :  H ⊆ G ) ->  (  card_hG :    @ Fintype.card  G H =  2 ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  (  H :  Type  u ) ->  [  Group  G ] ->  [  Group  H ] ->  (  f :  H → G ) ->  (  e :   LeftCoset  f H =  RightCoset  f H ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  (  H :  Type  u ) ->  [  Group  G ] ->  [  Groupₓ  H ] ->  (  f :  H → G ) ->  (  e :   LeftCoset  f H =  RightCoset  f H ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  (  H :  Type  u ) ->  [  Group  G ] ->  [  Groupₓₓ  H ] ->  (  f :  H → G ) ->  (  e :   LeftCoset  f H =  RightCoset  f H ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  (  H :  Type  u ) ->  [  Groupₓ  G ] ->  [  Group  H ] ->  (  f :  H → G ) ->  (  e :   LeftCoset  f H =  RightCoset  f H ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  (  H :  Type  u ) ->  [  Groupₓ  G ] ->  [  Groupₓ  H ] ->  (  f :  H → G ) ->  (  e :   LeftCoset  f H =  RightCoset  f H ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  (  H :  Type  u ) ->  [  Groupₓ  G ] ->  [  Groupₓₓ  H ] ->  (  f :  H → G ) ->  (  e :   LeftCoset  f H =  RightCoset  f H ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  (  H :  Type  u ) ->  [  Groupₓₓ  G ] ->  [  Group  H ] ->  (  f :  H → G ) ->  (  e :   LeftCoset  f H =  RightCoset  f H ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  (  H :  Type  u ) ->  [  Groupₓₓ  G ] ->  [  Groupₓ  H ] ->  (  f :  H → G ) ->  (  e :   LeftCoset  f H =  RightCoset  f H ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  (  H :  Type  u ) ->  [  Groupₓₓ  G ] ->  [  Groupₓₓ  H ] ->  (  f :  H → G ) ->  (  e :   LeftCoset  f H =  RightCoset  f H ) ->  IsNormalSubgroup  H
+
+{G : Type u_1} {H : subgroup G} [group G] (hH : #|G : H| = 2) : is_normal_subgroup H 
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Subgroup  G } ->  (  h :    card  G /  card  H =  2 ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Subgroup  G } ->  (  h :    card  G /  card  H =  2 ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Subgroup  G } ->  (  h :    card  G /  card  H =  2 ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  H :  Subgroup  G ) ->  (  h :    Fintype.card  G /  Fintype.card  H =  2 ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  H :  Subgroup  G ) ->  (  h :    Fintype.card  G /  Fintype.card  H =  2 ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  H :  Subgroup  G ) ->  (  h :    Fintype.card  G /  Fintype.card  H =  2 ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Subgroup  G } ->  (  h :   Fintype.card  H =  2 ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Subgroup  G } ->  (  h :   Fintype.card  H =  2 ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Subgroup  G } ->  (  h :   Fintype.card  H =  2 ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  H :  Subgroup  G ) ->  [  Fact   (    2 ∣  index_of_subgroup  H  ) ] ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  H :  Subgroup  G ) ->  [  Fact   (    2 ∣  index_of_subgroup  H  ) ] ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  H :  Subgroup  G ) ->  [  Fact   (    2 ∣  index_of_subgroup  H  ) ] ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Subgroup  G } ->  (  ht :   index_of  H =  2 ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Subgroup  G } ->  (  ht :   index_of  H =  2 ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Subgroup  G } ->  (  ht :   index_of  H =  2 ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Subgroup  G } ->  (  h :   Fintype.card   H *  2 =  Fintype.card  G ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Subgroup  G } ->  (  h :   Fintype.card   H *  2 =  Fintype.card  G ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Subgroup  G } ->  (  h :   Fintype.card   H *  2 =  Fintype.card  G ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Subgroup  G } ->  (  h :   [ G : H ] =  2 ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Subgroup  G } ->  (  h :   [ G : H ] =  2 ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Subgroup  G } ->  (  h :   [ G : H ] =  2 ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  (  H :  Subgroup  G ) ->  (  hH :    Fintype.card  G /  2 =  Fintype.card  H ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  H :  Subgroup  G ) ->  (  hH :    Fintype.card  G /  2 =  Fintype.card  H ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  H :  Subgroup  G ) ->  (  hH :    Fintype.card  G /  2 =  Fintype.card  H ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Group  G ] ->  {  H :  Subgroup  G } ->  (  hH :   subgroup.index  H =  2 ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  {  H :  Subgroup  G } ->  (  hH :   subgroup.index  H =  2 ) ->  IsNormalSubgroup  H
+
+ {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  {  H :  Subgroup  G } ->  (  hH :   subgroup.index  H =  2 ) ->  IsNormalSubgroup  H
+
+{G : Type u_1} [group G] (H : subgroup G) (h : ∣G : H∣ = 2) : is_normal_subgroup H 
+
+{H G : Type u_1} [group H] [group G] (a : H → G) (ha : is_group_hom a) (h2 : fintype.card (a '' H) = 2) : is_normal_subgroup H 
+
+failed to elaborate
+
+outputs: #[{G : Type u_1} [group G] {H : subgroup G} (h1 : index H 2) : H ≤ normalizer G , {G : Type u_1} (H : subgroup G) (hG : fintype.card G = 2 * fintype.card H) : is_normal_subgroup H , {G : Type u_1} {s : subgroup G} [group G] (h : s.index_pow 2 = 2) : is_normal_subgroup s , {G : Type u_1} [group G] {H : subgroup G} (h : index G H = 2) : is_normal_subgroup H , {G : Type u_1} [group G] (N : subgroup G) (hN : fintype.card (G / N) = 2) : is_normal_subgroup N , {G H : Type*} [group G] (h : H ⊆ G) (card_hG : @fintype.card G H = 2) : is_normal_subgroup H , {G : Type u_1} (H : Type u) [group G] [group H] (f : H → G) (e : left_coset f H = right_coset f H) : is_normal_subgroup H , {G : Type u_1} {H : subgroup G} [group G] (hH : #|G : H| = 2) : is_normal_subgroup H , {G : Type u_1} [group G] {H : subgroup G} (h : card G / card H = 2) : is_normal_subgroup H , {G : Type u_1} [group G] (H : subgroup G) (h : fintype.card G / fintype.card H = 2) : is_normal_subgroup H , {G : Type u_1} [group G] {H : subgroup G} (h : fintype.card H = 2) : is_normal_subgroup H , {G : Type u_1} [group G] (H : subgroup G) [fact (2 ∣ index_of_subgroup H)] : is_normal_subgroup H , {G : Type u_1} [group G] {H : subgroup G} (ht : index_of H = 2) : is_normal_subgroup H , {G : Type u_1} [group G] {H : subgroup G} (h : fintype.card H * 2 = fintype.card G) : is_normal_subgroup H , {G : Type u_1} [group G] {H : subgroup G} (h : [G : H] = 2) : is_normal_subgroup H , {G : Type u_1} [group G] (H : subgroup G) (hH : fintype.card G / 2 = fintype.card H) : is_normal_subgroup H , {G : Type u_1} [group G] {H : subgroup G} (hH : subgroup.index H = 2) : is_normal_subgroup H , {G : Type u_1} [group G] (H : subgroup G) (h : ∣G : H∣ = 2) : is_normal_subgroup H , {H G : Type u_1} [group H] [group G] (a : H → G) (ha : is_group_hom a) (h2 : fintype.card (a '' H) = 2) : is_normal_subgroup H ]
+
+total : 21
+
+elaborated: 15
+
+Every free group is torsion free.
+
+success
+
+theorem ∀ {α : Type u_1}, Monoidₓ.IsTorsionFree (FreeGroup α)
+
+total : 22
+
+elaborated: 16
+
+Every natural number greater than `1` is divisible by a prime number. 
+
+success
+
+theorem ∀ (n : ℕ), n > 1 → ∃ p, Nat.Prime p ∧ p ∣ n
+
+total : 23
+
+elaborated: 17
+
+A finite torsion-free group is trivial
+
+success
+
+theorem ∀ {α : Type u} [inst : Groupₓ α] [inst_1 : Fintype α], Monoidₓ.IsTorsionFree α → Fintype.card α ≤ 1
+
+total : 24
+
+elaborated: 18
+
+Every finite division ring is a field.
+
+success
+
+theorem ∀ (K : Type u) [inst : Fintype K] [inst : DivisionRing K], IsField K
+
+total : 25
+
+elaborated: 19
+
+Every finite topological space is compact.
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : Fintype α], CompactSpace α
+
+total : 26
+
+elaborated: 20
+
+Every surjective homomorphism from a finitely generated free group to itself is injective.
+
+No valid output from Codex; outputs below
+
+ {  α :  Type  u_1 } ->  {  G :  Type  u_2 } ->  [  Group  G ] ->  {  f :   FreeGroup  α →* G } ->  (  hf :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  G :  Type  u_2 } ->  [  Groupₓ  G ] ->  {  f :   FreeGroup  α →* G } ->  (  hf :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  G :  Type  u_2 } ->  [  Groupₓₓ  G ] ->  {  f :   FreeGroup  α →* G } ->  (  hf :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  (  f :   FreeGroup  α →*  FreeGroup  α ) ->  (  hf :  Function.Surjective   ⇑ f ) ->  [  Fintype  α ] ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  (  f :   FreeGroup  α →*  FreeGroup  α ) ->  (  hf :  Function.Surjective   ⇑ f ) ->  [  Fintypeₓ  α ] ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  Group  α ] ->  [  Group  β ] ->  {  f :  α → β } ->  (  hfg :  group.is_finitely_generated  α ) ->  (  hf :  IsGroupHom  f ) ->  (  hf' :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  Group  α ] ->  [  Groupₓ  β ] ->  {  f :  α → β } ->  (  hfg :  group.is_finitely_generated  α ) ->  (  hf :  IsGroupHom  f ) ->  (  hf' :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  Group  α ] ->  [  Groupₓₓ  β ] ->  {  f :  α → β } ->  (  hfg :  group.is_finitely_generated  α ) ->  (  hf :  IsGroupHom  f ) ->  (  hf' :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  Groupₓ  α ] ->  [  Group  β ] ->  {  f :  α → β } ->  (  hfg :  group.is_finitely_generated  α ) ->  (  hf :  IsGroupHom  f ) ->  (  hf' :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  Groupₓ  α ] ->  [  Groupₓ  β ] ->  {  f :  α → β } ->  (  hfg :  group.is_finitely_generated  α ) ->  (  hf :  IsGroupHom  f ) ->  (  hf' :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  Groupₓ  α ] ->  [  Groupₓₓ  β ] ->  {  f :  α → β } ->  (  hfg :  group.is_finitely_generated  α ) ->  (  hf :  IsGroupHom  f ) ->  (  hf' :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  Groupₓₓ  α ] ->  [  Group  β ] ->  {  f :  α → β } ->  (  hfg :  group.is_finitely_generated  α ) ->  (  hf :  IsGroupHom  f ) ->  (  hf' :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  Groupₓₓ  α ] ->  [  Groupₓ  β ] ->  {  f :  α → β } ->  (  hfg :  group.is_finitely_generated  α ) ->  (  hf :  IsGroupHom  f ) ->  (  hf' :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  β :  Type  u_2 } ->  [  Groupₓₓ  α ] ->  [  Groupₓₓ  β ] ->  {  f :  α → β } ->  (  hfg :  group.is_finitely_generated  α ) ->  (  hf :  IsGroupHom  f ) ->  (  hf' :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  G :  Type  u_2 } ->  [  Group  G ] ->  {  f :   FreeGroup  α → G } ->  (  gen :  Set  α ) ->  (  hn :  Fintype  gen ) ->  (  h :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  G :  Type  u_2 } ->  [  Group  G ] ->  {  f :   FreeGroup  α → G } ->  (  gen :  Set  α ) ->  (  hn :  Fintypeₓ  gen ) ->  (  h :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  G :  Type  u_2 } ->  [  Group  G ] ->  {  f :   FreeGroup  α → G } ->  (  gen :  Setₓ  α ) ->  (  hn :  Fintype  gen ) ->  (  h :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  G :  Type  u_2 } ->  [  Group  G ] ->  {  f :   FreeGroup  α → G } ->  (  gen :  Setₓ  α ) ->  (  hn :  Fintypeₓ  gen ) ->  (  h :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  G :  Type  u_2 } ->  [  Groupₓ  G ] ->  {  f :   FreeGroup  α → G } ->  (  gen :  Set  α ) ->  (  hn :  Fintype  gen ) ->  (  h :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  G :  Type  u_2 } ->  [  Groupₓ  G ] ->  {  f :   FreeGroup  α → G } ->  (  gen :  Set  α ) ->  (  hn :  Fintypeₓ  gen ) ->  (  h :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  G :  Type  u_2 } ->  [  Groupₓ  G ] ->  {  f :   FreeGroup  α → G } ->  (  gen :  Setₓ  α ) ->  (  hn :  Fintype  gen ) ->  (  h :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  G :  Type  u_2 } ->  [  Groupₓ  G ] ->  {  f :   FreeGroup  α → G } ->  (  gen :  Setₓ  α ) ->  (  hn :  Fintypeₓ  gen ) ->  (  h :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  G :  Type  u_2 } ->  [  Groupₓₓ  G ] ->  {  f :   FreeGroup  α → G } ->  (  gen :  Set  α ) ->  (  hn :  Fintype  gen ) ->  (  h :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  G :  Type  u_2 } ->  [  Groupₓₓ  G ] ->  {  f :   FreeGroup  α → G } ->  (  gen :  Set  α ) ->  (  hn :  Fintypeₓ  gen ) ->  (  h :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  G :  Type  u_2 } ->  [  Groupₓₓ  G ] ->  {  f :   FreeGroup  α → G } ->  (  gen :  Setₓ  α ) ->  (  hn :  Fintype  gen ) ->  (  h :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  G :  Type  u_2 } ->  [  Groupₓₓ  G ] ->  {  f :   FreeGroup  α → G } ->  (  gen :  Setₓ  α ) ->  (  hn :  Fintypeₓ  gen ) ->  (  h :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  n :  ℕ } ->  [  DecidableEq  α ] ->  [  Fintype  α ] ->  (  f :   FreeGroup  α n →+*  FreeGroup  α n ) ->  (  hf :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  n :  ℕ } ->  [  DecidableEq  α ] ->  [  Fintypeₓ  α ] ->  (  f :   FreeGroup  α n →+*  FreeGroup  α n ) ->  (  hf :  Function.Surjective  f ) ->  Function.Injective  f
+
+{α : Type u_1} (n : ℕ) (H : n ≥ 0) {G : Type u_2} [group G] (f : free_group α ⟶* G) (hf : function.surjective (function.injective.eq_iff.mpr f.injective)) : function.injective f 
+
+ {  α :  Type  u } ->  {  β :  Type  v } ->  [  FreeGroup  α ] ->  [  FreeGroup  β ] ->  {  f :  α → β } ->  [  IsGroupHom  f ] ->  (  hf :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  η :  Type  u_1 } ->  [ h :  Nonempty  η ] ->  injective   (  FreeGroup.of   :  η →*  FreeGroup  η )
+
+ {  α :  Type  u_1 } ->  {  G :  Type  u_2 } ->  {  n :  ℕ } ->  [  Group  α ] ->  [  Group  G ] ->  (  H :   (  n   :  ℤ ) ≠  0 ) ->  (  f :   FreeGroup  α →* G ) ->  (  h :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  G :  Type  u_2 } ->  {  n :  ℕ } ->  [  Group  α ] ->  [  Groupₓ  G ] ->  (  H :   (  n   :  ℤ ) ≠  0 ) ->  (  f :   FreeGroup  α →* G ) ->  (  h :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  G :  Type  u_2 } ->  {  n :  ℕ } ->  [  Group  α ] ->  [  Groupₓₓ  G ] ->  (  H :   (  n   :  ℤ ) ≠  0 ) ->  (  f :   FreeGroup  α →* G ) ->  (  h :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  G :  Type  u_2 } ->  {  n :  ℕ } ->  [  Groupₓ  α ] ->  [  Group  G ] ->  (  H :   (  n   :  ℤ ) ≠  0 ) ->  (  f :   FreeGroup  α →* G ) ->  (  h :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  G :  Type  u_2 } ->  {  n :  ℕ } ->  [  Groupₓ  α ] ->  [  Groupₓ  G ] ->  (  H :   (  n   :  ℤ ) ≠  0 ) ->  (  f :   FreeGroup  α →* G ) ->  (  h :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  G :  Type  u_2 } ->  {  n :  ℕ } ->  [  Groupₓ  α ] ->  [  Groupₓₓ  G ] ->  (  H :   (  n   :  ℤ ) ≠  0 ) ->  (  f :   FreeGroup  α →* G ) ->  (  h :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  G :  Type  u_2 } ->  {  n :  ℕ } ->  [  Groupₓₓ  α ] ->  [  Group  G ] ->  (  H :   (  n   :  ℤ ) ≠  0 ) ->  (  f :   FreeGroup  α →* G ) ->  (  h :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  G :  Type  u_2 } ->  {  n :  ℕ } ->  [  Groupₓₓ  α ] ->  [  Groupₓ  G ] ->  (  H :   (  n   :  ℤ ) ≠  0 ) ->  (  f :   FreeGroup  α →* G ) ->  (  h :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  G :  Type  u_2 } ->  {  n :  ℕ } ->  [  Groupₓₓ  α ] ->  [  Groupₓₓ  G ] ->  (  H :   (  n   :  ℤ ) ≠  0 ) ->  (  f :   FreeGroup  α →* G ) ->  (  h :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  {  f :   FreeGroup  α →*  FreeGroup  α } ->  (  hf :  Function.Surjective   ⇑ f ) ->  (  hfg :  fintype.countable  α ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  {  B :  Set  α } ->  [  DecidableEq  α ] ->  [  Fintype  B ] ->  [  Fintype   (   free_group.quotient  B  ) ] ->  {  f :   free_group.quotient  B →*  free_group.quotient  B } ->  (  hf :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  {  B :  Set  α } ->  [  DecidableEq  α ] ->  [  Fintype  B ] ->  [  Fintypeₓ   (   free_group.quotient  B  ) ] ->  {  f :   free_group.quotient  B →*  free_group.quotient  B } ->  (  hf :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  {  B :  Set  α } ->  [  DecidableEq  α ] ->  [  Fintypeₓ  B ] ->  [  Fintype   (   free_group.quotient  B  ) ] ->  {  f :   free_group.quotient  B →*  free_group.quotient  B } ->  (  hf :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  {  B :  Set  α } ->  [  DecidableEq  α ] ->  [  Fintypeₓ  B ] ->  [  Fintypeₓ   (   free_group.quotient  B  ) ] ->  {  f :   free_group.quotient  B →*  free_group.quotient  B } ->  (  hf :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  {  B :  Setₓ  α } ->  [  DecidableEq  α ] ->  [  Fintype  B ] ->  [  Fintype   (   free_group.quotient  B  ) ] ->  {  f :   free_group.quotient  B →*  free_group.quotient  B } ->  (  hf :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  {  B :  Setₓ  α } ->  [  DecidableEq  α ] ->  [  Fintype  B ] ->  [  Fintypeₓ   (   free_group.quotient  B  ) ] ->  {  f :   free_group.quotient  B →*  free_group.quotient  B } ->  (  hf :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  {  B :  Setₓ  α } ->  [  DecidableEq  α ] ->  [  Fintypeₓ  B ] ->  [  Fintype   (   free_group.quotient  B  ) ] ->  {  f :   free_group.quotient  B →*  free_group.quotient  B } ->  (  hf :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  {  B :  Setₓ  α } ->  [  DecidableEq  α ] ->  [  Fintypeₓ  B ] ->  [  Fintypeₓ   (   free_group.quotient  B  ) ] ->  {  f :   free_group.quotient  B →*  free_group.quotient  B } ->  (  hf :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  {  n :  ℕ } ->  (  h :  n >  0 ) ->  (  f :   FreeGroup  α n →*  FreeGroup  α n ) ->  (  hf :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  [  Fintype  α ] ->  {  G :  Type  v } ->  [  Group  G ] ->  (  f :   FreeGroup  α →* G ) ->  (  h :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  [  Fintype  α ] ->  {  G :  Type  v } ->  [  Groupₓ  G ] ->  (  f :   FreeGroup  α →* G ) ->  (  h :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  [  Fintype  α ] ->  {  G :  Type  v } ->  [  Groupₓₓ  G ] ->  (  f :   FreeGroup  α →* G ) ->  (  h :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  [  Fintypeₓ  α ] ->  {  G :  Type  v } ->  [  Group  G ] ->  (  f :   FreeGroup  α →* G ) ->  (  h :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  [  Fintypeₓ  α ] ->  {  G :  Type  v } ->  [  Groupₓ  G ] ->  (  f :   FreeGroup  α →* G ) ->  (  h :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  [  Fintypeₓ  α ] ->  {  G :  Type  v } ->  [  Groupₓₓ  G ] ->  (  f :   FreeGroup  α →* G ) ->  (  h :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  {  β :  Type  v } ->  [  Group  α ] ->  [  Group  β ] ->  (  f :  α → β ) ->  [  IsGroupHom  f ] ->  [  IsGroupHom  f.symm ] ->  (  Hf :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  {  β :  Type  v } ->  [  Group  α ] ->  [  Groupₓ  β ] ->  (  f :  α → β ) ->  [  IsGroupHom  f ] ->  [  IsGroupHom  f.symm ] ->  (  Hf :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  {  β :  Type  v } ->  [  Group  α ] ->  [  Groupₓₓ  β ] ->  (  f :  α → β ) ->  [  IsGroupHom  f ] ->  [  IsGroupHom  f.symm ] ->  (  Hf :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  {  β :  Type  v } ->  [  Groupₓ  α ] ->  [  Group  β ] ->  (  f :  α → β ) ->  [  IsGroupHom  f ] ->  [  IsGroupHom  f.symm ] ->  (  Hf :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  {  β :  Type  v } ->  [  Groupₓ  α ] ->  [  Groupₓ  β ] ->  (  f :  α → β ) ->  [  IsGroupHom  f ] ->  [  IsGroupHom  f.symm ] ->  (  Hf :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  {  β :  Type  v } ->  [  Groupₓ  α ] ->  [  Groupₓₓ  β ] ->  (  f :  α → β ) ->  [  IsGroupHom  f ] ->  [  IsGroupHom  f.symm ] ->  (  Hf :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  {  β :  Type  v } ->  [  Groupₓₓ  α ] ->  [  Group  β ] ->  (  f :  α → β ) ->  [  IsGroupHom  f ] ->  [  IsGroupHom  f.symm ] ->  (  Hf :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  {  β :  Type  v } ->  [  Groupₓₓ  α ] ->  [  Groupₓ  β ] ->  (  f :  α → β ) ->  [  IsGroupHom  f ] ->  [  IsGroupHom  f.symm ] ->  (  Hf :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  {  β :  Type  v } ->  [  Groupₓₓ  α ] ->  [  Groupₓₓ  β ] ->  (  f :  α → β ) ->  [  IsGroupHom  f ] ->  [  IsGroupHom  f.symm ] ->  (  Hf :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  {  n :  ℕ } ->  (  f :   FreeGroup  α n →*  FreeGroup  α n ) ->  (  hf :  Function.Surjective   ⇑ f ) ->  Function.Injective   ⇑ f
+
+ {  α :  Type  u_1 } ->  [  DecidableEq  α ] ->  {  f :   FreeGroup  α →*  FreeGroup  α } ->  (  hf :  Function.Surjective   ⇑ f ) ->  Function.Injective   (  f   :   FreeGroup  α →  FreeGroup  α )
+
+ {  n :  ℕ } ->  {  G :  Type  u_1 } ->  [  Group  G ] ->  (  f :   FreeGroup.of   (   Fin  n  ) →* G ) ->  (  hf :  Function.Surjective   ⇑ f ) ->  Function.Injective   (   f ∘ mk  )
+
+ {  n :  ℕ } ->  {  G :  Type  u_1 } ->  [  Group  G ] ->  (  f :   FreeGroup.of   (   Finₓ  n  ) →* G ) ->  (  hf :  Function.Surjective   ⇑ f ) ->  Function.Injective   (   f ∘ mk  )
+
+ {  n :  ℕ } ->  {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  f :   FreeGroup.of   (   Fin  n  ) →* G ) ->  (  hf :  Function.Surjective   ⇑ f ) ->  Function.Injective   (   f ∘ mk  )
+
+ {  n :  ℕ } ->  {  G :  Type  u_1 } ->  [  Groupₓ  G ] ->  (  f :   FreeGroup.of   (   Finₓ  n  ) →* G ) ->  (  hf :  Function.Surjective   ⇑ f ) ->  Function.Injective   (   f ∘ mk  )
+
+ {  n :  ℕ } ->  {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  f :   FreeGroup.of   (   Fin  n  ) →* G ) ->  (  hf :  Function.Surjective   ⇑ f ) ->  Function.Injective   (   f ∘ mk  )
+
+ {  n :  ℕ } ->  {  G :  Type  u_1 } ->  [  Groupₓₓ  G ] ->  (  f :   FreeGroup.of   (   Finₓ  n  ) →* G ) ->  (  hf :  Function.Surjective   ⇑ f ) ->  Function.Injective   (   f ∘ mk  )
+
+ {  α :  Type  u } ->  {  n :  ℕ } ->  [  DecidableEq  α ] ->  [  Fintype  α ] ->  (  f :   FreeGroup  α n →+*  FreeGroup  α n ) ->  (  hf :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u } ->  {  n :  ℕ } ->  [  DecidableEq  α ] ->  [  Fintypeₓ  α ] ->  (  f :   FreeGroup  α n →+*  FreeGroup  α n ) ->  (  hf :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  [  Group  α ] ->  {  G :  Type  u_2 } ->  (  f :  G →* α ) ->  [  is_finset_fintype  G ] ->  [  is_finset_fintype  α ] ->  (  hf :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  [  Groupₓ  α ] ->  {  G :  Type  u_2 } ->  (  f :  G →* α ) ->  [  is_finset_fintype  G ] ->  [  is_finset_fintype  α ] ->  (  hf :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  [  Groupₓₓ  α ] ->  {  G :  Type  u_2 } ->  (  f :  G →* α ) ->  [  is_finset_fintype  G ] ->  [  is_finset_fintype  α ] ->  (  hf :  Function.Surjective  f ) ->  Function.Injective  f
+
+ {  α :  Type  u_1 } ->  {  f :   FreeGroup  α →*  FreeGroup  α } ->  (  h :  Function.Surjective   ⇑ f ) ->  Function.Injective  f
+
+failed to elaborate
+
+outputs: #[{α : Type u_1} {G : Type u_2} [group G] {f : free_group α →* G} (hf : function.surjective ⇑f) : function.injective f , {α : Type u_1} (f : free_group α →* free_group α) (hf : function.surjective ⇑f) [fintype α] : function.injective f , {α : Type u_1} {β : Type u_2} [group α] [group β] {f : α → β} (hfg : group.is_finitely_generated α) (hf : is_group_hom f) (hf' : function.surjective f) : function.injective f , {α : Type u_1} {G : Type u_2} [group G] {f : free_group α → G} (gen : set α) (hn : fintype gen) (h : function.surjective f) : function.injective f , {α : Type u_1} {n : ℕ} [decidable_eq α] [fintype α] (f : free_group α n →+* free_group α n) (hf : function.surjective f) : function.injective f , {α : Type u_1} (n : ℕ) (H : n ≥ 0) {G : Type u_2} [group G] (f : free_group α ⟶* G) (hf : function.surjective (function.injective.eq_iff.mpr f.injective)) : function.injective f , {α : Type u} {β : Type v} [free_group α] [free_group β] {f : α → β} [is_group_hom f] (hf : function.surjective f) : function.injective f , {η : Type u_1} [h : nonempty η] : injective (free_group.of : η →* free_group η) , {α : Type u_1} {G : Type u_2} {n : ℕ} [group α] [group G] (H : (n : ℤ) ≠ 0) (f : free_group α →* G) (h : function.surjective ⇑f) : function.injective f , {α : Type u} {f : free_group α →* free_group α} (hf : function.surjective ⇑f) (hfg : fintype.countable α) : function.injective f , {α : Type u} {B : set α} [decidable_eq α] [fintype B] [fintype (free_group.quotient B)] {f : free_group.quotient B →* free_group.quotient B} (hf : function.surjective ⇑f) : function.injective f , {α : Type u} {n : ℕ} (h : n > 0) (f : free_group α n →* free_group α n) (hf : function.surjective f) : function.injective f , {α : Type u} [fintype α] {G : Type v} [group G] (f : free_group α →* G) (h : function.surjective ⇑f) : function.injective f , {α : Type u} {β : Type v} [group α] [group β] (f : α → β) [is_group_hom f] [is_group_hom f.symm] (Hf : function.surjective f) : function.injective f , {α : Type u} {n : ℕ} (f : free_group α n →* free_group α n) (hf : function.surjective ⇑f) : function.injective ⇑f , {α : Type u_1} [decidable_eq α] {f : free_group α →* free_group α} (hf : function.surjective ⇑f) : function.injective (f : free_group α → free_group α) , {n : ℕ} {G : Type u_1} [group G] (f : free_group.of (fin n) →* G) (hf : function.surjective ⇑f) : function.injective (f∘mk) , {α : Type u} {n : ℕ} [decidable_eq α] [fintype α] (f : free_group α n →+* free_group α n) (hf : function.surjective f) : function.injective f , {α : Type u_1} [group α] {G : Type u_2} (f : G →* α) [is_finset_fintype G] [is_finset_fintype α] (hf : function.surjective f) : function.injective f , {α : Type u_1} {f : free_group α →* free_group α} (h : function.surjective ⇑f) : function.injective f ]
+
+total : 27
+
+elaborated: 20
+
+Every positive even integer can be written as the sum of two primes.
+
+success
+
+theorem ∀ (n : ℕ) (a : 0 < n) (a : Even n), ∃ a b, a ≠ b ∧ Nat.Prime a ∧ Nat.Prime b ∧ a + b = n
+
+total : 28
+
+elaborated: 21
+
+Every matrix satisfies its own characteristic polynomial.
+
+success
+
+theorem ∀ {A : Type u} {n : Type v} [inst : CommRingₓ A] [inst_1 : Fintype n] [inst_2 : DecidableEq n] (M : Matrix n n A),
+  AlgHom.toFun (Polynomial.aeval M) (Matrix.charpoly M) = 0
+
+total : 29
+
+elaborated: 22
+
+The square root of an irrational number is irrational.
+
+No valid output from Codex; outputs below
+
+ {  a :   ℝ  ℝ } ->   Irrational  a →  Irrational   (   sqrt  a  )
+
+ {  x :   ℝ  ℝ } ->   Irrational  x →  Irrational   (   sqrt  x  )
+
+ {  x :   ℝ  ℝ } ->  (  hx :  Irrational  x ) ->  (  hx0 :  x ≠  0 ) ->  Irrational   (   x.root   2  )
+
+ (  x :   ℝ  ℝ ) ->  (  irr :  Irrational  x ) ->  Irrational   (   Real.sqrt  x  )
+
+ {  r :   ℝ  ℝ } ->   Irrational  r →  Irrational   (   Real.sqrt  r  )
+
+ {  x :   ℝ  ℝ } ->  (  hx :  Irrational  x ) ->  Irrational   (   Real.sqrt  x  )
+
+ {  x :   ℝ  ℝ } ->   Irrational   (   x * x  ) →  Irrational  x
+
+ {  α :  Type  u_1 } ->  [  LinearOrderedField  α ] ->  {  x : α } ->  (  hx :   Irrational  x ∧   0 < x ) ->  Irrational   (   sqrt  x  )
+
+ {  x :   ℝ  ℝ } ->  (  hx :  Irrational  x ) ->  (  hx0 :   0 ≤ x ) ->  Irrational   (   Real.sqrt  x  )
+
+ {  x :   ℝ  ℝ } ->  (  h :  Irrational  x ) ->  (  hx0 :  x ≠  0 ) ->  Irrational   (   sqrt  x  )
+
+ {  x :   ℝ  ℝ } ->  (  hx :  Irrational  x ) ->  Irrational   (   Real.sqrt   (   ↑ x  )  )
+
+ {  x :   ℝ  ℝ } ->  (  hx :  Irrational  x ) ->  Irrational   (   sqrt  x  )
+
+ {  x :   ℝ  ℝ } ->  (  hx :  Irrational  x ) ->  (  hxn0 :  x ≠  0 ) ->  Irrational   (   sqrt  x  )
+
+ {  x :   ℝ  ℝ } ->  (  hx :  Irrational  x ) ->  Irrational  x
+
+failed to elaborate
+
+outputs: #[{a : ℝ} : irrational a → irrational (sqrt a) , {x : ℝ} : irrational x → irrational (sqrt x) , {x : ℝ} (hx : irrational x) (hx0 : x ≠ 0) : irrational (x.root 2) , (x : ℝ) (irr : irrational x) : irrational (real.sqrt x) , {r : ℝ} : irrational r → irrational (real.sqrt r) , {x : ℝ} (hx : irrational x) : irrational (real.sqrt x) , {x : ℝ} : irrational (x * x) → irrational x , {α : Type u_1} [linear_ordered_field α] {x : α} (hx : irrational x ∧ 0 < x) : irrational (sqrt x) , {x : ℝ} (hx : irrational x) (hx0 : 0 ≤ x) : irrational (real.sqrt x) , {x : ℝ} (h : irrational x) (hx0 : x ≠ 0) : irrational (sqrt x) , {x : ℝ} (hx : irrational x) : irrational (real.sqrt (↑x)) , {x : ℝ} (hx : irrational x) : irrational (sqrt x) , {x : ℝ} (hx : irrational x) (hxn0 : x ≠ 0) : irrational (sqrt x) , {x : ℝ} (hx : irrational x) : irrational x ]
+
+total : 30
+
+elaborated: 22
+
+If the square of a number is even, the number itself is even.
+
+success
+
+theorem ∀ {m : ℕ}, Even (m * m) → Even m
+
+total : 31
+
+elaborated: 23
+
+In a finite commutative ring, all prime ideals are maximal.
+
+success
+
+theorem ∀ {α : Type u} [inst : CommRing α] [inst_1 : Fintype α] {x y : α} (h : x ≠ 0),
+  ∃ z, z * x = 1 ↔ ∃ z h, x ≠ 0 ∧ ∀ (w : α), z * w = 1 → y * w = y
+
+total : 32
+
+elaborated: 24
+
+A topological space $X$ is Hausdorff if and only if the diagonal is a closed set in $X × X$.
+
+No valid output from Codex; outputs below
+
+ {  X :  Type  u } ->  [  TopologicalSpace  X ] ->   T2Space  X ↔  IsClosed   {   p   :  X × X |   p .  1 =  p .  2 }
+
+ {  X :  Type* } ->  [  TopologicalSpace  X ] ->   T2Space  X ↔  IsClosed   (   diag  X  )
+
+ {  α :  Type  u } ->  [  TopologicalSpace  α ] ->   T2Space  α ↔  IsClosed   (   range   (   λ p :  α × α ,   p .  1 =  p .  2  )  )
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   hausdorff_space  X ↔  IsClosed   (   {   x   :  X × X |   x .  1 =  x .  2 }   :  Set   (   X × X  ) )
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   hausdorff_space  X ↔  IsClosed   (   {   x   :  X × X |   x .  1 =  x .  2 }   :  Setₓ   (   X × X  ) )
+
+ {  X :  Type  u } ->  [  TopologicalSpace  X ] ->   T2Space  X ↔  IsClosed   (   λ x :  X × X ,  (   x .  1   ,   x .  2 )  )
+
+ {  X :  Type  u } ->  [  TopologicalSpace  X ] ->   T2Space  X ↔  IsClosed   {   p   :  X × X |   p .  1 =  p .  2 }
+
+ {  α :  Type  u } ->  [  TopologicalSpace  α ] ->   T2Space  α ↔  IsClosed   {   p   :  α × α |   p .  1 =  p .  2 }
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   T2Space  X ↔  IsClosed   (   set.prod.diag  X  )
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   T2Space  X ↔  IsClosed   (   {   x   : X |  x = x }   :  Set   (   X × X  ) )
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   T2Space  X ↔  IsClosed   (   {   x   : X |  x = x }   :  Setₓ   (   X × X  ) )
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   T2Space  X ↔  IsClosed   (   {   p   :  X × X |   p .  1 =  p .  2 }  )
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   T2Space  X ↔  IsClosed   (   diagonal  X  )
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   T2Space  X ↔  IsClosed   (   diag  X  )
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   T2Space  X ↔  IsClosed   (   set.diag  X  )
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   hausdorff_space  X ↔  IsClosed   (  Δ   :  Set   (   X × X  ) )
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   hausdorff_space  X ↔  IsClosed   (  Δ   :  Setₓ   (   X × X  ) )
+
+ {  X :  Type  u } ->  [  TopologicalSpace  X ] ->   T2Space  X ↔  IsClosed   (   diagonal  X  )
+
+ {  H :  Type  u_1 } ->  [  TopologicalSpace  H ] ->   T2Space  H ↔  IsClosed   (   Δ  H  )
+
+ {  X :  Type  u_1 } ->  [  TopologicalSpace  X ] ->   T2Space  X ↔  IsClosed   (   set.prod.diagonal  X  )
+
+ {  X :  Type  u } ->  [  TopologicalSpace  X ] ->   T2Space  X ↔   @ IsClosed   _  _  (    @ Prod.topologicalSpace  X X  )  ↑ diagonal
+
+ {  X :  Type  u } ->  [  TopologicalSpace  X ] ->   T2Space  X ↔  IsClosed   (  diagonal   :  Set   (   X × X  ) )
+
+ {  X :  Type  u } ->  [  TopologicalSpace  X ] ->   T2Space  X ↔  IsClosed   (  diagonal   :  Setₓ   (   X × X  ) )
+
+failed to elaborate
+
+outputs: #[{X : Type u} [topological_space X] : t2_space X ↔ is_closed { p : X × X | p.1 = p.2 } , {X : Type*} [topological_space X] : t2_space X ↔ is_closed (diag X) , {α : Type u} [topological_space α] : t2_space α ↔ is_closed (range (λp : α × α, p.1 = p.2)) , {X : Type u_1} [topological_space X] : hausdorff_space X ↔ is_closed ({x : X × X | x.1 = x.2} : set (X × X)) , {X : Type u} [topological_space X] : t2_space X ↔ is_closed (λ x : X × X, (x.1, x.2)) , {X : Type u} [topological_space X] : t2_space X ↔ is_closed {p:X×X | p.1 = p.2} , {α : Type u} [topological_space α] : t2_space α ↔ is_closed {p : α × α | p.1 = p.2} , {X : Type u_1} [topological_space X] : t2_space X ↔ is_closed (set.prod.diag X) , {X : Type u_1} [topological_space X] : t2_space X ↔ is_closed ({x : X | x = x} : set (X × X)) , {X : Type u_1} [topological_space X] : t2_space X ↔ is_closed ({p : X × X | p.1 = p.2}) , {X : Type u_1} [topological_space X] : t2_space X ↔ is_closed (diagonal X) , {X : Type u_1} [topological_space X] : t2_space X ↔ is_closed (diag X) , {X : Type u_1} [topological_space X] : t2_space X ↔ is_closed (set.diag X) , {X : Type u_1} [topological_space X] : hausdorff_space X ↔ is_closed (Δ : set (X × X)) , {X : Type u} [topological_space X] : t2_space X ↔ is_closed (diagonal X) , {H : Type u_1} [topological_space H] : t2_space H ↔ is_closed (Δ H) , {X : Type u_1} [topological_space X] : t2_space X ↔ is_closed (set.prod.diagonal X) , {X : Type u} [topological_space X] : t2_space X ↔ @is_closed _ _ (@prod.topological_space X X) ↑diagonal , {X : Type u} [topological_space X] : t2_space X ↔ is_closed (diagonal : set (X × X)) ]
+
+total : 33
+
+elaborated: 24
+
+If every point of a subset of a topological space is contained in some open set, the subset itself is open.
+
+success
+
+theorem ∀ {α : Type u} {s : Set α} [inst : TopologicalSpace α], (∀ (x : α), x ∈ s → ∃ t, IsOpen t ∧ x ∈ t) → IsOpen s
+
+total : 34
+
+elaborated: 25
+
+Every non-identity element of a free group is of infinite order.
+
+success
+
+theorem ∀ {G : Type u}, FreeGroup G → ∀ {g : FreeGroup G}, g ≠ 1 → ¬IsOfFinOrder g
+
+total : 35
+
+elaborated: 26
+
+An element of a discrete valuation ring is a unit if and only if it has a valuation of zero.
+
+No valid output from Codex; outputs below
+
+ {  A :  Type  u_1 } ->  [  DiscreteValuationRing  A ] ->  (  x : A ) ->   IsUnit  x ↔     (   valuation.map  A  ) . to_fun  x =  0
+
+ (  K :  Type  u_1 ) ->  [  DiscreteValuationRing  K ] ->  {  x : K } ->   IsUnit  x ↔  valuation_set  K  0 x
+
+ (  R :  Type  u ) ->  [  DiscreteValuationRing  R ] ->  {  r : R } ->   IsUnit  r ↔   ⇑    (   discrete_valuation_ring.valuation  R  )  r =  0  ⇑    (   discrete_valuation_ring.valuation  R  )  rdiscrete_valuation_ring.valuation  R  )  r =  0  ⇑    (   discrete_valuation_ring.valuation  R  )  r =  0
+
+ {  R :  Type  u } ->  [  CommRing  R ] ->  [  IsDomain  R ] ->  [  DiscreteValuationRing  R ] ->  (  r : R ) ->   IsUnit  r ↔   vr.valuation  r =  0
+
+ {  R :  Type  u } ->  [  CommRingₓ  R ] ->  [  IsDomain  R ] ->  [  DiscreteValuationRing  R ] ->  (  r : R ) ->   IsUnit  r ↔   vr.valuation  r =  0
+
+ {  R :  Type  u } ->  [  CommRingₓₓ  R ] ->  [  IsDomain  R ] ->  [  DiscreteValuationRing  R ] ->  (  r : R ) ->   IsUnit  r ↔   vr.valuation  r =  0
+
+ (  R :  Type  u_1 ) ->  [  DiscreteValuationRing  R ] ->  (  a : R ) ->   IsUnit  a ↔  ∃    (   q :  ℕ ) ,   (   v_R  a  ) =  q •  V   ↑  (   nat.prime_factors  R  )
+
+ {  R :  Type  u_1 } ->  [  DiscreteValuationRing  R ] ->  {  a : R } ->   IsUnit  a ↔   Valuation  a =  0
+
+(R : Type u_1) [comm_ring R] [is_domain R] [discrete_valuation_ring R] {x : R} : is_unit x ↔ v(x) = 0 
+
+ (  R :  Type  u ) ->  [  CommRing  R ] ->  [  DiscreteValuationRing  R ] ->  {  x : R } ->   IsUnit  x ↔    (   valuation_of_discrete_valuation_ring  R  )  x =  0
+
+ (  R :  Type  u ) ->  [  CommRingₓ  R ] ->  [  DiscreteValuationRing  R ] ->  {  x : R } ->   IsUnit  x ↔    (   valuation_of_discrete_valuation_ring  R  )  x =  0
+
+ (  R :  Type  u ) ->  [  CommRingₓₓ  R ] ->  [  DiscreteValuationRing  R ] ->  {  x : R } ->   IsUnit  x ↔    (   valuation_of_discrete_valuation_ring  R  )  x =  0
+
+ {  R :  Type  u } ->  [  DiscreteValuationRing  R ] ->  {  x : R } ->   IsUnit  x ↔  Valuation   0 x
+
+{R : Type u} [discrete_valuation_ring R] : ∀ ⦃x : R⦄, is_unit x ↔ x ≠ 0 ∧ v(x) = 0 
+
+ (  R :  Type  u_1 ) ->  [  CommRing  R ] ->  [  DiscreteValuationRing  R ] ->  {  a : R } ->   IsUnit  a ↔   valuation.of  a =  0
+
+ (  R :  Type  u_1 ) ->  [  CommRingₓ  R ] ->  [  DiscreteValuationRing  R ] ->  {  a : R } ->   IsUnit  a ↔   valuation.of  a =  0
+
+ (  R :  Type  u_1 ) ->  [  CommRingₓₓ  R ] ->  [  DiscreteValuationRing  R ] ->  {  a : R } ->   IsUnit  a ↔   valuation.of  a =  0
+
+ (  R :  Type  u ) ->  [  DiscreteValuationRing  R ] ->  {  a : R } ->   IsUnit  a ↔     (   Valuation  R a  ) . val  a =  0
+
+ {  R :  Type  u } ->  [  DiscreteValuationRing  R ] ->  {  x : R } ->   IsUnit  x ↔   valuation_of  x =  0
+
+ (  R :  Type  u ) ->  [  DiscreteValuationRing  R ] ->  (  a : R ) ->   IsUnit  a ↔   val  a =  0
+
+ {  R :  Type  u } ->  [  DiscreteValuationRing  R ] ->  {  x : R } ->   IsUnit  x ↔   v  x =  0
+
+ {  R :  Type  u } ->  [  DiscreteValuationRing  R ] ->  {  x : R } ->   IsUnit  x ↔  classical.prop_decidable   (    valuation_ring.valuation  R x =  0  )
+
+ (  R :  Type  u ) ->  [  DiscreteValuationRing  R ] ->  {  a : R } ->   IsUnit  a ↔     (   valuation.map  R  ) . to_add_monoid_hom  a =  0
+
+ (  R :  Type  u ) ->  [  DiscreteValuationRing  R ] ->  (  x : R ) ->   IsUnit  x ↔   (   valuation_of  x  ) =  0
+
+ (  R :  Type  u_1 ) ->  [  DiscreteValuationRing  R ] ->  {  x : R } ->   IsUnit  x ↔   ↑  (   valuation_on_discrete_valuation_ring  R x  ) =  0
+
+ {  R :  Type  u } ->  [  CommRing  R ] ->  [  DiscreteValuationRing  R ] ->  (  x : R ) ->   IsUnit  x ↔   v  x =  0
+
+ {  R :  Type  u } ->  [  CommRingₓ  R ] ->  [  DiscreteValuationRing  R ] ->  (  x : R ) ->   IsUnit  x ↔   v  x =  0
+
+ {  R :  Type  u } ->  [  CommRingₓₓ  R ] ->  [  DiscreteValuationRing  R ] ->  (  x : R ) ->   IsUnit  x ↔   v  x =  0
+
+failed to elaborate
+
+outputs: #[{A : Type u_1} [discrete_valuation_ring A] (x : A) : is_unit x ↔ (valuation.map A).to_fun x = 0 , (K : Type u_1) [discrete_valuation_ring K] {x : K} : is_unit x ↔ valuation_set K 0 x , (R : Type u) [discrete_valuation_ring R] {r : R} : is_unit r ↔ ⇑(discrete_valuation_ring.valuation R) r = 0 , {R : Type u} [comm_ring R] [is_domain R] [discrete_valuation_ring R] (r : R) : is_unit r ↔ vr.valuation r = 0 , (R : Type u_1) [discrete_valuation_ring R] (a : R) : is_unit a ↔ ∃ (q : ℕ), (v_R a) = q • V ↑(nat.prime_factors R) , {R : Type u_1} [discrete_valuation_ring R] {a : R} :
+  is_unit a ↔ valuation a = 0 , (R : Type u_1) [comm_ring R] [is_domain R] [discrete_valuation_ring R] {x : R} : is_unit x ↔ v(x) = 0 , (R : Type u) [comm_ring R] [discrete_valuation_ring R] {x : R} : is_unit x ↔ (valuation_of_discrete_valuation_ring R) x = 0 , {R : Type u} [discrete_valuation_ring R] {x : R} : is_unit x ↔ has_valuation 0 x , {R : Type u} [discrete_valuation_ring R] : ∀ ⦃x : R⦄, is_unit x ↔ x ≠ 0 ∧ v(x) = 0 , (R : Type u_1) [comm_ring R] [discrete_valuation_ring R] {a : R} : is_unit a ↔ valuation.of a = 0 , (R : Type u) [discrete_valuation_ring R] {a : R} : is_unit a ↔ (valuation R a).val a = 0 , {R : Type u} [discrete_valuation_ring R] {x : R} : is_unit x ↔ valuation_of x = 0 , (R : Type u) [discrete_valuation_ring R] (a : R) : is_unit a ↔ val a = 0 , {R : Type u} [discrete_valuation_ring R] {x : R} : is_unit x ↔ v x = 0 , {R : Type u} [discrete_valuation_ring R] {x : R} : is_unit x ↔ classical.prop_decidable (valuation_ring.valuation R x = 0) , (R : Type u) [discrete_valuation_ring R] {a : R} : is_unit a ↔ (valuation.map R).to_add_monoid_hom a = 0 , (R : Type u) [discrete_valuation_ring R] (x : R) : is_unit x ↔ (valuation_of x) = 0 , (R : Type u_1) [discrete_valuation_ring R] {x : R} : is_unit x ↔ ↑(valuation_on_discrete_valuation_ring R x) = 0 , {R : Type u} [comm_ring R] [discrete_valuation_ring R] (x : R) : is_unit x ↔ v x = 0 ]
+
+total : 36
+
+elaborated: 26
+
+For any two relatively prime positive integers $a$ and $b$, every sufficiently large natural number $N$ can be written as a linear combination $ax + by$ of $a$ and $b$, where both $x$ and $y$ are natural numbers.
+
+success
+
+theorem ∀ {a b : ℕ}, a = 1 ∨ b = 1 → 1 < a * b → ∃ n, ∀ (N : ℕ), n ≤ N → ∃ x y, a * x + b * y = N
+
+total : 37
+
+elaborated: 27
+
+Every field is a ring.
+
+success
+
+theorem {α : Type u_1} → [inst : Field α] → NonAssocRing α
+
+total : 38
+
+elaborated: 28
+
+The set of units in a ring forms a group.
+
+success
+
+theorem {R : Type u_1} → [inst : Ringₓ R] → Group (Units R)
+
+total : 39
+
+elaborated: 29
+
+If the direct product of two groups is torsion free then each of the groups is torsion free.
+
+success
+
+theorem ∀ {η : Type u_1} {Gs : η → Type u_2} [inst : (i : η) → Groupₓ (Gs i)],
+  Monoidₓ.IsTorsionFree ((i : η) → Gs i) → ∀ (i : η), Monoidₓ.IsTorsionFree (Gs i)
+
+total : 40
+
+elaborated: 30
+
