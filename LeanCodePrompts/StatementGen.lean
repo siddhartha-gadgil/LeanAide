@@ -90,7 +90,7 @@ variable {context}
 
 
 
-def getContinuationExprs (s: String)(context: String := "")(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 20)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Array String := do
+def getContinuationExprs (s: String)(context: String := "")(numSim : Nat:= 10)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 20)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Array String := do
       -- work starts here; before this was caching, polling etc
     let (pairs, IOOut) ←  
       if numSim > 0 then  
@@ -108,7 +108,7 @@ def getContinuationExprs (s: String)(context: String := "")(numSim : Nat:= 10)(n
       else throwError m!"Web query error: {IOOut.stderr}"
     jsonToExprStrArray outJson
 
-def getDocContinuationExprs (s: String)(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 8)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Array String := do
+def getDocContinuationExprs (s: String)(numSim : Nat:= 10)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 8)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Array String := do
       -- work starts here; before this was caching, polling etc
     let (pairs, IOOut) ←  
       if numSim > 0 then  
@@ -148,7 +148,7 @@ def getSectionContinuationExprs (s: String)(context: String)(numSim : Nat:= 10)(
     return padded
 
 
-def showContinuationExprs (s: String)(context: String := "")(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 8)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Array (String × (List String)) := do
+def showContinuationExprs (s: String)(context: String := "")(numSim : Nat:= 10)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 8)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Array (String × (List String)) := do
   let exprs ← 
     getContinuationExprs s context numSim numKW includeFixed queryNum temp scoreBound matchBound
   exprs.mapM (fun s => do
@@ -157,7 +157,7 @@ def showContinuationExprs (s: String)(context: String := "")(numSim : Nat:= 10)(
     return (s!"theorem {context} {s} := sorry",exps.map (fun (_, s) => s))
   )
 
-def showDocContinuationExprs (s: String)(numSim : Nat:= 10)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 20)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Array (String × (List String)) := do
+def showDocContinuationExprs (s: String)(numSim : Nat:= 10)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 20)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Array (String × (List String)) := do
   let exprs ← 
     getDocContinuationExprs s numSim numKW includeFixed queryNum temp scoreBound matchBound
   exprs.mapM (fun s => do

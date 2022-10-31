@@ -171,7 +171,7 @@ def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
 
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
-def getCodeJson (s: String)(numSim : Nat:= 5)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM Json := do
+def getCodeJson (s: String)(numSim : Nat:= 5)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM Json := do
   match ← getCachedJson? s with
   | some js => return js
   | none =>    
@@ -260,7 +260,7 @@ def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array Strin
         return none
 
 /-- reverse translation from `Lean` to natural language -/
-def leanToPrompt (thm: String)(numSim : Nat:= 5)(numKW: Nat := 4)(temp : JsonNumber := 0)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM String := do
+def leanToPrompt (thm: String)(numSim : Nat:= 5)(numKW: Nat := 1)(temp : JsonNumber := 0)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM String := do
     let (pairs, _) ← getPromptPairs thm numSim numKW scoreBound matchBound
     let prompt := makeFlipPrompt thm pairs
     -- elabLog prompt
