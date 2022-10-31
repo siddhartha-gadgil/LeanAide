@@ -62,4 +62,4 @@ gunicorn -b :5000 wsgi:app
 Then open `code` from the base directory. Navigate to the file `TranslateExample.lean` to see an example translation (which will run automatically after compilation). More examples are in the comments.
 
 ## Lean-chat-IDP
-We are developing a bootstrapped version of [Lean-chat](https://github.com/zhangir-azerbayev/lean-chat)
+We are developing a version of [Lean-chat](https://github.com/zhangir-azerbayev/lean-chat) with input dependent prompting.
