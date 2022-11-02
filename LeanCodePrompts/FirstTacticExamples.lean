@@ -4,8 +4,9 @@ import Mathlib.Tactic.Use
 -- import Mathbin.All
 
 example : ∀ n : ℕ, ∃ m : ℕ, n < Nat.succ (2 * m) := by
+  show_tactic_prompt
   aide
-  apply Exists.intro
+  aide
   aide  
   repeat (sorry)
 
