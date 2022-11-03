@@ -55,6 +55,7 @@ def silly' : (n m : ℕ)  →  n + m = n + m := by
     intros
     show_goal  
     rfl
+    done
 
 structure TacticStateProxy where
   binders: Array <| Name ×  BinderInfo
@@ -114,30 +115,35 @@ def firstEffectiveTactic (tacStrings: List String)(warnOnly: Bool := Bool.true) 
       | Except.ok tac => do
           Term.withoutErrToSorry do 
             evalTactic tac
-          let check : Bool ← 
-          try 
-            let s₂? ← getTacticStateProxy  
-            match s₁?, s₂? with
-            | some s₁, some s₂ => equalStates s₁ s₂          
-            | _,_ => pure Bool.false
-          catch e =>
-            logWarning 
-              m!"Failed to check state after {tacString}; error : {e.toMessageData}" 
-            pure Bool.false
-          if check then
-            s.restore
-          else
-            let checkForSorries : Bool ←
-              try
-                let target ← getMainTarget
-                pure target.hasSyntheticSorry
-              catch _ => pure Bool.false
-            -- logInfo m!"sorries? {checkForSorries}"
-            if checkForSorries then
-              s.restore
-            else
+          let gs ← getUnsolvedGoals
+          if gs.isEmpty then
               logInfo m!"tactic `{tacString}` was effective"
               return 
+          else
+            let check : Bool ← 
+            try 
+              let s₂? ← getTacticStateProxy  
+              match s₁?, s₂? with
+              | some s₁, some s₂ => equalStates s₁ s₂          
+              | _,_ => pure Bool.true
+            catch e =>
+              -- logWarning 
+                -- m!"Failed to check state after {tacString}; error : {e.toMessageData}" 
+              pure Bool.true
+            if check then
+              s.restore
+            else
+              let checkForSorries : Bool ←
+                try
+                  let target ← getMainTarget
+                  pure target.hasSyntheticSorry
+                catch _ => pure Bool.false
+              -- logInfo m!"sorries? {checkForSorries}"
+              if checkForSorries then
+                s.restore
+              else
+                logInfo m!"tactic `{tacString}` was effective"
+                return 
       | Except.error e => 
         pure ()
     catch _ =>
