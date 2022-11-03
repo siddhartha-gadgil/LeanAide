@@ -254,14 +254,31 @@ elab "show_tactic_prompt" : tactic =>
     logInfo view
     return ()
 
+elab "lookahead" tac:tactic : tactic => 
+  withMainContext do
+    let s ← saveState
+    try
+      evalTactic tac
+      s.restore
+    catch e =>
+      s.restore
+      let msg := e.toMessageData
+      throwError s!"{← msg.toString}"
+
+
 def lookaheadTactics (ss: List String) : List String :=
     ss.map (fun s => s!"{s} ; done") ++ 
-    ss.map (fun s => s!"({s} <;> aide!) ; done") ++
-    ss.map (fun s => s!"{s} <;> aide!") ++ 
+    ss.map (fun s => s!"({s} <;> (lookahead aide!)) ; done") ++
+    ss.map (fun s => s!"{s} <;> (lookahead aide!)") ++ 
     ss
 
 example : 1 = 1 := by
   (rfl <;> skip) ; done
+
+example : 1 = 1 := by
+  lookahead rfl
+  lookahead rfl
+  rfl
 
 elab "aide_aux" : tactic =>
   withMainContext do
