@@ -253,3 +253,21 @@ elab "show_tactic_prompt" : tactic =>
     let view ← makeTacticPrompt 20
     logInfo view
     return ()
+
+def lookaheadTactics (ss: List String) : List String :=
+    ss.map (fun s => s!"{s} ; done") ++ 
+    ss.map (fun s => s!"({s} <;> aide!) ; done") ++
+    ss.map (fun s => s!"{s} <;> aide!") ++ 
+    ss
+
+example : 1 = 1 := by
+  (rfl <;> skip) ; done
+
+elab "aide_aux" : tactic =>
+  withMainContext do
+    let tacStrings ← tacticList
+    let tacStrings := tacStrings.filter (fun s => s != "sorry" && s != "admit")
+    let tacStrings := lookaheadTactics tacStrings
+    firstEffectiveTactic tacStrings Bool.false
+
+macro "aide_lookahead" : tactic => `(checkpoint aide_aux)
