@@ -5,7 +5,8 @@ import Mathlib.Tactic.Use
 
 example : ∀ n : ℕ, ∃ m : ℕ, n < 2 * m + 1 := by
   aide_lookahead
-  -- aide_lookahead
+  aide_lookahead
+  aide
   repeat (sorry)
 
 

@@ -284,6 +284,9 @@ elab "aide_aux" : tactic =>
   withMainContext do
     let tacStrings ← tacticList
     let tacStrings := tacStrings.filter (fun s => s != "sorry" && s != "admit")
+    let tacStringsNoIntros := tacStrings.filter (fun s => s.trim != "intros" && s.trim != "intro")
+    let tacStringsIntros := tacStrings.filter (fun s => s.trim = "intros" || s.trim = "intro")
+    let tacStrings := tacStringsNoIntros ++ tacStringsIntros
     let tacStrings := lookaheadTactics tacStrings
     firstEffectiveTactic tacStrings Bool.false
 
