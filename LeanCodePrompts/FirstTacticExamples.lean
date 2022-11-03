@@ -10,6 +10,8 @@ example : ∀ n : ℕ, ∃ m : ℕ, n < 2 * m + 1 := by
 
 example : ∀ n : ℕ, ∃ m : ℕ, n < 2 * m + 1 := by
   show_tactic_prompt
+  intro
+  rename_i n
   aide
   aide
   aide  
