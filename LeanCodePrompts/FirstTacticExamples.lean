@@ -4,9 +4,7 @@ import Mathlib.Tactic.Use
 -- import Mathbin.All
 
 example : ∀ n : ℕ, ∃ m : ℕ, n < 2 * m + 1 := by
-  aide_lookahead
-  aide_lookahead
-  aide
+  repeat (aide_lookahead)
   repeat (sorry)
 
 
