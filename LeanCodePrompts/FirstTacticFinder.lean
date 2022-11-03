@@ -238,13 +238,13 @@ elab "aide?" : tactic =>
   withMainContext do
     let tacStrings ← tacticList
     let tacStrings := tacStrings.filter (fun s => s != "sorry" && s != "admit")
-    firstEffectiveTactic tacStrings
+    firstEffectiveTactic tacStrings Bool.true
 
 elab "aide!" : tactic =>
   withMainContext do
     let tacStrings ← tacticList
     let tacStrings := tacStrings.filter (fun s => s != "sorry" && s != "admit")
-    firstEffectiveTactic tacStrings
+    firstEffectiveTactic tacStrings Bool.false
 
 macro "aide" : tactic => `(checkpoint aide?)
 
