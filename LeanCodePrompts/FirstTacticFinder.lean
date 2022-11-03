@@ -224,7 +224,7 @@ def tacticList : TacticM <| List String := do
     match cache.find? prompt with
     | some json => pure json
     | none =>  
-      let res ← openAIQuery prompt 20 ⟨8, 1⟩ #[";", "sorry"]
+      let res ← openAIQuery prompt 20 ⟨8, 1⟩ #[";", "sorry", "\n"]
       cacheTacticJson.set <| cache.insert prompt res
       pure res
   let outJson := 
@@ -237,12 +237,19 @@ def tacticList : TacticM <| List String := do
 elab "aide?" : tactic =>
   withMainContext do
     let tacStrings ← tacticList
+    let tacStringsNoIntros := tacStrings.filter (fun s => s.trim != "intros" && s.trim != "intro")
+    let tacStringsIntros := tacStrings.filter (fun s => s.trim = "intros" || s.trim = "intro")
+    let tacStrings := tacStringsNoIntros ++ tacStringsIntros
     let tacStrings := tacStrings.filter (fun s => s != "sorry" && s != "admit")
     firstEffectiveTactic tacStrings Bool.true
 
 elab "aide!" : tactic =>
   withMainContext do
     let tacStrings ← tacticList
+    let tacStringsNoIntros := tacStrings.filter (fun s => s.trim != "intros" && s.trim != "intro")
+    let tacStringsIntros := tacStrings.filter (fun s => s.trim = "intros" || s.trim = "intro")
+    let tacStrings := tacStringsNoIntros ++ tacStringsIntros
+
     let tacStrings := tacStrings.filter (fun s => s != "sorry" && s != "admit")
     firstEffectiveTactic tacStrings Bool.false
 
