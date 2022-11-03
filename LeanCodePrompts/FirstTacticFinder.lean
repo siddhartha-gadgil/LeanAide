@@ -36,6 +36,29 @@ def getTacticString : TacticM String := do
   s.restore
   return statement.replace "✝" ""
 
+elab "name_inacessibles" : tactic => do
+  withMainContext do
+  let lctx ←  getLCtx
+  let decls := lctx.decls
+  let mut statement := "rename_i"
+  for decl in decls do
+    match decl with
+    | some <| LocalDecl.ldecl _ _ n .. => 
+      if n != n.eraseMacroScopes then
+        statement := statement ++ s!" {n.eraseMacroScopes}"
+      pure ()
+    | some <| LocalDecl.cdecl _ _ n .. => do
+      if n != n.eraseMacroScopes then
+        statement := statement ++ s!" {n.eraseMacroScopes}"
+      pure ()
+    | none => pure ()
+  unless statement == "rename_i" do
+    let tac? := runParserCategory (← getEnv) `tactic statement
+      match tac? with
+      | Except.ok tac => do
+        evalTactic tac
+      | Except.error e => do
+        throwError e     
 
 elab "show_goal" : tactic => 
   withMainContext do  
@@ -54,6 +77,12 @@ def silly {α  : Type}(n m : ℕ)[DecidableEq α] : n + m = n + m := by
 def silly' : (n m : ℕ)  →  n + m = n + m := by
     intros
     show_goal  
+    rfl
+    done
+
+example : (n m : ℕ)  →  n + m = n + m := by
+    intros
+    name_inacessibles  
     rfl
     done
 
@@ -237,19 +266,16 @@ def tacticList : TacticM <| List String := do
 elab "aide?" : tactic =>
   withMainContext do
     let tacStrings ← tacticList
-    let tacStringsNoIntros := tacStrings.filter (fun s => s.trim != "intros" && s.trim != "intro")
-    let tacStringsIntros := tacStrings.filter (fun s => s.trim = "intros" || s.trim = "intro")
-    let tacStrings := tacStringsNoIntros ++ tacStringsIntros
     let tacStrings := tacStrings.filter (fun s => s != "sorry" && s != "admit")
+    let tac ← `(tactic|name_inacessibles)
+    evalTactic tac
     firstEffectiveTactic tacStrings Bool.true
 
 elab "aide!" : tactic =>
   withMainContext do
     let tacStrings ← tacticList
-    let tacStringsNoIntros := tacStrings.filter (fun s => s.trim != "intros" && s.trim != "intro")
-    let tacStringsIntros := tacStrings.filter (fun s => s.trim = "intros" || s.trim = "intro")
-    let tacStrings := tacStringsNoIntros ++ tacStringsIntros
-
+    let tac ← `(tactic|name_inacessibles)
+    evalTactic tac
     let tacStrings := tacStrings.filter (fun s => s != "sorry" && s != "admit")
     firstEffectiveTactic tacStrings Bool.false
 
@@ -291,9 +317,8 @@ elab "aide_aux" : tactic =>
   withMainContext do
     let tacStrings ← tacticList
     let tacStrings := tacStrings.filter (fun s => s != "sorry" && s != "admit")
-    let tacStringsNoIntros := tacStrings.filter (fun s => s.trim != "intros" && s.trim != "intro")
-    let tacStringsIntros := tacStrings.filter (fun s => s.trim = "intros" || s.trim = "intro")
-    let tacStrings := tacStringsNoIntros ++ tacStringsIntros
+    let tac ← `(tactic|name_inacessibles)
+    evalTactic tac
     let tacStrings := lookaheadTactics tacStrings
     firstEffectiveTactic tacStrings Bool.false
 
