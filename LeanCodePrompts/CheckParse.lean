@@ -113,6 +113,25 @@ def checkThm (s : String) : MetaM Bool := do
       pure true
   | Except.error _  => pure false
 
+#check Syntax
+partial def tokens (s : Syntax) : Array String := 
+match s with
+| .missing => Array.empty
+| .node _ _ args => args.foldl (fun acc x => acc ++ tokens x) Array.empty
+| .atom _  val => #[val]
+| .ident _ val .. => #[val.toString]
+
+def getTokens (s: String) : MetaM <| Array String := do
+  let env ← getEnv
+  let chk := Lean.Parser.runParserCategory env `thmStat  s
+  match chk with
+  | Except.ok stx  =>
+      pure <| tokens stx
+  | Except.error _  => pure Array.empty
+
+#eval getTokens "{α : Type u} [group α] [has_lt α] [covariant_class α α (function.swap has_mul.mul) has_lt.lt] {a : α} : 1 < a⁻¹ ↔ a < 1"
+
+
 /-- split prompts into those that parse -/
 def promptsThmSplit : MetaM ((Array String) × (Array String)) := do 
   let deps ← thmsPrompt
