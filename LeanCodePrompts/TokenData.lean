@@ -2,6 +2,8 @@ import LeanCodePrompts.CheckParse
 import Mathbin.All
 open Lean
 
+syntax  " ∥ " term " ∥ " : term
+
 def thmsForTokens := IO.FS.lines "data/parsed_thms.txt"
 
 def thmTokens : MetaM (Array (String × Array String)) := do
@@ -17,8 +19,9 @@ def writeTokens : MetaM Unit := do
       (fun acc token => acc ++ ", " ++ token.quote) thm.quote
   let text := lines.foldl (fun acc line => acc ++ line ++ "\n") ""
   IO.FS.writeFile "data/parsed_thms_tokens.txt" text
--- #eval thmTokens
+#eval thmTokens
 
 -- #check String.quote
 
-#eval writeTokens
+-- #eval writeTokens
+
