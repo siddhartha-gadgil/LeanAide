@@ -13,7 +13,7 @@ theorem compact_if_all_proper_compact {α : Type _} [TopologicalSpace α] : (∀
 /-
 Every prime that is one greater than a multiple of four can be expressed as the sum of two squares.
 -/
-theorem fermat_two_square : ∀ p : ℕ, Prime p → (p % 4 = 1) → ∃ a b : ℕ, a ^ 2 + b ^ 2 = p := sorry
+theorem fermat_two_square : ∀ p : ℕ, Nat.Prime p → (p % 4 = 1) → ∃ a b : ℕ, a ^ 2 + b ^ 2 = p := sorry
 
 /-
 For every subset of the Euclidean plane, there is a line segment of unit length whose endpoints are either both inside the subset or both outside it.
@@ -34,7 +34,7 @@ theorem all_idempotent_implies_commutative {R : Type _} [Ring R] : (∀ x : R, x
 /-
 There are infinitely many pairs of primes that differ exactly by two.
 -/
-theorem twin_prime_conjecture : ∀ n : ℕ, ∃ p : ℕ, p > n → Prime p → Prime (p + 2) := sorry
+theorem twin_prime_conjecture : ∀ n : ℕ, ∃ p : ℕ, p > n → Nat.Prime p → Nat.Prime (p + 2) := sorry
 
 /-
 If `I` is a collection of intervals of real numbers with lengths that sum to less than one, then the union of the intervals cannot be all of the unit interval.

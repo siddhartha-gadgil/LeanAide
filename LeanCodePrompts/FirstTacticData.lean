@@ -61,17 +61,18 @@ declare_syntax_cat sectionEnd
 syntax "end" (ident)? : sectionEnd
 
 -- code from Leo de Moura
-def getTactics (s : Syntax) : Array Syntax :=
+def getTactics (s : TSyntax ``tacticSeq) : Array (TSyntax `tactic) :=
   match s with
-  | `(tacticSeq| { $[$t:tactic $[;]?]* }) => t
-  | `(tacticSeq| $[$t:tactic $[;]?]*) => t
+  | `(tacticSeq| { $[$t]* }) => t
+  | `(tacticSeq| $[$t]*) => t
   | _ => #[]
+
 
 def parseTactics (s: String) : MetaM <| Array Syntax := do
   match ← partialParser tacticSeq s with
   | some (stx, _, _) => 
     let seq := getTactics stx
-    IO.println seq[0]!.reprint.get!
+    IO.println seq[0]!.raw.reprint.get!
     return seq
   | none => return #[]
 
