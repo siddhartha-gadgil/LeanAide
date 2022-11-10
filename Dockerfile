@@ -20,4 +20,4 @@ ENV PATH="${APP_HOME}/.elan/bin:${PATH}"
 RUN elan default leanprover/lean4:nightly
 RUN lake build Mathlib && lake build
 
-CMD exec build/bin/chkthms ": Type"
+ENTRYPOINT [ "build/bin/chkelab" ]

@@ -4786,3 +4786,43 @@ total : 40
 
 elaborated: 30
 
+No valid output from Codex; outputs below
+
+"∀ (p : ℕ) [inst : Fact (Nat.Prime p)], p = 2 ∨ p % 2 = 1"
+
+No valid output from Codex; outputs below
+
+"∀ (p : ℕ)  p = 2 ∨ p % 2 = 1"
+
+No valid output from Codex; outputs below
+
+"∀ (p : ℕ)  p = 2 ∨ p % 2 = 1"
+
+No valid output from Codex; outputs below
+
+"∀ (p : ℕ),  p = 2 ∨ p % 2 = 1"
+
+No valid output from Codex; outputs below
+
+"Nat"
+
+No valid output from Codex; outputs below
+
+"Nat"
+
+No valid output from Codex; outputs below
+
+Nat
+
+No valid output from Codex; outputs below
+
+∀ (p : ℕ),  p = 2 ∨ p % 2 = 1
+
+No valid output from Codex; outputs below
+
+∀ (p : ℕ),  p = 2 ∨ p % 2 = 1
+
+No valid output from Codex; outputs below
+
+∀ (p : Nat),  p = 2 ∨ p % 2 = 1
+

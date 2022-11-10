@@ -229,9 +229,11 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
 
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and optionally returns the best choice as well as all elaborated terms (used for batch processing, interactive code uses `arrayToExpr` instead)  -/
 def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array String))) := do
+  -- IO.println s!"arrayToExpr? called with {output.size} outputs"
   let mut elaborated : Array String := Array.empty
   let mut fullElaborated : Array String := Array.empty
   for out in output do
+    -- IO.println s!"elaboration called: {out}"
     let ployElab? ← polyElabThmTrans out
     match ployElab? with
       | Except.error _ => pure ()
@@ -280,7 +282,7 @@ def leanToPrompt (thm: String)(numSim : Nat:= 5)(numKW: Nat := 1)(temp : JsonNum
 
 -- #eval leanToPrompt "{  n :  ℕ } ->  Even   (    (   n +  1  ) * n  )"
 
-/-- array of outputs extracted from json -/
+/-- array of outputs extracted from OpenAI Json -/
 def jsonToExprStrArray (json: Json) : TermElabM (Array String) := do
   let outArr : Array String ← 
     match json.getArr? with
@@ -298,6 +300,29 @@ def jsonToExprStrArray (json: Json) : TermElabM (Array String) := do
         pure parsedArr
     | Except.error e => throwError m!"json parsing error: {e}"
   return outArr
+
+/-- array of outputs extracted from Json Array -/
+def jsonStringToExprStrArray (jsString: String) : TermElabM (Array String) := do
+  try
+  let json ← readJson jsString
+  let outArr : Array String ← 
+    match json.getArr? with
+    | Except.ok arr => 
+        let parsedArr : Array String ← 
+          arr.filterMapM <| fun js =>
+            match js.getStr? with
+            | Except.ok str => pure (some str)
+            | Except.error e => 
+              throwError m!"json string expected but got {js}, error: {e}"
+        pure parsedArr
+    | Except.error _ => pure #[jsString]
+  return outArr
+  catch _ =>
+    pure #[jsString]
+
+#eval jsonStringToExprStrArray "simple"
+#eval jsonStringToExprStrArray "[\"simple\", \"simple2\"]"
+
 
 /-- given json returned by open-ai obtain the best translation -/
 def jsonToExpr' (json: Json) : TermElabM Expr := do
