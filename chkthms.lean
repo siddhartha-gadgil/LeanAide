@@ -30,7 +30,7 @@ The underlying code also supports `open` for namespaces but this demo version do
 "
 
 def main (args: List String) : IO Unit := do
-  initSearchPath (← Lean.findSysroot) ["build/lib", "lean_packages/mathlib/build/lib/", "lean_packages/lean3port/build/lib/", "lean_packages/mathlib3port/build/lib/" ]
+  initSearchPath (← Lean.findSysroot) ["build/lib", "lean_packages/mathlib/build/lib/", "lean_packages/lean3port/build/lib/", "lean_packages/mathlib3port/build/lib/", "lean_packages/std/build/lib/", "lean_packages/Qq/build/lib/", "lean_packages/aesop/build/lib/" ]
   let env ← 
     importModules [{module := `Mathlib},
     {module := `LeanCodePrompts.Basic},

@@ -1,7 +1,7 @@
 import Lean
 import Lean.Meta
 import Init.System
-import Std
+-- import Std
 open Lean Meta Elab
 
 set_option synthInstance.maxHeartbeats 1000000

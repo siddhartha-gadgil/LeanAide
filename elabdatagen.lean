@@ -11,7 +11,7 @@ set_option compiler.extract_closed false
 def main (args: List String) : IO Unit := do
   let start? := (args.get? 0).bind (fun x => x.toNat?)
   let size? := (args.get? 0).bind (fun x => x.toNat?)
-  initSearchPath (← Lean.findSysroot) ["build/lib", "lean_packages/mathlib/build/lib/", "lean_packages/lean3port/build/lib/", "lean_packages/mathlib3port/build/lib/"]
+  initSearchPath (← Lean.findSysroot) ["build/lib", "lean_packages/mathlib/build/lib/", "lean_packages/lean3port/build/lib/", "lean_packages/mathlib3port/build/lib/", "lean_packages/std/build/lib/", "lean_packages/Qq/build/lib/", "lean_packages/aesop/build/lib/" ]
   let env ← 
     importModules [{module := `Mathlib},
     {module := `LeanCodePrompts.Basic},

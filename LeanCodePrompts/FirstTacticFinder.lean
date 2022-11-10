@@ -3,7 +3,7 @@ import LeanCodePrompts.ParseJson
 import LeanCodePrompts.Translate
 import Lean
 
-open Lean Meta Elab Tactic Parser Std
+open Lean Meta Elab Tactic Parser 
 
 initialize cacheTacticJson : IO.Ref (HashMap String Json) ← IO.mkRef (HashMap.empty) 
 
