@@ -1,7 +1,7 @@
 import LeanCodePrompts.Translate
 import LeanCodePrompts.Utils
 
-open Lean Meta Std Elab
+open Lean Meta Elab
 
 
 def translateWithDataM (s: String)(numSim : Nat:= 10)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : 

@@ -2,7 +2,7 @@ import Lean
 import Lean.Meta
 import LeanCodePrompts.CheckParse
 import LeanCodePrompts.ParseJson
-open Lean Std Meta Elab
+open Lean Meta Elab
 
 partial def camelSplitAux (s : String)(accum: List String) : List String :=
   if s.length == 0 then accum

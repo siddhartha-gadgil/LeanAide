@@ -2,7 +2,7 @@ import Lean
 import Lean.Meta
 import Init.System
 import Std
-open Lean Meta Std Elab
+open Lean Meta Elab
 
 set_option synthInstance.maxHeartbeats 1000000
 
@@ -113,7 +113,7 @@ partial def recExprNames (depth: Nat): Expr → MetaM (Array Name) :=
             -- IO.println "got ftype"
             let expl? := 
               ftype?.map $ fun ftype =>
-              (ftype.data.binderInfo.isExplicit)
+              (ftype.binderInfo.isExplicit)
             let expl := expl?.getD true
             -- IO.println s!"got expl: {expl}"
             let s ←  
@@ -160,7 +160,7 @@ def Lean.Expr.simplify(e: Expr) : MetaM Expr := do
   let cache ← simplifyCache.get
   match cache.find? e with
   | none => 
-    let r ← simp e (← Simp.Context.mkDefault)
+    let ⟨r, _⟩ ← simp e (← Simp.Context.mkDefault)
     simplifyCache.set (cache.insert e r.expr)
     return r.expr
   | some expr => return expr

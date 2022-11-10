@@ -5,7 +5,7 @@ import LeanCodePrompts.ParseJson
 import LeanCodePrompts.Utils
 import LeanCodePrompts.TeXPrompts
 
-open Std Lean
+open Lean
 
 initialize texCommandCache : IO.Ref (HashMap String String) ← do
   -- IO.println "Initialising TeX Command cache..."

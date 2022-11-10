@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Init.Set
 import LeanCodePrompts.Basic
 import LeanCodePrompts.Utils
-open Lean Meta Std Elab Parser Mathlib Set Tactic
+open Lean Meta Elab Parser Mathlib Set Tactic
  
 def s : Set Nat := fun _ => true
 -- #check s ∩ s

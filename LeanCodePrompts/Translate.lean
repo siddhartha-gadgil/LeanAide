@@ -6,7 +6,7 @@ import LeanCodePrompts.ParseJson
 import LeanCodePrompts.Autocorrect
 import LeanCodePrompts.KeywordSummary.KeywordExtraction
 import LeanCodePrompts.EgsTranslate
-open Lean Meta Std
+open Lean Meta
 
 open Lean Elab Parser Command
 
@@ -306,7 +306,7 @@ def jsonToExpr' (json: Json) : TermElabM Expr := do
 
 /-- translation from a comment-like syntax to a theorem statement -/
 elab "//-" cb:commentBody  : term => do
-  let s := cb.raw.getAtomVal!
+  let s := cb.raw.getAtomVal
   let s := (s.dropRight 2).trim  
   -- querying codex
   let js ← getCodeJson  s
