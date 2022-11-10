@@ -1,10 +1,6 @@
 import Mathbin.All
 import LeanCodePrompts.CheckParse
 
-#check Real
-#check ℝ 
-
-
 /-
 If every proper closed set of a topological space is compact, then the space itself is compact.
 -/
@@ -44,7 +40,7 @@ If `I` is a collection of intervals of real numbers with lengths that sum to les
 /-
 Every finite division ring is a field.
 -/
-theorem fin_div_ring_is_field {R : Type _} [Finite R] [DivisionRing R] : Field R := sorry
+--ERROR-- theorem fin_div_ring_is_field {R : Type _} [Finite R] [DivisionRing R] : Field R := sorry
 
 /-
 The product of two positive numbers is at most the square of their average.
@@ -95,8 +91,7 @@ theorem image_union (f : α → β) (S : Set (Set α)) : (f <$> (⋃₀ S)) = (�
 /-
 A topological space is normal if and only if any two disjoint closed subsets can be separated by a continuous function.
 -/
-lemma urysohn {X : Type _} [TopologicalSpace X] [TopologicalSpace ℝ] : NormalSpace X ↔ ( ∀ {S T : Set X}, IsClosed S → IsClosed T → Disjoint S T →
- (∃ f : X → ℝ, Continuous f → (∀ x ∈ S, f x = 0) ∧ (∀ x ∈ T, f x = 1)) ) := sorry
+--ERROR-- lemma urysohn {X : Type _} [TopologicalSpace X] [TopologicalSpace ℝ] : NormalSpace X ↔ ( ∀ {S T : Set X}, IsClosed S → IsClosed T → Disjoint S T → (∃ f : X → ℝ, Continuous f → (∀ x ∈ S, f x = 0) ∧ (∀ x ∈ T, f x = 1)) ) := sorry
 
 /-
 The only field automorphism of the reals is the identity.
@@ -142,7 +137,7 @@ theorem prime_eq_two_or_odd {n: Nat} : Nat.Prime n → n = 2 ∨ Odd n := sorry
 /-
 Every odd degree polynomial over `ℝ` has a zero
 -/
-theorem poly_odd_degree_has_zero {α : Type _} [Field α] (p : Polynomial α) : Odd (p.degree) → ∃ x, p.IsRoot x := sorry
+theorem poly_odd_degree_has_zero (p : Polynomial ℝ) : Odd (WithBot.unbot' 0 p.degree) → ∃ x, p.IsRoot x := sorry
 
 /-
 The product of two consequitive natural numbers is even.
@@ -208,8 +203,7 @@ Any homomorphism from the additive group of rational numbers to `ℤ` is trivial
 /-
 Every finite division ring is a field.
 -/
-theorem fin_int_domain_ring_is_field 
-    {R : Type _} [Ring R] : IsDomain R → Finite R → Field R := sorry
+--ERROR--theorem fin_int_domain_ring_is_field {R : Type _} [Ring R] : IsDomain R → Finite R → Field R := sorry
 
 /-
 Every finite topological space is compact
@@ -293,7 +287,7 @@ The elements of any finite distributive lattice can be represented as finite set
 /-
 Every matrix satisfies its own characteristic polynomial.
 -/
-theorem cayley_hamilton {R : Type _} [CommRing R] {n : Type _} [DecidableEq n] [Fintype n] (M : Matrix n n R) : (Polynomial.aeval M) M.charpoly = 0 := sorry
+--ERROR-- theorem cayley_hamilton {R : Type _} [CommRing R] {n : Type _} [DecidableEq n] [Fintype n] (M : Matrix n n R) : Polynomial.aeval M M.charpoly = 0 := sorry
 
 /-
 The square root of an irrational number is irrational.
@@ -349,7 +343,7 @@ The number of Sylow-2 subgroups of a dihedral group is equal to the largest odd 
 /-
 A topological space $X$ is Hausdorff if and only if the diagonal is a closed set in $X × X$.
 -/
-theorem hausdorff_iff_diag_closed {X : Type _} [TopologicalSpace X] : T2Space X ↔ IsClosed (Set.Diagonal X) := sorry
+--ERROR-- theorem hausdorff_iff_diag_closed {X : Type _} [TopologicalSpace X] : T2Space X ↔ IsClosed (Set.Diagonal X) := sorry
 
 /-
 If every point of a subset of a topological space is contained in some open set, the subset itself is open.
@@ -374,7 +368,7 @@ Any sub-ring of a field that contains the identity is an integral domain.
 /-
 An element of a discrete valuation ring is a unit if and only if it has a valuation of zero.
 -/
-theorem dvr_unit_iff_val_zero {R : Type _} [CommRing R] : IsDomain R → DiscreteValuationRing R → ∀ r : R, IsUnit r → DiscreteValuationRing.addVal R r = 0 := sorry
+--ERROR--theorem dvr_unit_iff_val_zero {R : Type _} [CommRing R] : IsDomain R → DiscreteValuationRing R → ∀ r : R, IsUnit r → DiscreteValuationRing.addVal R r = 0 := sorry
 
 /-
 Every automorphism of a tree fixes a vertex or an edge.
