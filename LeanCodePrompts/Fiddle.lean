@@ -67,7 +67,8 @@ syntax "section" (colGt ident)? : sectionHead
 #eval runParserCategoryPartial `sectionHead "section blah"
 
 def multiline := "section
-lemma "
+lemma x → y := by simp
+end"
 
 #eval runParserCategoryPartial `sectionHead multiline
 
@@ -161,3 +162,14 @@ match ← runParserCategoryPartial `tactic s with
 | Except.error _ => pure s
 
 #eval contractInduction inducEg
+
+def js := Json.mkObj [
+  ("a", Json.num 1),
+  ("b", Json.str "hello is this going to cause a wrap in the line"),
+  ("c", Json.arr #[Json.num 1, Json.str s!"hello {multiline}"])
+]
+
+#eval multiline
+#eval multiline.quote
+#eval js.pretty (10000)
+#eval IO.FS.writeFile "test.json" (js.pretty (10000))

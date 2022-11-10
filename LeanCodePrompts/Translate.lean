@@ -6,7 +6,7 @@ import LeanCodePrompts.ParseJson
 import LeanCodePrompts.Autocorrect
 import LeanCodePrompts.KeywordSummary.KeywordExtraction
 import LeanCodePrompts.EgsTranslate
-open Lean Meta
+open Lean Meta Std
 
 open Lean Elab Parser Command
 
@@ -143,9 +143,16 @@ def fixedPrompts:= #[("If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\d
 def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
     (scoreBound: Float)(matchBound: Nat)
    : TermElabM (Array (String × String) × IO.Process.Output) := do
+      let jsData := Json.mkObj [
+        ("filename", "data/safe_prompts.json"),
+        ("field", "doc_string"),
+        ("doc_string", s),
+        ("n", numSim),
+        ("model_name", "all-mpnet-base-v2")
+      ]
       let simJsonOut ←  
         IO.Process.output {cmd:= "curl", args:= 
-          #["-X", "POST", "-H", "Content-type: application/json", "-d", s ++ s!" top_K {numSim}", "localhost:5000/similar_json"]}
+          #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, s!"{← leanAideIP}/nearest_prompts"]}
       let pairs? ← sentenceSimPairs simJsonOut.stdout
       -- IO.println s!"obtained sentence similarity; time : {← IO.monoMsNow}"
       let allPairs := pairs?.toOption.getD #[]        
@@ -164,7 +171,7 @@ def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
 
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
-def getCodeJson (s: String)(numSim : Nat:= 5)(numKW: Nat := 4)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM Json := do
+def getCodeJson (s: String)(numSim : Nat:= 5)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM Json := do
   match ← getCachedJson? s with
   | some js => return js
   | none =>    
@@ -253,7 +260,7 @@ def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array Strin
         return none
 
 /-- reverse translation from `Lean` to natural language -/
-def leanToPrompt (thm: String)(numSim : Nat:= 5)(numKW: Nat := 4)(temp : JsonNumber := 0)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM String := do
+def leanToPrompt (thm: String)(numSim : Nat:= 5)(numKW: Nat := 1)(temp : JsonNumber := 0)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM String := do
     let (pairs, _) ← getPromptPairs thm numSim numKW scoreBound matchBound
     let prompt := makeFlipPrompt thm pairs
     -- elabLog prompt
@@ -299,7 +306,7 @@ def jsonToExpr' (json: Json) : TermElabM Expr := do
 
 /-- translation from a comment-like syntax to a theorem statement -/
 elab "//-" cb:commentBody  : term => do
-  let s := cb.raw.getAtomVal
+  let s := cb.raw.getAtomVal!
   let s := (s.dropRight 2).trim  
   -- querying codex
   let js ← getCodeJson  s

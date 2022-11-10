@@ -1,6 +1,5 @@
 import Lean
 import LeanCodePrompts.Utils
-import Lean.Data.HashMap
 
 open Lean IO
 
@@ -55,38 +54,32 @@ end String
 
 section Yake
 
-/-- Running the code in this section requires `Yet Another Keyword Extractor (Yake)` - https://pypi.org/project/yake/.
-This package can be installed with `pip3 install -U yake`.-/
+def leanAideIP : IO String := do
+  let key? ← IO.getEnv "LEANAIDE_IP"
+  return key?.getD "localhost:5000"
 
-def yakeResults (s : String) : IO <| List String := do
-  let out ← Process.output 
-      {cmd := "yake", args := #["--text_input", s, "--verbose"]}
-  return out.stdout |>.splitOn "\n"
-
-/- The keywords are not necessarily ranked by relevance in the output Json. -/
-def extractKeywordsToJson (s : String) : IO Json := do
-  let processOutput (lines : List String) : Json :=
-    let lines := lines |>.tail! |>.tail! |>.dropLast
-    let processedLines := lines.map $ λ l => 
-      match l.splitOn "0." with
-        | [stmt, score] => (stmt.trim, Json.num ("0." ++ score).toJsonNumber!)
-        | _ => panic! "Invalid format."
-    Json.mkObj processedLines
-
-  return processOutput <| ← yakeResults s
+/-- Fetch the keyword extraction results from `YAKE` (Yet Another Keyword Extractor). -/
+def yakeResults (s : String) : IO (Array Json) := do
+  let out ← IO.Process.output {cmd:= "curl", args:= 
+          #["-X", "POST", 
+            "-H", "Content-type: application/json", 
+            "-d", s, s!"{← leanAideIP}/keywords"]}
+  Json.parseArrIO out.stdout
 
 def extractKeywordsWithScores (s : String) (out : Bool := false) : IO <| List (String × Float) := do
   let kwds ← yakeResults s
+  let kwds := kwds.toList
 
   if out then
     for l in kwds do
       IO.println l
 
-  let kwds := kwds |>.tail! |>.tail! |>.dropLast
-  return kwds.map $ λ l =>
-    match l.splitOn "0." with
-      | [stmt, score] => (stmt.trim, ("0." ++ score).toFloat!)
-      | _ => panic! "Invalid format."
+  return kwds.filterMap $ λ j =>
+    let j' := Except.toOption j.getArr? |>.get!
+    let kw := j'[0]!.getStr!
+    let score? := j'[1]!.getNum?
+    let score := (Except.toOption score?).get! |>.toFloat
+    return (kw, score)
 
 def extractKeywords (s : String) (out : Bool := false) : IO <| List String := do
   let kwdsWithScores ← extractKeywordsWithScores s out
@@ -121,7 +114,7 @@ def MathlibKeywordLookup : IO Json := do
     "LeanCodePrompts/KeywordSummary/mathlib_keyword_lookup.json"
   IO.ofExcept <| Json.parse file
 
-initialize keywordCache : IO.Ref (HashMap String (Array Nat)) ← do
+initialize keywordCache : IO.Ref (Std.HashMap String (Array Nat)) ← do
   let mathlibKwdsJson ← IO.ofExcept (← MathlibKeywordLookup).getObj?
   
   let mathlibKwds : List (String × Array Nat) :=
@@ -133,7 +126,7 @@ initialize keywordCache : IO.Ref (HashMap String (Array Nat)) ← do
 
       (kw, idxs) :: l ) []
 
-  IO.mkRef (HashMap.ofList mathlibKwds)
+  IO.mkRef (Std.HashMap.ofList mathlibKwds)
 
 def getKeywordIndices? (kw : String) : IO <| Option (Array Nat) := do
   let cache ← keywordCache.get

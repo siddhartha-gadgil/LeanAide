@@ -1,0 +1,8 @@
+[package]
+name = "lean-chat"
+version = "0.1"
+lean_version = "leanprover-community/lean:3.42.1"
+path = "src"
+
+[dependencies]
+mathlib = {git = "https://github.com/leanprover-community/mathlib", rev = "3afafe6b0f4b3a30c936f33bc78d9bbd3b5fc454"}

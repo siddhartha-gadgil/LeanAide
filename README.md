@@ -28,28 +28,16 @@ However, since there are compatibility issues in the porting of `Lean`, if the a
 
 ### Python Setup
 
-Some Python code is needed for the prompt engineering. The following installation steps may be needed before running (you may need to use `pip3` instead of `pip`).
+Some Python code is needed for the prompt engineering. The following installation steps may be needed before running (you may need to use `pip3` instead of `pip`, or even setup a new virtual environment).
 
 ```bash
-pip install -U sentence-transformers
-
-pip install flask
-
-pip install yake
+pip install -r web_serv/requirements.txt
 ```
 
 In addition, embeddings for mathlib prompts are precomputed. To do this, from the base directory, run the following.
 
 ```bash
-cd SentenceSimilarityTask
-python
-```
-
-and from Python, run the following
-
-```python
-from sentence_similarity import *
-save_corpus_embeddings()
+python setup.py
 ```
 
 Hopefully this should complete the setup. If not please ask the maintainers for help (the setup has not been thoroughly tested).
@@ -63,7 +51,15 @@ cd web_serv
 flask run
 ```
 
+Alternatively, to use a production wsgi server, run the following from the base directory.
+
+```bash
+cd web_serv
+gunicorn -b :5000 wsgi:app
+```
+
+
 Then open `code` from the base directory. Navigate to the file `TranslateExample.lean` to see an example translation (which will run automatically after compilation). More examples are in the comments.
 
-## Lean-chat++
-We are developing a bootstrapped version of [Lean-chat](https://github.com/zhangir-azerbayev/lean-chat)
+## Lean-chat-IDP
+We are developing a version of [Lean-chat](https://github.com/zhangir-azerbayev/lean-chat) with input dependent prompting.

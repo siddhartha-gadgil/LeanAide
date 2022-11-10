@@ -10,6 +10,14 @@ match tac with
   `(tactic| cases $name)
 | _ => return tac
 
+def contractPolyTactic (tac: String): String := 
+  if tac.contains ',' then
+    let head := tac.splitOn "," |>.head!
+    if head.contains '[' 
+      then head ++ "]"
+      else tac
+  else tac
+
 def partialParser  (parser : Parser) (input : String) (fileName := "<input>") : MetaM <| Option (Syntax × String × String) := do
   let env ← getEnv
   let c := mkParserContext (mkInputContext input fileName) { env := env, options := {} }
@@ -103,19 +111,26 @@ def getTheoremAndTactic? (input : Syntax)(vars : String) :
     | `(theoremAndTactic|$kind:defHead $name:ident $args:argument* : $type := by $tac:tacticSeq) =>
         let seq := getTactics tac
         let tac ← contractInductionStx (seq[0]!)
+        let tac := tac.reprint.get!.splitOn "--" |>.head! |>.trim
+        let tac := tac.splitOn "<;>" |>.head! |>.trim
+        let tac := contractPolyTactic tac
         let argString := 
           (args.map fun a => a.raw.reprint.get!).foldl (fun a b => a ++ " " ++ b) (vars)
         let argString := argString.replace "\n" " " |>.trim
         return some ⟨kind.raw.reprint.get!.trim, name.raw.reprint.get!.trim,
-        argString, type.raw.reprint.get!.trim, tac.reprint.get!.trim⟩
+        argString, type.raw.reprint.get!.trim, tac⟩
     | `(theoremAndTactic|$kind:defHead  $args:argument* : $type := by $tac:tacticSeq) =>
         let seq := getTactics tac
         let tac ← contractInductionStx (seq[0]!)
+        let tac := tac.reprint.get!.splitOn "--" |>.head! |>.trim
+        let tac := tac.splitOn "<;>" |>.head! |>.trim
+        let tac := contractPolyTactic tac
         let argString := 
           (args.map fun a => a.raw.reprint.get!).foldl (fun a b => a ++ " " ++ b) (vars)
         let argString := argString.replace "\n" " " |>.trim
         return some ⟨kind.raw.reprint.get!.trim,"",
-        argString, type.raw.reprint.get!.trim, tac.reprint.get!.trim⟩ 
+        argString, type.raw.reprint.get!.trim, 
+        tac⟩ 
     | _ =>
       IO.println s!"could not parse theorem {input.reprint.get!} to get tactic"
       return none
@@ -249,3 +264,5 @@ def getTheoremsTacticsFromPolyLean : MetaM (Array TheoremAndTactic) := do
   logInfo m!"found {files.size} files"
   let files := files.toList.take 12 |>.toArray
   getTheoremsTacticsFromFiles files
+
+#eval "rw [Subsingleton.elim hd] -- align the Decidable instances implicitly used by `dite`" |>.splitOn "--" |>.head!

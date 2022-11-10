@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Init.Set
 import LeanCodePrompts.Basic
 import LeanCodePrompts.Utils
-open Lean Meta Elab Parser Set Tactic
+open Lean Meta Std Elab Parser Mathlib Set Tactic
  
 def s : Set Nat := fun _ => true
 -- #check s ∩ s
@@ -19,6 +19,10 @@ def depsPrompt : IO (Array String) := do
 declare_syntax_cat typed_ident
 syntax "(" ident ":" term ")" : typed_ident
 syntax "{" ident ":" term "}" : typed_ident
+
+#check Array.foldrM
+#check TSyntaxArray.rawImpl
+#check TSyntax.mk
 
 instance : Coe (Syntax) (TSyntax n) where
   coe := TSyntax.mk
@@ -108,6 +112,25 @@ def checkThm (s : String) : MetaM Bool := do
       IO.println stx 
       pure true
   | Except.error _  => pure false
+
+#check Syntax
+partial def tokens (s : Syntax) : Array String := 
+match s with
+| .missing => Array.empty
+| .node _ _ args => args.foldl (fun acc x => acc ++ tokens x) Array.empty
+| .atom _  val => #[val]
+| .ident _ val .. => #[val.toString]
+
+def getTokens (s: String) : MetaM <| Array String := do
+  let env ← getEnv
+  let chk := Lean.Parser.runParserCategory env `thmStat  s
+  match chk with
+  | Except.ok stx  =>
+      pure <| tokens stx
+  | Except.error _  => pure Array.empty
+
+#eval getTokens "{α : Type u} [group α] [has_lt α] [covariant_class α α (function.swap has_mul.mul) has_lt.lt] {a : α} : 1 < a⁻¹ ↔ a < 1"
+
 
 /-- split prompts into those that parse -/
 def promptsThmSplit : MetaM ((Array String) × (Array String)) := do 
