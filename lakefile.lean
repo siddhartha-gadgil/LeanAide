@@ -22,7 +22,7 @@ lean_exe bulkelab {
   supportInterpreter := true
 }
 
-@[defaultTarget]
+@[default_target]
 lean_exe chkelab {
   supportInterpreter := true
 }
