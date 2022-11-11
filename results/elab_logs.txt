@@ -4786,31 +4786,43 @@ total : 40
 
 elaborated: 30
 
-Writing to file: thm-elab-10-1-false-5-2.json
+No valid output from Codex; outputs below
 
-If every proper closed set of a topological space is compact, then the space itself is compact.
+"∀ (p : ℕ) [inst : Fact (Nat.Prime p)], p = 2 ∨ p % 2 = 1"
 
 No valid output from Codex; outputs below
 
- {  α :  Type  u } ->  [  TopologicalSpace  α ] ->  (  h :  ∀  s  ,   IsClosed  s →   s ≠ univ →  IsCompact  s ) ->  IsCompact  univ
+"∀ (p : ℕ)  p = 2 ∨ p % 2 = 1"
 
- {  α :  Type  u } ->  [  TopologicalSpace  α ] ->  (  h :  ∀   (  s  :  Set  α  )  ,   IsClosed  s →   ¬  is_univ  s →  IsCompact  s ) ->  IsCompact  univ
+No valid output from Codex; outputs below
 
- {  α :  Type  u } ->  [  TopologicalSpace  α ] ->  (  h :  ∀   (  s  :  Setₓ  α  )  ,   IsClosed  s →   ¬  is_univ  s →  IsCompact  s ) ->  IsCompact  univ
+"∀ (p : ℕ)  p = 2 ∨ p % 2 = 1"
 
- {  α :  Type  u } ->  [  TopologicalSpace  α ] ->  (  h :  ∀   (  s  :  Set  α  )  ,   IsClosed  s →   IsCompact  s →  s = univ ) ->  IsCompact  univ
+No valid output from Codex; outputs below
 
- {  α :  Type  u } ->  [  TopologicalSpace  α ] ->  (  h :  ∀   (  s  :  Setₓ  α  )  ,   IsClosed  s →   IsCompact  s →  s = univ ) ->  IsCompact  univ
+"∀ (p : ℕ),  p = 2 ∨ p % 2 = 1"
 
- {  α :  Type  u } ->  [  TopologicalSpace  α ] ->  (  h :  ∀   (  s  :  Set  α  )  ,   IsClosed  s →   ¬  s = univ →  IsCompact  s ) ->  IsCompact  univ
+No valid output from Codex; outputs below
 
- {  α :  Type  u } ->  [  TopologicalSpace  α ] ->  (  h :  ∀   (  s  :  Setₓ  α  )  ,   IsClosed  s →   ¬  s = univ →  IsCompact  s ) ->  IsCompact  univ
+"Nat"
 
-failed to elaborate
+No valid output from Codex; outputs below
 
-outputs: #[{α : Type u} [topological_space α] (h : ∀ s, is_closed s → s ≠ univ → is_compact s) : is_compact univ , {α : Type u} [topological_space α] (h : ∀ (s : set α), is_closed s → ¬ is_univ s → is_compact s) : is_compact univ , {α : Type u} [topological_space α] (h : ∀ (s : set α), is_closed s → is_compact s → s = univ) : is_compact univ , {α : Type u} [topological_space α] (h : ∀ (s : set α), is_closed s → ¬ s = univ → is_compact s) : is_compact univ ]
+"Nat"
 
-total : 1
+No valid output from Codex; outputs below
 
-elaborated: 0
+Nat
+
+No valid output from Codex; outputs below
+
+∀ (p : ℕ),  p = 2 ∨ p % 2 = 1
+
+No valid output from Codex; outputs below
+
+∀ (p : ℕ),  p = 2 ∨ p % 2 = 1
+
+No valid output from Codex; outputs below
+
+∀ (p : Nat),  p = 2 ∨ p % 2 = 1
 

@@ -119,3 +119,22 @@ def elabThmSplit(start? size?: Option Nat := none) : TermElabM ((Array String) �
 
 def elabThmSplitCore(start? size?: Option Nat := none) : CoreM ((Array String) × (Array String)) := 
   (elabThmSplit start? size?).run'.run'
+
+def outputFromCompletionsM (s: String) : 
+  TermElabM (String) := do
+  let output ← jsonStringToExprStrArray s
+  let output := output ++ (output.map (fun s => ": " ++ s))
+  let output := output.toList.eraseDups.toArray
+  -- IO.println s!"output: {output}"
+  let res? ← arrayToExpr? output
+  let js : Json ←  match res? with
+  | some (thm, elabs) => do
+    let thm ←  thm.view
+    pure <| Json.mkObj [("success", Bool.true), ("theorem", thm),
+            ("all-elabs", Json.arr <| elabs.map (Json.str))] 
+  | none => pure <| Json.mkObj [("success", Bool.false)]
+  return js.pretty 10000
+
+def outputFromCompletionsCore (s: String) : CoreM String := 
+  (outputFromCompletionsM s).run'.run'
+

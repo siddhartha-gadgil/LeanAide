@@ -61,5 +61,20 @@ gunicorn -b :5000 wsgi:app
 
 Then open `code` from the base directory. Navigate to the file `TranslateExample.lean` to see an example translation (which will run automatically after compilation). More examples are in the comments.
 
+## Elaboration using a docker container
+
+If one wants to just check validity of Lean code for statements, more precisely whether they can be elaborated, one can run a docker container. We can as an argument the statement we want to check or a list of statements as a json array. The standard output is the result as a json line. This can be used by calling from a script and redirecting outputs to a `jsonl` file.
+
+Below are some examples.
+
+```bash
+sudo docker pull sgadgil00/leanaide-elaborator:latest # pull the docker image
+sudo docker run sgadgil00/leanaide-elaborator:latest '["(p q :  ℕ ) (h : nat.prime  p) : p = q", "(p q: ℕ) : p = q", "(p: ℕ): is_silly p"]'
+sudo docker run sgadgil00/leanaide-elaborator:latest '(p q :  ℕ ) (h : nat.prime  p) : p = q'
+sudo docker run sgadgil00/leanaide-elaborator:latest '(p q :  ℕ ) -> (h : nat.prime  p) -> p = q'
+```
+
+Observe the statement can either consist of arguments followed by the claim (technically a `type`) or just be a claim (`type`). Further, mathlib terms are converted to their Lean 4 equivalents. 
+
 ## Lean-chat-IDP
 We are developing a version of [Lean-chat](https://github.com/zhangir-azerbayev/lean-chat) with input dependent prompting.
