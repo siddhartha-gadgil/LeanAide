@@ -1,7 +1,6 @@
 import Mathbin.All
 import LeanCodePrompts.CheckParse
 
-
 /-- Every prime that is `1` greater than a multiple of `4` can be expressed as the sum of two squares. -/
 example : ∀ {p : ℕ}, p % 4 = 1 → Prime p → ∃ a b, a ^ 2 + b ^ 2 = p ↔ ∀ p : ℕ, Prime p → (p % 4 = 1) → ∃ a b : ℕ, a ^ 2 + b ^ 2 = p := sorry
 
