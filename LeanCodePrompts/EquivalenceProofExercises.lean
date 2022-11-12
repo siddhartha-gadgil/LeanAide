@@ -1,6 +1,6 @@
 import Mathbin.All
 import LeanCodePrompts.CheckParse
-universe u v 
+universe u v u_1 u_2
 
 /-- Every prime that is `1` greater than a multiple of `4` can be expressed as the sum of two squares. -/
 example : (∀ {p : ℕ}, p % 4 = 1 → Prime p → ∃ a b, a ^ 2 + b ^ 2 = p) → (∀ p : ℕ, Prime p → (p % 4 = 1) → ∃ a b : ℕ, a ^ 2 + b ^ 2 = p) := sorry
@@ -43,8 +43,8 @@ example : (∀ (a b c : ℤ), a ^ 3 + b ^ 3 ≠ c ^ 3) → (∀ a b c : ℕ, a >
 example : (∀ a b c : ℕ, a > 0 → b > 0 → ¬(a^3 + b^3 = c^3)) → (∀ (a b c : ℤ), a ^ 3 + b ^ 3 ≠ c ^ 3) := sorry
 
 /-- If every element of a group `G` has order `2`, then every pair of elements of `G` commutes. -/
-example : (∀ {G : Type u_1} [inst : Group G], (∀ (x : G), x ^ 2 = 1) → ∀ {x y : G}, Commute x y) → (Unit) := sorry
-example : (Unit) → (∀ {G : Type u_1} [inst : Group G], (∀ (x : G), x ^ 2 = 1) → ∀ {x y : G}, Commute x y) := sorry
+example : (∀ {G : Type u_1} [inst : Group G], (∀ (x : G), x ^ 2 = 1) → ∀ {x y : G}, Commute x y) → ({G: Type u} → [Group G] →  (∀ x y : G, x * x = 1) → (∀ x y : G, Commute x y)) := sorry
+example : ({G: Type u} → [Group G] →  (∀ x y : G, x * x = 1) → (∀ x y : G, Commute x y)) → (∀ {G : Type u_1} [inst : Group G], (∀ (x : G), x ^ 2 = 1) → ∀ {x y : G}, Commute x y) := sorry
 
 /-- The product of two consecutive natural numbers is even. -/
 example : (∀ {p q : ℕ}, p = q + 1 → Even (p * q)) → ((n: Nat) →  Even <| n * (n + 1)) := sorry
@@ -64,38 +64,40 @@ example : (∀ {G : Type u} [inst : Groupₓ G] [inst_1 : Fintype G], Monoidₓ.
 example : ({G: Type u} → [Groupₓ G] → [Finite G] → Monoidₓ.IsTorsionFree G → IsSubgroup.Trivial G) → (∀ {G : Type u} [inst : Groupₓ G] [inst_1 : Fintype G], Monoidₓ.IsTorsionFree G → Fintype.card G = 1) := sorry
 
 /-- Every finite division ring is a field. -/
-example : ((K : Type u) → [inst : DivisionRing K] → Fintype K → Field K) → (Unit) := sorry
-example : (Unit) → ((K : Type u) → [inst : DivisionRing K] → Fintype K → Field K) := sorry
+example : ((K : Type u) → [inst : DivisionRing K] → Fintype K → Field K) → ({R : Type u} →  [Ringₓ R] → [IsDomain R] →  [Finite R] →  Field R) := sorry
+example : ({R : Type u} →  [Ringₓ R] → [IsDomain R] →  [Finite R] →  Field R) → ((K : Type u) → [inst : DivisionRing K] → Fintype K → Field K) := sorry
 
 
 /-- Every surjective homomorphism from a finitely generated free group to itself is injective -/
-example : (∀ {α : Type u_1} {β : Type u_2} [inst : Groupₓ α] [inst_1 : Groupₓ β] [inst_2 : Fintype α] [inst_3 : Fintype β]   {f : α → β}, IsGroupHom f → Function.Surjective f → Function.Injective f) → (Unit) := sorry
-example : (Unit) → (∀ {α : Type u_1} {β : Type u_2} [inst : Groupₓ α] [inst_1 : Groupₓ β] [inst_2 : Fintype α] [inst_3 : Fintype β]   {f : α → β}, IsGroupHom f → Function.Surjective f → Function.Injective f) := sorry
+example : (∀ {α : Type u_1} {β : Type u_2} [inst : Groupₓ α] [inst_1 : Groupₓ β] [inst_2 : Fintype α] [inst_3 : Fintype β]   {f : α → β}, IsGroupHom f → Function.Surjective f → Function.Injective f) → ({α : Type u} →  [Finite α] → (f: FreeGroup α → FreeGroup α) → (IsGroupHom f) → f.Surjective → f.Injective) := sorry
+example : ({α : Type u} →  [Finite α] → (f: FreeGroup α → FreeGroup α) → (IsGroupHom f) → f.Surjective → f.Injective) → (∀ {α : Type u_1} {β : Type u_2} [inst : Groupₓ α] [inst_1 : Groupₓ β] [inst_2 : Fintype α] [inst_3 : Fintype β]   {f : α → β}, IsGroupHom f → Function.Surjective f → Function.Injective f) := sorry
 
 /-- Every positive even integer can be written as the sum of two primes. -/
-example : (∀ {n : ℕ}, 0 < n → Even n → ∃ p q, Nat.Prime p ∧ Nat.Prime q ∧ p + q = n) → (Unit) := sorry
-example : (Unit) → (∀ {n : ℕ}, 0 < n → Even n → ∃ p q, Nat.Prime p ∧ Nat.Prime q ∧ p + q = n) := sorry
+example : (∀ {n : ℕ}, 0 < n → Even n → ∃ p q, Nat.Prime p ∧ Nat.Prime q ∧ p + q = n) → (∀ n : ℕ, n > 0 → Even n → ∃ p q : ℕ, Prime p → Prime q → n = p + q) := sorry
+example : (∀ n : ℕ, n > 0 → Even n → ∃ p q : ℕ, Prime p → Prime q → n = p + q) → (∀ {n : ℕ}, 0 < n → Even n → ∃ p q, Nat.Prime p ∧ Nat.Prime q ∧ p + q = n) := sorry
 
 /-- Every matrix satisfies its own characteristic polynomial. -/
-example : (∀ {R : Type u} [inst : CommRingₓ R] [inst_1 : Nontrivial R] {n : Type w} [inst_2 : DecidableEq n] [inst_3 : Fintype n]   (M : Matrix n n R), AlgHom.toFun (Polynomial.aeval M) (Matrix.charpoly M) = 0) → (Unit) := sorry
-example : (Unit) → (∀ {R : Type u} [inst : CommRingₓ R] [inst_1 : Nontrivial R] {n : Type w} [inst_2 : DecidableEq n] [inst_3 : Fintype n]   (M : Matrix n n R), AlgHom.toFun (Polynomial.aeval M) (Matrix.charpoly M) = 0) := sorry
+example : (∀ {R : Type u} [inst : CommRingₓ R] [inst_1 : Nontrivial R] {n : Type w} [inst_2 : DecidableEq n] [inst_3 : Fintype n]   (M : Matrix n n R), AlgHom.toFun (Polynomial.aeval M) (Matrix.charpoly M) = 0) → ({R : Type u} →  [CommRingₓ R] →  {n : Type v} →  [DecidableEq n] →  [Fintype n] →  (M : Matrix n n R) → (Polynomial.aeval M) M.charpoly = 0) := sorry
+example : ({R : Type u} →  [CommRingₓ R] →  {n : Type v} →  [DecidableEq n] →  [Fintype n] →  (M : Matrix n n R) → (Polynomial.aeval M) M.charpoly = 0) → (∀ {R : Type u} [inst : CommRingₓ R] [inst_1 : Nontrivial R] {n : Type w} [inst_2 : DecidableEq n] [inst_3 : Fintype n]   (M : Matrix n n R), AlgHom.toFun (Polynomial.aeval M) (Matrix.charpoly M) = 0) := sorry
 
 /-- If the square of a number is even, the number itself is even. -/
-example : (∀ {M : Type u} [inst : Semiring M] [inst_1 : DecidableEq M] (a : M), Even (a * a) → Even a) → (Unit) := sorry
-example : (Unit) → (∀ {M : Type u} [inst : Semiring M] [inst_1 : DecidableEq M] (a : M), Even (a * a) → Even a) := sorry
+example : (∀ {M : Type u} [inst : Semiring M] [inst_1 : DecidableEq M] (a : M), Even (a * a) → Even a) → (∀ n : ℕ, Even (n^2) → Even n) := sorry
+example : (∀ n : ℕ, Even (n^2) → Even n) → (∀ {M : Type u} [inst : Semiring M] [inst_1 : DecidableEq M] (a : M), Even (a * a) → Even a) := sorry
 
 
 /-- If every point of a subset of a topological space is contained in some open set, the subset itself is open. -/
-example : (∀ {α : Type u} [inst : TopologicalSpace α] {s : Set α}, (∀ (x : α), x ∈ s → ∃ t, IsOpen t ∧ x ∈ t) → IsOpen s) → (Unit) := sorry
-example : (Unit) → (∀ {α : Type u} [inst : TopologicalSpace α] {s : Set α}, (∀ (x : α), x ∈ s → ∃ t, IsOpen t ∧ x ∈ t) → IsOpen s) := sorry
+example : (∀ {α : Type u} [inst : TopologicalSpace α] {s : Set α}, (∀ (x : α), x ∈ s → ∃ t, IsOpen t ∧ x ∈ t) → IsOpen s) → ({X : Type u} →  [TopologicalSpace X] →  (S : Set X) →  (∀ x ∈ S, ∃ U : Set X, IsOpen U) → IsOpen S) := sorry
+example : ({X : Type u} →  [TopologicalSpace X] →  (S : Set X) →  (∀ x ∈ S, ∃ U : Set X, IsOpen U) → IsOpen S) → (∀ {α : Type u} [inst : TopologicalSpace α] {s : Set α}, (∀ (x : α), x ∈ s → ∃ t, IsOpen t ∧ x ∈ t) → IsOpen s) := sorry
 
 /-- Every non-identity element of a free group is of infinite order. -/
-example : (∀ {α : Type u} [inst : DecidableEq α] {x : FreeGroup α}, x ≠ 1 → ¬IsOfFinOrder x) → (Unit) := sorry
-example : (Unit) → (∀ {α : Type u} [inst : DecidableEq α] {x : FreeGroup α}, x ≠ 1 → ¬IsOfFinOrder x) := sorry
+example : (∀ {α : Type u} [inst : DecidableEq α] {x : FreeGroup α}, x ≠ 1 → ¬IsOfFinOrder x) → ({G : Type u} →  [Groupₓ G] →  FreeGroup G → (∀ g : G, g ≠ 1 → orderOf g = 0)) := sorry
+example : ({G : Type u} →  [Groupₓ G] →  FreeGroup G → (∀ g : G, g ≠ 1 → orderOf g = 0)) → (∀ {α : Type u} [inst : DecidableEq α] {x : FreeGroup α}, x ≠ 1 → ¬IsOfFinOrder x) := sorry
 
 /-- For any two relatively prime positive integers $a$ and $b$, every sufficiently large natural number $N$ can be written as a linear combination $ax + by$ of $a$ and $b$, where both $x$ and $y$ are natural numbers. -/
-example : (∀ {m n : ℕ}, 0 < m → 0 < n → Nat.gcd m n = 1 → ∀ (N : ℕ), N > m * n → ∃ x y, N = m * x + n * y) → (Unit) := sorry
-example : (Unit) → (∀ {m n : ℕ}, 0 < m → 0 < n → Nat.gcd m n = 1 → ∀ (N : ℕ), N > m * n → ∃ x y, N = m * x + n * y) := sorry
+example : (∀ {m n : ℕ}, 0 < m → 0 < n → Nat.gcd m n = 1 → ∀ (N : ℕ), N > m * n → ∃ x y, N = m * x + n * y) → (∀ a b : ℕ, a > 0 → b > 0 → Nat.coprime a b → ∃ m : ℕ, ∀ N : ℕ, N > m → ∃ x y : ℕ, N = a*x + b*y) := sorry
+example : (∀ a b : ℕ, a > 0 → b > 0 → Nat.coprime a b → ∃ m : ℕ, ∀ N : ℕ, N > m → ∃ x y : ℕ, N = a*x + b*y) → (∀ {m n : ℕ}, 0 < m → 0 < n → Nat.gcd m n = 1 → ∀ (N : ℕ), N > m * n → ∃ x y, N = m * x + n * y) := sorry
+
+-- The ones below had no model answers
 
 /-- Every field is a ring. -/
 example : ({α : Type u_1} → [inst : Field α] → Ring α) → (Unit) := sorry
