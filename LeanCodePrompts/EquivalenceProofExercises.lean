@@ -1,24 +1,50 @@
 import Mathbin.All
+import Mathlib.Tactic.Basic
 import LeanCodePrompts.CheckParse
+import LeanCodePrompts.ThmInfo
 universe u v u_1 u_2
 
 /-- Every Nat.Prime that is `1` greater than a multiple of `4` can be expressed as the sum of two squares. -/
-example : (∀ {p : ℕ}, p % 4 = 1 → Nat.Prime p → ∃ a b, a ^ 2 + b ^ 2 = p) → (∀ p : ℕ, Nat.Prime p → (p % 4 = 1) → ∃ a b : ℕ, a ^ 2 + b ^ 2 = p) := sorry
-example : (∀ p : ℕ, Nat.Prime p → (p % 4 = 1) → ∃ a b : ℕ, a ^ 2 + b ^ 2 = p) → (∀ {p : ℕ}, p % 4 = 1 → Nat.Prime p → ∃ a b, a ^ 2 + b ^ 2 = p) := sorry
+theorem fermat_two_square0 : (∀ {p : ℕ}, p % 4 = 1 → Nat.Prime p → ∃ a b, a ^ 2 + b ^ 2 = p) → (∀ p : ℕ, Nat.Prime p → (p % 4 = 1) → ∃ a b : ℕ, a ^ 2 + b ^ 2 = p) := by
+  intros h
+  intros
+  apply h <;> assumption
+
+theorem fermat_two_square1 : (∀ p : ℕ, Nat.Prime p → (p % 4 = 1) → ∃ a b : ℕ, a ^ 2 + b ^ 2 = p) → (∀ {p : ℕ}, p % 4 = 1 → Nat.Prime p → ∃ a b, a ^ 2 + b ^ 2 = p) := by
+  intro h
+  intros
+  apply h <;> assumption
 
 /-- The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares. -/
-example : (∀ {a b : ℤ},   ∃ x y z w,     a = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2 ∧ b = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2 →       ∃ x y z w, (a * b) = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) → (let is_sum_of_four_squares : ℕ → Prop := λ n : ℕ => ∃ (a b c d : ℕ), n = a^2 + b^2 + c^2 + d^2;
+theorem euler_four_square_identity0 : (∀ {a b : ℤ},   ∃ x y z w,     a = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2 ∧ b = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2 →       ∃ x y z w, a * b = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) → (let is_sum_of_four_squares : ℕ → Prop := λ n : ℕ => ∃ (a b c d : ℕ), n = a^2 + b^2 + c^2 + d^2;
   ∀ (x y : ℕ), is_sum_of_four_squares x → is_sum_of_four_squares y → is_sum_of_four_squares (x * y)) := sorry
-example : (let is_sum_of_four_squares : ℕ → Prop := λ n : ℕ => ∃ (a b c d : ℕ), n = a^2 + b^2 + c^2 + d^2;
+theorem euler_four_square_identity1 : (let is_sum_of_four_squares : ℕ → Prop := λ n : ℕ => ∃ (a b c d : ℕ), n = a^2 + b^2 + c^2 + d^2;
   ∀ (x y : ℕ), is_sum_of_four_squares x → is_sum_of_four_squares y → is_sum_of_four_squares (x * y)) → (∀ {a b : ℤ},   ∃ x y z w,     a = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2 ∧ b = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2 →       ∃ x y z w, (a * b) = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) := sorry
 
 /-- A ring with all elements idempotent is commutative. -/
-example : ({R : Type u} → [inst : CommRing R] → (∀ (x : R), (x * x) = x) → CommRing R) → ({R : Type u} →  [Ring R] →  (∀ x : R, (x * x) = 1) → CommRing R) := sorry
-example : ({R : Type u} →  [Ring R] →  (∀ x : R, (x * x) = 1)) → ({R : Type u} → [inst : CommRing R] → (∀ (x : R), (x * x) = x) → CommRing R) := sorry
+example : ({R : Type u} → [inst : CommRing R] → (∀ (x : R), (x * x) = x) → CommRing R) → ({R : Type u} →  [Ring R] →  (∀ x : R, (x * x) = x) → CommRing R) := by
+  intro h R RRing hyp
+  -- the typeclasses seem to be causing issues
+  haveI : CommRing R := sorry
+  apply h
+  intro x
+  sorry -- apply hyp
+
+example : ({R : Type u} →  [Ring R] →  (∀ x : R, x * x = 1)) → ({R : Type u} → [inst : CommRing R] → (∀ (x : R), x * x = x) → CommRing R) := sorry
 
 /-- There are infinitely many pairs of Nat.Primes that differ exactly by `2`. -/
-example : (∀ (n : ℕ), ∃ p₁ p₂, Nat.Prime p₁ ∧ Nat.Prime p₂ ∧ p₁ + 2 = p₂ ∧ ((2 * n) < p₂)) → (∀ n : ℕ, ∃ p : ℕ, p > n → Nat.Prime p → Nat.Prime (p + 2)) := sorry
-example : (∀ n : ℕ, ∃ p : ℕ, p > n → Nat.Prime p → Nat.Prime (p + 2)) → (∀ (n : ℕ), ∃ p₁ p₂, Nat.Prime p₁ ∧ Nat.Prime p₂ ∧ p₁ + 2 = p₂ ∧ (2 * n) < p₂) := sorry
+example : (∀ (n : ℕ), ∃ p₁ p₂, Nat.Prime p₁ ∧ Nat.Prime p₂ ∧ p₁ + 2 = p₂ ∧ (2 * n) < p₂) → (∀ n : ℕ, ∃ p : ℕ, p > n ∧ Nat.Prime p ∧ Nat.Prime (p + 2)) := by
+  intro h n
+  let ⟨p₁, p₂, Prime_p₁, Prime_p₂, hyp₁, hyp₂⟩ := h n
+  use p₁
+  apply And.intro -- `split` does not appear to exist yet
+  sorry -- needs `linarith` or `norm_num`
+  apply And.intro
+  exact Prime_p₁
+  rw [hyp₁]
+  exact Prime_p₂
+
+example : (∀ n : ℕ, ∃ p : ℕ, p > n → Nat.Prime p → Nat.Prime (p + 2)) → (∀ (n : ℕ), ∃ p₁ p₂, Nat.Prime p₁ ∧ Nat.Prime p₂ ∧ p₁ + 2 = p₂ ∧ 2 * n < p₂) := sorry
 
 
 
@@ -100,3 +126,13 @@ example : (Unit) → ((R : Type u_1) → [inst : Ring R] → AddGroup (Units R))
 example : (∀ {η : Type u_1} (G : Type u_2) [inst : Group G] {Γ : Type u_3} [inst_1 : Group Γ],   Monoid.IsTorsionFree (G × Γ) → Monoid.IsTorsionFree G ∧ Monoid.IsTorsionFree Γ) → (Unit) := sorry
 example : (Unit) → (∀ {η : Type u_1} (G : Type u_2) [inst : Group G] {Γ : Type u_3} [inst_1 : Group Γ],   Monoid.IsTorsionFree (G × Γ) → Monoid.IsTorsionFree G ∧ Monoid.IsTorsionFree Γ) := sorry
 
+
+-- #eval do
+--   let l ← getFileThmInfo
+--   --let l' := l.map Prod.fst |>.map Lean.Name.toString |>.qsort
+--   -- return l'.groupBy $ λ s s' => s.dropRight 1 == s'.dropRight 1
+--   return 1
+
+-- #eval [1, 1, 2, 2].groupBy (· = ·)
+
+-- #eval (Lean.Name.toString `fermat_two_square0).dropRight 1

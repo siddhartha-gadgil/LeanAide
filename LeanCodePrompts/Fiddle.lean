@@ -2,6 +2,15 @@ import Lean
 import Lean.Parser
 open Lean Meta Elab Parser
 
+set_option pp.all true
+example  : a = a := by
+    apply Eq.trans
+    rename_i α 
+    exact rfl
+    rename_i β 
+    exact rfl
+
+
 def runParserCategoryPartial  (catName : Name) (input : String) (fileName := "<input>") : MetaM <| Except String Syntax := do
   let env ← getEnv
   let c := mkParserContext (mkInputContext input fileName) { env := env, options := {} }
@@ -172,4 +181,5 @@ def js := Json.mkObj [
 #eval multiline
 #eval multiline.quote
 #eval js.pretty (10000)
-#eval IO.FS.writeFile "test.json" (js.pretty (10000))
+-- #eval IO.FS.writeFile "test.json" (js.pretty (10000))
+
