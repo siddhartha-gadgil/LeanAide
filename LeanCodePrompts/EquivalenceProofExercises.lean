@@ -16,10 +16,46 @@ theorem fermat_two_square1 : (∀ p : ℕ, Prime p → (p % 4 = 1) → ∃ a b :
   apply h <;> assumption
 
 /-- The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares. -/
-theorem euler_four_square_identity0 : (∀ {a b : ℤ},   ∃ x y z w,     a = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2 ∧ b = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2 →       ∃ x y z w, a * b = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) → (let is_sum_of_four_squares : ℕ → Prop := λ n : ℕ => ∃ (a b c d : ℕ), n = a^2 + b^2 + c^2 + d^2;
-  ∀ (x y : ℕ), is_sum_of_four_squares x → is_sum_of_four_squares y → is_sum_of_four_squares (x * y)) := sorry
+theorem euler_four_square_identity0 : (∀ {a b : ℤ},   (∃ x y z w, a = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) → (∃ x y z w, b = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) → ∃ x y z w, a * b = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) → 
+  (let is_sum_of_four_squares : ℕ → Prop := λ n : ℕ => ∃ (a b c d : ℕ), n = a^2 + b^2 + c^2 + d^2;
+  ∀ (x y : ℕ), is_sum_of_four_squares x → is_sum_of_four_squares y → is_sum_of_four_squares (x * y)) := by 
+  let is_sum_of_four_squares_int : ℤ → Prop := λ n : ℤ => ∃ (a b c d : ℤ), n = a^2 + b^2 + c^2 + d^2
+  intros h1 h2 x y hx hy
+  suffices : ∀ (a : ℕ), is_sum_of_four_squares_int (a : ℤ) ↔ h2 a
+  · rw [← this (x * y)] 
+    rw [Nat.cast_mul]
+    refine @h1 (x : ℤ) (y : ℤ) (by refine (this x).2 hx) (by refine (this y).2 hy)
+  intro z
+  refine ⟨λ h, by 
+    rcases h with ⟨a, b, c, d, h⟩
+    refine ⟨Int.natAbs a, Int.natAbs b, Int.natAbs c, Int.natAbs d, by 
+      have hn : ∀ (n : ℤ), (Int.natAbs n : ℤ) ^ 2 = n ^ 2
+      · intro n
+        have : (@OfNat.ofNat ℕ 2 (instOfNatNat 2) : ℕ) = bit0 One.one
+        · sorry
+        have h6 := @Int.nat_abs_eq_iff_sq_eq n (Int.natAbs n : ℤ)
+        rw [eq_comm]
+        rw [this]
+        -- this is the issue
+        have hpow : ∀ (z : ℤ) (n : ℕ), @HPow.hPow ℤ ℕ ℤ instHPow z n = @HPow.hPow ℤ ℕ ℤ Monoid.HPow z n
+        · sorry
+        simp_rw [← hpow]
+        refine h6.1 sorry
+      rw [← hn a, ← hn b, ← hn c, ← hn d] at h
+      simp_rw [← Nat.cast_pow] at h
+      simp_rw [← Nat.cast_add] at h
+      norm_cast at h ⟩, 
+    λ h, by 
+    rcases h with ⟨a, b, c, d, h⟩
+    refine ⟨(a : ℤ), (b : ℤ), (c : ℤ), (d : ℤ), by 
+      rw [h]
+      simp_rw [Nat.cast_add]
+      simp_rw [Nat.cast_pow] ⟩ ⟩
+
+  
 theorem euler_four_square_identity1 : (let is_sum_of_four_squares : ℕ → Prop := λ n : ℕ => ∃ (a b c d : ℕ), n = a^2 + b^2 + c^2 + d^2;
-  ∀ (x y : ℕ), is_sum_of_four_squares x → is_sum_of_four_squares y → is_sum_of_four_squares (x * y)) → (∀ {a b : ℤ},   ∃ x y z w,     a = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2 ∧ b = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2 →       ∃ x y z w, a * b = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) := sorry
+  ∀ (x y : ℕ), is_sum_of_four_squares x → is_sum_of_four_squares y → is_sum_of_four_squares (x * y)) → (∀ {a b : ℤ},   ∃ x y z w,     a = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2 ∧ b = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2 →       ∃ x y z w, a * b = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) := by 
+  sorry
 
 /-- A ring with all elements idempotent is commutative. -/
 example : ({R : Type u} → [inst : CommRing R] → (∀ (x : R), x * x = x) → CommRing R) → ({R : Type u} →  [Ring R] →  (∀ x : R, x * x = x) → CommRing R) := by
