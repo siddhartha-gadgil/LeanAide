@@ -62,8 +62,62 @@ theorem euler_four_square_identity0 : (∀ {a b : ℤ},   (∃ x y z w, a = x ^ 
 
   
 theorem euler_four_square_identity1 : (let is_sum_of_four_squares : ℕ → Prop := λ n : ℕ => ∃ (a b c d : ℕ), n = a^2 + b^2 + c^2 + d^2;
-  ∀ (x y : ℕ), is_sum_of_four_squares x → is_sum_of_four_squares y → is_sum_of_four_squares (x * y)) → (∀ {a b : ℤ},   ∃ x y z w,     a = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2 ∧ b = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2 →       ∃ x y z w, a * b = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) := by 
-  sorry
+  ∀ (x y : ℕ), is_sum_of_four_squares x → is_sum_of_four_squares y → is_sum_of_four_squares (x * y)) → (∀ {a b : ℤ}, 
+  (∃ x_1 y z w, a = x_1 ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) → 
+  (∃ x_2 y z w, b = x_2 ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) → 
+  ∃ x y z w, a * b = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) := by 
+  intros h1 x y hx hy
+  suffices nat_abs_eq : ∀ {z : ℤ} (hz : 0 ≤ z), (Int.natAbs z : ℤ) = z
+  · have sum_of_four_squares_nonneg : ∀ (a b c d : ℤ), 0 ≤ a^2 + b^2 + c^2 + d^2 := sorry
+    rcases hx with ⟨ax, bx, cx, dx, hx⟩
+    rcases hy with ⟨ay, b'y, cy, dy, hy⟩
+    have x_nonneg : 0 ≤ x := hx ▸ (sum_of_four_squares_nonneg _ _ _ _)
+    have y_nonneg : 0 ≤ y := hy ▸ (sum_of_four_squares_nonneg _ _ _ _)
+    rw [← nat_abs_eq x_nonneg] at hx
+    rw [← nat_abs_eq y_nonneg] at hy
+    have mul_nonneg : 0 ≤ x * y 
+    · -- this should work but some typeclass instance error : refine Int.mul_le_mul_of_nonneg_left x_nonneg y_nonneg
+      sorry
+    rw [← nat_abs_eq mul_nonneg]
+    -- copied from last proof
+    have hn : ∀ (n : ℤ), (Int.natAbs n : ℤ) ^ 2 = n ^ 2
+    · intro n
+      -- this is the issue
+      have hpow : ∀ (z : ℤ) (n : ℕ), @HPow.hPow ℤ ℕ ℤ instHPow z n = @HPow.hPow ℤ ℕ ℤ Monoid.HPow z n
+      · intros z n
+        change Monoidₓ.npow n z = Int.pow z n
+        induction n 
+        · change Monoidₓ.npow Zero.zero z = 1
+          rw [Monoidₓ.npow_zero' z]
+          simp only
+        · rw [Int.pow, Monoidₓ.npow_succ' _, _root_.mul_comm]
+          refine congr_arg2 _ (by assumption) rfl
+      simp_rw [← hpow]
+      refine Int.nat_abs_eq_iff_sq_eq.1 (by 
+        conv_rhs =>
+        · rw [← Int.nat_abs_abs] 
+        refine congr_arg _ (by 
+        rw [Int.abs_eq_nat_abs]
+        norm_num
+        norm_cast ) )
+    rw [← hn ax, ← hn bx, ← hn cx, ← hn dx] at hx
+    rw [← hn ay, ← hn b'y, ← hn cy, ← hn dy] at hy
+    simp_rw [← Nat.cast_pow, ← Nat.cast_add] at hx
+    simp_rw [← Nat.cast_pow, ← Nat.cast_add] at hy
+    norm_cast at hx
+    norm_cast at hy
+    rw [Int.nat_abs_mul]
+    specialize h1 (Int.natAbs x) (Int.natAbs y)
+    simp only at h1
+    obtain ⟨a, b, c, d, h⟩ := h1 ⟨Int.natAbs ax, Int.natAbs bx, Int.natAbs cx, Int.natAbs dx, hx⟩ ⟨Int.natAbs ay, Int.natAbs b'y, Int.natAbs cy, Int.natAbs dy, hy⟩
+    refine ⟨(a : ℤ), (b : ℤ), (c : ℤ), (d : ℤ), h ▸ by norm_cast ⟩
+  intros z hz
+  rw [Int.natAbs]
+  induction z
+  · simp only
+    norm_cast
+  exfalso
+  norm_cast at hz
 
 /-- A ring with all elements idempotent is commutative. -/
 example : ({R : Type u} → [inst : CommRing R] → (∀ (x : R), x * x = x) → CommRing R) → ({R : Type u} →  [Ring R] →  (∀ x : R, x * x = x) → CommRing R) := by
