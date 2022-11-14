@@ -31,16 +31,24 @@ theorem euler_four_square_identity0 : (∀ {a b : ℤ},   (∃ x y z w, a = x ^ 
     refine ⟨Int.natAbs a, Int.natAbs b, Int.natAbs c, Int.natAbs d, by 
       have hn : ∀ (n : ℤ), (Int.natAbs n : ℤ) ^ 2 = n ^ 2
       · intro n
-        have : (@OfNat.ofNat ℕ 2 (instOfNatNat 2) : ℕ) = bit0 One.one
-        · sorry
-        have h6 := @Int.nat_abs_eq_iff_sq_eq n (Int.natAbs n : ℤ)
-        rw [eq_comm]
-        rw [this]
         -- this is the issue
         have hpow : ∀ (z : ℤ) (n : ℕ), @HPow.hPow ℤ ℕ ℤ instHPow z n = @HPow.hPow ℤ ℕ ℤ Monoid.HPow z n
-        · sorry
+        · intros z n
+          change Monoidₓ.npow n z = Int.pow z n
+          induction n 
+          · change Monoidₓ.npow Zero.zero z = 1
+            rw [Monoidₓ.npow_zero' z]
+            simp only
+          · rw [Int.pow, Monoidₓ.npow_succ' _, _root_.mul_comm]
+            refine congr_arg2 _ (by assumption) rfl
         simp_rw [← hpow]
-        refine h6.1 sorry
+        refine Int.nat_abs_eq_iff_sq_eq.1 (by 
+          conv_rhs =>
+          · rw [← Int.nat_abs_abs] 
+          refine congr_arg _ (by 
+            rw [Int.abs_eq_nat_abs]
+            norm_num
+            norm_cast ) )
       rw [← hn a, ← hn b, ← hn c, ← hn d] at h
       simp_rw [← Nat.cast_pow] at h
       simp_rw [← Nat.cast_add] at h
