@@ -16,7 +16,7 @@ theorem fermat_two_square1 : (∀ p : ℕ, Nat.Prime p → (p % 4 = 1) → ∃ a
   apply h <;> assumption
 
 /-- The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares. -/
-theorem euler_four_square_identity0 : (∀ {a b : ℤ},   ∃ x y z w,     a = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2 ∧ b = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2 →       ∃ x y z w, HMul.hMul a b = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) → (let is_sum_of_four_squares : ℕ → Prop := λ n : ℕ => ∃ (a b c d : ℕ), n = a^2 + b^2 + c^2 + d^2;
+theorem euler_four_square_identity0 : (∀ {a b : ℤ},   ∃ x y z w,     a = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2 ∧ ∃ x y z w, b = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2 →       ∃ x y z w, (a * b) = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) → (let is_sum_of_four_squares : ℕ → Prop := λ n : ℕ => ∃ (a b c d : ℕ), n = a^2 + b^2 + c^2 + d^2;
   ∀ (x y : ℕ), is_sum_of_four_squares x → is_sum_of_four_squares y → is_sum_of_four_squares (x * y)) := sorry
 theorem euler_four_square_identity1 : (let is_sum_of_four_squares : ℕ → Prop := λ n : ℕ => ∃ (a b c d : ℕ), n = a^2 + b^2 + c^2 + d^2;
   ∀ (x y : ℕ), is_sum_of_four_squares x → is_sum_of_four_squares y → is_sum_of_four_squares (x * y)) → (∀ {a b : ℤ},   ∃ x y z w,     a = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2 ∧ b = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2 →       ∃ x y z w, (a * b) = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) := sorry
@@ -30,10 +30,10 @@ example : ({R : Type u} → [inst : CommRing R] → (∀ (x : R), (x * x) = x) �
   intro x
   sorry -- apply hyp
 
-example : ({R : Type u} →  [Ring R] →  (∀ x : R, HMul.hMul x x = 1)) → ({R : Type u} → [inst : CommRing R] → (∀ (x : R), HMul.hMul x x = x) → CommRing R) := sorry
+example : ({R : Type u} →  [Ring R] →  (∀ x : R, (x * x) = 1)) → ({R : Type u} → [inst : CommRing R] → (∀ (x : R), (x * x) = x) → CommRing R) := sorry
 
 /-- There are infinitely many pairs of Nat.Primes that differ exactly by `2`. -/
-example : (∀ (n : ℕ), ∃ p₁ p₂, Nat.Prime p₁ ∧ Nat.Prime p₂ ∧ p₁ + 2 = p₂ ∧ (2 * n) < p₂) → (∀ n : ℕ, ∃ p : ℕ, p > n ∧ Nat.Prime p ∧ Nat.Prime (p + 2)) := by
+example : (∀ (n : ℕ), ∃ p₁ p₂, Nat.Prime p₁ ∧ Nat.Prime p₂ ∧ p₁ + 2 = p₂ ∧ (2 + n) < p₂) → (∀ n : ℕ, ∃ p : ℕ, p > n ∧ Nat.Prime p ∧ Nat.Prime (p + 2)) := by
   intro h n
   let ⟨p₁, p₂, Prime_p₁, Prime_p₂, hyp₁, hyp₂⟩ := h n
   use p₁
@@ -44,7 +44,14 @@ example : (∀ (n : ℕ), ∃ p₁ p₂, Nat.Prime p₁ ∧ Nat.Prime p₂ ∧ p
   rw [hyp₁]
   exact Prime_p₂
 
-example : (∀ n : ℕ, ∃ p : ℕ, p > n → Nat.Prime p → Nat.Prime (p + 2)) → (∀ (n : ℕ), ∃ p₁ p₂, Nat.Prime p₁ ∧ Nat.Prime p₂ ∧ p₁ + 2 = p₂ ∧ HMul.hMul 2 n < p₂) := sorry
+example : (∀ n : ℕ, ∃ p : ℕ, p > n ∧ Nat.Prime p ∧ Nat.Prime (p + 2)) → (∀ (n : ℕ), ∃ p₁ p₂, Nat.Prime p₁ ∧ Nat.Prime p₂ ∧ p₁ + 2 = p₂ ∧ 2 + n < p₂) := by
+  intro h n
+  let ⟨p, hpn, Prime_p, Prime_pp2⟩ := h n
+  use p
+  use p + 2
+  have : (2 + n) < p + 2 := sorry -- linarith
+  exact ⟨Prime_p, Prime_pp2, rfl, this⟩
+
 
 
 
