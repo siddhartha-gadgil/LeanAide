@@ -11,7 +11,7 @@ open Lean Meta
 open Lean Elab Parser Command
 
 /-- extract prompt pairs from JSON response to local server -/
-def sentenceSimPairs(s: String) : MetaM  <| Except String (Array (String × String)) := do
+def sentenceSimPairs(s: String)(theoremField: String := "theorem") : MetaM  <| Except String (Array (String × String)) := do
   let json ← readJson (s) 
   -- logInfo "obtained json"
   match json.getArr? with
@@ -24,13 +24,16 @@ def sentenceSimPairs(s: String) : MetaM  <| Except String (Array (String × Stri
           match js.getStr? with
           | Except.error e => throwError s!"Error {e} while processing {js} as string"  
           | Except.ok s => pure s
-      let thm ←  match (json.getObjVal? "theorem") with
+      -- logInfo s!"theorem-field: {json.getObjVal? theoremField}"
+      -- logInfo s!"theorem: {json.getObjVal? "theorem"}"
+      let thm ←  match (json.getObjVal? theoremField) with
         | Except.error e => throwError s!"Error {e} while getting theorem"
         | Except.ok js => 
           match js.getStr? with
           | Except.error e => throwError s!"Error {e} while processing {js} as string"  
           | Except.ok s => pure s
       return (docstring, thm)
+    -- logInfo m!"pairs: {pairs}"
     return Except.ok pairs
   | Except.error e => return Except.error e
 
@@ -56,6 +59,16 @@ s!"theorem {thm} :=
 
 {acc}"
           ) s!"theorem {statement} := 
+/- "
+
+/-- make prompt for reverse translation from prompt pairs -/
+def makeFlipStatementsPrompt(statement : String)(pairs: Array (String × String)) : String := 
+      pairs.foldr (fun  (ds, thm) acc => 
+s!"{thm} := 
+/- {ds} -/
+
+{acc}"
+          ) s!"{statement} := 
 /- "
 
 def openAIKey : IO (Option String) := IO.getEnv "OPENAI_API_KEY"
@@ -153,9 +166,14 @@ def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
       let simJsonOut ←  
         IO.Process.output {cmd:= "curl", args:= 
           #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, s!"{← leanAideIP}/nearest_prompts"]}
-      let pairs? ← sentenceSimPairs simJsonOut.stdout
+      let pairs? ← sentenceSimPairs simJsonOut.stdout "theorem"
       -- IO.println s!"obtained sentence similarity; time : {← IO.monoMsNow}"
-      let allPairs := pairs?.toOption.getD #[]        
+      let allPairs : Array (String × String) ← 
+        match pairs? with
+        | Except.error e =>
+            throwError e            
+        | Except.ok pairs => pure pairs    
+      -- logInfo m!"all pairs: {allPairs}"        
       let kwPairs :=
         if numKW >0 
         then ←  keywordBasedPrompts docPair s numKW scoreBound matchBound
@@ -168,6 +186,32 @@ def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
       let kwPairs ←  keywordBasedPrompts docPair s
       return (
           (pairs ++ kwPairs).toList.eraseDups.toArray, simJsonOut)
+
+/-- choosing pairs to build a prompt -/
+def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := "doc_string")(theoremField : String := "theorem")
+   : TermElabM (Array (String × String) × IO.Process.Output) := do
+      let jsData := Json.mkObj [
+        ("filename", "data/safe_prompts.json"),
+        ("field", field),
+        (field, s),
+        ("n", numSim),
+        ("model_name", "all-mpnet-base-v2")
+      ]
+      let simJsonOut ←  
+        IO.Process.output {cmd:= "curl", args:= 
+          #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, s!"{← leanAideIP}/nearest_prompts"]}
+      let pairs? ← sentenceSimPairs simJsonOut.stdout theoremField
+      -- IO.println s!"obtained sentence similarity; time : {← IO.monoMsNow}"
+      let allPairs : Array (String × String) ← 
+        match pairs? with
+        | Except.error e =>
+            throwError e
+            
+        | Except.ok pairs => pure pairs    
+      -- logInfo m!"all pairs: {allPairs}"        
+      return (
+          allPairs.toList.eraseDups.toArray, simJsonOut)
+
 
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
@@ -276,6 +320,32 @@ def leanToPrompt (thm: String)(numSim : Nat:= 5)(numKW: Nat := 1)(temp : JsonNum
         | Except.ok js => js
     return outJson.getStr!
 
+/-- reverse translation from `Lean` to natural language -/
+def statementToPrompt (thm: String)(numSim : Nat:= 5)(temp : JsonNumber := 0) : TermElabM String := do
+    let (pairs, _) ← getPromptPairsGeneral thm numSim "statement"
+    let prompt := makeFlipStatementsPrompt thm pairs
+    -- elabLog prompt
+    let fullJson ← openAIQuery prompt 1 temp
+    let outJson := 
+      (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
+    let out? := (outJson.getArrVal? 0).bind fun js => js.getObjVal? "text"
+    let outJson := 
+        match (out?) with
+        | Except.error s => Json.str s!"query for translation failed: {s}" 
+        | Except.ok js => js
+    return outJson.getStr!
+
+def egThm := "theorem eg_thm : ∀ n: Nat, ∃ m : Nat, m > n ∧ m % 2 = 0"
+
+def pairs := getPromptPairsGeneral egThm 5 "statement" "statement"
+
+def prompt := do
+  let (pairs, _) ← pairs
+  return makeFlipStatementsPrompt egThm pairs
+
+#eval prompt
+
+#eval statementToPrompt egThm 5 0
 -- #eval leanToPrompt "∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p = 2 ∨ p % 2 = 1"
 
 -- #eval leanToPrompt "∀ {α : Type u} {x : FreeGroup α}, x ≠ 1 → ¬IsOfFinOrder x"
