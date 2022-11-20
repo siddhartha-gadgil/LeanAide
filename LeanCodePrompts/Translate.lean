@@ -321,7 +321,7 @@ def leanToPrompt (thm: String)(numSim : Nat:= 5)(numKW: Nat := 1)(temp : JsonNum
     return outJson.getStr!
 
 /-- reverse translation from `Lean` to natural language -/
-def statementToPrompt (thm: String)(numSim : Nat:= 5)(temp : JsonNumber := 0) : TermElabM String := do
+def statementToDoc (thm: String)(numSim : Nat:= 5)(temp : JsonNumber := 0) : TermElabM String := do
     let (pairs, _) ← getPromptPairsGeneral thm numSim "statement"
     let prompt := makeFlipStatementsPrompt thm pairs
     -- elabLog prompt
@@ -337,15 +337,15 @@ def statementToPrompt (thm: String)(numSim : Nat:= 5)(temp : JsonNumber := 0) : 
 
 def egThm := "theorem eg_thm : ∀ n: Nat, ∃ m : Nat, m > n ∧ m % 2 = 0"
 
-def pairs := getPromptPairsGeneral egThm 5 "statement" "statement"
+def egPairs := getPromptPairsGeneral egThm 5 "statement" "statement"
 
-def prompt := do
-  let (pairs, _) ← pairs
+def egPrompt := do
+  let (pairs, _) ← egPairs
   return makeFlipStatementsPrompt egThm pairs
 
-#eval prompt
+#eval egPrompt
 
-#eval statementToPrompt egThm 5 0
+#eval statementToDoc egThm 5 0
 -- #eval leanToPrompt "∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p = 2 ∨ p % 2 = 1"
 
 -- #eval leanToPrompt "∀ {α : Type u} {x : FreeGroup α}, x ≠ 1 → ¬IsOfFinOrder x"
