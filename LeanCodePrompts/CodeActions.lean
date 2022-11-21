@@ -19,13 +19,9 @@ open Lean Server Lsp RequestM
       let info? := snap.infoTree.findInfo? (·.tailPos?.any (· ≥ snap.endPos))
       -- the `Syntax` corresponding to the `Info` node
       let stx? := (·.stx) <$> info?
-      -- the printed form of the `Syntax`
-      let stmt? := stx? >>= Syntax.reprint
 
-      if let some stmt := stmt? then
-        -- assuming the input is of the form `/--s-/`
-        let s := stmt.drop 3 |>.dropRight 2
-        dbg_trace s
+      if let some stx := stx? then
+        let s := stx[0]![0]![1]! |>.getAtomVal.dropRight 2
         let translation' := snap.runCoreM doc.meta $ translateViewCore s
         EIO.toIO (λ _ => IO.userError "Translation failed.") translation'
       else throw $ IO.userError "Failed to extract snapshot." 
