@@ -411,6 +411,34 @@ elab "//-" cb:commentBody  : term => do
   logInfo m!"{e}"
   return e
 
+def uncurriedView(numArgs: Nat)(e: Expr) : MetaM String :=
+  match numArgs with
+  | 0 => do return " : " ++ (← e.view)
+  | k +1 => 
+    match e with
+    | Expr.forallE n t b bi => do
+      let core := s!"{n.eraseMacroScopes} : {← t.view}"
+      let typeString :=s!"{← t.view}"
+      let argString := match bi with
+      | BinderInfo.implicit => "{"++ core ++ "}"
+      | BinderInfo.strictImplicit => "{{ "++ core ++ "}}"
+      | BinderInfo.instImplicit =>
+        if (`inst).isPrefixOf n then s!"[{typeString}]"
+          else s!"[{core}]"
+      | BinderInfo.default => s!"({core})" 
+      return " " ++ argString ++ (← uncurriedView k b)
+    | _ => do return " : " ++ (← e.view)
+
+elab "uncurry2" e:term : term => do
+  let e ← Term.elabTerm e none
+  -- logInfo m!"{e}"
+  let e ← uncurriedView 2 e
+  return mkStrLit e
+
+universe u
+
+#eval uncurry2 ({α : Type u} →  (l: List α) →  (a : α) → a = a)
+
 def translateViewM (s: String) : TermElabM String := do
   let js ← getCodeJson  s
   let e ← jsonToExpr' js

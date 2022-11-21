@@ -183,3 +183,4 @@ def js := Json.mkObj [
 #eval js.pretty (10000)
 -- #eval IO.FS.writeFile "test.json" (js.pretty (10000))
 
+#check Expr.forallE
