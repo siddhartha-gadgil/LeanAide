@@ -413,9 +413,6 @@ elab "//-" cb:commentBody  : term => do
   trace[Translate.info] m!"{e}"
   return e
 
-#check forallBoundedTelescope
-#check Array.zip
-
 def uncurriedView(numArgs: Nat)(e: Expr) : MetaM String :=
   match numArgs with
   | 0 => do return " : " ++ (← e.view)
