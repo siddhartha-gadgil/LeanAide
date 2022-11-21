@@ -343,9 +343,10 @@ def egPrompt := do
   let (pairs, _) ← egPairs
   return makeFlipStatementsPrompt egThm pairs
 
-#eval egPrompt
+-- #eval egPrompt
 
-#eval statementToDoc egThm 5 0
+-- #eval statementToDoc egThm 5 0
+
 -- #eval leanToPrompt "∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p = 2 ∨ p % 2 = 1"
 
 -- #eval leanToPrompt "∀ {α : Type u} {x : FreeGroup α}, x ≠ 1 → ¬IsOfFinOrder x"
@@ -409,3 +410,13 @@ elab "//-" cb:commentBody  : term => do
   let e ← jsonToExpr' js
   logInfo m!"{e}"
   return e
+
+def translateViewM (s: String) : TermElabM String := do
+  let js ← getCodeJson  s
+  let e ← jsonToExpr' js
+  e.view
+
+/-- view of string in core; to be run with Snapshot.runCore
+-/
+def translateViewCore (s: String) : CoreM String := 
+  (translateViewM s).run'.run'
