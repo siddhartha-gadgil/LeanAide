@@ -231,7 +231,8 @@ def getCodeJson (s: String)(numSim : Nat:= 5)(numKW: Nat := 1)(includeFixed: Boo
         else pure (#[], ⟨0, "", ""⟩)
       let pairs := if includeFixed then pairs ++ fixedPrompts else pairs 
       let prompt := makePrompt s pairs
-      mkLog prompt
+      trace[Translate.info] m!"prompt: \n{prompt}"
+      -- mkLog prompt
       let fullJson ← openAIQuery prompt queryNum temp
       let outJson := 
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
@@ -244,7 +245,8 @@ def getCodeJson (s: String)(numSim : Nat:= 5)(numKW: Nat := 1)(includeFixed: Boo
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and returns the best choice, throwing an error if nothing elaborates.  -/
 def arrayToExpr (output: Array String) : TermElabM Expr := do
   let output := output.toList.eraseDups.toArray
-  mkLog output
+  trace[Translate.info] m!"output:\n{output}"
+  -- mkLog output
   let mut elaborated : Array String := Array.empty
   -- translation, autocorrection and filtering by elaboration
   for out in output do
@@ -408,7 +410,7 @@ elab "//-" cb:commentBody  : term => do
   let js ← getCodeJson  s
   -- filtering, autocorrection and selection
   let e ← jsonToExpr' js
-  logInfo m!"{e}"
+  trace[Translate.info] m!"{e}"
   return e
 
 #check forallBoundedTelescope
@@ -419,7 +421,7 @@ def uncurriedView(numArgs: Nat)(e: Expr) : MetaM String :=
   | 0 => do return " : " ++ (← e.view)
   | k +1 => 
     match e with
-    | Expr.forallE n t b bi => do
+    | Expr.forallE n t _ bi => do
       let core := s!"{n.eraseMacroScopes} : {← t.view}"
       let typeString :=s!"{← t.view}"
       let argString := match bi with
