@@ -411,6 +411,9 @@ elab "//-" cb:commentBody  : term => do
   logInfo m!"{e}"
   return e
 
+#check forallBoundedTelescope
+#check Array.zip
+
 def uncurriedView(numArgs: Nat)(e: Expr) : MetaM String :=
   match numArgs with
   | 0 => do return " : " ++ (← e.view)
@@ -426,18 +429,24 @@ def uncurriedView(numArgs: Nat)(e: Expr) : MetaM String :=
         if (`inst).isPrefixOf n then s!"[{typeString}]"
           else s!"[{core}]"
       | BinderInfo.default => s!"({core})" 
-      return " " ++ argString ++ (← uncurriedView k b)
+      let tail : String ← 
+        withLocalDecl `func BinderInfo.default e fun func =>
+          withLocalDecl n bi t fun arg => do
+            let fx := mkAppN func #[arg]
+            let newType ← inferType fx
+            uncurriedView k newType
+      return " " ++ argString ++ tail
     | _ => do return " : " ++ (← e.view)
 
 elab "uncurry2" e:term : term => do
   let e ← Term.elabTerm e none
-  -- logInfo m!"{e}"
   let e ← uncurriedView 2 e
   return mkStrLit e
 
 universe u
 
 #eval uncurry2 ({α : Type u} →  (l: List α) →  (a : α) → a = a)
+#eval uncurry2 ({α : Prop} →  [Decidable α] →  (a : α) → a = a)
 
 def translateViewM (s: String) : TermElabM String := do
   let js ← getCodeJson  s
