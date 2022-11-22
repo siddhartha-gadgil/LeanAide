@@ -254,7 +254,7 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
     match ployElab? with
       | Except.error _ => pure ()
       | Except.ok es =>
-        for (_ , s) in es do
+        for (_ , _, s) in es do
             elaborated := elaborated.push s 
   if elaborated.isEmpty then do
     -- information with failed logs
@@ -270,7 +270,7 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
     let topStr := groupSorted[0]![0]!
     let thmExc ← elabFuncTyp topStr
     match thmExc with
-    | Except.ok thm => return thm
+    | Except.ok (_, thm) => return thm
     | Except.error s => throwError s
 
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and optionally returns the best choice as well as all elaborated terms (used for batch processing, interactive code uses `arrayToExpr` instead)  -/
@@ -284,7 +284,7 @@ def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array Strin
     match ployElab? with
       | Except.error _ => pure ()
       | Except.ok es =>
-        for (expr, s) in es do
+        for (expr, _, s) in es do
           elaborated := elaborated.push s 
           if !expr.hasExprMVar then
             fullElaborated := fullElaborated.push s
@@ -302,7 +302,7 @@ def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array Strin
     let topStr := groupSorted[0]![0]!
     let thmExc ← elabFuncTyp topStr
     match thmExc with
-    | Except.ok thm => return some (thm, elaborated)
+    | Except.ok (_, thm) => return some (thm, elaborated)
     | Except.error s =>
         elabLog s!"Second round error : {s}"
         return none
