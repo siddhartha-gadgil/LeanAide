@@ -71,8 +71,10 @@ def Syntax.extractComment : Syntax → Option String
 
       let some stmt := stmt? | throw $ IO.userError "No input found."
       let translation : IO String := return stmt
-      -- let translation := snap.runTermElabM doc.meta <| translateViewM stmt
-      EIO.toIO (λ _ => IO.userError "Translation failed.") translation
+      let translation := snap.runTermElabM doc.meta <| translateViewM stmt
+      let translation ← EIO.toIO (λ _ => IO.userError "Translation failed.") translation
+      let translation := s!"\nexample : {translation.trim} := by sorry"
+      return translation
   }
 
   let ca : CodeAction := { title := "Translate theorem docstring to Lean code", kind? := "quickfix" }
@@ -100,3 +102,7 @@ def readFile : CodeActionProvider := fun params _snap => do
 example : 1 = 1 := by
   simp
 -/
+
+
+/- There are infinitely many odd numbers -/
+example : ∀ (n : ℕ), ∃ m, n < m ∧ m % 2 = 1 := by sorry
