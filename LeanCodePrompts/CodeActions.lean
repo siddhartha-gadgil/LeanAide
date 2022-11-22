@@ -29,10 +29,15 @@ partial def nearestComment (source : String)
     return ⟨start, stop + ⟨2⟩⟩
 
 /-- Extracts the text contained in a comment. -/
-def extractCommentText (comment : String) : Option String :=
-  /- TODO: Check whether the string is a comment before trimming, 
-    and extend to work for docstrings and other variants of the comment syntax. -/
-  return comment.drop 2 |>.dropRight 2
+def extractCommentText (comment : String) : Option String := do
+  guard $ comment.startsWith "/-"
+  guard $ comment.endsWith "-/"
+  let text := comment |>.drop 2 |>.dropRight 2
+  let c := text.front
+  if c.isAlphanum || c.isWhitespace then
+    return text
+  else
+    return text.drop 1
 
 /-
 open Parser.Command in
@@ -49,11 +54,13 @@ def Syntax.extractComment : Syntax → Option String
   let text := doc.meta.text
   let source := text.source
 
-  let edit : IO TextEdit := return {
-    range := params.range
+  let edit : IO TextEdit := do
+    -- the current position in the text document
+    let pos : String.Pos := text.lspPosToUtf8Pos params.range.end
+    let some ⟨start, stop⟩ := nearestComment source pos | throw $ IO.userError "No input found."
+    return {
+    range := ⟨text.leanPosToLspPos <| text.toPosition start, text.leanPosToLspPos <| text.toPosition stop⟩
     newText := ← do
-      -- the current position in the text document
-      let pos : String.Pos := text.lspPosToUtf8Pos params.range.end
       -- the smallest node of the `InfoTree` containing the current position
       let info? := snap.infoTree.findInfo? (·.contains pos)
       -- the `Syntax` corresponding to the `Info` node
@@ -62,23 +69,23 @@ def Syntax.extractComment : Syntax → Option String
       -- the statement to be translated to Lean code
       let stmt? : Option String := 
         (none /- TODO: First attempt to parse using `Syntax` -/)  <|>
-        (do /- Parse as a string -/
-          let ⟨start, «end»⟩ ← nearestComment source pos
-          let comment := source.extract start «end»
+        ( /- Parse as a string -/
+          let comment := source.extract start stop
           extractCommentText comment
-        ) <|> 
-        (some "Every prime number is odd.")
+        )
 
-      let some stmt := stmt? | throw $ IO.userError "No input found."
-      let translation : IO String := return stmt
-      let translation := snap.runTermElabM doc.meta <| translateViewM stmt
-      let translation ← EIO.toIO (λ _ => IO.userError "Translation failed.") translation
-      let translation := s!"\nexample : {translation.trim} := by sorry"
-      return translation
+      let translation' := snap.runTermElabM doc.meta <| translateViewM stmt?.get!
+      let translation ← EIO.toIO (λ _ => IO.userError "Translation failed.") translation'
+      return formatAsTheorem stmt? translation
   }
 
   let ca : CodeAction := { title := "Translate theorem docstring to Lean code", kind? := "quickfix" }
   return #[{ eager := ca, lazy? := some $ return {ca with edit? := WorkspaceEdit.ofTextEdit params.textDocument.uri $ ← edit} }]
+where
+  formatAsTheorem : Option String → String → String
+    | some comment, type => s!"/--{comment}-/\nexample : {type.trim} := sorry"
+    |     none    , type => s!"\nexample : {type.trim} := sorry"
+
 
 open RequestM in
 @[codeActionProvider]
@@ -104,5 +111,5 @@ example : 1 = 1 := by
 -/
 
 
-/- There are infinitely many odd numbers -/
-example : ∀ (n : ℕ), ∃ m, n < m ∧ m % 2 = 1 := by sorry
+/-- There are infinitely many odd numbers -/
+example : ∀ (n : ℕ), ∃ m, m > n ∧ m % 2 = 1 := sorry
