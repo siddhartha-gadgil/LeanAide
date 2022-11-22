@@ -3,8 +3,6 @@ import LeanCodePrompts.Translate
 
 open Lean Server Lsp RequestM
 
-def test : CoreM String := pure "\nexample : 1 = 1 := rfl"
-
 /-- A code action for translating doc-strings to Lean code using OpenAI Codex -/
 @[codeActionProvider] def formaliseDocStr : CodeActionProvider := fun params snap => do
   let doc ← readDoc
@@ -21,20 +19,15 @@ def test : CoreM String := pure "\nexample : 1 = 1 := rfl"
       let info? := snap.infoTree.findInfo? (·.tailPos?.any (· ≥ snap.endPos))
       -- the `Syntax` corresponding to the `Info` node
       let stx? := (·.stx) <$> info?
-      -- the printed form of the `Syntax`
-      let stmt? := stx? >>= Syntax.reprint
 
-      if let some stmt := stmt? then
-        -- assuming the input is of the form `/--s-/`
-        let s := stmt.drop 3 |>.dropRight 2
-        dbg_trace s
-        let translation' := snap.runCoreM doc.meta $ test -- translateViewCore s
+      if let some stx := stx? then
+        -- let s := stx[0]![0]![1]! |>.getAtomVal.dropRight 2
+        let s := "There are infinitely many odd numbers"
+        let translation' := 
+          snap.runTermElabM doc.meta <| translateViewM s
         EIO.toIO (λ _ => IO.userError "Translation failed.") translation'
       else throw $ IO.userError "Failed to extract snapshot." 
   }
 
   let ca : CodeAction := { title := "Translate theorem docstring to Lean code", kind? := "quickfix" }
   return #[{ eager := ca, lazy? := some $ return {ca with edit? := WorkspaceEdit.ofTextEdit params.textDocument.uri $ ← edit} }]
-
-/-- Every prime number is either two or odd. -/
-example : 1 = 1 := rfl

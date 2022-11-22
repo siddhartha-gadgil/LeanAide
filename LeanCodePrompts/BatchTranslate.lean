@@ -33,7 +33,7 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat :=
   let mut elabPairs: Array (String × String × (Array String)) := #[]
   let mut failed : Array String := #[]
   for prompt in prompts do 
-    elabLog prompt
+    trace[Translate.info] m!"{prompt}"
     IO.println ""
     IO.println prompt
     let (res?, outputs) ← 

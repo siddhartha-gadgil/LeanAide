@@ -42,3 +42,8 @@ def getStr! (j : Json) : String :=
   j.getStr?.toOption.get!
 
 end Lean.Json
+
+initialize
+  registerTraceClass `Translate.info
+  registerTraceClass `Translate.debug
+  registerTraceClass `Translate.warning

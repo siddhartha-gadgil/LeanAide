@@ -18,7 +18,7 @@ def getTacticString : TacticM String := do
     | some <| LocalDecl.ldecl _ _ n t .. => 
       statement := statement ++ s!"({n.eraseMacroScopes} : {← t.view}) "
       pure ()
-    | some <| LocalDecl.cdecl _ _ n t bi => do
+    | some <| LocalDecl.cdecl _ _ n t bi _ => do
       let core := s!"{n.eraseMacroScopes} : {← t.view}"
       let typeString :=s!"{← t.view}"
       let argString := match bi with
@@ -28,7 +28,6 @@ def getTacticString : TacticM String := do
         if (`inst).isPrefixOf n then s!"[{typeString}]"
           else s!"[{core}]"
       | BinderInfo.default => s!"({core})" 
-      | _ => ""
       statement := statement ++ argString ++ " " 
       pure ()
     | none => pure ()
@@ -107,7 +106,7 @@ def getTacticStateProxy : TacticM <| Option TacticStateProxy :=
         let b ← mkLambdaFVars fvars b
         letData := letData.push (n, t, b)
         pure ()
-      | some <| LocalDecl.cdecl _ fVarId n _ bi => do
+      | some <| LocalDecl.cdecl _ fVarId n _ bi _ => do
         binders := binders.push  (n, bi)
         fvars := fvars.push <| mkFVar fVarId
         pure ()

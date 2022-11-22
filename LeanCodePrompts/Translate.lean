@@ -231,7 +231,8 @@ def getCodeJson (s: String)(numSim : Nat:= 5)(numKW: Nat := 1)(includeFixed: Boo
         else pure (#[], ⟨0, "", ""⟩)
       let pairs := if includeFixed then pairs ++ fixedPrompts else pairs 
       let prompt := makePrompt s pairs
-      mkLog prompt
+      trace[Translate.info] m!"prompt: \n{prompt}"
+      -- mkLog prompt
       let fullJson ← openAIQuery prompt queryNum temp
       let outJson := 
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
@@ -244,7 +245,8 @@ def getCodeJson (s: String)(numSim : Nat:= 5)(numKW: Nat := 1)(includeFixed: Boo
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and returns the best choice, throwing an error if nothing elaborates.  -/
 def arrayToExpr (output: Array String) : TermElabM Expr := do
   let output := output.toList.eraseDups.toArray
-  mkLog output
+  trace[Translate.info] m!"output:\n{output}"
+  -- mkLog output
   let mut elaborated : Array String := Array.empty
   -- translation, autocorrection and filtering by elaboration
   for out in output do
@@ -408,8 +410,42 @@ elab "//-" cb:commentBody  : term => do
   let js ← getCodeJson  s
   -- filtering, autocorrection and selection
   let e ← jsonToExpr' js
-  logInfo m!"{e}"
+  trace[Translate.info] m!"{e}"
   return e
+
+def uncurriedView(numArgs: Nat)(e: Expr) : MetaM String :=
+  match numArgs with
+  | 0 => do return " : " ++ (← e.view)
+  | k +1 => 
+    match e with
+    | Expr.forallE n t _ bi => do
+      let core := s!"{n.eraseMacroScopes} : {← t.view}"
+      let typeString :=s!"{← t.view}"
+      let argString := match bi with
+      | BinderInfo.implicit => "{"++ core ++ "}"
+      | BinderInfo.strictImplicit => "{{ "++ core ++ "}}"
+      | BinderInfo.instImplicit =>
+        if (`inst).isPrefixOf n then s!"[{typeString}]"
+          else s!"[{core}]"
+      | BinderInfo.default => s!"({core})" 
+      let tail : String ← 
+        withLocalDecl `func BinderInfo.default e fun func =>
+          withLocalDecl n bi t fun arg => do
+            let fx := mkAppN func #[arg]
+            let newType ← inferType fx
+            uncurriedView k newType
+      return " " ++ argString ++ tail
+    | _ => do return " : " ++ (← e.view)
+
+elab "uncurry2" e:term : term => do
+  let e ← Term.elabTerm e none
+  let e ← uncurriedView 2 e
+  return mkStrLit e
+
+universe u
+
+#eval uncurry2 ({α : Type u} →  (l: List α) →  (a : α) → a = a)
+#eval uncurry2 ({α : Prop} →  [Decidable α] →  (a : α) → a = a)
 
 def translateViewM (s: String) : TermElabM String := do
   let js ← getCodeJson  s
