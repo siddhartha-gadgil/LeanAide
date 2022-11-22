@@ -273,6 +273,37 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
     | Except.ok (_, thm) => return thm
     | Except.error s => throwError s
 
+/-- Given an array of outputs, tries to elaborate them with translation and autocorrection and returns the best choice, throwing an error if nothing elaborates.  -/
+def arrayToStx (output: Array String) : TermElabM Syntax := do
+  let output := output.toList.eraseDups.toArray
+  trace[Translate.info] m!"output:\n{output}"
+  -- mkLog output
+  let mut elaborated : Array String := Array.empty
+  -- translation, autocorrection and filtering by elaboration
+  for out in output do
+    let ployElab? ← polyElabThmTrans out
+    match ployElab? with
+      | Except.error _ => pure ()
+      | Except.ok es =>
+        for (_ , _, s) in es do
+            elaborated := elaborated.push s 
+  if elaborated.isEmpty then do
+    -- information with failed logs
+    logWarning m!"No valid output from Codex; outputs below"
+    for out in output do
+      let polyOut ←  polyStrThmTrans out
+      for str in polyOut do
+        logWarning m!"{str}"
+    pure Syntax.missing
+  else    
+    -- grouping by trying to prove equality and selecting
+    let groupSorted ← groupFuncStrs elaborated
+    let topStr := groupSorted[0]![0]!
+    let thmExc ← elabFuncTyp topStr
+    match thmExc with
+    | Except.ok (stx, _) => return stx
+    | Except.error s => throwError s
+
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and optionally returns the best choice as well as all elaborated terms (used for batch processing, interactive code uses `arrayToExpr` instead)  -/
 def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array String))) := do
   -- IO.println s!"arrayToExpr? called with {output.size} outputs"
@@ -449,10 +480,12 @@ universe u
 
 def translateViewM (s: String) : TermElabM String := do
   let js ← getCodeJson  s
-  let e ← jsonToExpr' js
+  let output ← jsonToExprStrArray js
+  let e ← arrayToExpr output
   e.view
 
 /-- view of string in core; to be run with Snapshot.runCore
 -/
 def translateViewCore (s: String) : CoreM String := 
   (translateViewM s).run'.run'
+

@@ -20,7 +20,6 @@ example : //- Every prime number is either `2` or odd -/ := by
 example : //- There are infinitely many odd numbers -/ := by
             sorry
 
-
 /-! 
 ```
 example : //- There are infinitely many odd numbers -/ := by
