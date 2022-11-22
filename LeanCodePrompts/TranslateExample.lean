@@ -20,6 +20,10 @@ example : //- Every prime number is either `2` or odd -/ := by
 example : //- There are infinitely many odd numbers -/ := by
             sorry
 
+/- There are infinitely many odd numbers -/
+
+/- Every prime number is either `2` or odd -/
+
 /-! 
 ```
 example : //- There are infinitely many odd numbers -/ := by
