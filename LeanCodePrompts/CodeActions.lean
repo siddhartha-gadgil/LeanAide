@@ -31,3 +31,29 @@ open Lean Server Lsp RequestM
 
   let ca : CodeAction := { title := "Translate theorem docstring to Lean code", kind? := "quickfix" }
   return #[{ eager := ca, lazy? := some $ return {ca with edit? := WorkspaceEdit.ofTextEdit params.textDocument.uri $ ← edit} }]
+
+open RequestM in
+@[codeActionProvider]
+def readFile : CodeActionProvider := fun params _snap => do
+  let doc ← readDoc
+  let text := doc.meta.text
+  let source := text.source
+  let pos := text.lspPosToUtf8Pos params.range.end
+  let edit : TextEdit := {
+    range := params.range
+    newText :=
+      let tail := Substring.mk source pos source.endPos
+      let tail := tail.toString.splitOn "/-" |>.head!
+      "/- " ++ tail ++ "-/"
+  }
+  let ca : CodeAction := {title := "tail of source", kind? := "quickfix"}
+  return #[{eager := ca, lazy? := some $ return { ca with edit? := WorkspaceEdit.ofTextEdit params.textDocument.uri edit}}]
+  
+/- 
+
+example : 1 = 1 := by
+  simp
+-/
+
+example : 1 = 1 := by
+  simp
