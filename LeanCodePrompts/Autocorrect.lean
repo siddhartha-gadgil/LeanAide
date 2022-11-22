@@ -366,7 +366,7 @@ def polyIdentMappedFunStx (s: String)
 -- #eval identThmSegments "{K : Type u} [Field K] : is_ring K"
 
 /-- attempts to elaborate a string expected to be of a form like  `{A: Type} → (a : A) → P a` via parsing to a term; in principle any term is parsed -/
-def elabFuncTyp (funTypeStr : String) (levelNames : List Lean.Name := levelNames) : TermElabM (Except String Expr) := do
+def elabFuncTyp (funTypeStr : String) (levelNames : List Lean.Name := levelNames) : TermElabM (Except String <| Syntax ×  Expr) := do
     -- IO.println s!"matching syntax {funTypeStr}"
     match Lean.Parser.runParserCategory (← getEnv) `term funTypeStr with
         | Except.ok termStx => Term.withLevelNames levelNames <|
@@ -374,7 +374,7 @@ def elabFuncTyp (funTypeStr : String) (levelNames : List Lean.Name := levelNames
             -- IO.println "elaborating"
             let expr ← Term.withoutErrToSorry <| 
                 Term.elabTerm termStx none
-            return Except.ok expr
+            return Except.ok (termStx, expr)
           catch e => 
             return Except.error s!"{← e.toMessageData.toString} for {termStx.reprint} (during elaboration)"
         | Except.error e => 
@@ -387,15 +387,15 @@ def polyElabThmTrans (s : String)(limit : Option Nat := none)
         := [xName?, xxName?])
   (opens: List String := []) 
   (levelNames : List Lean.Name := levelNames)
-  : TermElabM <| Except String (List (Expr × String)) := do
+  : TermElabM <| Except String (List (Expr × Syntax × String)) := do
   match ← polyIdentMappedFunStx s transf extraTransf opens limit with
   | Except.ok funTypeStrList => do
     -- IO.println s!"elaborating {funTypeStrList.length} strings"
-    let pairs: List (Expr × String) ← 
+    let pairs: List (Expr × Syntax × String) ← 
       funTypeStrList.filterMapM (fun funTypeStr => do      
         let expE? ← elabFuncTyp funTypeStr levelNames
         let exp? := expE?.toOption
-        return exp?.map (. , funTypeStr))
+        return exp?.map <| fun (stx, expr) => (expr, stx , funTypeStr))
     return Except.ok pairs
   | Except.error e => return Except.error e
 
@@ -418,7 +418,7 @@ def elabThmTrans (s : String)
   match ← identMappedFunStx s transf opens with
   | Except.ok funTypeStr => do
     match (← elabFuncTyp funTypeStr levelNames) with
-    | Except.ok expr => return Except.ok (expr, funTypeStr)
+    | Except.ok (_, expr) => return Except.ok (expr, funTypeStr)
     | Except.error e => return Except.error e
   | Except.error e => return Except.error e
 
@@ -428,8 +428,8 @@ def compareFuncStrs(s₁ s₂ : String)
   let e₁ ← elabFuncTyp s₁  levelNames
   let e₂ ← elabFuncTyp s₂ levelNames
   match e₁ with
-  | Except.ok e₁ => match e₂ with
-    | Except.ok e₂ => 
+  | Except.ok (_, e₁) => match e₂ with
+    | Except.ok (_, e₂) => 
         let p := (← provedEqual e₁ e₂) || 
           (← provedEquiv e₁ e₂)
         return Except.ok p
