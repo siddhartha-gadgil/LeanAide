@@ -481,8 +481,16 @@ universe u
 def translateViewM (s: String) : TermElabM String := do
   let js ← getCodeJson  s
   let output ← jsonToExprStrArray js
-  let e ← arrayToExpr output
-  e.view
+  let e? ← arrayToExpr? output
+  match e? with
+  | some (e, _) => do
+    e.view
+  | none => do
+    let stxs ← output.filterMapM <| fun s => do
+      let exp ←  identMappedFunStx s 
+      return exp.toOption
+    return stxs.get? 0 |>.getD "False"
+
 
 /-- view of string in core; to be run with Snapshot.runCore
 -/

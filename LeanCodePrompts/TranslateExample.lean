@@ -5,15 +5,6 @@ import LeanCodePrompts.CodeActions
 -- import LeanCodePrompts.Autocorrect
 open Lean Meta Elab Term
 
-/- 
-set_option trace.Translate.info true
-example : //- Every prime number is either `2` or odd -/ := by
-            sorry
-example : //- There are infinitely many odd numbers -/ := by
-            sorry
-
-
--/
 set_option trace.Translate.info true
 example : //- Every prime number is either `2` or odd -/ := by
             sorry

@@ -4826,3 +4826,35 @@ No valid output from Codex; outputs below
 
 ∀ (p : Nat),  p = 2 ∨ p % 2 = 1
 
+No valid output from Codex; outputs below
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  (  h :   Module.rank  K V =  2 ) ->  FiniteDimensional  K V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  (  h :   Module.rank  K V =  2 ) ->  FiniteDimensional  K V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  (  h :   Module.rank  K V =  2 ) ->  FiniteDimensional  K V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  (  h :   Module.rank  K V =  2 ) ->  module.finite_dimensional  K V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  (  h :   Module.rank  K V =  2 ) ->  module.finite_dimensional  K V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  (  h :   Module.rank  K V =  2 ) ->  module.finite_dimensional  K V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  (  h :   Module.rank  K V =  2 ) ->  module.finite_dimensional  K V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  (  h :   Module.rank  K V =  2 ) ->  module.finite_dimensional  K V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  (  h :   Module.rank  K V =  2 ) ->  module.finite_dimensional  K V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroup  V ] ->  [  Module  K V ] ->  (  h :   Module.rank  K V =  2 ) ->  module.finite_dimensional  K V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓ  V ] ->  [  Module  K V ] ->  (  h :   Module.rank  K V =  2 ) ->  module.finite_dimensional  K V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  (  h :   Module.rank  K V =  2 ) ->  module.finite_dimensional  K V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  Field  K ] ->  [  AddCommGroup  V ] ->  [  vector_space  K V ] ->  (  h :   Module.rank  K V =  2 ) ->  FiniteDimensional  K V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  Field  K ] ->  [  AddCommGroupₓ  V ] ->  [  vector_space  K V ] ->  (  h :   Module.rank  K V =  2 ) ->  FiniteDimensional  K V
+
+ {  K :  Type  u } ->  {  V :  Type  v } ->  [  Field  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  vector_space  K V ] ->  (  h :   Module.rank  K V =  2 ) ->  FiniteDimensional  K V
+
