@@ -486,14 +486,16 @@ def translateViewM (s: String) : TermElabM String := do
   | some (e, _) => do
     e.view
   | none => do
-    let stxs ← output.filterMapM <| fun s => do
+    let stx ← output.findSomeM? <| fun s => do
       let exp ←  identMappedFunStx s 
       return exp.toOption
-    return stxs.get? 0 |>.getD "False"
+    return stx.getD "False"
 
 
 /-- view of string in core; to be run with Snapshot.runCore
 -/
 def translateViewCore (s: String) : CoreM String := 
   (translateViewM s).run'.run'
+
+#check Array.findSomeM?
 
