@@ -1,10 +1,6 @@
 import Mathbin.All
 import LeanCodePrompts.CheckParse
 
-#check Real
-#check ℝ 
-
-
 /-
 If every proper closed set of a topological space is compact, then the space itself is compact.
 -/
@@ -13,7 +9,7 @@ theorem compact_if_all_proper_compact {α : Type _} [TopologicalSpace α] : (∀
 /-
 Every prime that is one greater than a multiple of four can be expressed as the sum of two squares.
 -/
-theorem fermat_two_square : ∀ p : ℕ, Prime p → (p % 4 = 1) → ∃ a b : ℕ, a ^ 2 + b ^ 2 = p := sorry
+theorem fermat_two_square : ∀ p : ℕ, Nat.Prime p → (p % 4 = 1) → ∃ a b : ℕ, a ^ 2 + b ^ 2 = p := sorry
 
 /-
 For every subset of the Euclidean plane, there is a line segment of unit length whose endpoints are either both inside the subset or both outside it.
@@ -29,12 +25,12 @@ theorem euler_four_square_identity : let is_sum_of_four_squares : ℕ → Prop :
 /-
 A ring with all elements idempotent is commutative.
 -/
-theorem all_idempotent_implies_commutative {R : Type _} [Ring R] : (∀ x : R, x * x = 1) → CommRing R := sorry
+theorem all_idempotent_implies_commutative {R : Type _} [Ring R] : (∀ x : R, HMul.hMul x x = 1) → CommRing R := sorry
 
 /-
 There are infinitely many pairs of primes that differ exactly by two.
 -/
-theorem twin_prime_conjecture : ∀ n : ℕ, ∃ p : ℕ, p > n → Prime p → Prime (p + 2) := sorry
+theorem twin_prime_conjecture : ∀ n : ℕ, ∃ p : ℕ, p > n → Nat.Prime p → Nat.Prime (p + 2) := sorry
 
 /-
 If `I` is a collection of intervals of real numbers with lengths that sum to less than one, then the union of the intervals cannot be all of the unit interval.
@@ -44,7 +40,7 @@ If `I` is a collection of intervals of real numbers with lengths that sum to les
 /-
 Every finite division ring is a field.
 -/
-theorem fin_div_ring_is_field {R : Type _} [DivisionRing R] [Finite R] : Field R := sorry
+--ERROR-- theorem fin_div_ring_is_field {R : Type _} [Finite R] [DivisionRing R] : Field R := sorry
 
 /-
 The product of two positive numbers is at most the square of their average.
@@ -79,7 +75,7 @@ lemma zorn {α : Type _} [PartialOrder α] [Nonempty α] : (∀ c : Set α, IsCh
 /-
 A group whose automorphism group is cyclic is Abelian.
 -/
-theorem aut_group_cyclic_implies_abelian {G : Type _} [Groupₓ G] : CategoryTheory.Aut G → CommGroup G := sorry
+theorem aut_group_cyclic_implies_abelian {G : Type _} [Group G] : IsCyclic (G → G) → CommGroup G := sorry
 
 /-
 A uniformly continuous function of a uniformly continuous function is uniformly continuous.
@@ -95,8 +91,7 @@ theorem image_union (f : α → β) (S : Set (Set α)) : (f <$> (⋃₀ S)) = (�
 /-
 A topological space is normal if and only if any two disjoint closed subsets can be separated by a continuous function.
 -/
-lemma urysohn {X : Type _} [TopologicalSpace X] [TopologicalSpace ℝ] : NormalSpace X ↔ ( ∀ {S T : Set X}, IsClosed S → IsClosed T → Disjoint S T →
- (∃ f : X → ℝ, Continuous f → (∀ x ∈ S, f x = 0) ∧ (∀ x ∈ T, f x = 1)) ) := sorry
+--ERROR-- lemma urysohn {X : Type _} [TopologicalSpace X] [TopologicalSpace ℝ] : NormalSpace X ↔ ( ∀ {S T : Set X}, IsClosed S → IsClosed T → Disjoint S T → (∃ f : X → ℝ, Continuous f → (∀ x ∈ S, f x = 0) ∧ (∀ x ∈ T, f x = 1)) ) := sorry
 
 /-
 The only field automorphism of the reals is the identity.
@@ -106,7 +101,7 @@ The only field automorphism of the reals is the identity.
 /-
 If a function from the unit interval to itself has a point of period three, then it has points of all positive periods.
 -/
-theorem period_three_implies_chaos : ∀ f : Set.Icc 0 1 → Set.Icc 0 1, (∃ x : Set.Icc 0 1, Function.IsPeriodicPt f 3 x) → (∀ n : ℕ, n > 0 → ∃ y : Set.Icc 0 1, Function.IsPeriodicPt f n y) := sorry
+theorem period_three_implies_chaos : ∀ f : Set.IccCat 0 1 → Set.IccCat 0 1, (∃ x : Set.IccCat 0 1, Function.IsPeriodicPt f 3 x) → (∀ n : ℕ, n > 0 → ∃ y : Set.IccCat 0 1, Function.IsPeriodicPt f n y) := sorry
 
 /-
 A terminal object in a category is unique up to unique isomorphism.
@@ -116,7 +111,7 @@ theorem terminal_unique_iso {C : Type _} [CategoryTheory.Category C] : ∀ T₁ 
 /-
 A finitely-presented group containing a torsion element is finite.
 -/
-theorem torsion_in_fg_group_implies_finite {G : Type _} [Groupₓ G] : Groupₓ.Fg G → Finite G := sorry
+theorem torsion_in_fg_group_implies_finite {G : Type _} [Group G] : Group.Fg G → Finite G := sorry
 
 /-
 The complement of the union of two sets is the intersection of their complements.
@@ -132,17 +127,17 @@ theorem flt_3 : ∀ a b c : ℕ, a > 0 → b > 0 → ¬(a^3 + b^3 = c^3) := sorr
 /-
 If every element of a group `G` has order two, then every pair of elements of `G` commutes.
 -/
-theorem elems_order_two_implies_commutative {G: Type _}[Group G] : (∀ x y : G, x * x = 1) → (∀ x y : G, Commute x y) := sorry
+theorem elems_order_two_implies_commutative {G: Type _}[Group G] : (∀ x y : G, HMul.hMul x x = 1) → (∀ x y : G, Commute x y) := sorry
 
 /-
 Every prime number is either `2` or odd.
 -/
-theorem prime_eq_two_or_odd {n: Nat} : Prime n → n = 2 ∨ Odd n := sorry
+theorem prime_eq_two_or_odd {n: Nat} : Nat.Prime n → n = 2 ∨ Odd n := sorry
 
 /-
 Every odd degree polynomial over `ℝ` has a zero
 -/
-theorem poly_odd_degree_has_zero {α : Type _} [Field α] (p : Polynomial α) : Odd (p.degree) → ∃ x, p.IsRoot x := sorry
+theorem poly_odd_degree_has_zero (p : Polynomial ℝ) : Odd (WithBot.unbot' 0 p.degree) → ∃ x, p.IsRoot x := sorry
 
 /-
 The product of two consequitive natural numbers is even.
@@ -157,7 +152,7 @@ Every constant function `f x = c` from real numbers to real numbers is different
 /-
 Every index 2 subgroup of a group is normal
 -/
-theorem index_two_subgroup {G : Type _} [Groupₓ G] (H : Subgroup G): 
+theorem index_two_subgroup {G : Type _} [Group G] (H : Subgroup G): 
       H.index = 2 → Subgroup.Normal H := sorry
 
 /-
@@ -169,7 +164,7 @@ Every subgroup of a free group is free
 Every free group is torsion free
 -/
 theorem free_group_torsion_free {α : Type} :
-  Monoidₓ.IsTorsionFree (FreeGroup α) := sorry
+  Monoid.IsTorsionFree (FreeGroup α) := sorry
 
 /-
 Every non-empty subgroup of `ℤ` is isomorphic to `ℤ`
@@ -185,19 +180,19 @@ Every non-empty subgroup of `ℤ` is isomorphic to `ℤ`
 Every natural number greater than `1` is divisible by a prime number. 
 -/
 theorem has_prime_factor(n: ℕ) :
-  n > 1 → ∃ p: ℕ, Prime p ∧ (∃ d: ℕ, p * d = n) := sorry
+  n > 1 → ∃ p: ℕ, Nat.Prime p ∧ (∃ d: ℕ, HMul.hMul p d = n) := sorry
 
 /-
 Six is not the sum of two prime numbers.
 -/
 theorem six_not_prime_sum : 
-  ¬ (∃ n m: Nat, Prime n ∧ Prime m ∧ n ≠ m ∧ 6 = n + m) := sorry
+  ¬ (∃ n m: Nat, Nat.Prime n ∧ Nat.Prime m ∧ n ≠ m ∧ 6 = n + m) := sorry
 
 /-
 A finite torsion-free group is trivial
 -/
-theorem fin_torsionfree {G: Type _}[Groupₓ G][Finite G] :
-  Monoidₓ.IsTorsionFree G → IsSubgroup.Trivial G := sorry
+theorem fin_torsionfree {G: Type _}[Group G][Finite G] :
+  Monoid.IsTorsionFree G → IsSubgroup.Trivial G := sorry
 
 /-
 Any homomorphism from the additive group of rational numbers to `ℤ` is trivial
@@ -208,8 +203,7 @@ Any homomorphism from the additive group of rational numbers to `ℤ` is trivial
 /-
 Every finite division ring is a field.
 -/
-theorem fin_int_domain_ring_is_field 
-    {R : Type _} [Ringₓ R][IsDomain R] [Finite R] : Field R := sorry
+--ERROR--theorem fin_int_domain_ring_is_field {R : Type _} [Ring R] : IsDomain R → Finite R → Field R := sorry
 
 /-
 Every finite topological space is compact
@@ -279,7 +273,7 @@ Any locally-small category $C$ can be embedded into the category of contravarian
 /-
 Every positive even integer can be written as the sum of two primes.
 -/
-theorem goldbach : ∀ n : ℕ, n > 0 → Even n → ∃ p q : ℕ, Prime p → Prime q → n = p + q := sorry
+theorem goldbach : ∀ n : ℕ, n > 0 → Even n → ∃ p q : ℕ, Nat.Prime p → Nat.Prime q → n = p + q := sorry
 
 /-
 A complex function that is once differentiable is infinitely differentiable.
@@ -293,7 +287,7 @@ The elements of any finite distributive lattice can be represented as finite set
 /-
 Every matrix satisfies its own characteristic polynomial.
 -/
-theorem cayley_hamilton {R : Type _} [CommRingₓ R] {n : Type _} [DecidableEq n] [Fintype n] (M : Matrix n n R) : (Polynomial.aeval M) M.charpoly = 0 := sorry
+--ERROR-- theorem cayley_hamilton {R : Type _} [CommRing R] {n : Type _} [DecidableEq n] [Fintype n] (M : Matrix n n R) : Polynomial.aeval M M.charpoly = 0 := sorry
 
 /-
 The square root of an irrational number is irrational.
@@ -336,7 +330,7 @@ theorem sq_even_implies_num_even : ∀ n : ℕ, Even (n^2) → Even n := sorry
 /-
 In a finite commutative ring, all prime ideals are maximal.
 -/
-theorem finite_ring_prime_implies_maximal {R : Type _} [CommRingₓ R] [Fintype R] : ∀ (Idl : Ideal R), Idl.IsPrime → Idl.IsMaximal := sorry
+theorem finite_ring_prime_implies_maximal {R : Type _} [CommRing R] [Fintype R] : ∀ (Idl : Ideal R), Idl.IsPrime → Idl.IsMaximal := sorry
 
 /-
 An integer polynomial with a root in the integers has a root modulo every prime.
@@ -349,7 +343,7 @@ The number of Sylow-2 subgroups of a dihedral group is equal to the largest odd 
 /-
 A topological space $X$ is Hausdorff if and only if the diagonal is a closed set in $X × X$.
 -/
-theorem hausdorff_iff_diag_closed {X : Type _} [TopologicalSpace X] : T2Space X ↔ IsClosed (Set.Diagonal X) := sorry
+--ERROR-- theorem hausdorff_iff_diag_closed {X : Type _} [TopologicalSpace X] : T2Space X ↔ IsClosed (Set.Diagonal X) := sorry
 
 /-
 If every point of a subset of a topological space is contained in some open set, the subset itself is open.
@@ -364,7 +358,7 @@ The product of a complex number with its conjugate is a real number.
 /-
 Every non-identity element of a free group is of infinite order.
 -/
-theorem non_id_implies_infinite_order {G : Type _} [Groupₓ G] : FreeGroup G → (∀ g : G, g ≠ 1 → orderOf g = 0) := sorry
+theorem non_id_implies_infinite_order {G : Type _} [Group G] : FreeGroup G → (∀ g : G, g ≠ 1 → orderOf g = 0) := sorry
 
 /-
 Any sub-ring of a field that contains the identity is an integral domain.
@@ -374,7 +368,7 @@ Any sub-ring of a field that contains the identity is an integral domain.
 /-
 An element of a discrete valuation ring is a unit if and only if it has a valuation of zero.
 -/
-theorem dvr_unit_iff_val_zero {R : Type _} [CommRingₓ R] [IsDomain R] [DiscreteValuationRing R] : ∀ r : R, IsUnit r → DiscreteValuationRing.addVal R r = 0 := sorry
+--ERROR--theorem dvr_unit_iff_val_zero {R : Type _} [CommRing R] : IsDomain R → DiscreteValuationRing R → ∀ r : R, IsUnit r → DiscreteValuationRing.addVal R r = 0 := sorry
 
 /-
 Every automorphism of a tree fixes a vertex or an edge.
@@ -404,7 +398,7 @@ No non-constant polynomial of a complex variable can take imaginary values only.
 /-
 For any two relatively prime positive integers $a$ and $b$, every sufficiently large natural number $N$ can be written as a linear combination $ax + by$ of $a$ and $b$, where both $x$ and $y$ are natural numbers.
 -/
-theorem coprime_integer_span_sylvester_coin : ∀ a b : ℕ, a > 0 → b > 0 → Nat.coprime a b → ∃ m : ℕ, ∀ N : ℕ, N > m → ∃ x y : ℕ, N = a*x + b*y := sorry
+theorem coprime_integer_span_sylvester_coin : ∀ a b : ℕ, a > 0 → b > 0 → Nat.coprime a b → ∃ m : ℕ, ∀ N : ℕ, N > m → ∃ x y : ℕ, N = HMul.hMul a x + HMul.hMul b y := sorry
 
 /-
 An integer-valued polynomial need not have all integer coefficients.
@@ -442,8 +436,3 @@ The combinator (S K K) is equal to the identity combinator.
 -- Library/Init/Core.lean not yet ported
 -- theorem combinator_I_derivable_from_S_K : Combinator.S Combinator.K Combinator.K = Combinator.I := sorry
 
-#check Function.Injective
-
-#check AddGroup
-#print AddGroupₓ
-#print AddGroup

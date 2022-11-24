@@ -6,12 +6,12 @@ import LeanCodePrompts.ParseJson
 import LeanCodePrompts.Autocorrect
 import LeanCodePrompts.KeywordSummary.KeywordExtraction
 import LeanCodePrompts.EgsTranslate
-open Lean Meta Std
+open Lean Meta
 
 open Lean Elab Parser Command
 
 /-- extract prompt pairs from JSON response to local server -/
-def sentenceSimPairs(s: String) : MetaM  <| Except String (Array (String × String)) := do
+def sentenceSimPairs(s: String)(theoremField: String := "theorem") : MetaM  <| Except String (Array (String × String)) := do
   let json ← readJson (s) 
   -- logInfo "obtained json"
   match json.getArr? with
@@ -24,13 +24,16 @@ def sentenceSimPairs(s: String) : MetaM  <| Except String (Array (String × Stri
           match js.getStr? with
           | Except.error e => throwError s!"Error {e} while processing {js} as string"  
           | Except.ok s => pure s
-      let thm ←  match (json.getObjVal? "theorem") with
+      -- logInfo s!"theorem-field: {json.getObjVal? theoremField}"
+      -- logInfo s!"theorem: {json.getObjVal? "theorem"}"
+      let thm ←  match (json.getObjVal? theoremField) with
         | Except.error e => throwError s!"Error {e} while getting theorem"
         | Except.ok js => 
           match js.getStr? with
           | Except.error e => throwError s!"Error {e} while processing {js} as string"  
           | Except.ok s => pure s
       return (docstring, thm)
+    -- logInfo m!"pairs: {pairs}"
     return Except.ok pairs
   | Except.error e => return Except.error e
 
@@ -56,6 +59,16 @@ s!"theorem {thm} :=
 
 {acc}"
           ) s!"theorem {statement} := 
+/- "
+
+/-- make prompt for reverse translation from prompt pairs -/
+def makeFlipStatementsPrompt(statement : String)(pairs: Array (String × String)) : String := 
+      pairs.foldr (fun  (ds, thm) acc => 
+s!"{thm} := 
+/- {ds} -/
+
+{acc}"
+          ) s!"{statement} := 
 /- "
 
 def openAIKey : IO (Option String) := IO.getEnv "OPENAI_API_KEY"
@@ -153,9 +166,14 @@ def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
       let simJsonOut ←  
         IO.Process.output {cmd:= "curl", args:= 
           #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, s!"{← leanAideIP}/nearest_prompts"]}
-      let pairs? ← sentenceSimPairs simJsonOut.stdout
+      let pairs? ← sentenceSimPairs simJsonOut.stdout "theorem"
       -- IO.println s!"obtained sentence similarity; time : {← IO.monoMsNow}"
-      let allPairs := pairs?.toOption.getD #[]        
+      let allPairs : Array (String × String) ← 
+        match pairs? with
+        | Except.error e =>
+            throwError e            
+        | Except.ok pairs => pure pairs    
+      -- logInfo m!"all pairs: {allPairs}"        
       let kwPairs :=
         if numKW >0 
         then ←  keywordBasedPrompts docPair s numKW scoreBound matchBound
@@ -168,6 +186,32 @@ def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
       let kwPairs ←  keywordBasedPrompts docPair s
       return (
           (pairs ++ kwPairs).toList.eraseDups.toArray, simJsonOut)
+
+/-- choosing pairs to build a prompt -/
+def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := "doc_string")(theoremField : String := "theorem")
+   : TermElabM (Array (String × String) × IO.Process.Output) := do
+      let jsData := Json.mkObj [
+        ("filename", "data/safe_prompts.json"),
+        ("field", field),
+        (field, s),
+        ("n", numSim),
+        ("model_name", "all-mpnet-base-v2")
+      ]
+      let simJsonOut ←  
+        IO.Process.output {cmd:= "curl", args:= 
+          #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, s!"{← leanAideIP}/nearest_prompts"]}
+      let pairs? ← sentenceSimPairs simJsonOut.stdout theoremField
+      -- IO.println s!"obtained sentence similarity; time : {← IO.monoMsNow}"
+      let allPairs : Array (String × String) ← 
+        match pairs? with
+        | Except.error e =>
+            throwError e
+            
+        | Except.ok pairs => pure pairs    
+      -- logInfo m!"all pairs: {allPairs}"        
+      return (
+          allPairs.toList.eraseDups.toArray, simJsonOut)
+
 
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
@@ -187,7 +231,8 @@ def getCodeJson (s: String)(numSim : Nat:= 5)(numKW: Nat := 1)(includeFixed: Boo
         else pure (#[], ⟨0, "", ""⟩)
       let pairs := if includeFixed then pairs ++ fixedPrompts else pairs 
       let prompt := makePrompt s pairs
-      mkLog prompt
+      trace[Translate.info] m!"prompt: \n{prompt}"
+      -- mkLog prompt
       let fullJson ← openAIQuery prompt queryNum temp
       let outJson := 
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
@@ -200,7 +245,8 @@ def getCodeJson (s: String)(numSim : Nat:= 5)(numKW: Nat := 1)(includeFixed: Boo
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and returns the best choice, throwing an error if nothing elaborates.  -/
 def arrayToExpr (output: Array String) : TermElabM Expr := do
   let output := output.toList.eraseDups.toArray
-  mkLog output
+  trace[Translate.info] m!"output:\n{output}"
+  -- mkLog output
   let mut elaborated : Array String := Array.empty
   -- translation, autocorrection and filtering by elaboration
   for out in output do
@@ -208,7 +254,7 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
     match ployElab? with
       | Except.error _ => pure ()
       | Except.ok es =>
-        for (_ , s) in es do
+        for (_ , _, s) in es do
             elaborated := elaborated.push s 
   if elaborated.isEmpty then do
     -- information with failed logs
@@ -224,7 +270,38 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
     let topStr := groupSorted[0]![0]!
     let thmExc ← elabFuncTyp topStr
     match thmExc with
-    | Except.ok thm => return thm
+    | Except.ok (_, thm) => return thm
+    | Except.error s => throwError s
+
+/-- Given an array of outputs, tries to elaborate them with translation and autocorrection and returns the best choice, throwing an error if nothing elaborates.  -/
+def arrayToStx (output: Array String) : TermElabM Syntax := do
+  let output := output.toList.eraseDups.toArray
+  trace[Translate.info] m!"output:\n{output}"
+  -- mkLog output
+  let mut elaborated : Array String := Array.empty
+  -- translation, autocorrection and filtering by elaboration
+  for out in output do
+    let ployElab? ← polyElabThmTrans out
+    match ployElab? with
+      | Except.error _ => pure ()
+      | Except.ok es =>
+        for (_ , _, s) in es do
+            elaborated := elaborated.push s 
+  if elaborated.isEmpty then do
+    -- information with failed logs
+    logWarning m!"No valid output from Codex; outputs below"
+    for out in output do
+      let polyOut ←  polyStrThmTrans out
+      for str in polyOut do
+        logWarning m!"{str}"
+    pure Syntax.missing
+  else    
+    -- grouping by trying to prove equality and selecting
+    let groupSorted ← groupFuncStrs elaborated
+    let topStr := groupSorted[0]![0]!
+    let thmExc ← elabFuncTyp topStr
+    match thmExc with
+    | Except.ok (stx, _) => return stx
     | Except.error s => throwError s
 
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and optionally returns the best choice as well as all elaborated terms (used for batch processing, interactive code uses `arrayToExpr` instead)  -/
@@ -238,7 +315,7 @@ def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array Strin
     match ployElab? with
       | Except.error _ => pure ()
       | Except.ok es =>
-        for (expr, s) in es do
+        for (expr, _, s) in es do
           elaborated := elaborated.push s 
           if !expr.hasExprMVar then
             fullElaborated := fullElaborated.push s
@@ -256,7 +333,7 @@ def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array Strin
     let topStr := groupSorted[0]![0]!
     let thmExc ← elabFuncTyp topStr
     match thmExc with
-    | Except.ok thm => return some (thm, elaborated)
+    | Except.ok (_, thm) => return some (thm, elaborated)
     | Except.error s =>
         elabLog s!"Second round error : {s}"
         return none
@@ -275,6 +352,33 @@ def leanToPrompt (thm: String)(numSim : Nat:= 5)(numKW: Nat := 1)(temp : JsonNum
         | Except.error s => Json.str s!"query for translation failed: {s}" 
         | Except.ok js => js
     return outJson.getStr!
+
+/-- reverse translation from `Lean` to natural language -/
+def statementToDoc (thm: String)(numSim : Nat:= 5)(temp : JsonNumber := 0) : TermElabM String := do
+    let (pairs, _) ← getPromptPairsGeneral thm numSim "statement"
+    let prompt := makeFlipStatementsPrompt thm pairs
+    -- elabLog prompt
+    let fullJson ← openAIQuery prompt 1 temp
+    let outJson := 
+      (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
+    let out? := (outJson.getArrVal? 0).bind fun js => js.getObjVal? "text"
+    let outJson := 
+        match (out?) with
+        | Except.error s => Json.str s!"query for translation failed: {s}" 
+        | Except.ok js => js
+    return outJson.getStr!
+
+def egThm := "theorem eg_thm : ∀ n: Nat, ∃ m : Nat, m > n ∧ m % 2 = 0"
+
+def egPairs := getPromptPairsGeneral egThm 5 "statement" "statement"
+
+def egPrompt := do
+  let (pairs, _) ← egPairs
+  return makeFlipStatementsPrompt egThm pairs
+
+-- #eval egPrompt
+
+-- #eval statementToDoc egThm 5 0
 
 -- #eval leanToPrompt "∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p = 2 ∨ p % 2 = 1"
 
@@ -331,11 +435,67 @@ def jsonToExpr' (json: Json) : TermElabM Expr := do
 
 /-- translation from a comment-like syntax to a theorem statement -/
 elab "//-" cb:commentBody  : term => do
-  let s := cb.raw.getAtomVal!
+  let s := cb.raw.getAtomVal
   let s := (s.dropRight 2).trim  
   -- querying codex
   let js ← getCodeJson  s
   -- filtering, autocorrection and selection
   let e ← jsonToExpr' js
-  logInfo m!"{e}"
+  trace[Translate.info] m!"{e}"
   return e
+
+def uncurriedView(numArgs: Nat)(e: Expr) : MetaM String :=
+  match numArgs with
+  | 0 => do return " : " ++ (← e.view)
+  | k +1 => 
+    match e with
+    | Expr.forallE n t _ bi => do
+      let core := s!"{n.eraseMacroScopes} : {← t.view}"
+      let typeString :=s!"{← t.view}"
+      let argString := match bi with
+      | BinderInfo.implicit => "{"++ core ++ "}"
+      | BinderInfo.strictImplicit => "{{ "++ core ++ "}}"
+      | BinderInfo.instImplicit =>
+        if (`inst).isPrefixOf n then s!"[{typeString}]"
+          else s!"[{core}]"
+      | BinderInfo.default => s!"({core})" 
+      let tail : String ← 
+        withLocalDecl `func BinderInfo.default e fun func =>
+          withLocalDecl n bi t fun arg => do
+            let fx := mkAppN func #[arg]
+            let newType ← inferType fx
+            uncurriedView k newType
+      return " " ++ argString ++ tail
+    | _ => do return " : " ++ (← e.view)
+
+elab "uncurry2" e:term : term => do
+  let e ← Term.elabTerm e none
+  let e ← uncurriedView 2 e
+  return mkStrLit e
+
+universe u
+
+#eval uncurry2 ({α : Type u} →  (l: List α) →  (a : α) → a = a)
+#eval uncurry2 ({α : Prop} →  [Decidable α] →  (a : α) → a = a)
+
+def translateViewM (s: String) : TermElabM String := do
+  let js ← getCodeJson  s
+  let output ← jsonToExprStrArray js
+  let e? ← arrayToExpr? output
+  match e? with
+  | some (e, _) => do
+    e.view
+  | none => do
+    let stx ← output.findSomeM? <| fun s => do
+      let exp ←  identMappedFunStx s 
+      return exp.toOption
+    return stx.getD "False"
+
+
+/-- view of string in core; to be run with Snapshot.runCore
+-/
+def translateViewCore (s: String) : CoreM String := 
+  (translateViewM s).run'.run'
+
+#check Array.findSomeM?
+

@@ -5,7 +5,7 @@ package LeanCodePrompts{
   precompileModules := true
 }
 
-@[defaultTarget]
+@[default_target]
 lean_lib LeanCodePrompts {
 }
 
@@ -17,12 +17,12 @@ lean_exe elabdatagen{
   supportInterpreter := true
 }
 
-@[defaultTarget]
+@[default_target]
 lean_exe bulkelab {
   supportInterpreter := true
 }
 
-@[defaultTarget]
+@[default_target]
 lean_exe chkelab {
   supportInterpreter := true
 }
@@ -57,7 +57,7 @@ lean_exe depnames{
   supportInterpreter := true
 }
 
-@[defaultTarget]
+@[default_target]
 lean_exe chkthms{
   supportInterpreter := true
 }
@@ -65,7 +65,10 @@ lean_exe chkthms{
 lean_lib examples
 
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git"@"380fbe124708314e7dcd6c3b8f41adffd5046c44"
+  "https://github.com/leanprover-community/mathlib4.git"@"415530d447d2fc6557f3ed00caf409dd391e0756"
 
 require mathlib3port from git
-  "https://github.com/leanprover-community/mathlib3port.git"@"04ead7ffe5221b7c752fd2a7256244d61b01ac83"
+  "https://github.com/leanprover-community/mathlib3port.git"@"120d183ebd8c91a7ebbcb754d49aa1d7f696ee48"
+
+require aesop from git
+  "https://github.com/JLimperg/aesop.git"@"3fa339ad9365fd3f42d452b65fb3c409c7623017"

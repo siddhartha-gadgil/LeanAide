@@ -4,7 +4,7 @@ import Lean.Elab
 import Lean.Parser
 import Lean.Parser.Extension
 
-open Lean Meta Std Elab Parser Tactic
+open Lean Meta Elab Parser Tactic
 
 def Lean.Expr.view (expr: Expr) : MetaM String := do
   let expr ← instantiateMVars expr
@@ -42,3 +42,8 @@ def getStr! (j : Json) : String :=
   j.getStr?.toOption.get!
 
 end Lean.Json
+
+initialize
+  registerTraceClass `Translate.info
+  registerTraceClass `Translate.debug
+  registerTraceClass `Translate.warning
