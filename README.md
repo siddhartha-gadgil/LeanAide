@@ -1,6 +1,6 @@
 # LeanAide 
 
-LeanAide or Lean**AI**de (accidental pun) is work in progress to build AI based tools to help development with the Lean Theorem Prover. For now it has one tool under development, which translates statements written in natural language is a doc-string like format to Lean types (including theorem statements).
+LeanAide or Lean**AI**de (accidental pun) is work in progress to build AI based tools to help development with the Lean Theorem Prover. For now it has one tool under development, which translates statements written in natural language in a doc-string like format to Lean types (including theorem statements).
 
 ## Quickstart: translation to Lean statements
 
@@ -8,7 +8,7 @@ Our translation is based on Codex, to use which you need an OpenAI key. We also 
 
 ```bash
 export LEANAIDE_IP="34.100.184.111:5000"
-export OPENAI_API_KEY=<your open-ai key>
+export OPENAI_API_KEY=<your-open-ai-key>
 ```
 
 Build this repository with the following commands
@@ -18,9 +18,11 @@ lake build mathlib
 lake build
 ```
 
-After this open the folder in VS code (or equivalent) with Lean 4 and go to the file `LeanCodePrompts/TranslateExample.lean`. Place the cursor to the end of one of the comments below and invoke the _code action_ to translate by clicking on the lightbulb or using `ctrl-.`
+After this open the folder in VS code (or equivalent) with Lean 4 and go to the file `LeanCodePrompts/TranslateExample.lean`. Place the cursor to the end of one of the comments below and invoke the _code action_ to translate by clicking on the _lightbulb_ or using `ctrl-.`
 
-You can add your own comments and try to translate using the same method. In general, you can `import LeanCodePrompts.CodeActions` in a lean file and use the code-action to translate. In case this fails please look at the troubleshooting section below and/or message us on the Lean4 Zulip.
+You can add your own comments and try to translate using the same method. In general, you can `import LeanCodePrompts.CodeActions` in a lean file and use the code-action to translate. You should usually also include `import Mathbin.All` to include the (partly broken) binary port of `mathlib`. 
+
+In case translation fails please look at the troubleshooting section below and/or message us on the Lean 4 Zulip.
 
 To use in your own project, it should suffice to include this project as a dependency in `lakefile.lean` using the following (but this has not been tested).
 
