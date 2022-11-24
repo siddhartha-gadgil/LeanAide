@@ -4890,3 +4890,5 @@ No valid output from Codex; outputs below
 
  {  K :  Type  u } ->  {  V :  Type  v } ->  [  DivisionRing  K ] ->  [  AddCommGroupₓₓ  V ] ->  [  Module  K V ] ->  (  h :   Module.rank  K V =  2 ) ->  module.finite_dimensional  K V
 
+No valid output from Codex; outputs below
+
