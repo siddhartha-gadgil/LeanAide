@@ -1,4 +1,5 @@
 import json
+import socket
 from flask import Flask,render_template
 from flask import request
 from embed_picker import *
@@ -29,7 +30,8 @@ def tactic_prompts():
     choices = closest_embeddings(prompt_core, model_name, embs, data, n)
     log_json = {"query": js_query,  "choices": choices}
     log_string = json.dumps(log_json, ensure_ascii=False).replace('\n', '\\n')
-    with open("logs.jsonl", "a") as myfile:
+    hostname = socket.gethostname()
+    with open("logs-" + hostname + ".jsonl", "a") as myfile:
         myfile.write(log_string+'\n')
     return json.dumps(choices, ensure_ascii=False)
 

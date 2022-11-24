@@ -3,7 +3,7 @@ import LeanCodePrompts.Translate
 import LeanCodePrompts.CodeActions
 
 /-!
-# Tranlation demo
+# Translation demo
 
 To see translation in action, set the cursor to the end of one of the comments below and invoke the code action to translate by clicking on the lightbulb or using `ctrl-.`. 
 -/
