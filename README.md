@@ -87,7 +87,7 @@ gunicorn -b :5000 wsgi:app
 ```
 
 
-Then open `code` from the base directory. Navigate to the file `TranslateExample.lean` to see an example translation (which will run automatically after compilation). More examples are in the comments.
+Then open `code` from the base directory. Navigate to the file `TranslateExample.lean`. Place the cursor to the end of one of the comments below and invoke the _code action_ to translate by clicking on the _lightbulb_ or using `ctrl-.`
 
 ## Elaboration using a docker container
 
