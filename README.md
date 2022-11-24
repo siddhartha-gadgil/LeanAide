@@ -103,3 +103,17 @@ sudo docker run sgadgil00/leanaide-elaborator:latest '(p q :  ℕ ) -> (h : nat.
 ```
 
 Observe the statement can either consist of arguments followed by the claim (technically a `type`) or just be a claim (`type`). Further, mathlib terms are converted to their Lean 4 equivalents.
+
+## Contributions and details
+
+This is joint work by our team, 
+
+* Siddhartha Gadgil
+* Anand Rao Tadipatri
+* Ayush Agrawal
+* Ashvni Narayanan
+* Navin Goyal
+
+with a lot of help from the Lean community and from collaborators at Microsoft Research. Our server is hosted with support from research credits from Google.
+
+Our work is described in a [note](https://mathai2022.github.io/papers/17.pdf) at the [2nd Math AI workshop](https://mathai2022.github.io/papers/) and in more detail (along with related work) in a [preprint](https://arxiv.org/abs/2211.07524).
