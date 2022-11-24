@@ -5,7 +5,7 @@ import LeanCodePrompts.CodeActions
 /-!
 # Translation demo
 
-To see translation in action, place the cursor to the end of one of the comments below and invoke the code action to translate by clicking on the lightbulb or using `ctrl-.`. 
+To see translation in action, place the cursor anywhere on one of the comments below and invoke the code action to translate by clicking on the lightbulb or using `ctrl-.`. 
 -/
 
 

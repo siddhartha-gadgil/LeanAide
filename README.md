@@ -18,7 +18,7 @@ lake build mathlib
 lake build
 ```
 
-After this open the folder in VS code (or equivalent) with Lean 4 and go to the file `LeanCodePrompts/TranslateExample.lean`. Place the cursor to the end of one of the comments below and invoke the _code action_ to translate by clicking on the _lightbulb_ or using `ctrl-.`
+After this open the folder in VS code (or equivalent) with Lean 4 and go to the file `LeanCodePrompts/TranslateExample.lean`. Place the cursor anywhere on one of the comments below and invoke the _code action_ to translate by clicking on the _lightbulb_ or using `ctrl-.`
 
 You can add your own comments and try to translate using the same method. In general, you can `import LeanCodePrompts.CodeActions` in a lean file and use the code-action to translate. You should usually also include `import Mathbin.All` to include the (partly broken) binary port of `mathlib`. 
 
@@ -102,7 +102,4 @@ sudo docker run sgadgil00/leanaide-elaborator:latest '(p q :  ℕ ) (h : nat.pri
 sudo docker run sgadgil00/leanaide-elaborator:latest '(p q :  ℕ ) -> (h : nat.prime  p) -> p = q'
 ```
 
-Observe the statement can either consist of arguments followed by the claim (technically a `type`) or just be a claim (`type`). Further, mathlib terms are converted to their Lean 4 equivalents. 
-
-## Lean-chat-IDP
-We are developing a version of [Lean-chat](https://github.com/zhangir-azerbayev/lean-chat) with input dependent prompting.
+Observe the statement can either consist of arguments followed by the claim (technically a `type`) or just be a claim (`type`). Further, mathlib terms are converted to their Lean 4 equivalents.
