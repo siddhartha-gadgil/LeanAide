@@ -338,6 +338,11 @@ def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array Strin
         elabLog s!"Second round error : {s}"
         return none
 
+def greedyArrayToExpr? (output: Array String) : TermElabM (Option Expr) := do
+    output.findSomeM? <| fun out => do
+      let t? ← elabThmTrans? out
+      return t?.map fun (expr, _, _) => expr
+
 /-- reverse translation from `Lean` to natural language -/
 def leanToPrompt (thm: String)(numSim : Nat:= 5)(numKW: Nat := 1)(temp : JsonNumber := 0)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM String := do
     let (pairs, _) ← getPromptPairs thm numSim numKW scoreBound matchBound
@@ -481,9 +486,9 @@ universe u
 def translateViewM (s: String) : TermElabM String := do
   let js ← getCodeJson  s
   let output ← jsonToExprStrArray js
-  let e? ← arrayToExpr? output
+  let e? ← greedyArrayToExpr? output
   match e? with
-  | some (e, _) => do
+  | some e => do
     e.view
   | none => do
     let stx ← output.findSomeM? <| fun s => do

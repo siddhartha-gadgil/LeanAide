@@ -399,6 +399,23 @@ def polyElabThmTrans (s : String)(limit : Option Nat := none)
     return Except.ok pairs
   | Except.error e => return Except.error e
 
+/-- elaborates the string with translations and auto-corrections, including the one-to-many compatibility transformations and (optionally) returns a  translation and translated string -/
+def elabThmTrans? (s : String)(limit : Option Nat := none)
+  (transf : String → MetaM (Option String) := caseOrBinName?)
+  (extraTransf : List (String → MetaM (Option String))
+        := [xName?, xxName?])
+  (opens: List String := []) 
+  (levelNames : List Lean.Name := levelNames)
+  : TermElabM <| (Option (Expr × Syntax × String)) := do
+  match ← polyIdentMappedFunStx s transf extraTransf opens limit with
+  | Except.ok funTypeStrList => do
+    -- IO.println s!"elaborating {funTypeStrList.length} strings"
+    funTypeStrList.findSomeM? (fun funTypeStr => do      
+        let expE? ← elabFuncTyp funTypeStr levelNames
+        let exp? := expE?.toOption
+        return exp?.map <| fun (stx, expr) => (expr, stx , funTypeStr))
+  | Except.error _ => return none
+
 def polyStrThmTrans (s : String)
   (transf : String → MetaM (Option String) := caseOrBinName?)
   (extraTransf : List (String → MetaM (Option String))
