@@ -30,6 +30,8 @@ To use in your own project, it should suffice to include this project as a depen
 require LeanCodePrompts from git "https://github.com/siddhartha-gadgil/LeanAide"
 ```
 
+A version of the same tool for `Lean3` is available [here](https://github.com/0art0/lean3-statement-translation-tool).
+
 ## Full setup instructions
 
 The main code we use is in `Lean 4`. It also needs some Python code and some Python embedding data to be generated (embeddings are precomputed for efficiency). You can bypass the Python setup by using the server we host by configuring as above.
@@ -117,3 +119,5 @@ This is joint work by our team,
 with a lot of help from the Lean community and from collaborators at Microsoft Research. Our server is hosted with support from research credits from Google.
 
 Our work is described in a [note](https://mathai2022.github.io/papers/17.pdf) at the [2nd Math AI workshop](https://mathai2022.github.io/papers/) and in more detail (along with related work) in a [preprint](https://arxiv.org/abs/2211.07524).
+
+
