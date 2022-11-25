@@ -1,7 +1,0 @@
-[package]
-name = "lean3_statement_translation_tool"
-version = "0.1"
-lean_version = "leanprover-community/lean:3.48.0"
-path = "src"
-
-[dependencies]
