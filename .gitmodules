@@ -1,0 +1,3 @@
+[submodule "lean3-statement-translation-tool"]
+	path = lean3-statement-translation-tool
+	url = https://github.com/0art0/lean3-statement-translation-tool
