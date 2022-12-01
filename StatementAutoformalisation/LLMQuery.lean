@@ -17,7 +17,7 @@ structure Params where
   /-- The stop tokens for the completion. -/
   stopTokens : Array String := #[":=", "\n\n/-", "\n/-", "/-"]
 
-/-- A `Request` comprises a prompt and a list of parameters. -/
+/-- A `Request` comprises a prompt and a collection of parameters. -/
 structure Request extends Params where
   /-- The main prompt for querying the large language model. -/
   prompt : String

@@ -82,12 +82,17 @@ def buildPrompt [ToString Declaration] (decls : List DeclarationWithDocstring)
 /-- Checks whether a `Declaration` represents a type-correct Lean declaration. -/
 def Declaration.typeCheck : Declaration → Lean.MetaM Bool := sorry
 
+/-- Read a `Declaration` from `JSON` format. -/
 def Declaration.fromJson : Lean.Json → Declaration := sorry
 
+/-- Read a `DeclarationWithDocstring` from `JSON` format. -/
 def DeclarationWithDocstring.fromJson : Lean.Json → DeclarationWithDocstring := sorry
 
+/-- Convert a `Declaration` to a `JSON` object. -/
 def Declaration.toJson : Declaration → Lean.Json := sorry
 
+/-- Convert a `DeclarationWithDocstring` to a `JSON` object. -/
 def DeclarationWithDocstring.toJson : Declaration → Lean.Json := sorry
 
+/-- Read a `Declaration` from a `String`. -/
 def Declaration.fromString : String → Declaration := sorry
