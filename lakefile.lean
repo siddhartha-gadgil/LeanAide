@@ -9,6 +9,10 @@ package LeanCodePrompts{
 lean_lib LeanCodePrompts {
 }
 
+@[default_target]
+lean_lib StatementAutoformalisation {
+}
+
 lean_exe datagen{
   supportInterpreter := true
 }

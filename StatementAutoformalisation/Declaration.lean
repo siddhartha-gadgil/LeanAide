@@ -79,6 +79,9 @@ def buildPrompt [ToString Declaration] (decls : List DeclarationWithDocstring)
     (fun d prompt => s!"{toString d}\n\n{prompt}") 
     s!"{printComment stmt}\n{suffix}"
 
+/-- Checks whether a `Declaration` represents a type-correct Lean declaration. -/
+def Declaration.typeCheck : Declaration → Lean.MetaM Bool := sorry
+
 def Declaration.fromJson : Lean.Json → Declaration := sorry
 
 def DeclarationWithDocstring.fromJson : Lean.Json → DeclarationWithDocstring := sorry
