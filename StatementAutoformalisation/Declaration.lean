@@ -6,6 +6,8 @@ structure Declaration where
   kind : String
   /-- An optional name for the declaration. -/
   name : Option String := none
+  /-- The list of open namespaces that the declaration is contained in. -/
+  openNamespaces : List String := []
   /-- The arguments to the declaration (the part before the colon). -/
   args : String := "" -- TODO: Decide whether to make this a list/array
   /-- The type of the declaration (the part after the colon). -/
@@ -17,6 +19,7 @@ structure Declaration where
 structure DeclarationWithDocstring extends Declaration where
   /-- The documentation string describing the declaration. -/
   docstring : String
+  -- TODO eventually include embedding and keyword information
 
 /-- The `kind` of a `ConstantInfo` term (`axiom`/`def`/`theorem`/...) as a `String`.-/
 def Lean.ConstantInfo.kind? : Lean.ConstantInfo → Option String
@@ -56,9 +59,17 @@ def DeclarationWithDocstring.fromName? (nm : Name) : MetaM <| Option Declaration
 -- theorem test (n : Nat) : n = n := sorry
 -- #eval do return Declaration.type <$> (← Declaration.fromName? `test)
 
+open Lean in
+/-- All declarations from the current environment. -/
+def Declaration.envDecls : MetaM <| Array _root_.Declaration := sorry
+
+open Lean in
+/-- All declarations with documentation from the current environment. -/
+def DeclarationWithDocstring.envDecls : MetaM <| Array DeclarationWithDocstring := sorry
+
 /-- Render a `Declaration` as a `String`. -/
 instance Declaration.toString : ToString Declaration where
-  toString := fun ⟨kind, name?, args, type, value⟩ =>
+  toString := fun ⟨kind, name?, _, args, type, value⟩ =>
       s! "{kind} {name?.getD ""} {args} : {type} := {value}"
 
 /-- Decorate a `String` with Lean comment or docstring syntax. -/
@@ -71,22 +82,25 @@ instance DeclarationWithDocstring.toString
   toString := fun ⟨decl, doc⟩ => 
     s!"{printComment doc}\n{printDecl.toString decl}"
 
-/-- Build a prompt from a list of `DeclarationWithDocstring`s.-/
-def buildPrompt [ToString Declaration] (decls : List DeclarationWithDocstring)
-  (stmt : String) (suffix : String := "theorem") : String :=
+/-- Build a prompt from a list of `DeclarationWithDocstring`s. Note that the declarations are printed in the reverse order. -/
+def buildPrompt [ToString Declaration] (decls : Array DeclarationWithDocstring)
+  (suffix : String) : String :=
     decls.foldr
     -- this builds the prompt backwards
     (fun d prompt => s!"{toString d}\n\n{prompt}") 
-    s!"{printComment stmt}\n{suffix}"
+    suffix
 
 /-- Checks whether a `Declaration` represents a type-correct Lean declaration. -/
 def Declaration.typeCheck : Declaration → Lean.MetaM Bool := sorry
 
+/-- Checks whether a `DeclarationWithDocstring` represents a type-correct Lean declaration. -/
+def DeclarationWithDocstring.typeCheck : DeclarationWithDocstring → Lean.MetaM Bool := sorry
+
 /-- Read a `Declaration` from `JSON` format. -/
-def Declaration.fromJson : Lean.Json → Declaration := sorry
+def Declaration.fromJson : Lean.Json → Except String Declaration := sorry
 
 /-- Read a `DeclarationWithDocstring` from `JSON` format. -/
-def DeclarationWithDocstring.fromJson : Lean.Json → DeclarationWithDocstring := sorry
+def DeclarationWithDocstring.fromJson : Lean.Json → Except String DeclarationWithDocstring := sorry
 
 /-- Convert a `Declaration` to a `JSON` object. -/
 def Declaration.toJson : Declaration → Lean.Json := sorry
