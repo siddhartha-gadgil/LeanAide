@@ -184,3 +184,13 @@ def js := Json.mkObj [
 -- #eval IO.FS.writeFile "test.json" (js.pretty (10000))
 
 #check Expr.forallE
+
+open Term
+
+@[term_elab byTactic] def myElabByTactic : TermElab := 
+  fun stx expectedType? => do
+  mkSyntheticSorry (mkConst ``Nat)
+
+def sillyNat : Nat := by exact 1
+
+example : String := by simp
