@@ -1,10 +1,11 @@
 import $ivy.`com.lihaoyi::upickle:1.6.0`
 import $ivy.`com.lihaoyi::os-lib:0.8.0`
 import scala.util.matching.Regex
+import scala.util._
 
 val regex = "\ue000([^\ue001]*)\ue001([^\ue002]*)\ue002".r
 
-def clean(s: String): String = regex.replaceAllIn(s, _.group(2))
+def clean(s: String): String = Try(regex.replaceAllIn(s, _.group(2))).getOrElse(s)
 
 import ujson._
 val filename = "decls200.json"
@@ -43,14 +44,16 @@ def promptJs(js: Value): Value = {
   val name = obj("name").str.replace("\n", " ")
   val argSeq = obj("args").arr.toVector.map(js => exprString(js("arg")))
   val args = argSeq.mkString(" ")
+  val kind = obj("kind").str
   val typeExpr = exprString(obj("type"))
   val statement =
-    s"theorem ${name} ${args} : ${typeExpr}"
+    s"${kind} ${name} ${args} : ${typeExpr}"
   val theorem =
     s"${args} : ${typeExpr}"
   Obj(
     "doc_string" -> obj("doc_string").str.replace("\n", " "),
     "theorem" -> theorem,
+    "kind" -> kind,
     "statement" -> statement,
     "name" -> name,
     "args" -> args,
@@ -60,7 +63,7 @@ def promptJs(js: Value): Value = {
 
 def allPrompts(js: Value) = {
   val promptSeq = js.arr.toVector
-    .filter(js => js("kind").str == "theorem" && js("doc_string").str.nonEmpty)
+    .filter(js => js("doc_string").str.nonEmpty)
     .map(promptJs)
   Arr(promptSeq: _*)
 }
