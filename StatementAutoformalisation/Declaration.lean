@@ -1,5 +1,6 @@
 import Lean
 import Lean.Parser
+import StatementAutoformalisation.Utils
 
 /-- A structure for storing details of Lean declarations such as `theorem`s or `def`s in `String` format. -/
 structure Declaration where
@@ -15,13 +16,14 @@ structure Declaration where
   type : String
   /-- The value of the declaration (the part after the `:=` - irrelevant for theorems, but useful for definitions). -/
   value : String := "sorry"
-deriving Inhabited
+deriving Inhabited, Repr
 
 /-- A structure containing a `Declaration` together with its corresponding documentation string. -/
 structure DeclarationWithDocstring extends Declaration where
   /-- The documentation string describing the declaration. -/
   docstring : String
   -- TODO eventually include embedding and keyword information
+deriving Inhabited, Repr
 
 /-- The `kind` of a `ConstantInfo` term (`axiom`/`def`/`theorem`/...) as a `String`.-/
 def Lean.ConstantInfo.kind? : Lean.ConstantInfo → Option String
@@ -143,65 +145,57 @@ def openNamespaces.toArray : TSyntax `openNamespaces → Array String
   | _ => panic! "Expected `openNamespaces`"
 
 declare_syntax_cat decl
-syntax kind (ident)? argument* ":" term ":=" term : decl
-syntax argument* ":" term ":=" term : decl
-syntax kind (ident)? argument* ":" term : decl
-syntax argument* ":" term : decl
-
-#print TSyntax
-#print SyntaxNodeKinds
-#check Syntax.getKind
+syntax (kind)? (ident)? argument* ":" term (":=" term)? : decl
 
 def decl.toDeclaration : TSyntax `decl → _root_.Declaration
-  | `(decl| $k:kind $nm:ident $args:argument* : $t:term := $v:term) => 
-    { toDeclarationCore args t with 
-      kind := kind.toString k,
-      name := nm.getId.toString,
-      value := v.raw.reprint.get! }
-  | `(decl| $k:kind $args:argument* : $t:term := $v:term) => 
-    { toDeclarationCore args t with 
-      kind := kind.toString k,
-      value := v.raw.reprint.get! }
-  | `(decl| $args:argument* : $t:term := $v:term) =>
-    { toDeclarationCore args t with
-      value := v.raw.reprint.get! }
-  | `(decl| $k:kind $nm:ident $args:argument* : $t:term) =>
-    { toDeclarationCore args t with
-      kind := kind.toString k
-      name := nm.getId.toString }
-  | `(decl| $k:kind $args:argument* : $t:term) =>
-    { toDeclarationCore args t with
-      kind := kind.toString k }
-  | `(decl| $args:argument* : $t:term) => toDeclarationCore args t
-  | _ => panic! "Expected `decl`"
-where
-toDeclarationCore (args : Array <| TSyntax `argument) (type : TSyntax `term) : _root_.Declaration :=
-  { kind := "def", -- the most general `kind`
-    name := none,
+  | `(decl| $[$k?:kind]? $[$nm?:ident]? $args:argument* : $t:term $[:= $val?:term]?) =>
+  { kind := k?.elim kind.toString "def",
+    name := nm? >>= (·.getId.toString),
     openNamespaces := #[]
-    args := args.foldl (fun acc arg => acc ++ arg.raw.reprint.get!) "",
-    type := type.raw.reprint.get!,
-    value := "sorry" }
-
-#eval do
-  let env ← (getEnv : MetaM _)
-  let .ok stx := runParserCategory env `decl "theorem xyz (a : Nat) : ∀ x : Nat, x = a" | failure
-  let decl := decl.toDeclaration ⟨stx⟩
-  return decl.kind
+    args := args.foldl (fun acc arg => acc ++ arg.toString!) "",
+    type := t.toString!,
+    value := val?.elim TSyntax.toString! "sorry" }
+  | _ => panic! "Expected `decl`"
 
 declare_syntax_cat declWithNamespaces
 syntax (openNamespaces)? decl : declWithNamespaces
 
+def declWithNamespaces.toDeclaration : TSyntax `declWithNamespaces → _root_.Declaration
+  | `(declWithNamespaces| $[$ns?:openNamespaces]? $d:decl) =>
+    { decl.toDeclaration d with 
+      openNamespaces := ns?.elim openNamespaces.toArray .empty }
+  | _ => panic! "Expected `declWithNamespaces`"
+
 declare_syntax_cat declWithDocstring
-syntax docComment decl : declWithDocstring
+syntax (openNamespaces)? docComment decl : declWithDocstring
+
+def declWithDocstring.toDeclarationWithDocstring : TSyntax `declWithDocstring → MetaM DeclarationWithDocstring
+  | `(declWithDocstring| $[$ns?:openNamespaces]? $doc:docComment $d:decl) => do
+    let d := declWithNamespaces.toDeclaration <| 
+      ← `(declWithNamespaces| $[$ns?:openNamespaces]? $d:decl)
+    return ⟨d, ← getDocStringText doc⟩
+  | _ => panic! "Expected `declWithDocstring`"
 
 end ParsingAndElaboration
 
 /-- Read a `Declaration` from a `String`. -/
-def Declaration.fromString : String → Declaration := sorry
+def Declaration.fromString (stmt : String) : Lean.MetaM Declaration := do
+  let env ← Lean.getEnv
+  let .ok stx := Lean.Parser.runParserCategory env `decl stmt | failure
+  return decl.toDeclaration ⟨stx⟩
 
-/-- Checks whether a `Declaration` represents a type-correct Lean declaration. -/
+#eval Declaration.fromString "theorem xyz (a b : Nat) : a = b"
+
+/-- Read a `DeclarationWithDocstring` from a `String`. -/
+def DeclarationWithDocstring.fromString (stmt : String) : Lean.MetaM DeclarationWithDocstring := do
+  let env ← Lean.getEnv
+  let .ok stx := Lean.Parser.runParserCategory env `declWithDocstring stmt | failure
+  declWithDocstring.toDeclarationWithDocstring ⟨stx⟩
+
+#eval DeclarationWithDocstring.fromString "/-- A test theorem -/ theorem xyz (a b : Nat) : a = b"
+
+/-- Check whether a `Declaration` represents a type-correct `Lean` declaration. -/
 def Declaration.typeCheck : Declaration → Lean.MetaM Bool := sorry
 
-/-- Checks whether a `DeclarationWithDocstring` represents a type-correct Lean declaration. -/
+/-- Check whether a `DeclarationWithDocstring` represents a type-correct `Lean` declaration. -/
 def DeclarationWithDocstring.typeCheck : DeclarationWithDocstring → Lean.MetaM Bool := sorry
