@@ -43,6 +43,10 @@ def getStr! (j : Json) : String :=
 
 end Lean.Json
 
+def Array.joinWith (sep : String := " ") : Array String → String
+  | ⟨[]⟩ => ""
+  | ⟨a::as⟩ => Array.foldl (fun acc x => acc ++ sep ++ x) a ⟨as⟩
+
 def Option.elim : Option α → (α → β) → β → β
   | some a, f, _ => f a
   | none, _, b => b

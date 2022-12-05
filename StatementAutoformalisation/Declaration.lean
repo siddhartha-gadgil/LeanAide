@@ -1,4 +1,5 @@
 import Lean
+import Lean.Elab
 import Lean.Parser
 import StatementAutoformalisation.Utils
 
@@ -71,6 +72,14 @@ open Lean in
 /-- All declarations with documentation from the current environment. -/
 def DeclarationWithDocstring.envDecls : MetaM <| Array DeclarationWithDocstring := sorry
 
+/-- The `String` representation of the type of a `Declaration`. -/
+def Declaration.toType (decl : Declaration) : String :=
+  let ns := if decl.openNamespaces.isEmpty then "" else "open " ++ decl.openNamespaces.joinWith " " ++ " in "
+  let type :=
+    if decl.args.trim = "" then decl.type
+    else s!"∀ {decl.args}, {decl.type}"
+  ns ++ type
+
 /-- Render a `Declaration` as a `String`. -/
 instance Declaration.toString : ToString Declaration where
   toString := fun ⟨kind, name?, _, args, type, value⟩ =>
@@ -104,9 +113,10 @@ def DeclarationWithDocstring.fromJson : Lean.Json → Except String DeclarationW
 def Declaration.toJson : Declaration → Lean.Json := sorry
 
 /-- Convert a `DeclarationWithDocstring` to a `JSON` object. -/
-def DeclarationWithDocstring.toJson : Declaration → Lean.Json := sorry
+def DeclarationWithDocstring.toJson : DeclarationWithDocstring → Lean.Json := sorry
 
-section ParsingAndElaboration
+
+section Parsing
 
 open Lean Parser
 
@@ -115,6 +125,9 @@ syntax "(" ident+ ":" term ")" : argument
 syntax "{" ident+ ":" term "}" : argument
 syntax "[" ident+ ":" term "]" : argument
 syntax "⦃" ident+ ":" term "⦄" : argument
+syntax "(" term ")" : argument
+syntax "{" term "}" : argument
+syntax "⦃" term "⦄" : argument
 syntax "[" term "]" : argument
 
 -- TODO Update this function according to whether arguments are stored in a list or in a string
@@ -152,7 +165,7 @@ def decl.toDeclaration : TSyntax `decl → _root_.Declaration
   { kind := k?.elim kind.toString "def",
     name := nm? >>= (·.getId.toString),
     openNamespaces := #[]
-    args := args.foldl (fun acc arg => acc ++ arg.toString!) "",
+    args := args |>.map TSyntax.toString! |>.joinWith " ",
     type := t.toString!,
     value := val?.elim TSyntax.toString! "sorry" }
   | _ => panic! "Expected `decl`"
@@ -170,32 +183,41 @@ declare_syntax_cat declWithDocstring
 syntax (openNamespaces)? docComment decl : declWithDocstring
 
 def declWithDocstring.toDeclarationWithDocstring : TSyntax `declWithDocstring → MetaM DeclarationWithDocstring
-  | `(declWithDocstring| $[$ns?:openNamespaces]? $doc:docComment $d:decl) => do
-    let d := declWithNamespaces.toDeclaration <| 
-      ← `(declWithNamespaces| $[$ns?:openNamespaces]? $d:decl)
-    return ⟨d, ← getDocStringText doc⟩
+  | `(declWithDocstring| $[$ns?:openNamespaces]? $doc:docComment $d:decl) => 
+  do pure <| { 
+    toDeclaration := declWithNamespaces.toDeclaration <| 
+                  ← `(declWithNamespaces| $[$ns?:openNamespaces]? $d:decl),
+    docstring := ← getDocStringText doc }
   | _ => panic! "Expected `declWithDocstring`"
 
-end ParsingAndElaboration
+end Parsing
+
 
 /-- Read a `Declaration` from a `String`. -/
-def Declaration.fromString (stmt : String) : Lean.MetaM Declaration := do
+def Declaration.fromString? (stmt : String) : Lean.MetaM <| Option Declaration := do
   let env ← Lean.getEnv
-  let .ok stx := Lean.Parser.runParserCategory env `decl stmt | failure
+  let .ok stx := Lean.Parser.runParserCategory env `decl stmt | return none
   return decl.toDeclaration ⟨stx⟩
 
-#eval Declaration.fromString "theorem xyz (a b : Nat) : a = b"
-
 /-- Read a `DeclarationWithDocstring` from a `String`. -/
-def DeclarationWithDocstring.fromString (stmt : String) : Lean.MetaM DeclarationWithDocstring := do
+def DeclarationWithDocstring.fromString? (stmt : String) : Lean.MetaM <| Option DeclarationWithDocstring := do
   let env ← Lean.getEnv
-  let .ok stx := Lean.Parser.runParserCategory env `declWithDocstring stmt | failure
+  let .ok stx := Lean.Parser.runParserCategory env `declWithDocstring stmt | return none
   declWithDocstring.toDeclarationWithDocstring ⟨stx⟩
 
-#eval DeclarationWithDocstring.fromString "/-- A test theorem -/ theorem xyz (a b : Nat) : a = b"
-
+open Lean Elab Term in
 /-- Check whether a `Declaration` represents a type-correct `Lean` declaration. -/
-def Declaration.typeCheck : Declaration → Lean.MetaM Bool := sorry
+def Declaration.typeCheck (env : Environment) (decl : _root_.Declaration) : TermElabM Bool := do
+  let type := decl.toType
+  let .ok stx := Lean.Parser.runParserCategory env `term type | return false
+  try 
+    let _ := Term.withAutoBoundImplicit <| Term.withoutErrToSorry <| elabType stx
+    return true
+  catch e =>
+    -- TODO Eventually remove this line after confirming that the set-up works
+    dbg_trace ← e.toMessageData.toString
+    return false
 
 /-- Check whether a `DeclarationWithDocstring` represents a type-correct `Lean` declaration. -/
-def DeclarationWithDocstring.typeCheck : DeclarationWithDocstring → Lean.MetaM Bool := sorry
+def DeclarationWithDocstring.typeCheck (env : Lean.Environment) : DeclarationWithDocstring → Lean.Elab.Term.TermElabM Bool :=
+  Declaration.typeCheck env ∘ toDeclaration
