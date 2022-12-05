@@ -43,6 +43,16 @@ def getStr! (j : Json) : String :=
 
 end Lean.Json
 
+def Option.elim : Option α → (α → β) → β → β
+  | some a, f, _ => f a
+  | none, _, b => b
+
+def Lean.Syntax.toString! : Lean.Syntax → String :=
+  Option.get! ∘ Syntax.reprint
+
+def Lean.TSyntax.toString! : Lean.TSyntax t → String
+  | ⟨stx⟩ => stx.toString!
+
 def Array.partitionM [Monad M] (p : α → M Bool) (as : Array α) : M <| Array α × Array α := do
   let mut bs := #[]
   let mut cs := #[]
