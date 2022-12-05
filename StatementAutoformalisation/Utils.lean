@@ -43,6 +43,18 @@ def getStr! (j : Json) : String :=
 
 end Lean.Json
 
+def Array.partitionM [Monad M] (p : α → M Bool) (as : Array α) : M <| Array α × Array α := do
+  let mut bs := #[]
+  let mut cs := #[]
+
+  for a in as do
+    if ← p a then
+      bs := bs.push a
+    else
+      cs := cs.push a
+
+  return (bs, cs)
+
 initialize
   registerTraceClass `Translate.info
   registerTraceClass `Translate.debug

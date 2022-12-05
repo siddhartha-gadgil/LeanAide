@@ -28,8 +28,6 @@ structure Request extends Params where
   mkSuffix : Params → String → String
   /-- Process the language model completion as a `DeclarationWithDocstring`. -/
   processCompletion : Params → String → DeclarationWithDocstring
-  /-- Whether to retain only the type-correct completions. -/
-  typecheck? : Bool := true
 
 abbrev Request.params : Request → Params := Request.toParams_2
 
@@ -41,17 +39,17 @@ def promptDecls (req : Prompt.Request) : Lean.MetaM <| Array DeclarationWithDocs
   let customPrompts ← req.useNames.filterMapM DeclarationWithDocstring.fromName?
   let ctxPrompts ← if req.useCtx? then DeclarationWithDocstring.envDecls else pure #[]
   let allPrompts := #[fixedPrompts, keywordPrompts, similarityPrompts, customPrompts, ctxPrompts]
-  return allPrompts.foldl .append #[]
-  
+  return allPrompts.foldl .append .empty
+
 /-- Query the language model for translations based on the given `Prompt.Request`. -/
 def translate (req : Prompt.Request) : Lean.MetaM <| Array DeclarationWithDocstring := do
   let decls ← promptDecls req
   let prompt := buildPrompt decls <| req.mkSuffix req.params req.stmt
   let completions ← LLM.Request.getLLMCompletions ⟨req.toLLMParams, prompt⟩
-  let out := completions.map <| req.processCompletion req.params
-  if req.typecheck? then 
-    out.filterM DeclarationWithDocstring.typeCheck
-  else 
-    return out
+  return completions.map <| req.processCompletion req.params
+
+/-- Retrieve translations for a given `Prompt.Request` and sort them according to whether they type-check. -/
+def typecheckTranslations (req : Prompt.Request) : Lean.MetaM <| Array DeclarationWithDocstring × Array DeclarationWithDocstring :=
+  translate req >>= Array.partitionM DeclarationWithDocstring.typeCheck
 
 end Prompt
