@@ -148,6 +148,10 @@ syntax argument* ":" term ":=" term : decl
 syntax kind (ident)? argument* ":" term : decl
 syntax argument* ":" term : decl
 
+#print TSyntax
+#print SyntaxNodeKinds
+#check Syntax.getKind
+
 def decl.toDeclaration : TSyntax `decl → _root_.Declaration
   | `(decl| $k:kind $nm:ident $args:argument* : $t:term := $v:term) => 
     { toDeclarationCore args t with 
@@ -163,20 +167,27 @@ def decl.toDeclaration : TSyntax `decl → _root_.Declaration
       value := v.raw.reprint.get! }
   | `(decl| $k:kind $nm:ident $args:argument* : $t:term) =>
     { toDeclarationCore args t with
-      kind := k.raw.reprint.get!
+      kind := kind.toString k
       name := nm.getId.toString }
   | `(decl| $k:kind $args:argument* : $t:term) =>
     { toDeclarationCore args t with
-      kind := k.raw.reprint.get! }
+      kind := kind.toString k }
   | `(decl| $args:argument* : $t:term) => toDeclarationCore args t
   | _ => panic! "Expected `decl`"
-where toDeclarationCore (args : Array <| TSyntax `argument) (type : TSyntax `term) : _root_.Declaration :=
+where
+toDeclarationCore (args : Array <| TSyntax `argument) (type : TSyntax `term) : _root_.Declaration :=
   { kind := "def", -- the most general `kind`
     name := none,
     openNamespaces := #[]
     args := args.foldl (fun acc arg => acc ++ arg.raw.reprint.get!) "",
     type := type.raw.reprint.get!,
     value := "sorry" }
+
+#eval do
+  let env ← (getEnv : MetaM _)
+  let .ok stx := runParserCategory env `decl "theorem xyz (a : Nat) : ∀ x : Nat, x = a" | failure
+  let decl := decl.toDeclaration ⟨stx⟩
+  return decl.kind
 
 declare_syntax_cat declWithNamespaces
 syntax (openNamespaces)? decl : declWithNamespaces
