@@ -104,10 +104,26 @@ def buildPrompt [ToString Declaration] (decls : Array DeclarationWithDocstring)
     suffix
 
 /-- Read a `Declaration` from `JSON` format. -/
-def Declaration.fromJson : Lean.Json → Except String Declaration := sorry
+def Declaration.fromJson (data : Lean.Json) : Except String Declaration := do
+  -- TODO Update this after merging with `main` or `defdocs`
+  let kind := "theorem" -- ← data.getObjValAs String "kind"
+  let name ← data.getObjValAs? String "name"
+  let args ← data.getObjValAs? String "args"
+  let type ← data.getObjValAs? String "type"
+  return {
+    kind := kind,
+    name := name,
+    openNamespaces := #[],
+    args := args,
+    type := type,
+    value := "sorry"
+  }
 
 /-- Read a `DeclarationWithDocstring` from `JSON` format. -/
-def DeclarationWithDocstring.fromJson : Lean.Json → Except String DeclarationWithDocstring := sorry
+def DeclarationWithDocstring.fromJson (data : Lean.Json) : Except String DeclarationWithDocstring := do
+  let docstr ← data.getObjValAs? String "doc_string"
+  let decl ← Declaration.fromJson data
+  return ⟨decl, docstr⟩
 
 /-- Convert a `Declaration` to a `JSON` object. -/
 def Declaration.toJson (decl : Declaration) : Lean.Json := .pretty <| .mkObj [
