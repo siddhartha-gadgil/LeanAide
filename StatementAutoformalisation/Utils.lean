@@ -68,6 +68,9 @@ def Lean.ConstantInfo.kind? : Lean.ConstantInfo → Option String
   | ctorInfo   _ =>  none
   | recInfo    _ => "rec"
 
+def Lean.SMap.toArray [BEq α] [Hashable α] (m : SMap α β) : Array (α × β) :=
+  m.fold (init := .empty) fun arr a b => arr.push (a, b)
+
 def Array.partitionM [Monad M] (p : α → M Bool) (as : Array α) : M <| Array α × Array α := do
   let mut bs := #[]
   let mut cs := #[]

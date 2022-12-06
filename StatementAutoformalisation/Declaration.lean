@@ -54,19 +54,16 @@ def DeclarationWithDocstring.fromName? (nm : Name) : MetaM <| Option Declaration
   let doc? ← liftM <| findDocString? (← getEnv) nm
   return do some ⟨← decl?, ← doc?⟩
 
--- theorem test (n : Nat) : n = n := sorry
--- #eval do return Declaration.type <$> (← Declaration.fromName? `test)
-
 open Lean in
 /-- All declarations from the current environment. -/
 def Declaration.envDecls : MetaM <| Array _root_.Declaration := do
   let env ← getEnv
   let mainModuleIdx := env.getModuleIdx? env.mainModule
 
-  Array.mapM id <| env.constants.fold (fun decls nm ci => 
+  env.constants.toArray.filterMapM fun ⟨nm, ci⟩ =>
     if env.getModuleIdxFor? nm == mainModuleIdx then
-      decls.push <| Declaration.fromConstantInfo ci
-    else decls) .empty
+      Declaration.fromConstantInfo ci
+    else return none
 
 open Lean in
 /-- All declarations with documentation from the current environment. -/
@@ -74,11 +71,12 @@ def DeclarationWithDocstring.envDecls : MetaM <| Array DeclarationWithDocstring 
   let env ← getEnv
   let mainModuleIdx := env.getModuleIdx? env.mainModule
 
-  env.constants.toList.toArray.filterMapM fun ⟨nm, ci⟩ => do
-    guard $ env.getModuleIdxFor? nm == mainModuleIdx
-    let some docstring ← findDocString? env nm | pure none
-    let decl ← Declaration.fromConstantInfo ci
-    return some ⟨decl, docstring⟩
+  env.constants.toArray.filterMapM fun ⟨nm, ci⟩ => do
+    if  env.getModuleIdxFor? nm == mainModuleIdx then
+      let some docstring ← findDocString? env nm | pure none
+      let decl ← Declaration.fromConstantInfo ci
+      return some ⟨decl, docstring⟩
+    else return none
 
 /-- The `String` representation of the type of a `Declaration`. -/
 def Declaration.toType (decl : Declaration) : String :=
