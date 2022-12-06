@@ -50,7 +50,7 @@ end SentenceSimilarity
 
 section Test
 
-def egReq : SentenceSimilarity.Request :=
+def SentenceSimilarity.egReq : SentenceSimilarity.Request :=
 { kind := "theorem", nSim := 5, stmt := "Every matrix satisfies its own characteristic polynomial." }
 
 -- #eval egReq.similarDecls

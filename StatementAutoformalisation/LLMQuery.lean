@@ -64,7 +64,7 @@ end LLM
 
 section Test
 
-def egReq : LLM.Request := {prompt := "For all epsilon greater than zero, ", n := 1}
+def LLM.egReq : LLM.Request := {prompt := "For all epsilon greater than zero, ", n := 1}
 
 -- #eval egReq.getLLMCompletions
 
