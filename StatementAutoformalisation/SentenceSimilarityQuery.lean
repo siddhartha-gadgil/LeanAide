@@ -23,7 +23,7 @@ structure Request extends Params where
   stmt : String
 
 /-- Render a `Request` in `JSON` format. -/
-def Request.toJson (req : SentenceSimilarity.Request) : Lean.Json := .pretty <| .mkObj [
+def Request.toJson (req : SentenceSimilarity.Request) : Lean.Json := .mkObj [
   ("filename", req.source),
   ("model_name", req.model),
   ("kind", req.kind),
@@ -39,11 +39,20 @@ def Request.similarDecls (req : SentenceSimilarity.Request) : IO <| Array Declar
     | _ => do
     let out ← IO.Process.output {cmd:= "curl", args:= #[
       "-X", "POST", 
-      "-H", "Content-type: application/json", 
-      "-d", req.toJson.compress, s!"{← leanAideIP}/nearest_prompts"]}
-    IO.ofExcept <| do 
+      "-H", "Content-Type: application/json", 
+      "--data", req.toJson.pretty, s!"{← leanAideIP}/nearest_prompts"]}
+    IO.ofExcept <| do
       let result ← Lean.Json.parse out.stdout
       let prompts ← result.getArr?
       prompts.mapM DeclarationWithDocstring.fromJson
 
 end SentenceSimilarity
+
+section Test
+
+def egReq : SentenceSimilarity.Request :=
+{ kind := "theorem", nSim := 5, stmt := "Every matrix satisfies its own characteristic polynomial." }
+
+-- #eval egReq.similarDecls
+
+end Test

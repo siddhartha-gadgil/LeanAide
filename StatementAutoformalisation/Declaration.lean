@@ -144,7 +144,7 @@ def DeclarationWithDocstring.fromJson (data : Lean.Json) : Except String Declara
   return ⟨decl, docstr⟩
 
 /-- Convert a `Declaration` to a `JSON` object. -/
-def Declaration.toJson (decl : Declaration) : Lean.Json := .pretty <| .mkObj [
+def Declaration.toJson (decl : Declaration) : Lean.Json := .mkObj [
   ("kind", decl.kind),
   ("name", decl.name.getD ""),
   ("open_namespaces", .arr <| decl.openNamespaces.map .str),
@@ -155,7 +155,7 @@ def Declaration.toJson (decl : Declaration) : Lean.Json := .pretty <| .mkObj [
 
 /-- Convert a `DeclarationWithDocstring` to a `JSON` object. -/
 def DeclarationWithDocstring.toJson : DeclarationWithDocstring → Lean.Json
-  | ⟨decl, docstr⟩ => .pretty <| .mergeObj decl.toJson (.mkObj [("doc_string", docstr)])
+  | ⟨decl, docstr⟩ => .mergeObj decl.toJson (.mkObj [("doc_string", docstr)])
 
 section Parsing
 
