@@ -8,7 +8,7 @@ namespace Prompt
 /-- A structure containing all the relevant information to build a prompt for a Codex query. -/
 structure Params extends LLM.Params, SentenceSimilarity.Params, KeywordExtraction.Params where
   /-- Toggles whether to use a given set of fixed prompts (such as `Lean Chat` prompts) in the main prompt. -/
-  fixedPrompts : Array DeclarationWithDocstring := #[]
+  fixedPrompts : Lean.MetaM <| Array DeclarationWithDocstring := pure #[]
   /-- A list of names of declarations from the environment that are to be used in the prompt. -/
   useNames : Array Lean.Name := #[]
   /-- A list of module names from which to gather declarations for the prompt. -/
@@ -35,7 +35,7 @@ abbrev Request.params : Request → Params := Request.toParams_2
 
 /-- All the declarations that go into creating the final prompt. -/
 def promptDecls (req : Prompt.Request) : Lean.MetaM <| Array DeclarationWithDocstring := do
-  let fixedPrompts := req.fixedPrompts
+  let fixedPrompts ← req.fixedPrompts
   let similarityPrompts ← liftM <| SentenceSimilarity.Request.similarDecls ⟨req.toSentenceSimilarityParams, req.stmt⟩
   let keywordPrompts ← liftM <| KeywordExtraction.Request.similarDecls ⟨req.toKeywordExtractionParams, req.stmt⟩
   let customPrompts ← req.useNames.filterMapM DeclarationWithDocstring.fromName?
