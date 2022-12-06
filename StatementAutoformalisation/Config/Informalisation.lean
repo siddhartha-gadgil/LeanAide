@@ -7,7 +7,7 @@ def LLMParams : LLM.Params :=
   temperature := 2,
   n := 1,
   maxTokens := 200,
-  stopTokens := #["\n\n"]
+  stopTokens := #["-/", "\n\n"]
 }
 
 def SentenceSimilarityParams : SentenceSimilarity.Params :=

@@ -1,8 +1,8 @@
 import StatementAutoformalisation.Interface
-import StatementAutoformalisation.Config.Custom
+import StatementAutoformalisation.Config.Informalisation
 -- import Mathbin.All
 
 def req : Prompt.Request := 
-  ⟨PromptParams, "A closed subset of a compact space is compact"⟩
+  ⟨PromptParams, "theorem xyz : ∀ n : ℕ, ∃ m : ℕ, m > n ∧ m % 2 = 1"⟩
 
--- #eval Prod.snd <$> Prompt.translate req
+#eval Prompt.translate req
