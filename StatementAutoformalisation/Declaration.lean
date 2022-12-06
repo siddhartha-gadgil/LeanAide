@@ -56,27 +56,39 @@ def DeclarationWithDocstring.fromName? (nm : Name) : MetaM <| Option Declaration
 
 open Lean in
 /-- All declarations from the current environment. -/
-def Declaration.envDecls : MetaM <| Array _root_.Declaration := do
+def Declaration.envDecls (moduleNames : Array Name := .empty) (useMain? : Bool := true) : MetaM <| Array _root_.Declaration := do
+  if moduleNames.isEmpty && !useMain? then 
+    return #[]
+  
   let env ← getEnv
-  let mainModuleIdx := env.getModuleIdx? env.mainModule
+  let moduleNames := 
+    if useMain? then
+      moduleNames.push env.mainModule
+    else moduleNames
+  let moduleIdxs := moduleNames.filterMap env.getModuleIdx?
 
-  env.constants.toArray.filterMapM fun ⟨nm, ci⟩ =>
-    if env.getModuleIdxFor? nm == mainModuleIdx then
-      Declaration.fromConstantInfo ci
-    else return none
+  env.constants.toArray.filterMapM fun ⟨nm, ci⟩ => do
+    let some _ := moduleIdxs.contains <$> env.getModuleIdxFor? nm  | pure none
+    Declaration.fromConstantInfo ci
 
 open Lean in
 /-- All declarations with documentation from the current environment. -/
-def DeclarationWithDocstring.envDecls : MetaM <| Array DeclarationWithDocstring := do
+def DeclarationWithDocstring.envDecls (moduleNames : Array Name := .empty) (useMain? : Bool := true) : MetaM <| Array DeclarationWithDocstring := do
+  if moduleNames.isEmpty && !useMain? then 
+    return #[]
+
   let env ← getEnv
-  let mainModuleIdx := env.getModuleIdx? env.mainModule
+  let moduleNames := 
+    if useMain? then
+      moduleNames.push env.mainModule
+    else moduleNames
+  let moduleIdxs := moduleNames.filterMap env.getModuleIdx?
 
   env.constants.toArray.filterMapM fun ⟨nm, ci⟩ => do
-    if  env.getModuleIdxFor? nm == mainModuleIdx then
-      let some docstring ← findDocString? env nm | pure none
-      let decl ← Declaration.fromConstantInfo ci
-      return some ⟨decl, docstring⟩
-    else return none
+    let some _ := moduleIdxs.contains <$> env.getModuleIdxFor? nm | pure none
+    let some docstring ← findDocString? env nm | pure none
+    let decl ← Declaration.fromConstantInfo ci
+    return some ⟨decl, docstring⟩
 
 /-- The `String` representation of the type of a `Declaration`. -/
 def Declaration.toType (decl : Declaration) : String :=

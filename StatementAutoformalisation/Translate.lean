@@ -11,8 +11,10 @@ structure Params extends LLM.Params, SentenceSimilarity.Params, KeywordExtractio
   fixedPrompts : Array DeclarationWithDocstring := #[]
   /-- A list of names of declarations from the environment that are to be used in the prompt. -/
   useNames : Array Lean.Name := #[]
-  /-- Toggles whether to use declarations from the context in the prompt. -/
-  useCtx? : Bool := false
+  /-- A list of module names from which to gather declarations for the prompt. -/
+  useModules : Array Lean.Name := #[]
+  /-- Toggles whether to use declarations from the main context in the prompt. -/
+  useMainCtx? : Bool := false
   /-- A method for printing a `Declaration` as a `String`. -/
   printDecl : ToString DeclarationWithDocstring := DeclarationWithDocstring.toString
 
@@ -37,7 +39,7 @@ def promptDecls (req : Prompt.Request) : Lean.MetaM <| Array DeclarationWithDocs
   let similarityPrompts ← liftM <| SentenceSimilarity.Request.similarDecls ⟨req.toSentenceSimilarityParams, req.stmt⟩
   let keywordPrompts ← liftM <| KeywordExtraction.Request.similarDecls ⟨req.toKeywordExtractionParams, req.stmt⟩
   let customPrompts ← req.useNames.filterMapM DeclarationWithDocstring.fromName?
-  let ctxPrompts ← if req.useCtx? then DeclarationWithDocstring.envDecls else pure #[]
+  let ctxPrompts ← DeclarationWithDocstring.envDecls req.useModules req.useMainCtx?
   let allPrompts := #[fixedPrompts, keywordPrompts, similarityPrompts, customPrompts, ctxPrompts]
   return allPrompts.foldl .append .empty
 
