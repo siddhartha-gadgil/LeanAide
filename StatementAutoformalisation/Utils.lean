@@ -47,7 +47,8 @@ def Array.joinWith (sep : String := " ") : Array String → String
   | ⟨[]⟩ => ""
   | ⟨a::as⟩ => Array.foldl (fun acc x => acc ++ sep ++ x) a ⟨as⟩
 
-def Option.elim : Option α → (α → β) → β → β
+-- TODO Check where `Option.elim` is defined and use that instead
+def Option.eliminate : Option α → (α → β) → β → β
   | some a, f, _ => f a
   | none, _, b => b
 

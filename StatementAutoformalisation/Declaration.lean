@@ -206,12 +206,12 @@ syntax (kind)? (ident)? argument* ":" term (":=" term)? : decl
 
 def decl.toDeclaration : TSyntax `decl → _root_.Declaration
   | `(decl| $[$k?:kind]? $[$nm?:ident]? $args:argument* : $t:term $[:= $val?:term]?) =>
-  { kind := k?.elim kind.toString "def",
+  { kind := k?.eliminate kind.toString "def",
     name := nm? >>= (·.getId.toString),
     openNamespaces := #[]
     args := args |> arguments.toString,
     type := t.toString!,
-    value := val?.elim TSyntax.toString! "sorry" }
+    value := val?.eliminate TSyntax.toString! "sorry" }
   | _ => panic! "Expected `decl`"
 
 declare_syntax_cat declWithNamespaces
@@ -220,7 +220,7 @@ syntax (openNamespaces)? decl : declWithNamespaces
 def declWithNamespaces.toDeclaration : TSyntax `declWithNamespaces → _root_.Declaration
   | `(declWithNamespaces| $[$ns?:openNamespaces]? $d:decl) =>
     { decl.toDeclaration d with 
-      openNamespaces := ns?.elim openNamespaces.toArray .empty }
+      openNamespaces := ns?.eliminate openNamespaces.toArray .empty }
   | _ => panic! "Expected `declWithNamespaces`"
 
 declare_syntax_cat declWithDocstring
