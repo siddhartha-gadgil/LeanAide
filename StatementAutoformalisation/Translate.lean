@@ -48,8 +48,6 @@ def translate (req : Prompt.Request) : Lean.MetaM <| String × Array Declaration
   let decls ← promptDecls req
   let prompt := @buildPrompt req.printDecl decls <| req.mkSuffix req.stmt
   let completions ← LLM.Request.getLLMCompletions ⟨req.toLLMParams, prompt⟩
-  dbg_trace completions.size
-  dbg_trace completions[0]!
   return (prompt, 
     ← completions |>.map (req.processCompletion req.stmt) |>.filterMapM' DeclarationWithDocstring.fromString?)
 
