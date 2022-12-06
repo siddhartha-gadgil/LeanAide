@@ -104,14 +104,14 @@ instance Declaration.toString : ToString Declaration where
       s! "{kind} {name?.getD ""} {args} : {type} := {value}"
 
 /-- Decorate a `String` with Lean comment or docstring syntax. -/
-def printComment (doc : String) : String := s!"/-- {doc} -/"
+def printAsComment (doc : String) : String := s!"/-- {doc} -/"
 
 /-- Render a `DeclarationWithDocstring` as a `String`. -/
 instance DeclarationWithDocstring.toString 
     [printDecl : ToString Declaration] :
     ToString DeclarationWithDocstring where
   toString := fun ⟨decl, doc⟩ => 
-    s!"{printComment doc}\n{printDecl.toString decl}"
+    s!"{printAsComment doc}\n{printDecl.toString decl}"
 
 /-- Build a prompt from a list of `DeclarationWithDocstring`s. Note that the declarations are printed in the reverse order. -/
 def buildPrompt [ToString Declaration] (decls : Array DeclarationWithDocstring)

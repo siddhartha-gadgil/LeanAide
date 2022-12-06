@@ -34,6 +34,6 @@ def CustomPromptParams : Prompt.Params :=
   useModules := #[],
   useMainCtx? := false,
   printDecl := DeclarationWithDocstring.toString
-  mkSuffix := fun stmt => s!"{printComment stmt}\n{SentenceSimilarityParams.kind}",
+  mkSuffix := fun stmt => s!"{printAsComment stmt}\n{SentenceSimilarityParams.kind}",
   processCompletion := id
 }
