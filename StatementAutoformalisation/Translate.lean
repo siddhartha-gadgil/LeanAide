@@ -17,6 +17,10 @@ structure Params extends LLM.Params, SentenceSimilarity.Params, KeywordExtractio
   useMainCtx? : Bool := false
   /-- A method for printing a `Declaration` as a `String`. -/
   printDecl : ToString DeclarationWithDocstring := DeclarationWithDocstring.toString
+  /-- Make the suffix to add at the end of the prompt. -/
+  mkSuffix : String → String
+  /-- An additional processing of the Codex completion before converting to a `DeclarationWithDocstring`. -/
+  processCompletion : String → String := id
 
 abbrev Params.toLLMParams : Prompt.Params → LLM.Params := Params.toParams
 abbrev Params.toSentenceSimilarityParams : Prompt.Params → SentenceSimilarity.Params := Params.toParams_2
@@ -26,10 +30,6 @@ abbrev Params.toKeywordExtractionParams : Prompt.Params → KeywordExtraction.Pa
 structure Request extends Params where
   /-- The statement around which to build a prompt -/
   stmt : String
-  /-- Make the suffix to add at the end of the prompt. -/
-  mkSuffix : Params → String → String
-  /-- An additional processing of the Codex completion before converting to a `DeclarationWithDocstring`. -/
-  processCompletion : Params → String → String := fun _ => id
 
 abbrev Request.params : Request → Params := Request.toParams_2
 
@@ -46,9 +46,9 @@ def promptDecls (req : Prompt.Request) : Lean.MetaM <| Array DeclarationWithDocs
 /-- Query the language model for translations based on the given `Prompt.Request`. -/
 def translate (req : Prompt.Request) : Lean.MetaM <| Array DeclarationWithDocstring := do
   let decls ← promptDecls req
-  let prompt := buildPrompt decls <| req.mkSuffix req.params req.stmt
+  let prompt := buildPrompt decls <| req.mkSuffix req.stmt
   let completions ← LLM.Request.getLLMCompletions ⟨req.toLLMParams, prompt⟩
-  completions |>.map (req.processCompletion req.params) |>.filterMapM' DeclarationWithDocstring.fromString?
+  completions |>.map req.processCompletion |>.filterMapM' DeclarationWithDocstring.fromString?
 
 /-- Retrieve translations for a given `Prompt.Request` and sort them according to whether they type-check. -/
 def typecheckTranslations (req : Prompt.Request) : Lean.Elab.Term.TermElabM <| Array DeclarationWithDocstring × Array (DeclarationWithDocstring × String) := do
