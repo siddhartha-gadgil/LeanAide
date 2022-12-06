@@ -238,16 +238,18 @@ end Parsing
 
 
 /-- Read a `Declaration` from a `String`. -/
-def Declaration.fromString? (stmt : String) : Lean.MetaM <| Option Declaration := do
+def Declaration.fromString? (stmt : String) : Lean.MetaM <| Except String Declaration := do
   let env ← Lean.getEnv
-  let .ok stx := Lean.Parser.runParserCategory env `decl stmt | return none
-  return decl.toDeclaration ⟨stx⟩
+  let stx? := Lean.Parser.runParserCategory env `decl stmt
+  return stx?.map (decl.toDeclaration {raw := ·})
 
 /-- Read a `DeclarationWithDocstring` from a `String`. -/
-def DeclarationWithDocstring.fromString? (stmt : String) : Lean.MetaM <| Option DeclarationWithDocstring := do
+def DeclarationWithDocstring.fromString? (stmt : String) : Lean.MetaM <| Except String DeclarationWithDocstring := do
   let env ← Lean.getEnv
-  let .ok stx := Lean.Parser.runParserCategory env `declWithDocstring stmt | return none
-  declWithDocstring.toDeclarationWithDocstring ⟨stx⟩
+  let stx? := Lean.Parser.runParserCategory env `declWithDocstring stmt
+  match stx? with
+    | .error e => return .error e
+    | .ok stx => .ok <$> declWithDocstring.toDeclarationWithDocstring ⟨stx⟩
 
 open Lean Elab Term in
 /-- Check whether a `Declaration` represents a type-correct `Lean` declaration. -/

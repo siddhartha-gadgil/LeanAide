@@ -83,6 +83,12 @@ def Array.partitionM [Monad M] (p : α → M Bool) (as : Array α) : M <| Array 
 
   return (bs, cs)
 
+def Array.filterMapM' [Monad M] (as :Array α) (f : α → M (Except σ β)) : M (Array β) :=
+  as.foldlM (init := #[]) fun bs a => do
+    match ← f a with
+      | .ok b => return bs.push b
+      | .error _ => return bs
+
 def Array.partitionExceptM {α β σ : Type} [Monad M] (p : α → M (Except σ β)) (as : Array α) : M <| Array (α × β) × Array (α × σ) := do
   let mut oks := #[]
   let mut errors := #[]

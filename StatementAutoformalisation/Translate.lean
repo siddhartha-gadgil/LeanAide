@@ -28,8 +28,8 @@ structure Request extends Params where
   stmt : String
   /-- Make the suffix to add at the end of the prompt. -/
   mkSuffix : Params → String → String
-  /-- Process the language model completion as a `DeclarationWithDocstring`. -/
-  processCompletion : Params → String → DeclarationWithDocstring
+  /-- An additional processing of the Codex completion before converting to a `DeclarationWithDocstring`. -/
+  processCompletion : Params → String → String := fun _ => id
 
 abbrev Request.params : Request → Params := Request.toParams_2
 
@@ -48,7 +48,7 @@ def translate (req : Prompt.Request) : Lean.MetaM <| Array DeclarationWithDocstr
   let decls ← promptDecls req
   let prompt := buildPrompt decls <| req.mkSuffix req.params req.stmt
   let completions ← LLM.Request.getLLMCompletions ⟨req.toLLMParams, prompt⟩
-  return completions.map <| req.processCompletion req.params
+  completions |>.map (req.processCompletion req.params) |>.filterMapM' DeclarationWithDocstring.fromString?
 
 /-- Retrieve translations for a given `Prompt.Request` and sort them according to whether they type-check. -/
 def typecheckTranslations (req : Prompt.Request) : Lean.Elab.Term.TermElabM <| Array DeclarationWithDocstring × Array (DeclarationWithDocstring × String) := do
