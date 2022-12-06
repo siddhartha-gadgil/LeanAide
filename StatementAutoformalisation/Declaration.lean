@@ -148,13 +148,16 @@ syntax "(" ident+ ":" term ")" : argument
 syntax "{" ident+ ":" term "}" : argument
 syntax "[" ident+ ":" term "]" : argument
 syntax "⦃" ident+ ":" term "⦄" : argument
-syntax "(" term ")" : argument
-syntax "{" term "}" : argument
-syntax "⦃" term "⦄" : argument
-syntax "[" term "]" : argument
+syntax "(" term+ ")" : argument
+syntax "{" term+ "}" : argument
+syntax "⦃" term+ "⦄" : argument
+syntax "[" term+ "]" : argument
 
--- TODO Update this function according to whether arguments are stored in a list or in a string
-def argument.toString : TSyntax `argument → String := sorry
+def argument.toString : TSyntax `argument → String :=
+  TSyntax.toString!
+
+def arguments.toString : TSyntaxArray `argument → String := 
+  Array.joinWith " " ∘ .map argument.toString
 
 declare_syntax_cat kind
 syntax "theorem" : kind
@@ -188,7 +191,7 @@ def decl.toDeclaration : TSyntax `decl → _root_.Declaration
   { kind := k?.elim kind.toString "def",
     name := nm? >>= (·.getId.toString),
     openNamespaces := #[]
-    args := args |>.map TSyntax.toString! |>.joinWith " ",
+    args := args |> arguments.toString,
     type := t.toString!,
     value := val?.elim TSyntax.toString! "sorry" }
   | _ => panic! "Expected `decl`"
