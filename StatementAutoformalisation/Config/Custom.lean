@@ -29,7 +29,7 @@ def CustomPromptParams : Prompt.Params :=
   LLMParams, 
   SentenceSimilarityParams, 
   KeywordExtractionParams with
-  fixedPrompts := fixedPrompts,
+  fixedPrompts := leanChatPrompts,
   useNames := #[],
   useModules := #[],
   useMainCtx? := false,

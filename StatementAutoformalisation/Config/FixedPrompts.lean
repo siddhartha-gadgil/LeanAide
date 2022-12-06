@@ -2,7 +2,7 @@ import StatementAutoformalisation.Declaration
 
 /-- The fixed `Declaration`s that will be added to the beginning of the prompt. 
   The `Mathbin.All` import is required to parse the specialised notation. -/
-def fixedPrompts : Lean.MetaM <| Array DeclarationWithDocstring := 
+def leanChatPrompts : Lean.MetaM <| Array DeclarationWithDocstring := 
 #["/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/
   theorem abs_sum_leq_sum_abs (n : ℕ) (f : ℕ → ℂ) :
     abs (∑ i in finset.range n, f i) ≤ ∑ i in finset.range n, abs (f i)",
