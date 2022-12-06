@@ -16,11 +16,13 @@ structure Params where
   field : String := "doc_string"
   /-- The number of relevant sentences to retrieve. -/
   nSim : Nat
+deriving Repr
 
 /-- A `Request` comprises a statement and a collection of parameters. -/
 structure Request extends Params where
   /-- The statement for which similar prompts are to be retrieved. -/
   stmt : String
+deriving Repr
 
 /-- Render a `Request` in `JSON` format. -/
 def Request.toJson (req : SentenceSimilarity.Request) : Lean.Json := .mkObj [
@@ -53,6 +55,6 @@ section Test
 def SentenceSimilarity.egReq : SentenceSimilarity.Request :=
 { kind := "theorem", nSim := 5, stmt := "Every matrix satisfies its own characteristic polynomial." }
 
--- #eval egReq.similarDecls
+-- #eval SentenceSimilarity.egReq.similarDecls
 
 end Test

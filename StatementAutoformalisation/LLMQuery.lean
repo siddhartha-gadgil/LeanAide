@@ -16,11 +16,13 @@ structure Params where
   maxTokens : Nat := 300
   /-- The stop tokens for the completion. -/
   stopTokens : Array String := #[":=", "\n\n/-", "\n/-", "/-"]
+deriving Repr
 
 /-- A `Request` comprises a prompt and a collection of parameters. -/
 structure Request extends Params where
   /-- The main prompt for querying the large language model. -/
   prompt : String
+deriving Repr
 
 /-- Convert the parameters for querying the LLM to `JSON` format. -/
 def Request.toJson (req : LLM.Request) : Lean.Json := .mkObj $ [
@@ -66,6 +68,6 @@ section Test
 
 def LLM.egReq : LLM.Request := {prompt := "For all epsilon greater than zero, ", n := 1}
 
--- #eval egReq.getLLMCompletions
+-- #eval LLM.egReq.getLLMCompletions
 
 end Test

@@ -7,11 +7,13 @@ namespace KeywordExtraction
 structure Params where
   /-- The number of relevant sentence to retrieve. -/
   nKw : Nat
+deriving Repr
 
 /-- A `Request` comprises a statement and a collection of parameters. -/
 structure Request extends Params where
   /-- The statement for which similar prompts are to be retrieved. -/
   stmt : String
+deriving Repr
 
 /-- Extract the mathematical keywords from a given sentence. -/
 def extractKeywords : String → IO (Array String) := sorry
