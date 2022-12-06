@@ -57,6 +57,17 @@ def Lean.Syntax.toString! : Lean.Syntax → String :=
 def Lean.TSyntax.toString! : Lean.TSyntax t → String
   | ⟨stx⟩ => stx.toString!
 
+/-- The `kind` of a `ConstantInfo` term (`axiom`/`def`/`theorem`/...) as a `String`.-/
+def Lean.ConstantInfo.kind? : Lean.ConstantInfo → Option String
+  | axiomInfo  _ => "axiom"
+  | defnInfo   _ => "def"
+  | thmInfo    _ => "theorem"
+  | opaqueInfo _ => "opaque"
+  | quotInfo   _ =>  none
+  | inductInfo _ => "inductive"
+  | ctorInfo   _ =>  none
+  | recInfo    _ => "rec"
+
 def Array.partitionM [Monad M] (p : α → M Bool) (as : Array α) : M <| Array α × Array α := do
   let mut bs := #[]
   let mut cs := #[]

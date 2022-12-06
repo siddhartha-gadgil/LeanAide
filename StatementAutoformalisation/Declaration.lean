@@ -26,33 +26,26 @@ structure DeclarationWithDocstring extends Declaration where
   -- TODO eventually include embedding and keyword information
 deriving Inhabited, Repr
 
-/-- The `kind` of a `ConstantInfo` term (`axiom`/`def`/`theorem`/...) as a `String`.-/
-def Lean.ConstantInfo.kind? : Lean.ConstantInfo → Option String
-  | axiomInfo  _ => "axiom"
-  | defnInfo   _ => "def"
-  | thmInfo    _ => "theorem"
-  | opaqueInfo _ => "opaque"
-  | quotInfo   _ =>  none
-  | inductInfo _ => "inductive"
-  | ctorInfo   _ =>  none
-  | recInfo    _ => "rec"
+open Lean in
+/-- Convert a `ConstantInfo` in the environment into a `Declaration`. 
+  This is used to extract `Declaration`s from the environment by their name. -/
+def Declaration.fromConstantInfo (ci : ConstantInfo) : MetaM <| _root_.Declaration := do
+  let type ← Format.pretty <$> PrettyPrinter.ppExpr ci.type
+  let value? : Option String ← ci.value?.mapM <| Functor.map Format.pretty ∘ PrettyPrinter.ppExpr
+  return {
+    kind := ci.kind?.getD "def",
+    name := ci.name.toString,
+    openNamespaces := #[]
+    args := "",
+    type := type,
+    value := value?.getD "sorry"
+  }
 
 open Lean in
 /-- The declaration in the environment with the given name, as a `Declaration`. -/
 def Declaration.fromName? (nm : Name) : MetaM <| Option _root_.Declaration := do
   let ci? := (← getEnv).constants.find? nm
-  let type? ← display? <| ConstantInfo.type <$> ci?
-  let value? ← display? <| ci? >>= ConstantInfo.value?
-  return do some { 
-      kind := ← ci? >>= ConstantInfo.kind?,
-      name := some nm.toString,
-      args := "",
-      type := ← type?,
-      value := value?.getD "sorry" }
-where
-  display? : Option Expr → MetaM (Option String)
-  | none => return none
-  | some e => (·.pretty) <$> Lean.PrettyPrinter.ppExpr e
+  ci?.mapM Declaration.fromConstantInfo
 
 open Lean in
 /-- The declaration in the environment with the given name, together with its docstring, as a `DeclarationWithDocstring`. -/
@@ -66,11 +59,26 @@ def DeclarationWithDocstring.fromName? (nm : Name) : MetaM <| Option Declaration
 
 open Lean in
 /-- All declarations from the current environment. -/
-def Declaration.envDecls : MetaM <| Array _root_.Declaration := sorry
+def Declaration.envDecls : MetaM <| Array _root_.Declaration := do
+  let env ← getEnv
+  let mainModuleIdx := env.getModuleIdx? env.mainModule
+
+  Array.mapM id <| env.constants.fold (fun decls nm ci => 
+    if env.getModuleIdxFor? nm == mainModuleIdx then
+      decls.push <| Declaration.fromConstantInfo ci
+    else decls) .empty
 
 open Lean in
 /-- All declarations with documentation from the current environment. -/
-def DeclarationWithDocstring.envDecls : MetaM <| Array DeclarationWithDocstring := sorry
+def DeclarationWithDocstring.envDecls : MetaM <| Array DeclarationWithDocstring := do
+  let env ← getEnv
+  let mainModuleIdx := env.getModuleIdx? env.mainModule
+
+  env.constants.toList.toArray.filterMapM fun ⟨nm, ci⟩ => do
+    guard $ env.getModuleIdxFor? nm == mainModuleIdx
+    let some docstring ← findDocString? env nm | pure none
+    let decl ← Declaration.fromConstantInfo ci
+    return some ⟨decl, docstring⟩
 
 /-- The `String` representation of the type of a `Declaration`. -/
 def Declaration.toType (decl : Declaration) : String :=
