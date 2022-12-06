@@ -20,7 +20,8 @@ def extractKeywords : String → IO (Array String) := sorry
 def Request.similarDecls (req : KeywordExtraction.Request) : IO <| Array DeclarationWithDocstring :=
   match req.nKw with
     | .zero => return #[]
-    | _ => do 
-    sorry
+    | _ => return #[]
+    -- TODO implement this function 
+    -- sorry
 
 end KeywordExtraction
