@@ -114,7 +114,7 @@ instance DeclarationWithDocstring.toString
     s!"{printAsComment doc}\n{printDecl.toString decl}"
 
 /-- Build a prompt from a list of `DeclarationWithDocstring`s. Note that the declarations are printed in the reverse order. -/
-def buildPrompt [ToString Declaration] (decls : Array DeclarationWithDocstring)
+def buildPrompt [ToString DeclarationWithDocstring] (decls : Array DeclarationWithDocstring)
   (suffix : String) : String :=
     decls.foldr
     -- this builds the prompt backwards
