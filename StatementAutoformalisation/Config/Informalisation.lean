@@ -24,7 +24,7 @@ def KeywordExtractionParams : KeywordExtraction.Params :=
   nKw := 0
 }
 
-def CustomPromptParams : Prompt.Params :=
+def PromptParams : Prompt.Params :=
 {
   LLMParams, 
   SentenceSimilarityParams, 
