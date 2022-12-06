@@ -3,7 +3,7 @@ import StatementAutoformalisation.Config.FixedPrompts
 
 def LLMParams : LLM.Params :=
 {
-  model := "code-davinci-002",
+  openAIModel := "code-davinci-002",
   temperature := 2,
   n := 1,
   maxTokens := 200,
@@ -12,8 +12,8 @@ def LLMParams : LLM.Params :=
 
 def SentenceSimilarityParams : SentenceSimilarity.Params :=
 {
-  source := "data/safe-prompts.json",
-  model := "all-mpnet-base-v2",
+  source := "data/prompts.json",
+  sentenceTransformersModel := "all-mpnet-base-v2",
   kind := "theorem",
   field := "doc_string",
   nSim := 10

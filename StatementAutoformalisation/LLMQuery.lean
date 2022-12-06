@@ -6,7 +6,7 @@ namespace LLM
 /-- A structure with all the relevant parameters for making a query to a large language model such as OpenAI Codex. -/
 structure Params where
   /-- The Codex model to use. -/
-  model : String := "code-davinci-002"
+  openAIModel : String := "code-davinci-002"
   /-- The temperature at which to generate the completion. 
       This is stored as a natural number representing the actual temperature scaled up by a factor of ten. -/
   temperature : Nat := 8
@@ -27,7 +27,7 @@ deriving Repr
 /-- Convert the parameters for querying the LLM to `JSON` format. -/
 def Request.toJson (req : LLM.Request) : Lean.Json := .mkObj $ [
   ("prompt", req.prompt),
-  ("model", req.model),
+  ("model", req.openAIModel),
   ("temperature", .num ⟨req.temperature, 1⟩),
   ("n", req.n),
   ("max_tokens", req.maxTokens),

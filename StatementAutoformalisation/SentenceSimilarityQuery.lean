@@ -8,8 +8,8 @@ namespace SentenceSimilarity
 structure Params where
   /-- The `.json` file from which to take `mathlib` declarations. -/
   source : String := "data/prompts.json"
-  /-- The model to use for sentence embeddings. -/
-  model : String := "all-mpnet-base-v2"
+  /-- The `SentenceTransformers` model to use for sentence embeddings. -/
+  sentenceTransformersModel : String := "all-mpnet-base-v2"
   /-- The kind of prompts to retrieve (`theorem`/`def`/etc.) -/
   kind : String
   /-- The field to extract from the `mathlib` data. -/
@@ -27,7 +27,7 @@ deriving Repr
 /-- Render a `Request` in `JSON` format. -/
 def Request.toJson (req : SentenceSimilarity.Request) : Lean.Json := .mkObj [
   ("filename", req.source),
-  ("model_name", req.model),
+  ("model_name", req.sentenceTransformersModel),
   ("kind", req.kind),
   ("field", req.field),
   ("n", req.nSim),

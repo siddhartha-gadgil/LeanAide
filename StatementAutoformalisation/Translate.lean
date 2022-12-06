@@ -23,15 +23,15 @@ structure Params extends LLM.Params, SentenceSimilarity.Params, KeywordExtractio
   processCompletion : String → String := id
 
 abbrev Params.toLLMParams : Prompt.Params → LLM.Params := Params.toParams
-abbrev Params.toSentenceSimilarityParams : Prompt.Params → SentenceSimilarity.Params := Params.toParams_2
-abbrev Params.toKeywordExtractionParams : Prompt.Params → KeywordExtraction.Params := Params.toParams_1
+abbrev Params.toSentenceSimilarityParams : Prompt.Params → SentenceSimilarity.Params := Params.toParams_1
+abbrev Params.toKeywordExtractionParams : Prompt.Params → KeywordExtraction.Params := Params.toParams_2
 
 /-- A `Request` is a statement together with the relavent parameters for building a prompt. -/
 structure Request extends Params where
   /-- The statement around which to build a prompt -/
   stmt : String
 
-abbrev Request.params : Request → Params := Request.toParams_2
+abbrev Request.params : Request → Params := Request.toParams_3
 
 /-- All the declarations that go into creating the final prompt. -/
 def promptDecls (req : Prompt.Request) : Lean.MetaM <| Array DeclarationWithDocstring := do
