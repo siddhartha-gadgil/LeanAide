@@ -83,6 +83,17 @@ def Array.partitionM [Monad M] (p : α → M Bool) (as : Array α) : M <| Array 
 
   return (bs, cs)
 
+def Array.partitionExceptM {α β σ : Type} [Monad M] (p : α → M (Except σ β)) (as : Array α) : M <| Array (α × β) × Array (α × σ) := do
+  let mut oks := #[]
+  let mut errors := #[]
+
+  for a in as do
+    match ← p a with
+      | .ok b => oks := oks.push (a, b)
+      | .error s => errors := errors.push (a, s)
+
+  return (oks, errors)
+
 initialize
   registerTraceClass `Translate.info
   registerTraceClass `Translate.debug

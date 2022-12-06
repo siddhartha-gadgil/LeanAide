@@ -251,24 +251,25 @@ def DeclarationWithDocstring.fromString? (stmt : String) : Lean.MetaM <| Option 
 
 open Lean Elab Term in
 /-- Check whether a `Declaration` represents a type-correct `Lean` declaration. -/
-def Declaration.typeCheck (env : MetaM Environment := getEnv) (decl : _root_.Declaration) : MetaM Bool := TermElabM.run' do
+def Declaration.typeCheck (env : MetaM Environment := getEnv) (decl : _root_.Declaration) : MetaM <| Except String Unit := TermElabM.run' do
   let type := decl.toType
-  let .ok stx := Lean.Parser.runParserCategory (← env) `term type | return false
-  try 
-    let _ := Term.withAutoBoundImplicit <| Term.withoutErrToSorry <| elabType stx
-    return true
-  catch e =>
-    -- TODO Eventually remove this line after confirming that the set-up works
-    dbg_trace ← e.toMessageData.toString
-    return false
-
+  let stx? := Lean.Parser.runParserCategory (← env) `term type
+  match stx? with
+    | .error e => return .error e
+    | .ok stx => try 
+      let _ := Term.withAutoBoundImplicit <| 
+                Term.withoutErrToSorry <| 
+                  elabType stx
+      return .ok ()
+    catch e => return .error <| ← e.toMessageData.toString
+      
 /-- Perform the type-checking of a `Declaration` with a given list of imports. -/
 def Declaration.typeCheckWithImports (ns : List Lean.Name) (decl : Declaration) := do
   let env := liftM <| Lean.importModules (ns.map ({module := ·})) {}
   decl.typeCheck env
 
 /-- Check whether a `DeclarationWithDocstring` represents a type-correct `Lean` declaration. -/
-def DeclarationWithDocstring.typeCheck (env : Lean.MetaM Lean.Environment := Lean.getEnv) : DeclarationWithDocstring → Lean.MetaM Bool :=
+def DeclarationWithDocstring.typeCheck (env : Lean.MetaM Lean.Environment := Lean.getEnv) : DeclarationWithDocstring → Lean.MetaM (Except String Unit) :=
   Declaration.typeCheck env ∘ toDeclaration
 
 /-- Perform the type-checking of a `DeclarationWithDocstring` with a given list of imports. -/

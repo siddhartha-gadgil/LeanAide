@@ -51,7 +51,9 @@ def translate (req : Prompt.Request) : Lean.MetaM <| Array DeclarationWithDocstr
   return completions.map <| req.processCompletion req.params
 
 /-- Retrieve translations for a given `Prompt.Request` and sort them according to whether they type-check. -/
-def typecheckTranslations (req : Prompt.Request) : Lean.MetaM <| Array DeclarationWithDocstring × Array DeclarationWithDocstring :=
-  translate req >>= Array.partitionM DeclarationWithDocstring.typeCheck
+def typecheckTranslations (req : Prompt.Request) : Lean.MetaM <| Array DeclarationWithDocstring × Array (DeclarationWithDocstring × String) := do
+  let decls ← translate req 
+  let (typecorrect, failed) ← decls.partitionExceptM DeclarationWithDocstring.typeCheck
+  return (typecorrect.map Prod.fst, failed)
 
 end Prompt
