@@ -35,5 +35,5 @@ def PromptParams : Prompt.Params :=
   useMainCtx? := false,
   printDecl := DeclarationWithDocstring.toString
   mkSuffix := fun stmt => s!"{printAsComment stmt}\n{SentenceSimilarityParams.kind}",
-  processCompletion := id
+  processCompletion := fun comment completion => s!"{printAsComment comment}\n{SentenceSimilarityParams.kind} {completion}"
 }

@@ -20,7 +20,7 @@ structure Params extends LLM.Params, SentenceSimilarity.Params, KeywordExtractio
   /-- Make the suffix to add at the end of the prompt. -/
   mkSuffix : String → String
   /-- An additional processing of the Codex completion before converting to a `DeclarationWithDocstring`. -/
-  processCompletion : String → String := id
+  processCompletion : String → String → String := fun comment completion => s!"{printAsComment comment}\n{completion}"
 
 abbrev Params.toLLMParams : Prompt.Params → LLM.Params := Params.toParams
 abbrev Params.toSentenceSimilarityParams : Prompt.Params → SentenceSimilarity.Params := Params.toParams_1
@@ -44,15 +44,18 @@ def promptDecls (req : Prompt.Request) : Lean.MetaM <| Array DeclarationWithDocs
   return allPrompts.foldl .append .empty
 
 /-- Query the language model for translations based on the given `Prompt.Request`. -/
-def translate (req : Prompt.Request) : Lean.MetaM <| Array DeclarationWithDocstring := do
+def translate (req : Prompt.Request) : Lean.MetaM <| String × Array DeclarationWithDocstring := do
   let decls ← promptDecls req
   let prompt := @buildPrompt req.printDecl decls <| req.mkSuffix req.stmt
   let completions ← LLM.Request.getLLMCompletions ⟨req.toLLMParams, prompt⟩
-  completions |>.map req.processCompletion |>.filterMapM' DeclarationWithDocstring.fromString?
+  dbg_trace completions.size
+  dbg_trace completions[0]!
+  return (prompt, 
+    ← completions |>.map (req.processCompletion req.stmt) |>.filterMapM' DeclarationWithDocstring.fromString?)
 
 /-- Retrieve translations for a given `Prompt.Request` and sort them according to whether they type-check. -/
 def typecheckTranslations (req : Prompt.Request) : Lean.Elab.Term.TermElabM <| Array DeclarationWithDocstring × Array (DeclarationWithDocstring × String) := do
-  let decls ← translate req 
+  let (_, decls) ← translate req 
   let (typecorrect, failed) ← decls.partitionExceptM DeclarationWithDocstring.typeCheck
   return (typecorrect.map Prod.fst, failed)
 

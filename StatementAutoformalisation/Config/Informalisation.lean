@@ -35,5 +35,5 @@ def PromptParams : Prompt.Params :=
   useMainCtx? := false,
   printDecl := { toString := fun ⟨decl, docstring⟩ => s!"{toString decl}\n{printAsComment docstring}" }
   mkSuffix := fun stmt => s!"{stmt}\n/--",
-  processCompletion := id
+  processCompletion := fun stmt completion => s!"{printAsComment completion}\n{stmt}"
 }
