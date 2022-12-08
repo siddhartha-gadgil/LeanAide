@@ -18,7 +18,7 @@ gen_tokens = model.generate(
     input_ids,
     do_sample=True,
     temperature=0.8,
-    top_k=15,
+    num_return_sequences=15,
     eos_token_id=colEq,
     max_length=1000,
 )
@@ -26,5 +26,6 @@ gen_tokens = model.generate(
 print("Text computed")
 
 gen_text = tokenizer.batch_decode(gen_tokens)
-statement_text = ["theorem " + s[len(prompt):] for s in gen_text]
-print(statement_text)
+statement_text = ["theorem " + (s[len(prompt):].split(":=")[0]) for s in gen_text]
+for s in statement_text:
+    print(s)
