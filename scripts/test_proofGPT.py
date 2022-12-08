@@ -18,7 +18,7 @@ gen_tokens = model.generate(
     input_ids,
     do_sample=True,
     temperature=0.8,
-    num_return_sequences=15,
+    num_return_sequences=5,
     eos_token_id=colEq,
     max_length=1000,
 )
