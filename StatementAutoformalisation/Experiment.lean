@@ -1,8 +1,8 @@
 import StatementAutoformalisation.Interface
-import StatementAutoformalisation.Config.Informalisation
+import StatementAutoformalisation.Config.Custom
 -- import Mathbin.All
 
 def req : Prompt.Request := 
-  ⟨PromptParams, "theorem xyz : ∀ n : ℕ, ∃ m : ℕ, m > n ∧ m % 2 = 1"⟩
+  ⟨PromptParams, "Every even number can be written as the sum of two prime numbers"⟩
 
--- #eval Prompt.translate req
+#eval Prompt.translate req
