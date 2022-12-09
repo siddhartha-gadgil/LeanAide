@@ -26,9 +26,9 @@ def KeywordExtractionParams : KeywordExtraction.Params :=
 
 def PromptParams : Prompt.Params :=
 {
-  LLMParams, 
-  SentenceSimilarityParams, 
-  KeywordExtractionParams with
+  toLLMParams := LLMParams, 
+  toSentenceSimilarityParams := #[SentenceSimilarityParams], 
+  toKeywordExtractionParams := #[KeywordExtractionParams],
   fixedPrompts := leanChatPrompts,
   useNames := #[],
   useModules := #[],

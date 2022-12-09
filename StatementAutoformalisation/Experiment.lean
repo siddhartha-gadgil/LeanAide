@@ -5,4 +5,4 @@ import StatementAutoformalisation.Config.Informalisation
 def req : Prompt.Request := 
   ⟨PromptParams, "theorem xyz : ∀ n : ℕ, ∃ m : ℕ, m > n ∧ m % 2 = 1"⟩
 
-#eval Prompt.translate req
+-- #eval Prompt.translate req

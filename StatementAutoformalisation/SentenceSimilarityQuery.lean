@@ -48,6 +48,13 @@ def Request.similarDecls (req : SentenceSimilarity.Request) : IO <| Array Declar
       let prompts ← result.getArr?
       prompts.mapM DeclarationWithDocstring.fromJson
 
+/-- Accept multiple sentence similarity requests and merge them into a single array. -/
+def mergeRequests (reqs : Array SentenceSimilarity.Request) : IO <| Array DeclarationWithDocstring := do
+  let decls ← reqs.mapM Request.similarDecls
+  -- for now, the merging is done by just appending the data received from each request
+  -- TODO eventually use similarity scores to rank the declarations 
+  return decls.foldl .append .empty
+
 end SentenceSimilarity
 
 section Test

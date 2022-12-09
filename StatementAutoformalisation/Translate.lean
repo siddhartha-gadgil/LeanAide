@@ -6,7 +6,13 @@ import StatementAutoformalisation.LLMQuery
 namespace Prompt
 
 /-- A structure containing all the relevant information to build a prompt for a Codex query. -/
-structure Params extends LLM.Params, SentenceSimilarity.Params, KeywordExtraction.Params where
+structure Params where
+  /-- The parameters for querying the large language model. -/
+  toLLMParams : LLM.Params
+  /-- Parameters for retrieving various kinds of sentences from `mathlib` by sentence similarity. -/
+  toSentenceSimilarityParams : Array SentenceSimilarity.Params
+  /-- Parameters for retrieving various kinds of sentences by keyword matching. -/
+  toKeywordExtractionParams : Array KeywordExtraction.Params
   /-- Toggles whether to use a given set of fixed prompts (such as `Lean Chat` prompts) in the main prompt. -/
   fixedPrompts : Lean.MetaM <| Array DeclarationWithDocstring := pure #[]
   /-- A list of names of declarations from the environment that are to be used in the prompt. -/
@@ -22,22 +28,16 @@ structure Params extends LLM.Params, SentenceSimilarity.Params, KeywordExtractio
   /-- An additional processing of the Codex completion before converting to a `DeclarationWithDocstring`. -/
   processCompletion : String → String → String := fun comment completion => s!"{printAsComment comment}\n{completion}"
 
-abbrev Params.toLLMParams : Prompt.Params → LLM.Params := Params.toParams
-abbrev Params.toSentenceSimilarityParams : Prompt.Params → SentenceSimilarity.Params := Params.toParams_1
-abbrev Params.toKeywordExtractionParams : Prompt.Params → KeywordExtraction.Params := Params.toParams_2
-
 /-- A `Request` is a statement together with the relavent parameters for building a prompt. -/
 structure Request extends Params where
   /-- The statement around which to build a prompt -/
   stmt : String
 
-abbrev Request.params : Request → Params := Request.toParams_3
-
 /-- All the declarations that go into creating the final prompt. -/
 def promptDecls (req : Prompt.Request) : Lean.MetaM <| Array DeclarationWithDocstring := do
   let fixedPrompts ← req.fixedPrompts
-  let similarityPrompts ← liftM <| SentenceSimilarity.Request.similarDecls ⟨req.toSentenceSimilarityParams, req.stmt⟩
-  let keywordPrompts ← liftM <| KeywordExtraction.Request.similarDecls ⟨req.toKeywordExtractionParams, req.stmt⟩
+  let similarityPrompts ← liftM <| SentenceSimilarity.mergeRequests <| req.toSentenceSimilarityParams.map (⟨·,req.stmt⟩)
+  let keywordPrompts ← liftM <| KeywordExtraction.mergeRequests <| req.toKeywordExtractionParams.map (⟨·, req.stmt⟩)
   let customPrompts ← req.useNames.filterMapM DeclarationWithDocstring.fromName?
   let ctxPrompts ← DeclarationWithDocstring.envDecls req.useModules req.useMainCtx?
   let allPrompts := #[fixedPrompts, keywordPrompts, similarityPrompts, customPrompts, ctxPrompts]

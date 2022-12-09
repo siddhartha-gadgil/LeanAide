@@ -26,4 +26,9 @@ def Request.similarDecls (req : KeywordExtraction.Request) : IO <| Array Declara
     -- TODO implement this function 
     -- sorry
 
+/-- Accept multiple keyword extraction requests and merge them into a single array. -/
+def mergeRequests (reqs : Array KeywordExtraction.Request) : IO <| Array DeclarationWithDocstring := do
+  let decls ← reqs.mapM Request.similarDecls
+  return decls.foldl .append .empty
+
 end KeywordExtraction
