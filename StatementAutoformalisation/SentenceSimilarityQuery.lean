@@ -46,7 +46,7 @@ def Request.similarDecls (req : SentenceSimilarity.Request) : IO <| Array Declar
     IO.ofExcept <| do
       let result ← Lean.Json.parse out.stdout
       let prompts ← result.getArr?
-      prompts.mapM DeclarationWithDocstring.fromJson
+      prompts.mapM <| DeclarationWithDocstring.fromJson req.kind
 
 /-- Accept multiple sentence similarity requests and merge them into a single array. -/
 def mergeRequests (reqs : Array SentenceSimilarity.Request) : IO <| Array DeclarationWithDocstring := do
