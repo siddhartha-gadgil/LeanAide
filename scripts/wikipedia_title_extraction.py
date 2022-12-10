@@ -9,7 +9,7 @@ def get_category_members(category, titles, categories):
         "list": "categorymembers",
         "cmtitle": category,
         "cmlimit": "max", # Set the limit to "max" to retrieve all the members of the category
-        "delay": 0.25
+        "delay": 0.1
     }
 
     response = requests.get(url=URL, params=PARAMS)
