@@ -24,6 +24,10 @@ def KeywordExtractionParams : KeywordExtraction.Params :=
   nKw := 0
 }
 
+/-- The expected `kind` (`theorem`/`def`/...) of the completion.
+  This variable is required only to modify the suffix of the main prompt. -/
+def expectedKind? : Option String := "theorem"
+
 def PromptParams : Prompt.Params :=
 {
   toLLMParams := LLMParams, 
@@ -34,6 +38,6 @@ def PromptParams : Prompt.Params :=
   useModules := #[],
   useMainCtx? := false,
   printDecl := DeclarationWithDocstring.toString
-  mkSuffix := fun stmt => s!"{printAsComment stmt}\n{SentenceSimilarityParams.kind}",
-  processCompletion := fun comment completion => s!"{printAsComment comment}\n{SentenceSimilarityParams.kind} {completion}"
+  mkSuffix := fun stmt => s!"{printAsComment stmt}\n{expectedKind?.getD ""}",
+  processCompletion := fun comment completion => s!"{printAsComment comment}\n{expectedKind?.getD ""} {completion}"
 }

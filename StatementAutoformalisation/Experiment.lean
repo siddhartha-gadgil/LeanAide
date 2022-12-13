@@ -5,4 +5,4 @@ import StatementAutoformalisation.Config.Custom
 def req : Prompt.Request := 
   ⟨PromptParams, "Every even number can be written as the sum of two prime numbers"⟩
 
-#eval Prompt.translate req
+-- #eval Prompt.translate req

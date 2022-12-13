@@ -24,6 +24,10 @@ def KeywordExtractionParams : KeywordExtraction.Params :=
   nKw := 0
 }
 
+/-- The expected `kind` (`theorem`/`def`/...) of the completion.
+  This variable is required only to modify the suffix of the main prompt. -/
+def expectedKind? : Option String := none
+
 def PromptParams : Prompt.Params :=
 {
   toLLMParams := LLMParams, 
