@@ -46,7 +46,7 @@ def PromptParams : Prompt.Params :=
 
 def InterfaceParams : Interface.Params DeclarationWithDocstring :=
 {
-  title := "Translate comment to Lean theorem statement.",
+  title := "Translate comment to Lean theorem statement (with custom settings).",
   nearestOccurrence? := nearestComment,
   extractText? := extractCommentText?,
   action := fun stmt =>

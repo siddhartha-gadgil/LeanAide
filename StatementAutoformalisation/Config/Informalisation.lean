@@ -1,4 +1,4 @@
-import StatementAutoformalisation.Translate
+import StatementAutoformalisation.Interface
 import StatementAutoformalisation.Config.FixedPrompts
 
 namespace Informalisation

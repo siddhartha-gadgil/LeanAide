@@ -2,7 +2,7 @@ import StatementAutoformalisation.Translate
 
 /-- A generic interface for code actions that scan the file for certain occurrences,
  process them and replace them with the output. -/
-structure Interface.Params (T : Type _) where
+structure Interface.Params (α : Type _) where
   /-- The title of the code action. -/
   title : String
   /-- The occurrence of the desired pattern that is closest to the given position. -/
@@ -10,9 +10,9 @@ structure Interface.Params (T : Type _) where
   /-- Process the selected portion of the file to extract the main text of interest. -/
   extractText? : String → Option String
   /-- The transformation to perform to the input text (for example, translation). -/
-  action : String → Lean.Elab.TermElabM T
+  action : String → Lean.Elab.TermElabM α
   /-- Format and render the final output. -/
-  postProcess : (input : Option String) → (output : T) → String
+  postProcess : (input : Option String) → (output : α) → String
 
 open Lean Server Lsp RequestM in
 /-- An abstraction for performing edits through code actions. -/
