@@ -83,7 +83,7 @@ def Syntax.extractComment : Syntax → Option String
   return #[{ eager := ca, lazy? := some $ return {ca with edit? := WorkspaceEdit.ofTextEdit params.textDocument.uri $ ← edit} }]
 where
   formatAsTheorem : Option String → String → String
-    | some comment, type => s!"/--{comment}-/\nexample : {type.trim} := by sorry"
+    | some comment, type => s!"/-{comment}-/\nexample : {type.trim} := by sorry"
     |     none    , type => s!"\nexample : {type.trim} := by sorry"
 
 -- @[codeActionProvider] def informaliseThm : CodeActionProvider := fun params snap => do
