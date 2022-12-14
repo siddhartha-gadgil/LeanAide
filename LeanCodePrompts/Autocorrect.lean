@@ -3,7 +3,7 @@ import Lean.Meta
 import LeanCodePrompts.CheckParse
 import LeanCodePrompts.ParseJson
 import Mathlib.Mathport.Rename
-import Mathlib
+
 open Lean Meta Elab
 
 partial def camelSplitAux (s : String)(accum: List String) : List String :=
@@ -167,12 +167,10 @@ def isElabPrompt(s: String) : IO Bool := do
   let prompts ← elabPrompts
   return prompts.contains s
 
-def withoutIs : List String → List String
-| x :: ys => if x = "is" || x = "has" then ys else x :: ys
-| [] => []
 
 def withoutIs? : List String → Option (List String)
-| x :: ys => if x = "is" || x = "has" then some ys else none
+| x :: ys => 
+  if x = "is" || x = "has" then some ys else none
 | [] => none
 
 def binNameNoIsMap : IO (HashMap (List String) String) := do
