@@ -1,4 +1,4 @@
-import StatementAutoformalisation.Translate
+import StatementAutoformalisation.Interface
 import StatementAutoformalisation.Config.FixedPrompts
 
 def LLMParams : LLM.Params :=
@@ -41,3 +41,15 @@ def PromptParams : Prompt.Params :=
   mkSuffix := fun stmt => s!"{printAsComment stmt}\n{expectedKind?.getD ""}",
   processCompletion := fun comment completion => s!"{printAsComment comment}\n{expectedKind?.getD ""} {completion}"
 }
+
+def InterfaceParams : Interface.Params DeclarationWithDocstring :=
+{
+  title := "Translate comment to Lean theorem statement.",
+  nearestOccurrence? := nearestComment,
+  extractText? := extractCommentText?,
+  action := fun stmt =>
+    Prompt.typecorrectTranslations ⟨PromptParams, stmt⟩ >>= (pure ·[0]!),
+  postProcess := fun _ => ToString.toString
+}
+
+@[codeActionProvider] def Action := performCodeAction InterfaceParams
