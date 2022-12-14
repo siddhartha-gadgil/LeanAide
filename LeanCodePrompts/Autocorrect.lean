@@ -2,6 +2,8 @@ import Lean
 import Lean.Meta
 import LeanCodePrompts.CheckParse
 import LeanCodePrompts.ParseJson
+import Mathlib.Mathport.Rename
+import Mathlib
 open Lean Meta Elab
 
 partial def camelSplitAux (s : String)(accum: List String) : List String :=
@@ -199,13 +201,23 @@ def binName?(s : String) : MetaM <| Option String := do
                   fun splitNoIs => map.find? splitNoIs))
   return res
 
+def lean4Name?(s: String) : MetaM (Option String) := do
+  let m := Mathlib.Prelude.Rename.getRenameMap (← getEnv)
+  return m.find? s |>.map (fun (_, name) => name.toString)
+
 
 def caseOrBinName?(s : String) : MetaM (Option String) := do
-  let res ← caseName? s
-  if res.isNone then do
-    let res ← binName? s
-    return res
-  else return res
+  match ← lean4Name? s with
+  | some name => return some name
+  | none => do
+    let res ← caseName? s
+    if res.isNone then do
+      let res ← binName? s
+      return res
+    else return res
+
+-- #eval lean4Name? "has_abs"
+
 
 def identErr (err: String) : Option String :=
   let head := "unknown identifier '"
