@@ -1,7 +1,7 @@
 import LeanCodePrompts.CheckParse
 import Lean
 open Lean Meta Parser Elab Tactic
-
+/-
 def contractInductionStx (tac : Syntax) : MetaM Syntax := do
 match tac with
 | `(tactic| induction $name $_:inductionAlts) => 
@@ -267,3 +267,4 @@ def getTheoremsTacticsFromPolyLean : MetaM (Array TheoremAndTactic) := do
   getTheoremsTacticsFromFiles files
 
 #eval "rw [Subsingleton.elim hd] -- align the Decidable instances implicitly used by `dite`" |>.splitOn "--" |>.head!
+-/
