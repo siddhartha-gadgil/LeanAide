@@ -38,9 +38,9 @@
     "name": "Qq",
     "inputRev?": "master"}},
   {"git":
-   {"url": "https://github.com/JLimperg/aesop",
+   {"url": "https://github.com/JLimperg/aesop.git",
     "subDir?": null,
-    "rev": "ebea1013bc12e73193c5b6148271c1360addd298",
+    "rev": "5da29c05150bc96e2036bae4675e7efd70757f03",
     "name": "aesop",
     "inputRev?": "master"}},
   {"git":

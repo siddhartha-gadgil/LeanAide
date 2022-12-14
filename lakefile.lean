@@ -68,8 +68,8 @@ lean_exe chkthms{
 lean_lib examples
 
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git"@"415530d447d2fc6557f3ed00caf409dd391e0756"
+  "https://github.com/leanprover-community/mathlib4.git"@"master"
 
 
 require aesop from git
-  "https://github.com/JLimperg/aesop.git"@"3fa339ad9365fd3f42d452b65fb3c409c7623017"
+  "https://github.com/JLimperg/aesop.git"@"master"
