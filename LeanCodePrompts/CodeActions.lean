@@ -83,9 +83,35 @@ def Syntax.extractComment : Syntax → Option String
   return #[{ eager := ca, lazy? := some $ return {ca with edit? := WorkspaceEdit.ofTextEdit params.textDocument.uri $ ← edit} }]
 where
   formatAsTheorem : Option String → String → String
-    | some comment, type => s!"/--{comment}-/\nexample : {type.trim} := by sorry"
+    | some comment, type => s!"/-{comment}-/\nexample : {type.trim} := by sorry"
     |     none    , type => s!"\nexample : {type.trim} := by sorry"
 
+-- @[codeActionProvider] def informaliseThm : CodeActionProvider := fun params snap => do
+--   let doc ← readDoc
+--   let text := doc.meta.text
+--   let source := text.source
+
+--   let edit : IO TextEdit := do
+--     -- the current position in the text document
+--     let pos : String.Pos := text.lspPosToUtf8Pos params.range.end
+--     return {
+--     range := params.range
+--     newText := ← do
+--       -- the smallest node of the `InfoTree` containing the current position
+--       let info? := snap.infoTree.findInfo? (·.contains pos)
+--       -- the `Syntax` corresponding to the `Info` node
+--       let stx? := (·.stx) <$> info?
+
+--       -- the statement to be translated to Lean code
+--       let thm? : Option String := stx? >>= Syntax.reprint
+
+--       let translation' := snap.runTermElabM doc.meta <| statementToDoc thm?.get!
+--       let translation ← EIO.toIO (λ _ => IO.userError "Translation failed.") translation'
+--       return "/--" ++ translation ++ "-/\n"
+--   }
+
+--   let ca : CodeAction := { title := "Add a docstring to a Lean theorem", kind? := "quickfix" }
+--   return #[{ eager := ca, lazy? := some $ return {ca with edit? := WorkspaceEdit.ofTextEdit params.textDocument.uri $ ← edit} }]
 
 -- open RequestM in
 -- @[codeActionProvider]
