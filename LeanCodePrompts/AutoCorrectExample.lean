@@ -1,4 +1,4 @@
-import Mathbin.All
+import Mathlib
 import LeanCodePrompts.Translate
 import LeanCodePrompts.Autocorrect
 

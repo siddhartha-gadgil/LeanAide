@@ -8,7 +8,7 @@ set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
 def main (args: List String) : IO Unit := do
-  initSearchPath (← Lean.findSysroot) ["build/lib", "lean_packages/mathlib/build/lib/", "lean_packages/lean3port/build/lib/", "lean_packages/mathlib3port/build/lib/", "lean_packages/std/build/lib/", "lean_packages/Qq/build/lib/", "lean_packages/aesop/build/lib/" ]
+  initSearchPath (← Lean.findSysroot) ["build/lib", "lean_packages/mathlib/build/lib/",  "lean_packages/std/build/lib/", "lean_packages/Qq/build/lib/", "lean_packages/aesop/build/lib/" ]
   let type := (args.getD 0 "thm")
   let numSim := 
     (args.get? 1 >>= fun s => s.toNat?).getD 10 
@@ -30,7 +30,7 @@ def main (args: List String) : IO Unit := do
     {module:= `LeanCodePrompts.CheckParse},
     {module:= `LeanCodePrompts.ParseJson},
     {module:= `LeanCodePrompts.Translate},
-    {module := `Mathbin.All}] {}
+    {module := `Mathlib}] {}
   let core := 
     checkTranslatedThmsCore type
       numSim numKW includeFixed queryNum temp

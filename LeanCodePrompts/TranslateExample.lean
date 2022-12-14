@@ -1,4 +1,4 @@
-import Mathbin.All
+import Mathlib
 import LeanCodePrompts.Translate
 import LeanCodePrompts.CodeActions
 
@@ -10,6 +10,7 @@ To see translation in action, place the cursor anywhere on one of the comments b
 
 
 /- There are infinitely many odd numbers -/
+example : ∀ (n : ℕ), ∃ m, m > n ∧ m % 2 = 1 := by sorry
 
 /- Every prime number is either `2` or odd -/
 

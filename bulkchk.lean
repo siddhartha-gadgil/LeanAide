@@ -17,12 +17,12 @@ def promptsIO : IO (Array String) := do
 def main : IO Unit := do
   IO.println "starting"
   let initTime ← IO.monoMsNow
-  initSearchPath (← Lean.findSysroot) ["build/lib", "lean_packages/mathlib/build/lib/", "lean_packages/lean3port/build/lib/", "lean_packages/mathlib3port/build/lib/", "lean_packages/std/build/lib/", "lean_packages/Qq/build/lib/", "lean_packages/aesop/build/lib/" ]
+  initSearchPath (← Lean.findSysroot) ["build/lib", "lean_packages/mathlib/build/lib/",  "lean_packages/std/build/lib/", "lean_packages/Qq/build/lib/", "lean_packages/aesop/build/lib/" ]
   let env ← 
     importModules [{module := `Mathlib},
     {module := `LeanCodePrompts.Basic},
     {module:= `LeanCodePrompts.CheckParse},
-    {module := `Mathbin.All}] {}
+    {module := `Mathlib}] {}
   IO.println s!"enviroment loaded: {(← IO.monoMsNow) - initTime}ms"
   let mut count := 0
   let mut elabs : Array String := Array.empty
