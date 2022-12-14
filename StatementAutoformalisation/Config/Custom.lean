@@ -1,6 +1,8 @@
 import StatementAutoformalisation.Interface
 import StatementAutoformalisation.Config.FixedPrompts
 
+namespace Custom
+
 def LLMParams : LLM.Params :=
 {
   openAIModel := "code-davinci-002",
@@ -53,3 +55,5 @@ def InterfaceParams : Interface.Params DeclarationWithDocstring :=
 }
 
 @[codeActionProvider] def Action := performCodeAction InterfaceParams
+
+end Custom

@@ -1,6 +1,8 @@
 import StatementAutoformalisation.Translate
 import StatementAutoformalisation.Config.FixedPrompts
 
+namespace Default
+
 def LLMParams : LLM.Params :=
 {
   openAIModel := "code-davinci-002",
@@ -42,3 +44,5 @@ def PromptParams : Prompt.Params :=
   mkSuffix := fun stmt => s!"{printAsComment stmt}\n{expectedKind?.getD ""}",
   processCompletion := fun comment completion => s!"{printAsComment comment}\n{expectedKind?.getD ""} {completion}"
 }
+
+end Default
