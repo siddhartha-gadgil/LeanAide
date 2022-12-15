@@ -160,7 +160,8 @@ def elabPrompts : IO (HashSet String) := do
     return cacheStr
   else 
     let arr ← 
-      IO.FS.lines (System.mkFilePath ["data", "elab_thms.txt"])
+      IO.FS.lines (← 
+       reroutePath <| System.mkFilePath ["data", "elab_thms.txt"])
     return arr.foldl (fun acc n => acc.insert n) HashSet.empty
 
 def isElabPrompt(s: String) : IO Bool := do
