@@ -54,7 +54,7 @@ def caseNames : MetaM (HashMap String String) := do
   let cache ← caseNameCache.get
   if cache.isEmpty then 
       let jsBlob ← 
-        IO.FS.readFile (System.mkFilePath ["data", "case_dictionary.json"])
+        IO.FS.readFile (← reroutePath <| System.mkFilePath ["data", "case_dictionary.json"])
       let json ← readJson jsBlob
       match json.getArr? with
       | Except.error e => throwError e
@@ -78,7 +78,7 @@ def caseNames : MetaM (HashMap String String) := do
 --   let cache ← xNameCache.get
 --   if cache.isEmpty then 
 --       let lines ← 
---         IO.FS.lines (System.mkFilePath ["data", "x_names.txt"])
+--         IO.FS.lines (← reroutePath <| System.mkFilePath ["data", "x_names.txt"])
 --       let mut m : HashMap String String := HashMap.empty
 --       for xname in lines do
 --         m := m.insert (xname.dropRight 1) xname
@@ -90,7 +90,7 @@ def caseNames : MetaM (HashMap String String) := do
 --   let cache ← xxNameCache.get
 --   if cache.isEmpty then 
 --       let lines ← 
---         IO.FS.lines (System.mkFilePath ["data", "xx_names.txt"])
+--         IO.FS.lines (← reroutePath <| System.mkFilePath ["data", "xx_names.txt"])
 --       let mut m : HashMap String String := HashMap.empty
 --       for xxname in lines do
 --         m := m.insert (xxname.dropRight 2) xxname
@@ -102,7 +102,7 @@ def dotNames : MetaM (HashMap String String) := do
   let cache ← dotNameCache.get
   if cache.isEmpty then 
       let lines ← 
-        IO.FS.lines (System.mkFilePath ["data", "simple_dot_names.txt"])
+        IO.FS.lines (← reroutePath <| System.mkFilePath ["data", "simple_dot_names.txt"])
       let mut m : HashMap String String := HashMap.empty
       for name in lines do
         m := m.insert (name.toLower) name
@@ -137,7 +137,7 @@ def binNames : IO (Array String) := do
     return cacheStr
   else 
     let all ← 
-      IO.FS.lines (System.mkFilePath ["data", "binport_names.txt"])
+      IO.FS.lines (← reroutePath <| System.mkFilePath ["data", "binport_names.txt"])
     let filtered := all.filter (fun s => s.length > 0)
     let filtered := filtered.toList
     binNamesCache.set filtered.toArray
