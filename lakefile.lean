@@ -1,7 +1,7 @@
 import Lake
 open Lake DSL
 
-package LeanCodePrompts{
+package leanaide {
   precompileModules := true
 }
 
@@ -9,6 +9,7 @@ package LeanCodePrompts{
 lean_lib LeanCodePrompts {
 }
 
+@[default_target]
 lean_lib StatementAutoformalisation {
 }
 

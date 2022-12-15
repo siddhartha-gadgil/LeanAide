@@ -18,6 +18,14 @@ partial def showSyntax : Syntax → String
 | Lean.Syntax.ident _ _ val _ => val.toString
 | _ => ""
 
+def leanAidePath : System.FilePath := "lake-packages/leanaide/"
+
+def reroutePath (fp : System.FilePath) : IO System.FilePath := do
+  if ← fp.pathExists then
+    return fp
+  else
+    return leanAidePath / fp
+
 namespace Lean.Json
 
 def parseArrIO (s : String) : IO <| Array Json := do
