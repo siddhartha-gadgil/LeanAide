@@ -51,7 +51,7 @@ def InterfaceParams : Interface.Params DeclarationWithDocstring :=
   extractText? := pure,
   action := fun stmt =>
     Prompt.translate ⟨PromptParams, stmt⟩ >>= (fun (_, translations) => pure translations[0]!),
-  postProcess := fun _ => ToString.toString
+  postProcess := fun _ => DeclarationWithDocstring.toString.toString
 }
 
 @[codeActionProvider] def Action := performCodeAction InterfaceParams
