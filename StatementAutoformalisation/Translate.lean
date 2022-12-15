@@ -26,7 +26,7 @@ structure Params where
   /-- Make the suffix to add at the end of the prompt. -/
   mkSuffix : String → String
   /-- An additional processing of the Codex completion before converting to a `DeclarationWithDocstring`. -/
-  processCompletion : String → String → String := fun comment completion => s!"{printAsComment comment}\n{completion}"
+  processCompletion : (input : String) → (completion : String) → String := fun comment completion => s!"{printAsComment comment}\n{completion}"
 
 /-- A `Request` is a statement together with the relavent parameters for building a prompt. -/
 structure Request extends Params where
