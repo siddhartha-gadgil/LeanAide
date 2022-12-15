@@ -8,10 +8,15 @@ section MathlibStatements
 def MathlibStatements : IO <| Array Json := 
   Json.parseFile "data/full_mathlib_keyword_summary.json"
 
-initialize mathlibCache : IO.Ref (Array Json) ← IO.mkRef (← MathlibStatements)
+initialize mathlibCache : IO.Ref (Array Json) ← IO.mkRef .empty
 
-def getMathlibStatements : IO (Array Json) := do mathlibCache.get
-
+def getMathlibStatements : IO (Array Json) := do 
+  let mathlibStmts ← mathlibCache.get
+  if mathlibStmts.isEmpty then
+    let stmts ← MathlibStatements
+    mathlibCache.set stmts
+    return stmts
+  else return mathlibStmts
 
 def fetchRelevantStatements (kw : String) : IO <| Array Json := do
   return (← getMathlibStatements).filter $ (Option.toBool <| ·["keywords"]? >>= (·[kw]?))
@@ -114,10 +119,14 @@ def MathlibKeywordLookup : IO Json := do
     "data/mathlib_keyword_lookup.json"
   IO.ofExcept <| Json.parse file
 
-initialize keywordCache : IO.Ref (HashMap String (Array Nat)) ← do
-  let mathlibKwdsJson ← IO.ofExcept (← MathlibKeywordLookup).getObj?
+initialize keywordCache : IO.Ref (HashMap String (Array Nat)) ← IO.mkRef .empty
+
+def getKeywordCache : IO <| HashMap String (Array Nat) := do
+  let cache ← keywordCache.get
+  if cache.isEmpty then
+    let mathlibKwdsJson ← IO.ofExcept (← MathlibKeywordLookup).getObj?
   
-  let mathlibKwds : List (String × Array Nat) :=
+    let mathlibKwds : List (String × Array Nat) :=
     mathlibKwdsJson.fold ( λ l kw idxsJ =>
 
       let idxs : Array Nat := Option.get! do
@@ -125,8 +134,11 @@ initialize keywordCache : IO.Ref (HashMap String (Array Nat)) ← do
         idxs?.mapM (·.getNat?.toOption)
 
       (kw, idxs) :: l ) []
-
-  IO.mkRef (HashMap.ofList mathlibKwds)
+    
+    let keywordHash := HashMap.ofList mathlibKwds
+    keywordCache.set keywordHash
+    return keywordHash
+  else return cache
 
 def getKeywordIndices? (kw : String) : IO <| Option (Array Nat) := do
   let cache ← keywordCache.get
