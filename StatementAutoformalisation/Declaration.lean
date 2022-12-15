@@ -112,11 +112,9 @@ instance Declaration.printType : ToString Declaration where
 def printAsComment (doc : String) : String := s!"/-- {doc} -/"
 
 /-- Render a `DeclarationWithDocstring` as a `String`. -/
-instance DeclarationWithDocstring.toString 
-    [printDecl : ToString Declaration] :
-    ToString DeclarationWithDocstring where
+instance DeclarationWithDocstring.toString : ToString DeclarationWithDocstring where
   toString := fun ⟨decl, doc⟩ => 
-    s!"{printAsComment doc}\n{printDecl.toString decl}"
+    s!"{printAsComment doc}\n{Declaration.toString.toString decl}"
 
 /-- Display just the type of a `DeclarationWithDocstring`, ignoring other details. -/
 instance DeclarationWithDocstring.printType : ToString DeclarationWithDocstring where
