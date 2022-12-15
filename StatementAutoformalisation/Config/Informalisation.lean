@@ -44,4 +44,15 @@ def PromptParams : Prompt.Params :=
   processCompletion := fun stmt completion => s!"{printAsComment completion}\n{stmt}"
 }
 
+def InterfaceParams : Interface.Params DeclarationWithDocstring :=
+{
+  title := "Describe declaration in natural language.",
+  extractText? := pure,
+  action := fun stmt =>
+    Prompt.translate ⟨PromptParams, stmt⟩ >>= (fun (_, translations) => pure translations[0]!),
+  postProcess := fun _ => ToString.toString
+}
+
+@[codeActionProvider] def Action := performCodeAction InterfaceParams
+
 end Informalisation
