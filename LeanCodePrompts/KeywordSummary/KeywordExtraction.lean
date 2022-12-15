@@ -111,7 +111,7 @@ section KeywordLookup
 
 def MathlibKeywordLookup : IO Json := do
   let file ← IO.FS.readFile 
-    "LeanCodePrompts/KeywordSummary/mathlib_keyword_lookup.json"
+    "data/mathlib_keyword_lookup.json"
   IO.ofExcept <| Json.parse file
 
 initialize keywordCache : IO.Ref (HashMap String (Array Nat)) ← do
