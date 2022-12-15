@@ -6,7 +6,7 @@ open Lean IO
 section MathlibStatements
 
 def MathlibStatements : IO <| Array Json := 
-  Json.parseFile "LeanCodePrompts/KeywordSummary/full_mathlib_keyword_summary.json"
+  Json.parseFile "data/full_mathlib_keyword_summary.json"
 
 initialize mathlibCache : IO.Ref (Array Json) ← IO.mkRef (← MathlibStatements)
 
