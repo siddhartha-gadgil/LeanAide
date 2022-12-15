@@ -9,9 +9,9 @@ open Lean
 
 initialize texCommandCache : IO.Ref (HashMap String String) ← do
   -- IO.println "Initialising TeX Command cache..."
-  -- let js ← Json.parseFile "data/texcmds.json"
+  -- let js ← Json.parseFile <| ← reroutePath "data/texcmds.json"
   -- let l := js.map $ fun j => (j[0]!.getStr!, j[1]!.getStr!)
-  let .obj js ← IO.ofExcept $ Json.parse $ ← IO.FS.readFile "data/full-tex.json" | panic! "Invalid JSON format"
+  let .obj js ← IO.ofExcept $ Json.parse $ ← IO.FS.readFile (← reroutePath "data/full-tex.json") | panic! "Invalid JSON format"
   let l : List (String × String) := js.fold (λ as s j => (s, j.getStr!) :: as) []
   IO.mkRef $ HashMap.ofList l
 

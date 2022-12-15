@@ -6,7 +6,7 @@ open Lean IO
 section MathlibStatements
 
 def MathlibStatements : IO <| Array Json := 
-  Json.parseFile "data/full_mathlib_keyword_summary.json"
+  (reroutePath "data/full_mathlib_keyword_summary.json") >>= Json.parseFile
 
 initialize mathlibCache : IO.Ref (Array Json) ← IO.mkRef .empty
 
@@ -115,8 +115,7 @@ end Yake
 section KeywordLookup
 
 def MathlibKeywordLookup : IO Json := do
-  let file ← IO.FS.readFile 
-    "data/mathlib_keyword_lookup.json"
+  let file ← IO.FS.readFile <| ← reroutePath "data/mathlib_keyword_lookup.json"
   IO.ofExcept <| Json.parse file
 
 initialize keywordCache : IO.Ref (HashMap String (Array Nat)) ← IO.mkRef .empty

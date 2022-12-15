@@ -70,7 +70,7 @@ def readJson(s: String) : MetaM Json := do
 
 
 def checkRead: MetaM Json := do 
-  let file := System.mkFilePath ["data/test.json"]
+  let file ← liftM <| reroutePath <| System.mkFilePath ["data/test.json"]
   let s ← IO.FS.readFile file 
   readJson s
 

@@ -11,7 +11,7 @@ def thmTokens : MetaM (Array (String × Array String)) := do
     let thmTokens ←  lines.mapM <| fun s => do pure (s, ← getTokens s)
     return thmTokens
 
-
+/- IR check failed error
 def writeTokens : MetaM Unit := do
   let thmTokens ← thmTokens
   let lines := thmTokens.map <| 
@@ -19,6 +19,8 @@ def writeTokens : MetaM Unit := do
       (fun acc token => acc ++ ", " ++ token.quote) thm.quote
   let text := lines.foldl (fun acc line => acc ++ line ++ "\n") ""
   IO.FS.writeFile "data/parsed_thms_tokens.txt" text
+-/
+
 -- #eval thmTokens
 
 -- #check String.quote
