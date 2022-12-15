@@ -36,8 +36,7 @@ def Request.toJson (req : LLM.Request) : Lean.Json := .mkObj $ [
 
 /-- The key required to query the large language model. -/
 def key : IO String := do
-  let some key ← IO.getEnv "OPENAI_API_KEY" | IO.throwServerError
-      "`OPENAI_API_KEY` environment variable not found.
+  let some key ← IO.getEnv "OPENAI_API_KEY" | IO.throwServerError "`OPENAI_API_KEY` environment variable not found.
         This is required for the statement translation tool.
         Set it using the bash command `export OPENAI_API_KEY=<key>`,
         where `<key>` is your personal OpenAI key."
