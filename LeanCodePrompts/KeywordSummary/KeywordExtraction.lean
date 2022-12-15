@@ -141,7 +141,7 @@ def getKeywordCache : IO <| HashMap String (Array Nat) := do
   else return cache
 
 def getKeywordIndices? (kw : String) : IO <| Option (Array Nat) := do
-  let cache ← keywordCache.get
+  let cache ← getKeywordCache
   return cache.find? kw
 
 
