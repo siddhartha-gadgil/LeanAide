@@ -429,8 +429,8 @@ def jsonStringToExprStrArray (jsString: String) : TermElabM (Array String) := do
   catch _ =>
     pure #[jsString]
 
-#eval jsonStringToExprStrArray "simple"
-#eval jsonStringToExprStrArray "[\"simple\", \"simple2\"]"
+-- #eval jsonStringToExprStrArray "simple"
+-- #eval jsonStringToExprStrArray "[\"simple\", \"simple2\"]"
 
 
 /-- given json returned by open-ai obtain the best translation -/

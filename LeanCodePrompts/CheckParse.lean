@@ -129,7 +129,7 @@ def getTokens (s: String) : MetaM <| Array String := do
       pure <| tokens stx
   | Except.error _  => pure Array.empty
 
-#eval getTokens "{α : Type u} [group α] [has_lt α] [covariant_class α α (function.swap has_mul.mul) has_lt.lt] {a : α} : 1 < a⁻¹ ↔ a < 1"
+-- #eval getTokens "{α : Type u} [group α] [has_lt α] [covariant_class α α (function.swap has_mul.mul) has_lt.lt] {a : α} : 1 < a⁻¹ ↔ a < 1"
 
 
 /-- split prompts into those that parse -/
@@ -320,7 +320,7 @@ def groupThmsSortCore(ss: Array String)(opens: List String := [])
 
 -- #eval checkTerm "a • s"
 
-#eval checkTerm "λ x : Nat, x + 1"
+-- #eval checkTerm "λ x : Nat, x + 1"
 
 -- #eval checkTerm "a - t = 0"
 
@@ -353,7 +353,7 @@ def tryParseThm (s : String) : MetaM String := do
 
 -- #eval tryParseThm "theorem blah (n : Nat) {m: Type} : n  = n"
 
-#eval elabThm "(p: Nat)/-- blah test -/ theorem  (n : Nat) {m: Type} : n  = p"
+-- #eval elabThm "(p: Nat)/-- blah test -/ theorem  (n : Nat) {m: Type} : n  = p"
 
 def eg :=
 "section 
@@ -361,7 +361,7 @@ variable (α : Type) {n : Nat}
 /-- A doc that should be ignored -/
 theorem blah (m: Nat) : n  = m "
 
-#eval checkThm eg
+-- #eval checkThm eg
 
 -- #eval checkThm "(n : Nat) {m: Type} : n  = n"
 
@@ -423,13 +423,13 @@ def checkElabThm (s : String) : TermElabM String := do
 
 -- #eval checkElabThm "theorem blah (n : Nat) {m : Nat} : n  = m"
 
-#eval checkElabThm eg
+-- #eval checkElabThm eg
 
 -- #eval checkElabThm "theorem subfield.list_sum_mem {K : Type u} [field K] (s : subfield K) {l : list K} : (∀ (x : K), x ∈ l → x ∈ s) → l.sum ∈ s"
 
-#eval elabThm "theorem blah (n : Nat) {m : Nat} : n  = m" 
+-- #eval elabThm "theorem blah (n : Nat) {m : Nat} : n  = m" 
 
-#eval elabThm "theorem (n : Nat) {m : Nat} : n  = m"
+-- #eval elabThm "theorem (n : Nat) {m : Nat} : n  = m"
 
 -- #eval elabThm "theorem blah (n : Nat) {m : Nat} : n  = succ n" ["Nat"]
 
