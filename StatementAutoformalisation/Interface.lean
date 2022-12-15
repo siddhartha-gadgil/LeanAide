@@ -1,10 +1,12 @@
-import StatementAutoformalisation.Translate
+import StatementAutoformalisation.Utils
 
 /-- A generic interface for code actions that scan the file for certain occurrences,
  process them and replace them with the output. -/
 structure Interface.Params (α : Type _) where
   /-- The title of the code action. -/
   title : String
+  /-- Whether to treat the selected text as input. -/
+  useSelection? : Bool := false
   /-- The occurrence of the desired pattern that is closest to the given position. -/
   nearestOccurrence? : (source : String) → (pos : String.Pos) → Option String.Range := fun _ _ => none
   /-- Process the selected portion of the file to extract the main text of interest. -/
@@ -27,6 +29,14 @@ def performCodeAction {T : Type _} (iparams : Interface.Params T) : CodeActionPr
 
     -- the portion of the document to be processed
     let input? : Option (String × String.Range) :=
+        (do /- Attempt to extract the selected region. -/
+          guard $ iparams.useSelection?
+          let ⟨start, stop⟩ := params.range
+          let start' := text.lspPosToUtf8Pos start
+          let stop' := text.lspPosToUtf8Pos stop
+          let selection := source.extract start' stop'
+          return (selection, ⟨start', stop'⟩) )
+          <|> /- alternatively -/
         ( do /- Parse the `Syntax` using the `InfoTree` -/
           -- the smallest node of the `InfoTree` containing the current position
           let info ← _snap.infoTree.findInfo? (·.contains pos)

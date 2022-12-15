@@ -1,4 +1,5 @@
 import StatementAutoformalisation.Interface
+import StatementAutoformalisation.Translate
 import StatementAutoformalisation.Config.FixedPrompts
 
 namespace Default
@@ -52,7 +53,7 @@ def InterfaceParams : Interface.Params DeclarationWithDocstring :=
   extractText? := extractCommentText?,
   action := fun stmt =>
     Prompt.typecorrectTranslations ⟨PromptParams, stmt⟩ >>= (pure ·[0]!),
-  postProcess := fun _ => ToString.toString
+  postProcess := fun _ => DeclarationWithDocstring.toString.toString
 }
 
 @[codeActionProvider] def Action := performCodeAction InterfaceParams
