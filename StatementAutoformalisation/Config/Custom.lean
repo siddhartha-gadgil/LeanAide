@@ -1,4 +1,5 @@
 import StatementAutoformalisation.Interface
+import StatementAutoformalisation.Translate
 import StatementAutoformalisation.Config.FixedPrompts
 
 namespace Custom
