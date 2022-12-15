@@ -57,4 +57,8 @@ def typecheckTranslations (req : Prompt.Request) : Lean.Elab.Term.TermElabM <| A
   let (typecorrect, failed) ← decls.partitionExceptM DeclarationWithDocstring.typeCheck
   return (typecorrect.map Prod.fst, failed)
 
+/-- Retrieve only the type-correct suggestions for a given `Prompt.Request`. -/
+def typecorrectTranslations (req : Prompt.Request) : Lean.Elab.Term.TermElabM <| Array DeclarationWithDocstring :=
+  typecheckTranslations req >>= pure ∘ Prod.fst
+
 end Prompt

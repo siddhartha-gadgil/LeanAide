@@ -1,8 +1,8 @@
 import StatementAutoformalisation.Interface
 import StatementAutoformalisation.Config.Custom
+import StatementAutoformalisation.Config.Informalisation
 -- import Mathbin.All
 
-def req : Prompt.Request := 
-  ⟨PromptParams, "Every even number can be written as the sum of two prime numbers"⟩
+/- Every natural number can be written as the sum of two squares. -/
 
--- #eval Prompt.translate req
+def inf_odd_nat  : ∀ n : Nat, ∃ m : Nat, m > n ∧ m % 2 = 1  := sorry  
