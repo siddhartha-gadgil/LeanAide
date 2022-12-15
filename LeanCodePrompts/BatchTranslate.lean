@@ -21,10 +21,10 @@ def translateWithDataCore (s: String)(numSim : Nat:= 10)(numKW: Nat := 1)(includ
 
 def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : TermElabM Json := do
   elabLog s!"Writing to file: {type}-elab-{numSim}-{numKW}-{includeFixed}-{queryNum}-{temp.mantissa}.json"
-  let promptsFile := System.mkFilePath ["data",
+  let promptsFile ← reroutePath <| System.mkFilePath ["data",
     s!"prompts-{type}-{numSim}-{numKW}-{includeFixed}-{queryNum}-{temp.mantissa}.jsonl"]
   let h ← IO.FS.Handle.mk promptsFile IO.FS.Mode.append Bool.false
-  let file := System.mkFilePath [s!"data/{type}-prompts.txt"]
+  let file ← reroutePath <| System.mkFilePath [s!"data/{type}-prompts.txt"]
   let prompts ←  IO.FS.lines file
   let prompts := 
       prompts.map <| fun s => s.replace "<br>" "\n"
@@ -89,7 +89,7 @@ def checkTranslatedThmsCore(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat
       numSim numKW includeFixed queryNum temp).run'.run'
 
 def parsedThmsPrompt : IO (Array String) := do
-  let file := System.mkFilePath ["data/parsed_thms.txt"]
+  let file ← reroutePath <| System.mkFilePath ["data/parsed_thms.txt"]
   IO.FS.lines file
 
 
@@ -101,7 +101,7 @@ def elabThmSplit(start? size?: Option Nat := none) : TermElabM ((Array String) �
   let mut succ: Array String := Array.empty
   let mut fail: Array String := Array.empty
   let mut count := start?.getD 0
-  let succFile := System.mkFilePath ["data/elab_thms.txt"]
+  let succFile ← reroutePath <| System.mkFilePath ["data/elab_thms.txt"]
   let h ← IO.FS.Handle.mk succFile IO.FS.Mode.append Bool.false
   IO.println s!"total: {deps.size}"
   for thm in deps do

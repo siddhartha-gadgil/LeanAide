@@ -13,7 +13,7 @@ def s : Set Nat := fun _ => true
 -- #check s ∩ s
 
 def depsPrompt : IO (Array String) := do
-  let file := System.mkFilePath ["data/types.txt"]
+  let file ← reroutePath <| System.mkFilePath ["data/types.txt"]
   IO.FS.lines file
 
 declare_syntax_cat typed_ident
@@ -100,7 +100,7 @@ syntax "def" ident argument*  ":" term : thmStat
 syntax argument*  ":" term : thmStat
 
 def thmsPrompt : IO (Array String) := do
-  let file := System.mkFilePath ["data/thms.txt"]
+  let file ← reroutePath <| System.mkFilePath ["data/thms.txt"]
   IO.FS.lines file
 
 /-- check whether a string parses as a theorem -/
