@@ -70,10 +70,10 @@ def spread_similar_embeddings(sentence, model_name, embeddings, data, n_top, n_c
 
 
 # Testing
-model = "all-MiniLM-L6-v2"
-embs, kwds = load_embeddings("../data/wiktionary_mathematics_keywords.json", "keyword", model)
-n_top = 5
-n_candidate = 20
-statement = "If R is a left Noetherian ring, then the polynomial ring R[X] is also a left Noetherian ring."
-print(closest_embeddings(statement, model, embs, kwds, n_top))
-print(spread_similar_embeddings(statement, model, embs, kwds, n_top, n_candidate))
+#model = "all-MiniLM-L6-v2"
+#embs, kwds = load_embeddings("../data/wiktionary_mathematics_keywords.json", "keyword", model)
+#n_top = 5
+#n_candidate = 20
+#statement = "If R is a left Noetherian ring, then the polynomial ring R[X] is also a left Noetherian ring."
+#print(closest_embeddings(statement, model, embs, kwds, n_top))
+#print(spread_similar_embeddings(statement, model, embs, kwds, n_top, n_candidate))
