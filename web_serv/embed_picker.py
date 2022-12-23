@@ -56,6 +56,8 @@ def spread_similar_embeddings(sentence, model_name, embeddings, data, n_top, n_c
     sentence_embedding = models[model_name].encode(sentence)
     distances = np.dot(embeddings, sentence_embedding)
     indices = list(np.argsort(distances)[-n_candidate:])
+    print("Candidate keywords: ", [data[i] for i in indices])
+    print("Candidate keyword scores: ", [distances[i] for i in indices])
     top_idx = indices.pop(-1)
     spread_indices = [top_idx] # the list of indices with a good pair-wise spread, initialised with the top scoring index
     v = embeddings[top_idx] # this vector stores the sum of all the entries in the `spread_idxs` list
@@ -65,6 +67,9 @@ def spread_similar_embeddings(sentence, model_name, embeddings, data, n_top, n_c
         idx = indices.pop(least_sim)
         spread_indices.append(idx)
         v = v + embeddings[idx]
+
+    print("Selected keywords: ", [data[i] for i in spread_indices])
+    print("Selected keyword scores: ", [distances[i] for i in spread_indices])
     
     return [data[i] for i in spread_indices]
 
