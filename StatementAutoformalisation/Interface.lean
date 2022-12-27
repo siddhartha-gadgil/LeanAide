@@ -1,4 +1,4 @@
-import StatementAutoformalisation.Utils
+import Lean
 
 /-- A generic interface for code actions that scan the file for certain occurrences,
  process them and replace them with the output. -/
