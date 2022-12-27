@@ -13,6 +13,10 @@ lean_lib LeanCodePrompts {
 lean_lib StatementAutoformalisation {
 }
 
+@[default_target]
+lean_lib CodeAction {
+}
+
 lean_exe datagen{
   supportInterpreter := true
 }

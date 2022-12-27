@@ -1,4 +1,4 @@
-import StatementAutoformalisation.Interface
+import CodeAction.Interface
 import StatementAutoformalisation.Config.Custom
 import StatementAutoformalisation.Config.Informalisation
 import StatementAutoformalisation.Config.SuggestName

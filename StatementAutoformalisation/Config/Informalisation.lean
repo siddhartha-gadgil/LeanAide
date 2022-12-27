@@ -1,4 +1,4 @@
-import StatementAutoformalisation.Interface
+import CodeAction.Interface
 import StatementAutoformalisation.Translate
 import StatementAutoformalisation.Config.FixedPrompts
 
