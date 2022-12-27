@@ -29,4 +29,17 @@ example : ∀ n : Nat, n + .zero = .zero + n := by
   showTerm
     rw [Nat.zero_add]
 
+example : P → Q → P ∧ Q := by
+  showTerm
+    intros
+    apply And.intro <;>
+    assumption
+
+example : P → Q → P ∧ Q := by
+  intros p q
+  showTerm 
+    -- TODO debug the diplayed names issue
+    apply And.intro <;>
+    assumption
+
 end Test
