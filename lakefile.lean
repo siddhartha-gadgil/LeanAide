@@ -6,6 +6,11 @@ package leanaide {
 }
 
 @[default_target]
+lean_lib LeanAide {
+}
+
+
+@[default_target]
 lean_lib LeanCodePrompts {
 }
 

@@ -68,7 +68,7 @@ elab "show_goal" : tactic =>
 def silly {α  : Type}(n m : ℕ)[DecidableEq α] : n + m = n + m := by 
     show_goal
     let a  := n
-    let h : a = a := rfl
+    let _ : a = a := rfl
     show_goal
     rfl
 
@@ -154,7 +154,7 @@ def firstEffectiveTactic (tacStrings: List String)(warnOnly: Bool := Bool.true) 
               match s₁?, s₂? with
               | some s₁, some s₂ => equalStates s₁ s₂          
               | _,_ => pure Bool.true
-            catch e =>
+            catch _ =>
               -- logWarning 
                 -- m!"Failed to check state after {tacString}; error : {e.toMessageData}" 
               pure Bool.true
@@ -172,7 +172,7 @@ def firstEffectiveTactic (tacStrings: List String)(warnOnly: Bool := Bool.true) 
               else
                 logInfo m!"tactic `{tacString}` was effective"
                 return 
-      | Except.error e => 
+      | Except.error _ => 
         pure ()
     catch _ =>
       s.restore
@@ -303,9 +303,6 @@ def lookaheadTactics (ss: List String) : List String :=
     ss.map (fun s => s!"({s} <;> (lookahead aide!)) ; done") ++
     ss.map (fun s => s!"{s} <;> (lookahead aide!)") ++ 
     ss
-
-example : 1 = 1 := by
-  (rfl <;> skip) ; done
 
 example : 1 = 1 := by
   lookahead rfl
