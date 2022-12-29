@@ -278,7 +278,9 @@ elab "aide!" : tactic =>
     let tacStrings := tacStrings.filter (fun s => s != "sorry" && s != "admit")
     firstEffectiveTactic tacStrings Bool.false
 
-macro "aide" : tactic => `(checkpoint aide?)
+macro "aide" : tactic => 
+  `(tactic| aide? ; save)
+
 
 elab "show_tactic_prompt" : tactic => 
   withMainContext do  
