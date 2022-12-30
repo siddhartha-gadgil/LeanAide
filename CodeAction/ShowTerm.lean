@@ -55,7 +55,7 @@ def showTermCodeAction : CodeActionProvider := fun params _snap => do
     -- the node of the infotree containing the current position
     let some info := _snap.infoTree.findInfo? (·.contains pos) | IO.throwServerError "Infotree not found"
     match info.stx with
-    | `(theorem $nm:ident : $typ:term := $tac:byTactic) => 
+    | `(theorem $nm:ident $args* : $typ:term := $tac:byTactic) => 
       let trm : TermElabM Expr := do
         elabByTactic tac (← elabType typ)
       let pptrm : TermElabM Syntax := do
@@ -81,8 +81,12 @@ def showTermCodeAction : CodeActionProvider := fun params _snap => do
 
 section Test
 
-theorem xyz : 1 = 1 := by sorry
+theorem xyz : 1 = 1 := by exact Eq.refl 1
 
-theorem abc : 2 = 2 := by rfl
+theorem abc (n : Nat) (m : Nat) : n ≥ 0 ↔ m ≥ 0 := by
+  refine' ⟨fun _ => _, fun _ => _⟩ <;>
+  apply Nat.zero_le
 
 end Test
+
+#check Snapshots.Snapshot.env
