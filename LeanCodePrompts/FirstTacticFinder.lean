@@ -204,7 +204,7 @@ def getTacticPrompts(s: String)(numSim : Nat)
         ("field", "core-prompt"),
         ("core-prompt", s),
         ("n", numSim),
-        ("model_name", "all-MiniLM-L6-v2")
+        ("model_name", "all-mpnet-base-v2")
       ]
       let simJsonOut ←   
         IO.Process.output {cmd:= "curl", args:= 
