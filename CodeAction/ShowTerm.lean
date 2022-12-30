@@ -52,28 +52,27 @@ def showTermCodeAction : CodeActionProvider := fun params _snap => do
   let edit : IO TextEdit := do
     -- the current position in the text document
     let pos : String.Pos := text.lspPosToUtf8Pos params.range.end
-
-    -- the portion of the document to be processed
-    let input? : Option (Syntax × String.Range) := do 
-      /- Parse the `Syntax` using the `InfoTree` -/
-      -- the smallest node of the `InfoTree` containing the current position
-      let info ← _snap.infoTree.findInfo? (·.stx.getKind = ``byTactic)
-      pure (info.stx, ← info.range?)
-    match input? with
-      | some (stx, ⟨start, stop⟩) => return {
-          range :=
+    -- the node of the infotree containing the current position
+    let some info := _snap.infoTree.findInfo? (·.contains pos) | IO.throwServerError "Infotree not found"
+    match info.stx with
+    | `(theorem $nm:ident : $typ:term := $tac:byTactic) => 
+      let trm : TermElabM Expr := do
+        elabByTactic tac (← elabType typ)
+      let pptrm : TermElabM Syntax := do
+        PrettyPrinter.delab (← trm)
+      let some ⟨start, stop⟩ := tac.raw.getRange? | IO.throwServerError "Failed to obtain range"
+      let output : TSyntax `term := ⟨← EIO.toIO (fun _ => IO.userError "Code action failed") <|
+          _snap.runTermElabM doc.meta pptrm⟩
+      return {
+        range := 
             ⟨text.leanPosToLspPos <| text.toPosition start, 
-            text.leanPosToLspPos <| text.toPosition stop⟩
-          newText := ← do
-            let term := elabByTactic stx none -- TODO change `none` to the theorem type
-            let output ← EIO.toIO (fun _ => IO.userError "Action failed.") <|
-                _snap.runTermElabM doc.meta term
-            -- TODO find a better workaround for this
-            -- toString <$> Lean.ppExpr {env := ← mkEmptyEnvironment} output 
-            return "sorry" }
-      | none => throw <| IO.userError "Parsing input failed." 
+            text.leanPosToLspPos <| text.toPosition stop⟩,
+        newText := ← do
+          return output.raw.reprint.get!
+      }
+    | _ => IO.throwServerError "Parsing input failed. Input must be a `theorem` or `def` with a tactic proof."
 
-  let ca : CodeAction := { title := "Testing", kind? := "quickfix" }
+  let ca : CodeAction := { title := "Show the term corresponding to the tactic proof.", kind? := "quickfix" }
   return #[{ 
     eager := ca, 
     lazy? := some $ return { ca with 
@@ -82,8 +81,8 @@ def showTermCodeAction : CodeActionProvider := fun params _snap => do
 
 section Test
 
-theorem xyz : 1 = 1 := sorry
+theorem xyz : 1 = 1 := by sorry
 
-theorem abc : 2 = 2 := by exact Eq.refl 2
+theorem abc : 2 = 2 := by rfl
 
 end Test
