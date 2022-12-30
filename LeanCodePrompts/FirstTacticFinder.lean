@@ -11,7 +11,7 @@ def getTacticString : TacticM String := do
   let s ← saveState
   let target ← getMainTarget
   let lctx ←  getLCtx
-  let decls := lctx.decls
+  let decls := lctx.decls.toList.tail
   let mut statement := ""
   for decl in decls do
     match decl with
