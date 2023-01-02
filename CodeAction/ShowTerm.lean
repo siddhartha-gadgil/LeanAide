@@ -56,7 +56,7 @@ def showTermCodeAction : CodeActionProvider := fun params _snap => do
     let some info := _snap.infoTree.findInfo? (·.contains pos) | IO.throwServerError "Infotree not found"
     match info.stx with
     -- TODO allow docstrings
-    | `(theorem $nm:ident $args* : $typ:term := by $tac:tacticSeq) =>
+    | `(theorem $nm:ident $args* : $typ:term := $tac:byTactic) =>
       let pptrm : TermElabM Syntax := do
         let typ ← instantiateMVars <| ← elabType typ
         synthesizeSyntheticMVarsNoPostponing
