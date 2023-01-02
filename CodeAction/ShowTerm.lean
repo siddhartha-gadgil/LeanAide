@@ -59,7 +59,9 @@ def showTermCodeAction : CodeActionProvider := fun params _snap => do
     | `(theorem $nm:ident $args* : $typ:term := $tac:byTactic) =>
       let pptrm : TermElabM Syntax := do
         let typ ← instantiateMVars <| ← elabType typ
+        synthesizeSyntheticMVarsNoPostponing
         let trm ← instantiateMVars <| ← elabByTactic tac typ
+        synthesizeSyntheticMVarsNoPostponing
         PrettyPrinter.delab trm
       let some ⟨start, stop⟩ := tac.raw.getRange? | IO.throwServerError "Failed to obtain range"
       let output : TSyntax `term := ⟨← EIO.toIO (fun _ => IO.userError "Code action failed") <|
@@ -92,3 +94,4 @@ theorem abc (n : Nat) (m : Nat) : n ≥ 0 ↔ m ≥ 0 := by
 end Test
 
 #check Snapshots.Snapshot.env
+#check synthesizeSyntheticMVarsNoPostponing
