@@ -55,11 +55,12 @@ def showTermCodeAction : CodeActionProvider := fun params _snap => do
     -- the node of the infotree containing the current position
     let some info := _snap.infoTree.findInfo? (·.contains pos) | IO.throwServerError "Infotree not found"
     match info.stx with
-    | `(theorem $nm:ident $args* : $typ:term := $tac:byTactic) => 
-      let trm : TermElabM Expr := do
-        elabByTactic tac (← elabType typ)
+    -- TODO allow docstrings
+    | `(theorem $nm:ident $args* : $typ:term := $tac:byTactic) =>
       let pptrm : TermElabM Syntax := do
-        PrettyPrinter.delab (← trm)
+        let typ ← instantiateMVars <| ← elabType typ
+        let trm ← instantiateMVars <| ← elabByTactic tac typ
+        PrettyPrinter.delab trm
       let some ⟨start, stop⟩ := tac.raw.getRange? | IO.throwServerError "Failed to obtain range"
       let output : TSyntax `term := ⟨← EIO.toIO (fun _ => IO.userError "Code action failed") <|
           _snap.runTermElabM doc.meta pptrm⟩
@@ -84,6 +85,7 @@ section Test
 theorem xyz : 1 = 1 := by exact Eq.refl 1
 
 theorem abc (n : Nat) (m : Nat) : n ≥ 0 ↔ m ≥ 0 := by
+  showTerm
   refine' ⟨fun _ => _, fun _ => _⟩ <;>
   apply Nat.zero_le
 
