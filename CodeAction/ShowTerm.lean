@@ -56,11 +56,13 @@ def showTermCodeAction : CodeActionProvider := fun params _snap => do
     let some info := _snap.infoTree.findInfo? (·.contains pos) | IO.throwServerError "Infotree not found"
     match info.stx with
     -- TODO allow docstrings
-    | `(theorem $nm:ident $args* : $typ:term := $tac:byTactic) =>
+    | `(theorem $nm:ident $args* : $typ:term := by $tac:tacticSeq) =>
       let pptrm : TermElabM Syntax := do
         let typ ← instantiateMVars <| ← elabType typ
         synthesizeSyntheticMVarsNoPostponing
         let trm ← instantiateMVars <| ← elabByTactic tac typ
+        synthesizeSyntheticMVarsNoPostponing
+        let trm ← reduce trm
         synthesizeSyntheticMVarsNoPostponing
         PrettyPrinter.delab trm
       let some ⟨start, stop⟩ := tac.raw.getRange? | IO.throwServerError "Failed to obtain range"
