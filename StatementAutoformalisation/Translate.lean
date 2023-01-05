@@ -26,7 +26,7 @@ structure Params where
   /-- Make the suffix to add at the end of the prompt. -/
   mkSuffix : String → String
   /-- An additional processing of the Codex completion before converting to a `DeclarationWithDocstring`. -/
-  processCompletion : String → String → String := fun comment completion => s!"{printAsComment comment}\n{completion}"
+  processCompletion : (input : String) → (completion : String) → String := fun comment completion => s!"{printAsComment comment}\n{completion}"
 
 /-- A `Request` is a statement together with the relavent parameters for building a prompt. -/
 structure Request extends Params where
@@ -56,5 +56,9 @@ def typecheckTranslations (req : Prompt.Request) : Lean.Elab.Term.TermElabM <| A
   let (_, decls) ← translate req 
   let (typecorrect, failed) ← decls.partitionExceptM DeclarationWithDocstring.typeCheck
   return (typecorrect.map Prod.fst, failed)
+
+/-- Retrieve only the type-correct suggestions for a given `Prompt.Request`. -/
+def typecorrectTranslations (req : Prompt.Request) : Lean.Elab.Term.TermElabM <| Array DeclarationWithDocstring :=
+  typecheckTranslations req >>= pure ∘ Prod.fst
 
 end Prompt

@@ -103,15 +103,22 @@ instance Declaration.toString : ToString Declaration where
   toString := fun ⟨kind, name?, _, args, type, value⟩ =>
       s! "{kind} {name?.getD ""} {args} : {type} := {value}"
 
+/-- Display just the type of a `Declaration`, ignoring other details. -/
+instance Declaration.printType : ToString Declaration where
+  toString := fun ⟨_, _, _, args, type, _⟩ =>
+    s!"{args}{if args.isEmpty then "" else " : "}{type}"
+
 /-- Decorate a `String` with Lean comment or docstring syntax. -/
 def printAsComment (doc : String) : String := s!"/-- {doc} -/"
 
 /-- Render a `DeclarationWithDocstring` as a `String`. -/
-instance DeclarationWithDocstring.toString 
-    [printDecl : ToString Declaration] :
-    ToString DeclarationWithDocstring where
+instance DeclarationWithDocstring.toString : ToString DeclarationWithDocstring where
   toString := fun ⟨decl, doc⟩ => 
-    s!"{printAsComment doc}\n{printDecl.toString decl}"
+    s!"{printAsComment doc}\n{Declaration.toString.toString decl}"
+
+/-- Display just the type of a `DeclarationWithDocstring`, ignoring other details. -/
+instance DeclarationWithDocstring.printType : ToString DeclarationWithDocstring where
+  toString := fun ⟨decl, _⟩ => Declaration.printType.toString decl
 
 /-- Build a prompt from a list of `DeclarationWithDocstring`s. Note that the declarations are printed in the reverse order. -/
 def buildPrompt [ToString DeclarationWithDocstring] (decls : Array DeclarationWithDocstring)
