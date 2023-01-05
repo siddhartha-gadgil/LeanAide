@@ -77,5 +77,5 @@ require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git"@"master"
 
 
-require aesop from git
-  "https://github.com/JLimperg/aesop.git"@"master"
+-- require aesop from git
+--   "https://github.com/JLimperg/aesop.git"@"master"
