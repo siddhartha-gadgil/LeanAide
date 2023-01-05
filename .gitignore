@@ -14,3 +14,4 @@ SentenceSimilarityTask/embeddings_store/*.pkl
 data/tagged_nl2.json
 *.npy
 lake-packages/
+.cache/
