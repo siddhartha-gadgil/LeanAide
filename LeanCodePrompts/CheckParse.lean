@@ -3,14 +3,9 @@ import Lean.Meta
 import Lean.Elab
 import Lean.Parser
 import Lean.Parser.Extension
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Init.Set
-import LeanCodePrompts.Basic
 import LeanCodePrompts.Utils
-open Lean Meta Elab Parser Mathlib Set Tactic
+open Lean Meta Elab Parser  Tactic
  
-def s : Set Nat := fun _ => true
--- #check s ∩ s
 
 def depsPrompt : IO (Array String) := do
   let file ← reroutePath <| System.mkFilePath ["data/types.txt"]

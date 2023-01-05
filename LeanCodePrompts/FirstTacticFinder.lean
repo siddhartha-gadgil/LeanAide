@@ -11,7 +11,7 @@ def getTacticString : TacticM String := do
   let s ← saveState
   let target ← getMainTarget
   let lctx ←  getLCtx
-  let decls := lctx.decls.toList.tail
+  let decls := lctx.decls.toList.tail!
   let mut statement := ""
   for decl in decls do
     match decl with
@@ -65,7 +65,7 @@ elab "show_goal" : tactic =>
     logInfo view
     return ()
 
-def silly {α  : Type}(n m : ℕ)[DecidableEq α] : n + m = n + m := by 
+def silly {α  : Type}(n m : Nat)[DecidableEq α] : n + m = n + m := by 
     show_goal
     let a  := n
     let _ : a = a := rfl
@@ -73,13 +73,13 @@ def silly {α  : Type}(n m : ℕ)[DecidableEq α] : n + m = n + m := by
     rfl
 
 
-def silly' : (n m : ℕ)  →  n + m = n + m := by
+def silly' : (n m : Nat)  →  n + m = n + m := by
     intros
     show_goal  
     rfl
     done
 
-example : (n m : ℕ)  →  n + m = n + m := by
+example : (n m : Nat)  →  n + m = n + m := by
     intros
     name_inacessibles  
     rfl
@@ -186,15 +186,15 @@ elab "first_effective_tactic" : tactic =>
     firstEffectiveTactic ["unparsable", "exact blah", "intros", "rfl"]
 
 -- proved by reflexivity
-def silly'' (n m : ℕ)  : n + m = n + m := by
+def silly'' (n m : Nat)  : n + m = n + m := by
     intros -- legal but no effect
     first_effective_tactic
 
-def silly''' : (n m : ℕ)  →  n + m = n + m := by
+def silly''' : (n m : Nat)  →  n + m = n + m := by
     first_effective_tactic 
     rfl
 
-def silly'''' : (n m : ℕ)  →  n + m = n + m := by
+def silly'''' : (n m : Nat)  →  n + m = n + m := by
     repeat (first_effective_tactic)
 
 def getTacticPrompts(s: String)(numSim : Nat)
@@ -230,7 +230,7 @@ def getTacticPrompts(s: String)(numSim : Nat)
         | Except.error e => 
             throwError m!"Failed to parse json: {e}"
 
-def fourSquaresPrompt := ": ∀ p : ℕ, Prime p → (p % 4 = 1) → ∃ a b : ℕ, a ^ 2 + b ^ 2 = p"
+def fourSquaresPrompt := ": ∀ p : Nat, Prime p → (p % 4 = 1) → ∃ a b : Nat, a ^ 2 + b ^ 2 = p"
 
 -- #eval getTacticPrompts fourSquaresPrompt 20 
 
