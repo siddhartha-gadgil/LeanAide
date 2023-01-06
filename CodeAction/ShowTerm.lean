@@ -1,4 +1,4 @@
-import CodeAction.Interface
+import Lean
 
 open Lean Meta Elab Parser Tactic Term
 
@@ -56,16 +56,16 @@ def showTermCodeAction : CodeActionProvider := fun params _snap => do
     let some info := _snap.infoTree.findInfo? (·.contains pos) | IO.throwServerError "Infotree not found"
     match info.stx with
     -- TODO allow docstrings
-    | `(theorem $nm:ident $args* : $typ:term := $tac:byTactic) =>
+    | `(theorem $nm:ident $args* : $typ:term := by $tacs:tacticSeq) =>
       let pptrm : TermElabM Syntax := do
         let typ ← instantiateMVars <| ← elabType typ
         synthesizeSyntheticMVarsNoPostponing
-        let trm ← instantiateMVars <| ← elabByTactic tac typ
+        let trm ← instantiateMVars <| ← elabByTactic tacs typ
         synthesizeSyntheticMVarsNoPostponing
         let trm ← reduce trm
         synthesizeSyntheticMVarsNoPostponing
         PrettyPrinter.delab trm
-      let some ⟨start, stop⟩ := tac.raw.getRange? | IO.throwServerError "Failed to obtain range"
+      let some ⟨start, stop⟩ := tacs.raw.getRange? | IO.throwServerError "Failed to obtain range"
       let output : TSyntax `term := ⟨← EIO.toIO (fun _ => IO.userError "Code action failed") <|
           _snap.runTermElabM doc.meta pptrm⟩
       return {
@@ -97,3 +97,10 @@ end Test
 
 #check Snapshots.Snapshot.env
 #check synthesizeSyntheticMVarsNoPostponing
+#check evalTacticSeq
+#print Tactic
+#check Tactic.run
+#check Snapshots.Snapshot.tacticCache
+#check Tactic.Cache
+#check InfoTree.goalsAt?
+#check ContextInfo
