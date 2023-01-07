@@ -1,5 +1,7 @@
 import StatementAutoformalisation.Declaration
 
+set_option maxHeartbeats 10000000
+
 open Lean Meta in
 def checks : Array (Environment → Name → Bool) :=
   #[isAttribute,
@@ -66,6 +68,8 @@ def generatePrompts : MetaM Unit := do
 
 open Lean
 def main : IO Unit := do
-  initSearchPath (← Lean.findSysroot) ["build/lib", "lake-packages/mathlib/build/lib/",  "lake-packages/std/build/lib/", "lake-packages/Qq/build/lib/", "lake-packages/aesop/build/lib/" ]
+  IO.println "Generating prompts..."
+  initSearchPath (← Lean.findSysroot) ["lake-packages/mathlib/build/lib/",  "lake-packages/std/build/lib/", "lake-packages/Qq/build/lib/", "lake-packages/aesop/build/lib/"]
   let env ← importModules [{module := `Mathlib}] {}
   Prod.fst <$> generatePrompts.toIO {fileName := "", fileMap := default} {env := env}
+  IO.println s!"Output written to {outputFile}."
