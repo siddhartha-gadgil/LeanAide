@@ -36,6 +36,11 @@ lean_exe chkelab {
   supportInterpreter := true
 }
 
+@[default_target]
+lean_exe promptsgen {
+  supportInterpreter := true
+}
+
 lean_exe thmextract {
   supportInterpreter := true
 }
