@@ -1,4 +1,5 @@
 import StatementAutoformalisation.Declaration
+import Mathlib
 
 set_option maxHeartbeats 10000000
 
@@ -46,7 +47,7 @@ def forbiddenPrefixes : Array Name :=
 
 def blacklistFiles := [`StatementAutoformalisation.Declaration]
 
-def outputFile : System.FilePath := "../data/mathlib4-prompts.json"
+def outputFile : System.FilePath := "data/mathlib4-prompts.json"
 
 open Lean in
 def generatePrompts : MetaM Unit := do
