@@ -150,12 +150,12 @@ def DeclarationWithDocstring.fromJson (kind : String := "theorem") (data : Lean.
   return ⟨decl, docstr⟩
 
 /-- Convert a `Declaration` to a `JSON` object. -/
-def Declaration.toJson (decl : Declaration) (verbose? := false) : Lean.Json := .mkObj <| [
+def Declaration.toJson (decl : Declaration) (verbose? := false) : Lean.Json := .mkObj <| ([
   ("kind", decl.kind),
   ("name", decl.name.getD ""),
   ("args", decl.args),
   ("type", decl.type)
-] ++ if verbose? then [
+] : List (String × Lean.Json)) ++ if verbose? then [
   ("open_namespaces", Lean.Json.arr <| decl.openNamespaces.map .str),
   ("value", decl.value)
 ] else []
