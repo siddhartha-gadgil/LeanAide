@@ -1,5 +1,4 @@
 import StatementAutoformalisation.Declaration
-import Mathlib
 
 open Lean Meta in
 def checks : Array (Environment → Name → Bool) :=
