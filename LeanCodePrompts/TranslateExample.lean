@@ -14,3 +14,7 @@ example : ∀ (n : ℕ), ∃ m, m > n ∧ m % 2 = 1 := by sorry
 
 /- Every prime number is either `2` or odd -/
 
+set_option trace.Translate.info true 
+#eval translateViewM "There are infinitely many odd numbers"
+
+#eval translateViewM "Every prime number is either `2` or odd"
