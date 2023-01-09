@@ -10,7 +10,7 @@ open Lean Meta
 
 open Lean Elab Parser Command
 
-def fileName := "data/mathlib4-prompts.json"
+def fileName := "data/safe_prompts.json"
 
 /-- extract prompt pairs from JSON response to local server -/
 def sentenceSimPairs
