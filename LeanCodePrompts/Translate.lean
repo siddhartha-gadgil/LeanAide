@@ -11,31 +11,21 @@ open Lean Meta
 open Lean Elab Parser Command
 
 /-- extract prompt pairs from JSON response to local server -/
-def sentenceSimPairs(s: String)(theoremField: String := "theorem") : MetaM  <| Except String (Array (String × String)) := do
-  let json ← readJson (s) 
-  -- logInfo "obtained json"
-  match json.getArr? with
-  | Except.ok jsonArr => do
-    let pairs ←  jsonArr.mapM fun json => do
-      let docstring : String ←  
-        match (json.getObjVal? "doc_string") with
-        | Except.error e => throwError s!"Error {e} while getting doc_string"
-        | Except.ok js => 
-          match js.getStr? with
-          | Except.error e => throwError s!"Error {e} while processing {js} as string"  
-          | Except.ok s => pure s
-      -- logInfo s!"theorem-field: {json.getObjVal? theoremField}"
-      -- logInfo s!"theorem: {json.getObjVal? "theorem"}"
-      let thm ←  match (json.getObjVal? theoremField) with
-        | Except.error e => throwError s!"Error {e} while getting theorem"
-        | Except.ok js => 
-          match js.getStr? with
-          | Except.error e => throwError s!"Error {e} while processing {js} as string"  
-          | Except.ok s => pure s
-      return (docstring, thm)
-    -- logInfo m!"pairs: {pairs}"
-    return Except.ok pairs
-  | Except.error e => return Except.error e
+def sentenceSimPairs
+  (s: String) 
+  -- this used to be `theoremField`
+  (kind : String := "theorem")
+  (fileName : String)
+   : MetaM  <| Except String (Array (String × String)) := do
+  let json ← readJson s
+  return do
+    (← json.getArr?).mapM <| fun j => do
+      let docstring ← j.getObjValAs? String "doc_string" 
+      let typeField := 
+        if fileName ∈ ["mathlib4-prompts.json"] then "type"
+        else kind
+      let thm ← j.getObjValAs? String typeField
+      pure (docstring, thm) 
 
 -- #eval sentenceSimPairs egSen
 
@@ -155,9 +145,10 @@ def fixedPrompts:= #[("If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\d
 /-- choosing pairs to build a prompt -/
 def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
     (scoreBound: Float)(matchBound: Nat)
+    (fileName := "data/mathlib4-prompts.json")
    : TermElabM (Array (String × String) × IO.Process.Output) := do
       let jsData := Json.mkObj [
-        ("filename", "data/safe_prompts.json"),
+        ("filename", fileName),
         ("field", "doc_string"),
         ("doc_string", s),
         ("n", numSim),
@@ -166,7 +157,7 @@ def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
       let simJsonOut ←  
         IO.Process.output {cmd:= "curl", args:= 
           #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, s!"{← leanAideIP}/nearest_prompts"]}
-      let pairs? ← sentenceSimPairs simJsonOut.stdout "theorem"
+      let pairs? ← sentenceSimPairs simJsonOut.stdout "theorem" fileName
       -- IO.println s!"obtained sentence similarity; time : {← IO.monoMsNow}"
       let allPairs : Array (String × String) ← 
         match pairs? with
@@ -188,10 +179,11 @@ def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
           (pairs ++ kwPairs).toList.eraseDups.toArray, simJsonOut)
 
 /-- choosing pairs to build a prompt -/
-def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := "doc_string")(theoremField : String := "theorem")
+def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := "doc_string")
+    (theoremField : String := "theorem") (fileName := "data/mathlib4-prompts.json")
    : TermElabM (Array (String × String) × IO.Process.Output) := do
       let jsData := Json.mkObj [
-        ("filename", "data/safe_prompts.json"),
+        ("filename", fileName),
         ("field", field),
         (field, s),
         ("n", numSim),
@@ -200,7 +192,7 @@ def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := "doc_string"
       let simJsonOut ←  
         IO.Process.output {cmd:= "curl", args:= 
           #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, s!"{← leanAideIP}/nearest_prompts"]}
-      let pairs? ← sentenceSimPairs simJsonOut.stdout theoremField
+      let pairs? ← sentenceSimPairs simJsonOut.stdout theoremField fileName
       -- IO.println s!"obtained sentence similarity; time : {← IO.monoMsNow}"
       let allPairs : Array (String × String) ← 
         match pairs? with
