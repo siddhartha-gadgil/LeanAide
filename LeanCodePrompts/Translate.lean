@@ -10,12 +10,13 @@ open Lean Meta
 
 open Lean Elab Parser Command
 
+def fileName := "data/mathlib4-prompts.json"
+
 /-- extract prompt pairs from JSON response to local server -/
 def sentenceSimPairs
   (s: String) 
   -- this used to be `theoremField`
   (kind : String := "theorem")
-  (fileName : String := "data/safe-prompts.json")
    : MetaM  <| Except String (Array (String × String)) := do
   let json ← readJson s
   return do
@@ -145,7 +146,6 @@ def fixedPrompts:= #[("If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\d
 /-- choosing pairs to build a prompt -/
 def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
     (scoreBound: Float)(matchBound: Nat)
-    (fileName := "data/safe-prompts.json")
    : TermElabM (Array (String × String) × IO.Process.Output) := do
       let jsData := Json.mkObj [
         ("filename", fileName),
@@ -157,7 +157,7 @@ def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
       let simJsonOut ←  
         IO.Process.output {cmd:= "curl", args:= 
           #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, s!"{← leanAideIP}/nearest_prompts"]}
-      let pairs? ← sentenceSimPairs simJsonOut.stdout "theorem" fileName
+      let pairs? ← sentenceSimPairs simJsonOut.stdout "theorem"
       -- IO.println s!"obtained sentence similarity; time : {← IO.monoMsNow}"
       let allPairs : Array (String × String) ← 
         match pairs? with
@@ -180,7 +180,7 @@ def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
 
 /-- choosing pairs to build a prompt -/
 def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := "doc_string")
-    (theoremField : String := "theorem") (fileName := "data/safe-prompts.json")
+    (theoremField : String := "theorem")
    : TermElabM (Array (String × String) × IO.Process.Output) := do
       let jsData := Json.mkObj [
         ("filename", fileName),
@@ -192,7 +192,7 @@ def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := "doc_string"
       let simJsonOut ←  
         IO.Process.output {cmd:= "curl", args:= 
           #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, s!"{← leanAideIP}/nearest_prompts"]}
-      let pairs? ← sentenceSimPairs simJsonOut.stdout theoremField fileName
+      let pairs? ← sentenceSimPairs simJsonOut.stdout theoremField
       -- IO.println s!"obtained sentence similarity; time : {← IO.monoMsNow}"
       let allPairs : Array (String × String) ← 
         match pairs? with
@@ -476,18 +476,13 @@ universe u
 #eval uncurry2 ({α : Prop} →  [Decidable α] →  (a : α) → a = a)
 
 def translateViewM (s: String) : TermElabM String := do
-  trace[Translate.Info] "Getting Json"
   let js ← getCodeJson  s
-  trace[Translate.Info] "Coverting to string array"
   let output ← jsonToExprStrArray js
-  trace[Translate.Info] "Converting to Expr"
   let e? ← greedyArrayToExpr? output
   match e? with
   | some e => do
-    trace[Translate.Info] "Conversion succeeded"
     e.view
   | none => do
-    trace[Translate.Info] "Returning \"False\""
     let stx ← output.findSomeM? <| fun s => do
       let exp ←  identMappedFunStx s 
       return exp.toOption
