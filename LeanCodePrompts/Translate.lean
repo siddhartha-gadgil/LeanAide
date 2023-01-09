@@ -15,14 +15,14 @@ def sentenceSimPairs
   (s: String) 
   -- this used to be `theoremField`
   (kind : String := "theorem")
-  (fileName : String)
+  (fileName : String := "data/safe-prompts.json")
    : MetaM  <| Except String (Array (String × String)) := do
   let json ← readJson s
   return do
     (← json.getArr?).mapM <| fun j => do
       let docstring ← j.getObjValAs? String "doc_string" 
       let typeField := 
-        if fileName ∈ ["mathlib4-prompts.json"] then "type"
+        if fileName ∈ ["data/mathlib4-prompts.json"] then "type"
         else kind
       let thm ← j.getObjValAs? String typeField
       pure (docstring, thm) 
@@ -145,7 +145,7 @@ def fixedPrompts:= #[("If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\d
 /-- choosing pairs to build a prompt -/
 def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
     (scoreBound: Float)(matchBound: Nat)
-    (fileName := "data/mathlib4-prompts.json")
+    (fileName := "data/safe-prompts.json")
    : TermElabM (Array (String × String) × IO.Process.Output) := do
       let jsData := Json.mkObj [
         ("filename", fileName),
@@ -180,7 +180,7 @@ def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
 
 /-- choosing pairs to build a prompt -/
 def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := "doc_string")
-    (theoremField : String := "theorem") (fileName := "data/mathlib4-prompts.json")
+    (theoremField : String := "theorem") (fileName := "data/safe-prompts.json")
    : TermElabM (Array (String × String) × IO.Process.Output) := do
       let jsData := Json.mkObj [
         ("filename", fileName),
@@ -476,13 +476,18 @@ universe u
 #eval uncurry2 ({α : Prop} →  [Decidable α] →  (a : α) → a = a)
 
 def translateViewM (s: String) : TermElabM String := do
+  trace[Translate.Info] "Getting Json"
   let js ← getCodeJson  s
+  trace[Translate.Info] "Coverting to string array"
   let output ← jsonToExprStrArray js
+  trace[Translate.Info] "Converting to Expr"
   let e? ← greedyArrayToExpr? output
   match e? with
   | some e => do
+    trace[Translate.Info] "Conversion succeeded"
     e.view
   | none => do
+    trace[Translate.Info] "Returning \"False\""
     let stx ← output.findSomeM? <| fun s => do
       let exp ←  identMappedFunStx s 
       return exp.toOption
