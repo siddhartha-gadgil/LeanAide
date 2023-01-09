@@ -1,8 +1,6 @@
 import StatementAutoformalisation.Declaration
 import Mathlib
 
-set_option maxHeartbeats 10000000
-
 open Lean Meta in
 def checks : Array (Environment → Name → Bool) :=
   #[isAttribute,
@@ -72,6 +70,10 @@ open Lean
 def main : IO Unit := do
   IO.println "Generating prompts..."
   initSearchPath (← Lean.findSysroot) ["lake-packages/mathlib/build/lib/",  "lake-packages/std/build/lib/", "lake-packages/Qq/build/lib/", "lake-packages/aesop/build/lib/"]
-  let env ← importModules [{module := `Mathlib}] {}
-  Prod.fst <$> generatePrompts.toIO {fileName := "", fileMap := default, maxHeartbeats := 5000000} {env := env}
+  let env ← importModules [{module := `Mathlib}] {} 
+  Prod.fst <$> generatePrompts.toIO 
+    {fileName := "", 
+     fileMap := default, 
+     options := ⟨[(`maxHeartbeats, .ofNat 214920948329)]⟩, 
+     maxHeartbeats := 712467123} {env}
   IO.println s!"Output written to {outputFile}."
