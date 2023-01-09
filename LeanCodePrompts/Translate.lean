@@ -10,13 +10,12 @@ open Lean Meta
 
 open Lean Elab Parser Command
 
-def fileName := "data/mathlib4-prompts.json"
+def fileName := "data/safe-prompts.json"
 
 /-- extract prompt pairs from JSON response to local server -/
 def sentenceSimPairs
-  (s: String) 
-  -- this used to be `theoremField`
-  (kind : String := "theorem")
+  (s: String)
+  (theoremField : String := "theorem")
    : MetaM  <| Except String (Array (String × String)) := do
   let json ← readJson s
   return do
@@ -24,7 +23,7 @@ def sentenceSimPairs
       let docstring ← j.getObjValAs? String "doc_string" 
       let typeField := 
         if fileName ∈ ["data/mathlib4-prompts.json"] then "type"
-        else kind
+        else theoremField
       let thm ← j.getObjValAs? String typeField
       pure (docstring, thm) 
 
