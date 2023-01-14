@@ -74,6 +74,16 @@ def parseTactics (s: String) : MetaM <| Array Syntax := do
     return seq
   | none => return #[]
 
+def parseTactics? (s: String) : MetaM <| Option <| Array Syntax := do
+  let parsed? ← partialParser tacticSeq s
+  let seq := parsed?.map fun (stx, _, _) => getTactics stx
+  return seq
+
+def parseTacticBlocks(s: String) : MetaM <| List <| Array String := do
+  let blocks := s.splitOn "by" |>.tailD []
+  let stxs ←  blocks.filterMapM fun b => parseTactics? b
+  return stxs.map (fun arr => 
+    arr.map (fun stx => stx.reprint.getD "" |>.trim))
 
 structure TheoremAndTactic where
   kind: String
