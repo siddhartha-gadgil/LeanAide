@@ -168,7 +168,7 @@ def Lean.Expr.simplify(e: Expr) : MetaM Expr := do
 
 def excludeSuffixes := #[`dcasesOn, `recOn, `casesOn]
 
-#eval (`dcasesOn).isSuffixOf (`AlgebraicGeometry.IsAffine.dcasesOn)
+-- #eval (`dcasesOn).isSuffixOf (`AlgebraicGeometry.IsAffine.dcasesOn)
 
 /-- 
 Array of constants, names in their definition, and names in their type. 
@@ -207,4 +207,3 @@ def offSpringShallowTripleCore (depth: Nat):
     CoreM Unit := 
           (offSpringShallowTriple excludePrefixes depth).run' 
 
-#eval ([`this, `that]).toString

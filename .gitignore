@@ -13,3 +13,5 @@ SentenceSimilarityTask/embeddings_store/*.pkl
 /OpenaiModelPrompting/easy_to_hard
 data/tagged_nl2.json
 *.npy
+lake-packages/
+.cache/

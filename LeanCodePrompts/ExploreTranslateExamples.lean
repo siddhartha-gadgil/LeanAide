@@ -1,5 +1,5 @@
 import LeanCodePrompts.ExploreTranslate
-import Mathbin.All
+import Mathlib
 
 /-
 def eg1 := "There are infinitely many odd numbers."

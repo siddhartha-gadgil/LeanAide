@@ -1,7 +1,7 @@
 import StatementAutoformalisation.Declaration
 
 /-- The fixed `Declaration`s that will be added to the beginning of the prompt. 
-  The `Mathbin.All` import is required to parse the specialised notation. -/
+  The `Mathlib` import is required to parse the specialised notation. -/
 def leanChatPrompts : Lean.MetaM <| Array DeclarationWithDocstring := 
 return #[
   {

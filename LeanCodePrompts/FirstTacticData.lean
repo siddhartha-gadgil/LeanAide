@@ -18,16 +18,14 @@ def contractPolyTactic (tac: String): String :=
       else tac
   else tac
 
+
 def partialParser  (parser : Parser) (input : String) (fileName := "<input>") : MetaM <| Option (Syntax × String × String) := do
   let env ← getEnv
-  let c := mkParserContext (mkInputContext input fileName) { env := env, options := {} }
-  let s := mkParserState input
-  let s := whitespace c s
-  let parserFn := parser.fn
-  let s : ParserState := parserFn c s
-  -- IO.println s.stxStack
-  let stack := s.stxStack.filter fun s => !s.hasMissing
-  -- let s := categoryParserFnImpl catName c s
+  -- let c := mkParserContext (mkInputContext input fileName) { env := env, options := {} }
+  let p := andthenFn whitespace parser.fn
+  let ictx := mkInputContext input fileName
+  let s := p.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
+  let stack := s.stxStack.toSubarray.as.filter fun s => !s.hasMissing
   if stack.isEmpty &&  s.hasError then
     return    none
   else 
@@ -76,6 +74,16 @@ def parseTactics (s: String) : MetaM <| Array Syntax := do
     return seq
   | none => return #[]
 
+def parseTactics? (s: String) : MetaM <| Option <| Array Syntax := do
+  let parsed? ← partialParser tacticSeq s
+  let seq := parsed?.map fun (stx, _, _) => getTactics stx
+  return seq
+
+def parseTacticBlocks(s: String) : MetaM <| List <| Array String := do
+  let blocks := s.splitOn "by" |>.tailD []
+  let stxs ←  blocks.filterMapM fun b => parseTactics? b
+  return stxs.map (fun arr => 
+    arr.map (fun stx => stx.reprint.getD "" |>.trim))
 
 structure TheoremAndTactic where
   kind: String

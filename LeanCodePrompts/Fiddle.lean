@@ -10,7 +10,7 @@ example  : a = a := by
     rename_i β 
     exact rfl
 
-
+/-
 def runParserCategoryPartial  (catName : Name) (input : String) (fileName := "<input>") : MetaM <| Except String Syntax := do
   let env ← getEnv
   let c := mkParserContext (mkInputContext input fileName) { env := env, options := {} }
@@ -194,3 +194,5 @@ open Term
 def sillyNat : Nat := by exact 1
 
 example : String := by simp
+
+-/

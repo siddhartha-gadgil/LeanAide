@@ -1,4 +1,5 @@
-import CodeAction.Declaration
+import StatementAutoformalisation.Declaration
+import Mathlib
 
 open Lean Meta in
 def checks : Array (Environment → Name → Bool) :=
@@ -44,7 +45,7 @@ def forbiddenPrefixes : Array Name :=
 
 def blacklistFiles := [`StatementAutoformalisation.Declaration]
 
-def outputFile : System.FilePath := "../data/mathlib4-prompts.json"
+def outputFile : System.FilePath := "data/mathlib4-prompts.json"
 
 open Lean in
 def generatePrompts : MetaM Unit := do
@@ -59,6 +60,7 @@ def generatePrompts : MetaM Unit := do
       guard $ !checks.any (· env nm)
       guard $ !forbiddenPrefixes.any (·.isPrefixOf nm)
     valid?.mapM <| fun _ => do
+      liftM <| IO.println nm.toString
       let decl ← Declaration.fromConstantInfo ci
       let decldoc : DeclarationWithDocstring := ⟨decl, docstr⟩
       return decldoc.toJson
@@ -66,6 +68,12 @@ def generatePrompts : MetaM Unit := do
 
 open Lean
 def main : IO Unit := do
-  initSearchPath (← Lean.findSysroot) ["build/lib", "lake-packages/mathlib/build/lib/",  "lake-packages/std/build/lib/", "lake-packages/Qq/build/lib/", "lake-packages/aesop/build/lib/" ]
-  let env ← importModules [{module := `Mathlib}] {}
-  Prod.fst <$> generatePrompts.toIO {fileName := "", fileMap := default} {env := env}
+  IO.println "Generating prompts..."
+  initSearchPath (← Lean.findSysroot) ["lake-packages/mathlib/build/lib/",  "lake-packages/std/build/lib/", "lake-packages/Qq/build/lib/", "lake-packages/aesop/build/lib/"]
+  let env ← importModules [{module := `Mathlib}] {} 
+  Prod.fst <$> generatePrompts.toIO 
+    {fileName := "", 
+     fileMap := default, 
+     options := ⟨[(`maxHeartbeats, .ofNat 214920948329)]⟩, 
+     maxHeartbeats := 712467123} {env}
+  IO.println s!"Output written to {outputFile}."

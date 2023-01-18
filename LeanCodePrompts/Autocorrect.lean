@@ -2,6 +2,8 @@ import Lean
 import Lean.Meta
 import LeanCodePrompts.CheckParse
 import LeanCodePrompts.ParseJson
+import Mathlib.Mathport.Rename
+
 open Lean Meta Elab
 
 partial def camelSplitAux (s : String)(accum: List String) : List String :=
@@ -28,11 +30,11 @@ def fullSplit (s : String) : List String :=
 initialize caseNameCache : IO.Ref (HashMap String String) 
   ← IO.mkRef (HashMap.empty)
 
-initialize xNameCache : IO.Ref (HashMap String String) 
-  ← IO.mkRef (HashMap.empty)
+-- initialize xNameCache : IO.Ref (HashMap String String) 
+--   ← IO.mkRef (HashMap.empty)
 
-initialize xxNameCache : IO.Ref (HashMap String String) 
-  ← IO.mkRef (HashMap.empty)
+-- initialize xxNameCache : IO.Ref (HashMap String String) 
+--   ← IO.mkRef (HashMap.empty)
 
 initialize dotNameCache : IO.Ref (HashMap String String) 
   ← IO.mkRef (HashMap.empty)
@@ -52,7 +54,7 @@ def caseNames : MetaM (HashMap String String) := do
   let cache ← caseNameCache.get
   if cache.isEmpty then 
       let jsBlob ← 
-        IO.FS.readFile (System.mkFilePath ["data", "case_dictionary.json"])
+        IO.FS.readFile (← reroutePath <| System.mkFilePath ["data", "case_dictionary.json"])
       let json ← readJson jsBlob
       match json.getArr? with
       | Except.error e => throwError e
@@ -72,35 +74,35 @@ def caseNames : MetaM (HashMap String String) := do
         return m
   else return cache
 
-def xNames : MetaM (HashMap String String) := do
-  let cache ← xNameCache.get
-  if cache.isEmpty then 
-      let lines ← 
-        IO.FS.lines (System.mkFilePath ["data", "x_names.txt"])
-      let mut m : HashMap String String := HashMap.empty
-      for xname in lines do
-        m := m.insert (xname.dropRight 1) xname
-      xNameCache.set m
-      return m
-  else return cache
+-- def xNames : MetaM (HashMap String String) := do
+--   let cache ← xNameCache.get
+--   if cache.isEmpty then 
+--       let lines ← 
+--         IO.FS.lines (← reroutePath <| System.mkFilePath ["data", "x_names.txt"])
+--       let mut m : HashMap String String := HashMap.empty
+--       for xname in lines do
+--         m := m.insert (xname.dropRight 1) xname
+--       xNameCache.set m
+--       return m
+--   else return cache
 
-def xxNames : MetaM (HashMap String String) := do
-  let cache ← xxNameCache.get
-  if cache.isEmpty then 
-      let lines ← 
-        IO.FS.lines (System.mkFilePath ["data", "xx_names.txt"])
-      let mut m : HashMap String String := HashMap.empty
-      for xxname in lines do
-        m := m.insert (xxname.dropRight 2) xxname
-      xxNameCache.set m
-      return m
-  else return cache
+-- def xxNames : MetaM (HashMap String String) := do
+--   let cache ← xxNameCache.get
+--   if cache.isEmpty then 
+--       let lines ← 
+--         IO.FS.lines (← reroutePath <| System.mkFilePath ["data", "xx_names.txt"])
+--       let mut m : HashMap String String := HashMap.empty
+--       for xxname in lines do
+--         m := m.insert (xxname.dropRight 2) xxname
+--       xxNameCache.set m
+--       return m
+--   else return cache
 
 def dotNames : MetaM (HashMap String String) := do
   let cache ← dotNameCache.get
   if cache.isEmpty then 
       let lines ← 
-        IO.FS.lines (System.mkFilePath ["data", "simple_dot_names.txt"])
+        IO.FS.lines (← reroutePath <| System.mkFilePath ["data", "simple_dot_names.txt"])
       let mut m : HashMap String String := HashMap.empty
       for name in lines do
         m := m.insert (name.toLower) name
@@ -112,13 +114,13 @@ def caseName?(s: String) : MetaM (Option String) := do
   let cache ← caseNames
   return cache.find? s
 
-def xName?(s: String) : MetaM (Option String) := do
-  let cache ← xNames
-  return cache.find? s
+-- def xName?(s: String) : MetaM (Option String) := do
+--   let cache ← xNames
+--   return cache.find? s
 
-def xxName?(s: String) : MetaM (Option String) := do
-  let cache ← xxNames
-  return cache.find? s
+-- def xxName?(s: String) : MetaM (Option String) := do
+--   let cache ← xxNames
+--   return cache.find? s
 
 def dotName?(s: String) : MetaM (Option String) := do
 match s.splitOn "." with
@@ -135,7 +137,7 @@ def binNames : IO (Array String) := do
     return cacheStr
   else 
     let all ← 
-      IO.FS.lines (System.mkFilePath ["data", "binport_names.txt"])
+      IO.FS.lines (← reroutePath <| System.mkFilePath ["data", "binport_names.txt"])
     let filtered := all.filter (fun s => s.length > 0)
     let filtered := filtered.toList
     binNamesCache.set filtered.toArray
@@ -158,19 +160,18 @@ def elabPrompts : IO (HashSet String) := do
     return cacheStr
   else 
     let arr ← 
-      IO.FS.lines (System.mkFilePath ["data", "elab_thms.txt"])
+      IO.FS.lines (← 
+       reroutePath <| System.mkFilePath ["data", "elab_thms.txt"])
     return arr.foldl (fun acc n => acc.insert n) HashSet.empty
 
 def isElabPrompt(s: String) : IO Bool := do
   let prompts ← elabPrompts
   return prompts.contains s
 
-def withoutIs : List String → List String
-| x :: ys => if x = "is" || x = "has" then ys else x :: ys
-| [] => []
 
 def withoutIs? : List String → Option (List String)
-| x :: ys => if x = "is" || x = "has" then some ys else none
+| x :: ys => 
+  if x = "is" || x = "has" then some ys else none
 | [] => none
 
 def binNameNoIsMap : IO (HashMap (List String) String) := do
@@ -199,13 +200,23 @@ def binName?(s : String) : MetaM <| Option String := do
                   fun splitNoIs => map.find? splitNoIs))
   return res
 
+def lean4Name?(s: String) : MetaM (Option String) := do
+  let m := Mathlib.Prelude.Rename.getRenameMap (← getEnv)
+  return m.find? s |>.map (fun (_, name) => name.toString)
+
 
 def caseOrBinName?(s : String) : MetaM (Option String) := do
-  let res ← caseName? s
-  if res.isNone then do
-    let res ← binName? s
-    return res
-  else return res
+  match ← lean4Name? s with
+  | some name => return some name
+  | none => do
+    let res ← caseName? s
+    if res.isNone then do
+      let res ← binName? s
+      return res
+    else return res
+
+-- #eval lean4Name? "has_abs"
+
 
 def identErr (err: String) : Option String :=
   let head := "unknown identifier '"
@@ -354,7 +365,7 @@ def identMappedFunStx (s: String)
 def polyIdentMappedFunStx (s: String)
     (transf : String → MetaM (Option String) := caseOrBinName?)
     (extraTransf : List (String → MetaM (Option String)) 
-        := [xName?, xxName?])
+        := [])
     (opens: List String := [])(limit : Option Nat := none)  : MetaM (Except String (List String)) := do
     let corr?  ← identThmSegments s opens
     match corr? with
@@ -384,7 +395,7 @@ def elabFuncTyp (funTypeStr : String) (levelNames : List Lean.Name := levelNames
 def polyElabThmTrans (s : String)(limit : Option Nat := none)
   (transf : String → MetaM (Option String) := caseOrBinName?)
   (extraTransf : List (String → MetaM (Option String))
-        := [xName?, xxName?])
+        := [])
   (opens: List String := []) 
   (levelNames : List Lean.Name := levelNames)
   : TermElabM <| Except String (List (Expr × Syntax × String)) := do
@@ -403,7 +414,7 @@ def polyElabThmTrans (s : String)(limit : Option Nat := none)
 def elabThmTrans? (s : String)(limit : Option Nat := none)
   (transf : String → MetaM (Option String) := caseOrBinName?)
   (extraTransf : List (String → MetaM (Option String))
-        := [xName?, xxName?])
+        := [])
   (opens: List String := []) 
   (levelNames : List Lean.Name := levelNames)
   : TermElabM <| (Option (Expr × Syntax × String)) := do
@@ -419,7 +430,7 @@ def elabThmTrans? (s : String)(limit : Option Nat := none)
 def polyStrThmTrans (s : String)
   (transf : String → MetaM (Option String) := caseOrBinName?)
   (extraTransf : List (String → MetaM (Option String))
-        := [xName?, xxName?])
+        := [])
   (opens: List String := []) 
   : TermElabM (List String) := do
   match ← polyIdentMappedFunStx s transf extraTransf opens with

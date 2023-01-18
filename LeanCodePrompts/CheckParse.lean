@@ -3,14 +3,9 @@ import Lean.Meta
 import Lean.Elab
 import Lean.Parser
 import Lean.Parser.Extension
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Init.Set
-import LeanCodePrompts.Basic
 import LeanCodePrompts.Utils
-open Lean Meta Elab Parser Mathlib Set Tactic
+open Lean Meta Elab Parser  Tactic
  
-def s : Set Nat := fun _ => true
--- #check s ∩ s
 
 def depsPrompt : IO (Array String) := do
   let file ← reroutePath <| System.mkFilePath ["data/types.txt"]
@@ -29,41 +24,6 @@ instance : Coe (Syntax) (TSyntax n) where
 
 instance : Coe (Array Syntax) (Array (TSyntax n)) where
   coe := Array.map Coe.coe
-
-syntax "λ" ident "," term : term
-syntax "λ"  ident ":" term  "," term : term
-syntax "fun" ident "," term : term
-syntax "fun"  ident ":" term  "," term : term
-syntax "λ" "_" "," term : term
-syntax "λ" typed_ident* "," term : term
-syntax "Π"  ident ":" term  "," term : term
-syntax "Π" "(" ident ":" term ")" "," term : term
-syntax "⇑" term : term
-syntax "Type*" : term
-syntax "Sort*" : term
-macro_rules
-| `(λ $x:ident, $y:term) => `(fun $x => $y)
-| `(λ $x:ident : $type:term , $y:term) => 
-  `(fun ($x : $type)  => $y)
-| `(λ $xs:typed_ident* , $y) =>
-   Array.foldrM (fun x acc => `(fun $x => $acc)) y xs
-| `(fun $x:ident : $type:term , $y:term) => 
-  `(fun ($x : $type)  => $y)
-| `(λ _ , $y:term) => 
-  `(fun _  => $y)
-| `(Π $x:ident : $type:term , $y:term) => 
-  `(($x : $type) →  $y)
-| `(Π ( $x:ident : $type:term ) , $y:term) => 
-  `(($x : $type) →  $y)
--- | `(⇑ $x:term) => `(↑ $x)
-| `(Type*) => `(Type _)
-| `(Sort*) => `(Sort _)
-
-macro x:term "*" y:term "*" z:term : term => do
-  `(($x * $y) * $z)
-
-elab "ℝ" : term => do
-  return mkConst `Real
 
 /-- check whether a string parses as a term -/
 def checkTerm (s : String) : MetaM Bool := do
@@ -129,7 +89,7 @@ def getTokens (s: String) : MetaM <| Array String := do
       pure <| tokens stx
   | Except.error _  => pure Array.empty
 
-#eval getTokens "{α : Type u} [group α] [has_lt α] [covariant_class α α (function.swap has_mul.mul) has_lt.lt] {a : α} : 1 < a⁻¹ ↔ a < 1"
+-- #eval getTokens "{α : Type u} [group α] [has_lt α] [covariant_class α α (function.swap has_mul.mul) has_lt.lt] {a : α} : 1 < a⁻¹ ↔ a < 1"
 
 
 /-- split prompts into those that parse -/
@@ -320,7 +280,7 @@ def groupThmsSortCore(ss: Array String)(opens: List String := [])
 
 -- #eval checkTerm "a • s"
 
-#eval checkTerm "λ x : Nat, x + 1"
+-- #eval checkTerm "λ x : Nat, x + 1"
 
 -- #eval checkTerm "a - t = 0"
 
@@ -353,7 +313,7 @@ def tryParseThm (s : String) : MetaM String := do
 
 -- #eval tryParseThm "theorem blah (n : Nat) {m: Type} : n  = n"
 
-#eval elabThm "(p: Nat)/-- blah test -/ theorem  (n : Nat) {m: Type} : n  = p"
+-- #eval elabThm "(p: Nat)/-- blah test -/ theorem  (n : Nat) {m: Type} : n  = p"
 
 def eg :=
 "section 
@@ -361,7 +321,7 @@ variable (α : Type) {n : Nat}
 /-- A doc that should be ignored -/
 theorem blah (m: Nat) : n  = m "
 
-#eval checkThm eg
+-- #eval checkThm eg
 
 -- #eval checkThm "(n : Nat) {m: Type} : n  = n"
 
@@ -423,13 +383,13 @@ def checkElabThm (s : String) : TermElabM String := do
 
 -- #eval checkElabThm "theorem blah (n : Nat) {m : Nat} : n  = m"
 
-#eval checkElabThm eg
+-- #eval checkElabThm eg
 
 -- #eval checkElabThm "theorem subfield.list_sum_mem {K : Type u} [field K] (s : subfield K) {l : list K} : (∀ (x : K), x ∈ l → x ∈ s) → l.sum ∈ s"
 
-#eval elabThm "theorem blah (n : Nat) {m : Nat} : n  = m" 
+-- #eval elabThm "theorem blah (n : Nat) {m : Nat} : n  = m" 
 
-#eval elabThm "theorem (n : Nat) {m : Nat} : n  = m"
+-- #eval elabThm "theorem (n : Nat) {m : Nat} : n  = m"
 
 -- #eval elabThm "theorem blah (n : Nat) {m : Nat} : n  = succ n" ["Nat"]
 

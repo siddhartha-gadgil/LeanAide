@@ -20,12 +20,12 @@ def main : IO Unit := do
   let file := System.mkFilePath ["data/lib4_outputs.txt"]
   let lines ← IO.FS.lines file
   IO.println "loaded file"
-  initSearchPath (← Lean.findSysroot) ["build/lib", "lean_packages/mathlib/build/lib/", "lean_packages/lean3port/build/lib/", "lean_packages/mathlib3port/build/lib/", "lean_packages/std/build/lib/", "lean_packages/Qq/build/lib/", "lean_packages/aesop/build/lib/" ]
+  initSearchPath (← Lean.findSysroot) ["build/lib", "lake-packages/mathlib/build/lib/",  "lake-packages/std/build/lib/", "lake-packages/Qq/build/lib/", "lake-packages/aesop/build/lib/" ]
   let env ← 
     importModules [{module := `Mathlib},
     {module := `LeanCodePrompts.Basic},
     {module:= `LeanCodePrompts.CheckParse},
-    {module := `Mathbin.All}] {}
+    {module := `Mathlib}] {}
   IO.println s!"enviroment loaded: {(← IO.monoMsNow) - initTime}ms"
   let mut count := 0
   let mut failures := 0
