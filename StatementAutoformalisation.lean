@@ -1,4 +1,5 @@
-import CodeAction.Declaration
+import CodeAction.ShowTerm
+import StatementAutoformalisation.Declaration
 
 open Lean Meta in
 def checks : Array (Environment → Name → Bool) :=
