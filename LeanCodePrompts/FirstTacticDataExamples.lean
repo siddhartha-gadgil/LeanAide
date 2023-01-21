@@ -520,3 +520,7 @@ end Fintype
 #eval getTheoremsTactics egBugFile
 
 #eval partialParser (categoryParser `theoremAndTactic 0) egBugFile
+
+#eval (egFile.splitOn "by").tailD []|>.length
+
+#eval parseTacticBlocks egFile

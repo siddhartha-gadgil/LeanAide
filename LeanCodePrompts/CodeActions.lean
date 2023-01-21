@@ -136,6 +136,3 @@ example : 1 = 1 := by
   simp
 -/
 
-
-/-- There are infinitely many odd numbers -/
-example : ∀ (n : ℕ), ∃ m, m > n ∧ m % 2 = 1 := sorry

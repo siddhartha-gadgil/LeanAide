@@ -11,85 +11,35 @@ export LEANAIDE_IP="34.100.184.111:5000"
 export OPENAI_API_KEY=<your-open-ai-key>
 ```
 
-Build this repository with the following commands
+Build this repository with the following commands:
 
 ```bash
 lake build mathlib
 lake build
 ```
 
+Before the first command, it is advisable to download prebuilt `mathlib` binaries by running:
+
+```bash
+lake exe cache get
+```
+
+though this is not guaranteed to work. If it does not work, you can delete the `build` directory and build `mathlib` from source by running `lake build mathlib` instead.
+
+
 After this open the folder in VS code (or equivalent) with Lean 4 and go to the file `LeanCodePrompts/TranslateExample.lean`. Place the cursor anywhere on one of the comments below and invoke the _code action_ to translate by clicking on the _lightbulb_ or using `ctrl-.`
 
-You can add your own comments and try to translate using the same method. In general, you can `import LeanCodePrompts.CodeActions` in a lean file and use the code-action to translate. You should usually also include `import Mathbin.All` to include the (partly broken) binary port of `mathlib`. 
+You can add your own comments and try to translate using the same method. In general, you can `import LeanCodePrompts.CodeActions` in a lean file and use the code-action to translate. You should usually also include `import Mathlib` to include `mathlib`. 
 
-In case translation fails please look at the troubleshooting section below and/or message us on the Lean 4 Zulip.
-
-To use in your own project, it should suffice to include this project as a dependency in `lakefile.lean` using the following (but this has not been tested).
+To use in your own project, include this project as a dependency in `lakefile.lean` using the following.
 
 ```lean
 require LeanCodePrompts from git "https://github.com/siddhartha-gadgil/LeanAide"
 ```
 
+If you import `LeanAide` and `Mathlib` to a file, the code-action will be available, as in the [example](https://github.com/siddhartha-gadgil/proofs-and-programs-2023/blob/main/PnP2023/Extras/LeanTimes.lean).
+
 A version of the same tool for `Lean3` is available [here](https://github.com/0art0/lean3-statement-translation-tool).
-
-## Full setup instructions
-
-The main code we use is in `Lean 4`. It also needs some Python code and some Python embedding data to be generated (embeddings are precomputed for efficiency). You can bypass the Python setup by using the server we host by configuring as above.
-
-### Lean Setup
-
-The following sequences of commands should suffice for building the lean code.
-
-* `lake build mathlib`
-* `lake build`
-
-### Troubleshooting
-
-The present configuration seems to work reliably with the above instructions. If the above does not suffice, running the following command may be needed.
-
-* `lake build mathlib3port`
-
-However, since there are compatibility issues in the porting of `Lean`, if the above does not work one may have to do some combination of the following:
-
-* change the directory to `lean_packages/mathlib` and run `lake build` from there.
-* change the directory to `lean_packages/mathlib3port` and run lake build from there.
-* change the directory to `lean_packages/mathlib3port` and run lake build from there after deleting the subdirectory `lean_packages` (i.e., the directory `lean_packages/mathlib3port/lean_packages` relative to the base of this repository).
-* Rerun `lake build`.
-
-### Python Setup
-
-Some Python code is needed for the prompt engineering. The following installation steps may be needed before running (you may need to use `pip3` instead of `pip`, or even setup a new virtual environment).
-
-```bash
-pip install -r web_serv/requirements.txt
-```
-
-In addition, embeddings for mathlib prompts are precomputed. To do this, from the base directory, run the following.
-
-```bash
-python setup.py
-```
-
-Hopefully this should complete the setup. If not please ask the maintainers for help (the setup has not been thoroughly tested).
-
-### Running
-
-The Lean code assumes that a Python server is running. To start this, from the base directory run the following.
-
-```bash
-cd web_serv
-flask run
-```
-
-Alternatively, to use a production wsgi server, run the following from the base directory.
-
-```bash
-cd web_serv
-gunicorn -b :5000 wsgi:app
-```
-
-
-Then open `code` from the base directory. Navigate to the file `TranslateExample.lean`. Place the cursor to the end of one of the comments below and invoke the _code action_ to translate by clicking on the _lightbulb_ or using `ctrl-.`
 
 ## Elaboration using a docker container
 
@@ -105,6 +55,8 @@ sudo docker run sgadgil00/leanaide-elaborator:latest '(p q :  ℕ ) -> (h : nat.
 ```
 
 Observe the statement can either consist of arguments followed by the claim (technically a `type`) or just be a claim (`type`). Further, mathlib terms are converted to their Lean 4 equivalents.
+
+__Note:__ The docker container corresponds to the code in the git tag `data_binport` in this repository. This is because the statements are checked using the binary port of mathlib. The binary port has degraded during the porting process but the actual port (mathlib4) has not reached parity with the snapshot of the binary port at that tag.  
 
 ## Contributions and details
 

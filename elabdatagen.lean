@@ -11,14 +11,14 @@ set_option compiler.extract_closed false
 def main (args: List String) : IO Unit := do
   let start? := (args.get? 0).bind (fun x => x.toNat?)
   let size? := (args.get? 1).bind (fun x => x.toNat?)
-  initSearchPath (← Lean.findSysroot) ["build/lib", "lean_packages/mathlib/build/lib/", "lean_packages/lean3port/build/lib/", "lean_packages/mathlib3port/build/lib/", "lean_packages/std/build/lib/", "lean_packages/Qq/build/lib/", "lean_packages/aesop/build/lib/" ]
+  initSearchPath (← Lean.findSysroot) ["build/lib", "lake-packages/mathlib/build/lib/",  "lake-packages/std/build/lib/", "lake-packages/Qq/build/lib/", "lake-packages/aesop/build/lib/" ]
   let env ← 
     importModules [{module := `Mathlib},
     {module := `LeanCodePrompts.Basic},
     {module:= `LeanCodePrompts.CheckParse},
     {module:= `LeanCodePrompts.ParseJson},
     {module:= `LeanCodePrompts.Translate},
-    {module := `Mathbin.All}] {}
+    {module := `Mathlib}] {}
   let core := elabThmSplitCore start? size?
   let io? := 
     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} 

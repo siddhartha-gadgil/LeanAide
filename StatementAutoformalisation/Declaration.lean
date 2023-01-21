@@ -29,16 +29,17 @@ deriving Inhabited, Repr
 open Lean in
 /-- Convert a `ConstantInfo` in the environment into a `Declaration`. 
   This is used to extract `Declaration`s from the environment by their name. -/
-def Declaration.fromConstantInfo (ci : ConstantInfo) : MetaM <| _root_.Declaration := do
+def Declaration.fromConstantInfo (ci : ConstantInfo) (extractValue? := false) : MetaM <| _root_.Declaration := do
   let type ← Format.pretty <$> PrettyPrinter.ppExpr ci.type
-  let value? : Option String ← ci.value?.mapM <| Functor.map Format.pretty ∘ PrettyPrinter.ppExpr
   return {
     kind := ci.kind?.getD "def",
     name := ci.name.toString,
     openNamespaces := #[]
     args := "",
     type := type,
-    value := value?.getD "sorry"
+    value := (if extractValue? then 
+      ← ci.value?.mapM <| Functor.map Format.pretty ∘ PrettyPrinter.ppExpr 
+              else none).getD "sorry"
   }
 
 open Lean in
@@ -149,14 +150,15 @@ def DeclarationWithDocstring.fromJson (kind : String := "theorem") (data : Lean.
   return ⟨decl, docstr⟩
 
 /-- Convert a `Declaration` to a `JSON` object. -/
-def Declaration.toJson (decl : Declaration) : Lean.Json := .mkObj [
+def Declaration.toJson (decl : Declaration) (verbose? := false) : Lean.Json := .mkObj <| ([
   ("kind", decl.kind),
   ("name", decl.name.getD ""),
-  ("open_namespaces", .arr <| decl.openNamespaces.map .str),
   ("args", decl.args),
-  ("type", decl.type),
+  ("type", decl.type)
+] : List (String × Lean.Json)) ++ if verbose? then [
+  ("open_namespaces", Lean.Json.arr <| decl.openNamespaces.map .str),
   ("value", decl.value)
-]
+] else []
 
 /-- Convert a `DeclarationWithDocstring` to a `JSON` object. -/
 def DeclarationWithDocstring.toJson : DeclarationWithDocstring → Lean.Json

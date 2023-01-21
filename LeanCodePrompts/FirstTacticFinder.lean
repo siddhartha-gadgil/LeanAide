@@ -11,7 +11,7 @@ def getTacticString : TacticM String := do
   let s ← saveState
   let target ← getMainTarget
   let lctx ←  getLCtx
-  let decls := lctx.decls
+  let decls := lctx.decls.toList.tail!
   let mut statement := ""
   for decl in decls do
     match decl with
@@ -65,21 +65,21 @@ elab "show_goal" : tactic =>
     logInfo view
     return ()
 
-def silly {α  : Type}(n m : ℕ)[DecidableEq α] : n + m = n + m := by 
+def silly {α  : Type}(n m : Nat)[DecidableEq α] : n + m = n + m := by 
     show_goal
     let a  := n
-    let h : a = a := rfl
+    let _ : a = a := rfl
     show_goal
     rfl
 
 
-def silly' : (n m : ℕ)  →  n + m = n + m := by
+def silly' : (n m : Nat)  →  n + m = n + m := by
     intros
     show_goal  
     rfl
     done
 
-example : (n m : ℕ)  →  n + m = n + m := by
+example : (n m : Nat)  →  n + m = n + m := by
     intros
     name_inacessibles  
     rfl
@@ -154,7 +154,7 @@ def firstEffectiveTactic (tacStrings: List String)(warnOnly: Bool := Bool.true) 
               match s₁?, s₂? with
               | some s₁, some s₂ => equalStates s₁ s₂          
               | _,_ => pure Bool.true
-            catch e =>
+            catch _ =>
               -- logWarning 
                 -- m!"Failed to check state after {tacString}; error : {e.toMessageData}" 
               pure Bool.true
@@ -172,7 +172,7 @@ def firstEffectiveTactic (tacStrings: List String)(warnOnly: Bool := Bool.true) 
               else
                 logInfo m!"tactic `{tacString}` was effective"
                 return 
-      | Except.error e => 
+      | Except.error _ => 
         pure ()
     catch _ =>
       s.restore
@@ -186,15 +186,15 @@ elab "first_effective_tactic" : tactic =>
     firstEffectiveTactic ["unparsable", "exact blah", "intros", "rfl"]
 
 -- proved by reflexivity
-def silly'' (n m : ℕ)  : n + m = n + m := by
+def silly'' (n m : Nat)  : n + m = n + m := by
     intros -- legal but no effect
     first_effective_tactic
 
-def silly''' : (n m : ℕ)  →  n + m = n + m := by
+def silly''' : (n m : Nat)  →  n + m = n + m := by
     first_effective_tactic 
     rfl
 
-def silly'''' : (n m : ℕ)  →  n + m = n + m := by
+def silly'''' : (n m : Nat)  →  n + m = n + m := by
     repeat (first_effective_tactic)
 
 def getTacticPrompts(s: String)(numSim : Nat)
@@ -204,7 +204,7 @@ def getTacticPrompts(s: String)(numSim : Nat)
         ("field", "core-prompt"),
         ("core-prompt", s),
         ("n", numSim),
-        ("model_name", "all-MiniLM-L6-v2")
+        ("model_name", "all-mpnet-base-v2")
       ]
       let simJsonOut ←   
         IO.Process.output {cmd:= "curl", args:= 
@@ -230,7 +230,7 @@ def getTacticPrompts(s: String)(numSim : Nat)
         | Except.error e => 
             throwError m!"Failed to parse json: {e}"
 
-def fourSquaresPrompt := ": ∀ p : ℕ, Prime p → (p % 4 = 1) → ∃ a b : ℕ, a ^ 2 + b ^ 2 = p"
+def fourSquaresPrompt := ": ∀ p : Nat, Prime p → (p % 4 = 1) → ∃ a b : Nat, a ^ 2 + b ^ 2 = p"
 
 -- #eval getTacticPrompts fourSquaresPrompt 20 
 
@@ -278,7 +278,9 @@ elab "aide!" : tactic =>
     let tacStrings := tacStrings.filter (fun s => s != "sorry" && s != "admit")
     firstEffectiveTactic tacStrings Bool.false
 
-macro "aide" : tactic => `(checkpoint aide?)
+macro "aide" : tactic => 
+  `(tactic| aide? ; save)
+
 
 elab "show_tactic_prompt" : tactic => 
   withMainContext do  
@@ -303,9 +305,6 @@ def lookaheadTactics (ss: List String) : List String :=
     ss.map (fun s => s!"({s} <;> (lookahead aide!)) ; done") ++
     ss.map (fun s => s!"{s} <;> (lookahead aide!)") ++ 
     ss
-
-example : 1 = 1 := by
-  (rfl <;> skip) ; done
 
 example : 1 = 1 := by
   lookahead rfl

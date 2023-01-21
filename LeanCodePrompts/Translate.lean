@@ -10,32 +10,22 @@ open Lean Meta
 
 open Lean Elab Parser Command
 
+def fileName := "data/safe_prompts.json"
+
 /-- extract prompt pairs from JSON response to local server -/
-def sentenceSimPairs(s: String)(theoremField: String := "theorem") : MetaM  <| Except String (Array (String × String)) := do
-  let json ← readJson (s) 
-  -- logInfo "obtained json"
-  match json.getArr? with
-  | Except.ok jsonArr => do
-    let pairs ←  jsonArr.mapM fun json => do
-      let docstring : String ←  
-        match (json.getObjVal? "doc_string") with
-        | Except.error e => throwError s!"Error {e} while getting doc_string"
-        | Except.ok js => 
-          match js.getStr? with
-          | Except.error e => throwError s!"Error {e} while processing {js} as string"  
-          | Except.ok s => pure s
-      -- logInfo s!"theorem-field: {json.getObjVal? theoremField}"
-      -- logInfo s!"theorem: {json.getObjVal? "theorem"}"
-      let thm ←  match (json.getObjVal? theoremField) with
-        | Except.error e => throwError s!"Error {e} while getting theorem"
-        | Except.ok js => 
-          match js.getStr? with
-          | Except.error e => throwError s!"Error {e} while processing {js} as string"  
-          | Except.ok s => pure s
-      return (docstring, thm)
-    -- logInfo m!"pairs: {pairs}"
-    return Except.ok pairs
-  | Except.error e => return Except.error e
+def sentenceSimPairs
+  (s: String)
+  (theoremField : String := "theorem")
+   : MetaM  <| Except String (Array (String × String)) := do
+  let json ← readJson s
+  return do
+    (← json.getArr?).mapM <| fun j => do
+      let docstring ← j.getObjValAs? String "doc_string" 
+      let typeField := 
+        if fileName ∈ ["data/mathlib4-prompts.json"] then "type"
+        else theoremField
+      let thm ← j.getObjValAs? String typeField
+      pure (docstring, thm) 
 
 -- #eval sentenceSimPairs egSen
 
@@ -157,7 +147,7 @@ def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
     (scoreBound: Float)(matchBound: Nat)
    : TermElabM (Array (String × String) × IO.Process.Output) := do
       let jsData := Json.mkObj [
-        ("filename", "data/safe_prompts.json"),
+        ("filename", fileName),
         ("field", "doc_string"),
         ("doc_string", s),
         ("n", numSim),
@@ -188,10 +178,11 @@ def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
           (pairs ++ kwPairs).toList.eraseDups.toArray, simJsonOut)
 
 /-- choosing pairs to build a prompt -/
-def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := "doc_string")(theoremField : String := "theorem")
+def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := "doc_string")
+    (theoremField : String := "theorem")
    : TermElabM (Array (String × String) × IO.Process.Output) := do
       let jsData := Json.mkObj [
-        ("filename", "data/safe_prompts.json"),
+        ("filename", fileName),
         ("field", field),
         (field, s),
         ("n", numSim),
@@ -429,8 +420,8 @@ def jsonStringToExprStrArray (jsString: String) : TermElabM (Array String) := do
   catch _ =>
     pure #[jsString]
 
-#eval jsonStringToExprStrArray "simple"
-#eval jsonStringToExprStrArray "[\"simple\", \"simple2\"]"
+-- #eval jsonStringToExprStrArray "simple"
+-- #eval jsonStringToExprStrArray "[\"simple\", \"simple2\"]"
 
 
 /-- given json returned by open-ai obtain the best translation -/

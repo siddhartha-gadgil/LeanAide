@@ -66,7 +66,7 @@ def readJson(s: String) : MetaM Json := do
   -- logInfo "got syntax"
   parseJsonSyntax stx
 
-#eval readJson "[{hello: 1}, [2, 3], {\"x\": 3}]"
+-- #eval readJson "[{hello: 1}, [2, 3], {\"x\": 3}]"
 
 
 def checkRead: MetaM Json := do 
@@ -74,7 +74,7 @@ def checkRead: MetaM Json := do
   let s ← IO.FS.readFile file 
   readJson s
 
-#eval checkRead
+-- #eval checkRead
 
 def readJsonCore(s: String) : CoreM Json :=
     (readJson s).run'
