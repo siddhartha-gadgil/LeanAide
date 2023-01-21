@@ -72,4 +72,8 @@ open Lean
 def main : IO Unit := do
   initSearchPath (← Lean.findSysroot) ["build/lib", "lake-packages/mathlib/build/lib/",  "lake-packages/std/build/lib/", "lake-packages/Qq/build/lib/", "lake-packages/aesop/build/lib/" ]
   let env ← importModules [{module := `Mathlib}] {}
-  Prod.fst <$> generatePrompts.toIO {fileName := "", fileMap := default} {env := env}
+    Prod.fst <$> generatePrompts.toIO 
+    {fileName := "", 
+     fileMap := default, 
+     options := ⟨[(`maxHeartbeats, .ofNat 214920948329)]⟩, 
+     maxHeartbeats := 712467123} {env}
