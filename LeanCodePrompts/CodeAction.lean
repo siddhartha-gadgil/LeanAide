@@ -55,8 +55,12 @@ def Syntax.extractComment : Syntax → Option String
   let source := text.source
 
   -- the current position in the text document
-  let pos : String.Pos := text.lspPosToUtf8Pos params.range.end
-  let comment? := nearestComment? source pos
+  let lspPos : Lsp.Position := params.range.end
+  -- The position from which to start searching for a comment (by default, five lines above the given position)
+  let lspBeginPos : Lsp.Position := ⟨lspPos.line - 5, 0⟩
+  let pos : String.Pos := text.lspPosToUtf8Pos lspPos
+  let beginPos : String.Pos := text.lspPosToUtf8Pos lspBeginPos
+  let comment? := nearestComment? source pos beginPos
 
   let edit : IO TextEdit := do
     let some ⟨start, stop⟩ := comment? | throw $ IO.userError "No input found."
