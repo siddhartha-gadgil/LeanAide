@@ -1,4 +1,6 @@
 import Lean
+import Mathlib.Tactic.Basic
+import Aesop
 
 open Lean Meta Elab Parser Tactic Term
 
@@ -104,3 +106,14 @@ end Test
 #check Tactic.Cache
 #check InfoTree.goalsAt?
 #check ContextInfo
+
+set_option tactic.simp.trace true
+-- set_option trace.Elab.definition.structural true
+-- set_option pp.analyze true
+
+-- macro "simp" args:Std.Tactic.simpTraceArgsRest : tactic => `(tactic| simp? $args) 
+macro "aesop" args:Aesop.tactic_clause* : tactic => `(tactic| aesop? $args:Aesop.tactic_clause*)
+
+declare_aesop_rule_sets [test]
+
+example : a + 0 = a := by dsimp
