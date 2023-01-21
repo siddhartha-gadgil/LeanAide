@@ -15,14 +15,14 @@ def String.Range.expand : String.Range → Nat → String.Range
   | ⟨start, stop⟩, i => ⟨start - ⟨i⟩, stop + ⟨i⟩⟩
 
 /-- Finds the comment or doc-string in the source nearest to the given position. -/
-partial def nearestComment (source : String) 
+partial def nearestComment? (source : String) 
   (pos : String.Pos) (start : String.Pos := ⟨0⟩) : Option String.Range := do
     guard $ start ≤ pos
     let firstCommentRange ← findFirstComment? source start
     if (firstCommentRange.expand 2).contains pos then
       some firstCommentRange
     else
-      nearestComment source pos (source.next firstCommentRange.stop)
+      nearestComment? source pos (source.next firstCommentRange.stop)
   where findFirstComment? (source : String) (init : String.Pos) : Option String.Range := do
     let start ← (String.Iterator.mk source init).findFirst? "/-"
     let stop ← (String.Iterator.mk source start).findFirst? "-/"
@@ -54,10 +54,12 @@ def Syntax.extractComment : Syntax → Option String
   let text := doc.meta.text
   let source := text.source
 
+  -- the current position in the text document
+  let pos : String.Pos := text.lspPosToUtf8Pos params.range.end
+  let comment? := nearestComment? source pos
+
   let edit : IO TextEdit := do
-    -- the current position in the text document
-    let pos : String.Pos := text.lspPosToUtf8Pos params.range.end
-    let some ⟨start, stop⟩ := nearestComment source pos | throw $ IO.userError "No input found."
+    let some ⟨start, stop⟩ := comment? | throw $ IO.userError "No input found."
     return {
     range := ⟨text.leanPosToLspPos <| text.toPosition start, text.leanPosToLspPos <| text.toPosition stop⟩
     newText := ← do
@@ -79,7 +81,13 @@ def Syntax.extractComment : Syntax → Option String
       return formatAsTheorem stmt? translation
   }
 
-  let ca : CodeAction := { title := "Translate theorem docstring to Lean code", kind? := "quickfix" }
+  let ca : CodeAction := { 
+    title := "Translate theorem docstring to Lean code", 
+    kind? := "quickfix", 
+    disabled? := 
+      match comment? with
+        | .some _ => none
+        | .none => some ⟨"No nearby comments available."⟩ }
   return #[{ eager := ca, lazy? := some $ return {ca with edit? := WorkspaceEdit.ofTextEdit params.textDocument.uri $ ← edit} }]
 where
   formatAsTheorem : Option String → String → String
