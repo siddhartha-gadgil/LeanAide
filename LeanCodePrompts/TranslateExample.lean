@@ -1,6 +1,6 @@
 import Mathlib
 import LeanCodePrompts.Translate
-import LeanCodePrompts.CodeActions
+import LeanCodePrompts.CodeAction
 
 /-!
 # Translation demo

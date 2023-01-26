@@ -1,3 +1,3 @@
 import LeanCodePrompts.FirstTacticFinder
 import LeanCodePrompts.Translate
-import LeanCodePrompts.CodeActions
+import LeanCodePrompts.CodeAction
