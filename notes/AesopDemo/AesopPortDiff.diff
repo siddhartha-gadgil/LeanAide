@@ -1,0 +1,16 @@
+theorem rel_iff {x y z w : α} : (x, y) ≈ (z, w) ↔ x = z ∧ y = w ∨ x = w ∧ y = z :=
+-  by
+-  constructor <;> intro h
+-  · cases h <;> simp
+-  · cases h <;> rw [h.1, h.2]
+-    constructor
++  by aesop (rule_sets [Sym2]) (add norm unfold [HasEquiv.Equiv, Setoid.r])
+
+
+-    rintro ⟨rfl | rfl, rfl | rfl⟩ <;> try trivial <;> simp only [Sym2.eq_swap]
++    aesop
+
+
+-    cases hx <;> cases hy <;> cases hx' <;> cases hy' <;> subst_vars
+-    rw [Sym2.eq_swap]
++    aesop

@@ -22,6 +22,9 @@ lean_lib StatementAutoformalisation {
 lean_lib CodeAction {
 }
 
+lean_lib notes {
+}
+
 lean_exe datagen{
   supportInterpreter := true
 }
