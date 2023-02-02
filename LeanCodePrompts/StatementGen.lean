@@ -98,6 +98,7 @@ def getContinuationExprs (s: String)(context: String := "")(numSim : Nat:= 10)(n
       else pure (#[], ⟨0, "", ""⟩)
     let pairs := if includeFixed then pairs ++ fixedPrompts else pairs 
     let prompt := makeThmsPrompt pairs context
+    trace[Translate.info] m!"prompt: \n{prompt}"
     mkLog prompt
     let fullJson ← openAIQuery prompt queryNum temp
     let outJson := 
@@ -116,6 +117,7 @@ def getDocContinuationExprs (s: String)(numSim : Nat:= 10)(numKW: Nat := 1)(incl
       else pure (#[], ⟨0, "", ""⟩)
     let pairs := if includeFixed then pairs ++ fixedPrompts else pairs 
     let prompt := makeDocsThmsPrompt pairs 
+    trace[Translate.info] m!"prompt: \n{prompt}"
     mkLog prompt
     let fullJson ← openAIQuery prompt queryNum temp #[":="]
     let outJson := 
@@ -133,6 +135,7 @@ def getSectionContinuationExprs (s: String)(context: String)(numSim : Nat:= 10)(
     let (triples, IOOut) ←  
         getPromptTriples s numSim  
     let prompt := makeSectionPrompt triples context
+    trace[Translate.info] m!"prompt: \n{prompt}"
     mkLog prompt
     let fullJson ← openAIQuery prompt queryNum temp #[":="]
     let outJson := 
