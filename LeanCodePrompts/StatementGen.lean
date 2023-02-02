@@ -154,7 +154,7 @@ def showContinuationExprs (s: String)(context: String := "")(numSim : Nat:= 10)(
   exprs.mapM (fun s => do
     let exps? ← polyElabThmTrans (context ++ " " ++ s)
     let exps := exps?.toOption.getD []
-    return (s!"theorem {context} {s} := sorry",exps.map (fun (_, s) => s))
+    return (s!"theorem {context} {s} := sorry",exps.map (fun (_, s) => s.2))
   )
 
 def showDocContinuationExprs (s: String)(numSim : Nat:= 10)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 20)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Array (String × (List String)) := do
@@ -163,7 +163,7 @@ def showDocContinuationExprs (s: String)(numSim : Nat:= 10)(numKW: Nat := 1)(inc
   exprs.mapM (fun s => do
     let exps? ← polyElabThmTrans (s)
     let exps := exps?.toOption.getD []
-    return (s, exps.map (fun (_, s) => s))
+    return (s, exps.map (fun (_, s) => s.2))
   )
 
 def showSectionContinuationExprs (s: String)(context: String := "")(numSim : Nat:= 10)(queryNum: Nat := 16)(temp : JsonNumber := ⟨8, 1⟩) : TermElabM <| Array (String × (List String)) := do
@@ -172,5 +172,5 @@ def showSectionContinuationExprs (s: String)(context: String := "")(numSim : Nat
   exprs.mapM (fun s => do
     let exps? ← polyElabThmTrans (s)
     let exps := exps?.toOption.getD []
-    return (s, exps.map (fun (_, s) => s))
+    return (s, exps.map (fun (_, s) => s.2))
   )
