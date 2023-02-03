@@ -10,27 +10,6 @@ def showSyntax (s: String) : MetaM <| Syntax × String := do
     | Except.error e => throwError e
     | Except.ok s => pure (s, s.reprint.get!)
     
-
-partial def Lean.Syntax.terms (stx: Syntax)(depth?: Option ℕ := none) : List <| String × ℕ :=
-    if depth? = some 0 then
-        []
-    else
-    match stx with
-    | Syntax.node _ k args => 
-        let head? : Option String := do 
-            if 
-                (`Lean.Parser.Term).isPrefixOf k ||
-                k.components.head!.toString.startsWith "«term_" 
-            then
-                ← stx.reprint
-            else
-                none
-        match head? with
-        | some head => (head.trim, 0) :: (args.map (terms · (depth?.map (· -1))) |>.toList.join.map (fun (s, m) => (s, m + 1)))
-        | none => args.map (terms · (depth?.map (· -1))) 
-            |>.toList.join.map (fun (s, m) => (s, m + 1))
-    | _ => []
-
 partial def Lean.Syntax.kinds (stx: Syntax)(depth?: Option ℕ := none) : List String :=
     if depth? = some 0 then
         []
@@ -58,6 +37,26 @@ partial def Lean.Syntax.idents (stx: Syntax)(depth? : Option ℕ := none) : List
         else []
     | _ => []
 
+partial def Lean.Syntax.terms (stx: Syntax)(depth?: Option ℕ := none) : List <| String × ℕ × List Name :=
+    if depth? = some 0 then
+        []
+    else
+    match stx with
+    | Syntax.node _ k args => 
+        let head? : Option String := do 
+            if 
+                (`Lean.Parser.Term).isPrefixOf k ||
+                k.components.head!.toString.startsWith "«term_" 
+            then
+                ← stx.reprint
+            else
+                none
+        match head? with
+        | some head => (head.trim, 0, stx.idents.map (·.1)) :: (args.map (terms · (depth?.map (· -1))) |>.toList.join.map (fun (s, m, l) => (s, m + 1, l)))
+        | none => args.map (terms · (depth?.map (· -1))) 
+            |>.toList.join.map (fun (s, m, l) => (s, m + 1, l))
+    | _ => []
+
 def nameDefSyntax (name: Name) : MetaM <| Option Syntax := do
     let exp? ← nameExpr? name
     match exp? with
@@ -69,18 +68,17 @@ def nameDefSyntax (name: Name) : MetaM <| Option Syntax := do
 
 structure Premises where
     type : String
-    defTerms : List <| String × ℕ 
+    defTerms : List <| String × ℕ × List Name
     defIdents : List <| Name × ℕ
-    typeTerms : List <| String × ℕ
+    typeTerms : List <| String × ℕ × List Name
     typeIdents : List <| Name × ℕ 
 deriving Repr, Inhabited
 
-def Premises.defMainTerms (p: Premises) : List <| String × ℕ  :=
+def Premises.defMainTerms (p: Premises) : List <| String × ℕ × List Name  :=
     p.defTerms.filter (
-            fun (s, _) => s.1.length < 20 && (s.splitOn "=>").length == 1  
-                && (s.splitOn "↦").length == 1)
+            fun (s, _) => s.1.length < 20)
 
-def Premises.typeMainTerms (p: Premises) : List <| String × ℕ :=
+def Premises.typeMainTerms (p: Premises) : List <| String × ℕ × List Name :=
     p.typeTerms.filter (fun (s, _) => (s.splitOn "=>").length == 1  
                 && (s.splitOn "↦").length == 1)
 
@@ -101,7 +99,7 @@ def getPremises (name: Name)(depth? : Option ℕ := none ) : MetaM <| Premises :
 
 -- Testing
 
-def showTerms (s: String) : MetaM <| List <| String × ℕ  := do
+def showTerms (s: String) : MetaM <| List <| String × ℕ × List Name  := do
     let c := runParserCategory (← getEnv) `term s
     match c with
     | Except.error e => throwError e
@@ -120,7 +118,7 @@ def showKinds (s: String) : MetaM <| List String := do
     | Except.ok s => pure (s.kinds)
 
 def nameDefTerms (name: Name) : MetaM <| 
-    List <| String × ℕ  := do
+    List <| String × ℕ × List Name  := do
     let stx? ← nameDefSyntax name
     match stx? with
     | none => pure []
@@ -167,8 +165,8 @@ theorem oddExample : ∀ (n : ℕ), ∃ m, m > n ∧ m % 2 = 1 := by
   · linarith -- solve the first goal using `linarith` 
   · simp [Nat.add_mod] -- solve the second goal using `simp` with the lemma `Nat.add_mod`
 
-def egTerms : MetaM <| List <| String × ℕ := do
-    let p ←  getPremises ``oddExample (some 20) 
+def egTerms : MetaM <| List <| String × ℕ × List Name := do
+    let p ←  getPremises ``oddExample (some 30) 
     return p.defMainTerms
 
 #eval egTerms
@@ -178,3 +176,7 @@ def egIdents : MetaM <| List <| Name × ℕ:= do
     return p.defIdents
 
 #eval egIdents
+
+#check Linarith.lt_irrefl
+
+#eval nameDefSyntax ``oddExample
