@@ -34,7 +34,7 @@ def isWhiteListed (declName : Name) : MetaM Bool := do
   catch _ => return false
 
 def excludePrefixes := [`Lean, `Std, `IO, 
-          `Char, `String, `ST, `StateT, `Repr, `ReaderT, `EIO, `BaseIO, `UInt8, ``UInt16, ``UInt32, ``UInt64]
+          `Char, `String, `ST, `StateT, `Repr, `ReaderT, `EIO, `BaseIO, `UInt8, ``UInt16, ``UInt32, ``UInt64, `Mathlib.Tactic, `Mathlib.Meta]
 
 /-- names of global constants -/
 def constantNames  : MetaM (Array Name) := do
@@ -166,7 +166,7 @@ def Lean.Expr.simplify(e: Expr) : MetaM Expr := do
   | some expr => return expr
   catch _ => return e
 
-def excludeSuffixes := #[`dcasesOn, `recOn, `casesOn]
+def excludeSuffixes := #[`dcasesOn, `recOn, `casesOn, `rawCast]
 
 -- #eval (`dcasesOn).isSuffixOf (`AlgebraicGeometry.IsAffine.dcasesOn)
 
