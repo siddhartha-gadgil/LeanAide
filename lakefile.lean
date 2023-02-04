@@ -78,6 +78,10 @@ lean_exe depnames{
   supportInterpreter := true
 }
 
+lean_exe premises{
+  supportInterpreter := true
+}
+
 @[default_target]
 lean_exe chkthms{
   supportInterpreter := true

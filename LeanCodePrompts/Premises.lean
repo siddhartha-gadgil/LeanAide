@@ -4,11 +4,9 @@ import LeanCodePrompts.ConstDeps
 
 open Lean Meta Elab Parser PrettyPrinter
 
-def showSyntax (s: String) : MetaM <| Syntax × String := do
-    let c := runParserCategory (← getEnv) `term s
-    match c with
-    | Except.error e => throwError e
-    | Except.ok s => pure (s, s.reprint.get!)
+universe u v w u_1 u_2 u_3 u₁ u₂ u₃
+
+open LeanAide.Meta
     
 partial def Lean.Syntax.kinds (stx: Syntax)(depth?: Option ℕ := none) : List String :=
     if depth? = some 0 then
@@ -57,6 +55,15 @@ partial def Lean.Syntax.terms (stx: Syntax)(depth?: Option ℕ := none) : List <
             |>.toList.join.map (fun (s, m, l) => (s, m + 1, l))
     | _ => []
 
+namespace LeanAide.Meta
+
+def viewSyntax (s: String) : MetaM <| Syntax × String := do
+    let c := runParserCategory (← getEnv) `term s
+    match c with
+    | Except.error e => throwError e
+    | Except.ok s => pure (s, s.reprint.get!)
+
+
 def nameDefSyntax (name: Name) : MetaM <| Option Syntax := do
     let exp? ← nameExpr? name
     match exp? with
@@ -84,17 +91,19 @@ def Premises.typeMainTerms (p: Premises) : List <| String × ℕ × List Name :=
 
 def getPremises (name: Name)(depth? : Option ℕ := none ) : MetaM <| Premises := do
     let termStx? ← nameDefSyntax name
-    let term ← mkConstWithFreshMVarLevels name
+    let term ←  mkConstWithLevelParams name
     let type ← inferType term
     let typeView ← Meta.ppExpr type
     let typeStx ← delab type
     let defTerms := match termStx? with
         | none => []
         | some stx => stx.terms depth?
+    let defTerms := defTerms.filter (fun (s, _) => s.1.length < 10000
+        && !s.contains '\n')
     let defIdents := match termStx? with
         | none => []
         | some stx => stx.idents depth?
-    pure {type := typeView.pretty, defTerms := defTerms, defIdents := defIdents, typeTerms := typeStx.raw |>.terms depth?, typeIdents := typeStx.raw |>.idents depth?}
+    pure {type := typeView.pretty 10000, defTerms := defTerms, defIdents := defIdents, typeTerms := typeStx.raw |>.terms depth?, typeIdents := typeStx.raw |>.idents depth?}
 
 
 -- Testing
@@ -117,18 +126,18 @@ def showKinds (s: String) : MetaM <| List String := do
     | Except.error e => throwError e
     | Except.ok s => pure (s.kinds)
 
-def nameDefTerms (name: Name) : MetaM <| 
+def nameDefTerms (name: Name)(depth? : Option ℕ := none ) : MetaM <| 
     List <| String × ℕ × List Name  := do
     let stx? ← nameDefSyntax name
     match stx? with
     | none => pure []
-    | some stx => pure (stx.terms)
+    | some stx => pure (stx.terms depth?)
 
-def nameDefIdents (name: Name) : MetaM <| List <| Name × ℕ := do
+def nameDefIdents (name: Name)(depth? : Option ℕ := none ) : MetaM <| List <| Name × ℕ := do
     let stx? ← nameDefSyntax name
     match stx? with
     | none => pure []
-    | some stx => pure (stx.idents)
+    | some stx => pure (stx.idents depth?)
 
 #check List.join
 
@@ -138,7 +147,7 @@ def nameDefIdents (name: Name) : MetaM <| List <| Name × ℕ := do
 
 #eval showTerms "fun n ↦ Nat.succ n = n + 1"
 
-#eval showSyntax "n = n + 1"
+#eval viewSyntax "n = n + 1"
 
 #eval showKinds "n = n + 1"
 
@@ -180,3 +189,73 @@ def egIdents : MetaM <| List <| Name × ℕ:= do
 #check Linarith.lt_irrefl
 
 #eval nameDefSyntax ``oddExample
+
+def dataSize : MetaM ℕ := do
+    let names ← constantNames
+    return names.size 
+
+#eval dataSize
+
+def sampleExtract (n: ℕ := 100) : MetaM <|
+        List (Name × (List <| String × ℕ × List Name) ×
+        (List <| Name × ℕ)) := do
+    let names ← constantNames
+    let names := names.toList.take n
+    names.mapM (fun n => do 
+        let p ← nameDefTerms n
+        let q ← nameDefIdents n
+        pure (n, p, q)
+        )
+
+def batchPremiseExtractM (start stop: ℕ) : MetaM ℕ  := do
+    let names ← constantNames
+    let premisesFile := System.mkFilePath ["rawdata",
+    s!"outer-premises.jsonl"]
+    let h ← IO.FS.Handle.mk premisesFile IO.FS.Mode.append Bool.false
+    let names := names.toList.drop start |>.take (stop - start)
+    let mut cursor := start
+    IO.println s!"start: {start}, stop: {stop}"
+    for name in names do
+        IO.println <| s!"starting: {cursor} {name}"
+        let premises ← getPremises name (some 30)
+        let p := premises.defMainTerms
+        let pJson := p.map 
+            (fun (s, n, l) => 
+                Json.mkObj [
+                    ("term", s),
+                    ("depth", n),
+                    ("local-idents", Json.arr  (
+                        l.toArray
+                        |>.filter (fun name => !names.contains name)
+                        |>.map (fun name : Name =>
+                            name.toString)))
+                ]
+            )
+        let q:= premises.defIdents
+        let q := q.filter (fun (name, _) => names.contains name)
+        let qJson := q.map 
+            (fun (name, n) => 
+                Json.mkObj [
+                    ("name", name.toString),
+                    ("depth", n)
+                ]
+            )
+        let js := Json.mkObj [
+            ("name", name.toString),
+            ("type", premises.type),
+            ("terms", Json.arr 
+                pJson.toArray),
+            ("idents", Json.arr 
+                qJson.toArray)
+        ]
+        let out := js.pretty 10000
+        if out.length < 9000 then 
+            h.putStrLn <| out
+        IO.println <| s!"{cursor}. {name} : {premises.type} ({p.length}, {q.length}, {out.length})"
+        cursor := cursor + 1
+    return cursor
+
+def batchPremiseExtractCore (start stop: ℕ) : CoreM ℕ := 
+    (batchPremiseExtractM start stop).run'
+
+-- #eval sampleExtract

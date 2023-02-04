@@ -1,7 +1,7 @@
 import Lean.Meta
 import LeanCodePrompts
 import LeanCodePrompts.ConstDeps
-open Lean
+open Lean LeanAide.Meta
 
 set_option maxHeartbeats 10000000
 set_option maxRecDepth 1000

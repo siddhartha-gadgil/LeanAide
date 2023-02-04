@@ -6,6 +6,8 @@ open Lean Meta Elab
 
 set_option synthInstance.maxHeartbeats 1000000
 
+namespace LeanAide.Meta
+
 /- 
 Obtaining names of constants
 -/
@@ -34,7 +36,7 @@ def isWhiteListed (declName : Name) : MetaM Bool := do
   catch _ => return false
 
 def excludePrefixes := [`Lean, `Std, `IO, 
-          `Char, `String, `ST, `StateT, `Repr, `ReaderT, `EIO, `BaseIO, `UInt8, ``UInt16, ``UInt32, ``UInt64, `Mathlib.Tactic, `Mathlib.Meta]
+          `Char, `String, `ST, `StateT, `Repr, `ReaderT, `EIO, `BaseIO, `UInt8, ``UInt16, ``UInt32, ``UInt64, `Mathlib.Tactic, `Mathlib.Meta, `LeanAide.Meta, `Aesop]
 
 /-- names of global constants -/
 def constantNames  : MetaM (Array Name) := do
@@ -207,3 +209,4 @@ def offSpringShallowTripleCore (depth: Nat):
     CoreM Unit := 
           (offSpringShallowTriple excludePrefixes depth).run' 
 
+end LeanAide.Meta
