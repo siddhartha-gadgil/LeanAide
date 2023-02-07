@@ -51,6 +51,18 @@ partial def Lean.Syntax.idents (stx: Syntax)(depth? : Option ℕ := none) : List
         else []
     | _ => []
 
+def termKinds : MetaM <| SyntaxNodeKindSet :=  do
+    let env ← getEnv
+    let categories := (parserExtension.getState env).categories
+    let termCat? := getCategory categories `term
+    return termCat?.get!.kinds    
+
+def termKindList : MetaM <| List (SyntaxNodeKind × Unit) := do
+    let s ← termKinds
+    pure <| s.toList 
+
+#eval termKindList
+
 partial def Lean.Syntax.terms (stx: Syntax)(depth?: Option ℕ := none) : List <| String × ℕ × List Name :=
     if depth? = some 0 then
         []
