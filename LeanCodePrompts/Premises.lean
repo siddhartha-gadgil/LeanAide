@@ -92,6 +92,18 @@ def nameDefView (name: Name) : MetaM String := do
     let stx? ← nameDefSyntax name
     return (stx?.get!.reprint.get!)
 
+def nameDefSyntaxVerbose (name: Name) : MetaM <| Option Syntax := do
+    let exp? ← nameExpr? name
+    match exp? with
+    | none => pure none
+    | some exp => do
+        let (stx, _) ←  delabCore exp {} (delabVerbose)
+        pure (some stx)
+
+def nameDefViewVerbose (name: Name) : MetaM String := do
+    let stx? ← nameDefSyntaxVerbose name
+    return (stx?.get!.reprint.get!)
+
 structure Premises where
     type : String
     defTerms : List <| String × ℕ × List Name
@@ -196,7 +208,7 @@ set_option pp.proofs false in
 set_option pp.proofs.withType true in 
 #eval nameDefView ``Nat.gcd_eq_zero_iff
 
-
+#eval nameDefViewVerbose ``Nat.gcd_eq_zero_iff
 
 
 theorem oddExample : ∀ (n : ℕ), ∃ m, m > n ∧ m % 2 = 1 := by
