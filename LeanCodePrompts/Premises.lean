@@ -7,6 +7,15 @@ open Lean Meta Elab Parser PrettyPrinter
 universe u v w u_1 u_2 u_3 u₁ u₂ u₃
 
 open LeanAide.Meta
+
+open Elab Term in
+elab (name:=proved_prop) a:term "=:" b:term : term => do
+    let b ← elabType b 
+    let a ← elabTermEnsuringType a (some b)
+    guard (← isProof a)
+    return a
+
+example := (by decide) =: (1 ≤ 2) 
     
 -- delaborator copied from Lean to modify
 open Delaborator SubExpr in
