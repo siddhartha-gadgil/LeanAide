@@ -13,17 +13,11 @@ open Delaborator SubExpr in
 partial def delabVerbose : Delab := do
   checkMaxHeartbeats "delab"
   let e ← getExpr
-
+  let isProof ← (try Meta.isProof e catch _ => pure false)
   -- no need to hide atomic proofs
-  if ← pure !e.isAtomic <&&> pure !(← getPPOption getPPProofs) <&&> (try Meta.isProof e catch _ => pure false) then
-    if ← getPPOption getPPProofsWithType then
-      let stx ← withType delabVerbose
-      return ← annotateTermInfo (← `((_ : $stx)))
-    else
-      return ← annotateTermInfo (← ``(_))
   let k ← getExprKind
   let stx ← delabFor k <|> (liftM $ show MetaM _ from throwError "don't know how to delaborate '{k}'")
-  if ← getPPOption getPPAnalyzeTypeAscriptions <&&> getPPOption getPPAnalysisNeedsType <&&> pure !e.isMData then
+  if isProof || (← getPPOption getPPAnalyzeTypeAscriptions <&&> getPPOption getPPAnalysisNeedsType <&&> pure !e.isMData) then
     let typeStx ← withType delab
     `(($stx : $typeStx)) >>= annotateCurPos
   else
