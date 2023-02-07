@@ -26,9 +26,12 @@ partial def delabVerbose : Delab := do
   -- no need to hide atomic proofs
   let k ← getExprKind
   let stx ← delabFor k <|> (liftM $ show MetaM _ from throwError "don't know how to delaborate '{k}'")
-  if isProof || (← getPPOption getPPAnalyzeTypeAscriptions <&&> getPPOption getPPAnalysisNeedsType <&&> pure !e.isMData) then
-    let typeStx ← withType delab
+  if (← getPPOption getPPAnalyzeTypeAscriptions <&&> getPPOption getPPAnalysisNeedsType <&&> pure !e.isMData) then
+    let typeStx ← withType delabVerbose
     `(($stx : $typeStx)) >>= annotateCurPos
+  else if isProof then
+    let typeStx ← withType delabVerbose
+    `(($stx =: $typeStx)) >>= annotateCurPos
   else
     return stx
 
@@ -236,6 +239,17 @@ set_option pp.proofs.withType true in
 
 #eval nameDefViewVerbose ``Nat.gcd_eq_zero_iff
 
+#eval nameDefSyntaxVerbose ``Nat.gcd_eq_zero_iff
+
+#eval nameDefViewVerbose ``Nat.gcd_eq_gcd_ab
+
+set_option pp.proofs false in
+#eval nameDefView ``Nat.gcd_eq_gcd_ab
+
+#eval nameDefViewVerbose ``Nat.xgcd_aux_P
+
+set_option pp.proofs false in
+#eval nameDefView ``Nat.xgcd_aux_P
 
 theorem oddExample : ∀ (n : ℕ), ∃ m, m > n ∧ m % 2 = 1 := by
   intro n -- introduce a variable n
