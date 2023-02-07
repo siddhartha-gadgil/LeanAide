@@ -7,6 +7,15 @@ open Lean Meta Elab Parser PrettyPrinter
 universe u v w u_1 u_2 u_3 u₁ u₂ u₃
 
 open LeanAide.Meta
+
+open Elab Term in
+elab (name:=proved_prop) a:term "=:" b:term : term => do
+    let b ← elabType b 
+    let a ← elabTermEnsuringType a (some b)
+    guard (← isProof a)
+    return a
+
+example := (by decide) =: (1 ≤ 2) 
     
 -- delaborator copied from Lean to modify
 open Delaborator SubExpr in
@@ -51,9 +60,22 @@ partial def Lean.Syntax.idents (stx: Syntax)(depth? : Option ℕ := none) : List
         else []
     | _ => []
 
-partial def Lean.Syntax.terms (stx: Syntax)(depth?: Option ℕ := none) : List <| String × ℕ × List Name :=
+def termKinds : MetaM <| SyntaxNodeKindSet :=  do
+    let env ← getEnv
+    let categories := (parserExtension.getState env).categories
+    let termCat? := getCategory categories `term
+    return termCat?.get!.kinds    
+
+def termKindList : MetaM <| List (SyntaxNodeKind × Unit) := do
+    let s ← termKinds
+    pure <| s.toList 
+
+#eval termKindList
+
+partial def Lean.Syntax.terms (stx: Syntax)(depth?: Option ℕ := none) : 
+     MetaM <|  List <| String × ℕ × List Name := do
     if depth? = some 0 then
-        []
+        pure []
     else
     match stx with
     | Syntax.node _ k args => 
@@ -65,11 +87,15 @@ partial def Lean.Syntax.terms (stx: Syntax)(depth?: Option ℕ := none) : List <
                 ← stx.reprint
             else
                 none
+        let argTerms ← args.mapM (terms · (depth?.map (· -1))) 
+        let argTerms := argTerms.toList.join
         match head? with
-        | some head => (head.trim, 0, stx.idents.map (·.1)) :: (args.map (terms · (depth?.map (· -1))) |>.toList.join.map (fun (s, m, l) => (s, m + 1, l)))
-        | none => args.map (terms · (depth?.map (· -1))) 
-            |>.toList.join.map (fun (s, m, l) => (s, m + 1, l))
-    | _ => []
+        | some head =>             
+            return (head.trim, 0, stx.idents.map (·.1)) ::
+                 (argTerms.map (fun (s, m, l) => (s, m + 1, l)))
+        | none => 
+            return (argTerms.map (fun (s, m, l) => (s, m + 1, l)))
+    | _ => pure []
 
 namespace LeanAide.Meta
 
@@ -126,15 +152,15 @@ def getPremises (name: Name)(depth? : Option ℕ := none ) : MetaM <| Premises :
     let type ← inferType term
     let typeView ← Meta.ppExpr type
     let typeStx ← delab type
-    let defTerms := match termStx? with
-        | none => []
+    let defTerms ←  match termStx? with
+        | none => pure []
         | some stx => stx.terms depth?
     let defTerms := defTerms.filter (fun (s, _) => s.1.length < 10000
         && !s.contains '\n')
     let defIdents := match termStx? with
         | none => []
         | some stx => stx.idents depth?
-    pure {type := typeView.pretty 10000, defTerms := defTerms, defIdents := defIdents, typeTerms := typeStx.raw |>.terms depth?, typeIdents := typeStx.raw |>.idents depth?}
+    pure {type := typeView.pretty 10000, defTerms := defTerms, defIdents := defIdents, typeTerms := ←  typeStx.raw |>.terms depth?, typeIdents := typeStx.raw |>.idents depth?}
 
 
 -- Testing
@@ -143,7 +169,7 @@ def showTerms (s: String) : MetaM <| List <| String × ℕ × List Name  := do
     let c := runParserCategory (← getEnv) `term s
     match c with
     | Except.error e => throwError e
-    | Except.ok s => pure (s.terms)
+    | Except.ok s => (s.terms)
 
 def showIdents (s: String) : MetaM <| List <| Name × ℕ := do
     let c := runParserCategory (← getEnv) `term s
@@ -162,7 +188,7 @@ def nameDefTerms (name: Name)(depth? : Option ℕ := none ) : MetaM <|
     let stx? ← nameDefSyntax name
     match stx? with
     | none => pure []
-    | some stx => pure (stx.terms depth?)
+    | some stx => (stx.terms depth?)
 
 def nameDefIdents (name: Name)(depth? : Option ℕ := none ) : MetaM <| List <| Name × ℕ := do
     let stx? ← nameDefSyntax name
