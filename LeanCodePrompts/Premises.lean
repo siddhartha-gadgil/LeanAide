@@ -8,6 +8,28 @@ universe u v w u_1 u_2 u_3 u₁ u₂ u₃
 
 open LeanAide.Meta
     
+-- delaborator copied from Lean to modify
+open Delaborator SubExpr in
+partial def delabVerbose : Delab := do
+  checkMaxHeartbeats "delab"
+  let e ← getExpr
+
+  -- no need to hide atomic proofs
+  if ← pure !e.isAtomic <&&> pure !(← getPPOption getPPProofs) <&&> (try Meta.isProof e catch _ => pure false) then
+    if ← getPPOption getPPProofsWithType then
+      let stx ← withType delabVerbose
+      return ← annotateTermInfo (← `((_ : $stx)))
+    else
+      return ← annotateTermInfo (← ``(_))
+  let k ← getExprKind
+  let stx ← delabFor k <|> (liftM $ show MetaM _ from throwError "don't know how to delaborate '{k}'")
+  if ← getPPOption getPPAnalyzeTypeAscriptions <&&> getPPOption getPPAnalysisNeedsType <&&> pure !e.isMData then
+    let typeStx ← withType delab
+    `(($stx : $typeStx)) >>= annotateCurPos
+  else
+    return stx
+
+
 partial def Lean.Syntax.kinds (stx: Syntax)(depth?: Option ℕ := none) : List String :=
     if depth? = some 0 then
         []
@@ -72,6 +94,9 @@ def nameDefSyntax (name: Name) : MetaM <| Option Syntax := do
         let stx ←  delab exp
         pure (some stx)
 
+def nameDefView (name: Name) : MetaM String := do
+    let stx? ← nameDefSyntax name
+    return (stx?.get!.reprint.get!)
 
 structure Premises where
     type : String
@@ -166,6 +191,19 @@ def nameDefIdents (name: Name)(depth? : Option ℕ := none ) : MetaM <| List <| 
 
 #eval getPremises ``Nat.gcd_eq_zero_iff
 
+#eval nameDefSyntax ``Nat.gcd_eq_zero_iff
+
+
+#eval nameDefView ``Nat.gcd_eq_zero_iff
+
+set_option pp.proofs false in 
+#eval nameDefView ``Nat.gcd_eq_zero_iff
+
+set_option pp.proofs.withType true in 
+#eval nameDefView ``Nat.gcd_eq_zero_iff
+
+
+
 
 theorem oddExample : ∀ (n : ℕ), ∃ m, m > n ∧ m % 2 = 1 := by
   intro n -- introduce a variable n
@@ -259,3 +297,5 @@ def batchPremiseExtractCore (start stop: ℕ) : CoreM ℕ :=
     (batchPremiseExtractM start stop).run'
 
 -- #eval sampleExtract
+
+set_option pp.proofs.withType true
