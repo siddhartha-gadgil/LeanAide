@@ -28,5 +28,3 @@ def tacticDataStrings : IO <| List String := do
   let tacs ← tacticData
   return tacs.map toString 
   -- TODO replace the default `toString` instance with a more descriptive one
-
-#eval tacticDataStrings
