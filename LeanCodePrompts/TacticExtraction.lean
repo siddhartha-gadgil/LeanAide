@@ -1,7 +1,7 @@
 import Lean
 import LeanInk.Analysis.Basic
 
-open Lean
+open Lean Elab
 
 
 def inputFile : System.FilePath := "lake-packages"/"mathlib"/"Mathlib"/"Data"/"Int"/"Dvd"/"Pow.lean"
@@ -19,9 +19,34 @@ def tacticExtractionConfig : IO LeanInk.Configuration := return {
   experimentalSemanticType := false
 }
 
+-- modified from `LeanInk` source
+open LeanInk in
+def analyzeInput : AnalysisM Analysis.AnalysisResult := do
+  let config ← tacticExtractionConfig 
+  let context := Parser.mkInputContext config.inputFileContents config.inputFileName
+  let (header, state, messages) ← Parser.parseHeader context
+  -- doc-gen: Lake already configures us via LEAN_PATH
+  -- initializeSearchPaths header config
+    let options := Options.empty 
+                    |>.setBool `trace.Elab.info true
+                    |>.setBool `tactic.simp.trace true
+  let (environment, messages) ← processHeader header options messages context 0
+  logInfo s!"Header: {environment.header.mainModule}"
+  logInfo s!"Header: {environment.header.moduleNames}"
+  if messages.hasErrors then
+    for msg in messages.toList do
+      if msg.severity == .error then
+        let _ ← logError (← msg.toString)
+    throw <| IO.userError "Errors during import; aborting"
+  let commandState := Analysis.configureCommandState environment messages
+  let s ← IO.processCommands context state commandState
+  let result ← Analysis.resolveTacticList s.commandState.infoState.trees.toList
+  let messages := s.commandState.messages.msgs.toList.filter (λ m => m.endPos.isSome )
+  return ← result.insertMessages messages context.fileMap
+
 def tacticData : IO <| List LeanInk.Analysis.Sentence := do
   let config ← tacticExtractionConfig
-  let result ← LeanInk.Analysis.analyzeInput.run config 
+  let result ← analyzeInput.run config 
   return result.sentences
 
 def tacticDataStrings : IO <| List String := do
