@@ -1,6 +1,7 @@
 import Lean
 import Mathlib
 import LeanCodePrompts.ConstDeps
+import LeanCodePrompts.VerboseDelabs
 
 open Lean Meta Elab Parser PrettyPrinter
 
@@ -8,32 +9,6 @@ universe u v w u_1 u_2 u_3 u₁ u₂ u₃
 
 open LeanAide.Meta
 
-open Elab Term in
-elab (name:=proved_prop) a:term "=:" b:term : term => do
-    let b ← elabType b 
-    let a ← elabTermEnsuringType a (some b)
-    guard (← isProof a)
-    return a
-
-example := (by decide) =: (1 ≤ 2) 
-    
--- delaborator copied from Lean to modify
-open Delaborator SubExpr in
-partial def delabVerbose : Delab := do
-  checkMaxHeartbeats "delab"
-  let e ← getExpr
-  let isProof ← (try Meta.isProof e catch _ => pure false)
-  -- no need to hide atomic proofs
-  let k ← getExprKind
-  let stx ← delabFor k <|> (liftM $ show MetaM _ from throwError "don't know how to delaborate '{k}'")
-  if (← getPPOption getPPAnalyzeTypeAscriptions <&&> getPPOption getPPAnalysisNeedsType <&&> pure !e.isMData) then
-    let typeStx ← withType delabVerbose
-    `(($stx : $typeStx)) >>= annotateCurPos
-  else if isProof then
-    let typeStx ← withType delabVerbose
-    `(($stx =: $typeStx)) >>= annotateCurPos
-  else
-    return stx
 
 
 partial def Lean.Syntax.kinds (stx: Syntax)(depth?: Option ℕ := none) : List String :=
@@ -272,7 +247,7 @@ def egIdents : MetaM <| List <| Name × ℕ:= do
 
 #check Linarith.lt_irrefl
 
-#eval nameDefSyntax ``oddExample
+-- #eval nameDefSyntax ``oddExample
 
 def dataSize : MetaM ℕ := do
     let names ← constantNames
@@ -351,9 +326,9 @@ theorem imo_1964_q1b : ∀ (n : ℕ), (2 ^ n + 1) % 7 ≠ 0
       simp [imo_1964_q1b n]
 
 
-set_option pp.proofs.withType true in
-#eval nameDefView ``imo_1964_q1b
+-- set_option pp.proofs.withType true in
+-- #eval nameDefView ``imo_1964_q1b
 
-#eval nameDefView ``imo_1964_q1b
+-- #eval nameDefView ``imo_1964_q1b
 
-#eval nameDefViewVerbose ``imo_1964_q1b
+-- #eval nameDefViewVerbose ``imo_1964_q1b
