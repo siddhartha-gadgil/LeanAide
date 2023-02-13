@@ -24,7 +24,7 @@ partial def delabVerbose : Delab := do
   let k ← getExprKind
   let stx ← delabFor k <|> (liftM $ show MetaM _ from throwError "don't know how to delaborate '{k}'")
   if (← getPPOption getPPAnalyzeTypeAscriptions <&&> getPPOption getPPAnalysisNeedsType <&&> pure !e.isMData) then
-    let typeStx ← withType delabVerbose
+    let typeStx ← withType delab
     `(($stx : $typeStx)) >>= annotateCurPos
   else if isProof then
     let typeStx ← withType delab
@@ -63,7 +63,7 @@ def delabAppExplicitVerbose : Delab := do
                    else if isInstImplicit == true then
                      let stx ← if ← getPPOption getPPInstances then delab else `(_)
                      if ← getPPOption getPPInstanceTypes then
-                       let typeStx ← withType delabVerbose
+                       let typeStx ← withType delab
                        `(($stx : $typeStx))
                      else pure stx
                    else delabVerbose
@@ -261,7 +261,7 @@ def delabLetFun : Delab := do
     let n ← getUnusedName n b
     let stxB ← withBindingBody n delabVerbose
     if ← getPPOption getPPLetVarTypes <||> getPPOption getPPAnalysisLetVarType then
-      let stxT ← withBindingDomain delabVerbose
+      let stxT ← withBindingDomain delab
       `(let_fun $(mkIdent n) : $stxT := $stxV; $stxB)
     else
       `(let_fun $(mkIdent n) := $stxV; $stxB)
@@ -327,14 +327,14 @@ private partial def delabBinders (delabGroup : Array Syntax → Syntax → Delab
       withBindingBodyUnusedName fun stxN => delabBinders delabGroup (curNames.push stxN)
     else
       -- don't group => delab body and prepend current binder group
-      let (stx, stxN) ← withBindingBodyUnusedName fun stxN => return (← delabVerbose, stxN)
+      let (stx, stxN) ← withBindingBodyUnusedName fun stxN => return (← delab, stxN)
       delabGroup (curNames.push stxN) stx
 
 @[delab lam]
 def delabLam : Delab :=
   delabBinders fun curNames stxBody => do
     let e ← getExpr
-    let stxT ← withBindingDomain delabVerbose
+    let stxT ← withBindingDomain delab
     let ppTypes ← getPPOption getPPFunBinderTypes
     let usedDownstream := curNames.any (fun n => hasIdent n.getId stxBody)
 
@@ -403,7 +403,7 @@ private partial def delabForallBinders (delabGroup : Array Syntax → Bool → S
       withBindingBodyUnusedName fun stxN => delabForallBinders delabGroup (curNames.push stxN) curDep
     else
       -- don't group => delab body and prepend current binder group
-      let (stx, stxN) ← withBindingBodyUnusedName fun stxN => return (← delabVerbose, stxN)
+      let (stx, stxN) ← withBindingBodyUnusedName fun stxN => return (← delab, stxN)
       delabGroup (curNames.push stxN) curDep stx
 
 
@@ -416,7 +416,7 @@ def delabLetE : Delab := do
     let b := b.instantiate1 fvar
     descend b 2 delabVerbose
   if ← getPPOption getPPLetVarTypes <||> getPPOption getPPAnalysisLetVarType then
-    let stxT ← descend t 0 delabVerbose
+    let stxT ← descend t 0 delab
     `(let $(mkIdent n) : $stxT := $stxV; $stxB)
   else `(let $(mkIdent n) := $stxV; $stxB)
 
@@ -462,7 +462,7 @@ function.
 @[delab proj]
 def delabProj : Delab := do
   let Expr.proj _ idx _ ← getExpr | unreachable!
-  let e ← withProj delabVerbose
+  let e ← withProj delab
   -- not perfectly authentic: elaborates to the `idx`-th named projection
   -- function (e.g. `e.1` is `Prod.fst e`), which unfolds to the actual
   -- `proj`.
@@ -485,7 +485,7 @@ def delabProjectionApp : Delab := whenPPOption getPPStructureProjections $ do
   -- use field notation because we will not be able to see the parameters.
   let expl ← getPPOption getPPExplicit
   guard $ !expl || info.numParams == 0
-  let appStx ← withAppArg delabVerbose
+  let appStx ← withAppArg delab
   `($(appStx).$(mkIdent f):ident)
 
 @[delab app.dite]
@@ -518,10 +518,10 @@ def delabNamedPattern : Delab := do
   -- Note: we keep this as a delaborator because it accesses the DelabM context
   guard (← read).inPattern
   guard $ (← getExpr).getAppNumArgs == 4
-  let x ← withAppFn $ withAppFn $ withAppArg delabVerbose
-  let p ← withAppFn $ withAppArg delabVerbose
+  let x ← withAppFn $ withAppFn $ withAppArg delab
+  let p ← withAppFn $ withAppArg delab
   -- TODO: we should hide `h` if it has an inaccessible name and is not used in the rhs
-  let h ← withAppArg delabVerbose
+  let h ← withAppArg delab
   guard x.raw.isIdent
   `($x:ident@$h:ident:$p:term)
 
@@ -530,7 +530,7 @@ def delabSigmaCore (sigma : Bool) : Delab := whenPPOption getPPNotation do
   guard $ (← getExpr).getAppNumArgs == 2
   guard $ (← getExpr).appArg!.isLambda
   withAppArg do
-    let α ← withBindingDomain delabVerbose
+    let α ← withBindingDomain delab
     let bodyExpr := (← getExpr).bindingBody!
     withBindingBodyUnusedName fun n => do
       let b ← delabVerbose
@@ -565,7 +565,7 @@ partial def delabDoElems : DelabM (List Syntax) := do
   else if e.isLet then
     let Expr.letE n t v b _ ← getExpr | unreachable!
     let n ← getUnusedName n b
-    let stxT ← descend t 0 delabVerbose
+    let stxT ← descend t 0 delab
     let stxV ← descend v 1 delabVerbose
     withLetDecl n t v fun fvar =>
       let b := b.instantiate1 fvar
