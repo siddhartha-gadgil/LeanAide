@@ -344,4 +344,16 @@ def batchPremiseExtractCore (start stop: ℕ) : CoreM ℕ :=
 
 -- #eval sampleExtract
 
-set_option pp.proofs.withType true
+theorem imo_1964_q1b : ∀ (n : ℕ), (2 ^ n + 1) % 7 ≠ 0
+    | 0 | 1 | 2 => by decide
+    | n + 3 => by
+      rw [pow_add, Nat.add_mod, Nat.mul_mod, show 2 ^ 3 % 7 = 1 from by rfl]
+      simp [imo_1964_q1b n]
+
+
+set_option pp.proofs.withType true in
+#eval nameDefView ``imo_1964_q1b
+
+#eval nameDefView ``imo_1964_q1b
+
+#eval nameDefViewVerbose ``imo_1964_q1b
