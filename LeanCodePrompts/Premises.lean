@@ -331,6 +331,6 @@ theorem imo_1964_q1b : ∀ (n : ℕ), (2 ^ n + 1) % 7 ≠ 0
 -- set_option pp.proofs.withType true in
 -- #eval nameDefView ``imo_1964_q1b
 
--- #eval nameDefView ``imo_1964_q1b
+#eval nameDefView ``imo_1964_q1b
 
 -- #eval nameDefViewVerbose ``imo_1964_q1b

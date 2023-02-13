@@ -8,13 +8,13 @@ open Lean Meta Elab Term Parser PrettyPrinter
 namespace LeanAide.Meta
 
 open Elab Term in
-elab (name:=proved_prop) a:term "=:" b:term : term => do
+elab (name:=proved_prop) "(" a:term "=:" b:term ")": term => do
     let b ← elabType b 
     let a ← elabTermEnsuringType a (some b)
     guard (← isProof a)
     return a
 
-example := (by decide) =: (1 ≤ 2) 
+example :=  ((by decide) =: 1 ≤ 2 )
 
 
   
@@ -40,7 +40,7 @@ partial def delabVerbose : Delab := do
   checkMaxHeartbeats "delab"
   let e ← getExpr
   -- checkExprDepth e
-  let isProof ← (try Meta.isProof e catch _ => pure false)
+  let isProof := !e.isAtomic && (← (try Meta.isProof e catch _ => pure false))
   let k ← getExprKind
   let stx ← delabFor k <|> (liftM $ show MetaM _ from throwError "don't know how to delaborate '{k}'")
   if (← getPPOption getPPAnalyzeTypeAscriptions <&&> getPPOption getPPAnalysisNeedsType <&&> pure !e.isMData) then
@@ -541,12 +541,12 @@ partial def delabDoElems : DelabM (List Syntax) := do
   where
     prependAndRec x : DelabM _ := List.cons <$> x <*> delabDoElems
 
-@[delab app.Bind.bind]
-def delabDo : Delab := whenPPOption getPPNotation do
-  guard <| (← getExpr).isAppOfArity ``Bind.bind 6
-  let elems ← delabDoElems
-  let items ← elems.toArray.mapM (`(doSeqItem|$(·):doElem))
-  `(do $items:doSeqItem*)
+-- @[delab app.Bind.bind]
+-- def delabDo : Delab := whenPPOption getPPNotation do
+--   guard <| (← getExpr).isAppOfArity ``Bind.bind 6
+--   let elems ← delabDoElems
+--   let items ← elems.toArray.mapM (`(doSeqItem|$(·):doElem))
+--   `(do $items:doSeqItem*)
 
 def reifyName : Expr → DelabM Name
   | .const ``Lean.Name.anonymous .. => return Name.anonymous
