@@ -221,6 +221,8 @@ set_option pp.proofs.withType true in
 set_option pp.proofs false in
 #eval nameDefView ``Nat.gcd_eq_gcd_ab
 
+#eval setDelabBound 200
+
 #eval nameDefViewVerbose ``Nat.xgcd_aux_P
 
 set_option pp.proofs false in

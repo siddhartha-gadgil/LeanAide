@@ -55,3 +55,12 @@ initialize
   registerTraceClass `Translate.info
   registerTraceClass `Translate.debug
   registerTraceClass `Translate.warning
+
+
+initialize delab_bound : IO.Ref UInt32 ← IO.mkRef 200
+
+def getDelabBound : MetaM UInt32 := do
+   delab_bound.get
+
+def setDelabBound (n: UInt32) : MetaM Unit := do
+   delab_bound.set n

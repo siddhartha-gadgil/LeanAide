@@ -2,6 +2,7 @@
 Copied and modified from Lean 4 `./src/Lean/PrettyPrinter/Delaborator/Builtins.lean`
 -/
 import Lean
+import LeanCodePrompts.Utils
 open Lean Meta Elab Term Parser PrettyPrinter
 
 namespace LeanAide.Meta
@@ -14,12 +15,31 @@ elab (name:=proved_prop) a:term "=:" b:term : term => do
     return a
 
 example := (by decide) =: (1 ≤ 2) 
-    
+
+
+  
+
 -- delaborator copied from Lean to modify
 open Delaborator SubExpr 
+def checkExprDepth (e: Expr) : DelabM Unit := do
+  let depth ← getDelabBound
+  if e.approxDepth > depth then
+    failure
+
+
+def checkDepth : DelabM Unit := do
+  let depth ← getDelabBound
+  let e ← getExpr
+  if e.approxDepth > depth then
+    failure
+
+
+
+
 partial def delabVerbose : Delab := do
   checkMaxHeartbeats "delab"
   let e ← getExpr
+  -- checkExprDepth e
   let isProof ← (try Meta.isProof e catch _ => pure false)
   let k ← getExprKind
   let stx ← delabFor k <|> (liftM $ show MetaM _ from throwError "don't know how to delaborate '{k}'")
@@ -47,6 +67,7 @@ open TSyntax.Compat
 
 @[delab app]
 def delabAppExplicitVerbose : Delab := do
+  checkDepth
   let paramKinds ← getParamKinds
   let tagAppFn ← getPPOption getPPTagAppFns
   let (fnStx, _, argStxs) ← withAppFnArgs
@@ -74,6 +95,7 @@ def delabAppExplicitVerbose : Delab := do
 
 @[delab app]
 def delabAppImplicit : Delab := do
+  checkDepth
   -- TODO: always call the unexpanders, make them guard on the right # args?
   let paramKinds ← getParamKinds
   if ← getPPOption getPPExplicit then
@@ -192,6 +214,7 @@ where
 -/
 @[delab app]
 def delabAppMatch : Delab := whenPPOption getPPNotation <| whenPPOption getPPMatch do
+  checkDepth
   -- incrementally fill `AppMatchState` from arguments
   let st ← withAppFnArgs
     (do
@@ -268,6 +291,7 @@ def delabLetFun : Delab := do
 
 @[delab mdata]
 def delabMData : Delab := do
+  -- checkDepth
   if let some _ := inaccessible? (← getExpr) then
     let s ← withMDataExpr delabVerbose
     if (← read).inPattern then
@@ -334,6 +358,7 @@ private partial def delabBinders (delabGroup : Array Syntax → Syntax → Delab
 def delabLam : Delab :=
   delabBinders fun curNames stxBody => do
     let e ← getExpr
+    -- checkExprDepth e
     let stxT ← withBindingDomain delab
     let ppTypes ← getPPOption getPPFunBinderTypes
     let usedDownstream := curNames.any (fun n => hasIdent n.getId stxBody)
@@ -409,6 +434,7 @@ private partial def delabForallBinders (delabGroup : Array Syntax → Bool → S
 
 @[delab letE]
 def delabLetE : Delab := do
+  -- checkDepth
   let Expr.letE n t v b _ ← getExpr | unreachable!
   let n ← getUnusedName n b
   let stxV ← descend v 1 delabVerbose
@@ -420,73 +446,7 @@ def delabLetE : Delab := do
     `(let $(mkIdent n) : $stxT := $stxV; $stxB)
   else `(let $(mkIdent n) := $stxV; $stxB)
 
-@[delab lit]
-def delabLit : Delab := do
-  let Expr.lit l ← getExpr | unreachable!
-  match l with
-  | Literal.natVal n => pure $ quote n
-  | Literal.strVal s => pure $ quote s
 
--- `@OfNat.ofNat _ n _` ~> `n`
-@[delab app.OfNat.ofNat]
-def delabOfNat : Delab := whenPPOption getPPCoercions do
-  let .app (.app _ (.lit (.natVal n))) _ ← getExpr | failure
-  return quote n
-
--- `@OfDecimal.ofDecimal _ _ m s e` ~> `m*10^(sign * e)` where `sign == 1` if `s = false` and `sign = -1` if `s = true`
-@[delab app.OfScientific.ofScientific]
-def delabOfScientific : Delab := whenPPOption getPPCoercions do
-  let expr ← getExpr
-  guard <| expr.getAppNumArgs == 5
-  let .lit (.natVal m) ← pure (expr.getArg! 2) | failure
-  let .lit (.natVal e) ← pure (expr.getArg! 4) | failure
-  let s ← match expr.getArg! 3 with
-    | Expr.const ``Bool.true _  => pure true
-    | Expr.const ``Bool.false _ => pure false
-    | _ => failure
-  let str  := toString m
-  if s && e == str.length then
-    return Syntax.mkScientificLit ("0." ++ str)
-  else if s && e < str.length then
-    let mStr := str.extract 0 ⟨str.length - e⟩
-    let eStr := str.extract ⟨str.length - e⟩ ⟨str.length⟩
-    return Syntax.mkScientificLit (mStr ++ "." ++ eStr)
-  else
-    return Syntax.mkScientificLit (str ++ "e" ++ (if s then "-" else "") ++ toString e)
-
-/--
-Delaborate a projection primitive. These do not usually occur in
-user code, but are pretty-printed when e.g. `#print`ing a projection
-function.
--/
-@[delab proj]
-def delabProj : Delab := do
-  let Expr.proj _ idx _ ← getExpr | unreachable!
-  let e ← withProj delab
-  -- not perfectly authentic: elaborates to the `idx`-th named projection
-  -- function (e.g. `e.1` is `Prod.fst e`), which unfolds to the actual
-  -- `proj`.
-  let idx := Syntax.mkLit fieldIdxKind (toString (idx + 1));
-  `($(e).$idx:fieldIdx)
-
-/-- Delaborate a call to a projection function such as `Prod.fst`. -/
-@[delab app]
-def delabProjectionApp : Delab := whenPPOption getPPStructureProjections $ do
-  let e@(Expr.app fn _) ← getExpr | failure
-  let .const c@(.str _ f) _ ← pure fn.getAppFn | failure
-  let env ← getEnv
-  let some info ← pure $ env.getProjectionFnInfo? c | failure
-  -- can't use with classes since the instance parameter is implicit
-  guard $ !info.fromClass
-  -- projection function should be fully applied (#struct params + 1 instance parameter)
-  -- TODO: support over-application
-  guard $ e.getAppNumArgs == info.numParams + 1
-  -- If pp.explicit is true, and the structure has parameters, we should not
-  -- use field notation because we will not be able to see the parameters.
-  let expl ← getPPOption getPPExplicit
-  guard $ !expl || info.numParams == 0
-  let appStx ← withAppArg delab
-  `($(appStx).$(mkIdent f):ident)
 
 @[delab app.dite]
 def delabDIte : Delab := whenPPOption getPPNotation do
@@ -507,6 +467,7 @@ where
 
 @[delab app.cond]
 def delabCond : Delab := whenPPOption getPPNotation do
+  -- checkDepth
   guard $ (← getExpr).getAppNumArgs == 4
   let c ← withAppFn $ withAppFn $ withAppArg delabVerbose
   let t ← withAppFn $ withAppArg delabVerbose
@@ -515,6 +476,7 @@ def delabCond : Delab := whenPPOption getPPNotation do
 
 @[delab app.namedPattern]
 def delabNamedPattern : Delab := do
+  -- checkDepth
   -- Note: we keep this as a delaborator because it accesses the DelabM context
   guard (← read).inPattern
   guard $ (← getExpr).getAppNumArgs == 4
@@ -527,6 +489,7 @@ def delabNamedPattern : Delab := do
 
 -- Sigma and PSigma delaborators
 def delabSigmaCore (sigma : Bool) : Delab := whenPPOption getPPNotation do
+  checkDepth
   guard $ (← getExpr).getAppNumArgs == 2
   guard $ (← getExpr).appArg!.isLambda
   withAppArg do
@@ -547,6 +510,7 @@ def delabPSigma : Delab := delabSigmaCore (sigma := false)
 
 partial def delabDoElems : DelabM (List Syntax) := do
   let e ← getExpr
+  checkExprDepth e
   if e.isAppOfArity ``Bind.bind 6 then
     -- Bind.bind.{u, v} : {m : Type u → Type v} → [self : Bind m] → {α β : Type u} → m α → (α → m β) → m β
     let α := e.getAppArgs[2]!
@@ -589,15 +553,5 @@ def reifyName : Expr → DelabM Name
   | .app (.app (.const ``Lean.Name.str ..) n) (.lit (.strVal s)) => return (← reifyName n).mkStr s
   | .app (.app (.const ``Lean.Name.num ..) n) (.lit (.natVal i)) => return (← reifyName n).mkNum i
   | _ => failure
-
-@[delab app.Lean.Name.str]
-def delabNameMkStr : Delab := whenPPOption getPPNotation do
-  let n ← reifyName (← getExpr)
-  -- not guaranteed to be a syntactically valid name, but usually more helpful than the explicit version
-  return mkNode ``Lean.Parser.Term.quotedName #[Syntax.mkNameLit s!"`{n}"]
-
-@[delab app.Lean.Name.num]
-def delabNameMkNum : Delab := delabNameMkStr
-
 
 end LeanAide.Meta
