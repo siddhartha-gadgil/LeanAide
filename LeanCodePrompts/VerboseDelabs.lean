@@ -566,7 +566,7 @@ def NameGroups.append (base: NameGroups) (n: Name)(d: Nat): NameGroups :=
   | Name.str p "freeVar"  =>
     match p with
     | Name.str q "domVar"  => ⟨base.constNames, base.freeVarNames.push q, base.domVarNames⟩
-    | _ => panic! s!"unexpected freeVar name {n}"
+    | _ => ⟨base.constNames, base.freeVarNames.push p, base.domVarNames⟩
   | Name.str q "domVar"  => 
       ⟨base.constNames, base.freeVarNames, base.domVarNames.push q⟩
   | _ => ⟨base.constNames.push (n, d), base.freeVarNames, base.domVarNames⟩

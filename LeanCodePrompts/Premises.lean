@@ -57,6 +57,10 @@ partial def Lean.Syntax.terms (stx: Syntax)(depth?: Option ℕ := none) :
     else
     match stx with
     | Syntax.node _ k args => 
+        match stx with 
+        | `(proved_prop| ($pf:term =: $_:term )) =>  
+           pf.raw.terms
+        | _ =>
         let head? : Option String := do 
             if 
                 (`Lean.Parser.Term).isPrefixOf k ||
@@ -73,6 +77,7 @@ partial def Lean.Syntax.terms (stx: Syntax)(depth?: Option ℕ := none) :
                  (argTerms.map (fun (s, m, l) => (s, m + 1, l)))
         | none => 
             return (argTerms.map (fun (s, m, l) => (s, m + 1, l)))
+    
     | _ => pure []
 
 namespace LeanAide.Meta
@@ -132,7 +137,7 @@ def Premises.typeMainTerms (p: Premises) : List <| String × ℕ × List Name :=
                 && (s.splitOn "↦").length == 1)
 
 def getPremises (name: Name)(depth? : Option ℕ := none ) : MetaM <| Premises := do
-    let termStx? ← nameDefSyntax name
+    let termStx? ← nameDefSyntaxVerbose name
     let term ←  mkConstWithLevelParams name
     let type ← inferType term
     let typeView ← Meta.ppExpr type
