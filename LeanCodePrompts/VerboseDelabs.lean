@@ -63,7 +63,18 @@ def wrapInType (e: Expr)(stx: Term) : Delab := do
 open Lean.Parser.Term
 open TSyntax.Compat
 
+@[scoped delab fvar]
+def delabFVar : Delab := do
+let fvarPrefix : Name := "freeVariable"
+let Expr.fvar fvarId ← getExpr | unreachable!
+try
+  let l ← fvarId.getDecl
+  maybeAddBlockImplicit (mkIdent <| fvarPrefix.append l.userName)
+catch _ =>
+  -- loose free variable, use internal name
+  maybeAddBlockImplicit <| mkIdent <| fvarPrefix.append fvarId.name
 
+#check Name.isSuffixOf
 
 @[scoped delab app]
 def delabAppExplicitVerbose : Delab := do

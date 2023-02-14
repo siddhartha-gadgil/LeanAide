@@ -9,7 +9,7 @@ universe u v w u_1 u_2 u_3 u₁ u₂ u₃
 
 open LeanAide.Meta
 
-
+set_option pp.unicode.fun true
 
 partial def Lean.Syntax.kinds (stx: Syntax)(depth?: Option ℕ := none) : List String :=
     if depth? = some 0 then
