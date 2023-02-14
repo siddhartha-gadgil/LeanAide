@@ -92,6 +92,13 @@ def nameDefSyntax (name: Name) : MetaM <| Option Syntax := do
         let stx ←  delab exp
         pure (some stx)
 
+def boundedDef (bound: ℕ)(name: Name) : MetaM Bool := do
+    let exp? ← nameExpr? name
+    match exp? with
+    | none => pure false
+    | some exp => do
+        pure (exp.approxDepth < bound)
+
 def nameDefView (name: Name) : MetaM String := do
     let stx? ← nameDefSyntax name
     return (stx?.get!.reprint.get!)
@@ -242,10 +249,16 @@ def egTerms : MetaM <| List <| String × ℕ × List Name := do
 #eval egTerms
 
 def egIdents : MetaM <| List <| Name × ℕ:= do
-    let p ←  getPremises ``oddExample (some 30) 
+    let p ←  getPremises ``oddExample (some 50) 
     return p.defIdents
 
 #eval egIdents
+
+def egGpIdents : MetaM NameGroups := do
+    let nd ← egIdents
+    return groupedNames nd.toArray
+
+#eval egGpIdents
 
 #check Linarith.lt_irrefl
 
@@ -256,6 +269,13 @@ def dataSize : MetaM ℕ := do
     return names.size 
 
 #eval dataSize
+
+def boundedDataSize (n: ℕ) : MetaM ℕ := do
+    let names ← constantNames
+    let names ← names.filterM (boundedDef n)
+    return names.size
+
+#eval boundedDataSize 50
 
 def sampleExtract (n: ℕ := 100) : MetaM <|
         List (Name × (List <| String × ℕ × List Name) ×

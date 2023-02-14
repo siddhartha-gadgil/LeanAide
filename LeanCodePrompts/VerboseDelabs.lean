@@ -343,7 +343,7 @@ where
 
 def withBindingBodyUnusedName {α} (d : Syntax → DelabM α) : DelabM α := do
   let n ← getUnusedName (← getExpr).bindingName! (← getExpr).bindingBody!
-  let n := ("domVar" : Name).append n
+  let n := n.append "domVar"
   let stxN ← annotateCurPos (mkIdent n)
   withBindingBody n $ d stxN
 
@@ -555,21 +555,35 @@ partial def delabDoElems : DelabM (List Syntax) := do
 --   let items ← elems.toArray.mapM (`(doSeqItem|$(·):doElem))
 --   `(do $items:doSeqItem*)
 
+structure NameGroups where
+  constNames : Array <| Name × Nat := #[]
+  freeVarNames : Array Name := #[]
+  domVarNames : Array Name := #[]
+deriving Inhabited, Repr
+
+def NameGroups.append (base: NameGroups) (n: Name)(d: Nat): NameGroups :=
+  match n with
+  | Name.str p "freeVar"  =>
+    match p with
+    | Name.str q "domVar"  => ⟨base.constNames, base.freeVarNames.push q, base.domVarNames⟩
+    | _ => panic! s!"unexpected freeVar name {n}"
+  | Name.str q "domVar"  => 
+      ⟨base.constNames, base.freeVarNames, base.domVarNames.push q⟩
+  | _ => ⟨base.constNames.push (n, d), base.freeVarNames, base.domVarNames⟩
+
+def groupedNames (nd : Array <| Name × Nat) : NameGroups :=
+  nd.foldl (fun gp (n, d) => gp.append n d) {}
+
 @[scoped delab fvar]
 def delabFVar : Delab := do
 let Expr.fvar fvarId ← getExpr | unreachable!
 try
   let l ← fvarId.getDecl
-  maybeAddBlockImplicit (mkIdent <| fvarPrefix.append l.userName)
+  maybeAddBlockImplicit (mkIdent <| l.userName.append "freeVar")
 catch _ =>
   -- loose free variable, use internal name
-  maybeAddBlockImplicit <| mkIdent <| fvarPrefix.append fvarId.name
+  maybeAddBlockImplicit <| mkIdent <| fvarId.name.append "freeVar"
 
 
-def reifyName : Expr → DelabM Name
-  | .const ``Lean.Name.anonymous .. => return Name.anonymous
-  | .app (.app (.const ``Lean.Name.str ..) n) (.lit (.strVal s)) => return (← reifyName n).mkStr s
-  | .app (.app (.const ``Lean.Name.num ..) n) (.lit (.natVal i)) => return (← reifyName n).mkNum i
-  | _ => failure
 
 end LeanAide.Meta
