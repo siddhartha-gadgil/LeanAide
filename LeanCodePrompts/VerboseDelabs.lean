@@ -63,18 +63,7 @@ def wrapInType (e: Expr)(stx: Term) : Delab := do
 open Lean.Parser.Term
 open TSyntax.Compat
 
-@[scoped delab fvar]
-def delabFVar : Delab := do
-let fvarPrefix : Name := "freeVariable"
-let Expr.fvar fvarId ← getExpr | unreachable!
-try
-  let l ← fvarId.getDecl
-  maybeAddBlockImplicit (mkIdent <| fvarPrefix.append l.userName)
-catch _ =>
-  -- loose free variable, use internal name
-  maybeAddBlockImplicit <| mkIdent <| fvarPrefix.append fvarId.name
-
-#check Name.isSuffixOf
+def fvarPrefix : Name := "freeVariable"
 
 @[scoped delab app]
 def delabAppExplicitVerbose : Delab := do
@@ -352,6 +341,13 @@ where
   getPPBinderTypes (e : Expr) :=
     if e.isForall then getPPPiBinderTypes else getPPFunBinderTypes
 
+def withBindingBodyUnusedName {α} (d : Syntax → DelabM α) : DelabM α := do
+  let n ← getUnusedName (← getExpr).bindingName! (← getExpr).bindingBody!
+  let n := ("domVar" : Name).append n
+  let stxN ← annotateCurPos (mkIdent n)
+  withBindingBody n $ d stxN
+
+
 private partial def delabBinders (delabGroup : Array Syntax → Syntax → Delab) : optParam (Array Syntax) #[] → Delab
   -- Accumulate names (`Syntax.ident`s with position information) of the current, unfinished
   -- binder group `(d e ...)` as determined by `shouldGroupWithNext`. We cannot do grouping
@@ -558,6 +554,17 @@ partial def delabDoElems : DelabM (List Syntax) := do
 --   let elems ← delabDoElems
 --   let items ← elems.toArray.mapM (`(doSeqItem|$(·):doElem))
 --   `(do $items:doSeqItem*)
+
+@[scoped delab fvar]
+def delabFVar : Delab := do
+let Expr.fvar fvarId ← getExpr | unreachable!
+try
+  let l ← fvarId.getDecl
+  maybeAddBlockImplicit (mkIdent <| fvarPrefix.append l.userName)
+catch _ =>
+  -- loose free variable, use internal name
+  maybeAddBlockImplicit <| mkIdent <| fvarPrefix.append fvarId.name
+
 
 def reifyName : Expr → DelabM Name
   | .const ``Lean.Name.anonymous .. => return Name.anonymous
