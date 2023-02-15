@@ -367,7 +367,7 @@ def delabLam : Delab :=
     let e ← getExpr
     -- checkExprDepth e
     let stxT ← withBindingDomain delab
-    let ppTypes ← getPPOption getPPFunBinderTypes
+    let ppTypes := true
     let usedDownstream := curNames.any (fun n => hasIdent n.getId stxBody)
 
     -- leave lambda implicit if possible
