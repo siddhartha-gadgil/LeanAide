@@ -353,10 +353,10 @@ private partial def delabBinders (delabGroup : Array Syntax → Syntax → Delab
   -- binder group `(d e ...)` as determined by `shouldGroupWithNext`. We cannot do grouping
   -- inside-out, on the Syntax level, because it depends on comparing the Expr binder types.
   | curNames => do
-    if ← shouldGroupWithNext then
-      -- group with nested binder => recurse immediately
-      withBindingBodyUnusedName fun stxN => delabBinders delabGroup (curNames.push stxN)
-    else
+    -- if ← shouldGroupWithNext then
+    --   -- group with nested binder => recurse immediately
+    --   withBindingBodyUnusedName fun stxN => delabBinders delabGroup (curNames.push stxN)
+    -- else
       -- don't group => delab body and prepend current binder group
       let (stx, stxN) ← withBindingBodyUnusedName fun stxN => return (← delab, stxN)
       delabGroup (curNames.push stxN) stx
@@ -413,10 +413,10 @@ def delabLam : Delab :=
         match stxBody with
         | `(fun $binderGroups* => $stxBody) => (#[group] ++ binderGroups, stxBody)
         | _                                 => (#[group], stxBody)
-      if ← getPPOption getPPUnicodeFun then
-        `(fun $binders* ↦ $stxBody)
-      else
-        `(fun $binders* => $stxBody)
+      -- if ← getPPOption getPPUnicodeFun then
+      `(fun $binders* ↦ $stxBody)
+      -- else
+      --   `(fun $binders* => $stxBody)
 
 /--
 Similar to `delabBinders`, but tracking whether `forallE` is dependent or not.
