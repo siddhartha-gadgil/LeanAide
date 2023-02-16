@@ -218,6 +218,20 @@ def nameDefIdents (name: Name)(depth? : Option ℕ := none ) : MetaM <| List <| 
 
 #eval nameDefView ``Nat.gcd_eq_zero_iff
 
+def egSplit : MetaM <| Option (Syntax × Array Syntax) := do
+    let stx? ← nameDefSyntax ``Nat.gcd_eq_zero_iff
+    decomposeFunc stx?.get!
+
+#eval egSplit
+
+def egSplitView : MetaM <| Option (String × Array String) := do
+    let stx? ← nameDefSyntax ``Nat.gcd_eq_zero_iff
+    let pair? ← decomposeFunc stx?.get!
+    let (stx, args) := pair?.get!
+    pure (stx.reprint.get!, args.map (fun s => s.reprint.get!))
+
+#eval egSplitView
+
 set_option pp.proofs false in 
 #eval nameDefView ``Nat.gcd_eq_zero_iff
 

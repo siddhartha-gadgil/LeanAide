@@ -574,6 +574,31 @@ def NameGroups.append (base: NameGroups) (n: Name)(d: Nat): NameGroups :=
 def groupedNames (nd : Array <| Name × Nat) : NameGroups :=
   nd.foldl (fun gp (n, d) => gp.append n d) {}
 
+def Name.purgeSuffix: Name → Name
+  | Name.str p "freeVar"  =>
+    Name.purgeSuffix p
+  | Name.str q "domVar"  => 
+    Name.purgeSuffix q
+  | n => n
+
+
+partial def Syntax.purgeSuffix: Syntax → Syntax
+  | Syntax.ident _ _ n _ => 
+      mkIdent (Name.purgeSuffix n)
+  | Syntax.node info k args =>
+      Syntax.node info k (args.map Syntax.purgeSuffix) 
+  | s => s
+
+def decomposeFunc(stx : Syntax) : MetaM <| Option (Syntax × Array Syntax) := do
+  match stx with
+  | `(fun $args:funBinder* ↦ $body) =>
+    let body := Syntax.purgeSuffix body
+    let args := args.map Syntax.purgeSuffix
+    return some (body, args)
+  | _ => return none
+
+#check Parser.mkIdent
+
 @[scoped delab fvar]
 def delabFVar : Delab := do
 let Expr.fvar fvarId ← getExpr | unreachable!
