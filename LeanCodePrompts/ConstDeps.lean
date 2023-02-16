@@ -168,7 +168,7 @@ def Lean.Expr.simplify(e: Expr) : MetaM Expr := do
   | some expr => return expr
   catch _ => return e
 
-def excludeSuffixes := #[`dcasesOn, `recOn, `casesOn, `rawCast]
+def excludeSuffixes := #[`dcasesOn, `recOn, `casesOn, `rawCast, `freeVar]
 
 -- #eval (`dcasesOn).isSuffixOf (`AlgebraicGeometry.IsAffine.dcasesOn)
 

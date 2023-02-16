@@ -1,5 +1,6 @@
 import Lean
 import Mathlib
+import Std.Data.HashMap
 import LeanCodePrompts.ConstDeps
 import LeanCodePrompts.VerboseDelabs
 
@@ -11,32 +12,94 @@ open LeanAide.Meta
 
 set_option pp.unicode.fun true
 
-partial def Lean.Syntax.kinds (stx: Syntax)(depth?: Option ℕ := none) : List String :=
-    if depth? = some 0 then
-        []
-    else
-    match stx with
-    | Syntax.node _ k args => 
-        let head? : Option String := 
-            k.components.head?.map (· |>.toString)
-        match head? with
-        | some head => head :: (args.map (kinds · (depth?.map (· -1))) |>.toList.join)
-        | none => args.map (kinds · (depth?.map (· -1))) |>.toList.join
-    | _ => []
+structure TermData where
+    context : Array Syntax
+    value : Syntax
 
-partial def Lean.Syntax.idents (stx: Syntax)(depth? : Option ℕ := none) : List <| Name × ℕ  :=
-    if depth? = some 0 then
-        []
+inductive PropProofData : Type 
+|  mk: (Array Syntax) → -- context
+        Option Name → -- name
+        Syntax → -- proposition
+        Array (PropProofData × ℕ) → -- sub-proofs
+        Array (TermData × ℕ) → -- sub-terms
+        Array (Name × Syntax × ℕ) → -- proof identifiers used
+        Array (Name × Syntax × ℕ) → -- term identifiers used
+        PropProofData
+
+namespace PropProofData
+
+def context : PropProofData → Array Syntax
+| mk ctx .. => ctx
+
+def name : PropProofData → Option Name
+| mk _ name .. => name
+
+def proposition : PropProofData → Syntax
+| mk _ _ prop .. => prop
+
+def subProofs : PropProofData → Array (PropProofData × ℕ)
+| mk _ _ _ subProofs .. => subProofs
+
+def subTerms : PropProofData → Array (TermData × ℕ)
+| mk _ _ _ _ subTerms .. => subTerms
+
+def proofIdents : PropProofData → Array (Name × Syntax × ℕ)
+| mk _ _ _ _ _ proofIdents .. => proofIdents
+
+def termIdents : PropProofData → Array (Name × Syntax × ℕ)
+| mk _ _ _ _ _ _ termIdents  => termIdents
+
+def increaseDepth (d: ℕ) : PropProofData → PropProofData
+| mk ctx name prop subProofs subTerms proofIdents termIdents => 
+    mk ctx name prop 
+        (subProofs.map (fun (p, m) => (p, m + d)))
+        (subTerms.map (fun (p, m) => (p, m + d)))
+        (proofIdents.map (fun (n, s, m) => (n, s, m + d)))
+        (termIdents.map (fun (n, s, m) => (n, s, m + d))) 
+
+
+end PropProofData
+
+structure ConstsData where
+    definitions : HashMap Name  Syntax
+    theorems : HashMap Name  Syntax
+
+def constsData : MetaM ConstsData := do
+    let consts ← constantNameTypes
+    let mut definitions := HashMap.empty
+    let mut theorems := HashMap.empty
+    for (c, type) in consts do
+        let tstx ← delab type
+        let tstx := Syntax.purge tstx
+        if ← Meta.isProp type then
+            theorems := theorems.insert c tstx
+        else
+            definitions := definitions.insert c tstx
+    return { definitions := definitions, theorems := theorems }
+
+partial def Lean.Syntax.identsM (stx: Syntax)(maxDepth? : Option ℕ := none) : MetaM <| List <| Name × ℕ  := do
+    if maxDepth? = some 0 then
+        pure []
     else
-    match stx with
-    | Syntax.node _ _ args => 
-         args.map (idents · (depth?.map (· -1))) 
-            |>.toList.join.map (fun (s, m) => (s, m + 1))
-    | Syntax.ident _ _ name .. => 
-        if !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name)) then 
-            [(name, 0)]
-        else []
-    | _ => []
+    match ← lambdaStx? stx with
+    | some (body, args) =>
+        let prev ←  identsM  body (maxDepth?.map (· -1))
+        return prev.map (fun (s, m) => (s, m + args.size))
+    | none =>
+    match ← proofWithProp? stx with
+    | some (proof, _) =>
+        let prev ←  identsM  proof (maxDepth?.map (· -1))
+        return prev.map (fun (s, m) => (s, m + 1))
+    | none =>
+        match stx with
+        | Syntax.node _ _ args => 
+            let prev ← args.mapM (identsM · (maxDepth?.map (· -1))) 
+            return prev.toList.join.map (fun (s, m) => (s, m + 1))
+        | Syntax.ident _ _ name .. => 
+            if !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name)) then 
+                pure [(name, 0)]
+            else pure []
+        | _ => pure []
 
 def termKinds : MetaM <| SyntaxNodeKindSet :=  do
     let env ← getEnv
@@ -48,11 +111,90 @@ def termKindList : MetaM <| List (SyntaxNodeKind × Unit) := do
     let s ← termKinds
     pure <| s.toList 
 
-#eval termKindList
+-- #eval termKindList
 
-partial def Lean.Syntax.terms (stx: Syntax)(depth?: Option ℕ := none) : 
+
+partial def Lean.Syntax.termsM (context : Array Syntax)(stx: Syntax)(maxDepth? : Option ℕ := none) : MetaM <| List <| TermData × ℕ  := do
+    let tks ← termKindList
+    let tks := tks.map (·.1)
+    if maxDepth? = some 0 then
+        pure []
+    else
+    match ← lambdaStx? stx with
+    | some (body, args) =>
+        let prev ←  termsM (context ++ args) body (maxDepth?.map (· -1))
+        return prev.map (fun (s, m) => (s, m + args.size))
+    | none =>
+    match ← proofWithProp? stx with
+    | some (proof, _) =>
+        let prev ←  termsM context  proof (maxDepth?.map (· -1))
+        return prev.map (fun (s, m) => (s, m + 1))
+    | none =>
+        match stx with
+        | Syntax.node _ k args => 
+            let prev ← args.mapM (termsM context · (maxDepth?.map (· -1)))
+            let head : TermData := ⟨context, stx⟩
+            if tks.contains stx.getKind then 
+                return (head, 0) :: prev.toList.join.map (fun (s, m) => (s, m + 1))
+            else  
+            return prev.toList.join.map (fun (s, m) => (s, m + 1))
+        | Syntax.ident .. => 
+             pure []
+        | _ => pure []
+
+
+partial def PropProofData.get(depth: ℕ)(ctx : Array Syntax)(name?: Name)(prop pf : Syntax)(cnstData : ConstsData) : MetaM PropProofData := do
+    let mut subProofs: Array (PropProofData × ℕ) := #[]
+    let mut subTerms : Array (TermData × ℕ) := #[]
+    let mut proofIdents : Array (Name × Syntax × ℕ) := #[]
+    let mut termIdents : Array (Name × Syntax × ℕ) := #[]
+    let idents ← pf.identsM
+    for (name, d) in idents do
+        match cnstData.definitions.find? name with
+        | some defn =>
+            termIdents := termIdents.push (name, defn, d + depth)
+        | none =>
+        match cnstData.theorems.find? name with
+        | some thm =>
+            proofIdents := proofIdents.push (name, thm, d + depth)     
+        | none => pure ()
+    return mk ctx name? prop subProofs subTerms proofIdents termIdents
+
+
+
+partial def Lean.Syntax.kinds (stx: Syntax)(maxDepth?: Option ℕ := none) : List String :=
+    if maxDepth? = some 0 then
+        []
+    else
+    match stx with
+    | Syntax.node _ k args => 
+        let head? : Option String := 
+            k.components.head?.map (· |>.toString)
+        match head? with
+        | some head => head :: (args.map (kinds · (maxDepth?.map (· -1))) |>.toList.join)
+        | none => args.map (kinds · (maxDepth?.map (· -1))) |>.toList.join
+    | _ => []
+
+partial def Lean.Syntax.idents (stx: Syntax)(maxDepth? : Option ℕ := none) : List <| Name × ℕ  :=
+    if maxDepth? = some 0 then
+        []
+    else
+    match stx with
+    | Syntax.node _ _ args => 
+         args.map (idents · (maxDepth?.map (· -1))) 
+            |>.toList.join.map (fun (s, m) => (s, m + 1))
+    | Syntax.ident _ _ name .. => 
+        if !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name)) then 
+            [(name, 0)]
+        else []
+    | _ => []
+
+
+partial def Lean.Syntax.terms (stx: Syntax)(maxDepth?: Option ℕ := none) : 
      MetaM <|  List <| String × ℕ × List Name := do
-    if depth? = some 0 then
+    let tks ← termKindList
+    let tks := tks.map (·.1)
+    if maxDepth? = some 0 then
         pure []
     else
     match stx with
@@ -63,13 +205,12 @@ partial def Lean.Syntax.terms (stx: Syntax)(depth?: Option ℕ := none) :
         | _ =>
         let head? : Option String := do 
             if 
-                (`Lean.Parser.Term).isPrefixOf k ||
-                k.components.head!.toString.startsWith "«term_" 
+                k ∈ tks 
             then
                 ← stx.reprint
             else
                 none
-        let argTerms ← args.mapM (terms · (depth?.map (· -1))) 
+        let argTerms ← args.mapM (terms · (maxDepth?.map (· -1))) 
         let argTerms := argTerms.toList.join
         match head? with
         | some head =>             
@@ -108,6 +249,10 @@ def nameDefView (name: Name) : MetaM String := do
     let stx? ← nameDefSyntax name
     return (stx?.get!.reprint.get!)
 
+def nameDefCleanView (name: Name) : MetaM String := do
+    let stx? ← nameDefSyntax name
+    return ((Syntax.purge stx?.get!).reprint.get!)
+
 def nameDefSyntaxVerbose (name: Name) : MetaM <| Option Syntax := do
     let exp? ← nameExpr? name
     match exp? with
@@ -136,7 +281,7 @@ def Premises.typeMainTerms (p: Premises) : List <| String × ℕ × List Name :=
     p.typeTerms.filter (fun (s, _) => (s.splitOn "=>").length == 1  
                 && (s.splitOn "↦").length == 1)
 
-def getPremises (name: Name)(depth? : Option ℕ := none ) : MetaM <| Premises := do
+def getPremises (name: Name)(maxDepth? : Option ℕ := none ) : MetaM <| Premises := do
     let termStx? ← nameDefSyntaxVerbose name
     let term ←  mkConstWithLevelParams name
     let type ← inferType term
@@ -144,13 +289,13 @@ def getPremises (name: Name)(depth? : Option ℕ := none ) : MetaM <| Premises :
     let typeStx ← delab type
     let defTerms ←  match termStx? with
         | none => pure []
-        | some stx => stx.terms depth?
+        | some stx => stx.terms maxDepth?
     let defTerms := defTerms.filter (fun (s, _) => s.1.length < 10000
         && !s.contains '\n')
     let defIdents := match termStx? with
         | none => []
-        | some stx => stx.idents depth?
-    pure {type := typeView.pretty 10000, defTerms := defTerms, defIdents := defIdents, typeTerms := ←  typeStx.raw |>.terms depth?, typeIdents := typeStx.raw |>.idents depth?}
+        | some stx => stx.idents maxDepth?
+    pure {type := typeView.pretty 10000, defTerms := defTerms, defIdents := defIdents, typeTerms := ←  typeStx.raw |>.terms maxDepth?, typeIdents := typeStx.raw |>.idents maxDepth?}
 
 
 -- Testing
@@ -173,18 +318,18 @@ def showKinds (s: String) : MetaM <| List String := do
     | Except.error e => throwError e
     | Except.ok s => pure (s.kinds)
 
-def nameDefTerms (name: Name)(depth? : Option ℕ := none ) : MetaM <| 
+def nameDefTerms (name: Name)(maxDepth? : Option ℕ := none ) : MetaM <| 
     List <| String × ℕ × List Name  := do
     let stx? ← nameDefSyntax name
     match stx? with
     | none => pure []
-    | some stx => (stx.terms depth?)
+    | some stx => (stx.terms maxDepth?)
 
-def nameDefIdents (name: Name)(depth? : Option ℕ := none ) : MetaM <| List <| Name × ℕ := do
+def nameDefIdents (name: Name)(maxDepth? : Option ℕ := none ) : MetaM <| List <| Name × ℕ := do
     let stx? ← nameDefSyntax name
     match stx? with
     | none => pure []
-    | some stx => pure (stx.idents depth?)
+    | some stx => pure (stx.idents maxDepth?)
 
 #check List.join
 
@@ -218,15 +363,17 @@ def nameDefIdents (name: Name)(depth? : Option ℕ := none ) : MetaM <| List <| 
 
 #eval nameDefView ``Nat.gcd_eq_zero_iff
 
+#eval nameDefCleanView ``Nat.gcd_eq_zero_iff
+
 def egSplit : MetaM <| Option (Syntax × Array Syntax) := do
     let stx? ← nameDefSyntax ``Nat.gcd_eq_zero_iff
-    decomposeFunc stx?.get!
+    lambdaStx? stx?.get!
 
 #eval egSplit
 
 def egSplitView : MetaM <| Option (String × Array String) := do
     let stx? ← nameDefSyntax ``Nat.gcd_eq_zero_iff
-    let pair? ← decomposeFunc stx?.get!
+    let pair? ← lambdaStx? stx?.get!
     let (stx, args) := pair?.get!
     pure (stx.reprint.get!, args.map (fun s => s.reprint.get!))
 

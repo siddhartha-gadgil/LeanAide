@@ -582,22 +582,34 @@ def Name.purgeSuffix: Name → Name
   | n => n
 
 
-partial def Syntax.purgeSuffix: Syntax → Syntax
+partial def Syntax.purge: Syntax → Syntax := fun stx ↦
+  match stx with
   | Syntax.ident _ _ n _ => 
       mkIdent (Name.purgeSuffix n)
   | Syntax.node info k args =>
-      Syntax.node info k (args.map Syntax.purgeSuffix) 
+    match stx with
+    | `(($pf:term =: $_:term)) =>
+      Syntax.purge pf
+    | _ =>
+      Syntax.node info k (args.map Syntax.purge) 
   | s => s
 
-def decomposeFunc(stx : Syntax) : MetaM <| Option (Syntax × Array Syntax) := do
+def lambdaStx?(stx : Syntax) : MetaM <| Option (Syntax × Array Syntax) := do
   match stx with
   | `(fun $args:funBinder* ↦ $body) =>
-    let body := Syntax.purgeSuffix body
-    let args := args.map Syntax.purgeSuffix
+    let body := Syntax.purge body
+    let args := args.map Syntax.purge
     return some (body, args)
   | _ => return none
 
 #check Parser.mkIdent
+
+def proofWithProp? (stx : Syntax) : MetaM <| Option (Syntax × Syntax) := do
+  match stx with
+  | `(($stx =: $typeStx)) =>    
+    return some (stx, typeStx)
+  | _ => return none
+
 
 @[scoped delab fvar]
 def delabFVar : Delab := do
