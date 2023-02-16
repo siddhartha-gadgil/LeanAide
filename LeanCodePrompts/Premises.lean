@@ -12,51 +12,64 @@ open LeanAide.Meta
 
 set_option pp.unicode.fun true
 
+class Reprint(a : Type) where
+    reprSyn : a → String
+
+instance ReprintString : Reprint String where
+    reprSyn := id
+
+instance ReprintName : Reprint Name where
+    reprSyn := toString
+
+instance ReprintNat : Reprint Nat where
+    reprSyn := toString
+
+instance ReprintBool : Reprint Bool where
+    reprSyn := toString
+
+instance ReprintArray {a : Type} [Reprint a] : Reprint (Array a) where
+    reprSyn := fun xs => xs.toList.map Reprint.reprSyn |>.toString
+
+instance ReprintList {a : Type} [Reprint a] : Reprint (List a) where
+    reprSyn := fun xs => xs.map Reprint.reprSyn |>.toString
+
+instance ReprintOption {a : Type} [Reprint a] : Reprint (Option a) where
+    reprSyn := fun xs => xs.map Reprint.reprSyn |>.getD ""
+
+instance ReprintSyntax : Reprint Syntax where
+    reprSyn := fun xs => xs.reprint.get!
+
+def reprint {a : Type}[Reprint a] (x : a) : String := Reprint.reprSyn x
+
 structure TermData where
     context : Array Syntax
     value : Syntax
+deriving Repr
 
-inductive PropProofData : Type 
-|  mk: (Array Syntax) → -- context
-        Option Name → -- name
-        Syntax → -- proposition
-        Array (PropProofData × ℕ) → -- sub-proofs
-        Array (TermData × ℕ) → -- sub-terms
-        Array (Name × Syntax × ℕ) → -- proof identifiers used
-        Array (Name × Syntax × ℕ) → -- term identifiers used
-        PropProofData
+def checkRepr : Repr TermData := inferInstance
+
+
+
+structure PropProofData  where 
+ context : (Array Syntax)
+ name :       Option Name  -- name
+ type :       Syntax  -- proposition
+ terms :       Array (TermData × ℕ)  -- sub-terms
+ ids :       Array (Name ×  ℕ)  -- proof identifiers used
+-- deriving Repr
 
 namespace PropProofData
 
-def context : PropProofData → Array Syntax
-| mk ctx .. => ctx
 
-def name : PropProofData → Option Name
-| mk _ name .. => name
+def increaseDepth (d: ℕ) : PropProofData → PropProofData :=  
+fun data ↦
+    ⟨data.context, data.name, data.type, (data.terms.map (fun (p, m) => (p, m + d))),
+        (data.ids.map (fun (n,  m) => (n,  m + d))) ⟩
 
-def proposition : PropProofData → Syntax
-| mk _ _ prop .. => prop
-
-def subProofs : PropProofData → Array (PropProofData × ℕ)
-| mk _ _ _ subProofs .. => subProofs
-
-def subTerms : PropProofData → Array (TermData × ℕ)
-| mk _ _ _ _ subTerms .. => subTerms
-
-def proofIdents : PropProofData → Array (Name × Syntax × ℕ)
-| mk _ _ _ _ _ proofIdents .. => proofIdents
-
-def termIdents : PropProofData → Array (Name × Syntax × ℕ)
-| mk _ _ _ _ _ _ termIdents  => termIdents
-
-def increaseDepth (d: ℕ) : PropProofData → PropProofData
-| mk ctx name prop subProofs subTerms proofIdents termIdents => 
-    mk ctx name prop 
-        (subProofs.map (fun (p, m) => (p, m + d)))
-        (subTerms.map (fun (p, m) => (p, m + d)))
-        (proofIdents.map (fun (n, s, m) => (n, s, m + d)))
-        (termIdents.map (fun (n, s, m) => (n, s, m + d))) 
-
+open Reprint in
+def view : PropProofData → MetaM String := fun data => -- pure "_"
+-- | mk ctx name prop subProofs subTerms proofIdents termIdents => do
+    return s!"Context: {reprSyn data.context}; Name: {reprSyn data.name}; Proposition: {reprSyn data.type};  SubTerms: {data.terms.size}; Idents: {data.ids}"
 
 end PropProofData
 
@@ -134,7 +147,7 @@ partial def Lean.Syntax.termsM (context : Array Syntax)(stx: Syntax)(maxDepth? :
         | Syntax.node _ k args => 
             let prev ← args.mapM (termsM context · (maxDepth?.map (· -1)))
             let head : TermData := ⟨context, stx⟩
-            if tks.contains stx.getKind then 
+            if tks.contains k then 
                 return (head, 0) :: prev.toList.join.map (fun (s, m) => (s, m + 1))
             else  
             return prev.toList.join.map (fun (s, m) => (s, m + 1))
@@ -143,22 +156,21 @@ partial def Lean.Syntax.termsM (context : Array Syntax)(stx: Syntax)(maxDepth? :
         | _ => pure []
 
 
-partial def PropProofData.get(depth: ℕ)(ctx : Array Syntax)(name?: Name)(prop pf : Syntax)(cnstData : ConstsData) : MetaM PropProofData := do
-    let mut subProofs: Array (PropProofData × ℕ) := #[]
-    let mut subTerms : Array (TermData × ℕ) := #[]
-    let mut proofIdents : Array (Name × Syntax × ℕ) := #[]
-    let mut termIdents : Array (Name × Syntax × ℕ) := #[]
-    let idents ← pf.identsM
-    for (name, d) in idents do
-        match cnstData.definitions.find? name with
-        | some defn =>
-            termIdents := termIdents.push (name, defn, d + depth)
-        | none =>
-        match cnstData.theorems.find? name with
-        | some thm =>
-            proofIdents := proofIdents.push (name, thm, d + depth)     
-        | none => pure ()
-    return mk ctx name? prop subProofs subTerms proofIdents termIdents
+def PropProofData.get(depth: ℕ)(ctx : Array Syntax)(name?: Name)(prop pf : Syntax) : MetaM PropProofData := do
+    let subProofs: Array (PropProofData × ℕ) := #[]
+    let subTerms : List (TermData × ℕ)  ← pf.termsM ctx 
+    let ids : List (Name  × ℕ) ← pf.identsM 
+    -- let idents ← pf.identsM
+    -- for (name, d) in idents do
+    --     match cnstData.definitions.find? name with
+    --     | some defn =>
+    --         termIdents := termIdents.push (name, defn, d + depth)
+    --     | none =>
+    --     match cnstData.theorems.find? name with
+    --     | some thm =>
+    --         proofIdents := proofIdents.push (name, thm, d + depth)     
+    --     | none => pure ()
+    return ⟨ctx, name?, prop, subTerms.toArray, ids.toArray⟩
 
 
 
@@ -230,6 +242,15 @@ def viewSyntax (s: String) : MetaM <| Syntax × String := do
     | Except.ok s => pure (s, s.reprint.get!)
 
 
+def nameDefTypeSyntax (name: Name) : MetaM <| Syntax × Syntax := do
+    let info? := ((← getEnv).find? name)
+    let info := info?.get!
+    let exp := info.value?.get!
+    let type := info.type
+    let stx ← delab exp
+    let tstx ← delab type
+    return (stx, tstx)
+
 def nameDefSyntax (name: Name) : MetaM <| Option Syntax := do
     let exp? ← nameExpr? name
     match exp? with
@@ -237,6 +258,18 @@ def nameDefSyntax (name: Name) : MetaM <| Option Syntax := do
     | some exp => do
         let stx ←  delab exp
         pure (some stx)
+
+
+def viewData (name: Name) : MetaM <| String := do
+    let (stx, tstx) ← nameDefTypeSyntax name
+    let idents ← stx.identsM
+    let termData ←  stx.termsM #[] 
+    let data ←  PropProofData.get 0 #[] name stx tstx 
+    data.view
+    -- return "got data"
+    -- return Reprint.reprSyn stx ++ " : " ++ ReprintSyntax.reprSyn tstx ++ 
+    --     " idents: " ++ (repr idents.length |>.pretty) ++" ; " ++ (repr termData.length |>.pretty) 
+
 
 def boundedDef (bound: ℕ)(name: Name) : MetaM Bool := do
     let exp? ← nameExpr? name
@@ -299,6 +332,8 @@ def getPremises (name: Name)(maxDepth? : Option ℕ := none ) : MetaM <| Premise
 
 
 -- Testing
+
+#eval viewData ``Nat.succ_le_succ
 
 def showTerms (s: String) : MetaM <| List <| String × ℕ × List Name  := do
     let c := runParserCategory (← getEnv) `term s
