@@ -102,12 +102,13 @@ partial def Lean.Syntax.identsM (stx: Syntax)(context: Array Syntax)(maxDepth? :
     else
     match ← proofWithProp? stx with
     | some (proof, _) =>
+        -- IO.println s!"Proof: {proof}"
         let prev ←  identsM  proof context (maxDepth?.map (· -1))
         return prev.map (fun (s, m) => (s, m + 1))
     | none =>
     match ← lambdaStx? stx with
     | some (body, args) =>
-        IO.println s!"Lambda: {args}"
+        -- IO.println s!"Lambda: {args}"
         let prev ←  identsM  body (context ++ args) (maxDepth?.map (· -1))
         return prev.map (fun (s, m) => (s, m + args.size))
     | none =>
@@ -117,7 +118,7 @@ partial def Lean.Syntax.identsM (stx: Syntax)(context: Array Syntax)(maxDepth? :
             return prev.toList.join.map (fun (s, m) => (s, m + 1))
         | Syntax.ident _ _ name .. => 
             let contextVars := context.filterMap getVar
-            IO.println s!"Context: {contextVars} from {context}"
+            -- IO.println s!"Context: {contextVars} from {context}"
             if  !(contextVars.contains name) &&
                 !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name)) then 
                 pure [(name, 0)]
@@ -145,17 +146,19 @@ partial def Lean.Syntax.termsM (context : Array Syntax)(stx: Syntax)(maxDepth? :
     else
     match ← proofWithProp? stx with
     | some (proof, _) =>
-        logInfo m!"Proof: {proof}"
+        -- IO.println s!"Proof: {proof}"
         let prev ←  termsM context  proof (maxDepth?.map (· -1))
         return prev.map (fun (s, m) => (s, m + 1))
     | none =>
     match ← lambdaStx? stx with
     | some (body, args) =>
+        -- IO.println s!"Lambda: {args}"
         let prev ←  termsM (context ++ args) body (maxDepth?.map (· -1))
         return prev.map (fun (s, m) => (s, m + args.size))
     | none =>
         match stx with
         | Syntax.node _ k args => 
+            -- IO.println s!"Node: {k}"
             let prev ← args.mapM (termsM context · (maxDepth?.map (· -1)))
             let head : TermData := ⟨context, stx⟩
             if tks.contains k then 
@@ -169,7 +172,7 @@ partial def Lean.Syntax.termsM (context : Array Syntax)(stx: Syntax)(maxDepth? :
 
 def PropProofData.get(depth: ℕ)(ctx : Array Syntax)(name?: Name)(prop pf : Syntax) : MetaM PropProofData := do
     let subProofs: Array (PropProofData × ℕ) := #[]
-    let subTerms : List (TermData × ℕ)  ← pf.termsM ctx 
+    let subTerms : List (TermData × ℕ)  ← Syntax.termsM ctx pf
     let ids : List (Name  × ℕ) ← pf.identsM ctx 
     return ⟨ctx, name?, prop, subTerms.toArray, ids.toArray⟩
 
@@ -263,8 +266,9 @@ def nameDefSyntax (name: Name) : MetaM <| Option Syntax := do
 
 def viewData (name: Name) : MetaM <| String := do
     let (stx, tstx) ← nameDefTypeSyntax name
-    IO.println s!"{stx.reprint.get!} : {tstx.reprint.get!}"
-    let data ←  PropProofData.get 0 #[] name stx tstx 
+    -- IO.println s!"{stx.reprint.get!}"
+    -- IO.println s!"{← proofWithProp? stx}"
+    let data ←  PropProofData.get 0 #[] name tstx stx 
     data.view
 
 

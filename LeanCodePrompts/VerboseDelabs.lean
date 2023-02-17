@@ -597,8 +597,8 @@ partial def Syntax.purge: Syntax → Syntax := fun stx ↦
 def lambdaStx?(stx : Syntax) : MetaM <| Option (Syntax × Array Syntax) := do
   match stx with
   | `(fun $args:funBinder* ↦ $body) =>
-    -- let body := Syntax.purge body
-    -- let args := args.map Syntax.purge
+    return some (body, args)
+  | `((fun $args:funBinder* ↦ $body)) =>
     return some (body, args)
   | _ => return none
 
