@@ -343,7 +343,7 @@ where
 
 def withBindingBodyUnusedName {α} (d : Syntax → DelabM α) : DelabM α := do
   let n ← getUnusedName (← getExpr).bindingName! (← getExpr).bindingBody!
-  let n := n.append "domVar"
+  -- let n := n.append "domVar"
   let stxN ← annotateCurPos (mkIdent n)
   withBindingBody n $ d stxN
 
@@ -610,16 +610,23 @@ def proofWithProp? (stx : Syntax) : MetaM <| Option (Syntax × Syntax) := do
     return some (stx, typeStx)
   | _ => return none
 
+def getVar (stx: Syntax) : Option Name := 
+match stx with
+| `(funBinder|($n:ident)) => some n.getId
+| `(funBinder|($n:ident : $_)) => some n.getId
+| `(funBinder|{$n:ident : $_}) => some n.getId
+| `(funBinder|⦃$n:ident : $_⦄) => some n.getId
+| _ => none
 
-@[scoped delab fvar]
-def delabFVar : Delab := do
-let Expr.fvar fvarId ← getExpr | unreachable!
-try
-  let l ← fvarId.getDecl
-  maybeAddBlockImplicit (mkIdent <| l.userName.append "freeVar")
-catch _ =>
-  -- loose free variable, use internal name
-  maybeAddBlockImplicit <| mkIdent <| fvarId.name.append "freeVar"
+-- @[scoped delab fvar]
+-- def delabFVar : Delab := do
+-- let Expr.fvar fvarId ← getExpr | unreachable!
+-- try
+--   let l ← fvarId.getDecl
+--   maybeAddBlockImplicit (mkIdent <| l.userName.append "freeVar")
+-- catch _ =>
+--   -- loose free variable, use internal name
+--   maybeAddBlockImplicit <| mkIdent <| fvarId.name.append "freeVar"
 
 
 
