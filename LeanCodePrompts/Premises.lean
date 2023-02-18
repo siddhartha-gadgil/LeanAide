@@ -46,6 +46,12 @@ structure TermData where
     value : Syntax
 deriving Repr
 
+structure PropProofData where
+    context : Array Syntax
+    prop : Syntax
+    proof: Syntax
+deriving Repr
+
 instance reprintTermData : Reprint TermData where
     reprSyn := fun x => Reprint.reprSyn x.value
 
@@ -56,7 +62,7 @@ def checkRepr : Repr TermData := inferInstance
 
 
 
-structure PropProofData  where 
+structure PremiseData  where 
  context : (Array Syntax)
  name :       Option Name  -- name
  type :       Syntax  -- proposition
@@ -64,20 +70,20 @@ structure PropProofData  where
  ids :       Array (Name ×  ℕ)  -- proof identifiers used
 -- deriving Repr
 
-namespace PropProofData
+namespace PremiseData
 
 
-def increaseDepth (d: ℕ) : PropProofData → PropProofData :=  
+def increaseDepth (d: ℕ) : PremiseData → PremiseData :=  
 fun data ↦
     ⟨data.context, data.name, data.type, (data.terms.map (fun (p, m) => (p, m + d))),
         (data.ids.map (fun (n,  m) => (n,  m + d))) ⟩
 
 open Reprint in
-def view : PropProofData → MetaM String := fun data => -- pure "_"
+def view : PremiseData → MetaM String := fun data => -- pure "_"
 -- | mk ctx name prop subProofs subTerms proofIdents termIdents => do
     return s!"Context: {reprSyn data.context}; Name: {reprSyn data.name}; Proposition: {reprSyn data.type};  SubTerms: {reprSyn data.terms.toList}; Idents: {data.ids}"
 
-end PropProofData
+end PremiseData
 
 structure ConstsData where
     definitions : HashMap Name  Syntax
@@ -100,6 +106,12 @@ partial def Lean.Syntax.identsM (stx: Syntax)(context: Array Syntax)(maxDepth? :
     if maxDepth? = some 0 then
         pure []
     else
+    match ← namedArgument? stx with
+    | some (arg, _) =>
+        -- IO.println s!"Named: {arg}"
+        let prev ←  identsM  arg context (maxDepth?.map (· -1))
+        return prev.map (fun (s, m) => (s, m + 1))
+    | none =>
     match ← proofWithProp? stx with
     | some (proof, _) =>
         -- IO.println s!"Proof: {proof}"
@@ -144,6 +156,12 @@ partial def Lean.Syntax.termsM (context : Array Syntax)(stx: Syntax)(maxDepth? :
     if maxDepth? = some 0 then
         pure []
     else
+    match ← namedArgument? stx with
+    | some (arg, _) =>
+        -- IO.println s!"Named: {arg}"
+        let prev ←  termsM  context arg (maxDepth?.map (· -1))
+        return prev.map (fun (s, m) => (s, m + 1))
+    | none =>
     match ← proofWithProp? stx with
     | some (proof, _) =>
         -- IO.println s!"Proof: {proof}"
@@ -169,9 +187,43 @@ partial def Lean.Syntax.termsM (context : Array Syntax)(stx: Syntax)(maxDepth? :
              pure []
         | _ => pure []
 
+partial def Lean.Syntax.proofsM (context : Array Syntax)(stx: Syntax)(maxDepth? : Option ℕ := none) : MetaM <| List <| PropProofData × ℕ  := do
+    let tks ← termKindList
+    let tks := tks.map (·.1)
+    if maxDepth? = some 0 then
+        pure []
+    else
+    match ← namedArgument? stx with
+    | some (arg, _) =>
+        -- IO.println s!"Named: {arg}"
+        let prev ←  proofsM  context arg (maxDepth?.map (· -1))
+        return prev.map (fun (s, m) => (s, m + 1))
+    | none =>
+    match ← proofWithProp? stx with
+    | some (proof, prop) =>
+        -- IO.println s!"Proof: {proof}"
+        let prev ←  proofsM context  proof (maxDepth?.map (· -1))
+        let head : PropProofData := ⟨context, prop, proof⟩
+        return  (head, 0) :: prev.map (fun (s, m) => (s, m + 1))
+    | none =>
+    match ← lambdaStx? stx with
+    | some (body, args) =>
+        -- IO.println s!"Lambda: {args}"
+        let prev ←  proofsM (context ++ args) body (maxDepth?.map (· -1))
+        return prev.map (fun (s, m) => (s, m + args.size))
+    | none =>
+        match stx with
+        | Syntax.node _ _ args => 
+            -- IO.println s!"Node: {k}"
+            let prev ← args.mapM (proofsM context · (maxDepth?.map (· -1)))
+            return prev.toList.join.map (fun (s, m) => (s, m + 1))
+        | Syntax.ident .. => 
+             pure []
+        | _ => pure []
 
-def PropProofData.get(depth: ℕ)(ctx : Array Syntax)(name?: Name)(prop pf : Syntax) : MetaM PropProofData := do
-    let subProofs: Array (PropProofData × ℕ) := #[]
+
+def PremiseData.get(ctx : Array Syntax)(name?: Name)(prop pf : Syntax) : MetaM PremiseData := do
+    let subProofs: List (PropProofData × ℕ) ←  pf.proofsM ctx
     let subTerms : List (TermData × ℕ)  ← Syntax.termsM ctx pf
     let ids : List (Name  × ℕ) ← pf.identsM ctx 
     return ⟨ctx, name?, prop, subTerms.toArray, ids.toArray⟩
@@ -268,7 +320,7 @@ def viewData (name: Name) : MetaM <| String := do
     let (stx, tstx) ← nameDefTypeSyntax name
     -- IO.println s!"{stx.reprint.get!}"
     -- IO.println s!"{← proofWithProp? stx}"
-    let data ←  PropProofData.get 0 #[] name tstx stx 
+    let data ←  PremiseData.get  #[] name tstx stx 
     data.view
 
 
@@ -336,6 +388,7 @@ def getPremises (name: Name)(maxDepth? : Option ℕ := none ) : MetaM <| Premise
 
 #eval viewData ``Nat.succ_le_succ
 
+
 def showTerms (s: String) : MetaM <| List <| String × ℕ × List Name  := do
     let c := runParserCategory (← getEnv) `term s
     match c with
@@ -376,6 +429,12 @@ def nameDefIdents (name: Name)(maxDepth? : Option ℕ := none ) : MetaM <| List 
 #eval showTerms "fun n ↦ Nat.succ n = n + 1"
 
 #eval viewSyntax "n = n + 1"
+
+#eval viewSyntax "f (n := m)"
+
+#eval nameDefSyntax ``Nat.succ_le_succ
+
+#check Lean.Parser.Term.namedArgument
 
 #eval showKinds "n = n + 1"
 

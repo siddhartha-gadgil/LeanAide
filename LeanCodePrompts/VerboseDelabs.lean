@@ -618,6 +618,12 @@ match stx with
 | `(funBinder|⦃$n:ident : $_⦄) => some n.getId
 | _ => none
 
+def namedArgument? (stx : Syntax) : MetaM <| Option (Syntax × Syntax) := do
+  match stx with
+  | `(namedArgument|($n:ident := $stx)) =>    
+    return some (stx, n)
+  | _ => return none
+
 -- @[scoped delab fvar]
 -- def delabFVar : Delab := do
 -- let Expr.fvar fvarId ← getExpr | unreachable!
