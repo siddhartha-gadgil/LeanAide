@@ -174,10 +174,11 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(ma
             else pure (#[], #[], #[], [])
         | _ => pure (#[], #[], #[], [])
 
-def Lean.Syntax.premiseDataM (context : Array Syntax)(stx: Syntax)(maxDepth? : Option ℕ := none) : 
+def Lean.Syntax.premiseDataM (context : Array Syntax)(proof prop: Syntax)(name? : Option Name)(maxDepth? : Option ℕ := none) : 
     MetaM (List PremiseData) := do
-    let (_, _, _, ps) ← stx.premiseDataAuxM context maxDepth?
-    return ps
+    let (ts, pfs, ids, ps) ← proof.premiseDataAuxM context maxDepth?
+    let head : PremiseData := ⟨context, name?, prop.purge, ts, pfs, ids⟩
+    return head :: ps
 
 structure ConstsData where
     definitions : HashMap Name  Syntax
@@ -401,10 +402,14 @@ def nameDefSyntax (name: Name) : MetaM <| Option Syntax := do
         pure (some stx)
 
 def premisesFromName (name : Name) : MetaM (List PremiseData) := do
-    let stx? ← nameDefSyntax name
-    stx?.get!.premiseDataM #[]
+    let (pf, prop) ← nameDefTypeSyntax name
+    Lean.Syntax.premiseDataM #[] pf prop name
 
+def viewFromName (name: Name) : MetaM <| List String := do
+    let premises ← premisesFromName name
+    premises.mapM (fun p => p.view)
 
+#eval viewFromName `Nat.pred_le_pred
 
 def viewData (name: Name) : MetaM <| String := do
     let (stx, tstx) ← nameDefTypeSyntax name
