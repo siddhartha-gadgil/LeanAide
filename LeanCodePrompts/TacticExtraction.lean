@@ -49,6 +49,17 @@ def tacticData : IO <| List LeanInk.Analysis.Sentence := do
   let result ← analyzeInput.run config 
   return result.sentences
 
+instance : ToString LeanInk.Analysis.Goal where
+  toString goal := toString goal.conclusion
+
+instance : ToString LeanInk.Analysis.Tactic where
+  toString t := toString t.goalsAfter
+
+instance (priority := high) : ToString LeanInk.Analysis.Sentence where
+  toString
+    | .tactic t => s!"[TACTIC:{t.headPos}-{t.tailPos}]" ++ toString t
+    | .message m => "[MESSAGE]" ++ m.msg
+
 def tacticDataStrings : IO <| List String := do
   let tacs ← tacticData
   return tacs.map toString 
