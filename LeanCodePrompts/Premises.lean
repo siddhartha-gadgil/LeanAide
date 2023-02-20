@@ -53,7 +53,11 @@ structure PropProofData where
 deriving Repr
 
 instance reprintTermData : Reprint TermData where
-    reprSyn := fun x => Reprint.reprSyn x.value
+    reprSyn := fun x => s!"context: {Reprint.reprSyn x.context}; term: {Reprint.reprSyn x.value}"
+
+instance reprintProofData : Reprint PropProofData where
+    reprSyn := fun x => s!"context: {Reprint.reprSyn x.context}; prop: {Reprint.reprSyn x.prop}; proof : {Reprint.reprSyn x.proof}"
+        
 
 instance reprintPair {a : Type} {b : Type} [Reprint a] [Reprint b] : Reprint (a × b) where
     reprSyn := fun (x, y) => s!"({Reprint.reprSyn x}, {Reprint.reprSyn y})"
@@ -67,6 +71,7 @@ structure PremiseData  where
  name :       Option Name  -- name
  type :       Syntax  -- proposition
  terms :       Array (TermData × ℕ)  -- sub-terms
+ propProofs :       Array (PropProofData × ℕ)  -- sub-terms
  ids :       Array (Name ×  ℕ)  -- proof identifiers used
 -- deriving Repr
 
@@ -75,15 +80,27 @@ namespace PremiseData
 
 def increaseDepth (d: ℕ) : PremiseData → PremiseData :=  
 fun data ↦
-    ⟨data.context, data.name, data.type, (data.terms.map (fun (p, m) => (p, m + d))),
+    ⟨data.context, data.name, data.type, (data.terms.map (fun (p, m) => (p, m + d))), (data.propProofs.map (fun (p, m) => (p, m + d))),
         (data.ids.map (fun (n,  m) => (n,  m + d))) ⟩
 
 open Reprint in
 def view : PremiseData → MetaM String := fun data => -- pure "_"
 -- | mk ctx name prop subProofs subTerms proofIdents termIdents => do
-    return s!"Context: {reprSyn data.context}; Name: {reprSyn data.name}; Proposition: {reprSyn data.type};  SubTerms: {reprSyn data.terms.toList}; Idents: {data.ids}"
+    return s!"Context: {reprSyn data.context}; Name: {reprSyn data.name}; Proposition: {reprSyn data.type};  SubTerms: {reprSyn data.terms}; PropProofs : {reprSyn data.propProofs}  Idents: {data.ids}"
 
 end PremiseData
+
+partial def Lean.Syntax.purge: Syntax → Syntax := fun stx ↦
+  match stx with
+  | Syntax.ident _ _ n _ => 
+      mkIdent (Name.purgeSuffix n)
+  | Syntax.node info k args =>
+    match stx with
+    | `(($pf:term =: $_:term)) =>
+      pf.raw.purge
+    | _ =>
+      Syntax.node info k (args.map Syntax.purge) 
+  | s => s
 
 structure ConstsData where
     definitions : HashMap Name  Syntax
@@ -95,7 +112,7 @@ def constsData : MetaM ConstsData := do
     let mut theorems := HashMap.empty
     for (c, type) in consts do
         let tstx ← delab type
-        let tstx := Syntax.purge tstx
+        let tstx := tstx.raw.purge
         if ← Meta.isProp type then
             theorems := theorems.insert c tstx
         else
@@ -178,7 +195,7 @@ partial def Lean.Syntax.termsM (context : Array Syntax)(stx: Syntax)(maxDepth? :
         | Syntax.node _ k args => 
             -- IO.println s!"Node: {k}"
             let prev ← args.mapM (termsM context · (maxDepth?.map (· -1)))
-            let head : TermData := ⟨context, stx⟩
+            let head : TermData := ⟨context, stx.purge⟩
             if tks.contains k then 
                 return (head, 0) :: prev.toList.join.map (fun (s, m) => (s, m + 1))
             else  
@@ -188,8 +205,6 @@ partial def Lean.Syntax.termsM (context : Array Syntax)(stx: Syntax)(maxDepth? :
         | _ => pure []
 
 partial def Lean.Syntax.proofsM (context : Array Syntax)(stx: Syntax)(maxDepth? : Option ℕ := none) : MetaM <| List <| PropProofData × ℕ  := do
-    let tks ← termKindList
-    let tks := tks.map (·.1)
     if maxDepth? = some 0 then
         pure []
     else
@@ -226,7 +241,7 @@ def PremiseData.get(ctx : Array Syntax)(name?: Name)(prop pf : Syntax) : MetaM P
     let subProofs: List (PropProofData × ℕ) ←  pf.proofsM ctx
     let subTerms : List (TermData × ℕ)  ← Syntax.termsM ctx pf
     let ids : List (Name  × ℕ) ← pf.identsM ctx 
-    return ⟨ctx, name?, prop, subTerms.toArray, ids.toArray⟩
+    return ⟨ctx, name?, prop.purge, subTerms.toArray, subProofs.toArray, ids.toArray⟩
 
 
 
@@ -337,7 +352,7 @@ def nameDefView (name: Name) : MetaM String := do
 
 def nameDefCleanView (name: Name) : MetaM String := do
     let stx? ← nameDefSyntax name
-    return ((Syntax.purge stx?.get!).reprint.get!)
+    return ((stx?.get!.purge).reprint.get!)
 
 def nameDefSyntaxVerbose (name: Name) : MetaM <| Option Syntax := do
     let exp? ← nameExpr? name

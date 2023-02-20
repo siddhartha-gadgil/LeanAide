@@ -582,18 +582,6 @@ def Name.purgeSuffix: Name → Name
   | n => n
 
 
-partial def Syntax.purge: Syntax → Syntax := fun stx ↦
-  match stx with
-  | Syntax.ident _ _ n _ => 
-      mkIdent (Name.purgeSuffix n)
-  | Syntax.node info k args =>
-    match stx with
-    | `(($pf:term =: $_:term)) =>
-      Syntax.purge pf
-    | _ =>
-      Syntax.node info k (args.map Syntax.purge) 
-  | s => s
-
 def lambdaStx?(stx : Syntax) : MetaM <| Option (Syntax × Array Syntax) := do
   match stx with
   | `(fun $args:funBinder* ↦ $body) =>
