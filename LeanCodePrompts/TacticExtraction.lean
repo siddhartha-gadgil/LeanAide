@@ -4,14 +4,14 @@ import LeanInk.Analysis.Basic
 open Lean Elab
 
 
-def inputFile : System.FilePath := "lake-packages"/"mathlib"/"Mathlib"/"Data"/"Int"/"Dvd"/"Pow.lean"
+def inputFile : System.FilePath := "LeanCodePrompts" / "TacticExtractionTest.lean"
 
 #eval inputFile.pathExists
 
 def tacticExtractionConfig : IO LeanInk.Configuration := return {
   inputFilePath := inputFile
   inputFileContents := ← IO.FS.readFile inputFile
-  lakeFile := some $ "lake-packages"/"leanInk"/"lakefile.lean"
+  lakeFile := some $ "lakefile.lean" --  "lake-packages"/"leanInk"/"lakefile.lean"
   verbose := true
   prettifyOutput := true
   experimentalTypeInfo := true
