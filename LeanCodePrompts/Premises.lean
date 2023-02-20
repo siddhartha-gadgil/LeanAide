@@ -102,6 +102,83 @@ partial def Lean.Syntax.purge: Syntax → Syntax := fun stx ↦
       Syntax.node info k (args.map Syntax.purge) 
   | s => s
 
+def termKinds : MetaM <| SyntaxNodeKindSet :=  do
+    let env ← getEnv
+    let categories := (parserExtension.getState env).categories
+    let termCat? := getCategory categories `term
+    return termCat?.get!.kinds    
+
+def termKindList : MetaM <| List (SyntaxNodeKind × Unit) := do
+    let s ← termKinds
+    pure <| s.toList 
+
+
+partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(maxDepth? : Option ℕ := none) : 
+    MetaM (
+        Array (TermData × ℕ) ×
+        Array (PropProofData × ℕ) ×
+        Array (Name × ℕ) ×
+        List PremiseData
+        )  := do
+    if maxDepth? = some 0 then
+        pure (#[], #[], #[], [])    
+    else
+    let tks ← termKindList
+    let tks := tks.map (·.1)
+    match ← namedArgument? stx with
+    | some (arg, _) =>
+        arg.premiseDataAuxM context  (maxDepth?.map (· -1))
+    | none =>
+    match ← proofWithProp? stx with
+    | some (proof, prop) =>
+        let prev ←  proof.premiseDataAuxM context (maxDepth?.map (· -1))
+        let (ts, pfs, ids, ps) := prev
+        let headPf : PropProofData := ⟨context, prop.purge, proof.purge⟩
+        let head : PremiseData := ⟨context, none, stx.purge, ts, pfs, ids⟩
+        return (ts.map (fun (s, m) => (s, m + 1)),
+                pfs.map (fun (s, m) => (s, m + 1)) |>.push (headPf, 0),
+                ids.map (fun (s, m) => (s, m + 1)),
+                head :: ps)
+    | none =>
+    match ← lambdaStx? stx with
+    | some (body, args) =>
+        let prev ←  body.premiseDataAuxM (context ++ args) (maxDepth?.map (· -1))
+        let (ts, pfs, ids, ps) := prev
+        return (ts.map (fun (s, m) => (s, m + args.size)),
+                pfs.map (fun (s, m) => (s, m + args.size)),
+                ids.map (fun (s, m) => (s, m + args.size)),
+                ps)
+    | none =>
+        match stx with
+        | Syntax.node _ k args => 
+            let prevs ← args.mapM (premiseDataAuxM context · (maxDepth?.map (· -1)))
+            let mut ts: Array (TermData × ℕ) := #[]
+            let mut pfs: Array (PropProofData × ℕ) := #[]
+            let mut ids: Array (Name × ℕ) := #[]
+            let mut ps: List PremiseData := []
+            for prev in prevs do
+                let (ts', pfs', ids', ps') := prev
+                ts := ts ++ ts'.map (fun (s, m) => (s, m + 1))
+                pfs := pfs ++ pfs'.map (fun (s, m) => (s, m + 1))
+                ids := ids ++ ids'.map (fun (s, m) => (s, m + 1))
+                ps := ps ++ ps'
+            let head : TermData := ⟨context, stx.purge⟩
+            if tks.contains k then 
+                ts := ts.push (head, 0)
+            return (ts, pfs, ids, ps)
+        | Syntax.ident _ _ name .. => 
+            let contextVars := context.filterMap getVar
+            if  !(contextVars.contains name) &&
+                !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name)) then 
+                pure (#[], #[], #[(name, 0)], [])
+            else pure (#[], #[], #[], [])
+        | _ => pure (#[], #[], #[], [])
+
+def Lean.Syntax.premiseDataM (context : Array Syntax)(stx: Syntax)(maxDepth? : Option ℕ := none) : 
+    MetaM (List PremiseData) := do
+    let (_, _, _, ps) ← stx.premiseDataAuxM context maxDepth?
+    return ps
+
 structure ConstsData where
     definitions : HashMap Name  Syntax
     theorems : HashMap Name  Syntax
@@ -154,15 +231,6 @@ partial def Lean.Syntax.identsM (stx: Syntax)(context: Array Syntax)(maxDepth? :
             else pure []
         | _ => pure []
 
-def termKinds : MetaM <| SyntaxNodeKindSet :=  do
-    let env ← getEnv
-    let categories := (parserExtension.getState env).categories
-    let termCat? := getCategory categories `term
-    return termCat?.get!.kinds    
-
-def termKindList : MetaM <| List (SyntaxNodeKind × Unit) := do
-    let s ← termKinds
-    pure <| s.toList 
 
 -- #eval termKindList
 
@@ -203,6 +271,8 @@ partial def Lean.Syntax.termsM (context : Array Syntax)(stx: Syntax)(maxDepth? :
         | Syntax.ident .. => 
              pure []
         | _ => pure []
+
+
 
 partial def Lean.Syntax.proofsM (context : Array Syntax)(stx: Syntax)(maxDepth? : Option ℕ := none) : MetaM <| List <| PropProofData × ℕ  := do
     if maxDepth? = some 0 then
@@ -329,6 +399,11 @@ def nameDefSyntax (name: Name) : MetaM <| Option Syntax := do
     | some exp => do
         let stx ←  delab exp
         pure (some stx)
+
+def premisesFromName (name : Name) : MetaM (List PremiseData) := do
+    let stx? ← nameDefSyntax name
+    stx?.get!.premiseDataM #[]
+
 
 
 def viewData (name: Name) : MetaM <| String := do
