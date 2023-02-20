@@ -4,7 +4,7 @@ import LeanInk.Analysis.Basic
 open Lean Elab
 
 
-def inputFile : System.FilePath := "lake-packages"/"mathlib"/"Mathlib"/"Data"/"Int"/"Dvd"/"Pow.lean"
+def inputFile : System.FilePath := "LeanCodePrompts" / "TacticExtractionTest.lean"
 
 #eval inputFile.pathExists
 
@@ -48,6 +48,17 @@ def tacticData : IO <| List LeanInk.Analysis.Sentence := do
   let config ← tacticExtractionConfig
   let result ← analyzeInput.run config 
   return result.sentences
+
+instance : ToString LeanInk.Analysis.Goal where
+  toString goal := toString goal.conclusion
+
+instance : ToString LeanInk.Analysis.Tactic where
+  toString t := toString t.goalsAfter
+
+instance (priority := high) : ToString LeanInk.Analysis.Sentence where
+  toString
+    | .tactic t => s!"[TACTIC:{t.headPos}-{t.tailPos}]" ++ toString t
+    | .message m => "[MESSAGE]" ++ m.msg
 
 def tacticDataStrings : IO <| List String := do
   let tacs ← tacticData
