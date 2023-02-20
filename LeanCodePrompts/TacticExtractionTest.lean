@@ -11,3 +11,6 @@ theorem Nat.eq_self : ∀ n : Nat, n = n := by
   cases n
   · rfl
   · simp
+
+theorem add_zero_add : ∀ n : Nat, m + (0 + n + 0) = n + m := by
+  simp [Nat.add_comm]
