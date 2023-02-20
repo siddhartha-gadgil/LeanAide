@@ -1,4 +1,4 @@
-import LeanCodePrompts.Premises
+import LeanCodePrompts.ExtrasPremises
 import Lean
 open Lean Meta LeanAide.Meta
 
