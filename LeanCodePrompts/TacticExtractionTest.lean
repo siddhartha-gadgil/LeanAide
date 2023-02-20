@@ -10,4 +10,4 @@ theorem Nat.eq_self : ∀ n : Nat, n = n := by
   intro n
   cases n
   · rfl
-  · rfl
+  · simp
