@@ -82,14 +82,13 @@ end LeanInk
 open Lean Parser Term Meta Tactic
 
 -- Leonardo de Moura's code for generating trace data
-def getTactics (s : TSyntax ``tacticSeq) : Array (TSyntax `tactic) :=
-  match s with
+def getTactics : TSyntax ``tacticSeq → TSyntaxArray `tactic
   | `(tacticSeq| { $[$t]* }) => t
   | `(tacticSeq| $[$t]*) => t
   | _ => #[]
 
 elab "seq" s:tacticSeq : tactic => do
-  let tacs := getTactics  s
+  let tacs := getTactics s
   for tac in tacs do
     let gs ← getUnsolvedGoals
     withRef tac <| addRawTrace (goalsToMessageData gs)
