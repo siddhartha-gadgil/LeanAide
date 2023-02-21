@@ -419,7 +419,7 @@ def writeBatchPremisesM (start batch : Nat) : MetaM Nat  := do
                 pure ()
             | some defData =>
                 IO.println <| s!"{count} {name} written"
-                h.putStrLn <| (toJson defData).pretty 100000 
+                h.putStrLn <| (toJson defData).pretty 1000000
         count := count + 1    
     return start + batch
 
