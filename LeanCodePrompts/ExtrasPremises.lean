@@ -61,7 +61,7 @@ partial def Lean.Syntax.identsM (stx: Syntax)(context: Array Syntax)(maxDepth? :
         | _ => pure []
 
 
--- #eval termKindList
+-- -- #eval termKindList
 
 
 partial def Lean.Syntax.termsM (context : Array Syntax)(stx: Syntax)(maxDepth? : Option ℕ := none) : MetaM <| List <| TermData × ℕ  := do
@@ -149,7 +149,7 @@ def viewData (name: Name) : MetaM <| String := do
     let data ←  PremiseData.get  #[] name tstx stx 
     data.view
 
-#eval viewData ``Nat.succ_le_succ
+-- #eval viewData ``Nat.succ_le_succ
 
 partial def Lean.Syntax.kinds (stx: Syntax)(maxDepth?: Option ℕ := none) : List String :=
     if maxDepth? = some 0 then
@@ -282,56 +282,56 @@ def nameDefIdents (name: Name)(maxDepth? : Option ℕ := none ) : MetaM <| List 
 
 #check List.join
 
-#eval showTerms "fun n ↦ Nat.succ n"
+-- #eval showTerms "fun n ↦ Nat.succ n"
 
-#eval showIdents "fun n ↦ Nat.succ n"
+-- #eval showIdents "fun n ↦ Nat.succ n"
 
-#eval showTerms "fun n ↦ Nat.succ n = n + 1"
+-- #eval showTerms "fun n ↦ Nat.succ n = n + 1"
 
-#eval viewSyntax "n = n + 1"
+-- #eval viewSyntax "n = n + 1"
 
-#eval viewSyntax "f (n := m)"
+-- #eval viewSyntax "f (n := m)"
 
-#eval nameDefSyntax ``Nat.succ_le_succ
+-- #eval nameDefSyntax ``Nat.succ_le_succ
 
 #check Lean.Parser.Term.namedArgument
 
-#eval showKinds "n = n + 1"
+-- #eval showKinds "n = n + 1"
 
 def egTerms : MetaM <| List <| String × ℕ × List Name := do
     let p ←  getPremises ``oddExample (some 30) 
     return p.defMainTerms
 
-#eval egTerms
+-- #eval egTerms
 
 def egIdents : MetaM <| List <| Name × ℕ:= do
     let p ←  getPremises ``oddExample (some 50) 
     return p.defIdents
 
-#eval egIdents
+-- #eval egIdents
 
 def egGpIdents : MetaM NameGroups := do
     let nd ← egIdents
     return groupedNames nd.toArray
 
-#eval egGpIdents
+-- #eval egGpIdents
 
 #check Linarith.lt_irrefl
 
--- #eval nameDefSyntax ``oddExample
+-- -- #eval nameDefSyntax ``oddExample
 
 def dataSize : MetaM ℕ := do
     let names ← constantNames
     return names.size 
 
-#eval dataSize
+-- #eval dataSize
 
 def boundedDataSize (n: ℕ) : MetaM ℕ := do
     let names ← constantNames
     let names ← names.filterM (boundedDef n)
     return names.size
 
-#eval boundedDataSize 50
+-- #eval boundedDataSize 50
 
 def sampleExtract (n: ℕ := 100) : MetaM <|
         List (Name × (List <| String × ℕ × List Name) ×
@@ -395,7 +395,7 @@ def batchPremiseExtractM (start stop: ℕ) : MetaM ℕ  := do
 def batchPremiseExtractCore (start stop: ℕ) : CoreM ℕ := 
     (batchPremiseExtractM start stop).run'
 
--- #eval sampleExtract
+-- -- #eval sampleExtract
 
 theorem imo_1964_q1b : ∀ (n : ℕ), (2 ^ n + 1) % 7 ≠ 0
     | 0 | 1 | 2 => by decide
@@ -405,8 +405,8 @@ theorem imo_1964_q1b : ∀ (n : ℕ), (2 ^ n + 1) % 7 ≠ 0
 
 
 -- set_option pp.proofs.withType true in
+-- -- #eval nameDefView ``imo_1964_q1b
+
 -- #eval nameDefView ``imo_1964_q1b
 
-#eval nameDefView ``imo_1964_q1b
-
--- #eval nameDefViewVerbose ``imo_1964_q1b
+-- -- #eval nameDefViewVerbose ``imo_1964_q1b

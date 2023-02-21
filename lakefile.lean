@@ -78,7 +78,7 @@ lean_exe depnames{
   supportInterpreter := true
 }
 
-lean_exe premises{
+lean_exe getpremises{
   supportInterpreter := true
 }
 

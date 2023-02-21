@@ -1,5 +1,5 @@
 import Lean
-import Mathlib
+-- import Mathlib
 import Std.Data.HashMap
 import LeanCodePrompts.ConstDeps
 import LeanCodePrompts.VerboseDelabs
@@ -95,9 +95,9 @@ structure PremiseData  where
  context : (Array Syntax)
  name :       Option Name  -- name
  type :       Syntax  -- proposition
- terms :       Array (TermData × ℕ)  -- sub-terms
- propProofs :       Array (PropProofData × ℕ)  -- sub-terms
- ids :       Array (Name ×  ℕ)  -- proof identifiers used
+ terms :       Array (TermData × Nat)  -- sub-terms
+ propProofs :       Array (PropProofData × Nat)  -- sub-terms
+ ids :       Array (Name ×  Nat)  -- proof identifiers used
 -- deriving Repr
 
 namespace PremiseData
@@ -114,7 +114,7 @@ instance premiseToJson : ToJson PremiseData :=⟨
     ]⟩
 
 
-def increaseDepth (d: ℕ) : PremiseData → PremiseData :=  
+def increaseDepth (d: Nat) : PremiseData → PremiseData :=  
 fun data ↦
     ⟨data.context, data.name, data.type, (data.terms.map (fun (p, m) => (p, m + d))), (data.propProofs.map (fun (p, m) => (p, m + d))),
         (data.ids.map (fun (n,  m) => (n,  m + d))) ⟩
@@ -149,11 +149,11 @@ def termKindList : MetaM <| List (SyntaxNodeKind × Unit) := do
     pure <| s.toList 
 
 
-partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(maxDepth? : Option ℕ := none) : 
+partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(maxDepth? : Option Nat := none) : 
     MetaM (
-        Array (TermData × ℕ) ×
-        Array (PropProofData × ℕ) ×
-        Array (Name × ℕ) ×
+        Array (TermData × Nat) ×
+        Array (PropProofData × Nat) ×
+        Array (Name × Nat) ×
         List PremiseData
         )  := do
     if maxDepth? = some 0 then
@@ -188,9 +188,9 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(ma
         match stx with
         | Syntax.node _ k args => 
             let prevs ← args.mapM (premiseDataAuxM context · (maxDepth?.map (· -1)))
-            let mut ts: Array (TermData × ℕ) := #[]
-            let mut pfs: Array (PropProofData × ℕ) := #[]
-            let mut ids: Array (Name × ℕ) := #[]
+            let mut ts: Array (TermData × Nat) := #[]
+            let mut pfs: Array (PropProofData × Nat) := #[]
+            let mut ids: Array (Name × Nat) := #[]
             let mut ps: List PremiseData := []
             for prev in prevs do
                 let (ts', pfs', ids', ps') := prev
@@ -210,7 +210,7 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(ma
             else pure (#[], #[], #[], [])
         | _ => pure (#[], #[], #[], [])
 
-def Lean.Syntax.premiseDataM (context : Array Syntax)(proof prop: Syntax)(name? : Option Name)(maxDepth? : Option ℕ := none) : 
+def Lean.Syntax.premiseDataM (context : Array Syntax)(proof prop: Syntax)(name? : Option Name)(maxDepth? : Option Nat := none) : 
     MetaM (List PremiseData) := do
     let (ts, pfs, ids, ps) ← proof.premiseDataAuxM context maxDepth?
     let head : PremiseData := ⟨context, name?, prop.purge, ts, pfs, ids⟩
@@ -265,12 +265,12 @@ def premisesJsonFromName (name: Name) : MetaM <| Json := do
 -- #eval premisesViewFromName ``Nat.le_of_succ_le_succ
 
 
-def boundedDef (bound: ℕ)(name: Name) : MetaM Bool := do
+def boundedDef (bound: Nat)(name: Name) : MetaM Bool := do
     let exp? ← nameExpr? name
     match exp? with
     | none => pure false
     | some exp => do
-        pure (exp.approxDepth < bound)
+        pure (exp.approxDepth.toNat < bound)
 
 def nameDefView (name: Name) : MetaM String := do
     let stx? ← nameDefSyntax name
@@ -302,24 +302,24 @@ def nameDefViewVerbose (name: Name) : MetaM String := do
 
 -- #eval nameDefCleanView ``Nat.gcd_eq_zero_iff
 
-def egSplit : MetaM <| Option (Syntax × Array Syntax) := do
-    let stx? ← nameDefSyntax ``Nat.gcd_eq_zero_iff
-    lambdaStx? stx?.get!
+-- def egSplit : MetaM <| Option (Syntax × Array Syntax) := do
+--     let stx? ← nameDefSyntax ``Nat.gcd_eq_zero_iff
+--     lambdaStx? stx?.get!
 
 -- #eval egSplit
 
-def egSplitView : MetaM <| Option (String × Array String) := do
-    let stx? ← nameDefSyntax ``Nat.gcd_eq_zero_iff
-    let pair? ← lambdaStx? stx?.get!
-    let (stx, args) := pair?.get!
-    pure (stx.reprint.get!, args.map (fun s => s.reprint.get!))
+-- def egSplitView : MetaM <| Option (String × Array String) := do
+--     let stx? ← nameDefSyntax ``Nat.gcd_eq_zero_iff
+--     let pair? ← lambdaStx? stx?.get!
+--     let (stx, args) := pair?.get!
+--     pure (stx.reprint.get!, args.map (fun s => s.reprint.get!))
 
 -- #eval egSplitView
 
-set_option pp.proofs false in 
+-- set_option pp.proofs false in 
 -- #eval nameDefView ``Nat.gcd_eq_zero_iff
 
-set_option pp.proofs.withType true in 
+-- set_option pp.proofs.withType true in 
 -- #eval nameDefView ``Nat.gcd_eq_zero_iff
 
 -- #eval nameDefViewVerbose ``Nat.gcd_eq_zero_iff
@@ -328,22 +328,22 @@ set_option pp.proofs.withType true in
 
 -- #eval nameDefViewVerbose ``Nat.gcd_eq_gcd_ab
 
-set_option pp.proofs false in
+-- set_option pp.proofs false in
 -- #eval nameDefView ``Nat.gcd_eq_gcd_ab
 
 -- #eval setDelabBound 200
 
 -- #eval nameDefViewVerbose ``Nat.xgcd_aux_P
 
-set_option pp.proofs false in
+-- set_option pp.proofs false in
 -- #eval nameDefView ``Nat.xgcd_aux_P
 
-theorem oddExample : ∀ (n : ℕ), ∃ m, m > n ∧ m % 2 = 1 := by
-  intro n -- introduce a variable n
-  use 2 * n + 1 -- use `m = 2 * n + 1`
-  apply And.intro -- apply the constructor of `∧` to split goals
-  · linarith -- solve the first goal using `linarith` 
-  · simp [Nat.add_mod] -- solve the second goal using `simp` with the lemma `Nat.add_mod`
+-- theorem oddExample : ∀ (n : Nat), ∃ m, m > n ∧ m % 2 = 1 := by
+--   intro n -- introduce a variable n
+--   use 2 * n + 1 -- use `m = 2 * n + 1`
+--   apply And.intro -- apply the constructor of `∧` to split goals
+--   · linarith -- solve the first goal using `linarith` 
+--   · simp [Nat.add_mod] -- solve the second goal using `simp` with the lemma `Nat.add_mod`
 
 -- -- #eval premisesViewFromName ``oddExample
 
@@ -353,8 +353,8 @@ structure DefData where
     type : Syntax
     value : Syntax
     isProp : Bool
-    typeDepth : ℕ
-    valueDepth : ℕ
+    typeDepth : Nat
+    valueDepth : Nat
     premises : List PremiseData -- empty if depth exceeds bound
     deriving Inhabited, ToJson
 
@@ -368,3 +368,63 @@ def DefData.getM? (name: Name)(term type: Expr) : MetaM (Option  DefData) := do
     let typeDepth := type.approxDepth
     let valueDepth := term.approxDepth
     return some {name := name, type := tstx.raw.purge, value := stx.raw.purge, isProp := isProp, typeDepth := typeDepth.toNat, valueDepth := valueDepth.toNat, premises := premises}
+
+def nameSize : MetaM Nat := do
+    let cs ← constantNameValueTypes 
+    return cs.size
+
+-- #check Json.pretty
+
+-- #eval nameSize
+
+def nameSample (n: Nat) : MetaM (Array Name) := do
+    let cs ← constantNameValueTypes 
+    let mut out : Array Name := #[]
+    let mut count := 0
+    for (name, _, _) in cs do
+        if count % n = 0 then
+            out := out.push name
+        count := count + 1    
+    return out
+
+-- #eval nameSample 100
+
+def batchPremises (start batch : Nat) : MetaM (Array Json) := do
+    let cs ← constantNameValueTypes 
+    let mut out : Array Json := #[]
+    let mut count := 0
+    for (name, term, type) in cs do
+        if count >= start && count < start + batch then
+            let defData? ← DefData.getM? name term type
+            match defData? with
+            | none => pure ()
+            | some defData => out := out.push <| toJson defData
+        count := count + 1    
+    return out
+
+
+def writeBatchPremisesM (start batch : Nat) : MetaM Nat  := do
+    let cs ← constantNameValueTypes 
+    IO.println <| s!"{start}; {batch} from {cs.size}"
+    let mut count := 0
+    let premisesFile := System.mkFilePath ["rawdata", s!"premises.jsonl"]
+    let h ← IO.FS.Handle.mk premisesFile IO.FS.Mode.append Bool.false
+    for (name, term, type) in cs do
+        if count >= start && count < start + batch then
+            IO.println <| s!"{count} {name}"
+            let defData? ← DefData.getM? name term type
+            match defData? with
+            | none => 
+                IO.println <| s!"{count} {name} omitted"
+                pure ()
+            | some defData =>
+                IO.println <| s!"{count} {name} written"
+                h.putStrLn <| (toJson defData).pretty 100000 
+        count := count + 1    
+    return start + batch
+
+
+def writeBatchPremisesCore (start batch : Nat) : CoreM Nat := 
+    (writeBatchPremisesM start batch).run' {} 
+
+-- #eval batchPremises 0 5
