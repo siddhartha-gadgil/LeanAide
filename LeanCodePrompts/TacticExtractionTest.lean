@@ -12,6 +12,5 @@ theorem Nat.eq_self : ∀ n : Nat, n = n := by
   · rfl
   · simp
 
-set_option tactic.simp.trace true in
 theorem add_zero_add : ∀ n : Nat, m + (0 + n + 0) = n + m := by
   simp [Nat.add_comm]

@@ -3,13 +3,6 @@ import LeanInk.Analysis.Basic
 
 open Lean Elab
 
-#check Lean.Option.register
-register_option book.myGreeting : String := {
-  defValue := "Hello World"
-  group := "pp"
-  descr := "just a friendly greeting"
-}
-
 def inputFile : System.FilePath := 
 "LeanCodePrompts"/"TacticExtractionTest.lean"
 -- "LeanCodePrompts"/"PowTest.lean"
@@ -28,17 +21,19 @@ def tacticExtractionConfig : IO LeanInk.Configuration := return {
   experimentalSemanticType := false
 }
 
+def options : Options :=
+  Options.empty 
+    |>.set `trace.Elab.info true
+    |>.set `tactic.simp.trace true
+
 -- modified from `LeanInk` source
 open LeanInk in
-def analyzeInput : AnalysisM Analysis.AnalysisResult := do
+def analyzeInput' : AnalysisM Analysis.AnalysisResult := do
   let config ← tacticExtractionConfig 
   let context := Parser.mkInputContext config.inputFileContents config.inputFileName
   let (header, state, messages) ← Parser.parseHeader context
   -- doc-gen: Lake already configures us via LEAN_PATH
   -- initializeSearchPaths header config
-  let options := Options.empty 
-                    |>.setBool `trace.Elab.info true
-                    |>.setBool `tactic.simp.trace true
   let (environment, messages) ← processHeader header options messages context 0
   logInfo s!"Header: {environment.header.mainModule}"
   logInfo s!"Header: {environment.header.moduleNames}"
@@ -55,7 +50,7 @@ def analyzeInput : AnalysisM Analysis.AnalysisResult := do
 
 def tacticData : IO <| List LeanInk.Analysis.Sentence := do
   let config ← tacticExtractionConfig
-  let result ← analyzeInput.run config 
+  let result ← analyzeInput'.run config 
   return result.sentences
 
 instance : ToString LeanInk.Analysis.Goal where
