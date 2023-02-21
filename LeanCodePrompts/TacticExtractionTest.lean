@@ -2,6 +2,7 @@ theorem Nat.add_assoc' : ∀ a b c : Nat, a + b + c = a + (b + c) := by
   intro a
   intro b
   intro c
+  dbg_trace "Test message"
   apply Eq.symm
   apply Eq.symm
   rw [Nat.add_assoc]
