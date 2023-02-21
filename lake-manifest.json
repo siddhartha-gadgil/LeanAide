@@ -1,5 +1,5 @@
 {"version": 4,
- "packagesDir": "./lake-packages",
+ "packagesDir": "lake-packages",
  "packages":
  [{"git":
    {"url": "https://github.com/leanprover-community/mathlib4.git",
@@ -22,7 +22,7 @@
   {"git":
    {"url": "https://github.com/leanprover/LeanInk",
     "subDir?": null,
-    "rev": "499cf46f571562bebee0c8c193a7f9dcf5a30187",
+    "rev": "10bb456fa4677e791bdd4e195e2205476a55f7dd",
     "name": "leanInk",
     "inputRev?": "main"}},
   {"git":
