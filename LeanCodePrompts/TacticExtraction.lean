@@ -3,8 +3,10 @@ import LeanInk.Analysis.Basic
 
 open Lean Elab
 
-
-def inputFile : System.FilePath := "LeanCodePrompts" / "TacticExtractionTest.lean"
+def inputFile : System.FilePath := 
+"LeanCodePrompts"/"TacticExtractionTest.lean"
+-- "LeanCodePrompts"/"PowTest.lean"
+-- "lake-packages"/"mathlib"/"Mathlib"/"Data"/"Int"/"Dvd"/"Pow.lean"
 
 #eval inputFile.pathExists
 
@@ -19,17 +21,19 @@ def tacticExtractionConfig : IO LeanInk.Configuration := return {
   experimentalSemanticType := false
 }
 
+def options : Options :=
+  Options.empty 
+    |>.set `trace.Elab.info true
+    |>.set `tactic.simp.trace true
+
 -- modified from `LeanInk` source
 open LeanInk in
-def analyzeInput : AnalysisM Analysis.AnalysisResult := do
+def analyzeInput' : AnalysisM Analysis.AnalysisResult := do
   let config ← tacticExtractionConfig 
   let context := Parser.mkInputContext config.inputFileContents config.inputFileName
   let (header, state, messages) ← Parser.parseHeader context
   -- doc-gen: Lake already configures us via LEAN_PATH
   -- initializeSearchPaths header config
-    let options := Options.empty 
-                    |>.setBool `trace.Elab.info true
-                    |>.setBool `tactic.simp.trace true
   let (environment, messages) ← processHeader header options messages context 0
   logInfo s!"Header: {environment.header.mainModule}"
   logInfo s!"Header: {environment.header.moduleNames}"
@@ -41,12 +45,12 @@ def analyzeInput : AnalysisM Analysis.AnalysisResult := do
   let commandState := Analysis.configureCommandState environment messages
   let s ← IO.processCommands context state commandState
   let result ← Analysis.resolveTacticList s.commandState.infoState.trees.toList
-  let messages := s.commandState.messages.msgs.toList.filter (λ m => m.endPos.isSome )
+  let messages := s.commandState.messages.msgs.toList.filter (·.endPos.isSome)
   return ← result.insertMessages messages context.fileMap
 
 def tacticData : IO <| List LeanInk.Analysis.Sentence := do
   let config ← tacticExtractionConfig
-  let result ← analyzeInput.run config 
+  let result ← analyzeInput'.run config 
   return result.sentences
 
 instance : ToString LeanInk.Analysis.Goal where
@@ -64,3 +68,5 @@ def tacticDataStrings : IO <| List String := do
   let tacs ← tacticData
   return tacs.map toString 
   -- TODO replace the default `toString` instance with a more descriptive one
+
+#eval tacticDataStrings

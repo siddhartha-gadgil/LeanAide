@@ -1,3 +1,0 @@
-import LeanCodePrompts.TacticExtraction
-
-#eval tacticDataStrings
