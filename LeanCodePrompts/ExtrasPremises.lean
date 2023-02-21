@@ -25,7 +25,7 @@ end LeanAide.Meta
 
 open LeanAide.Meta
 
-partial def Lean.Syntax.identsM (stx: Syntax)(context: Array Syntax)(maxDepth? : Option ℕ := none) : MetaM <| List <| Name × ℕ  := do
+partial def Lean.Syntax.identsM (stx: Syntax)(context: Array Syntax)(maxDepth? : Option Nat := none) : MetaM <| List <| Name × Nat  := do
     if maxDepth? = some 0 then
         pure []
     else
@@ -64,7 +64,7 @@ partial def Lean.Syntax.identsM (stx: Syntax)(context: Array Syntax)(maxDepth? :
 -- -- #eval termKindList
 
 
-partial def Lean.Syntax.termsM (context : Array Syntax)(stx: Syntax)(maxDepth? : Option ℕ := none) : MetaM <| List <| TermData × ℕ  := do
+partial def Lean.Syntax.termsM (context : Array Syntax)(stx: Syntax)(maxDepth? : Option Nat := none) : MetaM <| List <| TermData × Nat  := do
     let tks ← termKindList
     let tks := tks.map (·.1)
     if maxDepth? = some 0 then
@@ -103,7 +103,7 @@ partial def Lean.Syntax.termsM (context : Array Syntax)(stx: Syntax)(maxDepth? :
 
 
 
-partial def Lean.Syntax.proofsM (context : Array Syntax)(stx: Syntax)(maxDepth? : Option ℕ := none) : MetaM <| List <| PropProofData × ℕ  := do
+partial def Lean.Syntax.proofsM (context : Array Syntax)(stx: Syntax)(maxDepth? : Option Nat := none) : MetaM <| List <| PropProofData × Nat  := do
     if maxDepth? = some 0 then
         pure []
     else
@@ -137,9 +137,9 @@ partial def Lean.Syntax.proofsM (context : Array Syntax)(stx: Syntax)(maxDepth? 
 
 
 def PremiseData.get(ctx : Array Syntax)(name?: Name)(prop pf : Syntax) : MetaM PremiseData := do
-    let subProofs: List (PropProofData × ℕ) ←  pf.proofsM ctx
-    let subTerms : List (TermData × ℕ)  ← Syntax.termsM ctx pf
-    let ids : List (Name  × ℕ) ← pf.identsM ctx 
+    let subProofs: List (PropProofData × Nat) ←  pf.proofsM ctx
+    let subTerms : List (TermData × Nat)  ← Syntax.termsM ctx pf
+    let ids : List (Name  × Nat) ← pf.identsM ctx 
     return ⟨ctx, name?, prop.purge, subTerms.toArray, subProofs.toArray, ids.toArray⟩
 
 def viewData (name: Name) : MetaM <| String := do
@@ -151,7 +151,7 @@ def viewData (name: Name) : MetaM <| String := do
 
 -- #eval viewData ``Nat.succ_le_succ
 
-partial def Lean.Syntax.kinds (stx: Syntax)(maxDepth?: Option ℕ := none) : List String :=
+partial def Lean.Syntax.kinds (stx: Syntax)(maxDepth?: Option Nat := none) : List String :=
     if maxDepth? = some 0 then
         []
     else
@@ -164,7 +164,7 @@ partial def Lean.Syntax.kinds (stx: Syntax)(maxDepth?: Option ℕ := none) : Lis
         | none => args.map (kinds · (maxDepth?.map (· -1))) |>.toList.join
     | _ => []
 
-partial def Lean.Syntax.idents (stx: Syntax)(maxDepth? : Option ℕ := none) : List <| Name × ℕ  :=
+partial def Lean.Syntax.idents (stx: Syntax)(maxDepth? : Option Nat := none) : List <| Name × Nat  :=
     if maxDepth? = some 0 then
         []
     else
@@ -179,8 +179,8 @@ partial def Lean.Syntax.idents (stx: Syntax)(maxDepth? : Option ℕ := none) : L
     | _ => []
 
 
-partial def Lean.Syntax.terms (stx: Syntax)(maxDepth?: Option ℕ := none) : 
-     MetaM <|  List <| String × ℕ × List Name := do
+partial def Lean.Syntax.terms (stx: Syntax)(maxDepth?: Option Nat := none) : 
+     MetaM <|  List <| String × Nat × List Name := do
     let tks ← termKindList
     let tks := tks.map (·.1)
     if maxDepth? = some 0 then
@@ -212,23 +212,23 @@ partial def Lean.Syntax.terms (stx: Syntax)(maxDepth?: Option ℕ := none) :
 
 structure Premises where
     type : String
-    defTerms : List <| String × ℕ × List Name
-    defIdents : List <| Name × ℕ
-    typeTerms : List <| String × ℕ × List Name
-    typeIdents : List <| Name × ℕ 
+    defTerms : List <| String × Nat × List Name
+    defIdents : List <| Name × Nat
+    typeTerms : List <| String × Nat × List Name
+    typeIdents : List <| Name × Nat 
 deriving Repr, Inhabited
 
-def Premises.defMainTerms (p: Premises) : List <| String × ℕ × List Name  :=
+def Premises.defMainTerms (p: Premises) : List <| String × Nat × List Name  :=
     p.defTerms.filter (
             fun (s, _) => s.1.length < 20)
 
-def Premises.typeMainTerms (p: Premises) : List <| String × ℕ × List Name :=
+def Premises.typeMainTerms (p: Premises) : List <| String × Nat × List Name :=
     p.typeTerms.filter (fun (s, _) => (s.splitOn "=>").length == 1  
                 && (s.splitOn "↦").length == 1)
 
 
 
-def getPremises (name: Name)(maxDepth? : Option ℕ := none ) : MetaM <| Premises := do
+def getPremises (name: Name)(maxDepth? : Option Nat := none ) : MetaM <| Premises := do
     let termStx? ← nameDefSyntaxVerbose name
     let term ←  mkConstWithLevelParams name
     let type ← inferType term
@@ -249,13 +249,13 @@ def getPremises (name: Name)(maxDepth? : Option ℕ := none ) : MetaM <| Premise
 
 
 
-def showTerms (s: String) : MetaM <| List <| String × ℕ × List Name  := do
+def showTerms (s: String) : MetaM <| List <| String × Nat × List Name  := do
     let c := runParserCategory (← getEnv) `term s
     match c with
     | Except.error e => throwError e
     | Except.ok s => (s.terms)
 
-def showIdents (s: String) : MetaM <| List <| Name × ℕ := do
+def showIdents (s: String) : MetaM <| List <| Name × Nat := do
     let c := runParserCategory (← getEnv) `term s
     match c with
     | Except.error e => throwError e
@@ -267,14 +267,14 @@ def showKinds (s: String) : MetaM <| List String := do
     | Except.error e => throwError e
     | Except.ok s => pure (s.kinds)
 
-def nameDefTerms (name: Name)(maxDepth? : Option ℕ := none ) : MetaM <| 
-    List <| String × ℕ × List Name  := do
+def nameDefTerms (name: Name)(maxDepth? : Option Nat := none ) : MetaM <| 
+    List <| String × Nat × List Name  := do
     let stx? ← nameDefSyntax name
     match stx? with
     | none => pure []
     | some stx => (stx.terms maxDepth?)
 
-def nameDefIdents (name: Name)(maxDepth? : Option ℕ := none ) : MetaM <| List <| Name × ℕ := do
+def nameDefIdents (name: Name)(maxDepth? : Option Nat := none ) : MetaM <| List <| Name × Nat := do
     let stx? ← nameDefSyntax name
     match stx? with
     | none => pure []
@@ -288,54 +288,56 @@ def nameDefIdents (name: Name)(maxDepth? : Option ℕ := none ) : MetaM <| List 
 
 -- #eval showTerms "fun n ↦ Nat.succ n = n + 1"
 
--- #eval viewSyntax "n = n + 1"
+#eval viewSyntax "match n + 1 with | 0 => 0 | _ => 1"
 
 -- #eval viewSyntax "f (n := m)"
 
 -- #eval nameDefSyntax ``Nat.succ_le_succ
 
 #check Lean.Parser.Term.namedArgument
+#check Lean.Parser.Term.matchAlt
+
 
 -- #eval showKinds "n = n + 1"
 
-def egTerms : MetaM <| List <| String × ℕ × List Name := do
-    let p ←  getPremises ``oddExample (some 30) 
-    return p.defMainTerms
+-- def egTerms : MetaM <| List <| String × Nat × List Name := do
+--     let p ←  getPremises ``oddExample (some 30) 
+--     return p.defMainTerms
 
 -- #eval egTerms
 
-def egIdents : MetaM <| List <| Name × ℕ:= do
-    let p ←  getPremises ``oddExample (some 50) 
-    return p.defIdents
+-- def egIdents : MetaM <| List <| Name × Nat:= do
+--     let p ←  getPremises ``oddExample (some 50) 
+--     return p.defIdents
 
 -- #eval egIdents
 
-def egGpIdents : MetaM NameGroups := do
-    let nd ← egIdents
-    return groupedNames nd.toArray
+-- def egGpIdents : MetaM NameGroups := do
+--     let nd ← egIdents
+--     return groupedNames nd.toArray
 
 -- #eval egGpIdents
 
-#check Linarith.lt_irrefl
+-- #check Linarith.lt_irrefl
 
 -- -- #eval nameDefSyntax ``oddExample
 
-def dataSize : MetaM ℕ := do
+def dataSize : MetaM Nat := do
     let names ← constantNames
     return names.size 
 
 -- #eval dataSize
 
-def boundedDataSize (n: ℕ) : MetaM ℕ := do
+def boundedDataSize (n: Nat) : MetaM Nat := do
     let names ← constantNames
     let names ← names.filterM (boundedDef n)
     return names.size
 
 -- #eval boundedDataSize 50
 
-def sampleExtract (n: ℕ := 100) : MetaM <|
-        List (Name × (List <| String × ℕ × List Name) ×
-        (List <| Name × ℕ)) := do
+def sampleExtract (n: Nat := 100) : MetaM <|
+        List (Name × (List <| String × Nat × List Name) ×
+        (List <| Name × Nat)) := do
     let names ← constantNames
     let names := names.toList.take n
     names.mapM (fun n => do 
@@ -344,7 +346,7 @@ def sampleExtract (n: ℕ := 100) : MetaM <|
         pure (n, p, q)
         )
 
-def batchPremiseExtractM (start stop: ℕ) : MetaM ℕ  := do
+def batchPremiseExtractM (start stop: Nat) : MetaM Nat  := do
     let names ← constantNames
     let premisesFile := System.mkFilePath ["rawdata",
     s!"outer-premises.jsonl"]
@@ -392,16 +394,16 @@ def batchPremiseExtractM (start stop: ℕ) : MetaM ℕ  := do
         cursor := cursor + 1
     return cursor
 
-def batchPremiseExtractCore (start stop: ℕ) : CoreM ℕ := 
+def batchPremiseExtractCore (start stop: Nat) : CoreM Nat := 
     (batchPremiseExtractM start stop).run'
 
 -- -- #eval sampleExtract
 
-theorem imo_1964_q1b : ∀ (n : ℕ), (2 ^ n + 1) % 7 ≠ 0
-    | 0 | 1 | 2 => by decide
-    | n + 3 => by
-      rw [pow_add, Nat.add_mod, Nat.mul_mod, show 2 ^ 3 % 7 = 1 from by rfl]
-      simp [imo_1964_q1b n]
+-- theorem imo_1964_q1b : ∀ (n : Nat), (2 ^ n + 1) % 7 ≠ 0
+--     | 0 | 1 | 2 => by decide
+--     | n + 3 => by
+--       rw [pow_add, Nat.add_mod, Nat.mul_mod, show 2 ^ 3 % 7 = 1 from by rfl]
+--       simp [imo_1964_q1b n]
 
 
 -- set_option pp.proofs.withType true in
