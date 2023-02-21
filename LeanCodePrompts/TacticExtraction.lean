@@ -10,6 +10,10 @@ def inputFile : System.FilePath :=
 
 #eval inputFile.pathExists
 
+namespace LeanInk
+
+/-! This code will likely be abandoned. -/
+
 def tacticExtractionConfig : IO LeanInk.Configuration := return {
   inputFilePath := inputFile
   inputFileContents := ← IO.FS.readFile inputFile
@@ -45,8 +49,10 @@ def analyzeInput' : AnalysisM Analysis.AnalysisResult := do
   let commandState := Analysis.configureCommandState environment messages
   let s ← IO.processCommands context state commandState
   let result ← Analysis.resolveTacticList s.commandState.infoState.trees.toList
-  let messages := s.commandState.messages.msgs.toList.filter (·.endPos.isSome)
+  let messages := s.commandState.messages.msgs.toList --.filter (·.endPos.isSome)
   return ← result.insertMessages messages context.fileMap
+
+#check MessageLog
 
 def tacticData : IO <| List LeanInk.Analysis.Sentence := do
   let config ← tacticExtractionConfig
@@ -69,4 +75,59 @@ def tacticDataStrings : IO <| List String := do
   return tacs.map toString 
   -- TODO replace the default `toString` instance with a more descriptive one
 
-#eval tacticDataStrings
+-- #eval tacticDataStrings
+
+end LeanInk
+
+open Lean Parser Term Meta Tactic
+
+-- Leonardo de Moura's code for generating trace data
+def getTactics (s : TSyntax ``tacticSeq) : Array (TSyntax `tactic) :=
+  match s with
+  | `(tacticSeq| { $[$t]* }) => t
+  | `(tacticSeq| $[$t]*) => t
+  | _ => #[]
+
+elab "seq" s:tacticSeq : tactic => do
+  let tacs := getTactics  s
+  for tac in tacs do
+    let gs ← getUnsolvedGoals
+    withRef tac <| addRawTrace (goalsToMessageData gs)
+    evalTactic tac
+
+example (h : x = y) : 0 + x = y := by
+  seq rw [Nat.zero_add]; rw [h]
+  done
+
+
+-- /-- `by tac` constructs a term of the expected type by running the tactic(s) `tac`. -/
+-- def byTactic' := leading_parser:leadPrec
+--   ppAllowUngrouped >> "by' " >> Tactic.tacticSeqIndentGt
+
+-- a deep copy of Lean's `by` tactic, called `by'`
+syntax (name := byTactic') "by' " tacticSeq : term
+
+@[term_elab byTactic'] def elabByTactic' : TermElab := fun stx expectedType? => do
+  match expectedType? with
+  | some expectedType =>
+    let mvar ← mkFreshExprMVar expectedType MetavarKind.syntheticOpaque
+    let mvarId := mvar.mvarId!
+    let ref ← getRef
+    registerSyntheticMVar ref mvarId <| SyntheticMVarKind.tactic stx (← saveContext)
+    return mvar
+  | none =>
+    tryPostpone
+    throwError ("invalid 'by\'' tactic, expected type has not been provided")
+
+example : 1 + 1 = 2 := by' -- the new `by'` syntax can be used to replace `by`
+  rfl
+
+-- intercepting the `by` tactic to output intermediate trace data
+-- the `by'` clone is needed here to avoid infinite recursion
+macro_rules
+  | `(by $ts) => `(by' seq $ts) 
+
+-- the `by` tactic now generates trace data by default
+example (h : x = y) : 0 + x = y := by
+  rw [h]; rw [Nat.zero_add]
+  done
