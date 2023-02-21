@@ -19,8 +19,8 @@ def main (args: List String) : IO Unit := do
     {module:= `LeanCodePrompts.ParseJson},
     {module:= `LeanCodePrompts.Premises},
     {module := `Mathlib}] {}
-  let core := 
-    writeBatchPremisesCore start stop
+  let core : CoreM Nat :=  
+     writeBatchPremisesCore start stop
   let io? := 
     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} 
     {env := env}
