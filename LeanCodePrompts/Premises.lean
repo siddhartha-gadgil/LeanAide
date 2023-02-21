@@ -368,3 +368,62 @@ def DefData.getM? (name: Name)(term type: Expr) : MetaM (Option  DefData) := do
     let typeDepth := type.approxDepth
     let valueDepth := term.approxDepth
     return some {name := name, type := tstx.raw.purge, value := stx.raw.purge, isProp := isProp, typeDepth := typeDepth.toNat, valueDepth := valueDepth.toNat, premises := premises}
+
+def nameSize : MetaM ℕ := do
+    let cs ← constantNameValueTypes 
+    return cs.size
+
+#check Json.pretty
+
+-- #eval nameSize
+
+def nameSample (n: ℕ) : MetaM (Array Name) := do
+    let cs ← constantNameValueTypes 
+    let mut out : Array Name := #[]
+    let mut count := 0
+    for (name, _, _) in cs do
+        if count % n = 0 then
+            out := out.push name
+        count := count + 1    
+    return out
+
+-- #eval nameSample 100
+
+def batchPremises (start batch : ℕ) : MetaM (Array Json) := do
+    let cs ← constantNameValueTypes 
+    let mut out : Array Json := #[]
+    let mut count := 0
+    for (name, term, type) in cs do
+        if count >= start && count < start + batch then
+            let defData? ← DefData.getM? name term type
+            match defData? with
+            | none => pure ()
+            | some defData => out := out.push <| toJson defData
+        count := count + 1    
+    return out
+
+
+def writeBatchPremisesM (start batch : ℕ) : MetaM ℕ  := do
+    let cs ← constantNameValueTypes 
+    let mut count := 0
+    let premisesFile := System.mkFilePath ["rawdata", s!"premises.jsonl"]
+    let h ← IO.FS.Handle.mk premisesFile IO.FS.Mode.append Bool.false
+    for (name, term, type) in cs do
+        if count >= start && count < start + batch then
+            IO.println <| s!"{count} {name}"
+            let defData? ← DefData.getM? name term type
+            match defData? with
+            | none => 
+                IO.println <| s!"{count} {name} omitted"
+                pure ()
+            | some defData =>
+                IO.println <| s!"{count} {name} written"
+                h.putStrLn <| (toJson defData).pretty 100000 
+        count := count + 1    
+    return start + batch
+
+
+def writeBatchPremisesCore (start batch : ℕ) : CoreM Unit := 
+    (writeBatchPremisesM start batch).run' {} 
+
+-- #eval batchPremises 0 5
