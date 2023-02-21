@@ -1,5 +1,5 @@
 import LeanCodePrompts.Premises
-import Lean
+import Lean.Meta
 open Lean Meta LeanAide.Meta
 
 set_option maxHeartbeats 10000000
