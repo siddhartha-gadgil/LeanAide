@@ -3,8 +3,16 @@ import LeanInk.Analysis.Basic
 
 open Lean Elab
 
+#check Lean.Option.register
+register_option book.myGreeting : String := {
+  defValue := "Hello World"
+  group := "pp"
+  descr := "just a friendly greeting"
+}
 
-def inputFile : System.FilePath := "LeanCodePrompts"/"TacticExtractionTest.lean"
+def inputFile : System.FilePath := 
+"LeanCodePrompts"/"TacticExtractionTest.lean"
+-- "LeanCodePrompts"/"PowTest.lean"
 -- "lake-packages"/"mathlib"/"Mathlib"/"Data"/"Int"/"Dvd"/"Pow.lean"
 
 #eval inputFile.pathExists
@@ -28,7 +36,7 @@ def analyzeInput : AnalysisM Analysis.AnalysisResult := do
   let (header, state, messages) ← Parser.parseHeader context
   -- doc-gen: Lake already configures us via LEAN_PATH
   -- initializeSearchPaths header config
-    let options := Options.empty 
+  let options := Options.empty 
                     |>.setBool `trace.Elab.info true
                     |>.setBool `tactic.simp.trace true
   let (environment, messages) ← processHeader header options messages context 0
@@ -42,7 +50,7 @@ def analyzeInput : AnalysisM Analysis.AnalysisResult := do
   let commandState := Analysis.configureCommandState environment messages
   let s ← IO.processCommands context state commandState
   let result ← Analysis.resolveTacticList s.commandState.infoState.trees.toList
-  let messages := s.commandState.messages.msgs.toList.filter (λ m => m.endPos.isSome )
+  let messages := s.commandState.messages.msgs.toList.filter (·.endPos.isSome)
   return ← result.insertMessages messages context.fileMap
 
 def tacticData : IO <| List LeanInk.Analysis.Sentence := do
