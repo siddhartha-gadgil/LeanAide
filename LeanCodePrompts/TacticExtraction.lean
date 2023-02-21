@@ -4,7 +4,8 @@ import LeanInk.Analysis.Basic
 open Lean Elab
 
 
-def inputFile : System.FilePath := "LeanCodePrompts" / "TacticExtractionTest.lean"
+def inputFile : System.FilePath := "LeanCodePrompts"/"TacticExtractionTest.lean"
+-- "lake-packages"/"mathlib"/"Mathlib"/"Data"/"Int"/"Dvd"/"Pow.lean"
 
 #eval inputFile.pathExists
 
@@ -64,3 +65,5 @@ def tacticDataStrings : IO <| List String := do
   let tacs ← tacticData
   return tacs.map toString 
   -- TODO replace the default `toString` instance with a more descriptive one
+
+#eval tacticDataStrings
