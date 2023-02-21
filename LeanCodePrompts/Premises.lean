@@ -10,6 +10,16 @@ universe u v w u_1 u_2 u_3 u₁ u₂ u₃
 
 open LeanAide.Meta
 
+def constantNameValueTypes  : MetaM (Array (Name × Expr ×   Expr)) := do
+  let env ← getEnv
+  let decls := env.constants.map₁.toArray
+  let allNames := decls.filterMap <| 
+    fun (name, dfn) => dfn.value? |>.map fun t => (name, t, dfn.type) 
+  let names ← allNames.filterM (fun (name, _) => isWhiteListed name)
+  let names := names.filter <| 
+    fun (name, _, _)  ↦ !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name)) 
+  return names
+
 set_option pp.unicode.fun true
 
 class Reprint(a : Type) where
@@ -248,11 +258,11 @@ def premisesJsonFromName (name: Name) : MetaM <| Json := do
     return toJson premises
 
 
-#eval premisesViewFromName ``Nat.pred_le_pred
+-- #eval premisesViewFromName ``Nat.pred_le_pred
 
-#eval premisesJsonFromName ``Nat.pred_le_pred
+-- #eval premisesJsonFromName ``Nat.pred_le_pred
 
-#eval premisesViewFromName ``Nat.le_of_succ_le_succ
+-- #eval premisesViewFromName ``Nat.le_of_succ_le_succ
 
 
 def boundedDef (bound: ℕ)(name: Name) : MetaM Bool := do
@@ -282,21 +292,21 @@ def nameDefViewVerbose (name: Name) : MetaM String := do
     let stx? ← nameDefSyntaxVerbose name
     return (stx?.get!.reprint.get!)
 
-#eval nameDefSyntax ``List.join
+-- #eval nameDefSyntax ``List.join
 
-#eval nameDefSyntax ``Nat.le_of_succ_le_succ
+-- #eval nameDefSyntax ``Nat.le_of_succ_le_succ
 
 
 
-#eval nameDefView ``Nat.gcd_eq_zero_iff
+-- #eval nameDefView ``Nat.gcd_eq_zero_iff
 
-#eval nameDefCleanView ``Nat.gcd_eq_zero_iff
+-- #eval nameDefCleanView ``Nat.gcd_eq_zero_iff
 
 def egSplit : MetaM <| Option (Syntax × Array Syntax) := do
     let stx? ← nameDefSyntax ``Nat.gcd_eq_zero_iff
     lambdaStx? stx?.get!
 
-#eval egSplit
+-- #eval egSplit
 
 def egSplitView : MetaM <| Option (String × Array String) := do
     let stx? ← nameDefSyntax ``Nat.gcd_eq_zero_iff
@@ -304,29 +314,29 @@ def egSplitView : MetaM <| Option (String × Array String) := do
     let (stx, args) := pair?.get!
     pure (stx.reprint.get!, args.map (fun s => s.reprint.get!))
 
-#eval egSplitView
+-- #eval egSplitView
 
 set_option pp.proofs false in 
-#eval nameDefView ``Nat.gcd_eq_zero_iff
+-- #eval nameDefView ``Nat.gcd_eq_zero_iff
 
 set_option pp.proofs.withType true in 
-#eval nameDefView ``Nat.gcd_eq_zero_iff
+-- #eval nameDefView ``Nat.gcd_eq_zero_iff
 
-#eval nameDefViewVerbose ``Nat.gcd_eq_zero_iff
+-- #eval nameDefViewVerbose ``Nat.gcd_eq_zero_iff
 
-#eval nameDefSyntaxVerbose ``Nat.gcd_eq_zero_iff
+-- #eval nameDefSyntaxVerbose ``Nat.gcd_eq_zero_iff
 
-#eval nameDefViewVerbose ``Nat.gcd_eq_gcd_ab
-
-set_option pp.proofs false in
-#eval nameDefView ``Nat.gcd_eq_gcd_ab
-
-#eval setDelabBound 200
-
-#eval nameDefViewVerbose ``Nat.xgcd_aux_P
+-- #eval nameDefViewVerbose ``Nat.gcd_eq_gcd_ab
 
 set_option pp.proofs false in
-#eval nameDefView ``Nat.xgcd_aux_P
+-- #eval nameDefView ``Nat.gcd_eq_gcd_ab
+
+-- #eval setDelabBound 200
+
+-- #eval nameDefViewVerbose ``Nat.xgcd_aux_P
+
+set_option pp.proofs false in
+-- #eval nameDefView ``Nat.xgcd_aux_P
 
 theorem oddExample : ∀ (n : ℕ), ∃ m, m > n ∧ m % 2 = 1 := by
   intro n -- introduce a variable n
@@ -335,4 +345,26 @@ theorem oddExample : ∀ (n : ℕ), ∃ m, m > n ∧ m % 2 = 1 := by
   · linarith -- solve the first goal using `linarith` 
   · simp [Nat.add_mod] -- solve the second goal using `simp` with the lemma `Nat.add_mod`
 
--- #eval premisesViewFromName ``oddExample
+-- -- #eval premisesViewFromName ``oddExample
+
+
+structure DefData where
+    name : Name
+    type : Syntax
+    value : Syntax
+    isProp : Bool
+    typeDepth : ℕ
+    valueDepth : ℕ
+    premises : List PremiseData -- empty if depth exceeds bound
+    deriving Inhabited, ToJson
+
+def DefData.getM? (name: Name)(term type: Expr) : MetaM (Option  DefData) := do
+    if term.approxDepth > (← getDelabBound) || type.approxDepth > (← getDelabBound) then return none
+    else
+    let (stx, _) ←  delabCore term {} (delabVerbose)
+    let (tstx, _) ←  delabCore type {} (delabVerbose)
+    let premises ← Lean.Syntax.premiseDataM #[] stx tstx name
+    let isProp := type.isProp
+    let typeDepth := type.approxDepth
+    let valueDepth := term.approxDepth
+    return some {name := name, type := tstx.raw.purge, value := stx.raw.purge, isProp := isProp, typeDepth := typeDepth.toNat, valueDepth := valueDepth.toNat, premises := premises}
