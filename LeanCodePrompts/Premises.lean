@@ -369,6 +369,18 @@ def DefData.getM? (name: Name)(term type: Expr) : MetaM (Option  DefData) := do
     let valueDepth := term.approxDepth
     return some {name := name, type := tstx.raw.purge, value := stx.raw.purge, isProp := isProp, typeDepth := typeDepth.toNat, valueDepth := valueDepth.toNat, premises := premises}
 
+structure IdentData where
+    type : Syntax
+    ids : List Name
+    deriving Inhabited, ToJson
+
+def IdentData.filter (d: IdentData)(p : Name → Bool) : IdentData := 
+    {type := d.type, ids := d.ids.filter p}
+
+def DefData.identData (d: DefData) : List IdentData := 
+    d.premises.map (fun p => 
+        {type := p.type, ids := p.ids.map (·.1) |>.toList.eraseDups})
+
 def nameSize : MetaM Nat := do
     let cs ← constantNameValueTypes 
     return cs.size
@@ -405,10 +417,13 @@ def batchPremises (start batch : Nat) : MetaM (Array Json) := do
 
 def writeBatchPremisesM (start batch : Nat) : MetaM Nat  := do
     let cs ← constantNameValueTypes 
+    let names := cs.map (·.1)
     IO.println <| s!"{start}; {batch} from {cs.size}"
     let mut count := 0
     let premisesFile := System.mkFilePath ["rawdata", s!"premises.jsonl"]
     let h ← IO.FS.Handle.mk premisesFile IO.FS.Mode.append Bool.false
+    let idsFile := System.mkFilePath ["rawdata", s!"idents.jsonl"]
+    let h' ← IO.FS.Handle.mk idsFile IO.FS.Mode.append Bool.false
     for (name, term, type) in cs do
         if count >= start && count < start + batch then
             IO.println <| s!"{count} {name}"
@@ -419,7 +434,13 @@ def writeBatchPremisesM (start batch : Nat) : MetaM Nat  := do
                 pure ()
             | some defData =>
                 IO.println <| s!"{count} {name} written"
-                h.putStrLn <| (toJson defData).pretty 1000000
+                let idData := defData.identData
+                let idData := 
+                    idData.map (fun d ↦ d.filter 
+                        (names.contains · ))
+                h.putStrLn <| (toJson defData).pretty 10000000
+                for d in idData do
+                    h'.putStrLn <| (toJson d).pretty 10000000
         count := count + 1    
     return start + batch
 

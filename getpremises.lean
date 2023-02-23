@@ -17,6 +17,7 @@ def main (args: List String) : IO Unit := do
     importModules [{module := `Mathlib},
     {module:= `LeanCodePrompts.CheckParse},
     {module:= `LeanCodePrompts.ParseJson},
+    {module:= `LeanCodePrompts.VerboseDelabs},
     {module:= `LeanCodePrompts.Premises},
     {module := `Mathlib}] {}
   let core : CoreM Nat :=  

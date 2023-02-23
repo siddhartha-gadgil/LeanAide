@@ -288,9 +288,15 @@ def nameDefIdents (name: Name)(maxDepth? : Option Nat := none ) : MetaM <| List 
 
 -- #eval showTerms "fun n ↦ Nat.succ n = n + 1"
 
-#eval viewSyntax "match n + 1 with | 0 => 0 | _ => 1"
+#eval viewSyntax "match n + 2 with | 0 => 0 | _ => 1"
 
 -- #eval viewSyntax "f (n := m)"
+
+def zeroOrOne : Nat → Nat
+| 0 => 0
+| _ => 1
+
+#eval nameDefSyntax ``zeroOrOne
 
 -- #eval nameDefSyntax ``Nat.succ_le_succ
 
