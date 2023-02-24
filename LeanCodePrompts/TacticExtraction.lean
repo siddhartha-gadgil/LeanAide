@@ -2,7 +2,7 @@ import Lean
 import Mathlib.Tactic.Simps.Basic
 import LeanInk.Analysis.Basic
 
-open Lean Elab
+open Lean Elab Parser Term Meta Tactic
 
 def inputFile : System.FilePath := 
 "LeanCodePrompts"/"TacticExtractionTest.lean"
@@ -10,8 +10,6 @@ def inputFile : System.FilePath :=
 -- "lake-packages"/"mathlib"/"Mathlib"/"Data"/"Int"/"Dvd"/"Pow.lean"
 
 #eval inputFile.pathExists
-
-open Lean Parser Term Meta Tactic
 
 -- Leonardo de Moura's code for generating trace data
 def getTactics : TSyntax ``tacticSeq → TSyntaxArray `tactic
@@ -27,12 +25,16 @@ def getTactics : TSyntax ``tacticSeq → TSyntaxArray `tactic
 #check setOptionFromString
 #check KVMap.setBool
 
+def elaborateStx : TSyntax `tactic → TacticM (TSyntax `tactic)
+  | `(tactic| simp%$tk $(config)? $(discharger)? $[only%$o]? $[[$args,*]]? $(loc)?) =>
+    sorry
+  | tac => return tac
+
 elab "seq" s:tacticSeq : tactic => do
   let tacs := getTactics s
   for tac in tacs do
     let gs ← getUnsolvedGoals
-    let toStxLog := withRef tac
-    toStxLog <| addRawTrace (goalsToMessageData gs)
+    withRef tac <| addRawTrace (goalsToMessageData gs)
     withOptions (·.setBool `tactic.simp.trace true) do
 
     -- match tac with
@@ -40,10 +42,17 @@ elab "seq" s:tacticSeq : tactic => do
     --     toStxLog <| addRawTrace (m!"simp")
     --   | tac@_ => withRef tac <| addRawTrace (m!"other") 
       evalTactic tac
-      toStxLog <| addRawTrace m!"[TACTIC] {tac}"
+      withRef tac <| addRawTrace m!"[TACTIC] {tac}"
+
+def addSeq : TSyntax ``tacticSeq → TermElabM (TSyntax ``tacticSeq)
+  | `(tacticSeq| { $[$t]* }) => `(tacticSeq| { seq $[$t]* })
+  | `(tacticSeq| $[$t]*) => `(tacticSeq| seq $[$t]*)
+  | _ => `(tacticSeq| seq done)
 
 example (h : x = y) : 0 + x = y := by
-  seq rw [Nat.zero_add]; rw [h]
+  seq 
+    rw [Nat.zero_add]
+    rw [h]
   done
 
 
