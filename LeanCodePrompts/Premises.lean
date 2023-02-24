@@ -54,6 +54,7 @@ def reprint {a : Type}[Reprint a] (x : a) : String := Reprint.reprSyn x
 structure TermData where
     context : Array Syntax
     value : Syntax
+    size : Nat
 deriving Repr
 
 structure PropProofData where
@@ -72,7 +73,8 @@ open Reprint
 instance : ToJson TermData := ⟨fun (d: TermData) ↦ 
     Json.mkObj [
         ("context", reprSyn d.context),
-        ("term", reprSyn d.value)
+        ("term", reprSyn d.value),
+        ("size", d.size)
     ]⟩
 
 instance : ToJson  PropProofData := ⟨fun (d: PropProofData) ↦  
@@ -153,6 +155,11 @@ def termKindList : MetaM <| List (SyntaxNodeKind × Unit) := do
     let s ← termKinds
     pure <| s.toList 
 
+partial def Lean.Syntax.size (stx: Syntax) : Nat := 
+    match stx with
+    | Syntax.ident _ _ _ _ => 1
+    | Syntax.node _ _ args => args.foldl (fun acc x => acc + x.size) 1
+    | _ => 1
 
 partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(maxDepth? : Option Nat := none) : 
     MetaM (
@@ -203,7 +210,7 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(ma
                 pfs := pfs ++ pfs'.map (fun (s, m) => (s, m + 1))
                 ids := ids ++ ids'.map (fun (s, m) => (s, m + 1))
                 ps := ps ++ ps'
-            let head : TermData := ⟨context, stx.purge⟩
+            let head : TermData := ⟨context, stx.purge, stx.purge.size⟩
             if tks.contains k then 
                 ts := ts.push (head, 0)
             return (ts, pfs, ids, ps)
