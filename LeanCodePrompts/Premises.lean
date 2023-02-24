@@ -373,16 +373,17 @@ def DefData.getM? (name: Name)(term type: Expr) : MetaM (Option  DefData) := do
     return some {name := name, type := tstx.raw.purge, value := stx.raw.purge, isProp := isProp, typeDepth := typeDepth.toNat, valueDepth := valueDepth.toNat, premises := premises}
 
 structure IdentData where
+    context : Array Syntax
     type : Syntax
     ids : List Name
     deriving Inhabited, ToJson
 
 def IdentData.filter (d: IdentData)(p : Name → Bool) : IdentData := 
-    {type := d.type, ids := d.ids.filter p}
+    {context:= d.context, type := d.type, ids := d.ids.filter p}
 
 def DefData.identData (d: DefData) : List IdentData := 
     d.premises.map (fun p => 
-        {type := p.type, ids := p.ids.map (·.1) |>.toList.eraseDups})
+        {context:= p.context, type := p.type, ids := p.ids.map (·.1) |>.toList.eraseDups})
 
 def nameSize : MetaM Nat := do
     let cs ← constantNameValueTypes 
@@ -441,9 +442,13 @@ def writeBatchPremisesM (start batch : Nat) : MetaM Nat  := do
                 let idData := 
                     idData.map (fun d ↦ d.filter 
                         (names.contains · ))
-                h.putStrLn <| (toJson defData).pretty 10000000
+                let l := (toJson defData).pretty 10000000
+                if l.length < 9000000 then
+                    h.putStrLn  l
                 for d in idData do
-                    h'.putStrLn <| (toJson d).pretty 10000000
+                    let l := (toJson d).pretty 10000000
+                    if l.length < 9000000 then
+                    h'.putStrLn l
         count := count + 1    
     return start + batch
 
