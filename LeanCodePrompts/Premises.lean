@@ -170,7 +170,7 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(ma
         let prev ←  proof.premiseDataAuxM context (maxDepth?.map (· -1))
         let (ts, pfs, ids, ps) := prev
         let headPf : PropProofData := ⟨context, prop.purge, proof.purge⟩
-        let head : PremiseData := ⟨context, none, stx.purge, ts, pfs, ids⟩
+        let head : PremiseData := ⟨context, none, prop.purge, ts, pfs, ids⟩
         return (ts.map (fun (s, m) => (s, m + 1)),
                 pfs.map (fun (s, m) => (s, m + 1)) |>.push (headPf, 0),
                 ids.map (fun (s, m) => (s, m + 1)),
@@ -210,11 +210,14 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(ma
             else pure (#[], #[], #[], [])
         | _ => pure (#[], #[], #[], [])
 
-def Lean.Syntax.premiseDataM (context : Array Syntax)(proof prop: Syntax)(name? : Option Name)(maxDepth? : Option Nat := none) : 
+def Lean.Syntax.premiseDataM (context : Array Syntax)
+    (proof prop: Syntax)(includeHead: Bool)(name? : Option Name)(maxDepth? : Option Nat := none) : 
     MetaM (List PremiseData) := do
     let (ts, pfs, ids, ps) ← proof.premiseDataAuxM context maxDepth?
-    let head : PremiseData := ⟨context, name?, prop.purge, ts, pfs, ids⟩
-    return head :: ps
+    if includeHead then
+        let head : PremiseData := ⟨context, name?, prop.purge, ts, pfs, ids⟩
+        return head :: ps
+    else return ps
 
 
 
@@ -247,7 +250,7 @@ def nameDefSyntax (name: Name) : MetaM <| Option Syntax := do
 
 def premisesFromName (name : Name) : MetaM (List PremiseData) := do
     let (pf, prop) ← nameDefTypeSyntax name
-    Lean.Syntax.premiseDataM #[] pf prop name
+    Lean.Syntax.premiseDataM #[] pf prop true name
 
 def premisesViewFromName (name: Name) : MetaM <| List String := do
     let premises ← premisesFromName name
@@ -363,8 +366,8 @@ def DefData.getM? (name: Name)(term type: Expr) : MetaM (Option  DefData) := do
     else
     let (stx, _) ←  delabCore term {} (delabVerbose)
     let (tstx, _) ←  delabCore type {} (delabVerbose)
-    let premises ← Lean.Syntax.premiseDataM #[] stx tstx name
     let isProp := type.isProp
+    let premises ← Lean.Syntax.premiseDataM #[] stx tstx isProp name
     let typeDepth := type.approxDepth
     let valueDepth := term.approxDepth
     return some {name := name, type := tstx.raw.purge, value := stx.raw.purge, isProp := isProp, typeDepth := typeDepth.toNat, valueDepth := valueDepth.toNat, premises := premises}
