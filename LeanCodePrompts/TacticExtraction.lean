@@ -1,4 +1,5 @@
 import Lean
+import Mathlib.Tactic.Simps.Basic
 import LeanInk.Analysis.Basic
 
 open Lean Elab
@@ -18,12 +19,27 @@ def getTactics : TSyntax ``tacticSeq → TSyntaxArray `tactic
   | `(tacticSeq| $[$t]*) => t
   | _ => #[]
 
+#check TraceElem
+#check MessageData
+#check Tactic.evalTraceMessage
+#check getTraceState
+#check TraceState
+#check setOptionFromString
+#check KVMap.setBool
+
 elab "seq" s:tacticSeq : tactic => do
   let tacs := getTactics s
   for tac in tacs do
     let gs ← getUnsolvedGoals
-    withRef tac <| addRawTrace (goalsToMessageData gs)
-    evalTactic tac
+    let toStxLog := withRef tac
+    toStxLog <| addRawTrace (goalsToMessageData gs)
+    withOptions (·.setBool `tactic.simp.trace true) <|
+
+    -- match tac with
+    --   | `(tactic| simp%$tk $(config)? $(discharger)? $[only%$o]? $[[$args,*]]? $(loc)?) =>
+    --     toStxLog <| addRawTrace (m!"simp")
+    --   | tac@_ => withRef tac <| addRawTrace (m!"other") 
+      evalTactic tac
 
 example (h : x = y) : 0 + x = y := by
   seq rw [Nat.zero_add]; rw [h]
@@ -59,5 +75,6 @@ macro_rules
 
 -- the `by` tactic now generates trace data by default
 example (h : x = y) : 0 + x = y := by
-  rw [h]; rw [Nat.zero_add]
+  rw [h]
+  simp [Nat.zero_add]
   done
