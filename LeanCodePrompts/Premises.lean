@@ -95,10 +95,11 @@ structure PremiseData  where
  context : (Array Syntax)
  name :       Option Name  -- name
  type :       Syntax  -- proposition
+ proof: Syntax  -- proof
  terms :       Array (TermData × Nat)  -- sub-terms
- propProofs :       Array (PropProofData × Nat)  -- sub-terms
+ propProofs :       Array (PropProofData × Nat)  -- sub-proofs
  ids :       Array (Name ×  Nat)  -- proof identifiers used
--- deriving Repr
+
 
 namespace PremiseData
 
@@ -108,15 +109,19 @@ instance premiseToJson : ToJson PremiseData :=⟨
             ("context", toJson d.context),
             ("name", toJson d.name),
             ("type", toJson d.type),
+            ("proof", toJson d.proof),
             ("terms", toJson d.terms),
             ("propProofs", toJson d.propProofs),
             ("ids", toJson d.ids)
     ]⟩
 
 
+def filterIds (pd: PremiseData)(p: Name → Bool) : PremiseData := 
+    ⟨pd.context, pd.name, pd.type, pd.proof, pd.terms, pd.propProofs, pd.ids.filter (fun (n, _) => p n)⟩
+
 def increaseDepth (d: Nat) : PremiseData → PremiseData :=  
 fun data ↦
-    ⟨data.context, data.name, data.type, (data.terms.map (fun (p, m) => (p, m + d))), (data.propProofs.map (fun (p, m) => (p, m + d))),
+    ⟨data.context, data.name, data.type, data.proof, (data.terms.map (fun (p, m) => (p, m + d))), (data.propProofs.map (fun (p, m) => (p, m + d))),
         (data.ids.map (fun (n,  m) => (n,  m + d))) ⟩
 
 open Reprint in
@@ -170,7 +175,7 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(ma
         let prev ←  proof.premiseDataAuxM context (maxDepth?.map (· -1))
         let (ts, pfs, ids, ps) := prev
         let headPf : PropProofData := ⟨context, prop.purge, proof.purge⟩
-        let head : PremiseData := ⟨context, none, prop.purge, ts, pfs, ids⟩
+        let head : PremiseData := ⟨context, none, prop.purge, proof.purge, ts, pfs, ids⟩
         return (ts.map (fun (s, m) => (s, m + 1)),
                 pfs.map (fun (s, m) => (s, m + 1)) |>.push (headPf, 0),
                 ids.map (fun (s, m) => (s, m + 1)),
@@ -215,7 +220,7 @@ def Lean.Syntax.premiseDataM (context : Array Syntax)
     MetaM (List PremiseData) := do
     let (ts, pfs, ids, ps) ← proof.premiseDataAuxM context maxDepth?
     if includeHead then
-        let head : PremiseData := ⟨context, name?, prop.purge, ts, pfs, ids⟩
+        let head : PremiseData := ⟨context, name?, prop.purge, proof.purge, ts, pfs, ids⟩
         return head :: ps
     else return ps
 
@@ -405,7 +410,7 @@ def nameSample (n: Nat) : MetaM (Array Name) := do
 
 -- #eval nameSample 100
 
-def batchPremises (start batch : Nat) : MetaM (Array Json) := do
+def batchDefns (start batch : Nat) : MetaM (Array Json) := do
     let cs ← constantNameValueTypes 
     let mut out : Array Json := #[]
     let mut count := 0
@@ -419,13 +424,13 @@ def batchPremises (start batch : Nat) : MetaM (Array Json) := do
     return out
 
 
-def writeBatchPremisesM (start batch : Nat) : MetaM Nat  := do
+def writeBatchDefnsM (start batch : Nat) : MetaM Nat  := do
     let cs ← constantNameValueTypes 
     let names := cs.map (·.1)
     IO.println <| s!"{start}; {batch} from {cs.size}"
     let mut count := 0
-    let premisesFile := System.mkFilePath ["rawdata", s!"premises.jsonl"]
-    let h ← IO.FS.Handle.mk premisesFile IO.FS.Mode.append Bool.false
+    let defnsFile := System.mkFilePath ["rawdata", s!"defns.jsonl"]
+    let h ← IO.FS.Handle.mk defnsFile IO.FS.Mode.append Bool.false
     let idsFile := System.mkFilePath ["rawdata", s!"idents.jsonl"]
     let h' ← IO.FS.Handle.mk idsFile IO.FS.Mode.append Bool.false
     for (name, term, type) in cs do
@@ -452,8 +457,43 @@ def writeBatchPremisesM (start batch : Nat) : MetaM Nat  := do
         count := count + 1    
     return start + batch
 
+def writePremisesM  : MetaM Nat  := do
+    let cs ← constantNameValueTypes 
+    let names := cs.map (·.1)
+    IO.println <| s!"Processing {cs.size} definitions"
+    let mut count := 0
+    let mut premisesDone : Array <| (Array Syntax) × Syntax := #[]
+    let premisesFile := System.mkFilePath ["rawdata", s!"premises.jsonl"]
+    let h ← IO.FS.Handle.mk premisesFile IO.FS.Mode.append Bool.false
+    for (name, term, type) in cs do
+        IO.println <| s!"{count} {name} (of {cs.size})"
+        let defData? ← DefData.getM? name term type
+        match defData? with
+        | none => 
+            IO.println <| s!"{count} {name} omitted"
+            pure ()
+        | some defData =>
+            IO.println <| s!"{count} {name} written"
+            let premises := defData.premises
+            for premise in premises do
+                let premiseHead := (premise.context, premise.type)
+                if premisesDone.contains premiseHead then
+                    IO.println "premise seen previously"
+                    pure ()
+                else
+                    premisesDone := premisesDone.push premiseHead
+                    IO.println "premise new"
+                    let premise := premise.filterIds (names.contains · )
+                    let l := (toJson premise).pretty 10000000
+                    if l.length < 9000000 then
+                        h.putStrLn  l
+        count := count + 1    
+    return count
 
-def writeBatchPremisesCore (start batch : Nat) : CoreM Nat := 
-    (writeBatchPremisesM start batch).run' {} 
+def writeBatchDefnsCore (start batch : Nat) : CoreM Nat := 
+    (writeBatchDefnsM start batch).run' {} 
 
--- #eval batchPremises 0 5
+def writePremisesCore : CoreM Nat :=
+    writePremisesM.run' {}
+
+-- #eval batchDefns 0 5
