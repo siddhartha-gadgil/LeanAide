@@ -33,13 +33,14 @@ elab "seq" s:tacticSeq : tactic => do
     let gs ← getUnsolvedGoals
     let toStxLog := withRef tac
     toStxLog <| addRawTrace (goalsToMessageData gs)
-    withOptions (·.setBool `tactic.simp.trace true) <|
+    withOptions (·.setBool `tactic.simp.trace true) do
 
     -- match tac with
     --   | `(tactic| simp%$tk $(config)? $(discharger)? $[only%$o]? $[[$args,*]]? $(loc)?) =>
     --     toStxLog <| addRawTrace (m!"simp")
     --   | tac@_ => withRef tac <| addRawTrace (m!"other") 
       evalTactic tac
+      toStxLog <| addRawTrace m!"[TACTIC] {tac}"
 
 example (h : x = y) : 0 + x = y := by
   seq rw [Nat.zero_add]; rw [h]
