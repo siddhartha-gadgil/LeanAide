@@ -2,7 +2,7 @@ import Lean
 import Mathlib.Tactic.Simps.Basic
 import LeanInk.Analysis.Basic
 
-open Lean Elab Parser Term Meta Tactic
+open Lean Elab Parser Term Meta Tactic Meta
 
 def inputFile : System.FilePath := 
 "LeanCodePrompts"/"TacticExtractionTest.lean"
@@ -24,25 +24,73 @@ def getTactics : TSyntax ``tacticSeq → TSyntaxArray `tactic
 #check TraceState
 #check setOptionFromString
 #check KVMap.setBool
+#check elabTerm
+#check PrettyPrinter.ppExpr
+#check Format
+#check TacticM
+#check TermElabM
 
-def elaborateStx : TSyntax `tactic → TacticM (TSyntax `tactic)
-  | `(tactic| simp%$tk $(config)? $(discharger)? $[only%$o]? $[[$args,*]]? $(loc)?) =>
-    sorry
-  | tac => return tac
+-- modified from `Lean.Elab.Tactic.Simp`
+def traceSimpCall' (stx : Syntax) (usedSimps : Simp.UsedSimps) : MetaM Syntax := do
+  let mut stx := stx
+  if stx[3].isNone then
+    stx := stx.setArg 3 (mkNullNode #[mkAtom "only"])
+  let mut args := #[]
+  let mut localsOrStar := some #[]
+  let lctx ← getLCtx
+  let env ← getEnv
+  for (thm, _) in usedSimps.toArray.qsort (·.2 < ·.2) do
+    match thm with
+    | .decl declName => -- global definitions in the environment
+      if env.contains declName && !simpOnlyBuiltins.contains declName then
+        args := args.push (← `(Parser.Tactic.simpLemma| $(mkIdent (← unresolveNameGlobal declName)):ident))
+    | .fvar fvarId => -- local hypotheses in the context
+      if let some ldecl := lctx.find? fvarId then
+        localsOrStar := localsOrStar.bind fun locals =>
+          if !ldecl.userName.isInaccessibleUserName &&
+              (lctx.findFromUserName? ldecl.userName).get!.fvarId == ldecl.fvarId then
+            some (locals.push ldecl.userName)
+          else
+            none
+      -- Note: the `if let` can fail for `simp (config := {contextual := true})` when
+      -- rewriting with a variable that was introduced in a scope. In that case we just ignore.
+    | .stx _ thmStx => -- simp theorems provided in the local invocation
+      args := args.push ⟨thmStx⟩ 
+    | .other _ => -- Ignore "special" simp lemmas such as constructed by `simp_all`.
+      pure ()     -- We can't display them anyway.
+  if let some locals := localsOrStar then
+    args := args ++ (← locals.mapM fun id => `(Parser.Tactic.simpLemma| $(mkIdent id):ident))
+  else
+    args := args.push ⟨(← `(Parser.Tactic.simpStar| *))⟩ 
+  let argsStx := if args.isEmpty then #[] else #[mkAtom "[", (mkAtom ",").mkSep args, mkAtom "]"]
+  stx := stx.setArg 4 (mkNullNode argsStx)
+  return stx
+
+def expandTacStx : TSyntax `tactic → TacticM (TSyntax `tactic)
+  | stx@`(tactic| simp%$tk $(config)? $(discharger)? $[only%$o]? $[[$args,*]]? $(loc)?) => do
+      let { ctx, dischargeWrapper } ← withMainContext <| mkSimpContext stx (eraseLocal := false)
+      let usedSimps ← dischargeWrapper.with fun discharge? =>
+        simpLocation ctx discharge? (expandOptLocation stx.raw[5])
+      return ⟨← traceSimpCall' stx usedSimps⟩ 
+  | `(tactic| have $[$x:ident]? := $prf) => do
+      -- let trm ← elabTerm prf none
+      -- let typ ← inferType trm
+      sorry
+  | `(tactic| let $x:ident := $val) => do
+      -- let trm ← elabTerm val none
+      -- let typ ← inferType trm
+      sorry
+  | `(tactic| $tac) => return tac
 
 elab "seq" s:tacticSeq : tactic => do
   let tacs := getTactics s
   for tac in tacs do
     let gs ← getUnsolvedGoals
     withRef tac <| addRawTrace (goalsToMessageData gs)
-    withOptions (·.setBool `tactic.simp.trace true) do
-
-    -- match tac with
-    --   | `(tactic| simp%$tk $(config)? $(discharger)? $[only%$o]? $[[$args,*]]? $(loc)?) =>
-    --     toStxLog <| addRawTrace (m!"simp")
-    --   | tac@_ => withRef tac <| addRawTrace (m!"other") 
-      evalTactic tac
-      withRef tac <| addRawTrace m!"[TACTIC] {tac}"
+    -- withOptions (·.setBool `tactic.simp.trace true) do
+    -- let tac' ← expandTacStx tac
+    evalTactic tac
+    withRef tac <| addRawTrace m!"[TACTIC] {tac}"
 
 def addSeq : TSyntax ``tacticSeq → TermElabM (TSyntax ``tacticSeq)
   | `(tacticSeq| { $[$t]* }) => `(tacticSeq| { seq $[$t]* })
