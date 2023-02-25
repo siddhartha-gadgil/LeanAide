@@ -64,7 +64,7 @@ partial def Lean.Syntax.identsM (stx: Syntax)(context: Array Syntax)(maxDepth? :
 -- -- #eval termKindList
 
 
-partial def Lean.Syntax.termsM (context : Array Syntax)(stx: Syntax)(maxDepth? : Option Nat := none) : MetaM <| List <| TermData × Nat  := do
+partial def Lean.Syntax.termsM (context : Array Syntax)(stx: Syntax)(maxDepth? : Option Nat := none) : MetaM <| List <| TermData   := do
     let tks ← termKindList
     let tks := tks.map (·.1)
     if maxDepth? = some 0 then
@@ -74,36 +74,36 @@ partial def Lean.Syntax.termsM (context : Array Syntax)(stx: Syntax)(maxDepth? :
     | some (arg, _) =>
         -- IO.println s!"Named: {arg}"
         let prev ←  termsM  context arg (maxDepth?.map (· -1))
-        return prev.map (fun (s, m) => (s, m + 1))
+        return prev.map (fun s => s.increaseDepth 1 )
     | none =>
     match ← proofWithProp? stx with
     | some (proof, _) =>
         -- IO.println s!"Proof: {proof}"
         let prev ←  termsM context  proof (maxDepth?.map (· -1))
-        return prev.map (fun (s, m) => (s, m + 1))
+        return prev.map (fun s => s.increaseDepth 1)
     | none =>
     match ← lambdaStx? stx with
     | some (body, args) =>
         -- IO.println s!"Lambda: {args}"
         let prev ←  termsM (context ++ args) body (maxDepth?.map (· -1))
-        return prev.map (fun (s, m) => (s, m + args.size))
+        return prev.map (fun s => s.increaseDepth args.size)
     | none =>
         match stx with
         | Syntax.node _ k args => 
             -- IO.println s!"Node: {k}"
             let prev ← args.mapM (termsM context · (maxDepth?.map (· -1)))
-            let head : TermData := ⟨context, stx.purge, stx.purge.size⟩
+            let head : TermData := ⟨context, stx.purge, stx.purge.size, 0⟩
             if tks.contains k then 
-                return (head, 0) :: prev.toList.join.map (fun (s, m) => (s, m + 1))
+                return (head) :: prev.toList.join.map (fun s => s.increaseDepth 1)
             else  
-            return prev.toList.join.map (fun (s, m) => (s, m + 1))
+            return prev.toList.join.map (fun s => s.increaseDepth 1)
         | Syntax.ident .. => 
              pure []
         | _ => pure []
 
 
 
-partial def Lean.Syntax.proofsM (context : Array Syntax)(stx: Syntax)(maxDepth? : Option Nat := none) : MetaM <| List <| PropProofData × Nat  := do
+partial def Lean.Syntax.proofsM (context : Array Syntax)(stx: Syntax)(maxDepth? : Option Nat := none) : MetaM <| List <| PropProofData   := do
     if maxDepth? = some 0 then
         pure []
     else
@@ -111,34 +111,35 @@ partial def Lean.Syntax.proofsM (context : Array Syntax)(stx: Syntax)(maxDepth? 
     | some (arg, _) =>
         -- IO.println s!"Named: {arg}"
         let prev ←  proofsM  context arg (maxDepth?.map (· -1))
-        return prev.map (fun (s, m) => (s, m + 1))
+        return prev.map (fun s => s.increaseDepth 1)
     | none =>
     match ← proofWithProp? stx with
     | some (proof, prop) =>
         -- IO.println s!"Proof: {proof}"
         let prev ←  proofsM context  proof (maxDepth?.map (· -1))
-        let head : PropProofData := ⟨context, prop, proof⟩
-        return  (head, 0) :: prev.map (fun (s, m) => (s, m + 1))
+        let head : PropProofData := 
+            ⟨context, prop, proof, prop.size, proof.size, 0⟩
+        return  (head) :: prev.map (fun s => s.increaseDepth 1)
     | none =>
     match ← lambdaStx? stx with
     | some (body, args) =>
         -- IO.println s!"Lambda: {args}"
         let prev ←  proofsM (context ++ args) body (maxDepth?.map (· -1))
-        return prev.map (fun (s, m) => (s, m + args.size))
+        return prev.map (fun s => s.increaseDepth args.size)
     | none =>
         match stx with
         | Syntax.node _ _ args => 
             -- IO.println s!"Node: {k}"
             let prev ← args.mapM (proofsM context · (maxDepth?.map (· -1)))
-            return prev.toList.join.map (fun (s, m) => (s, m + 1))
+            return prev.toList.join.map (fun s => s.increaseDepth 1)
         | Syntax.ident .. => 
              pure []
         | _ => pure []
 
 
 def PremiseData.get(ctx : Array Syntax)(name?: Name)(prop pf : Syntax) : MetaM PremiseData := do
-    let subProofs: List (PropProofData × Nat) ←  pf.proofsM ctx
-    let subTerms : List (TermData × Nat)  ← Syntax.termsM ctx pf
+    let subProofs: List (PropProofData) ←  pf.proofsM ctx
+    let subTerms : List (TermData)  ← Syntax.termsM ctx pf
     let ids : List (Name  × Nat) ← pf.identsM ctx 
     return ⟨ctx, name?, prop.purge, pf.purge, subTerms.toArray, subProofs.toArray, ids.toArray⟩
 

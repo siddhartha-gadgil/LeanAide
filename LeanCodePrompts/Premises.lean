@@ -51,17 +51,31 @@ instance reprintSyntax : Reprint Syntax where
 
 def reprint {a : Type}[Reprint a] (x : a) : String := Reprint.reprSyn x
 
+instance : ToJson Syntax := ⟨fun (d: Syntax) ↦ d.reprint.get!⟩
+
 structure TermData where
     context : Array Syntax
     value : Syntax
     size : Nat
-deriving Repr
+    depth: Nat
+deriving Repr, ToJson
+
+def TermData.increaseDepth (d: Nat) : TermData → TermData :=
+fun data ↦
+    ⟨data.context, data.value, data.size, data.depth + d⟩
 
 structure PropProofData where
     context : Array Syntax
     prop : Syntax
     proof: Syntax
-deriving Repr
+    propSize: Nat 
+    proofSize: Nat
+    depth: Nat
+deriving Repr, ToJson
+
+def PropProofData.increaseDepth (d: Nat) : PropProofData → PropProofData :=
+fun data ↦
+    ⟨data.context, data.prop, data.proof, data.propSize, data.proofSize, data.depth + d⟩
 
 instance reprintTermData : Reprint TermData where
     reprSyn := fun x => s!"context: {Reprint.reprSyn x.context}; term: {Reprint.reprSyn x.value}"
@@ -70,19 +84,19 @@ instance reprintProofData : Reprint PropProofData where
     reprSyn := fun x => s!"context: {Reprint.reprSyn x.context}; prop: {Reprint.reprSyn x.prop}; proof : {Reprint.reprSyn x.proof}"
         
 open Reprint 
-instance : ToJson TermData := ⟨fun (d: TermData) ↦ 
-    Json.mkObj [
-        ("context", reprSyn d.context),
-        ("term", reprSyn d.value),
-        ("size", d.size)
-    ]⟩
+-- instance : ToJson TermData := ⟨fun (d: TermData) ↦ 
+--     Json.mkObj [
+--         ("context", reprSyn d.context),
+--         ("term", reprSyn d.value),
+--         ("size", d.size)
+--     ]⟩
 
-instance : ToJson  PropProofData := ⟨fun (d: PropProofData) ↦  
-    Json.mkObj [
-        ("context", reprSyn d.context),
-        ("prop", reprSyn d.prop),
-        ("proof", reprSyn d.proof)
-    ]⟩
+-- instance : ToJson  PropProofData := ⟨fun (d: PropProofData) ↦  
+--     Json.mkObj [
+--         ("context", reprSyn d.context),
+--         ("prop", reprSyn d.prop),
+--         ("proof", reprSyn d.proof)
+--     ]⟩
 
 instance reprintPair {a : Type} {b : Type} [Reprint a] [Reprint b] : Reprint (a × b) where
     reprSyn := fun (x, y) => s!"({Reprint.reprSyn x}, {Reprint.reprSyn y})"
@@ -91,31 +105,31 @@ def checkRepr : Repr TermData := inferInstance
 
 example : ToJson Name := inferInstance
 
-instance : ToJson Syntax := ⟨fun (d: Syntax) ↦ d.reprint.get!⟩
 
 structure PremiseData  where 
  context : (Array Syntax)
  name :       Option Name  -- name
  type :       Syntax  -- proposition
  proof: Syntax  -- proof
- terms :       Array (TermData × Nat)  -- sub-terms
- propProofs :       Array (PropProofData × Nat)  -- sub-proofs
+ terms :       Array (TermData)  -- sub-terms
+ propProofs :       Array (PropProofData)  -- sub-proofs
  ids :       Array (Name ×  Nat)  -- proof identifiers used
+ deriving Repr, ToJson
 
 
 namespace PremiseData
 
-instance premiseToJson : ToJson PremiseData :=⟨
-    fun (d: PremiseData) ↦ 
-        Json.mkObj [
-            ("context", toJson d.context),
-            ("name", toJson d.name),
-            ("type", toJson d.type),
-            ("proof", toJson d.proof),
-            ("terms", toJson d.terms),
-            ("propProofs", toJson d.propProofs),
-            ("ids", toJson d.ids)
-    ]⟩
+-- instance premiseToJson : ToJson PremiseData :=⟨
+--     fun (d: PremiseData) ↦ 
+--         Json.mkObj [
+--             ("context", toJson d.context),
+--             ("name", toJson d.name),
+--             ("type", toJson d.type),
+--             ("proof", toJson d.proof),
+--             ("terms", toJson d.terms),
+--             ("propProofs", toJson d.propProofs),
+--             ("ids", toJson d.ids)
+--     ]⟩
 
 
 def filterIds (pd: PremiseData)(p: Name → Bool) : PremiseData := 
@@ -123,7 +137,7 @@ def filterIds (pd: PremiseData)(p: Name → Bool) : PremiseData :=
 
 def increaseDepth (d: Nat) : PremiseData → PremiseData :=  
 fun data ↦
-    ⟨data.context, data.name, data.type, data.proof, (data.terms.map (fun (p, m) => (p, m + d))), (data.propProofs.map (fun (p, m) => (p, m + d))),
+    ⟨data.context, data.name, data.type, data.proof, (data.terms.map (fun td => td.increaseDepth d)), (data.propProofs.map (fun p => p.increaseDepth d)),
         (data.ids.map (fun (n,  m) => (n,  m + d))) ⟩
 
 open Reprint in
@@ -163,8 +177,8 @@ partial def Lean.Syntax.size (stx: Syntax) : Nat :=
 
 partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(maxDepth? : Option Nat := none) : 
     MetaM (
-        Array (TermData × Nat) ×
-        Array (PropProofData × Nat) ×
+        Array (TermData) ×
+        Array (PropProofData) ×
         Array (Name × Nat) ×
         List PremiseData
         )  := do
@@ -181,10 +195,13 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(ma
     | some (proof, prop) =>
         let prev ←  proof.premiseDataAuxM context (maxDepth?.map (· -1))
         let (ts, pfs, ids, ps) := prev
-        let headPf : PropProofData := ⟨context, prop.purge, proof.purge⟩
+        let prop := prop.purge
+        let proof := proof.purge
+        let headPf : PropProofData := 
+            ⟨context, prop, proof, prop.size, proof.size, 0⟩
         let head : PremiseData := ⟨context, none, prop.purge, proof.purge, ts, pfs, ids⟩
-        return (ts.map (fun (s, m) => (s, m + 1)),
-                pfs.map (fun (s, m) => (s, m + 1)) |>.push (headPf, 0),
+        return (ts.map (fun t ↦ t.increaseDepth 1),
+                pfs.map (fun s ↦ s.increaseDepth 1) |>.push headPf,
                 ids.map (fun (s, m) => (s, m + 1)),
                 head :: ps)
     | none =>
@@ -192,27 +209,28 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(ma
     | some (body, args) =>
         let prev ←  body.premiseDataAuxM (context ++ args) (maxDepth?.map (· -1))
         let (ts, pfs, ids, ps) := prev
-        return (ts.map (fun (s, m) => (s, m + args.size)),
-                pfs.map (fun (s, m) => (s, m + args.size)),
+        return (ts.map (fun s => (s.increaseDepth args.size)),
+                pfs.map (fun s => (s.increaseDepth args.size)),
                 ids.map (fun (s, m) => (s, m + args.size)),
                 ps)
     | none =>
         match stx with
         | Syntax.node _ k args => 
             let prevs ← args.mapM (premiseDataAuxM context · (maxDepth?.map (· -1)))
-            let mut ts: Array (TermData × Nat) := #[]
-            let mut pfs: Array (PropProofData × Nat) := #[]
+            let mut ts: Array (TermData) := #[]
+            let mut pfs: Array (PropProofData) := #[]
             let mut ids: Array (Name × Nat) := #[]
             let mut ps: List PremiseData := []
             for prev in prevs do
                 let (ts', pfs', ids', ps') := prev
-                ts := ts ++ ts'.map (fun (s, m) => (s, m + 1))
-                pfs := pfs ++ pfs'.map (fun (s, m) => (s, m + 1))
+                ts := ts ++ ts'.map (fun s => s.increaseDepth 1)
+                pfs := pfs ++ pfs'.map (fun s => s.increaseDepth 1)
                 ids := ids ++ ids'.map (fun (s, m) => (s, m + 1))
                 ps := ps ++ ps'
-            let head : TermData := ⟨context, stx.purge, stx.purge.size⟩
+            let head : TermData := 
+                ⟨context, stx.purge, stx.purge.size, 0⟩
             if tks.contains k then 
-                ts := ts.push (head, 0)
+                ts := ts.push (head)
             return (ts, pfs, ids, ps)
         | Syntax.ident _ _ name .. => 
             let contextVars := context.filterMap getVar
