@@ -92,7 +92,7 @@ partial def Lean.Syntax.termsM (context : Array Syntax)(stx: Syntax)(maxDepth? :
         | Syntax.node _ k args => 
             -- IO.println s!"Node: {k}"
             let prev ← args.mapM (termsM context · (maxDepth?.map (· -1)))
-            let head : TermData := ⟨context, stx.purge⟩
+            let head : TermData := ⟨context, stx.purge, stx.purge.size⟩
             if tks.contains k then 
                 return (head, 0) :: prev.toList.join.map (fun (s, m) => (s, m + 1))
             else  
@@ -140,7 +140,7 @@ def PremiseData.get(ctx : Array Syntax)(name?: Name)(prop pf : Syntax) : MetaM P
     let subProofs: List (PropProofData × Nat) ←  pf.proofsM ctx
     let subTerms : List (TermData × Nat)  ← Syntax.termsM ctx pf
     let ids : List (Name  × Nat) ← pf.identsM ctx 
-    return ⟨ctx, name?, prop.purge, subTerms.toArray, subProofs.toArray, ids.toArray⟩
+    return ⟨ctx, name?, prop.purge, pf.purge, subTerms.toArray, subProofs.toArray, ids.toArray⟩
 
 def viewData (name: Name) : MetaM <| String := do
     let (stx, tstx) ← nameDefTypeSyntax name

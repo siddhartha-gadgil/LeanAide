@@ -472,6 +472,12 @@ def writePremisesM  : MetaM Nat  := do
     let mut premisesDone : Array <| (Array Syntax) × Syntax := #[]
     let premisesFile := System.mkFilePath ["rawdata", s!"premises.jsonl"]
     let h ← IO.FS.Handle.mk premisesFile IO.FS.Mode.append Bool.false
+    let trainPremisesFile := System.mkFilePath ["rawdata", s!"train_premises.jsonl"]
+    let hTrain ← IO.FS.Handle.mk trainPremisesFile IO.FS.Mode.append Bool.false
+    let testPremisesFile := System.mkFilePath ["rawdata", s!"test_premises.jsonl"]
+    let hTest ← IO.FS.Handle.mk testPremisesFile IO.FS.Mode.append Bool.false
+    let validPremisesFile := System.mkFilePath ["rawdata", s!"valid_premises.jsonl"]
+    let hValid ← IO.FS.Handle.mk validPremisesFile IO.FS.Mode.append Bool.false
     for (name, term, type) in cs do
         IO.println <| s!"{count} {name} (of {cs.size})"
         let defData? ← DefData.getM? name term type
@@ -481,6 +487,10 @@ def writePremisesM  : MetaM Nat  := do
             pure ()
         | some defData =>
             IO.println <| s!"{count} {name} written"
+            let gh := match ← IO.rand 0 10 with
+                | 0 => hTest
+                | 1 => hValid
+                | _ => hTrain
             let premises := defData.premises
             for premise in premises do
                 let premiseHead := (premise.context, premise.type)
@@ -494,6 +504,7 @@ def writePremisesM  : MetaM Nat  := do
                     let l := (toJson premise).pretty 10000000
                     if l.length < 9000000 then
                         h.putStrLn  l
+                        gh.putStrLn l
         count := count + 1    
     return count
 
