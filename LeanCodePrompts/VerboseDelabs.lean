@@ -65,7 +65,7 @@ open TSyntax.Compat
 
 def fvarPrefix : Name := "freeVariable"
 
-@[scoped delab app]
+@[delab app]
 def delabAppExplicitVerbose : Delab := do
   checkDepth
   let paramKinds ← getParamKinds
@@ -93,7 +93,7 @@ def delabAppExplicitVerbose : Delab := do
   wrapInType (← getExpr) stx
 
 
-@[scoped delab app]
+@[delab app]
 def delabAppImplicit : Delab := do
   checkDepth
   -- TODO: always call the unexpanders, make them guard on the right # args?
@@ -212,7 +212,7 @@ where
       (x : List α) → (Unit → motive List.nil) → ((a : α) → (as : List α) → motive (a :: as)) → motive x
   ```
 -/
-@[scoped delab app]
+@[delab app]
 def delabAppMatch : Delab := whenPPOption getPPNotation <| whenPPOption getPPMatch do
   checkDepth
   -- incrementally fill `AppMatchState` from arguments
@@ -289,7 +289,7 @@ def delabLetFun : Delab := do
     else
       `(let_fun $(mkIdent n) := $stxV; $stxB)
 
-@[scoped delab mdata]
+@[delab mdata]
 def delabMData : Delab := do
   -- checkDepth
   if let some _ := inaccessible? (← getExpr) then
@@ -361,7 +361,7 @@ private partial def delabBinders (delabGroup : Array Syntax → Syntax → Delab
       let (stx, stxN) ← withBindingBodyUnusedName fun stxN => return (← delab, stxN)
       delabGroup (curNames.push stxN) stx
 
-@[scoped delab lam]
+@[delab lam]
 def delabLam : Delab :=
   delabBinders fun curNames stxBody => do
     let e ← getExpr
@@ -439,7 +439,7 @@ private partial def delabForallBinders (delabGroup : Array Syntax → Bool → S
       delabGroup (curNames.push stxN) curDep stx
 
 
-@[scoped delab letE]
+@[delab letE]
 def delabLetE : Delab := do
   -- checkDepth
   let Expr.letE n t v b _ ← getExpr | unreachable!
@@ -455,7 +455,7 @@ def delabLetE : Delab := do
 
 
 
-@[scoped delab app.dite]
+@[delab app.dite]
 def delabDIte : Delab := whenPPOption getPPNotation do
   -- Note: we keep this as a delaborator for now because it actually accesses the expression.
   guard $ (← getExpr).getAppNumArgs == 5
@@ -472,7 +472,7 @@ where
       | none   => withBindingBodyUnusedName fun h => do
         return (← delabVerbose, h.getId)
 
-@[scoped delab app.cond]
+@[delab app.cond]
 def delabCond : Delab := whenPPOption getPPNotation do
   -- checkDepth
   guard $ (← getExpr).getAppNumArgs == 4
@@ -481,7 +481,7 @@ def delabCond : Delab := whenPPOption getPPNotation do
   let e ← withAppArg delabVerbose
   `(bif $c then $t else $e)
 
-@[scoped delab app.namedPattern]
+@[delab app.namedPattern]
 def delabNamedPattern : Delab := do
   -- checkDepth
   -- Note: we keep this as a delaborator because it accesses the DelabM context
@@ -509,10 +509,10 @@ def delabSigmaCore (sigma : Bool) : Delab := whenPPOption getPPNotation do
       else
         if sigma then `((_ : $α) × $b) else `((_ : $α) ×' $b)
 
-@[scoped delab app.Sigma]
+@[delab app.Sigma]
 def delabSigma : Delab := delabSigmaCore (sigma := true)
 
-@[scoped delab app.PSigma]
+@[delab app.PSigma]
 def delabPSigma : Delab := delabSigmaCore (sigma := false)
 
 partial def delabDoElems : DelabM (List Syntax) := do
@@ -548,7 +548,7 @@ partial def delabDoElems : DelabM (List Syntax) := do
   where
     prependAndRec x : DelabM _ := List.cons <$> x <*> delabDoElems
 
--- @[scoped delab app.Bind.bind]
+-- @[delab app.Bind.bind]
 -- def delabDo : Delab := whenPPOption getPPNotation do
 --   guard <| (← getExpr).isAppOfArity ``Bind.bind 6
 --   let elems ← delabDoElems
@@ -612,7 +612,7 @@ def namedArgument? (stx : Syntax) : MetaM <| Option (Syntax × Syntax) := do
     return some (stx, n)
   | _ => return none
 
--- @[scoped delab fvar]
+-- @[delab fvar]
 -- def delabFVar : Delab := do
 -- let Expr.fvar fvarId ← getExpr | unreachable!
 -- try

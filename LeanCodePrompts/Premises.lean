@@ -51,16 +51,31 @@ instance reprintSyntax : Reprint Syntax where
 
 def reprint {a : Type}[Reprint a] (x : a) : String := Reprint.reprSyn x
 
+instance : ToJson Syntax := ⟨fun (d: Syntax) ↦ d.reprint.get!⟩
+
 structure TermData where
     context : Array Syntax
     value : Syntax
-deriving Repr
+    size : Nat
+    depth: Nat
+deriving Repr, ToJson
+
+def TermData.increaseDepth (d: Nat) : TermData → TermData :=
+fun data ↦
+    ⟨data.context, data.value, data.size, data.depth + d⟩
 
 structure PropProofData where
     context : Array Syntax
     prop : Syntax
     proof: Syntax
-deriving Repr
+    propSize: Nat 
+    proofSize: Nat
+    depth: Nat
+deriving Repr, ToJson
+
+def PropProofData.increaseDepth (d: Nat) : PropProofData → PropProofData :=
+fun data ↦
+    ⟨data.context, data.prop, data.proof, data.propSize, data.proofSize, data.depth + d⟩
 
 instance reprintTermData : Reprint TermData where
     reprSyn := fun x => s!"context: {Reprint.reprSyn x.context}; term: {Reprint.reprSyn x.value}"
@@ -69,18 +84,19 @@ instance reprintProofData : Reprint PropProofData where
     reprSyn := fun x => s!"context: {Reprint.reprSyn x.context}; prop: {Reprint.reprSyn x.prop}; proof : {Reprint.reprSyn x.proof}"
         
 open Reprint 
-instance : ToJson TermData := ⟨fun (d: TermData) ↦ 
-    Json.mkObj [
-        ("context", reprSyn d.context),
-        ("term", reprSyn d.value)
-    ]⟩
+-- instance : ToJson TermData := ⟨fun (d: TermData) ↦ 
+--     Json.mkObj [
+--         ("context", reprSyn d.context),
+--         ("term", reprSyn d.value),
+--         ("size", d.size)
+--     ]⟩
 
-instance : ToJson  PropProofData := ⟨fun (d: PropProofData) ↦  
-    Json.mkObj [
-        ("context", reprSyn d.context),
-        ("prop", reprSyn d.prop),
-        ("proof", reprSyn d.proof)
-    ]⟩
+-- instance : ToJson  PropProofData := ⟨fun (d: PropProofData) ↦  
+--     Json.mkObj [
+--         ("context", reprSyn d.context),
+--         ("prop", reprSyn d.prop),
+--         ("proof", reprSyn d.proof)
+--     ]⟩
 
 instance reprintPair {a : Type} {b : Type} [Reprint a] [Reprint b] : Reprint (a × b) where
     reprSyn := fun (x, y) => s!"({Reprint.reprSyn x}, {Reprint.reprSyn y})"
@@ -89,34 +105,39 @@ def checkRepr : Repr TermData := inferInstance
 
 example : ToJson Name := inferInstance
 
-instance : ToJson Syntax := ⟨fun (d: Syntax) ↦ d.reprint.get!⟩
 
 structure PremiseData  where 
  context : (Array Syntax)
  name :       Option Name  -- name
  type :       Syntax  -- proposition
- terms :       Array (TermData × Nat)  -- sub-terms
- propProofs :       Array (PropProofData × Nat)  -- sub-terms
+ proof: Syntax  -- proof
+ terms :       Array (TermData)  -- sub-terms
+ propProofs :       Array (PropProofData)  -- sub-proofs
  ids :       Array (Name ×  Nat)  -- proof identifiers used
--- deriving Repr
+ deriving Repr, ToJson
+
 
 namespace PremiseData
 
-instance premiseToJson : ToJson PremiseData :=⟨
-    fun (d: PremiseData) ↦ 
-        Json.mkObj [
-            ("context", toJson d.context),
-            ("name", toJson d.name),
-            ("type", toJson d.type),
-            ("terms", toJson d.terms),
-            ("propProofs", toJson d.propProofs),
-            ("ids", toJson d.ids)
-    ]⟩
+-- instance premiseToJson : ToJson PremiseData :=⟨
+--     fun (d: PremiseData) ↦ 
+--         Json.mkObj [
+--             ("context", toJson d.context),
+--             ("name", toJson d.name),
+--             ("type", toJson d.type),
+--             ("proof", toJson d.proof),
+--             ("terms", toJson d.terms),
+--             ("propProofs", toJson d.propProofs),
+--             ("ids", toJson d.ids)
+--     ]⟩
 
+
+def filterIds (pd: PremiseData)(p: Name → Bool) : PremiseData := 
+    ⟨pd.context, pd.name, pd.type, pd.proof, pd.terms, pd.propProofs, pd.ids.filter (fun (n, _) => p n)⟩
 
 def increaseDepth (d: Nat) : PremiseData → PremiseData :=  
 fun data ↦
-    ⟨data.context, data.name, data.type, (data.terms.map (fun (p, m) => (p, m + d))), (data.propProofs.map (fun (p, m) => (p, m + d))),
+    ⟨data.context, data.name, data.type, data.proof, (data.terms.map (fun td => td.increaseDepth d)), (data.propProofs.map (fun p => p.increaseDepth d)),
         (data.ids.map (fun (n,  m) => (n,  m + d))) ⟩
 
 open Reprint in
@@ -148,11 +169,16 @@ def termKindList : MetaM <| List (SyntaxNodeKind × Unit) := do
     let s ← termKinds
     pure <| s.toList 
 
+partial def Lean.Syntax.size (stx: Syntax) : Nat := 
+    match stx with
+    | Syntax.ident _ _ _ _ => 1
+    | Syntax.node _ _ args => args.foldl (fun acc x => acc + x.size) 1
+    | _ => 1
 
 partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(maxDepth? : Option Nat := none) : 
     MetaM (
-        Array (TermData × Nat) ×
-        Array (PropProofData × Nat) ×
+        Array (TermData) ×
+        Array (PropProofData) ×
         Array (Name × Nat) ×
         List PremiseData
         )  := do
@@ -169,10 +195,13 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(ma
     | some (proof, prop) =>
         let prev ←  proof.premiseDataAuxM context (maxDepth?.map (· -1))
         let (ts, pfs, ids, ps) := prev
-        let headPf : PropProofData := ⟨context, prop.purge, proof.purge⟩
-        let head : PremiseData := ⟨context, none, stx.purge, ts, pfs, ids⟩
-        return (ts.map (fun (s, m) => (s, m + 1)),
-                pfs.map (fun (s, m) => (s, m + 1)) |>.push (headPf, 0),
+        let prop := prop.purge
+        let proof := proof.purge
+        let headPf : PropProofData := 
+            ⟨context, prop, proof, prop.size, proof.size, 0⟩
+        let head : PremiseData := ⟨context, none, prop.purge, proof.purge, ts, pfs, ids⟩
+        return (ts.map (fun t ↦ t.increaseDepth 1),
+                pfs.map (fun s ↦ s.increaseDepth 1) |>.push headPf,
                 ids.map (fun (s, m) => (s, m + 1)),
                 head :: ps)
     | none =>
@@ -180,27 +209,28 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(ma
     | some (body, args) =>
         let prev ←  body.premiseDataAuxM (context ++ args) (maxDepth?.map (· -1))
         let (ts, pfs, ids, ps) := prev
-        return (ts.map (fun (s, m) => (s, m + args.size)),
-                pfs.map (fun (s, m) => (s, m + args.size)),
+        return (ts.map (fun s => (s.increaseDepth args.size)),
+                pfs.map (fun s => (s.increaseDepth args.size)),
                 ids.map (fun (s, m) => (s, m + args.size)),
                 ps)
     | none =>
         match stx with
         | Syntax.node _ k args => 
             let prevs ← args.mapM (premiseDataAuxM context · (maxDepth?.map (· -1)))
-            let mut ts: Array (TermData × Nat) := #[]
-            let mut pfs: Array (PropProofData × Nat) := #[]
+            let mut ts: Array (TermData) := #[]
+            let mut pfs: Array (PropProofData) := #[]
             let mut ids: Array (Name × Nat) := #[]
             let mut ps: List PremiseData := []
             for prev in prevs do
                 let (ts', pfs', ids', ps') := prev
-                ts := ts ++ ts'.map (fun (s, m) => (s, m + 1))
-                pfs := pfs ++ pfs'.map (fun (s, m) => (s, m + 1))
+                ts := ts ++ ts'.map (fun s => s.increaseDepth 1)
+                pfs := pfs ++ pfs'.map (fun s => s.increaseDepth 1)
                 ids := ids ++ ids'.map (fun (s, m) => (s, m + 1))
                 ps := ps ++ ps'
-            let head : TermData := ⟨context, stx.purge⟩
+            let head : TermData := 
+                ⟨context, stx.purge, stx.purge.size, 0⟩
             if tks.contains k then 
-                ts := ts.push (head, 0)
+                ts := ts.push (head)
             return (ts, pfs, ids, ps)
         | Syntax.ident _ _ name .. => 
             let contextVars := context.filterMap getVar
@@ -210,11 +240,14 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(ma
             else pure (#[], #[], #[], [])
         | _ => pure (#[], #[], #[], [])
 
-def Lean.Syntax.premiseDataM (context : Array Syntax)(proof prop: Syntax)(name? : Option Name)(maxDepth? : Option Nat := none) : 
+def Lean.Syntax.premiseDataM (context : Array Syntax)
+    (proof prop: Syntax)(includeHead: Bool)(name? : Option Name)(maxDepth? : Option Nat := none) : 
     MetaM (List PremiseData) := do
     let (ts, pfs, ids, ps) ← proof.premiseDataAuxM context maxDepth?
-    let head : PremiseData := ⟨context, name?, prop.purge, ts, pfs, ids⟩
-    return head :: ps
+    if includeHead then
+        let head : PremiseData := ⟨context, name?, prop.purge, proof.purge, ts, pfs, ids⟩
+        return head :: ps
+    else return ps
 
 
 
@@ -247,7 +280,7 @@ def nameDefSyntax (name: Name) : MetaM <| Option Syntax := do
 
 def premisesFromName (name : Name) : MetaM (List PremiseData) := do
     let (pf, prop) ← nameDefTypeSyntax name
-    Lean.Syntax.premiseDataM #[] pf prop name
+    Lean.Syntax.premiseDataM #[] pf prop true name
 
 def premisesViewFromName (name: Name) : MetaM <| List String := do
     let premises ← premisesFromName name
@@ -363,11 +396,24 @@ def DefData.getM? (name: Name)(term type: Expr) : MetaM (Option  DefData) := do
     else
     let (stx, _) ←  delabCore term {} (delabVerbose)
     let (tstx, _) ←  delabCore type {} (delabVerbose)
-    let premises ← Lean.Syntax.premiseDataM #[] stx tstx name
     let isProp := type.isProp
+    let premises ← Lean.Syntax.premiseDataM #[] stx tstx isProp name
     let typeDepth := type.approxDepth
     let valueDepth := term.approxDepth
     return some {name := name, type := tstx.raw.purge, value := stx.raw.purge, isProp := isProp, typeDepth := typeDepth.toNat, valueDepth := valueDepth.toNat, premises := premises}
+
+structure IdentData where
+    context : Array Syntax
+    type : Syntax
+    ids : List Name
+    deriving Inhabited, ToJson
+
+def IdentData.filter (d: IdentData)(p : Name → Bool) : IdentData := 
+    {context:= d.context, type := d.type, ids := d.ids.filter p}
+
+def DefData.identData (d: DefData) : List IdentData := 
+    d.premises.map (fun p => 
+        {context:= p.context, type := p.type, ids := p.ids.map (·.1) |>.toList.eraseDups})
 
 def nameSize : MetaM Nat := do
     let cs ← constantNameValueTypes 
@@ -389,7 +435,7 @@ def nameSample (n: Nat) : MetaM (Array Name) := do
 
 -- #eval nameSample 100
 
-def batchPremises (start batch : Nat) : MetaM (Array Json) := do
+def batchDefns (start batch : Nat) : MetaM (Array Json) := do
     let cs ← constantNameValueTypes 
     let mut out : Array Json := #[]
     let mut count := 0
@@ -403,12 +449,15 @@ def batchPremises (start batch : Nat) : MetaM (Array Json) := do
     return out
 
 
-def writeBatchPremisesM (start batch : Nat) : MetaM Nat  := do
+def writeBatchDefnsM (start batch : Nat) : MetaM Nat  := do
     let cs ← constantNameValueTypes 
+    let names := cs.map (·.1)
     IO.println <| s!"{start}; {batch} from {cs.size}"
     let mut count := 0
-    let premisesFile := System.mkFilePath ["rawdata", s!"premises.jsonl"]
-    let h ← IO.FS.Handle.mk premisesFile IO.FS.Mode.append Bool.false
+    let defnsFile := System.mkFilePath ["rawdata", s!"defns.jsonl"]
+    let h ← IO.FS.Handle.mk defnsFile IO.FS.Mode.append Bool.false
+    let idsFile := System.mkFilePath ["rawdata", s!"idents.jsonl"]
+    let h' ← IO.FS.Handle.mk idsFile IO.FS.Mode.append Bool.false
     for (name, term, type) in cs do
         if count >= start && count < start + batch then
             IO.println <| s!"{count} {name}"
@@ -419,12 +468,68 @@ def writeBatchPremisesM (start batch : Nat) : MetaM Nat  := do
                 pure ()
             | some defData =>
                 IO.println <| s!"{count} {name} written"
-                h.putStrLn <| (toJson defData).pretty 1000000
+                let idData := defData.identData
+                let idData := 
+                    idData.map (fun d ↦ d.filter 
+                        (names.contains · ))
+                let l := (toJson defData).pretty 10000000
+                if l.length < 9000000 then
+                    h.putStrLn  l
+                for d in idData do
+                    let l := (toJson d).pretty 10000000
+                    if l.length < 9000000 then
+                    h'.putStrLn l
         count := count + 1    
     return start + batch
 
+def writePremisesM  : MetaM Nat  := do
+    let cs ← constantNameValueTypes 
+    let names := cs.map (·.1)
+    IO.println <| s!"Processing {cs.size} definitions"
+    let mut count := 0
+    let mut premisesDone : Array <| (Array Syntax) × Syntax := #[]
+    let premisesFile := System.mkFilePath ["rawdata", s!"premises.jsonl"]
+    let h ← IO.FS.Handle.mk premisesFile IO.FS.Mode.append Bool.false
+    let trainPremisesFile := System.mkFilePath ["rawdata", s!"train_premises.jsonl"]
+    let hTrain ← IO.FS.Handle.mk trainPremisesFile IO.FS.Mode.append Bool.false
+    let testPremisesFile := System.mkFilePath ["rawdata", s!"test_premises.jsonl"]
+    let hTest ← IO.FS.Handle.mk testPremisesFile IO.FS.Mode.append Bool.false
+    let validPremisesFile := System.mkFilePath ["rawdata", s!"valid_premises.jsonl"]
+    let hValid ← IO.FS.Handle.mk validPremisesFile IO.FS.Mode.append Bool.false
+    for (name, term, type) in cs do
+        IO.println <| s!"{count} {name} (of {cs.size})"
+        let defData? ← DefData.getM? name term type
+        match defData? with
+        | none => 
+            IO.println <| s!"{count} {name} omitted"
+            pure ()
+        | some defData =>
+            IO.println <| s!"{count} {name} written"
+            let gh := match ← IO.rand 0 10 with
+                | 0 => hTest
+                | 1 => hValid
+                | _ => hTrain
+            let premises := defData.premises
+            for premise in premises do
+                let premiseHead := (premise.context, premise.type)
+                if premisesDone.contains premiseHead then
+                    IO.println "premise seen previously"
+                    pure ()
+                else
+                    premisesDone := premisesDone.push premiseHead
+                    IO.println "premise new"
+                    let premise := premise.filterIds (names.contains · )
+                    let l := (toJson premise).pretty 10000000
+                    if l.length < 9000000 then
+                        h.putStrLn  l
+                        gh.putStrLn l
+        count := count + 1    
+    return count
 
-def writeBatchPremisesCore (start batch : Nat) : CoreM Nat := 
-    (writeBatchPremisesM start batch).run' {} 
+def writeBatchDefnsCore (start batch : Nat) : CoreM Nat := 
+    (writeBatchDefnsM start batch).run' {} 
 
--- #eval batchPremises 0 5
+def writePremisesCore : CoreM Nat :=
+    writePremisesM.run' {}
+
+-- #eval batchDefns 0 5
