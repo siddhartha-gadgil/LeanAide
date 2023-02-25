@@ -68,12 +68,14 @@ def traceSimpCall' (stx : Syntax) (usedSimps : Simp.UsedSimps) : MetaM Syntax :=
 
 def expandTacStx : TSyntax `tactic → TacticM (TSyntax `tactic)
   | stx@`(tactic| simp%$tk $(config)? $(discharger)? $[only%$o]? $[[$args,*]]? $(loc)?) => do
-      -- let { ctx, dischargeWrapper } ← withMainContext <| mkSimpContext stx (eraseLocal := false)
-      -- let usedSimps ← dischargeWrapper.with fun discharge? =>
-        -- simpLocation ctx discharge? (expandOptLocation stx.raw[5])
-      -- return ⟨← traceSimpCall' stx usedSimps⟩
-      `(tactic| simp) 
-  | `(tactic| $tac) => return tac
+      let { ctx, dischargeWrapper } ← withMainContext <| mkSimpContext stx (eraseLocal := false)
+      let usedSimps ← dischargeWrapper.with fun discharge? =>
+        simpLocation ctx discharge? (expandOptLocation stx.raw[5])
+      return ⟨← traceSimpCall' stx usedSimps⟩
+      -- `(tactic| simp) 
+  | `(tactic| $tac) => do
+    evalTactic tac
+    return tac
 
 elab "seq" s:tacticSeq : tactic => do
   let tacs := getTactics s
@@ -82,7 +84,7 @@ elab "seq" s:tacticSeq : tactic => do
     -- withRef tac <| addRawTrace (goalsToMessageData gs)
     -- withOptions (·.setBool `tactic.simp.trace true) do
     let tac' ← expandTacStx tac
-    evalTactic tac
+    -- evalTactic tac
     withRef tac <| addRawTrace m!"[TACTIC] {tac'}"
 
 def addSeq : TSyntax ``tacticSeq → TermElabM (TSyntax ``tacticSeq)
@@ -127,5 +129,5 @@ macro_rules
 -- the `by` tactic now generates trace data by default
 example (h : x = y) : 0 + x = y := by
   rw [h]
-  simp [Nat.zero_add]
+  simp
   done
