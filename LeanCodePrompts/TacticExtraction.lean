@@ -66,13 +66,12 @@ def traceSimpCall' (stx : Syntax) (usedSimps : Simp.UsedSimps) : MetaM Syntax :=
   stx := stx.setArg 4 (mkNullNode argsStx)
   return stx
 
-def expandTacStx : TSyntax `tactic → TacticM (TSyntax `tactic)
+def evalTacStx : TSyntax `tactic → TacticM (TSyntax `tactic)
   | stx@`(tactic| simp%$tk $(config)? $(discharger)? $[only%$o]? $[[$args,*]]? $(loc)?) => do
       let { ctx, dischargeWrapper } ← withMainContext <| mkSimpContext stx (eraseLocal := false)
       let usedSimps ← dischargeWrapper.with fun discharge? =>
         simpLocation ctx discharge? (expandOptLocation stx.raw[5])
       return ⟨← traceSimpCall' stx usedSimps⟩
-      -- `(tactic| simp) 
   | `(tactic| $tac) => do
     evalTactic tac
     return tac
@@ -81,10 +80,8 @@ elab "seq" s:tacticSeq : tactic => do
   let tacs := getTactics s
   for tac in tacs do
     let gs ← getUnsolvedGoals
-    -- withRef tac <| addRawTrace (goalsToMessageData gs)
-    -- withOptions (·.setBool `tactic.simp.trace true) do
-    let tac' ← expandTacStx tac
-    -- evalTactic tac
+    withRef tac <| addRawTrace (goalsToMessageData gs)
+    let tac' ← evalTacStx tac
     withRef tac <| addRawTrace m!"[TACTIC] {tac'}"
 
 def addSeq : TSyntax ``tacticSeq → TermElabM (TSyntax ``tacticSeq)
