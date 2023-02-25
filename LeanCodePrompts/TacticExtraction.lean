@@ -17,19 +17,6 @@ def getTactics : TSyntax ``tacticSeq → TSyntaxArray `tactic
   | `(tacticSeq| $[$t]*) => t
   | _ => #[]
 
-#check TraceElem
-#check MessageData
-#check Tactic.evalTraceMessage
-#check getTraceState
-#check TraceState
-#check setOptionFromString
-#check KVMap.setBool
-#check elabTerm
-#check PrettyPrinter.ppExpr
-#check Format
-#check TacticM
-#check TermElabM
-
 -- modified from `Lean.Elab.Tactic.Simp`
 def traceSimpCall' (stx : Syntax) (usedSimps : Simp.UsedSimps) : MetaM Syntax := do
   let mut stx := stx
@@ -66,12 +53,52 @@ def traceSimpCall' (stx : Syntax) (usedSimps : Simp.UsedSimps) : MetaM Syntax :=
   stx := stx.setArg 4 (mkNullNode argsStx)
   return stx
 
+def dsimpLocation' (ctx : Simp.Context) (loc : Location) : TacticM Syntax := do
+  match loc with
+  | Location.targets hyps simplifyTarget =>
+    withMainContext do
+      let fvarIds ← getFVarIds hyps
+      go fvarIds simplifyTarget
+  | Location.wildcard =>
+    withMainContext do
+      go (← (← getMainGoal).getNondepPropHyps) (simplifyTarget := true)
+where
+  go (fvarIdsToSimp : Array FVarId) (simplifyTarget : Bool) : TacticM Syntax := do
+    let mvarId ← getMainGoal
+    let (result?, usedSimps) ← dsimpGoal mvarId ctx (simplifyTarget := simplifyTarget) (fvarIdsToSimp := fvarIdsToSimp)
+    match result? with
+    | none => replaceMainGoal []
+    | some mvarId => replaceMainGoal [mvarId]
+    traceSimpCall' (← getRef) usedSimps
+
 def evalTacStx : TSyntax `tactic → TacticM (TSyntax `tactic)
   | stx@`(tactic| simp%$tk $(config)? $(discharger)? $[only%$o]? $[[$args,*]]? $(loc)?) => do
       let { ctx, dischargeWrapper } ← withMainContext <| mkSimpContext stx (eraseLocal := false)
       let usedSimps ← dischargeWrapper.with fun discharge? =>
         simpLocation ctx discharge? (expandOptLocation stx.raw[5])
       return ⟨← traceSimpCall' stx usedSimps⟩
+  | stx@`(tactic| simp_all%$tk $(config)? $(discharger)? $[only%$o]? $[[$args,*]]?) => do
+      let { ctx, .. } ← mkSimpContext stx (eraseLocal := true) (kind := .simpAll) (ignoreStarArg := true)
+      let (result?, usedSimps) ← simpAll (← getMainGoal) ctx
+      match result? with
+      | none => replaceMainGoal []
+      | some mvarId => replaceMainGoal [mvarId]
+      return ⟨← traceSimpCall' stx usedSimps⟩
+  | stx@`(tactic| dsimp%$tk $(config)? $[only%$o]? $[[$args,*]]? $(loc)?) => do
+      let { ctx, .. } ← withMainContext <| mkSimpContext stx (eraseLocal := false) (kind := .dsimp)
+      return ⟨← dsimpLocation' ctx (expandOptLocation stx.raw[5])⟩
+  | stx@`(tactic| have $[$x:ident]? := $prf) => do
+      evalTactic stx
+      let trm ← Tactic.elabTerm prf none
+      let typ ← inferType trm
+      let typStx ← PrettyPrinter.delab typ
+      `(tactic| have $[$x:ident]? : $typStx := $prf)
+  | stx@`(tactic| let $x:ident := $val) => do
+      evalTactic stx
+      let trm ← Tactic.elabTerm val none
+      let typ ← inferType trm
+      let typStx ← PrettyPrinter.delab typ
+      `(tactic| let $x:ident : $typStx := $val)
   | `(tactic| $tac) => do
     evalTactic tac
     return tac
@@ -84,17 +111,12 @@ elab "seq" s:tacticSeq : tactic => do
     let tac' ← evalTacStx tac
     withRef tac <| addRawTrace m!"[TACTIC] {tac'}"
 
-def addSeq : TSyntax ``tacticSeq → TermElabM (TSyntax ``tacticSeq)
-  | `(tacticSeq| { $[$t]* }) => `(tacticSeq| { seq $[$t]* })
-  | `(tacticSeq| $[$t]*) => `(tacticSeq| seq $[$t]*)
-  | _ => `(tacticSeq| seq done)
-
+-- an example of the `seq` tactic
 example (h : x = y) : 0 + x = y := by
   seq 
     rw [Nat.zero_add]
     rw [h]
   done
-
 
 -- /-- `by tac` constructs a term of the expected type by running the tactic(s) `tac`. -/
 -- def byTactic' := leading_parser:leadPrec
@@ -125,6 +147,7 @@ macro_rules
 
 -- the `by` tactic now generates trace data by default
 example (h : x = y) : 0 + x = y := by
-  rw [h]
-  simp
+  have := (rfl : 1 = 1)
+  let x := 5
+  simp_all
   done
