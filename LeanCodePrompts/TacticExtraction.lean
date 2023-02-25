@@ -68,29 +68,22 @@ def traceSimpCall' (stx : Syntax) (usedSimps : Simp.UsedSimps) : MetaM Syntax :=
 
 def expandTacStx : TSyntax `tactic → TacticM (TSyntax `tactic)
   | stx@`(tactic| simp%$tk $(config)? $(discharger)? $[only%$o]? $[[$args,*]]? $(loc)?) => do
-      let { ctx, dischargeWrapper } ← withMainContext <| mkSimpContext stx (eraseLocal := false)
-      let usedSimps ← dischargeWrapper.with fun discharge? =>
-        simpLocation ctx discharge? (expandOptLocation stx.raw[5])
-      return ⟨← traceSimpCall' stx usedSimps⟩ 
-  | `(tactic| have $[$x:ident]? := $prf) => do
-      -- let trm ← elabTerm prf none
-      -- let typ ← inferType trm
-      sorry
-  | `(tactic| let $x:ident := $val) => do
-      -- let trm ← elabTerm val none
-      -- let typ ← inferType trm
-      sorry
+      -- let { ctx, dischargeWrapper } ← withMainContext <| mkSimpContext stx (eraseLocal := false)
+      -- let usedSimps ← dischargeWrapper.with fun discharge? =>
+        -- simpLocation ctx discharge? (expandOptLocation stx.raw[5])
+      -- return ⟨← traceSimpCall' stx usedSimps⟩
+      `(tactic| simp) 
   | `(tactic| $tac) => return tac
 
 elab "seq" s:tacticSeq : tactic => do
   let tacs := getTactics s
   for tac in tacs do
     let gs ← getUnsolvedGoals
-    withRef tac <| addRawTrace (goalsToMessageData gs)
+    -- withRef tac <| addRawTrace (goalsToMessageData gs)
     -- withOptions (·.setBool `tactic.simp.trace true) do
-    -- let tac' ← expandTacStx tac
+    let tac' ← expandTacStx tac
     evalTactic tac
-    withRef tac <| addRawTrace m!"[TACTIC] {tac}"
+    withRef tac <| addRawTrace m!"[TACTIC] {tac'}"
 
 def addSeq : TSyntax ``tacticSeq → TermElabM (TSyntax ``tacticSeq)
   | `(tacticSeq| { $[$t]* }) => `(tacticSeq| { seq $[$t]* })
