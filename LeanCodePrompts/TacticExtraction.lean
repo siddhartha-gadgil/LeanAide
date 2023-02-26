@@ -1,6 +1,5 @@
 import Lean
 import Mathlib.Tactic.Simps.Basic
--- import LeanInk.Analysis.Basic
 
 open Lean Elab Parser Term Meta Tactic Meta
 
@@ -144,6 +143,8 @@ example : 1 + 1 = 2 := by' -- the new `by'` syntax can be used to replace `by`
 -- the `by'` clone is needed here to avoid infinite recursion
 macro_rules
   | `(by $ts) => `(by' seq $ts) 
+
+set_option linter.unreachableTactic false
 
 -- the `by` tactic now generates trace data by default
 example (h : x = y) : 0 + x = y := by
