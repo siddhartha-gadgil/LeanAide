@@ -1,6 +1,6 @@
 import Lean
 import Mathlib.Tactic.Simps.Basic
-import LeanInk.Analysis.Basic
+-- import LeanInk.Analysis.Basic
 
 open Lean Elab Parser Term Meta Tactic Meta
 
