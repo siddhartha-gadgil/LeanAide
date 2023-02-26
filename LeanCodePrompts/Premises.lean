@@ -487,16 +487,22 @@ def writeBatchDefnsM (start batch : Nat) : MetaM Nat  := do
 def writePremisesM  : MetaM Nat  := do
     let cs ← constantNameValueTypes 
     let names := cs.map (·.1)
+    let namesFile := System.mkFilePath ["rawdata", s!"names.txt"]
+    IO.FS.writeFile namesFile <| 
+        names.map toString |>.foldl (fun a b ↦ a  ++ b ++ "\n") ""
     IO.println <| s!"Processing {cs.size} definitions"
     let mut count := 0
     let mut premisesDone : Array <| (Array Syntax) × Syntax := #[]
     let premisesFile := System.mkFilePath ["rawdata", s!"premises.jsonl"]
+    IO.FS.writeFile premisesFile ""
     let h ← IO.FS.Handle.mk premisesFile IO.FS.Mode.append Bool.false
     let trainPremisesFile := System.mkFilePath ["rawdata", s!"train_premises.jsonl"]
+    IO.FS.writeFile trainPremisesFile ""
     let hTrain ← IO.FS.Handle.mk trainPremisesFile IO.FS.Mode.append Bool.false
     let testPremisesFile := System.mkFilePath ["rawdata", s!"test_premises.jsonl"]
     let hTest ← IO.FS.Handle.mk testPremisesFile IO.FS.Mode.append Bool.false
     let validPremisesFile := System.mkFilePath ["rawdata", s!"valid_premises.jsonl"]
+    IO.FS.writeFile validPremisesFile ""
     let hValid ← IO.FS.Handle.mk validPremisesFile IO.FS.Mode.append Bool.false
     for (name, term, type) in cs do
         IO.println <| s!"{count} {name} (of {cs.size})"
