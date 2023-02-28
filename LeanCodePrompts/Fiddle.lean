@@ -2,13 +2,37 @@ import Lean
 import Lean.Parser
 open Lean Meta Elab Parser
 
-set_option pp.all true
-example  : a = a := by
-    apply Eq.trans
-    rename_i α 
-    exact rfl
-    rename_i β 
-    exact rfl
+set_option autoImplicit false
+
+structure IncidenceGeometry  where
+   Point : Type
+   Line : Type
+
+structure Segment (geom: IncidenceGeometry) where
+    p1 : geom.Point
+    p2 : geom.Point
+
+structure EuclideanGeometry extends IncidenceGeometry where
+   distance : Point → Point → Nat
+
+instance : Coe EuclideanGeometry IncidenceGeometry where
+  coe geom := { Point := geom.Point, Line := geom.Line }
+
+def length (geom: EuclideanGeometry) (s: Segment geom) : Nat := 
+  geom.distance s.p1 s.p2
+
+def rnd (lo hi: Nat) : Nat := ((IO.rand lo hi).run' ()).get!
+
+#eval rnd 3 20
+
+
+-- set_option pp.all true
+-- example  : a = a := by
+--     apply Eq.trans
+--     rename_i α 
+--     exact rfl
+--     rename_i β 
+--     exact rfl
 
 /-
 def runParserCategoryPartial  (catName : Name) (input : String) (fileName := "<input>") : MetaM <| Except String Syntax := do
