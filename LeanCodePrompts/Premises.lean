@@ -492,6 +492,9 @@ def writePremisesM  : MetaM Nat  := do
     let namesFile := System.mkFilePath ["rawdata", s!"names.txt"]
     IO.FS.writeFile namesFile <| 
         names.map toString |>.foldl (fun a b ↦ a  ++ b ++ "\n") ""
+    let defIdsFile := System.mkFilePath ["rawdata", s!"def_ids.jsonl"]
+    IO.FS.writeFile defIdsFile ""
+    let hId ← IO.FS.Handle.mk defIdsFile IO.FS.Mode.append Bool.false
     IO.println <| s!"Processing {cs.size} definitions"
     let mut count := 0
     let mut premisesDone : Array <| (Array Syntax) × Syntax := #[]
@@ -523,16 +526,27 @@ def writePremisesM  : MetaM Nat  := do
             for premise in premises do
                 let premiseHead := (premise.context, premise.type)
                 if premisesDone.contains premiseHead then
-                    IO.println "premise seen previously"
+                    IO.print "premise seen previously; "
                     pure ()
                 else
                     premisesDone := premisesDone.push premiseHead
-                    IO.println "premise new"
+                    IO.print "premise new; "
                     let premise := premise.filterIds (names.contains · )
                     let l := (toJson premise).pretty 10000000
                     if l.length < 9000000 then
                         h.putStrLn  l
                         gh.putStrLn l
+            IO.println ""
+            let idData := defData.identData.bind (fun d ↦ d.ids)
+            let idData := idData.filter (names.contains · ) |>.eraseDups
+            let idData := Json.mkObj [
+                ("name", toJson defData.name),
+                ("ids", toJson idData),
+                ("is_prop", toJson defData.isProp)
+            ]
+            let l := idData.pretty 10000000
+            if l.length < 9000000 then
+                hId.putStrLn l
         count := count + 1    
     return count
 
