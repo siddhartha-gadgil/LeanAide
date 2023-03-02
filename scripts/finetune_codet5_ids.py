@@ -8,7 +8,7 @@
 
 from datasets import load_dataset
 
-dataset = load_dataset("json", "rawdata/train_ids.jsonl")
+dataset = load_dataset('json', data_dir='rawdata', data_files="train_ids.jsonl")
 print(dataset)
 
 
@@ -127,7 +127,7 @@ for epoch in range(num_epochs):
 # Now that we've trained a model, let's test it on some examples from the test set.
 model.eval()
 import json
-with open('test_ids.jsonl') as f:
+with open('rawdata/test_ids.jsonl') as f:
     test_ids = [json.load(line) for line in f]
 print ('Test set size:', len(test_ids))
 
