@@ -127,7 +127,7 @@ for epoch in range(num_epochs):
 # Now that we've trained a model, let's test it on some examples from the test set.
 model.eval()
 import json
-with open('rawdata/test_ids.jsonl') as f:
+with open('test_ids.jsonl') as f:
     test_ids = [json.load(line) for line in f]
 print ('Test set size:', len(test_ids))
 
@@ -147,7 +147,7 @@ for d in test_ids:
    gens = generate_ids(d['theorem'])
    d['generated'] = gens
 
-with open('rawdata/test_ids_generated.jsonl', 'w') as f:
+with open('test_ids_generated.jsonl', 'w') as f:
     for d in test_ids:
         f.write(json.dumps(d) + '\n')
 
