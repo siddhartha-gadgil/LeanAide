@@ -398,7 +398,7 @@ def DefData.getM? (name: Name)(term type: Expr) : MetaM (Option  DefData) := do
     else
     let (stx, _) ←  delabCore term {} (delabVerbose)
     let (tstx, _) ←  delabCore type {} (delabVerbose)
-    let isProp := type.isProp
+    let isProp ← Meta.isProof term
     let premises ← Lean.Syntax.premiseDataM #[] stx tstx isProp name
     let typeDepth := type.approxDepth
     let valueDepth := term.approxDepth
@@ -417,9 +417,11 @@ def DefData.identData (d: DefData) : List IdentData :=
     d.premises.map (fun p => 
         {context:= p.context, type := p.type, ids := p.ids.map (·.1) |>.toList.eraseDups})
 
-def nameSize : MetaM Nat := do
-    let cs ← constantNameValueTypes 
-    return cs.size
+def nameSize : MetaM <| Nat × Nat := do
+    let cs ← constantNameValueTypes
+    let cs' ← cs.filterM <| fun (_, term, _) => 
+        Meta.isProof term
+    return (cs.size, cs'.size)
 
 -- #check Json.pretty
 
