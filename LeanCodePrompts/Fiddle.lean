@@ -25,6 +25,15 @@ def rnd (lo hi: Nat) : Nat := ((IO.rand lo hi).run' ()).get!
 
 #eval rnd 3 20
 
+def a := rnd 0 10
+
+def b := rnd 0 10
+
+#eval a -- 1
+
+#eval b -- 2
+
+example : a = b := by rfl
 
 -- set_option pp.all true
 -- example  : a = a := by

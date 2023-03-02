@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# This is training of a model for generating lists of identifiers in a proof from the statement.
+# This is training of a model for generating lists of identifiers in a proof from the statement in Lean 4.
 
 # This is adapted from a notebook for training a CodeT5 model on generating documentation for Ruby code.
 
@@ -13,17 +13,15 @@ print(dataset)
 
 
 
-# The goal for the model is to generate a docstring based on the provided code. 
 # 
-# Let's now prepare the examples (i.e. code-docstring pairs) for the model. As you might know, Transformer models like BERT, BART, T5 etc. don't expect text as direct input, but rather integers which are called `input_ids` in HuggingFace Transformers. These represent tokens of a certain vocabulary. The model will learn rich contextual embedding vectors for each token, allowing it to get good results.
 # 
-# In other words, we need to turn the "Code" input from above into `input_ids`, and similarly, we need to turn the "Docstring" output from above into `input_ids`, which will serve as the `labels` for the model.
+# We need to turn the "theorem" input from above into `input_ids`, and similarly, we need to turn the "ids" output from above into `input_ids`, which will serve as the `labels` for the model.
 # 
 # In addition, as these models are trained on batches of examples rather than one example at a time, we'll need to pad/truncate both the inputs and labels, such that they are all of the same length. That's why we also will add an `attention_mask` input to the model, such that it knows not to take into account padding tokens when computing attention scores.
 # 
 # To summarize: 
-# * input: code, which is turned into `input_ids` + `attention_mask`
-# * output: docstrings, which are turned into `labels` (which are the `input_ids` of the docstrings).
+# * input: theorem, which is turned into `input_ids` + `attention_mask`
+# * output: ids, which are turned into `labels` (which are the `input_ids` of the docstrings).
 # 
 # Below, we define a `preprocess_examples` function, which we can apply on the entire dataset. 
 
@@ -32,7 +30,7 @@ from transformers import RobertaTokenizer
 
 tokenizer = RobertaTokenizer.from_pretrained("Salesforce/codet5-base")
 
-prefix = "Lean Proof-identifiers from Theorem: "
+prefix = "Lean proof-identifiers from Theorem: "
 max_input_length = 256
 max_target_length = 256
 
@@ -66,63 +64,43 @@ def preprocess_examples(examples):
 dataset = dataset.map(preprocess_examples, batched=True)
 
 # Next, let's set the format to "torch" and create PyTorch dataloaders.
-
-# In[6]:
-
-
 from torch.utils.data import DataLoader
 
 dataset.set_format(type="torch", columns=['input_ids', 'attention_mask', 'labels'])
 train_dataloader = DataLoader(dataset, shuffle=True, batch_size=8)
-
-
 
 batch = next(iter(train_dataloader))
 print(batch.keys())
 
 
 # Let's verify an example, by decoding it back into text:
-
-
-tokenizer.decode(batch['input_ids'][0])
-
-
-
+print ("Sample input:")
+print (tokenizer.decode(batch['input_ids'][0]))
 
 labels = batch['labels'][0]
-tokenizer.decode([label for label in labels if label != -100])
-
-
-
+print("Sample labels:")
+print(tokenizer.decode([label for label in labels if label != -100]))
 
 from transformers import T5ForConditionalGeneration 
 model = T5ForConditionalGeneration.from_pretrained('Salesforce/codet5-base')
-
-
-
 loss = model(input_ids=batch['input_ids'], attention_mask=batch['attention_mask'], labels=batch['labels']).loss
-
+print("Loss:")
 print (loss.item())
 
 
 from torch.optim import AdamW
-
 optimizer = AdamW(model.parameters(), lr=5e-5)
-
 from transformers import get_scheduler
-
 num_epochs = 3
 num_training_steps = num_epochs * len(train_dataloader)
 lr_scheduler = get_scheduler(
     name="linear", optimizer=optimizer, num_warmup_steps=5000, num_training_steps=num_training_steps
 )
 
-
-
 import torch
-
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 model.to(device)
+print ('Device: ')
 print (device)
 
 
@@ -154,7 +132,7 @@ with open('rawdata/test_ids.jsonl') as f:
 print ('Test set size:', len(test_ids))
 
 def generate_ids(prompt):
-    input_ids = tokenizer.encode(prompt, return_tensors='pt').to(device)
+    input_ids = tokenizer.encode(prefix + prompt, return_tensors='pt').to(device)
     gen_tokens = model.generate(
         input_ids,
         do_sample=True,
