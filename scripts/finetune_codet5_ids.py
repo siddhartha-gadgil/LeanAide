@@ -147,7 +147,7 @@ for d in test_ids:
    gens = generate_ids(d['theorem'])
    d['generated'] = gens
 
-with open('test_ids_generated.jsonl', 'w') as f:
+with open('rawdata/test_ids_generated.jsonl', 'w') as f:
     for d in test_ids:
         f.write(json.dumps(d) + '\n')
 
