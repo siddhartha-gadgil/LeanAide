@@ -67,7 +67,7 @@ dataset = dataset.map(preprocess_examples, batched=True)
 from torch.utils.data import DataLoader
 
 dataset.set_format(type="torch", columns=['input_ids', 'attention_mask', 'labels'])
-train_dataloader = DataLoader(dataset, shuffle=True, batch_size=8)
+train_dataloader = DataLoader(dataset['train'], shuffle=True, batch_size=8)
 
 batch = next(iter(train_dataloader))
 print(batch.keys())
