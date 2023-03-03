@@ -4,9 +4,7 @@ import openai
 completion = openai.ChatCompletion.create(
   model="gpt-3.5-turbo",
   messages=[
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": "Translate docstrings into Lean Codes following the format of the examples."},
-        {"role": "assistant", "content": "Please give examples."},
+        {"role": "system", "content": "You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples."},
         {"role": "user", "content": "/--  If `m` and `n` are natural numbers, then the natural number `m^n` is even if and only if `m` is even and `n` is positive. -/"},
         {"role": "assistant", "content": "theorem {m n : ℕ} : even (m ^ n) ↔ even m ∧ n ≠ 0 :="},
         {"role": "user", "content": "/-- Odd Bernoulli numbers (greater than 1) are zero. -/"},
