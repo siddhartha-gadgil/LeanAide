@@ -128,7 +128,7 @@ for epoch in range(num_epochs):
 model.eval()
 import json
 with open('rawdata/test_ids.jsonl') as f:
-    test_ids = [json.load(line) for line in f]
+    test_ids = [json.loads(line) for line in f]
 print ('Test set size:', len(test_ids))
 
 def generate_ids(prompt):
