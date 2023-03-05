@@ -9,6 +9,7 @@ def inputFile : System.FilePath :=
 -- "lake-packages"/"mathlib"/"Mathlib"/"Data"/"Int"/"Dvd"/"Pow.lean"
 
 #eval inputFile.pathExists
+#check Array.concatMap
 
 -- Leonardo de Moura's code for generating trace data
 def getTactics : TSyntax ``tacticSeq → TSyntaxArray `tactic
@@ -111,11 +112,13 @@ elab "seq" s:tacticSeq : tactic => do
     withRef tac <| addRawTrace m!"[TACTIC] {tac'}"
 
 -- an example of the `seq` tactic
-example (h : x = y) : 0 + x = y := by
+example (h : x = y) : 0 + x = y ∧ 1 = 1 := by
   seq 
-    rw [Nat.zero_add]
-    rw [h]
-  done
+    rw [Nat.zero_add]; rw [h]
+  refine' ⟨_, _⟩
+  focus
+    rfl
+  · rfl
 
 -- /-- `by tac` constructs a term of the expected type by running the tactic(s) `tac`. -/
 -- def byTactic' := leading_parser:leadPrec
@@ -146,9 +149,27 @@ macro_rules
 
 set_option linter.unreachableTactic false
 
+#check Parser.Tactic.tacticSeqBracketed
+
 -- the `by` tactic now generates trace data by default
-example (h : x = y) : 0 + x = y := by
+example (h : x = y) : x + 0 + x = x + y ∧ 1 = 1 := by
   have := (rfl : 1 = 1)
-  let x := 5
-  simp_all
+  let a := 5
+  refine' ⟨_, _⟩
+  focus
+    apply Eq.symm
+    apply Eq.symm
+    simp_all
+  · first | apply Eq.symm | simp
+    apply Eq.symm
+    rfl
   done
+
+example : ∀ n : Nat, n = n := by
+  intro n
+  let x : ∀ m : ℕ, m = m := by
+    intro a
+    rfl
+  match n with
+  | .zero => rfl
+  | .succ _ => rfl
