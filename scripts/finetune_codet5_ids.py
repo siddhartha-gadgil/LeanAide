@@ -140,14 +140,14 @@ def generate_ids(prompt):
         num_return_sequences=5,
         max_length=256,
     )
-    gen_text = tokenizer.batch_decode(gen_tokens)
+    gen_text = tokenizer.batch_decode(gen_tokens, skip_special_tokens=True)
     return gen_text
 
 for d in test_ids:
    gens = generate_ids(d['theorem'])
    d['generated'] = gens
 
-with open('rawdata/test_ids_generated.jsonl', 'w') as f:
+with open('rawdata/test_ids_generated.jsonl', 'w', encoding='utf-8') as f:
     for d in test_ids:
-        f.write(json.dumps(d) + '\n')
+        f.write(json.dumps(d, ensure_ascii=False) + '\n')
 
