@@ -1,0 +1,948 @@
+[
+  {
+    "theorem": "{  α  :  Sort  u_1  }{  p  :  α  →  Prop  }(  h  :  ∀  (  x  :  α  )  ,  p  x  )(  x  :  α  ) :  p  x ",
+    "ids": "",
+    "generated": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u  }[  UniformSpace  α  ]{  V  :  ℕ  →  Set  α   ×   α  }(  hV  :  ∀  (  n  :  ℕ  )  ,  V  n   ∈   uniformity  α  ){  u  :  ℕ  →  α  }(  hu  :  CauchySeq  u  ) :  ∃  (  φ  :  ℕ  →  ℕ  )  ,  StrictMono  φ   ∧   ∀  (  n  :  ℕ  )  ,  (  u  φ  n   +   1  ,  u  φ  n  )   ∈   V  n ",
+    "ids": "Filter.extraction_forall_of_eventually'; LT.lt.le; lt_add_one",
+    "generated": [
+      "CauchySeq.cauchySeq",
+      "Iff.mpr; Set.singleton_subset_iff; StrictMono; Set; Eq.symm; le_total; setOf; Filter.Tendsto; uniformity; Eq.mpr; id; Filter.tendsto_atTop_atTop; Filter.Tendsto.comp; Filter.tendsto_atTop_atTop; Filter.tendsto_id",
+      "Prod.exists_strictMono_tendsto; And.left; Eq.mp; cauchySeq_iff; Filter.Tendsto; Filter.tendsto_map'_iff; Filter.map; uniformity",
+      "CauchySeq.comp; CauchySeq.cauchySeq; Iff.mp; StrictMono; le_total; Eq.symm; Set.range; Eq.mpr; Set.eq_univ_iff_forall; id; le_refl; refl_mem_uniformity; le_rfl; Set.range_subset_iff; Classical.choose; StrictMono.monotone; Iff.mpr; Classical.choose_spec; Set.range_subset_iff; Set.range_mono; And.left; And.right",
+      "CauchySeq.cauchySeq"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u_2  }{  β  :  Type  u_1  }[  Preorder  α  ][  Preorder  β  ](  f  :  α   ↪o   β  ){  a  :  α  }{  b  :  α  } :  ¬  ↑  RelEmbedding.toEmbedding  f  b   ≤   ↑  RelEmbedding.toEmbedding  f  a   =   ¬  b   ≤   a ",
+    "ids": "congrArg; Not; RelEmbedding.map_rel_iff",
+    "generated": [
+      "congrArg; Not",
+      "congrArg; Not; RelEmbedding.toEmbedding",
+      "congrArg; Not",
+      "congrArg; Not; OrderEmbedding.le_iff_le",
+      "congrArg; Not"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u_1  }{  β  :  Type  u_4  }{  γ  :  Type  u_3  }{  δ  :  Type  u_2  }{  r  :  α  →  β  →  Prop  }{  p  :  β  →  γ  →  Prop  }{  q  :  γ  →  δ  →  Prop  }(  a  :  α  )(  d  :  δ  )(  x  :  Relation.Comp  Relation.Comp  r  p  q  a  d  ) :  ∃  (  b  :  β  )  ,  r  a  b   ∧   p  b  c ",
+    "ids": "",
+    "generated": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u_2  }{  β  :  Type  u_3  }{  γ  :  Type  u_1  }(  f  :  Part  α  )(  g  :  α  →  Part  β  )(  k  :  β  →  Part  γ  )(  a  :  γ  ) :  a   ∈   Part.bind  f  fun  (  x  :  α  )  ↦  Part.bind  g  x  k   =   ∃  (  a_1  :  α  )  ,  a_1   ∈   f   ∧   a   ∈   Part.bind  g  a_1  k ",
+    "ids": "",
+    "generated": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "theorem": " :  ∀  {  β  :  Type  u  }  {  α  :  Type  v  }  [  inst  :  AddCommMonoid  β  ]  [  inst_1  :  DecidableEq  α  ]  (  s  :  Finset  α  )  (  a  :  α  )  (  b  :  α  →  β  )  ,  Finset.sum  s  fun  (  x  :  α  )  ↦  if  h  :  x   =   a  then  b  x  else  0   =   if  a   ∈   s  then  b  a  else  0 ",
+    "ids": "Finset.sum_dite_eq'",
+    "generated": [
+      "Finset.sum_dite_eq'",
+      "Finset.sum_dite_eq'",
+      "Eq.mpr; id; Finset.sum; congrFun; congrArg; Eq.trans; Finset.sum_ite_eq'; Finset.sum_congr; dif_pos; rfl",
+      "Classical.em; Eq.mpr; id; Finset.sum; congrFun; congrArg; if_neg; if_pos; Finset.sum_eq_zero; Finset.sum_eq_single; Finset.single; of_eq_true; dif_neg; dif_pos; Eq.trans; implies_congr; Not; dite_congr; eq_self; eq_false; eq_true; Eq.mpr_prop",
+      "Finset.sum_dite_eq"
+    ]
+  },
+  {
+    "theorem": "{  σ₁  :  Type  u_1  }{  σ₂  :  Type  u_2  }{  f₁  :  σ₁  →  Option  σ₁  }{  f₂  :  σ₂  →  Option  σ₂  }{  tr  :  σ₁  →  σ₂  →  Prop  }(  H  :  Turing.Respects  f₁  f₂  tr  ){  a₁  :  σ₁  }{  a₂  :  σ₂  }(  aa  :  tr  a₁  a₂  ){  b₁  :  σ₁  }(  ab  :  Turing.Reaches₁  f₁  a₁  b₁  ){  c₁  :  σ₁  }(  ac  :  c₁   ∈   f₁  a₁  ) :  match  f₁  a₁  with  |  some  b₁  =>  ∃  (  b₂  :  σ₂  )  ,  tr  b₁  b₂   ∧   Turing.Reaches₁  f₂  a₂  b₂  |  none  =>  f₂  a₂   =   none   =   match  some  c₁  with  |  some  b₁  =>  ∃  (  b₂  :  σ₂  )  ,  tr  b₁  b₂   ∧   Turing.Reaches₁  f₂  a₂  b₂  |  none  =>  f₂  a₂   =   none ",
+    "ids": "Turing.Reaches₁",
+    "generated": [
+      "id; Eq.symm; Turing.Reaches₁",
+      "id; Eq.symm; Turing.Reaches₁",
+      "id; Turing.Reaches₁",
+      "id",
+      "id; Turing.Reaches₁"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u  }{  β  :  Type  v  }(  f  :  α  →  Option  β  )(  l  :  List  α  ){  b  :  β  }(  a  :  α  )(  l  :  List  α  )(  IH  :  b   ∈   List.filterMap  f  l   ↔   ∃  (  a  :  α  )  ,  a   ∈   l   ∧   f  a   =   some  b  )(  b'  :  β  )(  h  :  f  a   =   some  b'  )(  h  :  f  a   =   some  b'  )(  a_1  :  α  ) :  a_1   ∈   a   ::   l   =   a_1   =   a   ∨    a_1   ∈   l ",
+    "ids": "",
+    "generated": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "theorem": "{  M  :  Type  u_1  }[  Add  M  ]{  S  :  Set  AddSubsemigroup  M  }(  hS  :  DirectedOn  fun  (  x  :  AddSubsemigroup  M  )  (  x_1  :  AddSubsemigroup  M  )  ↦  x   ≤   x_1  S  )(  x  :  M  )(  x_0  :  M  )(  x_0  :  M  ) :  x_0   ∈   supₛ  S   ↔   ∃  (  s  :  AddSubsemigroup  M  )  ,  s   ∈   S   ∧   x_0   ∈   s ",
+    "ids": "AddSubsemigroup.mem_supₛ_of_directed_on",
+    "generated": [
+      "AddSubsemigroup.mem_supₛ_of_directedOn",
+      "AddSubsemigroup.mem_supₛ_of_directedOn",
+      "AddSubsemigroup.mem_supₛ_of_directedOn",
+      "AddSubsemigroup.mem_supₛ_of_directed_on",
+      "AddSubsemigroup.mem_supₛ_of_directedOn"
+    ]
+  },
+  {
+    "theorem": "{  n  :  ℕ  }(  i  :  Fin  n   +   1  )(  a  :  Fin  n  )(  b  :  Fin  n  )(  H  :  a   ≤   b  )(  ha  :  ↑  RelEmbedding.toEmbedding  Fin.castSucc  a   <   i  ) :  if  h  :  ↑  RelEmbedding.toEmbedding  Fin.castSucc  a   <   i  then  Fin.pred  i  Fin.predAbove.proof_1  a  i  h  else  Fin.castLt  i  Fin.predAbove.proof_2  a  i  h   ≤   if  h  :  ↑  RelEmbedding.toEmbedding  Fin.castSucc  b   <   i  then  Fin.pred  i  Fin.predAbove.proof_1  b  i  h  else  Fin.castLt  i  Fin.predAbove.proof_2  b  i  h ",
+    "ids": "Eq.mpr; id; Classical.em; congrFun; Fin.castLt; Fin.pred; congrArg; LE.le; le_refl; Nat.pred_le; RelEmbedding.toEmbedding; Fin.castSucc; Fin.predAbove.proof_1; Fin.predAbove.proof_2; dif_pos; dif_neg",
+    "generated": [
+      "Classical.em; Eq.mpr; id; Nat.le_pred_of_lt; congrFun; Fin.castLt; Fin.pred; congrArg; Fin.predAbove.proof_1; LE.le; dif_pos; dif_neg; lt_of_le_of_lt; Fin.is_lt; Eq.mp; LE.le; Fin.coe_pred",
+      "Classical.em; Eq.mpr; id; Fin.castSucc_le_castSucc; add_le_add_left; congrFun; Fin.castLt; Fin.pred; RelEmbedding.toEmbedding; congrArg; LE.le; Fin.predAbove.proof_2; Fin.coe_pred; Fin.predAbove.proof_1; Fin.le_pred; le_trans; dif_pos; Nat.le_pred_of_lt",
+      "Classical.em; Eq.mpr; id; Fin.castLt; Fin.pred; RelEmbedding.toEmbedding; congrFun; Fin.predAbove.proof_1; Fin.predAbove.proof_2; congrArg; LE.le; of_eq_true; dif_pos; Eq.trans; LE.le; Fin.coe_pred; Fin.castSucc; eq_true; Fin.predAbove.proof_2; dif_neg; lt_zero_iff_le",
+      "Classical.em; Eq.mpr; id; Fin.castLt; Fin.pred; congrFun; RelEmbedding.toEmbedding; Fin.castSucc; LE.le.trans; congrArg; Fin.le_castSucc; Fin.predAbove.proof_1; Fin.predAbove.proof_2; LE.le; dif_pos; dif_neg; lt_irrefl; Nat.zero_le; lt_of_le_of_lt; Fin.predAbove.proof_1; LE.le.trans_lt; Eq.mp; Fin.coe_pred",
+      "Classical.em; Eq.mpr; id; Fin.pred; congrArg; LE.le; Fin.predAbove.proof_3; LT.lt; Fin.castSucc_lt_castSucc_iff; dif_pos; Fin.predAbove.proof_2; dif_neg; lt_irrefl; Fin.castLt; Nat.pred_lt_pred_of_lt; Nat.pred_le; Eq.symm; RelEmbedding.toEmbedding; Fin.castSucc"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u_1  }[  Unique  α  ]{  s  :  Finset  α  }(  x  :  α  ) :  x   ∈   s   =   x   ∈   s ",
+    "ids": "",
+    "generated": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "theorem": "{  a  :  ℕ  }{  b  :  ℕ  }{  c  :  ℕ  }{  m  :  ℕ  }(  hc  :  c   ≠   0  )(  x_0  :  ℤ  )(  x_1  :  ℤ  )(  x_0  :  ℤ  )(  x_1  :  ℤ  ) :  ¬  ↑  c   =   0   =   True ",
+    "ids": "Eq.trans; congrArg; Not; eq_false",
+    "generated": [
+      "Eq.trans; congrArg; Not; eq_false",
+      "Eq.trans; congrArg; Not; eq_false",
+      "Eq.trans; congrArg; Not; eq_false",
+      "Eq.trans; congrArg; Not; eq_false",
+      "Eq.trans; congrArg; Not; eq_false"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u_1  }(  arr  :  Array  α  )(  l  :  List  α  ) :  Array.data  arr   ++   l   =   Array.data  arr   ++   l   =   True ",
+    "ids": "eq_self; Array.data",
+    "generated": [
+      "eq_self; Array.data",
+      "eq_self; Array.data",
+      "eq_self; Array.data",
+      "eq_self; Array.data",
+      "eq_self; Array.data"
+    ]
+  },
+  {
+    "theorem": "(  u  :  PNat.XgcdType  )(  hs  :  PNat.XgcdType.IsSpecial  u  ) :  PNat.XgcdType.y  u   =   PNat.XgcdType.y  u   ^   Nat.rawCast  1   *   Nat.rawCast  1   +   0 ",
+    "ids": "PNat.XgcdType.y",
+    "generated": [
+      "PNat.XgcdType.y",
+      "PNat.XgcdType.y",
+      "PNat.XgcdType.y",
+      "PNat.XgcdType.y",
+      "PNat.XgcdType.y"
+    ]
+  },
+  {
+    "theorem": "{  R  :  Type  u_1  }{  M  :  Type  u_2  }[  Semiring  R  ][  AddCommMonoid  M  ][  Module  R  M  ](  x  :  Submodule  R  M  )(  x_1  :  Submodule  R  M  )(  x_2  :  Submodule  R  M  ) :  ↑  x   ⊆   ↑  x_1  →  ↑  x   ⊆   ↑  x_2  →  ↑  x   ⊆   ↑  x_1   ∩   ↑  x_2 ",
+    "ids": "Set.subset_inter",
+    "generated": [
+      "Set.subset_inter",
+      "Set.subset_inter",
+      "Set.subset_inter",
+      "Set.subset_inter",
+      "Set.subset_inter"
+    ]
+  },
+  {
+    "theorem": "{  n  :  ℤ  }{  a  :  ℤ  } :  a   %   n   =   0   %   n   ↔   n   ∣   a   =   a   %   n   =   0   %   n   ↔   n   ∣   a ",
+    "ids": "",
+    "generated": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "theorem": "{  R  :  Type  u_1  }[  Field  R  ][  StarRing  R  ](  x  :  {  x  :  R  //  x   ∈   selfAdjoint  R  }  )(  y  :  {  x  :  R  //  x   ∈   selfAdjoint  R  }  ) :  ↑  x   ∈   selfAdjoint  R ",
+    "ids": "Subtype.prop",
+    "generated": [
+      "Subtype.prop",
+      "Subtype.prop",
+      "Subtype.prop",
+      "Subtype.property",
+      "Subtype.prop"
+    ]
+  },
+  {
+    "theorem": " :  ∀  {  M  :  Type  u_1  }  {  N  :  Type  u_2  }  [  inst  :  Add  M  ]  [  inst_1  :  Add  N  ]  (  s  :  AddSubsemigroup  M  )  (  t  :  AddSubsemigroup  N  )  {  a  b  :  M   ×   N  }  ,  a   ∈   ↑  s   ×ˢ   ↑  t  →  b   ∈   ↑  s   ×ˢ   ↑  t  →  Prod.fst  a   +   b   ∈   ↑  s   ∧   Prod.snd  a   +   b   ∈   ↑  t ",
+    "ids": "AddSubsemigroup.add_mem; And.right; And.left",
+    "generated": [
+      "AddSubsemigroup.add_mem; And.right; And.left",
+      "AddSubsemigroup.add_mem; And.right; And.left",
+      "AddSubsemigroup.add_mem; And.left; And.right",
+      "AddSubsemigroup.add_mem; And.right; And.left",
+      "AddSubsemigroup.add_mem; And.right; And.left"
+    ]
+  },
+  {
+    "theorem": "(  α  :  Type  u_1  )[  ConditionallyCompleteLinearOrder  α  ](  a  :  α  )(  b  :  α  )(  h₁  :  a   ≤   b  ) :  True  →  a   =   a ",
+    "ids": "",
+    "generated": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u  }[  TopologicalSpace  α  ]{  s  :  Set  α  }{  t  :  Set  α  }(  H  :  IsPreconnected  s  )(  Kst  :  s   ⊆   t  )(  Ktcs  :  t   ⊆   closure  s  )(  u  :  Set  α  )(  v  :  Set  α  )(  hu  :  IsOpen  u  )(  hv  :  IsOpen  v  )(  htuv  :  t   ⊆   u   ∪   v  )(  x  :  Set.Nonempty  t   ∩   u  )(  x_1  :  Set.Nonempty  t   ∩   v  ) :  _y   ∈   closure  s   ↔   ∀  (  o  :  Set  α  )  ,  IsOpen  o  →  _y   ∈   o  →  Set.Nonempty  o   ∩   s ",
+    "ids": "mem_closure_iff",
+    "generated": [
+      "mem_closure_iff",
+      "mem_closure_iff",
+      "mem_closure_iff",
+      "mem_closure_iff",
+      "mem_closure_iff"
+    ]
+  },
+  {
+    "theorem": "{  n  :  ℕ  }{  α  :  Type  u_1  }(  a  :  Fin  n  →  α  )(  m₁  :  ℕ  )(  m₂  :  ℕ  ) :  Fin.repeat  m₁   +   m₂  a   =   Fin.append  Fin.repeat  m₁  a  Fin.repeat  m₂  a   ∘   ↑  RelEmbedding.toEmbedding  RelIso.toRelEmbedding  Fin.cast  add_mul  m₁  m₂  n ",
+    "ids": "funext; Eq.mpr; id; Fin.addCases; of_eq_true; Eq.trans; Fin.repeat; Function.Surjective.forall; Fin.append; eq_self; congr; RelEmbedding.toEmbedding; OrderIso.surjective; RelIso.toRelEmbedding; Fin.cast; congrArg; Fin.append_right; Eq.symm; Fin.append_left; add_mul; Fin.modNat.proof_1; congrFun; Fin.cast_trans; Nat.mod_mod; HMod.hMod; Fin.coe_orderIso_apply; FunLike.coe; Fin.natAdd; Fin.castAdd; Nat.add_mod; Fin.cast_refl; zero_add; HAdd.hAdd; Nat.mul_mod_left",
+    "generated": [
+      "Eq.mpr; id; Function.comp_apply; Fin.repeat; Fin.append; RelEmbedding.toEmbedding; RelIso.toRelEmbedding; Fin.natAdd; Fin.append_right; Fin.cast; add_mul",
+      "Fin.append_left; Fin.repeat",
+      "id; Eq.mpr; congrArg; Eq.trans; congrFun; Fin.append; Nat.add_mod_left; Fin.append_right; Fin.repeat; Fin.append_left; funext; RelEmbedding.toEmbedding; RelIso.toRelEmbedding; Fin.cast; add_mul; Fin.is_lt; HMod.hMod; Eq.symm",
+      "funext; Eq.mpr; id; congrFun; Fin.append; congrArg; Fin.repeat; Nat.add_mod_left; Fin.append_right; Fin.append_left; Fin.repeat_add; Fin.append_left",
+      "funext; of_eq_true; Eq.trans; eq_self; congrArg; Fin.append_right; Fin.repeat; congrFun; RelEmbedding.toEmbedding; RelIso.toRelEmbedding; Fin.cast; add_mul"
+    ]
+  },
+  {
+    "theorem": "{  n  :  ℕ  }(  hn  :  n   ≠   0  )(  x  :  ℕ  ) :  0   ≤   0   ^   n ",
+    "ids": "Nat.zero_le",
+    "generated": [
+      "zero_le; Nat.zero_pow",
+      "zero_le",
+      "Nat.zero_le",
+      "Nat.zero_le; Nat.pow_zero",
+      "Nat.zero_le; Nat.zero_pow"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u_1  }{  β  :  Type  u_2  }{  s  :  Set  α  }{  s₁  :  Set  α  }{  t  :  Set  β  }{  t₁  :  Set  β  }(  h  :  Set.Nonempty  s   ×ˢ   t  )(  h_1  :  (  (  Set.eq_empty_or_nonempty  s   ×ˢ   t  =:  s   ×ˢ   t   =   ∅   ∨    Set.Nonempty  s   ×ˢ   t  )  =:  s   ×ˢ   t   =   ∅   ∨    Set.Nonempty  s   ×ˢ   t  )   =   (  (  Or.inr  h  =:  s   ×ˢ   t   =   ∅   ∨    Set.Nonempty  s   ×ˢ   t  )  =:  s   ×ˢ   t   =   ∅   ∨    Set.Nonempty  s   ×ˢ   t  )  ) :  s   =   s₁   ∧   t   =   t₁   ∨    False   =   s   =   s₁   ∧   t   =   t₁ ",
+    "ids": "",
+    "generated": [
+      "or_false",
+      "or_false",
+      "or_false",
+      "or_false",
+      "congrArg; eq_false"
+    ]
+  },
+  {
+    "theorem": "{  M  :  Type  u_1  }[  AddCommGroup  M  ](  s  :  AddSubgroup  M  ) :  Submodule.toAddSubgroup  Submodule.span  ℤ  ↑  s   =   AddSubgroup.closure  ↑  s ",
+    "ids": "Submodule.span_int_eq_addSubgroup_closure",
+    "generated": [
+      "Eq.mpr; Submodule.toAddSubgroup_eq; id; AddSubgroup.closure; Submodule.span_eq; Submodule.toAddSubgroup; Submodule.span",
+      "Submodule.toAddSubgroup_of_span_eq; AddSubgroup.zsmul_mem",
+      "Eq.mpr; id; AddSubgroup.closure; Submodule.toAddSubgroup; Submodule.span_eq; Submodule.span",
+      "Eq.mpr; id; AddSubgroup.closure; Submodule.toAddSubgroup; Submodule.span_eq; Submodule.span",
+      "AddSubgroup.zsmul_span_toAddSubgroup"
+    ]
+  },
+  {
+    "theorem": "(  a  :  PUnit  ) :  a  ᶜ   =   a  ᶜ ",
+    "ids": "rfl",
+    "generated": [
+      "rfl",
+      "rfl",
+      "",
+      "rfl",
+      "rfl"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u  }{  L₁  :  List  α   ×   Bool  }{  L₂  :  List  α   ×   Bool  }(  h  :  FreeGroup.Red  L₁  L₂  ){  L₂  :  List  α   ×   Bool  }{  L₃  :  List  α   ×   Bool  }(  _h₁₂  :  Relation.ReflTransGen  FreeGroup.Red.Step  L₁  L₂  )(  h₂₃  :  FreeGroup.Red.Step  L₂  L₃  )(  ih  :  ∃  (  n  :  ℕ  )  ,  List.length  L₁   =   List.length  L₂   +   2   *   n  )(  n  :  ℕ  )(  eq  :  List.length  L₁   =   List.length  L₂   +   2   *   n  ) :  List.length  L₁   =   List.length  L₃   +   2   +   2   *   n ",
+    "ids": "Eq.trans; congrFun; congrArg; HAdd.hAdd; Eq.symm; FreeGroup.Red.Step.length",
+    "generated": [
+      "Eq.trans; congr; congrArg; congrFun; HAdd.hAdd",
+      "Eq.trans; congrArg; congrFun; List.length; HAdd.hAdd; Eq.symm; mul_add; of_eq_true; mul_one; eq_self; mul_comm",
+      "Eq.trans; congrArg; congrFun; List.length; HAdd.hAdd",
+      "Eq.trans; congr; congrArg; congrFun; HAdd.hAdd",
+      "Eq.trans; congrArg; congr; HAdd.hAdd; Eq.symm; mul_add; mul_one; List.length"
+    ]
+  },
+  {
+    "theorem": "{  R  :  Type  u_1  }{  S  :  Type  u_2  }[  Ring  R  ][  LinearOrderedCommRing  S  ](  abv  :  AbsoluteValue  R  S  )(  x  :  ℤ  ˣ  )(  y  :  R  )(  h  :  x   =   1  ) :  ↑  abv  1   •   y   =   ↑  abv  y ",
+    "ids": "of_eq_true; Eq.trans; eq_self; congrFun; congrArg; one_smul",
+    "generated": [
+      "congrArg; one_smul",
+      "Eq.mpr; of_eq_true; id; Eq.trans; eq_self; congr; one_smul; congrArg; AbsoluteValue.map_one; congrFun; AbsoluteValue.map_neg; Neg.neg; mul_one",
+      "congrArg; one_smul",
+      "Eq.mpr; id; one_smul",
+      "congrArg; map_one; one_smul"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u_1  }{  M  :  Type  u_2  }[  One  M  ]{  s  :  Set  α  }{  a  :  α  }(  h  :  a   ∈   s  )(  f  :  α  →  M  ) :  if  a   ∈   s  then  f  a  else  1   =   f  a ",
+    "ids": "if_pos",
+    "generated": [
+      "if_pos",
+      "if_pos",
+      "if_pos",
+      "if_pos",
+      "if_pos"
+    ]
+  },
+  {
+    "theorem": "{  ι  :  Type  u_3  }{  M  :  Type  u_2  }{  N  :  Type  u_1  }[  AddCommMonoid  M  ][  OrderedAddCommMonoid  N  ](  f  :  M  →  N  )(  p  :  M  →  Prop  )(  h_one  :  f  0   =   0  )(  h_mul  :  ∀  (  x  y  :  M  )  ,  p  x  →  p  y  →  f  x   +   y   ≤   f  x   +   f  y  )(  hp_mul  :  ∀  (  x  y  :  M  )  ,  p  x  →  p  y  →  p  x   +   y  )(  g  :  ι  →  M  ){  s  :  Finset  ι  }(  hs  :  ∀  (  i  :  ι  )  ,  i   ∈   s  →  p  g  i  ) :  f  Finset.sum  s  fun  (  i  :  ι  )  ↦  g  i   ≤   Finset.sum  s  fun  (  i  :  ι  )  ↦  f  g  i ",
+    "ids": "Finset.eq_empty_or_nonempty; Finset.le_sum_nonempty_of_subadditive_on_pred; Eq.symm; of_eq_true; Finset.sum; Eq.trans; congrFun; congrArg; LE.le",
+    "generated": [
+      "id; Finset.sum_induction; Finset.sum",
+      "Multiset.sum_induction_nonempty; Finset.nodup",
+      "le_refl; Finset.sum",
+      "Finset.sum; Multiset.map; Finset.val",
+      "Trans.trans; Finset.sum_le_sum_of_subset_of_nonneg; Eq.symm; Multiset.map_map; Finset.val"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u_1  }{  β  :  Type  u_2  }(  x  :  α   ⊕   β  )(  val  :  α  ) :  Sum.inl  val   ∈   Set.range  Sum.inl   =   ∃  (  x  :  α  )  ,  x   =   val ",
+    "ids": "Eq.trans; congrArg; funext; Sum.inl.injEq",
+    "generated": [
+      "Eq.trans; congrArg; funext; and_true; eq_self",
+      "Eq.trans; congrArg; funext; Sum.inl.injEq",
+      "Eq.trans; congrArg; funext; true_and; congr; Sum.inl.injEq",
+      "Eq.trans; congrArg; funext; Sum.inl.injEq",
+      "Eq.trans; congrArg; funext; Sum.inl.injEq"
+    ]
+  },
+  {
+    "theorem": "{  G₁  :  Type  u_3  }{  G₂  :  Type  u_2  }{  G₃  :  Type  u_1  }[  AddGroup  G₁  ][  AddGroup  G₂  ][  AddGroup  G₃  ](  f  :  G₁   →+   G₂  )(  f_inv  :  G₂  →  G₁  )(  hf  :  Function.RightInverse  f_inv  ↑  f  )(  g  :  G₁   →+   G₃  )(  hg  :  AddMonoidHom.ker  f   ≤   AddMonoidHom.ker  g  )(  x  :  G₂  )(  y  :  G₂  ) :  ↑  g  f_inv  x   +   y   +   -  f_inv  x   +   f_inv  y   =   0   =   f_inv  x   +   y   +   -  f_inv  x   +   f_inv  y   ∈   AddMonoidHom.ker  g ",
+    "ids": "id; Eq.symm; AddMonoidHom.mem_ker",
+    "generated": [
+      "id; AddMonoidHom.mem_ker",
+      "id; Eq.symm; AddMonoidHom.mem_ker",
+      "",
+      "",
+      "id; AddMonoidHom.mem_ker"
+    ]
+  },
+  {
+    "theorem": "{  G₁  :  Type  u_3  }{  G₂  :  Type  u_2  }{  G₃  :  Type  u_1  }[  AddGroup  G₁  ][  AddGroup  G₂  ][  AddGroup  G₃  ](  f  :  G₁   →+   G₂  )(  f_inv  :  G₂  →  G₁  )(  hf  :  Function.RightInverse  f_inv  ↑  f  )(  g  :  G₁   →+   G₃  )(  hg  :  AddMonoidHom.ker  f   ≤   AddMonoidHom.ker  g  )(  x  :  G₂  )(  y  :  G₂  ) :  Eq  ↑  f  f_inv  x   +   y   =   Eq  x   +   y ",
+    "ids": "congrArg",
+    "generated": [
+      "congrArg",
+      "congrArg; congrFun",
+      "congrArg",
+      "congrArg",
+      "congrArg"
+    ]
+  },
+  {
+    "theorem": "{  β  :  Type  u  }{  α  :  Type  v  }{  s₁  :  Finset  α  }{  s₂  :  Finset  α  }{  f  :  α  →  β  }[  CommMonoid  β  ](  h  :  s₁   ⊆   s₂  )(  hf  :  ∀  (  x  :  α  )  ,  x   ∈   s₂  →  ¬  x   ∈   s₁  →  f  x   =   1  ) :  ∀  (  x  :  α  )  ,  x   ∈   s₂   \\   s₁  →  f  x   =   1 ",
+    "ids": "Eq.mpr; id; forall_congr; Eq.trans; implies_congr",
+    "generated": [
+      "Iff.mpr; Finset.mem_sdiff",
+      "Eq.mpr; id; forall_congr; Eq.trans; implies_congr; congrArg; Not; of_eq_true; eq_true",
+      "Iff.mpr; forall_eq; Eq.mpr; id; forall_congr; implies_congr; Eq.trans; congrArg; Not",
+      "Eq.mpr; id; forall_congr; Eq.trans; implies_congr; congrArg; Not; congrFun",
+      "Finset.prod.proof_1"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u_1  }[  DivisionRing  α  ](  r  :  ℚ  ) :  MulOpposite.unop  ↑  Rat.den  r  ⁻¹   *   MulOpposite.unop  ↑  Rat.num  r   =   ↑  r   =   ↑  Rat.den  r  ⁻¹   *   MulOpposite.unop  ↑  Rat.num  r   =   ↑  r ",
+    "ids": "id; MulOpposite.unop_natCast; Rat.den; MulOpposite.unop; Rat.num",
+    "generated": [
+      "id; MulOpposite.unop_intCast; MulOpposite.unop; Rat.den; Rat.num",
+      "id; MulOpposite.unop_intCast; MulOpposite.unop; Rat.den; Rat.num",
+      "id; MulOpposite.unop_intCast; MulOpposite.unop; Rat.den; Rat.num",
+      "id; MulOpposite.unop_intCast; MulOpposite.unop; Rat.den; Rat.num",
+      "id; MulOpposite.unop_intCast; MulOpposite.unop; Rat.num; Rat.den"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u_1  }[  LinearOrder  α  ] :  ∀  (  a  :  α  )  ,  max  a  a   =   a ",
+    "ids": "of_eq_true; Eq.trans; forall_congr; implies_true; eq_self; congrFun; congrArg; max_self",
+    "generated": [
+      "max_self",
+      "max_self",
+      "max_self",
+      "LinearOrder.max_self",
+      "max_self"
+    ]
+  },
+  {
+    "theorem": " :  ∀  {  α  :  Type  u_1  }  [  inst  :  LinearOrder  α  ]  {  s  :  Finset  α  }  {  a  :  α  }  ,  Finset.max  s   =   ↑  a  →  a   ∈   s ",
+    "ids": "Finset.induction_on; instDecidableEq; Finset.max; max_choice; Finset.mem_insert_self; Eq.symm; Finset.mem_insert_of_mem; Eq.mp; Finset.max_insert; eq_of_heq; rfl",
+    "generated": [
+      "Finset.mem_of_max; Eq.le",
+      "Finset.max; Eq.symm; Finset.exists_eq_max'; Eq.mpr; id; Eq.mp; Finset.max_mem_iff; Finset.mem_coe; Finset.coe_max",
+      "Finset.max_mem; Eq.symm",
+      "Finset.mem_of_max; WithBot.coe_lt_coe",
+      "Iff.mp; WithBot.coe_eq_coe; Finset.max_mem"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u_1  }{  β  :  Type  u_2  }[  Add  α  ][  AddZeroClass  β  ](  f  :  AddHom  α  β  )(  x  :  WithZero  α  )(  y  :  WithZero  α  )(  x  :  α  ) :  ZeroHom.toFun  {  toFun  :=  fun  (  x  :  WithZero  α  )  ↦  Option.casesOn  x  0  ↑  f  ,  map_zero'  :=  rfl  }  ↑  x   +   0   =   ZeroHom.toFun  {  toFun  :=  fun  (  x  :  WithZero  α  )  ↦  Option.casesOn  x  0  ↑  f  ,  map_zero'  :=  rfl  }  ↑  x ",
+    "ids": "add_zero; ZeroHom.toFun; rfl",
+    "generated": [
+      "add_zero; ZeroHom.toFun; rfl",
+      "add_zero; ZeroHom.toFun; rfl",
+      "add_zero; ZeroHom.toFun; rfl",
+      "add_zero; ZeroHom.toFun; rfl",
+      "AddMonoidHom.map_add; ZeroHom.toFun; rfl"
+    ]
+  },
+  {
+    "theorem": "{  G  :  Type  u_1  }{  H  :  Type  u_2  }[  Group  G  ][  Group  H  ]{  f  :  G  →  H  }(  hf  :  IsGroupHom  f  ){  s  :  Set  H  }(  hs  :  IsSubgroup  s  ){  a  :  G  }{  b  :  G  }(  a_1  :  f  a   ∈   s  )(  a_2  :  f  b   ∈   s  )(  x  :  G  )(  y  :  G  ) :  IsMulHom  f ",
+    "ids": "IsGroupHom.toIsMulHom",
+    "generated": [
+      "IsGroupHom.toIsMulHom",
+      "IsGroupHom.toIsMulHom",
+      "IsGroupHom.toIsMulHom",
+      "IsGroupHom.toIsMulHom",
+      "IsGroupHom.toIsMulHom"
+    ]
+  },
+  {
+    "theorem": "{  I  :  Type  u_3  }{  C  :  I  →  Type  u_1  }[  (  i  :  I  )  →  CategoryTheory.Category  C  i  ]{  A  :  Type  u_1  }[  CategoryTheory.Category  A  ](  f  :  (  i  :  I  )  →  A   ⥤   C  i  ){  X  :  A  }{  Y  :  A  }{  Z  :  A  }(  f_1  :  X   ⟶   Y  )(  g  :  Y   ⟶   Z  ) :  ∀  (  i  :  I  )  ,  Prefunctor.map  CategoryTheory.Functor.toPrefunctor  f  i  f_1   ≫   g   =   Prefunctor.map  CategoryTheory.Functor.toPrefunctor  f  i  f_1   ≫   Prefunctor.map  CategoryTheory.Functor.toPrefunctor  f  i  g ",
+    "ids": "CategoryTheory.Functor.map_comp",
+    "generated": [
+      "CategoryTheory.Functor.map_comp",
+      "CategoryTheory.Functor.map_comp",
+      "CategoryTheory.Functor.map_comp",
+      "Eq.symm; CategoryTheory.Functor.map_comp",
+      "CategoryTheory.Functor.map_comp"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u_1  }{  a  :  α  }{  b  :  α  }[  MulZeroClass  α  ][  Preorder  α  ][  PosMulMono  α  ](  ha  :  0   ≤   a  )(  hb  :  b   ≤   0  ) :  a   *   b   ≤   a   *   0 ",
+    "ids": "mul_le_mul_of_nonneg_left",
+    "generated": [
+      "mul_le_mul_of_nonpos_left",
+      "mul_le_mul_of_nonpos_left",
+      "mul_le_mul_of_nonpos_left",
+      "mul_le_mul_of_nonpos_left",
+      "mul_le_mul_of_nonneg_left"
+    ]
+  },
+  {
+    "theorem": " :  Nat.zero   =   Nat.zero ",
+    "ids": "rfl",
+    "generated": [
+      "rfl",
+      "rfl",
+      "rfl",
+      "rfl",
+      "rfl"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u_1  }{  β  :  Type  u_2  }{  l₁  :  List  α  }{  l₂  :  List  α  }(  h  :  l₁   <+:   l₂  )(  f  :  α  →  Option  β  )(  hd₁  :  α  )(  tl₁  :  List  α  )(  hl  :  ∀  {  l₂  :  List  α  }  ,  tl₁   <+:   l₂  →  List.filterMap  f  tl₁   <+:   List.filterMap  f  l₂  ){  l₂  :  List  α  }(  h  :  hd₁   ::   tl₁   <+:   l₂  )(  hd₂  :  α  )(  tl₂  :  List  α  )(  h_1  :  l₂   =   hd₂   ::   tl₂  )(  h  :  hd₁   ::   tl₁   <+:   hd₂   ::   tl₂  ) :  hd₁   ::   tl₁   <+:   hd₂   ::   tl₂   ↔   hd₁   =   hd₂   ∧   tl₁   <+:   tl₂ ",
+    "ids": "List.cons_prefix_iff",
+    "generated": [
+      "List.prefix_cons_inj",
+      "List.prefix_cons_inj",
+      "List.add_prefix",
+      "List.prefix_cons_inj",
+      "List.prefix_cons_inj"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u_1  }{  β  :  Type  u_2  }{  f  :  α  →  β  }{  c  :  α  }[  AddCommMonoid  α  ](  hf  :  Function.Periodic  f  c  )(  a  :  {  x  :  α  //  x   ∈   AddSubmonoid.multiples  c  }  )(  x  :  α  )(  val  :  α  )(  property  :  val   ∈   AddSubmonoid.multiples  c  )(  m  :  ℕ  )(  h  :  fun  (  i  :  ℕ  )  ↦  i   •   c  m   =   val  )(  x_0  :  α  )(  x_0  :  α  ) :  x_0   +   x   =   x   +   x_0 ",
+    "ids": "add_comm",
+    "generated": [
+      "add_comm",
+      "add_comm",
+      "add_comm",
+      "add_comm",
+      "add_comm"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u_1  }[  DecidableEq  α  ][  Fintype  α  ]{  x  :  α  }{  y  :  α  }{  z  :  α  }(  h  :  List.Nodup  [  x  ,  y  ,  z  ]  ) :  ¬  x   =   y   ∨    x   =   z   ∨    False   ∧   ¬  y   =   z   ∨    False ",
+    "ids": "Eq.mp; Eq.trans; congr; congrArg; Not",
+    "generated": [
+      "Eq.mp; List.Nodup.insert; List.Nodup.sublist; Iff.mp; List.nodup_cons; List.mem_cons",
+      "or_false_iff; And.right",
+      "Eq.mp; Eq.trans; congr; or_self; congrArg; false_or; and_false; Not",
+      "or_false_iff; And.right; Eq.mp; List.Nodup.insert_on; List.nodup_singleton",
+      "Or.imp_right; Eq.mp; Eq.trans; congr; congrArg; Not"
+    ]
+  },
+  {
+    "theorem": "{  R  :  Type  u  }{  M  :  Type  v  }{  M₂  :  Type  w  }{  M₃  :  Type  y  }[  CommSemiring  R  ][  AddCommMonoid  M  ][  AddCommMonoid  M₂  ][  AddCommMonoid  M₃  ][  Module  R  M  ][  Module  R  M₂  ][  Module  R  M₃  ] :  ∀  (  x  :  R  )  (  x_1  :  M  )  ,  AddHom.toFun  {  toFun  :=  fun  (  x  :  M  )  ↦  LinearMap.vecEmpty  ,  map_add'  :=  fun  (  x  :  M  )  ↦  (  _  :  ∀  (  x_2  :  M  )  ,  fun  (  x  :  M  )  ↦  LinearMap.vecEmpty  x   +   x_2   =   fun  (  x  :  M  )  ↦  LinearMap.vecEmpty  x   +   fun  (  x  :  M  )  ↦  LinearMap.vecEmpty  x_2  )  }  x   •   x_1   =   ↑  RingHom.id  R  x   •   AddHom.toFun  {  toFun  :=  fun  (  x  :  M  )  ↦  LinearMap.vecEmpty  ,  map_add'  :=  fun  (  x  :  M  )  ↦  (  _  :  ∀  (  x_2  :  M  )  ,  fun  (  x  :  M  )  ↦  LinearMap.vecEmpty  x   +   x_2   =   fun  (  x  :  M  )  ↦  LinearMap.vecEmpty  x   +   fun  (  x  :  M  )  ↦  LinearMap.vecEmpty  x_2  )  }  x_1 ",
+    "ids": "LinearMap.vecEmpty₂.proof_3",
+    "generated": [
+      "LinearMap.vecEmptyHom.proof_2",
+      "LinearEquiv.idEmpty.proof_3",
+      "LinearMap.id.proof_2",
+      "LinearMap.id.proof_2",
+      "LinearMap.vecEmptyHom.proof_3"
+    ]
+  },
+  {
+    "theorem": "{  p  :  ℕ  }(  pp  :  Nat.Prime  p  )(  k  :  ℕ  ){  x  :  ℕ  }(  a  :  ℕ  )(  h  :  a   <   k   ∧   x   =   p   ^   a  )(  h_left  :  a   <   k  )(  right  :  x   =   p   ^   a  ) :  a   ≤   k   ∧   p   ^   a   =   p   ^   a   ∧   a   <   k   =   True   ∧   True ",
+    "ids": "congr; Eq.trans; congrArg; and_self; of_eq_true; eq_true; eq_self",
+    "generated": [
+      "congr; Eq.trans; congrArg; eq_self; congrFun",
+      "congr; Eq.trans; congrArg; eq_true",
+      "congr; Eq.trans; congrArg; and_self; eq_true",
+      "congr; Eq.trans; congrArg; and_self; eq_true",
+      "congr; Eq.trans; congrArg; eq_true"
+    ]
+  },
+  {
+    "theorem": "(  R  :  Type  u_2  ){  M  :  Type  u_3  }{  M₂  :  Type  u_1  }[  Semiring  R  ][  AddCommMonoid  M  ][  Module  R  M  ][  AddCommMonoid  M₂  ][  SMul  R  M₂  ](  f  :  M   →+   M₂  )(  hf  :  Function.Surjective  ↑  f  )(  smul  :  ∀  (  c  :  R  )  (  x  :  M  )  ,  ↑  f  c   •   x   =   c   •   ↑  f  x  )(  c₁  :  R  )(  c₂  :  R  )(  x  :  M₂  ) :  ∀  (  x_1  :  M  )  ,  ↑  f  x_1   =   x  →  c₁   +   c₂   •   x   =   c₁   •   x   +   c₂   •   x ",
+    "ids": "of_eq_true; Eq.trans; congr; eq_self; congrArg; Eq.symm; HAdd.hAdd; AddMonoidHom.map_add; add_smul",
+    "generated": [
+      "of_eq_true; Eq.trans; congr; eq_self; congrArg; add_smul; HAdd.hAdd; Eq.symm",
+      "of_eq_true; Eq.trans; eq_self; congr; congrArg; add_smul; HAdd.hAdd; Eq.symm; congrFun; HSMul.hSMul; map_add",
+      "of_eq_true; Eq.trans; forall_congr; implies_true; eq_self; congr; congrArg; add_smul; HAdd.hAdd; congrFun",
+      "of_eq_true; Eq.trans; eq_self; congr; congrArg; add_smul; HAdd.hAdd; Eq.symm; congrFun",
+      "congr_fun"
+    ]
+  },
+  {
+    "theorem": "{  R  :  Type  u_1  }[  Ring  R  ](  s  :  Set  Subring  R  ) :  Eq  ↑  infᵢ  fun  (  i  :  Subring  R  )  ↦  infᵢ  fun  (  h  :  i   ∈   s  )  ↦  Subsemiring.toSubmonoid  Subring.toSubsemiring  i   =   Eq  Set.interᵢ  fun  (  x  :  Subring  R  )  ↦  Set.interᵢ  fun  (  x_1  :  x   ∈   s  )  ↦  ↑  x ",
+    "ids": "congrArg; Eq.trans; Submonoid.coe_infᵢ; Set.interᵢ; funext; Set.interᵢ_congr_Prop; Iff.of_eq",
+    "generated": [
+      "congrArg; Eq.trans; Set.binterᵢ_eq_interᵢ; Set.interᵢ; Subring.toSubmonoid; funext; Set.interᵢ_congr_Prop; Iff.of_eq; Subsemiring.toSubmonoid; Subring.toSubsemiring; infᵢ_congr_Prop; infᵢ_pos; of_eq_true",
+      "congrArg; Eq.trans; Set.binterᵢ_eq_interᵢ; Set.interᵢ; Subsemiring.toSubmonoid; Subring.toSubsemiring; funext; Set.interᵢ_congr_Prop; Iff.of_eq",
+      "congrArg; Eq.trans; Set.binterᵢ_eq_interᵢ; Set.interᵢ; funext; Submonoid.coe_infᵢ; Set.interᵢ_congr_Prop; Iff.of_eq",
+      "congrArg; Eq.trans; Set.interᵢ; Subring.coe_infᵢ; funext; Set.interᵢ_congr_Prop; Iff.of_eq",
+      "congrArg; Eq.trans; Set.interᵢ; funext; Submonoid.coe_infᵢ; Set.interᵢ_congr_Prop; Iff.of_eq"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u  }[  CommGroup  α  ][  Preorder  α  ][  CovariantClass  α  α  fun  (  x  :  α  )  (  x_1  :  α  )  ↦  x   *   x_1  fun  (  x  :  α  )  (  x_1  :  α  )  ↦  x   ≤   x_1  ]{  a  :  α  }{  b  :  α  }{  c  :  α  }{  d  :  α  }(  hab  :  a   ≤   b  )(  hcd  :  c   ≤   d  ) :  a   *   d  ⁻¹   ≤   c  ⁻¹   *   b   =   c   *   a   ≤   b   *   d ",
+    "ids": "id; mul_inv_le_inv_mul_iff",
+    "generated": [
+      "mul_inv_le_inv_mul_iff",
+      "mul_inv_le_inv_mul_iff",
+      "mul_inv_le_inv_mul_iff",
+      "id; mul_inv_le_inv_mul_iff",
+      "mul_inv_le_inv_mul_iff"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u  }{  p  :  α  →  Prop  }(  x  :  List  α  )(  x  :  List  α  )(  f  :  List.below  x  )(  x  :  List.below  a   ::   tail  ) :  List.All₂  p  a   ::   tail   ↔   ∀  (  x  :  α  )  ,  x   ∈   a   ::   tail  →  p  x   =   List.All₂  p  a   ::   tail   ↔   p  a   ∧   ∀  (  x  :  α  )  ,  x   ∈   tail  →  p  x ",
+    "ids": "id; List.All₂; List.forall_mem_cons",
+    "generated": [
+      "id; List.All₂; List.mem_cons",
+      "congrArg; Eq.trans; List.All₂; congrFun; forall_congr; implies_congr",
+      "id; congrArg; List.All₂; forall_congr; Eq.trans; implies_congr",
+      "id; List.All₂; List.mem_cons",
+      "id; forall_congr; congrArg; List.All₂; Eq.trans; implies_congr; PProd.fst"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u_1  }[  LinearOrderedField  α  ]{  β  :  Type  u_2  }[  Ring  β  ]{  abv  :  β  →  α  }[  IsAbsoluteValue  abv  ][  CauSeq.IsComplete  β  abv  ](  f  :  CauSeq  β  abv  )(  g  :  CauSeq  β  abv  ) :  Function.const  ℕ  CauSeq.lim  f   *   CauSeq.lim  g   -   ↑  f   *   ↑  g   =   ↑  CauSeq.const  abv  CauSeq.lim  f   -   f   *   g   +   ↑  CauSeq.const  abv  CauSeq.lim  f   *   CauSeq.const  abv  CauSeq.lim  g   -   g   =   True ",
+    "ids": "Eq.trans; eq_self; congrArg; Function.const; CauSeq.lim; congr; sub_add_sub_cancel'; Subtype.val; HAdd.hAdd; mul_sub; CauSeq.const; sub_mul",
+    "generated": [
+      "Eq.trans; eq_self; congr; congrArg; Subtype.val; sub_add_sub_cancel; CauSeq.const; HAdd.hAdd; CauSeq.lim; mul_comm; sub_mul",
+      "Eq.trans; eq_self; congr; CauSeq.const; congrArg; CauSeq.lim; sub_add_sub_cancel; congrFun; HAdd.hAdd; add_zero; sub_mul",
+      "Eq.trans; eq_self; congr; congrArg; sub_add_sub_cancel; Subtype.val; congrFun; CauSeq.const; CauSeq.lim; HAdd.hAdd; mul_sub; sub_mul",
+      "Eq.trans; CauSeq.const; congr; congrArg; CauSeq.lim; sub_add_sub_cancel; HAdd.hAdd; sub_mul; congrFun; mul_sub; HMul.hMul; CauSeq.const_lim",
+      "Eq.trans; eq_self; congr; congrArg; sub_mul; congrFun; CauSeq.const; CauSeq.lim; HSub.hSub; CauSeq.const_mul; mul_comm; sub_add; HAdd.hAdd; neg_mul; CauSeq.const_inv; CauSeq.const_mul"
+    ]
+  },
+  {
+    "theorem": "{  C  :  Type  u  }[  CategoryTheory.Category  C  ]{  X  :  C  }(  f  :  X   ⟶   X  )(  w  :  ∀  {  Y  :  C  }  (  g  :  Y   ⟶   X  )  ,  g   ≫   f   =   g  ) :  f   =   𝟙  X   =   𝟙  X   ≫   f   =   𝟙  X ",
+    "ids": "of_eq_true; Eq.trans; eq_self; congrArg; CategoryTheory.Category.id_comp",
+    "generated": [
+      "id; Eq.symm; CategoryTheory.Category.id_comp",
+      "id; Eq.symm; CategoryTheory.cancel_mono",
+      "id; Eq.symm; CategoryTheory.Category.id_comp",
+      "Eq.symm; CategoryTheory.cancel_mono",
+      "id; Eq.symm; CategoryTheory.Category.id_comp"
+    ]
+  },
+  {
+    "theorem": "{  n  :  ℕ  }(  i  :  Fin  n   +   1  ) :  ↑  Fin.last  n   -   ↑  i   =   ↑  ↑  Fin.rev  i   =   ↑  Fin.last  n   -   ↑  i   =   ↑  ↑  Fin.rev  i ",
+    "ids": "Fin.rev; Fin.last",
+    "generated": [
+      "Fin.rev; Fin.last",
+      "Fin.rev; Fin.last",
+      "Fin.last; Fin.rev",
+      "Fin.last; Fin.rev",
+      "Fin.rev; Fin.last"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u  }{  β  :  Type  v  }{  γ  :  Type  x  }[  AddCommMonoid  β  ](  f  :  α  →  γ  )(  s  :  Finset  γ  )(  hf  :  Set.InjOn  f  f   ⁻¹'   ↑  s  )(  g  :  γ  →  β  )(  hg  :  ∀  (  x  :  γ  )  ,  x   ∈   s  →  ¬  x   ∈   Set.range  f  →  g  x   =   0  )(  x  :  γ  )(  hx  :  x   ∈   s  ) :  ¬  x   ∈   Set.range  f  →  g  x   =   0 ",
+    "ids": "",
+    "generated": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "theorem": "(  a  :  ℕ  )(  b  :  ℕ  )(  b  :  ℕ  )(  f  :  Nat.below  (  motive  :=  fun  (  b  :  ℕ  )  ↦  ∀  (  a  :  ℕ  )  ,  a   <<<   b   =   a   *   2   ^   b  )  b  )(  a  :  ℕ  )(  x  :  Nat.below  (  motive  :=  fun  (  b  :  ℕ  )  ↦  ∀  (  a  :  ℕ  )  ,  a   <<<   b   =   a   *   2   ^   b  )  Nat.succ  z  ) :  2   *   a   *   2   ^   z   =   a   *   2   ^   z   *   2   =   True ",
+    "ids": "Eq.trans; eq_self; congr; congrArg; HMul.hMul; Nat.mul_comm; congrFun; Nat.mul_assoc",
+    "generated": [
+      "Eq.trans; eq_self; congr; congrArg; mul_one; HMul.hMul; congrFun; pow_one; HPow.hPow",
+      "Eq.trans; eq_self; congr; congrArg; mul_one; HMul.hMul",
+      "Eq.trans; eq_self; congr; congrArg; mul_one; mul_right_comm; HMul.hMul; pow_zero",
+      "Eq.trans; eq_self; congr; congrArg; mul_one; HMul.hMul",
+      "eq_self"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u  }(  x  :  List  α  )(  x_1  :  List  α  )(  x_2  :  List.Sublist  x  x_1  )(  x_3  :  List.length  x   =   List.length  x_1  )(  x  :  List  α  )(  f  :  List.below  (  motive  :=  fun  (  x  :  List  α  )  ↦  ∀  (  x_4  :  List  α  )  ,  List.Sublist  x  x_4  →  List.length  x   =   List.length  x_4  →  x   =   x_4  )  x  )(  x_4  :  List  α  )(  x_5  :  List.Sublist  x  x_4  )(  x_6  :  List.length  x   =   List.length  x_4  )(  x_7  :  List.below  (  motive  :=  fun  (  x  :  List  α  )  ↦  ∀  (  x_7  :  List  α  )  ,  List.Sublist  x  x_7  →  List.length  x   =   List.length  x_7  →  x   =   x_7  )  x  )(  t  :  False  ) :  List.length  l₂   <   Nat.succ  List.length  l₂ ",
+    "ids": "Nat.lt_succ_self; List.length",
+    "generated": [
+      "Nat.lt_succ_self; List.length",
+      "Nat.lt_succ_self; List.length",
+      "Nat.lt_succ_self; List.length",
+      "Nat.lt_succ_self; List.length",
+      "Nat.lt_succ_self; List.length"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u_1  }[  GeneralizedBooleanAlgebra  α  ][  DecidableRel  Disjoint  ][  DecidableRel  fun  (  x  :  α  )  (  x_1  :  α  )  ↦  x   ≤   x_1  ](  u  :  α  )(  v  :  α  )(  a  :  α  )(  h  :  ¬  Disjoint  u  a   ∧   v   ≤   a  ) :  ¬  Disjoint  u  a   ∧   v   ≤   a  →  if  Disjoint  u  a   ∧   v   ≤   a  then  a   ⊔   u   \\   v  else  a   =   a ",
+    "ids": "if_neg",
+    "generated": [
+      "if_neg",
+      "if_neg",
+      "if_neg",
+      "if_neg",
+      "if_neg"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u_1  }[  LinearOrderedRing  α  ](  x  :  α  )(  y  :  α  )(  h  :  x   =   0   ∨    0   <   x  )(  hx  :  0   <   x  )(  h  :  y   =   0   ∨    0   <   y  ) :  ↑  SignType.sign  x   *   y   =   ↑  SignType.sign  x   *   ↑  SignType.sign  y ",
+    "ids": "of_eq_true; Eq.trans; eq_self; congr; congrArg; sign_pos; mul_one; sign_zero; HMul.hMul; SignType.sign; eq_true",
+    "generated": [
+      "of_eq_true; Eq.symm; Eq.trans; eq_self; congrFun; congrArg; SignType.cast; neg_mul; SignType.sign; Neg.neg; mul_neg",
+      "Eq.symm; Eq.mpr; id; SignType.cast_mul; SignType.sign; mul_pos",
+      "of_eq_true; Eq.symm; Eq.trans; congr; eq_self; congrArg; SignType.cast; mul_one; SignType.sign; Neg.neg; mul_neg; mul_add; HAdd.hAdd; Nat.cast_mul",
+      "of_eq_true; Eq.symm; Eq.trans; congr; eq_self; congrArg; mul_one; neg_mul; SignType.cast_neg; Neg.neg; mul_neg; SignType.cast; neg_mul; Nat.cast_zero; Nat.cast; mul_pos; SignType.sign; Nat.cast_mul",
+      "of_eq_true; Eq.symm; Eq.trans; eq_self; congr; mul_one; congrArg; SignType.cast; neg_mul; Neg.neg; mul_neg; neg_mul; Nat.cast_mul"
+    ]
+  },
+  {
+    "theorem": "{  ι  :  Type  u_1  }{  α  :  Type  u_2  }[  CanonicallyOrderedAddMonoid  α  ][  LocallyFiniteOrder  α  ](  f  :  ι   →₀   α  ) :  ∀  (  x  :  ι  )  ,  x   ∈   Finsupp.support  ⊥   ∪   Finsupp.support  f  →  Finset.card  Finset.Icc  ↑  ⊥  x  ↑  f  x   =   Finset.card  Finset.Icc  ↑  ⊥  x  ↑  f  x ",
+    "ids": "Finset.card; Finset.Icc",
+    "generated": [
+      "Finset.card; Finset.Icc",
+      "Finset.card; Finset.Icc",
+      "Finset.card; Finset.Icc",
+      "Finset.card; Finset.Icc",
+      "Finset.card; Finset.Icc"
+    ]
+  },
+  {
+    "theorem": " :  ∀  {  G  :  Type  u_1  }  [  inst  :  AddGroup  G  ]  {  N  :  Type  u_2  }  [  inst_1  :  AddGroup  N  ]  {  H₁  K₁  :  AddSubgroup  G  }  {  H₂  K₂  :  AddSubgroup  N  }  [  h₁  :  AddSubgroup.Normal  AddSubgroup.addSubgroupOf  H₁  K₁  ]  [  h₂  :  AddSubgroup.Normal  AddSubgroup.addSubgroupOf  H₂  K₂  ]  ,  AddSubgroup.Normal  AddSubgroup.addSubgroupOf  AddSubgroup.prod  H₁  H₂  AddSubgroup.prod  K₁  K₂ ",
+    "ids": "AddSubgroup.sum_addSubgroupOf_sum_normal.proof_1",
+    "generated": [
+      "AddSubgroup.Normal.conj_mem; And.left; And.right; Iff.mp; AddSubgroup.mem_prod; Subtype.property",
+      "AddSubgroup.Normal.conj_mem; And.left; And.right; Prod.fst; Prod.snd; Iff.mp; Subtype.property",
+      "AddSubgroup.normal_addSubgroupOf_prod.proof_1",
+      "AddSubgroup.normal_addSubgroupOf_prod.proof_1",
+      "AddSubgroup.Normal.conj_mem; And.right; And.left; Iff.mp; AddSubgroup.mem_prod; Subtype.property"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u_1  }[  DecidableEq  α  ](  a  :  α  )(  x  :  List  α  )(  x  :  List  α  )(  f  :  List.below  x  )(  x  :  List.below  b   ::   l  ) :  ¬  b   =   a   =   ¬  False ",
+    "ids": "congrArg; Not; eq_false; Ne.symm",
+    "generated": [
+      "congrArg; Not; eq_false",
+      "congrArg; Not; eq_false",
+      "congrArg; Not; eq_false",
+      "congrArg; Not; eq_false",
+      "congrArg; Not; eq_false"
+    ]
+  },
+  {
+    "theorem": "{  M  :  Type  u_1  }{  N  :  Type  u_2  }{  P  :  Type  u_3  }[  AddZeroClass  M  ][  AddCommMonoid  N  ][  AddCommMonoid  P  ](  g  :  N   →+   P  )(  f₁  :  M   →+   N  )(  f₂  :  M   →+   N  )(  x  :  M  ) :  ↑  g  ↑  f₁  x   +   ↑  g  ↑  f₂  x   =   ↑  g  ↑  f₁  x   +   ↑  g  ↑  f₂  x   =   True ",
+    "ids": "eq_self",
+    "generated": [
+      "eq_self",
+      "eq_self",
+      "eq_self",
+      "eq_self",
+      "eq_self"
+    ]
+  },
+  {
+    "theorem": "{  C  :  Type  u₁  }[  CategoryTheory.Category  C  ]{  D  :  Type  u₂  }[  CategoryTheory.Category  D  ](  F  :  C   ⥤   D  )[  CategoryTheory.Full  F  ][  CategoryTheory.Faithful  F  ]{  X  :  C  }{  Y  :  C  }(  f  :  X   ⟶   Y  )[  CategoryTheory.IsIso  Prefunctor.map  CategoryTheory.Functor.toPrefunctor  F  f  ] :  CategoryTheory.CategoryStruct.comp  Prefunctor.map  CategoryTheory.Functor.toPrefunctor  F  CategoryTheory.Functor.preimage  F  CategoryTheory.inv  Prefunctor.map  CategoryTheory.Functor.toPrefunctor  F  f   =   CategoryTheory.CategoryStruct.comp  CategoryTheory.inv  Prefunctor.map  CategoryTheory.Functor.toPrefunctor  F  f ",
+    "ids": "congrArg; CategoryTheory.CategoryStruct.comp; CategoryTheory.Functor.image_preimage; CategoryTheory.inv; Prefunctor.map; CategoryTheory.Functor.toPrefunctor",
+    "generated": [
+      "congrArg; CategoryTheory.CategoryStruct.comp; CategoryTheory.Functor.image_preimage; CategoryTheory.inv",
+      "congrArg; CategoryTheory.CategoryStruct.comp; CategoryTheory.Functor.image_preimage; CategoryTheory.inv",
+      "congrArg; CategoryTheory.CategoryStruct.comp; CategoryTheory.Functor.image_preimage; CategoryTheory.inv",
+      "congrArg; CategoryTheory.CategoryStruct.comp; CategoryTheory.Functor.image_preimage; CategoryTheory.inv",
+      "congrArg; CategoryTheory.CategoryStruct.comp; Eq.trans; CategoryTheory.Functor.image_preimage; Prefunctor.map; CategoryTheory.Functor.toPrefunctor; CategoryTheory.IsIso.inv_hom_id; CategoryTheory.Functor.image_preimage"
+    ]
+  },
+  {
+    "theorem": "{  ι  :  Type  u_1  }{  α  :  ι  →  Type  u_2  }[  DecidableEq  ι  ][  (  i  :  ι  )  →  LinearOrder  α  i  ](  x  :  (  i  :  ι  )  →  α  i  )(  y  :  (  i  :  ι  )  →  α  i  )(  x'  :  (  i  :  ι  )  →  α  i  )(  y'  :  (  i  :  ι  )  →  α  i  )⦃  a  :  (  i  :  ι  )  →  α  i  ⦄(  a_1  :  a   ∈   Set.Icc  x  y   \\   Set.pi  Set.univ  fun  (  i  :  ι  )  ↦  Set.Ioo  x'  i  y'  i  )(  left  :  a   ∈   Set.Icc  x  y  )(  ha'  :  ¬  a   ∈   Set.pi  Set.univ  fun  (  i  :  ι  )  ↦  Set.Ioo  x'  i  y'  i  )(  hxa  :  x   ≤   a  )(  hay  :  a   ≤   y  ) :  ∃  (  x  :  ι  )  ,  x'  x   <   a  x  →  y'  x   ≤   a  x ",
+    "ids": "Eq.mp; Eq.trans; congrArg; funext; Not; forall_congr; implies_congr",
+    "generated": [
+      "",
+      "",
+      "Eq.mp; Eq.trans; congrArg; funext; Not; eq_true",
+      "LT.lt.le; And.right",
+      ""
+    ]
+  },
+  {
+    "theorem": "{  R  :  Type  u  }[  InvolutiveStar  R  ]{  r  :  R  }{  s  :  R  }(  h  :  r   =   star  s  ) :  star  r   =   s ",
+    "ids": "Eq.trans; congrArg; star_star",
+    "generated": [
+      "Eq.trans; congrArg; star_star; InvolutiveStar.toFun",
+      "Eq.trans; star_star; congrArg",
+      "Eq.trans; star_star; congrArg",
+      "Eq.trans; congr_arg; star_star; InvolutiveStar.toFun",
+      "Eq.mpr; id"
+    ]
+  },
+  {
+    "theorem": "{  β  :  Type  u  }{  α  :  Type  v  }[  CommMonoid  β  ][  DecidableEq  α  ](  s  :  Finset  α  )(  a  :  α  )(  b  :  (  x  :  α  )  →  a   =   x  →  β  )(  h  :  a   ∈   s  )(  h  :  True  ) :  a   =   a   =   True ",
+    "ids": "eq_self",
+    "generated": [
+      "eq_self",
+      "eq_self",
+      "eq_self",
+      "eq_self",
+      "eq_self"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Sort  u_2  }{  β  :  Sort  u_3  }{  γ  :  Sort  u_1  }(  f  :  α  →  β  →  γ  )(  P  :  Prop  )[  Decidable  P  ](  a  :  P  →  α  )(  b  :  ¬  P  →  α  )(  c  :  P  →  β  )(  d  :  ¬  P  →  β  ) :  f  dite  P  a  b   =   f  if  h_1  :  False  then  a  Eq.mpr_prop  eq_false  h  h_1  else  b  Eq.mpr_not  eq_false  h  h_1 ",
+    "ids": "congrArg; dite_congr; eq_false; Eq.mpr_not; Eq.mpr_prop",
+    "generated": [
+      "congrArg; dite_congr; eq_false; Eq.mpr_not; Eq.mpr_prop",
+      "congrArg; dite_congr; eq_false; Eq.mpr_prop; Eq.mpr_not",
+      "congrArg; dite_congr; eq_false; Eq.mpr_not; Eq.mpr_prop",
+      "congrArg; dite_congr; eq_false; Eq.mpr_prop; Eq.mpr_not",
+      "congrArg; dite_congr; eq_false; Eq.mpr_prop; Eq.mpr_not"
+    ]
+  },
+  {
+    "theorem": "{  Γ  :  Type  u_1  }[  Inhabited  Γ  ]{  n  :  ℕ  }{  enc  :  Γ  →  Vector  Bool  n  }(  enc0  :  enc  default   =   Vector.replicate  n  false  ) :  List.reverse  Vector.toList  enc  default   =   List.replicate  n  false   =   True ",
+    "ids": "Eq.trans; eq_self; congrFun; List.replicate; congrArg; List.reverse_replicate; List.reverse; Vector.toList",
+    "generated": [
+      "Eq.trans; eq_self; congrFun; List.replicate; congrArg; List.reverse; Vector.toList_reverse; Vector.toList",
+      "Eq.trans; eq_self; congrFun; List.replicate; congrArg; Vector.toList_reverse; List.reverse_replicate; Vector.toList",
+      "Eq.trans; eq_self; congrFun; List.replicate; congrArg; List.reverse; Vector.toList; Vector.reverse_replicate; List.reverse_map; Vector.toList_reverse",
+      "Eq.trans; eq_self; congrFun; List.replicate; congrArg; List.reverse_replicate; Vector.toList_reverse",
+      "Eq.trans; eq_true_of_decide; congrFun; List.replicate; congrArg; Vector.toList_reverse; Vector.replicate; List.reverse"
+    ]
+  },
+  {
+    "theorem": "{  ι  :  Type  u_2  }{  M  :  Type  u_1  }[  CanonicallyOrderedMonoid  M  ]{  f  :  ι  →  M  }{  s  :  Finset  ι  } :  ∀  (  x  :  ι  )  ,  x   ∈   s  →  1   ≤   f  x ",
+    "ids": "one_le",
+    "generated": [
+      "one_le",
+      "one_le",
+      "one_le",
+      "one_le",
+      "one_le"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u_1  }[  OrderedAddCommGroup  α  ]{  s  :  Set  α  }{  t  :  Set  α  }(  hs  :  IsUpperSet  s  ) :  s   -   t   =   s   +   -  t ",
+    "ids": "sub_eq_add_neg",
+    "generated": [
+      "sub_eq_add_neg",
+      "sub_eq_add_neg",
+      "sub_eq_add_neg",
+      "sub_eq_add_neg",
+      "sub_eq_add_neg"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u_2  }{  β  :  Type  u_1  }(  op  :  α  →  α  →  α  )[  IsCommutative  α  op  ][  IsAssociative  α  op  ]{  f  :  β  →  α  }{  g  :  β  →  α  }(  u₁  :  α  )(  u₂  :  α  )(  s  :  Multiset  β  )(  a  :  β  )(  b  :  Multiset  β  )(  h  :  Multiset.fold  op  op  u₁  u₂  Multiset.map  fun  (  x  :  β  )  ↦  op  f  x  g  x  b   =   op  Multiset.fold  op  u₁  Multiset.map  f  b  Multiset.fold  op  u₂  Multiset.map  g  b  ) :  op  f  a  op  op  Multiset.fold  op  u₁  Multiset.map  f  b  g  a  Multiset.fold  op  u₂  Multiset.map  g  b   =   op  op  f  a  Multiset.fold  op  u₁  Multiset.map  f  b  op  Multiset.fold  op  u₂  Multiset.map  g  b  g  a   =   op  f  a  op  Multiset.fold  op  u₁  Multiset.map  f  b  op  g  a  Multiset.fold  op  u₂  Multiset.map  g  b   =   op  op  f  a  Multiset.fold  op  u₁  Multiset.map  f  b  op  Multiset.fold  op  u₂  Multiset.map  g  b  g  a ",
+    "ids": "id; IsAssociative.assoc; Multiset.fold; Multiset.map",
+    "generated": [
+      "id; Eq.symm; Multiset.fold; Multiset.map",
+      "Multiset.fold; Multiset.map",
+      "Multiset.fold; Multiset.map",
+      "id; Eq.symm; Multiset.map; Multiset.fold",
+      "Multiset.fold; Multiset.map"
+    ]
+  },
+  {
+    "theorem": "{  M  :  Type  u_1  }[  Monoid  M  ]{  l  :  List  M  }(  hl  :  ∀  (  x  :  M  )  ,  x   ∈   l  →  x   =   1  )(  i  :  M  )(  l  :  List  M  )(  hil  :  ∀  (  x  :  M  )  ,  x   ∈   l  →  x   =   1  →  List.prod  l   =   1  )(  hl  :  ∀  (  x  :  M  )  ,  x   ∈   i   ::   l  →  x   =   1  ) :  i   *   1   =   1 ",
+    "ids": "Eq.mpr; id; List.mem_cons_self; one_mul",
+    "generated": [
+      "List.mul_mem_of_mem",
+      "Eq.mpr; id; List.mul_mem_cancel; List.mem_cons_of_mem",
+      "And.right; Eq.mp; List.forall_mem_cons",
+      "Eq.mpr; id; mul_one",
+      "Eq.mpr; id; List.prod_cons; List.prod"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u_1  }[  NonUnitalNonAssocSemiring  α  ](  s  :  Multiset  α  )(  a  :  α  )(  h  :  ∀  (  b  :  α  )  ,  b   ∈   s  →  Commute  a  b  )(  a_1  :  List  α  )(  h  :  ∀  (  b  :  α  )  ,  b   ∈   Quotient.mk  List.isSetoid  α  a_1  →  Commute  a  b  ) :  Commute  a  List.sum  a_1 ",
+    "ids": "Commute.list_sum_right",
+    "generated": [
+      "Commute.list_sum_right",
+      "Commute.list_sum_right",
+      "Commute.list_sum_right",
+      "Commute.list_sum_right; Commute.symm",
+      "Commute.list_sum_right"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u_2  }{  β  :  Type  u_3  }{  γ  :  Type  u_1  }[  DecidableEq  γ  ]{  f  :  α  →  β  →  γ  }{  s  :  Finset  α  }{  t  :  Finset  β  } :  Iff  ¬  Finset.Nonempty  s   ∧   Finset.Nonempty  t   =   Iff  ¬  Finset.Nonempty  s   ∨    ¬  Finset.Nonempty  t ",
+    "ids": "congrArg",
+    "generated": [
+      "congrArg",
+      "congrArg",
+      "congrArg",
+      "congrArg",
+      "congrArg"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u  }{  β  :  Type  v  }[  PartialOrder  α  ][  Preorder  β  ]{  l  :  α  →  β  }{  u  :  β  →  α  }(  gc  :  GaloisConnection  l  u  ){  l'  :  α  →  β  }{  u'  :  β  →  α  }(  gc'  :  GaloisConnection  l'  u'  )(  hl  :  ∀  (  a  :  α  )  ,  l  a   =   l'  a  ){  b  :  β  } :  l'  u'  b   =   l  u'  b ",
+    "ids": "Eq.symm",
+    "generated": [
+      "Eq.symm",
+      "",
+      "GaloisConnection.l_u'",
+      "Eq.symm; GaloisConnection.l_u_eq_l",
+      "Eq.symm"
+    ]
+  },
+  {
+    "theorem": "{  I  :  Type  u_1  }{  f  :  I  →  Type  u_2  }[  (  i  :  I  )  →  OrderedCommGroup  f  i  ] :  ∀  (  a  b  :  (  i  :  I  )  →  f  i  )  ,  a   ≤   b  →  b   ≤   a  →  a   =   b ",
+    "ids": "PartialOrder.le_antisymm",
+    "generated": [
+      "PartialOrder.le_antisymm",
+      "PartialOrder.le_antisymm",
+      "PartialOrder.le_antisymm",
+      "PartialOrder.le_antisymm",
+      "PartialOrder.le_antisymm"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u  } :  ⊥  ᶜ   =   ⊤ ",
+    "ids": "compl_bot",
+    "generated": [
+      "compl_bot",
+      "compl_bot",
+      "compl_bot",
+      "compl_bot",
+      "compl_bot"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u_1  }[  StrictOrderedRing  α  ](  a  :  α  )(  b  :  α  )(  c  :  α  )(  h  :  a   <   b  )(  hc  :  0   <   c  ) :  0   <   c   *   b   -   a   =   c   *   a   <   c   *   b ",
+    "ids": "Eq.trans; congrArg; LT.lt; mul_sub",
+    "generated": [
+      "sub_pos",
+      "sub_pos",
+      "sub_pos",
+      "sub_pos",
+      "Eq.trans; congrArg; LT.lt; sub_eq_add_neg"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u  }{  β  :  Type  v  }[  UniformSpace  α  ][  SemilatticeSup  β  ]{  u  :  β  →  α  }(  h  :  CauchySeq  u  ) :  Filter.map  Prod.map  u  u  Filter.prod  Filter.atTop  Filter.atTop   =   Filter.map  Prod.map  u  u  Filter.atTop ",
+    "ids": "congrArg; Filter.map; Filter.prod_atTop_atTop_eq; Prod.map",
+    "generated": [
+      "congrArg; Filter.map; Prod.map; Filter.prod_atTop_atTop_eq",
+      "Filter.prod_atTop_atTop_eq; Filter.map; Filter.atTop; Prod.map",
+      "congrArg; Filter.map; Filter.prod_atTop_atTop_eq; Prod.map",
+      "congrArg; Filter.map; Filter.prod_atTop_atTop_eq; Prod.map",
+      "congrArg; Filter.map; Prod.map; Filter.prod_atTop_atTop_eq"
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u_2  }{  β  :  Type  u_1  }[  Preorder  β  ]{  f  :  α  →  β  }{  l  :  Filter  α  }(  hf  :  Filter.Tendsto  f  l  Filter.atTop  )(  c  :  β  ) :  Filter.Eventually  fun  (  x  :  β  )  ↦  c   ≤   x  Filter.atTop ",
+    "ids": "Filter.eventually_ge_atTop",
+    "generated": [
+      "Filter.eventually_ge_atTop",
+      "Filter.eventually_ge_atTop",
+      "Filter.eventually_ge_atTop",
+      "Filter.eventually_le_atTop",
+      "Filter.eventually_ge_atTop"
+    ]
+  },
+  {
+    "theorem": "{  G  :  Type  u_1  }[  AddGroup  G  ](  s  :  Set  G  ) :  AddSubgroup.toAddSubmonoid  AddSubgroup.closure  -  s   =   AddSubmonoid.closure  -  s   ∪   -  -  s ",
+    "ids": "AddSubgroup.closure_toAddSubmonoid",
+    "generated": [
+      "AddSubgroup.closure_toAddSubmonoid",
+      "AddSubgroup.closure_toAddSubmonoid",
+      "AddSubgroup.closure_toAddSubmonoid",
+      "AddSubgroup.closure_toAddSubmonoid",
+      "AddSubgroup.closure_toAddSubmonoid"
+    ]
+  },
+  {
+    "theorem": "{  n  :  ℕ  }{  C  :  Fin  n   +   1  →  Sort  u_1  }(  h0  :  C  Fin.last  n  )(  hs  :  (  i  :  Fin  n  )  →  C  Fin.succ  i  →  C  ↑  RelEmbedding.toEmbedding  Fin.castSucc  i  )(  h  :  ¬  True  )(  h_1  :  n   =   n  ) :  Fin.last  n   =   Fin.last  n   =   True ",
+    "ids": "eq_self; Fin.last",
+    "generated": [
+      "eq_self; Fin.last",
+      "eq_self; Fin.last",
+      "eq_self; Fin.last",
+      "eq_self; Fin.last",
+      "eq_self; Fin.last"
+    ]
+  },
+  {
+    "theorem": " :  ∀  {  α  :  Type  u_1  }  [  inst  :  LinearOrderedAddCommGroup  α  ]  ,  Nontrivial  WithTop  α ",
+    "ids": "Nontrivial.exists_pair_ne",
+    "generated": [
+      "WithTop.nontrivial",
+      "WithTop.nontrivial",
+      "LinearOrder.WithTop.nontrivial",
+      "WithTop.Nontrivial",
+      "WithTop.nontrivial"
+    ]
+  },
+  {
+    "theorem": "{  n  :  ℕ  }(  i  :  Fin  Nat.succ  n  )(  a  :  Fin  n  ) :  a   ∈   Finset.univ   ∧   ↑  RelEmbedding.toEmbedding  Fin.succEmbedding  n  a   =   i   =   True   ∧   ↑  RelEmbedding.toEmbedding  Fin.succEmbedding  n  a   =   i ",
+    "ids": "congrFun; congrArg; RelEmbedding.toEmbedding; Fin.succEmbedding",
+    "generated": [
+      "congrFun; congrArg; RelEmbedding.toEmbedding; Fin.succEmbedding",
+      "congrFun; congrArg; RelEmbedding.toEmbedding; Fin.succEmbedding",
+      "congrFun; congrArg; RelEmbedding.toEmbedding; Fin.succEmbedding",
+      "congrFun; congrArg; RelEmbedding.toEmbedding; Fin.succEmbedding",
+      "congrFun; congrArg; RelEmbedding.toEmbedding; Fin.succEmbedding"
+    ]
+  },
+  {
+    "theorem": "{  m  :  Type  u_1  →  Type  u_2  }{  α  :  Type  u_1  }{  ρ  :  Type  u_1  }{  p  :  α  →  Prop  }{  x  :  StateT  ρ  m  α  }[  Monad  m  ][  LawfulMonad  m  ](  x_1  :  SatisfiesM  p  x  ) :  ∃  (  f  :  ρ  →  m  {  a  :  α   ×   ρ  //  fun  (  x  :  α   ×   ρ  )  ↦  p  Prod.fst  x  a  }  )  ,  ∀  (  x_2  :  ρ  )  ,  Subtype.val   <$>   f  x_2   =   x  x_2 ",
+    "ids": "Eq.mpr; id; Eq.symm; Subtype.val; map_eq_pure_bind",
+    "generated": [
+      "Subtype.val",
+      "",
+      "",
+      "Subtype.val; Prod.snd",
+      ""
+    ]
+  },
+  {
+    "theorem": "{  α  :  Type  u_1  }{  β  :  Type  u_2  }[  LinearOrder  α  ][  TopologicalSpace  α  ][  OrderTopology  α  ][  LinearOrder  β  ][  TopologicalSpace  β  ][  OrderTopology  β  ]{  f  :  α  →  β  }{  s  :  Set  α  }{  a  :  α  }(  h_mono  :  StrictMonoOn  f  s  )(  hs  :  s   ∈   nhds  a  )(  hfs_l  :  ∀  (  b  :  β  )  ,  b   <   f  a  →  ∃  (  c  :  α  )  ,  c   ∈   s   ∧   f  c   ∈   Set.Ico  b  f  a  )(  hfs_r  :  ∀  (  b  :  β  )  ,  b   >   f  a  →  ∃  (  c  :  α  )  ,  c   ∈   s   ∧   f  c   ∈   Set.Ioc  f  a  b  ) :  ContinuousWithinAt  f  Set.Iic  a  a ",
+    "ids": "StrictMonoOn.continuousWithinAt_left_of_exists_between; mem_nhdsWithin_of_mem_nhds",
+    "generated": [
+      "StrictMonoOn.continuousWithinAt_right_of_exists_between; LE.le.trans_lt; StrictMonoOn.lt_iff_lt",
+      "StrictMonoOn.continuousWithinAt_right_of_closure_image_mem_nhdsWithin; Filter.univ_mem'; id; Eq.mpr; And.left; implies_congr; StrictMonoOn.lt_iff_lt; congrArg; funext; congrFun",
+      "StrictMonoOn.continuousWithinAt_right_of_exists_between; LE.le.trans_lt; StrictMonoOn.lt_iff_lt",
+      "StrictMonoOn.continuousWithinAt_right_of_exists_between; LE.le.trans_lt; StrictMonoOn.lt_iff_lt",
+      "StrictMonoOn.continuousWithinAt_right_of_exists_between; LE.le.trans; StrictMonoOn.dual"
+    ]
+  }
+]

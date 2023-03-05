@@ -141,7 +141,7 @@ def PremiseData.get(ctx : Array Syntax)(name?: Name)(prop pf : Syntax) : MetaM P
     let subProofs: List (PropProofData) ←  pf.proofsM ctx
     let subTerms : List (TermData)  ← Syntax.termsM ctx pf
     let ids : List (Name  × Nat) ← pf.identsM ctx 
-    return ⟨ctx, name?, prop.purge, pf.purge, subTerms.toArray, subProofs.toArray, ids.toArray⟩
+    return ⟨ctx, name?, prop.purge, pf.purge, prop.purge.size, pf.purge.size, subTerms.toArray, subProofs.toArray, ids.toArray⟩
 
 def viewData (name: Name) : MetaM <| String := do
     let (stx, tstx) ← nameDefTypeSyntax name
