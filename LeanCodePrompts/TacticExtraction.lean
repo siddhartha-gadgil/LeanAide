@@ -12,12 +12,10 @@ def inputFile : System.FilePath :=
 #check Array.concatMap
 
 -- Leonardo de Moura's code for generating trace data
-partial def Lean.Syntax.getTactics : Syntax → TSyntaxArray `tactic
-  | `(tacticSeqBracketed| { $[$t]* }) => t
-  | `(tacticSeq| { $[$t]* }) => t.concatMap (fun ⟨stx⟩ => getTactics stx)
-  | `(tacticSeq| · $[$t]* ) => t.concatMap (fun ⟨stx⟩ => getTactics stx)
-  | `(tacticSeq| $[$t]*) => t.concatMap (fun ⟨stx⟩ => getTactics stx)
-  | `(tactic| $t) => #[t]
+def getTactics : TSyntax ``tacticSeq → TSyntaxArray `tactic
+  | `(tacticSeq| { $[$t]* }) => t
+  | `(tacticSeq| $[$t]*) => t
+  | _ => #[]
 
 -- modified from `Lean.Elab.Tactic.Simp`
 def traceSimpCall' (stx : Syntax) (usedSimps : Simp.UsedSimps) : MetaM Syntax := do
@@ -106,7 +104,7 @@ def evalTacStx : TSyntax `tactic → TacticM (TSyntax `tactic)
     return tac
 
 elab "seq" s:tacticSeq : tactic => do
-  let tacs := Lean.Syntax.getTactics s
+  let tacs := getTactics s
   for tac in tacs do
     let gs ← getUnsolvedGoals
     withRef tac <| addRawTrace (goalsToMessageData gs)
