@@ -18,6 +18,8 @@ def shrink(s: String): String =
     .trim()
     .replace("  ", " ")
 val turnstile = "\u22A2"
+
+// No longer used as context not included
 def termView(js: ujson.Value): (String, Double) = {
   val value = js("value").str
   val ctx = js("context").arr.map(_.str)
@@ -47,23 +49,25 @@ lazy val idThmFull: Map[String, String] = {
   val m = mutable.Map[String, String]()
   val id_js = os.read.lines.stream(os.pwd / "rawdata" / "def_ids.jsonl")
   val js = id_js.map(s => upickle.default.read[ujson.Obj](s))
-  id_js.foreach{
-    s =>
-      val js = upickle.default.read[ujson.Obj](s)
-      if (js("is_prop").bool) {
-        m(js("name").str) = js("type").str
-      }
+  id_js.foreach { s =>
+    val js = upickle.default.read[ujson.Obj](s)
+    if (js("is_prop").bool) {
+      m(js("name").str) = js("type").str
+    }
   }
-  m.toMap}
+  m.toMap
+}
 
-lazy val idThm = idThmFull.filterKeys((id: String) => idCount.getOrElse(id, 10) < 3)
+lazy val idThm =
+  idThmFull.filterKeys((id: String) => idCount.getOrElse(id, 10) < 3)
 
 def idProps(js: ujson.Value) = {
   val ids = js("ids").arr.map(_(0).str).distinct
   ids.flatMap(id => idThm.get(id))
 }
 
-def allTerms(js: ujson.Value) = js("terms").arr.map(termView).sortBy(_._2)
+def allTerms(js: ujson.Value) =
+  js("terms").arr.map(js => (js("value").str, js("size").num)).sortBy(_._2)
 def totalBound[A](l: List[(A, Double)], bound: Double)(
     a: A
 ): List[(A, Double)] = l
@@ -73,6 +77,8 @@ def totalBound[A](l: List[(A, Double)], bound: Double)(
 def topTerms(js: ujson.Value) =
   totalBound(allTerms(js).toList, 128)("").map(_._1).mkString("; ")
 def prop(js: ujson.Value) =
+  (shrink(js("prop").str), js("propSize").num)
+def propVerbose(js: ujson.Value) =
   (
     js("context").arr
       .map(s => shrink(s.str))
@@ -90,20 +96,24 @@ var count: Int = 0
 
 def predData(js: ujson.Value) = ujson.Obj(
   "theorem" -> js("context").arr
-      .map(s => shrink(s.str))
-      .mkString("", " ", s" : ${shrink(js("type").str)}"),
+    .map(s => shrink(s.str))
+    .mkString("", " ", s" : ${shrink(js("type").str)}"),
   "ids" -> idString(js),
   "lemmas" -> topProps(js),
   "terms" -> topTerms(js)
 )
 
-lazy val train_js = os.read.lines.stream(os.pwd / "rawdata" / "train_premises.jsonl")
+lazy val train_js =
+  os.read.lines.stream(os.pwd / "rawdata" / "train_premises.jsonl")
 def writeTrainingData(): Unit = train_js.foreach { s =>
   val js = upickle.default.read[ujson.Obj](s)
   count = count + 1
   if (count % 1000 == 0) println(count)
   os.write.over(os.pwd / "rawdata" / "train_ids.jsonl", "")
-  os.write.append(os.pwd / "rawdata" / "train_ids.jsonl", ujson.write(predData(js)) + "\n")
+  os.write.append(
+    os.pwd / "rawdata" / "train_ids.jsonl",
+    ujson.write(predData(js)) + "\n"
+  )
 }
 
 def writeTestData(): Unit = {
