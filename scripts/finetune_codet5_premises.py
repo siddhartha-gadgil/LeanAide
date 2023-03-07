@@ -166,7 +166,7 @@ for epoch in range(num_epochs):
         lr_scheduler.step()
         optimizer.zero_grad()
         progress_bar.update(1)
-    torch.save(model.state_dict(), f"codet5_ids_epoch_{epoch}.pt")
+    torch.save(model.state_dict(), f"codet5_ids_epoch_{epoch}.pt", pickle_protocol=4)
 
 # ## Inference
 # 
@@ -239,7 +239,7 @@ for epoch in range(num_epochs, 2 * num_epochs):
         lr_scheduler.step()
         optimizer.zero_grad()
         progress_bar.update(1)
-    torch.save(model.state_dict(), f"codet5_ids_epoch_{epoch}.pt")
+    torch.save(model.state_dict(), f"codet5_ids_epoch_{epoch}.pt", pickle_protocol=4)
 
 # ## Inference
 # 

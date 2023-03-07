@@ -35,10 +35,9 @@ lazy val idV: Vector[(String, Int)] = {
   val id_js = os.read.lines.stream(os.pwd / "rawdata" / "def_ids.jsonl")
   val js = id_js.map(s => upickle.default.read[ujson.Obj](s))
   val ids = js.map(_("ids").arr)
-  val idCount: mutable.Map = mutable.Map()
   val idCount: mutable.Map[String, Int] = mutable.Map()
   def addId(id: String): Unit = { idCount(id) = idCount.getOrElse(id, 0) + 1 }
-  ids.foreach { idL => idL.foreach(addId) }
+  ids.foreach { idL => idL.arr.foreach(id => addId(id.str)) }
   idCount.toVector.sortBy(_._2)
 }
 
