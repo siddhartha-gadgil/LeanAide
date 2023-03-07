@@ -56,7 +56,7 @@ lazy val idThmFull: Map[String, String] = {
   }
   m.toMap}
 
-lazy val idThm = idThmFull.filterKeys((id: String) => idCount.getOrElse(id, 10) < 5)
+lazy val idThm = idThmFull.filterKeys((id: String) => idCount.getOrElse(id, 10) < 3)
 
 def idProps(js: ujson.Value) = {
   val ids = js("ids").arr.map(_(0).str).distinct
@@ -89,7 +89,9 @@ def topProps(js: ujson.Value): String =
 var count: Int = 0
 
 def predData(js: ujson.Value) = ujson.Obj(
-  "theorem" -> (js("context").str + " : " + js("type").str),
+  "theorem" -> js("context").arr
+      .map(s => shrink(s.str))
+      .mkString("", " ", s" : ${shrink(js("type").str)}"),
   "ids" -> idString(js),
   "lemmas" -> topProps(js),
   "terms" -> topTerms(js)
