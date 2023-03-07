@@ -100,13 +100,15 @@ def writeTrainingData(): Unit = train_js.foreach { s =>
   val js = upickle.default.read[ujson.Obj](s)
   count = count + 1
   if (count % 1000 == 0) println(count)
-  os.write.append(train_id_file, ujson.write(predData(js)) + "\n")
+  os.write.over(os.pwd / "rawdata" / "train_ids.jsonl", "")
+  os.write.append(os.pwd / "rawdata" / "train_ids.jsonl", ujson.write(predData(js)) + "\n")
 }
 
 def writeTestData(): Unit = {
   count = 0
   val test_js = os.read.lines.stream(os.pwd / "rawdata" / "test_premises.jsonl")
   val test_id_file = os.pwd / "rawdata" / "test_ids.jsonl"
+  os.write.over(test_id_file, "")
   test_js.foreach { s =>
     val js = upickle.default.read[ujson.Obj](s)
     count = count + 1
