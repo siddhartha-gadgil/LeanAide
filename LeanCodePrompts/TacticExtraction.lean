@@ -24,8 +24,6 @@ partial def resolveTactic : TSyntax `tactic → TSyntaxArray `tactic
   | `(tactic| next _ $_* => $[$t]*) => t.concatMap resolveTactic
   | `(tactic| any_goals $[$t]*) => t.concatMap resolveTactic
   | `(tactic| all_goals $[$t]*) => t.concatMap resolveTactic
-  -- | `(tactic| first | $[$x]+) => sorry
-  -- | `(tactic| with_annotate_state $_ $_ $[$t]*)
   -- | `(tactic| rw $_? [$rs,*] $_?) => sorry
   -- | `(tactic| induction ) => sorry
   | `(tactic| $t) => #[t]
