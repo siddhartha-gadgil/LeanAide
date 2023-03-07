@@ -11,11 +11,35 @@ def inputFile : System.FilePath :=
 #eval inputFile.pathExists
 #check Array.concatMap
 
+#check SyntaxNodeKind
+#check Syntax.isOfKind
+#check Syntax.findStack?
+#check Syntax.Stack
+
 -- Leonardo de Moura's code for generating trace data
 def getTactics : TSyntax ``tacticSeq → TSyntaxArray `tactic
   | `(tacticSeq| { $[$t]* }) => t
   | `(tacticSeq| $[$t]*) => t
   | _ => #[]
+
+#check rwSeq
+#check rwRule
+
+partial def resolveTactic : TSyntax `tactic → TSyntaxArray `tactic
+  | `(tactic| · $[$t]* ) => t.concatMap resolveTactic
+  | `(tactic| { $[$t]* } ) => t.concatMap resolveTactic
+  | `(tactic| ( $[$t]* ) ) => t.concatMap resolveTactic
+  | `(tactic| focus $[$t]* ) => t.concatMap resolveTactic
+  | `(tactic| case _ $_* => $[$t]*) => t.concatMap resolveTactic
+  | `(tactic| case' _ $_* => $[$t]*) => t.concatMap resolveTactic
+  | `(tactic| next _ $_* => $[$t]*) => t.concatMap resolveTactic
+  | `(tactic| any_goals $[$t]*) => t.concatMap resolveTactic
+  | `(tactic| all_goals $[$t]*) => t.concatMap resolveTactic
+  -- | `(tactic| first | $[$x]+) => sorry
+  -- | `(tactic| with_annotate_state $_ $_ $[$t]*)
+  -- | `(tactic| rw $_? [$rs,*] $_?) => sorry
+  -- | `(tactic| induction ) => sorry
+  | `(tactic| $t) => #[t]
 
 -- modified from `Lean.Elab.Tactic.Simp`
 def traceSimpCall' (stx : Syntax) (usedSimps : Simp.UsedSimps) : MetaM Syntax := do
@@ -103,21 +127,29 @@ def evalTacStx : TSyntax `tactic → TacticM (TSyntax `tactic)
     evalTactic tac
     return tac
 
+#check Syntax.getKind
+#check Syntax.getArgs
+
+partial def Lean.Syntax.recFilter (P : Syntax → Bool) (root : Syntax) : Array Syntax :=
+  (if P root then #[root] else #[]) ++ root.getArgs.concatMap (recFilter P)
+
 elab "seq" s:tacticSeq : tactic => do
-  let tacs := getTactics s
+  -- dbg_trace s.raw.getArgs
+  let tacs := (getTactics s).concatMap resolveTactic -- .raw.recFilter (fun stx => stx.isOfKind `tactic)
+  -- dbg_trace tacs
   for tac in tacs do
     let gs ← getUnsolvedGoals
     withRef tac <| addRawTrace (goalsToMessageData gs)
-    let tac' ← evalTacStx tac
+    let tac' ← evalTacStx ⟨tac⟩
     withRef tac <| addRawTrace m!"[TACTIC] {tac'}"
 
 -- an example of the `seq` tactic
 example (h : x = y) : 0 + x = y ∧ 1 = 1 := by
   seq 
-    rw [Nat.zero_add]; rw [h]
+    rw [Nat.zero_add, h]
   refine' ⟨_, _⟩
   focus
-    rfl
+    rw [←h, h]
   · rfl
 
 -- /-- `by tac` constructs a term of the expected type by running the tactic(s) `tac`. -/
@@ -140,6 +172,7 @@ syntax (name := byTactic') "by' " tacticSeq : term
     throwError ("invalid 'by\'' tactic, expected type has not been provided")
 
 example : 1 + 1 = 2 := by' -- the new `by'` syntax can be used to replace `by`
+  focus
   rfl
 
 -- intercepting the `by` tactic to output intermediate trace data
@@ -162,6 +195,7 @@ example (h : x = y) : x + 0 + x = x + y ∧ 1 = 1 := by
     simp_all
   · first | apply Eq.symm | simp
     apply Eq.symm
+    subst h
     rfl
   done
 
