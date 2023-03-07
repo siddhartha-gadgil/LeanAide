@@ -50,7 +50,7 @@ lazy val idThmFull: Map[String, String] = {
   id_js.foreach{
     s =>
       val js = upickle.default.read[ujson.Obj](s)
-      if (js("isProp").bool) {
+      if (js("is_prop").bool) {
         m(js("name").str) = js("type").str
       }
   }
