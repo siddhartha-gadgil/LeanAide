@@ -5,25 +5,14 @@ open Lean Elab Parser Term Meta Tactic Meta
 
 def inputFile : System.FilePath := 
 "LeanCodePrompts"/"TacticExtractionTest.lean"
--- "LeanCodePrompts"/"PowTest.lean"
--- "lake-packages"/"mathlib"/"Mathlib"/"Data"/"Int"/"Dvd"/"Pow.lean"
 
 #eval inputFile.pathExists
-#check Array.concatMap
-
-#check SyntaxNodeKind
-#check Syntax.isOfKind
-#check Syntax.findStack?
-#check Syntax.Stack
 
 -- Leonardo de Moura's code for generating trace data
 def getTactics : TSyntax ``tacticSeq → TSyntaxArray `tactic
   | `(tacticSeq| { $[$t]* }) => t
   | `(tacticSeq| $[$t]*) => t
   | _ => #[]
-
-#check rwSeq
-#check rwRule
 
 partial def resolveTactic : TSyntax `tactic → TSyntaxArray `tactic
   | `(tactic| · $[$t]* ) => t.concatMap resolveTactic
@@ -41,59 +30,62 @@ partial def resolveTactic : TSyntax `tactic → TSyntaxArray `tactic
   -- | `(tactic| induction ) => sorry
   | `(tactic| $t) => #[t]
 
--- modified from `Lean.Elab.Tactic.Simp`
-def traceSimpCall' (stx : Syntax) (usedSimps : Simp.UsedSimps) : MetaM Syntax := do
-  let mut stx := stx
-  if stx[3].isNone then
-    stx := stx.setArg 3 (mkNullNode #[mkAtom "only"])
-  let mut args := #[]
-  let mut localsOrStar := some #[]
-  let lctx ← getLCtx
-  let env ← getEnv
-  for (thm, _) in usedSimps.toArray.qsort (·.2 < ·.2) do
-    match thm with
-    | .decl declName => -- global definitions in the environment
-      if env.contains declName && !simpOnlyBuiltins.contains declName then
-        args := args.push (← `(Parser.Tactic.simpLemma| $(mkIdent (← unresolveNameGlobal declName)):ident))
-    | .fvar fvarId => -- local hypotheses in the context
-      if let some ldecl := lctx.find? fvarId then
-        localsOrStar := localsOrStar.bind fun locals =>
-          if !ldecl.userName.isInaccessibleUserName &&
-              (lctx.findFromUserName? ldecl.userName).get!.fvarId == ldecl.fvarId then
-            some (locals.push ldecl.userName)
-          else
-            none
-      -- Note: the `if let` can fail for `simp (config := {contextual := true})` when
-      -- rewriting with a variable that was introduced in a scope. In that case we just ignore.
-    | .stx _ thmStx => -- simp theorems provided in the local invocation
-      args := args.push ⟨thmStx⟩ 
-    | .other _ => -- Ignore "special" simp lemmas such as constructed by `simp_all`.
-      pure ()     -- We can't display them anyway.
-  if let some locals := localsOrStar then
-    args := args ++ (← locals.mapM fun id => `(Parser.Tactic.simpLemma| $(mkIdent id):ident))
-  else
-    args := args.push ⟨(← `(Parser.Tactic.simpStar| *))⟩ 
-  let argsStx := if args.isEmpty then #[] else #[mkAtom "[", (mkAtom ",").mkSep args, mkAtom "]"]
-  stx := stx.setArg 4 (mkNullNode argsStx)
-  return stx
+section Source
+  -- modified from `Lean.Elab.Tactic.Simp`
+  def traceSimpCall' (stx : Syntax) (usedSimps : Simp.UsedSimps) : MetaM Syntax := do
+    let mut stx := stx
+    if stx[3].isNone then
+      stx := stx.setArg 3 (mkNullNode #[mkAtom "only"])
+    let mut args := #[]
+    let mut localsOrStar := some #[]
+    let lctx ← getLCtx
+    let env ← getEnv
+    for (thm, _) in usedSimps.toArray.qsort (·.2 < ·.2) do
+      match thm with
+      | .decl declName => -- global definitions in the environment
+        if env.contains declName && !simpOnlyBuiltins.contains declName then
+          args := args.push (← `(Parser.Tactic.simpLemma| $(mkIdent (← unresolveNameGlobal declName)):ident))
+      | .fvar fvarId => -- local hypotheses in the context
+        if let some ldecl := lctx.find? fvarId then
+          localsOrStar := localsOrStar.bind fun locals =>
+            if !ldecl.userName.isInaccessibleUserName &&
+                (lctx.findFromUserName? ldecl.userName).get!.fvarId == ldecl.fvarId then
+              some (locals.push ldecl.userName)
+            else
+              none
+        -- Note: the `if let` can fail for `simp (config := {contextual := true})` when
+        -- rewriting with a variable that was introduced in a scope. In that case we just ignore.
+      | .stx _ thmStx => -- simp theorems provided in the local invocation
+        args := args.push ⟨thmStx⟩ 
+      | .other _ => -- Ignore "special" simp lemmas such as constructed by `simp_all`.
+        pure ()     -- We can't display them anyway.
+    if let some locals := localsOrStar then
+      args := args ++ (← locals.mapM fun id => `(Parser.Tactic.simpLemma| $(mkIdent id):ident))
+    else
+      args := args.push ⟨(← `(Parser.Tactic.simpStar| *))⟩ 
+    let argsStx := if args.isEmpty then #[] else #[mkAtom "[", (mkAtom ",").mkSep args, mkAtom "]"]
+    stx := stx.setArg 4 (mkNullNode argsStx)
+    return stx
 
-def dsimpLocation' (ctx : Simp.Context) (loc : Location) : TacticM Syntax := do
-  match loc with
-  | Location.targets hyps simplifyTarget =>
-    withMainContext do
-      let fvarIds ← getFVarIds hyps
-      go fvarIds simplifyTarget
-  | Location.wildcard =>
-    withMainContext do
-      go (← (← getMainGoal).getNondepPropHyps) (simplifyTarget := true)
-where
-  go (fvarIdsToSimp : Array FVarId) (simplifyTarget : Bool) : TacticM Syntax := do
-    let mvarId ← getMainGoal
-    let (result?, usedSimps) ← dsimpGoal mvarId ctx (simplifyTarget := simplifyTarget) (fvarIdsToSimp := fvarIdsToSimp)
-    match result? with
-    | none => replaceMainGoal []
-    | some mvarId => replaceMainGoal [mvarId]
-    traceSimpCall' (← getRef) usedSimps
+  def dsimpLocation' (ctx : Simp.Context) (loc : Location) : TacticM Syntax := do
+    match loc with
+    | Location.targets hyps simplifyTarget =>
+      withMainContext do
+        let fvarIds ← getFVarIds hyps
+        go fvarIds simplifyTarget
+    | Location.wildcard =>
+      withMainContext do
+        go (← (← getMainGoal).getNondepPropHyps) (simplifyTarget := true)
+  where
+    go (fvarIdsToSimp : Array FVarId) (simplifyTarget : Bool) : TacticM Syntax := do
+      let mvarId ← getMainGoal
+      let (result?, usedSimps) ← dsimpGoal mvarId ctx (simplifyTarget := simplifyTarget) (fvarIdsToSimp := fvarIdsToSimp)
+      match result? with
+      | none => replaceMainGoal []
+      | some mvarId => replaceMainGoal [mvarId]
+      traceSimpCall' (← getRef) usedSimps
+
+end Source
 
 def evalTacStx : TSyntax `tactic → TacticM (TSyntax `tactic)
   | stx@`(tactic| simp%$tk $(config)? $(discharger)? $[only%$o]? $[[$args,*]]? $(loc)?) => do
@@ -122,16 +114,10 @@ def evalTacStx : TSyntax `tactic → TacticM (TSyntax `tactic)
       let trm ← Tactic.elabTerm val none
       let typ ← inferType trm
       let typStx ← PrettyPrinter.delab typ
-      `(tactic| let $x:ident : $typStx := $val)
+      `(tactic| let $x:ident : $typStx := $val)      
   | `(tactic| $tac) => do
     evalTactic tac
     return tac
-
-#check Syntax.getKind
-#check Syntax.getArgs
-
-partial def Lean.Syntax.recFilter (P : Syntax → Bool) (root : Syntax) : Array Syntax :=
-  (if P root then #[root] else #[]) ++ root.getArgs.concatMap (recFilter P)
 
 elab "seq" s:tacticSeq : tactic => do
   -- dbg_trace s.raw.getArgs
@@ -151,10 +137,6 @@ example (h : x = y) : 0 + x = y ∧ 1 = 1 := by
   focus
     rw [←h, h]
   · rfl
-
--- /-- `by tac` constructs a term of the expected type by running the tactic(s) `tac`. -/
--- def byTactic' := leading_parser:leadPrec
---   ppAllowUngrouped >> "by' " >> Tactic.tacticSeqIndentGt
 
 -- a deep copy of Lean's `by` tactic, called `by'`
 syntax (name := byTactic') "by' " tacticSeq : term
@@ -182,18 +164,16 @@ macro_rules
 
 set_option linter.unreachableTactic false
 
-#check Parser.Tactic.tacticSeqBracketed
-
 -- the `by` tactic now generates trace data by default
 example (h : x = y) : x + 0 + x = x + y ∧ 1 = 1 := by
   have := (rfl : 1 = 1)
   let a := 5
   refine' ⟨_, _⟩
-  focus
+  · apply Eq.symm
     apply Eq.symm
-    apply Eq.symm
+    rw [h, ← h]
     simp_all
-  · first | apply Eq.symm | simp
+  · apply Eq.symm
     apply Eq.symm
     subst h
     rfl
