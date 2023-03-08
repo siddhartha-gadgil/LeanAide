@@ -119,7 +119,7 @@ from torch.optim import AdamW
 optimizer = AdamW(model.parameters(), lr=5e-5)
 from transformers import get_scheduler
 num_epochs = 3
-num_training_steps = num_epochs * (len(train_dataloader_id))
+num_training_steps = num_epochs * (len(train_dataloader_id) + len(train_dataloader_lemma) + len(train_dataloader_term))
 lr_scheduler = get_scheduler(
     name="linear", optimizer=optimizer, num_warmup_steps=5000, num_training_steps=num_training_steps
 )
@@ -133,7 +133,7 @@ print (device)
 
 from tqdm.auto import tqdm
 
-progress_bar = tqdm(range(num_training_steps) * 3)
+progress_bar = tqdm(range(num_training_steps))
 
 model.train()
 for epoch in range(num_epochs):
