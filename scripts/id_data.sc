@@ -105,15 +105,17 @@ def predData(js: ujson.Value) = ujson.Obj(
 
 lazy val train_js =
   os.read.lines.stream(os.pwd / "rawdata" / "train_premises.jsonl")
-def writeTrainingData(): Unit = train_js.foreach { s =>
+def writeTrainingData(): Unit = {
+  os.write.over(os.pwd / "rawdata" / "train_ids.jsonl", "")
+  train_js.foreach { s =>
   val js = upickle.default.read[ujson.Obj](s)
   count = count + 1
   if (count % 1000 == 0) println(count)
-  os.write.over(os.pwd / "rawdata" / "train_ids.jsonl", "")
   os.write.append(
     os.pwd / "rawdata" / "train_ids.jsonl",
     ujson.write(predData(js)) + "\n"
   )
+}
 }
 
 def writeTestData(): Unit = {
