@@ -174,7 +174,7 @@ def termKindList : MetaM <| List (SyntaxNodeKind × Unit) := do
 partial def Lean.Syntax.size (stx: Syntax) : Nat := 
     match stx with
     | Syntax.ident _ _ _ _ => 1
-    | Syntax.node _ _ args => args.foldl (fun acc x => acc + x.size) 1
+    | Syntax.node _ _ args => args.foldl (fun acc x => acc + x.size) 0
     | _ => 1
 
 partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(maxDepth? : Option Nat := none) : 
@@ -542,7 +542,8 @@ def writePremisesM  : MetaM Nat  := do
             let idData := Json.mkObj [
                 ("name", toJson defData.name),
                 ("ids", toJson idData),
-                ("is_prop", toJson defData.isProp)
+                ("is_prop", toJson defData.isProp),
+                ("type", toJson defData.type.purge)
             ]
             let l := idData.pretty 10000000
             if l.length < 9000000 then
