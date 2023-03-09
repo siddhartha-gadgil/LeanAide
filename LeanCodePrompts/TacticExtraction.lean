@@ -14,19 +14,21 @@ def getTactics : TSyntax ``tacticSeq → TSyntaxArray `tactic
   | `(tacticSeq| $[$t]*) => t
   | _ => #[]
 
-partial def resolveTactic : TSyntax `tactic → TSyntaxArray `tactic
-  | `(tactic| · $[$t]* ) => t.concatMap resolveTactic
-  | `(tactic| { $[$t]* } ) => t.concatMap resolveTactic
-  | `(tactic| ( $[$t]* ) ) => t.concatMap resolveTactic
-  | `(tactic| focus $[$t]* ) => t.concatMap resolveTactic
-  | `(tactic| case _ $_* => $[$t]*) => t.concatMap resolveTactic
-  | `(tactic| case' _ $_* => $[$t]*) => t.concatMap resolveTactic
-  | `(tactic| next _ $_* => $[$t]*) => t.concatMap resolveTactic
-  | `(tactic| any_goals $[$t]*) => t.concatMap resolveTactic
-  | `(tactic| all_goals $[$t]*) => t.concatMap resolveTactic
-  -- | `(tactic| rw $_? [$rs,*] $_?) => sorry
-  -- | `(tactic| induction ) => sorry
-  | `(tactic| $t) => #[t]
+#check rwRuleSeq
+
+partial def resolveTactic : TSyntax `tactic → TacticM (TSyntaxArray `tactic)
+  | `(tactic| · $[$t]* ) => t.concatMapM resolveTactic
+  | `(tactic| { $[$t]* } ) => t.concatMapM resolveTactic
+  | `(tactic| ( $[$t]* ) ) => t.concatMapM resolveTactic
+  | `(tactic| focus $[$t]* ) => t.concatMapM resolveTactic
+  | `(tactic| case _ $_* => $[$t]*) => t.concatMapM resolveTactic
+  | `(tactic| case' _ $_* => $[$t]*) => t.concatMapM resolveTactic
+  | `(tactic| next _ $_* => $[$t]*) => t.concatMapM resolveTactic
+  | `(tactic| any_goals $[$t]*) => t.concatMapM resolveTactic
+  | `(tactic| all_goals $[$t]*) => t.concatMapM resolveTactic
+  | `(tactic| rw $cfg? [$rs,*] $loc?) => (rs : TSyntaxArray `Lean.Parser.Tactic.rwRule).mapM 
+                                                      (fun r => `(tactic| rw $cfg? [$r] $loc?))
+  | `(tactic| $t) => pure #[t]
 
 section Source
   -- modified from `Lean.Elab.Tactic.Simp`
@@ -119,7 +121,7 @@ def evalTacStx : TSyntax `tactic → TacticM (TSyntax `tactic)
 
 elab "seq" s:tacticSeq : tactic => do
   -- dbg_trace s.raw.getArgs
-  let tacs := (getTactics s).concatMap resolveTactic -- .raw.recFilter (fun stx => stx.isOfKind `tactic)
+  let tacs ← (getTactics s).concatMapM resolveTactic -- .raw.recFilter (fun stx => stx.isOfKind `tactic)
   -- dbg_trace tacs
   for tac in tacs do
     let gs ← getUnsolvedGoals
