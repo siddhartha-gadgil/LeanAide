@@ -26,8 +26,10 @@ partial def resolveTactic : TSyntax `tactic → TacticM (TSyntaxArray `tactic)
   | `(tactic| next _ $_* => $[$t]*) => t.concatMapM resolveTactic
   | `(tactic| any_goals $[$t]*) => t.concatMapM resolveTactic
   | `(tactic| all_goals $[$t]*) => t.concatMapM resolveTactic
-  | `(tactic| rw $cfg? [$rs,*] $loc?) => (rs : TSyntaxArray `Lean.Parser.Tactic.rwRule).mapM 
-                                                      (fun r => `(tactic| rw $cfg? [$r] $loc?))
+  | `(tactic| rw [$rs,*]) => 
+              dbg_trace "located `rw`"
+              (rs : TSyntaxArray `Lean.Parser.Tactic.rwRule).mapM 
+                                                      (fun r => `(tactic| rw [$r]))
   | `(tactic| $t) => pure #[t]
 
 section Source
