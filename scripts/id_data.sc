@@ -1,5 +1,6 @@
 def idPairs(js: ujson.Value) =
   js("ids").arr.toVector.map(js => (js.arr(0).str, js.arr(1).num))
+def ids(js: ujson.Value) = idPairs(js).map(_._1).distinct
 def topWeight(pairs: Vector[(String, Double)]) =
   pairs.groupMapReduce(_._1)(_._2)(math.min).toVector.sortBy(_._2).map(_._1)
 def idString(js: ujson.Value) = topWeight(idPairs(js)).take(64).mkString("; ")
@@ -103,6 +104,13 @@ def predData(js: ujson.Value) = ujson.Obj(
   "terms" -> topTerms(js)
 )
 
+def idData(js: ujson.Value) = ujson.Obj(
+  "theorem" -> js("context").arr
+    .map(s => shrink(s.str))
+    .mkString("", " ", s" : ${shrink(js("type").str)}"),
+  "premises" -> ids(js),
+)
+
 lazy val train_js =
   os.read.lines.stream(os.pwd / "rawdata" / "train_premises.jsonl")
 def writeTrainingData(): Unit = {
@@ -128,5 +136,18 @@ def writeTestData(): Unit = {
     count = count + 1
     if (count % 1000 == 0) println(count)
     os.write.append(test_id_file, ujson.write(predData(js)) + "\n")
+  }
+}
+
+def writeIds() : Unit = {
+  count = 0
+  val js = os.read.lines.stream(os.pwd / "rawdata" / "premises.jsonl")
+  val id_file = os.pwd / "rawdata" / "premise_ids.jsonl"
+  os.write.over(id_file, "")
+  js.foreach { s =>
+    val js = upickle.default.read[ujson.Obj](s)
+    count = count + 1
+    if (count % 1000 == 0) println(count)
+    os.write.append(id_file, ujson.write(idData(js)) + "\n")
   }
 }
