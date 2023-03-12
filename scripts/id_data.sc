@@ -108,7 +108,7 @@ def idData(js: ujson.Value) = ujson.Obj(
   "theorem" -> js("context").arr
     .map(s => shrink(s.str))
     .mkString("", " ", s" : ${shrink(js("type").str)}"),
-  "premises" -> ids(js),
+  "premises" -> ids(js)
 )
 
 lazy val train_js =
@@ -116,14 +116,14 @@ lazy val train_js =
 def writeTrainingData(): Unit = {
   os.write.over(os.pwd / "rawdata" / "train_ids.jsonl", "")
   train_js.foreach { s =>
-  val js = upickle.default.read[ujson.Obj](s)
-  count = count + 1
-  if (count % 1000 == 0) println(count)
-  os.write.append(
-    os.pwd / "rawdata" / "train_ids.jsonl",
-    ujson.write(predData(js)) + "\n"
-  )
-}
+    val js = upickle.default.read[ujson.Obj](s)
+    count = count + 1
+    if (count % 1000 == 0) println(count)
+    os.write.append(
+      os.pwd / "rawdata" / "train_ids.jsonl",
+      ujson.write(predData(js)) + "\n"
+    )
+  }
 }
 
 def writeTestData(): Unit = {
@@ -139,7 +139,7 @@ def writeTestData(): Unit = {
   }
 }
 
-def writeIds() : Unit = {
+def writeIds(): Unit = {
   count = 0
   val js = os.read.lines.stream(os.pwd / "rawdata" / "premises.jsonl")
   val id_file = os.pwd / "rawdata" / "premise_ids.jsonl"
@@ -149,5 +149,32 @@ def writeIds() : Unit = {
     count = count + 1
     if (count % 1000 == 0) println(count)
     os.write.append(id_file, ujson.write(idData(js)) + "\n")
+  }
+}
+
+def writePremisePairs(): Unit = {
+  count = 0
+  var pairCount = 0
+  val id_file = os.pwd / "rawdata" / "premise_ids.jsonl"
+  val pair_file = os.pwd / "rawdata" / "premise_pairs.jsonl"
+  os.write.over(pair_file, "")
+  val js = os.read.lines.stream(id_file)
+  js.foreach { s =>
+    val js = upickle.default.read[ujson.Obj](s)
+    count = count + 1
+    if (count % 1000 == 0) println(s"$count pairs: $pairCount")
+    val premises = js("premises").arr.map(_.str).distinct
+    premises.foreach { id =>
+      pairCount = pairCount + 1
+      os.write.append(
+        pair_file,
+        ujson.write(
+          ujson.Obj(
+            "theorem" -> js("theorem").str,
+            "premise" -> id
+          )
+        ) + "\n"
+      )
+    }
   }
 }
