@@ -115,7 +115,23 @@ def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
       let rtac ← `(tactic| rw $[$cfg]? [$r] $[$loc]?) 
       evalTactic rtac
       traceTacticCallAt ⟨r.raw⟩ rtac
-      traceGoalsAt ⟨r.raw⟩ 
+      traceGoalsAt ⟨r.raw⟩
+  | stx@`(tactic| apply $v) => do
+    traceGoalsAt stx
+    evalTactic stx
+    let trm ← Tactic.elabTerm v none
+    let typ ← inferType trm
+    let typStx ← PrettyPrinter.delab typ
+    `(tactic| apply ($v : $typStx)) >>= traceTacticCallAt stx
+    traceGoalsAt stx
+  | stx@`(tactic| exact $v) => do
+    traceGoalsAt stx
+    evalTactic stx
+    let trm ← Tactic.elabTerm v none
+    let typ ← inferType trm
+    let typStx ← PrettyPrinter.delab typ
+    `(tactic| exact ($v : $typStx)) >>= traceTacticCallAt stx
+    traceGoalsAt stx
   | stx@`(tactic| have $[$x:ident]? := $prf) => do
     traceGoalsAt stx
     evalTactic stx
@@ -137,6 +153,8 @@ def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
     evalTactic tac
     traceTacticCallAt stx tac
     traceGoalsAt stx
+
+#exit
 
 elab "seq" s:tacticSeq : tactic => do
   -- dbg_trace s.raw.getArgs
@@ -188,7 +206,7 @@ example (h : x = y) : x + 0 + x = x + y ∧ 1 = 1 := by
   refine' ⟨_, _⟩
   · apply Eq.symm
     apply Eq.symm
-    rw [h, ← h]
+    erw [h, ← h]
     simp_all
   · apply Eq.symm
     apply Eq.symm
