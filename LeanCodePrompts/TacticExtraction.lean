@@ -87,6 +87,8 @@ def traceGoalsAt (stx : TSyntax `tactic) : TacticM Unit := do
 def traceTacticCallAt (stx : TSyntax `tactic) (tac : TSyntax `tactic) : TacticM Unit := do
   withRef stx <| addRawTrace m!"[TACTIC] {tac}"
 
+#check Split.applyMatchSplitter
+
 def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
   | stx@`(tactic| simp%$tk $(config)? $(discharger)? $[only%$o]? $[[$args,*]]? $(loc)?) => do
     traceGoalsAt stx
@@ -116,6 +118,21 @@ def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
       evalTactic rtac
       traceTacticCallAt ⟨r.raw⟩ rtac
       traceGoalsAt ⟨r.raw⟩
+  | `(tactic| erw [$rs,*] $[$loc]?) => do
+    for r in (rs : TSyntaxArray `Lean.Parser.Tactic.rwRule) do
+      traceGoalsAt ⟨r.raw⟩
+      let rtac ← `(tactic| erw [$r] $[$loc]?) 
+      evalTactic rtac
+      traceTacticCallAt ⟨r.raw⟩ rtac
+      traceGoalsAt ⟨r.raw⟩
+  | `(tactic| rwa [$rs,*] $[$loc]?) => do
+    for r in (rs : TSyntaxArray `Lean.Parser.Tactic.rwRule) do
+      traceGoalsAt ⟨r.raw⟩
+      let rtac ← `(tactic| rw [$r] $[$loc]?) 
+      evalTactic rtac
+      traceTacticCallAt ⟨r.raw⟩ rtac
+      traceGoalsAt ⟨r.raw⟩
+    `(tactic| assumption) >>= evalTactic ∘ TSyntax.raw
   | stx@`(tactic| apply $v) => do
     traceGoalsAt stx
     evalTactic stx
@@ -153,8 +170,6 @@ def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
     evalTactic tac
     traceTacticCallAt stx tac
     traceGoalsAt stx
-
-#exit
 
 elab "seq" s:tacticSeq : tactic => do
   -- dbg_trace s.raw.getArgs
