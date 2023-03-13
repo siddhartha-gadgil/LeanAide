@@ -26,10 +26,8 @@ partial def resolveTactic : TSyntax `tactic → TacticM (TSyntaxArray `tactic)
   | `(tactic| next _ $_* => $[$t]*) => t.concatMapM resolveTactic
   | `(tactic| any_goals $[$t]*) => t.concatMapM resolveTactic
   | `(tactic| all_goals $[$t]*) => t.concatMapM resolveTactic
-  | `(tactic| rw [$rs,*]) => 
-              dbg_trace "located `rw`"
-              (rs : TSyntaxArray `Lean.Parser.Tactic.rwRule).mapM 
-                                                      (fun r => `(tactic| rw [$r]))
+  | `(tactic| rw $[$cfg]? [$rs,*] $[$loc]?) => (rs : TSyntaxArray `Lean.Parser.Tactic.rwRule).mapM 
+                                                      (fun r => `(tactic| rw $[$cfg]? [$r] $[$loc]?))
   | `(tactic| $t) => pure #[t]
 
 section Source
@@ -91,32 +89,32 @@ end Source
 
 def evalTacStx : TSyntax `tactic → TacticM (TSyntax `tactic)
   | stx@`(tactic| simp%$tk $(config)? $(discharger)? $[only%$o]? $[[$args,*]]? $(loc)?) => do
-      let { ctx, dischargeWrapper } ← withMainContext <| mkSimpContext stx (eraseLocal := false)
-      let usedSimps ← dischargeWrapper.with fun discharge? =>
-        simpLocation ctx discharge? (expandOptLocation stx.raw[5])
-      return ⟨← traceSimpCall' stx usedSimps⟩
+    let { ctx, dischargeWrapper } ← withMainContext <| mkSimpContext stx (eraseLocal := false)
+    let usedSimps ← dischargeWrapper.with fun discharge? =>
+      simpLocation ctx discharge? (expandOptLocation stx.raw[5])
+    return ⟨← traceSimpCall' stx usedSimps⟩
   | stx@`(tactic| simp_all%$tk $(config)? $(discharger)? $[only%$o]? $[[$args,*]]?) => do
-      let { ctx, .. } ← mkSimpContext stx (eraseLocal := true) (kind := .simpAll) (ignoreStarArg := true)
-      let (result?, usedSimps) ← simpAll (← getMainGoal) ctx
-      match result? with
-      | none => replaceMainGoal []
-      | some mvarId => replaceMainGoal [mvarId]
-      return ⟨← traceSimpCall' stx usedSimps⟩
+    let { ctx, .. } ← mkSimpContext stx (eraseLocal := true) (kind := .simpAll) (ignoreStarArg := true)
+    let (result?, usedSimps) ← simpAll (← getMainGoal) ctx
+    match result? with
+    | none => replaceMainGoal []
+    | some mvarId => replaceMainGoal [mvarId]
+    return ⟨← traceSimpCall' stx usedSimps⟩
   | stx@`(tactic| dsimp%$tk $(config)? $[only%$o]? $[[$args,*]]? $(loc)?) => do
-      let { ctx, .. } ← withMainContext <| mkSimpContext stx (eraseLocal := false) (kind := .dsimp)
-      return ⟨← dsimpLocation' ctx (expandOptLocation stx.raw[5])⟩
+    let { ctx, .. } ← withMainContext <| mkSimpContext stx (eraseLocal := false) (kind := .dsimp)
+    return ⟨← dsimpLocation' ctx (expandOptLocation stx.raw[5])⟩
   | stx@`(tactic| have $[$x:ident]? := $prf) => do
-      evalTactic stx
-      let trm ← Tactic.elabTerm prf none
-      let typ ← inferType trm
-      let typStx ← PrettyPrinter.delab typ
-      `(tactic| have $[$x:ident]? : $typStx := $prf)
+    evalTactic stx
+    let trm ← Tactic.elabTerm prf none
+    let typ ← inferType trm
+    let typStx ← PrettyPrinter.delab typ
+    `(tactic| have $[$x:ident]? : $typStx := $prf)
   | stx@`(tactic| let $x:ident := $val) => do
-      evalTactic stx
-      let trm ← Tactic.elabTerm val none
-      let typ ← inferType trm
-      let typStx ← PrettyPrinter.delab typ
-      `(tactic| let $x:ident : $typStx := $val)      
+    evalTactic stx
+    let trm ← Tactic.elabTerm val none
+    let typ ← inferType trm
+    let typStx ← PrettyPrinter.delab typ
+    `(tactic| let $x:ident : $typStx := $val)      
   | `(tactic| $tac) => do
     evalTactic tac
     return tac
