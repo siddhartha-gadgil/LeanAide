@@ -1,4 +1,5 @@
 import Aesop.Search.Main
+import Aesop
 import Lean
 open Aesop Lean Meta Elab Parser.Tactic
 
@@ -116,4 +117,10 @@ def getRuleSet (p: Float) (apps simps rws : Array Name) : MetaM RuleSet := do
     (fun c r => c.add r) defaultRules
   return allRules
 
-#check Aesop.search
+def runAesop (p: Float) (apps simps rws : Array Name) : MVarId → MetaM (List MVarId) := fun goal => do
+  let allRules ← getRuleSet p apps simps rws
+  let (goals, _) ← Aesop.search goal allRules
+  return goals.toList
+
+example : α → α := by
+  aesop
