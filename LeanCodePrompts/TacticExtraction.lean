@@ -21,15 +21,6 @@ partial def resolveTactic : TSyntax `tactic → TacticM (TSyntaxArray `tactic)
   | `(tactic| { $[$t]* } ) => t.concatMapM resolveTactic
   | `(tactic| ( $[$t]* ) ) => t.concatMapM resolveTactic
   | `(tactic| focus $[$t]* ) => t.concatMapM resolveTactic
-  | `(tactic| case _ $_* => $[$t]*) => t.concatMapM resolveTactic
-  | `(tactic| case' _ $_* => $[$t]*) => t.concatMapM resolveTactic
-  | `(tactic| next _ $_* => $[$t]*) => t.concatMapM resolveTactic
-  | `(tactic| any_goals $[$t]*) => t.concatMapM resolveTactic
-  | `(tactic| all_goals $[$t]*) => t.concatMapM resolveTactic
-  | `(tactic| rw [$rs,*]) => 
-              dbg_trace "located `rw`"
-              (rs : TSyntaxArray `Lean.Parser.Tactic.rwRule).mapM 
-                                                      (fun r => `(tactic| rw [$r]))
   | `(tactic| $t) => pure #[t]
 
 section Source
@@ -89,52 +80,108 @@ section Source
 
 end Source
 
-def evalTacStx : TSyntax `tactic → TacticM (TSyntax `tactic)
+def traceGoalsAt (stx : TSyntax `tactic) : TacticM Unit := do
+  let gs ← getUnsolvedGoals
+  withRef stx <| addRawTrace (goalsToMessageData gs)
+
+def traceTacticCallAt (stx : TSyntax `tactic) (tac : TSyntax `tactic) : TacticM Unit := do
+  withRef stx <| addRawTrace m!"[TACTIC] {tac}"
+
+#check Split.applyMatchSplitter
+
+def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
   | stx@`(tactic| simp%$tk $(config)? $(discharger)? $[only%$o]? $[[$args,*]]? $(loc)?) => do
-      let { ctx, dischargeWrapper } ← withMainContext <| mkSimpContext stx (eraseLocal := false)
-      let usedSimps ← dischargeWrapper.with fun discharge? =>
-        simpLocation ctx discharge? (expandOptLocation stx.raw[5])
-      return ⟨← traceSimpCall' stx usedSimps⟩
+    traceGoalsAt stx
+    let { ctx, dischargeWrapper } ← withMainContext <| mkSimpContext stx (eraseLocal := false)
+    let usedSimps ← dischargeWrapper.with fun discharge? =>
+      simpLocation ctx discharge? (expandOptLocation stx.raw[5])
+    traceTacticCallAt stx ⟨← traceSimpCall' stx usedSimps⟩
+    traceGoalsAt stx
   | stx@`(tactic| simp_all%$tk $(config)? $(discharger)? $[only%$o]? $[[$args,*]]?) => do
-      let { ctx, .. } ← mkSimpContext stx (eraseLocal := true) (kind := .simpAll) (ignoreStarArg := true)
-      let (result?, usedSimps) ← simpAll (← getMainGoal) ctx
-      match result? with
-      | none => replaceMainGoal []
-      | some mvarId => replaceMainGoal [mvarId]
-      return ⟨← traceSimpCall' stx usedSimps⟩
+    traceGoalsAt stx
+    let { ctx, .. } ← mkSimpContext stx (eraseLocal := true) (kind := .simpAll) (ignoreStarArg := true)
+    let (result?, usedSimps) ← simpAll (← getMainGoal) ctx
+    match result? with
+    | none => replaceMainGoal []
+    | some mvarId => replaceMainGoal [mvarId]
+    traceTacticCallAt stx ⟨← traceSimpCall' stx usedSimps⟩
+    traceGoalsAt stx
   | stx@`(tactic| dsimp%$tk $(config)? $[only%$o]? $[[$args,*]]? $(loc)?) => do
-      let { ctx, .. } ← withMainContext <| mkSimpContext stx (eraseLocal := false) (kind := .dsimp)
-      return ⟨← dsimpLocation' ctx (expandOptLocation stx.raw[5])⟩
+    traceGoalsAt stx
+    let { ctx, .. } ← withMainContext <| mkSimpContext stx (eraseLocal := false) (kind := .dsimp)
+    traceTacticCallAt stx ⟨← dsimpLocation' ctx (expandOptLocation stx.raw[5])⟩
+    traceGoalsAt stx
+  | `(tactic| rw $[$cfg]? [$rs,*] $[$loc]?) => do
+    for r in (rs : TSyntaxArray `Lean.Parser.Tactic.rwRule) do
+      traceGoalsAt ⟨r.raw⟩
+      let rtac ← `(tactic| rw $[$cfg]? [$r] $[$loc]?) 
+      evalTactic rtac
+      traceTacticCallAt ⟨r.raw⟩ rtac
+      traceGoalsAt ⟨r.raw⟩
+  | `(tactic| erw [$rs,*] $[$loc]?) => do
+    for r in (rs : TSyntaxArray `Lean.Parser.Tactic.rwRule) do
+      traceGoalsAt ⟨r.raw⟩
+      let rtac ← `(tactic| erw [$r] $[$loc]?) 
+      evalTactic rtac
+      traceTacticCallAt ⟨r.raw⟩ rtac
+      traceGoalsAt ⟨r.raw⟩
+  | `(tactic| rwa [$rs,*] $[$loc]?) => do
+    for r in (rs : TSyntaxArray `Lean.Parser.Tactic.rwRule) do
+      traceGoalsAt ⟨r.raw⟩
+      let rtac ← `(tactic| rw [$r] $[$loc]?) 
+      evalTactic rtac
+      traceTacticCallAt ⟨r.raw⟩ rtac
+      traceGoalsAt ⟨r.raw⟩
+    `(tactic| assumption) >>= evalTactic ∘ TSyntax.raw
+  | stx@`(tactic| apply $v) => do
+    traceGoalsAt stx
+    evalTactic stx
+    let trm ← Tactic.elabTerm v none
+    let typ ← inferType trm
+    let typStx ← PrettyPrinter.delab typ
+    `(tactic| apply ($v : $typStx)) >>= traceTacticCallAt stx
+    traceGoalsAt stx
+  | stx@`(tactic| exact $v) => do
+    traceGoalsAt stx
+    evalTactic stx
+    let trm ← Tactic.elabTerm v none
+    let typ ← inferType trm
+    let typStx ← PrettyPrinter.delab typ
+    `(tactic| exact ($v : $typStx)) >>= traceTacticCallAt stx
+    traceGoalsAt stx
   | stx@`(tactic| have $[$x:ident]? := $prf) => do
-      evalTactic stx
-      let trm ← Tactic.elabTerm prf none
-      let typ ← inferType trm
-      let typStx ← PrettyPrinter.delab typ
-      `(tactic| have $[$x:ident]? : $typStx := $prf)
+    traceGoalsAt stx
+    evalTactic stx
+    let trm ← Tactic.elabTerm prf none
+    let typ ← inferType trm
+    let typStx ← PrettyPrinter.delab typ
+    `(tactic| have $[$x:ident]? : $typStx := $prf) >>= traceTacticCallAt stx
+    traceGoalsAt stx
   | stx@`(tactic| let $x:ident := $val) => do
-      evalTactic stx
-      let trm ← Tactic.elabTerm val none
-      let typ ← inferType trm
-      let typStx ← PrettyPrinter.delab typ
-      `(tactic| let $x:ident : $typStx := $val)      
-  | `(tactic| $tac) => do
+    traceGoalsAt stx
+    evalTactic stx
+    let trm ← Tactic.elabTerm val none
+    let typ ← inferType trm
+    let typStx ← PrettyPrinter.delab typ
+    `(tactic| let $x:ident : $typStx := $val) >>= traceTacticCallAt stx 
+    traceGoalsAt stx 
+  | stx@`(tactic| $tac) => do
+    traceGoalsAt stx
     evalTactic tac
-    return tac
+    traceTacticCallAt stx tac
+    traceGoalsAt stx
 
 elab "seq" s:tacticSeq : tactic => do
   -- dbg_trace s.raw.getArgs
   let tacs ← (getTactics s).concatMapM resolveTactic -- .raw.recFilter (fun stx => stx.isOfKind `tactic)
   -- dbg_trace tacs
   for tac in tacs do
-    let gs ← getUnsolvedGoals
-    withRef tac <| addRawTrace (goalsToMessageData gs)
-    let tac' ← evalTacStx ⟨tac⟩
-    withRef tac <| addRawTrace m!"[TACTIC] {tac'}"
+    evalTacticWithTrace tac
 
 -- an example of the `seq` tactic
 example (h : x = y) : 0 + x = y ∧ 1 = 1 := by
   seq 
-    rw [Nat.zero_add, h]
+    rw [Nat.zero_add, (h : x = y)]
   refine' ⟨_, _⟩
   focus
     rw [←h, h]
@@ -170,10 +217,11 @@ set_option linter.unreachableTactic false
 example (h : x = y) : x + 0 + x = x + y ∧ 1 = 1 := by
   have := (rfl : 1 = 1)
   let a := 5
+  simp at this
   refine' ⟨_, _⟩
   · apply Eq.symm
     apply Eq.symm
-    rw [h, ← h]
+    erw [h, ← h]
     simp_all
   · apply Eq.symm
     apply Eq.symm
