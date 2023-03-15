@@ -10,10 +10,21 @@ initialize tacticSuggestions : IO.Ref (Array Syntax.Tactic)
 initialize rewriteSuggestions : IO.Ref (Array Syntax.Term) 
         ← IO.mkRef #[]
 
+initialize subgoalSuggestions : IO.Ref (Array Syntax.Term) 
+        ← IO.mkRef #[]
+
+theorem mpFrom (α  : Prop) {β : Prop} : α  → (α  → β) → β  := 
+  fun a f => f a   
+
+example : 1 = 1 := by
+  apply mpFrom (2 = 2)
+  · rfl
+  · simp only [Nat.succ]
+
+
 def getTacticSuggestions: IO (Array Syntax.Tactic) := 
   tacticSuggestions.get 
 
--- So that we can target hypotheses
 def rwTacticSuggestions : MetaM (Array Syntax.Tactic) := do
   let rws ← rewriteSuggestions.get
   let rwTacs ← rws.mapM fun rw => do
@@ -37,9 +48,18 @@ def rwAtTacticSuggestions : MetaM (Array Syntax.Tactic) := do
       tacs := tacs.push tac
   return tacs
 
-def clearTacticSuggestions : IO Unit := do
+def subgoalTacticSuggestions : MetaM (Array Syntax.Tactic) := do
+  let subgoals ← subgoalSuggestions.get
+  let mp := mkIdent ``mpFrom
+  subgoals.mapM <| fun α => do
+    let fx ← `($mp $α:term) 
+    `(tactic|apply $fx:term)
+
+
+def clearSuggestions : IO Unit := do
   tacticSuggestions.set #[]
   rewriteSuggestions.set #[]
+  subgoalSuggestions.set #[]
 
 def addTacticSuggestions (suggestions: Array Syntax.Tactic) : IO Unit := do
   let old ← tacticSuggestions.get
@@ -48,6 +68,22 @@ def addTacticSuggestions (suggestions: Array Syntax.Tactic) : IO Unit := do
 def addTacticSuggestion (suggestion: Syntax.Tactic) : IO Unit := do
   let old ← tacticSuggestions.get
   tacticSuggestions.set (old.push suggestion)
+
+def addRwSuggestions (suggestions: Array Syntax.Term) : IO Unit := do
+  let old ← rewriteSuggestions.get
+  rewriteSuggestions.set (old ++ suggestions)
+
+def addRwSuggestion (suggestion: Syntax.Term) : IO Unit := do
+  let old ← rewriteSuggestions.get
+  rewriteSuggestions.set (old.push suggestion)
+
+def addSubgoalSuggestions (suggestions: Array Syntax.Term) : IO Unit := do
+  let old ← subgoalSuggestions.get
+  subgoalSuggestions.set (old ++ suggestions)
+
+def addSubgoalSuggestion (suggestion: Syntax.Term) : IO Unit := do
+  let old ← subgoalSuggestions.get
+  subgoalSuggestions.set (old.push suggestion)
 
 def addConstRewrite (decl: Name)(flip: Bool) : MetaM Unit := do
   let stx : Syntax.Term := mkIdent decl
@@ -146,7 +182,7 @@ def customRuleMember (p: Float) : MetaM RuleSetMember := do
     tac := .ruleTac ``customTactics}
 
 def getRuleSet (p: Float) (apps simps rws : Array Name) : MetaM RuleSet := do
-  clearTacticSuggestions
+  clearSuggestions
   for n in rws do
     addConstRewrite n false
     addConstRewrite n true
@@ -170,12 +206,13 @@ def Lean.MessageData.ppformat? (msg: MessageData) : Option PPFormat :=
   | .ofPPFormat f => some f
   | _ => none
 
+-- to extract tactics later
 def Lean.MessageData.split (msg: MessageData) : Array MessageData :=
   match msg with
   | .compose l₁ l₂ => l₁.split ++ l₂.split
-  | .nest _ l => l.split
-  | .withContext _ l => l.split
-  | .withNamingContext _ l => l.split
+  | .nest n l => #[m!"nest {n}"] ++ l.split
+  | .withContext _ l => #[m!"ctx"] ++ l.split
+  | .withNamingContext _ l => #[m!"nmgctx"] ++ l.split
   | _ => #[msg]
 
 def runAesop (p: Float) (apps simps rws : Array Name) : MVarId → MetaM (List MVarId) := fun goal => goal.withContext do
