@@ -37,7 +37,9 @@ def rwAtTacticSuggestions : MetaM (Array Syntax.Tactic) := do
       tacs := tacs.push tac
   return tacs
 
-def clearTacticSuggestions : IO Unit := tacticSuggestions.set #[]
+def clearTacticSuggestions : IO Unit := do
+  tacticSuggestions.set #[]
+  rewriteSuggestions.set #[]
 
 def addTacticSuggestions (suggestions: Array Syntax.Tactic) : IO Unit := do
   let old ← tacticSuggestions.get
@@ -53,8 +55,6 @@ def addConstRewrite (decl: Name)(flip: Bool) : MetaM Unit := do
     addTacticSuggestion <| ← `(tactic|rw [← $stx])
   else
     addTacticSuggestions #[← `(tactic|rw [$stx:term])]
-
-#check rwRule
 
 /-- Rule set member for `apply` for a global constant -/
 def applyConstRuleMember (decl: Name)(p: Float) : MetaM RuleSetMember := do
@@ -74,21 +74,32 @@ def applyConstRuleMember (decl: Name)(p: Float) : MetaM RuleSetMember := do
     tac := .applyConst decl}
 
 /-- Rule set members for `simp` for a global constant proof -/
-def simpConstRuleMember (decl: Name) : MetaM RuleSetMember := do
+partial def simpConstRuleMember (decl: Name) : MetaM <| Array RuleSetMember := do
   let cinfo ← getConstInfo decl
   let val := cinfo.value!
-  if ¬(← isProof val) then throwError "simpConstRuleMember: expected proof, got {val}" 
-  let entries ←  mkSimpTheorems (.decl decl) cinfo.levelParams.toArray val
-  let name : RuleName := {
-    name := decl
-    builder := BuilderName.simp
-    phase := PhaseName.norm
-    scope := ScopeName.global
-  }
-  return RuleSetMember.normSimpRule {
-    name:= name
-    entries := entries.map .thm 
+  if ¬(← isProof val) then 
+    let head := RuleSetMember.unfoldRule {
+      decl := decl
+      unfoldThm? := ← getUnfoldEqnFor? decl
     }
+    if let some eqns ← getEqnsFor? decl then
+      let r ← eqns.mapM simpConstRuleMember
+      let r := r.foldl (fun c r => c ++ r) #[] 
+      return r.push head
+    else
+      return #[head] 
+  else
+    let entries ←  mkSimpTheorems (.decl decl) cinfo.levelParams.toArray val
+    let name : RuleName := {
+      name := decl
+      builder := BuilderName.simp
+      phase := PhaseName.norm
+      scope := ScopeName.global
+    }
+    return #[RuleSetMember.normSimpRule {
+      name:= name
+      entries := entries.map .thm 
+      }]
 
 def tacticExpr (goal : MVarId) (tac : Syntax.Tactic) :
     MetaM (Array MVarId × RuleTacScriptBuilder) := 
@@ -141,6 +152,7 @@ def getRuleSet (p: Float) (apps simps rws : Array Name) : MetaM RuleSet := do
     addConstRewrite n true
   let appRules ← apps.mapM (applyConstRuleMember · p)
   let simpRules ← simps.mapM simpConstRuleMember
+  let simpRules := simpRules.foldl (fun c r => c ++ r) #[]
   let defaultRules ←
       Frontend.getDefaultRuleSet (includeGlobalSimpTheorems := true)
   let allRules : RuleSet := 
