@@ -7,7 +7,35 @@ open Aesop Lean Meta Elab Parser.Tactic
 initialize tacticSuggestions : IO.Ref (Array Syntax.Tactic) 
         ← IO.mkRef #[]
 
-def getTacticSuggestions: IO (Array Syntax.Tactic) := tacticSuggestions.get
+initialize rewriteSuggestions : IO.Ref (Array Syntax.Term) 
+        ← IO.mkRef #[]
+
+def getTacticSuggestions: IO (Array Syntax.Tactic) := 
+  tacticSuggestions.get 
+
+-- So that we can target hypotheses
+def rwTacticSuggestions : MetaM (Array Syntax.Tactic) := do
+  let rws ← rewriteSuggestions.get
+  let rwTacs ← rws.mapM fun rw => do
+    let rw ← `(tactic|rw [$rw:term])
+    return rw
+  let rwTacFlips ← rws.mapM fun rw => do
+    let rw ← `(tactic|rw [← $rw:term])
+    return rw
+  return rwTacs ++ rwTacFlips
+
+def rwAtTacticSuggestions : MetaM (Array Syntax.Tactic) := do
+  let rws ← rewriteSuggestions.get
+  let mut tacs := #[]
+  let lctx ←  getLCtx
+  let fvarIdents := lctx.getFVarIds.map (mkIdent ·.name) 
+  for r in rws do
+    for f in fvarIdents do
+      let tac ← `(tactic|rw [$r:term] at $f:ident)
+      tacs := tacs.push tac
+      let tac ← `(tactic|rw [← $r:term] at $f:ident)
+      tacs := tacs.push tac
+  return tacs
 
 def clearTacticSuggestions : IO Unit := tacticSuggestions.set #[]
 
@@ -127,3 +155,7 @@ def runAesop (p: Float) (apps simps rws : Array Name) : MVarId → MetaM (List M
 
 example : α → α := by
   aesop
+
+-- For introducing local definitions
+/- Convert the given goal `Ctx |- target` into `Ctx |- let name : type := val; target`. It assumes `val` has type `type` -/
+#check MVarId.define -- Lean.MVarId.define (mvarId : MVarId) (name : Name) (type val : Expr) : MetaM MVarId
