@@ -13,8 +13,8 @@ elab "test_aesop" : tactic => do
     runAesop 0.5 #[``Nat.le_succ] #[``Nat.add_comm] #[``n_is_m]
     )
 
--- set_option trace.aesop.steps true in
-example : sillyN = sillyM := by
+set_option trace.aesop.steps true in
+example : sillyN + 1 = sillyM + 1 := by
   test_aesop -- uses rw [n_is_m]
 
 example : α → α := by

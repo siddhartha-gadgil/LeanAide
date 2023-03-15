@@ -160,9 +160,30 @@ def getRuleSet (p: Float) (apps simps rws : Array Name) : MetaM RuleSet := do
     (fun c r => c.add r) defaultRules
   return allRules
 
+def Lean.MessageData.format? (msg: MessageData) : Option Format :=
+  match msg with
+  | .ofFormat f => some f
+  | _ => none
+
+def Lean.MessageData.ppformat? (msg: MessageData) : Option PPFormat :=
+  match msg with
+  | .ofPPFormat f => some f
+  | _ => none
+
+def Lean.MessageData.split (msg: MessageData) : Array MessageData :=
+  match msg with
+  | .compose l₁ l₂ => l₁.split ++ l₂.split
+  | .nest _ l => l.split
+  | .withContext _ l => l.split
+  | .withNamingContext _ l => l.split
+  | _ => #[msg]
+
 def runAesop (p: Float) (apps simps rws : Array Name) : MVarId → MetaM (List MVarId) := fun goal => goal.withContext do
   let allRules ← getRuleSet p apps simps rws
-  let (goals, _) ← Aesop.search goal allRules
+  let (goals, _) ← Aesop.search goal allRules {traceScript := true} 
+  let msgLog ← Core.getMessageLog  
+  let msgs := msgLog.toList
+  logInfo m!"Messages: {msgs.map (·.data.split)}"
   return goals.toList
 
 example : α → α := by
@@ -171,3 +192,5 @@ example : α → α := by
 -- For introducing local definitions
 /- Convert the given goal `Ctx |- target` into `Ctx |- let name : type := val; target`. It assumes `val` has type `type` -/
 #check MVarId.define -- Lean.MVarId.define (mvarId : MVarId) (name : Name) (type val : Expr) : MetaM MVarId
+
+#check MessageData.instAppendMessageData
