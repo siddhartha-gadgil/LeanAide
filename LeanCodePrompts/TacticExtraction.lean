@@ -5,6 +5,8 @@ import Mathlib.Tactic.Classical
 
 open Lean Elab Parser Term Meta Tactic
 
+syntax (name := seq) "seq" tacticSeq : tactic
+
 section Source
   -- modified from `Lean.Elab.Tactic.Simp`
   def traceSimpCall' (stx : Syntax) (usedSimps : Simp.UsedSimps) : MetaM Syntax := do
@@ -71,6 +73,29 @@ section Source
       else
         setGoals (mvarId :: mvarIds)
         return (mvarId, mvarIds)
+
+/--
+  Searches for a metavariable `g` s.t. `tag` is its exact name.
+  If none then searches for a metavariable `g` s.t. `tag` is a suffix of its name.
+  If none, then it searches for a metavariable `g` s.t. `tag` is a prefix of its name. -/
+def findTag? (mvarIds : List MVarId) (tag : Name) : TacticM (Option MVarId) := do
+  match (← mvarIds.findM? fun mvarId => return tag == (← mvarId.getDecl).userName) with
+  | some mvarId => return mvarId
+  | none =>
+  match (← mvarIds.findM? fun mvarId => return tag.isSuffixOf (← mvarId.getDecl).userName) with
+  | some mvarId => return mvarId
+  | none => mvarIds.findM? fun mvarId => return tag.isPrefixOf (← mvarId.getDecl).userName
+
+def getCaseGoals (tag : TSyntax `Lean.binderIdent) : TacticM (MVarId × List MVarId) := do
+  let gs ← getUnsolvedGoals
+  let g ← if let `(Lean.binderIdent| $tag:ident) := tag then
+    let tag := tag.getId
+    let some g ← findTag? gs tag | throwError "tag not found"
+    pure g
+  else
+    getMainGoal
+  return (g, gs.erase g)
+
 end Source
 
 def traceGoalsAt (stx : TSyntax `tactic) : TacticM Unit := do
@@ -175,6 +200,22 @@ partial def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
     let typStx ← PrettyPrinter.delab typ
     `(tactic| exact ($v : $typStx)) >>= traceTacticCallAt stx
     traceGoalsAt stx
+  /- Handling `match`, `induction` and `cases` -/
+  | stx@`(tactic| case $[$tag $hs*]|* =>%$arr $tac:tacticSeq) => do
+    for tag in tag, h in hs do
+      traceGoalsAt ⟨arr⟩
+      traceTacticCallAt ⟨arr⟩ stx -- TODO (unimportant) remove the `tacticSeq` from `stx`
+      let (g, _) ← getCaseGoals tag
+      withRef arr <| addRawTrace (goalsToMessageData [g])
+    let stx ← `(tactic| case $[$tag $hs*]|* =>%$arr seq $tac:tacticSeq)
+    evalTactic stx.raw
+  | stx@`(tactic| case' $[$tag $hs*]|* =>%$arr $tac:tacticSeq) => do
+    for tag in tag, h in hs do
+      traceGoalsAt ⟨arr⟩
+      traceTacticCallAt ⟨arr⟩ stx -- TODO (unimportant) remove the `tacticSeq` from `stx`
+      let (g, _) ← getCaseGoals tag
+      withRef arr <| addRawTrace (goalsToMessageData [g])
+    let stx ← `(tactic| case' $[$tag $hs*]|* =>%$arr seq $tac:tacticSeq)
   /- Display the expected type in `have` and `let` statements -/
   | stx@`(tactic| have $[$x:ident]? := $prf) => do
     traceGoalsAt stx
@@ -199,12 +240,11 @@ partial def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
     traceTacticCallAt stx tac
     traceGoalsAt stx
 
-#check Tactic.tacticSorry
-
-elab "seq" s:tacticSeq : tactic => do
+@[tactic seq]
+def traceSequence : Tactic := fun s => do
   -- Leonardo de Moura's code for extracting the list of tactics
   match s with
-  | `(tacticSeq| $[$tacs]*) =>
+  | `(tactic| seq $[$tacs]*) =>
     for tac in tacs do
       evalTacticWithTrace tac
   | _ => evalTactic <| ← `(tactic.sorry)
@@ -279,3 +319,11 @@ example : P ∧ Q ↔ Q ∧ P := by
     constructor
     · assumption
     · assumption
+
+example : ∀ n : Nat, n = n := by
+  intro n
+  induction n
+  case zero => rfl
+  case succ _ ih => simp
+
+#check evalCase
