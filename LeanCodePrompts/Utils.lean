@@ -55,7 +55,7 @@ initialize
   registerTraceClass `Translate.info
   registerTraceClass `Translate.debug
   registerTraceClass `Translate.warning
-
+  registerTraceClass `leanaide.proof.info
 
 initialize delab_bound : IO.Ref UInt32 ← IO.mkRef 64
 
