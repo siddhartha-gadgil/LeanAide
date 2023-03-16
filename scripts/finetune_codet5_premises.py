@@ -172,14 +172,6 @@ def train():
 # ## Inference
 # 
 # Now that we've trained a model, let's test it on some examples from the test set.
-model.eval()
-import json
-with open('rawdata/test_ids.jsonl') as f:
-    test_ids = [json.loads(line) for line in f]
-print ('Test set size:', len(test_ids))
-
-gen_progress_bar = tqdm(range(len(test_ids)))
-
 def generate_premises(prompt, prefix):
     input_ids = tokenizer.encode(prefix + prompt, return_tensors='pt').to(device)
     gen_tokens = model.generate(
@@ -192,89 +184,25 @@ def generate_premises(prompt, prefix):
     gen_text = tokenizer.batch_decode(gen_tokens, skip_special_tokens=True)
     return gen_text
 
-for d in test_ids:
-    gens = generate_premises(d['theorem'], prefix_id)
-    d['generated_ids'] = gens
-    gens = generate_premises(d['theorem'], prefix_lemma)
-    d['generated_lemmas'] = gens
-    gens = generate_premises(d['theorem'], prefix_term)
-    d['generated_terms'] = gens
-    gen_progress_bar.update(1)
+def evaluate():
+    model.eval()
+    import json
+    import random
+    with open('rawdata/test_ids.jsonl') as f:
+        test_ids = [json.loads(line) for line in f if random.random() < 0.04]
+    print ('Test set size:', len(test_ids))
 
-with open('rawdata/test_ids_generated.jsonl', 'w', encoding='utf-8') as f:
+    gen_progress_bar = tqdm(range(len(test_ids)))
+
     for d in test_ids:
-        f.write(json.dumps(d, ensure_ascii=False) + '\n')
+        gens = generate_premises(d['theorem'], prefix_id)
+        d['generated_ids'] = gens
+        gens = generate_premises(d['theorem'], prefix_lemma)
+        d['generated_lemmas'] = gens
+        gens = generate_premises(d['theorem'], prefix_term)
+        d['generated_terms'] = gens
+        gen_progress_bar.update(1)
 
-# Some more training
-
-progress_bar = tqdm(range(num_training_steps) * 3)
-
-model.train()
-for epoch in range(num_epochs, 2 * num_epochs):
-    for batch in train_dataloader_id:
-        batch = {k: v.to(device) for k, v in batch.items()}
-        outputs = model(**batch)
-        loss = outputs.loss
-        loss.backward()
-
-        optimizer.step()
-        lr_scheduler.step()
-        optimizer.zero_grad()
-        progress_bar.update(1)
-    for batch in train_dataloader_lemma:
-        batch = {k: v.to(device) for k, v in batch.items()}
-        outputs = model(**batch)
-        loss = outputs.loss
-        loss.backward()
-        optimizer.step()
-        lr_scheduler.step()
-        optimizer.zero_grad()
-        progress_bar.update(1)
-    for batch in train_dataloader_term:
-        batch = {k: v.to(device) for k, v in batch.items()}
-        outputs = model(**batch)
-        loss = outputs.loss
-        loss.backward()
-
-        optimizer.step()
-        lr_scheduler.step()
-        optimizer.zero_grad()
-        progress_bar.update(1)
-    torch.save(model.state_dict(), f"codet5_ids_epoch_{epoch}.pt", pickle_protocol=4)
-
-# ## Inference
-# 
-# Now that we've trained a model, let's test it on some examples from the test set.
-model.eval()
-import json
-import random
-with open('rawdata/test_ids.jsonl') as f:
-    test_ids = [json.loads(line) for line in f if random.random() < 0.04] 
-print ('Test set size:', len(test_ids))
-
-gen_progress_bar = tqdm(range(len(test_ids)))
-
-def generate_premises(prompt, prefix):
-    input_ids = tokenizer.encode(prefix + prompt, return_tensors='pt').to(device)
-    gen_tokens = model.generate(
-        input_ids,
-        do_sample=True,
-        temperature=0.8,
-        num_return_sequences=5,
-        max_length=256,
-    )
-    gen_text = tokenizer.batch_decode(gen_tokens, skip_special_tokens=True)
-    return gen_text
-
-for d in test_ids:
-    gens = generate_premises(d['theorem'], prefix_id)
-    d['generated_ids'] = gens
-    gens = generate_premises(d['theorem'], prefix_lemma)
-    d['generated_lemmas'] = gens
-    gens = generate_premises(d['theorem'], prefix_term)
-    d['generated_terms'] = gens
-    gen_progress_bar.update(1)
-
-with open('rawdata/test_ids_generated_round2.jsonl', 'w', encoding='utf-8') as f:
-    for d in test_ids:
-        f.write(json.dumps(d, ensure_ascii=False) + '\n')
+    with open('rawdata/test_ids_generated.jsonl', 'w', encoding='utf-8') as f:
+        for d in test_ids:
+            f.write(json.dumps(d, ensure_ascii=False) + '\n')
