@@ -149,17 +149,19 @@ def tacticExpr (goal : MVarId) (tac : Syntax.Tactic) :
 
 def applyTacticsAux (tacs : Array Syntax.Tactic) : RuleTac := fun input => do
   let initialState ← saveState
-  let apps ← tacs.filterMapM fun (tac) => do
+  let appsTacs ← tacs.filterMapM fun (tac) => do
     try
       let (goals, scriptBuilder) ← tacticExpr input.goal tac
       let postState ← saveState
-      return some { postState, goals, scriptBuilder }
+      return some ({ postState, goals, scriptBuilder }, tac)
     catch _ =>
       return none
     finally
       restoreState initialState
-  if apps.isEmpty then throwError
-    "failed to apply any of the tactics"
+  let (apps, tacs) := appsTacs.unzip
+  if apps.isEmpty then 
+    throwError "failed to apply any of the tactics"
+  trace[leanaide.proof.info] "applied custom tactics {tacs}" 
   return { applications := apps, postBranchState? := none }
 
 def customTactics : RuleTac := fun input => do 
@@ -213,6 +215,8 @@ def Lean.MessageData.split (msg: MessageData) : Array MessageData :=
   | .nest n l => #[m!"nest {n}"] ++ l.split
   | .withContext _ l => #[m!"ctx"] ++ l.split
   | .withNamingContext _ l => #[m!"nmgctx"] ++ l.split
+  | .ofFormat _ => #["format", msg]
+  | .ofPPFormat _ => #["ppformat", msg]
   | _ => #[msg]
 
 def runAesop (p: Float) (apps simps rws : Array Name) : MVarId → MetaM (List MVarId) := fun goal => goal.withContext do
