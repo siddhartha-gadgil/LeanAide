@@ -1,27 +1,14 @@
 import Lean
 import Mathlib.Tactic.Simps.Basic
+import Mathlib.Tactic.PermuteGoals
+import Mathlib.Tactic.Classical
 
-open Lean Elab Parser Term Meta Tactic Meta
+open Lean Elab Parser Term Meta Tactic
 
-def inputFile : System.FilePath := 
-"LeanCodePrompts"/"TacticExtractionTest.lean"
-
-#eval inputFile.pathExists
-
--- Leonardo de Moura's code for generating trace data
+-- Leonardo de Moura's code for extracting the list of tactics
 def getTactics : TSyntax ``tacticSeq → TSyntaxArray `tactic
-  | `(tacticSeq| { $[$t]* }) => t
   | `(tacticSeq| $[$t]*) => t
   | _ => #[]
-
-#check rwRuleSeq
-
-partial def resolveTactic : TSyntax `tactic → TacticM (TSyntaxArray `tactic)
-  | `(tactic| · $[$t]* ) => t.concatMapM resolveTactic
-  | `(tactic| { $[$t]* } ) => t.concatMapM resolveTactic
-  | `(tactic| ( $[$t]* ) ) => t.concatMapM resolveTactic
-  | `(tactic| focus $[$t]* ) => t.concatMapM resolveTactic
-  | `(tactic| $t) => pure #[t]
 
 section Source
   -- modified from `Lean.Elab.Tactic.Simp`
@@ -89,7 +76,23 @@ def traceTacticCallAt (stx : TSyntax `tactic) (tac : TSyntax `tactic) : TacticM 
 
 #check Split.applyMatchSplitter
 
-def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
+partial def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
+  | `(tactic| { $[$t]* }) => do 
+    for tac in t do 
+      evalTacticWithTrace tac
+  | `(tactic| ( $[$t]* )) => do 
+    for tac in t do 
+      evalTacticWithTrace tac
+  | `(tactic| · $[$t]*) => do
+    setGoals [← getMainGoal]
+    for tac in t do
+      evalTacticWithTrace tac
+    setGoals <| ← getUnsolvedGoals
+  | `(tactic| focus $[$t]*) => do
+    setGoals [← getMainGoal]
+    for tac in t do
+      evalTacticWithTrace tac
+    setGoals <| ← getUnsolvedGoals
   | stx@`(tactic| simp%$tk $(config)? $(discharger)? $[only%$o]? $[[$args,*]]? $(loc)?) => do
     traceGoalsAt stx
     let { ctx, dischargeWrapper } ← withMainContext <| mkSimpContext stx (eraseLocal := false)
@@ -164,7 +167,7 @@ def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
     let typ ← inferType trm
     let typStx ← PrettyPrinter.delab typ
     `(tactic| let $x:ident : $typStx := $val) >>= traceTacticCallAt stx 
-    traceGoalsAt stx 
+    traceGoalsAt stx
   | stx@`(tactic| $tac) => do
     traceGoalsAt stx
     evalTactic tac
@@ -173,8 +176,7 @@ def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
 
 elab "seq" s:tacticSeq : tactic => do
   -- dbg_trace s.raw.getArgs
-  let tacs ← (getTactics s).concatMapM resolveTactic -- .raw.recFilter (fun stx => stx.isOfKind `tactic)
-  -- dbg_trace tacs
+  let tacs := getTactics s
   for tac in tacs do
     evalTacticWithTrace tac
 
@@ -219,10 +221,10 @@ example (h : x = y) : x + 0 + x = x + y ∧ 1 = 1 := by
   let a := 5
   simp at this
   refine' ⟨_, _⟩
-  · apply Eq.symm
+  { apply Eq.symm
     apply Eq.symm
-    erw [h, ← h]
-    simp_all
+    erw [h, ← h, h, ← h]
+    simp_all }
   · apply Eq.symm
     apply Eq.symm
     subst h
