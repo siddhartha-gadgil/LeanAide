@@ -32,11 +32,11 @@ print(dataset)
 
 from transformers import RobertaTokenizer
 
-tokenizer = RobertaTokenizer.from_pretrained("Salesforce/codet5-base")
+tokenizer = RobertaTokenizer.from_pretrained("Salesforce/codet5-small")
 
-prefix_id = "Lean proof-identifiers from Theorem: "
-prefix_lemma = "Lean proof-lemmas from Theorem: "
-prefix_term = "Lean proof-subterms from Theorem: "
+prefix_id = "IDENTIFIERS in Lean proof from Theorem: "
+prefix_lemma = "LEMMAS in Lean proof from Theorem: "
+prefix_term = "TERMS in Lean proof from Theorem: "
 
 max_input_length = 256
 max_target_length = 256
@@ -87,9 +87,9 @@ dataset_id.set_format(type="torch", columns=['input_ids', 'attention_mask', 'lab
 dataset_lemma.set_format(type="torch", columns=['input_ids', 'attention_mask', 'labels'])
 dataset_term.set_format(type="torch", columns=['input_ids', 'attention_mask', 'labels'])
 
-train_dataloader_id = DataLoader(dataset_id['train'], shuffle=True, batch_size=8)
-train_dataloader_lemma = DataLoader(dataset_lemma['train'], shuffle=True, batch_size=8)
-train_dataloader_term = DataLoader(dataset_term['train'], shuffle=True, batch_size=8)
+train_dataloader_id = DataLoader(dataset_id['train'], shuffle=True, batch_size=16)
+train_dataloader_lemma = DataLoader(dataset_lemma['train'], shuffle=True, batch_size=16)
+train_dataloader_term = DataLoader(dataset_term['train'], shuffle=True, batch_size=16)
 
 batch = next(iter(train_dataloader_id))
 print(batch.keys())
@@ -109,7 +109,7 @@ print("Sample labels:")
 print(tokenizer.decode([label for label in labels if label != -100]))
 
 from transformers import T5ForConditionalGeneration 
-model = T5ForConditionalGeneration.from_pretrained('Salesforce/codet5-base')
+model = T5ForConditionalGeneration.from_pretrained('Salesforce/codet5-small')
 loss = model(input_ids=batch['input_ids'], attention_mask=batch['attention_mask'], labels=batch['labels']).loss
 print("Loss:")
 print (loss.item())
@@ -133,40 +133,41 @@ print (device)
 
 from tqdm.auto import tqdm
 
-progress_bar = tqdm(range(num_training_steps))
+def train():
+    progress_bar = tqdm(range(num_training_steps))
 
-model.train()
-for epoch in range(num_epochs):
-    for batch in train_dataloader_id:
-        batch = {k: v.to(device) for k, v in batch.items()}
-        outputs = model(**batch)
-        loss = outputs.loss
-        loss.backward()
+    model.train()
+    for epoch in range(num_epochs):
+        for batch in train_dataloader_id:
+            batch = {k: v.to(device) for k, v in batch.items()}
+            outputs = model(**batch)
+            loss = outputs.loss
+            loss.backward()
 
-        optimizer.step()
-        lr_scheduler.step()
-        optimizer.zero_grad()
-        progress_bar.update(1)
-    for batch in train_dataloader_lemma:
-        batch = {k: v.to(device) for k, v in batch.items()}
-        outputs = model(**batch)
-        loss = outputs.loss
-        loss.backward()
-        optimizer.step()
-        lr_scheduler.step()
-        optimizer.zero_grad()
-        progress_bar.update(1)
-    for batch in train_dataloader_term:
-        batch = {k: v.to(device) for k, v in batch.items()}
-        outputs = model(**batch)
-        loss = outputs.loss
-        loss.backward()
+            optimizer.step()
+            lr_scheduler.step()
+            optimizer.zero_grad()
+            progress_bar.update(1)
+        for batch in train_dataloader_lemma:
+            batch = {k: v.to(device) for k, v in batch.items()}
+            outputs = model(**batch)
+            loss = outputs.loss
+            loss.backward()
+            optimizer.step()
+            lr_scheduler.step()
+            optimizer.zero_grad()
+            progress_bar.update(1)
+        for batch in train_dataloader_term:
+            batch = {k: v.to(device) for k, v in batch.items()}
+            outputs = model(**batch)
+            loss = outputs.loss
+            loss.backward()
 
-        optimizer.step()
-        lr_scheduler.step()
-        optimizer.zero_grad()
-        progress_bar.update(1)
-    torch.save(model.state_dict(), f"codet5_ids_epoch_{epoch}.pt", pickle_protocol=4)
+            optimizer.step()
+            lr_scheduler.step()
+            optimizer.zero_grad()
+            progress_bar.update(1)
+        torch.save(model.state_dict(), f"codet5_ids_epoch_{epoch}.pt", pickle_protocol=4)
 
 # ## Inference
 # 
@@ -246,8 +247,9 @@ for epoch in range(num_epochs, 2 * num_epochs):
 # Now that we've trained a model, let's test it on some examples from the test set.
 model.eval()
 import json
+import random
 with open('rawdata/test_ids.jsonl') as f:
-    test_ids = [json.loads(line) for line in f]
+    test_ids = [json.loads(line) for line in f if random.random() < 0.04] 
 print ('Test set size:', len(test_ids))
 
 gen_progress_bar = tqdm(range(len(test_ids)))
