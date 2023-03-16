@@ -5,11 +5,6 @@ import Mathlib.Tactic.Classical
 
 open Lean Elab Parser Term Meta Tactic
 
--- Leonardo de Moura's code for extracting the list of tactics
-def getTactics : TSyntax ``tacticSeq → TSyntaxArray `tactic
-  | `(tacticSeq| $[$t]*) => t
-  | _ => #[]
-
 section Source
   -- modified from `Lean.Elab.Tactic.Simp`
   def traceSimpCall' (stx : Syntax) (usedSimps : Simp.UsedSimps) : MetaM Syntax := do
@@ -65,6 +60,17 @@ section Source
       | some mvarId => replaceMainGoal [mvarId]
       traceSimpCall' (← getRef) usedSimps
 
+  def getMainGoal' : TacticM (MVarId × List MVarId) := do
+  loop (← getGoals)
+    where
+  loop : List MVarId → TacticM (MVarId × List MVarId)
+    | [] => throwNoGoalsToBeSolved
+    | mvarId :: mvarIds => do
+      if (← mvarId.isAssigned) then
+        loop mvarIds
+      else
+        setGoals (mvarId :: mvarIds)
+        return (mvarId, mvarIds)
 end Source
 
 def traceGoalsAt (stx : TSyntax `tactic) : TacticM Unit := do
@@ -77,22 +83,27 @@ def traceTacticCallAt (stx : TSyntax `tactic) (tac : TSyntax `tactic) : TacticM 
 #check Split.applyMatchSplitter
 
 partial def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
+  /- Dealing with bracketing -/
   | `(tactic| { $[$t]* }) => do 
     for tac in t do 
       evalTacticWithTrace tac
   | `(tactic| ( $[$t]* )) => do 
     for tac in t do 
       evalTacticWithTrace tac
+  /- Dealing with focused goals -/
   | `(tactic| · $[$t]*) => do
-    setGoals [← getMainGoal]
+    let (mainGoal, otherGoals) ← getMainGoal'
+    setGoals [mainGoal]
     for tac in t do
       evalTacticWithTrace tac
-    setGoals <| ← getUnsolvedGoals
+    setGoals otherGoals
   | `(tactic| focus $[$t]*) => do
-    setGoals [← getMainGoal]
+    let (mainGoal, otherGoals) ← getMainGoal'
+    setGoals [mainGoal]
     for tac in t do
       evalTacticWithTrace tac
-    setGoals <| ← getUnsolvedGoals
+    setGoals otherGoals
+  /- Trace `simp` calls with the complete list of theorems used -/
   | stx@`(tactic| simp%$tk $(config)? $(discharger)? $[only%$o]? $[[$args,*]]? $(loc)?) => do
     traceGoalsAt stx
     let { ctx, dischargeWrapper } ← withMainContext <| mkSimpContext stx (eraseLocal := false)
@@ -114,6 +125,7 @@ partial def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
     let { ctx, .. } ← withMainContext <| mkSimpContext stx (eraseLocal := false) (kind := .dsimp)
     traceTacticCallAt stx ⟨← dsimpLocation' ctx (expandOptLocation stx.raw[5])⟩
     traceGoalsAt stx
+  /- Treat a rewrite sequence as a sequence of individual rewrites, with a trace provided at each step -/
   | `(tactic| rw $[$cfg]? [$rs,*] $[$loc]?) => do
     for r in (rs : TSyntaxArray `Lean.Parser.Tactic.rwRule) do
       traceGoalsAt ⟨r.raw⟩
@@ -136,6 +148,7 @@ partial def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
       traceTacticCallAt ⟨r.raw⟩ rtac
       traceGoalsAt ⟨r.raw⟩
     `(tactic| assumption) >>= evalTactic ∘ TSyntax.raw
+  /- Annotate `apply` and `exact` applications with the type information -/
   | stx@`(tactic| apply $v) => do
     traceGoalsAt stx
     evalTactic stx
@@ -152,6 +165,7 @@ partial def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
     let typStx ← PrettyPrinter.delab typ
     `(tactic| exact ($v : $typStx)) >>= traceTacticCallAt stx
     traceGoalsAt stx
+  /- Display the expected type in `have` and `let` statements -/
   | stx@`(tactic| have $[$x:ident]? := $prf) => do
     traceGoalsAt stx
     evalTactic stx
@@ -168,17 +182,22 @@ partial def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
     let typStx ← PrettyPrinter.delab typ
     `(tactic| let $x:ident : $typStx := $val) >>= traceTacticCallAt stx 
     traceGoalsAt stx
+  /- Otherwise, evaluate the tactic normally -/
   | stx@`(tactic| $tac) => do
     traceGoalsAt stx
     evalTactic tac
     traceTacticCallAt stx tac
     traceGoalsAt stx
 
+#check Tactic.tacticSorry
+
 elab "seq" s:tacticSeq : tactic => do
-  -- dbg_trace s.raw.getArgs
-  let tacs := getTactics s
-  for tac in tacs do
-    evalTacticWithTrace tac
+  -- Leonardo de Moura's code for extracting the list of tactics
+  match s with
+  | `(tacticSeq| $[$tacs]*) =>
+    for tac in tacs do
+      evalTacticWithTrace tac
+  | _ => evalTactic <| ← `(tactic.sorry)
 
 -- an example of the `seq` tactic
 example (h : x = y) : 0 + x = y ∧ 1 = 1 := by
@@ -211,7 +230,7 @@ example : 1 + 1 = 2 := by' -- the new `by'` syntax can be used to replace `by`
 -- intercepting the `by` tactic to output intermediate trace data
 -- the `by'` clone is needed here to avoid infinite recursion
 macro_rules
-  | `(by $ts) => `(by' seq $ts) 
+  | `(by $t) => `(by' seq $t) 
 
 set_option linter.unreachableTactic false
 
@@ -221,10 +240,10 @@ example (h : x = y) : x + 0 + x = x + y ∧ 1 = 1 := by
   let a := 5
   simp at this
   refine' ⟨_, _⟩
-  { apply Eq.symm
+  · apply Eq.symm
     apply Eq.symm
     erw [h, ← h, h, ← h]
-    simp_all }
+    simp_all
   · apply Eq.symm
     apply Eq.symm
     subst h
@@ -239,3 +258,14 @@ example : ∀ n : Nat, n = n := by
   match n with
   | .zero => rfl
   | .succ _ => rfl
+
+example : P ∧ Q ↔ Q ∧ P := by
+  constructor
+  · intro ⟨x, y⟩
+    constructor
+    · assumption
+    · assumption
+  · intro ⟨_, _⟩
+    constructor
+    · assumption
+    · assumption
