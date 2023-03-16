@@ -84,26 +84,32 @@ def traceTacticCallAt (stx : TSyntax `tactic) (tac : TSyntax `tactic) : TacticM 
 
 partial def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
   /- Dealing with bracketing -/
-  | `(tactic| { $[$t]* }) => do 
-    for tac in t do 
+  | `(tactic| { $[$tacs]* }) => do 
+    for tac in tacs do 
       evalTacticWithTrace tac
-  | `(tactic| ( $[$t]* )) => do 
-    for tac in t do 
+  | `(tactic| ( $[$tacs]* )) => do 
+    for tac in tacs do 
       evalTacticWithTrace tac
   /- Dealing with focused goals -/
-  | `(tactic| · $[$t]*) => do
+  | `(tactic| · $[$tacs]*) => do
     let (mainGoal, otherGoals) ← getMainGoal'
     setGoals [mainGoal]
-    for tac in t do
+    for tac in tacs do
       evalTacticWithTrace tac
     setGoals otherGoals
-  | `(tactic| focus $[$t]*) => do
+  | `(tactic| focus $[$tacs]*) => do
     let (mainGoal, otherGoals) ← getMainGoal'
     setGoals [mainGoal]
-    for tac in t do
+    for tac in tacs do
       evalTacticWithTrace tac
     setGoals otherGoals
-  /- Trace `simp` calls with the complete list of theorems used -/
+  /- Handle trace for the `classical` tactic -/
+  | `(tactic| classical $[$tacs]*) => do
+      modifyEnv Meta.instanceExtension.pushScope
+      Meta.addInstance ``Classical.propDecidable .local 10
+      try for tac in tacs do evalTacticWithTrace tac
+      finally modifyEnv Meta.instanceExtension.popScope
+   /- Trace `simp` calls with the complete list of theorems used -/
   | stx@`(tactic| simp%$tk $(config)? $(discharger)? $[only%$o]? $[[$args,*]]? $(loc)?) => do
     traceGoalsAt stx
     let { ctx, dischargeWrapper } ← withMainContext <| mkSimpContext stx (eraseLocal := false)
