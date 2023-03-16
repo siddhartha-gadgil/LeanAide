@@ -154,6 +154,10 @@ partial def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
     evalTactic stx
     let trm ← Tactic.elabTerm v none
     let typ ← inferType trm
+    let (mainGoal, otherGoals) ← getMainGoal'
+    let newGoals ← mainGoal.apply trm
+    setGoals <| newGoals ++ otherGoals
+    let typ ← instantiateMVars typ
     let typStx ← PrettyPrinter.delab typ
     `(tactic| apply ($v : $typStx)) >>= traceTacticCallAt stx
     traceGoalsAt stx
