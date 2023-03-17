@@ -216,23 +216,30 @@ partial def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
       let (g, _) ← getCaseGoals tag
       withRef arr <| addRawTrace (goalsToMessageData [g])
     let stx ← `(tactic| case' $[$tag $hs*]|* =>%$arr seq $tac:tacticSeq)
-  | stx@`(tactic| induction $[$ts],* $[using $id:ident]?  $[generalizing $gs*]? with $[$tac]? $is*) => do
+  | `(tactic| induction $[$ts],* $[using $id:ident]?  $[generalizing $gs*]? with $[$tac]? $is*) => do
     let is' : TSyntaxArray ``inductionAlt ←
-      is.mapM <| fun i =>
-        match i with
+      is.mapM <|
+        fun
           | `(inductionAlt| $il* => $ts:tacticSeq) => `(inductionAlt| $il* => seq $ts)
-          | i' => return ⟨i'⟩
+          | i => return ⟨i⟩
     let stx' ← `(tactic| induction $[$ts],* $[using $id:ident]?  $[generalizing $gs*]? with $[$tac]? $is'*)
     evalTactic stx'
-  | stx@`(tactic| cases $[$cs],* $[using $id:ident]? with $[$tac]? $is*) => do
+  | `(tactic| cases $[$cs],* $[using $id:ident]? with $[$tac]? $is*) => do
     let is' : TSyntaxArray ``inductionAlt ←
-      is.mapM <| fun i =>
-        match i with
+      is.mapM <|
+        fun
           | `(inductionAlt| $il* => $ts:tacticSeq) => `(inductionAlt| $il* => seq $ts)
-          | i' => return ⟨i'⟩
-    let stx' ← `(tactic| cases $[$ts],* $[using $id:ident]? with $[$tac]? $is'*)
+          | i => return ⟨i⟩
+    let stx' ← `(tactic| cases $[$cs],* $[using $id:ident]? with $[$tac]? $is'*)
     evalTactic stx'
-  |
+  | `(match $[$gen]? $[$motive]? $discrs,* with $alts:matchAlt*) => do
+    let alts' : TSyntaxArray ``matchAlt ←
+      alts.mapM <|
+        fun
+          | `(matchAltExpr| | $[$pats],* => $rhs) => `(matchAltExpr| | $[$pats],* => seq $rhs)
+          | alt =>  return ⟨alt⟩
+      let stx' ← `(tactic| match $[$gen]? $[$motive]? $discrs,* with $alts':matchAlt*)
+      evalTactic stx'
   /- Display the expected type in `have` and `let` statements -/
   | stx@`(tactic| have $[$x:ident]? := $prf) => do
     traceGoalsAt stx
@@ -354,5 +361,13 @@ example : ∀ n : Nat, n + n = n + n := by
   cases n with
     | zero => rfl
     | succ _ => rfl
+
+example : ∀ n : Nat, n + n = n + n := by
+  intro n
+  match n with
+    | .zero => rfl
+    | .succ _ => rfl
+
+
 
 #check evalCase
