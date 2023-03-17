@@ -96,6 +96,8 @@ def getCaseGoals (tag : TSyntax `Lean.binderIdent) : TacticM (MVarId × List MVa
     getMainGoal
   return (g, gs.erase g)
 
+def matchAltTac := Term.matchAlt (rhsParser := matchRhs)
+
 end Source
 
 def traceGoalsAt (stx : TSyntax `tactic) : TacticM Unit := do
@@ -236,8 +238,8 @@ partial def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
     let alts' : TSyntaxArray ``matchAlt ←
       alts.mapM <|
         fun
-          | `(Lean.Parser.Tactic.matchAlts| | $[$pats,*]|* => $rhs:tacticSeq) => do
-              let alt ← `(Lean.Parser.Tactic.matchAlts| | $[$pats,*]|* => seq $rhs)
+          | `(matchAltTac| | $[$pats,*]|* => $rhs:tacticSeq) => do
+              let alt ← `(matchAltTac| | $[$pats,*]|* => seq $rhs)
               return ⟨alt⟩
           | alt =>  return ⟨alt⟩
       let stx' ← `(tactic| match $[$gen]? $[$motive]? $discrs,* with $alts':matchAlt*)
