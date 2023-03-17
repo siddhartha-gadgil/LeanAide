@@ -96,6 +96,11 @@ def getCaseGoals (tag : TSyntax `Lean.binderIdent) : TacticM (MVarId × List MVa
     getMainGoal
   return (g, gs.erase g)
 
+def matchAltTac : Parser := matchAlt (rhsParser := tacticSeq) 
+
+instance : Coe (TSyntax ``matchAltTac) (TSyntax ``matchAlt) where
+  coe stx := ⟨stx.raw⟩
+
 end Source
 
 def traceGoalsAt (stx : TSyntax `tactic) : TacticM Unit := do
@@ -236,7 +241,7 @@ partial def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
     let alts' : TSyntaxArray ``matchAlt ←
       alts.mapM <|
         fun
-          | `(matchAltExpr| | $[$pats],* => $rhs) => `(matchAltExpr| | $[$pats],* => seq $rhs)
+          | `(matchAltTac| | $[$pats,*]|* => $rhs:tacticSeq) => `(matchAltTac| | $[$pats,*]|* => seq $rhs)
           | alt =>  return ⟨alt⟩
       let stx' ← `(tactic| match $[$gen]? $[$motive]? $discrs,* with $alts':matchAlt*)
       evalTactic stx'
@@ -359,7 +364,9 @@ example : ∀ n : Nat, n + n = n + n := by
 example : ∀ n : Nat, n + n = n + n := by
   intro n
   cases n with
-    | zero => rfl
+    | zero =>
+      let h := (rfl : 1 = 1)
+      rfl
     | succ _ => rfl
 
 example : ∀ n : Nat, n + n = n + n := by
@@ -367,7 +374,5 @@ example : ∀ n : Nat, n + n = n + n := by
   match n with
     | .zero => rfl
     | .succ _ => rfl
-
-
 
 #check evalCase
