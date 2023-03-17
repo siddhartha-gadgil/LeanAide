@@ -232,7 +232,7 @@ partial def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
           | i => return ⟨i⟩
     let stx' ← `(tactic| cases $[$cs],* $[using $id:ident]? with $[$tac]? $is'*)
     evalTactic stx'
-  | `(match $[$gen]? $[$motive]? $discrs,* with $alts:matchAlt*) => do
+  | `(tactic| match $[$gen]? $[$motive]? $discrs,* with $alts:matchAlt*) => do
     let alts' : TSyntaxArray ``matchAlt ←
       alts.mapM <|
         fun
@@ -308,6 +308,8 @@ example : 1 + 1 = 2 := by' -- the new `by'` syntax can be used to replace `by`
 macro_rules
   | `(by $t) => `(by' seq $t) 
 
+section Test
+
 set_option linter.unreachableTactic false
 
 -- the `by` tactic now generates trace data by default
@@ -372,4 +374,4 @@ example : ∀ n : Nat, n + n = n + n := by
     | .zero => rfl
     | .succ _ => rfl
 
-#check evalCase
+end Test
