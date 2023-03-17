@@ -224,6 +224,15 @@ partial def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
           | i' => return ⟨i'⟩
     let stx' ← `(tactic| induction $[$ts],* $[using $id:ident]?  $[generalizing $gs*]? with $[$tac]? $is'*)
     evalTactic stx'
+  | stx@`(tactic| cases $[$cs],* $[using $id:ident]? with $[$tac]? $is*) => do
+    let is' : TSyntaxArray ``inductionAlt ←
+      is.mapM <| fun i =>
+        match i with
+          | `(inductionAlt| $il* => $ts:tacticSeq) => `(inductionAlt| $il* => seq $ts)
+          | i' => return ⟨i'⟩
+    let stx' ← `(tactic| cases $[$ts],* $[using $id:ident]? with $[$tac]? $is'*)
+    evalTactic stx'
+  |
   /- Display the expected type in `have` and `let` statements -/
   | stx@`(tactic| have $[$x:ident]? := $prf) => do
     traceGoalsAt stx
@@ -339,5 +348,11 @@ example : ∀ n : Nat, n + n = n + n := by
   induction n with
     | zero => rfl
     | succ _ _ => rfl
+
+example : ∀ n : Nat, n + n = n + n := by
+  intro n
+  cases n with
+    | zero => rfl
+    | succ _ => rfl
 
 #check evalCase
