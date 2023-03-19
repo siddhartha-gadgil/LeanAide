@@ -590,6 +590,12 @@ def lambdaStx?(stx : Syntax) : MetaM <| Option (Syntax × Array Syntax) := do
     return some (body, args)
   | _ => return none
 
+def appStx?(stx : Syntax) : MetaM <| Option (Syntax × Syntax) := do
+  match stx with
+  | `($f:term $arg:term) =>
+    return some (f, arg)
+  | _ => return none
+
 #check Parser.mkIdent
 
 def proofWithProp? (stx : Syntax) : MetaM <| Option (Syntax × Syntax) := do
