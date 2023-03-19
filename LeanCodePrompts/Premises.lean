@@ -110,6 +110,7 @@ structure PremiseData  where
  context : (Array Syntax)
  name :       Option Name  -- name
  type :       Syntax  -- proposition
+ typeGroup : Syntax  -- proposition group
  proof: Syntax  -- proof
  typeSize : Nat
  proofSize : Nat
@@ -135,11 +136,11 @@ namespace PremiseData
 
 
 def filterIds (pd: PremiseData)(p: Name → Bool) : PremiseData := 
-    ⟨pd.context, pd.name, pd.type, pd.proof, pd.typeSize, pd.proofSize, pd.terms, pd.propProofs, pd.ids.filter (fun (n, _) => p n)⟩
+    ⟨pd.context, pd.name, pd.type, pd.typeGroup, pd.proof, pd.typeSize, pd.proofSize, pd.terms, pd.propProofs, pd.ids.filter (fun (n, _) => p n)⟩
 
 def increaseDepth (d: Nat) : PremiseData → PremiseData :=  
 fun data ↦
-    ⟨data.context, data.name, data.type, data.proof, data.typeSize, data.proofSize, (data.terms.map (fun td => td.increaseDepth d)), (data.propProofs.map (fun p => p.increaseDepth d)),
+    ⟨data.context, data.name, data.type, data.typeGroup, data.proof, data.typeSize, data.proofSize, (data.terms.map (fun td => td.increaseDepth d)), (data.propProofs.map (fun p => p.increaseDepth d)),
         (data.ids.map (fun (n,  m) => (n,  m + d))) ⟩
 
 open Reprint in
@@ -195,8 +196,10 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(pr
     | none =>
     match ← proofWithProp? stx with
     | some (proof, prop) =>
+        let newPropHead? := propHead?.orElse <| fun _ ↦ some prop
+        let newPropHead := newPropHead?.get!
         let prev ←  
-            proof.premiseDataAuxM context (propHead?.orElse <| fun _ ↦ prop) (maxDepth?.map (· -1))
+            proof.premiseDataAuxM context (some newPropHead) (maxDepth?.map (· -1))
         let (ts, pfs, ids, ps) := prev
         let prop := prop.purge
         let proof := proof.purge
@@ -207,7 +210,7 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(pr
                 pfs
             else 
                 pfs.map (fun s ↦ s.increaseDepth 1) |>.push headPf
-        let head : PremiseData := ⟨context, none, prop, proof, prop.size, proof.size, ts, pfs, ids⟩
+        let head : PremiseData := ⟨context, none, prop, newPropHead, proof, prop.size, proof.size, ts, pfs, ids⟩
         return (ts.map (fun t ↦ t.increaseDepth 1),
                 newPfs,
                 ids.map (fun (s, m) => (s, m + 1)),
@@ -253,7 +256,7 @@ def Lean.Syntax.premiseDataM (context : Array Syntax)
     MetaM (List PremiseData) := do
     let (ts, pfs, ids, ps) ← proof.premiseDataAuxM context (some prop) maxDepth?
     if includeHead then
-        let head : PremiseData := ⟨context, name?, prop.purge, proof.purge, prop.purge.size, proof.purge.size, ts, pfs, ids⟩
+        let head : PremiseData := ⟨context, name?, prop.purge, prop.purge, proof.purge, prop.purge.size, proof.purge.size, ts, pfs, ids⟩
         return head :: ps
     else return ps
 
