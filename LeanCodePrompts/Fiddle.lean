@@ -35,6 +35,32 @@ def b := rnd 0 10
 
 example : a = b := by rfl
 
+def scottSyntax (h t: Expr) : MetaM Syntax := do
+  let hStx ← PrettyPrinter.delab h
+  let tpp ← ppExpr t
+  let stx1 ← `(tactic| rw [$hStx:term])
+  return stx1.raw.updateTrailing s!"-- {tpp}".toSubstring
+
+elab "test_stx" h:term "hint" t:term  : term => do
+  let h ← Term.elabTerm h none
+  let t ← Term.elabTerm t none
+  let stx ← scottSyntax h t
+  logInfo m!"{stx}"
+  return h
+
+def egStx : MetaM Syntax := do
+  let stx? := runParserCategory (← getEnv) `tactic "rw [Nat.zero]"
+  let stx := stx?.toOption.get!
+  logInfo m!"{stx}"
+  return stx
+
+
+#eval egStx
+
+#eval test_stx Nat.zero hint 3 
+
+#check Lean.Syntax.atom
+
 -- set_option pp.all true
 -- example  : a = a := by
 --     apply Eq.trans
