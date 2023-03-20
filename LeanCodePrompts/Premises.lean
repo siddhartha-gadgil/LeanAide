@@ -366,6 +366,9 @@ def writePremisesM  : MetaM Nat  := do
     let validPremisesFile := System.mkFilePath ["rawdata", s!"valid_premises.jsonl"]
     IO.FS.writeFile validPremisesFile ""
     let hValid ← IO.FS.Handle.mk validPremisesFile IO.FS.Mode.append Bool.false
+    let mut testNum := 0
+    let mut validNum := 0
+    let mut trainNum := 0
     for (name, term, type) in cs do
         IO.println <| s!"{count} {name} (of {cs.size})"
         let defData? ← DefData.getM? name term type
@@ -375,10 +378,19 @@ def writePremisesM  : MetaM Nat  := do
             pure ()
         | some defData =>
             IO.println <| s!"{count} {name} written"
-            let gh := match ← IO.rand 0 9 with
-                | 0 => hTest
-                | 1 => hValid
-                | _ => hTrain
+            let gh ←  match ← IO.rand 0 9 with
+                | 0 => do
+                    testNum := testNum + 1
+                    IO.println s!"writing to test; now :{testNum}" 
+                    pure hTest
+                | 1 => 
+                    validNum := validNum + 1
+                    IO.println s!"writing to valid; now :{validNum}"
+                    pure hValid
+                | _ => 
+                    trainNum := trainNum + 1
+                    IO.println s!"writing to train; now :{trainNum}"
+                    pure hTrain
             let premises := defData.premises
             for premise in premises do
                 let premiseHead := (premise.context, premise.type)
