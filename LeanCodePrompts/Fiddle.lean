@@ -55,10 +55,8 @@ def egStx : MetaM Syntax := do
   return stx
 
 
-def imps : CoreM <| Array Import := do
-  let env ← getEnv
-  let imps := env.imports
-  return imps
+def imps : CoreM <| Array Name := do
+  return (← getEnv).allImportedModuleNames
 
 #eval imps
 
