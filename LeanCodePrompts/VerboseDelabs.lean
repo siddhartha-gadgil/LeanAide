@@ -4,10 +4,15 @@ Copied and modified from Lean 4 `./src/Lean/PrettyPrinter/Delaborator/Builtins.l
 import Lean
 import LeanCodePrompts.Utils
 open Lean Meta Elab Term Parser PrettyPrinter
+/-!
+# Verbose delaborators
 
+We define delaborators that preserve more information than the default ones, and corresponding syntax to allow this.
+-/
 namespace LeanAide.Meta
 
 open Elab Term in
+/-- Syntax `proof =: prop` for a proof with its type recorded -/
 elab (name:=proved_prop) "(" a:term "=:" b:term ")": term => do
     let b ← elabType b 
     let a ← elabTermEnsuringType a (some b)
@@ -17,15 +22,11 @@ elab (name:=proved_prop) "(" a:term "=:" b:term ")": term => do
 example :=  ((by decide) =: 1 ≤ 2 )
 
 
-  
-
--- delaborator copied from Lean to modify
 open Delaborator SubExpr 
 def checkExprDepth (e: Expr) : DelabM Unit := do
   let depth ← getDelabBound
   if e.approxDepth > depth then
     failure
-
 
 def checkDepth : DelabM Unit := do
   let depth ← getDelabBound
@@ -33,13 +34,10 @@ def checkDepth : DelabM Unit := do
   if e.approxDepth > depth then
     failure
 
-
-
-
+/-- Modified top-level delaborator to expand if proof to `proof =: prop`-/
 partial def delabVerbose : Delab := do
   checkMaxHeartbeats "delab"
   let e ← getExpr
-  -- checkExprDepth e
   let isProof := !e.isAtomic && (← (try Meta.isProof e catch _ => pure false))
   let k ← getExprKind
   let stx ← delabFor k <|> (liftM $ show MetaM _ from throwError "don't know how to delaborate '{k}'")
@@ -52,6 +50,7 @@ partial def delabVerbose : Delab := do
   else
     return stx
 
+/-- Helper wrapping a proof `proof` as `proof =: prop` -/
 def wrapInType (e: Expr)(stx: Term) : Delab := do
   let isProof ← (try Meta.isProof e catch _ => pure false)
   if isProof then
@@ -347,58 +346,38 @@ def withBindingBodyUnusedName {α} (d : Syntax → DelabM α) : DelabM α := do
   let stxN ← annotateCurPos (mkIdent n)
   withBindingBody n $ d stxN
 
-
+/-- `delabBinders` modified to never group -/
 private partial def delabBinders (delabGroup : Array Syntax → Syntax → Delab) : optParam (Array Syntax) #[] → Delab
-  -- Accumulate names (`Syntax.ident`s with position information) of the current, unfinished
-  -- binder group `(d e ...)` as determined by `shouldGroupWithNext`. We cannot do grouping
-  -- inside-out, on the Syntax level, because it depends on comparing the Expr binder types.
   | curNames => do
-    -- if ← shouldGroupWithNext then
-    --   -- group with nested binder => recurse immediately
-    --   withBindingBodyUnusedName fun stxN => delabBinders delabGroup (curNames.push stxN)
-    -- else
       -- don't group => delab body and prepend current binder group
       let (stx, stxN) ← withBindingBodyUnusedName fun stxN => return (← delab, stxN)
       delabGroup (curNames.push stxN) stx
 
+/-- `delabLam` modified to always have type info and never group -/
 @[delab lam]
 def delabLam : Delab :=
   delabBinders fun curNames stxBody => do
     let e ← getExpr
-    -- checkExprDepth e
     let stxT ← withBindingDomain delab
     let ppTypes := true
     let usedDownstream := curNames.any (fun n => hasIdent n.getId stxBody)
 
-    -- leave lambda implicit if possible
-    -- TODO: for now we just always block implicit lambdas when delaborating. We can revisit.
-    -- Note: the current issue is that it requires state, i.e. if *any* previous binder was implicit,
-    -- it doesn't seem like we can leave a subsequent binder implicit.
     let blockImplicitLambda := true
-    /-
-    let blockImplicitLambda := expl ||
-      e.binderInfo == BinderInfo.default ||
-      -- Note: the following restriction fixes many issues with roundtripping,
-      -- but this condition may still not be perfectly in sync with the elaborator.
-      e.binderInfo == BinderInfo.instImplicit ||
-      Elab.Term.blockImplicitLambda stxBody ||
-      usedDownstream
-    -/
 
     if !blockImplicitLambda then
-      pure stxBody
+      pure stxBody -- empty case
     else
       let defaultCase (_ : Unit) : Delab := do
-        if ppTypes then
+        if ppTypes then -- always true
           -- "default" binder group is the only one that expects binder names
           -- as a term, i.e. a single `Syntax.ident` or an application thereof
           let stxCurNames ←
-            if curNames.size > 1 then
+            if curNames.size > 1 then -- never
               `($(curNames.get! 0) $(curNames.eraseIdx 0)*)
-            else
+            else -- always ungrouped
               pure $ curNames.get! 0;
           `(funBinder| ($stxCurNames : $stxT))
-        else
+        else -- never
           pure curNames.back  -- here `curNames.size == 1`
       let group ← match e.binderInfo, ppTypes with
         | BinderInfo.default,        _      => defaultCase ()
@@ -430,13 +409,40 @@ private partial def delabForallBinders (delabGroup : Array Syntax → Bool → S
     delabGroup curNames curDep (← delabVerbose)
   else
     let curDep := dep
-    if ← shouldGroupWithNext then
-      -- group with nested binder => recurse immediately
-      withBindingBodyUnusedName fun stxN => delabForallBinders delabGroup (curNames.push stxN) curDep
-    else
+    -- if ← shouldGroupWithNext then
+    --   -- group with nested binder => recurse immediately
+    --   withBindingBodyUnusedName fun stxN => delabForallBinders delabGroup (curNames.push stxN) curDep
+    -- else
       -- don't group => delab body and prepend current binder group
       let (stx, stxN) ← withBindingBodyUnusedName fun stxN => return (← delab, stxN)
       delabGroup (curNames.push stxN) curDep stx
+
+@[delab forallE]
+def delabForall : Delab := do
+  delabForallBinders fun curNames dependent stxBody => do
+    let e ← getExpr
+    let prop ← try isProp e catch _ => pure false
+    let stxT ← withBindingDomain delab
+    let group ← match e.binderInfo with
+    | BinderInfo.implicit       => `(bracketedBinderF|{$curNames* : $stxT})
+    | BinderInfo.strictImplicit => `(bracketedBinderF|⦃$curNames* : $stxT⦄)
+    -- here `curNames.size == 1`
+    | BinderInfo.instImplicit   => `(bracketedBinderF|[$curNames.back : $stxT])
+    | _                         =>
+      -- NOTE: non-dependent arrows are available only for the default binder info
+      -- if dependent then
+      --   if prop && !(← getPPOption getPPPiBinderTypes) then
+      --     return ← `(∀ $curNames:ident*, $stxBody)
+      --   else
+          `(bracketedBinderF|($curNames* : $stxT))
+      -- else
+      --   return ← curNames.foldrM (fun _ stxBody => `($stxT → $stxBody)) stxBody
+    if prop then
+      match stxBody with
+      | `(∀ $groups*, $stxBody) => `(∀ $group $groups*, $stxBody)
+      | _                       => `(∀ $group, $stxBody)
+    else
+      `($group:bracketedBinder → $stxBody)
 
 
 @[delab letE]
@@ -609,17 +615,6 @@ def namedArgument? (stx : Syntax) : MetaM <| Option (Syntax × Syntax) := do
   | `(namedArgument|($n:ident := $stx)) =>    
     return some (stx, n)
   | _ => return none
-
--- @[delab fvar]
--- def delabFVar : Delab := do
--- let Expr.fvar fvarId ← getExpr | unreachable!
--- try
---   let l ← fvarId.getDecl
---   maybeAddBlockImplicit (mkIdent <| l.userName.append "freeVar")
--- catch _ =>
---   -- loose free variable, use internal name
---   maybeAddBlockImplicit <| mkIdent <| fvarId.name.append "freeVar"
-
 
 
 end LeanAide.Meta

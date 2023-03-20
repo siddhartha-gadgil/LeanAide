@@ -65,7 +65,7 @@ def nameDefSyntax (name: Name) : MetaM <| Option Syntax := do
 
 def premisesFromName (name : Name) : MetaM (List PremiseData) := do
     let (pf, prop) ← nameDefTypeSyntax name
-    Lean.Syntax.premiseDataM #[] pf prop true name
+    Lean.Syntax.premiseDataM #[] pf prop true name name
 
 
 def premisesJsonFromName (name: Name) : MetaM <| Json := do
@@ -169,7 +169,7 @@ open LeanAide.Meta
 open Reprint in
 def PremiseData.view : PremiseData → MetaM String := fun data => -- pure "_"
 -- | mk ctx name prop subProofs subTerms proofIdents termIdents => do
-    return s!"context: {reprSyn data.context}; name: {reprSyn data.name}; type: {reprSyn data.type};  sub-terms: {reprSyn data.terms}; sub-proofs : {reprSyn data.propProofs}  identifiers: {data.ids}"
+    return s!"context: {reprSyn data.context}; name: {reprSyn data.name?}; type: {reprSyn data.type};  sub-terms: {reprSyn data.terms}; sub-proofs : {reprSyn data.propProofs}  identifiers: {data.ids}"
 
 structure ConstsData where
     definitions : HashMap Name  Syntax
@@ -300,11 +300,11 @@ partial def Lean.Syntax.proofsM (context : Array Syntax)(stx: Syntax)(maxDepth? 
         | _ => pure []
 
 
-def PremiseData.get(ctx : Array Syntax)(name?: Name)(prop pf : Syntax) : MetaM PremiseData := do
+def PremiseData.get(ctx : Array Syntax)(name: Name)(prop pf : Syntax) : MetaM PremiseData := do
     let subProofs: List (PropProofData) ←  pf.proofsM ctx
     let subTerms : List (TermData)  ← Syntax.termsM ctx pf
     let ids : List (Name  × Nat) ← pf.identsM ctx 
-    return ⟨ctx, name?, prop.purge, prop.purge, pf.purge, prop.purge.size, pf.purge.size, subTerms.toArray, subProofs.toArray, ids.toArray⟩
+    return ⟨ctx, some name, name, prop.purge, prop.purge, pf.purge, prop.purge.size, pf.purge.size, subTerms.toArray, subProofs.toArray, ids.toArray⟩
 
 def viewData (name: Name) : MetaM <| String := do
     let (stx, tstx) ← nameDefTypeSyntax name

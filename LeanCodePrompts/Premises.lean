@@ -69,7 +69,8 @@ fun data ↦
 /-- Full premise data for a proposition -/        
 structure PremiseData  where 
  context : (Array Syntax) -- variables, types, binders
- name :       Option Name  -- name
+ name? :       Option Name  -- name
+ defnName: Name -- name of definition from which it arose
  type :       Syntax  -- proposition
  typeGroup : Syntax  -- proposition group
  proof: Syntax  -- proof
@@ -84,11 +85,11 @@ structure PremiseData  where
 namespace PremiseData
 
 def filterIds (pd: PremiseData)(p: Name → Bool) : PremiseData := 
-    ⟨pd.context, pd.name, pd.type, pd.typeGroup, pd.proof, pd.typeSize, pd.proofSize, pd.terms, pd.propProofs, pd.ids.filter (fun (n, _) => p n)⟩
+    ⟨pd.context, pd.name?, pd.defnName,  pd.type, pd.typeGroup, pd.proof, pd.typeSize, pd.proofSize, pd.terms, pd.propProofs, pd.ids.filter (fun (n, _) => p n)⟩
 
 def increaseDepth (d: Nat) : PremiseData → PremiseData :=  
 fun data ↦
-    ⟨data.context, data.name, data.type, data.typeGroup, data.proof, data.typeSize, data.proofSize, (data.terms.map (fun td => td.increaseDepth d)), (data.propProofs.map (fun p => p.increaseDepth d)),
+    ⟨data.context, data.name?, data.defnName, data.type, data.typeGroup, data.proof, data.typeSize, data.proofSize, (data.terms.map (fun td => td.increaseDepth d)), (data.propProofs.map (fun p => p.increaseDepth d)),
         (data.ids.map (fun (n,  m) => (n,  m + d))) ⟩
 
 end PremiseData
@@ -126,7 +127,7 @@ The parameter `isArg` specifies whether the term is an argument of a function. T
 
 The parameter `propHead?` specifies the head of the group of propositions, where groups are related by `intro`, i.e., moving from `∀` to context variables. This is used to determine whether to add the proposition to the list of lemmas.
 -/
-partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(propHead? : Option Syntax)(isArg: Bool)(maxDepth? : Option Nat := none) : 
+partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)(stx: Syntax)(propHead? : Option Syntax)(isArg: Bool)(maxDepth? : Option Nat := none) : 
     MetaM (
         Array (TermData) ×
         Array (PropProofData) ×
@@ -140,7 +141,7 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(pr
     let tks := tks.map (·.1)
     match ← namedArgument? stx with
     | some (arg, _) => -- named argument of a function, name ignored
-        arg.premiseDataAuxM context none true (maxDepth?.map (· -1))
+        arg.premiseDataAuxM context defnName none  true (maxDepth?.map (· -1))
     | none =>
     -- the special `proof =: prop` syntax 
     match ← proofWithProp? stx with
@@ -154,7 +155,7 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(pr
         subproof not an instantiation, is part of a new/old group. 
         -/
         let prev ←  
-            proof.premiseDataAuxM context (some newPropHead) false (maxDepth?.map (· -1))
+            proof.premiseDataAuxM context defnName (some newPropHead) false (maxDepth?.map (· -1))
         let (ts, pfs, ids, ps) := prev
         let prop := prop.purge
         let proof := proof.purge
@@ -166,7 +167,7 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(pr
                     ⟨context, prop, proof, prop.size, proof.size, 0⟩
                 pfs.map (fun s ↦ s.increaseDepth 1) |>.push headPf
         let head : PremiseData := 
-            ⟨context, none, prop, newPropHead, proof, prop.size, proof.size, ts, pfs, ids⟩
+            ⟨context, none, defnName, prop, newPropHead, proof, prop.size, proof.size, ts, pfs, ids⟩
         return (ts.map (fun t ↦ t.increaseDepth 1),
                 newPfs,
                 ids.map (fun (s, m) => (s, m + 1)),
@@ -176,7 +177,7 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(pr
     | some (body, args) =>
         let prev ←  /- data for subterm; not an instantiation; 
         inherits proposition group: if this is a proof, so would the previous term and hence we will have a group.  -/
-            body.premiseDataAuxM (context ++ args) propHead? false (maxDepth?.map (· -1))
+            body.premiseDataAuxM (context ++ args) defnName propHead? false (maxDepth?.map (· -1))
         let (ts, pfs, ids, ps) := prev
         return (ts.map (fun s => (s.increaseDepth args.size)),
                 pfs.map (fun s => (s.increaseDepth args.size)),
@@ -185,9 +186,9 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(pr
     | none =>
     match ← appStx? stx with
     | some (f, arg) =>
-        let prev ←  f.premiseDataAuxM context none false (maxDepth?.map (· -1))
+        let prev ←  f.premiseDataAuxM context defnName none false (maxDepth?.map (· -1))
         let (ts, pfs, ids, ps) := prev
-        let prev ←  arg.premiseDataAuxM context none true (maxDepth?.map (· -1))
+        let prev ←  arg.premiseDataAuxM context defnName none true (maxDepth?.map (· -1))
         let (ts', pfs', ids', ps') := prev
         let ts'' := 
             if isArg then -- this is an instantiation
@@ -203,7 +204,8 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(pr
     | none =>
         match stx with
         | Syntax.node _ k args => 
-            let prevs ← args.mapM (premiseDataAuxM context  · none false (maxDepth?.map (· -1)))
+            let prevs ← args.mapM (
+                premiseDataAuxM context defnName · none false (maxDepth?.map (· -1)))
             let mut ts: Array (TermData) := #[]
             let mut pfs: Array (PropProofData) := #[]
             let mut ids: Array (Name × Nat) := #[]
@@ -228,11 +230,11 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(pr
         | _ => pure (#[], #[], #[], [])
 
 def Lean.Syntax.premiseDataM (context : Array Syntax)
-    (proof prop: Syntax)(includeHead: Bool)(name? : Option Name)(maxDepth? : Option Nat := none) : 
+    (proof prop: Syntax)(includeHead: Bool)(name? : Option Name)(defnName : Name)(maxDepth? : Option Nat := none) : 
     MetaM (List PremiseData) := do
-    let (ts, pfs, ids, ps) ← proof.premiseDataAuxM context (some prop) false maxDepth?
+    let (ts, pfs, ids, ps) ← proof.premiseDataAuxM context defnName (some prop) false maxDepth?
     if includeHead then
-        let head : PremiseData := ⟨context, name?, prop.purge, prop.purge, proof.purge, prop.purge.size, proof.purge.size, ts, pfs, ids⟩
+        let head : PremiseData := ⟨context, name?, defnName, prop.purge, prop.purge, proof.purge, prop.purge.size, proof.purge.size, ts, pfs, ids⟩
         return head :: ps
     else return ps
 
@@ -253,7 +255,8 @@ def DefData.getM? (name: Name)(term type: Expr) : MetaM (Option  DefData) := do
     let (stx, _) ←  delabCore term {} (delabVerbose)
     let (tstx, _) ←  delabCore type {} (delabVerbose)
     let isProp ← Meta.isProof term
-    let premises ← Lean.Syntax.premiseDataM #[] stx tstx isProp name
+    let premises ← 
+        Lean.Syntax.premiseDataM #[] stx tstx isProp (some name) name
     let typeDepth := type.approxDepth
     let valueDepth := term.approxDepth
     return some {name := name, type := tstx.raw.purge, value := stx.raw.purge, isProp := isProp, typeDepth := typeDepth.toNat, valueDepth := valueDepth.toNat, premises := premises}
@@ -372,7 +375,7 @@ def writePremisesM  : MetaM Nat  := do
             pure ()
         | some defData =>
             IO.println <| s!"{count} {name} written"
-            let gh := match ← IO.rand 0 10 with
+            let gh := match ← IO.rand 0 9 with
                 | 0 => hTest
                 | 1 => hValid
                 | _ => hTrain
