@@ -67,13 +67,21 @@ def premisesFromName (name : Name) : MetaM (List PremiseData) := do
     let (pf, prop) ← nameDefTypeSyntax name
     Lean.Syntax.premiseDataM #[] pf prop true name name
 
+def _root_.PremiseData.view : PremiseData → MetaM String := fun data => do
+    return s!"context: {reprint data.context}; name?: {data.name?}; defnName: {data.defnName}; type: {reprint data.type};  sub-terms: {reprint data.terms}; sub-proofs : {reprint data.propProofs}  identifiers: {data.ids}"
+
+
+def premisesViewFromName (name: Name) : MetaM <| List String := do
+    let premises ← premisesFromName name
+    premises.mapM (fun p => p.view)
+
 
 def premisesJsonFromName (name: Name) : MetaM <| Json := do
     let premises ← premisesFromName name
     return toJson premises
 
 
--- #eval premisesViewFromName ``Nat.pred_le_pred
+#eval premisesViewFromName ``Nat.pred_le_pred
 
 -- #eval premisesJsonFromName ``Nat.pred_le_pred
 
@@ -166,10 +174,6 @@ end LeanAide.Meta
 
 open LeanAide.Meta
 
-open Reprint in
-def PremiseData.view : PremiseData → MetaM String := fun data => -- pure "_"
--- | mk ctx name prop subProofs subTerms proofIdents termIdents => do
-    return s!"context: {reprSyn data.context}; name: {reprSyn data.name?}; type: {reprSyn data.type};  sub-terms: {reprSyn data.terms}; sub-proofs : {reprSyn data.propProofs}  identifiers: {data.ids}"
 
 structure ConstsData where
     definitions : HashMap Name  Syntax
