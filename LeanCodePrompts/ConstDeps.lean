@@ -183,25 +183,28 @@ def offSpringShallowTriple(excludePrefixes: List Name := [])(depth: Nat)
   let goodKeys := keys.filter fun (name, _) =>
     !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name))
   IO.println s!"Tokens considered (excluding system code): {goodKeys.size}"
+  let depsFile := System.mkFilePath ["data", "deps.yaml"]
+  let h ← IO.FS.Handle.mk depsFile IO.FS.Mode.append
   let mut count := 0
   for (n, type) in  (goodKeys) do
-      IO.println s!"Token: {n}"
       let l := (← offSpring? depth n).getD #[]
-      IO.println s!"Offspring: {l.size}"
       -- let type ← type.simplify
       -- IO.println "simplified"
       let l := l.filter fun n => !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf n))
       -- IO.println s!"Computing offspring for {type}"
       let tl ←  recExprNames depth type
-      IO.println s!"Type offspring: {tl.size}"
       let tl := tl.filter fun n => !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n))
       -- IO.println s!"Type offspring (excluding system code): {tl.size}"
-      IO.eprintln s!"- name: {n}"
-      IO.eprintln <| s!"  defn: " ++ ((s!"{l}").drop 1)
-      IO.eprintln <| s!"  type: " ++ ((s!"{tl}").drop 1)
-      IO.eprintln ""
+      h.putStrLn s!"- name: {n}"
+      h.putStrLn <| s!"  defn: " ++ ((s!"{l}").drop 1)
+      h.putStrLn <| s!"  type: " ++ ((s!"{tl}").drop 1)
+      h.putStrLn ""
       count := count + 1
-      IO.println s!"Completed: {count} (out of {goodKeys.size})"
+      if count % 1000 = 0 then
+        IO.println s!"Token: {n}"
+        IO.println s!"Offspring: {l.size}"
+        IO.println s!"Type offspring: {tl.size}"
+        IO.println s!"Completed: {count} (out of {goodKeys.size})"
   return ()
 
   
