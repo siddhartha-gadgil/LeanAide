@@ -3,6 +3,173 @@ open Lean Meta Elab Term Syntax PrettyPrinter Parser
 
 namespace LeanAide.Meta
 
+class Reprint(a : Type) where
+    reprSyn : a → String
+
+instance reprintString : Reprint String where
+    reprSyn := id
+
+instance reprintName : Reprint Name where
+    reprSyn := toString
+
+instance reprintNat : Reprint Nat where
+    reprSyn := toString
+
+instance reprintBool : Reprint Bool where
+    reprSyn := toString
+
+instance reprintArray {a : Type} [Reprint a] : Reprint (Array a) where
+    reprSyn := fun xs => xs.toList.map Reprint.reprSyn |>.toString
+
+instance reprintList {a : Type} [Reprint a] : Reprint (List a) where
+    reprSyn := fun xs => xs.map Reprint.reprSyn |>.toString
+
+instance reprintOption {a : Type} [Reprint a] : Reprint (Option a) where
+    reprSyn := fun xs => xs.map Reprint.reprSyn |>.getD ""
+
+instance reprintSyntax : Reprint Syntax where
+    reprSyn := fun xs => xs.reprint.get!
+
+def reprint {a : Type}[Reprint a] (x : a) : String := Reprint.reprSyn x
+
+instance reprintTermData : Reprint TermData where
+    reprSyn := fun x => s!"context: {Reprint.reprSyn x.context}; term: {Reprint.reprSyn x.value}"
+
+instance reprintProofData : Reprint PropProofData where
+    reprSyn := fun x => s!"context: {Reprint.reprSyn x.context}; prop: {Reprint.reprSyn x.prop}; proof : {Reprint.reprSyn x.proof}"
+
+
+def viewSyntax (s: String) : MetaM <| Syntax × String := do
+    let c := runParserCategory (← getEnv) `term s
+    match c with
+    | Except.error e => throwError e
+    | Except.ok s => pure (s, s.reprint.get!)
+
+
+def nameDefTypeSyntax (name: Name) : MetaM <| Syntax × Syntax := do
+    let info? := ((← getEnv).find? name)
+    let info := info?.get!
+    let exp := info.value?.get!
+    let type := info.type
+    let (stx, _) ←  delabCore exp {} (delabVerbose)
+    let (tstx, _) ←  delabCore type {} (delabVerbose)
+    return (stx, tstx)
+
+def nameDefSyntax (name: Name) : MetaM <| Option Syntax := do
+    let exp? ← nameExpr? name
+    match exp? with
+    | none => pure none
+    | some exp => do
+        let stx ←  delab exp
+        pure (some stx)
+
+def premisesFromName (name : Name) : MetaM (List PremiseData) := do
+    let (pf, prop) ← nameDefTypeSyntax name
+    Lean.Syntax.premiseDataM #[] pf prop true name
+
+
+def premisesJsonFromName (name: Name) : MetaM <| Json := do
+    let premises ← premisesFromName name
+    return toJson premises
+
+
+-- #eval premisesViewFromName ``Nat.pred_le_pred
+
+-- #eval premisesJsonFromName ``Nat.pred_le_pred
+
+-- #eval premisesViewFromName ``Nat.le_of_succ_le_succ
+
+
+def boundedDef (bound: Nat)(name: Name) : MetaM Bool := do
+    let exp? ← nameExpr? name
+    match exp? with
+    | none => pure false
+    | some exp => do
+        pure (exp.approxDepth.toNat < bound)
+
+def nameDefView (name: Name) : MetaM String := do
+    let stx? ← nameDefSyntax name
+    return (stx?.get!.reprint.get!)
+
+def nameDefCleanView (name: Name) : MetaM String := do
+    let stx? ← nameDefSyntax name
+    return ((stx?.get!.purge).reprint.get!)
+
+def nameDefSyntaxVerbose (name: Name) : MetaM <| Option Syntax := do
+    let exp? ← nameExpr? name
+    match exp? with
+    | none => pure none
+    | some exp => do
+        let (stx, _) ←  delabCore exp {} (delabVerbose)
+        pure (some stx)
+
+def nameDefViewVerbose (name: Name) : MetaM String := do
+    let stx? ← nameDefSyntaxVerbose name
+    return (stx?.get!.reprint.get!)
+
+-- #eval nameDefSyntax ``List.join
+
+-- #eval nameDefSyntax ``Nat.le_of_succ_le_succ
+
+
+
+-- #eval nameDefView ``Nat.gcd_eq_zero_iff
+
+-- #eval nameDefCleanView ``Nat.gcd_eq_zero_iff
+
+-- def egSplit : MetaM <| Option (Syntax × Array Syntax) := do
+--     let stx? ← nameDefSyntax ``Nat.gcd_eq_zero_iff
+--     lambdaStx? stx?.get!
+
+-- #eval egSplit
+
+-- def egSplitView : MetaM <| Option (String × Array String) := do
+--     let stx? ← nameDefSyntax ``Nat.gcd_eq_zero_iff
+--     let pair? ← lambdaStx? stx?.get!
+--     let (stx, args) := pair?.get!
+--     pure (stx.reprint.get!, args.map (fun s => s.reprint.get!))
+
+-- #eval egSplitView
+
+-- set_option pp.proofs false in 
+-- #eval nameDefView ``Nat.gcd_eq_zero_iff
+
+-- set_option pp.proofs.withType true in 
+-- #eval nameDefView ``Nat.gcd_eq_zero_iff
+
+-- #eval nameDefViewVerbose ``Nat.gcd_eq_zero_iff
+
+-- #eval nameDefSyntaxVerbose ``Nat.gcd_eq_zero_iff
+
+-- #eval nameDefViewVerbose ``Nat.gcd_eq_gcd_ab
+
+-- set_option pp.proofs false in
+-- #eval nameDefView ``Nat.gcd_eq_gcd_ab
+
+-- #eval setDelabBound 200
+
+-- #eval nameDefViewVerbose ``Nat.xgcd_aux_P
+
+-- set_option pp.proofs false in
+-- #eval nameDefView ``Nat.xgcd_aux_P
+
+-- theorem oddExample : ∀ (n : Nat), ∃ m, m > n ∧ m % 2 = 1 := by
+--   intro n -- introduce a variable n
+--   use 2 * n + 1 -- use `m = 2 * n + 1`
+--   apply And.intro -- apply the constructor of `∧` to split goals
+--   · linarith -- solve the first goal using `linarith` 
+--   · simp [Nat.add_mod] -- solve the second goal using `simp` with the lemma `Nat.add_mod`
+
+-- -- #eval premisesViewFromName ``oddExample
+
+end LeanAide.Meta
+
+open LeanAide.Meta
+
+open Reprint in
+def PremiseData.view : PremiseData → MetaM String := fun data => -- pure "_"
+-- | mk ctx name prop subProofs subTerms proofIdents termIdents => do
+    return s!"context: {reprSyn data.context}; name: {reprSyn data.name}; type: {reprSyn data.type};  sub-terms: {reprSyn data.terms}; sub-proofs : {reprSyn data.propProofs}  identifiers: {data.ids}"
 
 structure ConstsData where
     definitions : HashMap Name  Syntax
@@ -20,10 +187,6 @@ def constsData : MetaM ConstsData := do
         else
             definitions := definitions.insert c tstx
     return { definitions := definitions, theorems := theorems }
-
-end LeanAide.Meta
-
-open LeanAide.Meta
 
 partial def Lean.Syntax.identsM (stx: Syntax)(context: Array Syntax)(maxDepth? : Option Nat := none) : MetaM <| List <| Name × Nat  := do
     if maxDepth? = some 0 then
@@ -141,7 +304,7 @@ def PremiseData.get(ctx : Array Syntax)(name?: Name)(prop pf : Syntax) : MetaM P
     let subProofs: List (PropProofData) ←  pf.proofsM ctx
     let subTerms : List (TermData)  ← Syntax.termsM ctx pf
     let ids : List (Name  × Nat) ← pf.identsM ctx 
-    return ⟨ctx, name?, prop.purge, pf.purge, prop.purge.size, pf.purge.size, subTerms.toArray, subProofs.toArray, ids.toArray⟩
+    return ⟨ctx, name?, prop.purge, prop.purge, pf.purge, prop.purge.size, pf.purge.size, subTerms.toArray, subProofs.toArray, ids.toArray⟩
 
 def viewData (name: Name) : MetaM <| String := do
     let (stx, tstx) ← nameDefTypeSyntax name

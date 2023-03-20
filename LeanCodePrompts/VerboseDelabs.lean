@@ -574,14 +574,6 @@ def NameGroups.append (base: NameGroups) (n: Name)(d: Nat): NameGroups :=
 def groupedNames (nd : Array <| Name × Nat) : NameGroups :=
   nd.foldl (fun gp (n, d) => gp.append n d) {}
 
-def Name.purgeSuffix: Name → Name
-  | Name.str p "freeVar"  =>
-    Name.purgeSuffix p
-  | Name.str q "domVar"  => 
-    Name.purgeSuffix q
-  | n => n
-
-
 def lambdaStx?(stx : Syntax) : MetaM <| Option (Syntax × Array Syntax) := do
   match stx with
   | `(fun $args:funBinder* ↦ $body) =>

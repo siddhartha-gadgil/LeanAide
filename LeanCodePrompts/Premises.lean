@@ -1,15 +1,28 @@
 import Lean
--- import Mathlib
 import Std.Data.HashMap
 import LeanCodePrompts.ConstDeps
 import LeanCodePrompts.VerboseDelabs
+
+/-!
+# Premise data
+
+Here we extract premise data from all definitions in the environment. This includes proofs in the environment as well as sub-proofs in proofs/definitions. The main technique for working with subproofs is the use of the custom *verbose* delaborators that rewrite the syntax tree to include the statements of the proof terms, in the syntax `proof =: prop`. 
+
+We are using premises is a broad sense, including:
+
+- identifiers
+- propositions that are proved by sub-terms (lemmas)
+- terms that are arguments of functions (instantiations)
+
+As theorems are equivalent to others where we trade `∀` with context terms, we associate groups. Further, we exclude statements derived in this way (i.e., by `intro`) from the list of lemmas.
+-/
 
 open Lean Meta Elab Parser PrettyPrinter
 
 universe u v w u_1 u_2 u_3 u₁ u₂ u₃
 
 open LeanAide.Meta
-
+/-- All constants in the environment with value and type. -/
 def constantNameValueTypes  : MetaM (Array (Name × Expr ×   Expr)) := do
   let env ← getEnv
   let decls := env.constants.map₁.toArray
@@ -22,37 +35,10 @@ def constantNameValueTypes  : MetaM (Array (Name × Expr ×   Expr)) := do
 
 set_option pp.unicode.fun true
 
-class Reprint(a : Type) where
-    reprSyn : a → String
-
-instance reprintString : Reprint String where
-    reprSyn := id
-
-instance reprintName : Reprint Name where
-    reprSyn := toString
-
-instance reprintNat : Reprint Nat where
-    reprSyn := toString
-
-instance reprintBool : Reprint Bool where
-    reprSyn := toString
-
-instance reprintArray {a : Type} [Reprint a] : Reprint (Array a) where
-    reprSyn := fun xs => xs.toList.map Reprint.reprSyn |>.toString
-
-instance reprintList {a : Type} [Reprint a] : Reprint (List a) where
-    reprSyn := fun xs => xs.map Reprint.reprSyn |>.toString
-
-instance reprintOption {a : Type} [Reprint a] : Reprint (Option a) where
-    reprSyn := fun xs => xs.map Reprint.reprSyn |>.getD ""
-
-instance reprintSyntax : Reprint Syntax where
-    reprSyn := fun xs => xs.reprint.get!
-
-def reprint {a : Type}[Reprint a] (x : a) : String := Reprint.reprSyn x
-
+/-- Syntax as json -/
 instance : ToJson Syntax := ⟨fun (d: Syntax) ↦ d.reprint.get!⟩
 
+/-- Subterms in a premise -/
 structure TermData where
     context : Array Syntax
     value : Syntax
@@ -60,10 +46,12 @@ structure TermData where
     depth: Nat
 deriving Repr, ToJson
 
+/-- Increase depth of a subterm (for recursion) -/
 def TermData.increaseDepth (d: Nat) : TermData → TermData :=
 fun data ↦
     ⟨data.context, data.value, data.size, data.depth + d⟩
 
+/-- Lemma data with proofs -/
 structure PropProofData where
     context : Array Syntax
     prop : Syntax
@@ -73,67 +61,27 @@ structure PropProofData where
     depth: Nat
 deriving Repr, ToJson
 
+/-- Increase depth for a lemma (for recursion) -/
 def PropProofData.increaseDepth (d: Nat) : PropProofData → PropProofData :=
 fun data ↦
     ⟨data.context, data.prop, data.proof, data.propSize, data.proofSize, data.depth + d⟩
 
-instance reprintTermData : Reprint TermData where
-    reprSyn := fun x => s!"context: {Reprint.reprSyn x.context}; term: {Reprint.reprSyn x.value}"
-
-instance reprintProofData : Reprint PropProofData where
-    reprSyn := fun x => s!"context: {Reprint.reprSyn x.context}; prop: {Reprint.reprSyn x.prop}; proof : {Reprint.reprSyn x.proof}"
-        
-open Reprint 
--- instance : ToJson TermData := ⟨fun (d: TermData) ↦ 
---     Json.mkObj [
---         ("context", reprSyn d.context),
---         ("term", reprSyn d.value),
---         ("size", d.size)
---     ]⟩
-
--- instance : ToJson  PropProofData := ⟨fun (d: PropProofData) ↦  
---     Json.mkObj [
---         ("context", reprSyn d.context),
---         ("prop", reprSyn d.prop),
---         ("proof", reprSyn d.proof)
---     ]⟩
-
-instance reprintPair {a : Type} {b : Type} [Reprint a] [Reprint b] : Reprint (a × b) where
-    reprSyn := fun (x, y) => s!"({Reprint.reprSyn x}, {Reprint.reprSyn y})"
-
-def checkRepr : Repr TermData := inferInstance
-
-example : ToJson Name := inferInstance
-
-
+/-- Full premise data for a proposition -/        
 structure PremiseData  where 
- context : (Array Syntax)
+ context : (Array Syntax) -- variables, types, binders
  name :       Option Name  -- name
  type :       Syntax  -- proposition
  typeGroup : Syntax  -- proposition group
  proof: Syntax  -- proof
  typeSize : Nat
  proofSize : Nat
- terms :       Array (TermData)  -- sub-terms
+ terms :       Array (TermData)  -- instantiations
  propProofs :       Array (PropProofData)  -- sub-proofs
  ids :       Array (Name ×  Nat)  -- proof identifiers used
  deriving Repr, ToJson
 
 
 namespace PremiseData
-
--- instance premiseToJson : ToJson PremiseData :=⟨
---     fun (d: PremiseData) ↦ 
---         Json.mkObj [
---             ("context", toJson d.context),
---             ("name", toJson d.name),
---             ("type", toJson d.type),
---             ("proof", toJson d.proof),
---             ("terms", toJson d.terms),
---             ("propProofs", toJson d.propProofs),
---             ("ids", toJson d.ids)
---     ]⟩
-
 
 def filterIds (pd: PremiseData)(p: Name → Bool) : PremiseData := 
     ⟨pd.context, pd.name, pd.type, pd.typeGroup, pd.proof, pd.typeSize, pd.proofSize, pd.terms, pd.propProofs, pd.ids.filter (fun (n, _) => p n)⟩
@@ -143,17 +91,11 @@ fun data ↦
     ⟨data.context, data.name, data.type, data.typeGroup, data.proof, data.typeSize, data.proofSize, (data.terms.map (fun td => td.increaseDepth d)), (data.propProofs.map (fun p => p.increaseDepth d)),
         (data.ids.map (fun (n,  m) => (n,  m + d))) ⟩
 
-open Reprint in
-def view : PremiseData → MetaM String := fun data => -- pure "_"
--- | mk ctx name prop subProofs subTerms proofIdents termIdents => do
-    return s!"context: {reprSyn data.context}; name: {reprSyn data.name}; type: {reprSyn data.type};  sub-terms: {reprSyn data.terms}; sub-proofs : {reprSyn data.propProofs}  identifiers: {data.ids}"
-
 end PremiseData
 
+/-- Remove the added `=: prop` from syntax -/
 partial def Lean.Syntax.purge: Syntax → Syntax := fun stx ↦
   match stx with
-  | Syntax.ident _ _ n _ => 
-      mkIdent (Name.purgeSuffix n)
   | Syntax.node info k args =>
     match stx with
     | `(($pf:term =: $_:term)) =>
@@ -178,6 +120,12 @@ partial def Lean.Syntax.size (stx: Syntax) : Nat :=
     | Syntax.node _ _ args => args.foldl (fun acc x => acc + x.size) 0
     | _ => 1
 
+/-- Compute recursively premise-data of sublemmas as well as the identifiers, instantiations and subproofs. These are used at the top level recursively.
+
+The parameter `isArg` specifies whether the term is an argument of a function. This is used to determine whether to add the term to the list of instantiations. 
+
+The parameter `propHead?` specifies the head of the group of propositions, where groups are related by `intro`, i.e., moving from `∀` to context variables. This is used to determine whether to add the proposition to the list of lemmas.
+-/
 partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(propHead? : Option Syntax)(isArg: Bool)(maxDepth? : Option Nat := none) : 
     MetaM (
         Array (TermData) ×
@@ -191,34 +139,43 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(pr
     let tks ← termKindList
     let tks := tks.map (·.1)
     match ← namedArgument? stx with
-    | some (arg, _) =>
-        arg.premiseDataAuxM context none false (maxDepth?.map (· -1))
+    | some (arg, _) => -- named argument of a function, name ignored
+        arg.premiseDataAuxM context none true (maxDepth?.map (· -1))
     | none =>
+    -- the special `proof =: prop` syntax 
     match ← proofWithProp? stx with
     | some (proof, prop) =>
-        let newPropHead? := propHead?.orElse <| fun _ ↦ some prop
-        let newPropHead := newPropHead?.get!
+        -- start a group if not in a group
+        let newPropHead :=
+            match propHead? with
+            | some p => p
+            | none => prop
+        /- compute the data for the subproof; 
+        subproof not an instantiation, is part of a new/old group. 
+        -/
         let prev ←  
             proof.premiseDataAuxM context (some newPropHead) false (maxDepth?.map (· -1))
         let (ts, pfs, ids, ps) := prev
         let prop := prop.purge
         let proof := proof.purge
-        let headPf : PropProofData := 
-            ⟨context, prop, proof, prop.size, proof.size, 0⟩
         let newPfs :=
-            if propHead?.isSome then
+            if propHead?.isSome then -- exclude lemma if in prior group
                 pfs
             else 
+                let headPf : PropProofData := 
+                    ⟨context, prop, proof, prop.size, proof.size, 0⟩
                 pfs.map (fun s ↦ s.increaseDepth 1) |>.push headPf
-        let head : PremiseData := ⟨context, none, prop, newPropHead, proof, prop.size, proof.size, ts, pfs, ids⟩
+        let head : PremiseData := 
+            ⟨context, none, prop, newPropHead, proof, prop.size, proof.size, ts, pfs, ids⟩
         return (ts.map (fun t ↦ t.increaseDepth 1),
                 newPfs,
                 ids.map (fun (s, m) => (s, m + 1)),
                 head :: ps)
     | none =>
-    match ← lambdaStx? stx with
+    match ← lambdaStx? stx with -- term is a lambda
     | some (body, args) =>
-        let prev ←  
+        let prev ←  /- data for subterm; not an instantiation; 
+        inherits proposition group: if this is a proof, so would the previous term and hence we will have a group.  -/
             body.premiseDataAuxM (context ++ args) propHead? false (maxDepth?.map (· -1))
         let (ts, pfs, ids, ps) := prev
         return (ts.map (fun s => (s.increaseDepth args.size)),
@@ -228,14 +185,14 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(stx: Syntax)(pr
     | none =>
     match ← appStx? stx with
     | some (f, arg) =>
-        let prev ←  f.premiseDataAuxM context propHead? false (maxDepth?.map (· -1))
+        let prev ←  f.premiseDataAuxM context none false (maxDepth?.map (· -1))
         let (ts, pfs, ids, ps) := prev
-        let prev ←  arg.premiseDataAuxM context propHead? true (maxDepth?.map (· -1))
+        let prev ←  arg.premiseDataAuxM context none true (maxDepth?.map (· -1))
         let (ts', pfs', ids', ps') := prev
-        let head : TermData := 
-                ⟨context, stx.purge, stx.purge.size, 0⟩
         let ts'' := 
-            if isArg then
+            if isArg then -- this is an instantiation
+            let head : TermData := 
+                ⟨context, stx.purge, stx.purge.size, 0⟩
             (ts ++ ts').map (fun s => s.increaseDepth 1) |>.push head
             else 
             (ts ++ ts').map (fun s => s.increaseDepth 1)
@@ -278,137 +235,6 @@ def Lean.Syntax.premiseDataM (context : Array Syntax)
         let head : PremiseData := ⟨context, name?, prop.purge, prop.purge, proof.purge, prop.purge.size, proof.purge.size, ts, pfs, ids⟩
         return head :: ps
     else return ps
-
-
-
-
-namespace LeanAide.Meta
-
-def viewSyntax (s: String) : MetaM <| Syntax × String := do
-    let c := runParserCategory (← getEnv) `term s
-    match c with
-    | Except.error e => throwError e
-    | Except.ok s => pure (s, s.reprint.get!)
-
-
-def nameDefTypeSyntax (name: Name) : MetaM <| Syntax × Syntax := do
-    let info? := ((← getEnv).find? name)
-    let info := info?.get!
-    let exp := info.value?.get!
-    let type := info.type
-    let (stx, _) ←  delabCore exp {} (delabVerbose)
-    let (tstx, _) ←  delabCore type {} (delabVerbose)
-    return (stx, tstx)
-
-def nameDefSyntax (name: Name) : MetaM <| Option Syntax := do
-    let exp? ← nameExpr? name
-    match exp? with
-    | none => pure none
-    | some exp => do
-        let stx ←  delab exp
-        pure (some stx)
-
-def premisesFromName (name : Name) : MetaM (List PremiseData) := do
-    let (pf, prop) ← nameDefTypeSyntax name
-    Lean.Syntax.premiseDataM #[] pf prop true name
-
-def premisesViewFromName (name: Name) : MetaM <| List String := do
-    let premises ← premisesFromName name
-    premises.mapM (fun p => p.view)
-
-def premisesJsonFromName (name: Name) : MetaM <| Json := do
-    let premises ← premisesFromName name
-    return toJson premises
-
-
--- #eval premisesViewFromName ``Nat.pred_le_pred
-
--- #eval premisesJsonFromName ``Nat.pred_le_pred
-
--- #eval premisesViewFromName ``Nat.le_of_succ_le_succ
-
-
-def boundedDef (bound: Nat)(name: Name) : MetaM Bool := do
-    let exp? ← nameExpr? name
-    match exp? with
-    | none => pure false
-    | some exp => do
-        pure (exp.approxDepth.toNat < bound)
-
-def nameDefView (name: Name) : MetaM String := do
-    let stx? ← nameDefSyntax name
-    return (stx?.get!.reprint.get!)
-
-def nameDefCleanView (name: Name) : MetaM String := do
-    let stx? ← nameDefSyntax name
-    return ((stx?.get!.purge).reprint.get!)
-
-def nameDefSyntaxVerbose (name: Name) : MetaM <| Option Syntax := do
-    let exp? ← nameExpr? name
-    match exp? with
-    | none => pure none
-    | some exp => do
-        let (stx, _) ←  delabCore exp {} (delabVerbose)
-        pure (some stx)
-
-def nameDefViewVerbose (name: Name) : MetaM String := do
-    let stx? ← nameDefSyntaxVerbose name
-    return (stx?.get!.reprint.get!)
-
--- #eval nameDefSyntax ``List.join
-
--- #eval nameDefSyntax ``Nat.le_of_succ_le_succ
-
-
-
--- #eval nameDefView ``Nat.gcd_eq_zero_iff
-
--- #eval nameDefCleanView ``Nat.gcd_eq_zero_iff
-
--- def egSplit : MetaM <| Option (Syntax × Array Syntax) := do
---     let stx? ← nameDefSyntax ``Nat.gcd_eq_zero_iff
---     lambdaStx? stx?.get!
-
--- #eval egSplit
-
--- def egSplitView : MetaM <| Option (String × Array String) := do
---     let stx? ← nameDefSyntax ``Nat.gcd_eq_zero_iff
---     let pair? ← lambdaStx? stx?.get!
---     let (stx, args) := pair?.get!
---     pure (stx.reprint.get!, args.map (fun s => s.reprint.get!))
-
--- #eval egSplitView
-
--- set_option pp.proofs false in 
--- #eval nameDefView ``Nat.gcd_eq_zero_iff
-
--- set_option pp.proofs.withType true in 
--- #eval nameDefView ``Nat.gcd_eq_zero_iff
-
--- #eval nameDefViewVerbose ``Nat.gcd_eq_zero_iff
-
--- #eval nameDefSyntaxVerbose ``Nat.gcd_eq_zero_iff
-
--- #eval nameDefViewVerbose ``Nat.gcd_eq_gcd_ab
-
--- set_option pp.proofs false in
--- #eval nameDefView ``Nat.gcd_eq_gcd_ab
-
--- #eval setDelabBound 200
-
--- #eval nameDefViewVerbose ``Nat.xgcd_aux_P
-
--- set_option pp.proofs false in
--- #eval nameDefView ``Nat.xgcd_aux_P
-
--- theorem oddExample : ∀ (n : Nat), ∃ m, m > n ∧ m % 2 = 1 := by
---   intro n -- introduce a variable n
---   use 2 * n + 1 -- use `m = 2 * n + 1`
---   apply And.intro -- apply the constructor of `∧` to split goals
---   · linarith -- solve the first goal using `linarith` 
---   · simp [Nat.add_mod] -- solve the second goal using `simp` with the lemma `Nat.add_mod`
-
--- -- #eval premisesViewFromName ``oddExample
 
 
 structure DefData where
