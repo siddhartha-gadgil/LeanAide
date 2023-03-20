@@ -55,6 +55,13 @@ def egStx : MetaM Syntax := do
   return stx
 
 
+def imps : CoreM <| Array Import := do
+  let env ← getEnv
+  let imps := env.imports
+  return imps
+
+#eval imps
+
 #eval egStx
 
 #eval test_stx Nat.zero hint 3 
