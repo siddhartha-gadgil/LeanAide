@@ -16,6 +16,8 @@ structure Params where
   maxTokens : Nat := 300
   /-- The stop tokens for the completion. -/
   stopTokens : Array String := #[":=", "\n\n/-", "\n/-", "/-"]
+  /-- The system message to supply to the model. -/
+  systemMessage : String
 deriving Repr
 
 /-- A `Request` comprises a prompt and a collection of parameters. -/
@@ -25,7 +27,7 @@ structure Request extends Params where
 
 /-- Convert the parameters for querying the LLM to `JSON` format. -/
 def Request.toJson (req : LLM.Request) : Lean.Json := .mkObj $ [
-  ("messages", .arr <| req.messages),
+  ("messages", .arr <| #[.mkObj [("role", "system"), ("content", req.systemMessage)]] ++ req.messages),
   ("model", req.openAIModel),
   ("temperature", .num ⟨req.temperature, 1⟩),
   ("n", req.n),
@@ -65,9 +67,10 @@ end LLM
 section Test
 
 def LLM.egReq : LLM.Request := 
-{messages := 
+{ systemMessage := "You are a large language model."
+  messages := 
   #[(.mkObj [("role", "user"), ("content", "For all epsilon greater than zero, ")])], 
-  n := 1}
+  n := 1 }
 
 -- #eval LLM.egReq.getLLMCompletions
 
