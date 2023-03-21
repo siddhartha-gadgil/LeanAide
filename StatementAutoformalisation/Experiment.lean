@@ -24,4 +24,6 @@ example : ∀ n : Nat, ∃ m : Nat, m > n ∧ m % 2 = 1  := sorry
 
 def req : Prompt.Request := ⟨Default.PromptParams, "There are infinitely many odd numbers."⟩
 
-#eval buildPrompt DeclarationWithDocstring.toMessage <| Prompt.promptDecls req
+#eval do
+  let decls ← Prompt.promptDecls req 
+  return buildPrompt DeclarationWithDocstring.toMessage decls req.stmt
