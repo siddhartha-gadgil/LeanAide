@@ -230,6 +230,8 @@ def getTacticPrompts(s: String)(numSim : Nat)
         | Except.error e => 
             throwError m!"Failed to parse json: {e}"
 
+
+
 def fourSquaresPrompt := ": ∀ p : Nat, Prime p → (p % 4 = 1) → ∃ a b : Nat, a ^ 2 + b ^ 2 = p"
 
 -- #eval getTacticPrompts fourSquaresPrompt 20 
@@ -246,18 +248,24 @@ theorem {core} := by "
   return prompt
 
 def tacticList : TacticM <| List String := do
-  let prompt ← makeTacticPrompt 20
+  let core ← getTacticString
+  let prompts ← getTacticPrompts core 5
+  let promptPairs := prompts.map (fun p => 
+    let arr := p.splitOn ":= by"
+    (arr.get! 0++ ":= by", arr.get! 1))
+  let prompt := GPT.makePrompt core promptPairs
+  -- let prompt ← makeTacticPrompt 20 
   let cache ← cacheTacticJson.get
   let fullJson ←
-    match cache.find? prompt with
+    match cache.find? prompt.pretty with
     | some json => pure json
     | none =>  
-      let res ← openAIQuery prompt 20 ⟨8, 1⟩ #[";", "sorry", "\n"]
-      cacheTacticJson.set <| cache.insert prompt res
+      let res ← gptQuery prompt 5 ⟨8, 1⟩ #[";", "sorry", "\n"]
+      cacheTacticJson.set <| cache.insert prompt.pretty res
       pure res
   let outJson := 
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
-  let arr ← jsonToExprStrArray outJson
+  let arr ← GPT.jsonToExprStrArray outJson
   let arr := arr.map (fun s => 
       if s.endsWith "<" then s.dropRight 1 |>.trim else s.trim)
   return arr.toList.eraseDups

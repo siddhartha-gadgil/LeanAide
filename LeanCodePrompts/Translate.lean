@@ -40,13 +40,38 @@ def prompt (sys: String) (egs : List <| String × String)(query : String) : Json
     egs.bind (fun (ds, thm) => [message "user" ds, message "assistant" thm])
   Json.arr <| head :: egArr ++ [message "user" query] |>.toArray
 
-def sysPrompt := "You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples. DO NOT include natural language in your answers. Your answers must be valid Lean code."
+def sysPrompt := "You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples. Follow EXACTLY the examples given."
 
-def makePrompt(query : String)(pairs: Array (String × String)) : String := prompt sysPrompt pairs.toList query |>.pretty
+def makePrompt(query : String)(pairs: Array (String × String)) : Json:= prompt sysPrompt pairs.toList query 
+
+def makeFlipPrompt(query : String)(pairs: Array (String × String)) : Json:= prompt sysPrompt (pairs.toList.map (fun (x, y) => (y, x))) query
+
+def jsonToExprStrArray (json: Json) : TermElabM (Array String) := do
+  let outArr : Array String ← 
+    match json.getArr? with
+    | Except.ok arr => 
+        let parsedArr : Array String ← 
+          arr.filterMapM <| fun js =>
+            match js.getObjVal? "message" with
+            | Except.ok jsobj => 
+                match jsobj.getObjVal? "content" with
+                | Except.ok jsstr =>
+                  match jsstr.getStr? with
+                  | Except.ok str => pure (some str)
+                  | Except.error e => 
+                    throwError m!"json string expected but got {js}, error: {e}"
+                | Except.error _ =>
+                  throwError m!"no content field in {jsobj}"
+            | Except.error _ =>
+                throwError m!"no message field in {js}"
+            
+        pure parsedArr
+    | Except.error e => throwError m!"json parsing error: {e}"
 
 end GPT
 
 /-- make prompt from prompt pairs -/
+@[deprecated GPT.makePrompt]
 def makePrompt(prompt : String)(pairs: Array (String × String)) : String := 
       pairs.foldr (fun  (ds, thm) acc => 
         -- acc ++ "/-- " ++ ds ++" -/\ntheorem" ++ thm ++ "\n" ++ "\n"
@@ -59,6 +84,7 @@ theorem "
 
 
 /-- make prompt for reverse translation from prompt pairs -/
+@[deprecated GPT.makeFlipPrompt]
 def makeFlipPrompt(statement : String)(pairs: Array (String × String)) : String := 
       pairs.foldr (fun  (ds, thm) acc => 
 s!"theorem {thm} := 
@@ -81,15 +107,16 @@ s!"{thm} :=
 def openAIKey : IO (Option String) := IO.getEnv "OPENAI_API_KEY"
 
 /--query OpenAI Codex with given prompt and parameters -/
-def openAIQuery(prompt: String)(n: Nat := 1)
-  (temp : JsonNumber := ⟨2, 1⟩)(stopTokens: Array String :=  #[":=", "-/"])(model : String := "code-davinci-002") : MetaM Json := do
+def codexQuery(prompt: String)(n: Nat := 1)
+  (temp : JsonNumber := ⟨2, 1⟩)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json := do
   let key? ← openAIKey
   let key := 
     match key? with
     | some k => k
     | none => panic! "OPENAI_API_KEY not set"
-  let dataJs := Json.mkObj [("model", model), ("prompt", prompt), ("temperature", Json.num temp), ("n", n), ("max_tokens", 150), ("stop", Json.arr <| stopTokens |>.map Json.str)]
+  let dataJs := Json.mkObj [("model", "code-davinci-002"), ("prompt", prompt), ("temperature", Json.num temp), ("n", n), ("max_tokens", 150), ("stop", Json.arr <| stopTokens |>.map Json.str)]
   let data := dataJs.pretty
+  trace[Translate.info] "OpenAI query: {data}"
   let out ←  IO.Process.output {
         cmd:= "curl", 
         args:= #["https://api.openai.com/v1/completions",
@@ -98,6 +125,32 @@ def openAIQuery(prompt: String)(n: Nat := 1)
         "-H", "Content-Type: application/json",
         "--data", data]}
   readJson out.stdout
+
+def gptQuery(messages: Json)(n: Nat := 1)
+  (temp : JsonNumber := ⟨2, 1⟩)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json := do
+  let key? ← openAIKey
+  let key := 
+    match key? with
+    | some k => k
+    | none => panic! "OPENAI_API_KEY not set"
+  let dataJs := Json.mkObj [("model", "gpt-3.5-turbo"), ("messages", messages)
+  , ("temperature", Json.num temp), ("n", n), ("max_tokens", 150), ("stop", Json.arr <| stopTokens |>.map Json.str)
+  ]
+  let data := dataJs.pretty
+  trace[Translate.info] "OpenAI query: {data}"
+  let out ←  IO.Process.output {
+        cmd:= "curl", 
+        args:= #["https://api.openai.com/v1/chat/completions",
+        "-X", "POST",
+        "-H", "Authorization: Bearer " ++ key,
+        "-H", "Content-Type: application/json",
+        "--data", data]}
+  trace[Translate.info] "OpenAI response: {out.stdout} (stderr: {out.stderr})"
+  readJson out.stdout
+
+def openAIQuery(prompt: String)(n: Nat := 1)
+  (temp : JsonNumber := ⟨2, 1⟩)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json :=
+  codexQuery prompt n temp stopTokens 
 
 /-!
 Caching, polling etc to avoid repeatedly calling servers
@@ -223,7 +276,7 @@ def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := "doc_string"
 
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
-def getCodeJson (s: String)(numSim : Nat:= 5)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM Json := do
+def getCodeJson (s: String)(numSim : Nat:= 8)(numKW: Nat := 0)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM Json := do
   match ← getCachedJson? s with
   | some js => return js
   | none =>    
@@ -237,11 +290,13 @@ def getCodeJson (s: String)(numSim : Nat:= 5)(numKW: Nat := 1)(includeFixed: Boo
         if numSim > 0 then  
           getPromptPairs s numSim numKW scoreBound matchBound 
         else pure (#[], ⟨0, "", ""⟩)
-      let pairs := if includeFixed then pairs ++ fixedPrompts else pairs 
-      let prompt := makePrompt s pairs
-      trace[Translate.info] m!"prompt: \n{prompt}"
+      let pairs := if includeFixed then pairs ++ fixedPrompts else pairs
+      let pairs  := pairs.filter (fun (s, _) => s.length < 100) 
+      let prompt := GPT.makePrompt s pairs
+      trace[Translate.info] m!"prompt: \n{prompt.pretty}"
       -- mkLog prompt
-      let fullJson ← openAIQuery prompt queryNum temp
+      let fullJson ← 
+        gptQuery prompt queryNum temp 
       let outJson := 
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
       let pending ←  pendingJsonQueries.get
@@ -354,9 +409,9 @@ def greedyArrayToExpr? (output: Array String) : TermElabM (Option Expr) := do
 /-- reverse translation from `Lean` to natural language -/
 def leanToPrompt (thm: String)(numSim : Nat:= 5)(numKW: Nat := 1)(temp : JsonNumber := 0)(scoreBound: Float := 0.2)(matchBound: Nat := 15)(textField : String := "text") : TermElabM String := do
     let (pairs, _) ← getPromptPairs thm numSim numKW scoreBound matchBound
-    let prompt := makeFlipPrompt thm pairs
+    let prompt := GPT.makeFlipPrompt thm pairs
     -- elabLog prompt
-    let fullJson ← openAIQuery prompt 1 temp
+    let fullJson ← gptQuery prompt 1 temp
     let outJson := 
       (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
     let out? := (outJson.getArrVal? 0).bind fun js => js.getObjVal? textField
@@ -367,6 +422,7 @@ def leanToPrompt (thm: String)(numSim : Nat:= 5)(numKW: Nat := 1)(temp : JsonNum
     return outJson.getStr!
 
 /-- reverse translation from `Lean` to natural language -/
+@[deprecated leanToPrompt]
 def statementToDoc (thm: String)(numSim : Nat:= 5)(temp : JsonNumber := 0) : TermElabM String := do
     let (pairs, _) ← getPromptPairsGeneral thm numSim "statement"
     let prompt := makeFlipStatementsPrompt thm pairs
@@ -400,13 +456,13 @@ def egPrompt := do
 -- #eval leanToPrompt "{  n :  ℕ } ->  Even   (    (   n +  1  ) * n  )"
 
 /-- array of outputs extracted from OpenAI Json -/
-def jsonToExprStrArray (json: Json)(textField : String := "text") : TermElabM (Array String) := do
+def jsonToExprStrArray (json: Json) : TermElabM (Array String) := do
   let outArr : Array String ← 
     match json.getArr? with
     | Except.ok arr => 
         let parsedArr : Array String ← 
           arr.filterMapM <| fun js =>
-            match js.getObjVal? textField with
+            match js.getObjVal? "text" with
               | Except.ok jsstr =>
                 match jsstr.getStr? with
                 | Except.ok str => pure (some str)
@@ -443,7 +499,7 @@ def jsonStringToExprStrArray (jsString: String) : TermElabM (Array String) := do
 
 /-- given json returned by open-ai obtain the best translation -/
 def jsonToExpr' (json: Json) : TermElabM Expr := do
-  let output ← jsonToExprStrArray json
+  let output ← GPT.jsonToExprStrArray json
   arrayToExpr output
 
 /-- translation from a comment-like syntax to a theorem statement -/
@@ -488,15 +544,14 @@ elab "uncurry2" e:term : term => do
 
 universe u
 
-#eval uncurry2 ({α : Type u} →  (l: List α) →  (a : α) → a = a)
-#eval uncurry2 ({α : Prop} →  [Decidable α] →  (a : α) → a = a)
 
 def translateViewM (s: String) : TermElabM String := do
   let js ← getCodeJson  s
-  let output ← jsonToExprStrArray js
-  let e? ← greedyArrayToExpr? output
+  let output ← GPT.jsonToExprStrArray js
+  trace[Translate.info] m!"{output}"
+  let e? ← arrayToExpr? output
   match e? with
-  | some e => do
+  | some (e, _) => do
     e.view
   | none => do
     let stx ← output.findSomeM? <| fun s => do
@@ -510,5 +565,4 @@ def translateViewM (s: String) : TermElabM String := do
 def translateViewCore (s: String) : CoreM String := 
   (translateViewM s).run'.run'
 
-#check Array.findSomeM?
 

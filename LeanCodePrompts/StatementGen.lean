@@ -90,24 +90,25 @@ variable {context}
 
 
 
-def getContinuationExprs (s: String)(context: String := "")(numSim : Nat:= 10)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 20)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Array String := do
+def getContinuationExprs (s: String)(numSim : Nat:= 10)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 20)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Array String := do
       -- work starts here; before this was caching, polling etc
     let (pairs, IOOut) ←  
       if numSim > 0 then  
         getPromptPairs s numSim numKW scoreBound matchBound 
       else pure (#[], ⟨0, "", ""⟩)
     let pairs := if includeFixed then pairs ++ fixedPrompts else pairs 
-    let prompt := makeThmsPrompt pairs context
+    let promptPairs := pairs.map (fun (_, thm) => ("State a theorem", s!"theorem {thm}"))
+    let prompt := GPT.makePrompt "State a theorem" promptPairs
     trace[Translate.info] m!"prompt: \n{prompt}"
     mkLog prompt
-    let fullJson ← openAIQuery prompt queryNum temp
+    let fullJson ← gptQuery prompt queryNum temp
     let outJson := 
       (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
     let pending ←  pendingJsonQueries.get
     pendingJsonQueries.set (pending.erase s)
     if IOOut.exitCode = 0 then cacheJson s outJson 
       else throwError m!"Web query error: {IOOut.stderr}"
-    jsonToExprStrArray outJson
+    GPT.jsonToExprStrArray outJson
 
 def getDocContinuationExprs (s: String)(numSim : Nat:= 10)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 8)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Array String := do
       -- work starts here; before this was caching, polling etc
@@ -116,17 +117,18 @@ def getDocContinuationExprs (s: String)(numSim : Nat:= 10)(numKW: Nat := 1)(incl
         getPromptPairs s numSim numKW scoreBound matchBound 
       else pure (#[], ⟨0, "", ""⟩)
     let pairs := if includeFixed then pairs ++ fixedPrompts else pairs 
-    let prompt := makeDocsThmsPrompt pairs 
+    let promptPairs := pairs.map (fun (doc, thm) => ("State a theorem with docstring", s!"/-- {doc} -/\ntheorem {thm}"))
+    let prompt := GPT.makePrompt "State a theorem" promptPairs
     trace[Translate.info] m!"prompt: \n{prompt}"
     mkLog prompt
-    let fullJson ← openAIQuery prompt queryNum temp #[":="]
+    let fullJson ← gptQuery prompt queryNum temp #[":="]
     let outJson := 
       (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
     let pending ←  pendingJsonQueries.get
     pendingJsonQueries.set (pending.erase s)
     if IOOut.exitCode = 0 then cacheJson s outJson 
       else throwError m!"Web query error: {IOOut.stderr}"
-    let completions ← jsonToExprStrArray outJson
+    let completions ← GPT.jsonToExprStrArray outJson
     let padded := completions.map (fun c => "/-- " ++ c)
     return padded
 
@@ -134,17 +136,18 @@ def getSectionContinuationExprs (s: String)(context: String)(numSim : Nat:= 10)(
       -- work starts here; before this was caching, polling etc
     let (triples, IOOut) ←  
         getPromptTriples s numSim  
-    let prompt := makeSectionPrompt triples context
+    let promptPairs := triples.map (fun (doc, args, thm) => ("State a theorem with docstring in context", s!"variable {args}\n/-- {doc} -/\ntheorem {thm}"))
+    let prompt := GPT.makePrompt "State a theorem" promptPairs
     trace[Translate.info] m!"prompt: \n{prompt}"
     mkLog prompt
-    let fullJson ← openAIQuery prompt queryNum temp #[":="]
+    let fullJson ← gptQuery prompt queryNum temp #[":="]
     let outJson := 
       (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
     let pending ←  pendingJsonQueries.get
     pendingJsonQueries.set (pending.erase s)
     if IOOut.exitCode = 0 then cacheJson s outJson 
       else throwError m!"Web query error: {IOOut.stderr}"
-    let completions ← jsonToExprStrArray outJson
+    let completions ← GPT.jsonToExprStrArray outJson
     let padded := completions.map (fun c => 
     s!"{context}
 /-- " ++ c)
@@ -153,7 +156,7 @@ def getSectionContinuationExprs (s: String)(context: String)(numSim : Nat:= 10)(
 
 def showContinuationExprs (s: String)(context: String := "")(numSim : Nat:= 10)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 8)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Array (String × (List String)) := do
   let exprs ← 
-    getContinuationExprs s context numSim numKW includeFixed queryNum temp scoreBound matchBound
+    getContinuationExprs s numSim numKW includeFixed queryNum temp scoreBound matchBound
   exprs.mapM (fun s => do
     let exps? ← polyElabThmTrans (context ++ " " ++ s)
     let exps := exps?.toOption.getD []
