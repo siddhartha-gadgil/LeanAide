@@ -1,7 +1,8 @@
-import StatementAutoformalisation.Interface
-import StatementAutoformalisation.Config.Custom
-import StatementAutoformalisation.Config.Informalisation
-import StatementAutoformalisation.Config.SuggestName
+-- import StatementAutoformalisation.Interface
+import StatementAutoformalisation.Config.Default
+-- import StatementAutoformalisation.Config.Custom
+-- import StatementAutoformalisation.Config.Informalisation
+-- import StatementAutoformalisation.Config.SuggestName
 -- import Mathbin.All
 
 /-!

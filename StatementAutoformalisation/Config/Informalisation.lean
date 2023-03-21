@@ -6,11 +6,14 @@ namespace Informalisation
 
 def LLMParams : LLM.Params :=
 {
-  openAIModel := "code-davinci-002",
+  openAIModel := "gpt-3.5-turbo",
   temperature := 2,
   n := 1,
   maxTokens := 200,
-  stopTokens := #["-/", "\n\n"]
+  stopTokens := #["-/", "\n\n"],
+  systemMessage := 
+  "You are a coding assistant who translates from Lean Theorem Prover code to natural language following examples.
+   Follow EXACTLY the examples given."
 }
 
 def SentenceSimilarityParams : SentenceSimilarity.Params :=
@@ -27,10 +30,6 @@ def KeywordExtractionParams : KeywordExtraction.Params :=
   nKw := 0
 }
 
-/-- The expected `kind` (`theorem`/`def`/...) of the completion.
-  This variable is required only to modify the suffix of the main prompt. -/
-def expectedKind? : Option String := none
-
 def PromptParams : Prompt.Params :=
 {
   toLLMParams := LLMParams, 
@@ -40,8 +39,8 @@ def PromptParams : Prompt.Params :=
   useNames := #[],
   useModules := #[],
   useMainCtx? := false,
-  printDecl := { toString := fun ⟨decl, docstring⟩ => s!"{toString decl}\n{printAsComment docstring}" }
-  mkSuffix := fun stmt => s!"{stmt}\n/--",
+  printMessage := fun decl => #[mkMessage "user" decl.toDeclaration.toString, mkMessage "assistant" decl.docstring],
+  mkSuffix := id,
   processCompletion := fun stmt completion => s!"{printAsComment completion}\n{stmt}"
 }
 
@@ -51,7 +50,7 @@ def InterfaceParams : Interface.Params DeclarationWithDocstring :=
   extractText? := pure,
   action := fun stmt =>
     Prompt.translate ⟨PromptParams, stmt⟩ >>= (fun (_, translations) => pure translations[0]!),
-  postProcess := fun _ => DeclarationWithDocstring.toString.toString
+  postProcess := fun _ => DeclarationWithDocstring.toString
 }
 
 @[codeActionProvider] def Action := performCodeAction InterfaceParams

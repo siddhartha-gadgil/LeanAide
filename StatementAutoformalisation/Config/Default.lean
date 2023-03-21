@@ -51,7 +51,7 @@ def InterfaceParams : Interface.Params DeclarationWithDocstring :=
   extractText? := extractCommentText?,
   action := fun stmt =>
     Prompt.typecorrectTranslations ⟨PromptParams, stmt⟩ >>= (pure ·[0]!),
-  postProcess := fun _ => DeclarationWithDocstring.toString.toString
+  postProcess := fun _ => DeclarationWithDocstring.toString
 }
 
 @[codeActionProvider] def Action := performCodeAction InterfaceParams
