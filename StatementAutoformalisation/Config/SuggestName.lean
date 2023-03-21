@@ -6,11 +6,12 @@ namespace SuggestName
 
 def LLMParams : LLM.Params :=
 {
-  openAIModel := "code-davinci-002",
+  openAIModel := "gpt-3.5-turbo",
   temperature := 4,
   n := 5,
   maxTokens := 200,
-  stopTokens := #["\n\n"]
+  stopTokens := #["\n\n"],
+  systemMessage := "Please suggest a suitable name for the given theorem written in Lean."
 }
 
 def PromptParams : Prompt.Params :=
@@ -22,8 +23,8 @@ def PromptParams : Prompt.Params :=
   useNames := #[],
   useModules := #[],
   useMainCtx? := false,
-  printDecl := { toString := fun d => s!"{DeclarationWithDocstring.printType.toString d}\nName: {d.name.getD "none"}" }
-  mkSuffix := fun d => s!"{d}\nName:",
+  printMessage := fun decl => #[mkMessage "user" decl.printType, mkMessage "assistant" (decl.name.getD "none")],
+  mkSuffix := id,
   processCompletion := fun type name => s!"/-- -/ {name} {type}"
 }
 
