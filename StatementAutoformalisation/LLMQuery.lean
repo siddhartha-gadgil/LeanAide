@@ -6,7 +6,7 @@ namespace LLM
 /-- A structure with all the relevant parameters for making a query to a large language model such as OpenAI Codex. -/
 structure Params where
   /-- The Codex model to use. -/
-  openAIModel : String := "code-davinci-002"
+  openAIModel : String := "gpt-3.5-turbo"
   /-- The temperature at which to generate the completion. 
       This is stored as a natural number representing the actual temperature scaled up by a factor of ten. -/
   temperature : Nat := 8
@@ -21,12 +21,11 @@ deriving Repr
 /-- A `Request` comprises a prompt and a collection of parameters. -/
 structure Request extends Params where
   /-- The main prompt for querying the large language model. -/
-  prompt : String
-deriving Repr
+  messages : Array Lean.Json
 
 /-- Convert the parameters for querying the LLM to `JSON` format. -/
 def Request.toJson (req : LLM.Request) : Lean.Json := .mkObj $ [
-  ("prompt", req.prompt),
+  ("messages", .arr <| req.messages),
   ("model", req.openAIModel),
   ("temperature", .num ⟨req.temperature, 1⟩),
   ("n", req.n),
@@ -46,7 +45,7 @@ def key : IO String := do
 def Request.queryLLM (req : LLM.Request) : IO Lean.Json := do
   let out ←  IO.Process.output {
       cmd:= "curl", 
-      args:= #["https://api.openai.com/v1/completions",
+      args:= #["https://api.openai.com/v1/chat/completions",
       "-X", "POST",
       "-H", s!"Authorization: Bearer {← key}",
       "-H", "Content-Type: application/json",
@@ -59,13 +58,16 @@ def Request.getLLMCompletions (req : LLM.Request) : IO <| Array String := do
   IO.ofExcept <| do
     let choices ← out.getObjVal? "choices"
     let completions ← choices.getArr?
-    completions.mapM <| fun completion => do (← completion.getObjVal? "text").getStr?
+    completions.mapM <| fun completion => do (← completion.getObjVal? "content").getStr?
 
 end LLM
 
 section Test
 
-def LLM.egReq : LLM.Request := {prompt := "For all epsilon greater than zero, ", n := 1}
+def LLM.egReq : LLM.Request := 
+{messages := 
+  #[(.mkObj [("role", "user"), ("content", "For all epsilon greater than zero, ")])], 
+  n := 1}
 
 -- #eval LLM.egReq.getLLMCompletions
 
