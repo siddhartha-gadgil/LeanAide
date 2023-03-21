@@ -8,7 +8,7 @@ def translateWithDataM (s: String)(numSim : Nat:= 10)(numKW: Nat := 1)(includeFi
   TermElabM ((Option (Expr × (Array String) )) × Array String) := do
   let js ← 
     getCodeJson s numSim numKW includeFixed queryNum temp scoreBound matchBound
-  let output ← jsonToExprStrArray js
+  let output ← GPT.jsonToExprStrArray js
   let output := output.toList.eraseDups.toArray
   let res ← arrayToExpr? output
   return (res, output)
