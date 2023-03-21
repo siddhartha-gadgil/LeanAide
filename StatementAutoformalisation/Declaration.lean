@@ -100,9 +100,8 @@ def Declaration.toType (decl : Declaration) : String :=
   ns ++ type
 
 /-- Render a `Declaration` as a `String`. -/
-instance Declaration.toString : ToString Declaration where
-  toString := fun ⟨kind, name?, _, args, type, value⟩ =>
-      s! "{kind} {name?.getD ""} {args} : {type} := {value}"
+def Declaration.toString : Declaration → String
+  | ⟨kind, name?, _, args, type, value⟩ => s! "{kind} {name?.getD ""} {args} : {type} := {value}"
 
 /-- Display just the type of a `Declaration`, ignoring other details. -/
 instance Declaration.printType : ToString Declaration where
@@ -113,9 +112,8 @@ instance Declaration.printType : ToString Declaration where
 def printAsComment (doc : String) : String := s!"/-- {doc} -/"
 
 /-- Render a `DeclarationWithDocstring` as a `String`. -/
-instance DeclarationWithDocstring.toString : ToString DeclarationWithDocstring where
-  toString := fun ⟨decl, doc⟩ => 
-    s!"{printAsComment doc}\n{Declaration.toString.toString decl}"
+def DeclarationWithDocstring.toString : DeclarationWithDocstring → String
+  | ⟨decl, doc⟩ =>  s!"{printAsComment doc}\n{decl.toString}"
 
 /-- Display just the type of a `DeclarationWithDocstring`, ignoring other details. -/
 instance DeclarationWithDocstring.printType : ToString DeclarationWithDocstring where
@@ -124,7 +122,7 @@ instance DeclarationWithDocstring.printType : ToString DeclarationWithDocstring 
 /-- Display a `DeclarationWithDocstring` as a message where 
   the user describes the declaration in natural language and the assistant replies with the formal code. -/
 def DeclarationWithDocstring.toMessage (decl : DeclarationWithDocstring) : Array Lean.Json :=
-  #[mkMessage "user" decl.docstring, mkMessage "assistant" (Declaration.toString.toString decl.toDeclaration)]
+  #[mkMessage "user" decl.docstring, mkMessage "assistant" decl.toDeclaration.toString]
 
 /-- Build a prompt from a list of `DeclarationWithDocstring`s. Note that the declarations are printed in the reverse order. -/
 def buildPrompt (toMessage : DeclarationWithDocstring → Array Lean.Json) 
