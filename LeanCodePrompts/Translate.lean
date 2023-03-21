@@ -549,9 +549,9 @@ def translateViewM (s: String) : TermElabM String := do
   let js ← getCodeJson  s
   let output ← GPT.jsonToExprStrArray js
   trace[Translate.info] m!"{output}"
-  let e? ← greedyArrayToExpr? output
+  let e? ← arrayToExpr? output
   match e? with
-  | some e => do
+  | some (e, _) => do
     e.view
   | none => do
     let stx ← output.findSomeM? <| fun s => do
