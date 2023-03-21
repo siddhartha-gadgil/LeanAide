@@ -21,8 +21,8 @@ structure Params where
   useModules : Array Lean.Name := #[]
   /-- Toggles whether to use declarations from the main context in the prompt. -/
   useMainCtx? : Bool := false
-  /-- A method for printing a `Declaration` as a `String`. -/
-  printDecl : ToString DeclarationWithDocstring := DeclarationWithDocstring.toString
+  /-- A method for printing a `DeclarationWithDocstring` as a message. -/
+  printMessage : DeclarationWithDocstring → Array Lean.Json := DeclarationWithDocstring.toMessage
   /-- Make the suffix to add at the end of the prompt. -/
   mkSuffix : String → String
   /-- An additional processing of the Codex completion before converting to a `DeclarationWithDocstring`. -/
@@ -46,7 +46,7 @@ def promptDecls (req : Prompt.Request) : Lean.MetaM <| Array DeclarationWithDocs
 /-- Query the language model for translations based on the given `Prompt.Request`. -/
 def translate (req : Prompt.Request) : Lean.MetaM <| Array Lean.Json × Array DeclarationWithDocstring := do
   let decls ← promptDecls req
-  let prompt := buildPrompt decls <| req.mkSuffix req.stmt
+  let prompt := buildPrompt req.printMessage decls <| req.mkSuffix req.stmt
   let completions ← LLM.Request.getLLMCompletions ⟨req.toLLMParams, prompt⟩
   return (prompt, 
     ← completions |>.map (req.processCompletion req.stmt) |>.filterMapM' DeclarationWithDocstring.fromString?)

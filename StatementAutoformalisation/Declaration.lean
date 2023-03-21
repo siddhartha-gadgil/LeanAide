@@ -127,11 +127,11 @@ def DeclarationWithDocstring.toMessage (decl : DeclarationWithDocstring) : Array
   #[mkMessage "user" decl.docstring, mkMessage "assistant" (Declaration.toString.toString decl.toDeclaration)]
 
 /-- Build a prompt from a list of `DeclarationWithDocstring`s. Note that the declarations are printed in the reverse order. -/
-def buildPrompt (decls : Array DeclarationWithDocstring)
-  (suffix : String) : Array Lean.Json :=
+def buildPrompt (toMessage : DeclarationWithDocstring → Array Lean.Json) 
+  (decls : Array DeclarationWithDocstring) (suffix : String) : Array Lean.Json :=
     decls.foldr
     -- this builds the prompt backwards
-    (fun d prompt => d.toMessage ++ prompt) 
+    (fun d prompt => (toMessage d) ++ prompt) 
     #[mkMessage "user" suffix]
 
 /-- Read a `Declaration` from `JSON` format. -/
