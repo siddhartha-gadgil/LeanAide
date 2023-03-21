@@ -109,7 +109,7 @@ instance Declaration.printType : ToString Declaration where
   toString := fun ⟨_, _, _, args, type, _⟩ =>
     s!"{args}{if args.isEmpty then "" else " : "}{type}"
 
-/-- Decorate a `String` with Lean comment or docstring syntax. -/
+-- /-- Decorate a `String` with Lean comment or docstring syntax. -/
 def printAsComment (doc : String) : String := s!"/-- {doc} -/"
 
 /-- Render a `DeclarationWithDocstring` as a `String`. -/
@@ -121,13 +121,18 @@ instance DeclarationWithDocstring.toString : ToString DeclarationWithDocstring w
 instance DeclarationWithDocstring.printType : ToString DeclarationWithDocstring where
   toString := fun ⟨decl, _⟩ => Declaration.printType.toString decl
 
+/-- Display a `DeclarationWithDocstring` as a message where 
+  the user describes the declaration in natural language and the assistant replies with the formal code. -/
+def DeclarationWithDocstring.toMessage (decl : DeclarationWithDocstring) : Array Lean.Json :=
+  #[mkMessage "user" decl.docstring, mkMessage "assistant" (Declaration.toString.toString decl.toDeclaration)]
+
 /-- Build a prompt from a list of `DeclarationWithDocstring`s. Note that the declarations are printed in the reverse order. -/
-def buildPrompt [ToString DeclarationWithDocstring] (decls : Array DeclarationWithDocstring)
-  (suffix : String) : String :=
+def buildPrompt (decls : Array DeclarationWithDocstring)
+  (suffix : String) : Array Lean.Json :=
     decls.foldr
     -- this builds the prompt backwards
-    (fun d prompt => s!"{toString d}\n\n{prompt}") 
-    suffix
+    (fun d prompt => d.toMessage ++ prompt) 
+    #[mkMessage "user" suffix]
 
 /-- Read a `Declaration` from `JSON` format. -/
 def Declaration.fromJson (kind : String := "theorem") (data : Lean.Json) : Except String Declaration := do

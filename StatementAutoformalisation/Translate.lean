@@ -44,9 +44,9 @@ def promptDecls (req : Prompt.Request) : Lean.MetaM <| Array DeclarationWithDocs
   return allPrompts.foldl .append .empty
 
 /-- Query the language model for translations based on the given `Prompt.Request`. -/
-def translate (req : Prompt.Request) : Lean.MetaM <| String × Array DeclarationWithDocstring := do
+def translate (req : Prompt.Request) : Lean.MetaM <| Array Lean.Json × Array DeclarationWithDocstring := do
   let decls ← promptDecls req
-  let prompt := @buildPrompt req.printDecl decls <| req.mkSuffix req.stmt
+  let prompt := buildPrompt decls <| req.mkSuffix req.stmt
   let completions ← LLM.Request.getLLMCompletions ⟨req.toLLMParams, prompt⟩
   return (prompt, 
     ← completions |>.map (req.processCompletion req.stmt) |>.filterMapM' DeclarationWithDocstring.fromString?)
