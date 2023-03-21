@@ -104,9 +104,8 @@ def Declaration.toString : Declaration → String
   | ⟨kind, name?, _, args, type, value⟩ => s! "{kind} {name?.getD ""} {args} : {type} := {value}"
 
 /-- Display just the type of a `Declaration`, ignoring other details. -/
-instance Declaration.printType : ToString Declaration where
-  toString := fun ⟨_, _, _, args, type, _⟩ =>
-    s!"{args}{if args.isEmpty then "" else " : "}{type}"
+def Declaration.printType : Declaration → String
+  | ⟨_, _, _, args, type, _⟩ => s!"{args}{if args.isEmpty then "" else " : "}{type}"
 
 -- /-- Decorate a `String` with Lean comment or docstring syntax. -/
 def printAsComment (doc : String) : String := s!"/-- {doc} -/"
@@ -116,8 +115,8 @@ def DeclarationWithDocstring.toString : DeclarationWithDocstring → String
   | ⟨decl, doc⟩ =>  s!"{printAsComment doc}\n{decl.toString}"
 
 /-- Display just the type of a `DeclarationWithDocstring`, ignoring other details. -/
-instance DeclarationWithDocstring.printType : ToString DeclarationWithDocstring where
-  toString := fun ⟨decl, _⟩ => Declaration.printType.toString decl
+def DeclarationWithDocstring.printType : DeclarationWithDocstring → String
+  | ⟨decl, _⟩ => decl.printType
 
 /-- Display a `DeclarationWithDocstring` as a message where 
   the user describes the declaration in natural language and the assistant replies with the formal code. -/
