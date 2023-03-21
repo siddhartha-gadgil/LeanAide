@@ -68,8 +68,7 @@ section Test
 
 def LLM.egReq : LLM.Request := 
 { systemMessage := "You are a large language model."
-  messages := 
-  #[(.mkObj [("role", "user"), ("content", "For all epsilon greater than zero, ")])], 
+  messages := #[mkMessage "user" "For all epsilon greater than zero, "], 
   n := 1 }
 
 -- #eval LLM.egReq.getLLMCompletions

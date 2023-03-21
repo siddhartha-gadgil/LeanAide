@@ -43,6 +43,9 @@ def getStr! (j : Json) : String :=
 
 end Lean.Json
 
+def mkMessage (role : String) (content : String) : Json := 
+  .mkObj [("role", role), ("content", content)]
+
 def Array.joinWith (sep : String := " ") : Array String → String
   | ⟨[]⟩ => ""
   | ⟨a::as⟩ => Array.foldl (fun acc x => acc ++ sep ++ x) a ⟨as⟩
