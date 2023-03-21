@@ -18,7 +18,7 @@ def LLMParams : LLM.Params :=
 
 def SentenceSimilarityParams : SentenceSimilarity.Params :=
 {
-  source := "data/safe-prompts.json",
+  source := "data/prompts.json",
   sentenceTransformersModel := "all-mpnet-base-v2",
   kind := "theorem",
   field := "doc_string",

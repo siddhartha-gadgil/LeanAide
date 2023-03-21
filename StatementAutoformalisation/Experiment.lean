@@ -20,3 +20,8 @@ The code actions implemented so far can be tested here.
 /- Every prime number is either `2` or odd. -/
 
 example : ∀ n : Nat, ∃ m : Nat, m > n ∧ m % 2 = 1  := sorry
+
+
+def req : Prompt.Request := ⟨Default.PromptParams, "There are infinitely many odd numbers."⟩
+
+#eval buildPrompt DeclarationWithDocstring.toMessage <| Prompt.promptDecls req
