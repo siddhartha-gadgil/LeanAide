@@ -183,7 +183,7 @@ def offSpringShallowTriple(excludePrefixes: List Name := [])(depth: Nat)
   let goodKeys := keys.filter fun (name, _) =>
     !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name))
   IO.println s!"Tokens considered (excluding system code): {goodKeys.size}"
-  let depsFile := System.mkFilePath ["data", "deps.yaml"]
+  let depsFile := System.mkFilePath ["rawdata", "deps.yaml"]
   let h ← IO.FS.Handle.mk depsFile IO.FS.Mode.append
   let mut count := 0
   for (n, type) in  (goodKeys) do
