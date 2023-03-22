@@ -30,9 +30,9 @@ if size == 'small':
 from transformers import T5ForConditionalGeneration 
 model = T5ForConditionalGeneration.from_pretrained(f'Salesforce/codet5-{size}')
 import torch
-save_field = field
+load_field = field
 if len(sys.argv > 2):
-    load_field = sys.argv[2] # can be eg 'ids' or even a chain of fields like 'lemmas_ids'
+    load_field = f'{sys.argv[2]}_field' # can be eg 'ids' or even a chain of fields like 'lemma_ids'
 
 model.load_state_dict(torch.load(f"codet5_{load_field}_epoch_2.pt"))
 
@@ -65,7 +65,7 @@ def evaluate():
 
     gen_progress_bar = tqdm(range(len(test_ids)))
 
-    f= open("rawdata/test_ids_generated.txt","w", encoding='utf-8')
+    f= open(f"rawdata/test_{field}_generated.jsonl","w", encoding='utf-8')
 
     for d in test_ids:
         gens = generate_premises(d['theorem'], prefix)

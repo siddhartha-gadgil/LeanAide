@@ -65,7 +65,7 @@ def evaluate():
 
     gen_progress_bar = tqdm(range(len(test_ids)))
 
-    f= open("rawdata/test_ids_generated.txt","w", encoding='utf-8')
+    f= open(f"rawdata/test_{field}_generated.jsonl","w", encoding='utf-8')
 
     for d in test_ids:
         gens = generate_premises(d['theorem'], prefix)

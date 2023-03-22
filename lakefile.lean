@@ -86,6 +86,9 @@ lean_exe getdefns{
   supportInterpreter := true
 }
 
+lean_exe moduledeps{
+  supportInterpreter := true
+}
 
 @[default_target]
 lean_exe chkthms{
