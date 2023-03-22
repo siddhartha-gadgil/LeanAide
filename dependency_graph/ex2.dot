@@ -1,0 +1,34 @@
+strict digraph { 
+	"Tropical.injective_trop" -> {"Tropical.tropEquiv" [color=green] "Equiv.injective" [color=green]}
+	"Tropical.tropEquiv" -> {"Tropical.trop" [color=green] "Tropical.untrop_trop" [color=green] "Tropical.untrop" [color=green] "Equiv.mk" [color=green] "Tropical.trop_untrop" [color=green]}
+	"Equiv.injective" -> {"EquivLike.injective" [color=green]}
+	"Tropical.trop" -> {"id" [color=green]}
+	"Function.Injective" -> {"Eq" [color=green]}
+	"Tropical.trop" -> {"id" [color=green]}
+	"Tropical.untrop_trop" -> {"rfl" [color=green]}
+	"Tropical.untrop" -> {"id" [color=green]}
+	"Tropical.trop_untrop" -> {"rfl" [color=green]}
+	"EquivLike.injective" -> {"EmbeddingLike.injective" [color=green]}
+	"rfl" -> {"rfl.proof_1" [color=green]}
+	"rfl" -> {"rfl.proof_1" [color=green]}
+	"EmbeddingLike.injective" -> {"EmbeddingLike.injective'" [color=green]}
+	"rfl.proof_1" -> {"Eq.refl" [color=green]}
+	"rfl.proof_1" -> {"Eq.refl" [color=green]}
+	"Tropical.injective_trop" -> {"Tropical.trop" [color=blue] "Function.Injective" [color=blue]}
+	"Tropical.tropEquiv" -> {"Equiv" [color=blue] "Tropical" [color=blue]}
+	"Equiv.injective" -> {"FunLike.coe" [color=blue] "Function.Injective" [color=blue]}
+	"Tropical.trop" -> {"Tropical" [color=blue]}
+	"Tropical.trop" -> {"Tropical" [color=blue]}
+	"Tropical.untrop_trop" -> {"Tropical.untrop" [color=blue] "Tropical.trop" [color=blue] "Eq" [color=blue]}
+	"Equiv.mk" -> {"Equiv" [color=blue]}
+	"Tropical.trop_untrop" -> {"Tropical.untrop" [color=blue] "Tropical.trop" [color=blue] "Eq" [color=blue]}
+	"EquivLike.injective" -> {"FunLike.coe" [color=blue] "Function.Injective" [color=blue]}
+	"rfl" -> {"Eq" [color=blue]}
+	"rfl" -> {"Eq" [color=blue]}
+	"EmbeddingLike.injective" -> {"FunLike.coe" [color=blue] "Function.Injective" [color=blue]}
+	"rfl.proof_1" -> {"Eq" [color=blue]}
+	"rfl.proof_1" -> {"Eq" [color=blue]}
+	"EmbeddingLike.injective'" -> {"FunLike.coe" [color=blue] "Function.Injective" [color=blue]}
+	"Eq.refl" -> {"Eq" [color=blue]}
+	"Eq.refl" -> {"Eq" [color=blue]}
+	}

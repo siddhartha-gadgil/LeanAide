@@ -15,3 +15,5 @@ data/tagged_nl2.json
 *.npy
 lake-packages/
 .cache/
+dependency_graph/deps.yaml
+dependency_graph/deps_copy_rep.yaml
