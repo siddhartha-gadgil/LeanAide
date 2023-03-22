@@ -70,7 +70,7 @@ def preprocess_examples_ids(examples):
     return preprocess_examples(examples, prefix_id, 'ids')
 
 def preprocess_examples_lemmas(examples):
-    return preprocess_examples(examples, prefix_lemma, 'lemmas')
+    return preprocess_examples(examples, prefix_lemma, 'lemma')
 
 def preprocess_examples_terms(examples):
     return preprocess_examples(examples, prefix_term, 'terms')

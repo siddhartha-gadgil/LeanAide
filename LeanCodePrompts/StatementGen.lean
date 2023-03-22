@@ -54,6 +54,12 @@ def getPromptTriples(s: String)(numSim : Nat)
           allTriples.toList.eraseDups.toArray, simJsonOut)
 
 
+def sysContinuationPrompt := "You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples. Follow EXACTLY the syntax in the examples given. You will continue the sequence of examples"
+
+def continuationPrompt (egs: String) : Json := 
+  Json.arr <| #[GPT.message "system" sysContinuationPrompt, GPT.message "user" egs]
+    
+
 /-- make prompt for continuing statements-/
 def makeThmsPrompt(pairs: Array (String × String))(context: String := "") : String := 
 pairs.foldr (fun  (_, thm) acc => 
@@ -61,8 +67,7 @@ pairs.foldr (fun  (_, thm) acc =>
 s!"theorem {thm} :=
 
 {acc}"
-          ) s!"
-theorem {context}"
+          ) s!""
 
 
 /-- make prompt for continuing statements with docs-/
@@ -97,8 +102,7 @@ def getContinuationExprs (s: String)(numSim : Nat:= 10)(numKW: Nat := 1)(include
         getPromptPairs s numSim numKW scoreBound matchBound 
       else pure (#[], ⟨0, "", ""⟩)
     let pairs := if includeFixed then pairs ++ fixedPrompts else pairs 
-    let promptPairs := pairs.map (fun (_, thm) => ("State a theorem", s!"theorem {thm}"))
-    let prompt := GPT.makePrompt "State a theorem" promptPairs
+    let prompt := continuationPrompt (makeThmsPrompt pairs)
     trace[Translate.info] m!"prompt: \n{prompt}"
     mkLog prompt
     let fullJson ← gptQuery prompt queryNum temp
@@ -160,7 +164,7 @@ def showContinuationExprs (s: String)(context: String := "")(numSim : Nat:= 10)(
   exprs.mapM (fun s => do
     let exps? ← polyElabThmTrans (context ++ " " ++ s)
     let exps := exps?.toOption.getD []
-    return (s!"theorem {context} {s} := sorry",exps.map (fun (_, s) => s.2))
+    return (s!"{s} := sorry",exps.map (fun (_, s) => s.2))
   )
 
 def showDocContinuationExprs (s: String)(numSim : Nat:= 10)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 20)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Array (String × (List String)) := do

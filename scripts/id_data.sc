@@ -113,6 +113,7 @@ def idData(js: ujson.Value) = ujson.Obj(
 
 lazy val train_js =
   os.read.lines.stream(os.pwd / "rawdata" / "train_premises.jsonl")
+
 def writeTrainingData(): Unit = {
   os.write.over(os.pwd / "rawdata" / "train_ids.jsonl", "")
   train_js.foreach { s =>
@@ -172,6 +173,32 @@ def writePremisePairs(): Unit = {
           ujson.Obj(
             "theorem" -> js("theorem").str,
             "premise" -> id
+          )
+        ) + "\n"
+      )
+    }
+  }
+}
+
+def writeLemmaPairs(group: String): Unit = {
+  count = 0
+  var pairCount = 0
+  val js = os.read.lines.stream(os.pwd / "rawdata" / s"${group}_premises.jsonl")
+  val pair_file = os.pwd / "rawdata" / s"${group}_lemma.jsonl"
+  os.write.over(pair_file, "")
+  js.foreach { s =>
+    val js = upickle.default.read[ujson.Obj](s)
+    count = count + 1
+    if (count % 1000 == 0) println(s"$count pairs: $pairCount")
+    val lemmas = js("lemmas").arr.map(_.str).distinct
+    lemmas.foreach { id =>
+      pairCount = pairCount + 1
+      os.write.append(
+        pair_file,
+        ujson.write(
+          ujson.Obj(
+            "theorem" -> js("theorem").str,
+            "lemma" -> id
           )
         ) + "\n"
       )

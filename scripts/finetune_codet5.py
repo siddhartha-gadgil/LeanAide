@@ -19,7 +19,7 @@ prefix = prefixes[field] +  ' in Lean proof from Theorem: '
 
 from datasets import load_dataset
 
-dataset = load_dataset('json', data_dir='rawdata', data_files="train_ids.jsonl")
+dataset = load_dataset('json', data_dir='rawdata', data_files=f"train_{field}.jsonl")
 print(dataset)
 
 from transformers import RobertaTokenizer
