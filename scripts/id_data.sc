@@ -190,15 +190,20 @@ def writeLemmaPairs(group: String): Unit = {
     val js = upickle.default.read[ujson.Obj](s)
     count = count + 1
     if (count % 1000 == 0) println(s"$count pairs: $pairCount")
-    val lemmas = js("lemmas").arr.map(_.str).distinct
-    lemmas.foreach { id =>
+    val lemmas = js("propProofs").arr
+    lemmas.foreach { propProof =>
       pairCount = pairCount + 1
       os.write.append(
         pair_file,
         ujson.write(
           ujson.Obj(
-            "theorem" -> js("theorem").str,
-            "lemma" -> id
+            "theorem" -> js("context").arr
+      .map(s => shrink(s.str))
+      .mkString("", " ", s" : ${shrink(js("type").str)}"),
+            "lemma" -> propProof("context").arr
+      .map(s => shrink(s.str))
+      .mkString("", " ", s" : ${shrink(propProof("prop").str
+          )}")
           )
         ) + "\n"
       )

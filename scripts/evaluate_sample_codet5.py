@@ -59,7 +59,7 @@ def evaluate():
     model.eval()
     import json
     import random
-    with open(f'rawdata/test_{field}.jsonl') as f:
+    with open(f'rawdata/test_ids.jsonl') as f:
         test_ids = [json.loads(line) for line in f if random.random() < 0.04]
     print ('Test set size:', len(test_ids))
 
