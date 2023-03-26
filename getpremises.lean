@@ -22,13 +22,6 @@ def main (_: List String) : IO Unit := do
     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]
     } 
     {env := env}
-  match ← io?.toIO' with
-  | Except.ok cursor =>
-    IO.println s!"Success: ran to {cursor}"
-  | Except.error e =>
-    do
-          IO.println "Ran with error"
-          let msg ← e.toMessageData.toString
-          IO.println msg
-
+  let cursor ←  io?.runToIO
+  IO.println s!"Success: ran to {cursor}"
   return ()
