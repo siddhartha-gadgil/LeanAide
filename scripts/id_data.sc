@@ -180,6 +180,34 @@ def writePremisePairs(): Unit = {
   }
 }
 
+def writeTrainPremisePairs(): Unit = {
+  var count = 0
+  var pairCount = 0
+  val id_file = os.pwd / "rawdata" / "train_premise_ids.jsonl"
+  val pair_file = os.pwd / "rawdata" / "train_premise_pairs.jsonl"
+  os.write.over(pair_file, "")
+  val js = os.read.lines.stream(id_file)
+  js.foreach { s =>
+    val js = upickle.default.read[ujson.Obj](s)
+    count = count + 1
+    if (count % 1000 == 0) println(s"$count pairs: $pairCount")
+    val premises = js("premises").arr.map(_.str).distinct
+    premises.foreach { id =>
+      pairCount = pairCount + 1
+      os.write.append(
+        pair_file,
+        ujson.write(
+          ujson.Obj(
+            "theorem" -> js("theorem").str,
+            "premise" -> id
+          )
+        ) + "\n"
+      )
+    }
+  }
+}
+
+
 def writeLemmaPairs(group: String): Unit = {
   count = 0
   var pairCount = 0
