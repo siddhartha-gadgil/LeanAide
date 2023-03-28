@@ -218,7 +218,7 @@ def writeIdPairs(group: String): Unit = {
   count = 0
   var pairCount = 0
   val js = os.read.lines.stream(os.pwd / "rawdata" / s"${group}_premises.jsonl")
-  val pair_file = os.pwd / "rawdata" / s"${group}_lemma.jsonl"
+  val pair_file = os.pwd / "rawdata" / s"${group}_id.jsonl"
   os.write.over(pair_file, "")
   js.foreach { s =>
     val js = upickle.default.read[ujson.Obj](s)
