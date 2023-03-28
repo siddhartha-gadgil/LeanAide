@@ -3,8 +3,10 @@ import openai
 
 completion = openai.ChatCompletion.create(
   model="gpt-3.5-turbo",
+  n= 5,
+  temperature=0.8,
   messages=[
-        {"role": "system", "content": "You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples."},
+        {"role": "system", "content": "You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples. Follow EXACTLY the examples given"},
         {"role": "user", "content": "/--  If `m` and `n` are natural numbers, then the natural number `m^n` is even if and only if `m` is even and `n` is positive. -/"},
         {"role": "assistant", "content": "theorem {m n : ℕ} : even (m ^ n) ↔ even m ∧ n ≠ 0 :="},
         {"role": "user", "content": "/-- Odd Bernoulli numbers (greater than 1) are zero. -/"},
@@ -29,4 +31,4 @@ completion = openai.ChatCompletion.create(
 
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
-print(completion.choices[0].message['content'].encode().decode('unicode-escape').encode('latin1').decode('utf-8'))
+print([choice.message['content'].encode().decode('unicode-escape').encode('latin1').decode('utf-8') for choice in completion.choices])

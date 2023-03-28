@@ -64,3 +64,21 @@ def getDelabBound : MetaM UInt32 := do
 
 def setDelabBound (n: UInt32) : MetaM Unit := do
    delab_bound.set n
+
+def Lean.MessageData.toCrudeString (msg: MessageData) : String :=
+  match msg with
+  | .compose l₁ l₂ => l₁.toCrudeString ++ l₂.toCrudeString
+  | .nest _ l => l.toCrudeString
+  | .withContext _ l => l.toCrudeString
+  | .withNamingContext _ l => l.toCrudeString
+  | .ofFormat m => s!"{m}"
+  | .ofPPFormat _ => "ofPPFormat"
+  | .tagged _ l => l.toCrudeString
+  | .group l => l.toCrudeString
+  | .trace _ s _ _ => s.toCrudeString
+  | .ofGoal _ => "ofGoal"
+
+def EIO.runToIO (eio: EIO Exception α) : IO α  := do
+  eio.toIO (fun e => IO.userError <| s!"Error: {e.toMessageData.toCrudeString}")
+
+

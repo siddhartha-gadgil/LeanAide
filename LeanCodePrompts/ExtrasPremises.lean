@@ -68,7 +68,7 @@ def premisesFromName (name : Name) : MetaM (List PremiseData) := do
     Lean.Syntax.premiseDataM #[] pf prop true name name
 
 def _root_.PremiseData.view : PremiseData → MetaM String := fun data => do
-    return s!"context: {reprint data.context}; name?: {data.name?}; defnName: {data.defnName}; type: {reprint data.type};  sub-terms: {reprint data.terms}; sub-proofs : {reprint data.propProofs}  identifiers: {data.ids}"
+    return s!"context: {reprint data.context}; name?: {data.name?}; defnName: {data.defnName}; type: {reprint data.type}; type-group: {reprint data.typeGroup}; sub-terms: {reprint data.terms}; sub-proofs : {reprint data.propProofs}  identifiers: {data.ids}"
 
 
 def premisesViewFromName (name: Name) : MetaM <| List String := do
