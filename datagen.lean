@@ -12,7 +12,6 @@ def main (args: List String) : IO Unit := do
   initSearchPath (← Lean.findSysroot) ["build/lib", "lake-packages/mathlib/build/lib/",  "lake-packages/std/build/lib/", "lake-packages/Qq/build/lib/", "lake-packages/aesop/build/lib/" ]
   let env ← 
     importModules [{module := `Mathlib},
-    {module := `LeanCodePrompts.Basic},
     {module:= `LeanCodePrompts.CheckParse},
     {module := `Mathlib}] {}
   let core := promptsThmSplitCore
