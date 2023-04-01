@@ -44,12 +44,18 @@ open Lean Meta Elab Tactic Parser
   Task.spawn fun _ => dbgSleep 1 fun _ => "C"
 ]
 
-elab "run_task" : tactic => do
-  let io : IO Unit := 
-    IO.FS.writeFile ("test.txt") "Hello there"
-  discard <| IO.asTask io
+def slowFibIO : Nat → IO Nat
+| 0 => pure 0
+| 1 => pure 1
+| n + 2 => do return (← slowFibIO (n)) + (←  slowFibIO (n + 1))   
+
+elab "run_io_task" : tactic => do
+  let _  ← (IO.asTask <| 
+    do IO.FS.writeFile ("rawdata/testIO.txt") s!"Computed: {← slowFibIO 34} at {← IO.monoMsNow}"
+    ).toIO
   return ()
 
-example : 1 = 1 := by
-  run_task
-  trivial
+example : 5 = 5 := by
+  run_io_task
+  rfl
+
