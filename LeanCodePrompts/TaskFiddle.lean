@@ -1,3 +1,6 @@
+import Lean
+
+open Lean Meta Elab Tactic Parser 
 
 #eval 3
 
@@ -40,3 +43,13 @@
   Task.spawn fun _ => dbgSleep 3 fun _ => "B",
   Task.spawn fun _ => dbgSleep 1 fun _ => "C"
 ]
+
+elab "run_task" : tactic => do
+  let io : IO Unit := 
+    IO.FS.writeFile ("test.txt") "Hello there"
+  discard <| IO.asTask io
+  return ()
+
+example : 1 = 1 := by
+  run_task
+  trivial
