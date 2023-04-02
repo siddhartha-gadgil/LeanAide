@@ -78,7 +78,13 @@ def Lean.MessageData.toCrudeString (msg: MessageData) : String :=
   | .trace _ s _ _ => s.toCrudeString
   | .ofGoal _ => "ofGoal"
 
-def EIO.runToIO (eio: EIO Exception α) : IO α  := do
-  eio.toIO (fun e => IO.userError <| s!"Error: {e.toMessageData.toCrudeString}")
+def EIO.runToIO' (eio: EIO Exception α) : IO α  := do
+  match ←  eio.toIO' with
+  | Except.ok x =>
+      pure x
+  | Except.error e =>
+      let msg ← e.toMessageData.toString
+      IO.throwServerError msg
+
 
 

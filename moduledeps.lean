@@ -28,6 +28,5 @@ def main (args: List String) : IO Unit := do
     do
           IO.println "Ran with error"
           let msg ← e.toMessageData.toString
-          IO.println msg
-
+          IO.throwServerError msg
   return ()
