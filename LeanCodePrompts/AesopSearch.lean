@@ -13,6 +13,15 @@ initialize rewriteSuggestions : IO.Ref (Array Syntax.Term)
 initialize subgoalSuggestions : IO.Ref (Array Syntax.Term) 
         ← IO.mkRef #[]
 
+initialize fibOut : IO.Ref String 
+        ← IO.mkRef ""
+
+def setFib (s: String) : IO Unit := do
+  fibOut.set s
+
+def getFib : IO String := do
+  fibOut.get
+
 theorem mpFrom (α  : Prop) {β : Prop} : α  → (α  → β) → β  := 
   fun a f => f a   
 
@@ -223,8 +232,8 @@ def runAesop (p: Float) (apps simps rws : Array Name) : MVarId → MetaM (List M
   let allRules ← getRuleSet p apps simps rws
   let (goals, _) ← Aesop.search goal allRules {traceScript := true} 
   let msgLog ← Core.getMessageLog  
-  let msgs := msgLog.toList
-  logInfo m!"Messages: {msgs.map (·.data.split)}"
+  -- let msgs := msgLog.toList
+  -- logInfo m!"Messages: {msgs.map (·.data.split)}"
   return goals.toList
 
 example : α → α := by

@@ -19,13 +19,13 @@ elab "test_aesop" : tactic => do
     runAesop 0.5 #[``MyEmpty.eql] #[``Nat.add_comm] #[``n_is_m]
     )
 
-set_option trace.leanaide.proof.info true 
+-- set_option trace.leanaide.proof.info true 
 
-set_option trace.aesop.proof true 
-set_option trace.aesop.steps true 
-set_option trace.aesop.steps.tree true 
-set_option trace.aesop.steps.ruleSelection true 
-set_option trace.aesop.steps.ruleFailures true 
+-- set_option trace.aesop.proof true 
+-- set_option trace.aesop.steps true 
+-- set_option trace.aesop.steps.tree true 
+-- set_option trace.aesop.steps.ruleSelection true 
+-- set_option trace.aesop.steps.ruleFailures true 
 
 
 example (a b : MyEmpty): a = b := by

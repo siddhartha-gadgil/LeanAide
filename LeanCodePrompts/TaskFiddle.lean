@@ -1,4 +1,5 @@
 import Lean
+import LeanCodePrompts.AesopSearch
 
 open Lean Meta Elab Tactic Parser 
 
@@ -11,13 +12,16 @@ def slowFibIO : Nat → IO Nat
 
 elab "run_io_task" : tactic => do
   let _  ← (IO.asTask <| 
-    do IO.FS.writeFile ("rawdata/testIO.txt") s!"Computed: {← slowFibIO 34} at {← IO.monoMsNow}"
+    do 
+      setFib s!"Computed: {← slowFibIO 37} at {← IO.monoMsNow}"
     ).toIO
   return ()
 
-example : 5 = 5 := by
+example : 3 = 3 := by
   run_io_task
   rfl
+
+#eval getFib
 
 #check Core.CoreM.run -- {α : Type} → CoreM α → Core.Context → Core.State → EIO Exception (α × Core.State)
 #check Meta.MetaM.run /-{α : Type} →
