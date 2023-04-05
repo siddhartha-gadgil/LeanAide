@@ -41,3 +41,21 @@ example : 3 = 3 := by
         MetaM (List MVarId × Term.State)-/
 #check IO.asTask /- {α : Type} → IO α → optParam Task.Priority Task.Priority.default → BaseIO (Task (Except IO.Error α)) -/
 #check evalTactic
+#check assignExprMVar
+#check evalTactic
+#check runTactic
+
+def TacticM.runToIO (mvar: MVarId)(tacticCode : Syntax) : 
+    IO Unit := do
+    sorry
+
+#check withMVarContext    
+#check Elab.runFrontend
+
+def useTactic (type : Expr)
+  (tacticCode : TSyntax `Lean.Parser.Tactic.tacticSeq) : TermElabM Expr := 
+  Term.withoutErrToSorry do
+    let code ← `(by $tacticCode)
+    let term ← Elab.Term.elabTerm code (some type)
+    Term.synthesizeSyntheticMVarsNoPostponing
+    return term
