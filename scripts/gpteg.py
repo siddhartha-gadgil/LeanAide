@@ -12,7 +12,6 @@ completion = openai.ChatCompletion.create(
         {"role": "user", "content": "/-- The golden ratio is irrational. -/"},
         {"role": "assistant", "content": "theorem  : irrational golden_ratio :="},
         {"role": "user", "content": "/-- There are no perfect squares strictly between m² and (m+1)² -/"},
-        {"role": "assistant", "content": "theorem {m : ℕ} : ¬ ∃ (n : ℕ), m ^ 2 < n ^ 2 ∧ n ^ 2 < (m + 1) ^ 2 :="},
         {"role": "user", "content": "/-- The only numbers with empty prime factorization are `0` and `1` -/"},        
         {"role": "assistant", "content": "theorem (n : ℕ) : n.factorization = 0 ↔ n = 0 ∨ n = 1 :="},
         {"role": "user", "content": "/--  If `m` and `n` are natural numbers, then the natural number `m^n` is even if and only if `m` is even and `n` is positive. -/"},

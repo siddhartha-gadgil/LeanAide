@@ -13,11 +13,11 @@ def slowFibIO : Nat → IO Nat
 elab "run_io_task" : tactic => do
   let _  ← (IO.asTask <| 
     do 
-      setFib s!"Computed: {← slowFibIO 37} at {← IO.monoMsNow}"
+      setFib s!"Computed: {← slowFibIO 34} at {← IO.monoMsNow}"
     ).toIO
   return ()
 
-example : 3 = 3 := by
+example : 4 = 4 := by
   run_io_task
   rfl
 

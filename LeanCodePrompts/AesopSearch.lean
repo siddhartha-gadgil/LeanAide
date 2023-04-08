@@ -13,14 +13,16 @@ initialize rewriteSuggestions : IO.Ref (Array Syntax.Term)
 initialize subgoalSuggestions : IO.Ref (Array Syntax.Term) 
         ← IO.mkRef #[]
 
-initialize fibOut : IO.Ref String 
-        ← IO.mkRef ""
+initialize fibOut : IO.Ref (Array String) 
+        ← IO.mkRef #[]
+
+def getFib : IO (Array String) := do
+  fibOut.get
+
 
 def setFib (s: String) : IO Unit := do
-  fibOut.set s
+  fibOut.set <| (← getFib).push  s
 
-def getFib : IO String := do
-  fibOut.get
 
 theorem mpFrom (α  : Prop) {β : Prop} : α  → (α  → β) → β  := 
   fun a f => f a   

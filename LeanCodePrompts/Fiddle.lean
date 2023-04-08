@@ -1,6 +1,18 @@
 import Lean
 import Lean.Parser
+import Mathlib
 open Lean Meta Elab Parser
+
+
+instance : HAdd String String Nat :=
+  ⟨fun s t ↦ s.length + t.length⟩
+
+#eval "blah" + "Hello"
+
+instance : Zero String where 
+  zero := "zero"
+#eval (0 : String)
+#eval (0 : String × Nat)
 
 set_option autoImplicit false
 
