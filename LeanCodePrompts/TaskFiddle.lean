@@ -45,10 +45,6 @@ example : 4 = 4 := by
 #check evalTactic
 #check runTactic
 
-def TacticM.runToIO (mvar: MVarId)(tacticCode : Syntax) : 
-    IO Unit := do
-    sorry
-
 #check withMVarContext    
 #check Elab.runFrontend
 
