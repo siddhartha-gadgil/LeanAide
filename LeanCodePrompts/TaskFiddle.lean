@@ -55,3 +55,26 @@ def useTactic (type : Expr)
     let term ← Elab.Term.elabTerm code (some type)
     Term.synthesizeSyntheticMVarsNoPostponing
     return term
+
+example : 1 ≤ 2 := by
+  checkpoint apply Nat.le_step
+  apply Nat.le_refl
+
+def egProof : TermElabM Expr := do
+  let typeStx ← `((1 : Nat) ≤ 2)
+  let type ← Elab.Term.elabTerm typeStx none
+  Term.synthesizeSyntheticMVarsNoPostponing
+  reduce <| ← mkDecideProof type
+
+example : 1 ≤ 2 := by simp 
+
+#eval egProof
+
+elab "eg_proof" : term => do
+  reduce <| ← egProof
+
+def eg :  1 ≤ 2 := eg_proof
+
+#reduce eg_proof -- #eval does not work
+
+#check egProof
