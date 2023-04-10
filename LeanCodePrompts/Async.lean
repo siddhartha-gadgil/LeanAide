@@ -83,10 +83,29 @@ def runAndCache (tacticCode : Syntax) : TacticM Unit :=
     logError m!"Error while running tactic {repr tacticCode}, {ex.toMessageData}"
   set s₀.core
   set s₀.meta
-  set s₀.term
 
-
-
+def runAndCacheM (tacticCode : Syntax) (goal: MVarId) (target : Expr) : MetaM Unit := 
+  goal.withContext do 
+    let lctx ← getLCtx
+    let key : GoalKey := { goal := target, lctx := lctx.decls.toList }
+    let core₀ ← getThe Core.State
+    let meta₀ ← getThe Meta.State
+    try
+      let (goals, ts) ← runTactic  goal tacticCode 
+      unless goals.isEmpty do
+        throwError m!"Tactic not finishing, got {goals} goals."
+      let s : PolyState := {
+      core   := (← getThe Core.State)
+      meta   := (← getThe Meta.State)
+      term   := ts
+      }     
+      putTactic key s
+      logInfo m!"Stored tactic result for {repr key}"
+    catch ex =>
+      logError ex.toMessageData
+      logError m!"Error while running tactic {repr tacticCode}, {ex.toMessageData}"
+    set core₀
+    set meta₀
 
 syntax (name := launchTactic) "launch" tacticSeq : tactic
 
@@ -96,7 +115,10 @@ syntax (name := launchTactic) "launch" tacticSeq : tactic
   match stx with
   | `(tactic| launch $tacticCode) => do
     let s ← saveState
-    runAndCache tacticCode
+    let ts ← getThe Term.State
+    -- runAndCache tacticCode
+    runAndCacheM tacticCode (← getMainGoal) (← getMainTarget)
+    set ts
     s.restore
   | _ => throwUnsupportedSyntax
 
