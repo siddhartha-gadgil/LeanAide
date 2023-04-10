@@ -1,5 +1,5 @@
 import Lean
-open Lean Meta Elab Term Tactic
+open Lean Meta Elab Term Tactic Core
 
 /-!
 # Asynchronous tactic execution
@@ -77,14 +77,17 @@ def runAndCache (tacticCode : Syntax) : TacticM Unit :=
       term   := (← getThe Term.State)
     }     
     putTactic key s
-    logInfo m!"Stored tactic result for {repr key}"
+    logInfo m!"Stored tactic result for {← ppExpr key.goal}"
   catch ex =>
     logError ex.toMessageData
-    logError m!"Error while running tactic {repr tacticCode}, {ex.toMessageData}"
+    logError m!"Error while running tactic {tacticCode.prettyPrint}: {ex.toMessageData}"
+  logInfo m!"Stored tactic result for {← ppExpr <| ←getMainTarget}"
+  let msgs ← getMessageLog 
   set s₀.core
   set s₀.meta
+  setMessageLog msgs
 
-def runAndCacheM (tacticCode : Syntax) (goal: MVarId) (target : Expr) : MetaM Unit := 
+def runAndCacheM (tacticCode : Syntax) (goal: MVarId) (target : Expr) (tk: Syntax) : MetaM Unit := 
   goal.withContext do 
     let lctx ← getLCtx
     let key : GoalKey := { goal := target, lctx := lctx.decls.toList }
@@ -93,19 +96,20 @@ def runAndCacheM (tacticCode : Syntax) (goal: MVarId) (target : Expr) : MetaM Un
     try
       let (goals, ts) ← runTactic  goal tacticCode 
       unless goals.isEmpty do
-        throwError m!"Tactic not finishing, got {goals} goals."
+        throwErrorAt tk m!"Tactic not finishing, remaining goals:\n{goals}"
       let s : PolyState := {
       core   := (← getThe Core.State)
       meta   := (← getThe Meta.State)
       term   := ts
       }     
       putTactic key s
-      logInfo m!"Stored tactic result for {repr key}"
+      logInfoAt tk m!"Stored tactic result for {repr key}"
     catch ex =>
-      logError ex.toMessageData
-      logError m!"Error while running tactic {repr tacticCode}, {ex.toMessageData}"
+      logWarningAt tk m!"Error while running tactic {tacticCode.prettyPrint}, {ex.toMessageData}"
+    let msgs ← getMessageLog 
     set core₀
     set meta₀
+    setMessageLog msgs
 
 syntax (name := launchTactic) "launch" tacticSeq : tactic
 
@@ -113,13 +117,15 @@ syntax (name := launchTactic) "launch" tacticSeq : tactic
   withMainContext do
   focus do
   match stx with
-  | `(tactic| launch $tacticCode) => do
+  | `(tactic| launch%$tk $tacticCode) => do
     let s ← saveState
     let ts ← getThe Term.State
     -- runAndCache tacticCode
-    runAndCacheM tacticCode (← getMainGoal) (← getMainTarget)
+    runAndCacheM tacticCode (← getMainGoal) (← getMainTarget) tk
+    let msgs ← getMessageLog 
     set ts
     s.restore
+    setMessageLog msgs
   | _ => throwUnsupportedSyntax
 
 elab "fetch" : tactic => 
