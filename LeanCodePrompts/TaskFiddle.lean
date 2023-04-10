@@ -1,4 +1,5 @@
 import Lean
+import Mathlib
 import LeanCodePrompts.AesopSearch
 
 open Lean Meta Elab Tactic Parser 
@@ -63,10 +64,12 @@ example : 1 ≤ 2 := by
 def egProof : TermElabM Expr := do
   let typeStx ← `((1 : Nat) ≤ 2)
   let type ← Elab.Term.elabTerm typeStx none
+  let code ← `(by linarith)
+  let term  ← Elab.Term.elabTerm code (some type)
   Term.synthesizeSyntheticMVarsNoPostponing
-  reduce <| ← mkDecideProof type
+  reduce <| term
 
-example : 1 ≤ 2 := by simp 
+example (n: Nat) : n + 1 ≤ n + 2 := by linarith
 
 #eval egProof
 
@@ -78,3 +81,13 @@ def eg :  1 ≤ 2 := eg_proof
 #reduce eg_proof -- #eval does not work
 
 #check egProof
+
+#synth BEq Expr
+deriving instance BEq for LocalDecl
+#synth BEq FVarId
+#synth Hashable Expr
+#synth Hashable FVarId
+deriving instance Hashable for LocalDecl
+#synth Hashable <| List LocalDecl
+#check PersistentHashMap
+#check LocalContext
