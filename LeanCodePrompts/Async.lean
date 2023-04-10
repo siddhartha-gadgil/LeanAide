@@ -40,53 +40,34 @@ structure GoalKey where
   lctx : List <| Option LocalDecl
 deriving BEq, Hashable, Repr
 
-structure PolyState where
+structure ProofState where
   core   : Core.State
   meta   : Meta.State
-  term   : Term.State
+  term   : Option Term.State
+  script: Syntax
 
 def GoalKey.get : TacticM GoalKey := do
   let lctx ← getLCtx
   let goal ← getMainTarget
   pure { goal := goal, lctx := lctx.decls.toList }
 
-initialize tacticCache : IO.Ref (HashMap GoalKey PolyState) 
+initialize tacticCache : IO.Ref (HashMap GoalKey ProofState) 
         ← IO.mkRef <| HashMap.empty
 
-def putTactic (key : GoalKey) (s : PolyState) : MetaM Unit := do
+def putTactic (key : GoalKey) (s : ProofState) : MetaM Unit := do
   tacticCache.modify fun m => m.insert key s
 
-def getStates (key : GoalKey) : TacticM (Option PolyState) := do  
+def getStates (key : GoalKey) : TacticM (Option ProofState) := do  
   let m ← tacticCache.get
   return m.find? key
 
-def runAndCache (tacticCode : Syntax) : TacticM Unit := 
-  withMainContext do
-  let s₀ : Snapshot := {
-      stx    := tacticCode
-      core   := (← getThe Core.State)
-      meta   := (← getThe Meta.State)
-      term   := (← getThe Term.State)
-      tactic := (← get)
-    }
-  try
-    let key ← GoalKey.get     
-    evalTactic tacticCode
-    let s : PolyState := {
-      core   := (← getThe Core.State)
-      meta   := (← getThe Meta.State)
-      term   := (← getThe Term.State)
-    }     
-    putTactic key s
-    logInfo m!"Stored tactic result for {← ppExpr key.goal}"
-  catch ex =>
-    logError ex.toMessageData
-    logError m!"Error while running tactic {tacticCode.prettyPrint}: {ex.toMessageData}"
-  logInfo m!"Stored tactic result for {← ppExpr <| ←getMainTarget}"
-  let msgs ← getMessageLog 
-  set s₀.core
-  set s₀.meta
-  setMessageLog msgs
+/- Abstracted to possibly replace by Aesop search -/
+def runTacticCode (goal: MVarId) (tacticCode : Syntax)  : 
+  MetaM <| (Option Term.State) × Syntax := do
+    let (goals, ts) ← runTactic  goal tacticCode 
+    unless goals.isEmpty do
+        throwError m!"Tactic not finishing, remaining goals:\n{goals}"
+    pure (some ts, tacticCode)
 
 def runAndCacheM (tacticCode : Syntax) (goal: MVarId) (target : Expr) (tk: Syntax) : MetaM Unit := 
   goal.withContext do 
@@ -95,17 +76,15 @@ def runAndCacheM (tacticCode : Syntax) (goal: MVarId) (target : Expr) (tk: Synta
     let core₀ ← getThe Core.State
     let meta₀ ← getThe Meta.State
     try
-      let (goals, ts) ← runTactic  goal tacticCode 
-      unless goals.isEmpty do
-        throwErrorAt tk m!"Tactic not finishing, remaining goals:\n{goals}"
-      let s : PolyState := {
+      let (ts, script) ← runTacticCode  goal tacticCode 
+      let s : ProofState := {
       core   := (← getThe Core.State)
       meta   := (← getThe Meta.State)
       term   := ts
+      script := script
       }     
       putTactic key s
       logInfoAt tk m!"Stored tactic result for {← ppExpr key.goal}"
-      -- IO.println s!"Stored tactic result for {← ppExpr key.goal}"
     catch ex =>
       logWarningAt tk m!"Error while running tactic {tacticCode.prettyPrint}, {ex.toMessageData}"
     let msgs ← getMessageLog 
@@ -156,7 +135,13 @@ elab "fetch_proof" : tactic =>
   | some s => do
     set s.core
     set s.meta
-    set s.term
+    match s.term with
+    | none => pure ()
+    | some ts =>
+      set ts 
     setGoals []
+    logInfo m!"Try this: {indentD s.script}"
 
 example : 1 = 1 := by checkpoint rfl
+
+#check InfoTree.goalsAt?
