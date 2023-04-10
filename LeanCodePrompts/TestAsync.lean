@@ -5,4 +5,3 @@ example : 1 ≤ 2 := by
   launch (apply Nat.le_step)
   launch decide
   fetch_proof
-

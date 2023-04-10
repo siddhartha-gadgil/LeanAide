@@ -45,6 +45,7 @@ structure ProofState where
   meta   : Meta.State
   term   : Option Term.State
   script: Syntax
+  tailPos? : Option String.Pos
 
 def GoalKey.get : TacticM GoalKey := do
   let lctx ← getLCtx
@@ -54,8 +55,15 @@ def GoalKey.get : TacticM GoalKey := do
 initialize tacticCache : IO.Ref (HashMap GoalKey ProofState) 
         ← IO.mkRef <| HashMap.empty
 
+initialize tacticPosCache : IO.Ref (HashMap CacheKey ProofState) 
+        ← IO.mkRef <| HashMap.empty
+
 def putTactic (key : GoalKey) (s : ProofState) : MetaM Unit := do
   tacticCache.modify fun m => m.insert key s
+
+def putPosTactic (key : CacheKey) (s : ProofState) : MetaM Unit := do
+  tacticPosCache.modify fun m => m.insert key s
+
 
 def getStates (key : GoalKey) : TacticM (Option ProofState) := do  
   let m ← tacticCache.get
@@ -69,7 +77,7 @@ def runTacticCode (goal: MVarId) (tacticCode : Syntax)  :
         throwError m!"Tactic not finishing, remaining goals:\n{goals}"
     pure (some ts, tacticCode)
 
-def runAndCacheM (tacticCode : Syntax) (goal: MVarId) (target : Expr) (tk: Syntax) : MetaM Unit := 
+def runAndCacheM (tacticCode : Syntax) (goal: MVarId) (target : Expr) (pos? tailPos? : Option String.Pos) : MetaM Unit := 
   goal.withContext do 
     let lctx ← getLCtx
     let key : GoalKey := { goal := target, lctx := lctx.decls.toList }
@@ -82,23 +90,25 @@ def runAndCacheM (tacticCode : Syntax) (goal: MVarId) (target : Expr) (tk: Synta
       meta   := (← getThe Meta.State)
       term   := ts
       script := script
+      tailPos? := tailPos?
       }     
       putTactic key s
-      logInfoAt tk m!"Stored tactic result for {← ppExpr key.goal}"
-    catch ex =>
-      logWarningAt tk m!"Error while running tactic {tacticCode.prettyPrint}, {ex.toMessageData}"
-    let msgs ← getMessageLog 
+      match pos? with
+      | none => pure ()
+      | some pos => 
+        let ckey : CacheKey := { pos := pos, mvarId := goal}
+        putPosTactic ckey s
+    catch _ =>
     set core₀
     set meta₀
-    setMessageLog msgs
 
 -- #check MetaM.run'
 
-def runAndCacheIO (tacticCode : Syntax) (goal: MVarId) (target : Expr) (tk: Syntax) 
+def runAndCacheIO (tacticCode : Syntax) (goal: MVarId) (target : Expr) (pos? tailPos?: Option String.Pos) 
   (mctx : Meta.Context) (ms : Meta.State) 
   (cctx : Core.Context) (cs: Core.State) : IO Unit :=
   let eio := 
-  (runAndCacheM tacticCode goal target tk).run' mctx ms |>.run' cctx cs
+  (runAndCacheM tacticCode goal target pos? tailPos?).run' mctx ms |>.run' cctx cs
   let res := eio.runToIO'
   res
 
@@ -108,7 +118,7 @@ syntax (name := launchTactic) "launch" tacticSeq : tactic
   withMainContext do
   focus do
   match stx with
-  | `(tactic| launch%$tk $tacticCode) => do
+  | `(tactic| launch $tacticCode) => do
     let s ← saveState
     let ts ← getThe Term.State
     -- runAndCache tacticCode
@@ -118,12 +128,10 @@ syntax (name := launchTactic) "launch" tacticSeq : tactic
     let cs ← getThe Core.State 
     -- runAndCacheM tacticCode (← getMainGoal) (← getMainTarget) tk
     let ioSeek := runAndCacheIO 
-      tacticCode (← getMainGoal) (← getMainTarget) tk mctx ms cctx cs
+      tacticCode (← getMainGoal) (← getMainTarget) stx.getPos? stx.getTailPos? mctx ms cctx cs
     let _ ← ioSeek.asTask
-    let msgs ← getMessageLog 
     set ts
     s.restore
-    setMessageLog msgs
   | _ => throwUnsupportedSyntax
 
 elab "fetch_proof" : tactic => 
@@ -143,5 +151,3 @@ elab "fetch_proof" : tactic =>
     logInfo m!"Try this: {indentD s.script}"
 
 example : 1 = 1 := by checkpoint rfl
-
-#check InfoTree.goalsAt?

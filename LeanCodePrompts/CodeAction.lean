@@ -61,7 +61,7 @@ def Syntax.extractComment : Syntax → Option String
   let pos : String.Pos := text.lspPosToUtf8Pos lspPos
   let beginPos : String.Pos := text.lspPosToUtf8Pos lspBeginPos
   let comment? := nearestComment? source pos beginPos
-
+ 
   let edit : IO TextEdit := do
     let some ⟨start, stop⟩ := comment? | throw $ IO.userError "No input found."
     return {
@@ -70,7 +70,7 @@ def Syntax.extractComment : Syntax → Option String
       -- the smallest node of the `InfoTree` containing the current position
       let info? := snap.infoTree.findInfo? (·.contains pos)
       -- the `Syntax` corresponding to the `Info` node
-      let stx? := (·.stx) <$> info?
+      -- let stx? := (·.stx) <$> info?
 
       -- the statement to be translated to Lean code
       let stmt? : Option String := 
