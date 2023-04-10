@@ -50,8 +50,6 @@ section Misc
 
 end Misc
 
-#check withoutModifyingState
-
 @[tactic seq]
 partial def traceTactic : Tactic
   | `(tactic| seq $n $[$tacs]*) => do
@@ -59,11 +57,14 @@ partial def traceTactic : Tactic
     let tacs' ← tacs.mapM <|
       fun | `(tactic| $tac) => `(tactic| seq $n.succ {$tac})
     evalTacticM `(tacticSeq| $[$tacs']*) 
-  | `(tactic| seq $n { $[$tacs]* }) =>
+  | `(tactic| seq $n { $[$tacs]* }) => do
+    withoutModifyingState <| logTacticSnapshot n.getNat <| ← `(tacticSeq| { $[$tacs]* })
     evalTacticM `(tactic| { seq $n.succ $[$tacs]* })
-  | `(tactic| seq $n · $[$tacs]*) =>
+  | `(tactic| seq $n · $[$tacs]*) => do
+    withoutModifyingState <| logTacticSnapshot n.getNat <| ← `(tacticSeq| · $[$tacs]*)
     evalTacticM `(tactic| · seq $n.succ $[$tacs]*)
-  | `(tactic| seq $n focus $[$tacs]*) =>
+  | `(tactic| seq $n focus $[$tacs]*) => do
+    withoutModifyingState <| logTacticSnapshot n.getNat <| ← `(tacticSeq| focus $[$tacs]*)
     evalTacticM `(tactic| focus seq $n.succ $[$tacs]*)
   | `(tactic| seq $n $t:tactic) => do
     logTacticSnapshot n.getNat t
