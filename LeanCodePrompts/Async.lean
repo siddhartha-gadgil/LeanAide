@@ -39,18 +39,23 @@ structure GoalKey where
   lctx : List <| Option LocalDecl
 deriving BEq, Hashable, Repr
 
+structure PolyState where
+  core   : Core.State
+  meta   : Meta.State
+  term   : Term.State
+
 def GoalKey.get : TacticM GoalKey := do
   let lctx ← getLCtx
   let goal ← getMainTarget
   pure { goal := goal, lctx := lctx.decls.toList }
 
-initialize tacticCache : IO.Ref (HashMap GoalKey Tactic.Snapshot) 
+initialize tacticCache : IO.Ref (HashMap GoalKey PolyState) 
         ← IO.mkRef <| HashMap.empty
 
-def putTactic (key : GoalKey) (s : Tactic.Snapshot) : TacticM Unit := do
+def putTactic (key : GoalKey) (s : PolyState) : MetaM Unit := do
   tacticCache.modify fun m => m.insert key s
 
-def getSnap (key : GoalKey) : TacticM (Option Tactic.Snapshot) := do  
+def getStates (key : GoalKey) : TacticM (Option PolyState) := do  
   let m ← tacticCache.get
   return m.find? key
 
@@ -66,12 +71,10 @@ def runAndCache (tacticCode : Syntax) : TacticM Unit :=
   try
     let key ← GoalKey.get     
     evalTactic tacticCode
-    let s : Snapshot := {
-      stx    := tacticCode
+    let s : PolyState := {
       core   := (← getThe Core.State)
       meta   := (← getThe Meta.State)
       term   := (← getThe Term.State)
-      tactic := (← get)
     }     
     putTactic key s
     logInfo m!"Stored tactic result for {repr key}"
@@ -81,26 +84,32 @@ def runAndCache (tacticCode : Syntax) : TacticM Unit :=
   set s₀.core
   set s₀.meta
   set s₀.term
-  set s₀.tactic
+
+
+
 
 syntax (name := launchTactic) "launch" tacticSeq : tactic
 
 @[tactic launchTactic] def elabLaunchTactic : Tactic := fun stx => 
   withMainContext do
+  focus do
   match stx with
   | `(tactic| launch $tacticCode) => do
+    let s ← saveState
     runAndCache tacticCode
+    s.restore
   | _ => throwUnsupportedSyntax
 
-elab "fetch" : tactic => do
+elab "fetch" : tactic => 
+  focus do
   let key ← GoalKey.get
   let goal ← getMainGoal
-  match (← getSnap key) with
+  match (← getStates key) with
   | none => throwTacticEx `fetch goal  m!"No cached result found for this goal; key : {repr key}."
   | some s => do
     set s.core
     set s.meta
     set s.term
-    set s.tactic
+    setGoals []
 
 example : 1 = 1 := by checkpoint rfl
