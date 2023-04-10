@@ -6,27 +6,21 @@ import Mathlib.Tactic.Classical
 
 open Lean Elab Parser Term Meta Tactic
 
-syntax (name := seq) "seq" num tacticSeq : tactic
-
 section Misc
 
   section Utils
   
-  def evalTacticM (stx : TacticM <| TSyntax ``tacticSeq) : TacticM Unit :=
-    stx >>= evalTactic ∘ TSyntax.raw 
+  def evalTacticM (stx : TacticM <| TSyntax `tactic) : TacticM Unit :=
+    stx >>= evalTactic ∘ TSyntax.raw
 
   def Lean.TSyntax.succ : TSyntax `num → TSyntax `num :=
     fun nm ↦ Syntax.mkNumLit <| toString nm.getNat.succ
-  
-  instance : Coe (TSyntax `tactic) (TSyntax ``tacticSeq) where
-    coe 
-      | `(tactic| $tac) => ⟨tac⟩
 
   end Utils
 
   section Logging
 
-  def logTacticSnapshot (depth : ℕ) (tac : TSyntax ``tacticSeq) (ref : Syntax := tac) : TacticM Unit := do
+  def logTacticSnapshot (depth : ℕ) (tac : TSyntax `tactic) (ref : Option Syntax := some tac) : TacticM Unit := do
     let goalsBefore ← getUnsolvedGoals
     evalTacticM <| pure tac
     let goalsAfter ← getUnsolvedGoals
@@ -37,26 +31,28 @@ section Misc
 
 end Misc
 
-@[tactic seq]
-partial def traceTactic : Tactic
+syntax (name := snap) "snap" num tactic : tactic
+syntax (name := seq) "seq" num tacticSeq : tactic
+
+macro_rules
   | `(tactic| seq $n $[$tacs]*) => do
-    withoutModifyingState <| logTacticSnapshot n.getNat <| ← `(tacticSeq| $[$tacs]*)
     let tacs' ← tacs.mapM <|
-      fun | `(tactic| $tac) => `(tactic| seq $n.succ {$tac})
-    evalTacticM `(tacticSeq| $[$tacs']*) 
-  | `(tactic| seq $n { $[$tacs]* }) => do
-    withoutModifyingState <| logTacticSnapshot n.getNat <| ← `(tacticSeq| { $[$tacs]* })
-    evalTacticM `(tactic| { seq $n.succ $[$tacs]* })
-  | `(tactic| seq $n · $[$tacs]*) => do
-    withoutModifyingState <| logTacticSnapshot n.getNat <| ← `(tacticSeq| · $[$tacs]*)
-    evalTacticM `(tactic| · seq $n.succ $[$tacs]*)
-  | `(tactic| seq $n focus $[$tacs]*) => do
-    withoutModifyingState <| logTacticSnapshot n.getNat <| ← `(tacticSeq| focus $[$tacs]*)
-    evalTacticM `(tactic| focus seq $n.succ $[$tacs]*)
-  | `(tactic| seq $n $t:tactic) => do
-    logTacticSnapshot n.getNat t
+      fun tac ↦ `(tactic| snap $n.succ $tac)
+    `(tactic| {$[$tacs']*})
+
+@[tactic seq] def traceSeq : Tactic
+  | `(tacticSeq| seq $n $[$tacs]*) => do
+    -- withoutModifyingState <| logTacticSnapshot n.getNat <| ← `(tactic| {$[$tacs]*} )
+    dbg_trace n
+    for tac in tacs do
+      evalTacticM `(tactic| snap $n.succ $tac)
   | _ => panic! "Invalid `seq` format."
 
+@[tactic snap] partial def traceTacticSnap : Tactic
+  | `(tactic| snap $n $t:tactic) => do
+    withRef t <| logInfo n
+    logTacticSnapshot n.getNat t
+  | _ => panic! "Invalid `snap` format."
 
 section ByTactic
 
@@ -81,3 +77,15 @@ macro_rules
   | `(by $t) => `(by' seq 0 $t) 
 
 end ByTactic
+
+#eval do
+  let tacs ← (tacticSnapRef.get : IO _)
+  return tacs.size
+
+example : ∀ n : Nat, n = n := by
+  intro n
+  rfl
+
+#eval do
+  let tacs ← (tacticSnapRef.get : IO _)
+  return tacs.size
