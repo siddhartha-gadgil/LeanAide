@@ -1,23 +1,10 @@
 import Lean
+import LeanCodePrompts.TacticExtractionOutputCache
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.Classical
 
 open Lean Elab Parser Term Meta Tactic
-
-structure TacticSnapshot where
-  depth : Nat
-  goalsBefore : List MVarId
-  tactic : TSyntax ``tacticSeq
-  goalsAfter : List MVarId
-  ref : Syntax
-
-initialize tacticSnapRef : IO.Ref (Array TacticSnapshot) ← IO.mkRef #[] 
-
-def tacticSnapRef.push (snap : TacticSnapshot) : IO Unit := do
-  let snaps ← tacticSnapRef.get
-  tacticSnapRef.set <| snaps.push snap
-
 
 syntax (name := seq) "seq" num tacticSeq : tactic
 
@@ -69,3 +56,28 @@ partial def traceTactic : Tactic
   | `(tactic| seq $n $t:tactic) => do
     logTacticSnapshot n.getNat t
   | _ => panic! "Invalid `seq` format."
+
+
+section ByTactic
+
+-- a clone of the `by` tactic
+syntax (name := byTactic') "by' " tacticSeq : term
+
+@[term_elab byTactic'] def elabByTactic' : TermElab := fun stx expectedType? => do
+  match expectedType? with
+  | some expectedType =>
+    let mvar ← mkFreshExprMVar expectedType MetavarKind.syntheticOpaque
+    let mvarId := mvar.mvarId!
+    let ref ← getRef
+    registerSyntheticMVar ref mvarId <| SyntheticMVarKind.tactic stx (← saveContext)
+    return mvar
+  | none =>
+    tryPostpone
+    throwError ("invalid 'by\'' tactic, expected type has not been provided")
+
+-- intercepting the `by` tactic to output intermediate trace data
+-- the `by'` clone is needed here to avoid infinite recursion
+macro_rules
+  | `(by $t) => `(by' seq 0 $t) 
+
+end ByTactic
