@@ -61,14 +61,14 @@ def Syntax.extractComment : Syntax → Option String
   let pos : String.Pos := text.lspPosToUtf8Pos lspPos
   let beginPos : String.Pos := text.lspPosToUtf8Pos lspBeginPos
   let comment? := nearestComment? source pos beginPos
- 
+
   let edit : IO TextEdit := do
     let some ⟨start, stop⟩ := comment? | throw $ IO.userError "No input found."
     return {
     range := ⟨text.leanPosToLspPos <| text.toPosition start, text.leanPosToLspPos <| text.toPosition stop⟩
     newText := ← do
       -- the smallest node of the `InfoTree` containing the current position
-      let info? := snap.infoTree.findInfo? (·.contains pos)
+      -- let info? := snap.infoTree.findInfo? (·.contains pos)
       -- the `Syntax` corresponding to the `Info` node
       -- let stx? := (·.stx) <$> info?
 
@@ -92,7 +92,10 @@ def Syntax.extractComment : Syntax → Option String
       match comment? with
         | .some _ => none
         | .none => some ⟨"No nearby comments available."⟩ }
-  return #[{ eager := ca, lazy? := some $ return {ca with edit? := WorkspaceEdit.ofTextEdit params.textDocument.uri $ ← edit} }]
+  return #[{ eager := ca, lazy? := some $ return {ca with 
+  edit? := some <|
+    WorkspaceEdit.ofTextEdit params.textDocument.uri <| ← edit
+    } }]
 where
   formatAsTheorem : Option String → String → String
     | some comment, type => s!"/-{comment}-/\nexample : {type.trim} := by sorry"
