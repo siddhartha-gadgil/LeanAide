@@ -1,4 +1,5 @@
 import Lean
+import LeanCodePrompts.Utils
 open Lean Meta Elab Term Tactic Core
 
 /-!
@@ -103,13 +104,24 @@ def runAndCacheM (tacticCode : Syntax) (goal: MVarId) (target : Expr) (tk: Synta
       term   := ts
       }     
       putTactic key s
-      logInfoAt tk m!"Stored tactic result for {repr key}"
+      logInfoAt tk m!"Stored tactic result for {← ppExpr key.goal}"
+      -- IO.println s!"Stored tactic result for {← ppExpr key.goal}"
     catch ex =>
       logWarningAt tk m!"Error while running tactic {tacticCode.prettyPrint}, {ex.toMessageData}"
     let msgs ← getMessageLog 
     set core₀
     set meta₀
     setMessageLog msgs
+
+-- #check MetaM.run'
+
+def runAndCacheIO (tacticCode : Syntax) (goal: MVarId) (target : Expr) (tk: Syntax) 
+  (mctx : Meta.Context) (ms : Meta.State) 
+  (cctx : Core.Context) (cs: Core.State) : IO Unit :=
+  let eio := 
+  (runAndCacheM tacticCode goal target tk).run' mctx ms |>.run' cctx cs
+  let res := eio.runToIO'
+  res
 
 syntax (name := launchTactic) "launch" tacticSeq : tactic
 
@@ -121,19 +133,26 @@ syntax (name := launchTactic) "launch" tacticSeq : tactic
     let s ← saveState
     let ts ← getThe Term.State
     -- runAndCache tacticCode
-    runAndCacheM tacticCode (← getMainGoal) (← getMainTarget) tk
+    let mctx ← readThe Meta.Context
+    let ms ← getThe Meta.State 
+    let cctx ← readThe Core.Context
+    let cs ← getThe Core.State 
+    -- runAndCacheM tacticCode (← getMainGoal) (← getMainTarget) tk
+    let ioSeek := runAndCacheIO 
+      tacticCode (← getMainGoal) (← getMainTarget) tk mctx ms cctx cs
+    let _ ← ioSeek.asTask
     let msgs ← getMessageLog 
     set ts
     s.restore
     setMessageLog msgs
   | _ => throwUnsupportedSyntax
 
-elab "fetch" : tactic => 
+elab "fetch_proof" : tactic => 
   focus do
   let key ← GoalKey.get
   let goal ← getMainGoal
   match (← getStates key) with
-  | none => throwTacticEx `fetch goal  m!"No cached result found for this goal; key : {repr key}."
+  | none => throwTacticEx `fetch goal  m!"No cached result found for the goal : {← ppExpr <| key.goal }."
   | some s => do
     set s.core
     set s.meta
