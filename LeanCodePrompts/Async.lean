@@ -211,3 +211,4 @@ elab "fetch_proof" : tactic =>
 example : 1 = 1 := by checkpoint rfl
 
 #check Parser.runParserCategory
+#check Syntax.updateTrailing
