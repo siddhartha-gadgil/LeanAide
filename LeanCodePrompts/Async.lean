@@ -80,8 +80,6 @@ def runTacticCode (tacticCode : Syntax)  : PolyTacticM := fun goal ↦ do
         throwError m!"Tactic not finishing, remaining goals:\n{goals}"
     pure (some ts, tacticCode)
 
-def PolyTacticM.ofTactic (tacticCode : Syntax) : PolyTacticM := runTacticCode tacticCode
-
 def getMsgTactic?  : CoreM <| Option Syntax := do
   let msgLog ← Core.getMessageLog  
   let msgs := msgLog.toList
@@ -107,6 +105,9 @@ def runTacticCodeMsg (tacticCode : Syntax)  : PolyTacticM := fun goal ↦ do
     | none => tacticCode
     | some tac => tac
     pure (some ts, code)
+
+def PolyTacticM.ofTactic (tacticCode : Syntax) : PolyTacticM := runTacticCodeMsg tacticCode
+
 
 def runAndCacheM (polyTac : PolyTacticM) (goal: MVarId) (target : Expr) (pos? tailPos? : Option String.Pos)(preScript: String) : MetaM Unit := 
   goal.withContext do 
