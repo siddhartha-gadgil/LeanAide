@@ -246,3 +246,28 @@ example : α → α := by
 #check MVarId.define -- Lean.MVarId.define (mvarId : MVarId) (name : Name) (type val : Expr) : MetaM MVarId
 
 #check MessageData.instAppendMessageData
+
+def getMsgTactic?  : CoreM <| Option Syntax := do
+  let msgLog ← Core.getMessageLog  
+  let msgs := msgLog.toList
+  let mut tac? : Option Syntax := none
+  for msg in msgs do
+    let msg := msg.data
+    let msg ← msg.toString 
+    let msg := msg.replace "Try this:" "" |>.trim
+    let parsedMessage := Parser.runParserCategory (←getEnv)  `tactic msg
+    match parsedMessage with
+    | Except.ok tac => 
+      tac? := some tac
+    | _ =>
+      logInfo m!"failed to parse tactic {msg}"
+  return tac?
+ 
+open Tactic
+
+elab "messages" tac:tacticSeq : tactic => do
+  let goal ← getMainGoal
+  evalTactic tac
+  let tac ← getMsgTactic?
+  logInfo m!"tactic in message: {tac}"
+  admitGoal goal 

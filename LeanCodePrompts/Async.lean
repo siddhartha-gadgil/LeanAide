@@ -70,22 +70,52 @@ def getStates (key : GoalKey) : TacticM (Option ProofState) := do
   let m ← tacticCache.get
   return m.find? key
 
+abbrev PolyTacticM :=  MVarId → 
+  (MetaM <| (Option Term.State) × Syntax)
+
 /- Abstracted to possibly replace by Aesop search -/
-def runTacticCode (goal: MVarId) (tacticCode : Syntax)  : 
-  MetaM <| (Option Term.State) × Syntax := do
+def runTacticCode (tacticCode : Syntax)  : PolyTacticM := fun goal ↦ do
     let (goals, ts) ← runTactic  goal tacticCode 
     unless goals.isEmpty do
         throwError m!"Tactic not finishing, remaining goals:\n{goals}"
     pure (some ts, tacticCode)
 
-def runAndCacheM (tacticCode : Syntax) (goal: MVarId) (target : Expr) (pos? tailPos? : Option String.Pos)(preScript: String) : MetaM Unit := 
+def PolyTacticM.ofTactic (tacticCode : Syntax) : PolyTacticM := runTacticCode tacticCode
+
+def getMsgTactic?  : CoreM <| Option Syntax := do
+  let msgLog ← Core.getMessageLog  
+  let msgs := msgLog.toList
+  let mut tac? : Option Syntax := none
+  for msg in msgs do
+    let msg := msg.data
+    let msg ← msg.toString 
+    let msg := msg.replace "Try this:" "" |>.trim
+    let parsedMessage := Parser.runParserCategory (←getEnv)  `tactic msg
+    match parsedMessage with
+    | Except.ok tac => 
+      tac? := some tac
+    | _ =>
+      logInfo m!"failed to parse tactic {msg}"
+  return tac?
+
+def runTacticCodeMsg (tacticCode : Syntax)  : PolyTacticM := fun goal ↦ do
+    let (goals, ts) ← runTactic  goal tacticCode 
+    unless goals.isEmpty do
+        throwError m!"Tactic not finishing, remaining goals:\n{goals}"
+    let tac? ← getMsgTactic?
+    let code := match tac? with
+    | none => tacticCode
+    | some tac => tac
+    pure (some ts, code)
+
+def runAndCacheM (polyTac : PolyTacticM) (goal: MVarId) (target : Expr) (pos? tailPos? : Option String.Pos)(preScript: String) : MetaM Unit := 
   goal.withContext do 
     let lctx ← getLCtx
     let key : GoalKey := { goal := target, lctx := lctx.decls.toList }
     let core₀ ← getThe Core.State
     let meta₀ ← getThe Meta.State
     try
-      let (ts, script) ← runTacticCode  goal tacticCode 
+      let (ts, script) ← polyTac goal 
       let s : ProofState := {
       core   := (← getThe Core.State)
       meta   := (← getThe Meta.State)
@@ -106,11 +136,11 @@ def runAndCacheM (tacticCode : Syntax) (goal: MVarId) (target : Expr) (pos? tail
 
 -- #check MetaM.run'
 
-def runAndCacheIO (tacticCode : Syntax) (goal: MVarId) (target : Expr) (pos? tailPos?: Option String.Pos)(preScript: String) 
+def runAndCacheIO (polyTac : PolyTacticM) (goal: MVarId) (target : Expr) (pos? tailPos?: Option String.Pos)(preScript: String) 
   (mctx : Meta.Context) (ms : Meta.State) 
   (cctx : Core.Context) (cs: Core.State) : IO Unit :=
   let eio := 
-  (runAndCacheM tacticCode goal target pos? tailPos? preScript).run' mctx ms |>.run' cctx cs
+  (runAndCacheM polyTac goal target pos? tailPos? preScript).run' mctx ms |>.run' cctx cs
   let res := eio.runToIO'
   res
 
@@ -129,8 +159,8 @@ syntax (name := launchTactic) "launch" tacticSeq : tactic
     let cctx ← readThe Core.Context
     let cs ← getThe Core.State 
     -- runAndCacheM tacticCode (← getMainGoal) (← getMainTarget) tk
-    let ioSeek := runAndCacheIO 
-      tacticCode (← getMainGoal) (← getMainTarget) 
+    let ioSeek := runAndCacheIO (PolyTacticM.ofTactic tacticCode) 
+        (← getMainGoal) (← getMainTarget) 
               stx.getPos? stx.getTailPos? stx.reprint.get!  mctx ms cctx cs
     let _ ← ioSeek.asTask
     set ts
@@ -153,14 +183,12 @@ syntax (name := bgTactic) "bg" tacticSeq : tactic
     let cs ← getThe Core.State 
     -- runAndCacheM tacticCode (← getMainGoal) (← getMainTarget) tk
     let ioSeek := runAndCacheIO 
-      tacticCode (← getMainGoal) (← getMainTarget) 
+      (PolyTacticM.ofTactic tacticCode)  (← getMainGoal) (← getMainTarget) 
               stx.getPos? stx.getTailPos? stx.reprint.get!  mctx ms cctx cs
     let _ ← ioSeek.asTask
     set ts
     s.restore
-    let goal ← getMainGoal
-    let s ←  mkSyntheticSorry (← getMainTarget)
-    goal.assign s 
+    admitGoal <| ← getMainGoal
   | _ => throwUnsupportedSyntax
 
 elab "fetch_proof" : tactic => 
@@ -180,3 +208,5 @@ elab "fetch_proof" : tactic =>
     logInfo m!"Try this: {indentD s.script}"
 
 example : 1 = 1 := by checkpoint rfl
+
+#check Parser.runParserCategory
