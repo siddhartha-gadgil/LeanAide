@@ -44,6 +44,7 @@ structure ProofState where
   core   : Core.State
   meta   : Meta.State
   term   : Option Term.State
+  preScript : String
   script: Syntax
   tailPos? : Option String.Pos
 
@@ -77,7 +78,7 @@ def runTacticCode (goal: MVarId) (tacticCode : Syntax)  :
         throwError m!"Tactic not finishing, remaining goals:\n{goals}"
     pure (some ts, tacticCode)
 
-def runAndCacheM (tacticCode : Syntax) (goal: MVarId) (target : Expr) (pos? tailPos? : Option String.Pos) : MetaM Unit := 
+def runAndCacheM (tacticCode : Syntax) (goal: MVarId) (target : Expr) (pos? tailPos? : Option String.Pos)(preScript: String) : MetaM Unit := 
   goal.withContext do 
     let lctx ← getLCtx
     let key : GoalKey := { goal := target, lctx := lctx.decls.toList }
@@ -89,6 +90,7 @@ def runAndCacheM (tacticCode : Syntax) (goal: MVarId) (target : Expr) (pos? tail
       core   := (← getThe Core.State)
       meta   := (← getThe Meta.State)
       term   := ts
+      preScript := preScript
       script := script
       tailPos? := tailPos?
       }     
@@ -104,11 +106,11 @@ def runAndCacheM (tacticCode : Syntax) (goal: MVarId) (target : Expr) (pos? tail
 
 -- #check MetaM.run'
 
-def runAndCacheIO (tacticCode : Syntax) (goal: MVarId) (target : Expr) (pos? tailPos?: Option String.Pos) 
+def runAndCacheIO (tacticCode : Syntax) (goal: MVarId) (target : Expr) (pos? tailPos?: Option String.Pos)(preScript: String) 
   (mctx : Meta.Context) (ms : Meta.State) 
   (cctx : Core.Context) (cs: Core.State) : IO Unit :=
   let eio := 
-  (runAndCacheM tacticCode goal target pos? tailPos?).run' mctx ms |>.run' cctx cs
+  (runAndCacheM tacticCode goal target pos? tailPos? preScript).run' mctx ms |>.run' cctx cs
   let res := eio.runToIO'
   res
 
@@ -128,7 +130,8 @@ syntax (name := launchTactic) "launch" tacticSeq : tactic
     let cs ← getThe Core.State 
     -- runAndCacheM tacticCode (← getMainGoal) (← getMainTarget) tk
     let ioSeek := runAndCacheIO 
-      tacticCode (← getMainGoal) (← getMainTarget) stx.getPos? stx.getTailPos? mctx ms cctx cs
+      tacticCode (← getMainGoal) (← getMainTarget) 
+              stx.getPos? stx.getTailPos? stx.reprint.get!  mctx ms cctx cs
     let _ ← ioSeek.asTask
     set ts
     s.restore
