@@ -1,6 +1,7 @@
 import LeanCodePrompts.Async
 import LeanCodePrompts.AsyncCodeAction
-import Mathlib
+import Aesop
+import Mathlib.Tactic.LibrarySearch
 
 example : 1 ≤ 2 := by
   bg decide
