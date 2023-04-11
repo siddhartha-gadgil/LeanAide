@@ -16,7 +16,7 @@ def textEdits (text: FileMap) : IO <| Array TextEdit := do
         range := ⟨text.leanPosToLspPos <| text.toPosition k.pos, text.leanPosToLspPos <| text.toPosition tailPos⟩
         newText := 
           if (current.trim = s.preScript.trim) 
-            then s.script.reprint.get!
+            then s.script.reprint.get!.trimRight
           else current -- ++ s!"/-change detected: {s.preScript} to {current}-/"
       }
       edits := edits.push edit
