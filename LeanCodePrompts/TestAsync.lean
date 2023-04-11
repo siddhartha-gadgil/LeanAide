@@ -3,11 +3,30 @@ import LeanCodePrompts.AsyncCodeAction
 
 
 example : 1 ≤ 2 := by
-  launch rfl
-  launch (apply Nat.le_step)
-  launch decide
-  fetch_proof
+  bg decide
 
--- example : 1  = 1 := by launch rfl
+example : 1  = 1 := by bg rfl
+
+example (n : Nat) : n ≤ n := by
+  bg apply Nat.le_refl
+  
+
+
+  
+
+
+  
+
+
+  
+
+  
+
+
+  
+
+
+  
+
 
   

@@ -137,6 +137,32 @@ syntax (name := launchTactic) "launch" tacticSeq : tactic
     s.restore
   | _ => throwUnsupportedSyntax
 
+syntax (name := bgTactic) "bg" tacticSeq : tactic
+
+@[tactic bgTactic] def elabBgTactic : Tactic := fun stx => 
+  withMainContext do
+  focus do
+  match stx with
+  | `(tactic| bg $tacticCode) => do
+    let s ← saveState
+    let ts ← getThe Term.State
+    -- runAndCache tacticCode
+    let mctx ← readThe Meta.Context
+    let ms ← getThe Meta.State 
+    let cctx ← readThe Core.Context
+    let cs ← getThe Core.State 
+    -- runAndCacheM tacticCode (← getMainGoal) (← getMainTarget) tk
+    let ioSeek := runAndCacheIO 
+      tacticCode (← getMainGoal) (← getMainTarget) 
+              stx.getPos? stx.getTailPos? stx.reprint.get!  mctx ms cctx cs
+    let _ ← ioSeek.asTask
+    set ts
+    s.restore
+    let goal ← getMainGoal
+    let s ←  mkSyntheticSorry (← getMainTarget)
+    goal.assign s 
+  | _ => throwUnsupportedSyntax
+
 elab "fetch_proof" : tactic => 
   focus do
   let key ← GoalKey.get
