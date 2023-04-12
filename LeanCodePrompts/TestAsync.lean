@@ -12,8 +12,17 @@ example (n : Nat) : n ≤ n := by
 example : 2 ≤ 2 := by
   bg library_search
 
-  
+macro "auto" : tactic => do
+  `(tactic|aesop?)
 
+example : 2 ≤ 2 := by
+  bg auto
+  
+macro_rules
+| `(tactic|auto) => `(tactic|library_search)
+
+example : 2 ≤ 2 := by
+  bg auto
 
   
 
