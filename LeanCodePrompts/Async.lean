@@ -207,6 +207,37 @@ elab "fetch_proof" : tactic =>
 macro "auto" : tactic => do
   `(tactic|aesop?)
 
+syntax (name := autoTacs) "with_auto" (tacticSeq)? : tactic
+
+@[tactic autoTacs] def autoStartImpl : Tactic := fun stx => do
+match stx with
+| `(tactic| with_auto $tacticCode) => do
+    let tacticCode ← `(tactic|auto) 
+    let ioSeek : IO Unit := runAndCacheIO 
+      (PolyTacticM.ofTactic tacticCode)  (← getMainGoal) (← getMainTarget) 
+              stx.getPos? stx.getTailPos? stx.reprint.get!  
+              (← readThe Meta.Context) (← getThe Meta.State ) 
+              (← readThe Core.Context) (← getThe Core.State)
+    let _ ← ioSeek.asTask
+    try
+      fetchProof
+    catch _ =>
+      pure ()
+| `(tactic| with_auto) => do
+    let tacticCode ← `(tactic|auto) 
+    let ioSeek : IO Unit := runAndCacheIO 
+      (PolyTacticM.ofTactic tacticCode)  (← getMainGoal) (← getMainTarget) 
+              stx.getPos? stx.getTailPos? stx.reprint.get!  
+              (← readThe Meta.Context) (← getThe Meta.State ) 
+              (← readThe Core.Context) (← getThe Core.State)
+    let _ ← ioSeek.asTask
+    try
+      fetchProof
+    catch _ =>
+      pure ()
+| _ => throwUnsupportedSyntax
+
+
 -- the first is to trigger the search
 syntax (name := autoLaunch) "#by" : term
 syntax (name:= autoBy) "#by#" (tacticSeq)? : term
