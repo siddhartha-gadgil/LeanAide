@@ -86,5 +86,11 @@ def EIO.runToIO' (eio: EIO Exception α) : IO α  := do
       let msg ← e.toMessageData.toString
       IO.throwServerError msg
 
+-- code from Leo de Moura
+def getTactics (s : TSyntax ``tacticSeq) : Array (TSyntax `tactic) :=
+  match s with
+  | `(tacticSeq| { $[$t]* }) => t
+  | `(tacticSeq| $[$t]*) => t
+  | _ => #[]
 
 

@@ -1,7 +1,7 @@
 import Lean
 import LeanCodePrompts.Utils
 import Aesop
-open Lean Meta Elab Term Tactic Core
+open Lean Meta Elab Term Tactic Core Parser
 
 /-!
 # Asynchronous tactic execution
@@ -185,7 +185,7 @@ syntax (name := bgTactic) "bg" tacticSeq : tactic
     admitGoal <| ← getMainGoal
   | _ => throwUnsupportedSyntax
 
-def fetchProof : TacticM Unit := 
+def fetchProof (stx? : Option Syntax := none) : TacticM Unit := 
   focus do
   let key ← GoalKey.get
   let goal ← getMainGoal
@@ -199,7 +199,11 @@ def fetchProof : TacticM Unit :=
     | some ts =>
       set ts 
     setGoals []
-    logInfo m!"Try this: {indentD s.script}"
+    match stx? with
+    | none =>
+      logInfo m!"Try this: {indentD s.script}"
+    | some stx =>
+      logInfoAt stx m!"Try this: {indentD s.script}"
 
 elab "fetch_proof" : tactic => 
   fetchProof
@@ -211,7 +215,8 @@ syntax (name := autoTacs) "with_auto" (tacticSeq)? : tactic
 
 @[tactic autoTacs] def autoStartImpl : Tactic := fun stx => do
 match stx with
-| `(tactic| with_auto $tacticCode) => do
+| `(tactic| with_auto%$tk $tacticCode) => do
+    let allTacs := getTactics tacticCode
     let tacticCode ← `(tactic|auto) 
     let ioSeek : IO Unit := runAndCacheIO 
       (PolyTacticM.ofTactic tacticCode)  (← getMainGoal) (← getMainTarget) 
@@ -220,9 +225,20 @@ match stx with
               (← readThe Core.Context) (← getThe Core.State)
     let _ ← ioSeek.asTask
     try
-      fetchProof
+      dbgSleep 50 fun _ => fetchProof tk
     catch _ =>
-      pure ()
+      pure ()    
+    for tacticCode in allTacs do
+      let ioSeek : IO Unit := runAndCacheIO 
+        (PolyTacticM.ofTactic tacticCode)  (← getMainGoal) (← getMainTarget) 
+                stx.getPos? stx.getTailPos? stx.reprint.get!  
+                (← readThe Meta.Context) (← getThe Meta.State ) 
+                (← readThe Core.Context) (← getThe Core.State)
+      let _ ← ioSeek.asTask
+      try
+        dbgSleep 50 fun _ => fetchProof tacticCode
+      catch _ =>
+        pure ()    
 | `(tactic| with_auto) => do
     let tacticCode ← `(tactic|auto) 
     let ioSeek : IO Unit := runAndCacheIO 
@@ -232,38 +248,11 @@ match stx with
               (← readThe Core.Context) (← getThe Core.State)
     let _ ← ioSeek.asTask
     try
-      fetchProof
+      dbgSleep 50 fun _ => fetchProof
     catch _ =>
       pure ()
 | _ => throwUnsupportedSyntax
 
-
--- the first is to trigger the search
-syntax (name := autoLaunch) "#by" : term
-syntax (name:= autoBy) "#by#" (tacticSeq)? : term
-
-@[term_elab autoLaunch] def elabAutoLaunch : TermElab := fun stx expectedType? => do
-  match expectedType? with
-  | none => throwError "could not infer expected type"
-  | some type => do
-    let mvarId ← mkFreshMVarId
-    let mvar := mkMVar mvarId
-    let check ← Meta.isProp type 
-    if check then
-      let tacticCode ← `(tactic|auto) 
-      let ioSeek : IO Unit := 
-      runAndCacheIO (PolyTacticM.ofTactic tacticCode)  mvarId type
-              stx.getPos? stx.getTailPos? stx.reprint.get!  
-              (← readThe Meta.Context) (← getThe Meta.State ) 
-              (← readThe Core.Context) (← getThe Core.State)
-      let _ ← ioSeek.asTask
-    admitGoal mvarId
-    return mvar
-
-
--- for use within tactics
-syntax "#by" : tactic
-syntax "#by#" (tacticSeq)? : tactic
 
 example : 1 = 1 := by checkpoint rfl
 
