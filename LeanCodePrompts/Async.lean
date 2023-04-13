@@ -60,6 +60,17 @@ initialize tacticCache : IO.Ref (HashMap GoalKey ProofState)
 initialize tacticPosCache : IO.Ref (HashMap CacheKey ProofState) 
         ← IO.mkRef <| HashMap.empty
 
+initialize spawnedKeys : 
+  IO.Ref (HashSet <| GoalKey × Option String.Pos × Option String.Pos) 
+        ← IO.mkRef  ∅
+
+def isSpawned (key : GoalKey) (pos? tailPos? : Option String.Pos) : IO Bool := do
+  let m ← spawnedKeys.get
+  return m.contains (key, pos?, tailPos?)
+
+def markSpawned (key : GoalKey) (pos? tailPos? : Option String.Pos) : IO Unit := do
+  spawnedKeys.modify fun m => m.insert (key, pos?, tailPos?)
+
 def putTactic (key : GoalKey) (s : ProofState) : MetaM Unit := do
   tacticCache.modify fun m => m.insert key s
 
@@ -114,6 +125,9 @@ def runAndCacheM (polyTac : PolyTacticM) (goal: MVarId) (target : Expr) (pos? ta
   goal.withContext do 
     let lctx ← getLCtx
     let key : GoalKey := { goal := target, lctx := lctx.decls.toList }
+    if ←isSpawned key pos? tailPos? then
+      return ()
+    markSpawned key pos? tailPos? 
     let core₀ ← getThe Core.State
     let meta₀ ← getThe Meta.State
     try
