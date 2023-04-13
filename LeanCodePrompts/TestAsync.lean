@@ -10,8 +10,8 @@ axiom silly : sillyN = 2
 example : sillyN ≤ 3 := by
   with_auto
   rw [silly]
-  -- check_auto
   skip
+  -- skip
   -- auto
 
 /-

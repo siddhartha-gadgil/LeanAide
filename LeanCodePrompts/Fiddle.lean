@@ -3,6 +3,8 @@ import Lean.Parser
 import Mathlib
 open Lean Meta Elab Parser
 
+notation:85 x "^" y => Vector x y
+
 instance : HAdd String String Nat :=
   ⟨fun s t ↦ s.length + t.length⟩
 

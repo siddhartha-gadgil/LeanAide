@@ -199,7 +199,7 @@ syntax (name := bgTactic) "bg" tacticSeq : tactic
     admitGoal <| ← getMainGoal
   | _ => throwUnsupportedSyntax
 
-def fetchProof (stx? : Option Syntax := none) : TacticM Unit := 
+def fetchProof  : TacticM (MessageData) := 
   focus do
   let key ← GoalKey.get
   let goal ← getMainGoal
@@ -213,14 +213,10 @@ def fetchProof (stx? : Option Syntax := none) : TacticM Unit :=
     | some ts =>
       set ts 
     setGoals []
-    match stx? with
-    | none =>
-      logInfo m!"Try this: {indentD s.script}"
-    | some stx =>
-      logInfoAt stx m!"Try this: {indentD s.script}"
+    return m!"Try this next: {indentD s.script}"
 
-elab "fetch_proof" : tactic => 
-  fetchProof
+elab "fetch_proof" : tactic => do
+  discard fetchProof
 
 macro "auto" : tactic => do
   `(tactic|aesop?)
@@ -231,11 +227,14 @@ syntax (name := autoTacs) "with_auto" (tacticSeq)? : tactic
 withMainContext do
 let autoCode ← `(tactic|auto) 
 match stx with
-| `(tactic| with_auto $tacticCode) => do
+| `(tactic| with_auto%$tk $tacticCode) => do
+    let mut prevPos := tk
     let allTacs := getTactics tacticCode
     for tacticCode in allTacs do
       try 
-        fetchProof tacticCode
+        let msg ← fetchProof 
+        logWarningAt tacticCode m!"proof complete at: {tacticCode}"
+        logInfoAt prevPos msg
       catch _ =>
       if (← getUnsolvedGoals).isEmpty then
         logInfoAt tacticCode m!"No more goals to solve"
@@ -250,7 +249,7 @@ match stx with
                 (← readThe Meta.Context) (← getThe Meta.State ) 
                 (← readThe Core.Context) (← getThe Core.State)
       let _ ← ioSeek.asTask
-      -- logInfoAt tacticCode m!"Launched tactic {tacticCode} for goal {← ppExpr <| (← getMainTarget)}"
+      prevPos := tacticCode
 | `(tactic| with_auto) => do
     let tacticCode ← `(tactic|auto) 
     if (← getUnsolvedGoals).isEmpty then
@@ -263,7 +262,10 @@ match stx with
               (← readThe Core.Context) (← getThe Core.State)
     let _ ← ioSeek.asTask
     try
-      dbgSleep 50 fun _ => fetchProof
+      dbgSleep 50 fun _ => do
+        let msg ← fetchProof 
+        logInfoAt tacticCode m!"proof complete at: {tacticCode}"
+        logInfoAt tacticCode msg
     catch _ =>
       pure ()
     if (← getUnsolvedGoals).isEmpty then
