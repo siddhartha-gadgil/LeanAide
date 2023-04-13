@@ -223,6 +223,12 @@ macro "auto" : tactic => do
 
 syntax (name := autoTacs) "with_auto" (tacticSeq)? : tactic
 
+macro "by#" tacs:tacticSeq : term =>
+  `(by with_auto $tacs)
+
+macro "by#"  : term =>
+  `(by with_auto)
+
 @[tactic autoTacs] def autoStartImpl : Tactic := fun stx => 
 withMainContext do
 let autoCode ← `(tactic|auto) 
@@ -241,7 +247,7 @@ match stx with
         return () 
       evalTactic tacticCode
       if (← getUnsolvedGoals).isEmpty then
-        logInfoAt tacticCode m!"No more goals to solve"
+        logInfoAt tacticCode m!"Goals complete!"
         return ()
       let ioSeek : IO Unit := runAndCacheIO 
         (PolyTacticM.ofTactic autoCode)  (← getMainGoal) (← getMainTarget) 
@@ -250,6 +256,12 @@ match stx with
                 (← readThe Core.Context) (← getThe Core.State)
       let _ ← ioSeek.asTask
       prevPos := tacticCode
+      try
+        dbgSleep 50 fun _ => do
+          let msg ← fetchProof 
+          logInfoAt tacticCode msg
+      catch _ =>
+        pure ()
 | `(tactic| with_auto) => do
     let tacticCode ← `(tactic|auto) 
     if (← getUnsolvedGoals).isEmpty then
@@ -264,7 +276,6 @@ match stx with
     try
       dbgSleep 50 fun _ => do
         let msg ← fetchProof 
-        logInfoAt tacticCode m!"proof complete at: {tacticCode}"
         logInfoAt tacticCode msg
     catch _ =>
       pure ()

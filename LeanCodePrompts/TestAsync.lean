@@ -10,11 +10,15 @@ axiom silly : sillyN = 2
 example : sillyN ≤ 3 := by
   with_auto
   rw [silly]
-  skip
-  -- skip
-  -- auto
+  -- simp_all only
 
-/-
+example : 3 ≤ 4 := by# 
+
+example : sillyN ≤ 4 := by#
+  rw [silly]
+  
+
+
 example : 1 ≤ 2 := by
   bg decide
   
@@ -27,8 +31,6 @@ example : 2 ≤ 2 := by
 example : 2 ≤ 2 := by
   bg auto
 
-
-
 example : 2 ≤ 2 := by
   with_auto
 
@@ -40,9 +42,9 @@ example : 2 ≤ 2 := by
 
 def prop := 2 ≤ 2
 
--- example : prop := by
---   with_auto
---   rw [prop]
+example : prop := by
+  with_auto
+  rw [prop]
 
 
 
@@ -51,7 +53,7 @@ def prop := 2 ≤ 2
 
   
 
--/
+
   
 
   
