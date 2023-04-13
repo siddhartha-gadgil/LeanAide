@@ -23,10 +23,9 @@ example : 2 ≤ 2 := by
 
 def prop := 2 ≤ 2
 
--- example : prop := by
---   with_auto
---   rw [prop]
-
+example : prop := by
+  with_auto
+  rw [prop]
 
   
 

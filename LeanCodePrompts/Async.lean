@@ -229,19 +229,8 @@ syntax (name := autoTacs) "with_auto" (tacticSeq)? : tactic
 
 @[tactic autoTacs] def autoStartImpl : Tactic := fun stx => do
 match stx with
-| `(tactic| with_auto%$tk $tacticCode) => do
+| `(tactic| with_auto $tacticCode) => do
     let allTacs := getTactics tacticCode
-    let tacticCode ← `(tactic|auto) 
-    let ioSeek : IO Unit := runAndCacheIO 
-      (PolyTacticM.ofTactic tacticCode)  (← getMainGoal) (← getMainTarget) 
-              stx.getPos? stx.getTailPos? stx.reprint.get!  
-              (← readThe Meta.Context) (← getThe Meta.State ) 
-              (← readThe Core.Context) (← getThe Core.State)
-    let _ ← ioSeek.asTask
-    try
-      dbgSleep 50 fun _ => fetchProof tk
-    catch _ =>
-      pure ()    
     for tacticCode in allTacs do
       if (← getUnsolvedGoals).isEmpty then
         logInfoAt tacticCode m!"No more goals to solve"
