@@ -22,6 +22,7 @@ example : sillyN ≤ 4 := by#
 example : 1 ≤ 2 := by
   bg decide
 
+-- c
 
 example (n : Nat) : n ≤ n := by
   bg aesop?
