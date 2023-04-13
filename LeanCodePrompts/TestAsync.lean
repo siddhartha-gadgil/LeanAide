@@ -3,6 +3,18 @@ import LeanCodePrompts.AsyncCodeAction
 import Aesop
 import Mathlib.Tactic.LibrarySearch
 
+opaque sillyN : Nat
+
+axiom silly : sillyN = 2
+
+example : sillyN ≤ 3 := by
+  with_auto
+  rw [silly]
+  -- check_auto
+  skip
+  -- auto
+
+/-
 example : 1 ≤ 2 := by
   bg decide
   
@@ -14,7 +26,12 @@ example : 2 ≤ 2 := by
 
 example : 2 ≤ 2 := by
   bg auto
-  
+
+
+
+example : 2 ≤ 2 := by
+  with_auto
+
 macro_rules
 | `(tactic|auto) => `(tactic|library_search)
 
@@ -23,19 +40,18 @@ example : 2 ≤ 2 := by
 
 def prop := 2 ≤ 2
 
-example : prop := by
-  with_auto
-  rw [prop]
+-- example : prop := by
+--   with_auto
+--   rw [prop]
+
+
 
   
 
 
   
 
-
-  
-
-
+-/
   
 
   
