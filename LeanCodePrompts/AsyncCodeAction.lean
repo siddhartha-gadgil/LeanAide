@@ -15,13 +15,16 @@ def textEdits (text: FileMap) : IO <| Array TextEdit := do
       let checkStart : Bool := 
         match s.preScript with
           | none => false
-          | some pre => pre.trim.startsWith current.trim
+          | some pre => pre.trim == current.trim
       let edit : TextEdit := {
         range := ⟨text.leanPosToLspPos <| text.toPosition k.pos, text.leanPosToLspPos <| text.toPosition tailPos⟩
         newText := 
           if checkStart 
-            then s.script.reprint.get!.trimRight
-          else current ++ s!"/-change detected: {s.preScript} to {current}-/"
+            then
+              let stx := s.script
+              let stx' := stx.copyHeadTailInfoFrom .missing 
+              stx'.reprint.get!.trimRight
+          else current   ++ s!"/-change detected: {s.preScript.get!} to {current}-/"
       }
       edits := edits.push edit
   -- tacticPosCache.set ∅

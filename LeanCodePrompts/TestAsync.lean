@@ -20,18 +20,18 @@ example : sillyN ≤ 4 := by#
 
 
 example : 1 ≤ 2 := by
-  bg decide
+   decide
 
 -- c
 
 example (n : Nat) : n ≤ n := by
-  bg aesop?
+   simp_all only [le_refl ]
   
 example : 2 ≤ 2 := by
-  bg library_search
+   exact of_decide_eq_true  rfl
 
 example : 2 ≤ 2 := by
-  bg auto
+   simp_all  only
 
 example : 2 ≤ 2 := by
   with_auto
@@ -40,7 +40,7 @@ macro_rules
 | `(tactic|auto) => `(tactic|library_search)
 
 example : 2 ≤ 2 := by
-  bg auto
+   exact of_decide_eq_true  rfl
 
 def prop := 2 ≤ 2
 

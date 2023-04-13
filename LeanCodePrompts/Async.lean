@@ -169,10 +169,11 @@ syntax (name := launchTactic) "launch" tacticSeq : tactic
   | `(tactic| launch $tacticCode) => do
     let s ← saveState
     let ts ← getThe Term.State
-    let stxString := stx.formatStx.pretty 
+    let stx' := stx.copyHeadTailInfoFrom .missing 
     let ioSeek := runAndCacheIO 
       (PolyTacticM.ofTactic tacticCode)  (← getMainGoal) (← getMainTarget) 
-              stx.getPos? stx.getTailPos? stxString  
+              stx.getPos? stx.getTailPos? 
+              (some <| stx'.reprint.get! |>.replace "  " " ")
               (← readThe Meta.Context) (← getThe Meta.State ) 
               (← readThe Core.Context) (← getThe Core.State)
     let _ ← ioSeek.asTask
@@ -186,12 +187,14 @@ syntax (name := bgTactic) "bg" tacticSeq : tactic
   withMainContext do
   focus do
   match stx with
-  | `(tactic| bg $tacticCode) => do
+  | stx@`(tactic| bg $tacticCode) => do
     let s ← saveState
     let ts ← getThe Term.State
+    let stx' := stx.copyHeadTailInfoFrom .missing
     let ioSeek : IO Unit := runAndCacheIO 
       (PolyTacticM.ofTactic tacticCode)  (← getMainGoal) (← getMainTarget) 
-              stx.getPos? stx.getTailPos? stx.reprint.get!  
+              stx.getPos? stx.getTailPos? 
+              (some <| stx'.reprint.get! |>.replace "  " " ") 
               (← readThe Meta.Context) (← getThe Meta.State ) 
               (← readThe Core.Context) (← getThe Core.State)
     let _ ← ioSeek.asTask
