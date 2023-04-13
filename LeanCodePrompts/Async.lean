@@ -243,6 +243,9 @@ match stx with
     catch _ =>
       pure ()    
     for tacticCode in allTacs do
+      if (← getUnsolvedGoals).isEmpty then
+        logInfoAt tacticCode m!"No more goals to solve"
+        return () 
       let ioSeek : IO Unit := runAndCacheIO 
         (PolyTacticM.ofTactic tacticCode)  (← getMainGoal) (← getMainTarget) 
                 stx.getPos? stx.getTailPos? stx.reprint.get!  

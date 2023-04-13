@@ -21,6 +21,13 @@ macro_rules
 example : 2 ≤ 2 := by
   bg auto
 
+def prop := 2 ≤ 2
+
+-- example : prop := by
+--   with_auto
+--   rw [prop]
+
+
   
 
 
