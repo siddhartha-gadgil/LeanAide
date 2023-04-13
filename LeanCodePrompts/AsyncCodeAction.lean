@@ -17,7 +17,7 @@ def textEdits (text: FileMap) : IO <| Array TextEdit := do
         newText := 
           if (current.trim = s.preScript.trim) 
             then s.script.reprint.get!.trimRight
-          else current -- ++ s!"/-change detected: {s.preScript} to {current}-/"
+          else current ++ s!"/-change detected: {s.preScript} to {current}-/"
       }
       edits := edits.push edit
   -- tacticPosCache.set ∅

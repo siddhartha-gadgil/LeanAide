@@ -169,9 +169,10 @@ syntax (name := launchTactic) "launch" tacticSeq : tactic
   | `(tactic| launch $tacticCode) => do
     let s ← saveState
     let ts ← getThe Term.State
+    let stxString := stx.formatStx.pretty 
     let ioSeek := runAndCacheIO 
       (PolyTacticM.ofTactic tacticCode)  (← getMainGoal) (← getMainTarget) 
-              stx.getPos? stx.getTailPos? stx.reprint.get!  
+              stx.getPos? stx.getTailPos? stxString  
               (← readThe Meta.Context) (← getThe Meta.State ) 
               (← readThe Core.Context) (← getThe Core.State)
     let _ ← ioSeek.asTask
