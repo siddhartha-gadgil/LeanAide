@@ -227,28 +227,37 @@ macro "auto" : tactic => do
 
 syntax (name := autoTacs) "with_auto" (tacticSeq)? : tactic
 
-@[tactic autoTacs] def autoStartImpl : Tactic := fun stx => do
+@[tactic autoTacs] def autoStartImpl : Tactic := fun stx => 
+withMainContext do
+let autoCode ← `(tactic|auto) 
 match stx with
 | `(tactic| with_auto $tacticCode) => do
     let allTacs := getTactics tacticCode
     for tacticCode in allTacs do
+      try 
+        fetchProof tacticCode
+      catch _ =>
       if (← getUnsolvedGoals).isEmpty then
         logInfoAt tacticCode m!"No more goals to solve"
         return () 
+      evalTactic tacticCode
+      if (← getUnsolvedGoals).isEmpty then
+        logInfoAt tacticCode m!"No more goals to solve"
+        return ()
       let ioSeek : IO Unit := runAndCacheIO 
-        (PolyTacticM.ofTactic tacticCode)  (← getMainGoal) (← getMainTarget) 
+        (PolyTacticM.ofTactic autoCode)  (← getMainGoal) (← getMainTarget) 
                 stx.getPos? stx.getTailPos? stx.reprint.get!  
                 (← readThe Meta.Context) (← getThe Meta.State ) 
                 (← readThe Core.Context) (← getThe Core.State)
       let _ ← ioSeek.asTask
-      try
-        dbgSleep 50 fun _ => fetchProof tacticCode
-      catch _ =>
-        pure ()    
+      -- logInfoAt tacticCode m!"Launched tactic {tacticCode} for goal {← ppExpr <| (← getMainTarget)}"
 | `(tactic| with_auto) => do
     let tacticCode ← `(tactic|auto) 
+    if (← getUnsolvedGoals).isEmpty then
+        logInfoAt tacticCode m!"No more goals to solve"
+        return () 
     let ioSeek : IO Unit := runAndCacheIO 
-      (PolyTacticM.ofTactic tacticCode)  (← getMainGoal) (← getMainTarget) 
+      (PolyTacticM.ofTactic autoCode)  (← getMainGoal) (← getMainTarget) 
               stx.getPos? stx.getTailPos? stx.reprint.get!  
               (← readThe Meta.Context) (← getThe Meta.State ) 
               (← readThe Core.Context) (← getThe Core.State)
@@ -257,8 +266,25 @@ match stx with
       dbgSleep 50 fun _ => fetchProof
     catch _ =>
       pure ()
+    if (← getUnsolvedGoals).isEmpty then
+        logInfoAt tacticCode m!"No more goals to solve"
+        return () 
 | _ => throwUnsupportedSyntax
 
+
+elab "check_auto" : tactic => withMainContext do
+  if (← getUnsolvedGoals).isEmpty then
+        logInfo m!"No more goals to solve"
+        return () 
+  let lctx ← getLCtx
+  let target ← getMainTarget 
+  let key : GoalKey := { goal := target, lctx := lctx.decls.toList }
+  logInfo m!"Checking for cached result for the goal : {← ppExpr <| key.goal }"
+  let cache : HashMap GoalKey ProofState ← tacticCache.get
+  logInfo m!"Cache size : {cache.size}"
+  logInfo m!"Cache keys"
+  for (k, _) in cache.toList do
+    logInfo m!"{← ppExpr k.goal}"
 
 example : 1 = 1 := by checkpoint rfl
 
