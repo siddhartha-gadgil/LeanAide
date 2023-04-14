@@ -3,6 +3,19 @@ import Lean.Parser
 import Mathlib
 open Lean Meta Elab Parser
 
+def stxPurged : MetaM Syntax := do
+  let text := "rw [Nat.zero]\n\n -- a comment"
+  let stx? := runParserCategory (← getEnv) `tactic text
+  let stx := stx?.toOption.get!
+  let stx' := stx.copyHeadTailInfoFrom .missing
+  return stx' 
+
+def stxPurgedView : MetaM String := do
+  let stx ← stxPurged
+  return stx.reprint.get!.trim
+
+#eval stxPurgedView
+
 notation:85 x "^" y => Vector x y
 
 instance : HAdd String String Nat :=

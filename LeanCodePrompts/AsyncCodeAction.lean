@@ -12,12 +12,19 @@ def textEdits (text: FileMap) : IO <| Array TextEdit := do
     | none => pure ()
     | some tailPos => 
       let current := source.extract k.pos tailPos
+      let checkStart : Bool := 
+        match s.preScript with
+          | none => false
+          | some pre => pre.trim == current.trim
       let edit : TextEdit := {
         range := ⟨text.leanPosToLspPos <| text.toPosition k.pos, text.leanPosToLspPos <| text.toPosition tailPos⟩
         newText := 
-          if (current.trim = s.preScript.trim) 
-            then s.script.reprint.get!.trimRight
-          else current -- ++ s!"/-change detected: {s.preScript} to {current}-/"
+          if checkStart 
+            then
+              let stx := s.script
+              let stx' := stx.copyHeadTailInfoFrom .missing 
+              stx'.reprint.get!.trimRight
+          else current   ++ s!"/-change detected: {s.preScript.get!} to {current}-/"
       }
       edits := edits.push edit
   -- tacticPosCache.set ∅
