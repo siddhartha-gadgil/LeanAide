@@ -100,7 +100,18 @@ section Misc
        withRef ref <| addRawTrace m!"[TACTIC] {snap.tactic}"
        withRef ref <| addRawTrace snap.goalsAfter
       | none => continue
-    
+
+  def TacticSnapshot.toJson : TacticSnapshot → IO Json
+    | ⟨depth, goalsBefore, tac, goalsAfter, _⟩ => do
+      return .mkObj <| [
+        ("depth", depth),
+        ("goals_before", ← goalsBefore.toString),
+        ("tactic", ← do
+          let .some s ← pure tac.raw.reprint | throw <| IO.userError "Failed to print syntax while exporting snapshot to Json."
+          return s),
+        ("goals_after", ← goalsAfter.toString)
+      ]  
+
   end Logging
 
 end Misc
