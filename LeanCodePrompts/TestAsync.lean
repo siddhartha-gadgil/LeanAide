@@ -48,16 +48,6 @@ example : prop := by
   with_auto
   rw [prop]
 
-namespace leanaide.auto
-
-scoped macro (priority := high) "by" tacs?:(tacticSeq)? : term => 
-  match tacs? with
-  | none => `(by with_auto)
-  | some tacs => `(by with_auto $tacs)
-
-
-end leanaide.auto
-
 macro_rules
 | `(tactic|auto) => `(tactic|aesop?)
 

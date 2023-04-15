@@ -303,6 +303,16 @@ elab "check_auto" : tactic => withMainContext do
   for (k, _) in cache.toList do
     logInfo m!"{← ppExpr k.goal}"
 
+namespace leanaide.auto
+
+scoped macro (priority := high) "by" tacs?:(tacticSeq)? : term => 
+  match tacs? with
+  | none => `(by with_auto)
+  | some tacs => `(by with_auto $tacs)
+
+end leanaide.auto
+
+
 example : 1 = 1 := by checkpoint rfl
 
 #check Meta.isProp
