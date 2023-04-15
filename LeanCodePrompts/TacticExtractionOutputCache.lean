@@ -4,9 +4,9 @@ open Lean Elab Parser Term Meta Tactic
 
 structure TacticSnapshot where
   depth : Nat
-  goalsBefore : List MVarId
+  goalsBefore : MessageData
   tactic : TSyntax `tactic
-  goalsAfter : List MVarId
+  goalsAfter : MessageData
   ref : Option Syntax
 
 initialize tacticSnapRef : IO.Ref (Array TacticSnapshot) ← IO.mkRef #[] 
