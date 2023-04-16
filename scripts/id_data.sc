@@ -241,3 +241,28 @@ def writeIdPairs(group: String): Unit = {
     }
   }
 }
+
+def writeDeps(group: String): Unit = {
+  count = 0
+  var pairCount = 0
+  val js = os.read.lines.stream(os.pwd / "rawdata" / s"${group}_premises.jsonl")
+  val depFile = os.pwd / "rawdata" / s"${group}_deps.jsonl"
+  os.write.over(depFile, "")
+  js.foreach { s =>
+    val js = upickle.default.read[ujson.Obj](s)
+    count = count + 1
+    if (count % 1000 == 0) println(s"$count pairs: $pairCount")
+    val ids = js("ids").arr.map(_._1).toVector.distinct
+    val terms = js("terms").arr.map(_("value").str).distinct
+    val propProofs = js("propProofs").arr
+    val lemmas = propProofs.map(s => shrink(s.str))
+      .mkString("", " ", s" : ${shrink(propProof("prop").str
+          )}")
+    val theorem = js("context").arr
+      .map(s => shrink(s.str))
+      .mkString("", " ", s" : ${shrink(js("type").str)}")
+    val deps = js.Obj("theorem" -> theorem, "terms" -> terms, "lemmas" -> lemmas, "ids" -> ids)
+    os.write.append(depFile, ujson.write(deps) + "\n")
+    pairCount = pairCount + 1
+  }
+}
