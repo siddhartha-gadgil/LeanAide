@@ -252,10 +252,10 @@ def writeDeps(group: String): Unit = {
     val js = upickle.default.read[ujson.Obj](s)
     count = count + 1
     if (count % 1000 == 0) println(s"$count pairs: $pairCount")
-    val ids = js("ids").arr.map(_._1).toVector.distinct
+    val ids = js("ids").arr.map(_(0)).toVector.distinct
     val terms = js("terms").arr.map(_("value").str).distinct
     val propProofs = js("propProofs").arr
-    val lemmas = propProofs.map(s => shrink(s.str))
+    val lemmas = propProofs.map(propProof => shrink(s.str))
       .mkString("", " ", s" : ${shrink(propProof("prop").str
           )}")
     val theorem = js("context").arr
