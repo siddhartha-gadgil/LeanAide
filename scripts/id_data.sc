@@ -255,9 +255,7 @@ def writeDeps(group: String): Unit = {
     val ids = js("ids").arr.map(_(0)).toVector.distinct
     val terms = js("terms").arr.map(_("value").str).distinct
     val propProofs = js("propProofs").arr
-    val lemmas = propProofs.map(propProof => shrink(s.str))
-      .mkString("", " ", " : "+shrink(propProof("prop").str
-          ))
+    val lemmas = propProofs.map(_("prop").str).toVector.distinct
     val theorem = js("context").arr
       .map(s => shrink(s.str))
       .mkString("", " ", s" : ${shrink(js("type").str)}")
