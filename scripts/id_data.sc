@@ -256,12 +256,12 @@ def writeDeps(group: String): Unit = {
     val terms = js("terms").arr.map(_("value").str).distinct
     val propProofs = js("propProofs").arr
     val lemmas = propProofs.map(propProof => shrink(s.str))
-      .mkString("", " ", s" : ${shrink(propProof("prop").str
-          )}")
+      .mkString("", " ", " : "+shrink(propProof("prop").str
+          ))
     val theorem = js("context").arr
       .map(s => shrink(s.str))
       .mkString("", " ", s" : ${shrink(js("type").str)}")
-    val deps = js.Obj("theorem" -> theorem, "terms" -> terms, "lemmas" -> lemmas, "ids" -> ids)
+    val deps = ujson.Obj("theorem" -> theorem, "terms" -> terms, "lemmas" -> lemmas, "ids" -> ids)
     os.write.append(depFile, ujson.write(deps) + "\n")
     pairCount = pairCount + 1
   }
