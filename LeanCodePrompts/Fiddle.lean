@@ -1,7 +1,10 @@
 import Lean
 import Lean.Parser
+import Lean.Data.Json.Parser
 import Mathlib
-open Lean Meta Elab Parser
+open Lean Meta Elab Parser Json.Parser
+
+#eval Lean.Json.parse "{\"x\" : 3, \"y\" : 4, \"z\" : [\"five\", 6]}"
 
 def stxPurged : MetaM Syntax := do
   let text := "rw [Nat.zero]\n\n -- a comment"
