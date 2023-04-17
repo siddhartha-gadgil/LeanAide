@@ -110,7 +110,17 @@ section Misc
           let .some s ← pure tac.raw.reprint | throw <| IO.userError "Failed to print syntax while exporting snapshot to Json."
           return s),
         ("goals_after", ← goalsAfter.toString)
-      ]  
+      ]
+
+  def outputLocation : System.FilePath := 
+    "."/"data"/"tactics"/"test.json"
+  
+  elab "log_and_clear_ref" : tactic => do
+    let snaps ← tacticSnapRef.get
+    let jsnaps ← snaps.mapM (TacticSnapshot.toJson ·)
+    let h ← IO.FS.Handle.mk outputLocation IO.FS.Mode.append false
+    h.putStr <| toString <| Json.arr jsnaps
+    tacticSnapRef.set #[]
 
   end Logging
 
@@ -230,7 +240,10 @@ syntax (name := byTactic') "by' " tacticSeq : term
 -- intercepting the `by` tactic to output intermediate trace data
 -- the `by'` clone is needed here to avoid infinite recursion
 macro_rules
-  | `(by $t) => `(by' seq 0 $t) 
+  | `(by $t) => do
+    let tacs : TSyntaxArray `tactic ←  
+      pure #[← `(tactic| seq 0 $t), ← `(tactic| trace_tactic_snapshots), ← `(tactic| log_and_clear_ref)]
+    `(by' $[$tacs]*) 
 
 end ByTactic
 

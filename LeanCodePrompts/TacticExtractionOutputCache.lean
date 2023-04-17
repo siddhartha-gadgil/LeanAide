@@ -8,6 +8,7 @@ structure TacticSnapshot where
   tactic : TSyntax `tactic
   goalsAfter : MessageData
   ref : Option Syntax
+deriving Inhabited
 
 initialize tacticSnapRef : IO.Ref (Array TacticSnapshot) ← IO.mkRef #[] 
 
