@@ -86,9 +86,11 @@ section Misc
 
   def logTacticSnapshot (depth : ℕ) (tac : TacticM <| TSyntax `tactic) (ref : Option Syntax) : TacticM Unit := do
     let goalsBefore ← getUnsolvedGoals
+    let strGoalsBefore ← MessageData.toString <| ← addMessageContext <| goalsToMessageData goalsBefore
     evalTacticM <| tac
     let goalsAfter ← getUnsolvedGoals
-    let snap : TacticSnapshot := ⟨depth, goalsToMessageData goalsBefore, ← tac, goalsToMessageData goalsAfter, ref⟩
+    let strGoalsAfter ← MessageData.toString <| ← addMessageContext <| goalsToMessageData goalsAfter
+    let snap : TacticSnapshot := ⟨depth, strGoalsBefore, ← tac, strGoalsAfter, ref⟩
     tacticSnapRef.push snap
 
   elab "trace_tactic_snapshots" : tactic => do
@@ -105,12 +107,22 @@ section Misc
     | ⟨depth, goalsBefore, tac, goalsAfter, _⟩ => do
       return .mkObj <| [
         ("depth", depth),
-        ("goals_before", ← goalsBefore.toString),
+        ("goals_before", goalsBefore),
         ("tactic", ← do
           let .some s ← pure tac.raw.reprint | throw <| IO.userError "Failed to print syntax while exporting snapshot to Json."
           return s),
-        ("goals_after", ← goalsAfter.toString)
-      ]  
+        ("goals_after", goalsAfter)
+      ]
+
+  def outputLocation : System.FilePath := 
+    "."/"data"/"tactics"/"test.json"
+  
+  elab "log_and_clear_ref" : tactic => do
+    let snaps ← tacticSnapRef.get
+    let jsnaps ← snaps.mapM (TacticSnapshot.toJson ·)
+    let h ← IO.FS.Handle.mk outputLocation IO.FS.Mode.append false
+    h.putStr <| Json.pretty <| Json.arr jsnaps
+    tacticSnapRef.set #[]
 
   end Logging
 
@@ -230,7 +242,10 @@ syntax (name := byTactic') "by' " tacticSeq : term
 -- intercepting the `by` tactic to output intermediate trace data
 -- the `by'` clone is needed here to avoid infinite recursion
 macro_rules
-  | `(by $t) => `(by' seq 0 $t) 
+  | `(by $t) => do
+    let tacs : TSyntaxArray `tactic :=
+      #[← `(tactic| seq 0 $t), ← `(tactic| trace_tactic_snapshots), ← `(tactic| log_and_clear_ref)]
+    `(by' $[$tacs]*) 
 
 end ByTactic
 
