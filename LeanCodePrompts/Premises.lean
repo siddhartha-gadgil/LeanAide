@@ -91,6 +91,34 @@ partial def shrink (s: String) : String :=
                 |>.trim
     if step == s then s else shrink step
 
+structure CorePremiseDataDirect where
+    context : Array String
+    ids : Array String
+    terms : Array <| Array String ×  String
+    lemmas : Array String 
+deriving Repr, ToJson, FromJson
+
+def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CorePremiseDataDirect := 
+    ⟨pd.context.map (fun s => shrink s.reprint.get!.trim), pd.ids.map (fun (n, _) => shrink n.toString), pd.terms.map (fun td => 
+       (td.context.map (fun s => shrink s.reprint.get!.trim),
+       td.value.reprint.get!.trim)), pd.propProofs.map (fun p => p.prop.reprint.get!.trim)⟩
+
+structure CorePremiseData extends CorePremiseDataDirect where
+    namedLemmas : Array String
+deriving Repr, ToJson, FromJson
+
+
+def CorePremiseData.fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap String String) : CorePremiseData := {
+    context := direct.context,
+    ids := direct.ids,
+    terms := direct.terms,
+    lemmas := direct.lemmas,
+    namedLemmas := direct.ids.filterMap (fun id => propMap.find? id)
+}
+
+def CorePremiseData.fromPremiseData (pd: PremiseData)(propMap : HashMap String String) : CorePremiseData := 
+    CorePremiseData.fromDirect (CorePremiseDataDirect.fromPremiseData pd) propMap
+
 namespace PremiseData
 
 def filterIds (pd: PremiseData)(p: Name → Bool) : PremiseData := 
