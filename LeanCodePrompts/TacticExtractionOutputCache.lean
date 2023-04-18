@@ -4,9 +4,9 @@ open Lean Elab Parser Term Meta Tactic
 
 structure TacticSnapshot where
   depth : Nat
-  goalsBefore : MessageData
+  goalsBefore : String
   tactic : TSyntax `tactic
-  goalsAfter : MessageData
+  goalsAfter : String
   ref : Option Syntax
 deriving Inhabited
 
