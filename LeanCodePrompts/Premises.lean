@@ -36,7 +36,7 @@ def constantNameValueTypes  : MetaM (Array (Name × Expr ×   Expr)) := do
 set_option pp.unicode.fun true
 
 /-- Syntax as json -/
-instance : ToJson Syntax := ⟨fun (d: Syntax) ↦ d.reprint.get!⟩
+instance : ToJson Syntax := ⟨fun (d: Syntax) ↦ d.reprint.get!.trim⟩
 
 /-- Subterms in a premise -/
 structure TermData where
@@ -81,6 +81,15 @@ structure PremiseData  where
  ids :       Array (Name ×  Nat)  -- proof identifiers used
  deriving Repr, ToJson
 
+partial def shrink (s: String) : String := 
+    let step := s.replace "  " " " |>.replace "( " "("
+                |>.replace " )" ")"
+                |>.replace "{ " "{"
+                |>.replace " }" "}"
+                |>.replace "[ " "["
+                |>.replace " ]" "]"
+                |>.trim
+    if step == s then s else shrink step
 
 namespace PremiseData
 
