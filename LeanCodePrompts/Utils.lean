@@ -115,3 +115,9 @@ def getTactics (s : TSyntax ``tacticSeq) : Array (TSyntax `tactic) :=
   | _ => #[]
 
 
+def threadNum : IO Nat := do
+  let out ← IO.Process.output {cmd:= "threads.sh"}
+  let stdout := out.stdout
+  return stdout.toNat! 
+
+#eval threadNum

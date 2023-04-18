@@ -1,1 +1,2 @@
-grep ^cpu\scores /proc/cpuinfo | uniq |  awk '{print }'
+#bin/bash
+echo $(grep -c ^processor /proc/cpuinfo)
