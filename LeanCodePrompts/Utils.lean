@@ -116,8 +116,10 @@ def getTactics (s : TSyntax ``tacticSeq) : Array (TSyntax `tactic) :=
 
 
 def threadNum : IO Nat := do
-  let out ← IO.Process.output {cmd:= "threads.sh"}
-  let stdout := out.stdout
-  return stdout.toNat! 
+  try
+    let info ←  IO.FS.readFile "/proc/cpuinfo" 
+    return (info.splitOn "processor" |>.length) + 1
+  catch _ =>
+    return 4
 
 #eval threadNum
