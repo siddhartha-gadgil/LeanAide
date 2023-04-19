@@ -122,5 +122,10 @@ def threadNum : IO Nat := do
   catch _ =>
     return 4
 
+def jsonLines [ToJson α] (jsl : Array α) : String :=
+  let lines := jsl.map (fun j => toJson j |>.pretty 10000000) 
+      |>.filter (fun l =>  l.length < 9000000)
+  lines.foldl (fun acc l => acc ++ "\n" ++ l) ""
+
 #eval threadNum
 #check System.mkFilePath

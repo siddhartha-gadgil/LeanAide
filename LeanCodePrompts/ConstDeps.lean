@@ -1,6 +1,7 @@
 import Lean
 import Lean.Meta
 import Init.System
+import LeanCodePrompts.Utils
 -- import Std
 open Lean Meta Elab
 
@@ -211,5 +212,81 @@ def offSpringShallowTriple(excludePrefixes: List Name := [])(depth: Nat)
 def offSpringShallowTripleCore (depth: Nat): 
     CoreM Unit := 
           (offSpringShallowTriple excludePrefixes depth).run' 
+
+/-- All constants in the environment with value and type. -/
+def constantNameValueTypes  : MetaM (Array (Name × Expr ×   Expr × Option String)) := do
+  let env ← getEnv
+  let decls := env.constants.map₁.toArray
+  let allNamesCore := decls.filterMap <| 
+    fun (name, dfn) => dfn.value? |>.map fun t => (name, t, dfn.type)
+  let allNames ← allNamesCore.mapM <| 
+    fun (name, value, type) => do
+      pure <| (name, value, type, ← findDocString? env name )  
+  let names ← allNames.filterM (fun (name, _) => isWhiteListed name)
+  let names := names.filter <| 
+    fun (name, _, _)  ↦ !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name)) 
+  return names
+
+
+structure DefnTypes where
+    name: Name
+    type: String
+    isProp : Bool
+    docString? : Option String
+    deriving Repr, ToJson, FromJson
+
+def propMapFromDefns (dfns : Array DefnTypes) : MetaM <| HashMap Name String := do
+    return HashMap.ofList <|
+       dfns.filter (fun d => d.isProp) 
+        |>.toList.map fun d => (d.name, d.type)
+
+
+def groups := ["train", "test", "valid"]
+
+def splitData (data: Array α) : IO <| HashMap String (Array α) := do
+    let mut img := HashMap.ofList <| groups.map fun g => (g, #[])
+    for d in data do
+        let group :=  match ← IO.rand 0 9 with
+            | 0 => "test"
+            | 1 => "valid"
+            | _ => "train"
+        img := img.insert group <| (img.findD group #[]) ++ #[d]
+    return img
+namespace DefnTypes
+def getM : MetaM <| Array DefnTypes := do
+    let cs ← constantNameValueTypes 
+    cs.mapM <| fun (name, term, type, doc?) => do
+        let fmt ← Meta.ppExpr type 
+        pure ⟨name, fmt.pretty, ← isProof term, doc?⟩
+
+def writeM (dfns : Array DefnTypes) : MetaM Unit := do
+    let jsonl := dfns.map toJson
+    let path := System.mkFilePath ["rawdata", "defn-types", "all.jsonl"]
+    IO.FS.writeFile path (jsonLines jsonl)
+
+/-- Saving to file and returning for convenience along with map -/
+def getWriteSplitM : MetaM <| (Array DefnTypes) × (HashMap Name String) × HashMap String (Array DefnTypes) := do
+    let dfns ← getM
+    writeM dfns
+    let split ← splitData dfns
+    for group in groups do
+        let path := System.mkFilePath ["rawdata", "defn-types", group ++ ".jsonl"]
+        IO.FS.writeFile path (jsonLines <| split.findD group #[])
+    let pm ← propMapFromDefns dfns 
+    return (dfns, pm, split)
+
+def getWriteSplitCore : CoreM ((Array DefnTypes) × (HashMap Name String) × HashMap String (Array DefnTypes)) := 
+    (getWriteSplitM).run'
+
+def getWriteM : MetaM <| (Array DefnTypes) × (HashMap Name String) := do
+    let dfns ← getM
+    writeM dfns
+    let pm ← propMapFromDefns dfns 
+    return (dfns, pm)
+
+def getWriteCore : CoreM ((Array DefnTypes) × (HashMap Name String)) := 
+    (getWriteM).run'
+
+end DefnTypes
 
 end LeanAide.Meta
