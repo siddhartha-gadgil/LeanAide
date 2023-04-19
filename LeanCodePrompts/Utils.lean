@@ -118,7 +118,7 @@ def getTactics (s : TSyntax ``tacticSeq) : Array (TSyntax `tactic) :=
 def threadNum : IO Nat := do
   try
     let info ←  IO.FS.readFile "/proc/cpuinfo" 
-    return (info.splitOn "processor" |>.length) + 1
+    return (info.splitOn "processor" |>.length) - 1
   catch _ =>
     return 4
 

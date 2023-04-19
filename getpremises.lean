@@ -18,10 +18,10 @@ def main (_: List String) : IO Unit := do
     {module := `Mathlib}] {}
   let core : CoreM Nat :=  
      writePremisesCore 
-  let io? := 
-    core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]
-    } 
-    {env := env}
+  let coreCtx : Core.Context := 
+      {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]
+    }   
+  let io? := core.run' coreCtx {env := env}
   let cursor ←  io?.runToIO'
   IO.println s!"Success: ran to {cursor}"
   return ()
