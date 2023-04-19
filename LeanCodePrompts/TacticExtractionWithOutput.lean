@@ -84,24 +84,26 @@ section Misc
 
   section Logging
 
-  def logTacticSnapshot (depth : ℕ) (tac : TacticM <| TSyntax `tactic) (ref : Option Syntax) : TacticM Unit := do
+  def logTacticSnapshotAt (idx : ℕ) (depth : ℕ) (tac : TacticM <| TSyntax `tactic) (ref : Option Syntax) : TacticM Unit := do
     let goalsBefore ← getUnsolvedGoals
     let strGoalsBefore ← MessageData.toString <| ← addMessageContext <| goalsToMessageData goalsBefore
     evalTacticM <| tac
     let goalsAfter ← getUnsolvedGoals
     let strGoalsAfter ← MessageData.toString <| ← addMessageContext <| goalsToMessageData goalsAfter
     let snap : TacticSnapshot := ⟨depth, strGoalsBefore, ← tac, strGoalsAfter, ref⟩
-    tacticSnapRef.push snap
+    tacticSnapRef.insert idx snap
 
-  elab "trace_tactic_snapshots" : tactic => do
-    let snaps ← tacticSnapRef.get
-    for snap in snaps do
-      match snap.ref with
-      | .some ref =>
-       withRef ref <| addRawTrace snap.goalsBefore
-       withRef ref <| addRawTrace m!"[TACTIC] {snap.tactic}"
-       withRef ref <| addRawTrace snap.goalsAfter
-      | none => continue
+#check NumLit
+
+  -- elab "trace_tactic_snapshots" idx:num : tactic => do
+  --   let snaps ← tacticSnapRef.getIdx idx.getNat
+  --   snaps.forM <| fun _ snap => do
+  --     match snap.ref with
+  --     | .some ref =>
+  --      withRef ref <| addRawTrace snap.goalsBefore
+  --      withRef ref <| addRawTrace m!"[TACTIC] {snap.tactic}"
+  --      withRef ref <| addRawTrace snap.goalsAfter
+  --     | none => pure ()
       
   def TacticSnapshot.toJson : TacticSnapshot → IO Json
     | ⟨depth, goalsBefore, tac, goalsAfter, _⟩ => do
@@ -115,110 +117,112 @@ section Misc
       ]
 
   def outputLocation : System.FilePath := 
-    "."/"data"/"tactics"/"test.json"
+    "."/"data"/"tactics"
   
   elab "log_and_clear_ref" : tactic => do
-    let snaps ← tacticSnapRef.get
+    let idx ← counter.get
+    let snaps ← tacticSnapRef.getIdx idx
     let jsnaps ← snaps.mapM (TacticSnapshot.toJson ·)
+    let mod ← getMainModule
+    let fileName := s!"{mod}-{idx}.json"
     let h ← IO.FS.Handle.mk outputLocation IO.FS.Mode.append false
     h.putStr <| Json.pretty <| Json.arr jsnaps
-    tacticSnapRef.set #[]
+    tacticSnapRef.setIdx idx #[]
 
   end Logging
 
 end Misc
 
-syntax (name := snap) "snap" num tactic : tactic
-syntax (name := seq) "seq" num tacticSeq : tactic
+syntax (name := snap) "snap" num num tactic : tactic
+syntax (name := seq) "seq" num num tacticSeq : tactic
 
 macro_rules
-  | `(tactic| seq $n $[$tacs]*) => do
+  | `(tactic| seq $idx $n $[$tacs]*) => do
     let tacs' ← tacs.mapM <|
-      fun tac ↦ `(tactic| snap $n $tac)
+      fun tac ↦ `(tactic| snap $idx $n $tac)
     `(tactic| {$[$tacs']*})
 
 @[tactic seq] def traceSeq : Tactic
-  | `(tacticSeq| seq $n $[$tacs]*) => do
+  | `(tacticSeq| seq $idx $n $[$tacs]*) => do
     -- withoutModifyingState <| logTacticSnapshot n.getNat <| ← `(tactic| {$[$tacs]*} )
-    dbg_trace n
     for tac in tacs do
-      evalTacticM `(tactic| snap $n.succ $tac)
+      evalTacticM `(tactic| snap $idx $n.succ $tac)
   | _ => panic! "Invalid `seq` format."
 
 @[tactic snap] partial def traceTacticSnap : Tactic
-| `(tactic| snap $n $t) =>
+| `(tactic| snap $idx $n $t) =>
   match t with
   | `(tactic| focus $[$tacs]*) => do
-    withoutModifyingState <| logTacticSnapshot n.getNat `(tactic| focus $[$tacs]*) none
-    evalTacticM `(tactic| focus seq $n.succ $[$tacs]*)
+    withoutModifyingState <| logTacticSnapshotAt idx.getNat n.getNat `(tactic| focus $[$tacs]*) none
+    evalTacticM `(tactic| focus seq $idx $n.succ $[$tacs]*)
   | `(tactic| · $[$tacs]*) => do
-    withoutModifyingState <| logTacticSnapshot n.getNat `(tactic| · $[$tacs]*) none
-    evalTacticM `(tactic| · seq $n.succ $[$tacs]*)
+    withoutModifyingState <| logTacticSnapshotAt idx.getNat n.getNat `(tactic| · $[$tacs]*) none
+    evalTacticM `(tactic| · seq $idx $n.succ $[$tacs]*)
   | `(tactic| {$[$tacs]*}) => do
-    withoutModifyingState <| logTacticSnapshot n.getNat `(tactic| {$[$tacs]*}) none
-    evalTacticM `(tactic| {seq $n.succ $[$tacs]*})
+    withoutModifyingState <| logTacticSnapshotAt idx.getNat n.getNat `(tactic| {$[$tacs]*}) none
+    evalTacticM `(tactic| {seq $idx $n.succ $[$tacs]*})
   | `(tactic| ($[$tacs]*)) => do
-    withoutModifyingState <| logTacticSnapshot n.getNat `(tactic| ($[$tacs]*)) none
-    evalTacticM `(tactic| (seq $n.succ $[$tacs]*))
+    withoutModifyingState <| logTacticSnapshotAt idx.getNat n.getNat `(tactic| ($[$tacs]*)) none
+    evalTacticM `(tactic| (seq $idx $n.succ $[$tacs]*))
   | `(tactic| classical $[$tacs]*) => do
-    withoutModifyingState <| logTacticSnapshot n.getNat `(tactic| classical $[$tacs]*) none
-    evalTacticM `(tactic| classical seq $n.succ $[$tacs]*)
+    withoutModifyingState <| logTacticSnapshotAt idx.getNat n.getNat `(tactic| classical $[$tacs]*) none
+    evalTacticM `(tactic| classical seq $idx $n.succ $[$tacs]*)
   | stx@`(tactic| simp%$tk $(config)? $(discharger)? $[only%$o]? $[[$args,*]]? $(loc)?) => do
     let usedSimps ← withoutModifyingState <| do
       let { ctx, dischargeWrapper } ← withMainContext <| mkSimpContext stx (eraseLocal := false)
       dischargeWrapper.with fun discharge? =>
         simpLocation ctx discharge? (expandOptLocation stx.raw[5])
-    logTacticSnapshot n.getNat (traceSimpCall' stx usedSimps) stx
+    logTacticSnapshotAt idx.getNat n.getNat (traceSimpCall' stx usedSimps) stx
   | stx@`(tactic| simp_all%$tk $(config)? $(discharger)? $[only%$o]? $[[$args,*]]?) => do
     let usedSimps ← withoutModifyingState <| do
       let { ctx, .. } ← mkSimpContext stx (eraseLocal := true) (kind := .simpAll) (ignoreStarArg := true)
       Prod.snd <$> simpAll (← getMainGoal) ctx
-    logTacticSnapshot n.getNat (traceSimpCall' stx usedSimps) stx
+    logTacticSnapshotAt idx.getNat n.getNat (traceSimpCall' stx usedSimps) stx
   -- TODO Fix `dsimp`
   | stx@`(tactic| dsimp%$tk $(config)? $[only%$o]? $[[$args,*]]? $(loc)?) => do
     let c ← withoutModifyingState <| do
       let { ctx, .. } ← withMainContext <| mkSimpContext stx (eraseLocal := false) (kind := .dsimp)
       dsimpLocation' ctx (expandOptLocation stx.raw[5]) stx
-    logTacticSnapshot n.getNat (pure c) stx
+    logTacticSnapshotAt idx.getNat n.getNat (pure c) stx
   | `(tactic| rw $[$cfg]? [$rs,*] $[$loc]?) => do
     for r in (rs : TSyntaxArray `Lean.Parser.Tactic.rwRule) do
-      logTacticSnapshot n.getNat `(tactic| rw $[$cfg]? [$r] $[$loc]?) r
+      logTacticSnapshotAt idx.getNat n.getNat `(tactic| rw $[$cfg]? [$r] $[$loc]?) r
   | `(tactic| erw [$rs,*] $[$loc]?) => do
     for r in (rs : TSyntaxArray `Lean.Parser.Tactic.rwRule) do
-      logTacticSnapshot n.getNat `(tactic| erw [$r] $[$loc]?) r
+      logTacticSnapshotAt idx.getNat n.getNat `(tactic| erw [$r] $[$loc]?) r
   | `(tactic| rwa%$tk [$rs,*] $[$loc]?) => do
     for r in (rs : TSyntaxArray `Lean.Parser.Tactic.rwRule) do
-      logTacticSnapshot n.getNat `(tactic| rw [$r] $[$loc]?) r
-    logTacticSnapshot n.getNat `(tactic| assumption) tk
+      logTacticSnapshotAt idx.getNat n.getNat `(tactic| rw [$r] $[$loc]?) r
+    logTacticSnapshotAt idx.getNat n.getNat `(tactic| assumption) tk
   | stx@`(tactic| case $[$tag $hs*]|* =>%$arr $tac:tacticSeq) => do
-    logTacticSnapshot n.getNat `(tactic| case $[$tag $hs*]|* =>%$arr seq $n.succ $tac:tacticSeq) stx
+    logTacticSnapshotAt idx.getNat n.getNat `(tactic| case $[$tag $hs*]|* =>%$arr seq $idx $n.succ $tac:tacticSeq) stx
   | stx@`(tactic| case' $[$tag $hs*]|* =>%$arr $tac:tacticSeq) => do
-    logTacticSnapshot n.getNat `(tactic| case' $[$tag $hs*]|* =>%$arr seq $n.succ $tac:tacticSeq) stx
+    logTacticSnapshotAt idx.getNat n.getNat `(tactic| case' $[$tag $hs*]|* =>%$arr seq $idx $n.succ $tac:tacticSeq) stx
   | `(tactic| induction $[$ts],* $[using $id:ident]?  $[generalizing $gs*]? with $[$tac]? $is*) => do
     let is' : TSyntaxArray ``inductionAlt ←
       is.mapM <|
         fun
-          | `(inductionAlt| $il* => $ts:tacticSeq) => `(inductionAlt| $il* => seq $n.succ $ts)
+          | `(inductionAlt| $il* => $ts:tacticSeq) => `(inductionAlt| $il* => seq $idx $n.succ $ts)
           | i => return ⟨i⟩
-    logTacticSnapshot n.getNat `(tactic| induction $[$ts],* $[using $id:ident]?  $[generalizing $gs*]? with $[$tac]? $is'*) none
+    logTacticSnapshotAt idx.getNat n.getNat `(tactic| induction $[$ts],* $[using $id:ident]?  $[generalizing $gs*]? with $[$tac]? $is'*) none
   | `(tactic| cases $[$cs],* $[using $id:ident]? with $[$tac]? $is*) => do
     let is' : TSyntaxArray ``inductionAlt ←
       is.mapM <|
         fun
-          | `(inductionAlt| $il* => $ts:tacticSeq) => `(inductionAlt| $il* => seq $n.succ $ts)
+          | `(inductionAlt| $il* => $ts:tacticSeq) => `(inductionAlt| $il* => seq $idx $n.succ $ts)
           | i => return ⟨i⟩
-    logTacticSnapshot n.getNat `(tactic| cases $[$cs],* $[using $id:ident]? with $[$tac]? $is'*) none
+    logTacticSnapshotAt idx.getNat n.getNat `(tactic| cases $[$cs],* $[using $id:ident]? with $[$tac]? $is'*) none
   | `(tactic| match $[$gen]? $[$motive]? $discrs,* with $alts:matchAlt*) => do
     let alts' : TSyntaxArray ``matchAlt ←
       alts.mapM <|
         fun
           | `(matchAltTac| | $[$pats,*]|* => $rhs:tacticSeq) => do
-              let alt ← `(matchAltTac| | $[$pats,*]|* => seq $n.succ $rhs)
+              let alt ← `(matchAltTac| | $[$pats,*]|* => seq $idx $n.succ $rhs)
               return ⟨alt⟩
           | alt =>  return ⟨alt⟩
-    logTacticSnapshot n.getNat `(tactic| match $[$gen]? $[$motive]? $discrs,* with $alts':matchAlt*) none
+    logTacticSnapshotAt idx.getNat n.getNat `(tactic| match $[$gen]? $[$motive]? $discrs,* with $alts':matchAlt*) none
   | `(tactic| $t:tactic) => do
-    logTacticSnapshot n.getNat (pure t) (some t)
+    logTacticSnapshotAt idx.getNat n.getNat (pure t) (some t)
 | _ => panic! "Invalid `snap` format."
 
 section ByTactic
@@ -226,14 +230,21 @@ section ByTactic
 -- a clone of the `by` tactic
 syntax (name := byTactic') "by' " tacticSeq : term
 
+#check NumLit
+
 @[term_elab byTactic'] def elabByTactic' : TermElab := fun stx expectedType? => do
   match expectedType? with
   | some expectedType =>
-    let mvar ← mkFreshExprMVar expectedType MetavarKind.syntheticOpaque
-    let mvarId := mvar.mvarId!
-    let ref ← getRef
-    registerSyntheticMVar ref mvarId <| SyntheticMVarKind.tactic stx (← saveContext)
-    return mvar
+    match stx with
+    | tacstx@`(term| by' $[$tacs]*) => do
+      let mvar ← mkFreshExprMVar expectedType MetavarKind.syntheticOpaque
+      let mvarId := mvar.mvarId!
+      let ref ← getRef
+      let idx ← counter.getIdx
+      let idxStx := Syntax.mkNumLit <| toString idx
+      registerSyntheticMVar ref mvarId <| SyntheticMVarKind.tactic (← `(term| by' seq $idxStx 0 $[$tacs]*)) (← saveContext)
+      return mvar
+    | _ => throwUnsupportedSyntax
   | none =>
     tryPostpone
     throwError ("invalid 'by\'' tactic, expected type has not been provided")
@@ -242,8 +253,9 @@ syntax (name := byTactic') "by' " tacticSeq : term
 -- the `by'` clone is needed here to avoid infinite recursion
 macro_rules
   | `(by $t) => do
+
     let tacs : TSyntaxArray `tactic :=
-      #[← `(tactic| seq 0 $t), 
+      #[← `(tactic| seq $idx 0 $t), 
         -- Uncomment to enable tactic trace
         -- ← `(tactic| trace_tactic_snapshots), 
         ← `(tactic| log_and_clear_ref)]
