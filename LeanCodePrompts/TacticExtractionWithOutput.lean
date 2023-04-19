@@ -102,7 +102,7 @@ section Misc
        withRef ref <| addRawTrace m!"[TACTIC] {snap.tactic}"
        withRef ref <| addRawTrace snap.goalsAfter
       | none => continue
-
+      
   def TacticSnapshot.toJson : TacticSnapshot → IO Json
     | ⟨depth, goalsBefore, tac, goalsAfter, _⟩ => do
       return .mkObj <| [
@@ -179,7 +179,6 @@ macro_rules
     let c ← withoutModifyingState <| do
       let { ctx, .. } ← withMainContext <| mkSimpContext stx (eraseLocal := false) (kind := .dsimp)
       dsimpLocation' ctx (expandOptLocation stx.raw[5]) stx
-    dbg_trace c
     logTacticSnapshot n.getNat (pure c) stx
   | `(tactic| rw $[$cfg]? [$rs,*] $[$loc]?) => do
     for r in (rs : TSyntaxArray `Lean.Parser.Tactic.rwRule) do
@@ -244,11 +243,15 @@ syntax (name := byTactic') "by' " tacticSeq : term
 macro_rules
   | `(by $t) => do
     let tacs : TSyntaxArray `tactic :=
-      #[← `(tactic| seq 0 $t), ← `(tactic| trace_tactic_snapshots), ← `(tactic| log_and_clear_ref)]
+      #[← `(tactic| seq 0 $t), 
+        -- Uncomment to enable tactic trace
+        -- ← `(tactic| trace_tactic_snapshots), 
+        ← `(tactic| log_and_clear_ref)]
     `(by' $[$tacs]*) 
 
 end ByTactic
 
+section Examples
 
 set_option linter.unreachableTactic false
 
@@ -264,8 +267,4 @@ example : ∀ n : Nat, n = n ∧ n = n := by
 example : a = a + 0 := by
   rw [← Nat.zero_add a, ← Nat.add_zero a, Nat.add_zero, Nat.zero_add, Nat.add_zero]
 
-
-#eval do
-  let snaps ← (tacticSnapRef.get : IO _)
-  for snap in snaps do
-    IO.println snap.tactic.raw.reprint.get!
+end Examples
