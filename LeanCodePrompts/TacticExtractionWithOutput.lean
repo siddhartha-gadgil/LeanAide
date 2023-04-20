@@ -93,17 +93,15 @@ section Misc
     let snap : TacticSnapshot := ⟨depth, strGoalsBefore, ← tac, strGoalsAfter, ref⟩
     tacticSnapRef.insert idx snap
 
-#check NumLit
-
-  -- elab "trace_tactic_snapshots" idx:num : tactic => do
-  --   let snaps ← tacticSnapRef.getIdx idx.getNat
-  --   snaps.forM <| fun _ snap => do
-  --     match snap.ref with
-  --     | .some ref =>
-  --      withRef ref <| addRawTrace snap.goalsBefore
-  --      withRef ref <| addRawTrace m!"[TACTIC] {snap.tactic}"
-  --      withRef ref <| addRawTrace snap.goalsAfter
-  --     | none => pure ()
+def traceTacticSnapshots (idx : ℕ) : MetaM Unit := do
+  let snaps ← tacticSnapRef.getIdx idx
+  for snap in snaps do
+    match snap.ref with
+    | .some ref =>
+      withRef ref <| addRawTrace snap.goalsBefore
+      withRef ref <| addRawTrace m!"[TACTIC] {snap.tactic}"
+      withRef ref <| addRawTrace snap.goalsAfter
+    | none => pure ()
       
   def TacticSnapshot.toJson : TacticSnapshot → IO Json
     | ⟨depth, goalsBefore, tac, goalsAfter, _⟩ => do
@@ -119,14 +117,12 @@ section Misc
   def outputLocation : System.FilePath := 
     "."/"data"/"tactics"
   
-  elab "log_and_clear_ref" : tactic => do
-    let idx ← counter.get
+  def logAndClearRef (idx : ℕ) : TermElabM Unit := do 
     let snaps ← tacticSnapRef.getIdx idx
     let jsnaps ← snaps.mapM (TacticSnapshot.toJson ·)
     let mod ← getMainModule
     let fileName := s!"{mod}-{idx}.json"
-    let h ← IO.FS.Handle.mk outputLocation IO.FS.Mode.append false
-    h.putStr <| Json.pretty <| Json.arr jsnaps
+    IO.FS.writeFile (outputLocation / fileName) <| Json.pretty <| Json.arr jsnaps
     tacticSnapRef.setIdx idx #[]
 
   end Logging
@@ -243,6 +239,8 @@ syntax (name := byTactic') "by' " tacticSeq : term
       let idx ← counter.getIdx
       let idxStx := Syntax.mkNumLit <| toString idx
       registerSyntheticMVar ref mvarId <| SyntheticMVarKind.tactic (← `(term| by' seq $idxStx 0 $[$tacs]*)) (← saveContext)
+      traceTacticSnapshots idx
+      logAndClearRef idx
       return mvar
     | _ => throwUnsupportedSyntax
   | none =>
@@ -252,14 +250,7 @@ syntax (name := byTactic') "by' " tacticSeq : term
 -- intercepting the `by` tactic to output intermediate trace data
 -- the `by'` clone is needed here to avoid infinite recursion
 macro_rules
-  | `(by $t) => do
-
-    let tacs : TSyntaxArray `tactic :=
-      #[← `(tactic| seq $idx 0 $t), 
-        -- Uncomment to enable tactic trace
-        -- ← `(tactic| trace_tactic_snapshots), 
-        ← `(tactic| log_and_clear_ref)]
-    `(by' $[$tacs]*) 
+  | `(by $t) => `(by' $t)
 
 end ByTactic
 
