@@ -86,6 +86,27 @@ def EIO.runToIO' (eio: EIO Exception α) : IO α  := do
       let msg ← e.toMessageData.toString
       IO.throwServerError msg
 
+def EIO.spawnToIO (eio: EIO Exception α) : IO <| Task <| IO α  := do
+  let io : IO α:= do 
+    match ←  eio.toIO' with
+    | Except.ok x =>
+        pure x
+    | Except.error e =>
+        let msg ← e.toMessageData.toString
+        IO.throwServerError msg
+  let task ←  io.asTask
+  return task.map (fun eio => 
+    match eio with
+    | Except.ok x =>
+        pure x
+    | Except.error e => do
+        let msg := e.toString
+        IO.throwServerError msg)
+    
+def EIO.asyncIO (eio: EIO Exception α) : IO α  := do
+  let task ← EIO.spawnToIO eio
+  task.get
+
 -- code from Leo de Moura
 def getTactics (s : TSyntax ``tacticSeq) : Array (TSyntax `tactic) :=
   match s with
@@ -94,3 +115,28 @@ def getTactics (s : TSyntax ``tacticSeq) : Array (TSyntax `tactic) :=
   | _ => #[]
 
 
+def threadNum : IO Nat := do
+  try
+    let info ←  IO.FS.readFile <| System.mkFilePath ["/", "proc", "cpuinfo"]
+    return (info.splitOn "processor" |>.length) - 1
+  catch _ =>
+    return 4
+
+def jsonLines [ToJson α] (jsl : Array α) : String :=
+  let lines := jsl.map (fun j => toJson j |>.pretty 10000000) 
+      |>.filter (fun l =>  l.length < 9000000)
+  lines.foldl (fun acc l => acc ++ "\n" ++ l) ""
+
+partial def List.batchesAux (l: List α)(size: Nat)(accum : List (List α)) : List (List α) :=
+  match l with
+  | [] => accum
+  | _ => 
+    let batch := l.take size
+    let rest := l.drop size
+    batchesAux rest size (batch::accum)
+
+def List.batches (l: List α)(size: Nat) : List (List α) :=
+  batchesAux l size []
+
+def Array.batches (l: Array α)(size: Nat) : Array (Array α) :=
+  (l.toList.batches size).map (fun l => l.toArray) |>.toArray

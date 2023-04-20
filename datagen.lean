@@ -14,22 +14,16 @@ def main (args: List String) : IO Unit := do
     importModules [{module := `Mathlib},
     {module:= `LeanCodePrompts.CheckParse},
     {module := `Mathlib}] {}
+  let coreCtx : Core.Context := 
+    {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 1000000000, maxRecDepth := 10000} 
   let core := promptsThmSplitCore
-  let io? := 
-    core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} 
-    {env := env}
-  match ← io?.toIO' with
-  | Except.ok (succ, fail) =>
-    IO.println "Success"
-    IO.println s!"parsed : {succ.size}"
-    IO.println s!"failed to parse: {fail.size}"
-    let succFile := System.mkFilePath ["data/parsed_thms.txt"]
-    IO.FS.writeFile succFile <| 
-      succ.foldl (fun acc x => acc ++ s!"{x}\n") ""
-    let failFile := System.mkFilePath ["data/unparsed_thms.txt"]
-    IO.FS.writeFile failFile <| 
-      fail.foldl (fun acc x => acc ++ s!"{x}\n") ""
-  | Except.error e =>
-    do
-          let msg ← e.toMessageData.toString
-          IO.println msg
+  let (succ, fail) ←  core.run' coreCtx {env := env} |>.runToIO'
+  IO.println "Success"
+  IO.println s!"parsed : {succ.size}"
+  IO.println s!"failed to parse: {fail.size}"
+  let succFile := System.mkFilePath ["data/parsed_thms.txt"]
+  IO.FS.writeFile succFile <| 
+    succ.foldl (fun acc x => acc ++ s!"{x}\n") ""
+  let failFile := System.mkFilePath ["data/unparsed_thms.txt"]
+  IO.FS.writeFile failFile <| 
+    fail.foldl (fun acc x => acc ++ s!"{x}\n") ""

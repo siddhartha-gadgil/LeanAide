@@ -22,18 +22,28 @@ open Lean Meta Elab Parser PrettyPrinter
 universe u v w u_1 u_2 u_3 u₁ u₂ u₃
 
 open LeanAide.Meta
-/-- All constants in the environment with value and type. -/
-def constantNameValueTypes  : MetaM (Array (Name × Expr ×   Expr)) := do
-  let env ← getEnv
-  let decls := env.constants.map₁.toArray
-  let allNames := decls.filterMap <| 
-    fun (name, dfn) => dfn.value? |>.map fun t => (name, t, dfn.type) 
-  let names ← allNames.filterM (fun (name, _) => isWhiteListed name)
-  let names := names.filter <| 
-    fun (name, _, _)  ↦ !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name)) 
-  return names
+
+
+def freshDataHandle (fileNamePieces : List String) : IO IO.FS.Handle := do
+    let path := System.mkFilePath <| [".", "rawdata"] ++ fileNamePieces
+    IO.FS.writeFile path "" 
+    IO.FS.Handle.mk path IO.FS.Mode.append Bool.false
+
+
+def fileNamePieces : HashMap (String × String) (List String) :=
+    HashMap.ofList <|
+        ["core", "full"].bind fun kind => 
+            ("all" :: groups).map fun group => ((kind, group), ["premises", kind, group++".jsonl"])
+
+def fileHandles : IO (HashMap (String × String) IO.FS.Handle) := do
+    let mut handles := HashMap.empty
+    for (k, v) in fileNamePieces.toList do
+        handles := handles.insert k <| ← freshDataHandle v
+    return handles
+
 
 set_option pp.unicode.fun true
+set_option pp.match false
 
 /-- Syntax as json -/
 instance : ToJson Syntax := ⟨fun (d: Syntax) ↦ d.reprint.get!.trim⟩
@@ -81,6 +91,16 @@ structure PremiseData  where
  ids :       Array (Name ×  Nat)  -- proof identifiers used
  deriving Repr, ToJson
 
+def PremiseData.writeFull (data: PremiseData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
+    let l := (toJson data).pretty 10000000
+    let gh := handles.findD ("core", group) 
+                (← freshDataHandle ["premises", "core", group++".jsonl"])
+    let h := handles.findD ("core", "all") 
+                (← freshDataHandle ["premises", "core", "all.jsonl"])
+    if l.length < 9000000 then
+                        h.putStrLn  l
+                        gh.putStrLn l
+
 partial def shrink (s: String) : String := 
     let step := s.replace "  " " " |>.replace "( " "("
                 |>.replace " )" ")"
@@ -91,6 +111,49 @@ partial def shrink (s: String) : String :=
                 |>.trim
     if step == s then s else shrink step
 
+structure CorePremiseDataDirect where
+    context : Array String
+    ids : Array String
+    terms : Array <| Array String ×  String
+    lemmas : Array String 
+deriving Repr, ToJson, FromJson
+
+def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CorePremiseDataDirect := 
+    ⟨pd.context.map (fun s => shrink s.reprint.get!.trim), pd.ids.map (fun (n, _) => shrink n.toString), pd.terms.map (fun td => 
+       (td.context.map (fun s => shrink s.reprint.get!.trim),
+       td.value.reprint.get!.trim)), pd.propProofs.map (fun p => p.prop.reprint.get!.trim)⟩
+
+structure CorePremiseData extends CorePremiseDataDirect where
+    namedLemmas : Array String
+deriving Repr, ToJson, FromJson
+
+
+namespace CorePremiseData
+
+def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap String String) : CorePremiseData := {
+    context := direct.context,
+    ids := direct.ids,
+    terms := direct.terms,
+    lemmas := direct.lemmas,
+    namedLemmas := direct.ids.filterMap (fun id => propMap.find? id)
+}
+
+def fromPremiseData (pd: PremiseData)(propMap : HashMap String String) : CorePremiseData := 
+    CorePremiseData.fromDirect (CorePremiseDataDirect.fromPremiseData pd) propMap
+
+
+def write (data: CorePremiseData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
+    let l := (toJson data).pretty 10000000
+    let gh := handles.findD ("core", group) 
+                (← freshDataHandle ["premises", "core", group])
+    let h := handles.findD ("core", "all") 
+                (← freshDataHandle ["premises", "core", "all"])
+    if l.length < 9000000 then
+                        h.putStrLn  l
+                        gh.putStrLn l
+
+end CorePremiseData
+
 namespace PremiseData
 
 def filterIds (pd: PremiseData)(p: Name → Bool) : PremiseData := 
@@ -100,6 +163,13 @@ def increaseDepth (d: Nat) : PremiseData → PremiseData :=
 fun data ↦
     ⟨data.context, data.name?, data.defnName, data.type, data.typeGroup, data.proof, data.typeSize, data.proofSize, (data.terms.map (fun td => td.increaseDepth d)), (data.propProofs.map (fun p => p.increaseDepth d)),
         (data.ids.map (fun (n,  m) => (n,  m + d))) ⟩
+
+def write (data: PremiseData)(group: String)
+    (handles: HashMap (String × String) IO.FS.Handle)
+    (propMap : HashMap String String) : IO Unit := do 
+        data.writeFull group handles
+        let coreData := CorePremiseData.fromPremiseData data propMap
+        coreData.write group handles
 
 end PremiseData
 
