@@ -123,7 +123,7 @@ def traceTacticSnapshots (idx : ℕ) : MetaM Unit := do
     let mod ← getMainModule
     let fileName := s!"{mod}-{idx}.json"
     IO.FS.writeFile (outputLocation / fileName) <| Json.pretty <| Json.arr jsnaps
-    tacticSnapRef.setIdx idx #[]
+    -- tacticSnapRef.setIdx idx #[]
 
   end Logging
 
@@ -226,31 +226,31 @@ section ByTactic
 -- a clone of the `by` tactic
 syntax (name := byTactic') "by' " tacticSeq : term
 
-#check NumLit
-
-@[term_elab byTactic'] def elabByTactic' : TermElab := fun stx expectedType? => do
-  match expectedType? with
-  | some expectedType =>
-    match stx with
-    | tacstx@`(term| by' $[$tacs]*) => do
-      let mvar ← mkFreshExprMVar expectedType MetavarKind.syntheticOpaque
-      let mvarId := mvar.mvarId!
-      let ref ← getRef
-      let idx ← counter.getIdx
-      let idxStx := Syntax.mkNumLit <| toString idx
-      registerSyntheticMVar ref mvarId <| SyntheticMVarKind.tactic (← `(term| by' seq $idxStx 0 $[$tacs]*)) (← saveContext)
-      traceTacticSnapshots idx
-      logAndClearRef idx
-      return mvar
-    | _ => throwUnsupportedSyntax
-  | none =>
-    tryPostpone
-    throwError ("invalid 'by\'' tactic, expected type has not been provided")
+ @[term_elab byTactic'] def elabByTactic' : TermElab := fun stx expectedType? => do
+   match expectedType? with
+   | some expectedType =>
+    let mvar ← mkFreshExprMVar expectedType MetavarKind.syntheticOpaque
+    let mvarId := mvar.mvarId!
+    let ref ← getRef
+    registerSyntheticMVar ref mvarId <| SyntheticMVarKind.tactic stx (← saveContext)
+    return mvar
+   | none =>
+     tryPostpone
+     throwError ("invalid 'by\'' tactic, expected type has not been provided")
 
 -- intercepting the `by` tactic to output intermediate trace data
 -- the `by'` clone is needed here to avoid infinite recursion
-macro_rules
-  | `(by $t) => `(by' $t)
+@[term_elab byTactic] def elabByTacticLog : TermElab := fun stx expectedType? => do
+  match stx with
+    | `(term| by $tacs:tacticSeq) => do
+      let idx ← counter.getIdx
+      let idxStx := Syntax.mkNumLit <| toString idx
+      logInfoAt stx m!"{idx}"
+      let e ← elabByTactic' (← `(term| by' seq $idxStx 0 $tacs)) expectedType?
+      traceTacticSnapshots idx
+      logAndClearRef idx
+      return e
+    | _ => throwUnsupportedSyntax
 
 end ByTactic
 

@@ -33,9 +33,7 @@ def tacticSnapRef.setIdx (idx : Nat) (snaps : Array TacticSnapshot) : IO Unit :=
 def tacticSnapRef.insert (idx : Nat) (snap : TacticSnapshot) : IO Unit := do
   let snapsMap ← tacticSnapRef.get
   let snaps ← getIdx idx
-  let (snapsMap', existing?) := snapsMap.insert' idx (snaps.push snap)
-  if existing? then
-    tacticSnapRef.set snapsMap'
-  else IO.throwServerError s!"The index {idx} does not exist in the `HashMap` of `TacticSnapshot`s."
+  tacticSnapRef.set <| snapsMap.insert idx (snaps.push snap)
 
+#check MacroM
 #check adaptExpander
