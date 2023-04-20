@@ -258,24 +258,10 @@ syntax (name := byTactic') "by' " tacticSeq : term
       let ts : TSyntaxArray `tactic :=
         #[← `(tactic| seq $idx 0 $tacs), 
           -- Uncomment to enable tactic trace
-          ← `(tactic| trace_tactic_snapshots $idx), 
+          -- ← `(tactic| trace_tactic_snapshots $idx), 
           ← `(tactic| log_and_clear_ref $idx)]
       `(by' $[$ts]*) 
-
     | _ => throwUnsupportedSyntax
-
-
--- fun stx expectedType? => do
---   match stx with
---     | `(term| by $tacs:tacticSeq) => do
---       let idx ← counter.getIdx
---       let idxStx := Syntax.mkNumLit <| toString idx
---       logInfoAt stx m!"{idx}"
---       let e ← elabByTactic' (← `(term| by' seq $idxStx 0 $tacs)) expectedType?
---       traceTacticSnapshots idx
---       logAndClearRef idx
---       return e
---     | _ => throwUnsupportedSyntax
 
 end ByTactic
 

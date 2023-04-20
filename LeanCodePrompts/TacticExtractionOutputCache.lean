@@ -36,6 +36,3 @@ def tacticSnapRef.insert (idx : Nat) (snap : TacticSnapshot) : IO Unit := do
   let snapsMap ← tacticSnapRef.get
   let snaps ← getIdx idx
   tacticSnapRef.set <| snapsMap.insert idx (snaps.push snap)
-
-#check MacroM
-#check adaptExpander
