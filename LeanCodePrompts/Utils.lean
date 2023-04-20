@@ -127,5 +127,16 @@ def jsonLines [ToJson α] (jsl : Array α) : String :=
       |>.filter (fun l =>  l.length < 9000000)
   lines.foldl (fun acc l => acc ++ "\n" ++ l) ""
 
-#eval threadNum
-#check System.mkFilePath
+partial def List.batchesAux (l: List α)(size: Nat)(accum : List (List α)) : List (List α) :=
+  match l with
+  | [] => accum
+  | _ => 
+    let batch := l.take size
+    let rest := l.drop size
+    batchesAux rest size (batch::accum)
+
+def List.batches (l: List α)(size: Nat) : List (List α) :=
+  batchesAux l size []
+
+def Array.batches (l: Array α)(size: Nat) : Array (Array α) :=
+  (l.toList.batches size).map (fun l => l.toArray) |>.toArray
