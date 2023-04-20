@@ -93,15 +93,20 @@ section Misc
     let snap : TacticSnapshot := ⟨depth, strGoalsBefore, ← tac, strGoalsAfter, ref⟩
     tacticSnapRef.insert idx snap
 
-def traceTacticSnapshots (idx : ℕ) : MetaM Unit := do
-  let snaps ← tacticSnapRef.getIdx idx
-  for snap in snaps do
-    match snap.ref with
-    | .some ref =>
-      withRef ref <| addRawTrace snap.goalsBefore
-      withRef ref <| addRawTrace m!"[TACTIC] {snap.tactic}"
-      withRef ref <| addRawTrace snap.goalsAfter
-    | none => pure ()
+  syntax (name := trace_tactic_snapshots) "trace_tactic_snapshots" num : tactic
+
+  @[tactic trace_tactic_snapshots] def traceTacticSnapshots : Tactic
+    | `(tactic| trace_tactic_snapshots $i) => do
+      let idx := i.getNat
+      let snaps ← tacticSnapRef.getIdx idx
+      for snap in snaps do
+        match snap.ref with
+        | .some ref =>
+          withRef ref <| addRawTrace snap.goalsBefore
+          withRef ref <| addRawTrace m!"[TACTIC] {snap.tactic}"
+          withRef ref <| addRawTrace snap.goalsAfter
+        | none => pure ()
+    | _ => throwUnsupportedSyntax
       
   def TacticSnapshot.toJson : TacticSnapshot → IO Json
     | ⟨depth, goalsBefore, tac, goalsAfter, _⟩ => do
@@ -116,14 +121,19 @@ def traceTacticSnapshots (idx : ℕ) : MetaM Unit := do
 
   def outputLocation : System.FilePath := 
     "."/"data"/"tactics"
-  
-  def logAndClearRef (idx : ℕ) : TermElabM Unit := do 
-    let snaps ← tacticSnapRef.getIdx idx
-    let jsnaps ← snaps.mapM (TacticSnapshot.toJson ·)
-    let mod ← getMainModule
-    let fileName := s!"{mod}-{idx}.json"
-    IO.FS.writeFile (outputLocation / fileName) <| Json.pretty <| Json.arr jsnaps
-    -- tacticSnapRef.setIdx idx #[]
+
+  syntax (name := log_and_clear_ref) "log_and_clear_ref" num : tactic
+
+  @[tactic log_and_clear_ref] def logAndClearRef : Tactic
+    | `(tactic| log_and_clear_ref $i) => do
+      let idx := i.getNat
+      let snaps ← tacticSnapRef.getIdx idx
+      let jsnaps ← snaps.mapM (TacticSnapshot.toJson ·)
+      let mod ← getMainModule
+      let fileName := s!"{mod}-{idx}.json"
+      IO.FS.writeFile (outputLocation / fileName) <| Json.pretty <| Json.arr jsnaps
+      tacticSnapRef.setIdx idx #[]
+    | _ => throwUnsupportedSyntax
 
   end Logging
 
@@ -240,17 +250,32 @@ syntax (name := byTactic') "by' " tacticSeq : term
 
 -- intercepting the `by` tactic to output intermediate trace data
 -- the `by'` clone is needed here to avoid infinite recursion
-@[term_elab byTactic] def elabByTacticLog : TermElab := fun stx expectedType? => do
-  match stx with
+@[term_elab byTactic] def elabByTacticLog : TermElab := 
+  adaptExpander <| fun
     | `(term| by $tacs:tacticSeq) => do
-      let idx ← counter.getIdx
-      let idxStx := Syntax.mkNumLit <| toString idx
-      logInfoAt stx m!"{idx}"
-      let e ← elabByTactic' (← `(term| by' seq $idxStx 0 $tacs)) expectedType?
-      traceTacticSnapshots idx
-      logAndClearRef idx
-      return e
+      let i ← counter.getIdx
+      let idx := Syntax.mkNumLit <| toString i
+      let ts : TSyntaxArray `tactic :=
+        #[← `(tactic| seq $idx 0 $tacs), 
+          -- Uncomment to enable tactic trace
+          ← `(tactic| trace_tactic_snapshots $idx), 
+          ← `(tactic| log_and_clear_ref $idx)]
+      `(by' $[$ts]*) 
+
     | _ => throwUnsupportedSyntax
+
+
+-- fun stx expectedType? => do
+--   match stx with
+--     | `(term| by $tacs:tacticSeq) => do
+--       let idx ← counter.getIdx
+--       let idxStx := Syntax.mkNumLit <| toString idx
+--       logInfoAt stx m!"{idx}"
+--       let e ← elabByTactic' (← `(term| by' seq $idxStx 0 $tacs)) expectedType?
+--       traceTacticSnapshots idx
+--       logAndClearRef idx
+--       return e
+--     | _ => throwUnsupportedSyntax
 
 end ByTactic
 
@@ -267,7 +292,7 @@ example : ∀ n : Nat, n = n ∧ n = n := by
   · rfl
   · rfl
 
-example : a = a + 0 := by
+def xyz : a = a + 0 := by
   rw [← Nat.zero_add a, ← Nat.add_zero a, Nat.add_zero, Nat.zero_add, Nat.add_zero]
 
 end Examples

@@ -20,6 +20,8 @@ initialize tacticSnapRef : IO.Ref <|HashMap Nat (Array TacticSnapshot)
 def counter.getIdx : IO Nat := do
   let i ← counter.get
   counter.set i.succ
+  let snapsMap ← tacticSnapRef.get
+  tacticSnapRef.set <| snapsMap.insert i #[]
   return i
 
 def tacticSnapRef.getIdx (idx : Nat) : IO <| Array TacticSnapshot := do
