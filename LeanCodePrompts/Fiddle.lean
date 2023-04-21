@@ -6,6 +6,9 @@ open Lean Meta Elab Parser Json.Parser
 
 #eval Lean.Json.parse "{\"x\" : 3, \"y\" : 4, \"z\" : [\"five\", 6]}"
 
+example : (4 : ℝ) > 0 := by simp
+example : (4 : ℝ)⁻¹ > 0 := by simp
+
 def stxPurged : MetaM Syntax := do
   let text := "rw [Nat.zero]\n\n -- a comment"
   let stx? := runParserCategory (← getEnv) `tactic text

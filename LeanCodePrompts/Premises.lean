@@ -340,6 +340,14 @@ def DefData.getM? (name: Name)(term type: Expr) : MetaM (Option  DefData) := do
     let valueDepth := term.approxDepth
     return some {name := name, type := tstx.raw.purge, value := stx.raw.purge, isProp := isProp, typeDepth := typeDepth.toNat, valueDepth := valueDepth.toNat, premises := premises}
 
+def DefData.ofNameM? (name: Name) : MetaM (Option DefData) := do
+    let info ←  getConstInfo name
+    let type := info.type
+    let term? := info.value? 
+    match term? with
+    | some term => DefData.getM? name term type
+    | none => return none
+
 structure IdentData where
     context : Array Syntax
     type : Syntax
@@ -379,7 +387,7 @@ def batchDefns (start batch : Nat) : MetaM (Array Json) := do
     let cs ← constantNameValueTypes 
     let mut out : Array Json := #[]
     let mut count := 0
-    for (name, term, type) in cs do
+    for (name, term, type, _) in cs do
         if count >= start && count < start + batch then
             let defData? ← DefData.getM? name term type
             match defData? with
@@ -398,7 +406,7 @@ def writeBatchDefnsM (start batch : Nat) : MetaM Nat  := do
     let h ← IO.FS.Handle.mk defnsFile IO.FS.Mode.append Bool.false
     let idsFile := System.mkFilePath ["rawdata", s!"idents.jsonl"]
     let h' ← IO.FS.Handle.mk idsFile IO.FS.Mode.append Bool.false
-    for (name, term, type) in cs do
+    for (name, term, type, _) in cs do
         if count >= start && count < start + batch then
             IO.println <| s!"{count} {name}"
             let defData? ← DefData.getM? name term type
@@ -448,7 +456,7 @@ def writePremisesM  : MetaM Nat  := do
     let mut testNum := 0
     let mut validNum := 0
     let mut trainNum := 0
-    for (name, term, type) in cs do
+    for (name, term, type, _) in cs do
         IO.println <| s!"{count} {name} (of {cs.size})"
         let defData? ← DefData.getM? name term type
         match defData? with
