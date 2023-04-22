@@ -71,8 +71,14 @@ open TSyntax.Compat
 
 def fvarPrefix : Name := "freeVariable"
 
+def delabAppFn : Delab := do
+  if (← getExpr).consumeMData.isConst then
+    withMDatasOptions delabConst
+  else
+    delabVerbose
+
 @[delab app]
-def delabAppExplicitVerbose : Delab := do
+def delabAppExplicit : Delab := do
   checkDepth
   let paramKinds ← getParamKinds
   let tagAppFn ← getPPOption getPPTagAppFns
@@ -97,6 +103,30 @@ def delabAppExplicitVerbose : Delab := do
       pure (fnStx, paramKinds.tailD [], argStxs.push argStx))
   let stx := Syntax.mkApp fnStx argStxs
   wrapInType (← getExpr) stx
+
+def unexpandStructureInstance (stx : Syntax) : Delab := whenPPOption getPPStructureInstances do
+  let env ← getEnv
+  let e ← getExpr
+  let some s ← pure $ e.isConstructorApp? env | failure
+  guard $ isStructure env s.induct;
+  /- If implicit arguments should be shown, and the structure has parameters, we should not
+     pretty print using { ... }, because we will not be able to see the parameters. -/
+  let fieldNames := getStructureFields env s.induct
+  let mut fields := #[]
+  guard $ fieldNames.size == stx[1].getNumArgs
+  let args := e.getAppArgs
+  let fieldVals := args.extract s.numParams args.size
+  for idx in [:fieldNames.size] do
+    let fieldName := fieldNames[idx]!
+    let fieldId := mkIdent fieldName
+    let fieldPos ← nextExtraPos
+    let fieldId := annotatePos fieldPos fieldId
+    addFieldInfo fieldPos (s.induct ++ fieldName) fieldName fieldId fieldVals[idx]!
+    let field ← `(structInstField|$fieldId:ident := $(stx[1][idx]))
+    fields := fields.push field
+  let tyStx ← withType do
+    if (← getPPOption getPPStructureInstanceType) then delabVerbose >>= pure ∘ some else pure none
+  `({ $fields,* $[: $tyStx]? })
 
 
 @[delab app]
