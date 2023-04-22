@@ -304,7 +304,7 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
                 ts := ts.push (head)
             return (ts, pfs, ids, ps)
         | Syntax.ident _ _ name .. => 
-            let contextVars := context.filterMap getVar
+            let contextVars := context.filterMap getVar?
             if  !(contextVars.contains name) &&
                 !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name)) then 
                 pure (#[], #[], #[(name, 0)], [])

@@ -7,7 +7,14 @@ open Lean Meta Elab Term Parser PrettyPrinter
 /-!
 # Verbose delaborators
 
-We define delaborators that preserve more information than the default ones, and corresponding syntax to allow this.
+We define delaborators that preserve more information than the default ones, and corresponding syntax to allow this. Specifically:
+
+* Introduce syntax `proof =: prop` for a proof with its type recorded
+* Write lambdas and ∀'s with explicit types.
+
+If an expression has depth above a certain threshold, we do not use the verbose delaborators.
+
+Many delaborators are unchanged except for making recursive calls to `delabVerbose` instead of `delab`.
 -/
 namespace LeanAide.Meta
 
@@ -409,17 +416,12 @@ private partial def delabForallBinders (delabGroup : Array Syntax → Bool → S
     delabGroup curNames curDep (← delabVerbose)
   else
     let curDep := dep
-    -- if ← shouldGroupWithNext then
-    --   -- group with nested binder => recurse immediately
-    --   withBindingBodyUnusedName fun stxN => delabForallBinders delabGroup (curNames.push stxN) curDep
-    -- else
-      -- don't group => delab body and prepend current binder group
       let (stx, stxN) ← withBindingBodyUnusedName fun stxN => return (← delab, stxN)
       delabGroup (curNames.push stxN) curDep stx
 
 @[delab forallE]
 def delabForall : Delab := do
-  delabForallBinders fun curNames dependent stxBody => do
+  delabForallBinders fun curNames _ stxBody => do
     let e ← getExpr
     let prop ← try isProp e catch _ => pure false
     let stxT ← withBindingDomain delab
@@ -429,14 +431,7 @@ def delabForall : Delab := do
     -- here `curNames.size == 1`
     | BinderInfo.instImplicit   => `(bracketedBinderF|[$curNames.back : $stxT])
     | _                         =>
-      -- NOTE: non-dependent arrows are available only for the default binder info
-      -- if dependent then
-      --   if prop && !(← getPPOption getPPPiBinderTypes) then
-      --     return ← `(∀ $curNames:ident*, $stxBody)
-      --   else
           `(bracketedBinderF|($curNames* : $stxT))
-      -- else
-      --   return ← curNames.foldrM (fun _ stxBody => `($stxT → $stxBody)) stxBody
     if prop then
       match stxBody with
       | `(∀ $groups*, $stxBody) => `(∀ $group $groups*, $stxBody)
@@ -525,7 +520,6 @@ partial def delabDoElems : DelabM (List Syntax) := do
   let e ← getExpr
   checkExprDepth e
   if e.isAppOfArity ``Bind.bind 6 then
-    -- Bind.bind.{u, v} : {m : Type u → Type v} → [self : Bind m] → {α β : Type u} → m α → (α → m β) → m β
     let α := e.getAppArgs[2]!
     let ma ← withAppFn $ withAppArg delabVerbose
     withAppArg do
@@ -554,13 +548,10 @@ partial def delabDoElems : DelabM (List Syntax) := do
   where
     prependAndRec x : DelabM _ := List.cons <$> x <*> delabDoElems
 
--- @[delab app.Bind.bind]
--- def delabDo : Delab := whenPPOption getPPNotation do
---   guard <| (← getExpr).isAppOfArity ``Bind.bind 6
---   let elems ← delabDoElems
---   let items ← elems.toArray.mapM (`(doSeqItem|$(·):doElem))
---   `(do $items:doSeqItem*)
 
+/-!
+A deprecated approach involving appending `freeVar` and `domVar` to identifiers.
+-/
 structure NameGroups where
   constNames : Array <| Name × Nat := #[]
   freeVarNames : Array Name := #[]
@@ -580,6 +571,10 @@ def NameGroups.append (base: NameGroups) (n: Name)(d: Nat): NameGroups :=
 def groupedNames (nd : Array <| Name × Nat) : NameGroups :=
   nd.foldl (fun gp (n, d) => gp.append n d) {}
 
+/-!
+Matching and auxiliary functions for verbose delaborators.
+-/
+
 def lambdaStx?(stx : Syntax) : MetaM <| Option (Syntax × Array Syntax) := do
   match stx with
   | `(fun $args:funBinder* ↦ $body) =>
@@ -594,15 +589,13 @@ def appStx?(stx : Syntax) : MetaM <| Option (Syntax × Syntax) := do
     return some (f, arg)
   | _ => return none
 
-#check Parser.mkIdent
-
 def proofWithProp? (stx : Syntax) : MetaM <| Option (Syntax × Syntax) := do
   match stx with
   | `(($stx =: $typeStx)) =>    
     return some (stx, typeStx)
   | _ => return none
 
-def getVar (stx: Syntax) : Option Name := 
+def getVar? (stx: Syntax) : Option Name := 
 match stx with
 | `(funBinder|($n:ident)) => some n.getId
 | `(funBinder|($n:ident : $_)) => some n.getId
