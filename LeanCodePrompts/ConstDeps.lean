@@ -289,4 +289,8 @@ def getWriteCore : CoreM ((Array DefnTypes) × (HashMap Name String)) :=
 
 end DefnTypes
 
+def getPropMap : MetaM <| HashMap Name String := do
+    let dfns ← DefnTypes.getM
+    propMapFromDefns dfns
+
 end LeanAide.Meta

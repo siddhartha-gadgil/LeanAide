@@ -114,15 +114,22 @@ partial def shrink (s: String) : String :=
 
 structure CorePremiseDataDirect where
     context : Array String
-    ids : Array String
+    type : String
+    typeGroup : String
+    ids : Array Name
     terms : Array <| Array String ×  String
     lemmas : Array String 
 deriving Repr, ToJson, FromJson
 
 def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CorePremiseDataDirect := 
-    ⟨pd.context.map (fun s => shrink s.reprint.get!.trim), pd.ids.map (fun (n, _) => shrink n.toString), pd.terms.map (fun td => 
+    ⟨pd.context.map (fun s => shrink s.reprint.get!.trim), 
+    shrink pd.type.reprint.get!.trim,
+    shrink pd.typeGroup.reprint.get!.trim,
+    pd.ids.map (fun (n, _) => shrink n.toString), 
+    pd.terms.map (fun td => 
        (td.context.map (fun s => shrink s.reprint.get!.trim),
-       td.value.reprint.get!.trim)), pd.propProofs.map (fun p => p.prop.reprint.get!.trim)⟩
+       td.value.reprint.get!.trim)), 
+    pd.propProofs.map (fun p => p.prop.reprint.get!.trim)⟩
 
 structure CorePremiseData extends CorePremiseDataDirect where
     namedLemmas : Array String
@@ -131,15 +138,17 @@ deriving Repr, ToJson, FromJson
 
 namespace CorePremiseData
 
-def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap String String) : CorePremiseData := {
+def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap Name String) : CorePremiseData := {
     context := direct.context,
+    type := direct.type,
+    typeGroup := direct.typeGroup,
     ids := direct.ids,
     terms := direct.terms,
     lemmas := direct.lemmas,
     namedLemmas := direct.ids.filterMap (fun id => propMap.find? id)
 }
 
-def fromPremiseData (pd: PremiseData)(propMap : HashMap String String) : CorePremiseData := 
+def fromPremiseData (pd: PremiseData)(propMap : HashMap Name String) : CorePremiseData := 
     CorePremiseData.fromDirect (CorePremiseDataDirect.fromPremiseData pd) propMap
 
 
@@ -167,9 +176,12 @@ fun data ↦
     ⟨data.context, data.name?, data.defnName, data.type, data.typeGroup, data.proof, data.typeSize, data.proofSize, (data.terms.map (fun td => td.increaseDepth d)), (data.propProofs.map (fun p => p.increaseDepth d)),
         (data.ids.map (fun (n,  m) => (n,  m + d))) ⟩
 
+def coreData (data: PremiseData)(propMap : HashMap Name String) : CorePremiseData := 
+    CorePremiseData.fromPremiseData data propMap
+
 def write (data: PremiseData)(group: String)
     (handles: HashMap (String × String) IO.FS.Handle)
-    (propMap : HashMap String String) : IO Unit := do 
+    (propMap : HashMap Name String) : IO Unit := do 
         data.writeFull group handles
         let coreData := CorePremiseData.fromPremiseData data propMap
         coreData.write group handles
@@ -331,7 +343,10 @@ structure DefData where
     premises : List PremiseData -- empty if depth exceeds bound
     deriving Inhabited, ToJson
 
-def DefData.getM? (name: Name)(term type: Expr) : MetaM (Option  DefData) := do
+def DefData.getM? (name: Name)(term type: Expr) : MetaM (Option  DefData) :=  withOptions (fun o => 
+                    let o' :=  pp.match.set o false
+                    pp.unicode.fun.set o' true)
+    do
     if term.approxDepth > (← getDelabBound) || type.approxDepth > (← getDelabBound) then return none
     else
     let (stx, _) ←  delabCore term {} (delabVerbose)
@@ -358,7 +373,7 @@ def PremiseData.ofNames (names: List Name) : MetaM (List PremiseData) := do
 
 def PremiseData.writeBatch (names: List Name)(group: String)
     (handles: HashMap (String × String) IO.FS.Handle)
-    (propMap : HashMap String String)(verbose: Bool := false) : MetaM Unit := do
+    (propMap : HashMap Name String)(verbose: Bool := false) : MetaM Unit := do
     for name in names do
         match ← DefData.ofNameM? name with
         | none => pure ()
@@ -367,6 +382,18 @@ def PremiseData.writeBatch (names: List Name)(group: String)
                 IO.println s!"Writing {defn.name}"
             for premise in defn.premises do
                 premise.write group handles propMap
+
+def CorePremiseData.ofNameM? (name: Name) : 
+    MetaM (Option <| List CorePremiseData) := do
+    let dfn? ← DefData.ofNameM? name
+    let premises := dfn?.map (·.premises)
+    let propMap ← getPropMap 
+    match premises with
+    | none => return none
+    | some premises => 
+        return some <| premises.map (fun p => p.coreData propMap)
+
+#eval CorePremiseData.ofNameM? ``Nat.le_of_succ_le_succ
 
 -- Code below this probably dead
 

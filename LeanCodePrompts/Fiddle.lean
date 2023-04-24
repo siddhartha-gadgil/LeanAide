@@ -14,6 +14,11 @@ def gedit : IO String := do
 
 #check  1
 
+#check NeZero
+
+instance : NeZero 1 := ⟨by decide⟩
+
+#eval (2 : ZMod 3)
 
 syntax (name:= gedit!) "#gedit" : command
 
