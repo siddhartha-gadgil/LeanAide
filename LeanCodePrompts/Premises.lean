@@ -54,7 +54,7 @@ structure TermData where
     value : Syntax
     size : Nat
     depth: Nat
-deriving Repr, ToJson
+deriving Repr, ToJson, BEq
 
 /-- Increase depth of a subterm (for recursion) -/
 def TermData.increaseDepth (d: Nat) : TermData → TermData :=
@@ -69,7 +69,7 @@ structure PropProofData where
     propSize: Nat 
     proofSize: Nat
     depth: Nat
-deriving Repr, ToJson
+deriving Repr, ToJson, BEq
 
 /-- Increase depth for a lemma (for recursion) -/
 def PropProofData.increaseDepth (d: Nat) : PropProofData → PropProofData :=
@@ -89,7 +89,7 @@ structure PremiseData  where
  terms :       Array (TermData)  -- instantiations
  propProofs :       Array (PropProofData)  -- sub-proofs
  ids :       Array (Name ×  Nat)  -- proof identifiers used
- deriving Repr, ToJson
+ deriving Repr, ToJson, BEq
 
 def PremiseData.writeFull (data: PremiseData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
     let l := (toJson data).pretty 10000000
@@ -356,7 +356,7 @@ def DefData.getM? (name: Name)(term type: Expr) : MetaM (Option  DefData) :=  wi
         Lean.Syntax.premiseDataM #[] stx tstx isProp (some name) name
     let typeDepth := type.approxDepth
     let valueDepth := term.approxDepth
-    return some {name := name, type := tstx.raw.purge, value := stx.raw.purge, isProp := isProp, typeDepth := typeDepth.toNat, valueDepth := valueDepth.toNat, premises := premises}
+    return some {name := name, type := tstx.raw.purge, value := stx.raw.purge, isProp := isProp, typeDepth := typeDepth.toNat, valueDepth := valueDepth.toNat, premises := premises.eraseDups}
 
 def DefData.ofNameM? (name: Name) : MetaM (Option DefData) := do
     let info ←  getConstInfo name
