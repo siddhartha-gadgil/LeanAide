@@ -41,7 +41,6 @@ def fileHandles : IO (HashMap (String × String) IO.FS.Handle) := do
         handles := handles.insert k <| ← freshDataHandle v
     return handles
 
-
 set_option pp.unicode.fun true
 set_option pp.match false
 
@@ -93,11 +92,18 @@ structure PremiseData  where
 
 def PremiseData.writeFull (data: PremiseData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
     let l := (toJson data).pretty 10000000
-    let gh := handles.findD ("full", group) 
-                (← IO.throwServerError 
-                    ("No handle for " ++ group ++ " in " ++ "full"))
-    let h := handles.findD ("full", "all") 
-                (← IO.throwServerError "No handle for 'all' in full")
+    -- IO.println s!"Handles:  {handles.toList.map (fun (k, _) => k)}"
+    let key := ("full", group) 
+    -- IO.println s!"Key: {key}, contained in handles: {handles.contains key}"
+    let gh ←  match handles.find? key with
+                | some h => pure h   
+                | none => 
+                 IO.throwServerError 
+                    ("No handle for " ++ group ++ " in " ++ "full")
+    let h ←  match handles.find? ("full", "all") with
+                | some h => pure h
+                | none => 
+                    IO.throwServerError "No handle for 'all' in full"
     if l.length < 9000000 then
                         h.putStrLn  l
                         gh.putStrLn l
@@ -154,12 +160,14 @@ def fromPremiseData (pd: PremiseData)(propMap : HashMap String String) : CorePre
 
 def write (data: CorePremiseData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
     let l := (toJson data).pretty 10000000
-    let gh := handles.findD ("core", group) 
-                (← IO.throwServerError 
-                    ("No handle for " ++ group ++ " in " ++ "core"))
-    let h := handles.findD ("core", "all") 
-                (← IO.throwServerError 
-                    ("No handle for " ++ "'all'" ++ " in " ++ "core"))
+    let gh ← match handles.find? ("core", group) with
+                | some h => pure h
+                | none => 
+                    IO.throwServerError ("No handle for " ++ group ++ " in " ++ "core")                
+    let h ←  match handles.find? ("core", "all") with
+                | some h => pure h
+                | none => 
+                    IO.throwServerError "No handle for 'all' in core"
     if l.length < 9000000 then
                         h.putStrLn  l
                         gh.putStrLn l
@@ -382,6 +390,11 @@ def PremiseData.writeBatch (names: List Name)(group: String)
                 IO.println s!"Writing {defn.name}"
             for premise in defn.premises do
                 premise.write group handles propMap
+
+def PremiseData.writeBatchCore (names: List Name)(group: String)
+    (handles: HashMap (String × String) IO.FS.Handle)
+    (propMap : HashMap String String)(verbose: Bool := false) : CoreM Unit :=
+    PremiseData.writeBatch names group handles propMap verbose |>.run'
 
 def CorePremiseData.ofNameM? (name: Name) : 
     MetaM (Option <| List CorePremiseData) := do
