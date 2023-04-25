@@ -82,6 +82,10 @@ lean_exe getpremises{
   supportInterpreter := true
 }
 
+lean_exe testpremises{
+  supportInterpreter := true
+}
+
 lean_exe getdefns{
   supportInterpreter := true
 }

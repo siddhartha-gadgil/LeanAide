@@ -298,7 +298,24 @@ def getPropMap : MetaM <| HashMap Name String := do
     propMapFromDefns dfns
 
 def getPropMapStr : MetaM <| HashMap String String := do
-    let dfns ← DefnTypes.getM
-    propMapFromDefnsStr dfns
+    let mut count := 0
+    let mut skipped := 0
+    let cs ← constantNameTypes 
+    let mut m : HashMap String String := HashMap.empty
+    for (name, type) in cs do
+      if !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && type.approxDepth < 60 then
+        let fmt ← ppExpr type
+        if count % 1000 = 0 then
+          IO.println s!"count: {count}"
+          IO.println s!"skipped: {skipped}"
+        m := m.insert name.toString.trim fmt.pretty
+        count := count + 1
+      else
+        if type.approxDepth >= 60 then
+          skipped := skipped + 1
+    return m
+
+def propMapCore : CoreM (HashMap String String) := 
+    (getPropMapStr).run'
 
 end LeanAide.Meta

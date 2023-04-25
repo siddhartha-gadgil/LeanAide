@@ -23,7 +23,7 @@ def coreContext : Core.Context := {fileName := "", fileMap := ⟨"", #[], #[]⟩
 def main (_: List String) : IO Unit := do
   init
   let env ← environment
-  let cursor ←  
-    writePremisesCore.run' coreContext {env := env} |>.runToIO'
-  IO.println s!"Success: ran to {cursor}"
+  let pm ←  
+    propMapCore.run' coreContext {env := env} |>.runToIO'
+  IO.println s!"Success: ran to {pm.size}"
   return ()
