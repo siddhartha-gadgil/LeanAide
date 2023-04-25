@@ -240,6 +240,10 @@ def propMapFromDefns (dfns : Array DefnTypes) : MetaM <| HashMap Name String := 
        dfns.filter (fun d => d.isProp) 
         |>.toList.map fun d => (d.name, d.type)
 
+def propMapFromDefnsStr (dfns : Array DefnTypes) : MetaM <| HashMap String String := do
+    return HashMap.ofList <|
+       dfns.filter (fun d => d.isProp) 
+        |>.toList.map fun d => (d.name.toString.trim, d.type)
 
 def groups := ["train", "test", "valid"]
 
@@ -292,5 +296,9 @@ end DefnTypes
 def getPropMap : MetaM <| HashMap Name String := do
     let dfns ← DefnTypes.getM
     propMapFromDefns dfns
+
+def getPropMapStr : MetaM <| HashMap String String := do
+    let dfns ← DefnTypes.getM
+    propMapFromDefnsStr dfns
 
 end LeanAide.Meta

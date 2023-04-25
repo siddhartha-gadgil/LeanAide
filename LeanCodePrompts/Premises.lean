@@ -88,7 +88,7 @@ structure PremiseData  where
  proofSize : Nat
  terms :       Array (TermData)  -- instantiations
  propProofs :       Array (PropProofData)  -- sub-proofs
- ids :       Array (Name ×  Nat)  -- proof identifiers used
+ ids :       Array (String ×  Nat)  -- proof identifiers used
  deriving Repr, ToJson, BEq
 
 def PremiseData.writeFull (data: PremiseData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
@@ -116,7 +116,7 @@ structure CorePremiseDataDirect where
     context : Array String
     type : String
     typeGroup : String
-    ids : Array Name
+    ids : Array String
     terms : Array <| Array String ×  String
     lemmas : Array String 
 deriving Repr, ToJson, FromJson
@@ -125,7 +125,7 @@ def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CorePremiseDataDir
     ⟨pd.context.map (fun s => shrink s.reprint.get!.trim), 
     shrink pd.type.reprint.get!.trim,
     shrink pd.typeGroup.reprint.get!.trim,
-    pd.ids.map (fun (n, _) => shrink n.toString), 
+    pd.ids.map (fun (n, _) => shrink n), 
     pd.terms.map (fun td => 
        (td.context.map (fun s => shrink s.reprint.get!.trim),
        td.value.reprint.get!.trim)), 
@@ -138,7 +138,7 @@ deriving Repr, ToJson, FromJson
 
 namespace CorePremiseData
 
-def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap Name String) : CorePremiseData := {
+def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap String String) : CorePremiseData := {
     context := direct.context,
     type := direct.type,
     typeGroup := direct.typeGroup,
@@ -148,7 +148,7 @@ def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap Name String) : 
     namedLemmas := direct.ids.filterMap (fun id => propMap.find? id)
 }
 
-def fromPremiseData (pd: PremiseData)(propMap : HashMap Name String) : CorePremiseData := 
+def fromPremiseData (pd: PremiseData)(propMap : HashMap String String) : CorePremiseData := 
     CorePremiseData.fromDirect (CorePremiseDataDirect.fromPremiseData pd) propMap
 
 
@@ -176,12 +176,12 @@ fun data ↦
     ⟨data.context, data.name?, data.defnName, data.type, data.typeGroup, data.proof, data.typeSize, data.proofSize, (data.terms.map (fun td => td.increaseDepth d)), (data.propProofs.map (fun p => p.increaseDepth d)),
         (data.ids.map (fun (n,  m) => (n,  m + d))) ⟩
 
-def coreData (data: PremiseData)(propMap : HashMap Name String) : CorePremiseData := 
+def coreData (data: PremiseData)(propMap : HashMap String String) : CorePremiseData := 
     CorePremiseData.fromPremiseData data propMap
 
 def write (data: PremiseData)(group: String)
     (handles: HashMap (String × String) IO.FS.Handle)
-    (propMap : HashMap Name String) : IO Unit := do 
+    (propMap : HashMap String String) : IO Unit := do 
         data.writeFull group handles
         let coreData := CorePremiseData.fromPremiseData data propMap
         coreData.write group handles
@@ -225,7 +225,7 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
     MetaM (
         Array (TermData) ×
         Array (PropProofData) ×
-        Array (Name × Nat) ×
+        Array (String × Nat) ×
         List PremiseData
         )  := do
     if maxDepth? = some 0 then
@@ -302,7 +302,7 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
                 premiseDataAuxM context defnName · none false (maxDepth?.map (· -1)))
             let mut ts: Array (TermData) := #[]
             let mut pfs: Array (PropProofData) := #[]
-            let mut ids: Array (Name × Nat) := #[]
+            let mut ids: Array (String × Nat) := #[]
             let mut ps: List PremiseData := []
             for prev in prevs do
                 let (ts', pfs', ids', ps') := prev
@@ -319,7 +319,7 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
             let contextVars := context.filterMap getVar?
             if  !(contextVars.contains name) &&
                 !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name)) then 
-                pure (#[], #[], #[(name, 0)], [])
+                pure (#[], #[], #[(stx.reprint.get!.trim, 0)], [])
             else pure (#[], #[], #[], [])
         | _ => pure (#[], #[], #[], [])
 
@@ -373,7 +373,7 @@ def PremiseData.ofNames (names: List Name) : MetaM (List PremiseData) := do
 
 def PremiseData.writeBatch (names: List Name)(group: String)
     (handles: HashMap (String × String) IO.FS.Handle)
-    (propMap : HashMap Name String)(verbose: Bool := false) : MetaM Unit := do
+    (propMap : HashMap String String)(verbose: Bool := false) : MetaM Unit := do
     for name in names do
         match ← DefData.ofNameM? name with
         | none => pure ()
@@ -387,14 +387,19 @@ def CorePremiseData.ofNameM? (name: Name) :
     MetaM (Option <| List CorePremiseData) := do
     let dfn? ← DefData.ofNameM? name
     let premises := dfn?.map (·.premises)
-    let propMap ← getPropMap 
+    let propMap ← getPropMapStr 
     match premises with
     | none => return none
     | some premises => 
         return some <| premises.map (fun p => p.coreData propMap)
 
-#eval CorePremiseData.ofNameM? ``Nat.le_of_succ_le_succ
+-- #eval CorePremiseData.ofNameM? ``Nat.le_of_succ_le_succ
+-- #print Nat.le_of_succ_le_succ
+def propList : MetaM <| List (Name × String) := do
+    let propMap ← getPropMap
+    return propMap.toList
 
+-- #eval propList
 -- Code below this probably dead
 
 structure IdentData where
