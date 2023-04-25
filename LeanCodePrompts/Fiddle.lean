@@ -14,6 +14,10 @@ def gedit : IO String := do
 
 #check  1
 
+#check List.findIdx?
+
+#check List.remove
+
 #check NeZero
 
 instance : NeZero 1 := ⟨by decide⟩

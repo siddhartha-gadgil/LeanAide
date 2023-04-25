@@ -395,11 +395,22 @@ def CorePremiseData.ofNameM? (name: Name) :
 
 -- #eval CorePremiseData.ofNameM? ``Nat.le_of_succ_le_succ
 -- #print Nat.le_of_succ_le_succ
+
+def CorePremiseData.writeTest (names: List Name) : MetaM Unit := do
+    let cores ← names.filterMapM CorePremiseData.ofNameM?
+    let path := System.mkFilePath ["data", "tests", "premises.json"]
+    IO.FS.writeFile path <| (toJson cores).pretty 
+
 def propList : MetaM <| List (Name × String) := do
     let propMap ← getPropMap
     return propMap.toList
 
 -- #eval propList
+
+
+
+
+
 -- Code below this probably dead
 
 structure IdentData where
