@@ -87,7 +87,7 @@ def EIO.runToIO' (eio: EIO Exception α) : IO α  := do
       IO.throwServerError msg
 
 def EIO.spawnToIO (eio: EIO Exception α) : IO <| Task <| IO α  := do
-  let task ←  eio.asTask 
+  let task ←  eio.asTask (prio := Task.Priority.max)
   return task.map (fun eio => 
     match eio with
     | Except.ok x =>

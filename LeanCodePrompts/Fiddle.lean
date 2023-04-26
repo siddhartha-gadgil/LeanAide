@@ -12,6 +12,8 @@ def gedit : IO String := do
 
 -- #eval gedit
 
+#check MvFunctor
+
 #check  1
 
 #check List.findIdx?

@@ -389,7 +389,13 @@ def PremiseData.writeBatch (names: List Name)(group: String)
     (propMap : HashMap String String)(verbose: Bool := false) : MetaM Nat := do
     let mut count := 0
     for name in names do
-        match ← DefData.ofNameM? name with
+        let dfn ←
+            try
+                DefData.ofNameM? name
+            catch ex =>
+                IO.println s!"Error {← ex.toMessageData.toString} writing {name}"
+                pure none
+        match dfn with
         | none => pure ()
         | some defn =>
             if verbose then
@@ -397,6 +403,8 @@ def PremiseData.writeBatch (names: List Name)(group: String)
             for premise in defn.premises do
                 premise.write group handles propMap
                 count := count + 1
+                if count % 1000 = 0 then
+                    IO.println s!"Wrote {count} premises"
     return count
 
 def PremiseData.writeBatchCore (names: List Name)(group: String)

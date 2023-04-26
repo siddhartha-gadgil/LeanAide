@@ -36,10 +36,12 @@ def main (_: List String) : IO Unit := do
     let allNames := groupedNames[group].get!
     IO.println s!"Definitions in group {group}: {allNames.size}"
     let batches := allNames.batches' concurrency
-    let tasks ←  batches.mapM fun batch => do
-        let names := batch.map (·.toName) |>.toList
+    let batches := batches.map (fun batch => batch.map (·.toName) |>.toList) 
+    IO.println s!"Made {batches.size} batches"
+    let tasks ←  batches.mapM fun names => do
         let writeCore := PremiseData.writeBatchCore names group handles propMap
         writeCore.run' coreContext {env := env} |>.spawnToIO
+    IO.println "Spawned tasks"
     let unifyTasks ← BaseIO.mapTasks pure tasks.toList
     let getTasks := unifyTasks.get
     let counts ← getTasks.mapM id 
