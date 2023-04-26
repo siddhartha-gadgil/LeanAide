@@ -402,9 +402,9 @@ def PremiseData.writeBatch (names: List Name)(group: String)
                 IO.println s!"Writing {defn.name}"
             for premise in defn.premises do
                 premise.write group handles propMap
-                count := count + 1
-                if count % 1000 = 0 then
-                    IO.println s!"Wrote {count} premises"
+            count := count + 1
+            if count % 100 = 0 then
+                IO.println s!"Wrote {count} definitions of {names.length}"
     return count
 
 def PremiseData.writeBatchCore (names: List Name)(group: String)
