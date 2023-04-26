@@ -30,21 +30,18 @@ def main (_: List String) : IO Unit := do
   let groupedNames ←  splitData propNames 
   let handles ← fileHandles
   let concurrency := (← threadNum) * 3 / 4
-  let mut tasks : Array (Task <| IO Nat) := #[]
   for group in groups do
+    IO.println s!"Finding premises for group {group}"
     let allNames := groupedNames[group].get!
+    IO.println s!"Definitions in group {group}: {allNames.size}"
     let batches := allNames.batches' concurrency
-    for batch in batches do
-      let names := batch.map (·.toName) |>.toList
-      let writeCore := PremiseData.writeBatchCore names group handles propMap true
-      let task ←  writeCore.run' coreContext {env := env} |>.spawnToIO
-      tasks := tasks.push task
-  let unifyTasks ← BaseIO.mapTasks pure tasks.toList
-  let getTasks := unifyTasks.get
-  let mut counts : Array Nat := #[]
-  for task in getTasks do
-    let count ← task
-    counts := counts.push count
-    IO.println s!"Task done: {count} premises written"
-  IO.println s!"Done: all {counts.size} tasks completed"
+    let tasks ←  batches.mapM fun batch => do
+        let names := batch.map (·.toName) |>.toList
+        let writeCore := PremiseData.writeBatchCore names group handles propMap true
+        writeCore.run' coreContext {env := env} |>.spawnToIO
+    let unifyTasks ← BaseIO.mapTasks pure tasks.toList
+    let getTasks := unifyTasks.get
+    let counts ← getTasks.mapM id 
+    IO.println s!"Done: {counts} premises found in batches"
+  IO.println s!"Done: all tasks completed"
   return ()
