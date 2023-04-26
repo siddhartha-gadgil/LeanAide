@@ -23,14 +23,7 @@ def coreContext : Core.Context := {fileName := "", fileMap := ⟨"", #[], #[]⟩
 def main (_: List String) : IO Unit := do
   init
   let env ← environment
-  let propMap ←  
-    propMapCore.run' coreContext {env := env} |>.runToIO'
-  IO.println s!"Success: ran to {propMap.size}"
-  let names := [`Nat.exists_infinite_primes, `Nat.minFac_le_div]
-  let handles ← fileHandles
-  IO.println "Writing batch"
-  let testCore := 
-    PremiseData.writeBatchCore (names) "test" handles propMap true
-  testCore.run' coreContext {env := env} |>.runToIO'  
-  IO.println "Done"
+  let cursor ←  
+    writePremisesCore.run' coreContext {env := env} |>.runToIO'
+  IO.println s!"Success: ran to {cursor}"
   return ()

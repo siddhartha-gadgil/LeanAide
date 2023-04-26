@@ -140,3 +140,14 @@ def List.batches (l: List α)(size: Nat) : List (List α) :=
 
 def Array.batches (l: Array α)(size: Nat) : Array (Array α) :=
   (l.toList.batches size).map (fun l => l.toArray) |>.toArray
+
+def List.batches' (l: List α)(numBatches: Nat) : List (List α) :=
+  let size := 
+    if l.length % numBatches = 0 then
+      l.length / numBatches
+    else
+      l.length / numBatches + 1
+  batchesAux l size []
+
+def Array.batches' (l: Array α)(numBatches: Nat) : Array (Array α) :=
+  (l.toList.batches' numBatches).map (fun l => l.toArray) |>.toArray
