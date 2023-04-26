@@ -30,6 +30,7 @@ def main (_: List String) : IO Unit := do
   let groupedNames ←  splitData propNames 
   let handles ← fileHandles
   let concurrency := (← threadNum) * 3 / 4
+  IO.println s!"Using {concurrency} threads"
   for group in groups do
     IO.println s!"Finding premises for group {group}"
     let allNames := groupedNames[group].get!
@@ -37,7 +38,7 @@ def main (_: List String) : IO Unit := do
     let batches := allNames.batches' concurrency
     let tasks ←  batches.mapM fun batch => do
         let names := batch.map (·.toName) |>.toList
-        let writeCore := PremiseData.writeBatchCore names group handles propMap true
+        let writeCore := PremiseData.writeBatchCore names group handles propMap
         writeCore.run' coreContext {env := env} |>.spawnToIO
     let unifyTasks ← BaseIO.mapTasks pure tasks.toList
     let getTasks := unifyTasks.get
