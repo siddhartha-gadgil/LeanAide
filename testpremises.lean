@@ -20,17 +20,17 @@ def environment : IO Environment := do
 def coreContext : Core.Context := {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]
     }   
 
-def main (_: List String) : IO Unit := do
+def main (args: List String) : IO Unit := do
   init
   let env ← environment
   let propMap ←  
     propMapCore.run' coreContext {env := env} |>.runToIO'
   IO.println s!"Success: ran to {propMap.size}"
-  let names := [`Nat.exists_infinite_primes, `Nat.minFac_le_div]
+  let names := args.map String.toName
   let handles ← fileHandles
   IO.println "Writing batch"
   let testCore := 
-    PremiseData.writeBatchCore (names) "test" handles propMap true
-  testCore.run' coreContext {env := env} |>.runToIO'  
+    PremiseData.writeBatchCore (names) "extra" handles propMap true
+  discard <| testCore.run' coreContext {env := env} |>.runToIO'  
   IO.println "Done"
   return ()

@@ -33,7 +33,7 @@ def freshDataHandle (fileNamePieces : List String) : IO IO.FS.Handle := do
 def fileNamePieces : HashMap (String × String) (List String) :=
     HashMap.ofList <|
         ["core", "full"].bind fun kind => 
-            ("all" :: groups).map fun group => ((kind, group), ["premises", kind, group++".jsonl"])
+            ("all" :: "extra" :: groups).map fun group => ((kind, group), ["premises", kind, group++".jsonl"])
 
 def fileHandles : IO (HashMap (String × String) IO.FS.Handle) := do
     let mut handles := HashMap.empty
