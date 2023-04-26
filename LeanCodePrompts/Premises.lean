@@ -118,23 +118,28 @@ partial def shrink (s: String) : String :=
                 |>.trim
     if step == s then s else shrink step
 
+structure CoreTermData where
+    context : Array String
+    value : String
+deriving Repr, ToJson, FromJson, BEq
+
 structure CorePremiseDataDirect where
     context : Array String
     type : String
     typeGroup : String
     ids : Array String
-    terms : Array <| Array String ×  String
+    terms : List CoreTermData
     lemmas : Array String 
-deriving Repr, ToJson, FromJson
+deriving Repr, ToJson, FromJson, BEq
 
 def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CorePremiseDataDirect := 
     ⟨pd.context.map (fun s => shrink s.reprint.get!.trim), 
     shrink pd.type.reprint.get!.trim,
     shrink pd.typeGroup.reprint.get!.trim,
     pd.ids.map (fun (n, _) => shrink n), 
-    pd.terms.map (fun td => 
-       (td.context.map (fun s => shrink s.reprint.get!.trim),
-       td.value.reprint.get!.trim)), 
+    pd.terms.toList.map (fun td => 
+       ⟨td.context.map (fun s => shrink s.reprint.get!.trim),
+       td.value.reprint.get!.trim⟩) |>.eraseDups, 
     pd.propProofs.map (fun p => p.prop.reprint.get!.trim)⟩
 
 structure CorePremiseData extends CorePremiseDataDirect where
