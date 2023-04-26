@@ -386,7 +386,8 @@ def PremiseData.ofNames (names: List Name) : MetaM (List PremiseData) := do
 
 def PremiseData.writeBatch (names: List Name)(group: String)
     (handles: HashMap (String × String) IO.FS.Handle)
-    (propMap : HashMap String String)(verbose: Bool := false) : MetaM Unit := do
+    (propMap : HashMap String String)(verbose: Bool := false) : MetaM Nat := do
+    let mut count := 0
     for name in names do
         match ← DefData.ofNameM? name with
         | none => pure ()
@@ -395,10 +396,12 @@ def PremiseData.writeBatch (names: List Name)(group: String)
                 IO.println s!"Writing {defn.name}"
             for premise in defn.premises do
                 premise.write group handles propMap
+                count := count + 1
+    return count
 
 def PremiseData.writeBatchCore (names: List Name)(group: String)
     (handles: HashMap (String × String) IO.FS.Handle)
-    (propMap : HashMap String String)(verbose: Bool := false) : CoreM Unit :=
+    (propMap : HashMap String String)(verbose: Bool := false) : CoreM Nat :=
     PremiseData.writeBatch names group handles propMap verbose |>.run'
 
 def CorePremiseData.ofNameM? (name: Name) : 
