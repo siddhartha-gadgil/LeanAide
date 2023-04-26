@@ -87,20 +87,13 @@ def EIO.runToIO' (eio: EIO Exception α) : IO α  := do
       IO.throwServerError msg
 
 def EIO.spawnToIO (eio: EIO Exception α) : IO <| Task <| IO α  := do
-  let io : IO α:= do 
-    match ←  eio.toIO' with
-    | Except.ok x =>
-        pure x
-    | Except.error e =>
-        let msg ← e.toMessageData.toString
-        IO.throwServerError msg
-  let task ←  io.asTask
+  let task ←  eio.asTask 
   return task.map (fun eio => 
     match eio with
     | Except.ok x =>
         pure x
     | Except.error e => do
-        let msg := e.toString
+        let msg ←  e.toMessageData.toString
         IO.throwServerError msg)
     
 def EIO.asyncIO (eio: EIO Exception α) : IO α  := do
