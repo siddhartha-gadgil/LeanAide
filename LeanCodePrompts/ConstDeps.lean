@@ -300,11 +300,14 @@ def getPropMap : MetaM <| HashMap Name String := do
 def getPropMapStr : MetaM <| HashMap String String := do
     let mut count := 0
     let mut skipped := 0
-    let cs ← constantNameTypes 
+    let cs ← constantNameValueTypes 
     let mut m : HashMap String String := HashMap.empty
-    for (name, type) in cs do
+    let mut dfs : Array DefnTypes := #[]
+    for (name, value, type, doc?) in cs do
       if !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && type.approxDepth < 60 then
         let fmt ← ppExpr type
+        let dfn : DefnTypes := ⟨name, fmt.pretty, ← isProof value, doc?⟩
+        dfs := dfs.push dfn
         if count % 1000 = 0 then
           IO.println s!"count: {count}"
           IO.println s!"skipped: {skipped}"
@@ -313,6 +316,8 @@ def getPropMapStr : MetaM <| HashMap String String := do
       else
         if type.approxDepth >= 60 then
           skipped := skipped + 1
+    let path := System.mkFilePath ["rawdata", "defn-types", "all.jsonl"]
+    IO.FS.writeFile path <| jsonLines <| dfs
     return m
 
 def propMapCore : CoreM (HashMap String String) := 

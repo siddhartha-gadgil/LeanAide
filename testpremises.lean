@@ -20,11 +20,22 @@ def environment : IO Environment := do
 def coreContext : Core.Context := {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]
     }   
 
+#check fromJson?
+
 def main (args: List String) : IO Unit := do
   init
   let env ← environment
-  let propMap ←  
-    propMapCore.run' coreContext {env := env} |>.runToIO'
+  let path := System.mkFilePath ["rawdata", "defn-types", "all.jsonl"]
+  let propMap ← if ← path.pathExists then 
+        let lines ←  IO.FS.lines path
+        let lines := lines.filterMap (fun l => (Lean.Json.parse l).toOption)
+        let dfns : Array DefnTypes := 
+          lines.filterMap (fun l=>  (fromJson? l).toOption)
+        let propList := dfns.toList.map (fun d => (d.name.toString, d.type))
+        pure <| HashMap.ofList propList
+    else 
+        IO.println s!"File {path} not found, running to generate it"
+        propMapCore.run' coreContext {env := env} |>.runToIO'
   IO.println s!"Success: ran to {propMap.size}"
   let names := args.map String.toName
   let handles ← fileHandles
