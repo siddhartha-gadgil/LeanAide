@@ -36,12 +36,13 @@ def main (args: List String) : IO Unit := do
     else 
         IO.println s!"File {path} not found, running to generate it"
         propMapCore.run' coreContext {env := env} |>.runToIO'
-  IO.println s!"Success: ran to {propMap.size}"
+  -- IO.println s!"Success: ran to {propMap.size}"
   let names := args.map String.toName
   let handles ← fileHandles
-  IO.println "Writing batch"
+  -- IO.println "Writing batch"
   let testCore := 
     PremiseData.writeBatchCore (names) "extra" handles propMap true
   discard <| testCore.run' coreContext {env := env} |>.runToIO'  
-  IO.println "Done"
+  IO.println ""
+  IO.println <| ← IO.FS.readFile (System.mkFilePath ["rawdata", "premises", "core", "extra.jsonl"]) 
   return ()
