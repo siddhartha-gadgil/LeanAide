@@ -26,6 +26,10 @@ open LeanAide.Meta
 
 def freshDataHandle (fileNamePieces : List String) : IO IO.FS.Handle := do
     let path := System.mkFilePath <| [".", "rawdata"] ++ fileNamePieces
+    let dir := System.mkFilePath <| [".", "rawdata"] ++ 
+        fileNamePieces.take (fileNamePieces.length - 1)
+    if !(← dir.pathExists) then
+        IO.FS.createDirAll dir
     IO.FS.writeFile path "" 
     IO.FS.Handle.mk path IO.FS.Mode.append Bool.false
 
@@ -388,6 +392,7 @@ def PremiseData.writeBatch (names: List Name)(group: String)
     (handles: HashMap (String × String) IO.FS.Handle)
     (propMap : HashMap String String)(verbose: Bool := false) : MetaM Nat := do
     let mut count := 0
+    let mut premiseCount := 0
     for name in names do
         let dfn ←
             try
@@ -402,10 +407,11 @@ def PremiseData.writeBatch (names: List Name)(group: String)
                 IO.println s!"Writing {defn.name}"
             for premise in defn.premises do
                 premise.write group handles propMap
+                premiseCount := premiseCount + 1
             count := count + 1
             if count % 100 = 0 then
                 IO.println s!"Wrote {count} definitions of {names.length}"
-    return count
+    return premiseCount
 
 def PremiseData.writeBatchCore (names: List Name)(group: String)
     (handles: HashMap (String × String) IO.FS.Handle)

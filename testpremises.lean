@@ -25,6 +25,9 @@ def coreContext : Core.Context := {fileName := "", fileMap := ⟨"", #[], #[]⟩
 def main (args: List String) : IO Unit := do
   init
   let env ← environment
+  let dir := System.mkFilePath <| [".", "rawdata", "defn-types"]
+  if !(← dir.pathExists) then
+        IO.FS.createDirAll dir
   let path := System.mkFilePath ["rawdata", "defn-types", "all.jsonl"]
   let propMap ← if ← path.pathExists then 
         let lines ←  IO.FS.lines path
