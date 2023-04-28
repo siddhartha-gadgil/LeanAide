@@ -119,6 +119,7 @@ deriving Repr, ToJson, FromJson, BEq
 
 structure CorePremiseDataDirect where
     context : Array String
+    name? :       Option Name  -- name
     type : String
     typeGroup : String
     ids : Array String
@@ -128,6 +129,7 @@ deriving Repr, ToJson, FromJson, BEq
 
 def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CorePremiseDataDirect := 
     ⟨pd.context.map (fun s => shrink s.reprint.get!.trim), 
+    pd.name?,
     shrink pd.type.reprint.get!.trim,
     shrink pd.typeGroup.reprint.get!.trim,
     pd.ids.map (fun (n, _) => shrink n), 
@@ -146,6 +148,7 @@ namespace CorePremiseData
 def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap String String) : CorePremiseData :=
     {
     context := direct.context,
+    name? := direct.name?,
     type := direct.type,
     typeGroup := direct.typeGroup,
     ids := direct.ids.filter (fun id => propMap.contains id),
@@ -274,6 +277,28 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
                 newPfs,
                 ids.map (fun (s, m) => (s, m + 1)),
                 head :: ps)
+    | none =>
+    match ← letStx? stx with -- term is a let
+    | some (n, type, val, body) =>
+        let decl' : Syntax ← `(Lean.Parser.Term.letDecl|$n:ident : $type := $val)
+        let decl'' : Syntax ← `(Lean.Parser.Term.funBinder|($n:ident : $type:term))
+        let decl : Syntax := 
+            if (← proofWithProp? val).isSome then
+                decl''
+            else  decl' 
+        let prev ←   
+            body.raw.premiseDataAuxM (context ++ #[decl]) defnName propHead? false (maxDepth?.map (· -1))
+        let prev' ←  
+            val.raw.premiseDataAuxM (context) defnName propHead? false (maxDepth?.map (· -1))
+        let (ts, pfs, ids, ps) := prev
+        let (ts', pfs', ids', ps') := prev'
+        return (ts.map (fun s => (s.increaseDepth 1)) ++
+                ts'.map (fun s => (s.increaseDepth 1)),
+                pfs.map (fun s => (s.increaseDepth 1)) ++
+                pfs'.map (fun s => (s.increaseDepth 1)),
+                ids.map (fun (s, m) => (s, m + 1)) ++
+                ids'.map (fun (s, m) => (s, m + 1)),
+                ps ++ ps')
     | none =>
     match ← lambdaStx? stx with -- term is a lambda
     | some (body, args) =>

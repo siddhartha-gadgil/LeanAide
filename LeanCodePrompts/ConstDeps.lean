@@ -316,12 +316,14 @@ def getPropMapStr : MetaM <| HashMap String String := do
     for (name, value, type, doc?) in cs do
       if !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && type.approxDepth < 60 then
         let fmt ← ppExpr type
-        let dfn : DefnTypes := ⟨name, fmt.pretty, ← isProof value, doc?⟩
+        let isProp ← isProof value
+        let dfn : DefnTypes := ⟨name, fmt.pretty, isProp, doc?⟩
         dfs := dfs.push dfn
         if count % 1000 = 0 then
           IO.println s!"count: {count}"
           IO.println s!"skipped: {skipped}"
-        m := m.insert name.toString.trim fmt.pretty
+        if isProp then
+          m := m.insert name.toString.trim fmt.pretty
         count := count + 1
       else
         if type.approxDepth >= 60 then
