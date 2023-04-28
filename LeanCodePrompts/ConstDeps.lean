@@ -297,6 +297,16 @@ def getPropMap : MetaM <| HashMap Name String := do
     let dfns ← DefnTypes.getM
     propMapFromDefns dfns
 
+partial def shrink (s: String) : String := 
+    let step := s.replace "  " " " |>.replace "( " "("
+                |>.replace " )" ")"
+                |>.replace "{ " "{"
+                |>.replace " }" "}"
+                |>.replace "[ " "["
+                |>.replace " ]" "]"
+                |>.trim
+    if step == s then s else shrink step
+
 def getPropMapStr : MetaM <| HashMap String String := do
     let mut count := 0
     let mut skipped := 0
@@ -322,5 +332,17 @@ def getPropMapStr : MetaM <| HashMap String String := do
 
 def propMapCore : CoreM (HashMap String String) := 
     (getPropMapStr).run'
+
+def nameViewM? (name: Name) : MetaM <| Option String := do
+  let exp? ←  nameExpr? name
+  let fmt ← match exp? with
+    | some exp => do
+      let fmt ← ppExpr exp
+      pure <| some <| shrink fmt.pretty
+    | none => pure name.toString
+  return fmt
+
+def nameViewCore? (name: Name) : CoreM <| Option String := 
+    (nameViewM? name).run'
 
 end LeanAide.Meta

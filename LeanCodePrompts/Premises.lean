@@ -49,7 +49,7 @@ set_option pp.unicode.fun true
 set_option pp.match false
 
 /-- Syntax as json -/
-instance : ToJson Syntax := ⟨fun (d: Syntax) ↦ d.reprint.get!.trim⟩
+instance : ToJson Syntax := ⟨fun (d: Syntax) ↦ shrink d.reprint.get!.trim⟩
 
 /-- Subterms in a premise -/
 structure TermData where
@@ -112,16 +112,6 @@ def PremiseData.writeFull (data: PremiseData)(group: String)(handles: HashMap (S
                         h.putStrLn  l
                         gh.putStrLn l
 
-partial def shrink (s: String) : String := 
-    let step := s.replace "  " " " |>.replace "( " "("
-                |>.replace " )" ")"
-                |>.replace "{ " "{"
-                |>.replace " }" "}"
-                |>.replace "[ " "["
-                |>.replace " ]" "]"
-                |>.trim
-    if step == s then s else shrink step
-
 structure CoreTermData where
     context : Array String
     value : String
@@ -143,8 +133,8 @@ def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CorePremiseDataDir
     pd.ids.map (fun (n, _) => shrink n), 
     pd.terms.toList.map (fun td => 
        ⟨td.context.map (fun s => shrink s.reprint.get!.trim),
-       td.value.reprint.get!.trim⟩) |>.eraseDups, 
-    pd.propProofs.map (fun p => p.prop.reprint.get!.trim)⟩
+       shrink td.value.reprint.get!.trim⟩) |>.eraseDups, 
+    pd.propProofs.map (fun p => shrink p.prop.reprint.get!.trim)⟩
 
 structure CorePremiseData extends CorePremiseDataDirect where
     namedLemmas : Array String
@@ -153,11 +143,12 @@ deriving Repr, ToJson, FromJson
 
 namespace CorePremiseData
 
-def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap String String) : CorePremiseData := {
+def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap String String) : CorePremiseData :=
+    {
     context := direct.context,
     type := direct.type,
     typeGroup := direct.typeGroup,
-    ids := direct.ids,
+    ids := direct.ids.filter (fun id => propMap.contains id),
     terms := direct.terms,
     lemmas := direct.lemmas,
     namedLemmas := direct.ids.filterMap (fun id => propMap.find? id)
@@ -383,6 +374,20 @@ def DefData.ofNameM? (name: Name) : MetaM (Option DefData) := do
     | some term => DefData.getM? name term type
     | none => return none
 
+def verboseView? (name: Name) : MetaM (Option String) := do
+    let info ←  getConstInfo name
+    let term? := info.value? 
+    match term? with
+    | some term => 
+        let (stx, _) ←  delabCore term {} (delabVerbose)
+        return some <| shrink stx.raw.reprint.get!
+    | none => return none
+
+def verboseViewCore? (name: Name) : CoreM (Option String) :=
+    (verboseView? name).run' {}
+
+def DefData.ofNameCore? (name: Name) : CoreM (Option DefData) :=
+    (DefData.ofNameM? name).run' {}
 
 def PremiseData.ofNames (names: List Name) : MetaM (List PremiseData) := do
     let defs ← names.filterMapM DefData.ofNameM?

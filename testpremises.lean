@@ -17,6 +17,13 @@ def environment : IO Environment := do
     {module:= `LeanCodePrompts.Premises},
     {module := `Mathlib}] {}
 
+def environment' : IO Environment := do
+  importModules [{module := `Mathlib},
+    {module:= `LeanCodePrompts.CheckParse},
+    {module:= `LeanCodePrompts.ParseJson},
+    {module:= `LeanCodePrompts.ConstDeps},
+    {module := `Mathlib}] {}
+
 def coreContext : Core.Context := {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]
     }   
 
@@ -47,5 +54,18 @@ def main (args: List String) : IO Unit := do
     PremiseData.writeBatchCore (names) "extra" handles propMap true
   discard <| testCore.run' coreContext {env := env} |>.runToIO'  
   IO.println ""
-  IO.println <| ← IO.FS.readFile (System.mkFilePath ["rawdata", "premises", "core", "extra.jsonl"]) 
+  let rawLines := (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "core", "extra.jsonl"])).filter (fun l => l != "")
+  let jsLines := rawLines.filterMap <| fun l => (Lean.Json.parse l).toOption
+  -- IO.println <| ← IO.FS.readFile (System.mkFilePath ["rawdata", "premises", "core", "extra.jsonl"]) 
+  for name in names do
+    let stxCore :=  nameViewCore? name 
+    let stx ← stxCore.run' coreContext {env := ← environment'} |>.runToIO'
+    IO.println s!"\nname: {name}"
+    IO.println s!"\nexpression: \n{stx}"
+    let verboseCore := verboseViewCore? name
+    let view ← verboseCore.run' coreContext {env := env} |>.runToIO'
+    IO.println s!"\nverbose: \n{view}" 
+  for l in jsLines do
+    IO.println ""
+    IO.println l.pretty
   return ()
