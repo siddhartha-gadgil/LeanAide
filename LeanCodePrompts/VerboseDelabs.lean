@@ -41,8 +41,14 @@ def checkDepth : DelabM Unit := do
   if e.approxDepth > depth then
     failure
 
+#check Meta.isProp
+
 /-- Modified top-level delaborator to expand if proof to `proof =: prop`-/
-partial def delabVerbose : Delab := do
+partial def delabVerbose : Delab := 
+  withOptions (fun o => 
+                    let o' :=  pp.match.set o false
+                    pp.unicode.fun.set o' true)
+  do  
   checkMaxHeartbeats "delab"
   let e ← getExpr
   let isProof := !e.isAtomic && (← (try Meta.isProof e catch _ => pure false))
@@ -55,7 +61,9 @@ partial def delabVerbose : Delab := do
     let typeStx ← withType delab
     `(($stx =: $typeStx)) >>= annotateCurPos
   else
-    return stx
+    if ← Meta.isProp e then
+    `(($stx : Prop)) >>= annotateCurPos
+    else  return stx
 
 /-- Helper wrapping a proof `proof` as `proof =: prop` -/
 def wrapInType (e: Expr)(stx: Term) : Delab := do
@@ -647,4 +655,24 @@ def letStx? (stx: Syntax) : MetaM <| Option (Ident × Term × Term × Term) := d
     return some (n, type, val, body)
   | _ => return none
 
+def getName? (stx: Syntax) : Option Name :=
+  match stx with
+  | `($n:ident) => some n.getId
+  | _ => none
+
+def structuralTerm (stx: Syntax) : MetaM Bool := do
+  match getName? stx with
+  | none => pure false
+  | some n => 
+    let check := (``Eq).isPrefixOf n || (``Iff).isPrefixOf n
+    IO.println s!"function with name: {n}; blocked: {check}"
+    return check
+
+def wrappedProp? (stx : Syntax) : MetaM <| Option Syntax := do
+  match stx with
+  | `(($stx:term : Prop)) =>    
+    return some stx
+  | _ => return none
+
+#check And.intro
 end LeanAide.Meta

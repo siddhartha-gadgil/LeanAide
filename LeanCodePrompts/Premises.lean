@@ -244,9 +244,13 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
     else
     let tks ← termKindList
     let tks := tks.map (·.1)
+    match ← wrappedProp? stx with
+    | some prop =>
+        prop.premiseDataAuxM context defnName none  false maxDepth?
+    | none =>
     match ← namedArgument? stx with
     | some (arg, _) => -- named argument of a function, name ignored
-        arg.premiseDataAuxM context defnName none  true (maxDepth?.map (· -1))
+        arg.premiseDataAuxM context defnName none  isArg (maxDepth?.map (· -1))
     | none =>
     -- the special `proof =: prop` syntax 
     match ← proofWithProp? stx with
@@ -316,7 +320,9 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
         let prev ←  f.premiseDataAuxM context defnName none false (maxDepth?.map (· -1))
         let mut (ts, pfs, ids, ps) := prev
         for arg in args do
-            let prev ←  arg.premiseDataAuxM context defnName none true (maxDepth?.map (· -1))
+            let block ← structuralTerm f
+            let prev ←  
+                arg.premiseDataAuxM context defnName none (!block) (maxDepth?.map (· -1))
             let (ts', pfs', ids', ps') := prev
             ts := ts ++ ts'
             pfs := pfs ++ pfs'
@@ -402,7 +408,11 @@ def DefData.ofNameM? (name: Name) : MetaM (Option DefData) := do
     | some term => DefData.getM? name term type
     | none => return none
 
-def verboseView? (name: Name) : MetaM (Option String) := do
+def verboseView? (name: Name) : MetaM (Option String) := 
+    withOptions (fun o => 
+                    let o' :=  pp.match.set o false
+                    pp.unicode.fun.set o' true)
+    do
     let info ←  getConstInfo name
     let term? := info.value? 
     match term? with
@@ -474,8 +484,6 @@ def propList : MetaM <| Array (String × String) := do
     return propMap.toArray
 
 -- #eval propList
-
-
 
 
 

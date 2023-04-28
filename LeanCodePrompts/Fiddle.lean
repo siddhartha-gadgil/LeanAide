@@ -11,7 +11,7 @@ def gedit : IO String := do
   return "done"
 
 -- #eval gedit
-
+#check or_false_iff
 #check MvFunctor
 
 #check  1
