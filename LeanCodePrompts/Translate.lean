@@ -206,7 +206,7 @@ def hasElab (s: String)(limit : Option Nat := none) : TermElabM Bool := do
 /-- log to file -/
 def elabLog (s: String) : IO Unit := do
   let logFile := System.mkFilePath ["results/elab_logs.txt"]
-  let h ← IO.FS.Handle.mk logFile IO.FS.Mode.append Bool.false
+  let h ←  IO.FS.Handle.mk logFile IO.FS.Mode.append
   h.putStrLn s
   h.putStrLn ""
 

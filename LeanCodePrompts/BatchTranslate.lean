@@ -23,7 +23,7 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat :=
   elabLog s!"Writing to file: {type}-elab-{numSim}-{numKW}-{includeFixed}-{queryNum}-{temp.mantissa}.json"
   let promptsFile ← reroutePath <| System.mkFilePath ["data",
     s!"prompts-{type}-{numSim}-{numKW}-{includeFixed}-{queryNum}-{temp.mantissa}.jsonl"]
-  let h ← IO.FS.Handle.mk promptsFile IO.FS.Mode.append Bool.false
+  let h ← IO.FS.Handle.mk promptsFile IO.FS.Mode.append
   let file ← reroutePath <| System.mkFilePath [s!"data/{type}-prompts.txt"]
   let prompts ←  IO.FS.lines file
   let prompts := 
@@ -102,7 +102,7 @@ def elabThmSplit(start? size?: Option Nat := none) : TermElabM ((Array String) �
   let mut fail: Array String := Array.empty
   let mut count := start?.getD 0
   let succFile ← reroutePath <| System.mkFilePath ["data/elab_thms.txt"]
-  let h ← IO.FS.Handle.mk succFile IO.FS.Mode.append Bool.false
+  let h ← IO.FS.Handle.mk succFile IO.FS.Mode.append
   IO.println s!"total: {deps.size}"
   for thm in deps do
     IO.println s!"parsing theorem {thm}"
