@@ -15,9 +15,9 @@ declare_syntax_cat typed_ident
 syntax "(" ident ":" term ")" : typed_ident
 syntax "{" ident ":" term "}" : typed_ident
 
-#check Array.foldrM
-#check TSyntaxArray.rawImpl
-#check TSyntax.mk
+-- #check Array.foldrM
+-- #check TSyntaxArray.rawImpl
+-- #check TSyntax.mk
 
 instance : Coe (Syntax) (TSyntax n) where
   coe := TSyntax.mk
