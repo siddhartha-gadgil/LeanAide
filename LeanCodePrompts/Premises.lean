@@ -312,25 +312,28 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
                 ps)
     | none =>
     match ← appStx? stx with
-    | some (f, arg) =>
+    | some (f, args) =>
         let prev ←  f.premiseDataAuxM context defnName none false (maxDepth?.map (· -1))
-        let (ts, pfs, ids, ps) := prev
-        let prev ←  arg.premiseDataAuxM context defnName none true (maxDepth?.map (· -1))
-        let (ts', pfs', ids', ps') := prev
-        let ts'' := 
-            if isArg then -- this is an instantiation
+        let mut (ts, pfs, ids, ps) := prev
+        for arg in args do
+            let prev ←  arg.premiseDataAuxM context defnName none true (maxDepth?.map (· -1))
+            let (ts', pfs', ids', ps') := prev
+            ts := ts ++ ts'
+            pfs := pfs ++ pfs'
+            ids := ids ++ ids'
+            ps := ps ++ ps'
+        if isArg then -- this is an instantiation
             let head : TermData := 
                 ⟨context, stx.purge, stx.purge.size, 0⟩
-            (ts ++ ts').map (fun s => s.increaseDepth 1) |>.push head
-            else 
-            (ts ++ ts').map (fun s => s.increaseDepth 1)
-        return (ts'',
-                (pfs ++ pfs').map (fun s => s.increaseDepth 1),
-                (ids ++ ids').map (fun (s, m) => (s, m + 1)),
-                ps ++ ps')
+            ts := ts.push head
+        return (ts.map (fun s => s.increaseDepth 1),
+                pfs.map (fun s => s.increaseDepth 1),
+                ids.map (fun (s, m) => (s, m + 1)),
+                ps) 
     | none =>
         match stx with
         | Syntax.node _ k args => 
+            -- IO.println s!"kind {k}; args {args.map (·.reprint.get!)}}"
             let prevs ← args.mapM (
                 premiseDataAuxM context defnName · none false (maxDepth?.map (· -1)))
             let mut ts: Array (TermData) := #[]

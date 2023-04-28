@@ -613,10 +613,10 @@ def lambdaStx?(stx : Syntax) : MetaM <| Option (Syntax × Array Syntax) := do
     return some (body, args)
   | _ => return none
 
-def appStx?(stx : Syntax) : MetaM <| Option (Syntax × Syntax) := do
+def appStx?(stx : Syntax) : MetaM <| Option (Syntax × Array Syntax) := do
   match stx with
-  | `($f:term $arg:term) =>
-    return some (f, arg)
+  | `($f:term $args:term*) =>
+    return some (f, args)
   | _ => return none
 
 def proofWithProp? (stx : Syntax) : MetaM <| Option (Syntax × Syntax) := do
