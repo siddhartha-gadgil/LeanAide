@@ -1,8 +1,5 @@
 import Lean
 import LeanCodePrompts.TacticExtractionOutputCache
-import Mathlib.Tactic.Simps.Basic
-import Mathlib.Tactic.PermuteGoals
-import Mathlib.Tactic.Classical
 
 open Lean Elab Parser Term Meta Tactic
 
@@ -84,7 +81,7 @@ section Misc
 
   section Logging
 
-  def logTacticSnapshotAt (idx : ℕ) (depth : ℕ) (tac : TacticM <| TSyntax `tactic) (ref : Option Syntax) : TacticM Unit := do
+  def logTacticSnapshotAt (idx : Nat) (depth : Nat) (tac : TacticM <| TSyntax `tactic) (ref : Option Syntax) : TacticM Unit := do
     let goalsBefore ← getUnsolvedGoals
     let strGoalsBefore ← MessageData.toString <| ← addMessageContext <| goalsToMessageData goalsBefore
     evalTacticM <| tac
@@ -155,7 +152,7 @@ macro_rules
       evalTacticM `(tactic| snap $idx $n.succ $tac)
   | _ => panic! "Invalid `seq` format."
 
-@[tactic snap] partial def traceTacticSnap : Tactic
+@[tactic snap] def traceTacticSnap : Tactic
 | `(tactic| snap $idx $n $t) =>
   match t with
   | `(tactic| focus $[$tacs]*) => do
@@ -170,9 +167,9 @@ macro_rules
   | `(tactic| ($[$tacs]*)) => do
     withoutModifyingState <| logTacticSnapshotAt idx.getNat n.getNat `(tactic| ($[$tacs]*)) none
     evalTacticM `(tactic| (seq $idx $n.succ $[$tacs]*))
-  | `(tactic| classical $[$tacs]*) => do
-    withoutModifyingState <| logTacticSnapshotAt idx.getNat n.getNat `(tactic| classical $[$tacs]*) none
-    evalTacticM `(tactic| classical seq $idx $n.succ $[$tacs]*)
+  -- | `(tactic| classical $[$tacs]*) => do
+  --   withoutModifyingState <| logTacticSnapshotAt idx.getNat n.getNat `(tactic| classical $[$tacs]*) none
+  --   evalTacticM `(tactic| classical seq $idx $n.succ $[$tacs]*)
   | stx@`(tactic| simp%$tk $(config)? $(discharger)? $[only%$o]? $[[$args,*]]? $(loc)?) => do
     let usedSimps ← withoutModifyingState <| do
       let { ctx, dischargeWrapper } ← withMainContext <| mkSimpContext stx (eraseLocal := false)
@@ -196,10 +193,10 @@ macro_rules
   | `(tactic| erw [$rs,*] $[$loc]?) => do
     for r in (rs : TSyntaxArray `Lean.Parser.Tactic.rwRule) do
       logTacticSnapshotAt idx.getNat n.getNat `(tactic| erw [$r] $[$loc]?) r
-  | `(tactic| rwa%$tk [$rs,*] $[$loc]?) => do
-    for r in (rs : TSyntaxArray `Lean.Parser.Tactic.rwRule) do
-      logTacticSnapshotAt idx.getNat n.getNat `(tactic| rw [$r] $[$loc]?) r
-    logTacticSnapshotAt idx.getNat n.getNat `(tactic| assumption) tk
+  -- | `(tactic| rwa%$tk [$rs,*] $[$loc]?) => do
+  --   for r in (rs : TSyntaxArray `Lean.Parser.Tactic.rwRule) do
+  --     logTacticSnapshotAt idx.getNat n.getNat `(tactic| rw [$r] $[$loc]?) r
+  --   logTacticSnapshotAt idx.getNat n.getNat `(tactic| assumption) tk
   | stx@`(tactic| case $[$tag $hs*]|* =>%$arr $tac:tacticSeq) => do
     logTacticSnapshotAt idx.getNat n.getNat `(tactic| case $[$tag $hs*]|* =>%$arr seq $idx $n.succ $tac:tacticSeq) stx
   | stx@`(tactic| case' $[$tag $hs*]|* =>%$arr $tac:tacticSeq) => do
