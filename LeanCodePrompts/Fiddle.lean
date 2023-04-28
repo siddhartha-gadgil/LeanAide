@@ -6,6 +6,39 @@ open Lean Meta Elab Parser Json.Parser
 
 #eval Lean.Json.parse "{\"x\" : 3, \"y\" : 4, \"z\" : [\"five\", 6]}"
 
+def gedit : IO String := do
+  discard <| IO.Process.spawn { cmd := "gedit"} 
+  return "done"
+
+-- #eval gedit
+#check or_false_iff
+#check MvFunctor
+
+#check  1
+
+#check List.findIdx?
+
+#check List.remove
+
+#check NeZero
+
+instance : NeZero 1 := ⟨by decide⟩
+
+#eval (2 : ZMod 3)
+
+syntax (name:= gedit!) "#gedit" : command
+
+open Command in
+@[command_elab gedit!] def elabGedit : CommandElab := 
+  fun _ => do
+  let _ ← gedit
+  return ()
+
+-- #gedit
+
+example : (4 : ℝ) > 0 := by simp
+example : (4 : ℝ)⁻¹ > 0 := by simp
+
 def stxPurged : MetaM Syntax := do
   let text := "rw [Nat.zero]\n\n -- a comment"
   let stx? := runParserCategory (← getEnv) `tactic text

@@ -87,20 +87,13 @@ def EIO.runToIO' (eio: EIO Exception α) : IO α  := do
       IO.throwServerError msg
 
 def EIO.spawnToIO (eio: EIO Exception α) : IO <| Task <| IO α  := do
-  let io : IO α:= do 
-    match ←  eio.toIO' with
-    | Except.ok x =>
-        pure x
-    | Except.error e =>
-        let msg ← e.toMessageData.toString
-        IO.throwServerError msg
-  let task ←  io.asTask
+  let task ←  eio.asTask (prio := Task.Priority.max)
   return task.map (fun eio => 
     match eio with
     | Except.ok x =>
         pure x
     | Except.error e => do
-        let msg := e.toString
+        let msg ←  e.toMessageData.toString
         IO.throwServerError msg)
     
 def EIO.asyncIO (eio: EIO Exception α) : IO α  := do
@@ -140,3 +133,14 @@ def List.batches (l: List α)(size: Nat) : List (List α) :=
 
 def Array.batches (l: Array α)(size: Nat) : Array (Array α) :=
   (l.toList.batches size).map (fun l => l.toArray) |>.toArray
+
+def List.batches' (l: List α)(numBatches: Nat) : List (List α) :=
+  let size := 
+    if l.length % numBatches = 0 then
+      l.length / numBatches
+    else
+      l.length / numBatches + 1
+  batchesAux l size []
+
+def Array.batches' (l: Array α)(numBatches: Nat) : Array (Array α) :=
+  (l.toList.batches' numBatches).map (fun l => l.toArray) |>.toArray

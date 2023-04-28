@@ -117,14 +117,14 @@ def codexQuery(prompt: String)(n: Nat := 1)
   let dataJs := Json.mkObj [("model", "code-davinci-002"), ("prompt", prompt), ("temperature", Json.num temp), ("n", n), ("max_tokens", 150), ("stop", Json.arr <| stopTokens |>.map Json.str)]
   let data := dataJs.pretty
   trace[Translate.info] "OpenAI query: {data}"
-  let out ←  IO.Process.output {
+  let out ←  IO.Process.run {
         cmd:= "curl", 
         args:= #["https://api.openai.com/v1/completions",
         "-X", "POST",
         "-H", "Authorization: Bearer " ++ key,
         "-H", "Content-Type: application/json",
         "--data", data]}
-  readJson out.stdout
+  readJson out
 
 def gptQuery(messages: Json)(n: Nat := 1)
   (temp : JsonNumber := ⟨2, 1⟩)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json := do

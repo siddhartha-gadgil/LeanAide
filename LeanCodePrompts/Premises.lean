@@ -26,6 +26,10 @@ open LeanAide.Meta
 
 def freshDataHandle (fileNamePieces : List String) : IO IO.FS.Handle := do
     let path := System.mkFilePath <| [".", "rawdata"] ++ fileNamePieces
+    let dir := System.mkFilePath <| [".", "rawdata"] ++ 
+        fileNamePieces.take (fileNamePieces.length - 1)
+    if !(← dir.pathExists) then
+        IO.FS.createDirAll dir
     IO.FS.writeFile path "" 
     IO.FS.Handle.mk path IO.FS.Mode.append Bool.false
 
@@ -33,7 +37,7 @@ def freshDataHandle (fileNamePieces : List String) : IO IO.FS.Handle := do
 def fileNamePieces : HashMap (String × String) (List String) :=
     HashMap.ofList <|
         ["core", "full"].bind fun kind => 
-            ("all" :: groups).map fun group => ((kind, group), ["premises", kind, group++".jsonl"])
+            ("all" :: "extra" :: groups).map fun group => ((kind, group), ["premises", kind, group++".jsonl"])
 
 def fileHandles : IO (HashMap (String × String) IO.FS.Handle) := do
     let mut handles := HashMap.empty
@@ -41,12 +45,11 @@ def fileHandles : IO (HashMap (String × String) IO.FS.Handle) := do
         handles := handles.insert k <| ← freshDataHandle v
     return handles
 
-
 set_option pp.unicode.fun true
 set_option pp.match false
 
 /-- Syntax as json -/
-instance : ToJson Syntax := ⟨fun (d: Syntax) ↦ d.reprint.get!.trim⟩
+instance : ToJson Syntax := ⟨fun (d: Syntax) ↦ shrink d.reprint.get!.trim⟩
 
 /-- Subterms in a premise -/
 structure TermData where
@@ -54,7 +57,7 @@ structure TermData where
     value : Syntax
     size : Nat
     depth: Nat
-deriving Repr, ToJson
+deriving Repr, ToJson, BEq
 
 /-- Increase depth of a subterm (for recursion) -/
 def TermData.increaseDepth (d: Nat) : TermData → TermData :=
@@ -69,7 +72,7 @@ structure PropProofData where
     propSize: Nat 
     proofSize: Nat
     depth: Nat
-deriving Repr, ToJson
+deriving Repr, ToJson, BEq
 
 /-- Increase depth for a lemma (for recursion) -/
 def PropProofData.increaseDepth (d: Nat) : PropProofData → PropProofData :=
@@ -88,40 +91,52 @@ structure PremiseData  where
  proofSize : Nat
  terms :       Array (TermData)  -- instantiations
  propProofs :       Array (PropProofData)  -- sub-proofs
- ids :       Array (Name ×  Nat)  -- proof identifiers used
- deriving Repr, ToJson
+ ids :       Array (String ×  Nat)  -- proof identifiers used
+ deriving Repr, ToJson, BEq
 
 def PremiseData.writeFull (data: PremiseData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
     let l := (toJson data).pretty 10000000
-    let gh := handles.findD ("core", group) 
-                (← freshDataHandle ["premises", "core", group++".jsonl"])
-    let h := handles.findD ("core", "all") 
-                (← freshDataHandle ["premises", "core", "all.jsonl"])
+    -- IO.println s!"Handles:  {handles.toList.map (fun (k, _) => k)}"
+    let key := ("full", group) 
+    -- IO.println s!"Key: {key}, contained in handles: {handles.contains key}"
+    let gh ←  match handles.find? key with
+                | some h => pure h   
+                | none => 
+                 IO.throwServerError 
+                    ("No handle for " ++ group ++ " in " ++ "full")
+    let h ←  match handles.find? ("full", "all") with
+                | some h => pure h
+                | none => 
+                    IO.throwServerError "No handle for 'all' in full"
     if l.length < 9000000 then
                         h.putStrLn  l
                         gh.putStrLn l
 
-partial def shrink (s: String) : String := 
-    let step := s.replace "  " " " |>.replace "( " "("
-                |>.replace " )" ")"
-                |>.replace "{ " "{"
-                |>.replace " }" "}"
-                |>.replace "[ " "["
-                |>.replace " ]" "]"
-                |>.trim
-    if step == s then s else shrink step
+structure CoreTermData where
+    context : Array String
+    value : String
+deriving Repr, ToJson, FromJson, BEq
 
 structure CorePremiseDataDirect where
     context : Array String
+    name? :       Option Name  -- name
+    type : String
+    typeGroup : String
     ids : Array String
-    terms : Array <| Array String ×  String
+    terms : List CoreTermData
     lemmas : Array String 
-deriving Repr, ToJson, FromJson
+deriving Repr, ToJson, FromJson, BEq
 
 def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CorePremiseDataDirect := 
-    ⟨pd.context.map (fun s => shrink s.reprint.get!.trim), pd.ids.map (fun (n, _) => shrink n.toString), pd.terms.map (fun td => 
-       (td.context.map (fun s => shrink s.reprint.get!.trim),
-       td.value.reprint.get!.trim)), pd.propProofs.map (fun p => p.prop.reprint.get!.trim)⟩
+    ⟨pd.context.map (fun s => shrink s.reprint.get!.trim), 
+    pd.name?,
+    shrink pd.type.reprint.get!.trim,
+    shrink pd.typeGroup.reprint.get!.trim,
+    pd.ids.map (fun (n, _) => shrink n), 
+    pd.terms.toList.map (fun td => 
+       ⟨td.context.map (fun s => shrink s.reprint.get!.trim),
+       shrink td.value.reprint.get!.trim⟩) |>.eraseDups, 
+    pd.propProofs.map (fun p => shrink p.prop.reprint.get!.trim)⟩
 
 structure CorePremiseData extends CorePremiseDataDirect where
     namedLemmas : Array String
@@ -130,9 +145,13 @@ deriving Repr, ToJson, FromJson
 
 namespace CorePremiseData
 
-def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap String String) : CorePremiseData := {
+def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap String String) : CorePremiseData :=
+    {
     context := direct.context,
-    ids := direct.ids,
+    name? := direct.name?,
+    type := direct.type,
+    typeGroup := direct.typeGroup,
+    ids := direct.ids.filter (fun id => propMap.contains id),
     terms := direct.terms,
     lemmas := direct.lemmas,
     namedLemmas := direct.ids.filterMap (fun id => propMap.find? id)
@@ -144,10 +163,14 @@ def fromPremiseData (pd: PremiseData)(propMap : HashMap String String) : CorePre
 
 def write (data: CorePremiseData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
     let l := (toJson data).pretty 10000000
-    let gh := handles.findD ("core", group) 
-                (← freshDataHandle ["premises", "core", group])
-    let h := handles.findD ("core", "all") 
-                (← freshDataHandle ["premises", "core", "all"])
+    let gh ← match handles.find? ("core", group) with
+                | some h => pure h
+                | none => 
+                    IO.throwServerError ("No handle for " ++ group ++ " in " ++ "core")                
+    let h ←  match handles.find? ("core", "all") with
+                | some h => pure h
+                | none => 
+                    IO.throwServerError "No handle for 'all' in core"
     if l.length < 9000000 then
                         h.putStrLn  l
                         gh.putStrLn l
@@ -163,6 +186,9 @@ def increaseDepth (d: Nat) : PremiseData → PremiseData :=
 fun data ↦
     ⟨data.context, data.name?, data.defnName, data.type, data.typeGroup, data.proof, data.typeSize, data.proofSize, (data.terms.map (fun td => td.increaseDepth d)), (data.propProofs.map (fun p => p.increaseDepth d)),
         (data.ids.map (fun (n,  m) => (n,  m + d))) ⟩
+
+def coreData (data: PremiseData)(propMap : HashMap String String) : CorePremiseData := 
+    CorePremiseData.fromPremiseData data propMap
 
 def write (data: PremiseData)(group: String)
     (handles: HashMap (String × String) IO.FS.Handle)
@@ -210,7 +236,7 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
     MetaM (
         Array (TermData) ×
         Array (PropProofData) ×
-        Array (Name × Nat) ×
+        Array (String × Nat) ×
         List PremiseData
         )  := do
     if maxDepth? = some 0 then
@@ -218,9 +244,13 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
     else
     let tks ← termKindList
     let tks := tks.map (·.1)
+    match ← wrappedProp? stx with
+    | some prop =>
+        prop.premiseDataAuxM context defnName none  false maxDepth?
+    | none =>
     match ← namedArgument? stx with
     | some (arg, _) => -- named argument of a function, name ignored
-        arg.premiseDataAuxM context defnName none  true (maxDepth?.map (· -1))
+        arg.premiseDataAuxM context defnName none  isArg (maxDepth?.map (· -1))
     | none =>
     -- the special `proof =: prop` syntax 
     match ← proofWithProp? stx with
@@ -252,6 +282,28 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
                 ids.map (fun (s, m) => (s, m + 1)),
                 head :: ps)
     | none =>
+    match ← letStx? stx with -- term is a let
+    | some (n, type, val, body) =>
+        let decl' : Syntax ← `(Lean.Parser.Term.letDecl|$n:ident : $type := $val)
+        let decl'' : Syntax ← `(Lean.Parser.Term.funBinder|($n:ident : $type:term))
+        let decl : Syntax := 
+            if (← proofWithProp? val).isSome then
+                decl''
+            else  decl' 
+        let prev ←   
+            body.raw.premiseDataAuxM (context ++ #[decl]) defnName propHead? false (maxDepth?.map (· -1))
+        let prev' ←  
+            val.raw.premiseDataAuxM (context) defnName propHead? false (maxDepth?.map (· -1))
+        let (ts, pfs, ids, ps) := prev
+        let (ts', pfs', ids', ps') := prev'
+        return (ts.map (fun s => (s.increaseDepth 1)) ++
+                ts'.map (fun s => (s.increaseDepth 1)),
+                pfs.map (fun s => (s.increaseDepth 1)) ++
+                pfs'.map (fun s => (s.increaseDepth 1)),
+                ids.map (fun (s, m) => (s, m + 1)) ++
+                ids'.map (fun (s, m) => (s, m + 1)),
+                ps ++ ps')
+    | none =>
     match ← lambdaStx? stx with -- term is a lambda
     | some (body, args) =>
         let prev ←  /- data for subterm; not an instantiation; 
@@ -264,30 +316,35 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
                 ps)
     | none =>
     match ← appStx? stx with
-    | some (f, arg) =>
+    | some (f, args) =>
         let prev ←  f.premiseDataAuxM context defnName none false (maxDepth?.map (· -1))
-        let (ts, pfs, ids, ps) := prev
-        let prev ←  arg.premiseDataAuxM context defnName none true (maxDepth?.map (· -1))
-        let (ts', pfs', ids', ps') := prev
-        let ts'' := 
-            if isArg then -- this is an instantiation
+        let mut (ts, pfs, ids, ps) := prev
+        for arg in args do
+            let block ← structuralTerm f
+            let prev ←  
+                arg.premiseDataAuxM context defnName none (!block) (maxDepth?.map (· -1))
+            let (ts', pfs', ids', ps') := prev
+            ts := ts ++ ts'
+            pfs := pfs ++ pfs'
+            ids := ids ++ ids'
+            ps := ps ++ ps'
+        if isArg then -- this is an instantiation
             let head : TermData := 
                 ⟨context, stx.purge, stx.purge.size, 0⟩
-            (ts ++ ts').map (fun s => s.increaseDepth 1) |>.push head
-            else 
-            (ts ++ ts').map (fun s => s.increaseDepth 1)
-        return (ts'',
-                (pfs ++ pfs').map (fun s => s.increaseDepth 1),
-                (ids ++ ids').map (fun (s, m) => (s, m + 1)),
-                ps ++ ps')
+            ts := ts.push head
+        return (ts.map (fun s => s.increaseDepth 1),
+                pfs.map (fun s => s.increaseDepth 1),
+                ids.map (fun (s, m) => (s, m + 1)),
+                ps) 
     | none =>
         match stx with
         | Syntax.node _ k args => 
+            -- IO.println s!"kind {k}; args {args.map (·.reprint.get!)}}"
             let prevs ← args.mapM (
                 premiseDataAuxM context defnName · none false (maxDepth?.map (· -1)))
             let mut ts: Array (TermData) := #[]
             let mut pfs: Array (PropProofData) := #[]
-            let mut ids: Array (Name × Nat) := #[]
+            let mut ids: Array (String × Nat) := #[]
             let mut ps: List PremiseData := []
             for prev in prevs do
                 let (ts', pfs', ids', ps') := prev
@@ -301,10 +358,10 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
                 ts := ts.push (head)
             return (ts, pfs, ids, ps)
         | Syntax.ident _ _ name .. => 
-            let contextVars := context.filterMap getVar
+            let contextVars := context.filterMap getVar?
             if  !(contextVars.contains name) &&
                 !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name)) then 
-                pure (#[], #[], #[(name, 0)], [])
+                pure (#[], #[], #[(stx.reprint.get!.trim, 0)], [])
             else pure (#[], #[], #[], [])
         | _ => pure (#[], #[], #[], [])
 
@@ -328,7 +385,10 @@ structure DefData where
     premises : List PremiseData -- empty if depth exceeds bound
     deriving Inhabited, ToJson
 
-def DefData.getM? (name: Name)(term type: Expr) : MetaM (Option  DefData) := do
+def DefData.getM? (name: Name)(term type: Expr) : MetaM (Option  DefData) :=  withOptions (fun o => 
+                    let o' :=  pp.match.set o false
+                    pp.unicode.fun.set o' true)
+    do
     if term.approxDepth > (← getDelabBound) || type.approxDepth > (← getDelabBound) then return none
     else
     let (stx, _) ←  delabCore term {} (delabVerbose)
@@ -338,7 +398,96 @@ def DefData.getM? (name: Name)(term type: Expr) : MetaM (Option  DefData) := do
         Lean.Syntax.premiseDataM #[] stx tstx isProp (some name) name
     let typeDepth := type.approxDepth
     let valueDepth := term.approxDepth
-    return some {name := name, type := tstx.raw.purge, value := stx.raw.purge, isProp := isProp, typeDepth := typeDepth.toNat, valueDepth := valueDepth.toNat, premises := premises}
+    return some {name := name, type := tstx.raw.purge, value := stx.raw.purge, isProp := isProp, typeDepth := typeDepth.toNat, valueDepth := valueDepth.toNat, premises := premises.eraseDups}
+
+def DefData.ofNameM? (name: Name) : MetaM (Option DefData) := do
+    let info ←  getConstInfo name
+    let type := info.type
+    let term? := info.value? 
+    match term? with
+    | some term => DefData.getM? name term type
+    | none => return none
+
+def verboseView? (name: Name) : MetaM (Option String) := 
+    withOptions (fun o => 
+                    let o' :=  pp.match.set o false
+                    pp.unicode.fun.set o' true)
+    do
+    let info ←  getConstInfo name
+    let term? := info.value? 
+    match term? with
+    | some term => 
+        let (stx, _) ←  delabCore term {} (delabVerbose)
+        return some <| shrink stx.raw.reprint.get!
+    | none => return none
+
+def verboseViewCore? (name: Name) : CoreM (Option String) :=
+    (verboseView? name).run' {}
+
+def DefData.ofNameCore? (name: Name) : CoreM (Option DefData) :=
+    (DefData.ofNameM? name).run' {}
+
+def PremiseData.ofNames (names: List Name) : MetaM (List PremiseData) := do
+    let defs ← names.filterMapM DefData.ofNameM?
+    return defs.bind (fun d => d.premises)
+
+def PremiseData.writeBatch (names: List Name)(group: String)
+    (handles: HashMap (String × String) IO.FS.Handle)
+    (propMap : HashMap String String)(verbose: Bool := false) : MetaM Nat := do
+    let mut count := 0
+    let mut premiseCount := 0
+    for name in names do
+        let dfn ←
+            try
+                DefData.ofNameM? name
+            catch ex =>
+                IO.println s!"Error {← ex.toMessageData.toString} writing {name}"
+                pure none
+        match dfn with
+        | none => pure ()
+        | some defn =>
+            if verbose then
+                IO.println s!"Writing {defn.name}"
+            for premise in defn.premises do
+                premise.write group handles propMap
+                premiseCount := premiseCount + 1
+            count := count + 1
+            if count % 100 = 0 then
+                IO.println s!"Wrote {count} definitions of {names.length}"
+    return premiseCount
+
+def PremiseData.writeBatchCore (names: List Name)(group: String)
+    (handles: HashMap (String × String) IO.FS.Handle)
+    (propMap : HashMap String String)(verbose: Bool := false) : CoreM Nat :=
+    PremiseData.writeBatch names group handles propMap verbose |>.run'
+
+def CorePremiseData.ofNameM? (name: Name) : 
+    MetaM (Option <| List CorePremiseData) := do
+    let dfn? ← DefData.ofNameM? name
+    let premises := dfn?.map (·.premises)
+    let propMap ← getPropMapStr 
+    match premises with
+    | none => return none
+    | some premises => 
+        return some <| premises.map (fun p => p.coreData propMap)
+
+-- #eval CorePremiseData.ofNameM? ``Nat.le_of_succ_le_succ
+-- #print Nat.le_of_succ_le_succ
+
+def CorePremiseData.writeTest (names: List Name) : MetaM Unit := do
+    let cores ← names.filterMapM CorePremiseData.ofNameM?
+    let path := System.mkFilePath ["data", "tests", "premises.json"]
+    IO.FS.writeFile path <| (toJson cores).pretty 
+
+def propList : MetaM <| Array (String × String) := do
+    let propMap ← getPropMapStr
+    return propMap.toArray
+
+-- #eval propList
+
+
+
+-- Code below this probably dead
 
 structure IdentData where
     context : Array Syntax
@@ -379,7 +528,7 @@ def batchDefns (start batch : Nat) : MetaM (Array Json) := do
     let cs ← constantNameValueTypes 
     let mut out : Array Json := #[]
     let mut count := 0
-    for (name, term, type) in cs do
+    for (name, term, type, _) in cs do
         if count >= start && count < start + batch then
             let defData? ← DefData.getM? name term type
             match defData? with
@@ -398,7 +547,7 @@ def writeBatchDefnsM (start batch : Nat) : MetaM Nat  := do
     let h ← IO.FS.Handle.mk defnsFile IO.FS.Mode.append Bool.false
     let idsFile := System.mkFilePath ["rawdata", s!"idents.jsonl"]
     let h' ← IO.FS.Handle.mk idsFile IO.FS.Mode.append Bool.false
-    for (name, term, type) in cs do
+    for (name, term, type, _) in cs do
         if count >= start && count < start + batch then
             IO.println <| s!"{count} {name}"
             let defData? ← DefData.getM? name term type
@@ -448,7 +597,7 @@ def writePremisesM  : MetaM Nat  := do
     let mut testNum := 0
     let mut validNum := 0
     let mut trainNum := 0
-    for (name, term, type) in cs do
+    for (name, term, type, _) in cs do
         IO.println <| s!"{count} {name} (of {cs.size})"
         let defData? ← DefData.getM? name term type
         match defData? with

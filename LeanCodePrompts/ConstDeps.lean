@@ -240,6 +240,10 @@ def propMapFromDefns (dfns : Array DefnTypes) : MetaM <| HashMap Name String := 
        dfns.filter (fun d => d.isProp) 
         |>.toList.map fun d => (d.name, d.type)
 
+def propMapFromDefnsStr (dfns : Array DefnTypes) : MetaM <| HashMap String String := do
+    return HashMap.ofList <|
+       dfns.filter (fun d => d.isProp) 
+        |>.toList.map fun d => (d.name.toString.trim, d.type)
 
 def groups := ["train", "test", "valid"]
 
@@ -288,5 +292,59 @@ def getWriteCore : CoreM ((Array DefnTypes) × (HashMap Name String)) :=
     (getWriteM).run'
 
 end DefnTypes
+
+def getPropMap : MetaM <| HashMap Name String := do
+    let dfns ← DefnTypes.getM
+    propMapFromDefns dfns
+
+partial def shrink (s: String) : String := 
+    let step := s.replace "  " " " |>.replace "( " "("
+                |>.replace " )" ")"
+                |>.replace "{ " "{"
+                |>.replace " }" "}"
+                |>.replace "[ " "["
+                |>.replace " ]" "]"
+                |>.trim
+    if step == s then s else shrink step
+
+def getPropMapStr : MetaM <| HashMap String String := do
+    let mut count := 0
+    let mut skipped := 0
+    let cs ← constantNameValueTypes 
+    let mut m : HashMap String String := HashMap.empty
+    let mut dfs : Array DefnTypes := #[]
+    for (name, value, type, doc?) in cs do
+      if !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && type.approxDepth < 60 then
+        let fmt ← ppExpr type
+        let isProp ← isProof value
+        let dfn : DefnTypes := ⟨name, fmt.pretty, isProp, doc?⟩
+        dfs := dfs.push dfn
+        if count % 1000 = 0 then
+          IO.println s!"count: {count}"
+          IO.println s!"skipped: {skipped}"
+        if isProp then
+          m := m.insert name.toString.trim fmt.pretty
+        count := count + 1
+      else
+        if type.approxDepth >= 60 then
+          skipped := skipped + 1
+    let path := System.mkFilePath ["rawdata", "defn-types", "all.jsonl"]
+    IO.FS.writeFile path <| jsonLines <| dfs
+    return m
+
+def propMapCore : CoreM (HashMap String String) := 
+    (getPropMapStr).run'
+
+def nameViewM? (name: Name) : MetaM <| Option String := do
+  let exp? ←  nameExpr? name
+  let fmt ← match exp? with
+    | some exp => do
+      let fmt ← ppExpr exp
+      pure <| some <| shrink fmt.pretty
+    | none => pure name.toString
+  return fmt
+
+def nameViewCore? (name: Name) : CoreM <| Option String := 
+    (nameViewM? name).run'
 
 end LeanAide.Meta

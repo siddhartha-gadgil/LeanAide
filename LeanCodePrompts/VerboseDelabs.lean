@@ -7,7 +7,14 @@ open Lean Meta Elab Term Parser PrettyPrinter
 /-!
 # Verbose delaborators
 
-We define delaborators that preserve more information than the default ones, and corresponding syntax to allow this.
+We define delaborators that preserve more information than the default ones, and corresponding syntax to allow this. Specifically:
+
+* Introduce syntax `proof =: prop` for a proof with its type recorded
+* Write lambdas and ∀'s with explicit types.
+
+If an expression has depth above a certain threshold, we do not use the verbose delaborators.
+
+Many delaborators are unchanged except for making recursive calls to `delabVerbose` instead of `delab`.
 -/
 namespace LeanAide.Meta
 
@@ -34,8 +41,14 @@ def checkDepth : DelabM Unit := do
   if e.approxDepth > depth then
     failure
 
+#check Meta.isProp
+
 /-- Modified top-level delaborator to expand if proof to `proof =: prop`-/
-partial def delabVerbose : Delab := do
+partial def delabVerbose : Delab := 
+  withOptions (fun o => 
+                    let o' :=  pp.match.set o false
+                    pp.unicode.fun.set o' true)
+  do  
   checkMaxHeartbeats "delab"
   let e ← getExpr
   let isProof := !e.isAtomic && (← (try Meta.isProof e catch _ => pure false))
@@ -48,7 +61,9 @@ partial def delabVerbose : Delab := do
     let typeStx ← withType delab
     `(($stx =: $typeStx)) >>= annotateCurPos
   else
-    return stx
+    if ← Meta.isProp e then
+    `(($stx : Prop)) >>= annotateCurPos
+    else  return stx
 
 /-- Helper wrapping a proof `proof` as `proof =: prop` -/
 def wrapInType (e: Expr)(stx: Term) : Delab := do
@@ -64,8 +79,14 @@ open TSyntax.Compat
 
 def fvarPrefix : Name := "freeVariable"
 
+def delabAppFn : Delab := do
+  if (← getExpr).consumeMData.isConst then
+    withMDatasOptions delabConst
+  else
+    delabVerbose
+
 @[delab app]
-def delabAppExplicitVerbose : Delab := do
+def delabAppExplicit : Delab := do
   checkDepth
   let paramKinds ← getParamKinds
   let tagAppFn ← getPPOption getPPTagAppFns
@@ -90,6 +111,30 @@ def delabAppExplicitVerbose : Delab := do
       pure (fnStx, paramKinds.tailD [], argStxs.push argStx))
   let stx := Syntax.mkApp fnStx argStxs
   wrapInType (← getExpr) stx
+
+def unexpandStructureInstance (stx : Syntax) : Delab := whenPPOption getPPStructureInstances do
+  let env ← getEnv
+  let e ← getExpr
+  let some s ← pure $ e.isConstructorApp? env | failure
+  guard $ isStructure env s.induct;
+  /- If implicit arguments should be shown, and the structure has parameters, we should not
+     pretty print using { ... }, because we will not be able to see the parameters. -/
+  let fieldNames := getStructureFields env s.induct
+  let mut fields := #[]
+  guard $ fieldNames.size == stx[1].getNumArgs
+  let args := e.getAppArgs
+  let fieldVals := args.extract s.numParams args.size
+  for idx in [:fieldNames.size] do
+    let fieldName := fieldNames[idx]!
+    let fieldId := mkIdent fieldName
+    let fieldPos ← nextExtraPos
+    let fieldId := annotatePos fieldPos fieldId
+    addFieldInfo fieldPos (s.induct ++ fieldName) fieldName fieldId fieldVals[idx]!
+    let field ← `(structInstField|$fieldId:ident := $(stx[1][idx]))
+    fields := fields.push field
+  let tyStx ← withType do
+    if (← getPPOption getPPStructureInstanceType) then delabVerbose >>= pure ∘ some else pure none
+  `({ $fields,* $[: $tyStx]? })
 
 
 @[delab app]
@@ -282,11 +327,11 @@ def delabLetFun : Delab := do
     let Expr.lam n _ b _ ← getExpr | unreachable!
     let n ← getUnusedName n b
     let stxB ← withBindingBody n delabVerbose
-    if ← getPPOption getPPLetVarTypes <||> getPPOption getPPAnalysisLetVarType then
-      let stxT ← withBindingDomain delab
-      `(let_fun $(mkIdent n) : $stxT := $stxV; $stxB)
-    else
-      `(let_fun $(mkIdent n) := $stxV; $stxB)
+    -- if ← getPPOption getPPLetVarTypes <||> getPPOption getPPAnalysisLetVarType then
+    let stxT ← withBindingDomain delab
+    `(let_fun $(mkIdent n) : $stxT := $stxV; $stxB)
+    -- else
+    --   `(let_fun $(mkIdent n) := $stxV; $stxB)
 
 @[delab mdata]
 def delabMData : Delab := do
@@ -409,17 +454,12 @@ private partial def delabForallBinders (delabGroup : Array Syntax → Bool → S
     delabGroup curNames curDep (← delabVerbose)
   else
     let curDep := dep
-    -- if ← shouldGroupWithNext then
-    --   -- group with nested binder => recurse immediately
-    --   withBindingBodyUnusedName fun stxN => delabForallBinders delabGroup (curNames.push stxN) curDep
-    -- else
-      -- don't group => delab body and prepend current binder group
       let (stx, stxN) ← withBindingBodyUnusedName fun stxN => return (← delab, stxN)
       delabGroup (curNames.push stxN) curDep stx
 
 @[delab forallE]
 def delabForall : Delab := do
-  delabForallBinders fun curNames dependent stxBody => do
+  delabForallBinders fun curNames _ stxBody => do
     let e ← getExpr
     let prop ← try isProp e catch _ => pure false
     let stxT ← withBindingDomain delab
@@ -429,14 +469,7 @@ def delabForall : Delab := do
     -- here `curNames.size == 1`
     | BinderInfo.instImplicit   => `(bracketedBinderF|[$curNames.back : $stxT])
     | _                         =>
-      -- NOTE: non-dependent arrows are available only for the default binder info
-      -- if dependent then
-      --   if prop && !(← getPPOption getPPPiBinderTypes) then
-      --     return ← `(∀ $curNames:ident*, $stxBody)
-      --   else
           `(bracketedBinderF|($curNames* : $stxT))
-      -- else
-      --   return ← curNames.foldrM (fun _ stxBody => `($stxT → $stxBody)) stxBody
     if prop then
       match stxBody with
       | `(∀ $groups*, $stxBody) => `(∀ $group $groups*, $stxBody)
@@ -454,10 +487,10 @@ def delabLetE : Delab := do
   let stxB ← withLetDecl n t v fun fvar =>
     let b := b.instantiate1 fvar
     descend b 2 delabVerbose
-  if ← getPPOption getPPLetVarTypes <||> getPPOption getPPAnalysisLetVarType then
-    let stxT ← descend t 0 delab
-    `(let $(mkIdent n) : $stxT := $stxV; $stxB)
-  else `(let $(mkIdent n) := $stxV; $stxB)
+  -- if ← getPPOption getPPLetVarTypes <||> getPPOption getPPAnalysisLetVarType then
+  let stxT ← descend t 0 delab
+  `(let $(mkIdent n) : $stxT := $stxV; $stxB)
+  -- else `(let $(mkIdent n) := $stxV; $stxB)
 
 
 
@@ -525,7 +558,6 @@ partial def delabDoElems : DelabM (List Syntax) := do
   let e ← getExpr
   checkExprDepth e
   if e.isAppOfArity ``Bind.bind 6 then
-    -- Bind.bind.{u, v} : {m : Type u → Type v} → [self : Bind m] → {α β : Type u} → m α → (α → m β) → m β
     let α := e.getAppArgs[2]!
     let ma ← withAppFn $ withAppArg delabVerbose
     withAppArg do
@@ -554,13 +586,10 @@ partial def delabDoElems : DelabM (List Syntax) := do
   where
     prependAndRec x : DelabM _ := List.cons <$> x <*> delabDoElems
 
--- @[delab app.Bind.bind]
--- def delabDo : Delab := whenPPOption getPPNotation do
---   guard <| (← getExpr).isAppOfArity ``Bind.bind 6
---   let elems ← delabDoElems
---   let items ← elems.toArray.mapM (`(doSeqItem|$(·):doElem))
---   `(do $items:doSeqItem*)
 
+/-!
+A deprecated approach involving appending `freeVar` and `domVar` to identifiers.
+-/
 structure NameGroups where
   constNames : Array <| Name × Nat := #[]
   freeVarNames : Array Name := #[]
@@ -580,6 +609,10 @@ def NameGroups.append (base: NameGroups) (n: Name)(d: Nat): NameGroups :=
 def groupedNames (nd : Array <| Name × Nat) : NameGroups :=
   nd.foldl (fun gp (n, d) => gp.append n d) {}
 
+/-!
+Matching and auxiliary functions for verbose delaborators.
+-/
+
 def lambdaStx?(stx : Syntax) : MetaM <| Option (Syntax × Array Syntax) := do
   match stx with
   | `(fun $args:funBinder* ↦ $body) =>
@@ -588,13 +621,11 @@ def lambdaStx?(stx : Syntax) : MetaM <| Option (Syntax × Array Syntax) := do
     return some (body, args)
   | _ => return none
 
-def appStx?(stx : Syntax) : MetaM <| Option (Syntax × Syntax) := do
+def appStx?(stx : Syntax) : MetaM <| Option (Syntax × Array Syntax) := do
   match stx with
-  | `($f:term $arg:term) =>
-    return some (f, arg)
+  | `($f:term $args:term*) =>
+    return some (f, args)
   | _ => return none
-
-#check Parser.mkIdent
 
 def proofWithProp? (stx : Syntax) : MetaM <| Option (Syntax × Syntax) := do
   match stx with
@@ -602,7 +633,7 @@ def proofWithProp? (stx : Syntax) : MetaM <| Option (Syntax × Syntax) := do
     return some (stx, typeStx)
   | _ => return none
 
-def getVar (stx: Syntax) : Option Name := 
+def getVar? (stx: Syntax) : Option Name := 
 match stx with
 | `(funBinder|($n:ident)) => some n.getId
 | `(funBinder|($n:ident : $_)) => some n.getId
@@ -616,5 +647,32 @@ def namedArgument? (stx : Syntax) : MetaM <| Option (Syntax × Syntax) := do
     return some (stx, n)
   | _ => return none
 
+def letStx? (stx: Syntax) : MetaM <| Option (Ident × Term × Term × Term) := do
+  match stx with
+  | `(let $n:ident : $type := $val; $body) =>  
+    return some (n, type, val, body)
+  | `(let_fun $n:ident : $type := $val; $body) =>  
+    return some (n, type, val, body)
+  | _ => return none
 
+def getName? (stx: Syntax) : Option Name :=
+  match stx with
+  | `($n:ident) => some n.getId
+  | _ => none
+
+def structuralTerm (stx: Syntax) : MetaM Bool := do
+  match getName? stx with
+  | none => pure false
+  | some n => 
+    let check := (``Eq).isPrefixOf n || (``Iff).isPrefixOf n
+    IO.println s!"function with name: {n}; blocked: {check}"
+    return check
+
+def wrappedProp? (stx : Syntax) : MetaM <| Option Syntax := do
+  match stx with
+  | `(($stx:term : Prop)) =>    
+    return some stx
+  | _ => return none
+
+#check And.intro
 end LeanAide.Meta

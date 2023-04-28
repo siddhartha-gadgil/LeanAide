@@ -24,7 +24,7 @@ def textEdits (text: FileMap) : IO <| Array TextEdit := do
               let stx := s.script
               let stx' := stx.copyHeadTailInfoFrom .missing 
               stx'.reprint.get!.trimRight
-          else current   ++ s!"/-change detected: {s.preScript.get!} to {current}-/"
+          else current  -- ++ s!"/-change detected: {s.preScript.get!} to {current}-/"
       }
       edits := edits.push edit
   -- tacticPosCache.set ∅
