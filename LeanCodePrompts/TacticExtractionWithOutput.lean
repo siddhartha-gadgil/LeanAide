@@ -262,20 +262,18 @@ syntax (name := byTactic') "by' " tacticSeq : term
 
 end ByTactic
 
-section Examples
+-- section Examples
 
-set_option linter.unreachableTactic false
+-- example : a + 0 = a := by
+--   dsimp
 
-example : a + 0 = a := by
-  dsimp
+-- example : ∀ n : Nat, n = n ∧ n = n := by
+--   intro n
+--   constructor
+--   · rfl
+--   · rfl
 
-example : ∀ n : Nat, n = n ∧ n = n := by
-  intro n
-  constructor
-  · rfl
-  · rfl
+-- def xyz : a = a + 0 := by
+--   rw [← Nat.zero_add a, ← Nat.add_zero a, Nat.add_zero, Nat.zero_add, Nat.add_zero]
 
-def xyz : a = a + 0 := by
-  rw [← Nat.zero_add a, ← Nat.add_zero a, Nat.add_zero, Nat.zero_add, Nat.add_zero]
-
-end Examples
+-- end Examples
