@@ -1,4 +1,0 @@
-[{"tactic": "dsimp\n\n only  [  Nat.add_zero  ] ",
-  "goals_before": "a : ℕ\n⊢ a + 0 = a",
-  "goals_after": "",
-  "depth": 0}]
