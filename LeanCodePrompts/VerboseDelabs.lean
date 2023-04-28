@@ -319,11 +319,11 @@ def delabLetFun : Delab := do
     let Expr.lam n _ b _ ← getExpr | unreachable!
     let n ← getUnusedName n b
     let stxB ← withBindingBody n delabVerbose
-    if ← getPPOption getPPLetVarTypes <||> getPPOption getPPAnalysisLetVarType then
-      let stxT ← withBindingDomain delab
-      `(let_fun $(mkIdent n) : $stxT := $stxV; $stxB)
-    else
-      `(let_fun $(mkIdent n) := $stxV; $stxB)
+    -- if ← getPPOption getPPLetVarTypes <||> getPPOption getPPAnalysisLetVarType then
+    let stxT ← withBindingDomain delab
+    `(let_fun $(mkIdent n) : $stxT := $stxV; $stxB)
+    -- else
+    --   `(let_fun $(mkIdent n) := $stxV; $stxB)
 
 @[delab mdata]
 def delabMData : Delab := do
@@ -479,10 +479,10 @@ def delabLetE : Delab := do
   let stxB ← withLetDecl n t v fun fvar =>
     let b := b.instantiate1 fvar
     descend b 2 delabVerbose
-  if ← getPPOption getPPLetVarTypes <||> getPPOption getPPAnalysisLetVarType then
-    let stxT ← descend t 0 delab
-    `(let $(mkIdent n) : $stxT := $stxV; $stxB)
-  else `(let $(mkIdent n) := $stxV; $stxB)
+  -- if ← getPPOption getPPLetVarTypes <||> getPPOption getPPAnalysisLetVarType then
+  let stxT ← descend t 0 delab
+  `(let $(mkIdent n) : $stxT := $stxV; $stxB)
+  -- else `(let $(mkIdent n) := $stxV; $stxB)
 
 
 
@@ -639,5 +639,14 @@ def namedArgument? (stx : Syntax) : MetaM <| Option (Syntax × Syntax) := do
     return some (stx, n)
   | _ => return none
 
+def letStx? (stx: Syntax) : MetaM <| Option (Syntax × Syntax × Syntax) := do
+  match stx with
+  | `(let $n:ident : $type := $val; $body) =>  
+    let decl : Syntax ← `(letDecl|$n:ident : $type := $val)   
+    return some (decl, val, body)
+  | `(let_fun $n:ident : $type := $val; $body) =>  
+    let decl : Syntax ← `(letDecl|$n:ident : $type := $val)  
+    return some (decl, val, body)
+  | _ => return none
 
 end LeanAide.Meta
