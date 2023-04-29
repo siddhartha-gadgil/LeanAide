@@ -31,7 +31,7 @@ def freshDataHandle (fileNamePieces : List String) : IO IO.FS.Handle := do
     if !(← dir.pathExists) then
         IO.FS.createDirAll dir
     IO.FS.writeFile path "" 
-    IO.FS.Handle.mk path IO.FS.Mode.append Bool.false
+    IO.FS.Handle.mk path IO.FS.Mode.append
 
 
 def fileNamePieces : HashMap (String × String) (List String) :=
@@ -544,9 +544,9 @@ def writeBatchDefnsM (start batch : Nat) : MetaM Nat  := do
     IO.println <| s!"{start}; {batch} from {cs.size}"
     let mut count := 0
     let defnsFile := System.mkFilePath ["rawdata", s!"defns.jsonl"]
-    let h ← IO.FS.Handle.mk defnsFile IO.FS.Mode.append Bool.false
+    let h ← IO.FS.Handle.mk defnsFile IO.FS.Mode.append
     let idsFile := System.mkFilePath ["rawdata", s!"idents.jsonl"]
-    let h' ← IO.FS.Handle.mk idsFile IO.FS.Mode.append Bool.false
+    let h' ← IO.FS.Handle.mk idsFile IO.FS.Mode.append 
     for (name, term, type, _) in cs do
         if count >= start && count < start + batch then
             IO.println <| s!"{count} {name}"
@@ -579,21 +579,21 @@ def writePremisesM  : MetaM Nat  := do
         names.map toString |>.foldl (fun a b ↦ a  ++ b ++ "\n") ""
     let defIdsFile := System.mkFilePath ["rawdata", s!"def_ids.jsonl"]
     IO.FS.writeFile defIdsFile ""
-    let hId ← IO.FS.Handle.mk defIdsFile IO.FS.Mode.append Bool.false
+    let hId ← IO.FS.Handle.mk defIdsFile IO.FS.Mode.append
     IO.println <| s!"Processing {cs.size} definitions"
     let mut count := 0
     let mut premisesDone : Array <| (Array Syntax) × Syntax := #[]
     let premisesFile := System.mkFilePath ["rawdata", s!"premises.jsonl"]
     IO.FS.writeFile premisesFile ""
-    let h ← IO.FS.Handle.mk premisesFile IO.FS.Mode.append Bool.false
+    let h ← IO.FS.Handle.mk premisesFile IO.FS.Mode.append
     let trainPremisesFile := System.mkFilePath ["rawdata", s!"train_premises.jsonl"]
     IO.FS.writeFile trainPremisesFile ""
-    let hTrain ← IO.FS.Handle.mk trainPremisesFile IO.FS.Mode.append Bool.false
+    let hTrain ← IO.FS.Handle.mk trainPremisesFile IO.FS.Mode.append
     let testPremisesFile := System.mkFilePath ["rawdata", s!"test_premises.jsonl"]
-    let hTest ← IO.FS.Handle.mk testPremisesFile IO.FS.Mode.append Bool.false
+    let hTest ← IO.FS.Handle.mk testPremisesFile IO.FS.Mode.append
     let validPremisesFile := System.mkFilePath ["rawdata", s!"valid_premises.jsonl"]
     IO.FS.writeFile validPremisesFile ""
-    let hValid ← IO.FS.Handle.mk validPremisesFile IO.FS.Mode.append Bool.false
+    let hValid ← IO.FS.Handle.mk validPremisesFile IO.FS.Mode.append
     let mut testNum := 0
     let mut validNum := 0
     let mut trainNum := 0

@@ -219,7 +219,7 @@ partial def Lean.Syntax.identsM (stx: Syntax)(context: Array Syntax)(maxDepth? :
             let prev ← args.mapM (identsM · context (maxDepth?.map (· -1))) 
             return prev.toList.join.map (fun (s, m) => (s, m + 1))
         | Syntax.ident _ _ name .. => 
-            let contextVars := context.filterMap getVar
+            let contextVars := context.filterMap getVar?
             -- IO.println s!"Context: {contextVars} from {context}"
             if  !(contextVars.contains name) &&
                 !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name)) then 
@@ -308,6 +308,7 @@ def PremiseData.get(ctx : Array Syntax)(name: Name)(prop pf : Syntax) : MetaM Pr
     let subProofs: List (PropProofData) ←  pf.proofsM ctx
     let subTerms : List (TermData)  ← Syntax.termsM ctx pf
     let ids : List (Name  × Nat) ← pf.identsM ctx 
+    let ids := ids.map <| fun (n, d) => (n.toString, d)
     return ⟨ctx, some name, name, prop.purge, prop.purge, pf.purge, prop.purge.size, pf.purge.size, subTerms.toArray, subProofs.toArray, ids.toArray⟩
 
 def viewData (name: Name) : MetaM <| String := do
@@ -524,7 +525,7 @@ def batchPremiseExtractM (start stop: Nat) : MetaM Nat  := do
     let names ← constantNames
     let premisesFile := System.mkFilePath ["rawdata",
     s!"outer-premises.jsonl"]
-    let h ← IO.FS.Handle.mk premisesFile IO.FS.Mode.append Bool.false
+    let h ← IO.FS.Handle.mk premisesFile IO.FS.Mode.append 
     let names := names.toList.drop start |>.take (stop - start)
     let mut cursor := start
     IO.println s!"start: {start}, stop: {stop}"

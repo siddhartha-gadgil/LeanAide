@@ -7,7 +7,7 @@ def countAndSave (p: String) : MetaM Nat := do
   let mut count := 0
   let files ← leanFiles [p]
   let censusFile := System.mkFilePath ["data", "tactic-census.txt"]
-  let h ← IO.FS.Handle.mk censusFile IO.FS.Mode.append Bool.false
+  let h ← IO.FS.Handle.mk censusFile IO.FS.Mode.append
   for f in files do
     let blob : String ←  
       try 
