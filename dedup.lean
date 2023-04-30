@@ -18,6 +18,7 @@ def allPairsString (ss: List String) : String :=
   jsonLines <| (allPairs ss).toArray
 
 def main (_: List String) : IO Unit := do
+  IO.println "Deduplicating core"
   let allLines := 
     (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "core", "all.jsonl"])).filter (fun l => l != "") |>.toList.eraseDups
   let trainLines := 
@@ -31,6 +32,7 @@ def main (_: List String) : IO Unit := do
   IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "core", "test.jsonl"]) (testLines.foldl (fun s l => s ++ l ++ "\n") "")
   IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "core", "valid.jsonl"]) (validLines.foldl (fun s l => s ++ l ++ "\n") "")
 
+  IO.println "Deduplicating identifiers"
   let allLines := 
     (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "identifiers", "all.jsonl"])).filter (fun l => l != "") |>.toList.eraseDups
   let trainLines := 
@@ -43,6 +45,8 @@ def main (_: List String) : IO Unit := do
   IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "identifiers", "train.jsonl"]) (trainLines.foldl (fun s l => s ++ l ++ "\n") "")
   IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "identifiers", "test.jsonl"]) (testLines.foldl (fun s l => s ++ l ++ "\n") "")
   IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "identifiers", "valid.jsonl"]) (validLines.foldl (fun s l => s ++ l ++ "\n") "")
+
+  IO.println "Deduplicating ident pairs"
   IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "ident_pairs", "all.jsonl"]) (allPairsString allLines)
   IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "ident_pairs", "train.jsonl"]) (allPairsString trainLines)
   IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "ident_pairs", "test.jsonl"]) (allPairsString testLines)
