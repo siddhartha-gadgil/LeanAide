@@ -36,7 +36,7 @@ def freshDataHandle (fileNamePieces : List String) : IO IO.FS.Handle := do
 
 def fileNamePieces : HashMap (String × String) (List String) :=
     HashMap.ofList <|
-        ["core", "full"].bind fun kind => 
+        ["core", "full", "identifiers", "ident_pairs"].bind fun kind => 
             ("all" :: "extra" :: groups).map fun group => ((kind, group), ["premises", kind, group++".jsonl"])
 
 def fileHandles : IO (HashMap (String × String) IO.FS.Handle) := do
@@ -150,7 +150,6 @@ def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CorePremiseDataDir
 structure CorePremiseData extends CorePremiseDataDirect where
     namedLemmas : Array String
 deriving Repr, ToJson, FromJson
-
 
 namespace CorePremiseData
 
@@ -440,6 +439,75 @@ def PremiseData.ofNames (names: List Name) : MetaM (List PremiseData) := do
     let defs ← names.filterMapM DefData.ofNameM?
     return defs.bind (fun d => d.premises)
 
+structure IdentData where
+    context : Array String
+    type : String
+    ids : Array String
+    deriving Inhabited, ToJson
+
+structure IdentPair where
+    context : Array String
+    type : String
+    id : String
+deriving Inhabited, ToJson
+
+namespace IdentData
+
+def write (data: IdentData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
+    let l := (toJson data).pretty 10000000
+    let gh ← match handles.find? ("identifiers", group) with
+                | some h => pure h
+                | none => 
+                    IO.throwServerError ("No handle for " ++ group ++ " in " ++ "identifiers")                
+    let h ←  match handles.find? ("identifiers", "all") with
+                | some h => pure h
+                | none => 
+                    IO.throwServerError "No handle for 'all' in indentifiers"
+    if l.length < 9000000 then
+                        h.putStrLn  l
+                        gh.putStrLn l
+
+
+def unfold (data: IdentData) : Array IdentPair :=
+    data.ids.map (fun id => ⟨data.context, data.type, id⟩)
+
+def ofCorePremiseData (data: CorePremiseData) : IdentData :=
+    ⟨data.context, data.type, data.ids⟩
+
+end IdentData
+
+
+
+namespace IdentPair
+
+def write (data: IdentPair)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
+    let l := (toJson data).pretty 10000000
+    let gh ← match handles.find? ("ident_pairs", group) with
+                | some h => pure h
+                | none => 
+                    IO.throwServerError ("No handle for " ++ group ++ " in " ++ "ident_pairs")                
+    let h ←  match handles.find? ("ident_pairs", "all") with
+                | some h => pure h
+                | none => 
+                    IO.throwServerError "No handle for 'all' in indent_pairs"
+    if l.length < 9000000 then
+                        h.putStrLn  l
+                        gh.putStrLn l
+
+end IdentPair
+
+def IdentData.filter (d: IdentData)(p : String → Bool) : IdentData := 
+    {context:= d.context, type := d.type, ids := d.ids.filter p}
+
+def DefData.identData (d: DefData) : List IdentData := 
+    d.premises.map (fun p => 
+        {
+                context:= p.context.map (·.reprint.get!)
+                type := p.type.reprint.get!
+                ids := 
+                    p.ids.map (·.1) |>.toList.eraseDups.toArray})
+
+
 def PremiseData.writeBatch (names: List Name)(group: String)
     (handles: HashMap (String × String) IO.FS.Handle)
     (propMap : HashMap String String)(verbose: Bool := false) : MetaM Nat := do
@@ -459,6 +527,12 @@ def PremiseData.writeBatch (names: List Name)(group: String)
                 IO.println s!"Writing {defn.name}"
             for premise in defn.premises do
                 premise.write group handles propMap
+                let identData := 
+                    IdentData.ofCorePremiseData <| premise.coreData propMap 
+                identData.write group handles
+                let identPairs := identData.unfold
+                for identPair in identPairs do
+                    identPair.write group handles
                 premiseCount := premiseCount + 1
             count := count + 1
             if count % 100 = 0 then
@@ -495,21 +569,7 @@ def propList : MetaM <| Array (String × String) := do
 -- #eval propList
 
 
-
 -- Code below this probably dead
-
-structure IdentData where
-    context : Array Syntax
-    type : Syntax
-    ids : List Name
-    deriving Inhabited, ToJson
-
-def IdentData.filter (d: IdentData)(p : Name → Bool) : IdentData := 
-    {context:= d.context, type := d.type, ids := d.ids.filter p}
-
-def DefData.identData (d: DefData) : List IdentData := 
-    d.premises.map (fun p => 
-        {context:= p.context, type := p.type, ids := p.ids.map (·.1) |>.toList.eraseDups})
 
 def nameSize : MetaM <| Nat × Nat := do
     let cs ← constantNameValueTypes
@@ -643,7 +703,8 @@ def writePremisesM  : MetaM Nat  := do
                         h.putStrLn  l
                         gh.putStrLn l
             IO.println ""
-            let idData := defData.identData.bind (fun d ↦ d.ids)
+            let names := names.map (·.toString)
+            let idData := defData.identData.bind (fun d ↦ d.ids.toList)
             let idData := idData.filter (names.contains · ) |>.eraseDups
             let idData := Json.mkObj [
                 ("name", toJson defData.name),
