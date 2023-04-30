@@ -1,3 +1,22 @@
+import LeanCodePrompts.Premises
+open Lean Json Data
+
+def pairs? (s: String) : Option <| List IdentPair := 
+  let js? := Lean.Json.parse s |>.toOption
+  let ids? : Option IdentData :=
+     js?.bind (fun js => fromJson? js |>.toOption)
+  ids?.map <| fun id => id.unfold |>.toList 
+
+def allPairs (ss: List String) : List IdentPair := 
+  ss.foldl (fun acc s => 
+    match pairs? s with
+    | some ps => ps ++ acc
+    | none => acc
+  ) []
+
+def allPairsString (ss: List String) : String := 
+  jsonLines <| (allPairs ss).toArray
+
 def main (_: List String) : IO Unit := do
   let allLines := 
     (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "core", "all.jsonl"])).filter (fun l => l != "") |>.toList.eraseDups
@@ -24,3 +43,7 @@ def main (_: List String) : IO Unit := do
   IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "identifiers", "train.jsonl"]) (trainLines.foldl (fun s l => s ++ l ++ "\n") "")
   IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "identifiers", "test.jsonl"]) (testLines.foldl (fun s l => s ++ l ++ "\n") "")
   IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "identifiers", "valid.jsonl"]) (validLines.foldl (fun s l => s ++ l ++ "\n") "")
+  IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "ident_pairs", "all.jsonl"]) (allPairsString allLines)
+  IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "ident_pairs", "train.jsonl"]) (allPairsString trainLines)
+  IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "ident_pairs", "test.jsonl"]) (allPairsString testLines)
+  IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "ident_pairs", "valid.jsonl"]) (allPairsString validLines)

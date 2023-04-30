@@ -443,7 +443,7 @@ structure IdentData where
     context : Array String
     type : String
     ids : Array String
-    deriving Inhabited, ToJson
+    deriving Inhabited, ToJson, FromJson
 
 structure IdentPair where
     context : Array String
