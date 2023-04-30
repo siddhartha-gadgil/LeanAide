@@ -665,7 +665,7 @@ def structuralTerm (stx: Syntax) : MetaM Bool := do
   | none => pure false
   | some n => 
     let check := (``Eq).isPrefixOf n || (``Iff).isPrefixOf n
-    IO.println s!"function with name: {n}; blocked: {check}"
+    -- IO.println s!"function with name: {n}; blocked: {check}"
     return check
 
 def wrappedProp? (stx : Syntax) : MetaM <| Option Syntax := do

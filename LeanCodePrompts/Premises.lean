@@ -117,6 +117,15 @@ structure CoreTermData where
     value : String
 deriving Repr, ToJson, FromJson, BEq
 
+structure CorePropData where
+    context : Array String
+    prop : String
+deriving Repr, ToJson, FromJson, BEq
+
+def CorePropData.ofPropProof (propPf : PropProofData) : CorePropData :=
+    ⟨propPf.context.map (fun s => shrink s.reprint.get!.trim),
+    shrink propPf.prop.reprint.get!.trim⟩
+
 structure CorePremiseDataDirect where
     context : Array String
     name? :       Option Name  -- name
@@ -124,7 +133,7 @@ structure CorePremiseDataDirect where
     typeGroup : String
     ids : Array String
     terms : List CoreTermData
-    lemmas : Array String 
+    lemmas : Array CorePropData 
 deriving Repr, ToJson, FromJson, BEq
 
 def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CorePremiseDataDirect := 
@@ -136,7 +145,7 @@ def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CorePremiseDataDir
     pd.terms.toList.map (fun td => 
        ⟨td.context.map (fun s => shrink s.reprint.get!.trim),
        shrink td.value.reprint.get!.trim⟩) |>.eraseDups, 
-    pd.propProofs.map (fun p => shrink p.prop.reprint.get!.trim)⟩
+    pd.propProofs.map CorePropData.ofPropProof⟩
 
 structure CorePremiseData extends CorePremiseDataDirect where
     namedLemmas : Array String
