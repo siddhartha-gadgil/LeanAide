@@ -391,7 +391,7 @@ structure DefData where
     typeDepth : Nat
     valueDepth : Nat
     premises : List PremiseData -- empty if depth exceeds bound
-    deriving Inhabited, ToJson
+    deriving Inhabited, ToJson, Repr
 
 def DefData.getM? (name: Name)(term type: Expr) : MetaM (Option  DefData) :=  withOptions (fun o => 
                     let o' :=  pp.match.set o false
@@ -414,6 +414,14 @@ def DefData.ofNameM? (name: Name) : MetaM (Option DefData) := do
     let term? := info.value? 
     match term? with
     | some term => DefData.getM? name term type
+    | none => return none
+
+def depths (name: Name) : MetaM (Option (Nat × Nat)) := do
+    let info ←  getConstInfo name
+    let type := info.type
+    let term? := info.value? 
+    match term? with
+    | some term => return some (term.approxDepth.toNat, type.approxDepth.toNat)
     | none => return none
 
 def verboseView? (name: Name) : MetaM (Option String) := 

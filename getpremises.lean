@@ -55,5 +55,3 @@ def main (_: List String) : IO Unit := do
     IO.println s!"Done {group}"
   IO.println s!"Done: all tasks completed"
   return ()
-
-#check List.zip
