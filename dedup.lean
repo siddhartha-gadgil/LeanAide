@@ -32,7 +32,7 @@ def main (_: List String) : IO Unit := do
 
   IO.println s!"Read lines: {trainLines.size}, {testLines.size}, {validLines.size}"
 
-  let handles ← fileHandles
+  let handles ← mainFileHandles
   let lineMap : HashMap String <| Array String := HashMap.ofList  <| [("train", trainLines), ("test", testLines), ("valid", validLines)]
   let mut prevLines: HashSet String := {}
   let mut count := 0

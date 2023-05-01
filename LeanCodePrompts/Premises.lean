@@ -24,13 +24,14 @@ universe u v w u_1 u_2 u_3 u₁ u₂ u₃
 open LeanAide.Meta
 
 
-def freshDataHandle (fileNamePieces : List String) : IO IO.FS.Handle := do
+def freshDataHandle (fileNamePieces : List String)(clean: Bool := true) : IO IO.FS.Handle := do
     let path := System.mkFilePath <| [".", "rawdata"] ++ fileNamePieces
     let dir := System.mkFilePath <| [".", "rawdata"] ++ 
         fileNamePieces.take (fileNamePieces.length - 1)
     if !(← dir.pathExists) then
         IO.FS.createDirAll dir
-    IO.FS.writeFile path "" 
+    if clean then
+        IO.FS.writeFile path "" 
     IO.FS.Handle.mk path IO.FS.Mode.append
 
 
@@ -39,7 +40,18 @@ def fileNamePieces : HashMap (String × String) (List String) :=
         ["core", "full", "identifiers", "ident_pairs"].bind fun kind => 
             ("all" :: "extra" :: groups).map fun group => ((kind, group), ["premises", kind, group++".jsonl"])
 
-def fileHandles : IO (HashMap (String × String) IO.FS.Handle) := do
+def mainFileNamePieces : HashMap (String × String) (List String) :=
+    HashMap.ofList <|
+        ["core",  "identifiers", "ident_pairs"].bind fun kind => 
+            ("all"  :: groups).map fun group => ((kind, group), ["premises", kind, group++".jsonl"])
+
+def fileHandles (clean : Bool := true) : IO (HashMap (String × String) IO.FS.Handle)  := do
+    let mut handles := HashMap.empty
+    for (k, v) in fileNamePieces.toList do
+        handles := handles.insert k <| ← freshDataHandle v clean
+    return handles
+
+def mainFileHandles : IO (HashMap (String × String) IO.FS.Handle) := do
     let mut handles := HashMap.empty
     for (k, v) in fileNamePieces.toList do
         handles := handles.insert k <| ← freshDataHandle v

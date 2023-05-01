@@ -48,7 +48,7 @@ def main (args: List String) : IO Unit := do
         propMapCore.run' coreContext {env := env} |>.runToIO'
   -- IO.println s!"Success: ran to {propMap.size}"
   let names := args.map String.toName
-  let handles ← fileHandles
+  let handles ← fileHandles false
   -- IO.println "Writing batch"
   let testCore := 
     PremiseData.writeBatchCore (names) "extra" handles propMap "" true
