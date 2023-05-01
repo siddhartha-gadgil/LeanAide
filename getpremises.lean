@@ -41,13 +41,14 @@ def main (_: List String) : IO Unit := do
     let batches' := batches.zip (Array.range batches.size)
     let tasks ←  batches'.mapM fun (names, k) => do
         let writeCore := PremiseData.writeBatchCore names group handles propMap s!"batch: {k}"
-        writeCore.run' coreContext {env := env} |>.spawnToIO
+        let t ← writeCore.run' coreContext {env := env} |>.spawnToIO
+        pure (t, k)
     IO.println "Spawned tasks"
     let mut count := 0
-    for task in tasks.reverse do
+    for (task, k) in tasks.reverse do
       count := count + 1
-      IO.println s!"Waiting for task {count} of {tasks.size}"
-      IO.println s!"Task finished with premises: {← task.get}"
+      IO.println s!"Waiting for task {k}: {count} of {tasks.size}"
+      IO.println s!"Task {k} finished with premises: {← task.get}"
     -- let unifyTasks ← BaseIO.mapTasks pure tasks.toList
     -- let getTasks := unifyTasks.get
     -- discard <| getTasks.mapM id 
