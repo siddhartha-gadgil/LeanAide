@@ -510,7 +510,7 @@ def DefData.identData (d: DefData) : List IdentData :=
 
 def PremiseData.writeBatch (names: List Name)(group: String)
     (handles: HashMap (String × String) IO.FS.Handle)
-    (propMap : HashMap String String)(verbose: Bool := false) : MetaM Nat := do
+    (propMap : HashMap String String)(tag: String := "anonymous")(verbose: Bool := false) : MetaM Nat := do
     let mut count := 0
     let mut premiseCount := 0
     for name in names do
@@ -537,13 +537,13 @@ def PremiseData.writeBatch (names: List Name)(group: String)
             count := count + 1
             if count % 300 = 0 then
                 IO.println s!"Wrote {count} definitions of {names.length}"
-    IO.println s!"Wrote {premiseCount} premises from {count} definitions of {names.length}"
+    IO.println s!"Wrote {premiseCount} premises from {count} definitions of {names.length} in task {tag}"
     return premiseCount
 
 def PremiseData.writeBatchCore (names: List Name)(group: String)
     (handles: HashMap (String × String) IO.FS.Handle)
-    (propMap : HashMap String String)(verbose: Bool := false) : CoreM Nat :=
-    PremiseData.writeBatch names group handles propMap verbose |>.run'
+    (propMap : HashMap String String)(tag: String := "anonymous")(verbose: Bool := false) : CoreM Nat :=
+    PremiseData.writeBatch names group handles propMap tag verbose |>.run'
 
 def CorePremiseData.ofNameM? (name: Name) : 
     MetaM (Option <| List CorePremiseData) := do

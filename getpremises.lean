@@ -38,12 +38,15 @@ def main (_: List String) : IO Unit := do
     let batches := allNames.batches' concurrency
     let batches := batches.map (fun batch => batch.map (·.toName) |>.toList) 
     IO.println s!"Made {batches.size} batches"
-    let tasks ←  batches.mapM fun names => do
-        let writeCore := PremiseData.writeBatchCore names group handles propMap
+    let batches' := batches.zip (Array.range batches.size)
+    let tasks ←  batches'.mapM fun (names, k) => do
+        let writeCore := PremiseData.writeBatchCore names group handles propMap s!"batch: {k}"
         writeCore.run' coreContext {env := env} |>.spawnToIO
     IO.println "Spawned tasks"
+    let mut count := 0
     for task in tasks.reverse do
-      IO.println s!"Waiting for task"
+      count := count + 1
+      IO.println s!"Waiting for task {count} of {tasks.size}"
       IO.println s!"Task finished with premises: {← task.get}"
     -- let unifyTasks ← BaseIO.mapTasks pure tasks.toList
     -- let getTasks := unifyTasks.get
@@ -51,3 +54,5 @@ def main (_: List String) : IO Unit := do
     IO.println s!"Done {group}"
   IO.println s!"Done: all tasks completed"
   return ()
+
+#check List.zip
