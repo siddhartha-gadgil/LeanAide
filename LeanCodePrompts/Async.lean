@@ -315,6 +315,6 @@ end leanaide.auto
 
 example : 1 = 1 := by checkpoint rfl
 
-#check Meta.isProp
-#check Parser.runParserCategory
-#check Syntax.updateTrailing
+-- #check Meta.isProp
+-- #check Parser.runParserCategory
+-- #check Syntax.updateTrailing

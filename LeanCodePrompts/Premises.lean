@@ -535,8 +535,9 @@ def PremiseData.writeBatch (names: List Name)(group: String)
                     identPair.write group handles
                 premiseCount := premiseCount + 1
             count := count + 1
-            if count % 100 = 0 then
+            if count % 300 = 0 then
                 IO.println s!"Wrote {count} definitions of {names.length}"
+    IO.println s!"Wrote {premiseCount} premises from {count} definitions of {names.length}"
     return premiseCount
 
 def PremiseData.writeBatchCore (names: List Name)(group: String)

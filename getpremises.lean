@@ -44,7 +44,7 @@ def main (_: List String) : IO Unit := do
     IO.println "Spawned tasks"
     let unifyTasks ← BaseIO.mapTasks pure tasks.toList
     let getTasks := unifyTasks.get
-    let counts ← getTasks.mapM id 
-    IO.println s!"Done: {counts} premises found in batches"
+    discard <| getTasks.mapM id 
+    IO.println s!"Done {group}"
   IO.println s!"Done: all tasks completed"
   return ()
