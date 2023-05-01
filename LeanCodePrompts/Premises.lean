@@ -53,7 +53,7 @@ def fileHandles (clean : Bool := true) : IO (HashMap (String × String) IO.FS.Ha
 
 def mainFileHandles : IO (HashMap (String × String) IO.FS.Handle) := do
     let mut handles := HashMap.empty
-    for (k, v) in fileNamePieces.toList do
+    for (k, v) in mainFileNamePieces.toList do
         handles := handles.insert k <| ← freshDataHandle v
     return handles
 
