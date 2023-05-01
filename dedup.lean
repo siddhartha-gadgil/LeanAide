@@ -37,6 +37,7 @@ def main (_: List String) : IO Unit := do
   for l in trainLines do
     if !prevLines.contains l then
       count := count + 1
+      prevLines := prevLines.insert l
       let js? := Lean.Json.parse l |>.toOption
       let dfn? : Option CorePremiseData := 
         js?.bind <| fun js => (fromJson? js).toOption
