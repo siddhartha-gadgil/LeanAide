@@ -42,9 +42,12 @@ def main (_: List String) : IO Unit := do
         let writeCore := PremiseData.writeBatchCore names group handles propMap
         writeCore.run' coreContext {env := env} |>.spawnToIO
     IO.println "Spawned tasks"
-    let unifyTasks ← BaseIO.mapTasks pure tasks.toList
-    let getTasks := unifyTasks.get
-    discard <| getTasks.mapM id 
+    for task in tasks do
+      IO.println s!"Waiting for task"
+      IO.println s!"Task finished with premises: {← task.get}"
+    -- let unifyTasks ← BaseIO.mapTasks pure tasks.toList
+    -- let getTasks := unifyTasks.get
+    -- discard <| getTasks.mapM id 
     IO.println s!"Done {group}"
   IO.println s!"Done: all tasks completed"
   return ()
