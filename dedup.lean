@@ -30,6 +30,17 @@ def main (_: List String) : IO Unit := do
 
   IO.println s!"Read lines: {trainLines.size}, {testLines.size}, {validLines.size}"
 
+  let mut count := 0
+  for l in trainLines do
+    count := count + 1
+    let js? := Lean.Json.parse l |>.toOption
+    let dfn? : Option CorePremiseData := 
+      js?.bind <| fun js => (fromJson? js).toOption
+    if count % 100 = 0 then
+      IO.println s!"obtained {count} definitions"
+    if dfn?.isNone then
+      IO.println s!"Could not parse: {l}"
+
   -- IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "core", "all.jsonl"]) (allLines.foldl (fun s l => s ++ l ++ "\n") "")
   -- IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "core", "train.jsonl"]) (trainLines.foldl (fun s l => s ++ l ++ "\n") "")
   -- IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "core", "test.jsonl"]) (testLines.foldl (fun s l => s ++ l ++ "\n") "")
