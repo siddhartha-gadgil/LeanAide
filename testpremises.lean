@@ -51,7 +51,7 @@ def main (args: List String) : IO Unit := do
   let handles ← fileHandles
   -- IO.println "Writing batch"
   let testCore := 
-    PremiseData.writeBatchCore (names) "extra" handles propMap true
+    PremiseData.writeBatchCore (names) "extra" handles propMap "" true
   discard <| testCore.run' coreContext {env := env} |>.runToIO'  
   IO.println ""
   let rawLines := (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "core", "extra.jsonl"])).filter (fun l => l != "")
