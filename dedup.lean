@@ -19,35 +19,38 @@ def allPairsString (ss: List String) : String :=
 
 def main (_: List String) : IO Unit := do
   IO.println "Deduplicating core"
-  let allLines := 
-    (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "core", "all.jsonl"])).filter (fun l => l != "") |>.toList.eraseDups
+  -- let allLines := 
+  --   (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "core", "all.jsonl"])).filter (fun l => l != "") -- |>.toList.eraseDups
   let trainLines := 
-    (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "core", "train.jsonl"])).filter (fun l => l != "") |>.toList.eraseDups
+    (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "core", "train.jsonl"])) --.filter (fun l => l != "") |>.toList.eraseDups
   let testLines := 
-    (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "core", "test.jsonl"])).filter (fun l => l != "" && !trainLines.contains l) |>.toList.eraseDups
+    (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "core", "test.jsonl"])) --.filter (fun l => l != "" && !trainLines.contains l) -- |>.toList.eraseDups
   let validLines := 
-    (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "core", "valid.jsonl"])).filter (fun l => l != "" && !trainLines.contains l && !testLines.contains l) |>.toList.eraseDups
-  IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "core", "all.jsonl"]) (allLines.foldl (fun s l => s ++ l ++ "\n") "")
-  IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "core", "train.jsonl"]) (trainLines.foldl (fun s l => s ++ l ++ "\n") "")
-  IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "core", "test.jsonl"]) (testLines.foldl (fun s l => s ++ l ++ "\n") "")
-  IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "core", "valid.jsonl"]) (validLines.foldl (fun s l => s ++ l ++ "\n") "")
+    (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "core", "valid.jsonl"])) --.filter (fun l => l != "" && !trainLines.contains l && !testLines.contains l) -- |>.toList.eraseDups
 
-  IO.println "Deduplicating identifiers"
-  let allLines := 
-    (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "identifiers", "all.jsonl"])).filter (fun l => l != "") |>.toList.eraseDups
-  let trainLines := 
-    (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "identifiers", "train.jsonl"])).filter (fun l => l != "") |>.toList.eraseDups
-  let testLines := 
-    (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "identifiers", "test.jsonl"])).filter (fun l => l != "" && !trainLines.contains l) |>.toList.eraseDups
-  let validLines := 
-    (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "identifiers", "valid.jsonl"])).filter (fun l => l != "" && !trainLines.contains l && !testLines.contains l) |>.toList.eraseDups
-  IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "identifiers", "all.jsonl"]) (allLines.foldl (fun s l => s ++ l ++ "\n") "")
-  IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "identifiers", "train.jsonl"]) (trainLines.foldl (fun s l => s ++ l ++ "\n") "")
-  IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "identifiers", "test.jsonl"]) (testLines.foldl (fun s l => s ++ l ++ "\n") "")
-  IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "identifiers", "valid.jsonl"]) (validLines.foldl (fun s l => s ++ l ++ "\n") "")
+  IO.println s!"Read lines: {trainLines.size}, {testLines.size}, {validLines.size}"
 
-  IO.println "Deduplicating ident pairs"
-  IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "ident_pairs", "all.jsonl"]) (allPairsString allLines)
-  IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "ident_pairs", "train.jsonl"]) (allPairsString trainLines)
-  IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "ident_pairs", "test.jsonl"]) (allPairsString testLines)
-  IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "ident_pairs", "valid.jsonl"]) (allPairsString validLines)
+  -- IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "core", "all.jsonl"]) (allLines.foldl (fun s l => s ++ l ++ "\n") "")
+  -- IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "core", "train.jsonl"]) (trainLines.foldl (fun s l => s ++ l ++ "\n") "")
+  -- IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "core", "test.jsonl"]) (testLines.foldl (fun s l => s ++ l ++ "\n") "")
+  -- IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "core", "valid.jsonl"]) (validLines.foldl (fun s l => s ++ l ++ "\n") "")
+
+  -- IO.println "Deduplicating identifiers"
+  -- let allLines := 
+  --   (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "identifiers", "all.jsonl"])).filter (fun l => l != "") |>.toList.eraseDups
+  -- let trainLines := 
+  --   (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "identifiers", "train.jsonl"])).filter (fun l => l != "") |>.toList.eraseDups
+  -- let testLines := 
+  --   (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "identifiers", "test.jsonl"])).filter (fun l => l != "" && !trainLines.contains l) |>.toList.eraseDups
+  -- let validLines := 
+  --   (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "identifiers", "valid.jsonl"])).filter (fun l => l != "" && !trainLines.contains l && !testLines.contains l) |>.toList.eraseDups
+  -- IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "identifiers", "all.jsonl"]) (allLines.foldl (fun s l => s ++ l ++ "\n") "")
+  -- IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "identifiers", "train.jsonl"]) (trainLines.foldl (fun s l => s ++ l ++ "\n") "")
+  -- IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "identifiers", "test.jsonl"]) (testLines.foldl (fun s l => s ++ l ++ "\n") "")
+  -- IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "identifiers", "valid.jsonl"]) (validLines.foldl (fun s l => s ++ l ++ "\n") "")
+
+  -- IO.println "Deduplicating ident pairs"
+  -- IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "ident_pairs", "all.jsonl"]) (allPairsString allLines)
+  -- IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "ident_pairs", "train.jsonl"]) (allPairsString trainLines)
+  -- IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "ident_pairs", "test.jsonl"]) (allPairsString testLines)
+  -- IO.FS.writeFile (System.mkFilePath ["rawdata", "premises", "ident_pairs", "valid.jsonl"]) (allPairsString validLines)
