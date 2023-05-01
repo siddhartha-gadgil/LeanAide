@@ -536,7 +536,7 @@ def PremiseData.writeBatch (names: List Name)(group: String)
                 premiseCount := premiseCount + 1
             count := count + 1
             if count % 300 = 0 then
-                IO.println s!"Wrote {count} definitions of {names.length}"
+                IO.println s!"Wrote {count} definitions of {names.length} in task {tag}"
     IO.println s!"Wrote {premiseCount} premises from {count} definitions of {names.length} in task {tag}"
     return premiseCount
 
