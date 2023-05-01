@@ -40,7 +40,7 @@ def main (_: List String) : IO Unit := do
     IO.println s!"Made {batches.size} batches"
     let batches' := batches.zip (Array.range batches.size)
     let tasks ←  batches'.mapM fun (names, k) => do
-        let writeCore := PremiseData.writeBatchCore names group handles propMap s!"batch: {k}" (k = 40)
+        let writeCore := PremiseData.writeBatchCore names group handles propMap s!"batch: {k}"  
         let t ← writeCore.run' coreContext {env := env} |>.spawnToIO
         pure (t, k)
     IO.println "Spawned tasks"
