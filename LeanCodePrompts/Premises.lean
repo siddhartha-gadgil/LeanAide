@@ -474,7 +474,9 @@ deriving Inhabited, ToJson
 namespace IdentData
 
 def write (data: IdentData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
-    let l := (toJson data).pretty 10000000
+    let thm := data.context.foldr (fun s c => s ++ c) s!" : {data.type}"
+    let js := Json.mkObj [("theorem", thm), ("identifiers", toJson data.ids)]
+    let l := js.pretty 10000000
     let gh ← match handles.find? ("identifiers", group) with
                 | some h => pure h
                 | none => 
@@ -496,12 +498,12 @@ def ofCorePremiseData (data: CorePremiseData) : IdentData :=
 
 end IdentData
 
-
-
 namespace IdentPair
 
 def write (data: IdentPair)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
-    let l := (toJson data).pretty 10000000
+    let thm := data.context.foldr (fun s c => s ++ c) s!" : {data.type}"
+    let js := Json.mkObj [("theorem", thm), ("identifier", toJson data.id)]
+    let l := js.pretty 10000000
     let gh ← match handles.find? ("ident_pairs", group) with
                 | some h => pure h
                 | none => 
