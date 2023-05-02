@@ -12,6 +12,8 @@ def test : MetaM Unit := do
 
 #eval depths ``Nat.totient_eq_card_lt_and_coprime
 
+#eval depths ``Nat.succ
+
 -- #eval propList
 
 -- times out, should run from command line

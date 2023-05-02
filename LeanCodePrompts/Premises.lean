@@ -434,7 +434,9 @@ def depths (name: Name) : MetaM (Option (Nat × Nat)) := do
     let term? := info.value? 
     match term? with
     | some term => return some (term.approxDepth.toNat, type.approxDepth.toNat)
-    | none => return none
+    | none =>
+        logInfo m!"no value for {name}" 
+        return none
 
 def verboseView? (name: Name) : MetaM (Option String) := 
     withOptions (fun o => 
