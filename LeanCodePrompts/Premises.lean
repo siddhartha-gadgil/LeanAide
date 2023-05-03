@@ -69,12 +69,13 @@ structure TermData where
     value : Syntax
     size : Nat
     depth: Nat
+    isProp: Bool
 deriving Repr, ToJson, BEq
 
 /-- Increase depth of a subterm (for recursion) -/
 def TermData.increaseDepth (d: Nat) : TermData → TermData :=
 fun data ↦
-    ⟨data.context, data.value, data.size, data.depth + d⟩
+    ⟨data.context, data.value, data.size, data.depth + d, data.isProp⟩
 
 /-- Lemma data with proofs -/
 structure PropProofData where
@@ -127,6 +128,7 @@ def PremiseData.writeFull (data: PremiseData)(group: String)(handles: HashMap (S
 structure CoreTermData where
     context : Array String
     value : String
+    isProp: Bool
 deriving Repr, ToJson, FromJson, BEq
 
 structure CorePropData where
@@ -156,7 +158,7 @@ def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CorePremiseDataDir
     pd.ids.map (fun (n, _) => shrink n), 
     pd.terms.toList.map (fun td => 
        ⟨td.context.map (fun s => shrink s.reprint.get!.trim),
-       shrink td.value.reprint.get!.trim⟩) |>.eraseDups, 
+       shrink td.value.reprint.get!.trim, td.isProp⟩) |>.eraseDups, 
     pd.propProofs.map CorePropData.ofPropProof⟩
 
 structure CorePremiseData extends CorePremiseDataDirect where
@@ -266,7 +268,13 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
     let tks := tks.map (·.1)
     match ← wrappedProp? stx with
     | some prop =>
-        prop.premiseDataAuxM context defnName none  false maxDepth?
+        let (ts, pfs, ids, ps) ←  prop.premiseDataAuxM context defnName none  false maxDepth?
+        if isArg then -- this is an instantiation
+            let head : TermData := 
+                ⟨context, stx.purge, stx.purge.size, 0, true⟩
+            pure <| (ts.push head, pfs, ids, ps)
+        else 
+            pure (ts, pfs, ids, ps)
     | none =>
     match ← namedArgument? stx with
     | some (arg, _) => -- named argument of a function, name ignored
@@ -350,7 +358,7 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
             ps := ps ++ ps'
         if isArg then -- this is an instantiation
             let head : TermData := 
-                ⟨context, stx.purge, stx.purge.size, 0⟩
+                ⟨context, stx.purge, stx.purge.size, 0, false⟩
             ts := ts.push head
         return (ts.map (fun s => s.increaseDepth 1),
                 pfs.map (fun s => s.increaseDepth 1),
@@ -372,9 +380,9 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
                 pfs := pfs ++ pfs'.map (fun s => s.increaseDepth 1)
                 ids := ids ++ ids'.map (fun (s, m) => (s, m + 1))
                 ps := ps ++ ps'
-            let head : TermData := 
-                ⟨context, stx.purge, stx.purge.size, 0⟩
             if isArg && tks.contains k then 
+                let head : TermData := 
+                    ⟨context, stx.purge, stx.purge.size, 0, false⟩
                 ts := ts.push (head)
             return (ts, pfs, ids, ps)
         | Syntax.ident _ _ name .. => 
