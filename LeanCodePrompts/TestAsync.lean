@@ -48,11 +48,17 @@ example : prop := by
   with_auto
   rw [prop]
 
+example : 1 = 1 := by#
+
 macro_rules
 | `(tactic|auto) => `(tactic|aesop?)
 
 example : sillyN ≤ 4 := by#
   rw [silly]
+
+example : 1 = 1 := by#
+  skip
+  
 
 open leanaide.auto
 

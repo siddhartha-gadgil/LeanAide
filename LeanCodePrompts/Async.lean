@@ -245,11 +245,11 @@ match stx with
     for tacticCode in allTacs do
       try 
         let msg ← fetchProof 
-        logWarningAt tacticCode m!"proof complete at: {tacticCode}"
+        logWarningAt tacticCode m!"proof complete before: {tacticCode}"
         logInfoAt prevPos msg
       catch _ =>
         if (← getUnsolvedGoals).isEmpty then
-          logInfoAt tacticCode m!"Goals accomplished!! 🎉"
+          -- logInfoAt tacticCode m!"Goals accomplished!! 🎉"
           return () 
       evalTactic tacticCode
       if (← getUnsolvedGoals).isEmpty then
@@ -286,7 +286,7 @@ match stx with
     catch _ =>
       pure ()
     if (← getUnsolvedGoals).isEmpty then
-        logInfoAt tacticCode m!"Goals accomplished!! 🎉"
+        -- logInfoAt tacticCode m!"Goals accomplished!! 🎉"
         return () 
 | _ => throwUnsupportedSyntax
 
