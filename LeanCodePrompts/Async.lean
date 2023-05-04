@@ -44,7 +44,7 @@ deriving BEq, Hashable, Repr
 structure ProofState where
   core   : Core.State
   meta   : Meta.State
-  term   : Option Term.State
+  term?   : Option Term.State
   preScript : Option String
   script: Syntax
   tailPos? : Option String.Pos
@@ -86,7 +86,8 @@ abbrev PolyTacticM :=  MVarId →
   (MetaM <| (Option Term.State) × Syntax)
 
 /- Abstracted to possibly replace by Aesop search -/
-def runTacticCode (tacticCode : Syntax)  : PolyTacticM := fun goal ↦ do
+def runTacticCode (tacticCode : Syntax)  : PolyTacticM := fun goal ↦ 
+  withoutModifyingState do
     let (goals, ts) ← runTactic  goal tacticCode 
     unless goals.isEmpty do
         throwError m!"Tactic not finishing, remaining goals:\n{goals}"
@@ -103,6 +104,7 @@ def getMsgTactic?  : CoreM <| Option Syntax := do
     let parsedMessage := Parser.runParserCategory (←getEnv)  `tactic msg
     match parsedMessage with
     | Except.ok tac => 
+      resetMessageLog
       tac? := some tac
     | _ =>
       logInfo m!"failed to parse tactic {msg}"
@@ -131,11 +133,11 @@ def runAndCacheM (polyTac : PolyTacticM) (goal: MVarId) (target : Expr) (pos? ta
     let core₀ ← getThe Core.State
     let meta₀ ← getThe Meta.State
     try
-      let (ts, script) ← polyTac goal 
+      let (ts?, script) ← polyTac goal 
       let s : ProofState := {
       core   := (← getThe Core.State)
       meta   := (← getThe Meta.State)
-      term   := ts
+      term?   := ts?
       preScript := preScript
       script := script
       tailPos? := tailPos?
@@ -212,7 +214,7 @@ def fetchProof  : TacticM (MessageData) :=
   | some s => do
     set s.core
     set s.meta
-    match s.term with
+    match s.term? with
     | none => pure ()
     | some ts =>
       set ts 
@@ -246,12 +248,12 @@ match stx with
         logWarningAt tacticCode m!"proof complete at: {tacticCode}"
         logInfoAt prevPos msg
       catch _ =>
-      if (← getUnsolvedGoals).isEmpty then
-        logInfoAt tacticCode m!"No more goals to solve"
-        return () 
+        if (← getUnsolvedGoals).isEmpty then
+          logInfoAt tacticCode m!"Goals accomplished!! 🎉"
+          return () 
       evalTactic tacticCode
       if (← getUnsolvedGoals).isEmpty then
-        logInfoAt tacticCode m!"Goals complete!"
+        logInfoAt tacticCode m!"Goals accomplished!! 🎉"
         return ()
       let ioSeek : IO Unit := runAndCacheIO 
         (PolyTacticM.ofTactic autoCode)  (← getMainGoal) (← getMainTarget) 
@@ -269,7 +271,7 @@ match stx with
 | `(tactic| with_auto) => do
     let tacticCode ← `(tactic|auto) 
     if (← getUnsolvedGoals).isEmpty then
-        logInfoAt tacticCode m!"No more goals to solve"
+        logInfoAt tacticCode m!"Goals accomplished!! 🎉"
         return () 
     let ioSeek : IO Unit := runAndCacheIO 
       (PolyTacticM.ofTactic autoCode)  (← getMainGoal) (← getMainTarget) 
@@ -284,7 +286,7 @@ match stx with
     catch _ =>
       pure ()
     if (← getUnsolvedGoals).isEmpty then
-        logInfoAt tacticCode m!"No more goals to solve"
+        logInfoAt tacticCode m!"Goals accomplished!! 🎉"
         return () 
 | _ => throwUnsupportedSyntax
 
