@@ -10,6 +10,12 @@ def gedit : IO String := do
   discard <| IO.Process.spawn { cmd := "gedit"} 
   return "done"
 
+#check zero_mem
+#eval (resolveGlobalName `zero_mem : MetaM _)
+#print AddSubmonoid.zero_mem
+example: ∀ {M : Type u_1} [inst : 
+AddZeroClass M] (S : AddSubmonoid M) , 0 ∈ S  := zero_mem 
+
 -- #eval gedit
 #check or_false_iff
 #check MvFunctor

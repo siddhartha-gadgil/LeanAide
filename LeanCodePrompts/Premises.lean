@@ -228,6 +228,8 @@ partial def Lean.Syntax.purge: Syntax → Syntax := fun stx ↦
     match stx with
     | `(($pf:term =: $_:term)) =>
       pf.raw.purge
+    | `(($p : Prop)) => 
+        p.raw.purge
     | _ =>
       Syntax.node info k (args.map Syntax.purge) 
   | s => s
@@ -673,6 +675,11 @@ def writeBatchDefnsM (start batch : Nat) : MetaM Nat  := do
         count := count + 1    
     return start + batch
 
+def checkName (name: Name) : MetaM Bool := do
+    let l ← resolveGlobalName name
+    return l.length > 0 
+
+
 def writePremisesM  : MetaM Nat  := do
     let cs ← constantNameValueTypes 
     let names := cs.map (·.1)
@@ -736,9 +743,10 @@ def writePremisesM  : MetaM Nat  := do
                         h.putStrLn  l
                         gh.putStrLn l
             IO.println ""
-            let names := names.map (·.toString)
             let idData := defData.identData.bind (fun d ↦ d.ids.toList)
-            let idData := idData.filter (names.contains · ) |>.eraseDups
+            let idData ←  idData.filterM 
+                (fun n => checkName <| String.toName n) 
+            let idData := idData.eraseDups
             let idData := Json.mkObj [
                 ("name", toJson defData.name),
                 ("ids", toJson idData),
