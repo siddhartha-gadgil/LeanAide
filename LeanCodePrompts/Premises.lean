@@ -173,7 +173,7 @@ def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap String String) 
     name? := direct.name?,
     type := direct.type,
     typeGroup := direct.typeGroup,
-    ids := direct.ids.filter (fun id => propMap.contains id),
+    ids := direct.ids
     terms := direct.terms,
     lemmas := direct.lemmas,
     namedLemmas := direct.ids.filterMap (fun id => propMap.find? id)
@@ -266,6 +266,7 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
     if maxDepth? = some 0 then
         pure (#[], #[], #[], [])    
     else
+    -- IO.println s!"Recursive call:\n{stx}"
     let tks ← termKindList
     let tks := tks.map (·.1)
     match ← wrappedProp? stx with
@@ -340,6 +341,8 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
         inherits proposition group: if this is a proof, so would the previous term and hence we will have a group.  -/
             body.premiseDataAuxM (context ++ args) defnName propHead? false (maxDepth?.map (· -1))
         let (ts, pfs, ids, ps) := prev
+        if ids.size > 0 then
+                    IO.println s!"lambda body ids {ids}"
         return (ts.map (fun s => (s.increaseDepth args.size)),
                 pfs.map (fun s => (s.increaseDepth args.size)),
                 ids.map (fun (s, m) => (s, m + args.size)),
@@ -354,6 +357,8 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
             let prev ←  
                 arg.premiseDataAuxM context defnName none (!block) (maxDepth?.map (· -1))
             let (ts', pfs', ids', ps') := prev
+            if ids'.size > 0 then
+                    IO.println s!"arg ids' {ids'}"
             ts := ts ++ ts'
             pfs := pfs ++ pfs'
             ids := ids ++ ids'
@@ -378,6 +383,8 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
             let mut ps: List PremiseData := []
             for prev in prevs do
                 let (ts', pfs', ids', ps') := prev
+                if ids'.size > 0 then
+                    IO.println s!"ids' {ids'}"
                 ts := ts ++ ts'.map (fun s => s.increaseDepth 1)
                 pfs := pfs ++ pfs'.map (fun s => s.increaseDepth 1)
                 ids := ids ++ ids'.map (fun (s, m) => (s, m + 1))
@@ -388,11 +395,14 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
                 ts := ts.push (head)
             return (ts, pfs, ids, ps)
         | Syntax.ident _ _ name .. => 
+            IO.println s!"ident {name}"
             let contextVars := context.filterMap getVar?
             if  !(contextVars.contains name) &&
                 !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name)) then 
                 pure (#[], #[], #[(stx.reprint.get!.trim, 0)], [])
-            else pure (#[], #[], #[], [])
+            else
+                IO.println s!"skipping {name}" 
+                pure (#[], #[], #[], [])
         | _ => pure (#[], #[], #[], [])
 
 def Lean.Syntax.premiseDataM (context : Array Syntax)
@@ -679,7 +689,7 @@ def checkName (name: Name) : MetaM Bool := do
     let l ← resolveGlobalName name
     return l.length > 0 
 
-#eval checkName `Or.inl
+-- #eval checkName `Or.inl
 
 def writePremisesM  : MetaM Nat  := do
     let cs ← constantNameValueTypes 
