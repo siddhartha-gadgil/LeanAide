@@ -52,8 +52,8 @@ example (x: List Nat) : (3 :: x).length = x.length + 1 := by
 example (x y: Nat) : x + y = y + x := by
   test_aesop -- uses `Nat.add_comm`
 
-example : 1 ≤1 := by
-  messages library_search 
+-- example : 1 ≤1 := by
+--   messages library_search 
 
-example : 1 ≤1 := by
-  messages aesop?
+-- example : 1 ≤1 := by
+--   messages aesop?

@@ -116,9 +116,8 @@ def applyConstRuleMember (decl: Name)(p: Float) : MetaM RuleSetMember := do
   return RuleSetMember.unsafeRule {
     name:= name
     indexingMode := indexingMode
-    usesBranchState := false
     extra:= ⟨⟨p⟩⟩
-    tac := .applyConst decl}
+    tac := .applyConst decl TransparencyMode.default}
 
 /-- Rule set members for `simp` for a global constant proof -/
 partial def simpConstRuleMember (decl: Name) : MetaM <| Array RuleSetMember := do
@@ -159,12 +158,12 @@ def tacticExpr (goal : MVarId) (tac : Syntax.Tactic) :
   return (goals, scriptBuilder)
 
 def applyTacticsAux (tacs : Array Syntax.Tactic) : RuleTac := fun input => do
-  let initialState ← saveState
+  let initialState : SavedState ← saveState
   let appsTacs ← tacs.filterMapM fun (tac) => do
     try
       let (goals, scriptBuilder) ← tacticExpr input.goal tac
       let postState ← saveState
-      return some ({ postState, goals, scriptBuilder }, tac)
+      return some (⟨ goals, postState, scriptBuilder ⟩, tac)
     catch _ =>
       return none
     finally
@@ -173,7 +172,7 @@ def applyTacticsAux (tacs : Array Syntax.Tactic) : RuleTac := fun input => do
   if apps.isEmpty then 
     throwError "failed to apply any of the tactics"
   trace[leanaide.proof.info] "applied custom tactics {tacs}" 
-  return { applications := apps, postBranchState? := none }
+  return { applications := apps}
 
 def customTactics : RuleTac := fun input => do 
   let tacs ← getTacticSuggestions
@@ -190,7 +189,6 @@ def customRuleMember (p: Float) : MetaM RuleSetMember := do
   return RuleSetMember.unsafeRule {
     name:= name
     indexingMode := IndexingMode.unindexed
-    usesBranchState := false
     extra:= ⟨⟨p⟩⟩
     tac := .ruleTac ``customTactics}
 
@@ -204,6 +202,7 @@ def getRuleSet (p: Float) (apps simps rws : Array Name) : MetaM RuleSet := do
   let simpRules := simpRules.foldl (fun c r => c ++ r) #[]
   let defaultRules ←
       Frontend.getDefaultRuleSet (includeGlobalSimpTheorems := true)
+      {}
   let allRules : RuleSet := 
     ((appRules ++ simpRules).push (← customRuleMember p)).foldl
     (fun c r => c.add r) defaultRules
