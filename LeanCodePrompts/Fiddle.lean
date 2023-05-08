@@ -11,21 +11,25 @@ def gedit : IO String := do
   return "done"
 
 #check zero_mem
-#eval (resolveGlobalName `zero_mem : MetaM _)
+#eval (resolveGlobalName `Nat.succ : MetaM _)
 #print AddSubmonoid.zero_mem
 example: ∀ {M : Type u_1} [inst : 
 AddZeroClass M] (S : AddSubmonoid M) , 0 ∈ S  := zero_mem 
+#check FirstOrder.Language.Term.var.sizeOf_spec
+#print false_or
 
 -- #eval gedit
 #check or_false_iff
 #check MvFunctor
+#print Or.intro_left
+#check Or.inl
 
 #check  1
 
 #check List.findIdx?
 
 #check List.remove
-
+#print Decidable.recOn_true.proof_1
 #check NeZero
 
 instance : NeZero 1 := ⟨by decide⟩

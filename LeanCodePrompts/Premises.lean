@@ -679,6 +679,7 @@ def checkName (name: Name) : MetaM Bool := do
     let l ← resolveGlobalName name
     return l.length > 0 
 
+#eval checkName `Or.inl
 
 def writePremisesM  : MetaM Nat  := do
     let cs ← constantNameValueTypes 

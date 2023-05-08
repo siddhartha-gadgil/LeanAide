@@ -80,7 +80,7 @@ def premisesJsonFromName (name: Name) : MetaM <| Json := do
     let premises ← premisesFromName name
     return toJson premises
 
-
+#eval viewSyntax "false_or"
 #eval premisesViewFromName ``Nat.pred_le_pred
 
 -- #eval premisesJsonFromName ``Nat.pred_le_pred
@@ -259,7 +259,7 @@ partial def Lean.Syntax.termsM (context : Array Syntax)(stx: Syntax)(maxDepth? :
         | Syntax.node _ k args => 
             -- IO.println s!"Node: {k}"
             let prev ← args.mapM (termsM context · (maxDepth?.map (· -1)))
-            let head : TermData := ⟨context, stx.purge, stx.purge.size, 0⟩
+            let head : TermData := ⟨context, stx.purge, stx.purge.size, 0, false⟩
             if tks.contains k then 
                 return (head) :: prev.toList.join.map (fun s => s.increaseDepth 1)
             else  
