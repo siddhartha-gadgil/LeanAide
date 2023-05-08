@@ -341,8 +341,8 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
         inherits proposition group: if this is a proof, so would the previous term and hence we will have a group.  -/
             body.premiseDataAuxM (context ++ args) defnName propHead? false (maxDepth?.map (· -1))
         let (ts, pfs, ids, ps) := prev
-        if ids.size > 0 then
-                    IO.println s!"lambda body ids {ids}"
+        -- if ids.size > 0 then
+        --             IO.println s!"lambda body ids {ids}"
         return (ts.map (fun s => (s.increaseDepth args.size)),
                 pfs.map (fun s => (s.increaseDepth args.size)),
                 ids.map (fun (s, m) => (s, m + args.size)),
@@ -357,8 +357,8 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
             let prev ←  
                 arg.premiseDataAuxM context defnName none (!block) (maxDepth?.map (· -1))
             let (ts', pfs', ids', ps') := prev
-            if ids'.size > 0 then
-                    IO.println s!"arg ids' {ids'}"
+            -- if ids'.size > 0 then
+            --         IO.println s!"arg ids' {ids'}"
             ts := ts ++ ts'
             pfs := pfs ++ pfs'
             ids := ids ++ ids'
@@ -383,8 +383,8 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
             let mut ps: List PremiseData := []
             for prev in prevs do
                 let (ts', pfs', ids', ps') := prev
-                if ids'.size > 0 then
-                    IO.println s!"ids' {ids'}"
+                -- if ids'.size > 0 then
+                --     IO.println s!"ids' {ids'}"
                 ts := ts ++ ts'.map (fun s => s.increaseDepth 1)
                 pfs := pfs ++ pfs'.map (fun s => s.increaseDepth 1)
                 ids := ids ++ ids'.map (fun (s, m) => (s, m + 1))
@@ -395,13 +395,13 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
                 ts := ts.push (head)
             return (ts, pfs, ids, ps)
         | Syntax.ident _ _ name .. => 
-            IO.println s!"ident {name}"
+            -- IO.println s!"ident {name}"
             let contextVars := context.filterMap getVar?
             if  !(contextVars.contains name) &&
                 !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name)) then 
                 pure (#[], #[], #[(stx.reprint.get!.trim, 0)], [])
             else
-                IO.println s!"skipping {name}" 
+                -- IO.println s!"skipping {name}" 
                 pure (#[], #[], #[], [])
         | _ => pure (#[], #[], #[], [])
 
