@@ -24,13 +24,14 @@ universe u v w u_1 u_2 u_3 u₁ u₂ u₃
 open LeanAide.Meta
 
 
-def freshDataHandle (fileNamePieces : List String) : IO IO.FS.Handle := do
+def freshDataHandle (fileNamePieces : List String)(clean: Bool := true) : IO IO.FS.Handle := do
     let path := System.mkFilePath <| [".", "rawdata"] ++ fileNamePieces
     let dir := System.mkFilePath <| [".", "rawdata"] ++ 
         fileNamePieces.take (fileNamePieces.length - 1)
     if !(← dir.pathExists) then
         IO.FS.createDirAll dir
-    IO.FS.writeFile path "" 
+    if clean then
+        IO.FS.writeFile path "" 
     IO.FS.Handle.mk path IO.FS.Mode.append
 
 
@@ -39,9 +40,20 @@ def fileNamePieces : HashMap (String × String) (List String) :=
         ["core", "full", "identifiers", "ident_pairs"].bind fun kind => 
             ("all" :: "extra" :: groups).map fun group => ((kind, group), ["premises", kind, group++".jsonl"])
 
-def fileHandles : IO (HashMap (String × String) IO.FS.Handle) := do
+def mainFileNamePieces : HashMap (String × String) (List String) :=
+    HashMap.ofList <|
+        ["core",  "identifiers", "ident_pairs"].bind fun kind => 
+            ("all"  :: groups).map fun group => ((kind, group), ["premises", kind, group++".jsonl"])
+
+def fileHandles (clean : Bool := true) : IO (HashMap (String × String) IO.FS.Handle)  := do
     let mut handles := HashMap.empty
     for (k, v) in fileNamePieces.toList do
+        handles := handles.insert k <| ← freshDataHandle v clean
+    return handles
+
+def mainFileHandles : IO (HashMap (String × String) IO.FS.Handle) := do
+    let mut handles := HashMap.empty
+    for (k, v) in mainFileNamePieces.toList do
         handles := handles.insert k <| ← freshDataHandle v
     return handles
 
@@ -57,12 +69,13 @@ structure TermData where
     value : Syntax
     size : Nat
     depth: Nat
+    isProp: Bool
 deriving Repr, ToJson, BEq
 
 /-- Increase depth of a subterm (for recursion) -/
 def TermData.increaseDepth (d: Nat) : TermData → TermData :=
 fun data ↦
-    ⟨data.context, data.value, data.size, data.depth + d⟩
+    ⟨data.context, data.value, data.size, data.depth + d, data.isProp⟩
 
 /-- Lemma data with proofs -/
 structure PropProofData where
@@ -115,6 +128,7 @@ def PremiseData.writeFull (data: PremiseData)(group: String)(handles: HashMap (S
 structure CoreTermData where
     context : Array String
     value : String
+    isProp: Bool
 deriving Repr, ToJson, FromJson, BEq
 
 structure CorePropData where
@@ -144,7 +158,7 @@ def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CorePremiseDataDir
     pd.ids.map (fun (n, _) => shrink n), 
     pd.terms.toList.map (fun td => 
        ⟨td.context.map (fun s => shrink s.reprint.get!.trim),
-       shrink td.value.reprint.get!.trim⟩) |>.eraseDups, 
+       shrink td.value.reprint.get!.trim, td.isProp⟩) |>.eraseDups, 
     pd.propProofs.map CorePropData.ofPropProof⟩
 
 structure CorePremiseData extends CorePremiseDataDirect where
@@ -159,7 +173,7 @@ def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap String String) 
     name? := direct.name?,
     type := direct.type,
     typeGroup := direct.typeGroup,
-    ids := direct.ids.filter (fun id => propMap.contains id),
+    ids := direct.ids
     terms := direct.terms,
     lemmas := direct.lemmas,
     namedLemmas := direct.ids.filterMap (fun id => propMap.find? id)
@@ -214,6 +228,8 @@ partial def Lean.Syntax.purge: Syntax → Syntax := fun stx ↦
     match stx with
     | `(($pf:term =: $_:term)) =>
       pf.raw.purge
+    | `(($p : Prop)) => 
+        p.raw.purge
     | _ =>
       Syntax.node info k (args.map Syntax.purge) 
   | s => s
@@ -250,11 +266,18 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
     if maxDepth? = some 0 then
         pure (#[], #[], #[], [])    
     else
+    -- IO.println s!"Recursive call:\n{stx}"
     let tks ← termKindList
     let tks := tks.map (·.1)
     match ← wrappedProp? stx with
     | some prop =>
-        prop.premiseDataAuxM context defnName none  false maxDepth?
+        let (ts, pfs, ids, ps) ←  prop.premiseDataAuxM context defnName none  false maxDepth?
+        if isArg then -- this is an instantiation
+            let head : TermData := 
+                ⟨context, stx.purge, stx.purge.size, 0, true⟩
+            pure <| (ts.push head, pfs, ids, ps)
+        else 
+            pure (ts, pfs, ids, ps)
     | none =>
     match ← namedArgument? stx with
     | some (arg, _) => -- named argument of a function, name ignored
@@ -318,6 +341,8 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
         inherits proposition group: if this is a proof, so would the previous term and hence we will have a group.  -/
             body.premiseDataAuxM (context ++ args) defnName propHead? false (maxDepth?.map (· -1))
         let (ts, pfs, ids, ps) := prev
+        -- if ids.size > 0 then
+        --             IO.println s!"lambda body ids {ids}"
         return (ts.map (fun s => (s.increaseDepth args.size)),
                 pfs.map (fun s => (s.increaseDepth args.size)),
                 ids.map (fun (s, m) => (s, m + args.size)),
@@ -332,13 +357,15 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
             let prev ←  
                 arg.premiseDataAuxM context defnName none (!block) (maxDepth?.map (· -1))
             let (ts', pfs', ids', ps') := prev
+            -- if ids'.size > 0 then
+            --         IO.println s!"arg ids' {ids'}"
             ts := ts ++ ts'
             pfs := pfs ++ pfs'
             ids := ids ++ ids'
             ps := ps ++ ps'
         if isArg then -- this is an instantiation
             let head : TermData := 
-                ⟨context, stx.purge, stx.purge.size, 0⟩
+                ⟨context, stx.purge, stx.purge.size, 0, false⟩
             ts := ts.push head
         return (ts.map (fun s => s.increaseDepth 1),
                 pfs.map (fun s => s.increaseDepth 1),
@@ -356,21 +383,26 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
             let mut ps: List PremiseData := []
             for prev in prevs do
                 let (ts', pfs', ids', ps') := prev
+                -- if ids'.size > 0 then
+                --     IO.println s!"ids' {ids'}"
                 ts := ts ++ ts'.map (fun s => s.increaseDepth 1)
                 pfs := pfs ++ pfs'.map (fun s => s.increaseDepth 1)
                 ids := ids ++ ids'.map (fun (s, m) => (s, m + 1))
                 ps := ps ++ ps'
-            let head : TermData := 
-                ⟨context, stx.purge, stx.purge.size, 0⟩
             if isArg && tks.contains k then 
+                let head : TermData := 
+                    ⟨context, stx.purge, stx.purge.size, 0, false⟩
                 ts := ts.push (head)
             return (ts, pfs, ids, ps)
         | Syntax.ident _ _ name .. => 
+            -- IO.println s!"ident {name}"
             let contextVars := context.filterMap getVar?
             if  !(contextVars.contains name) &&
                 !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name)) then 
                 pure (#[], #[], #[(stx.reprint.get!.trim, 0)], [])
-            else pure (#[], #[], #[], [])
+            else
+                -- IO.println s!"skipping {name}" 
+                pure (#[], #[], #[], [])
         | _ => pure (#[], #[], #[], [])
 
 def Lean.Syntax.premiseDataM (context : Array Syntax)
@@ -391,7 +423,7 @@ structure DefData where
     typeDepth : Nat
     valueDepth : Nat
     premises : List PremiseData -- empty if depth exceeds bound
-    deriving Inhabited, ToJson
+    deriving Inhabited, ToJson, Repr
 
 def DefData.getM? (name: Name)(term type: Expr) : MetaM (Option  DefData) :=  withOptions (fun o => 
                     let o' :=  pp.match.set o false
@@ -415,6 +447,16 @@ def DefData.ofNameM? (name: Name) : MetaM (Option DefData) := do
     match term? with
     | some term => DefData.getM? name term type
     | none => return none
+
+def depths (name: Name) : MetaM (Option (Nat × Nat)) := do
+    let info ←  getConstInfo name
+    let type := info.type
+    let term? := info.value? 
+    match term? with
+    | some term => return some (term.approxDepth.toNat, type.approxDepth.toNat)
+    | none =>
+        logInfo m!"no value for {name}" 
+        return none
 
 def verboseView? (name: Name) : MetaM (Option String) := 
     withOptions (fun o => 
@@ -443,7 +485,7 @@ structure IdentData where
     context : Array String
     type : String
     ids : Array String
-    deriving Inhabited, ToJson
+    deriving Inhabited, ToJson, FromJson
 
 structure IdentPair where
     context : Array String
@@ -454,7 +496,9 @@ deriving Inhabited, ToJson
 namespace IdentData
 
 def write (data: IdentData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
-    let l := (toJson data).pretty 10000000
+    let thm := data.context.foldr (fun s c => s ++ c) s!" : {data.type}"
+    let js := Json.mkObj [("theorem", thm), ("identifiers", toJson data.ids)]
+    let l := js.pretty 10000000
     let gh ← match handles.find? ("identifiers", group) with
                 | some h => pure h
                 | none => 
@@ -476,12 +520,12 @@ def ofCorePremiseData (data: CorePremiseData) : IdentData :=
 
 end IdentData
 
-
-
 namespace IdentPair
 
 def write (data: IdentPair)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
-    let l := (toJson data).pretty 10000000
+    let thm := data.context.foldr (fun s c => s ++ c) s!" : {data.type}"
+    let js := Json.mkObj [("theorem", thm), ("identifier", toJson data.id)]
+    let l := js.pretty 10000000
     let gh ← match handles.find? ("ident_pairs", group) with
                 | some h => pure h
                 | none => 
@@ -510,7 +554,7 @@ def DefData.identData (d: DefData) : List IdentData :=
 
 def PremiseData.writeBatch (names: List Name)(group: String)
     (handles: HashMap (String × String) IO.FS.Handle)
-    (propMap : HashMap String String)(verbose: Bool := false) : MetaM Nat := do
+    (propMap : HashMap String String)(tag: String := "anonymous")(verbose: Bool := false) : MetaM Nat := do
     let mut count := 0
     let mut premiseCount := 0
     for name in names do
@@ -535,14 +579,15 @@ def PremiseData.writeBatch (names: List Name)(group: String)
                     identPair.write group handles
                 premiseCount := premiseCount + 1
             count := count + 1
-            if count % 100 = 0 then
-                IO.println s!"Wrote {count} definitions of {names.length}"
+            if count % 300 = 0 then
+                IO.println s!"Wrote {count} definitions of {names.length} in task {tag}"
+    IO.println s!"Wrote {premiseCount} premises from {count} definitions of {names.length} in task {tag}"
     return premiseCount
 
 def PremiseData.writeBatchCore (names: List Name)(group: String)
     (handles: HashMap (String × String) IO.FS.Handle)
-    (propMap : HashMap String String)(verbose: Bool := false) : CoreM Nat :=
-    PremiseData.writeBatch names group handles propMap verbose |>.run'
+    (propMap : HashMap String String)(tag: String := "anonymous")(verbose: Bool := false) : CoreM Nat :=
+    PremiseData.writeBatch names group handles propMap tag verbose |>.run'
 
 def CorePremiseData.ofNameM? (name: Name) : 
     MetaM (Option <| List CorePremiseData) := do
@@ -640,6 +685,12 @@ def writeBatchDefnsM (start batch : Nat) : MetaM Nat  := do
         count := count + 1    
     return start + batch
 
+def checkName (name: Name) : MetaM Bool := do
+    let l ← resolveGlobalName name
+    return l.length > 0 
+
+-- #eval checkName `Or.inl
+
 def writePremisesM  : MetaM Nat  := do
     let cs ← constantNameValueTypes 
     let names := cs.map (·.1)
@@ -703,9 +754,10 @@ def writePremisesM  : MetaM Nat  := do
                         h.putStrLn  l
                         gh.putStrLn l
             IO.println ""
-            let names := names.map (·.toString)
             let idData := defData.identData.bind (fun d ↦ d.ids.toList)
-            let idData := idData.filter (names.contains · ) |>.eraseDups
+            let idData ←  idData.filterM 
+                (fun n => checkName <| String.toName n) 
+            let idData := idData.eraseDups
             let idData := Json.mkObj [
                 ("name", toJson defData.name),
                 ("ids", toJson idData),

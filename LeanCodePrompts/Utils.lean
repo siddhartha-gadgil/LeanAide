@@ -57,7 +57,7 @@ initialize
   registerTraceClass `Translate.warning
   registerTraceClass `leanaide.proof.info
 
-initialize delab_bound : IO.Ref UInt32 ← IO.mkRef 64
+initialize delab_bound : IO.Ref UInt32 ← IO.mkRef 50
 
 def getDelabBound : MetaM UInt32 := do
    delab_bound.get

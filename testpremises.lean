@@ -27,8 +27,6 @@ def environment' : IO Environment := do
 def coreContext : Core.Context := {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]
     }   
 
-#check fromJson?
-
 def main (args: List String) : IO Unit := do
   init
   let env ← environment
@@ -48,10 +46,10 @@ def main (args: List String) : IO Unit := do
         propMapCore.run' coreContext {env := env} |>.runToIO'
   -- IO.println s!"Success: ran to {propMap.size}"
   let names := args.map String.toName
-  let handles ← fileHandles
+  let handles ← fileHandles false
   -- IO.println "Writing batch"
   let testCore := 
-    PremiseData.writeBatchCore (names) "extra" handles propMap true
+    PremiseData.writeBatchCore (names) "extra" handles propMap "" true
   discard <| testCore.run' coreContext {env := env} |>.runToIO'  
   IO.println ""
   let rawLines := (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "core", "extra.jsonl"])).filter (fun l => l != "")

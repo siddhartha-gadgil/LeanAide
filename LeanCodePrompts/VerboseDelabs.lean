@@ -130,10 +130,10 @@ def unexpandStructureInstance (stx : Syntax) : Delab := whenPPOption getPPStruct
     let fieldPos ← nextExtraPos
     let fieldId := annotatePos fieldPos fieldId
     addFieldInfo fieldPos (s.induct ++ fieldName) fieldName fieldId fieldVals[idx]!
-    let field ← `(structInstField|$fieldId:ident := $(stx[1][idx]))
+    let field ← `(structInstField|$fieldId:ident := (($(stx[1][idx]))))
     fields := fields.push field
   let tyStx ← withType do
-    if (← getPPOption getPPStructureInstanceType) then delabVerbose >>= pure ∘ some else pure none
+    if (← getPPOption getPPStructureInstanceType) then delab >>= pure ∘ some else pure none
   `({ $fields,* $[: $tyStx]? })
 
 
@@ -180,7 +180,7 @@ def delabAppImplicit : Delab := do
         | some stx => argStxs.push stx
       pure (fnStx, paramKinds.tailD [], argStxs))
   let stx := Syntax.mkApp fnStx argStxs
-  let stx ← wrapInType (← getExpr) stx
+  -- let stx ← wrapInType (← getExpr) stx
   if ← isRegularApp then
     (guard (← getPPOption getPPNotation) *> unexpandRegularApp stx)
     <|> (guard (← getPPOption getPPStructureInstances) *> unexpandStructureInstance stx)
