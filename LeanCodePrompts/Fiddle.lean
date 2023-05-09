@@ -10,10 +10,11 @@ def gedit : IO String := do
   discard <| IO.Process.spawn { cmd := "gedit"} 
   return "done"
 
+#check List.findSome?
 #check zero_mem
-#eval (resolveGlobalName `Nat.succ : MetaM _)
+#eval (resolveGlobalName `none : MetaM _)
 #print AddSubmonoid.zero_mem
-example: ∀ {M : Type u_1} [inst : 
+example: ∀ {M : Type u_1} [ 
 AddZeroClass M] (S : AddSubmonoid M) , 0 ∈ S  := zero_mem 
 #check FirstOrder.Language.Term.var.sizeOf_spec
 #print false_or
