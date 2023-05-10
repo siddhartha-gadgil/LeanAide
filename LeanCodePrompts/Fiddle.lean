@@ -20,6 +20,8 @@ AddZeroClass M] (S : AddSubmonoid M) , 0 ∈ S  := zero_mem
 #print false_or
 #print Prop.completeLattice.proof_3
 
+theorem one_is_pos : 0 < 1 := by simp
+
 example : ∀ (x : Set Prop) (x_1 : Prop),
   (∀ (b : Prop), b ∈ x → x_1 ≤ b) → x_1 → ∀ (b : Prop), b ∈ x → b := by aesop
 
