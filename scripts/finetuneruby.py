@@ -100,7 +100,7 @@ trainer = Trainer(
     compute_metrics=compute_metrics,
 )
 
-
+trainer.train()
 # ## Inference
 # 
 # Now that we've trained a model, let's test it on some examples from the test set.
