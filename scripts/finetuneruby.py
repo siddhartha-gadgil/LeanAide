@@ -126,7 +126,7 @@ print("Code:", test_example['code'])
 input_ids = tokenizer(test_example['code'], return_tensors='pt').input_ids.to('cuda')
 # generate
 model.eval()
-outputs = model.generate(input_ids)
+outputs = model.generate(input_ids, max_length=128)
 print("Generated docstring:", tokenizer.decode(outputs[0], skip_special_tokens=True))
 
 # Let's compare this to the ground-truth docstring:
@@ -137,7 +137,8 @@ print("Multiple outputs:")
 
 gen_tokens = model.generate(input_ids, do_sample=True,
         temperature=0.8,
+        max_length=128,
         num_return_sequences=5)
-gen_text = tokenizer.batch_decode(gen_tokens)
+gen_text = tokenizer.batch_decode(gen_tokens, skip_special_tokens=True)
 for text in gen_text:
     print(text)
