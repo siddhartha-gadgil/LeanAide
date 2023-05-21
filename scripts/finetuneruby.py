@@ -81,7 +81,7 @@ model = model.cuda()
 import numpy as np
 import evaluate
 
-metric = evaluate.load("google_blue")
+metric = evaluate.load("google_bleu")
 
 def compute_metrics(eval_pred):
     logits, labels = eval_pred
