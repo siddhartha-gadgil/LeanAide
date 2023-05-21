@@ -71,7 +71,7 @@ dataset = dataset.map(preprocess_examples, batched=True)
 print(dataset)
 dataset.set_format(type="torch", columns=['input_ids', 'attention_mask', 'labels'])
 train_dataset = dataset['train']
-eval_dataset = dataset['test']
+# eval_dataset = dataset['test']
 
 from transformers import T5ForConditionalGeneration 
 model = T5ForConditionalGeneration.from_pretrained('Salesforce/codet5-base')
@@ -90,14 +90,14 @@ def compute_metrics(eval_pred):
 
 from transformers import TrainingArguments, Trainer
 
-training_args = TrainingArguments(output_dir="test_trainer", evaluation_strategy="epoch")
+training_args = TrainingArguments(output_dir="test_trainer")
 
 trainer = Trainer(
     model=model,
     args=training_args,
     train_dataset=train_dataset,
-    eval_dataset= eval_dataset,
-    compute_metrics=compute_metrics,
+    # eval_dataset= eval_dataset,
+    # compute_metrics=compute_metrics,
 )
 
 trainer.train()
