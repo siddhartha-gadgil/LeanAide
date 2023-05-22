@@ -90,7 +90,7 @@ def compute_metrics(eval_pred):
 
 from transformers import TrainingArguments, Trainer
 
-training_args = TrainingArguments(output_dir="test_trainer")
+training_args = TrainingArguments(output_dir="rawdata/test_trainer")
 
 trainer = Trainer(
     model=model,
@@ -121,6 +121,7 @@ print("Code:", test_example['code'])
 # We can prepare the example using `RobertaTokenizer`, and generate using the `.generate()` method. Note that there are several ways of doing generation (greedy decoding/beam search/top k sampling/etc.), for that I refer to Patrick's blog post which you can find [here](https://huggingface.co/blog/how-to-generate). Here we will just use the default settings (i.e. greedy decoding).
 
 
+model.save_pretrained("rawdata/test_trainer/trained_model")
 
 # prepare for the model
 input_ids = tokenizer(test_example['code'], return_tensors='pt').input_ids.to('cuda')
