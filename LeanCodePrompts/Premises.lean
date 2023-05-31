@@ -37,12 +37,12 @@ def freshDataHandle (fileNamePieces : List String)(clean: Bool := true) : IO IO.
 
 def fileNamePieces : HashMap (String × String) (List String) :=
     HashMap.ofList <|
-        ["core", "full", "identifiers", "ident_pairs"].bind fun kind => 
+        ["core", "full", "identifiers", "ident_pairs", "ident_strings"].bind fun kind => 
             ("all" :: "extra" :: groups).map fun group => ((kind, group), ["premises", kind, group++".jsonl"])
 
 def mainFileNamePieces : HashMap (String × String) (List String) :=
     HashMap.ofList <|
-        ["core",  "identifiers", "ident_pairs"].bind fun kind => 
+        ["core",  "identifiers", "ident_pairs", "ident_strings"].bind fun kind => 
             ("all"  :: groups).map fun group => ((kind, group), ["premises", kind, group++".jsonl"])
 
 def fileHandles (clean : Bool := true) : IO (HashMap (String × String) IO.FS.Handle)  := do
@@ -163,6 +163,8 @@ def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CorePremiseDataDir
 
 structure CorePremiseData extends CorePremiseDataDirect where
     namedLemmas : Array String
+    thm: String := context.foldr (fun id s => id ++ s) " : " ++ type
+    idString := ids.foldl (fun s id => s ++ id ++ "; ") ""
 deriving Repr, ToJson, FromJson
 
 def checkName (name: Name) : MetaM Bool := do
@@ -519,6 +521,23 @@ def write (data: IdentData)(group: String)(handles: HashMap (String × String) I
                 | none => 
                     IO.throwServerError ("No handle for " ++ group ++ " in " ++ "identifiers")                
     let h ←  match handles.find? ("identifiers", "all") with
+                | some h => pure h
+                | none => 
+                    IO.throwServerError "No handle for 'all' in indentifiers"
+    if l.length < 9000000 then
+                        h.putStrLn  l
+                        gh.putStrLn l
+
+def writeString (data: IdentData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
+    let thm := data.context.foldr (fun s c => s ++ c) s!" : {data.type}"
+    let idString : String := data.ids.foldl (fun s i => s ++ i ++ "; ") ""
+    let js := Json.mkObj [("theorem", thm), ("identifiers", idString)]
+    let l := js.pretty 10000000
+    let gh ← match handles.find? ("ident_strings", group) with
+                | some h => pure h
+                | none => 
+                    IO.throwServerError ("No handle for " ++ group ++ " in " ++ "ident_strings")                
+    let h ←  match handles.find? ("ident_strings", "all") with
                 | some h => pure h
                 | none => 
                     IO.throwServerError "No handle for 'all' in indentifiers"

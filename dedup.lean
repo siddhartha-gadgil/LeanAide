@@ -52,6 +52,7 @@ def main (_: List String) : IO Unit := do
             let identData := 
                 IdentData.ofCorePremiseData corePremise 
             identData.write group handles
+            identData.writeString group handles
             let identPairs := identData.unfold
             for identPair in identPairs do
                 identPair.write group handles
