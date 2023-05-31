@@ -67,60 +67,29 @@ dataset = dataset.map(preprocess_examples, batched=True)
 from torch.utils.data import DataLoader
 
 dataset.set_format(type="torch", columns=['input_ids', 'attention_mask', 'labels'])
-train_dataloader = DataLoader(dataset['train'], shuffle=True, batch_size=8)
-
-batch = next(iter(train_dataloader))
-print(batch.keys())
-
-
-# Let's verify an example, by decoding it back into text:
-print ("Sample input:")
-print (tokenizer.decode(batch['input_ids'][0]))
-
-labels = batch['labels'][0]
-print("Sample labels:")
-print(tokenizer.decode([label for label in labels if label != -100]))
+train_dataset = dataset['train']
 
 from transformers import T5ForConditionalGeneration 
 model = T5ForConditionalGeneration.from_pretrained('Salesforce/codet5-base')
-loss = model(input_ids=batch['input_ids'], attention_mask=batch['attention_mask'], labels=batch['labels']).loss
-print("Loss:")
-print (loss.item())
+model = model.cuda()
 
 
-from torch.optim import AdamW
-optimizer = AdamW(model.parameters(), lr=5e-5)
-from transformers import get_scheduler
-num_epochs = 3
-num_training_steps = num_epochs * len(train_dataloader)
-lr_scheduler = get_scheduler(
-    name="linear", optimizer=optimizer, num_warmup_steps=5000, num_training_steps=num_training_steps
+from transformers import TrainingArguments, Trainer
+
+training_args = TrainingArguments(output_dir="rawdata/test_trainer")
+
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=train_dataset,
 )
 
-import torch
-device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-model.to(device)
-print ('Device: ')
-print (device)
+trainer.train()
 
 
-from tqdm.auto import tqdm
 
-progress_bar = tqdm(range(num_training_steps))
+train_dataloader = DataLoader(dataset['train'], shuffle=True, batch_size=8)
 
-model.train()
-for epoch in range(num_epochs):
-    for batch in train_dataloader:
-        batch = {k: v.to(device) for k, v in batch.items()}
-        outputs = model(**batch)
-        loss = outputs.loss
-        loss.backward()
-
-        optimizer.step()
-        lr_scheduler.step()
-        optimizer.zero_grad()
-        progress_bar.update(1)
-    torch.save(model.state_dict(), f"codet5_ids_epoch_{epoch}.pt")
 
 # ## Inference
 # 
