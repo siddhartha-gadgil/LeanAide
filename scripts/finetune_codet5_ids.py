@@ -70,7 +70,7 @@ from torch.utils.data import DataLoader
 
 dataset.set_format(type="torch", columns=['input_ids', 'attention_mask', 'labels'])
 train_dataset = dataset['train']
-train_dataset = train_dataset.shuffle(seed=42).select(range(10000)) # for testing
+# train_dataset = train_dataset.shuffle(seed=42).select(range(10000)) # for testing
 
 
 from transformers import T5ForConditionalGeneration 
@@ -112,13 +112,14 @@ class PredictionScores:
       predictions = set([p for l in prediction_lists for p in l])
       self.prediction_size = len(predictions)
       self.correct = [p for p in predictions if p in ids]
+      self.missed = [p for p in ids if p not in predictions]
       self.coverage = len(self.correct) / len(ids) if len(ids) > 0 else 0
       self.efficiency = len(self.correct) / self.prediction_size if self.prediction_size > 0 else 0
 
 with open('rawdata/premises/identifiers/test.jsonl') as f:
     test_ids = [json.loads(line) for line in f]
 
-test_ids = sample(test_ids, 1000) # for testing
+# test_ids = sample(test_ids, 1000) # for testing
 print ('Test set size:', len(test_ids))
 
 def generate_ids(prompt):
@@ -126,8 +127,8 @@ def generate_ids(prompt):
     gen_tokens = model.generate(
         input_ids,
         do_sample=True,
-        temperature=0.8,
-        num_return_sequences=5,
+        temperature=1.5,
+        num_return_sequences=8,
         max_length=256,
     )
     gen_text = tokenizer.batch_decode(gen_tokens, skip_special_tokens=True)
@@ -144,6 +145,7 @@ for d in test_ids:
     d['target_size'] = scores.target_size
     d['prediction_size'] = scores.prediction_size
     d['correct'] = scores.correct
+    d['missed'] = scores.missed
     d['coverage'] = scores.coverage
     d['efficiency'] = scores.efficiency
     coverage_list.append(scores.coverage)
