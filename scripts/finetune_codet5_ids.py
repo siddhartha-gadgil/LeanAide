@@ -140,7 +140,7 @@ count = 0
 for d in test_ids:
     gens = generate_ids(d['theorem'])
     d['generated'] = gens
-    scores = PredictionScores(d['ids'], gens)
+    scores = PredictionScores(d['identifiers'], gens)
     d['target_size'] = scores.target_size
     d['prediction_size'] = scores.prediction_size
     d['correct'] = scores.correct
