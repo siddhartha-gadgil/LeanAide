@@ -11,7 +11,6 @@ import torch
 from random import sample
 
 dataset = load_dataset('json', data_dir='rawdata/premises/ident_strings', data_files="train.jsonl")
-dataset = dataset.shuffle(seed=42).select(range(10000)) # for testing
 print(dataset)
 
 
@@ -71,6 +70,8 @@ from torch.utils.data import DataLoader
 
 dataset.set_format(type="torch", columns=['input_ids', 'attention_mask', 'labels'])
 train_dataset = dataset['train']
+train_dataset = train_dataset.shuffle(seed=42).select(range(10000)) # for testing
+
 
 from transformers import T5ForConditionalGeneration 
 model = T5ForConditionalGeneration.from_pretrained('Salesforce/codet5-base')
