@@ -154,7 +154,7 @@ for d in test_ids:
         print('average efficiency:', sum(efficiency_list) / len(efficiency_list))
 
 
-with open('rawdata/identifiers/test.jsonl', 'w', encoding='utf-8') as f:
+with open('rawdata/identifiers/test_data.jsonl', 'w', encoding='utf-8') as f:
     for d in test_ids:
         f.write(json.dumps(d, ensure_ascii=False) + '\n')
 
