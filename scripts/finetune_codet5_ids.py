@@ -10,7 +10,7 @@ from datasets import load_dataset
 import torch
 from random import sample
 
-dataset = load_dataset('json', data_dir='rawdata/id_strings', data_files="train.jsonl")
+dataset = load_dataset('json', data_dir='rawdata/premises/ident_strings', data_files="train.jsonl")
 dataset = dataset.shuffle(seed=42).select(range(10000)) # for testing
 print(dataset)
 
@@ -114,7 +114,7 @@ class PredictionScores:
       self.coverage = len(self.correct) / len(ids) if len(ids) > 0 else 0
       self.efficiency = len(self.correct) / self.prediction_size if self.prediction_size > 0 else 0
 
-with open('rawdata/identifiers/test.jsonl') as f:
+with open('rawdata/premises/identifiers/test.jsonl') as f:
     test_ids = [json.loads(line) for line in f]
 
 test_ids = sample(test_ids, 1000) # for testing
@@ -154,7 +154,7 @@ for d in test_ids:
         print('average efficiency:', sum(efficiency_list) / len(efficiency_list))
 
 
-with open('rawdata/identifiers/test_data.jsonl', 'w', encoding='utf-8') as f:
+with open('rawdata/premises/identifiers/test_data.jsonl', 'w', encoding='utf-8') as f:
     for d in test_ids:
         f.write(json.dumps(d, ensure_ascii=False) + '\n')
 
