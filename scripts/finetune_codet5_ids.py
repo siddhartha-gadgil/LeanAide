@@ -39,7 +39,7 @@ max_target_length = 256
 def preprocess_examples(examples):
   # encode the code-docstring pairs
   theorems = examples['theorem']
-  ids = examples['ids']
+  ids = examples['identifiers']
   
   inputs = [prefix + thm for thm in theorems]
   model_inputs = tokenizer(inputs, max_length=max_input_length, padding="max_length", truncation=True)
