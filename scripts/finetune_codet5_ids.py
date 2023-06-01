@@ -11,7 +11,7 @@ import torch
 from random import sample
 
 dataset = load_dataset('json', data_dir='rawdata/id_strings', data_files="train.jsonl")
-# dataset = dataset.shuffle(seed=42).select(range(10000)) # for testing
+dataset = dataset.shuffle(seed=42).select(range(10000)) # for testing
 print(dataset)
 
 
@@ -117,7 +117,7 @@ class PredictionScores:
 with open('rawdata/identifiers/test.jsonl') as f:
     test_ids = [json.loads(line) for line in f]
 
-# test_ids = sample(test_ids, 1000) # for testing
+test_ids = sample(test_ids, 1000) # for testing
 print ('Test set size:', len(test_ids))
 
 def generate_ids(prompt):
