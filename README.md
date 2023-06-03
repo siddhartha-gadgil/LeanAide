@@ -2,6 +2,8 @@
 
 LeanAide or Lean**AI**de (accidental pun) is work in progress to build AI based tools to help development with the Lean Theorem Prover. For now it has one tool under development, which translates statements written in natural language in a doc-string like format to Lean types (including theorem statements).
 
+![leanaide-mathlib4](https://github.com/siddhartha-gadgil/LeanAide/assets/18333981/23de9912-5a60-4fd9-a99e-d9835629b4ca)
+
 ## Quickstart: translation to Lean statements
 
 Our translation is based on Codex, to use which you need an OpenAI key. We also use a server for _sentence similarity_. To get started please configure environment variables using the following bash commands or equivalent in your shell:
