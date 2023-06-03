@@ -37,12 +37,12 @@ def freshDataHandle (fileNamePieces : List String)(clean: Bool := true) : IO IO.
 
 def fileNamePieces : HashMap (String × String) (List String) :=
     HashMap.ofList <|
-        ["core", "full", "identifiers", "ident_pairs"].bind fun kind => 
+        ["core", "full", "identifiers", "ident_pairs", "ident_strings"].bind fun kind => 
             ("all" :: "extra" :: groups).map fun group => ((kind, group), ["premises", kind, group++".jsonl"])
 
 def mainFileNamePieces : HashMap (String × String) (List String) :=
     HashMap.ofList <|
-        ["core",  "identifiers", "ident_pairs"].bind fun kind => 
+        ["core",  "identifiers", "ident_pairs", "ident_strings"].bind fun kind => 
             ("all"  :: groups).map fun group => ((kind, group), ["premises", kind, group++".jsonl"])
 
 def fileHandles (clean : Bool := true) : IO (HashMap (String × String) IO.FS.Handle)  := do
@@ -163,12 +163,28 @@ def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CorePremiseDataDir
 
 structure CorePremiseData extends CorePremiseDataDirect where
     namedLemmas : Array String
+    thm: String := context.foldr (fun id s => id ++ s) " : " ++ type
+    idString := ids.foldl (fun s id => s ++ id ++ "; ") ""
 deriving Repr, ToJson, FromJson
+
+def checkName (name: Name) : MetaM Bool := do
+    let l ← resolveGlobalName name
+    return l.length > 0 
+
+-- #eval checkName `Or.inl
+
+def getDefn? (name: String)(propMap: HashMap String String) : MetaM <| Option String := do
+    match propMap.find? name with
+    | some s => return some s
+    | none => do
+    let l ← resolveGlobalName name
+    let names := l.map (fun (n, _) => n.toString)
+    return names.findSome? (fun n => propMap.find? n)
 
 namespace CorePremiseData
 
-def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap String String) : CorePremiseData :=
-    {
+def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap String String) : MetaM CorePremiseData := do 
+    return {
     context := direct.context,
     name? := direct.name?,
     type := direct.type,
@@ -176,10 +192,11 @@ def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap String String) 
     ids := direct.ids
     terms := direct.terms,
     lemmas := direct.lemmas,
-    namedLemmas := direct.ids.filterMap (fun id => propMap.find? id)
-}
+    namedLemmas := ←  direct.ids.filterMapM (
+        fun id =>  getDefn? id propMap)
+    }
 
-def fromPremiseData (pd: PremiseData)(propMap : HashMap String String) : CorePremiseData := 
+def fromPremiseData (pd: PremiseData)(propMap : HashMap String String) : MetaM CorePremiseData := 
     CorePremiseData.fromDirect (CorePremiseDataDirect.fromPremiseData pd) propMap
 
 
@@ -209,14 +226,14 @@ fun data ↦
     ⟨data.context, data.name?, data.defnName, data.type, data.typeGroup, data.proof, data.typeSize, data.proofSize, (data.terms.map (fun td => td.increaseDepth d)), (data.propProofs.map (fun p => p.increaseDepth d)),
         (data.ids.map (fun (n,  m) => (n,  m + d))) ⟩
 
-def coreData (data: PremiseData)(propMap : HashMap String String) : CorePremiseData := 
+def coreData (data: PremiseData)(propMap : HashMap String String) : MetaM CorePremiseData := 
     CorePremiseData.fromPremiseData data propMap
 
 def write (data: PremiseData)(group: String)
     (handles: HashMap (String × String) IO.FS.Handle)
-    (propMap : HashMap String String) : IO Unit := do 
+    (propMap : HashMap String String) : MetaM Unit := do 
         data.writeFull group handles
-        let coreData := CorePremiseData.fromPremiseData data propMap
+        let coreData ←  CorePremiseData.fromPremiseData data propMap
         coreData.write group handles
 
 end PremiseData
@@ -511,6 +528,23 @@ def write (data: IdentData)(group: String)(handles: HashMap (String × String) I
                         h.putStrLn  l
                         gh.putStrLn l
 
+def writeString (data: IdentData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
+    let thm := data.context.foldr (fun s c => s ++ c) s!" : {data.type}"
+    let idString : String := data.ids.foldl (fun s i => s ++ i ++ "; ") ""
+    let js := Json.mkObj [("theorem", thm), ("identifiers", idString)]
+    let l := js.pretty 10000000
+    let gh ← match handles.find? ("ident_strings", group) with
+                | some h => pure h
+                | none => 
+                    IO.throwServerError ("No handle for " ++ group ++ " in " ++ "ident_strings")                
+    let h ←  match handles.find? ("ident_strings", "all") with
+                | some h => pure h
+                | none => 
+                    IO.throwServerError "No handle for 'all' in indentifiers"
+    if l.length < 9000000 then
+                        h.putStrLn  l
+                        gh.putStrLn l
+
 
 def unfold (data: IdentData) : Array IdentPair :=
     data.ids.map (fun id => ⟨data.context, data.type, id⟩)
@@ -572,7 +606,7 @@ def PremiseData.writeBatch (names: List Name)(group: String)
             for premise in defn.premises do
                 premise.write group handles propMap
                 let identData := 
-                    IdentData.ofCorePremiseData <| premise.coreData propMap 
+                    IdentData.ofCorePremiseData <| ← premise.coreData propMap 
                 identData.write group handles
                 let identPairs := identData.unfold
                 for identPair in identPairs do
@@ -597,7 +631,7 @@ def CorePremiseData.ofNameM? (name: Name) :
     match premises with
     | none => return none
     | some premises => 
-        return some <| premises.map (fun p => p.coreData propMap)
+        return some <| ←  premises.mapM (fun p =>  p.coreData propMap)
 
 -- #eval CorePremiseData.ofNameM? ``Nat.le_of_succ_le_succ
 -- #print Nat.le_of_succ_le_succ
@@ -684,12 +718,6 @@ def writeBatchDefnsM (start batch : Nat) : MetaM Nat  := do
                     h'.putStrLn l
         count := count + 1    
     return start + batch
-
-def checkName (name: Name) : MetaM Bool := do
-    let l ← resolveGlobalName name
-    return l.length > 0 
-
--- #eval checkName `Or.inl
 
 def writePremisesM  : MetaM Nat  := do
     let cs ← constantNameValueTypes 

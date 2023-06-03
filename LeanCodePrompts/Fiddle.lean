@@ -10,20 +10,29 @@ def gedit : IO String := do
   discard <| IO.Process.spawn { cmd := "gedit"} 
   return "done"
 
+#check List.findSome?
 #check zero_mem
-#eval (resolveGlobalName `Nat.succ : MetaM _)
+#eval (resolveGlobalName `none : MetaM _)
 #print AddSubmonoid.zero_mem
-example: ∀ {M : Type u_1} [inst : 
+example: ∀ {M : Type u_1} [ 
 AddZeroClass M] (S : AddSubmonoid M) , 0 ∈ S  := zero_mem 
 #check FirstOrder.Language.Term.var.sizeOf_spec
 #print false_or
 #print Prop.completeLattice.proof_3
+
+theorem one_is_pos : 0 < 1 := by simp
 
 example : ∀ (x : Set Prop) (x_1 : Prop),
   (∀ (b : Prop), b ∈ x → x_1 ≤ b) → x_1 → ∀ (b : Prop), b ∈ x → b := by aesop
 
 example : ∀ (x : Set Prop) (a : Prop), a ∈ x → infₛ x → a  := by aesop
 
+
+example : 1 ≤3 := by
+  have : 1 ≤ 2
+  let _ := 3
+  simp
+  simp 
 
 -- #eval gedit
 #check or_false_iff

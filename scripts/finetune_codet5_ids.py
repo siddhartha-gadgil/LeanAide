@@ -7,15 +7,17 @@
 
 
 from datasets import load_dataset
+import torch
+from random import sample
 
-dataset = load_dataset('json', data_dir='rawdata', data_files="train_ids.jsonl")
+dataset = load_dataset('json', data_dir='rawdata/premises/ident_strings', data_files="train.jsonl")
 print(dataset)
 
 
 
 # 
 # 
-# We need to turn the "theorem" input from above into `input_ids`, and similarly, we need to turn the "ids" output from above into `input_ids`, which will serve as the `labels` for the model.
+# We need to turn the "theorem" input from above into `input_ids`, and similarly, we need to turn the "identifiers" output from above into `input_ids`, which will serve as the `labels` for the model.
 # 
 # In addition, as these models are trained on batches of examples rather than one example at a time, we'll need to pad/truncate both the inputs and labels, such that they are all of the same length. That's why we also will add an `attention_mask` input to the model, such that it knows not to take into account padding tokens when computing attention scores.
 # 
@@ -37,7 +39,7 @@ max_target_length = 256
 def preprocess_examples(examples):
   # encode the code-docstring pairs
   theorems = examples['theorem']
-  ids = examples['ids']
+  ids = examples['identifiers']
   
   inputs = [prefix + thm for thm in theorems]
   model_inputs = tokenizer(inputs, max_length=max_input_length, padding="max_length", truncation=True)
@@ -67,68 +69,57 @@ dataset = dataset.map(preprocess_examples, batched=True)
 from torch.utils.data import DataLoader
 
 dataset.set_format(type="torch", columns=['input_ids', 'attention_mask', 'labels'])
-train_dataloader = DataLoader(dataset['train'], shuffle=True, batch_size=8)
+train_dataset = dataset['train']
+# train_dataset = train_dataset.shuffle(seed=42).select(range(10000)) # for testing
 
-batch = next(iter(train_dataloader))
-print(batch.keys())
-
-
-# Let's verify an example, by decoding it back into text:
-print ("Sample input:")
-print (tokenizer.decode(batch['input_ids'][0]))
-
-labels = batch['labels'][0]
-print("Sample labels:")
-print(tokenizer.decode([label for label in labels if label != -100]))
 
 from transformers import T5ForConditionalGeneration 
 model = T5ForConditionalGeneration.from_pretrained('Salesforce/codet5-base')
-loss = model(input_ids=batch['input_ids'], attention_mask=batch['attention_mask'], labels=batch['labels']).loss
-print("Loss:")
-print (loss.item())
+model = model.cuda()
+device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
 
-from torch.optim import AdamW
-optimizer = AdamW(model.parameters(), lr=5e-5)
-from transformers import get_scheduler
-num_epochs = 3
-num_training_steps = num_epochs * len(train_dataloader)
-lr_scheduler = get_scheduler(
-    name="linear", optimizer=optimizer, num_warmup_steps=5000, num_training_steps=num_training_steps
+from transformers import TrainingArguments, Trainer
+
+training_args = TrainingArguments(output_dir="rawdata/idstrings_codet5_base")
+
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=train_dataset,
 )
 
-import torch
-device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-model.to(device)
-print ('Device: ')
-print (device)
+trainer.train()
 
+model.save_pretrained("rawdata/idstrings_codet5_base/trained_model")
 
-from tqdm.auto import tqdm
+train_dataloader = DataLoader(dataset['train'], shuffle=True, batch_size=8)
 
-progress_bar = tqdm(range(num_training_steps))
-
-model.train()
-for epoch in range(num_epochs):
-    for batch in train_dataloader:
-        batch = {k: v.to(device) for k, v in batch.items()}
-        outputs = model(**batch)
-        loss = outputs.loss
-        loss.backward()
-
-        optimizer.step()
-        lr_scheduler.step()
-        optimizer.zero_grad()
-        progress_bar.update(1)
-    torch.save(model.state_dict(), f"codet5_ids_epoch_{epoch}.pt")
 
 # ## Inference
 # 
 # Now that we've trained a model, let's test it on some examples from the test set.
 model.eval()
 import json
-with open('rawdata/test_ids.jsonl') as f:
+
+def split_prediction(s):
+   return [x.strip() for x in s.split(';')]
+
+class PredictionScores:
+   def __init__(self, ids, prediction_strings):
+      self.target_size = len(ids)
+      prediction_lists = [split_prediction(p) for p in prediction_strings]
+      predictions = set([p for l in prediction_lists for p in l])
+      self.prediction_size = len(predictions)
+      self.correct = [p for p in predictions if p in ids]
+      self.missed = [p for p in ids if p not in predictions]
+      self.coverage = len(self.correct) / len(ids) if len(ids) > 0 else 0
+      self.efficiency = len(self.correct) / self.prediction_size if self.prediction_size > 0 else 0
+
+with open('rawdata/premises/identifiers/test.jsonl') as f:
     test_ids = [json.loads(line) for line in f]
+
+# test_ids = sample(test_ids, 1000) # for testing
 print ('Test set size:', len(test_ids))
 
 def generate_ids(prompt):
@@ -136,18 +127,37 @@ def generate_ids(prompt):
     gen_tokens = model.generate(
         input_ids,
         do_sample=True,
-        temperature=0.8,
-        num_return_sequences=5,
+        temperature=1.5,
+        num_return_sequences=8,
         max_length=256,
     )
     gen_text = tokenizer.batch_decode(gen_tokens, skip_special_tokens=True)
     return gen_text
 
-for d in test_ids:
-   gens = generate_ids(d['theorem'])
-   d['generated'] = gens
+coverage_list=[]
+efficiency_list=[]
 
-with open('rawdata/test_ids_generated.jsonl', 'w', encoding='utf-8') as f:
+count = 0
+for d in test_ids:
+    gens = generate_ids(d['theorem'])
+    d['generated'] = gens
+    scores = PredictionScores(d['identifiers'], gens)
+    d['target_size'] = scores.target_size
+    d['prediction_size'] = scores.prediction_size
+    d['correct'] = scores.correct
+    d['missed'] = scores.missed
+    d['coverage'] = scores.coverage
+    d['efficiency'] = scores.efficiency
+    coverage_list.append(scores.coverage)
+    efficiency_list.append(scores.efficiency)
+    count += 1
+    if count % 100 == 0:
+        print(count)
+        print('average coverage:', sum(coverage_list) / len(coverage_list))
+        print('average efficiency:', sum(efficiency_list) / len(efficiency_list))
+
+
+with open('rawdata/premises/identifiers/test_data.jsonl', 'w', encoding='utf-8') as f:
     for d in test_ids:
         f.write(json.dumps(d, ensure_ascii=False) + '\n')
 
