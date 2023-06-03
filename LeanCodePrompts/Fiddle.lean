@@ -28,6 +28,12 @@ example : ∀ (x : Set Prop) (x_1 : Prop),
 example : ∀ (x : Set Prop) (a : Prop), a ∈ x → infₛ x → a  := by aesop
 
 
+example : 1 ≤3 := by
+  have : 1 ≤ 2
+  let _ := 3
+  simp
+  simp 
+
 -- #eval gedit
 #check or_false_iff
 #check MvFunctor
