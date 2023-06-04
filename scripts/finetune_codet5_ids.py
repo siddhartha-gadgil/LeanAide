@@ -76,7 +76,7 @@ train_dataset = dataset['train']
 from transformers import T5ForConditionalGeneration 
 model = T5ForConditionalGeneration.from_pretrained('Salesforce/codet5-base')
 model = model.cuda()
-device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+device = torch.device("cuda") # if torch.cuda.is_available() else torch.device("cpu")
 
 
 from transformers import TrainingArguments, Trainer
@@ -122,42 +122,47 @@ with open('rawdata/premises/identifiers/test.jsonl') as f:
 # test_ids = sample(test_ids, 1000) # for testing
 print ('Test set size:', len(test_ids))
 
-def generate_ids(prompt):
+def generate_ids(prompt, temperature=1.5, num_return_sequences=8, max_length=256):
     input_ids = tokenizer.encode(prefix + prompt, return_tensors='pt').to(device)
     gen_tokens = model.generate(
         input_ids,
         do_sample=True,
-        temperature=1.5,
-        num_return_sequences=8,
-        max_length=256,
+        temperature=temperature,
+        num_return_sequences=num_return_sequences,
+        max_length=max_length,
     )
     gen_text = tokenizer.batch_decode(gen_tokens, skip_special_tokens=True)
     return gen_text
 
 coverage_list=[]
 efficiency_list=[]
-
 count = 0
-for d in test_ids:
-    gens = generate_ids(d['theorem'])
-    d['generated'] = gens
-    scores = PredictionScores(d['identifiers'], gens)
-    d['target_size'] = scores.target_size
-    d['prediction_size'] = scores.prediction_size
-    d['correct'] = scores.correct
-    d['missed'] = scores.missed
-    d['coverage'] = scores.coverage
-    d['efficiency'] = scores.efficiency
-    coverage_list.append(scores.coverage)
-    efficiency_list.append(scores.efficiency)
-    count += 1
-    if count % 100 == 0:
-        print(count)
-        print('average coverage:', sum(coverage_list) / len(coverage_list))
-        print('average efficiency:', sum(efficiency_list) / len(efficiency_list))
+covered = 0
 
-
-with open('rawdata/premises/identifiers/test_data.jsonl', 'w', encoding='utf-8') as f:
+with open('rawdata/premises/identifiers/codet5_test_data.jsonl', 'w', encoding='utf-8') as f:
     for d in test_ids:
+        gens = generate_ids(d['theorem'])
+        d['generated'] = gens
+        scores = PredictionScores(d['identifiers'], gens)
+        d['target_size'] = scores.target_size
+        d['prediction_size'] = scores.prediction_size
+        d['correct'] = scores.correct
+        d['missed'] = scores.missed
+        d['coverage'] = scores.coverage
+        if scores.coverage == 1:
+            covered += 1
+        d['efficiency'] = scores.efficiency
         f.write(json.dumps(d, ensure_ascii=False) + '\n')
+        coverage_list.append(scores.coverage)
+        efficiency_list.append(scores.efficiency)
+        count += 1
+        if count % 100 == 0:
+            print(count)
+            print('average coverage:', sum(coverage_list) / len(coverage_list))
+            print('average efficiency:', sum(efficiency_list) / len(efficiency_list))
+            print('covered:', covered)
+            print('fraction fully covered:', covered / count)
+            print()
+
+
 
