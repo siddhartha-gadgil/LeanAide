@@ -22,6 +22,10 @@ lean_lib StatementAutoformalisation {
 lean_lib CodeAction {
 }
 
+@[default_target]
+lean_lib TacticExtraction {
+}
+
 lean_lib notes {
 }
 
