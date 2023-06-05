@@ -21,6 +21,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 checkpoint = "Salesforce/codegen-350M-multi"
 tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+tokenizer.add_special_tokens({'pad_token': '[PAD]'}) # for padding
 
 max_length = 512
 
