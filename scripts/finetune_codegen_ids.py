@@ -19,7 +19,7 @@ print(dataset)
 
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-checkpoint = "Salesforce/codegen-350M-multi"
+checkpoint = "Salesforce/codegen-350M-mono"
 tokenizer = AutoTokenizer.from_pretrained(checkpoint)
 tokenizer.add_special_tokens({'pad_token': '[PAD]'}) # for padding
 
