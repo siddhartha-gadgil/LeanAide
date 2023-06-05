@@ -26,8 +26,10 @@ max_length = 512
 
 def preprocess_examples(examples):
   # encode the code-docstring pairs
-  
-  inputs = ['theorem ' + eg['theorem'] + '\nIdentifiers: ' + eg['identifiers'] for eg in examples]
+  theorems = examples['theorem']
+  ids = examples['identifiers']
+  pairs = zip(theorems, ids)
+  inputs = ['theorem ' + thm + '\nIdentifiers: ' + ids for (thm, ids) in pairs]
   model_inputs = tokenizer(inputs, max_length=max_length, padding="max_length", truncation=True)
   labels = model_inputs['input_ids']
   model_inputs["labels"] = labels
