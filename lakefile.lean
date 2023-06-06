@@ -110,5 +110,4 @@ lean_lib examples
 require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git"@"master"
 
--- require aesop from git
---   "https://github.com/JLimperg/aesop.git"@"master"
+require proofwidgets from git "https://github.com/0art0/ProofWidgets4"@"browsing"
