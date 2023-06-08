@@ -30,7 +30,7 @@ def preprocess_examples(examples):
   theorems = examples['theorem']
   ids = examples['identifiers']
   pairs = zip(theorems, ids)
-  inputs = ['theorem ' + thm + '\nIdentifiers: ' + ids for (thm, ids) in pairs]
+  inputs = ['theorem ' + thm + '\nIdentifiers: ' + ids + tokenizer.eos_token for (thm, ids) in pairs]
   model_inputs = tokenizer(inputs, max_length=max_length, padding="max_length", truncation=True)
   labels = model_inputs['input_ids']
   model_inputs["labels"] = labels
@@ -107,10 +107,11 @@ def generate_ids(prompt, temperature=1.5, num_return_sequences=8, max_length=256
         temperature=temperature,
         num_return_sequences=num_return_sequences,
         max_length=max_length,
+        pad_token_id=tokenizer.eos_token_id
     )
     completion_text = tokenizer.batch_decode(completion_tokens, skip_special_tokens=True)
     gen_text = [t[len(input):] for t in completion_text]
-    return gen_text
+    return (gen_text, t[:len(input)] for t in completion_text)
 
 coverage_list=[]
 efficiency_list=[]
@@ -119,8 +120,9 @@ covered = 0
 
 with open('rawdata/premises/identifiers/codegen_test_data.jsonl', 'w', encoding='utf-8') as f:
     for d in test_ids:
-        gens = generate_ids(d['theorem'])
+        (gens, prompts) = generate_ids(d['theorem'])
         d['generated'] = gens
+        d['prompts'] = prompts
         scores = PredictionScores(d['identifiers'], gens)
         d['target_size'] = scores.target_size
         d['prediction_size'] = scores.prediction_size

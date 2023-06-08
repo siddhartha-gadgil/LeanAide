@@ -10,7 +10,9 @@ def gedit : IO String := do
   discard <| IO.Process.spawn { cmd := "gedit"} 
   return "done"
 
+
 #check List.findSome?
+#check List.getLast?_isSome
 #check zero_mem
 #eval (resolveGlobalName `none : MetaM _)
 #print AddSubmonoid.zero_mem
@@ -19,6 +21,8 @@ AddZeroClass M] (S : AddSubmonoid M) , 0 ∈ S  := zero_mem
 #check FirstOrder.Language.Term.var.sizeOf_spec
 #print false_or
 #print Prop.completeLattice.proof_3
+
+#check Fintype
 
 theorem one_is_pos : 0 < 1 := by simp
 
