@@ -111,7 +111,8 @@ def generate_ids(prompt, temperature=1.5, num_return_sequences=8, max_length=256
     )
     completion_text = tokenizer.batch_decode(completion_tokens, skip_special_tokens=True)
     gen_text = [t[len(input):] for t in completion_text]
-    return (gen_text, t[:len(input)] for t in completion_text)
+    prompts = [t[:len(input)] for t in completion_text]
+    return (gen_text, prompts)
 
 coverage_list=[]
 efficiency_list=[]
