@@ -21,8 +21,62 @@ AddZeroClass M] (S : AddSubmonoid M) , 0 ∈ S  := zero_mem
 #check FirstOrder.Language.Term.var.sizeOf_spec
 #print false_or
 #print Prop.completeLattice.proof_3
+#check List.foldl_append
+#check List.concat_eq_append
+#check List.reverse_append
 
 #check Fintype
+
+structure SplitList (l: List α) where
+  l₁ : List α
+  a : α
+  w : l = l₁ ++ [a]
+
+theorem splitEnd (l: List α)(nontriv : l ≠ []): ∃ (l' : List α) (a : α), l = l' ++ [a] := by
+  match c:l.reverse with
+  | [] =>
+    simp [List.reverse_reverse] at c
+    contradiction
+  | (a::l') =>
+    have c' : l.reverse.reverse = (a::l').reverse := by rw [c] 
+    simp [List.reverse_reverse] at c'
+    use l'.reverse, a
+    assumption
+
+def splitEnd' [DecidableEq α](l: List α)(_ : l ≠ []): SplitList l := 
+  match l with
+  | h :: t => 
+    if p:t = [] then
+      ⟨[], h, by simp [p]⟩
+    else by
+      let ⟨l'', a, w⟩ := splitEnd' t p
+      use h :: l'', a
+      simp [w]
+termination_by _ l _ => l.length
+
+def mockCancel (l₁ l₂ : List ℤ): List ℤ  :=
+  if c:l₁ = [] then l₂ else 
+  let ⟨l₁', a, _⟩ := splitEnd' l₁ c
+  match l₂ with
+  | [] => l₁
+  | h :: t => 
+      if h = -a then l₁' ++ t else l₁ ++ l₂
+
+theorem mc_shrink (l₁ l₂ : List ℤ) : 
+  (mockCancel l₁ l₂).length ≤ l₁.length + l₂.length := by
+  rw [mockCancel]
+  split
+  · simp
+  · split
+    split
+    · simp
+    · rename_i h₀' sp l₁' a' w' _ l₂' h' t'
+      split
+      · rw [w']
+        simp [List.length_append]
+        linarith
+      · simp [List.length_append]
+        
 
 theorem one_is_pos : 0 < 1 := by simp
 
