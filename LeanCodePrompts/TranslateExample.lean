@@ -1,4 +1,4 @@
-import Mathlib
+import Mathlib.Data.Nat.Basic
 import LeanCodePrompts.Translate
 import LeanCodePrompts.CodeAction
 

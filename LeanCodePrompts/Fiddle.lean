@@ -1,7 +1,7 @@
 import Lean
 import Lean.Parser
 import Lean.Data.Json.Parser
-import Mathlib
+import Mathlib.Data.List.Basic
 open Lean Meta Elab Parser Json.Parser
 
 #eval Lean.Json.parse "{\"x\" : 3, \"y\" : 4, \"z\" : [\"five\", 6]}"

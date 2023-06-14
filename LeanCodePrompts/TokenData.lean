@@ -1,5 +1,5 @@
 import LeanCodePrompts.CheckParse
-import Mathlib
+-- import Mathlib
 open Lean
 
 syntax  " ∥ " term " ∥ " : term
