@@ -1,6 +1,6 @@
 import LeanCodePrompts.AesopSearch
 import Lean
-import Mathlib.Data.Nat.Basic
+import Mathlib
 open Lean Meta Elab
 
 opaque sillyN  : Nat

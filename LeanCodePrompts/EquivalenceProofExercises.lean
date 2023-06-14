@@ -1,4 +1,4 @@
-import Mathlib.Data.Nat.Basic
+import Mathlib
 import Mathlib.Tactic.Basic
 import LeanCodePrompts.CheckParse
 import LeanCodePrompts.ThmInfo

@@ -1,5 +1,5 @@
 import Lean
-import Mathlib.Data.Rat.Basic
+import Mathlib
 /-!
 An attempt to give priority to homogeneous operations in the elaborator and make some other changes that allow expressions without too many type annotations.
 

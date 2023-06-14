@@ -1,5 +1,5 @@
 import LeanCodePrompts.Premises
-import Mathlib.Data.Nat.Basic
+import Mathlib
 open Lean Meta
 
 #check Nat.exists_infinite_primes

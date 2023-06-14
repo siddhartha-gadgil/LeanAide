@@ -1,4 +1,4 @@
-import Mathlib.Data.Rat.Basic
+import Mathlib
 
 -- instance : HPow ℕ ℕ ℚ := ⟨fun n k ↦ (n : ℚ) ^ k⟩
 -- example (n : ℕ) : ℚ := (4 *(n*(n-1)/2)^3-(n*(n-1)/2)^2)/3

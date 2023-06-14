@@ -1,7 +1,7 @@
 import LeanCodePrompts.FirstTacticFinder
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Use
-import Mathlib.Data.Nat.Basic
+import Mathlib
 
 -- example : ∀ n : ℕ, ∃ m : ℕ, n < 2 * m + 1 := by
 --   repeat (aide_lookahead)
