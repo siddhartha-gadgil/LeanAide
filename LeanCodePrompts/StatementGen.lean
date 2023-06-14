@@ -95,11 +95,11 @@ variable {context}
 
 
 
-def getContinuationExprs (s: String)(numSim : Nat:= 10)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 20)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Array String := do
+def getContinuationExprs (s: String)(numSim : Nat:= 10)(includeFixed: Bool := Bool.false)(queryNum: Nat := 20)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Array String := do
       -- work starts here; before this was caching, polling etc
     let (pairs, IOOut) ←  
       if numSim > 0 then  
-        getPromptPairs s numSim numKW scoreBound matchBound 
+        getPromptPairs s numSim scoreBound matchBound 
       else pure (#[], ⟨0, "", ""⟩)
     let pairs := if includeFixed then pairs ++ fixedPrompts else pairs 
     let prompt := continuationPrompt (makeThmsPrompt pairs)
@@ -118,7 +118,7 @@ def getDocContinuationExprs (s: String)(numSim : Nat:= 10)(numKW: Nat := 1)(incl
       -- work starts here; before this was caching, polling etc
     let (pairs, IOOut) ←  
       if numSim > 0 then  
-        getPromptPairs s numSim numKW scoreBound matchBound 
+        getPromptPairs s numSim scoreBound matchBound 
       else pure (#[], ⟨0, "", ""⟩)
     let pairs := if includeFixed then pairs ++ fixedPrompts else pairs 
     let promptPairs := pairs.map (fun (doc, thm) => ("State a theorem with docstring", s!"/-- {doc} -/\ntheorem {thm}"))
@@ -160,7 +160,7 @@ def getSectionContinuationExprs (s: String)(context: String)(numSim : Nat:= 10)(
 
 def showContinuationExprs (s: String)(context: String := "")(numSim : Nat:= 10)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 8)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Array (String × (List String)) := do
   let exprs ← 
-    getContinuationExprs s numSim numKW includeFixed queryNum temp scoreBound matchBound
+    getContinuationExprs s numSim includeFixed queryNum temp scoreBound matchBound
   exprs.mapM (fun s => do
     let exps? ← polyElabThmTrans (context ++ " " ++ s)
     let exps := exps?.toOption.getD []
