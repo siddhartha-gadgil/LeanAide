@@ -12,8 +12,6 @@ def main (args: List String) : IO Unit := do
   let type := (args.getD 0 "thm")
   let numSim := 
     (args.get? 1 >>= fun s => s.toNat?).getD 10 
-  let numKW := 
-    (args.get? 2 >>= fun s => s.toNat?).getD 1
   let includeFixed := 
     (args.get? 3 >>= fun s => s.toLower.startsWith "t").getD Bool.false
   let queryNum := 
@@ -23,7 +21,7 @@ def main (args: List String) : IO Unit := do
   let temp : JsonNumber := ⟨temp10, 1⟩
   let outFile := System.mkFilePath 
       ["results", 
-      s!"{type}-elab-{numSim}-{numKW}-{includeFixed}-{queryNum}-{temp10}.json"]
+      s!"{type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp10}.json"]
   let env ← 
     importModules [{module := `Mathlib},
     {module := `LeanCodePrompts.Basic},
@@ -33,7 +31,7 @@ def main (args: List String) : IO Unit := do
     {module := `Mathlib}] {}
   let core := 
     checkTranslatedThmsCore type
-      numSim numKW includeFixed queryNum temp
+      numSim includeFixed queryNum temp
   let io? := 
     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} 
     {env := env}

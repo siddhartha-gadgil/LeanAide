@@ -4,7 +4,6 @@ import Lean.Parser
 import LeanCodePrompts.CheckParse
 import LeanCodePrompts.ParseJson
 import LeanCodePrompts.Autocorrect
-import LeanCodePrompts.KeywordSummary.KeywordExtraction
 import LeanCodePrompts.EgsTranslate
 open Lean Meta
 
@@ -210,10 +209,14 @@ def elabLog (s: String) : IO Unit := do
   h.putStrLn s
   h.putStrLn ""
 
+def leanAideIP : IO String := do
+  let key? ← IO.getEnv "LEANAIDE_IP"
+  return key?.getD "localhost:5000"
+
 def fixedPrompts:= #[("If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.", "(n : ℕ) (f : ℕ → ℂ) :\n abs (∑ i in finset.range n, f i) ≤ ∑ i in finset.range n, abs (f i) :="), ("If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.", "(n : ℕ) (x y : euclidean_space ℝ (fin n)) :\n ∥x + y∥^2 + ∥x - y∥^2 = 2*∥x∥^2 + 2*∥y∥^2 :="), ("If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.", "(G : Type*) [group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :="), ("Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.", "(X : Type*) [topological_space X]\n (A : set X) (hA : ∀ x ∈ A, ∃ U : set X, is_open U ∧ x ∈ U ∧ U ⊆ A):\n is_open A :=")]
 
 /-- choosing pairs to build a prompt -/
-def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
+def getPromptPairs(s: String)(numSim : Nat)
     (scoreBound: Float)(matchBound: Nat)
    : TermElabM (Array (String × String) × IO.Process.Output) := do
       let jsData := Json.mkObj [
@@ -233,19 +236,13 @@ def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
         | Except.error e =>
             throwError e            
         | Except.ok pairs => pure pairs    
-      -- logInfo m!"all pairs: {allPairs}"        
-      let kwPairs :=
-        if numKW >0 
-        then ←  keywordBasedPrompts docPair s numKW scoreBound matchBound
-        else #[]
-      -- IO.println s!"obtained keyword pairs; time : {← IO.monoMsNow}"
-      let allPairs := (allPairs ++ kwPairs).toList.eraseDups.toArray
+      -- logInfo m!"all pairs: {allPairs}"
+      let allPairs := (allPairs).toList.eraseDups.toArray
       let pairs -- := allPairs -- 
         ←  allPairs.filterM (fun (_, s) => do
             isElabPrompt s )
-      let kwPairs ←  keywordBasedPrompts docPair s
       return (
-          (pairs ++ kwPairs).toList.eraseDups.toArray, simJsonOut)
+          (pairs).toList.eraseDups.toArray, simJsonOut)
 
 /-- choosing pairs to build a prompt -/
 def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := "doc_string")
@@ -276,7 +273,7 @@ def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := "doc_string"
 
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
-def getCodeJson (s: String)(numSim : Nat:= 8)(numKW: Nat := 0)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM Json := do
+def getCodeJson (s: String)(numSim : Nat:= 8)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM Json := do
   match ← getCachedJson? s with
   | some js => return js
   | none =>    
@@ -288,7 +285,7 @@ def getCodeJson (s: String)(numSim : Nat:= 8)(numKW: Nat := 0)(includeFixed: Boo
       -- work starts here; before this was caching, polling etc
       let (pairs, IOOut) ←  
         if numSim > 0 then  
-          getPromptPairs s numSim numKW scoreBound matchBound 
+          getPromptPairs s numSim scoreBound matchBound 
         else pure (#[], ⟨0, "", ""⟩)
       let pairs := if includeFixed then pairs ++ fixedPrompts else pairs
       let pairs  := pairs.filter (fun (s, _) => s.length < 100) 
@@ -407,8 +404,8 @@ def greedyArrayToExpr? (output: Array String) : TermElabM (Option Expr) := do
       return t?.map fun (expr, _, _) => expr
 
 /-- reverse translation from `Lean` to natural language -/
-def leanToPrompt (thm: String)(numSim : Nat:= 5)(numKW: Nat := 1)(temp : JsonNumber := 0)(scoreBound: Float := 0.2)(matchBound: Nat := 15)(textField : String := "text") : TermElabM String := do
-    let (pairs, _) ← getPromptPairs thm numSim numKW scoreBound matchBound
+def leanToPrompt (thm: String)(numSim : Nat:= 5)(temp : JsonNumber := 0)(scoreBound: Float := 0.2)(matchBound: Nat := 15)(textField : String := "text") : TermElabM String := do
+    let (pairs, _) ← getPromptPairs thm numSim scoreBound matchBound
     let prompt := GPT.makeFlipPrompt thm pairs
     -- elabLog prompt
     let fullJson ← gptQuery prompt 1 temp

@@ -4,25 +4,25 @@ import LeanCodePrompts.Utils
 open Lean Meta Elab
 
 
-def translateWithDataM (s: String)(numSim : Nat:= 10)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : 
+def translateWithDataM (s: String)(numSim : Nat:= 10)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : 
   TermElabM ((Option (Expr × (Array String) )) × Array String) := do
   let js ← 
-    getCodeJson s numSim numKW includeFixed queryNum temp scoreBound matchBound
+    getCodeJson s numSim includeFixed queryNum temp scoreBound matchBound
   let output ← GPT.jsonToExprStrArray js
   let output := output.toList.eraseDups.toArray
   let res ← arrayToExpr? output
   return (res, output)
   
-def translateWithDataCore (s: String)(numSim : Nat:= 10)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : 
+def translateWithDataCore (s: String)(numSim : Nat:= 10)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : 
   CoreM ((Option (Expr × (Array String) )) × Array String) := 
     (translateWithDataM s 
-      numSim numKW includeFixed 
+      numSim includeFixed 
         queryNum temp scoreBound matchBound).run'.run'
 
-def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : TermElabM Json := do
-  elabLog s!"Writing to file: {type}-elab-{numSim}-{numKW}-{includeFixed}-{queryNum}-{temp.mantissa}.json"
+def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : TermElabM Json := do
+  elabLog s!"Writing to file: {type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp.mantissa}.json"
   let promptsFile ← reroutePath <| System.mkFilePath ["data",
-    s!"prompts-{type}-{numSim}-{numKW}-{includeFixed}-{queryNum}-{temp.mantissa}.jsonl"]
+    s!"prompts-{type}-{numSim}-{includeFixed}-{queryNum}-{temp.mantissa}.jsonl"]
   let h ← IO.FS.Handle.mk promptsFile IO.FS.Mode.append
   let file ← reroutePath <| System.mkFilePath [s!"data/{type}-prompts.txt"]
   let prompts ←  IO.FS.lines file
@@ -38,7 +38,7 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat :=
     IO.println prompt
     let (res?, outputs) ← 
         translateWithDataM prompt
-          numSim numKW includeFixed queryNum temp
+          numSim includeFixed queryNum temp
     let fullPrompt := (← logs 1).head! 
     let js := Json.mkObj [("text", Json.str prompt), ("fullPrompt", Json.str fullPrompt)]
     h.putStrLn <| js.pretty 10000
@@ -67,7 +67,6 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat :=
       [("total-prompts", count),
         ("elaborated", elaborated),
         ("number-similar-sentences", numSim),
-       ("number-keyword-sentences", numKW),
        ("include-fixed", includeFixed),
        ("query-number", queryNum),
        ("temperature", Json.num temp),
@@ -84,9 +83,9 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat :=
             ]
   return js
 
-def checkTranslatedThmsCore(type: String := "thm")(numSim : Nat:= 10)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : CoreM Json :=
+def checkTranslatedThmsCore(type: String := "thm")(numSim : Nat:= 10)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : CoreM Json :=
     (checkTranslatedThmsM type
-      numSim numKW includeFixed queryNum temp).run'.run'
+      numSim includeFixed queryNum temp).run'.run'
 
 def parsedThmsPrompt : IO (Array String) := do
   let file ← reroutePath <| System.mkFilePath ["data/parsed_thms.txt"]
@@ -137,4 +136,3 @@ def outputFromCompletionsM (s: String) :
 
 def outputFromCompletionsCore (s: String) : CoreM String := 
   (outputFromCompletionsM s).run'.run'
-
