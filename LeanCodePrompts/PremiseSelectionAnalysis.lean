@@ -19,15 +19,15 @@ set_option maxRecDepth 1000000000
 
 /-- A custom structure for premise selection data. -/
 structure PremiseSelectionRecord where
-  «theorem» : String
-  identifiers : List Name
-  generated : List Name
-  target_size : Nat
+  «theorem»       : String
+  identifiers     : List Name
+  generated       : List Name
+  target_size     : Nat
   prediction_size : Nat
-  correct : List Name
-  missed : List Name
-  coverage : Float
-  efficiency : Float
+  correct         : List Name
+  missed          : List Name
+  coverage        : Float
+  efficiency      : Float
 deriving FromJson, ToJson, Inhabited, Repr
 
 open Parsec in
@@ -51,7 +51,8 @@ A plot of the distribution of the number of premises in the training data.
 
 #plot {
   data: [{
-    x: $(premiseData.map (·.identifiers.length)),
+    -- x: $(premiseData.map (·.identifiers.length)),
+    x: [1, 1, 1, 2, 2, 2, 3],
     type: "histogram"
   }]
 }
