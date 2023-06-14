@@ -54,6 +54,6 @@ def InterfaceParams : Interface.Params DeclarationWithDocstring :=
   postProcess := fun _ => DeclarationWithDocstring.toString
 }
 
-@[codeActionProvider] def Action := performCodeAction InterfaceParams
+@[code_action_provider] def Action := performCodeAction InterfaceParams
 
 end Custom

@@ -31,7 +31,7 @@ def textEdits (text: FileMap) : IO <| Array TextEdit := do
   pure edits
 
 
-@[codeActionProvider] def fillInProofs : CodeActionProvider := fun params _ => do
+@[code_action_provider] def fillInProofs : CodeActionProvider := fun params _ => do
   let doc ← readDoc
   let text := doc.meta.text
   let edits ← textEdits text

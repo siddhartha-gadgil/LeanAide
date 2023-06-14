@@ -39,6 +39,6 @@ def InterfaceParams : Interface.Params DeclarationWithDocstring :=
   postProcess := fun type decl => s!"{decl.name.getD ""} {type}"
 }
 
-@[codeActionProvider] def Action := performCodeAction InterfaceParams
+@[code_action_provider] def Action := performCodeAction InterfaceParams
 
 end SuggestName

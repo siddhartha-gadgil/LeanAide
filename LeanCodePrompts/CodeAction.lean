@@ -49,7 +49,7 @@ def Syntax.extractComment : Syntax → Option String
 -/
 
 /-- A code action for translating doc-strings to Lean code using OpenAI Codex -/
-@[codeActionProvider] def formaliseDocStr : CodeActionProvider := fun params snap => do
+@[code_action_provider] def formaliseDocStr : CodeActionProvider := fun params snap => do
   let doc ← readDoc
   let text := doc.meta.text
   let source := text.source
@@ -101,7 +101,7 @@ where
     | some comment, type => s!"/-{comment}-/\nexample : {type.trim} := by sorry"
     |     none    , type => s!"\nexample : {type.trim} := by sorry"
 
--- @[codeActionProvider] def informaliseThm : CodeActionProvider := fun params snap => do
+-- @[code_action_provider] def informaliseThm : CodeActionProvider := fun params snap => do
 --   let doc ← readDoc
 --   let text := doc.meta.text
 --   let source := text.source
@@ -129,7 +129,7 @@ where
 --   return #[{ eager := ca, lazy? := some $ return {ca with edit? := WorkspaceEdit.ofTextEdit params.textDocument.uri $ ← edit} }]
 
 -- open RequestM in
--- @[codeActionProvider]
+-- @[code_action_provider]
 -- def readFile : CodeActionProvider := fun params _snap => do
 --   let doc ← readDoc
 --   let text := doc.meta.text
