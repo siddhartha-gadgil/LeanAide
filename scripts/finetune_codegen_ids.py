@@ -100,7 +100,7 @@ print ('Test set size:', len(test_ids))
 
 def generate_ids(prompt, temperature=1.5, num_return_sequences=8, max_length=256):
     input = "theorem " + prompt + '\nIdentifiers: '
-    input_ids = tokenizer.encode(input, return_tensors='pt').to(device)
+    input_ids = tokenizer(input, return_tensors='pt').input_ids.to(device)
     completion_tokens = model.generate(
         input_ids,
         do_sample=True,
