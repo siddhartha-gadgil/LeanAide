@@ -1,75 +1,14 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# This is training of a model for generating lists of identifiers in a proof from the statement in Lean 4.
-
-# This is adapted from a notebook for training a CodeT5 model on generating documentation for Ruby code and further modified for the causal CodeGen model.
-
-
-from datasets import load_dataset
 import torch
-from random import sample
-
-dataset = load_dataset('json', data_dir='rawdata/premises/ident_strings', data_files="train.jsonl")
-print(dataset)
-
-# 
-# Below, we define a `preprocess_examples` function, which we can apply on the entire dataset. 
-
 
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-checkpoint = "Salesforce/codegen-350M-mono"
+checkpoint = "rawdata/idstrings_codegen_350/trained_model"
 tokenizer = AutoTokenizer.from_pretrained(checkpoint)
-tokenizer.add_special_tokens({'pad_token': '[PAD]'}) # for padding
-
-max_length = 512
-
-def preprocess_examples(examples):
-  # encode the code-docstring pairs
-  theorems = examples['theorem']
-  ids = examples['identifiers']
-  pairs = zip(theorems, ids)
-  inputs = ['theorem ' + thm + '\nIdentifiers: ' + ids + tokenizer.eos_token for (thm, ids) in pairs]
-  model_inputs = tokenizer(inputs, max_length=max_length, padding="max_length", truncation=True)
-  labels = model_inputs['input_ids']
-  model_inputs["labels"] = labels
-  return model_inputs
-
-
-# Now that we have defined the function, let's call `.map()` on the HuggingFace Dataset object, which allows us to apply this function in batches (by default a batch size of 1,000 is used!) - hence super fast.
-
-
-
-dataset = dataset.map(preprocess_examples, batched=True)
-
-# Next, let's set the format to "torch" and create PyTorch dataloaders.
-from torch.utils.data import DataLoader
-
-dataset.set_format(type="torch", columns=['input_ids', 'attention_mask', 'labels'])
-train_dataset = dataset['train']
-# train_dataset = train_dataset.shuffle(seed=42).select(range(10000)) # for testing
-
+tokenizer.add_special_tokens({'pad_token': '[PAD]'}) 
 
 model = AutoModelForCausalLM.from_pretrained(checkpoint)
 model = model.cuda()
 device = torch.device("cuda") 
-
-from transformers import TrainingArguments, Trainer
-
-training_args = TrainingArguments(output_dir="rawdata/idstrings_codegen_350")
-
-trainer = Trainer(
-    model=model,
-    args=training_args,
-    train_dataset=train_dataset,
-)
-
-trainer.train()
-
-model.save_pretrained("rawdata/idstrings_codegen_350/trained_model")
-
-train_dataloader = DataLoader(dataset['train'], shuffle=True, batch_size=8)
 
 
 # ## Inference
@@ -107,7 +46,7 @@ def generate_ids(prompt, temperature=1.5, num_return_sequences=8, max_length=256
         temperature=temperature,
         num_return_sequences=num_return_sequences,
         max_length=max_length,
-        pad_token_id=tokenizer.pad_token_id
+        # pad_token_id=tokenizer.pad_token_id
     )
     completion_text = tokenizer.batch_decode(completion_tokens, skip_special_tokens=True)
     gen_text = [t[len(input):] for t in completion_text]
@@ -123,7 +62,7 @@ with open('rawdata/premises/identifiers/codegen_test_data.jsonl', 'w', encoding=
     for d in test_ids:
         (gens, prompts) = generate_ids(d['theorem'])
         d['generated'] = gens
-        d['prompts'] = prompts
+        # d['prompts'] = prompts
         scores = PredictionScores(d['identifiers'], gens)
         d['target_size'] = scores.target_size
         d['prediction_size'] = scores.prediction_size
