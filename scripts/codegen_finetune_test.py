@@ -3,7 +3,7 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 checkpoint = "rawdata/idstrings_codegen_350/trained_model"
-tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+tokenizer = AutoTokenizer.from_pretrained("Salesforce/codegen-350M-mono")
 tokenizer.add_special_tokens({'pad_token': '[PAD]'}) 
 
 model = AutoModelForCausalLM.from_pretrained(checkpoint)
