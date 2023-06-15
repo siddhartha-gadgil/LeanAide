@@ -30,7 +30,7 @@ def preprocess_examples(examples):
   theorems = examples['theorem']
   ids = examples['identifiers']
   pairs = zip(theorems, ids)
-  inputs = ['theorem ' + thm + '\nIdentifiers: ' + ids + tokenizer.eos_token for (thm, ids) in pairs]
+  inputs = ['theorem ' + thm + '\nIdentifiers: ' + ids for (thm, ids) in pairs]
   model_inputs = tokenizer(inputs, max_length=max_length, padding="max_length", truncation=True)
   labels = model_inputs['input_ids']
   model_inputs["labels"] = labels
@@ -100,19 +100,17 @@ print ('Test set size:', len(test_ids))
 
 def generate_ids(prompt, temperature=1.5, num_return_sequences=8, max_length=256):
     input = "theorem " + prompt + '\nIdentifiers: '
-    input_ids = tokenizer(input, return_tensors='pt').input_ids.to(device)
+    input_ids = tokenizer.encode(input, return_tensors='pt').to(device)
     completion_tokens = model.generate(
         input_ids,
         do_sample=True,
         temperature=temperature,
         num_return_sequences=num_return_sequences,
         max_length=max_length,
-        pad_token_id=tokenizer.pad_token_id
     )
     completion_text = tokenizer.batch_decode(completion_tokens, skip_special_tokens=True)
     gen_text = [t[len(input):] for t in completion_text]
-    prompts = [t[:len(input)] for t in completion_text]
-    return (gen_text, prompts)
+    return gen_text
 
 coverage_list=[]
 efficiency_list=[]
@@ -121,9 +119,8 @@ covered = 0
 
 with open('rawdata/premises/identifiers/codegen_test_data.jsonl', 'w', encoding='utf-8') as f:
     for d in test_ids:
-        (gens, prompts) = generate_ids(d['theorem'])
+        gens = generate_ids(d['theorem'])
         d['generated'] = gens
-        d['prompts'] = prompts
         scores = PredictionScores(d['identifiers'], gens)
         d['target_size'] = scores.target_size
         d['prediction_size'] = scores.prediction_size
