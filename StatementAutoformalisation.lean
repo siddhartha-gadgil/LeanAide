@@ -70,7 +70,7 @@ def generatePrompts : MetaM Unit := do
 
 open Lean
 def main : IO Unit := do
-  initSearchPath (← Lean.findSysroot) ["build/lib", "lake-packages/mathlib/build/lib/",  "lake-packages/std/build/lib/", "lake-packages/Qq/build/lib/", "lake-packages/aesop/build/lib/" ]
+  initSearchPath (← Lean.findSysroot) ["build/lib", "lake-packages/mathlib/build/lib/",  "lake-packages/std/build/lib/", "lake-packages/Qq/build/lib/", "lake-packages/aesop/build/lib/", "lake-packages/proofwidgets/build/lib" ]
   let env ← importModules [{module := `Mathlib}] {}
   Prod.fst <$> generatePrompts.toIO 
     {fileName := "", 
