@@ -56,6 +56,12 @@ def main (_: List String) : IO Unit := do
             let identPairs := identData.unfold
             for identPair in identPairs do
                 identPair.write group handles
+            let termPairs := TermPair.ofCorePremiseData corePremise 
+            for termPair in termPairs do
+                termPair.write group handles
+            let lemmaPairs := LemmaPair.ofCorePremiseData corePremise
+            for lemmaPair in lemmaPairs do
+                lemmaPair.write group handles                
             if count % 5000 = 0 then
               IO.println s!"obtained {count} definitions; {dups} duplicates"
         | none =>

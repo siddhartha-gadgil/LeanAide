@@ -37,12 +37,14 @@ def freshDataHandle (fileNamePieces : List String)(clean: Bool := true) : IO IO.
 
 def fileNamePieces : HashMap (String × String) (List String) :=
     HashMap.ofList <|
-        ["core", "full", "identifiers", "ident_pairs", "ident_strings"].bind fun kind => 
+        ["core", "full", "identifiers", "ident_pairs", "ident_strings",
+        "term_pairs", "lemma_pairs"].bind fun kind => 
             ("all" :: "extra" :: groups).map fun group => ((kind, group), ["premises", kind, group++".jsonl"])
 
 def mainFileNamePieces : HashMap (String × String) (List String) :=
     HashMap.ofList <|
-        ["core",  "identifiers", "ident_pairs", "ident_strings"].bind fun kind => 
+        ["core",  "identifiers", "ident_pairs", "ident_strings",
+        "term_pairs", "lemma_pairs"].bind fun kind => 
             ("all"  :: groups).map fun group => ((kind, group), ["premises", kind, group++".jsonl"])
 
 def fileHandles (clean : Bool := true) : IO (HashMap (String × String) IO.FS.Handle)  := do
@@ -139,6 +141,9 @@ deriving Repr, ToJson, FromJson, BEq
 def CorePropData.ofPropProof (propPf : PropProofData) : CorePropData :=
     ⟨propPf.context.map (fun s => shrink s.reprint.get!.trim),
     shrink propPf.prop.reprint.get!.trim⟩
+
+def CorePropData.thm (data: CorePropData) : String :=
+     data.context.foldr (fun s c => s ++ " " ++ c) s!" : {data.prop}"
 
 structure CorePremiseDataDirect where
     context : Array String
@@ -574,6 +579,78 @@ def write (data: IdentPair)(group: String)(handles: HashMap (String × String) I
 
 end IdentPair
 
+def contextString (context : Array String) : String := 
+    context.foldr (fun s c => s ++ c) ""
+
+structure LemmaPair where
+    thmContext : Array String
+    thmType : String
+    lemmaType : String -- have only this for named lemmas
+
+namespace LemmaPair
+
+def thm (data: LemmaPair) : String := data.thmContext.foldr (fun s c => s ++ c) s!" : {data.thmType}"
+
+def write (data: LemmaPair)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
+    let js := Json.mkObj [("theorem", data.thm), ("lemma", data.lemmaType)]
+    let l := js.pretty 10000000
+    let gh ← match handles.find? ("lemma_pairs", group) with
+                | some h => pure h
+                | none => 
+                    IO.throwServerError ("No handle for " ++ group ++ " in " ++ "lemma_pairs")                
+    let h ←  match handles.find? ("lemma_pairs", "all") with
+                | some h => pure h
+                | none => 
+                    IO.throwServerError "No handle for 'all' in lemma_pairs"
+    if l.length < 9000000 then
+                        h.putStrLn  l
+                        gh.putStrLn l
+
+def ofCorePremiseData (data: CorePremiseData) : Array LemmaPair :=
+    data.lemmas.map (fun l => ⟨data.context, data.type, l.thm⟩) ++
+    data.namedLemmas.map (fun l => ⟨data.context, data.type, l⟩)
+
+end LemmaPair
+
+structure TermPair where
+    thmContext : Array String
+    thmType : String
+    termContext : Array String
+    term : String
+    isProp: Bool
+    
+
+namespace TermPair
+
+def thm (data: TermPair) : String := 
+    data.thmContext.foldr (fun s c => s ++ c) s!" : {data.thmType}"
+
+def write (data: TermPair)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
+    let js := Json.mkObj [
+        ("theorem", data.thm), 
+        ("term_context", contextString data.termContext),
+        ("term", data.term),
+        ("is_prop", data.isProp)
+        ]
+    let l := js.pretty 10000000
+    let gh ← match handles.find? ("term_pairs", group) with
+                | some h => pure h
+                | none => 
+                    IO.throwServerError ("No handle for " ++ group ++ " in " ++ "term_pairs")                
+    let h ←  match handles.find? ("term_pairs", "all") with
+                | some h => pure h
+                | none => 
+                    IO.throwServerError "No handle for 'all' in term_pairs"
+    if l.length < 9000000 then
+                        h.putStrLn  l
+                        gh.putStrLn l
+
+def ofCorePremiseData (data: CorePremiseData) : List TermPair :=
+    data.terms.map (fun t => 
+        ⟨data.context, data.type, t.context, t.value, t.isProp⟩)
+
+end TermPair
+
 def IdentData.filter (d: IdentData)(p : String → Bool) : IdentData := 
     {context:= d.context, type := d.type, ids := d.ids.filter p}
 
@@ -605,12 +682,19 @@ def PremiseData.writeBatch (names: List Name)(group: String)
                 IO.println s!"Writing {defn.name}"
             for premise in defn.premises do
                 premise.write group handles propMap
+                let coreData ← premise.coreData propMap 
                 let identData := 
-                    IdentData.ofCorePremiseData <| ← premise.coreData propMap 
+                    IdentData.ofCorePremiseData coreData
                 identData.write group handles
                 let identPairs := identData.unfold
                 for identPair in identPairs do
                     identPair.write group handles
+                let termPairs := TermPair.ofCorePremiseData coreData 
+                for termPair in termPairs do
+                    termPair.write group handles
+                let lemmaPairs := LemmaPair.ofCorePremiseData coreData
+                for lemmaPair in lemmaPairs do
+                    lemmaPair.write group handles
                 premiseCount := premiseCount + 1
             count := count + 1
             if count % 300 = 0 then
