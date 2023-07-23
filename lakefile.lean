@@ -107,6 +107,8 @@ lean_exe chkthms{
 
 lean_lib examples
 
+lean_lib scratch
+
 require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git"@"master"
 
