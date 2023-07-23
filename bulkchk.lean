@@ -2,6 +2,7 @@ import Lean.Meta
 import LeanCodePrompts
 import LeanCodePrompts.CheckParse
 import LeanCodePrompts.Makecaps
+import LeanAide.Config
 open Lean
 
 set_option maxHeartbeats 10000000
@@ -17,7 +18,7 @@ def promptsIO : IO (Array String) := do
 def main : IO Unit := do
   IO.println "starting"
   let initTime ← IO.monoMsNow
-  initSearchPath (← Lean.findSysroot) ["build/lib", "lake-packages/mathlib/build/lib/",  "lake-packages/std/build/lib/", "lake-packages/Qq/build/lib/", "lake-packages/aesop/build/lib/", "lake-packages/proofwidgets/build/lib" ]
+  initSearchPath (← Lean.findSysroot) initFiles
   let env ← 
     importModules [{module := `Mathlib},
     {module := `LeanCodePrompts.Basic},

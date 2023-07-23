@@ -150,7 +150,9 @@ def elabThm (s : String)(opens: List String := [])
         | Except.ok termStx => Term.withLevelNames levelNames <|
           try 
             let expr ← Term.withoutErrToSorry <| 
-                Term.elabTerm termStx none
+                Term.elabType termStx
+            Term.synthesizeSyntheticMVarsNoPostponing
+            IO.println s!"{(←PrettyPrinter.delab expr).raw.reprint}"
             return Except.ok expr
           catch e => 
             return Except.error s!"{← e.toMessageData.toString} ; identifiers {idents termStx} (during elaboration)"

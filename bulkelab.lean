@@ -1,6 +1,7 @@
 import Lean.Meta
 import LeanCodePrompts
 import LeanCodePrompts.BatchTranslate
+import LeanAide.Config
 open Lean
 
 set_option maxHeartbeats 10000000
@@ -8,7 +9,7 @@ set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
 def main (args: List String) : IO Unit := do
-  initSearchPath (← Lean.findSysroot) ["build/lib", "lake-packages/mathlib/build/lib/",  "lake-packages/std/build/lib/", "lake-packages/Qq/build/lib/", "lake-packages/aesop/build/lib/", "lake-packages/proofwidgets/build/lib" ]
+  initSearchPath (← Lean.findSysroot) initFiles
   let type := (args.getD 0 "thm")
   let numSim := 
     (args.get? 1 >>= fun s => s.toNat?).getD 10 
