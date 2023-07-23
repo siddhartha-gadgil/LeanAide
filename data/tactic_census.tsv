@@ -1,0 +1,465 @@
+rw	47300
+exact	28769
+·	15538
+refine'	14221
+simp	13901
+have	12972
+apply	12920
+intro	11493
+rintro	6596
+rfl	6261
+ext	6069
+simpa	5848
+obtain	5573
+rcases	5081
+cases	4805
+by_cases	2918
+convert	2918
+rwa	2893
+let	2826
+constructor	2782
+cases'	2676
+refine	2214
+dsimp	2134
+congr	1997
+induction'	1764
+haveI	1747
+intros	1598
+erw	1535
+change	1392
+use	1313
+infer_instance	1251
+suffices	1107
+split_ifs	1033
+subst	987
+linarith	908
+letI	903
+ring	885
+induction	814
+norm_num	801
+ext1	797
+replace	755
+unfold	611
+assumption	597
+try	575
+aesop_cat	563
+norm_cast	520
+classical	505
+set	496
+funext	485
+decide	472
+calc	469
+first	466
+exacts	456
+exact_mod_cast	449
+contrapose!	449
+fin_cases	387
+clear	364
+case	362
+show	358
+revert	346
+lift	345
+field_simp	339
+swap	336
+conv_rhs	333
+specialize	330
+slice_lhs	312
+by_contra	301
+contradiction	295
+choose	295
+conv_lhs	287
+tauto	278
+symm	272
+gcongr	262
+positivity	244
+delta	244
+abel	242
+(	237
+slice_rhs	208
+{	204
+right	199
+push_cast	197
+trans	189
+push_neg	188
+aesop	184
+skip	184
+conv	178
+exfalso	177
+tfae_have	177
+left	170
+nth_rw	169
+injection	163
+apply_fun	153
+trivial	144
+norm_num1	140
+ring_nf	132
+pgame_wf_tac	127
+generalize	118
+subst_vars	116
+all_goals	116
+apply_rules	116
+repeat'	112
+done	110
+continuity	109
+by_contra'	108
+fapply	90
+inhabit	87
+introv	84
+exists	83
+solve_by_elim	77
+iterate	77
+rename_i	70
+nlinarith	69
+ac_rfl	69
+substs	67
+congr!	67
+borelize	62
+choose!	62
+simp_all	61
+ring1	58
+contrapose	51
+convert_to	47
+fconstructor	47
+wlog	47
+isBoundedDefault	43
+rotate_left	40
+linear_combination	40
+repeat	39
+cases_type	38
+tfae_finish	36
+split	34
+generalize_proofs	34
+injections	33
+any_goals	32
+casesm	32
+rw_mod_cast	30
+aesop_cat_nonterminal	29
+measurability	28
+match	27
+clear!	27
+apply_assumption	25
+nontriviality	24
+clear_value	22
+rsuffices	22
+on_goal	22
+next	22
+assumption_mod_cast	20
+pick_goal	20
+interval_cases	17
+classical!	16
+pure_coherence	16
+unit_interval	13
+nth_rewrite	12
+mono	11
+assumption'	8
+rcongr	8
+abel_nf	8
+apply_mod_cast	7
+triv	7
+ghost_calc	6
+rename	5
+find	4
+ring!	3
+infer_param	3
+· -- Porting note: simp used to be able to close this goal	3
+cancel_denoms	3
+clear_aux_decl	3
+· -- B₁.comp l r = B₂.comp l r → B₁ = B₂	2
+· -- B₁ = B₂ → B₁.comp l r = B₂.comp l r	2
+rotate_right	2
+· -- by construction, `s p` is `ε`-dense	2
+rename'	2
+· -- Porting note: this `show` wasn't needed in Lean 3	2
+· -- Porting note: added type ascription to LHS	2
+swap_var	2
+· -- Porting note: broken ext	2
+· -- Porting note : Lean can't use `Types.limit_ext'` as an `ext` lemma	2
+· -- This is just `hfg` run through `eventually_prod_iff`	2
+set!	2
+restrict_tac	2
+· -- case `b ≠ 0`	2
+· -- Porting note: had to add `rfl`, because `simp` only uses the built-in `rfl`.	2
+refine' -- pred	2
+refine
+      -- Porting note: removing the placeholders give an error	2
+· -- porting note: was `measurability`	2
+· -- Porting note: `rw [h1] at *` rewrites at `h1`	2
+repeat'
+    -- Porting note: why do we need to fill in the implicit `C` here, and below?	2
+classical
+      -- for Fintype (Subgroup.zpowers g)	1
+·-- case `ringChar F = 2`	1
+classical
+  -- Porting note: Originally `obtain ⟨ha, rfl⟩`
+  -- This is https://github.com/leanprover/std4/issues/62	1
+· -- Porting note: was simply `hp` as an argument above	1
+· /- First we prove that `F` is injective. Indeed, if `F x = F y` and `x ≠ y`, then we can find
+    `(U, V) ∈ s` such that `x ∈ U` and `y ∉ V`, hence `F x UV = 0 ≠ ε UV = F y UV`. -/	1
+· /- Now we prove that each neighborhood `V` of `x : X` include a preimage of a neighborhood of
+    `F x` under `F`. Without loss of generality, `V` belongs to `B`. Choose `U ∈ B` such that
+    `x ∈ V` and `closure V ⊆ U`. Then the preimage of the `(ε (U, V))`-neighborhood of `F x`
+    is included by `V`. -/	1
+· /- Finally, we prove that `F` is continuous. Given `δ > 0`, consider the set `T` of `(U, V) ∈ s`
+    such that `ε (U, V) ≥ δ`. Since `ε` tends to zero, `T` is finite. Since each `f` is continuous,
+    we can choose a neighborhood such that `dist (F y (U, V)) (F x (U, V)) ≤ δ` for any
+    `(U, V) ∈ T`. For `(U, V) ∉ T`, the same inequality is true because both `F y (U, V)` and
+    `F x (U, V)` belong to the interval `[0, ε (U, V)]`. -/	1
+· -- Porting note: was `replace h := pow_eq_zero h; rw [coe_coe] at h; simpa using hne.1`	1
+· -- Porting note: was `by norm_cast`	1
+· -- To show `𝓣 ≤ 𝓣₀`, we have to show that closed balls are `𝓣`-neighborhoods of 0.	1
+· -- Finally, to show `𝓣₀ ≤ 𝓣`, we simply argue that `id = (fun x ↦ x • 1)` is continuous from
+    -- `(𝕜, 𝓣₀)` to `(𝕜, 𝓣)` because `(•) : (𝕜, 𝓣₀) × (𝕜, 𝓣) → (𝕜, 𝓣)` is continuous.	1
+· -- In the case where `l` is surjective, we factor it as `φ : (E ⧸ l.ker) ≃ₗ[𝕜] 𝕜`. Note that
+    -- `E ⧸ l.ker` is T2 since `l.ker` is closed.	1
+· -- if `f` is not integrable, both `setToFun` are 0.	1
+· -- `j z a = z / (a + 1)`: we prove that this ratio is close to `α`	1
+· -- check that `u ∪ {a'}` is made of elements of `t`.	1
+· -- Check that `u ∪ {a'}` is a disjoint family. This follows from the fact that `a'` does not
+    -- intersect `u`.	1
+· -- `NullMeasurableSet I volume`	1
+· -- `∀ (g : G), g ≠ 0 → AEDisjoint volume (g +ᵥ I) I`	1
+· -- `∀ (g : G), QuasiMeasurePreserving (VAdd.vadd g) volume volume`	1
+· -- `volume univ ≤ ∑' (g : G), volume (g +ᵥ I)`	1
+· --the kernel of the map is clearly `(I * S) ∩ R<x>`. To get injectivity, we need to show that
+    --this is contained in `I * R<x>`, which is the content of the previous lemma.	1
+· -- porting note: todo: Lean fails to find InvMemClass instance	1
+· -- Porting note: issues with synthesizing Algebra R S	1
+transitivity	1
+· -- φ : S → Sᶜ is injective	1
+· -- Porting note: Here was one `exact`, but timeouted.	1
+· -- integral is continuous	1
+· -- `(π / b) ^ (1 / 2 : ℂ)` is continuous	1
+· -- RHS doesn't vanish	1
+· -- Porting note: was `nlinarith`	1
+·-- 5 ≤ fib 5	1
+· -- n + 1 ≤ fib (n + 1) for 5 ≤ n	1
+· -- Main case : `0 < y < π / 2`	1
+· -- Easy case : `π / 2 ≤ y ≤ 3 * π / 2`	1
+· -- Porting note: makes instance metavariable like in Lean 3	1
+· -- Porting note: used to be exact _|>. hg i j but that can't find an instance	1
+· -- `v` is an infinite basis,
+    -- so by `infinite_basis_le_maximal_linearIndependent`, `v'` is at least as big,
+    -- and then applying `infinite_basis_le_maximal_linearIndependent` again
+    -- we see they have the same cardinality.	1
+· -- and otherwise we have `linearIndependent_le_infinite_basis`.	1
+· -- porting note: was ext; · rfl; apply hEq_of_eq	1
+· -- porting note: was `continuity`	1
+· -- Porting note: Rewrote this proof	1
+· -- If there exists `δ ∈ (0, ε)`, then we choose `δ`-nhd of `a` and `(ε-δ)`-nhd of `b`	1
+· -- Otherwise `ε`-nhd of each point `a` is `{a}`	1
+· -- Porting note: was `unfold LinearMap.det`	1
+exact  -- porting note: added `GCDMonoid.` twice	1
+· -- remaining goal 1	1
+· -- Now we just need to check that the lift we picked was the only possible one.
+      -- So we suppose we had some other gluing `t` of our sections	1
+· -- Claim: `1 ≤ ⇑norm_sq ↑(g • z)`. If not, then `S•g•z` has larger imaginary part	1
+· -- Porting note: was
+    -- linarith [hp.out.one_lt, le_of_lt hp.out.one_lt]	1
+· /- human proof:
+        Let g ∈ Γₛₜ 𝒢 x be a germ. Represent it on an open set U ⊆ X
+        as ⟨t, U⟩. By local surjectivity, pass to a smaller open set V
+        on which there exists s ∈ Γ_ ℱ V mapping to t |_ V.
+        Then the germ of s maps to g -/
+    -- Let g ∈ Γₛₜ 𝒢 x be a germ.	1
+· -- i ≠ j: this entry should be 0	1
+· -- Everything except `(i , j)` (= `(σ j , j)`) is given by A, and the rest is a single `1`.	1
+· -- This feels a little redundant, since already have `ht_cover` as a hypothesis
+    -- Unfortunately, `ht_cover` uses a bounded union over the set `t`, while here we have the
+    -- Union indexed by the type `tt`, so we need some boilerplate to translate one to the other	1
+· -- Porting note: `convert` needed help	1
+· -- Porting note: added `congr_arg`	1
+· -- Porting note: `← Function.comp.assoc` & `-Equiv.Perm.sign_swap'` are required.	1
+· -- Porting note: Explicitly specify `c`.	1
+· -- Check that `F` is continuous, as a uniform limit of continuous functions	1
+· -- Check that `F` is bounded	1
+· -- Check that `F` is close to `f N` in distance terms	1
+· -- ψ₁ is the continuous ring hom `ℂ →+* ℂ` constructed from `closure (K) ≃+* ℂ`
+      -- and `extψ : closure (K) →+* ℂ`	1
+· -- extψ : closure(K) →+* ℂ is the extension of ψ : K →+* ℂ	1
+· -- Porting note: This case was
+            -- `exact WithBot.some_le_some.2 ⟨iInf₂_le _ ha, le_iSup₂_of_le _ ha le_rfl⟩`
+            -- but there seems to be a defEq-problem at `iInf₂_le` that lean cannot resolve yet.	1
+· -- Porting note: ungolfed, due to identification problems
+                -- between `toProd` and `toDualProd`. Original mathport output:
+                -- cases h fun t hb c hc =>
+                --   (WithBot.coe_le_coe.1 <| ha _ hb).1.trans <|
+                --     s.fst_le_snd.trans (WithBot.coe_le_coe.1 <| ha _ hc).2 }	1
+· -- here we need to help the elaborator with an explicit instantiation	1
+· -- the remaining step of the calculation above	1
+· -- `e = left chart`, `e' = left chart`	1
+·-- `e = right chart`, `e' = right chart`	1
+· -- Porting note: originally this was
+        -- rintro x (rfl | hx)
+        -- exacts [Or.inl (Set.mem_singleton x), Or.inr (hl.2 x hx)]
+      -- but this fails because `List.Mem` is now an inductive prop.
+      -- I couldn't work out how to drive `rcases` here but asked at
+      -- https://leanprover.zulipchat.com/#narrow/stream/348111-std4/topic/rcases.3F/near/347976083	1
+· -- Base case: `0 < re s`, so Gamma is given by the integral formula	1
+· -- Induction step: use recurrence formulae in `s` for Gamma and GammaSeq	1
+· -- first deal with silly case z = integer	1
+· -- x > 0 : easy case	1
+· -- x = 0 : reduce to continuousAt_cpow_zero_of_re_pos	1
+· -- x < 0 : difficult case	1
+.	1
+· -- An intermediate claim used to apply induction along `G : Finset J` later on.	1
+· -- conclude...	1
+classical
+  -- The limit cone for `F` whose topology is defined as an infimum.	1
+match_target	1
+guard_hyp	1
+· -- Then we check that the formula, being a composition of `ContDiff` pieces, is
+      -- itself `ContDiff`	1
+· -- Porting note: was
+      -- rw [indicator_of_not_mem (not_mem_Ioo_of_le ht), indicator_of_not_mem (not_mem_Ioi.mpr ht),
+      --   ContinuousLinearMap.map_zero, ContinuousLinearMap.zero_apply]	1
+· -- Porting note: was
+      -- rw [indicator_of_mem ht, indicator_of_mem (mem_Ioi.mpr ht.1),
+      --     indicator_of_mem (mem_Ioi.mpr <| sub_pos.mpr ht.2)]	1
+· -- Porting note: was
+      -- rw [indicator_of_not_mem (not_mem_Ioo_of_ge ht),
+      --     indicator_of_not_mem (not_mem_Ioi.mpr (sub_nonpos_of_le ht)),
+      --     ContinuousLinearMap.map_zero]	1
+· -- Porting note: was
+      -- rw [indicator_of_not_mem (_ : x - t ∉ Ioi 0), ContinuousLinearMap.map_zero]	1
+· -- Porting note: was
+      -- rw [indicator_of_not_mem (mem_Ioi.not.mpr ht), ContinuousLinearMap.map_zero,
+      --  ContinuousLinearMap.zero_apply]	1
+· -- The easy case: `s ≠ 0`	1
+· -- Note the case n = 0 (i.e. s = 1) works OK here, but only because we have used
+    -- `Function.update_noteq` to change the goal; the original goal is genuinely false for s = 1.	1
+·-- k = 0 : evaluate explicitly	1
+· -- k = 2 * (m + 1) : both sides "trivially" zero	1
+classical
+  -- Porting note : use the same universe level	1
+· -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5072): was `use`	1
+· -- porting note: Lean 3 had `(FreeCommRing.lift _).map_neg` but I needed to replace it with
+  -- `RingHom.map_neg` to get the rewrite to compile	1
+· -- porting note: was `(restriction _).map_add`	1
+· -- Easy case #1: 0 ∉ [a, b] -- use continuity.	1
+· -- Easy case #2: 0 < re r -- again use continuity	1
+· -- case `c < 0`: integrand is identically constant, *except* at `x = 0` if `r ≠ 0`.	1
+· -- Porting note: was `change ... with ...`	1
+· -- Porting note: added `⟨⟩` brackets and reordered goals	1
+· -- the product is invertible because all the factors are	1
+· /- If `(c, d) = ∅`, then let `ed` be a trivialization of `proj` over a neighborhood of `d`.
+      Then the disjoint union of `ec` restricted to `(-∞, d)` and `ed` restricted to `(c, ∞)` is
+      a trivialization over `[a, d]`. -/	1
+· /- If `(c, d)` is nonempty, then take `d' ∈ (c, d)`. Since the base set of `ec` includes
+          `[a, d)`, it includes `[a, d'] ⊆ [a, d)` as well. -/	1
+· -- We need to show that `f` has bounded norm. Choose `C` such that `‖g‖ ≤ C` for all `g ∈ s`.	1
+·-- We use the volume as an upper estimate.	1
+ext
+      -- porting note: was `simp only [...]`	1
+· -- If `m` is an even number, then `(m / 2) * p` can be represented as a sum of four squares	1
+· -- Porting note: fails without this line
+    -- This will presumably be fixed by the changes discussed at
+    -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/!4.232894/near/342121059	1
+· -- take a set set t which is nonempty and at a finite distance of s	1
+lift_lets	1
+calc
+    -- porting note: needs extra annotations, no longer unifies against the goal in the face of
+    -- ambiguity	1
+· -- b = f	1
+· -- Porting note : need more hand holding here because Lean knows that
+      -- `CommRing.ofHom ...` is iso, but without `ofHom` Lean does not know what to do	1
+· -- In the non-trivial case `∀ i, a i < b i`, we apply a lemma we proved above.	1
+· -- porting note: was compute_degree_le; repeat' rwa [Nat.sub_add_cancel]	1
+· -- in this case, f is constant because all values are at top	1
+· -- Base case: `n = 0`, the fixed subspace is the whole space, so `φ = id`	1
+· -- porting note: was `linarith [unitInterval.nonneg t, unitInterval.le_one t]` but `linarith`
+    -- doesn't know about `ℚ` yet. https://github.com/leanprover-community/mathlib4/issues/2714
+    -- porting note: although `linarith` now knows about `ℚ`, it still fails here as it doesn't
+    -- find `LinearOrder X`.	1
+· -- Show that it maps each index to the corresponding finite set	1
+· -- The reverse direction is a straightforward cardinality argument	1
+· -- Otherwise, `b ≤ a`, and the interval is a subsingleton,
+    -- so all subalgebras are the same anyway.	1
+norm_cast0	1
+· -- If Left played in -x, Right responds with the same move in x.	1
+· -- If Left in x, Right responds with the same move in -x.	1
+· -- `convert` here is faster than `exact`, and this proof is near the time limit.
+      -- convert isIntegral_isLocalization_polynomial_quotient P pX hpX	1
+· -- Porting note: was `rcases minimal_nonempty_open_eq_singleton ho hne _ with ⟨x, hx⟩`
+    --               https://github.com/leanprover/std4/issues/116	1
+ext
+    -- Porting note: why doesn't `simp` work here?	1
+· -- Porting note: squeezed simp	1
+· -- Porting note: this branch had been:
+      -- simpa only [Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex,
+      --   HomologicalComplex.id_f, PInfty_f, ← P_is_eventually_constant (rfl.le : n + 1 ≤ n + 1),
+      --   homotopyPToId_eventually_constant X (lt_add_one (n + 1))] using
+      --   (homotopyPToId X (n + 2)).comm (n + 1)
+      -- which fails on leanprover/lean4:nightly-2023-05-16 due to
+      -- https://github.com/leanprover/lean4/pull/2146
+      -- The `erw` below clunkily works around this.	1
+· -- Porting note: behavior of `@` changed relative to lean 3, was
+      -- exact fun i => (@measurable_prod_mk_left β γ _ _ b) _ (hf_meas i)	1
+· -- case `‖c i‖ ≤ 2`	1
+· -- case `2 < ‖c i‖`	1
+simpa!	1
+run_tac	1
+open	1
+· -- Porting note: was
+        -- exact fun n => eventually_of_forall fun y =>
+        --   SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n	1
+· -- porting note: Lean does not automatically synthesize the instance
+    -- `[Subsingleton (Fin 0 → M)]` which is needed for `Subsingleton.elim 0 v` on line 114.	1
+focus	1
+· -- To prove that `n` is coprime with `b`, we need to show that for all prime factors of `n`,
+    -- we can derive a contradiction if `n` divides `b`.	1
+· /- Since each `f (Nx $ π.tag J)` is `ε`-close to `g (π.tag J)`, replacing the latter with
+        the former in the formula for the integral sum changes the sum at most by `μ I * ε`. -/	1
+· /-  For the last jump, we use the fact that the distance between `f (Nx x) x` and `g x` is less
+        than or equal to the distance between `f N₀ x` and `g x` and the integral of
+        `‖f N₀ x - g x‖` is less than or equal to `ε`. -/	1
+· -- Porting note: Originally `simpa [Wbtw, affineSegment] using h`	1
+· -- The integral from 1 to ∞ is zero:	1
+· -- Porting note: infer_instance fails because it applies `Finite.of_fintype` and produces a
+    -- "stuck at solving universe constraint" error.	1
+· -- use the IH to show that the following equality suffices	1
+· -- Our first goal is to show that this chosen gluing satisfies the
+      -- predicate. Of course, we use locality of the predicate.	1
+classical
+    -- Introduce shorthand for span of an element	1
+· -- We construct a map x : ℕ → α with dense image	1
+· -- Porting note: `Finset.le_sup` needed some helps	1
+· -- If `ζ.im = 0`, then `Complex.exp ζ` is a positive real number	1
+· -- If `ζ.im = π / 2`, then `Complex.exp ζ` is a purely imaginary number with positive `im`	1
+·-- If `‖f x₀‖ ≤ C`, then `hle` implies the required estimate	1
+· -- Otherwise, `‖f z‖ ≤ ‖f x₀‖` for all `z` in the right half-plane due to `hle`.	1
+· -- Porting note: was
+      -- convert mul_comm _ _ using 2
+      -- simp	1
+· -- pair cf cg	1
+· --comp hf hg	1
+classical
+  -- to avoid having to show that the predicate is decidable	1
+· -- case 2: `a ≥ a₁`	1
+all_goals
+-- porting note: wlog not implemented yet, the following replaces the three previous lines
+-- wlog (discharger := tactic.skip) hab : a ≤ b := le_total a b using a b s t, b a t s	1
+· -- Porting note: was
+      -- `simpa [orderedInsert, h', h] using fun b' bm => trans h' (rel_of_sorted_cons h _ bm)`	1
+· -- Porting note: without the explicit argument Lean is not sure of the type.	1
+· -- the rest of the proof is a straightforward calculation	1
+· -- as `K` is closed and non-empty, it is pointed	1
+· -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+    -- See https://github.com/leanprover-community/mathlib4/issues/5229	1
+· -- m even, n even	1
+· -- m even, n odd	1
+· -- m odd, n even	1
+· -- m odd, n odd	1
+· -- If `n = 5`, then `g` is itself a 5-cycle, conjugate to `finRotate 5`.	1
+· -- porting note: middle lemma now needs `erw` as `ENNReal` does not reduce to `WithTop NNReal`
+    -- https://github.com/leanprover-community/mathlib4/issues/5164	1
+· -- Map each vertex using the homomorphism provided for its singleton subgraph.	1
+· -- Porting note: mathlib3 `continuity` found `continuous_set_coe`	1
+· -- This is also an element of the subalgebra, and takes only real values	1
+· -- And it also separates the points `x₁`, `x₂`	1
+· -- Porting note: The previous code was:
+      -- rintro ⟨_, rfl, rfl, _⟩
+      -- rfl
+      --
+      -- The code reports an error for the second `rfl`.	1
+· -- Porting note: Previous proof was `decide`	1
+· -- Porting note: avoided some defeq abuse	1

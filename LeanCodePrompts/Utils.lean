@@ -144,3 +144,5 @@ def List.batches' (l: List α)(numBatches: Nat) : List (List α) :=
 
 def Array.batches' (l: Array α)(numBatches: Nat) : Array (Array α) :=
   (l.toList.batches' numBatches).map (fun l => l.toArray) |>.toArray
+
+#check Json.compress
