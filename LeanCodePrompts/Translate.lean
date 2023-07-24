@@ -2,13 +2,12 @@ import Lean
 import Lean.Meta
 import Lean.Parser
 import LeanAide.TheoremElab
+import LeanAide.IP
 
 import LeanCodePrompts.Autocorrect
-import LeanCodePrompts.KeywordSummary.KeywordExtraction
 import LeanCodePrompts.EgsTranslate
-open Lean Meta
 
-open Lean Elab Parser Command
+open Lean Meta Elab Parser Command
 
 def fileName := "data/safe_prompts.json"
 
@@ -234,18 +233,11 @@ def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
             throwError e            
         | Except.ok pairs => pure pairs    
       -- logInfo m!"all pairs: {allPairs}"        
-      let kwPairs :=
-        if numKW >0 
-        then ←  keywordBasedPrompts docPair s numKW scoreBound matchBound
-        else #[]
-      -- IO.println s!"obtained keyword pairs; time : {← IO.monoMsNow}"
-      let allPairs := (allPairs ++ kwPairs).toList.eraseDups.toArray
+      let allPairs := allPairs.toList.eraseDups.toArray
       let pairs -- := allPairs -- 
         ←  allPairs.filterM (fun (_, s) => do
             isElabPrompt s )
-      let kwPairs ←  keywordBasedPrompts docPair s
-      return (
-          (pairs ++ kwPairs).toList.eraseDups.toArray, simJsonOut)
+      return (pairs.toList.eraseDups.toArray, simJsonOut)
 
 /-- choosing pairs to build a prompt -/
 def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := "doc_string")
