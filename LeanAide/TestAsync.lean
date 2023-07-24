@@ -1,5 +1,5 @@
-import LeanCodePrompts.Async
-import LeanCodePrompts.AsyncCodeAction
+import LeanAide.Async
+import LeanAide.AsyncCodeAction
 import Aesop
 import Mathlib.Tactic.LibrarySearch
 

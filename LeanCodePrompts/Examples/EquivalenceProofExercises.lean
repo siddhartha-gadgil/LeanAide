@@ -89,9 +89,9 @@ example : (∀ {n : ℕ}, 1 < n → ∃ p, Nat.Prime p ∧ p ∣ n) → ((n: ℕ
   n > 1 → ∃ p: ℕ, Nat.Prime p ∧ (∃ d: ℕ, (p * d) = n)) := sorry
 example : ((n: ℕ) → n > 1 → ∃ p: ℕ, Nat.Prime p ∧ (∃ d: ℕ, (p * d) = n)) → (∀ {n : ℕ}, 1 < n → ∃ p, Nat.Prime p ∧ p ∣ n) := sorry
 
-/-- A finite torsion-free group is trivial -/
-example : (∀ {G : Type u} [inst : Group G] [inst_1 : Fintype G], Monoid.IsTorsionFree G → Fintype.card G = 1) → ({G: Type u} → [Group G] → [Finite G] → Monoid.IsTorsionFree G → IsSubgroup.Trivial G) := sorry
-example : ({G: Type u} → [Group G] → [Finite G] → Monoid.IsTorsionFree G → IsSubgroup.Trivial G) → (∀ {G : Type u} [inst : Group G] [inst_1 : Fintype G], Monoid.IsTorsionFree G → Fintype.card G = 1) := sorry
+-- /-- A finite torsion-free group is trivial -/
+-- example : (∀ {G : Type u} [inst : Group G] [inst_1 : Fintype G], Monoid.IsTorsionFree G → Fintype.card G = 1) → ({G: Type u} → [Group G] → [Finite G] → Monoid.IsTorsionFree G → IsSubgroup.Trivial G) := sorry
+-- example : ({G: Type u} → [Group G] → [Finite G] → Monoid.IsTorsionFree G → IsSubgroup.Trivial G) → (∀ {G : Type u} [inst : Group G] [inst_1 : Fintype G], Monoid.IsTorsionFree G → Fintype.card G = 1) := sorry
 
 
 

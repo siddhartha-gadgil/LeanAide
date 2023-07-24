@@ -1,4 +1,4 @@
-import LeanCodePrompts.Async
+import LeanAide.Async
 
 open Lean Meta Elab Term Tactic Core
 open Lsp Server RequestM

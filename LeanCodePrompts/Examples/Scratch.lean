@@ -86,7 +86,7 @@ theorem uniformcts_of_uniformcts {α β γ : Type _} [UniformSpace α] [UniformS
 /-
 The image of a union of sets is the union of the images.
 -/
-theorem image_union (f : α → β) (S : Set (Set α)) : (f <$> (⋃₀ S)) = (⋃₀ ((Functor.map f) <$> S)) := sorry
+-- theorem image_union (f : α → β) (S : Set (Set α)) : (f <$> (⋃₀ S)) = (⋃₀ ((Functor.map f) <$> S)) := sorry
 
 /-
 A topological space is normal if and only if any two disjoint closed subsets can be separated by a continuous function.
@@ -101,7 +101,7 @@ The only field automorphism of the reals is the identity.
 /-
 If a function from the unit interval to itself has a point of period three, then it has points of all positive periods.
 -/
-theorem period_three_implies_chaos : ∀ f : Set.IccCat 0 1 → Set.IccCat 0 1, (∃ x : Set.IccCat 0 1, Function.IsPeriodicPt f 3 x) → (∀ n : ℕ, n > 0 → ∃ y : Set.IccCat 0 1, Function.IsPeriodicPt f n y) := sorry
+-- theorem period_three_implies_chaos : ∀ f : Set.IccCat 0 1 → Set.IccCat 0 1, (∃ x : Set.IccCat 0 1, Function.IsPeriodicPt f 3 x) → (∀ n : ℕ, n > 0 → ∃ y : Set.IccCat 0 1, Function.IsPeriodicPt f n y) := sorry
 
 /-
 A terminal object in a category is unique up to unique isomorphism.
@@ -111,7 +111,7 @@ theorem terminal_unique_iso {C : Type _} [CategoryTheory.Category C] : ∀ T₁ 
 /-
 A finitely-presented group containing a torsion element is finite.
 -/
-theorem torsion_in_fg_group_implies_finite {G : Type _} [Group G] : Group.Fg G → Finite G := sorry
+-- theorem torsion_in_fg_group_implies_finite {G : Type _} [Group G] : Group.Fg G → Finite G := sorry
 
 /-
 The complement of the union of two sets is the intersection of their complements.
@@ -191,8 +191,8 @@ theorem six_not_prime_sum :
 /-
 A finite torsion-free group is trivial
 -/
-theorem fin_torsionfree {G: Type _}[Group G][Finite G] :
-  Monoid.IsTorsionFree G → IsSubgroup.Trivial G := sorry
+-- theorem fin_torsionfree {G: Type _}[Group G][Finite G] :
+--   Monoid.IsTorsionFree G → IsSubgroup.Trivial G := sorry
 
 /-
 Any homomorphism from the additive group of rational numbers to `ℤ` is trivial
