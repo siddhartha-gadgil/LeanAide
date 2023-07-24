@@ -1,5 +1,5 @@
-import LeanCodePrompts.FirstTacticData
-import LeanCodePrompts.FirstTacticDataExamples
+import LeanAide.FirstTacticData
+import LeanAide.FirstTacticDataExamples
 import Lean
 open Lean Meta
 

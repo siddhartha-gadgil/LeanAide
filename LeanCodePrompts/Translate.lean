@@ -17,7 +17,7 @@ def sentenceSimPairs
   (s: String)
   (theoremField : String := "theorem")
    : MetaM  <| Except String (Array (String × String)) := do
-  let json ← readJson s
+  let json := Lean.Json.parse  s |>.toOption.get!
   return do
     (← json.getArr?).mapM <| fun j => do
       let docstring ← j.getObjValAs? String "doc_string" 
@@ -124,7 +124,7 @@ def codexQuery(prompt: String)(n: Nat := 1)
         "-H", "Authorization: Bearer " ++ key,
         "-H", "Content-Type: application/json",
         "--data", data]}
-  readJson out
+  return Lean.Json.parse out |>.toOption.get!
 
 def gptQuery(messages: Json)(n: Nat := 1)
   (temp : JsonNumber := ⟨2, 1⟩)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json := do
@@ -146,7 +146,7 @@ def gptQuery(messages: Json)(n: Nat := 1)
         "-H", "Content-Type: application/json",
         "--data", data]}
   trace[Translate.info] "OpenAI response: {out.stdout} (stderr: {out.stderr})"
-  readJson out.stdout
+  return Lean.Json.parse out.stdout |>.toOption.get!
 
 def openAIQuery(prompt: String)(n: Nat := 1)
   (temp : JsonNumber := ⟨2, 1⟩)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json :=
@@ -477,7 +477,7 @@ def jsonToExprStrArray (json: Json) : TermElabM (Array String) := do
 /-- array of outputs extracted from Json Array -/
 def jsonStringToExprStrArray (jsString: String) : TermElabM (Array String) := do
   try
-  let json ← readJson jsString
+  let json := Lean.Json.parse  jsString |>.toOption.get!
   let outArr : Array String ← 
     match json.getArr? with
     | Except.ok arr => 

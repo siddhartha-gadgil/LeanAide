@@ -213,7 +213,7 @@ def getTacticPrompts(s: String)(numSim : Nat)
         throwError m!"Failed to get prompts from server: {simJsonOut.stderr}"
       else
         let json := 
-          Lean.Json.parse  simJsonOut.stdout |>.toOption.get! 
+          Lean.Json.parse simJsonOut.stdout |>.toOption.get! 
         match json.getArr? with
         | Except.ok arr => 
           let mut prompts := #[]

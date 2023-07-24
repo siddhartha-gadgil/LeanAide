@@ -1,4 +1,4 @@
-import LeanCodePrompts.FirstTacticData
+import LeanAide.FirstTacticData
 open Lean Parser Tactic
 
 -- for testing

@@ -56,7 +56,8 @@ def caseNames : MetaM (HashMap String String) := do
   if cache.isEmpty then 
       let jsBlob ← 
         IO.FS.readFile (← reroutePath <| System.mkFilePath ["data", "case_dictionary.json"])
-      let json ← readJson jsBlob
+      let json := 
+        Lean.Json.parse jsBlob |>.toOption.get!
       match json.getArr? with
       | Except.error e => throwError e
       | Except.ok arr => do

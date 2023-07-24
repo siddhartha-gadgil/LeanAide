@@ -1,4 +1,4 @@
-import LeanCodePrompts.FirstTacticFinder
+import LeanAide.FirstTacticFinder
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Use
 import Mathlib

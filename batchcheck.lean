@@ -34,14 +34,11 @@ def main (args: List String) : IO Unit := do
   let inp ←  IO.FS.readFile inpfile
   let outfile :=  System.mkFilePath [outName]
   let mut out : Json := Json.null
-  let core := readJsonCore inp
   let io? := 
-    core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
-  match ← io?.toIO' with
+    Lean.Json.parse inp
+  match io? with
   | Except.error e => 
-    let m := e.toMessageData
-    let outString ← m.toString
-    out := Json.str outString
+    out := Json.str e
   | Except.ok js =>
     match js.getArr? with
     | Except.error e => 

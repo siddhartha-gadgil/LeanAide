@@ -5,7 +5,7 @@ open Lean Meta Elab
 
 /-- extract prompt pairs from JSON response to local server -/
 def sentenceSimTriples(s: String) : MetaM  <| Except String (Array (String × String × String)) := do
-  let json ← readJson (s) 
+  let json := Lean.Json.parse s |>.toOption.get! 
   -- logInfo "obtained json"
   match json.getArr? with
   | Except.ok jsonArr => do
