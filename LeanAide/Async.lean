@@ -1,7 +1,8 @@
 import Lean
 import LeanAide.Aides
 import Aesop
-open Lean Meta Elab Term Tactic Core Parser
+
+open Lean Meta Elab Term Tactic Core Parser Tactic
 
 /-!
 # Asynchronous tactic execution
@@ -31,10 +32,7 @@ We have a function of type `TacticM Unit` which
 * We then restore these states.
 -/
 
-deriving instance BEq for LocalDecl
-deriving instance Hashable for LocalDecl
-deriving instance Repr for LocalDecl
-
+deriving instance BEq, Hashable, Repr for LocalDecl
 
 structure GoalKey where
   goal : Expr
@@ -44,9 +42,9 @@ deriving BEq, Hashable, Repr
 structure ProofState where
   core   : Core.State
   meta   : Meta.State
-  term?   : Option Term.State
+  term?  : Option Term.State
   preScript : Option String
-  script: Syntax
+  script : TSyntax ``tacticSeq
   tailPos? : Option String.Pos
 
 def GoalKey.get : TacticM GoalKey := do
@@ -83,34 +81,34 @@ def getStates (key : GoalKey) : TacticM (Option ProofState) := do
   return m.find? key
 
 abbrev PolyTacticM :=  MVarId → 
-  (MetaM <| (Option Term.State) × Syntax)
+  (MetaM <| (Option Term.State) × TSyntax ``tacticSeq)
 
 /- Abstracted to possibly replace by Aesop search -/
-def runTacticCode (tacticCode : Syntax)  : PolyTacticM := fun goal ↦ 
+def runTacticCode (tacticCode : TSyntax ``tacticSeq)  : PolyTacticM := fun goal ↦ 
   withoutModifyingState do
     let (goals, ts) ← runTactic  goal tacticCode 
     unless goals.isEmpty do
         throwError m!"Tactic not finishing, remaining goals:\n{goals}"
     pure (some ts, tacticCode)
 
-def getMsgTactic?  : CoreM <| Option Syntax := do
+def getMsgTactic?  : CoreM <| Option (TSyntax ``tacticSeq) := do
   let msgLog ← Core.getMessageLog  
   let msgs := msgLog.toList
-  let mut tac? : Option Syntax := none
+  let mut tac? : Option <| TSyntax ``tacticSeq := none
   for msg in msgs do
     let msg := msg.data
     let msg ← msg.toString 
     let msg := msg.replace "Try this:" "" |>.trim
-    let parsedMessage := Parser.runParserCategory (←getEnv)  `tactic msg
+    let parsedMessage := Parser.runParserCategory (←getEnv)  ``tacticSeq msg
     match parsedMessage with
     | Except.ok tac => 
       resetMessageLog
-      tac? := some tac
+      tac? := some ⟨tac⟩
     | _ =>
       logInfo m!"failed to parse tactic {msg}"
   return tac?
 
-def runTacticCodeMsg (tacticCode : Syntax)  : PolyTacticM := fun goal ↦ do
+def runTacticCodeMsg (tacticCode : TSyntax ``tacticSeq)  : PolyTacticM := fun goal ↦ do
     let (goals, ts) ← runTactic  goal tacticCode 
     unless goals.isEmpty do
         throwError m!"Tactic not finishing, remaining goals:\n{goals}"
@@ -120,7 +118,7 @@ def runTacticCodeMsg (tacticCode : Syntax)  : PolyTacticM := fun goal ↦ do
     | some tac => tac
     pure (some ts, code)
 
-def PolyTacticM.ofTactic (tacticCode : Syntax) : PolyTacticM := runTacticCodeMsg tacticCode
+def PolyTacticM.ofTactic (tacticCode : TSyntax ``tacticSeq) : PolyTacticM := runTacticCodeMsg tacticCode
 
 
 def runAndCacheM (polyTac : PolyTacticM) (goal: MVarId) (target : Expr) (pos? tailPos? : Option String.Pos)(preScript: Option String) : MetaM Unit := 
@@ -237,7 +235,7 @@ macro "by#"  : term =>
 
 @[tactic autoTacs] def autoStartImpl : Tactic := fun stx => 
 withMainContext do
-let autoCode ← `(tactic|auto) 
+let autoCode ← `(tacticSeq| auto) 
 match stx with
 | `(tactic| with_auto%$tk $tacticCode) => do
     let mut prevPos := tk
@@ -313,10 +311,3 @@ scoped macro (priority := high) "by" tacs?:(tacticSeq)? : term =>
   | some tacs => `(by with_auto $tacs)
 
 end leanaide.auto
-
-
-example : 1 = 1 := by checkpoint rfl
-
--- #check Meta.isProp
--- #check Parser.runParserCategory
--- #check Syntax.updateTrailing
