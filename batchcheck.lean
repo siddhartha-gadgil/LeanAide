@@ -2,7 +2,6 @@ import Lean.Meta
 import LeanCodePrompts
 import LeanAide.TheoremElab
 import LeanCodePrompts.Makecaps
-import LeanCodePrompts.ParseJson
 import LeanAide.Config
 open Lean
 
@@ -18,7 +17,7 @@ def main (args: List String) : IO Unit := do
     {module := `LeanCodePrompts.Basic},
     {module:= `LeanCodePrompts.CheckParse},
     {module:= `LeanCodePrompts.Makecaps},
-    {module:= `LeanCodePrompts.ParseJson},
+    
     {module := `Mathlib}] {}
 
   let (inpName, outName) := 

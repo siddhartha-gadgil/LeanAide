@@ -29,7 +29,7 @@ def main (args: List String) : IO Unit := do
     importModules [{module := `Mathlib},
     {module := `LeanCodePrompts.Basic},
     {module:= `LeanCodePrompts.CheckParse},
-    {module:= `LeanCodePrompts.ParseJson},
+    
     {module:= `LeanCodePrompts.Translate},
     {module := `Mathlib}] {}
   let core := 

@@ -14,7 +14,7 @@ def main (args: List String) : IO Unit := do
   let env ← 
     importModules [{module := `Mathlib},
     {module:= `LeanCodePrompts.CheckParse},
-    {module:= `LeanCodePrompts.ParseJson},
+    
     {module:= `LeanCodePrompts.Translate},
     {module := `Mathlib}] {}
   let core := 

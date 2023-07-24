@@ -4892,3 +4892,39 @@ No valid output from Codex; outputs below
 
 No valid output from Codex; outputs below
 
+No valid output from Codex; outputs below
+
+∀ (n : ℕ), ∃ (m : ℕ), m > n ∧ m % 2 = 1
+
+∀ (n : ℕ), ∃ (m : ℕ), m > n ∧ m % 2 = 1
+
+∀ (n : ℕ), ∃ (m : ℕ), m > n ∧ m % 2 = 1
+
+∀ (n : ℕ), ∃ (m : ℕ), m > n ∧ m % 2 = 1
+
+∀ (n : ℕ), ∃ (m : ℕ), m > n ∧ m % 2 = 1
+
+No valid output from Codex; outputs below
+
+∀ (n : ℕ), ∃ (m : ℕ), m > n ∧ m % 2 = 1
+
+∀ (n : ℕ), ∃ (m : ℕ), m > n ∧ m % 2 = 1
+
+∀ (n : ℕ), ∃ (m : ℕ), m > n ∧ m % 2 = 1
+
+∀ (n : ℕ), ∃ (m : ℕ), m > n ∧ m % 2 = 1
+
+∀ (n : ℕ), ∃ (m : ℕ), m > n ∧ m % 2 = 1
+
+No valid output from Codex; outputs below
+
+∀ (n : ℕ), ∃ (m : ℕ), m > n ∧ m % 2 = 1
+
+∀ (n : ℕ), ∃ (m : ℕ), m > n ∧ m % 2 = 1
+
+∀ (n : ℕ), ∃ (m : ℕ), m > n ∧ m % 2 = 1
+
+∀ (n : ℕ), ∃ (m : ℕ), m > n ∧ m % 2 = 1
+
+∀ (n : ℕ), ∃ (m : ℕ), m > n ∧ m % 2 = 1
+

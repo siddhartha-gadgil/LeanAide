@@ -1,4 +1,4 @@
-import LeanCodePrompts.ImportList
+import LeanAide.ImportList
 import Lean.Meta
 import LeanAide.Config
 open Lean Meta 
@@ -14,7 +14,7 @@ def main (args: List String) : IO Unit := do
   let name : Name := nameStr.toName 
   let env ← 
     importModules [
-    {module:= `LeanCodePrompts.ImportList},
+    {module:= `LeanAide.ImportList},
     {module:= name}] {}
   let core : CoreM Nat :=  
      writeImport nameStr

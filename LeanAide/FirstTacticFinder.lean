@@ -1,5 +1,5 @@
 import LeanAide.FirstTacticData
-import LeanCodePrompts.ParseJson
+
 import LeanCodePrompts.Translate
 import Lean
 

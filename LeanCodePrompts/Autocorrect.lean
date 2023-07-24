@@ -2,7 +2,7 @@ import Lean
 import Lean.Meta
 import LeanAide.TheoremElab
 import LeanAide.TheoremEquality
-import LeanCodePrompts.ParseJson
+
 import Mathlib.Mathport.Rename
 
 open Lean Meta Elab

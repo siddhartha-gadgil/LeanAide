@@ -2,7 +2,7 @@ import Lean
 import Lean.Meta
 import Lean.Parser
 import LeanAide.TheoremElab
-import LeanCodePrompts.ParseJson
+
 import LeanCodePrompts.Autocorrect
 import LeanCodePrompts.KeywordSummary.KeywordExtraction
 import LeanCodePrompts.EgsTranslate
