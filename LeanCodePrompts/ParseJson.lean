@@ -1,7 +1,7 @@
 import Lean
 import Lean.Parser
 import Lean.Data.Json
-import LeanCodePrompts.Utils
+import LeanAide.Aides
 
 open Lean Parser
 

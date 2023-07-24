@@ -3,6 +3,7 @@ import Lean.Meta
 import Lean.Elab
 import Lean.Parser
 import Lean.Parser.Extension
+import LeanAide.Config
 
 open Lean Meta Elab Parser Tactic
 
@@ -50,14 +51,6 @@ def getStr! (j : Json) : String :=
   j.getStr?.toOption.get!
 
 end Lean.Json
-
-initialize
-  registerTraceClass `Translate.info
-  registerTraceClass `Translate.debug
-  registerTraceClass `Translate.warning
-  registerTraceClass `leanaide.proof.info
-
-initialize delab_bound : IO.Ref UInt32 ← IO.mkRef 50
 
 def getDelabBound : MetaM UInt32 := do
    delab_bound.get
@@ -146,3 +139,12 @@ def Array.batches' (l: Array α)(numBatches: Nat) : Array (Array α) :=
   (l.toList.batches' numBatches).map (fun l => l.toArray) |>.toArray
 
 #check Json.compress
+
+#check Option.mapM
+
+@[inline] protected def Except.mapM [Monad m] (f : α → m β) 
+    (o : Except ε α) : m (Except ε β) := do
+  match o with
+  | Except.ok a => return Except.ok (← f a)
+  | Except.error e => return Except.error e
+

@@ -3,9 +3,14 @@ import Lean.Meta
 import Lean.Elab
 import Lean.Parser
 import Lean.Parser.Extension
-import LeanCodePrompts.Utils
+import LeanAide.Aides
 open Lean Meta Elab Parser  Tactic
  
+/-!
+## Parsing and Elaboration of statements
+
+These can be headed with `theorem`, `def`, `example` or nothing and may or may not have a name.
+-/
 
 def depsPrompt : IO (Array String) := do
   let file ← reroutePath <| System.mkFilePath ["data/types.txt"]
@@ -14,37 +19,6 @@ def depsPrompt : IO (Array String) := do
 declare_syntax_cat typed_ident
 syntax "(" ident ":" term ")" : typed_ident
 syntax "{" ident ":" term "}" : typed_ident
-
--- #check Array.foldrM
--- #check TSyntaxArray.rawImpl
--- #check TSyntax.mk
-
-instance : Coe (Syntax) (TSyntax n) where
-  coe := TSyntax.mk
-
-instance : Coe (Array Syntax) (Array (TSyntax n)) where
-  coe := Array.map Coe.coe
-
-/-- check whether a string parses as a term -/
-def checkTerm (s : String) : MetaM Bool := do
-  let env ← getEnv
-  let chk := Lean.Parser.runParserCategory env `term  s
-  match chk with
-  | Except.ok _  => pure true
-  | Except.error _  => pure false
-
-/-- split prompts into those that parse -/
-def promptsSplit : MetaM ((Array String) × (Array String)) := do 
-  let deps ← depsPrompt
-  let mut succ: Array String := Array.empty
-  let mut fail: Array String := Array.empty
-  for type in deps do
-    let chk ←  checkTerm type
-    if chk then
-      succ := succ.push type
-    else
-      fail := fail.push type
-  return (succ, fail)
 
 
 declare_syntax_cat argument
@@ -73,7 +47,6 @@ def checkThm (s : String) : MetaM Bool := do
       pure true
   | Except.error _  => pure false
 
-#check Syntax
 partial def tokens (s : Syntax) : Array String := 
 match s with
 | .missing => Array.empty
@@ -88,8 +61,6 @@ def getTokens (s: String) : MetaM <| Array String := do
   | Except.ok stx  =>
       pure <| tokens stx
   | Except.error _  => pure Array.empty
-
--- #eval getTokens "{α : Type u} [group α] [has_lt α] [covariant_class α α (function.swap has_mul.mul) has_lt.lt] {a : α} : 1 < a⁻¹ ↔ a < 1"
 
 
 /-- split prompts into those that parse -/
@@ -163,6 +134,14 @@ def elabThmCore (s : String)(opens: List String := [])
   (levelNames : List Lean.Name := levelNames)
   : CoreM <| Except String Expr := 
     (elabThm s opens levelNames).run'.run'
+
+/-!
+### Examples for parsing and elaboration
+-/
+
+/-!
+## Equality of statements
+-/
 
 theorem true_true_iff_True : true = true ↔ True := by
     apply Iff.intro
@@ -278,44 +257,6 @@ def groupThmsSortCore(ss: Array String)(opens: List String := [])
 
 -- Tests
 
--- #eval checkTerm "(fun x : Nat => x + 1)"
-
--- #eval checkTerm "a • s"
-
--- #eval checkTerm "λ x : Nat, x + 1"
-
--- #eval checkTerm "a - t = 0"
-
-
-def checkStatements : MetaM (List (String × Bool)) := do
-  let prompts ← depsPrompt
-  (prompts.toList.take 50).mapM fun s => 
-    do return (s, ← checkTerm s)
-
-def tryParseThm (s : String) : MetaM String := do
-  let env ← getEnv
-  let chk := Lean.Parser.runParserCategory env `thmStat  s
-  match chk with
-  | Except.ok stx  =>
-      match stx with
-      | `(thmStat|theorem $_ $args:argument* : $type:term) =>
-        let mut argS := ""
-        for arg in args do
-          argS := argS ++ (showSyntax arg) ++ " -> "
-        let funStx := s!"{argS}{showSyntax type}"
-        pure s!"match: {funStx}"
-      | `(thmStat|$args:argument* : $type:term) =>
-        let mut argS := ""
-        for arg in args do
-          argS := argS ++ (showSyntax arg) ++ " -> "
-        let funStx := s!"{argS}{showSyntax type}"
-        pure s!"match: {funStx}"
-      | _ => pure s!"parsed to mysterious {stx}"
-  | Except.error e  => pure s!"error: {e}"
-
--- #eval tryParseThm "theorem blah (n : Nat) {m: Type} : n  = n"
-
--- #eval elabThm "(p: Nat)/-- blah test -/ theorem  (n : Nat) {m: Type} : n  = p"
 
 def eg :=
 "section 
@@ -323,95 +264,10 @@ variable (α : Type) {n : Nat}
 /-- A doc that should be ignored -/
 theorem blah (m: Nat) : n  = m "
 
--- #eval checkThm eg
+#eval checkThm eg
 
--- #eval checkThm "(n : Nat) {m: Type} : n  = n"
+#eval checkThm "(n : Nat) {m: Type} : n  = n"
 
--- #eval tryParseThm "theorem subfield.list_sum_mem {K : Type u} [field K] (s : subfield K) {l : list K} : (∀ (x : K), x ∈ l → x ∈ s) → l.sum ∈ s"
-
-def checkElabThm (s : String) : TermElabM String := do
-  let env ← getEnv
-  let chk := Lean.Parser.runParserCategory env `thmStat  s
-  match chk with
-  | Except.ok stx  =>
-      match stx with
-      | `(thmStat|theorem $_ $args:argument* : $type:term) =>
-        let mut argS := ""
-        for arg in args do
-          argS := argS ++ (showSyntax arg) ++ " -> "
-        let funStx := s!"{argS}{showSyntax type}"
-        match Lean.Parser.runParserCategory env `term funStx with
-        | Except.ok termStx => Term.withLevelNames levelNames <|
-          try 
-            let expr ← Term.withoutErrToSorry <| 
-                Term.elabTerm termStx none
-            pure s!"elaborated: {← expr.view} from {funStx}"
-          catch e => 
-            pure s!"{← e.toMessageData.toString} during elaboration"
-        | Except.error e => 
-            pure s!"parsed to {funStx}; error while parsing: {e}"
-      | `(thmStat|$vars:argument* $_:docComment theorem $args:argument* : $type:term ) =>
-        let mut argS := ""
-        for arg in vars ++ args do
-          argS := argS ++ (showSyntax arg) ++ " -> "
-        let funStx := s!"{argS}{showSyntax type}"
-        match Lean.Parser.runParserCategory env `term funStx with
-        | Except.ok termStx => Term.withLevelNames levelNames <|
-          try 
-            let expr ← Term.withoutErrToSorry <| 
-                Term.elabTerm termStx none
-            pure s!"elaborated: {← expr.view} from {funStx}"
-          catch e => 
-            pure s!"{← e.toMessageData.toString} during elaboration"
-        | Except.error e => 
-            pure s!"parsed to {funStx}; error while parsing: {e}"
-      | `(thmStat|$args:argument* : $type:term) =>
-        let mut argS := ""
-        for arg in args do
-          argS := argS ++ (showSyntax arg) ++ " -> "
-        let funStx := s!"{argS}{showSyntax type}"
-        match Lean.Parser.runParserCategory env `term funStx with
-        | Except.ok termStx => Term.withLevelNames levelNames <|
-          try 
-            let expr ← Term.withoutErrToSorry <| 
-                Term.elabTerm termStx none
-            pure s!"elaborated: {← expr.view} from {funStx}"
-          catch e => 
-            pure s!"{← e.toMessageData.toString} during elaboration"
-        | Except.error e => 
-            pure s!"parsed to {funStx}; error while parsing: {e}"
-      | _ => pure s!"parsed to mysterious {stx}"
-  | Except.error e  => pure s!"error: {e}"
-
--- #eval checkElabThm "theorem blah (n : Nat) {m : Nat} : n  = m"
-
--- #eval checkElabThm eg
-
--- #eval checkElabThm "theorem subfield.list_sum_mem {K : Type u} [field K] (s : subfield K) {l : list K} : (∀ (x : K), x ∈ l → x ∈ s) → l.sum ∈ s"
-
--- #eval elabThm "theorem blah (n : Nat) {m : Nat} : n  = m" 
-
--- #eval elabThm "theorem (n : Nat) {m : Nat} : n  = m"
-
--- #eval elabThm "theorem blah (n : Nat) {m : Nat} : n  = succ n" ["Nat"]
-
--- #eval elabThm "theorem blah (n : Nat) {m : Nat} : n  = succ n" ["Nat"]
-
--- #eval elabThm "(n : Nat) {m : Nat} : n  = succ n" ["Nat"]
-
--- #eval elabThmCore "(n : Nat) {m : Nat} : n  = succ n" ["Nat"]
-
--- #eval elabThm "theorem subfield.list_sum_mem {K : Type u} [field K] (s : subfield K) {l : list K} : (∀ (x : K), x ∈ l → x ∈ s) → l.sum ∈ s"
-
--- #eval compareThms "theorem nonsense(n : Nat) (m : Nat) : n = m" "(p : Nat)(q: Nat) : p = q"
-
--- #eval compareThms ": True" ": true = true"
-
--- #eval compareThms "{A: Type} : A →  True" "{A: Type}: A →  true"
-
--- #eval compareThms ": False" ": false = true"
-
--- #eval compareThms "{A: Sort} : False →  A" "{A: Sort} : false = true →  A"
 
 example : (∀ {A: Sort}, False → A) ↔ (∀ {A: Sort}, false = true → A) := by
   intros; lynx at *<;> apply Iff.intro <;> intro hyp  <;> (lynx at *) <;> (try assumption) <;> try (intros; apply Eq.symm; apply hyp)

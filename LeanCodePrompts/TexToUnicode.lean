@@ -2,7 +2,7 @@ import Lean
 import Lean.Data.Json.Basic
 import Lean.Data.Json.FromToJson
 import LeanCodePrompts.ParseJson
-import LeanCodePrompts.Utils
+import LeanAide.Aides
 import LeanCodePrompts.TeXPrompts
 
 open Lean

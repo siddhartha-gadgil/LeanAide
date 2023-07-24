@@ -1,7 +1,7 @@
 import Aesop.Search.Main
 import Aesop
 import Lean
-import LeanCodePrompts.Utils
+import LeanAide.Aides
 open Aesop Lean Meta Elab Parser.Tactic
 
 initialize tacticSuggestions : IO.Ref (Array Syntax.Tactic) 

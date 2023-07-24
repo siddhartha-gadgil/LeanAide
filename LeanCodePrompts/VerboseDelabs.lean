@@ -2,7 +2,7 @@
 Copied and modified from Lean 4 `./src/Lean/PrettyPrinter/Delaborator/Builtins.lean`
 -/
 import Lean
-import LeanCodePrompts.Utils
+import LeanAide.Aides
 open Lean Meta Elab Term Parser PrettyPrinter
 /-!
 # Verbose delaborators
