@@ -240,6 +240,9 @@ def runAesop (p: Float) (apps simps rws : Array Name) : MVarId → MetaM (List M
 example : α → α := by
   aesop
 
+theorem true_true_iff_True : true = true ↔ True := by
+  aesop
+
 -- For introducing local definitions
 /- Convert the given goal `Ctx |- target` into `Ctx |- let name : type := val; target`. It assumes `val` has type `type` -/
 #check MVarId.define -- Lean.MVarId.define (mvarId : MVarId) (name : Name) (type val : Expr) : MetaM MVarId
