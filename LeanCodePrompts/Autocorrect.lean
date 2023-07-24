@@ -266,19 +266,19 @@ def interLeave(full: Substring)(idents: List Substring) :
 def identThmSegments (s : String)(opens: List String := [])
   : MetaM <| Except String ((Array (String × String)) × String) := do
   let env ← getEnv
-  let chk := Lean.Parser.runParserCategory env `thmStat  s
+  let chk := Lean.Parser.runParserCategory env `theorem_statement  s
   match chk with
   | Except.ok stx  =>
       match stx with
-      | `(thmStat|$_: docComment theorem  $args:argument* : $type:term) =>
+      | `(theorem_statement|$_: docComment theorem  $args:argument* : $type:term) =>
         identsAux type args
-      | `(thmStat|$vars:argument* $_: docComment theorem $args:argument* : $type:term) =>
+      | `(theorem_statement|$vars:argument* $_: docComment theorem $args:argument* : $type:term) =>
         identsAux type (vars ++ args)
-      | `(thmStat|theorem $_ $args:argument* : $type:term) =>
+      | `(theorem_statement|theorem $_ $args:argument* : $type:term) =>
         identsAux type args
-      | `(thmStat|def $_ $args:argument* : $type:term) =>
+      | `(theorem_statement|def $_ $args:argument* : $type:term) =>
         identsAux type args
-      | `(thmStat|$args:argument* : $type:term) =>
+      | `(theorem_statement|$args:argument* : $type:term) =>
         identsAux type args
       | _ => return Except.error "not a theorem statement"
   | Except.error _  => return Except.error "not a theorem statement"

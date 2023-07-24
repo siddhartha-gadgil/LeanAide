@@ -16,22 +16,16 @@ def depsPrompt : IO (Array String) := do
   let file ← reroutePath <| System.mkFilePath ["data/types.txt"]
   IO.FS.lines file
 
-declare_syntax_cat typed_ident
-syntax "(" ident ":" term ")" : typed_ident
-syntax "{" ident ":" term "}" : typed_ident
+declare_syntax_cat theorem_head
+syntax "theorem" : theorem_head
+syntax "def" : theorem_head
+syntax "lemma" : theorem_head
+syntax "instance" : theorem_head
+syntax "example" : theorem_head
 
-
-declare_syntax_cat argument
-syntax "(" ident+ " : " term ")" : argument
-syntax "{" ident+ " : " term "}" : argument
-syntax "[" ident " : " term "]" : argument
-syntax "[" term "]" : argument
-
-declare_syntax_cat thmStat
-syntax argument* docComment "theorem"  argument*  ":" term : thmStat
-syntax "theorem" (ident)? argument*  ":" term : thmStat
-syntax "def" ident argument*  ":" term : thmStat
-syntax argument*  ":" term : thmStat
+declare_syntax_cat theorem_statement
+syntax bracketedBinder* docComment (theorem_head)?  bracketedBinder*  ":" term : theorem_statement
+syntax (theorem_head)? (ident)? bracketedBinder*  ":" term : theorem_statement
 
 def thmsPrompt : IO (Array String) := do
   let file ← reroutePath <| System.mkFilePath ["data/thms.txt"]
@@ -40,7 +34,7 @@ def thmsPrompt : IO (Array String) := do
 /-- check whether a string parses as a theorem -/
 def checkThm (s : String) : MetaM Bool := do
   let env ← getEnv
-  let chk := Lean.Parser.runParserCategory env `thmStat  s
+  let chk := Lean.Parser.runParserCategory env `theorem_statement  s
   match chk with
   | Except.ok stx  =>
       IO.println stx 
@@ -56,7 +50,7 @@ match s with
 
 def getTokens (s: String) : MetaM <| Array String := do
   let env ← getEnv
-  let chk := Lean.Parser.runParserCategory env `thmStat  s
+  let chk := Lean.Parser.runParserCategory env `theorem_statement  s
   match chk with
   | Except.ok stx  =>
       pure <| tokens stx
@@ -91,23 +85,17 @@ def elabThm (s : String)(opens: List String := [])
   (levelNames : List Lean.Name := levelNames)
   : TermElabM <| Except String Expr := do
   let env ← getEnv
-  let chk := Lean.Parser.runParserCategory env `thmStat  s
+  let chk := Lean.Parser.runParserCategory env `theorem_statement  s
   match chk with
   | Except.ok stx  =>
       match stx with
-      | `(thmStat| $_:docComment theorem  $args:argument* : $type:term) =>
+      | `(theorem_statement| $_:docComment $[$_:theorem_head]? $args:bracketedBinder* : $type:term) =>
         elabAux type args
-      | `(thmStat|theorem $_ $args:argument* : $type:term) =>
+      | `(theorem_statement|$[$_:theorem_head]? $[$_:ident]? $args:bracketedBinder* : $type:term) =>
         elabAux type args
-      | `(thmStat|theorem $args:argument* : $type:term) =>
-        elabAux type args
-      | `(thmStat|$vars:argument* $_:docComment  theorem $args:argument* : $type:term ) =>
+      | `(theorem_statement|$vars:bracketedBinder* $_:docComment  $[$_:theorem_head]? $args:bracketedBinder* : $type:term ) =>
         elabAux type (vars ++ args)
-      | `(thmStat|def $_ $args:argument* : $type:term) =>
-        elabAux type args
-      | `(thmStat|$args:argument* : $type:term) =>
-        elabAux type args
-      | _ => return Except.error s!"parsed incorrectly to {stx}"
+      | _ => return Except.error s!"parsed to unmatched syntax {stx}"
   | Except.error e  => return Except.error e
   where elabAux (type: Syntax)(args: Array Syntax) : 
         TermElabM <| Except String Expr := do
@@ -135,9 +123,23 @@ def elabThmCore (s : String)(opens: List String := [])
   : CoreM <| Except String Expr := 
     (elabThm s opens levelNames).run'.run'
 
+def elabView (s : String)(opens: List String := []) 
+  (levelNames : List Lean.Name := levelNames)
+  : TermElabM <| Except String String := do
+  (← elabThm s opens levelNames).mapM (fun e => 
+      do return (← PrettyPrinter.delab e).raw.reprint.get!
+  )
+
 /-!
 ### Examples for parsing and elaboration
 -/
+
+#eval elabView "theorem (n : Nat) {m: Type} : n  = n"
+#eval elabView "theorem my_name (n : Nat) {m: Type} : n  = n"
+#eval elabView "(n : Nat)  : n  + 1 < n"
+#eval elabView "def eg (n : Nat)  : n  + 1 < n"
+#eval elabView "def  (n : Nat)  : n  + 1 < n"
+
 
 /-!
 ## Equality of statements

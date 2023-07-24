@@ -1,4 +1,5 @@
 import LeanAide.TheoremElab
+import LeanAide.Aides
 import Lean
 open Lean Meta Parser Elab Tactic
 
@@ -34,23 +35,15 @@ def partialParser  (parser : Parser) (input : String) (fileName := "<input>") : 
     let stx := stack.back
     return some (stx, head, input.drop head.length)
 
-
-declare_syntax_cat defHead
-syntax "theorem" : defHead
-syntax "def" : defHead
-syntax "lemma" : defHead
-syntax "instance" : defHead
-syntax "example" : defHead
-
 declare_syntax_cat theoremAndTactic
 
 syntax 
-  defHead (ident)? (argument)* ":" term ":=" "by" tacticSeq : theoremAndTactic
+  theorem_head (ident)? (bracketedBinder)* ":" term ":=" "by" tacticSeq : theoremAndTactic
 
 
 
 declare_syntax_cat variableStatement
-syntax "variable" (argument)* : variableStatement
+syntax "variable" (bracketedBinder)* : variableStatement
 
 declare_syntax_cat sectionHead
 syntax "section" (colGt ident)? : sectionHead
@@ -61,14 +54,15 @@ syntax "end" (ident)? : sectionEnd
 def parseTactics (s: String) : MetaM <| Array Syntax := do
   match ← partialParser tacticSeq s with
   | some (stx, _, _) => 
-    let seq := getTactics stx
+    let seq := getTactics (TSyntax.mk stx)
     IO.println seq[0]!.raw.reprint.get!
     return seq
   | none => return #[]
 
 def parseTactics? (s: String) : MetaM <| Option <| Array Syntax := do
   let parsed? ← partialParser tacticSeq s
-  let seq := parsed?.map fun (stx, _, _) => getTactics stx
+  let seq := parsed?.map fun (stx, _, _) => getTactics 
+    (TSyntax.mk stx)
   return seq
 
 def parseTacticBlocks(s: String) : MetaM <| List <| Array String := do
@@ -109,7 +103,7 @@ end TheoremAndTactic
 def getTheoremAndTactic? (input : Syntax)(vars : String) : 
       MetaM <| Option TheoremAndTactic := do
     match input with
-    | `(theoremAndTactic|$kind:defHead $name:ident $args:argument* : $type := by $tac:tacticSeq) =>
+    | `(theoremAndTactic|$kind:theorem_head $name:ident $args:bracketedBinder* : $type := by $tac:tacticSeq) =>
         let seq := getTactics tac
         let tac ← contractInductionStx (seq[0]!)
         let tac := tac.reprint.get!.splitOn "--" |>.head! |>.trim
@@ -120,7 +114,7 @@ def getTheoremAndTactic? (input : Syntax)(vars : String) :
         let argString := argString.replace "\n" " " |>.trim
         return some ⟨kind.raw.reprint.get!.trim, name.raw.reprint.get!.trim,
         argString, type.raw.reprint.get!.trim, tac⟩
-    | `(theoremAndTactic|$kind:defHead  $args:argument* : $type := by $tac:tacticSeq) =>
+    | `(theoremAndTactic|$kind:theorem_head  $args:bracketedBinder* : $type := by $tac:tacticSeq) =>
         let seq := getTactics tac
         let tac ← contractInductionStx (seq[0]!)
         let tac := tac.reprint.get!.splitOn "--" |>.head! |>.trim
@@ -147,7 +141,7 @@ def parseTheoremAndTactic? (input: String) : MetaM <| Option TheoremAndTactic :=
 def getVariables! (input : Syntax) : 
       MetaM String := do
     match input with
-    | `(variableStatement|variable $args:argument*) =>
+    | `(variableStatement|variable $args:bracketedBinder*) =>
         let argString := 
           (args.map fun a => a.raw.reprint.get!).foldl (fun a b => a ++ " " ++ b) ""
         return argString.replace "\n" " " |>.trim 
