@@ -287,7 +287,7 @@ elab "aide!" : tactic =>
     firstEffectiveTactic tacStrings Bool.false
 
 macro "aide" : tactic => 
-  `(tactic| aide? ; save)
+  `(tactic| (aide? ; save))
 
 
 elab "show_tactic_prompt" : tactic => 
@@ -328,4 +328,4 @@ elab "aide_aux" : tactic =>
     let tacStrings := lookaheadTactics tacStrings
     firstEffectiveTactic tacStrings Bool.false
 
-macro "aide_lookahead" : tactic => `(checkpoint aide_aux)
+macro "aide_lookahead" : tactic => `(tactic|checkpoint aide_aux)
