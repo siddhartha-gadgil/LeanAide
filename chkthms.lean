@@ -34,7 +34,7 @@ def main (args: List String) : IO Unit := do
   initSearchPath (← Lean.findSysroot) initFiles
   let env ← 
     importModules [{module := `Mathlib},
-    {module:= `LeanCodePrompts.CheckParse},
+    {module:= `LeanAide.TheoremElab},
     {module := `Mathlib}] {}
   match args with
   | [] => IO.println chkDocs

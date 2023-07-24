@@ -148,3 +148,32 @@ def Array.batches' (l: Array α)(numBatches: Nat) : Array (Array α) :=
   | Except.ok a => return Except.ok (← f a)
   | Except.error e => return Except.error e
 
+/- 
+Obtaining names of constants
+-/
+
+def isBlackListed  (declName : Name) : MetaM  Bool := do
+  let env ← getEnv
+  return (declName.isInternal
+  || isAuxRecursor env declName
+  || isNoConfusion env declName
+  || isRecCore env declName
+  || isMatcherCore env declName)
+
+def isAux (declName : Name) : MetaM  Bool := do
+  let env ← getEnv
+  return (isAuxRecursor env declName
+          || isNoConfusion env declName)
+  
+def isNotAux  (declName : Name) : MetaM  Bool := do
+  let nAux ← isAux declName
+  return (not nAux)
+
+def isWhiteListed (declName : Name) : MetaM Bool := do
+  try
+  let bl ← isBlackListed  declName
+  return !bl
+  catch _ => return false
+
+def excludePrefixes := [`Lean, `Std, `IO, 
+          `Char, `String, `ST, `StateT, `Repr, `ReaderT, `EIO, `BaseIO, `UInt8, ``UInt16, ``UInt32, ``UInt64, `Mathlib.Tactic, `Mathlib.Meta, `LeanAide.Meta, `Aesop]

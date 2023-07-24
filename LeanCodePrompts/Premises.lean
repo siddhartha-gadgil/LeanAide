@@ -1,6 +1,6 @@
 import Lean
 import Std.Data.HashMap
-import LeanCodePrompts.ConstDeps
+import LeanAide.ConstDeps
 import LeanCodePrompts.VerboseDelabs
 
 /-!

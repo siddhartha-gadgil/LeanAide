@@ -1,6 +1,7 @@
 import Lean
 import Lean.Meta
 import LeanAide.TheoremElab
+import LeanAide.TheoremEquality
 import LeanCodePrompts.ParseJson
 import Mathlib.Mathport.Rename
 
@@ -270,17 +271,15 @@ def identThmSegments (s : String)(opens: List String := [])
   match chk with
   | Except.ok stx  =>
       match stx with
-      | `(theorem_statement|$_: docComment theorem  $args:argument* : $type:term) =>
+      | `(theorem_statement|$_: docComment $_:theorem_head  $args:bracketedBinder* : $type:term) =>
         identsAux type args
-      | `(theorem_statement|$vars:argument* $_: docComment theorem $args:argument* : $type:term) =>
-        identsAux type (vars ++ args)
-      | `(theorem_statement|theorem $_ $args:argument* : $type:term) =>
+      | `(theorem_statement|$_:theorem_head $_ $args:bracketedBinder* : $type:term) =>
         identsAux type args
-      | `(theorem_statement|def $_ $args:argument* : $type:term) =>
+      | `(theorem_statement|$args:bracketedBinder* : $type:term) =>
         identsAux type args
-      | `(theorem_statement|$args:argument* : $type:term) =>
-        identsAux type args
-      | _ => return Except.error "not a theorem statement"
+      | _ => 
+        let err : Except String ((Array (String × String)) × String) := Except.error "not a theorem statement" 
+        (pure err : MetaM <| Except String ((Array (String × String)) × String))
   | Except.error _  => return Except.error "not a theorem statement"
   where identsAux (type: Syntax)(args: Array Syntax) : 
         MetaM <| Except String ((Array (String × String)) × String) := do
