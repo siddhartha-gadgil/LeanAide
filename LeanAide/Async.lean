@@ -52,11 +52,13 @@ def GoalKey.get : TacticM GoalKey := do
   let goal ← getMainTarget
   pure { goal := goal, lctx := lctx.decls.toList }
 
+section Caches
+
 initialize tacticCache : IO.Ref (HashMap GoalKey ProofState) 
-        ← IO.mkRef <| HashMap.empty
+        ← IO.mkRef ∅
 
 initialize tacticPosCache : IO.Ref (HashMap CacheKey ProofState) 
-        ← IO.mkRef <| HashMap.empty
+        ← IO.mkRef ∅
 
 initialize spawnedKeys : 
   IO.Ref (HashSet <| GoalKey × Option String.Pos × Option String.Pos) 
@@ -80,13 +82,15 @@ def getStates (key : GoalKey) : TacticM (Option ProofState) := do
   let m ← tacticCache.get
   return m.find? key
 
+end Caches
+
 abbrev PolyTacticM :=  MVarId → 
   (MetaM <| (Option Term.State) × TSyntax ``tacticSeq)
 
 /- Abstracted to possibly replace by Aesop search -/
 def runTacticCode (tacticCode : TSyntax ``tacticSeq)  : PolyTacticM := fun goal ↦ 
   withoutModifyingState do
-    let (goals, ts) ← runTactic  goal tacticCode 
+    let (goals, ts) ← runTactic goal tacticCode 
     unless goals.isEmpty do
         throwError m!"Tactic not finishing, remaining goals:\n{goals}"
     pure (some ts, tacticCode)

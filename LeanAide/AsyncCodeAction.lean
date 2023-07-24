@@ -22,7 +22,7 @@ def textEdits (text: FileMap) : IO <| Array TextEdit := do
           if checkStart 
             then
               let stx := s.script
-              let stx' := stx.copyHeadTailInfoFrom .missing 
+              let stx' := stx.raw.copyHeadTailInfoFrom .missing 
               stx'.reprint.get!.trimRight
           else current  -- ++ s!"/-change detected: {s.preScript.get!} to {current}-/"
       }
