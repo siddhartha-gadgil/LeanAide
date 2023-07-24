@@ -17,8 +17,7 @@ def LLMParams : LLM.Params :=
 def PromptParams : Prompt.Params :=
 {
   toLLMParams := LLMParams, 
-  toSentenceSimilarityParams := #[], 
-  toKeywordExtractionParams := #[],
+  toSentenceSimilarityParams := #[],
   fixedPrompts := leanChatPrompts,
   useNames := #[],
   useModules := #[],

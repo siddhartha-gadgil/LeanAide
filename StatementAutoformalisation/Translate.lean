@@ -1,6 +1,5 @@
 import Lean
 import StatementAutoformalisation.SentenceSimilarityQuery
-import StatementAutoformalisation.KeywordExtractionQuery
 import StatementAutoformalisation.LLMQuery
 
 namespace Prompt
@@ -11,8 +10,6 @@ structure Params where
   toLLMParams : LLM.Params
   /-- Parameters for retrieving various kinds of sentences from `mathlib` by sentence similarity. -/
   toSentenceSimilarityParams : Array SentenceSimilarity.Params
-  /-- Parameters for retrieving various kinds of sentences by keyword matching. -/
-  toKeywordExtractionParams : Array KeywordExtraction.Params
   /-- Toggles whether to use a given set of fixed prompts (such as `Lean Chat` prompts) in the main prompt. -/
   fixedPrompts : Lean.MetaM <| Array DeclarationWithDocstring := pure #[]
   /-- A list of names of declarations from the environment that are to be used in the prompt. -/
@@ -37,10 +34,9 @@ structure Request extends Params where
 def promptDecls (req : Prompt.Request) : Lean.MetaM <| Array DeclarationWithDocstring := do
   let fixedPrompts ← req.fixedPrompts
   let similarityPrompts ← liftM <| SentenceSimilarity.mergeRequests <| req.toSentenceSimilarityParams.map (⟨·,req.stmt⟩)
-  let keywordPrompts ← liftM <| KeywordExtraction.mergeRequests <| req.toKeywordExtractionParams.map (⟨·, req.stmt⟩)
   let customPrompts ← req.useNames.filterMapM DeclarationWithDocstring.fromName?
   let ctxPrompts ← DeclarationWithDocstring.envDecls req.useModules req.useMainCtx?
-  let allPrompts := #[fixedPrompts, keywordPrompts, similarityPrompts, customPrompts, ctxPrompts]
+  let allPrompts := #[fixedPrompts, similarityPrompts, customPrompts, ctxPrompts]
   return allPrompts.foldl .append .empty
 
 /-- Query the language model for translations based on the given `Prompt.Request`. -/

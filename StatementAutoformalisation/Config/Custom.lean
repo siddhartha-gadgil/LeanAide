@@ -25,16 +25,10 @@ def SentenceSimilarityParams : SentenceSimilarity.Params :=
   nSim := 10
 }
 
-def KeywordExtractionParams : KeywordExtraction.Params :=
-{
-  nKw := 0
-}
-
 def PromptParams : Prompt.Params :=
 {
   toLLMParams := LLMParams, 
-  toSentenceSimilarityParams := #[SentenceSimilarityParams], 
-  toKeywordExtractionParams := #[KeywordExtractionParams],
+  toSentenceSimilarityParams := #[SentenceSimilarityParams],
   fixedPrompts := leanChatPrompts,
   useNames := #[],
   useModules := #[],
