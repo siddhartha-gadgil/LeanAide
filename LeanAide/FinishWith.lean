@@ -1,33 +1,68 @@
 import Lean
+import Std
 
 open Lean Elab Tactic Parser Tactic
 open Lsp Server RequestM
 
+def Lean.Elab.GoalsAtResult.display (goalsAt : Lean.Elab.GoalsAtResult) : IO (Format × Format) := do
+  let goalsBefore ← goalsAt.ctxInfo.ppGoals goalsAt.tacticInfo.goalsBefore
+  let goalsAfter ← goalsAt.ctxInfo.ppGoals goalsAt.tacticInfo.goalsAfter
+  return (goalsBefore, goalsAfter)
+
 @[code_action_provider]
-def dummyCodeAction : CodeActionProvider := fun params _ ↦ do
+def dummyCodeAction : CodeActionProvider := fun params snap ↦ do
+  let doc ← readDoc
+  let text := doc.meta.text
+  -- the current position in the text document
+  let pos : String.Pos := text.lspPosToUtf8Pos params.range.end
+  let allGoals ← snap.infoTree.goalsAt? text pos |>.mapM (GoalsAtResult.display ·)
+  let data := Format.pretty <| Format.join <|
+    allGoals.foldl (fun l (goalsBefore, goalsAfter) ↦ goalsBefore :: goalsAfter :: l) []
+
   let ca : CodeAction := 
     {
-      title := "Dummy code action", 
+      title := "Show tactic state here", 
       kind? := "quickfix"
-      disabled? := some ⟨"Inactive"⟩ -- TODO: Make a function of `params`
     }
-  return #[{eager := ca, lazy? := some <| pure <| {ca with disabled? := none}}]
+  return #[{
+    eager := ca, 
+    lazy? := some do
+      dbg_trace data
+      return ca
+  }]
 
 syntax (name := finishTac) "finish_with" tacticSeqIndentGt tacticSeq : tactic
 
+#check addMessageContext
+
 @[tactic finishTac]
 def finishTacElab : Tactic
-  | `(tactic| finish_with $cmd $[$tacs]*) => do
+  | stx@`(tactic| finish_with $cmd $[$tacs]*) => do
     for tac in tacs do
-      evalTactic tac
       try
         evalTactic cmd
         unless (← getGoals).isEmpty do
           throwError m!"Unfinished goals."
         logInfoAt tac m!"Goals closed with {cmd}."
       catch e => continue
+      evalTactic tac
   |  _ => throwUnsupportedSyntax
 
-example : ∀ n : ℕ, n = n := by
-  finish_with rfl
-  intro n
+#check Snapshot
+#check Std.Tactic.TryThis.addSuggestion
+#check InfoTree.hoverableInfoAt?
+#check InfoTree.goalsAt?
+#check GoalsAtResult
+#check ContextInfo
+#check ContextInfo.ppGoals
+#check TacticInfo
+#check ElabInfo
+#check LocalContext
+#check TacticInfo.format
+#check MetavarContext
+#check Format
+#check FileWorker.EditableDocument
+
+example : ∀ n : ℕ, ∀ m : ℕ, n = n := by
+  intros
+  sorry
