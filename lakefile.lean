@@ -107,9 +107,9 @@ lean_exe chkthms{
 
 lean_lib examples
 
-lean_lib LeanAideScratch{
-  srcDir := "Scratch"
-}
+lean_lib LeanAideScratch
+
+lean_lib Extras
 
 require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git"@"master"
