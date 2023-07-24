@@ -1,5 +1,5 @@
 import Mathlib
-import LeanCodePrompts.CheckParse
+import LeanAide.TheoremElab
 
 /-
 If every proper closed set of a topological space is compact, then the space itself is compact.

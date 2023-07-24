@@ -1,6 +1,6 @@
 import Mathlib
 import Mathlib.Tactic.Basic
-import LeanCodePrompts.CheckParse
+import LeanAide.TheoremElab
 import LeanCodePrompts.ThmInfo
 universe u v u_1 u_2
 

@@ -1,4 +1,4 @@
-import LeanCodePrompts.CheckParse
+import LeanAide.TheoremElab
 import Mathlib
 open Lean
 

@@ -1,6 +1,6 @@
 import Lean.Meta
 import LeanCodePrompts
-import LeanCodePrompts.CheckParse
+import LeanAide.TheoremElab
 import LeanCodePrompts.Makecaps
 import LeanCodePrompts.ParseJson
 import LeanAide.Config

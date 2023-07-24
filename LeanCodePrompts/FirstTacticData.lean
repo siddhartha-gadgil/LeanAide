@@ -1,4 +1,4 @@
-import LeanCodePrompts.CheckParse
+import LeanAide.TheoremElab
 import Lean
 open Lean Meta Parser Elab Tactic
 

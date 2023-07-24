@@ -1,6 +1,6 @@
 import Lean
 import Lean.Meta
-import LeanCodePrompts.CheckParse
+import LeanAide.TheoremElab
 import LeanCodePrompts.ParseJson
 import Mathlib.Mathport.Rename
 
