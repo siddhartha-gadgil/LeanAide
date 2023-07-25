@@ -70,11 +70,13 @@ example : 1 = 1 := by
 
 open leanaide.auto
 
-example : sillyN ≤ 4 := by#
+-- To be avoided
+
+example : sillyN ≤ 4 := by
   rw [silly]
   
 
-example : 1 = 1 := by#
+example : 1 = 1 := by
 
 
   
