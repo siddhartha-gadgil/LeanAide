@@ -285,14 +285,14 @@ where
       cumTacs := cumTacs.push tacticCode
       try 
         let script ← fetchProof
-        let msg := m!"Try this next: {indentD script}" 
+        -- let msg := m!"Try this next: {indentD script}" 
         logWarningAt tacticCode m!"proof complete before: {tacticCode}" 
         let allTacs ←  appendTactics' cumTacs script
         if fromBy then
            TryThis.addSuggestion stx (← `(by $allTacs))
         else
            TryThis.addSuggestion stx allTacs 
-        logInfoAt prevPos msg
+        -- logInfoAt prevPos msg
       catch _ =>
         if (← getUnsolvedGoals).isEmpty then
           -- logInfoAt tacticCode m!"Goals accomplished!! 🎉"
@@ -311,13 +311,13 @@ where
       try
         dbgSleep 50 fun _ => do
           let script ← fetchProof
-          let msg := m!"Try this next: {indentD script}"  
+          -- let msg := m!"Try this next: {indentD script}"  
           let allTacs ←  appendTactics' cumTacs script
           if fromBy then
             TryThis.addSuggestion stx (← `(by $allTacs))
           else
             TryThis.addSuggestion stx allTacs
-          logInfoAt tacticCode msg
+          -- logInfoAt tacticCode msg
       catch _ =>
         pure ()
   autoStartImplAux' (stx: Syntax) (fromBy: Bool) : TacticM Unit := 
@@ -336,12 +336,12 @@ where
     try
       dbgSleep 50 fun _ => do
         let script ← fetchProof
-        let msg := m!"Try this next: {indentD script}" 
+        -- let msg := m!"Try this next: {indentD script}" 
         if fromBy then
           TryThis.addSuggestion stx (← `(by $script))
         else
           TryThis.addSuggestion stx script          
-        logInfoAt tacticCode msg
+        -- logInfoAt tacticCode msg
     catch _ =>
       pure ()
     if (← getUnsolvedGoals).isEmpty then
