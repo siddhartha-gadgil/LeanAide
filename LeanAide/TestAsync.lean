@@ -29,7 +29,7 @@ example (n : Nat) : n ≤ n := by
    aesop?
   
 example : 2 ≤ 2 := by
-   library_search
+   apply?
 
 example : 2 ≤ 2 := by
    auto?
@@ -37,13 +37,16 @@ example : 2 ≤ 2 := by
 example : 2 ≤ 2 := by
   with_auto
 
+example : 2 ≤ 2 := by#
+   skip
+
 macro_rules
 | `(tactic|auto?) => `(tactic|apply?)
 
-example : 2 ≤ 2 := by
-   auto?
+example : 2 ≤ 2 := by#
+   skip
 
-def prop := 2 ≤ 2
+def prop := 2 ≤ 3
 
 example : prop := by
   with_auto
@@ -60,6 +63,8 @@ example : sillyN ≤ 4 := by#
 example : 1 = 1 := by#
   skip
   
+example : 1 = 1 := by
+  simp?
 
 open leanaide.auto
 

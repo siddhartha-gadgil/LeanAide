@@ -95,6 +95,19 @@ def runTacticCode (tacticCode : TSyntax ``tacticSeq)  : PolyTacticM := fun goal 
         throwError m!"Tactic not finishing, remaining goals:\n{goals}"
     pure (some ts, tacticCode)
 
+/-- This is a slight modification of `Parser.runParserCategory` due to Scott Morrison. -/
+def parseAsTacticSeq (env : Environment) (input : String) (fileName := "<input>") :
+    Except String (TSyntax ``tacticSeq) :=
+  let p := andthenFn whitespace Tactic.tacticSeq.fn
+  let ictx := mkInputContext input fileName
+  let s := p.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
+  if s.hasError then
+    Except.error (s.toErrorMsg ictx)
+  else if input.atEnd s.pos then
+    Except.ok ⟨s.stxStack.back⟩
+  else
+    Except.error ((s.mkError "end of input").toErrorMsg ictx)
+
 def getMsgTacticD (default : TSyntax ``tacticSeq)  : CoreM <| TSyntax ``tacticSeq := do
   let msgLog ← Core.getMessageLog  
   let msgs := msgLog.toList
@@ -107,24 +120,24 @@ def getMsgTacticD (default : TSyntax ``tacticSeq)  : CoreM <| TSyntax ``tacticSe
       pure ()
     | some msg => do
       let parsedMessage := 
-        Parser.runParserCategory (←getEnv)  ``tacticSeq msg.toString
+        parseAsTacticSeq (←getEnv) msg.toString
       match parsedMessage with
       | Except.ok tac' => 
         resetMessageLog
-        tac:=  (TSyntax.mk tac')
+        tac:=  tac'
       | _ =>
-        logInfo m!"failed to parse tactic {msg}"
+        logInfo m!"failed to parse tactic ({msg.toString})"
         pure ()
   return tac
 
 def runTacticCodeMsg (tacticCode : TSyntax ``tacticSeq)  : PolyTacticM := 
   fun goal ↦ do
-    let mut msgs ← 
-      modifyGetThe Core.State fun st => (st.messages, { st with messages := {} })
+    -- let mut msgs ← 
+    --   modifyGetThe Core.State fun st => (st.messages, { st with messages := {} })
     let (goals, ts) ← runTactic  goal tacticCode 
     unless goals.isEmpty do
-        msgs := msgs ++ (← getThe Core.State).messages
-        modifyThe Core.State fun st => { st with messages := msgs }
+        -- msgs := msgs ++ (← getThe Core.State).messages
+        -- modifyThe Core.State fun st => { st with messages := msgs }
         throwError m!"Tactic not finishing, remaining goals:\n{goals}"
     let code ← getMsgTacticD tacticCode
     pure (some ts, code)
