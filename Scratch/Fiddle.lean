@@ -10,6 +10,10 @@ def gedit : IO String := do
   discard <| IO.Process.spawn { cmd := "gedit"} 
   return "done"
 
+def egType := fun (α : Type) ↦ fun [Mul α] ↦ fun x y : α ↦ x * y
+
+#check egType ℕ 
+#eval egType _ 2 3 
 
 #check List.findSome?
 #check List.getLast?_isSome
@@ -83,7 +87,7 @@ theorem one_is_pos : 0 < 1 := by simp
 example : ∀ (x : Set Prop) (x_1 : Prop),
   (∀ (b : Prop), b ∈ x → x_1 ≤ b) → x_1 → ∀ (b : Prop), b ∈ x → b := by aesop
 
-example : ∀ (x : Set Prop) (a : Prop), a ∈ x → infₛ x → a  := by aesop
+-- example : ∀ (x : Set Prop) (a : Prop), a ∈ x → infₛ x → a  := by aesop
 
 
 example : 1 ≤3 := by

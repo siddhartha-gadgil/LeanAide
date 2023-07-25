@@ -317,10 +317,7 @@ match stx with
       dbgSleep 50 fun _ => do
         let script ← fetchProof
         let msg := m!"Try this next: {indentD script}" 
-        TryThis.addSuggestion tacticCode 
-          (← `(tacticSeq|
-            $tacticCode
-            ($script)))
+        TryThis.addSuggestion tacticCode script
         logInfoAt tacticCode msg
     catch _ =>
       pure ()
