@@ -11,7 +11,6 @@ axiom silly : sillyN = 2
 example : sillyN ≤ 3 := by
   with_auto
   rw [silly]
-  -- simp_all only
 
 example : 3 ≤ 4 := by# 
 
@@ -49,9 +48,8 @@ example : 2 ≤ 2 := by#
 
 def prop := 2 ≤ 3
 
-example : prop := by
+example : prop := by#
     rw [prop]
-    exact Nat.le_succ 2
 
 example : 1 = 1 := by#
 

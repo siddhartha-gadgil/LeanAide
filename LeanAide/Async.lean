@@ -251,19 +251,33 @@ elab "fetch_proof" : tactic => do
 macro "auto?" : tactic => do
   `(tactic|aesop?)
 
-syntax (name := autoTacs) "with_auto" (tacticSeq)? : tactic
+syntax (name := autoTacs) "with_auto" ("blah")? (tacticSeq)? : tactic
 
 macro "by#" tacs:tacticSeq : term =>
-  `(by with_auto $tacs)
+  `(by 
+  with_auto blah $tacs)
 
 macro "by#"  : term =>
-  `(by with_auto)
+  `(by 
+  with_auto blah)
 
 @[tactic autoTacs] def autoStartImpl : Tactic := fun stx => 
 withMainContext do
-let autoCode ← `(tacticSeq| auto?) 
 match stx with
-| `(tactic| with_auto%$tk $tacticCode) => do
+| `(tactic| with_auto%$tk blah $tacticCode) => 
+    autoStartImplAux stx tk tacticCode true
+| `(tactic| with_auto%$tk $tacticCode) => 
+    autoStartImplAux stx tk tacticCode false
+| `(tactic| with_auto blah) => do
+    autoStartImplAux' stx true    
+| `(tactic| with_auto) => do
+    autoStartImplAux' stx false    
+| _ => throwUnsupportedSyntax
+where 
+  autoStartImplAux (stx tk: Syntax)
+  (tacticCode : TSyntax ``tacticSeq)(fromBy: Bool) : TacticM Unit := 
+  withMainContext do
+    let autoCode ← `(tacticSeq| auto?)
     let mut prevPos := tk
     let allTacs := getTactics tacticCode
     let mut cumTacs :  Array (TSyntax `tactic) := #[]
@@ -273,8 +287,11 @@ match stx with
         let script ← fetchProof
         let msg := m!"Try this next: {indentD script}" 
         logWarningAt tacticCode m!"proof complete before: {tacticCode}" 
-        TryThis.addSuggestion stx 
-          (← appendTactics' cumTacs script)
+        let allTacs ←  appendTactics' cumTacs script
+        if fromBy then
+           TryThis.addSuggestion stx (← `(by $allTacs))
+        else
+           TryThis.addSuggestion stx allTacs 
         logInfoAt prevPos msg
       catch _ =>
         if (← getUnsolvedGoals).isEmpty then
@@ -295,12 +312,17 @@ match stx with
         dbgSleep 50 fun _ => do
           let script ← fetchProof
           let msg := m!"Try this next: {indentD script}"  
-          TryThis.addSuggestion stx 
-           (← appendTactics' cumTacs script)
+          let allTacs ←  appendTactics' cumTacs script
+          if fromBy then
+            TryThis.addSuggestion stx (← `(by $allTacs))
+          else
+            TryThis.addSuggestion stx allTacs
           logInfoAt tacticCode msg
       catch _ =>
         pure ()
-| `(tactic| with_auto) => do
+  autoStartImplAux' (stx: Syntax) (fromBy: Bool) : TacticM Unit := 
+    withMainContext do
+    let autoCode ← `(tacticSeq| auto?)
     let tacticCode ← `(tactic|auto?) 
     if (← getUnsolvedGoals).isEmpty then
         logInfoAt tacticCode m!"Goals accomplished!! 🎉"
@@ -315,14 +337,16 @@ match stx with
       dbgSleep 50 fun _ => do
         let script ← fetchProof
         let msg := m!"Try this next: {indentD script}" 
-        TryThis.addSuggestion stx script
+        if fromBy then
+          TryThis.addSuggestion stx (← `(by $script))
+        else
+          TryThis.addSuggestion stx script          
         logInfoAt tacticCode msg
     catch _ =>
       pure ()
     if (← getUnsolvedGoals).isEmpty then
         -- logInfoAt tacticCode m!"Goals accomplished!! 🎉"
         return () 
-| _ => throwUnsupportedSyntax
 
 
 elab "check_auto" : tactic => withMainContext do
