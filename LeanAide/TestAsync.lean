@@ -45,13 +45,13 @@ macro_rules
 
 example : 2 ≤ 2 := by#
      skip
-     (exact Nat.le_refl 2)
+
 
 def prop := 2 ≤ 3
 
 example : prop := by
-  with_auto
-  rw [prop]
+    rw [prop]
+    exact Nat.le_succ 2
 
 example : 1 = 1 := by#
 

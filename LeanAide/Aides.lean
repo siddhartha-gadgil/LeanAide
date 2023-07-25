@@ -112,6 +112,18 @@ def appendTactics (s t : TSyntax ``tacticSeq) :
       `(tacticSeq| $[$ts']*)
   | _ => pure t
 
+def appendTactics' (ts : Array (TSyntax `tactic))
+    (s : TSyntax ``tacticSeq) : 
+  MetaM (TSyntax ``tacticSeq) := do
+  match s with
+  | `(tacticSeq| { $[$t]* }) => 
+      let ts' := ts ++ t
+      `(tacticSeq| { $[$ts']* })
+  | `(tacticSeq| $[$t]*) => 
+      let ts' := ts ++ t
+      `(tacticSeq| $[$ts']*)
+  | _ => `(tacticSeq| $[$ts]*)
+
 def consTactics (h: TSyntax `tactic)(s : TSyntax ``tacticSeq):
   MetaM (TSyntax ``tacticSeq) := do
   match s with

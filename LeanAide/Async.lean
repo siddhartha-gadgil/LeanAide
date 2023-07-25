@@ -266,13 +266,15 @@ match stx with
 | `(tactic| with_auto%$tk $tacticCode) => do
     let mut prevPos := tk
     let allTacs := getTactics tacticCode
+    let mut cumTacs :  Array (TSyntax `tactic) := #[]
     for tacticCode in allTacs do
+      cumTacs := cumTacs.push tacticCode
       try 
         let script ← fetchProof
         let msg := m!"Try this next: {indentD script}" 
         logWarningAt tacticCode m!"proof complete before: {tacticCode}" 
-        TryThis.addSuggestion prevPos 
-          (← consTactics tacticCode script)
+        TryThis.addSuggestion stx 
+          (← appendTactics' cumTacs script)
         logInfoAt prevPos msg
       catch _ =>
         if (← getUnsolvedGoals).isEmpty then
@@ -293,8 +295,8 @@ match stx with
         dbgSleep 50 fun _ => do
           let script ← fetchProof
           let msg := m!"Try this next: {indentD script}"  
-          TryThis.addSuggestion tacticCode 
-           (← consTactics tacticCode script)
+          TryThis.addSuggestion stx 
+           (← appendTactics' cumTacs script)
           logInfoAt tacticCode msg
       catch _ =>
         pure ()
@@ -313,7 +315,7 @@ match stx with
       dbgSleep 50 fun _ => do
         let script ← fetchProof
         let msg := m!"Try this next: {indentD script}" 
-        TryThis.addSuggestion tacticCode script
+        TryThis.addSuggestion stx script
         logInfoAt tacticCode msg
     catch _ =>
       pure ()
