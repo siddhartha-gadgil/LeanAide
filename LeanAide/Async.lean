@@ -271,7 +271,7 @@ match stx with
         let script ← fetchProof
         let msg := m!"Try this next: {indentD script}" 
         logWarningAt tacticCode m!"proof complete before: {tacticCode}" 
-        TryThis.addSuggestion tacticCode 
+        TryThis.addSuggestion prevPos 
           (← `(tacticSeq|
             $tacticCode
             ($script)))
