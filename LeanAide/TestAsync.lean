@@ -9,7 +9,7 @@ opaque sillyN : Nat
 axiom silly : sillyN = 2
 
 example : sillyN ≤ 3 := by
-  with_auto
+  with_auto aesop? do
   rw [silly]
 
 example : 3 ≤ 4 := by# 
@@ -30,31 +30,34 @@ example (n : Nat) : n ≤ n := by
 example : 2 ≤ 2 := by
    apply?
 
-example : 2 ≤ 2 := by
-   auto?
+example : 2 ≤ 2 := by#
 
 example : 2 ≤ 2 := by
-  with_auto
+  with_auto aesop? do
 
 example : 2 ≤ 2 := by#
    skip
 
-macro_rules
-| `(tactic|auto?) => `(tactic|apply?)
+macro "by!" tacs:tacticSeq : term =>
+  `(by 
+  with_auto from_by apply? do $tacs)
 
-example : 2 ≤ 2 := by#
+macro "by!"  : term =>
+  `(by 
+  with_auto from_by apply? do)
+
+
+example : 2 ≤ 2 := by!
      skip
 
 
 def prop := 2 ≤ 3
 
-example : prop := by#
+example : prop := by!
     rw [prop]
 
-example : 1 = 1 := by#
+example : 1 = 1 := by!
 
-macro_rules
-| `(tactic|auto?) => `(tactic|aesop?)
 
 example : sillyN ≤ 4 := by#
   rw [silly]
@@ -67,11 +70,11 @@ example : 1 = 1 := by
 
 open leanaide.auto
 
-example : sillyN ≤ 4 := by
+example : sillyN ≤ 4 := by#
   rw [silly]
   
 
-example : 1 = 1 := by
+example : 1 = 1 := by#
 
 
   

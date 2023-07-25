@@ -97,7 +97,7 @@ def runTacticCode (tacticCode : TSyntax ``tacticSeq)  : PolyTacticM := fun goal 
         throwError m!"Tactic not finishing, remaining goals:\n{goals}"
     pure (some ts, tacticCode)
 
-/-- This is a slight modification of `Parser.runParserCategory` due to Scott Morrison. -/
+/-- This is a slight modification of `Parser.runParserCategory` due to Scott Morrison/Kim Liesinger. -/
 def parseAsTacticSeq (env : Environment) (input : String) (fileName := "<input>") :
     Except String (TSyntax ``tacticSeq) :=
   let p := andthenFn whitespace Tactic.tacticSeq.fn
@@ -248,54 +248,51 @@ def fetchProof  : TacticM (TSyntax `Lean.Parser.Tactic.tacticSeq) :=
 elab "fetch_proof" : tactic => do
   discard fetchProof
 
-macro "auto?" : tactic => do
-  `(tactic|aesop?)
+-- macro "auto?" : tactic => do
+--   `(tactic|aesop?)
 
-syntax (name := autoTacs) "with_auto" ("blah")? (tacticSeq)? : tactic
+syntax (name := autoTacs) "with_auto" ("from_by")? tacticSeq "do" (tacticSeq)? : tactic
 
 macro "by#" tacs:tacticSeq : term =>
   `(by 
-  with_auto blah $tacs)
+  with_auto from_by aesop? do $tacs)
 
 macro "by#"  : term =>
   `(by 
-  with_auto blah)
+  with_auto from_by aesop? do)
+
 
 @[tactic autoTacs] def autoStartImpl : Tactic := fun stx => 
 withMainContext do
 match stx with
-| `(tactic| with_auto%$tk blah $tacticCode) => 
-    autoStartImplAux stx tk tacticCode true
-| `(tactic| with_auto%$tk $tacticCode) => 
-    autoStartImplAux stx tk tacticCode false
-| `(tactic| with_auto blah) => do
-    autoStartImplAux' stx true    
-| `(tactic| with_auto) => do
-    autoStartImplAux' stx false    
+| `(tactic| with_auto from_by $auto? do $tacticCode) => 
+    autoStartImplAux stx auto? tacticCode true
+| `(tactic| with_auto $auto? do $tacticCode) => 
+    autoStartImplAux stx auto? tacticCode false
+| `(tactic| with_auto from_by $auto? do) => do
+    autoStartImplAux' stx auto? true    
+| `(tactic| with_auto $auto? do) => do
+    autoStartImplAux' stx auto? false    
 | _ => throwUnsupportedSyntax
 where 
-  autoStartImplAux (stx tk: Syntax)
+  autoStartImplAux (stx: Syntax)
+  (autoCode : TSyntax `Lean.Parser.Tactic.tacticSeq)
   (tacticCode : TSyntax ``tacticSeq)(fromBy: Bool) : TacticM Unit := 
   withMainContext do
-    let autoCode ← `(tacticSeq| auto?)
-    let mut prevPos := tk
     let allTacs := getTactics tacticCode
     let mut cumTacs :  Array (TSyntax `tactic) := #[]
     for tacticCode in allTacs do
       cumTacs := cumTacs.push tacticCode
       try 
         let script ← fetchProof
-        -- let msg := m!"Try this next: {indentD script}" 
         logWarningAt tacticCode m!"proof complete before: {tacticCode}" 
         let allTacs ←  appendTactics' cumTacs script
         if fromBy then
            TryThis.addSuggestion stx (← `(by $allTacs))
         else
            TryThis.addSuggestion stx allTacs 
-        -- logInfoAt prevPos msg
       catch _ =>
         if (← getUnsolvedGoals).isEmpty then
-          -- logInfoAt tacticCode m!"Goals accomplished!! 🎉"
           return () 
       evalTactic tacticCode
       if (← getUnsolvedGoals).isEmpty then
@@ -307,25 +304,22 @@ where
                 (← readThe Meta.Context) (← getThe Meta.State ) 
                 (← readThe Core.Context) (← getThe Core.State)
       let _ ← ioSeek.asTask
-      prevPos := tacticCode
       try
         dbgSleep 50 fun _ => do
           let script ← fetchProof
-          -- let msg := m!"Try this next: {indentD script}"  
           let allTacs ←  appendTactics' cumTacs script
           if fromBy then
             TryThis.addSuggestion stx (← `(by $allTacs))
           else
             TryThis.addSuggestion stx allTacs
-          -- logInfoAt tacticCode msg
       catch _ =>
         pure ()
-  autoStartImplAux' (stx: Syntax) (fromBy: Bool) : TacticM Unit := 
+  autoStartImplAux' (stx: Syntax) 
+    (autoCode : TSyntax `Lean.Parser.Tactic.tacticSeq)(fromBy: Bool) : TacticM Unit := 
     withMainContext do
-    let autoCode ← `(tacticSeq| auto?)
-    let tacticCode ← `(tactic|auto?) 
+    -- let tacticCode ← `(tactic|auto?) 
     if (← getUnsolvedGoals).isEmpty then
-        logInfoAt tacticCode m!"Goals accomplished!! 🎉"
+        logInfoAt stx m!"Goals accomplished!! 🎉"
         return () 
     let ioSeek : IO Unit := runAndCacheIO 
       (PolyTacticM.ofTactic autoCode)  (← getMainGoal) (← getMainTarget) 
@@ -336,16 +330,13 @@ where
     try
       dbgSleep 50 fun _ => do
         let script ← fetchProof
-        -- let msg := m!"Try this next: {indentD script}" 
         if fromBy then
           TryThis.addSuggestion stx (← `(by $script))
         else
           TryThis.addSuggestion stx script          
-        -- logInfoAt tacticCode msg
     catch _ =>
       pure ()
     if (← getUnsolvedGoals).isEmpty then
-        -- logInfoAt tacticCode m!"Goals accomplished!! 🎉"
         return () 
 
 
@@ -367,7 +358,7 @@ namespace leanaide.auto
 
 scoped macro (priority := high) "by" tacs?:(tacticSeq)? : term => 
   match tacs? with
-  | none => `(by with_auto)
-  | some tacs => `(by with_auto $tacs)
+  | none => `(by with_auto from_by aesop? do)
+  | some tacs => `(by with_auto from_by aesop? do $tacs)
 
 end leanaide.auto
