@@ -2,6 +2,7 @@ import LeanAide.Async
 import LeanAide.AsyncCodeAction
 import Aesop
 import Mathlib.Tactic.LibrarySearch
+import Mathlib.Tactic.TryThis
 
 opaque sillyN : Nat
 
@@ -17,30 +18,30 @@ example : 3 ≤ 4 := by#
 example : sillyN ≤ 4 := by#
   rw [silly]
   
-
+example: 1 = 1 := by aesop?
 
 example : 1 ≤ 2 := by
-  bg decide
+   decide
 
 -- c
 
 example (n : Nat) : n ≤ n := by
-  bg aesop?
+   aesop?
   
 example : 2 ≤ 2 := by
-  bg library_search
+   library_search
 
 example : 2 ≤ 2 := by
-  bg auto
+   auto?
 
 example : 2 ≤ 2 := by
   with_auto
 
 macro_rules
-| `(tactic|auto) => `(tactic|library_search)
+| `(tactic|auto?) => `(tactic|apply?)
 
 example : 2 ≤ 2 := by
-  bg auto
+   auto?
 
 def prop := 2 ≤ 2
 
@@ -51,7 +52,7 @@ example : prop := by
 example : 1 = 1 := by#
 
 macro_rules
-| `(tactic|auto) => `(tactic|aesop?)
+| `(tactic|auto?) => `(tactic|aesop?)
 
 example : sillyN ≤ 4 := by#
   rw [silly]

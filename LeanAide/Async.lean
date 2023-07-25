@@ -95,31 +95,38 @@ def runTacticCode (tacticCode : TSyntax ``tacticSeq)  : PolyTacticM := fun goal 
         throwError m!"Tactic not finishing, remaining goals:\n{goals}"
     pure (some ts, tacticCode)
 
-def getMsgTactic?  : CoreM <| Option (TSyntax ``tacticSeq) := do
+def getMsgTacticD (default : TSyntax ``tacticSeq)  : CoreM <| TSyntax ``tacticSeq := do
   let msgLog ← Core.getMessageLog  
   let msgs := msgLog.toList
-  let mut tac? : Option <| TSyntax ``tacticSeq := none
+  let mut tac : TSyntax ``tacticSeq := default
   for msg in msgs do
     let msg := msg.data
     let msg ← msg.toString 
-    let msg := msg.replace "Try this:" "" |>.trim
-    let parsedMessage := Parser.runParserCategory (←getEnv)  ``tacticSeq msg
-    match parsedMessage with
-    | Except.ok tac => 
-      resetMessageLog
-      tac? := some ⟨tac⟩
-    | _ =>
-      logInfo m!"failed to parse tactic {msg}"
-  return tac?
+    match msg.dropPrefix? "Try this: " with
+    | none => 
+      pure ()
+    | some msg => do
+      let parsedMessage := 
+        Parser.runParserCategory (←getEnv)  ``tacticSeq msg.toString
+      match parsedMessage with
+      | Except.ok tac' => 
+        resetMessageLog
+        tac:=  (TSyntax.mk tac')
+      | _ =>
+        logInfo m!"failed to parse tactic {msg}"
+        pure ()
+  return tac
 
-def runTacticCodeMsg (tacticCode : TSyntax ``tacticSeq)  : PolyTacticM := fun goal ↦ do
+def runTacticCodeMsg (tacticCode : TSyntax ``tacticSeq)  : PolyTacticM := 
+  fun goal ↦ do
+    let mut msgs ← 
+      modifyGetThe Core.State fun st => (st.messages, { st with messages := {} })
     let (goals, ts) ← runTactic  goal tacticCode 
     unless goals.isEmpty do
+        msgs := msgs ++ (← getThe Core.State).messages
+        modifyThe Core.State fun st => { st with messages := msgs }
         throwError m!"Tactic not finishing, remaining goals:\n{goals}"
-    let tac? ← getMsgTactic?
-    let code := match tac? with
-    | none => tacticCode
-    | some tac => tac
+    let code ← getMsgTacticD tacticCode
     pure (some ts, code)
 
 def PolyTacticM.ofTactic (tacticCode : TSyntax ``tacticSeq) : PolyTacticM := runTacticCodeMsg tacticCode
@@ -226,7 +233,7 @@ def fetchProof  : TacticM (MessageData) :=
 elab "fetch_proof" : tactic => do
   discard fetchProof
 
-macro "auto" : tactic => do
+macro "auto?" : tactic => do
   `(tactic|aesop?)
 
 syntax (name := autoTacs) "with_auto" (tacticSeq)? : tactic
@@ -239,7 +246,7 @@ macro "by#"  : term =>
 
 @[tactic autoTacs] def autoStartImpl : Tactic := fun stx => 
 withMainContext do
-let autoCode ← `(tacticSeq| auto) 
+let autoCode ← `(tacticSeq| auto?) 
 match stx with
 | `(tactic| with_auto%$tk $tacticCode) => do
     let mut prevPos := tk
@@ -271,7 +278,7 @@ match stx with
       catch _ =>
         pure ()
 | `(tactic| with_auto) => do
-    let tacticCode ← `(tactic|auto) 
+    let tacticCode ← `(tactic|auto?) 
     if (← getUnsolvedGoals).isEmpty then
         logInfoAt tacticCode m!"Goals accomplished!! 🎉"
         return () 
