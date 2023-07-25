@@ -100,6 +100,30 @@ def getTactics (s : TSyntax ``tacticSeq) : Array (TSyntax `tactic) :=
   | `(tacticSeq| $[$t]*) => t
   | _ => #[]
 
+def appendTactics (s t : TSyntax ``tacticSeq) : 
+  MetaM (TSyntax ``tacticSeq) := do
+  let ts := getTactics t
+  match s with
+  | `(tacticSeq| { $[$t]* }) => 
+      let ts' := t ++ ts
+      `(tacticSeq| { $[$ts']* })
+  | `(tacticSeq| $[$t]*) => 
+      let ts' := t ++ ts
+      `(tacticSeq| $[$ts']*)
+  | _ => pure t
+
+def consTactics (h: TSyntax `tactic)(s : TSyntax ``tacticSeq):
+  MetaM (TSyntax ``tacticSeq) := do
+  match s with
+  | `(tacticSeq| { $[$t]* }) => 
+      let ts' := #[h] ++ t
+      `(tacticSeq| { $[$ts']* })
+  | `(tacticSeq| $[$t]*) => 
+      let ts' := #[h] ++ t
+      `(tacticSeq| $[$ts']*)
+  | _ => pure s
+
+#check Array.append
 
 def threadNum : IO Nat := do
   try

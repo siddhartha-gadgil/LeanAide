@@ -272,9 +272,7 @@ match stx with
         let msg := m!"Try this next: {indentD script}" 
         logWarningAt tacticCode m!"proof complete before: {tacticCode}" 
         TryThis.addSuggestion prevPos 
-          (← `(tacticSeq|
-            $tacticCode
-            ($script)))
+          (← consTactics tacticCode script)
         logInfoAt prevPos msg
       catch _ =>
         if (← getUnsolvedGoals).isEmpty then
@@ -296,9 +294,7 @@ match stx with
           let script ← fetchProof
           let msg := m!"Try this next: {indentD script}"  
           TryThis.addSuggestion tacticCode 
-            (← `(tacticSeq|
-            $tacticCode
-            ($script)))
+           (← consTactics tacticCode script)
           logInfoAt tacticCode msg
       catch _ =>
         pure ()
