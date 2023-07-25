@@ -2,7 +2,7 @@ import LeanAide.Async
 import LeanAide.AsyncCodeAction
 import Aesop
 import Mathlib.Tactic.LibrarySearch
-import Mathlib.Tactic.TryThis
+import Std.Tactic.TryThis
 
 opaque sillyN : Nat
 
@@ -44,7 +44,8 @@ macro_rules
 | `(tactic|auto?) => `(tactic|apply?)
 
 example : 2 ≤ 2 := by#
-   skip
+     skip
+     (exact Nat.le_refl 2)
 
 def prop := 2 ≤ 3
 

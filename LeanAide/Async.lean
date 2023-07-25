@@ -1,8 +1,10 @@
 import Lean
 import LeanAide.Aides
+import Std.Tactic.TryThis
 import Aesop
 
 open Lean Meta Elab Term Tactic Core Parser Tactic
+open Std.Tactic
 
 /-!
 # Asynchronous tactic execution
@@ -227,7 +229,7 @@ syntax (name := bgTactic) "bg" tacticSeq : tactic
     admitGoal <| ← getMainGoal
   | _ => throwUnsupportedSyntax
 
-def fetchProof  : TacticM (MessageData) := 
+def fetchProof  : TacticM (TSyntax `Lean.Parser.Tactic.tacticSeq) := 
   focus do
   let key ← GoalKey.get
   let goal ← getMainGoal
@@ -241,7 +243,7 @@ def fetchProof  : TacticM (MessageData) :=
     | some ts =>
       set ts 
     setGoals []
-    return m!"Try this next: {indentD s.script}"
+    return s.script
 
 elab "fetch_proof" : tactic => do
   discard fetchProof
@@ -266,8 +268,13 @@ match stx with
     let allTacs := getTactics tacticCode
     for tacticCode in allTacs do
       try 
-        let msg ← fetchProof 
-        logWarningAt tacticCode m!"proof complete before: {tacticCode}"
+        let script ← fetchProof
+        let msg := m!"Try this next: {indentD script}" 
+        logWarningAt tacticCode m!"proof complete before: {tacticCode}" 
+        TryThis.addSuggestion tacticCode 
+          (← `(tacticSeq|
+            $tacticCode
+            ($script)))
         logInfoAt prevPos msg
       catch _ =>
         if (← getUnsolvedGoals).isEmpty then
@@ -286,7 +293,12 @@ match stx with
       prevPos := tacticCode
       try
         dbgSleep 50 fun _ => do
-          let msg ← fetchProof 
+          let script ← fetchProof
+          let msg := m!"Try this next: {indentD script}"  
+          TryThis.addSuggestion tacticCode 
+            (← `(tacticSeq|
+            $tacticCode
+            ($script)))
           logInfoAt tacticCode msg
       catch _ =>
         pure ()
@@ -303,7 +315,12 @@ match stx with
     let _ ← ioSeek.asTask
     try
       dbgSleep 50 fun _ => do
-        let msg ← fetchProof 
+        let script ← fetchProof
+        let msg := m!"Try this next: {indentD script}" 
+        TryThis.addSuggestion tacticCode 
+          (← `(tacticSeq|
+            $tacticCode
+            ($script)))
         logInfoAt tacticCode msg
     catch _ =>
       pure ()
