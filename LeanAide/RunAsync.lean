@@ -34,9 +34,9 @@ We have a function of type `TacticM Unit` which
 * We then restore these states.
 -/
 
-register_option with_auto.delay : Nat :=
+register_option aided_by.delay : Nat :=
   { defValue := 50
-    group := "with_auto"
+    group := "aided_by"
     descr := "Time to wait after launching a task." }
 
 deriving instance BEq, Hashable, Repr for LocalDecl
@@ -165,27 +165,27 @@ def fetchProof  : TacticM ProofState :=
     return s
 
 
-syntax (name := autoTacs) "with_auto" ("from_by")? tacticSeq "do" (tacticSeq)? : tactic
+syntax (name := autoTacs) "aided_by" ("from_by")? tacticSeq "do" (tacticSeq)? : tactic
 
 macro "by#" tacs:tacticSeq : term =>
   `(by 
-  with_auto from_by aesop? do $tacs)
+  aided_by from_by aesop? do $tacs)
 
 macro "by#"  : term =>
   `(by 
-  with_auto from_by aesop? do)
+  aided_by from_by aesop? do)
 
 
 @[tactic autoTacs] def autoStartImpl : Tactic := fun stx => 
 withMainContext do
 match stx with
-| `(tactic| with_auto from_by $auto? do $tacticCode) => 
+| `(tactic| aided_by from_by $auto? do $tacticCode) => 
     autoStartImplAux stx auto? tacticCode true
-| `(tactic| with_auto $auto? do $tacticCode) => 
+| `(tactic| aided_by $auto? do $tacticCode) => 
     autoStartImplAux stx auto? tacticCode false
-| `(tactic| with_auto from_by $auto? do) => do
+| `(tactic| aided_by from_by $auto? do) => do
     autoStartImplAux' stx auto? true    
-| `(tactic| with_auto $auto? do) => do
+| `(tactic| aided_by $auto? do) => do
     autoStartImplAux' stx auto? false    
 | _ => throwUnsupportedSyntax
 where 
@@ -196,20 +196,33 @@ where
     let allTacs := getTactics tacticCode
     let mut cumTacs :  Array (TSyntax `tactic) := #[]
     for tacticCode in allTacs do
+      if tacticCode.raw.reprint.get!.trim = "sorry" then
+        evalTactic tacticCode
+        return ()
       cumTacs := cumTacs.push tacticCode
       try 
         let pf ← fetchProof
         logWarningAt tacticCode m!"proof complete before: {tacticCode}" 
         let allTacs ←  appendTactics' cumTacs pf.script
+        unless allTacs.raw.reprint.get!.trim.endsWith "sorry" do
         if fromBy then
            TryThis.addSuggestion stx (← `(by $allTacs))
         else
            TryThis.addSuggestion stx allTacs
       catch _ =>
         if (← getUnsolvedGoals).isEmpty then
+          if fromBy then
+            TryThis.addSuggestion stx (← `(by $[$cumTacs]*))
+          else
+            TryThis.addSuggestion stx (← `(tacticSeq|$[$cumTacs]*))
           return () 
       evalTactic tacticCode
       if (← getUnsolvedGoals).isEmpty then
+        unless tacticCode.raw.reprint.get!.trim.endsWith "sorry" do
+          if fromBy then
+            TryThis.addSuggestion stx (← `(by $[$cumTacs]*))
+          else
+            TryThis.addSuggestion stx (← `(tacticSeq|$[$cumTacs]*))
         return ()
       let ioSeek : IO Unit := runAndCacheIO 
         autoCode  (← getMainGoal) (← getMainTarget) 
@@ -217,7 +230,7 @@ where
                 (← readThe Core.Context) (← getThe Core.State)
       let _ ← ioSeek.asTask
       try
-        let delay  := with_auto.delay.get (← getOptions)
+        let delay  := aided_by.delay.get (← getOptions)
         dbgSleep delay.toUInt32 fun _ => do
           let pf ← fetchProof
           let allTacs ←  appendTactics' cumTacs pf.script
@@ -238,7 +251,7 @@ where
               (← readThe Core.Context) (← getThe Core.State)
     let _ ← ioSeek.asTask
     try
-      let delay  := with_auto.delay.get (← getOptions)
+      let delay  := aided_by.delay.get (← getOptions)
       dbgSleep delay.toUInt32 fun _ => do
         let pf ← fetchProof
         let script := pf.script
@@ -256,7 +269,7 @@ namespace leanaide.auto
 
 scoped macro (priority := high) "by" tacs?:(tacticSeq)? : term => 
   match tacs? with
-  | none => `(by with_auto from_by aesop? do)
-  | some tacs => `(by with_auto from_by aesop? do $tacs)
+  | none => `(by aided_by from_by aesop? do)
+  | some tacs => `(by aided_by from_by aesop? do $tacs)
 
 end leanaide.auto

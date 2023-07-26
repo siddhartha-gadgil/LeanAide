@@ -253,27 +253,27 @@ elab "fetch_proof" : tactic => do
 -- macro "auto?" : tactic => do
 --   `(tactic|aesop?)
 
-syntax (name := autoTacs) "with_auto" ("from_by")? tacticSeq "do" (tacticSeq)? : tactic
+syntax (name := autoTacs) "aided_by" ("from_by")? tacticSeq "do" (tacticSeq)? : tactic
 
 macro "by#" tacs:tacticSeq : term =>
   `(by 
-  with_auto from_by aesop? do $tacs)
+  aided_by from_by aesop? do $tacs)
 
 macro "by#"  : term =>
   `(by 
-  with_auto from_by aesop? do)
+  aided_by from_by aesop? do)
 
 
 @[tactic autoTacs] def autoStartImpl : Tactic := fun stx => 
 withMainContext do
 match stx with
-| `(tactic| with_auto from_by $auto? do $tacticCode) => 
+| `(tactic| aided_by from_by $auto? do $tacticCode) => 
     autoStartImplAux stx auto? tacticCode true
-| `(tactic| with_auto $auto? do $tacticCode) => 
+| `(tactic| aided_by $auto? do $tacticCode) => 
     autoStartImplAux stx auto? tacticCode false
-| `(tactic| with_auto from_by $auto? do) => do
+| `(tactic| aided_by from_by $auto? do) => do
     autoStartImplAux' stx auto? true    
-| `(tactic| with_auto $auto? do) => do
+| `(tactic| aided_by $auto? do) => do
     autoStartImplAux' stx auto? false    
 | _ => throwUnsupportedSyntax
 where 
@@ -360,7 +360,7 @@ namespace leanaide.auto
 
 scoped macro (priority := high) "by" tacs?:(tacticSeq)? : term => 
   match tacs? with
-  | none => `(by with_auto from_by aesop? do)
-  | some tacs => `(by with_auto from_by aesop? do $tacs)
+  | none => `(by aided_by from_by aesop? do)
+  | some tacs => `(by aided_by from_by aesop? do $tacs)
 
 end leanaide.auto

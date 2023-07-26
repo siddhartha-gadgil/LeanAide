@@ -8,9 +8,7 @@ opaque sillyN : Nat
 axiom silly : sillyN = 2
 
 example : sillyN ≤ 3 := by#
-    rw [silly]
-    sorry
-
+  sorry
 
 example : 3 ≤ 4 := by#
   sorry
@@ -23,7 +21,7 @@ example : 2 ≤ 2 := by#
   sorry
 
 example : 2 ≤ 2 := by
-  with_auto aesop? do
+  aided_by aesop? do
   sorry
 
 example : 2 ≤ 2 := by#
@@ -32,11 +30,11 @@ example : 2 ≤ 2 := by#
 
 macro "by!" tacs:tacticSeq : term =>
   `(by 
-  with_auto from_by apply? do $tacs)
+  aided_by from_by apply? do $tacs)
 
 macro "by!"  : term =>
   `(by 
-  with_auto from_by apply? do)
+  aided_by from_by apply? do)
 
 
 example : 2 ≤ 2 := by!
@@ -72,7 +70,7 @@ theorem sum_formula (n: ℕ) :  sum n = (n * (n + 1) : ℚ) / 2  := by
   induction n with
   | zero => rfl
   | succ n ih => 
-    with_auto linarith do
+    aided_by linarith do
     simp [sum]
     sorry
 
