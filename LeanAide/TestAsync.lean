@@ -7,12 +7,10 @@ opaque sillyN : Nat
 
 axiom silly : sillyN = 2
 
-example : sillyN ≤ 3 := by
+example : sillyN ≤ 3 := by#
     rw [silly]
-    simp_all only
 
-
-example : 3 ≤ 4 := by# 
+example : 3 ≤ 4 := by simp_all only 
 
 example : sillyN ≤ 4 := by#
   rw [silly]
@@ -22,7 +20,6 @@ example: 1 = 1 := by aesop?
 example : 1 ≤ 2 := by
    decide
 
--- c
 
 example : 2 ≤ 2 := by#
 
@@ -34,23 +31,23 @@ example : 2 ≤ 2 := by#
 
 macro "by!" tacs:tacticSeq : term =>
   `(by 
-  with_auto from_by apply? do $tacs)
+  with_auto from_by apply? do $tacs) 
 
 macro "by!"  : term =>
   `(by 
   with_auto from_by apply? do)
 
+example: 3 ≤3 := by exact? 
 
-example : 2 ≤ 2 := by
-  skip
-  exact Nat.AtLeastTwo.prop
+example : 2 ≤ 2 := by!
+
+
 
 
 def prop := 2 ≤ 3
 
-example : prop := by
+example : prop := by!
   rw [prop]
-  exact Nat.AtLeastTwo.prop
 
 example : 1 = 1 := by!
 
@@ -67,6 +64,8 @@ example : 1 = 1 := by
 def sum : ℕ → ℕ
 | 0 => 0
 | n + 1 => n + 1 + sum n
+
+set_option with_auto.delay 2000
 
 theorem sum_formula (n: ℕ) :  sum n = (n * (n + 1) : ℚ) / 2  := by 
   induction n with
