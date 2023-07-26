@@ -45,9 +45,7 @@ structure ProofState where
   core   : Core.State
   meta   : Meta.State
   term?  : Option Term.State
-  preScript : Option String
   script : TSyntax ``tacticSeq
-  tailPos? : Option String.Pos
 
 def GoalKey.get : TacticM GoalKey := do
   let lctx ← getLCtx
@@ -147,7 +145,7 @@ def runTacticCodeMsg (tacticCode : TSyntax ``tacticSeq)  : PolyTacticM :=
 def PolyTacticM.ofTactic (tacticCode : TSyntax ``tacticSeq) : PolyTacticM := runTacticCodeMsg tacticCode
 
 
-def runAndCacheM (polyTac : PolyTacticM) (goal: MVarId) (target : Expr) (pos? tailPos? : Option String.Pos)(preScript: Option String) : MetaM Unit := 
+def runAndCacheM (polyTac : PolyTacticM) (goal: MVarId) (target : Expr) (pos? tailPos? : Option String.Pos) : MetaM Unit := 
   goal.withContext do 
     let lctx ← getLCtx
     let key : GoalKey := { goal := target, lctx := lctx.decls.toList }
@@ -162,9 +160,7 @@ def runAndCacheM (polyTac : PolyTacticM) (goal: MVarId) (target : Expr) (pos? ta
       core   := (← getThe Core.State)
       meta   := (← getThe Meta.State)
       term?   := ts?
-      preScript := preScript
       script := script
-      tailPos? := tailPos?
       }     
       putTactic key s
       match pos? with
@@ -178,11 +174,11 @@ def runAndCacheM (polyTac : PolyTacticM) (goal: MVarId) (target : Expr) (pos? ta
 
 -- #check MetaM.run'
 
-def runAndCacheIO (polyTac : PolyTacticM) (goal: MVarId) (target : Expr) (pos? tailPos?: Option String.Pos)(preScript: Option String) 
+def runAndCacheIO (polyTac : PolyTacticM) (goal: MVarId) (target : Expr) (pos? tailPos?: Option String.Pos) 
   (mctx : Meta.Context) (ms : Meta.State) 
   (cctx : Core.Context) (cs: Core.State) : IO Unit :=
   let eio := 
-  (runAndCacheM polyTac goal target pos? tailPos? preScript).run' mctx ms |>.run' cctx cs
+  (runAndCacheM polyTac goal target pos? tailPos?).run' mctx ms |>.run' cctx cs
   let res := eio.runToIO'
   res
 
@@ -195,11 +191,9 @@ syntax (name := launchTactic) "launch" tacticSeq : tactic
   | `(tactic| launch $tacticCode) => do
     let s ← saveState
     let ts ← getThe Term.State
-    let stx' := stx.copyHeadTailInfoFrom .missing 
     let ioSeek := runAndCacheIO 
       (PolyTacticM.ofTactic tacticCode)  (← getMainGoal) (← getMainTarget) 
               stx.getPos? stx.getTailPos? 
-              (some <| stx'.reprint.get! |>.replace "  " " ")
               (← readThe Meta.Context) (← getThe Meta.State ) 
               (← readThe Core.Context) (← getThe Core.State)
     let _ ← ioSeek.asTask
@@ -216,11 +210,9 @@ syntax (name := bgTactic) "bg" tacticSeq : tactic
   | stx@`(tactic| bg $tacticCode) => do
     let s ← saveState
     let ts ← getThe Term.State
-    let stx' := stx.copyHeadTailInfoFrom .missing
     let ioSeek : IO Unit := runAndCacheIO 
       (PolyTacticM.ofTactic tacticCode)  (← getMainGoal) (← getMainTarget) 
               stx.getPos? stx.getTailPos? 
-              (some <| stx'.reprint.get! |>.replace "  " " ") 
               (← readThe Meta.Context) (← getThe Meta.State ) 
               (← readThe Core.Context) (← getThe Core.State)
     let _ ← ioSeek.asTask
@@ -300,7 +292,7 @@ where
         return ()
       let ioSeek : IO Unit := runAndCacheIO 
         (PolyTacticM.ofTactic autoCode)  (← getMainGoal) (← getMainTarget) 
-                none none none  
+                none none   
                 (← readThe Meta.Context) (← getThe Meta.State ) 
                 (← readThe Core.Context) (← getThe Core.State)
       let _ ← ioSeek.asTask
@@ -323,7 +315,7 @@ where
         return () 
     let ioSeek : IO Unit := runAndCacheIO 
       (PolyTacticM.ofTactic autoCode)  (← getMainGoal) (← getMainTarget) 
-              none none none 
+              none none 
               (← readThe Meta.Context) (← getThe Meta.State ) 
               (← readThe Core.Context) (← getThe Core.State)
     let _ ← ioSeek.asTask
