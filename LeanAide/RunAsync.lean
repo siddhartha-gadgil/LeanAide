@@ -61,22 +61,18 @@ initialize tacticPosCache : IO.Ref (HashMap CacheKey ProofState)
         ← IO.mkRef ∅
 
 initialize spawnedKeys : 
-  IO.Ref (HashSet <| GoalKey × Option String.Pos × Option String.Pos) 
+  IO.Ref (HashSet <| GoalKey) 
         ← IO.mkRef  ∅
 
-def isSpawned (key : GoalKey) (pos? tailPos? : Option String.Pos) : IO Bool := do
+def isSpawned (key : GoalKey) : IO Bool := do
   let m ← spawnedKeys.get
-  return m.contains (key, pos?, tailPos?)
+  return m.contains key
 
-def markSpawned (key : GoalKey) (pos? tailPos? : Option String.Pos) : IO Unit := do
-  spawnedKeys.modify fun m => m.insert (key, pos?, tailPos?)
+def markSpawned (key : GoalKey)  : IO Unit := do
+  spawnedKeys.modify fun m => m.insert key
 
 def putTactic (key : GoalKey) (s : ProofState) : MetaM Unit := do
   tacticCache.modify fun m => m.insert key s
-
-def putPosTactic (key : CacheKey) (s : ProofState) : MetaM Unit := do
-  tacticPosCache.modify fun m => m.insert key s
-
 
 def getStates (key : GoalKey) : TacticM (Option ProofState) := do  
   let m ← tacticCache.get
@@ -145,13 +141,13 @@ def runTacticCodeMsg (tacticCode : TSyntax ``tacticSeq)  : PolyTacticM :=
 def PolyTacticM.ofTactic (tacticCode : TSyntax ``tacticSeq) : PolyTacticM := runTacticCodeMsg tacticCode
 
 
-def runAndCacheM (polyTac : PolyTacticM) (goal: MVarId) (target : Expr) (pos? tailPos? : Option String.Pos) : MetaM Unit := 
+def runAndCacheM (polyTac : PolyTacticM) (goal: MVarId) (target : Expr)  : MetaM Unit := 
   goal.withContext do 
     let lctx ← getLCtx
     let key : GoalKey := { goal := target, lctx := lctx.decls.toList }
-    if ←isSpawned key pos? tailPos? then
+    if ←isSpawned key then
       return ()
-    markSpawned key pos? tailPos? 
+    markSpawned key 
     let core₀ ← getThe Core.State
     let meta₀ ← getThe Meta.State
     try
@@ -163,63 +159,17 @@ def runAndCacheM (polyTac : PolyTacticM) (goal: MVarId) (target : Expr) (pos? ta
       script := script
       }     
       putTactic key s
-      match pos? with
-      | none => pure ()
-      | some pos => 
-        let ckey : CacheKey := { pos := pos, mvarId := goal}
-        putPosTactic ckey s
     catch _ =>
     set core₀
     set meta₀
 
--- #check MetaM.run'
-
-def runAndCacheIO (polyTac : PolyTacticM) (goal: MVarId) (target : Expr) (pos? tailPos?: Option String.Pos) 
+def runAndCacheIO (polyTac : PolyTacticM) (goal: MVarId) (target : Expr) 
   (mctx : Meta.Context) (ms : Meta.State) 
   (cctx : Core.Context) (cs: Core.State) : IO Unit :=
   let eio := 
-  (runAndCacheM polyTac goal target pos? tailPos?).run' mctx ms |>.run' cctx cs
+  (runAndCacheM polyTac goal target).run' mctx ms |>.run' cctx cs
   let res := eio.runToIO'
   res
-
-syntax (name := launchTactic) "launch" tacticSeq : tactic
-
-@[tactic launchTactic] def elabLaunchTactic : Tactic := fun stx => 
-  withMainContext do
-  focus do
-  match stx with
-  | `(tactic| launch $tacticCode) => do
-    let s ← saveState
-    let ts ← getThe Term.State
-    let ioSeek := runAndCacheIO 
-      (PolyTacticM.ofTactic tacticCode)  (← getMainGoal) (← getMainTarget) 
-              stx.getPos? stx.getTailPos? 
-              (← readThe Meta.Context) (← getThe Meta.State ) 
-              (← readThe Core.Context) (← getThe Core.State)
-    let _ ← ioSeek.asTask
-    set ts
-    s.restore
-  | _ => throwUnsupportedSyntax
-
-syntax (name := bgTactic) "bg" tacticSeq : tactic
-
-@[tactic bgTactic] def elabBgTactic : Tactic := fun stx => 
-  withMainContext do
-  focus do
-  match stx with
-  | stx@`(tactic| bg $tacticCode) => do
-    let s ← saveState
-    let ts ← getThe Term.State
-    let ioSeek : IO Unit := runAndCacheIO 
-      (PolyTacticM.ofTactic tacticCode)  (← getMainGoal) (← getMainTarget) 
-              stx.getPos? stx.getTailPos? 
-              (← readThe Meta.Context) (← getThe Meta.State ) 
-              (← readThe Core.Context) (← getThe Core.State)
-    let _ ← ioSeek.asTask
-    set ts
-    s.restore
-    admitGoal <| ← getMainGoal
-  | _ => throwUnsupportedSyntax
 
 def fetchProof  : TacticM (TSyntax `Lean.Parser.Tactic.tacticSeq) := 
   focus do
@@ -237,11 +187,6 @@ def fetchProof  : TacticM (TSyntax `Lean.Parser.Tactic.tacticSeq) :=
     setGoals []
     return s.script
 
-elab "fetch_proof" : tactic => do
-  discard fetchProof
-
--- macro "auto?" : tactic => do
---   `(tactic|aesop?)
 
 syntax (name := autoTacs) "with_auto" ("from_by")? tacticSeq "do" (tacticSeq)? : tactic
 
@@ -292,7 +237,6 @@ where
         return ()
       let ioSeek : IO Unit := runAndCacheIO 
         (PolyTacticM.ofTactic autoCode)  (← getMainGoal) (← getMainTarget) 
-                none none   
                 (← readThe Meta.Context) (← getThe Meta.State ) 
                 (← readThe Core.Context) (← getThe Core.State)
       let _ ← ioSeek.asTask
@@ -315,7 +259,6 @@ where
         return () 
     let ioSeek : IO Unit := runAndCacheIO 
       (PolyTacticM.ofTactic autoCode)  (← getMainGoal) (← getMainTarget) 
-              none none 
               (← readThe Meta.Context) (← getThe Meta.State ) 
               (← readThe Core.Context) (← getThe Core.State)
     let _ ← ioSeek.asTask
@@ -331,20 +274,6 @@ where
     if (← getUnsolvedGoals).isEmpty then
         return () 
 
-
-elab "check_auto" : tactic => withMainContext do
-  if (← getUnsolvedGoals).isEmpty then
-        logInfo m!"No more goals to solve"
-        return () 
-  let lctx ← getLCtx
-  let target ← getMainTarget 
-  let key : GoalKey := { goal := target, lctx := lctx.decls.toList }
-  logInfo m!"Checking for cached result for the goal : {← ppExpr <| key.goal }"
-  let cache : HashMap GoalKey ProofState ← tacticCache.get
-  logInfo m!"Cache size : {cache.size}"
-  logInfo m!"Cache keys"
-  for (k, _) in cache.toList do
-    logInfo m!"{← ppExpr k.goal}"
 
 namespace leanaide.auto
 
