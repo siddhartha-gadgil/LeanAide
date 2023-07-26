@@ -39,6 +39,14 @@ register_option aided_by.delay : Nat :=
     group := "aided_by"
     descr := "Time to wait after launching a task." }
 
+def isSorry (tacticCode: TSyntax `tactic) : TermElabM Bool := do
+  let goal ← mkFreshExprMVar (mkConst ``False) 
+  try
+    let (goals, _) ← Elab.runTactic  goal.mvarId! tacticCode
+    return goals.isEmpty
+  catch _ =>
+    return false
+
 deriving instance BEq, Hashable, Repr for LocalDecl
 
 structure GoalKey where
@@ -196,7 +204,7 @@ where
     let allTacs := getTactics tacticCode
     let mut cumTacs :  Array (TSyntax `tactic) := #[]
     for tacticCode in allTacs do
-      if tacticCode.raw.reprint.get!.trim = "sorry" then
+      if ← isSorry tacticCode then
         evalTactic tacticCode
         return ()
       cumTacs := cumTacs.push tacticCode
@@ -204,7 +212,6 @@ where
         let pf ← fetchProof
         logWarningAt tacticCode m!"proof complete before: {tacticCode}" 
         let allTacs ←  appendTactics' cumTacs pf.script
-        unless allTacs.raw.reprint.get!.trim.endsWith "sorry" do
         if fromBy then
            TryThis.addSuggestion stx (← `(by $allTacs))
         else
