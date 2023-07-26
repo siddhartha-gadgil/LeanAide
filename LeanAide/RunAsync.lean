@@ -46,6 +46,7 @@ structure ProofState where
   meta   : Meta.State
   term?  : Option Term.State
   script : TSyntax ``tacticSeq
+  messages : List Message
 
 def GoalKey.get : TacticM GoalKey := do
   let lctx ← getLCtx
@@ -93,19 +94,19 @@ def parseAsTacticSeq (env : Environment) (input : String) (fileName := "<input>"
   else
     Except.error ((s.mkError "end of input").toErrorMsg ictx)
 
-def getMsgTacticD (default : TSyntax ``tacticSeq)  : CoreM <| TSyntax ``tacticSeq := do
+def getMsgTacticD (default : TSyntax ``tacticSeq)  : CoreM <| (TSyntax ``tacticSeq) × (List Message) := do
   let msgLog ← Core.getMessageLog  
   let msgs := msgLog.toList
   let mut tac : TSyntax ``tacticSeq := default
   for msg in msgs do
     let msg := msg.data
     let msg ← msg.toString 
-    match msg.dropPrefix? "Try this: " with
+    match msg.dropPrefix? "Try this:" with
     | none => 
       pure ()
     | some msg => do
       let parsedMessage := 
-        parseAsTacticSeq (←getEnv) msg.toString
+        parseAsTacticSeq (←getEnv) msg.toString.trimLeft
       match parsedMessage with
       | Except.ok tac' => 
         resetMessageLog
@@ -113,7 +114,7 @@ def getMsgTacticD (default : TSyntax ``tacticSeq)  : CoreM <| TSyntax ``tacticSe
       | _ =>
         logInfo m!"failed to parse tactic ({msg.toString})"
         pure ()
-  return tac
+  return (tac, msgs)
 
 
 
@@ -127,16 +128,18 @@ def runAndCacheM (tacticCode : TSyntax ``tacticSeq)
     markSpawned key 
     let core₀ ← getThe Core.State
     let meta₀ ← getThe Meta.State
+    -- modifyThe Core.State fun st => { st with messages := {} }
     try
       let (goals, ts) ← runTactic  goal tacticCode 
       unless goals.isEmpty do
         throwError m!"Tactic not finishing, remaining goals:\n{goals}"
-      let code ← getMsgTacticD tacticCode
+      let (code, msgs) ← getMsgTacticD tacticCode
       let s : ProofState := {
         core   := (← getThe Core.State)
         meta   := (← getThe Meta.State)
         term?   := some ts
         script := code
+        messages := msgs
         }     
       putTactic key s
     catch _ =>
@@ -151,7 +154,7 @@ def runAndCacheIO (tacticCode : TSyntax ``tacticSeq) (goal: MVarId) (target : Ex
   let res := eio.runToIO'
   res
 
-def fetchProof  : TacticM (TSyntax `Lean.Parser.Tactic.tacticSeq) := 
+def fetchProof  : TacticM ProofState := 
   focus do
   let key ← GoalKey.get
   let goal ← getMainGoal
@@ -165,7 +168,7 @@ def fetchProof  : TacticM (TSyntax `Lean.Parser.Tactic.tacticSeq) :=
     | some ts =>
       set ts 
     setGoals []
-    return s.script
+    return s
 
 
 syntax (name := autoTacs) "with_auto" ("from_by")? tacticSeq "do" (tacticSeq)? : tactic
@@ -201,19 +204,22 @@ where
     for tacticCode in allTacs do
       cumTacs := cumTacs.push tacticCode
       try 
-        let script ← fetchProof
+        let pf ← fetchProof
         logWarningAt tacticCode m!"proof complete before: {tacticCode}" 
-        let allTacs ←  appendTactics' cumTacs script
+        let allTacs ←  appendTactics' cumTacs pf.script
         if fromBy then
            TryThis.addSuggestion stx (← `(by $allTacs))
         else
-           TryThis.addSuggestion stx allTacs 
+           TryThis.addSuggestion stx allTacs
+        -- logInfo m!"Messages ({pf.messages.length}):" 
+        -- for msg in pf.messages do
+        --   logInfo m!"message: {msg.data}"
       catch _ =>
         if (← getUnsolvedGoals).isEmpty then
           return () 
       evalTactic tacticCode
       if (← getUnsolvedGoals).isEmpty then
-        logInfoAt tacticCode m!"Goals accomplished!! 🎉"
+        -- logInfoAt tacticCode m!"Goals accomplished!! 🎉"
         return ()
       let ioSeek : IO Unit := runAndCacheIO 
         autoCode  (← getMainGoal) (← getMainTarget) 
@@ -222,19 +228,22 @@ where
       let _ ← ioSeek.asTask
       try
         dbgSleep 50 fun _ => do
-          let script ← fetchProof
-          let allTacs ←  appendTactics' cumTacs script
+          let pf ← fetchProof
+          let allTacs ←  appendTactics' cumTacs pf.script
           if fromBy then
             TryThis.addSuggestion stx (← `(by $allTacs))
           else
             TryThis.addSuggestion stx allTacs
+          -- logInfo m!"Messages ({pf.messages.length}):" 
+          -- for msg in pf.messages do
+          --   logInfo m!"message: {msg.data}"
       catch _ =>
         pure ()
   autoStartImplAux' (stx: Syntax) 
     (autoCode : TSyntax `Lean.Parser.Tactic.tacticSeq)(fromBy: Bool) : TacticM Unit := 
     withMainContext do
     if (← getUnsolvedGoals).isEmpty then
-        logInfoAt stx m!"Goals accomplished!! 🎉"
+        -- logInfoAt stx m!"Goals accomplished!! 🎉"
         return () 
     let ioSeek : IO Unit := runAndCacheIO 
       autoCode  (← getMainGoal) (← getMainTarget) 
@@ -243,11 +252,15 @@ where
     let _ ← ioSeek.asTask
     try
       dbgSleep 50 fun _ => do
-        let script ← fetchProof
+        let pf ← fetchProof
+        let script := pf.script
         if fromBy then
           TryThis.addSuggestion stx (← `(by $script))
         else
           TryThis.addSuggestion stx script          
+        -- logInfo m!"Messages ({pf.messages.length}):" 
+        -- for msg in pf.messages do
+        --   logInfo m!"message: {msg.data}"
     catch _ =>
       pure ()
     if (← getUnsolvedGoals).isEmpty then

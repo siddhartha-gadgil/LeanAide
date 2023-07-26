@@ -1,6 +1,6 @@
 import LeanAide.RunAsync
 import Aesop
-import Mathlib.Tactic.LibrarySearch
+import Mathlib
 import Std.Tactic.TryThis
 
 opaque sillyN : Nat
@@ -66,6 +66,20 @@ example : 1 = 1 := by#
   
 example : 1 = 1 := by
   simp?
+
+def sum : ℕ → ℕ
+| 0 => 0
+| n + 1 => n + 1 + sum n
+
+theorem sum_formula (n: ℕ) :  sum n = (n * (n + 1) : ℚ) / 2  := by 
+  induction n with
+  | zero => rfl
+  | succ n ih => 
+    with_auto linarith do
+    simp [sum]
+    
+    
+
 
 open leanaide.auto
 
