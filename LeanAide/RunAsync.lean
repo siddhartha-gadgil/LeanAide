@@ -34,6 +34,11 @@ We have a function of type `TacticM Unit` which
 * We then restore these states.
 -/
 
+register_option with_auto.delay : Nat :=
+  { defValue := 50
+    group := "with_auto"
+    descr := "Time to wait after launching a task." }
+
 deriving instance BEq, Hashable, Repr for LocalDecl
 
 structure GoalKey where
@@ -219,7 +224,6 @@ where
           return () 
       evalTactic tacticCode
       if (← getUnsolvedGoals).isEmpty then
-        -- logInfoAt tacticCode m!"Goals accomplished!! 🎉"
         return ()
       let ioSeek : IO Unit := runAndCacheIO 
         autoCode  (← getMainGoal) (← getMainTarget) 
@@ -227,7 +231,8 @@ where
                 (← readThe Core.Context) (← getThe Core.State)
       let _ ← ioSeek.asTask
       try
-        dbgSleep 50 fun _ => do
+        let delay  := with_auto.delay.get (← getOptions)
+        dbgSleep delay.toUInt32 fun _ => do
           let pf ← fetchProof
           let allTacs ←  appendTactics' cumTacs pf.script
           if fromBy then
@@ -243,7 +248,6 @@ where
     (autoCode : TSyntax `Lean.Parser.Tactic.tacticSeq)(fromBy: Bool) : TacticM Unit := 
     withMainContext do
     if (← getUnsolvedGoals).isEmpty then
-        -- logInfoAt stx m!"Goals accomplished!! 🎉"
         return () 
     let ioSeek : IO Unit := runAndCacheIO 
       autoCode  (← getMainGoal) (← getMainTarget) 
@@ -251,7 +255,8 @@ where
               (← readThe Core.Context) (← getThe Core.State)
     let _ ← ioSeek.asTask
     try
-      dbgSleep 50 fun _ => do
+      let delay  := with_auto.delay.get (← getOptions)
+      dbgSleep delay.toUInt32 fun _ => do
         let pf ← fetchProof
         let script := pf.script
         if fromBy then
