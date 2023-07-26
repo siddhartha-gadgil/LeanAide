@@ -52,8 +52,6 @@ structure ProofState where
   term?  : Option Term.State
   script : TSyntax ``tacticSeq
   messages : List Message
-  initTrees : List InfoTree
-  finalTrees : List InfoTree
 
 def GoalKey.get : TacticM GoalKey := do
   let lctx ← getLCtx
@@ -135,8 +133,7 @@ def runAndCacheM (tacticCode : TSyntax ``tacticSeq)
     markSpawned key 
     let core₀ ← getThe Core.State
     let meta₀ ← getThe Meta.State
-    let trees := (← getInfoState).trees
-    modifyThe Core.State fun st => { st with messages := {} }
+    -- modifyThe Core.State fun st => { st with messages := {} }
     try
       let (goals, ts) ← runTactic  goal tacticCode 
       unless goals.isEmpty do
@@ -148,14 +145,11 @@ def runAndCacheM (tacticCode : TSyntax ``tacticSeq)
         term?   := some ts
         script := code
         messages := msgs
-        initTrees := trees.toList
-        finalTrees := (← getInfoState).trees.toList
         }     
       putTactic key s
     catch _ =>
     set core₀
     set meta₀
-    modifyInfoState fun s => { s with trees := trees }
 
 def runAndCacheIO (tacticCode : TSyntax ``tacticSeq) (goal: MVarId) (target : Expr) 
   (mctx : Meta.Context) (ms : Meta.State) 
@@ -220,10 +214,8 @@ where
         let allTacs ←  appendTactics' cumTacs pf.script
         if fromBy then
            TryThis.addSuggestion stx (← `(by $allTacs))
-           logInfo m!"Trees: {pf.initTrees.length} -> {pf.finalTrees.length}"
         else
            TryThis.addSuggestion stx allTacs
-           logInfo m!"Trees: {pf.initTrees.length} -> {pf.finalTrees.length}"
         -- logInfo m!"Messages ({pf.messages.length}):" 
         -- for msg in pf.messages do
         --   logInfo m!"message: {msg.data}"
@@ -244,21 +236,9 @@ where
           let pf ← fetchProof
           let allTacs ←  appendTactics' cumTacs pf.script
           if fromBy then
-            let trees := (← getInfoState).trees.toList
-            let initTrees := (←  pf.initTrees.mapM (·.format)).map Format.pretty
-            let finalTrees := (←  pf.initTrees.mapM (·.format)).map Format.pretty
-            let purgedTrees ← 
-              trees.filterM fun t => do
-                let t ← t.format
-                pure (initTrees.contains t.pretty || !(finalTrees.contains t.pretty))              
             TryThis.addSuggestion stx (← `(by $allTacs))
-            modifyInfoState fun s => { s with trees := purgedTrees.toPArray' }
-            logInfo m!"Trees: {pf.initTrees.length} -> {pf.finalTrees.length}"
-            logInfo m!"Trees: {trees.length} -> {purgedTrees.length}"
           else
             TryThis.addSuggestion stx allTacs
-            logInfo m!"Trees: {pf.initTrees.length} -> {pf.finalTrees.length}"
-
           -- logInfo m!"Messages ({pf.messages.length}):" 
           -- for msg in pf.messages do
           --   logInfo m!"message: {msg.data}"
@@ -281,20 +261,8 @@ where
         let script := pf.script
         if fromBy then
           TryThis.addSuggestion stx (← `(by $script))
-          let trees := (← getInfoState).trees.toList
-          let initTrees := (←  pf.initTrees.mapM (·.format)).map Format.pretty
-          let finalTrees := (←  pf.initTrees.mapM (·.format)).map Format.pretty
-          let purgedTrees ← 
-            trees.filterM fun t => do
-              let t ← t.format
-              pure (initTrees.contains t.pretty || !(finalTrees.contains t.pretty))
-          modifyInfoState fun s => { s with trees := purgedTrees.toPArray' }              
-          logInfo m!"Trees: {pf.initTrees.length} -> {pf.finalTrees.length}"
-          logInfo m!"Trees: {trees.length} -> {purgedTrees.length}"
-          
         else
-          TryThis.addSuggestion stx script      
-          logInfo m!"Trees: {pf.initTrees.length} -> {pf.finalTrees.length}"    
+          TryThis.addSuggestion stx script          
         -- logInfo m!"Messages ({pf.messages.length}):" 
         -- for msg in pf.messages do
         --   logInfo m!"message: {msg.data}"
