@@ -63,9 +63,6 @@ section Caches
 initialize tacticCache : IO.Ref (HashMap GoalKey ProofState) 
         ← IO.mkRef ∅
 
-initialize tacticPosCache : IO.Ref (HashMap CacheKey ProofState) 
-        ← IO.mkRef ∅
-
 initialize spawnedKeys : 
   IO.Ref (HashSet <| GoalKey) 
         ← IO.mkRef  ∅
@@ -133,7 +130,6 @@ def runAndCacheM (tacticCode : TSyntax ``tacticSeq)
     markSpawned key 
     let core₀ ← getThe Core.State
     let meta₀ ← getThe Meta.State
-    -- modifyThe Core.State fun st => { st with messages := {} }
     try
       let (goals, ts) ← runTactic  goal tacticCode 
       unless goals.isEmpty do
@@ -166,13 +162,6 @@ def fetchProof  : TacticM ProofState :=
   match (← getStates key) with
   | none => throwTacticEx `fetch goal  m!"No cached result found for the goal : {← ppExpr <| key.goal }."
   | some s => do
-    set s.core
-    set s.meta
-    match s.term? with
-    | none => pure ()
-    | some ts =>
-      set ts 
-    setGoals []
     return s
 
 
@@ -216,9 +205,6 @@ where
            TryThis.addSuggestion stx (← `(by $allTacs))
         else
            TryThis.addSuggestion stx allTacs
-        -- logInfo m!"Messages ({pf.messages.length}):" 
-        -- for msg in pf.messages do
-        --   logInfo m!"message: {msg.data}"
       catch _ =>
         if (← getUnsolvedGoals).isEmpty then
           return () 
@@ -239,9 +225,6 @@ where
             TryThis.addSuggestion stx (← `(by $allTacs))
           else
             TryThis.addSuggestion stx allTacs
-          -- logInfo m!"Messages ({pf.messages.length}):" 
-          -- for msg in pf.messages do
-          --   logInfo m!"message: {msg.data}"
       catch _ =>
         pure ()
   autoStartImplAux' (stx: Syntax) 
@@ -263,9 +246,6 @@ where
           TryThis.addSuggestion stx (← `(by $script))
         else
           TryThis.addSuggestion stx script          
-        -- logInfo m!"Messages ({pf.messages.length}):" 
-        -- for msg in pf.messages do
-        --   logInfo m!"message: {msg.data}"
     catch _ =>
       pure ()
     if (← getUnsolvedGoals).isEmpty then

@@ -7,30 +7,28 @@ opaque sillyN : Nat
 
 axiom silly : sillyN = 2
 
-example : sillyN ≤ 3 := by
+example : sillyN ≤ 3 := by#
     rw [silly]
-    simp_all only
+    sorry
 
 
-example : 3 ≤ 4 := by# 
+example : 3 ≤ 4 := by#
+  sorry
 
 example : sillyN ≤ 4 := by#
   rw [silly]
+  sorry
   
-example: 1 = 1 := by aesop?
-
-example : 1 ≤ 2 := by
-   decide
-
--- c
-
 example : 2 ≤ 2 := by#
+  sorry
 
 example : 2 ≤ 2 := by
   with_auto aesop? do
+  sorry
 
 example : 2 ≤ 2 := by#
    skip
+   sorry
 
 macro "by!" tacs:tacticSeq : term =>
   `(by 
@@ -41,9 +39,8 @@ macro "by!"  : term =>
   with_auto from_by apply? do)
 
 
-example : 2 ≤ 2 := by
-  skip
-  exact Nat.AtLeastTwo.prop
+example : 2 ≤ 2 := by!
+  sorry
 
 
 def prop := 2 ≤ 3
@@ -53,13 +50,16 @@ example : prop := by
   exact Nat.AtLeastTwo.prop
 
 example : 1 = 1 := by!
+  sorry
 
 
 example : sillyN ≤ 4 := by#
   rw [silly]
+  sorry
 
 example : 1 = 1 := by#
   skip
+  sorry
   
 example : 1 = 1 := by
   simp?
@@ -74,7 +74,7 @@ theorem sum_formula (n: ℕ) :  sum n = (n * (n + 1) : ℚ) / 2  := by
   | succ n ih => 
     with_auto linarith do
     simp [sum]
-    
+    sorry
 
 
   
