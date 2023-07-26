@@ -1,5 +1,4 @@
-import LeanAide.Async
-import LeanAide.AsyncCodeAction
+import LeanAide.RunAsync
 import Aesop
 import Mathlib.Tactic.LibrarySearch
 import Std.Tactic.TryThis

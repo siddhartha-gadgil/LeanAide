@@ -7,8 +7,6 @@ open Lean Meta Elab Term Tactic Core Parser Tactic
 open Std.Tactic
 
 /-!
-A cleaner version is in `RunAsync`.
-
 # Asynchronous tactic execution
 
 We provide methods for executing tactics asynchronously. These are modelled on the `checkpoint` tactic.
