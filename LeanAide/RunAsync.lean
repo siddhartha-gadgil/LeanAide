@@ -80,17 +80,6 @@ def getStates (key : GoalKey) : TacticM (Option ProofState) := do
 
 end Caches
 
-abbrev PolyTacticM :=  MVarId → 
-  (MetaM <| (Option Term.State) × TSyntax ``tacticSeq)
-
-/- Abstracted to possibly replace by Aesop search -/
-def runTacticCode (tacticCode : TSyntax ``tacticSeq)  : PolyTacticM := fun goal ↦ 
-  withoutModifyingState do
-    let (goals, ts) ← runTactic goal tacticCode 
-    unless goals.isEmpty do
-        throwError m!"Tactic not finishing, remaining goals:\n{goals}"
-    pure (some ts, tacticCode)
-
 /-- This is a slight modification of `Parser.runParserCategory` due to Scott Morrison/Kim Liesinger. -/
 def parseAsTacticSeq (env : Environment) (input : String) (fileName := "<input>") :
     Except String (TSyntax ``tacticSeq) :=
@@ -126,22 +115,10 @@ def getMsgTacticD (default : TSyntax ``tacticSeq)  : CoreM <| TSyntax ``tacticSe
         pure ()
   return tac
 
-def runTacticCodeMsg (tacticCode : TSyntax ``tacticSeq)  : PolyTacticM := 
-  fun goal ↦ do
-    -- let mut msgs ← 
-    --   modifyGetThe Core.State fun st => (st.messages, { st with messages := {} })
-    let (goals, ts) ← runTactic  goal tacticCode 
-    unless goals.isEmpty do
-        -- msgs := msgs ++ (← getThe Core.State).messages
-        -- modifyThe Core.State fun st => { st with messages := msgs }
-        throwError m!"Tactic not finishing, remaining goals:\n{goals}"
-    let code ← getMsgTacticD tacticCode
-    pure (some ts, code)
-
-def PolyTacticM.ofTactic (tacticCode : TSyntax ``tacticSeq) : PolyTacticM := runTacticCodeMsg tacticCode
 
 
-def runAndCacheM (polyTac : PolyTacticM) (goal: MVarId) (target : Expr)  : MetaM Unit := 
+def runAndCacheM (tacticCode : TSyntax ``tacticSeq) 
+  (goal: MVarId) (target : Expr)  : MetaM Unit := 
   goal.withContext do 
     let lctx ← getLCtx
     let key : GoalKey := { goal := target, lctx := lctx.decls.toList }
@@ -151,23 +128,26 @@ def runAndCacheM (polyTac : PolyTacticM) (goal: MVarId) (target : Expr)  : MetaM
     let core₀ ← getThe Core.State
     let meta₀ ← getThe Meta.State
     try
-      let (ts?, script) ← polyTac goal 
+      let (goals, ts) ← runTactic  goal tacticCode 
+      unless goals.isEmpty do
+        throwError m!"Tactic not finishing, remaining goals:\n{goals}"
+      let code ← getMsgTacticD tacticCode
       let s : ProofState := {
-      core   := (← getThe Core.State)
-      meta   := (← getThe Meta.State)
-      term?   := ts?
-      script := script
-      }     
+        core   := (← getThe Core.State)
+        meta   := (← getThe Meta.State)
+        term?   := some ts
+        script := code
+        }     
       putTactic key s
     catch _ =>
     set core₀
     set meta₀
 
-def runAndCacheIO (polyTac : PolyTacticM) (goal: MVarId) (target : Expr) 
+def runAndCacheIO (tacticCode : TSyntax ``tacticSeq) (goal: MVarId) (target : Expr) 
   (mctx : Meta.Context) (ms : Meta.State) 
   (cctx : Core.Context) (cs: Core.State) : IO Unit :=
   let eio := 
-  (runAndCacheM polyTac goal target).run' mctx ms |>.run' cctx cs
+  (runAndCacheM tacticCode goal target).run' mctx ms |>.run' cctx cs
   let res := eio.runToIO'
   res
 
@@ -236,7 +216,7 @@ where
         logInfoAt tacticCode m!"Goals accomplished!! 🎉"
         return ()
       let ioSeek : IO Unit := runAndCacheIO 
-        (PolyTacticM.ofTactic autoCode)  (← getMainGoal) (← getMainTarget) 
+        autoCode  (← getMainGoal) (← getMainTarget) 
                 (← readThe Meta.Context) (← getThe Meta.State ) 
                 (← readThe Core.Context) (← getThe Core.State)
       let _ ← ioSeek.asTask
@@ -253,12 +233,11 @@ where
   autoStartImplAux' (stx: Syntax) 
     (autoCode : TSyntax `Lean.Parser.Tactic.tacticSeq)(fromBy: Bool) : TacticM Unit := 
     withMainContext do
-    -- let tacticCode ← `(tactic|auto?) 
     if (← getUnsolvedGoals).isEmpty then
         logInfoAt stx m!"Goals accomplished!! 🎉"
         return () 
     let ioSeek : IO Unit := runAndCacheIO 
-      (PolyTacticM.ofTactic autoCode)  (← getMainGoal) (← getMainTarget) 
+      autoCode  (← getMainGoal) (← getMainTarget) 
               (← readThe Meta.Context) (← getThe Meta.State ) 
               (← readThe Core.Context) (← getThe Core.State)
     let _ ← ioSeek.asTask
