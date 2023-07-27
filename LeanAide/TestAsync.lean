@@ -55,6 +55,21 @@ example : 2 ≤ 2 := by
   sorry
 
 /--
+info: Try this: by
+  skip
+  sleep 100
+  simp_all only
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
+set_option aided_by.delay 0 in
+example : 2 ≤ 3 := by#
+  skip
+  sleep 100
+  sorry
+
+/--
 info: Try this: by simp_all only
 ---
 info: Try this: by
