@@ -3,8 +3,6 @@ import Aesop
 import Mathlib.Tactic
 import Std.Tactic.TryThis
 
-set_option aided_by.delay 200
-
 opaque sillyN : Nat
 
 axiom silly : sillyN = 2
@@ -41,6 +39,8 @@ macro "by!"  : term =>
 
 example : 2 ≤ 3 := by apply?  
 
+set_option aided_by.delay 200
+
 example : 2 ≤ 4 := by!
   sorry
 
@@ -70,7 +70,7 @@ def sum : ℕ → ℕ
 | 0 => 0
 | n + 1 => n + 1 + sum n
 
-set_option aided_by.delay 2000
+set_option aided_by.delay 600
 
 theorem sum_formula (n: ℕ) :  sum n = (n * (n + 1) : ℚ) / 2  := by 
   induction n with

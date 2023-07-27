@@ -196,11 +196,10 @@ match stx with
 | `(tactic| aided_by $auto? do) => do
     autoStartImplAux' stx auto? false    
 | _ => throwUnsupportedSyntax
-where 
-  autoStartImplAux (stx: Syntax)
-  (autoCode : TSyntax `Lean.Parser.Tactic.tacticSeq)
-  (tacticCode : TSyntax ``tacticSeq)(fromBy: Bool) : TacticM Unit := 
-  withMainContext do
+where
+  initialSearch (stx: Syntax) 
+    (autoCode : TSyntax `Lean.Parser.Tactic.tacticSeq)(fromBy: Bool) : TacticM Unit := 
+    withMainContext do
     if (← getUnsolvedGoals).isEmpty then
         return () 
     let ioSeek : IO Unit := runAndCacheIO 
@@ -213,36 +212,21 @@ where
       dbgSleep delay.toUInt32 fun _ => do
         let pf ← fetchProof
         let script := pf.script
-        logInfo m!"closing: {← getMainTarget}; script: {script}"
         if fromBy then
           TryThis.addSuggestion stx (← `(by $script))
         else
           TryThis.addSuggestion stx script         
-        logInfo m!"closed: {← getMainTarget}; script: {script}" 
     catch _ =>
       pure ()
-
+  autoStartImplAux (stx: Syntax)
+  (autoCode : TSyntax `Lean.Parser.Tactic.tacticSeq)
+  (tacticCode : TSyntax ``tacticSeq)(fromBy: Bool) : TacticM Unit := 
+  withMainContext do
+    initialSearch stx autoCode fromBy
     let allTacs := getTactics tacticCode
     let mut cumTacs :  Array (TSyntax `tactic) := #[]
     for tacticCode in allTacs do
-      try 
-        let pf ← fetchProof
-        logWarningAt tacticCode m!"proof complete before: {tacticCode}" 
-        let allTacs ←  appendTactics' cumTacs pf.script
-        if fromBy then
-           TryThis.addSuggestion stx (← `(by $allTacs))
-        else
-           TryThis.addSuggestion stx allTacs
-      catch _ =>
-        logInfo m!"no goals found at: {tacticCode}"
-        if (← getUnsolvedGoals).isEmpty then
-          if fromBy then
-            TryThis.addSuggestion stx (← `(by $[$cumTacs]*))
-          else
-            TryThis.addSuggestion stx (← `(tacticSeq|$[$cumTacs]*))
-          return () 
       evalTactic tacticCode
-      logInfo m!"evaluated: {tacticCode}"
       if ← isSorry tacticCode then
         return ()
       cumTacs := cumTacs.push tacticCode
@@ -267,29 +251,13 @@ where
             TryThis.addSuggestion stx (← `(by $allTacs))
           else
             TryThis.addSuggestion stx allTacs
+          return ()
       catch _ =>
         pure ()
   autoStartImplAux' (stx: Syntax) 
     (autoCode : TSyntax `Lean.Parser.Tactic.tacticSeq)(fromBy: Bool) : TacticM Unit := 
     withMainContext do
-    if (← getUnsolvedGoals).isEmpty then
-        return () 
-    let ioSeek : IO Unit := runAndCacheIO 
-      autoCode  (← getMainGoal) (← getMainTarget) 
-              (← readThe Meta.Context) (← getThe Meta.State ) 
-              (← readThe Core.Context) (← getThe Core.State)
-    let _ ← ioSeek.asTask
-    try
-      let delay  := aided_by.delay.get (← getOptions)
-      dbgSleep delay.toUInt32 fun _ => do
-        let pf ← fetchProof
-        let script := pf.script
-        if fromBy then
-          TryThis.addSuggestion stx (← `(by $script))
-        else
-          TryThis.addSuggestion stx script          
-    catch _ =>
-      pure ()
+    initialSearch stx autoCode fromBy
     if (← getUnsolvedGoals).isEmpty then
         return () 
 
