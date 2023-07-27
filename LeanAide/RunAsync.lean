@@ -89,6 +89,10 @@ def getStates (key : GoalKey) : TacticM (Option ProofState) := do
   let m ← tacticCache.get
   return m.find? key
 
+def clearCache : IO Unit := do
+  tacticCache.modify fun _ => ∅
+  spawnedKeys.modify fun _ => ∅
+
 end Caches
 
 /-- This is a slight modification of `Parser.runParserCategory` due to Scott Morrison/Kim Liesinger. -/

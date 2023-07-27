@@ -3,6 +3,28 @@ import Aesop
 import Mathlib.Tactic
 import Std.Tactic.TryThis
 
+-- Solving in the background
+/--
+info: Try this: by simp_all only
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in  
+example : 2 ≤ 3 := by#
+  sorry
+
+/--
+info: Try this: simp_all only
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
+example : 2 ≤ 2 := by
+  aided_by aesop? do
+  sorry
+
+
+-- Solving as soon as `aesop?` can complete the proof
 opaque sillyN : Nat
 
 axiom silly : sillyN = 2
@@ -12,15 +34,6 @@ warning: declaration uses 'sorry'
 -/
 #guard_msgs in
 example : sillyN ≤ 3 := by#
-  sorry
-
-/--
-info: Try this: by simp_all only
----
-warning: declaration uses 'sorry'
--/
-#guard_msgs in
-example : 3 ≤ 4 := by#
   sorry
 
 /--
@@ -35,25 +48,10 @@ example : sillyN ≤ 4 := by#
   rw [silly]
   sorry
 
-/--
-info: Try this: by simp_all only
----
-warning: declaration uses 'sorry'
--/
-#guard_msgs in  
-example : 2 ≤ 2 := by#
-  sorry
+-- Ensuring reset of the cache
+#eval clearCache
 
-/--
-info: Try this: simp_all only
----
-warning: declaration uses 'sorry'
--/
-#guard_msgs in
-example : 2 ≤ 2 := by
-  aided_by aesop? do
-  sorry
-
+-- Showing that the task runs in the background
 /--
 info: Try this: by
   skip
@@ -69,6 +67,7 @@ example : 2 ≤ 3 := by#
   sleep 100
   sorry
 
+-- Messages tried after each steps
 /--
 info: Try this: by simp_all only
 ---
@@ -83,6 +82,7 @@ example : 2 ≤ 2 := by#
    skip
    sorry
 
+-- Using `apply?` in place of `aesop?`
 macro "by!" tacs:tacticSeq : term =>
   `(by 
   aided_by from_by apply? do $tacs)
@@ -91,7 +91,7 @@ macro "by!"  : term =>
   `(by 
   aided_by from_by apply? do)
 
-
+-- Added to make sure that the discriminant tree is loaded.
 example : 2 ≤ 3 := by apply?  
 
 set_option aided_by.delay 200
@@ -138,6 +138,8 @@ def sum : ℕ → ℕ
 | 0 => 0
 | n + 1 => n + 1 + sum n
 
+
+-- Using `linarith`, tried after each step.
 set_option aided_by.delay 600
 
 /--
