@@ -3,23 +3,21 @@ import Lean.Meta
 import Lean.Elab
 import LeanAide.Aides
 import LeanAide.TheoremElab
-import Aesop
+import LeanAide.AesopTacticRuleSet
 import Mathlib.Tactic
 open Lean Meta Elab Parser Tactic
 
-macro "add_aesop_tactic" tac:tactic : command =>
+macro "add_aesop_power_tactic" tac:tactic : command =>
   let decl := mkIdentFrom tac.raw (`Aesop ++ (.mkSimple tac.raw.reprint.get!) ++ `tactic)
   `(command|
-      @[aesop unsafe tactic] def $decl : TacticM Unit :=
+      @[aesop unsafe tactic (rule_sets [PowerTactic])] def $decl : TacticM Unit :=
         `(tactic| $tac) >>= evalTactic ∘ TSyntax.raw)
 
-elab "add_aesop_tactics" tacs:tactic,* : command => do
-  Command.elabSetOption <| ← `(command| set_option linter.unreachableTactic false)
+elab "add_aesop_power_tactics" tacs:tactic,* : command => do
   for tac in tacs.getElems do
-    Command.elabCommand <| ← `(command| add_aesop_tactic $tac)
-  Command.elabSetOption <| ← `(command| set_option linter.unreachableTactic true)
+    `(command| add_aesop_power_tactic $tac) >>= Command.elabCommand ∘ TSyntax.raw
 
-add_aesop_tactics gcongr, ring, linarith, norm_num, positivity, polyrith
+add_aesop_power_tactics gcongr, ring, linarith, norm_num, positivity, polyrith
 
 /-!
 ## Equality of statements
