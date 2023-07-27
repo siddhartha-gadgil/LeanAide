@@ -1,4 +1,4 @@
-import LeanCodePrompts.Premises
+import LeanAide.Premises
 import Lean.Meta
 open Lean Meta LeanAide.Meta
 
@@ -14,7 +14,7 @@ def environment : IO Environment := do
     {module:= `LeanCodePrompts.CheckParse},
     
     {module:= `LeanCodePrompts.VerboseDelabs},
-    {module:= `LeanCodePrompts.Premises},
+    {module:= `LeanAide.Premises},
     {module := `Mathlib}] {}
 
 def coreContext : Core.Context := {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]

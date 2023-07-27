@@ -1,4 +1,4 @@
-import LeanCodePrompts.Premises
+import LeanAide.Premises
 import Lean.Meta
 import LeanAide.Config
 open Lean Meta LeanAide.Meta
@@ -15,7 +15,7 @@ def environment : IO Environment := do
     {module:= `LeanCodePrompts.CheckParse},
     
     {module:= `LeanCodePrompts.VerboseDelabs},
-    {module:= `LeanCodePrompts.Premises},
+    {module:= `LeanAide.Premises},
     {module := `Mathlib}] {}
 
 def environment' : IO Environment := do

@@ -1,4 +1,4 @@
-import LeanCodePrompts.Premises
+import LeanAide.Premises
 import Lean.Meta
 import LeanAide.Config
 open Lean Meta LeanAide.Meta
@@ -19,7 +19,7 @@ def main (args: List String) : IO Unit := do
     {module:= `LeanCodePrompts.CheckParse},
     
     {module:= `LeanCodePrompts.VerboseDelabs},
-    {module:= `LeanCodePrompts.Premises},
+    {module:= `LeanAide.Premises},
     {module := `Mathlib}] {}
   let core : CoreM Nat :=  
      writeBatchDefnsCore start stop
