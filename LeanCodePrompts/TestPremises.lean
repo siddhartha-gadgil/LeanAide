@@ -1,4 +1,4 @@
-import LeanCodePrompts.Premises
+import LeanAide.Premises
 import Mathlib
 open Lean Meta
 

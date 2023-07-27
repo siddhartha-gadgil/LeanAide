@@ -1,4 +1,4 @@
-import LeanCodePrompts.Premises
+import LeanAide.Premises
 open Lean Json Data LeanAide.Meta
 
 

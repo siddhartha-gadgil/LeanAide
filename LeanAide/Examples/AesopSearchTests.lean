@@ -1,4 +1,4 @@
-import LeanCodePrompts.AesopSearch
+import LeanAide.AesopSearch
 import Lean
 import Mathlib
 open Lean Meta Elab

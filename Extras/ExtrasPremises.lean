@@ -1,4 +1,4 @@
-import LeanCodePrompts.Premises
+import LeanAide.Premises
 open Lean Meta Elab Term Syntax PrettyPrinter Parser
 
 namespace LeanAide.Meta
