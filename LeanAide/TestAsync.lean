@@ -23,6 +23,14 @@ warning: declaration uses 'sorry'
 example : 3 ≤ 4 := by#
   sorry
 
+/--
+info: Try this: by
+  rw [silly]
+  simp_all only
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
 example : sillyN ≤ 4 := by#
   rw [silly]
   sorry
