@@ -29,7 +29,7 @@ def provedEqual (e₁ e₂ : Expr) : TermElabM Bool := do
   let type ← mkEq e₁ e₂
   let mvar ← mkFreshExprMVar <| some type
   let mvarId := mvar.mvarId!
-  let stx ← `(tactic| aesop)
+  let stx ← `(tactic| aesop (rule_sets [PowerTactic]))
   let res ←  runTactic mvarId stx
   let (remaining, _) := res
   return remaining.isEmpty
