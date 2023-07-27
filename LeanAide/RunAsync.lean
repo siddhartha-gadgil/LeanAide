@@ -201,13 +201,30 @@ where
   (autoCode : TSyntax `Lean.Parser.Tactic.tacticSeq)
   (tacticCode : TSyntax ``tacticSeq)(fromBy: Bool) : TacticM Unit := 
   withMainContext do
+    if (← getUnsolvedGoals).isEmpty then
+        return () 
+    let ioSeek : IO Unit := runAndCacheIO 
+      autoCode  (← getMainGoal) (← getMainTarget) 
+              (← readThe Meta.Context) (← getThe Meta.State ) 
+              (← readThe Core.Context) (← getThe Core.State)
+    let _ ← ioSeek.asTask
+    try
+      let delay  := aided_by.delay.get (← getOptions)
+      dbgSleep delay.toUInt32 fun _ => do
+        let pf ← fetchProof
+        let script := pf.script
+        logInfo m!"closing: {← getMainTarget}; script: {script}"
+        if fromBy then
+          TryThis.addSuggestion stx (← `(by $script))
+        else
+          TryThis.addSuggestion stx script         
+        logInfo m!"closed: {← getMainTarget}; script: {script}" 
+    catch _ =>
+      pure ()
+
     let allTacs := getTactics tacticCode
     let mut cumTacs :  Array (TSyntax `tactic) := #[]
     for tacticCode in allTacs do
-      if ← isSorry tacticCode then
-        evalTactic tacticCode
-        return ()
-      cumTacs := cumTacs.push tacticCode
       try 
         let pf ← fetchProof
         logWarningAt tacticCode m!"proof complete before: {tacticCode}" 
@@ -217,6 +234,7 @@ where
         else
            TryThis.addSuggestion stx allTacs
       catch _ =>
+        logInfo m!"no goals found at: {tacticCode}"
         if (← getUnsolvedGoals).isEmpty then
           if fromBy then
             TryThis.addSuggestion stx (← `(by $[$cumTacs]*))
@@ -224,6 +242,10 @@ where
             TryThis.addSuggestion stx (← `(tacticSeq|$[$cumTacs]*))
           return () 
       evalTactic tacticCode
+      logInfo m!"evaluated: {tacticCode}"
+      if ← isSorry tacticCode then
+        return ()
+      cumTacs := cumTacs.push tacticCode
       if (← getUnsolvedGoals).isEmpty then
         unless tacticCode.raw.reprint.get!.trim.endsWith "sorry" do
           if fromBy then
