@@ -3,6 +3,13 @@ import Lean.Parser
 import Lean.Data.Json.Parser
 import Mathlib
 open Lean Meta Elab Parser Json.Parser
+open Mathlib.Prelude.Rename
+
+
+def lean4Name? (name: Name) : MetaM (Option Name) := do
+  return ((getRenameMap  (←getEnv)).find? name).map (·.2)
+
+#eval lean4Name? `nat.prime -- some `Nat.Prime
 
 #eval Lean.Json.parse "{\"x\" : 3, \"y\" : 4, \"z\" : [\"five\", 6]}"
 

@@ -120,8 +120,3 @@ example : (∀ (a b c: Nat),
 
 
 #eval compareThms "(a b c: Nat): a + (b + c) = (a + b) + c" "(a b c: Nat): (a + b) + c = a + (b + c)"
-
-example : False := by
-  have : True
-  · simp only
-  · sorry 
