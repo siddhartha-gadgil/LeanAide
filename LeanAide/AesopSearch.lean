@@ -152,7 +152,10 @@ def tacticExpr (goal : MVarId) (tac : Syntax.Tactic) :
   return (goals, scriptBuilder)
 
 def applyTacticsAux (tacs : Array Syntax.Tactic) : RuleTac := fun input => do
-  trace[leanaide.proof.info] "trying custom tactics: {tacs}"
+  let goalType ← inferType (mkMVarEx input.goal) 
+  let lctx ←  getLCtx
+  let fvarNames ←  lctx.getFVarIds.toList.tail.mapM (·.getUserName) 
+  trace[leanaide.proof.info] "trying custom tactics: {tacs} for goal {goalType}; fvars: {fvarNames}"
   let initialState : SavedState ← saveState
   let appsTacs ← tacs.filterMapM fun (tac) => do
     try

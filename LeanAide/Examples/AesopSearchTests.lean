@@ -22,9 +22,9 @@ elab "test_aesop" : tactic => do
 
 set_option trace.leanaide.proof.info true 
 
--- set_option trace.aesop.proof true 
+set_option trace.aesop.proof true 
 -- set_option trace.aesop.steps true 
--- set_option trace.aesop.steps.tree true 
+-- set_option trace.aesop.tree true 
 -- set_option trace.aesop.steps.ruleSelection true 
 -- set_option trace.aesop.steps.ruleFailures true 
 
@@ -35,6 +35,10 @@ example (a b : MyEmpty): a = b := by
 
 example (h : sillyN = 1) : 2 = sillyM + 1 := by
   test_aesop -- uses `rw [n_is_m] at h`
+
+example : (sillyN = 1) →  2 = sillyM + 1 := by
+  test_aesop -- uses `rw [← n_is_m]`, does not use `rw .. at ..`
+
 
 #check Array
 
