@@ -13,16 +13,6 @@ initialize rewriteSuggestions : IO.Ref (Array Syntax.Term)
 initialize subgoalSuggestions : IO.Ref (Array Syntax.Term) 
         ← IO.mkRef #[]
 
-initialize fibOut : IO.Ref (Array String) 
-        ← IO.mkRef #[]
-
-def getFib : IO (Array String) := do
-  fibOut.get
-
-
-def setFib (s: String) : IO Unit := do
-  fibOut.set <| (← getFib).push  s
-
 
 theorem mpFrom (α  : Prop) {β : Prop} : α  → (α  → β) → β  := 
   fun a f => f a   
@@ -232,7 +222,7 @@ def Lean.MessageData.split (msg: MessageData) : Array MessageData :=
 def runAesop (p: Float) (apps simps rws : Array Name) : MVarId → MetaM (List MVarId) := fun goal => goal.withContext do
   let allRules ← getRuleSet p apps simps rws
   let (goals, _) ← Aesop.search goal allRules {traceScript := true} 
-  let msgLog ← Core.getMessageLog  
+  -- let msgLog ← Core.getMessageLog  
   -- let msgs := msgLog.toList
   -- logInfo m!"Messages: {msgs.map (·.data.split)}"
   return goals.toList

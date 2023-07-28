@@ -1,6 +1,4 @@
 import Lean
-import Lean.Parser
-import Lean.Data.Json.Parser
 import Mathlib
 open Lean Meta Elab Term
 open Mathlib.Prelude.Rename
