@@ -40,14 +40,17 @@ def rwAtTacticSuggestions : MetaM (Array Syntax.Tactic) := do
   let rws ← rewriteSuggestions.get
   let mut tacs := #[]
   let lctx ←  getLCtx
-  let fvarIdents := lctx.getFVarIds.map (mkIdent ·.name) 
+  let fvarNames ←  lctx.getFVarIds.toList.tail.mapM (·.getUserName) 
   for r in rws do
-    for f in fvarIdents do
+    for n in fvarNames do
+      let f := mkIdent n
       let tac ← `(tactic|rw [$r:term] at $f:ident)
       tacs := tacs.push tac
       let tac ← `(tactic|rw [← $r:term] at $f:ident)
       tacs := tacs.push tac
   return tacs
+
+#check FVarId.getUserName
 
 def subgoalTacticSuggestions : MetaM (Array Syntax.Tactic) := do
   let subgoals ← subgoalSuggestions.get
@@ -88,8 +91,9 @@ def addSubgoalSuggestion (suggestion: Syntax.Term) : IO Unit := do
 
 def addConstRewrite (decl: Name)(flip: Bool) : MetaM Unit := do
   let stx : Syntax.Term := mkIdent decl
+  addRwSuggestions #[stx]
   if flip  then
-    addTacticSuggestion <| ← `(tactic|rw [← $stx])
+    addTacticSuggestion <| ← `(tactic|rw [← $stx])    
   else
     addTacticSuggestions #[← `(tactic|rw [$stx:term])]
 
@@ -148,12 +152,13 @@ def tacticExpr (goal : MVarId) (tac : Syntax.Tactic) :
   return (goals, scriptBuilder)
 
 def applyTacticsAux (tacs : Array Syntax.Tactic) : RuleTac := fun input => do
+  trace[leanaide.proof.info] "trying custom tactics: {tacs}"
   let initialState : SavedState ← saveState
   let appsTacs ← tacs.filterMapM fun (tac) => do
     try
       let (goals, scriptBuilder) ← tacticExpr input.goal tac
       let postState ← saveState
-      return some (⟨ goals, postState, scriptBuilder ⟩, tac)
+      return some (⟨ goals, postState, scriptBuilder ⟩, tac)      
     catch _ =>
       return none
     finally
@@ -166,8 +171,9 @@ def applyTacticsAux (tacs : Array Syntax.Tactic) : RuleTac := fun input => do
 
 def customTactics : RuleTac := fun input => do 
   let tacs ← getTacticSuggestions
+  let rwsAt ← rwAtTacticSuggestions 
   logInfo m!"customTactics: {tacs}"
-  applyTacticsAux tacs input
+  applyTacticsAux (tacs ++ rwsAt) input
 
 def customRuleMember (p: Float) : MetaM RuleSetMember := do
   let name : RuleName := {
@@ -198,68 +204,13 @@ def getRuleSet (p: Float) (apps simps rws : Array Name) : MetaM RuleSet := do
     (fun c r => c.add r) defaultRules
   return allRules
 
-def Lean.MessageData.format? (msg: MessageData) : Option Format :=
-  match msg with
-  | .ofFormat f => some f
-  | _ => none
-
-def Lean.MessageData.ppformat? (msg: MessageData) : Option PPFormat :=
-  match msg with
-  | .ofPPFormat f => some f
-  | _ => none
-
--- to extract tactics later
-def Lean.MessageData.split (msg: MessageData) : Array MessageData :=
-  match msg with
-  | .compose l₁ l₂ => l₁.split ++ l₂.split
-  | .nest n l => #[m!"nest {n}"] ++ l.split
-  | .withContext _ l => #[m!"ctx"] ++ l.split
-  | .withNamingContext _ l => #[m!"nmgctx"] ++ l.split
-  | .ofFormat _ => #["format", msg]
-  | .ofPPFormat _ => #["ppformat", msg]
-  | _ => #[msg]
-
 def runAesop (p: Float) (apps simps rws : Array Name) : MVarId → MetaM (List MVarId) := fun goal => goal.withContext do
   let allRules ← getRuleSet p apps simps rws
   let (goals, _) ← Aesop.search goal allRules {traceScript := true} 
-  -- let msgLog ← Core.getMessageLog  
-  -- let msgs := msgLog.toList
-  -- logInfo m!"Messages: {msgs.map (·.data.split)}"
   return goals.toList
 
-example : α → α := by
-  aesop
-
-theorem true_true_iff_True : true = true ↔ True := by
-  aesop
 
 -- For introducing local definitions
 /- Convert the given goal `Ctx |- target` into `Ctx |- let name : type := val; target`. It assumes `val` has type `type` -/
 #check MVarId.define -- Lean.MVarId.define (mvarId : MVarId) (name : Name) (type val : Expr) : MetaM MVarId
 
-#check MessageData.instAppendMessageData
-
-def getMsgTactic?  : CoreM <| Option Syntax := do
-  let msgLog ← Core.getMessageLog  
-  let msgs := msgLog.toList
-  let mut tac? : Option Syntax := none
-  for msg in msgs do
-    let msg := msg.data
-    let msg ← msg.toString 
-    let msg := msg.replace "Try this:" "" |>.trim
-    let parsedMessage := Parser.runParserCategory (←getEnv)  `tactic msg
-    match parsedMessage with
-    | Except.ok tac => 
-      tac? := some tac
-    | _ =>
-      logInfo m!"failed to parse tactic {msg}"
-  return tac?
- 
-open Tactic
-
-elab "messages" tac:tacticSeq : tactic => do
-  let goal ← getMainGoal
-  evalTactic tac
-  let tac ← getMsgTactic?
-  logInfo m!"tactic in message: {tac}"
-  admitGoal goal 

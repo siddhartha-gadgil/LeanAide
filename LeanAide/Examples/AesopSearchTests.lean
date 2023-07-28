@@ -17,10 +17,10 @@ theorem MyEmpty.eql (a b : MyEmpty) : a = b := by
 
 elab "test_aesop" : tactic => do
   Tactic.liftMetaTactic (
-    runAesop 0.5 #[``MyEmpty.eql] #[``Nat.add_comm] #[``n_is_m]
+    runAesop 0.5 #[``MyEmpty.eql] #[``Nat.add_comm] #[ ``n_is_m]
     )
 
--- set_option trace.leanaide.proof.info true 
+set_option trace.leanaide.proof.info true 
 
 -- set_option trace.aesop.proof true 
 -- set_option trace.aesop.steps true 
@@ -33,8 +33,10 @@ example (a b : MyEmpty): a = b := by
   test_aesop -- uses `apply MyEmpty.eql`
 
 
-example : sillyN + 1 = sillyM + 1 := by
-  test_aesop -- uses `rw [n_is_m]`
+example (h : sillyN = 1) : 2 = sillyM + 1 := by
+  test_aesop -- uses `rw [n_is_m] at h`
+
+#check Array
 
 example : α → α := by
   aesop
