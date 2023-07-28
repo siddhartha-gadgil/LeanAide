@@ -17,7 +17,7 @@ elab "add_aesop_power_tactics" tacs:tactic,* : command => do
   for tac in tacs.getElems do
     `(command| add_aesop_power_tactic $tac) >>= Command.elabCommand ∘ TSyntax.raw
 
-add_aesop_power_tactics gcongr, ring, linarith, norm_num, positivity, polyrith
+add_aesop_power_tactics gcongr, ring, linarith, norm_num, positivity, polyrith, ext, norm_cast 
 
 /-!
 ## Equality of statements
@@ -120,3 +120,8 @@ example : (∀ (a b c: Nat),
 
 
 #eval compareThms "(a b c: Nat): a + (b + c) = (a + b) + c" "(a b c: Nat): (a + b) + c = a + (b + c)"
+
+example : False := by
+  have : True
+  · simp only
+  · sorry 
