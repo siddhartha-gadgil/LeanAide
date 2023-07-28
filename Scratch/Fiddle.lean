@@ -6,10 +6,22 @@ open Lean Meta Elab Parser Json.Parser
 open Mathlib.Prelude.Rename
 
 
-def lean4Name? (name: Name) : MetaM (Option Name) := do
-  return ((getRenameMap  (←getEnv)).find? name).map (·.2)
+def lean4Name? (name: Name) : MetaM (Option (Name × Bool)) := do
+  let name? := 
+    ((getRenameMap  (←getEnv)).find? name).map (·.2)
+  match name? with
+  | none => pure none
+  | some name =>
+    let check ←  try
+      let _ ← getConstInfo  name
+      pure true
+    catch _ => pure false
+    let _ : Ident := mkIdent name
+    pure (name, check)
 
-#eval lean4Name? `nat.prime -- some `Nat.Prime
+#eval lean4Name? `nat.prime -- some (`Nat.Prime, true)
+
+
 
 #eval Lean.Json.parse "{\"x\" : 3, \"y\" : 4, \"z\" : [\"five\", 6]}"
 
