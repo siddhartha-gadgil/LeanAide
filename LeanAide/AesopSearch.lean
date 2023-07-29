@@ -178,18 +178,31 @@ def customTactics : RuleTac := fun input => do
   logInfo m!"customTactics: {tacs}"
   applyTacticsAux (tacs ++ rwsAt) input
 
-def customRuleMember (p: Float) : MetaM RuleSetMember := do
+def customRuleMember (p: Float) : RuleSetMember := 
   let name : RuleName := {
     name := `customTactics
     builder := BuilderName.tactic
     phase := PhaseName.«unsafe»
     scope := ScopeName.global
   }
-  return RuleSetMember.unsafeRule {
+  RuleSetMember.unsafeRule {
     name:= name
     indexingMode := IndexingMode.unindexed
     extra:= ⟨⟨p⟩⟩
     tac := .ruleTac ``customTactics}
+
+def tacticMember (p: Float)(tac : Name) : RuleSetMember := 
+  let name : RuleName := {
+    name := tac
+    builder := BuilderName.tactic
+    phase := PhaseName.«unsafe»
+    scope := ScopeName.global
+  }
+  RuleSetMember.unsafeRule {
+    name:= name
+    indexingMode := IndexingMode.unindexed
+    extra:= ⟨⟨p⟩⟩
+    tac := .tacticM tac}
 
 def getRuleSet (p: Float) (apps simps rws : Array Name) : MetaM RuleSet := do
   clearSuggestions
@@ -203,7 +216,7 @@ def getRuleSet (p: Float) (apps simps rws : Array Name) : MetaM RuleSet := do
       Frontend.getDefaultRuleSet (includeGlobalSimpTheorems := true)
       {}
   let allRules : RuleSet := 
-    ((appRules ++ simpRules).push (← customRuleMember p)).foldl
+    ((appRules ++ simpRules).push (customRuleMember p)).foldl
     (fun c r => c.add r) defaultRules
   return allRules
 

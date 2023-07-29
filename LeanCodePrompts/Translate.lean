@@ -322,7 +322,7 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
   else    
     -- grouping by trying to prove equality and selecting
     let groupSorted ← groupFuncStrs elaborated
-    let topStr := groupSorted[0]![0]!
+    let topStr := (groupSorted[0]!)[0]!
     let thmExc ← elabFuncTyp topStr
     match thmExc with
     | Except.ok (_, thm) => return thm
@@ -353,7 +353,7 @@ def arrayToStx (output: Array String) : TermElabM Syntax := do
   else    
     -- grouping by trying to prove equality and selecting
     let groupSorted ← groupFuncStrs elaborated
-    let topStr := groupSorted[0]![0]!
+    let topStr := (groupSorted[0]!)[0]!
     let thmExc ← elabFuncTyp topStr
     match thmExc with
     | Except.ok (stx, _) => return stx
@@ -385,7 +385,7 @@ def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array Strin
     let priority := 
         if fullElaborated.isEmpty then elaborated else fullElaborated
     let groupSorted ← groupFuncStrs priority
-    let topStr := groupSorted[0]![0]!
+    let topStr := (groupSorted[0]!)[0]!
     let thmExc ← elabFuncTyp topStr
     match thmExc with
     | Except.ok (_, thm) => return some (thm, elaborated)
