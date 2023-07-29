@@ -7,6 +7,9 @@ open Aesop Lean Meta Elab Parser.Tactic
 initialize tacticSuggestions : IO.Ref (Array Syntax.Tactic) 
         ← IO.mkRef #[]
 
+initialize tacticStrings : IO.Ref (Array String) 
+        ← IO.mkRef #[]
+
 initialize rewriteSuggestions : IO.Ref (Array Syntax.Term) 
         ← IO.mkRef #[]
 
@@ -25,6 +28,9 @@ example : 1 = 1 := by
 
 def getTacticSuggestions: IO (Array Syntax.Tactic) := 
   tacticSuggestions.get 
+
+def getTacticStrings: IO (Array String) := 
+  tacticStrings.get 
 
 def rwTacticSuggestions : MetaM (Array Syntax.Tactic) := do
   let rws ← rewriteSuggestions.get
@@ -64,6 +70,7 @@ def clearSuggestions : IO Unit := do
   tacticSuggestions.set #[]
   rewriteSuggestions.set #[]
   subgoalSuggestions.set #[]
+  tacticStrings.set #[]
 
 def addTacticSuggestions (suggestions: Array Syntax.Tactic) : IO Unit := do
   let old ← tacticSuggestions.get
@@ -96,6 +103,11 @@ def addConstRewrite (decl: Name)(flip: Bool) : MetaM Unit := do
     addTacticSuggestion <| ← `(tactic|rw [← $stx])    
   else
     addTacticSuggestions #[← `(tactic|rw [$stx:term])]
+
+def addTacticString (tac: String) : MetaM Unit := do 
+  let old ← tacticStrings.get
+  tacticStrings.set (old.push tac)
+
 
 /-- Rule set member for `apply` for a global constant -/
 def applyConstRuleMember (decl: Name)(p: Float) : MetaM RuleSetMember := do
@@ -155,7 +167,7 @@ def applyTacticsAux (tacs : Array Syntax.Tactic) : RuleTac := fun input => do
   let goalType ← inferType (mkMVarEx input.goal) 
   let lctx ←  getLCtx
   let fvarNames ←  lctx.getFVarIds.toList.tail.mapM (·.getUserName) 
-  trace[leanaide.proof.info] "trying custom tactics: {tacs} for goal {goalType}; fvars: {fvarNames}"
+  trace[leanaide.proof.info] "trying custom tactics: {tacs} for goal {←ppExpr  goalType}; fvars: {fvarNames}"
   let initialState : SavedState ← saveState
   let appsTacs ← tacs.filterMapM fun (tac) => do
     try
@@ -175,8 +187,17 @@ def applyTacticsAux (tacs : Array Syntax.Tactic) : RuleTac := fun input => do
 def customTactics : RuleTac := fun input => do 
   let tacs ← getTacticSuggestions
   let rwsAt ← rwAtTacticSuggestions 
+  let tacString ← getTacticStrings 
+  let mut parsedTacs : Array Syntax.Tactic := #[]
+  for tac in tacString do
+    match parseAsTacticSeq (←getEnv) tac with
+      | Except.ok tacs => 
+        parsedTacs := parsedTacs.push <| ← `(tactic|($tacs))
+      | Except.error err => throwError err
   logInfo m!"customTactics: {tacs}"
-  applyTacticsAux (tacs ++ rwsAt) input
+  applyTacticsAux (tacs ++ rwsAt 
+    ++ parsedTacs
+    ) input
 
 def customRuleMember (p: Float) : RuleSetMember := 
   let name : RuleName := {
@@ -204,11 +225,14 @@ def tacticMember (p: Float)(tac : Name) : RuleSetMember :=
     extra:= ⟨⟨p⟩⟩
     tac := .tacticM tac}
 
-def getRuleSet (p: Float) (apps simps rws : Array Name) : MetaM RuleSet := do
+def getRuleSet (p: Float) (apps simps rws : Array Name)
+  (tacs: Array String) : MetaM RuleSet := do
   clearSuggestions
   for n in rws do
     addConstRewrite n false
     addConstRewrite n true
+  for t in tacs do
+    addTacticString t
   let appRules ← apps.mapM (applyConstRuleMember · p)
   let simpRules ← simps.mapM simpConstRuleMember
   let simpRules := simpRules.foldl (fun c r => c ++ r) #[]
@@ -220,8 +244,9 @@ def getRuleSet (p: Float) (apps simps rws : Array Name) : MetaM RuleSet := do
     (fun c r => c.add r) defaultRules
   return allRules
 
-def runAesop (p: Float) (apps simps rws : Array Name) : MVarId → MetaM (List MVarId) := fun goal => goal.withContext do
-  let allRules ← getRuleSet p apps simps rws
+def runAesop (p: Float) (apps simps rws : Array Name) 
+  (tacs: Array String := #[]): MVarId → MetaM (List MVarId) := fun goal => goal.withContext do
+  let allRules ← getRuleSet p apps simps rws tacs
   let (goals, _) ← Aesop.search goal allRules {traceScript := true} 
   return goals.toList
 

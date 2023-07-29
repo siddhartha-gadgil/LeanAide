@@ -17,16 +17,14 @@ theorem MyEmpty.eql (a b : MyEmpty) : a = b := by
 
 elab "test_aesop" : tactic => do
   Tactic.liftMetaTactic (
-    runAesop 0.5 #[``MyEmpty.eql] #[``Nat.add_comm] #[ ``n_is_m]
+    runAesop 0.5 #[``MyEmpty.eql] #[``Nat.add_comm] #[``n_is_m]
     )
 
 set_option trace.leanaide.proof.info true 
 
 set_option trace.aesop.proof true 
--- set_option trace.aesop.steps true 
 -- set_option trace.aesop.tree true 
 -- set_option trace.aesop.steps.ruleSelection true 
--- set_option trace.aesop.steps.ruleFailures true 
 
 
 example (a b : MyEmpty): a = b := by
@@ -39,8 +37,26 @@ example (h : sillyN = 1) : 2 = sillyM + 1 := by
 example : (sillyN = 1) →  2 = sillyM + 1 := by
   test_aesop -- uses `rw [← n_is_m]`, does not use `rw .. at ..`
 
+elab "power_aesop" : tactic => do
+  Tactic.liftMetaTactic (
+    runAesop 0.5 #[``MyEmpty.eql] #[``Nat.add_comm] #[``n_is_m]
+    #["gcongr", "ring", "linarith", "norm_num", "positivity", "polyrith"]
+    )
 
-#check Array
+example : (∀ (a b c: Nat), 
+  a + (b + c) = (a + b) + c) ↔ (∀ (a b c: Nat), (a + b) + c = a + (b + c)) := by 
+  power_aesop
+
+elab "test_aesop'" : tactic => do
+  Tactic.liftMetaTactic (
+    runAesop 0.5 #[``MyEmpty.eql] #[``Nat.add_comm] #[ ``n_is_m] #["sorry"]
+    )
+
+
+example : False := by
+  test_aesop' -- uses sorry
+
+
 
 example : α → α := by
   aesop
