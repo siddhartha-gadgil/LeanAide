@@ -587,3 +587,159 @@ def batchPremiseExtractCore (start stop: Nat) : CoreM Nat :=
 -- #eval nameDefView ``imo_1964_q1b
 
 -- -- #eval nameDefViewVerbose ``imo_1964_q1b
+
+def nameSize : MetaM <| Nat × Nat := do
+    let cs ← constantNameValueTypes
+    let cs' ← cs.filterM <| fun (_, term, _) => 
+        Meta.isProof term
+    return (cs.size, cs'.size)
+
+-- #check Json.pretty
+
+-- #eval nameSize
+
+def nameSample (n: Nat) : MetaM (Array Name) := do
+    let cs ← constantNameValueTypes 
+    let mut out : Array Name := #[]
+    let mut count := 0
+    for (name, _, _) in cs do
+        if count % n = 0 then
+            out := out.push name
+        count := count + 1    
+    return out
+
+-- #eval nameSample 100
+
+def batchDefns (start batch : Nat) : MetaM (Array Json) := do
+    let cs ← constantNameValueTypes 
+    let mut out : Array Json := #[]
+    let mut count := 0
+    for (name, term, type, _) in cs do
+        if count >= start && count < start + batch then
+            let defData? ← DefData.getM? name term type
+            match defData? with
+            | none => pure ()
+            | some defData => out := out.push <| toJson defData
+        count := count + 1    
+    return out
+
+
+def writeBatchDefnsM (start batch : Nat) : MetaM Nat  := do
+    let cs ← constantNameValueTypes 
+    let names := cs.map (·.1)
+    IO.println <| s!"{start}; {batch} from {cs.size}"
+    let mut count := 0
+    let defnsFile := System.mkFilePath ["rawdata", s!"defns.jsonl"]
+    let h ← IO.FS.Handle.mk defnsFile IO.FS.Mode.append
+    let idsFile := System.mkFilePath ["rawdata", s!"idents.jsonl"]
+    let h' ← IO.FS.Handle.mk idsFile IO.FS.Mode.append 
+    for (name, term, type, _) in cs do
+        if count >= start && count < start + batch then
+            IO.println <| s!"{count} {name}"
+            let defData? ← DefData.getM? name term type
+            match defData? with
+            | none => 
+                IO.println <| s!"{count} {name} omitted"
+                pure ()
+            | some defData =>
+                IO.println <| s!"{count} {name} written"
+                let idData := defData.identData
+                let idData := 
+                    idData.map (fun d ↦ d.filter 
+                        (names.contains · ))
+                let l := (toJson defData).pretty 10000000
+                if l.length < 9000000 then
+                    h.putStrLn  l
+                for d in idData do
+                    let l := (toJson d).pretty 10000000
+                    if l.length < 9000000 then
+                    h'.putStrLn l
+        count := count + 1    
+    return start + batch
+
+def writePremisesM  : MetaM Nat  := do
+    let cs ← constantNameValueTypes 
+    let names := cs.map (·.1)
+    let namesFile := System.mkFilePath ["rawdata", s!"names.txt"]
+    IO.FS.writeFile namesFile <| 
+        names.map toString |>.foldl (fun a b ↦ a  ++ b ++ "\n") ""
+    let defIdsFile := System.mkFilePath ["rawdata", s!"def_ids.jsonl"]
+    IO.FS.writeFile defIdsFile ""
+    let hId ← IO.FS.Handle.mk defIdsFile IO.FS.Mode.append
+    IO.println <| s!"Processing {cs.size} definitions"
+    let mut count := 0
+    let mut premisesDone : Array <| (Array Syntax) × Syntax := #[]
+    let premisesFile := System.mkFilePath ["rawdata", s!"premises.jsonl"]
+    IO.FS.writeFile premisesFile ""
+    let h ← IO.FS.Handle.mk premisesFile IO.FS.Mode.append
+    let trainPremisesFile := System.mkFilePath ["rawdata", s!"train_premises.jsonl"]
+    IO.FS.writeFile trainPremisesFile ""
+    let hTrain ← IO.FS.Handle.mk trainPremisesFile IO.FS.Mode.append
+    let testPremisesFile := System.mkFilePath ["rawdata", s!"test_premises.jsonl"]
+    let hTest ← IO.FS.Handle.mk testPremisesFile IO.FS.Mode.append
+    let validPremisesFile := System.mkFilePath ["rawdata", s!"valid_premises.jsonl"]
+    IO.FS.writeFile validPremisesFile ""
+    let hValid ← IO.FS.Handle.mk validPremisesFile IO.FS.Mode.append
+    let mut testNum := 0
+    let mut validNum := 0
+    let mut trainNum := 0
+    for (name, term, type, _) in cs do
+        IO.println <| s!"{count} {name} (of {cs.size})"
+        let defData? ← DefData.getM? name term type
+        match defData? with
+        | none => 
+            IO.println <| s!"{count} {name} omitted"
+            pure ()
+        | some defData =>
+            IO.println <| s!"{count} {name} written"
+            let gh ←  match ← IO.rand 0 9 with
+                | 0 => do
+                    testNum := testNum + 1
+                    IO.println s!"writing to test; now :{testNum}" 
+                    pure hTest
+                | 1 => 
+                    validNum := validNum + 1
+                    IO.println s!"writing to valid; now :{validNum}"
+                    pure hValid
+                | _ => 
+                    trainNum := trainNum + 1
+                    IO.println s!"writing to train; now :{trainNum}"
+                    pure hTrain
+            let premises := defData.premises
+            for premise in premises do
+                let premiseHead := (premise.context, premise.type)
+                if premisesDone.contains premiseHead then
+                    IO.print "premise seen previously; "
+                    pure ()
+                else
+                    premisesDone := premisesDone.push premiseHead
+                    IO.print "premise new; "
+                    let premise := premise.filterIds (names.contains · )
+                    let l := (toJson premise).pretty 10000000
+                    if l.length < 9000000 then
+                        h.putStrLn  l
+                        gh.putStrLn l
+            IO.println ""
+            let idData := defData.identData.bind (fun d ↦ d.ids.toList)
+            let idData ←  idData.filterM 
+                (fun n => checkName <| String.toName n) 
+            let idData := idData.eraseDups
+            let idData := Json.mkObj [
+                ("name", toJson defData.name),
+                ("ids", toJson idData),
+                ("is_prop", toJson defData.isProp),
+                ("type", toJson defData.type.purge)
+            ]
+            let l := idData.pretty 10000000
+            if l.length < 9000000 then
+                hId.putStrLn l
+        count := count + 1    
+    return count
+
+def writeBatchDefnsCore (start batch : Nat) : CoreM Nat := 
+    (writeBatchDefnsM start batch).run' {} 
+
+def writePremisesCore : CoreM Nat :=
+    writePremisesM.run' {}
+
+-- #eval batchDefns 0 5
