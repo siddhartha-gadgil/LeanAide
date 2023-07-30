@@ -1,7 +1,7 @@
 import Lean
 import Std.Data.HashMap
 import LeanAide.ConstDeps
-import LeanCodePrompts.VerboseDelabs
+import LeanAide.VerboseDelabs
 
 /-!
 # Premise data
