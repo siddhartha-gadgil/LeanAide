@@ -226,3 +226,16 @@ def parseAsTacticSeq (env : Environment) (input : String) (fileName := "<input>"
     Except.ok ⟨s.stxStack.back⟩
   else
     Except.error ((s.mkError "end of input").toErrorMsg ictx)
+
+def getName? (stx: Syntax) : Option Name :=
+  match stx with
+  | `($n:ident) => some n.getId
+  | _ => none
+
+def structuralTerm (stx: Syntax) : MetaM Bool := do
+  match getName? stx with
+  | none => pure false
+  | some n => 
+    let check := (``Eq).isPrefixOf n || (``Iff).isPrefixOf n
+    -- IO.println s!"function with name: {n}; blocked: {check}"
+    return check

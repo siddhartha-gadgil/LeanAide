@@ -655,19 +655,6 @@ def letStx? (stx: Syntax) : MetaM <| Option (Ident × Term × Term × Term) := d
     return some (n, type, val, body)
   | _ => return none
 
-def getName? (stx: Syntax) : Option Name :=
-  match stx with
-  | `($n:ident) => some n.getId
-  | _ => none
-
-def structuralTerm (stx: Syntax) : MetaM Bool := do
-  match getName? stx with
-  | none => pure false
-  | some n => 
-    let check := (``Eq).isPrefixOf n || (``Iff).isPrefixOf n
-    -- IO.println s!"function with name: {n}; blocked: {check}"
-    return check
-
 def wrappedProp? (stx : Syntax) : MetaM <| Option Syntax := do
   match stx with
   | `(($stx:term : Prop)) =>    
