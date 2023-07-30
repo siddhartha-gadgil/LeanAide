@@ -229,14 +229,22 @@ def splitData (data: Array α) : IO <| HashMap String (Array α) := do
 namespace DefnTypes
 def getM : MetaM <| Array DefnTypes := do
     let cs ← constantNameValueTypes 
-    cs.mapM <| fun (name, term, type, doc?) => do
-        let fmt ← Meta.ppExpr type 
-        pure ⟨name, fmt.pretty, ← isProof term, doc?⟩
+    cs.filterMapM <| fun (name, term, type, doc?) => do
+        let depth := type.approxDepth
+        if depth > 60 then
+          return none
+        else
+          let fmt ← Meta.ppExpr type 
+          pure
+            (some ⟨name, fmt.pretty, ← isProof term, doc?⟩)
 
-def writeM (dfns : Array DefnTypes) : MetaM Unit := do
+def writeM (dfns : Array DefnTypes)(name: String := "all.json") : MetaM Unit := do
     let jsonl := dfns.map toJson
-    let path := System.mkFilePath ["rawdata", "defn-types", "all.jsonl"]
-    IO.FS.writeFile path (jsonLines jsonl)
+    let jsonc := jsonl.map Json.compress
+    let path := System.mkFilePath ["rawdata", "defn-types", name]
+    let handle ←  IO.FS.Handle.mk path IO.FS.Mode.append
+    for l in jsonc do
+        handle.putStrLn l
 
 /-- Saving to file and returning for convenience along with map -/
 def getWriteSplitM : MetaM <| (Array DefnTypes) × (HashMap Name String) × HashMap String (Array DefnTypes) := do
@@ -265,8 +273,10 @@ end DefnTypes
 
 def writeDocsM : MetaM Unit := do
   let dfns ← DefnTypes.getM
+  IO.println s!"Total: {dfns.size}"
   let dfns := dfns.filter (fun d => d.docString?.isSome)
-  DefnTypes.writeM dfns
+  IO.println s!"Total: {dfns.size}"
+  DefnTypes.writeM dfns "docs.jsonl"
 
 def writeDocsCore : CoreM Unit := 
     (writeDocsM).run'

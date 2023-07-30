@@ -105,6 +105,10 @@ lean_exe chkthms{
   supportInterpreter := true
 }
 
+lean_exe writedocs {
+  supportInterpreter := true
+}
+
 lean_lib examples
 
 lean_lib LeanAideScratch
