@@ -18,6 +18,9 @@ def constantNames  : MetaM (Array Name) := do
   let names := names.filter fun n => !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n))
   return names
 
+def constantNamesCore  : CoreM (Array Name) :=
+  constantNames.run'
+
 /-- names with types of global constants -/
 def constantNameTypes  : MetaM (Array (Name ×  Expr)) := do
   let env ← getEnv
