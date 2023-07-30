@@ -13,7 +13,7 @@ def main (args: List String) : IO Unit := do
   initSearchPath (← Lean.findSysroot) initFiles
   let env ← 
     importModules [{module := `Mathlib},
-    {module:= `LeanCodePrompts.CheckParse},
+    {module:= `LeanAide.TheoremElab},
     {module := `Mathlib}] {}
   let coreCtx : Core.Context := 
     {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 1000000000, maxRecDepth := 10000} 

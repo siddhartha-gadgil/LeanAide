@@ -260,6 +260,14 @@ def getWriteCore : CoreM ((Array DefnTypes) × (HashMap Name String)) :=
 
 end DefnTypes
 
+def writeDocsM : MetaM Unit := do
+  let dfns ← DefnTypes.getM
+  let dfns := dfns.filter (fun d => d.docString?.isSome)
+  DefnTypes.writeM dfns
+
+def writeDocsCore : CoreM Unit := 
+    (writeDocsM).run'
+
 def getPropMap : MetaM <| HashMap Name String := do
     let dfns ← DefnTypes.getM
     propMapFromDefns dfns

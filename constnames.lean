@@ -1,5 +1,6 @@
 import Lean.Meta
 import LeanCodePrompts
+import LeanAide.Config
 import LeanAide.ConstDeps
 open Lean LeanAide.Meta
 
@@ -8,7 +9,7 @@ set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
 def main : IO Unit := do
-  initSearchPath (← Lean.findSysroot) ["build/lib", "lake-packages/mathlib/build/lib/",  "lake-packages/std/build/lib/", "lake-packages/Qq/build/lib/", "lake-packages/aesop/build/lib/", "lake-packages/proofwidgets/build/lib" ]
+  initSearchPath (← Lean.findSysroot) initPath
   let env ← 
     importModules [
     {module := `Mathlib}] {}

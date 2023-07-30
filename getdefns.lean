@@ -16,7 +16,7 @@ def main (args: List String) : IO Unit := do
     (args.get? 1 >>= fun s => s.toNat?).getD 1
   let env ← 
     importModules [{module := `Mathlib},
-    {module:= `LeanCodePrompts.CheckParse},
+    {module:= `LeanAide.TheoremElab},
     
     {module:= `LeanAide.VerboseDelabs},
     {module:= `LeanAide.Premises},

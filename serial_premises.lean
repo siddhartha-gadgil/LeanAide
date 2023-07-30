@@ -11,7 +11,7 @@ def init : IO Unit := do
 
 def environment : IO Environment := do
   importModules [{module := `Mathlib},
-    {module:= `LeanCodePrompts.CheckParse},
+    {module:= `LeanAide.TheoremElab},
     
     {module:= `LeanAide.VerboseDelabs},
     {module:= `LeanAide.Premises},

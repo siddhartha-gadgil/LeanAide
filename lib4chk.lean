@@ -25,7 +25,7 @@ def main : IO Unit := do
   let env ← 
     importModules [{module := `Mathlib},
     {module := `LeanCodePrompts.Basic},
-    {module:= `LeanCodePrompts.CheckParse},
+    {module:= `LeanAide.TheoremElab},
     {module := `Mathlib}] {}
   IO.println s!"enviroment loaded: {(← IO.monoMsNow) - initTime}ms"
   let mut count := 0

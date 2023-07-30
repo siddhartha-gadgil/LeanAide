@@ -13,7 +13,7 @@ def main (args: List String) : IO Unit := do
   let env ← 
     importModules [
     {module := `LeanCodePrompts.Basic},
-    {module:= `LeanCodePrompts.CheckParse},
+    {module:= `LeanAide.TheoremElab},
     {module:= `LeanCodePrompts.FirstTacticData},
     {module := `Mathlib}] {}
   let core := 

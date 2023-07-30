@@ -13,7 +13,7 @@ def main (args: List String) : IO Unit := do
   let completions := (args.getD 0 "thm")
   let env ← 
     importModules [{module := `Mathlib},
-    {module:= `LeanCodePrompts.CheckParse},
+    {module:= `LeanAide.TheoremElab},
     
     {module:= `LeanCodePrompts.Translate},
     {module := `Mathlib}] {}
