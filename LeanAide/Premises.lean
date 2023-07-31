@@ -24,6 +24,7 @@ universe u v w u_1 u_2 u_3 u₁ u₂ u₃
 
 open LeanAide.Meta
 
+set_option pp.match false
 
 /-- Remove the added `=: prop` from syntax -/
 partial def Lean.Syntax.purge: Syntax → Syntax := fun stx ↦

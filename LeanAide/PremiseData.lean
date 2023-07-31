@@ -58,7 +58,6 @@ def mainFileHandles : IO (HashMap (String × String) IO.FS.Handle) := do
     return handles
 
 set_option pp.unicode.fun true
-set_option pp.match false
 
 /-- Syntax as json -/
 instance : ToJson Syntax := ⟨fun (d: Syntax) ↦ shrink d.reprint.get!.trim⟩
