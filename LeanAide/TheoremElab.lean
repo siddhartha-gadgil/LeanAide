@@ -105,8 +105,8 @@ def elabThmFromStx (stx : Syntax)(opens: List String := [])
           (opens.foldl (fun acc s => acc ++ " " ++ s) "open ") ++ " in "
         let mut argS := ""
         for arg in args do
-          argS := argS ++ (showSyntax arg) ++ " -> "
-        let funStx := s!"{header}{argS}{showSyntax type}"
+          argS := argS ++ (arg.reprint.get!) ++ " -> "
+        let funStx := s!"{header}{argS}{type.reprint.get!}"
         match Lean.Parser.runParserCategory (← getEnv) `term funStx with
         | Except.ok termStx => Term.withLevelNames levelNames <|
           try 
