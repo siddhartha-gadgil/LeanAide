@@ -106,7 +106,7 @@ def elabThmSplit(start? size?: Option Nat := none) : TermElabM ((Array String) �
   IO.println s!"total: {deps.size}"
   for thm in deps do
     IO.println s!"parsing theorem {thm}"
-    let chk ←  hasElab thm (some 25)
+    let chk ←  hasElab thm 
     count := count + 1
     if chk then
       succ := succ.push thm
