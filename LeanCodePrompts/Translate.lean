@@ -11,20 +11,27 @@ import LeanCodePrompts.EgsTranslate
 
 open Lean Meta Elab Parser Command
 
-def fileName := "data/safe_prompts.json"
+def fileName := "data/mathlib4-thms.json"
+
+def lean4mode := decide (fileName ∈ ["data/mathlib4-prompts.json",
+        "data/mathlib4-thms.json"])
+
+def docField := 
+        if lean4mode then "docString" else "doc_string"
+
+def theoremField :=
+        if lean4mode then "type" else "theorem"
 
 /-- extract prompt pairs from JSON response to local server -/
 def sentenceSimPairs
   (s: String)
-  (theoremField : String := "theorem")
+  (theoremField : String := theoremField)
    : MetaM  <| Except String (Array (String × String)) := do
   let json := Lean.Json.parse  s |>.toOption.get!
   return do
     (← json.getArr?).mapM <| fun j => do
       let lean4mode := fileName ∈ ["data/mathlib4-prompts.json",
         "data/mathlib4-thms.json"]
-      let docField := 
-        if lean4mode then "docString" else "doc_string"
       let docstring ← j.getObjValAs? String docField 
       let typeField := 
         if lean4mode then "type"
@@ -113,7 +120,7 @@ def openAIKey : IO (Option String) := IO.getEnv "OPENAI_API_KEY"
 
 /--query OpenAI Codex with given prompt and parameters -/
 def codexQuery(prompt: String)(n: Nat := 1)
-  (temp : JsonNumber := ⟨2, 1⟩)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json := do
+  (temp : JsonNumber := ⟨8, 1⟩)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json := do
   let key? ← openAIKey
   let key := 
     match key? with
@@ -219,15 +226,15 @@ def getPromptPairs(s: String)(numSim : Nat)
    : TermElabM (Array (String × String) × IO.Process.Output) := do
       let jsData := Json.mkObj [
         ("filename", fileName),
-        ("field", "doc_string"),
-        ("doc_string", s),
+        ("field", docField),
+        (docField, s),
         ("n", numSim),
         ("model_name", "all-mpnet-base-v2")
       ]
       let simJsonOut ←  
         IO.Process.output {cmd:= "curl", args:= 
           #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, s!"{← leanAideIP}/nearest_prompts"]}
-      let pairs? ← sentenceSimPairs simJsonOut.stdout "theorem"
+      let pairs? ← sentenceSimPairs simJsonOut.stdout theoremField
       -- IO.println s!"obtained sentence similarity; time : {← IO.monoMsNow}"
       let allPairs : Array (String × String) ← 
         match pairs? with
@@ -239,8 +246,8 @@ def getPromptPairs(s: String)(numSim : Nat)
       return (allPairs.toList.eraseDups.toArray, simJsonOut)
 
 /-- choosing pairs to build a prompt -/
-def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := "doc_string")
-    (theoremField : String := "theorem")
+def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := docField)
+    (theoremField : String := theoremField)
    : TermElabM (Array (String × String) × IO.Process.Output) := do
       let jsData := Json.mkObj [
         ("filename", fileName),
