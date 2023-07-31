@@ -166,7 +166,7 @@ def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CorePremiseDataDir
 
 structure CorePremiseData extends CorePremiseDataDirect where
     namedLemmas : Array String
-    thm: String := context.foldr (fun id s => id ++ s) " : " ++ type
+    thm: String := context.foldr (fun id s => id ++ " " ++ s) " : " ++ type
     idString := ids.foldl (fun s id => s ++ id ++ "; ") ""
 deriving Repr, ToJson, FromJson
 
@@ -285,7 +285,7 @@ deriving Inhabited, ToJson
 namespace IdentData
 
 def write (data: IdentData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
-    let thm := data.context.foldr (fun s c => s ++ c) s!" : {data.type}"
+    let thm := data.context.foldr (fun s c => s ++ " " ++ c) s!" : {data.type}"
     let js := Json.mkObj [("theorem", thm), ("identifiers", toJson data.ids)]
     let l := js.pretty 10000000
     let gh ← match handles.find? ("identifiers", group) with
@@ -329,7 +329,7 @@ end IdentData
 namespace IdentPair
 
 def write (data: IdentPair)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
-    let thm := data.context.foldr (fun s c => s ++ c) s!" : {data.type}"
+    let thm := data.context.foldr (fun s c => s ++ " " ++ c) s!" : {data.type}"
     let js := Json.mkObj [("theorem", thm), ("identifier", toJson data.id)]
     let l := js.pretty 10000000
     let gh ← match handles.find? ("ident_pairs", group) with
@@ -347,7 +347,7 @@ def write (data: IdentPair)(group: String)(handles: HashMap (String × String) I
 end IdentPair
 
 def contextString (context : Array String) : String := 
-    context.foldr (fun s c => s ++ c) ""
+    context.foldr (fun s c => s ++ " " ++ c) ""
 
 structure LemmaPair where
     thmContext : Array String
@@ -390,7 +390,7 @@ structure TermPair where
 namespace TermPair
 
 def thm (data: TermPair) : String := 
-    data.thmContext.foldr (fun s c => s ++ c) s!" : {data.thmType}"
+    data.thmContext.foldr (fun s c => s ++ " " ++ c) s!" : {data.thmType}"
 
 def write (data: TermPair)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
     let js := Json.mkObj [

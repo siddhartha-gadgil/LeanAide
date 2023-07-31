@@ -38,7 +38,6 @@ partial def Lean.Syntax.purge: Syntax → Syntax := fun stx ↦
       Syntax.node info k (args.map Syntax.purge) 
   | s => s
 
-
 /-- Compute recursively premise-data of sublemmas as well as the identifiers, instantiations and subproofs. These are used at the top level recursively.
 
 The parameter `isArg` specifies whether the term is an argument of a function. This is used to determine whether to add the term to the list of instantiations. 
