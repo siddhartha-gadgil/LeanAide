@@ -60,12 +60,8 @@ lean_exe bulkchk{
   supportInterpreter := true
 }
 
-lean_exe lib4chk{
+lean_exe extras.lib4chk{
   supportInterpreter := true
-}
-
-lean_exe annotatekwds{
-  supportInterpreter := false
 }
 
 
@@ -73,13 +69,6 @@ lean_exe batchcheck{
   supportInterpreter := true
 }
 
-lean_exe constnames{
-  supportInterpreter := true
-}
-
-lean_exe depnames{
-  supportInterpreter := true
-}
 
 lean_exe getpremises{
   supportInterpreter := true
@@ -108,11 +97,21 @@ lean_exe writedocs {
   supportInterpreter := true
 }
 
+
 lean_lib examples
 
 lean_lib LeanAideScratch
 
 lean_lib Extras
+
+lean_exe extras.constnames{
+  supportInterpreter := true
+}
+
+lean_exe extras.depnames{
+  supportInterpreter := true
+}
+
 
 require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git"@"master"

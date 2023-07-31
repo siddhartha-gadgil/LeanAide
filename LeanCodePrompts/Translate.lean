@@ -6,7 +6,6 @@ import LeanAide.Lean4Names
 import LeanAide.TheoremEquality
 import LeanAide.IP
 
--- import LeanCodePrompts.Autocorrect
 import LeanCodePrompts.EgsTranslate
 
 open Lean Meta Elab Parser Command
