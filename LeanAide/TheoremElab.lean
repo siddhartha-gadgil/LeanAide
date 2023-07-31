@@ -26,6 +26,7 @@ syntax "example" : theorem_head
 declare_syntax_cat theorem_statement
 syntax bracketedBinder* docComment (theorem_head)?  bracketedBinder*  ":" term : theorem_statement
 syntax (theorem_head)? (ident)? bracketedBinder*  ":" term : theorem_statement
+syntax term : theorem_statement
 
 def thmsPrompt : IO (Array String) := do
   let file ← reroutePath <| System.mkFilePath ["data/thms.txt"]
@@ -85,22 +86,19 @@ partial def idents : Syntax → List String
 /--
 Elaborate the statement of a theorem, returning the elaborated expression. The syntax of the statement is liberal: it can be headed with `theorem`, `def`, `example` or nothing and may or may not have a name.
 -/
-def elabThm (s : String)(opens: List String := []) 
+def elabThmFromStx (stx : Syntax)(opens: List String := []) 
   (levelNames : List Lean.Name := levelNames)
   : TermElabM <| Except String Expr := do
-  let env ← getEnv
-  let chk := Lean.Parser.runParserCategory env `theorem_statement  s
-  match chk with
-  | Except.ok stx  =>
-      match stx with
-      | `(theorem_statement| $_:docComment $[$_:theorem_head]? $args:bracketedBinder* : $type:term) =>
-        elabAux type args
-      | `(theorem_statement|$[$_:theorem_head]? $[$_:ident]? $args:bracketedBinder* : $type:term) =>
-        elabAux type args
-      | `(theorem_statement|$vars:bracketedBinder* $_:docComment  $[$_:theorem_head]? $args:bracketedBinder* : $type:term ) =>
-        elabAux type (vars ++ args)
-      | _ => return Except.error s!"parsed to unmatched syntax {stx}"
-  | Except.error e  => return Except.error e
+    match stx with
+    | `(theorem_statement| $_:docComment $[$_:theorem_head]? $args:bracketedBinder* : $type:term) =>
+      elabAux type args
+    | `(theorem_statement|$[$_:theorem_head]? $[$_:ident]? $args:bracketedBinder* : $type:term) =>
+      elabAux type args
+    | `(theorem_statement|$vars:bracketedBinder* $_:docComment  $[$_:theorem_head]? $args:bracketedBinder* : $type:term ) =>
+      elabAux type (vars ++ args)
+    | `(theorem_statement|$type:term ) =>
+      elabAux type #[]
+    | _ => return Except.error s!"parsed to unmatched syntax {stx}"
   where elabAux (type: Syntax)(args: Array Syntax) : 
         TermElabM <| Except String Expr := do
         let header := if opens.isEmpty then "" else 
@@ -121,6 +119,22 @@ def elabThm (s : String)(opens: List String := [])
             return Except.error s!"{← e.toMessageData.toString} ; identifiers {idents termStx} (during elaboration)"
         | Except.error e => 
             return Except.error s!"parsed to {funStx}; error while parsing as theorem: {e}" 
+
+
+/--
+Elaborate the statement of a theorem, returning the elaborated expression. The syntax of the statement is liberal: it can be headed with `theorem`, `def`, `example` or nothing and may or may not have a name.
+-/
+def elabThm (s : String)(opens: List String := []) 
+  (levelNames : List Lean.Name := levelNames)
+  : TermElabM <| Except String Expr := do
+  let env ← getEnv
+  let stx? := Lean.Parser.runParserCategory env `theorem_statement  s
+  match stx? with
+  | Except.ok stx  =>
+      elabThmFromStx stx opens levelNames
+  | Except.error e  => return Except.error e
+
+
 
 def elabThmCore (s : String)(opens: List String := []) 
   (levelNames : List Lean.Name := levelNames)

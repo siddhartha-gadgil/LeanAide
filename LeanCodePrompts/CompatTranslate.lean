@@ -2,11 +2,9 @@ import Lean
 import Lean.Meta
 import Lean.Parser
 import LeanAide.TheoremElab
-import LeanAide.Lean4Names
-import LeanAide.TheoremEquality
 import LeanAide.IP
 
--- import LeanCodePrompts.Autocorrect
+import LeanCodePrompts.Autocorrect
 import LeanCodePrompts.EgsTranslate
 
 open Lean Meta Elab Parser Command
@@ -201,9 +199,12 @@ partial def pollCacheJson (s : String) : IO Json := do
     pollCacheJson s
 
 /-- check if there is a valid elaboration after translation, autocorrection -/
-def hasElab (s: String) : TermElabM Bool := do
-  let elab? ← elabThm4 s
-  return elab?.toOption.isSome
+def hasElab (s: String)(limit : Option Nat := none) : TermElabM Bool := do
+    -- (elabThmTrans s).map (fun e => e.toBool)
+  let elab? ← polyElabThmTrans s limit
+  match elab? with
+  | Except.error _ => return Bool.false
+  | Except.ok els => return !els.isEmpty
 
 /-- log to file -/
 def elabLog (s: String) : IO Unit := do
@@ -215,7 +216,8 @@ def elabLog (s: String) : IO Unit := do
 def fixedPrompts:= #[("If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.", "(n : ℕ) (f : ℕ → ℂ) :\n abs (∑ i in finset.range n, f i) ≤ ∑ i in finset.range n, abs (f i) :="), ("If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.", "(n : ℕ) (x y : euclidean_space ℝ (fin n)) :\n ∥x + y∥^2 + ∥x - y∥^2 = 2*∥x∥^2 + 2*∥y∥^2 :="), ("If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.", "(G : Type*) [group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :="), ("Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.", "(X : Type*) [topological_space X]\n (A : set X) (hA : ∀ x ∈ A, ∃ U : set X, is_open U ∧ x ∈ U ∧ U ⊆ A):\n is_open A :=")]
 
 /-- choosing pairs to build a prompt -/
-def getPromptPairs(s: String)(numSim : Nat)
+def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
+    (scoreBound: Float)(matchBound: Nat)
    : TermElabM (Array (String × String) × IO.Process.Output) := do
       let jsData := Json.mkObj [
         ("filename", fileName),
@@ -236,7 +238,10 @@ def getPromptPairs(s: String)(numSim : Nat)
         | Except.ok pairs => pure pairs    
       -- logInfo m!"all pairs: {allPairs}"        
       let allPairs := allPairs.toList.eraseDups.toArray
-      return (allPairs.toList.eraseDups.toArray, simJsonOut)
+      let pairs -- := allPairs -- 
+        ←  allPairs.filterM (fun (_, s) => do
+            isElabPrompt s )
+      return (pairs.toList.eraseDups.toArray, simJsonOut)
 
 /-- choosing pairs to build a prompt -/
 def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := "doc_string")
@@ -279,7 +284,7 @@ def getCodeJson (s: String)(numSim : Nat:= 8)(numKW: Nat := 0)(includeFixed: Boo
       -- work starts here; before this was caching, polling etc
       let (pairs, IOOut) ←  
         if numSim > 0 then  
-          getPromptPairs s numSim 
+          getPromptPairs s numSim numKW scoreBound matchBound 
         else pure (#[], ⟨0, "", ""⟩)
       let pairs := if includeFixed then pairs ++ fixedPrompts else pairs
       let pairs  := pairs.filter (fun (s, _) => s.length < 100) 
@@ -300,80 +305,106 @@ def getCodeJson (s: String)(numSim : Nat:= 8)(numKW: Nat := 0)(includeFixed: Boo
 def arrayToExpr (output: Array String) : TermElabM Expr := do
   let output := output.toList.eraseDups.toArray
   trace[Translate.info] m!"output:\n{output}"
-  let mut elabStrs : Array String := Array.empty
-  let mut elaborated : Array Expr := Array.empty
-  let mut fullElaborated : Array Expr := Array.empty
+  -- mkLog output
+  let mut elaborated : Array String := Array.empty
+  -- translation, autocorrection and filtering by elaboration
   for out in output do
-    -- IO.println s!"elaboration called: {out}"
-    let elab? ← elabThm4 out
-    match elab? with
+    let ployElab? ← polyElabThmTrans out
+    match ployElab? with
       | Except.error _ => pure ()
-      | Except.ok expr =>
-          elaborated := elaborated.push expr
-          elabStrs := elabStrs.push out
-          if !expr.hasExprMVar then
-            fullElaborated := fullElaborated.push expr
-  if elaborated.isEmpty then 
-    elabLog "No valid output from Codex; outputs below"
+      | Except.ok es =>
+        for (_ , _, s) in es do
+            elaborated := elaborated.push s 
+  if elaborated.isEmpty then do
+    -- information with failed logs
+    logWarning m!"No valid output from Codex; outputs below"
     for out in output do
-      let stx ← parseThm4 out
-      match stx with
-      | Except.error err => 
-          elabLog s!"{err} while parsing {out}"
-          pure ()
-      | Except.ok stx => do
-        elabLog s!"{stx.reprint.get!}"
+      let polyOut ←  polyStrThmTrans out
+      for str in polyOut do
+        logWarning m!"{str}"
     mkSyntheticSorry (mkSort levelZero)
   else    
-    let priority := 
-        if fullElaborated.isEmpty then elaborated else fullElaborated
-    let groupSorted ← groupThmExprsSorted priority
-    return (groupSorted[0]!)[0]!
+    -- grouping by trying to prove equality and selecting
+    let groupSorted ← groupFuncStrs elaborated
+    let topStr := (groupSorted[0]!)[0]!
+    let thmExc ← elabFuncTyp topStr
+    match thmExc with
+    | Except.ok (_, thm) => return thm
+    | Except.error s => throwError s
 
+/-- Given an array of outputs, tries to elaborate them with translation and autocorrection and returns the best choice, throwing an error if nothing elaborates.  -/
+def arrayToStx (output: Array String) : TermElabM Syntax := do
+  let output := output.toList.eraseDups.toArray
+  trace[Translate.info] m!"output:\n{output}"
+  -- mkLog output
+  let mut elaborated : Array String := Array.empty
+  -- translation, autocorrection and filtering by elaboration
+  for out in output do
+    let ployElab? ← polyElabThmTrans out
+    match ployElab? with
+      | Except.error _ => pure ()
+      | Except.ok es =>
+        for (_ , _, s) in es do
+            elaborated := elaborated.push s 
+  if elaborated.isEmpty then do
+    -- information with failed logs
+    logWarning m!"No valid output from Codex; outputs below"
+    for out in output do
+      let polyOut ←  polyStrThmTrans out
+      for str in polyOut do
+        logWarning m!"{str}"
+    pure Syntax.missing
+  else    
+    -- grouping by trying to prove equality and selecting
+    let groupSorted ← groupFuncStrs elaborated
+    let topStr := (groupSorted[0]!)[0]!
+    let thmExc ← elabFuncTyp topStr
+    match thmExc with
+    | Except.ok (stx, _) => return stx
+    | Except.error s => throwError s
 
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and optionally returns the best choice as well as all elaborated terms (used for batch processing, interactive code uses `arrayToExpr` instead)  -/
 def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array String))) := do
   -- IO.println s!"arrayToExpr? called with {output.size} outputs"
-  let mut elabStrs : Array String := Array.empty
-  let mut elaborated : Array Expr := Array.empty
-  let mut fullElaborated : Array Expr := Array.empty
+  let mut elaborated : Array String := Array.empty
+  let mut fullElaborated : Array String := Array.empty
   for out in output do
     -- IO.println s!"elaboration called: {out}"
-    let elab? ← elabThm4 out
-    match elab? with
+    let ployElab? ← polyElabThmTrans out
+    match ployElab? with
       | Except.error _ => pure ()
-      | Except.ok expr =>
-          elaborated := elaborated.push expr
-          elabStrs := elabStrs.push out
+      | Except.ok es =>
+        for (expr, _, s) in es do
+          elaborated := elaborated.push s 
           if !expr.hasExprMVar then
-            fullElaborated := fullElaborated.push expr
+            fullElaborated := fullElaborated.push s
   if elaborated.isEmpty then 
     elabLog "No valid output from Codex; outputs below"
     for out in output do
-      let stx ← parseThm4 out
-      match stx with
-      | Except.error err => 
-          elabLog s!"{err} while parsing {out}"
-          pure ()
-      | Except.ok stx => do
-        elabLog s!"{stx.reprint.get!}"
+      let polyOut ←  polyStrThmTrans out
+      for str in polyOut do
+        elabLog s!"{str}"
     return none
   else    
     let priority := 
         if fullElaborated.isEmpty then elaborated else fullElaborated
-    let groupSorted ← groupThmExprsSorted priority
-    let thm := (groupSorted[0]!)[0]!
-    return some (thm, elabStrs)
-
+    let groupSorted ← groupFuncStrs priority
+    let topStr := (groupSorted[0]!)[0]!
+    let thmExc ← elabFuncTyp topStr
+    match thmExc with
+    | Except.ok (_, thm) => return some (thm, elaborated)
+    | Except.error s =>
+        elabLog s!"Second round error : {s}"
+        return none
 
 def greedyArrayToExpr? (output: Array String) : TermElabM (Option Expr) := do
     output.findSomeM? <| fun out => do
-      let el? ← elabThm4 out
-      pure el?.toOption
+      let t? ← elabThmTrans? out
+      return t?.map fun (expr, _, _) => expr
 
 /-- reverse translation from `Lean` to natural language -/
-def leanToPrompt (thm: String)(numSim : Nat:= 5)(temp : JsonNumber := 0)(textField : String := "text") : TermElabM String := do
-    let (pairs, _) ← getPromptPairs thm numSim 
+def leanToPrompt (thm: String)(numSim : Nat:= 5)(numKW: Nat := 1)(temp : JsonNumber := 0)(scoreBound: Float := 0.2)(matchBound: Nat := 15)(textField : String := "text") : TermElabM String := do
+    let (pairs, _) ← getPromptPairs thm numSim numKW scoreBound matchBound
     let prompt := GPT.makeFlipPrompt thm pairs
     -- elabLog prompt
     let fullJson ← gptQuery prompt 1 temp
@@ -520,8 +551,8 @@ def translateViewM (s: String) : TermElabM String := do
     e.view
   | none => do
     let stx ← output.findSomeM? <| fun s => do
-      let exp ←  parseThm4 s 
-      return exp.toOption |>.map fun stx => stx.reprint.get!
+      let exp ←  identMappedFunStx s 
+      return exp.toOption
     return stx.getD "False"
 
 

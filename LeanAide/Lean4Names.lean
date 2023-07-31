@@ -1,5 +1,6 @@
 import Lean
 import Mathlib
+import LeanAide.TheoremElab
 open Lean Meta Elab Term
 open Mathlib.Prelude.Rename
 
@@ -26,6 +27,23 @@ match stx with
   let args ← args.mapM lean4NamesSyntax
   return mkNode k args
 | stx => pure stx
+
+def parseThm4 (s : String) : TermElabM <| Except String Syntax := do
+  let env ← getEnv
+  let stx? := Lean.Parser.runParserCategory env `theorem_statement  s
+  match stx? with
+  | Except.error err => return Except.error err
+  | Except.ok stx => return Except.ok <| ← lean4NamesSyntax stx
+
+def elabThm4 (s : String)(opens: List String := []) 
+  (levelNames : List Lean.Name := levelNames)
+  : TermElabM <| Except String Expr := do
+  let env ← getEnv
+  let stx? := Lean.Parser.runParserCategory env `theorem_statement  s
+  match stx? with
+  | Except.error err => throwError err
+  | Except.ok stx =>
+    elabThmFromStx (← lean4NamesSyntax stx) opens levelNames
 
 -- for testing
 

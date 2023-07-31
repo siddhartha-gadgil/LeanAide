@@ -2,7 +2,7 @@ import Lake
 open Lake DSL
 
 package leanaide {
-  precompileModules := true
+  -- precompileModules := true
 }
 
 @[default_target]
@@ -47,7 +47,6 @@ lean_exe chkelab {
   supportInterpreter := true
 }
 
-@[default_target]
 lean_exe promptsgen {
   supportInterpreter := true
 }

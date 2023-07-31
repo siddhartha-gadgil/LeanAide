@@ -3,7 +3,7 @@ import Lean.Meta
 import LeanAide.TheoremElab
 import LeanAide.TheoremEquality
 
-import Mathlib.Mathport.Rename
+-- import Mathlib.Mathport.Rename
 
 open Lean Meta Elab
 

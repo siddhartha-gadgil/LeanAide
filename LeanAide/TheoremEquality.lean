@@ -95,6 +95,23 @@ def groupThms(ss: Array String)(opens: List String := [])
         groups := groups.set! j (groups[j]!.push s)
     return groups
 
+def groupThmExprs(ss: Array Expr)
+  : TermElabM (Array (Array Expr)) := do
+    let mut groups: Array (Array Expr) := Array.empty
+    for s in ss do
+      match ← groups.findIdxM? (fun g => 
+          provedEquiv s g[0]! ) with
+      |none  => 
+        groups := groups.push #[s]
+      | some j => 
+        groups := groups.set! j (groups[j]!.push s)
+    return groups
+
+def groupThmExprsSorted(ss: Array Expr)
+  : TermElabM (Array (Array Expr)) := do
+  let gps ← groupThmExprs ss
+  return gps.qsort (fun xs ys => xs.size > ys.size)
+
 def groupTheoremsCore(ss: Array String)(opens: List String := []) 
   (levelNames : List Lean.Name := levelNames)
   : CoreM (Array (Array String)) := 
