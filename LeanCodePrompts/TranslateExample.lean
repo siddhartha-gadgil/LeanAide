@@ -10,9 +10,9 @@ To see translation in action, place the cursor anywhere on one of the comments b
 -/
 
 
-/- There are infinitely many odd numbers -/
+//- There are infinitely many odd numbers -/
 
-/- Every prime number is either `2` or odd -/
+//- Every prime number is either `2` or odd -/
 
 set_option trace.Translate.info true 
 #eval translateViewM "There are infinitely many odd numbers"
