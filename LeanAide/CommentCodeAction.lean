@@ -12,7 +12,7 @@ def extractTranslationCommentBody : TSyntax ``translationComment → String
   | stx => panic! s!"Ill-formed translation comment syntax: {stx}."
 
 def dummyTranslateStatement (_stmt : String) : TermElabM String := 
-  pure "\ntheorem fermat_last : ∀ x y z n : Nat, n > 2 → x^n + y^n = z^n → x * y * z = 0 := by \n  sorry"
+  pure "theorem fermat_last : ∀ x y z n : Nat, n > 2 → x^n + y^n = z^n → x*y*z = 0 := by \n  sorry"
 
 @[command_code_action translationComment]
 def translationCommentCodeAction : CommandCodeAction := fun _params _snap _ctx _info ↦ do
@@ -27,11 +27,16 @@ def translationCommentCodeAction : CommandCodeAction := fun _params _snap _ctx _
     eager
     lazy? := some do
       let stx := cmdInfo.stx
-      let .some pos := stx.getTailPos? | return eager
+      let .some range := stx.getRange? | return eager
+      let text := extractTranslationCommentBody ⟨stx⟩
       let res ← EIO.toIO (fun _ ↦ .userError "Translation failed.") <| _snap.runTermElabM doc.meta <|
-          dummyTranslateStatement (extractTranslationCommentBody ⟨stx⟩)
+          dummyTranslateStatement text
       return { eager with
         edit? := some <| .ofTextEdit doc.meta.uri {
-          range := doc.meta.text.utf8RangeToLspRange ⟨pos, pos⟩,
-          newText := res }}
+          range := doc.meta.text.utf8RangeToLspRange range,
+          newText := s!"/-- {text}-/\n{res}"}}
     }]
+
+/-- Hello world -/
+theorem fermat_last : ∀ x y z n : Nat, n > 2 → x^n + y^n = z^n → x*y*z = 0 := by 
+  sorry
