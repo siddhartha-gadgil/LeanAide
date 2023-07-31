@@ -19,9 +19,13 @@ def sentenceSimPairs
   let json := Lean.Json.parse  s |>.toOption.get!
   return do
     (← json.getArr?).mapM <| fun j => do
-      let docstring ← j.getObjValAs? String "doc_string" 
+      let lean4mode := fileName ∈ ["data/mathlib4-prompts.json",
+        "data/mathlib4-thms.json"]
+      let docField := 
+        if lean4mode then "docString" else "doc_string"
+      let docstring ← j.getObjValAs? String docField 
       let typeField := 
-        if fileName ∈ ["data/mathlib4-prompts.json"] then "type"
+        if lean4mode then "type"
         else theoremField
       let thm ← j.getObjValAs? String typeField
       pure (docstring, thm) 
