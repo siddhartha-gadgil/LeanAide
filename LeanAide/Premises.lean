@@ -27,17 +27,21 @@ open LeanAide.Meta
 set_option pp.match false
 
 /-- Remove the added `=: prop` from syntax -/
-partial def Lean.Syntax.purge: Syntax → Syntax := fun stx ↦
+partial def Lean.Syntax.purge: Syntax → MetaM Syntax := fun stx ↦
   match stx with
   | Syntax.node info k args =>
     match stx with
     | `(($pf:term =: $_:term)) =>
       pf.raw.purge
     | `(($p : Prop)) => 
-        p.raw.purge
-    | _ =>
-      Syntax.node info k (args.map Syntax.purge) 
-  | s => s
+        match p.raw with
+        | Syntax.ident .. =>
+            p.raw.purge
+        | _ => `(($p:term))
+
+    | _ => do
+     return Syntax.node info k (← args.mapM Syntax.purge) 
+  | s => return s
 
 /-- Compute recursively premise-data of sublemmas as well as the identifiers, instantiations and subproofs. These are used at the top level recursively.
 
@@ -63,7 +67,7 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
         let (ts, pfs, ids, ps) ←  prop.premiseDataAuxM context defnName none  false maxDepth?
         if isArg then -- this is an instantiation
             let head : TermData := 
-                ⟨context, stx.purge, stx.purge.size, 0, true⟩
+                ⟨context, ← stx.purge, (← stx.purge).size, 0, true⟩
             pure <| (ts.push head, pfs, ids, ps)
         else 
             pure (ts, pfs, ids, ps)
@@ -86,8 +90,8 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
         let prev ←  
             proof.premiseDataAuxM context defnName (some newPropHead) false (maxDepth?.map (· -1))
         let (ts, pfs, ids, ps) := prev
-        let prop := prop.purge
-        let proof := proof.purge
+        let prop ← prop.purge
+        let proof ←  proof.purge
         let newPfs :=
             if propHead?.isSome then -- exclude lemma if in prior group
                 pfs
@@ -154,7 +158,7 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
             ps := ps ++ ps'
         if isArg then -- this is an instantiation
             let head : TermData := 
-                ⟨context, stx.purge, stx.purge.size, 0, false⟩
+                ⟨context, ← stx.purge, (← stx.purge).size, 0, false⟩
             ts := ts.push head
         return (ts.map (fun s => s.increaseDepth 1),
                 pfs.map (fun s => s.increaseDepth 1),
@@ -180,7 +184,7 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
                 ps := ps ++ ps'
             if isArg && tks.contains k then 
                 let head : TermData := 
-                    ⟨context, stx.purge, stx.purge.size, 0, false⟩
+                    ⟨context, ← stx.purge, (← stx.purge).size, 0, false⟩
                 ts := ts.push (head)
             return (ts, pfs, ids, ps)
         | Syntax.ident _ _ name .. => 
@@ -199,7 +203,10 @@ def Lean.Syntax.premiseDataM (context : Array Syntax)
     MetaM (List PremiseData) := do
     let (ts, pfs, ids, ps) ← proof.premiseDataAuxM context defnName (some prop) false maxDepth?
     if includeHead then
-        let head : PremiseData := ⟨context, name?, defnName, prop.purge, prop.purge, proof.purge, prop.purge.size, proof.purge.size, ts, pfs, ids⟩
+        let head : PremiseData := 
+            ⟨context, name?, defnName, ← prop.purge, 
+            ← prop.purge, ← proof.purge, (← prop.purge).size, 
+            (← proof.purge).size, ts, pfs, ids⟩
         return head :: ps
     else return ps
 
@@ -217,7 +224,7 @@ def DefData.getM? (name: Name)(term type: Expr) : MetaM (Option  DefData) :=  wi
         Lean.Syntax.premiseDataM #[] stx tstx isProp (some name) name
     let typeDepth := type.approxDepth
     let valueDepth := term.approxDepth
-    return some {name := name, type := tstx.raw.purge, value := stx.raw.purge, isProp := isProp, typeDepth := typeDepth.toNat, valueDepth := valueDepth.toNat, premises := premises.eraseDups}
+    return some {name := name, type := ←  tstx.raw.purge, value := ←  stx.raw.purge, isProp := isProp, typeDepth := typeDepth.toNat, valueDepth := valueDepth.toNat, premises := premises.eraseDups}
 
 def DefData.ofNameM? (name: Name) : MetaM (Option DefData) := do
     let info ←  getConstInfo name
