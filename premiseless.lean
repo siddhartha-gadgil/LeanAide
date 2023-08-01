@@ -45,10 +45,11 @@ def main (_: List String) : IO Unit := do
         IO.println "finished proof search"
         if proved then
           provedCount := provedCount + 1
-          IO.println s!"{corePremise.thm} proved"
+          IO.println s!"Result proved"
         else
-          IO.println s!"{corePremise.thm} not proved"
+          IO.println s!"Result not proved"
+        IO.println "-------------------"
     | none => pure ()
-  IO.println s!"{count} processed, {premiselessCount} premiseless"
+  IO.println s!"{count} processed, {premiselessCount} premiseless, {provedCount} proved"
 
   

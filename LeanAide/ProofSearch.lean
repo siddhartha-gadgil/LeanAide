@@ -18,9 +18,12 @@ def proofSearchM (thm: String) : TermElabM Bool := do
   | Except.ok type => 
     let goal ←mkFreshExprMVar type
     let mvarId := goal.mvarId! 
-    let goals ←
-      runAesop 0.5 #[] #[] #[] powerTactics mvarId 
-    return goals.isEmpty
+    try 
+      let goals ←
+        runAesop 0.5 #[] #[] #[] powerTactics mvarId 
+      return goals.isEmpty
+    catch _ =>
+      return false
   | Except.error _ => return false
 
 def proofSearchCore (thm: String) : CoreM Bool := 
