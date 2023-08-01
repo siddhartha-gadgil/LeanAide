@@ -5,15 +5,16 @@ open Lean Json Data LeanAide.Meta
 def environment : IO Environment := do
   importModules [{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
-    
-    {module:= `LeanAide.VerboseDelabs},
     {module:= `LeanAide.Premises},
+    {module:= `LeanAide.ProofSearch},
     {module := `Mathlib}] {}
 
-def coreContext : Core.Context := {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]
+def coreContext : Core.Context := 
+  {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]
     }   
 
 def main (_: List String) : IO Unit := do
+  initSearchPath (← Lean.findSysroot) initFiles
   let env ← environment
   let testLines := 
     (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "core", "test.jsonl"]))
