@@ -18,7 +18,7 @@ def environment : IO Environment := do
     {module:= `LeanAide.Premises},
     {module := `Mathlib}] {}
 
-def coreContext : Core.Context := {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 10000000000, maxRecDepth := 1000000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]
+def coreContext : Core.Context := {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]
     }   
 
 def main (_: List String) : IO Unit := do
