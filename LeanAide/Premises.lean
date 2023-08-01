@@ -27,17 +27,24 @@ open LeanAide.Meta
 set_option pp.match false
 
 /-- Remove the added `=: prop` from syntax -/
-partial def Lean.Syntax.purge: Syntax → MetaM Syntax := fun stx ↦
+partial def Lean.Syntax.purge: Syntax → MetaM Syntax := fun stx ↦ do
   match stx with
   | Syntax.node info k args =>
     match stx with
+    | `((($t:term))) =>
+        let t' ←  t.raw.purge 
+        let t' : Syntax.Term := TSyntax.mk t'
+        `(($t'))
     | `(($pf:term =: $_:term)) =>
       pf.raw.purge
     | `(($p : Prop)) => 
         match p.raw with
         | Syntax.ident .. =>
             p.raw.purge
-        | _ => `(($p:term))
+        | _ => 
+            let p' ←  p.raw.purge 
+            let p' : Syntax.Term := TSyntax.mk p'
+            `(($p'))
 
     | _ => do
      return Syntax.node info k (← args.mapM Syntax.purge) 

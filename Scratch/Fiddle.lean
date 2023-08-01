@@ -3,6 +3,7 @@ import Lean.Parser
 import Lean.Data.Json.Parser
 import Mathlib
 import LeanAide.VerboseDelabs
+import LeanAide.Premises
 open Lean Meta Elab Parser Json.Parser
 open Mathlib.Prelude.Rename
 
@@ -11,7 +12,23 @@ example : ∀ {α : Type u_1} {f : (a : α) → ENNReal} {s : Finset α} (h : Fi
 
 def egDel {α : Type u_1} [GeneralizedCoheytingAlgebra α] {a : α} {b : α} {c : α} (h : a ⊔ c ≤ b ⊔ c)  : (a \ c ≤ b \ c) = (a \ c ≤ b \ c) := by sorry
 
+def egChk {α : Type u_1} {β : Type u_2} {s : Set α} {t : Set α} {f : (a : α) → β} (hf : Function.Injective f) (h : f '' s ⊆ f '' t)  : (s ⊆ t) = (s ⊆ t) := by sorry
+
 #check egDel
+#check egChk
+
+elab "egDelab" d:term : term => do
+  let t ← Term.elabTerm d none 
+  logInfo m!"term: {t}"
+  logInfo m!"purged: {← d.raw.purge}"
+  return t
+
+
+#check egDelab {α : Type} →  {s : Set α} →  {t : Set α}   →  (s ⊆ t : Prop) = (s ⊆ t : Prop)
+
+universe u_1 u_2
+
+#check egDelab ({α : Type u_1} →  {β : Type u_2} →  {s : Set α} →  {t : Set α} →  {f : (a : α) → β} →  (hf : Function.Injective f) →  (h : f '' s ⊆ f '' t)  →  (s ⊆ t : Prop) = (s ⊆ t : Prop) : Prop)
 
 def lean4Name? (name: Name) : MetaM (Option (Name × Bool)) := do
   let name? := 
