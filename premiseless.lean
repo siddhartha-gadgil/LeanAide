@@ -38,9 +38,11 @@ def main (_: List String) : IO Unit := do
         premiselessCount := premiselessCount + 1
         IO.println s!"{corePremise.thm} has no true premises"
         IO.println s!"{corePremise.ids} are the ids"
+        IO.println "launching proof search"
         let core := proofSearchCore corePremise.thm
         let proved ← 
           core.run' coreContext {env := env} |>.runToIO'
+        IO.println "finished proof search"
         if proved then
           provedCount := provedCount + 1
           IO.println s!"{corePremise.thm} proved"
