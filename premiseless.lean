@@ -21,9 +21,10 @@ def main (_: List String) : IO Unit := do
   let mut count := 0
   let mut premiselessCount := 0
   let mut provedCount := 0
+  let mut elaboratedCount := 0
   for l in testLines do
     if count % 100 = 0 then
-      IO.println s!"{count} processed, {premiselessCount} premiseless, {provedCount} proved"
+      IO.println s!"{count} processed, {premiselessCount} premiseless, {provedCount} proved, {elaboratedCount} elaborated"
     let js? := Lean.Json.parse l |>.toOption
     let premise? : Option CorePremiseData := 
       js?.bind <| fun js => (fromJson? js).toOption
@@ -34,15 +35,21 @@ def main (_: List String) : IO Unit := do
       let check := ids.all (
         fun n ↦
           (``Eq).isPrefixOf n || (``Iff).isPrefixOf n)
-      if check then
+      if check && corePremise.lemmas.isEmpty &&
+        corePremise.terms.isEmpty then
         premiselessCount := premiselessCount + 1
-        IO.println s!"{corePremise.thm} has no true premises"
+        IO.println s!"{corePremise.thm} has no lemmas, terms, true premises"
         IO.println s!"{corePremise.ids} are the ids"
         IO.println "launching proof search"
         let core := proofSearchCore corePremise.thm
-        let proved ← 
+        let (elaborated, proved) ← 
           core.run' coreContext {env := env} |>.runToIO'
         IO.println "finished proof search"
+        if elaborated then
+          elaboratedCount := elaboratedCount + 1
+          IO.println s!"Result elaborated"
+        else
+          IO.println s!"Result not elaborated"
         if proved then
           provedCount := provedCount + 1
           IO.println s!"Result proved"
@@ -50,6 +57,6 @@ def main (_: List String) : IO Unit := do
           IO.println s!"Result not proved"
         IO.println "-------------------"
     | none => pure ()
-  IO.println s!"{count} processed, {premiselessCount} premiseless, {provedCount} proved"
+  IO.println s!"{count} processed, {premiselessCount} premiseless, {provedCount} proved, {elaboratedCount} elaborated"
 
   

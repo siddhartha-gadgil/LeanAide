@@ -8,7 +8,7 @@ open Lean Meta Elab
 def powerTactics := #["gcongr", "ring", "linarith", "norm_num", "positivity", "polyrith"]
 
 -- should eventually use premises
-def proofSearchM (thm: String) : TermElabM Bool := do
+def proofSearchM (thm: String) : TermElabM <| Bool × Bool := do
   let type? ← elabThm thm 
   IO.println "Trying to prove"
   IO.println thm
@@ -21,11 +21,11 @@ def proofSearchM (thm: String) : TermElabM Bool := do
     try 
       let goals ←
         runAesop 0.5 #[] #[] #[] powerTactics mvarId 
-      return goals.isEmpty
+      return (true, goals.isEmpty)
     catch _ =>
-      return false
-  | Except.error _ => return false
+      return (true, false)
+  | Except.error _ => return (false, false)
 
-def proofSearchCore (thm: String) : CoreM Bool := 
+def proofSearchCore (thm: String) : CoreM <| Bool × Bool  := 
   (proofSearchM thm).run'.run'
 
