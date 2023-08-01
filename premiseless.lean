@@ -23,7 +23,7 @@ def main (_: List String) : IO Unit := do
   let mut provedCount := 0
   for l in testLines do
     if count % 100 = 0 then
-      IO.println s!"{count} processed, {premiselessCount} premiseless"
+      IO.println s!"{count} processed, {premiselessCount} premiseless, {provedCount} proved"
     let js? := Lean.Json.parse l |>.toOption
     let premise? : Option CorePremiseData := 
       js?.bind <| fun js => (fromJson? js).toOption
