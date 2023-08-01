@@ -5,7 +5,7 @@ open Lean Json Data LeanAide.Meta
 def environment : IO Environment := do
   importModules [{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
-    {module:= `LeanAide.Premises},
+    {module:= `LeanAide.PremiseData},
     {module:= `LeanAide.ProofSearch},
     {module := `Mathlib}] {}
 
