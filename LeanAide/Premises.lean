@@ -31,24 +31,22 @@ partial def Lean.Syntax.purge: Syntax → MetaM Syntax := fun stx ↦ do
   match stx with
   | Syntax.node info k args =>
     match stx with
-    | `((($t:term))) =>
-        let t' ←  t.raw.purge 
-        let t' : Syntax.Term := TSyntax.mk t'
-        `(($t'))
     | `(($pf:term =: $_:term)) =>
-      pf.raw.purge
+        padTerm <| ←  pf.raw.purge
     | `(($p : Prop)) => 
-        match p.raw with
-        | Syntax.ident .. =>
-            p.raw.purge
-        | _ => 
-            let p' ←  p.raw.purge 
-            let p' : Syntax.Term := TSyntax.mk p'
-            `(($p'))
-
+        padTerm <| ← p.raw.purge
     | _ => do
-     return Syntax.node info k (← args.mapM Syntax.purge) 
+     return Syntax.node info k (← args.mapM <| fun arg => do
+        padTerm <| ← Syntax.purge arg
+        ) 
   | s => return s
+  where padTerm (t : Syntax) : MetaM Syntax := 
+    match t with
+    | `(($_)) => pure t
+    | `($_:ident) => pure t
+    | _ =>
+        let t : Syntax.Term := TSyntax.mk t 
+        `(($t:term))
 
 /-- Compute recursively premise-data of sublemmas as well as the identifiers, instantiations and subproofs. These are used at the top level recursively.
 

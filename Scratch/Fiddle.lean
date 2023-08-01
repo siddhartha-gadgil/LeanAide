@@ -23,6 +23,9 @@ elab "egDelab" d:term : term => do
   logInfo m!"purged: {← d.raw.purge}"
   return t
 
+example {α : Type u} {ι : Sort x} {f : (a : ι) → Filter α} {p : (a : ι) → Prop} {l : Filter α} (h : ∀ {s : Set α} , (s ∈ l : Prop) ↔ (∃ (i : ι) , (p i : Prop) ∧ (s ∈ f i : Prop) : Prop)) {x : Set α} (a : ι)  : (p a) = (p a) := by sorry
+
+
 example {α : Type u_1} {ι : Sort u_2} [ConditionallyCompleteLattice α] {f : (a : ι) → α} {g : (a : ι) → α} (B : BddAbove (Set.range g)) (H : ∀ (x : ι) , f x ≤ g x) (h : IsEmpty ι) (h_1 : (isEmpty_or_nonempty ι =: (IsEmpty ι : Prop) ∨ (Nonempty ι : Prop)) = (Or.inl h =: (IsEmpty ι : Prop) ∨ (Nonempty ι : Prop)))  : Or.inl h = isEmpty_or_nonempty ι := by sorry
 
 example {α : Type u_2} {β : Type u_1} {M : Type u_3} [CommMonoid M] {f : (a : α) → M} {s : Set β} {g : (a : β) → α} (hg : Set.InjOn g (s ∩ Function.mulSupport f ∘ g))  : 1 = 1 := by sorry
