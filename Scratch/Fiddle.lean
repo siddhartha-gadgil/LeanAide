@@ -5,6 +5,9 @@ import Mathlib
 open Lean Meta Elab Parser Json.Parser
 open Mathlib.Prelude.Rename
 
+example : ∀ {α : Type u_1} {f : (a : α) → ENNReal} {s : Finset α} (h : Finset.sum s (fun (a : α) ↦ f a) = 1) (h' : ∀ (a : α) (x : ¬ a ∈ s) , f a = 0) {a : α} (ha : ¬ a ∈ s) , f a = 0   := by sorry
+
+example {α : Type u_1} [GeneralizedCoheytingAlgebra α] {a : α} {b : α} {c : α} (h : a ⊔ c ≤ b ⊔ c)  : (a \ c ≤ b \ c) = (a \ c ≤ b \ c) := by sorry
 
 def lean4Name? (name: Name) : MetaM (Option (Name × Bool)) := do
   let name? := 

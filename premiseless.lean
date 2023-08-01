@@ -55,7 +55,10 @@ def main (_: List String) : IO Unit := do
           IO.println s!"Result proved"
         else
           IO.println s!"Result not proved"
+        IO.println s!"{count} processed, {premiselessCount} premiseless,
+        {provedCount} proved, {elaboratedCount} elaborated"
         IO.println "-------------------"
+        
     | none => pure ()
   IO.println s!"{count} processed, {premiselessCount} premiseless, {provedCount} proved, {elaboratedCount} elaborated"
 
