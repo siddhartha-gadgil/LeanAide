@@ -23,12 +23,17 @@ elab "egDelab" d:term : term => do
   logInfo m!"purged: {← d.raw.purge}"
   return t
 
+example {α : Type u_1} {ι : Sort u_2} [ConditionallyCompleteLattice α] {f : (a : ι) → α} {g : (a : ι) → α} (B : BddAbove (Set.range g)) (H : ∀ (x : ι) , f x ≤ g x) (h : IsEmpty ι) (h_1 : (isEmpty_or_nonempty ι =: (IsEmpty ι : Prop) ∨ (Nonempty ι : Prop)) = (Or.inl h =: (IsEmpty ι : Prop) ∨ (Nonempty ι : Prop)))  : Or.inl h = isEmpty_or_nonempty ι := by sorry
+
+example {α : Type u_2} {β : Type u_1} {M : Type u_3} [CommMonoid M] {f : (a : α) → M} {s : Set β} {g : (a : β) → α} (hg : Set.InjOn g (s ∩ Function.mulSupport f ∘ g))  : 1 = 1 := by sorry
 
 #check egDelab {α : Type} →  {s : Set α} →  {t : Set α}   →  (s ⊆ t : Prop) = (s ⊆ t : Prop)
 
-universe u_1 u_2
+universe u_1 u_2 u_3
 
 #check egDelab ({α : Type u_1} →  {β : Type u_2} →  {s : Set α} →  {t : Set α} →  {f : (a : α) → β} →  (hf : Function.Injective f) →  (h : f '' s ⊆ f '' t)  →  (s ⊆ t : Prop) = (s ⊆ t : Prop) : Prop)
+
+#check egDelab ({α : Type u_2} →  {β : Type u_1} →  {M : Type u_3} →  [CommMonoid M] →  {f : (a : α) → M} →  {s : Set β} →  {g : (a : β) → α} →  (hg : Set.InjOn g (s ∩ Function.mulSupport f ∘ g))  →  1 = 1)
 
 def lean4Name? (name: Name) : MetaM (Option (Name × Bool)) := do
   let name? := 
