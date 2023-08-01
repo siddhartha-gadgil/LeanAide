@@ -1,7 +1,20 @@
 import LeanAide.PremiseData
+import LeanAide.ProofSearch
 open Lean Json Data LeanAide.Meta
 
+def environment : IO Environment := do
+  importModules [{module := `Mathlib},
+    {module:= `LeanAide.TheoremElab},
+    
+    {module:= `LeanAide.VerboseDelabs},
+    {module:= `LeanAide.Premises},
+    {module := `Mathlib}] {}
+
+def coreContext : Core.Context := {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]
+    }   
+
 def main (_: List String) : IO Unit := do
+  let env ← environment
   let testLines := 
     (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "core", "test.jsonl"]))
   let mut count := 0
@@ -24,7 +37,14 @@ def main (_: List String) : IO Unit := do
         premiselessCount := premiselessCount + 1
         IO.println s!"{corePremise.thm} has no true premises"
         IO.println s!"{corePremise.ids} are the ids"
-        -- should try to prove here
+        let core := proofSearchCore corePremise.thm
+        let proved ← 
+          core.run' coreContext {env := env} |>.runToIO'
+        if proved then
+          provedCount := provedCount + 1
+          IO.println s!"{corePremise.thm} proved"
+        else
+          IO.println s!"{corePremise.thm} not proved"
     | none => pure ()
   IO.println s!"{count} processed, {premiselessCount} premiseless"
 
