@@ -37,7 +37,7 @@ partial def Lean.Syntax.purge: Syntax → MetaM Syntax := fun stx ↦ do
         padTerm <| ← p.raw.purge
     | _ => do
      return Syntax.node info k (← args.mapM <| fun arg => do
-        padTerm <| ← Syntax.purge arg
+        Syntax.purge arg
         ) 
   | s => return s
   where padTerm (t : Syntax) : MetaM Syntax := 
