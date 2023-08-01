@@ -26,3 +26,6 @@ def main (_: List String) : IO Unit := do
         IO.println s!"{corePremise.ids} are the ids"
         -- should try to prove here
     | none => pure ()
+  IO.println s!"{count} processed, {premiselessCount} premiseless"
+
+  
