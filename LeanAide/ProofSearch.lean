@@ -10,12 +10,16 @@ def powerTactics := #["gcongr", "ring", "linarith", "norm_num", "positivity", "p
 -- should eventually use premises
 def proofSearchM (thm: String) : TermElabM Bool := do
   let type? ← elabThm thm 
+  IO.println "Trying to prove"
+  IO.println thm
+  IO.println type?
+  IO.println ""
   match type? with
   | Except.ok type => 
     let goal ←mkFreshExprMVar type
     let mvarId := goal.mvarId! 
     let goals ←
-      runAesop 0.5 #[] #[``Nat.add_comm] #[] powerTactics mvarId 
+      runAesop 0.5 #[] #[] #[] powerTactics mvarId 
     return goals.isEmpty
   | Except.error _ => return false
 
