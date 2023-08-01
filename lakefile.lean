@@ -55,6 +55,10 @@ lean_exe thmextract {
   supportInterpreter := true
 }
 
+lean_exe premiseless {
+  supportInterpreter := true
+}
+
 
 lean_exe bulkchk{
   supportInterpreter := true
