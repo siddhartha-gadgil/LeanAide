@@ -1,6 +1,7 @@
 import Std.CodeAction.Misc
+import Std.Tactic.TryThis
 
-open Lean Std Parser CodeAction Elab Command Server Lsp RequestM Snapshots
+open Lean Std Parser CodeAction Elab Command Server Lsp RequestM Snapshots Tactic
 
 syntax (name := translationComment) "//-" commentBody : command
 
@@ -37,6 +38,30 @@ def translationCommentCodeAction : CommandCodeAction := fun _params _snap _ctx _
           newText := s!"/-- {text}-/\n{res}"}}
     }]
 
-/-- Hello world -/
-theorem fermat_last : ∀ x y z n : Nat, n > 2 → x^n + y^n = z^n → x*y*z = 0 := by 
-  sorry
+#check TryThis.addSuggestion
+
+@[command_code_action translationComment]
+def translationCommentTryThis : CommandCodeAction := fun _params _snap _ctx _info ↦ do
+  let .node (.ofCommandInfo cmdInfo) _ := _info | return #[]
+  let doc ← readDoc
+  
+  let eager := {
+    title := "Suggest a translation to Lean."
+    kind? := "quickfix",
+    isPreferred? := true }
+  return #[{
+    eager
+    lazy? := some do
+      let stx := cmdInfo.stx
+      let .some range := stx.getRange? | return eager
+      let text := extractTranslationCommentBody ⟨stx⟩
+      EIO.toIO (fun _ ↦ .userError "Translation failed.") <| 
+        _snap.runTermElabM doc.meta <| do
+          let res ← dummyTranslateStatement text
+          let .ok thm := Parser.runParserCategory (← getEnv) `command res | 
+            throwError "Failed to parse result."
+          TryThis.addSuggestion stx (⟨thm⟩ : TSyntax `command)
+      return eager
+    }]
+
+//- Hello world -/
