@@ -7,6 +7,22 @@ import LeanAide.Premises
 open Lean Meta Elab Parser Json.Parser
 open Mathlib.Prelude.Rename
 
+open PrettyPrinter in
+
+def verboseView?' (name: Name) : MetaM (Option String) := 
+    do
+    let info ←  getConstInfo name
+    let term? := info.value? 
+    match term? with
+    | some term => 
+        let (stx, _) ←  delabCore term {} (Delaborator.delab)
+        return some <| stx.raw.reprint.get!
+    | none => return none
+
+def egBindComp {α β γ α' : Type} {f : α' → β → γ} {g : (a : α) → α'} (a : α) (b : β) :=  f (g a) b
+
+#eval verboseView?' `egBindComp -- this has the error `f g a b` 
+
 
 example : ∀ {α : Type u_1} {f : (a : α) → ENNReal} {s : Finset α} (h : Finset.sum s (fun (a : α) ↦ f a) = 1) (h' : ∀ (a : α) (x : ¬ a ∈ s) , f a = 0) {a : α} (ha : ¬ a ∈ s) , f a = 0   := by sorry
 
@@ -31,14 +47,13 @@ def egBind {α : Type u_5} {β : Type u_4} {γ : Type u_3} {a : Option α} {b : 
 
 def egBind' {α β γ α' : Type}  {f : (a : α') → (a : β) → γ} {g : (a : α) → α'} (_ : ∀ (a : α) (b : β) , f (g a) b = f (g a) b)  : 1 = 1 := rfl
 
-def egBindComp {α β γ α' : Type} {f : α' → β → γ} {g : (a : α) → α'} (a : α) (b : β) :=  f (g a) b
+
 
 #eval verboseView? `egBind -- this has the error `f g a b` without `(g a)`
 
 #eval verboseView?' `egBind -- this has the error `f g a b` without `(g a)`
 
 #eval verboseView?' `egBind' -- this has the error `f g a b` without `(g a)`
-#eval verboseView?' `egBindComp -- this has the error `f g a b` 
 
 example {α : Type u_1} {ι : Sort u_2} [ConditionallyCompleteLattice α] {f : (a : ι) → α} {g : (a : ι) → α} (B : BddAbove (Set.range g)) (H : ∀ (x : ι) , f x ≤ g x) (h : IsEmpty ι) (h_1 : (isEmpty_or_nonempty ι =: (IsEmpty ι : Prop) ∨ (Nonempty ι : Prop)) = (Or.inl h =: (IsEmpty ι : Prop) ∨ (Nonempty ι : Prop)))  : Or.inl h = isEmpty_or_nonempty ι := by sorry
 

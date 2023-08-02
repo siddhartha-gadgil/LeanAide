@@ -262,18 +262,7 @@ def verboseView? (name: Name) : MetaM (Option String) :=
         return some <| shrink stx.raw.reprint.get!
     | none => return none
 
-def verboseView?' (name: Name) : MetaM (Option String) := 
-    -- withOptions (fun o => 
-    --                 let o' :=  pp.match.set o false
-    --                 pp.unicode.fun.set o' true)
-    do
-    let info ←  getConstInfo name
-    let term? := info.value? 
-    match term? with
-    | some term => 
-        let (stx, _) ←  delabCore term {} (Delaborator.delab)
-        return some <| shrink stx.raw.reprint.get!
-    | none => return none
+
 
 def verboseViewCore? (name: Name) : CoreM (Option String) :=
     (verboseView? name).run' {}
