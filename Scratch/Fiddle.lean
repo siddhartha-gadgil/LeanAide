@@ -25,6 +25,20 @@ elab "egDelab" d:term : term => do
 
 example {α : Type u} {ι : Sort x} {f : (a : ι) → Filter α} {p : (a : ι) → Prop} {l : Filter α} (h : ∀ {s : Set α} , (s ∈ l : Prop) ↔ (∃ (i : ι) , (p i : Prop) ∧ (s ∈ f i : Prop) : Prop)) {x : Set α} (a : ι)  : (p a) = (p a) := by sorry
 
+-- {α : Type u_5} {β : Type u_4} {γ : Type u_3} {a : Option α} {b : Option β} {α' : Type u_1} {δ : Type u_2} {f : (a : α') → (a : β) → γ} {g : (a : α) → α'} {f' : (a : β) → (a : α) → δ} {g' : (a : δ) → γ} (h_left_anticomm : ∀ (a : α) (b : β) , f g a b = g' f' b a) (val : α) (h : a = some val) (val_1 : β) (h : b = some val_1)  : some val_1 = b
+
+def egBind {α : Type u_5} {β : Type u_4} {γ : Type u_3} {a : Option α} {b : Option β} {α' : Type u_1} {δ : Type u_2} {f : (a : α') → (a : β) → γ} {g : (a : α) → α'} {f' : (a : β) → (a : α) → δ} {g' : (a : δ) → γ} (h_left_anticomm : ∀ (a : α) (b : β) , f (g a) b = g' (f' b a)) (val : α) (h : a = some val) (val_1 : β) (h : b = some val_1)  : some val_1 = b := by sorry
+
+def egBind' {α β γ α' : Type}  {f : (a : α') → (a : β) → γ} {g : (a : α) → α'} (_ : ∀ (a : α) (b : β) , f (g a) b = f (g a) b)  : 1 = 1 := rfl
+
+def egBindComp {α β γ α' : Type} {f : α' → β → γ} {g : (a : α) → α'} (a : α) (b : β) :=  f (g a) b
+
+#eval verboseView? `egBind -- this has the error `f g a b` without `(g a)`
+
+#eval verboseView?' `egBind -- this has the error `f g a b` without `(g a)`
+
+#eval verboseView?' `egBind' -- this has the error `f g a b` without `(g a)`
+#eval verboseView?' `egBindComp -- this has the error `f g a b` 
 
 example {α : Type u_1} {ι : Sort u_2} [ConditionallyCompleteLattice α] {f : (a : ι) → α} {g : (a : ι) → α} (B : BddAbove (Set.range g)) (H : ∀ (x : ι) , f x ≤ g x) (h : IsEmpty ι) (h_1 : (isEmpty_or_nonempty ι =: (IsEmpty ι : Prop) ∨ (Nonempty ι : Prop)) = (Or.inl h =: (IsEmpty ι : Prop) ∨ (Nonempty ι : Prop)))  : Or.inl h = isEmpty_or_nonempty ι := by sorry
 
