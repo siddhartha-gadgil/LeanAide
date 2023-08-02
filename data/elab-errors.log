@@ -1,0 +1,217 @@
+ : ∀ {α : Type u_1} {f : (a : α) → ENNReal} {s : Finset α} (h : Finset.sum s fun (a : α) ↦ f a = 1) (h' : ∀ (a : α) (x : ¬ a ∈ s) , f a = 0) {a : α} (ha : ¬ a ∈ s) , ↑ Pmf.ofFinset f s h h' a = 0
+failed to synthesize instance
+  AddCommMonoid Prop ; identifiers [α, u_1, f, a, α, ENNReal, s, Finset, α, h, Finset.sum, s, a, α, f, a, h', a, α, x, a, s, f, a, a, α, ha, a, s, Pmf.ofFinset, f, s, h, h', a] (during elaboration)
+
+ : ∀ {α : Type u_1} {f : (a : α) → ENNReal} {s : Finset α} (h : Finset.sum s fun (a : α) ↦ f a = 1) (h' : ∀ (a : α) (x : ¬ a ∈ s) , f a = 0) {a : α} (ha : ¬ a ∈ s) , f a = 0
+failed to synthesize instance
+  AddCommMonoid Prop ; identifiers [α, u_1, f, a, α, ENNReal, s, Finset, α, h, Finset.sum, s, a, α, f, a, h', a, α, x, a, s, f, a, a, α, ha, a, s, f, a] (during elaboration)
+
+ : ∀ {V : Type u_2} {W : Type u_3} {V₁ : Type u_1} [inst : SeminormedAddCommGroup V] [inst_1 : SeminormedAddCommGroup W] [inst_2 : SeminormedAddCommGroup V₁] {f : NormedAddGroupHom V W} {g : NormedAddGroupHom V W} (φ : NormedAddGroupHom V₁ V) (h : NormedAddGroupHom.comp f φ = NormedAddGroupHom.comp g φ) (C : ℝ) (hφ : ‖ φ ‖ ≤ C) , ‖ NormedAddGroupHom.Equalizer.lift φ h ‖ ≤ C
+<input>:1:325: expected term
+
+ : ∀ {V : Type u_2} {W : Type u_3} {V₁ : Type u_1} [inst : SeminormedAddCommGroup V] [inst_1 : SeminormedAddCommGroup W] [inst_2 : SeminormedAddCommGroup V₁] {f : NormedAddGroupHom V W} {g : NormedAddGroupHom V W} (φ : NormedAddGroupHom V₁ V) (h : NormedAddGroupHom.comp f φ = NormedAddGroupHom.comp g φ) (C : ℝ) (hφ : ‖ φ ‖ ≤ C) , ‖ φ ‖ ≤ C
+<input>:1:325: expected term
+
+{α : Type u_1} [MulOneClass α] [LT α] [CovariantClass α α Function.swap fun (x : α) (x_1 : α) ↦ x * x_1 fun (x : α) (x_1 : α) ↦ x < x_1] [ContravariantClass α α Function.swap fun (x : α) (x_1 : α) ↦ x * x_1 fun (x : α) (x_1 : α) ↦ x < x_1] (a : α) {b : α}  : a < b * a ↔ 1 * a < b * a = a < b * a ↔ 1 * a < b * a
+<input>:1:285: expected end of input
+
+{α : Type u_1} [MulOneClass α] [LT α] [CovariantClass α α Function.swap fun (x : α) (x_1 : α) ↦ x * x_1 fun (x : α) (x_1 : α) ↦ x < x_1] [ContravariantClass α α Function.swap fun (x : α) (x_1 : α) ↦ x * x_1 fun (x : α) (x_1 : α) ↦ x < x_1] (a : α) {b : α}  : a < b * a ↔ a < b * a
+application type mismatch
+  CovariantClass α α Function.swap
+argument
+  Function.swap
+has type
+  ((x : ?m.19) → (y : ?m.20) → ?m.21 x y) →
+    (y : ?m.20) → (x : ?m.19) → ?m.21 x y : Sort (imax (imax ?u.18 ?u.17 ?u.16) ?u.17 ?u.18 ?u.16)
+but is expected to have type
+  α → α → α : Type u_1 ; identifiers [α, u_1, MulOneClass, α, LT, α, CovariantClass, α, α, Function.swap, x, α, x_1, α, x, x_1, x, α, x_1, α, x, x_1, ContravariantClass, α, α, Function.swap, x, α, x_1, α, x, x_1, x, α, x_1, α, x, x_1, a, α, b, α, a, b, a, a, b, a] (during elaboration)
+
+{α : Type u_1} [GeneralizedCoheytingAlgebra α] {a : α} {b : α} {c : α} (h : a ⊔ c ≤ b ⊔ c)  : a \ c ≤ b \ c = a \ c ≤ b \ c
+<input>:1:108: expected end of input
+
+{α : Type u_1} [GeneralizedCoheytingAlgebra α] {a : α} {b : α} {c : α} (h : a ⊔ c ≤ b ⊔ c)  : a ⊔ c \ c ≤ b \ c = a ⊔ c \ c ≤ b \ c
+<input>:1:112: expected end of input
+
+{n : ℕ} {f : Vector ℕ n →. ℕ} (pf : Nat.Partrec' f) {m : ℕ} {n : ℕ} {f : Vector ℕ n →. ℕ} (g : (a : Fin n) → Vector ℕ m →. ℕ) (a : Nat.Partrec' f) (a : ∀ (i : Fin n) , Nat.Partrec' g i) (a_ih : Partrec f) (a_ih_1 : ∀ (i : Fin n) , Partrec g i)  : ∀ (i : Fin n) , Partrec g i
+application type mismatch
+  Nat.Partrec' g
+argument
+  g
+has type
+  Fin n → Vector ℕ m →. ℕ : Type
+but is expected to have type
+  Vector ℕ ?m.51 →. ℕ : Type ; identifiers [n, f, Vector, n, pf, Nat.Partrec', f, m, n, f, Vector, n, g, a, Fin, n, Vector, m, a, Nat.Partrec', f, a, i, Fin, n, Nat.Partrec', g, i, a_ih, Partrec, f, a_ih_1, i, Fin, n, Partrec, g, i, i, Fin, n, Partrec, g, i] (during elaboration)
+
+{α : Type u_1} {l : Filter α} {R : Type u_2} [Distrib R] (f : Filter.Germ l R) (g : Filter.Germ l R) (h : Filter.Germ l R) (f : (a : α) → R) (g : (a : α) → R) (h : (a : α) → R)  : f * g + h =ᶠ[l] f * g + f * h = f * g + h =ᶠ[l] f * g + f * h
+application type mismatch
+  f * g + h =ᶠ[l] ?m.81592 =ᶠ[l] f * g + f * h
+argument
+  ?m.81592 =ᶠ[l] f * g + f * h
+has type
+  Prop : Type
+but is expected to have type
+  α → R : Type (max u_2 u_1) ; identifiers [α, u_1, l, Filter, α, R, u_2, Distrib, R, f, Filter.Germ, l, R, g, Filter.Germ, l, R, h, Filter.Germ, l, R, f, a, α, R, g, a, α, R, h, a, α, R, f, g, h, l, f, g, f, h, f, g, h, l, f, g, f, h] (during elaboration)
+
+{α : Type u_2} {β : Type u_1} [AddMonoid α] [AddAction α β] {a : β} (motive : (x : ↑ AddAction.orbit α a) → Prop) (x : ↑ AddAction.orbit α a) (h_1 : ∀ (b : β) (x : α) (hx : fun (x : α) ↦ x +ᵥ a x = b) , motive {val := ((b)) , property := (((Exists.intro x hx =: ∃ (y : α) , fun (x : α) ↦ x +ᵥ a y = b)))}) (val : β) (property : val ∈ AddAction.orbit α a)  : ∀ (w : α) (h : fun (x : α) ↦ x +ᵥ a w = val) , motive {val := ((val)) , property := ((Exists.intro w h))}
+<input>:1:260: expected term
+
+{M₀ : Type u_1} [inst : MonoidWithZero M₀] {a : M₀} (h : IsUnit Ring.inverse a) (h_1 : Subsingleton M₀) (h_2 : (subsingleton_or_nontrivial M₀ =: (Subsingleton M₀ : Prop) ∨ (Nontrivial M₀ : Prop)) = (Or.inl h_1 =: (Subsingleton M₀ : Prop) ∨ (Nontrivial M₀ : Prop)))  : Or.inl h_1 = subsingleton_or_nontrivial M₀
+<input>:1:143: expected term
+
+ : ∀ {G : Type u_1} [inst : AddGroup G] (self : AddSubgroup G) {x : G} (a : x ∈ AddSubsemigroup.carrier AddSubmonoid.toAddSubsemigroup AddSubgroup.toAddSubmonoid self) , - x ∈ AddSubsemigroup.carrier AddSubmonoid.toAddSubsemigroup AddSubgroup.toAddSubmonoid self
+function expected at
+  AddSubsemigroup.carrier ?m.79766 AddSubgroup.toAddSubmonoid
+term has type
+  Prop ; identifiers [G, u_1, inst, AddGroup, G, self, AddSubgroup, G, x, G, a, x, AddSubsemigroup.carrier, AddSubmonoid.toAddSubsemigroup, AddSubgroup.toAddSubmonoid, self, x, AddSubsemigroup.carrier, AddSubmonoid.toAddSubsemigroup, AddSubgroup.toAddSubmonoid, self] (during elaboration)
+
+ : ∀ (G : Type u_1) [inst : AddGroup G] (self : AddSubgroup G) {x : G} (a : x ∈ AddSubsemigroup.carrier AddSubmonoid.toAddSubsemigroup self . 1) , - x ∈ AddSubsemigroup.carrier AddSubmonoid.toAddSubsemigroup self . 1
+function expected at
+  AddSubsemigroup.carrier ?m.79766 self
+term has type
+  Prop ; identifiers [G, u_1, inst, AddGroup, G, self, AddSubgroup, G, x, G, a, x, AddSubsemigroup.carrier, AddSubmonoid.toAddSubsemigroup, self, x, AddSubsemigroup.carrier, AddSubmonoid.toAddSubsemigroup, self] (during elaboration)
+
+{K : Type v} {V : Type w} [Field K] [AddCommGroup V] [Module K V] (f : Module.End K V) (μs : Set K) (xs : (a : ↑ μs) → V) (h_eigenvec : ∀ (μ : ↑ μs) , Module.End.HasEigenvector f ↑ μ xs μ) (μ : {x : K // x ∈ μs})  : Module.End.HasEigenvector f ↑ μ xs μ
+type mismatch
+  μs
+has type
+  Set K : Type v
+but is expected to have type
+  Sort ?u.1398 : Type ?u.1398 ; identifiers [K, v, V, w, Field, K, AddCommGroup, V, Module, K, V, f, Module.End, K, V, μs, Set, K, xs, a, μs, V, h_eigenvec, μ, μs, Module.End.HasEigenvector, f, μ, xs, μ, μ, x, K, x, μs, Module.End.HasEigenvector, f, μ, xs, μ] (during elaboration)
+
+{α : Type u_1} {β : Type u_2} {γ : Type u_3} [Primcodable α] [Primcodable β] [Primcodable γ] {p : (a : α) → Prop} {q : (a : β) → Prop} {r : (a : γ) → Prop} (x : p ≤₀ r) (x_1 : q ≤₀ r) (f : (a : α) → γ) (c₁ : Computable f) (h₁ : ∀ (a : α) , (p a : Prop) ↔ (r f a : Prop)) (g : (a : β) → γ) (c₂ : Computable g) (h₂ : ∀ (a : β) , (q a : Prop) ↔ (r g a : Prop)) (x : α ⊕ β) (val : α) (h : x = Sum.inl val)  : Sum.inl val = x
+application type mismatch
+  r f
+argument
+  f
+has type
+  α → γ : Type (max u_1 u_3)
+but is expected to have type
+  γ : Type u_3 ; identifiers [α, u_1, β, u_2, γ, u_3, Primcodable, α, Primcodable, β, Primcodable, γ, p, a, α, q, a, β, r, a, γ, x, p, r, x_1, q, r, f, a, α, γ, c₁, Computable, f, h₁, a, α, p, a, r, f, a, g, a, β, γ, c₂, Computable, g, h₂, a, β, q, a, r, g, a, x, α, β, val, α, h, x, Sum.inl, val, Sum.inl, val, x] (during elaboration)
+
+{α : Type u_1} {β : Type u_2} {γ : Type u_3} [Primcodable α] [Primcodable β] [Primcodable γ] {p : (a : α) → Prop} {q : (a : β) → Prop} {r : (a : γ) → Prop} (x : p ≤₀ r) (x_1 : q ≤₀ r) (f : (a : α) → γ) (c₁ : Computable f) (h₁ : ∀ (a : α) , (p a : Prop) ↔ (r f a : Prop)) (g : (a : β) → γ) (c₂ : Computable g) (h₂ : ∀ (a : β) , (q a : Prop) ↔ (r g a : Prop)) (x : α ⊕ β) (val : α) (h : x = Sum.inl val)  : p val ↔ r f val
+application type mismatch
+  r f
+argument
+  f
+has type
+  α → γ : Type (max u_1 u_3)
+but is expected to have type
+  γ : Type u_3 ; identifiers [α, u_1, β, u_2, γ, u_3, Primcodable, α, Primcodable, β, Primcodable, γ, p, a, α, q, a, β, r, a, γ, x, p, r, x_1, q, r, f, a, α, γ, c₁, Computable, f, h₁, a, α, p, a, r, f, a, g, a, β, γ, c₂, Computable, g, h₂, a, β, q, a, r, g, a, x, α, β, val, α, h, x, Sum.inl, val, p, val, r, f, val] (during elaboration)
+
+{R : Type u₁} [StrictOrderedSemiring R] {a : R} (h : 0 ≤ a) (ha : a ≤ 1) {i : ℕ} {j : ℕ} (hij : i ≤ j) (k : ℕ) (hk : j = i + k)  : a ^ j ≤ a ^ i = a ^ j ≤ a ^ i
+<input>:1:145: expected end of input
+
+{α : Type u_1} {β : Type u_2} {γ : Type u_3} [Primcodable α] [Primcodable β] [Primcodable γ] {p : (a : α) → Prop} {q : (a : β) → Prop} {r : (a : γ) → Prop} (x : p ≤₀ r) (x_1 : q ≤₀ r) (f : (a : α) → γ) (c₁ : Computable f) (h₁ : ∀ (a : α) , (p a : Prop) ↔ (r f a : Prop)) (g : (a : β) → γ) (c₂ : Computable g) (h₂ : ∀ (a : β) , (q a : Prop) ↔ (r g a : Prop)) (x : α ⊕ β) (val : β) (h : x = Sum.inr val)  : Sum.inr val = x
+application type mismatch
+  r f
+argument
+  f
+has type
+  α → γ : Type (max u_1 u_3)
+but is expected to have type
+  γ : Type u_3 ; identifiers [α, u_1, β, u_2, γ, u_3, Primcodable, α, Primcodable, β, Primcodable, γ, p, a, α, q, a, β, r, a, γ, x, p, r, x_1, q, r, f, a, α, γ, c₁, Computable, f, h₁, a, α, p, a, r, f, a, g, a, β, γ, c₂, Computable, g, h₂, a, β, q, a, r, g, a, x, α, β, val, β, h, x, Sum.inr, val, Sum.inr, val, x] (during elaboration)
+
+{α : Type u_1} {β : Type u_2} {γ : Type u_3} [Primcodable α] [Primcodable β] [Primcodable γ] {p : (a : α) → Prop} {q : (a : β) → Prop} {r : (a : γ) → Prop} (x : p ≤₀ r) (x_1 : q ≤₀ r) (f : (a : α) → γ) (c₁ : Computable f) (h₁ : ∀ (a : α) , (p a : Prop) ↔ (r f a : Prop)) (g : (a : β) → γ) (c₂ : Computable g) (h₂ : ∀ (a : β) , (q a : Prop) ↔ (r g a : Prop)) (x : α ⊕ β) (val : β) (h : x = Sum.inr val)  : q val ↔ r g val
+application type mismatch
+  r f
+argument
+  f
+has type
+  α → γ : Type (max u_1 u_3)
+but is expected to have type
+  γ : Type u_3 ; identifiers [α, u_1, β, u_2, γ, u_3, Primcodable, α, Primcodable, β, Primcodable, γ, p, a, α, q, a, β, r, a, γ, x, p, r, x_1, q, r, f, a, α, γ, c₁, Computable, f, h₁, a, α, p, a, r, f, a, g, a, β, γ, c₂, Computable, g, h₂, a, β, q, a, r, g, a, x, α, β, val, β, h, x, Sum.inr, val, q, val, r, g, val] (during elaboration)
+
+{α : Type u_1} {β : Type u_2} {γ : Type u_3} [Primcodable α] [Primcodable β] [Primcodable γ] {p : (a : α) → Prop} {q : (a : β) → Prop} {r : (a : γ) → Prop} (x : p ≤₀ r) (x_1 : q ≤₀ r) (f : (a : α) → γ) (c₁ : Computable f) (h₁ : ∀ (a : α) , (p a : Prop) ↔ (r f a : Prop)) (g : (a : β) → γ) (c₂ : Computable g) (h₂ : ∀ (a : β) , (q a : Prop) ↔ (r g a : Prop)) (x : α ⊕ β)  : x = x
+application type mismatch
+  r f
+argument
+  f
+has type
+  α → γ : Type (max u_1 u_3)
+but is expected to have type
+  γ : Type u_3 ; identifiers [α, u_1, β, u_2, γ, u_3, Primcodable, α, Primcodable, β, Primcodable, γ, p, a, α, q, a, β, r, a, γ, x, p, r, x_1, q, r, f, a, α, γ, c₁, Computable, f, h₁, a, α, p, a, r, f, a, g, a, β, γ, c₂, Computable, g, h₂, a, β, q, a, r, g, a, x, α, β, x, x] (during elaboration)
+
+ : ∀ {α : Type u} [inst : SizeOf α] , sizeOf LazyList.nil = 1
+typeclass instance problem is stuck, it is often due to metavariables
+  SizeOf (LazyList ?m.6756) ; identifiers [α, u, inst, SizeOf, α, sizeOf, LazyList.nil] (during elaboration)
+
+{M₀ : Type u_1} [inst : MonoidWithZero M₀] {a : M₀} (h : IsUnit Ring.inverse a) (h_1 : Subsingleton M₀) (h_2 : (subsingleton_or_nontrivial M₀ =: (Subsingleton M₀ : Prop) ∨ (Nontrivial M₀ : Prop)) = (Or.inl h_1 =: (Subsingleton M₀ : Prop) ∨ (Nontrivial M₀ : Prop))) (M : Type u_1) (inst : Monoid M) (a : M) (a' : M) (e'_3 : a = a') (h : a' = a) (a' : M)  : a = a
+<input>:1:143: expected term
+
+ : ∀ {α : Type u_1} {β : Type u_2} [inst : MeasurableSpace α] [inst_1 : MeasurableSpace β] {f : (a : α) → β} (self : MeasurableEmbedding f) ⦃ s : Set α ⦄ (a : MeasurableSet s) , MeasurableSet f '' s
+application type mismatch
+  Set.image (MeasurableSet ?m.353)
+argument
+  MeasurableSet ?m.353
+has type
+  Prop : Type
+but is expected to have type
+  α → ?m.79608 self a : Type (max ?u.146 u_1) ; identifiers [α, u_1, β, u_2, inst, MeasurableSpace, α, inst_1, MeasurableSpace, β, f, a, α, β, self, MeasurableEmbedding, f, s, Set, α, a, MeasurableSet, s, MeasurableSet, f, s] (during elaboration)
+
+ : ∀ (α : Type u_1) (β : Type u_2) [inst : MeasurableSpace α] [inst_1 : MeasurableSpace β] (f : (a : α) → β) (self : MeasurableEmbedding f) ⦃ s : Set α ⦄ (a : MeasurableSet s) , MeasurableSet f '' s
+application type mismatch
+  Set.image (MeasurableSet ?m.353)
+argument
+  MeasurableSet ?m.353
+has type
+  Prop : Type
+but is expected to have type
+  α → ?m.79608 α β f self a : Type (max ?u.146 u_1) ; identifiers [α, u_1, β, u_2, inst, MeasurableSpace, α, inst_1, MeasurableSpace, β, f, a, α, β, self, MeasurableEmbedding, f, s, Set, α, a, MeasurableSet, s, MeasurableSet, f, s] (during elaboration)
+
+{G : Type u_1} [Group G] (H : Subgroup G) (a : G) (b : G)  : Setoid.Rel Doset.setoid ↑ Subgroup.toSubmonoid H ↑ ⊥ a b ↔ Setoid.Rel Doset.setoid ↑ Subgroup.toSubmonoid H ↑ ⊥ a b
+function expected at
+  Setoid.Rel ?m.80159 ?m.80160 H
+term has type
+  Prop ; identifiers [G, u_1, Group, G, H, Subgroup, G, a, G, b, G, Setoid.Rel, Doset.setoid, Subgroup.toSubmonoid, H, a, b, Setoid.Rel, Doset.setoid, Subgroup.toSubmonoid, H, a, b] (during elaboration)
+
+{M₀ : Type u_1} [inst : MonoidWithZero M₀] {a : M₀} (h : IsUnit Ring.inverse a) (h_1 : Subsingleton M₀) (h_2 : (subsingleton_or_nontrivial M₀ =: (Subsingleton M₀ : Prop) ∨ (Nontrivial M₀ : Prop)) = (Or.inl h_1 =: (Subsingleton M₀ : Prop) ∨ (Nontrivial M₀ : Prop))) (M : Type u_1) (inst : Monoid M) (a : M) (a' : M) (e'_3 : a = a') (h : a' = a)  : a = a'
+<input>:1:143: expected term
+
+{M₀ : Type u_1} [inst : MonoidWithZero M₀] {a : M₀} (h : IsUnit Ring.inverse a) (h_1 : Subsingleton M₀) (h_2 : (subsingleton_or_nontrivial M₀ =: (Subsingleton M₀ : Prop) ∨ (Nontrivial M₀ : Prop)) = (Or.inl h_1 =: (Subsingleton M₀ : Prop) ∨ (Nontrivial M₀ : Prop))) (M : Type u_1) (inst : Monoid M) (a : M) (a' : M) (e'_3 : a = a')  : a' = a'
+<input>:1:143: expected term
+
+{M₀ : Type u_1} [inst : MonoidWithZero M₀] {a : M₀} (h : IsUnit Ring.inverse a) (h_1 : Nontrivial M₀) (h_2 : (subsingleton_or_nontrivial M₀ =: (Subsingleton M₀ : Prop) ∨ (Nontrivial M₀ : Prop)) = (Or.inr h_1 =: (Subsingleton M₀ : Prop) ∨ (Nontrivial M₀ : Prop)))  : Or.inr h_1 = subsingleton_or_nontrivial M₀
+<input>:1:141: expected term
+
+ : ∀ {E : Type u_1} {F : Type u_2} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] [inst_2 : NormedAddCommGroup F] [inst_3 : NormedSpace ℝ F] (self : SchwartzMap E F) , ContDiff ℝ ⊤ SchwartzMap.toFun self
+function expected at
+  ContDiff ℝ ⊤ SchwartzMap.toFun
+term has type
+  Prop ; identifiers [E, u_1, F, u_2, inst, NormedAddCommGroup, E, inst_1, NormedSpace, E, inst_2, NormedAddCommGroup, F, inst_3, NormedSpace, F, self, SchwartzMap, E, F, ContDiff, SchwartzMap.toFun, self] (during elaboration)
+
+ : ∀ (E : Type u_1) (F : Type u_2) [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] [inst_2 : NormedAddCommGroup F] [inst_3 : NormedSpace ℝ F] (self : SchwartzMap E F) , ContDiff ℝ ⊤ self . 1
+function expected at
+  ContDiff ℝ ⊤ ↑self
+term has type
+  Prop ; identifiers [E, u_1, F, u_2, inst, NormedAddCommGroup, E, inst_1, NormedSpace, E, inst_2, NormedAddCommGroup, F, inst_3, NormedSpace, F, self, SchwartzMap, E, F, ContDiff, self] (during elaboration)
+
+{𝕜 : Type u_1} {E : Type u_2} [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] (x : ConvexCone 𝕜 E) (x_1 : E) (x_2 : E)  : ∃ (x_3 : E) , x_2 = 0 ∧ x_3 ∈ x ∧ x_2 + x_3 = x_1 = x_2 = 0 ∧ ∃ (x_3 : E) , x_3 ∈ x ∧ x_2 + x_3 = x_1
+<input>:1:181: expected end of input
+
+{𝕜 : Type u_1} {E : Type u_2} [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] (x : ConvexCone 𝕜 E) (x_1 : E)  : ∃ (a : E) , a ∈ x ∧ a = x_1 = x_1 ∈ x
+<input>:1:149: expected end of input
+
+{J : Type v} [CategoryTheory.SmallCategory J] (F : CategoryTheory.Functor J TypeMax) [CategoryTheory.IsFilteredOrEmpty J] {i : J} {j : J} {xi : CategoryTheory.Functor.toPrefunctor F . obj i} {xj : CategoryTheory.Functor.toPrefunctor F . obj j}  : EqvGen CategoryTheory.Limits.Types.Quot.Rel F {fst := ((i)) , snd := ((xi))} {fst := ((j)) , snd := ((xj))} ↔ EqvGen CategoryTheory.Limits.Types.Quot.Rel F {fst := ((i)) , snd := ((xi))} {fst := ((j)) , snd := ((xj))}
+function expected at
+  F.toPrefunctor
+term has type
+  J ⥤q TypeMax ; identifiers [J, v, CategoryTheory.SmallCategory, J, F, CategoryTheory.Functor, J, TypeMax, CategoryTheory.IsFilteredOrEmpty, J, i, J, j, J, xi, CategoryTheory.Functor.toPrefunctor, F, obj, i, xj, CategoryTheory.Functor.toPrefunctor, F, obj, j, EqvGen, CategoryTheory.Limits.Types.Quot.Rel, F, fst, i, snd, xi, fst, j, snd, xj, EqvGen, CategoryTheory.Limits.Types.Quot.Rel, F, fst, i, snd, xi, fst, j, snd, xj] (during elaboration)
+
+{R : Type u} [CommRing R] [IsBezout R] {x : R} {y : R} {z : R} (hx : z ∣ x) (hy : z ∣ y)  : z ∣ x = z ∣ x
+<input>:1:98: expected end of input
+
+{R : Type u} [CommRing R] [IsBezout R] {x : R} {y : R} {z : R} (hx : z ∣ x) (hy : z ∣ y)  : z ∣ y = z ∣ y
+<input>:1:98: expected end of input
+
+(𝕜 : Type u_3) (E : Type u_2) [OrderedSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E] {ι : Type u_1} (b : (a : ι) → Set E) (p : (a : ι) → Prop) (hbasis : Filter.HasBasis nhds 0 p b) (hconvex : ∀ (i : ι) (a : p i) , Convex 𝕜 b i) (x : E) (i : ι) (hi : fun (x : E) ↦ p x i)  : Convex 𝕜 b i
+invalid universe level, ?u.80758 is not greater than 0 ; identifiers [𝕜, u_3, E, u_2, OrderedSemiring, 𝕜, AddCommGroup, E, Module, 𝕜, E, TopologicalSpace, E, TopologicalAddGroup, E, ι, u_1, b, a, ι, Set, E, p, a, ι, hbasis, Filter.HasBasis, nhds, p, b, hconvex, i, ι, a, p, i, Convex, 𝕜, b, i, x, E, i, ι, hi, x, E, p, x, i, Convex, 𝕜, b, i] (during elaboration)
+
+{α : Type u_1} {β : Type u_2} {s : Set α} {t : Set α} {f : (a : α) → β} (hf : Function.Injective f) (h : f '' s ⊆ f '' t)  : s ⊆ t = s ⊆ t
+<input>:1:131: expected end of input
+
+{α : Type u_1} {β : Type u_2} {s : Set α} {t : Set α} {f : (a : α) → β} (hf : Function.Injective f) (h : f '' s ⊆ f '' t)  : f ⁻¹' f '' s ⊆ t = f ⁻¹' f '' s ⊆ t
+<input>:1:142: expected end of input
+
+(q : ℚ)  : q ≤ ↑ q = q ≤ ↑ q
+<input>:1:19: expected end of input
+
