@@ -113,7 +113,7 @@ def elabThmFromStx (stx : Syntax)(opens: List String := [])
             let expr ← Term.withoutErrToSorry <| 
                 Term.elabType termStx
             Term.synthesizeSyntheticMVarsNoPostponing
-            IO.println s!"{(←PrettyPrinter.delab expr).raw.reprint}"
+            -- IO.println s!"{(←PrettyPrinter.delab expr).raw.reprint}"
             return Except.ok expr
           catch e => 
             return Except.error s!"{← e.toMessageData.toString} ; identifiers {idents termStx} (during elaboration)"
