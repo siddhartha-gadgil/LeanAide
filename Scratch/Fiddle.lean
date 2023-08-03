@@ -14,7 +14,7 @@ def delabView (name: Name) : MetaM String :=
     let info ←  getConstInfo name
     let term := info.value?.get! 
     let stx ←  delab term
-    let fmt ←  formatTerm stx
+    let fmt ←  ppTerm stx
     return fmt.pretty --stx.raw.reprint.get!
 
 def egComp {α β γ α' : Type} (f : α' → β → γ) (g : (a : α) → α') (a : α) (b : β) :=  f (g a) b

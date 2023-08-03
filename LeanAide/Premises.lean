@@ -172,7 +172,6 @@ partial def Lean.Syntax.premiseDataAuxM (context : Array Syntax)(defnName: Name)
     | none =>
         match stx with
         | Syntax.node _ k args => 
-            -- IO.println s!"kind {k}; args {args.map (·.reprint.get!)}}"
             let prevs ← args.mapM (
                 premiseDataAuxM context defnName · none false (maxDepth?.map (· -1)))
             let mut ts: Array (TermData) := #[]

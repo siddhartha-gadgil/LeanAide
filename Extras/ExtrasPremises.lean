@@ -101,7 +101,7 @@ def nameDefView (name: Name) : MetaM String := do
 
 def nameDefCleanView (name: Name) : MetaM String := do
     let stx? ← nameDefSyntax name
-    return ((stx?.get!.purge).reprint.get!)
+    return ((← stx?.get!.purge).reprint.get!)
 
 def nameDefSyntaxVerbose (name: Name) : MetaM <| Option Syntax := do
     let exp? ← nameExpr? name
@@ -185,7 +185,7 @@ def constsData : MetaM ConstsData := do
     let mut theorems := HashMap.empty
     for (c, type) in consts do
         let tstx ← delab type
-        let tstx := tstx.raw.purge
+        let tstx ←  tstx.raw.purge
         if ← Meta.isProp type then
             theorems := theorems.insert c tstx
         else
@@ -259,7 +259,8 @@ partial def Lean.Syntax.termsM (context : Array Syntax)(stx: Syntax)(maxDepth? :
         | Syntax.node _ k args => 
             -- IO.println s!"Node: {k}"
             let prev ← args.mapM (termsM context · (maxDepth?.map (· -1)))
-            let head : TermData := ⟨context, stx.purge, stx.purge.size, 0, false⟩
+            let head : TermData := 
+                ⟨context, ← stx.purge, (← stx.purge).size, 0, false⟩
             if tks.contains k then 
                 return (head) :: prev.toList.join.map (fun s => s.increaseDepth 1)
             else  
@@ -309,7 +310,7 @@ def PremiseData.get(ctx : Array Syntax)(name: Name)(prop pf : Syntax) : MetaM Pr
     let subTerms : List (TermData)  ← Syntax.termsM ctx pf
     let ids : List (Name  × Nat) ← pf.identsM ctx 
     let ids := ids.map <| fun (n, d) => (n.toString, d)
-    return ⟨ctx, some name, name, prop.purge, prop.purge, pf.purge, prop.purge.size, pf.purge.size, subTerms.toArray, subProofs.toArray, ids.toArray⟩
+    return ⟨ctx, some name, name, ← prop.purge, ← prop.purge, ← pf.purge, (← prop.purge).size, (← pf.purge).size, subTerms.toArray, subProofs.toArray, ids.toArray⟩
 
 def viewData (name: Name) : MetaM <| String := do
     let (stx, tstx) ← nameDefTypeSyntax name
@@ -728,7 +729,7 @@ def writePremisesM  : MetaM Nat  := do
                 ("name", toJson defData.name),
                 ("ids", toJson idData),
                 ("is_prop", toJson defData.isProp),
-                ("type", toJson defData.type.purge)
+                ("type", toJson <| ←  defData.type.purge)
             ]
             let l := idData.pretty 10000000
             if l.length < 9000000 then

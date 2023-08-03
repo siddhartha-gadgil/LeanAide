@@ -60,7 +60,8 @@ def mainFileHandles : IO (HashMap (String × String) IO.FS.Handle) := do
 set_option pp.unicode.fun true
 
 /-- Syntax as json -/
-instance : ToJson Syntax := ⟨fun (d: Syntax) ↦ shrink d.reprint.get!.trim⟩
+instance : ToJson Syntax := ⟨fun (d: Syntax) ↦ 
+    shrink d.reprint.get!.trim⟩
 
 /-- Subterms in a premise -/
 structure TermData where
