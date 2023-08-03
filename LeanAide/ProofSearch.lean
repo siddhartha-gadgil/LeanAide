@@ -1,9 +1,10 @@
 import LeanAide.AesopSearch
 import LeanAide.Aides
 import LeanAide.TheoremElab
+import LeanAide.RunAsync
 import Lean
 import Mathlib
-open Lean Meta Elab
+open Lean Meta Elab Parser Tactic
 
 def powerTactics := #["gcongr", "ring", "linarith", "norm_num", "positivity", "polyrith"]
 
@@ -11,7 +12,8 @@ def errLog := IO.FS.Handle.mk (System.mkFilePath ["data",
     s!"elab-errors.log"]) IO.FS.Mode.append
 
 -- should eventually use premises
-def proofSearchM (thm: String) : TermElabM <| Bool × Bool := do
+def proofSearchM (thm: String) : TermElabM <| Bool × Bool := 
+  withoutModifyingState do
   let type? ← elabThm thm 
   let errs ← errLog 
   IO.println "Trying to prove"
@@ -20,12 +22,20 @@ def proofSearchM (thm: String) : TermElabM <| Bool × Bool := do
   IO.println ""
   match type? with
   | Except.ok type => 
-    let goal ←mkFreshExprMVar type
+    let goal ← mkFreshExprMVar type
     let mvarId := goal.mvarId! 
     try 
       let goals ←
-        runAesop 0.5 #[] #[] #[] powerTactics mvarId 
-      return (true, goals.isEmpty)
+        runAesop 0.5 #[] #[] #[] powerTactics mvarId
+      let proved := goals.isEmpty
+      let stx ← `(tacticSeq|aesop?) 
+      if proved then
+        let (pf, _) ← getMsgTacticD stx 
+        IO.println s!"Proof:"
+        IO.println pf
+      else
+        IO.println "Failed"
+      return (true, proved)
     catch _ =>
       return (true, false)
   | Except.error err =>
