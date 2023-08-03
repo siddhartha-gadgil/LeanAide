@@ -23,6 +23,13 @@ def egComp {α β γ α' : Type} (f : α' → β → γ) (g : (a : α) → α') 
 
 #eval delabView `egComp -- this has the error `f g a b` 
 
+def delabSyntax (name: Name) : MetaM Syntax := 
+    do
+    let info ←  getConstInfo name
+    let term := info.value?.get! 
+    PrettyPrinter.delab term
+
+#eval delabSyntax `egComp 
 
 example : ∀ {α : Type u_1} {f : (a : α) → ENNReal} {s : Finset α} (h : Finset.sum s (fun (a : α) ↦ f a) = 1) (h' : ∀ (a : α) (x : ¬ a ∈ s) , f a = 0) {a : α} (ha : ¬ a ∈ s) , f a = 0   := by sorry
 
