@@ -32,8 +32,10 @@ def proofSearchM (thm: String) : TermElabM <| Bool × Bool :=
       if proved then
         let (pfScript, _) ← getMsgTacticD stx 
         IO.println s!"Proof:"
-        let pf ← PrettyPrinter.formatCategory `tacticSeq pfScript 
-        IO.println pf.pretty
+        let tacs := getTactics pfScript  
+        for tac in tacs do
+          let fmt ← PrettyPrinter.formatTactic tac 
+          IO.println fmt.pretty
       else
         IO.println "Failed"
       return (true, proved)
