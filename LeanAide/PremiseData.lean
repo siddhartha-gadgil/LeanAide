@@ -214,7 +214,7 @@ structure CorePropData where
 deriving Repr, ToJson, FromJson, BEq
 
 def CorePropData.ofPropProof (propPf : PropProofData) : CoreM CorePropData := do
-    return ⟨propPf.context.map (fun s => shrink s.reprint.get!.trim),
+    return ⟨← propPf.context.mapM contextToString,
     ← termToString propPf.prop⟩
 
 def CorePropData.thm (data: CorePropData) : String :=
@@ -501,7 +501,7 @@ def IdentData.filter (d: IdentData)(p : String → Bool) : IdentData :=
 def DefData.identData (d: DefData) : CoreM <| List IdentData := do 
     d.premises.mapM (fun p => do
         pure {
-                context:= p.context.map (·.reprint.get!)
+                context:= ← p.context.mapM contextToString
                 type := ← termToString p.type
                 ids := 
                     p.ids.map (·.1) |>.toList.eraseDups.toArray})

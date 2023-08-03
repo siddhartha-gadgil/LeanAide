@@ -282,7 +282,7 @@ def verboseView? (name: Name) : MetaM (Option String) :=
     match term? with
     | some term => 
         let (stx, _) ←  delabCore term {} (delabVerbose)
-        return some <| shrink stx.raw.reprint.get!
+        return some <| shrink (← termToString stx) 
     | none => return none
 
 
