@@ -92,14 +92,17 @@ def main (_: List String) : IO Unit := do
   let premiseless := premiseless.eraseIdx 0 -- temporary hack
   let concurrency := (← threadNum) * 3 / 4
   let batches := premiseless.batches' concurrency
-  IO.println "First batch trial"
-  let core := batchProofSearchCore batches[0]!
-  let triples ← core.run' coreContext {env := env} |>.runToIO'
-  for (thm, el, pr) in triples do
-    IO.println s!"{thm}\nelaborated: {el}, proved: {pr}"
-  IO.println s!"Total: {triples.size}"
-  let elaborated := triples.filter <| fun (_, el, _) => el
-  let proved := elaborated.filter <| fun (_, _, pr) => pr
-  IO.println s!"Elaborated: {elaborated.size}, proved: {proved.size}"
-  -- IO.println "starting serial"
-  -- serial testLines
+  let batches' := batches.zip (Array.range batches.size)
+  let tasks ← batches'.mapM fun (batch, k) => do
+     let core := batchProofSearchCore batch
+     let t ← core.run' coreContext {env := env} |>.spawnToIO
+     pure (t, k)
+  IO.println "Spawned tasks"
+  let mut count := 0
+  for (task, k) in tasks do
+    count := count + 1
+    IO.println s!"Waiting for task {k}: {count} of {tasks.size}"
+    let triples ← task.get
+    let elaborated := triples.filter <| fun (_, el, _) => el
+    let proved := elaborated.filter <| fun (_, _, pr) => pr
+    IO.println s!"Elaborated: {elaborated.size}, proved: {proved.size}"
