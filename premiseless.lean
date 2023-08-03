@@ -94,8 +94,12 @@ def main (_: List String) : IO Unit := do
   let batches := premiseless.batches' concurrency
   IO.println "First batch trial"
   let core := batchProofSearchCore batches[0]!
-  let triple ← core.run' coreContext {env := env} |>.runToIO'
-  for (thm, el, pr) in triple do
+  let triples ← core.run' coreContext {env := env} |>.runToIO'
+  for (thm, el, pr) in triples do
     IO.println s!"{thm}\nelaborated: {el}, proved: {pr}"
-  IO.println "starting serial"
+  IO.println "Total: {triples.size}"
+  let elaborated := triples.filter <| fun (_, el, _) => el
+  let proved := elaborated.filter <| fun (_, _, pr) => pr
+  IO.println s!"Elaborated: {elaborated.size}, proved: {proved.size}"
+  -- IO.println "starting serial"
   -- serial testLines
