@@ -97,7 +97,7 @@ def main (_: List String) : IO Unit := do
   let triples ← core.run' coreContext {env := env} |>.runToIO'
   for (thm, el, pr) in triples do
     IO.println s!"{thm}\nelaborated: {el}, proved: {pr}"
-  IO.println "Total: {triples.size}"
+  IO.println s!"Total: {triples.size}"
   let elaborated := triples.filter <| fun (_, el, _) => el
   let proved := elaborated.filter <| fun (_, _, pr) => pr
   IO.println s!"Elaborated: {elaborated.size}, proved: {proved.size}"
