@@ -98,4 +98,4 @@ def main (_: List String) : IO Unit := do
   for (thm, el, pr) in triple do
     IO.println s!"{thm}\nelaborated: {el}, proved: {pr}"
   IO.println "starting serial"
-  serial testLines
+  -- serial testLines
