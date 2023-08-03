@@ -16,10 +16,10 @@ def proofSearchM (thm: String) : TermElabM <| Bool × Bool :=
   withoutModifyingState do
   let type? ← elabThm thm 
   let errs ← errLog 
-  IO.println "Trying to prove"
-  IO.println thm
-  IO.println type?
-  IO.println ""
+  -- IO.println "Trying to prove"
+  -- IO.println thm
+  -- IO.println type?
+  -- IO.println ""
   match type? with
   | Except.ok type => 
     let goal ← mkFreshExprMVar type
@@ -28,16 +28,16 @@ def proofSearchM (thm: String) : TermElabM <| Bool × Bool :=
       let goals ←
         runAesop 0.5 #[] #[] #[] powerTactics mvarId
       let proved := goals.isEmpty
-      let stx ← `(tacticSeq|aesop?) 
-      if proved then
-        let (pfScript, _) ← getMsgTacticD stx 
-        IO.println s!"Proof:"
-        let tacs := getTactics pfScript  
-        for tac in tacs do
-          let fmt ← PrettyPrinter.formatTactic tac 
-          IO.println fmt.pretty
-      else
-        IO.println "Failed"
+      -- let stx ← `(tacticSeq|aesop?) 
+      -- if proved then
+      --   let (pfScript, _) ← getMsgTacticD stx 
+      --   IO.println s!"Proof:"
+      --   let tacs := getTactics pfScript  
+      --   for tac in tacs do
+      --     let fmt ← PrettyPrinter.formatTactic tac 
+      --     IO.println fmt.pretty
+      -- else
+      --   IO.println "Failed"
       return (true, proved)
     catch _ =>
       return (true, false)
