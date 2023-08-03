@@ -119,7 +119,10 @@ def contextToString : Syntax → CoreM String := fun d => do
         return s!"⦃_ : {type}⦄"
 
 
-    | _ => throwError "context syntax must be a let or function binder : got {d.reprint}"
+    | stx => 
+        let fallback := stx.reprint.get!
+        IO.println s!"contextToString fallback to: {stx}"
+        return fallback
 
 instance : ToJsonM (ContextSyn) := ⟨fun (ds: ContextSyn) => do
 let s : Array Json ← ds.mapM fun d => do
