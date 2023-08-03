@@ -92,17 +92,35 @@ def main (_: List String) : IO Unit := do
   let premiseless := premiseless.eraseIdx 0 -- temporary hack
   let concurrency := (← threadNum) * 3 / 4
   let batches := premiseless.batches' concurrency
-  let batches' := batches.zip (Array.range batches.size)
-  let tasks ← batches'.mapM fun (batch, k) => do
-     let core := batchProofSearchCore batch
-     let t ← core.run' coreContext {env := env} |>.spawnToIO
-     pure (t, k)
-  IO.println "Spawned tasks"
   let mut count := 0
-  for (task, k) in tasks do
-    count := count + 1
-    IO.println s!"Waiting for task {k}: {count} of {tasks.size}"
-    let triples ← task.get
+  let mut total := 0
+  let mut elaboratedNum := 0
+  let mut provedNum := 0
+  for batch in batches do
+    IO.println s!"Processing batch {count} of {batches.size}"
+    let core := batchProofSearchCore batch
+    let triples ← 
+      core.run' coreContext {env := env} |>.runToIO'
     let elaborated := triples.filter <| fun (_, el, _) => el
     let proved := elaborated.filter <| fun (_, _, pr) => pr
-    IO.println s!"Elaborated: {elaborated.size}, proved: {proved.size}"
+    IO.println s!"Elaborated: {elaborated.size}, proved: {proved.size} of {batch.size}"
+    elaboratedNum := elaboratedNum + elaborated.size
+    provedNum := provedNum + proved.size
+    total := total + batch.size
+    count := count + 1
+    IO.println s!"Total elaborated: {elaboratedNum}, proved: {provedNum} of {total}"
+    IO.println "-------------------"
+  -- let batches' := batches.zip (Array.range batches.size)
+  -- let tasks ← batches'.mapM fun (batch, k) => do
+  --    let core := batchProofSearchCore batch
+  --    let t ← core.run' coreContext {env := env} |>.spawnToIO
+  --    pure (t, k)
+  -- IO.println "Spawned tasks"
+  -- let mut count := 0
+  -- for (task, k) in tasks do
+  --   count := count + 1
+  --   IO.println s!"Waiting for task {k}: {count} of {tasks.size}"
+  --   let triples ← task.get
+  --   let elaborated := triples.filter <| fun (_, el, _) => el
+  --   let proved := elaborated.filter <| fun (_, _, pr) => pr
+  --   IO.println s!"Elaborated: {elaborated.size}, proved: {proved.size}"
