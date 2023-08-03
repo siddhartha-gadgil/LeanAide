@@ -79,8 +79,8 @@ def serial (testLines : Array String) : IO Unit := do
 
 
 def main (_: List String) : IO Unit := do
-  let env ← environment
   initSearchPath (← Lean.findSysroot) initFiles
+  let env ← environment
   let testLines := 
     (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "core", "test.jsonl"]))
   IO.println "filtering"
