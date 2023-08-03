@@ -14,7 +14,7 @@ def coreContext : Core.Context :=
     }   
 
 def filterPremiseless (init : Array String) : Array String :=
-  init.filter <| fun l =>
+  init.filterMap <| fun l =>
     let js? := Lean.Json.parse l |>.toOption
     let premise? : Option CorePremiseData := 
       js?.bind <| fun js => (fromJson? js).toOption
@@ -24,9 +24,12 @@ def filterPremiseless (init : Array String) : Array String :=
       let check := ids.all (
         fun n ↦
           (``Eq).isPrefixOf n || (``Iff).isPrefixOf n)
-      check && corePremise.lemmas.isEmpty &&
-        corePremise.terms.isEmpty 
-    | none => false
+      if check && corePremise.lemmas.isEmpty &&
+        corePremise.terms.isEmpty
+      then 
+        some corePremise.thm
+      else none 
+    | none => none
 
 
 def serial (testLines : Array String) : IO Unit := do
