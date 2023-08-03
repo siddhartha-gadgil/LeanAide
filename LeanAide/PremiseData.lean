@@ -96,10 +96,10 @@ def contextToString : Syntax → CoreM String := fun d => do
     | `(funImplicitBinder|{$n:ident : $type:term}) =>
         let type := (← ppTerm type).pretty.trim
         return "{" ++ s!"{n.getId.toString} : {type}" ++ "}"
-    | `([$n:ident : $type:term]) =>
+    | `(instBinder|[$n:ident : $type:term]) =>
         let type := (← ppTerm type).pretty.trim
         return s!"[{n.getId.toString} : {type}]"
-    | `([$type:term]) =>
+    | `(instBinder|[$type:term]) =>
         let type := (← ppTerm type).pretty.trim
         return s!"[{type}]"
     | `(funStrictImplicitBinder|⦃$n:ident : $type:term⦄) =>
@@ -111,9 +111,6 @@ def contextToString : Syntax → CoreM String := fun d => do
     | `(funImplicitBinder|{_ : $type:term}) =>
         let type := (← ppTerm type).pretty.trim
         return "{" ++ s!"_ : {type}" ++ "}"
-    | `([_ : $type:term]) =>
-        let type := (← ppTerm type).pretty.trim
-        return s!"[_ : {type}]"
     | `(funStrictImplicitBinder|⦃_ : $type:term⦄) =>
         let type := (← ppTerm type).pretty.trim
         return s!"⦃_ : {type}⦄"
@@ -121,7 +118,7 @@ def contextToString : Syntax → CoreM String := fun d => do
 
     | stx => 
         let fallback := stx.reprint.get!
-        IO.println s!"contextToString fallback to: {stx}"
+        IO.println s!"contextToString fallback to: {fallback} for {stx}"
         return fallback
 
 instance : ToJsonM (ContextSyn) := ⟨fun (ds: ContextSyn) => do
