@@ -79,14 +79,23 @@ def serial (testLines : Array String) : IO Unit := do
 
 
 def main (_: List String) : IO Unit := do
+  let env ← environment
   initSearchPath (← Lean.findSysroot) initFiles
   let testLines := 
     (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "core", "test.jsonl"]))
   IO.println "filtering"
   let premiseless := filterPremiseless testLines
   IO.println s!"filtered: {premiseless.size} premiseless of {testLines.size} total"
+  let premiseless := premiseless.eraseIdx 0 -- temporary hack
+  let concurrency := (← threadNum) * 3 / 4
+  let batches := premiseless.batches' concurrency
+  IO.println "First batch trial"
+  let core := batchProofSearchCore batches[0]!
+  let triple ← core.run' coreContext {env := env} |>.runToIO'
+  for (thm, el, pr) in triple do
+    IO.println s!"{thm}\nelaborated: {el}, proved: {pr}"
   IO.println "starting serial"
   serial testLines
 
 
-  
+#check Array.eraseIdx
