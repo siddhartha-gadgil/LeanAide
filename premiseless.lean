@@ -90,9 +90,9 @@ def main (_: List String) : IO Unit := do
   let concurrency := (← threadNum) * 3 / 4
   let batches := premiseless.batches' concurrency
   IO.println "First batch trial"
-  -- let core := batchProofSearchCore batches[0]!
-  -- let triple ← core.run' coreContext {env := env} |>.runToIO'
-  -- for (thm, el, pr) in triple do
-  --   IO.println s!"{thm}\nelaborated: {el}, proved: {pr}"
+  let core := batchProofSearchCore batches[0]!
+  let triple ← core.run' coreContext {env := env} |>.runToIO'
+  for (thm, el, pr) in triple do
+    IO.println s!"{thm}\nelaborated: {el}, proved: {pr}"
   IO.println "starting serial"
   serial testLines
