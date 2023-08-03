@@ -196,6 +196,8 @@ partial def Lean.Syntax.premiseDataAuxM (context : ContextSyn)(defnName: Name)(s
         match stx.raw with
         | Syntax.node _ k args => 
             let prevs ← args.mapM (fun arg =>
+                match arg with
+                | `($arg:term) =>
                 premiseDataAuxM context defnName (TSyntax.mk arg) none false (maxDepth?.map (· -1)))
             let mut ts: Array (TermData) := #[]
             let mut pfs: Array (PropProofData) := #[]

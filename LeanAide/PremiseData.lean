@@ -83,15 +83,42 @@ instance : ToJsonM Syntax.Term := ⟨fun (d: Syntax.Term) ↦ do
 
 abbrev ContextSyn := Array Syntax
 
+open Lean.Parser.Term
 def contextToString : Syntax → CoreM String := fun d => do
     match d with
-    | `(Lean.Parser.Term.letDecl|$n:ident : $type := $val) => 
+    | `(letDecl|$n:ident : $type := $val) => 
         let type := (← ppTerm type).pretty.trim
         let val := (← ppTerm val).pretty.trim
         return s!"({n.getId.toString} : {type} := {val})" 
-    | `(Lean.Parser.Term.funBinder|($n:ident : $type:term)) =>
+    | `(funBinder|($n:ident : $type:term)) =>
         let type := (← ppTerm type).pretty.trim
         return s!"({n.getId.toString} : {type})"
+    | `(funImplicitBinder|{$n:ident : $type:term}) =>
+        let type := (← ppTerm type).pretty.trim
+        return "{" ++ s!"{n.getId.toString} : {type}" ++ "}"
+    | `([$n:ident : $type:term]) =>
+        let type := (← ppTerm type).pretty.trim
+        return s!"[{n.getId.toString} : {type}]"
+    | `([$type:term]) =>
+        let type := (← ppTerm type).pretty.trim
+        return s!"[{type}]"
+    | `(funStrictImplicitBinder|⦃$n:ident : $type:term⦄) =>
+        let type := (← ppTerm type).pretty.trim
+        return s!"⦃{n.getId.toString} : {type}⦄"
+    | `(funBinder|(_ : $type:term)) =>
+        let type := (← ppTerm type).pretty.trim
+        return s!"(_ : {type})"
+    | `(funImplicitBinder|{_ : $type:term}) =>
+        let type := (← ppTerm type).pretty.trim
+        return "{" ++ s!"_ : {type}" ++ "}"
+    | `([_ : $type:term]) =>
+        let type := (← ppTerm type).pretty.trim
+        return s!"[_ : {type}]"
+    | `(funStrictImplicitBinder|⦃_ : $type:term⦄) =>
+        let type := (← ppTerm type).pretty.trim
+        return s!"⦃_ : {type}⦄"
+
+
     | _ => throwError "context syntax must be a let or function binder : got {d.reprint}"
 
 instance : ToJsonM (ContextSyn) := ⟨fun (ds: ContextSyn) => do
