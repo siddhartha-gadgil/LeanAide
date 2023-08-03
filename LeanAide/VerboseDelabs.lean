@@ -613,23 +613,24 @@ def groupedNames (nd : Array <| Name × Nat) : NameGroups :=
 Matching and auxiliary functions for verbose delaborators.
 -/
 
-def lambdaStx?(stx : Syntax) : MetaM <| Option (Syntax × Array Syntax) := do
+def lambdaStx?(stx : Syntax) : MetaM <| Option (Syntax.Term × Array Syntax) := do
   match stx with
-  | `(fun $args:funBinder* ↦ $body) =>
+  | `(fun $args:funBinder* ↦ $body:term) =>
     return some (body, args)
-  | `((fun $args:funBinder* ↦ $body)) =>
+  | `((fun $args:funBinder* ↦ $body:term)) =>
     return some (body, args)
   | _ => return none
 
-def appStx?(stx : Syntax) : MetaM <| Option (Syntax × Array Syntax) := do
+def appStx?(stx : Syntax) : MetaM <| Option (Syntax.Term × Array Syntax.Term) := do
   match stx with
   | `($f:term $args:term*) =>
     return some (f, args)
   | _ => return none
 
-def proofWithProp? (stx : Syntax) : MetaM <| Option (Syntax × Syntax) := do
+def proofWithProp? (stx : Syntax) : 
+  MetaM <| Option (Syntax.Term × Syntax.Term) := do
   match stx with
-  | `(($stx =: $typeStx)) =>    
+  | `(($stx:term =: $typeStx:term)) =>    
     return some (stx, typeStx)
   | _ => return none
 
@@ -641,9 +642,9 @@ match stx with
 | `(funBinder|⦃$n:ident : $_⦄) => some n.getId
 | _ => none
 
-def namedArgument? (stx : Syntax) : MetaM <| Option (Syntax × Syntax) := do
+def namedArgument? (stx : Syntax) : MetaM <| Option (Syntax.Term × Syntax) := do
   match stx with
-  | `(namedArgument|($n:ident := $stx)) =>    
+  | `(namedArgument|($n:ident := $stx:term)) =>    
     return some (stx, n)
   | _ => return none
 
@@ -655,7 +656,7 @@ def letStx? (stx: Syntax) : MetaM <| Option (Ident × Term × Term × Term) := d
     return some (n, type, val, body)
   | _ => return none
 
-def wrappedProp? (stx : Syntax) : MetaM <| Option Syntax := do
+def wrappedProp? (stx : Syntax.Term) : MetaM <| Option Syntax.Term := do
   match stx with
   | `(($stx:term : Prop)) =>    
     return some stx
