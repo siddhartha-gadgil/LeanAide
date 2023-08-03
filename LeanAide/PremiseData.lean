@@ -59,18 +59,68 @@ def mainFileHandles : IO (HashMap (String × String) IO.FS.Handle) := do
 
 set_option pp.unicode.fun true
 
+class ToJsonM (α : Type u) where
+  toJsonM : α → CoreM Json
+
+instance (α : Type u) [ToJson α] : ToJsonM α where
+  toJsonM := pure ∘ toJson
+
+export ToJsonM (toJsonM)
+
+instance [ToJsonM α] : ToJsonM (Array α) where
+  toJsonM := fun arr => do
+    let as : Array Json ←  arr.mapM fun a => toJsonM a
+    return Json.arr as
+
+def termToString : Syntax.Term → CoreM String :=
+    fun t => do
+        let stx ← ppTerm t
+        return stx.pretty.trim
+
 /-- Syntax as json -/
-instance : ToJson Syntax := ⟨fun (d: Syntax) ↦ 
-    shrink d.reprint.get!.trim⟩
+instance : ToJsonM Syntax.Term := ⟨fun (d: Syntax.Term) ↦ do 
+    termToString d⟩
+
+abbrev ContextSyn := Array Syntax
+
+def contextToString : Syntax → CoreM String := fun d => do
+    match d with
+    | `(Lean.Parser.Term.letDecl|$n:ident : $type := $val) => 
+        let type := (← ppTerm type).pretty.trim
+        let val := (← ppTerm val).pretty.trim
+        return s!"({n.getId.toString} : {type} := {val})" 
+    | `(Lean.Parser.Term.funBinder|($n:ident : $type:term)) =>
+        let type := (← ppTerm type).pretty.trim
+        return s!"({n.getId.toString} : {type})"
+    | _ => throwError "context syntax must be a let or function binder : got {d.reprint}"
+
+instance : ToJsonM (ContextSyn) := ⟨fun (ds: ContextSyn) => do
+let s : Array Json ← ds.mapM fun d => do
+    pure <| toJson (← contextToString d)
+pure <| toJson s⟩
+
+instance : ToJsonM Nat := inferInstance
+instance : ToJsonM Bool := inferInstance
+instance : ToJsonM String := inferInstance
 
 /-- Subterms in a premise -/
 structure TermData where
-    context : Array Syntax
-    value : Syntax
+    context : ContextSyn
+    value : Syntax.Term
     size : Nat
     depth: Nat
     isProp: Bool
-deriving Repr, ToJson, BEq
+deriving Repr, BEq
+
+instance : ToJsonM TermData :=
+⟨fun (data: TermData) => do
+    return Json.mkObj ([
+        ("context", ← toJsonM data.context),
+        ("value", ← toJsonM data.value),
+        ("size", toJson data.size),
+        ("depth", toJson data.depth),
+        ("isProp", toJson data.isProp) 
+        ])⟩
 
 /-- Increase depth of a subterm (for recursion) -/
 def TermData.increaseDepth (d: Nat) : TermData → TermData :=
@@ -79,13 +129,24 @@ fun data ↦
 
 /-- Lemma data with proofs -/
 structure PropProofData where
-    context : Array Syntax
-    prop : Syntax
-    proof: Syntax
+    context : ContextSyn
+    prop : Syntax.Term
+    proof: Syntax.Term
     propSize: Nat 
     proofSize: Nat
     depth: Nat
-deriving Repr, ToJson, BEq
+deriving Repr, BEq
+
+instance : ToJsonM PropProofData :=
+⟨fun (data: PropProofData) => do
+    return Json.mkObj ([
+        ("context", ← toJsonM data.context),
+        ("prop", ← toJsonM data.prop),
+        ("proof", ← toJsonM data.proof),
+        ("propSize", toJson data.propSize),
+        ("proofSize", toJson data.proofSize),
+        ("depth", toJson data.depth) 
+        ])⟩
 
 /-- Increase depth for a lemma (for recursion) -/
 def PropProofData.increaseDepth (d: Nat) : PropProofData → PropProofData :=
@@ -94,21 +155,37 @@ fun data ↦
 
 /-- Full premise data for a proposition -/        
 structure PremiseData  where 
- context : (Array Syntax) -- variables, types, binders
+ context : ContextSyn -- variables, types, binders
  name? :       Option Name  -- name
  defnName: Name -- name of definition from which it arose
- type :       Syntax  -- proposition
- typeGroup : Syntax  -- proposition group
- proof: Syntax  -- proof
+ type :       Syntax.Term  -- proposition
+ typeGroup : Syntax.Term  -- proposition group
+ proof: Syntax.Term  -- proof
  typeSize : Nat
  proofSize : Nat
  terms :       Array (TermData)  -- instantiations
  propProofs :       Array (PropProofData)  -- sub-proofs
  ids :       Array (String ×  Nat)  -- proof identifiers used
- deriving Repr, ToJson, BEq
+ deriving Repr, BEq
 
-def PremiseData.writeFull (data: PremiseData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
-    let l := (toJson data).pretty 10000000
+instance : ToJsonM PremiseData :=
+⟨fun (data: PremiseData) => do
+    return Json.mkObj ([
+        ("context", ← toJsonM data.context),
+        ("name", toJson data.name?),
+        ("defnName", toJson data.defnName.toString),
+        ("type", ← toJsonM data.type),
+        ("typeGroup", ← toJsonM data.typeGroup),
+        ("proof", ← toJsonM data.proof),
+        ("typeSize", toJson data.typeSize),
+        ("proofSize", toJson data.proofSize),
+        ("terms", ← toJsonM data.terms),
+        ("propProofs", ← toJsonM data.propProofs),
+        ("ids", ← toJsonM data.ids)
+        ])⟩
+
+def PremiseData.writeFull (data: PremiseData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : CoreM Unit := do
+    let l := (← toJsonM data).pretty 10000000
     -- IO.println s!"Handles:  {handles.toList.map (fun (k, _) => k)}"
     let key := ("full", group) 
     -- IO.println s!"Key: {key}, contained in handles: {handles.contains key}"
@@ -136,9 +213,9 @@ structure CorePropData where
     prop : String
 deriving Repr, ToJson, FromJson, BEq
 
-def CorePropData.ofPropProof (propPf : PropProofData) : CorePropData :=
-    ⟨propPf.context.map (fun s => shrink s.reprint.get!.trim),
-    shrink propPf.prop.reprint.get!.trim⟩
+def CorePropData.ofPropProof (propPf : PropProofData) : CoreM CorePropData := do
+    return ⟨propPf.context.map (fun s => shrink s.reprint.get!.trim),
+    ← termToString propPf.prop⟩
 
 def CorePropData.thm (data: CorePropData) : String :=
      data.context.foldr (fun s c => s ++ " " ++ c) s!" : {data.prop}"
@@ -153,16 +230,16 @@ structure CorePremiseDataDirect where
     lemmas : Array CorePropData 
 deriving Repr, ToJson, FromJson, BEq
 
-def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CorePremiseDataDirect := 
-    ⟨pd.context.map (fun s => shrink s.reprint.get!.trim), 
+def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CoreM CorePremiseDataDirect := do 
+return ⟨← pd.context.mapM contextToString, 
     pd.name?,
-    shrink pd.type.reprint.get!.trim,
-    shrink pd.typeGroup.reprint.get!.trim,
+    ← termToString pd.type,
+    ← termToString  pd.typeGroup,
     pd.ids.map (fun (n, _) => shrink n), 
-    pd.terms.toList.map (fun td => 
-       ⟨td.context.map (fun s => shrink s.reprint.get!.trim),
-       shrink td.value.reprint.get!.trim, td.isProp⟩) |>.eraseDups, 
-    pd.propProofs.map CorePropData.ofPropProof⟩
+    (← pd.terms.toList.mapM (fun td => do 
+       pure ⟨← td.context.mapM contextToString,
+       ← termToString td.value, td.isProp⟩)) |>.eraseDups, 
+    ← pd.propProofs.mapM CorePropData.ofPropProof⟩
 
 structure CorePremiseData extends CorePremiseDataDirect where
     namedLemmas : Array String
@@ -199,8 +276,8 @@ def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap String String) 
         fun id =>  getDefn? id propMap)
     }
 
-def fromPremiseData (pd: PremiseData)(propMap : HashMap String String) : MetaM CorePremiseData := 
-    CorePremiseData.fromDirect (CorePremiseDataDirect.fromPremiseData pd) propMap
+def fromPremiseData (pd: PremiseData)(propMap : HashMap String String) : MetaM CorePremiseData := do
+    CorePremiseData.fromDirect (← CorePremiseDataDirect.fromPremiseData pd) propMap
 
 
 def write (data: CorePremiseData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
@@ -262,13 +339,13 @@ partial def Lean.Syntax.size (stx: Syntax) : Nat :=
 
 structure DefData where
     name : Name
-    type : Syntax
-    value : Syntax
+    type : Syntax.Term
+    value : Syntax.Term
     isProp : Bool
     typeDepth : Nat
     valueDepth : Nat
     premises : List PremiseData -- empty if depth exceeds bound
-    deriving Inhabited, ToJson, Repr
+    deriving Inhabited,  Repr
 
 structure IdentData where
     context : Array String
@@ -421,10 +498,10 @@ end TermPair
 def IdentData.filter (d: IdentData)(p : String → Bool) : IdentData := 
     {context:= d.context, type := d.type, ids := d.ids.filter p}
 
-def DefData.identData (d: DefData) : List IdentData := 
-    d.premises.map (fun p => 
-        {
+def DefData.identData (d: DefData) : CoreM <| List IdentData := do 
+    d.premises.mapM (fun p => do
+        pure {
                 context:= p.context.map (·.reprint.get!)
-                type := p.type.reprint.get!
+                type := ← termToString p.type
                 ids := 
                     p.ids.map (·.1) |>.toList.eraseDups.toArray})
