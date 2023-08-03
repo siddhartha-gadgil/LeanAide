@@ -13,11 +13,24 @@ def coreContext : Core.Context :=
   {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]
     }   
 
-def main (_: List String) : IO Unit := do
-  initSearchPath (← Lean.findSysroot) initFiles
+def filterPremiseless (init : Array String) : Array String :=
+  init.filter <| fun l =>
+    let js? := Lean.Json.parse l |>.toOption
+    let premise? : Option CorePremiseData := 
+      js?.bind <| fun js => (fromJson? js).toOption
+    match premise? with
+    | some corePremise =>
+      let ids := corePremise.ids.map (·.toName)
+      let check := ids.all (
+        fun n ↦
+          (``Eq).isPrefixOf n || (``Iff).isPrefixOf n)
+      check && corePremise.lemmas.isEmpty &&
+        corePremise.terms.isEmpty 
+    | none => false
+
+
+def serial (testLines : Array String) : IO Unit := do
   let env ← environment
-  let testLines := 
-    (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "core", "test.jsonl"]))
   let mut count := 0
   let mut premiselessCount := 0
   let mut provedCount := 0
@@ -63,5 +76,17 @@ def main (_: List String) : IO Unit := do
           
     | none => pure ()
   IO.println s!"{count} processed, {premiselessCount} premiseless, {provedCount} proved, {elaboratedCount} elaborated"
+
+
+def main (_: List String) : IO Unit := do
+  initSearchPath (← Lean.findSysroot) initFiles
+  let testLines := 
+    (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "core", "test.jsonl"]))
+  IO.println "filtering"
+  let premiseless := filterPremiseless testLines
+  IO.println s!"filtered: {premiseless.size} premiseless of {testLines.size} total"
+  IO.println "starting serial"
+  serial testLines
+
 
   

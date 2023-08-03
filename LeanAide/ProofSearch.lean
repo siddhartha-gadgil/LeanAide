@@ -47,6 +47,14 @@ def proofSearchM (thm: String) : TermElabM <| Bool × Bool :=
     errs.putStrLn ""
     return (false, false)
 
+def batchProofSearchM (thms: List String) : TermElabM <| List <| String × Bool × Bool := 
+  thms.mapM fun thm => do
+    let pair ← proofSearchM thm
+    let (elaborated, proved) := pair
+    return (thm, elaborated, proved)
+
 def proofSearchCore (thm: String) : CoreM <| Bool × Bool  := 
   (proofSearchM thm).run'.run'
 
+def batchProofSearchCore (thms: List String) : CoreM <| List <| String × Bool × Bool := 
+  (batchProofSearchM thms).run'.run'
