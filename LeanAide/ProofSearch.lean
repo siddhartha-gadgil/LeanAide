@@ -6,7 +6,7 @@ import Lean
 import Mathlib
 open Lean Meta Elab Parser Tactic Core
 
-def powerTactics := #["gcongr", "ring", "linarith", "norm_num", "positivity", "polyrith"]
+def powerTactics := #["gcongr", "ring", "linarith", "norm_num", "positivity"]
 
 def errLog := IO.FS.Handle.mk (System.mkFilePath ["data",
     s!"elab-errors.log"]) IO.FS.Mode.append
