@@ -156,6 +156,11 @@ partial def Lean.Syntax.premiseDataAuxM (context : ContextSyn)(defnName: Name)(s
         let (ts, pfs, ids, ps) := prev
         let prop ← purgeTerm prop
         let proof ←  purgeTerm proof
+        let newPropHead :=
+            match propHead? with
+            | some p => p
+            | none => prop
+
         let newPfs :=
             if propHead?.isSome then -- exclude lemma if in prior group
                 pfs
