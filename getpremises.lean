@@ -12,11 +12,17 @@ def init : IO Unit := do
 
 def environment : IO Environment := do
   importModules [{module := `Mathlib},
-    {module:= `LeanAide.TheoremElab},
-    
+    {module:= `LeanAide.TheoremElab},    
     {module:= `LeanAide.VerboseDelabs},
     {module:= `LeanAide.Premises},
     {module := `Mathlib}] {}
+
+def environment' : IO Environment := do
+  importModules [{module := `Mathlib},
+    {module:= `LeanAide.TheoremElab},    
+    {module:= `LeanAide.ConstDeps},
+    {module := `Mathlib}] {}
+
 
 def coreContext : Core.Context := {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]
     }   
@@ -24,8 +30,9 @@ def coreContext : Core.Context := {fileName := "", fileMap := ⟨"", #[], #[]⟩
 def main (_: List String) : IO Unit := do
   init
   let env ← environment
+  let env' ← environment'
   let propMap ←  
-    propMapCore.run' coreContext {env := env} |>.runToIO'
+    propMapCore.run' coreContext {env := env'} |>.runToIO'
   IO.println s!"Obtained prop-map: {propMap.size} entries"
   let propNames := propMap.toArray.map (·.1)
   let groupedNames ←  splitData propNames 

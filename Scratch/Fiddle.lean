@@ -7,6 +7,13 @@ import LeanAide.Premises
 open Lean Meta Elab Parser Json.Parser
 open Mathlib.Prelude.Rename
 
+#check DirectSum.lie_of
+
+def purgeFailEg : MetaM DefData := do
+  pure (← DefData.ofNameM? `purgeFailEg).get!
+
+#eval purgeFailEg
+
 open PrettyPrinter in
 
 def delabView (name: Name) : MetaM String := 
