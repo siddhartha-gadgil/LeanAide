@@ -10,7 +10,7 @@ def environment : IO Environment := do
     {module := `Mathlib}] {}
 
 def coreContext : Core.Context := 
-  {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 4000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]
+  {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 8000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]
     }   
 
 def filterPremiseless (init : Array String) : Array String :=
@@ -57,25 +57,23 @@ def serial (testLines : Array String) : IO Unit := do
         IO.println s!"{corePremise.thm} has no lemmas, terms, true premises"
         IO.println s!"{corePremise.ids} are the ids"
         IO.println "launching proof search"
-        if true then
-          let core := proofSearchCore corePremise.thm
-          let (elaborated, proved) ← 
-            core.run' coreContext {env := env} |>.runToIO'
-          IO.println "finished proof search"
-          if elaborated then
-            elaboratedCount := elaboratedCount + 1
-            IO.println s!"Result elaborated"
-          else
-            IO.println s!"Result not elaborated"
-          if proved then
-            provedCount := provedCount + 1
-            IO.println s!"Result proved"
-          else
-            IO.println s!"Result not proved"
-          IO.println s!"{count} processed, {premiselessCount} premiseless,
-          {provedCount} proved, {elaboratedCount} elaborated"
-          IO.println "-------------------"
-        else IO.println s!"skipping {corePremise.thm}"
+        let core := proofSearchCore corePremise.thm
+        let (elaborated, proved) ← 
+          core.run' coreContext {env := env} |>.runToIO'
+        IO.println "finished proof search"
+        if elaborated then
+          elaboratedCount := elaboratedCount + 1
+          IO.println s!"Result elaborated"
+        else
+          IO.println s!"Result not elaborated"
+        if proved then
+          provedCount := provedCount + 1
+          IO.println s!"Result proved"
+        else
+          IO.println s!"Result not proved"
+        IO.println s!"{count} processed, {premiselessCount} premiseless,
+        {provedCount} proved, {elaboratedCount} elaborated"
+        IO.println "-------------------"
           
     | none => pure ()
   IO.println s!"{count} processed, {premiselessCount} premiseless, {provedCount} proved, {elaboratedCount} elaborated"
