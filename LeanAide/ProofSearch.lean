@@ -40,11 +40,8 @@ def getMsgTactic?  : CoreM <| Option <| (TSyntax ``tacticSeq) × Format := do
 def proofSearchM (thm: String) : TermElabM <| Bool × Bool := 
   withoutModifyingState do
   let type? ← elabThm thm 
+  IO.println s!"Elaborated"
   let errs ← errLog 
-  IO.println "Trying to prove"
-  IO.println thm
-  -- IO.println type?
-  -- IO.println ""
   match type? with
   | Except.ok type => 
     let goal ← mkFreshExprMVar type
