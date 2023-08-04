@@ -22,6 +22,8 @@ macro n:term "-₀" m:term : term => do
 
 #eval 5 -₀ 3 -- 2
 
+#check Array.zip
+
 elab(priority:=high) n:term "-" m:term : term => 
   Term.withoutErrToSorry do
   try

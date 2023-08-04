@@ -5,6 +5,7 @@ import LeanAide.TheoremElab
 import LeanAide.Lean4Names
 import LeanAide.TheoremEquality
 import LeanAide.IP
+import Mathlib.Util.Pickle
 
 import LeanCodePrompts.EgsTranslate
 
