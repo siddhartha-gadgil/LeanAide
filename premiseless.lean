@@ -83,9 +83,11 @@ def serial (testLines : Array String) : IO Unit := do
 
 def main (_: List String) : IO Unit := do
   initSearchPath (← Lean.findSysroot) initFiles
-  let env ← environment
+  -- let env ← environment
   let testLines := 
     (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "core", "test.jsonl"]))
+  serial testLines
+
   IO.println "filtering"
   let premiseless := filterPremiseless testLines
   IO.println s!"filtered: {premiseless.size} premiseless of {testLines.size} total"
@@ -96,20 +98,20 @@ def main (_: List String) : IO Unit := do
   let mut total := 0
   let mut elaboratedNum := 0
   let mut provedNum := 0
-  for batch in batches do
-    IO.println s!"Processing batch {count} of {batches.size}"
-    let core := batchProofSearchCore batch
-    let triples ← 
-      core.run' coreContext {env := env} |>.runToIO'
-    let elaborated := triples.filter <| fun (_, el, _) => el
-    let proved := elaborated.filter <| fun (_, _, pr) => pr
-    IO.println s!"Elaborated: {elaborated.size}, proved: {proved.size} of {batch.size}"
-    elaboratedNum := elaboratedNum + elaborated.size
-    provedNum := provedNum + proved.size
-    total := total + batch.size
-    count := count + 1
-    IO.println s!"Total elaborated: {elaboratedNum}, proved: {provedNum} of {total}"
-    IO.println "-------------------"
+  -- for batch in batches do
+  --   IO.println s!"Processing batch {count} of {batches.size}"
+  --   let core := batchProofSearchCore batch
+  --   let triples ← 
+  --     core.run' coreContext {env := env} |>.runToIO'
+  --   let elaborated := triples.filter <| fun (_, el, _) => el
+  --   let proved := elaborated.filter <| fun (_, _, pr) => pr
+  --   IO.println s!"Elaborated: {elaborated.size}, proved: {proved.size} of {batch.size}"
+  --   elaboratedNum := elaboratedNum + elaborated.size
+  --   provedNum := provedNum + proved.size
+  --   total := total + batch.size
+  --   count := count + 1
+  --   IO.println s!"Total elaborated: {elaboratedNum}, proved: {provedNum} of {total}"
+  --   IO.println "-------------------"
   -- let batches' := batches.zip (Array.range batches.size)
   -- let tasks ← batches'.mapM fun (batch, k) => do
   --    let core := batchProofSearchCore batch
