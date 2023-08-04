@@ -10,7 +10,7 @@ def environment : IO Environment := do
     {module := `Mathlib}] {}
 
 def coreContext : Core.Context := 
-  {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 8000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]
+  {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 1000000000, maxRecDepth := 2000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]
     }   
 
 def filterPremiseless (init : Array String) : Array String :=
