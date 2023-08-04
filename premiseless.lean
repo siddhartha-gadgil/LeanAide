@@ -57,7 +57,7 @@ def serial (testLines : Array String) : IO Unit := do
         IO.println s!"{corePremise.thm} has no lemmas, terms, true premises"
         IO.println s!"{corePremise.ids} are the ids"
         IO.println "launching proof search"
-        if premiselessCount > 1 then
+        if true then
           let core := proofSearchCore corePremise.thm
           let (elaborated, proved) ← 
             core.run' coreContext {env := env} |>.runToIO'
