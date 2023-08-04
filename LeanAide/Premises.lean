@@ -144,6 +144,7 @@ partial def Lean.Syntax.premiseDataAuxM (context : ContextSyn)(defnName: Name)(s
     match ← proofWithProp? stx with
     | some (proof, prop) =>
         -- start a group if not in a group
+        let prop ← purgeTerm prop
         let newPropHead :=
             match propHead? with
             | some p => p
@@ -154,13 +155,7 @@ partial def Lean.Syntax.premiseDataAuxM (context : ContextSyn)(defnName: Name)(s
         let prev ←  
             premiseDataAuxM context defnName proof (some newPropHead) false (maxDepth?.map (· -1))
         let (ts, pfs, ids, ps) := prev
-        let prop ← purgeTerm prop
         let proof ←  purgeTerm proof
-        let newPropHead :=
-            match propHead? with
-            | some p => p
-            | none => prop
-
         let newPfs :=
             if propHead?.isSome then -- exclude lemma if in prior group
                 pfs
