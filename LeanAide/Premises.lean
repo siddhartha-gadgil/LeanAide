@@ -145,10 +145,10 @@ partial def Lean.Syntax.premiseDataAuxM (context : ContextSyn)(defnName: Name)(s
     | some (proof, prop) =>
         -- start a group if not in a group
         let prop ← purgeTerm prop
-        let newPropHead :=
+        let newPropHead ← 
             match propHead? with
-            | some p => p
-            | none => prop
+            | some p => pure <| ← purgeTerm p
+            | none => pure prop
         /- compute the data for the subproof; 
         subproof not an instantiation, is part of a new/old group. 
         -/
