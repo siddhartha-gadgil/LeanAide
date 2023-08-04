@@ -14,7 +14,6 @@ def main (args: List String) : IO Unit := do
   initSearchPath (← Lean.findSysroot) initFiles
   let env ← 
     importModules [{module := `Mathlib},
-    {module := `LeanCodePrompts.Basic},
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanCodePrompts.Makecaps},
     

@@ -7,6 +7,43 @@ import LeanAide.Premises
 open Lean Meta Elab Parser Json.Parser
 open Mathlib.Prelude.Rename
 
+/-- Subtract `m` and `n` in the presence of a proof that `n ≤ m`. -/
+def minus (m n : ℕ)(hyp : n ≤ m) : ℕ :=
+  match m, n, hyp with
+  | m, 0, _ => m
+  | 0, _ +1, pf => nomatch pf
+  | m + 1, n + 1 , pf =>
+    minus m n (Nat.le_of_succ_le_succ pf)
+
+#eval minus 5 3 (by decide) -- 2
+
+macro n:term "-₀" m:term : term => do
+  `(minus $n $m (by decide))
+
+#eval 5 -₀ 3 -- 2
+
+elab(priority:=high) n:term "-" m:term : term => 
+  Term.withoutErrToSorry do
+  try
+    let n' ← Term.elabTermEnsuringType n (mkConst ``Nat)
+    let m' ← Term.elabTermEnsuringType m (mkConst ``Nat)
+    let inequality ← mkAppM ``LE.le #[m', n']
+    let pf ← Term.elabTermEnsuringType (← `(by decide)) inequality
+    Term.synthesizeSyntheticMVarsNoPostponing
+    mkAppM ``minus #[n', m', pf]
+  catch _ =>
+    let n ← Term.elabTerm n none
+    let m ← Term.elabTerm m none
+    mkAppM ``HSub.hSub #[n, m]
+
+#eval (5 : ℤ) - (6 : ℤ)
+#eval 6 - 5 -- 1
+-- #eval 5 - 6 -- error
+
+#eval Json.parse "1.345345674532" |>.toOption |>.get! |>.getNum?|>.toOption |>.get! |>.toFloat 
+
+#eval decide (5 ≤  6)
+
 #check DirectSum.lie_of
 
 def purgeFailEg : MetaM DefData := do
