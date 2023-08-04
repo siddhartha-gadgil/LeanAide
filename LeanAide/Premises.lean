@@ -69,6 +69,42 @@ partial def purgeTerm : Syntax.Term → MetaM Syntax.Term := fun stx ↦ do
         let t : Syntax.Term := TSyntax.mk t 
         `(($t:term))
 
+open Lean.Parser.Term in
+def purgeContext : Syntax → MetaM Syntax := fun stx => do
+    match stx with
+    | `(letDecl|$n:ident : $type := $val) => 
+        let type  ←purgeTerm type 
+        let val ← purgeTerm val
+        `(letDecl|$n:ident : $type := $val) 
+    | `(funBinder|($n:ident : $type:term)) =>
+        let type ← purgeTerm type
+        `(funBinder|($n:ident : $type:term))
+    | `(funImplicitBinder|{$n:ident : $type:term}) =>
+        let type ← purgeTerm type
+        `(funImplicitBinder|{$n:ident : $type:term})
+    | `(instBinder|[$n:ident : $type:term]) =>
+        let type ← purgeTerm type
+        `(instBinder|[$n:ident : $type:term])
+    | `(instBinder|[$type:term]) =>
+        let type ← purgeTerm type
+        `(instBinder|[$type:term])
+    | `(funStrictImplicitBinder|⦃$n:ident : $type:term⦄) =>
+        let type ← purgeTerm type
+        `(funStrictImplicitBinder|⦃$n:ident : $type:term⦄)
+    | `(funBinder|(_ : $type:term)) =>
+        let type ← purgeTerm type
+        `(funBinder|(_ : $type:term))
+    | `(funImplicitBinder|{_ : $type:term}) =>
+        let type ← purgeTerm type
+        `(funImplicitBinder|{_ : $type:term})
+    | `(funStrictImplicitBinder|⦃_ : $type:term⦄) =>
+        let type ← purgeTerm type
+        `(funStrictImplicitBinder|⦃_ : $type:term⦄)
+    | stx => 
+        let fallback := stx.reprint.get!
+        IO.println s!"purgeSyntax fallback to: {fallback}, i.e. {stx}"
+        return stx
+
 
 /-- Compute recursively premise-data of sublemmas as well as the identifiers, instantiations and subproofs. These are used at the top level recursively.
 
@@ -142,6 +178,7 @@ partial def Lean.Syntax.premiseDataAuxM (context : ContextSyn)(defnName: Name)(s
             if (← proofWithProp? val).isSome then
                 decl''
             else  decl' 
+        let decl ←purgeContext decl 
         let prev ←   
             premiseDataAuxM (context ++ #[decl]) defnName body propHead? false (maxDepth?.map (· -1))
         let prev' ←  
@@ -158,6 +195,7 @@ partial def Lean.Syntax.premiseDataAuxM (context : ContextSyn)(defnName: Name)(s
     | none =>
     match ← lambdaStx? stx with -- term is a lambda
     | some (body, args) =>
+        let args ← args.mapM (fun arg => purgeContext arg) 
         let prev ←  /- data for subterm; not an instantiation; 
         inherits proposition group: if this is a proof, so would the previous term and hence we will have a group.  -/
             premiseDataAuxM (context ++ args) defnName body propHead? false (maxDepth?.map (· -1))

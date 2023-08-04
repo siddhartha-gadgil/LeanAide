@@ -88,16 +88,16 @@ def main (_: List String) : IO Unit := do
     (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "core", "test.jsonl"]))
   serial testLines
 
-  IO.println "filtering"
-  let premiseless := filterPremiseless testLines
-  IO.println s!"filtered: {premiseless.size} premiseless of {testLines.size} total"
-  let premiseless := premiseless.eraseIdx 0 -- temporary hack
-  let concurrency := (← threadNum) * 3 / 4
-  let batches := premiseless.batches' concurrency
-  let mut count := 0
-  let mut total := 0
-  let mut elaboratedNum := 0
-  let mut provedNum := 0
+  -- IO.println "filtering"
+  -- let premiseless := filterPremiseless testLines
+  -- IO.println s!"filtered: {premiseless.size} premiseless of {testLines.size} total"
+  -- let premiseless := premiseless.eraseIdx 0 -- temporary hack
+  -- let concurrency := (← threadNum) * 3 / 4
+  -- let batches := premiseless.batches' concurrency
+  -- let mut count := 0
+  -- let mut total := 0
+  -- let mut elaboratedNum := 0
+  -- let mut provedNum := 0
   -- for batch in batches do
   --   IO.println s!"Processing batch {count} of {batches.size}"
   --   let core := batchProofSearchCore batch

@@ -114,8 +114,6 @@ def contextToString : Syntax → CoreM String := fun d => do
     | `(funStrictImplicitBinder|⦃_ : $type:term⦄) =>
         let type := (← ppTerm type).pretty.trim
         return s!"⦃_ : {type}⦄"
-
-
     | stx => 
         let fallback := stx.reprint.get!
         IO.println s!"contextToString fallback to: {fallback} for {stx}"
