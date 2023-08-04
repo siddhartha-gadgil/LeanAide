@@ -4,12 +4,37 @@ import LeanAide.TheoremElab
 import LeanAide.RunAsync
 import Lean
 import Mathlib
-open Lean Meta Elab Parser Tactic
+open Lean Meta Elab Parser Tactic Core
 
 def powerTactics := #["gcongr", "ring", "linarith", "norm_num", "positivity", "polyrith"]
 
 def errLog := IO.FS.Handle.mk (System.mkFilePath ["data",
     s!"elab-errors.log"]) IO.FS.Mode.append
+
+def getMsgTactic?  : CoreM <| Option <| (TSyntax ``tacticSeq) × Format := do
+  let msgLog ← Core.getMessageLog  
+  let msgs := msgLog.toList
+  let mut tac? : Option <| TSyntax ``tacticSeq := none
+  let mut fmt? : Option Format := none
+  for msg in msgs do
+    let msg := msg.data
+    let msg' ← msg.toString 
+    match msg'.dropPrefix? "Try this:" with
+    | none => 
+      pure ()
+    | some msg'' => do
+      let parsedMessage := 
+        parseAsTacticSeq (←getEnv) msg''.toString.trimLeft
+      match parsedMessage with
+      | Except.ok tac' => 
+        resetMessageLog
+        tac?:= some  tac'
+        fmt? := some <| ← msg.format
+      | _ =>
+        logInfo m!"failed to parse tactic ({msg''.toString})"
+        pure ()
+  return tac?.bind (fun tac => 
+    fmt?.map fun fmt => (tac, fmt))
 
 -- should eventually use premises
 def proofSearchM (thm: String) : TermElabM <| Bool × Bool := 
@@ -28,15 +53,18 @@ def proofSearchM (thm: String) : TermElabM <| Bool × Bool :=
       let goals ←
         runAesop 0.5 #[] #[] #[] powerTactics mvarId
       let proved := goals.isEmpty
-      let stx ← `(tacticSeq|aesop?) 
       if proved then
-        let (pfScript, _) ← getMsgTacticD stx 
-        IO.println s!"Proof:"
-        let tacs := getTactics pfScript  
-        IO.println s!"Number of tactics: {tacs.size}"
-        for tac in tacs do
-          let fmt ← PrettyPrinter.ppTactic tac 
+        let pair? ← getMsgTactic?
+        match pair? with
+        | none => IO.println "could not extract proof"
+        | some (pfScript, fmt) =>
+          IO.println s!"Proof:"
           IO.println fmt.pretty
+          let tacs := getTactics pfScript  
+          IO.println s!"Number of tactics: {tacs.size}"
+          for tac in tacs do
+            let fmt ← PrettyPrinter.ppTactic tac 
+            IO.println fmt.pretty
       else
         IO.println "Failed"
       return (true, proved)
