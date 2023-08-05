@@ -55,17 +55,12 @@ def proofSearchM (thm: String) : TermElabM <| Bool × Bool :=
         match pair? with
         | none => IO.println "could not extract proof"
         | some (pfScript, _) =>
-          IO.println s!"Proof:"
-          -- IO.println fmt.pretty
-          -- let tacs := getTactics pfScript  
-          -- IO.println "From tacticSeq"
-          IO.println (← PrettyPrinter.ppCategory `tacticSeq pfScript)
-          -- IO.println s!"Number of tactics: {tacs.size}"
-          -- for tac in tacs do
-          --   let fmt ← PrettyPrinter.ppTactic tac 
-          --   IO.println fmt.pretty
+          let pfScript:= 
+            (← PrettyPrinter.ppCategory `tacticSeq pfScript).pretty
+          let code := s!"example: {← ppExpr type} := by\n{pfScript}\n\n"
+          IO.println code
       else
-        IO.println "Failed"
+        IO.println "example: {← ppExpr type} := by sorry\n\n"
       return (true, proved)
     catch _ =>
       return (true, false)
