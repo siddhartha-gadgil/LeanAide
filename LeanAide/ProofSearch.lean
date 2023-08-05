@@ -58,6 +58,8 @@ def proofSearchM (thm: String) : TermElabM <| Bool × Bool :=
           IO.println s!"Proof:"
           IO.println fmt.pretty
           let tacs := getTactics pfScript  
+          IO.println "From tacticSeq"
+          IO.println (← PrettyPrinter.ppCategory `tacticSeq pfScript)
           IO.println s!"Number of tactics: {tacs.size}"
           for tac in tacs do
             let fmt ← PrettyPrinter.ppTactic tac 
