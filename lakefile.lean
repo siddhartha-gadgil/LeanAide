@@ -68,6 +68,7 @@ lean_exe extras.lib4chk{
   supportInterpreter := true
 }
 
+lean_exe pickle_embeddings 
 
 lean_exe batchcheck{
   supportInterpreter := true
