@@ -51,5 +51,10 @@ def readEmbeddingsArray : IO <| Array <| String ×  FloatArray :=  do
       IO.println s!"read {count} embeddings"
   return accum
 
+unsafe def loadEmbeddings : IO Nat := 
+  withUnpickle  "rawdata/mathlib4-thms-embeddings.json.olean" <| fun (data: Array <| String ×  FloatArray) => pure data.size
+
+-- #eval loadEmbeddings
+
 -- #check readEmbeddings
 -- #eval embeddingSize

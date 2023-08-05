@@ -18,13 +18,13 @@ def getMsgTactic?  : CoreM <| Option <| (TSyntax ``tacticSeq) × Format := do
   let mut fmt? : Option Format := none
   for msg in msgs do
     let msg := msg.data
-    let msg' ← msg.toString 
+    let msg' := (← msg.format).pretty 
     match msg'.dropPrefix? "Try this:" with
     | none => 
       pure ()
     | some msg'' => do
       let parsedMessage := 
-        parseAsTacticSeq (←getEnv) msg''.toString.trimLeft
+        parseAsTacticSeq (←getEnv) msg''.toString
       match parsedMessage with
       | Except.ok tac' => 
         resetMessageLog
