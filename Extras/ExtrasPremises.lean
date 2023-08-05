@@ -32,11 +32,11 @@ instance reprintSyntax : Reprint Syntax where
 
 def reprint {a : Type}[Reprint a] (x : a) : String := Reprint.reprSyn x
 
-instance reprintTermData : Reprint TermData where
-    reprSyn := fun x => s!"context: {Reprint.reprSyn x.context}; term: {Reprint.reprSyn x.value}"
+-- instance reprintTermData : Reprint TermData where
+--     reprSyn := fun x => s!"context: {Reprint.reprSyn x.context}; term: {Reprint.reprSyn x.value}"
 
-instance reprintProofData : Reprint PropProofData where
-    reprSyn := fun x => s!"context: {Reprint.reprSyn x.context}; prop: {Reprint.reprSyn x.prop}; proof : {Reprint.reprSyn x.proof}"
+-- instance reprintProofData : Reprint PropProofData where
+--     reprSyn := fun x => s!"context: {Reprint.reprSyn x.context}; prop: {Reprint.reprSyn x.prop}; proof : {Reprint.reprSyn x.proof}"
 
 
 def viewSyntax (s: String) : MetaM <| Syntax × String := do
@@ -63,25 +63,25 @@ def nameDefSyntax (name: Name) : MetaM <| Option Syntax := do
         let stx ←  delab exp
         pure (some stx)
 
-def premisesFromName (name : Name) : MetaM (List PremiseData) := do
-    let (pf, prop) ← nameDefTypeSyntax name
-    Lean.Syntax.premiseDataM #[] pf prop true name name
+-- def premisesFromName (name : Name) : MetaM (List PremiseData) := do
+--     let (pf, prop) ← nameDefTypeSyntax name
+--     Lean.Syntax.premiseDataM #[] pf prop true name name
 
-def _root_.PremiseData.view : PremiseData → MetaM String := fun data => do
-    return s!"context: {reprint data.context}; name?: {data.name?}; defnName: {data.defnName}; type: {reprint data.type}; type-group: {reprint data.typeGroup}; sub-terms: {reprint data.terms}; sub-proofs : {reprint data.propProofs}  identifiers: {data.ids}"
-
-
-def premisesViewFromName (name: Name) : MetaM <| List String := do
-    let premises ← premisesFromName name
-    premises.mapM (fun p => p.view)
+-- def _root_.PremiseData.view : PremiseData → MetaM String := fun data => do
+--     return s!"context: {reprint data.context}; name?: {data.name?}; defnName: {data.defnName}; type: {reprint data.type}; type-group: {reprint data.typeGroup}; sub-terms: {reprint data.terms}; sub-proofs : {reprint data.propProofs}  identifiers: {data.ids}"
 
 
-def premisesJsonFromName (name: Name) : MetaM <| Json := do
-    let premises ← premisesFromName name
-    return toJson premises
+-- def premisesViewFromName (name: Name) : MetaM <| List String := do
+--     let premises ← premisesFromName name
+--     premises.mapM (fun p => p.view)
+
+
+-- def premisesJsonFromName (name: Name) : MetaM <| Json := do
+--     let premises ← premisesFromName name
+--     return toJson premises
 
 #eval viewSyntax "false_or"
-#eval premisesViewFromName ``Nat.pred_le_pred
+-- #eval premisesViewFromName ``Nat.pred_le_pred
 
 -- #eval premisesJsonFromName ``Nat.pred_le_pred
 
@@ -230,7 +230,7 @@ partial def Lean.Syntax.identsM (stx: Syntax)(context: Array Syntax)(maxDepth? :
 
 -- -- #eval termKindList
 
-
+/-
 partial def Lean.Syntax.termsM (context : Array Syntax)(stx: Syntax)(maxDepth? : Option Nat := none) : MetaM <| List <| TermData   := do
     let tks ← termKindList
     let tks := tks.map (·.1)
@@ -744,3 +744,4 @@ def writePremisesCore : CoreM Nat :=
     writePremisesM.run' {}
 
 -- #eval batchDefns 0 5
+-/
