@@ -1,11 +1,60 @@
-{X : Type u_1} [TopologicalSpace X] {x : X} {F : Set X} (h : x ∈ F)  : ∀ (_t : ↑unitInterval), x ∈ F
-type mismatch
-  unitInterval
-has type
-  Set ℝ : Type
-but is expected to have type
-  Sort ?u.99 : Type ?u.99 ; identifiers [X, u_1, TopologicalSpace, X, x, X, F, Set, X, h, x, F, _t, unitInterval, x, F] (during elaboration)
+{L : FirstOrder.Language} {M : Type w'} [FirstOrder.Language.IsOrdered L] [FirstOrder.Language.Structure L M] [LE M] [FirstOrder.Language.OrderedStructure L M] {a : M} {b : M}  : (FirstOrder.Language.Structure.RelMap FirstOrder.Language.leSymb ![a, b]) ↔
+  (FirstOrder.Language.Structure.RelMap FirstOrder.Language.leSymb ![a, b])
+unknown universe level 'w'' ; identifiers [L, FirstOrder.Language, M, w', FirstOrder.Language.IsOrdered, L, FirstOrder.Language.Structure, L, M, LE, M, FirstOrder.Language.OrderedStructure, L, M, a, M, b, M, FirstOrder.Language.Structure.RelMap, FirstOrder.Language.leSymb, a, b, FirstOrder.Language.Structure.RelMap, FirstOrder.Language.leSymb, a, b] (during elaboration)
 
-{R : Type u_1} [CommRing R] {ι₁ : Type u_2} {ι₂ : Type u_3} [Finite ι₁] [Finite ι₂] (val : Fintype ι₁) (h : (nonempty_fintype ι₁=:Nonempty (Fintype ι₁)) = (Nonempty.intro val=:Nonempty (Fintype ι₁)))  : (Nonempty.intro val) = (nonempty_fintype ι₁)
-<input>:1:129: expected term
+{α : Type u_1} {a : α} {b : α}  : ((¬(a ∈ {b})) ↔ (a ≠ b)) = ((¬(a ∈ {b})) ↔ (a ≠ b))
+typeclass instance problem is stuck, it is often due to metavariables
+  Singleton α ?m.931 ; identifiers [α, u_1, a, α, b, α, a, b, b, a, b, a, b, b, a, b] (during elaboration)
+
+ : (∀ {ι : Type uι} {E : Type uE} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] [inst_2 : FiniteDimensional ℝ E]
+  {H : Type uH} [inst_3 : TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] {s : Set M} [inst_7 : T2Space M]
+  {f : SmoothBumpCovering ι I M s} {U : (a : M) → Set M},
+  (BumpCovering.IsSubordinate (SmoothBumpCovering.toBumpCovering f) fun (i : ι) ↦ U (SmoothBumpCovering.c s f i)) ↔
+    (SmoothBumpCovering.IsSubordinate f U))
+unknown universe level 'uι' ; identifiers [ι, uι, E, uE, inst, NormedAddCommGroup, E, inst_1, NormedSpace, E, inst_2, FiniteDimensional, E, H, uH, inst_3, TopologicalSpace, H, I, ModelWithCorners, E, H, M, uM, inst_4, TopologicalSpace, M, inst_5, ChartedSpace, H, M, inst_6, SmoothManifoldWithCorners, I, M, s, Set, M, inst_7, T2Space, M, f, SmoothBumpCovering, ι, I, M, s, U, a, M, Set, M, BumpCovering.IsSubordinate, SmoothBumpCovering.toBumpCovering, f, i, ι, U, SmoothBumpCovering.c, s, f, i, SmoothBumpCovering.IsSubordinate, f, U] (during elaboration)
+
+ : ∀ {ι : Type uι} {E : Type uE} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] [inst_2 : FiniteDimensional ℝ E]
+  {H : Type uH} [inst_3 : TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] {s : Set M} [inst_7 : T2Space M]
+  {f : SmoothBumpCovering ι I M s} {U : (a : M) → Set M},
+  (BumpCovering.IsSubordinate (SmoothBumpCovering.toBumpCovering f) fun (i : ι) ↦ U (SmoothBumpCovering.c s f i)) ↔
+    (BumpCovering.IsSubordinate (SmoothBumpCovering.toBumpCovering f) fun (i : ι) ↦ U (SmoothBumpCovering.c s f i))
+unknown universe level 'uι' ; identifiers [ι, uι, E, uE, inst, NormedAddCommGroup, E, inst_1, NormedSpace, E, inst_2, FiniteDimensional, E, H, uH, inst_3, TopologicalSpace, H, I, ModelWithCorners, E, H, M, uM, inst_4, TopologicalSpace, M, inst_5, ChartedSpace, H, M, inst_6, SmoothManifoldWithCorners, I, M, s, Set, M, inst_7, T2Space, M, f, SmoothBumpCovering, ι, I, M, s, U, a, M, Set, M, BumpCovering.IsSubordinate, SmoothBumpCovering.toBumpCovering, f, i, ι, U, SmoothBumpCovering.c, s, f, i, BumpCovering.IsSubordinate, SmoothBumpCovering.toBumpCovering, f, i, ι, U, SmoothBumpCovering.c, s, f, i] (during elaboration)
+
+{𝕜 : Type u_2} {E : Type u_1} [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] (x : E)  : ((x ∈ ⊤ᗮ) ↔ (x ∈ ⊥)) = ((x ∈ ⊤ᗮ) ↔ (x ∈ ⊥))
+typeclass instance problem is stuck, it is often due to metavariables
+  Membership E (?m.3858 x) ; identifiers [𝕜, u_2, E, u_1, IsROrC, 𝕜, NormedAddCommGroup, E, InnerProductSpace, 𝕜, E, x, E, x, x, x, x] (during elaboration)
+
+{𝕜 : Type u_2} {E : Type u_1} [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] (x : E)  : ((x ∈ ⊤ᗮ) ↔ (x = 0)) = ((x ∈ ⊤ᗮ) ↔ (x = 0))
+typeclass instance problem is stuck, it is often due to metavariables
+  InnerProductSpace (?m.2643 x) E ; identifiers [𝕜, u_2, E, u_1, IsROrC, 𝕜, NormedAddCommGroup, E, InnerProductSpace, 𝕜, E, x, E, x, x, x, x] (during elaboration)
+
+{𝕜 : Type u_1} {E : Type u_2} [SeminormedRing 𝕜] [SMul 𝕜 E] {s : Set E} {t : Set E} (ht : Balanced 𝕜 t) (h : s ⊆ t) ⦃x : E⦄ (hx : x ∈ balancedHull 𝕜 s) (r : 𝕜) (h_1 : ∃ (x_1 : ‖r‖ ≤ 1), x ∈ r • s) (hr : ‖r‖ ≤ 1) (h_2 : x ∈ r • s) (y : E) (h_3 : (y ∈ s) ∧ ((fun (x : E) ↦ r • x) y = x)) (hy : y ∈ s) (right : (fun (x : E) ↦ r • x) y = x) (hx : (fun (x : E) ↦ r • x) y ∈ balancedHull 𝕜 s)  : y ∈ t
+failed to synthesize instance
+  HSMul 𝕜 (Set E) ?m.614 ; identifiers [𝕜, u_1, E, u_2, SeminormedRing, 𝕜, SMul, 𝕜, E, s, Set, E, t, Set, E, ht, Balanced, 𝕜, t, h, s, t, x, E, hx, x, balancedHull, 𝕜, s, r, 𝕜, h_1, x_1, r, x, r, s, hr, r, h_2, x, r, s, y, E, h_3, y, s, x, E, r, x, y, x, hy, y, s, right, x, E, r, x, y, x, hx, x, E, r, x, y, balancedHull, 𝕜, s, y, t] (during elaboration)
+
+{α : Type u_2} {m0 : MeasurableSpace α} {μ : MeasureTheory.Measure α} {γ : Type u_1} (f : (a : α) → γ) (g : (a : α) → γ) (s : Set α) (hs_zero : ↑↑μ s = 0) (h_ss : sᶜ ⊆ {a : α | (if (a ∈ s) then f a else g a) = g a}) {α : Type u_2} [HasSubset α] (a : α) (a_1 : α) (e_a : a = a_1) (a_2 : α) (a_3 : α) (e_a : a_2 = a_3)  : (a ⊆ a_2) = (a ⊆ a_2)
+failed to synthesize instance
+  Decidable (a ∈ s) ; identifiers [α, u_2, m0, MeasurableSpace, α, μ, MeasureTheory.Measure, α, γ, u_1, f, a, α, γ, g, a, α, γ, s, Set, α, hs_zero, μ, s, h_ss, s, a, α, a, s, f, a, g, a, g, a, α, u_2, HasSubset, α, a, α, a_1, α, e_a, a, a_1, a_2, α, a_3, α, e_a, a_2, a_3, a, a_2, a, a_2] (during elaboration)
+
+{α : Type u_2} {m0 : MeasurableSpace α} {μ : MeasureTheory.Measure α} {γ : Type u_1} (f : (a : α) → γ) (g : (a : α) → γ) (s : Set α) (hs_zero : ↑↑μ s = 0) (h_ss : sᶜ ⊆ {a : α | (if (a ∈ s) then f a else g a) = g a})  : s = s
+failed to synthesize instance
+  Decidable (a ∈ s) ; identifiers [α, u_2, m0, MeasurableSpace, α, μ, MeasureTheory.Measure, α, γ, u_1, f, a, α, γ, g, a, α, γ, s, Set, α, hs_zero, μ, s, h_ss, s, a, α, a, s, f, a, g, a, g, a, s, s] (during elaboration)
+
+{α : Type u_2} {m0 : MeasurableSpace α} {μ : MeasureTheory.Measure α} {γ : Type u_1} (f : (a : α) → γ) (g : (a : α) → γ) (s : Set α) (hs_zero : ↑↑μ s = 0) (h_ss : sᶜ ⊆ {a : α | (if (a ∈ s) then f a else g a) = g a})  : sᶜᶜ = sᶜᶜ
+failed to synthesize instance
+  Decidable (a ∈ s) ; identifiers [α, u_2, m0, MeasurableSpace, α, μ, MeasureTheory.Measure, α, γ, u_1, f, a, α, γ, g, a, α, γ, s, Set, α, hs_zero, μ, s, h_ss, s, a, α, a, s, f, a, g, a, g, a, s, s] (during elaboration)
+
+{C : Type u_2} [CategoryTheory.Category C] {X : C} {Y : C} {f : X ⟶ Y} {g : X ⟶ Y} {s : CategoryTheory.Limits.Fork f g} {t : CategoryTheory.Limits.Fork f g} (i : CategoryTheory.Limits.Cone.pt s ≅ CategoryTheory.Limits.Cone.pt t) (w : autoParam (CategoryTheory.CategoryStruct.comp i.hom (CategoryTheory.Limits.Fork.ι t) = CategoryTheory.Limits.Fork.ι s)
+  _auto✝)  : CategoryTheory.Limits.Fork.ι s = CategoryTheory.CategoryStruct.comp i.hom (CategoryTheory.Limits.Fork.ι t)
+<input>:2:7: expected token
+
+{𝕜 : Type u_2} {E : Type u_1} [OrderedSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E} (hc : ∀ (t : Set E) (a : t ⊆ s), s ∩ ↑(convexHull 𝕜) t ⊆ t) (t : Set { x : E // x ∈ s }) (x : { x : E // x ∈ s }) (h : ↑x ∈ ↑(convexHull 𝕜) (Subtype.val '' t))  : (x ∈ t) = (x ∈ t)
+type mismatch
+  x
+has type
+  { x // x ∈ s } : Type u_1
+but is expected to have type
+  ?m.1136 hc t x : outParam (Type ?u.845) ; identifiers [𝕜, u_2, E, u_1, OrderedSemiring, 𝕜, AddCommGroup, E, Module, 𝕜, E, s, Set, E, hc, t, Set, E, a, t, s, s, convexHull, 𝕜, t, t, t, Set, x, E, x, s, x, x, E, x, s, h, x, convexHull, 𝕜, Subtype.val, t, x, t, x, t] (during elaboration)
 
