@@ -1,7 +1,6 @@
 import Lean.Meta
-import LeanCodePrompts
 import LeanAide.TheoremElab
-import LeanCodePrompts.Makecaps
+import LeanAide.TheoremEquality
 import LeanAide.Config
 open Lean
 
@@ -14,10 +13,8 @@ def main (args: List String) : IO Unit := do
   initSearchPath (← Lean.findSysroot) initFiles
   let env ← 
     importModules [{module := `Mathlib},
-    {module := `LeanCodePrompts.Basic},
     {module:= `LeanAide.TheoremElab},
-    {module:= `LeanCodePrompts.Makecaps},
-    
+    {module:= `LeanAide.TheoremEquality},    
     {module := `Mathlib}] {}
 
   let (inpName, outName) := 
