@@ -5246,3 +5246,19 @@ total : 11
 
 elaborated: 7
 
+No valid output from Codex; outputs below
+
+∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 :  AddCommGroupCat V] [inst_2 :  ModuleCat K V]
+  (h : FiniteDimensional.finrank K V = 2), FiniteDimensional K V
+
+: ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 :  AddCommGroupCat V] [inst_2 :  ModuleCat K V]
+  (h : FiniteDimensional.finrank K V = 2), FiniteDimensional K V
+
+Writing to file: silly-elab-10-false-5-8.json
+
+Writing to file: silly-elab-10-false-5-8.json
+
+Writing to file: silly-elab-10-false-5-8.json
+
+Writing to file: silly-elab-10-false-5-8.json
+
