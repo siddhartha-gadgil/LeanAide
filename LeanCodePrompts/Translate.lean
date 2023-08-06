@@ -292,7 +292,7 @@ def getCodeJson (s: String)(numSim : Nat:= 8)(includeFixed: Bool := Bool.false)(
       let pairs  := pairs.filter (fun (s, _) => s.length < 100) 
       let prompt := GPT.makePrompt s pairs
       trace[Translate.info] m!"prompt: \n{prompt.pretty}"
-      -- mkLog prompt
+      mkLog prompt
       let fullJson ← 
         gptQuery prompt queryNum temp 
       let outJson := 

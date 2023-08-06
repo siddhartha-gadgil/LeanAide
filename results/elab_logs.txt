@@ -4996,3 +4996,253 @@ total : 5
 
 elaborated: 4
 
+success
+
+theorem {R : Type u} → [inst : Field R] → DivisionRing R
+
+total : 6
+
+elaborated: 5
+
+No valid output from Codex; outputs below
+
+∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 :  AddCommGroupCat V] [inst_2 :  ModuleCat K V]
+  (h : FiniteDimensional.finrank K V = 2), FiniteDimensional K V
+
+failed to elaborate
+
+outputs: #[∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V]
+  (h : FiniteDimensional.finrank K V = 2), FiniteDimensional K V]
+
+total : 7
+
+elaborated: 5
+
+success
+
+theorem ∀ (n : ℕ), ∃ m, n = Nat.succ m
+
+total : 8
+
+elaborated: 6
+
+success
+
+theorem ∀ (n : ℕ), n < Nat.succ n
+
+total : 9
+
+elaborated: 7
+
+No valid output from Codex; outputs below
+
+∀ {α : Type u_1} (s :  ZFSet α), MeasurableSet s
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u_1} (s : Set α), MeasurableSet s]
+
+total : 10
+
+elaborated: 7
+
+No valid output from Codex; outputs below
+
+∀ {α : Type u_1} [inst : MeasurableSpace α] (μ : MeasureTheory.Measure α) (s :  ZFSet α),
+  MeasureTheory.MeasureTheory.is_null_measure μ s → MeasurableSet s
+
+∀ {α : Type u_1} [inst : MeasurableSpace α] (μ : MeasureTheory.Measure α),
+  ∀ (s :  ZFSet α), MeasureTheory.measure_zero μ s → MeasurableSet s
+
+∀ {α : Type u_1} [inst : MeasurableSpace α] (s :  ZFSet α) (h : BorelMeasure.measureOf s = 0),
+  MeasurableSet s
+
+∀ {α : Type u_1} [inst : MeasurableSpace α] (μ : MeasureTheory.Measure α)
+  (s :  ZFSet α) (hs : MeasureTheory.measure_of μ s = 0), MeasurableSet s
+
+∀ {α : Type u_1} [inst : MeasurableSpace α] (μ : MeasureTheory.Measure α) (s :  ZFSet α),
+  MeasureTheory.MeasureTheory.LebesgueMeasurableSet s → MeasureTheory.MeasureTheory.ZeroMeasure μ s →
+  MeasurableSet s
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u_1} [inst : MeasurableSpace α] (μ : MeasureTheory.Measure α) (s : Set α),
+  MeasureTheory.MeasureTheory.is_null_measure μ s → MeasurableSet s, ∀ {α : Type u_1} [inst : MeasurableSpace α] (μ : MeasureTheory.Measure α),
+  ∀ (s : Set α), MeasureTheory.measure_zero μ s → MeasurableSet s, ∀ {α : Type u_1} [inst : MeasurableSpace α] (s : Set α) (h : BorelMeasure.measureOf s = 0),
+  MeasurableSet s, ∀ {α : Type u_1} [inst : MeasurableSpace α] (μ : MeasureTheory.Measure α)
+  (s : Set α) (hs : MeasureTheory.measure_of μ s = 0), MeasurableSet s, ∀ {α : Type u_1} [inst : MeasurableSpace α] (μ : MeasureTheory.Measure α) (s : Set α),
+  MeasureTheory.MeasureTheory.LebesgueMeasurableSet s → MeasureTheory.MeasureTheory.ZeroMeasure μ s →
+  MeasurableSet s]
+
+total : 11
+
+elaborated: 7
+
+success
+
+theorem ∀ {p : ℕ}, Nat.Prime p → ¬∃ n, n * n = p
+
+total : 12
+
+elaborated: 8
+
+success
+
+theorem ∀ {p : ℕ}, Nat.Prime p → Odd p → 2 < p
+
+total : 13
+
+elaborated: 9
+
+Writing to file: silly-elab-10-false-5-8.json
+
+success
+
+theorem ∀ {p : ℕ}, Nat.Prime p ↔ p = 2 ∨ p % 2 = 1
+
+total : 1
+
+elaborated: 1
+
+success
+
+theorem ∀ (n : ℕ), Odd (2 * n + 1)
+
+total : 2
+
+elaborated: 2
+
+success
+
+theorem Nat.Prime 3
+
+total : 3
+
+elaborated: 3
+
+success
+
+theorem ∀ (n : ℕ), ∃ p, Nat.Prime p ∧ Odd p ∧ p > n
+
+total : 4
+
+elaborated: 4
+
+No valid output from Codex; outputs below
+
+∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 :  AddCommGroupCat V] [inst_2 :  ModuleCat K V]
+  (h : FiniteDimensional.finrank K V = 2), FiniteDimensional K V
+
+∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 :  AddCommGroupCat V] [inst_2 :  ModuleCat K V], (FiniteDimensional.finrank K V = 2 : Prop) → FiniteDimensional K V
+
+∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 :  AddCommGroupCat V] [inst_2 :  ModuleCat K V],
+  (FiniteDimensional.finrank K V = 2 : Prop) → FiniteDimensional K V
+
+∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 :  AddCommGroupCat V] [inst_2 :  ModuleCat K V],
+  FiniteDimensional.finrank K V = 2 → FiniteDimensional K V
+
+failed to elaborate
+
+outputs: #[∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V]
+  (h : FiniteDimensional.finrank K V = 2), FiniteDimensional K V, ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V], (FiniteDimensional.finrank K V = 2 : Prop) → FiniteDimensional K V, ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],
+  (FiniteDimensional.finrank K V = 2 : Prop) → FiniteDimensional K V, ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],
+  FiniteDimensional.finrank K V = 2 → FiniteDimensional K V]
+
+total : 5
+
+elaborated: 4
+
+success
+
+theorem {α : Type u} → [inst : Field α] → DivisionRing α
+
+total : 6
+
+elaborated: 5
+
+No valid output from Codex; outputs below
+
+∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 :  AddCommGroupCat V] [inst_2 :  ModuleCat K V]
+  (h : FiniteDimensional.finrank K V = 2), FiniteDimensional K V
+
+∀ {K : Type u} {V : Type v} [inst : Field K] [inst_1 :  AddCommGroupCat V] [inst_2 : VectorSpace K V]
+  (h : FiniteDimensional.finrank K V = 2), FiniteDimensional K V
+
+failed to elaborate
+
+outputs: #[∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V]
+  (h : FiniteDimensional.finrank K V = 2), FiniteDimensional K V, ∀ {K : Type u} {V : Type v} [inst : Field K] [inst_1 : AddCommGroup V] [inst_2 : VectorSpace K V]
+  (h : FiniteDimensional.finrank K V = 2), FiniteDimensional K V]
+
+total : 7
+
+elaborated: 5
+
+success
+
+theorem ∀ (n : ℕ), ∃ m, m = n + 1
+
+total : 8
+
+elaborated: 6
+
+success
+
+theorem ∀ (n : ℕ), n < Nat.succ n
+
+total : 9
+
+elaborated: 7
+
+No valid output from Codex; outputs below
+
+∀ {α : Type u_1} (s :  ZFSet α), LebesgueMeasurableSet s
+
+∀ (s :  ZFSet ℝ), LebesgueMeasurableSet s
+
+∀ {α : Type u_1} (s :  ZFSet α), MeasurableSet s
+
+∀ {α : Type u_1} (s :  ZFSet α),
+  MeasurableSet s
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u_1} (s : Set α), LebesgueMeasurableSet s, ∀ (s : Set ℝ), LebesgueMeasurableSet s, ∀ {α : Type u_1} (s : Set α), MeasurableSet s, ∀ {α : Type u_1} (s : Set α),
+  MeasurableSet s]
+
+total : 10
+
+elaborated: 7
+
+No valid output from Codex; outputs below
+
+∀ {α : Type u_1} (s :  ZFSet α) [inst : MeasurableSpace α] [inst_1 : BorelSpace α]
+  (h : ∀ (ε : ℝ), ε > 0 → ∃ (t :  ZFSet α), s ⊆ t ∧ BorelMeasure.measure t < ε),
+  MeasurableSet s
+
+∀ {α : Type u_1} [inst : MeasurableSpace α] {s :  ZFSet α} (h : BorelMeasure.zero s),
+  MeasurableSet s
+
+∀ {α : Type u_1} [inst : MeasurableSpace α] (s :  ZFSet α) (h : BorelMeasure.measureOf s = 0),
+  LebesgueMeasure.measurableSet' s
+
+∀ {α : Type u_1} [T : TopologicalSpace α] [M : MeasurableSpace α] [B : BorelSpace α]
+  (μ : MeasureTheory.Measure α), ∀ (s :  ZFSet α), MeasureTheory.measure μ s = 0 → MeasurableSet s
+
+∀ {α : Type u_1} [MeasurableSpace α] (μ : MeasureTheory.Measure α) (s :  ZFSet α),
+  MeasureTheory.MeasureTheory.is_null_measurable_set μ s → MeasurableSet s
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u_1} (s : Set α) [inst : MeasurableSpace α] [inst_1 : BorelSpace α]
+  (h : ∀ (ε : ℝ), ε > 0 → ∃ (t : Set α), s ⊆ t ∧ BorelMeasure.measure t < ε),
+  MeasurableSet s, ∀ {α : Type u_1} [inst : MeasurableSpace α] {s : Set α} (h : BorelMeasure.zero s),
+  MeasurableSet s, ∀ {α : Type u_1} [inst : MeasurableSpace α] (s : Set α) (h : BorelMeasure.measureOf s = 0),
+  LebesgueMeasure.measurableSet' s, ∀ {α : Type u_1} [T : TopologicalSpace α] [M : MeasurableSpace α] [B : BorelSpace α]
+  (μ : MeasureTheory.Measure α), ∀ (s : Set α), MeasureTheory.measure μ s = 0 → MeasurableSet s, ∀ {α : Type u_1} [MeasurableSpace α] (μ : MeasureTheory.Measure α) (s : Set α),
+  MeasureTheory.MeasureTheory.is_null_measurable_set μ s → MeasurableSet s]
+
+total : 11
+
+elaborated: 7
+

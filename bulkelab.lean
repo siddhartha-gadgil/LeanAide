@@ -18,7 +18,7 @@ def main (args: List String) : IO Unit := do
   let queryNum := 
     (args.get? 3 >>= fun s => s.toNat?).getD 5
   let temp10 :=
-    (args.get? 4 >>= fun s => s.toNat?).getD 2
+    (args.get? 4 >>= fun s => s.toNat?).getD 8
   let temp : JsonNumber := ⟨temp10, 1⟩
   let outFile := System.mkFilePath 
       ["results", 

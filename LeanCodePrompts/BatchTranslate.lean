@@ -23,6 +23,11 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed:
   elabLog s!"Writing to file: {type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp.mantissa}.json"
   let promptsFile := System.mkFilePath ["data",
     s!"prompts-{type}-{numSim}-{includeFixed}-{queryNum}-{temp.mantissa}.jsonl"]
+  let outFile := System.mkFilePath 
+      ["results", 
+      s!"{type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp.mantissa}.jsonl"]
+  IO.FS.writeFile outFile ""
+  let outHandle ← IO.FS.Handle.mk outFile IO.FS.Mode.append
   let h ← IO.FS.Handle.mk promptsFile IO.FS.Mode.append
   let file := System.mkFilePath [s!"data/{type}-prompts.txt"]
   let prompts ←  IO.FS.lines file
@@ -39,9 +44,10 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed:
     let (res?, outputs) ← 
         translateWithDataM prompt
           numSim includeFixed queryNum temp
-    -- let fullPrompt := (← logs 1).head! 
-    let js := Json.mkObj [("text", Json.str prompt)]
-    h.putStrLn <| js.pretty 10000
+    let fullPrompt := (← logs 1).head! 
+    let js := Json.mkObj [("text", Json.str prompt),
+       ("fullPrompt", Json.str fullPrompt)]
+    h.putStrLn <| js.compress
     count := count + 1
     match res? with
     | some (e, thms) =>
@@ -50,6 +56,12 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed:
       elabLog s!"theorem {v}"
       IO.println s!"theorem {v}"
       elaborated := elaborated + 1
+      let js := Json.mkObj [("text", Json.str prompt),
+       ("fullPrompt", Json.str fullPrompt),
+       ("result", true),
+       ("theorem", v),
+       ("all_elaborations", Json.arr <|thms.map Json.str)]
+      outHandle.putStrLn <| js.compress
       elabPairs := elabPairs.push (prompt, v, thms) 
     | none =>
       elabLog "failed to elaborate"
