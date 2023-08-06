@@ -274,7 +274,7 @@ def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := docField)
 
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
-def getCodeJson (s: String)(numSim : Nat:= 8)(numKW: Nat := 0)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM Json := do
+def getCodeJson (s: String)(numSim : Nat:= 8)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : TermElabM Json := do
   match ← getCachedJson? s with
   | some js => return js
   | none =>    
