@@ -86,7 +86,7 @@ def nearestDocsToEmbedding (data : Array <| String ×  FloatArray)
 
 unsafe def getNearestDocsToEmbedding (embedding : Array Float) (k : Nat)(dist: FloatArray → Array Float → Float := distL2Sq) : IO (List String) := do
   withUnpickle  "rawdata/mathlib4-thms-embeddings.json.olean" <| fun (data: Array <| String ×  FloatArray) =>
-  pure <| nearestDocsToEmbedding data embedding k dist
+  pure <| nearestDocsToEmbedding data[:10] embedding k dist
 
 def embedQuery (doc: String) : IO <| Except String Json := do
   let key? ← openAIKey
@@ -105,7 +105,7 @@ def embedQuery (doc: String) : IO <| Except String Json := do
         "--data", data]}
   return Lean.Json.parse out.stdout 
 
-#eval embedQuery "There are infinitely many odd numbers"
+-- #eval embedQuery "There are infinitely many odd numbers"
 
 unsafe def nearestDocsToDoc (doc: String)(k : Nat)(dist: FloatArray → Array Float → Float := distL2Sq) : MetaM (List String) := do
   let queryRes? ← embedQuery doc
