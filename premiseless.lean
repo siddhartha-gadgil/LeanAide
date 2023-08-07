@@ -13,7 +13,7 @@ def coreContext : Core.Context :=
   {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 3000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]
     }   
 
-def filterPremiseless (init : Array String) : Array String :=
+def filterPremiseless (init : Array String)(full: Bool) : Array String :=
   init.filterMap <| fun l =>
     let js? := Lean.Json.parse l |>.toOption
     let premise? : Option CorePremiseData := 
@@ -27,6 +27,8 @@ def filterPremiseless (init : Array String) : Array String :=
       if check && corePremise.lemmas.isEmpty &&
         corePremise.terms.isEmpty
       then 
+        if full then some l
+        else
         some corePremise.thm
       else none 
     | none => none
@@ -48,9 +50,9 @@ def serial (testLines : Array String)(preChecked: Bool := false) : IO Unit := do
     | some corePremise =>
       count := count + 1
       let ids := corePremise.ids.map (·.toName)
-      let check := preChecked || ids.all (
+      let check := preChecked || (ids.all (
         fun n ↦
-          (``Eq).isPrefixOf n || (``Iff).isPrefixOf n)
+          (``Eq).isPrefixOf n || (``Iff).isPrefixOf n))
       if check && corePremise.lemmas.isEmpty &&
         corePremise.terms.isEmpty then
         premiselessCount := premiselessCount + 1
@@ -85,7 +87,7 @@ def main (_: List String) : IO Unit := do
   let testLines := 
     (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "core", "test.jsonl"]))
   IO.println "filtering"
-  let premiseless := filterPremiseless testLines
+  let premiseless := filterPremiseless testLines true
   IO.println s!"filtered: {premiseless.size} premiseless of {testLines.size} total"
 
   serial premiseless true
