@@ -41,12 +41,12 @@ def elabThm4 (s : String)(opens: List String := [])
   let env ← getEnv
   let stx? := Lean.Parser.runParserCategory env `theorem_statement  s
   match stx? with
-  | Except.error err => throwError s!"{err} for:\n {s}"
+  | Except.error err => return Except.error s!"{err} for:\n {s}"
   | Except.ok stx =>
     match ← elabThmFromStx stx opens levelNames with
     | Except.error err₁ => 
       match ← elabThmFromStx (← lean4NamesSyntax stx) opens levelNames with
-      | Except.error err₂ => throwError s!"{err₁}\n{err₂} (with lean4NamesSyntax)"
+      | Except.error err₂ => return Except.error s!"{err₁}\n{err₂} (with lean4NamesSyntax)"
       | Except.ok e => return Except.ok e
     | Except.ok e => return  Except.ok e
 
