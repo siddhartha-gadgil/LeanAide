@@ -239,3 +239,5 @@ def structuralTerm (stx: Syntax) : MetaM Bool := do
     let check := (``Eq).isPrefixOf n || (``Iff).isPrefixOf n
     -- IO.println s!"function with name: {n}; blocked: {check}"
     return check
+
+def openAIKey : IO (Option String) := IO.getEnv "OPENAI_API_KEY"

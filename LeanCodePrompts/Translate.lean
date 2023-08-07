@@ -116,8 +116,6 @@ s!"{thm} :=
           ) s!"{statement} := 
 /- "
 
-def openAIKey : IO (Option String) := IO.getEnv "OPENAI_API_KEY"
-
 /--query OpenAI Codex with given prompt and parameters -/
 def codexQuery(prompt: String)(n: Nat := 1)
   (temp : JsonNumber := ⟨8, 1⟩)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json := do
