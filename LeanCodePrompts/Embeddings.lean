@@ -14,16 +14,16 @@ def readEmbeddings : IO <| Std.HashMap String FloatArray :=  do
   let jsonArr := json.getArr? |>.toOption.get!
   let mut accum := Std.HashMap.empty
   for jsLine in jsonArr do
-    let name := 
+    let doc := 
       match jsLine.getObjValAs? String "docString" with
-      | Except.ok name => name
+      | Except.ok doc => doc
       | Except.error err => panic! s!"error reading docString: {err}" 
     let embedding':= 
       match jsLine.getObjValAs? (List Float) "embedding" with
       | Except.ok embedding => embedding
       | Except.error err => panic! s!"error reading embedding: {err}" 
     let embedding := embedding'.toFloatArray
-    accum := accum.insert name embedding
+    accum := accum.insert doc embedding
     count := count + 1
     if count % 1000 == 0 then    
       IO.println s!"read {count} embeddings"
@@ -35,17 +35,20 @@ def readEmbeddingsArray : IO <| Array <| String ×  FloatArray :=  do
   let json := Json.parse blob |>.toOption.get!
   let jsonArr := json.getArr? |>.toOption.get!
   let mut accum := #[]
+  let mut docs : Array String := #[]
   for jsLine in jsonArr do
-    let name := 
+    let doc := 
       match jsLine.getObjValAs? String "docString" with
-      | Except.ok name => name
+      | Except.ok doc => doc
       | Except.error err => panic! s!"error reading docString: {err}" 
     let embedding':= 
       match jsLine.getObjValAs? (List Float) "embedding" with
       | Except.ok embedding => embedding
       | Except.error err => panic! s!"error reading embedding: {err}" 
     let embedding := embedding'.toFloatArray
-    accum := accum.push (name, embedding)
+    unless docs.contains doc do
+      docs := docs.push doc
+      accum := accum.push (doc, embedding)
     count := count + 1
     if count % 1000 == 0 then    
       IO.println s!"read {count} embeddings"
