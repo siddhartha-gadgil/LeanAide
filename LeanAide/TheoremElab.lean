@@ -116,7 +116,7 @@ def elabThmFromStx (stx : Syntax)(opens: List String := [])
             -- IO.println s!"{(←PrettyPrinter.delab expr).raw.reprint}"
             return Except.ok expr
           catch e => 
-            return Except.error s!"{← e.toMessageData.toString} ; identifiers {idents termStx} (during elaboration)"
+            return Except.error s!"{← e.toMessageData.toString} ; identifiers {idents termStx} (during elaboration) for {termStx.reprint.get!}"
         | Except.error e => 
             return Except.error s!"parsed to {funStx}; error while parsing as theorem: {e}" 
 

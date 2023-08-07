@@ -7,6 +7,14 @@ import LeanAide.Premises
 open Lean Meta Elab Parser Json.Parser
 open Mathlib.Prelude.Rename
 
+#check FiniteDimensional.finrank
+
+universe u v
+
+example: ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V]
+  (h : FiniteDimensional.finrank K V = 2), FiniteDimensional K V := by sorry
+ 
+
 /-- Subtract `m` and `n` in the presence of a proof that `n ≤ m`. -/
 def minus (m n : ℕ)(hyp : n ≤ m) : ℕ :=
   match m, n, hyp with
