@@ -32,7 +32,7 @@ def filterPremiseless (init : Array String) : Array String :=
     | none => none
 
 
-def serial (testLines : Array String) : IO Unit := do
+def serial (testLines : Array String)(preChecked: Bool := false) : IO Unit := do
   let env ← environment
   let mut count := 0
   let mut premiselessCount := 0
@@ -48,7 +48,7 @@ def serial (testLines : Array String) : IO Unit := do
     | some corePremise =>
       count := count + 1
       let ids := corePremise.ids.map (·.toName)
-      let check := ids.all (
+      let check := preChecked || ids.all (
         fun n ↦
           (``Eq).isPrefixOf n || (``Iff).isPrefixOf n)
       if check && corePremise.lemmas.isEmpty &&
@@ -84,12 +84,12 @@ def main (_: List String) : IO Unit := do
   -- let env ← environment
   let testLines := 
     (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "core", "test.jsonl"]))
+  IO.println "filtering"
+  let premiseless := filterPremiseless testLines
+  IO.println s!"filtered: {premiseless.size} premiseless of {testLines.size} total"
+
   serial testLines
 
-  -- IO.println "filtering"
-  -- let premiseless := filterPremiseless testLines
-  -- IO.println s!"filtered: {premiseless.size} premiseless of {testLines.size} total"
-  -- let premiseless := premiseless.eraseIdx 0 -- temporary hack
   -- let concurrency := (← threadNum) * 3 / 4
   -- let batches := premiseless.batches' concurrency
   -- let mut count := 0

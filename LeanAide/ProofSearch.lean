@@ -50,17 +50,20 @@ def proofSearchM (thm: String)(tacs: Array String := powerTactics) : TermElabM <
       let goals ←
         runAesop 0.5 #[] #[] #[] tacs mvarId
       let proved := goals.isEmpty
-      if proved then
-        let pair? ← getMsgTactic?
-        match pair? with
-        | none => IO.println "could not extract proof"
-        | some (pfScript, _) =>
-          let pfScript:= 
-            (← PrettyPrinter.ppCategory `tacticSeq pfScript).pretty
-          let code := s!"example: {← ppExpr type} := by\n{pfScript}\n\n"
-          IO.println code
-      else
-        IO.println "example: {← ppExpr type} := by sorry\n\n"
+      let code : String ← 
+        if proved 
+        then
+          let pair? ← getMsgTactic?
+          match pair? with
+          | none => 
+            pure "sorry -- could not extract proof"
+          | some (pfScript, _) =>
+            let pfScript:= 
+              (← PrettyPrinter.ppCategory `tacticSeq pfScript).pretty
+            pure pfScript
+        else 
+            pure s!"sorry"
+      IO.println s!"example: {← ppExpr type} := by\n{code}\n\n"
       return (true, proved)
     catch _ =>
       return (true, false)
