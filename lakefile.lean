@@ -74,6 +74,8 @@ lean_exe batchcheck{
   supportInterpreter := true
 }
 
+lean_exe nearest_embeddings
+
 
 lean_exe getpremises{
   supportInterpreter := true

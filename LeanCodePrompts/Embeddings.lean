@@ -67,7 +67,7 @@ def insertBy (l: List α)(cost : α → Float)(sizeBound: Nat)(x : α) : List α
     | [] => [x]
     | y :: ys =>
       if cost x < cost y then
-        x :: l
+        x :: l |>.take k
       else
         y :: insertBy ys cost k x
 
@@ -85,8 +85,12 @@ def nearestDocsToEmbedding (data : Array <| String ×  FloatArray)
   pairs.map <| fun (doc, _) => doc
 
 unsafe def getNearestDocsToEmbedding (embedding : Array Float) (k : Nat)(dist: FloatArray → Array Float → Float := distL2Sq) : IO (List String) := do
-  withUnpickle  "rawdata/mathlib4-thms-embeddings.json.olean" <| fun (data: Array <| String ×  FloatArray) =>
-  pure <| nearestDocsToEmbedding data embedding k dist
+    let (data, _) 
+      ← unpickle (Array <| String ×  FloatArray)  "rawdata/mathlib4-thms-embeddings.json.olean" 
+    -- IO.println s!"data size: {data.size}" 
+    let res := nearestDocsToEmbedding data embedding k dist
+    -- IO.println s!"nearestDocsToEmbedding complete: {res}"
+    return res
 
 def embedQuery (doc: String) : IO <| Except String Json := do
   let key? ← openAIKey
@@ -107,22 +111,30 @@ def embedQuery (doc: String) : IO <| Except String Json := do
 
 -- #eval embedQuery "There are infinitely many odd numbers"
 
-unsafe def nearestDocsToDoc (doc: String)(k : Nat)(dist: FloatArray → Array Float → Float := distL2Sq) : CoreM (List String) := do
+unsafe def nearestDocsToDoc (doc: String)(k : Nat)(dist: FloatArray → Array Float → Float := distL2Sq) : IO (List String) := do
+  -- IO.println s!"querying openai for embedding of {doc}"
   let queryRes? ← embedQuery doc
+  -- IO.println "query complete"
   match queryRes? with
   | Except.ok queryRes =>
+    -- IO.println s!"query result obtained"
     let queryData? := queryRes.getObjVal? "data"
     match queryData? with
     | Except.error error => 
-        throwError s!"no data in query result: {error}"
+        IO.println s!"no data in query result: {error}"
+        panic s!"no data in query result: {error}"
     | Except.ok queryDataArr =>
+      -- IO.println s!"data in query result obtained"
       let queryData := queryDataArr.getArrVal? 0 |>.toOption.get!
       match queryData.getObjValAs? (Array Float) "embedding" with
       | Except.ok queryEmbedding => 
-        getNearestDocsToEmbedding queryEmbedding k dist
+        -- IO.println s!"embedding in query result obtained"
+        let res ← getNearestDocsToEmbedding queryEmbedding k dist
+        -- IO.println s!"getNearestDocsToEmbedding complete: {res}"
+        pure res
       | Except.error error =>
-        throwError s!"no embedding in query result: {error} in {queryData}"
+        panic s!"no embedding in query result: {error} in {queryData}"
   | Except.error err => panic! s!"error querying openai: {err}"
 
--- #eval nearestDocsToDoc "There are infinitely many odd numbers" 10
+-- #eval nearestDocsToDoc "There are infinitely many odd numbers" 3
 
