@@ -7,6 +7,9 @@ import Mathlib
 
 open Std Lean
 
+initialize embeddingsRef  : IO.Ref (Array <| String ×  FloatArray)
+        ← IO.mkRef #[]
+
 def readEmbeddings : IO <| Std.HashMap String FloatArray :=  do
   let mut count := 0
   let blob ← IO.FS.readFile "rawdata/mathlib4-thms-embeddings.json"
@@ -84,12 +87,16 @@ def nearestDocsToEmbedding (data : Array <| String ×  FloatArray)
       insertBy acc (fun (_, flArr) ↦ dist flArr embedding) k pair) []
   pairs.map <| fun (doc, _) => doc
 
+unsafe def loadEmbeddings: IO Unit := do
+    if (← embeddingsRef.get).isEmpty then
+      let (data, _) ← unpickle (Array <| String ×  FloatArray)  "rawdata/mathlib4-thms-embeddings.json.olean" 
+      embeddingsRef.set data
+    return ()
+
 unsafe def getNearestDocsToEmbedding (embedding : Array Float) (k : Nat)(dist: FloatArray → Array Float → Float := distL2Sq) : IO (List String) := do
-    let (data, _) 
-      ← unpickle (Array <| String ×  FloatArray)  "rawdata/mathlib4-thms-embeddings.json.olean" 
-    -- IO.println s!"data size: {data.size}" 
+    loadEmbeddings
+    let data ← embeddingsRef.get 
     let res := nearestDocsToEmbedding data embedding k dist
-    -- IO.println s!"nearestDocsToEmbedding complete: {res}"
     return res
 
 def embedQuery (doc: String) : IO <| Except String Json := do
