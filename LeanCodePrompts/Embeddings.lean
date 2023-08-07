@@ -62,6 +62,23 @@ unsafe def loadEmbeddingsTest : IO Nat :=
 
 -- #eval loadEmbeddingsTest
 
+-- Avoiding recomputing distances
+def insertByMemo (l: List <| α × Float)(cost : α → Float)(sizeBound: Nat)
+    (x : α) (cx? : Option Float := none) : List <| α × Float :=
+  match sizeBound with
+  | 0 => l
+  | k + 1 =>
+    match l with
+    | [] => [(x, cost x)]
+    | (y, cy) :: ys =>
+      let cx := match cx? with
+        | some c => c
+        | none => cost x
+      if cx < cy then
+        (x, cx) :: l |>.take k
+      else
+        (y, cy) :: insertByMemo ys cost k x (some cx)
+
 def insertBy (l: List α)(cost : α → Float)(sizeBound: Nat)(x : α) : List α :=
   match sizeBound with
   | 0 => l
@@ -82,10 +99,11 @@ def distL2Sq (v₁ : FloatArray) (v₂ : Array Float) : Float :=
 def nearestDocsToEmbedding (data : Array <| String ×  FloatArray) 
   (embedding : Array Float) (k : Nat)
   (dist: FloatArray → Array Float → Float := distL2Sq) : List String :=
-  let pairs : List <| String × FloatArray := 
-    data.foldl (fun (acc : List <| String × FloatArray) (pair : String × FloatArray) => 
-      insertBy acc (fun (_, flArr) ↦ dist flArr embedding) k pair) []
-  pairs.map <| fun (doc, _) => doc
+  let pairs : List <| (String × FloatArray) × Float := 
+    data.foldl (fun (acc : List <| (String × FloatArray) × Float) 
+      (pair : String × FloatArray) => 
+      insertByMemo acc (fun (_, flArr) ↦ dist flArr embedding) k pair) []
+  pairs.map <| fun ((doc, _), _) => doc
 
 unsafe def loadEmbeddings: IO Unit := do
     if (← embeddingsRef.get).isEmpty then

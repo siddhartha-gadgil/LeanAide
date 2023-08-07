@@ -6,6 +6,6 @@ open Lean
 unsafe def main (args: List String) : IO Unit := do
   let doc := args.head!
   -- IO.println doc
-  let embs ← nearestDocsToDoc doc 3
+  let embs ← nearestDocsToDoc doc 10
   -- IO.println "complete"
   IO.println <| Lean.Json.arr <| embs.toArray.map Json.str
