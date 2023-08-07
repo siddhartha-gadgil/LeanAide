@@ -58,7 +58,7 @@ def readEmbeddingsArray : IO <| Array <| String ×  FloatArray :=  do
   return accum
 
 unsafe def loadEmbeddingsTest : IO Nat := 
-  withUnpickle  "rawdata/mathlib4-thms-embeddings.json.olean" <| fun (data: Array <| String ×  FloatArray) => pure data.size
+  withUnpickle  "rawdata/mathlib4-thms-embeddings.olean" <| fun (data: Array <| String ×  FloatArray) => pure data.size
 
 -- #eval loadEmbeddingsTest
 
@@ -107,7 +107,7 @@ def nearestDocsToEmbedding (data : Array <| String ×  FloatArray)
 
 unsafe def loadEmbeddings: IO Unit := do
     if (← embeddingsRef.get).isEmpty then
-      let (data, _) ← unpickle (Array <| String ×  FloatArray)  "rawdata/mathlib4-thms-embeddings.json.olean" 
+      let (data, _) ← unpickle (Array <| String ×  FloatArray)  "rawdata/mathlib4-thms-embeddings.olean" 
       embeddingsRef.set data
     return ()
 

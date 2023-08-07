@@ -14,7 +14,13 @@ universe u v
 example: ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V]
   (h : FiniteDimensional.finrank K V = 2), FiniteDimensional K V := by sorry
  
-
+example (a b c: ℕ) : a + b + c = c + b + a := by
+  conv  => 
+    congr
+    conv =>
+      congr
+      rw [Nat.add_comm]
+  sorry
 /-- Subtract `m` and `n` in the presence of a proof that `n ≤ m`. -/
 def minus (m n : ℕ)(hyp : n ≤ m) : ℕ :=
   match m, n, hyp with

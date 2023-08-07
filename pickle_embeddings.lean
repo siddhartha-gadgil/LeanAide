@@ -3,4 +3,4 @@ import Mathlib.Util.Pickle
 
 def main : IO Unit := do
   let embArr ← readEmbeddingsArray
-  pickle "rawdata/mathlib4-thms-embeddings.json.olean" embArr
+  pickle "rawdata/mathlib4-thms-embeddings.olean" embArr
