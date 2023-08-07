@@ -5262,3 +5262,413 @@ Writing to file: silly-elab-10-false-5-8.json
 
 Writing to file: silly-elab-10-false-5-8.json
 
+Writing to file: silly-elab-10-false-5-8.json
+
+success
+
+theorem ∀ (p : ℕ), Nat.Prime p → p = 2 ∨ p % 2 = 1
+
+total : 1
+
+elaborated: 1
+
+success
+
+theorem ∀ (n : ℕ), ∃ m, m > n ∧ Odd m
+
+total : 2
+
+elaborated: 2
+
+success
+
+theorem ∀ {p : ℕ}, Nat.Prime p → 2 < p → 3 ≤ p
+
+total : 3
+
+elaborated: 3
+
+success
+
+theorem ∀ {n : ℕ}, ∃ p, Nat.Prime p ∧ p > n ∧ Odd p
+
+total : 4
+
+elaborated: 4
+
+success
+
+theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],
+  FiniteDimensional.finrank K V = 2 → FiniteDimensional K V
+
+total : 5
+
+elaborated: 5
+
+success
+
+theorem {K : Type u} → [inst : Field K] → DivisionRing K
+
+total : 6
+
+elaborated: 6
+
+success
+
+theorem ∀ (k : Type u_1) (V : Type u_2) [inst : DivisionRing k] [inst_1 : AddCommGroup V] [inst_2 : Module k V],
+  FiniteDimensional.finrank k V = 2 → FiniteDimensional k V
+
+total : 7
+
+elaborated: 7
+
+success
+
+theorem ∀ (n : ℕ), ∃ m, n = Nat.succ m
+
+total : 8
+
+elaborated: 8
+
+success
+
+theorem ∀ (n : ℕ), n < Nat.succ n
+
+total : 9
+
+elaborated: 9
+
+success
+
+theorem ∀ {α : Type u_1} [inst : MeasurableSpace α] (s : Set α), MeasurableSet s
+
+total : 10
+
+elaborated: 10
+
+No valid output from Codex; outputs below
+
+∀ {α : Type u_1} [inst : TopologicalSpace α] [inst_1 : MeasurableSpace α] [inst_2 : BorelSpace α]
+  {μ : MeasureTheory.Measure α} [MeasureTheory.is_finite_measure μ],
+  (∀ (s :  ZFSet α), MeasurableSet s → μ s = 0 → MeasurableSet s)
+
+∀ {α : Type u_1} [inst : TopologicalSpace α] {μ : MeasureTheory.Measure α} [inst_1 : T2Space α] [S : MeasurableSpace α]
+  [inst_2 : BorelSpace α], ∀ (s :  ZFSet α), MeasureTheory.measureμ μ s = 0 → MeasurableSet s
+
+∀ {α : Type u_1} [inst : TopologicalSpace α] (μ : MeasureTheory.Measure α) [inst_1 : T2Space α] [inst_2 : SigmaFinite μ]
+  [inst_3 : MeasurableSpace α] [inst_4 : BorelSpace α] {s :  ZFSet α},
+  μ s = 0 → MeasurableSet s
+
+∀ {α : Type u_1} [inst : TopologicalSpace α] [inst_1 : MeasurableSpace α] [inst_2 : BorelSpace α]
+  {s :  ZFSet α}, MeasureTheory.measureOf s = 0 → MeasurableSet s
+
+∀ {α : Type u_1} [inst : TopologicalSpace α] (μ : MeasureTheory.Measure α) [inst_1 : BorelSpace α],
+  (∀ (s :  ZFSet α), MeasureTheory.measureOf μ s = 0 → MeasurableSet s)
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u_1} [inst : TopologicalSpace α] [inst_1 : MeasurableSpace α] [inst_2 : BorelSpace α]
+  {μ : MeasureTheory.Measure α} [MeasureTheory.is_finite_measure μ],
+  (∀ (s : Set α), MeasurableSet s → μ s = 0 → MeasurableSet s), ∀ {α : Type u_1} [inst : TopologicalSpace α] {μ : MeasureTheory.Measure α} [inst_1 : T2Space α] [S : MeasurableSpace α]
+  [inst_2 : BorelSpace α], ∀ (s : Set α), MeasureTheory.measureμ μ s = 0 → MeasurableSet s, ∀ {α : Type u_1} [inst : TopologicalSpace α] (μ : MeasureTheory.Measure α) [inst_1 : T2Space α] [inst_2 : SigmaFinite μ]
+  [inst_3 : MeasurableSpace α] [inst_4 : BorelSpace α] {s : Set α},
+  μ s = 0 → MeasurableSet s, ∀ {α : Type u_1} [inst : TopologicalSpace α] [inst_1 : MeasurableSpace α] [inst_2 : BorelSpace α]
+  {s : Set α}, MeasureTheory.measureOf s = 0 → MeasurableSet s, ∀ {α : Type u_1} [inst : TopologicalSpace α] (μ : MeasureTheory.Measure α) [inst_1 : BorelSpace α],
+  (∀ (s : Set α), MeasureTheory.measureOf μ s = 0 → MeasurableSet s)]
+
+total : 11
+
+elaborated: 10
+
+success
+
+theorem ∀ {p : ℕ}, Nat.Prime p → ¬IsSquare p
+
+total : 12
+
+elaborated: 11
+
+success
+
+theorem ∀ {p : ℕ}, Nat.Prime p → p > 2
+
+total : 13
+
+elaborated: 12
+
+success
+
+theorem ∀ {a b : ℕ} {c d e f g h : ℕ},
+  (∃ x₁ y₁ z₁ w₁ x₂ y₂ z₂ w₂, a = x₁ ^ 2 + y₁ ^ 2 + z₁ ^ 2 + w₁ ^ 2 ∧ b = x₂ ^ 2 + y₂ ^ 2 + z₂ ^ 2 + w₂ ^ 2) →
+    ∃ x y z w, a * b = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2
+
+total : 14
+
+elaborated: 13
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : CompactSpace α], LocallyCompactSpace α
+
+total : 15
+
+elaborated: 14
+
+success
+
+theorem ∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β},
+  Continuous f → UniformContinuous f
+
+total : 16
+
+elaborated: 15
+
+success
+
+theorem ∀ (a b : ℕ), a ≠ b → Nat.Prime a → Nat.Prime b → a + b ≠ 6
+
+total : 17
+
+elaborated: 16
+
+success
+
+theorem ∀ (n : ℤ), ¬Irrational ↑n
+
+total : 18
+
+elaborated: 17
+
+success
+
+theorem ∀ {R : Type u} [inst : Semiring R], IsUnit 1
+
+total : 19
+
+elaborated: 18
+
+success
+
+theorem {G : Type u_1} → [inst : Group G] → (H : Subgroup G) → Group { x // x ∈ H }
+
+total : 20
+
+elaborated: 19
+
+No valid output from Codex; outputs below
+
+∀ {a b : ℕ}, nat.add a b = a + b
+
+∀ {m n : ℕ}, nat.succ (m + n) = m + nat.succ n
+
+∀ (m n : ℕ), is_nat (m + n)
+
+∀ {m n : ℕ}, is_nat (m + n)
+
+failed to elaborate
+
+outputs: #[∀ {a b : ℕ}, nat.add a b = a + b, ∀ {m n : ℕ}, nat.succ (m + n) = m + nat.succ n, ∀ (m n : ℕ), is_nat (m + n), ∀ {m n : ℕ}, is_nat (m + n)]
+
+total : 21
+
+elaborated: 19
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Monoid G], IsOfFinOrder 1
+
+total : 22
+
+elaborated: 20
+
+success
+
+theorem Fact (Nat.Prime 7)
+
+total : 23
+
+elaborated: 21
+
+success
+
+theorem ∃ p, Nat.Prime p ∧ p < 8 ∧ ∃ q, Nat.Prime q ∧ q < p ∧ ∃ r, Nat.Prime r ∧ r < q
+
+total : 24
+
+elaborated: 22
+
+success
+
+theorem ∀ {α : Type u} {a : Set α}, Set.Finite a → ∅ ⊆ a
+
+total : 25
+
+elaborated: 23
+
+No valid output from Codex; outputs below
+
+∀ {α : Type u} {s :  ZFSet α}, Infinite s → Set.Finite {x : α | x ∈ s}
+
+<input>:1:43: expected '(', '_' or identifier while parsing ∀ {α : Type u} {s : Set α}, Infinite s → ∃ {t : Set α}, Set.Finite t ∧ t ⊆ s
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u} {s : Set α}, Infinite s → Set.Finite {x : α | x ∈ s}, ∀ {α : Type u} {s : Set α}, Infinite s → ∃ {t : Set α}, Set.Finite t ∧ t ⊆ s]
+
+total : 26
+
+elaborated: 23
+
+success
+
+theorem (R : Type u_1) → [inst : CommRing R] → Monoid R
+
+total : 27
+
+elaborated: 24
+
+No valid output from Codex; outputs below
+
+<input>:1:16: expected ',' while parsing ¬∃ (F : Type u) [inst : Field F] [inst_1 : Finite F], Fintype.card F = 10
+
+∀ (F : Type u_1) [inst : Field F], Fintype.card F ≠ 10
+
+<input>:1:58: expected token while parsing ∀ (F : Type u) [inst : Field F] [inst_1 : Finite F], ¬(F ≃ₘ Finₓ 10)
+
+failed to elaborate
+
+outputs: #[¬∃ (F : Type u) [inst : Field F] [inst_1 : Finite F], Fintype.card F = 10, ∀ (F : Type u_1) [inst : Field F], Fintype.card F ≠ 10, ∀ (F : Type u) [inst : Field F] [inst_1 : Finite F], ¬(F ≃ₘ Finₓ 10)]
+
+total : 28
+
+elaborated: 24
+
+success
+
+theorem ∀ {n : ℕ}, Odd n → ∃ x y, x ≠ y ∧ n = x + y
+
+total : 29
+
+elaborated: 25
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Monoid G] {x : G}, IsOfFinOrder x ↔ True
+
+total : 30
+
+elaborated: 26
+
+success
+
+theorem ∀ {n : ℕ}, Even n → Even (n ^ 2)
+
+total : 31
+
+elaborated: 27
+
+success
+
+theorem ∀ {R : Type u} [inst : CommRing R] [inst_1 : IsDomain R], IsField R
+
+total : 32
+
+elaborated: 28
+
+success
+
+theorem ∀ {α : Type u} [inst : MulOneClass α], id 1 = 1
+
+total : 33
+
+elaborated: 29
+
+success
+
+theorem ∀ {α : Type u_1} (x : α), Function.IsFixedPt id x
+
+total : 34
+
+elaborated: 30
+
+success
+
+theorem ∀ {α : Type u} [inst : PseudoMetricSpace α] {x : α}, Metric.diam {x} = 0
+
+total : 35
+
+elaborated: 31
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G], ¬(G → false = true)
+
+total : 36
+
+elaborated: 32
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] (j : Set α),
+  IsConnected j → ∀ (x : α), x ∈ j → IsConnected (connectedComponent x)
+
+total : 37
+
+elaborated: 33
+
+success
+
+theorem ∃ M, Ideal.IsMaximal M
+
+total : 38
+
+elaborated: 34
+
+success
+
+theorem PythagoreanTriple 3 4 5
+
+total : 39
+
+elaborated: 35
+
+No valid output from Codex; outputs below
+
+<input>:1:0: expected '/--', ':' or term while parsing import linear_algebra.basis
+
+namespace vector_space
+
+variables (K : Type*) (V : Type*) [field K] [add_comm_group V] [vector_space K V]
+
+lemma empty_set_basis_trivial (h : ¬(basis (set.empty : set V) K V)) : subspace.dim K V = 0 
+
+∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 :  AddCommGroupCat V] [inst_2 :  ModuleCat K V],
+  ¬(Basis (∅ :  ZFSet V) K V) ↔ IsTrivial V
+
+∀ (k : Type u_2) (V : Type u_3) [inst : Field k] [inst_1 :  AddCommGroupCat V] [inst_2 :  ModuleCat k V],
+  Basis ∅ k V → FiniteDimensional k V → Subsingleton V
+
+∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 :  AddCommGroupCat V] [inst_2 :  ModuleCat K V],
+  Basis ∅ K V → IsTrivial V
+
+∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 :  AddCommGroupCat V] [inst_2 :  ModuleCat K V],
+  Basis ∅ K V → Subsingleton V
+
+failed to elaborate
+
+outputs: #[import linear_algebra.basis
+
+namespace vector_space
+
+variables (K : Type*) (V : Type*) [field K] [add_comm_group V] [vector_space K V]
+
+lemma empty_set_basis_trivial (h : ¬(basis (set.empty : set V) K V)) : subspace.dim K V = 0 , ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],
+  ¬(Basis (∅ : Set V) K V) ↔ IsTrivial V, ∀ (k : Type u_2) (V : Type u_3) [inst : Field k] [inst_1 : AddCommGroup V] [inst_2 : Module k V],
+  Basis ∅ k V → FiniteDimensional k V → Subsingleton V, ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],
+  Basis ∅ K V → IsTrivial V, ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],
+  Basis ∅ K V → Subsingleton V]
+
+total : 40
+
+elaborated: 35
+
