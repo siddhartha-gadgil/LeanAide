@@ -88,7 +88,7 @@ def main (_: List String) : IO Unit := do
   let premiseless := filterPremiseless testLines
   IO.println s!"filtered: {premiseless.size} premiseless of {testLines.size} total"
 
-  serial premiseless
+  serial premiseless true
 
   -- let concurrency := (← threadNum) * 3 / 4
   -- let batches := premiseless.batches' concurrency
