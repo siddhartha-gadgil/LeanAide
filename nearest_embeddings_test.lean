@@ -31,3 +31,22 @@ def main (args : List String) : IO Unit := do
   _stdioCfg.kill
   IO.println "Done. \n\n"
   IO.println outputs
+
+def IO.Process.withStdin (args : SpawnArgs) (input : String) : IO Output := do
+  let child₀ ← spawn { args with stdin := .piped, stdout := .piped, stderr := .piped }
+  let (stdin, child) ← child₀.takeStdin
+  stdin.putStr input
+  stdin.flush
+  let stdout ← IO.asTask child.stdout.readToEnd .dedicated
+  let stderr ← child.stderr.readToEnd
+  let exitCode ← child.wait
+  let stdout ← IO.ofExcept stdout.get
+  pure { exitCode := exitCode, stdout := stdout, stderr := stderr }
+
+#eval do -- works
+  let out ← IO.Process.withStdin {cmd := "gp", args := #["-q"]} "(x + 1) * (x - 1)" 
+  return out.stdout
+
+#eval do -- loops
+  let out ← IO.Process.withStdin {cmd := "./build/bin/nearest_embeddings", args := #["2"]} "hello" 
+  return out.stdout
