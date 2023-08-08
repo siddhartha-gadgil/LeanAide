@@ -68,28 +68,36 @@ def insertByMemo (l: List <| α × Float)(cost : α → Float)(sizeBound: Nat)
   match sizeBound with
   | 0 => l
   | k + 1 =>
+    let cx := match cx? with
+    | some c => c
+    | none => cost x
     match l with
-    | [] => [(x, cost x)]
+    | [] => [(x, cx)]
     | (y, cy) :: ys =>
-      let cx := match cx? with
-        | some c => c
-        | none => cost x
       if cx < cy then
         (x, cx) :: l |>.take k
       else
         (y, cy) :: insertByMemo ys cost k x (some cx)
 
-def insertBy (l: List α)(cost : α → Float)(sizeBound: Nat)(x : α) : List α :=
+def insertByMemo' (l: Array <| α × Float)(cost : α → Float)(sizeBound: Nat)
+    (x : α) (cx? : Option Float := none) : Array <| α × Float :=
   match sizeBound with
   | 0 => l
   | k + 1 =>
-    match l with
-    | [] => [x]
-    | y :: ys =>
-      if cost x < cost y then
-        x :: l |>.take k
-      else
-        y :: insertBy ys cost k x
+    let cx := match cx? with
+    | some c => c
+    | none => cost x
+    match l.findIdx? (fun (_, cy) => cx < cy) with
+    | some idx => 
+      l.insertAt idx (x, cx) |>.shrink k
+    | none => l.push (x, cx) |>.shrink k
+
+
+#check List.findIdx?
+#check Array.findIdx?
+
+#eval Array.insertAt! #[1, 3, 4] 1 2 |>.shrink 7
+#check Array.pop
 
 def distL2Sq (v₁ : FloatArray) (v₂ : Array Float) : Float :=
   let squaredDiffs : Array Float := 
@@ -99,11 +107,11 @@ def distL2Sq (v₁ : FloatArray) (v₂ : Array Float) : Float :=
 def nearestDocsToEmbedding (data : Array <| String ×  FloatArray) 
   (embedding : Array Float) (k : Nat)
   (dist: FloatArray → Array Float → Float := distL2Sq) : List String :=
-  let pairs : List <| (String × FloatArray) × Float := 
-    data.foldl (fun (acc : List <| (String × FloatArray) × Float) 
+  let pairs : Array <| (String × FloatArray) × Float := 
+    data.foldl (fun (acc : Array <| (String × FloatArray) × Float) 
       (pair : String × FloatArray) => 
-      insertByMemo acc (fun (_, flArr) ↦ dist flArr embedding) k pair) []
-  pairs.map <| fun ((doc, _), _) => doc
+      insertByMemo' acc (fun (_, flArr) ↦ dist flArr embedding) k pair) #[]
+  (pairs.map <| fun ((doc, _), _) => doc).toList
 
 unsafe def loadEmbeddings: IO Unit := do
     if (← embeddingsRef.get).isEmpty then
