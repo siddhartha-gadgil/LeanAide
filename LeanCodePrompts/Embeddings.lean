@@ -200,5 +200,4 @@ unsafe def nearestDocsToDoc (doc: String)(k : Nat)(dist: FloatArray → Array Fl
         panic s!"no embedding in query result: {error} in {queryData}"
   | Except.error err => panic! s!"error querying openai: {err}"
 
--- #eval nearestDocsToDoc "There are infinitely many odd numbers" 3
 
