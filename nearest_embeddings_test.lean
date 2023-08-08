@@ -1,23 +1,33 @@
-import nearest_embeddings
+import Lean
+open Lean
 
-def test (k : ℕ) (stmts : Array String) : IO (Array Lean.Json) := do
-  let stdioCfg ← IO.Process.spawn {
+def statements := #["hello", "world"]
+
+def main (args : List String) : IO Unit := do
+  IO.println "Loading ..."
+  let _stdioCfg ← IO.Process.spawn {
     stdin := .piped,
     stdout := .piped,
     stderr := .piped,
     cmd := "./build/bin/nearest_embeddings",
-    args := #[toString k],
+    args := args.toArray,
     cwd := "."
-  } 
+  }
+  IO.println "Running process ..."
   let mut outputs : Array Lean.Json := #[]
-  for stmt in stmts do
+  for stmt in statements do
     IO.println stmt
-    stdioCfg.stdin.putStrLn stmt
-    let out ← stdioCfg.stdout.getLine
-    IO.println out
-    let json ← IO.ofExcept <| Lean.Json.parse out
+    let (stdin, stdioCfg) ← _stdioCfg.takeStdin
+    stdin.putStrLn stmt
+    IO.println s!"Printed {stmt} to process `stdin` ..."
+    let stdout ← IO.asTask stdioCfg.stdout.getLine .dedicated
+    IO.println "Fetching `stdout` ..."
+    let stderr ← stdioCfg.stderr.readToEnd
+    let exitCode ← stdioCfg.wait
+    let stdout ← IO.ofExcept stdout.get
+    IO.println s!"Output {stdout} from `stdout` retrieved ..."
+    let json ← IO.ofExcept <| Lean.Json.parse stdout
     outputs := outputs.push json
-  stdioCfg.kill
-  return outputs
-
--- #eval test 5 #["hello", "world"]
+  _stdioCfg.kill
+  IO.println "Done. \n\n"
+  IO.println outputs

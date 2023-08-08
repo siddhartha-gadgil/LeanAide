@@ -13,7 +13,7 @@ def nearestDocsToDoc' (data : Array (String × FloatArray)) (doc : String) (k : 
 
 unsafe def main (args : List String) : IO Unit := do
   let [arg] := args | IO.throwServerError "Expected exactly one argument."
-  let k := String.toNat! arg
+  let k := arg.toNat!
 
   let stdin ← IO.getStdin
   let stdout ← IO.getStdout
@@ -35,6 +35,7 @@ where
   
   showNearestDocs (stdin stdout : IO.FS.Stream) (k : ℕ) (data : Array (String × FloatArray)): IO Unit := do
     let doc ← stdin.getLine
+    IO.println s!"Received {doc}"
     let embs ← nearestDocsToDoc' data doc k
     let out : Lean.Json := .arr <| embs.map fun (docstr, thm) ↦ .mkObj [("docstring", docstr), ("theorem", thm)]
     stdout.putStrLn out.compress
