@@ -26,7 +26,7 @@ def theoremField :=
 def sentenceSimPairs
   (s: String)
   (theoremField : String := theoremField)
-   : MetaM  <| Except String (Array (String × String)) := do
+   : IO  <| Except String (Array (String × String)) := do
   let json := Lean.Json.parse  s |>.toOption.get!
   return do
     (← json.getArr?).mapM <| fun j => do
@@ -58,7 +58,7 @@ def makePrompt(query : String)(pairs: Array (String × String)) : Json:= prompt 
 
 def makeFlipPrompt(query : String)(pairs: Array (String × String)) : Json:= prompt sysPrompt (pairs.toList.map (fun (x, y) => (y, x))) query
 
-def jsonToExprStrArray (json: Json) : TermElabM (Array String) := do
+def jsonToExprStrArray (json: Json) : CoreM (Array String) := do
   let outArr : Array String ← 
     match json.getArr? with
     | Except.ok arr => 
@@ -118,7 +118,7 @@ s!"{thm} :=
 
 /--query OpenAI Codex with given prompt and parameters -/
 def codexQuery(prompt: String)(n: Nat := 1)
-  (temp : JsonNumber := ⟨8, 1⟩)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json := do
+  (temp : JsonNumber := ⟨8, 1⟩)(stopTokens: Array String :=  #[":=", "-/"]) : CoreM Json := do
   let key? ← openAIKey
   let key := 
     match key? with
@@ -137,7 +137,7 @@ def codexQuery(prompt: String)(n: Nat := 1)
   return Lean.Json.parse out |>.toOption.get!
 
 def gptQuery(messages: Json)(n: Nat := 1)
-  (temp : JsonNumber := ⟨2, 1⟩)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json := do
+  (temp : JsonNumber := ⟨2, 1⟩)(stopTokens: Array String :=  #[":=", "-/"]) : CoreM Json := do
   let key? ← openAIKey
   let key := 
     match key? with
@@ -221,7 +221,7 @@ def fixedPrompts:= #[("If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\d
 
 /-- choosing pairs to build a prompt -/
 def getPromptPairs(s: String)(numSim : Nat)
-   : TermElabM (Array (String × String) × IO.Process.Output) := do
+   : IO <| Except String (Array (String × String)) := do
       let jsData := Json.mkObj [
         ("filename", fileName),
         ("field", docField),
@@ -232,16 +232,18 @@ def getPromptPairs(s: String)(numSim : Nat)
       let simJsonOut ←  
         IO.Process.output {cmd:= "curl", args:= 
           #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, s!"{← leanAideIP}/nearest_prompts"]}
+      unless simJsonOut.exitCode == 0 do
+        return Except.error s!"curl failed with exit code {simJsonOut.exitCode}¬{simJsonOut.stderr}"
       let pairs? ← sentenceSimPairs simJsonOut.stdout theoremField
       -- IO.println s!"obtained sentence similarity; time : {← IO.monoMsNow}"
       let allPairs : Array (String × String) ← 
         match pairs? with
         | Except.error e =>
-            throwError e            
+            return Except.error e            
         | Except.ok pairs => pure pairs    
       -- logInfo m!"all pairs: {allPairs}"        
       let allPairs := allPairs.toList.eraseDups.toArray
-      return (allPairs.toList.eraseDups.toArray, simJsonOut)
+      return Except.ok allPairs.toList.eraseDups.toArray
 
 /-- choosing pairs to build a prompt -/
 def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := docField)
@@ -282,10 +284,13 @@ def getCodeJson (s: String)(numSim : Nat:= 8)(includeFixed: Bool := Bool.false)(
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.insert s)
       -- work starts here; before this was caching, polling etc
-      let (pairs, IOOut) ←  
+      let pairs? ←  
         if numSim > 0 then  
           getPromptPairs s numSim 
-        else pure (#[], ⟨0, "", ""⟩)
+        else pure <| Except.ok #[]
+      match pairs? with
+      | Except.error e => throwError e
+      | Except.ok pairs => do
       let pairs := if includeFixed then pairs ++ fixedPrompts else pairs
       let pairs  := pairs.filter (fun (s, _) => s.length < 100) 
       let prompt := GPT.makePrompt s pairs
@@ -297,8 +302,7 @@ def getCodeJson (s: String)(numSim : Nat:= 8)(includeFixed: Bool := Bool.false)(
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.erase s)
-      if IOOut.exitCode = 0 then cacheJson s outJson 
-        else throwError m!"Web query error: {IOOut.stderr}"
+      cacheJson s outJson 
       return outJson
 
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and returns the best choice, throwing an error if nothing elaborates.  -/
@@ -378,7 +382,8 @@ def greedyArrayToExpr? (output: Array String) : TermElabM (Option Expr) := do
 
 /-- reverse translation from `Lean` to natural language -/
 def leanToPrompt (thm: String)(numSim : Nat:= 5)(temp : JsonNumber := 0)(textField : String := "text") : TermElabM String := do
-    let (pairs, _) ← getPromptPairs thm numSim 
+    let pairs? ← getPromptPairs thm numSim 
+    let pairs := pairs?.toOption.getD #[]
     let prompt := GPT.makeFlipPrompt thm pairs
     -- elabLog prompt
     let fullJson ← gptQuery prompt 1 temp
