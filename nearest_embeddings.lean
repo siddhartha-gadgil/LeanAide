@@ -27,7 +27,8 @@ unsafe def main (args : List String) : IO Unit := do
     }
     IO.println out
 
-  withUnpickle picklePath <| fun data ↦
+  withUnpickle picklePath <| fun data ↦ do
+    stdout.putStrLn "Nearest `mathlib` embeddings\n"
     showNearestDocs stdin stdout k data
 
 where
@@ -35,7 +36,6 @@ where
   
   showNearestDocs (stdin stdout : IO.FS.Stream) (k : ℕ) (data : Array (String × FloatArray)): IO Unit := do
     let doc ← stdin.getLine
-    IO.println s!"Received {doc}"
     let embs ← nearestDocsToDoc' data doc k
     let out : Lean.Json := .arr <| embs.map fun (docstr, thm) ↦ .mkObj [("docstring", docstr), ("theorem", thm)]
     stdout.putStrLn out.compress
