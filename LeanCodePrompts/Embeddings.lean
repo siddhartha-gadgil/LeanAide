@@ -149,10 +149,10 @@ unsafe def loadEmbeddings: IO Unit := do
 #check Std.HashMap
 
 unsafe def getNearestDocsToEmbedding (embedding : Array Float) (k : Nat)(dist: FloatArray → Array Float → Float := distL2Sq) : IO (List String) := do
-    IO.println s!"loading embeddings"
+    -- IO.println s!"loading embeddings"
     loadEmbeddings
     let data ← embeddingsRef.get 
-    IO.println s!"loaded embeddings: {data.size}"
+    -- IO.println s!"loaded embeddings: {data.size}"
     let res :=  nearestDocsToEmbedding data embedding k dist
     return res
 
@@ -176,9 +176,9 @@ def embedQuery (doc: String) : IO <| Except String Json := do
 -- #eval embedQuery "There are infinitely many odd numbers"
 
 unsafe def nearestDocsToDoc (doc: String)(k : Nat)(dist: FloatArray → Array Float → Float := distL2Sq) : IO (List String) := do
-  IO.println s!"querying openai for embedding of {doc}"
+  -- IO.println s!"querying openai for embedding of {doc}"
   let queryRes? ← embedQuery doc
-  IO.println "query complete"
+  -- IO.println "query complete"
   match queryRes? with
   | Except.ok queryRes =>
     -- IO.println s!"query result obtained"
@@ -192,7 +192,7 @@ unsafe def nearestDocsToDoc (doc: String)(k : Nat)(dist: FloatArray → Array Fl
       let queryData := queryDataArr.getArrVal? 0 |>.toOption.get!
       match queryData.getObjValAs? (Array Float) "embedding" with
       | Except.ok queryEmbedding => 
-        IO.println s!"embedding in query result obtained"
+        -- IO.println s!"embedding in query result obtained"
         let res ← getNearestDocsToEmbedding queryEmbedding k dist
         -- IO.println s!"getNearestDocsToEmbedding complete: {res}"
         pure res

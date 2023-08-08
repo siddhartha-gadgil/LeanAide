@@ -3,9 +3,14 @@ import LeanAide.Aides
 import Lean.Data.Json
 open Lean
 
-unsafe def main (args: List String) : IO Unit := do
-  let doc := args.head!
-  IO.println doc
+unsafe def show_nearest (stdin stdout : IO.FS.Stream) : IO Unit := do
+  let doc ← stdin.getLine
   let embs ← nearestDocsToDoc doc 10
-  IO.println "complete"
-  IO.println <| Lean.Json.arr <| embs.toArray.map Json.str
+  let out := Lean.Json.arr <| embs.toArray.map Json.str
+  stdout.putStrLn out.compress
+  show_nearest stdin stdout
+
+unsafe def main (_: List String) : IO Unit := do
+  let stdin ← IO.getStdin
+  let stdout ← IO.getStdout
+  show_nearest stdin stdout
