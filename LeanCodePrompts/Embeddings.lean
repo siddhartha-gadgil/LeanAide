@@ -62,24 +62,8 @@ unsafe def loadEmbeddingsTest : IO Nat :=
 
 -- #eval loadEmbeddingsTest
 
--- Avoiding recomputing distances
-def insertByMemo (l: List <| α × Float)(cost : α → Float)(sizeBound: Nat)
-    (x : α) (cx? : Option Float := none) : List <| α × Float :=
-  match sizeBound with
-  | 0 => l
-  | k + 1 =>
-    let cx := match cx? with
-    | some c => c
-    | none => cost x
-    match l with
-    | [] => [(x, cx)]
-    | (y, cy) :: ys =>
-      if cx < cy then
-        (x, cx) :: l |>.take k
-      else
-        (y, cy) :: insertByMemo ys cost k x (some cx)
 
-def insertByMemo' (l: Array <| α × Float)(cost : α → Float)(sizeBound: Nat)
+def insertByMemo (l: Array <| α × Float)(cost : α → Float)(sizeBound: Nat)
     (x : α) (cx? : Option Float := none) : Array <| α × Float :=
   match sizeBound with
   | 0 => l
@@ -92,22 +76,6 @@ def insertByMemo' (l: Array <| α × Float)(cost : α → Float)(sizeBound: Nat)
       l.insertAt idx (x, cx) |>.shrink k
     | none => l.push (x, cx) |>.shrink k
 
-def insertBy [BEq α][Hashable α] (l: Array α)(cost: Std.HashMap α Float)(sizeBound : Nat)
-  (x: α) : Array α:= 
-  match sizeBound with
-  | 0 => l
-  | k + 1 => 
-    match l.findIdx? (fun y => cost.find! x < cost.find! y) with
-    | some idx => 
-      l.insertAt idx x |>.shrink k
-    | none => l.push x |>.shrink k
-
-
-#check List.findIdx?
-#check Array.findIdx?
-
-#eval Array.insertAt! #[1, 3, 4] 1 2 |>.shrink 7
-#check Array.pop
 
 def distL2Sq (v₁ : FloatArray) (v₂ : Array Float) : Float :=
   let squaredDiffs : Array Float := 
@@ -120,41 +88,9 @@ def nearestDocsToEmbedding (data : Array <| String ×  FloatArray)
   let pairs : Array <| (String × FloatArray) × Float := 
     data.foldl (fun (acc : Array <| (String × FloatArray) × Float) 
       (pair : String × FloatArray) => 
-      insertByMemo' acc (fun (_, flArr) ↦ dist flArr embedding) k pair) #[]
+      insertByMemo acc (fun (_, flArr) ↦ dist flArr embedding) k pair) #[]
   (pairs.map <| fun ((doc, _), _) => doc).toList
 
-def nearestDocsToEmbedding' (data : Array <| String ×  FloatArray) 
-    (embedding : Array Float) (k : Nat)
-    (dist: FloatArray → Array Float → Float := distL2Sq) : 
-    IO <| Array String := do
-  IO.println s!"computing distances"
-  let mut distMap : Std.HashMap String Float := HashMap.empty
-  for (doc, flArr) in data do
-    distMap := distMap.insert doc (dist flArr embedding)
-  IO.println s!"computed distances: {distMap.size}"
-  IO.println s!"minimizing distances"
-  let docs := data.map (fun (doc, _) => doc)
-  return docs.foldl (fun (acc : Array String) (doc : String) => 
-    insertBy acc distMap k doc) #[]
-  
-  
-
-
-unsafe def loadEmbeddings: IO Unit := do
-    if (← embeddingsRef.get).isEmpty then
-      let (data, _) ← unpickle (Array <| String ×  FloatArray)  "rawdata/mathlib4-thms-embeddings.olean" 
-      embeddingsRef.set data
-    return ()
-
-#check Std.HashMap
-
-unsafe def getNearestDocsToEmbedding (embedding : Array Float) (k : Nat)(dist: FloatArray → Array Float → Float := distL2Sq) : IO (List String) := do
-    -- IO.println s!"loading embeddings"
-    loadEmbeddings
-    let data ← embeddingsRef.get 
-    -- IO.println s!"loaded embeddings: {data.size}"
-    let res :=  nearestDocsToEmbedding data embedding k dist
-    return res
 
 def embedQuery (doc: String) : IO <| Except String Json := do
   let key? ← openAIKey
@@ -175,8 +111,7 @@ def embedQuery (doc: String) : IO <| Except String Json := do
 
 -- #eval embedQuery "There are infinitely many odd numbers"
 
-unsafe def nearestDocsToDoc (doc: String)(k : Nat)(dist: FloatArray → Array Float → Float := distL2Sq) : IO (List String) := do
-  -- IO.println s!"querying openai for embedding of {doc}"
+def nearestDocsToDoc (data: Array (String × FloatArray))(doc: String)(k : Nat)(dist: FloatArray → Array Float → Float := distL2Sq) : IO (List String) := do
   let queryRes? ← embedQuery doc
   -- IO.println "query complete"
   match queryRes? with
@@ -193,11 +128,12 @@ unsafe def nearestDocsToDoc (doc: String)(k : Nat)(dist: FloatArray → Array Fl
       match queryData.getObjValAs? (Array Float) "embedding" with
       | Except.ok queryEmbedding => 
         -- IO.println s!"embedding in query result obtained"
-        let res ← getNearestDocsToEmbedding queryEmbedding k dist
+        let res := nearestDocsToEmbedding data queryEmbedding k dist
         -- IO.println s!"getNearestDocsToEmbedding complete: {res}"
         pure res
       | Except.error error =>
         panic s!"no embedding in query result: {error} in {queryData}"
   | Except.error err => panic! s!"error querying openai: {err}"
+
 
 
