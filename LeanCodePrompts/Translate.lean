@@ -256,7 +256,16 @@ def getPromptPairsOpenAIexe (s: String)(numSim : Nat) :
       match js.getArr? with
       | Except.error e => return Except.error e
       | Except.ok jsArr => 
-        sorry
+        let mut pairs : Array <| String × String := #[]
+        for js in jsArr do
+          match js.getObjValAs? String "docString" with
+          | Except.error e => return Except.error e
+          | Except.ok doc =>
+          match js.getObjValAs? String "theorem" with
+          | Except.error e => return Except.error e
+          | Except.ok thm => 
+            pairs := pairs.push (doc, thm)
+        return Except.ok pairs
 
 /-- choosing pairs to build a prompt -/
 def getPromptPairs(s: String)(numSim : Nat)(source: String := "bert")
@@ -264,6 +273,8 @@ def getPromptPairs(s: String)(numSim : Nat)(source: String := "bert")
    match source with
     | "bert" =>
       getPromptPairsBert s numSim
+    | "openAIexe" =>
+      getPromptPairsOpenAIexe s numSim
     | s => 
       return Except.error s!"unknown source {s}"
 
@@ -308,7 +319,7 @@ def getCodeJson (s: String)(numSim : Nat:= 8)(includeFixed: Bool := Bool.false)(
       -- work starts here; before this was caching, polling etc
       let pairs? ←  
         if numSim > 0 then  
-          getPromptPairs s numSim 
+          getPromptPairs s numSim
         else pure <| Except.ok #[]
       match pairs? with
       | Except.error e => throwError e
