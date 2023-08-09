@@ -57,10 +57,44 @@ def readEmbeddingsArray : IO <| Array <| String ×  FloatArray :=  do
       IO.println s!"read {count} embeddings"
   return accum
 
+def readEmbeddingsFullArray : IO <| Array <| (String × String) ×  FloatArray :=  do
+  let mut count := 0
+  let blob ← IO.FS.readFile "rawdata/mathlib4-thms-embeddings.json"
+  let json := Json.parse blob |>.toOption.get!
+  let jsonArr := json.getArr? |>.toOption.get!
+  let mut accum := #[]
+  let mut docs : Array String := #[]
+  for jsLine in jsonArr do
+    let doc := 
+      match jsLine.getObjValAs? String "docString" with
+      | Except.ok doc => doc
+      | Except.error err => panic! s!"error reading docString: {err}" 
+    let thm :=
+      match jsLine.getObjValAs? String "type" with
+      | Except.ok thm => thm
+      | Except.error err => panic! s!"error reading thmString: {err}"
+    let embedding':= 
+      match jsLine.getObjValAs? (List Float) "embedding" with
+      | Except.ok embedding => embedding
+      | Except.error err => panic! s!"error reading embedding: {err}" 
+    let embedding := embedding'.toFloatArray
+    unless docs.contains doc do
+      docs := docs.push doc
+      accum := accum.push ((doc, thm), embedding)
+    count := count + 1
+    if count % 1000 == 0 then    
+      IO.println s!"read {count} embeddings"
+  return accum
+
+
 unsafe def loadEmbeddingsTest : IO Nat := 
   withUnpickle  "rawdata/mathlib4-thms-embeddings.olean" <| fun (data: Array <| String ×  FloatArray) => pure data.size
 
--- #eval loadEmbeddingsTest
+unsafe def loadEmbeddingsFullTest : IO Nat := 
+  withUnpickle  "rawdata/mathlib4-doc-thms-embeddings.olean" <| fun (data: Array <| (String × String) ×  FloatArray) => pure data.size
+
+
+-- #eval loadEmbeddingsFullTest
 
 
 def insertByMemo (l: Array <| α × Float)(cost : α → Float)(sizeBound: Nat)
@@ -73,8 +107,8 @@ def insertByMemo (l: Array <| α × Float)(cost : α → Float)(sizeBound: Nat)
     | none => cost x
     match l.findIdx? (fun (_, cy) => cx < cy) with
     | some idx => 
-      l.insertAt idx (x, cx) |>.shrink k
-    | none => l.push (x, cx) |>.shrink k
+      l.insertAt idx (x, cx) |>.shrink (k + 1)
+    | none => l.push (x, cx) |>.shrink (k + 1)
 
 
 def distL2Sq (v₁ : FloatArray) (v₂ : Array Float) : Float :=
@@ -88,6 +122,16 @@ def nearestDocsToEmbedding (data : Array <| String ×  FloatArray)
   let pairs : Array <| (String × FloatArray) × Float := 
     data.foldl (fun (acc : Array <| (String × FloatArray) × Float) 
       (pair : String × FloatArray) => 
+      insertByMemo acc (fun (_, flArr) ↦ dist flArr embedding) k pair) #[]
+  (pairs.map <| fun ((doc, _), _) => doc).toList
+
+
+def nearestDocsToFullEmbedding (data : Array <| (String × String) ×  FloatArray) 
+  (embedding : Array Float) (k : Nat)
+  (dist: FloatArray → Array Float → Float := distL2Sq) : List (String × String) :=
+  let pairs : Array <| ((String × String) × FloatArray) × Float := 
+    data.foldl (fun (acc : Array <| ((String × String) × FloatArray) × Float) 
+      (pair : (String × String) × FloatArray) => 
       insertByMemo acc (fun (_, flArr) ↦ dist flArr embedding) k pair) #[]
   (pairs.map <| fun ((doc, _), _) => doc).toList
 
@@ -135,5 +179,27 @@ def nearestDocsToDoc (data: Array (String × FloatArray))(doc: String)(k : Nat)(
         panic s!"no embedding in query result: {error} in {queryData}"
   | Except.error err => panic! s!"error querying openai: {err}"
 
-
+def nearestDocsToDocFull (data: Array ((String × String) × FloatArray))(doc: String)(k : Nat)(dist: FloatArray → Array Float → Float := distL2Sq) : IO (List (String × String)) := do
+  let queryRes? ← embedQuery doc
+  -- IO.println "query complete"
+  match queryRes? with
+  | Except.ok queryRes =>
+    -- IO.println s!"query result obtained"
+    let queryData? := queryRes.getObjVal? "data"
+    match queryData? with
+    | Except.error error => 
+        IO.println s!"no data in query result: {error}"
+        panic s!"no data in query result: {error}"
+    | Except.ok queryDataArr =>
+      -- IO.println s!"data in query result obtained"
+      let queryData := queryDataArr.getArrVal? 0 |>.toOption.get!
+      match queryData.getObjValAs? (Array Float) "embedding" with
+      | Except.ok queryEmbedding => 
+        -- IO.println s!"embedding in query result obtained"
+        let res := nearestDocsToFullEmbedding data queryEmbedding k dist
+        -- IO.println s!"getNearestDocsToEmbedding complete: {res}"
+        pure res
+      | Except.error error =>
+        panic s!"no embedding in query result: {error} in {queryData}"
+  | Except.error err => panic! s!"error querying openai: {err}"
 
