@@ -219,8 +219,7 @@ def elabLog (s: String) : IO Unit := do
 
 def fixedPrompts:= #[("If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.", "(n : ℕ) (f : ℕ → ℂ) :\n abs (∑ i in finset.range n, f i) ≤ ∑ i in finset.range n, abs (f i) :="), ("If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.", "(n : ℕ) (x y : euclidean_space ℝ (fin n)) :\n ∥x + y∥^2 + ∥x - y∥^2 = 2*∥x∥^2 + 2*∥y∥^2 :="), ("If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.", "(G : Type*) [group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :="), ("Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.", "(X : Type*) [topological_space X]\n (A : set X) (hA : ∀ x ∈ A, ∃ U : set X, is_open U ∧ x ∈ U ∧ U ⊆ A):\n is_open A :=")]
 
-/-- choosing pairs to build a prompt -/
-def getPromptPairs(s: String)(numSim : Nat)
+def getPromptPairsBert(s: String)(numSim : Nat)
    : IO <| Except String (Array (String × String)) := do
       let jsData := Json.mkObj [
         ("filename", fileName),
@@ -244,6 +243,29 @@ def getPromptPairs(s: String)(numSim : Nat)
       -- logInfo m!"all pairs: {allPairs}"        
       let allPairs := allPairs.toList.eraseDups.toArray
       return Except.ok allPairs.toList.eraseDups.toArray
+
+def getPromptPairsOpenAIexe (s: String)(numSim : Nat) :
+  IO <| Except String (Array (String × String)) := do
+    let outJs ← IO.Process.run {
+      cmd := "lake",
+      args := #["exe", "nearest_embeddings", s, toString numSim]
+    }
+    match Json.parse outJs with
+    | Except.error e => return Except.error e
+    | Except.ok js => 
+      match js.getArr? with
+      | Except.error e => return Except.error e
+      | Except.ok jsArr => 
+        sorry
+
+/-- choosing pairs to build a prompt -/
+def getPromptPairs(s: String)(numSim : Nat)(source: String := "bert")
+   : IO <| Except String (Array (String × String)) := 
+   match source with
+    | "bert" =>
+      getPromptPairsBert s numSim
+    | s => 
+      return Except.error s!"unknown source {s}"
 
 /-- choosing pairs to build a prompt -/
 def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := docField)

@@ -22,9 +22,7 @@ unsafe def show_nearest (stdin stdout : IO.FS.Stream)(data: Array (String × Flo
     show_nearest stdin stdout data
   return ()
 
-unsafe def main (_: List String) : IO Unit := do
-  let stdin ← IO.getStdin
-  let stdout ← IO.getStdout
+unsafe def main (args: List String) : IO Unit := do
   let picklePath : System.FilePath := "rawdata/mathlib4-thms-embeddings.olean"
   unless ← picklePath.pathExists do
     IO.println "Fetching embeddings ..."
@@ -33,4 +31,15 @@ unsafe def main (_: List String) : IO Unit := do
       args := #["--output", "rawdata/mathlib4-thms-embeddings.olean", "-s",  "https://math.iisc.ac.in/~gadgil/data/mathlib4-thms-embeddings.olean"]
     }
     IO.println out
-  withUnpickle  picklePath <| fun (data : Array <| String ×  FloatArray) => show_nearest stdin stdout data
+  withUnpickle  picklePath <| 
+    fun (data : Array <| String ×  FloatArray) => do
+      let doc? := args[0]?
+      match doc? with
+      | some doc => 
+        let num := (args[1]?.bind fun s => s.toNat?).getD 10
+        let embs ← nearestDocsToDoc data doc num
+        IO.println <| Lean.Json.arr <| embs.toArray.map Json.str
+      | none =>
+        let stdin ← IO.getStdin
+        let stdout ← IO.getStdout
+        show_nearest stdin stdout data
