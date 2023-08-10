@@ -26,6 +26,8 @@ lean_lib CodeAction {
 lean_lib TacticExtraction {
 }
 
+lean_lib CodeGen
+
 lean_lib notes {
 }
 

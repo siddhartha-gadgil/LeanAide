@@ -8,6 +8,10 @@ open Lean Meta Elab Parser Json.Parser
 open Mathlib.Prelude.Rename
 
 #check FiniteDimensional.finrank
+#check ContinuousLinearEquiv.preimage_symm_preimage
+#check homology.map_desc_apply
+#check Submodule.equivMapOfInjective.proof_2
+#check Submodule.equivMapOfInjective
 
 universe u v
 

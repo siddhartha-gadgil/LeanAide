@@ -299,9 +299,9 @@ def getPropMapStr : MetaM <| HashMap String String := do
     let mut count := 0
     let mut skipped := 0
     let omittedPath := 
-      System.mkFilePath ["LeanAide", "Omitted.lean"]
+      System.mkFilePath ["CodeGen", "Omitted.lean"]
     IO.FS.writeFile omittedPath ""
-    let propOmittedHandle ←  
+    let mut propOmittedHandle ←  
       IO.FS.Handle.mk omittedPath IO.FS.Mode.append
     propOmittedHandle.putStrLn "import Mathlib"
     let cs ← constantNameValueTypes 
@@ -323,6 +323,13 @@ def getPropMapStr : MetaM <| HashMap String String := do
         if type.approxDepth >= 60 then
           skipped := skipped + 1
           propOmittedHandle.putStrLn s!"#check {name}"
+          if skipped % 100 = 0 then
+            let omittedPath := 
+              System.mkFilePath ["CodeGen", s!"Omitted{skipped/100}.lean"]
+            IO.FS.writeFile omittedPath ""
+            propOmittedHandle ←  
+              IO.FS.Handle.mk omittedPath IO.FS.Mode.append
+
     let path := System.mkFilePath ["rawdata", "defn-types", "all.jsonl"]
     IO.FS.writeFile path <| jsonLines <| dfs
     return m
