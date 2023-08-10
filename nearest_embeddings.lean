@@ -24,6 +24,7 @@ unsafe def show_nearest (stdin stdout : IO.FS.Stream)(data: Array ((String × St
           ("theorem", Json.str thm)
         ] 
   stdout.putStrLn out.compress
+  stdout.flush
   unless halt do 
     show_nearest stdin stdout data
   return ()
