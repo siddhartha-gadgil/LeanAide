@@ -82,6 +82,11 @@ lean_exe getpremises{
   supportInterpreter := true
 }
 
+lean_exe props{
+  supportInterpreter := true
+}
+
+
 lean_exe testpremises{
   supportInterpreter := true
 }
