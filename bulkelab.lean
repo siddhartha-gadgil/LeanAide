@@ -22,6 +22,11 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
   let temp10 := p.flag? "temperature" |>.map (fun s => s.as! Nat)
     |>.getD 8
   let temp : JsonNumber := ⟨temp10, 1⟩
+  let model := p.flag? "model" |>.map (fun s => s.as! String)
+    |>.getD "gpt-3.5-turbo"
+  let embedding := p.flag? "embedding" |>.map (fun s => s.as! String)
+    |>.getD "bert"
+
   let outFile := System.mkFilePath 
       ["results", 
       s!"{type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp10}.json"]
@@ -32,7 +37,7 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
     {module := `Mathlib}] {}
   let core := 
     checkTranslatedThmsCore type
-      numSim includeFixed queryNum temp
+      numSim includeFixed queryNum temp model embedding
   let io? := 
     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} 
     {env := env}
@@ -49,14 +54,16 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
   return 0
 
 def bulkElab : Cmd := `[Cli|
-  bulkelab VIA runBulkElab; ["0.0.1"]
+  bulkelab VIA runBulkElab; ["0.1"]
   "Elaborate a set of inputs and report whether successful and the result if successful."
 
   FLAGS:
     include_fixed;         "Include the standard fixed prompts."
-    p, prompts : Nat;      "Number of example prompts"
+    p, prompts : Nat;      "Number of example prompts (default 10)."
     r, responses : Nat;    "Number of responses to ask for."
     t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t`."
+    m, model : String ; "Model to be used (default `gpt-3.5-turbo`)"
+    e, embedding : String; "Embedding to be used (default `bert`)"
 
   ARGS:
     input : String;      "The input file in the `data` folder."

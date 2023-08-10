@@ -137,13 +137,14 @@ def codexQuery(prompt: String)(n: Nat := 1)
   return Lean.Json.parse out |>.toOption.get!
 
 def gptQuery(messages: Json)(n: Nat := 1)
-  (temp : JsonNumber := ⟨2, 1⟩)(stopTokens: Array String :=  #[":=", "-/"]) : CoreM Json := do
+  (temp : JsonNumber := ⟨2, 1⟩)
+  (stopTokens: Array String :=  #[":=", "-/"])(model: String) : CoreM Json := do
   let key? ← openAIKey
   let key := 
     match key? with
     | some k => k
     | none => panic! "OPENAI_API_KEY not set"
-  let dataJs := Json.mkObj [("model", "gpt-3.5-turbo"), ("messages", messages)
+  let dataJs := Json.mkObj [("model", model), ("messages", messages)
   , ("temperature", Json.num temp), ("n", n), ("max_tokens", 150), ("stop", Json.arr <| stopTokens |>.map Json.str)
   ]
   let data := dataJs.pretty
@@ -273,7 +274,7 @@ def getPromptPairs(s: String)(numSim : Nat)(source: String := "bert")
    match source with
     | "bert" =>
       getPromptPairsBert s numSim
-    | "openAIexe" =>
+    | "openai" =>
       getPromptPairsOpenAIexe s numSim
     | s => 
       return Except.error s!"unknown source {s}"
@@ -307,7 +308,9 @@ def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := docField)
 
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
-def getCodeJson (s: String)(numSim : Nat:= 8)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩) : TermElabM Json := do
+def getCodeJson (s: String)(numSim : Nat:= 8)
+  (includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(model: String)
+  (embedding: String) : TermElabM Json := do
   match ← getCachedJson? s with
   | some js => return js
   | none =>    
@@ -319,7 +322,7 @@ def getCodeJson (s: String)(numSim : Nat:= 8)(includeFixed: Bool := Bool.false)(
       -- work starts here; before this was caching, polling etc
       let pairs? ←  
         if numSim > 0 then  
-          getPromptPairs s numSim
+          getPromptPairs s numSim embedding
         else pure <| Except.ok #[]
       match pairs? with
       | Except.error e => throwError e
@@ -330,7 +333,7 @@ def getCodeJson (s: String)(numSim : Nat:= 8)(includeFixed: Bool := Bool.false)(
       trace[Translate.info] m!"prompt: \n{prompt.pretty}"
       mkLog prompt
       let fullJson ← 
-        gptQuery prompt queryNum temp 
+        gptQuery prompt queryNum temp (model := model)
       let outJson := 
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
       let pending ←  pendingJsonQueries.get
@@ -414,12 +417,12 @@ def greedyArrayToExpr? (output: Array String) : TermElabM (Option Expr) := do
       pure el?.toOption
 
 /-- reverse translation from `Lean` to natural language -/
-def leanToPrompt (thm: String)(numSim : Nat:= 5)(temp : JsonNumber := 0)(textField : String := "text") : TermElabM String := do
+def leanToPrompt (thm: String)(numSim : Nat:= 5)(temp : JsonNumber := 0)(textField : String := "text")(model: String) : TermElabM String := do
     let pairs? ← getPromptPairs thm numSim 
     let pairs := pairs?.toOption.getD #[]
     let prompt := GPT.makeFlipPrompt thm pairs
     -- elabLog prompt
-    let fullJson ← gptQuery prompt 1 temp
+    let fullJson ← gptQuery prompt 1 temp (model := model)
     let outJson := 
       (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
     let out? := (outJson.getArrVal? 0).bind fun js => js.getObjVal? textField
@@ -515,7 +518,9 @@ elab "//-" cb:commentBody  : term => do
   let s := cb.raw.getAtomVal
   let s := (s.dropRight 2).trim  
   -- querying codex
-  let js ← getCodeJson  s
+  let js ← 
+    getCodeJson  s (model := "gpt-3.5-turbo") 
+      (embedding := "bert")
   -- filtering, autocorrection and selection
   let e ← jsonToExpr' js
   trace[Translate.info] m!"{e}"
@@ -553,8 +558,9 @@ elab "uncurry2" e:term : term => do
 universe u
 
 
-def translateViewM (s: String) : TermElabM String := do
-  let js ← getCodeJson  s
+def translateViewM (s: String)(model : String := "gpt-3.5-turbo")(embedding: String := "bert") : TermElabM String := do
+  let js ← getCodeJson  s (model := model)
+        (embedding := embedding)
   let output ← GPT.jsonToExprStrArray js
   trace[Translate.info] m!"{output}"
   let e? ← arrayToExpr? output

@@ -6034,3 +6034,408 @@ total : 40
 
 elaborated: 36
 
+Writing to file: silly-elab-12-false-15-9.json
+
+success
+
+theorem ∀ (p : ℕ), Nat.Prime p ↔ p = 2 ∨ Odd p
+
+total : 1
+
+elaborated: 1
+
+success
+
+theorem ∀ (n : ℕ), n % 2 = 1 → ∃ m, m > n ∧ m % 2 = 1
+
+total : 2
+
+elaborated: 2
+
+success
+
+theorem ∀ (p : ℕ), Nat.Prime p → p % 2 = 1 → p ≥ 3
+
+total : 3
+
+elaborated: 3
+
+success
+
+theorem ∀ {p : ℕ}, Nat.Prime p → Odd p → Set.Infinite {q | Nat.Prime q ∧ q ≠ p}
+
+total : 4
+
+elaborated: 4
+
+success
+
+theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],
+  FiniteDimensional.finrank K V = 2 → FiniteDimensional K V
+
+total : 5
+
+elaborated: 5
+
+success
+
+theorem {R : Type u} → [inst : Field R] → DivisionRing R
+
+total : 6
+
+elaborated: 6
+
+success
+
+theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],
+  FiniteDimensional K V → FiniteDimensional.finrank K V = 2 → FiniteDimensional K V
+
+total : 7
+
+elaborated: 7
+
+success
+
+theorem ∀ (n : ℕ), ∃ m, m = n + 1
+
+total : 8
+
+elaborated: 8
+
+success
+
+theorem ∀ (n : ℕ), n < n + 1
+
+total : 9
+
+elaborated: 9
+
+success
+
+theorem ∀ {α : Type u_1} [inst : MeasurableSpace α] (s : Set α), MeasurableSet s
+
+total : 10
+
+elaborated: 10
+
+success
+
+theorem ∀ {α : Type u_1} [inst : TopologicalSpace α] [inst_1 : MeasurableSpace α] [inst_2 : BorelSpace α]
+  {μ : MeasureTheory.Measure α} (s : Set α), ↑↑μ s = 0 → MeasurableSet s
+
+total : 11
+
+elaborated: 11
+
+success
+
+theorem ∀ {p : ℕ}, Nat.Prime p → ¬IsSquare p
+
+total : 12
+
+elaborated: 12
+
+success
+
+theorem ∀ {p : ℕ}, Nat.Prime p → 2 < p
+
+total : 13
+
+elaborated: 13
+
+success
+
+theorem ∀ (a b : ℕ),
+  ℕ →
+    ℕ →
+      ℕ →
+        ℕ →
+          ℕ →
+            ℕ →
+              (∃ a1 a2 a3 a4, a = a1 ^ 2 + a2 ^ 2 + a3 ^ 2 + a4 ^ 2) →
+                (∃ b1 b2 b3 b4, b = b1 ^ 2 + b2 ^ 2 + b3 ^ 2 + b4 ^ 2) →
+                  ∃ c1 c2 c3 c4, a * b = c1 ^ 2 + c2 ^ 2 + c3 ^ 2 + c4 ^ 2
+
+total : 14
+
+elaborated: 14
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : CompactSpace α], LocallyCompactSpace α
+
+total : 15
+
+elaborated: 15
+
+success
+
+theorem ∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β},
+  Continuous f → UniformContinuous f
+
+total : 16
+
+elaborated: 16
+
+success
+
+theorem ∀ {p q : ℕ}, Nat.Prime p → Nat.Prime q → p ≠ q → p + q ≠ 6
+
+total : 17
+
+elaborated: 17
+
+success
+
+theorem ∀ (n : ℤ), ¬Irrational ↑n
+
+total : 18
+
+elaborated: 18
+
+success
+
+theorem ∀ {R : Type u} [inst : Semiring R], IsUnit 1
+
+total : 19
+
+elaborated: 19
+
+success
+
+theorem {G : Type} → [inst : Group G] → (H : Set G) → IsSubgroup H → Group ↑H
+
+total : 20
+
+elaborated: 20
+
+No valid output from Codex; outputs below
+
+∀ (m n : ℕ), is_nat (m + n)
+
+∀ (m n : ℕ), nat.add m n = m + n
+
+∀ {m n : ℕ}, is_nat (m + n)
+
+∀ {m n : ℕ}, m + n ∈ ℕ
+
+∀ (m n : ℕ), m + n ∈ ℕ
+
+∀ {m n : ℕ}, nat.add m n = m + n
+
+<input>:1:28: expected end of input while parsing ∀ {m n : ℕ}, is_nat (m + n) where
+  is_nat : ℕ → Prop
+| 0        
+
+∀ {m n : ℕ}, nat.add m n = nat.add n m
+
+failed to elaborate
+
+outputs: #[∀ (m n : ℕ), is_nat (m + n), ∀ (m n : ℕ), nat.add m n = m + n, ∀ {m n : ℕ}, is_nat (m + n), ∀ {m n : ℕ}, m + n ∈ ℕ, ∀ (m n : ℕ), m + n ∈ ℕ, ∀ {m n : ℕ}, nat.add m n = m + n, ∀ {m n : ℕ}, is_nat (m + n) where
+  is_nat : ℕ → Prop
+| 0        , ∀ {m n : ℕ}, nat.add m n = nat.add n m]
+
+total : 21
+
+elaborated: 20
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G], IsOfFinOrder 1
+
+total : 22
+
+elaborated: 21
+
+success
+
+theorem Nat.Prime 7
+
+total : 23
+
+elaborated: 22
+
+success
+
+theorem ∃ p1 p2 p3,
+  Nat.Prime p1 ∧
+    Nat.Prime p2 ∧
+      Nat.Prime p3 ∧
+        p1 < 8 ∧
+          p2 < 8 ∧ p3 < 8 ∧ ¬p1 = p2 ∧ ¬p1 = p3 ∧ ¬p2 = p3 ∧ ∀ (p : ℕ), Nat.Prime p → p < 8 → p = p1 ∨ p = p2 ∨ p = p3
+
+total : 24
+
+elaborated: 23
+
+success
+
+theorem ∀ {α : Type u} {a : Set α}, Set.Finite a → ∅ ⊆ a
+
+total : 25
+
+elaborated: 24
+
+No valid output from Codex; outputs below
+
+<input>:1:43: expected '(', '_' or identifier while parsing ∀ {α : Type u} {s : Set α}, Infinite s → ∃ {t : Set α}, Set.Finite t ∧ t ⊆ s
+
+<input>:1:44: expected '(', '_' or identifier while parsing ∀ {α : Type u} {s : Set α}, Infinite s → (∃ {t : Set α}, Set.Finite t ∧ t ⊆ s)
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u} {s : Set α}, Infinite s → ∃ {t : Set α}, Set.Finite t ∧ t ⊆ s, ∀ {α : Type u} {s : Set α}, Infinite s → (∃ {t : Set α}, Set.Finite t ∧ t ⊆ s)]
+
+total : 26
+
+elaborated: 24
+
+success
+
+theorem (R : Type u_1) → [inst : CommRing R] → Monoid R
+
+total : 27
+
+elaborated: 25
+
+No valid output from Codex; outputs below
+
+<input>:1:16: expected ',' while parsing ¬∃ (F : Type u) [inst : Field F] [inst_1 : Finite F], Fintype.card F = 10
+
+<input>:1:14: expected ',' while parsing ¬∃ (F : Type) [inst : Field F] [inst_1 : Fintype F], Fintype.card F = 10
+
+<input>:1:16: expected ',' while parsing ¬∃ (F : Type u) [inst : Field F] [inst_1 : Fintype F], Fintype.card F = 10
+
+<input>:1:16: expected ',' while parsing ¬∃ (F : Type u) [inst : Field F] (inst_1 : Fintype F), Fintype.card F = 10
+
+<input>:1:18: expected ',' while parsing ¬∃ (F : Type u_1) [inst : Field F], Fintype.card F = 10
+
+<input>:1:40: expected token while parsing ∀ (F : Type u_1) [inst : Field F], ¬(F ≃ₙₐ Cardinal.mk (fin 10))
+
+<input>:1:16: expected ',' while parsing ¬∃ (F : Type u) [inst : Field F] [inst_1 : Finite F], F ≃ₚ fin 10
+
+∀ (F : Type u) [inst : Field F], Fintype.card F ≠ 10
+
+<input>:1:16: expected ',' while parsing ¬∃ (F : Type u) [inst : Field F] [inst_1 : Finite F], Finite.card F = 10
+
+∀ {F : Type u} [inst : Field F] [inst_1 : Finite F], Fintype.card F ≠ 10
+
+∀ {F : Type u} [inst : Field F], ¬(F ≃ₗ[ℤ] ( Fin 10 →₀ ℤ))
+
+∀ (F : Type u) [inst : Field F] [inst_1 : Finite F], ¬(Fintype.card F = 10)
+
+failed to elaborate
+
+outputs: #[¬∃ (F : Type u) [inst : Field F] [inst_1 : Finite F], Fintype.card F = 10, ¬∃ (F : Type) [inst : Field F] [inst_1 : Fintype F], Fintype.card F = 10, ¬∃ (F : Type u) [inst : Field F] [inst_1 : Fintype F], Fintype.card F = 10, ¬∃ (F : Type u) [inst : Field F] (inst_1 : Fintype F), Fintype.card F = 10, ¬∃ (F : Type u_1) [inst : Field F], Fintype.card F = 10, ∀ (F : Type u_1) [inst : Field F], ¬(F ≃ₙₐ Cardinal.mk (fin 10)), ¬∃ (F : Type u) [inst : Field F] [inst_1 : Finite F], F ≃ₚ fin 10, ∀ (F : Type u) [inst : Field F], Fintype.card F ≠ 10, ¬∃ (F : Type u) [inst : Field F] [inst_1 : Finite F], Finite.card F = 10, ∀ {F : Type u} [inst : Field F] [inst_1 : Finite F], Fintype.card F ≠ 10, ∀ {F : Type u} [inst : Field F], ¬(F ≃ₗ[ℤ] (fin 10 →₀ ℤ)), ∀ (F : Type u) [inst : Field F] [inst_1 : Finite F], ¬(Fintype.card F = 10)]
+
+total : 28
+
+elaborated: 25
+
+success
+
+theorem ∀ {n : ℕ}, Odd n → ∃ x y, x ≠ y ∧ n = x + y
+
+total : 29
+
+elaborated: 26
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Monoid G] (x : G), IsOfFinOrder x
+
+total : 30
+
+elaborated: 27
+
+success
+
+theorem ∀ (n : ℕ), Even n → Even (n ^ 2)
+
+total : 31
+
+elaborated: 28
+
+success
+
+theorem ∀ {R : Type u} [inst : CommRing R] [inst_1 : DivisionRing R], IsField R
+
+total : 32
+
+elaborated: 29
+
+success
+
+theorem ∀ {α : Type u} [inst : Monoid α], id One.one = One.one
+
+total : 33
+
+elaborated: 30
+
+success
+
+theorem ∀ {α : Type u} (x : α), Function.IsFixedPt id x
+
+total : 34
+
+elaborated: 31
+
+success
+
+theorem ∀ {α : Type u} [inst : PseudoMetricSpace α] {x : α}, Metric.diam {x} = 0
+
+total : 35
+
+elaborated: 32
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G], ∃ x, true = true
+
+total : 36
+
+elaborated: 33
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] (x : α), IsConnected (connectedComponent x)
+
+total : 37
+
+elaborated: 34
+
+success
+
+theorem ∃ M, Ideal.IsMaximal M
+
+total : 38
+
+elaborated: 35
+
+success
+
+theorem PythagoreanTriple 3 4 5
+
+total : 39
+
+elaborated: 36
+
+success
+
+theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V] (s : Set V),
+  Basis (↑s) K V → s = ∅ → Subsingleton V
+
+total : 40
+
+elaborated: 37
+
+Writing to file: silly-elab-14-false-15-9.json
+
+success
+
+theorem ∀ (p : ℕ), Nat.Prime p → p = 2 ∨ Odd p
+
+total : 1
+
+elaborated: 1
+
