@@ -217,3 +217,294 @@ but is expected to have type
   OneHom (?m.7330 toRingHom commutes' toRingHom_1 r)
     (?m.7326 toRingHom commutes' toRingHom_1 r) : Type (max ?u.3580 ?u.3579) ; identifiers [R, u, A, v, B, w, CommSemiring, R, Semiring, A, Semiring, B, Algebra, R, A, Algebra, R, B, toRingHom, A, B, commutes', r, R, OneHom.toFun, toRingHom, algebraMap, R, A, r, algebraMap, R, B, r, toRingHom_1, A, B, commutes'_1, r, R, OneHom.toFun, toRingHom_1, algebraMap, R, A, r, algebraMap, R, B, r, a, toRingHom, toRingHom_1, toRingHom_1, toRingHom_1] (during elaboration) for {R : Type u}  -> {A : Type v}  -> {B : Type w}  -> [CommSemiring R]  -> [Semiring A]  -> [Semiring B]  -> [Algebra R A]  -> [Algebra R B]  -> (toRingHom : A →+* B)  -> (commutes' : ∀ (r : R), OneHom.toFun (↑↑toRingHom) (↑(algebraMap R A) r) = ↑(algebraMap R B) r)  -> (toRingHom_1 : A →+* B)  -> (commutes'_1 : ∀ (r : R), OneHom.toFun (↑↑toRingHom_1) (↑(algebraMap R A) r) = ↑(algebraMap R B) r)  -> (a : toRingHom = toRingHom_1)   -> toRingHom_1 = toRingHom_1
 
+{L : FirstOrder.Language} {M : Type w'} [FirstOrder.Language.IsOrdered L] [FirstOrder.Language.Structure L M] [LE M] [FirstOrder.Language.OrderedStructure L M] {a : M} {b : M}  : (FirstOrder.Language.Structure.RelMap FirstOrder.Language.leSymb ![a, b]) ↔
+  (FirstOrder.Language.Structure.RelMap FirstOrder.Language.leSymb ![a, b])
+typeclass instance problem is stuck, it is often due to metavariables
+  FirstOrder.Language.Structure ?m.268 M ; identifiers [L, FirstOrder.Language, M, w', FirstOrder.Language.IsOrdered, L, FirstOrder.Language.Structure, L, M, LE, M, FirstOrder.Language.OrderedStructure, L, M, a, M, b, M, FirstOrder.Language.Structure.RelMap, FirstOrder.Language.leSymb, a, b, FirstOrder.Language.Structure.RelMap, FirstOrder.Language.leSymb, a, b] (during elaboration) for {L : FirstOrder.Language}  -> {M : Type w'}  -> [FirstOrder.Language.IsOrdered L]  -> [FirstOrder.Language.Structure L M]  -> [LE M]  -> [FirstOrder.Language.OrderedStructure L M]  -> {a : M}  -> {b : M}   -> (FirstOrder.Language.Structure.RelMap FirstOrder.Language.leSymb ![a, b]) ↔
+  (FirstOrder.Language.Structure.RelMap FirstOrder.Language.leSymb ![a, b])
+
+{α : Type u_1} {a : α} {b : α}  : ((¬(a ∈ {b})) ↔ (a ≠ b)) = ((¬(a ∈ {b})) ↔ (a ≠ b))
+typeclass instance problem is stuck, it is often due to metavariables
+  Singleton α ?m.931 ; identifiers [α, u_1, a, α, b, α, a, b, b, a, b, a, b, b, a, b] (during elaboration) for {α : Type u_1}  -> {a : α}  -> {b : α}   -> ((¬(a ∈ {b})) ↔ (a ≠ b)) = ((¬(a ∈ {b})) ↔ (a ≠ b))
+
+ : (∀ {ι : Type uι} {E : Type uE} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] [inst_2 : FiniteDimensional ℝ E]
+  {H : Type uH} [inst_3 : TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] {s : Set M} [inst_7 : T2Space M]
+  {f : SmoothBumpCovering ι I M s} {U : (a : M) → Set M},
+  (BumpCovering.IsSubordinate (SmoothBumpCovering.toBumpCovering f) fun (i : ι) ↦ U (SmoothBumpCovering.c s f i)) ↔
+    (SmoothBumpCovering.IsSubordinate f U))
+unknown universe level 'uH' ; identifiers [ι, uι, E, uE, inst, NormedAddCommGroup, E, inst_1, NormedSpace, E, inst_2, FiniteDimensional, E, H, uH, inst_3, TopologicalSpace, H, I, ModelWithCorners, E, H, M, uM, inst_4, TopologicalSpace, M, inst_5, ChartedSpace, H, M, inst_6, SmoothManifoldWithCorners, I, M, s, Set, M, inst_7, T2Space, M, f, SmoothBumpCovering, ι, I, M, s, U, a, M, Set, M, BumpCovering.IsSubordinate, SmoothBumpCovering.toBumpCovering, f, i, ι, U, SmoothBumpCovering.c, s, f, i, SmoothBumpCovering.IsSubordinate, f, U] (during elaboration) for (∀ {ι : Type uι} {E : Type uE} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] [inst_2 : FiniteDimensional ℝ E]
+  {H : Type uH} [inst_3 : TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] {s : Set M} [inst_7 : T2Space M]
+  {f : SmoothBumpCovering ι I M s} {U : (a : M) → Set M},
+  (BumpCovering.IsSubordinate (SmoothBumpCovering.toBumpCovering f) fun (i : ι) ↦ U (SmoothBumpCovering.c s f i)) ↔
+    (SmoothBumpCovering.IsSubordinate f U))
+
+ : ∀ {ι : Type uι} {E : Type uE} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] [inst_2 : FiniteDimensional ℝ E]
+  {H : Type uH} [inst_3 : TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] {s : Set M} [inst_7 : T2Space M]
+  {f : SmoothBumpCovering ι I M s} {U : (a : M) → Set M},
+  (BumpCovering.IsSubordinate (SmoothBumpCovering.toBumpCovering f) fun (i : ι) ↦ U (SmoothBumpCovering.c s f i)) ↔
+    (BumpCovering.IsSubordinate (SmoothBumpCovering.toBumpCovering f) fun (i : ι) ↦ U (SmoothBumpCovering.c s f i))
+unknown universe level 'uH' ; identifiers [ι, uι, E, uE, inst, NormedAddCommGroup, E, inst_1, NormedSpace, E, inst_2, FiniteDimensional, E, H, uH, inst_3, TopologicalSpace, H, I, ModelWithCorners, E, H, M, uM, inst_4, TopologicalSpace, M, inst_5, ChartedSpace, H, M, inst_6, SmoothManifoldWithCorners, I, M, s, Set, M, inst_7, T2Space, M, f, SmoothBumpCovering, ι, I, M, s, U, a, M, Set, M, BumpCovering.IsSubordinate, SmoothBumpCovering.toBumpCovering, f, i, ι, U, SmoothBumpCovering.c, s, f, i, BumpCovering.IsSubordinate, SmoothBumpCovering.toBumpCovering, f, i, ι, U, SmoothBumpCovering.c, s, f, i] (during elaboration) for ∀ {ι : Type uι} {E : Type uE} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] [inst_2 : FiniteDimensional ℝ E]
+  {H : Type uH} [inst_3 : TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] {s : Set M} [inst_7 : T2Space M]
+  {f : SmoothBumpCovering ι I M s} {U : (a : M) → Set M},
+  (BumpCovering.IsSubordinate (SmoothBumpCovering.toBumpCovering f) fun (i : ι) ↦ U (SmoothBumpCovering.c s f i)) ↔
+    (BumpCovering.IsSubordinate (SmoothBumpCovering.toBumpCovering f) fun (i : ι) ↦ U (SmoothBumpCovering.c s f i))
+
+{𝕜 : Type u_2} {E : Type u_1} [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] (x : E)  : ((x ∈ ⊤ᗮ) ↔ (x ∈ ⊥)) = ((x ∈ ⊤ᗮ) ↔ (x ∈ ⊥))
+typeclass instance problem is stuck, it is often due to metavariables
+  Membership E (?m.3858 x) ; identifiers [𝕜, u_2, E, u_1, IsROrC, 𝕜, NormedAddCommGroup, E, InnerProductSpace, 𝕜, E, x, E, x, x, x, x] (during elaboration) for {𝕜 : Type u_2}  -> {E : Type u_1}  -> [IsROrC 𝕜]  -> [NormedAddCommGroup E]  -> [InnerProductSpace 𝕜 E]  -> (x : E)   -> ((x ∈ ⊤ᗮ) ↔ (x ∈ ⊥)) = ((x ∈ ⊤ᗮ) ↔ (x ∈ ⊥))
+
+{𝕜 : Type u_2} {E : Type u_1} [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] (x : E)  : ((x ∈ ⊤ᗮ) ↔ (x = 0)) = ((x ∈ ⊤ᗮ) ↔ (x = 0))
+typeclass instance problem is stuck, it is often due to metavariables
+  InnerProductSpace (?m.2643 x) E ; identifiers [𝕜, u_2, E, u_1, IsROrC, 𝕜, NormedAddCommGroup, E, InnerProductSpace, 𝕜, E, x, E, x, x, x, x] (during elaboration) for {𝕜 : Type u_2}  -> {E : Type u_1}  -> [IsROrC 𝕜]  -> [NormedAddCommGroup E]  -> [InnerProductSpace 𝕜 E]  -> (x : E)   -> ((x ∈ ⊤ᗮ) ↔ (x = 0)) = ((x ∈ ⊤ᗮ) ↔ (x = 0))
+
+{𝕜 : Type u_1} {E : Type u_2} [SeminormedRing 𝕜] [SMul 𝕜 E] {s : Set E} {t : Set E} (ht : Balanced 𝕜 t) (h : s ⊆ t) ⦃x : E⦄ (hx : x ∈ balancedHull 𝕜 s) (r : 𝕜) (h_1 : ∃ (x_1 : ‖r‖ ≤ 1), x ∈ r • s) (hr : ‖r‖ ≤ 1) (h_2 : x ∈ r • s) (y : E) (h_3 : (y ∈ s) ∧ ((fun (x : E) ↦ r • x) y = x)) (hy : y ∈ s) (right : (fun (x : E) ↦ r • x) y = x) (hx : (fun (x : E) ↦ r • x) y ∈ balancedHull 𝕜 s)  : y ∈ t
+failed to synthesize instance
+  HSMul 𝕜 (Set E) ?m.614 ; identifiers [𝕜, u_1, E, u_2, SeminormedRing, 𝕜, SMul, 𝕜, E, s, Set, E, t, Set, E, ht, Balanced, 𝕜, t, h, s, t, x, E, hx, x, balancedHull, 𝕜, s, r, 𝕜, h_1, x_1, r, x, r, s, hr, r, h_2, x, r, s, y, E, h_3, y, s, x, E, r, x, y, x, hy, y, s, right, x, E, r, x, y, x, hx, x, E, r, x, y, balancedHull, 𝕜, s, y, t] (during elaboration) for {𝕜 : Type u_1}  -> {E : Type u_2}  -> [SeminormedRing 𝕜]  -> [SMul 𝕜 E]  -> {s : Set E}  -> {t : Set E}  -> (ht : Balanced 𝕜 t)  -> (h : s ⊆ t)  -> ⦃x : E⦄  -> (hx : x ∈ balancedHull 𝕜 s)  -> (r : 𝕜)  -> (h_1 : ∃ (x_1 : ‖r‖ ≤ 1), x ∈ r • s)  -> (hr : ‖r‖ ≤ 1)  -> (h_2 : x ∈ r • s)  -> (y : E)  -> (h_3 : (y ∈ s) ∧ ((fun (x : E) ↦ r • x) y = x))  -> (hy : y ∈ s)  -> (right : (fun (x : E) ↦ r • x) y = x)  -> (hx : (fun (x : E) ↦ r • x) y ∈ balancedHull 𝕜 s)   -> y ∈ t
+
+{α : Type u_2} {m0 : MeasurableSpace α} {μ : MeasureTheory.Measure α} {γ : Type u_1} (f : (a : α) → γ) (g : (a : α) → γ) (s : Set α) (hs_zero : ↑↑μ s = 0) (h_ss : sᶜ ⊆ {a : α | (if (a ∈ s) then f a else g a) = g a}) {α : Type u_2} [HasSubset α] (a : α) (a_1 : α) (e_a : a = a_1) (a_2 : α) (a_3 : α) (e_a : a_2 = a_3)  : (a ⊆ a_2) = (a ⊆ a_2)
+failed to synthesize instance
+  Decidable (a ∈ s) ; identifiers [α, u_2, m0, MeasurableSpace, α, μ, MeasureTheory.Measure, α, γ, u_1, f, a, α, γ, g, a, α, γ, s, Set, α, hs_zero, μ, s, h_ss, s, a, α, a, s, f, a, g, a, g, a, α, u_2, HasSubset, α, a, α, a_1, α, e_a, a, a_1, a_2, α, a_3, α, e_a, a_2, a_3, a, a_2, a, a_2] (during elaboration) for {α : Type u_2}  -> {m0 : MeasurableSpace α}  -> {μ : MeasureTheory.Measure α}  -> {γ : Type u_1}  -> (f : (a : α) → γ)  -> (g : (a : α) → γ)  -> (s : Set α)  -> (hs_zero : ↑↑μ s = 0)  -> (h_ss : sᶜ ⊆ {a : α | (if (a ∈ s) then f a else g a) = g a})  -> {α : Type u_2}  -> [HasSubset α]  -> (a : α)  -> (a_1 : α)  -> (e_a : a = a_1)  -> (a_2 : α)  -> (a_3 : α)  -> (e_a : a_2 = a_3)   -> (a ⊆ a_2) = (a ⊆ a_2)
+
+{α : Type u_2} {m0 : MeasurableSpace α} {μ : MeasureTheory.Measure α} {γ : Type u_1} (f : (a : α) → γ) (g : (a : α) → γ) (s : Set α) (hs_zero : ↑↑μ s = 0) (h_ss : sᶜ ⊆ {a : α | (if (a ∈ s) then f a else g a) = g a})  : s = s
+failed to synthesize instance
+  Decidable (a ∈ s) ; identifiers [α, u_2, m0, MeasurableSpace, α, μ, MeasureTheory.Measure, α, γ, u_1, f, a, α, γ, g, a, α, γ, s, Set, α, hs_zero, μ, s, h_ss, s, a, α, a, s, f, a, g, a, g, a, s, s] (during elaboration) for {α : Type u_2}  -> {m0 : MeasurableSpace α}  -> {μ : MeasureTheory.Measure α}  -> {γ : Type u_1}  -> (f : (a : α) → γ)  -> (g : (a : α) → γ)  -> (s : Set α)  -> (hs_zero : ↑↑μ s = 0)  -> (h_ss : sᶜ ⊆ {a : α | (if (a ∈ s) then f a else g a) = g a})   -> s = s
+
+{α : Type u_2} {m0 : MeasurableSpace α} {μ : MeasureTheory.Measure α} {γ : Type u_1} (f : (a : α) → γ) (g : (a : α) → γ) (s : Set α) (hs_zero : ↑↑μ s = 0) (h_ss : sᶜ ⊆ {a : α | (if (a ∈ s) then f a else g a) = g a})  : sᶜᶜ = sᶜᶜ
+failed to synthesize instance
+  Decidable (a ∈ s) ; identifiers [α, u_2, m0, MeasurableSpace, α, μ, MeasureTheory.Measure, α, γ, u_1, f, a, α, γ, g, a, α, γ, s, Set, α, hs_zero, μ, s, h_ss, s, a, α, a, s, f, a, g, a, g, a, s, s] (during elaboration) for {α : Type u_2}  -> {m0 : MeasurableSpace α}  -> {μ : MeasureTheory.Measure α}  -> {γ : Type u_1}  -> (f : (a : α) → γ)  -> (g : (a : α) → γ)  -> (s : Set α)  -> (hs_zero : ↑↑μ s = 0)  -> (h_ss : sᶜ ⊆ {a : α | (if (a ∈ s) then f a else g a) = g a})   -> sᶜᶜ = sᶜᶜ
+
+{C : Type u_2} [CategoryTheory.Category C] {X : C} {Y : C} {f : X ⟶ Y} {g : X ⟶ Y} {s : CategoryTheory.Limits.Fork f g} {t : CategoryTheory.Limits.Fork f g} (i : CategoryTheory.Limits.Cone.pt s ≅ CategoryTheory.Limits.Cone.pt t) (w : autoParam (CategoryTheory.CategoryStruct.comp i.hom (CategoryTheory.Limits.Fork.ι t) = CategoryTheory.Limits.Fork.ι s)
+  _auto✝)  : CategoryTheory.Limits.Fork.ι s = CategoryTheory.CategoryStruct.comp i.hom (CategoryTheory.Limits.Fork.ι t)
+<input>:2:7: expected token
+
+{𝕜 : Type u_2} {E : Type u_1} [OrderedSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E} (hc : ∀ (t : Set E) (a : t ⊆ s), s ∩ ↑(convexHull 𝕜) t ⊆ t) (t : Set { x : E // x ∈ s }) (x : { x : E // x ∈ s }) (h : ↑x ∈ ↑(convexHull 𝕜) (Subtype.val '' t))  : (x ∈ t) = (x ∈ t)
+type mismatch
+  x
+has type
+  { x // x ∈ s } : Type u_1
+but is expected to have type
+  ?m.1136 hc t x : outParam (Type ?u.845) ; identifiers [𝕜, u_2, E, u_1, OrderedSemiring, 𝕜, AddCommGroup, E, Module, 𝕜, E, s, Set, E, hc, t, Set, E, a, t, s, s, convexHull, 𝕜, t, t, t, Set, x, E, x, s, x, x, E, x, s, h, x, convexHull, 𝕜, Subtype.val, t, x, t, x, t] (during elaboration) for {𝕜 : Type u_2}  -> {E : Type u_1}  -> [OrderedSemiring 𝕜]  -> [AddCommGroup E]  -> [Module 𝕜 E]  -> {s : Set E}  -> (hc : ∀ (t : Set E) (a : t ⊆ s), s ∩ ↑(convexHull 𝕜) t ⊆ t)  -> (t : Set { x : E // x ∈ s })  -> (x : { x : E // x ∈ s })  -> (h : ↑x ∈ ↑(convexHull 𝕜) (Subtype.val '' t))   -> (x ∈ t) = (x ∈ t)
+
+{L : FirstOrder.Language} {M : Type w'} [FirstOrder.Language.IsOrdered L] [FirstOrder.Language.Structure L M] [LE M] [FirstOrder.Language.OrderedStructure L M] {a : M} {b : M}  : (FirstOrder.Language.Structure.RelMap FirstOrder.Language.leSymb ![a, b]) ↔
+  (FirstOrder.Language.Structure.RelMap FirstOrder.Language.leSymb ![a, b])
+typeclass instance problem is stuck, it is often due to metavariables
+  FirstOrder.Language.Structure ?m.268 M ; identifiers [L, FirstOrder.Language, M, w', FirstOrder.Language.IsOrdered, L, FirstOrder.Language.Structure, L, M, LE, M, FirstOrder.Language.OrderedStructure, L, M, a, M, b, M, FirstOrder.Language.Structure.RelMap, FirstOrder.Language.leSymb, a, b, FirstOrder.Language.Structure.RelMap, FirstOrder.Language.leSymb, a, b] (during elaboration) for {L : FirstOrder.Language}  -> {M : Type w'}  -> [FirstOrder.Language.IsOrdered L]  -> [FirstOrder.Language.Structure L M]  -> [LE M]  -> [FirstOrder.Language.OrderedStructure L M]  -> {a : M}  -> {b : M}   -> (FirstOrder.Language.Structure.RelMap FirstOrder.Language.leSymb ![a, b]) ↔
+  (FirstOrder.Language.Structure.RelMap FirstOrder.Language.leSymb ![a, b])
+
+{α : Type u_1} {a : α} {b : α}  : ((¬(a ∈ {b})) ↔ (a ≠ b)) = ((¬(a ∈ {b})) ↔ (a ≠ b))
+typeclass instance problem is stuck, it is often due to metavariables
+  Singleton α ?m.931 ; identifiers [α, u_1, a, α, b, α, a, b, b, a, b, a, b, b, a, b] (during elaboration) for {α : Type u_1}  -> {a : α}  -> {b : α}   -> ((¬(a ∈ {b})) ↔ (a ≠ b)) = ((¬(a ∈ {b})) ↔ (a ≠ b))
+
+ : (∀ {ι : Type uι} {E : Type uE} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] [inst_2 : FiniteDimensional ℝ E]
+  {H : Type uH} [inst_3 : TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] {s : Set M} [inst_7 : T2Space M]
+  {f : SmoothBumpCovering ι I M s} {U : (a : M) → Set M},
+  (BumpCovering.IsSubordinate (SmoothBumpCovering.toBumpCovering f) fun (i : ι) ↦ U (SmoothBumpCovering.c s f i)) ↔
+    (SmoothBumpCovering.IsSubordinate f U))
+unknown universe level 'uH' ; identifiers [ι, uι, E, uE, inst, NormedAddCommGroup, E, inst_1, NormedSpace, E, inst_2, FiniteDimensional, E, H, uH, inst_3, TopologicalSpace, H, I, ModelWithCorners, E, H, M, uM, inst_4, TopologicalSpace, M, inst_5, ChartedSpace, H, M, inst_6, SmoothManifoldWithCorners, I, M, s, Set, M, inst_7, T2Space, M, f, SmoothBumpCovering, ι, I, M, s, U, a, M, Set, M, BumpCovering.IsSubordinate, SmoothBumpCovering.toBumpCovering, f, i, ι, U, SmoothBumpCovering.c, s, f, i, SmoothBumpCovering.IsSubordinate, f, U] (during elaboration) for (∀ {ι : Type uι} {E : Type uE} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] [inst_2 : FiniteDimensional ℝ E]
+  {H : Type uH} [inst_3 : TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] {s : Set M} [inst_7 : T2Space M]
+  {f : SmoothBumpCovering ι I M s} {U : (a : M) → Set M},
+  (BumpCovering.IsSubordinate (SmoothBumpCovering.toBumpCovering f) fun (i : ι) ↦ U (SmoothBumpCovering.c s f i)) ↔
+    (SmoothBumpCovering.IsSubordinate f U))
+
+ : ∀ {ι : Type uι} {E : Type uE} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] [inst_2 : FiniteDimensional ℝ E]
+  {H : Type uH} [inst_3 : TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] {s : Set M} [inst_7 : T2Space M]
+  {f : SmoothBumpCovering ι I M s} {U : (a : M) → Set M},
+  (BumpCovering.IsSubordinate (SmoothBumpCovering.toBumpCovering f) fun (i : ι) ↦ U (SmoothBumpCovering.c s f i)) ↔
+    (BumpCovering.IsSubordinate (SmoothBumpCovering.toBumpCovering f) fun (i : ι) ↦ U (SmoothBumpCovering.c s f i))
+unknown universe level 'uH' ; identifiers [ι, uι, E, uE, inst, NormedAddCommGroup, E, inst_1, NormedSpace, E, inst_2, FiniteDimensional, E, H, uH, inst_3, TopologicalSpace, H, I, ModelWithCorners, E, H, M, uM, inst_4, TopologicalSpace, M, inst_5, ChartedSpace, H, M, inst_6, SmoothManifoldWithCorners, I, M, s, Set, M, inst_7, T2Space, M, f, SmoothBumpCovering, ι, I, M, s, U, a, M, Set, M, BumpCovering.IsSubordinate, SmoothBumpCovering.toBumpCovering, f, i, ι, U, SmoothBumpCovering.c, s, f, i, BumpCovering.IsSubordinate, SmoothBumpCovering.toBumpCovering, f, i, ι, U, SmoothBumpCovering.c, s, f, i] (during elaboration) for ∀ {ι : Type uι} {E : Type uE} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] [inst_2 : FiniteDimensional ℝ E]
+  {H : Type uH} [inst_3 : TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] {s : Set M} [inst_7 : T2Space M]
+  {f : SmoothBumpCovering ι I M s} {U : (a : M) → Set M},
+  (BumpCovering.IsSubordinate (SmoothBumpCovering.toBumpCovering f) fun (i : ι) ↦ U (SmoothBumpCovering.c s f i)) ↔
+    (BumpCovering.IsSubordinate (SmoothBumpCovering.toBumpCovering f) fun (i : ι) ↦ U (SmoothBumpCovering.c s f i))
+
+{𝕜 : Type u_2} {E : Type u_1} [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] (x : E)  : ((x ∈ ⊤ᗮ) ↔ (x ∈ ⊥)) = ((x ∈ ⊤ᗮ) ↔ (x ∈ ⊥))
+typeclass instance problem is stuck, it is often due to metavariables
+  Membership E (?m.3858 x) ; identifiers [𝕜, u_2, E, u_1, IsROrC, 𝕜, NormedAddCommGroup, E, InnerProductSpace, 𝕜, E, x, E, x, x, x, x] (during elaboration) for {𝕜 : Type u_2}  -> {E : Type u_1}  -> [IsROrC 𝕜]  -> [NormedAddCommGroup E]  -> [InnerProductSpace 𝕜 E]  -> (x : E)   -> ((x ∈ ⊤ᗮ) ↔ (x ∈ ⊥)) = ((x ∈ ⊤ᗮ) ↔ (x ∈ ⊥))
+
+{𝕜 : Type u_2} {E : Type u_1} [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] (x : E)  : ((x ∈ ⊤ᗮ) ↔ (x = 0)) = ((x ∈ ⊤ᗮ) ↔ (x = 0))
+typeclass instance problem is stuck, it is often due to metavariables
+  InnerProductSpace (?m.2643 x) E ; identifiers [𝕜, u_2, E, u_1, IsROrC, 𝕜, NormedAddCommGroup, E, InnerProductSpace, 𝕜, E, x, E, x, x, x, x] (during elaboration) for {𝕜 : Type u_2}  -> {E : Type u_1}  -> [IsROrC 𝕜]  -> [NormedAddCommGroup E]  -> [InnerProductSpace 𝕜 E]  -> (x : E)   -> ((x ∈ ⊤ᗮ) ↔ (x = 0)) = ((x ∈ ⊤ᗮ) ↔ (x = 0))
+
+{𝕜 : Type u_1} {E : Type u_2} [SeminormedRing 𝕜] [SMul 𝕜 E] {s : Set E} {t : Set E} (ht : Balanced 𝕜 t) (h : s ⊆ t) ⦃x : E⦄ (hx : x ∈ balancedHull 𝕜 s) (r : 𝕜) (h_1 : ∃ (x_1 : ‖r‖ ≤ 1), x ∈ r • s) (hr : ‖r‖ ≤ 1) (h_2 : x ∈ r • s) (y : E) (h_3 : (y ∈ s) ∧ ((fun (x : E) ↦ r • x) y = x)) (hy : y ∈ s) (right : (fun (x : E) ↦ r • x) y = x) (hx : (fun (x : E) ↦ r • x) y ∈ balancedHull 𝕜 s)  : y ∈ t
+failed to synthesize instance
+  HSMul 𝕜 (Set E) ?m.614 ; identifiers [𝕜, u_1, E, u_2, SeminormedRing, 𝕜, SMul, 𝕜, E, s, Set, E, t, Set, E, ht, Balanced, 𝕜, t, h, s, t, x, E, hx, x, balancedHull, 𝕜, s, r, 𝕜, h_1, x_1, r, x, r, s, hr, r, h_2, x, r, s, y, E, h_3, y, s, x, E, r, x, y, x, hy, y, s, right, x, E, r, x, y, x, hx, x, E, r, x, y, balancedHull, 𝕜, s, y, t] (during elaboration) for {𝕜 : Type u_1}  -> {E : Type u_2}  -> [SeminormedRing 𝕜]  -> [SMul 𝕜 E]  -> {s : Set E}  -> {t : Set E}  -> (ht : Balanced 𝕜 t)  -> (h : s ⊆ t)  -> ⦃x : E⦄  -> (hx : x ∈ balancedHull 𝕜 s)  -> (r : 𝕜)  -> (h_1 : ∃ (x_1 : ‖r‖ ≤ 1), x ∈ r • s)  -> (hr : ‖r‖ ≤ 1)  -> (h_2 : x ∈ r • s)  -> (y : E)  -> (h_3 : (y ∈ s) ∧ ((fun (x : E) ↦ r • x) y = x))  -> (hy : y ∈ s)  -> (right : (fun (x : E) ↦ r • x) y = x)  -> (hx : (fun (x : E) ↦ r • x) y ∈ balancedHull 𝕜 s)   -> y ∈ t
+
+{α : Type u_2} {m0 : MeasurableSpace α} {μ : MeasureTheory.Measure α} {γ : Type u_1} (f : (a : α) → γ) (g : (a : α) → γ) (s : Set α) (hs_zero : ↑↑μ s = 0) (h_ss : sᶜ ⊆ {a : α | (if (a ∈ s) then f a else g a) = g a}) {α : Type u_2} [HasSubset α] (a : α) (a_1 : α) (e_a : a = a_1) (a_2 : α) (a_3 : α) (e_a : a_2 = a_3)  : (a ⊆ a_2) = (a ⊆ a_2)
+failed to synthesize instance
+  Decidable (a ∈ s) ; identifiers [α, u_2, m0, MeasurableSpace, α, μ, MeasureTheory.Measure, α, γ, u_1, f, a, α, γ, g, a, α, γ, s, Set, α, hs_zero, μ, s, h_ss, s, a, α, a, s, f, a, g, a, g, a, α, u_2, HasSubset, α, a, α, a_1, α, e_a, a, a_1, a_2, α, a_3, α, e_a, a_2, a_3, a, a_2, a, a_2] (during elaboration) for {α : Type u_2}  -> {m0 : MeasurableSpace α}  -> {μ : MeasureTheory.Measure α}  -> {γ : Type u_1}  -> (f : (a : α) → γ)  -> (g : (a : α) → γ)  -> (s : Set α)  -> (hs_zero : ↑↑μ s = 0)  -> (h_ss : sᶜ ⊆ {a : α | (if (a ∈ s) then f a else g a) = g a})  -> {α : Type u_2}  -> [HasSubset α]  -> (a : α)  -> (a_1 : α)  -> (e_a : a = a_1)  -> (a_2 : α)  -> (a_3 : α)  -> (e_a : a_2 = a_3)   -> (a ⊆ a_2) = (a ⊆ a_2)
+
+{α : Type u_2} {m0 : MeasurableSpace α} {μ : MeasureTheory.Measure α} {γ : Type u_1} (f : (a : α) → γ) (g : (a : α) → γ) (s : Set α) (hs_zero : ↑↑μ s = 0) (h_ss : sᶜ ⊆ {a : α | (if (a ∈ s) then f a else g a) = g a})  : s = s
+failed to synthesize instance
+  Decidable (a ∈ s) ; identifiers [α, u_2, m0, MeasurableSpace, α, μ, MeasureTheory.Measure, α, γ, u_1, f, a, α, γ, g, a, α, γ, s, Set, α, hs_zero, μ, s, h_ss, s, a, α, a, s, f, a, g, a, g, a, s, s] (during elaboration) for {α : Type u_2}  -> {m0 : MeasurableSpace α}  -> {μ : MeasureTheory.Measure α}  -> {γ : Type u_1}  -> (f : (a : α) → γ)  -> (g : (a : α) → γ)  -> (s : Set α)  -> (hs_zero : ↑↑μ s = 0)  -> (h_ss : sᶜ ⊆ {a : α | (if (a ∈ s) then f a else g a) = g a})   -> s = s
+
+{α : Type u_2} {m0 : MeasurableSpace α} {μ : MeasureTheory.Measure α} {γ : Type u_1} (f : (a : α) → γ) (g : (a : α) → γ) (s : Set α) (hs_zero : ↑↑μ s = 0) (h_ss : sᶜ ⊆ {a : α | (if (a ∈ s) then f a else g a) = g a})  : sᶜᶜ = sᶜᶜ
+failed to synthesize instance
+  Decidable (a ∈ s) ; identifiers [α, u_2, m0, MeasurableSpace, α, μ, MeasureTheory.Measure, α, γ, u_1, f, a, α, γ, g, a, α, γ, s, Set, α, hs_zero, μ, s, h_ss, s, a, α, a, s, f, a, g, a, g, a, s, s] (during elaboration) for {α : Type u_2}  -> {m0 : MeasurableSpace α}  -> {μ : MeasureTheory.Measure α}  -> {γ : Type u_1}  -> (f : (a : α) → γ)  -> (g : (a : α) → γ)  -> (s : Set α)  -> (hs_zero : ↑↑μ s = 0)  -> (h_ss : sᶜ ⊆ {a : α | (if (a ∈ s) then f a else g a) = g a})   -> sᶜᶜ = sᶜᶜ
+
+{C : Type u_2} [CategoryTheory.Category C] {X : C} {Y : C} {f : X ⟶ Y} {g : X ⟶ Y} {s : CategoryTheory.Limits.Fork f g} {t : CategoryTheory.Limits.Fork f g} (i : CategoryTheory.Limits.Cone.pt s ≅ CategoryTheory.Limits.Cone.pt t) (w : autoParam (CategoryTheory.CategoryStruct.comp i.hom (CategoryTheory.Limits.Fork.ι t) = CategoryTheory.Limits.Fork.ι s)
+  _auto✝)  : CategoryTheory.Limits.Fork.ι s = CategoryTheory.CategoryStruct.comp i.hom (CategoryTheory.Limits.Fork.ι t)
+<input>:2:7: expected token
+
+{𝕜 : Type u_2} {E : Type u_1} [OrderedSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E} (hc : ∀ (t : Set E) (a : t ⊆ s), s ∩ ↑(convexHull 𝕜) t ⊆ t) (t : Set { x : E // x ∈ s }) (x : { x : E // x ∈ s }) (h : ↑x ∈ ↑(convexHull 𝕜) (Subtype.val '' t))  : (x ∈ t) = (x ∈ t)
+type mismatch
+  x
+has type
+  { x // x ∈ s } : Type u_1
+but is expected to have type
+  ?m.1136 hc t x : outParam (Type ?u.845) ; identifiers [𝕜, u_2, E, u_1, OrderedSemiring, 𝕜, AddCommGroup, E, Module, 𝕜, E, s, Set, E, hc, t, Set, E, a, t, s, s, convexHull, 𝕜, t, t, t, Set, x, E, x, s, x, x, E, x, s, h, x, convexHull, 𝕜, Subtype.val, t, x, t, x, t] (during elaboration) for {𝕜 : Type u_2}  -> {E : Type u_1}  -> [OrderedSemiring 𝕜]  -> [AddCommGroup E]  -> [Module 𝕜 E]  -> {s : Set E}  -> (hc : ∀ (t : Set E) (a : t ⊆ s), s ∩ ↑(convexHull 𝕜) t ⊆ t)  -> (t : Set { x : E // x ∈ s })  -> (x : { x : E // x ∈ s })  -> (h : ↑x ∈ ↑(convexHull 𝕜) (Subtype.val '' t))   -> (x ∈ t) = (x ∈ t)
+
+ : (∀ {ι : Type u_1} {V : Type u} [inst : CategoryTheory.Category V] [inst_1 : CategoryTheory.Limits.HasZeroMorphisms V]
+  {c : ComplexShape ι} {A : HomologicalComplex V c} {B : HomologicalComplex V c} [inst_2 : SizeOf ι] [inst_3 : SizeOf V]
+  (f : (i : ι) → HomologicalComplex.X A i ⟶ HomologicalComplex.X B i)
+  (comm' :
+    autoParam
+      (∀ (i : ι) (j : ι) (a : ComplexShape.Rel c i j),
+        CategoryTheory.CategoryStruct.comp (f i) (HomologicalComplex.d B i j) =
+          CategoryTheory.CategoryStruct.comp (HomologicalComplex.d A i j) (f j))
+      _auto✝),
+  sizeOf (HomologicalComplex.Hom.mk f) = 1)
+<input>:9:11: expected token
+
+ : ∀ {ι : Type u_1} {V : Type u} [inst : CategoryTheory.Category V] [inst_1 : CategoryTheory.Limits.HasZeroMorphisms V]
+  {c : ComplexShape ι} {A : HomologicalComplex V c} {B : HomologicalComplex V c} [inst_2 : SizeOf ι] [inst_3 : SizeOf V]
+  (f : (i : ι) → HomologicalComplex.X A i ⟶ HomologicalComplex.X B i)
+  (comm' :
+    autoParam
+      (∀ (i : ι) (j : ι) (a : ComplexShape.Rel c i j),
+        CategoryTheory.CategoryStruct.comp (f i) (HomologicalComplex.d B i j) =
+          CategoryTheory.CategoryStruct.comp (HomologicalComplex.d A i j) (f j))
+      _auto✝),
+  1 = 1
+<input>:9:11: expected token
+
+{α : Type u_1} {M : Type u_3} (R : Type u_2) [Semiring R] [AddCommMonoid M] [Module R M] {s : Finset α} {f : (a : α) → R} (g : (a : α) → M) (hf : ∀ (a : α) (a_1 : f a ≠ 0), a ∈ s)  : ∀ (x : α) (a : x ∈ Finset.filter (fun (a : α) ↦ f a ≠ 0) s), f x • g x = f x • g x
+failed to synthesize instance
+  DecidablePred fun a => f a ≠ 0 ; identifiers [α, u_1, M, u_3, R, u_2, Semiring, R, AddCommMonoid, M, Module, R, M, s, Finset, α, f, a, α, R, g, a, α, M, hf, a, α, a_1, f, a, a, s, x, α, a, x, Finset.filter, a, α, f, a, s, f, x, g, x, f, x, g, x] (during elaboration) for {α : Type u_1}  -> {M : Type u_3}  -> (R : Type u_2)  -> [Semiring R]  -> [AddCommMonoid M]  -> [Module R M]  -> {s : Finset α}  -> {f : (a : α) → R}  -> (g : (a : α) → M)  -> (hf : ∀ (a : α) (a_1 : f a ≠ 0), a ∈ s)   -> ∀ (x : α) (a : x ∈ Finset.filter (fun (a : α) ↦ f a ≠ 0) s), f x • g x = f x • g x
+
+{α : Type u_1} (x : Subtype Setoid.IsPartition) (y : Subtype Setoid.IsPartition) (hx : x ≤ y) (hy : y ≤ x) (h : Setoid.mkClasses ↑x (Setoid.Partition.le.proof_1 x) = Setoid.mkClasses ↑y (Setoid.Partition.le.proof_2 y))  : (x = y) = (x = y)
+application type mismatch
+  Setoid.mkClasses ?m.2267 (_ : ∀ (a : ?m.5707), ∃! b x, a ∈ b)
+argument
+  Setoid.Partition.le.proof_2 y
+has type
+  ∀ (a : ?m.5707), ∃! b x, a ∈ b : Prop
+but is expected to have type
+  ∀ (a : ?m.5708 x y hx hy), ∃! b x_1, a ∈ b : Prop ; identifiers [α, u_1, x, Subtype, Setoid.IsPartition, y, Subtype, Setoid.IsPartition, hx, x, y, hy, y, x, h, Setoid.mkClasses, x, Setoid.Partition.le.proof_1, x, Setoid.mkClasses, y, Setoid.Partition.le.proof_2, y, x, y, x, y] (during elaboration) for {α : Type u_1}  -> (x : Subtype Setoid.IsPartition)  -> (y : Subtype Setoid.IsPartition)  -> (hx : x ≤ y)  -> (hy : y ≤ x)  -> (h : Setoid.mkClasses ↑x (Setoid.Partition.le.proof_1 x) = Setoid.mkClasses ↑y (Setoid.Partition.le.proof_2 y))   -> (x = y) = (x = y)
+
+{α : Type u_1} (x : Subtype Setoid.IsPartition) (y : Subtype Setoid.IsPartition) (hx : x ≤ y) (hy : y ≤ x) (h : Setoid.mkClasses ↑x (Setoid.Partition.le.proof_1 x) = Setoid.mkClasses ↑y (Setoid.Partition.le.proof_2 y))  : (↑x = ↑y) = (↑x = ↑y)
+type mismatch
+  y
+has type
+  Subtype Setoid.IsPartition : Type ?u.8
+but is expected to have type
+  ?m.5928 x y hx hy h : Sort ?u.5682 ; identifiers [α, u_1, x, Subtype, Setoid.IsPartition, y, Subtype, Setoid.IsPartition, hx, x, y, hy, y, x, h, Setoid.mkClasses, x, Setoid.Partition.le.proof_1, x, Setoid.mkClasses, y, Setoid.Partition.le.proof_2, y, x, y, x, y] (during elaboration) for {α : Type u_1}  -> (x : Subtype Setoid.IsPartition)  -> (y : Subtype Setoid.IsPartition)  -> (hx : x ≤ y)  -> (hy : y ≤ x)  -> (h : Setoid.mkClasses ↑x (Setoid.Partition.le.proof_1 x) = Setoid.mkClasses ↑y (Setoid.Partition.le.proof_2 y))   -> (↑x = ↑y) = (↑x = ↑y)
+
+{α : Type u_1} [HeytingAlgebra α]  : (⊥ᶜ = ⊤) = (⊥ᶜ = ⊤)
+typeclass instance problem is stuck, it is often due to metavariables
+  Top ?m.2795 ; identifiers [α, u_1, HeytingAlgebra, α] (during elaboration) for {α : Type u_1}  -> [HeytingAlgebra α]   -> (⊥ᶜ = ⊤) = (⊥ᶜ = ⊤)
+
+{α : Type u_1} [HeytingAlgebra α]  : (⊥ ⇨ ⊥ = ⊤) = (⊥ ⇨ ⊥ = ⊤)
+typeclass instance problem is stuck, it is often due to metavariables
+  Top ?m.4000 ; identifiers [α, u_1, HeytingAlgebra, α] (during elaboration) for {α : Type u_1}  -> [HeytingAlgebra α]   -> (⊥ ⇨ ⊥ = ⊤) = (⊥ ⇨ ⊥ = ⊤)
+
+{α : Type u_1} [HeytingAlgebra α]  : ⊤ = ⊤
+typeclass instance problem is stuck, it is often due to metavariables
+  Top ?m.701 ; identifiers [α, u_1, HeytingAlgebra, α] (during elaboration) for {α : Type u_1}  -> [HeytingAlgebra α]   -> ⊤ = ⊤
+
+{α : Type u} {β : Type v} [Fintype β] (r : (a : α) → (a : β) → Prop) [(a : α) → DecidablePred (r a)] (r' : (a : α) → Finset β := fun (a : α) ↦ Finset.filter (fun (b : β) ↦ r a b) Finset.univ) (h : ∀ (A : Finset α), Finset.filter (fun (b : β) ↦ ∃ (a : α), (a ∈ A) ∧ (r a b)) Finset.univ = Finset.biUnion A r') (h' : ∀ (f : (a : α) → β) (x : α), (r x (f x)) ↔ (f x ∈ r' x)) (A : Finset α)  : ∀ (A : Finset α), Finset.filter (fun (b : β) ↦ ∃ (a : α), (a ∈ A) ∧ (r a b)) Finset.univ = Finset.biUnion A r'
+failed to synthesize instance
+  DecidableEq β ; identifiers [α, u, β, v, Fintype, β, r, a, α, a, β, a, α, DecidablePred, r, a, r', a, α, Finset, β, a, α, Finset.filter, b, β, r, a, b, Finset.univ, h, A, Finset, α, Finset.filter, b, β, a, α, a, A, r, a, b, Finset.univ, Finset.biUnion, A, r', h', f, a, α, β, x, α, r, x, f, x, f, x, r', x, A, Finset, α, A, Finset, α, Finset.filter, b, β, a, α, a, A, r, a, b, Finset.univ, Finset.biUnion, A, r'] (during elaboration) for {α : Type u}  -> {β : Type v}  -> [Fintype β]  -> (r : (a : α) → (a : β) → Prop)  -> [(a : α) → DecidablePred (r a)]  -> (r' : (a : α) → Finset β := fun (a : α) ↦ Finset.filter (fun (b : β) ↦ r a b) Finset.univ)  -> (h : ∀ (A : Finset α), Finset.filter (fun (b : β) ↦ ∃ (a : α), (a ∈ A) ∧ (r a b)) Finset.univ = Finset.biUnion A r')  -> (h' : ∀ (f : (a : α) → β) (x : α), (r x (f x)) ↔ (f x ∈ r' x))  -> (A : Finset α)   -> ∀ (A : Finset α), Finset.filter (fun (b : β) ↦ ∃ (a : α), (a ∈ A) ∧ (r a b)) Finset.univ = Finset.biUnion A r'
+
+{R : Type u_3} {S : Type u_1} [CommRing R] [CommRing S] (f : R →+* S) {X : ModuleCat R} (x : ↑X) (x' : ↑X)  : (1 ⊗ₜ[R] (x + x') = 1 ⊗ₜ[R] x + 1 ⊗ₜ[R] x') = (1 ⊗ₜ[R] (x + x') = 1 ⊗ₜ[R] x + 1 ⊗ₜ[R] x')
+type mismatch
+  X
+has type
+  ModuleCat R : Type (max u_3 (?u.531 + 1))
+but is expected to have type
+  Sort ?u.661 : Type ?u.661 ; identifiers [R, u_3, S, u_1, CommRing, R, CommRing, S, f, R, S, X, ModuleCat, R, x, X, x', X, R, x, x', R, x, R, x', R, x, x', R, x, R, x'] (during elaboration) for {R : Type u_3}  -> {S : Type u_1}  -> [CommRing R]  -> [CommRing S]  -> (f : R →+* S)  -> {X : ModuleCat R}  -> (x : ↑X)  -> (x' : ↑X)   -> (1 ⊗ₜ[R] (x + x') = 1 ⊗ₜ[R] x + 1 ⊗ₜ[R] x') = (1 ⊗ₜ[R] (x + x') = 1 ⊗ₜ[R] x + 1 ⊗ₜ[R] x')
+
+{R : Type u_3} {S : Type u_1} [CommRing R] [CommRing S] (f : R →+* S) {X : ModuleCat R} (x : ↑X) (x' : ↑X)  : 1 ⊗ₜ[R] x + 1 ⊗ₜ[R] x' = 1 ⊗ₜ[R] x + 1 ⊗ₜ[R] x'
+type mismatch
+  X
+has type
+  ModuleCat R : Type (max u_3 (?u.531 + 1))
+but is expected to have type
+  Sort ?u.661 : Type ?u.661 ; identifiers [R, u_3, S, u_1, CommRing, R, CommRing, S, f, R, S, X, ModuleCat, R, x, X, x', X, R, x, R, x', R, x, R, x'] (during elaboration) for {R : Type u_3}  -> {S : Type u_1}  -> [CommRing R]  -> [CommRing S]  -> (f : R →+* S)  -> {X : ModuleCat R}  -> (x : ↑X)  -> (x' : ↑X)   -> 1 ⊗ₜ[R] x + 1 ⊗ₜ[R] x' = 1 ⊗ₜ[R] x + 1 ⊗ₜ[R] x'
+
+{R : Type u} {A : Type v} {B : Type w} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] (toRingHom : A →+* B) (commutes' : ∀ (r : R), OneHom.toFun (↑↑toRingHom) (↑(algebraMap R A) r) = ↑(algebraMap R B) r) (toRingHom_1 : A →+* B) (commutes'_1 : ∀ (r : R), OneHom.toFun (↑↑toRingHom_1) (↑(algebraMap R A) r) = ↑(algebraMap R B) r) (a : { toRingHom := ((toRingHom)), commutes' := ((commutes')) } =
+  { toRingHom := ((toRingHom_1)), commutes' := ((commutes'_1)) })  : ∀ (toRingHom_eq : toRingHom = toRingHom_1), toRingHom = toRingHom_1
+type mismatch
+  toRingHom_1
+has type
+  A →+* B : Type (max v w)
+but is expected to have type
+  OneHom (?m.7752 toRingHom commutes' toRingHom_1 r)
+    (?m.7748 toRingHom commutes' toRingHom_1 r) : Type (max ?u.3580 ?u.3579) ; identifiers [R, u, A, v, B, w, CommSemiring, R, Semiring, A, Semiring, B, Algebra, R, A, Algebra, R, B, toRingHom, A, B, commutes', r, R, OneHom.toFun, toRingHom, algebraMap, R, A, r, algebraMap, R, B, r, toRingHom_1, A, B, commutes'_1, r, R, OneHom.toFun, toRingHom_1, algebraMap, R, A, r, algebraMap, R, B, r, a, toRingHom, toRingHom, commutes', commutes', toRingHom, toRingHom_1, commutes', commutes'_1, toRingHom_eq, toRingHom, toRingHom_1, toRingHom, toRingHom_1] (during elaboration) for {R : Type u}  -> {A : Type v}  -> {B : Type w}  -> [CommSemiring R]  -> [Semiring A]  -> [Semiring B]  -> [Algebra R A]  -> [Algebra R B]  -> (toRingHom : A →+* B)  -> (commutes' : ∀ (r : R), OneHom.toFun (↑↑toRingHom) (↑(algebraMap R A) r) = ↑(algebraMap R B) r)  -> (toRingHom_1 : A →+* B)  -> (commutes'_1 : ∀ (r : R), OneHom.toFun (↑↑toRingHom_1) (↑(algebraMap R A) r) = ↑(algebraMap R B) r)  -> (a : { toRingHom := ((toRingHom)), commutes' := ((commutes')) } =
+  { toRingHom := ((toRingHom_1)), commutes' := ((commutes'_1)) })   -> ∀ (toRingHom_eq : toRingHom = toRingHom_1), toRingHom = toRingHom_1
+
+{α : Type u} {β : Type v} [Fintype β] (r : (a : α) → (a : β) → Prop) [(a : α) → DecidablePred (r a)] (r' : (a : α) → Finset β := fun (a : α) ↦ Finset.filter (fun (b : β) ↦ r a b) Finset.univ) (h : ∀ (A : Finset α), Finset.filter (fun (b : β) ↦ ∃ (a : α), (a ∈ A) ∧ (r a b)) Finset.univ = Finset.biUnion A r') (h' : ∀ (f : (a : α) → β) (x : α), (r x (f x)) ↔ (f x ∈ r' x)) (f : (a : α) → β) (x : α) (f : (a : α) → β) (x : α)  : (r x (f x)) ↔ (f x ∈ r' x)
+failed to synthesize instance
+  DecidableEq β ; identifiers [α, u, β, v, Fintype, β, r, a, α, a, β, a, α, DecidablePred, r, a, r', a, α, Finset, β, a, α, Finset.filter, b, β, r, a, b, Finset.univ, h, A, Finset, α, Finset.filter, b, β, a, α, a, A, r, a, b, Finset.univ, Finset.biUnion, A, r', h', f, a, α, β, x, α, r, x, f, x, f, x, r', x, f, a, α, β, x, α, f, a, α, β, x, α, r, x, f, x, f, x, r', x] (during elaboration) for {α : Type u}  -> {β : Type v}  -> [Fintype β]  -> (r : (a : α) → (a : β) → Prop)  -> [(a : α) → DecidablePred (r a)]  -> (r' : (a : α) → Finset β := fun (a : α) ↦ Finset.filter (fun (b : β) ↦ r a b) Finset.univ)  -> (h : ∀ (A : Finset α), Finset.filter (fun (b : β) ↦ ∃ (a : α), (a ∈ A) ∧ (r a b)) Finset.univ = Finset.biUnion A r')  -> (h' : ∀ (f : (a : α) → β) (x : α), (r x (f x)) ↔ (f x ∈ r' x))  -> (f : (a : α) → β)  -> (x : α)  -> (f : (a : α) → β)  -> (x : α)   -> (r x (f x)) ↔ (f x ∈ r' x)
+
+{C : Type u_2} [CategoryTheory.Category C] ⦃X : C⦄ ⦃S : CategoryTheory.Sieve X⦄ (H₁ : S ∈
+  (fun (X : C) (S : CategoryTheory.Sieve X) ↦
+      ∀ {Y : C} (f : Y ⟶ X), ∃ (Z : C), ∃ (g : Z ⟶ Y), S.arrows (CategoryTheory.CategoryStruct.comp g f))
+    X) (R : CategoryTheory.Sieve X) (H₂ : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄ (a : S.arrows f),
+  CategoryTheory.Sieve.pullback f R ∈
+    (fun (X : C) (S : CategoryTheory.Sieve X) ↦
+        ∀ {Y : C} (f : Y ⟶ X), ∃ (Z : C), ∃ (g : Z ⟶ Y), S.arrows (CategoryTheory.CategoryStruct.comp g f))
+      Y) {Y : C} (f : Y ⟶ X)  : ∃ (Z : C), ∃ (g : Z ⟶ Y), S.arrows (CategoryTheory.CategoryStruct.comp g f)
+failed to synthesize instance
+  Membership (CategoryTheory.Sieve X) (CategoryTheory.Sieve X → Prop) ; identifiers [C, u_2, CategoryTheory.Category, C, X, C, S, CategoryTheory.Sieve, X, H₁, S, X, C, S, CategoryTheory.Sieve, X, Y, C, f, Y, X, Z, C, g, Z, Y, S.arrows, CategoryTheory.CategoryStruct.comp, g, f, X, R, CategoryTheory.Sieve, X, H₂, Y, C, f, Y, X, a, S.arrows, f, CategoryTheory.Sieve.pullback, f, R, X, C, S, CategoryTheory.Sieve, X, Y, C, f, Y, X, Z, C, g, Z, Y, S.arrows, CategoryTheory.CategoryStruct.comp, g, f, Y, Y, C, f, Y, X, Z, C, g, Z, Y, S.arrows, CategoryTheory.CategoryStruct.comp, g, f] (during elaboration) for {C : Type u_2}  -> [CategoryTheory.Category C]  -> ⦃X : C⦄  -> ⦃S : CategoryTheory.Sieve X⦄  -> (H₁ : S ∈
+  (fun (X : C) (S : CategoryTheory.Sieve X) ↦
+      ∀ {Y : C} (f : Y ⟶ X), ∃ (Z : C), ∃ (g : Z ⟶ Y), S.arrows (CategoryTheory.CategoryStruct.comp g f))
+    X)  -> (R : CategoryTheory.Sieve X)  -> (H₂ : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄ (a : S.arrows f),
+  CategoryTheory.Sieve.pullback f R ∈
+    (fun (X : C) (S : CategoryTheory.Sieve X) ↦
+        ∀ {Y : C} (f : Y ⟶ X), ∃ (Z : C), ∃ (g : Z ⟶ Y), S.arrows (CategoryTheory.CategoryStruct.comp g f))
+      Y)  -> {Y : C}  -> (f : Y ⟶ X)   -> ∃ (Z : C), ∃ (g : Z ⟶ Y), S.arrows (CategoryTheory.CategoryStruct.comp g f)
+
+{R : Type u} {A : Type v} {B : Type w} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] (toRingHom : A →+* B) (commutes' : ∀ (r : R), OneHom.toFun (↑↑toRingHom) (↑(algebraMap R A) r) = ↑(algebraMap R B) r) (toRingHom_1 : A →+* B) (commutes'_1 : ∀ (r : R), OneHom.toFun (↑↑toRingHom_1) (↑(algebraMap R A) r) = ↑(algebraMap R B) r) (a : toRingHom = toRingHom_1) (h : toRingHom_1 = toRingHom) (toRingHom_2 : A →+* B)  : toRingHom = toRingHom
+type mismatch
+  toRingHom_1
+has type
+  A →+* B : Type (max v w)
+but is expected to have type
+  OneHom (?m.7342 toRingHom commutes' toRingHom_1 r)
+    (?m.7338 toRingHom commutes' toRingHom_1 r) : Type (max ?u.3580 ?u.3579) ; identifiers [R, u, A, v, B, w, CommSemiring, R, Semiring, A, Semiring, B, Algebra, R, A, Algebra, R, B, toRingHom, A, B, commutes', r, R, OneHom.toFun, toRingHom, algebraMap, R, A, r, algebraMap, R, B, r, toRingHom_1, A, B, commutes'_1, r, R, OneHom.toFun, toRingHom_1, algebraMap, R, A, r, algebraMap, R, B, r, a, toRingHom, toRingHom_1, h, toRingHom_1, toRingHom, toRingHom_2, A, B, toRingHom, toRingHom] (during elaboration) for {R : Type u}  -> {A : Type v}  -> {B : Type w}  -> [CommSemiring R]  -> [Semiring A]  -> [Semiring B]  -> [Algebra R A]  -> [Algebra R B]  -> (toRingHom : A →+* B)  -> (commutes' : ∀ (r : R), OneHom.toFun (↑↑toRingHom) (↑(algebraMap R A) r) = ↑(algebraMap R B) r)  -> (toRingHom_1 : A →+* B)  -> (commutes'_1 : ∀ (r : R), OneHom.toFun (↑↑toRingHom_1) (↑(algebraMap R A) r) = ↑(algebraMap R B) r)  -> (a : toRingHom = toRingHom_1)  -> (h : toRingHom_1 = toRingHom)  -> (toRingHom_2 : A →+* B)   -> toRingHom = toRingHom
+
+{R : Type u} {A : Type v} {B : Type w} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] (toRingHom : A →+* B) (commutes' : ∀ (r : R), OneHom.toFun (↑↑toRingHom) (↑(algebraMap R A) r) = ↑(algebraMap R B) r) (toRingHom_1 : A →+* B) (commutes'_1 : ∀ (r : R), OneHom.toFun (↑↑toRingHom_1) (↑(algebraMap R A) r) = ↑(algebraMap R B) r) (a : toRingHom = toRingHom_1) (h : toRingHom_1 = toRingHom) (commutes'_2 : ∀ (r : R), OneHom.toFun (↑↑toRingHom) (↑(algebraMap R A) r) = ↑(algebraMap R B) r) (a : toRingHom = toRingHom) (h : HEq a (Eq.refl toRingHom))  : { toRingHom := ((toRingHom)), commutes' := ((commutes')) } = { toRingHom := ((toRingHom)), commutes' := ((commutes')) }
+type mismatch
+  toRingHom
+has type
+  A →+* B : Type (max v w)
+but is expected to have type
+  OneHom (?m.13500 toRingHom commutes' toRingHom_1 commutes'_1 a h r)
+    (?m.13484 toRingHom commutes' toRingHom_1 commutes'_1 a h r) : Type (max ?u.7031 ?u.7030) ; identifiers [R, u, A, v, B, w, CommSemiring, R, Semiring, A, Semiring, B, Algebra, R, A, Algebra, R, B, toRingHom, A, B, commutes', r, R, OneHom.toFun, toRingHom, algebraMap, R, A, r, algebraMap, R, B, r, toRingHom_1, A, B, commutes'_1, r, R, OneHom.toFun, toRingHom_1, algebraMap, R, A, r, algebraMap, R, B, r, a, toRingHom, toRingHom_1, h, toRingHom_1, toRingHom, commutes'_2, r, R, OneHom.toFun, toRingHom, algebraMap, R, A, r, algebraMap, R, B, r, a, toRingHom, toRingHom, h, HEq, a, Eq.refl, toRingHom, toRingHom, toRingHom, commutes', commutes', toRingHom, toRingHom, commutes', commutes'] (during elaboration) for {R : Type u}  -> {A : Type v}  -> {B : Type w}  -> [CommSemiring R]  -> [Semiring A]  -> [Semiring B]  -> [Algebra R A]  -> [Algebra R B]  -> (toRingHom : A →+* B)  -> (commutes' : ∀ (r : R), OneHom.toFun (↑↑toRingHom) (↑(algebraMap R A) r) = ↑(algebraMap R B) r)  -> (toRingHom_1 : A →+* B)  -> (commutes'_1 : ∀ (r : R), OneHom.toFun (↑↑toRingHom_1) (↑(algebraMap R A) r) = ↑(algebraMap R B) r)  -> (a : toRingHom = toRingHom_1)  -> (h : toRingHom_1 = toRingHom)  -> (commutes'_2 : ∀ (r : R), OneHom.toFun (↑↑toRingHom) (↑(algebraMap R A) r) = ↑(algebraMap R B) r)  -> (a : toRingHom = toRingHom)  -> (h : HEq a (Eq.refl toRingHom))   -> { toRingHom := ((toRingHom)), commutes' := ((commutes')) } = { toRingHom := ((toRingHom)), commutes' := ((commutes')) }
+
+{R : Type u} {A : Type v} {B : Type w} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] (toRingHom : A →+* B) (commutes' : ∀ (r : R), OneHom.toFun (↑↑toRingHom) (↑(algebraMap R A) r) = ↑(algebraMap R B) r) (toRingHom_1 : A →+* B) (commutes'_1 : ∀ (r : R), OneHom.toFun (↑↑toRingHom_1) (↑(algebraMap R A) r) = ↑(algebraMap R B) r) (a : toRingHom = toRingHom_1) (h : toRingHom_1 = toRingHom)  : toRingHom = toRingHom_1
+type mismatch
+  toRingHom_1
+has type
+  A →+* B : Type (max v w)
+but is expected to have type
+  OneHom (?m.7335 toRingHom commutes' toRingHom_1 r)
+    (?m.7331 toRingHom commutes' toRingHom_1 r) : Type (max ?u.3580 ?u.3579) ; identifiers [R, u, A, v, B, w, CommSemiring, R, Semiring, A, Semiring, B, Algebra, R, A, Algebra, R, B, toRingHom, A, B, commutes', r, R, OneHom.toFun, toRingHom, algebraMap, R, A, r, algebraMap, R, B, r, toRingHom_1, A, B, commutes'_1, r, R, OneHom.toFun, toRingHom_1, algebraMap, R, A, r, algebraMap, R, B, r, a, toRingHom, toRingHom_1, h, toRingHom_1, toRingHom, toRingHom, toRingHom_1] (during elaboration) for {R : Type u}  -> {A : Type v}  -> {B : Type w}  -> [CommSemiring R]  -> [Semiring A]  -> [Semiring B]  -> [Algebra R A]  -> [Algebra R B]  -> (toRingHom : A →+* B)  -> (commutes' : ∀ (r : R), OneHom.toFun (↑↑toRingHom) (↑(algebraMap R A) r) = ↑(algebraMap R B) r)  -> (toRingHom_1 : A →+* B)  -> (commutes'_1 : ∀ (r : R), OneHom.toFun (↑↑toRingHom_1) (↑(algebraMap R A) r) = ↑(algebraMap R B) r)  -> (a : toRingHom = toRingHom_1)  -> (h : toRingHom_1 = toRingHom)   -> toRingHom = toRingHom_1
+
+{R : Type u} {A : Type v} {B : Type w} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] (toRingHom : A →+* B) (commutes' : ∀ (r : R), OneHom.toFun (↑↑toRingHom) (↑(algebraMap R A) r) = ↑(algebraMap R B) r) (toRingHom_1 : A →+* B) (commutes'_1 : ∀ (r : R), OneHom.toFun (↑↑toRingHom_1) (↑(algebraMap R A) r) = ↑(algebraMap R B) r) (a : toRingHom = toRingHom_1)  : toRingHom_1 = toRingHom_1
+type mismatch
+  toRingHom_1
+has type
+  A →+* B : Type (max v w)
+but is expected to have type
+  OneHom (?m.7330 toRingHom commutes' toRingHom_1 r)
+    (?m.7326 toRingHom commutes' toRingHom_1 r) : Type (max ?u.3580 ?u.3579) ; identifiers [R, u, A, v, B, w, CommSemiring, R, Semiring, A, Semiring, B, Algebra, R, A, Algebra, R, B, toRingHom, A, B, commutes', r, R, OneHom.toFun, toRingHom, algebraMap, R, A, r, algebraMap, R, B, r, toRingHom_1, A, B, commutes'_1, r, R, OneHom.toFun, toRingHom_1, algebraMap, R, A, r, algebraMap, R, B, r, a, toRingHom, toRingHom_1, toRingHom_1, toRingHom_1] (during elaboration) for {R : Type u}  -> {A : Type v}  -> {B : Type w}  -> [CommSemiring R]  -> [Semiring A]  -> [Semiring B]  -> [Algebra R A]  -> [Algebra R B]  -> (toRingHom : A →+* B)  -> (commutes' : ∀ (r : R), OneHom.toFun (↑↑toRingHom) (↑(algebraMap R A) r) = ↑(algebraMap R B) r)  -> (toRingHom_1 : A →+* B)  -> (commutes'_1 : ∀ (r : R), OneHom.toFun (↑↑toRingHom_1) (↑(algebraMap R A) r) = ↑(algebraMap R B) r)  -> (a : toRingHom = toRingHom_1)   -> toRingHom_1 = toRingHom_1
+
