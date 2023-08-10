@@ -2,23 +2,25 @@ import Lean.Meta
 import LeanCodePrompts
 import LeanCodePrompts.BatchTranslate
 import LeanAide.Config
-open Lean
+import Cli
+open Lean Cli
 
 set_option maxHeartbeats 10000000
 set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
-def main (args: List String) : IO Unit := do
+def runBulkElab (p : Parsed) : IO UInt32 := do
   initSearchPath (← Lean.findSysroot) initFiles
-  let type := (args.getD 0 "thm")
-  let numSim := 
-    (args.get? 1 >>= fun s => s.toNat?).getD 10 
-  let includeFixed := 
-    (args.get? 2 >>= fun s => s.toLower.startsWith "t").getD Bool.false
-  let queryNum := 
-    (args.get? 3 >>= fun s => s.toNat?).getD 5
-  let temp10 :=
-    (args.get? 4 >>= fun s => s.toNat?).getD 8
+  let type := 
+    p.positionalArg? "input" |>.map (fun s => s.as! String)
+    |>.getD "thm"
+  let numSim := p.flag? "prompts" |>.map (fun s => s.as! Nat)
+    |>.getD 10
+  let includeFixed := p.hasFlag "include_fixed" 
+  let queryNum := p.flag? "responses" |>.map (fun s => s.as! Nat)
+    |>.getD 5
+  let temp10 := p.flag? "temperature" |>.map (fun s => s.as! Nat)
+    |>.getD 8
   let temp : JsonNumber := ⟨temp10, 1⟩
   let outFile := System.mkFilePath 
       ["results", 
@@ -44,4 +46,22 @@ def main (args: List String) : IO Unit := do
           let msg ← e.toMessageData.toString
           IO.println msg
 
-  return ()
+  return 0
+
+def bulkElab : Cmd := `[Cli|
+  bulkelab VIA runBulkElab; ["0.0.1"]
+  "Elaborate a set of inputs and report whether successful and the result if successful."
+
+  FLAGS:
+    include_fixed;         "Include the standard fixed prompts."
+    p, prompts : Nat;      "Number of example prompts"
+    r, responses : Nat;    "Number of responses to ask for."
+    t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t`."
+
+  ARGS:
+    input : String;      "The input file in the `data` folder."
+
+]
+
+def main (args: List String) : IO UInt32 := 
+  bulkElab.validate args

@@ -5672,3 +5672,365 @@ total : 40
 
 elaborated: 35
 
+Writing to file: silly-elab-12-false-12-9.json
+
+success
+
+theorem ∀ (p : ℕ), Nat.Prime p ↔ p = 2 ∨ Odd p
+
+total : 1
+
+elaborated: 1
+
+success
+
+theorem ∀ (n : ℕ), ∃ k, k > n ∧ Odd k
+
+total : 2
+
+elaborated: 2
+
+success
+
+theorem ∀ (p : ℕ), Nat.Prime p → p % 2 = 1 → p ≥ 3
+
+total : 3
+
+elaborated: 3
+
+success
+
+theorem ∀ {n : ℕ}, ∃ p, Nat.Prime p ∧ p > n ∧ Odd p
+
+total : 4
+
+elaborated: 4
+
+success
+
+theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],
+  FiniteDimensional.finrank K V = 2 → FiniteDimensional K V
+
+total : 5
+
+elaborated: 5
+
+success
+
+theorem {R : Type u} → [inst : Field R] → DivisionRing R
+
+total : 6
+
+elaborated: 6
+
+success
+
+theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],
+  FiniteDimensional K V → FiniteDimensional.finrank K V = 2 → FiniteDimensional K V
+
+total : 7
+
+elaborated: 7
+
+success
+
+theorem ∀ (n : ℕ), ∃ m, m = n + 1
+
+total : 8
+
+elaborated: 8
+
+success
+
+theorem ∀ (n : ℕ), n < n + 1
+
+total : 9
+
+elaborated: 9
+
+success
+
+theorem ∀ {α : Type u_1} [inst : MeasurableSpace α] (s : Set α), MeasurableSet s
+
+total : 10
+
+elaborated: 10
+
+No valid output from Codex; outputs below
+
+failed to elaborate
+
+outputs: #[]
+
+total : 11
+
+elaborated: 10
+
+success
+
+theorem ∀ {p : ℕ}, Nat.Prime p → ∀ {n : ℕ}, p = n * n → False
+
+total : 12
+
+elaborated: 11
+
+success
+
+theorem ∀ {p : ℕ}, Nat.Prime p → p > 2
+
+total : 13
+
+elaborated: 12
+
+success
+
+theorem ∀ {α : Type u} [inst : LinearOrderedRing α] {a b : α} {c d e f g h : α},
+  (∃ w x y z, a = w ^ 2 + x ^ 2 + y ^ 2 + z ^ 2) →
+    (∃ u v s t, b = u ^ 2 + v ^ 2 + s ^ 2 + t ^ 2) → ∃ r1 r2 r3 r4, a * b = r1 ^ 2 + r2 ^ 2 + r3 ^ 2 + r4 ^ 2
+
+total : 14
+
+elaborated: 13
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : CompactSpace α], LocallyCompactSpace α
+
+total : 15
+
+elaborated: 14
+
+success
+
+theorem ∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β},
+  Continuous f → UniformContinuous f
+
+total : 16
+
+elaborated: 15
+
+success
+
+theorem ∀ {p q : ℕ}, Nat.Prime p → Nat.Prime q → p ≠ q → p + q ≠ 6
+
+total : 17
+
+elaborated: 16
+
+success
+
+theorem ∀ (n : ℤ), ¬Irrational ↑n
+
+total : 18
+
+elaborated: 17
+
+success
+
+theorem ∀ {R : Type u} [inst : Ring R], IsUnit 1
+
+total : 19
+
+elaborated: 18
+
+success
+
+theorem {G : Type u_1} → [inst : Group G] → (H : Subgroup G) → Group { x // x ∈ H }
+
+total : 20
+
+elaborated: 19
+
+success
+
+theorem ∀ {m n : ℕ}, m + n = m + n
+
+total : 21
+
+elaborated: 20
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G], IsOfFinOrder 1
+
+total : 22
+
+elaborated: 21
+
+success
+
+theorem Nat.Prime 7
+
+total : 23
+
+elaborated: 22
+
+success
+
+theorem ∃ n, n = 3 ∧ Nat.Prime 2 ∧ Nat.Prime 3 ∧ Nat.Prime 5 ∧ ∀ (m : ℕ), m > 5 → ¬Nat.Prime m
+
+total : 24
+
+elaborated: 23
+
+success
+
+theorem ∀ {α : Type u} {a : Set α}, Set.Finite a → ∅ ⊆ a
+
+total : 25
+
+elaborated: 24
+
+No valid output from Codex; outputs below
+
+<input>:1:43: expected '(', '_' or identifier while parsing ∀ {α : Type u} {s : Set α}, Infinite s → ∃ {t : Set α}, Set.Finite t ∧ t ⊆ s
+
+∀ {α : Type u} {s :  ZFSet α}, Infinite s → ∃ (f : ℕ → α), Function.Injective f ∧ Set.Finite (f '' Set.univ) ∧ ∀ (x : α), x ∈ s → ∃ (n : ℕ), f n = x
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u} {s : Set α}, Infinite s → ∃ {t : Set α}, Set.Finite t ∧ t ⊆ s, ∀ {α : Type u} {s : Set α}, Infinite s → ∃ (f : ℕ → α), Function.Injective f ∧ Set.Finite (f '' Set.univ) ∧ ∀ (x : α), x ∈ s → ∃ (n : ℕ), f n = x]
+
+total : 26
+
+elaborated: 24
+
+success
+
+theorem {R : Type u_1} → [inst : CommRing R] → Monoid R
+
+total : 27
+
+elaborated: 25
+
+success
+
+theorem ∀ (F : Type u) [inst : Field F] [inst_1 : Fintype F], Fintype.card F ≠ 10
+
+total : 28
+
+elaborated: 26
+
+success
+
+theorem ∀ {n : ℕ}, Odd n → ∃ x y, x ≠ y ∧ n = x + y
+
+total : 29
+
+elaborated: 27
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Monoid G] {x : G}, IsOfFinOrder x ↔ True
+
+total : 30
+
+elaborated: 28
+
+success
+
+theorem ∀ {n : ℕ}, Even n → Even (n * n)
+
+total : 31
+
+elaborated: 29
+
+No valid output from Codex; outputs below
+
+∀ {R : Type u} [inst : CommutativeDivisionRing R], Field R
+
+∀ {K : Type u} [inst : CommutativeDivisionRing K], Field K
+
+∀ {R : Type u} [inst :  CommRingCat R] [inst_1 : IsDomain R] [inst_2 : ∀ x : R, x ≠ 0 → x⁻¹ ∈ R], IsField R
+
+∀ {K : Type u} [inst : CommDivisionRing K], Field K
+
+∀ {R : Type u} [inst :  CommRingCat R] [inst_1 : IsDivisionRing R], IsField R
+
+∀ {R : Type u} [inst :  CommRingCat R] [inst_1 : IsField R], IsField R
+
+∀ {R : Type u} [inst :  CommRingCat R] (inst_1 : IsDivisionRing R), IsField R
+
+∀ {K : Type u} [inst :  CommRingCat K] [inst_1 : IsDivisionRing K], IsField K
+
+failed to elaborate
+
+outputs: #[∀ {R : Type u} [inst : CommutativeDivisionRing R], Field R, ∀ {K : Type u} [inst : CommutativeDivisionRing K], Field K, ∀ {R : Type u} [inst : CommRing R] [inst_1 : IsDomain R] [inst_2 : ∀ x : R, x ≠ 0 → x⁻¹ ∈ R], IsField R, ∀ {K : Type u} [inst : CommDivisionRing K], Field K, ∀ {R : Type u} [inst : CommRing R] [inst_1 : IsDivisionRing R], IsField R, ∀ {R : Type u} [inst : CommRing R] [inst_1 : IsField R], IsField R, ∀ {R : Type u} [inst : CommRing R] (inst_1 : IsDivisionRing R), IsField R, ∀ {K : Type u} [inst : CommRing K] [inst_1 : IsDivisionRing K], IsField K]
+
+total : 32
+
+elaborated: 29
+
+success
+
+theorem ∀ {α : Type u} [inst : MulOneClass α], id 1 = 1
+
+total : 33
+
+elaborated: 30
+
+success
+
+theorem ∀ {α : Type u} (x : α), Function.IsFixedPt id x
+
+total : 34
+
+elaborated: 31
+
+success
+
+theorem ∀ {α : Type u} [inst : PseudoMetricSpace α] {x : α}, Metric.diam {x} = 0
+
+total : 35
+
+elaborated: 32
+
+No valid output from Codex; outputs below
+
+∀ {G : Type u_1} [self :  GroupCat G],  Nonempty G
+
+∀ {G : Type u} [self :  GroupCat G],  Inhabited G
+
+∀ {G : Type u_1} [inst :  GroupCat G],  Nonempty G
+
+failed to elaborate
+
+outputs: #[∀ {G : Type u_1} [self : Group G], nonempty G, ∀ {G : Type u} [self : Group G], inhabited G, ∀ {G : Type u_1} [inst : Group G], nonempty G]
+
+total : 36
+
+elaborated: 32
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] (x : α), IsConnected (connectedComponent x)
+
+total : 37
+
+elaborated: 33
+
+success
+
+theorem ∃ M, Ideal.IsMaximal M
+
+total : 38
+
+elaborated: 34
+
+success
+
+theorem PythagoreanTriple 3 4 5
+
+total : 39
+
+elaborated: 35
+
+success
+
+theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],
+  Basis (↑∅) K V → Submodule.span K ∅ = ⊥
+
+total : 40
+
+elaborated: 36
+

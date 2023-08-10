@@ -30,12 +30,12 @@ unsafe def show_nearest (stdin stdout : IO.FS.Stream)(data: Array ((String × St
   return ()
 
 unsafe def main (args: List String) : IO Unit := do
-  let picklePath : System.FilePath := "rawdata/mathlib4-doc-thms-embeddings.olean"
+  let picklePath : System.FilePath := "build/lib/mathlib4-doc-thms-embeddings.olean"
   unless ← picklePath.pathExists do
-    IO.println "Fetching embeddings ..."
+    IO.eprintln "Fetching embeddings ..."
     let out ← IO.Process.run {
       cmd := "curl",
-      args := #["--output", "rawdata/mathlib4-doc-thms-embeddings.olean", "-s",  "https://math.iisc.ac.in/~gadgil/data/mathlib4-doc-thms-embeddings.olean"]
+      args := #["--output", picklePath.toString, "-s",  "https://math.iisc.ac.in/~gadgil/data/mathlib4-doc-thms-embeddings.olean"]
     }
     IO.println out
   withUnpickle  picklePath <| 

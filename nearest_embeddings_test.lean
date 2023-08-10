@@ -2,8 +2,8 @@ import Lean
 open Lean
 
 def nearestEmbeddingsCmd : IO.Process.SpawnArgs := {
-  cmd := "./build/bin/nearest_embeddings",
-  args := #[],
+  cmd := "lake",
+  args := #["exe", "nearest_embeddings"],
   cwd := "."
 }
 
@@ -18,7 +18,7 @@ def queryProcess (args : IO.Process.SpawnArgs) (queries : Array String) : IO (Ar
     stdin := .piped,
     stdout := .piped,
     stderr := .piped }
-  let (stdin, child) ← child.takeStdin
+  let stdin := child.stdin
   let mut outputs : Array String := #[]
   for query in queries do
     stdin.putStrLn query
