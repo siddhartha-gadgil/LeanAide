@@ -15,6 +15,34 @@ open Mathlib.Prelude.Rename
 
 universe u v
 
+example : ∀ x: ℕ, x + 3 = 3 + x := by
+  conv =>
+    enter [x, 2]
+    rw [Nat.add_comm]
+  intro _ 
+  rfl
+   
+example (f g : ℕ → ℕ): f = g → ∀ x: ℕ, f (x + 3) = g (3 + x) := by
+  conv =>
+    intro eqn x
+    arg 1
+    rw [eqn]
+    arg 1    
+    rw [Nat.add_comm]
+  simp
+
+example (f g : ℕ → ℕ): f = g → ∀ x: ℕ, f (x + 3) = g (3 + x) := by
+  conv =>
+    enter [eqn, x, 2]
+    rw [← eqn]
+  conv => 
+    enter [eqn, x, 1]
+    rw [Nat.add_comm]
+  simp
+
+  
+    
+
 example: ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V]
   (h : FiniteDimensional.finrank K V = 2), FiniteDimensional K V := by sorry
  

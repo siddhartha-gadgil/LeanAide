@@ -14,7 +14,7 @@ To see translation in action, place the cursor anywhere on one of the comments b
 
 //- Every prime number is either `2` or odd -/
 
-set_option trace.Translate.info true 
+-- set_option trace.Translate.info true 
 #eval translateViewM "There are infinitely many odd numbers"
 
 #eval translateViewM "Every prime number is either `2` or odd"
