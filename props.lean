@@ -29,7 +29,6 @@ def coreContext : Core.Context := {fileName := "", fileMap := ⟨"", #[], #[]⟩
 
 def main (_: List String) : IO Unit := do
   init
-  let env ← environment
   let env' ← environment'
   let propMap ←  
     propMapCore.run' coreContext {env := env'} |>.runToIO'
