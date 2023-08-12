@@ -54,9 +54,10 @@ def serial (testLines : Array String)(preChecked: Bool := false) : IO Unit := do
         fun n ↦
           (``Eq).isPrefixOf n || (``Iff).isPrefixOf n))
       if check && corePremise.lemmas.isEmpty &&
-        corePremise.terms.isEmpty then
+        corePremise.terms.isEmpty && 
+        corePremise.name?.isSome then
         premiselessCount := premiselessCount + 1
-        IO.println s!"{corePremise.thm} has no lemmas, terms, true premises"
+        IO.println s!"theorem {corePremise.name?.getD ""} : {corePremise.thm} has no lemmas, terms, true premises"
         IO.println s!"{corePremise.ids} are the ids"
         IO.println "launching proof search"
         let core := proofSearchCore corePremise.thm #[]
