@@ -40,6 +40,21 @@ example (f g : ℕ → ℕ): f = g → ∀ x: ℕ, f (x + 3) = g (3 + x) := by
     rw [Nat.add_comm]
   simp
 
+example (f g : ℕ →   ℕ → ℕ): f = g → ∀ x: ℕ, 
+    f (x + 3) (4 + x) = g (3 + x) (x + 4) := by
+  conv => 
+    intro
+    enter [x, 1, 2]
+    rw [Nat.add_comm]
+  conv => 
+    intro
+    enter [x, 1, 1]
+    rw [Nat.add_comm]
+  conv =>
+    enter [eqn, x, 2]
+    rw [← eqn]
+  simp
+
   
     
 
