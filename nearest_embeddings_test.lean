@@ -11,24 +11,19 @@ def nearestEmbeddingsCmd : IO.Process.SpawnArgs := {
   stderr := .piped
 }
 
+initialize nearestEmbeddingsProcessRef : IO.Ref 
+  (Option <| IO.Process.Child nearestEmbeddingsCmd.toStdioConfig) ← IO.mkRef none
 
-@[instance] axiom IO.FS.Handle.instInhabited : Inhabited IO.FS.Handle
-
-noncomputable instance (stdio : IO.Process.Stdio) : Inhabited stdio.toHandleType :=
-  match stdio with
-    | .inherit | .null => inferInstanceAs <| Inhabited Unit
-    | .piped => inferInstanceAs <| Inhabited IO.FS.Handle
-
-noncomputable instance : Inhabited (IO.Process.Child nearestEmbeddingsCmd.toStdioConfig) where
-  default := ⟨default, default, default⟩
-
-initialize nearestEmbeddingsProcessRef : IO.Ref (IO.Process.Child nearestEmbeddingsCmd.toStdioConfig) ← do
-  let child ← IO.Process.spawn nearestEmbeddingsCmd
-  IO.mkRef child
-
+def getNearestEmbeddingsProcess : IO (IO.Process.Child nearestEmbeddingsCmd.toStdioConfig) := do
+  match ← nearestEmbeddingsProcessRef.get with
+    | some child => return child
+    | none =>
+      let child ← IO.Process.spawn nearestEmbeddingsCmd
+      nearestEmbeddingsProcessRef.set child
+      return child
 
 def queryNearestEmbeddingsProcess (queries : Array String) : IO (Array String) := do
-  let child ← nearestEmbeddingsProcessRef.get 
+  let child ← getNearestEmbeddingsProcess 
   let stdin := child.stdin
   let mut outputs : Array String := #[]
   for query in queries do
@@ -37,7 +32,6 @@ def queryNearestEmbeddingsProcess (queries : Array String) : IO (Array String) :
     let out ← child.stdout.getLine
     outputs := outputs.push out
   return outputs
-
 
 def statements := #[
   "There are infinitely many odd numbers",
