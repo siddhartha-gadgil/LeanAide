@@ -49,7 +49,7 @@ def proofSearchM (thm: String)(apps simps : Array Name := #[])(tacs: Array Strin
     try 
       let goals ←
         runAesop 0.5 apps simps #[] tacs mvarId
-      let proved := goals.isEmpty
+      let proved := goals.isEmpty 
       let (code: String) ← 
         if proved 
         then

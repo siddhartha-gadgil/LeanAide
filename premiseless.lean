@@ -62,7 +62,7 @@ def serial (testLines : Array String)(preChecked: Bool := false) : IO Unit := do
         IO.println s!"theorem {corePremise.name?.getD ""} : {corePremise.thm} has no lemmas, terms, true premises"
         IO.println s!"{corePremise.ids} are the ids"
         IO.println "launching proof search"
-        let core := proofSearchCore corePremise.thm #[] #[] #[]
+        let core := proofSearchCore corePremise.thm ids ids #[]
         let (elaborated, proved, code?) ← 
           core.run' coreContext {env := env} |>.runToIO'
         IO.println "finished proof search"
@@ -72,20 +72,31 @@ def serial (testLines : Array String)(preChecked: Bool := false) : IO Unit := do
           if proved 
           then
             genCode.putStrLn s!"#check {corePremise.name?.getD "none"}"
+            IO.println "Result proved with premises"
+            provedCount := provedCount + 1
             match code? with
             | some code => 
               genCode.putStrLn code
             | none => pure ()
           else
-            genCode.putStrLn s!"#print {corePremise.name?.getD "none"}"
+            let core := proofSearchCore corePremise.thm #[] #[] #[]
+            let (_, proved, code?) ← 
+              core.run' coreContext {env := env} |>.runToIO'
+            if proved 
+            then
+              genCode.putStrLn s!"#check {corePremise.name?.getD "none"}"
+              IO.println "Result proved without premises"
+              provedCount := provedCount + 1
+              match code? with
+              | some code => 
+                genCode.putStrLn code
+              | none => pure ()
+            else
+              genCode.putStrLn s!"#print {corePremise.name?.getD "none"}"
         else
           IO.println s!"Result not elaborated"
           genCode.putStrLn 
             s!"#check {corePremise.name?.getD "none"} -- not elaborated"
-        if proved then
-          provedCount := provedCount + 1
-          IO.println s!"Result proved"
-        else
           IO.println s!"Result not proved"
         IO.println s!"{count} processed, {premiselessCount} named and premiseless, {provedCount} proved, {elaboratedCount} elaborated"
         IO.println "-------------------"
