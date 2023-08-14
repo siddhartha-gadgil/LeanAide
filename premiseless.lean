@@ -40,6 +40,8 @@ def serial (testLines : Array String)(preChecked: Bool := false) : IO Unit := do
   let mut premiselessCount := 0
   let mut provedCount := 0
   let mut elaboratedCount := 0
+  let genCode ←  IO.FS.Handle.mk "CodeGen/Premiseless.lean" IO.FS.Mode.write
+  genCode.putStrLn "import Mathlib"
   for l in testLines do
     if count % 100 = 0 then
       IO.println s!"{count} processed, {premiselessCount} premiseless, {provedCount} proved, {elaboratedCount} elaborated"
@@ -67,17 +69,27 @@ def serial (testLines : Array String)(preChecked: Bool := false) : IO Unit := do
         if elaborated then
           elaboratedCount := elaboratedCount + 1
           IO.println s!"Result elaborated"
+          if proved 
+          then
+            genCode.putStrLn s!"#check {corePremise.name?.getD "none"}"
+            match code? with
+            | some code => 
+              genCode.putStrLn code
+            | none => pure ()
+          else
+            genCode.putStrLn s!"#print {corePremise.name?.getD "none"}"
         else
           IO.println s!"Result not elaborated"
+          genCode.putStrLn 
+            s!"#check {corePremise.name?.getD "none"} -- not elaborated"
         if proved then
           provedCount := provedCount + 1
           IO.println s!"Result proved"
         else
           IO.println s!"Result not proved"
-        IO.println s!"{count} processed, {premiselessCount} premiseless,
-        {provedCount} proved, {elaboratedCount} elaborated"
+        IO.println s!"{count} processed, {premiselessCount} named and premiseless, {provedCount} proved, {elaboratedCount} elaborated"
         IO.println "-------------------"
-          
+        genCode.putStrLn ""  
     | none => pure ()
   IO.println s!"{count} processed, {premiselessCount} premiseless, {provedCount} proved, {elaboratedCount} elaborated"
 

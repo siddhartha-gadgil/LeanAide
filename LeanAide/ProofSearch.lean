@@ -63,8 +63,9 @@ def proofSearchM (thm: String)(tacs: Array String := powerTactics) : TermElabM <
             pure pfScript
         else 
             pure "sorry"
-      IO.println s!"example: {← ppExpr type} := by\n{code}\n\n"
-      return (true, proved, some code)
+      let statement := s!"example: {← ppExpr type} := by\n{code}\n\n"
+      IO.println statement
+      return (true, proved, some statement)
     catch _ =>
       return (true, false, none)
   | Except.error err =>
