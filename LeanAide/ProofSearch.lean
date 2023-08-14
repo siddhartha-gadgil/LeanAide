@@ -37,7 +37,7 @@ def getMsgTactic?  : CoreM <| Option <| (TSyntax ``tacticSeq) × Format := do
     fmt?.map fun fmt => (tac, fmt))
 
 -- should eventually use premises
-def proofSearchM (thm: String)(tacs: Array String := powerTactics) : TermElabM <| Bool × Bool × (Option String) := 
+def proofSearchM (thm: String)(apps simps : Array Name := #[])(tacs: Array String := powerTactics) : TermElabM <| Bool × Bool × (Option String) := 
   withoutModifyingState do
   let type? ← elabThm thm 
   IO.println s!"Elaborated"
@@ -48,7 +48,7 @@ def proofSearchM (thm: String)(tacs: Array String := powerTactics) : TermElabM <
     let mvarId := goal.mvarId! 
     try 
       let goals ←
-        runAesop 0.5 #[] #[] #[] tacs mvarId
+        runAesop 0.5 apps simps #[] tacs mvarId
       let proved := goals.isEmpty
       let (code: String) ← 
         if proved 
@@ -80,8 +80,8 @@ def batchProofSearchM (thms: Array String) : TermElabM <| Array <| String × Boo
     let (elaborated, proved) := pair
     return (thm, elaborated, proved)
 
-def proofSearchCore (thm: String)(tacs: Array String := powerTactics) : CoreM <| Bool × Bool × (Option String)  := 
-  (proofSearchM thm tacs).run'.run'
+def proofSearchCore (thm: String)(apps simps : Array Name := #[])(tacs: Array String := powerTactics) : CoreM <| Bool × Bool × (Option String)  := 
+  (proofSearchM thm apps simps tacs).run'.run'
 
 def batchProofSearchCore (thms: Array String) : CoreM <| Array <| String × Bool × Bool × Option (String) := 
   (batchProofSearchM thms).run'.run'
