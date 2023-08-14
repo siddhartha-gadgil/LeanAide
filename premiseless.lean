@@ -61,7 +61,7 @@ def serial (testLines : Array String)(preChecked: Bool := false) : IO Unit := do
         IO.println s!"{corePremise.ids} are the ids"
         IO.println "launching proof search"
         let core := proofSearchCore corePremise.thm #[]
-        let (elaborated, proved) ← 
+        let (elaborated, proved, code?) ← 
           core.run' coreContext {env := env} |>.runToIO'
         IO.println "finished proof search"
         if elaborated then

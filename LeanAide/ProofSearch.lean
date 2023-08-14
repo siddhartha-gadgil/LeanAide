@@ -37,7 +37,7 @@ def getMsgTactic?  : CoreM <| Option <| (TSyntax ``tacticSeq) × Format := do
     fmt?.map fun fmt => (tac, fmt))
 
 -- should eventually use premises
-def proofSearchM (thm: String)(tacs: Array String := powerTactics) : TermElabM <| Bool × Bool := 
+def proofSearchM (thm: String)(tacs: Array String := powerTactics) : TermElabM <| Bool × Bool × (Option String) := 
   withoutModifyingState do
   let type? ← elabThm thm 
   IO.println s!"Elaborated"
@@ -50,7 +50,7 @@ def proofSearchM (thm: String)(tacs: Array String := powerTactics) : TermElabM <
       let goals ←
         runAesop 0.5 #[] #[] #[] tacs mvarId
       let proved := goals.isEmpty
-      let code : String ← 
+      let (code: String) ← 
         if proved 
         then
           let pair? ← getMsgTactic?
@@ -62,25 +62,25 @@ def proofSearchM (thm: String)(tacs: Array String := powerTactics) : TermElabM <
               (← PrettyPrinter.ppCategory `tacticSeq pfScript).pretty
             pure pfScript
         else 
-            pure s!"sorry"
+            pure "sorry"
       IO.println s!"example: {← ppExpr type} := by\n{code}\n\n"
-      return (true, proved)
+      return (true, proved, some code)
     catch _ =>
-      return (true, false)
+      return (true, false, none)
   | Except.error err =>
     errs.putStrLn thm 
     errs.putStrLn err
     errs.putStrLn ""
-    return (false, false)
+    return (false, false, none)
 
-def batchProofSearchM (thms: Array String) : TermElabM <| Array <| String × Bool × Bool := 
+def batchProofSearchM (thms: Array String) : TermElabM <| Array <| String × Bool × Bool × (Option String) := 
   thms.mapM fun thm => do
     let pair ← proofSearchM thm
     let (elaborated, proved) := pair
     return (thm, elaborated, proved)
 
-def proofSearchCore (thm: String)(tacs: Array String := powerTactics) : CoreM <| Bool × Bool  := 
+def proofSearchCore (thm: String)(tacs: Array String := powerTactics) : CoreM <| Bool × Bool × (Option String)  := 
   (proofSearchM thm tacs).run'.run'
 
-def batchProofSearchCore (thms: Array String) : CoreM <| Array <| String × Bool × Bool := 
+def batchProofSearchCore (thms: Array String) : CoreM <| Array <| String × Bool × Bool × Option (String) := 
   (batchProofSearchM thms).run'.run'
