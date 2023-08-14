@@ -2,7 +2,7 @@ import Mathlib
 #check Ordnode.balance.proof_22
 example: ∀ {α : Type u_1} (r : Ordnode α), id r = Ordnode.nil → Ordnode.nil = id r := by
   intro α r h
-  simp_all only [id_eq, eq_iff_iff, iff_true]
+  simp_all only [id_eq]
 
 
 
@@ -29,7 +29,7 @@ example: ∀ {R : Type u} [inst : NonUnitalNonAssocRing R] (self : NonUnitalSubr
 example: ∀ {J : Type u_1} (j : CategoryTheory.Limits.WidePushoutShape J) (j_1 : J), j = some j_1 → some j_1 = j := by
   intro J j j_1 h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
@@ -58,7 +58,7 @@ example: ∀ (𝕜 : Type u_4) [inst : NontriviallyNormedField 𝕜] {𝕜' : Ty
 example: ∀ (o a : ONote) (a_1 : ℕ+) (a_2 : ONote), o = ONote.oadd a a_1 a_2 → ONote.oadd a a_1 a_2 = o := by
   intro o a a_1 a_2 h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
@@ -85,7 +85,7 @@ example: ∀ {p : Prop}, p = False → ¬p := by
 #check Ordnode.balance.proof_24
 example: ∀ {α : Type u_1} (rr : Ordnode α), id rr = Ordnode.nil → Ordnode.nil = id rr := by
   intro α rr h
-  simp_all only [id_eq, eq_iff_iff, iff_true]
+  simp_all only [id_eq]
 
 
 
@@ -130,20 +130,25 @@ example: ∀ {α : Type u} (β : Type v) [inst : AddMonoid α] [inst_1 : AddActi
 example: ∀ {p : ENNReal}, p = 0 → 0 = p := by
   intro p hp
   aesop_subst hp
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
 #check FirstOrder.Language.Sentence.realize_not -- not elaborated
 
-#print CategoryTheory.Limits.WidePushoutShape.struct.proof_6
+#check CategoryTheory.Limits.WidePushoutShape.struct.proof_6
+example: ∀ {J : Type u_1} {Z : CategoryTheory.Limits.WidePushoutShape J}, Z = Z := by
+  intro J Z
+  simp_all only
+
+
 
 #check FP.ofPosRatDn.proof_4
 example: ∀ [C : FP.FloatCfg] (n d : ℕ+) (d₁ n₁ : ℕ),
   Int.shift2 (↑d) (↑n) (↑(Nat.size ↑n) - ↑(Nat.size ↑d) - ↑FP.prec + ↑FP.prec) = (d₁, n₁) →
     (d₁, n₁) = Int.shift2 (↑d) (↑n) (↑(Nat.size ↑n) - ↑(Nat.size ↑d) - ↑FP.prec + ↑FP.prec) := by
   intro C n d d₁ n₁ h
-  simp_all only [sub_add_cancel, eq_iff_iff, iff_true]
+  simp_all only [sub_add_cancel]
 
 
 
@@ -163,7 +168,7 @@ example: ∀ {𝒜 : Type u_1} [inst : CategoryTheory.Category 𝒜] {A B C : �
 example: ∀ (α : Type u_1) {Z : CategoryTheory.Discrete α} (as : α), Z = { as := as } → { as := as } = Z := by
   intro α Z as h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
@@ -195,7 +200,7 @@ example: ∀ {R : Type u_1} {M : Type u_2} [inst : CommRing R] [inst_1 : AddComm
 example: ∀ {J : Type u_1} {X Y : CategoryTheory.Limits.WidePushoutShape J}, Y = X → X = Y := by
   intro J X Y h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
@@ -209,7 +214,7 @@ example: ∀ {J : Type u_1} {X Y : CategoryTheory.Limits.WidePushoutShape J}, Y 
 example: ∀ (b q : Turing.PartrecToTM2.Λ'), b = Turing.PartrecToTM2.Λ'.copy q → Turing.PartrecToTM2.Λ'.copy q = b := by
   intro b q h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
@@ -228,11 +233,15 @@ example: ∀ {G : Type u_1} [inst : Group G] {p p' : Subgroup G} {x : G}, x ∈ 
 example: ∀ (x : PGame) {α β : Type u_1} {L : α → PGame} {R : β → PGame}, x = PGame.mk α β L R → PGame.mk α β L R = x := by
   intro x α β L R h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
-#print Turing.ToPartrec.Cont.halt.sizeOf_spec
+#check Turing.ToPartrec.Cont.halt.sizeOf_spec
+example: sizeOf Turing.ToPartrec.Cont.halt = 1 := by
+simp_all only
+
+
 
 #check CategoryTheory.ShortComplex.HomologyData.comm
 example: ∀ {C : Type u_1} [inst : CategoryTheory.Category C] [inst_1 : CategoryTheory.Limits.HasZeroMorphisms C]
@@ -306,7 +315,7 @@ example: ∀ {C : Type u_2} [inst : CategoryTheory.Category C] [inst_1 : Categor
   {f : X ⟶ Y}, f = 0 → 0 = f := by
   intro C inst inst_1 X Y f h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
@@ -359,7 +368,14 @@ example: ∀ {α : Type u} {β : Type v} [inst : AddGroup α] [inst_1 : AddActio
 
 
 
-#print Turing.PartrecToTM2.Λ'.instDecidableEq.proof_50
+#check Turing.PartrecToTM2.Λ'.instDecidableEq.proof_50
+example: ∀ (b : Turing.PartrecToTM2.Λ') (p : Turing.PartrecToTM2.Γ' → Bool) (k₁ k₂ : Turing.PartrecToTM2.K')
+  (q : Turing.PartrecToTM2.Λ'), b = Turing.PartrecToTM2.Λ'.move p k₁ k₂ q → Turing.PartrecToTM2.Λ'.move p k₁ k₂ q = b := by
+  intro b p k₁ k₂ q h
+  aesop_subst h
+  simp_all only
+
+
 
 #print Bipointed.Hom.map_snd
 
@@ -398,7 +414,7 @@ example: ∀ (b : Turing.PartrecToTM2.Λ') (f : Option Turing.PartrecToTM2.Γ' �
   b = Turing.PartrecToTM2.Λ'.read f → Turing.PartrecToTM2.Λ'.read f = b := by
   intro b f h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
@@ -456,13 +472,23 @@ example: ∀ (J : Type u_1) {j : CategoryTheory.Bicone J} {j_1 : J},
   j = CategoryTheory.Bicone.diagram j_1 → CategoryTheory.Bicone.diagram j_1 = j := by
   intro J j j_1 h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
-#print WithTop.linearOrderedAddCommGroupWithTop.proof_9
+#check WithTop.linearOrderedAddCommGroupWithTop.proof_9
+example: ∀ {α : Type u_1} [inst : LinearOrderedAddCommGroup α] (a b : WithTop α), a - b = a - b := by
+  intro α inst a b
+  simp_all only
 
-#print Equiv.Perm.permGroup.proof_4
+
+
+#check Equiv.Perm.permGroup.proof_4
+example: ∀ {α : Type u_1} (a b : Equiv.Perm α), a / b = a / b := by
+  intro α a b
+  simp_all only
+
+
 
 #print RingInvo.involution'
 
@@ -479,7 +505,7 @@ example: ∀ {α : Type u_2} {β : Type u_1} [inst : TopologicalSpace α] [inst_
 example: ∀ (i n : ℕ), i = Nat.succ n → Nat.succ n = i := by
   intro i n h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
@@ -491,7 +517,7 @@ example: ∀ (i n : ℕ), i = Nat.succ n → Nat.succ n = i := by
 example: ∀ (b : ℤ) (a : ℕ), b = Int.negSucc a → Int.negSucc a = b := by
   intro b a h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
@@ -516,7 +542,7 @@ example: ∀ (J : Type u_1) {X : CategoryTheory.Bicone J} {j : J},
   X = CategoryTheory.Bicone.diagram j → CategoryTheory.Bicone.diagram j = X := by
   intro J X j h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
@@ -532,11 +558,26 @@ example: ∀ (J : Type u_1) {X : CategoryTheory.Bicone J} {j : J},
 
 #print isOpen_sum_iff
 
-#print SubfieldClass.toField.proof_17
+#check SubfieldClass.toField.proof_17
+example: ∀ {K : Type u_1} [inst : Field K] (S : Type u_2) [inst_1 : SetLike S K] [h : SubfieldClass S K] (s : S)
+  (x : { x // x ∈ s }) (n : ℤ), n • x = n • x := by
+  intro K inst S inst_1 h s x n
+  simp_all only [zsmul_eq_mul]
 
-#print IdemSemiring.ofSemiring.proof_7
 
-#print CommRingCat.punitIsTerminal.proof_3
+
+#check IdemSemiring.ofSemiring.proof_7
+example: ∀ {α : Type u_1} [inst : Semiring α] (a b : α), a + b = a + b := by
+  intro α inst a b
+  simp_all only
+
+
+
+#check CommRingCat.punitIsTerminal.proof_3
+example: 1 = 1 := by
+simp_all only
+
+
 
 #check NNReal.coe_le_coe
 example: ∀ {r₁ r₂ : NNReal}, r₁ ≤ r₂ ↔ r₁ ≤ r₂ := by
@@ -560,7 +601,11 @@ example: ∀ {n m : ℕ}, n < m → Nat.succ n ≤ m := by
 
 #print TopCat.GlueData.MkCore.t_id
 
-#print Nat.Partrec.Code.right.sizeOf_spec
+#check Nat.Partrec.Code.right.sizeOf_spec
+example: sizeOf Nat.Partrec.Code.right = 1 := by
+simp_all only
+
+
 
 #check AddAction.orbitRel_apply
 example: ∀ {α : Type u} {β : Type v} [inst : AddGroup α] [inst_1 : AddAction α β] {x y : β},
@@ -583,9 +628,18 @@ example: ∀ {α : Type u_2} {β : Type u_1} {p : β → Prop} {f : α → β} {
 
 #print Filter.IsCountableBasis.countable
 
-#print Num.zero.sizeOf_spec
+#check Num.zero.sizeOf_spec
+example: sizeOf Num.zero = 1 := by
+simp_all only
 
-#print commGroupAddCommGroupEquivalence_functor_obj_str_zero
+
+
+#check commGroupAddCommGroupEquivalence_functor_obj_str_zero
+example: CommGroupCat → 0 = 0 := by
+  intro X
+  simp_all only
+
+
 
 #print StructureGroupoid.eq_on_source'
 
@@ -710,11 +764,16 @@ example: ∀ {α : Type u_1} {a : α} {l : List α}, a ∈ l ↔ a ∈ l := by
 #check Nat.equivFinOfCardPos.proof_4
 example: ∀ {α : Type u_1} (val : Infinite α), fintypeOrInfinite α = PSum.inr val → PSum.inr val = fintypeOrInfinite α := by
   intro α val h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
-#print SubfieldClass.toField.proof_8
+#check SubfieldClass.toField.proof_8
+example: ∀ {K : Type u_1} [inst : Field K] (S : Type u_2) [inst_1 : SetLike S K] [h : SubfieldClass S K], S → 0 = 0 := by
+  intro K inst S inst_1 h s
+  simp_all only
+
+
 
 #print Part.right_dom_of_div_dom
 
@@ -754,7 +813,7 @@ example: ∀ (b : Turing.PartrecToTM2.Λ') (k : Turing.PartrecToTM2.K')
   b = Turing.PartrecToTM2.Λ'.push k s q → Turing.PartrecToTM2.Λ'.push k s q = b := by
   intro b k s q h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
@@ -803,7 +862,7 @@ example: ∀ {α : Type u} [inst : TopologicalSpace α] {x : α} {F : Filter α}
 #check Ordnode.balanceR.proof_13
 example: ∀ {α : Type u_1} (l : Ordnode α), id l = Ordnode.nil → Ordnode.nil = id l := by
   intro α l h
-  simp_all only [id_eq, eq_iff_iff, iff_true]
+  simp_all only [id_eq]
 
 
 
@@ -811,7 +870,7 @@ example: ∀ {α : Type u_1} (l : Ordnode α), id l = Ordnode.nil → Ordnode.ni
 example: ∀ (α : Type u_1) {Y : CategoryTheory.Discrete α} (as : α), Y = { as := as } → { as := as } = Y := by
   intro α Y as h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
@@ -819,7 +878,7 @@ example: ∀ (α : Type u_1) {Y : CategoryTheory.Discrete α} (as : α), Y = { a
 example: ∀ (J : Type u_1) {X : CategoryTheory.Bicone J}, X = CategoryTheory.Bicone.right → CategoryTheory.Bicone.right = X := by
   intro J X h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
@@ -856,7 +915,12 @@ example: ∀ (K : Type u_3) {L : Type u_2} {L' : Type u_1} [inst : Field K] [ins
 
 #print ModuleFilterBasis.smul_right'
 
-#print PUnit.addCommGroup.proof_2
+#check PUnit.addCommGroup.proof_2
+example: ∀ (a : PUnit), 0 + a = 0 + a := by
+  intro a
+  simp_all only [PUnit.zero_eq, PUnit.add_eq]
+
+
 
 #check Subsemigroup.mem_inf
 example: ∀ {M : Type u_1} [inst : Mul M] {p p' : Subsemigroup M} {x : M}, x ∈ p ⊓ p' ↔ x ∈ p ∧ x ∈ p' := by
@@ -871,7 +935,14 @@ example: ∀ {M : Type u_1} [inst : Mul M] {p p' : Subsemigroup M} {x : M}, x �
 
 #print FirstOrder.Language.LHom.mk.sizeOf_spec
 
-#print Affine.Simplex.PointsWithCircumcenterIndex.circumcenter_index.sizeOf_spec
+#check Affine.Simplex.PointsWithCircumcenterIndex.circumcenter_index.sizeOf_spec
+example: ∀ {n : ℕ}, sizeOf Affine.Simplex.PointsWithCircumcenterIndex.circumcenter_index = 1 := by
+  intro n
+  apply Eq.refl
+  intro n
+  exact n
+
+
 
 #check WeierstrassCurve.Point.zero.sizeOf_spec -- not elaborated
 
@@ -879,7 +950,7 @@ example: ∀ {M : Type u_1} [inst : Mul M] {p p' : Subsemigroup M} {x : M}, x �
 example: ∀ {J : Type u_1} (j' : CategoryTheory.Limits.WidePushoutShape J), j' = none → none = j' := by
   intro J j' h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
@@ -926,7 +997,7 @@ example: ∀ (J : Type u_1) {Z : CategoryTheory.Bicone J} {k : J},
   Z = CategoryTheory.Bicone.diagram k → CategoryTheory.Bicone.diagram k = Z := by
   intro J Z k h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
@@ -1017,7 +1088,7 @@ example: ∀ (J : Type u_1) {Y : CategoryTheory.Bicone J} (j : J),
   Y = CategoryTheory.Bicone.diagram j → CategoryTheory.Bicone.diagram j = Y := by
   intro J Y j h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
@@ -1071,7 +1142,7 @@ example: ∀ {R : Type u} {A : Type v} [inst : CommSemiring R] [inst_1 : Semirin
 example: ∀ {J : Type u_1} {Y : CategoryTheory.Limits.WidePullbackShape J}, Y = none → none = Y := by
   intro J Y h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
@@ -1093,7 +1164,7 @@ example: ∀ (J : Type u_1) {Z : CategoryTheory.Bicone J} {k : J},
   Z = CategoryTheory.Bicone.diagram k → CategoryTheory.Bicone.diagram k = Z := by
   intro J Z k h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
@@ -1145,13 +1216,18 @@ example: ∀ {R : Type u} [inst : NonUnitalNonAssocRing R] {s : NonUnitalSubring
 example: ∀ (b q₁ q₂ : Turing.PartrecToTM2.Λ'), b = Turing.PartrecToTM2.Λ'.pred q₁ q₂ → Turing.PartrecToTM2.Λ'.pred q₁ q₂ = b := by
   intro b q₁ q₂ h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
 #print CategoryTheory.Adjunction.CoreHomEquiv.homEquiv_naturality_left_symm
 
-#print SubfieldClass.toField.proof_9
+#check SubfieldClass.toField.proof_9
+example: ∀ {K : Type u_1} [inst : Field K] (S : Type u_2) [inst_1 : SetLike S K] [h : SubfieldClass S K], S → 1 = 1 := by
+  intro K inst S inst_1 h s
+  simp_all only
+
+
 
 #check Subring.mem_toSubsemiring
 example: ∀ {R : Type u} [inst : Ring R] {s : Subring R} {x : R}, x ∈ s.toSubsemiring ↔ x ∈ s := by
@@ -1219,7 +1295,7 @@ example: ∀ {p : Prop}, p → ¬¬p := by
 example: ∀ {α : Type u_1} (rl : Ordnode α), rl = Ordnode.nil → Ordnode.nil = rl := by
   intro α rl h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
@@ -1298,7 +1374,7 @@ example: ∀ (b : Turing.PartrecToTM2.Λ') (k : Turing.PartrecToTM2.K')
   b = Turing.PartrecToTM2.Λ'.push k s q → Turing.PartrecToTM2.Λ'.push k s q = b := by
   intro b k s q h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
@@ -1337,7 +1413,7 @@ example: ∀ {𝕜 : Type u_1} [inst : OrderedSemiring 𝕜] {E : Type u_2} [ins
 example: ∀ (n n_1 : ℕ), n = Nat.succ n_1 → Nat.succ n_1 = n := by
   intro n n_1 h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
@@ -1349,13 +1425,18 @@ example: ∀ (n n_1 : ℕ), n = Nat.succ n_1 → Nat.succ n_1 = n := by
 
 #check IsTorsion.group.proof_5 -- not elaborated
 
-#print CategoryTheory.quotientPathsEquiv.proof_2
+#check CategoryTheory.quotientPathsEquiv.proof_2
+example: ∀ (C : Type u_1) [inst : CategoryTheory.Category C] (X : CategoryTheory.Quotient (CategoryTheory.pathsHomRel C)), X = X := by
+  intro C inst X
+  simp_all only [CategoryTheory.pathsHomRel, CategoryTheory.pathComposition_obj, CategoryTheory.pathComposition_map]
+
+
 
 #check CategoryTheory.finBiconeHom.proof_12
 example: ∀ (J : Type u_1) (k : CategoryTheory.Bicone J), k = CategoryTheory.Bicone.right → CategoryTheory.Bicone.right = k := by
   intro J k h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
@@ -1394,7 +1475,12 @@ example: ∀ {V : Type u} (v w : V), SimpleGraph.Adj ⊥ v w ↔ False := by
 
 
 
-#print unitary.instGroupSubtypeMemSubmonoidToMulOneClassInstMembershipInstSetLikeSubmonoidUnitary.proof_13
+#check unitary.instGroupSubtypeMemSubmonoidToMulOneClassInstMembershipInstSetLikeSubmonoidUnitary.proof_13
+example: ∀ {R : Type u_1} [inst : Monoid R] [inst_1 : StarSemigroup R] (a b : { x // x ∈ unitary R }), a / b = a / b := by
+  intro R inst inst_1 a b
+  simp_all only
+
+
 
 #check EMetric.mem_ball
 example: ∀ {α : Type u} [inst : PseudoEMetricSpace α] {x y : α} {ε : ENNReal}, y ∈ EMetric.ball x ε ↔ edist y x < ε := by
@@ -1490,11 +1576,18 @@ example: ∀ {C : Type u_2} [inst : CategoryTheory.Category C] {X Y Z : C} {f : 
   {comm : CategoryTheory.CategoryStruct.comp h f = CategoryTheory.CategoryStruct.comp k g},
   CategoryTheory.CategoryStruct.comp k g = CategoryTheory.CategoryStruct.comp h f := by
   intro C inst X Y Z f g W h k comm
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
-#print Turing.PartrecToTM2.Λ'.instDecidableEq.proof_84
+#check Turing.PartrecToTM2.Λ'.instDecidableEq.proof_84
+example: ∀ (b : Turing.PartrecToTM2.Λ') (p : Turing.PartrecToTM2.Γ' → Bool) (k : Turing.PartrecToTM2.K')
+  (q : Turing.PartrecToTM2.Λ'), b = Turing.PartrecToTM2.Λ'.clear p k q → Turing.PartrecToTM2.Λ'.clear p k q = b := by
+  intro b p k q h
+  aesop_subst h
+  simp_all only
+
+
 
 #check Filter.Eventually.filter_mono
 example: ∀ {α : Type u} {f₁ f₂ : Filter α}, f₁ ≤ f₂ → ∀ {p : α → Prop}, (∀ᶠ (x : α) in f₂, p x) → ∀ᶠ (x : α) in f₁, p x := by
@@ -1563,13 +1656,18 @@ example: ∀ (b : Turing.PartrecToTM2.Λ') (f : Option Turing.PartrecToTM2.Γ' �
   b = Turing.PartrecToTM2.Λ'.read f → Turing.PartrecToTM2.Λ'.read f = b := by
   intro b f h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
 #check MeasureTheory.IsFundamentalDomain.nullMeasurableSet -- not elaborated
 
-#print commGroupAddCommGroupEquivalence_functor_obj_str_sub
+#check commGroupAddCommGroupEquivalence_functor_obj_str_sub
+example: ∀ (X : CommGroupCat) (x y : Additive ↑X), x - y = x - y := by
+  intro X x y
+  simp_all only [commGroupAddCommGroupEquivalence_functor_obj_str_sub]
+
+
 
 #check StarSubalgebra.mem_inf
 example: ∀ {R : Type u_1} {A : Type u_2} [inst : CommSemiring R] [inst_1 : StarRing R] [inst_2 : Semiring A]
@@ -1629,7 +1727,12 @@ example: ∀ {α : Type u} {β : Type v} [inst : UniformSpace α] [inst_1 : Unif
 
 #print Set.mem_vsub
 
-#print PUnit.addCommGroup.proof_3
+#check PUnit.addCommGroup.proof_3
+example: ∀ (a : PUnit), a + 0 = a + 0 := by
+  intro a
+  simp_all only [PUnit.zero_eq, PUnit.add_eq]
+
+
 
 #print AddGroupSeminorm.add_le'
 
@@ -1655,7 +1758,7 @@ example: ∀ {α : Type u_1} {β : Type u_2} [inst : Preorder α] [inst_1 : Preo
 example: ∀ (J : Type u_1) (k : CategoryTheory.Bicone J), k = CategoryTheory.Bicone.right → CategoryTheory.Bicone.right = k := by
   intro J k h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
@@ -1663,7 +1766,11 @@ example: ∀ (J : Type u_1) (k : CategoryTheory.Bicone J), k = CategoryTheory.Bi
 
 #check TopCat.Presheaf.stalkCongr.proof_2 -- not elaborated
 
-#print ProofWidgets.LayoutKind.inline.sizeOf_spec
+#check ProofWidgets.LayoutKind.inline.sizeOf_spec
+example: sizeOf ProofWidgets.LayoutKind.inline = 1 := by
+simp_all only
+
+
 
 #print ConvexBody.convex'
 
@@ -1676,13 +1783,20 @@ example: ∀ {μ ν : YoungDiagram}, μ.cells ⊆ ν.cells ↔ μ ≤ ν := by
 
 
 
-#print Turing.PartrecToTM2.Λ'.instDecidableEq.proof_82
+#check Turing.PartrecToTM2.Λ'.instDecidableEq.proof_82
+example: ∀ (b : Turing.PartrecToTM2.Λ') (p : Turing.PartrecToTM2.Γ' → Bool) (k₁ k₂ : Turing.PartrecToTM2.K')
+  (q : Turing.PartrecToTM2.Λ'), b = Turing.PartrecToTM2.Λ'.move p k₁ k₂ q → Turing.PartrecToTM2.Λ'.move p k₁ k₂ q = b := by
+  intro b p k₁ k₂ q h
+  aesop_subst h
+  simp_all only
+
+
 
 #check CategoryTheory.finBiconeHom.proof_10
 example: ∀ (J : Type u_1) (k : CategoryTheory.Bicone J), k = CategoryTheory.Bicone.left → CategoryTheory.Bicone.left = k := by
   intro J k h
   aesop_subst h
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
@@ -1700,7 +1814,7 @@ example: ∀ {C : Type u₁} [inst : CategoryTheory.Category C] {X Y : C} {f : X
 example: ∀ {R : Type u_1} [inst : CommRing R] {J K : Ideal R},
   Ideal.radical J = Ideal.radical K → Ideal.radical K = Ideal.radical J := by
   intro R inst J K hJK
-  simp_all only [eq_iff_iff, iff_true]
+  simp_all only
 
 
 
