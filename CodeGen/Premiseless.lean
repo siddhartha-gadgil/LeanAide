@@ -689,15 +689,15 @@ example: ∀ {M : Type u_1} [inst : AddMonoid M] {z : M}, z ∈ AddSubmonoid.cen
 #print Ordnode.all_node'
 
 #check Class.mem_def
-example: ∀ (A B : Class), A ∈ B ↔ ∃ x, ↑x = A ∧ B x := by
-  intro A B
-  apply Iff.intro
-  · intro a
-    exact a
-  · intro a
-    unhygienic with_reducible aesop_destruct_products
-    aesop_subst left
-    simp_all only [Class.coe_mem]
+-- example: ∀ (A B : Class), A ∈ B ↔ ∃ x, ↑x = A ∧ B x := by
+--   intro A B
+--   apply Iff.intro
+--   · intro a
+--     exact a
+--   · intro a
+--     unhygienic with_reducible aesop_destruct_products
+--     aesop_subst left
+--     simp_all only [Class.coe_mem]
 
 
 
@@ -936,11 +936,11 @@ example: ∀ {M : Type u_1} [inst : Mul M] {p p' : Subsemigroup M} {x : M}, x �
 #print FirstOrder.Language.LHom.mk.sizeOf_spec
 
 #check Affine.Simplex.PointsWithCircumcenterIndex.circumcenter_index.sizeOf_spec
-example: ∀ {n : ℕ}, sizeOf Affine.Simplex.PointsWithCircumcenterIndex.circumcenter_index = 1 := by
-  intro n
-  apply Eq.refl
-  intro n
-  exact n
+-- example: ∀ {n : ℕ}, sizeOf Affine.Simplex.PointsWithCircumcenterIndex.circumcenter_index = 1 := by
+--   intro n
+--   apply Eq.refl
+--   intro n
+--   exact n
 
 
 
@@ -1076,10 +1076,10 @@ example: ∀ {α : Type u_1} {β : Type u_2} {A : Set α} {B : Set β} {f : α �
 
 
 
-#check Fin.mk_le_of_le_val
-example: ∀ {n : ℕ} {b : Fin n} {a : ℕ} (h : a ≤ ↑b), { val := a, isLt := (_ : a < n) } ≤ b := by
-  intro n b a h
-  exact h
+-- #check Fin.mk_le_of_le_val
+-- example: ∀ {n : ℕ} {b : Fin n} {a : ℕ} (h : a ≤ ↑b), { val := a, isLt := (_ : a < n) } ≤ b := by
+--   intro n b a h
+--   exact h
 
 
 
@@ -1104,18 +1104,18 @@ example: ∀ (G : Type u_1) [inst : Group G] {n : ℕ} (v : Vector G n),
 
 
 
-#check Multiset.disjoint_left
-example: ∀ {α : Type u_1} {s t : Multiset α}, Multiset.Disjoint s t ↔ ∀ {a : α}, a ∈ s → ¬a ∈ t := by
-  intro α s t
-  apply Iff.intro
-  · intro a a_1 a_1_1
-    apply Aesop.BuiltinRules.not_intro
-    intro a_2
-    apply a
-    on_goal 2 => exact a_2
-    simp_all only
-  · intro a
-    exact a
+-- #check Multiset.disjoint_left
+-- example: ∀ {α : Type u_1} {s t : Multiset α}, Multiset.Disjoint s t ↔ ∀ {a : α}, a ∈ s → ¬a ∈ t := by
+--   intro α s t
+--   apply Iff.intro
+--   · intro a a_1 a_1_1
+--     apply Aesop.BuiltinRules.not_intro
+--     intro a_2
+--     apply a
+--     on_goal 2 => exact a_2
+--     simp_all only
+--   · intro a
+--     exact a
 
 
 
@@ -1354,6 +1354,15 @@ example: ∀ {R : Type u} [inst : CommSemiring R] {A : Type v} [inst_1 : CommSem
 
 #print Relator.LeftUnique.flip
 
+#check Aesop.Options
+
+-- dropping one more argument causes Aesop to fail
+example : ∀ {α : Type u_1} {β : Type u_2} {r : α → β → Prop},
+  Relator.LeftUnique r → Relator.RightUnique (flip r) :=
+ by
+--  intro x
+ aesop? (options := { introsTransparency? := some .default })
+
 #check Turing.PointedMap.map_pt'
 example: ∀ {Γ : Type u} {Γ' : Type v} [inst : Inhabited Γ] [inst_1 : Inhabited Γ'] (self : Turing.PointedMap Γ Γ'),
   Turing.PointedMap.f self default = default := by
@@ -1391,11 +1400,11 @@ example: ∀ {R : Type u_1} {A : Type u_2} [inst : CommSemiring R] [inst_1 : Com
 
 #print MvPolynomial.le_vanishingIdeal_zeroLocus
 
-#check LinearIndependent.restrict_of_comp_subtype
-example: ∀ {ι : Type u'} {R : Type u_1} {M : Type u_2} {v : ι → M} [inst : Semiring R] [inst_1 : AddCommMonoid M]
-  [inst_2 : Module R M] {s : Set ι}, LinearIndependent R (v ∘ Subtype.val) → LinearIndependent R (Set.restrict s v) := by
-  intro ι R M v inst inst_1 inst_2 s hs
-  exact hs
+-- #check LinearIndependent.restrict_of_comp_subtype
+-- example: ∀ {ι : Type u'} {R : Type u_1} {M : Type u_2} {v : ι → M} [inst : Semiring R] [inst_1 : AddCommMonoid M]
+--   [inst_2 : Module R M] {s : Set ι}, LinearIndependent R (v ∘ Subtype.val) → LinearIndependent R (Set.restrict s v) := by
+--   intro ι R M v inst inst_1 inst_2 s hs
+--   exact hs
 
 
 
@@ -1420,6 +1429,7 @@ example: ∀ (n n_1 : ℕ), n = Nat.succ n_1 → Nat.succ n_1 = n := by
 #print RingNorm.eq_zero_of_map_eq_zero'
 
 #print mem_commutatorSet_iff
+
 
 #check SModEq.def -- not elaborated
 

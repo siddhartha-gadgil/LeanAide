@@ -15,6 +15,9 @@ open Mathlib.Prelude.Rename
 
 universe u v
 
+example :(A B C : Prop) → (f : A → B → C) → (a : A) → (b : B) → C := by
+  aesop?   
+
 example : ∀ x: ℕ, x + 3 = 3 + x := by
   conv =>
     enter [x, 2]
