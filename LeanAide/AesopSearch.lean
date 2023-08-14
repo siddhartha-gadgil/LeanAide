@@ -167,7 +167,7 @@ def applyTacticsAux (tacs : Array Syntax.Tactic) : RuleTac := fun input => do
   let goalType ← inferType (mkMVarEx input.goal) 
   let lctx ←  getLCtx
   let fvarNames ←  lctx.getFVarIds.toList.tail.mapM (·.getUserName) 
-  trace[leanaide.proof.info] "trying custom tactics: {tacs} for goal {←ppExpr  goalType}; fvars: {fvarNames}"
+  trace[leanaide.proof.info] "trying dynamic tactics: {tacs} for goal {←ppExpr  goalType}; fvars: {fvarNames}"
   let initialState : SavedState ← saveState
   let appsTacs ← tacs.filterMapM fun (tac) => do
     try
@@ -181,10 +181,10 @@ def applyTacticsAux (tacs : Array Syntax.Tactic) : RuleTac := fun input => do
   let (apps, tacs) := appsTacs.unzip
   if apps.isEmpty then 
     throwError "failed to apply any of the tactics"
-  trace[leanaide.proof.info] "applied custom tactics {tacs}" 
+  trace[leanaide.proof.info] "applied dynamic tactics {tacs}" 
   return { applications := apps}
 
-def customTactics : RuleTac := fun input => do 
+def dynamicTactics : RuleTac := fun input => do 
   let tacs ← getTacticSuggestions
   let rwsAt ← rwAtTacticSuggestions 
   let tacString ← getTacticStrings 
@@ -194,14 +194,14 @@ def customTactics : RuleTac := fun input => do
       | Except.ok tacs => 
         parsedTacs := parsedTacs.push <| ← `(tactic|($tacs))
       | Except.error err => throwError err
-  logInfo m!"customTactics: {tacs}"
+  logInfo m!"dynamicTactics: {tacs}"
   applyTacticsAux (tacs ++ rwsAt 
     ++ parsedTacs
     ) input
 
-def customRuleMember (p: Float) : RuleSetMember := 
+def dynamicRuleMember (p: Float) : RuleSetMember := 
   let name : RuleName := {
-    name := `customTactics
+    name := `dynamicTactics
     builder := BuilderName.tactic
     phase := PhaseName.«unsafe»
     scope := ScopeName.global
@@ -210,7 +210,7 @@ def customRuleMember (p: Float) : RuleSetMember :=
     name:= name
     indexingMode := IndexingMode.unindexed
     extra:= ⟨⟨p⟩⟩
-    tac := .ruleTac ``customTactics}
+    tac := .ruleTac ``dynamicTactics}
 
 def tacticMember (p: Float)(tac : Name) : RuleSetMember := 
   let name : RuleName := {
@@ -240,7 +240,7 @@ def getRuleSet (p: Float) (apps simps rws : Array Name)
       Frontend.getDefaultRuleSet (includeGlobalSimpTheorems := true)
       {}
   let allRules : RuleSet := 
-    ((appRules ++ simpRules).push (customRuleMember p)).foldl
+    ((appRules ++ simpRules).push (dynamicRuleMember p)).foldl
     (fun c r => c.add r) defaultRules
   return allRules
 
