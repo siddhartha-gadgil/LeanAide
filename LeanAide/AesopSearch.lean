@@ -247,7 +247,7 @@ def getRuleSet (p: Float) (apps simps rws : Array Name)
 def runAesop (p: Float) (apps simps rws : Array Name) 
   (tacs: Array String := #[]): MVarId → MetaM (List MVarId) := fun goal => goal.withContext do
   let allRules ← getRuleSet p apps simps rws tacs
-  let (goals, _) ← Aesop.search goal allRules {traceScript := true,  maxRuleApplicationDepth := 120, maxRuleApplications := 800,} 
+  let (goals, _) ← Aesop.search goal allRules {traceScript := true,  maxRuleApplicationDepth := 120, maxRuleApplications := 800,introsTransparency? := TransparencyMode.default} 
   return goals.toList
 
 
