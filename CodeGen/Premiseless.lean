@@ -2,7 +2,7 @@ import Mathlib
 #check Ordnode.balance.proof_22
 example: ∀ {α : Type u_1} (r : Ordnode α), id r = Ordnode.nil → Ordnode.nil = id r := by
   intro α r h
-  simp_all only [id_eq]
+  simp_all only [id_eq, eq_iff_iff, iff_true]
 
 
 
@@ -29,7 +29,7 @@ example: ∀ {R : Type u} [inst : NonUnitalNonAssocRing R] (self : NonUnitalSubr
 example: ∀ {J : Type u_1} (j : CategoryTheory.Limits.WidePushoutShape J) (j_1 : J), j = some j_1 → some j_1 = j := by
   intro J j j_1 h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -58,7 +58,7 @@ example: ∀ (𝕜 : Type u_4) [inst : NontriviallyNormedField 𝕜] {𝕜' : Ty
 example: ∀ (o a : ONote) (a_1 : ℕ+) (a_2 : ONote), o = ONote.oadd a a_1 a_2 → ONote.oadd a a_1 a_2 = o := by
   intro o a a_1 a_2 h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -85,7 +85,7 @@ example: ∀ {p : Prop}, p = False → ¬p := by
 #check Ordnode.balance.proof_24
 example: ∀ {α : Type u_1} (rr : Ordnode α), id rr = Ordnode.nil → Ordnode.nil = id rr := by
   intro α rr h
-  simp_all only [id_eq]
+  simp_all only [id_eq, eq_iff_iff, iff_true]
 
 
 
@@ -130,7 +130,7 @@ example: ∀ {α : Type u} (β : Type v) [inst : AddMonoid α] [inst_1 : AddActi
 example: ∀ {p : ENNReal}, p = 0 → 0 = p := by
   intro p hp
   aesop_subst hp
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -148,7 +148,7 @@ example: ∀ [C : FP.FloatCfg] (n d : ℕ+) (d₁ n₁ : ℕ),
   Int.shift2 (↑d) (↑n) (↑(Nat.size ↑n) - ↑(Nat.size ↑d) - ↑FP.prec + ↑FP.prec) = (d₁, n₁) →
     (d₁, n₁) = Int.shift2 (↑d) (↑n) (↑(Nat.size ↑n) - ↑(Nat.size ↑d) - ↑FP.prec + ↑FP.prec) := by
   intro C n d d₁ n₁ h
-  simp_all only [sub_add_cancel]
+  simp_all only [sub_add_cancel, eq_iff_iff, iff_true]
 
 
 
@@ -168,7 +168,7 @@ example: ∀ {𝒜 : Type u_1} [inst : CategoryTheory.Category 𝒜] {A B C : �
 example: ∀ (α : Type u_1) {Z : CategoryTheory.Discrete α} (as : α), Z = { as := as } → { as := as } = Z := by
   intro α Z as h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -200,7 +200,7 @@ example: ∀ {R : Type u_1} {M : Type u_2} [inst : CommRing R] [inst_1 : AddComm
 example: ∀ {J : Type u_1} {X Y : CategoryTheory.Limits.WidePushoutShape J}, Y = X → X = Y := by
   intro J X Y h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -214,7 +214,7 @@ example: ∀ {J : Type u_1} {X Y : CategoryTheory.Limits.WidePushoutShape J}, Y 
 example: ∀ (b q : Turing.PartrecToTM2.Λ'), b = Turing.PartrecToTM2.Λ'.copy q → Turing.PartrecToTM2.Λ'.copy q = b := by
   intro b q h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -233,7 +233,7 @@ example: ∀ {G : Type u_1} [inst : Group G] {p p' : Subgroup G} {x : G}, x ∈ 
 example: ∀ (x : PGame) {α β : Type u_1} {L : α → PGame} {R : β → PGame}, x = PGame.mk α β L R → PGame.mk α β L R = x := by
   intro x α β L R h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -315,7 +315,7 @@ example: ∀ {C : Type u_2} [inst : CategoryTheory.Category C] [inst_1 : Categor
   {f : X ⟶ Y}, f = 0 → 0 = f := by
   intro C inst inst_1 X Y f h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -414,7 +414,7 @@ example: ∀ (b : Turing.PartrecToTM2.Λ') (f : Option Turing.PartrecToTM2.Γ' �
   b = Turing.PartrecToTM2.Λ'.read f → Turing.PartrecToTM2.Λ'.read f = b := by
   intro b f h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -472,7 +472,7 @@ example: ∀ (J : Type u_1) {j : CategoryTheory.Bicone J} {j_1 : J},
   j = CategoryTheory.Bicone.diagram j_1 → CategoryTheory.Bicone.diagram j_1 = j := by
   intro J j j_1 h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -505,7 +505,7 @@ example: ∀ {α : Type u_2} {β : Type u_1} [inst : TopologicalSpace α] [inst_
 example: ∀ (i n : ℕ), i = Nat.succ n → Nat.succ n = i := by
   intro i n h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -517,7 +517,7 @@ example: ∀ (i n : ℕ), i = Nat.succ n → Nat.succ n = i := by
 example: ∀ (b : ℤ) (a : ℕ), b = Int.negSucc a → Int.negSucc a = b := by
   intro b a h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -542,7 +542,7 @@ example: ∀ (J : Type u_1) {X : CategoryTheory.Bicone J} {j : J},
   X = CategoryTheory.Bicone.diagram j → CategoryTheory.Bicone.diagram j = X := by
   intro J X j h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -764,7 +764,7 @@ example: ∀ {α : Type u_1} {a : α} {l : List α}, a ∈ l ↔ a ∈ l := by
 #check Nat.equivFinOfCardPos.proof_4
 example: ∀ {α : Type u_1} (val : Infinite α), fintypeOrInfinite α = PSum.inr val → PSum.inr val = fintypeOrInfinite α := by
   intro α val h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -813,7 +813,7 @@ example: ∀ (b : Turing.PartrecToTM2.Λ') (k : Turing.PartrecToTM2.K')
   b = Turing.PartrecToTM2.Λ'.push k s q → Turing.PartrecToTM2.Λ'.push k s q = b := by
   intro b k s q h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -862,7 +862,7 @@ example: ∀ {α : Type u} [inst : TopologicalSpace α] {x : α} {F : Filter α}
 #check Ordnode.balanceR.proof_13
 example: ∀ {α : Type u_1} (l : Ordnode α), id l = Ordnode.nil → Ordnode.nil = id l := by
   intro α l h
-  simp_all only [id_eq]
+  simp_all only [id_eq, eq_iff_iff, iff_true]
 
 
 
@@ -870,7 +870,7 @@ example: ∀ {α : Type u_1} (l : Ordnode α), id l = Ordnode.nil → Ordnode.ni
 example: ∀ (α : Type u_1) {Y : CategoryTheory.Discrete α} (as : α), Y = { as := as } → { as := as } = Y := by
   intro α Y as h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -878,7 +878,7 @@ example: ∀ (α : Type u_1) {Y : CategoryTheory.Discrete α} (as : α), Y = { a
 example: ∀ (J : Type u_1) {X : CategoryTheory.Bicone J}, X = CategoryTheory.Bicone.right → CategoryTheory.Bicone.right = X := by
   intro J X h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -950,7 +950,7 @@ example: ∀ {n : ℕ}, sizeOf Affine.Simplex.PointsWithCircumcenterIndex.circum
 example: ∀ {J : Type u_1} (j' : CategoryTheory.Limits.WidePushoutShape J), j' = none → none = j' := by
   intro J j' h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -997,7 +997,7 @@ example: ∀ (J : Type u_1) {Z : CategoryTheory.Bicone J} {k : J},
   Z = CategoryTheory.Bicone.diagram k → CategoryTheory.Bicone.diagram k = Z := by
   intro J Z k h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -1088,7 +1088,7 @@ example: ∀ (J : Type u_1) {Y : CategoryTheory.Bicone J} (j : J),
   Y = CategoryTheory.Bicone.diagram j → CategoryTheory.Bicone.diagram j = Y := by
   intro J Y j h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -1142,7 +1142,7 @@ example: ∀ {R : Type u} {A : Type v} [inst : CommSemiring R] [inst_1 : Semirin
 example: ∀ {J : Type u_1} {Y : CategoryTheory.Limits.WidePullbackShape J}, Y = none → none = Y := by
   intro J Y h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -1164,7 +1164,7 @@ example: ∀ (J : Type u_1) {Z : CategoryTheory.Bicone J} {k : J},
   Z = CategoryTheory.Bicone.diagram k → CategoryTheory.Bicone.diagram k = Z := by
   intro J Z k h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -1216,7 +1216,7 @@ example: ∀ {R : Type u} [inst : NonUnitalNonAssocRing R] {s : NonUnitalSubring
 example: ∀ (b q₁ q₂ : Turing.PartrecToTM2.Λ'), b = Turing.PartrecToTM2.Λ'.pred q₁ q₂ → Turing.PartrecToTM2.Λ'.pred q₁ q₂ = b := by
   intro b q₁ q₂ h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -1295,7 +1295,7 @@ example: ∀ {p : Prop}, p → ¬¬p := by
 example: ∀ {α : Type u_1} (rl : Ordnode α), rl = Ordnode.nil → Ordnode.nil = rl := by
   intro α rl h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -1374,7 +1374,7 @@ example: ∀ (b : Turing.PartrecToTM2.Λ') (k : Turing.PartrecToTM2.K')
   b = Turing.PartrecToTM2.Λ'.push k s q → Turing.PartrecToTM2.Λ'.push k s q = b := by
   intro b k s q h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -1413,7 +1413,7 @@ example: ∀ {𝕜 : Type u_1} [inst : OrderedSemiring 𝕜] {E : Type u_2} [ins
 example: ∀ (n n_1 : ℕ), n = Nat.succ n_1 → Nat.succ n_1 = n := by
   intro n n_1 h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -1436,7 +1436,7 @@ example: ∀ (C : Type u_1) [inst : CategoryTheory.Category C] (X : CategoryTheo
 example: ∀ (J : Type u_1) (k : CategoryTheory.Bicone J), k = CategoryTheory.Bicone.right → CategoryTheory.Bicone.right = k := by
   intro J k h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -1576,7 +1576,7 @@ example: ∀ {C : Type u_2} [inst : CategoryTheory.Category C] {X Y Z : C} {f : 
   {comm : CategoryTheory.CategoryStruct.comp h f = CategoryTheory.CategoryStruct.comp k g},
   CategoryTheory.CategoryStruct.comp k g = CategoryTheory.CategoryStruct.comp h f := by
   intro C inst X Y Z f g W h k comm
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -1656,7 +1656,7 @@ example: ∀ (b : Turing.PartrecToTM2.Λ') (f : Option Turing.PartrecToTM2.Γ' �
   b = Turing.PartrecToTM2.Λ'.read f → Turing.PartrecToTM2.Λ'.read f = b := by
   intro b f h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -1758,7 +1758,7 @@ example: ∀ {α : Type u_1} {β : Type u_2} [inst : Preorder α] [inst_1 : Preo
 example: ∀ (J : Type u_1) (k : CategoryTheory.Bicone J), k = CategoryTheory.Bicone.right → CategoryTheory.Bicone.right = k := by
   intro J k h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -1796,7 +1796,7 @@ example: ∀ (b : Turing.PartrecToTM2.Λ') (p : Turing.PartrecToTM2.Γ' → Bool
 example: ∀ (J : Type u_1) (k : CategoryTheory.Bicone J), k = CategoryTheory.Bicone.left → CategoryTheory.Bicone.left = k := by
   intro J k h
   aesop_subst h
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
@@ -1814,7 +1814,7 @@ example: ∀ {C : Type u₁} [inst : CategoryTheory.Category C] {X Y : C} {f : X
 example: ∀ {R : Type u_1} [inst : CommRing R] {J K : Ideal R},
   Ideal.radical J = Ideal.radical K → Ideal.radical K = Ideal.radical J := by
   intro R inst J K hJK
-  simp_all only
+  simp_all only [eq_iff_iff, iff_true]
 
 
 
