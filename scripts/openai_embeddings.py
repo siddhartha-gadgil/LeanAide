@@ -1,12 +1,13 @@
 import json
 import openai
 
-inp = open("data/mathlib4-thms.json", 'r', encoding='utf-8')
-out = open("data/mathlib4-thms-embeddings.json", 'w', encoding='utf-8')
+inp = open("data/mathlib4-prompts.json", 'r', encoding='utf-8')
+out = open("data/mathlib4-prompts-embeddings.json", 'w', encoding='utf-8')
 
 # read `inp` and extract json
 js = json.load(inp)
 count = 0
+print(len(js))
 # for each line, compute the embeddings
 for l in js:
     response = openai.Embedding.create(

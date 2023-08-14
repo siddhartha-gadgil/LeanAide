@@ -329,6 +329,7 @@ def getPropMapStr : MetaM <| HashMap String String := do
             IO.FS.writeFile omittedPath ""
             propOmittedHandle ←  
               IO.FS.Handle.mk omittedPath IO.FS.Mode.append
+            propOmittedHandle.putStrLn "import Mathlib"
 
     let path := System.mkFilePath ["rawdata", "defn-types", "all.jsonl"]
     IO.FS.writeFile path <| jsonLines <| dfs
