@@ -1,9 +1,10 @@
+import Mathlib
 #check HasStrictFDerivAt.implicitToLocalHomeomorph_apply_ker
 #check Submodule.iSup_eq_range_dfinsupp_lsum
 #check ContinuousLinearMap.adjointAux_apply
 #check ContinuousLinearMap.postcomp_apply
 #check ContinuousLinearEquiv.image_symm_image
-#check Function.Injective.kleeneAlgebra.proof_4
+#print Function.Injective.kleeneAlgebra.proof_4
 #check CategoryTheory.Pseudofunctor.mk.inj
 #check CategoryTheory.SimplicialObject.Augmented.whiskering.proof_4
 #check ContinuousLinearMap.prodₗᵢ.proof_9
