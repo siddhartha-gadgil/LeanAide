@@ -357,9 +357,11 @@ def getCodeJson (s: String)(numSim : Nat:= 8)
       let prompt := GPT.makePrompt s pairs
       trace[Translate.info] m!"prompt: \n{prompt.pretty}"
       mkLog prompt
-      let fullJson := if azure 
-      then ← azureQuery prompt queryNum temp (model := model)
-      else ← gptQuery prompt queryNum temp (model := model)
+      let fullJson ←  match azure with
+      | true => 
+        azureQuery prompt queryNum temp (model := model)
+      | false =>  
+        gptQuery prompt queryNum temp (model := model)
       let outJson := 
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
       let pending ←  pendingJsonQueries.get

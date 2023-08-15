@@ -6439,3 +6439,151 @@ total : 1
 
 elaborated: 1
 
+Writing to file: thm-elab-12-false-10-8.json
+
+No valid output from Codex; outputs below
+
+∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s :  ZFSet α}, IsClosed s → Proper s → IsCompact s) → IsCompact (univ :  ZFSet α)
+
+∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s :  ZFSet α}, IsClosed s → IsProper s → IsCompact s) → IsCompact α
+
+∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s :  ZFSet α}, IsClosed s → IsProper s → IsCompact s) → IsCompact (univ :  ZFSet α)
+
+∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s :  ZFSet α}, IsClosed s → ProperSet s → IsCompact s) → CompactSpace α
+
+∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s :  ZFSet α}, IsClosed s → ProperSet s → IsCompact s) → IsCompact (univ :  ZFSet α)
+
+∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s :  ZFSet α}, IsClosed s → ProperSpace s → IsCompact s) → CompactSpace α
+
+∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ (s :  ZFSet α), IsClosed s → IsProper s → IsCompact s) → IsCompact (univ :  ZFSet α)
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s : Set α}, IsClosed s → Proper s → IsCompact s) → IsCompact (univ : Set α), ∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s : Set α}, IsClosed s → IsProper s → IsCompact s) → IsCompact α, ∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s : Set α}, IsClosed s → IsProper s → IsCompact s) → IsCompact (univ : Set α), ∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s : Set α}, IsClosed s → ProperSet s → IsCompact s) → CompactSpace α, ∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s : Set α}, IsClosed s → ProperSet s → IsCompact s) → IsCompact (univ : Set α), ∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s : Set α}, IsClosed s → ProperSpace s → IsCompact s) → CompactSpace α, ∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ (s : Set α), IsClosed s → IsProper s → IsCompact s) → IsCompact (univ : Set α)]
+
+total : 1
+
+elaborated: 0
+
+Writing to file: thm-elab-12-false-10-8.json
+
+No valid output from Codex; outputs below
+
+∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s :  ZFSet α}, IsClosed s → IsProper s → IsCompact s) → IsCompact (univ :  ZFSet α)
+
+∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s :  ZFSet α}, IsProper s → IsClosed s → IsCompact s) → IsCompact (@univ α)
+
+∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s :  ZFSet α}, IsClosed s → Proper s → IsCompact s) → IsCompact (univ :  ZFSet α)
+
+∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s :  ZFSet α}, IsProper s → IsClosed s → IsCompact s) → IsCompact (univ :  ZFSet α)
+
+∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s :  ZFSet α}, IsProperClosed s → IsCompact s) → IsCompact (univ :  ZFSet α)
+
+∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s :  ZFSet α}, IsClosed s → ProperSet s → IsCompact s) →
+    IsCompact (univ :  ZFSet α)
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s : Set α}, IsClosed s → IsProper s → IsCompact s) → IsCompact (univ : Set α), ∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s : Set α}, IsProper s → IsClosed s → IsCompact s) → IsCompact (@univ α), ∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s : Set α}, IsClosed s → Proper s → IsCompact s) → IsCompact (univ : Set α), ∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s : Set α}, IsProper s → IsClosed s → IsCompact s) → IsCompact (univ : Set α), ∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s : Set α}, IsProperClosed s → IsCompact s) → IsCompact (univ : Set α), ∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s : Set α}, IsClosed s → ProperSet s → IsCompact s) →
+    IsCompact (univ : Set α)]
+
+total : 1
+
+elaborated: 0
+
+success
+
+theorem ∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p ≠ 2 → p % 4 = 1 → ∃ x y, p = x ^ 2 + y ^ 2
+
+total : 2
+
+elaborated: 1
+
+No valid output from Codex; outputs below
+
+failed to elaborate
+
+outputs: #[]
+
+total : 3
+
+elaborated: 1
+
+success
+
+theorem {R : Type u} → [inst : Ring R] → (∀ (x : R), IsIdempotentElem x) → CommRing R
+
+total : 4
+
+elaborated: 2
+
+success
+
+theorem ∀ (n : ℕ), ∃ p q, Nat.Prime p ∧ Nat.Prime q ∧ p - q = 2 ∧ p > n ∧ q > n
+
+total : 5
+
+elaborated: 3
+
+Writing to file: thm-elab-12-false-10-8.json
+
+No valid output from Codex; outputs below
+
+∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s :  ZFSet α}, IsClosed s → Proper s → IsCompact s) → IsCompact (univ :  ZFSet α)
+
+∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s :  ZFSet α}, IsClosed s → ProperSet s → IsCompact s) → IsCompact (univ :  ZFSet α)
+
+∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s :  ZFSet α}, IsClosed s → IsProper s → IsCompact s) → IsCompact univ
+
+∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s :  ZFSet α}, IsClosed s → IsProper s → IsCompact s) → IsCompact (univ :  ZFSet α)
+
+∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s :  ZFSet α}, IsClosed s → ¬IsCompact s) → IsCompact (univ :  ZFSet α)
+
+∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s :  ZFSet α}, IsProper s → IsClosed s → IsCompact s) → IsCompact (univ :  ZFSet α)
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s : Set α}, IsClosed s → Proper s → IsCompact s) → IsCompact (univ : Set α), ∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s : Set α}, IsClosed s → ProperSet s → IsCompact s) → IsCompact (univ : Set α), ∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s : Set α}, IsClosed s → IsProper s → IsCompact s) → IsCompact univ, ∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s : Set α}, IsClosed s → IsProper s → IsCompact s) → IsCompact (univ : Set α), ∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s : Set α}, IsClosed s → ¬IsCompact s) → IsCompact (univ : Set α), ∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ {s : Set α}, IsProper s → IsClosed s → IsCompact s) → IsCompact (univ : Set α)]
+
+total : 1
+
+elaborated: 0
+

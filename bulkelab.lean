@@ -26,6 +26,8 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
     |>.getD "gpt-3.5-turbo"
   let embedding := p.flag? "embedding" |>.map (fun s => s.as! String)
     |>.getD "bert"
+  let delay := p.flag? "delay" |>.map (fun s => s.as! Nat)
+    |>.getD 20
   let azure := p.hasFlag "azure"
 
   let outFile := System.mkFilePath 
@@ -38,7 +40,7 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
     {module := `Mathlib}] {}
   let core := 
     checkTranslatedThmsCore type
-      numSim includeFixed queryNum temp model embedding azure
+      numSim includeFixed queryNum temp model embedding azure delay
   let io? := 
     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} 
     {env := env}
@@ -61,10 +63,11 @@ def bulkElab : Cmd := `[Cli|
   FLAGS:
     include_fixed;         "Include the standard fixed prompts."
     p, prompts : Nat;      "Number of example prompts (default 10)."
-    r, responses : Nat;    "Number of responses to ask for."
+    r, responses : Nat;    "Number of responses to ask for (default 5)."
     t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t`."
     m, model : String ; "Model to be used (default `gpt-3.5-turbo`)"
     e, embedding : String; "Embedding to be used (default `bert`)"
+    d, delay : Nat; "Delay between requests in seconds (default 20)."
     azure; "Use Azure instead of OpenAI."
 
   ARGS:
