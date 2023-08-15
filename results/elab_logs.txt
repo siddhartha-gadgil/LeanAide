@@ -6587,3 +6587,798 @@ total : 1
 
 elaborated: 0
 
+success
+
+theorem ∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p ≠ 2 → p % 4 = 1 → ∃ x y, p = x ^ 2 + y ^ 2
+
+total : 2
+
+elaborated: 1
+
+success
+
+theorem ∀ {α : Type u} [inst : LinearOrderedRing α] {a b : α} {c d x y z w : α},
+  (∃ a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄, a = a₁ * a₁ + a₂ * a₂ + a₃ * a₃ + a₄ * a₄ ∧ b = b₁ * b₁ + b₂ * b₂ + b₃ * b₃ + b₄ * b₄) →
+    ∃ r₁ r₂ r₃ r₄, a * b = r₁ * r₁ + r₂
+
+total : 3
+
+elaborated: 2
+
+success
+
+theorem {R : Type u} → [inst : Ring R] → (∀ (a : R), IsIdempotentElem a) → CommRing R
+
+total : 4
+
+elaborated: 3
+
+success
+
+theorem ∀ (n : ℕ), ∃ p q, Nat.Prime p ∧ Nat.Prime q ∧ p ≠ q ∧ p - q = 2 ∧ p > n ∧ q > n
+
+total : 5
+
+elaborated: 4
+
+success
+
+theorem {K : Type u} → [inst : DivisionRing K] → Fintype K → Field K
+
+total : 6
+
+elaborated: 5
+
+success
+
+theorem ∀ {α : Type u} {β : Type v} (f : α → β) (g : β → α), Function.Injective f → Function.Injective g → Function.Bijective f
+
+total : 7
+
+elaborated: 6
+
+success
+
+theorem ∀ {V : Type u} (G : SimpleGraph V) [inst : Fintype V] [inst_1 : DecidableRel G.Adj],
+  (∀ (v w : V), v ≠ w → ∃! n, SimpleGraph.Adj G v n ∧ SimpleGraph.Adj G w n) →
+    ∃ v, ∀ (u : V), u ≠ v → SimpleGraph.Adj G v u
+
+total : 8
+
+elaborated: 7
+
+No valid output from Codex; outputs below
+
+∀ {n : ℕ}, Partitions.OddPartitionsCount n = Partitions.DistinctPartitionsCount n
+
+∀ {n : ℕ}, Partitions.NumberOfPartitionsWithProperty n (fun p => ∀ x ∈ p.parts, Odd x) =
+  Partitions.NumberOfPartitionsWithProperty n (fun p => Partitions.DistinctParts p.parts)
+
+∀ (n : ℕ), Finset.card (Partition.OddParts n) = Finset.card (Partition.DistinctParts n)
+
+∀ {n : ℕ}, (Finset.card (Partition.OddParts n)) = (Finset.card (Partition.DistinctParts n))
+
+∀ {n : ℕ}, Nat.numOddPartitions n = Nat.numDistinctPartitions n
+
+∀ {n : ℕ}, (Finset.card (Finset.filter Odd (Nat.Partitions n))) = (Finset.card (Nat.Partitions.distinct n))
+
+∀ {n : ℕ}, Nat.Partition.OddCount n = Nat.Partition.DistinctCount n
+
+∀ {n : ℕ}, Nat.numPartitions n (fun k => k % 2 = 1) = Nat.numPartitions n (fun k => k =  List.Nodup k)
+
+<input>:1:12: expected token while parsing ∀ {n : ℕ}, (∑ k in Finset.range (n+1) | Partitions.numberOfPartitionsWithPartsOdd k) =
+              (∑ k in Finset.range (n+1) | Partitions.numberOfPartitionsWithDistinctParts k)
+
+∀ {n : ℕ}, Nat.PartitionCount n (fun parts => List.All (fun x => Odd x) parts) =
+  Nat.PartitionCount n (fun parts => List.Distinct parts)
+
+failed to elaborate
+
+outputs: #[∀ {n : ℕ}, Partitions.OddPartitionsCount n = Partitions.DistinctPartitionsCount n, ∀ {n : ℕ}, Partitions.NumberOfPartitionsWithProperty n (fun p => ∀ x ∈ p.parts, Odd x) =
+  Partitions.NumberOfPartitionsWithProperty n (fun p => Partitions.DistinctParts p.parts), ∀ (n : ℕ), Finset.card (Partition.OddParts n) = Finset.card (Partition.DistinctParts n), ∀ {n : ℕ}, (Finset.card (Partition.OddParts n)) = (Finset.card (Partition.DistinctParts n)), ∀ {n : ℕ}, Nat.numOddPartitions n = Nat.numDistinctPartitions n, ∀ {n : ℕ}, (Finset.card (Finset.filter Odd (Nat.Partitions n))) = (Finset.card (Nat.Partitions.distinct n)), ∀ {n : ℕ}, Nat.Partition.OddCount n = Nat.Partition.DistinctCount n, ∀ {n : ℕ}, Nat.numPartitions n (fun k => k % 2 = 1) = Nat.numPartitions n (fun k => k = list.nodup k), ∀ {n : ℕ}, (∑ k in Finset.range (n+1) | Partitions.numberOfPartitionsWithPartsOdd k) =
+              (∑ k in Finset.range (n+1) | Partitions.numberOfPartitionsWithDistinctParts k), ∀ {n : ℕ}, Nat.PartitionCount n (fun parts => List.All (fun x => Odd x) parts) =
+  Nat.PartitionCount n (fun parts => List.Distinct parts)]
+
+total : 9
+
+elaborated: 7
+
+No valid output from Codex; outputs below
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.set.chain
+import order.zorn
+
+variables {α : Type} {r : α → α → Prop}
+
+theorem zorn_nonempty_poset_maximal_element (h : ∀ (c : set α), chain r c → ∃ ub, ∀ a ∈ c, r a ub) :
+  ∃ m, ∀ a, r m a → r a m 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.set.basic
+
+variables {α : Type*} {r : α → α → Prop}
+
+theorem zorns_lemma (h : ∀ c : set α, zorn.chain r c → set.nonempty c → ∃ ub, ∀ a ∈ c, r a ub) :
+  ∃ m, ∀ a, r m a → r a m 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.set.chain
+
+lemma zorns_lemma {α : Type u} (r : α → α → Prop) :
+  (∀ (c : set α), chain r c → c.nonempty → ∃ ub, ∀ a ∈ c, r a ub) →
+  ∀ (a : α), (∀ x, r a x → r x a) → ∃ m, ∀ x, r m x → r x m 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.set.chain
+import order.bounds
+
+variables {α : Type} {r : α → α → Prop}
+
+theorem zorn (h : ∀ c : set α, chain r c → ∃ ub, ∀ a ∈ c, r a ub) : ∃ m, ∀ a, r m a → r a m 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.set.chain
+
+variables {α : Type*} {r : α → α → Prop}
+
+theorem zorn_nonempty_chain_upper_bound
+  (h₁ : ∀ (c : set α), chain r c → c.nonempty → ∃ ub, ∀ a ∈ c, r a ub) :
+  ∃ m, ∀ a, r m a → r a m 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.set.chain
+import data.set.lattice
+
+variables {α : Type} {r : α → α → Prop}
+
+theorem zorn (h : ∀c:set α, chain r c → c.nonempty → ∃ub, ∀a∈c, r a ub) :
+  ∃m, ∀a, ¬ r m a 
+
+theorem zorns_lemma {α : Type u} {r : α → α → Prop} : (∀ (c :  Set α), c.nonempty → chain r c → (∃ (ub : α), ∀ (a : α), a ∈ c → r a ub)) → (∃ (m : α), ∀ (a : α), r m a → r a m) 
+
+theorem zorns_lemma (α : Type u) [PartialOrder α] :
+  (∀ (c :  Set α), chain c → ∃ ub, ∀ a ∈ c, a ≤ ub) → (∃ m : α, ∀ a, m ≤ a → a = m) 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.set.basic
+
+namespace poset
+
+variables (α : Type*) (r : α → α → Prop)
+
+def has_maximal_element : Prop 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.set.chain
+import order.zorn
+
+variables {α : Type} {r : α → α → Prop}
+
+theorem zorns_lemma (h : ∀c:set α, chain r c → ∃ub, ∀a∈c, r a ub) (ne : ∃x, x ∈ set.univ) :
+  ∃m, ∀a, r m a → r a m 
+
+failed to elaborate
+
+outputs: #[import data.set.chain
+import order.zorn
+
+variables {α : Type} {r : α → α → Prop}
+
+theorem zorn_nonempty_poset_maximal_element (h : ∀ (c : set α), chain r c → ∃ ub, ∀ a ∈ c, r a ub) :
+  ∃ m, ∀ a, r m a → r a m , import data.set.basic
+
+variables {α : Type*} {r : α → α → Prop}
+
+theorem zorns_lemma (h : ∀ c : set α, zorn.chain r c → set.nonempty c → ∃ ub, ∀ a ∈ c, r a ub) :
+  ∃ m, ∀ a, r m a → r a m , import data.set.chain
+
+lemma zorns_lemma {α : Type u} (r : α → α → Prop) :
+  (∀ (c : set α), chain r c → c.nonempty → ∃ ub, ∀ a ∈ c, r a ub) →
+  ∀ (a : α), (∀ x, r a x → r x a) → ∃ m, ∀ x, r m x → r x m , import data.set.chain
+import order.bounds
+
+variables {α : Type} {r : α → α → Prop}
+
+theorem zorn (h : ∀ c : set α, chain r c → ∃ ub, ∀ a ∈ c, r a ub) : ∃ m, ∀ a, r m a → r a m , import data.set.chain
+
+variables {α : Type*} {r : α → α → Prop}
+
+theorem zorn_nonempty_chain_upper_bound
+  (h₁ : ∀ (c : set α), chain r c → c.nonempty → ∃ ub, ∀ a ∈ c, r a ub) :
+  ∃ m, ∀ a, r m a → r a m , import data.set.chain
+import data.set.lattice
+
+variables {α : Type} {r : α → α → Prop}
+
+theorem zorn (h : ∀c:set α, chain r c → c.nonempty → ∃ub, ∀a∈c, r a ub) :
+  ∃m, ∀a, ¬ r m a , theorem zorns_lemma {α : Type u} {r : α → α → Prop} : (∀ (c : set α), c.nonempty → chain r c → (∃ (ub : α), ∀ (a : α), a ∈ c → r a ub)) → (∃ (m : α), ∀ (a : α), r m a → r a m) , theorem zorns_lemma (α : Type u) [PartialOrder α] :
+  (∀ (c : set α), chain c → ∃ ub, ∀ a ∈ c, a ≤ ub) → (∃ m : α, ∀ a, m ≤ a → a = m) , import data.set.basic
+
+namespace poset
+
+variables (α : Type*) (r : α → α → Prop)
+
+def has_maximal_element : Prop , import data.set.chain
+import order.zorn
+
+variables {α : Type} {r : α → α → Prop}
+
+theorem zorns_lemma (h : ∀c:set α, chain r c → ∃ub, ∀a∈c, r a ub) (ne : ∃x, x ∈ set.univ) :
+  ∃m, ∀a, r m a → r a m ]
+
+total : 10
+
+elaborated: 7
+
+No valid output from Codex; outputs below
+
+∀ {G : Type u} [inst :  GroupCat G], IsAbelian G → IsCyclic (AutGroup G) → IsAbelian G
+
+∀ {G : Type u_1} [inst :  GroupCat G],
+  (∀ (ϕ : G ≃* G), IsCyclic (MulAut G)) → IsAbelian G
+
+∀ {G : Type u_1} [inst :  GroupCat G],
+  IsCyclic (Aut G) → IsAbelian G
+
+∀ {G : Type u_1} [inst :  GroupCat G], IsCyclic (Aut G) → IsAbelian G
+
+∀ {G : Type u} [inst :  GroupCat G] [inst_1 : IsCyclic (G ≃* G)], IsAbelian G
+
+∀ {G : Type u} [inst :  GroupCat G], IsCyclic (AutomorphismGroup G) → IsAbelian G
+
+∀ {G : Type u} [inst :  GroupCat G], (∀ (ϕ : G ≃* G), IsCyclic (MulEquiv.toAuto G ϕ)) → IsAbelian G
+
+∀ {G : Type u_1} [inst :  GroupCat G],
+  IsCyclic (AutomorphismGroup G) → IsAbelian G
+
+∀ {G : Type u_1} [inst :  GroupCat G], IsCyclic (AutomorphismGroup G) → IsAbelian G
+
+failed to elaborate
+
+outputs: #[∀ {G : Type u} [inst : Group G], IsAbelian G → IsCyclic (AutGroup G) → IsAbelian G, ∀ {G : Type u_1} [inst : Group G],
+  (∀ (ϕ : G ≃* G), IsCyclic (MulAut G)) → IsAbelian G, ∀ {G : Type u_1} [inst : Group G],
+  IsCyclic (Aut G) → IsAbelian G, ∀ {G : Type u_1} [inst : Group G], IsCyclic (Aut G) → IsAbelian G, ∀ {G : Type u} [inst : Group G] [inst_1 : IsCyclic (G ≃* G)], IsAbelian G, ∀ {G : Type u} [inst : Group G], IsCyclic (AutomorphismGroup G) → IsAbelian G, ∀ {G : Type u} [inst : Group G], (∀ (ϕ : G ≃* G), IsCyclic (MulEquiv.toAuto G ϕ)) → IsAbelian G, ∀ {G : Type u_1} [inst : Group G],
+  IsCyclic (AutomorphismGroup G) → IsAbelian G, ∀ {G : Type u_1} [inst : Group G], IsCyclic (AutomorphismGroup G) → IsAbelian G]
+
+total : 11
+
+elaborated: 7
+
+success
+
+theorem ∀ {α : Type u} {β : Type v} {γ : Type w} [inst : UniformSpace α] [inst_1 : UniformSpace β] [inst_2 : UniformSpace γ]
+  {f : α → β} {g : β → γ}, UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f)
+
+total : 12
+
+elaborated: 8
+
+success
+
+theorem ∀ {α : Type u} {β : Type v} {γ : Type w} [inst : UniformSpace α] [inst_1 : UniformSpace β] [inst_2 : UniformSpace γ]
+  {f : α → β} {g : β → γ}, UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f)
+
+total : 13
+
+elaborated: 9
+
+No valid output from Codex; outputs below
+
+failed to elaborate
+
+outputs: #[]
+
+total : 14
+
+elaborated: 9
+
+success
+
+theorem ∀ (f : ℝ → ℝ),
+  (∃ x, 0 ≤ x ∧ x ≤ 1 ∧ Function.IsPeriodicPt f 3 x) →
+    ∀ (n : ℕ), 0 < n → ∃ y, 0 ≤ y ∧ y ≤ 1 ∧ Function.IsPeriodicPt f n y
+
+total : 15
+
+elaborated: 10
+
+success
+
+theorem ∀ {C : Type u} [inst : CategoryTheory.Category C] (X Y : C),
+  CategoryTheory.Limits.IsTerminal X → CategoryTheory.Limits.IsTerminal Y → Nonempty (Unique (X ≅ Y))
+
+total : 16
+
+elaborated: 11
+
+success
+
+theorem ∀ {α : Type u} {s t : Set α}, (s ∪ t)ᶜ = sᶜ ∩ tᶜ
+
+total : 17
+
+elaborated: 12
+
+success
+
+theorem ∀ (a b : ℕ), ℕ → a > 0 → b > 0 → ¬∃ d, a ^ 3 + b ^ 3 = d ^ 3
+
+total : 18
+
+elaborated: 13
+
+No valid output from Codex; outputs below
+
+∀ {G : Type u_1} [inst :  GroupCat G], (∀ (x : G), IsOfFinOrder x 2) → ∀ (a b : G), Commute a b
+
+∀ {G : Type u_1} [inst :  GroupCat G], (∀ (x : G), IsOfFinOrder x 2) →
+  ∀ (a b : G), Commute a b
+
+∀ {G : Type u_1} [inst :  GroupCat G], (∀ (x : G), IsOfFinOrder x 2) → ∀ {a b : G}, Commute a b
+
+∀ {G : Type u_1} [inst :  GroupCat G], (∀ (x : G), IsOfOrder x 2) → ∀ (x y : G), Commute x y
+
+∀ {G : Type u_1} [inst :  GroupCat G], (∀ (x : G), IsOfFinOrder x 2) →
+  ∀ (x y : G), Commute x y
+
+∀ {G : Type u_1} [inst :  GroupCat G], (∀ (x : G), IsOfFinOrder x ∧ OrderOf x = 2) → ∀ (a b : G), Commute a b
+
+failed to elaborate
+
+outputs: #[∀ {G : Type u_1} [inst : Group G], (∀ (x : G), IsOfFinOrder x 2) → ∀ (a b : G), Commute a b, ∀ {G : Type u_1} [inst : Group G], (∀ (x : G), IsOfFinOrder x 2) →
+  ∀ (a b : G), Commute a b, ∀ {G : Type u_1} [inst : Group G], (∀ (x : G), IsOfFinOrder x 2) → ∀ {a b : G}, Commute a b, ∀ {G : Type u_1} [inst : Group G], (∀ (x : G), IsOfOrder x 2) → ∀ (x y : G), Commute x y, ∀ {G : Type u_1} [inst : Group G], (∀ (x : G), IsOfFinOrder x 2) →
+  ∀ (x y : G), Commute x y, ∀ {G : Type u_1} [inst : Group G], (∀ (x : G), IsOfFinOrder x ∧ OrderOf x = 2) → ∀ (a b : G), Commute a b]
+
+total : 19
+
+elaborated: 13
+
+success
+
+theorem ∀ {n : ℕ}, Even (n * (n + 1))
+
+total : 20
+
+elaborated: 14
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G] (H : Subgroup G), Subgroup.FiniteIndex H → Subgroup.index H = 2 → Subgroup.Normal H
+
+total : 21
+
+elaborated: 15
+
+No valid output from Codex; outputs below
+
+∀ (G : Type u_1) [inst :  GroupCat G] [inst_1 : FreeGroup G], Monoid.IsTorsionFree G
+
+∀ {G : Type u_1} [inst :  GroupCat G] [inst_1 : FreeGroup G], Monoid.IsTorsionFree G
+
+∀ {A : Type u_1} [inst : FreeGroup A], Monoid.IsTorsionFree (FreeGroup A)
+
+∀ {A : Type u} [inst : FreeGroup A], Monoid.IsTorsionFree (FreeGroup A)
+
+∀ {A : Type u_1} [inst :  GroupCat A] [inst_1 : FreeGroup A], Monoid.IsTorsionFree A
+
+∀ {A : Type u_1} [inst :  GroupCat A] [inst_1 : FreeGroup A], Monoid.IsTorsionFree (FreeGroup A)
+
+failed to elaborate
+
+outputs: #[∀ (G : Type u_1) [inst : Group G] [inst_1 : FreeGroup G], Monoid.IsTorsionFree G, ∀ {G : Type u_1} [inst : Group G] [inst_1 : FreeGroup G], Monoid.IsTorsionFree G, ∀ {A : Type u_1} [inst : FreeGroup A], Monoid.IsTorsionFree (FreeGroup A), ∀ {A : Type u} [inst : FreeGroup A], Monoid.IsTorsionFree (FreeGroup A), ∀ {A : Type u_1} [inst : Group A] [inst_1 : FreeGroup A], Monoid.IsTorsionFree A, ∀ {A : Type u_1} [inst : Group A] [inst_1 : FreeGroup A], Monoid.IsTorsionFree (FreeGroup A)]
+
+total : 22
+
+elaborated: 15
+
+success
+
+theorem ∀ (n : ℕ), 1 < n → ∃ p, Nat.Prime p ∧ p ∣ n
+
+total : 23
+
+elaborated: 16
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G] [inst_1 : Finite G], Monoid.IsTorsionFree G → IsEmpty G
+
+total : 24
+
+elaborated: 17
+
+success
+
+theorem {K : Type u} → [inst : DivisionRing K] → Fintype K → Field K
+
+total : 25
+
+elaborated: 18
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : Finite α], CompactSpace α
+
+total : 26
+
+elaborated: 19
+
+No valid output from Codex; outputs below
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.free_group.basic
+
+variables {α : Type} [decidable_eq α]
+
+lemma free_group.inj_of_surj_of_fg (f : free_group α →* free_group α) (h_surj : function.surjective f)
+  (h_fg : (free_group.of '' (finsupp.supported α α set.univ : set (α →₀ ℤ))) = finset.univ) :
+  function.injective f 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.finset
+
+lemma surjective_homomorphism_injective_from_finitely_generated_free_group :
+  ∀ {α : Type u} [inst : Group α] {G : α} [is_free_group : group.is_free_group G]
+  {H : α} [is_free_group : group.is_free_group H]
+  {f : G →* H} (hf : function.surjective f),
+  function.injective f 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.free_group.basic
+
+open free_group
+
+lemma surjective_homomorphism_injective {α : Type} [decidable_eq α] (f : free_group α →* free_group α) (hf : function.surjective f) :
+  function.injective f 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.free_group
+
+open free_group
+
+theorem surjective_homomorphism_injective {ι : Type} [fintype ι] (f : free_group ι →* free_group ι) (h_surjective : function.surjective f) : function.injective f 
+
+∀ {α : Type u} [inst :  GroupCat α] (G : FreeGroup α) (f : G →* G),
+  Function.Surjective ↑f → Group.IsFree G → Function.Injective ↑f
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.free_group
+
+open free_group
+
+lemma surjective_homomorphism_injective {ι : Type*} [decidable_eq ι] (gens : ι → free_group) 
+  (h_hom : ∀ g : free_group, ∃ n : free_group, (gens n) * g = g * (gens n)) (f : free_group →* free_group) 
+  (h_surj : function.surjective f) : function.injective f 
+
+<input>:1:0: expected '/--', ':' or term while parsing import algebra.group.free_group
+
+variables {α : Type} [group α]
+
+lemma surjective_homomorphism_injective_of_finitely_generated_free_group
+  {β : Type} [group β] (f : α → β) [is_group_hom f] (hf : function.surjective f)
+  (hα : is_free_group α) (hβ : is_finitely_generated_free_group β) :
+  function.injective f 
+
+∀ {ι : Type u} (G : Type v) [inst :  GroupCat G] (σ : ι → G) [inst_1 : FinitelyGenerated σ] (f : G →* G),
+  Function.Surjective ↑f → Function.Injective ↑f
+
+∀ {α : Type u} [inst :  GroupCat α] {β : Type v} [inst_1 :  GroupCat β] {f : α → β},
+  IsGroupHom f → Function.Surjective f → Group.IsFree α → Group.IsFree β → Group.IsInjective f
+
+∀ {ι : Type u} (A : ι → Type v) [inst : ∀ (i : ι), FreeGroup.Setoid A] [inst_1 : ∀ (i : ι),  GroupCat (A i)]
+    [inst_2 : FreeGroup.FinitelyGenerated A] {G : Type u_1} [inst_3 :  GroupCat G]
+    {f : FreeGroup A →* G}, Function.Surjective ↑f → f = 1 → Function.Injective ↑f
+
+failed to elaborate
+
+outputs: #[import data.free_group.basic
+
+variables {α : Type} [decidable_eq α]
+
+lemma free_group.inj_of_surj_of_fg (f : free_group α →* free_group α) (h_surj : function.surjective f)
+  (h_fg : (free_group.of '' (finsupp.supported α α set.univ : set (α →₀ ℤ))) = finset.univ) :
+  function.injective f , import data.finset
+
+lemma surjective_homomorphism_injective_from_finitely_generated_free_group :
+  ∀ {α : Type u} [inst : Group α] {G : α} [is_free_group : group.is_free_group G]
+  {H : α} [is_free_group : group.is_free_group H]
+  {f : G →* H} (hf : function.surjective f),
+  function.injective f , import data.free_group.basic
+
+open free_group
+
+lemma surjective_homomorphism_injective {α : Type} [decidable_eq α] (f : free_group α →* free_group α) (hf : function.surjective f) :
+  function.injective f , import data.free_group
+
+open free_group
+
+theorem surjective_homomorphism_injective {ι : Type} [fintype ι] (f : free_group ι →* free_group ι) (h_surjective : function.surjective f) : function.injective f , ∀ {α : Type u} [inst : Group α] (G : FreeGroup α) (f : G →* G),
+  Function.Surjective ↑f → Group.IsFree G → Function.Injective ↑f, import data.free_group
+
+open free_group
+
+lemma surjective_homomorphism_injective {ι : Type*} [decidable_eq ι] (gens : ι → free_group) 
+  (h_hom : ∀ g : free_group, ∃ n : free_group, (gens n) * g = g * (gens n)) (f : free_group →* free_group) 
+  (h_surj : function.surjective f) : function.injective f , import algebra.group.free_group
+
+variables {α : Type} [group α]
+
+lemma surjective_homomorphism_injective_of_finitely_generated_free_group
+  {β : Type} [group β] (f : α → β) [is_group_hom f] (hf : function.surjective f)
+  (hα : is_free_group α) (hβ : is_finitely_generated_free_group β) :
+  function.injective f , ∀ {ι : Type u} (G : Type v) [inst : Group G] (σ : ι → G) [inst_1 : FinitelyGenerated σ] (f : G →* G),
+  Function.Surjective ↑f → Function.Injective ↑f, ∀ {α : Type u} [inst : Group α] {β : Type v} [inst_1 : Group β] {f : α → β},
+  IsGroupHom f → Function.Surjective f → Group.IsFree α → Group.IsFree β → Group.IsInjective f, ∀ {ι : Type u} (A : ι → Type v) [inst : ∀ (i : ι), FreeGroup.Setoid A] [inst_1 : ∀ (i : ι), Group (A i)]
+    [inst_2 : FreeGroup.FinitelyGenerated A] {G : Type u_1} [inst_3 : Group G]
+    {f : FreeGroup A →* G}, Function.Surjective ↑f → f = 1 → Function.Injective ↑f]
+
+total : 27
+
+elaborated: 19
+
+success
+
+theorem ∀ {n : ℕ}, Even n → n > 0 → ∃ p q, Nat.Prime p ∧ Nat.Prime q ∧ n = p + q
+
+total : 28
+
+elaborated: 20
+
+No valid output from Codex; outputs below
+
+∀ {α : Type u} {n : Type v} [inst :  CommRingCat α] [ DecidableEq n] [ Fintype n] (A : Matrix n n α),
+  Matrix.charpoly A = Polynomial.eval (Matrix.to_fun A) (Matrix.charpoly A)
+
+∀ {α : Type u_1} {n : Type u_2} [inst :  CommRingCat α] (A : Matrix n n α), Matrix.satisfiesCharacteristicPoly A (Matrix.charpoly A)
+
+∀ {α : Type u_1} [ CommRing α] {n : Type u_2} [ DecidableEq n] (A : Matrix n n α),
+  (Matrix.charpoly A).eval A = 0
+
+∀ {R : Type u} {n : Type v} [inst :  CommRingCat R] [inst_1 : Nontrivial R] [inst_2 :  FintypeCat n] (A : Matrix n n R),
+  Matrix.charpoly A (Matrix.toLinearMap A) = 0
+
+∀ {α : Type u_1} {n : Type u_2} [inst :  CommRingCat α] [inst_1 : DecidableEq n] [inst_2 :  FintypeCat n] (A : Matrix n n α),
+  Matrix.charpoly A = Matrix.charpoly (Matrix.to_lin A)
+
+∀ {R : Type u} {n : Type v} [ Ring R] [ DecidableEq n] [ Fintype n] (A :  Matrix n n R),
+   Matrix.charpoly A A = 0
+
+∀ {α : Type u_1} {n : Type u_2} [ CommRing α] [ DecidableEq n] (A : Matrix n n α),
+  Matrix.charpoly A = Matrix.det (Matrix.X • Matrix.eye n - A)
+
+∀ {α : Type u_2} {n : Type u_1} [inst :  CommRingCat α] (A : Matrix α n n),
+  Matrix.charpoly A = Matrix.det (Matrix.X • Matrix.eye n - A)
+
+∀ {α : Type u_1} {n : Type u_2} [inst :  CommRingCat α] [inst_1 : DecidableEq n] [inst_2 :  AddCommGroupCat n]
+  [inst_3 :  ModuleCat α n], ∀ (A : Matrix n n α), Matrix.charpoly A (Matrix.to_linear_map A) = 0
+
+∀ {α : Type u} {n : Type v} [ CommRing α] (A : Matrix n n α),
+  Matrix.charpoly A = Polynomial.eval (Matrix.to_fun A) (Matrix.charpoly A)
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u} {n : Type v} [inst : CommRing α] [decidable_eq n] [fintype n] (A : Matrix n n α),
+  Matrix.charpoly A = Polynomial.eval (Matrix.to_fun A) (Matrix.charpoly A), ∀ {α : Type u_1} {n : Type u_2} [inst : CommRing α] (A : Matrix n n α), Matrix.satisfiesCharacteristicPoly A (Matrix.charpoly A), ∀ {α : Type u_1} [comm_ring α] {n : Type u_2} [decidable_eq n] (A : Matrix n n α),
+  (Matrix.charpoly A).eval A = 0, ∀ {R : Type u} {n : Type v} [inst : CommRing R] [inst_1 : Nontrivial R] [inst_2 : Fintype n] (A : Matrix n n R),
+  Matrix.charpoly A (Matrix.toLinearMap A) = 0, ∀ {α : Type u_1} {n : Type u_2} [inst : CommRing α] [inst_1 : DecidableEq n] [inst_2 : Fintype n] (A : Matrix n n α),
+  Matrix.charpoly A = Matrix.charpoly (Matrix.to_lin A), ∀ {R : Type u} {n : Type v} [ring R] [decidable_eq n] [fintype n] (A : matrix n n R),
+  matrix.charpoly A A = 0, ∀ {α : Type u_1} {n : Type u_2} [comm_ring α] [decidable_eq n] (A : Matrix n n α),
+  Matrix.charpoly A = Matrix.det (Matrix.X • Matrix.eye n - A), ∀ {α : Type u_2} {n : Type u_1} [inst : CommRing α] (A : Matrix α n n),
+  Matrix.charpoly A = Matrix.det (Matrix.X • Matrix.eye n - A), ∀ {α : Type u_1} {n : Type u_2} [inst : CommRing α] [inst_1 : DecidableEq n] [inst_2 : AddCommGroup n]
+  [inst_3 : Module α n], ∀ (A : Matrix n n α), Matrix.charpoly A (Matrix.to_linear_map A) = 0, ∀ {α : Type u} {n : Type v} [comm_ring α] (A : Matrix n n α),
+  Matrix.charpoly A = Polynomial.eval (Matrix.to_fun A) (Matrix.charpoly A)]
+
+total : 29
+
+elaborated: 20
+
+success
+
+theorem ∀ {x : ℝ}, Irrational x → Irrational (Real.sqrt x)
+
+total : 30
+
+elaborated: 21
+
+success
+
+theorem ∀ {n : ℕ}, Even (n * n) → Even n
+
+total : 31
+
+elaborated: 22
+
+success
+
+theorem ∀ {R : Type u_1} [inst : CommRing R] [inst_1 : Fintype R] (P : Ideal R), Ideal.IsPrime P → Ideal.IsMaximal P
+
+total : 32
+
+elaborated: 23
+
+No valid output from Codex; outputs below
+
+∀ {X : Type u} [inst : TopologicalSpace X],
+  IsHausdorff X ↔ IsClosed (Set.diagonal X)
+
+∀ {X : Type u} [inst : TopologicalSpace X],
+  T2Space X ↔ IsClosed (Set.Diagonal X)
+
+∀ {X : Type u} [inst : TopologicalSpace X],
+  IsHausdorff X ↔ IsClosed (TopologicalSpace.diagonal X)
+
+∀ {X : Type u} [inst : TopologicalSpace X],
+  IsHausdorff X ↔ IsClosed (TopologicalSpace.diag X)
+
+∀ {X : Type u} [inst : TopologicalSpace X],
+  IsHausdorff X ↔ IsClosed (diagonal X)
+
+∀ {X : Type u} [inst : TopologicalSpace X],
+  HausdorffSpace X ↔ IsClosed (TopologicalSpace.diagonal X)
+
+∀ {X : Type u} [inst : TopologicalSpace X],
+  IsHausdorff X ↔ IsClosed (Set.Diagonal X)
+
+failed to elaborate
+
+outputs: #[∀ {X : Type u} [inst : TopologicalSpace X],
+  IsHausdorff X ↔ IsClosed (Set.diagonal X), ∀ {X : Type u} [inst : TopologicalSpace X],
+  T2Space X ↔ IsClosed (Set.Diagonal X), ∀ {X : Type u} [inst : TopologicalSpace X],
+  IsHausdorff X ↔ IsClosed (TopologicalSpace.diagonal X), ∀ {X : Type u} [inst : TopologicalSpace X],
+  IsHausdorff X ↔ IsClosed (TopologicalSpace.diag X), ∀ {X : Type u} [inst : TopologicalSpace X],
+  IsHausdorff X ↔ IsClosed (diagonal X), ∀ {X : Type u} [inst : TopologicalSpace X],
+  HausdorffSpace X ↔ IsClosed (TopologicalSpace.diagonal X), ∀ {X : Type u} [inst : TopologicalSpace X],
+  IsHausdorff X ↔ IsClosed (Set.Diagonal X)]
+
+total : 33
+
+elaborated: 23
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] {s : Set α}, (∀ (x : α), x ∈ s → ∃ U, IsOpen U ∧ x ∈ U) → IsOpen s
+
+total : 34
+
+elaborated: 24
+
+No valid output from Codex; outputs below
+
+∀ {α : Type u} [inst : DecidableEq α] {L : List (α × Bool)} {x : FreeGroup α},
+  x ≠ FreeGroup.one → IsOfInfOrder x
+
+∀ {α : Type u} (x : FreeGroup α), x ≠ FreeGroup.one → ¬IsOfFinOrder x
+
+∀ {α : Type u} [inst : DecidableEq α] (x : FreeGroup α), x ≠ FreeGroup.one → ¬IsOfFinOrder x
+
+∀ {α : Type u} [inst : DecidableEq α] (L : List (α × Bool)) (x : FreeGroup α),
+  x ≠ FreeGroup.one → IsOfInfOrder x
+
+∀ {α : Type u} [inst : DecidableEq α] {L : List (α × Bool)} {x : α × Bool},
+  x ∈ L → x ≠ (1, tt) → ¬IsOfFinOrder (FreeGroup.mk [x])
+
+∀ {α : Type u} [inst : DecidableEq α] {L : List (α × Bool)} {x : FreeGroup α}, x ≠ FreeGroup.one → IsOfInfOrder x
+
+∀ {α : Type u} [inst : DecidableEq α] (x : FreeGroup α), x ≠ FreeGroup.one → IsOfInfOrder x
+
+∀ {α : Type u} (L : List (α × Bool)) [inst : DecidableEq α] {x : FreeGroup α},
+  x ≠ FreeGroup.one → IsOfInfOrder x
+
+∀ {α : Type u} [inst : DecidableEq α] (x : FreeGroup α), x ≠ FreeGroup.of [] → IsOfInfOrder x
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u} [inst : DecidableEq α] {L : List (α × Bool)} {x : FreeGroup α},
+  x ≠ FreeGroup.one → IsOfInfOrder x, ∀ {α : Type u} (x : FreeGroup α), x ≠ FreeGroup.one → ¬IsOfFinOrder x, ∀ {α : Type u} [inst : DecidableEq α] (x : FreeGroup α), x ≠ FreeGroup.one → ¬IsOfFinOrder x, ∀ {α : Type u} [inst : DecidableEq α] (L : List (α × Bool)) (x : FreeGroup α),
+  x ≠ FreeGroup.one → IsOfInfOrder x, ∀ {α : Type u} [inst : DecidableEq α] {L : List (α × Bool)} {x : α × Bool},
+  x ∈ L → x ≠ (1, tt) → ¬IsOfFinOrder (FreeGroup.mk [x]), ∀ {α : Type u} [inst : DecidableEq α] {L : List (α × Bool)} {x : FreeGroup α}, x ≠ FreeGroup.one → IsOfInfOrder x, ∀ {α : Type u} [inst : DecidableEq α] (x : FreeGroup α), x ≠ FreeGroup.one → IsOfInfOrder x, ∀ {α : Type u} (L : List (α × Bool)) [inst : DecidableEq α] {x : FreeGroup α},
+  x ≠ FreeGroup.one → IsOfInfOrder x, ∀ {α : Type u} [inst : DecidableEq α] (x : FreeGroup α), x ≠ FreeGroup.of [] → IsOfInfOrder x]
+
+total : 35
+
+elaborated: 24
+
+success
+
+theorem ∀ (R : Type u) [inst : CommRing R] [inst_1 : IsDomain R] [inst_2 : DiscreteValuationRing R] (x : R),
+  IsUnit x ↔ ?m.12642589 R x = 0
+
+total : 36
+
+elaborated: 25
+
+No valid output from Codex; outputs below
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.nat.gcd
+
+theorem linear_combination_exists (a b : ℕ) (h : nat.coprime a b) : ∀ N : ℕ, ∀ n : ℕ, N ≥ n → ∃ x y : ℕ, N = a * x + b * y
+| N n hn 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.nat.basic
+
+lemma linear_combination_existence (a b : ℕ) (h : nat.coprime a b) : ∀ N : ℕ, ∃ x y : ℕ, a * x + b * y = N 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.nat.gcd
+
+variables {a b : ℕ} (h : nat.coprime a b)
+
+theorem linear_combination_of_coprime_numbers :
+  ∀ (N : ℕ), ∃ (x y : ℕ), N = a * x + b * y 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.nat.prime
+
+theorem linear_combination_rel_prime (a b : ℕ) (h : nat.coprime a b) : ∀ N : ℕ, ∃ x y : ℕ, a * x + b * y = N 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.nat.gcd
+
+lemma linear_combination_exists (a b : ℕ) (h : nat.coprime a b) :
+  ∀ (N : ℕ), ∃ (x y : ℕ), a * x + b * y = N 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.nat.prime
+
+lemma linear_combination_of_rel_prime_numbers :
+  ∀ (a b N : ℕ), nat.coprime a b → N ≥ a * b - a - b + 1 →
+  ∃ (x y : ℕ), a * x + b * y = N 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.nat.prime
+
+lemma linear_combination_rel_prime (a b : ℕ) (h : nat.coprime a b) :
+  ∀ N : ℕ, ∃ x y : ℕ, N = a * x + b * y 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.nat.prime
+
+lemma linear_combination_exists (a b N : ℕ) (hcoprime : nat.coprime a b) (hN : N ≥ a * b - a - b) :
+  ∃ (x y : ℕ), a * x + b * y = N 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.nat.basic
+
+lemma linear_combination_exists (a b : ℕ) (h : nat.coprime a b) : ∀ N : ℕ, N ≥ a * b - a - b → ∃ x y : ℕ, a * x + b * y = N 
+
+failed to elaborate
+
+outputs: #[import data.nat.gcd
+
+theorem linear_combination_exists (a b : ℕ) (h : nat.coprime a b) : ∀ N : ℕ, ∀ n : ℕ, N ≥ n → ∃ x y : ℕ, N = a * x + b * y
+| N n hn , import data.nat.basic
+
+lemma linear_combination_existence (a b : ℕ) (h : nat.coprime a b) : ∀ N : ℕ, ∃ x y : ℕ, a * x + b * y = N , import data.nat.gcd
+
+variables {a b : ℕ} (h : nat.coprime a b)
+
+theorem linear_combination_of_coprime_numbers :
+  ∀ (N : ℕ), ∃ (x y : ℕ), N = a * x + b * y , import data.nat.prime
+
+theorem linear_combination_rel_prime (a b : ℕ) (h : nat.coprime a b) : ∀ N : ℕ, ∃ x y : ℕ, a * x + b * y = N , import data.nat.gcd
+
+lemma linear_combination_exists (a b : ℕ) (h : nat.coprime a b) :
+  ∀ (N : ℕ), ∃ (x y : ℕ), a * x + b * y = N , import data.nat.prime
+
+lemma linear_combination_of_rel_prime_numbers :
+  ∀ (a b N : ℕ), nat.coprime a b → N ≥ a * b - a - b + 1 →
+  ∃ (x y : ℕ), a * x + b * y = N , import data.nat.prime
+
+lemma linear_combination_rel_prime (a b : ℕ) (h : nat.coprime a b) :
+  ∀ N : ℕ, ∃ x y : ℕ, N = a * x + b * y , import data.nat.prime
+
+lemma linear_combination_exists (a b N : ℕ) (hcoprime : nat.coprime a b) (hN : N ≥ a * b - a - b) :
+  ∃ (x y : ℕ), a * x + b * y = N , import data.nat.basic
+
+lemma linear_combination_exists (a b : ℕ) (h : nat.coprime a b) : ∀ N : ℕ, N ≥ a * b - a - b → ∃ x y : ℕ, a * x + b * y = N ]
+
+total : 37
+
+elaborated: 25
+
+success
+
+theorem {K : Type u} → [inst : Field K] → Ring K
+
+total : 38
+
+elaborated: 26
+
+success
+
+theorem {R : Type u_1} → [inst : Semiring R] → Group Rˣ
+
+total : 39
+
+elaborated: 27
+
+success
+
+theorem ∀ {G H : Type u_1} [instG : Group G] [instH : Group H],
+  Monoid.IsTorsionFree (G × H) → Monoid.IsTorsionFree G ∧ Monoid.IsTorsionFree H
+
+total : 40
+
+elaborated: 28
+
