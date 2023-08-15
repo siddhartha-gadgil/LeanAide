@@ -26,6 +26,7 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
     |>.getD "gpt-3.5-turbo"
   let embedding := p.flag? "embedding" |>.map (fun s => s.as! String)
     |>.getD "bert"
+  let azure := p.hasFlag "azure"
 
   let outFile := System.mkFilePath 
       ["results", 
@@ -37,7 +38,7 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
     {module := `Mathlib}] {}
   let core := 
     checkTranslatedThmsCore type
-      numSim includeFixed queryNum temp model embedding
+      numSim includeFixed queryNum temp model embedding azure
   let io? := 
     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} 
     {env := env}
@@ -64,6 +65,7 @@ def bulkElab : Cmd := `[Cli|
     t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t`."
     m, model : String ; "Model to be used (default `gpt-3.5-turbo`)"
     e, embedding : String; "Embedding to be used (default `bert`)"
+    azure; "Use Azure instead of OpenAI."
 
   ARGS:
     input : String;      "The input file in the `data` folder."

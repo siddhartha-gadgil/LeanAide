@@ -7,10 +7,10 @@ open Lean Meta Elab
 def translateWithDataM (s: String)(numSim : Nat:= 10)
   (includeFixed: Bool := Bool.false)(queryNum: Nat := 5)
   (temp : JsonNumber := ⟨2, 1⟩)(model: String)
-  (embedding: String) : 
+  (embedding: String)(azure: Bool := false) : 
   TermElabM ((Option (Expr × (Array String) )) × Array String) := do
   let js ← 
-    getCodeJson s numSim includeFixed queryNum temp model embedding
+    getCodeJson s numSim includeFixed queryNum temp model embedding azure
   let output ← GPT.jsonToExprStrArray js
   let output := output.toList.eraseDups.toArray
   let res ← arrayToExpr? output 
@@ -19,14 +19,14 @@ def translateWithDataM (s: String)(numSim : Nat:= 10)
 def translateWithDataCore (s: String)(numSim : Nat:= 10)
   (includeFixed: Bool := Bool.false)(queryNum: Nat := 5)
   (temp : JsonNumber := ⟨2, 1⟩)(model: String)
-  (embedding: String) :
+  (embedding: String)(azure: Bool := false) :
   CoreM ((Option (Expr × (Array String) )) × Array String) := 
     (translateWithDataM s 
       numSim includeFixed 
-        queryNum temp model embedding).run'.run'
+        queryNum temp model embedding azure).run'.run'
 
 def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(model: String)
-  (embedding: String) : TermElabM Json := do
+  (embedding: String)(azure: Bool := false) : TermElabM Json := do
   elabLog s!"Writing to file: {type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp.mantissa}.json"
   let promptsFile := System.mkFilePath ["data",
     s!"prompts-{type}-{numSim}-{includeFixed}-{queryNum}-{temp.mantissa}.jsonl"]
@@ -50,7 +50,7 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed:
     IO.println prompt
     let (res?, outputs) ← 
         translateWithDataM prompt
-          numSim includeFixed queryNum temp model embedding
+          numSim includeFixed queryNum temp model embedding azure
     let fullPrompt := (← logs 1).head! 
     let js := Json.mkObj [("text", Json.str prompt),
        ("fullPrompt", Json.str fullPrompt)]
@@ -102,9 +102,9 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed:
             ]
   return js
 
-def checkTranslatedThmsCore(type: String := "thm")(numSim : Nat:= 10)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(model: String)(embedding : String): CoreM Json :=
+def checkTranslatedThmsCore(type: String := "thm")(numSim : Nat:= 10)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(model: String)(embedding : String)(azure: Bool := false): CoreM Json :=
     (checkTranslatedThmsM type
-      numSim includeFixed queryNum temp model embedding).run'.run'
+      numSim includeFixed queryNum temp model embedding azure).run'.run'
 
 def parsedThmsPrompt : IO (Array String) := do
   let file := System.mkFilePath ["data/parsed_thms.txt"]

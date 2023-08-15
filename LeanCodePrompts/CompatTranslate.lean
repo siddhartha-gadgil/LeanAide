@@ -379,7 +379,7 @@ def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array Strin
           if !expr.hasExprMVar then
             fullElaborated := fullElaborated.push s
   if elaborated.isEmpty then 
-    elabLog "No valid output from Codex; outputs below"
+    elabLog "No valid output from LLM; outputs below"
     for out in output do
       let polyOut ←  polyStrThmTrans out
       for str in polyOut do

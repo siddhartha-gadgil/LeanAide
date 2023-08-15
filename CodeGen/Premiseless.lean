@@ -685,16 +685,16 @@ example: ∀ {M : Type u_1} [inst : AddMonoid M] {z : M}, z ∈ AddSubmonoid.cen
 
 #print Ordnode.all_node'
 
-#check Class.mem_def
-example: ∀ (A B : Class), A ∈ B ↔ ∃ x, ↑x = A ∧ B x := by
-  intro A B
-  apply Iff.intro
-  · intro a
-    exact a
-  · intro a
-    unhygienic with_reducible aesop_destruct_products
-    aesop_subst left
-    simp_all only [Class.coe_mem]
+-- #check Class.mem_def
+-- example: ∀ (A B : Class), A ∈ B ↔ ∃ x, ↑x = A ∧ B x := by
+--   intro A B
+--   apply Iff.intro
+--   · intro a
+--     exact a
+--   · intro a
+--     unhygienic with_reducible aesop_destruct_products
+--     aesop_subst left
+--     simp_all only [Class.coe_mem]
 
 
 
@@ -934,12 +934,12 @@ example: ∀ {M : Type u_1} [inst : Mul M] {p p' : Subsemigroup M} {x : M}, x �
 
 #print FirstOrder.Language.LHom.mk.sizeOf_spec
 
-#check Affine.Simplex.PointsWithCircumcenterIndex.circumcenter_index.sizeOf_spec
-example: ∀ {n : ℕ}, sizeOf Affine.Simplex.PointsWithCircumcenterIndex.circumcenter_index = 1 := by
-  intro n
-  apply Eq.refl
-  intro n
-  exact n
+-- #check Affine.Simplex.PointsWithCircumcenterIndex.circumcenter_index.sizeOf_spec
+-- example: ∀ {n : ℕ}, sizeOf Affine.Simplex.PointsWithCircumcenterIndex.circumcenter_index = 1 := by
+--   intro n
+--   apply Eq.refl
+--   intro n
+--   exact n
 
 
 
@@ -1046,10 +1046,10 @@ example: ∀ {R : Type u} [inst : NonAssocSemiring R] {p p' : Subsemiring R} {x 
 
 #print Set.preimage_subset_iff
 
-#check Fin.mk_le_of_le_val
-example: ∀ {n : ℕ} {b : Fin n} {a : ℕ} (h : a ≤ ↑b), { val := a, isLt := (_ : a < n) } ≤ b := by
-  intro n b a h
-  exact h
+-- #check Fin.mk_le_of_le_val
+-- example: ∀ {n : ℕ} {b : Fin n} {a : ℕ} (h : a ≤ ↑b), { val := a, isLt := (_ : a < n) } ≤ b := by
+--   intro n b a h
+--   exact h
 
 
 
@@ -1340,11 +1340,11 @@ example: ∀ {k : Type u_1} [inst : Field k] {σ : Type u_2} (I : Ideal (MvPolyn
 
 
 
-#check LinearIndependent.restrict_of_comp_subtype
-example: ∀ {ι : Type u'} {R : Type u_1} {M : Type u_2} {v : ι → M} [inst : Semiring R] [inst_1 : AddCommMonoid M]
-  [inst_2 : Module R M] {s : Set ι}, LinearIndependent R (v ∘ Subtype.val) → LinearIndependent R (Set.restrict s v) := by
-  intro ι R M v inst inst_1 inst_2 s hs
-  exact hs
+-- #check LinearIndependent.restrict_of_comp_subtype
+-- example: ∀ {ι : Type u'} {R : Type u_1} {M : Type u_2} {v : ι → M} [inst : Semiring R] [inst_1 : AddCommMonoid M]
+--   [inst_2 : Module R M] {s : Set ι}, LinearIndependent R (v ∘ Subtype.val) → LinearIndependent R (Set.restrict s v) := by
+--   intro ι R M v inst inst_1 inst_2 s hs
+--   exact hs
 
 
 
@@ -1760,7 +1760,7 @@ example: ∀ {R : Type u_1} [inst : Ring R], IsArtinianRing R ↔ IsArtinian R R
 
 #check Membership.mem.out
 example: ∀ {α : Type u} {p : α → Prop} {a : α}, a ∈ {x | p x} → p a := by
-simp_all only [Set.mem_setOf_eq, implies_true, forall_const]
+aesop (options := { introsTransparency? := some .default })
 
 
 
