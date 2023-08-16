@@ -392,7 +392,7 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
           if !expr.hasExprMVar then
             fullElaborated := fullElaborated.push expr
   if elaborated.isEmpty then 
-    elabLog "No valid output from Codex; outputs below"
+    elabLog "No valid output from LLM; outputs below"
     for out in output do
       let stx ← parseThm4 out
       match stx with
@@ -426,7 +426,7 @@ def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array Strin
           if !expr.hasExprMVar then
             fullElaborated := fullElaborated.push expr
   if elaborated.isEmpty then 
-    elabLog "No valid output from Codex; outputs below"
+    elabLog "No valid output from LLM; outputs below"
     for out in output do
       let stx ← parseThm4 out
       match stx with

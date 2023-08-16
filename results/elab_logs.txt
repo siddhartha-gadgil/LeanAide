@@ -7382,3 +7382,1860 @@ total : 40
 
 elaborated: 28
 
+Writing to file: false-elab-15-false-12-8.json
+
+success
+
+theorem ∀ (R : Type u_1) [inst : Ring R], IsField R
+
+total : 1
+
+elaborated: 1
+
+No valid output from Codex; outputs below
+
+<input>:1:74: expected end of input while parsing This statement is not true. There exist infinite-dimensional vector spaces, such as the vector space of all real or complex numbers.
+
+<input>:1:83: expected end of input while parsing This statement is not true. There exist vector spaces that are infinite-dimensional, meaning they do not have a finite basis.
+
+<input>:1:119: expected end of input while parsing This statement is incorrect. Not every vector space is finite-dimensional. There are infinite-dimensional vector spaces, such as the vector space of polynomials or the vector space of infinite sequences.
+
+<input>:1:74: expected end of input while parsing This statement is not true. There exist infinite-dimensional vector spaces, such as the vector space of polynomials of infinite degree.
+
+<input>:1:83: expected end of input while parsing This statement is not true. There exist vector spaces that are infinite-dimensional, such as the space of all real-valued functions or the space of all sequences.
+
+<input>:1:74: expected end of input while parsing This statement is not true. There exist infinite-dimensional vector spaces, such as the vector space of infinite sequences or the vector space of polynomials of infinite degree.
+
+<input>:1:123: expected end of input while parsing This statement is not correct. Not every vector space is finite-dimensional. There exist infinite-dimensional vector spaces, such as the space of all polynomials or the space of all sequences.
+
+<input>:1:74: expected end of input while parsing This statement is not true. There exist infinite-dimensional vector spaces, such as the space of all polynomials or the space of all sequences.
+
+<input>:1:121: expected end of input while parsing This statement is incorrect. Not every vector space is finite-dimensional. There exist infinite-dimensional vector spaces, such as the space of all polynomials or the space of real or complex sequences.
+
+<input>:1:121: expected end of input while parsing This statement is incorrect. Not every vector space is finite-dimensional. There exist infinite-dimensional vector spaces, such as the space of all polynomials or the space of all functions.
+
+<input>:1:81: expected end of input while parsing This statement is not true. There are vector spaces that are infinite-dimensional, meaning they do not have a finite basis.
+
+failed to elaborate
+
+outputs: #[This statement is not true. There exist infinite-dimensional vector spaces, such as the vector space of all real or complex numbers., This statement is not true. There exist vector spaces that are infinite-dimensional, meaning they do not have a finite basis., This statement is incorrect. Not every vector space is finite-dimensional. There are infinite-dimensional vector spaces, such as the vector space of polynomials or the vector space of infinite sequences., This statement is not true. There exist infinite-dimensional vector spaces, such as the vector space of polynomials of infinite degree., This statement is not true. There exist vector spaces that are infinite-dimensional, such as the space of all real-valued functions or the space of all sequences., This statement is not true. There exist infinite-dimensional vector spaces, such as the vector space of infinite sequences or the vector space of polynomials of infinite degree., This statement is not correct. Not every vector space is finite-dimensional. There exist infinite-dimensional vector spaces, such as the space of all polynomials or the space of all sequences., This statement is not true. There exist infinite-dimensional vector spaces, such as the space of all polynomials or the space of all sequences., This statement is incorrect. Not every vector space is finite-dimensional. There exist infinite-dimensional vector spaces, such as the space of all polynomials or the space of real or complex sequences., This statement is incorrect. Not every vector space is finite-dimensional. There exist infinite-dimensional vector spaces, such as the space of all polynomials or the space of all functions., This statement is not true. There are vector spaces that are infinite-dimensional, meaning they do not have a finite basis.]
+
+total : 2
+
+elaborated: 1
+
+No valid output from Codex; outputs below
+
+∀ {G : Type u_1} [inst :  GroupCat G], TorsionMonoid G
+
+∀ {G : Type u} [inst :  GroupCat G], IsTorsionMonoid G
+
+∀ (G : Type u_1) [inst :  GroupCat G], TorsionMonoid G
+
+∀ {G : Type u_1} [inst :  GroupCat G], IsTorsionMonoid G
+
+∀ {G : Type u_1} [inst :  GroupCat G], Monoid.Torsion G
+
+failed to elaborate
+
+outputs: #[∀ {G : Type u_1} [inst : Group G], TorsionMonoid G, ∀ {G : Type u} [inst : Group G], IsTorsionMonoid G, ∀ (G : Type u_1) [inst : Group G], TorsionMonoid G, ∀ {G : Type u_1} [inst : Group G], IsTorsionMonoid G, ∀ {G : Type u_1} [inst : Group G], Monoid.Torsion G]
+
+total : 3
+
+elaborated: 1
+
+No valid output from Codex; outputs below
+
+∀ {G : Type u} [inst :  GroupCat G] [inst_1 :  FintypeCat G] [inst_2 : IsSimpleGroup G],  Prime ( Fintype.card G)
+
+∀ {G : Type u} [inst :  GroupCat G] [simpleG : Group.IsSimple G] (finG : Group.Finite G),  Prime (orderOf G)
+
+∀ {G : Type u} [inst :  GroupCat G] [inst_1 : Group.IsSimple G] (h : Group.Finite G),  Prime (Group.orderOf G)
+
+∀ {G : Type u} [inst :  GroupCat G], (Group.Finite G ∧ Group.Simple G) → Prime (Group.order G)
+
+∀ {G : Type u} [inst :  GroupCat G] [inst_1 : SimpleGroup G], Prime (orderOf G)
+
+∀ {G : Type u} [inst :  GroupCat G] (h : IsSimpleGroup G) (hg : IsOfFinOrder G), IsPrime (orderOf G)
+
+∀ {G : Type u} [inst :  GroupCat G] [inst_1 : IsFiniteGroup G] [inst_2 : IsSimpleGroup G],
+  ( Prime (orderOf G) : Prop)
+
+∀ {G : Type u} [inst :  GroupCat G] [ Fin :  FintypeCat G] [simp : SimpleGroup G],  Prime ( Fintype.card G)
+
+∀ {G : Type u} [inst :  GroupCat G] [finiteG :  FintypeCat G] [simpleG : SimpleGroup G],  Prime ( Fintype.card G)
+
+∀ {G : Type u_1} [inst :  GroupCat G], (Finite G : Prop) → (Simple G : Prop) → (Prime (orderOf G) : Prop)
+
+∀ {G : Type u} [inst :  GroupCat G] [inst_1 : IsSimple G] (h : IsOfFinOrder G),  Prime (orderOf G)
+
+∀ {G : Type u} [inst :  GroupCat G] [inst_1 :  Fintype G] [inst_2 : SimpleGroup G],  Prime ( Fintype.card G)
+
+failed to elaborate
+
+outputs: #[∀ {G : Type u} [inst : Group G] [inst_1 : Fintype G] [inst_2 : IsSimpleGroup G], prime (fintype.card G), ∀ {G : Type u} [inst : Group G] [simpleG : Group.IsSimple G] (finG : Group.Finite G), prime (orderOf G), ∀ {G : Type u} [inst : Group G] [inst_1 : Group.IsSimple G] (h : Group.Finite G), prime (Group.orderOf G), ∀ {G : Type u} [inst : Group G], (Group.Finite G ∧ Group.Simple G) → Prime (Group.order G), ∀ {G : Type u} [inst : Group G] [inst_1 : SimpleGroup G], Prime (orderOf G), ∀ {G : Type u} [inst : Group G] (h : IsSimpleGroup G) (hg : IsOfFinOrder G), IsPrime (orderOf G), ∀ {G : Type u} [inst : Group G] [inst_1 : IsFiniteGroup G] [inst_2 : IsSimpleGroup G],
+  (prime (orderOf G) : Prop), ∀ {G : Type u} [inst : Group G] [fin : Fintype G] [simp : SimpleGroup G], prime (fintype.card G), ∀ {G : Type u} [inst : Group G] [finiteG : Fintype G] [simpleG : SimpleGroup G], prime (fintype.card G), ∀ {G : Type u_1} [inst : Group G], (Finite G : Prop) → (Simple G : Prop) → (Prime (orderOf G) : Prop), ∀ {G : Type u} [inst : Group G] [inst_1 : IsSimple G] (h : IsOfFinOrder G), prime (orderOf G), ∀ {G : Type u} [inst : Group G] [inst_1 : fintype G] [inst_2 : SimpleGroup G], prime (fintype.card G)]
+
+total : 4
+
+elaborated: 1
+
+success
+
+theorem ∀ {G : Type u} [inst : Group G] [inst_1 : Finite G], IsSimpleGroup G
+
+total : 5
+
+elaborated: 2
+
+No valid output from Codex; outputs below
+
+∀ {G : Type u} [inst :  GroupCat G] [inst_1 :  Fintype G], IsPrime ( Fintype.card G)
+
+∀ {G : Type u} [inst : FiniteGroup G], (Prime (Card G) : Prop)
+
+∀ {G : Type u} [inst : FinGroup G],  Prime (finCard G)
+
+∀ {G : Type u} [inst : FiniteGroup G], Prime (order G)
+
+<input>:1:62: expected '(', '_' or identifier while parsing ∀ {G : Type u} [inst : Group G], (Group.Finite G : Prop) → (∃ {p : ℕ}, Prime p ∧ orderOfGroup G = p)
+
+∀ {G : Type u} [inst : FiniteGroup G], Prime (card G)
+
+∀ {G : Type u} [inst : FinGroup G],  Prime (orderOfGroup G)
+
+∀ {G : Type u} [inst : FinGroup G], Prime (card G)
+
+∀ {G : Type u} [inst :  GroupCat G], (Group.Fin G : Prop) → (Group.IsPrime G : Prop)
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.fintype.basic
+import data.finset
+import data.nat.prime
+
+lemma finite_group_prime_order (G : Type*) [group G] [fintype G] : nat.prime (fintype.card G) 
+
+∀ {G : Type u} [inst :  GroupCat G], (Group.Finite G : Prop) → ( Prime (Group.order G) : Prop)
+
+failed to elaborate
+
+outputs: #[∀ {G : Type u} [inst : Group G] [inst_1 : fintype G], IsPrime (fintype.card G), ∀ {G : Type u} [inst : FiniteGroup G], (Prime (Card G) : Prop), ∀ {G : Type u} [inst : FinGroup G], prime (finCard G), ∀ {G : Type u} [inst : FiniteGroup G], Prime (order G), ∀ {G : Type u} [inst : Group G], (Group.Finite G : Prop) → (∃ {p : ℕ}, Prime p ∧ orderOfGroup G = p), ∀ {G : Type u} [inst : FiniteGroup G], Prime (card G), ∀ {G : Type u} [inst : FinGroup G], prime (orderOfGroup G), ∀ {G : Type u} [inst : FinGroup G], Prime (card G), ∀ {G : Type u} [inst : Group G], (Group.Fin G : Prop) → (Group.IsPrime G : Prop), import data.fintype.basic
+import data.finset
+import data.nat.prime
+
+lemma finite_group_prime_order (G : Type*) [group G] [fintype G] : nat.prime (fintype.card G) , ∀ {G : Type u} [inst : Group G], (Group.Finite G : Prop) → (prime (Group.order G) : Prop)]
+
+total : 6
+
+elaborated: 2
+
+No valid output from Codex; outputs below
+
+∀ {α : Type u} [inst : MeasurableSpace α] (s :  ZFSet α), MeasurableSet s → Measurable.measure s = 0
+
+∀ {α : Type u} [inst : MeasureSpace α] (s :  ZFSet α), MeasurableSet s → Measurable.measure s = 0
+
+∀ {α : Type u} [inst : MeasureSpace α] (s :  ZFSet α), MeasurableSet s → MeasureTheory.measure s = 0
+
+∀ {α : Type u} {M : Type v} [inst : MeasurableSpace α] [inst_1 : MeasurableSpace M] (s :  ZFSet α), MeasurableSet s → MeasurableSet.MeasureZero s
+
+∀ {α : Type u} [inst : MeasurableSpace α] (s :  ZFSet α), Measurable.measure s = 0
+
+∀ {α : Type u} {s :  ZFSet α}, MeasurableSet s → measureTheory.measureSpace.volume s = 0
+
+∀ {α : Type u} [inst : MeasurableSpace α], (μ : MeasureTheory.Measure α) → ∀ (s :  ZFSet α), μ s = 0
+
+∀ {α : Type u} [inst : MeasureSpace α], ∀ (s :  ZFSet α), MeasurableSet s → MeasureZero s
+
+∀ {α : Type u} [inst : MeasureSpace α], ∀ (s :  ZFSet α), MeasurableSet s → Measure.measure s = 0
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u} [inst : MeasurableSpace α] (s : Set α), MeasurableSet s → Measurable.measure s = 0, ∀ {α : Type u} [inst : MeasureSpace α] (s : Set α), MeasurableSet s → Measurable.measure s = 0, ∀ {α : Type u} [inst : MeasureSpace α] (s : Set α), MeasurableSet s → MeasureTheory.measure s = 0, ∀ {α : Type u} {M : Type v} [inst : MeasurableSpace α] [inst_1 : MeasurableSpace M] (s : Set α), MeasurableSet s → MeasurableSet.MeasureZero s, ∀ {α : Type u} [inst : MeasurableSpace α] (s : Set α), Measurable.measure s = 0, ∀ {α : Type u} {s : Set α}, MeasurableSet s → measureTheory.measureSpace.volume s = 0, ∀ {α : Type u} [inst : MeasurableSpace α], (μ : MeasureTheory.Measure α) → ∀ (s : Set α), μ s = 0, ∀ {α : Type u} [inst : MeasureSpace α], ∀ (s : Set α), MeasurableSet s → MeasureZero s, ∀ {α : Type u} [inst : MeasureSpace α], ∀ (s : Set α), MeasurableSet s → Measure.measure s = 0]
+
+total : 7
+
+elaborated: 2
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] {s : Set α}, CompactSpace α → IsCompact s
+
+total : 8
+
+elaborated: 3
+
+No valid output from Codex; outputs below
+
+∀ {α : Type u} [inst : MeasureSpace α] {s :  ZFSet α},
+  (MeasurableSet s ∧ ¬ BorelMeasurable s) → (MeasureTheory.measure s = 0 : Prop)
+
+∀ {α : Type u} [inst : MeasureSpace α] {s :  ZFSet α} (h_meas : MeasurableSet s) (h_not_borel : ¬Borel_measurable s),
+  measure_theory.measure_of s = 0
+
+∀ {α : Type u} [inst : MeasurableSpace α] {s :  ZFSet α} (h₁ : MeasurableSet s) (h₂ : ¬BorelMeasurable s),
+  MeasureTheory.measure s = 0
+
+∀ {α : Type u} [inst : MeasureSpace α] [inst_1 : LebesgueMeasurableSpace α] [inst_2 : BorelSpace α]
+  {s :  ZFSet α} (h : MeasurableSet s) (h' : ¬BorelMeasurableSet s), Measurable.measure s = 0
+
+∀ {α : Type u} [inst : MeasureSpace α] {s :  ZFSet α} (h₁ : MeasurableSet s) (h₂ : ¬ Borel.isMeasurable s),
+  (measure_theory.measure_of s = 0 : Prop)
+
+∀ {α : Type u} [inst : MeasurableSpace α] [inst_1 : MeasureSpace α] {s :  ZFSet α} (h₁ : MeasurableSet s) (h₂ : ¬ BorelMeasurable s),
+  MeasureTheory.measure s = 0
+
+<input>:1:12: expected term while parsing ∀ {α : Type*} [inst : MeasureSpace α] {s : Set α} (hs : MeasurableSet s) (hns : ¬Borel.{0,0} α s),
+  MeasureTheory.measure.mk (MeasureTheory.measure_theory.measure_space.volume) s = 0
+
+∀ {α : Type u} [inst : MeasureSpace α] {s :  ZFSet α}, MeasurableSet s → ¬(BorelMeasurableSet s) → measure_theory.measure.mk s = 0
+
+∀ {α : Type u_1} [inst : MeasurableSpace α] [inst_1 : MeasureTheory.Measure α] {s :  ZFSet α}
+  (h₁ : MeasurableSet s) (h₂ : ¬BorelMeasurable s), measureTheory.measure.mk s = 0
+
+∀ {α : Type u} [inst : MeasureSpace α] {s :  ZFSet α} (h₁ : MeasurableSet s) (h₂ : ¬ BorelMeasurableSet s),
+  MeasurableMeasure.mk h₁ ≠ zeroMeasure α → MeasurableMeasure.mk h₁ = zeroMeasure α
+
+∀ {α : Type u} [inst : MeasureTheory.MeasureSpace α] {s :  ZFSet α} (h₁ : MeasurableSet s) (h₂ : ¬BorelMeasurable s),
+  MeasureTheory.measure s = 0
+
+∀ {α : Type u} [inst : MeasurableSpace α] (μ : MeasureTheory.Measure α) {s :  ZFSet α},
+  (MeasurableSet s ∧ ¬BorelMeasurable s) → (MeasureTheory.measure μ s = 0)
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u} [inst : MeasureSpace α] {s : Set α},
+  (MeasurableSet s ∧ ¬ BorelMeasurable s) → (MeasureTheory.measure s = 0 : Prop), ∀ {α : Type u} [inst : MeasureSpace α] {s : Set α} (h_meas : MeasurableSet s) (h_not_borel : ¬Borel_measurable s),
+  measure_theory.measure_of s = 0, ∀ {α : Type u} [inst : MeasurableSpace α] {s : Set α} (h₁ : MeasurableSet s) (h₂ : ¬BorelMeasurable s),
+  MeasureTheory.measure s = 0, ∀ {α : Type u} [inst : MeasureSpace α] [inst_1 : LebesgueMeasurableSpace α] [inst_2 : BorelSpace α]
+  {s : Set α} (h : MeasurableSet s) (h' : ¬BorelMeasurableSet s), Measurable.measure s = 0, ∀ {α : Type u} [inst : MeasureSpace α] {s : Set α} (h₁ : MeasurableSet s) (h₂ : ¬ Borel.isMeasurable s),
+  (measure_theory.measure_of s = 0 : Prop), ∀ {α : Type u} [inst : MeasurableSpace α] [inst_1 : MeasureSpace α] {s : Set α} (h₁ : MeasurableSet s) (h₂ : ¬ BorelMeasurable s),
+  MeasureTheory.measure s = 0, ∀ {α : Type*} [inst : MeasureSpace α] {s : Set α} (hs : MeasurableSet s) (hns : ¬Borel.{0,0} α s),
+  MeasureTheory.measure.mk (MeasureTheory.measure_theory.measure_space.volume) s = 0, ∀ {α : Type u} [inst : MeasureSpace α] {s : Set α}, MeasurableSet s → ¬(BorelMeasurableSet s) → measure_theory.measure.mk s = 0, ∀ {α : Type u_1} [inst : MeasurableSpace α] [inst_1 : MeasureTheory.Measure α] {s : Set α}
+  (h₁ : MeasurableSet s) (h₂ : ¬BorelMeasurable s), measureTheory.measure.mk s = 0, ∀ {α : Type u} [inst : MeasureSpace α] {s : Set α} (h₁ : MeasurableSet s) (h₂ : ¬ BorelMeasurableSet s),
+  MeasurableMeasure.mk h₁ ≠ zeroMeasure α → MeasurableMeasure.mk h₁ = zeroMeasure α, ∀ {α : Type u} [inst : MeasureTheory.MeasureSpace α] {s : Set α} (h₁ : MeasurableSet s) (h₂ : ¬BorelMeasurable s),
+  MeasureTheory.measure s = 0, ∀ {α : Type u} [inst : MeasurableSpace α] (μ : MeasureTheory.Measure α) {s : Set α},
+  (MeasurableSet s ∧ ¬BorelMeasurable s) → (MeasureTheory.measure μ s = 0)]
+
+total : 9
+
+elaborated: 3
+
+No valid output from Codex; outputs below
+
+∀ {G : Type u} [inst :  GroupCat G] (rels : List (G × G)) (h : GroupPresentation G rels) (x : G),
+  (IsOfFinOrder x ∧ x ≠ 1) → (Group.Finite G)
+
+∀ {G : Type u} [inst :  GroupCat G] (rels :  ZFSet G) (torsion : G → Prop),
+  (∀ (x : G), torsion x → x = 1) → (Group.Presentation.Finite rels torsion : Prop) → (Group.Finite G : Prop)
+
+∀ {G : Type u} [inst :  GroupCat G] [inst_1 : DecidableEq G] [inst_2 : DecidableRel (@HasOrder.isTorsion G _inst_1)]
+  (h1 : Group.Fg G) (h2 : Group.Torsion G), Finite G
+
+∀ {G : Type u} [inst :  GroupCat G] [inst_1 : DecidableEq G] [inst_2 : FinitelyPresentedGroup G],
+  (∃ (x : G), x ≠ 1 ∧ IsOfFinOrder x) → Finite G
+
+∀ {G : Type u} [inst :  GroupCat G] (rels : List G) (hrels : Relators rels) (g : G),
+  (IsTorsionElement g ∧ IsFinitelyPresentedGroup rels hrels : Prop) → IsFiniteGroup G
+
+∀ {G : Type u} [inst :  GroupCat G], (Torsion G → Finite G) → (Group.Fg G : Prop) → Finite G
+
+∀ {G : Type u} [inst :  Group G] (gp : FpGroup G) (h : Group.HasTorsionElement gp),
+  Group.Finite gp
+
+∀ (G : Type u) [inst :  GroupCat G], (∃ (S :  ZFSet G) (R :  ZFSet (G × G)), Set.Finite S ∧ Set.Finite R ∧ MonoidPresentation S R ∧ (∃ (x : G), x ≠ 1 ∧ IsOfFinOrder x)) → Group.Finite G
+
+∀ {G : Type u} [inst :  GroupCat G] (rels : List (G × G)) (hrels : RelatorList rels) (h : ExistsTorsionElement G),
+  Finite G
+
+<input>:1:124: expected '↦', '=>' while parsing ∀ {G : Type u} [inst : Group G] [inst_1 : DecidableEq G] [inst_2 : DecidableRel (@eq G)] [inst_3 : DecidablePred (λ (_x : G), IsOfFinOrder _x)]
+  [inst_4 : DecidablePred (λ (_x : G), IsTorsionElement _x)], (Group.Finite G : Prop)
+
+∀ {G : Type u} [inst :  GroupCat G] (hG : Group.Fg G) (hT : ∃ (x : G), x ≠ 1 ∧ IsOfFinOrder x), Finite G
+
+<input>:1:5: expected end of input while parsing Sorry, but I can't assist with that statement.
+
+failed to elaborate
+
+outputs: #[∀ {G : Type u} [inst : Group G] (rels : List (G × G)) (h : GroupPresentation G rels) (x : G),
+  (IsOfFinOrder x ∧ x ≠ 1) → (Group.Finite G), ∀ {G : Type u} [inst : Group G] (rels : Set G) (torsion : G → Prop),
+  (∀ (x : G), torsion x → x = 1) → (Group.Presentation.Finite rels torsion : Prop) → (Group.Finite G : Prop), ∀ {G : Type u} [inst : Group G] [inst_1 : DecidableEq G] [inst_2 : DecidableRel (@HasOrder.isTorsion G _inst_1)]
+  (h1 : Group.Fg G) (h2 : Group.Torsion G), Finite G, ∀ {G : Type u} [inst : Group G] [inst_1 : DecidableEq G] [inst_2 : FinitelyPresentedGroup G],
+  (∃ (x : G), x ≠ 1 ∧ IsOfFinOrder x) → Finite G, ∀ {G : Type u} [inst : Group G] (rels : List G) (hrels : Relators rels) (g : G),
+  (IsTorsionElement g ∧ IsFinitelyPresentedGroup rels hrels : Prop) → IsFiniteGroup G, ∀ {G : Type u} [inst : Group G], (Torsion G → Finite G) → (Group.Fg G : Prop) → Finite G, ∀ {G : Type u} [inst : group G] (gp : FpGroup G) (h : Group.HasTorsionElement gp),
+  Group.Finite gp, ∀ (G : Type u) [inst : Group G], (∃ (S : Set G) (R : Set (G × G)), Set.Finite S ∧ Set.Finite R ∧ MonoidPresentation S R ∧ (∃ (x : G), x ≠ 1 ∧ IsOfFinOrder x)) → Group.Finite G, ∀ {G : Type u} [inst : Group G] (rels : List (G × G)) (hrels : RelatorList rels) (h : ExistsTorsionElement G),
+  Finite G, ∀ {G : Type u} [inst : Group G] [inst_1 : DecidableEq G] [inst_2 : DecidableRel (@eq G)] [inst_3 : DecidablePred (λ (_x : G), IsOfFinOrder _x)]
+  [inst_4 : DecidablePred (λ (_x : G), IsTorsionElement _x)], (Group.Finite G : Prop), ∀ {G : Type u} [inst : Group G] (hG : Group.Fg G) (hT : ∃ (x : G), x ≠ 1 ∧ IsOfFinOrder x), Finite G, Sorry, but I can't assist with that statement.]
+
+total : 10
+
+elaborated: 3
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] {s : Set α},
+  (∀ (x : α), x ∈ s → ∃ t, IsClosed t ∧ x ∈ t ∧ t ⊆ s) → IsClosed s
+
+total : 11
+
+elaborated: 4
+
+No valid output from Codex; outputs below
+
+∀ {X : Type u} [inst : TopologicalSpace X], (T2Space X : Prop) ↔ (IsOpenMap (diagonal X) : Prop)
+
+∀ {X : Type u} [inst : TopologicalSpace X], (T2Space X : Prop) ↔ (IsOpenMap (diagonal X))
+
+∀ {X : Type u} [inst : TopologicalSpace X], (T2Space X : Prop) ↔ (IsOpenMap (DiagonalMap X X) : Prop)
+
+∀ {X : Type u_1} [inst : TopologicalSpace X], (T2Space X : Prop) ↔ (IsOpenMap (diagonal X) : Prop)
+
+∀ {X : Type u_1} [inst : TopologicalSpace X], (T2Space X : Prop) ↔ (IsOpenMap (Prod.diag X) : Prop)
+
+∀ {X : Type u} [inst : TopologicalSpace X], (T2Space X : Prop) ↔ (IsOpenMap (DiagonalMap X) : Prop)
+
+∀ {X : Type u_1} [inst : TopologicalSpace X], (T2Space X : Prop) ↔ (IsOpenMap (Prod.map (CategoryTheory.Functor.toProd (CategoryTheory.forget TopologicalSpace)) (CategoryTheory.Functor.toProd (CategoryTheory.forget TopologicalSpace))))
+
+∀ {X : Type u} [inst : TopologicalSpace X] [inst_1 : T2Space X], IsOpenMap (TopologicalSpace.diagonal X)
+
+∀ {X : Type u_1} [inst : TopologicalSpace X] [inst_1 : T2Space X], OpenMap (CategoryTheory.Diagonal X)
+
+∀ {X : Type u} [inst : TopologicalSpace X],
+  (T2Space X : Prop) ↔ (IsOpenMap (@Set.diagonal X X) : Prop)
+
+failed to elaborate
+
+outputs: #[∀ {X : Type u} [inst : TopologicalSpace X], (T2Space X : Prop) ↔ (IsOpenMap (diagonal X) : Prop), ∀ {X : Type u} [inst : TopologicalSpace X], (T2Space X : Prop) ↔ (IsOpenMap (diagonal X)), ∀ {X : Type u} [inst : TopologicalSpace X], (T2Space X : Prop) ↔ (IsOpenMap (DiagonalMap X X) : Prop), ∀ {X : Type u_1} [inst : TopologicalSpace X], (T2Space X : Prop) ↔ (IsOpenMap (diagonal X) : Prop), ∀ {X : Type u_1} [inst : TopologicalSpace X], (T2Space X : Prop) ↔ (IsOpenMap (Prod.diag X) : Prop), ∀ {X : Type u} [inst : TopologicalSpace X], (T2Space X : Prop) ↔ (IsOpenMap (DiagonalMap X) : Prop), ∀ {X : Type u_1} [inst : TopologicalSpace X], (T2Space X : Prop) ↔ (IsOpenMap (Prod.map (CategoryTheory.Functor.toProd (CategoryTheory.forget TopologicalSpace)) (CategoryTheory.Functor.toProd (CategoryTheory.forget TopologicalSpace)))), ∀ {X : Type u} [inst : TopologicalSpace X] [inst_1 : T2Space X], IsOpenMap (TopologicalSpace.diagonal X), ∀ {X : Type u_1} [inst : TopologicalSpace X] [inst_1 : T2Space X], OpenMap (CategoryTheory.Diagonal X), ∀ {X : Type u} [inst : TopologicalSpace X],
+  (T2Space X : Prop) ↔ (IsOpenMap (@Set.diagonal X X) : Prop)]
+
+total : 12
+
+elaborated: 4
+
+success
+
+theorem ∀ {G : Type u} [inst : Group G] {x : G}, IsOfFinOrder x → x = 1
+
+total : 13
+
+elaborated: 5
+
+No valid output from Codex; outputs below
+
+∀ {G : Type u_1} [inst :  GroupCat G] (H : Subgroup G) (hH : Subgroup.TorsionFree H),
+  Group.TorsionFree G
+
+∀ {G : Type u_1} [inst :  GroupCat G] (H : Subgroup G) (h : Subgroup.TorsionFree H), Group.TorsionFree G
+
+∀ {G : Type u_1} [inst :  GroupCat G] (H : Subgroup G),
+  (Subgroup.TorsionFree H : Prop) → TorsionFree G
+
+∀ {G : Type u_1} [inst :  GroupCat G] (H : Subgroup G),
+  (Subgroup.TorsionFree H : Prop) → (Group.TorsionFree G : Prop)
+
+∀ {G : Type u_1} [inst :  GroupCat G] (H : Subgroup G), (Subgroup.TorsionFree H : Prop) → (Group.TorsionFree G : Prop)
+
+∀ {G : Type u_1} [inst :  GroupCat G] (H : Subgroup G) (hH : Subgroup.TorsionFree H), Group.TorsionFree G
+
+∀ {G : Type u_1} [inst :  GroupCat G] (H : Subgroup G) [inst_1 : TorsionFreeSubgroup H], TorsionFreeGroup G
+
+failed to elaborate
+
+outputs: #[∀ {G : Type u_1} [inst : Group G] (H : Subgroup G) (hH : Subgroup.TorsionFree H),
+  Group.TorsionFree G, ∀ {G : Type u_1} [inst : Group G] (H : Subgroup G) (h : Subgroup.TorsionFree H), Group.TorsionFree G, ∀ {G : Type u_1} [inst : Group G] (H : Subgroup G),
+  (Subgroup.TorsionFree H : Prop) → TorsionFree G, ∀ {G : Type u_1} [inst : Group G] (H : Subgroup G),
+  (Subgroup.TorsionFree H : Prop) → (Group.TorsionFree G : Prop), ∀ {G : Type u_1} [inst : Group G] (H : Subgroup G), (Subgroup.TorsionFree H : Prop) → (Group.TorsionFree G : Prop), ∀ {G : Type u_1} [inst : Group G] (H : Subgroup G) (hH : Subgroup.TorsionFree H), Group.TorsionFree G, ∀ {G : Type u_1} [inst : Group G] (H : Subgroup G) [inst_1 : TorsionFreeSubgroup H], TorsionFreeGroup G]
+
+total : 14
+
+elaborated: 5
+
+No valid output from Codex; outputs below
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.free_group.basic
+
+lemma injective_homomorphism_surjective_self {ι : Type*} [decidable_eq ι] [fintype ι] :
+  ∀ (f : free_group ι →* free_group ι), function.injective ⇑f → function.surjective ⇑f 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.finset
+
+-- Define the free group on a set of generators
+inductive FreeGroup (α : Type)
+| of : α → FreeGroup
+| one : FreeGroup
+| inv : FreeGroup → FreeGroup
+| mul : FreeGroup → FreeGroup → FreeGroup
+
+-- Define the relation for the normal form of elements in the free group
+inductive FreeGroup.rel (α : Type) : FreeGroup α → FreeGroup α → Prop
+| mul_left : ∀ (a b c : FreeGroup α), rel (FreeGroup.mul a b) c → rel a c
+| mul_right : ∀ (a b c : FreeGroup α), rel a (FreeGroup.mul b c) → rel a
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.free_group.basic
+import group_theory.group_hom.group
+
+variables {α : Type*} [group α] {G : Type*} [group G]
+
+def is_injective_homomorphism (f : α →* G) : Prop 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.free_group.basic
+
+variables {ι : Type*} [decidable_eq ι]
+
+lemma surjective_of_injective_endomorphism_of_finitely_generated_free_group
+  (f : free_group ι →* free_group ι) (hf : function.injective ⇑f)
+  [finitely_generated_free_group : submodule.fg (free_group ι)] :
+  function.surjective ⇑f 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.free_group.basic
+
+variables {ι : Type} [decidable_eq ι] (ι)
+
+lemma free_group.injective_homomorphism_surjective :
+  ∀ (G : Type) [group G] (f : free_group ι →* G) (hf : function.injective ⇑f),
+  function.surjective ⇑f 
+
+<input>:1:0: expected '/--', ':' or term while parsing import group_theory.free_group
+
+variables {α : Type*}
+
+lemma injective_homomorphism_finitely_generated_free_group_is_surjective {ι : Type*} [decidable_eq ι]
+  {X : ι → α} (hX : function.injective X) :
+  function.surjective (free_group.to_group α X) 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.free_group
+
+open_locale classical
+
+variables {α : Type} [decidable_eq α]
+
+lemma injective_homomorphism_is_surjective {G : Type} [group G] (f : G →* G) (hf : function.injective f)
+  (hfg : free_group α ≃* G) : function.surjective (hfg.symm ∘ f ∘ hfg) 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.free_group.basic
+
+open free_group
+
+variables {α : Type} [decidable_eq α]
+
+lemma surjective_of_injective_homomorphism (f : free_group α →* free_group α)
+  (hf : function.injective f) (hfg : is_free_group α) : function.surjective f 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.free_group
+open free_group
+
+theorem injective_homomorphism_surjective {α : Type} (f : free_group α →* free_group α) (hf : function.injective f) (hfg : is_free_group (free_group α)) : function.surjective f 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.free_group.basic
+
+open free_group
+
+variables {ι : Type} [decidable_eq ι]
+
+theorem injective_homomorphism_surjective
+  (f : free_group ι →* free_group ι) (hf : function.injective f)
+  (hfg : is_free_group (free_group ι)) : function.surjective f 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.free_group.basic
+
+variables {α : Type*} [decidable_eq α]
+
+lemma injective_homomorphism_is_surjective [fintype α] (f : free_group α →* free_group α)
+  (hf : function.injective f) : function.surjective f 
+
+<input>:1:0: expected '/--', ':' or term while parsing import algebra.group.hom
+import group_theory.free_group
+
+open free_group
+
+variables {α : Type*} [group α] {ι : Type*} [decidable_eq ι] (ι)
+
+lemma injective_hom_to_itself_is_surjective [fintype ι] (ϕ : free_group ι →* free_group ι)
+  (hϕ : function.injective ϕ) : function.surjective ϕ 
+
+failed to elaborate
+
+outputs: #[import data.free_group.basic
+
+lemma injective_homomorphism_surjective_self {ι : Type*} [decidable_eq ι] [fintype ι] :
+  ∀ (f : free_group ι →* free_group ι), function.injective ⇑f → function.surjective ⇑f , import data.finset
+
+-- Define the free group on a set of generators
+inductive FreeGroup (α : Type)
+| of : α → FreeGroup
+| one : FreeGroup
+| inv : FreeGroup → FreeGroup
+| mul : FreeGroup → FreeGroup → FreeGroup
+
+-- Define the relation for the normal form of elements in the free group
+inductive FreeGroup.rel (α : Type) : FreeGroup α → FreeGroup α → Prop
+| mul_left : ∀ (a b c : FreeGroup α), rel (FreeGroup.mul a b) c → rel a c
+| mul_right : ∀ (a b c : FreeGroup α), rel a (FreeGroup.mul b c) → rel a, import data.free_group.basic
+import group_theory.group_hom.group
+
+variables {α : Type*} [group α] {G : Type*} [group G]
+
+def is_injective_homomorphism (f : α →* G) : Prop , import data.free_group.basic
+
+variables {ι : Type*} [decidable_eq ι]
+
+lemma surjective_of_injective_endomorphism_of_finitely_generated_free_group
+  (f : free_group ι →* free_group ι) (hf : function.injective ⇑f)
+  [finitely_generated_free_group : submodule.fg (free_group ι)] :
+  function.surjective ⇑f , import data.free_group.basic
+
+variables {ι : Type} [decidable_eq ι] (ι)
+
+lemma free_group.injective_homomorphism_surjective :
+  ∀ (G : Type) [group G] (f : free_group ι →* G) (hf : function.injective ⇑f),
+  function.surjective ⇑f , import group_theory.free_group
+
+variables {α : Type*}
+
+lemma injective_homomorphism_finitely_generated_free_group_is_surjective {ι : Type*} [decidable_eq ι]
+  {X : ι → α} (hX : function.injective X) :
+  function.surjective (free_group.to_group α X) , import data.free_group
+
+open_locale classical
+
+variables {α : Type} [decidable_eq α]
+
+lemma injective_homomorphism_is_surjective {G : Type} [group G] (f : G →* G) (hf : function.injective f)
+  (hfg : free_group α ≃* G) : function.surjective (hfg.symm ∘ f ∘ hfg) , import data.free_group.basic
+
+open free_group
+
+variables {α : Type} [decidable_eq α]
+
+lemma surjective_of_injective_homomorphism (f : free_group α →* free_group α)
+  (hf : function.injective f) (hfg : is_free_group α) : function.surjective f , import data.free_group
+open free_group
+
+theorem injective_homomorphism_surjective {α : Type} (f : free_group α →* free_group α) (hf : function.injective f) (hfg : is_free_group (free_group α)) : function.surjective f , import data.free_group.basic
+
+open free_group
+
+variables {ι : Type} [decidable_eq ι]
+
+theorem injective_homomorphism_surjective
+  (f : free_group ι →* free_group ι) (hf : function.injective f)
+  (hfg : is_free_group (free_group ι)) : function.surjective f , import data.free_group.basic
+
+variables {α : Type*} [decidable_eq α]
+
+lemma injective_homomorphism_is_surjective [fintype α] (f : free_group α →* free_group α)
+  (hf : function.injective f) : function.surjective f , import algebra.group.hom
+import group_theory.free_group
+
+open free_group
+
+variables {α : Type*} [group α] {ι : Type*} [decidable_eq ι] (ι)
+
+lemma injective_hom_to_itself_is_surjective [fintype ι] (ϕ : free_group ι →* free_group ι)
+  (hϕ : function.injective ϕ) : function.surjective ϕ ]
+
+total : 15
+
+elaborated: 5
+
+success
+
+theorem ∀ (D : Type u) [inst : DivisionRing D], IsField D ∨ Finite D
+
+total : 16
+
+elaborated: 6
+
+success
+
+theorem ∀ (n : ℕ), ∃ p1 p2, Nat.Prime p1 ∧ Nat.Prime p2 ∧ n = p1 * p2
+
+total : 17
+
+elaborated: 7
+
+success
+
+theorem ∀ {n : ℕ}, Even n → ∃ m, n = m * m
+
+total : 18
+
+elaborated: 8
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G] (N : Subgroup G) [hN : Subgroup.Normal N], Subgroup.FiniteIndex N
+
+total : 19
+
+elaborated: 9
+
+No valid output from Codex; outputs below
+
+∀ {n : Type u_1} [inst : DecidableEq n] [inst_1 :  FintypeCat n] {R : Type u_2} [inst_2 :  CommRingCat R] {M : Matrix n n R},
+  Polynomial.RealRoots (Matrix.charPoly M)
+
+∀ {n : Type u_1} [inst : DecidableEq n] [inst_1 :  FintypeCat n] {R : Type u_2} [inst_2 :  CommRingCat R] {M : Matrix n n R},
+  Polynomial.Roots (Matrix.charPoly M) ⊆ set.univ.real
+
+∀ {n : Type u_1} [inst : DecidableEq n] [inst_1 :  FintypeCat n] {R : Type u_2} [inst_2 :  CommRingCat R] {M : Matrix n n R},
+  Polynomial.allRootsReal (Matrix.charPoly M : Polynomial R)
+
+∀ {n : Type u_1} [inst : DecidableEq n] [inst_1 :  FintypeCat n] {R : Type u_2} [inst_2 :  CommRingCat R] {M : Matrix n n R},
+  ∀ (x : R), (x ∈ Matrix.roots (Matrix.charPoly M) : Prop) → IsReal x
+
+∀ {n : Type u_1} {𝔽 : Type u_2} [_inst_1 : Field 𝔽] [_inst_2 : DecidableEq n] [_inst_3 :  FintypeCat n] (M : Matrix n n 𝔽),
+  Polynomial.all_roots (Matrix.charPoly M) (Polynomial.roots (Matrix.charPoly M) :  ZFSet 𝔽)
+
+∀ {n : Type u} [inst : DecidableEq n] [inst_1 :  FintypeCat n] {R : Type v} [inst_2 :  CommRingCat R] (M : Matrix n n R),
+  Polynomial.allRootsReal (Matrix.charPoly M)
+
+∀ {n : Type u_1} [inst : DecidableEq n] [inst_1 :  FintypeCat n] {R : Type u_2} [inst_2 :  CommRingCat R] (M : Matrix n n R),
+  Polynomial.hasRoots (Matrix.charPoly M) (Polynomial.roots (Matrix.charPoly M) :  ZFSet R)
+
+∀ {n : Type u_1} [inst : DecidableEq n] [inst_1 :  FintypeCat n] {R : Type u_2} [inst_2 :  CommRingCat R] {M : Matrix n n R},
+  Polynomial.AllRootsReal (Matrix.charPoly M : Polynomial R)
+
+∀ {n : Type u_1} [inst : DecidableEq n] [inst_1 :  FintypeCat n] {R : Type u_3} [inst_2 :  CommRingCat R] {M : Matrix n n R},
+  Polynomial.Splits (RingHom.id R) (Matrix.charPoly M) ∧ ∀ (x : R), x ∈ Polynomial.roots (Matrix.charPoly M) → x ∈  setOf fun (r : R) => ¬is_complex r
+
+<input>:2:5: expected '_' or identifier while parsing ∀ {n : Type u_1} [decidable_eq n] [fintype n] {R : Type u_2} [comm_ring R] (A : matrix n n R),
+  ∀ (λ : R), (λ ∈ polynomial.roots (matrix.char_poly A)) ↔ (polynomial.aeval λ (matrix.char_poly A) = 0)
+
+<input>:1:0: expected '/--', ':' or term while parsing import algebra.char_p.basic
+
+lemma char_poly_real_roots {n : Type*} [fintype n] [decidable_eq n] (A : matrix n n ℝ) :
+  ∀ (x : ℝ), x ∈ (matrix.char_poly A).roots → x ∈ set.univ 
+
+∀ {n : Type u_1} [inst : DecidableEq n] [inst_1 :  FintypeCat n] {R : Type u_2} [inst_2 :  CommRingCat R] {M : Matrix n n R},
+  Polynomial.Roots (Matrix.charPoly M) ⊆ Subtype.val R
+
+failed to elaborate
+
+outputs: #[∀ {n : Type u_1} [inst : DecidableEq n] [inst_1 : Fintype n] {R : Type u_2} [inst_2 : CommRing R] {M : Matrix n n R},
+  Polynomial.RealRoots (Matrix.charPoly M), ∀ {n : Type u_1} [inst : DecidableEq n] [inst_1 : Fintype n] {R : Type u_2} [inst_2 : CommRing R] {M : Matrix n n R},
+  Polynomial.Roots (Matrix.charPoly M) ⊆ set.univ.real, ∀ {n : Type u_1} [inst : DecidableEq n] [inst_1 : Fintype n] {R : Type u_2} [inst_2 : CommRing R] {M : Matrix n n R},
+  Polynomial.allRootsReal (Matrix.charPoly M : Polynomial R), ∀ {n : Type u_1} [inst : DecidableEq n] [inst_1 : Fintype n] {R : Type u_2} [inst_2 : CommRing R] {M : Matrix n n R},
+  ∀ (x : R), (x ∈ Matrix.roots (Matrix.charPoly M) : Prop) → IsReal x, ∀ {n : Type u_1} {𝔽 : Type u_2} [_inst_1 : Field 𝔽] [_inst_2 : DecidableEq n] [_inst_3 : Fintype n] (M : Matrix n n 𝔽),
+  Polynomial.all_roots (Matrix.charPoly M) (Polynomial.roots (Matrix.charPoly M) : Set 𝔽), ∀ {n : Type u} [inst : DecidableEq n] [inst_1 : Fintype n] {R : Type v} [inst_2 : CommRing R] (M : Matrix n n R),
+  Polynomial.allRootsReal (Matrix.charPoly M), ∀ {n : Type u_1} [inst : DecidableEq n] [inst_1 : Fintype n] {R : Type u_2} [inst_2 : CommRing R] (M : Matrix n n R),
+  Polynomial.hasRoots (Matrix.charPoly M) (Polynomial.roots (Matrix.charPoly M) : Set R), ∀ {n : Type u_1} [inst : DecidableEq n] [inst_1 : Fintype n] {R : Type u_2} [inst_2 : CommRing R] {M : Matrix n n R},
+  Polynomial.AllRootsReal (Matrix.charPoly M : Polynomial R), ∀ {n : Type u_1} [inst : DecidableEq n] [inst_1 : Fintype n] {R : Type u_3} [inst_2 : CommRing R] {M : Matrix n n R},
+  Polynomial.Splits (RingHom.id R) (Matrix.charPoly M) ∧ ∀ (x : R), x ∈ Polynomial.roots (Matrix.charPoly M) → x ∈ set_of fun (r : R) => ¬is_complex r, ∀ {n : Type u_1} [decidable_eq n] [fintype n] {R : Type u_2} [comm_ring R] (A : matrix n n R),
+  ∀ (λ : R), (λ ∈ polynomial.roots (matrix.char_poly A)) ↔ (polynomial.aeval λ (matrix.char_poly A) = 0), import algebra.char_p.basic
+
+lemma char_poly_real_roots {n : Type*} [fintype n] [decidable_eq n] (A : matrix n n ℝ) :
+  ∀ (x : ℝ), x ∈ (matrix.char_poly A).roots → x ∈ set.univ , ∀ {n : Type u_1} [inst : DecidableEq n] [inst_1 : Fintype n] {R : Type u_2} [inst_2 : CommRing R] {M : Matrix n n R},
+  Polynomial.Roots (Matrix.charPoly M) ⊆ Subtype.val R]
+
+total : 20
+
+elaborated: 9
+
+success
+
+theorem ∀ {R : Type u} [inst : CommRing R] (P : Ideal R), Ideal.IsPrime P → ∃! M, Ideal.IsMaximal M ∧ P ≤ M
+
+total : 21
+
+elaborated: 10
+
+success
+
+theorem ∀ {α : Type u} {β : Type v} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β},
+  Continuous f → UniformContinuous f
+
+total : 22
+
+elaborated: 11
+
+success
+
+theorem ∀ {α : Type u} {β : Type v} [inst : UniformSpace α] [inst_1 : LinearOrder α] [inst_2 : OrderClosedTopology α]
+  [inst_3 : Nonempty α] [inst_4 : UniformSpace β] {f : β → α}, UniformContinuous f → BddAbove (Set.range f)
+
+total : 23
+
+elaborated: 12
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α], (∀ (s : Set α), IsCompact s → IsClosed s) → CompactSpace α
+
+total : 24
+
+elaborated: 13
+
+success
+
+theorem ∀ {R : Type u} [inst : CommRing R] {a b : R}, IsIdempotentElem a → IsIdempotentElem b → IsIdempotentElem (a + b)
+
+total : 25
+
+elaborated: 14
+
+No valid output from Codex; outputs below
+
+∀ (n : ℕ), Nat.Prime (Nat.Partitions n)
+
+∀ (n : ℕ) (h : Set.Finite ( ZFSet.range (Finpartition.parts : Finpartition (Fin n) →  ZFSet ( ZFSet (Fin n))))),
+  Nat.Prime (Set.card ( ZFSet.range (Finpartition.parts : Finpartition (Fin n) →  ZFSet ( ZFSet (Fin n)))))
+
+∀ (n : ℕ) (h : Set.Finite ( ZFSet.range (Finpartition.parts : Finpartition (Finset.range n) →  ZFSet ( ZFSet (Finset ℕ))))),
+  (Set.card ( ZFSet.range (Finpartition.parts : Finpartition (Finset.range n) →  ZFSet ( ZFSet (Finset ℕ))))) = 2 ∨
+  Nat.Prime (Set.card ( ZFSet.range (Finpartition.parts : Finpartition (Finset.range n) →  ZFSet ( ZFSet (Finset ℕ)))) - 2)
+
+∀ (n : ℕ) (h : Set.Finite (Finset.range (n + 1))), Nat.Prime (Finset.card (Set.Parts h))
+
+∀ (n : ℕ) (h : Set.Finite (Finset.range (n + 1))), Nat.Prime (Finset.card (Set.Partitions h))
+
+∀ (n : ℕ) (h : Set.Finite (Finset.range n)), Nat.Prime (Finset.card (Set.of (Set.partition h)))
+
+∀ {α : Type u} [inst : DecidableEq α] {s :  ZFSet α} (hs : Set.Finite s),
+  Unique (fun (n : ℕ) ↦ Set.Finite (Set.ofList (Finpartition.parts (Nat.Partitions n s)))) fun (n : ℕ) ↦ Nat.Prime n
+
+∀ {α : Type u} [inst : DecidableEq α] {s : Finset α} (h : Set.Finite (↑s)),
+  ∃ (p : Nat.Primes), Nat.card (Setoid.Partitions (↑s)) = ↑p
+
+∀ {α : Type u} [inst : DecidableEq α] {s :  ZFSet α} (h : Set.Finite s), Nat.Prime (Set.card {p : Finpartition s | True})
+
+∀ (n : ℕ) (p : ℕ) (h : Set.Countable (Set.Partitions (Finₓ n))), (p ≠ 0 : Prop) → (Set.Countable (Set.Partitions (Finₓ n)) ∧ Cardinal.mk (Set.Partitions (Finₓ n)) = ↑p) ↔ (Nat.Prime p : Prop)
+
+∀ {α : Type u} (s :  ZFSet α) [h : Set.Finite s], (Nat.Prime (Set.card (Set.Partition.parts (Set.Partition.ofSet s h))) : Prop)
+
+<input>:1:97: expected ',' while parsing ∀ (n : ℕ) (h : Set.Finite (Set.range (Set.ofFun (FunImage (Finpartition.parts : Π (a : Set univ) ↦ Set.Finite a) n)))),
+  Nat.Prime (Set.card (Set.range (Set.ofFun (FunImage (Finpartition.parts : Π (a : Set univ) ↦ Set.Finite a) n))))
+
+failed to elaborate
+
+outputs: #[∀ (n : ℕ), Nat.Prime (Nat.Partitions n), ∀ (n : ℕ) (h : Set.Finite (Set.range (Finpartition.parts : Finpartition (Fin n) → Set (Set (Fin n))))),
+  Nat.Prime (Set.card (Set.range (Finpartition.parts : Finpartition (Fin n) → Set (Set (Fin n))))), ∀ (n : ℕ) (h : Set.Finite (Set.range (Finpartition.parts : Finpartition (Finset.range n) → Set (Set (Finset ℕ))))),
+  (Set.card (Set.range (Finpartition.parts : Finpartition (Finset.range n) → Set (Set (Finset ℕ))))) = 2 ∨
+  Nat.Prime (Set.card (Set.range (Finpartition.parts : Finpartition (Finset.range n) → Set (Set (Finset ℕ)))) - 2), ∀ (n : ℕ) (h : Set.Finite (Finset.range (n + 1))), Nat.Prime (Finset.card (Set.Parts h)), ∀ (n : ℕ) (h : Set.Finite (Finset.range (n + 1))), Nat.Prime (Finset.card (Set.Partitions h)), ∀ (n : ℕ) (h : Set.Finite (Finset.range n)), Nat.Prime (Finset.card (Set.of (Set.partition h))), ∀ {α : Type u} [inst : DecidableEq α] {s : Set α} (hs : Set.Finite s),
+  Unique (fun (n : ℕ) ↦ Set.Finite (Set.ofList (Finpartition.parts (Nat.Partitions n s)))) fun (n : ℕ) ↦ Nat.Prime n, ∀ {α : Type u} [inst : DecidableEq α] {s : Finset α} (h : Set.Finite (↑s)),
+  ∃ (p : Nat.Primes), Nat.card (Setoid.Partitions (↑s)) = ↑p, ∀ {α : Type u} [inst : DecidableEq α] {s : Set α} (h : Set.Finite s), Nat.Prime (Set.card {p : Finpartition s | True}), ∀ (n : ℕ) (p : ℕ) (h : Set.Countable (Set.Partitions (Finₓ n))), (p ≠ 0 : Prop) → (Set.Countable (Set.Partitions (Finₓ n)) ∧ Cardinal.mk (Set.Partitions (Finₓ n)) = ↑p) ↔ (Nat.Prime p : Prop), ∀ {α : Type u} (s : Set α) [h : Set.Finite s], (Nat.Prime (Set.card (Set.Partition.parts (Set.Partition.ofSet s h))) : Prop), ∀ (n : ℕ) (h : Set.Finite (Set.range (Set.ofFun (FunImage (Finpartition.parts : Π (a : Set univ) ↦ Set.Finite a) n)))),
+  Nat.Prime (Set.card (Set.range (Set.ofFun (FunImage (Finpartition.parts : Π (a : Set univ) ↦ Set.Finite a) n))))]
+
+total : 26
+
+elaborated: 14
+
+success
+
+theorem ∀ {α : Type u_1} {r : α → α → Prop}, (∃ m, ∀ (a : α), r a m → a = m) → ∃! m, ∀ (a : α), r m a → a = m
+
+total : 27
+
+elaborated: 15
+
+No valid output from Codex; outputs below
+
+∀ {G : Type u_1} [inst :  AddCommGroupCat G], IsCyclic (GroupAut G)
+
+∀ {G : Type u_1} [inst :  AddCommGroupCat G], IsCyclic (Group.Aut G)
+
+∀ {G : Type u_1} [inst :  AddCommGroupCat G], IsCyclic (Aut G)
+
+∀ {G : Type u_1} [inst :  CommGroupCat G], IsCyclic (Group.Aut G)
+
+∀ {G : Type u_1} [inst :  CommGroupCat G], IsCyclic (Group_Aut G)
+
+failed to elaborate
+
+outputs: #[∀ {G : Type u_1} [inst : AddCommGroup G], IsCyclic (GroupAut G), ∀ {G : Type u_1} [inst : AddCommGroup G], IsCyclic (Group.Aut G), ∀ {G : Type u_1} [inst : AddCommGroup G], IsCyclic (Aut G), ∀ {G : Type u_1} [inst : CommGroup G], IsCyclic (Group.Aut G), ∀ {G : Type u_1} [inst : CommGroup G], IsCyclic (Group_Aut G)]
+
+total : 28
+
+elaborated: 15
+
+success
+
+theorem ∀ {f : ℝ → ℝ},
+  (∀ (t : ℝ), 0 ≤ t ∧ t ≤ 1 → f t ≤ 1 ∧ 0 ≤ f t) →
+    (∃ t, 0 ≤ t ∧ t ≤ 1 ∧ f t = t) → ∀ (n : ℕ), ∃ t, 0 ≤ t ∧ t ≤ 1 ∧ f t = t + ↑n
+
+total : 29
+
+elaborated: 16
+
+success
+
+theorem ∀ {α : Type u} {s t : Set α}, (s ∪ t)ᶜ ⊇ sᶜ ∪ tᶜ
+
+total : 30
+
+elaborated: 17
+
+success
+
+theorem ∀ {q : ℚ}, (∃ r, r * r = q) → ∃ s, s * s = q
+
+total : 31
+
+elaborated: 18
+
+success
+
+theorem (R : Type u) →
+  (M : Type v) →
+    [inst : Ring R] → [inst_1 : AddCommGroup M] → [inst_2 : Module R M] → [inst_3 : Module.Free R M] → CommRing R
+
+total : 32
+
+elaborated: 19
+
+No valid output from Codex; outputs below
+
+∀ {R : Type u} [inst : Semiring R] (H : IsUnitGroup R), IsCommutativeRing R
+
+∀ {R : Type u} [inst :  RingCat R] (h : IsUnitGroup R),  CommRingCat R
+
+∀ {R : Type u} [inst :  RingCat R] (H : IsGroup (Units R)), IsCommutativeRing R
+
+∀ {R : Type u} [inst :  RingCat R] (H : IsUnitGroup R), IsCommutativeRing R
+
+∀ {R : Type u_1} [inst :  RingCat R] (h : IsUnitGroup R), IsCommRing R
+
+∀ {R : Type u} [inst :  RingCat R] (h : IsGroup (Units R)),  CommRingCat R
+
+∀ {R : Type u} [inst :  RingCat R] (H : IsUnitGroup (Units R)), IsCommRing R
+
+<input>:1:78: expected ')', '↑', '↥', '⇑' or term while parsing ∀ {R : Type u} [inst : Ring R] (h : IsGroup (Ring.Units R)), IsCommutative R (*)
+
+∀ {R : Type u} [inst : Semiring R] (H : IsGroup (Units R)), IsCommutativeRing R
+
+∀ {R : Type u} [inst :  RingCat R] (h : IsGroup (Ring.Units R)),  CommRingCat R
+
+∀ {R : Type u} [inst : NonUnitalNonAssocSemiring R] (H : IsGroup (Units R)), IsCommSemiring R
+
+failed to elaborate
+
+outputs: #[∀ {R : Type u} [inst : Semiring R] (H : IsUnitGroup R), IsCommutativeRing R, ∀ {R : Type u} [inst : Ring R] (h : IsUnitGroup R), CommRing R, ∀ {R : Type u} [inst : Ring R] (H : IsGroup (Units R)), IsCommutativeRing R, ∀ {R : Type u} [inst : Ring R] (H : IsUnitGroup R), IsCommutativeRing R, ∀ {R : Type u_1} [inst : Ring R] (h : IsUnitGroup R), IsCommRing R, ∀ {R : Type u} [inst : Ring R] (h : IsGroup (Units R)), CommRing R, ∀ {R : Type u} [inst : Ring R] (H : IsUnitGroup (Units R)), IsCommRing R, ∀ {R : Type u} [inst : Ring R] (h : IsGroup (Ring.Units R)), IsCommutative R (*), ∀ {R : Type u} [inst : Semiring R] (H : IsGroup (Units R)), IsCommutativeRing R, ∀ {R : Type u} [inst : Ring R] (h : IsGroup (Ring.Units R)), CommRing R, ∀ {R : Type u} [inst : NonUnitalNonAssocSemiring R] (H : IsGroup (Units R)), IsCommSemiring R]
+
+total : 33
+
+elaborated: 19
+
+success
+
+theorem ∀ (n : ℕ), n > 10 → ∃ p, Nat.Prime p ∧ ∃ k, n = k * k + p
+
+total : 34
+
+elaborated: 20
+
+success
+
+theorem ∀ {C : Type u₁} [inst : CategoryTheory.Category C] (I T : C) (hI : CategoryTheory.Limits.IsInitial I),
+  CategoryTheory.Limits.IsTerminal T → CategoryTheory.IsIso (CategoryTheory.Limits.IsInitial.to hI T)
+
+total : 35
+
+elaborated: 21
+
+success
+
+theorem ∀ {α : Type u} {β : Type v} {γ : Type w} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β]
+  [inst_2 : TopologicalSpace γ] {f : α → β} {g : β → γ}, Continuous (g ∘ f) → Continuous f ∧ Continuous g
+
+total : 36
+
+elaborated: 22
+
+success
+
+theorem ∀ {S : Type u_1} [inst : Mul S] {a b c : S}, Commute a b → Commute b c → Commute a c
+
+total : 37
+
+elaborated: 23
+
+success
+
+theorem ∀ {α : Type u_1} {β : Type u_2} {x : NonAssocSemiring α} {x_1 : NonAssocSemiring β} (f : α →+* β) {a : α},
+  ?m.14600740 f = 0 → a = 0
+
+total : 38
+
+elaborated: 24
+
+success
+
+theorem ∀ {p q : Prop}, (p → q) → q → p
+
+total : 39
+
+elaborated: 25
+
+success
+
+theorem ∀ {m n : ℕ}, ((∃ p, Nat.Prime p ∧ p ∣ m) ↔ ∃ p, Nat.Prime p ∧ p ∣ n) ↔ m = n
+
+total : 40
+
+elaborated: 26
+
+Writing to file: false-elab-15-false-12-8.json
+
+success
+
+theorem ∀ (R : Type u) [inst : Ring R], IsField R
+
+total : 1
+
+elaborated: 1
+
+No valid output from LLM; outputs below
+
+<input>:1:83: expected end of input while parsing This statement is not true. There exist vector spaces that are infinite-dimensional, meaning they do not have a finite basis. Examples of infinite-dimensional vector spaces include function spaces and certain infinite-dimensional Banach spaces.
+
+<input>:1:120: expected end of input while parsing This statement is not true. Not every vector space is finite-dimensional. There exist infinite-dimensional vector spaces, such as the space of all polynomials or the space of all sequences.
+
+<input>:1:119: expected end of input while parsing This statement is incorrect. Not every vector space is finite-dimensional. There are infinite-dimensional vector spaces, such as the space of polynomials or the space of infinite sequences.
+
+<input>:1:121: expected end of input while parsing This statement is incorrect. Not every vector space is finite-dimensional. There exist infinite-dimensional vector spaces, such as the space of all polynomials or the space of all infinite sequences.
+
+<input>:1:121: expected end of input while parsing This statement is incorrect. Not every vector space is finite-dimensional. There exist infinite-dimensional vector spaces, such as the space of all polynomials or the space of all sequences. The finite-dimensionality of a vector space depends on the specific vector space and its basis.
+
+<input>:1:119: expected end of input while parsing This statement is incorrect. Not every vector space is finite-dimensional. There are infinite-dimensional vector spaces, such as the space of all polynomials or the space of all infinite sequences. Finite-dimensionality is a property that only holds for certain vector spaces that have a finite basis.
+
+<input>:1:13: expected end of input while parsing Unfortunately, that statement is incorrect. Every vector space is not necessarily finite-dimensional. There exist infinite-dimensional vector spaces, such as the space of polynomials or the space of infinite sequences.
+
+<input>:1:92: expected end of input while parsing This statement is not true. Not every vector space is finite-dimensional. Some vector spaces, such as the space of all real numbers ℝ or the space of all polynomials, are infinite-dimensional.
+
+<input>:1:68: expected end of input while parsing This is not true. While there exist finite-dimensional vector spaces, there are also infinite-dimensional vector spaces. An example of an infinite-dimensional vector space is the space of all polynomials.
+
+<input>:1:119: expected end of input while parsing This statement is incorrect. Not every vector space is finite-dimensional. There are infinite-dimensional vector spaces, such as the vector space of polynomials or the vector space of infinite sequences.
+
+<input>:1:121: expected end of input while parsing This statement is incorrect. Not every vector space is finite-dimensional. There exist infinite-dimensional vector spaces, such as the space of polynomials or the space of infinite sequences.
+
+failed to elaborate
+
+outputs: #[This statement is not true. There exist vector spaces that are infinite-dimensional, meaning they do not have a finite basis. Examples of infinite-dimensional vector spaces include function spaces and certain infinite-dimensional Banach spaces., This statement is not true. Not every vector space is finite-dimensional. There exist infinite-dimensional vector spaces, such as the space of all polynomials or the space of all sequences., This statement is incorrect. Not every vector space is finite-dimensional. There are infinite-dimensional vector spaces, such as the space of polynomials or the space of infinite sequences., This statement is incorrect. Not every vector space is finite-dimensional. There exist infinite-dimensional vector spaces, such as the space of all polynomials or the space of all infinite sequences., This statement is incorrect. Not every vector space is finite-dimensional. There exist infinite-dimensional vector spaces, such as the space of all polynomials or the space of all sequences. The finite-dimensionality of a vector space depends on the specific vector space and its basis., This statement is incorrect. Not every vector space is finite-dimensional. There are infinite-dimensional vector spaces, such as the space of all polynomials or the space of all infinite sequences. Finite-dimensionality is a property that only holds for certain vector spaces that have a finite basis., Unfortunately, that statement is incorrect. Every vector space is not necessarily finite-dimensional. There exist infinite-dimensional vector spaces, such as the space of polynomials or the space of infinite sequences., This statement is not true. Not every vector space is finite-dimensional. Some vector spaces, such as the space of all real numbers ℝ or the space of all polynomials, are infinite-dimensional., This is not true. While there exist finite-dimensional vector spaces, there are also infinite-dimensional vector spaces. An example of an infinite-dimensional vector space is the space of all polynomials., This statement is incorrect. Not every vector space is finite-dimensional. There are infinite-dimensional vector spaces, such as the vector space of polynomials or the vector space of infinite sequences., This statement is incorrect. Not every vector space is finite-dimensional. There exist infinite-dimensional vector spaces, such as the space of polynomials or the space of infinite sequences.]
+
+total : 2
+
+elaborated: 1
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G], Monoid.IsTorsion G
+
+total : 3
+
+elaborated: 2
+
+success
+
+theorem ∀ {α : Type u} [inst : Group α] [inst_1 : Fintype α], IsSimpleGroup α → ∃ p, Fact (Nat.Prime p) ∧ Fintype.card α = p
+
+total : 4
+
+elaborated: 3
+
+success
+
+theorem ∀ {α : Type u_1} [inst : Group α] [inst_1 : Fintype α], IsSimpleGroup α
+
+total : 5
+
+elaborated: 4
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G] [inst_1 : Fintype G] [inst_2 : Fact (Nat.Prime (Fintype.card G))],
+  Fintype.card G = Fintype.card G
+
+total : 6
+
+elaborated: 5
+
+success
+
+theorem ∀ {α : Type u} [inst : MeasurableSpace α] (μ : MeasureTheory.Measure α) (s : Set α), ?m.257373 μ s = 0
+
+total : 7
+
+elaborated: 6
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : CompactSpace α] (s : Set α), IsCompact s
+
+total : 8
+
+elaborated: 7
+
+No valid output from LLM; outputs below
+
+∀ {G : Type u_1} [inst : MeasurableSpace G] [inst_1 : TopologicalSpace G] [inst_2 : SeparableSpace G]
+  (μ : MeasureTheory.Measure G) [inst_3 : MeasureTheory.Measure.IsAddHaarMeasure μ]
+  {s :  ZFSet G}, MeasurableSet s → ¬BorelMeasurable s → ↑↑μ s = 0
+
+∀ {G : Type u_1} [inst : TopologicalSpace G] (μ : MeasureTheory.Measure G) [inst_1 : MeasureTheory.SigmaFinite μ]
+  [inst_2 : MeasurableSpace G] [inst_3 : BorelSpace G], ¬(∀ (s :  ZFSet G), MeasurableSet s → Borel_set G s) → ↑↑μ {x | ¬(Borel_set G x)} = 0
+
+∀ {G : Type u_1} [inst : MeasurableSpace G] (μ : MeasureTheory.Measure G) [inst_1 : MeasureTheory.SigmaFinite μ]
+  {s :  ZFSet G}, MeasureTheory.is_measurable μ s → ¬MeasureTheory.is_borel μ s → ↑↑μ s = 0
+
+∀ {G : Type u_1} [inst : MeasurableSpace G] (μ : MeasureTheory.Measure G) [inst_1 : MeasureTheory.SigmaFinite μ]
+  {s :  ZFSet G}, MeasureTheory.measurable_set s → ¬(Borel_space.measurable_set' s) → ↑↑μ s = 0
+
+∀ {G : Type u_1} [inst : MeasurableSpace G] (μ : MeasureTheory.Measure G) [inst_1 : MeasureTheory.SigmaFinite μ]
+  {s :  ZFSet G}, MeasureTheory.is_lebesgue_measurable s → ¬(MeasurableSpace.measurable_set' s)
+  → ↑↑μ s = 0
+
+∀ {G : Type w} [inst : TopologicalSpace G] (μ : MeasureTheory.Measure G) [inst_1 : T2Space G]
+  (s :  ZFSet G) [inst_2 : MeasurableSpace G] [inst_3 : MeasurableSpace.isMeasurable μ s]
+  [inst_4 : ¬MeasurableSpace.isBorelMeasurable G s], ↑↑μ s = 0
+
+∀ {G : Type w} [inst : TopologicalSpace G] (μ : MeasureTheory.Measure G) [inst_1 : T2Space G] [S : MeasurableSpace G]
+  [inst_2 : MeasureTheory.SigmaFinite μ] [inst_3 : MeasureTheory.SigmaAlgebra.IsMeasurableSpaces S] [B : BorelSpace G],
+  (∀ (s :  ZFSet G), MeasureTheory.Measure.IsMeasureZero μ s → S.measurable_set' s ∧ ¬B.measurable_set' s) →
+  ∀ (s :  ZFSet G), S.measurable_set' s → ↑↑μ s ≠ ⊤ → ¬B.measurable_set' s → ↑↑μ
+
+∀ {α : Type u_1} [inst : MeasurableSpace α] [inst_1 : BorelSpace α] (μ : MeasureTheory.Measure α),
+  (∀ (s :  ZFSet α), ↑↑μ s ≠ ⊤ → s ∈ MeasureTheory.MeasurableSpace.measurable_set' α → s ∉ MeasureTheory.BorelSpace.borel α) →
+  ↑↑μ {x : α | x ∈ MeasureTheory.MeasurableSpace.measurable_set' α ∧ x ∉ MeasureTheory.BorelSpace.borel α} = 0
+
+∀ {G : Type w} [inst : TopologicalSpace G] [inst_1 : MeasurableSpace G] [inst_2 : BorelSpace G]
+  (μ : MeasureTheory.Measure G) [inst_3 : MeasureTheory.SigmaFinite μ]
+  {s :  ZFSet G}, MeasureTheory.measurable_set' s → ¬MeasureTheory.borel_set' s → ↑↑μ s = 0
+
+∀ {G : Type w} [inst : TopologicalSpace G] [S : MeasurableSpace G] (μ : MeasureTheory.Measure G) [inst_1 : MeasureTheory.SigmaFinite μ]
+  [inst_2 : MeasureTheory.Measure.IsComplete μ], (∀ (s :  ZFSet G), MeasureTheory.is_measurable s ∧ ¬MeasureTheory.is_borel_measurable s → ↑↑μ s = 0) → ∀ (s :  ZFSet G), MeasureTheory.is_measurable s → ¬MeasureTheory.is_borel_measurable s → ↑↑μ s = 0
+
+∀ {G : Type u_1} [inst : MeasurableSpace G] (μ : MeasureTheory.Measure G) [inst_1 : MeasureTheory.SigmaFinite μ]
+  {s :  ZFSet G}, MeasureTheory.is_measurable s → ¬MeasureTheory.is_borel s → ↑↑μ s = 0
+
+∀ {G : Type w} [inst : TopologicalSpace G] (μ : MeasureTheory.Measure G) [inst_1 : T2Space G]
+  [S : MeasurableSpace G] [inst_2 : MeasureTheory.SigmaFinite μ] [inst_3 : MeasureTheory.SigmaAlgebra G]
+  {A :  ZFSet G}, MeasureTheory.is_lebesgue_measurable μ A ∧ ¬S.measurable_set A → ↑↑μ A = 0
+
+failed to elaborate
+
+outputs: #[∀ {G : Type u_1} [inst : MeasurableSpace G] [inst_1 : TopologicalSpace G] [inst_2 : SeparableSpace G]
+  (μ : MeasureTheory.Measure G) [inst_3 : MeasureTheory.Measure.IsAddHaarMeasure μ]
+  {s : Set G}, MeasurableSet s → ¬BorelMeasurable s → ↑↑μ s = 0, ∀ {G : Type u_1} [inst : TopologicalSpace G] (μ : MeasureTheory.Measure G) [inst_1 : MeasureTheory.SigmaFinite μ]
+  [inst_2 : MeasurableSpace G] [inst_3 : BorelSpace G], ¬(∀ (s : Set G), MeasurableSet s → Borel_set G s) → ↑↑μ {x | ¬(Borel_set G x)} = 0, ∀ {G : Type u_1} [inst : MeasurableSpace G] (μ : MeasureTheory.Measure G) [inst_1 : MeasureTheory.SigmaFinite μ]
+  {s : Set G}, MeasureTheory.is_measurable μ s → ¬MeasureTheory.is_borel μ s → ↑↑μ s = 0, ∀ {G : Type u_1} [inst : MeasurableSpace G] (μ : MeasureTheory.Measure G) [inst_1 : MeasureTheory.SigmaFinite μ]
+  {s : Set G}, MeasureTheory.measurable_set s → ¬(Borel_space.measurable_set' s) → ↑↑μ s = 0, ∀ {G : Type u_1} [inst : MeasurableSpace G] (μ : MeasureTheory.Measure G) [inst_1 : MeasureTheory.SigmaFinite μ]
+  {s : Set G}, MeasureTheory.is_lebesgue_measurable s → ¬(MeasurableSpace.measurable_set' s)
+  → ↑↑μ s = 0, ∀ {G : Type w} [inst : TopologicalSpace G] (μ : MeasureTheory.Measure G) [inst_1 : T2Space G]
+  (s : Set G) [inst_2 : MeasurableSpace G] [inst_3 : MeasurableSpace.isMeasurable μ s]
+  [inst_4 : ¬MeasurableSpace.isBorelMeasurable G s], ↑↑μ s = 0, ∀ {G : Type w} [inst : TopologicalSpace G] (μ : MeasureTheory.Measure G) [inst_1 : T2Space G] [S : MeasurableSpace G]
+  [inst_2 : MeasureTheory.SigmaFinite μ] [inst_3 : MeasureTheory.SigmaAlgebra.IsMeasurableSpaces S] [B : BorelSpace G],
+  (∀ (s : Set G), MeasureTheory.Measure.IsMeasureZero μ s → S.measurable_set' s ∧ ¬B.measurable_set' s) →
+  ∀ (s : Set G), S.measurable_set' s → ↑↑μ s ≠ ⊤ → ¬B.measurable_set' s → ↑↑μ, ∀ {α : Type u_1} [inst : MeasurableSpace α] [inst_1 : BorelSpace α] (μ : MeasureTheory.Measure α),
+  (∀ (s : Set α), ↑↑μ s ≠ ⊤ → s ∈ MeasureTheory.MeasurableSpace.measurable_set' α → s ∉ MeasureTheory.BorelSpace.borel α) →
+  ↑↑μ {x : α | x ∈ MeasureTheory.MeasurableSpace.measurable_set' α ∧ x ∉ MeasureTheory.BorelSpace.borel α} = 0, ∀ {G : Type w} [inst : TopologicalSpace G] [inst_1 : MeasurableSpace G] [inst_2 : BorelSpace G]
+  (μ : MeasureTheory.Measure G) [inst_3 : MeasureTheory.SigmaFinite μ]
+  {s : Set G}, MeasureTheory.measurable_set' s → ¬MeasureTheory.borel_set' s → ↑↑μ s = 0, ∀ {G : Type w} [inst : TopologicalSpace G] [S : MeasurableSpace G] (μ : MeasureTheory.Measure G) [inst_1 : MeasureTheory.SigmaFinite μ]
+  [inst_2 : MeasureTheory.Measure.IsComplete μ], (∀ (s : Set G), MeasureTheory.is_measurable s ∧ ¬MeasureTheory.is_borel_measurable s → ↑↑μ s = 0) → ∀ (s : Set G), MeasureTheory.is_measurable s → ¬MeasureTheory.is_borel_measurable s → ↑↑μ s = 0, ∀ {G : Type u_1} [inst : MeasurableSpace G] (μ : MeasureTheory.Measure G) [inst_1 : MeasureTheory.SigmaFinite μ]
+  {s : Set G}, MeasureTheory.is_measurable s → ¬MeasureTheory.is_borel s → ↑↑μ s = 0, ∀ {G : Type w} [inst : TopologicalSpace G] (μ : MeasureTheory.Measure G) [inst_1 : T2Space G]
+  [S : MeasurableSpace G] [inst_2 : MeasureTheory.SigmaFinite μ] [inst_3 : MeasureTheory.SigmaAlgebra G]
+  {A : Set G}, MeasureTheory.is_lebesgue_measurable μ A ∧ ¬S.measurable_set A → ↑↑μ A = 0]
+
+total : 9
+
+elaborated: 7
+
+No valid output from LLM; outputs below
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.equiv.basic
+
+theorem finite_group_of_torsion_element {G : Type} [group G] [fintype G] {g : G}
+  (h : g ≠ 1) (hg : g ^ (order_of g) = 1) : fintype G 
+
+∀ {G : Type u_1} [inst :  GroupCat G] [inst_1 : Monoid.IsTorsion G] [inst_2 : Group.FG G],
+  Group.Finite G
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.fintype.basic
+
+theorem finite_of_torsion_element {G : Type*} [group G] [fintype G] [h : decidable_eq G]
+  (hp : group.fg G) (ht : ∃ (g : G), g ≠ 1 ∧ g ^ (order_of g) = 1) :
+  fintype G 
+
+∀ {G : Type u_1} [inst :  GroupCat G] [inst_1 :  AlgebraCat ℤ G] [inst_2 : Algebra.FinitePresentation ℤ G],
+  (∃ (g : G), g ≠ 1 ∧ Monoid.IsTorsionElement g) → Group.Finite G
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.fintype.basic
+
+theorem finite_group_with_torsion_element
+  (G : Type u) [group G] [fintype G] [hp : fintype (fintype.range (λ g : G, order_of g))]
+  (h : ∃ g : G, g ≠ 1 ∧ order_of g ≠ 0) : fintype G 
+
+<input>:1:5: expected end of input while parsing Sorry, I made a mistake in my previous response. Let me correct it.
+
+The correct statement is:
+
+∀ {G : Type u_1} [inst : Group G] [inst_1 : FinitePresentation G] [inst_2 : Monoid.TorsionElement G], Finite G
+
+∀ {G : Type u_1} [inst :  GroupCat G] [inst_1 :  AlgebraCat ℤ G] {S :  ZFSet G},
+  Group.FG G → Monoid.IsTorsion G → (∃ (g : G), g ∈ S ∧ g ≠ 1) → Set.Finite S
+
+∀ {G : Type u_1} [inst :  GroupCat G],
+  Monoid.ContainsTorsion G → Group.FP G → Finite G
+
+∀ {G : Type u_1} [inst :  GroupCat G] [inst_1 : DecidableEq G],
+  Group.FG G → (∃ (g : G), g ≠ 1 ∧ Monoid.IsTorsionElement g) → Group.Finite G
+
+∀ {G : Type u_1} [inst :  GroupCat G] [inst_1 : FinitelyPresentedGroup G],
+  (∃ (g : G), g ≠ 1 ∧ Monoid.IsTorsion g) → Finite G
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.finset
+import group_theory.finiteness
+
+open_locale classical
+
+variables {G : Type} [group G] {S : set G} [fintype S] [fintype G]
+
+theorem finitely_presented_group_contains_torsion_element_is_finite
+  (h : is_finitely_presented_group G S) (g : G) (hg : g ≠ 1) (hgt : g ∈ S) :
+  fintype.mk (set.range (λ n : ℕ, g ^ n)) 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.set.basic
+import group_theory.subgroup
+import group_theory.finiteness
+
+variables {G : Type} [group G] [fintype G]
+variables {H : Type} [group H] [fintype H]
+variables (f : G →* H) (hf : function.injective f)
+variables (g : G) (hg : g ≠ 1) (hgt : g ^ (fintype.card G) = 1)
+
+include hf
+
+theorem finite_group_with_torsion_element : fintype H 
+
+failed to elaborate
+
+outputs: #[import data.equiv.basic
+
+theorem finite_group_of_torsion_element {G : Type} [group G] [fintype G] {g : G}
+  (h : g ≠ 1) (hg : g ^ (order_of g) = 1) : fintype G , ∀ {G : Type u_1} [inst : Group G] [inst_1 : Monoid.IsTorsion G] [inst_2 : Group.FG G],
+  Group.Finite G, import data.fintype.basic
+
+theorem finite_of_torsion_element {G : Type*} [group G] [fintype G] [h : decidable_eq G]
+  (hp : group.fg G) (ht : ∃ (g : G), g ≠ 1 ∧ g ^ (order_of g) = 1) :
+  fintype G , ∀ {G : Type u_1} [inst : Group G] [inst_1 : Algebra ℤ G] [inst_2 : Algebra.FinitePresentation ℤ G],
+  (∃ (g : G), g ≠ 1 ∧ Monoid.IsTorsionElement g) → Group.Finite G, import data.fintype.basic
+
+theorem finite_group_with_torsion_element
+  (G : Type u) [group G] [fintype G] [hp : fintype (fintype.range (λ g : G, order_of g))]
+  (h : ∃ g : G, g ≠ 1 ∧ order_of g ≠ 0) : fintype G , Sorry, I made a mistake in my previous response. Let me correct it.
+
+The correct statement is:
+
+∀ {G : Type u_1} [inst : Group G] [inst_1 : FinitePresentation G] [inst_2 : Monoid.TorsionElement G], Finite G, ∀ {G : Type u_1} [inst : Group G] [inst_1 : Algebra ℤ G] {S : Set G},
+  Group.FG G → Monoid.IsTorsion G → (∃ (g : G), g ∈ S ∧ g ≠ 1) → Set.Finite S, ∀ {G : Type u_1} [inst : Group G],
+  Monoid.ContainsTorsion G → Group.FP G → Finite G, ∀ {G : Type u_1} [inst : Group G] [inst_1 : DecidableEq G],
+  Group.FG G → (∃ (g : G), g ≠ 1 ∧ Monoid.IsTorsionElement g) → Group.Finite G, ∀ {G : Type u_1} [inst : Group G] [inst_1 : FinitelyPresentedGroup G],
+  (∃ (g : G), g ≠ 1 ∧ Monoid.IsTorsion g) → Finite G, import data.finset
+import group_theory.finiteness
+
+open_locale classical
+
+variables {G : Type} [group G] {S : set G} [fintype S] [fintype G]
+
+theorem finitely_presented_group_contains_torsion_element_is_finite
+  (h : is_finitely_presented_group G S) (g : G) (hg : g ≠ 1) (hgt : g ∈ S) :
+  fintype.mk (set.range (λ n : ℕ, g ^ n)) , import data.set.basic
+import group_theory.subgroup
+import group_theory.finiteness
+
+variables {G : Type} [group G] [fintype G]
+variables {H : Type} [group H] [fintype H]
+variables (f : G →* H) (hf : function.injective f)
+variables (g : G) (hg : g ≠ 1) (hgt : g ^ (fintype.card G) = 1)
+
+include hf
+
+theorem finite_group_with_torsion_element : fintype H ]
+
+total : 10
+
+elaborated: 7
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] {s : Set α},
+  (∀ (x : α), x ∈ s → ∃ t, IsClosed t ∧ x ∈ t ∧ t ⊆ s) → IsClosed s
+
+total : 11
+
+elaborated: 8
+
+No valid output from LLM; outputs below
+
+∀ {X : Type u_1} [inst : TopologicalSpace X], T2Space X ↔ IsOpenMap (DiagonalMap X)
+
+∀ {X : Type u} [inst : TopologicalSpace X], T2Space X ↔ IsOpenMap (@prod.mk X X)
+
+∀ {X : Type u_1} [inst : TopologicalSpace X], T2Space X ↔ IsOpenMap (Prod.diag X)
+
+∀ {X : Type u} [inst : TopologicalSpace X], T2Space X ↔ IsOpenMap (Diagonal X)
+
+∀ {X : Type u} [inst : TopologicalSpace X], T2Space X ↔ IsOpenMap (DiagonalMap X)
+
+∀ {X : Type u} [inst : TopologicalSpace X] [inst_1 : T2Space X], IsOpenMap (@prod.mk X X)
+
+∀ {X : Type u} [inst : TopologicalSpace X], T2Space X ↔ IsOpenMap (diagonal X)
+
+∀ {X : Type u} [inst : TopologicalSpace X], T2Space X ↔ OpenMap (Diagonal X)
+
+failed to elaborate
+
+outputs: #[∀ {X : Type u_1} [inst : TopologicalSpace X], T2Space X ↔ IsOpenMap (DiagonalMap X), ∀ {X : Type u} [inst : TopologicalSpace X], T2Space X ↔ IsOpenMap (@prod.mk X X), ∀ {X : Type u_1} [inst : TopologicalSpace X], T2Space X ↔ IsOpenMap (Prod.diag X), ∀ {X : Type u} [inst : TopologicalSpace X], T2Space X ↔ IsOpenMap (Diagonal X), ∀ {X : Type u} [inst : TopologicalSpace X], T2Space X ↔ IsOpenMap (DiagonalMap X), ∀ {X : Type u} [inst : TopologicalSpace X] [inst_1 : T2Space X], IsOpenMap (@prod.mk X X), ∀ {X : Type u} [inst : TopologicalSpace X], T2Space X ↔ IsOpenMap (diagonal X), ∀ {X : Type u} [inst : TopologicalSpace X], T2Space X ↔ OpenMap (Diagonal X)]
+
+total : 12
+
+elaborated: 8
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G] {g : G}, IsOfFinOrder g → g = 1
+
+total : 13
+
+elaborated: 9
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G] {H : Subgroup G}, Monoid.IsTorsionFree { x // x ∈ H } → Monoid.IsTorsionFree G
+
+total : 14
+
+elaborated: 10
+
+success
+
+theorem ∀ {α : Type u} {G : Type v} [inst : MulOneClass G] [inst_1 : Group G] [inst_2 : Fintype α]
+  {f : FreeGroup α →* FreeGroup α}, Function.Injective ↑f → Function.Surjective ↑f
+
+total : 15
+
+elaborated: 11
+
+success
+
+theorem ∀ (K : Type u_1) [inst : DivisionRing K], IsField K ∨ Finite K
+
+total : 16
+
+elaborated: 12
+
+failed to elaborate
+
+outputs: #[]
+
+total : 17
+
+elaborated: 12
+
+success
+
+theorem ∀ {n : ℕ}, Even n → ∃ m, n = m ^ 2
+
+total : 18
+
+elaborated: 13
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G] (N : Subgroup G) [inst_1 : Subgroup.Normal N], Subgroup.FiniteIndex N
+
+total : 19
+
+elaborated: 14
+
+No valid output from LLM; outputs below
+
+∀ {α : Type u_2} {n : Type u_1} [inst : IsROrC α] {A : Matrix n n α},
+  Polynomial.AllRootsReal (Polynomial.characteristicDet A)
+
+∀ {α : Type u_2} {n : Type u_1} [inst : IsROrC α] {A : Matrix n n α},
+  Polynomial.RootsAreReal (Polynomial.charPoly A)
+
+∀ {α : Type u_1} {n : Type u_2} [inst :  CommRingCat α] [inst_1 : DecidableEq n] [inst_2 : HasZero α] [inst_3 : HasOne α] [inst_4 :  AlgebraCat α (Matrix n n α)],
+  ∀ (A : Matrix n n α), Polynomial.IsRoot (Matrix.charpoly A) (↑(↑IsROrC.re (Matrix.trace A)))
+
+<input>:2:63: expected '↦', '=>' while parsing ∀ {α : Type u_1} {n : Type u_2} [inst : IsROrC α] [inst_1 : Field α] [inst_2 : Algebra α (Matrix n n α)] {A : Matrix n n α},
+  Polynomial.IsRoot (Polynomial.characteristic (↑A)) (λ (x : α), x ∈ spectrum α ↑A) →
+  ∀ (x : α), x ∈ spectrum α ↑A → ↑(inst.re x) = x
+
+∀ {α : Type u_2} {n : Type u_1} [inst : IsROrC α] [inst_1 : Field α] {A : Matrix n n α},
+  Polynomial.IsRoot (Matrix.charPoly A) A
+
+∀ {α : Type u} {n : Type v} [inst : IsROrC α] [inst_1 : Field α] [inst_2 :  FintypeCat n] (A : Matrix n n α),
+  Polynomial.AllRootsReal (Polynomial.charPoly A)
+
+∀ {α : Type u_2} {n : Type u_1} [inst : IsROrC α] {A : Matrix n n α},
+  0 < Matrix.nrows A → Polynomial.IsRoot (Matrix.charpoly A) ↑(↑IsROrC.re)
+
+<input>:2:50: expected '↦', '=>' while parsing ∀ {α : Type u_1} {n : Type u_2} [inst : IsROrC α] [inst_1 : Field α] [inst_2 : Algebra α (Matrix n n α)] {A : Matrix n n α},
+  Polynomial.IsRoot (Matrix.charPoly A) (λ (x : α), ↑(IsROrC.re x))
+
+<input>:2:105: expected end of input while parsing ∀ {α : Type u_2} {n : Type u_1} [inst : IsROrC α] [inst_1 : Ring α] [inst_2 : Module ℕ α] [decidable_eq n] {A : Matrix n n α},
+  Polynomial.IsRoot (Matrix.det (Polynomial.eval₂ (algebraMap α (Polynomial α)) (Matrix.vecLambda A) X)) ⬝ (algebraMap α (Polynomial α)) (↑(Matrix.charPoly A))
+
+∀ {α : Type u_1} {n : Type u_2} [inst : IsROrC α] {A : Matrix n n α},
+  Polynomial.AllRootsReal (charPoly A)
+
+∀ {α : Type u_2} {n : Type u_1} [inst : Field α] {A : Matrix n n α},
+  Polynomial.AllRootsReal (Polynomial.charPoly A)
+
+<input>:1:68: expected '(', '[', '_', '{', '⦃' or identifier while parsing ∀ {α : Type u_1} {n : Type u_2} [inst : IsROrC α], Matrix n n α → ∀ λ, λ ∈ Matrix.eigenvalues
+  (Matrix.charPoly X) → ↑(↑IsROrC.re λ) = λ
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u_2} {n : Type u_1} [inst : IsROrC α] {A : Matrix n n α},
+  Polynomial.AllRootsReal (Polynomial.characteristicDet A), ∀ {α : Type u_2} {n : Type u_1} [inst : IsROrC α] {A : Matrix n n α},
+  Polynomial.RootsAreReal (Polynomial.charPoly A), ∀ {α : Type u_1} {n : Type u_2} [inst : CommRing α] [inst_1 : DecidableEq n] [inst_2 : HasZero α] [inst_3 : HasOne α] [inst_4 : Algebra α (Matrix n n α)],
+  ∀ (A : Matrix n n α), Polynomial.IsRoot (Matrix.charpoly A) (↑(↑IsROrC.re (Matrix.trace A))), ∀ {α : Type u_1} {n : Type u_2} [inst : IsROrC α] [inst_1 : Field α] [inst_2 : Algebra α (Matrix n n α)] {A : Matrix n n α},
+  Polynomial.IsRoot (Polynomial.characteristic (↑A)) (λ (x : α), x ∈ spectrum α ↑A) →
+  ∀ (x : α), x ∈ spectrum α ↑A → ↑(inst.re x) = x, ∀ {α : Type u_2} {n : Type u_1} [inst : IsROrC α] [inst_1 : Field α] {A : Matrix n n α},
+  Polynomial.IsRoot (Matrix.charPoly A) A, ∀ {α : Type u} {n : Type v} [inst : IsROrC α] [inst_1 : Field α] [inst_2 : Fintype n] (A : Matrix n n α),
+  Polynomial.AllRootsReal (Polynomial.charPoly A), ∀ {α : Type u_2} {n : Type u_1} [inst : IsROrC α] {A : Matrix n n α},
+  0 < Matrix.nrows A → Polynomial.IsRoot (Matrix.charpoly A) ↑(↑IsROrC.re), ∀ {α : Type u_1} {n : Type u_2} [inst : IsROrC α] [inst_1 : Field α] [inst_2 : Algebra α (Matrix n n α)] {A : Matrix n n α},
+  Polynomial.IsRoot (Matrix.charPoly A) (λ (x : α), ↑(IsROrC.re x)), ∀ {α : Type u_2} {n : Type u_1} [inst : IsROrC α] [inst_1 : Ring α] [inst_2 : Module ℕ α] [decidable_eq n] {A : Matrix n n α},
+  Polynomial.IsRoot (Matrix.det (Polynomial.eval₂ (algebraMap α (Polynomial α)) (Matrix.vecLambda A) X)) ⬝ (algebraMap α (Polynomial α)) (↑(Matrix.charPoly A)), ∀ {α : Type u_1} {n : Type u_2} [inst : IsROrC α] {A : Matrix n n α},
+  Polynomial.AllRootsReal (charPoly A), ∀ {α : Type u_2} {n : Type u_1} [inst : Field α] {A : Matrix n n α},
+  Polynomial.AllRootsReal (Polynomial.charPoly A), ∀ {α : Type u_1} {n : Type u_2} [inst : IsROrC α], Matrix n n α → ∀ λ, λ ∈ Matrix.eigenvalues
+  (Matrix.charPoly X) → ↑(↑IsROrC.re λ) = λ]
+
+total : 20
+
+elaborated: 14
+
+No valid output from LLM; outputs below
+
+∀ {R : Type u} [inst :  CommRingCat R] (P : Ideal R) (hP : Ideal.IsPrime P),
+  ∃! (M : Ideal R), Ideal.IsMaximal M ∧ P ⊆ M
+
+∀ {R : Type u} [inst :  CommRingCat R], ∀ {P : Ideal R}, Ideal.IsPrime P → ∃! (M : Ideal R), Ideal.IsMaximal M ∧ P ⊆ M
+
+∀ {R : Type u} [inst :  CommRingCat R] (P : Ideal R) [hP : Ideal.IsPrime P],
+  ∃! (M : Ideal R), Ideal.IsMaximal M ∧ P ⊆ M
+
+∀ {R : Type u} [inst :  CommRingCat R] (P : Ideal R),
+  Ideal.IsPrime P → ∃! (M : Ideal R), Ideal.IsMaximal M ∧ P ⊆ M
+
+∀ {R : Type u} [inst :  CommRingCat R],
+  ∀ (P : Ideal R), Ideal.IsPrime P → ∃! (M : Ideal R), Ideal.IsMaximal M ∧ P ⊆ M
+
+∀ {R : Type u} [inst :  CommRingCat R] (P : Ideal R), Ideal.IsPrime P → ∃! (M : Ideal R), Ideal.IsMaximal M ∧ P ⊆ M
+
+failed to elaborate
+
+outputs: #[∀ {R : Type u} [inst : CommRing R] (P : Ideal R) (hP : Ideal.IsPrime P),
+  ∃! (M : Ideal R), Ideal.IsMaximal M ∧ P ⊆ M, ∀ {R : Type u} [inst : CommRing R], ∀ {P : Ideal R}, Ideal.IsPrime P → ∃! (M : Ideal R), Ideal.IsMaximal M ∧ P ⊆ M, ∀ {R : Type u} [inst : CommRing R] (P : Ideal R) [hP : Ideal.IsPrime P],
+  ∃! (M : Ideal R), Ideal.IsMaximal M ∧ P ⊆ M, ∀ {R : Type u} [inst : CommRing R] (P : Ideal R),
+  Ideal.IsPrime P → ∃! (M : Ideal R), Ideal.IsMaximal M ∧ P ⊆ M, ∀ {R : Type u} [inst : CommRing R],
+  ∀ (P : Ideal R), Ideal.IsPrime P → ∃! (M : Ideal R), Ideal.IsMaximal M ∧ P ⊆ M, ∀ {R : Type u} [inst : CommRing R] (P : Ideal R), Ideal.IsPrime P → ∃! (M : Ideal R), Ideal.IsMaximal M ∧ P ⊆ M]
+
+total : 21
+
+elaborated: 14
+
+success
+
+theorem ∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β},
+  Continuous f → UniformContinuous f
+
+total : 22
+
+elaborated: 15
+
+No valid output from LLM; outputs below
+
+∀ {α : Type u} {β : Type v} [inst :  UniformSpaceCat α] [inst_1 : LinearOrder β] [inst_2 : Nonempty β]
+  {f : α → β}, UniformContinuous f → BddAbove ( ZFSet.range f)
+
+∀ {α : Type u} {β : Type v} [inst :  UniformSpaceCat α] [inst_1 : LinearOrder β] [inst_2 : TopologicalSpace β]
+  [inst_3 : OrderClosedTopology β] {f : α → β},
+  UniformContinuous f → BddAbove ( ZFSet.range f)
+
+∀ {α : Type u} {β : Type v} [inst :  UniformSpaceCat α] [inst_1 : LinearOrder β] [inst_2 : Nonempty β] {f : α → β},
+  UniformContinuous f → BddAbove ( ZFSet.range f)
+
+∀ {α : Type u} {β : Type v} [inst :  UniformSpaceCat α] [inst_1 : LinearOrder β] [inst_2 : TopologicalSpace β] [inst_3 : OrderClosedTopology β]
+  {f : α → β}, UniformContinuous f → BddAbove ( ZFSet.range f)
+
+∀ {α : Type u} {β : Type v} [inst :  UniformSpaceCat α] [inst_1 :  UniformSpaceCat β] {f : α → β},
+  UniformContinuous f → BddAbove ( ZFSet.range f)
+
+∀ {α : Type u_1} {β : Type u_2} [inst :  UniformSpaceCat α] [inst_1 : LinearOrder β] [inst_2 : TopologicalSpace β]
+  [inst_3 : OrderClosedTopology β] {f : α → β},
+  UniformContinuous f → BddAbove ( ZFSet.range f)
+
+∀ {α : Type u} {β : Type v} [inst :  UniformSpaceCat α] [inst_1 : LinearOrder β] [inst_2 : TopologicalSpace β]
+  {f : α → β},
+  UniformContinuous f → BddAbove ( ZFSet.range f)
+
+∀ {α : Type u} {β : Type v} [inst :  UniformSpaceCat α] [inst_1 : LinearOrder α] [inst_2 : Nonempty α]
+  {f : α → β}, UniformContinuous f → BddAbove ( ZFSet.range f)
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u} {β : Type v} [inst : UniformSpace α] [inst_1 : LinearOrder β] [inst_2 : Nonempty β]
+  {f : α → β}, UniformContinuous f → BddAbove (Set.range f), ∀ {α : Type u} {β : Type v} [inst : UniformSpace α] [inst_1 : LinearOrder β] [inst_2 : TopologicalSpace β]
+  [inst_3 : OrderClosedTopology β] {f : α → β},
+  UniformContinuous f → BddAbove (Set.range f), ∀ {α : Type u} {β : Type v} [inst : UniformSpace α] [inst_1 : LinearOrder β] [inst_2 : Nonempty β] {f : α → β},
+  UniformContinuous f → BddAbove (Set.range f), ∀ {α : Type u} {β : Type v} [inst : UniformSpace α] [inst_1 : LinearOrder β] [inst_2 : TopologicalSpace β] [inst_3 : OrderClosedTopology β]
+  {f : α → β}, UniformContinuous f → BddAbove (Set.range f), ∀ {α : Type u} {β : Type v} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β},
+  UniformContinuous f → BddAbove (Set.range f), ∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : LinearOrder β] [inst_2 : TopologicalSpace β]
+  [inst_3 : OrderClosedTopology β] {f : α → β},
+  UniformContinuous f → BddAbove (Set.range f), ∀ {α : Type u} {β : Type v} [inst : UniformSpace α] [inst_1 : LinearOrder β] [inst_2 : TopologicalSpace β]
+  {f : α → β},
+  UniformContinuous f → BddAbove (Set.range f), ∀ {α : Type u} {β : Type v} [inst : UniformSpace α] [inst_1 : LinearOrder α] [inst_2 : Nonempty α]
+  {f : α → β}, UniformContinuous f → BddAbove (Set.range f)]
+
+total : 23
+
+elaborated: 15
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α], (∀ (s : Set α), IsCompact s → IsClosed s) → CompactSpace α
+
+total : 24
+
+elaborated: 16
+
+success
+
+theorem ∀ {α : Type u_1} [self : CommRing α] (a b : α), IsIdempotentElem a → IsIdempotentElem b → IsIdempotentElem (a + b)
+
+total : 25
+
+elaborated: 17
+
+No valid output from LLM; outputs below
+
+∀ {α : Type u} [inst :  FintypeCat α], IsPrime (Fintype.card ( ZFSet α)) → IsPartition ( ZFSet α) → False
+
+∀ {α : Type u} [inst :  FintypeCat α], IsPrime (Set.card (Set.Quot (Set.Equiv.setoid α Setoid.symm Setoid.trans)))
+
+∀ {α : Type u} [inst :  FintypeCat α], IsPrime ( Fintype.card ( ZFSet α)) → IsPartition ( ZFSet α) → False
+
+∀ {α : Type u} [inst :  FintypeCat α], IsPrime ( Fintype.card (Set.Partitions α))
+
+∀ {α : Type u} [inst :  FintypeCat α], IsPrime (Set.card ( ZFSet α)) → IsPrime (Set.card (Set.Setoid.partition α))
+
+∀ {α : Type u} [inst :  FintypeCat α], IsPrime (Fintype.card (Finset.powerset α))
+
+∀ {α : Type u} [inst :  FintypeCat α], IsPrime (card ( ZFSet α).Partitions)
+
+∀ {α : Type u} [inst :  FintypeCat α], IsPrime (Fintype.card (Set.Partition α))
+
+∀ {α : Type u} [inst :  FintypeCat α], IsPrime (Fintype.card (Finset α)) → IsPartition (Finset α) → False
+
+∀ {α : Type u} [inst :  FintypeCat α], IsPrime (Finset.card (Set.Partition α))
+
+<input>:1:78: expected '↦', '=>' while parsing ∀ {α : Type u} [inst : Fintype α], IsPrime (Set.card (Set.SetOf (λ (s : Set α), Set.Finite s ∧ Set.Union s = @Set.Union α ∅)))
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u} [inst : Fintype α], IsPrime (Fintype.card (Set α)) → IsPartition (Set α) → False, ∀ {α : Type u} [inst : Fintype α], IsPrime (Set.card (Set.Quot (Set.Equiv.setoid α Setoid.symm Setoid.trans))), ∀ {α : Type u} [inst : Fintype α], IsPrime (fintype.card (Set α)) → IsPartition (Set α) → False, ∀ {α : Type u} [inst : Fintype α], IsPrime (fintype.card (Set.Partitions α)), ∀ {α : Type u} [inst : Fintype α], IsPrime (Set.card (Set α)) → IsPrime (Set.card (Set.Setoid.partition α)), ∀ {α : Type u} [inst : Fintype α], IsPrime (Fintype.card (Finset.powerset α)), ∀ {α : Type u} [inst : Fintype α], IsPrime (card (Set α).Partitions), ∀ {α : Type u} [inst : Fintype α], IsPrime (Fintype.card (Set.Partition α)), ∀ {α : Type u} [inst : Fintype α], IsPrime (Fintype.card (Finset α)) → IsPartition (Finset α) → False, ∀ {α : Type u} [inst : Fintype α], IsPrime (Finset.card (Set.Partition α)), ∀ {α : Type u} [inst : Fintype α], IsPrime (Set.card (Set.SetOf (λ (s : Set α), Set.Finite s ∧ Set.Union s = @Set.Union α ∅)))]
+
+total : 26
+
+elaborated: 17
+
+success
+
+theorem ∀ {α : Type u_1} (P : α → α → Prop), (∃ m, ∀ (a : α), P a m) → ∃! x, ∀ (y : α), P y x
+
+total : 27
+
+elaborated: 18
+
+No valid output from LLM; outputs below
+
+∀ {G : Type u_1} [inst :  CommGroupCat G], IsCyclic (Group.automorphismGroup G)
+
+∀ {G : Type u_1} [inst :  CommGroupCat G], IsCyclic (AutomorphismGroup G)
+
+∀ {G : Type u_1} [inst :  CommGroupCat G], IsCyclic (Aut G)
+
+failed to elaborate
+
+outputs: #[∀ {G : Type u_1} [inst : CommGroup G], IsCyclic (Group.automorphismGroup G), ∀ {G : Type u_1} [inst : CommGroup G], IsCyclic (AutomorphismGroup G), ∀ {G : Type u_1} [inst : CommGroup G], IsCyclic (Aut G)]
+
+total : 28
+
+elaborated: 18
+
+success
+
+theorem ∀ {f : ℝ → ℝ}, Continuous f → (∃ x, 0 ≤ x ∧ x ≤ 1 ∧ f x = x) → ∀ (n : ℕ), ∃ x, 0 ≤ x ∧ x ≤ 1 ∧ f^[n] x = x
+
+total : 29
+
+elaborated: 19
+
+success
+
+theorem ∀ {α : Type u} {s t : Set α}, (s ∪ t)ᶜ ⊇ sᶜ ∪ tᶜ
+
+total : 30
+
+elaborated: 20
+
+success
+
+theorem ∀ (q : ℚ), q ≥ 0 → (∃ r, r * r = q) → ∃ s, s * s = q
+
+total : 31
+
+elaborated: 21
+
+success
+
+theorem (R : Type u_1) →
+  (M : Type u_2) → [inst : Ring R] → [inst_1 : AddCommGroup M] → [inst_2 : Module R M] → Module.Free R M → CommRing R
+
+total : 32
+
+elaborated: 22
+
+success
+
+theorem {R : Type u} → [inst : Ring R] → Group Rˣ → (∀ (x y : R), x * y = y * x) → CommRing R
+
+total : 33
+
+elaborated: 23
+
+success
+
+theorem ∀ {n : ℕ}, 10 < n → ∃ a p, n = a ^ 2 + p ∧ Nat.Prime p
+
+total : 34
+
+elaborated: 24
+
+No valid output from LLM; outputs below
+
+∀ {C : Type u₁} [inst : CategoryTheory.Category C],
+  CategoryTheory.Limits.IsInitial (CategoryTheory.Limits.TerminalObject C) ∧
+    CategoryTheory.Limits.IsTerminal (CategoryTheory.Limits.InitialObject C) →
+  CategoryTheory.Iso (CategoryTheory.Limits.InitialObject C) (CategoryTheory.Limits.TerminalObject C)
+
+∀ {C : Type u₁} [inst : CategoryTheory.Category C] [inst_1 : CategoryTheory.Limits.HasInitial C]
+  [inst_2 : CategoryTheory.Limits.HasTerminal C], CategoryTheory.Iso (CategoryTheory.Limits.InitialObject C) (CategoryTheory.Limits.TerminalObject C)
+
+∀ {C : Type u₁} [inst : CategoryTheory.Category C],
+  CategoryTheory.Limits.IsInitial (CategoryTheory.Limits.terminalObject C) →
+  CategoryTheory.Limits.terminalObject C ≅ CategoryTheory.Limits.initialObject C
+
+∀ {C : Type u₁} [inst : CategoryTheory.Category C], CategoryTheory.Limits.IsInitial (@CategoryTheory.Limits.Terminal C inst) → CategoryTheory.Iso (@CategoryTheory.Limits.Initial C inst) (@CategoryTheory.Limits.Terminal C inst)
+
+∀ {C : Type u₁} [inst : CategoryTheory.Category C], CategoryTheory.Limits.IsInitial (CategoryTheory.Limits.TerminalObject C) → CategoryTheory.Isomorphism (CategoryTheory.Limits.InitialObject C) (CategoryTheory.Limits.TerminalObject C)
+
+∀ {C : Type u₁} [inst : CategoryTheory.Category C] [inst_1 : CategoryTheory.Limits.HasInitial C]
+  [inst_2 : CategoryTheory.Limits.HasTerminal C], CategoryTheory.Iso (CategoryTheory.Limits.initialObject C) (CategoryTheory.Limits.terminalObject C)
+
+∀ {C : Type u₁} [inst : CategoryTheory.Category C],
+  CategoryTheory.Limits.IsInitial (CategoryTheory.Limits.TerminalObject C) ∧
+  CategoryTheory.Limits.IsTerminal (CategoryTheory.Limits.InitialObject C) →
+  CategoryTheory.Iso (CategoryTheory.Limits.InitialObject C) (CategoryTheory.Limits.TerminalObject C)
+
+∀ {C : Type u₁} [inst : CategoryTheory.Category C], CategoryTheory.Limits.IsInitial (CategoryTheory.Limits.TerminalObject C) →
+  CategoryTheory.Limits.IsTerminal (CategoryTheory.Limits.InitialObject C) →
+  CategoryTheory.IsIso (CategoryTheory.Limits.TerminalObject C ⟶ CategoryTheory.Limits.InitialObject C)
+
+∀ {C : Type u₁} [inst : CategoryTheory.Category C],
+  CategoryTheory.Limits.IsInitial (CategoryTheory.Limits.terminal C) →
+  CategoryTheory.Limits.IsTerminal (CategoryTheory.Limits.initial C) →
+  CategoryTheory.IsIso (CategoryTheory.Limits.initial C ⟶ CategoryTheory.Limits.terminal C)
+
+∀ {C : Type u₁} [inst : CategoryTheory.Category C],
+  CategoryTheory.Limits.IsInitial (CategoryTheory.Limits.TerminalObject C) →
+  CategoryTheory.Limits.TerminalObject C ≅ CategoryTheory.Limits.InitialObject C
+
+∀ {C : Type u₁} [inst : CategoryTheory.Category C],
+  CategoryTheory.Limits.IsInitial (CategoryTheory.Limits.TerminalObject C) ∧
+    CategoryTheory.Limits.IsTerminal (CategoryTheory.Limits.InitialObject C)
+
+failed to elaborate
+
+outputs: #[∀ {C : Type u₁} [inst : CategoryTheory.Category C],
+  CategoryTheory.Limits.IsInitial (CategoryTheory.Limits.TerminalObject C) ∧
+    CategoryTheory.Limits.IsTerminal (CategoryTheory.Limits.InitialObject C) →
+  CategoryTheory.Iso (CategoryTheory.Limits.InitialObject C) (CategoryTheory.Limits.TerminalObject C), ∀ {C : Type u₁} [inst : CategoryTheory.Category C] [inst_1 : CategoryTheory.Limits.HasInitial C]
+  [inst_2 : CategoryTheory.Limits.HasTerminal C], CategoryTheory.Iso (CategoryTheory.Limits.InitialObject C) (CategoryTheory.Limits.TerminalObject C), ∀ {C : Type u₁} [inst : CategoryTheory.Category C],
+  CategoryTheory.Limits.IsInitial (CategoryTheory.Limits.terminalObject C) →
+  CategoryTheory.Limits.terminalObject C ≅ CategoryTheory.Limits.initialObject C, ∀ {C : Type u₁} [inst : CategoryTheory.Category C], CategoryTheory.Limits.IsInitial (@CategoryTheory.Limits.Terminal C inst) → CategoryTheory.Iso (@CategoryTheory.Limits.Initial C inst) (@CategoryTheory.Limits.Terminal C inst), ∀ {C : Type u₁} [inst : CategoryTheory.Category C], CategoryTheory.Limits.IsInitial (CategoryTheory.Limits.TerminalObject C) → CategoryTheory.Isomorphism (CategoryTheory.Limits.InitialObject C) (CategoryTheory.Limits.TerminalObject C), ∀ {C : Type u₁} [inst : CategoryTheory.Category C] [inst_1 : CategoryTheory.Limits.HasInitial C]
+  [inst_2 : CategoryTheory.Limits.HasTerminal C], CategoryTheory.Iso (CategoryTheory.Limits.initialObject C) (CategoryTheory.Limits.terminalObject C), ∀ {C : Type u₁} [inst : CategoryTheory.Category C],
+  CategoryTheory.Limits.IsInitial (CategoryTheory.Limits.TerminalObject C) ∧
+  CategoryTheory.Limits.IsTerminal (CategoryTheory.Limits.InitialObject C) →
+  CategoryTheory.Iso (CategoryTheory.Limits.InitialObject C) (CategoryTheory.Limits.TerminalObject C), ∀ {C : Type u₁} [inst : CategoryTheory.Category C], CategoryTheory.Limits.IsInitial (CategoryTheory.Limits.TerminalObject C) →
+  CategoryTheory.Limits.IsTerminal (CategoryTheory.Limits.InitialObject C) →
+  CategoryTheory.IsIso (CategoryTheory.Limits.TerminalObject C ⟶ CategoryTheory.Limits.InitialObject C), ∀ {C : Type u₁} [inst : CategoryTheory.Category C],
+  CategoryTheory.Limits.IsInitial (CategoryTheory.Limits.terminal C) →
+  CategoryTheory.Limits.IsTerminal (CategoryTheory.Limits.initial C) →
+  CategoryTheory.IsIso (CategoryTheory.Limits.initial C ⟶ CategoryTheory.Limits.terminal C), ∀ {C : Type u₁} [inst : CategoryTheory.Category C],
+  CategoryTheory.Limits.IsInitial (CategoryTheory.Limits.TerminalObject C) →
+  CategoryTheory.Limits.TerminalObject C ≅ CategoryTheory.Limits.InitialObject C, ∀ {C : Type u₁} [inst : CategoryTheory.Category C],
+  CategoryTheory.Limits.IsInitial (CategoryTheory.Limits.TerminalObject C) ∧
+    CategoryTheory.Limits.IsTerminal (CategoryTheory.Limits.InitialObject C)]
+
+total : 35
+
+elaborated: 24
+
+success
+
+theorem ∀ {α : Type u} {β : Type v} {γ : Type x} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β]
+  [inst_2 : TopologicalSpace γ] {f : α → β} {g : β → γ}, Continuous (g ∘ f) → Continuous f ∧ Continuous g
+
+total : 36
+
+elaborated: 25
+
+success
+
+theorem ∀ {S : Type u_1} [inst : Mul S] {a b c : S}, Commute a b → Commute b c → Commute a c
+
+total : 37
+
+elaborated: 26
+
+success
+
+theorem ∀ {R : Type u} {S : Type v} [inst : Semiring R] [inst_1 : Semiring S] (f : R →+* S) (x : R), ?m.11586675 f x = 0 → x = 0
+
+total : 38
+
+elaborated: 27
+
+success
+
+theorem ∀ {p q : Prop}, (p → q) → q → p
+
+total : 39
+
+elaborated: 28
+
+success
+
+theorem ∀ {m n : ℕ},
+  ((¬∃ p, Nat.Prime p ∧ p ∣ m) ∧ ¬∃ q, Nat.Prime q ∧ q ∣ n) ∨ (¬m = n → ∃ p, Nat.Prime p ∧ p ∣ m ∧ p ∣ n) → m = n
+
+total : 40
+
+elaborated: 29
+
+Writing to file: false-elab-20-false-15-12.json
+
+success
+
+theorem ∀ {R : Type u} [inst : Ring R], IsField R
+
+total : 1
+
+elaborated: 1
+
+No valid output from LLM; outputs below
+
+<input>:1:130: expected end of input while parsing This statement is not true. Every vector space is not necessarily finite-dimensional. There are infinite-dimensional vector spaces, such as spaces of polynomials or infinite sequences.
+
+<input>:1:121: expected end of input while parsing This statement is incorrect. Not every vector space is finite-dimensional. There exist infinite-dimensional vector spaces, such as the space of polynomials or the space of infinite sequences.
+
+<input>:1:118: expected end of input while parsing This statement is not true. Not every vector space is finite-dimensional. There are infinite-dimensional vector spaces, such as the space of all polynomials or the space of all sequences.
+
+<input>:1:12: expected end of input while parsing There seems to be a misunderstanding. Not every vector space is finite-dimensional. In fact, there exist infinite-dimensional vector spaces. However, every vector space does have a dimension, which can be finite or infinite.
+
+<input>:1:75: expected end of input while parsing This statement is not true. While some vector spaces are finite-dimensional, others are infinite-dimensional. A vector space is said to be finite-dimensional if it has a basis with a finite number of elements.
+
+<input>:1:110: expected end of input while parsing This is not true. Not every vector space is finite-dimensional. There exist infinite-dimensional vector spaces, such as the space of all polynomials or the space of all sequences.
+
+<input>:1:120: expected end of input while parsing This statement is not true. Not every vector space is finite-dimensional. There exist infinite-dimensional vector spaces, such as the vector space of infinite sequences.
+
+<input>:1:73: expected end of input while parsing This statement is not true. There are vector spaces of infinite dimension, such as the vector space of all sequences.
+
+<input>:1:121: expected end of input while parsing This statement is incorrect. Not every vector space is finite-dimensional. There exist infinite-dimensional vector spaces, such as the space of all polynomials or the space of all infinite sequences.
+
+<input>:1:133: expected end of input while parsing This statement is incorrect. Every vector space is not necessarily finite-dimensional. There exist infinite-dimensional vector spaces, such as the space of polynomials or the space of all continuous functions.
+
+<input>:1:83: expected end of input while parsing This statement is not true. There exist vector spaces that are infinite-dimensional, such as the space of all polynomials or the space of infinite sequences. However, if you restrict the statement to finite-dimensional vector spaces, then it is true.
+
+<input>:1:121: expected end of input while parsing This statement is incorrect. Not every vector space is finite-dimensional. There exist infinite-dimensional vector spaces, such as the vector space of polynomials or the vector space of infinite sequences.
+
+<input>:1:120: expected end of input while parsing This statement is not true. Not every vector space is finite-dimensional. There exist infinite-dimensional vector spaces, such as the space of all polynomials or the space of all sequences.
+
+<input>:1:239: expected end of input while parsing This statement is not correct. It is not true that every vector space is finite-dimensional. There are infinite-dimensional vector spaces such as the space of all polynomials or the space of all sequences. Finite-dimensional vector spaces have a basis with a finite number of elements, whereas infinite-dimensional vector spaces do not have a finite basis.
+
+<input>:1:94: expected end of input while parsing This statement is false. Not every vector space is finite-dimensional. Some vector spaces can have an infinite dimension, such as the space of all real or complex numbers.
+
+failed to elaborate
+
+outputs: #[This statement is not true. Every vector space is not necessarily finite-dimensional. There are infinite-dimensional vector spaces, such as spaces of polynomials or infinite sequences., This statement is incorrect. Not every vector space is finite-dimensional. There exist infinite-dimensional vector spaces, such as the space of polynomials or the space of infinite sequences., This statement is not true. Not every vector space is finite-dimensional. There are infinite-dimensional vector spaces, such as the space of all polynomials or the space of all sequences., There seems to be a misunderstanding. Not every vector space is finite-dimensional. In fact, there exist infinite-dimensional vector spaces. However, every vector space does have a dimension, which can be finite or infinite., This statement is not true. While some vector spaces are finite-dimensional, others are infinite-dimensional. A vector space is said to be finite-dimensional if it has a basis with a finite number of elements., This is not true. Not every vector space is finite-dimensional. There exist infinite-dimensional vector spaces, such as the space of all polynomials or the space of all sequences., This statement is not true. Not every vector space is finite-dimensional. There exist infinite-dimensional vector spaces, such as the vector space of infinite sequences., This statement is not true. There are vector spaces of infinite dimension, such as the vector space of all sequences., This statement is incorrect. Not every vector space is finite-dimensional. There exist infinite-dimensional vector spaces, such as the space of all polynomials or the space of all infinite sequences., This statement is incorrect. Every vector space is not necessarily finite-dimensional. There exist infinite-dimensional vector spaces, such as the space of polynomials or the space of all continuous functions., This statement is not true. There exist vector spaces that are infinite-dimensional, such as the space of all polynomials or the space of infinite sequences. However, if you restrict the statement to finite-dimensional vector spaces, then it is true., This statement is incorrect. Not every vector space is finite-dimensional. There exist infinite-dimensional vector spaces, such as the vector space of polynomials or the vector space of infinite sequences., This statement is not true. Not every vector space is finite-dimensional. There exist infinite-dimensional vector spaces, such as the space of all polynomials or the space of all sequences., This statement is not correct. It is not true that every vector space is finite-dimensional. There are infinite-dimensional vector spaces such as the space of all polynomials or the space of all sequences. Finite-dimensional vector spaces have a basis with a finite number of elements, whereas infinite-dimensional vector spaces do not have a finite basis., This statement is false. Not every vector space is finite-dimensional. Some vector spaces can have an infinite dimension, such as the space of all real or complex numbers.]
+
+total : 2
+
+elaborated: 1
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G], Monoid.IsTorsion G
+
+total : 3
+
+elaborated: 2
+
+success
+
+theorem ∀ {α : Type u} [inst : Group α] [inst_1 : Fintype α], IsSimpleGroup α → Fact (Nat.Prime (Fintype.card α))
+
+total : 4
+
+elaborated: 3
+
+success
+
+theorem ∀ {α : Type u} [inst : Group α] [inst_1 : Fintype α], IsSimpleGroup α
+
+total : 5
+
+elaborated: 4
+
+success
+
+theorem ∀ {α : Type u} [inst : Group α] [inst_1 : Fintype α], Fact (Nat.Prime (Fintype.card α))
+
+total : 6
+
+elaborated: 5
+
+success
+
+theorem ∀ {α : Type u} [inst : MeasurableSpace α] (s : Set α), ?m.1954656 s = 0
+
+total : 7
+
+elaborated: 6
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : CompactSpace α] (s : Set α), IsCompact s
+
+total : 8
+
+elaborated: 7
+
+success
+
+theorem ∀ {α : Type u_1} [inst : TopologicalSpace α] [inst_1 : MeasurableSpace α] (μ : MeasureTheory.Measure α)
+  [inst_2 : MeasureTheory.SigmaFinite μ] (s : Set α),
+  MeasurableSet s → (∃ t, t ⊆ s ∧ ¬MeasurableSet t) → ?m.2308854 μ s = 0
+
+total : 9
+
+elaborated: 8
+
+No valid output from LLM; outputs below
+
+∀ {G : Type u_1} [inst :  GroupCat G],
+  Monoid.FinitePresentation G → (∃ (g : G), g ≠ 1 → orderOf g ≠ infinity) → Monoid.IsFinite G
+
+<input>:2:0: expected 'in' while parsing open function
+open bool
+open set
+
+theorem infinite_univ_of_mem_torsion_element {G : Type} [group G] [fintype G]
+  (hGf : is_sifinite G) (a : G) :
+  a ≠ 1 → a ∈ torsion G → infinite G 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.finset.basic
+
+theorem finite_of_torsion_element {G : Type*} [group G] [fintype G]
+  (h : ∃ g : G, g ≠ 1 ∧ order_of g < fintype.card G) : fintype G 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.fintype.basic
+
+lemma finitely_presented_group_torsion_finite {G : Type u_1} [inst : group G]
+  (hG : h ⊆ G) (h₁ : fintype h) (h₂ : is_group_hom h_inst : G → h) (h₃ : Monoid.IsTorsion h) :
+  fintype G 
+
+∀ {G : Type u_1} [inst :  GroupCat G], Monoid.FG G → (∃ (g : G), g ≠ 1 → Monoid.IsTorsion g)  → Monoid.Finite G
+
+∀ {G : Type u_1} [inst :  GroupCat G] [group_inst: Monoid.IsTorsion G] [fp_inst: Monoid.FG G], Finite G
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.set.basic
+
+theorem finite_of_finitely_presented_group_with_torsion_element (G : Type) [group G]
+  (h : finitely_presented_group G) (x : G) (hx : x ≠ 1) (hxt : is_torsion G x) : fintype G 
+
+<input>:1:5: expected end of input while parsing Sorry, I made an error. Let me correct it.
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.group.basic
+
+lemma finite_group_of_finitely_presented_group_with_torsion (G : Type) [group G] [fintype G]
+  {H : set G} (h : group.is_finitely_generated H) (h' : ∃ (x : G) (hx : x ∈ H) (hx' : x ≠ 1), x ∈ set_torsion G) :
+  group.is_finite H 
+
+<input>:1:0: expected '/--', ':' or term while parsing import data.zmod.basic
+
+open zmod
+
+theorem finite_of_finitely_presented_group_containing_torsion_element {G : Type u_1} [group G] (inst : add_group G)
+  [hN : fintype G] 
+  [hZ : fintype {x : G // order_of x ≠ 0}] :
+  fintype G 
+
+<input>:1:5: expected end of input while parsing Sorry, but I can't generate the requested definition.
+
+∀ {G : Type u_1} [inst :  GroupCat G] [inst_1 : DecidableEq G] [inst_2 : DecidableEq ( FreeGroup G)] {g : G},
+  Group.FG G → Monoid.IsTorsion g → Inst.Finite g G
+
+∀ {G : Type u_1} [inst :  GroupCat G] [inst_1 : Monoid.FVertex G] [inst_2 : Monoid.IsTorsion G],
+  Group.FG G → Finite G
+
+<input>:1:78: expected ')', '↑', '↥', '⇑' or term while parsing ∀ {G : Type u_1} [inst : Group G] [inst_1 : Setoid G] [inst_2 : DecidableRel (∈)],
+  Relation.Reflexive (≈) → Relation.Symmetric (≈) → Relation.Transitive (≈) → Set.Finite (Set.range fun g => OrderOf g) → Group.ElementWithOrderExists G → Group.Finite G
+
+∀ {G : Type u_1} [inst :  GroupCat G] [inst_1 : FinitePresentation G] (g : G),
+  Monoid.IsTorsionElement g → Monoid.IsFinite G
+
+failed to elaborate
+
+outputs: #[∀ {G : Type u_1} [inst : Group G],
+  Monoid.FinitePresentation G → (∃ (g : G), g ≠ 1 → orderOf g ≠ infinity) → Monoid.IsFinite G, open function
+open bool
+open set
+
+theorem infinite_univ_of_mem_torsion_element {G : Type} [group G] [fintype G]
+  (hGf : is_sifinite G) (a : G) :
+  a ≠ 1 → a ∈ torsion G → infinite G , import data.finset.basic
+
+theorem finite_of_torsion_element {G : Type*} [group G] [fintype G]
+  (h : ∃ g : G, g ≠ 1 ∧ order_of g < fintype.card G) : fintype G , import data.fintype.basic
+
+lemma finitely_presented_group_torsion_finite {G : Type u_1} [inst : group G]
+  (hG : h ⊆ G) (h₁ : fintype h) (h₂ : is_group_hom h_inst : G → h) (h₃ : Monoid.IsTorsion h) :
+  fintype G , ∀ {G : Type u_1} [inst : Group G], Monoid.FG G → (∃ (g : G), g ≠ 1 → Monoid.IsTorsion g)  → Monoid.Finite G, ∀ {G : Type u_1} [inst : Group G] [group_inst: Monoid.IsTorsion G] [fp_inst: Monoid.FG G], Finite G, import data.set.basic
+
+theorem finite_of_finitely_presented_group_with_torsion_element (G : Type) [group G]
+  (h : finitely_presented_group G) (x : G) (hx : x ≠ 1) (hxt : is_torsion G x) : fintype G , Sorry, I made an error. Let me correct it., import data.group.basic
+
+lemma finite_group_of_finitely_presented_group_with_torsion (G : Type) [group G] [fintype G]
+  {H : set G} (h : group.is_finitely_generated H) (h' : ∃ (x : G) (hx : x ∈ H) (hx' : x ≠ 1), x ∈ set_torsion G) :
+  group.is_finite H , import data.zmod.basic
+
+open zmod
+
+theorem finite_of_finitely_presented_group_containing_torsion_element {G : Type u_1} [group G] (inst : add_group G)
+  [hN : fintype G] 
+  [hZ : fintype {x : G // order_of x ≠ 0}] :
+  fintype G , Sorry, but I can't generate the requested definition., ∀ {G : Type u_1} [inst : Group G] [inst_1 : DecidableEq G] [inst_2 : DecidableEq (free_group G)] {g : G},
+  Group.FG G → Monoid.IsTorsion g → Inst.Finite g G, ∀ {G : Type u_1} [inst : Group G] [inst_1 : Monoid.FVertex G] [inst_2 : Monoid.IsTorsion G],
+  Group.FG G → Finite G, ∀ {G : Type u_1} [inst : Group G] [inst_1 : Setoid G] [inst_2 : DecidableRel (∈)],
+  Relation.Reflexive (≈) → Relation.Symmetric (≈) → Relation.Transitive (≈) → Set.Finite (Set.range fun g => OrderOf g) → Group.ElementWithOrderExists G → Group.Finite G, ∀ {G : Type u_1} [inst : Group G] [inst_1 : FinitePresentation G] (g : G),
+  Monoid.IsTorsionElement g → Monoid.IsFinite G]
+
+total : 10
+
+elaborated: 8
+
