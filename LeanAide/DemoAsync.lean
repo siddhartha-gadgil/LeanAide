@@ -41,3 +41,6 @@ theorem sum_formula (n: ℕ) :  sum n = (n * (n + 1) : ℚ) / 2  := by
       simp
       simp [sum]
       linarith
+
+set_option aided_by.delay 0
+example : 7 ≤ 11 := by simp_all only
