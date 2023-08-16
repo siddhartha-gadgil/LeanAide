@@ -48,7 +48,7 @@ def proofSearchM (thm: String)(apps simps : Array Name := #[])(tacs: Array Strin
     let mvarId := goal.mvarId! 
     try 
       let goals ←
-        runAesop 0.5 apps simps #[] tacs mvarId
+        runAesop 0.5 apps simps #[] tacs {} mvarId
       let proved := goals.isEmpty 
       let (code: String) ← 
         if proved 
