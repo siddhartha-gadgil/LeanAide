@@ -34,6 +34,18 @@ def nearestDocsToDocEmbedding (data : Array <| (String × String) ×  FloatArray
   (pairs.map <| fun ((doc, _), _) => doc).toList
 
 
+def nearestDocsToDocFullEmbedding (data : Array <| (String × String × Bool) ×  FloatArray) 
+  (embedding : Array Float) (k : Nat)
+  (dist: FloatArray → Array Float → Float := distL2Sq)(penalty : Float) : List (String × String) :=
+  let tuples : Array <| ((String × String × Bool) × FloatArray) × Float := 
+    data.foldl (fun (acc : Array <| ((String × String × Bool) × FloatArray) × Float) 
+      (tuple : (String × String × Bool) × FloatArray) => 
+      insertByMemo acc (fun ((_, _, isProp), flArr) ↦ 
+        let d := dist flArr embedding
+        if isProp then d * penalty else d) k tuple) #[]
+  (tuples.map <| fun (((doc, thm, _), _), _) => (doc, thm)).toList
+
+
 def embedQuery (doc: String) : IO <| Except String Json := do
   let key? ← openAIKey
   let key := 

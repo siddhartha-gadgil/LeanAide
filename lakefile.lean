@@ -78,6 +78,8 @@ lean_exe batchcheck{
 
 lean_exe nearest_embeddings
 
+lean_exe nearest_embeddings_full
+
 lean_exe nearest_embeddings_test
 
 lean_exe getpremises{
