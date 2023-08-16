@@ -28,6 +28,8 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
     |>.getD "bert"
   let delay := p.flag? "delay" |>.map (fun s => s.as! Nat)
     |>.getD 20
+  let repeats := p.flag? "repeats" |>.map (fun s => s.as! Nat)
+    |>.getD 0
   let azure := p.hasFlag "azure"
 
   let outFile := System.mkFilePath 
@@ -40,7 +42,8 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
     {module := `Mathlib}] {}
   let core := 
     checkTranslatedThmsCore type
-      numSim includeFixed queryNum temp model embedding azure delay
+      numSim includeFixed queryNum temp model embedding azure 
+      delay repeats
   let io? := 
     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} 
     {env := env}
@@ -68,6 +71,7 @@ def bulkElab : Cmd := `[Cli|
     m, model : String ; "Model to be used (default `gpt-3.5-turbo`)"
     e, embedding : String; "Embedding to be used (default `bert`)"
     d, delay : Nat; "Delay between requests in seconds (default 20)."
+    repeats : Nat; "Number of times to repeat the request (default 0)."
     azure; "Use Azure instead of OpenAI."
 
   ARGS:
