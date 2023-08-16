@@ -15,7 +15,7 @@ unsafe def show_nearest (stdin stdout : IO.FS.Stream)(data: Array ((String × St
         |>.getD inp, 
       j.getObjValAs? Nat "n" |>.toOption.getD 10,
       j.getObjValAs? Bool "halt" |>.toOption.getD false)
-  let embs ← nearestDocsToDocFull data doc num
+  let embs ← nearestDocsToDocThms data doc num
   let out := 
     Lean.Json.arr <| 
       embs.toArray.map fun (doc, thm) =>
@@ -44,7 +44,7 @@ unsafe def main (args: List String) : IO Unit := do
       match doc? with
       | some doc => 
         let num := (args[1]?.bind fun s => s.toNat?).getD 10
-        let embs ← nearestDocsToDocFull data doc num
+        let embs ← nearestDocsToDocThms data doc num
         IO.println <| 
           Lean.Json.arr <| 
             embs.toArray.map fun (doc, thm) =>
