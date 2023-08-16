@@ -291,7 +291,7 @@ def getPromptPairsOpenAIexe (s: String)(numSim : Nat) :
           | Except.error e => return Except.error e
           | Except.ok thm => 
             pairs := pairs.push (doc, thm)
-        return Except.ok pairs
+        return Except.ok pairs.reverse
 
 /-- choosing pairs to build a prompt -/
 def getPromptPairs(s: String)(numSim : Nat)(source: String := "bert")
