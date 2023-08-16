@@ -4,18 +4,20 @@ import Lean.Data.Json
 import Mathlib.Util.Pickle
 open Lean
 
-unsafe def show_nearest (stdin stdout : IO.FS.Stream)(data: Array ((String × String) × FloatArray)) : IO Unit := do
+unsafe def show_nearest_full (stdin stdout : IO.FS.Stream)
+  (data: Array ((String × String × Bool) × FloatArray)) : IO Unit := do
   let inp ← stdin.getLine
-  let (doc, num, halt) := 
+  let (doc, num, penalty, halt) := 
     match Json.parse inp with
-    | Except.error _ => (inp, 10, false)
+    | Except.error _ => (inp, 10, 2.0, false)
     | Except.ok j => 
       (j.getObjValAs? String "docString" |>.toOption.orElse 
         (fun _ => j.getObjValAs? String "doc_string" |>.toOption) 
         |>.getD inp, 
       j.getObjValAs? Nat "n" |>.toOption.getD 10,
+      j.getObjValAs? Float "penalty" |>.toOption.getD 2.0,
       j.getObjValAs? Bool "halt" |>.toOption.getD false)
-  let embs ← nearestDocsToDocThms data doc num
+  let embs ← nearestDocsToDocFull data doc num (penalty := penalty)
   let out := 
     Lean.Json.arr <| 
       embs.toArray.map fun (doc, thm) =>
@@ -26,7 +28,7 @@ unsafe def show_nearest (stdin stdout : IO.FS.Stream)(data: Array ((String × St
   stdout.putStrLn out.compress
   stdout.flush
   unless halt do 
-    show_nearest stdin stdout data
+    show_nearest_full stdin stdout data
   return ()
 
 unsafe def main (args: List String) : IO Unit := do
@@ -39,12 +41,12 @@ unsafe def main (args: List String) : IO Unit := do
     }
     IO.println out
   withUnpickle  picklePath <| 
-    fun (data : Array <| (String × String) ×  FloatArray) => do
+    fun (data : Array <| (String × String × Bool) ×  FloatArray) => do
       let doc? := args[0]?
       match doc? with
       | some doc => 
         let num := (args[1]?.bind fun s => s.toNat?).getD 10
-        let embs ← nearestDocsToDocThms data doc num
+        let embs ← nearestDocsToDocFull data doc num (penalty := 2.0)
         IO.println <| 
           Lean.Json.arr <| 
             embs.toArray.map fun (doc, thm) =>
@@ -55,4 +57,4 @@ unsafe def main (args: List String) : IO Unit := do
       | none =>
         let stdin ← IO.getStdin
         let stdout ← IO.getStdout
-        show_nearest stdin stdout data
+        show_nearest_full stdin stdout data
