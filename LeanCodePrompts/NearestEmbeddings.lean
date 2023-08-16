@@ -36,14 +36,14 @@ def nearestDocsToDocEmbedding (data : Array <| (String × String) ×  FloatArray
 
 def nearestDocsToDocFullEmbedding (data : Array <| (String × String × Bool) ×  FloatArray) 
   (embedding : Array Float) (k : Nat)
-  (dist: FloatArray → Array Float → Float := distL2Sq)(penalty : Float) : List (String × String) :=
+  (dist: FloatArray → Array Float → Float := distL2Sq)(penalty : Float) : List (String × String × Bool) :=
   let tuples : Array <| ((String × String × Bool) × FloatArray) × Float := 
     data.foldl (fun (acc : Array <| ((String × String × Bool) × FloatArray) × Float) 
       (tuple : (String × String × Bool) × FloatArray) => 
       insertByMemo acc (fun ((_, _, isProp), flArr) ↦ 
         let d := dist flArr embedding
-        if isProp then d * penalty else d) k tuple) #[]
-  (tuples.map <| fun (((doc, thm, _), _), _) => (doc, thm)).toList
+        if isProp then d else d * penalty) k tuple) #[]
+  (tuples.map <| fun (((doc, thm, isProp), _), _) => (doc, thm, isProp)).toList
 
 
 def embedQuery (doc: String) : IO <| Except String Json := do
@@ -92,7 +92,7 @@ def nearestDocsToDocThms (data: Array ((String × String) × FloatArray))(doc: S
 
 def nearestDocsToDocFull (data: Array ((String × String × Bool) × FloatArray))
     (doc: String)(k : Nat)(dist: FloatArray → Array Float → Float := distL2Sq)
-    (penalty: Float) : IO (List (String × String)) := do
+    (penalty: Float) : IO (List (String × String × Bool)) := do
   let queryRes? ← embedQuery doc
   -- IO.println "query complete"
   match queryRes? with

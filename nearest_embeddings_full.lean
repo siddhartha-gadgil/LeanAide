@@ -20,10 +20,11 @@ unsafe def show_nearest_full (stdin stdout : IO.FS.Stream)
   let embs ← nearestDocsToDocFull data doc num (penalty := penalty)
   let out := 
     Lean.Json.arr <| 
-      embs.toArray.map fun (doc, thm) =>
+      embs.toArray.map fun (doc, thm, isProp) =>
         Json.mkObj <| [
           ("docString", Json.str doc),
-          ("theorem", Json.str thm)
+          ("theorem", Json.str thm),
+          ("isProp", Json.bool isProp)
         ] 
   stdout.putStrLn out.compress
   stdout.flush
@@ -49,10 +50,11 @@ unsafe def main (args: List String) : IO Unit := do
         let embs ← nearestDocsToDocFull data doc num (penalty := 2.0)
         IO.println <| 
           Lean.Json.arr <| 
-            embs.toArray.map fun (doc, thm) =>
+            embs.toArray.map fun (doc, thm, isProp) =>
               Json.mkObj <| [
                 ("docString", Json.str doc),
-                ("theorem", Json.str thm)
+                ("theorem", Json.str thm),
+                ("isProp", Json.bool isProp)
               ] 
       | none =>
         let stdin ← IO.getStdin
