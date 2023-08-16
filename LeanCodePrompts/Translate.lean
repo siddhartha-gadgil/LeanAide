@@ -270,11 +270,14 @@ def getPromptPairsBert(s: String)(numSim : Nat)
       let allPairs := allPairs.toList.eraseDups.toArray
       return Except.ok allPairs.toList.eraseDups.toArray
 
-def getPromptPairsOpenAIexe (s: String)(numSim : Nat) :
+def getPromptPairsOpenAIexe (s: String)(numSim : Nat)(full: Bool:= false) :
   IO <| Except String (Array (String × String)) := do
+    let script := if full 
+      then "nearest_embeddings_full"
+      else "nearest_embeddings"
     let outJs ← IO.Process.run {
       cmd := "lake",
-      args := #["exe", "nearest_embeddings", s, toString numSim]
+      args := #["exe", script, s, toString numSim]
     }
     match Json.parse outJs with
     | Except.error e => return Except.error e
@@ -301,6 +304,8 @@ def getPromptPairs(s: String)(numSim : Nat)(source: String := "bert")
       getPromptPairsBert s numSim
     | "openai" =>
       getPromptPairsOpenAIexe s numSim
+    | "openai_full" =>
+      getPromptPairsOpenAIexe s numSim true
     | s => 
       return Except.error s!"unknown source {s}"
 
