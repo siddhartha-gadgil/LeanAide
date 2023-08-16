@@ -1,4 +1,4 @@
-import LeanCodePrompts.Embeddings
+import LeanCodePrompts.NearestEmbeddings
 import LeanAide.Aides
 import Lean.Data.Json
 import Mathlib.Util.Pickle
