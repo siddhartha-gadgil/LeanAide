@@ -139,7 +139,7 @@ def declInLctx  (d :Syntax) : TermElabM Bool := do
         anyWithNameType n type
     | `(funImplicitBinder|{$n:ident : $type:term}) =>
         anyWithNameType n type
-    | `(instBinder|[$n:ident : $type:term]) =>
+    | `(instBinder|[$_:ident : $type:term]) =>
         anyWithType type
     | `(instBinder|[$type:term]) =>
         anyWithType type
@@ -168,6 +168,46 @@ def declInLctx  (d :Syntax) : TermElabM Bool := do
         lctx.anyM fun d => do
             let type ←  Term.elabType type
             isDefEq d.type type
+
+partial def runInRelForallCtx (decls: List Syntax)(c: TermElabM Expr) : TermElabM Expr := 
+    match decls with
+    | [] => c
+    | d :: ds => do
+    let inCtx ← declInLctx d
+    if inCtx then runInRelForallCtx ds c
+    else match d with
+    | `(letDecl|$n:ident : $type := $val) => 
+        let name := n.getId
+        let type ←  Term.elabType type
+        let val ← Term.elabTerm val none
+        withLetDecl name type val fun x => do
+            let tail ← runInRelForallCtx ds c
+            mkLambdaFVars #[x] tail
+    | `(funBinder|($n:ident : $type:term)) =>
+        forallRec n.getId type BinderInfo.default ds
+    | `(funImplicitBinder|{$n:ident : $type:term}) =>
+        forallRec n.getId type BinderInfo.implicit ds
+    | `(instBinder|[$n:ident : $type:term]) =>
+        forallRec n.getId type BinderInfo.instImplicit ds        
+    | `(instBinder|[$type:term]) =>
+        forallRec Name.anonymous type BinderInfo.instImplicit ds
+    | `(funStrictImplicitBinder|⦃$n:ident : $type:term⦄) =>
+        forallRec n.getId type BinderInfo.strictImplicit ds
+    | `(funBinder|(_ : $type:term)) =>
+        forallRec Name.anonymous type BinderInfo.default ds
+    | `(funImplicitBinder|{_ : $type:term}) =>
+        forallRec Name.anonymous type BinderInfo.implicit ds
+    | `(funStrictImplicitBinder|⦃_ : $type:term⦄) =>
+        forallRec Name.anonymous type BinderInfo.strictImplicit ds
+    | stx => 
+        IO.println s!"Expected local declaration syntax; got {stx}"
+        c
+    where forallRec (name : Name)(type : Syntax.Term)(bi: BinderInfo)
+        (ds : List Syntax) : TermElabM Expr := do
+        let type ←  Term.elabType type
+        withLocalDecl name bi type fun x => do
+            let tail ← runInRelForallCtx ds c
+            mkForallFVars #[x] tail
 
 instance : ToJsonM (ContextSyn) := ⟨fun (ds: ContextSyn) => do
 let s : Array Json ← ds.mapM fun d => do
