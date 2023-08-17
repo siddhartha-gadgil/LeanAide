@@ -458,8 +458,7 @@ def compareFuncStrs(s₁ s₂ : String)
   match e₁ with
   | Except.ok (_, e₁) => match e₂ with
     | Except.ok (_, e₂) => 
-        let p := (← provedEqual e₁ e₂) || 
-          (← provedEquiv e₁ e₂)
+        let p ← provedEqual e₁ e₂ <||> provedEquiv e₁ e₂
         return Except.ok p
     | Except.error e₂ => return Except.error e₂
   | Except.error e₁ => return Except.error e₁

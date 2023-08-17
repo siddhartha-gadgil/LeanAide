@@ -125,7 +125,7 @@ def equalStates (s₁ s₂ : TacticStateProxy) : TacticM Bool :=
             (← (List.range s₁.letData.size).allM (fun i => 
               let (n₁, t₁, b₁) := s₁.letData.get! i
               let (n₂, t₂, b₂) := s₂.letData.get! i
-              return n₁ == n₂ && (← isDefEq t₁ t₂) && (← isDefEq b₁ b₂)))
+              return n₁ == n₂ && (← isDefEq t₁ t₂ <&&> isDefEq b₁ b₂)))
 
 def firstEffectiveTactic (tacStrings: List String)(warnOnly: Bool := Bool.true) : TacticM Unit :=
   withMainContext do

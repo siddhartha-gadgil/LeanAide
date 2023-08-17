@@ -54,8 +54,7 @@ def compareThms(s₁ s₂ : String)(opens: List String := [])
   match e₁ with
   | Except.ok e₁ => match e₂ with
     | Except.ok e₂ => 
-        let p := (← provedEqual e₁ e₂) || 
-          (← provedEquiv e₁ e₂)
+        let p ←  (provedEqual e₁ e₂) <||>  (provedEquiv e₁ e₂)
         return Except.ok p
     | Except.error e₂ => return Except.error e₂
   | Except.error e₁ => return Except.error e₁
@@ -67,8 +66,7 @@ def compareThmsCore(s₁ s₂ : String)(opens: List String := [])
 
 def compareThmExps(e₁ e₂: Expr)
   : TermElabM <| Except String Bool := do
-      let p := (← provedEqual e₁ e₂) || 
-        (← provedEquiv e₁ e₂)
+      let p ← provedEqual e₁ e₂ <||>  provedEquiv e₁ e₂
       return Except.ok p
 
 def compareThmExpsCore(e₁ e₂: Expr)
