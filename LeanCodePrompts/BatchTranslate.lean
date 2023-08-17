@@ -7,7 +7,7 @@ open Lean Meta Elab
 def translateWithDataM (s: String)(numSim : Nat:= 10)
   (includeFixed: Bool := Bool.false)(queryNum: Nat := 5)
   (temp : JsonNumber := ⟨2, 1⟩)(model: String)
-  (embedding: String)(azure: Bool := false)(repeats: Nat := 0) : 
+  (embedding: String)(azure: Bool := false)(repeats: Nat := 0)(sleepTime : Nat := 1) : 
   TermElabM ((Option (Expr × (Array String) )) × Array String) := do
   let js ← 
     getCodeJson s numSim includeFixed queryNum temp model embedding azure
@@ -18,7 +18,8 @@ def translateWithDataM (s: String)(numSim : Nat:= 10)
   | k + 1 =>
     IO.println s!"No outputs; repeating ({k} left)"
     elabLog s!"No outputs; repeating ({k} left)"
-    translateWithDataM s numSim includeFixed queryNum temp model embedding azure k
+    IO.sleep (sleepTime * 1000)
+    translateWithDataM s numSim includeFixed queryNum temp model embedding azure k (sleepTime * 2)
   else
     let output := output.toList.eraseDups.toArray
     let res ← arrayToExpr? output 
