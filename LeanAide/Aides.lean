@@ -227,6 +227,23 @@ def parseAsTacticSeq (env : Environment) (input : String) (fileName := "<input>"
   else
     Except.error ((s.mkError "end of input").toErrorMsg ictx)
 
+
+/-- Parsing with a group, for example to extract context -/
+def parseGroup (env : Environment) (input : String) (parsers: List Parser) (fileName := "<input>") :
+    Except String Syntax :=      
+  match parsers with
+  | [] => Except.error "no parsers"
+  | head :: tail =>
+  let p := tail.foldl (fun acc p => acc <|> p) head |>.fn
+  let ictx := mkInputContext input fileName
+  let s := p.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
+  if s.hasError then
+    Except.error (s.toErrorMsg ictx)
+  else if input.atEnd s.pos then
+    Except.ok s.stxStack.back
+  else
+    Except.error ((s.mkError "end of input").toErrorMsg ictx)
+
 def getName? (stx: Syntax) : Option Name :=
   match stx with
   | `($n:ident) => some n.getId

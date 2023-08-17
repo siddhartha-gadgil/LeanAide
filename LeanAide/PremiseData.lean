@@ -89,7 +89,7 @@ def declToString : Syntax → CoreM String := fun d => do
     | `(letDecl|$n:ident : $type := $val) => 
         let type := (← ppTerm type).pretty.trim
         let val := (← ppTerm val).pretty.trim
-        return s!"({n.getId.toString} : {type} := {val})" 
+        return s!"{n.getId.toString} : {type} := {val}" 
     | `(funBinder|($n:ident : $type:term)) =>
         let type := (← ppTerm type).pretty.trim
         return s!"({n.getId.toString} : {type})"
@@ -176,7 +176,7 @@ partial def runInRelForallCtx (decls: List Syntax)(c: TermElabM Expr) : TermElab
     let inCtx ← declInLctx d
     if inCtx then runInRelForallCtx ds c
     else match d with
-    | `(letDecl|$n:ident : $type := $val) => 
+    | `(letIdDecl|$n:ident : $type := $val) => 
         let name := n.getId
         let type ←  Term.elabType type
         let val ← Term.elabTerm val none
@@ -208,6 +208,20 @@ partial def runInRelForallCtx (decls: List Syntax)(c: TermElabM Expr) : TermElab
         withLocalDecl name bi type fun x => do
             let tail ← runInRelForallCtx ds c
             mkForallFVars #[x] tail
+
+def parseContext (s: String) : CoreM <| Except String Syntax := do 
+    return parseGroup (← getEnv) s [letDecl, funBinder, funImplicitBinder, funStrictImplicitBinder, instBinder]
+
+#eval parseContext "x : Nat := 0"
+#eval parseContext "(x : Nat)"
+
+def roundTripCtx (s: String) : CoreM String := do
+    let stx? ← parseContext s
+    declToString stx?.toOption.get!
+
+#eval roundTripCtx "x : Nat := 0"
+#eval roundTripCtx "(x : Nat)"
+#eval roundTripCtx "{_ : Nat}"
 
 #check mkFreshUserName
 def egName : MetaM Name :=
