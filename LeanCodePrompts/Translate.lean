@@ -5,6 +5,7 @@ import LeanAide.TheoremElab
 import LeanAide.Lean4Names
 import LeanAide.TheoremEquality
 import LeanAide.IP
+import LeanCodePrompts.SpawnNearestEmbeddings
 import Mathlib.Util.Pickle
 
 import LeanCodePrompts.EgsTranslate
@@ -611,5 +612,3 @@ def translateViewM (s: String)(model : String := "gpt-3.5-turbo")(embedding: Str
 -/
 def translateViewCore (s: String) : CoreM String := 
   (translateViewM s).run'.run'
-
-

@@ -20,13 +20,3 @@ To see translation in action, place the cursor anywhere on one of the comments b
 
 #eval translateViewM "Every prime number is either `2` or odd"
 
-def stats := #[
-  "There are infinitely many odd numbers",
-  "Every vector space of dimension 2 is finite dimensional",
-  "Every subgroup of an Abelian group is Abelian"]
-
-def mainTest : IO Unit := timeit "nearest_embeddings_test" do
-  let results ← queryNearestEmbeddingsProcess stats
-  IO.println results
-
-#eval mainTest
