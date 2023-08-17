@@ -10551,3 +10551,91 @@ total : 9
 
 elaborated: 7
 
+No valid output from LLM; outputs below
+
+2
+
+No valid output from LLM; outputs below
+
+2
+
+No valid output from LLM; outputs below
+
+The smallest  Even number is 0.
+
+No valid output from LLM; outputs below
+
+<input>:1:20: expected end of input while parsing ExistsUnique (p : ℕ), Nat.Prime p ∧ ∀ (q : ℕ), Nat.Prime q → q ≥ p
+
+<input>:1:20: expected end of input while parsing ExistsUnique (p : ℕ), Nat.Prime p ∧ ∀ (q : ℕ), Nat.Prime q → p ≤ q
+
+Nat.minFac 2
+
+No valid output from LLM; outputs below
+
+<input>:1:20: expected end of input while parsing ExistsUnique (p : ℕ), Nat.Prime p ∧ ∀ (q : ℕ), Nat.Prime q → q ≥ p
+
+<input>:1:20: expected end of input while parsing ExistsUnique (p : ℕ), Nat.Prime p ∧ ∀ (q : ℕ), Nat.Prime q → p ≤ q
+
+Nat.minFac 2
+
+No valid output from LLM; outputs below
+
+∀ (p : ℕ), Nat.Prime p → p = 2 ∨ Nat.Even p
+
+No valid output from LLM; outputs below
+
+∀ (p : ℕ), Nat.Prime p → p = 2 ∨ Nat.Even p
+
+∀ (p : ℕ), Nat.Prime p → (p = 2 ∨ Nat.Even p)
+
+No valid output from LLM; outputs below
+
+∀ (p : ℕ), Nat.Prime p → (p = 2 ∨ Nat.Even p)
+
+∀ (p : ℕ), Nat.Prime p → p = 2 ∨ Nat.Even p
+
+∀ (p : ℕ) [inst : Fact (Nat.Prime p)], p = 2 ∨ Nat.Even p
+
+No valid output from LLM; outputs below
+
+∀ (p : ℕ), Nat.Prime p → p = 2 ∨ Nat.Even p
+
+∀ (p : ℕ), Nat.Prime p → (p = 2 ∨ Nat.Even p)
+
+No valid output from LLM; outputs below
+
+∀ (p : ℕ), Nat.Prime p → p = 2 ∨ Nat.Even p
+
+∀ (p : ℕ), Nat.Prime p → (p = 2 ∨ Nat.Even p)
+
+No valid output from LLM; outputs below
+
+∀ (p : ℕ), Nat.Prime p → p = 2 ∨ Nat.Even p
+
+∀ (p : ℕ), Nat.Prime p → (p = 2 ∨ Nat.Even p)
+
+No valid output from LLM; outputs below
+
+∀ (p : ℕ), Nat.Prime p → p = 2 ∨ Nat.Even p
+
+∀ (p : ℕ), Nat.Prime p → (p = 2 ∨ Nat.Even p)
+
+No valid output from LLM; outputs below
+
+∀ (p : ℕ), Nat.Prime p → p = 2 ∨ Nat.Even p
+
+∀ (p : ℕ), Nat.Prime p → (p = 2 ∨ Nat.Even p)
+
+No valid output from LLM; outputs below
+
+∀ (p : ℕ), Nat.Prime p → p = 2 ∨ Nat.Even p
+
+∀ (p : ℕ), Nat.Prime p → (p = 2 ∨ Nat.Even p)
+
+No valid output from LLM; outputs below
+
+∀ (p : ℕ), Nat.Prime p → p = 2 ∨ Nat.Even p
+
+∀ (p : ℕ), Nat.Prime p → (p = 2 ∨ Nat.Even p)
+

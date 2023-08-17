@@ -627,7 +627,7 @@ open PrettyPrinter
   let s := s.getString
   let js ← 
     getCodeJson  s (model := "gpt-3.5-turbo") 
-      (embedding := "bert")
+      (embedding := "openai_full")
   let e ← jsonToExpr' js
   let stx' ← delab e
   TryThis.addSuggestion stx stx'

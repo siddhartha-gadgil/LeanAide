@@ -32,14 +32,16 @@ def nearestEmbeddingsFullCmd : IO.Process.SpawnArgs := {
 }
 
 initialize nearestEmbeddingsFullProcessRef : IO.Ref 
-  (Option <| IO.Process.Child nearestEmbeddingsFullCmd.toStdioConfig) ← IO.mkRef none
+  (Option <| IO.Process.Child nearestEmbeddingsFullCmd.toStdioConfig) ← (do 
+    let child ← IO.Process.spawn nearestEmbeddingsFullCmd
+    IO.mkRef <| some child)
 
 def getNearestEmbeddingsFullProcess : IO (IO.Process.Child nearestEmbeddingsFullCmd.toStdioConfig) := do
   match ← nearestEmbeddingsProcessRef.get with
     | some child => return child
     | none =>
-      let child ← IO.Process.spawn nearestEmbeddingsCmd
-      nearestEmbeddingsProcessRef.set child
+      let child ← IO.Process.spawn nearestEmbeddingsFullCmd
+      nearestEmbeddingsFullProcessRef.set child
       return child
 
 
