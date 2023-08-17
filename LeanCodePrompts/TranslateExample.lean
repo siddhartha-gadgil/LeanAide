@@ -20,3 +20,4 @@ To see translation in action, place the cursor anywhere on one of the comments b
 
 #eval translateViewM "Every prime number is either `2` or odd"
 
+#check l!"There are infinitely many odd numbers"

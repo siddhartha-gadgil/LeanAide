@@ -99,18 +99,6 @@ def runTacticCode (tacticCode : TSyntax ``tacticSeq)  : PolyTacticM := fun goal 
         throwError m!"Tactic not finishing, remaining goals:\n{goals}"
     pure (some ts, tacticCode)
 
-/-- This is a slight modification of `Parser.runParserCategory` due to Scott Morrison/Kim Liesinger. -/
-def parseAsTacticSeq (env : Environment) (input : String) (fileName := "<input>") :
-    Except String (TSyntax ``tacticSeq) :=
-  let p := andthenFn whitespace Tactic.tacticSeq.fn
-  let ictx := mkInputContext input fileName
-  let s := p.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
-  if s.hasError then
-    Except.error (s.toErrorMsg ictx)
-  else if input.atEnd s.pos then
-    Except.ok ⟨s.stxStack.back⟩
-  else
-    Except.error ((s.mkError "end of input").toErrorMsg ictx)
 
 def getMsgTacticD (default : TSyntax ``tacticSeq)  : CoreM <| TSyntax ``tacticSeq := do
   let msgLog ← Core.getMessageLog  

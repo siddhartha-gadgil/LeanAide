@@ -209,6 +209,14 @@ partial def runInRelForallCtx (decls: List Syntax)(c: TermElabM Expr) : TermElab
             let tail ← runInRelForallCtx ds c
             mkForallFVars #[x] tail
 
+#check mkFreshUserName
+def egName : MetaM Name :=
+    withLocalDecl `n BinderInfo.default (mkConst ``Nat) fun _ => do
+    let nn := (← getLCtx).getUnusedName `n
+    return nn
+
+#eval egName
+
 instance : ToJsonM (ContextSyn) := ⟨fun (ds: ContextSyn) => do
 let s : Array Json ← ds.mapM fun d => do
     pure <| toJson (← declToString d)

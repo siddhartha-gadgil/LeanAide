@@ -10340,3 +10340,214 @@ total : 28
 
 elaborated: 24
 
+Writing to file: thms-elab-20-false-15-12.json
+
+Writing to file: thm-elab-20-false-15-12.json
+
+No valid output from LLM; outputs below
+
+∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ s :  ZFSet α, IsClosed s → s ≠ univ → IsCompact s) → CompactSpace α
+
+∀ {α : Type u} [inst : TopologicalSpace α] (h : ∀ (s :  ZFSet α), IsClosed s → s ≠ univ → IsCompact s),
+  CompactSpace α
+
+∀ {α : Type u} [inst : TopologicalSpace α]
+  (h : ∀ s :  ZFSet α, IsClosed s ∧ s ≠ univ → IsCompact s), CompactSpace α
+
+∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ C :  ZFSet α, IsClosed C → C ≠ univ → IsCompact C) → CompactSpace α
+
+lemma compact_of_proper_closed_compact {X : Type} [ TopologicalSpace X] (h : ∀ (s :  Set X),  IsClosed s → s ≠ univ →  IsCompact s) :  IsCompact (univ :  Set X) 
+
+∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ s :  ZFSet α, IsProperClosed s → IsCompact s) → IsCompact (univ :  ZFSet α)
+
+∀ {α : Type u} [inst : TopologicalSpace α] (h : ∀ (s :  ZFSet α), IsClosed s → s ≠ univ → IsCompact s),
+  IsCompact (univ :  ZFSet α)
+
+∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀s :  ZFSet α, IsProperClosed s → IsCompact s) → CompactSpace α
+
+∀ {α : Type u} [inst : TopologicalSpace α]
+  (h : ∀ (s :  ZFSet α), IsClosed s → s ≠ univ → IsCompact s),
+  CompactSpace α
+
+∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ s :  ZFSet α, IsProper s → IsClosed s → IsCompact s) → CompactSpace α
+
+∀ {α : Type u} [inst : TopologicalSpace α] (h : ∀ (s :  ZFSet α), IsClosed s → s ≠ univ → IsCompact s), CompactSpace α
+
+∀ {α : Type u} [inst : TopologicalSpace α] (h : ∀ (s :  ZFSet α), IsProperAndClosed s → IsCompact s), CompactSpace α
+
+∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ (s :  ZFSet α), IsProper s → IsClosed s → IsCompact s) → CompactSpace α
+
+∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ s :  ZFSet α, IsProperClosed s → IsCompact s) → CompactSpace α
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ s : Set α, IsClosed s → s ≠ univ → IsCompact s) → CompactSpace α, ∀ {α : Type u} [inst : TopologicalSpace α] (h : ∀ (s : Set α), IsClosed s → s ≠ univ → IsCompact s),
+  CompactSpace α, ∀ {α : Type u} [inst : TopologicalSpace α]
+  (h : ∀ s : Set α, IsClosed s ∧ s ≠ univ → IsCompact s), CompactSpace α, ∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ C : Set α, IsClosed C → C ≠ univ → IsCompact C) → CompactSpace α, lemma compact_of_proper_closed_compact {X : Type} [topological_space X] (h : ∀ (s : set X), is_closed s → s ≠ univ → is_compact s) : is_compact (univ : set X) , ∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ s : Set α, IsProperClosed s → IsCompact s) → IsCompact (univ : Set α), ∀ {α : Type u} [inst : TopologicalSpace α] (h : ∀ (s : Set α), IsClosed s → s ≠ univ → IsCompact s),
+  IsCompact (univ : Set α), ∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀s : Set α, IsProperClosed s → IsCompact s) → CompactSpace α, ∀ {α : Type u} [inst : TopologicalSpace α]
+  (h : ∀ (s : Set α), IsClosed s → s ≠ univ → IsCompact s),
+  CompactSpace α, ∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ s : Set α, IsProper s → IsClosed s → IsCompact s) → CompactSpace α, ∀ {α : Type u} [inst : TopologicalSpace α] (h : ∀ (s : Set α), IsClosed s → s ≠ univ → IsCompact s), CompactSpace α, ∀ {α : Type u} [inst : TopologicalSpace α] (h : ∀ (s : Set α), IsProperAndClosed s → IsCompact s), CompactSpace α, ∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ (s : Set α), IsProper s → IsClosed s → IsCompact s) → CompactSpace α, ∀ {α : Type u} [inst : TopologicalSpace α],
+  (∀ s : Set α, IsProperClosed s → IsCompact s) → CompactSpace α]
+
+total : 1
+
+elaborated: 0
+
+success
+
+theorem ∀ {p : ℕ} [fact : Fact (Nat.Prime p)], p ≡ 1 [MOD 4] → ∃ x y, p = x ^ 2 + y ^ 2
+
+total : 2
+
+elaborated: 1
+
+success
+
+theorem ∀ {a b : ℕ} {c d e f g h : ℕ},
+  (∃ p₁ q₁ r₁ s₁, a = p₁ ^ 2 + q₁ ^ 2 + r₁ ^ 2 + s₁ ^ 2) →
+    (∃ p₂ q₂ r₂ s₂, b = p₂ ^ 2 + q₂ ^ 2 + r₂ ^ 2 + s₂ ^ 2) → ∃ p₃ q₃ r₃ s₃, a * b = p₃ ^ 2 + q₃ ^ 2 + r₃ ^ 2 + s₃ ^ 2
+
+total : 3
+
+elaborated: 2
+
+success
+
+theorem ∀ {R : Type u_1} [self : Ring R], (∀ (x : R), x * x = x) → Commutative Mul.mul
+
+total : 4
+
+elaborated: 3
+
+success
+
+theorem Set.Infinite {p | Nat.Prime p ∧ Nat.Prime (p + 2)}
+
+total : 5
+
+elaborated: 4
+
+success
+
+theorem ∀ {F : Type u_1} [inst : Finite F] [inst_1 : DivisionRing F], IsField F
+
+total : 6
+
+elaborated: 5
+
+success
+
+theorem ∀ {α : Type u} {β : Type v} (f : α → β) (g : β → α),
+  (∀ (x : α), g (f x) = x) → (∀ (y : β), f (g y) = y) → Function.Bijective f
+
+total : 7
+
+elaborated: 6
+
+success
+
+theorem ∀ {V : Type u} (G : SimpleGraph V) [inst : Fintype V] [inst_1 : DecidableRel G.Adj],
+  (∀ (v₁ v₂ : V), v₁ ≠ v₂ → ∃! u, SimpleGraph.Adj G u v₁ ∧ SimpleGraph.Adj G u v₂) →
+    ∃ v, ∀ (u : V), u ≠ v → SimpleGraph.Adj G u v
+
+total : 8
+
+elaborated: 7
+
+No valid output from LLM; outputs below
+
+∀ {n : ℕ},
+  Finset.card {f : Finset ℕ | f.sum = n ∧ ∀ (x : ℕ), x ∈ f → ¬↑x % 2 = 0} = 
+    Finset.card {f : Finset ℕ | f.sum = n ∧ f.nodup}
+
+∀ {n : ℕ},
+  Finset.card ( Finset.filter (fun p => Nat.odd ( Finset.card p)) Partitions.parts) =
+    Finset.card ( Finset.filter (fun p =>  Finset.card p =  Finset.card (finset.nub p)) Partitions.parts)
+
+∀ (n : ℕ), Card.card {P : Partition n // ∀ (p : Part n), (↥(Partition.isOdd P) p ↔ Partition.isDistinct P p)} =
+              Card.card {P : Partition n // Partition.isDistinct P.to_comb}
+
+∀ (n : ℕ), Partition.oddPartitions n = Partition.distinctPartitions n
+
+∀ {n : ℕ}, Nat.Partitions.EvenParts n = Nat.Partitions.DistinctParts n
+
+<input>:2:82: expected ',' while parsing ∀ {n : ℕ},
+  card {p : Partition n | ∀ x ∈ p.parts, ¬even x} = card {p : Partition n | ∀ x y ∈ p.parts, x ≠ y}
+
+∀ (n : ℕ),
+  ( Finset.card {p : partition n | partition.allEqualParts p → p.allDistinctParts}) =
+    ( Finset.card {p : partition n | set.allPartitionPartsOdd p})
+
+∀ {n : ℕ},
+  Cardinal.mk {s : Finpartition (Finset.range n) | ∀ ( Part : Finset ℕ),  Part ∈ s.parts → ¬Nat.Even (Finset.card  Part )} =
+    Cardinal.mk {s : Finpartition (Finset.range n) | ∀ ( Part : Finset ℕ),  Part ∈ s.parts → List.Distinct (Finset.to_list  Part )}
+
+<input>:1:57: expected '.', '[', '{', '|', '⦃' or term while parsing ∀ (n : ℕ), Partitions.numPartitionsWithProperty n (fun λ => ∀ (i j : ℕ), i ∈ λ → j ∈ λ → i ≠ j) =
+  Partitions.numPartitionsWithProperty n (fun λ => ∀ (i j : ℕ), i ∈ λ → j ∈ λ → i < j ∨ i > j)
+
+<input>:2:3: expected token while parsing ∀ (n : ℕ),
+  (∑ k in Finset.range (n + 1) | nat.odd k, Partitions.parts_count k n) = Partitions.distinct_count n
+
+<input>:1:25: expected end of input while parsing The number of partitions with odd parts is equal to the number of partitions with distinct parts. This is a well-known result in combinatorics known as Euler's partition theorem.
+
+<input>:4:87: expected ')', ',' or ':' while parsing ∀ {n : ℕ},
+  (Finset.card (finpartition.parts (Partition.ofAnastrophic (Partition.oddPartitions 𝕜 n))) :
+     ℝ) =
+    ↑(Finset.card (finpartition.parts (Partition.ofAnastrophic (Partition.distinctParts(ι : ι) L L' n 𝕜 Γ A)) :
+        Set (Set 𝕜))) :
+       ℝ)
+
+∀ {n : ℕ},
+  (↑(Partitions.odd n) :  FintypeCat (Finpartition {x // x ∈ Finset.univ ∧ x ≤ n})) =
+    Partitions.distinct n
+
+∀ {n : ℕ}, Partitions.NumPartitionsWithProperty n fun p => List.All (fun x => x % 2 = 1) p =
+                   Partitions.NumPartitionsWithProperty n fun p => List.Distinct p
+
+∀ {n : ℕ},
+  ℕ.Partitions.Count (fun c => Nat.Partitions.AllEvenParts c ≠ ∅) n =
+    ℕ.Partitions.Count (fun c => Nat.Partitions.AllDistinctParts c ≠ ∅) n
+
+failed to elaborate
+
+outputs: #[∀ {n : ℕ},
+  Finset.card {f : Finset ℕ | f.sum = n ∧ ∀ (x : ℕ), x ∈ f → ¬↑x % 2 = 0} = 
+    Finset.card {f : Finset ℕ | f.sum = n ∧ f.nodup}, ∀ {n : ℕ},
+  Finset.card (finset.filter (fun p => Nat.odd (finset.card p)) Partitions.parts) =
+    Finset.card (finset.filter (fun p => finset.card p = finset.card (finset.nub p)) Partitions.parts), ∀ (n : ℕ), Card.card {P : Partition n // ∀ (p : Part n), (↥(Partition.isOdd P) p ↔ Partition.isDistinct P p)} =
+              Card.card {P : Partition n // Partition.isDistinct P.to_comb}, ∀ (n : ℕ), Partition.oddPartitions n = Partition.distinctPartitions n, ∀ {n : ℕ}, Nat.Partitions.EvenParts n = Nat.Partitions.DistinctParts n, ∀ {n : ℕ},
+  card {p : Partition n | ∀ x ∈ p.parts, ¬even x} = card {p : Partition n | ∀ x y ∈ p.parts, x ≠ y}, ∀ (n : ℕ),
+  (finset.card {p : partition n | partition.allEqualParts p → p.allDistinctParts}) =
+    (finset.card {p : partition n | set.allPartitionPartsOdd p}), ∀ {n : ℕ},
+  Cardinal.mk {s : Finpartition (Finset.range n) | ∀ (part : Finset ℕ), part ∈ s.parts → ¬Nat.Even (Finset.card part)} =
+    Cardinal.mk {s : Finpartition (Finset.range n) | ∀ (part : Finset ℕ), part ∈ s.parts → List.Distinct (Finset.to_list part)}, ∀ (n : ℕ), Partitions.numPartitionsWithProperty n (fun λ => ∀ (i j : ℕ), i ∈ λ → j ∈ λ → i ≠ j) =
+  Partitions.numPartitionsWithProperty n (fun λ => ∀ (i j : ℕ), i ∈ λ → j ∈ λ → i < j ∨ i > j), ∀ (n : ℕ),
+  (∑ k in Finset.range (n + 1) | nat.odd k, Partitions.parts_count k n) = Partitions.distinct_count n, The number of partitions with odd parts is equal to the number of partitions with distinct parts. This is a well-known result in combinatorics known as Euler's partition theorem., ∀ {n : ℕ},
+  (Finset.card (finpartition.parts (Partition.ofAnastrophic (Partition.oddPartitions 𝕜 n))) :
+     ℝ) =
+    ↑(Finset.card (finpartition.parts (Partition.ofAnastrophic (Partition.distinctParts(ι : ι) L L' n 𝕜 Γ A)) :
+        Set (Set 𝕜))) :
+       ℝ), ∀ {n : ℕ},
+  (↑(Partitions.odd n) : Fintype (Finpartition {x // x ∈ Finset.univ ∧ x ≤ n})) =
+    Partitions.distinct n, ∀ {n : ℕ}, Partitions.NumPartitionsWithProperty n fun p => List.All (fun x => x % 2 = 1) p =
+                   Partitions.NumPartitionsWithProperty n fun p => List.Distinct p, ∀ {n : ℕ},
+  ℕ.Partitions.Count (fun c => Nat.Partitions.AllEvenParts c ≠ ∅) n =
+    ℕ.Partitions.Count (fun c => Nat.Partitions.AllDistinctParts c ≠ ∅) n]
+
+total : 9
+
+elaborated: 7
+

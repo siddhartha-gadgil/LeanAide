@@ -6,11 +6,13 @@ import LeanAide.Lean4Names
 import LeanAide.TheoremEquality
 import LeanAide.IP
 import LeanCodePrompts.SpawnNearestEmbeddings
+import Std.Tactic.TryThis
 import Mathlib.Util.Pickle
 
 import LeanCodePrompts.EgsTranslate
 
 open Lean Meta Elab Parser Command
+open Std.Tactic
 
 def fileName := "data/mathlib4-thms.json"
 
@@ -341,7 +343,7 @@ def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := docField)
 -/
 def getCodeJson (s: String)(numSim : Nat:= 8)
   (includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(model: String)
-  (embedding: String)(azure: Bool := false) : TermElabM Json := do
+  (embedding: String)(azure: Bool := false) : CoreM Json := do
   match ← getCachedJson? s with
   | some js => return js
   | none =>    
@@ -612,3 +614,22 @@ def translateViewM (s: String)(model : String := "gpt-3.5-turbo")(embedding: Str
 -/
 def translateViewCore (s: String) : CoreM String := 
   (translateViewM s).run'.run'
+
+syntax (name := ltrans) "l!" str : term
+
+#check TermElabM
+open PrettyPrinter
+
+@[term_elab ltrans] def ltransImpl : Term.TermElab := 
+  fun stx _ => do
+  match stx with
+  | `(l! $s:str) =>
+  let s := s.getString
+  let js ← 
+    getCodeJson  s (model := "gpt-3.5-turbo") 
+      (embedding := "bert")
+  let e ← jsonToExpr' js
+  let stx' ← delab e
+  TryThis.addSuggestion stx stx'
+  return e 
+  | _ => throwUnsupportedSyntax
