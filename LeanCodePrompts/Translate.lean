@@ -139,7 +139,7 @@ def codexQuery(prompt: String)(n: Nat := 1)
 
 def gptQuery(messages: Json)(n: Nat := 1)
   (temp : JsonNumber := ⟨2, 1⟩)
-  (stopTokens: Array String :=  #[":=", "-/"])(model: String) : CoreM Json := do
+  (stopTokens: Array String :=  #[":=", "-/"])(model: String := "gpt-3.5-turbo") : CoreM Json := do
   let key? ← openAIKey
   let key := 
     match key? with
