@@ -84,7 +84,7 @@ instance : ToJsonM Syntax.Term := ⟨fun (d: Syntax.Term) ↦ do
 abbrev ContextSyn := Array Syntax
 
 open Lean.Parser.Term
-def contextToString : Syntax → CoreM String := fun d => do
+def declToString : Syntax → CoreM String := fun d => do
     match d with
     | `(letDecl|$n:ident : $type := $val) => 
         let type := (← ppTerm type).pretty.trim
@@ -116,12 +116,62 @@ def contextToString : Syntax → CoreM String := fun d => do
         return s!"⦃_ : {type}⦄"
     | stx => 
         let fallback := stx.reprint.get!
-        IO.println s!"contextToString fallback to: {fallback} for {stx}"
+        IO.println s!"declToString fallback to: {fallback} for {stx}"
         return fallback
+
+def declInLctx  (d :Syntax) : TermElabM Bool := do 
+    match d with
+    | `(letDecl|$n:ident : $type := $val) => 
+        let lctx ← getLCtx 
+        match lctx.findFromUserName? n.getId with
+        | some dcl => do
+            let type ←  Term.elabType type
+            let dval? := dcl.value? 
+            isDefEq dcl.type type <&&> 
+                (isProp dcl.type <||>
+                match dval? with
+                | some dval => do
+                    let val ← Term.elabTerm val none
+                    isDefEq dval val
+                | none => return false)
+        | none => return false
+    | `(funBinder|($n:ident : $type:term)) =>
+        anyWithNameType n type
+    | `(funImplicitBinder|{$n:ident : $type:term}) =>
+        anyWithNameType n type
+    | `(instBinder|[$n:ident : $type:term]) =>
+        anyWithType type
+    | `(instBinder|[$type:term]) =>
+        anyWithType type
+    | `(funStrictImplicitBinder|⦃$n:ident : $type:term⦄) =>
+        anyWithNameType n type
+    | `(funBinder|(_ : $type:term)) =>
+        anyWithType type
+    | `(funImplicitBinder|{_ : $type:term}) =>
+        anyWithType type
+    | `(funStrictImplicitBinder|⦃_ : $type:term⦄) =>
+        anyWithType type
+    | stx => 
+        IO.println s!"Expected local declaration syntax; got {stx}"
+        return false
+    where 
+    anyWithNameType (n : TSyntax `ident)(type : Syntax.Term) : 
+        TermElabM Bool := do
+        let lctx ← getLCtx 
+        match lctx.findFromUserName? n.getId with
+        | some d => do
+            let type ←  Term.elabType type
+            isDefEq d.type type
+        | none => return false
+    anyWithType (type : Syntax.Term) : TermElabM Bool := do
+        let lctx ← getLCtx 
+        lctx.anyM fun d => do
+            let type ←  Term.elabType type
+            isDefEq d.type type
 
 instance : ToJsonM (ContextSyn) := ⟨fun (ds: ContextSyn) => do
 let s : Array Json ← ds.mapM fun d => do
-    pure <| toJson (← contextToString d)
+    pure <| toJson (← declToString d)
 pure <| toJson s⟩
 
 instance : ToJsonM Nat := inferInstance
@@ -239,7 +289,7 @@ structure CorePropData where
 deriving Repr, ToJson, FromJson, BEq
 
 def CorePropData.ofPropProof (propPf : PropProofData) : CoreM CorePropData := do
-    return ⟨← propPf.context.mapM contextToString,
+    return ⟨← propPf.context.mapM declToString,
     ← termToString propPf.prop⟩
 
 def CorePropData.thm (data: CorePropData) : String :=
@@ -256,13 +306,13 @@ structure CorePremiseDataDirect where
 deriving Repr, ToJson, FromJson, BEq
 
 def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CoreM CorePremiseDataDirect := do 
-return ⟨← pd.context.mapM contextToString, 
+return ⟨← pd.context.mapM declToString, 
     pd.name?,
     ← termToString pd.type,
     ← termToString  pd.typeGroup,
     pd.ids.map (fun (n, _) => shrink n), 
     (← pd.terms.toList.mapM (fun td => do 
-       pure ⟨← td.context.mapM contextToString,
+       pure ⟨← td.context.mapM declToString,
        ← termToString td.value, td.isProp⟩)) |>.eraseDups, 
     ← pd.propProofs.mapM CorePropData.ofPropProof⟩
 
@@ -526,7 +576,7 @@ def IdentData.filter (d: IdentData)(p : String → Bool) : IdentData :=
 def DefData.identData (d: DefData) : CoreM <| List IdentData := do 
     d.premises.mapM (fun p => do
         pure {
-                context:= ← p.context.mapM contextToString
+                context:= ← p.context.mapM declToString
                 type := ← termToString p.type
                 ids := 
                     p.ids.map (·.1) |>.toList.eraseDups.toArray})
