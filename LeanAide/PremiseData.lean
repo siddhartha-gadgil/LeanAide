@@ -228,8 +228,42 @@ def egName : MetaM Name :=
     withLocalDecl `n BinderInfo.default (mkConst ``Nat) fun _ => do
     let nn := (← getLCtx).getUnusedName `n
     return nn
-
 #eval egName
+
+open Tactic Term
+def introInContext (ctx : List String)(term: String) : TacticM Unit := 
+    withMainContext do
+    for c in ctx do
+        let stx? ← parseContext c
+        match stx? with
+        | Except.error e => throwError s!"Error {e} parsing declaration {c}"
+        | Except.ok stx =>
+         unless ← declInLctx stx do
+            throwError s!"Declaration {c} not in local context"
+    let term? := 
+     runParserCategory (←getEnv) `term term
+    match term? with
+    | Except.error e => 
+        throwError s!"Error {e} parsing term {term}"
+    | Except.ok term =>
+        let term' : Syntax.Term := ⟨term⟩ 
+        withoutErrToSorry do
+        try
+            let _  ←  Term.elabTerm term' none
+            Term.synthesizeSyntheticMVarsNoPostponing
+        catch e =>
+            throwError s!"Error {← e.toMessageData.toString} elaborating term {term}"
+        let stx ← `(tactic| let _ := $term') 
+        evalTactic stx
+    pure ()
+
+elab "intro_in"  ctx:strLit* "!!" t:strLit  : tactic => do
+    let dcls := ctx.toList.map (fun s => s.getString)
+    introInContext dcls t.getString
+
+example (n m : Nat) : 1 = 1 := by
+    intro_in "(n : Nat)" "{m : Nat}" !! "n + 1 + m"
+    rfl
 
 instance : ToJsonM (ContextSyn) := ⟨fun (ds: ContextSyn) => do
 let s : Array Json ← ds.mapM fun d => do
