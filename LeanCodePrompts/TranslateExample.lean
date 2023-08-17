@@ -1,6 +1,6 @@
 import Mathlib
 import LeanCodePrompts.Translate
-import LeanCodePrompts.SpawnNearestEmbeddings
+-- import LeanCodePrompts.SpawnNearestEmbeddings
 
 /-!
 # Translation demo
