@@ -251,11 +251,15 @@ def introInContext (ctx : List String)(term: String) : TacticM Unit :=
         withoutErrToSorry do 
         withSynthesize do
         try
-            let _  ←  Term.elabTerm term' none
+            let term  ←  Term.elabTerm term' none
+            let type ← inferType term 
+            let name := `θ
+            let lctx ← getLCtx
+            let name := lctx.getUnusedName name 
+            let relGoal ←  (←getMainGoal).define name type term
+            replaceMainGoal [relGoal]
         catch e =>
             throwError s!"Error {← e.toMessageData.toString} elaborating term {term}"
-        let stx ← `(tactic| let _ := $term') 
-        evalTactic stx
     pure ()
 
 elab "intro_in"  ctx:strLit* "!!" t:strLit  : tactic => do
@@ -263,6 +267,7 @@ elab "intro_in"  ctx:strLit* "!!" t:strLit  : tactic => do
     introInContext dcls t.getString
 
 example (n m : Nat) : 1 = 1 := by
+    let θ := 2 -- name to avoid
     intro_in "(n : Nat)" "{m : Nat}" !! "n + 1 + m"
     rfl
 

@@ -13,17 +13,6 @@ initialize tacticStrings : IO.Ref (Array String)
 initialize rewriteSuggestions : IO.Ref (Array Syntax.Term) 
         ← IO.mkRef #[]
 
-initialize subgoalSuggestions : IO.Ref (Array Syntax.Term) 
-        ← IO.mkRef #[]
-
-
-theorem mpFrom (α  : Prop) {β : Prop} : α  → (α  → β) → β  := 
-  fun a f => f a   
-
-example : 1 = 1 := by
-  apply mpFrom (2 = 2)
-  · rfl
-  · simp only [Nat.succ]
 
 
 def getTacticSuggestions: IO (Array Syntax.Tactic) := 
@@ -56,20 +45,9 @@ def rwAtTacticSuggestions : MetaM (Array Syntax.Tactic) := do
       tacs := tacs.push tac
   return tacs
 
-#check FVarId.getUserName
-
-def subgoalTacticSuggestions : MetaM (Array Syntax.Tactic) := do
-  let subgoals ← subgoalSuggestions.get
-  let mp := mkIdent ``mpFrom
-  subgoals.mapM <| fun α => do
-    let fx ← `($mp $α:term) 
-    `(tactic|apply $fx:term)
-
-
 def clearSuggestions : IO Unit := do
   tacticSuggestions.set #[]
   rewriteSuggestions.set #[]
-  subgoalSuggestions.set #[]
   tacticStrings.set #[]
 
 def addTacticSuggestions (suggestions: Array Syntax.Tactic) : IO Unit := do
@@ -84,17 +62,6 @@ def addRwSuggestions (suggestions: Array Syntax.Term) : IO Unit := do
   let old ← rewriteSuggestions.get
   rewriteSuggestions.set (old ++ suggestions)
 
-def addRwSuggestion (suggestion: Syntax.Term) : IO Unit := do
-  let old ← rewriteSuggestions.get
-  rewriteSuggestions.set (old.push suggestion)
-
-def addSubgoalSuggestions (suggestions: Array Syntax.Term) : IO Unit := do
-  let old ← subgoalSuggestions.get
-  subgoalSuggestions.set (old ++ suggestions)
-
-def addSubgoalSuggestion (suggestion: Syntax.Term) : IO Unit := do
-  let old ← subgoalSuggestions.get
-  subgoalSuggestions.set (old.push suggestion)
 
 def addConstRewrite (decl: Name)(flip: Bool) : MetaM Unit := do
   let stx : Syntax.Term := mkIdent decl
@@ -163,7 +130,7 @@ def tacticExpr (goal : MVarId) (tac : Syntax.Tactic) :
     ScriptBuilder.ofTactic goals.size (pure tac)
   return (goals, scriptBuilder)
 
-def applyTacticsAux (tacs : Array Syntax.Tactic) : RuleTac := fun input => do
+def dynamicRuleTac (tacs : Array Syntax.Tactic) : RuleTac := fun input => do
   let goalType ← inferType (mkMVarEx input.goal) 
   let lctx ←  getLCtx
   let fvarNames ←  lctx.getFVarIds.toList.tail.mapM (·.getUserName) 
@@ -195,7 +162,7 @@ def dynamicTactics : RuleTac := fun input => do
         parsedTacs := parsedTacs.push <| ← `(tactic|($tacs))
       | Except.error err => throwError err
   logInfo m!"dynamicTactics: {tacs}"
-  applyTacticsAux (tacs ++ rwsAt 
+  dynamicRuleTac (tacs ++ rwsAt 
     ++ parsedTacs
     ) input
 
@@ -254,9 +221,3 @@ def runAesop (p: Float) (apps simps rws : Array Name)
   let allRules ← getRuleSet p apps simps rws tacs
   let (goals, _) ← Aesop.search goal allRules opts.toOptions 
   return goals.toList
-
-
--- For introducing local definitions
-/- Convert the given goal `Ctx |- target` into `Ctx |- let name : type := val; target`. It assumes `val` has type `type` -/
-#check MVarId.define -- Lean.MVarId.define (mvarId : MVarId) (name : Name) (type val : Expr) : MetaM MVarId
-
