@@ -23,14 +23,16 @@ def distL2Sq (v₁ : FloatArray) (v₂ : Array Float) : Float :=
     (v₁.data.zip v₂).map (fun (x, y) => (x - y) * (x - y)) 
   squaredDiffs.foldl (Float.add) 0.0
 
+def bestWithCost (l: Array <| α)
+  (cost : α → Float)(n: Nat): Array <| α × Float := 
+  l.foldl (fun (acc : Array <| α × Float) (x: α) => 
+    insertByMemo acc cost n x none) #[]
 
 def nearestDocsToDocEmbedding (data : Array <| (String × String) ×  FloatArray) 
   (embedding : Array Float) (k : Nat)
   (dist: FloatArray → Array Float → Float := distL2Sq) : List (String × String) :=
   let pairs : Array <| ((String × String) × FloatArray) × Float := 
-    data.foldl (fun (acc : Array <| ((String × String) × FloatArray) × Float) 
-      (pair : (String × String) × FloatArray) => 
-      insertByMemo acc (fun (_, flArr) ↦ dist flArr embedding) k pair) #[]
+    bestWithCost data (fun (_, flArr) ↦ dist flArr embedding) k 
   (pairs.map <| fun ((doc, _), _) => doc).toList
 
 
@@ -38,11 +40,9 @@ def nearestDocsToDocFullEmbedding (data : Array <| (String × String × Bool) ×
   (embedding : Array Float) (k : Nat)
   (dist: FloatArray → Array Float → Float := distL2Sq)(penalty : Float) : List (String × String × Bool) :=
   let tuples : Array <| ((String × String × Bool) × FloatArray) × Float := 
-    data.foldl (fun (acc : Array <| ((String × String × Bool) × FloatArray) × Float) 
-      (tuple : (String × String × Bool) × FloatArray) => 
-      insertByMemo acc (fun ((_, _, isProp), flArr) ↦ 
+    bestWithCost data (fun ((_, _, isProp), flArr) ↦ 
         let d := dist flArr embedding
-        if isProp then d else d * penalty) k tuple) #[]
+        if isProp then d else d * penalty) k 
   (tuples.map <| fun (((doc, thm, isProp), _), _) => (doc, thm, isProp)).toList
 
 
