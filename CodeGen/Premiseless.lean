@@ -1663,7 +1663,6 @@ example: ∀ {α : Type u_1} {β : Type u_2} [inst : Preorder α] [inst_1 : Preo
 
 
 
-#print QuadraticForm.Isometry.map_app'
 
 #print ProperCone.mem_zero
 
