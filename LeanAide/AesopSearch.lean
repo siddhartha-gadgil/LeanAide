@@ -211,13 +211,18 @@ def getRuleSet (p: Float) (apps simps rws : Array Name)
     (fun c r => c.add r) defaultRules
   return allRules
 
-structure AesopSearchOptions extends Aesop.Options where
+structure AesopSearchConfig extends Aesop.Options where
   traceScript := true
   maxRuleApplicationDepth := 120
   maxRuleApplications := 800
+  apps : Array Name 
+  simps : Array Name
+  rws : Array Name
+  tacs : Array String := #[]
+  dynProb : Float := 0.5
 
-def runAesop (p: Float) (apps simps rws : Array Name) 
-  (tacs: Array String := #[])(opts: AesopSearchOptions :={}): MVarId → MetaM (List MVarId) := fun goal => goal.withContext do
-  let allRules ← getRuleSet p apps simps rws tacs
-  let (goals, _) ← Aesop.search goal allRules opts.toOptions 
+def runAesop (config: AesopSearchConfig): MVarId → MetaM (List MVarId) := fun goal => goal.withContext do
+  let allRules ← 
+    getRuleSet config.dynProb config.apps config.simps config.rws config.tacs
+  let (goals, _) ← Aesop.search goal allRules config.toOptions 
   return goals.toList
