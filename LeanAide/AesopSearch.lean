@@ -218,11 +218,32 @@ structure AesopSearchConfig extends Aesop.Options where
   apps : Array Name 
   simps : Array Name
   rws : Array Name
+  forwards : Array Name := #[] -- TODO
+  destructs : Array Name := #[] -- TODO
   tacs : Array String := #[]
   dynProb : Float := 0.5
 
-def runAesop (config: AesopSearchConfig): MVarId → MetaM (List MVarId) := fun goal => goal.withContext do
-  let allRules ← 
-    getRuleSet config.dynProb config.apps config.simps config.rws config.tacs
+def AesopSearchConfig.rules (config: AesopSearchConfig) : 
+    MetaM RuleSet := do
+  getRuleSet config.dynProb config.apps config.simps config.rws config.tacs
+
+def runAesop (config: AesopSearchConfig): MVarId → MetaM (List MVarId) := fun goal => 
+  goal.withContext do
+  let allRules ← config.rules
   let (goals, _) ← Aesop.search goal allRules config.toOptions 
   return goals.toList
+
+def polyAesopRun (configs: List AesopSearchConfig) : 
+    MVarId → MetaM Bool := 
+  fun goal => goal.withContext do
+  match configs with
+  | [] => return false
+  | head :: tail =>
+    let s ← saveState 
+    let allRules ← head.rules
+    let (goals, _) ← Aesop.search goal allRules head.toOptions 
+    if goals.isEmpty then
+      return true
+    else
+      s.restore
+      polyAesopRun tail goal
