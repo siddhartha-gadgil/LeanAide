@@ -1,6 +1,7 @@
 import Lean
 import Std.Data.HashMap
 import LeanAide.ConstDeps
+import LeanAide.Using
 
 /-!
 # Premise data
@@ -247,10 +248,10 @@ def introInContext (ctx : List String)(term: String) : TacticM Unit :=
         throwError s!"Error {e} parsing term {term}"
     | Except.ok term =>
         let term' : Syntax.Term := ⟨term⟩ 
-        withoutErrToSorry do
+        withoutErrToSorry do 
+        withSynthesize do
         try
             let _  ←  Term.elabTerm term' none
-            Term.synthesizeSyntheticMVarsNoPostponing
         catch e =>
             throwError s!"Error {← e.toMessageData.toString} elaborating term {term}"
         let stx ← `(tactic| let _ := $term') 
@@ -264,6 +265,39 @@ elab "intro_in"  ctx:strLit* "!!" t:strLit  : tactic => do
 example (n m : Nat) : 1 = 1 := by
     intro_in "(n : Nat)" "{m : Nat}" !! "n + 1 + m"
     rfl
+
+def usingRelContext (ctx : List String)(type: String) : TacticM Unit := 
+    withMainContext do
+    let mut decls : Array Syntax := #[]
+    for c in ctx do
+        let stx? ← parseContext c
+        match stx? with
+        | Except.error e => throwError s!"Error {e} parsing declaration {c}"
+        | Except.ok stx =>
+         unless ← declInLctx stx do
+            decls := decls.push stx
+    let type? := 
+     runParserCategory (←getEnv) `term type
+    match type? with
+    | Except.error e => 
+        throwError s!"Error {e} parsing type {type}"
+    | Except.ok type =>
+        let type' : Syntax.Term := ⟨type⟩ 
+        let type ←  runInRelForallCtx decls.toList <|
+            withoutErrToSorry do 
+            withSynthesize do
+            Term.elabType type'
+        usingM type
+    pure ()
+
+elab "using_in"  ctx:strLit* "!!" t:strLit  : tactic => do
+    let dcls := ctx.toList.map (fun s => s.getString)
+    usingRelContext dcls t.getString
+
+example (n: Nat) : 1 = 1 := by
+    using_in "(m : Nat)" "(n: Nat)" !! "n + m = m + n"
+    · intro m ; apply Nat.add_comm
+    · intros ; rfl
 
 instance : ToJsonM (ContextSyn) := ⟨fun (ds: ContextSyn) => do
 let s : Array Json ← ds.mapM fun d => do
