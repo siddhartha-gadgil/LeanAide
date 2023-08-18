@@ -28,6 +28,17 @@ def bestWithCost (l: Array <| α)
   l.foldl (fun (acc : Array <| α × Float) (x: α) => 
     insertByMemo acc cost n x none) #[]
 
+#check Task.spawn
+
+def bestWithCostConc (l: Array <| α)
+  (cost : α → Float)(n: Nat): IO <| Array <| α × Float := do
+  let groups := l.batches' <| ← threadNum
+  let tasks := groups.map <| fun group => Task.spawn <| fun _ => 
+    bestWithCost group cost n
+  let resultGroups := tasks.map Task.get 
+  let results := resultGroups.foldl (fun acc group => acc ++ group) #[]
+  return results.qsort (fun (_, c₁) (_, c₂) => c₁ < c₂) |>.shrink n
+
 def nearestDocsToDocEmbedding (data : Array <| (String × String) ×  FloatArray) 
   (embedding : Array Float) (k : Nat)
   (dist: FloatArray → Array Float → Float := distL2Sq) : List (String × String) :=
@@ -45,6 +56,16 @@ def nearestDocsToDocFullEmbedding (data : Array <| (String × String × Bool) ×
         if isProp then d else d * penalty) k 
   (tuples.map <| fun (((doc, thm, isProp), _), _) => (doc, thm, isProp)).toList
 
+
+def nearestDocsToDocFullEmbeddingConc (data : Array <| (String × String × Bool) ×  FloatArray) 
+  (embedding : Array Float) (k : Nat)
+  (dist: FloatArray → Array Float → Float := distL2Sq)(penalty : Float) : 
+   IO <| List (String × String × Bool) := do
+  let tuples : Array <| ((String × String × Bool) × FloatArray) × Float ←  
+    bestWithCostConc data (fun ((_, _, isProp), flArr) ↦ 
+        let d := dist flArr embedding
+        if isProp then d else d * penalty) k 
+  return (tuples.map <| fun (((doc, thm, isProp), _), _) => (doc, thm, isProp)).toList
 
 def embedQuery (doc: String) : IO <| Except String Json := do
   let key? ← openAIKey
@@ -109,8 +130,8 @@ def nearestDocsToDocFull (data: Array ((String × String × Bool) × FloatArray)
       match queryData.getObjValAs? (Array Float) "embedding" with
       | Except.ok queryEmbedding => 
         -- IO.println s!"embedding in query result obtained"
-        let res := 
-          nearestDocsToDocFullEmbedding data queryEmbedding k dist penalty
+        let res ←  
+          nearestDocsToDocFullEmbeddingConc data queryEmbedding k dist penalty
         -- IO.println s!"getNearestDocsToEmbedding complete: {res}"
         pure res
       | Except.error error =>
