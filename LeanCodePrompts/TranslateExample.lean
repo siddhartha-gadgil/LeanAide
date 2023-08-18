@@ -13,5 +13,7 @@ import LeanCodePrompts.Translate
 
 #eval translateViewM "Every prime number is either `2` or odd"
 
+#eval pingEmbedding
+
 #check l!"There are infinitely many odd numbers"
 

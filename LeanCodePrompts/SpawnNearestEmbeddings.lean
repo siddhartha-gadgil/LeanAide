@@ -77,3 +77,7 @@ def getNearestEmbeddingsFull (query : String)(numSim: Nat)(penalty: Float) : IO 
   stdin.putStrLn jsQuery.compress
   stdin.flush
   child.stdout.getLine
+
+def pingEmbedding : IO Bool := do
+  let proc? ← nearestEmbeddingsFullProcessRef.get
+  return proc?.isSome
