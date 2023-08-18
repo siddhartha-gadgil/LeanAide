@@ -132,5 +132,3 @@ lean_exe extras.depnames{
 
 require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git"@"master"
-
-require proofwidgets from git "https://github.com/0art0/ProofWidgets4"@"browsing"
