@@ -15,5 +15,6 @@ import LeanCodePrompts.Translate
 
 #eval pingEmbedding
 
-#check l!"There are infinitely many odd numbers"
-
+theorem infinitude_odds : l!"There are infinitely many odd numbers" :=
+  by
+    sorry 
