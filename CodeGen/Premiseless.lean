@@ -1290,10 +1290,8 @@ example: ∀ {𝕜 : Type u_1} {E : Type u_2} [inst : OrderedSemiring 𝕜] [ins
 
 #check Relator.LeftUnique.flip
 example: ∀ {α : Type u_1} {β : Type u_2} {r : α → β → Prop}, Relator.LeftUnique r → Relator.RightUnique (flip r) := by
-  intro α β r h a b c a_1 a_2
-  apply h
-  on_goal 2 => exact a_2
-  exact a_1
+  aesop (add norm unfold Relator.LeftUnique,
+  norm unfold Relator.RightUnique)
 
 
 

@@ -132,9 +132,8 @@ def constructorConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetM
   return rules.map (·.1)
 
 /-- Rule set member for `unfold` for a global constant -/
-def unfoldConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMember := do
-  let prob :=  Syntax.mkNumLit s!"{p * 100}"
-  let stx ← `(attr|aesop unsafe $prob:num % unfold) 
+def unfoldConstRuleMembers (decl: Name) : MetaM <| Array RuleSetMember := do
+  let stx ← `(attr|aesop norm unfold) 
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
   let rules ← runMetaMAsCoreM $
       config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
