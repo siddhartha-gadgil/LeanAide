@@ -89,31 +89,67 @@ def applyConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMember 
 
 /-- Rule set members for `simp` for a global constant proof -/
 partial def simpConstRuleMember (decl: Name) : MetaM <| Array RuleSetMember := do
-  let cinfo ← getConstInfo decl
-  let val := cinfo.value!
-  if ¬(← isProof val) then 
-    let head := RuleSetMember.unfoldRule {
-      decl := decl
-      unfoldThm? := ← getUnfoldEqnFor? decl
-    }
-    if let some eqns ← getEqnsFor? decl then
-      let r ← eqns.mapM simpConstRuleMember
-      let r := r.foldl (fun c r => c ++ r) #[] 
-      return r.push head
-    else
-      return #[head] 
-  else
-    let entries ←  mkSimpTheorems (.decl decl) cinfo.levelParams.toArray val
-    let name : RuleName := {
-      name := decl
-      builder := BuilderName.simp
-      phase := PhaseName.norm
-      scope := ScopeName.global
-    }
-    return #[RuleSetMember.normSimpRule {
-      name:= name
-      entries := entries.map .thm 
-      }]
+  let stx ← `(attr|aesop norm simp) 
+  let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
+  let rules ← runMetaMAsCoreM $
+      config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
+  return rules.map (·.1)
+
+/-- Rule set member for `forward` for a global constant -/
+def forwardConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMember := do
+  let prob :=  Syntax.mkNumLit s!"{p * 100}"
+  let stx ← `(attr|aesop unsafe $prob:num % forward) 
+  let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
+  let rules ← runMetaMAsCoreM $
+      config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
+  return rules.map (·.1)
+
+/-- Rule set member for `destruct` for a global constant -/
+def destructConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMember := do
+  let prob :=  Syntax.mkNumLit s!"{p * 100}"
+  let stx ← `(attr|aesop unsafe $prob:num % destruct) 
+  let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
+  let rules ← runMetaMAsCoreM $
+      config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
+  return rules.map (·.1)
+
+/-- Rule set member for `cases` for a global constant -/
+def casesConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMember := do
+  let prob :=  Syntax.mkNumLit s!"{p * 100}"
+  let stx ← `(attr|aesop unsafe $prob:num % cases) 
+  let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
+  let rules ← runMetaMAsCoreM $
+      config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
+  return rules.map (·.1)
+
+/-- Rule set member for `constructors` for a global constant -/
+def constructorConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMember := do
+  let prob :=  Syntax.mkNumLit s!"{p * 100}"
+  let stx ← `(attr|aesop unsafe $prob:num % constructors) 
+  let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
+  let rules ← runMetaMAsCoreM $
+      config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
+  return rules.map (·.1)
+
+/-- Rule set member for `unfold` for a global constant -/
+def unfoldConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMember := do
+  let prob :=  Syntax.mkNumLit s!"{p * 100}"
+  let stx ← `(attr|aesop unsafe $prob:num % unfold) 
+  let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
+  let rules ← runMetaMAsCoreM $
+      config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
+  return rules.map (·.1)
+
+/-- Rule set member for `tactic` for a global constant -/
+def tacticConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMember := do
+  let prob :=  Syntax.mkNumLit s!"{p * 100}"
+  let stx ← `(attr|aesop unsafe $prob:num % tactic) 
+  let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
+  let rules ← runMetaMAsCoreM $
+      config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
+  return rules.map (·.1)
+
+
 
 def tacticExpr (goal : MVarId) (tac : Syntax.Tactic) :
     MetaM (Array MVarId × RuleTacScriptBuilder) := 
