@@ -245,7 +245,7 @@ def getRuleSet (p: Float) (apps simps rws : Array Name)
 
 @[aesop safe forward] def eg : Nat → True  := by simp
 
--- Copied from Aesop search
+-- Copied from Aesop source code
 open Aesop.BuiltinRules in
 def introsWithTransparency (transparency: TransparencyMode) : RuleTac := RuleTac.ofSingleRuleTac λ input => do
     let md? := some transparency
