@@ -78,13 +78,14 @@ def addTacticString (tac: String) : MetaM Unit := do
 
 /-- Rule set member for `apply` for a global constant -/
 def applyConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMember := do
-  let prob : TSyntax `num := ⟨← `(Parser.numLit|50)⟩ 
-  let prio ← `(priority|$prob:num %) 
-  let stx ← `(attr|aesop unsafe  apply) 
+  let prob :=  Syntax.mkNumLit s!"{p * 100}"
+  let stx ← `(attr|aesop unsafe $prob:num % apply) 
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
   let rules ← runMetaMAsCoreM $
       config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
   return rules.map (·.1)
+
+#check Parser.numLit
 
 /-- Rule set members for `simp` for a global constant proof -/
 partial def simpConstRuleMember (decl: Name) : MetaM <| Array RuleSetMember := do
