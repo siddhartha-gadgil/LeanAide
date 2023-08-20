@@ -245,6 +245,39 @@ def getRuleSet (p: Float) (apps simps rws : Array Name)
 
 @[aesop safe forward] def eg : Nat → True  := by simp
 
+-- Copied from Aesop search
+open Aesop.BuiltinRules in
+def introsWithTransparency (transparency: TransparencyMode) : RuleTac := RuleTac.ofSingleRuleTac λ input => do
+    let md? := some transparency
+    let (newFVars, goal) ← unhygienic $
+      if let some md := md? then
+        withTransparency md $ introsUnfolding input.goal
+      else
+        input.goal.intros
+    if newFVars.size == 0 then
+      throwError "nothing to introduce"
+    let scriptBuilder? ←
+      if input.options.generateScript then
+        goal.withContext do
+          let newFVarUserNames ← newFVars.mapM (mkIdent <$> ·.getUserName)
+          let tac ← `(tactic| intro $newFVarUserNames:ident*)
+          let tac :=
+            if let some md := md? then
+              withAllTransparencySyntax md tac
+            else
+              pure tac
+          pure $ some $ .ofTactic 1 tac
+
+      else
+        pure none
+    return (#[goal], scriptBuilder?)
+
+@[aesop unsafe 90% tactic]
+def introsWithDefault : RuleTac := introsWithTransparency TransparencyMode.default
+def introsWithAll : RuleTac := introsWithTransparency TransparencyMode.all
+def introsWithReducible : RuleTac := introsWithTransparency TransparencyMode.reducible
+def introsWithInstances : RuleTac := introsWithTransparency TransparencyMode.instances
+
 structure AesopSearchConfig extends Aesop.Options where
   traceScript := true
   maxRuleApplicationDepth := 120
