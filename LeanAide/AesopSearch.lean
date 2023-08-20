@@ -77,20 +77,15 @@ def addTacticString (tac: String) : MetaM Unit := do
 
 
 /-- Rule set member for `apply` for a global constant -/
-def applyConstRuleMember (decl: Name)(p: Float) : MetaM RuleSetMember := do
-  let type := (← getConstInfo decl).type
-  let indexingMode ←  IndexingMode.targetMatchingConclusion type
-  let name : RuleName := {
-    name := decl
-    builder := BuilderName.apply
-    phase := PhaseName.«unsafe»
-    scope := ScopeName.global
-  }
-  return RuleSetMember.unsafeRule {
-    name:= name
-    indexingMode := indexingMode
-    extra:= ⟨⟨p⟩⟩
-    tac := .applyConst decl TransparencyMode.default}
+def applyConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMember := do
+  let prob :=  Syntax.mkNumLit s!"{p * 100}"
+  let stx ← `(attr|aesop unsafe $prob:num % apply) 
+  let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
+  let rules ← runMetaMAsCoreM $
+      config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
+  return rules.map (·.1)
+
+#check Parser.numLit
 
 /-- Rule set members for `simp` for a global constant proof -/
 partial def simpConstRuleMember (decl: Name) : MetaM <| Array RuleSetMember := do
@@ -192,6 +187,7 @@ def tacticMember (p: Float)(tac : Name) : RuleSetMember :=
     extra:= ⟨⟨p⟩⟩
     tac := .tacticM tac}
 
+
 def getRuleSet (p: Float) (apps simps rws : Array Name)
   (tacs: Array String) : MetaM RuleSet := do
   clearSuggestions
@@ -200,7 +196,8 @@ def getRuleSet (p: Float) (apps simps rws : Array Name)
     addConstRewrite n true
   for t in tacs do
     addTacticString t
-  let appRules ← apps.mapM (applyConstRuleMember · p)
+  let appRules ← apps.mapM (applyConstRuleMembers · p)
+  let appRules := appRules.foldl (fun c r => c ++ r) #[]
   let simpRules ← simps.mapM simpConstRuleMember
   let simpRules := simpRules.foldl (fun c r => c ++ r) #[]
   let defaultRules ←
@@ -210,6 +207,8 @@ def getRuleSet (p: Float) (apps simps rws : Array Name)
     ((appRules ++ simpRules).push (dynamicRuleMember p)).foldl
     (fun c r => c.add r) defaultRules
   return allRules
+
+@[aesop safe forward] def eg : Nat → True  := by simp
 
 structure AesopSearchConfig extends Aesop.Options where
   traceScript := true
