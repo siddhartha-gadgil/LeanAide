@@ -31,6 +31,24 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
   let repeats := p.flag? "repeats" |>.map (fun s => s.as! Nat)
     |>.getD 0
   let azure := p.hasFlag "azure"
+  let queryData? : Option (HashMap String Json) ←  
+    p.flag? "query_data" |>.map (fun s => s.as! String) |>.mapM 
+      fun filename => do
+        let lines ←  IO.FS.lines filename
+        let mut qdMap := HashMap.empty
+        for l in lines do
+          let json? := Json.parse l
+          match json? with
+          | Except.ok json => 
+            let doc := (json.getObjValAs? String "docString" |>.toOption.orElse 
+            (fun _ => json.getObjValAs? String "doc_string" |>.toOption)
+            ).get! 
+            let out := json.getObjValAs? Json "choices" |>.toOption.get!
+            qdMap := qdMap.insert doc out
+          | Except.error e => do
+            throw <| IO.userError s!"Error parsing query data file: {e}"
+          
+        pure qdMap
 
   let outFile := System.mkFilePath 
       ["results", 
@@ -43,7 +61,7 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
   let core := 
     checkTranslatedThmsCore type
       numSim includeFixed queryNum temp model embedding azure 
-      delay repeats
+      delay repeats queryData?
   let io? := 
     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} 
     {env := env}
@@ -60,17 +78,18 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
   return 0
 
 def bulkElab : Cmd := `[Cli|
-  bulkelab VIA runBulkElab; ["0.1"]
+  bulkelab VIA runBulkElab;
   "Elaborate a set of inputs and report whether successful and the result if successful."
 
   FLAGS:
-    include_fixed;         "Include the standard fixed prompts."
+    include_fixed;         "Include the 'Lean Chat' fixed prompts."
     p, prompts : Nat;      "Number of example prompts (default 10)."
     r, responses : Nat;    "Number of responses to ask for (default 5)."
     t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t`."
     m, model : String ; "Model to be used (default `gpt-3.5-turbo`)"
     e, embedding : String; "Embedding to be used (default `bert`)"
     d, delay : Nat; "Delay between requests in seconds (default 20)."
+    query_data : String; "Query data jsonlines file if cached queries are to be used; should have the result of the 'choices' field of the output and a 'docString' field for the query."
     repeats : Nat; "Number of times to repeat the request (default 0)."
     azure; "Use Azure instead of OpenAI."
 
