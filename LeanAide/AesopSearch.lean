@@ -33,17 +33,17 @@ def rwTacticSuggestions : MetaM (Array Syntax.Tactic) := do
 
 def rwAtTacticSuggestions : MetaM (Array Syntax.Tactic) := do
   let rws ← rewriteSuggestions.get
-  let mut tacs := #[]
+  let mut dynTactics := #[]
   let lctx ←  getLCtx
   let fvarNames ←  lctx.getFVarIds.toList.tail.mapM (·.getUserName) 
   for r in rws do
     for n in fvarNames do
       let f := mkIdent n
       let tac ← `(tactic|rw [$r:term] at $f:ident)
-      tacs := tacs.push tac
+      dynTactics := dynTactics.push tac
       let tac ← `(tactic|rw [← $r:term] at $f:ident)
-      tacs := tacs.push tac
-  return tacs
+      dynTactics := dynTactics.push tac
+  return dynTactics
 
 def clearSuggestions : IO Unit := do
   tacticSuggestions.set #[]
@@ -160,13 +160,13 @@ def tacticExpr (goal : MVarId) (tac : Syntax.Tactic) :
     ScriptBuilder.ofTactic goals.size (pure tac)
   return (goals, scriptBuilder)
 
-def dynamicRuleTac (tacs : Array Syntax.Tactic) : RuleTac := fun input => do
+def dynamicRuleTac (dynTactics : Array Syntax.Tactic) : RuleTac := fun input => do
   let goalType ← inferType (mkMVarEx input.goal) 
   let lctx ←  getLCtx
   let fvarNames ←  lctx.getFVarIds.toList.tail.mapM (·.getUserName) 
-  trace[leanaide.proof.info] "trying dynamic tactics: {tacs} for goal {←ppExpr  goalType}; fvars: {fvarNames}"
+  trace[leanaide.proof.info] "trying dynamic tactics: {dynTactics} for goal {←ppExpr  goalType}; fvars: {fvarNames}"
   let initialState : SavedState ← saveState
-  let appsTacs ← tacs.filterMapM fun (tac) => do
+  let appsTacs ← dynTactics.filterMapM fun (tac) => do
     try
       let (goals, scriptBuilder) ← tacticExpr input.goal tac
       let postState ← saveState
@@ -175,24 +175,24 @@ def dynamicRuleTac (tacs : Array Syntax.Tactic) : RuleTac := fun input => do
       return none
     finally
       restoreState initialState
-  let (apps, tacs) := appsTacs.unzip
+  let (apps, dynTactics) := appsTacs.unzip
   if apps.isEmpty then 
     throwError "failed to apply any of the tactics"
-  trace[leanaide.proof.info] "applied dynamic tactics {tacs}" 
+  trace[leanaide.proof.info] "applied dynamic tactics {dynTactics}" 
   return { applications := apps}
 
 def dynamicTactics : RuleTac := fun input => do 
-  let tacs ← getTacticSuggestions
+  let dynTactics ← getTacticSuggestions
   let rwsAt ← rwAtTacticSuggestions 
   let tacString ← getTacticStrings 
   let mut parsedTacs : Array Syntax.Tactic := #[]
   for tac in tacString do
     match parseAsTacticSeq (←getEnv) tac with
-      | Except.ok tacs => 
-        parsedTacs := parsedTacs.push <| ← `(tactic|($tacs))
+      | Except.ok dynTactics => 
+        parsedTacs := parsedTacs.push <| ← `(tactic|($dynTactics))
       | Except.error err => throwError err
-  logInfo m!"dynamicTactics: {tacs}"
-  dynamicRuleTac (tacs ++ rwsAt 
+  logInfo m!"dynamicTactics: {dynTactics}"
+  dynamicRuleTac (dynTactics ++ rwsAt 
     ++ parsedTacs
     ) input
 
@@ -253,7 +253,7 @@ def introsWithTransparency (transparency: TransparencyMode) : RuleTac := RuleTac
         pure none
     return (#[goal], scriptBuilder?)
 
-@[aesop unsafe 90% tactic]
+-- @[aesop unsafe 90% tactic]
 def introsWithDefault : RuleTac := introsWithTransparency TransparencyMode.default
 def introsWithAll : RuleTac := introsWithTransparency TransparencyMode.all
 def introsWithReducible : RuleTac := introsWithTransparency TransparencyMode.reducible
@@ -268,7 +268,8 @@ structure AesopSearchConfig extends Aesop.Options where
   rws : Array Name
   forwards : Array <| Name × Float := #[] -- TODO
   destructs : Array <| Name × Float := #[] -- TODO
-  tacs : Array String := #[]
+  tactics : Array <| Name × Float := #[] -- usually tactics are not named
+  dynTactics : Array String := #[]
   dynProb : Float := 0.5
 
 def AesopSearchConfig.ruleSet (config: AesopSearchConfig) : 
@@ -277,18 +278,23 @@ def AesopSearchConfig.ruleSet (config: AesopSearchConfig) :
   for n in config.rws do
     addConstRewrite n false
     addConstRewrite n true
-  for t in config.tacs do
+  for t in config.dynTactics do
     addTacticString t
   let appRules ← config.apps.mapM 
     (fun (n, p) => applyConstRuleMembers n p)
-  let appRules := appRules.foldl (fun c r => c ++ r) #[]
+  let appRules : Array RuleSetMember := appRules.foldl (fun c r => c ++ r) #[]
+  let tacticRules ← 
+    config.tactics.push (``introsWithDefault, 0.9) |>.mapM 
+    (fun (n, p) => tacticConstRuleMembers n p)
+  let tacticRules : Array RuleSetMember := 
+    tacticRules.foldl (fun c r => c ++ r) #[]
   let simpRules ← config.simps.mapM simpConstRuleMember
   let simpRules := simpRules.foldl (fun c r => c ++ r) #[]
   let defaultRules ←
       Frontend.getDefaultRuleSet (includeGlobalSimpTheorems := true)
       {}
   let allRules : RuleSet := 
-    ((appRules ++ simpRules).push (dynamicRuleMember config.dynProb)).foldl
+    ((appRules ++ simpRules ++ tacticRules).push (dynamicRuleMember config.dynProb)).foldl
     (fun c r => c.add r) defaultRules
   return allRules
 
