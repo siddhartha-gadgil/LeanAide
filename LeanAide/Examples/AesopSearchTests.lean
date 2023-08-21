@@ -26,7 +26,6 @@ set_option trace.aesop.proof true
 -- set_option trace.aesop.tree true 
 -- set_option trace.aesop.steps.ruleSelection true 
 
-
 example (a b : MyEmpty): a = b := by
   test_aesop -- uses `apply MyEmpty.eql`
 
@@ -36,6 +35,9 @@ example (h : sillyN = 1) : 2 = sillyM + 1 := by
 
 example : (sillyN = 1) →  2 = sillyM + 1 := by
   test_aesop -- uses `rw [← n_is_m]`, does not use `rw .. at ..`
+
+example: ∀ {α : Type u_1} {β : Type u_2} {r : α → β → Prop}, Relator.LeftUnique r → Relator.RightUnique (flip r) := by
+  test_aesop -- uses introduction with default transparency
 
 elab "power_aesop" : tactic => do
   Tactic.liftMetaTactic (
