@@ -11053,3 +11053,350 @@ total : 39
 
 elaborated: 37
 
+Writing to file: silly-elab-10-false-5-8.json
+
+success
+
+theorem ∀ {p : ℕ}, Nat.Prime p → p = 2 ∨ Odd p
+
+total : 1
+
+elaborated: 1
+
+success
+
+theorem ∃ᶠ (m : ℕ) in Filter.atTop, m % 2 = 1
+
+total : 2
+
+elaborated: 2
+
+success
+
+theorem ℕ
+
+total : 3
+
+elaborated: 3
+
+success
+
+theorem Set.Infinite {p | Nat.Prime p ∧ Odd p}
+
+total : 4
+
+elaborated: 4
+
+success
+
+theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],
+  Module.rank K V = 2 → FiniteDimensional K V
+
+total : 5
+
+elaborated: 5
+
+success
+
+theorem {K : Type u} → [inst : Field K] → DivisionRing K
+
+total : 6
+
+elaborated: 6
+
+success
+
+theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],
+  Module.rank K V = 2 → FiniteDimensional K V
+
+total : 7
+
+elaborated: 7
+
+success
+
+theorem ∀ (n : ℕ), ∃ k, n + 1 = k
+
+total : 8
+
+elaborated: 8
+
+success
+
+theorem ∀ {n : ℕ}, n < Nat.succ n
+
+total : 9
+
+elaborated: 9
+
+success
+
+theorem ∀ {α : Type u_1} [inst : MeasurableSpace α] [inst_1 : TopologicalSpace α] [inst_2 : BorelSpace α],
+  OpensMeasurableSpace α
+
+total : 10
+
+elaborated: 10
+
+success
+
+theorem ∀ {α : Type u_1} [inst : MeasurableSpace α] (μ : MeasureTheory.Measure α) {s : Set α}, ?m.729893 μ = 0 → MeasurableSet s
+
+total : 11
+
+elaborated: 11
+
+success
+
+theorem ∀ {p : ℕ}, Nat.Prime p → ¬∃ t, t * t = p
+
+total : 12
+
+elaborated: 12
+
+success
+
+theorem ∀ {p : ℕ} [inst : Fact (Nat.Prime p)], Odd p → p > 2
+
+total : 13
+
+elaborated: 13
+
+success
+
+theorem ∀ {a b x y u v r s : ℕ},
+  a = x ^ 2 + y ^ 2 + u ^ 2 + v ^ 2 →
+    b = r ^ 2 + s ^ 2 + x ^ 2 + y ^ 2 → ∃ p q t z, a * b = p ^ 2 + q ^ 2 + t ^ 2 + z ^ 2
+
+total : 14
+
+elaborated: 14
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : CompactSpace α], LocallyCompactSpace α
+
+total : 15
+
+elaborated: 15
+
+success
+
+theorem ∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β},
+  Continuous f → UniformContinuous f
+
+total : 16
+
+elaborated: 16
+
+success
+
+theorem ∀ {a b : ℕ}, Nat.Prime a → Nat.Prime b → a ≠ b → a + b ≠ 6
+
+total : 17
+
+elaborated: 17
+
+success
+
+theorem ∀ (z : ℤ), ¬Irrational ↑z
+
+total : 18
+
+elaborated: 18
+
+success
+
+theorem ∀ {R : Type u} [inst : Ring R], IsUnit 1
+
+total : 19
+
+elaborated: 19
+
+success
+
+theorem {G : Type u_1} → [inst : Group G] → (H : Subgroup G) → Group { x // x ∈ H }
+
+total : 20
+
+elaborated: 20
+
+success
+
+theorem ∀ (m n : ℕ), ∃ k, m + n = k
+
+total : 21
+
+elaborated: 21
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Monoid G], IsOfFinOrder 1
+
+total : 22
+
+elaborated: 22
+
+success
+
+theorem Fact (Nat.Prime 7)
+
+total : 23
+
+elaborated: 23
+
+success
+
+theorem Finset.card (Finset.filter Nat.Prime (Finset.range 8)) = 3
+
+total : 24
+
+elaborated: 24
+
+success
+
+theorem ∀ {α : Type u} {s : Set α}, Set.Finite s → ∅ ⊆ s
+
+total : 25
+
+elaborated: 25
+
+success
+
+theorem ∀ {α : Type u} {s : Set α} [inst : Infinite α], ∃ t, Set.Finite t ∧ t ⊆ s
+
+total : 26
+
+elaborated: 26
+
+success
+
+theorem {R : Type u} → [inst : CommRing R] → Monoid R
+
+total : 27
+
+elaborated: 27
+
+No valid output from LLM; outputs below
+
+<input>:1:18: expected ',' while parsing ¬∃ (F : Type u_1) [inst : Field F], Fintype.card F = 10 
+
+<input>:1:18: expected ',' while parsing ¬∃ (K : Type u_1) [inst : Field K], Fintype.card K = 10 
+
+<input>:1:16: expected ',' while parsing ¬∃ (K : Type u) [inst : Field K], Fintype.card K = 10 
+
+<input>:1:14: expected ',' while parsing ¬∃ (K : Type) [inst : Field K], Fintype.card K = 10 
+
+<input>:1:3: expected '(', '_' or identifier while parsing ¬∃ {F : Type u_1} [inst : Field F], Fintype.card F = 10 
+
+<input>:1:16: expected ',' while parsing ¬∃ (F : Type u) [inst : Field F], Fintype.card F = 10 
+
+failed to elaborate
+
+outputs: #[¬∃ (F : Type u_1) [inst : Field F], Fintype.card F = 10 , ¬∃ (K : Type u_1) [inst : Field K], Fintype.card K = 10 , ¬∃ (K : Type u) [inst : Field K], Fintype.card K = 10 , ¬∃ (K : Type) [inst : Field K], Fintype.card K = 10 , ¬∃ {F : Type u_1} [inst : Field F], Fintype.card F = 10 , ¬∃ (F : Type u) [inst : Field F], Fintype.card F = 10 ]
+
+total : 28
+
+elaborated: 27
+
+success
+
+theorem ∀ {n : ℕ}, Odd n → ∃ a b, a ≠ b ∧ n = a + b
+
+total : 29
+
+elaborated: 28
+
+success
+
+theorem ∀ {G : Type u_1} [inst : GroupWithZero G] (x : G), IsOfFinOrder x
+
+total : 30
+
+elaborated: 29
+
+success
+
+theorem ∀ {α : Type u} [inst : LinearOrderedRing α] {x : α}, Even x → Even (x * x)
+
+total : 31
+
+elaborated: 30
+
+success
+
+theorem ∀ (A : Type u) [inst : CommRing A] [inst_1 : Nontrivial A] [inst_2 : DivisionRing A], IsField A
+
+total : 32
+
+elaborated: 31
+
+No valid output from LLM; outputs below
+
+∀ {α : Type u} [inst : HasOne α],  id 1 = 1 
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u} [inst : HasOne α], id 1 = 1 ]
+
+total : 33
+
+elaborated: 31
+
+success
+
+theorem ∀ {α : Type u} (x : α), Function.IsFixedPt id x
+
+total : 34
+
+elaborated: 32
+
+success
+
+theorem ∀ {α : Type u} [inst : PseudoMetricSpace α] {x : α}, Metric.diam {x} = 0
+
+total : 35
+
+elaborated: 33
+
+success
+
+theorem ∀ (G : Type u_1) [inst : Group G], Nonempty G
+
+total : 36
+
+elaborated: 34
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] (x : α), IsConnected (connectedComponent x)
+
+total : 37
+
+elaborated: 35
+
+success
+
+theorem ∀ {R : Type u_1} [inst : CommRing R] [inst_1 : IsDomain R], ∃ M, Ideal.IsMaximal M
+
+total : 38
+
+elaborated: 36
+
+success
+
+theorem PythagoreanTriple 3 4 5
+
+total : 39
+
+elaborated: 37
+
+success
+
+theorem ∀ {R : Type u} {M : Type v} [inst : Ring R] [inst_1 : AddCommGroup M] [inst_2 : Module R M] {ι : Type w}
+  [inst_3 : IsEmpty ι], Basis ι R M → M = ⊥
+
+total : 40
+
+elaborated: 38
+

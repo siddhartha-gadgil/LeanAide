@@ -88,3 +88,43 @@
 {"text":"All connected components of a topological space are connected.","fullPrompt":"No prompt (maybe using cached data)"}
 {"text":"The ring of integers has a maximal ideal.","fullPrompt":"No prompt (maybe using cached data)"}
 {"text":"The numbers `3`, `4` and `5` form a Pythagorean triple.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every prime number is `2` or odd.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"There are infinitely many odd natural numbers.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"The smallest odd prime is `3`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"There are infinitely many odd prime numbers.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If a vector space has dimension `2` then it is finite dimensional.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every field is a division ring.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If a space has dimension `2` then it is finite dimensional.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every natural number has a successor.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every natural number is less than its successor.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every set is Lebesgue measurable.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every set of Borel measure zero is Lebesgue measurable.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"No prime number is a perfect square.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every odd prime number is greater than `2`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every compact topological space is locally compact.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every continuous function is uniformly continuous.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"`6` is not the sum of two distinct prime numbers.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"No integer is irrational.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"The identity element in a ring is a unit.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every subgroup of a group is a group.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"The sum of two natural numbers is a natural number.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"The identity element of a group has finite order.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"`7` is a prime number.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"There are `3` prime numbers below `8`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"The empty set is contained in every finite set.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every infinite set contains a finite set.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every commutative ring is a monoid.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"There is no field of order `10`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every odd natural number is the sum of two distinct natural numbers.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every element in the trivial group has finite order.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"The square of an even number is even.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every commutative division ring is a field.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"The image of the identity element under the identity map is the identity element.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every point is a fixed point of the identity function on a space.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"The diameter of a singleton space is `0`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every group is non-empty.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"All connected components of a topological space are connected.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"The ring of integers has a maximal ideal.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"The numbers `3`, `4` and `5` form a Pythagorean triple.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"A vector space with the empty set as basis is trivial.","fullPrompt":"No prompt (maybe using cached data)"}
