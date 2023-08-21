@@ -11,23 +11,32 @@ example: ∀ {α : Type u_1} (r : Ordnode α), id r = Ordnode.nil → Ordnode.ni
 #check NonUnitalSubring.neg_mem'
 example: ∀ {R : Type u} [inst : NonUnitalNonAssocRing R] (self : NonUnitalSubring R) {x : R},
   x ∈ self.carrier → -x ∈ self.carrier := by
-simp_all only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, NonUnitalSubsemiring.mem_toAddSubmonoid,
-    NonUnitalSubring.mem_toNonUnitalSubsemiring, neg_mem_iff, implies_true, forall_const]
+  intro R inst self x a
+  simp_all only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, NonUnitalSubsemiring.mem_toAddSubmonoid,
+    NonUnitalSubring.mem_toNonUnitalSubsemiring, neg_mem_iff]
 
 
 
 #print LinearMap.polar_mem_iff
 
+
 #check Equiv.left_inv
 example: ∀ {α : Sort u_1} {β : Sort u_2} (self : α ≃ β), Function.LeftInverse self.invFun self.toFun := by
-  intro α β self x
-  simp_all only [Equiv.toFun_as_coe_apply, Equiv.invFun_as_coe, Equiv.symm_apply_apply]
+  intro α β self
+  simp_all only [Equiv.invFun_as_coe, Equiv.toFun_as_coe]
+  intro x
+  simp_all only [Equiv.symm_apply_apply]
 
 
 
 #check SmoothBumpCovering.isSubordinate_toBumpCovering -- not elaborated
 
 #print Set.antitone_setOf
+example : ∀ {α : Type u_1} {β : Type u_2} [inst : Preorder α] {p : α → β → Prop},
+  (∀ (b : β), Antitone fun a => p a b) → Antitone fun a => {b | p a b} := by
+    intro α β _ p
+    aesop (options := { introsTransparency? := some .default })
+
 
 #check CategoryTheory.Limits.WidePushoutShape.fintypeHom.proof_6
 example: ∀ {J : Type u_1} (j : CategoryTheory.Limits.WidePushoutShape J) (j_1 : J), j = some j_1 → some j_1 = j := by
@@ -68,9 +77,14 @@ example: ∀ (o a : ONote) (a_1 : ℕ+) (a_2 : ONote), o = ONote.oadd a a_1 a_2 
 
 #print Int.ModEq.trans
 
+
+example : ∀ {n a b c : ℤ}, a ≡ b [ZMOD n] → b ≡ c [ZMOD n] → a ≡ c [ZMOD n] := by
+  intro n a b c
+  apply Eq.trans -- but `aesop (add safe apply Eq.trans)` does not work here
+
 #check not_of_eq_false
 example: ∀ {p : Prop}, p = False → ¬p := by
-  intro p h a
+  intro p h
   aesop_subst h
   simp_all only
 
@@ -80,7 +94,12 @@ example: ∀ {p : Prop}, p = False → ¬p := by
 
 #print Int.ModEq.symm
 
-#print IsRegular.right
+#check IsRegular.right
+example: ∀ {R : Type u_1} [inst : Mul R] {c : R}, IsRegular c → IsRightRegular c := by
+  intro R inst c self
+  simp_all only [IsRegular.right]
+
+
 
 #print Pretrivialization.proj_toFun
 
@@ -111,7 +130,14 @@ example: ∀ {α : Type u} [inst : LE α] {p : α → Prop} {x y : Subtype p}, x
 
 
 
-#print ConvexCone.Pointed.mono
+#check ConvexCone.Pointed.mono
+example: ∀ {𝕜 : Type u_1} {E : Type u_2} [inst : OrderedSemiring 𝕜] [inst_1 : AddCommMonoid E] [inst_2 : SMul 𝕜 E]
+  {S T : ConvexCone 𝕜 E}, S ≤ T → ConvexCone.Pointed S → ConvexCone.Pointed T := by
+  intro 𝕜 E inst inst_1 inst_2 S T h a
+  apply h
+  exact a
+
+
 
 #check AddAction.mem_fixedPoints
 example: ∀ {α : Type u} (β : Type v) [inst : AddMonoid α] [inst_1 : AddAction α β] {b : β},
@@ -123,7 +149,8 @@ example: ∀ {α : Type u} (β : Type v) [inst : AddMonoid α] [inst_1 : AddActi
 
 #check Set.Subsingleton.injOn
 example: ∀ {α : Type u_1} {β : Type u_2} {s : Set α}, Set.Subsingleton s → ∀ (f : α → β), Set.InjOn f s := by
-  intro α β s hs f x₁ a x₂ a_1 a_2
+  intro α β s hs f
+  intro x₁ a x₂ a_1 a_2
   apply hs
   · simp_all only
   · simp_all only
@@ -156,17 +183,24 @@ example: ∀ [C : FP.FloatCfg] (n d : ℕ+) (d₁ n₁ : ℕ),
 
 
 
-#check CategoryTheory.Splitting.iso_comp_snd_eq
-example: ∀ {𝒜 : Type u_1} [inst : CategoryTheory.Category 𝒜] {A B C : 𝒜} {f : A ⟶ B} {g : B ⟶ C}
-  [inst_1 : CategoryTheory.Limits.HasZeroMorphisms 𝒜] [inst_2 : CategoryTheory.Limits.HasBinaryBiproducts 𝒜]
-  (self : CategoryTheory.Splitting f g),
-  CategoryTheory.CategoryStruct.comp self.iso.hom CategoryTheory.Limits.biprod.snd = g := by
-  intro 𝒜 inst A B C f g inst_1 inst_2 self
-  simp_all only [CategoryTheory.Splitting.iso_comp_snd_eq]
+-- #check CategoryTheory.Splitting.iso_comp_snd_eq
+-- example: ∀ {𝒜 : Type u_1} [inst : CategoryTheory.Category.{u_2, u_1} 𝒜] {A B C : 𝒜} {f : A ⟶ B} {g : B ⟶ C}
+--   [inst_1 : CategoryTheory.Limits.HasZeroMorphisms 𝒜] [inst_2 : CategoryTheory.Limits.HasBinaryBiproducts 𝒜]
+--   (self : CategoryTheory.Splitting f g),
+--   CategoryTheory.CategoryStruct.comp self.iso.hom CategoryTheory.Limits.biprod.snd = g := by
+--   intro 𝒜 inst A B C f g inst_1 inst_2 self
+--   simp_all only [CategoryTheory.Splitting.iso_comp_snd_eq]
 
 
 
 #print IsSubmonoid.mul_mem
+example : ∀ {M : Type u_1} [inst : Monoid M] {s : Set M},
+  IsSubmonoid s → ∀ {a b : M}, a ∈ s → b ∈ s → a * b ∈ s := by
+    intro M _ s self
+    apply IsSubmonoid.mul_mem
+    aesop
+    
+
 
 #check CategoryTheory.discreteCategory.proof_6
 example: ∀ (α : Type u_1) {Z : CategoryTheory.Discrete α} (as : α), Z = { as := as } → { as := as } = Z := by
@@ -247,13 +281,13 @@ simp_all only
 
 
 
-#check CategoryTheory.ShortComplex.HomologyData.comm
-example: ∀ {C : Type u_1} [inst : CategoryTheory.Category C] [inst_1 : CategoryTheory.Limits.HasZeroMorphisms C]
-  {S : CategoryTheory.ShortComplex C} (self : CategoryTheory.ShortComplex.HomologyData S),
-  CategoryTheory.CategoryStruct.comp self.left.π (CategoryTheory.CategoryStruct.comp self.iso.hom self.right.ι) =
-    CategoryTheory.CategoryStruct.comp self.left.i self.right.p := by
-  intro C inst inst_1 S self
-  simp_all only [CategoryTheory.ShortComplex.HomologyData.comm]
+-- #check CategoryTheory.ShortComplex.HomologyData.comm
+-- example: ∀ {C : Type u_1} [inst : CategoryTheory.Category.{u_2, u_1} C] [inst_1 : CategoryTheory.Limits.HasZeroMorphisms C]
+--   {S : CategoryTheory.ShortComplex C} (self : CategoryTheory.ShortComplex.HomologyData S),
+--   CategoryTheory.CategoryStruct.comp self.left.π (CategoryTheory.CategoryStruct.comp self.iso.hom self.right.ι) =
+--     CategoryTheory.CategoryStruct.comp self.left.i self.right.p := by
+--   intro C inst inst_1 S self
+--   simp_all only [CategoryTheory.ShortComplex.HomologyData.comm]
 
 
 
@@ -262,10 +296,8 @@ example: ∀ {C : Type u_1} [inst : CategoryTheory.Category C] [inst_1 : Categor
 #check HasCompactMulSupport.isCompact
 example: ∀ {α : Type u_1} {β : Type u_2} [inst : TopologicalSpace α] [inst_1 : One β] {f : α → β},
   HasCompactMulSupport f → IsCompact (mulTSupport f) := by
-  intro α β inst inst_1 f hf f_1 inst_2 a
-  simp_all only [Filter.le_principal_iff]
-  apply hf
-  simp_all only [Filter.le_principal_iff]
+  intro α β inst inst_1 f hf
+  exact hf
 
 
 
@@ -274,10 +306,10 @@ example: ∀ {α : Type u_1} [inst : CommSemiring α] (E : LinearRecurrence α) 
   LinearRecurrence.IsSolution E u ↔ u ∈ LinearRecurrence.solSpace E := by
   intro α inst E u
   apply Iff.intro
-  · intro a n
-    apply a
-  · intro a n
-    apply a
+  · intro a
+    exact a
+  · intro a
+    exact a
 
 
 
@@ -293,7 +325,17 @@ example: ∀ {α : Type u_1} [inst : CommSemiring α] (E : LinearRecurrence α) 
 
 #print Set.pairwise_of_forall
 
-#print Filter.eventually_curry_iff
+#check Filter.eventually_curry_iff
+example: ∀ {α : Type u_1} {β : Type u_2} {f : Filter α} {g : Filter β} {p : α × β → Prop},
+  (∀ᶠ (x : α × β) in Filter.curry f g, p x) ↔ ∀ᶠ (x : α) in f, ∀ᶠ (y : β) in g, p (x, y) := by
+  intro α β f g p
+  apply Iff.intro
+  · intro a
+    exact a
+  · intro a
+    exact a
+
+
 
 #print IsMonoidHom.map_one
 
@@ -306,12 +348,12 @@ example: ∀ {R : Type u} {A : Type v} [inst : CommSemiring R] [inst_1 : NonUnit
 
 
 
-#check CategoryTheory.Limits.isoZeroOfEpiEqZero.proof_1
-example: ∀ {C : Type u_2} [inst : CategoryTheory.Category C] [inst_1 : CategoryTheory.Limits.HasZeroMorphisms C] {X Y : C}
-  {f : X ⟶ Y}, f = 0 → 0 = f := by
-  intro C inst inst_1 X Y f h
-  aesop_subst h
-  simp_all only
+-- #check CategoryTheory.Limits.isoZeroOfEpiEqZero.proof_1
+-- example: ∀ {C : Type u_2} [inst : CategoryTheory.Category.{u_2, u_2} C] [inst_1 : CategoryTheory.Limits.HasZeroMorphisms C]
+--   {X Y : C} {f : X ⟶ Y}, f = 0 → 0 = f := by
+--   intro C inst inst_1 X Y f h
+--   aesop_subst h
+--   simp_all only
 
 
 
@@ -349,8 +391,8 @@ example: ∀ {M : Type u_1} [inst : MonoidWithZero M] {r : M}, r ∈ nonZeroDivi
   · intro a x a_1
     apply a
     simp_all only
-  · intro a z a_1
-    simp_all only [zero_mul]
+  · intro a
+    exact a
 
 
 
@@ -400,10 +442,8 @@ example: ∀ (x x_1 x_2 : PUnit), x ≤ x_1 ⇨ x_2 ↔ x ≤ x_1 ⇨ x_2 := by
 
 #check IsSMulRegular.isLeftRegular
 example: ∀ {R : Type u_1} [inst : Mul R] {a : R}, IsSMulRegular R a → IsLeftRegular a := by
-  intro R inst a h a₁ a₂ a_1
-  simp_all only
-  apply h
-  simp_all only [smul_eq_mul]
+  intro R inst a h
+  exact h
 
 
 
@@ -419,7 +459,8 @@ example: ∀ (b : Turing.PartrecToTM2.Λ') (f : Option Turing.PartrecToTM2.Γ' �
 #check AbsoluteValue.nonneg'
 example: ∀ {R : Type u_1} {S : Type u_2} [inst : Semiring R] [inst_1 : OrderedSemiring S] (self : AbsoluteValue R S) (x : R),
   0 ≤ MulHom.toFun self.toMulHom x := by
-simp_all only [MulHom.toFun_eq_coe, AbsoluteValue.coe_toMulHom, NonnegHomClass.map_nonneg, forall_const, implies_true]
+  intro R S inst inst_1 self x
+  simp_all only [MulHom.toFun_eq_coe, AbsoluteValue.coe_toMulHom, NonnegHomClass.map_nonneg]
 
 
 
@@ -440,12 +481,12 @@ example: ∀ {𝕜 : Type u_2} {E : Type u_1} [inst : OrderedSemiring 𝕜] [ins
 
 
 
-#check CategoryTheory.IsSplitCoequalizer.leftSection_bottom
-example: ∀ {C : Type u} [inst : CategoryTheory.Category C] {X Y : C} {f g : X ⟶ Y} {Z : C} {π : Y ⟶ Z}
-  (self : CategoryTheory.IsSplitCoequalizer f g π),
-  CategoryTheory.CategoryStruct.comp self.leftSection g = CategoryTheory.CategoryStruct.id Y := by
-  intro C inst X Y f g Z π self
-  simp_all only [CategoryTheory.IsSplitCoequalizer.leftSection_bottom]
+-- #check CategoryTheory.IsSplitCoequalizer.leftSection_bottom
+-- example: ∀ {C : Type u} [inst : CategoryTheory.Category.{u_2, u} C] {X Y : C} {f g : X ⟶ Y} {Z : C} {π : Y ⟶ Z}
+--   (self : CategoryTheory.IsSplitCoequalizer f g π),
+--   CategoryTheory.CategoryStruct.comp self.leftSection g = CategoryTheory.CategoryStruct.id Y := by
+--   intro C inst X Y f g Z π self
+--   simp_all only [CategoryTheory.IsSplitCoequalizer.leftSection_bottom]
 
 
 
@@ -674,8 +715,8 @@ example: ∀ {M : Type u_1} [inst : AddMonoid M] {z : M}, z ∈ AddSubmonoid.cen
   apply Iff.intro
   · intro a g
     apply a
-  · intro a m
-    simp_all only
+  · intro a
+    exact a
 
 
 
@@ -685,16 +726,16 @@ example: ∀ {M : Type u_1} [inst : AddMonoid M] {z : M}, z ∈ AddSubmonoid.cen
 
 #print Ordnode.all_node'
 
--- #check Class.mem_def
--- example: ∀ (A B : Class), A ∈ B ↔ ∃ x, ↑x = A ∧ B x := by
---   intro A B
---   apply Iff.intro
---   · intro a
---     exact a
---   · intro a
---     unhygienic with_reducible aesop_destruct_products
---     aesop_subst left
---     simp_all only [Class.coe_mem]
+#check Class.mem_def
+example: ∀ (A B : Class), A ∈ B ↔ ∃ x : ZFSet, ↑x = A ∧ B x := by
+  intro A B
+  apply Iff.intro
+  · intro a
+    exact a
+  · intro a
+    unhygienic with_reducible aesop_destruct_products
+    aesop_subst left
+    simp_all only [Class.coe_mem]
 
 
 
@@ -708,12 +749,12 @@ example: ∀ {M : Type u_1} [inst : AddMonoid M] {z : M}, z ∈ AddSubmonoid.cen
 
 #print HolderOnWith.edist_le
 
-#check CategoryTheory.Idempotents.Karoubi.Hom.comm
-example: ∀ {C : Type u_1} [inst : CategoryTheory.Category C] {P Q : CategoryTheory.Idempotents.Karoubi C}
-  (self : CategoryTheory.Idempotents.Karoubi.Hom P Q),
-  self.f = CategoryTheory.CategoryStruct.comp P.p (CategoryTheory.CategoryStruct.comp self.f Q.p) := by
-  intro C inst P Q self
-  simp_all only [CategoryTheory.Idempotents.Karoubi.comp_p, CategoryTheory.Idempotents.Karoubi.p_comp]
+-- #check CategoryTheory.Idempotents.Karoubi.Hom.comm
+-- example: ∀ {C : Type u_1} [inst : CategoryTheory.Category.{u_2, u_1} C] {P Q : CategoryTheory.Idempotents.Karoubi C}
+--   (self : CategoryTheory.Idempotents.Karoubi.Hom P Q),
+--   self.f = CategoryTheory.CategoryStruct.comp P.p (CategoryTheory.CategoryStruct.comp self.f Q.p) := by
+--   intro C inst P Q self
+--   simp_all only [CategoryTheory.Idempotents.Karoubi.comp_p, CategoryTheory.Idempotents.Karoubi.p_comp]
 
 
 
@@ -725,15 +766,9 @@ example: ∀ {R : Type u_1} {M : Type u_2} [inst : Semiring R] [inst_1 : AddComm
   apply Iff.intro
   · intro a i j a_1
     apply a
-    intro a_2
-    aesop_subst a_2
-    simp_all only [not_true]
-  · intro a i j a_1
-    simp_all only [ne_eq]
-    apply a
-    intro a_2
-    aesop_subst a_2
-    simp_all only [not_true]
+    simp_all only [ne_eq, not_false_eq_true]
+  · intro a
+    exact a
 
 
 
@@ -783,14 +818,18 @@ example: ∀ {K : Type u_1} [inst : Field K] (S : Type u_2) [inst_1 : SetLike S 
 #print ofBoolAlg_inj
 
 #check CategoryTheory.Subobject.isoOfEq.proof_2
-example: ∀ {C : Type u_1} [inst : CategoryTheory.Category C] {B : C} (X Y : CategoryTheory.Subobject B), X = Y → Y ≤ X := by
-simp_all only [le_refl, implies_true, forall_const]
+example: ∀ {C : Type u_1} [inst : CategoryTheory.Category.{u_2, u_1} C] {B : C} (X Y : CategoryTheory.Subobject B),
+  X = Y → Y ≤ X := by
+  intro C inst B X Y h
+  aesop_subst h
+  simp_all only [le_refl]
 
 
 
 #check GE.ge.le
 example: ∀ {α : Type u} [inst : LE α] {x y : α}, x ≥ y → y ≤ x := by
-simp_all only [ge_iff_le, implies_true, forall_const]
+  intro α inst x y h
+  simp_all only [ge_iff_le]
 
 
 
@@ -798,7 +837,8 @@ simp_all only [ge_iff_le, implies_true, forall_const]
 
 #check GT.gt.lt
 example: ∀ {α : Type u} [inst : LT α] {x y : α}, x > y → y < x := by
-simp_all only [gt_iff_lt, implies_true, forall_const]
+  intro α inst x y h
+  simp_all only [gt_iff_lt]
 
 
 
@@ -934,12 +974,10 @@ example: ∀ {M : Type u_1} [inst : Mul M] {p p' : Subsemigroup M} {x : M}, x �
 
 #print FirstOrder.Language.LHom.mk.sizeOf_spec
 
--- #check Affine.Simplex.PointsWithCircumcenterIndex.circumcenter_index.sizeOf_spec
+#check Affine.Simplex.PointsWithCircumcenterIndex.circumcenter_index.sizeOf_spec
 -- example: ∀ {n : ℕ}, sizeOf Affine.Simplex.PointsWithCircumcenterIndex.circumcenter_index = 1 := by
 --   intro n
 --   apply Eq.refl
---   intro n
---   exact n
 
 
 
@@ -979,7 +1017,7 @@ example: ∀ {α : Type u_1} [inst : MeasurableSpace α] (a : α) (s : Subtype M
 
 
 #check CategoryTheory.MonadHom.app_η
-example: ∀ {C : Type u₁} [inst : CategoryTheory.Category C] {T₁ T₂ : CategoryTheory.Monad C}
+example: ∀ {C : Type u₁} [inst : CategoryTheory.Category.{u_2, u₁} C] {T₁ T₂ : CategoryTheory.Monad C}
   (self : CategoryTheory.MonadHom T₁ T₂) (X : C),
   CategoryTheory.CategoryStruct.comp (CategoryTheory.NatTrans.app (CategoryTheory.Monad.η T₁) X)
       (CategoryTheory.NatTrans.app self.toNatTrans X) =
@@ -1002,7 +1040,17 @@ example: ∀ (J : Type u_1) {Z : CategoryTheory.Bicone J} {k : J},
 
 #print CategoryTheory.Monad.left_unit'
 
-#print NonUnitalStarSubalgebra.toNonUnitalSubalgebra_le_iff
+#check NonUnitalStarSubalgebra.toNonUnitalSubalgebra_le_iff
+example: ∀ {R : Type u} {A : Type v} [inst : CommSemiring R] [inst_1 : NonUnitalNonAssocSemiring A] [inst_2 : Module R A]
+  [inst_3 : Star A] {S₁ S₂ : NonUnitalStarSubalgebra R A}, S₁.toNonUnitalSubalgebra ≤ S₂.toNonUnitalSubalgebra ↔ S₁ ≤ S₂ := by
+  intro R A inst inst_1 inst_2 inst_3 S₁ S₂
+  apply Iff.intro
+  · intro a
+    exact a
+  · intro a
+    exact a
+
+
 
 #print AffineIsometry.norm_map
 
@@ -1019,8 +1067,8 @@ example: ∀ {K : Type u_1} {L : Type u_2} [inst : Field K] [inst_1 : Field L] [
 #print WellOrder.wo
 
 #check Bimod.Hom.left_act_hom
-example: ∀ {C : Type u₁} [inst : CategoryTheory.Category C] [inst_1 : CategoryTheory.MonoidalCategory C] {A B : Mon_ C}
-  {M N : Bimod A B} (self : Bimod.Hom M N),
+example: ∀ {C : Type u₁} [inst : CategoryTheory.Category.{u_2, u₁} C] [inst_1 : CategoryTheory.MonoidalCategory C]
+  {A B : Mon_ C} {M N : Bimod A B} (self : Bimod.Hom M N),
   CategoryTheory.CategoryStruct.comp M.actLeft self.hom =
     CategoryTheory.CategoryStruct.comp
       (CategoryTheory.MonoidalCategory.tensorHom (CategoryTheory.CategoryStruct.id A.X) self.hom) N.actLeft := by
@@ -1029,7 +1077,16 @@ example: ∀ {C : Type u₁} [inst : CategoryTheory.Category C] [inst_1 : Catego
 
 
 
-#print Ideal.mem_pi
+#check Ideal.mem_pi
+example: ∀ {α : Type u} [inst : Semiring α] (I : Ideal α) (ι : Type v) (x : ι → α), x ∈ Ideal.pi I ι ↔ ∀ (i : ι), x i ∈ I := by
+  intro α inst I ι x
+  apply Iff.intro
+  · intro a i
+    apply a
+  · intro a
+    exact a
+
+
 
 #print CategoryTheory.GrothendieckTopology.transitive'
 
@@ -1044,7 +1101,17 @@ example: ∀ {R : Type u} [inst : NonAssocSemiring R] {p p' : Subsemiring R} {x 
 
 #print IsAddMonoidHom.map_zero
 
-#print Set.preimage_subset_iff
+#check Set.preimage_subset_iff
+example: ∀ {α : Type u_1} {β : Type u_2} {A : Set α} {B : Set β} {f : α → β}, f ⁻¹' B ⊆ A ↔ ∀ (a : α), f a ∈ B → a ∈ A := by
+  intro α β A B f
+  apply Iff.intro
+  · intro a a_1 a_1_1
+    apply a
+    simp_all only [Set.mem_preimage]
+  · intro a
+    exact a
+
+
 
 -- #check Fin.mk_le_of_le_val
 -- example: ∀ {n : ℕ} {b : Fin n} {a : ℕ} (h : a ≤ ↑b), { val := a, isLt := (_ : a < n) } ≤ b := by
@@ -1062,28 +1129,31 @@ example: ∀ (J : Type u_1) {Y : CategoryTheory.Bicone J} (j : J),
 
 
 
-#check Equiv.Perm.VectorsProdEqOne.mem_iff
-example: ∀ (G : Type u_1) [inst : Group G] {n : ℕ} (v : Vector G n),
-  v ∈ Equiv.Perm.vectorsProdEqOne G n ↔ List.prod (Vector.toList v) = 1 := by
-  intro G inst n v
-  apply Iff.intro
-  · intro a
-    exact a
-  · intro a
-    exact a
+-- #check Equiv.Perm.VectorsProdEqOne.mem_iff
+-- example: ∀ (G : Type u_1) [inst : Group G] {n : ℕ} (v : Vector G n),
+--   v ∈ Equiv.Perm.vectorsProdEqOne G n ↔ List.prod (Vector.toList v) = 1 := by
+--   intro G inst n v
+--   (have fwd : True := eg n)
+--   apply Iff.intro
+--   · intro a
+--     exact a
+--   · intro a
+--     exact a
 
 
 
 #check Multiset.disjoint_left
-example: ∀ {α : Type u_1} {s t : Multiset α}, Multiset.Disjoint s t ↔ ∀ {a : α}, a ∈ s → ¬a ∈ t := by
-  intro α s t
-  apply Iff.intro
-  · intro a a_1 a_1_1 a_2
-    apply a
-    on_goal 2 => exact a_2
-    simp_all only
-  · intro a a_1 a_2 a_3
-    simp_all only
+-- example: ∀ {α : Type u_1} {s t : Multiset α}, Multiset.Disjoint s t ↔ ∀ {a : α}, a ∈ s → ¬a ∈ t := by
+--   intro α s t
+--   apply Iff.intro
+--   · intro a a_1 a_1_1
+--     apply Aesop.BuiltinRules.not_intro
+--     intro a_2
+--     apply a
+--     on_goal 2 => exact a_2
+--     simp_all only
+--   · intro a
+--     exact a
 
 
 
@@ -1122,8 +1192,8 @@ example: ∀ {𝕜 : Type u_2} {E : Type u_1} [inst : SeminormedRing 𝕜] [inst
   · intro a V a_1
     apply a
     simp_all only
-  · intro a V a_1
-    simp_all only
+  · intro a
+    exact a
 
 
 
@@ -1157,12 +1227,10 @@ example: ∀ {α : Type u_1} [inst : Preorder α] {s : Set α} {x : α}, x ∈ u
 example: ∀ {x y : PGame}, PGame.Lf x y ↔ Game.Lf (Quotient.mk PGame.setoid x) (Quotient.mk PGame.setoid y) := by
   intro x y
   apply Iff.intro
-  · intro a a_1
-    apply a
-    simp_all only
-  · intro a a_1
-    apply a
-    simp_all only
+  · intro a
+    exact a
+  · intro a
+    exact a
 
 
 
@@ -1206,7 +1274,19 @@ example: ∀ {R : Type u} [inst : Ring R] {s : Subring R} {x : R}, x ∈ s.toSub
 
 
 
-#print LieModule.mem_weightSpace
+#check LieModule.mem_weightSpace
+example: ∀ {R : Type u} {L : Type v} [inst : CommRing R] [inst_1 : LieRing L] [inst_2 : LieAlgebra R L] (M : Type w)
+  [inst_3 : AddCommGroup M] [inst_4 : Module R M] [inst_5 : LieRingModule L M] [inst_6 : LieModule R L M]
+  [inst_7 : LieAlgebra.IsNilpotent R L] (χ : L → R) (m : M),
+  m ∈ LieModule.weightSpace M χ ↔ m ∈ LieModule.preWeightSpace M χ := by
+  intro R L inst inst_1 inst_2 M inst_3 inst_4 inst_5 inst_6 inst_7 χ m
+  apply Iff.intro
+  · intro a
+    exact a
+  · intro a
+    exact a
+
+
 
 #print AlgebraicGeometry.AffineTargetMorphismProperty.IsLocal.RespectsIso
 
@@ -1240,8 +1320,8 @@ example: ∀ {L : FirstOrder.Language} {M : Type w} [inst : FirstOrder.Language.
 
 #check not_not_intro
 example: ∀ {p : Prop}, p → ¬¬p := by
-  intro p h a
-  simp_all only
+  intro p h
+  simp_all only [not_true, not_false_eq_true]
 
 
 
@@ -1262,8 +1342,8 @@ example: ∀ {α : Type u_1} (rl : Ordnode α), rl = Ordnode.nil → Ordnode.nil
 #check OrderAddMonoidHom.monotone' -- not elaborated
 
 #check Bimod.middle_assoc
-example: ∀ {C : Type u₁} [inst : CategoryTheory.Category C] [inst_1 : CategoryTheory.MonoidalCategory C] {A B : Mon_ C}
-  (self : Bimod A B),
+example: ∀ {C : Type u₁} [inst : CategoryTheory.Category.{u_2, u₁} C] [inst_1 : CategoryTheory.MonoidalCategory C]
+  {A B : Mon_ C} (self : Bimod A B),
   CategoryTheory.CategoryStruct.comp
       (CategoryTheory.MonoidalCategory.tensorHom self.actLeft (CategoryTheory.CategoryStruct.id B.X)) self.actRight =
     CategoryTheory.CategoryStruct.comp (CategoryTheory.MonoidalCategory.associator A.X self.X B.X).hom
@@ -1284,14 +1364,39 @@ example: ∀ {𝕜 : Type u_1} {E : Type u_2} [inst : OrderedSemiring 𝕜] [ins
 
 
 
-#print Multiset.subset_iff
+#check Multiset.subset_iff
+example: ∀ {α : Type u_1} {s t : Multiset α}, s ⊆ t ↔ ∀ ⦃x : α⦄, x ∈ s → x ∈ t := by
+  intro α s t
+  apply Iff.intro
+  · intro a x a_1
+    apply a
+    simp_all only
+  · intro a
+    exact a
 
-#print Submodule.le_div_iff
+
+
+#check Submodule.le_div_iff
+example: ∀ {R : Type u} [inst : CommSemiring R] {A : Type v} [inst_1 : CommSemiring A] [inst_2 : Algebra R A]
+  {I J K : Submodule R A}, I ≤ J / K ↔ ∀ (x : A), x ∈ I → ∀ (z : A), z ∈ K → x * z ∈ J := by
+  intro R inst A inst_1 inst_2 I J K
+  apply Iff.intro
+  · intro a x a_1 z a_2
+    apply a
+    · simp_all only
+    · simp_all only
+  · intro a
+    exact a
+
+
 
 #check Relator.LeftUnique.flip
 example: ∀ {α : Type u_1} {β : Type u_2} {r : α → β → Prop}, Relator.LeftUnique r → Relator.RightUnique (flip r) := by
-  aesop (add norm unfold Relator.LeftUnique,
-  norm unfold Relator.RightUnique)
+  intro α β r h
+  intro a b c a_1 a_2
+  apply h
+  on_goal 2 => exact a_2
+  exact a_1
 
 
 
@@ -1333,7 +1438,8 @@ example: ∀ {R : Type u_1} {A : Type u_2} [inst : CommSemiring R] [inst_1 : Com
 #check MvPolynomial.le_vanishingIdeal_zeroLocus
 example: ∀ {k : Type u_1} [inst : Field k] {σ : Type u_2} (I : Ideal (MvPolynomial σ k)),
   I ≤ MvPolynomial.vanishingIdeal (MvPolynomial.zeroLocus I) := by
-  intro k inst σ I x a x_1 a_1
+  intro k inst σ I
+  intro x a x_1 a_1
   simp_all only [MvPolynomial.mem_zeroLocus_iff]
 
 
@@ -1373,7 +1479,8 @@ example: ∀ (n n_1 : ℕ), n = Nat.succ n_1 → Nat.succ n_1 = n := by
 #check IsTorsion.group.proof_5 -- not elaborated
 
 #check CategoryTheory.quotientPathsEquiv.proof_2
-example: ∀ (C : Type u_1) [inst : CategoryTheory.Category C] (X : CategoryTheory.Quotient (CategoryTheory.pathsHomRel C)), X = X := by
+example: ∀ (C : Type u_1) [inst : CategoryTheory.Category.{u_2, u_1} C]
+  (X : CategoryTheory.Quotient (CategoryTheory.pathsHomRel C)), X = X := by
   intro C inst X
   simp_all only [CategoryTheory.pathsHomRel, CategoryTheory.pathComposition_obj, CategoryTheory.pathComposition_map]
 
@@ -1452,8 +1559,8 @@ example: ∀ {E : Type u_1} [inst : AddGroup E] {p q : NonarchAddGroupSeminorm E
 #print TopologicalSpace.IsTopologicalBasis.sUnion_eq
 
 #check CategoryTheory.MonoidalNatTrans.tensor
-example: ∀ {C : Type u₁} [inst : CategoryTheory.Category C] [inst_1 : CategoryTheory.MonoidalCategory C] {D : Type u₂}
-  [inst_2 : CategoryTheory.Category D] [inst_3 : CategoryTheory.MonoidalCategory D]
+example: ∀ {C : Type u₁} [inst : CategoryTheory.Category.{u_2, u₁} C] [inst_1 : CategoryTheory.MonoidalCategory C] {D : Type u₂}
+  [inst_2 : CategoryTheory.Category.{u₁, u₂} D] [inst_3 : CategoryTheory.MonoidalCategory D]
   {F G : CategoryTheory.LaxMonoidalFunctor C D} (self : CategoryTheory.MonoidalNatTrans F G) (X Y : C),
   CategoryTheory.CategoryStruct.comp (CategoryTheory.LaxMonoidalFunctor.μ F X Y)
       (CategoryTheory.NatTrans.app self.toNatTrans (CategoryTheory.MonoidalCategory.tensorObj X Y)) =
@@ -1470,7 +1577,17 @@ example: ∀ {C : Type u₁} [inst : CategoryTheory.Category C] [inst_1 : Catego
 
 #print BilinForm.mk.sizeOf_spec
 
-#print Finsupp.mem_supported
+#check Finsupp.mem_supported
+example: ∀ {α : Type u_1} {M : Type u_2} (R : Type u_3) [inst : Semiring R] [inst_1 : AddCommMonoid M] [inst_2 : Module R M]
+  {s : Set α} (p : α →₀ M), p ∈ Finsupp.supported M R s ↔ ↑p.support ⊆ s := by
+  intro α M R inst inst_1 inst_2 s p
+  apply Iff.intro
+  · intro a
+    exact a
+  · intro a
+    exact a
+
+
 
 #print Sylow.isPGroup'
 
@@ -1499,8 +1616,8 @@ example: ∀ {𝕜 : Type u_1} [inst : NontriviallyNormedField 𝕜] {E : Type u
 #check Filter.mem_sub -- not elaborated
 
 #check Mon_.Hom.one_hom
-example: ∀ {C : Type u₁} [inst : CategoryTheory.Category C] [inst_1 : CategoryTheory.MonoidalCategory C] {M N : Mon_ C}
-  (self : Mon_.Hom M N), CategoryTheory.CategoryStruct.comp M.one self.hom = N.one := by
+example: ∀ {C : Type u₁} [inst : CategoryTheory.Category.{u_2, u₁} C] [inst_1 : CategoryTheory.MonoidalCategory C]
+  {M N : Mon_ C} (self : Mon_.Hom M N), CategoryTheory.CategoryStruct.comp M.one self.hom = N.one := by
   intro C inst inst_1 M N self
   simp_all only [Mon_.Hom.one_hom]
 
@@ -1509,8 +1626,8 @@ example: ∀ {C : Type u₁} [inst : CategoryTheory.Category C] [inst_1 : Catego
 #print NonUnitalRingHom.mem_range
 
 #check CategoryTheory.Limits.PullbackCone.flipIsLimit.proof_1
-example: ∀ {C : Type u_2} [inst : CategoryTheory.Category C] {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} {W : C} {h : W ⟶ X} {k : W ⟶ Y}
-  {comm : CategoryTheory.CategoryStruct.comp h f = CategoryTheory.CategoryStruct.comp k g},
+example: ∀ {C : Type u_2} [inst : CategoryTheory.Category.{u_2, u_2} C] {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} {W : C} {h : W ⟶ X}
+  {k : W ⟶ Y} {comm : CategoryTheory.CategoryStruct.comp h f = CategoryTheory.CategoryStruct.comp k g},
   CategoryTheory.CategoryStruct.comp k g = CategoryTheory.CategoryStruct.comp h f := by
   intro C inst X Y Z f g W h k comm
   simp_all only
@@ -1523,21 +1640,34 @@ example: ∀ (b : Turing.PartrecToTM2.Λ') (p : Turing.PartrecToTM2.Γ' → Bool
   intro b p k q h
   aesop_subst h
   simp_all only
+ 
 
 
+#check Filter.Eventually.filter_mono
+example: ∀ {α : Type u} {f₁ f₂ : Filter α}, f₁ ≤ f₂ → ∀ {p : α → Prop}, (∀ᶠ (x : α) in f₂, p x) → ∀ᶠ (x : α) in f₁, p x := by
+  intro α f₁ f₂ h p hp
+  apply h
+  simp_all only
+  exact hp
 
-#print Filter.Eventually.filter_mono
+
 
 #print Pmf.ofFinset_apply_of_not_mem
 
 #print RelEmbedding.refl.proof_1
 
-#print Monotone.codRestrict
+#check Monotone.codRestrict
+example: ∀ {α : Type u_1} {β : Type u_2} [inst : Preorder α] [inst_1 : Preorder β] {f : α → β},
+  Monotone f → ∀ {s : Set β} (hs : ∀ (x : α), f x ∈ s), Monotone (Set.codRestrict f s hs) := by
+  intro α β inst inst_1 f h s hs
+  exact h
+
+
 
 #check Subring.neg_mem'
 example: ∀ {R : Type u} [inst : Ring R] (self : Subring R) {x : R}, x ∈ self.carrier → -x ∈ self.carrier := by
-simp_all only [Subsemiring.coe_carrier_toSubmonoid, Subring.coe_toSubsemiring, SetLike.mem_coe, neg_mem_iff,
-    implies_true, forall_const]
+  intro R inst self x a
+  simp_all only [Subsemiring.coe_carrier_toSubmonoid, Subring.coe_toSubsemiring, SetLike.mem_coe, neg_mem_iff]
 
 
 
@@ -1554,13 +1684,13 @@ example: ∀ {G : Type u_1} [inst : AddGroup G] {z : G}, z ∈ AddSubgroup.cente
   apply Iff.intro
   · intro a g
     apply a
-  · intro a m
-    simp_all only
+  · intro a
+    exact a
 
 
 
 #check CategoryTheory.MorphismProperty.epimorphisms.iff
-example: ∀ {C : Type u} [inst : CategoryTheory.Category C] {X Y : C} (f : X ⟶ Y),
+example: ∀ {C : Type u} [inst : CategoryTheory.Category.{u_2, u} C] {X Y : C} (f : X ⟶ Y),
   CategoryTheory.MorphismProperty.epimorphisms C f ↔ CategoryTheory.Epi f := by
   intro C inst X Y f
   simp_all only [CategoryTheory.MorphismProperty.epimorphisms.iff]
@@ -1615,7 +1745,7 @@ example: ∀ {α : Type u} [inst : AddMonoid α] (self : AddUnits α), self.neg 
 
 #check not_of_iff_false
 example: ∀ {a : Prop}, (a ↔ False) → ¬a := by
-  intro a a_1 a_2
+  intro a a_1
   aesop_subst a_1
   simp_all only
 
@@ -1632,7 +1762,7 @@ example: ∀ {a : Prop}, (a ↔ False) → ¬a := by
 #check Module.Baer.ExtensionOf.le -- not elaborated
 
 #check CategoryTheory.ThinSkeleton.preorder.proof_4
-example: ∀ (C : Type u_2) [inst : CategoryTheory.Category C] (a b : CategoryTheory.ThinSkeleton C), a < b ↔ a < b := by
+example: ∀ (C : Type u_2) [inst : CategoryTheory.Category.{u_2, u_2} C] (a b : CategoryTheory.ThinSkeleton C), a < b ↔ a < b := by
   intro C inst a b
   simp_all only
 
@@ -1640,7 +1770,14 @@ example: ∀ (C : Type u_2) [inst : CategoryTheory.Category C] (a b : CategoryTh
 
 #check CategoryTheory.symmetricOfHasFiniteProducts_braiding -- not elaborated
 
-#print UniformSpace.uniformContinuous_quotient
+#check UniformSpace.uniformContinuous_quotient
+example: ∀ {α : Type u} {β : Type v} [inst : UniformSpace α] [inst_1 : UniformSpace β]
+  {f : Quotient (UniformSpace.separationSetoid α) → β},
+  (UniformContinuous fun x => f (Quotient.mk (UniformSpace.separationSetoid α) x)) → UniformContinuous f := by
+  intro α β inst inst_1 f hf
+  exact hf
+
+
 
 #print Set.mem_vsub
 
@@ -1661,6 +1798,7 @@ example: ∀ {α : Type u_1} {β : Type u_2} [inst : Preorder α] [inst_1 : Preo
 
 
 
+-- #check QuadraticForm.Isometry.map_app' -- not elaborated
 
 #print ProperCone.mem_zero
 
@@ -1719,7 +1857,7 @@ example: ∀ (J : Type u_1) (k : CategoryTheory.Bicone J), k = CategoryTheory.Bi
 #check YoungDiagram.isLowerSet -- not elaborated
 
 #check CategoryTheory.SplitEpi.id
-example: ∀ {C : Type u₁} [inst : CategoryTheory.Category C] {X Y : C} {f : X ⟶ Y} (self : CategoryTheory.SplitEpi f),
+example: ∀ {C : Type u₁} [inst : CategoryTheory.Category.{u_2, u₁} C] {X Y : C} {f : X ⟶ Y} (self : CategoryTheory.SplitEpi f),
   CategoryTheory.CategoryStruct.comp self.section_ f = CategoryTheory.CategoryStruct.id Y := by
   intro C inst X Y f self
   simp_all only [CategoryTheory.SplitEpi.id]
@@ -1757,7 +1895,8 @@ example: ∀ {R : Type u_1} [inst : Ring R], IsArtinianRing R ↔ IsArtinian R R
 
 #check Membership.mem.out
 example: ∀ {α : Type u} {p : α → Prop} {a : α}, a ∈ {x | p x} → p a := by
-aesop (options := { introsTransparency? := some .default })
+  intro α p a h
+  simp_all only [Set.mem_setOf_eq]
 
 
 
