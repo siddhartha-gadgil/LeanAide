@@ -85,7 +85,7 @@ inferred
 
  : (∀ {α : Type u} [inst : SizeOf α], sizeOf RegularExpression.zero = 1)
 typeclass instance problem is stuck, it is often due to metavariables
-  SizeOf (RegularExpression ?m.6756) ; identifiers [α, u, inst, SizeOf, α, sizeOf, RegularExpression.zero] (during elaboration) for (∀ {α : Type u} [inst : SizeOf α], sizeOf RegularExpression.zero = 1)
+  SizeOf (RegularExpression ?m.6826) ; identifiers [α, u, inst, SizeOf, α, sizeOf, RegularExpression.zero] (during elaboration) for (∀ {α : Type u} [inst : SizeOf α], sizeOf RegularExpression.zero = 1)
 
  : (∀ {α : Type u_1} {β : Type u_2} [inst : NonAssocSemiring α] [inst_1 : Preorder α] [inst_2 : NonAssocSemiring β]
   [inst_3 : Preorder β] (self : α →+*o β), Monotone (OneHom.toFun ↑↑(OrderRingHom.toRingHom self)))
@@ -94,7 +94,7 @@ type mismatch
 has type
   α →+* β : Type (max u_1 u_2)
 but is expected to have type
-  OneHom (?m.1709 self) (?m.1710 self) : Type (max ?u.184 ?u.183) ; identifiers [α, u_1, β, u_2, inst, NonAssocSemiring, α, inst_1, Preorder, α, inst_2, NonAssocSemiring, β, inst_3, Preorder, β, self, α, β, Monotone, OneHom.toFun, OrderRingHom.toRingHom, self] (during elaboration) for (∀ {α : Type u_1} {β : Type u_2} [inst : NonAssocSemiring α] [inst_1 : Preorder α] [inst_2 : NonAssocSemiring β]
+  OneHom (?m.1739 self) (?m.1740 self) : Type (max ?u.194 ?u.193) ; identifiers [α, u_1, β, u_2, inst, NonAssocSemiring, α, inst_1, Preorder, α, inst_2, NonAssocSemiring, β, inst_3, Preorder, β, self, α, β, Monotone, OneHom.toFun, OrderRingHom.toRingHom, self] (during elaboration) for (∀ {α : Type u_1} {β : Type u_2} [inst : NonAssocSemiring α] [inst_1 : Preorder α] [inst_2 : NonAssocSemiring β]
   [inst_3 : Preorder β] (self : α →+*o β), Monotone (OneHom.toFun ↑↑(OrderRingHom.toRingHom self)))
 
  : (∀ {G : Type u_1} [inst : Group G] (n : ℕ) (q : G),
@@ -103,7 +103,7 @@ but is expected to have type
       Subgroup.closure
         {x : G | ∃ (p : G), (p ∈ lowerCentralSeries G n) ∧ (∃ (q : G), (q ∈ ⊤) ∧ (p * q * p⁻¹ * q⁻¹ = x))}))
 typeclass instance problem is stuck, it is often due to metavariables
-  Membership G (?m.2897 n q✝ x p q) ; identifiers [G, u_1, inst, Group, G, n, q, G, q, lowerCentralSeries, G, n, q, Subgroup.closure, x, G, p, G, p, lowerCentralSeries, G, n, q, G, q, p, q, p, q, x] (during elaboration) for (∀ {G : Type u_1} [inst : Group G] (n : ℕ) (q : G),
+  Membership G (?m.2902 n q✝ x p q) ; identifiers [G, u_1, inst, Group, G, n, q, G, q, lowerCentralSeries, G, n, q, Subgroup.closure, x, G, p, G, p, lowerCentralSeries, G, n, q, G, q, p, q, p, q, x] (during elaboration) for (∀ {G : Type u_1} [inst : Group G] (n : ℕ) (q : G),
   (q ∈ lowerCentralSeries G (n + 1)) ↔
     (q ∈
       Subgroup.closure
@@ -111,7 +111,7 @@ typeclass instance problem is stuck, it is often due to metavariables
 
  : (∀ {C : Type u} [inst : SizeOf C], sizeOf CategoryTheory.FreeMonoidalCategory.Unit = 1)
 typeclass instance problem is stuck, it is often due to metavariables
-  SizeOf (CategoryTheory.FreeMonoidalCategory ?m.6756) ; identifiers [C, u, inst, SizeOf, C, sizeOf, CategoryTheory.FreeMonoidalCategory.Unit] (during elaboration) for (∀ {C : Type u} [inst : SizeOf C], sizeOf CategoryTheory.FreeMonoidalCategory.Unit = 1)
+  SizeOf (CategoryTheory.FreeMonoidalCategory ?m.6826) ; identifiers [C, u, inst, SizeOf, C, sizeOf, CategoryTheory.FreeMonoidalCategory.Unit] (during elaboration) for (∀ {C : Type u} [inst : SizeOf C], sizeOf CategoryTheory.FreeMonoidalCategory.Unit = 1)
 
  : (∀ (C : Type u) [inst : CategoryTheory.Category C] [inst_1 : CategoryTheory.Limits.HasInitial C]
   [inst_2 : CategoryTheory.Limits.HasBinaryCoproducts C] (P : C) (Q : C),
@@ -128,7 +128,7 @@ but is expected to have type
  : (∀ {α : Type u_1} [inst : Mul α] {s : Set α} {t : Set α} {a : α},
   (a ∈ s * t) ↔ (∃ (x : α), ∃ (y : α), (x ∈ s) ∧ ((y ∈ t) ∧ (x * y = a))))
 failed to synthesize instance
-  HMul (Set α) (Set α) ?m.1969 ; identifiers [α, u_1, inst, Mul, α, s, Set, α, t, Set, α, a, α, a, s, t, x, α, y, α, x, s, y, t, x, y, a] (during elaboration) for (∀ {α : Type u_1} [inst : Mul α] {s : Set α} {t : Set α} {a : α},
+  HMul (Set α) (Set α) ?m.1993 ; identifiers [α, u_1, inst, Mul, α, s, Set, α, t, Set, α, a, α, a, s, t, x, α, y, α, x, s, y, t, x, y, a] (during elaboration) for (∀ {α : Type u_1} [inst : Mul α] {s : Set α} {t : Set α} {a : α},
   (a ∈ s * t) ↔ (∃ (x : α), ∃ (y : α), (x ∈ s) ∧ ((y ∈ t) ∧ (x * y = a))))
 
  : (∀ {R : Type u_1} {M : Type u_2} [inst : Semiring R] [inst_1 : AddCommGroup M] (self : Module.Core R M) (r : R) (x : M)
@@ -144,7 +144,7 @@ failed to synthesize instance
 
  : (∀ {R : Type u} [inst : SizeOf R], sizeOf Rack.PreEnvelGroup.unit = 1)
 typeclass instance problem is stuck, it is often due to metavariables
-  SizeOf (Rack.PreEnvelGroup ?m.6756) ; identifiers [R, u, inst, SizeOf, R, sizeOf, Rack.PreEnvelGroup.unit] (during elaboration) for (∀ {R : Type u} [inst : SizeOf R], sizeOf Rack.PreEnvelGroup.unit = 1)
+  SizeOf (Rack.PreEnvelGroup ?m.6826) ; identifiers [R, u, inst, SizeOf, R, sizeOf, Rack.PreEnvelGroup.unit] (during elaboration) for (∀ {R : Type u} [inst : SizeOf R], sizeOf Rack.PreEnvelGroup.unit = 1)
 
  : (∀ {R : Type u_1} [inst : Semiring R] (h : IsField R) (a : R) (b : R), a / b = a / b)
 failed to synthesize instance
@@ -187,14 +187,14 @@ unknown universe level 'uH' ; identifiers [ι, uι, E, uE, inst, NormedAddCommGr
   [inst_2 : NormedSpace 𝕜 F] {f : (a : 𝕜) → F} {f' : F} {x : 𝕜},
   (HasStrictDerivAt f f' x) ↔ (HasStrictFDerivAt f (ContinuousLinearMap.smulRight 1 f') x))
 typeclass instance problem is stuck, it is often due to metavariables
-  NormedSpace ?m.8177 F ; identifiers [𝕜, u, inst, NontriviallyNormedField, 𝕜, F, v, inst_1, NormedAddCommGroup, F, inst_2, NormedSpace, 𝕜, F, f, a, 𝕜, F, f', F, x, 𝕜, HasStrictDerivAt, f, f', x, HasStrictFDerivAt, f, ContinuousLinearMap.smulRight, f', x] (during elaboration) for (∀ {𝕜 : Type u} [inst : NontriviallyNormedField 𝕜] {F : Type v} [inst_1 : NormedAddCommGroup F]
+  NormedSpace ?m.8251 F ; identifiers [𝕜, u, inst, NontriviallyNormedField, 𝕜, F, v, inst_1, NormedAddCommGroup, F, inst_2, NormedSpace, 𝕜, F, f, a, 𝕜, F, f', F, x, 𝕜, HasStrictDerivAt, f, f', x, HasStrictFDerivAt, f, ContinuousLinearMap.smulRight, f', x] (during elaboration) for (∀ {𝕜 : Type u} [inst : NontriviallyNormedField 𝕜] {F : Type v} [inst_1 : NormedAddCommGroup F]
   [inst_2 : NormedSpace 𝕜 F] {f : (a : 𝕜) → F} {f' : F} {x : 𝕜},
   (HasStrictDerivAt f f' x) ↔ (HasStrictFDerivAt f (ContinuousLinearMap.smulRight 1 f') x))
 
  : (∀ {R : Type u} [inst : CommRing R] {W : WeierstrassCurve R} [inst_1 : SizeOf R],
   sizeOf WeierstrassCurve.Point.zero = 1)
 typeclass instance problem is stuck, it is often due to metavariables
-  SizeOf (WeierstrassCurve.Point ?m.7627) ; identifiers [R, u, inst, CommRing, R, W, WeierstrassCurve, R, inst_1, SizeOf, R, sizeOf, WeierstrassCurve.Point.zero] (during elaboration) for (∀ {R : Type u} [inst : CommRing R] {W : WeierstrassCurve R} [inst_1 : SizeOf R],
+  SizeOf (WeierstrassCurve.Point ?m.7697) ; identifiers [R, u, inst, CommRing, R, W, WeierstrassCurve, R, inst_1, SizeOf, R, sizeOf, WeierstrassCurve.Point.zero] (during elaboration) for (∀ {R : Type u} [inst : CommRing R] {W : WeierstrassCurve R} [inst_1 : SizeOf R],
   sizeOf WeierstrassCurve.Point.zero = 1)
 
  : (∀ {α : Type u_1} [inst : Div α] {s : Set α} {t : Set α} {a : α},
@@ -246,7 +246,7 @@ failed to synthesize instance
  : (∀ {α : Type u_1} {β : Type u_2} [inst : Preorder α] [inst_1 : Preorder β] [inst_2 : AddZeroClass α]
   [inst_3 : AddZeroClass β] (self : α →+o β), Monotone (ZeroHom.toFun ↑(OrderAddMonoidHom.toAddMonoidHom self)))
 typeclass instance problem is stuck, it is often due to metavariables
-  Preorder (?m.2761 self) ; identifiers [α, u_1, β, u_2, inst, Preorder, α, inst_1, Preorder, β, inst_2, AddZeroClass, α, inst_3, AddZeroClass, β, self, α, β, Monotone, ZeroHom.toFun, OrderAddMonoidHom.toAddMonoidHom, self] (during elaboration) for (∀ {α : Type u_1} {β : Type u_2} [inst : Preorder α] [inst_1 : Preorder β] [inst_2 : AddZeroClass α]
+  Preorder (?m.2800 self) ; identifiers [α, u_1, β, u_2, inst, Preorder, α, inst_1, Preorder, β, inst_2, AddZeroClass, α, inst_3, AddZeroClass, β, self, α, β, Monotone, ZeroHom.toFun, OrderAddMonoidHom.toAddMonoidHom, self] (during elaboration) for (∀ {α : Type u_1} {β : Type u_2} [inst : Preorder α] [inst_1 : Preorder β] [inst_2 : AddZeroClass α]
   [inst_3 : AddZeroClass β] (self : α →+o β), Monotone (ZeroHom.toFun ↑(OrderAddMonoidHom.toAddMonoidHom self)))
 
  : (∀ {R : Type u_1} [inst : Ring R] {M : Type u_2} [inst_1 : AddCommGroup M] [inst_2 : Module R M] {U : Submodule R M}
@@ -287,7 +287,7 @@ but is expected to have type
  : (∀ {α : Type u_1} [inst : Sub α] {f : Filter α} {g : Filter α} {s : Set α},
   (s ∈ f - g) ↔ (∃ (t₁ : Set α), ∃ (t₂ : Set α), (t₁ ∈ f) ∧ ((t₂ ∈ g) ∧ (t₁ - t₂ ⊆ s))))
 failed to synthesize instance
-  HSub (Filter α) (Filter α) ?m.804 ; identifiers [α, u_1, inst, Sub, α, f, Filter, α, g, Filter, α, s, Set, α, s, f, g, t₁, Set, α, t₂, Set, α, t₁, f, t₂, g, t₁, t₂, s] (during elaboration) for (∀ {α : Type u_1} [inst : Sub α] {f : Filter α} {g : Filter α} {s : Set α},
+  HSub (Filter α) (Filter α) ?m.812 ; identifiers [α, u_1, inst, Sub, α, f, Filter, α, g, Filter, α, s, Set, α, s, f, g, t₁, Set, α, t₂, Set, α, t₁, f, t₂, g, t₁, t₂, s] (during elaboration) for (∀ {α : Type u_1} [inst : Sub α] {f : Filter α} {g : Filter α} {s : Set α},
   (s ∈ f - g) ↔ (∃ (t₁ : Set α), ∃ (t₂ : Set α), (t₁ ∈ f) ∧ ((t₂ ∈ g) ∧ (t₁ - t₂ ⊆ s))))
 
  : (∀ {G : Type u_1} {α : Type u_2} [inst : One G] [inst_1 : SMul G α] [inst_2 : MeasurableSpace α] {s : Set α}
@@ -297,7 +297,7 @@ failed to synthesize instance
 
  : (∀ {ι : Type u} {α : (a : ι) → Type v} [inst : (i : ι) → Preorder (α i)] (i : ι), Monotone (Function.eval i))
 typeclass instance problem is stuck, it is often due to metavariables
-  Preorder (?m.467 i i) ; identifiers [ι, u, α, a, ι, v, inst, i, ι, Preorder, α, i, i, ι, Monotone, Function.eval, i] (during elaboration) for (∀ {ι : Type u} {α : (a : ι) → Type v} [inst : (i : ι) → Preorder (α i)] (i : ι), Monotone (Function.eval i))
+  Preorder (?m.497 i i) ; identifiers [ι, u, α, a, ι, v, inst, i, ι, Preorder, α, i, i, ι, Monotone, Function.eval, i] (during elaboration) for (∀ {ι : Type u} {α : (a : ι) → Type v} [inst : (i : ι) → Preorder (α i)] (i : ι), Monotone (Function.eval i))
 
  : (∀ {α : Type u_1} [inst : GeneralizedBooleanAlgebra α] (a : α) (b : α), a - b = a - b)
 failed to synthesize instance
@@ -330,6 +330,15 @@ but is expected to have type
   [inst_2 : CategoryTheory.Limits.HasBinaryProducts C] (X : C) (Y : C),
   β_ X Y = CategoryTheory.Limits.prod.braiding X Y)
 
+ : (∀ {R : Type u_1} {M₁ : Type u_2} {M₂ : Type u_3} [inst : Semiring R] [inst_1 : AddCommMonoid M₁]
+  [inst_2 : AddCommMonoid M₂] [inst_3 : Module R M₁] [inst_4 : Module R M₂] {Q₁ : QuadraticForm R M₁}
+  {Q₂ : QuadraticForm R M₂} (self : QuadraticForm.Isometry Q₁ Q₂) (m : M₁),
+  ↑Q₂ (AddHom.toFun (LinearMap.toAddHom ↑(QuadraticForm.Isometry.toLinearEquiv self)) m) = ↑Q₁ m)
+unknown constant 'QuadraticForm.Isometry' ; identifiers [R, u_1, M₁, u_2, M₂, u_3, inst, Semiring, R, inst_1, AddCommMonoid, M₁, inst_2, AddCommMonoid, M₂, inst_3, Module, R, M₁, inst_4, Module, R, M₂, Q₁, QuadraticForm, R, M₁, Q₂, QuadraticForm, R, M₂, self, QuadraticForm.Isometry, Q₁, Q₂, m, M₁, Q₂, AddHom.toFun, LinearMap.toAddHom, QuadraticForm.Isometry.toLinearEquiv, self, m, Q₁, m] (during elaboration) for (∀ {R : Type u_1} {M₁ : Type u_2} {M₂ : Type u_3} [inst : Semiring R] [inst_1 : AddCommMonoid M₁]
+  [inst_2 : AddCommMonoid M₂] [inst_3 : Module R M₁] [inst_4 : Module R M₂] {Q₁ : QuadraticForm R M₁}
+  {Q₂ : QuadraticForm R M₂} (self : QuadraticForm.Isometry Q₁ Q₂) (m : M₁),
+  ↑Q₂ (AddHom.toFun (LinearMap.toAddHom ↑(QuadraticForm.Isometry.toLinearEquiv self)) m) = ↑Q₁ m)
+
  : (∀ {G : Type u_1} {α : Type u_2} [inst : Zero G] [inst_1 : VAdd G α] [inst_2 : MeasurableSpace α] {s : Set α}
   {μ : autoParam (MeasureTheory.Measure α) _auto✝} (self : MeasureTheory.IsAddFundamentalDomain G s),
   ∀ᵐ (x : α) ∂μ, ∃ (g : G), g +ᵥ x ∈ s)
@@ -345,7 +354,7 @@ but is expected to have type
 
  : (∀ (self : YoungDiagram), IsLowerSet ↑(YoungDiagram.cells self))
 typeclass instance problem is stuck, it is often due to metavariables
-  LE (?m.324 self) ; identifiers [self, YoungDiagram, IsLowerSet, YoungDiagram.cells, self] (during elaboration) for (∀ (self : YoungDiagram), IsLowerSet ↑(YoungDiagram.cells self))
+  LE (?m.330 self) ; identifiers [self, YoungDiagram, IsLowerSet, YoungDiagram.cells, self] (during elaboration) for (∀ (self : YoungDiagram), IsLowerSet ↑(YoungDiagram.cells self))
 
  : (∀ {M : Type u_1} [inst : AddCommMonoid M] {S : AddSubmonoid M} {N : Type u_2} [inst_1 : AddCommMonoid N]
   (self : AddSubmonoid.LocalizationMap S N) (x : M) (y : M),
@@ -353,7 +362,7 @@ typeclass instance problem is stuck, it is often due to metavariables
       ZeroHom.toFun (↑(AddSubmonoid.LocalizationMap.toAddMonoidHom self)) y) ↔
     (∃ (c : { x : M // x ∈ S }), ↑c + x = ↑c + y))
 typeclass instance problem is stuck, it is often due to metavariables
-  Zero (?m.9706 self x y) ; identifiers [M, u_1, inst, AddCommMonoid, M, S, AddSubmonoid, M, N, u_2, inst_1, AddCommMonoid, N, self, AddSubmonoid.LocalizationMap, S, N, x, M, y, M, ZeroHom.toFun, AddSubmonoid.LocalizationMap.toAddMonoidHom, self, x, ZeroHom.toFun, AddSubmonoid.LocalizationMap.toAddMonoidHom, self, y, c, x, M, x, S, c, x, c, y] (during elaboration) for (∀ {M : Type u_1} [inst : AddCommMonoid M] {S : AddSubmonoid M} {N : Type u_2} [inst_1 : AddCommMonoid N]
+  Zero (?m.9539 self x y) ; identifiers [M, u_1, inst, AddCommMonoid, M, S, AddSubmonoid, M, N, u_2, inst_1, AddCommMonoid, N, self, AddSubmonoid.LocalizationMap, S, N, x, M, y, M, ZeroHom.toFun, AddSubmonoid.LocalizationMap.toAddMonoidHom, self, x, ZeroHom.toFun, AddSubmonoid.LocalizationMap.toAddMonoidHom, self, y, c, x, M, x, S, c, x, c, y] (during elaboration) for (∀ {M : Type u_1} [inst : AddCommMonoid M] {S : AddSubmonoid M} {N : Type u_2} [inst_1 : AddCommMonoid N]
   (self : AddSubmonoid.LocalizationMap S N) (x : M) (y : M),
   (ZeroHom.toFun (↑(AddSubmonoid.LocalizationMap.toAddMonoidHom self)) x =
       ZeroHom.toFun (↑(AddSubmonoid.LocalizationMap.toAddMonoidHom self)) y) ↔
