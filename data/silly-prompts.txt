@@ -37,4 +37,4 @@ Every group is non-empty.
 All connected components of a topological space are connected.
 The ring of integers has a maximal ideal.
 The numbers `3`, `4` and `5` form a Pythagorean triple.
-A vector space with the empty set as basis is trivial. 
+A vector space with the empty set as basis is trivial.
