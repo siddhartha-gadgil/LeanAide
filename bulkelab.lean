@@ -45,6 +45,7 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
             ).get! 
             let out := json.getObjValAs? Json "choices" |>.toOption.get!
             qdMap := qdMap.insert doc out
+            IO.println doc
           | Except.error e => do
             throw <| IO.userError s!"Error parsing query data file: {e}"
           

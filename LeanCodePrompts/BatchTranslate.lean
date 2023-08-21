@@ -9,16 +9,18 @@ def translateWithDataM (s: String)(numSim : Nat:= 10)
   (temp : JsonNumber := ⟨2, 1⟩)(model: String)
   (embedding: String)(azure: Bool := false)(repeats: Nat := 0)(sleepTime : Nat := 1)(queryData? : Option <| (HashMap String Json)  ) : 
   TermElabM ((Option (Expr × (Array String) )) × Array String) := do
-  let js ←  match queryData? with
+  let output ←  match queryData? with
   | none =>  
-    getCodeJson s numSim includeFixed queryNum temp model embedding azure
+    let js ← getCodeJson s numSim includeFixed queryNum temp model embedding azure
+    GPT.jsonToExprStrArray js
   | some f =>
     let res? := f.find? s
     match res? with
     | none => 
       throwError s!"no data for {s}"
-    | some js => pure js
-  let output ← GPT.jsonToExprStrArray js
+    | some js => 
+      let arr := js.getArr? |>.toOption.get!
+      pure <| arr.map fun js => js.getStr!
   if output.isEmpty then
   match repeats with
   | 0 => return (none, output)
@@ -70,7 +72,7 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed:
         translateWithDataM prompt
           numSim includeFixed queryNum temp model embedding azure 
           repeats 1 queryData?
-    let fullPrompt := (← logs 1).head! 
+    let fullPrompt := (← logs 1).head?.getD "No prompt (maybe using cached data)"
     let js := Json.mkObj [("text", Json.str prompt),
        ("fullPrompt", Json.str fullPrompt)]
     h.putStrLn <| js.compress
