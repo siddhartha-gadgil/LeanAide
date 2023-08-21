@@ -200,7 +200,7 @@ theorem splitEnd (l: List α)(nontriv : l ≠ []): ∃ (l' : List α) (a : α), 
     have c' : l.reverse.reverse = (a::l').reverse := by rw [c] 
     simp [List.reverse_reverse] at c'
     use l'.reverse, a
-    assumption
+
 
 def splitEnd' [DecidableEq α](l: List α)(_ : l ≠ []): SplitList l := 
   match l with

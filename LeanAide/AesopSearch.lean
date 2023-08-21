@@ -50,10 +50,6 @@ def clearSuggestions : IO Unit := do
   rewriteSuggestions.set #[]
   tacticStrings.set #[]
 
-def addTacticSuggestions (suggestions: Array Syntax.Tactic) : IO Unit := do
-  let old ← tacticSuggestions.get
-  tacticSuggestions.set (old ++ suggestions)
-
 def addTacticSuggestion (suggestion: Syntax.Tactic) : IO Unit := do
   let old ← tacticSuggestions.get
   tacticSuggestions.set (old.push suggestion)
@@ -69,7 +65,7 @@ def addConstRewrite (decl: Name)(flip: Bool) : MetaM Unit := do
   if flip  then
     addTacticSuggestion <| ← `(tactic|rw [← $stx])    
   else
-    addTacticSuggestions #[← `(tactic|rw [$stx:term])]
+    addTacticSuggestion <| ← `(tactic|rw [$stx:term])
 
 def addTacticString (tac: String) : MetaM Unit := do 
   let old ← tacticStrings.get
@@ -259,18 +255,75 @@ def introsWithAll : RuleTac := introsWithTransparency TransparencyMode.all
 def introsWithReducible : RuleTac := introsWithTransparency TransparencyMode.reducible
 def introsWithInstances : RuleTac := introsWithTransparency TransparencyMode.instances
 
+partial def syntaxNames (stx: Syntax) : List Name := 
+  match stx with
+  | Syntax.node _ _ args => 
+    args.toList.bind syntaxNames
+  | Syntax.ident _ _ name _ =>    
+    [name]
+  | _ => []
+
+def syntaxConsts (stx: Syntax) : CoreM <| List Name := do
+  let env ← getEnv
+  let names := syntaxNames stx
+  let consts := names.filter (fun n => env.contains n)
+  return consts
+
+-- To possibly use for cases, constructors
+def syntaxInductives (stx : Syntax) : CoreM <| List Name := do
+  let env ← getEnv
+  let consts ← syntaxConsts stx
+  let inductives := consts.filter (fun n => 
+    match env.find? n with
+    | some (ConstantInfo.inductInfo _) => true
+    | _ => false)
+  return inductives
+
+-- To be included based on identifiers in goal
+def structProjs (name: Name) : CoreM <| List Name := do
+  let env ← getEnv
+  let structNames := getStructureFields env name
+  return structNames.toList.map (fun n => name.append n)
+
+def syntaxStructProjs (stx: Syntax) : CoreM <| List Name := do
+  let inductives ← syntaxInductives stx
+  let structProjs ← inductives.mapM structProjs
+  return structProjs.join
+
+#eval structProjs ``And
+#check And.left
+
 structure AesopSearchConfig extends Aesop.Options where
   traceScript := true
   maxRuleApplicationDepth := 120
   maxRuleApplications := 800
-  apps : Array <| Name × Float 
-  simps : Array Name
-  rws : Array Name
-  forwards : Array <| Name × Float := #[] -- TODO
-  destructs : Array <| Name × Float := #[] -- TODO
+  apps : Array <| Name × Float := #[] 
+  simps : Array Name := #[]
+  rws : Array Name := #[]
+  forwards : Array <| Name × Float := #[] 
+  destructs : Array <| Name × Float := #[] 
+  cases : Array <| Name × Float := #[]
+  constructors : Array <| Name × Float := #[]
   tactics : Array <| Name × Float := #[] -- usually tactics are not named
   dynTactics : Array String := #[]
   dynProb : Float := 0.5
+
+def AesopSearchConfig.addSimp (config: AesopSearchConfig) (decl: Name) : AesopSearchConfig := {
+  config with
+  simps := config.simps.push decl
+}
+
+def withAndWithoutSimpsList (configs : List AesopSearchConfig)
+  (decls: List Name): List AesopSearchConfig :=
+  match decls with
+  | [] => configs
+  | head :: tail => 
+    let newConfigs := configs.map (·.addSimp head)
+    withAndWithoutSimpsList (newConfigs ++ configs) tail
+
+def withAndWithoutSimps (config: AesopSearchConfig) 
+  (decls: List Name) : List AesopSearchConfig :=
+  withAndWithoutSimpsList [config] decls
 
 def AesopSearchConfig.ruleSet (config: AesopSearchConfig) : 
     MetaM RuleSet := do
@@ -280,21 +333,34 @@ def AesopSearchConfig.ruleSet (config: AesopSearchConfig) :
     addConstRewrite n true
   for t in config.dynTactics do
     addTacticString t
-  let appRules ← config.apps.mapM 
-    (fun (n, p) => applyConstRuleMembers n p)
-  let appRules : Array RuleSetMember := appRules.foldl (fun c r => c ++ r) #[]
-  let tacticRules ← 
+  let appRules : Array RuleSetMember := (← config.apps.mapM 
+    (fun (n, p) => applyConstRuleMembers n p) 
+    ).foldl (fun c r => c ++ r) #[]
+  let forwardRules : Array RuleSetMember := (← config.forwards.mapM 
+    (fun (n, p) => forwardConstRuleMembers n p) 
+    ).foldl (fun c r => c ++ r) #[]
+  let destructRules : Array RuleSetMember := (← config.destructs.mapM
+    (fun (n, p) => destructConstRuleMembers n p) 
+    ).foldl (fun c r => c ++ r) #[]
+  let casesRules : Array RuleSetMember := (← config.cases.mapM
+    (fun (n, p) => casesConstRuleMembers n p) 
+    ).foldl (fun c r => c ++ r) #[]
+  let constructorRules : Array RuleSetMember := (← config.constructors.mapM
+    (fun (n, p) => constructorConstRuleMembers n p) 
+    ).foldl (fun c r => c ++ r) #[]
+  let tacticRules :=  (← 
     config.tactics.push (``introsWithDefault, 0.9) |>.mapM 
     (fun (n, p) => tacticConstRuleMembers n p)
-  let tacticRules : Array RuleSetMember := 
-    tacticRules.foldl (fun c r => c ++ r) #[]
+    ).foldl (fun c r => c ++ r) #[]
   let simpRules ← config.simps.mapM simpConstRuleMember
   let simpRules := simpRules.foldl (fun c r => c ++ r) #[]
   let defaultRules ←
       Frontend.getDefaultRuleSet (includeGlobalSimpTheorems := true)
       {}
   let allRules : RuleSet := 
-    ((appRules ++ simpRules ++ tacticRules).push (dynamicRuleMember config.dynProb)).foldl
+    ((appRules ++ simpRules ++ tacticRules
+     ++ forwardRules ++ destructRules ++ casesRules ++ constructorRules
+     ).push (dynamicRuleMember config.dynProb)).foldl
     (fun c r => c.add r) defaultRules
   return allRules
 
