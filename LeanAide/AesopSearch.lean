@@ -223,25 +223,6 @@ def tacticMember (p: Float)(tac : Name) : RuleSetMember :=
     tac := .tacticM tac}
 
 
-def getRuleSet (p: Float) (apps simps rws : Array Name)
-  (tacs: Array String) : MetaM RuleSet := do
-  clearSuggestions
-  for n in rws do
-    addConstRewrite n false
-    addConstRewrite n true
-  for t in tacs do
-    addTacticString t
-  let appRules ← apps.mapM (applyConstRuleMembers · p)
-  let appRules := appRules.foldl (fun c r => c ++ r) #[]
-  let simpRules ← simps.mapM simpConstRuleMember
-  let simpRules := simpRules.foldl (fun c r => c ++ r) #[]
-  let defaultRules ←
-      Frontend.getDefaultRuleSet (includeGlobalSimpTheorems := true)
-      {}
-  let allRules : RuleSet := 
-    ((appRules ++ simpRules).push (dynamicRuleMember p)).foldl
-    (fun c r => c.add r) defaultRules
-  return allRules
 
 @[aesop safe forward] def eg : Nat → True  := by simp
 
@@ -282,21 +263,40 @@ structure AesopSearchConfig extends Aesop.Options where
   traceScript := true
   maxRuleApplicationDepth := 120
   maxRuleApplications := 800
-  apps : Array Name 
+  apps : Array <| Name × Float 
   simps : Array Name
   rws : Array Name
-  forwards : Array Name := #[] -- TODO
-  destructs : Array Name := #[] -- TODO
+  forwards : Array <| Name × Float := #[] -- TODO
+  destructs : Array <| Name × Float := #[] -- TODO
   tacs : Array String := #[]
   dynProb : Float := 0.5
 
-def AesopSearchConfig.rules (config: AesopSearchConfig) : 
+def AesopSearchConfig.ruleSet (config: AesopSearchConfig) : 
     MetaM RuleSet := do
-  getRuleSet config.dynProb config.apps config.simps config.rws config.tacs
+  clearSuggestions
+  for n in config.rws do
+    addConstRewrite n false
+    addConstRewrite n true
+  for t in config.tacs do
+    addTacticString t
+  let appRules ← config.apps.mapM 
+    (fun (n, p) => applyConstRuleMembers n p)
+  let appRules := appRules.foldl (fun c r => c ++ r) #[]
+  let simpRules ← config.simps.mapM simpConstRuleMember
+  let simpRules := simpRules.foldl (fun c r => c ++ r) #[]
+  let defaultRules ←
+      Frontend.getDefaultRuleSet (includeGlobalSimpTheorems := true)
+      {}
+  let allRules : RuleSet := 
+    ((appRules ++ simpRules).push (dynamicRuleMember config.dynProb)).foldl
+    (fun c r => c.add r) defaultRules
+  return allRules
+
+
 
 def runAesop (config: AesopSearchConfig): MVarId → MetaM (List MVarId) := fun goal => 
   goal.withContext do
-  let allRules ← config.rules
+  let allRules ← config.ruleSet
   let (goals, _) ← Aesop.search goal allRules config.toOptions 
   return goals.toList
 
@@ -307,7 +307,7 @@ def polyAesopRun (configs: List AesopSearchConfig) :
   | [] => return false
   | head :: tail =>
     let s ← saveState 
-    let allRules ← head.rules
+    let allRules ← head.ruleSet
     let (goals, _) ← Aesop.search goal allRules head.toOptions 
     if goals.isEmpty then
       return true
