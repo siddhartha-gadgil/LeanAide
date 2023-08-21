@@ -17,7 +17,7 @@ theorem MyEmpty.eql (a b : MyEmpty) : a = b := by
 
 elab "test_aesop" : tactic => do
   Tactic.liftMetaTactic (
-    runAesop {apps := #[(``MyEmpty.eql, 0.5)], simps := #[``Nat.add_comm], rws := #[``n_is_m], tacs := #[]}
+    runAesop {apps := #[(``MyEmpty.eql, 0.5)], simps := #[``Nat.add_comm], rws := #[``n_is_m], dynTactics := #[]}
     )
 
 set_option trace.leanaide.proof.info true 
@@ -39,7 +39,7 @@ example : (sillyN = 1) →  2 = sillyM + 1 := by
 
 elab "power_aesop" : tactic => do
   Tactic.liftMetaTactic (
-    runAesop  {apps := #[(``MyEmpty.eql, 0.5)], simps := #[``Nat.add_comm], rws :=  #[``n_is_m], tacs :=
+    runAesop  {apps := #[(``MyEmpty.eql, 0.5)], simps := #[``Nat.add_comm], rws :=  #[``n_is_m], dynTactics :=
     #["gcongr", "ring", "linarith", "norm_num", "positivity", "polyrith"]}
     )
 
@@ -49,9 +49,9 @@ example : (∀ (a b c: Nat),
 
 elab "test_aesop'" : tactic => do
   Tactic.liftMetaTactic (fun mvar => do
-    let chk  ← polyAesopRun [{apps := #[(``MyEmpty.eql, 0.5)], simps := #[``Nat.add_comm], rws :=  #[``n_is_m], tacs :=
+    let chk  ← polyAesopRun [{apps := #[(``MyEmpty.eql, 0.5)], simps := #[``Nat.add_comm], rws :=  #[``n_is_m], dynTactics :=
     #[]},
-      {apps := #[], simps := #[], rws :=  #[], tacs := #["sorry"]}] 
+      {apps := #[], simps := #[], rws :=  #[], dynTactics := #["sorry"]}] 
       mvar
     if chk then return [] else return [mvar]
     )
@@ -59,8 +59,6 @@ elab "test_aesop'" : tactic => do
 
 example : False := by
   test_aesop' -- uses sorry
-
-
 
 example : α → α := by
   aesop
