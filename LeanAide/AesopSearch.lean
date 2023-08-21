@@ -219,9 +219,6 @@ def tacticMember (p: Float)(tac : Name) : RuleSetMember :=
     tac := .tacticM tac}
 
 
-
-@[aesop safe forward] def eg : Nat → True  := by simp
-
 -- Copied from Aesop source code
 open Aesop.BuiltinRules in
 def introsWithTransparency (transparency: TransparencyMode) : RuleTac := RuleTac.ofSingleRuleTac λ input => do
