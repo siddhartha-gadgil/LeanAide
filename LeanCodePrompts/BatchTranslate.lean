@@ -6,7 +6,7 @@ open Lean Meta Elab
 
 def translateWithDataM (s: String)(numSim : Nat:= 10)
   (includeFixed: Bool := Bool.false)(queryNum: Nat := 5)
-  (temp : JsonNumber := ⟨2, 1⟩)(model: String)
+  (temp : JsonNumber := 0.2)(model: String)
   (embedding: String)(azure: Bool := false)(repeats: Nat := 0)(sleepTime : Nat := 1)(queryData? : Option <| (HashMap String Json)  ) : 
   TermElabM ((Option (Expr × (Array String) )) × Array String) := do
   let output ←  match queryData? with
@@ -36,7 +36,7 @@ def translateWithDataM (s: String)(numSim : Nat:= 10)
   
 def translateWithDataCore (s: String)(numSim : Nat:= 10)
   (includeFixed: Bool := Bool.false)(queryNum: Nat := 5)
-  (temp : JsonNumber := ⟨2, 1⟩)(model: String)
+  (temp : JsonNumber := 0.2)(model: String)
   (embedding: String)(azure: Bool := false)(repeats: Nat := 0)
   (queryData? : Option <| (HashMap String Json)  ) :
   CoreM ((Option (Expr × (Array String) )) × Array String) := 
@@ -45,7 +45,7 @@ def translateWithDataCore (s: String)(numSim : Nat:= 10)
         queryNum temp model embedding azure repeats
         (queryData? := queryData?)).run'.run'
 
-def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(model: String)
+def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := 0.2)(model: String)
   (embedding: String)(azure: Bool := false)(delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json) ) : TermElabM Json := do
   elabLog s!"Writing to file: {type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp.mantissa}.json"
   let promptsFile := System.mkFilePath ["data",
@@ -123,7 +123,7 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed:
             ]
   return js
 
-def checkTranslatedThmsCore(type: String := "thm")(numSim : Nat:= 10)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(model: String)(embedding : String)(azure: Bool := false)(delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json)  ): CoreM Json :=
+def checkTranslatedThmsCore(type: String := "thm")(numSim : Nat:= 10)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := 0.2)(model: String)(embedding : String)(azure: Bool := false)(delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json)  ): CoreM Json :=
     (checkTranslatedThmsM type
       numSim includeFixed queryNum temp model embedding azure delay repeats queryData?).run'.run'
 

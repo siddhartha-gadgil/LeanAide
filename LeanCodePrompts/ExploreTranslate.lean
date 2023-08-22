@@ -4,7 +4,7 @@ open Lean Meta Elab
 
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
-def getCodeCustomJson (s: String)(customPrompts : Array (String × String) := #[])(numSim : Nat:= 5)(numKW: Nat := 1)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Json := do
+def getCodeCustomJson (s: String)(customPrompts : Array (String × String) := #[])(numSim : Nat:= 5)(numKW: Nat := 1)(queryNum: Nat := 5)(temp : JsonNumber := 0.2)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Json := do
   match ← getCachedJson? s with
   | some js => return js
   | none =>    

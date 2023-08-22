@@ -140,7 +140,7 @@ def codexQuery(prompt: String)(n: Nat := 1)
   return Lean.Json.parse out |>.toOption.get!
 
 def gptQuery(messages: Json)(n: Nat := 1)
-  (temp : JsonNumber := ⟨2, 1⟩)
+  (temp : JsonNumber := 0.2)
   (stopTokens: Array String :=  #[":=", "-/"])(model: String := "gpt-3.5-turbo") : CoreM Json := do
   let key? ← openAIKey
   let key := 
@@ -163,7 +163,7 @@ def gptQuery(messages: Json)(n: Nat := 1)
   return Lean.Json.parse out.stdout |>.toOption.get!
 
 def azureQuery(messages: Json)(n: Nat := 1)
-  (temp : JsonNumber := ⟨2, 1⟩)
+  (temp : JsonNumber := 0.2)
   (stopTokens: Array String :=  #[":=", "-/"])(model: String) : CoreM Json := do
   let key? ← azureKey
   let key := 
@@ -188,7 +188,7 @@ def azureQuery(messages: Json)(n: Nat := 1)
 
 
 def openAIQuery(prompt: String)(n: Nat := 1)
-  (temp : JsonNumber := ⟨2, 1⟩)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json :=
+  (temp : JsonNumber := 0.2)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json :=
   codexQuery prompt n temp stopTokens 
 
 /-!
@@ -273,7 +273,7 @@ def getPromptPairsBert(s: String)(numSim : Nat)
       let allPairs := allPairs.toList.eraseDups.toArray
       return Except.ok allPairs.toList.eraseDups.toArray
 
-def getPromptPairsOpenAIexe (s: String)(numSim : Nat)(full: Bool:= false) :
+def getPromptPairsOpenAIexe (s: String)(numSim : Nat)(full: Bool:= true) :
   IO <| Except String (Array (String × String)) := do
     let script := if full 
       then "nearest_embeddings_full"
@@ -300,13 +300,13 @@ def getPromptPairsOpenAIexe (s: String)(numSim : Nat)(full: Bool:= false) :
         return Except.ok pairs.reverse
 
 /-- choosing pairs to build a prompt -/
-def getPromptPairs(s: String)(numSim : Nat)(source: String := "bert")
+def getPromptPairs(s: String)(numSim : Nat)(source: String := "openai_full")
    : IO <| Except String (Array (String × String)) := 
    match source with
     | "bert" =>
       getPromptPairsBert s numSim
-    | "openai" =>
-      getPromptPairsOpenAIexe s numSim
+    | "openai_thms" =>
+      getPromptPairsOpenAIexe s numSim false
     | "openai_full" =>
       getPromptPairsOpenAIexe s numSim true
     | s => 
@@ -342,7 +342,7 @@ def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := docField)
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
 def getCodeJson (s: String)(numSim : Nat:= 8)
-  (includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(model: String)
+  (includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := 0.8)(model: String)
   (embedding: String)(azure: Bool := false) : CoreM Json := do
   match ← getCachedJson? s with
   | some js => return js
