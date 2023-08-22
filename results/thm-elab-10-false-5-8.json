@@ -15,7 +15,7 @@
    "some-correct": null,
    "prompt":
    "Every prime that is `1` greater than a multiple of `4` can be expressed as the sum of two squares.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p % 4 = 1 → ∃ a b, a ^ 2 + b ^ 2 = p "]},
@@ -24,7 +24,7 @@
    "some-correct": null,
    "prompt":
    "The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {a b x y u v : ℕ}, a = x ^ 2 + y ^ 2 + u ^ 2 + v ^ 2 → b = x ^ 2 + y ^ 2 + u ^ 2 + v ^ 2 → ∃ r s t w, a * b = r ^ 2 + s ^ 2 + t ^ 2 + w ^ 2 ",
