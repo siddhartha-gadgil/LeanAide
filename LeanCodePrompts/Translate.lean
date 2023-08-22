@@ -14,6 +14,30 @@ import LeanCodePrompts.EgsTranslate
 open Lean Meta Elab Parser Command
 open Std.Tactic
 
+register_option lean_aide.translate.prompt_size : Nat :=
+  { defValue := 8
+    group := "lean_aide.translate"
+    descr := "Number of document strings in a prompt (default 8)" }
+
+register_option lean_aide.translate.choices : Nat :=
+  { defValue := 5
+    group := "lean_aide.translate"
+    descr := "Number of outputs to request in a query (default 5)." }
+
+register_option lean_aide.translate.use_defintions : Bool :=
+  { defValue := true
+    group := "lean_aide.translate"
+    descr := "Whether to use docstrings of definitions (in addition to theorems)." }
+
+register_option lean_aide.translate.definition_penalty : Nat :=
+  { defValue := 20
+    group := "lean_aide.translate"
+    descr := "Penalty for a prompt being from a definition scaled by 10" }
+
+def promptSize : CoreM Nat := do
+  return  lean_aide.translate.prompt_size.get (← getOptions)
+  
+
 def fileName := "data/mathlib4-thms.json"
 
 def lean4mode := decide (fileName ∈ ["data/mathlib4-prompts.json",
@@ -626,7 +650,7 @@ open PrettyPrinter
   | `(l! $s:str) =>
   let s := s.getString
   let js ← 
-    getCodeJson  s (model := "gpt-3.5-turbo") 
+    getCodeJson  s (numSim := lean_aide.translate.prompt_size.get (← getOptions)) (queryNum := lean_aide.translate.choices.get (← getOptions)) (model := "gpt-3.5-turbo") 
       (embedding := "openai_full")
   let e ← jsonToExpr' js
   let stx' ← delab e
