@@ -52,8 +52,7 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
         pure qdMap
 
   let outFile := System.mkFilePath 
-      ["results", 
-      s!"{type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp10}.json"]
+      [s!"results/{type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp10}.json"]
   let env ← 
     importModules [{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
@@ -70,6 +69,8 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
   | Except.ok js =>
     IO.println "Success"
     IO.FS.writeFile outFile js.pretty
+    IO.println js.pretty
+    IO.println s!"Written to file {outFile}"
   | Except.error e =>
     do
           IO.println "Ran with error"
