@@ -20,7 +20,7 @@ If every element of a group `G` has order `2`, then every pair of elements of `G
 The product of two consecutive natural numbers is even.
 Every index 2 subgroup of a group is normal.
 Every free group is torsion free.
-Every natural number greater than `1` is divisible by a prime number. 
+Every natural number greater than `1` is divisible by a prime number.
 A finite torsion-free group is trivial
 Every finite division ring is a field.
 Every finite topological space is compact.

@@ -14,7 +14,7 @@ def translateWithDataM (s: String)(numSim : Nat:= 10)
     let js ← getCodeJson s numSim includeFixed queryNum temp model embedding azure
     GPT.jsonToExprStrArray js
   | some f =>
-    let res? := f.find? s
+    let res? := f.find? s.trim
     match res? with
     | none => 
       throwError s!"no data for {s}"
