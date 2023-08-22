@@ -273,7 +273,7 @@ def getPromptPairsBert(s: String)(numSim : Nat)
       let allPairs := allPairs.toList.eraseDups.toArray
       return Except.ok allPairs.toList.eraseDups.toArray
 
-def getPromptPairsOpenAIexe (s: String)(numSim : Nat)(full: Bool:= false) :
+def getPromptPairsOpenAIexe (s: String)(numSim : Nat)(full: Bool:= true) :
   IO <| Except String (Array (String × String)) := do
     let script := if full 
       then "nearest_embeddings_full"
@@ -305,8 +305,8 @@ def getPromptPairs(s: String)(numSim : Nat)(source: String := "bert")
    match source with
     | "bert" =>
       getPromptPairsBert s numSim
-    | "openai" =>
-      getPromptPairsOpenAIexe s numSim
+    | "openai_thms" =>
+      getPromptPairsOpenAIexe s numSim false
     | "openai_full" =>
       getPromptPairsOpenAIexe s numSim true
     | s => 
