@@ -76,7 +76,7 @@ def openAIKey : IO (Option String) := IO.getEnv "OPENAI_API_KEY"
 -- this is to keep everything at the `IO` level without disturbing the rest of the code
 def openAIQuery (prompt : String)
   (n : Nat := 1)
-  (temp : JsonNumber := ⟨2, 1⟩)
+  (temp : JsonNumber := 0.2)
   (stopTokens : Array String :=  #[":=", "-/"]) : IO Json := do
 
   let .some key ← openAIKey | panic! "OPENAI_API_KEY not set"

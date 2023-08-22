@@ -111,7 +111,7 @@ def openAIKey : IO (Option String) := IO.getEnv "OPENAI_API_KEY"
 
 /--query OpenAI Codex with given prompt and parameters -/
 def codexQuery(prompt: String)(n: Nat := 1)
-  (temp : JsonNumber := ⟨2, 1⟩)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json := do
+  (temp : JsonNumber := 0.2)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json := do
   let key? ← openAIKey
   let key := 
     match key? with
@@ -130,7 +130,7 @@ def codexQuery(prompt: String)(n: Nat := 1)
   return Lean.Json.parse out |>.toOption.get!
 
 def gptQuery(messages: Json)(n: Nat := 1)
-  (temp : JsonNumber := ⟨2, 1⟩)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json := do
+  (temp : JsonNumber := 0.2)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json := do
   let key? ← openAIKey
   let key := 
     match key? with
@@ -152,7 +152,7 @@ def gptQuery(messages: Json)(n: Nat := 1)
   return Lean.Json.parse out.stdout |>.toOption.get!
 
 def openAIQuery(prompt: String)(n: Nat := 1)
-  (temp : JsonNumber := ⟨2, 1⟩)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json :=
+  (temp : JsonNumber := 0.2)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json :=
   codexQuery prompt n temp stopTokens 
 
 /-!
@@ -272,7 +272,7 @@ def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := "doc_string"
 
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
-def getCodeJson (s: String)(numSim : Nat:= 8)(numKW: Nat := 0)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM Json := do
+def getCodeJson (s: String)(numSim : Nat:= 8)(numKW: Nat := 0)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := 0.2)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM Json := do
   match ← getCachedJson? s with
   | some js => return js
   | none =>    
