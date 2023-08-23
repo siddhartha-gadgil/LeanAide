@@ -51,8 +51,9 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
           
         pure qdMap
 
-  let outFile := System.mkFilePath 
-      [s!"results/{type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp10}.json"]
+  let outFile := System.mkFilePath <|
+    [p.flag? "output" |>.map (fun s => s.as! String) |>.getD
+      s!"results/{type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp10}.json"]
   let env ← 
     importModules [{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
@@ -85,6 +86,7 @@ def bulkElab : Cmd := `[Cli|
 
   FLAGS:
     include_fixed;         "Include the 'Lean Chat' fixed prompts."
+    o, output : String;    "Output file (default `results/{type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp10}.json`)."
     p, prompts : Nat;      "Number of example prompts (default 10)."
     r, responses : Nat;    "Number of responses to ask for (default 5)."
     t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t`."

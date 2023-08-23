@@ -2,7 +2,7 @@ import LeanSlides
 import Mathlib
 import LeanCodePrompts.Translate
 
-#slides +draft Introduction /-!
+#slides Introduction /-!
 
 % LeanAIde
 % A statement autoformalisation tool for Lean
@@ -31,10 +31,10 @@ import LeanCodePrompts.Translate
 -/
 
 /-! ## A quick demonstration of the tool -/
--- theorem infinitude_odds : l!"There are infinitely many odd numbers" := 
---   by sorry
+theorem infinitude_odds : ∀ (n : ℕ), ∃ m, m > n ∧ m % 2 = 1 := 
+  by sorry
 
-#slides +draft Prompting /-!
+#slides Prompting /-!
 
 # Prompting
 
@@ -44,16 +44,16 @@ strong effect on the output.
 
 A few possible prompting styles for autoformalisation include:
 
-- Direct prompting
+- Direct (zero-shot) prompting
 - Fixed few-shot prompting
 - Input-dependent promptings 
 
 -/
 
 /-! ## The closest embeddings to the given statement -/
--- #eval getNearestEmbeddings "Every even number can be written as the sum of two primes" 6
+#eval getNearestEmbeddingsFull "Every even number can be written as the sum of two primes" 6 2.0
 
-#slides +draft Details /-!
+#slides Details /-!
 
 # The design
 
@@ -71,14 +71,14 @@ semantic relationships between them.
 
 The embedding of the input statement is computed (using OpenAI embeddings)
 and compared with stored embeddings of
-`Mathlib` doc-strings to identify the most similar ones.
+`Mathlib` doc-strings to identify the most similar ones., i.e.,
 
 # Prompting
 
 The prompt to the language model is assembled from the sentence embeddings
-as an alternating sequence of doc-strings and their corresponding Lean formal statements.
+as an alternating dialogue of doc-strings ("from the user") and their corresponding Lean formal statements ("from the assistant").
 
-This is sent as a query to the OpenAI GPT-3.5 Turbo language model via an API call.
+This is sent as a query to the `OpenAI GPT-3.5 Turbo` or `GPT-4` language model via an API call.
 
 Additional configuration options permit adding a few fixed examples to the prompt
 and also using theorems with doc-strings from the current editor window.
@@ -104,20 +104,22 @@ this is a very strong condition.
 
 # Output
 
-After post-processing and filtering, the translations
-are clustered by proved equivalence using 
-the `aesop` automation tool.
+After post-processing and filtering, the final output is picked by *majority voting*, i.e.,
 
-A representative of the most common translation is
-then presented to the user.
+- the statements are clustered by proved equivalence using 
+the `aesop` automation tool and 
+- a representative of the most common translation is then presented to the user.
 
 -/
 
-#slides +draft Evaluation /-!
+-- TODO: Example which does not elaborate
+
+#slides Evaluation /-!
 
 # Evaluation
 
 The `LeanAIde` tool is tested against two datasets:
+
 - A custom data-set of around 120 theorem statements at the undergraudate level
 - The `ProofNet` benchmark for statement autoformalisation
 
@@ -153,7 +155,7 @@ def randomFileLine (filePath : System.FilePath) : IO String := do
 
 #slides Conclusion /-!
 
-# Summary
+## Summary
 
 `LeanAIde` is a tool for translating
 natural language theorem statements to Lean code,
@@ -165,7 +167,7 @@ several distinctive features of the Lean theorem prover,
 including its programming and meta-programming capabilities
 and its the vast and unified mathematics library.
 
-# Language models and proof assistants
+## Language models and proof assistants
 
 There is potential for combining
 languages models with proof assistants for
@@ -179,7 +181,7 @@ tasks such as
 Such tools can make formalisation of mathematics
 vastly more approachable.
 
-# References
+## References
 
 - Zhangir Azerbayev and Edward W. Ayers. lean-chat: user guide. Lean. 2023. 
   url: https://github.com/zhangir-azerbayev/lean-chat.

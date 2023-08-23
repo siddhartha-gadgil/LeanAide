@@ -16,7 +16,7 @@
  [{"theorem": "∀ (R : Type u) [inst : CommRing R], IsField R",
    "some-correct": null,
    "prompt": "Every ring is a field.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {R : Type u} [inst : Semiring R], IsField R → Field R ",
@@ -26,7 +26,7 @@
    "∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],\n  FiniteDimensional K V",
    "some-correct": null,
    "prompt": "Every vector space is finite dimensional.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V], FiniteDimensional K V ",
@@ -34,7 +34,7 @@
   {"theorem": "∀ {G : Type u_1} [inst : Group G], Monoid.IsTorsion G",
    "some-correct": null,
    "prompt": "Every group is a torsion monoid.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {G : Type u_1} [inst : Group G], Monoid.IsTorsion G ",
@@ -43,7 +43,7 @@
    "∀ {α : Type u} [inst : Group α] [inst_1 : Fintype α], IsSimpleGroup α → ∃ p, Fact (Nat.Prime p) ∧ Fintype.card α = p",
    "some-correct": null,
    "prompt": "Every finite simple group has prime order.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} [inst : Group α] [inst_1 : Fintype α], IsSimpleGroup α → ∃ p, Nat.Prime p ∧ Fintype.card α = p ",
@@ -54,7 +54,7 @@
    "∀ {α : Type u} [inst : Group α] [inst_1 : Fintype α], ∃ p, Fact (Nat.Prime p) ∧ Fintype.card α = p",
    "some-correct": null,
    "prompt": "Every finite group has prime order.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {G : Type u_1} [inst : Group G] [inst_1 : Fintype G], ∃ p : ℕ, Fact (Nat.Prime p) ∧ Fintype.card G = p ",
@@ -63,7 +63,7 @@
    "∀ {α : Type u_1} [inst : MeasurableSpace α] (μ : MeasureTheory.Measure α) (s : Set α), ?m.320065 μ s = 0",
    "some-correct": null,
    "prompt": "Every set has Lebesgue measure zero.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["forall {α : Type u_1} [inst : MeasurableSpace α] (s : Set α), ↑↑MeasureTheory.volume s = 0 ",
@@ -73,7 +73,7 @@
    "∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : CompactSpace α] (s : Set α), IsCompact s",
    "some-correct": null,
    "prompt": "If a topological space is compact, then every subset is compact.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : CompactSpace α] (s : Set α), IsCompact s "]},
@@ -82,7 +82,7 @@
    "some-correct": null,
    "prompt":
    "If every point of a subset of a topological space is contained in some closed set, the subset itself is closed.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} [inst : TopologicalSpace α] {s : Set α}, (∀ x ∈ s, ∃ t, IsClosed t ∧ x ∈ t) → IsClosed s ",
@@ -95,7 +95,7 @@
    "some-correct": null,
    "prompt":
    "A topological space $X$ is Hausdorff if and only if the diagonal map is an open map from $X$ to $X × X$.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} [inst : TopologicalSpace α],\n  T2Space α ↔ IsOpenMap fun (x : α) => (x, x) ",
@@ -103,10 +103,10 @@
     "∀ {α : Type u} [inst : TopologicalSpace α], T2Space α ↔ IsOpenMap fun (x : α) => (x, x) "]},
   {"theorem":
    "∀ {G : Type u_1} [inst : Group G] {x : G}, IsOfFinOrder x → ∃ n, 0 < n ∧ x ^ n = 1",
-   "some-correct": null,
+   "some-correct": false,
    "prompt": "Any finite order element in a group is equal to the identity.",
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "Seems to be trying to make a true statement",
    "all-elabs":
    ["∀ {G : Type u_1} [inst : Monoid G] {x : G}, IsOfFinOrder x → orderOf x ≠ 0 → x ^ (orderOf x) = 1 ",
     "∀ {G : Type u_1} [inst : Group G] {x : G}, IsOfFinOrder x → x ^ orderOf x = 1 ",
@@ -119,7 +119,7 @@
    "some-correct": null,
    "prompt":
    "If a subgroup of a group is torsion-free, then the group itself is torsion free.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {G : Type u_1} [inst : Group G] (H : Subgroup G), Monoid.IsTorsionFree { x // x ∈ H } → Monoid.IsTorsionFree G ",
@@ -128,10 +128,10 @@
     "forall {G : Type u_1} [inst : Group G], (∃ (H : Subgroup G), Monoid.IsTorsionFree { x // x ∈ H }) -> Monoid.IsTorsionFree G "]},
   {"theorem":
    "∀ {G : Type u} [inst : Group G] [inst_1 : IsFreeGroup G] {f : G →* G}, Function.Injective ↑f → Function.Surjective ↑f",
-   "some-correct": null,
+   "some-correct": true,
    "prompt":
    "Every injective homomorphism from a finitely generated free group to itself is surjective.",
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["∀ {ι : Type u_1} {G : Type u_2} [inst : Group G] [inst_1 : Fintype ι] {f : FreeGroup ι → G},\n  IsGroupHom f → Function.Injective f → Function.Surjective f ",
@@ -139,9 +139,9 @@
     "∀ {G : Type u} [inst : Group G] [inst_1 : IsFreeGroup G] {f : G →* G}, Function.Injective ↑f → Function.Surjective ↑f "]},
   {"theorem":
    "∀ (K : Type u) [inst : DivisionRing K], IsField K ∨ FiniteDimensional K K",
-   "some-correct": null,
+   "some-correct": true,
    "prompt": "Every division ring is either a field or finite.",
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["∀ {K : Type u_1} [inst : DivisionRing K], IsField K ∨ Finite K ",
@@ -151,7 +151,7 @@
   {"theorem": "∀ (n : ℕ), n > 1 → ∃ p q, Nat.Prime p ∧ Nat.Prime q ∧ n = p * q",
    "some-correct": null,
    "prompt": "Every natural number is the product of two primes.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ (n : ℕ), n > 0 → ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ n = p * q ",
@@ -163,7 +163,7 @@
   {"theorem": "∀ {n : ℕ}, Even n → ∃ m, n = m ^ 2",
    "some-correct": null,
    "prompt": "Every even number is the square of a natural number.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {n : ℕ}, Even n → ∃ m, n = m ^ 2 ",
@@ -174,7 +174,7 @@
    "∀ {G : Type u_1} [inst : Group G] (H : Subgroup G) [inst_1 : Subgroup.Normal H], Subgroup.FiniteIndex H",
    "some-correct": null,
    "prompt": "Every normal subgroup of a group has finite index.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {G : Type u_1} [inst : Group G] {H : Subgroup G} [self : Subgroup.Normal H], Subgroup.index H ≠ 0 ",
@@ -189,7 +189,7 @@
    "some-correct": null,
    "prompt":
    "In a commutative ring, every prime ideal is contained in a unique maximal ideal.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {R : Type u} [inst : CommRing R] (P : Ideal R) [Ideal.IsPrime P],\n  ∃! M, Ideal.IsMaximal M ∧ P ≤ M ",
@@ -203,7 +203,7 @@
    "∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β},\n  Continuous f → UniformContinuous f",
    "some-correct": null,
    "prompt": "Every continuous function is uniformly continuous.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β},\n  Continuous f → UniformContinuous f ",
@@ -214,7 +214,7 @@
    "some-correct": null,
    "prompt":
    "If every compact subset of a topological space is closed, then the space is compact.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : T2Space α],\n  (∀ (s : Set α), IsCompact s → IsClosed s) → CompactSpace α ",
@@ -224,7 +224,7 @@
    "some-correct": null,
    "prompt":
    "In a commutative ring, the sum of idempotent elements is idempotent.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {R : Type u_1} [inst : CommRing R] (a b : R), IsIdempotentElem a → IsIdempotentElem b → IsIdempotentElem (a + b) ",
@@ -234,10 +234,10 @@
     "∀ {R : Type u_1} [self : CommRing R] (a b : R), IsIdempotentElem a → IsIdempotentElem b → IsIdempotentElem (a + b) "]},
   {"theorem":
    "∀ {α : Type u_1} [inst : PartialOrder α] {a : α}, (∀ (b : α), a ≤ b → b = a) → ∃! m, ∀ (b : α), m ≤ b",
-   "some-correct": null,
+   "some-correct": true,
    "prompt":
    "If a poset has a maximal element, then it has a unique minimal element.",
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u_1} [inst : PartialOrder α] (a : α) (H : ∀ b, a ≤ b → b ≤ a),\n  ∃! c, (∀ d, c ≤ d) ∧ (∀ d, d ≤ c → c = d) ",
@@ -250,10 +250,10 @@
     "∀ {α : Type u_1} [inst : PartialOrder α] {a : α},\n  (∀ (b : α), a ≤ b → b = a) → (∃! m : α, ∀ (b : α), m ≤ b) "]},
   {"theorem":
    "∀ {α : Type u_1} {f : α → α} {x : α}, Function.IsFixedPt f x → ∀ (n : ℕ), 0 < n → Function.IsPeriodicPt f n x",
-   "some-correct": null,
+   "some-correct": true,
    "prompt":
    "If a function from the unit interval to itself has a fixed point, then it has points of all positive periods.",
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u_1} {f : α → α} {x : α}, Function.IsFixedPt f x → ∀ (n : ℕ), Function.IsPeriodicPt f n x ",
@@ -266,7 +266,7 @@
    "some-correct": null,
    "prompt":
    "The complement of the union of two sets contains the union of their complements.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} (s t : Set α), (s ∪ t)ᶜ ⊇ sᶜ ∪ tᶜ ",
@@ -276,7 +276,7 @@
   {"theorem": "∀ (q : ℚ), ∃ r, Real.sqrt ↑q = ↑r",
    "some-correct": null,
    "prompt": "The square root of an rational number is rational.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ (q : ℚ), ∃ p : ℚ, p * p = q → Real.sqrt ↑q = ↑p ",
@@ -287,18 +287,18 @@
     "∀ (q : ℚ), ∃ r, Real.sqrt (Rat.cast q) = Rat.cast r "]},
   {"theorem":
    "∀ {R : Type u} {M : Type v} [inst : Semiring R] [inst_1 : AddCommMonoid M] [inst_2 : Module R M]\n  [inst_3 : Module.Free R M], IsCommutative R Add.add",
-   "some-correct": null,
+   "some-correct": false,
    "prompt": "If a module over a ring is free, then the ring is commutative.",
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "Made a true statement",
    "all-elabs":
    ["∀ {R : Type u} {M : Type v} [inst : Semiring R] [inst_1 : AddCommMonoid M] [inst_2 : Module R M]\n  [inst_3 : Module.Free R M], IsCommutative R Add.add "]},
   {"theorem":
    "∀ {R : Type u} [inst : Ring R], (∀ (a b : R), IsUnit a → IsUnit b → a * b = b * a) → ∀ (x y : R), x * y = y * x",
-   "some-correct": null,
+   "some-correct": true,
    "prompt":
    "If the set of units of a ring forms a group then the ring is commutative.",
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["∀ {R : Type u} [inst : Ring R],\n  (∀ (x y : R), IsUnit x → IsUnit y → IsUnit (x * y)) → (∀ (x y : R), x * y = y * x) ",
@@ -308,7 +308,7 @@
    "some-correct": null,
    "prompt":
    "Every natural number larger than `10` is the sum of a square and a prime.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ (n : ℕ), n > 10 → ∃ x p, n = x ^ 2 + p ∧ Nat.Prime p ",
@@ -320,7 +320,7 @@
    "some-correct": null,
    "prompt":
    "The initial object of a category is isomorphic to its terminal object.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {C : Type u₁} [inst : CategoryTheory.Category C] [inst_1 : CategoryTheory.Limits.HasInitial C]\n  [inst_2 : CategoryTheory.Limits.HasTerminal C], ⊥_ C ≅ ⊤_ C ",
@@ -329,10 +329,10 @@
     "∀ {C : Type u₁} [inst : CategoryTheory.Category C] [inst_1 : CategoryTheory.Limits.HasInitial C]\n  [inst_2 : CategoryTheory.Limits.HasTerminal C], CategoryTheory.IsIsomorphic (⊥_ C) (⊤_ C) "]},
   {"theorem":
    "∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β]\n  [inst_2 : TopologicalSpace γ] {f : α → β} {g : β → γ}, Continuous (g ∘ f) → Continuous f → Continuous g",
-   "some-correct": null,
+   "some-correct": true,
    "prompt":
    "If the composition of two functions is continuous, then each of them is continuous.",
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} {β : Type v} {γ : Type w} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β]\n  [inst_2 : TopologicalSpace γ] {g : β → γ} {f : α → β},\n  Continuous (g ∘ f) → Continuous f → Continuous g ",
@@ -348,7 +348,7 @@
    "some-correct": null,
    "prompt":
    "If `a` commutes with `b` and `b` commutes with `c` then `a` commutes with `c`.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {S : Type u_1} [inst : Mul S] {a b c : S}, Commute a b → Commute b c → Commute a c ",
@@ -359,7 +359,7 @@
    "some-correct": null,
    "prompt":
    "If an element maps to zero under a ring homomorphism, then it is zero.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {R : Type u} {S : Type v} [inst : Semiring R] [inst_1 : Semiring S] {f : R →+* S} {r : R},\n  ↑f r = 0 → r = 0 "]},
@@ -367,7 +367,7 @@
    "some-correct": null,
    "prompt":
    "Two natural numbers are equal if and only if they are both divisible by some prime number.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {m n : ℕ}, (∃ (p : ℕ), Nat.Prime p ∧ p ∣ m ∧ p ∣ n) ↔ m = n ",
