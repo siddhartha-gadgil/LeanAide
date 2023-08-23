@@ -25,7 +25,7 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
   let model := p.flag? "model" |>.map (fun s => s.as! String)
     |>.getD "gpt-3.5-turbo"
   let embedding := p.flag? "embedding" |>.map (fun s => s.as! String)
-    |>.getD "bert"
+    |>.getD "openai_full"
   let delay := p.flag? "delay" |>.map (fun s => s.as! Nat)
     |>.getD 20
   let repeats := p.flag? "repeats" |>.map (fun s => s.as! Nat)
@@ -52,8 +52,7 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
         pure qdMap
 
   let outFile := System.mkFilePath 
-      ["results", 
-      s!"{type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp10}.json"]
+      [s!"results/{type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp10}.json"]
   let env ← 
     importModules [{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
@@ -70,6 +69,8 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
   | Except.ok js =>
     IO.println "Success"
     IO.FS.writeFile outFile js.pretty
+    IO.println js.pretty
+    IO.println s!"Written to file {outFile}"
   | Except.error e =>
     do
           IO.println "Ran with error"
@@ -88,7 +89,7 @@ def bulkElab : Cmd := `[Cli|
     r, responses : Nat;    "Number of responses to ask for (default 5)."
     t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t`."
     m, model : String ; "Model to be used (default `gpt-3.5-turbo`)"
-    e, embedding : String; "Embedding to be used (default `bert`)"
+    e, embedding : String; "Embedding to be used (default `openai_full`)"
     d, delay : Nat; "Delay between requests in seconds (default 20)."
     query_data : String; "Query data jsonlines file if cached queries are to be used; should have the result of the 'choices' field of the output and a 'docString' field for the query."
     repeats : Nat; "Number of times to repeat the request (default 0)."

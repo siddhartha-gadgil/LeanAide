@@ -1,4 +1,4 @@
-If every proper closed set of a topological space is compact, then the space itself is compact.
+If every proper closed subset of a topological space is compact, then the space itself is compact.
 Every prime that is `1` greater than a multiple of `4` can be expressed as the sum of two squares.
 The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares.
 A ring with all elements idempotent is commutative.
@@ -20,7 +20,7 @@ If every element of a group `G` has order `2`, then every pair of elements of `G
 The product of two consecutive natural numbers is even.
 Every index 2 subgroup of a group is normal.
 Every free group is torsion free.
-Every natural number greater than `1` is divisible by a prime number. 
+Every natural number greater than `1` is divisible by a prime number.
 A finite torsion-free group is trivial
 Every finite division ring is a field.
 Every finite topological space is compact.

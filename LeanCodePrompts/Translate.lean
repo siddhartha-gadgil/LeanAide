@@ -14,6 +14,30 @@ import LeanCodePrompts.EgsTranslate
 open Lean Meta Elab Parser Command
 open Std.Tactic
 
+register_option lean_aide.translate.prompt_size : Nat :=
+  { defValue := 8
+    group := "lean_aide.translate"
+    descr := "Number of document strings in a prompt (default 8)" }
+
+register_option lean_aide.translate.choices : Nat :=
+  { defValue := 5
+    group := "lean_aide.translate"
+    descr := "Number of outputs to request in a query (default 5)." }
+
+register_option lean_aide.translate.use_defintions : Bool :=
+  { defValue := true
+    group := "lean_aide.translate"
+    descr := "Whether to use docstrings of definitions (in addition to theorems)." }
+
+register_option lean_aide.translate.definition_penalty : Nat :=
+  { defValue := 20
+    group := "lean_aide.translate"
+    descr := "Penalty for a prompt being from a definition scaled by 10" }
+
+def promptSize : CoreM Nat := do
+  return  lean_aide.translate.prompt_size.get (← getOptions)
+  
+
 def fileName := "data/mathlib4-thms.json"
 
 def lean4mode := decide (fileName ∈ ["data/mathlib4-prompts.json",
@@ -140,7 +164,7 @@ def codexQuery(prompt: String)(n: Nat := 1)
   return Lean.Json.parse out |>.toOption.get!
 
 def gptQuery(messages: Json)(n: Nat := 1)
-  (temp : JsonNumber := ⟨2, 1⟩)
+  (temp : JsonNumber := 0.2)
   (stopTokens: Array String :=  #[":=", "-/"])(model: String := "gpt-3.5-turbo") : CoreM Json := do
   let key? ← openAIKey
   let key := 
@@ -163,7 +187,7 @@ def gptQuery(messages: Json)(n: Nat := 1)
   return Lean.Json.parse out.stdout |>.toOption.get!
 
 def azureQuery(messages: Json)(n: Nat := 1)
-  (temp : JsonNumber := ⟨2, 1⟩)
+  (temp : JsonNumber := 0.2)
   (stopTokens: Array String :=  #[":=", "-/"])(model: String) : CoreM Json := do
   let key? ← azureKey
   let key := 
@@ -188,7 +212,7 @@ def azureQuery(messages: Json)(n: Nat := 1)
 
 
 def openAIQuery(prompt: String)(n: Nat := 1)
-  (temp : JsonNumber := ⟨2, 1⟩)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json :=
+  (temp : JsonNumber := 0.2)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json :=
   codexQuery prompt n temp stopTokens 
 
 /-!
@@ -273,7 +297,7 @@ def getPromptPairsBert(s: String)(numSim : Nat)
       let allPairs := allPairs.toList.eraseDups.toArray
       return Except.ok allPairs.toList.eraseDups.toArray
 
-def getPromptPairsOpenAIexe (s: String)(numSim : Nat)(full: Bool:= false) :
+def getPromptPairsOpenAIexe (s: String)(numSim : Nat)(full: Bool:= true) :
   IO <| Except String (Array (String × String)) := do
     let script := if full 
       then "nearest_embeddings_full"
@@ -300,13 +324,13 @@ def getPromptPairsOpenAIexe (s: String)(numSim : Nat)(full: Bool:= false) :
         return Except.ok pairs.reverse
 
 /-- choosing pairs to build a prompt -/
-def getPromptPairs(s: String)(numSim : Nat)(source: String := "bert")
+def getPromptPairs(s: String)(numSim : Nat)(source: String := "openai_full")
    : IO <| Except String (Array (String × String)) := 
    match source with
     | "bert" =>
       getPromptPairsBert s numSim
-    | "openai" =>
-      getPromptPairsOpenAIexe s numSim
+    | "openai_thms" =>
+      getPromptPairsOpenAIexe s numSim false
     | "openai_full" =>
       getPromptPairsOpenAIexe s numSim true
     | s => 
@@ -342,7 +366,7 @@ def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := docField)
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
 def getCodeJson (s: String)(numSim : Nat:= 8)
-  (includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := ⟨2, 1⟩)(model: String)
+  (includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := 0.8)(model: String)
   (embedding: String)(azure: Bool := false) : CoreM Json := do
   match ← getCachedJson? s with
   | some js => return js
@@ -626,7 +650,7 @@ open PrettyPrinter
   | `(l! $s:str) =>
   let s := s.getString
   let js ← 
-    getCodeJson  s (model := "gpt-3.5-turbo") 
+    getCodeJson  s (numSim := lean_aide.translate.prompt_size.get (← getOptions)) (queryNum := lean_aide.translate.choices.get (← getOptions)) (model := "gpt-3.5-turbo") 
       (embedding := "openai_full")
   let e ← jsonToExpr' js
   let stx' ← delab e
