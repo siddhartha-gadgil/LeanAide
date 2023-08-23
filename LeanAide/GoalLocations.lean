@@ -4,9 +4,13 @@ import Std
 open Lean
 
 def Lean.SubExpr.extensions (p : SubExpr.Pos) : Expr → Array (SubExpr.Pos × Expr)
-  | .app fn arg => #[(p.pushAppFn, fn), (p.pushAppArg, arg)]
-  | .lam _ binderType body _
-  | .forallE _ binderType body _ => #[(p.pushBindingDomain, binderType), (p.pushBindingBody, body)]
+  | .app fn arg => 
+    if fn.isApp then
+      #[(p.pushAppFn, fn), (p.pushAppArg, arg)]
+    else
+      #[(p.pushAppArg, arg)]
+  | .lam _ _ body _ => #[(p.pushBindingBody, body)]
+  | .forallE _ _ body _ => #[(p.pushBindingBody, body)]
   | .letE _ type value body _ => #[(p.pushLetVarType, type), (p.pushLetValue, value), (p.pushLetBody, body)]
   | .mdata _ expr => extensions p expr
   | .proj _ _ struct => #[(p.pushProj, struct)]
@@ -18,6 +22,11 @@ partial def Lean.Expr.allSubExprs (p : SubExpr.Pos) (e : Expr) : Array (SubExpr.
 
 def Lean.Expr.allPositions (e : Expr) : Array SubExpr.Pos := 
   e.allSubExprs .root |>.map Prod.fst
+
+def Lean.Expr.viewPositions (e : Expr) : MetaM (Array (SubExpr.Pos × String)) :=
+  e.allSubExprs .root |>.mapM fun (pos, subexpr) ↦ do
+    let stx ← PrettyPrinter.delab subexpr
+    return (pos, stx.raw.reprint.get!)
 
 open Meta Elab Term in
 #eval show TermElabM _ from do
@@ -35,7 +44,7 @@ private structure SolveReturn where
   listRest : List Nat
 
 private def solveLevel (expr : Expr) (path : List Nat) : MetaM SolveReturn := match expr with
-  | Expr.app _ _ => do
+  | .app _ _ => do
     let mut descExp := expr
     let mut count := 0
     let mut explicitList := []
@@ -70,19 +79,10 @@ private def solveLevel (expr : Expr) (path : List Nat) : MetaM SolveReturn := ma
 
     return { expr := nextExp, val? := toString count , listRest := pathRest }
 
-  | Expr.lam n _ b _ => do
-    let name := match n with
-      | Name.str _ s => s
-      | _ => panic! "no name found"
-    return { expr := b, val? := name, listRest := path.tail! }
+  | .lam n _ b _ => pure { expr := b, val? := n.getString!, listRest := path.tail! }
+  | .forallE n _ b _ => pure { expr := b, val? := n.getString!, listRest := path.tail! }
 
-  | Expr.forallE n _ b _ => do
-    let name := match n with
-      | Name.str _ s => s
-      | _ => panic! "no name found"
-    return { expr := b, val? := name, listRest := path.tail! }
-
-  | Expr.mdata _ b => do
+  | .mdata _ b => do
     match b with
       | Expr.mdata _ _ => return { expr := b, val? := none, listRest := path }
       | _ => return { expr := b.appFn!.appArg!, val? := none, listRest := path.tail!.tail! }
@@ -107,12 +107,17 @@ def Lean.SubExpr.Pos.toConvEnterArg (goalType : Expr) (subexprPos : SubExpr.Pos)
   retList := List.reverse retList
   return retList
 
-def Lean.Expr.allConvEnterArgs (e : Expr) :=
-  e.allPositions.mapM <| Lean.SubExpr.Pos.toConvEnterArg e
+def Lean.Expr.allConvEnterArgs (e : Expr) : MetaM <| Array (List String) :=
+  e.allPositions.filterMapM <| fun pos ↦ do
+    try
+      let arg ← Lean.SubExpr.Pos.toConvEnterArg e pos
+      return some arg
+    catch _ =>
+      return none
 
 open Meta Elab Term in
 #eval show TermElabM _ from do
-  let stx ← `(term| 1 + 2) 
+  let stx ← `(term| ∀ x, Nat.succ x = 1) 
   let t ← Term.elabTerm stx none
   let t ← reduce t
-  t.allConvEnterArgs
+  return t.viewPositions
