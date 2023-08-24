@@ -1,0 +1,1362 @@
+[
+  {
+    "docString": "If every proper closed subset of a topological space is compact, then the space itself is compact.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- If every proper closed subset of a topological space is compact, then the space itself is compact. -/\ntheorem",
+    "choices": [
+      "(X : Type*) [TopologicalSpace X] (h : ∀ (A : Set X), IsClosed A ∧ A ≠ univ → IsCompact A) :\nIsCompact (univ : Set X) ",
+      "(X : Type*) [TopologicalSpace X] (h : ∀ C : Set X, IsClosed C → C ≠ univ → IsCompact C) : IsCompact (univ : Set X) ",
+      "(X : Type*) [TopologicalSpace X] (h : ∀ C : Set X, IsClosed C → C ≠ Set.Univ → IsCompact C) : IsCompact (Set.Univ : Set X) ",
+      "(X : Type*) [TopologicalSpace X] (h : ∀ A : Set X, IsClosed A → A ≠ univ → IsCompact A) :\nIsCompact (univ : Set X) ",
+      "(X : Type*) [TopologicalSpace X] (h : ∀ (C : Set X), IsClosed C ∧ C ≠ univ → IsCompact C) :\nIsCompact (univ : Set X) ",
+      "(X : Type*) [TopologicalSpace X] (h : ∀ (A : Set X), IsClosed A → A ≠ univ → IsCompact A) :\nIsCompact (univ : Set X) ",
+      "(X : Type*) [TopologicalSpace X] (h : ∀ C : Set X, IsClosed C ∧ C ≠ univ → IsCompact C) : IsCompact (univ : Set X) ",
+      "(X : Type*) [TopologicalSpace X] (h : ∀ A : Set X, IsClosed A → A ≠ univ → IsCompact A) : IsCompact (univ : Set X) ",
+      "(X : Type*) [TopologicalSpace X] (h : ∀ C : Set X, IsClosed C ∧ C ≠ Set.Univ → IsCompact C) :\nIsCompact (Set.Univ : Set X) ",
+      "(X : Type*) [TopologicalSpace X] (h : ∀C : Set X, C ≠ univ → IsClosed C → IsCompact C) :\nIsCompact (univ : Set X) "
+    ]
+  },
+  {
+    "docString": "Every prime that is `1` greater than a multiple of `4` can be expressed as the sum of two squares.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- Every prime that is `1` greater than a multiple of `4` can be expressed as the sum of two squares. -/\ntheorem",
+    "choices": [
+      "(n : ℕ) [Fact (nat.prime n)] (hn : n % 4 = 1) :\n∃ a b : ℕ, a^2 + b^2 = n ",
+      "(n : ℕ) [hp : Fact (Nat.Prime n)] (h : n % 4 = 1) :\n ∃ x y : ℕ, x^2 + y^2 = n ",
+      "(n : ℕ) [hprime : Fact (Prime n)] (hmod : n % 4 = 1) :\n  ∃ a b : ℕ, a^2 + b^2 = n ",
+      "(n : ℕ) (hp : Nat.Prime (4 * n + 1)) :\n∃ (a b : ℕ), (4 * n + 1) = a^2 + b^2 ",
+      "(n : ℕ) [hp : Prime n] (h : n % 4 = 1) : ∃ (a b : ℕ), a ^ 2 + b ^ 2 = n ",
+      "(n : ℕ) [hp : Fact (Nat.Prime n)] (h : n % 4 = 1) :\n  ∃ x y : ℕ, x ^ 2 + y ^ 2 = n ",
+      "(n : ℕ) (hn : Nat.Prime n) (h1 : n % 4 = 1) :\n  ∃ a b : ℕ, a^2 + b^2 = n ",
+      "(every_prime_sum_of_two_squares : ∀ p : ℕ, Prime p → (p % 4 = 1) → ∃ a b : ℕ, p = a^2 + b^2) :",
+      "prime_sum_of_two_squares (p : ℕ) (hp : Nat.Prime p) (hmod : p % 4 = 1) :\n  ∃ a b : ℕ, a ^ 2 + b ^ 2 = p ",
+      "(Nat.Prime p) (hp : p % 4 = 1) : ∃ a b : ℕ, a^2 + b^2 = p "
+    ]
+  },
+  {
+    "docString": "The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares. -/\ntheorem",
+    "choices": [
+      "(n m : ℕ) : ∃ a b c d : ℕ, n * m = a^2 + b^2 + c^2 + d^2 ",
+      "(sum_four_squares_mul_sum_four_squares : ∀ (a b c d e f : ℤ),\n (a^2 + b^2 + c^2 + d^2) * (e^2 + f^2 + c^2 + d^2) = ∃ (g h i j : ℤ), g^2 + h^2 + i^2 + j^2) ",
+      "(n m : ℕ) :\n ∃ a b c d p q r s : ℤ, a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = n ∧ p ^ 2 + q ^ 2 + r ^ 2 + s ^ 2 = m ∧ (a * p + b * q + c * r + d * s) ^ 2 + (a * q - b * p - c * s + d * r) ^ 2 + (a * r + b * s - c * p - d * q) ^ 2 + (a * s - b * r + c * q - d * p) ^ 2 = n * m ",
+      "(sum_four_squares_mul_sum_four_squares : ∀ (a b c d e f : ℤ),\n (a^2 + b^2 + c^2 + d^2) * (e^2 + f^2) =\n  ∃ w x y z : ℤ, w^2 + x^2 + y^2 + z^2) ",
+      "(sum_of_four_squares_mul :\n  ∀ (a b : ℤ), ∃ (m n p q : ℤ), a * b = m^2 + n^2 + p^2 + q^2) ",
+      "(n m : ℕ) : ∃ a b c d : ℕ, n * m = a^2 + b^2 + c^2 + d^2 ",
+      "(sum_four_squares_mul_sum_four_squares :\n  ∀ (m n : ℕ), (∃ a b c d, m = a^2 + b^2 + c^2 + d^2) → (∃ p q r s, n = p^2 + q^2 + r^2 + s^2)\n  → ∃ u v w x, m * n = u^2 + v^2 + w^2 + x^2 ",
+      "(n m : ℕ) :\n∃ a b c d : ℕ, a^2 + b^2 + c^2 + d^2 = (n * m) ",
+      "(n m : ℕ) :\n ∃ a b c d : ℕ, n * m = a^2 + b^2 + c^2 + d^2 ",
+      "(n m : ℕ) :\n∃ a b c d : ℕ, n * m = a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 "
+    ]
+  },
+  {
+    "docString": "A ring with all elements idempotent is commutative.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- A ring with all elements idempotent is commutative. -/\ntheorem",
+    "choices": [
+      "(idem_ring : Type*) [Ring idem_ring] (h_idem : ∀ (a : idem_ring), a * a = a) :\n ∀ (x y : idem_ring), x * y = y * x ",
+      "(G : Type*) [Ring G] (hG : ∀ x : G, x * x = x) :\n∀ x y : G, x * y = y * x ",
+      "(G : Type*) [Ring G] (hG : ∀ x : G, x * x = x) : IsCommutative G (*) ",
+      "(X : Type*) [Semiring X] (h_idem : ∀ x : X, x * x = x) : ∀ x y : X, x * y = y * x ",
+      "(idem_ring : Type*) [Ring idem_ring] (idem : ∀ (a : idem_ring), a * a = a) :\n CommSemiring idem_ring ",
+      "(idem_ring : Type*) [Ring idem_ring] (idem : ∀ a : idem_ring, a * a = a) :\n  ∀ a b : idem_ring, a * b = b * a ",
+      "(idempotent_ring : Type*) [Ring idempotent_ring] (h : ∀ x : idempotent_ring, x * x = x) : IsCommutative idempotent_ring (*) ",
+      "(idem_ring : Type*) [Ring idem_ring] (h_idem : ∀ x : idem_ring, x * x = x) : IsCommutative idem_ring (*) ",
+      "(idem_ring : Type*) [Ring idem_ring] (idem : ∀ a : idem_ring, a * a = a) :\n  ∀ a b : idem_ring, a * b = b * a ",
+      "(R : Type*) [Ring R] (h_idem : ∀ a : R, a * a = a) : ∀ a b : R, a * b = b * a "
+    ]
+  },
+  {
+    "docString": "There are infinitely many pairs of primes that differ exactly by `2`.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- There are infinitely many pairs of primes that differ exactly by `2`. -/\ntheorem",
+    "choices": [
+      "infinitely_many_twin_primes : ∃ f : ℕ → ℕ × ℕ, Function.injective f ∧ ∀ n, Prime (f n).fst ∧ Prime (f n).snd ∧ (f n).snd - (f n).fst = 2 ",
+      "infinitely_many_twin_primes : ∃ p : ℕ, ∀ k ≥ p, ∃ (n : ℕ), Prime (n + k) ∧ Prime (n + k + 2) ",
+      "infinitely_many_twin_primes : ∃ P : ℕ → ℕ, ∀ n, Prime (P n) ∧ Prime (P n + 2) ",
+      "infinitely_many_twin_primes : ∃ f : ℕ → ℕ, ∀ n : ℕ, Prime (f n) ∧ Prime (f n + 2) ",
+      "infinitely_many_twin_primes : ∃ f : ℕ → ℕ, Function.Injective f ∧ ∀ n, (∀ k < n, Nat.Prime (f k)) ∧ Nat.Prime (f n + 2) ",
+      "infinitely_many_twin_primes : ∃ f : ℕ → ℕ, ∀ k, Prime (f k) ∧ Prime (f k + 2) ",
+      "infinitely_many_twin_primes : ∃f : ℕ → ℕ × ℕ, Function.Injective f ∧ ∀ n, (Prime (f n).fst) ∧ (Prime (f n).snd) ∧ (f n).snd - (f n).fst = 2 ",
+      "infinitely_many_twin_primes : ∃ f : ℕ → ℕ, StrictMono f ∧ ∀ n, Nat.Prime (f n) ∧ Nat.Prime (f n + 2) ",
+      ": ∃ f : ℕ → ℕ, (∀ n, Prime (f n) ∧ Prime (f n + 2)) ∧ ∀ m n, m ≠ n → f m ≠ f n ",
+      "infinitely_many_twin_primes : ∃ (f : ℕ → ℕ × ℕ), (∀ n, Nat.Prime (f n).1 ∧ Nat.Prime (f n).2 ∧ (f n).2 - (f n).1 = 2) ∧ ∀ m n, m ≠ n → f m ≠ f n "
+    ]
+  },
+  {
+    "docString": "Every finite division ring is a field.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- Every finite division ring is a field. -/\ntheorem",
+    "choices": [
+      "(G : Type*) [DivisionRing G] [Fintype G] : IsField G ",
+      "(fD : Type*) [DivisionRing fD] [Fintype fD] : IsField fD ",
+      "(X : Type*) [DivisionRing X] [Fintype X] : IsField X ",
+      "(G : Type*) [DivisionRing G] [Fintype G] : IsField G ",
+      "(field_of_finite_division_ring) (R : Type*) [DivisionRing R] [Fintype R]:\n  Field R ",
+      "(X : Type*) [DivisionRing X] [Fintype X] : IsField X ",
+      "(G : Type*) [DivisionRing G] [Fintype G] :\nField G ",
+      "(G : Type*) [DivisionRing G] [Fintype G] : Field G ",
+      "(G : Type*) [DivisionRing G] [Fintype G] : IsField G ",
+      "(G : Type*) [DivRing G] [Fintype G] : IsField G "
+    ]
+  },
+  {
+    "docString": "If each of two types can be mapped injectively into the other, then there is a bijection between them.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- If each of two types can be mapped injectively into the other, then there is a bijection between them. -/\ntheorem",
+    "choices": [
+      "(X Y : Type*) (f : X → Y) (g : Y → X) (hf : Function.Injective f) (hg : Function.Injective g) :\n ∃ (h : X → Y), Function.Bijective h ",
+      "(X Y : Type*) (hX : ∃ f : X → Y, Function.injective f) (hY : ∃ g : Y → X, Function.injective g) :\n ∃ h : X ≃ Y ",
+      "(X Y : Type*) (f : X → Y) (g : Y → X)\n (hf : Function.Injective f) (hg : Function.Injective g) :\n ∃ (h : X ≃ Y), True ",
+      "(G : Type*) (H : Type*)\n(inj_GH : ∃ f : G → H, Function.injective f)\n(inj_HG : ∃ g : H → G, Function.injective g) :\n∃ (h : G ≃ H), true ",
+      "(X Y : Type) (f : X → Y) (g : Y → X) (hf : Function.Injective f) (hg : Function.Injective g) :\n ∃ h : X → Y, Function.Bijective h ",
+      "(X Y : Type*) (f : X → Y) (g : Y → X) (hf : Function.Injective f) (hg : Function.Injective g) :\n ∃ h : X ≃ Y, True ",
+      "(X Y : Type*) (f : X → Y) (g : Y → X)\n(hf : Function.Injective f) (hg : Function.Injective g) :\n∃ (h : X → Y), Function.Bijective h ",
+      "(X Y : Type*) (hX : ∃ f : X → Y, Function.Injective f) (hY : ∃ g : Y → X, Function.Injective g) :\n ∃ h : X ≃ Y ",
+      "(X Y : Type) (f : X → Y) (g : Y → X)\n  (hf : Function.Injective f) (hg : Function.Injective g) :\n  ∃ (h : X ≃ Y), True ",
+      "(X Y : Type*) (h1 : nonempty (X ↪ Y)) (h2 : nonempty (Y ↪ X)) : nonempty (X ≃ Y) "
+    ]
+  },
+  {
+    "docString": "A finite graph in which every pair of vertices have precisely one common neighbour contains a vertex that is adjacent to all other vertices.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- A finite graph in which every pair of vertices have precisely one common neighbour contains a vertex that is adjacent to all other vertices. -/\ntheorem",
+    "choices": [
+      "(G : Type*) [DecidableEq G] [Fintype G] [∀ (x y : G), x ≠ y → Fintype (common_neighbors G x y)]\n(adj_one_common_neighbor : ∀ x y : G, x ≠ y → Fintype.card (common_neighbors G x y) = 1) :\n∃ x : G, ∀ y : G, y ≠ x → (x, y) ∈ edge_set G ",
+      "(graph : Type*) [fgraph : FiniteGraph graph] :\n∃ v : graph, ∀ w : graph, w ≠ v → ∃ v' : graph, v' ≠ v ∧ v' ≠ w ∧ fgraph.adj v' v ∧ fgraph.adj v' w ",
+      "(graph : Type*) [FiniteGraph graph] (h_common_neighbour : ∀ (v w : graph), ∃! (u : graph), u ≠ v ∧ u ≠ w ∧ u ∉ graph.adj v w) :\n∃ (v : graph), ∀ (w : graph), w ≠ v → w ∈ graph.adj v ",
+      "(graph : Type*) [Fintype graph] [DecidableRel graph.adj] (h : ∀ u v : graph, u ≠ v ≠> (∃! w, u.adj w ∧ v.adj w)) :\n∃ x, ∀ y, x ≠ y → x.adj y ",
+      "(Vertices : Type*) [Fintype Vertices] [DecidableEq Vertices] (Edges : Vertices → Vertices → Prop)\n  (h_common_neighbor : ∀ x y : Vertices, x ≠ y → ∃! z, Edges x z ∧ Edges y z) :\n∃ v : Vertices, ∀ w : Vertices, w ≠ v → Edges v w ",
+      "(graph : Type*) [Graph graph] (h_finite : Fintype graph)\n(h_unique_common_neighbor : ∀ v w : graph, v ≠ w → ∃! y, graph.adj y v ∧ graph.adj y w)\n: ∃ v : graph, ∀ w : graph, w ≠ v → graph.adj v w ",
+      "(Graph : Type*) [FiniteGraph Graph] :\n∃ v : Graph.Vertex, ∀ w : Graph.Vertex, w ≠ v ↔ Graph.adj v w ",
+      "(finite_graph : Type*) [Graph finite_graph] (vertices : Finset finite_graph)\n (h_card : ∀ a b ∈ vertices, a ≠ b → ∃! v, v ∈ vertices ∧ Graph.is_adj a v ∧ Graph.is_adj b v) :\n ∃ x ∈ vertices, ∀ y ∈ vertices, y ≠ x → Graph.is_adj x y ",
+      "(f : Type*) [Graph f] (h_fin : Fintype f)\n (h_common_neighbor : ∀ x y : f, x ≠ y → ∃ z : f, z ≠ x ∧ z ≠ y ∧ Graph.Adj f x z ∧ Graph.Adj f y z ∧ ∀ w : f, w ≠ x ∧ w ≠ y ∧ Graph.Adj f x w ∧ Graph.Adj f y w → w = z) :\n ∃ v : f, ∀ w : f, w ≠ v → Graph.Adj f v w ",
+      "(G : Type*) [Graph G] [Fintype G] (h : ∀ v w : G, v ≠ w → ∃ z, z ≠ v ∧ z ≠ w ∧ Graph.adj v z ∧ Graph.adj w z) : ∃ x, ∀ y, y ≠ x → Graph.adj x y "
+    ]
+  },
+  {
+    "docString": "The number of partitions with odd parts is equal to the number of partitions with distinct parts.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- The number of partitions with odd parts is equal to the number of partitions with distinct parts. -/\ntheorem",
+    "choices": [
+      "(num_partitions_odd_eq_distinct : ∀ n, num_partitions_with_odd_parts n = num_partitions_with_distinct_parts n ",
+      "(number_of_partitions : ℕ) :\n  num_partitions_with_odd_parts number_of_partitions = num_partitions_with_distinct_parts number_of_partitions ",
+      "(num_partitions_odd_parts_eq_distinct_parts : ℕ) :\n partitions_with_odd_parts num_partitions_odd_parts_eq_distinct_parts = partitions_with_distinct_parts num_partitions_odd_parts_eq_distinct_parts ",
+      "(n : ℕ) : partitions_with_odd_parts n = partitions_with_distinct_parts n ",
+      "(num_partitions_odd_distinct : ℕ → ℕ) :\n ∀ n : ℕ, num_partitions_odd_distinct n = num_partitions_distinct n ",
+      "(partitions_with_odd_parts : ℕ → ℕ) (partitions_with_distinct_parts : ℕ → ℕ) (n : ℕ) :\n partitions_with_odd_parts n = partitions_with_distinct_parts n ",
+      "(num_partitions_odd_eq_distinct : ∀ n : ℕ, num_partitions_odd n = num_partitions_distinct n ",
+      "(num_partitions_odd_parts_eq_distinct_parts : ℕ → ℕ) :\nnum_partitions_odd_parts_eq_distinct_parts n ",
+      "(num_partitions_odd_parts_eq_distinct_parts : ∀ n : ℕ, num_partitions_with_odd_parts n = num_partitions_with_distinct_parts n ",
+      "(num_partitions_odd_eq_num_partitions_distinct : ℕ) :\n odd_parts_num_partitions num_partitions_odd_eq_num_partitions_distinct =\n distinct_parts_num_partitions num_partitions_odd_eq_num_partitions_distinct "
+    ]
+  },
+  {
+    "docString": "Every non-empty poset in which every chain has an upper bound contains a maximal element.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- Every non-empty poset in which every chain has an upper bound contains a maximal element. -/\ntheorem",
+    "choices": [
+      "(Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀ C : Set Zorn, Chain C → ∃ ub, ∀ a ∈ C, a ≤ ub) :\n ∃ m : Zorn, ∀ a : Zorn, m ≠ a → m < a ",
+      "(Zorn : Type*) [PartialOrder Zorn] (S : Set Zorn) (hS : Set.Nonempty S)\n (h_upper : ∀ (chain : Set Zorn), Zorn.Chain (≤) chain → ∃ s ∈ S, ∀ c ∈ chain, c ≤ s) :\n ∃ m ∈ S, ∀ s ∈ S, m ≤ s → s = m ",
+      "(Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn)\n (hchain : ∀ (c : Set Zorn), Chain HasSubset.Subset c → ∃ ub, ∀ a ∈ c, a ≤ ub) :\n ∃ m : Zorn, ∀ a, m ≤ a → a = m ",
+      "(Zorn : Type*) [PartialOrder Zorn] (Hne : Nonempty Zorn)\n (H : ∀c : Set Zorn, Chain c → c.nonempty → ∃ub, ∀a ∈ c, a ≤ ub) :\n ∃m : Zorn, ∀a, m < a → False ",
+      "(Zorn : Type*) (le : Zorn → Zorn → Prop)\n [PartialOrder Zorn] (h : ∀ C : Set Zorn, (∀ z1 z2 ∈ C, le z1 z2 ∨ le z2 z1) → (∃ z_ub ∈ C, ∀ z ∈ C, le z z_ub)) :\n ∃ m : Zorn, ∀ z : Zorn, ¬(le m z ∧ ¬(le z m)) ",
+      "(Zorn : Type*) [PartialOrder Zorn]\n(hne : Nonempty Zorn) (hchain : ∀ C : Set Zorn, Chain C → ∃ ub, ∀ c ∈ C, c ≤ ub) :\n∃ m : Zorn, ∀ z : Zorn, m ≠ z → z ≤ m → False ",
+      "(Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀ C : Set Zorn, IsChain C → ∃ ub, IsUpperBound C ub) :\n∃ m : Zorn, ∀ x : Zorn, m ≠ x → x < m ",
+      "(Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀(c : Set Zorn), Chain c → c.nonempty → ∃ ub, ∀ a ∈ c, a ≤ ub) :\n∃ m : Zorn, ∀ a, m ≤ a → a = m ",
+      "(Z : Type*) [Preorder Z] [Inhabited Z] (h : ∀ C : Set Z, C.nonempty → Chain Z → UpperBounds C.nonempty) :\n ∃ m : Z, ∀ z : Z, m ≤ z → z = m ",
+      "(Zorn's Lemma) (P : Type*) [PartialOrder P] (hne : Nonempty P) (hchain : ∀ (c : Set P), Chain c → ∃ ub, ∀ a ∈ c, a ≤ ub) :\n∃ m : P, ∀ a, m ≤ a → a = m "
+    ]
+  },
+  {
+    "docString": "A group whose automorphism group is cyclic is Abelian.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- A group whose automorphism group is cyclic is Abelian. -/\ntheorem",
+    "choices": [
+      "(G : Type*) [Group G] [Fintype (Aut G)] (h_aut_cyclic : ∃ g : Aut G, ∀ x : Aut G, ∃ n : ℕ, g ^ n = x) : IsCommutative G ",
+      "(G : Type*) [Group G] (hAut : ∃ g : Aut G, ∀ h : Aut G, ∃ n : ℤ, h = g ^ n) : IsAbelian G ",
+      "(G : Type*) [Group G] (h_aut_cyclic : ∃ x : Aut G, ∀ y : Aut G, ∃ n : ℤ, y = x ^ n) : IsCommutative G ",
+      "(G : Type*) [Group G] (h : IsCyclic (Aut G)) : IsCommutative G ",
+      "(G : Type*) [Group G] (hAut : IsCyclic (Aut G)) : IsCommutative G ",
+      "(G : Type*) [Group G] (autG_cyclic : ∃ g : Aut G, ∀ x : Aut G, ∃ n : ℤ, x = g ^ n) : IsCommutative G ",
+      "(G : Type*) [Group G] (h_aut : ∃ g : Aut G, ∀ φ : Aut G, ∃ n : ℤ, φ = g ^ n) : IsCommutative G ",
+      "(G : Type*) [Group G] (hAut : IsCyclic (Aut G)) : IsCommutative G ",
+      "(G : Type*) [Group G] (h_auto_cyclic : ∃ (ϕ : G ≃* G), ∀ (ψ : G ≃* G), ∃ (n : ℤ), (ψ = ϕ ^ n)) : IsCommutative G ",
+      "(G : Type*) [Group G] (hAut : ∃ a : Aut G, ∀ b : Aut G, ∃ n : ℤ, b = a ^ n) : IsCommutative G "
+    ]
+  },
+  {
+    "docString": "A uniformly continuous function of a uniformly continuous function is uniformly continuous.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- A uniformly continuous function of a uniformly continuous function is uniformly continuous. -/\ntheorem",
+    "choices": [
+      "(X Y Z : Type*) [UniformSpace X] [UniformSpace Y] [UniformSpace Z]\n  (f : X → Y) (g : Y → Z) (hf : UniformContinuous f) (hg : UniformContinuous g) :\n  UniformContinuous (g ∘ f) ",
+      "(X Y Z : Type*) [UniformSpace X] [UniformSpace Y] [UniformSpace Z]\n  (f : X → Y) (g : Y → Z) (hf : UniformContinuous f) (hg : UniformContinuous g) :\n  UniformContinuous (g ∘ f) ",
+      "(X Y Z : Type*) [UniformSpace X] [UniformSpace Y] [UniformSpace Z]\n(f : X → Y) (g : Y → Z) (hf : UniformContinuity f) (hg : UniformContinuity g) :\n UniformContinuity (g ∘ f) ",
+      "(X : Type*) (Y : Type*) (Z : Type*)\n[UniformSpace X] [UniformSpace Y] [UniformSpace Z] (f : X → Y) (g : Y → Z) :\n  UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f) ",
+      "(X Y Z : Type*) [UniformSpace X] [UniformSpace Y] [UniformSpace Z]\n  (f : X → Y) (g : Y → Z) (hf : UniformContinuous f) (hg : UniformContinuous g) :\n  UniformContinuous (g ∘ f) ",
+      "(G : Type*) [UniformSpace G] (H : Type*) [UniformSpace H] (I : Type*) [UniformSpace I]\n  (f : G → H) (g : H → I) (hf : UniformContinuous f) (hg : UniformContinuous g) :\n  UniformContinuous (g ∘ f) ",
+      "(X Y Z : Type*) [UniformSpace X] [UniformSpace Y] [UniformSpace Z]\n (f : X → Y) (g : Y → Z)\n (hf : UniformContinuous f) (hg : UniformContinuous g) :\n UniformContinuous (g ∘ f) ",
+      "(X Y Z : Type*) [UniformSpace X] [UniformSpace Y] [UniformSpace Z]\n  (f : X → Y) (g : Y → Z) (hf : UniformContinuous f) (hg : UniformContinuous g) :\n  UniformContinuous (g ∘ f) ",
+      "(X Y Z : Type*) [UniformSpace X] [UniformSpace Y] [UniformSpace Z]\n(f : X → Y) (g : Y → Z) (hf : UniformContinuous f) (hg : UniformContinuous g) :\nUniformContinuous (g ∘ f) ",
+      "(X Y Z : Type*) [UniformSpace X] [UniformSpace Y] [UniformSpace Z] (f : X → Y) (g : Y → Z) (hf : UniformContinuous f) (hg : UniformContinuous g) : UniformContinuous (g ∘ f) "
+    ]
+  },
+  {
+    "docString": "A uniformly continuous function of a uniformly continuous function is uniformly continuous.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- A uniformly continuous function of a uniformly continuous function is uniformly continuous. -/\ntheorem",
+    "choices": [
+      "(X Y Z : Type*) [UniformSpace X] [UniformSpace Y] [UniformSpace Z]\n(f : X → Y) (g : Y → Z) (hf : UniformContinuous f) (hg : UniformContinuous g) :\nUniformContinuous (g ∘ f) ",
+      "(X Y Z : Type*) [UniformSpace X] [UniformSpace Y] [UniformSpace Z]\n(f : X → Y) (g : Y → Z) (hf : UniformContinuous f) (hg : UniformContinuous g) :\nUniformContinuous (g ∘ f) ",
+      "(X Y Z : Type*) [UniformSpace X] [UniformSpace Y] [UniformSpace Z]\n  (f : X → Y) (g : Y → Z) (hf : UniformContinuous f) (hg : UniformContinuous g) :\n  UniformContinuous (g ∘ f) ",
+      "(X : Type*) (Y : Type*) (Z : Type*)\n[UniformSpace X] [UniformSpace Y] [UniformSpace Z]\n(f : X → Y) (g : Y → Z) (hf : UniformContinuous f) (hg : UniformContinuous g) :\nUniformContinuous (g ∘ f) ",
+      "(X Y Z : Type*) [UniformSpace X] [UniformSpace Y] [UniformSpace Z]\n  (f : X → Y) (g : Y → Z) (hf : UniformContinuous f) (hg : UniformContinuous g) :\n  UniformContinuous (g ∘ f) ",
+      "(X Y Z : Type*) [UniformSpace X] [UniformSpace Y] [UniformSpace Z]\n  (f : X → Y) (g : Y → Z) (hf : UniformContinuous f) (hg : UniformContinuous g) :\n  UniformContinuous (g ∘ f) ",
+      "(X Y Z : Type) [UniformSpace X] [UniformSpace Y] [UniformSpace Z]\n(f : X → Y) (g : Y → Z) (hf : UniformContinuous f) (hg : UniformContinuous g) :\nUniformContinuous (g ∘ f) ",
+      "(X Y Z : Type*) [UniformSpace X] [UniformSpace Y] [UniformSpace Z]\n  (f : X → Y) (g : Y → Z) (hf : UniformContinuous f) (hg : UniformContinuous g) :\n  UniformContinuous (g ∘ f) ",
+      "(X Y Z : Type*) [UniformSpace X] [UniformSpace Y] [UniformSpace Z]\n  (f : X → Y) (g : Y → Z) (hf : UniformContinuous f) (hg : UniformContinuous g) :\n  UniformContinuous (g ∘ f) ",
+      "(X Y Z : Type*) [UniformSpace X] [UniformSpace Y] [UniformSpace Z]\n(f : X → Y) (g : Y → Z) (hf : UniformContinuous f) (hg : UniformContinuous g) :\nUniformContinuous (g ∘ f) "
+    ]
+  },
+  {
+    "docString": "A topological space is normal if and only if any two disjoint closed subsets can be separated by a continuous function.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- A topological space is normal if and only if any two disjoint closed subsets can be separated by a continuous function. -/\ntheorem",
+    "choices": [
+      "(X : Type*) [TopologicalSpace X] : \nnormal_space X ↔ ∀ A B : Set X, IsClosed A → IsClosed B → Disjoint A B → ∃ f : X → ℝ, Continuous f ∧ (∀ a ∈ A, f a = 0) ∧ (∀ b ∈ B, f b = 1) ",
+      "(X : Type*) [TopologicalSpace X] :\n  normal_space X ↔\n  ∀ (A B : Set X), IsClosed A → IsClosed B → Disjoint A B →\n  ∃ f : X → ℝ, Continuous f ∧ (∀ a ∈ A, f a = 0) ∧ (∀ b ∈ B, f b = 1) ",
+      "(X : Type*) [TopologicalSpace X] :\n  normal_space X ↔\n  (∀ (A B : Set X), IsClosed A → IsClosed B → Disjoint A B →\n   ∃ f : X → ℝ, Continuous f ∧ (∀ x ∈ A, f x = 0) ∧ (∀ x ∈ B, f x = 1)) ",
+      "(X : Type*) [TopologicalSpace X] :\n  t2_space X ↔\n  (∀ A B : Set X, IsClosed A → IsClosed B → Disjoint A B →\n   ∃ f : X → ℝ, Continuous f ∧ (∀ x ∈ A, f x = 0) ∧ (∀ x ∈ B, f x = 1)) ",
+      "(X : Type*) [TopologicalSpace X] :\n  NormalSpace X ↔ ∀ A B : Set X, IsClosed A → IsClosed B → Disjoint A B → ∃ f : X → ℝ, Continuous f ∧ (∀ a ∈ A, f a = 0) ∧ (∀ b ∈ B, f b = 1) ",
+      "(X : Type*) [TopologicalSpace X] :\n  normal_space X ↔\n  ∀ A B : Set X, IsClosed A → IsClosed B → Disjoint A B →\n  ∃ f : X → ℝ, Continuous f ∧ (∀ a ∈ A, f a = 0) ∧ (∀ b ∈ B, f b = 1) ",
+      "(X : Type*) [TopologicalSpace X] :\n  normal_space X ↔\n  ∀ (A B : Set X), IsClosed A → IsClosed B → Disjoint A B →\n    ∃ f : X → ℝ, Continuous f ∧ (∀ x ∈ A, f x = 0) ∧ (∀ x ∈ B, f x = 1) ",
+      "(X : Type*) [TopologicalSpace X] :\n  normal_space X ↔ (∀ A B : Set X, IsClosed A → IsClosed B → Disjoint A B → ∃ f : X → ℝ, Continuous f ∧ (∀ a ∈ A, f a = 0) ∧ (∀ b ∈ B, f b = 1)) ",
+      "(X : Type*) [TopologicalSpace X] :\n normal_space X ↔ ∀ (A B : Set X), IsClosed A → IsClosed B → Disjoint A B → ∃ f : X → ℝ, Continuous f ∧ (∀ a ∈ A, f a = 0) ∧ (∀ b ∈ B, f b = 1) ",
+      "(X : Type*) [TopologicalSpace X] :\n normal_space X ↔\n ∀ (A B : Set X), IsClosed A → IsClosed B → Disjoint A B → ∃ f : X → ℝ, Continuous f ∧ (∀ x ∈ A, f x = 0) ∧ (∀ x ∈ B, f x = 1) "
+    ]
+  },
+  {
+    "docString": "If a function from the unit interval to itself has a point of period three, then it has points of all positive periods.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- If a function from the unit interval to itself has a point of period three, then it has points of all positive periods. -/\ntheorem",
+    "choices": [
+      "(X : Type*) [TopologicalSpace X] [LinearOrder X] [OrderTopology X] [TopologicalSpace.OpensMeasurableSpace X]\n  (f : X → X) (hf : Continuous f)\n  (p : X) (hp : p ∈ set.Icc (0 : X) 1) (hp3 : (f ∘ f ∘ f) p = p) :\n  ∀ n : ℕ, ∃ q : X, q ∈ set.Icc (0 : X) 1 ∧ (f ^ n) q = q ",
+      "(X : Type*) [TopologicalSpace X] [LinearOrder X] [OrderTopology X] [UnitInterval X]\n(f : X → X) (hf : Continuous f) (x : X) (hx : f (f (f x)) = x) :\n∀ n : ℕ, ∃ y : X, (f ^ n) y = y ",
+      "(unit_interval : Type*) [LinearOrderedField unit_interval] [TopologicalSpace unit_interval] [OrderTopology unit_interval] [TopologicalRing unit_interval]\n(f : unit_interval → unit_interval) (hf : Continuous f) (x₀ : unit_interval) (hx₀ : f (f (f x₀)) = x₀) :\n∀ n : ℕ, ∃ x : unit_interval, (f ^ n) x = x ",
+      "(X : Type*) [TopologicalSpace X] [Inhabited X]\n  (f : I → I) (hf : Continuous f) (x : I) (hx : iterate f 3 x = x) :\n∀ n : ℕ, ∃ y : I, iterate f (n + 1) y = y ",
+      "(X : Type*) [TopologicalSpace X] [LinearOrder X] [OrderTopology X]\n  (f : X → X) (hf : Continuous f) (hf' : ∀ x, f x ∈ set.Icc x x) (t : X)\n  (h1 : f t = t) (h2 : f (f t) = t) (h3 : f (f (f t)) = t) :\n  ∀ n : ℕ, ∃ x, iterated_fderiv_within n f set.univ x = x ",
+      "(unit_interval : Type) [LinearOrder unit_interval] [TopologicalSpace unit_interval] [OrderTopology unit_interval] [TopologicalSpace.IntervalConnected (set.Icc (0 : unit_interval) 1)]\n  (f : unit_interval → unit_interval) (hf : ContinuousOn f (set.Icc (0 : unit_interval) 1))\n  (x₀ : unit_interval) (hx₀ : f (f (f x₀)) = x₀) :\n  ∀ n : ℕ, ∃ x : unit_interval, (f ^ n) x = x ",
+      "(unit_interval : Type*)\n[fintype unit_interval] [TopologicalSpace unit_interval]\n(fn : unit_interval → unit_interval)\n(h_period_3 : ∃ x : unit_interval, fn (fn (fn x)) = x) :\n∀ n : ℕ, ∃ y : unit_interval, iterate n fn y = y ",
+      "(X : Type*) [TopologicalSpace X] [LinearOrder X]\n  [OrderTopology X] [PreorderHomClass 𝓘(𝕜) X 𝕜] (H01 : (0 : X) < 1)\n  (f : 𝕜 →ᵃ[𝕜] X) (hf : ∀ x : X, x ∈ Icc (0 : X) 1 → f x ∈ Icc (0 : X) 1) (hf3 : ∃ x : X, x ∈ Icc (0 : X) 1 ∧ (f^[3]) x = x) :\n  ∀ n : ℕ, ∃ x : X, x ∈ Icc (0 : X) 1 ∧ (f^[n]) x = x ",
+      "(X : Type*) [LinearOrderedField X] [TopologicalSpace X] [OrderTopology X]\n(f : X → X) (hf : Continuous f) (h0 : 0 ≤ f 0) (h1 : f 1 ≤ 1)\n(h_period : ∃ x, 0 < x ∧ x < 1 ∧ f (f (f x)) = x) :\n∀ n : ℕ, ∃ x, 0 < x ∧ x < 1 ∧ (f^[n] x = x) ",
+      "(T : Type*) [TopologicalSpace T] [t₀_space T]\n (f : T → T) (hf : Continuous f) (x : T) (hx : f (f (f x)) = x) :\n ∀ n : ℕ, ∃ y : T, iterate f n y = y "
+    ]
+  },
+  {
+    "docString": "A terminal object in a category is unique up to unique isomorphism.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- A terminal object in a category is unique up to unique isomorphism. -/\ntheorem",
+    "choices": [
+      "(CategoryTheory.Category C) [i : CategoryTheory.Limits.HasTerminal C] :\n  ∀ (X Y : C) (hX : CategoryTheory.Limits.IsTerminal X) (hY : CategoryTheory.Limits.IsTerminal Y),\n  Nonempty (X ≅ Y) ",
+      "(C : Type*) [Category C] (T1 T2 : C) [T1_terminal : IsTerminal T1] [T2_terminal : IsTerminal T2] :\nunique (T1 ≅ T2) ",
+      "{C : Type*} [category C] (T₁ T₂ : C)\n(hT₁ : is_terminal T₁) (hT₂ : is_terminal T₂) :\nunique (T₁ ≅ T₂) ",
+      "[category_theory.terminal_is_unique] {C : Type*} [category C] [has_terminal C] :\nunique (terminal C) ",
+      "{C : Type*} [Category C] [has_terminal C] : unique (terminal C) ",
+      "(X Y : C) [terminal X] [terminal Y] :\n  unique (X ≅ Y) ",
+      "{C : Type*} [Category C] [Inhabited C]\n  (Y₁ Y₂ : C) [∀ Z : C, Unique (Z ⟶ Y₁)] [∀ Z : C, Unique (Z ⟶ Y₂)] :\n  Nonempty (Y₁ ≅ Y₂) ",
+      "(Obj : Type*) [Category.Obj.Obj Obj] [Category.Terminal Obj] (T₁ T₂ : Obj) :\n  unique (T₁ ⟶ T₂) ",
+      "(C : Type u) [category_theory.Category C]\n (T₁ T₂ : C) [category_theory.Limits.IsTerminal T₁] [category_theory.Limits.IsTerminal T₂] :\n unique (T₁ ≅ T₂) ",
+      "(Obj : Type) [Category Obj] (T₁ T₂ : Obj) [TerminalObj T₁] [TerminalObj T₂] :\n  unique (T₁ ≅ T₂) "
+    ]
+  },
+  {
+    "docString": "The complement of the union of two sets is the intersection of their complements.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- The complement of the union of two sets is the intersection of their complements. -/\ntheorem",
+    "choices": [
+      "(X : Type*) (A B : Set X) : HasCompl.compl (A ∪ B) = HasCompl.compl A ∩ HasCompl.compl B ",
+      "(X : Type*) (A B : Set X) : HasCompl.compl (A ∪ B) = HasCompl.compl A ∩ HasCompl.compl B ",
+      "(X : Type*) (A B : Set X) :\n  HasCompl.compl (A ∪ B) = HasCompl.compl A ∩ HasCompl.compl B ",
+      "(X : Type*) (A B : Set X) : HasCompl.compl (HasUnion.union A B) = HasInter.inter (HasCompl.compl A) (HasCompl.compl B) ",
+      "(A B : Set α) : HasCompl.compl (A ∪ B) = HasCompl.compl A ∩ HasCompl.compl B ",
+      "(X : Type*) (A B : Set X) : HasCompl.compl (A ∪ B) = HasCompl.compl A ∩ HasCompl.compl B ",
+      "(X : Type*) (A B : Set X) : HasCompl.compl (A ∪ B) = HasCompl.compl A ∩ HasCompl.compl B ",
+      "(X : Type*) (A B : Set X) : HasCompl.compl (HasUnion.union A B) = HasInter.inter (HasCompl.compl A) (HasCompl.compl B) ",
+      "(X : Type*) (A B : Set X) : HasCompl.compl (A ∪ B) = HasCompl.compl A ∩ HasCompl.compl B ",
+      "(A B : Set α) : (A ∪ B)ᶜ = Aᶜ ∩ Bᶜ "
+    ]
+  },
+  {
+    "docString": "The sum of the cubes of two positive integers is never equal to the cube of a third integer.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- The sum of the cubes of two positive integers is never equal to the cube of a third integer. -/\ntheorem",
+    "choices": [
+      "(n m k : ℕ) (hn : n > 0) (hm : m > 0) :\n  n ^ 3 + m ^ 3 ≠ k ^ 3 ",
+      "(no_sum_of_cubes : ∀ (x y z : ℕ), x^3 + y^3 ≠ z^3) :",
+      "(not_sum_cubes : ∀ x y z : ℕ, x > 0 → y > 0 → x^3 + y^3 ≠ z^3) ",
+      "no_sum_of_cubes_eq_cube : ∀ x y z : ℕ, x ^ 3 + y ^ 3 ≠ z ^ 3 ",
+      "(n m k : ℕ) (hn : n > 0) (hm : m > 0) : n ^ 3 + m ^ 3 ≠ k ^ 3 ",
+      "(sum_cubes_ne_third_cube : ∀ (a b c : ℕ), a^3 + b^3 ≠ c^3 ",
+      "(no_sum_of_cubes : ∀ (a b c : ℕ), a^3 + b^3 ≠ c^3) ",
+      "(no_two_positive_integers_cubes_sum_to_third_cube : ∀ (a b c : ℕ), a^3 + b^3 ≠ c^3 ",
+      "(sum_of_cubes_ne_cube : ∀ (a b c : ℕ), a^3 + b^3 ≠ c^3 ",
+      "(n m k : ℕ) (hn : n > 0) (hm : m > 0) : n^3 + m^3 ≠ k^3 "
+    ]
+  },
+  {
+    "docString": "If every element of a group `G` has order `2`, then every pair of elements of `G` commutes.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- If every element of a group `G` has order `2`, then every pair of elements of `G` commutes. -/\ntheorem",
+    "choices": [
+      "(G : Type*) [Group G] (hG : ∀ x : G, x^2 = 1) : ∀ x y : G, x * y = y * x ",
+      "(G : Type*) [Group G] (hG : ∀ g : G, g ^ 2 = 1) : ∀ x y : G, x * y = y * x ",
+      "(G : Type*) [Group G] (h : ∀ g : G, g ^ 2 = 1) : ∀ x y : G, x * y = y * x ",
+      "(G : Type*) [Group G] (hG : ∀ g : G, g * g = 1) : ∀ x y : G, x * y = y * x ",
+      "(G : Type*) [Group G] (hG : ∀ g : G, g ^ 2 = 1) : ∀ x y : G, x * y = y * x ",
+      "(G : Type*) [Group G] (hG : ∀ g : G, g ^ 2 = 1) : ∀ x y : G, x * y = y * x ",
+      "(G : Type*) [Group G] (hG : ∀ (x : G), x^2 = 1) :\n ∀ (x y : G), x * y = y * x ",
+      "(G : Type*) [Group G] (h : ∀ g : G, g^2 = 1) :\n ∀ x y : G, x * y = y * x ",
+      "(G : Type*) [Group G] (hG : ∀ x : G, x * x = 1) : ∀ x y : G, x * y = y * x ",
+      "(G : Type*) [Group G] (h2 : ∀ x : G, x ^ 2 = 1) : ∀ x y : G, x * y = y * x "
+    ]
+  },
+  {
+    "docString": "The product of two consecutive natural numbers is even.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- The product of two consecutive natural numbers is even. -/\ntheorem",
+    "choices": [
+      "(n : ℕ) : (n * (n + 1)) % 2 = 0 ",
+      "(m n : ℕ) (h : n = m + 1) : Even (m * n) ",
+      "(n : ℕ) :\neven (n * (n + 1)) ",
+      "(n : ℕ) : even (n * (n + 1)) ",
+      "(n : ℕ) : (n * (n + 1)) % 2 = 0 ",
+      "(n : ℕ) : (n * (n + 1)) % 2 = 0 ",
+      "(n : ℕ) : (n * (n + 1)) % 2 = 0 ",
+      "(n : ℕ) :\n  (n * (n + 1)) % 2 = 0 ",
+      "(n : ℕ) : Even ((n * (n + 1))) ",
+      "(n : ℕ) : (n * (n + 1)) % 2 = 0 "
+    ]
+  },
+  {
+    "docString": "Every index 2 subgroup of a group is normal.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- Every index 2 subgroup of a group is normal. -/\ntheorem",
+    "choices": [
+      "(G : Type*) [Group G] (H : Subgroup G) (hH : Fintype.card (G ⧸ H) = 2) :\n Subgroup.Normal H ",
+      "(G : Type*) [Group G] (H : Set G) [Subgroup H] (h2 : fintype.card H = fintype.card G / 2) :\n Subgroup.Normal (Subgroup.mk H) ",
+      "(G : Type*) [Group G] (H : Set G) [hH : Subgroup G H] (hH2 : Fintype.card H = Fintype.card G / 2) : IsNormalSubgroup H ",
+      "(G : Type*) [Group G] (H : Set G) [hH : Subgroup G H] (idx_two : Subgroup.index H = 2) :\n Subgroup.Normal hH ",
+      "(G : Type*) [Group G] (H : Set G) (h2 : ∀ x : G, x ∈ H ∨ x⁻¹ ∈ H) (hH : ∀ x y : G, x ∈ H → y ∈ H → x * y ∈ H) :\n  Subgroup.Normal (Subgroup.mk H hH (h2 1) (λ x hx, h2 x⁻¹ (hx⁻¹))) ",
+      "(G : Type*) [Group G] (H : Set G) [k : IsSubgroup H] (h2 : Fintype.card H = Fintype.card G / 2) : IsNormalSubgroup H ",
+      "(G : Type*) [Group G] (H : Set G) [hH : IsSubgroup H] (in2 : Fintype.card H = Fintype.card G / 2) :\n  IsNormalSubgroup H ",
+      "(G : Type*) [Group G] (H : Set G) [hH : Subgroup G H] (h2 : Fintype.card H = Fintype.card G / 2) : Subgroup.Normal H ",
+      "(G : Type*) [Group G] (H : Set G) [Subgroup G H] (h2 : ∀ x : G, x ∈ H ∨ x * x ∈ H) :\n  ∀ n g : G, (g * n * g⁻¹) ∈ H ↔ n ∈ H ",
+      "(G : Type*) [Group G] (H : Set G) [Subgroup H] (hH : Fintype.card H = Fintype.card G / 2) : Normal H "
+    ]
+  },
+  {
+    "docString": "Every free group is torsion free.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- Every free group is torsion free. -/\ntheorem",
+    "choices": [
+      "(G : Type*) [Group G] [IsFreeGroup G] : ∀ x : G, x ≠ 1 → ∃ n : ℤ, n ≠ 0 ∧ x ^ n ≠ 1 ",
+      "(G : Type*) [Group G] [IsFreeGroup G] : ∀ x : G, x ≠ 1 → ∀ n : ℕ, n ≠ 0 → x ^ n ≠ 1 ",
+      "(G : Type*) [Group G] [IsFreeGroup G] : ∀ x : G, x ≠ 1 → ∃ n : ℤ, x ^ n ≠ 1 ",
+      "(G : Type*) [Group G] [IsFreeGroup G] :\n ∀ x : G, x ≠ 1 → ∀ n : ℕ, n ≠ 0 → x ^ n ≠ 1 ",
+      "(G : Type*) [Group G] [IsFreeGroup G] : IsTorsionFree G ",
+      "(G : Type*) [Group G] [IsFreeGroup G] : ∀ g : G, g ≠ 1 → ∀ n : ℕ, n ≠ 0 → g ^ n ≠ 1 ",
+      "(G : Type*) [Group G] [IsFreeGroup G] : TorsionFree G ",
+      "(G : Type*) [Group G] [IsFreeGroup G] : ∀ g : G, g ≠ 1 → ∃ n : ℤ, g ^ n ≠ 1 ",
+      "(G : Type*) [Group G] [IsFreeGroup G] : ∀ x : G, x ≠ 1 → ∃ n : ℤ, n ≠ 0 ∧ x ^ n ≠ 1 ",
+      "(G : Type*) [FreeGroup G] : ∀ x : G, x ≠ 1 → ∃ n : ℤ, n ≠ 0 ∧ x ^ n = 1 → False "
+    ]
+  },
+  {
+    "docString": "Every natural number greater than `1` is divisible by a prime number.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- Every natural number greater than `1` is divisible by a prime number. -/\ntheorem",
+    "choices": [
+      "(n : ℕ) (hn : n > 1) : ∃ p, Prime p ∧ p ∣ n ",
+      "(n : ℕ) (hn : n > 1) : ∃ p, Nat.Prime p ∧ p ∣ n ",
+      "prime_divisor_of_gt_one (n : ℕ) (hn : n > 1) : ∃ p, Nat.Prime p ∧ p ∣ n ",
+      "(n : ℕ) (hn : n > 1) : ∃ p, Nat.Prime p ∧ p ∣ n ",
+      "(n : ℕ) (hn : n > 1) :\n  ∃ p : ℕ, Nat.Prime p ∧ p ∣ n ",
+      "(n : ℕ) (hn : n > 1) : ∃ p : ℕ, Prime p ∧ p ∣ n ",
+      "(n : ℕ) (hn : n > 1) : ∃ p, Nat.Prime p ∧ p ∣ n ",
+      "(n : ℕ) (hn : n > 1) :\n∃ p : ℕ, Nat.Prime p ∧ p ∣ n ",
+      "prime_divisor_of_nat_gt_one (n : ℕ) (hn : n > 1) : ∃ p, Prime p ∧ p ∣ n ",
+      "(divisible_by_prime) (n : ℕ) (hn : n > 1) : ∃ p : ℕ, Prime p ∧ p ∣ n "
+    ]
+  },
+  {
+    "docString": "A finite torsion-free group is trivial",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- A finite torsion-free group is trivial -/\ntheorem",
+    "choices": [
+      "(G : Type*) [Group G] [Fintype G] (hf : ∀ g : G, g ≠ 1 → ∃ n : ℕ, g ^ n = 1) (htf : ∀ g : G, ∀ n : ℕ, g ^ n = 1 → g = 1) :\n  G ≃ Unit ",
+      "(G : Type*) [Fintype G] [Group G] (hG : ∀ x ∈ G, x ≠ 1 → ∀ n : ℕ, x ^ n ≠ 1) : Subsingleton G ",
+      "(G : Type*) [Fintype G] [Group G] (h_torsion_free : ∀ (x : G) (n : ℕ), n > 0 → x ^ n = 1 → x = 1) : G ≃ Unit ",
+      "(G : Type*) [Group G] [Fintype G] (h_torsion_free : ∀ (x : G) (n : ℕ), n ≠ 0 → x ^ n = 1 → x = 1) : G ≃ 1 ",
+      "(G : Type*) [Group G] [Fintype G] (h_torsion_free : ∀ (x : G) (n : ℕ), n ≠ 0 → x ^ n ≠ 1) : ∀ (x : G), x = 1 ",
+      "(G : Type*) [Group G] [Fintype G] (hTorsionFree : ∀ a : G, a ≠ 1 → ∃ n : ℕ, n ≠ 0 ∧ a ^ n = 1) :\n  ∀ a : G, a = 1 ",
+      "(G : Type*) [Group G] [Fintype G] (H : ∀ (x : G), x ≠ 1 → ∃ n : ℕ, 0 < n ∧ x ^ n = 1) : ∀ (x : G), x = 1 ",
+      "(G : Type*) [Group G] [Fintype G] (hG : ∀ g : G, g ≠ 1 → g ≠ g⁻¹) : G ≃ 1 ",
+      "(G : Type*) [Group G] [Fintype G] (hf : ∀ x : G, x ≠ 1 → ∃ n : ℕ, 0 < n ∧ x ^ n = 1) : G ≃ 1 ",
+      "(G : Type*) [Group G] [Fintype G] (h_torsion_free : ∀ (x : G), x ≠ 1 → ∃ n : ℕ, x ^ n ≠ 1) : is_trivial G "
+    ]
+  },
+  {
+    "docString": "Every finite division ring is a field.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- Every finite division ring is a field. -/\ntheorem",
+    "choices": [
+      "(G : Type*) [DivisionRing G] [Fintype G] : IsField G ",
+      "(finite_division_ring : Type*) [Fintype finite_division_ring] [DivisionRing finite_division_ring] :\n Field finite_division_ring ",
+      "(X : Type*) [DivRing X] [Fintype X] : IsField X ",
+      "(field_of_finite_division_ring : Prop) [Fintype K] [DivisionRing K] :\n  field K ",
+      "(finite_division_ring : Type*) [DivisionRing finite_division_ring] [Fintype finite_division_ring] :\n Field finite_division_ring ",
+      "(M : Type*) [DivisionRing M] [Fintype M] : IsField M ",
+      "(G : Type*) [DivisionRing G] [Fintype G] : Field G ",
+      "(finite_div_ring : Type*) [DivisionRing finite_div_ring] [Fintype finite_div_ring] :\n Field finite_div_ring ",
+      "(G : Type*) [DivisionRing G] [Fintype G] : Field G ",
+      "(G : Type*) [DivisionRing G] [Fintype G] : Field G "
+    ]
+  },
+  {
+    "docString": "Every finite topological space is compact.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- Every finite topological space is compact. -/\ntheorem",
+    "choices": [
+      "(X : Type*) [TopologicalSpace X] [Fintype X] : CompactSpace X ",
+      "(X : Type*) [TopologicalSpace X] [Fintype X] : CompactSpace X ",
+      "(X : Type*) [Topology.Finite X] [TopologicalSpace X] :\nCompactSpace X ",
+      "(X : Type*) [TopologicalSpace X] [Fintype X] :\nIsCompact (Set.Univ : Set X) ",
+      "(X : Type*) [TopologicalSpace X] [Fintype X] : CompactSpace X ",
+      "(X : Type*) [TopologicalSpace X] [fintype X] :\nCompactSpace X ",
+      "(X : Type*) [TopologicalSpace X] [fintype X] : IsCompact (univ : Set X) ",
+      "(X : Type*) [TopologicalSpace X] [Fintype X] : IsCompact (univ : Set X) ",
+      "(X : Type*) [TopologicalSpace X] [Fintype X] : CompactSpace X ",
+      "(X : Type*) [TopologicalSpace X] [Fintype X] : CompactSpace X "
+    ]
+  },
+  {
+    "docString": "Every surjective homomorphism from a finitely generated free group to itself is injective.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- Every surjective homomorphism from a finitely generated free group to itself is injective. -/\ntheorem",
+    "choices": [
+      "(G : Type*) [Group G] [fintype G] (f : G →* G) (hf : Function.Surjective (⇑f)) :\nFunction.Injective (⇑f) ",
+      "(G : Type*) [Group G] [Fintype G] (hG : FinitelyGenerated G)\n  (f : G →* G) (hf : Function.Surjective (⇑f)) : Function.Injective (⇑f) ",
+      "(G : Type*) [Group G] [AddCommGroup G] [FinitelyGenerated G]\n(f : G →* G) (hf : Function.Surjective (⇑f)) :\nFunction.Injective (⇑f) ",
+      "(G : Type*) [Group G] [Fintype G] (f : G →* G) (hf : Function.Surjective (⇑f)) : Function.Injective (⇑f) ",
+      "(G : Type*) [Group G] [FreeGroup G] (f : G →* G) (hf_surj : Function.Surjective (⇑f)):\n Function.Injective (⇑f) ",
+      "(G : Type*) [Group G] [Fintype G] (f : G → G) (hf : Function.surjective f) (h_hom : IsGroupHom f) :\n  Function.injective f ",
+      "(G : Type*) [Group G] [FgFree : FinitelyGeneratedFreeGroup G] (φ : G →* G) (hφ : Function.Surjective φ) :\nFunction.Injective φ ",
+      "(G : Type*) [Group G] [Fintype G] [Fintype.infinite G] (hG : IsFreeGroup G) (f : G →* G) (hf : Function.surjective f) :\nFunction.injective f ",
+      "(G : Type*) [Group G] [Fintype G] (f : G → G) (hf : Function.surjective f) (h_free : IsFreeGroup G) :\nFunction.injective f ",
+      "(G : Type*) [Group G] [FinitelyGenerated G] [FreeGroup G] (f : G →* G) (hf : Function.Surjective (⇑f)) : Function.Injective (⇑f) "
+    ]
+  },
+  {
+    "docString": "Every positive even integer can be written as the sum of two primes.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- Every positive even integer can be written as the sum of two primes. -/\ntheorem",
+    "choices": [
+      "every_even_sum_of_two_primes :\n  ∀ n : ℕ, 2 ≤ n → n % 2 = 0 → ∃ p q : ℕ, Prime p ∧ Prime q ∧ n = p + q ",
+      "goldbach_conjecture (n : ℕ) (hn : 2 ≤ n ∧ Even n) : ∃ p q : ℕ, prime p ∧ prime q ∧ n = p + q ",
+      "goldbach_conjecture :\n  ∀ n : ℕ, n > 2 → n % 2 = 0 → ∃ (p q : ℕ), n = p + q ∧ Prime p ∧ Prime q ",
+      "goldbach_conjecture : ∀ n : ℕ, 2 ≤ n → n % 2 = 0 → ∃ p q : ℕ, Prime p ∧ Prime q ∧ n = p + q ",
+      "(goldbach_conjecture : ∀ n : ℕ, 2 ≤ n → n % 2 = 0 → ∃ (p q : ℕ), is_prime p ∧ is_prime q ∧ n = p + q) :",
+      "goldbach_conjecture : ∀ n : ℕ, 2 ≤ n → n % 2 = 0 → ∃ p q : ℕ, prime p ∧ prime q ∧ n = p + q ",
+      "Goldbach_conjecture : ∀ n : ℕ, n > 2 → Even n → ∃ p q : ℕ, Prime p ∧ Prime q ∧ n = p + q ",
+      "goldbach_conjecture : ∀ n : ℕ, 2 ≤ n → n % 2 = 0 → ∃ p q : ℕ, Prime p ∧ Prime q ∧ n = p + q ",
+      "goldbach_conjecture (n : ℕ) (hn : 2 ≤ n ∧ n % 2 = 0) : ∃ p q : ℕ, Prime p ∧ Prime q ∧ n = p + q ",
+      "goldbach_conjecture : ∀ n : ℕ, 2 ≤ n → n % 2 = 0 → ∃ p q : ℕ, n = p + q ∧ is_prime p ∧ is_prime q "
+    ]
+  },
+  {
+    "docString": "Every matrix satisfies its own characteristic polynomial.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- Every matrix satisfies its own characteristic polynomial. -/\ntheorem",
+    "choices": [
+      "(X : Type*) [Ring X] (A : Matrix n n X) :\n Matrix.det (A - Matrix.scalar n (Matrix.charpoly A).X) = 0 ",
+      "(X : Type*) [Ring X] (A : Matrix n n X) :\n  Polynomial.eval A (Matrix.charpoly A) = 0 ",
+      "(X : Type*) [Ring X] (A : Matrix (Fin n) (Fin n) X) :\n  (Matrix.charpoly A).eval (Matrix.eval A) = 0 ",
+      "(X : Type*) [Fintype X] [DecidableEq X] (R : Type*) [CommRing R] (A : Matrix X X R) :\n  (Matrix.charpoly A).eval A = 0 ",
+      "(X : Type*) [Ring X] (n : ℕ) (A : Matrix (Fin n) (Fin n) X) :\n  Polynomial.eval A (Matrix.charpoly A) = 0 ",
+      "(X : Type*) [Fintype X] [DecidableEq X] (R : Type*) [CommRing R] (A : Matrix X X R) :\n  Polynomial.eval A (Matrix.charpoly A) = 0 ",
+      "(X : Type*) [Ring X] (M : Matrix n n X) : \nMatrix.charpoly M M = 0 ",
+      "(X : Type*) [Fintype X] [DecidableEq X] [CommRing R] (M : Matrix X X R) : \nMatrix.charpoly M • M = Matrix.adjugate M * Matrix.charpoly M ",
+      "(X : Type*) [Fintype X] [DecidableEq X] [CommRing R] (A : Matrix X X R) :\n  Polynomial.eval (A : Matrix X X R) (Matrix.charpoly A) = 0 ",
+      "(X : Type*) [Fintype X] [DecidableEq X] (R : Type*) [CommRing R] (A : Matrix X X R) :\n  Polynomial.eval A (Matrix.charpoly A) = Zero.zero "
+    ]
+  },
+  {
+    "docString": "The square root of an irrational number is irrational.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- The square root of an irrational number is irrational. -/\ntheorem",
+    "choices": [
+      "(sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :",
+      "(sqrt_irrational {x : ℝ} (hx : Irrational x)) : Irrational (Real.sqrt x) ",
+      "(sqrt_irrational : ∀ x : ℝ, Irrational x → Irrational (Real.sqrt x)) :",
+      "(sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :",
+      "(sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :",
+      "(sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :",
+      "(sqrt_irrational : ∀ x : ℝ, Irrational x → Irrational (Real.sqrt x)) :",
+      "(sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :",
+      "(sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :",
+      "(sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :"
+    ]
+  },
+  {
+    "docString": "If the square of a number is even, the number itself is even.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- If the square of a number is even, the number itself is even. -/\ntheorem",
+    "choices": [
+      "(n : ℕ) (hsq : n^2 % 2 = 0) : n % 2 = 0 ",
+      "(n : ℕ) (h : n ^ 2 % 2 = 0) : n % 2 = 0 ",
+      "(sq_even : ℕ) (h : sq_even ^ 2 % 2 = 0) :\nsq_even % 2 = 0 ",
+      "(square_even : ℕ) (h : square_even ^ 2 % 2 = 0) : square_even % 2 = 0 ",
+      "(square_even_iff_even : ∀ n : ℤ, n^2 % 2 = 0 → n % 2 = 0) :",
+      "(square_even : ∀ (n : ℕ), 2 ∣ n^2 → 2 ∣ n) :",
+      "(sq_even : ℕ) (h : sq_even ^ 2 % 2 = 0) : sq_even % 2 = 0 ",
+      "(sq_even : ℕ → Prop) (x : ℕ) (h : sq_even (x^2)) : sq_even x ",
+      "(sq_even : ℕ → Prop) (a : ℕ) (h : sq_even (a^2)) : sq_even a ",
+      "(square_even_iff_even : ∀ (n : ℕ), n^2 % 2 = 0 ↔ n % 2 = 0) :"
+    ]
+  },
+  {
+    "docString": "In a finite commutative ring, all prime ideals are maximal.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- In a finite commutative ring, all prime ideals are maximal. -/\ntheorem",
+    "choices": [
+      "(finite_ideal : Type*) [CommRing finite_ideal] [IsFinite finite_ideal] (P : Ideal finite_ideal) [Ideal.IsPrime P] :\n Ideal.IsMaximal P ",
+      "(X : Type) [CommRing X] [Fintype X] (P : Ideal X) [Hp : Ideal.IsPrime P] :\nIdeal.IsMaximal P ",
+      "(G : Type*) [CommRing G] [Fintype G] (P : Ideal G) [IsPrime P] :\n IsMaximal P ",
+      "(G : Type*) [CommRing G] [Fintype G] (P : Ideal G) [hP : Ideal.IsPrime P] :\n Ideal.IsMaximal P ",
+      "(G : Type*) [CommRing G] [Fintype G] (P : Ideal G) [hP : P.is_prime] :\n  P.is_maximal ",
+      "(finite_ring : Type*) [CommRing finite_ring] [Fintype finite_ring] (P : Ideal finite_ring) [hP : Ideal.IsPrime P] :\nIdeal.IsMaximal P ",
+      "(G : Type*) [CommRing G] [Fintype G]\n(P : Ideal G) [hP_prime : Ideal.is_prime P] :\nIdeal.is_maximal P ",
+      "(fin_comm_ring : Type*) [Fintype fin_comm_ring] [comm_ring fin_comm_ring] :\n ∀ (P : Ideal fin_comm_ring), Ideal.IsPrime P → Ideal.IsMaximal P ",
+      "(G : Type*) [CommRing G] [Fintype G] (P : Ideal G) [hP : P.is_prime] :\n P.is_maximal ",
+      "(G : Type*) [CommRing G] [Fintype G] (P : Ideal G) (hP : Ideal.IsPrime P) :\nIdeal.IsMaximal P "
+    ]
+  },
+  {
+    "docString": "A topological space $X$ is Hausdorff if and only if the diagonal is a closed set in $X × X$.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- A topological space $X$ is Hausdorff if and only if the diagonal is a closed set in $X × X$. -/\ntheorem",
+    "choices": [
+      "(X : Type*) [TopologicalSpace X] :\n  (∀ x y : X, x ≠ y → ∃ U V : Set X, IsOpen U ∧ IsOpen V ∧ x ∈ U ∧ y ∈ V ∧ U ∩ V = ∅) ↔\n  IsClosed (Diagonal X) ",
+      "(X : Type*) [TopologicalSpace X] :\n  (∀ x y : X, x ≠ y → ∃ U V : Set X, IsOpen U ∧ IsOpen V ∧ x ∈ U ∧ y ∈ V ∧ U ∩ V = ∅) ↔\n  IsClosed (Diagonal X) ",
+      "(X : Type*) [TopologicalSpace X] :\n  Hausdorff X ↔ IsClosed (Set.Diagonal X) ",
+      "(X : Type*) [TopologicalSpace X] :\n (∀ x y : X, x ≠ y → ∃ U V : Set X, IsOpen U ∧ IsOpen V ∧ x ∈ U ∧ y ∈ V ∧ U ∩ V = ∅)\n ↔ IsClosed ({(x, y) : X × X | x = y} : Set (X × X)) ",
+      "(X : Type*) [TopologicalSpace X] :\n  (∀ x y : X, x ≠ y → ∃ U V : Set X, IsOpen U ∧ IsOpen V ∧ x ∈ U ∧ y ∈ V ∧ U ∩ V = ∅) ↔\n  IsClosed (Set.Diagonal X) ",
+      "(X : Type*) [TopologicalSpace X] :\n  t2_space X ↔ IsClosed (Set.Diagonal X) ",
+      "(X : Type*) [TopologicalSpace X] :\n  t2_space X ↔ IsClosed (Set.Diagonal X) ",
+      "(X : Type*) [TopologicalSpace X] :\n  T2Space X ↔ IsClosed (Set.Diagonal X) ",
+      "(X : Type*) [TopologicalSpace X] :\n  T2Space X ↔ IsClosed (id_rel : Set (X × X)) ",
+      "(X : Type*) [TopologicalSpace X] :\n T2Space X ↔ IsClosed {p : X × X | p.1 = p.2} "
+    ]
+  },
+  {
+    "docString": "If every point of a subset of a topological space is contained in some open set, the subset itself is open.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- If every point of a subset of a topological space is contained in some open set, the subset itself is open. -/\ntheorem",
+    "choices": [
+      "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U):\n IsOpen A ",
+      "(X : Type*) [TopologicalSpace X]\n (B : Set X) (hB : ∀ x ∈ B, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ B):\n IsOpen B ",
+      "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U) :\n IsOpen A ",
+      "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U):\n IsOpen A ",
+      "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U) :\n IsOpen A ",
+      "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A ",
+      "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U):\n IsOpen A ",
+      "(X : Type*) [TopologicalSpace X]\n (B : Set X) (hB : ∀ x ∈ B, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ B):\n IsOpen B ",
+      "(X : Type*) [TopologicalSpace X]\n (B : Set X) (hB : ∀ x ∈ B, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ B):\n IsOpen B ",
+      "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A "
+    ]
+  },
+  {
+    "docString": "Every non-identity element of a free group is of infinite order.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- Every non-identity element of a free group is of infinite order. -/\ntheorem",
+    "choices": [
+      "(G : Type*) [Group G] [IsFreeGroup G] (x : G) (hx : x ≠ 1) : ∀ n : ℕ, x ^ n ≠ 1 ",
+      "(G : Type*) [Group G] [IsFreeGroup G] (x : G) (hx : x ≠ 1) : ∀ n : ℕ, x ^ n ≠ 1 ",
+      "(F : Type*) [Group F] [IsFreeGroup F] (x : F) (hx : x ≠ 1) : ∀ n : ℕ, x ^ n ≠ 1 ",
+      "(G : Type*) [Group G] [is_free_group G] (x : G) (hx : x ≠ 1) : ∀ n : ℕ, x ^ n ≠ 1 ",
+      "(G : Type*) [Group G] [IsFreeGroup G] (x : G) (hx : x ≠ 1) : ∀ n : ℕ, x ^ n ≠ 1 ",
+      "(G : Type*) [Group G] [IsFreeGroup G] (x : G) (hx : x ≠ 1) : ∀ n : ℕ, x ^ n ≠ 1 ",
+      "(G : Type*) [Group G] [IsFreeGroup G] (x : G) (hx : x ≠ 1) : ∀ n : ℕ, x ^ n ≠ 1 ",
+      "(G : Type*) [Group G] [is_free_group G] (x : G) (hx : x ≠ 1) : ∀ n : ℕ, x ^ n ≠ 1 ",
+      "(G : Type*) [Group G] [IsFreeGroup G] (x : G) (hx : x ≠ 1) : ∀ n : ℕ, x ^ n ≠ 1 ",
+      "(G : Type*) [Group G] [IsFreeGroup G] (x : G) (hx : x ≠ 1) : ∀ n : ℕ, x ^ n ≠ 1 "
+    ]
+  },
+  {
+    "docString": "An element of a discrete valuation ring is a unit if and only if it has a valuation of zero.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- An element of a discrete valuation ring is a unit if and only if it has a valuation of zero. -/\ntheorem",
+    "choices": [
+      "(DVR : Type*) [IntegralDomain DVR] [IsPrincipalIdealRing DVR]\n(valuation : DVR → ℕ) (hDVR : DiscreteValuationRing valuation) (x : DVR) :\n(is_unit x) ↔ (valuation x = 0) ",
+      "(dvr : Type*) [IntegralDomain dvr] [DiscreteValuationRing dvr] (x : dvr) :\n  IsUnit x ↔ DiscreteValuationRing.valuation x = 0 ",
+      "(DVR : Type*) [IntegralDomain DVR] [DiscreteValuationRing DVR] (x : DVR) :\n (x ≠ 0 ∧ ∀ n : ℕ, x ∣ x ^ n) ↔ DiscreteValuationRing.valuation x = 0 ",
+      "(X : Type*) [IntegralDomain X] [DiscreteValuationRing X] [IsPrincipalIdealRing X]\n (x : X) (hx : x ≠ 0) :\n IsUnit x ↔ DiscreteValuationRing.valuation X x = 0 ",
+      "(discrete_valuation_ring : Type*) [IntegralDomain discrete_valuation_ring] [IsDiscreteValuationRing discrete_valuation_ring]\n(valuation : discrete_valuation_ring → ℕ) (a : discrete_valuation_ring) :\n  IsUnit a ↔ valuation a = 0 ",
+      "(DVR : Type*) [IntegralDomain DVR] [IsDVR DVR] (x : DVR) :\n   IsUnit x ↔ Valuation.valuation x = 0 ",
+      "(dvr : Type*) [IntegralDomain dvr] [DiscreteValuationRing dvr] (x : dvr) :\n is_unit x ↔ DiscreteValuationRing.valuation x = 0 ",
+      "(dvr : Type*) [IntegralDomain dvr] [IsPrincipalIdealRing dvr] [IsDiscreteValuationRing dvr] (a : dvr) :\n  a ∈ Units dvr ↔ IsDiscreteValuationRing.valuation a = 0 ",
+      "(G : Type*) [DiscreteValuationRing G] (x : G) :\n  IsUnit x ↔ DiscreteValuationRing.valuation x = 0 ",
+      "(D : Type*) [IntegralDomain D] [IsDiscreteValuationRing D] (x : D) :\n  IsUnit x ↔ (∀ (v : Valuation D ℝ≥0), ⇑v x = 0) "
+    ]
+  },
+  {
+    "docString": "For any two relatively prime positive integers $a$ and $b$, every sufficiently large natural number $N$ can be written as a linear combination $ax + by$ of $a$ and $b$, where both $x$ and $y$ are natural numbers.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- For any two relatively prime positive integers $a$ and $b$, every sufficiently large natural number $N$ can be written as a linear combination $ax + by$ of $a$ and $b$, where both $x$ and $y$ are natural numbers. -/\ntheorem",
+    "choices": [
+      "(n a b : ℕ) (coprime_ab : Nat.Coprime a b) :\n∃ N : ℕ, ∀ m ≥ N, ∃ (x y : ℕ), m = a * x + b * y ",
+      "(N₀ : ℕ) (a b : ℕ) (h_coprime : Nat.coprime a b) :\n  ∀ N ≥ N₀, ∃ (x y : ℕ), N = a * x + b * y ",
+      "(chicken_mcnugget_theorem (a b : ℕ) (h_coprime : Nat.Coprime a b)) :\n  ∀ N ≥ a * b - a - b, ∃ x y : ℕ, N = a * x + b * y ",
+      "(frobenius_theorem_nat (a b : ℕ) (h_coprime : Nat.coprime a b)) :\n  ∃ N : ℕ, ∀ n, N ≤ n → ∃ x y : ℕ, n = a * x + b * y ",
+      "(frobenius_theorem : ∀ a b : ℕ, Nat.gcd a b = 1 → ∃ N : ℕ, ∀ n, N ≤ n → ∃ x y : ℕ, n = a * x + b * y) ",
+      "(chicken_mcnugget_theorem : ℕ → ℕ → Prop) ",
+      "(N : ℕ) (a b : ℕ) (hcoprime : Nat.Coprime a b) :\n∃ N0 : ℕ, ∀ N ≥ N0, ∃ x y : ℕ, N = a * x + b * y ",
+      "(chicken_mcnugget : ℕ → ℕ → Prop) ",
+      "(a b : ℕ) (coprime_ab : Nat.Coprime a b) :\n∃ N : ℕ, ∀ n : ℕ, n ≥ N → ∃ x y : ℕ, n = a * x + b * y ",
+      "(N : ℕ) (a b : ℕ) (hcoprime : Nat.coprime a b) (hsufficient : N ≥ a * b) :\n∃ x y : ℕ, ax + by = N "
+    ]
+  },
+  {
+    "docString": "Every field is a ring.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- Every field is a ring. -/\ntheorem",
+    "choices": [
+      "(field_to_ring : ∀ (F : Type*) [Field F], Ring F) ",
+      "(field_is_ring : Field F) : Ring F ",
+      "(field_to_ring : ∀ (F : Type*) [Field F], Ring F) : Prop ",
+      "(X : Type*) [Field X] : Ring X ",
+      "(field_to_ring) (F : Type*) [Field F] : Ring F ",
+      "(field_to_ring : ∀ (F : Type*) [Field F], Ring F) :",
+      "(field_to_ring : ∀ (F : Type*) [Field F], Ring F) :",
+      "(field_to_ring : ∀ (K : Type*) [Field K], Ring K) :",
+      "(field_to_ring : ∀ (K : Type*) [Field K], Ring K) ",
+      "(field_to_ring : ∀ (K : Type*) [Field K], Ring K) "
+    ]
+  },
+  {
+    "docString": "The set of units in a ring forms a group.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- The set of units in a ring forms a group. -/\ntheorem",
+    "choices": [
+      "(G : Type*) [Ring G] :\n Group (Units G) ",
+      "(G : Type*) [Ring G] : ∃ U : Type*, [Group U] ∧ @Units G ≃ U ",
+      "(G : Type*) [Ring G] : Group (Units G) ",
+      "(X : Type*) [Ring X] :\nGroup (Units X) ",
+      "(G : Type*) [Ring G] :\n∃ (unitG : Type*) [Group unitG] [Equivalence (λ (a b : unitG), a.val * b.inv = b.val * a.inv)], unitG ≃ Set G ",
+      "(G : Type*) [Ring G] : Group (Units G) ",
+      "(G : Type*) [Ring G] : Group (Units G) ",
+      "(G : Type*) [Ring G] :\nGroup (Units G) ",
+      "(units_group) {R : Type*} [Ring R] : Group (Units R) ",
+      "(G : Type*) [Ring G] : Group (Units G) "
+    ]
+  },
+  {
+    "docString": "If the direct product of two groups is torsion free then each of the groups is torsion free.",
+    "prompts": [
+      [
+        "If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.",
+        "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"
+      ],
+      [
+        "If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.",
+        "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"
+      ],
+      [
+        "If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.",
+        "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"
+      ],
+      [
+        "Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.",
+        "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A"
+      ]
+    ],
+    "prompt_cons": "/-- If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$. -/\ntheorem (n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) :=\n\n/-- If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$. -/\ntheorem (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 :=\n\n/-- If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct. -/\ntheorem (G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n :=\n\n/-- Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$. -/\ntheorem (X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A :=\n\n/-- If the direct product of two groups is torsion free then each of the groups is torsion free. -/\ntheorem",
+    "choices": [
+      "(G : Type*) (H : Type*) [Group G] [Group H] (gh_torsion_free : ∀ g : G × H, g ≠ 1 → ∃ n : ℤ, g ^ n ≠ 1) :\n(∀ (g : G), g ≠ 1 → ∃ n : ℤ, g ^ n ≠ 1) ∧ (∀ (h : H), h ≠ 1 → ∃ n : ℤ, h ^ n ≠ 1) ",
+      "(G₁ G₂ : Type*) [Group G₁] [Group G₂]\n  (H : ∀ (x : G₁ × G₂), (∃ n : ℕ, n ≠ 0 ∧ x^n = (1, 1)) → x = (1, 1)) :\n  (∀ (x : G₁), (∃ n : ℕ, n ≠ 0 ∧ x^n = 1) → x = 1) ∧ (∀ (x : G₂), (∃ n : ℕ, n ≠ 0 ∧ x^n = 1) → x = 1) ",
+      "(G H : Type*) [Group G] [Group H] (gh_torsion_free : ∀ g h : G × H, (g, h) ≠ 1 → g ≠ 1 ∨ h ≠ 1) :\n(∀ g : G, g ≠ 1 → g ≠ 1) ∧ (∀ h : H, h ≠ 1 → h ≠ 1) ",
+      "(G1 G2 : Type*) [Group G1] [Group G2]\n (H : ∀ (x₁ : G1) (x₂ : G2), x₁ ≠ 1 ∨ x₂ ≠ 1 → (x₁, x₂) ≠ (1, 1))\n : (∀ x : G1, x ≠ 1 → x ≠ 1) ∧ (∀ x : G2, x ≠ 1 → x ≠ 1) ",
+      "(X Y : Type*) [Group X] [Group Y] (G : Type*) [Group G] [IsLinearOrder G]\n (hG : ∀ a b : X × Y, (a ≠ 1 ∨ b ≠ 1) → a * b ≠ 1) :\n (∀ x : X, x ≠ 1 → ∃ n : G, x ^ n ≠ 1) ∧ (∀ y : Y, y ≠ 1 → ∃ m : G, y ^ m ≠ 1) ",
+      "(G : Type*) [Group G] (H : Type*) [Group H] (gh : Group (G × H))\n  (tor_free : ∀ (g : G × H), g ≠ 1 → ∃ n : ℕ, g ^ n ≠ 1) :\n  (∀ (g : G), g ≠ 1 → ∃ n : ℕ, g ^ n ≠ 1) ∧ (∀ (h : H), h ≠ 1 → ∃ n : ℕ, h ^ n ≠ 1) ",
+      "(G H : Type*) [Group G] [Group H]\n  (h : IsTorsionFree (G × H)) : IsTorsionFree G ∧ IsTorsionFree H ",
+      "(G H : Type*) [Group G] [Group H] (gh_tors_free : ∀ (x : G × H), x ≠ 1 → ∃ n : ℤ, x ^ n ≠ 1) :\n(∀ (g : G), g ≠ 1 → ∃ n : ℤ, g ^ n ≠ 1) ∧ (∀ (h : H), h ≠ 1 → ∃ n : ℤ, h ^ n ≠ 1) ",
+      "(G H : Type*) [Group G] [Group H] (prod_torsion_free : ∀ (gh : G × H), gh ≠ 1 → ∃ n : ℤ, n ≠ 0 ∧ gh ^ n ≠ 1) :\n(∀ (g : G), g ≠ 1 → ∃ n : ℤ, n ≠ 0 ∧ g ^ n ≠ 1) ∧ (∀ (h : H), h ≠ 1 → ∃ n : ℤ, n ≠ 0 ∧ h ^ n ≠ 1) ",
+      "(G : Type*) (H : Type*) [Group G] [Group H] (gh : ∀ (g : G) (h : H), (g, h) ≠ 1 → ∃ n : ℕ, (g ^ n ≠ 1) ∧ (h ^ n ≠ 1)) :\n(∀ g : G, g ≠ 1 → ∃ n : ℕ, g ^ n ≠ 1) ∧ (∀ h : H, h ≠ 1 → ∃ n : ℕ, h ^ n ≠ 1) "
+    ]
+  }
+]
