@@ -1,5 +1,14 @@
 import Mathlib
 
+example (x : ℝ) : ‖x‖ = 0 := sorry
+
+example (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) : ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 := by sorry
+
+#check Complex.abs
+
+open BigOperators
+example (n : ℕ) (f : ℕ → ℂ) : Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) := by sorry
+
 example : 1 = 1 := by
   let c := 1
   show c = 1
