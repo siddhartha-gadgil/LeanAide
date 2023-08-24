@@ -1,7 +1,11 @@
 import jsonlines
 
-with jsonlines.open("../data/proofnet_test.jsonl", "r") as data:
-    nl_statements = [line["nl_statement"] + '\n' for line in data]
+def extract_proofnet_lines(file:str):
+    with jsonlines.open(file + ".jsonl", "r") as data:
+        nl_statements = [line["nl_statement"] + '\n' for line in data]
 
-with open("../data/proofnet_statements.txt", "w") as output:
-    output.writelines(nl_statements)
+    with open(file + "_statements" + ".txt", "w") as output:
+        output.writelines(nl_statements)
+
+extract_proofnet_lines("../data/proofnet_test")
+extract_proofnet_lines("../data/proofnet_valid")

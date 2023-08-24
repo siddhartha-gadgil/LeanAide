@@ -1,1 +1,2 @@
 curl https://huggingface.co/datasets/hoskinson-center/proofnet/raw/main/test.jsonl --output ../data/proofnet_test.jsonl
+curl https://huggingface.co/datasets/hoskinson-center/proofnet/raw/main/valid.jsonl --output ../data/proofnet_valid.jsonl
