@@ -4,7 +4,7 @@ example (x : ℝ) : ‖x‖ = 0 := sorry
 
 example (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) : ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 := by sorry
 
-example : forall {R : Type u} [inst : CommRing R] {n : Type w} [inst_1 : DecidableEq n] [inst_2 : Fintype n] (M : Matrix n n R),  Polynomial.aeval M (Matrix.charpoly M) = 0 := by sorry
+example : ∀ {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : Group H],  Monoid.IsTorsionFree (G × H) → Monoid.IsTorsionFree G ∧ Monoid.IsTorsionFree H := by sorry
 
 #check Complex.abs
 
