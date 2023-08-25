@@ -38,3 +38,43 @@
 {"text":"Every field is a ring.","fullPrompt":"No prompt (maybe using cached data)"}
 {"text":"The set of units in a ring forms a group.","fullPrompt":"No prompt (maybe using cached data)"}
 {"text":"If the direct product of two groups is torsion free then each of the groups is torsion free.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If every proper closed set of a topological space is compact, then the space itself is compact.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every prime that is `1` greater than a multiple of `4` can be expressed as the sum of two squares.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"A ring with all elements idempotent is commutative.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"There are infinitely many pairs of primes that differ exactly by `2`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every finite division ring is a field.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If each of two types can be mapped injectively into the other, then there is a bijection between them.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"A finite graph in which every pair of vertices have precisely one common neighbour contains a vertex that is adjacent to all other vertices.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"The number of partitions with odd parts is equal to the number of partitions with distinct parts.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every non-empty poset in which every chain has an upper bound contains a maximal element.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"A group whose automorphism group is cyclic is Abelian.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"A uniformly continuous function of a uniformly continuous function is uniformly continuous.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"A uniformly continuous function of a uniformly continuous function is uniformly continuous.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"A topological space is normal if and only if any two disjoint closed subsets can be separated by a continuous function.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If a function from the unit interval to itself has a point of period three, then it has points of all positive periods.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"A terminal object in a category is unique up to unique isomorphism.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"The complement of the union of two sets is the intersection of their complements.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"The sum of the cubes of two positive integers is never equal to the cube of a third integer.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If every element of a group `G` has order `2`, then every pair of elements of `G` commutes.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"The product of two consecutive natural numbers is even.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every index 2 subgroup of a group is normal.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every free group is torsion free.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every natural number greater than `1` is divisible by a prime number.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"A finite torsion-free group is trivial","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every finite division ring is a field.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every finite topological space is compact.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every surjective homomorphism from a finitely generated free group to itself is injective.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every positive even integer can be written as the sum of two primes.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every matrix satisfies its own characteristic polynomial.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"The square root of an irrational number is irrational.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If the square of a number is even, the number itself is even.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"In a finite commutative ring, all prime ideals are maximal.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"A topological space $X$ is Hausdorff if and only if the diagonal is a closed set in $X × X$.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If every point of a subset of a topological space is contained in some open set, the subset itself is open.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every non-identity element of a free group is of infinite order.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"An element of a discrete valuation ring is a unit if and only if it has a valuation of zero.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"For any two relatively prime positive integers $a$ and $b$, every sufficiently large natural number $N$ can be written as a linear combination $ax + by$ of $a$ and $b$, where both $x$ and $y$ are natural numbers.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every field is a ring.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"The set of units in a ring forms a group.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If the direct product of two groups is torsion free then each of the groups is torsion free.","fullPrompt":"No prompt (maybe using cached data)"}
