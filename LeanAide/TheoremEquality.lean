@@ -17,7 +17,7 @@ elab "add_aesop_power_tactics" tacs:tactic,* : command => do
   for tac in tacs.getElems do
     `(command| add_aesop_power_tactic $tac) >>= Command.elabCommand ∘ TSyntax.raw
 
-add_aesop_power_tactics gcongr, ring, linarith, norm_num, positivity, polyrith, ext, norm_cast 
+-- add_aesop_power_tactics gcongr, ring, linarith, norm_num, positivity, polyrith, ext, norm_cast 
 
 /-!
 ## Equality of statements
@@ -25,7 +25,8 @@ add_aesop_power_tactics gcongr, ring, linarith, norm_num, positivity, polyrith, 
 An API based on Aesop. Should use a refined conguration for `aesop` to make it more effective.
 -/
 
-def provedEqual (e₁ e₂ : Expr) : TermElabM Bool := do
+def provedEqual (e₁ e₂ : Expr) : TermElabM Bool := 
+ withoutModifyingState do
   let type ← mkEq e₁ e₂
   let mvar ← mkFreshExprMVar <| some type
   let mvarId := mvar.mvarId!
@@ -34,7 +35,8 @@ def provedEqual (e₁ e₂ : Expr) : TermElabM Bool := do
   let (remaining, _) := res
   return remaining.isEmpty
 
-def provedEquiv (e₁ e₂ : Expr) : TermElabM Bool := do
+def provedEquiv (e₁ e₂ : Expr) : TermElabM Bool := 
+  withoutModifyingState do
   try
   let type ← mkAppM ``Iff #[e₁, e₂]
   let mvar ← mkFreshExprMVar <| some type

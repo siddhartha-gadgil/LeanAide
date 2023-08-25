@@ -30,7 +30,6 @@ def translateWithDataM (s: String)(numSim : Nat:= 10)
     IO.sleep (sleepTime * 1000)
     translateWithDataM s numSim includeFixed queryNum temp model embedding azure k (sleepTime * 2) queryData?
   else
-    let output := output.toList.eraseDups.toArray
     let res ← arrayToExpr? output 
     return (res, output)
   
@@ -163,7 +162,6 @@ def outputFromCompletionsM (s: String) :
   TermElabM (String) := do
   let output ← jsonStringToExprStrArray s
   let output := output ++ (output.map (fun s => ": " ++ s))
-  let output := output.toList.eraseDups.toArray
   -- IO.println s!"output: {output}"
   let res? ← arrayToExpr? output
   let js : Json ←  match res? with

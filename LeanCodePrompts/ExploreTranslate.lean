@@ -16,7 +16,7 @@ def getCodeCustomJson (s: String)(customPrompts : Array (String × String) := #[
       -- work starts here; before this was caching, polling etc
       let (pairs, IOOut) ←  
         if numSim > 0 then  
-          getPromptPairs s numSim numKW scoreBound matchBound 
+          getPromptPairs s numSim 
         else pure (#[], ⟨0, "", ""⟩)
       let pairs := pairs.reverse
       let pairs := pairs ++ customPrompts 
