@@ -1,4 +1,4 @@
-If every proper closed set of a topological space is compact, then the space itself is compact.
+If every proper closed subset of a topological space is compact, then the space itself is compact.
 Every prime that is `1` greater than a multiple of `4` can be expressed as the sum of two squares.
 The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares.
 A ring with all elements idempotent is commutative.

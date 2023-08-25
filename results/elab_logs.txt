@@ -15230,3 +15230,466 @@ total : 40
 
 elaborated: 35
 
+Writing to file: thm-elab-10-false-5-8.json
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α], (∀ (s : Set α), IsClosed s → s ≠ ⊤ → IsCompact s) → CompactSpace α
+
+total : 1
+
+elaborated: 1
+
+success
+
+theorem ∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p % 4 = 1 → ∃ a b, a ^ 2 + b ^ 2 = p
+
+total : 2
+
+elaborated: 2
+
+success
+
+theorem ∀ {a b x y u v r s : ℕ},
+  a = x ^ 2 + y ^ 2 + r ^ 2 + s ^ 2 →
+    b = u ^ 2 + v ^ 2 + r ^ 2 + s ^ 2 → ∃ p q t w, a * b = p ^ 2 + q ^ 2 + t ^ 2 + w ^ 2
+
+total : 3
+
+elaborated: 3
+
+Writing to file: thm-elab-10-false-5-8.json
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α], (∀ (s : Set α), IsClosed s → s ≠ ⊤ → IsCompact s) → CompactSpace α
+
+total : 1
+
+elaborated: 1
+
+success
+
+theorem ∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p % 4 = 1 → ∃ a b, a ^ 2 + b ^ 2 = p
+
+total : 2
+
+elaborated: 2
+
+success
+
+theorem ∀ {a b x y u v r s : ℕ},
+  a = x ^ 2 + y ^ 2 + r ^ 2 + s ^ 2 →
+    b = u ^ 2 + v ^ 2 + r ^ 2 + s ^ 2 → ∃ p q t w, a * b = p ^ 2 + q ^ 2 + t ^ 2 + w ^ 2
+
+total : 3
+
+elaborated: 3
+
+success
+
+theorem ∀ {R : Type u_1} [inst : Ring R], (∀ (a : R), a * a = a) → ∀ (x y : R), x * y = y * x
+
+total : 4
+
+elaborated: 4
+
+success
+
+theorem Set.Infinite {p | Nat.Prime p ∧ Nat.Prime (p + 2)}
+
+total : 5
+
+elaborated: 5
+
+success
+
+theorem {K : Type u_1} → [inst : DivisionRing K] → [inst_1 : Fintype K] → Field K
+
+total : 6
+
+elaborated: 6
+
+success
+
+theorem ∀ {α : Type u_1} {β : Type u_2}, (∃ f, Function.Injective f) → (∃ g, Function.Injective g) → Nonempty (α ≃ β)
+
+total : 7
+
+elaborated: 7
+
+success
+
+theorem ∀ {V : Type u} (G : SimpleGraph V) [inst : Fintype V] [inst_1 : DecidableRel G.Adj],
+  (∀ (v w : V), v ≠ w → ∃! u, SimpleGraph.Adj G v u ∧ SimpleGraph.Adj G w u) →
+    ∃ v, ∀ (w : V), w ≠ v → SimpleGraph.Adj G v w
+
+total : 8
+
+elaborated: 8
+
+No valid output from LLM; outputs below
+
+Nat.partitions_odd_eq_partitions_distinct 
+
+Nat.odd_part_count_eq_distinct_part_count 
+
+Nat.odd_part_count_eq_disjoint_part_count 
+
+Nat.odd_part_count_eq_distinct_part_count : ∀ n, Nat.oddPartCount n = Nat.distinctPartCount n 
+
+Nat.partitions.parts_odd_eq_parts_distinct 
+
+Nat.odd_parts_eq_distinct_parts 
+
+Nat.oddPartitions_eq_distinctPartitions 
+
+Nat.partitions_eq_distinct_parts_odd 
+
+Nat.odd_part_count_eq_distinct_part_count : ∀ (n : ℕ), Nat.part_count Nat.odd n = Nat.part_count Nat.distinct n 
+
+Nat.partitions_eq_odd_eq_distinct 
+
+failed to elaborate
+
+outputs: #[Nat.partitions_odd_eq_partitions_distinct , Nat.odd_part_count_eq_distinct_part_count , Nat.odd_part_count_eq_disjoint_part_count , Nat.odd_part_count_eq_distinct_part_count : ∀ n, Nat.oddPartCount n = Nat.distinctPartCount n , Nat.partitions.parts_odd_eq_parts_distinct , Nat.odd_parts_eq_distinct_parts , Nat.oddPartitions_eq_distinctPartitions , Nat.partitions_eq_distinct_parts_odd , Nat.odd_part_count_eq_distinct_part_count : ∀ (n : ℕ), Nat.part_count Nat.odd n = Nat.part_count Nat.distinct n , Nat.partitions_eq_odd_eq_distinct ]
+
+total : 9
+
+elaborated: 8
+
+success
+
+theorem ∀ {α : Type u_1} {r : α → α → Prop} [inst : PartialOrder α] [inst_1 : Nonempty α],
+  (∀ (c : Set α), IsChain r c → Set.Nonempty c → ∃ ub, ∀ (a : α), a ∈ c → r a ub) → ∃ m, ∀ (a : α), r m a → r a m
+
+total : 10
+
+elaborated: 9
+
+No valid output from LLM; outputs below
+
+∀ {G : Type u_1} [inst :  GroupCat G] [inst_1 : IsCyclic (Aut G)],  CommGroupCat G 
+
+∀ {G : Type u_1} [inst :  GroupCat G] [inst_1 : IsCyclic (Aut G)], IsCommGroup G 
+
+∀ {G : Type u_1} [inst :  GroupCat G] [inst_1 : IsCyclic (Aut G)], IsAbelian G 
+
+∀ {G : Type u_1} [inst :  GroupCat G], IsCyclic (Aut G) → IsAbelian G 
+
+∀ {G : Type u_1} [inst :  GroupCat G] [inst_1 : IsCyclic (Aut G)],  CommGroupCat G 
+
+∀ {G : Type u_1} [inst :  GroupCat G] [inst_1 : IsCyclic (Aut G)], IsCommutative G 
+
+∀ {G : Type u_1} [inst :  GroupCat G] [inst_1 : IsCyclic (Aut G)],  CommGroupCat G 
+
+∀ {G : Type u_1} [inst :  GroupCat G] [inst_1 : IsCyclic (Aut G)],  CommGroupCat G 
+
+∀ {α : Type u} [inst :  GroupCat α] (h : IsCyclic (Aut α)), IsCommutative α 
+
+∀ {G : Type u_1} [inst :  GroupCat G] [inst_1 : IsCyclic (Aut G)], IsAbelian G 
+
+failed to elaborate
+
+outputs: #[∀ {G : Type u_1} [inst : Group G] [inst_1 : IsCyclic (Aut G)], CommGroup G , ∀ {G : Type u_1} [inst : Group G] [inst_1 : IsCyclic (Aut G)], IsCommGroup G , ∀ {G : Type u_1} [inst : Group G] [inst_1 : IsCyclic (Aut G)], IsAbelian G , ∀ {G : Type u_1} [inst : Group G], IsCyclic (Aut G) → IsAbelian G , ∀ {G : Type u_1} [inst : Group G] [inst_1 : IsCyclic (Aut G)], CommGroup G , ∀ {G : Type u_1} [inst : Group G] [inst_1 : IsCyclic (Aut G)], IsCommutative G , ∀ {G : Type u_1} [inst : Group G] [inst_1 : IsCyclic (Aut G)], CommGroup G , ∀ {G : Type u_1} [inst : Group G] [inst_1 : IsCyclic (Aut G)], CommGroup G , ∀ {α : Type u} [inst : Group α] (h : IsCyclic (Aut α)), IsCommutative α , ∀ {G : Type u_1} [inst : Group G] [inst_1 : IsCyclic (Aut G)], IsAbelian G ]
+
+total : 11
+
+elaborated: 9
+
+success
+
+theorem ∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} [inst : UniformSpace α] [inst_1 : UniformSpace β]
+  [inst_2 : UniformSpace γ] (f : α → β) (g : β → γ),
+  UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f)
+
+total : 12
+
+elaborated: 10
+
+success
+
+theorem ∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} [inst : UniformSpace α] [inst_1 : UniformSpace β]
+  [inst_2 : UniformSpace γ] (f : α → β) (g : β → γ),
+  UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f)
+
+total : 13
+
+elaborated: 11
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α],
+  NormalSpace α ↔
+    ∀ (s t : Set α),
+      IsClosed s →
+        IsClosed t → Disjoint s t → ∃ f, Continuous f ∧ ∀ (x : α), x ∈ s → f x = 0 ∧ ∀ (x : α), x ∈ t → f x = 1
+
+total : 14
+
+elaborated: 12
+
+success
+
+theorem ∀ {α : Type u_1} {f : α → α} {x : α}, Function.IsPeriodicPt f 3 x → ∀ (n : ℕ), 0 < n → ∃ y, Function.IsPeriodicPt f n y
+
+total : 15
+
+elaborated: 13
+
+success
+
+theorem {C : Type u₁} →
+  [inst : CategoryTheory.Category.{?u.20560571, u₁} C] →
+    [inst_1 : CategoryTheory.Limits.HasTerminal C] →
+      {A B : C} → CategoryTheory.Limits.IsTerminal A → CategoryTheory.Limits.IsTerminal B → Unique (A ≅ B)
+
+total : 16
+
+elaborated: 14
+
+success
+
+theorem ∀ {α : Type u} (s t : Set α), sᶜ ∩ tᶜ = (s ∪ t)ᶜ
+
+total : 17
+
+elaborated: 15
+
+success
+
+theorem ∀ {x y z : ℕ}, x > 0 → y > 0 → x ^ 3 + y ^ 3 ≠ z ^ 3
+
+total : 18
+
+elaborated: 16
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G], (∀ (x : G), x * x = 1) → ∀ (x y : G), Commute x y
+
+total : 19
+
+elaborated: 17
+
+success
+
+theorem ∀ {n : ℕ}, Even (n * (n + 1))
+
+total : 20
+
+elaborated: 18
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G] {H : Subgroup G}, Subgroup.index H = 2 → Subgroup.Normal H
+
+total : 21
+
+elaborated: 19
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G] [inst_1 : IsFreeGroup G], Monoid.IsTorsionFree G
+
+total : 22
+
+elaborated: 20
+
+success
+
+theorem ∀ (n : ℕ), 1 < n → ∃ p, Nat.Prime p ∧ p ∣ n
+
+total : 23
+
+elaborated: 21
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G] [inst_1 : Finite G], Monoid.IsTorsionFree G → Subsingleton G
+
+total : 24
+
+elaborated: 22
+
+success
+
+theorem {K : Type u_1} → [inst : DivisionRing K] → [inst_1 : Fintype K] → Field K
+
+total : 25
+
+elaborated: 23
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : Finite α], CompactSpace α
+
+total : 26
+
+elaborated: 24
+
+success
+
+theorem ∀ {α : Type u} [inst : Fintype α] (f : FreeGroup α →* FreeGroup α), Function.Surjective ↑f → Function.Injective ↑f
+
+total : 27
+
+elaborated: 25
+
+success
+
+theorem ∀ (n : ℕ), n ≠ 0 → n % 2 = 0 → ∃ p q, Nat.Prime p ∧ Nat.Prime q ∧ n = p + q
+
+total : 28
+
+elaborated: 26
+
+No valid output from LLM; outputs below
+
+∀ {R : Type u} [inst :  CommRingCat R] {n : Type w} [inst_1 : DecidableEq n] [inst_2 :  FintypeCat n] (M : Matrix n n R),
+  Polynomial.aeval M (Matrix.charpoly M) = 0 
+
+∀ {n : Type u} [inst :  FintypeCat n] [inst_1 : DecidableEq n] {R : Type v} [inst_2 :  CommRingCat R] {M : Matrix n n R},
+  Polynomial.eval M (Matrix.charpoly M) = 0 
+
+failed to elaborate
+
+outputs: #[∀ {R : Type u} [inst : CommRing R] {n : Type w} [inst_1 : DecidableEq n] [inst_2 : Fintype n] (M : Matrix n n R),
+  Polynomial.aeval M (Matrix.charpoly M) = 0 , ∀ {n : Type u} [inst : Fintype n] [inst_1 : DecidableEq n] {R : Type v} [inst_2 : CommRing R] {M : Matrix n n R},
+  Polynomial.eval M (Matrix.charpoly M) = 0 ]
+
+total : 29
+
+elaborated: 26
+
+success
+
+theorem ∀ {x : ℝ}, Irrational x → Irrational (Real.sqrt x)
+
+total : 30
+
+elaborated: 27
+
+success
+
+theorem ∀ {α : Type u} [inst : Semiring α] {x : α}, Even (x * x) → Even x
+
+total : 31
+
+elaborated: 28
+
+success
+
+theorem ∀ {R : Type u_1} [inst : CommRing R] [inst_1 : Fintype R] (P : Ideal R), Ideal.IsPrime P → Ideal.IsMaximal P
+
+total : 32
+
+elaborated: 29
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α], T2Space α ↔ IsClosed {p | p.fst = p.snd}
+
+total : 33
+
+elaborated: 30
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] {s : Set α}, (∀ (x : α), x ∈ s → ∃ U, IsOpen U ∧ x ∈ U ∧ U ⊆ s) → IsOpen s
+
+total : 34
+
+elaborated: 31
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G], IsFreeGroup G → ∀ (x : G), x ≠ 1 → ¬IsOfFinOrder x
+
+total : 35
+
+elaborated: 32
+
+success
+
+theorem ∀ {R : Type u_1} [inst : CommRing R] [inst_1 : IsDomain R] [inst_2 : DiscreteValuationRing R] (x : R),
+  IsUnit x ↔ ↑(DiscreteValuationRing.addVal R) x = 0
+
+total : 36
+
+elaborated: 33
+
+success
+
+theorem ∀ (a b : ℕ), Nat.coprime a b → ∀ (N : ℕ), ∃ x y, a * x + b * y ≥ N
+
+total : 37
+
+elaborated: 34
+
+success
+
+theorem (K : Type u) → [inst : Field K] → Ring K
+
+total : 38
+
+elaborated: 35
+
+success
+
+theorem {R : Type u_1} → [inst : Ring R] → Group Rˣ
+
+total : 39
+
+elaborated: 36
+
+No valid output from LLM; outputs below
+
+∀ {G : Type u_1} {H : Type u_2} [inst :  GroupCat G] [inst_1 :  GroupCat H],
+  Monoid.IsTorsionFree (G × H) → Monoid.IsTorsionFree G ∧ Monoid.IsTorsionFree H 
+
+forall {η : Type u_1} {Gs1 Gs2 : η → Type u_2} [inst1 : (i : η) →  GroupCat (Gs1 i)] [inst2 : (i : η) →  GroupCat (Gs2 i)],
+  Monoid.IsTorsionFree ((i : η) → Gs1 i × Gs2 i) → Monoid.IsTorsionFree ((i : η) → Gs1 i) ∧ Monoid.IsTorsionFree ((i : η) → Gs2 i) 
+
+∀ {G₁ G₂ : Type u_1} [inst₁ :  GroupCat G₁] [inst₂ :  GroupCat G₂],
+  Monoid.IsTorsionFree (G₁ × G₂) → Monoid.IsTorsionFree G₁ ∧ Monoid.IsTorsionFree G₂ 
+
+forall {G : Type u_1} {H : Type u_2} [inst :  GroupCat G] [inst_1 :  GroupCat H],
+  Monoid.IsTorsionFree (G × H) → Monoid.IsTorsionFree G ∧ Monoid.IsTorsionFree H 
+
+forall {G H : Type u_1} [inst :  GroupCat G] [inst_1 :  GroupCat H],
+  Monoid.IsTorsionFree (G × H) → Monoid.IsTorsionFree G ∧ Monoid.IsTorsionFree H 
+
+∀ {G : Type u_1} {H : Type u_2} [inst :  GroupCat G] [inst_1 :  GroupCat H],
+  Monoid.IsTorsionFree (G × H) → Monoid.IsTorsionFree G ∧ Monoid.IsTorsionFree H 
+
+∀ {G : Type u_1} {H : Type u_2} [inst :  GroupCat G] [inst_1 :  GroupCat H],
+  Monoid.IsTorsionFree (G × H) → Monoid.IsTorsionFree G ∧ Monoid.IsTorsionFree H 
+
+∀ {η : Type u_1} {Gs : η → Type u_2} [inst : (i : η) →  GroupCat (Gs i)],
+  Monoid.IsTorsionFree ((i : η) → Gs i) → ∀ (i : η), Monoid.IsTorsionFree (Gs i) 
+
+∀ {η : Type u_1} {Gs : η → Type u_2} [inst : (i : η) →  GroupCat (Gs i)],
+  Monoid.IsTorsionFree ((i : η) → Gs i) → ∀ (i : η), Monoid.IsTorsionFree (Gs i) 
+
+forall {G₁ G₂ : Type u_1} [instG₁ :  GroupCat G₁] [instG₂ :  GroupCat G₂],
+  Monoid.IsTorsionFree (G₁ × G₂) → Monoid.IsTorsionFree G₁ ∧ Monoid.IsTorsionFree G₂ 
+
+failed to elaborate
+
+outputs: #[∀ {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : Group H],
+  Monoid.IsTorsionFree (G × H) → Monoid.IsTorsionFree G ∧ Monoid.IsTorsionFree H , forall {η : Type u_1} {Gs1 Gs2 : η → Type u_2} [inst1 : (i : η) → Group (Gs1 i)] [inst2 : (i : η) → Group (Gs2 i)],
+  Monoid.IsTorsionFree ((i : η) → Gs1 i × Gs2 i) → Monoid.IsTorsionFree ((i : η) → Gs1 i) ∧ Monoid.IsTorsionFree ((i : η) → Gs2 i) , ∀ {G₁ G₂ : Type u_1} [inst₁ : Group G₁] [inst₂ : Group G₂],
+  Monoid.IsTorsionFree (G₁ × G₂) → Monoid.IsTorsionFree G₁ ∧ Monoid.IsTorsionFree G₂ , forall {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : Group H],
+  Monoid.IsTorsionFree (G × H) → Monoid.IsTorsionFree G ∧ Monoid.IsTorsionFree H , forall {G H : Type u_1} [inst : Group G] [inst_1 : Group H],
+  Monoid.IsTorsionFree (G × H) → Monoid.IsTorsionFree G ∧ Monoid.IsTorsionFree H , ∀ {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : Group H],
+  Monoid.IsTorsionFree (G × H) → Monoid.IsTorsionFree G ∧ Monoid.IsTorsionFree H , ∀ {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : Group H],
+  Monoid.IsTorsionFree (G × H) → Monoid.IsTorsionFree G ∧ Monoid.IsTorsionFree H , ∀ {η : Type u_1} {Gs : η → Type u_2} [inst : (i : η) → Group (Gs i)],
+  Monoid.IsTorsionFree ((i : η) → Gs i) → ∀ (i : η), Monoid.IsTorsionFree (Gs i) , ∀ {η : Type u_1} {Gs : η → Type u_2} [inst : (i : η) → Group (Gs i)],
+  Monoid.IsTorsionFree ((i : η) → Gs i) → ∀ (i : η), Monoid.IsTorsionFree (Gs i) , forall {G₁ G₂ : Type u_1} [instG₁ : Group G₁] [instG₂ : Group G₂],
+  Monoid.IsTorsionFree (G₁ × G₂) → Monoid.IsTorsionFree G₁ ∧ Monoid.IsTorsionFree G₂ ]
+
+total : 40
+
+elaborated: 36
+
