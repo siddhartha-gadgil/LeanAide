@@ -444,7 +444,7 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
 
 
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and optionally returns the best choice as well as all elaborated terms (used for batch processing, interactive code uses `arrayToExpr` instead)  -/
-def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array String))) := do
+def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array String) × (Array (Array String)) )) := do
   -- IO.println s!"arrayToExpr? called with {output.size} outputs"
   let mut elabStrs : Array String := Array.empty
   let mut elaborated : Array Expr := Array.empty
@@ -484,7 +484,8 @@ def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array Strin
         if fullElaborated.isEmpty then elaborated else fullElaborated
     let groupSorted ← groupThmExprsSorted priority
     let thm := (groupSorted[0]!)[0]!
-    return some (thm, elabStrs)
+    let gpView ←  groupSorted.mapM (fun gp => gp.mapM (fun e => e.view))
+    return some (thm, elabStrs, gpView)
 
 
 def greedyArrayToExpr? (output: Array String) : TermElabM (Option Expr) := do
