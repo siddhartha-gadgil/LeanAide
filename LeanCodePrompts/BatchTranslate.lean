@@ -61,7 +61,7 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed:
       prompts.map <| fun s => s.replace "<br>" "\n"
   let mut count := 0
   let mut elaborated := 0
-  let mut elabPairs: Array (String × String × (Array String)) := #[]
+  let mut elabPairs: Array (String × String × (Array String) × Array (Array String)) := #[]
   let mut failed : Array String := #[]
   for prompt in prompts do 
     trace[Translate.info] m!"{prompt}"
@@ -90,7 +90,7 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed:
        ("all_elaborations", Json.arr <|thms.map Json.str),
        ("gps", Json.arr <| gps.map (Json.arr ∘ Array.map Json.str))]
       outHandle.putStrLn <| js.compress
-      elabPairs := elabPairs.push (prompt, v, thms) 
+      elabPairs := elabPairs.push (prompt, v, thms, gps) 
     | none =>
       elabLog "failed to elaborate"
       IO.println "failed to elaborate"
@@ -112,10 +112,11 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed:
        ("temperature", Json.num temp),
        ("elaborated-prompts", 
         Json.arr <| ←  elabPairs.mapM <| 
-          fun (p, s, thms) => do 
+          fun (p, s, thms, gps) => do 
             return Json.mkObj [
             ("prompt", p), ("theorem", s),
             ("all-elabs", Json.arr <| thms.map (Json.str)),
+            ("groups", Json.arr <| gps.map (Json.arr ∘ Array.map Json.str)),
             ("comments", ""), ("correct", Json.null), 
             ("some-correct", Json.null)   
             ]),
