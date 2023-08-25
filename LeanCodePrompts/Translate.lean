@@ -15,12 +15,12 @@ open Lean Meta Elab Parser Command
 open Std.Tactic
 
 register_option lean_aide.translate.prompt_size : Nat :=
-  { defValue := 8
+  { defValue := 10
     group := "lean_aide.translate"
     descr := "Number of document strings in a prompt (default 8)" }
 
 register_option lean_aide.translate.choices : Nat :=
-  { defValue := 5
+  { defValue := 10
     group := "lean_aide.translate"
     descr := "Number of outputs to request in a query (default 5)." }
 
@@ -175,7 +175,7 @@ def gptQuery(messages: Json)(n: Nat := 1)
   , ("temperature", Json.num temp), ("n", n), ("max_tokens", 150), ("stop", Json.arr <| stopTokens |>.map Json.str)
   ]
   let data := dataJs.pretty
-  trace[Translate.info] "OpenAI query: {data}"
+  trace[Translate.info] "GPT query: {data}"
   let out ←  IO.Process.output {
         cmd:= "curl", 
         args:= #["https://api.openai.com/v1/chat/completions",
@@ -403,14 +403,21 @@ def getCodeJson (s: String)(numSim : Nat:= 8)
 
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and returns the best choice, throwing an error if nothing elaborates.  -/
 def arrayToExpr (output: Array String) : TermElabM Expr := do
-  let output := output.toList.eraseDups.toArray
   trace[Translate.info] m!"output:\n{output}"
   let mut elabStrs : Array String := Array.empty
   let mut elaborated : Array Expr := Array.empty
   let mut fullElaborated : Array Expr := Array.empty
+  let mut cache : HashMap String (Except String Expr) := 
+    HashMap.empty
   for out in output do
     -- IO.println s!"elaboration called: {out}"
-    let elab? ← elabThm4 out
+    let elab? ← 
+      match cache.find? out with
+      | some elab? => pure elab?
+      | none => 
+        let res ← elabThm4 out
+        cache := cache.insert out res
+        pure res
     match elab? with
       | Except.error _ => pure ()
       | Except.ok expr =>
@@ -442,9 +449,18 @@ def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array Strin
   let mut elabStrs : Array String := Array.empty
   let mut elaborated : Array Expr := Array.empty
   let mut fullElaborated : Array Expr := Array.empty
+  let mut cache : HashMap String (Except String Expr) := 
+    HashMap.empty
   for out in output do
     -- IO.println s!"elaboration called: {out}"
-    let elab? ← elabThm4 out
+    let elab? ← 
+      match cache.find? out with
+      | some elab? => pure elab?
+      | none => 
+        let res ← elabThm4 out
+        cache := cache.insert out res
+        pure res
+
     match elab? with
       | Except.error _ => pure ()
       | Except.ok expr =>
@@ -641,7 +657,6 @@ def translateViewCore (s: String) : CoreM String :=
 
 syntax (name := ltrans) "l!" str : term
 
-#check TermElabM
 open PrettyPrinter
 
 @[term_elab ltrans] def ltransImpl : Term.TermElab := 
