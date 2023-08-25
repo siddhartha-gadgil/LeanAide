@@ -8,7 +8,7 @@ def translateWithDataM (s: String)(numSim : Nat:= 10)
   (includeFixed: Bool := Bool.false)(queryNum: Nat := 5)
   (temp : JsonNumber := 0.2)(model: String)
   (embedding: String)(azure: Bool := false)(repeats: Nat := 0)(sleepTime : Nat := 1)(queryData? : Option <| (HashMap String Json)  ) : 
-  TermElabM ((Option (Expr × (Array String) )) × Array String) := do
+  TermElabM ((Option (Expr × (Array String) × (Array (Array String)) )) × Array String) := do
   let output ←  match queryData? with
   | none =>  
     let js ← getCodeJson s numSim includeFixed queryNum temp model embedding azure
@@ -38,7 +38,7 @@ def translateWithDataCore (s: String)(numSim : Nat:= 10)
   (temp : JsonNumber := 0.2)(model: String)
   (embedding: String)(azure: Bool := false)(repeats: Nat := 0)
   (queryData? : Option <| (HashMap String Json)  ) :
-  CoreM ((Option (Expr × (Array String) )) × Array String) := 
+  CoreM ((Option (Expr × (Array String) ×  (Array (Array String)) )) × Array String) := 
     (translateWithDataM s 
       numSim includeFixed 
         queryNum temp model embedding azure repeats
@@ -61,7 +61,7 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed:
       prompts.map <| fun s => s.replace "<br>" "\n"
   let mut count := 0
   let mut elaborated := 0
-  let mut elabPairs: Array (String × String × (Array String)) := #[]
+  let mut elabPairs: Array (String × String × (Array String) × Array (Array String)) := #[]
   let mut failed : Array String := #[]
   for prompt in prompts do 
     trace[Translate.info] m!"{prompt}"
@@ -77,7 +77,7 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed:
     h.putStrLn <| js.compress
     count := count + 1
     match res? with
-    | some (e, thms) =>
+    | some (e, thms, gps) =>
       elabLog "success"
       let v ← e.view
       elabLog s!"theorem {v}"
@@ -87,9 +87,10 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed:
        ("fullPrompt", Json.str fullPrompt),
        ("result", true),
        ("theorem", v),
-       ("all_elaborations", Json.arr <|thms.map Json.str)]
+       ("all_elaborations", Json.arr <|thms.map Json.str),
+       ("gps", Json.arr <| gps.map (Json.arr ∘ Array.map Json.str))]
       outHandle.putStrLn <| js.compress
-      elabPairs := elabPairs.push (prompt, v, thms) 
+      elabPairs := elabPairs.push (prompt, v, thms, gps) 
     | none =>
       elabLog "failed to elaborate"
       IO.println "failed to elaborate"
@@ -111,10 +112,11 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed:
        ("temperature", Json.num temp),
        ("elaborated-prompts", 
         Json.arr <| ←  elabPairs.mapM <| 
-          fun (p, s, thms) => do 
+          fun (p, s, thms, gps) => do 
             return Json.mkObj [
             ("prompt", p), ("theorem", s),
             ("all-elabs", Json.arr <| thms.map (Json.str)),
+            ("groups", Json.arr <| gps.map (Json.arr ∘ Array.map Json.str)),
             ("comments", ""), ("correct", Json.null), 
             ("some-correct", Json.null)   
             ]),
@@ -165,7 +167,7 @@ def outputFromCompletionsM (s: String) :
   -- IO.println s!"output: {output}"
   let res? ← arrayToExpr? output
   let js : Json ←  match res? with
-  | some (thm, elabs) => do
+  | some (thm, elabs, _) => do
     let thm ←  thm.view
     pure <| Json.mkObj [("success", Bool.true), ("theorem", thm),
             ("all-elabs", Json.arr <| elabs.map (Json.str))] 

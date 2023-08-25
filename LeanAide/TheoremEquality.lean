@@ -26,6 +26,7 @@ An API based on Aesop. Should use a refined conguration for `aesop` to make it m
 -/
 
 def provedEqual (e₁ e₂ : Expr) : TermElabM Bool := 
+  if e₁ == e₂ then return true else
  withoutModifyingState do
   let type ← mkEq e₁ e₂
   let mvar ← mkFreshExprMVar <| some type
@@ -36,6 +37,7 @@ def provedEqual (e₁ e₂ : Expr) : TermElabM Bool :=
   return remaining.isEmpty
 
 def provedEquiv (e₁ e₂ : Expr) : TermElabM Bool := 
+  if e₁ == e₂ then return true else
   withoutModifyingState do
   try
   let type ← mkAppM ``Iff #[e₁, e₂]
