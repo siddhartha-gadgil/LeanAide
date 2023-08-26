@@ -25,7 +25,7 @@
     ["∀ (n : ℕ), Nat.Prime n → n % 4 = 1 → ∃ a b, a ^ 2 + b ^ 2 = n",
      "∀ (p : ℕ), Nat.Prime p → p % 4 = 1 → ∃ a b, a ^ 2 + b ^ 2 = p"],
     ["∀ (n : ℕ) [hprime : Fact (Prime n)], n % 4 = 1 → ∃ a b, a ^ 2 + b ^ 2 = n"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(n : ℕ) [Fact (nat.prime n)] (hn : n % 4 = 1) :\n∃ a b : ℕ, a^2 + b^2 = n ",
@@ -45,7 +45,7 @@
      "∀ (n m : ℕ), ∃ a b c d, n * m = a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2",
      "∀ (n m : ℕ), ∃ a b c d, n * m = a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2"],
     ["∀ (n m : ℕ), ∃ a b c d, a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = n * m"]],
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["(n m : ℕ) : ∃ a b c d : ℕ, n * m = a^2 + b^2 + c^2 + d^2 ",
@@ -66,7 +66,7 @@
      "∀ (R : Type u_12) [inst : Ring R], (∀ (a : R), a * a = a) → ∀ (a b : R), a * b = b * a"],
     ["(idem_ring : Type u_12) → [inst : Ring idem_ring] → (∀ (a : idem_ring), a * a = a) → CommSemiring idem_ring"],
     ["∀ (X : Type u_12) [inst : Semiring X], (∀ (x : X), x * x = x) → ∀ (x y : X), x * y = y * x"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(idem_ring : Type*) [Ring idem_ring] (h_idem : ∀ (a : idem_ring), a * a = a) :\n ∀ (x y : idem_ring), x * y = y * x ",
@@ -90,7 +90,7 @@
     ["∃ f, Function.Injective f ∧ ∀ (n : ℕ), Prime (f n).fst ∧ Prime (f n).snd ∧ (f n).snd - (f n).fst = 2"],
     ["∃ f, StrictMono f ∧ ∀ (n : ℕ), Nat.Prime (f n) ∧ Nat.Prime (f n + 2)"],
     ["∃ f, (∀ (n : ℕ), Prime (f n) ∧ Prime (f n + 2)) ∧ ∀ (m n : ℕ), m ≠ n → f m ≠ f n"]],
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["infinitely_many_twin_primes : ∃ p : ℕ, ∀ k ≥ p, ∃ (n : ℕ), Prime (n + k) ∧ Prime (n + k + 2) ",
@@ -115,7 +115,7 @@
     ["(finite_div_ring : Type u_12) →\n  [inst : DivisionRing finite_div_ring] → [inst : Fintype finite_div_ring] → Field finite_div_ring"],
     ["(finite_division_ring : Type u_12) →\n  [inst : DivisionRing finite_division_ring] → [inst : Fintype finite_division_ring] → Field finite_division_ring"],
     ["(finite_division_ring : Type u_12) →\n  [inst : Fintype finite_division_ring] → [inst : DivisionRing finite_division_ring] → Field finite_division_ring"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(G : Type*) [DivisionRing G] [Fintype G] : IsField G ",
@@ -139,7 +139,7 @@
     ["∀ (X : Type u_12) (Y : Type u_13), Nonempty (X ↪ Y) → Nonempty (Y ↪ X) → Nonempty (X ≃ Y)"],
     ["∀ (X Y : Type) (f : X → Y) (g : Y → X), Function.Injective f → Function.Injective g → ∃ h, Function.Bijective h"],
     ["∀ (X Y : Type) (f : X → Y) (g : Y → X), Function.Injective f → Function.Injective g → ∃ h, True"]],
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["(X Y : Type*) (f : X → Y) (g : Y → X) (hf : Function.Injective f) (hg : Function.Injective g) :\n ∃ (h : X → Y), Function.Bijective h ",
@@ -156,7 +156,7 @@
    "A finite graph in which every pair of vertices have precisely one common neighbour contains a vertex that is adjacent to all other vertices.",
    "groups":
    [["∀ (Vertices : Type u_12) [inst : Fintype Vertices] [inst : DecidableEq Vertices] (Edges : Vertices → Vertices → Prop),\n  (∀ (x y : Vertices), x ≠ y → ∃! z, Edges x z ∧ Edges y z) → ∃ v, ∀ (w : Vertices), w ≠ v → Edges v w"]],
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["(Vertices : Type*) [Fintype Vertices] [DecidableEq Vertices] (Edges : Vertices → Vertices → Prop)\n  (h_common_neighbor : ∀ x y : Vertices, x ≠ y → ∃! z, Edges x z ∧ Edges y z) :\n∃ v : Vertices, ∀ w : Vertices, w ≠ v → Edges v w "]},
@@ -167,7 +167,7 @@
    "The number of partitions with odd parts is equal to the number of partitions with distinct parts.",
    "groups":
    [["∀ (partitions_with_odd_parts partitions_with_distinct_parts : ℕ → ℕ) (n : ℕ),\n  partitions_with_odd_parts n = partitions_with_distinct_parts n"]],
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["(partitions_with_odd_parts : ℕ → ℕ) (partitions_with_distinct_parts : ℕ → ℕ) (n : ℕ) :\n partitions_with_odd_parts n = partitions_with_distinct_parts n "]},
@@ -187,7 +187,7 @@
      "∀ (X : Type u_12) (Y : Type u_13) (Z : Type u_14) [inst : UniformSpace X] [inst_1 : UniformSpace Y]\n  [inst_2 : UniformSpace Z] (f : X → Y) (g : Y → Z),\n  UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f)",
      "∀ (X : Type u_12) (Y : Type u_13) (Z : Type u_14) [inst : UniformSpace X] [inst_1 : UniformSpace Y]\n  [inst_2 : UniformSpace Z] (f : X → Y) (g : Y → Z),\n  UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f)"],
     ["∀ (X Y Z : Type) [inst : UniformSpace X] [inst_1 : UniformSpace Y] [inst_2 : UniformSpace Z] (f : X → Y) (g : Y → Z),\n  UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f)"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(X Y Z : Type*) [UniformSpace X] [UniformSpace Y] [UniformSpace Z]\n(f : X → Y) (g : Y → Z) (hf : UniformContinuous f) (hg : UniformContinuous g) :\nUniformContinuous (g ∘ f) ",
@@ -216,7 +216,7 @@
      "∀ (X : Type u_12) (Y : Type u_13) (Z : Type u_14) [inst : UniformSpace X] [inst_1 : UniformSpace Y]\n  [inst_2 : UniformSpace Z] (f : X → Y) (g : Y → Z),\n  UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f)",
      "∀ (X : Type u_12) (Y : Type u_13) (Z : Type u_14) [inst : UniformSpace X] [inst_1 : UniformSpace Y]\n  [inst_2 : UniformSpace Z] (f : X → Y) (g : Y → Z),\n  UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f)"],
     ["∀ (X Y Z : Type) [inst : UniformSpace X] [inst_1 : UniformSpace Y] [inst_2 : UniformSpace Z] (f : X → Y) (g : Y → Z),\n  UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f)"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(X Y Z : Type*) [UniformSpace X] [UniformSpace Y] [UniformSpace Z]\n(f : X → Y) (g : Y → Z) (hf : UniformContinuous f) (hg : UniformContinuous g) :\nUniformContinuous (g ∘ f) ",
@@ -236,7 +236,7 @@
    "A topological space is normal if and only if any two disjoint closed subsets can be separated by a continuous function.",
    "groups":
    [["∀ (X : Type u_12) [inst : TopologicalSpace X],\n  NormalSpace X ↔\n    ∀ (A B : Set X),\n      IsClosed A →\n        IsClosed B → Disjoint A B → ∃ f, Continuous f ∧ (∀ (a : X), a ∈ A → f a = 0) ∧ ∀ (b : X), b ∈ B → f b = 1"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(X : Type*) [TopologicalSpace X] :\n  NormalSpace X ↔ ∀ A B : Set X, IsClosed A → IsClosed B → Disjoint A B → ∃ f : X → ℝ, Continuous f ∧ (∀ a ∈ A, f a = 0) ∧ (∀ b ∈ B, f b = 1) "]},
@@ -247,7 +247,7 @@
    "If a function from the unit interval to itself has a point of period three, then it has points of all positive periods.",
    "groups":
    [["∀ (unit_interval : Type u_12) [inst : LinearOrderedField unit_interval] [inst_1 : TopologicalSpace unit_interval]\n  [inst_2 : OrderTopology unit_interval] [inst_3 : TopologicalRing unit_interval] (f : unit_interval → unit_interval),\n  Continuous f → ∀ (x₀ : unit_interval), f (f (f x₀)) = x₀ → ∀ (n : ℕ), ∃ x, (f ^ n) x = x"]],
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["(unit_interval : Type*) [LinearOrderedField unit_interval] [TopologicalSpace unit_interval] [OrderTopology unit_interval] [TopologicalRing unit_interval]\n(f : unit_interval → unit_interval) (hf : Continuous f) (x₀ : unit_interval) (hx₀ : f (f (f x₀)) = x₀) :\n∀ n : ℕ, ∃ x : unit_interval, (f ^ n) x = x ",
@@ -263,7 +263,7 @@
      "∀ (X : Type u_12) (A B : Set X), (A ∪ B)ᶜ = Aᶜ ∩ Bᶜ",
      "∀ (X : Type u_12) (A B : Set X), (A ∪ B)ᶜ = Aᶜ ∩ Bᶜ",
      "∀ (X : Type u_12) (A B : Set X), (A ∪ B)ᶜ = Aᶜ ∩ Bᶜ"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(X : Type*) (A B : Set X) : HasCompl.compl (A ∪ B) = HasCompl.compl A ∩ HasCompl.compl B ",
@@ -281,7 +281,7 @@
      "∀ (n m k : ℕ), n > 0 → m > 0 → n ^ 3 + m ^ 3 ≠ k ^ 3",
      "∀ (n m k : ℕ), n > 0 → m > 0 → n ^ 3 + m ^ 3 ≠ k ^ 3"],
     ["∀ (x y z : ℕ), x ^ 3 + y ^ 3 ≠ z ^ 3"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(n m k : ℕ) (hn : n > 0) (hm : m > 0) :\n  n ^ 3 + m ^ 3 ≠ k ^ 3 ",
@@ -296,7 +296,7 @@
    "groups":
    [["∀ (G : Type u_12) [inst : Group G], (∀ (g : G), g * g = 1) → ∀ (x y : G), x * y = y * x",
      "∀ (G : Type u_12) [inst : Group G], (∀ (x : G), x * x = 1) → ∀ (x y : G), x * y = y * x"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(G : Type*) [Group G] (hG : ∀ x : G, x^2 = 1) : ∀ x y : G, x * y = y * x ",
@@ -320,7 +320,7 @@
      "∀ (n : ℕ), n * (n + 1) % 2 = 0",
      "∀ (n : ℕ), n * (n + 1) % 2 = 0"],
     ["∀ (m n : ℕ), n = m + 1 → Even (m * n)"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(n : ℕ) : (n * (n + 1)) % 2 = 0 ",
@@ -339,7 +339,7 @@
    "prompt": "Every free group is torsion free.",
    "groups":
    [["∀ (G : Type u_12) [inst : Group G] [inst_1 : IsFreeGroup G] (x : G), x ≠ 1 → ∃ n, n ≠ 0 ∧ x ^ n ≠ 1"]],
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["(G : Type*) [Group G] [IsFreeGroup G] : ∀ x : G, x ≠ 1 → ∃ n : ℤ, n ≠ 0 ∧ x ^ n ≠ 1 "]},
@@ -355,7 +355,7 @@
      "∀ (n : ℕ), n > 1 → ∃ p, Nat.Prime p ∧ p ∣ n",
      "∀ (n : ℕ), n > 1 → ∃ p, Nat.Prime p ∧ p ∣ n"],
     ["∀ (n : ℕ), n > 1 → ∃ p, Prime p ∧ p ∣ n"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(n : ℕ) (hn : n > 1) : ∃ p, Prime p ∧ p ∣ n ",
@@ -373,7 +373,7 @@
    "prompt": "A finite torsion-free group is trivial",
    "groups":
    [["(G : Type u_12) →\n  [inst : Group G] →\n    [inst_1 : Fintype G] → (∀ (g : G), g ≠ 1 → ∃ n, g ^ n = 1) → (∀ (g : G) (n : ℕ), g ^ n = 1 → g = 1) → G ≃ Unit"]],
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["(G : Type*) [Group G] [Fintype G] (hf : ∀ g : G, g ≠ 1 → ∃ n : ℕ, g ^ n = 1) (htf : ∀ g : G, ∀ n : ℕ, g ^ n = 1 → g = 1) :\n  G ≃ Unit "]},
@@ -390,7 +390,7 @@
     ["(finite_div_ring : Type u_12) →\n  [inst : DivisionRing finite_div_ring] → [inst : Fintype finite_div_ring] → Field finite_div_ring"],
     ["(finite_division_ring : Type u_12) →\n  [inst : DivisionRing finite_division_ring] → [inst : Fintype finite_division_ring] → Field finite_division_ring"],
     ["(finite_division_ring : Type u_12) →\n  [inst : Fintype finite_division_ring] → [inst : DivisionRing finite_division_ring] → Field finite_division_ring"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(G : Type*) [DivisionRing G] [Fintype G] : IsField G ",
@@ -412,7 +412,7 @@
      "∀ (X : Type u_12) [inst : TopologicalSpace X] [inst_1 : Fintype X], CompactSpace X",
      "∀ (X : Type u_12) [inst : TopologicalSpace X] [inst_1 : Fintype X], CompactSpace X",
      "∀ (X : Type u_12) [inst : TopologicalSpace X] [inst_1 : Fintype X], CompactSpace X"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(X : Type*) [TopologicalSpace X] [Fintype X] : CompactSpace X ",
@@ -428,7 +428,7 @@
    "Every surjective homomorphism from a finitely generated free group to itself is injective.",
    "groups":
    [["∀ (G : Type u_12) [inst : Group G] [inst_1 : Fintype G] (f : G →* G), Function.Surjective ↑f → Function.Injective ↑f"]],
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["(G : Type*) [Group G] [Fintype G] (f : G →* G) (hf : Function.Surjective (⇑f)) : Function.Injective (⇑f) "]},
@@ -446,7 +446,7 @@
     ["∀ (n : ℕ), n > 2 → Even n → ∃ p q, Prime p ∧ Prime q ∧ n = p + q"],
     ["∀ (n : ℕ), 2 ≤ n ∧ Even n → ∃ p q, Prime p ∧ Prime q ∧ n = p + q"],
     ["∀ (n : ℕ), n > 2 → n % 2 = 0 → ∃ p q, n = p + q ∧ Prime p ∧ Prime q"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["every_even_sum_of_two_primes :\n  ∀ n : ℕ, 2 ≤ n → n % 2 = 0 → ∃ p q : ℕ, Prime p ∧ Prime q ∧ n = p + q ",
@@ -466,7 +466,7 @@
      "∀ (sq_even : ℕ), sq_even ^ 2 % 2 = 0 → sq_even % 2 = 0",
      "∀ (square_even : ℕ), square_even ^ 2 % 2 = 0 → square_even % 2 = 0",
      "∀ (sq_even : ℕ), sq_even ^ 2 % 2 = 0 → sq_even % 2 = 0"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(n : ℕ) (hsq : n^2 % 2 = 0) : n % 2 = 0 ",
@@ -485,7 +485,7 @@
      "∀ (finite_ring : Type u_12) [inst : CommRing finite_ring] [inst_1 : Fintype finite_ring] (P : Ideal finite_ring)\n  [hP : Ideal.IsPrime P], Ideal.IsMaximal P",
      "∀ (G : Type u_12) [inst : CommRing G] [inst_1 : Fintype G] (P : Ideal G), Ideal.IsPrime P → Ideal.IsMaximal P"],
     ["∀ (X : Type) [inst : CommRing X] [inst_1 : Fintype X] (P : Ideal X) [Hp : Ideal.IsPrime P], Ideal.IsMaximal P"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(X : Type) [CommRing X] [Fintype X] (P : Ideal X) [Hp : Ideal.IsPrime P] :\nIdeal.IsMaximal P ",
@@ -499,7 +499,7 @@
    "A topological space $X$ is Hausdorff if and only if the diagonal is a closed set in $X × X$.",
    "groups":
    [["∀ (X : Type u_12) [inst : TopologicalSpace X], T2Space X ↔ IsClosed {p | p.fst = p.snd}"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(X : Type*) [TopologicalSpace X] :\n T2Space X ↔ IsClosed {p : X × X | p.1 = p.2} "]},
@@ -519,7 +519,7 @@
      "∀ (X : Type u_12) [inst : TopologicalSpace X] (A : Set X), (∀ (x : X), x ∈ A → ∃ U, IsOpen U ∧ x ∈ U) → IsOpen A",
      "∀ (X : Type u_12) [inst : TopologicalSpace X] (A : Set X), (∀ (x : X), x ∈ A → ∃ U, IsOpen U ∧ x ∈ U) → IsOpen A",
      "∀ (X : Type u_12) [inst : TopologicalSpace X] (A : Set X), (∀ (x : X), x ∈ A → ∃ U, IsOpen U ∧ x ∈ U) → IsOpen A"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U):\n IsOpen A ",
@@ -545,7 +545,7 @@
      "∀ (G : Type u_12) [inst : Group G] [inst_1 : IsFreeGroup G] (x : G), x ≠ 1 → ∀ (n : ℕ), x ^ n ≠ 1",
      "∀ (G : Type u_12) [inst : Group G] [inst_1 : IsFreeGroup G] (x : G), x ≠ 1 → ∀ (n : ℕ), x ^ n ≠ 1",
      "∀ (G : Type u_12) [inst : Group G] [inst_1 : IsFreeGroup G] (x : G), x ≠ 1 → ∀ (n : ℕ), x ^ n ≠ 1"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(G : Type*) [Group G] [IsFreeGroup G] (x : G) (hx : x ≠ 1) : ∀ n : ℕ, x ^ n ≠ 1 ",
@@ -563,7 +563,7 @@
    "For any two relatively prime positive integers $a$ and $b$, every sufficiently large natural number $N$ can be written as a linear combination $ax + by$ of $a$ and $b$, where both $x$ and $y$ are natural numbers.",
    "groups":
    [["∀ (N₀ a b : ℕ), Nat.coprime a b → ∀ (N : ℕ), N ≥ N₀ → ∃ x y, N = a * x + b * y"]],
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["(N₀ : ℕ) (a b : ℕ) (h_coprime : Nat.coprime a b) :\n  ∀ N ≥ N₀, ∃ (x y : ℕ), N = a * x + b * y "]},
@@ -573,7 +573,7 @@
    "groups":
    [["(X : Type u_12) → [inst : Field X] → Ring X"],
     ["((F : Type u_12) → [inst : Field F] → Ring F) → Prop"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(field_to_ring : ∀ (F : Type*) [Field F], Ring F) : Prop ",
@@ -589,7 +589,7 @@
     ["(G : Type u_12) → [inst : Ring G] → Group Gˣ"],
     ["(G : Type u_12) → [inst : Ring G] → Group Gˣ"],
     ["(X : Type u_12) → [inst : Ring X] → Group Xˣ"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(G : Type*) [Ring G] :\n Group (Units G) ",
@@ -606,7 +606,7 @@
    "If the direct product of two groups is torsion free then each of the groups is torsion free.",
    "groups":
    [["∀ (G : Type u_12) (H : Type u_13) [inst : Group G] [inst_1 : Group H],\n  (∀ (g : G × H), g ≠ 1 → ∃ n, g ^ n ≠ 1) → (∀ (g : G), g ≠ 1 → ∃ n, g ^ n ≠ 1) ∧ ∀ (h : H), h ≠ 1 → ∃ n, h ^ n ≠ 1"]],
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["(G : Type*) (H : Type*) [Group G] [Group H] (gh_torsion_free : ∀ g : G × H, g ≠ 1 → ∃ n : ℤ, g ^ n ≠ 1) :\n(∀ (g : G), g ≠ 1 → ∃ n : ℤ, g ^ n ≠ 1) ∧ (∀ (h : H), h ≠ 1 → ∃ n : ℤ, h ^ n ≠ 1)"]}],
