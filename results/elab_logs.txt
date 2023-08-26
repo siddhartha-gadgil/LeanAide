@@ -18052,3 +18052,1988 @@ total : 1
 
 elaborated: 0
 
+success
+
+theorem ∀ (n : ℕ) [inst : Fact (Nat.Prime n)], n % 4 = 1 → ∃ a b, a ^ 2 + b ^ 2 = n
+
+total : 2
+
+elaborated: 1
+
+success
+
+theorem ∀ (n m : ℕ), ∃ a b c d, n * m = a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2
+
+total : 3
+
+elaborated: 2
+
+success
+
+theorem ∀ (idem_ring : Type u_12) [inst : Ring idem_ring], (∀ (a : idem_ring), a * a = a) → ∀ (x y : idem_ring), x * y = y * x
+
+total : 4
+
+elaborated: 3
+
+success
+
+theorem ∃ P, ∀ (n : ℕ), Prime (P n) ∧ Prime (P n + 2)
+
+total : 5
+
+elaborated: 4
+
+success
+
+theorem (G : Type u_12) → [inst : DivisionRing G] → [inst : Fintype G] → Field G
+
+total : 6
+
+elaborated: 5
+
+success
+
+theorem ∀ (X : Type u_12) (Y : Type u_13) (f : X → Y) (g : Y → X), Function.Injective f → Function.Injective g → ∃ h, True
+
+total : 7
+
+elaborated: 6
+
+success
+
+theorem ∀ (Vertices : Type u_12) [inst : Fintype Vertices] [inst : DecidableEq Vertices] (Edges : Vertices → Vertices → Prop),
+  (∀ (x y : Vertices), x ≠ y → ∃! z, Edges x z ∧ Edges y z) → ∃ v, ∀ (w : Vertices), w ≠ v → Edges v w
+
+total : 8
+
+elaborated: 7
+
+success
+
+theorem ∀ (partitions_with_odd_parts partitions_with_distinct_parts : ℕ → ℕ) (n : ℕ),
+  partitions_with_odd_parts n = partitions_with_distinct_parts n
+
+total : 9
+
+elaborated: 8
+
+No valid output from LLM; outputs below
+
+(Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀ C :  ZFSet Zorn, Chain C → ∃ ub, ∀ a ∈ C, a ≤ ub) :
+ ∃ m : Zorn, ∀ a : Zorn, m ≠ a → m < a 
+
+<input>:2:46: expected ')', '↑', '↥', '⇑' or term while parsing (Zorn : Type*) [PartialOrder Zorn] (S : Set Zorn) (hS : Set.Nonempty S)
+ (h_upper : ∀ (chain : Set Zorn), Zorn.Chain (≤) chain → ∃ s ∈ S, ∀ c ∈ chain, c ≤ s) :
+ ∃ m ∈ S, ∀ s ∈ S, m ≤ s → s = m 
+
+(Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn)
+ (hchain : ∀ (c :  ZFSet Zorn), Chain HasSubset.Subset c → ∃ ub, ∀ a ∈ c, a ≤ ub) :
+ ∃ m : Zorn, ∀ a, m ≤ a → a = m 
+
+(Zorn : Type*) [PartialOrder Zorn] (Hne : Nonempty Zorn)
+ (H : ∀c :  ZFSet Zorn, Chain c → c.nonempty → ∃ub, ∀a ∈ c, a ≤ ub) :
+ ∃m : Zorn, ∀a, m < a → False 
+
+<input>:2:51: expected ',' while parsing (Zorn : Type*) (le : Zorn → Zorn → Prop)
+ [PartialOrder Zorn] (h : ∀ C : Set Zorn, (∀ z1 z2 ∈ C, le z1 z2 ∨ le z2 z1) → (∃ z_ub ∈ C, ∀ z ∈ C, le z z_ub)) :
+ ∃ m : Zorn, ∀ z : Zorn, ¬(le m z ∧ ¬(le z m)) 
+
+(Zorn : Type*) [PartialOrder Zorn]
+(hne : Nonempty Zorn) (hchain : ∀ C :  ZFSet Zorn, Chain C → ∃ ub, ∀ c ∈ C, c ≤ ub) :
+∃ m : Zorn, ∀ z : Zorn, m ≠ z → z ≤ m → False 
+
+(Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀ C :  ZFSet Zorn, IsChain C → ∃ ub, IsUpperBound C ub) :
+∃ m : Zorn, ∀ x : Zorn, m ≠ x → x < m 
+
+(Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀(c :  ZFSet Zorn), Chain c → c.nonempty → ∃ ub, ∀ a ∈ c, a ≤ ub) :
+∃ m : Zorn, ∀ a, m ≤ a → a = m 
+
+(Z : Type*) [Preorder Z] [Inhabited Z] (h : ∀ C :  ZFSet Z, C.nonempty → Chain Z → UpperBounds C.nonempty) :
+ ∃ m : Z, ∀ z : Z, m ≤ z → z = m 
+
+(Zorn's Lemma) (P : Type*) [PartialOrder P] (hne : Nonempty P) (hchain : ∀ (c :  ZFSet P), Chain c → ∃ ub, ∀ a ∈ c, a ≤ ub) :
+∃ m : P, ∀ a, m ≤ a → a = m 
+
+failed to elaborate
+
+outputs: #[(Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀ C : Set Zorn, Chain C → ∃ ub, ∀ a ∈ C, a ≤ ub) :
+ ∃ m : Zorn, ∀ a : Zorn, m ≠ a → m < a , (Zorn : Type*) [PartialOrder Zorn] (S : Set Zorn) (hS : Set.Nonempty S)
+ (h_upper : ∀ (chain : Set Zorn), Zorn.Chain (≤) chain → ∃ s ∈ S, ∀ c ∈ chain, c ≤ s) :
+ ∃ m ∈ S, ∀ s ∈ S, m ≤ s → s = m , (Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn)
+ (hchain : ∀ (c : Set Zorn), Chain HasSubset.Subset c → ∃ ub, ∀ a ∈ c, a ≤ ub) :
+ ∃ m : Zorn, ∀ a, m ≤ a → a = m , (Zorn : Type*) [PartialOrder Zorn] (Hne : Nonempty Zorn)
+ (H : ∀c : Set Zorn, Chain c → c.nonempty → ∃ub, ∀a ∈ c, a ≤ ub) :
+ ∃m : Zorn, ∀a, m < a → False , (Zorn : Type*) (le : Zorn → Zorn → Prop)
+ [PartialOrder Zorn] (h : ∀ C : Set Zorn, (∀ z1 z2 ∈ C, le z1 z2 ∨ le z2 z1) → (∃ z_ub ∈ C, ∀ z ∈ C, le z z_ub)) :
+ ∃ m : Zorn, ∀ z : Zorn, ¬(le m z ∧ ¬(le z m)) , (Zorn : Type*) [PartialOrder Zorn]
+(hne : Nonempty Zorn) (hchain : ∀ C : Set Zorn, Chain C → ∃ ub, ∀ c ∈ C, c ≤ ub) :
+∃ m : Zorn, ∀ z : Zorn, m ≠ z → z ≤ m → False , (Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀ C : Set Zorn, IsChain C → ∃ ub, IsUpperBound C ub) :
+∃ m : Zorn, ∀ x : Zorn, m ≠ x → x < m , (Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀(c : Set Zorn), Chain c → c.nonempty → ∃ ub, ∀ a ∈ c, a ≤ ub) :
+∃ m : Zorn, ∀ a, m ≤ a → a = m , (Z : Type*) [Preorder Z] [Inhabited Z] (h : ∀ C : Set Z, C.nonempty → Chain Z → UpperBounds C.nonempty) :
+ ∃ m : Z, ∀ z : Z, m ≤ z → z = m , (Zorn's Lemma) (P : Type*) [PartialOrder P] (hne : Nonempty P) (hchain : ∀ (c : Set P), Chain c → ∃ ub, ∀ a ∈ c, a ≤ ub) :
+∃ m : P, ∀ a, m ≤ a → a = m ]
+
+total : 10
+
+elaborated: 8
+
+No valid output from LLM; outputs below
+
+(G : Type*) [ GroupCat G] [ FintypeCat (Aut G)] (h_aut_cyclic : ∃ g : Aut G, ∀ x : Aut G, ∃ n : ℕ, g ^ n = x) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (hAut : ∃ g : Aut G, ∀ h : Aut G, ∃ n : ℤ, h = g ^ n) : IsAbelian G 
+
+(G : Type*) [ GroupCat G] (h_aut_cyclic : ∃ x : Aut G, ∀ y : Aut G, ∃ n : ℤ, y = x ^ n) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (h : IsCyclic (Aut G)) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (hAut : IsCyclic (Aut G)) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (autG_cyclic : ∃ g : Aut G, ∀ x : Aut G, ∃ n : ℤ, x = g ^ n) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (h_aut : ∃ g : Aut G, ∀ φ : Aut G, ∃ n : ℤ, φ = g ^ n) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (hAut : IsCyclic (Aut G)) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (h_auto_cyclic : ∃ (ϕ : G ≃* G), ∀ (ψ : G ≃* G), ∃ (n : ℤ), (ψ = ϕ ^ n)) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (hAut : ∃ a : Aut G, ∀ b : Aut G, ∃ n : ℤ, b = a ^ n) : IsCommutative G 
+
+failed to elaborate
+
+outputs: #[(G : Type*) [Group G] [Fintype (Aut G)] (h_aut_cyclic : ∃ g : Aut G, ∀ x : Aut G, ∃ n : ℕ, g ^ n = x) : IsCommutative G , (G : Type*) [Group G] (hAut : ∃ g : Aut G, ∀ h : Aut G, ∃ n : ℤ, h = g ^ n) : IsAbelian G , (G : Type*) [Group G] (h_aut_cyclic : ∃ x : Aut G, ∀ y : Aut G, ∃ n : ℤ, y = x ^ n) : IsCommutative G , (G : Type*) [Group G] (h : IsCyclic (Aut G)) : IsCommutative G , (G : Type*) [Group G] (hAut : IsCyclic (Aut G)) : IsCommutative G , (G : Type*) [Group G] (autG_cyclic : ∃ g : Aut G, ∀ x : Aut G, ∃ n : ℤ, x = g ^ n) : IsCommutative G , (G : Type*) [Group G] (h_aut : ∃ g : Aut G, ∀ φ : Aut G, ∃ n : ℤ, φ = g ^ n) : IsCommutative G , (G : Type*) [Group G] (hAut : IsCyclic (Aut G)) : IsCommutative G , (G : Type*) [Group G] (h_auto_cyclic : ∃ (ϕ : G ≃* G), ∀ (ψ : G ≃* G), ∃ (n : ℤ), (ψ = ϕ ^ n)) : IsCommutative G , (G : Type*) [Group G] (hAut : ∃ a : Aut G, ∀ b : Aut G, ∃ n : ℤ, b = a ^ n) : IsCommutative G ]
+
+total : 11
+
+elaborated: 8
+
+success
+
+theorem ∀ (X : Type u_12) (Y : Type u_13) (Z : Type u_14) [inst : UniformSpace X] [inst_1 : UniformSpace Y]
+  [inst_2 : UniformSpace Z] (f : X → Y) (g : Y → Z),
+  UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f)
+
+total : 12
+
+elaborated: 9
+
+success
+
+theorem ∀ (X : Type u_12) (Y : Type u_13) (Z : Type u_14) [inst : UniformSpace X] [inst_1 : UniformSpace Y]
+  [inst_2 : UniformSpace Z] (f : X → Y) (g : Y → Z),
+  UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f)
+
+total : 13
+
+elaborated: 10
+
+success
+
+theorem ∀ (X : Type u_12) [inst : TopologicalSpace X],
+  NormalSpace X ↔
+    ∀ (A B : Set X),
+      IsClosed A →
+        IsClosed B → Disjoint A B → ∃ f, Continuous f ∧ (∀ (a : X), a ∈ A → f a = 0) ∧ ∀ (b : X), b ∈ B → f b = 1
+
+total : 14
+
+elaborated: 11
+
+success
+
+theorem ∀ (unit_interval : Type u_12) [inst : LinearOrderedField unit_interval] [inst_1 : TopologicalSpace unit_interval]
+  [inst_2 : OrderTopology unit_interval] [inst_3 : TopologicalRing unit_interval] (f : unit_interval → unit_interval),
+  Continuous f → ∀ (x₀ : unit_interval), f (f (f x₀)) = x₀ → ∀ (n : ℕ), ∃ x, (f ^ n) x = x
+
+total : 15
+
+elaborated: 12
+
+No valid output from LLM; outputs below
+
+(CategoryTheory.Category C) [i : CategoryTheory.Limits.HasTerminal C] :
+  ∀ (X Y : C) (hX : CategoryTheory.Limits.IsTerminal X) (hY : CategoryTheory.Limits.IsTerminal Y),
+  Nonempty (X ≅ Y) 
+
+(C : Type*) [Category C] (T1 T2 : C) [T1_terminal : IsTerminal T1] [T2_terminal : IsTerminal T2] :
+ Unique (T1 ≅ T2) 
+
+{C : Type*} [category C] (T₁ T₂ : C)
+(hT₁ : is_terminal T₁) (hT₂ : is_terminal T₂) :
+ Unique (T₁ ≅ T₂) 
+
+[category_theory.terminal_is_unique] {C : Type*} [category C] [has_terminal C] :
+ Unique (terminal C) 
+
+{C : Type*} [Category C] [has_terminal C] :  Unique (terminal C) 
+
+(X Y : C) [terminal X] [terminal Y] :
+   Unique (X ≅ Y) 
+
+{C : Type*} [Category C] [Inhabited C]
+  (Y₁ Y₂ : C) [∀ Z : C, Unique (Z ⟶ Y₁)] [∀ Z : C, Unique (Z ⟶ Y₂)] :
+  Nonempty (Y₁ ≅ Y₂) 
+
+(Obj : Type*) [Category.Obj.Obj Obj] [Category.Terminal Obj] (T₁ T₂ : Obj) :
+   Unique (T₁ ⟶ T₂) 
+
+(C : Type u) [category_theory.Category C]
+ (T₁ T₂ : C) [category_theory.Limits.IsTerminal T₁] [category_theory.Limits.IsTerminal T₂] :
+  Unique (T₁ ≅ T₂) 
+
+(Obj : Type) [Category Obj] (T₁ T₂ : Obj) [TerminalObj T₁] [TerminalObj T₂] :
+   Unique (T₁ ≅ T₂) 
+
+failed to elaborate
+
+outputs: #[(CategoryTheory.Category C) [i : CategoryTheory.Limits.HasTerminal C] :
+  ∀ (X Y : C) (hX : CategoryTheory.Limits.IsTerminal X) (hY : CategoryTheory.Limits.IsTerminal Y),
+  Nonempty (X ≅ Y) , (C : Type*) [Category C] (T1 T2 : C) [T1_terminal : IsTerminal T1] [T2_terminal : IsTerminal T2] :
+unique (T1 ≅ T2) , {C : Type*} [category C] (T₁ T₂ : C)
+(hT₁ : is_terminal T₁) (hT₂ : is_terminal T₂) :
+unique (T₁ ≅ T₂) , [category_theory.terminal_is_unique] {C : Type*} [category C] [has_terminal C] :
+unique (terminal C) , {C : Type*} [Category C] [has_terminal C] : unique (terminal C) , (X Y : C) [terminal X] [terminal Y] :
+  unique (X ≅ Y) , {C : Type*} [Category C] [Inhabited C]
+  (Y₁ Y₂ : C) [∀ Z : C, Unique (Z ⟶ Y₁)] [∀ Z : C, Unique (Z ⟶ Y₂)] :
+  Nonempty (Y₁ ≅ Y₂) , (Obj : Type*) [Category.Obj.Obj Obj] [Category.Terminal Obj] (T₁ T₂ : Obj) :
+  unique (T₁ ⟶ T₂) , (C : Type u) [category_theory.Category C]
+ (T₁ T₂ : C) [category_theory.Limits.IsTerminal T₁] [category_theory.Limits.IsTerminal T₂] :
+ unique (T₁ ≅ T₂) , (Obj : Type) [Category Obj] (T₁ T₂ : Obj) [TerminalObj T₁] [TerminalObj T₂] :
+  unique (T₁ ≅ T₂) ]
+
+total : 16
+
+elaborated: 12
+
+success
+
+theorem ∀ (X : Type u_12) (A B : Set X), (A ∪ B)ᶜ = Aᶜ ∩ Bᶜ
+
+total : 17
+
+elaborated: 13
+
+success
+
+theorem ∀ (n m k : ℕ), n > 0 → m > 0 → n ^ 3 + m ^ 3 ≠ k ^ 3
+
+total : 18
+
+elaborated: 14
+
+success
+
+theorem ∀ (G : Type u_12) [inst : Group G], (∀ (g : G), g * g = 1) → ∀ (x y : G), x * y = y * x
+
+total : 19
+
+elaborated: 15
+
+success
+
+theorem ∀ (n : ℕ), n * (n + 1) % 2 = 0
+
+total : 20
+
+elaborated: 16
+
+No valid output from LLM; outputs below
+
+(G : Type*) [ GroupCat G] (H : Subgroup G) (hH : Fintype.card (G ⧸ H) = 2) :
+ Subgroup.Normal H 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [Subgroup H] (h2 :  Fintype.card H =  Fintype.card G / 2) :
+ Subgroup.Normal (Subgroup.mk H) 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [hH : Subgroup G H] (hH2 : Fintype.card H = Fintype.card G / 2) : IsNormalSubgroup H 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [hH : Subgroup G H] (idx_two : Subgroup.index H = 2) :
+ Subgroup.Normal hH 
+
+<input>:2:50: expected '↦', '=>' while parsing (G : Type*) [Group G] (H : Set G) (h2 : ∀ x : G, x ∈ H ∨ x⁻¹ ∈ H) (hH : ∀ x y : G, x ∈ H → y ∈ H → x * y ∈ H) :
+  Subgroup.Normal (Subgroup.mk H hH (h2 1) (λ x hx, h2 x⁻¹ (hx⁻¹))) 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [k : IsSubgroup H] (h2 : Fintype.card H = Fintype.card G / 2) : IsNormalSubgroup H 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [hH : IsSubgroup H] (in2 : Fintype.card H = Fintype.card G / 2) :
+  IsNormalSubgroup H 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [hH : Subgroup G H] (h2 : Fintype.card H = Fintype.card G / 2) : Subgroup.Normal H 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [Subgroup G H] (h2 : ∀ x : G, x ∈ H ∨ x * x ∈ H) :
+  ∀ n g : G, (g * n * g⁻¹) ∈ H ↔ n ∈ H 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [Subgroup H] (hH : Fintype.card H = Fintype.card G / 2) : Normal H 
+
+failed to elaborate
+
+outputs: #[(G : Type*) [Group G] (H : Subgroup G) (hH : Fintype.card (G ⧸ H) = 2) :
+ Subgroup.Normal H , (G : Type*) [Group G] (H : Set G) [Subgroup H] (h2 : fintype.card H = fintype.card G / 2) :
+ Subgroup.Normal (Subgroup.mk H) , (G : Type*) [Group G] (H : Set G) [hH : Subgroup G H] (hH2 : Fintype.card H = Fintype.card G / 2) : IsNormalSubgroup H , (G : Type*) [Group G] (H : Set G) [hH : Subgroup G H] (idx_two : Subgroup.index H = 2) :
+ Subgroup.Normal hH , (G : Type*) [Group G] (H : Set G) (h2 : ∀ x : G, x ∈ H ∨ x⁻¹ ∈ H) (hH : ∀ x y : G, x ∈ H → y ∈ H → x * y ∈ H) :
+  Subgroup.Normal (Subgroup.mk H hH (h2 1) (λ x hx, h2 x⁻¹ (hx⁻¹))) , (G : Type*) [Group G] (H : Set G) [k : IsSubgroup H] (h2 : Fintype.card H = Fintype.card G / 2) : IsNormalSubgroup H , (G : Type*) [Group G] (H : Set G) [hH : IsSubgroup H] (in2 : Fintype.card H = Fintype.card G / 2) :
+  IsNormalSubgroup H , (G : Type*) [Group G] (H : Set G) [hH : Subgroup G H] (h2 : Fintype.card H = Fintype.card G / 2) : Subgroup.Normal H , (G : Type*) [Group G] (H : Set G) [Subgroup G H] (h2 : ∀ x : G, x ∈ H ∨ x * x ∈ H) :
+  ∀ n g : G, (g * n * g⁻¹) ∈ H ↔ n ∈ H , (G : Type*) [Group G] (H : Set G) [Subgroup H] (hH : Fintype.card H = Fintype.card G / 2) : Normal H ]
+
+total : 21
+
+elaborated: 16
+
+Writing to file: thm-elab-10-false-5-8.json
+
+No valid output from LLM; outputs below
+
+(X : Type*) [TopologicalSpace X] (h : ∀ (A :  ZFSet X), IsClosed A ∧ A ≠ univ → IsCompact A) :
+IsCompact (univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀ C :  ZFSet X, IsClosed C → C ≠ univ → IsCompact C) : IsCompact (univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀ C :  ZFSet X, IsClosed C → C ≠ Set.Univ → IsCompact C) : IsCompact (Set.Univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀ A :  ZFSet X, IsClosed A → A ≠ univ → IsCompact A) :
+IsCompact (univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀ (C :  ZFSet X), IsClosed C ∧ C ≠ univ → IsCompact C) :
+IsCompact (univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀ (A :  ZFSet X), IsClosed A → A ≠ univ → IsCompact A) :
+IsCompact (univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀ C :  ZFSet X, IsClosed C ∧ C ≠ univ → IsCompact C) : IsCompact (univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀ A :  ZFSet X, IsClosed A → A ≠ univ → IsCompact A) : IsCompact (univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀ C :  ZFSet X, IsClosed C ∧ C ≠ Set.Univ → IsCompact C) :
+IsCompact (Set.Univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀C :  ZFSet X, C ≠ univ → IsClosed C → IsCompact C) :
+IsCompact (univ :  ZFSet X) 
+
+failed to elaborate
+
+outputs: #[(X : Type*) [TopologicalSpace X] (h : ∀ (A : Set X), IsClosed A ∧ A ≠ univ → IsCompact A) :
+IsCompact (univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀ C : Set X, IsClosed C → C ≠ univ → IsCompact C) : IsCompact (univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀ C : Set X, IsClosed C → C ≠ Set.Univ → IsCompact C) : IsCompact (Set.Univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀ A : Set X, IsClosed A → A ≠ univ → IsCompact A) :
+IsCompact (univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀ (C : Set X), IsClosed C ∧ C ≠ univ → IsCompact C) :
+IsCompact (univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀ (A : Set X), IsClosed A → A ≠ univ → IsCompact A) :
+IsCompact (univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀ C : Set X, IsClosed C ∧ C ≠ univ → IsCompact C) : IsCompact (univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀ A : Set X, IsClosed A → A ≠ univ → IsCompact A) : IsCompact (univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀ C : Set X, IsClosed C ∧ C ≠ Set.Univ → IsCompact C) :
+IsCompact (Set.Univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀C : Set X, C ≠ univ → IsClosed C → IsCompact C) :
+IsCompact (univ : Set X) ]
+
+total : 1
+
+elaborated: 0
+
+success
+
+theorem ∀ (n : ℕ) [inst : Fact (Nat.Prime n)], n % 4 = 1 → ∃ a b, a ^ 2 + b ^ 2 = n
+
+total : 2
+
+elaborated: 1
+
+success
+
+theorem ∀ (n m : ℕ), ∃ a b c d, n * m = a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2
+
+total : 3
+
+elaborated: 2
+
+success
+
+theorem ∀ (idem_ring : Type u_12) [inst : Ring idem_ring], (∀ (a : idem_ring), a * a = a) → ∀ (x y : idem_ring), x * y = y * x
+
+total : 4
+
+elaborated: 3
+
+success
+
+theorem ∃ P, ∀ (n : ℕ), Prime (P n) ∧ Prime (P n + 2)
+
+total : 5
+
+elaborated: 4
+
+success
+
+theorem (G : Type u_12) → [inst : DivisionRing G] → [inst : Fintype G] → Field G
+
+total : 6
+
+elaborated: 5
+
+success
+
+theorem ∀ (X : Type u_12) (Y : Type u_13) (f : X → Y) (g : Y → X), Function.Injective f → Function.Injective g → ∃ h, True
+
+total : 7
+
+elaborated: 6
+
+success
+
+theorem ∀ (Vertices : Type u_12) [inst : Fintype Vertices] [inst : DecidableEq Vertices] (Edges : Vertices → Vertices → Prop),
+  (∀ (x y : Vertices), x ≠ y → ∃! z, Edges x z ∧ Edges y z) → ∃ v, ∀ (w : Vertices), w ≠ v → Edges v w
+
+total : 8
+
+elaborated: 7
+
+success
+
+theorem ∀ (partitions_with_odd_parts partitions_with_distinct_parts : ℕ → ℕ) (n : ℕ),
+  partitions_with_odd_parts n = partitions_with_distinct_parts n
+
+total : 9
+
+elaborated: 8
+
+No valid output from LLM; outputs below
+
+(Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀ C :  ZFSet Zorn, Chain C → ∃ ub, ∀ a ∈ C, a ≤ ub) :
+ ∃ m : Zorn, ∀ a : Zorn, m ≠ a → m < a 
+
+<input>:2:46: expected ')', '↑', '↥', '⇑' or term while parsing (Zorn : Type*) [PartialOrder Zorn] (S : Set Zorn) (hS : Set.Nonempty S)
+ (h_upper : ∀ (chain : Set Zorn), Zorn.Chain (≤) chain → ∃ s ∈ S, ∀ c ∈ chain, c ≤ s) :
+ ∃ m ∈ S, ∀ s ∈ S, m ≤ s → s = m 
+
+(Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn)
+ (hchain : ∀ (c :  ZFSet Zorn), Chain HasSubset.Subset c → ∃ ub, ∀ a ∈ c, a ≤ ub) :
+ ∃ m : Zorn, ∀ a, m ≤ a → a = m 
+
+(Zorn : Type*) [PartialOrder Zorn] (Hne : Nonempty Zorn)
+ (H : ∀c :  ZFSet Zorn, Chain c → c.nonempty → ∃ub, ∀a ∈ c, a ≤ ub) :
+ ∃m : Zorn, ∀a, m < a → False 
+
+<input>:2:51: expected ',' while parsing (Zorn : Type*) (le : Zorn → Zorn → Prop)
+ [PartialOrder Zorn] (h : ∀ C : Set Zorn, (∀ z1 z2 ∈ C, le z1 z2 ∨ le z2 z1) → (∃ z_ub ∈ C, ∀ z ∈ C, le z z_ub)) :
+ ∃ m : Zorn, ∀ z : Zorn, ¬(le m z ∧ ¬(le z m)) 
+
+(Zorn : Type*) [PartialOrder Zorn]
+(hne : Nonempty Zorn) (hchain : ∀ C :  ZFSet Zorn, Chain C → ∃ ub, ∀ c ∈ C, c ≤ ub) :
+∃ m : Zorn, ∀ z : Zorn, m ≠ z → z ≤ m → False 
+
+(Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀ C :  ZFSet Zorn, IsChain C → ∃ ub, IsUpperBound C ub) :
+∃ m : Zorn, ∀ x : Zorn, m ≠ x → x < m 
+
+(Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀(c :  ZFSet Zorn), Chain c → c.nonempty → ∃ ub, ∀ a ∈ c, a ≤ ub) :
+∃ m : Zorn, ∀ a, m ≤ a → a = m 
+
+(Z : Type*) [Preorder Z] [Inhabited Z] (h : ∀ C :  ZFSet Z, C.nonempty → Chain Z → UpperBounds C.nonempty) :
+ ∃ m : Z, ∀ z : Z, m ≤ z → z = m 
+
+(Zorn's Lemma) (P : Type*) [PartialOrder P] (hne : Nonempty P) (hchain : ∀ (c :  ZFSet P), Chain c → ∃ ub, ∀ a ∈ c, a ≤ ub) :
+∃ m : P, ∀ a, m ≤ a → a = m 
+
+failed to elaborate
+
+outputs: #[(Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀ C : Set Zorn, Chain C → ∃ ub, ∀ a ∈ C, a ≤ ub) :
+ ∃ m : Zorn, ∀ a : Zorn, m ≠ a → m < a , (Zorn : Type*) [PartialOrder Zorn] (S : Set Zorn) (hS : Set.Nonempty S)
+ (h_upper : ∀ (chain : Set Zorn), Zorn.Chain (≤) chain → ∃ s ∈ S, ∀ c ∈ chain, c ≤ s) :
+ ∃ m ∈ S, ∀ s ∈ S, m ≤ s → s = m , (Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn)
+ (hchain : ∀ (c : Set Zorn), Chain HasSubset.Subset c → ∃ ub, ∀ a ∈ c, a ≤ ub) :
+ ∃ m : Zorn, ∀ a, m ≤ a → a = m , (Zorn : Type*) [PartialOrder Zorn] (Hne : Nonempty Zorn)
+ (H : ∀c : Set Zorn, Chain c → c.nonempty → ∃ub, ∀a ∈ c, a ≤ ub) :
+ ∃m : Zorn, ∀a, m < a → False , (Zorn : Type*) (le : Zorn → Zorn → Prop)
+ [PartialOrder Zorn] (h : ∀ C : Set Zorn, (∀ z1 z2 ∈ C, le z1 z2 ∨ le z2 z1) → (∃ z_ub ∈ C, ∀ z ∈ C, le z z_ub)) :
+ ∃ m : Zorn, ∀ z : Zorn, ¬(le m z ∧ ¬(le z m)) , (Zorn : Type*) [PartialOrder Zorn]
+(hne : Nonempty Zorn) (hchain : ∀ C : Set Zorn, Chain C → ∃ ub, ∀ c ∈ C, c ≤ ub) :
+∃ m : Zorn, ∀ z : Zorn, m ≠ z → z ≤ m → False , (Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀ C : Set Zorn, IsChain C → ∃ ub, IsUpperBound C ub) :
+∃ m : Zorn, ∀ x : Zorn, m ≠ x → x < m , (Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀(c : Set Zorn), Chain c → c.nonempty → ∃ ub, ∀ a ∈ c, a ≤ ub) :
+∃ m : Zorn, ∀ a, m ≤ a → a = m , (Z : Type*) [Preorder Z] [Inhabited Z] (h : ∀ C : Set Z, C.nonempty → Chain Z → UpperBounds C.nonempty) :
+ ∃ m : Z, ∀ z : Z, m ≤ z → z = m , (Zorn's Lemma) (P : Type*) [PartialOrder P] (hne : Nonempty P) (hchain : ∀ (c : Set P), Chain c → ∃ ub, ∀ a ∈ c, a ≤ ub) :
+∃ m : P, ∀ a, m ≤ a → a = m ]
+
+total : 10
+
+elaborated: 8
+
+No valid output from LLM; outputs below
+
+(G : Type*) [ GroupCat G] [ FintypeCat (Aut G)] (h_aut_cyclic : ∃ g : Aut G, ∀ x : Aut G, ∃ n : ℕ, g ^ n = x) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (hAut : ∃ g : Aut G, ∀ h : Aut G, ∃ n : ℤ, h = g ^ n) : IsAbelian G 
+
+(G : Type*) [ GroupCat G] (h_aut_cyclic : ∃ x : Aut G, ∀ y : Aut G, ∃ n : ℤ, y = x ^ n) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (h : IsCyclic (Aut G)) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (hAut : IsCyclic (Aut G)) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (autG_cyclic : ∃ g : Aut G, ∀ x : Aut G, ∃ n : ℤ, x = g ^ n) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (h_aut : ∃ g : Aut G, ∀ φ : Aut G, ∃ n : ℤ, φ = g ^ n) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (hAut : IsCyclic (Aut G)) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (h_auto_cyclic : ∃ (ϕ : G ≃* G), ∀ (ψ : G ≃* G), ∃ (n : ℤ), (ψ = ϕ ^ n)) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (hAut : ∃ a : Aut G, ∀ b : Aut G, ∃ n : ℤ, b = a ^ n) : IsCommutative G 
+
+failed to elaborate
+
+outputs: #[(G : Type*) [Group G] [Fintype (Aut G)] (h_aut_cyclic : ∃ g : Aut G, ∀ x : Aut G, ∃ n : ℕ, g ^ n = x) : IsCommutative G , (G : Type*) [Group G] (hAut : ∃ g : Aut G, ∀ h : Aut G, ∃ n : ℤ, h = g ^ n) : IsAbelian G , (G : Type*) [Group G] (h_aut_cyclic : ∃ x : Aut G, ∀ y : Aut G, ∃ n : ℤ, y = x ^ n) : IsCommutative G , (G : Type*) [Group G] (h : IsCyclic (Aut G)) : IsCommutative G , (G : Type*) [Group G] (hAut : IsCyclic (Aut G)) : IsCommutative G , (G : Type*) [Group G] (autG_cyclic : ∃ g : Aut G, ∀ x : Aut G, ∃ n : ℤ, x = g ^ n) : IsCommutative G , (G : Type*) [Group G] (h_aut : ∃ g : Aut G, ∀ φ : Aut G, ∃ n : ℤ, φ = g ^ n) : IsCommutative G , (G : Type*) [Group G] (hAut : IsCyclic (Aut G)) : IsCommutative G , (G : Type*) [Group G] (h_auto_cyclic : ∃ (ϕ : G ≃* G), ∀ (ψ : G ≃* G), ∃ (n : ℤ), (ψ = ϕ ^ n)) : IsCommutative G , (G : Type*) [Group G] (hAut : ∃ a : Aut G, ∀ b : Aut G, ∃ n : ℤ, b = a ^ n) : IsCommutative G ]
+
+total : 11
+
+elaborated: 8
+
+success
+
+theorem ∀ (X : Type u_12) (Y : Type u_13) (Z : Type u_14) [inst : UniformSpace X] [inst_1 : UniformSpace Y]
+  [inst_2 : UniformSpace Z] (f : X → Y) (g : Y → Z),
+  UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f)
+
+total : 12
+
+elaborated: 9
+
+success
+
+theorem ∀ (X : Type u_12) (Y : Type u_13) (Z : Type u_14) [inst : UniformSpace X] [inst_1 : UniformSpace Y]
+  [inst_2 : UniformSpace Z] (f : X → Y) (g : Y → Z),
+  UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f)
+
+total : 13
+
+elaborated: 10
+
+success
+
+theorem ∀ (X : Type u_12) [inst : TopologicalSpace X],
+  NormalSpace X ↔
+    ∀ (A B : Set X),
+      IsClosed A →
+        IsClosed B → Disjoint A B → ∃ f, Continuous f ∧ (∀ (a : X), a ∈ A → f a = 0) ∧ ∀ (b : X), b ∈ B → f b = 1
+
+total : 14
+
+elaborated: 11
+
+success
+
+theorem ∀ (unit_interval : Type u_12) [inst : LinearOrderedField unit_interval] [inst_1 : TopologicalSpace unit_interval]
+  [inst_2 : OrderTopology unit_interval] [inst_3 : TopologicalRing unit_interval] (f : unit_interval → unit_interval),
+  Continuous f → ∀ (x₀ : unit_interval), f (f (f x₀)) = x₀ → ∀ (n : ℕ), ∃ x, (f ^ n) x = x
+
+total : 15
+
+elaborated: 12
+
+No valid output from LLM; outputs below
+
+(CategoryTheory.Category C) [i : CategoryTheory.Limits.HasTerminal C] :
+  ∀ (X Y : C) (hX : CategoryTheory.Limits.IsTerminal X) (hY : CategoryTheory.Limits.IsTerminal Y),
+  Nonempty (X ≅ Y) 
+
+(C : Type*) [Category C] (T1 T2 : C) [T1_terminal : IsTerminal T1] [T2_terminal : IsTerminal T2] :
+ Unique (T1 ≅ T2) 
+
+{C : Type*} [category C] (T₁ T₂ : C)
+(hT₁ : is_terminal T₁) (hT₂ : is_terminal T₂) :
+ Unique (T₁ ≅ T₂) 
+
+[category_theory.terminal_is_unique] {C : Type*} [category C] [has_terminal C] :
+ Unique (terminal C) 
+
+{C : Type*} [Category C] [has_terminal C] :  Unique (terminal C) 
+
+(X Y : C) [terminal X] [terminal Y] :
+   Unique (X ≅ Y) 
+
+{C : Type*} [Category C] [Inhabited C]
+  (Y₁ Y₂ : C) [∀ Z : C, Unique (Z ⟶ Y₁)] [∀ Z : C, Unique (Z ⟶ Y₂)] :
+  Nonempty (Y₁ ≅ Y₂) 
+
+(Obj : Type*) [Category.Obj.Obj Obj] [Category.Terminal Obj] (T₁ T₂ : Obj) :
+   Unique (T₁ ⟶ T₂) 
+
+(C : Type u) [category_theory.Category C]
+ (T₁ T₂ : C) [category_theory.Limits.IsTerminal T₁] [category_theory.Limits.IsTerminal T₂] :
+  Unique (T₁ ≅ T₂) 
+
+(Obj : Type) [Category Obj] (T₁ T₂ : Obj) [TerminalObj T₁] [TerminalObj T₂] :
+   Unique (T₁ ≅ T₂) 
+
+failed to elaborate
+
+outputs: #[(CategoryTheory.Category C) [i : CategoryTheory.Limits.HasTerminal C] :
+  ∀ (X Y : C) (hX : CategoryTheory.Limits.IsTerminal X) (hY : CategoryTheory.Limits.IsTerminal Y),
+  Nonempty (X ≅ Y) , (C : Type*) [Category C] (T1 T2 : C) [T1_terminal : IsTerminal T1] [T2_terminal : IsTerminal T2] :
+unique (T1 ≅ T2) , {C : Type*} [category C] (T₁ T₂ : C)
+(hT₁ : is_terminal T₁) (hT₂ : is_terminal T₂) :
+unique (T₁ ≅ T₂) , [category_theory.terminal_is_unique] {C : Type*} [category C] [has_terminal C] :
+unique (terminal C) , {C : Type*} [Category C] [has_terminal C] : unique (terminal C) , (X Y : C) [terminal X] [terminal Y] :
+  unique (X ≅ Y) , {C : Type*} [Category C] [Inhabited C]
+  (Y₁ Y₂ : C) [∀ Z : C, Unique (Z ⟶ Y₁)] [∀ Z : C, Unique (Z ⟶ Y₂)] :
+  Nonempty (Y₁ ≅ Y₂) , (Obj : Type*) [Category.Obj.Obj Obj] [Category.Terminal Obj] (T₁ T₂ : Obj) :
+  unique (T₁ ⟶ T₂) , (C : Type u) [category_theory.Category C]
+ (T₁ T₂ : C) [category_theory.Limits.IsTerminal T₁] [category_theory.Limits.IsTerminal T₂] :
+ unique (T₁ ≅ T₂) , (Obj : Type) [Category Obj] (T₁ T₂ : Obj) [TerminalObj T₁] [TerminalObj T₂] :
+  unique (T₁ ≅ T₂) ]
+
+total : 16
+
+elaborated: 12
+
+success
+
+theorem ∀ (X : Type u_12) (A B : Set X), (A ∪ B)ᶜ = Aᶜ ∩ Bᶜ
+
+total : 17
+
+elaborated: 13
+
+success
+
+theorem ∀ (n m k : ℕ), n > 0 → m > 0 → n ^ 3 + m ^ 3 ≠ k ^ 3
+
+total : 18
+
+elaborated: 14
+
+success
+
+theorem ∀ (G : Type u_12) [inst : Group G], (∀ (g : G), g * g = 1) → ∀ (x y : G), x * y = y * x
+
+total : 19
+
+elaborated: 15
+
+success
+
+theorem ∀ (n : ℕ), n * (n + 1) % 2 = 0
+
+total : 20
+
+elaborated: 16
+
+No valid output from LLM; outputs below
+
+(G : Type*) [ GroupCat G] (H : Subgroup G) (hH : Fintype.card (G ⧸ H) = 2) :
+ Subgroup.Normal H 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [Subgroup H] (h2 :  Fintype.card H =  Fintype.card G / 2) :
+ Subgroup.Normal (Subgroup.mk H) 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [hH : Subgroup G H] (hH2 : Fintype.card H = Fintype.card G / 2) : IsNormalSubgroup H 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [hH : Subgroup G H] (idx_two : Subgroup.index H = 2) :
+ Subgroup.Normal hH 
+
+<input>:2:50: expected '↦', '=>' while parsing (G : Type*) [Group G] (H : Set G) (h2 : ∀ x : G, x ∈ H ∨ x⁻¹ ∈ H) (hH : ∀ x y : G, x ∈ H → y ∈ H → x * y ∈ H) :
+  Subgroup.Normal (Subgroup.mk H hH (h2 1) (λ x hx, h2 x⁻¹ (hx⁻¹))) 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [k : IsSubgroup H] (h2 : Fintype.card H = Fintype.card G / 2) : IsNormalSubgroup H 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [hH : IsSubgroup H] (in2 : Fintype.card H = Fintype.card G / 2) :
+  IsNormalSubgroup H 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [hH : Subgroup G H] (h2 : Fintype.card H = Fintype.card G / 2) : Subgroup.Normal H 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [Subgroup G H] (h2 : ∀ x : G, x ∈ H ∨ x * x ∈ H) :
+  ∀ n g : G, (g * n * g⁻¹) ∈ H ↔ n ∈ H 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [Subgroup H] (hH : Fintype.card H = Fintype.card G / 2) : Normal H 
+
+failed to elaborate
+
+outputs: #[(G : Type*) [Group G] (H : Subgroup G) (hH : Fintype.card (G ⧸ H) = 2) :
+ Subgroup.Normal H , (G : Type*) [Group G] (H : Set G) [Subgroup H] (h2 : fintype.card H = fintype.card G / 2) :
+ Subgroup.Normal (Subgroup.mk H) , (G : Type*) [Group G] (H : Set G) [hH : Subgroup G H] (hH2 : Fintype.card H = Fintype.card G / 2) : IsNormalSubgroup H , (G : Type*) [Group G] (H : Set G) [hH : Subgroup G H] (idx_two : Subgroup.index H = 2) :
+ Subgroup.Normal hH , (G : Type*) [Group G] (H : Set G) (h2 : ∀ x : G, x ∈ H ∨ x⁻¹ ∈ H) (hH : ∀ x y : G, x ∈ H → y ∈ H → x * y ∈ H) :
+  Subgroup.Normal (Subgroup.mk H hH (h2 1) (λ x hx, h2 x⁻¹ (hx⁻¹))) , (G : Type*) [Group G] (H : Set G) [k : IsSubgroup H] (h2 : Fintype.card H = Fintype.card G / 2) : IsNormalSubgroup H , (G : Type*) [Group G] (H : Set G) [hH : IsSubgroup H] (in2 : Fintype.card H = Fintype.card G / 2) :
+  IsNormalSubgroup H , (G : Type*) [Group G] (H : Set G) [hH : Subgroup G H] (h2 : Fintype.card H = Fintype.card G / 2) : Subgroup.Normal H , (G : Type*) [Group G] (H : Set G) [Subgroup G H] (h2 : ∀ x : G, x ∈ H ∨ x * x ∈ H) :
+  ∀ n g : G, (g * n * g⁻¹) ∈ H ↔ n ∈ H , (G : Type*) [Group G] (H : Set G) [Subgroup H] (hH : Fintype.card H = Fintype.card G / 2) : Normal H ]
+
+total : 21
+
+elaborated: 16
+
+success
+
+theorem ∀ (G : Type u_12) [inst : Group G] [inst_1 : IsFreeGroup G] (x : G), x ≠ 1 → ∃ n, n ≠ 0 ∧ x ^ n ≠ 1
+
+total : 22
+
+elaborated: 17
+
+success
+
+theorem ∀ (n : ℕ), n > 1 → ∃ p, Nat.Prime p ∧ p ∣ n
+
+total : 23
+
+elaborated: 18
+
+Writing to file: thm-elab-10-false-5-8.json
+
+No valid output from LLM; outputs below
+
+(X : Type*) [TopologicalSpace X] (h : ∀ (A :  ZFSet X), IsClosed A ∧ A ≠ univ → IsCompact A) :
+IsCompact (univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀ C :  ZFSet X, IsClosed C → C ≠ univ → IsCompact C) : IsCompact (univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀ C :  ZFSet X, IsClosed C → C ≠ Set.Univ → IsCompact C) : IsCompact (Set.Univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀ A :  ZFSet X, IsClosed A → A ≠ univ → IsCompact A) :
+IsCompact (univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀ (C :  ZFSet X), IsClosed C ∧ C ≠ univ → IsCompact C) :
+IsCompact (univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀ (A :  ZFSet X), IsClosed A → A ≠ univ → IsCompact A) :
+IsCompact (univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀ C :  ZFSet X, IsClosed C ∧ C ≠ univ → IsCompact C) : IsCompact (univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀ A :  ZFSet X, IsClosed A → A ≠ univ → IsCompact A) : IsCompact (univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀ C :  ZFSet X, IsClosed C ∧ C ≠ Set.Univ → IsCompact C) :
+IsCompact (Set.Univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀C :  ZFSet X, C ≠ univ → IsClosed C → IsCompact C) :
+IsCompact (univ :  ZFSet X) 
+
+failed to elaborate
+
+outputs: #[(X : Type*) [TopologicalSpace X] (h : ∀ (A : Set X), IsClosed A ∧ A ≠ univ → IsCompact A) :
+IsCompact (univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀ C : Set X, IsClosed C → C ≠ univ → IsCompact C) : IsCompact (univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀ C : Set X, IsClosed C → C ≠ Set.Univ → IsCompact C) : IsCompact (Set.Univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀ A : Set X, IsClosed A → A ≠ univ → IsCompact A) :
+IsCompact (univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀ (C : Set X), IsClosed C ∧ C ≠ univ → IsCompact C) :
+IsCompact (univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀ (A : Set X), IsClosed A → A ≠ univ → IsCompact A) :
+IsCompact (univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀ C : Set X, IsClosed C ∧ C ≠ univ → IsCompact C) : IsCompact (univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀ A : Set X, IsClosed A → A ≠ univ → IsCompact A) : IsCompact (univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀ C : Set X, IsClosed C ∧ C ≠ Set.Univ → IsCompact C) :
+IsCompact (Set.Univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀C : Set X, C ≠ univ → IsClosed C → IsCompact C) :
+IsCompact (univ : Set X) ]
+
+total : 1
+
+elaborated: 0
+
+success
+
+theorem ∀ (n : ℕ) [inst : Fact (Nat.Prime n)], n % 4 = 1 → ∃ a b, a ^ 2 + b ^ 2 = n
+
+total : 2
+
+elaborated: 1
+
+success
+
+theorem ∀ (n m : ℕ), ∃ a b c d, n * m = a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2
+
+total : 3
+
+elaborated: 2
+
+success
+
+theorem ∀ (idem_ring : Type u_12) [inst : Ring idem_ring], (∀ (a : idem_ring), a * a = a) → ∀ (x y : idem_ring), x * y = y * x
+
+total : 4
+
+elaborated: 3
+
+success
+
+theorem ∃ P, ∀ (n : ℕ), Prime (P n) ∧ Prime (P n + 2)
+
+total : 5
+
+elaborated: 4
+
+success
+
+theorem (G : Type u_12) → [inst : DivisionRing G] → [inst : Fintype G] → Field G
+
+total : 6
+
+elaborated: 5
+
+success
+
+theorem ∀ (X : Type u_12) (Y : Type u_13) (f : X → Y) (g : Y → X), Function.Injective f → Function.Injective g → ∃ h, True
+
+total : 7
+
+elaborated: 6
+
+success
+
+theorem ∀ (Vertices : Type u_12) [inst : Fintype Vertices] [inst : DecidableEq Vertices] (Edges : Vertices → Vertices → Prop),
+  (∀ (x y : Vertices), x ≠ y → ∃! z, Edges x z ∧ Edges y z) → ∃ v, ∀ (w : Vertices), w ≠ v → Edges v w
+
+total : 8
+
+elaborated: 7
+
+success
+
+theorem ∀ (partitions_with_odd_parts partitions_with_distinct_parts : ℕ → ℕ) (n : ℕ),
+  partitions_with_odd_parts n = partitions_with_distinct_parts n
+
+total : 9
+
+elaborated: 8
+
+No valid output from LLM; outputs below
+
+(Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀ C :  ZFSet Zorn, Chain C → ∃ ub, ∀ a ∈ C, a ≤ ub) :
+ ∃ m : Zorn, ∀ a : Zorn, m ≠ a → m < a 
+
+<input>:2:46: expected ')', '↑', '↥', '⇑' or term while parsing (Zorn : Type*) [PartialOrder Zorn] (S : Set Zorn) (hS : Set.Nonempty S)
+ (h_upper : ∀ (chain : Set Zorn), Zorn.Chain (≤) chain → ∃ s ∈ S, ∀ c ∈ chain, c ≤ s) :
+ ∃ m ∈ S, ∀ s ∈ S, m ≤ s → s = m 
+
+(Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn)
+ (hchain : ∀ (c :  ZFSet Zorn), Chain HasSubset.Subset c → ∃ ub, ∀ a ∈ c, a ≤ ub) :
+ ∃ m : Zorn, ∀ a, m ≤ a → a = m 
+
+(Zorn : Type*) [PartialOrder Zorn] (Hne : Nonempty Zorn)
+ (H : ∀c :  ZFSet Zorn, Chain c → c.nonempty → ∃ub, ∀a ∈ c, a ≤ ub) :
+ ∃m : Zorn, ∀a, m < a → False 
+
+<input>:2:51: expected ',' while parsing (Zorn : Type*) (le : Zorn → Zorn → Prop)
+ [PartialOrder Zorn] (h : ∀ C : Set Zorn, (∀ z1 z2 ∈ C, le z1 z2 ∨ le z2 z1) → (∃ z_ub ∈ C, ∀ z ∈ C, le z z_ub)) :
+ ∃ m : Zorn, ∀ z : Zorn, ¬(le m z ∧ ¬(le z m)) 
+
+(Zorn : Type*) [PartialOrder Zorn]
+(hne : Nonempty Zorn) (hchain : ∀ C :  ZFSet Zorn, Chain C → ∃ ub, ∀ c ∈ C, c ≤ ub) :
+∃ m : Zorn, ∀ z : Zorn, m ≠ z → z ≤ m → False 
+
+(Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀ C :  ZFSet Zorn, IsChain C → ∃ ub, IsUpperBound C ub) :
+∃ m : Zorn, ∀ x : Zorn, m ≠ x → x < m 
+
+(Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀(c :  ZFSet Zorn), Chain c → c.nonempty → ∃ ub, ∀ a ∈ c, a ≤ ub) :
+∃ m : Zorn, ∀ a, m ≤ a → a = m 
+
+(Z : Type*) [Preorder Z] [Inhabited Z] (h : ∀ C :  ZFSet Z, C.nonempty → Chain Z → UpperBounds C.nonempty) :
+ ∃ m : Z, ∀ z : Z, m ≤ z → z = m 
+
+(Zorn's Lemma) (P : Type*) [PartialOrder P] (hne : Nonempty P) (hchain : ∀ (c :  ZFSet P), Chain c → ∃ ub, ∀ a ∈ c, a ≤ ub) :
+∃ m : P, ∀ a, m ≤ a → a = m 
+
+failed to elaborate
+
+outputs: #[(Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀ C : Set Zorn, Chain C → ∃ ub, ∀ a ∈ C, a ≤ ub) :
+ ∃ m : Zorn, ∀ a : Zorn, m ≠ a → m < a , (Zorn : Type*) [PartialOrder Zorn] (S : Set Zorn) (hS : Set.Nonempty S)
+ (h_upper : ∀ (chain : Set Zorn), Zorn.Chain (≤) chain → ∃ s ∈ S, ∀ c ∈ chain, c ≤ s) :
+ ∃ m ∈ S, ∀ s ∈ S, m ≤ s → s = m , (Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn)
+ (hchain : ∀ (c : Set Zorn), Chain HasSubset.Subset c → ∃ ub, ∀ a ∈ c, a ≤ ub) :
+ ∃ m : Zorn, ∀ a, m ≤ a → a = m , (Zorn : Type*) [PartialOrder Zorn] (Hne : Nonempty Zorn)
+ (H : ∀c : Set Zorn, Chain c → c.nonempty → ∃ub, ∀a ∈ c, a ≤ ub) :
+ ∃m : Zorn, ∀a, m < a → False , (Zorn : Type*) (le : Zorn → Zorn → Prop)
+ [PartialOrder Zorn] (h : ∀ C : Set Zorn, (∀ z1 z2 ∈ C, le z1 z2 ∨ le z2 z1) → (∃ z_ub ∈ C, ∀ z ∈ C, le z z_ub)) :
+ ∃ m : Zorn, ∀ z : Zorn, ¬(le m z ∧ ¬(le z m)) , (Zorn : Type*) [PartialOrder Zorn]
+(hne : Nonempty Zorn) (hchain : ∀ C : Set Zorn, Chain C → ∃ ub, ∀ c ∈ C, c ≤ ub) :
+∃ m : Zorn, ∀ z : Zorn, m ≠ z → z ≤ m → False , (Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀ C : Set Zorn, IsChain C → ∃ ub, IsUpperBound C ub) :
+∃ m : Zorn, ∀ x : Zorn, m ≠ x → x < m , (Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀(c : Set Zorn), Chain c → c.nonempty → ∃ ub, ∀ a ∈ c, a ≤ ub) :
+∃ m : Zorn, ∀ a, m ≤ a → a = m , (Z : Type*) [Preorder Z] [Inhabited Z] (h : ∀ C : Set Z, C.nonempty → Chain Z → UpperBounds C.nonempty) :
+ ∃ m : Z, ∀ z : Z, m ≤ z → z = m , (Zorn's Lemma) (P : Type*) [PartialOrder P] (hne : Nonempty P) (hchain : ∀ (c : Set P), Chain c → ∃ ub, ∀ a ∈ c, a ≤ ub) :
+∃ m : P, ∀ a, m ≤ a → a = m ]
+
+total : 10
+
+elaborated: 8
+
+No valid output from LLM; outputs below
+
+(G : Type*) [ GroupCat G] [ FintypeCat (Aut G)] (h_aut_cyclic : ∃ g : Aut G, ∀ x : Aut G, ∃ n : ℕ, g ^ n = x) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (hAut : ∃ g : Aut G, ∀ h : Aut G, ∃ n : ℤ, h = g ^ n) : IsAbelian G 
+
+(G : Type*) [ GroupCat G] (h_aut_cyclic : ∃ x : Aut G, ∀ y : Aut G, ∃ n : ℤ, y = x ^ n) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (h : IsCyclic (Aut G)) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (hAut : IsCyclic (Aut G)) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (autG_cyclic : ∃ g : Aut G, ∀ x : Aut G, ∃ n : ℤ, x = g ^ n) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (h_aut : ∃ g : Aut G, ∀ φ : Aut G, ∃ n : ℤ, φ = g ^ n) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (hAut : IsCyclic (Aut G)) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (h_auto_cyclic : ∃ (ϕ : G ≃* G), ∀ (ψ : G ≃* G), ∃ (n : ℤ), (ψ = ϕ ^ n)) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (hAut : ∃ a : Aut G, ∀ b : Aut G, ∃ n : ℤ, b = a ^ n) : IsCommutative G 
+
+failed to elaborate
+
+outputs: #[(G : Type*) [Group G] [Fintype (Aut G)] (h_aut_cyclic : ∃ g : Aut G, ∀ x : Aut G, ∃ n : ℕ, g ^ n = x) : IsCommutative G , (G : Type*) [Group G] (hAut : ∃ g : Aut G, ∀ h : Aut G, ∃ n : ℤ, h = g ^ n) : IsAbelian G , (G : Type*) [Group G] (h_aut_cyclic : ∃ x : Aut G, ∀ y : Aut G, ∃ n : ℤ, y = x ^ n) : IsCommutative G , (G : Type*) [Group G] (h : IsCyclic (Aut G)) : IsCommutative G , (G : Type*) [Group G] (hAut : IsCyclic (Aut G)) : IsCommutative G , (G : Type*) [Group G] (autG_cyclic : ∃ g : Aut G, ∀ x : Aut G, ∃ n : ℤ, x = g ^ n) : IsCommutative G , (G : Type*) [Group G] (h_aut : ∃ g : Aut G, ∀ φ : Aut G, ∃ n : ℤ, φ = g ^ n) : IsCommutative G , (G : Type*) [Group G] (hAut : IsCyclic (Aut G)) : IsCommutative G , (G : Type*) [Group G] (h_auto_cyclic : ∃ (ϕ : G ≃* G), ∀ (ψ : G ≃* G), ∃ (n : ℤ), (ψ = ϕ ^ n)) : IsCommutative G , (G : Type*) [Group G] (hAut : ∃ a : Aut G, ∀ b : Aut G, ∃ n : ℤ, b = a ^ n) : IsCommutative G ]
+
+total : 11
+
+elaborated: 8
+
+success
+
+theorem ∀ (X : Type u_12) (Y : Type u_13) (Z : Type u_14) [inst : UniformSpace X] [inst_1 : UniformSpace Y]
+  [inst_2 : UniformSpace Z] (f : X → Y) (g : Y → Z),
+  UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f)
+
+total : 12
+
+elaborated: 9
+
+success
+
+theorem ∀ (X : Type u_12) (Y : Type u_13) (Z : Type u_14) [inst : UniformSpace X] [inst_1 : UniformSpace Y]
+  [inst_2 : UniformSpace Z] (f : X → Y) (g : Y → Z),
+  UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f)
+
+total : 13
+
+elaborated: 10
+
+success
+
+theorem ∀ (X : Type u_12) [inst : TopologicalSpace X],
+  NormalSpace X ↔
+    ∀ (A B : Set X),
+      IsClosed A →
+        IsClosed B → Disjoint A B → ∃ f, Continuous f ∧ (∀ (a : X), a ∈ A → f a = 0) ∧ ∀ (b : X), b ∈ B → f b = 1
+
+total : 14
+
+elaborated: 11
+
+success
+
+theorem ∀ (unit_interval : Type u_12) [inst : LinearOrderedField unit_interval] [inst_1 : TopologicalSpace unit_interval]
+  [inst_2 : OrderTopology unit_interval] [inst_3 : TopologicalRing unit_interval] (f : unit_interval → unit_interval),
+  Continuous f → ∀ (x₀ : unit_interval), f (f (f x₀)) = x₀ → ∀ (n : ℕ), ∃ x, (f ^ n) x = x
+
+total : 15
+
+elaborated: 12
+
+No valid output from LLM; outputs below
+
+(CategoryTheory.Category C) [i : CategoryTheory.Limits.HasTerminal C] :
+  ∀ (X Y : C) (hX : CategoryTheory.Limits.IsTerminal X) (hY : CategoryTheory.Limits.IsTerminal Y),
+  Nonempty (X ≅ Y) 
+
+(C : Type*) [Category C] (T1 T2 : C) [T1_terminal : IsTerminal T1] [T2_terminal : IsTerminal T2] :
+ Unique (T1 ≅ T2) 
+
+{C : Type*} [category C] (T₁ T₂ : C)
+(hT₁ : is_terminal T₁) (hT₂ : is_terminal T₂) :
+ Unique (T₁ ≅ T₂) 
+
+[category_theory.terminal_is_unique] {C : Type*} [category C] [has_terminal C] :
+ Unique (terminal C) 
+
+{C : Type*} [Category C] [has_terminal C] :  Unique (terminal C) 
+
+(X Y : C) [terminal X] [terminal Y] :
+   Unique (X ≅ Y) 
+
+{C : Type*} [Category C] [Inhabited C]
+  (Y₁ Y₂ : C) [∀ Z : C, Unique (Z ⟶ Y₁)] [∀ Z : C, Unique (Z ⟶ Y₂)] :
+  Nonempty (Y₁ ≅ Y₂) 
+
+(Obj : Type*) [Category.Obj.Obj Obj] [Category.Terminal Obj] (T₁ T₂ : Obj) :
+   Unique (T₁ ⟶ T₂) 
+
+(C : Type u) [category_theory.Category C]
+ (T₁ T₂ : C) [category_theory.Limits.IsTerminal T₁] [category_theory.Limits.IsTerminal T₂] :
+  Unique (T₁ ≅ T₂) 
+
+(Obj : Type) [Category Obj] (T₁ T₂ : Obj) [TerminalObj T₁] [TerminalObj T₂] :
+   Unique (T₁ ≅ T₂) 
+
+failed to elaborate
+
+outputs: #[(CategoryTheory.Category C) [i : CategoryTheory.Limits.HasTerminal C] :
+  ∀ (X Y : C) (hX : CategoryTheory.Limits.IsTerminal X) (hY : CategoryTheory.Limits.IsTerminal Y),
+  Nonempty (X ≅ Y) , (C : Type*) [Category C] (T1 T2 : C) [T1_terminal : IsTerminal T1] [T2_terminal : IsTerminal T2] :
+unique (T1 ≅ T2) , {C : Type*} [category C] (T₁ T₂ : C)
+(hT₁ : is_terminal T₁) (hT₂ : is_terminal T₂) :
+unique (T₁ ≅ T₂) , [category_theory.terminal_is_unique] {C : Type*} [category C] [has_terminal C] :
+unique (terminal C) , {C : Type*} [Category C] [has_terminal C] : unique (terminal C) , (X Y : C) [terminal X] [terminal Y] :
+  unique (X ≅ Y) , {C : Type*} [Category C] [Inhabited C]
+  (Y₁ Y₂ : C) [∀ Z : C, Unique (Z ⟶ Y₁)] [∀ Z : C, Unique (Z ⟶ Y₂)] :
+  Nonempty (Y₁ ≅ Y₂) , (Obj : Type*) [Category.Obj.Obj Obj] [Category.Terminal Obj] (T₁ T₂ : Obj) :
+  unique (T₁ ⟶ T₂) , (C : Type u) [category_theory.Category C]
+ (T₁ T₂ : C) [category_theory.Limits.IsTerminal T₁] [category_theory.Limits.IsTerminal T₂] :
+ unique (T₁ ≅ T₂) , (Obj : Type) [Category Obj] (T₁ T₂ : Obj) [TerminalObj T₁] [TerminalObj T₂] :
+  unique (T₁ ≅ T₂) ]
+
+total : 16
+
+elaborated: 12
+
+success
+
+theorem ∀ (X : Type u_12) (A B : Set X), (A ∪ B)ᶜ = Aᶜ ∩ Bᶜ
+
+total : 17
+
+elaborated: 13
+
+success
+
+theorem ∀ (n m k : ℕ), n > 0 → m > 0 → n ^ 3 + m ^ 3 ≠ k ^ 3
+
+total : 18
+
+elaborated: 14
+
+success
+
+theorem ∀ (G : Type u_12) [inst : Group G], (∀ (g : G), g * g = 1) → ∀ (x y : G), x * y = y * x
+
+total : 19
+
+elaborated: 15
+
+success
+
+theorem ∀ (n : ℕ), n * (n + 1) % 2 = 0
+
+total : 20
+
+elaborated: 16
+
+No valid output from LLM; outputs below
+
+(G : Type*) [ GroupCat G] (H : Subgroup G) (hH : Fintype.card (G ⧸ H) = 2) :
+ Subgroup.Normal H 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [Subgroup H] (h2 :  Fintype.card H =  Fintype.card G / 2) :
+ Subgroup.Normal (Subgroup.mk H) 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [hH : Subgroup G H] (hH2 : Fintype.card H = Fintype.card G / 2) : IsNormalSubgroup H 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [hH : Subgroup G H] (idx_two : Subgroup.index H = 2) :
+ Subgroup.Normal hH 
+
+<input>:2:50: expected '↦', '=>' while parsing (G : Type*) [Group G] (H : Set G) (h2 : ∀ x : G, x ∈ H ∨ x⁻¹ ∈ H) (hH : ∀ x y : G, x ∈ H → y ∈ H → x * y ∈ H) :
+  Subgroup.Normal (Subgroup.mk H hH (h2 1) (λ x hx, h2 x⁻¹ (hx⁻¹))) 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [k : IsSubgroup H] (h2 : Fintype.card H = Fintype.card G / 2) : IsNormalSubgroup H 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [hH : IsSubgroup H] (in2 : Fintype.card H = Fintype.card G / 2) :
+  IsNormalSubgroup H 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [hH : Subgroup G H] (h2 : Fintype.card H = Fintype.card G / 2) : Subgroup.Normal H 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [Subgroup G H] (h2 : ∀ x : G, x ∈ H ∨ x * x ∈ H) :
+  ∀ n g : G, (g * n * g⁻¹) ∈ H ↔ n ∈ H 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [Subgroup H] (hH : Fintype.card H = Fintype.card G / 2) : Normal H 
+
+failed to elaborate
+
+outputs: #[(G : Type*) [Group G] (H : Subgroup G) (hH : Fintype.card (G ⧸ H) = 2) :
+ Subgroup.Normal H , (G : Type*) [Group G] (H : Set G) [Subgroup H] (h2 : fintype.card H = fintype.card G / 2) :
+ Subgroup.Normal (Subgroup.mk H) , (G : Type*) [Group G] (H : Set G) [hH : Subgroup G H] (hH2 : Fintype.card H = Fintype.card G / 2) : IsNormalSubgroup H , (G : Type*) [Group G] (H : Set G) [hH : Subgroup G H] (idx_two : Subgroup.index H = 2) :
+ Subgroup.Normal hH , (G : Type*) [Group G] (H : Set G) (h2 : ∀ x : G, x ∈ H ∨ x⁻¹ ∈ H) (hH : ∀ x y : G, x ∈ H → y ∈ H → x * y ∈ H) :
+  Subgroup.Normal (Subgroup.mk H hH (h2 1) (λ x hx, h2 x⁻¹ (hx⁻¹))) , (G : Type*) [Group G] (H : Set G) [k : IsSubgroup H] (h2 : Fintype.card H = Fintype.card G / 2) : IsNormalSubgroup H , (G : Type*) [Group G] (H : Set G) [hH : IsSubgroup H] (in2 : Fintype.card H = Fintype.card G / 2) :
+  IsNormalSubgroup H , (G : Type*) [Group G] (H : Set G) [hH : Subgroup G H] (h2 : Fintype.card H = Fintype.card G / 2) : Subgroup.Normal H , (G : Type*) [Group G] (H : Set G) [Subgroup G H] (h2 : ∀ x : G, x ∈ H ∨ x * x ∈ H) :
+  ∀ n g : G, (g * n * g⁻¹) ∈ H ↔ n ∈ H , (G : Type*) [Group G] (H : Set G) [Subgroup H] (hH : Fintype.card H = Fintype.card G / 2) : Normal H ]
+
+total : 21
+
+elaborated: 16
+
+success
+
+theorem ∀ (G : Type u_12) [inst : Group G] [inst_1 : IsFreeGroup G] (x : G), x ≠ 1 → ∃ n, n ≠ 0 ∧ x ^ n ≠ 1
+
+total : 22
+
+elaborated: 17
+
+success
+
+theorem ∀ (n : ℕ), n > 1 → ∃ p, Nat.Prime p ∧ p ∣ n
+
+total : 23
+
+elaborated: 18
+
+success
+
+theorem (G : Type u_12) →
+  [inst : Group G] →
+    [inst_1 : Fintype G] → (∀ (g : G), g ≠ 1 → ∃ n, g ^ n = 1) → (∀ (g : G) (n : ℕ), g ^ n = 1 → g = 1) → G ≃ Unit
+
+total : 24
+
+elaborated: 19
+
+success
+
+theorem (G : Type u_12) → [inst : DivisionRing G] → [inst : Fintype G] → Field G
+
+total : 25
+
+elaborated: 20
+
+success
+
+theorem ∀ (X : Type u_12) [inst : TopologicalSpace X] [inst_1 : Fintype X], CompactSpace X
+
+total : 26
+
+elaborated: 21
+
+success
+
+theorem ∀ (G : Type u_12) [inst : Group G] [inst_1 : Fintype G] (f : G →* G), Function.Surjective ↑f → Function.Injective ↑f
+
+total : 27
+
+elaborated: 22
+
+success
+
+theorem ∀ (n : ℕ), 2 ≤ n → n % 2 = 0 → ∃ p q, Prime p ∧ Prime q ∧ n = p + q
+
+total : 28
+
+elaborated: 23
+
+No valid output from LLM; outputs below
+
+(X : Type*) [ RingCat X] (A : Matrix n n X) :
+ Matrix.det (A - Matrix.scalar n (Matrix.charpoly A).X) = 0 
+
+(X : Type*) [ RingCat X] (A : Matrix n n X) :
+  Polynomial.eval A (Matrix.charpoly A) = 0 
+
+(X : Type*) [ RingCat X] (A : Matrix (Fin n) (Fin n) X) :
+  (Matrix.charpoly A).eval (Matrix.eval A) = 0 
+
+(X : Type*) [ FintypeCat X] [DecidableEq X] (R : Type*) [ CommRingCat R] (A : Matrix X X R) :
+  (Matrix.charpoly A).eval A = 0 
+
+(X : Type*) [ RingCat X] (n : ℕ) (A : Matrix (Fin n) (Fin n) X) :
+  Polynomial.eval A (Matrix.charpoly A) = 0 
+
+(X : Type*) [ FintypeCat X] [DecidableEq X] (R : Type*) [ CommRingCat R] (A : Matrix X X R) :
+  Polynomial.eval A (Matrix.charpoly A) = 0 
+
+(X : Type*) [ RingCat X] (M : Matrix n n X) : 
+Matrix.charpoly M M = 0 
+
+(X : Type*) [ FintypeCat X] [DecidableEq X] [ CommRingCat R] (M : Matrix X X R) : 
+Matrix.charpoly M • M = Matrix.adjugate M * Matrix.charpoly M 
+
+(X : Type*) [ FintypeCat X] [DecidableEq X] [ CommRingCat R] (A : Matrix X X R) :
+  Polynomial.eval (A : Matrix X X R) (Matrix.charpoly A) = 0 
+
+(X : Type*) [ FintypeCat X] [DecidableEq X] (R : Type*) [ CommRingCat R] (A : Matrix X X R) :
+  Polynomial.eval A (Matrix.charpoly A) = Zero.zero 
+
+failed to elaborate
+
+outputs: #[(X : Type*) [Ring X] (A : Matrix n n X) :
+ Matrix.det (A - Matrix.scalar n (Matrix.charpoly A).X) = 0 , (X : Type*) [Ring X] (A : Matrix n n X) :
+  Polynomial.eval A (Matrix.charpoly A) = 0 , (X : Type*) [Ring X] (A : Matrix (Fin n) (Fin n) X) :
+  (Matrix.charpoly A).eval (Matrix.eval A) = 0 , (X : Type*) [Fintype X] [DecidableEq X] (R : Type*) [CommRing R] (A : Matrix X X R) :
+  (Matrix.charpoly A).eval A = 0 , (X : Type*) [Ring X] (n : ℕ) (A : Matrix (Fin n) (Fin n) X) :
+  Polynomial.eval A (Matrix.charpoly A) = 0 , (X : Type*) [Fintype X] [DecidableEq X] (R : Type*) [CommRing R] (A : Matrix X X R) :
+  Polynomial.eval A (Matrix.charpoly A) = 0 , (X : Type*) [Ring X] (M : Matrix n n X) : 
+Matrix.charpoly M M = 0 , (X : Type*) [Fintype X] [DecidableEq X] [CommRing R] (M : Matrix X X R) : 
+Matrix.charpoly M • M = Matrix.adjugate M * Matrix.charpoly M , (X : Type*) [Fintype X] [DecidableEq X] [CommRing R] (A : Matrix X X R) :
+  Polynomial.eval (A : Matrix X X R) (Matrix.charpoly A) = 0 , (X : Type*) [Fintype X] [DecidableEq X] (R : Type*) [CommRing R] (A : Matrix X X R) :
+  Polynomial.eval A (Matrix.charpoly A) = Zero.zero ]
+
+total : 29
+
+elaborated: 23
+
+No valid output from LLM; outputs below
+
+<input>:1:72: unexpected end of input while parsing (sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :
+
+<input>:1:46: expected end of input while parsing (sqrt_irrational {x : ℝ} (hx : Irrational x)) : Irrational (Real.sqrt x) 
+
+<input>:1:70: unexpected end of input while parsing (sqrt_irrational : ∀ x : ℝ, Irrational x → Irrational (Real.sqrt x)) :
+
+<input>:1:72: unexpected end of input while parsing (sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :
+
+<input>:1:72: unexpected end of input while parsing (sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :
+
+<input>:1:72: unexpected end of input while parsing (sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :
+
+<input>:1:70: unexpected end of input while parsing (sqrt_irrational : ∀ x : ℝ, Irrational x → Irrational (Real.sqrt x)) :
+
+<input>:1:72: unexpected end of input while parsing (sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :
+
+<input>:1:72: unexpected end of input while parsing (sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :
+
+<input>:1:72: unexpected end of input while parsing (sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :
+
+failed to elaborate
+
+outputs: #[(sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :, (sqrt_irrational {x : ℝ} (hx : Irrational x)) : Irrational (Real.sqrt x) , (sqrt_irrational : ∀ x : ℝ, Irrational x → Irrational (Real.sqrt x)) :, (sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :, (sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :, (sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :, (sqrt_irrational : ∀ x : ℝ, Irrational x → Irrational (Real.sqrt x)) :, (sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :, (sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :, (sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :]
+
+total : 30
+
+elaborated: 23
+
+success
+
+theorem ∀ (n : ℕ), n ^ 2 % 2 = 0 → n % 2 = 0
+
+total : 31
+
+elaborated: 24
+
+success
+
+theorem ∀ (G : Type u_12) [inst : CommRing G] [inst_1 : Fintype G] (P : Ideal G) [hP : Ideal.IsPrime P], Ideal.IsMaximal P
+
+total : 32
+
+elaborated: 25
+
+success
+
+theorem ∀ (X : Type u_12) [inst : TopologicalSpace X], T2Space X ↔ IsClosed {p | p.fst = p.snd}
+
+total : 33
+
+elaborated: 26
+
+success
+
+theorem ∀ (X : Type u_12) [inst : TopologicalSpace X] (B : Set X), (∀ (x : X), x ∈ B → ∃ U, IsOpen U ∧ x ∈ U ∧ U ⊆ B) → IsOpen B
+
+total : 34
+
+elaborated: 27
+
+success
+
+theorem ∀ (G : Type u_12) [inst : Group G] [inst_1 : IsFreeGroup G] (x : G), x ≠ 1 → ∀ (n : ℕ), x ^ n ≠ 1
+
+total : 35
+
+elaborated: 28
+
+No valid output from LLM; outputs below
+
+(DVR : Type*) [IntegralDomain DVR] [IsPrincipalIdealRing DVR]
+( Valuation : DVR → ℕ) (hDVR : DiscreteValuationRing  Valuation ) (x : DVR) :
+( IsUnit x) ↔ ( Valuation x = 0) 
+
+(dvr : Type*) [IntegralDomain dvr] [DiscreteValuationRing dvr] (x : dvr) :
+  IsUnit x ↔ DiscreteValuationRing.valuation x = 0 
+
+(DVR : Type*) [IntegralDomain DVR] [DiscreteValuationRing DVR] (x : DVR) :
+ (x ≠ 0 ∧ ∀ n : ℕ, x ∣ x ^ n) ↔ DiscreteValuationRing.valuation x = 0 
+
+(X : Type*) [IntegralDomain X] [DiscreteValuationRing X] [IsPrincipalIdealRing X]
+ (x : X) (hx : x ≠ 0) :
+ IsUnit x ↔ DiscreteValuationRing.valuation X x = 0 
+
+( DiscreteValuationRing : Type*) [IntegralDomain  DiscreteValuationRing ] [IsDiscreteValuationRing  DiscreteValuationRing ]
+( Valuation :  DiscreteValuationRing → ℕ) (a :  DiscreteValuationRing ) :
+  IsUnit a ↔  Valuation a = 0 
+
+(DVR : Type*) [IntegralDomain DVR] [IsDVR DVR] (x : DVR) :
+   IsUnit x ↔ Valuation.valuation x = 0 
+
+(dvr : Type*) [IntegralDomain dvr] [DiscreteValuationRing dvr] (x : dvr) :
+  IsUnit x ↔ DiscreteValuationRing.valuation x = 0 
+
+(dvr : Type*) [IntegralDomain dvr] [IsPrincipalIdealRing dvr] [IsDiscreteValuationRing dvr] (a : dvr) :
+  a ∈ Units dvr ↔ IsDiscreteValuationRing.valuation a = 0 
+
+(G : Type*) [DiscreteValuationRing G] (x : G) :
+  IsUnit x ↔ DiscreteValuationRing.valuation x = 0 
+
+(D : Type*) [IntegralDomain D] [IsDiscreteValuationRing D] (x : D) :
+  IsUnit x ↔ (∀ (v : Valuation D ℝ≥0), ⇑v x = 0) 
+
+failed to elaborate
+
+outputs: #[(DVR : Type*) [IntegralDomain DVR] [IsPrincipalIdealRing DVR]
+(valuation : DVR → ℕ) (hDVR : DiscreteValuationRing valuation) (x : DVR) :
+(is_unit x) ↔ (valuation x = 0) , (dvr : Type*) [IntegralDomain dvr] [DiscreteValuationRing dvr] (x : dvr) :
+  IsUnit x ↔ DiscreteValuationRing.valuation x = 0 , (DVR : Type*) [IntegralDomain DVR] [DiscreteValuationRing DVR] (x : DVR) :
+ (x ≠ 0 ∧ ∀ n : ℕ, x ∣ x ^ n) ↔ DiscreteValuationRing.valuation x = 0 , (X : Type*) [IntegralDomain X] [DiscreteValuationRing X] [IsPrincipalIdealRing X]
+ (x : X) (hx : x ≠ 0) :
+ IsUnit x ↔ DiscreteValuationRing.valuation X x = 0 , (discrete_valuation_ring : Type*) [IntegralDomain discrete_valuation_ring] [IsDiscreteValuationRing discrete_valuation_ring]
+(valuation : discrete_valuation_ring → ℕ) (a : discrete_valuation_ring) :
+  IsUnit a ↔ valuation a = 0 , (DVR : Type*) [IntegralDomain DVR] [IsDVR DVR] (x : DVR) :
+   IsUnit x ↔ Valuation.valuation x = 0 , (dvr : Type*) [IntegralDomain dvr] [DiscreteValuationRing dvr] (x : dvr) :
+ is_unit x ↔ DiscreteValuationRing.valuation x = 0 , (dvr : Type*) [IntegralDomain dvr] [IsPrincipalIdealRing dvr] [IsDiscreteValuationRing dvr] (a : dvr) :
+  a ∈ Units dvr ↔ IsDiscreteValuationRing.valuation a = 0 , (G : Type*) [DiscreteValuationRing G] (x : G) :
+  IsUnit x ↔ DiscreteValuationRing.valuation x = 0 , (D : Type*) [IntegralDomain D] [IsDiscreteValuationRing D] (x : D) :
+  IsUnit x ↔ (∀ (v : Valuation D ℝ≥0), ⇑v x = 0) ]
+
+total : 36
+
+elaborated: 28
+
+success
+
+theorem ∀ (N₀ a b : ℕ), Nat.coprime a b → ∀ (N : ℕ), N ≥ N₀ → ∃ x y, N = a * x + b * y
+
+total : 37
+
+elaborated: 29
+
+success
+
+theorem (X : Type u_12) → [inst : Field X] → Ring X
+
+total : 38
+
+elaborated: 30
+
+success
+
+theorem (G : Type u_12) → [inst : Ring G] → Group Gˣ
+
+total : 39
+
+elaborated: 31
+
+Writing to file: thm-elab-10-false-5-8.json
+
+No valid output from LLM; outputs below
+
+(X : Type*) [TopologicalSpace X] (h : ∀ (A :  ZFSet X), IsClosed A ∧ A ≠ univ → IsCompact A) :
+IsCompact (univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀ C :  ZFSet X, IsClosed C → C ≠ univ → IsCompact C) : IsCompact (univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀ C :  ZFSet X, IsClosed C → C ≠ Set.Univ → IsCompact C) : IsCompact (Set.Univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀ A :  ZFSet X, IsClosed A → A ≠ univ → IsCompact A) :
+IsCompact (univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀ (C :  ZFSet X), IsClosed C ∧ C ≠ univ → IsCompact C) :
+IsCompact (univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀ (A :  ZFSet X), IsClosed A → A ≠ univ → IsCompact A) :
+IsCompact (univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀ C :  ZFSet X, IsClosed C ∧ C ≠ univ → IsCompact C) : IsCompact (univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀ A :  ZFSet X, IsClosed A → A ≠ univ → IsCompact A) : IsCompact (univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀ C :  ZFSet X, IsClosed C ∧ C ≠ Set.Univ → IsCompact C) :
+IsCompact (Set.Univ :  ZFSet X) 
+
+(X : Type*) [TopologicalSpace X] (h : ∀C :  ZFSet X, C ≠ univ → IsClosed C → IsCompact C) :
+IsCompact (univ :  ZFSet X) 
+
+failed to elaborate
+
+outputs: #[(X : Type*) [TopologicalSpace X] (h : ∀ (A : Set X), IsClosed A ∧ A ≠ univ → IsCompact A) :
+IsCompact (univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀ C : Set X, IsClosed C → C ≠ univ → IsCompact C) : IsCompact (univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀ C : Set X, IsClosed C → C ≠ Set.Univ → IsCompact C) : IsCompact (Set.Univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀ A : Set X, IsClosed A → A ≠ univ → IsCompact A) :
+IsCompact (univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀ (C : Set X), IsClosed C ∧ C ≠ univ → IsCompact C) :
+IsCompact (univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀ (A : Set X), IsClosed A → A ≠ univ → IsCompact A) :
+IsCompact (univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀ C : Set X, IsClosed C ∧ C ≠ univ → IsCompact C) : IsCompact (univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀ A : Set X, IsClosed A → A ≠ univ → IsCompact A) : IsCompact (univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀ C : Set X, IsClosed C ∧ C ≠ Set.Univ → IsCompact C) :
+IsCompact (Set.Univ : Set X) , (X : Type*) [TopologicalSpace X] (h : ∀C : Set X, C ≠ univ → IsClosed C → IsCompact C) :
+IsCompact (univ : Set X) ]
+
+total : 1
+
+elaborated: 0
+
+success
+
+theorem ∀ (n : ℕ) [inst : Fact (Nat.Prime n)], n % 4 = 1 → ∃ a b, a ^ 2 + b ^ 2 = n
+
+total : 2
+
+elaborated: 1
+
+success
+
+theorem ∀ (n m : ℕ), ∃ a b c d, n * m = a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2
+
+total : 3
+
+elaborated: 2
+
+success
+
+theorem ∀ (idem_ring : Type u_12) [inst : Ring idem_ring], (∀ (a : idem_ring), a * a = a) → ∀ (x y : idem_ring), x * y = y * x
+
+total : 4
+
+elaborated: 3
+
+success
+
+theorem ∃ P, ∀ (n : ℕ), Prime (P n) ∧ Prime (P n + 2)
+
+total : 5
+
+elaborated: 4
+
+success
+
+theorem (G : Type u_12) → [inst : DivisionRing G] → [inst : Fintype G] → Field G
+
+total : 6
+
+elaborated: 5
+
+success
+
+theorem ∀ (X : Type u_12) (Y : Type u_13) (f : X → Y) (g : Y → X), Function.Injective f → Function.Injective g → ∃ h, True
+
+total : 7
+
+elaborated: 6
+
+success
+
+theorem ∀ (Vertices : Type u_12) [inst : Fintype Vertices] [inst : DecidableEq Vertices] (Edges : Vertices → Vertices → Prop),
+  (∀ (x y : Vertices), x ≠ y → ∃! z, Edges x z ∧ Edges y z) → ∃ v, ∀ (w : Vertices), w ≠ v → Edges v w
+
+total : 8
+
+elaborated: 7
+
+success
+
+theorem ∀ (partitions_with_odd_parts partitions_with_distinct_parts : ℕ → ℕ) (n : ℕ),
+  partitions_with_odd_parts n = partitions_with_distinct_parts n
+
+total : 9
+
+elaborated: 8
+
+No valid output from LLM; outputs below
+
+(Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀ C :  ZFSet Zorn, Chain C → ∃ ub, ∀ a ∈ C, a ≤ ub) :
+ ∃ m : Zorn, ∀ a : Zorn, m ≠ a → m < a 
+
+<input>:2:46: expected ')', '↑', '↥', '⇑' or term while parsing (Zorn : Type*) [PartialOrder Zorn] (S : Set Zorn) (hS : Set.Nonempty S)
+ (h_upper : ∀ (chain : Set Zorn), Zorn.Chain (≤) chain → ∃ s ∈ S, ∀ c ∈ chain, c ≤ s) :
+ ∃ m ∈ S, ∀ s ∈ S, m ≤ s → s = m 
+
+(Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn)
+ (hchain : ∀ (c :  ZFSet Zorn), Chain HasSubset.Subset c → ∃ ub, ∀ a ∈ c, a ≤ ub) :
+ ∃ m : Zorn, ∀ a, m ≤ a → a = m 
+
+(Zorn : Type*) [PartialOrder Zorn] (Hne : Nonempty Zorn)
+ (H : ∀c :  ZFSet Zorn, Chain c → c.nonempty → ∃ub, ∀a ∈ c, a ≤ ub) :
+ ∃m : Zorn, ∀a, m < a → False 
+
+<input>:2:51: expected ',' while parsing (Zorn : Type*) (le : Zorn → Zorn → Prop)
+ [PartialOrder Zorn] (h : ∀ C : Set Zorn, (∀ z1 z2 ∈ C, le z1 z2 ∨ le z2 z1) → (∃ z_ub ∈ C, ∀ z ∈ C, le z z_ub)) :
+ ∃ m : Zorn, ∀ z : Zorn, ¬(le m z ∧ ¬(le z m)) 
+
+(Zorn : Type*) [PartialOrder Zorn]
+(hne : Nonempty Zorn) (hchain : ∀ C :  ZFSet Zorn, Chain C → ∃ ub, ∀ c ∈ C, c ≤ ub) :
+∃ m : Zorn, ∀ z : Zorn, m ≠ z → z ≤ m → False 
+
+(Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀ C :  ZFSet Zorn, IsChain C → ∃ ub, IsUpperBound C ub) :
+∃ m : Zorn, ∀ x : Zorn, m ≠ x → x < m 
+
+(Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀(c :  ZFSet Zorn), Chain c → c.nonempty → ∃ ub, ∀ a ∈ c, a ≤ ub) :
+∃ m : Zorn, ∀ a, m ≤ a → a = m 
+
+(Z : Type*) [Preorder Z] [Inhabited Z] (h : ∀ C :  ZFSet Z, C.nonempty → Chain Z → UpperBounds C.nonempty) :
+ ∃ m : Z, ∀ z : Z, m ≤ z → z = m 
+
+(Zorn's Lemma) (P : Type*) [PartialOrder P] (hne : Nonempty P) (hchain : ∀ (c :  ZFSet P), Chain c → ∃ ub, ∀ a ∈ c, a ≤ ub) :
+∃ m : P, ∀ a, m ≤ a → a = m 
+
+failed to elaborate
+
+outputs: #[(Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀ C : Set Zorn, Chain C → ∃ ub, ∀ a ∈ C, a ≤ ub) :
+ ∃ m : Zorn, ∀ a : Zorn, m ≠ a → m < a , (Zorn : Type*) [PartialOrder Zorn] (S : Set Zorn) (hS : Set.Nonempty S)
+ (h_upper : ∀ (chain : Set Zorn), Zorn.Chain (≤) chain → ∃ s ∈ S, ∀ c ∈ chain, c ≤ s) :
+ ∃ m ∈ S, ∀ s ∈ S, m ≤ s → s = m , (Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn)
+ (hchain : ∀ (c : Set Zorn), Chain HasSubset.Subset c → ∃ ub, ∀ a ∈ c, a ≤ ub) :
+ ∃ m : Zorn, ∀ a, m ≤ a → a = m , (Zorn : Type*) [PartialOrder Zorn] (Hne : Nonempty Zorn)
+ (H : ∀c : Set Zorn, Chain c → c.nonempty → ∃ub, ∀a ∈ c, a ≤ ub) :
+ ∃m : Zorn, ∀a, m < a → False , (Zorn : Type*) (le : Zorn → Zorn → Prop)
+ [PartialOrder Zorn] (h : ∀ C : Set Zorn, (∀ z1 z2 ∈ C, le z1 z2 ∨ le z2 z1) → (∃ z_ub ∈ C, ∀ z ∈ C, le z z_ub)) :
+ ∃ m : Zorn, ∀ z : Zorn, ¬(le m z ∧ ¬(le z m)) , (Zorn : Type*) [PartialOrder Zorn]
+(hne : Nonempty Zorn) (hchain : ∀ C : Set Zorn, Chain C → ∃ ub, ∀ c ∈ C, c ≤ ub) :
+∃ m : Zorn, ∀ z : Zorn, m ≠ z → z ≤ m → False , (Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀ C : Set Zorn, IsChain C → ∃ ub, IsUpperBound C ub) :
+∃ m : Zorn, ∀ x : Zorn, m ≠ x → x < m , (Zorn : Type*) [PartialOrder Zorn] (hne : Nonempty Zorn) (hchain : ∀(c : Set Zorn), Chain c → c.nonempty → ∃ ub, ∀ a ∈ c, a ≤ ub) :
+∃ m : Zorn, ∀ a, m ≤ a → a = m , (Z : Type*) [Preorder Z] [Inhabited Z] (h : ∀ C : Set Z, C.nonempty → Chain Z → UpperBounds C.nonempty) :
+ ∃ m : Z, ∀ z : Z, m ≤ z → z = m , (Zorn's Lemma) (P : Type*) [PartialOrder P] (hne : Nonempty P) (hchain : ∀ (c : Set P), Chain c → ∃ ub, ∀ a ∈ c, a ≤ ub) :
+∃ m : P, ∀ a, m ≤ a → a = m ]
+
+total : 10
+
+elaborated: 8
+
+No valid output from LLM; outputs below
+
+(G : Type*) [ GroupCat G] [ FintypeCat (Aut G)] (h_aut_cyclic : ∃ g : Aut G, ∀ x : Aut G, ∃ n : ℕ, g ^ n = x) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (hAut : ∃ g : Aut G, ∀ h : Aut G, ∃ n : ℤ, h = g ^ n) : IsAbelian G 
+
+(G : Type*) [ GroupCat G] (h_aut_cyclic : ∃ x : Aut G, ∀ y : Aut G, ∃ n : ℤ, y = x ^ n) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (h : IsCyclic (Aut G)) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (hAut : IsCyclic (Aut G)) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (autG_cyclic : ∃ g : Aut G, ∀ x : Aut G, ∃ n : ℤ, x = g ^ n) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (h_aut : ∃ g : Aut G, ∀ φ : Aut G, ∃ n : ℤ, φ = g ^ n) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (hAut : IsCyclic (Aut G)) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (h_auto_cyclic : ∃ (ϕ : G ≃* G), ∀ (ψ : G ≃* G), ∃ (n : ℤ), (ψ = ϕ ^ n)) : IsCommutative G 
+
+(G : Type*) [ GroupCat G] (hAut : ∃ a : Aut G, ∀ b : Aut G, ∃ n : ℤ, b = a ^ n) : IsCommutative G 
+
+failed to elaborate
+
+outputs: #[(G : Type*) [Group G] [Fintype (Aut G)] (h_aut_cyclic : ∃ g : Aut G, ∀ x : Aut G, ∃ n : ℕ, g ^ n = x) : IsCommutative G , (G : Type*) [Group G] (hAut : ∃ g : Aut G, ∀ h : Aut G, ∃ n : ℤ, h = g ^ n) : IsAbelian G , (G : Type*) [Group G] (h_aut_cyclic : ∃ x : Aut G, ∀ y : Aut G, ∃ n : ℤ, y = x ^ n) : IsCommutative G , (G : Type*) [Group G] (h : IsCyclic (Aut G)) : IsCommutative G , (G : Type*) [Group G] (hAut : IsCyclic (Aut G)) : IsCommutative G , (G : Type*) [Group G] (autG_cyclic : ∃ g : Aut G, ∀ x : Aut G, ∃ n : ℤ, x = g ^ n) : IsCommutative G , (G : Type*) [Group G] (h_aut : ∃ g : Aut G, ∀ φ : Aut G, ∃ n : ℤ, φ = g ^ n) : IsCommutative G , (G : Type*) [Group G] (hAut : IsCyclic (Aut G)) : IsCommutative G , (G : Type*) [Group G] (h_auto_cyclic : ∃ (ϕ : G ≃* G), ∀ (ψ : G ≃* G), ∃ (n : ℤ), (ψ = ϕ ^ n)) : IsCommutative G , (G : Type*) [Group G] (hAut : ∃ a : Aut G, ∀ b : Aut G, ∃ n : ℤ, b = a ^ n) : IsCommutative G ]
+
+total : 11
+
+elaborated: 8
+
+success
+
+theorem ∀ (X : Type u_12) (Y : Type u_13) (Z : Type u_14) [inst : UniformSpace X] [inst_1 : UniformSpace Y]
+  [inst_2 : UniformSpace Z] (f : X → Y) (g : Y → Z),
+  UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f)
+
+total : 12
+
+elaborated: 9
+
+success
+
+theorem ∀ (X : Type u_12) (Y : Type u_13) (Z : Type u_14) [inst : UniformSpace X] [inst_1 : UniformSpace Y]
+  [inst_2 : UniformSpace Z] (f : X → Y) (g : Y → Z),
+  UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f)
+
+total : 13
+
+elaborated: 10
+
+success
+
+theorem ∀ (X : Type u_12) [inst : TopologicalSpace X],
+  NormalSpace X ↔
+    ∀ (A B : Set X),
+      IsClosed A →
+        IsClosed B → Disjoint A B → ∃ f, Continuous f ∧ (∀ (a : X), a ∈ A → f a = 0) ∧ ∀ (b : X), b ∈ B → f b = 1
+
+total : 14
+
+elaborated: 11
+
+success
+
+theorem ∀ (unit_interval : Type u_12) [inst : LinearOrderedField unit_interval] [inst_1 : TopologicalSpace unit_interval]
+  [inst_2 : OrderTopology unit_interval] [inst_3 : TopologicalRing unit_interval] (f : unit_interval → unit_interval),
+  Continuous f → ∀ (x₀ : unit_interval), f (f (f x₀)) = x₀ → ∀ (n : ℕ), ∃ x, (f ^ n) x = x
+
+total : 15
+
+elaborated: 12
+
+No valid output from LLM; outputs below
+
+(CategoryTheory.Category C) [i : CategoryTheory.Limits.HasTerminal C] :
+  ∀ (X Y : C) (hX : CategoryTheory.Limits.IsTerminal X) (hY : CategoryTheory.Limits.IsTerminal Y),
+  Nonempty (X ≅ Y) 
+
+(C : Type*) [Category C] (T1 T2 : C) [T1_terminal : IsTerminal T1] [T2_terminal : IsTerminal T2] :
+ Unique (T1 ≅ T2) 
+
+{C : Type*} [category C] (T₁ T₂ : C)
+(hT₁ : is_terminal T₁) (hT₂ : is_terminal T₂) :
+ Unique (T₁ ≅ T₂) 
+
+[category_theory.terminal_is_unique] {C : Type*} [category C] [has_terminal C] :
+ Unique (terminal C) 
+
+{C : Type*} [Category C] [has_terminal C] :  Unique (terminal C) 
+
+(X Y : C) [terminal X] [terminal Y] :
+   Unique (X ≅ Y) 
+
+{C : Type*} [Category C] [Inhabited C]
+  (Y₁ Y₂ : C) [∀ Z : C, Unique (Z ⟶ Y₁)] [∀ Z : C, Unique (Z ⟶ Y₂)] :
+  Nonempty (Y₁ ≅ Y₂) 
+
+(Obj : Type*) [Category.Obj.Obj Obj] [Category.Terminal Obj] (T₁ T₂ : Obj) :
+   Unique (T₁ ⟶ T₂) 
+
+(C : Type u) [category_theory.Category C]
+ (T₁ T₂ : C) [category_theory.Limits.IsTerminal T₁] [category_theory.Limits.IsTerminal T₂] :
+  Unique (T₁ ≅ T₂) 
+
+(Obj : Type) [Category Obj] (T₁ T₂ : Obj) [TerminalObj T₁] [TerminalObj T₂] :
+   Unique (T₁ ≅ T₂) 
+
+failed to elaborate
+
+outputs: #[(CategoryTheory.Category C) [i : CategoryTheory.Limits.HasTerminal C] :
+  ∀ (X Y : C) (hX : CategoryTheory.Limits.IsTerminal X) (hY : CategoryTheory.Limits.IsTerminal Y),
+  Nonempty (X ≅ Y) , (C : Type*) [Category C] (T1 T2 : C) [T1_terminal : IsTerminal T1] [T2_terminal : IsTerminal T2] :
+unique (T1 ≅ T2) , {C : Type*} [category C] (T₁ T₂ : C)
+(hT₁ : is_terminal T₁) (hT₂ : is_terminal T₂) :
+unique (T₁ ≅ T₂) , [category_theory.terminal_is_unique] {C : Type*} [category C] [has_terminal C] :
+unique (terminal C) , {C : Type*} [Category C] [has_terminal C] : unique (terminal C) , (X Y : C) [terminal X] [terminal Y] :
+  unique (X ≅ Y) , {C : Type*} [Category C] [Inhabited C]
+  (Y₁ Y₂ : C) [∀ Z : C, Unique (Z ⟶ Y₁)] [∀ Z : C, Unique (Z ⟶ Y₂)] :
+  Nonempty (Y₁ ≅ Y₂) , (Obj : Type*) [Category.Obj.Obj Obj] [Category.Terminal Obj] (T₁ T₂ : Obj) :
+  unique (T₁ ⟶ T₂) , (C : Type u) [category_theory.Category C]
+ (T₁ T₂ : C) [category_theory.Limits.IsTerminal T₁] [category_theory.Limits.IsTerminal T₂] :
+ unique (T₁ ≅ T₂) , (Obj : Type) [Category Obj] (T₁ T₂ : Obj) [TerminalObj T₁] [TerminalObj T₂] :
+  unique (T₁ ≅ T₂) ]
+
+total : 16
+
+elaborated: 12
+
+success
+
+theorem ∀ (X : Type u_12) (A B : Set X), (A ∪ B)ᶜ = Aᶜ ∩ Bᶜ
+
+total : 17
+
+elaborated: 13
+
+success
+
+theorem ∀ (n m k : ℕ), n > 0 → m > 0 → n ^ 3 + m ^ 3 ≠ k ^ 3
+
+total : 18
+
+elaborated: 14
+
+success
+
+theorem ∀ (G : Type u_12) [inst : Group G], (∀ (g : G), g * g = 1) → ∀ (x y : G), x * y = y * x
+
+total : 19
+
+elaborated: 15
+
+success
+
+theorem ∀ (n : ℕ), n * (n + 1) % 2 = 0
+
+total : 20
+
+elaborated: 16
+
+No valid output from LLM; outputs below
+
+(G : Type*) [ GroupCat G] (H : Subgroup G) (hH : Fintype.card (G ⧸ H) = 2) :
+ Subgroup.Normal H 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [Subgroup H] (h2 :  Fintype.card H =  Fintype.card G / 2) :
+ Subgroup.Normal (Subgroup.mk H) 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [hH : Subgroup G H] (hH2 : Fintype.card H = Fintype.card G / 2) : IsNormalSubgroup H 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [hH : Subgroup G H] (idx_two : Subgroup.index H = 2) :
+ Subgroup.Normal hH 
+
+<input>:2:50: expected '↦', '=>' while parsing (G : Type*) [Group G] (H : Set G) (h2 : ∀ x : G, x ∈ H ∨ x⁻¹ ∈ H) (hH : ∀ x y : G, x ∈ H → y ∈ H → x * y ∈ H) :
+  Subgroup.Normal (Subgroup.mk H hH (h2 1) (λ x hx, h2 x⁻¹ (hx⁻¹))) 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [k : IsSubgroup H] (h2 : Fintype.card H = Fintype.card G / 2) : IsNormalSubgroup H 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [hH : IsSubgroup H] (in2 : Fintype.card H = Fintype.card G / 2) :
+  IsNormalSubgroup H 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [hH : Subgroup G H] (h2 : Fintype.card H = Fintype.card G / 2) : Subgroup.Normal H 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [Subgroup G H] (h2 : ∀ x : G, x ∈ H ∨ x * x ∈ H) :
+  ∀ n g : G, (g * n * g⁻¹) ∈ H ↔ n ∈ H 
+
+(G : Type*) [ GroupCat G] (H :  ZFSet G) [Subgroup H] (hH : Fintype.card H = Fintype.card G / 2) : Normal H 
+
+failed to elaborate
+
+outputs: #[(G : Type*) [Group G] (H : Subgroup G) (hH : Fintype.card (G ⧸ H) = 2) :
+ Subgroup.Normal H , (G : Type*) [Group G] (H : Set G) [Subgroup H] (h2 : fintype.card H = fintype.card G / 2) :
+ Subgroup.Normal (Subgroup.mk H) , (G : Type*) [Group G] (H : Set G) [hH : Subgroup G H] (hH2 : Fintype.card H = Fintype.card G / 2) : IsNormalSubgroup H , (G : Type*) [Group G] (H : Set G) [hH : Subgroup G H] (idx_two : Subgroup.index H = 2) :
+ Subgroup.Normal hH , (G : Type*) [Group G] (H : Set G) (h2 : ∀ x : G, x ∈ H ∨ x⁻¹ ∈ H) (hH : ∀ x y : G, x ∈ H → y ∈ H → x * y ∈ H) :
+  Subgroup.Normal (Subgroup.mk H hH (h2 1) (λ x hx, h2 x⁻¹ (hx⁻¹))) , (G : Type*) [Group G] (H : Set G) [k : IsSubgroup H] (h2 : Fintype.card H = Fintype.card G / 2) : IsNormalSubgroup H , (G : Type*) [Group G] (H : Set G) [hH : IsSubgroup H] (in2 : Fintype.card H = Fintype.card G / 2) :
+  IsNormalSubgroup H , (G : Type*) [Group G] (H : Set G) [hH : Subgroup G H] (h2 : Fintype.card H = Fintype.card G / 2) : Subgroup.Normal H , (G : Type*) [Group G] (H : Set G) [Subgroup G H] (h2 : ∀ x : G, x ∈ H ∨ x * x ∈ H) :
+  ∀ n g : G, (g * n * g⁻¹) ∈ H ↔ n ∈ H , (G : Type*) [Group G] (H : Set G) [Subgroup H] (hH : Fintype.card H = Fintype.card G / 2) : Normal H ]
+
+total : 21
+
+elaborated: 16
+
+success
+
+theorem ∀ (G : Type u_12) [inst : Group G] [inst_1 : IsFreeGroup G] (x : G), x ≠ 1 → ∃ n, n ≠ 0 ∧ x ^ n ≠ 1
+
+total : 22
+
+elaborated: 17
+
+success
+
+theorem ∀ (n : ℕ), n > 1 → ∃ p, Nat.Prime p ∧ p ∣ n
+
+total : 23
+
+elaborated: 18
+
+success
+
+theorem (G : Type u_12) →
+  [inst : Group G] →
+    [inst_1 : Fintype G] → (∀ (g : G), g ≠ 1 → ∃ n, g ^ n = 1) → (∀ (g : G) (n : ℕ), g ^ n = 1 → g = 1) → G ≃ Unit
+
+total : 24
+
+elaborated: 19
+
+success
+
+theorem (G : Type u_12) → [inst : DivisionRing G] → [inst : Fintype G] → Field G
+
+total : 25
+
+elaborated: 20
+
+success
+
+theorem ∀ (X : Type u_12) [inst : TopologicalSpace X] [inst_1 : Fintype X], CompactSpace X
+
+total : 26
+
+elaborated: 21
+
+success
+
+theorem ∀ (G : Type u_12) [inst : Group G] [inst_1 : Fintype G] (f : G →* G), Function.Surjective ↑f → Function.Injective ↑f
+
+total : 27
+
+elaborated: 22
+
+success
+
+theorem ∀ (n : ℕ), 2 ≤ n → n % 2 = 0 → ∃ p q, Prime p ∧ Prime q ∧ n = p + q
+
+total : 28
+
+elaborated: 23
+
+No valid output from LLM; outputs below
+
+(X : Type*) [ RingCat X] (A : Matrix n n X) :
+ Matrix.det (A - Matrix.scalar n (Matrix.charpoly A).X) = 0 
+
+(X : Type*) [ RingCat X] (A : Matrix n n X) :
+  Polynomial.eval A (Matrix.charpoly A) = 0 
+
+(X : Type*) [ RingCat X] (A : Matrix (Fin n) (Fin n) X) :
+  (Matrix.charpoly A).eval (Matrix.eval A) = 0 
+
+(X : Type*) [ FintypeCat X] [DecidableEq X] (R : Type*) [ CommRingCat R] (A : Matrix X X R) :
+  (Matrix.charpoly A).eval A = 0 
+
+(X : Type*) [ RingCat X] (n : ℕ) (A : Matrix (Fin n) (Fin n) X) :
+  Polynomial.eval A (Matrix.charpoly A) = 0 
+
+(X : Type*) [ FintypeCat X] [DecidableEq X] (R : Type*) [ CommRingCat R] (A : Matrix X X R) :
+  Polynomial.eval A (Matrix.charpoly A) = 0 
+
+(X : Type*) [ RingCat X] (M : Matrix n n X) : 
+Matrix.charpoly M M = 0 
+
+(X : Type*) [ FintypeCat X] [DecidableEq X] [ CommRingCat R] (M : Matrix X X R) : 
+Matrix.charpoly M • M = Matrix.adjugate M * Matrix.charpoly M 
+
+(X : Type*) [ FintypeCat X] [DecidableEq X] [ CommRingCat R] (A : Matrix X X R) :
+  Polynomial.eval (A : Matrix X X R) (Matrix.charpoly A) = 0 
+
+(X : Type*) [ FintypeCat X] [DecidableEq X] (R : Type*) [ CommRingCat R] (A : Matrix X X R) :
+  Polynomial.eval A (Matrix.charpoly A) = Zero.zero 
+
+failed to elaborate
+
+outputs: #[(X : Type*) [Ring X] (A : Matrix n n X) :
+ Matrix.det (A - Matrix.scalar n (Matrix.charpoly A).X) = 0 , (X : Type*) [Ring X] (A : Matrix n n X) :
+  Polynomial.eval A (Matrix.charpoly A) = 0 , (X : Type*) [Ring X] (A : Matrix (Fin n) (Fin n) X) :
+  (Matrix.charpoly A).eval (Matrix.eval A) = 0 , (X : Type*) [Fintype X] [DecidableEq X] (R : Type*) [CommRing R] (A : Matrix X X R) :
+  (Matrix.charpoly A).eval A = 0 , (X : Type*) [Ring X] (n : ℕ) (A : Matrix (Fin n) (Fin n) X) :
+  Polynomial.eval A (Matrix.charpoly A) = 0 , (X : Type*) [Fintype X] [DecidableEq X] (R : Type*) [CommRing R] (A : Matrix X X R) :
+  Polynomial.eval A (Matrix.charpoly A) = 0 , (X : Type*) [Ring X] (M : Matrix n n X) : 
+Matrix.charpoly M M = 0 , (X : Type*) [Fintype X] [DecidableEq X] [CommRing R] (M : Matrix X X R) : 
+Matrix.charpoly M • M = Matrix.adjugate M * Matrix.charpoly M , (X : Type*) [Fintype X] [DecidableEq X] [CommRing R] (A : Matrix X X R) :
+  Polynomial.eval (A : Matrix X X R) (Matrix.charpoly A) = 0 , (X : Type*) [Fintype X] [DecidableEq X] (R : Type*) [CommRing R] (A : Matrix X X R) :
+  Polynomial.eval A (Matrix.charpoly A) = Zero.zero ]
+
+total : 29
+
+elaborated: 23
+
+No valid output from LLM; outputs below
+
+<input>:1:72: unexpected end of input while parsing (sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :
+
+<input>:1:46: expected end of input while parsing (sqrt_irrational {x : ℝ} (hx : Irrational x)) : Irrational (Real.sqrt x) 
+
+<input>:1:70: unexpected end of input while parsing (sqrt_irrational : ∀ x : ℝ, Irrational x → Irrational (Real.sqrt x)) :
+
+<input>:1:72: unexpected end of input while parsing (sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :
+
+<input>:1:72: unexpected end of input while parsing (sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :
+
+<input>:1:72: unexpected end of input while parsing (sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :
+
+<input>:1:70: unexpected end of input while parsing (sqrt_irrational : ∀ x : ℝ, Irrational x → Irrational (Real.sqrt x)) :
+
+<input>:1:72: unexpected end of input while parsing (sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :
+
+<input>:1:72: unexpected end of input while parsing (sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :
+
+<input>:1:72: unexpected end of input while parsing (sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :
+
+failed to elaborate
+
+outputs: #[(sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :, (sqrt_irrational {x : ℝ} (hx : Irrational x)) : Irrational (Real.sqrt x) , (sqrt_irrational : ∀ x : ℝ, Irrational x → Irrational (Real.sqrt x)) :, (sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :, (sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :, (sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :, (sqrt_irrational : ∀ x : ℝ, Irrational x → Irrational (Real.sqrt x)) :, (sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :, (sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :, (sqrt_irrational : ∀ (x : ℝ), Irrational x → Irrational (Real.sqrt x)) :]
+
+total : 30
+
+elaborated: 23
+
+success
+
+theorem ∀ (n : ℕ), n ^ 2 % 2 = 0 → n % 2 = 0
+
+total : 31
+
+elaborated: 24
+
+success
+
+theorem ∀ (G : Type u_12) [inst : CommRing G] [inst_1 : Fintype G] (P : Ideal G) [hP : Ideal.IsPrime P], Ideal.IsMaximal P
+
+total : 32
+
+elaborated: 25
+
+success
+
+theorem ∀ (X : Type u_12) [inst : TopologicalSpace X], T2Space X ↔ IsClosed {p | p.fst = p.snd}
+
+total : 33
+
+elaborated: 26
+
+success
+
+theorem ∀ (X : Type u_12) [inst : TopologicalSpace X] (B : Set X), (∀ (x : X), x ∈ B → ∃ U, IsOpen U ∧ x ∈ U ∧ U ⊆ B) → IsOpen B
+
+total : 34
+
+elaborated: 27
+
+success
+
+theorem ∀ (G : Type u_12) [inst : Group G] [inst_1 : IsFreeGroup G] (x : G), x ≠ 1 → ∀ (n : ℕ), x ^ n ≠ 1
+
+total : 35
+
+elaborated: 28
+
+No valid output from LLM; outputs below
+
+(DVR : Type*) [IntegralDomain DVR] [IsPrincipalIdealRing DVR]
+( Valuation : DVR → ℕ) (hDVR : DiscreteValuationRing  Valuation ) (x : DVR) :
+( IsUnit x) ↔ ( Valuation x = 0) 
+
+(dvr : Type*) [IntegralDomain dvr] [DiscreteValuationRing dvr] (x : dvr) :
+  IsUnit x ↔ DiscreteValuationRing.valuation x = 0 
+
+(DVR : Type*) [IntegralDomain DVR] [DiscreteValuationRing DVR] (x : DVR) :
+ (x ≠ 0 ∧ ∀ n : ℕ, x ∣ x ^ n) ↔ DiscreteValuationRing.valuation x = 0 
+
+(X : Type*) [IntegralDomain X] [DiscreteValuationRing X] [IsPrincipalIdealRing X]
+ (x : X) (hx : x ≠ 0) :
+ IsUnit x ↔ DiscreteValuationRing.valuation X x = 0 
+
+( DiscreteValuationRing : Type*) [IntegralDomain  DiscreteValuationRing ] [IsDiscreteValuationRing  DiscreteValuationRing ]
+( Valuation :  DiscreteValuationRing → ℕ) (a :  DiscreteValuationRing ) :
+  IsUnit a ↔  Valuation a = 0 
+
+(DVR : Type*) [IntegralDomain DVR] [IsDVR DVR] (x : DVR) :
+   IsUnit x ↔ Valuation.valuation x = 0 
+
+(dvr : Type*) [IntegralDomain dvr] [DiscreteValuationRing dvr] (x : dvr) :
+  IsUnit x ↔ DiscreteValuationRing.valuation x = 0 
+
+(dvr : Type*) [IntegralDomain dvr] [IsPrincipalIdealRing dvr] [IsDiscreteValuationRing dvr] (a : dvr) :
+  a ∈ Units dvr ↔ IsDiscreteValuationRing.valuation a = 0 
+
+(G : Type*) [DiscreteValuationRing G] (x : G) :
+  IsUnit x ↔ DiscreteValuationRing.valuation x = 0 
+
+(D : Type*) [IntegralDomain D] [IsDiscreteValuationRing D] (x : D) :
+  IsUnit x ↔ (∀ (v : Valuation D ℝ≥0), ⇑v x = 0) 
+
+failed to elaborate
+
+outputs: #[(DVR : Type*) [IntegralDomain DVR] [IsPrincipalIdealRing DVR]
+(valuation : DVR → ℕ) (hDVR : DiscreteValuationRing valuation) (x : DVR) :
+(is_unit x) ↔ (valuation x = 0) , (dvr : Type*) [IntegralDomain dvr] [DiscreteValuationRing dvr] (x : dvr) :
+  IsUnit x ↔ DiscreteValuationRing.valuation x = 0 , (DVR : Type*) [IntegralDomain DVR] [DiscreteValuationRing DVR] (x : DVR) :
+ (x ≠ 0 ∧ ∀ n : ℕ, x ∣ x ^ n) ↔ DiscreteValuationRing.valuation x = 0 , (X : Type*) [IntegralDomain X] [DiscreteValuationRing X] [IsPrincipalIdealRing X]
+ (x : X) (hx : x ≠ 0) :
+ IsUnit x ↔ DiscreteValuationRing.valuation X x = 0 , (discrete_valuation_ring : Type*) [IntegralDomain discrete_valuation_ring] [IsDiscreteValuationRing discrete_valuation_ring]
+(valuation : discrete_valuation_ring → ℕ) (a : discrete_valuation_ring) :
+  IsUnit a ↔ valuation a = 0 , (DVR : Type*) [IntegralDomain DVR] [IsDVR DVR] (x : DVR) :
+   IsUnit x ↔ Valuation.valuation x = 0 , (dvr : Type*) [IntegralDomain dvr] [DiscreteValuationRing dvr] (x : dvr) :
+ is_unit x ↔ DiscreteValuationRing.valuation x = 0 , (dvr : Type*) [IntegralDomain dvr] [IsPrincipalIdealRing dvr] [IsDiscreteValuationRing dvr] (a : dvr) :
+  a ∈ Units dvr ↔ IsDiscreteValuationRing.valuation a = 0 , (G : Type*) [DiscreteValuationRing G] (x : G) :
+  IsUnit x ↔ DiscreteValuationRing.valuation x = 0 , (D : Type*) [IntegralDomain D] [IsDiscreteValuationRing D] (x : D) :
+  IsUnit x ↔ (∀ (v : Valuation D ℝ≥0), ⇑v x = 0) ]
+
+total : 36
+
+elaborated: 28
+
+success
+
+theorem ∀ (N₀ a b : ℕ), Nat.coprime a b → ∀ (N : ℕ), N ≥ N₀ → ∃ x y, N = a * x + b * y
+
+total : 37
+
+elaborated: 29
+
+success
+
+theorem (X : Type u_12) → [inst : Field X] → Ring X
+
+total : 38
+
+elaborated: 30
+
+success
+
+theorem (G : Type u_12) → [inst : Ring G] → Group Gˣ
+
+total : 39
+
+elaborated: 31
+
+success
+
+theorem ∀ (G : Type u_12) (H : Type u_13) [inst : Group G] [inst_1 : Group H],
+  (∀ (g : G × H), g ≠ 1 → ∃ n, g ^ n ≠ 1) → (∀ (g : G), g ≠ 1 → ∃ n, g ^ n ≠ 1) ∧ ∀ (h : H), h ≠ 1 → ∃ n, h ^ n ≠ 1
+
+total : 40
+
+elaborated: 32
+

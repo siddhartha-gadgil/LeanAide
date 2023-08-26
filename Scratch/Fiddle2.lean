@@ -6,6 +6,8 @@ example (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) : ‖x + y‖^2 + ‖x - y�
 
 example : ∀ {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : Group H],  Monoid.IsTorsionFree (G × H) → Monoid.IsTorsionFree G ∧ Monoid.IsTorsionFree H := by sorry
 
+example  (G : Type*) (H : Type*) [Group G] [Group H] (gh_torsion_free : ∀ g : G × H, g ≠ 1 → ∃ n : ℤ, g ^ n ≠ 1) : (∀ (g : G), g ≠ 1 → ∃ n : ℤ, g ^ n ≠ 1) ∧ (∀ (h : H), h ≠ 1 → ∃ n : ℤ, h ^ n ≠ 1) := by sorry
+
 example : PythagoreanTriple 3 4 5 := by sorry
 
 #check Complex.abs
