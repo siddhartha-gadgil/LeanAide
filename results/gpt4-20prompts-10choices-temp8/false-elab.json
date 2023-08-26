@@ -29,7 +29,7 @@
      "∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],\n  FiniteDimensional K V",
      "∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],\n  FiniteDimensional K V",
      "∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],\n  FiniteDimensional K V"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V], FiniteDimensional K V ",
@@ -56,7 +56,7 @@
      "∀ {G : Type u_1} [inst : Group G], Monoid.IsTorsion G",
      "∀ {G : Type u_1} [inst : Group G], Monoid.IsTorsion G",
      "∀ {G : Type u_1} [inst : Group G], Monoid.IsTorsion G"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {G : Type u_1} [inst : Group G], Monoid.IsTorsion G ",
@@ -78,7 +78,7 @@
      "∀ {G : Type u_1} [inst : Group G] [inst_1 : Fintype G] [inst_2 : IsSimpleGroup G], ∃ p, Nat.Prime p ∧ Fintype.card G = p"],
     ["∀ {G : Type u_1} [inst : Group G] [inst_1 : Fintype G], IsSimpleGroup G → ∃ p, Fact (Nat.Prime p) ∧ Fintype.card G = p"],
     ["∀ {G : Type u_1} [inst : Group G] [inst_1 : Fintype G] [self : IsSimpleGroup G], IsPrimePow (Fintype.card G)"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {G : Type u_1} [inst : Group G] [inst_1 : Fintype G] [self : IsSimpleGroup G], IsPrimePow (Fintype.card G) ",
@@ -93,7 +93,7 @@
    [["∀ {G : Type u_1} [inst : Group G] [inst_1 : Fintype G], IsSimpleGroup G",
      "∀ {G : Type u_1} [inst : Group G] [inst_1 : Fintype G], IsSimpleGroup G"],
     ["∀ {G : Type u_1} [inst : Group G] [inst_1 : Fintype G] {p : ℕ} [hp : Fact (Nat.Prime p)],\n  Fintype.card G = p → IsSimpleGroup G"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["forall {G : Type u_1} [inst : Group G] [inst_1 : Fintype G], IsSimpleGroup G ",
@@ -112,7 +112,7 @@
      "∀ {G : Type u_1} [inst : Group G] [inst_1 : Fintype G], ∃ p, Nat.Prime p ∧ Fintype.card G = p",
      "∀ {G : Type u_1} [inst : Group G] [inst_1 : Fintype G], ∃ p, Nat.Prime p ∧ Fintype.card G = p"],
     ["∀ {G : Type u_1} [inst : Group G] [inst_1 : Fintype G] {p : ℕ} [hp : Fact (Nat.Prime p)],\n  Fintype.card G = p → IsSimpleGroup G"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {G : Type u_1} [inst : Group G] [inst_1 : Fintype G], ∃ p : ℕ, Fact (Nat.Prime p) ∧ Fintype.card G = p ",
@@ -131,7 +131,7 @@
    [["∀ {α : Type u_1} [inst : MeasurableSpace α] (s : Set α), ?m.641938 s = 0"],
     ["∀ {α : Type u_1} [inst : MeasurableSpace α] (μ : MeasureTheory.Measure α) (s : Set α),\n  MeasurableSet s → ?m.560860 μ s = 0"],
     ["∀ {s : Set ℝ}, ?m.641759 = 0"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["forall {α : Type u_1} [inst : MeasurableSpace α] (μ : MeasureTheory.Measure α) (s : Set α), MeasurableSet s → ↑↑μ s = 0 ",
@@ -152,7 +152,7 @@
      "∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : CompactSpace α] (s : Set α), IsCompact s",
      "∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : CompactSpace α] (s : Set α), IsCompact s",
      "∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : CompactSpace α] (s : Set α), IsCompact s"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : CompactSpace α] (s : Set α), IsCompact s ",
@@ -175,7 +175,7 @@
      "∀ {α : Type u} [inst : TopologicalSpace α] {s : Set α},\n  (∀ (x : α), x ∈ s → ∃ t, IsClosed t ∧ x ∈ t ∧ t ⊆ s) → IsClosed s",
      "∀ {α : Type u} [inst : TopologicalSpace α] {s : Set α},\n  (∀ (x : α), x ∈ s → ∃ t, IsClosed t ∧ x ∈ t ∧ t ⊆ s) → IsClosed s"],
     ["∀ {α : Type u} [inst : TopologicalSpace α] {s : Set α},\n  (∀ (x : α), x ∈ s → ∃ t, x ∈ t ∧ IsClosed t ∧ t ⊆ s) → IsClosed s"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} [inst : TopologicalSpace α] {s t : Set α}, (∀ x ∈ s, ∃ u, IsClosed u ∧ x ∈ u ∧ u ⊆ t) → IsClosed s ",
@@ -190,7 +190,7 @@
     "∀ {α : Type u} [inst : TopologicalSpace α] {s : Set α}, (∀ x ∈ s, ∃ t : Set α, IsClosed t ∧ x ∈ t ∧ t ⊆ s) → IsClosed s "]},
   {"theorem":
    "∀ {G : Type u_1} [inst : Group G] {x : G}, IsOfFinOrder x → x ^ orderOf x = 1",
-   "some-correct": null,
+   "some-correct": true,
    "prompt": "Any finite order element in a group is equal to the identity.",
    "groups":
    [["∀ {G : Type u_1} [inst : Group G] {x : G}, IsOfFinOrder x → x ^ orderOf x = 1",
@@ -200,7 +200,7 @@
     ["∀ {G : Type u_1} [inst : Group G] {x : G}, IsOfFinOrder x → ∃ n, 0 < n ∧ x ^ n = 1",
      "∀ {G : Type u_1} [inst : Group G] {x : G}, IsOfFinOrder x → ∃ n, 0 < n ∧ x ^ n = 1"],
     ["∀ {G : Type u_1} [inst : Group G] {x : G}, IsOfFinOrder x → ∃ n, x ^ n = 1"]],
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["∀ {G : Type u_1} [inst : Group G] {x : G}, orderOf x = 1 → x = 1 ",
@@ -224,7 +224,7 @@
      "∀ {G : Type u_1} [inst : Group G] (H : Subgroup G), Monoid.IsTorsionFree { x // x ∈ H } → Monoid.IsTorsionFree G"],
     ["∀ {G : Type u_1} [inst : Group G], (∀ (H : Subgroup G), Monoid.IsTorsionFree { x // x ∈ H }) → Monoid.IsTorsionFree G",
      "∀ {G : Type u_1} [inst : Group G], (∀ (H : Subgroup G), Monoid.IsTorsionFree { x // x ∈ H }) → Monoid.IsTorsionFree G"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {G : Type u_1} [inst : Group G], (∀ (H : Subgroup G), Monoid.IsTorsionFree { x // x ∈ H }) → Monoid.IsTorsionFree G ",
@@ -247,7 +247,7 @@
      "∀ {α : Type u} [inst : Fintype α] {f : FreeGroup α → FreeGroup α}, Function.Injective f → Function.Surjective f",
      "∀ {α : Type u} [inst : Fintype α] (f : FreeGroup α → FreeGroup α), Function.Injective f → Function.Surjective f"],
     ["∀ {ι : Type u_1} [inst : Fintype ι] {f : FreeGroup ι →* FreeGroup ι}, Function.Injective ↑f → Function.Surjective ↑f"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} [inst : Fintype α] (f : FreeGroup α →* FreeGroup α), Function.Injective ↑f → Function.Surjective ↑f ",
@@ -267,7 +267,7 @@
      "∀ {K : Type u_1} [inst : DivisionRing K], IsField K ∨ Finite K",
      "∀ (K : Type u_1) [inst : DivisionRing K], IsField K ∨ Finite K"],
     ["∀ (K : Type u_1) [inst : DivisionRing K], IsField K ∨ Nonempty (Fintype K)"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ (K : Type u_1) [inst : DivisionRing K], IsField K ∨ Finite K ",
@@ -288,7 +288,7 @@
      "∀ (n : ℕ), n > 1 → ∃ p q, Nat.Prime p ∧ Nat.Prime q ∧ n = p * q"],
     ["∀ (n : ℕ), n ≠ 0 → n ≠ 1 → ∃ p q, Nat.Prime p ∧ Nat.Prime q ∧ n = p * q",
      "∀ (n : ℕ), n ≠ 0 → n ≠ 1 → ∃ p q, Nat.Prime p ∧ Nat.Prime q ∧ n = p * q"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ (n : ℕ), n ≠ 0 → ∃ (p q : ℕ), Nat.Prime p ∧ Nat.Prime q ∧ n = p * q ",
@@ -315,7 +315,7 @@
      "∀ {n : ℕ}, Even n → ∃ x, n = x ^ 2"],
     ["∀ {n : ℕ}, Even n → ∃ x, n = 2 * x ^ 2",
      "∀ {n : ℕ}, Even n → ∃ k, n = 2 * k ^ 2"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {n : ℕ}, Even n → ∃ m, n = m ^ 2 ",
@@ -330,7 +330,7 @@
     "∀ {n : ℕ}, Even n → ∃ x : ℕ, n = x ^ 2 "]},
   {"theorem":
    "∀ {G : Type u_1} [inst : Group G] {H : Subgroup G} [self : Subgroup.Normal H], Subgroup.index H ≠ 0",
-   "some-correct": null,
+   "some-correct": true,
    "prompt": "Every normal subgroup of a group has finite index.",
    "groups":
    [["∀ {G : Type u_1} [inst : Group G] {H : Subgroup G} [self : Subgroup.Normal H], Subgroup.index H ≠ 0",
@@ -342,7 +342,7 @@
      "∀ {G : Type u_1} [inst : Group G] {N : Subgroup G} [hN : Subgroup.Normal N], Subgroup.FiniteIndex N"],
     ["∀ {G : Type u_1} [inst : Group G] {N : Subgroup G} [hN : Subgroup.Normal N],\n  Subgroup.FiniteIndex N → Subgroup.index N ≠ 0"],
     ["{G : Type u_1} →\n  [inst : Group G] → (H : Subgroup G) → [inst_1 : Subgroup.Normal H] → Subgroup.FiniteIndex H → Fintype (G ⧸ H)"]],
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["∀ {G : Type u_1} [inst : Group G] (H : Subgroup G) [inst_1 : Subgroup.Normal H], Subgroup.FiniteIndex H → Fintype (G ⧸ H) ",
@@ -370,7 +370,7 @@
      "∀ {R : Type u} [inst : CommRing R] (P : Ideal R) [hP : Ideal.IsPrime P], ∃! M, Ideal.IsMaximal M ∧ P ≤ M",
      "∀ {R : Type u} [inst : CommRing R] (P : Ideal R) [inst_1 : Ideal.IsPrime P], ∃! M, Ideal.IsMaximal M ∧ P ≤ M"],
     ["∀ {R : Type u} [inst : CommRing R] [hR : Nontrivial R] (P : Ideal R), Ideal.IsPrime P → ∃! M, Ideal.IsMaximal M ∧ P ≤ M"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {R : Type u} [inst : CommRing R] (P : Ideal R) [Ideal.IsPrime P], ∃! M, Ideal.IsMaximal M ∧ P ≤ M ",
@@ -385,7 +385,7 @@
     "∀ {R : Type u} [inst : CommRing R] [hR : Nontrivial R] (P : Ideal R), Ideal.IsPrime P → ∃! (M : Submodule R R), Ideal.IsMaximal M ∧ P ≤ M "]},
   {"theorem":
    "∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] [inst_2 : CompactSpace α] (f : α → β),\n  Continuous f → UniformContinuous f",
-   "some-correct": null,
+   "some-correct": true,
    "prompt": "Every continuous function is uniformly continuous.",
    "groups":
    [["∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] [inst_2 : CompactSpace α] (f : α → β),\n  Continuous f → UniformContinuous f",
@@ -396,7 +396,7 @@
      "∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] [inst_2 : CompactSpace α] (f : α → β),\n  Continuous f → UniformContinuous f"],
     ["∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β},\n  Continuous f → UniformContinuous f"],
     ["∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] (self : α ≃ᵤ β),\n  UniformContinuous self.toFun"]],
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["forall {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] [CompactSpace α] (f : α → β),\n  Continuous f → UniformContinuous f ",
@@ -416,7 +416,7 @@
      "∀ {α : Type u} {β : Type v} [inst : PseudoMetricSpace α] [inst_1 : PseudoMetricSpace β] {f : α → β},\n  UniformContinuous f → Metric.Bounded (Set.range f)",
      "∀ {α : Type u} {β : Type v} [inst : PseudoMetricSpace α] [inst_1 : PseudoMetricSpace β] {f : α → β},\n  UniformContinuous f → Metric.Bounded (Set.range f)"],
     ["∀ {α : Type u_1} {β : Type u_2} [inst : PseudoMetricSpace α] [inst_1 : PseudoMetricSpace β] {f : α → β},\n  UniformContinuous f → Metric.Bounded (Set.range f)"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} {β : Type v} [inst : PseudoMetricSpace α] [inst_1 : PseudoMetricSpace β] {f : α → β},\n  UniformContinuous f → Metric.Bounded (Set.range f) ",
@@ -439,7 +439,7 @@
      "∀ {α : Type u} [inst : TopologicalSpace α], (∀ (s : Set α), IsCompact s → IsClosed s) → CompactSpace α",
      "∀ {α : Type u} [inst : TopologicalSpace α], (∀ (s : Set α), IsCompact s → IsClosed s) → CompactSpace α",
      "∀ {α : Type u} [inst : TopologicalSpace α], (∀ (s : Set α), IsCompact s → IsClosed s) → CompactSpace α"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} [inst : TopologicalSpace α], (∀ (s : Set α), IsCompact s → IsClosed s) → CompactSpace α ",
@@ -468,7 +468,7 @@
      "∀ {R : Type u_1} [inst : CommRing R] (a b : R), IsIdempotentElem a → IsIdempotentElem b → IsIdempotentElem (a + b)"],
     ["∀ {R : Type u_1} [inst : CommRing R] (x y : R),\n  IsIdempotentElem x → IsIdempotentElem y → Commute x y → IsIdempotentElem (x + y)",
      "∀ {R : Type u_1} [inst : CommRing R] (x y : R),\n  IsIdempotentElem x → IsIdempotentElem y → Commute x y → IsIdempotentElem (x + y)"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {R : Type u_1} [inst : CommRing R] (x y : R), IsIdempotentElem x → IsIdempotentElem y → Commute x y → IsIdempotentElem (x + y) ",
@@ -489,7 +489,7 @@
    "groups":
    [["∀ {α : Type u_1} [inst : PartialOrder α] [inst_1 : BoundedOrder α], ∃! m, ∀ (a : α), a ≤ m",
      "∀ {α : Type u_1} [inst : PartialOrder α] [inst_1 : BoundedOrder α], ∃! m, ∀ (a : α), a ≤ m"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u_1} [inst : PartialOrder α] [inst_1 : Nonempty α] (H : ∃ x, ∀ y, y ≤ x),\n  ∃! x, ∀ y, x ≤ y ",
@@ -508,7 +508,7 @@
      "∀ {α : Type u_1} {f : α → α} {x : α}, Function.IsFixedPt f x → ∀ (n : ℕ), Function.IsPeriodicPt f n x"],
     ["∀ {α : Type u_1} {f : α → α} [inst : LinearOrderedField α] {x : α},\n  Function.IsFixedPt f x → 0 < x → x < 1 → ∀ (n : ℕ), ∃ y, Function.IsPeriodicPt f n y ∧ 0 < y ∧ y < 1"],
     ["∀ {α : Type u_1} {f : α → α} {a b : α} [inst : LinearOrder α] [inst_1 : TopologicalSpace α]\n  [inst_2 : OrderClosedTopology α],\n  a ≤ b →\n    a ≤ f a ∧ f a ≤ b ∨ a ≤ f b ∧ f b ≤ b → ∀ (n : ℕ), 0 < n → Function.IsPeriodicPt f n a ∨ Function.IsPeriodicPt f n b"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u_1} {f : α → α} {x : α}, Function.IsFixedPt f x → ∀ (n : ℕ), Function.IsPeriodicPt f n x ",
@@ -532,7 +532,7 @@
      "∀ {α : Type u} (A B : Set α), (A ∪ B)ᶜ ⊆ Aᶜ ∪ Bᶜ",
      "∀ {α : Type u} (s t : Set α), (s ∪ t)ᶜ ⊆ sᶜ ∪ tᶜ"],
     ["∀ {α : Type u} (s t : Set α), sᶜ ∪ tᶜ ⊆ (s ∪ t)ᶜ"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} (A B : Set α), (A ∪ B)ᶜ ⊆ Aᶜ ∩ Bᶜ ",
@@ -559,7 +559,7 @@
      "∀ (q : ℚ), ∃ r, Real.sqrt ↑q = r",
      "∀ (q : ℚ), ∃ r, Real.sqrt ↑q = r",
      "∀ (q : ℚ), ∃ r, Real.sqrt ↑q = r"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ (q : ℚ), ∃ r, Real.sqrt ↑q = ↑r ",
@@ -579,7 +579,7 @@
    "If the set of units of a ring forms a group then the ring is commutative.",
    "groups":
    [["∀ {R : Type u_1} [inst : Ring R], (∀ (a b : R), IsUnit a → IsUnit b → IsUnit (a * b)) → ∀ (x y : R), x * y = y * x"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {R : Type u_1} [inst : Ring R], (∀ a b : R, IsUnit a → IsUnit b → IsUnit (a * b)) → ∀ (x y : R), x * y = y * x "]},
@@ -597,7 +597,7 @@
      "∀ (n : ℕ), n > 10 → ∃ x p, n = x ^ 2 + p ∧ Nat.Prime p",
      "∀ (n : ℕ), 10 < n → ∃ a p, n = a ^ 2 + p ∧ Nat.Prime p"],
     ["∀ (n : ℕ), 10 < n → ∃ p x, Nat.Prime p ∧ n = x ^ 2 + p"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ (n : ℕ), n > 10 → ∃ x p, n = x ^ 2 + p ∧ Nat.Prime p ",
@@ -623,7 +623,7 @@
      "∀ {C : Type u₁} [inst : CategoryTheory.Category.{?u.12642836, u₁} C] [inst_1 : CategoryTheory.Limits.HasInitial C]\n  [inst_2 : CategoryTheory.Limits.HasTerminal C], Nonempty (⊥_ C ≅ ⊤_ C)"],
     ["{C : Type u₁} →\n  [inst : CategoryTheory.Category.{?u.13151040, u₁} C] →\n    [inst_1 : CategoryTheory.Limits.HasInitial C] → [inst_2 : CategoryTheory.Limits.HasTerminal C] → ⊥_ C ≅ ⊤_ C"],
     ["{C : Type u₁} →\n  [inst : CategoryTheory.Category.{?u.13150538, u₁} C] →\n    [inst_1 : CategoryTheory.Limits.HasInitial C] → [inst_2 : CategoryTheory.Limits.HasTerminal C] → ⊥_ C ≅ ⊤_ C"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {C : Type u₁} [inst : CategoryTheory.Category C] [inst_1 : CategoryTheory.Limits.HasInitial C]\n  [inst_2 : CategoryTheory.Limits.HasTerminal C], Nonempty (⊥_ C ≅ ⊤_ C) ",
@@ -649,7 +649,7 @@
      "∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β]\n  [inst_2 : TopologicalSpace γ] {f : α → β} {g : β → γ}, Continuous (g ∘ f) → Continuous f → Continuous g",
      "∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β]\n  [inst_2 : TopologicalSpace γ] {f : α → β} {g : β → γ} {h : α → γ},\n  h = g ∘ f → Continuous h → Continuous f → Continuous g"],
     ["∀ {α : Type u_3} {β : Type u_1} {γ : Type u_2} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β]\n  [inst_2 : TopologicalSpace γ] {g : β → γ} {f : α → β}, Continuous (g ∘ f) → Continuous f → Continuous g"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β]\n  [inst_2 : TopologicalSpace γ] {f : α → β} {g : β → γ} {h : α → γ},\n  h = g ∘ f → Continuous h → Continuous f → Continuous g ",
@@ -678,7 +678,7 @@
      "∀ {S : Type u_1} [inst : Mul S] {a b c : S}, Commute a b → Commute b c → Commute a c",
      "∀ {S : Type u_1} [inst : Mul S] {a b c : S}, Commute a b → Commute b c → Commute a c",
      "∀ {S : Type u_1} [inst : Mul S] {a b c : S}, Commute a b → Commute b c → Commute a c"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {S : Type u_1} [inst : Mul S] {a b c : S}, Commute a b → Commute b c → Commute a c ",
@@ -707,7 +707,7 @@
     ["∀ {R : Type u} {S : Type v} [inst : Ring R] [inst_1 : Ring S] {f : R →+* S} (x : R), ?m.13798522 x = 0 → x = 0"],
     ["∀ {R : Type u} {S : Type v} [inst : Ring R] [inst_1 : Ring S] {f : R →+* S} (r : R), ?m.13801159 r = 0 → r = 0"],
     ["∀ {R : Type u} {S : Type v} [inst : NonAssocSemiring R] [inst_1 : NonAssocSemiring S] (f : R →+* S) (a : R),\n  ?m.13801516 f a = 0 → a = 0"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {R : Type u} {S : Type v} [inst : Ring R] [inst_1 : Ring S] {f : R →+* S} (x : R), ↑f x = 0 → x = 0 ",
@@ -735,7 +735,7 @@
      "∀ {m n : ℕ}, (∃ p, Nat.Prime p ∧ p ∣ m ∧ p ∣ n) ↔ m = n",
      "∀ {m n : ℕ}, (∃ p, Nat.Prime p ∧ p ∣ m ∧ p ∣ n) ↔ m = n"],
     ["∀ {m n : ℕ}, (∃ p, Nat.Prime p ∧ (p ∣ m ↔ p ∣ n)) ↔ m = n"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {m n : ℕ}, (∃ (p : ℕ), Nat.Prime p ∧ p ∣ m ∧ p ∣ n) ↔ m = n ",

@@ -19,7 +19,7 @@
      "∀ {p : ℕ}, Nat.Prime p → p = 2 ∨ p % 2 = 1",
      "∀ {p : ℕ}, Nat.Prime p → p = 2 ∨ p % 2 = 1"],
     ["∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p = 2 ∨ p % 2 = 1"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {p : ℕ}, Nat.Prime p → p = 2 ∨ p % 2 = 1 ",
@@ -42,7 +42,7 @@
      "Set.Infinite {x | Odd x}",
      "Set.Infinite {n | Odd n}"],
     ["∃ᶠ (m : ℕ) in Filter.atTop, Odd m"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["Set.Infinite {n : ℕ | Odd n} ",
@@ -52,10 +52,10 @@
     "∃ᶠ (m : ℕ) in Filter.atTop, Odd m ",
     "Set.Infinite {n : ℕ | Odd n} "]},
   {"theorem": "∀ {p : ℕ}, Nat.Prime p → p % 2 = 1 → p = 3",
-   "some-correct": null,
+   "some-correct": true,
    "prompt": "The smallest odd prime is `3`.",
    "groups": [["∀ {p : ℕ}, Nat.Prime p → p % 2 = 1 → p = 3"]],
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["Nat.Prime.min_odd_prime_is_3 : Nat.Prime 3 ∧ ∀ (n : ℕ), Nat.Prime n → n % 2 = 1 → 3 ≤ n ",
@@ -74,7 +74,7 @@
      "Set.Infinite {p | Nat.Prime p ∧ Odd p}",
      "Set.Infinite {p | Nat.Prime p ∧ Odd p}",
      "Set.Infinite {p | Nat.Prime p ∧ Odd p}"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["Set.Infinite {p | Nat.Prime p ∧ Odd p} ",
@@ -102,7 +102,7 @@
      "∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],\n  Module.rank K V = 2 → FiniteDimensional K V",
      "∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],\n  Module.rank K V = 2 → FiniteDimensional K V",
      "∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],\n  Module.rank K V = 2 → FiniteDimensional K V"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],\n  Module.rank K V = 2 → FiniteDimensional K V ",
@@ -129,7 +129,7 @@
     ["(K : Type u) → [inst : Field K] → DivisionRing K",
      "(K : Type u) → [inst : Field K] → DivisionRing K"],
     ["(K : Type u) → [inst : Field K] → DivisionRing K"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ (K : Type u) [inst : Field K], DivisionRing K ",
@@ -157,7 +157,7 @@
      "∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],\n  Module.rank K V = 2 → FiniteDimensional K V",
      "∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],\n  Module.rank K V = 2 → FiniteDimensional K V",
      "∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],\n  Module.rank K V = 2 → FiniteDimensional K V"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["forall {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],\n  Module.rank K V = 2 → FiniteDimensional K V ",
@@ -184,7 +184,7 @@
      "∀ (n : ℕ), ∃ k, n + 1 = k",
      "∀ (n : ℕ), ∃ m, m = n + 1",
      "∀ (n : ℕ), ∃ m, m = n + 1"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ (n : ℕ), ∃ m, m = n + 1 ",
@@ -211,7 +211,7 @@
      "∀ {n : ℕ}, n < n + 1",
      "∀ (n : ℕ), n < Nat.succ n",
      "∀ {n : ℕ}, n < n + 1"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {n : ℕ}, n < n + 1 ",
@@ -230,7 +230,7 @@
    "prompt": "Every set is Lebesgue measurable.",
    "groups":
    [["∀ {α : Type u_1} [inst : MeasurableSpace α] (s : Set α), MeasurableSet s"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u_1} [inst : MeasurableSpace α], ∀ s : Set α, MeasurableSet s "]},
@@ -246,7 +246,7 @@
     ["∀ {α : Type u_1} [inst : MeasurableSpace α] [inst_1 : TopologicalSpace α] [inst_2 : BorelSpace α] {s : Set α}\n  (μ : MeasureTheory.Measure α), ?m.474058 μ = 0 → MeasurableSet s"],
     ["∀ {α : Type u_1} [inst : MeasurableSpace α] [inst_1 : TopologicalSpace α]\n  [inst_2 : TopologicalSpace.SecondCountableTopology α] [inst_3 : BorelSpace α] {s : Set α},\n  ?m.474224 = 0 → MeasurableSet s"],
     ["∀ {α : Type u_1} [inst : TopologicalSpace α] [inst_1 : MeasurableSpace α] [inst_2 : BorelSpace α]\n  (μ : MeasureTheory.Measure α) (s : Set α), ?m.962923 μ s = 0 → MeasurableSet s"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["forall {α : Type u_1} [inst : MeasurableSpace α] [inst_1 : TopologicalSpace α] [inst_2 : TopologicalSpace.SecondCountableTopology α]\n  [inst_3 : BorelSpace α] (μ : MeasureTheory.Measure α) (s : Set α), ↑↑μ s = 0 → MeasurableSet s ",
@@ -270,7 +270,7 @@
     ["∀ (p : ℕ) [inst : Fact (Nat.Prime p)], ¬∃ t, t * t = p",
      "∀ {p : ℕ} [inst : Fact (Nat.Prime p)], ¬∃ t, t * t = p",
      "∀ (p : ℕ) [inst : Fact (Nat.Prime p)], ¬∃ t, t * t = p"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {p : ℕ}, Nat.Prime p → ¬∃ t, t * t = p ",
@@ -297,7 +297,7 @@
      "∀ {p : ℕ}, Nat.Prime p → Odd p → p > 2",
      "∀ {p : ℕ}, Nat.Prime p → Odd p → p > 2"],
     ["∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p % 2 = 1 → p > 2"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {p : ℕ} [inst : Fact (Nat.Prime p)], Odd p → p > 2 ",
@@ -326,7 +326,7 @@
     ["∀ {a b x y u v w s t : ℕ},\n  a = x ^ 2 + y ^ 2 + u ^ 2 + v ^ 2 →\n    b = w ^ 2 + s ^ 2 + t ^ 2 → ∃ r1 r2 r3 r4, a * b = r1 ^ 2 + r2 ^ 2 + r3 ^ 2 + r4 ^ 2"],
     ["∀ {a b x y u v : ℕ},\n  a = x ^ 2 + y ^ 2 → b = u ^ 2 + v ^ 2 → ∃ r s, a * b = r ^ 2 + s ^ 2 + (u * x + v * y) ^ 2 + (u * y - v * x) ^ 2"],
     ["∀ (a b c d u v w x : ℕ),\n  (a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2) * (u ^ 2 + v ^ 2 + w ^ 2 + x ^ 2) =\n    (a * u + b * v + c * w + d * x) ^ 2 + (a * v - b * u - c * x + d * w) ^ 2 + (a * w + b * x - c * u - d * v) ^ 2 +\n      (a * x - b * w + c * v - d * u) ^ 2"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {a b x y u v w s t : ℕ}, a = x ^ 2 + y ^ 2 + u ^ 2 + v ^ 2 → b = w ^ 2 + s ^ 2 + t ^ 2 → ∃ r1 r2 r3 r4, a * b = r1 ^ 2 + r2 ^ 2 + r3 ^ 2 + r4 ^ 2 ",
@@ -354,7 +354,7 @@
      "∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : CompactSpace α], LocallyCompactSpace α",
      "∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : CompactSpace α], LocallyCompactSpace α",
      "∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : CompactSpace α], LocallyCompactSpace α"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : CompactSpace α], LocallyCompactSpace α ",
@@ -380,7 +380,7 @@
      "∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] [inst_2 : CompactSpace α] (f : α → β),\n  Continuous f → UniformContinuous f"],
     ["∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] (self : α ≃ᵤ β),\n  UniformContinuous self.toFun"],
     ["∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β},\n  Continuous f → UniformContinuous f"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β},\n  Continuous f → UniformContinuous f ",
@@ -397,7 +397,7 @@
    "groups":
    [["∀ {p q : ℕ}, Nat.Prime p → Nat.Prime q → p ≠ q → p + q ≠ 6",
      "∀ {a b : ℕ}, Nat.Prime a → Nat.Prime b → a ≠ b → a + b ≠ 6"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["¬∃ (a b : ℕ), Nat.Prime a ∧ Nat.Prime b ∧ a ≠ b ∧ a + b = 6 ",
@@ -424,7 +424,7 @@
      "∀ (z : ℤ), ¬Irrational ↑z",
      "∀ (z : ℤ), ¬Irrational ↑z",
      "∀ (z : ℤ), ¬Irrational ↑z"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ (n : ℤ), ¬Irrational ↑n ",
@@ -451,7 +451,7 @@
      "∀ {R : Type u} [inst : Ring R], IsUnit 1",
      "∀ {α : Type u} [inst : MonoidWithZero α], IsUnit 1",
      "∀ {R : Type u} [inst : Ring R], IsUnit 1"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {R : Type u} [inst : Ring R], IsUnit (1 : R) ",
@@ -479,7 +479,7 @@
      "{G : Type u_1} → [inst : Group G] → (H : Subgroup G) → Group { x // x ∈ H }"],
     ["{G : Type u_1} → [inst : Group G] → (H : Subgroup G) → Group { x // x ∈ H }"],
     ["{G : Type u_1} → [inst : Group G] → (H : Subgroup G) → Group { x // x ∈ H }"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["forall {G : Type u_1} [inst : Group G] (H : Subgroup G), Group { x // x ∈ H } ",
@@ -506,7 +506,7 @@
      "∀ (m n : ℕ), ∃ k, m + n = k",
      "∀ (a b : ℕ), ∃ c, a + b = c"],
     ["ℕ → ℕ → ℕ"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ (a b : ℕ), ∃ c, a + b = c ",
@@ -526,7 +526,7 @@
    [["∀ {G : Type u_1} [inst : Group G], IsOfFinOrder 1",
      "∀ {G : Type u_1} [inst : Group G], IsOfFinOrder 1",
      "∀ {G : Type u_1} [inst : Group G], IsOfFinOrder 1"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {G : Type u_1} [inst : Group G], IsOfFinOrder (1 : G) ",
@@ -553,7 +553,7 @@
      "Fact (Nat.Prime 7)",
      "Fact (Nat.Prime 7)",
      "Fact (Nat.Prime 7)"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["Fact (Nat.Prime 7) ",
@@ -573,7 +573,7 @@
    [["Finset.card (Finset.filter Nat.Prime (Finset.range 8)) = 3"],
     ["Fact (Finset.card (Finset.filter Nat.Prime (Finset.range 8)) = 3)"],
     ["Nat.card { x // x ∈ Finset.filter Nat.Prime (Finset.range 8) } = 3"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["Fact (Finset.card (Finset.filter Nat.Prime (Finset.range 8)) = 3) ",
@@ -593,7 +593,7 @@
      "∀ {α : Type u} {s : Set α}, Set.Finite s → ∅ ⊆ s",
      "∀ {α : Type u} {s : Set α}, Set.Finite s → ∅ ⊆ s",
      "∀ {α : Type u} {s : Set α}, Set.Finite s → ∅ ⊆ s"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} {s : Set α}, Set.Finite s → ∅ ⊆ s ",
@@ -613,7 +613,7 @@
    "groups":
    [["∀ {α : Type u} {s : Set α}, ¬Set.Finite s → ∃ t, Set.Finite t ∧ t ⊆ s",
      "∀ {α : Type u} {s : Set α}, ¬Set.Finite s → ∃ t, Set.Finite t ∧ t ⊆ s"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} {s : Set α}, ¬Set.Finite s → ∃ t : Finset α, ↑t ⊆ s ",
@@ -631,7 +631,7 @@
      "{R : Type u} → [inst : CommRing R] → Monoid R"],
     ["{α : Type u} → [inst : CommRing α] → Monoid α"],
     ["{R : Type u_1} → [inst : CommRing R] → Monoid R"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {R : Type u} [inst : CommRing R], Monoid R ",
@@ -656,7 +656,7 @@
      "∀ (n : ℕ), Odd n → ∃ a b, a ≠ b ∧ n = a + b",
      "∀ (n : ℕ), Odd n → ∃ a b, a ≠ b ∧ n = a + b"],
     ["∀ (n : ℕ), Odd n → ∃ a b, n = a + b ∧ a ≠ b"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {n : ℕ}, Odd n → ∃ x y : ℕ, x ≠ y ∧ n = x + y ",
@@ -670,7 +670,7 @@
     "∀ (n : ℕ), Odd n → ∃ a b : ℕ, a ≠ b ∧ n = a + b ",
     "∀ (n : ℕ), Odd n → ∃ a b : ℕ, a ≠ b ∧ n = a + b "]},
   {"theorem": "∀ {G : Type u_1} [inst : Group G], IsOfFinOrder 1",
-   "some-correct": null,
+   "some-correct": true,
    "prompt": "Every element in the trivial group has finite order.",
    "groups":
    [["∀ {G : Type u_1} [inst : Group G], IsOfFinOrder 1",
@@ -680,7 +680,7 @@
     ["∀ {G : Type u_1} [inst : Group G] [inst_1 : Subsingleton G] (x : G), IsOfFinOrder x"],
     ["∀ {G : Type u_1} [inst : Group G] [inst_1 : Unique G] (x : G), IsOfFinOrder x"],
     ["∀ {G : Type u_1} [inst : Monoid G] [inst_1 : Subsingleton G] (x : G), IsOfFinOrder x"]],
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["∀ {G : Type u_1} [inst : Monoid G] (x : Unit), IsOfFinOrder x ",
@@ -699,7 +699,7 @@
      "∀ {α : Type u} [inst : LinearOrderedRing α] {x : α}, Even x → Even (x * x)"],
     ["∀ {n : ℕ}, n % 2 = 0 → n * n % 2 = 0",
      "∀ (n : ℕ), n % 2 = 0 → n * n % 2 = 0"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {n : ℕ}, Even n → Even (n ^ 2) ",
@@ -725,7 +725,7 @@
     ["∀ (K : Type u) [inst : CommRing K] [inst_1 : IsDomain K], IsField K"],
     ["∀ {K : Type u} [inst : DivisionSemiring K] [inst_1 : CommSemiring K], IsField K"],
     ["∀ {R : Type u} [inst : CommSemiring R] [inst_1 : DivisionRing R], IsField R"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {K : Type u} [inst : DivisionSemiring K] [inst_1 : CommSemiring K], IsField K ",
@@ -748,7 +748,7 @@
      "∀ {α : Type u} [inst : Monoid α], id 1 = 1",
      "∀ {α : Type u} [inst : Monoid α], id 1 = 1",
      "∀ {α : Type u} [inst : MulOneClass α], id 1 = 1"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} [inst : MulOneClass α], id 1 = 1 ",
@@ -775,7 +775,7 @@
      "∀ {α : Type u} (x : α), Function.IsFixedPt id x",
      "∀ {α : Type u} (x : α), Function.IsFixedPt id x",
      "∀ {α : Type u} (x : α), Function.IsFixedPt id x"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} (x : α), Function.IsFixedPt (@id α) x ",
@@ -803,7 +803,7 @@
      "∀ {α : Type u} [inst : PseudoMetricSpace α] {x : α}, Metric.diam {x} = 0",
      "∀ {α : Type u} [inst : PseudoMetricSpace α] {x : α}, Metric.diam {x} = 0",
      "∀ {α : Type u} [inst : PseudoMetricSpace α] {x : α}, Metric.diam {x} = 0"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} [inst : PseudoMetricSpace α] {x : α}, Metric.diam {x} = 0 ",
@@ -830,7 +830,7 @@
      "∀ {G : Type u} [inst : Group G], Nonempty G",
      "∀ (G : Type u) [inst : Group G], Nonempty G",
      "∀ (G : Type u) [inst : Group G], Nonempty G"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ (G : Type u) [inst : Group G], Nonempty G ",
@@ -854,7 +854,7 @@
      "∀ {α : Type u} [inst : TopologicalSpace α] (x : α), IsConnected (connectedComponent x)",
      "∀ {α : Type u} [inst : TopologicalSpace α] (x : α), IsConnected (connectedComponent x)",
      "∀ {α : Type u} [inst : TopologicalSpace α] (x : α), IsConnected (connectedComponent x)"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} [inst : TopologicalSpace α] (x : α), IsConnected (connectedComponent x) ",
@@ -865,14 +865,14 @@
     "∀ {α : Type u} [inst : TopologicalSpace α] (x : α), IsConnected (connectedComponent x) "]},
   {"theorem":
    "∀ {R : Type u_1} [inst : CommRing R] [inst_1 : IsDomain R] [inst_2 : IsDedekindDomain R], ∃ M, Ideal.IsMaximal M",
-   "some-correct": null,
+   "some-correct": false,
    "prompt": "The ring of integers has a maximal ideal.",
    "groups":
    [["∀ {R : Type u_1} [inst : CommRing R] [inst_1 : IsDomain R] [inst_2 : IsDedekindDomain R], ∃ M, Ideal.IsMaximal M",
      "∀ {R : Type u_1} [inst : CommRing R] [inst_1 : IsDomain R] [inst_2 : IsDedekindDomain R], ∃ M, Ideal.IsMaximal M"],
     ["∀ {K : Type u} [inst : Field K] [inst_1 : CharZero K] [inst_2 : NumberField K], ∃ M, Ideal.IsMaximal M"],
     ["∀ {K : Type u_1} [inst : Field K], { x // x ∈ NumberField.ringOfIntegers K } → ∃ I, Ideal.IsMaximal I"]],
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["∀ {R : Type u_1} [inst : CommRing R] [inst_1 : IsDomain R] [inst_2 : IsDedekindDomain R], ∃ M, Ideal.IsMaximal M ",
@@ -893,7 +893,7 @@
      "PythagoreanTriple 3 4 5",
      "PythagoreanTriple 3 4 5",
      "PythagoreanTriple 3 4 5"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["PythagoreanTriple 3 4 5 ",
@@ -915,7 +915,7 @@
     ["∀ {ι : Type u_1} {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],\n  Basis ι K V → (ι → False) → Subsingleton V"],
     ["{ι : Type u_1} →\n  {K : Type u_2} →\n    {V : Type u_3} →\n      [inst : DivisionRing K] → [inst_1 : AddCommGroup V] → [inst_2 : Module K V] → Basis ι K V → ι → False → V"],
     ["∀ {ι : Type u_1} {K : Type u_2} {V : Type u_3} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],\n  IsEmpty ι → Basis ι K V → Subsingleton V"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {ι : Type u_1} {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],\n  Basis ι K V → (ι → False) → Subsingleton V ",

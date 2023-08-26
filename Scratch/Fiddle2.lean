@@ -6,7 +6,11 @@ example (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) : ‖x + y‖^2 + ‖x - y�
 
 example : ∀ {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : Group H],  Monoid.IsTorsionFree (G × H) → Monoid.IsTorsionFree G ∧ Monoid.IsTorsionFree H := by sorry
 
+example : PythagoreanTriple 3 4 5 := by sorry
+
 #check Complex.abs
+
+example : ∀ {n : ℕ}, n * n % 2 = 0 → n % 2 = 0 := by sorry
 
 open BigOperators
 example (n : ℕ) (f : ℕ → ℂ) : Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i) := by sorry
