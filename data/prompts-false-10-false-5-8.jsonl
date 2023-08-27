@@ -118,3 +118,43 @@
 {"text":"If an element maps to zero under a ring homomorphism, then it is zero.","fullPrompt":"No prompt (maybe using cached data)"}
 {"text":"Implication `→` is symmetric. If `P → Q` then `Q → P`.","fullPrompt":"No prompt (maybe using cached data)"}
 {"text":"Two natural numbers are equal if and only if they are both divisible by some prime number.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every ring is a field.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every vector space is finite dimensional.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every group is a torsion monoid.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every finite simple group has prime order.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every finite group is simple.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every finite group has prime order.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every set has Lebesgue measure zero.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If a topological space is compact, then every subset is compact.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every set that is Lebesgue measurable but not Borel measurable has Lebesgue measure zero.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"A finitely-presented group containing a torsion element is finite.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If every point of a subset of a topological space is contained in some closed set, the subset itself is closed.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"A topological space $X$ is Hausdorff if and only if the diagonal map is an open map from $X$ to $X × X$.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Any finite order element in a group is equal to the identity.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If a subgroup of a group is torsion-free, then the group itself is torsion free.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every injective homomorphism from a finitely generated free group to itself is surjective.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every division ring is either a field or finite.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every natural number is the product of two primes.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every even number is the square of a natural number.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every normal subgroup of a group has finite index.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"The characteristic polynomial of every matrix has real roots.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"In a commutative ring, every prime ideal is contained in a unique maximal ideal.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every continuous function is uniformly continuous.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every uniformly continuous function is bounded above.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If every compact subset of a topological space is closed, then the space is compact.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"In a commutative ring, the sum of idempotent elements is idempotent.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"The number of partitions of a finite set is a prime number.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If a poset has a maximal element, then it has a unique minimal element.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"The automorphism group of an Abelian group is cyclic.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If a function from the unit interval to itself has a fixed point, then it has points of all positive periods.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"The complement of the union of two sets contains the union of their complements.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"The square root of an rational number is rational.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If a module over a ring is free, then the ring is commutative.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If the set of units of a ring forms a group then the ring is commutative.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Every natural number larger than `10` is the sum of a square and a prime.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"The initial object of a category is isomorphic to its terminal object.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If the composition of two functions is continuous, then each of them is continuous.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If `a` commutes with `b` and `b` commutes with `c` then `a` commutes with `c`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If an element maps to zero under a ring homomorphism, then it is zero.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Implication `→` is symmetric. If `P → Q` then `Q → P`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Two natural numbers are equal if and only if they are both divisible by some prime number.","fullPrompt":"No prompt (maybe using cached data)"}
