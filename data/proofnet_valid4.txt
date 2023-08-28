@@ -1,0 +1,25 @@
+Define `Λ(n) = log p` if `n` is a power of `p` and zero otherwise. Prove that `Σ_{d | n} μ(n / d) log d = Λ(n)`.
+Show that there are infinitely many primes congruent to `-1` modulo 6.
+Show that the equation `7x^3 + 2 = y^3` has no solution in integers.
+Let `p` and `q` be distinct odd primes such that `p - 1` divides `q - 1`. If `(n, pq) = 1`, show that `n^(q 1) ≡ 1 (mod pq)`.
+Consider a prime `p` of the form `4t + 3`. Show that `a` is a primitive root modulo `p` if and only if `-a` has order `(p - 1) / 2`.
+Let `p` be an odd prime. Show that `a` is a primitive root modulo `p` if and only if `a^((p - 1) / q) ≢ 1 (mod p)` for all prime divisors `q` of `p - 1`.
+Show that any prime divisor of `x^4 - x^2 + 1` is congruent to 1 modulo 12.
+Show that if `a` is negative, then `p ≡ q (4a)` together with `p ∤ a` imply `(a / p) = (a / q)`.
+Show that 1729 is the smallest positive integer expressible as the sum of two different integral cubes in two ways.
+Suppose that `f` is holomorphic in an open set `Ω`. Prove that if `Re(f)` is constant, then `f` is constant.
+Suppose that `f` is holomorphic in an open set `Ω`. Prove that if `|f|` is constant, then `f` is constant.
+Prove that the power series `Σ zn/n^2` converges at every point of the unit circle.
+Suppose `f` is continuous in a region `Ω`. Prove that any two primitives of `f` (if they exist) differ by a constant.
+Let `Ω` be a bounded open subset of `ℂ`, and `ϕ: Ω → Ω` a holomorphic function. Prove that if there exists a point `z₀ ∈ Ω` such that `ϕ(z₀) = z₀` and `ϕ'(z₀) = 1`, then `ϕ` is linear.
+Show that `∫_{-∞}^{∞} cos x / (x^2 + a^2) dx = π e^{-a} / a` for `a > 0`.
+Show that `∫_0^1 log(sin π x) dx = -log 2`.
+Show that there is no holomorphic function `f` in the unit disc `D` that extends continuously to `∂D` such that `f(z) = 1/z` for `z ∈ ∂D`.
+For `j ∈ {1, 2, 3, 4}`, let `z_j` be a complex number with `|z_j| = 1` and `z_j ≠ 1`. Prove that `3 - z_1 - z_2 - z_3 - z_4 + z_1 z_2 z_3 z_4 ≠ 0`.
+Let `n` be a positive integer, and let `f_n(z) = n + (n - 1)z + (n - 2)z^2 + ⋯ + z^(n - 1)`. Prove that `f_n` has no roots in the closed unit disk `{z ∈ ℂ: |z| ≤ 1}`.
+Suppose that `f(x) = Σ c_i x^i` is a power series for which each coefficient `c_i` is 0 or 1. Show that if `f(2/3) = 3/2`, then `f(1/2)` must be irrational.
+Prove that for each positive integer `n`, the number `10^(10^(10^n)) + 10^(10^n) + 10^n - 1` is not prime.
+Prove that there exist infinitely many integers `n` such that `n, n + 1, n + 2` are each the sum of the squares of two integers.
+Let `f` be a real function on the real line with continuous third derivative. Prove that there exists a point `a` such that...
+Let `(p_n)` be a sequence and `f: ℕ → ℕ`. The sequence `(q_k)_{k ∈ ℕ}` with `q_k = p_{f(k)}` is called a rearrangement of `(p_n)`. Show that if `f` is an injection, the limit of a sequence is unaffected by rearrangement.
+Let `𝒯` be the collection of open subsets of a metric space `M`, and `𝒦` the collection of closed subsets. Show that there is a bijection from `𝒯` onto `𝒦`.

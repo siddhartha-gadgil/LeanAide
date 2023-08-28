@@ -23710,3 +23710,1517 @@ total : 28
 
 elaborated: 22
 
+Writing to file: proofnet_valid_unicode-elab-10-false-5-8.json
+
+success
+
+theorem ∀ {r : ℚ} {x : ℝ}, r ≠ 0 → Irrational x → Irrational (↑r + x)
+
+total : 1
+
+elaborated: 1
+
+success
+
+theorem ¬∃ q, q ^ 2 = 12
+
+total : 2
+
+elaborated: 2
+
+success
+
+theorem ∀ (A : Set ℝ), Set.Nonempty A → BddBelow A → sInf A = -sSup (-A)
+
+total : 3
+
+elaborated: 3
+
+success
+
+theorem ∀ (z : ℂ), ∃ r w, 0 ≤ r ∧ ?m.1464420 z r w = 1 ∧ z = r * w
+
+total : 4
+
+elaborated: 4
+
+success
+
+theorem ∀ {x y : ℂ}, ↑Complex.abs (↑(↑Complex.abs x) - ↑(↑Complex.abs y)) ≤ ↑Complex.abs (x - y)
+
+total : 5
+
+elaborated: 5
+
+success
+
+theorem ∀ {k : ℕ} [inst : LinearOrderedField ℝ] [inst_1 : NormedAddCommGroup (Fin k → ℝ)] [inst_2 : NormedSpace ℝ (Fin k → ℝ)]
+  {x y : Fin k → ℝ} {r d : ℝ},
+  k ≥ 3 →
+    dist x y = d →
+      d > 0 → r > 0 → 2 * r > d → ∃ f, Function.Injective f ∧ ∀ (n : ℤ), dist (f n) x = r ∧ dist (f n) y = r
+
+total : 6
+
+elaborated: 6
+
+No valid output from LLM; outputs below
+
+<input>:1:80: expected end of input while parsing ∀ {k : ℕ} (x : EuclideanSpace ℝ k), 2 ≤ k → ∃ y : EuclideanSpace ℝ k, y ≠ 0 ∧ x ⋅ y = 0 
+
+∀ {k : ℕ} {x : EuclideanSpace ℝ k}, k ≥ 2 → ∃ y, y ≠ 0 ∧ inner x y = 0 
+
+∀ {k : ℕ} {x : Finₓ k → ℝ}, k ≥ 2 → ∃ y : Finₓ k → ℝ, y ≠ 0 ∧ Finₓ.innerProduct x y = 0 
+
+<input>:1:67: expected token while parsing ∀ {k : ℕ} {x : Finₓ k → ℝ}, k ≥ 2 → ∃ y : Finₓ k → ℝ, y ≠ 0 ∧ ⟪x, y⟫ = 0 
+
+<input>:1:59: expected end of input while parsing ∀ {k : ℕ} {x : EuclideanSpace ℝ k}, k ≥ 2 → ∃ y, y ≠ 0 ∧ x ⋅ y = 0 
+
+<input>:1:59: expected end of input while parsing ∀ {k : ℕ} {x : EuclideanSpace ℝ k}, 2 ≤ k → ∃ y, y ≠ 0 ∧ x ⋅ y = 0 
+
+<input>:1:51: expected token while parsing ∀ {k : ℕ} {x : ℝ^k}, 2 ≤ k → ∃ y : ℝ^k, y ≠ 0 ∧ (x ⋅ y = 0) 
+
+<input>:1:50: expected end of input while parsing ∀ {k : ℕ} {x : ℝ^k}, 2 ≤ k → ∃ y : ℝ^k, y ≠ 0 ∧ x ⋅ y = 0 
+
+<input>:1:51: expected end of input while parsing ∀ {k : ℕ} {x : Finₓ k → ℝ}, 2 ≤ k → ∃ y, y ≠ 0 ∧ x ⋅ y = 0 
+
+∀ {k : ℕ} (x : Finₓ k → ℝ), 2 ≤ k → ∃ y, y ≠ 0 ∧ (Finset.sum Finset.univ fun i => x i * y i) = 0 
+
+failed to elaborate
+
+outputs: #[∀ {k : ℕ} (x : EuclideanSpace ℝ k), 2 ≤ k → ∃ y : EuclideanSpace ℝ k, y ≠ 0 ∧ x ⋅ y = 0 , ∀ {k : ℕ} {x : EuclideanSpace ℝ k}, k ≥ 2 → ∃ y, y ≠ 0 ∧ inner x y = 0 , ∀ {k : ℕ} {x : Finₓ k → ℝ}, k ≥ 2 → ∃ y : Finₓ k → ℝ, y ≠ 0 ∧ Finₓ.innerProduct x y = 0 , ∀ {k : ℕ} {x : Finₓ k → ℝ}, k ≥ 2 → ∃ y : Finₓ k → ℝ, y ≠ 0 ∧ ⟪x, y⟫ = 0 , ∀ {k : ℕ} {x : EuclideanSpace ℝ k}, k ≥ 2 → ∃ y, y ≠ 0 ∧ x ⋅ y = 0 , ∀ {k : ℕ} {x : EuclideanSpace ℝ k}, 2 ≤ k → ∃ y, y ≠ 0 ∧ x ⋅ y = 0 , ∀ {k : ℕ} {x : ℝ^k}, 2 ≤ k → ∃ y : ℝ^k, y ≠ 0 ∧ (x ⋅ y = 0) , ∀ {k : ℕ} {x : ℝ^k}, 2 ≤ k → ∃ y : ℝ^k, y ≠ 0 ∧ x ⋅ y = 0 , ∀ {k : ℕ} {x : Finₓ k → ℝ}, 2 ≤ k → ∃ y, y ≠ 0 ∧ x ⋅ y = 0 , ∀ {k : ℕ} (x : Finₓ k → ℝ), 2 ≤ k → ∃ y, y ≠ 0 ∧ (Finset.sum Finset.univ fun i => x i * y i) = 0 ]
+
+total : 7
+
+elaborated: 6
+
+success
+
+theorem ∀ {k : ℝ} {a b c r : ℝ}, (∀ (x : ℝ), |x - a| = 2 * |x - b| ↔ |x - c| = r) → 3 * c = 4 * b - a ∧ 3 * r = 2 * |b - a|
+
+total : 8
+
+elaborated: 7
+
+No valid output from LLM; outputs below
+
+∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : TopologicalSpace.HasCountableBasisOfCompactSubsetsWithLimit X],
+  TopologicalSpace.SeparableSpace X 
+
+∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : ∀ (A :  ZFSet X), Set.Infinite A → HasCountableLimitPoints A],
+  TopologicalSpace.SeparableSpace X 
+
+∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : TopologicalSpace.SeparableSpace X] (h : ∀ s :  ZFSet X, Set.Infinite s → ∃ x, IsLimitPoint s x),
+  TopologicalSpace.SeparableSpace X 
+
+∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : ∀ (s :  ZFSet X), Set.Infinite s → ∃ x, IsLimitPoint s x],
+  TopologicalSpace.SeparableSpace X 
+
+∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : ∀ (s :  ZFSet X), Set.Infinite s → ∃ (p : X), IsLimitPointOf s],
+  TopologicalSpace.SeparableSpace X 
+
+∀ (X : Type u_1) [inst : MetricSpace X] [inst_1 : TopologicalSpace X] (h : ∀ s :  ZFSet X, Set.Infinite s →  Exists (fun {p} => HasMem.Mem p ( closure s))),
+  TopologicalSpace.SeparableSpace X 
+
+∀ (X : Type u) [inst : MetricSpace X] [inst_1 : ∀ (s :  ZFSet X), Set.Infinite s → ∃ x, IsLimitPoint s x],
+  TopologicalSpace.SeparableSpace X 
+
+∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : TopologicalSpace.HasInfiniteSubsetLimitPoint X],
+  TopologicalSpace.SeparableSpace X 
+
+∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : EveryInfiniteSetHasLimitPoint X],
+  TopologicalSpace.SeparableSpace X 
+
+∀ {X : Type u_1} [inst : MetricSpace X] [H : ∀ (s :  ZFSet X), Set.Infinite s → Set.Nonempty (SetOf IsLimitPoint s)],
+  TopologicalSpace.SeparableSpace X 
+
+failed to elaborate
+
+outputs: #[∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : TopologicalSpace.HasCountableBasisOfCompactSubsetsWithLimit X],
+  TopologicalSpace.SeparableSpace X , ∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : ∀ (A : Set X), Set.Infinite A → HasCountableLimitPoints A],
+  TopologicalSpace.SeparableSpace X , ∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : TopologicalSpace.SeparableSpace X] (h : ∀ s : Set X, Set.Infinite s → ∃ x, IsLimitPoint s x),
+  TopologicalSpace.SeparableSpace X , ∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : ∀ (s : Set X), Set.Infinite s → ∃ x, IsLimitPoint s x],
+  TopologicalSpace.SeparableSpace X , ∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : ∀ (s : Set X), Set.Infinite s → ∃ (p : X), IsLimitPointOf s],
+  TopologicalSpace.SeparableSpace X , ∀ (X : Type u_1) [inst : MetricSpace X] [inst_1 : TopologicalSpace X] (h : ∀ s : Set X, Set.Infinite s → Exists (fun {p} => HasMem.Mem p (closure s))),
+  TopologicalSpace.SeparableSpace X , ∀ (X : Type u) [inst : MetricSpace X] [inst_1 : ∀ (s : Set X), Set.Infinite s → ∃ x, IsLimitPoint s x],
+  TopologicalSpace.SeparableSpace X , ∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : TopologicalSpace.HasInfiniteSubsetLimitPoint X],
+  TopologicalSpace.SeparableSpace X , ∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : EveryInfiniteSetHasLimitPoint X],
+  TopologicalSpace.SeparableSpace X , ∀ {X : Type u_1} [inst : MetricSpace X] [H : ∀ (s : Set X), Set.Infinite s → Set.Nonempty (SetOf IsLimitPoint s)],
+  TopologicalSpace.SeparableSpace X ]
+
+total : 9
+
+elaborated: 7
+
+No valid output from LLM; outputs below
+
+∀ {α : Type u_1} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace.SecondCountableTopology α] [inst_2 : T2Space α],
+  ∀ {E :  ZFSet α}, Uncountable E → Preperfect (CondensationPoints α E) 
+
+∀ {α : Type u_1} [inst : TopologicalSpace α] {E :  ZFSet α} [inst_1 : TopologicalSpace.SecondCountableTopology α],
+  ¬Set.Countable E →
+    ∃ P, Perfect P ∧ Set.Nonempty P ∧ ∀ (x : α), IsCondensationPoint x E ↔ x ∈ P 
+
+<input>:2:8: unexpected end of input; expected ':=' or '|' while parsing forall {k : ℕ} {E : Set (Finₓ k → ℝ)}, ¬Set.Countable E →
+  let P 
+
+<input>:3:10: unexpected end of input; expected ':=' or '|' while parsing ∀ {k : ℕ} {E : Set (EuclideanSpace ℝ k)},
+  ¬Set.Countable E →
+    let P 
+
+∀ {k : ℕ} {E :  ZFSet (Finₓ (k + 1) → ℝ)}, ¬Set.Countable E →
+  ∃ P, Perfect P ∧ P ⊆ E ∧ P = {x | ∀ (n : ℕ), ∃ r, 0 < r ∧ ClosedBall x r ∩ E ⊆ ClosedBall x r ∩ P} 
+
+∀ {k : ℕ} {E :  ZFSet (EuclideanSpace ℝ k)} [_inst_1 : TopologicalSpace.SecondCountableTopology (EuclideanSpace ℝ k)],
+  ¬Set.Countable E →
+    ∀ {P :  ZFSet (EuclideanSpace ℝ k)},
+      P = {x : EuclideanSpace ℝ k | Filter.IsCondensationPt x (Filter.principal E)} → Perfect P 
+
+<input>:4:10: unexpected end of input; expected ':=' or '|' while parsing forall {α : Type u_1} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace.SecondCountableTopology α] [inst_2 : LinearOrder α] [inst_3 : OrderTopology α],
+  (Exists fun [Nonempty α] => True) →
+  ∀ {E : Set α}, Set.Countable Eᶜ →
+    let P 
+
+∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace.SecondCountableTopology α] {C :  ZFSet α} {E :  ZFSet α},
+  IsCondensationPointOf C E →
+    ¬Set.Countable E →
+      Perfect C 
+
+∀ {α : Type u_1} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace.SecondCountableTopology α] {E :  ZFSet α},
+  ¬Set.Countable E →
+    ∀ {P :  ZFSet α}, P = CondensationPoints E → Perfect P 
+
+<input>:3:10: unexpected end of input; expected ':=' or '|' while parsing ∀ {α : Type u_1} [inst : TopologicalSpace α] {E : Set α} [inst_1 : TopologicalSpace.SecondCountableTopology α] [inst_2 : LinearOrder α] [inst_3 : OrderTopology α],
+  ¬Set.Countable E →
+    let P 
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u_1} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace.SecondCountableTopology α] [inst_2 : T2Space α],
+  ∀ {E : Set α}, Uncountable E → Preperfect (CondensationPoints α E) , ∀ {α : Type u_1} [inst : TopologicalSpace α] {E : Set α} [inst_1 : TopologicalSpace.SecondCountableTopology α],
+  ¬Set.Countable E →
+    ∃ P, Perfect P ∧ Set.Nonempty P ∧ ∀ (x : α), IsCondensationPoint x E ↔ x ∈ P , forall {k : ℕ} {E : Set (Finₓ k → ℝ)}, ¬Set.Countable E →
+  let P , ∀ {k : ℕ} {E : Set (EuclideanSpace ℝ k)},
+  ¬Set.Countable E →
+    let P , ∀ {k : ℕ} {E : Set (Finₓ (k + 1) → ℝ)}, ¬Set.Countable E →
+  ∃ P, Perfect P ∧ P ⊆ E ∧ P = {x | ∀ (n : ℕ), ∃ r, 0 < r ∧ ClosedBall x r ∩ E ⊆ ClosedBall x r ∩ P} , ∀ {k : ℕ} {E : Set (EuclideanSpace ℝ k)} [_inst_1 : TopologicalSpace.SecondCountableTopology (EuclideanSpace ℝ k)],
+  ¬Set.Countable E →
+    ∀ {P : Set (EuclideanSpace ℝ k)},
+      P = {x : EuclideanSpace ℝ k | Filter.IsCondensationPt x (Filter.principal E)} → Perfect P , forall {α : Type u_1} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace.SecondCountableTopology α] [inst_2 : LinearOrder α] [inst_3 : OrderTopology α],
+  (Exists fun [Nonempty α] => True) →
+  ∀ {E : Set α}, Set.Countable Eᶜ →
+    let P , ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace.SecondCountableTopology α] {C : Set α} {E : Set α},
+  IsCondensationPointOf C E →
+    ¬Set.Countable E →
+      Perfect C , ∀ {α : Type u_1} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace.SecondCountableTopology α] {E : Set α},
+  ¬Set.Countable E →
+    ∀ {P : Set α}, P = CondensationPoints E → Perfect P , ∀ {α : Type u_1} [inst : TopologicalSpace α] {E : Set α} [inst_1 : TopologicalSpace.SecondCountableTopology α] [inst_2 : LinearOrder α] [inst_3 : OrderTopology α],
+  ¬Set.Countable E →
+    let P ]
+
+total : 10
+
+elaborated: 7
+
+success
+
+theorem ∀ {α : Type u} [inst : MetricSpace α] [inst_1 : TopologicalSpace.SeparableSpace α] {s : Set α},
+  IsClosed s → ∃ t₁ t₂, t₁ ⊆ s ∧ t₂ ⊆ s ∧ Perfect t₁ ∧ Set.Countable t₂ ∧ s = t₁ ∪ t₂
+
+total : 11
+
+elaborated: 8
+
+success
+
+theorem ∀ {α : Type u} {β : Type v} [inst : TopologicalSpace α] [inst_1 : LinearOrderedRing α] [inst_2 : OrderTopology α]
+  [inst_3 : TopologicalSpace β] {s : β → α} {a : α} {f : Filter β},
+  Filter.Tendsto s f (nhds a) → Filter.Tendsto (fun x => |s x|) f (nhds |a|)
+
+total : 12
+
+elaborated: 9
+
+success
+
+theorem ∀ (s : ℕ → ℝ),
+  s 0 = Real.sqrt 2 →
+    (∀ (n : ℕ), s (n + 1) = Real.sqrt (2 + Real.sqrt (s n))) →
+      (∃ l, Filter.Tendsto s Filter.atTop (nhds l)) ∧ ∀ (n : ℕ), s n < 2
+
+total : 13
+
+elaborated: 10
+
+success
+
+theorem ∀ {α : Type u_1} [inst : LinearOrderedField α] [inst_1 : Archimedean α],
+  Filter.Tendsto (fun n => Finset.sum (Finset.range n) fun i => Real.sqrt (↑i + 1) - Real.sqrt ↑i) Filter.atTop
+    Filter.atTop
+
+total : 14
+
+elaborated: 11
+
+No valid output from LLM; outputs below
+
+∀ {α : Type u_1} {β : Type u_2} [inst : OrderedCommMonoid α] [inst_1 : OrderedCommMonoid β] {f : ℕ → α} {g : ℕ → β},
+  Summable f →
+    (∀ (n : ℕ), g n ≤ g (n + 1)) →
+      BddAbove (Set.Range g) →
+        Summable fun n => f n * g n 
+
+∀ {α : Type u_1} {β : Type u_2} [inst : OrderedCommMonoid α] [inst_1 : LinearOrderedCommMonoid β] {a : ℕ → α} {b : ℕ → β},
+  Summable a → Monotone b → BddAbove (Set.Range b) → Summable (fun n => a n * b n) 
+
+∀ {α : Type u_1} {β : Type u_2} [inst : OrderedCommMonoid α] [inst_1 : LinearOrderedCommRing β] {ua : α →+ ℝ} {u : ℕ → α}
+  {ub : β →+ ℝ} {v : ℕ → β},
+  Filter.Tendsto (fun n => ua (u n)) Filter.atTop ( nhds 0) →
+    (Monotone v ∧ Bounded (Set.Range v)) →
+      Filter.Tendsto (fun n => (ua (u n)).toReal * ub (v n).toReal) Filter.atTop ( nhds 0) 
+
+<input>:2:91: expected '↦', '=>' while parsing ∀ {α : Type u_1} [inst : LinearOrderedField α] {a b : ℕ → α},
+  Summable a → BddAbove (Set.Range b) → BddBelow (Set.Range b) → Monotone b → Summable (λ n, a n * b n) 
+
+∀ {α : Type u_1} {β : Type u_2} [inst : OrderedCancelAddCommMonoid β] [inst_1 : TopologicalSpace β] {a b : ℕ → β} {c : β},
+  HasSum a c →
+    BddAbove (Set.Range b) →
+      Monotone b → HasSum (fun n => a n * b n) (c * b 0) 
+
+∀ {α : Type u_1} {β : Type u_2} [inst : LinearOrderedField α] [inst_1 : OrderedAddCommMonoid β] {a : ℕ → α} {b : ℕ → β},
+  HasSum a (∑' (n : ℕ), a n) →
+    Monotone b →
+      BddAbove (Set.Range b) →
+        HasSum (fun n => a n * b n) (∑' (n : ℕ), a n * b n) 
+
+∀ {α : Type u_1} {β : Type u_2} [inst : OrderedCommMonoid α] [inst_1 : LinearOrderedAddCommMonoid β]
+  [inst_2 : TopologicalSpace β] [inst_3 : OrderClosedTopology β] {f g : ℕ → α} {B : α},
+  HasSum f B → Monotone g → BddAbove (Set.Range g) → HasSum (fun n => f n * g n) (B * g 0) 
+
+∀ {α : Type u_1} {β : Type u_2} [inst : LinearOrderedField α] [inst_1 : TopologicalSpace α] [inst_2 : OrderTopology α]
+  {f : ℕ → α} {g : ℕ → β} [inst_3 : LinearOrderedAddCommMonoid β] {a : α} {b : β},
+  HasSum f a →
+    Monotone g →
+      BddAbove (Set.Range g) →
+        BddBelow (Set.Range g) → HasSum (fun n => f n * g n) (a * b) 
+
+forall {α : Type u_1} {β : Type u_2} [inst : OrderedCommMonoid α] [inst_1 : OrderedCommMonoid β] {a : ℕ → α} {b : ℕ → β},
+  Summable a →
+    BddBelow ( ZFSet.range b) →
+      BddAbove ( ZFSet.range b) →
+        Monotone b →
+          Summable fun n => a n * b n 
+
+forall {α : Type u_1} {β : Type u_2} [inst : OrderedCommMonoid α] [inst_1 : OrderedCommMonoid β]
+  {a : ℕ → α} {b : ℕ → β} {l : α},
+  HasSum a l → Monotone b → BddAbove (Set.Range b) → HasSum (fun n => a n * b n) (l * b 0) 
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u_1} {β : Type u_2} [inst : OrderedCommMonoid α] [inst_1 : OrderedCommMonoid β] {f : ℕ → α} {g : ℕ → β},
+  Summable f →
+    (∀ (n : ℕ), g n ≤ g (n + 1)) →
+      BddAbove (Set.Range g) →
+        Summable fun n => f n * g n , ∀ {α : Type u_1} {β : Type u_2} [inst : OrderedCommMonoid α] [inst_1 : LinearOrderedCommMonoid β] {a : ℕ → α} {b : ℕ → β},
+  Summable a → Monotone b → BddAbove (Set.Range b) → Summable (fun n => a n * b n) , ∀ {α : Type u_1} {β : Type u_2} [inst : OrderedCommMonoid α] [inst_1 : LinearOrderedCommRing β] {ua : α →+ ℝ} {u : ℕ → α}
+  {ub : β →+ ℝ} {v : ℕ → β},
+  Filter.Tendsto (fun n => ua (u n)) Filter.atTop (nhds 0) →
+    (Monotone v ∧ Bounded (Set.Range v)) →
+      Filter.Tendsto (fun n => (ua (u n)).toReal * ub (v n).toReal) Filter.atTop (nhds 0) , ∀ {α : Type u_1} [inst : LinearOrderedField α] {a b : ℕ → α},
+  Summable a → BddAbove (Set.Range b) → BddBelow (Set.Range b) → Monotone b → Summable (λ n, a n * b n) , ∀ {α : Type u_1} {β : Type u_2} [inst : OrderedCancelAddCommMonoid β] [inst_1 : TopologicalSpace β] {a b : ℕ → β} {c : β},
+  HasSum a c →
+    BddAbove (Set.Range b) →
+      Monotone b → HasSum (fun n => a n * b n) (c * b 0) , ∀ {α : Type u_1} {β : Type u_2} [inst : LinearOrderedField α] [inst_1 : OrderedAddCommMonoid β] {a : ℕ → α} {b : ℕ → β},
+  HasSum a (∑' (n : ℕ), a n) →
+    Monotone b →
+      BddAbove (Set.Range b) →
+        HasSum (fun n => a n * b n) (∑' (n : ℕ), a n * b n) , ∀ {α : Type u_1} {β : Type u_2} [inst : OrderedCommMonoid α] [inst_1 : LinearOrderedAddCommMonoid β]
+  [inst_2 : TopologicalSpace β] [inst_3 : OrderClosedTopology β] {f g : ℕ → α} {B : α},
+  HasSum f B → Monotone g → BddAbove (Set.Range g) → HasSum (fun n => f n * g n) (B * g 0) , ∀ {α : Type u_1} {β : Type u_2} [inst : LinearOrderedField α] [inst_1 : TopologicalSpace α] [inst_2 : OrderTopology α]
+  {f : ℕ → α} {g : ℕ → β} [inst_3 : LinearOrderedAddCommMonoid β] {a : α} {b : β},
+  HasSum f a →
+    Monotone g →
+      BddAbove (Set.Range g) →
+        BddBelow (Set.Range g) → HasSum (fun n => f n * g n) (a * b) , forall {α : Type u_1} {β : Type u_2} [inst : OrderedCommMonoid α] [inst_1 : OrderedCommMonoid β] {a : ℕ → α} {b : ℕ → β},
+  Summable a →
+    BddBelow (Set.range b) →
+      BddAbove (Set.range b) →
+        Monotone b →
+          Summable fun n => a n * b n , forall {α : Type u_1} {β : Type u_2} [inst : OrderedCommMonoid α] [inst_1 : OrderedCommMonoid β]
+  {a : ℕ → α} {b : ℕ → β} {l : α},
+  HasSum a l → Monotone b → BddAbove (Set.Range b) → HasSum (fun n => a n * b n) (l * b 0) ]
+
+total : 15
+
+elaborated: 11
+
+success
+
+theorem ∀ {α : Type u} {β : Type v} [inst : MetricSpace α] [inst_1 : Nonempty β] [inst_2 : SemilatticeSup β] {u : β → α},
+  CauchySeq u →
+    ∀ {ι : Type u_1} {f : ι → β} {p : Filter ι} [inst_3 : Filter.NeBot p],
+      Filter.Tendsto f p Filter.atTop →
+        ∀ {a : α}, Filter.Tendsto (u ∘ f) p (nhds a) → Filter.Tendsto u Filter.atTop (nhds a)
+
+total : 16
+
+elaborated: 12
+
+success
+
+theorem ∀ {α : Type u_1} [inst : MetricSpace α] [inst_1 : CompleteSpace α] {G : ℕ → Set α},
+  (∀ (n : ℕ), IsOpen (G n)) → (∀ (n : ℕ), Dense (G n)) → Set.Nonempty (⋂ (n : ℕ), G n)
+
+total : 17
+
+elaborated: 13
+
+success
+
+theorem ∀ {X : Type u_1} {Y : Type u_2} [inst : MetricSpace X] [inst_1 : MetricSpace Y] {E : Set X} {f : X → Y},
+  Continuous f → Set.MapsTo f (closure E) (closure (f '' E))
+
+total : 18
+
+elaborated: 14
+
+success
+
+theorem ∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : MetricSpace X]
+  [inst_3 : MetricSpace Y] {f g : X → Y} {E : Set X}, Dense E → Continuous f → Continuous g → Dense (f '' E)
+
+total : 19
+
+elaborated: 15
+
+success
+
+theorem ∀ {Y : Type u_1} [inst : TopologicalSpace Y] [inst_1 : NormalSpace Y] {E : Set Y} (f : C(↑E, ℝ)),
+  IsClosed E → ∃ g, ContinuousMap.restrict E g = f
+
+total : 20
+
+elaborated: 16
+
+No valid output from LLM; outputs below
+
+forall {X : Type u} {Y : Type v} [instX : TopologicalSpace X] [instY : TopologicalSpace Y] [inst : CompactSpace X]
+  {f : X → Y}, Compact (SetOf fun p : X × Y => p.2 = f p.1) ↔ Continuous f 
+
+<input>:3:49: expected 'do' while parsing forall {X : Type u} {Y : Type v} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y]
+  [inst_2 : T2Space Y] [inst_3 : CompactSpace X] {E : Set X} {f : X → Y},
+  IsCompact (SetOf (fun x => (x, f x)) for x in E) ↔ ContinuousOn f E 
+
+forall {E : Type u} [inst : TopologicalSpace E] {α : Type v} [inst_1 : TopologicalSpace α] [inst_2 : T2Space α] {f : E → α},
+  IsCompact (Function.Graph f) ↔ IsCompact (Set.Range f) 
+
+forall {E : Type u_1} {F : Type u_2} [inst : TopologicalSpace E] [inst_1 : TopologicalSpace F]
+  [inst_2 : CompactSpace E] [inst_3 : T2Space E] [inst_4 : T2Space F] {f : E → F},
+  Continuous f ↔ IsCompact (Set.Graph f) 
+
+<input>:2:57: expected '↦', '=>' while parsing ∀ {α : Type u_1} {β : Type u_2} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] {E : Set α} {f : α → β},
+  IsCompact E → (ContinuousOn f E ↔ IsCompact (SetOf (λ x, (x, f x)))) 
+
+∀ {α : Type u} {β : Type v} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] {E :  ZFSet α} {f : α → β},
+  IsCompact E → (ContinuousOn f E ↔ IsCompact (graph f E)) 
+
+∀ {α : Type u} {β : Type v} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] {f : α → β} {s :  ZFSet α},
+  IsCompact s → (IsCompact (SetOf fun p => ∃ (x : α) (H : x ∈ s), p = (x, f x)) ↔ ContinuousOn f s) 
+
+∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : CompactSpace X]
+  {E :  ZFSet X} {f : X → Y},
+  E ⊆ fgraph f ↔ Compact (fgraph f) 
+
+forall {α : Type u} {β : Type v} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] {f : α → β} {E :  ZFSet α},
+  IsCompact E → (IsCompact (Set.Graph f E) ↔ ContinuousOn f E) 
+
+forall {α : Type u} {β : Type v} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] {s :  ZFSet α} {f : α → β},
+  IsCompact s → (IsCompact (SetOf fun p => p.1 ∈ s ∧ p.2 = f p.1) ↔ ContinuousOn f s) 
+
+failed to elaborate
+
+outputs: #[forall {X : Type u} {Y : Type v} [instX : TopologicalSpace X] [instY : TopologicalSpace Y] [inst : CompactSpace X]
+  {f : X → Y}, Compact (SetOf fun p : X × Y => p.2 = f p.1) ↔ Continuous f , forall {X : Type u} {Y : Type v} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y]
+  [inst_2 : T2Space Y] [inst_3 : CompactSpace X] {E : Set X} {f : X → Y},
+  IsCompact (SetOf (fun x => (x, f x)) for x in E) ↔ ContinuousOn f E , forall {E : Type u} [inst : TopologicalSpace E] {α : Type v} [inst_1 : TopologicalSpace α] [inst_2 : T2Space α] {f : E → α},
+  IsCompact (Function.Graph f) ↔ IsCompact (Set.Range f) , forall {E : Type u_1} {F : Type u_2} [inst : TopologicalSpace E] [inst_1 : TopologicalSpace F]
+  [inst_2 : CompactSpace E] [inst_3 : T2Space E] [inst_4 : T2Space F] {f : E → F},
+  Continuous f ↔ IsCompact (Set.Graph f) , ∀ {α : Type u_1} {β : Type u_2} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] {E : Set α} {f : α → β},
+  IsCompact E → (ContinuousOn f E ↔ IsCompact (SetOf (λ x, (x, f x)))) , ∀ {α : Type u} {β : Type v} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] {E : Set α} {f : α → β},
+  IsCompact E → (ContinuousOn f E ↔ IsCompact (graph f E)) , ∀ {α : Type u} {β : Type v} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] {f : α → β} {s : Set α},
+  IsCompact s → (IsCompact (SetOf fun p => ∃ (x : α) (H : x ∈ s), p = (x, f x)) ↔ ContinuousOn f s) , ∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : CompactSpace X]
+  {E : Set X} {f : X → Y},
+  E ⊆ fgraph f ↔ Compact (fgraph f) , forall {α : Type u} {β : Type v} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] {f : α → β} {E : Set α},
+  IsCompact E → (IsCompact (Set.Graph f E) ↔ ContinuousOn f E) , forall {α : Type u} {β : Type v} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] {s : Set α} {f : α → β},
+  IsCompact s → (IsCompact (SetOf fun p => p.1 ∈ s ∧ p.2 = f p.1) ↔ ContinuousOn f s) ]
+
+total : 21
+
+elaborated: 16
+
+success
+
+theorem ∀ {E : Set ℝ}, Metric.Bounded E → ∃ f, UniformContinuous f ∧ ∀ (C : ℝ), ∃ x, x ∈ E ∧ C < |f x|
+
+total : 22
+
+elaborated: 17
+
+success
+
+theorem ∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} [inst : UniformSpace α] [inst_1 : UniformSpace β]
+  [inst_2 : UniformSpace γ] {g : α → β} {f : β → γ},
+  UniformContinuous g → UniformContinuous f → UniformContinuous (f ∘ g)
+
+total : 23
+
+elaborated: 18
+
+success
+
+theorem ∀ {f : ℝ → ℝ},
+  (∀ {a b c : ℝ}, a < b → f a < c → c < f b → ∃ x, x ∈ Set.Ioo a b ∧ f x = c) →
+    (∀ (q : ℚ), IsClosed {x | f x = ↑q}) → Continuous f
+
+total : 24
+
+elaborated: 19
+
+success
+
+theorem ∀ {a b : ℝ},
+  a < b →
+    ∀ {f : ℝ → ℝ},
+      ContinuousOn f (Set.Ioo a b) →
+        (∀ (x y : ℝ), x ∈ Set.Ioo a b → y ∈ Set.Ioo a b → f ((x + y) / 2) ≤ (f x + f y) / 2) →
+          ConvexOn ℝ (Set.Ioo a b) f
+
+total : 25
+
+elaborated: 20
+
+success
+
+theorem ∀ {f : ℝ → ℝ} {a b : ℝ},
+  (∀ (x : ℝ), x ∈ Set.Ioo a b → 0 < deriv f x) →
+    StrictMono f ∧
+      ∀ {x : ℝ},
+        x ∈ Set.Ioo a b → ∃ g, (∀ (y : ℝ), y ∈ Set.Ioo (f a) (f b) → (g ∘ f) y = y) ∧ HasDerivAt g (deriv f x)⁻¹ (f x)
+
+total : 26
+
+elaborated: 21
+
+No valid output from LLM; outputs below
+
+<input>:2:1428: unexpected end of input; expected ')', ',' or ':' while parsing ∀ {R : Type u_1} [inst : CommRing R] [inst_1 : IsDomain R] [inst_2 : CharZero R] (C : ℕ → R),
+  (Finset.sum (Finset.range (Nat.succ (Nat.succ (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Fin
+
+<input>:2:3: expected token while parsing ∀ {C : ℕ → ℝ},
+  (∑ (i : ℕ) in Finset.range (n + 1), C i / (↑i + 1)) = 0 →
+    ∃ x _h₀ _h₁, (Finset.sum (Finset.range (n + 1)) fun i => C i * x ^ i) = 0 
+
+∀ (C : ℕ → ℝ), (Finset.sum (Finset.range (n + 1)) fun i => C i / (↑i + 1)) = 0 →
+  ∃ x _h₀ : 0 < x, x < 1 ∧ Polynomial.eval x (Finset.sum (Finset.range (n + 1)) fun i => Polynomial.C (C i) * Polynomial.X ^ i) = 0 
+
+<input>:2:18: expected token while parsing ∀ {𝕜 : Type u_1} [inst : Field 𝕜] [inst_1 : LinearOrderedField 𝕜] [inst_2 : FloorRing 𝕜],
+  (∀ (C : ℝ → 𝕜), ∑ i in Finset.range (n + 1), C i * ↑(i) / (↑(i + 1))) = 0 →
+    ∃ x _h₀ _h₁, ∑ i in Finset.range (n + 1), C (i) * (x ^ i) = 0 
+
+<input>:2:3: expected token while parsing ∀ {C : ℕ → ℝ},
+  (∑ (i : ℕ) in Finset.range (n + 1), C i / (↑i + 1)) = 0 →
+    ∃ x _h₀ : 0 ≤ x, ∃ _h₁ : x ≤ 1, (∑ (i : ℕ) in Finset.range (n + 1), C i * x ^ i) = 0 
+
+<input>:2:3: expected token while parsing ∀ {C : ℕ → ℝ},
+  (∑ (i : ℕ) in Finset.range (n + 2), C i / ↑(i + 1)) = 0 →
+    (∃ x _h₀ _h₁, (∑ (i : ℕ) in Finset.range (n + 1), C i * x ^ i) = 0) 
+
+<input>:2:3: expected token while parsing ∀ (C : ℕ → ℝ),
+  (∑ i in Finset.range (n + 1), C i / (↑i + 1)) = 0 →
+    ∃ x ∈ Set.Icc (0 : ℝ) 1, Polynomial.eval x (Finset.sum (Finset.range (n + 1)) (Polynomial.monomial ∘ nat.succ)) = 0 
+
+<input>:2:3: expected token while parsing ∀ {C : ℕ → ℝ},
+  (∑ n in Finset.range (Nat.succ (Nat.succ n)), C n / (↑n + 1)) = 0 →
+    ∃ x ∈ Set.Icc (0 : ℝ) 1, (∑ n in Finset.range (Nat.succ (Nat.succ n)), C n * x ^ n) = 0 
+
+<input>:2:3: expected token while parsing ∀ {C : ℕ → ℝ},
+  (∑ n, C n / (↑n + 1)) = 0 →
+    ∃ x _h₀ _h₁, (Finset.sum (Finset.range (Nat.succ (Nat.succ _))) fun x_1 => C x_1 * x ^ x_1) = 0 
+
+<input>:3:10: expected token while parsing ∀ {n : ℕ} {C : ℕ → ℝ},
+  (∀ i, C i ≠ 0) →
+  (C 0 + (∑ i in Finset.range n, C (i + 1) / (↑i + 1)) + C (n + 1) / (↑n + 1) = 0) →
+  ∃ x _h₀ _h₁, Polynomial.eval x (Finset.sum (Finset.range (n + 2)) fun i => ↑Polynomial.C (C i) * Polynomial.X ^ i) = 0 
+
+failed to elaborate
+
+outputs: #[∀ {R : Type u_1} [inst : CommRing R] [inst_1 : IsDomain R] [inst_2 : CharZero R] (C : ℕ → R),
+  (Finset.sum (Finset.range (Nat.succ (Nat.succ (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Fin, ∀ {C : ℕ → ℝ},
+  (∑ (i : ℕ) in Finset.range (n + 1), C i / (↑i + 1)) = 0 →
+    ∃ x _h₀ _h₁, (Finset.sum (Finset.range (n + 1)) fun i => C i * x ^ i) = 0 , ∀ (C : ℕ → ℝ), (Finset.sum (Finset.range (n + 1)) fun i => C i / (↑i + 1)) = 0 →
+  ∃ x _h₀ : 0 < x, x < 1 ∧ Polynomial.eval x (Finset.sum (Finset.range (n + 1)) fun i => Polynomial.C (C i) * Polynomial.X ^ i) = 0 , ∀ {𝕜 : Type u_1} [inst : Field 𝕜] [inst_1 : LinearOrderedField 𝕜] [inst_2 : FloorRing 𝕜],
+  (∀ (C : ℝ → 𝕜), ∑ i in Finset.range (n + 1), C i * ↑(i) / (↑(i + 1))) = 0 →
+    ∃ x _h₀ _h₁, ∑ i in Finset.range (n + 1), C (i) * (x ^ i) = 0 , ∀ {C : ℕ → ℝ},
+  (∑ (i : ℕ) in Finset.range (n + 1), C i / (↑i + 1)) = 0 →
+    ∃ x _h₀ : 0 ≤ x, ∃ _h₁ : x ≤ 1, (∑ (i : ℕ) in Finset.range (n + 1), C i * x ^ i) = 0 , ∀ {C : ℕ → ℝ},
+  (∑ (i : ℕ) in Finset.range (n + 2), C i / ↑(i + 1)) = 0 →
+    (∃ x _h₀ _h₁, (∑ (i : ℕ) in Finset.range (n + 1), C i * x ^ i) = 0) , ∀ (C : ℕ → ℝ),
+  (∑ i in Finset.range (n + 1), C i / (↑i + 1)) = 0 →
+    ∃ x ∈ Set.Icc (0 : ℝ) 1, Polynomial.eval x (Finset.sum (Finset.range (n + 1)) (Polynomial.monomial ∘ nat.succ)) = 0 , ∀ {C : ℕ → ℝ},
+  (∑ n in Finset.range (Nat.succ (Nat.succ n)), C n / (↑n + 1)) = 0 →
+    ∃ x ∈ Set.Icc (0 : ℝ) 1, (∑ n in Finset.range (Nat.succ (Nat.succ n)), C n * x ^ n) = 0 , ∀ {C : ℕ → ℝ},
+  (∑ n, C n / (↑n + 1)) = 0 →
+    ∃ x _h₀ _h₁, (Finset.sum (Finset.range (Nat.succ (Nat.succ _))) fun x_1 => C x_1 * x ^ x_1) = 0 , ∀ {n : ℕ} {C : ℕ → ℝ},
+  (∀ i, C i ≠ 0) →
+  (C 0 + (∑ i in Finset.range n, C (i + 1) / (↑i + 1)) + C (n + 1) / (↑n + 1) = 0) →
+  ∃ x _h₀ _h₁, Polynomial.eval x (Finset.sum (Finset.range (n + 2)) fun i => ↑Polynomial.C (C i) * Polynomial.X ^ i) = 0 ]
+
+total : 27
+
+elaborated: 21
+
+success
+
+theorem ∀ {f : ℝ → ℝ},
+  ContinuousOn f (Set.Ici 0) →
+    DifferentiableOn ℝ f (Set.Ioi 0) →
+      f 0 = 0 → MonotoneOn (deriv f) (Set.Ioi 0) → MonotoneOn (fun x => f x / x) (Set.Ioi 0)
+
+total : 28
+
+elaborated: 22
+
+success
+
+theorem ∀ {a : ℝ} {f : ℝ → ℝ} {M₀ M₁ M₂ : ℝ},
+  Differentiable ℝ f →
+    Differentiable ℝ (deriv f) →
+      (∀ (x : ℝ), a < x → |f x| ≤ M₀) →
+        (∀ (x : ℝ), a < x → |deriv f x| ≤ M₁) → (∀ (x : ℝ), a < x → |deriv^[2] f x| ≤ M₂) → M₁ ^ 2 ≤ 4 * M₀ * M₂
+
+total : 29
+
+elaborated: 23
+
+success
+
+theorem ∀ {X : Type u_1} [inst : TopologicalSpace X] {A : Set X}, (∀ (x : X), x ∈ A → ∃ U, IsOpen U ∧ x ∈ U ∧ U ⊆ A) → IsOpen A
+
+total : 30
+
+elaborated: 24
+
+success
+
+theorem {X : Type u} → {ι : Type u_1} → (ι → TopologicalSpace X) → TopologicalSpace X
+
+total : 31
+
+elaborated: 25
+
+success
+
+theorem ∀ {X : Type u} {ι : Type u_1} (T : ι → TopologicalSpace X), ∃! T₀, ∀ (i : ι), T i ≤ T₀
+
+total : 32
+
+elaborated: 26
+
+Writing to file: proofnet_valid_unicode-elab-10-false-5-8.json
+
+success
+
+theorem ∀ {r : ℚ} {x : ℝ}, r ≠ 0 → Irrational x → Irrational (↑r + x)
+
+total : 1
+
+elaborated: 1
+
+success
+
+theorem ¬∃ q, q ^ 2 = 12
+
+total : 2
+
+elaborated: 2
+
+success
+
+theorem ∀ (A : Set ℝ), Set.Nonempty A → BddBelow A → sInf A = -sSup (-A)
+
+total : 3
+
+elaborated: 3
+
+success
+
+theorem ∀ (z : ℂ), ∃ r w, 0 ≤ r ∧ ?m.1464420 z r w = 1 ∧ z = r * w
+
+total : 4
+
+elaborated: 4
+
+success
+
+theorem ∀ {x y : ℂ}, ↑Complex.abs (↑(↑Complex.abs x) - ↑(↑Complex.abs y)) ≤ ↑Complex.abs (x - y)
+
+total : 5
+
+elaborated: 5
+
+success
+
+theorem ∀ {k : ℕ} [inst : LinearOrderedField ℝ] [inst_1 : NormedAddCommGroup (Fin k → ℝ)] [inst_2 : NormedSpace ℝ (Fin k → ℝ)]
+  {x y : Fin k → ℝ} {r d : ℝ},
+  k ≥ 3 →
+    dist x y = d →
+      d > 0 → r > 0 → 2 * r > d → ∃ f, Function.Injective f ∧ ∀ (n : ℤ), dist (f n) x = r ∧ dist (f n) y = r
+
+total : 6
+
+elaborated: 6
+
+No valid output from LLM; outputs below
+
+<input>:1:80: expected end of input while parsing ∀ {k : ℕ} (x : EuclideanSpace ℝ k), 2 ≤ k → ∃ y : EuclideanSpace ℝ k, y ≠ 0 ∧ x ⋅ y = 0 
+
+∀ {k : ℕ} {x : EuclideanSpace ℝ k}, k ≥ 2 → ∃ y, y ≠ 0 ∧ inner x y = 0 
+
+∀ {k : ℕ} {x : Finₓ k → ℝ}, k ≥ 2 → ∃ y : Finₓ k → ℝ, y ≠ 0 ∧ Finₓ.innerProduct x y = 0 
+
+<input>:1:67: expected token while parsing ∀ {k : ℕ} {x : Finₓ k → ℝ}, k ≥ 2 → ∃ y : Finₓ k → ℝ, y ≠ 0 ∧ ⟪x, y⟫ = 0 
+
+<input>:1:59: expected end of input while parsing ∀ {k : ℕ} {x : EuclideanSpace ℝ k}, k ≥ 2 → ∃ y, y ≠ 0 ∧ x ⋅ y = 0 
+
+<input>:1:59: expected end of input while parsing ∀ {k : ℕ} {x : EuclideanSpace ℝ k}, 2 ≤ k → ∃ y, y ≠ 0 ∧ x ⋅ y = 0 
+
+<input>:1:51: expected token while parsing ∀ {k : ℕ} {x : ℝ^k}, 2 ≤ k → ∃ y : ℝ^k, y ≠ 0 ∧ (x ⋅ y = 0) 
+
+<input>:1:50: expected end of input while parsing ∀ {k : ℕ} {x : ℝ^k}, 2 ≤ k → ∃ y : ℝ^k, y ≠ 0 ∧ x ⋅ y = 0 
+
+<input>:1:51: expected end of input while parsing ∀ {k : ℕ} {x : Finₓ k → ℝ}, 2 ≤ k → ∃ y, y ≠ 0 ∧ x ⋅ y = 0 
+
+∀ {k : ℕ} (x : Finₓ k → ℝ), 2 ≤ k → ∃ y, y ≠ 0 ∧ (Finset.sum Finset.univ fun i => x i * y i) = 0 
+
+failed to elaborate
+
+outputs: #[∀ {k : ℕ} (x : EuclideanSpace ℝ k), 2 ≤ k → ∃ y : EuclideanSpace ℝ k, y ≠ 0 ∧ x ⋅ y = 0 , ∀ {k : ℕ} {x : EuclideanSpace ℝ k}, k ≥ 2 → ∃ y, y ≠ 0 ∧ inner x y = 0 , ∀ {k : ℕ} {x : Finₓ k → ℝ}, k ≥ 2 → ∃ y : Finₓ k → ℝ, y ≠ 0 ∧ Finₓ.innerProduct x y = 0 , ∀ {k : ℕ} {x : Finₓ k → ℝ}, k ≥ 2 → ∃ y : Finₓ k → ℝ, y ≠ 0 ∧ ⟪x, y⟫ = 0 , ∀ {k : ℕ} {x : EuclideanSpace ℝ k}, k ≥ 2 → ∃ y, y ≠ 0 ∧ x ⋅ y = 0 , ∀ {k : ℕ} {x : EuclideanSpace ℝ k}, 2 ≤ k → ∃ y, y ≠ 0 ∧ x ⋅ y = 0 , ∀ {k : ℕ} {x : ℝ^k}, 2 ≤ k → ∃ y : ℝ^k, y ≠ 0 ∧ (x ⋅ y = 0) , ∀ {k : ℕ} {x : ℝ^k}, 2 ≤ k → ∃ y : ℝ^k, y ≠ 0 ∧ x ⋅ y = 0 , ∀ {k : ℕ} {x : Finₓ k → ℝ}, 2 ≤ k → ∃ y, y ≠ 0 ∧ x ⋅ y = 0 , ∀ {k : ℕ} (x : Finₓ k → ℝ), 2 ≤ k → ∃ y, y ≠ 0 ∧ (Finset.sum Finset.univ fun i => x i * y i) = 0 ]
+
+total : 7
+
+elaborated: 6
+
+success
+
+theorem ∀ {k : ℝ} {a b c r : ℝ}, (∀ (x : ℝ), |x - a| = 2 * |x - b| ↔ |x - c| = r) → 3 * c = 4 * b - a ∧ 3 * r = 2 * |b - a|
+
+total : 8
+
+elaborated: 7
+
+No valid output from LLM; outputs below
+
+∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : TopologicalSpace.HasCountableBasisOfCompactSubsetsWithLimit X],
+  TopologicalSpace.SeparableSpace X 
+
+∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : ∀ (A :  ZFSet X), Set.Infinite A → HasCountableLimitPoints A],
+  TopologicalSpace.SeparableSpace X 
+
+∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : TopologicalSpace.SeparableSpace X] (h : ∀ s :  ZFSet X, Set.Infinite s → ∃ x, IsLimitPoint s x),
+  TopologicalSpace.SeparableSpace X 
+
+∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : ∀ (s :  ZFSet X), Set.Infinite s → ∃ x, IsLimitPoint s x],
+  TopologicalSpace.SeparableSpace X 
+
+∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : ∀ (s :  ZFSet X), Set.Infinite s → ∃ (p : X), IsLimitPointOf s],
+  TopologicalSpace.SeparableSpace X 
+
+∀ (X : Type u_1) [inst : MetricSpace X] [inst_1 : TopologicalSpace X] (h : ∀ s :  ZFSet X, Set.Infinite s →  Exists (fun {p} => HasMem.Mem p ( closure s))),
+  TopologicalSpace.SeparableSpace X 
+
+∀ (X : Type u) [inst : MetricSpace X] [inst_1 : ∀ (s :  ZFSet X), Set.Infinite s → ∃ x, IsLimitPoint s x],
+  TopologicalSpace.SeparableSpace X 
+
+∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : TopologicalSpace.HasInfiniteSubsetLimitPoint X],
+  TopologicalSpace.SeparableSpace X 
+
+∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : EveryInfiniteSetHasLimitPoint X],
+  TopologicalSpace.SeparableSpace X 
+
+∀ {X : Type u_1} [inst : MetricSpace X] [H : ∀ (s :  ZFSet X), Set.Infinite s → Set.Nonempty (SetOf IsLimitPoint s)],
+  TopologicalSpace.SeparableSpace X 
+
+failed to elaborate
+
+outputs: #[∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : TopologicalSpace.HasCountableBasisOfCompactSubsetsWithLimit X],
+  TopologicalSpace.SeparableSpace X , ∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : ∀ (A : Set X), Set.Infinite A → HasCountableLimitPoints A],
+  TopologicalSpace.SeparableSpace X , ∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : TopologicalSpace.SeparableSpace X] (h : ∀ s : Set X, Set.Infinite s → ∃ x, IsLimitPoint s x),
+  TopologicalSpace.SeparableSpace X , ∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : ∀ (s : Set X), Set.Infinite s → ∃ x, IsLimitPoint s x],
+  TopologicalSpace.SeparableSpace X , ∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : ∀ (s : Set X), Set.Infinite s → ∃ (p : X), IsLimitPointOf s],
+  TopologicalSpace.SeparableSpace X , ∀ (X : Type u_1) [inst : MetricSpace X] [inst_1 : TopologicalSpace X] (h : ∀ s : Set X, Set.Infinite s → Exists (fun {p} => HasMem.Mem p (closure s))),
+  TopologicalSpace.SeparableSpace X , ∀ (X : Type u) [inst : MetricSpace X] [inst_1 : ∀ (s : Set X), Set.Infinite s → ∃ x, IsLimitPoint s x],
+  TopologicalSpace.SeparableSpace X , ∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : TopologicalSpace.HasInfiniteSubsetLimitPoint X],
+  TopologicalSpace.SeparableSpace X , ∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : EveryInfiniteSetHasLimitPoint X],
+  TopologicalSpace.SeparableSpace X , ∀ {X : Type u_1} [inst : MetricSpace X] [H : ∀ (s : Set X), Set.Infinite s → Set.Nonempty (SetOf IsLimitPoint s)],
+  TopologicalSpace.SeparableSpace X ]
+
+total : 9
+
+elaborated: 7
+
+No valid output from LLM; outputs below
+
+∀ {α : Type u_1} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace.SecondCountableTopology α] [inst_2 : T2Space α],
+  ∀ {E :  ZFSet α}, Uncountable E → Preperfect (CondensationPoints α E) 
+
+∀ {α : Type u_1} [inst : TopologicalSpace α] {E :  ZFSet α} [inst_1 : TopologicalSpace.SecondCountableTopology α],
+  ¬Set.Countable E →
+    ∃ P, Perfect P ∧ Set.Nonempty P ∧ ∀ (x : α), IsCondensationPoint x E ↔ x ∈ P 
+
+<input>:2:8: unexpected end of input; expected ':=' or '|' while parsing forall {k : ℕ} {E : Set (Finₓ k → ℝ)}, ¬Set.Countable E →
+  let P 
+
+<input>:3:10: unexpected end of input; expected ':=' or '|' while parsing ∀ {k : ℕ} {E : Set (EuclideanSpace ℝ k)},
+  ¬Set.Countable E →
+    let P 
+
+∀ {k : ℕ} {E :  ZFSet (Finₓ (k + 1) → ℝ)}, ¬Set.Countable E →
+  ∃ P, Perfect P ∧ P ⊆ E ∧ P = {x | ∀ (n : ℕ), ∃ r, 0 < r ∧ ClosedBall x r ∩ E ⊆ ClosedBall x r ∩ P} 
+
+∀ {k : ℕ} {E :  ZFSet (EuclideanSpace ℝ k)} [_inst_1 : TopologicalSpace.SecondCountableTopology (EuclideanSpace ℝ k)],
+  ¬Set.Countable E →
+    ∀ {P :  ZFSet (EuclideanSpace ℝ k)},
+      P = {x : EuclideanSpace ℝ k | Filter.IsCondensationPt x (Filter.principal E)} → Perfect P 
+
+<input>:4:10: unexpected end of input; expected ':=' or '|' while parsing forall {α : Type u_1} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace.SecondCountableTopology α] [inst_2 : LinearOrder α] [inst_3 : OrderTopology α],
+  (Exists fun [Nonempty α] => True) →
+  ∀ {E : Set α}, Set.Countable Eᶜ →
+    let P 
+
+∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace.SecondCountableTopology α] {C :  ZFSet α} {E :  ZFSet α},
+  IsCondensationPointOf C E →
+    ¬Set.Countable E →
+      Perfect C 
+
+∀ {α : Type u_1} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace.SecondCountableTopology α] {E :  ZFSet α},
+  ¬Set.Countable E →
+    ∀ {P :  ZFSet α}, P = CondensationPoints E → Perfect P 
+
+<input>:3:10: unexpected end of input; expected ':=' or '|' while parsing ∀ {α : Type u_1} [inst : TopologicalSpace α] {E : Set α} [inst_1 : TopologicalSpace.SecondCountableTopology α] [inst_2 : LinearOrder α] [inst_3 : OrderTopology α],
+  ¬Set.Countable E →
+    let P 
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u_1} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace.SecondCountableTopology α] [inst_2 : T2Space α],
+  ∀ {E : Set α}, Uncountable E → Preperfect (CondensationPoints α E) , ∀ {α : Type u_1} [inst : TopologicalSpace α] {E : Set α} [inst_1 : TopologicalSpace.SecondCountableTopology α],
+  ¬Set.Countable E →
+    ∃ P, Perfect P ∧ Set.Nonempty P ∧ ∀ (x : α), IsCondensationPoint x E ↔ x ∈ P , forall {k : ℕ} {E : Set (Finₓ k → ℝ)}, ¬Set.Countable E →
+  let P , ∀ {k : ℕ} {E : Set (EuclideanSpace ℝ k)},
+  ¬Set.Countable E →
+    let P , ∀ {k : ℕ} {E : Set (Finₓ (k + 1) → ℝ)}, ¬Set.Countable E →
+  ∃ P, Perfect P ∧ P ⊆ E ∧ P = {x | ∀ (n : ℕ), ∃ r, 0 < r ∧ ClosedBall x r ∩ E ⊆ ClosedBall x r ∩ P} , ∀ {k : ℕ} {E : Set (EuclideanSpace ℝ k)} [_inst_1 : TopologicalSpace.SecondCountableTopology (EuclideanSpace ℝ k)],
+  ¬Set.Countable E →
+    ∀ {P : Set (EuclideanSpace ℝ k)},
+      P = {x : EuclideanSpace ℝ k | Filter.IsCondensationPt x (Filter.principal E)} → Perfect P , forall {α : Type u_1} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace.SecondCountableTopology α] [inst_2 : LinearOrder α] [inst_3 : OrderTopology α],
+  (Exists fun [Nonempty α] => True) →
+  ∀ {E : Set α}, Set.Countable Eᶜ →
+    let P , ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace.SecondCountableTopology α] {C : Set α} {E : Set α},
+  IsCondensationPointOf C E →
+    ¬Set.Countable E →
+      Perfect C , ∀ {α : Type u_1} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace.SecondCountableTopology α] {E : Set α},
+  ¬Set.Countable E →
+    ∀ {P : Set α}, P = CondensationPoints E → Perfect P , ∀ {α : Type u_1} [inst : TopologicalSpace α] {E : Set α} [inst_1 : TopologicalSpace.SecondCountableTopology α] [inst_2 : LinearOrder α] [inst_3 : OrderTopology α],
+  ¬Set.Countable E →
+    let P ]
+
+total : 10
+
+elaborated: 7
+
+success
+
+theorem ∀ {α : Type u} [inst : MetricSpace α] [inst_1 : TopologicalSpace.SeparableSpace α] {s : Set α},
+  IsClosed s → ∃ t₁ t₂, t₁ ⊆ s ∧ t₂ ⊆ s ∧ Perfect t₁ ∧ Set.Countable t₂ ∧ s = t₁ ∪ t₂
+
+total : 11
+
+elaborated: 8
+
+success
+
+theorem ∀ {α : Type u} {β : Type v} [inst : TopologicalSpace α] [inst_1 : LinearOrderedRing α] [inst_2 : OrderTopology α]
+  [inst_3 : TopologicalSpace β] {s : β → α} {a : α} {f : Filter β},
+  Filter.Tendsto s f (nhds a) → Filter.Tendsto (fun x => |s x|) f (nhds |a|)
+
+total : 12
+
+elaborated: 9
+
+success
+
+theorem ∀ (s : ℕ → ℝ),
+  s 0 = Real.sqrt 2 →
+    (∀ (n : ℕ), s (n + 1) = Real.sqrt (2 + Real.sqrt (s n))) →
+      (∃ l, Filter.Tendsto s Filter.atTop (nhds l)) ∧ ∀ (n : ℕ), s n < 2
+
+total : 13
+
+elaborated: 10
+
+success
+
+theorem ∀ {α : Type u_1} [inst : LinearOrderedField α] [inst_1 : Archimedean α],
+  Filter.Tendsto (fun n => Finset.sum (Finset.range n) fun i => Real.sqrt (↑i + 1) - Real.sqrt ↑i) Filter.atTop
+    Filter.atTop
+
+total : 14
+
+elaborated: 11
+
+No valid output from LLM; outputs below
+
+∀ {α : Type u_1} {β : Type u_2} [inst : OrderedCommMonoid α] [inst_1 : OrderedCommMonoid β] {f : ℕ → α} {g : ℕ → β},
+  Summable f →
+    (∀ (n : ℕ), g n ≤ g (n + 1)) →
+      BddAbove (Set.Range g) →
+        Summable fun n => f n * g n 
+
+∀ {α : Type u_1} {β : Type u_2} [inst : OrderedCommMonoid α] [inst_1 : LinearOrderedCommMonoid β] {a : ℕ → α} {b : ℕ → β},
+  Summable a → Monotone b → BddAbove (Set.Range b) → Summable (fun n => a n * b n) 
+
+∀ {α : Type u_1} {β : Type u_2} [inst : OrderedCommMonoid α] [inst_1 : LinearOrderedCommRing β] {ua : α →+ ℝ} {u : ℕ → α}
+  {ub : β →+ ℝ} {v : ℕ → β},
+  Filter.Tendsto (fun n => ua (u n)) Filter.atTop ( nhds 0) →
+    (Monotone v ∧ Bounded (Set.Range v)) →
+      Filter.Tendsto (fun n => (ua (u n)).toReal * ub (v n).toReal) Filter.atTop ( nhds 0) 
+
+<input>:2:91: expected '↦', '=>' while parsing ∀ {α : Type u_1} [inst : LinearOrderedField α] {a b : ℕ → α},
+  Summable a → BddAbove (Set.Range b) → BddBelow (Set.Range b) → Monotone b → Summable (λ n, a n * b n) 
+
+∀ {α : Type u_1} {β : Type u_2} [inst : OrderedCancelAddCommMonoid β] [inst_1 : TopologicalSpace β] {a b : ℕ → β} {c : β},
+  HasSum a c →
+    BddAbove (Set.Range b) →
+      Monotone b → HasSum (fun n => a n * b n) (c * b 0) 
+
+∀ {α : Type u_1} {β : Type u_2} [inst : LinearOrderedField α] [inst_1 : OrderedAddCommMonoid β] {a : ℕ → α} {b : ℕ → β},
+  HasSum a (∑' (n : ℕ), a n) →
+    Monotone b →
+      BddAbove (Set.Range b) →
+        HasSum (fun n => a n * b n) (∑' (n : ℕ), a n * b n) 
+
+∀ {α : Type u_1} {β : Type u_2} [inst : OrderedCommMonoid α] [inst_1 : LinearOrderedAddCommMonoid β]
+  [inst_2 : TopologicalSpace β] [inst_3 : OrderClosedTopology β] {f g : ℕ → α} {B : α},
+  HasSum f B → Monotone g → BddAbove (Set.Range g) → HasSum (fun n => f n * g n) (B * g 0) 
+
+∀ {α : Type u_1} {β : Type u_2} [inst : LinearOrderedField α] [inst_1 : TopologicalSpace α] [inst_2 : OrderTopology α]
+  {f : ℕ → α} {g : ℕ → β} [inst_3 : LinearOrderedAddCommMonoid β] {a : α} {b : β},
+  HasSum f a →
+    Monotone g →
+      BddAbove (Set.Range g) →
+        BddBelow (Set.Range g) → HasSum (fun n => f n * g n) (a * b) 
+
+forall {α : Type u_1} {β : Type u_2} [inst : OrderedCommMonoid α] [inst_1 : OrderedCommMonoid β] {a : ℕ → α} {b : ℕ → β},
+  Summable a →
+    BddBelow ( ZFSet.range b) →
+      BddAbove ( ZFSet.range b) →
+        Monotone b →
+          Summable fun n => a n * b n 
+
+forall {α : Type u_1} {β : Type u_2} [inst : OrderedCommMonoid α] [inst_1 : OrderedCommMonoid β]
+  {a : ℕ → α} {b : ℕ → β} {l : α},
+  HasSum a l → Monotone b → BddAbove (Set.Range b) → HasSum (fun n => a n * b n) (l * b 0) 
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u_1} {β : Type u_2} [inst : OrderedCommMonoid α] [inst_1 : OrderedCommMonoid β] {f : ℕ → α} {g : ℕ → β},
+  Summable f →
+    (∀ (n : ℕ), g n ≤ g (n + 1)) →
+      BddAbove (Set.Range g) →
+        Summable fun n => f n * g n , ∀ {α : Type u_1} {β : Type u_2} [inst : OrderedCommMonoid α] [inst_1 : LinearOrderedCommMonoid β] {a : ℕ → α} {b : ℕ → β},
+  Summable a → Monotone b → BddAbove (Set.Range b) → Summable (fun n => a n * b n) , ∀ {α : Type u_1} {β : Type u_2} [inst : OrderedCommMonoid α] [inst_1 : LinearOrderedCommRing β] {ua : α →+ ℝ} {u : ℕ → α}
+  {ub : β →+ ℝ} {v : ℕ → β},
+  Filter.Tendsto (fun n => ua (u n)) Filter.atTop (nhds 0) →
+    (Monotone v ∧ Bounded (Set.Range v)) →
+      Filter.Tendsto (fun n => (ua (u n)).toReal * ub (v n).toReal) Filter.atTop (nhds 0) , ∀ {α : Type u_1} [inst : LinearOrderedField α] {a b : ℕ → α},
+  Summable a → BddAbove (Set.Range b) → BddBelow (Set.Range b) → Monotone b → Summable (λ n, a n * b n) , ∀ {α : Type u_1} {β : Type u_2} [inst : OrderedCancelAddCommMonoid β] [inst_1 : TopologicalSpace β] {a b : ℕ → β} {c : β},
+  HasSum a c →
+    BddAbove (Set.Range b) →
+      Monotone b → HasSum (fun n => a n * b n) (c * b 0) , ∀ {α : Type u_1} {β : Type u_2} [inst : LinearOrderedField α] [inst_1 : OrderedAddCommMonoid β] {a : ℕ → α} {b : ℕ → β},
+  HasSum a (∑' (n : ℕ), a n) →
+    Monotone b →
+      BddAbove (Set.Range b) →
+        HasSum (fun n => a n * b n) (∑' (n : ℕ), a n * b n) , ∀ {α : Type u_1} {β : Type u_2} [inst : OrderedCommMonoid α] [inst_1 : LinearOrderedAddCommMonoid β]
+  [inst_2 : TopologicalSpace β] [inst_3 : OrderClosedTopology β] {f g : ℕ → α} {B : α},
+  HasSum f B → Monotone g → BddAbove (Set.Range g) → HasSum (fun n => f n * g n) (B * g 0) , ∀ {α : Type u_1} {β : Type u_2} [inst : LinearOrderedField α] [inst_1 : TopologicalSpace α] [inst_2 : OrderTopology α]
+  {f : ℕ → α} {g : ℕ → β} [inst_3 : LinearOrderedAddCommMonoid β] {a : α} {b : β},
+  HasSum f a →
+    Monotone g →
+      BddAbove (Set.Range g) →
+        BddBelow (Set.Range g) → HasSum (fun n => f n * g n) (a * b) , forall {α : Type u_1} {β : Type u_2} [inst : OrderedCommMonoid α] [inst_1 : OrderedCommMonoid β] {a : ℕ → α} {b : ℕ → β},
+  Summable a →
+    BddBelow (Set.range b) →
+      BddAbove (Set.range b) →
+        Monotone b →
+          Summable fun n => a n * b n , forall {α : Type u_1} {β : Type u_2} [inst : OrderedCommMonoid α] [inst_1 : OrderedCommMonoid β]
+  {a : ℕ → α} {b : ℕ → β} {l : α},
+  HasSum a l → Monotone b → BddAbove (Set.Range b) → HasSum (fun n => a n * b n) (l * b 0) ]
+
+total : 15
+
+elaborated: 11
+
+success
+
+theorem ∀ {α : Type u} {β : Type v} [inst : MetricSpace α] [inst_1 : Nonempty β] [inst_2 : SemilatticeSup β] {u : β → α},
+  CauchySeq u →
+    ∀ {ι : Type u_1} {f : ι → β} {p : Filter ι} [inst_3 : Filter.NeBot p],
+      Filter.Tendsto f p Filter.atTop →
+        ∀ {a : α}, Filter.Tendsto (u ∘ f) p (nhds a) → Filter.Tendsto u Filter.atTop (nhds a)
+
+total : 16
+
+elaborated: 12
+
+success
+
+theorem ∀ {α : Type u_1} [inst : MetricSpace α] [inst_1 : CompleteSpace α] {G : ℕ → Set α},
+  (∀ (n : ℕ), IsOpen (G n)) → (∀ (n : ℕ), Dense (G n)) → Set.Nonempty (⋂ (n : ℕ), G n)
+
+total : 17
+
+elaborated: 13
+
+success
+
+theorem ∀ {X : Type u_1} {Y : Type u_2} [inst : MetricSpace X] [inst_1 : MetricSpace Y] {E : Set X} {f : X → Y},
+  Continuous f → Set.MapsTo f (closure E) (closure (f '' E))
+
+total : 18
+
+elaborated: 14
+
+success
+
+theorem ∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : MetricSpace X]
+  [inst_3 : MetricSpace Y] {f g : X → Y} {E : Set X}, Dense E → Continuous f → Continuous g → Dense (f '' E)
+
+total : 19
+
+elaborated: 15
+
+success
+
+theorem ∀ {Y : Type u_1} [inst : TopologicalSpace Y] [inst_1 : NormalSpace Y] {E : Set Y} (f : C(↑E, ℝ)),
+  IsClosed E → ∃ g, ContinuousMap.restrict E g = f
+
+total : 20
+
+elaborated: 16
+
+No valid output from LLM; outputs below
+
+forall {X : Type u} {Y : Type v} [instX : TopologicalSpace X] [instY : TopologicalSpace Y] [inst : CompactSpace X]
+  {f : X → Y}, Compact (SetOf fun p : X × Y => p.2 = f p.1) ↔ Continuous f 
+
+<input>:3:49: expected 'do' while parsing forall {X : Type u} {Y : Type v} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y]
+  [inst_2 : T2Space Y] [inst_3 : CompactSpace X] {E : Set X} {f : X → Y},
+  IsCompact (SetOf (fun x => (x, f x)) for x in E) ↔ ContinuousOn f E 
+
+forall {E : Type u} [inst : TopologicalSpace E] {α : Type v} [inst_1 : TopologicalSpace α] [inst_2 : T2Space α] {f : E → α},
+  IsCompact (Function.Graph f) ↔ IsCompact (Set.Range f) 
+
+forall {E : Type u_1} {F : Type u_2} [inst : TopologicalSpace E] [inst_1 : TopologicalSpace F]
+  [inst_2 : CompactSpace E] [inst_3 : T2Space E] [inst_4 : T2Space F] {f : E → F},
+  Continuous f ↔ IsCompact (Set.Graph f) 
+
+<input>:2:57: expected '↦', '=>' while parsing ∀ {α : Type u_1} {β : Type u_2} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] {E : Set α} {f : α → β},
+  IsCompact E → (ContinuousOn f E ↔ IsCompact (SetOf (λ x, (x, f x)))) 
+
+∀ {α : Type u} {β : Type v} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] {E :  ZFSet α} {f : α → β},
+  IsCompact E → (ContinuousOn f E ↔ IsCompact (graph f E)) 
+
+∀ {α : Type u} {β : Type v} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] {f : α → β} {s :  ZFSet α},
+  IsCompact s → (IsCompact (SetOf fun p => ∃ (x : α) (H : x ∈ s), p = (x, f x)) ↔ ContinuousOn f s) 
+
+∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : CompactSpace X]
+  {E :  ZFSet X} {f : X → Y},
+  E ⊆ fgraph f ↔ Compact (fgraph f) 
+
+forall {α : Type u} {β : Type v} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] {f : α → β} {E :  ZFSet α},
+  IsCompact E → (IsCompact (Set.Graph f E) ↔ ContinuousOn f E) 
+
+forall {α : Type u} {β : Type v} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] {s :  ZFSet α} {f : α → β},
+  IsCompact s → (IsCompact (SetOf fun p => p.1 ∈ s ∧ p.2 = f p.1) ↔ ContinuousOn f s) 
+
+failed to elaborate
+
+outputs: #[forall {X : Type u} {Y : Type v} [instX : TopologicalSpace X] [instY : TopologicalSpace Y] [inst : CompactSpace X]
+  {f : X → Y}, Compact (SetOf fun p : X × Y => p.2 = f p.1) ↔ Continuous f , forall {X : Type u} {Y : Type v} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y]
+  [inst_2 : T2Space Y] [inst_3 : CompactSpace X] {E : Set X} {f : X → Y},
+  IsCompact (SetOf (fun x => (x, f x)) for x in E) ↔ ContinuousOn f E , forall {E : Type u} [inst : TopologicalSpace E] {α : Type v} [inst_1 : TopologicalSpace α] [inst_2 : T2Space α] {f : E → α},
+  IsCompact (Function.Graph f) ↔ IsCompact (Set.Range f) , forall {E : Type u_1} {F : Type u_2} [inst : TopologicalSpace E] [inst_1 : TopologicalSpace F]
+  [inst_2 : CompactSpace E] [inst_3 : T2Space E] [inst_4 : T2Space F] {f : E → F},
+  Continuous f ↔ IsCompact (Set.Graph f) , ∀ {α : Type u_1} {β : Type u_2} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] {E : Set α} {f : α → β},
+  IsCompact E → (ContinuousOn f E ↔ IsCompact (SetOf (λ x, (x, f x)))) , ∀ {α : Type u} {β : Type v} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] {E : Set α} {f : α → β},
+  IsCompact E → (ContinuousOn f E ↔ IsCompact (graph f E)) , ∀ {α : Type u} {β : Type v} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] {f : α → β} {s : Set α},
+  IsCompact s → (IsCompact (SetOf fun p => ∃ (x : α) (H : x ∈ s), p = (x, f x)) ↔ ContinuousOn f s) , ∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : CompactSpace X]
+  {E : Set X} {f : X → Y},
+  E ⊆ fgraph f ↔ Compact (fgraph f) , forall {α : Type u} {β : Type v} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] {f : α → β} {E : Set α},
+  IsCompact E → (IsCompact (Set.Graph f E) ↔ ContinuousOn f E) , forall {α : Type u} {β : Type v} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] {s : Set α} {f : α → β},
+  IsCompact s → (IsCompact (SetOf fun p => p.1 ∈ s ∧ p.2 = f p.1) ↔ ContinuousOn f s) ]
+
+total : 21
+
+elaborated: 16
+
+success
+
+theorem ∀ {E : Set ℝ}, Metric.Bounded E → ∃ f, UniformContinuous f ∧ ∀ (C : ℝ), ∃ x, x ∈ E ∧ C < |f x|
+
+total : 22
+
+elaborated: 17
+
+success
+
+theorem ∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} [inst : UniformSpace α] [inst_1 : UniformSpace β]
+  [inst_2 : UniformSpace γ] {g : α → β} {f : β → γ},
+  UniformContinuous g → UniformContinuous f → UniformContinuous (f ∘ g)
+
+total : 23
+
+elaborated: 18
+
+success
+
+theorem ∀ {f : ℝ → ℝ},
+  (∀ {a b c : ℝ}, a < b → f a < c → c < f b → ∃ x, x ∈ Set.Ioo a b ∧ f x = c) →
+    (∀ (q : ℚ), IsClosed {x | f x = ↑q}) → Continuous f
+
+total : 24
+
+elaborated: 19
+
+success
+
+theorem ∀ {a b : ℝ},
+  a < b →
+    ∀ {f : ℝ → ℝ},
+      ContinuousOn f (Set.Ioo a b) →
+        (∀ (x y : ℝ), x ∈ Set.Ioo a b → y ∈ Set.Ioo a b → f ((x + y) / 2) ≤ (f x + f y) / 2) →
+          ConvexOn ℝ (Set.Ioo a b) f
+
+total : 25
+
+elaborated: 20
+
+success
+
+theorem ∀ {f : ℝ → ℝ} {a b : ℝ},
+  (∀ (x : ℝ), x ∈ Set.Ioo a b → 0 < deriv f x) →
+    StrictMono f ∧
+      ∀ {x : ℝ},
+        x ∈ Set.Ioo a b → ∃ g, (∀ (y : ℝ), y ∈ Set.Ioo (f a) (f b) → (g ∘ f) y = y) ∧ HasDerivAt g (deriv f x)⁻¹ (f x)
+
+total : 26
+
+elaborated: 21
+
+No valid output from LLM; outputs below
+
+<input>:2:1428: unexpected end of input; expected ')', ',' or ':' while parsing ∀ {R : Type u_1} [inst : CommRing R] [inst_1 : IsDomain R] [inst_2 : CharZero R] (C : ℕ → R),
+  (Finset.sum (Finset.range (Nat.succ (Nat.succ (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Fin
+
+<input>:2:3: expected token while parsing ∀ {C : ℕ → ℝ},
+  (∑ (i : ℕ) in Finset.range (n + 1), C i / (↑i + 1)) = 0 →
+    ∃ x _h₀ _h₁, (Finset.sum (Finset.range (n + 1)) fun i => C i * x ^ i) = 0 
+
+∀ (C : ℕ → ℝ), (Finset.sum (Finset.range (n + 1)) fun i => C i / (↑i + 1)) = 0 →
+  ∃ x _h₀ : 0 < x, x < 1 ∧ Polynomial.eval x (Finset.sum (Finset.range (n + 1)) fun i => Polynomial.C (C i) * Polynomial.X ^ i) = 0 
+
+<input>:2:18: expected token while parsing ∀ {𝕜 : Type u_1} [inst : Field 𝕜] [inst_1 : LinearOrderedField 𝕜] [inst_2 : FloorRing 𝕜],
+  (∀ (C : ℝ → 𝕜), ∑ i in Finset.range (n + 1), C i * ↑(i) / (↑(i + 1))) = 0 →
+    ∃ x _h₀ _h₁, ∑ i in Finset.range (n + 1), C (i) * (x ^ i) = 0 
+
+<input>:2:3: expected token while parsing ∀ {C : ℕ → ℝ},
+  (∑ (i : ℕ) in Finset.range (n + 1), C i / (↑i + 1)) = 0 →
+    ∃ x _h₀ : 0 ≤ x, ∃ _h₁ : x ≤ 1, (∑ (i : ℕ) in Finset.range (n + 1), C i * x ^ i) = 0 
+
+<input>:2:3: expected token while parsing ∀ {C : ℕ → ℝ},
+  (∑ (i : ℕ) in Finset.range (n + 2), C i / ↑(i + 1)) = 0 →
+    (∃ x _h₀ _h₁, (∑ (i : ℕ) in Finset.range (n + 1), C i * x ^ i) = 0) 
+
+<input>:2:3: expected token while parsing ∀ (C : ℕ → ℝ),
+  (∑ i in Finset.range (n + 1), C i / (↑i + 1)) = 0 →
+    ∃ x ∈ Set.Icc (0 : ℝ) 1, Polynomial.eval x (Finset.sum (Finset.range (n + 1)) (Polynomial.monomial ∘ nat.succ)) = 0 
+
+<input>:2:3: expected token while parsing ∀ {C : ℕ → ℝ},
+  (∑ n in Finset.range (Nat.succ (Nat.succ n)), C n / (↑n + 1)) = 0 →
+    ∃ x ∈ Set.Icc (0 : ℝ) 1, (∑ n in Finset.range (Nat.succ (Nat.succ n)), C n * x ^ n) = 0 
+
+<input>:2:3: expected token while parsing ∀ {C : ℕ → ℝ},
+  (∑ n, C n / (↑n + 1)) = 0 →
+    ∃ x _h₀ _h₁, (Finset.sum (Finset.range (Nat.succ (Nat.succ _))) fun x_1 => C x_1 * x ^ x_1) = 0 
+
+<input>:3:10: expected token while parsing ∀ {n : ℕ} {C : ℕ → ℝ},
+  (∀ i, C i ≠ 0) →
+  (C 0 + (∑ i in Finset.range n, C (i + 1) / (↑i + 1)) + C (n + 1) / (↑n + 1) = 0) →
+  ∃ x _h₀ _h₁, Polynomial.eval x (Finset.sum (Finset.range (n + 2)) fun i => ↑Polynomial.C (C i) * Polynomial.X ^ i) = 0 
+
+failed to elaborate
+
+outputs: #[∀ {R : Type u_1} [inst : CommRing R] [inst_1 : IsDomain R] [inst_2 : CharZero R] (C : ℕ → R),
+  (Finset.sum (Finset.range (Nat.succ (Nat.succ (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Finset.range (Nat.succ (Nat.pred (Finset.card (Fin, ∀ {C : ℕ → ℝ},
+  (∑ (i : ℕ) in Finset.range (n + 1), C i / (↑i + 1)) = 0 →
+    ∃ x _h₀ _h₁, (Finset.sum (Finset.range (n + 1)) fun i => C i * x ^ i) = 0 , ∀ (C : ℕ → ℝ), (Finset.sum (Finset.range (n + 1)) fun i => C i / (↑i + 1)) = 0 →
+  ∃ x _h₀ : 0 < x, x < 1 ∧ Polynomial.eval x (Finset.sum (Finset.range (n + 1)) fun i => Polynomial.C (C i) * Polynomial.X ^ i) = 0 , ∀ {𝕜 : Type u_1} [inst : Field 𝕜] [inst_1 : LinearOrderedField 𝕜] [inst_2 : FloorRing 𝕜],
+  (∀ (C : ℝ → 𝕜), ∑ i in Finset.range (n + 1), C i * ↑(i) / (↑(i + 1))) = 0 →
+    ∃ x _h₀ _h₁, ∑ i in Finset.range (n + 1), C (i) * (x ^ i) = 0 , ∀ {C : ℕ → ℝ},
+  (∑ (i : ℕ) in Finset.range (n + 1), C i / (↑i + 1)) = 0 →
+    ∃ x _h₀ : 0 ≤ x, ∃ _h₁ : x ≤ 1, (∑ (i : ℕ) in Finset.range (n + 1), C i * x ^ i) = 0 , ∀ {C : ℕ → ℝ},
+  (∑ (i : ℕ) in Finset.range (n + 2), C i / ↑(i + 1)) = 0 →
+    (∃ x _h₀ _h₁, (∑ (i : ℕ) in Finset.range (n + 1), C i * x ^ i) = 0) , ∀ (C : ℕ → ℝ),
+  (∑ i in Finset.range (n + 1), C i / (↑i + 1)) = 0 →
+    ∃ x ∈ Set.Icc (0 : ℝ) 1, Polynomial.eval x (Finset.sum (Finset.range (n + 1)) (Polynomial.monomial ∘ nat.succ)) = 0 , ∀ {C : ℕ → ℝ},
+  (∑ n in Finset.range (Nat.succ (Nat.succ n)), C n / (↑n + 1)) = 0 →
+    ∃ x ∈ Set.Icc (0 : ℝ) 1, (∑ n in Finset.range (Nat.succ (Nat.succ n)), C n * x ^ n) = 0 , ∀ {C : ℕ → ℝ},
+  (∑ n, C n / (↑n + 1)) = 0 →
+    ∃ x _h₀ _h₁, (Finset.sum (Finset.range (Nat.succ (Nat.succ _))) fun x_1 => C x_1 * x ^ x_1) = 0 , ∀ {n : ℕ} {C : ℕ → ℝ},
+  (∀ i, C i ≠ 0) →
+  (C 0 + (∑ i in Finset.range n, C (i + 1) / (↑i + 1)) + C (n + 1) / (↑n + 1) = 0) →
+  ∃ x _h₀ _h₁, Polynomial.eval x (Finset.sum (Finset.range (n + 2)) fun i => ↑Polynomial.C (C i) * Polynomial.X ^ i) = 0 ]
+
+total : 27
+
+elaborated: 21
+
+success
+
+theorem ∀ {f : ℝ → ℝ},
+  ContinuousOn f (Set.Ici 0) →
+    DifferentiableOn ℝ f (Set.Ioi 0) →
+      f 0 = 0 → MonotoneOn (deriv f) (Set.Ioi 0) → MonotoneOn (fun x => f x / x) (Set.Ioi 0)
+
+total : 28
+
+elaborated: 22
+
+success
+
+theorem ∀ {a : ℝ} {f : ℝ → ℝ} {M₀ M₁ M₂ : ℝ},
+  Differentiable ℝ f →
+    Differentiable ℝ (deriv f) →
+      (∀ (x : ℝ), a < x → |f x| ≤ M₀) →
+        (∀ (x : ℝ), a < x → |deriv f x| ≤ M₁) → (∀ (x : ℝ), a < x → |deriv^[2] f x| ≤ M₂) → M₁ ^ 2 ≤ 4 * M₀ * M₂
+
+total : 29
+
+elaborated: 23
+
+success
+
+theorem ∀ {X : Type u_1} [inst : TopologicalSpace X] {A : Set X}, (∀ (x : X), x ∈ A → ∃ U, IsOpen U ∧ x ∈ U ∧ U ⊆ A) → IsOpen A
+
+total : 30
+
+elaborated: 24
+
+success
+
+theorem {X : Type u} → {ι : Type u_1} → (ι → TopologicalSpace X) → TopologicalSpace X
+
+total : 31
+
+elaborated: 25
+
+success
+
+theorem ∀ {X : Type u} {ι : Type u_1} (T : ι → TopologicalSpace X), ∃! T₀, ∀ (i : ι), T i ≤ T₀
+
+total : 32
+
+elaborated: 26
+
+No valid output from LLM; outputs below
+
+∀ {α : Type u} [t : TopologicalSpace α] {s :  ZFSet ( ZFSet α)},
+  TopologicalSpace.IsTopologicalBasis s → t = ⋂₀ {u :  ZFSet ( ZFSet α) | s ⊆ u ∧ (TopologicalSpace.generateFrom u). IsOpen =  id } 
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u} [t : TopologicalSpace α] {s : Set (Set α)},
+  TopologicalSpace.IsTopologicalBasis s → t = ⋂₀ {u : Set (Set α) | s ⊆ u ∧ (TopologicalSpace.generateFrom u).is_open = id} ]
+
+total : 33
+
+elaborated: 26
+
+success
+
+theorem ∀ {α : Type u_1} [inst : LinearOrder α] {a b : α}, a < b → ¬b ≤ a
+
+total : 34
+
+elaborated: 27
+
+No valid output from LLM; outputs below
+
+∀ {α : Type u} [inst : LinearOrder α] [inst_1 : TopologicalSpace α] [inst_2 : OrderTopology α],
+  ¬TopologicalSpace.IsTopologicalBasis {ab | ∃ (a b : α) (ha : HasMem.Mem a ℚ) (hb : HasMem.Mem b ℚ), ab = (a, b) ∧ a < b} 
+
+∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : LinearOrderedField α] [inst_2 : OrderTopology α],
+  TopologicalSpace.generateFrom
+    (SetOf fun s => ∃ (i j : ℚ), 0 < j - i ∧ s = Set.Ioo (i : α) (j : α)) ≠ TopologicalSpace.generateFrom (SetOf Set.Ioi) 
+
+∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : LinearOrder α] [inst_2 : TopologicalSpace.SecondCountableTopology α],
+  TopologicalSpace.IsTopologicalBasis (SetOf fun s => ∃ (a b : ℚ), a < b ∧ s = Set.Ioo (a : α) (b : α)) ∧
+  t ≠ TopologicalSpace.generateFrom (SetOf fun b => ∃ a, b = Set.Ioi a) 
+
+<input>:2:8: unexpected end of input; expected ':=' or '|' while parsing ∀ {α : Type u} [inst : LinearOrder α] [inst_1 : TopologicalSpace α] [inst_2 : OrderTopology α] [inst_3 : DenselyOrdered α],
+  let S 
+
+∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : LinearOrder α] [inst_2 : OrderTopology α] [inst_3 : DenseOrder α],
+  ∃ b, TopologicalSpace.IsTopologicalBasis b ∧ TopologicalSpace.generateFrom b ≠ Filter.lowerComplete α 
+
+∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : LinearOrderedField α] [self : TopologicalSpace.SecondCountableTopology α],
+  TopologicalSpace.generateFrom
+    {s :  ZFSet α | ∃ a b : ℚ, a < b ∧ s = Set.Ioo (coe a) (coe b)} ≠
+    TopologicalSpace.generateFrom
+      {s :  ZFSet α | ∃ a b : α, a < b ∧ s = Set.Ico a b} 
+
+<input>:2:146: expected ',' while parsing ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : LinearOrderedField α] [order : OrderTopology α] [floor : FloorRing α],
+  TopologicalSpace.generateFrom {s : Set α | ∃ (a : α) (H : a < a + 1), s = Set.Ioo a (a + 1)} ≠ TopologicalSpace.generateFrom {s : Set α | ∃ a b (H : a < b) (h₁ : a ∈ ℚ) (h₂ : b ∈ ℚ), s = Set.Ioo a b} 
+
+∀ {α : Type u} [inst : LinearOrder α] [inst_1 : TopologicalSpace α] [inst_2 : OrderTopology α] [inst_3 : NoMinOrder α],
+  ¬TopologicalSpace.IsTopologicalBasis (SetOf fun s => ∃ a b : α, a < b ∧ s = Set.Ioo a b) 
+
+<input>:2:8: unexpected end of input; expected ':=' or '|' while parsing ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : LinearOrderedField α] [inst_2 : OrderTopology α], 
+  let s 
+
+<input>:1:120: expected end of input while parsing {α : Type u} [inst : TopologicalSpace α] [inst_1 : LinearOrder α] [inst_2 : OrderTopology α] [inst_3 : DenselyOrdered α],
+  Filter.HasBasis (Filter.principal {a b : α | a < b ∧ ∃ l H r H, a = l ∧ b = r}) (fun V => True) id 
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u} [inst : LinearOrder α] [inst_1 : TopologicalSpace α] [inst_2 : OrderTopology α],
+  ¬TopologicalSpace.IsTopologicalBasis {ab | ∃ (a b : α) (ha : HasMem.Mem a ℚ) (hb : HasMem.Mem b ℚ), ab = (a, b) ∧ a < b} , ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : LinearOrderedField α] [inst_2 : OrderTopology α],
+  TopologicalSpace.generateFrom
+    (SetOf fun s => ∃ (i j : ℚ), 0 < j - i ∧ s = Set.Ioo (i : α) (j : α)) ≠ TopologicalSpace.generateFrom (SetOf Set.Ioi) , ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : LinearOrder α] [inst_2 : TopologicalSpace.SecondCountableTopology α],
+  TopologicalSpace.IsTopologicalBasis (SetOf fun s => ∃ (a b : ℚ), a < b ∧ s = Set.Ioo (a : α) (b : α)) ∧
+  t ≠ TopologicalSpace.generateFrom (SetOf fun b => ∃ a, b = Set.Ioi a) , ∀ {α : Type u} [inst : LinearOrder α] [inst_1 : TopologicalSpace α] [inst_2 : OrderTopology α] [inst_3 : DenselyOrdered α],
+  let S , ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : LinearOrder α] [inst_2 : OrderTopology α] [inst_3 : DenseOrder α],
+  ∃ b, TopologicalSpace.IsTopologicalBasis b ∧ TopologicalSpace.generateFrom b ≠ Filter.lowerComplete α , ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : LinearOrderedField α] [self : TopologicalSpace.SecondCountableTopology α],
+  TopologicalSpace.generateFrom
+    {s : Set α | ∃ a b : ℚ, a < b ∧ s = Set.Ioo (coe a) (coe b)} ≠
+    TopologicalSpace.generateFrom
+      {s : Set α | ∃ a b : α, a < b ∧ s = Set.Ico a b} , ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : LinearOrderedField α] [order : OrderTopology α] [floor : FloorRing α],
+  TopologicalSpace.generateFrom {s : Set α | ∃ (a : α) (H : a < a + 1), s = Set.Ioo a (a + 1)} ≠ TopologicalSpace.generateFrom {s : Set α | ∃ a b (H : a < b) (h₁ : a ∈ ℚ) (h₂ : b ∈ ℚ), s = Set.Ioo a b} , ∀ {α : Type u} [inst : LinearOrder α] [inst_1 : TopologicalSpace α] [inst_2 : OrderTopology α] [inst_3 : NoMinOrder α],
+  ¬TopologicalSpace.IsTopologicalBasis (SetOf fun s => ∃ a b : α, a < b ∧ s = Set.Ioo a b) , ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : LinearOrderedField α] [inst_2 : OrderTopology α], 
+  let s , {α : Type u} [inst : TopologicalSpace α] [inst_1 : LinearOrder α] [inst_2 : OrderTopology α] [inst_3 : DenselyOrdered α],
+  Filter.HasBasis (Filter.principal {a b : α | a < b ∧ ∃ l H r H, a = l ∧ b = r}) (fun V => True) id ]
+
+total : 35
+
+elaborated: 27
+
+success
+
+theorem ∀ {X Y : Type u} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y], IsOpenMap Prod.fst
+
+total : 36
+
+elaborated: 28
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] {U A : Set α}, IsOpen U → IsClosed A → IsOpen (U \ A) ∧ IsClosed (A \ U)
+
+total : 37
+
+elaborated: 29
+
+success
+
+theorem ∀ {X : Type u} {Y : Type v} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : LinearOrder Y]
+  [inst_3 : OrderTopology Y] {f g : X → Y}, Continuous f → Continuous g → Continuous fun x => min (f x) (g x)
+
+total : 38
+
+elaborated: 30
+
+success
+
+theorem ∀ {J : Type u_1} {X : J → Type u_2} [inst : (j : J) → TopologicalSpace (X j)] {x : (j : J) → X j}
+  {x_i : ℕ → (j : J) → X j},
+  Filter.Tendsto x_i Filter.atTop (nhds x) ↔ ∀ (j : J), Filter.Tendsto (fun n => x_i n j) Filter.atTop (nhds (x j))
+
+total : 39
+
+elaborated: 31
+
+success
+
+theorem ∀ (x : ℝ), 0 ≤ x → x ≤ 1 → Filter.Tendsto (fun n => x ^ n) Filter.atTop (nhds 0)
+
+total : 40
+
+elaborated: 32
+
+success
+
+theorem ∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : MetricSpace Y] {f : X → Y} {ι : Type u_3}
+  {p : Filter ι} {F : ι → X → Y} {x : X} {x_n : ι → X},
+  TendstoUniformly F f p →
+    ContinuousAt f x → Filter.Tendsto x_n p (nhds x) → Filter.Tendsto (fun n => F n (x_n n)) p (nhds (f x))
+
+total : 41
+
+elaborated: 33
+
+No valid output from LLM; outputs below
+
+∀ {α : Type u_1} {β : Type u_2} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] {A :  ZFSet α} {f : α → β},
+  IsOpenMap f → Continuous f → (∀ (a : α), a ∈ A → f a = a) →  ZFSet.range f = A → QuotientMap f 
+
+∀ {X : Type u_1} {A : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace A] {f : X → A},
+  Continuous f →  ZFSet.range f =  ZFSet.range (Set.restrict f A) → (∀ x : A, Set.restrict f A x = x) → QuotientMap f 
+
+∀ {α : Type u_1} {β : Type u_2} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] {A :  ZFSet α} {r : α → β},
+  IsRetraction A r → QuotientMap r 
+
+∀ {X : Type u_1} {A : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace A] {r : X → A},
+  IsRetraction r → QuotientMap r 
+
+∀ {α : Type u_1} {A : Type u_2} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace A] {f : α → A},
+  Continuous f → (∀ (a : A), f a = a) →  ZFSet.range f = Set.univ → QuotientMap f 
+
+∀ {α : Type u_1} {β : Type u_2} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] {A :  ZFSet α} {r : α → β},
+  IsRetract A r → Continuous r → QuotientMap r 
+
+∀ {X : Type u_1} {A : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace A] {r : X → A},
+  Continuous r → (∀ a, r a = a) → QuotientMap r 
+
+∀ {X : Type u_1} {A : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace A] {r : X → A},
+  (∀ (a : A), r a = a) → Continuous r → Function.Injective  id → QuotientMap r 
+
+∀ {X : Type u_1} {A : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace A] {r : X → A},
+  IsRetraction A r → Continuous r → QuotientMap r 
+
+∀ {X : Type u_1} {A : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace A] {r : X → A},
+  Continuous r → (∀ (a : A), r a = a) → QuotientMap r 
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u_1} {β : Type u_2} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] {A : Set α} {f : α → β},
+  IsOpenMap f → Continuous f → (∀ (a : α), a ∈ A → f a = a) → Set.range f = A → QuotientMap f , ∀ {X : Type u_1} {A : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace A] {f : X → A},
+  Continuous f → Set.range f = Set.range (Set.restrict f A) → (∀ x : A, Set.restrict f A x = x) → QuotientMap f , ∀ {α : Type u_1} {β : Type u_2} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] {A : Set α} {r : α → β},
+  IsRetraction A r → QuotientMap r , ∀ {X : Type u_1} {A : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace A] {r : X → A},
+  IsRetraction r → QuotientMap r , ∀ {α : Type u_1} {A : Type u_2} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace A] {f : α → A},
+  Continuous f → (∀ (a : A), f a = a) → Set.range f = Set.univ → QuotientMap f , ∀ {α : Type u_1} {β : Type u_2} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] {A : Set α} {r : α → β},
+  IsRetract A r → Continuous r → QuotientMap r , ∀ {X : Type u_1} {A : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace A] {r : X → A},
+  Continuous r → (∀ a, r a = a) → QuotientMap r , ∀ {X : Type u_1} {A : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace A] {r : X → A},
+  (∀ (a : A), r a = a) → Continuous r → Function.Injective id → QuotientMap r , ∀ {X : Type u_1} {A : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace A] {r : X → A},
+  IsRetraction A r → Continuous r → QuotientMap r , ∀ {X : Type u_1} {A : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace A] {r : X → A},
+  Continuous r → (∀ (a : A), r a = a) → QuotientMap r ]
+
+total : 42
+
+elaborated: 33
+
+No valid output from LLM; outputs below
+
+∀ {α : Type u} {ι : Type u_1} [inst : TopologicalSpace α] [inst_1 : PreconnectedSpace α] {s : ι →  ZFSet α},
+  (∀ (i : ι), IsConnected (s i)) →
+    (∀ (i : ι), Set.Nonempty (s i ∩ s (i + 1))) → IsConnected (⋃ (i : ι), s i) 
+
+∀ {α : Type u} [inst : TopologicalSpace α] {A : ℕ →  ZFSet α},
+  (∀ (n : ℕ), IsConnected (A n)) →
+    (∀ (n : ℕ), Set.Nonempty (A n ∩ A (n + 1))) → IsConnected (⋃ (n : ℕ), A n) 
+
+∀ {α : Type u} [inst : TopologicalSpace α] {A : ℕ →  ZFSet α},
+  (∀ (n : ℕ), IsConnected (A n)) → (∀ (n : ℕ), Set.Nonempty (A n ∩ A (n + 1))) → IsConnected (⋃ (n : ℕ), A n) 
+
+∀ {α : Type u} [inst : TopologicalSpace α] {ι : Type u_1} [inst_1 : LinearOrder ι] [inst_2 : SuccOrder ι] {A : ι →  ZFSet α},
+  (∀ (i : ι), IsConnected (A i)) → (∀ (i : ι), Set.Nonempty (A i ∩ A (succ i))) → IsConnected (⋃ (i : ι), A i) 
+
+∀ {α : Type u} [inst : TopologicalSpace α] {A : ℕ →  ZFSet α},
+  (∀ (n : ℕ), IsConnected (A n)) →
+    (∀ (n : ℕ), Set.Nonempty (A n ∩ A (n + 1))) → IsConnected (⋃ (n : ℕ), A n) 
+
+∀ {α : Type u} [inst : TopologicalSpace α] {A : ℕ →  ZFSet α},
+  (∀ (i : ℕ), IsConnected (A i)) → (∀ (i : ℕ), Set.Nonempty (A i ∩ A (i + 1))) → IsConnected (⋃ (i : ℕ), A i) 
+
+∀ {α : Type u} {ι : Type u_1} [inst : TopologicalSpace α] [inst_1 : LinearOrder ι] {X : ι →  ZFSet α},
+  (∀ (i : ι), IsConnected (X i)) →
+    (∀ (i j : ι), i < j → Set.Nonempty (X i ∩ X j)) → IsConnected (⋃ (i : ι), X i) 
+
+∀ {X : Type u_1} [inst : TopologicalSpace X] {ι : Type u_2} [inst_1 : LinearOrder ι] {A : ι →  ZFSet X},
+  (∀ (n : ι), IsConnected (A n)) →
+    (∀ (n : ι), Set.Nonempty (A n ∩ A (n + 1))) → IsConnected (⋃ (n : ι), A n) 
+
+∀ {α : Type u} {ι : Type u_1} [inst : TopologicalSpace α] [_inst_1 : PreconnectedSpace α] {s : ι →  ZFSet α} {l : ℕ → ι}
+  (hls : ∀ (n : ℕ), s (l n) ∩ s (l (n + 1)) ≠ ∅),
+  (∀ (n : ℕ), IsConnected (s (l n))) → IsConnected (⋃ (n : ℕ), s (l n)) 
+
+∀ {α : Type u} [inst : TopologicalSpace α] {A : ℕ →  ZFSet α},
+  (∀ (n : ℕ), IsConnected (A n)) →
+    (∀ (n : ℕ), Set.Nonempty (A n ∩ A (n + 1))) → IsConnected (⋃ (n : ℕ), A n) 
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u} {ι : Type u_1} [inst : TopologicalSpace α] [inst_1 : PreconnectedSpace α] {s : ι → Set α},
+  (∀ (i : ι), IsConnected (s i)) →
+    (∀ (i : ι), Set.Nonempty (s i ∩ s (i + 1))) → IsConnected (⋃ (i : ι), s i) , ∀ {α : Type u} [inst : TopologicalSpace α] {A : ℕ → Set α},
+  (∀ (n : ℕ), IsConnected (A n)) →
+    (∀ (n : ℕ), Set.Nonempty (A n ∩ A (n + 1))) → IsConnected (⋃ (n : ℕ), A n) , ∀ {α : Type u} [inst : TopologicalSpace α] {A : ℕ → Set α},
+  (∀ (n : ℕ), IsConnected (A n)) → (∀ (n : ℕ), Set.Nonempty (A n ∩ A (n + 1))) → IsConnected (⋃ (n : ℕ), A n) , ∀ {α : Type u} [inst : TopologicalSpace α] {ι : Type u_1} [inst_1 : LinearOrder ι] [inst_2 : SuccOrder ι] {A : ι → Set α},
+  (∀ (i : ι), IsConnected (A i)) → (∀ (i : ι), Set.Nonempty (A i ∩ A (succ i))) → IsConnected (⋃ (i : ι), A i) , ∀ {α : Type u} [inst : TopologicalSpace α] {A : ℕ → Set α},
+  (∀ (n : ℕ), IsConnected (A n)) →
+    (∀ (n : ℕ), Set.Nonempty (A n ∩ A (n + 1))) → IsConnected (⋃ (n : ℕ), A n) , ∀ {α : Type u} [inst : TopologicalSpace α] {A : ℕ → Set α},
+  (∀ (i : ℕ), IsConnected (A i)) → (∀ (i : ℕ), Set.Nonempty (A i ∩ A (i + 1))) → IsConnected (⋃ (i : ℕ), A i) , ∀ {α : Type u} {ι : Type u_1} [inst : TopologicalSpace α] [inst_1 : LinearOrder ι] {X : ι → Set α},
+  (∀ (i : ι), IsConnected (X i)) →
+    (∀ (i j : ι), i < j → Set.Nonempty (X i ∩ X j)) → IsConnected (⋃ (i : ι), X i) , ∀ {X : Type u_1} [inst : TopologicalSpace X] {ι : Type u_2} [inst_1 : LinearOrder ι] {A : ι → Set X},
+  (∀ (n : ι), IsConnected (A n)) →
+    (∀ (n : ι), Set.Nonempty (A n ∩ A (n + 1))) → IsConnected (⋃ (n : ι), A n) , ∀ {α : Type u} {ι : Type u_1} [inst : TopologicalSpace α] [_inst_1 : PreconnectedSpace α] {s : ι → Set α} {l : ℕ → ι}
+  (hls : ∀ (n : ℕ), s (l n) ∩ s (l (n + 1)) ≠ ∅),
+  (∀ (n : ℕ), IsConnected (s (l n))) → IsConnected (⋃ (n : ℕ), s (l n)) , ∀ {α : Type u} [inst : TopologicalSpace α] {A : ℕ → Set α},
+  (∀ (n : ℕ), IsConnected (A n)) →
+    (∀ (n : ℕ), Set.Nonempty (A n ∩ A (n + 1))) → IsConnected (⋃ (n : ℕ), A n) ]
+
+total : 43
+
+elaborated: 33
+
+No valid output from LLM; outputs below
+
+∀ {α : Type u_1} [inst : Infinite α], ConnectedSpace (CofiniteTopology α) 
+
+∀ {X : Type u_1} [inst : Infinite X], ConnectedSpace (CofiniteTopology X) 
+
+∀ {X : Type u_1} [inst : Infinite X], ConnectedSpace (CofiniteTopology X) 
+
+∀ {X : Type u_1} [inst : Infinite X], ConnectedSpace (CofiniteTopology X) 
+
+∀ {α : Type u_1} [inst : Infinite α], ConnectedSpace (CofiniteTopology α) 
+
+∀ {X : Type u_1} [inst : Infinite X], ConnectedSpace (CofiniteTopology X) 
+
+∀ {X : Type u_1} [inst : TopologicalSpace X] [inst_1 : Infinite X] [inst_2 : CofiniteTopology X],
+  ConnectedSpace X 
+
+∀ {α : Type u_1} [inst : Infinite α], ConnectedSpace (CofiniteTopology α) 
+
+∀ {X : Type u_1} [inst : TopologicalSpace X] [inst_1 : Infinite X] [inst_2 : CofiniteTopology X], ConnectedSpace X 
+
+∀ {X : Type u_1} [inst : Infinite X], ConnectedSpace (CofiniteTopology X) 
+
+failed to elaborate
+
+outputs: #[∀ {α : Type u_1} [inst : Infinite α], ConnectedSpace (CofiniteTopology α) , ∀ {X : Type u_1} [inst : Infinite X], ConnectedSpace (CofiniteTopology X) , ∀ {X : Type u_1} [inst : Infinite X], ConnectedSpace (CofiniteTopology X) , ∀ {X : Type u_1} [inst : Infinite X], ConnectedSpace (CofiniteTopology X) , ∀ {α : Type u_1} [inst : Infinite α], ConnectedSpace (CofiniteTopology α) , ∀ {X : Type u_1} [inst : Infinite X], ConnectedSpace (CofiniteTopology X) , ∀ {X : Type u_1} [inst : TopologicalSpace X] [inst_1 : Infinite X] [inst_2 : CofiniteTopology X],
+  ConnectedSpace X , ∀ {α : Type u_1} [inst : Infinite α], ConnectedSpace (CofiniteTopology α) , ∀ {X : Type u_1} [inst : TopologicalSpace X] [inst_1 : Infinite X] [inst_2 : CofiniteTopology X], ConnectedSpace X , ∀ {X : Type u_1} [inst : Infinite X], ConnectedSpace (CofiniteTopology X) ]
+
+total : 44
+
+elaborated: 33
+
