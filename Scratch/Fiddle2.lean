@@ -2,6 +2,8 @@ import Mathlib
 
 example : forall {a : ℝ} {f : ℝ → ℝ} {M₀ M₁ M₂ : ℝ},  Differentiable ℝ f → Differentiable ℝ (deriv f) →    (∀ x, a < x → abs (f x) ≤ M₀) →      (∀ x, a < x → abs (deriv f x) ≤ M₁) →        (∀ x, a < x → abs (deriv^[2] f x) ≤ M₂) → M₁ ^ 2 ≤ 4 * M₀ * M₂ := by sorry
 
+example : ∀ {M : Type u_1} [inst : MetricSpace M],  ∃ (f : Set M → Set M), (∀ (U : Set M), IsOpen U → IsClosed (f U)) ∧ (∀ (K : Set M), IsClosed K → IsOpen (f K)) ∧    (∀ (U₁ U₂ : Set M), IsOpen U₁ → IsOpen U₂ → f U₁ = f U₂ → U₁ = U₂) ∧    (∀ (K₁ K₂ : Set M), IsClosed K₁ → IsClosed K₂ → f K₁ = f K₂ → K₁ = K₂) := by sorry
+
 example (x : ℝ) : ‖x‖ = 0 := sorry
 
 example (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) : ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 := by sorry

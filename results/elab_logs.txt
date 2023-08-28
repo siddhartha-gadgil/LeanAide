@@ -27898,3 +27898,1044 @@ total : 15
 
 elaborated: 11
 
+Writing to file: proofnet_valid4-elab-10-false-5-8.json
+
+No valid output from LLM; outputs below
+
+∀ {n : ℕ}, (Finset.sum (Nat.divisors n) fun d => MoebiusFunction.moebius (n / d) * Real.log ↑d) = Nat.ArithmeticFunction.logs.nat_apply n 
+
+∀ (n : ℕ), Finset.sum (Nat.divisors n) (fun d => Moebius.moebius (n / d) * Real.log d) = ite (Nat.PrimePow n) (Real.log (Nat.minFac n)) 0 
+
+∀ (n : ℕ),
+  Finset.sum (Nat.divisors n) (fun d => Moebius.moebius d * Real.log d) = if n = 0 then 0 else Real.log (Nat.gcd n (Nat.minFac n)) 
+
+∀ (n : ℕ),
+  (Finset.sum (Nat.divisors n) (λ d => (μ n / d) * Real.log d)) = if h : ∃ p k, Nat.Prime p ∧ 0 < k ∧ p ^ k = n then Real.log (Classical.some h) else 0 
+
+∀ (n : ℕ),
+  (Finset.sum (Nat.divisors n) fun d => Moebius.moebius d * (Real.log d)) = (if n = 0 then 0 else Nat.Prime.log (Nat.factorization n).support.prod) 
+
+∀ (n : ℕ), Finset.sum (Nat.divisors n) (fun d => Moebius.moebius d * Real.log d) = AddChar.Λ n 
+
+<input>:1:10: expected token while parsing ∀ n : ℕ, (∑ d in n.divisors, Moebius.moebiusFunction (n / d) * Real.log d) = if Nat.Prime (Nat.minFac n) ∧ n = Nat.minFac n ^ Nat.factorization n (Nat.minFac n) then Real.log (Nat.minFac n) else 0 
+
+∀ (n : ℕ),
+  (Finset.sum (Nat.divisors n) fun d => Moebius.moebius d * Real.log (n / d)) = if n = 1 then 0 else Real.log (Nat.minFac n) 
+
+<input>:1:47: expected '↦', '=>' while parsing ∀ (n : ℕ), Finset.sum (Finset.filter (λ (d : ℕ), d ∣ n) (Finset.range (n + 1))) (λ (d : ℕ), Moebius.moebius (n / d) * Real.log ↑d) = ite (n = 1) 0 (Real.log (↑(Nat.minFac n))) 
+
+∀ (n : ℕ), (Finset.sum (Nat.divisors n) fun d => MoebiusFunction.moebius d * Real.log (↑(n / d))) = AddChar.logPow n 
+
+failed to elaborate
+
+outputs: #[∀ {n : ℕ}, (Finset.sum (Nat.divisors n) fun d => MoebiusFunction.moebius (n / d) * Real.log ↑d) = Nat.ArithmeticFunction.logs.nat_apply n , ∀ (n : ℕ), Finset.sum (Nat.divisors n) (fun d => Moebius.moebius (n / d) * Real.log d) = ite (Nat.PrimePow n) (Real.log (Nat.minFac n)) 0 , ∀ (n : ℕ),
+  Finset.sum (Nat.divisors n) (fun d => Moebius.moebius d * Real.log d) = if n = 0 then 0 else Real.log (Nat.gcd n (Nat.minFac n)) , ∀ (n : ℕ),
+  (Finset.sum (Nat.divisors n) (λ d => (μ n / d) * Real.log d)) = if h : ∃ p k, Nat.Prime p ∧ 0 < k ∧ p ^ k = n then Real.log (Classical.some h) else 0 , ∀ (n : ℕ),
+  (Finset.sum (Nat.divisors n) fun d => Moebius.moebius d * (Real.log d)) = (if n = 0 then 0 else Nat.Prime.log (Nat.factorization n).support.prod) , ∀ (n : ℕ), Finset.sum (Nat.divisors n) (fun d => Moebius.moebius d * Real.log d) = AddChar.Λ n , ∀ n : ℕ, (∑ d in n.divisors, Moebius.moebiusFunction (n / d) * Real.log d) = if Nat.Prime (Nat.minFac n) ∧ n = Nat.minFac n ^ Nat.factorization n (Nat.minFac n) then Real.log (Nat.minFac n) else 0 , ∀ (n : ℕ),
+  (Finset.sum (Nat.divisors n) fun d => Moebius.moebius d * Real.log (n / d)) = if n = 1 then 0 else Real.log (Nat.minFac n) , ∀ (n : ℕ), Finset.sum (Finset.filter (λ (d : ℕ), d ∣ n) (Finset.range (n + 1))) (λ (d : ℕ), Moebius.moebius (n / d) * Real.log ↑d) = ite (n = 1) 0 (Real.log (↑(Nat.minFac n))) , ∀ (n : ℕ), (Finset.sum (Nat.divisors n) fun d => MoebiusFunction.moebius d * Real.log (↑(n / d))) = AddChar.logPow n ]
+
+total : 1
+
+elaborated: 0
+
+No valid output from LLM; outputs below
+
+Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} 
+
+Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} 
+
+Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} 
+
+Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} 
+
+Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} 
+
+<input>:1:50: expected end of input while parsing Set.Infinite {p | Nat.Prime p ∧ p ≡ (-1) [MOD 6]} :
+
+Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} 
+
+Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} 
+
+Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} 
+
+Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} 
+
+failed to elaborate
+
+outputs: #[Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} , Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} , Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} , Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} , Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} , Set.Infinite {p | Nat.Prime p ∧ p ≡ (-1) [MOD 6]} :, Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} , Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} , Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} , Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} ]
+
+total : 2
+
+elaborated: 0
+
+success
+
+theorem ∀ (x y : ℤ), 7 * x ^ 3 + 2 ≠ y ^ 3
+
+total : 3
+
+elaborated: 1
+
+success
+
+theorem ∀ {p q n : ℕ} [inst : Fact (Nat.Prime p)] [inst_1 : Fact (Nat.Prime q)],
+  p ≠ 2 → q ≠ 2 → p ≠ q → p - 1 ∣ q - 1 → IsCoprime n (p * q) → ↑(n ^ (q - 1)) ≡ 1 [ZMOD ↑p * ↑q]
+
+total : 4
+
+elaborated: 2
+
+success
+
+theorem ∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p % 4 = 3 → ∀ {a : ℕ}, IsPrimitiveRoot a p ↔ orderOf (-↑a) = (p - 1) / 2
+
+total : 5
+
+elaborated: 3
+
+success
+
+theorem ∀ (p : ℕ) [inst : Fact (Nat.Prime p)],
+  p % 2 = 1 → ∀ (a : ℕ), IsPrimitiveRoot a p ↔ ∀ (q : ℕ), Nat.Prime q → q ∣ p - 1 → a ^ ((p - 1) / q) ≠ 1
+
+total : 6
+
+elaborated: 4
+
+success
+
+theorem ∀ {x p : ℕ}, Nat.Prime p → p ∣ x ^ 4 - x ^ 2 + 1 → p % 12 = 1
+
+total : 7
+
+elaborated: 5
+
+No valid output from LLM; outputs below
+
+∀ {a : ℤ} {p q : ℕ} [inst : Fact (Nat.Prime p)] [inst_1 : Fact (Nat.Prime q)],
+  a < 0 → p ≡ q [ZMOD 4 * a] → ↑a % ↑p ≠ 0 → legendreSym a ↑p = legendreSym a ↑q 
+
+<input>:2:8: expected ':' while parsing /-- If `a` is negative, then `p ≡ q (4a)` together with `p ∤ a` imply `(a / p) = (a / q)`. -/
+theorem ∀ {a : ℤ} {p q : ℕ}, a < 0 → p % (4 * -a) = q % (4 * -a) → ¬↑p ∣ a → legendreSym a ↑p = legendreSym a ↑q 
+
+∀ {a p q : ℤ}, a < 0 → p % (4 * a) = q % (4 * a) → ¬↑p ∣ a → legendreSym a p = legendreSym a q 
+
+∀ {p q a : ℕ} [inst : Fact (Nat.Prime p)] [inst_1 : Fact (Nat.Prime q)],
+  a < 0 → p % (4 * a) = q % (4 * a) → ¬p ∣ a → legendreSym a p = legendreSym a q 
+
+∀ {a : ℤ} {p q : ℕ} [Fact (Nat.Prime p)] [Fact (Nat.Prime q)],
+  a < 0 → p % (4 * a) = q % (4 * a) → ↑p ∣ a → ↑q ∣ a → legendreSym a ↑p = legendreSym a ↑q 
+
+∀ {a : ℤ} {p q : ℕ} [inst : Fact (Nat.Prime p)] [inst_1 : Fact (Nat.Prime q)],
+  a < 0 → p % (4 * a) = q % (4 * a) → ¬(↑p ∣ a) → legendreSym a ↑p = legendreSym a ↑q 
+
+∀ {a : ℤ} {p q : ℕ}, a < 0 → p % (4 * -a) = q % (4 * -a) → ↑p ∣ a → ↑q ∣ a → legendreSym p a = legendreSym q a 
+
+∀ {a p q : ℤ},
+  a < 0 → p % (4 * a) = q % (4 * a) → ¬p ∣ a → ¬q ∣ a → legendreSym a p = legendreSym a q 
+
+∀ {a : ℤ} {p q : ℕ} [hp : Fact (Nat.Prime p)] [hq : Fact (Nat.Prime q)],
+  a < 0 → (p % (4 * -a) = q % (4 * -a)) → ¬(↑p ∣ a) → legendreSym a ↑p = legendreSym a ↑q 
+
+∀ {a : ℤ} {p q : ℕ} [inst : Fact (Nat.Prime p)] [inst_1 : Fact (Nat.Prime q)],
+  a < 0 → p ≡ q [ZMOD 4 * a] → ¬p ∣ a → legendreSym a ↑p = legendreSym a ↑q 
+
+failed to elaborate
+
+outputs: #[∀ {a : ℤ} {p q : ℕ} [inst : Fact (Nat.Prime p)] [inst_1 : Fact (Nat.Prime q)],
+  a < 0 → p ≡ q [ZMOD 4 * a] → ↑a % ↑p ≠ 0 → legendreSym a ↑p = legendreSym a ↑q , /-- If `a` is negative, then `p ≡ q (4a)` together with `p ∤ a` imply `(a / p) = (a / q)`. -/
+theorem ∀ {a : ℤ} {p q : ℕ}, a < 0 → p % (4 * -a) = q % (4 * -a) → ¬↑p ∣ a → legendreSym a ↑p = legendreSym a ↑q , ∀ {a p q : ℤ}, a < 0 → p % (4 * a) = q % (4 * a) → ¬↑p ∣ a → legendreSym a p = legendreSym a q , ∀ {p q a : ℕ} [inst : Fact (Nat.Prime p)] [inst_1 : Fact (Nat.Prime q)],
+  a < 0 → p % (4 * a) = q % (4 * a) → ¬p ∣ a → legendreSym a p = legendreSym a q , ∀ {a : ℤ} {p q : ℕ} [Fact (Nat.Prime p)] [Fact (Nat.Prime q)],
+  a < 0 → p % (4 * a) = q % (4 * a) → ↑p ∣ a → ↑q ∣ a → legendreSym a ↑p = legendreSym a ↑q , ∀ {a : ℤ} {p q : ℕ} [inst : Fact (Nat.Prime p)] [inst_1 : Fact (Nat.Prime q)],
+  a < 0 → p % (4 * a) = q % (4 * a) → ¬(↑p ∣ a) → legendreSym a ↑p = legendreSym a ↑q , ∀ {a : ℤ} {p q : ℕ}, a < 0 → p % (4 * -a) = q % (4 * -a) → ↑p ∣ a → ↑q ∣ a → legendreSym p a = legendreSym q a , ∀ {a p q : ℤ},
+  a < 0 → p % (4 * a) = q % (4 * a) → ¬p ∣ a → ¬q ∣ a → legendreSym a p = legendreSym a q , ∀ {a : ℤ} {p q : ℕ} [hp : Fact (Nat.Prime p)] [hq : Fact (Nat.Prime q)],
+  a < 0 → (p % (4 * -a) = q % (4 * -a)) → ¬(↑p ∣ a) → legendreSym a ↑p = legendreSym a ↑q , ∀ {a : ℤ} {p q : ℕ} [inst : Fact (Nat.Prime p)] [inst_1 : Fact (Nat.Prime q)],
+  a < 0 → p ≡ q [ZMOD 4 * a] → ¬p ∣ a → legendreSym a ↑p = legendreSym a ↑q ]
+
+total : 8
+
+elaborated: 5
+
+success
+
+theorem ∃ x1 y1 x2 y2, x1 ≠ x2 ∧ y1 ≠ y2 ∧ x1 ^ 3 + y1 ^ 3 = x2 ^ 3 + y2 ^ 3 ∧ x1 ^ 3 + y1 ^ 3 = 1729
+
+total : 9
+
+elaborated: 6
+
+success
+
+theorem ∀ {E : Type u} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {Ω : Set E} {f : E → ℂ},
+  DifferentiableOn ℂ f Ω → IsOpen Ω → (∀ (x : E), x ∈ Ω → (f x).re = (f x).re) → ∀ (x y : E), x ∈ Ω → y ∈ Ω → f x = f y
+
+total : 10
+
+elaborated: 7
+
+success
+
+theorem ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {f : E → ℂ} {Ω : Set E},
+  IsOpen Ω →
+    DifferentiableOn ℂ f Ω → (∀ (x : E), x ∈ Ω → ↑Complex.abs (f x) = ↑Complex.abs (f 0)) → ∀ (x : E), x ∈ Ω → f x = f 0
+
+total : 11
+
+elaborated: 8
+
+success
+
+theorem ∀ (z : ℂ), ↑Complex.abs z = 1 → Summable fun n => z ^ n / (n + 1) ^ 2
+
+total : 12
+
+elaborated: 9
+
+No valid output from LLM; outputs below
+
+∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {f : ℝ → E} {F G : ℝ → E},
+  (∀ (x : ℝ), HasDerivAt F (f x) x) →
+    (∀ (x : ℝ), HasDerivAt G (f x) x) →
+      ContinuousOn f (Set.Interval F.a G.a) →
+        ContinuousOn F (Set.Interval F.a G.a) →
+          ContinuousOn G (Set.Interval F.a G.a) →
+            ∃ (C : E), ∀ (x : ℝ), x ∈ Set.Interval F.a G.a → F x = G x + C 
+
+∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : T1Space Y] [inst_3 : LinearOrder Y]
+  [inst_4 : OrderClosedTopology Y] {f F G : X → Y},
+  Continuous f → (∀ (x : X), HasDerivAt F (f x) x) → (∀ (x : X), HasDerivAt G (f x) x) → ∃ c, ∀ (x : X), F x = G x + c 
+
+∀ {Ω : Type u_1} [inst : MeasurableSpace Ω] [inst_1 : BorelSpace Ω] [inst_2 : TopologicalSpace Ω] [inst_3 : OpensMeasurableSpace Ω]
+  {f F₁ F₂ : Ω → ℝ},
+  Continuous f →
+    F₁ =ᶠ[MeasureTheory.Measure.ae (MeasureTheory.Measure.restrict volume ( interior Ω))] f.antiderivative →
+      F₂ =ᶠ[MeasureTheory.Measure.ae (MeasureTheory.Measure.restrict volume ( interior Ω))] f.antiderivative →
+        Continuous F₁ → Continuous F₂ → ∃ C, ∀ (x : Ω), x ∈  interior Ω → F₁ x = F₂ x + C 
+
+∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {F : Type u_2} [inst_2 : NormedAddCommGroup F]
+  [inst_3 : NormedSpace ℝ F] {f : E → F} {g₁ g₂ : E → F} {Ω :  ZFSet E},
+  ContinuousOn f Ω →
+    HasPrimitiveWithinAt f g₁ Ω →
+      HasPrimitiveWithinAt f g₂ Ω →
+        ContinuousOn g₁ Ω → ContinuousOn g₂ Ω → ∀ (x : E), x ∈ Ω → g₁ x = g₂ x + (g₁ (Classical.some (_ : ∃ x, x ∈ Ω)) - g₂ (Classical.some (_ : ∃ x, x ∈ Ω))) 
+
+∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : T1Space Y] {Ω :  ZFSet X}
+  [inst_3 : IsRegion Ω] {f F₁ F₂ : X → Y},
+  ContinuousOn f Ω →
+    (∀ (x : X), x ∈ Ω → HasDerivWithinAt F₁ (f x) Ω x) →
+      (∀ (x : X), x ∈ Ω → HasDerivWithinAt F₂ (f x) Ω x) →
+        ∃ (C : Y), ∀ (x : X), x ∈ Ω → F₁ x = F₂ x + C 
+
+∀ {E : Type u} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {F : Type v} [inst_2 : NormedAddCommGroup F]
+  [inst_3 : NormedSpace ℝ F] {f : E → F} {s :  ZFSet E} {g₁ g₂ : F} {U :  ZFSet E},
+  ContinuousOn f s →
+    HasIntegralOn ℝ g₁ f U s →
+      HasIntegralOn ℝ g₂ f U s →
+        ∀ (x : E), x ∈ s → g₁ x = g₂ x + (g₁ (Classical.some (_ : ∃ x, x ∈ s)) - g₂ (Classical.some (_ : ∃ x, x ∈ s))) 
+
+<input>:1:3: expected '_' or identifier while parsing ∀ {ℝ : Type u_1} {E : Type u_2} [inst : MeasurableSpace ℝ] [inst_1 : NormedAddCommGroup E] [inst_2 : NormedSpace ℝ E]
+  {F : Type u_3} [inst_3 : NormedGroup F] [inst_4 : NormedSpace ℝ F] {f₁ f₂ : ℝ → F} {f : ℝ → E} {Ω : Set ℝ},
+  ContinuousOn f Ω →
+  (∀ (x : ℝ), x ∈ Ω → HasDerivWithinAt f₁ (f x) Ω x) →
+    (∀ (x : ℝ), x ∈ Ω → HasDerivWithinAt f₂ (f x) Ω x) →
+      ∃ (C : F), ∀ (x : ℝ), x ∈ Ω → f₁ x = f₂ x + C 
+
+∀ {X : Type u} [inst : TopologicalSpace X] [inst_1 :  AddCommGroupCat X] [inst_2 : TopologicalAddGroup X]
+  {f F₁ F₂ : ℝ → X},
+  ContinuousOn f (Set.Interval F₁ F₂) →
+    (∀ (x : ℝ), x ∈ Set.Interval F₁ F₂ → HasDerivAt F₁ (f x) x) →
+      (∀ (x : ℝ), x ∈ Set.Interval F₁ F₂ → HasDerivAt F₂ (f x) x) →
+        ∃ (C : X), ∀ (x : ℝ), x ∈ Set.Interval F₁ F₂ → F₁ x = F₂ x + C 
+
+∀ {X : Type u} {Y : Type v} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : T2Space Y] [inst_3 :  AddGroupCat Y] [inst_4 : TopologicalAddGroup Y]
+  {f F₁ F₂ : X → Y},
+  Continuous f →
+    (∀ x, HasDerivAt F₁ (f x) x) →
+      (∀ x, HasDerivAt F₂ (f x) x) →
+        ∃ c : Y, ∀ (x : X), F₁ x = F₂ x + c 
+
+∀ {X : Type u} {Y : Type v} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : T2Space Y] {m : MeasurableSpace X}
+  {μ : MeasureTheory.Measure X} [inst_3 : MeasureTheory.Measure.IsComplete μ] {f : X → Y} {F₁ F₂ : MeasureTheory.VectorMeasure X Y},
+  Continuous f →
+    F₁ ∈ MeasureTheory.VectorMeasure.primitive μ f →
+      F₂ ∈ MeasureTheory.VectorMeasure.primitive μ f → F₁ = F₂ 
+
+failed to elaborate
+
+outputs: #[∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {f : ℝ → E} {F G : ℝ → E},
+  (∀ (x : ℝ), HasDerivAt F (f x) x) →
+    (∀ (x : ℝ), HasDerivAt G (f x) x) →
+      ContinuousOn f (Set.Interval F.a G.a) →
+        ContinuousOn F (Set.Interval F.a G.a) →
+          ContinuousOn G (Set.Interval F.a G.a) →
+            ∃ (C : E), ∀ (x : ℝ), x ∈ Set.Interval F.a G.a → F x = G x + C , ∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : T1Space Y] [inst_3 : LinearOrder Y]
+  [inst_4 : OrderClosedTopology Y] {f F G : X → Y},
+  Continuous f → (∀ (x : X), HasDerivAt F (f x) x) → (∀ (x : X), HasDerivAt G (f x) x) → ∃ c, ∀ (x : X), F x = G x + c , ∀ {Ω : Type u_1} [inst : MeasurableSpace Ω] [inst_1 : BorelSpace Ω] [inst_2 : TopologicalSpace Ω] [inst_3 : OpensMeasurableSpace Ω]
+  {f F₁ F₂ : Ω → ℝ},
+  Continuous f →
+    F₁ =ᶠ[MeasureTheory.Measure.ae (MeasureTheory.Measure.restrict volume (interior Ω))] f.antiderivative →
+      F₂ =ᶠ[MeasureTheory.Measure.ae (MeasureTheory.Measure.restrict volume (interior Ω))] f.antiderivative →
+        Continuous F₁ → Continuous F₂ → ∃ C, ∀ (x : Ω), x ∈ interior Ω → F₁ x = F₂ x + C , ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {F : Type u_2} [inst_2 : NormedAddCommGroup F]
+  [inst_3 : NormedSpace ℝ F] {f : E → F} {g₁ g₂ : E → F} {Ω : Set E},
+  ContinuousOn f Ω →
+    HasPrimitiveWithinAt f g₁ Ω →
+      HasPrimitiveWithinAt f g₂ Ω →
+        ContinuousOn g₁ Ω → ContinuousOn g₂ Ω → ∀ (x : E), x ∈ Ω → g₁ x = g₂ x + (g₁ (Classical.some (_ : ∃ x, x ∈ Ω)) - g₂ (Classical.some (_ : ∃ x, x ∈ Ω))) , ∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : T1Space Y] {Ω : Set X}
+  [inst_3 : IsRegion Ω] {f F₁ F₂ : X → Y},
+  ContinuousOn f Ω →
+    (∀ (x : X), x ∈ Ω → HasDerivWithinAt F₁ (f x) Ω x) →
+      (∀ (x : X), x ∈ Ω → HasDerivWithinAt F₂ (f x) Ω x) →
+        ∃ (C : Y), ∀ (x : X), x ∈ Ω → F₁ x = F₂ x + C , ∀ {E : Type u} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {F : Type v} [inst_2 : NormedAddCommGroup F]
+  [inst_3 : NormedSpace ℝ F] {f : E → F} {s : Set E} {g₁ g₂ : F} {U : Set E},
+  ContinuousOn f s →
+    HasIntegralOn ℝ g₁ f U s →
+      HasIntegralOn ℝ g₂ f U s →
+        ∀ (x : E), x ∈ s → g₁ x = g₂ x + (g₁ (Classical.some (_ : ∃ x, x ∈ s)) - g₂ (Classical.some (_ : ∃ x, x ∈ s))) , ∀ {ℝ : Type u_1} {E : Type u_2} [inst : MeasurableSpace ℝ] [inst_1 : NormedAddCommGroup E] [inst_2 : NormedSpace ℝ E]
+  {F : Type u_3} [inst_3 : NormedGroup F] [inst_4 : NormedSpace ℝ F] {f₁ f₂ : ℝ → F} {f : ℝ → E} {Ω : Set ℝ},
+  ContinuousOn f Ω →
+  (∀ (x : ℝ), x ∈ Ω → HasDerivWithinAt f₁ (f x) Ω x) →
+    (∀ (x : ℝ), x ∈ Ω → HasDerivWithinAt f₂ (f x) Ω x) →
+      ∃ (C : F), ∀ (x : ℝ), x ∈ Ω → f₁ x = f₂ x + C , ∀ {X : Type u} [inst : TopologicalSpace X] [inst_1 : AddCommGroup X] [inst_2 : TopologicalAddGroup X]
+  {f F₁ F₂ : ℝ → X},
+  ContinuousOn f (Set.Interval F₁ F₂) →
+    (∀ (x : ℝ), x ∈ Set.Interval F₁ F₂ → HasDerivAt F₁ (f x) x) →
+      (∀ (x : ℝ), x ∈ Set.Interval F₁ F₂ → HasDerivAt F₂ (f x) x) →
+        ∃ (C : X), ∀ (x : ℝ), x ∈ Set.Interval F₁ F₂ → F₁ x = F₂ x + C , ∀ {X : Type u} {Y : Type v} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : T2Space Y] [inst_3 : AddGroup Y] [inst_4 : TopologicalAddGroup Y]
+  {f F₁ F₂ : X → Y},
+  Continuous f →
+    (∀ x, HasDerivAt F₁ (f x) x) →
+      (∀ x, HasDerivAt F₂ (f x) x) →
+        ∃ c : Y, ∀ (x : X), F₁ x = F₂ x + c , ∀ {X : Type u} {Y : Type v} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : T2Space Y] {m : MeasurableSpace X}
+  {μ : MeasureTheory.Measure X} [inst_3 : MeasureTheory.Measure.IsComplete μ] {f : X → Y} {F₁ F₂ : MeasureTheory.VectorMeasure X Y},
+  Continuous f →
+    F₁ ∈ MeasureTheory.VectorMeasure.primitive μ f →
+      F₂ ∈ MeasureTheory.VectorMeasure.primitive μ f → F₁ = F₂ ]
+
+total : 13
+
+elaborated: 9
+
+success
+
+theorem ∀ {Ω : Set ℂ} {ϕ : ℂ → ℂ},
+  IsOpen Ω →
+    Metric.Bounded Ω →
+      DifferentiableOn ℂ ϕ Ω →
+        Set.MapsTo ϕ Ω Ω → ∃ z₀, z₀ ∈ Ω ∧ ϕ z₀ = z₀ ∧ HasDerivAt ϕ 1 z₀ → ∀ (z : ℂ), z ∈ Ω → ϕ z = z + (ϕ z₀ - z₀)
+
+total : 14
+
+elaborated: 10
+
+success
+
+theorem ∀ {a : ℝ}, 0 < a → ∫ (x : ℝ) in -Real.pi..Real.pi, Real.cos x / (x ^ 2 + a ^ 2) = Real.pi * rexp (-a) / a
+
+total : 15
+
+elaborated: 11
+
+success
+
+theorem ∫ (x : ℝ) in ?m.14072390, Real.log (Real.sin (Real.pi * x)) = -Real.log 2
+
+total : 16
+
+elaborated: 12
+
+No valid output from LLM; outputs below
+
+<input>:4:17: expected '↦', '=>' while parsing ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {D : Set ℂ} {f : ℂ → E},
+  D = Metric.Ball 0 1 →
+  ContinuousOn f (Closure D) →
+  Set.EqOn f (λ z, z⁻¹) (Closure (Metric.Sphere 0 1)) → False 
+
+<input>:1:98: expected term while parsing ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {D : Set ℂ} (hd : ∀ z ∈ ∂D, ∥z∥ = 1),
+  ¬∃ (f : ℂ → E), DifferentiableOn ℂ f (Interior D) ∧ ContinuousOn f D ∧ ∀ (z : ℂ), z ∈ ∂D → f z = (z⁻¹) • 1 
+
+∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {H : Type u_2} [inst_2 : TopologicalSpace H]
+  {I : ModelWithCorners ℂ E H} [inst_3 : ModelWithCorners.Boundaryless I] {M : Type u_3} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] {f : M → ℂ},
+  ContinuousOn f (Metric.sphere 0 1) →
+    (∀ (z : ℂ), z ∈ Metric.sphere 0 1 → f z = z⁻¹) →
+      ¬MDifferentiable I (modelWithCornersSelf ℂ ℂ) f 
+
+<input>:3:19: expected '↦', '=>' while parsing ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {f : ℂ → E},
+  ContinuousOn f (Metric.closedBall 0 1) →
+    Set.EqOn f (λ z, z⁻¹) (Metric.sphere 0 1) → False 
+
+∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {H : Type u_2} [inst_2 : TopologicalSpace H]
+  {I : ModelWithCorners ℂ E H} [inst_3 : ModelWithCorners.Boundaryless I] {M : Type u_3} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] (f : M → ℂ),
+  (∀ (z : ℂ), z ∈ Metric.sphere 0 1 → f z = z⁻¹) →
+    ContinuousOn f (Metric.sphere 0 1) →
+      ¬(MDifferentiable I (modelWithCornersSelf ℂ ℂ) f ∧ ContinuousOn f (Metric.closedBall 0 1)) 
+
+∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {D : ℕ → PartialHolomorphic E (Metric.ClosedBall 0 1)},
+  MDifferentiableOnCl I (ModelWithCornersSelf ℂ E) (fun z => z + 1 / z) (Metric.ClosedBall 0 1) →
+    ContinuousOn (fun z => z + 1 / z) (Metric.ClosedBall 0 1) →
+      (∀ (z : ℂ), z ∈ Metric.Sphere 0 1 → (fun z => z + 1 / z) z = 1 / z) → False 
+
+<input>:5:25: expected '↦', '=>' while parsing ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {H : Type u_2} [inst_2 : TopologicalSpace H]
+  {I : ModelWithCorners ℂ E H} [inst_3 : ModelWithCorners.Boundaryless I] {M : Type u_3} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] {f : M → ℂ},
+  ContinuousOn f (Closure (Metric.Ball 0 1)) →
+    Set.EqOn f (λ (z : ℂ), z⁻¹) (Metric.Sphere 0 1) → False 
+
+∀ {E : Type u_2} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {F : Type u_4} [inst_2 : NormedAddCommGroup F]
+  [inst_3 : NormedSpace ℂ F] {H : Type u_3} [inst_4 : TopologicalSpace H] {I : ModelWithCorners ℂ E H}
+  [inst_5 : ModelWithCorners.Boundaryless I] {M : Type u_1} [inst_6 : TopologicalSpace M] [inst_7 : CompactSpace M]
+  [inst_8 : ChartedSpace H M] [inst_9 : SmoothManifoldWithCorners I M] [inst_10 : PreconnectedSpace M] {f : M → F},
+  MDifferentiable I (modelWithCornersSelf ℂ F) f → f ∉ ContinuousOn f (Metric.ClosedBall 0 1) ∧
+    ∀ (z : ℂ), z ∈ Metric.sphere 0 1 → f z = (z - 0)⁻¹ → False 
+
+<input>:5:17: expected '↦', '=>' while parsing ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {H : Type u_2} [inst_2 : TopologicalSpace H]
+  {I : ModelWithCorners ℂ E H} [inst_3 : ModelWithCorners.Boundaryless I] {M : Type u_3} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] {f : M → ℂ},
+  ContinuousOn f (metric.sphere (0 : ℂ) 1) →
+  Set.EqOn f (λ z, (z : ℂ)⁻¹) (metric.sphere (0 : ℂ) 1) →
+  ¬ MDifferentiable I (modelWithCornersSelf ℂ ℂ) f 
+
+∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] [inst_2 : CompleteSpace E],
+  ¬∃ (f : ℂ → E), ContinuousOn f (Metric.closedBall 0 1) ∧ DifferentiableOn ℂ f (Metric.ball 0 1) ∧
+    ∀ (z : ℂ), z ∈ Metric.sphere 0 1 → f z = (z⁻¹) 
+
+failed to elaborate
+
+outputs: #[∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {D : Set ℂ} {f : ℂ → E},
+  D = Metric.Ball 0 1 →
+  ContinuousOn f (Closure D) →
+  Set.EqOn f (λ z, z⁻¹) (Closure (Metric.Sphere 0 1)) → False , ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {D : Set ℂ} (hd : ∀ z ∈ ∂D, ∥z∥ = 1),
+  ¬∃ (f : ℂ → E), DifferentiableOn ℂ f (Interior D) ∧ ContinuousOn f D ∧ ∀ (z : ℂ), z ∈ ∂D → f z = (z⁻¹) • 1 , ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {H : Type u_2} [inst_2 : TopologicalSpace H]
+  {I : ModelWithCorners ℂ E H} [inst_3 : ModelWithCorners.Boundaryless I] {M : Type u_3} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] {f : M → ℂ},
+  ContinuousOn f (Metric.sphere 0 1) →
+    (∀ (z : ℂ), z ∈ Metric.sphere 0 1 → f z = z⁻¹) →
+      ¬MDifferentiable I (modelWithCornersSelf ℂ ℂ) f , ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {f : ℂ → E},
+  ContinuousOn f (Metric.closedBall 0 1) →
+    Set.EqOn f (λ z, z⁻¹) (Metric.sphere 0 1) → False , ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {H : Type u_2} [inst_2 : TopologicalSpace H]
+  {I : ModelWithCorners ℂ E H} [inst_3 : ModelWithCorners.Boundaryless I] {M : Type u_3} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] (f : M → ℂ),
+  (∀ (z : ℂ), z ∈ Metric.sphere 0 1 → f z = z⁻¹) →
+    ContinuousOn f (Metric.sphere 0 1) →
+      ¬(MDifferentiable I (modelWithCornersSelf ℂ ℂ) f ∧ ContinuousOn f (Metric.closedBall 0 1)) , ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {D : ℕ → PartialHolomorphic E (Metric.ClosedBall 0 1)},
+  MDifferentiableOnCl I (ModelWithCornersSelf ℂ E) (fun z => z + 1 / z) (Metric.ClosedBall 0 1) →
+    ContinuousOn (fun z => z + 1 / z) (Metric.ClosedBall 0 1) →
+      (∀ (z : ℂ), z ∈ Metric.Sphere 0 1 → (fun z => z + 1 / z) z = 1 / z) → False , ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {H : Type u_2} [inst_2 : TopologicalSpace H]
+  {I : ModelWithCorners ℂ E H} [inst_3 : ModelWithCorners.Boundaryless I] {M : Type u_3} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] {f : M → ℂ},
+  ContinuousOn f (Closure (Metric.Ball 0 1)) →
+    Set.EqOn f (λ (z : ℂ), z⁻¹) (Metric.Sphere 0 1) → False , ∀ {E : Type u_2} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {F : Type u_4} [inst_2 : NormedAddCommGroup F]
+  [inst_3 : NormedSpace ℂ F] {H : Type u_3} [inst_4 : TopologicalSpace H] {I : ModelWithCorners ℂ E H}
+  [inst_5 : ModelWithCorners.Boundaryless I] {M : Type u_1} [inst_6 : TopologicalSpace M] [inst_7 : CompactSpace M]
+  [inst_8 : ChartedSpace H M] [inst_9 : SmoothManifoldWithCorners I M] [inst_10 : PreconnectedSpace M] {f : M → F},
+  MDifferentiable I (modelWithCornersSelf ℂ F) f → f ∉ ContinuousOn f (Metric.ClosedBall 0 1) ∧
+    ∀ (z : ℂ), z ∈ Metric.sphere 0 1 → f z = (z - 0)⁻¹ → False , ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {H : Type u_2} [inst_2 : TopologicalSpace H]
+  {I : ModelWithCorners ℂ E H} [inst_3 : ModelWithCorners.Boundaryless I] {M : Type u_3} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] {f : M → ℂ},
+  ContinuousOn f (metric.sphere (0 : ℂ) 1) →
+  Set.EqOn f (λ z, (z : ℂ)⁻¹) (metric.sphere (0 : ℂ) 1) →
+  ¬ MDifferentiable I (modelWithCornersSelf ℂ ℂ) f , ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] [inst_2 : CompleteSpace E],
+  ¬∃ (f : ℂ → E), ContinuousOn f (Metric.closedBall 0 1) ∧ DifferentiableOn ℂ f (Metric.ball 0 1) ∧
+    ∀ (z : ℂ), z ∈ Metric.sphere 0 1 → f z = (z⁻¹) ]
+
+total : 17
+
+elaborated: 12
+
+success
+
+theorem ∀ {z₁ z₂ z₃ z₄ : ℂ},
+  ↑Complex.abs z₁ = 1 →
+    z₁ ≠ 1 →
+      ↑Complex.abs z₂ = 1 →
+        z₂ ≠ 1 →
+          ↑Complex.abs z₃ = 1 → z₃ ≠ 1 → ↑Complex.abs z₄ = 1 → z₄ ≠ 1 → 3 - z₁ - z₂ - z₃ - z₄ + z₁ * z₂ * z₃ * z₄ ≠ 0
+
+total : 18
+
+elaborated: 13
+
+success
+
+theorem ∀ {n : ℕ}, 0 < n → ∀ (z : ℂ), ?m.27834600 z ≤ 1 → ¬Polynomial.IsRoot (Polynomial.Chebyshev.T ℂ n) z
+
+total : 19
+
+elaborated: 14
+
+success
+
+theorem ∀ (f : ℕ → ℚ),
+  (∀ (n : ℕ), f n = 0 ∨ f n = 1) →
+    ∑' (n : ℕ), f n * (2 / 3) ^ n = 3 / 2 → Irrational (∑' (n : ℕ), ↑(f n) * (1 / 2) ^ ↑n)
+
+total : 20
+
+elaborated: 15
+
+success
+
+theorem ∀ (n : ℕ), 0 < n → ¬Nat.Prime (10 ^ 10 ^ 10 ^ n + 10 ^ 10 ^ n + 10 ^ n - 1)
+
+total : 21
+
+elaborated: 16
+
+success
+
+theorem ∀ (N : ℕ), ∃ n, N < n ∧ ∃ x1 y1 x2 y2 x3 y3, n = x1 ^ 2 + y1 ^ 2 ∧ n + 1 = x2 ^ 2 + y2 ^ 2 ∧ n + 2 = x3 ^ 2 + y3 ^ 2
+
+total : 22
+
+elaborated: 17
+
+success
+
+theorem ∀ {f : ℝ → ℝ},
+  Differentiable ℝ f →
+    (∀ {x : ℝ}, DifferentiableAt ℝ (deriv f) x) →
+      Continuous (deriv (deriv (deriv f))) →
+        ∃ a, deriv (deriv (deriv f)) a * a = 2 * deriv (deriv f) a - 2 * f a + 4 * deriv f a - 6 * a
+
+total : 23
+
+elaborated: 18
+
+success
+
+theorem ∀ {α : Type u_1} [inst : TopologicalSpace α] {a : α} {f : ℕ → ℕ} {p q : ℕ → α},
+  Function.Injective f →
+    Filter.Tendsto p Filter.atTop (nhds a) → (q = fun k => p (f k)) → Filter.Tendsto q Filter.atTop (nhds a)
+
+total : 24
+
+elaborated: 19
+
+Writing to file: proofnet_valid4-elab-10-false-5-8.json
+
+No valid output from LLM; outputs below
+
+∀ {n : ℕ}, (Finset.sum (Nat.divisors n) fun d => MoebiusFunction.moebius (n / d) * Real.log ↑d) = Nat.ArithmeticFunction.logs.nat_apply n 
+
+∀ (n : ℕ), Finset.sum (Nat.divisors n) (fun d => Moebius.moebius (n / d) * Real.log d) = ite (Nat.PrimePow n) (Real.log (Nat.minFac n)) 0 
+
+∀ (n : ℕ),
+  Finset.sum (Nat.divisors n) (fun d => Moebius.moebius d * Real.log d) = if n = 0 then 0 else Real.log (Nat.gcd n (Nat.minFac n)) 
+
+∀ (n : ℕ),
+  (Finset.sum (Nat.divisors n) (λ d => (μ n / d) * Real.log d)) = if h : ∃ p k, Nat.Prime p ∧ 0 < k ∧ p ^ k = n then Real.log (Classical.some h) else 0 
+
+∀ (n : ℕ),
+  (Finset.sum (Nat.divisors n) fun d => Moebius.moebius d * (Real.log d)) = (if n = 0 then 0 else Nat.Prime.log (Nat.factorization n).support.prod) 
+
+∀ (n : ℕ), Finset.sum (Nat.divisors n) (fun d => Moebius.moebius d * Real.log d) = AddChar.Λ n 
+
+<input>:1:10: expected token while parsing ∀ n : ℕ, (∑ d in n.divisors, Moebius.moebiusFunction (n / d) * Real.log d) = if Nat.Prime (Nat.minFac n) ∧ n = Nat.minFac n ^ Nat.factorization n (Nat.minFac n) then Real.log (Nat.minFac n) else 0 
+
+∀ (n : ℕ),
+  (Finset.sum (Nat.divisors n) fun d => Moebius.moebius d * Real.log (n / d)) = if n = 1 then 0 else Real.log (Nat.minFac n) 
+
+<input>:1:47: expected '↦', '=>' while parsing ∀ (n : ℕ), Finset.sum (Finset.filter (λ (d : ℕ), d ∣ n) (Finset.range (n + 1))) (λ (d : ℕ), Moebius.moebius (n / d) * Real.log ↑d) = ite (n = 1) 0 (Real.log (↑(Nat.minFac n))) 
+
+∀ (n : ℕ), (Finset.sum (Nat.divisors n) fun d => MoebiusFunction.moebius d * Real.log (↑(n / d))) = AddChar.logPow n 
+
+failed to elaborate
+
+outputs: #[∀ {n : ℕ}, (Finset.sum (Nat.divisors n) fun d => MoebiusFunction.moebius (n / d) * Real.log ↑d) = Nat.ArithmeticFunction.logs.nat_apply n , ∀ (n : ℕ), Finset.sum (Nat.divisors n) (fun d => Moebius.moebius (n / d) * Real.log d) = ite (Nat.PrimePow n) (Real.log (Nat.minFac n)) 0 , ∀ (n : ℕ),
+  Finset.sum (Nat.divisors n) (fun d => Moebius.moebius d * Real.log d) = if n = 0 then 0 else Real.log (Nat.gcd n (Nat.minFac n)) , ∀ (n : ℕ),
+  (Finset.sum (Nat.divisors n) (λ d => (μ n / d) * Real.log d)) = if h : ∃ p k, Nat.Prime p ∧ 0 < k ∧ p ^ k = n then Real.log (Classical.some h) else 0 , ∀ (n : ℕ),
+  (Finset.sum (Nat.divisors n) fun d => Moebius.moebius d * (Real.log d)) = (if n = 0 then 0 else Nat.Prime.log (Nat.factorization n).support.prod) , ∀ (n : ℕ), Finset.sum (Nat.divisors n) (fun d => Moebius.moebius d * Real.log d) = AddChar.Λ n , ∀ n : ℕ, (∑ d in n.divisors, Moebius.moebiusFunction (n / d) * Real.log d) = if Nat.Prime (Nat.minFac n) ∧ n = Nat.minFac n ^ Nat.factorization n (Nat.minFac n) then Real.log (Nat.minFac n) else 0 , ∀ (n : ℕ),
+  (Finset.sum (Nat.divisors n) fun d => Moebius.moebius d * Real.log (n / d)) = if n = 1 then 0 else Real.log (Nat.minFac n) , ∀ (n : ℕ), Finset.sum (Finset.filter (λ (d : ℕ), d ∣ n) (Finset.range (n + 1))) (λ (d : ℕ), Moebius.moebius (n / d) * Real.log ↑d) = ite (n = 1) 0 (Real.log (↑(Nat.minFac n))) , ∀ (n : ℕ), (Finset.sum (Nat.divisors n) fun d => MoebiusFunction.moebius d * Real.log (↑(n / d))) = AddChar.logPow n ]
+
+total : 1
+
+elaborated: 0
+
+No valid output from LLM; outputs below
+
+Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} 
+
+Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} 
+
+Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} 
+
+Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} 
+
+Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} 
+
+<input>:1:50: expected end of input while parsing Set.Infinite {p | Nat.Prime p ∧ p ≡ (-1) [MOD 6]} :
+
+Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} 
+
+Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} 
+
+Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} 
+
+Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} 
+
+failed to elaborate
+
+outputs: #[Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} , Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} , Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} , Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} , Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} , Set.Infinite {p | Nat.Prime p ∧ p ≡ (-1) [MOD 6]} :, Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} , Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} , Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} , Set.Infinite {p | Nat.Prime p ∧ p ≡ -1 [MOD 6]} ]
+
+total : 2
+
+elaborated: 0
+
+success
+
+theorem ∀ (x y : ℤ), 7 * x ^ 3 + 2 ≠ y ^ 3
+
+total : 3
+
+elaborated: 1
+
+success
+
+theorem ∀ {p q n : ℕ} [inst : Fact (Nat.Prime p)] [inst_1 : Fact (Nat.Prime q)],
+  p ≠ 2 → q ≠ 2 → p ≠ q → p - 1 ∣ q - 1 → IsCoprime n (p * q) → ↑(n ^ (q - 1)) ≡ 1 [ZMOD ↑p * ↑q]
+
+total : 4
+
+elaborated: 2
+
+success
+
+theorem ∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p % 4 = 3 → ∀ {a : ℕ}, IsPrimitiveRoot a p ↔ orderOf (-↑a) = (p - 1) / 2
+
+total : 5
+
+elaborated: 3
+
+success
+
+theorem ∀ (p : ℕ) [inst : Fact (Nat.Prime p)],
+  p % 2 = 1 → ∀ (a : ℕ), IsPrimitiveRoot a p ↔ ∀ (q : ℕ), Nat.Prime q → q ∣ p - 1 → a ^ ((p - 1) / q) ≠ 1
+
+total : 6
+
+elaborated: 4
+
+success
+
+theorem ∀ {x p : ℕ}, Nat.Prime p → p ∣ x ^ 4 - x ^ 2 + 1 → p % 12 = 1
+
+total : 7
+
+elaborated: 5
+
+No valid output from LLM; outputs below
+
+∀ {a : ℤ} {p q : ℕ} [inst : Fact (Nat.Prime p)] [inst_1 : Fact (Nat.Prime q)],
+  a < 0 → p ≡ q [ZMOD 4 * a] → ↑a % ↑p ≠ 0 → legendreSym a ↑p = legendreSym a ↑q 
+
+<input>:2:8: expected ':' while parsing /-- If `a` is negative, then `p ≡ q (4a)` together with `p ∤ a` imply `(a / p) = (a / q)`. -/
+theorem ∀ {a : ℤ} {p q : ℕ}, a < 0 → p % (4 * -a) = q % (4 * -a) → ¬↑p ∣ a → legendreSym a ↑p = legendreSym a ↑q 
+
+∀ {a p q : ℤ}, a < 0 → p % (4 * a) = q % (4 * a) → ¬↑p ∣ a → legendreSym a p = legendreSym a q 
+
+∀ {p q a : ℕ} [inst : Fact (Nat.Prime p)] [inst_1 : Fact (Nat.Prime q)],
+  a < 0 → p % (4 * a) = q % (4 * a) → ¬p ∣ a → legendreSym a p = legendreSym a q 
+
+∀ {a : ℤ} {p q : ℕ} [Fact (Nat.Prime p)] [Fact (Nat.Prime q)],
+  a < 0 → p % (4 * a) = q % (4 * a) → ↑p ∣ a → ↑q ∣ a → legendreSym a ↑p = legendreSym a ↑q 
+
+∀ {a : ℤ} {p q : ℕ} [inst : Fact (Nat.Prime p)] [inst_1 : Fact (Nat.Prime q)],
+  a < 0 → p % (4 * a) = q % (4 * a) → ¬(↑p ∣ a) → legendreSym a ↑p = legendreSym a ↑q 
+
+∀ {a : ℤ} {p q : ℕ}, a < 0 → p % (4 * -a) = q % (4 * -a) → ↑p ∣ a → ↑q ∣ a → legendreSym p a = legendreSym q a 
+
+∀ {a p q : ℤ},
+  a < 0 → p % (4 * a) = q % (4 * a) → ¬p ∣ a → ¬q ∣ a → legendreSym a p = legendreSym a q 
+
+∀ {a : ℤ} {p q : ℕ} [hp : Fact (Nat.Prime p)] [hq : Fact (Nat.Prime q)],
+  a < 0 → (p % (4 * -a) = q % (4 * -a)) → ¬(↑p ∣ a) → legendreSym a ↑p = legendreSym a ↑q 
+
+∀ {a : ℤ} {p q : ℕ} [inst : Fact (Nat.Prime p)] [inst_1 : Fact (Nat.Prime q)],
+  a < 0 → p ≡ q [ZMOD 4 * a] → ¬p ∣ a → legendreSym a ↑p = legendreSym a ↑q 
+
+failed to elaborate
+
+outputs: #[∀ {a : ℤ} {p q : ℕ} [inst : Fact (Nat.Prime p)] [inst_1 : Fact (Nat.Prime q)],
+  a < 0 → p ≡ q [ZMOD 4 * a] → ↑a % ↑p ≠ 0 → legendreSym a ↑p = legendreSym a ↑q , /-- If `a` is negative, then `p ≡ q (4a)` together with `p ∤ a` imply `(a / p) = (a / q)`. -/
+theorem ∀ {a : ℤ} {p q : ℕ}, a < 0 → p % (4 * -a) = q % (4 * -a) → ¬↑p ∣ a → legendreSym a ↑p = legendreSym a ↑q , ∀ {a p q : ℤ}, a < 0 → p % (4 * a) = q % (4 * a) → ¬↑p ∣ a → legendreSym a p = legendreSym a q , ∀ {p q a : ℕ} [inst : Fact (Nat.Prime p)] [inst_1 : Fact (Nat.Prime q)],
+  a < 0 → p % (4 * a) = q % (4 * a) → ¬p ∣ a → legendreSym a p = legendreSym a q , ∀ {a : ℤ} {p q : ℕ} [Fact (Nat.Prime p)] [Fact (Nat.Prime q)],
+  a < 0 → p % (4 * a) = q % (4 * a) → ↑p ∣ a → ↑q ∣ a → legendreSym a ↑p = legendreSym a ↑q , ∀ {a : ℤ} {p q : ℕ} [inst : Fact (Nat.Prime p)] [inst_1 : Fact (Nat.Prime q)],
+  a < 0 → p % (4 * a) = q % (4 * a) → ¬(↑p ∣ a) → legendreSym a ↑p = legendreSym a ↑q , ∀ {a : ℤ} {p q : ℕ}, a < 0 → p % (4 * -a) = q % (4 * -a) → ↑p ∣ a → ↑q ∣ a → legendreSym p a = legendreSym q a , ∀ {a p q : ℤ},
+  a < 0 → p % (4 * a) = q % (4 * a) → ¬p ∣ a → ¬q ∣ a → legendreSym a p = legendreSym a q , ∀ {a : ℤ} {p q : ℕ} [hp : Fact (Nat.Prime p)] [hq : Fact (Nat.Prime q)],
+  a < 0 → (p % (4 * -a) = q % (4 * -a)) → ¬(↑p ∣ a) → legendreSym a ↑p = legendreSym a ↑q , ∀ {a : ℤ} {p q : ℕ} [inst : Fact (Nat.Prime p)] [inst_1 : Fact (Nat.Prime q)],
+  a < 0 → p ≡ q [ZMOD 4 * a] → ¬p ∣ a → legendreSym a ↑p = legendreSym a ↑q ]
+
+total : 8
+
+elaborated: 5
+
+success
+
+theorem ∃ x1 y1 x2 y2, x1 ≠ x2 ∧ y1 ≠ y2 ∧ x1 ^ 3 + y1 ^ 3 = x2 ^ 3 + y2 ^ 3 ∧ x1 ^ 3 + y1 ^ 3 = 1729
+
+total : 9
+
+elaborated: 6
+
+success
+
+theorem ∀ {E : Type u} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {Ω : Set E} {f : E → ℂ},
+  DifferentiableOn ℂ f Ω → IsOpen Ω → (∀ (x : E), x ∈ Ω → (f x).re = (f x).re) → ∀ (x y : E), x ∈ Ω → y ∈ Ω → f x = f y
+
+total : 10
+
+elaborated: 7
+
+success
+
+theorem ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {f : E → ℂ} {Ω : Set E},
+  IsOpen Ω →
+    DifferentiableOn ℂ f Ω → (∀ (x : E), x ∈ Ω → ↑Complex.abs (f x) = ↑Complex.abs (f 0)) → ∀ (x : E), x ∈ Ω → f x = f 0
+
+total : 11
+
+elaborated: 8
+
+success
+
+theorem ∀ (z : ℂ), ↑Complex.abs z = 1 → Summable fun n => z ^ n / (n + 1) ^ 2
+
+total : 12
+
+elaborated: 9
+
+No valid output from LLM; outputs below
+
+∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {f : ℝ → E} {F G : ℝ → E},
+  (∀ (x : ℝ), HasDerivAt F (f x) x) →
+    (∀ (x : ℝ), HasDerivAt G (f x) x) →
+      ContinuousOn f (Set.Interval F.a G.a) →
+        ContinuousOn F (Set.Interval F.a G.a) →
+          ContinuousOn G (Set.Interval F.a G.a) →
+            ∃ (C : E), ∀ (x : ℝ), x ∈ Set.Interval F.a G.a → F x = G x + C 
+
+∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : T1Space Y] [inst_3 : LinearOrder Y]
+  [inst_4 : OrderClosedTopology Y] {f F G : X → Y},
+  Continuous f → (∀ (x : X), HasDerivAt F (f x) x) → (∀ (x : X), HasDerivAt G (f x) x) → ∃ c, ∀ (x : X), F x = G x + c 
+
+∀ {Ω : Type u_1} [inst : MeasurableSpace Ω] [inst_1 : BorelSpace Ω] [inst_2 : TopologicalSpace Ω] [inst_3 : OpensMeasurableSpace Ω]
+  {f F₁ F₂ : Ω → ℝ},
+  Continuous f →
+    F₁ =ᶠ[MeasureTheory.Measure.ae (MeasureTheory.Measure.restrict volume ( interior Ω))] f.antiderivative →
+      F₂ =ᶠ[MeasureTheory.Measure.ae (MeasureTheory.Measure.restrict volume ( interior Ω))] f.antiderivative →
+        Continuous F₁ → Continuous F₂ → ∃ C, ∀ (x : Ω), x ∈  interior Ω → F₁ x = F₂ x + C 
+
+∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {F : Type u_2} [inst_2 : NormedAddCommGroup F]
+  [inst_3 : NormedSpace ℝ F] {f : E → F} {g₁ g₂ : E → F} {Ω :  ZFSet E},
+  ContinuousOn f Ω →
+    HasPrimitiveWithinAt f g₁ Ω →
+      HasPrimitiveWithinAt f g₂ Ω →
+        ContinuousOn g₁ Ω → ContinuousOn g₂ Ω → ∀ (x : E), x ∈ Ω → g₁ x = g₂ x + (g₁ (Classical.some (_ : ∃ x, x ∈ Ω)) - g₂ (Classical.some (_ : ∃ x, x ∈ Ω))) 
+
+∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : T1Space Y] {Ω :  ZFSet X}
+  [inst_3 : IsRegion Ω] {f F₁ F₂ : X → Y},
+  ContinuousOn f Ω →
+    (∀ (x : X), x ∈ Ω → HasDerivWithinAt F₁ (f x) Ω x) →
+      (∀ (x : X), x ∈ Ω → HasDerivWithinAt F₂ (f x) Ω x) →
+        ∃ (C : Y), ∀ (x : X), x ∈ Ω → F₁ x = F₂ x + C 
+
+∀ {E : Type u} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {F : Type v} [inst_2 : NormedAddCommGroup F]
+  [inst_3 : NormedSpace ℝ F] {f : E → F} {s :  ZFSet E} {g₁ g₂ : F} {U :  ZFSet E},
+  ContinuousOn f s →
+    HasIntegralOn ℝ g₁ f U s →
+      HasIntegralOn ℝ g₂ f U s →
+        ∀ (x : E), x ∈ s → g₁ x = g₂ x + (g₁ (Classical.some (_ : ∃ x, x ∈ s)) - g₂ (Classical.some (_ : ∃ x, x ∈ s))) 
+
+<input>:1:3: expected '_' or identifier while parsing ∀ {ℝ : Type u_1} {E : Type u_2} [inst : MeasurableSpace ℝ] [inst_1 : NormedAddCommGroup E] [inst_2 : NormedSpace ℝ E]
+  {F : Type u_3} [inst_3 : NormedGroup F] [inst_4 : NormedSpace ℝ F] {f₁ f₂ : ℝ → F} {f : ℝ → E} {Ω : Set ℝ},
+  ContinuousOn f Ω →
+  (∀ (x : ℝ), x ∈ Ω → HasDerivWithinAt f₁ (f x) Ω x) →
+    (∀ (x : ℝ), x ∈ Ω → HasDerivWithinAt f₂ (f x) Ω x) →
+      ∃ (C : F), ∀ (x : ℝ), x ∈ Ω → f₁ x = f₂ x + C 
+
+∀ {X : Type u} [inst : TopologicalSpace X] [inst_1 :  AddCommGroupCat X] [inst_2 : TopologicalAddGroup X]
+  {f F₁ F₂ : ℝ → X},
+  ContinuousOn f (Set.Interval F₁ F₂) →
+    (∀ (x : ℝ), x ∈ Set.Interval F₁ F₂ → HasDerivAt F₁ (f x) x) →
+      (∀ (x : ℝ), x ∈ Set.Interval F₁ F₂ → HasDerivAt F₂ (f x) x) →
+        ∃ (C : X), ∀ (x : ℝ), x ∈ Set.Interval F₁ F₂ → F₁ x = F₂ x + C 
+
+∀ {X : Type u} {Y : Type v} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : T2Space Y] [inst_3 :  AddGroupCat Y] [inst_4 : TopologicalAddGroup Y]
+  {f F₁ F₂ : X → Y},
+  Continuous f →
+    (∀ x, HasDerivAt F₁ (f x) x) →
+      (∀ x, HasDerivAt F₂ (f x) x) →
+        ∃ c : Y, ∀ (x : X), F₁ x = F₂ x + c 
+
+∀ {X : Type u} {Y : Type v} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : T2Space Y] {m : MeasurableSpace X}
+  {μ : MeasureTheory.Measure X} [inst_3 : MeasureTheory.Measure.IsComplete μ] {f : X → Y} {F₁ F₂ : MeasureTheory.VectorMeasure X Y},
+  Continuous f →
+    F₁ ∈ MeasureTheory.VectorMeasure.primitive μ f →
+      F₂ ∈ MeasureTheory.VectorMeasure.primitive μ f → F₁ = F₂ 
+
+failed to elaborate
+
+outputs: #[∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {f : ℝ → E} {F G : ℝ → E},
+  (∀ (x : ℝ), HasDerivAt F (f x) x) →
+    (∀ (x : ℝ), HasDerivAt G (f x) x) →
+      ContinuousOn f (Set.Interval F.a G.a) →
+        ContinuousOn F (Set.Interval F.a G.a) →
+          ContinuousOn G (Set.Interval F.a G.a) →
+            ∃ (C : E), ∀ (x : ℝ), x ∈ Set.Interval F.a G.a → F x = G x + C , ∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : T1Space Y] [inst_3 : LinearOrder Y]
+  [inst_4 : OrderClosedTopology Y] {f F G : X → Y},
+  Continuous f → (∀ (x : X), HasDerivAt F (f x) x) → (∀ (x : X), HasDerivAt G (f x) x) → ∃ c, ∀ (x : X), F x = G x + c , ∀ {Ω : Type u_1} [inst : MeasurableSpace Ω] [inst_1 : BorelSpace Ω] [inst_2 : TopologicalSpace Ω] [inst_3 : OpensMeasurableSpace Ω]
+  {f F₁ F₂ : Ω → ℝ},
+  Continuous f →
+    F₁ =ᶠ[MeasureTheory.Measure.ae (MeasureTheory.Measure.restrict volume (interior Ω))] f.antiderivative →
+      F₂ =ᶠ[MeasureTheory.Measure.ae (MeasureTheory.Measure.restrict volume (interior Ω))] f.antiderivative →
+        Continuous F₁ → Continuous F₂ → ∃ C, ∀ (x : Ω), x ∈ interior Ω → F₁ x = F₂ x + C , ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {F : Type u_2} [inst_2 : NormedAddCommGroup F]
+  [inst_3 : NormedSpace ℝ F] {f : E → F} {g₁ g₂ : E → F} {Ω : Set E},
+  ContinuousOn f Ω →
+    HasPrimitiveWithinAt f g₁ Ω →
+      HasPrimitiveWithinAt f g₂ Ω →
+        ContinuousOn g₁ Ω → ContinuousOn g₂ Ω → ∀ (x : E), x ∈ Ω → g₁ x = g₂ x + (g₁ (Classical.some (_ : ∃ x, x ∈ Ω)) - g₂ (Classical.some (_ : ∃ x, x ∈ Ω))) , ∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : T1Space Y] {Ω : Set X}
+  [inst_3 : IsRegion Ω] {f F₁ F₂ : X → Y},
+  ContinuousOn f Ω →
+    (∀ (x : X), x ∈ Ω → HasDerivWithinAt F₁ (f x) Ω x) →
+      (∀ (x : X), x ∈ Ω → HasDerivWithinAt F₂ (f x) Ω x) →
+        ∃ (C : Y), ∀ (x : X), x ∈ Ω → F₁ x = F₂ x + C , ∀ {E : Type u} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {F : Type v} [inst_2 : NormedAddCommGroup F]
+  [inst_3 : NormedSpace ℝ F] {f : E → F} {s : Set E} {g₁ g₂ : F} {U : Set E},
+  ContinuousOn f s →
+    HasIntegralOn ℝ g₁ f U s →
+      HasIntegralOn ℝ g₂ f U s →
+        ∀ (x : E), x ∈ s → g₁ x = g₂ x + (g₁ (Classical.some (_ : ∃ x, x ∈ s)) - g₂ (Classical.some (_ : ∃ x, x ∈ s))) , ∀ {ℝ : Type u_1} {E : Type u_2} [inst : MeasurableSpace ℝ] [inst_1 : NormedAddCommGroup E] [inst_2 : NormedSpace ℝ E]
+  {F : Type u_3} [inst_3 : NormedGroup F] [inst_4 : NormedSpace ℝ F] {f₁ f₂ : ℝ → F} {f : ℝ → E} {Ω : Set ℝ},
+  ContinuousOn f Ω →
+  (∀ (x : ℝ), x ∈ Ω → HasDerivWithinAt f₁ (f x) Ω x) →
+    (∀ (x : ℝ), x ∈ Ω → HasDerivWithinAt f₂ (f x) Ω x) →
+      ∃ (C : F), ∀ (x : ℝ), x ∈ Ω → f₁ x = f₂ x + C , ∀ {X : Type u} [inst : TopologicalSpace X] [inst_1 : AddCommGroup X] [inst_2 : TopologicalAddGroup X]
+  {f F₁ F₂ : ℝ → X},
+  ContinuousOn f (Set.Interval F₁ F₂) →
+    (∀ (x : ℝ), x ∈ Set.Interval F₁ F₂ → HasDerivAt F₁ (f x) x) →
+      (∀ (x : ℝ), x ∈ Set.Interval F₁ F₂ → HasDerivAt F₂ (f x) x) →
+        ∃ (C : X), ∀ (x : ℝ), x ∈ Set.Interval F₁ F₂ → F₁ x = F₂ x + C , ∀ {X : Type u} {Y : Type v} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : T2Space Y] [inst_3 : AddGroup Y] [inst_4 : TopologicalAddGroup Y]
+  {f F₁ F₂ : X → Y},
+  Continuous f →
+    (∀ x, HasDerivAt F₁ (f x) x) →
+      (∀ x, HasDerivAt F₂ (f x) x) →
+        ∃ c : Y, ∀ (x : X), F₁ x = F₂ x + c , ∀ {X : Type u} {Y : Type v} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : T2Space Y] {m : MeasurableSpace X}
+  {μ : MeasureTheory.Measure X} [inst_3 : MeasureTheory.Measure.IsComplete μ] {f : X → Y} {F₁ F₂ : MeasureTheory.VectorMeasure X Y},
+  Continuous f →
+    F₁ ∈ MeasureTheory.VectorMeasure.primitive μ f →
+      F₂ ∈ MeasureTheory.VectorMeasure.primitive μ f → F₁ = F₂ ]
+
+total : 13
+
+elaborated: 9
+
+success
+
+theorem ∀ {Ω : Set ℂ} {ϕ : ℂ → ℂ},
+  IsOpen Ω →
+    Metric.Bounded Ω →
+      DifferentiableOn ℂ ϕ Ω →
+        Set.MapsTo ϕ Ω Ω → ∃ z₀, z₀ ∈ Ω ∧ ϕ z₀ = z₀ ∧ HasDerivAt ϕ 1 z₀ → ∀ (z : ℂ), z ∈ Ω → ϕ z = z + (ϕ z₀ - z₀)
+
+total : 14
+
+elaborated: 10
+
+success
+
+theorem ∀ {a : ℝ}, 0 < a → ∫ (x : ℝ) in -Real.pi..Real.pi, Real.cos x / (x ^ 2 + a ^ 2) = Real.pi * rexp (-a) / a
+
+total : 15
+
+elaborated: 11
+
+success
+
+theorem ∫ (x : ℝ) in ?m.14072390, Real.log (Real.sin (Real.pi * x)) = -Real.log 2
+
+total : 16
+
+elaborated: 12
+
+No valid output from LLM; outputs below
+
+<input>:4:17: expected '↦', '=>' while parsing ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {D : Set ℂ} {f : ℂ → E},
+  D = Metric.Ball 0 1 →
+  ContinuousOn f (Closure D) →
+  Set.EqOn f (λ z, z⁻¹) (Closure (Metric.Sphere 0 1)) → False 
+
+<input>:1:98: expected term while parsing ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {D : Set ℂ} (hd : ∀ z ∈ ∂D, ∥z∥ = 1),
+  ¬∃ (f : ℂ → E), DifferentiableOn ℂ f (Interior D) ∧ ContinuousOn f D ∧ ∀ (z : ℂ), z ∈ ∂D → f z = (z⁻¹) • 1 
+
+∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {H : Type u_2} [inst_2 : TopologicalSpace H]
+  {I : ModelWithCorners ℂ E H} [inst_3 : ModelWithCorners.Boundaryless I] {M : Type u_3} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] {f : M → ℂ},
+  ContinuousOn f (Metric.sphere 0 1) →
+    (∀ (z : ℂ), z ∈ Metric.sphere 0 1 → f z = z⁻¹) →
+      ¬MDifferentiable I (modelWithCornersSelf ℂ ℂ) f 
+
+<input>:3:19: expected '↦', '=>' while parsing ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {f : ℂ → E},
+  ContinuousOn f (Metric.closedBall 0 1) →
+    Set.EqOn f (λ z, z⁻¹) (Metric.sphere 0 1) → False 
+
+∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {H : Type u_2} [inst_2 : TopologicalSpace H]
+  {I : ModelWithCorners ℂ E H} [inst_3 : ModelWithCorners.Boundaryless I] {M : Type u_3} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] (f : M → ℂ),
+  (∀ (z : ℂ), z ∈ Metric.sphere 0 1 → f z = z⁻¹) →
+    ContinuousOn f (Metric.sphere 0 1) →
+      ¬(MDifferentiable I (modelWithCornersSelf ℂ ℂ) f ∧ ContinuousOn f (Metric.closedBall 0 1)) 
+
+∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {D : ℕ → PartialHolomorphic E (Metric.ClosedBall 0 1)},
+  MDifferentiableOnCl I (ModelWithCornersSelf ℂ E) (fun z => z + 1 / z) (Metric.ClosedBall 0 1) →
+    ContinuousOn (fun z => z + 1 / z) (Metric.ClosedBall 0 1) →
+      (∀ (z : ℂ), z ∈ Metric.Sphere 0 1 → (fun z => z + 1 / z) z = 1 / z) → False 
+
+<input>:5:25: expected '↦', '=>' while parsing ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {H : Type u_2} [inst_2 : TopologicalSpace H]
+  {I : ModelWithCorners ℂ E H} [inst_3 : ModelWithCorners.Boundaryless I] {M : Type u_3} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] {f : M → ℂ},
+  ContinuousOn f (Closure (Metric.Ball 0 1)) →
+    Set.EqOn f (λ (z : ℂ), z⁻¹) (Metric.Sphere 0 1) → False 
+
+∀ {E : Type u_2} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {F : Type u_4} [inst_2 : NormedAddCommGroup F]
+  [inst_3 : NormedSpace ℂ F] {H : Type u_3} [inst_4 : TopologicalSpace H] {I : ModelWithCorners ℂ E H}
+  [inst_5 : ModelWithCorners.Boundaryless I] {M : Type u_1} [inst_6 : TopologicalSpace M] [inst_7 : CompactSpace M]
+  [inst_8 : ChartedSpace H M] [inst_9 : SmoothManifoldWithCorners I M] [inst_10 : PreconnectedSpace M] {f : M → F},
+  MDifferentiable I (modelWithCornersSelf ℂ F) f → f ∉ ContinuousOn f (Metric.ClosedBall 0 1) ∧
+    ∀ (z : ℂ), z ∈ Metric.sphere 0 1 → f z = (z - 0)⁻¹ → False 
+
+<input>:5:17: expected '↦', '=>' while parsing ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {H : Type u_2} [inst_2 : TopologicalSpace H]
+  {I : ModelWithCorners ℂ E H} [inst_3 : ModelWithCorners.Boundaryless I] {M : Type u_3} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] {f : M → ℂ},
+  ContinuousOn f (metric.sphere (0 : ℂ) 1) →
+  Set.EqOn f (λ z, (z : ℂ)⁻¹) (metric.sphere (0 : ℂ) 1) →
+  ¬ MDifferentiable I (modelWithCornersSelf ℂ ℂ) f 
+
+∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] [inst_2 : CompleteSpace E],
+  ¬∃ (f : ℂ → E), ContinuousOn f (Metric.closedBall 0 1) ∧ DifferentiableOn ℂ f (Metric.ball 0 1) ∧
+    ∀ (z : ℂ), z ∈ Metric.sphere 0 1 → f z = (z⁻¹) 
+
+failed to elaborate
+
+outputs: #[∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {D : Set ℂ} {f : ℂ → E},
+  D = Metric.Ball 0 1 →
+  ContinuousOn f (Closure D) →
+  Set.EqOn f (λ z, z⁻¹) (Closure (Metric.Sphere 0 1)) → False , ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {D : Set ℂ} (hd : ∀ z ∈ ∂D, ∥z∥ = 1),
+  ¬∃ (f : ℂ → E), DifferentiableOn ℂ f (Interior D) ∧ ContinuousOn f D ∧ ∀ (z : ℂ), z ∈ ∂D → f z = (z⁻¹) • 1 , ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {H : Type u_2} [inst_2 : TopologicalSpace H]
+  {I : ModelWithCorners ℂ E H} [inst_3 : ModelWithCorners.Boundaryless I] {M : Type u_3} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] {f : M → ℂ},
+  ContinuousOn f (Metric.sphere 0 1) →
+    (∀ (z : ℂ), z ∈ Metric.sphere 0 1 → f z = z⁻¹) →
+      ¬MDifferentiable I (modelWithCornersSelf ℂ ℂ) f , ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {f : ℂ → E},
+  ContinuousOn f (Metric.closedBall 0 1) →
+    Set.EqOn f (λ z, z⁻¹) (Metric.sphere 0 1) → False , ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {H : Type u_2} [inst_2 : TopologicalSpace H]
+  {I : ModelWithCorners ℂ E H} [inst_3 : ModelWithCorners.Boundaryless I] {M : Type u_3} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] (f : M → ℂ),
+  (∀ (z : ℂ), z ∈ Metric.sphere 0 1 → f z = z⁻¹) →
+    ContinuousOn f (Metric.sphere 0 1) →
+      ¬(MDifferentiable I (modelWithCornersSelf ℂ ℂ) f ∧ ContinuousOn f (Metric.closedBall 0 1)) , ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {D : ℕ → PartialHolomorphic E (Metric.ClosedBall 0 1)},
+  MDifferentiableOnCl I (ModelWithCornersSelf ℂ E) (fun z => z + 1 / z) (Metric.ClosedBall 0 1) →
+    ContinuousOn (fun z => z + 1 / z) (Metric.ClosedBall 0 1) →
+      (∀ (z : ℂ), z ∈ Metric.Sphere 0 1 → (fun z => z + 1 / z) z = 1 / z) → False , ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {H : Type u_2} [inst_2 : TopologicalSpace H]
+  {I : ModelWithCorners ℂ E H} [inst_3 : ModelWithCorners.Boundaryless I] {M : Type u_3} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] {f : M → ℂ},
+  ContinuousOn f (Closure (Metric.Ball 0 1)) →
+    Set.EqOn f (λ (z : ℂ), z⁻¹) (Metric.Sphere 0 1) → False , ∀ {E : Type u_2} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {F : Type u_4} [inst_2 : NormedAddCommGroup F]
+  [inst_3 : NormedSpace ℂ F] {H : Type u_3} [inst_4 : TopologicalSpace H] {I : ModelWithCorners ℂ E H}
+  [inst_5 : ModelWithCorners.Boundaryless I] {M : Type u_1} [inst_6 : TopologicalSpace M] [inst_7 : CompactSpace M]
+  [inst_8 : ChartedSpace H M] [inst_9 : SmoothManifoldWithCorners I M] [inst_10 : PreconnectedSpace M] {f : M → F},
+  MDifferentiable I (modelWithCornersSelf ℂ F) f → f ∉ ContinuousOn f (Metric.ClosedBall 0 1) ∧
+    ∀ (z : ℂ), z ∈ Metric.sphere 0 1 → f z = (z - 0)⁻¹ → False , ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {H : Type u_2} [inst_2 : TopologicalSpace H]
+  {I : ModelWithCorners ℂ E H} [inst_3 : ModelWithCorners.Boundaryless I] {M : Type u_3} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] {f : M → ℂ},
+  ContinuousOn f (metric.sphere (0 : ℂ) 1) →
+  Set.EqOn f (λ z, (z : ℂ)⁻¹) (metric.sphere (0 : ℂ) 1) →
+  ¬ MDifferentiable I (modelWithCornersSelf ℂ ℂ) f , ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] [inst_2 : CompleteSpace E],
+  ¬∃ (f : ℂ → E), ContinuousOn f (Metric.closedBall 0 1) ∧ DifferentiableOn ℂ f (Metric.ball 0 1) ∧
+    ∀ (z : ℂ), z ∈ Metric.sphere 0 1 → f z = (z⁻¹) ]
+
+total : 17
+
+elaborated: 12
+
+success
+
+theorem ∀ {z₁ z₂ z₃ z₄ : ℂ},
+  ↑Complex.abs z₁ = 1 →
+    z₁ ≠ 1 →
+      ↑Complex.abs z₂ = 1 →
+        z₂ ≠ 1 →
+          ↑Complex.abs z₃ = 1 → z₃ ≠ 1 → ↑Complex.abs z₄ = 1 → z₄ ≠ 1 → 3 - z₁ - z₂ - z₃ - z₄ + z₁ * z₂ * z₃ * z₄ ≠ 0
+
+total : 18
+
+elaborated: 13
+
+success
+
+theorem ∀ {n : ℕ}, 0 < n → ∀ (z : ℂ), ?m.27834600 z ≤ 1 → ¬Polynomial.IsRoot (Polynomial.Chebyshev.T ℂ n) z
+
+total : 19
+
+elaborated: 14
+
+success
+
+theorem ∀ (f : ℕ → ℚ),
+  (∀ (n : ℕ), f n = 0 ∨ f n = 1) →
+    ∑' (n : ℕ), f n * (2 / 3) ^ n = 3 / 2 → Irrational (∑' (n : ℕ), ↑(f n) * (1 / 2) ^ ↑n)
+
+total : 20
+
+elaborated: 15
+
+success
+
+theorem ∀ (n : ℕ), 0 < n → ¬Nat.Prime (10 ^ 10 ^ 10 ^ n + 10 ^ 10 ^ n + 10 ^ n - 1)
+
+total : 21
+
+elaborated: 16
+
+success
+
+theorem ∀ (N : ℕ), ∃ n, N < n ∧ ∃ x1 y1 x2 y2 x3 y3, n = x1 ^ 2 + y1 ^ 2 ∧ n + 1 = x2 ^ 2 + y2 ^ 2 ∧ n + 2 = x3 ^ 2 + y3 ^ 2
+
+total : 22
+
+elaborated: 17
+
+success
+
+theorem ∀ {f : ℝ → ℝ},
+  Differentiable ℝ f →
+    (∀ {x : ℝ}, DifferentiableAt ℝ (deriv f) x) →
+      Continuous (deriv (deriv (deriv f))) →
+        ∃ a, deriv (deriv (deriv f)) a * a = 2 * deriv (deriv f) a - 2 * f a + 4 * deriv f a - 6 * a
+
+total : 23
+
+elaborated: 18
+
+success
+
+theorem ∀ {α : Type u_1} [inst : TopologicalSpace α] {a : α} {f : ℕ → ℕ} {p q : ℕ → α},
+  Function.Injective f →
+    Filter.Tendsto p Filter.atTop (nhds a) → (q = fun k => p (f k)) → Filter.Tendsto q Filter.atTop (nhds a)
+
+total : 24
+
+elaborated: 19
+
+success
+
+theorem ∀ {M : Type u_1} [inst : MetricSpace M],
+  ∃ f,
+    (∀ (U : Set M), IsOpen U → IsClosed (f U)) ∧
+      (∀ (K : Set M), IsClosed K → IsOpen (f K)) ∧
+        (∀ (U₁ U₂ : Set M), IsOpen U₁ → IsOpen U₂ → f U₁ = f U₂ → U₁ = U₂) ∧
+          ∀ (K₁ K₂ : Set M), IsClosed K₁ → IsClosed K₂ → f K₁ = f K₂ → K₁ = K₂
+
+total : 25
+
+elaborated: 20
+
