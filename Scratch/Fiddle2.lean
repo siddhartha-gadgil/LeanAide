@@ -10,6 +10,12 @@ example  (G : Type*) (H : Type*) [Group G] [Group H] (gh_torsion_free : ∀ g : 
 
 example : PythagoreanTriple 3 4 5 := by sorry
 
+example : ∀ {α : Type u} [t : MetricSpace α] [inst : TopologicalSpace.SeparableSpace α] {s : Set α},  IsClosed s → ∃ t₁ t₂, Perfect t₁ ∧ Set.Countable t₂ ∧ s = t₁ ∪ t₂ := by sorry
+
+example : forall {α : Type u} [inst : PseudoMetricSpace α] [inst_1 : CompleteSpace α] {f : ℕ → Set α},  (∀ n, IsOpen (f n)) → (∀ n, Dense (f n)) → Set.Nonempty (⋂ n, f n)   := by sorry
+
+example : ∀ {Y : Type u_1} [inst : TopologicalSpace Y] [inst_1 : NormalSpace Y] {s : Set Y} (f : C(↑s, ℝ)),  IsClosed s → ∃ g, ContinuousMap.restrict s g = f  := by sorry
+
 #check Complex.abs
 
 example : ∀ {n : ℕ}, n * n % 2 = 0 → n % 2 = 0 := by sorry

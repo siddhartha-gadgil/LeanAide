@@ -4,7 +4,7 @@ Let $A$ be a nonempty set of real numbers which is bounded below. Let $-A$ be th
 If $z$ is a complex number, there exists an $r\geq 0$ and a complex number $w$ with $| w | = 1$ such that $z = rw$.
 If $x, y$ are complex, then $||x|-|y|| \leq |x-y|$.
 Suppose $k \geq 3, x, y \in \mathbb{R}^k, |x - y| = d > 0$, and $r > 0$. Then if $2r > d$, there are infinitely many $z \in \mathbb{R}^k$ such that $|z-x|=|z-y|=r$.
-If $k \geq 2$ and $\mathbf{x} \in R^{k}$, there exists $\mathbf{y} \in R^{k}$ such that $\mathbf{y} \neq 0$ and $\mathbf{x} \cdot \mathbf{y}=0$
+If $k \geq 2$ and $\mathbf{x} \in R^{k}$, there exists $\mathbf{y} \in R^{k}$ such that $\mathbf{y} \neq 0$ and $\mathbf{x} \cdot \mathbf{y}=0$.
 Suppose $a, b \in R^k$. There exists $c \in R^k$ and $r > 0$ such that $|x-a|=2|x-b|$ if and only if $| x - c | = r$. Then $3c = 4b - a$ and $3r = 2 |b - a|$.
 Let $X$ be a metric space in which every infinite subset has a limit point. Then $X$ is separable.
 Suppose $E\subset\mathbb{R}^k$ is uncountable, and let $P$ be the set of condensation points of $E$. Then $P$ is perfect.
@@ -47,7 +47,7 @@ Let $f: S^{1} \rightarrow \mathbb{R}$ be a continuous map. There exists a point 
 Let $X$ be locally path connected. Then every connected open set in $X$ is path connected.
 Let $X$ be a compact Hausdorff space. Let $\mathcal{A}$ be a collection of closed connected subsets of $X$ that is simply ordered by proper inclusion. Then $Y=\bigcap_{A \in \mathcal{A}} A$ is connected.
 A connected metric space having more than one point is uncountable.
-X is countably compact if and only if every nested sequence $C_1 \supset C_2 \supset \cdots$ of closed nonempty sets of X has a nonempty intersection.
+$X$ is countably compact if and only if every nested sequence $C_1 \supset C_2 \supset \cdots$ of closed nonempty sets of $X$ has a nonempty intersection.
 The rationals $\mathbb{Q}$ are not locally compact.
 If $X$ is a Hausdorff space that is locally compact at the point $x$, then for each neighborhood $U$ of $x$, there is a neighborhood $V$ of $x$ such that $\bar{V}$ is compact and $\bar{V} \subset U$.
 If $X$ has a countable dense subset, every collection of disjoint open sets in $X$ is countable.
@@ -90,7 +90,7 @@ Let $\Omega$ be a bounded open subset of $\mathbb{C}$, and $\varphi: \Omega \rig
 $ \int_{-\infty}^{\infty} \frac{\cos x}{x^2 + a^2} dx = \pi \frac{e^{-a}}{a}$ for $a > 0$.
 $\int_0^1 \log(\sin \pi x) dx = - \log 2$.
 There is no holomorphic function $f$ in the unit disc $D$ that extends continuously to $\partial D$ such that $f(z) = 1/z$ for $z \in \partial D$.
-For $j \in\{1,2,3,4\}$, let $z_{j}$ be a complex number with $\left|z_{j}\right|=1$ and $z_{j} \neq 1$. Then $3-z_{1}-z_{2}-z_{3}-z_{4}+z_{1} z_{2} z_{3} z_{4} \neq 0 .$
+For $j \in\{1,2,3,4\}$, let $z_{j}$ be a complex number with $\left|z_{j}\right|=1$ and $z_{j} \neq 1$. Then $3-z_{1}-z_{2}-z_{3}-z_{4}+z_{1} z_{2} z_{3} z_{4} \neq 0$ .
 Let $n$ be a positive integer, and let $f_{n}(z)=n+(n-1) z+$ $(n-2) z^{2}+\cdots+z^{n-1}$. Then $f_{n}$ has no roots in the closed unit disk $\{z \in \mathbb{C}:|z| \leq 1\}$.
 Suppose that $f(x)=\sum_{i=0}^{\infty} c_{i} x^{i}$ is a power series for which each coefficient $c_{i}$ is 0 or 1 . If $f(2 / 3)=3 / 2$, then $f(1 / 2)$ must be irrational.
 For each positive integer $n$, the number $10^{10^{10^n}}+10^{10^n}+10^n-1$ is not prime.
