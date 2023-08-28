@@ -1,5 +1,7 @@
 import Mathlib
 
+example : forall {a : ℝ} {f : ℝ → ℝ} {M₀ M₁ M₂ : ℝ},  Differentiable ℝ f → Differentiable ℝ (deriv f) →    (∀ x, a < x → abs (f x) ≤ M₀) →      (∀ x, a < x → abs (deriv f x) ≤ M₁) →        (∀ x, a < x → abs (deriv^[2] f x) ≤ M₂) → M₁ ^ 2 ≤ 4 * M₀ * M₂ := by sorry
+
 example (x : ℝ) : ‖x‖ = 0 := sorry
 
 example (n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) : ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2 := by sorry
@@ -15,6 +17,8 @@ example : ∀ {α : Type u} [t : MetricSpace α] [inst : TopologicalSpace.Separa
 example : forall {α : Type u} [inst : PseudoMetricSpace α] [inst_1 : CompleteSpace α] {f : ℕ → Set α},  (∀ n, IsOpen (f n)) → (∀ n, Dense (f n)) → Set.Nonempty (⋂ n, f n)   := by sorry
 
 example : ∀ {Y : Type u_1} [inst : TopologicalSpace Y] [inst_1 : NormalSpace Y] {s : Set Y} (f : C(↑s, ℝ)),  IsClosed s → ∃ g, ContinuousMap.restrict s g = f  := by sorry
+
+example: forall {Y : Type u_1} [inst : TopologicalSpace Y] [inst_1 : NormalSpace Y] {E : Set Y} (f : C(↑E, ℝ)),  IsClosed E → ∃ g, ContinuousMap.restrict E g = f := by sorry
 
 #check Complex.abs
 

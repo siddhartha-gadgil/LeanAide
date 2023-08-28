@@ -1,0 +1,21 @@
+{"text":"If `r` is rational (`r ≠ 0`) and `x` is irrational, prove that `r+x` is irrational.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Prove that there is no rational number whose square is `12`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Let `A` be a nonempty set of real numbers which is bounded below. Let `-A` be the set of all numbers `-x`, where `x ∈ A`. Prove that `inf A = -sup (-A)`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If `z` is a complex number, prove that there exists an `r ≥ 0` and a complex number `w` with `| w | = 1` such that `z = rw`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If `x, y` are complex, prove that `||x|-|y|| ≤ |x-y|`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Suppose `k ≥ 3`, `x, y ∈ ℝ^k`, `|x - y| = d > 0`, and `r > 0`. Prove that if `2r > d`, there are infinitely many `z ∈ ℝ^k` such that `|z-x|=|z-y|=r`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If `k ≥ 2` and `𝑥 ∈ ℝ^k`, prove that there exists `𝑦 ∈ ℝ^k` such that `𝑦 ≠ 0` but `𝑥 ⋅ 𝑦 = 0`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Suppose `a, b ∈ ℝ^k`. Find `c ∈ ℝ^k` and `r > 0` such that `|x-a|=2|x-b|` if and only if `| x - c | = r`. Prove that `3c = 4b - a` and `3r = 2 |b - a|`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Let `X` be a metric space in which every infinite subset has a limit point. Prove that `X` is separable.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Suppose `E⊆ℝ^k` is uncountable, and let `P` be the set of condensation points of `E`. Prove that `P` is perfect.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Prove that every closed set in a separable metric space is the union of a (possibly empty) perfect set and a set which is at most countable.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Prove that convergence of `{s_n}` implies convergence of `{|s_n|}`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If `s_1=√2`, and `s_{n+1}=√(2+√s_n)` for `(n=1,2,3, ...)`, prove that `{s_n}` converges, and that `s_n < 2` for `n=1,2,3, ...`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Prove that `lim_{n→∞} Σ_{i<n} a_i = ∞`, where `a_i = √(i + 1) - √i`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If `Σ a_n` converges, and if `{b_n}` is monotonic and bounded, prove that `Σ a_n b_n` converges.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Suppose `{p_n}` is a Cauchy sequence in a metric space `X`, and some sequence `{p_{n l}}` converges to a point `p ∈ X`. Prove that the full sequence `{p_n}` converges to `p`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Suppose `X` is a nonempty complete metric space, and `{G_n}` is a sequence of dense open sets of `X`. Prove Baire's theorem, namely, that `∩_{n=1}^{∞} G_n` is not empty.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If `f` is a continuous mapping of a metric space `X` into a metric space `Y`, prove that `f(∂E) ⊆ ∂f(E)` for every set `E ⊆ X`. (`∂E` denotes the closure of `E`).","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Let `f` and `g` be continuous mappings of a metric space `X` into a metric space `Y`, and let `E` be a dense subset of `X`. Prove that `f(E)` is dense in `f(X)`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If `f` is a real continuous function defined on a closed set `E ⊆ ℝ`, prove that there exist continuous real functions `g` on `ℝ` such that `g(x)=f(x)` for all `x ∈ E`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"If `f` is defined on `E`, the graph of `f` is the set of points `(x, f(x))`, for `x ∈ E`. In particular, if `E` is a set of real numbers, and `f` is real-valued, the graph of `f` is a subset of the plane. Suppose `E` is compact, and prove that `f` is continuous on `E` if and only if its graph is compact."

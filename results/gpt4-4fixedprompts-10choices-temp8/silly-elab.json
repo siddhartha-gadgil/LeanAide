@@ -15,7 +15,7 @@
  [{"theorem": "∀ (Prime : ℕ), Nat.Prime Prime → Prime = 2 ∨ Prime % 2 = 1",
    "some-correct": null,
    "prompt": "Every prime number is `2` or odd.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(prime : ℕ) (hp : nat.prime prime) :\n prime = 2 ∨ prime % 2 = 1 ",
@@ -28,7 +28,7 @@
   {"theorem": "∀ (k : ℕ), ∃ n, n > k ∧ n % 2 = 1",
    "some-correct": null,
    "prompt": "There are infinitely many odd natural numbers.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    [": ∃ f : ℕ → ℕ, function.injective f ∧ ∀ n, odd (f n) ",
@@ -38,7 +38,7 @@
   {"theorem": "Prime 3",
    "some-correct": null,
    "prompt": "The smallest odd prime is `3`.",
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["smallest_odd_prime : prime 3 ",
@@ -47,7 +47,7 @@
   {"theorem": "∀ (N : ℕ), ∃ p, p > N ∧ Prime p ∧ Odd p",
    "some-correct": null,
    "prompt": "There are infinitely many odd prime numbers.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    [": ∀ N : ℕ, ∃ p : ℕ, prime p ∧ odd p ∧ p > N ",
@@ -62,7 +62,7 @@
    "Type u_12 → ∀ (K : Type u_13) [inst : DivisionRing K], IsField K",
    "some-correct": null,
    "prompt": "Every field is a division ring.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(field_division_ring : Type*) [field field_division_ring] : division_ring field_division_ring ",
@@ -71,7 +71,7 @@
   {"theorem": "∀ (n : ℕ), ∃ m, m = n + 1",
    "some-correct": null,
    "prompt": "Every natural number has a successor.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(n : ℕ) : ∃ m : ℕ, m = n + 1 ",
@@ -81,21 +81,21 @@
   {"theorem": "∀ (n : ℕ), n < n + 1",
    "some-correct": null,
    "prompt": "Every natural number is less than its successor.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["(n : ℕ) : n < n + 1 ", "(n : ℕ) : n < n.succ "]},
   {"theorem":
    "∀ (X : Type u_12) [inst : MeasurableSpace X] (A : Set X), MeasurableSet A",
    "some-correct": null,
    "prompt": "Every set is Lebesgue measurable.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(X : Type*) [measurable_space X] (A : set X) : measurable_set A "]},
   {"theorem": "∀ (n : ℕ), Prime n → ¬∃ m, n = m ^ 2",
    "some-correct": null,
    "prompt": "No prime number is a perfect square.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(no_prime_perfect_square : ℕ → Prop) (p : ℕ) (hp : prime p) :\n no_prime_perfect_square p ",
@@ -104,7 +104,7 @@
    "∀ (Prime : ℕ) [hp : Fact (Nat.Prime Prime)], Odd Prime → Prime > 2",
    "some-correct": null,
    "prompt": "Every odd prime number is greater than `2`.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(prime : ℕ) [hp : fact (nat.prime prime)] (h_odd : odd prime) :\nprime > 2 ",
@@ -115,7 +115,7 @@
    "some-correct": null,
    "prompt":
    "The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares.",
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["(four_squares_sum : ℕ → ℕ → ℕ → ℕ → ℕ) (m n : ℕ) :\n ∃ a b c d : ℕ, m * n = four_squares_sum a b c d ",
@@ -129,7 +129,7 @@
    "∀ (X : Type u_12) [inst : TopologicalSpace X] [inst_1 : CompactSpace X], LocallyCompactSpace X",
    "some-correct": null,
    "prompt": "Every compact topological space is locally compact.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(X : Type*) [topological_space X] [compact_space X] : \nlocally_compact_space X ",
@@ -141,7 +141,7 @@
    "∀ (X : Type u_12) (Y : Type u_13) [inst : MetricSpace X] [inst_1 : MetricSpace Y] [inst_2 : CompactSpace X] (f : X → Y),\n  Continuous f → UniformContinuous f",
    "some-correct": null,
    "prompt": "Every continuous function is uniformly continuous.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(X : Type*) [metric_space X] (Y : Type*) [metric_space Y] (f : X → Y) (hf : continuous f) :\n  uniform_continuous f ",
@@ -151,7 +151,7 @@
   {"theorem": "¬∃ p q, Prime p ∧ Prime q ∧ p ≠ q ∧ p + q = 6",
    "some-correct": null,
    "prompt": "`6` is not the sum of two distinct prime numbers.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    [":\n  ¬ (∃ p q : ℕ, prime p ∧ prime q ∧ p ≠ q ∧ p + q = 6) ",
@@ -164,7 +164,7 @@
   {"theorem": "(∀ (n : ℤ), Irrational ↑n) → False",
    "some-correct": null,
    "prompt": "No integer is irrational.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(no_irrational_integer : ∀ n : ℤ, irrational (n : ℝ)) : false ",
@@ -172,7 +172,7 @@
   {"theorem": "∀ (X : Type u_12) [inst : Ring X], IsUnit 1",
    "some-correct": null,
    "prompt": "The identity element in a ring is a unit.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(X : Type*) [ring X] : is_unit (1 : X) ",
@@ -182,13 +182,13 @@
   {"theorem": "∀ (n m : ℕ), ∃ k, n + m = k",
    "some-correct": null,
    "prompt": "The sum of two natural numbers is a natural number.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["(n m : ℕ) : ℕ ", "(n m : ℕ) : ∃ k : ℕ, n + m = k "]},
   {"theorem": "∀ (G : Type u_12) [inst : Group G], ∃ n, n > 0 ∧ 1 ^ n = 1",
    "some-correct": null,
    "prompt": "The identity element of a group has finite order.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(G : Type*) [group G] : ∃ n : ℕ, n ≠ 0 ∧ (1 : G) ^ n = 1 ",
@@ -198,7 +198,7 @@
   {"theorem": "Prime 7",
    "some-correct": null,
    "prompt": "`7` is a prime number.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["prime_7 : nat.prime 7 ",
@@ -210,7 +210,7 @@
   {"theorem": "∃ primes, primes = {2, 3, 5, 7} ∧ Finset.card primes = 3",
    "some-correct": null,
    "prompt": "There are `3` prime numbers below `8`.",
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    [": ∃ (s : finset ℕ), s = {2, 3, 5, 7} ∧ ∀ p ∈ s, prime p ",
@@ -218,7 +218,7 @@
   {"theorem": "∀ {α : Type u_12} (s : Finset α), ∅ ⊆ s",
    "some-correct": null,
    "prompt": "The empty set is contained in every finite set.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["{α : Type*} (s : finset α) : ∅ ⊆ s ",
@@ -227,7 +227,7 @@
    "∀ (X : Type u_12) [inst : Infinite X] (n : ℕ), ∃ A, Finset.card A = n",
    "some-correct": null,
    "prompt": "Every infinite set contains a finite set.",
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["(X : Type*) [infinite X] (n : ℕ) :\n  ∃ A : finset X, finset.card A = n ",
@@ -241,7 +241,7 @@
    "(com_ring : Type u_12) → [inst : CommRing com_ring] → Monoid com_ring",
    "some-correct": null,
    "prompt": "Every commutative ring is a monoid.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(comm_ring R : Type*) : monoid R ",
@@ -251,7 +251,7 @@
    "some-correct": null,
    "prompt":
    "Every odd natural number is the sum of two distinct natural numbers.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["  every_odd_sum_two_distinct : ∀ (n : ℕ), odd n → ∃ (a b : ℕ), a ≠ b ∧ a + b = n ",
@@ -267,7 +267,7 @@
    "∀ (G : Type u_12) [inst : Group G], (∀ (x : G), x = 1) → ∀ (x : G), ∃ n, x ^ n = 1",
    "some-correct": null,
    "prompt": "Every element in the trivial group has finite order.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(trivial_group : Type*) [group trivial_group] : ∀ x : trivial_group, ∃ n : ℕ, x^n = 1 ",
@@ -280,7 +280,7 @@
   {"theorem": "∀ (n : ℕ), Even n → Even (n ^ 2)",
    "some-correct": null,
    "prompt": "The square of an even number is even.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(n : ℕ) (hn : even n) : even (n^2) ",
@@ -293,7 +293,7 @@
    "∀ (comm_div_ring : Type u_12) [inst : CommRing comm_div_ring] [inst_1 : Nontrivial comm_div_ring]\n  [inst_2 : IsDomain comm_div_ring], IsField comm_div_ring",
    "some-correct": null,
    "prompt": "Every commutative division ring is a field.",
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["(G : Type*) [comm_ring G] [div_inv_monoid G] (hz : ∀ (a : G), a * a⁻¹ = 1) :\nfield G ",
@@ -308,7 +308,7 @@
    "some-correct": null,
    "prompt":
    "The image of the identity element under the identity map is the identity element.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(G : Type*) [group G] (id_map : G → G) (h : ∀ g : G, id_map g = g) :\n id_map 1 = 1 ",
@@ -322,7 +322,7 @@
    "some-correct": null,
    "prompt":
    "Every point is a fixed point of the identity function on a space.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(X : Type*) (x : X) : id x = x ", "(X : Type*) : ∀ x : X, id x = x "]},
@@ -330,7 +330,7 @@
    "∀ (s : Type u_12) [inst : MetricSpace s] (x : s), Metric.diam {x} = 0",
    "some-correct": null,
    "prompt": "The diameter of a singleton space is `0`.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(s : Type*) [metric_space s] (x : s) :\n metric.diam (singleton x) = 0 ",
@@ -341,7 +341,7 @@
   {"theorem": "∀ (G : Type u_12) [inst : Group G], Nonempty G",
    "some-correct": null,
    "prompt": "Every group is non-empty.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(G : Type*) [group G] : nonempty G ",
@@ -350,7 +350,7 @@
    "∀ (X : Type u_12) [inst : TopologicalSpace X] (C : Set X), IsConnected C → IsConnected C",
    "some-correct": null,
    "prompt": "All connected components of a topological space are connected.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["(X : Type*) [topological_space X] (C : set X) (hC : is_connected C) :\n  is_connected C ",
@@ -361,7 +361,7 @@
   {"theorem": "∃ a b c, a ^ 2 + b ^ 2 = c ^ 2 ∧ a = 3 ∧ b = 4 ∧ c = 5",
    "some-correct": null,
    "prompt": "The numbers `3`, `4` and `5` form a Pythagorean triple.",
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    [": ∃ (a b c : ℕ), a^2 + b^2 = c^2 ∧ a = 3 ∧ b = 4 ∧ c = 5 ",
