@@ -21,7 +21,7 @@
    "Every prime that is `1` greater than a multiple of `4` can be expressed as the sum of two squares.",
    "groups":
    [["∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p % 4 = 1 → ∃ a b, a ^ 2 + b ^ 2 = p"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p % 4 = 1 → ∃ a b, a ^ 2 + b ^ 2 = p "]},
@@ -32,7 +32,7 @@
    "The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares.",
    "groups":
    [["∀ {a b x y u v : ℕ},\n  a = x ^ 2 + y ^ 2 + u ^ 2 + v ^ 2 →\n    b = x ^ 2 + y ^ 2 + u ^ 2 + v ^ 2 → ∃ r s t w, a * b = r ^ 2 + s ^ 2 + t ^ 2 + w ^ 2"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {a b x y u v : ℕ}, a = x ^ 2 + y ^ 2 + u ^ 2 + v ^ 2 → b = x ^ 2 + y ^ 2 + u ^ 2 + v ^ 2 → ∃ r s t w, a * b = r ^ 2 + s ^ 2 + t ^ 2 + w ^ 2 "]},
@@ -41,7 +41,7 @@
    "prompt":
    "There are infinitely many pairs of primes that differ exactly by `2`.",
    "groups": [["Set.Infinite {p | Nat.Prime p ∧ Nat.Prime (p + 2)}"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["Set.Infinite {p : ℕ | Nat.Prime p ∧ Nat.Prime (p + 2)} "]},
   {"theorem":
@@ -50,7 +50,7 @@
    "prompt": "Every finite division ring is a field.",
    "groups":
    [["(K : Type u_1) → [inst : DivisionRing K] → [inst_1 : Fintype K] → Field K"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ (K : Type u_1) [inst : DivisionRing K] [inst_1 : Fintype K], Field K "]},
@@ -61,7 +61,7 @@
    "If each of two types can be mapped injectively into the other, then there is a bijection between them.",
    "groups":
    [["∀ {α : Type u} {β : Type v} (f : α → β) (g : β → α), Function.Injective f → Function.Injective g → Nonempty (α ≃ β)"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} {β : Type v} (f : α → β) (g : β → α),\n  Function.Injective f → Function.Injective g → Nonempty (α ≃ β) "]},
@@ -72,7 +72,7 @@
    "A finite graph in which every pair of vertices have precisely one common neighbour contains a vertex that is adjacent to all other vertices.",
    "groups":
    [["∀ {V : Type u} (G : SimpleGraph V) [inst : Fintype V] [inst_1 : DecidableRel G.Adj],\n  (∀ (v w : V), v ≠ w → ∃! x, SimpleGraph.Adj G x v ∧ SimpleGraph.Adj G x w) →\n    ∃ x, ∀ (v : V), v ≠ x → SimpleGraph.Adj G x v"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {V : Type u} (G : SimpleGraph V) [inst : Fintype V] [inst_1 : DecidableRel G.Adj],\n  (∀ (v w : V), v ≠ w → ∃! (x : V), SimpleGraph.Adj G x v ∧ SimpleGraph.Adj G x w) →\n  ∃ (x : V), ∀ (v : V), v ≠ x → SimpleGraph.Adj G x v "]},
@@ -83,7 +83,7 @@
    "Every non-empty poset in which every chain has an upper bound contains a maximal element.",
    "groups":
    [["∀ {α : Type u_1} {r : α → α → Prop} [inst : Nonempty α],\n  (∀ (c : Set α), IsChain r c → Set.Nonempty c → ∃ ub, ∀ (a : α), a ∈ c → r a ub) →\n    (∀ {a b c : α}, r a b → r b c → r a c) → ∃ m, ∀ (a : α), r m a → r a m"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u_1} {r : α → α → Prop} [inst : Nonempty α],\n  (∀ (c : Set α), IsChain r c → Set.Nonempty c → ∃ ub, ∀ (a : α), a ∈ c → r a ub) →\n    (∀ {a b c : α}, r a b → r b c → r a c) → ∃ m, ∀ (a : α), r m a → r a m "]},
@@ -94,7 +94,7 @@
    "A uniformly continuous function of a uniformly continuous function is uniformly continuous.",
    "groups":
    [["∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} [inst : UniformSpace α] [inst_1 : UniformSpace β]\n  [inst_2 : UniformSpace γ] {f : α → β} {g : β → γ},\n  UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f)"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} [inst : UniformSpace α] [inst_1 : UniformSpace β] [inst_2 : UniformSpace γ]\n  {f : α → β} {g : β → γ}, UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f) "]},
@@ -105,7 +105,7 @@
    "A uniformly continuous function of a uniformly continuous function is uniformly continuous.",
    "groups":
    [["∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} [inst : UniformSpace α] [inst_1 : UniformSpace β]\n  [inst_2 : UniformSpace γ] {f : α → β} {g : β → γ},\n  UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f)"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} [inst : UniformSpace α] [inst_1 : UniformSpace β] [inst_2 : UniformSpace γ]\n  {f : α → β} {g : β → γ}, UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f) "]},
@@ -116,7 +116,7 @@
    "A topological space is normal if and only if any two disjoint closed subsets can be separated by a continuous function.",
    "groups":
    [["∀ {α : Type u} [inst : TopologicalSpace α],\n  NormalSpace α ↔\n    ∀ (s t : Set α),\n      IsClosed s → IsClosed t → Disjoint s t → ∃ f, Continuous f ∧ ∀ (x : α), x ∈ s → f x = 0 ∧ x ∈ t → f x = 1"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} [inst : TopologicalSpace α], NormalSpace α ↔\n  ∀ (s t : Set α), IsClosed s → IsClosed t → Disjoint s t → ∃ f, Continuous f ∧ ∀ x, x ∈ s → f x = 0 ∧ x ∈ t → f x = 1 "]},
@@ -127,7 +127,7 @@
    "If a function from the unit interval to itself has a point of period three, then it has points of all positive periods.",
    "groups":
    [["∀ {α : Type u_1} (f : α → α) [inst : LinearOrderedAddCommGroup α] [inst_1 : Archimedean α],\n  (∃ x, Function.IsPeriodicPt f 3 x) → ∀ (n : ℕ), ∃ x, Function.IsPeriodicPt f n x"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u_1} (f : α → α) [inst : LinearOrderedAddCommGroup α] [inst_1 : Archimedean α],\n  (∃ x, Function.IsPeriodicPt f 3 x) → ∀ n, ∃ x, Function.IsPeriodicPt f n x "]},
@@ -136,7 +136,7 @@
    "prompt":
    "The complement of the union of two sets is the intersection of their complements.",
    "groups": [["∀ {α : Type u} (s t : Set α), sᶜ ∩ tᶜ = (s ∪ t)ᶜ"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["∀ {α : Type u} (s t : Set α), sᶜ ∩ tᶜ = (s ∪ t)ᶜ "]},
   {"theorem": "∀ {x y z : ℕ}, x > 0 → y > 0 → x ^ 3 + y ^ 3 ≠ z ^ 3",
@@ -144,7 +144,7 @@
    "prompt":
    "The sum of the cubes of two positive integers is never equal to the cube of a third integer.",
    "groups": [["∀ {x y z : ℕ}, x > 0 → y > 0 → x ^ 3 + y ^ 3 ≠ z ^ 3"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["∀ {x y z : ℕ}, x > 0 → y > 0 → x ^ 3 + y ^ 3 ≠ z ^ 3 "]},
   {"theorem":
@@ -154,7 +154,7 @@
    "If every element of a group `G` has order `2`, then every pair of elements of `G` commutes.",
    "groups":
    [["∀ {G : Type u_1} [inst : Group G], (∀ (x : G), x * x = 1) → ∀ (x y : G), Commute x y"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {G : Type u_1} [inst : Group G] (h : ∀ (x : G), x * x = 1), ∀ (x y : G), Commute x y "]},
@@ -162,7 +162,7 @@
    "some-correct": null,
    "prompt": "The product of two consecutive natural numbers is even.",
    "groups": [["∀ {n : ℕ}, Even (n * (n + 1))"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["∀ {n : ℕ}, Even (n * (n + 1)) "]},
   {"theorem":
@@ -171,7 +171,7 @@
    "prompt": "Every index 2 subgroup of a group is normal.",
    "groups":
    [["∀ {G : Type u_1} [inst : Group G] {H : Subgroup G}, Subgroup.index H = 2 → Subgroup.Normal H"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {G : Type u_1} [inst : Group G] {H : Subgroup G}, Subgroup.index H = 2 → Subgroup.Normal H "]},
@@ -181,7 +181,7 @@
    "prompt": "Every free group is torsion free.",
    "groups":
    [["∀ {G : Type u_1} [inst : Group G] [hF : IsFreeGroup G], Monoid.IsTorsionFree G"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {G : Type u_1} [inst : Group G] [hF : IsFreeGroup G], Monoid.IsTorsionFree G "]},
@@ -190,7 +190,7 @@
    "prompt":
    "Every natural number greater than `1` is divisible by a prime number.",
    "groups": [["∀ (n : ℕ), 1 < n → ∃ p, Nat.Prime p ∧ p ∣ n"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["∀ (n : ℕ), 1 < n → ∃ (p : ℕ), Nat.Prime p ∧ p ∣ n "]},
   {"theorem":
@@ -199,7 +199,7 @@
    "prompt": "A finite torsion-free group is trivial",
    "groups":
    [["∀ {G : Type u_1} [inst : Group G] [inst_1 : Finite G], Monoid.IsTorsionFree G → Subsingleton G"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {G : Type u_1} [inst : Group G] [inst_1 : Finite G], Monoid.IsTorsionFree G → Subsingleton G "]},
@@ -209,7 +209,7 @@
    "prompt": "Every finite division ring is a field.",
    "groups":
    [["(K : Type u_1) → [inst : DivisionRing K] → [inst_1 : Fintype K] → Field K"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ (K : Type u_1) [inst : DivisionRing K] [inst_1 : Fintype K], Field K "]},
@@ -219,7 +219,7 @@
    "prompt": "Every finite topological space is compact.",
    "groups":
    [["∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : Finite α], CompactSpace α"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["finite_compact {α : Type u} [inst : TopologicalSpace α] [inst_1 : Finite α] : CompactSpace α "]},
@@ -230,7 +230,7 @@
    "Every surjective homomorphism from a finitely generated free group to itself is injective.",
    "groups":
    [["∀ {α : Type u} [inst : Fintype α] (f : FreeGroup α →* FreeGroup α), Function.Surjective ↑f → Function.Injective ↑f"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} [inst : Fintype α] (f : FreeGroup α →* FreeGroup α),\n  Function.Surjective ↑f → Function.Injective ↑f "]},
@@ -241,7 +241,7 @@
    "Every positive even integer can be written as the sum of two primes.",
    "groups":
    [["∀ (n : ℕ), n ≠ 0 → Even n → ∃ p q, Nat.Prime p ∧ Nat.Prime q ∧ n = p + q"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ (n : ℕ), n ≠ 0 → Even n → ∃ p q, Nat.Prime p ∧ Nat.Prime q ∧ n = p + q "]},
@@ -249,7 +249,7 @@
    "some-correct": null,
    "prompt": "The square root of an irrational number is irrational.",
    "groups": [["∀ {x : ℝ}, Irrational x → Irrational (Real.sqrt x)"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["∀ {x : ℝ}, Irrational x → Irrational (Real.sqrt x) "]},
   {"theorem":
@@ -258,7 +258,7 @@
    "prompt": "If the square of a number is even, the number itself is even.",
    "groups":
    [["∀ {α : Type u} [inst : LinearOrderedRing α] {x : α}, x * x % 2 = 0 ↔ x % 2 = 0"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} [inst : LinearOrderedRing α] {x : α}, x * x % 2 = 0 ↔ x % 2 = 0 "]},
@@ -268,7 +268,7 @@
    "prompt": "In a finite commutative ring, all prime ideals are maximal.",
    "groups":
    [["∀ {R : Type u_1} [inst : CommRing R] [inst_1 : Fintype R] (P : Ideal R), Ideal.IsPrime P → Ideal.IsMaximal P"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {R : Type u_1} [inst : CommRing R] [inst_1 : Fintype R] (P : Ideal R), Ideal.IsPrime P → Ideal.IsMaximal P "]},
@@ -279,7 +279,7 @@
    "If every point of a subset of a topological space is contained in some open set, the subset itself is open.",
    "groups":
    [["∀ {α : Type u} [inst : TopologicalSpace α] {s : Set α}, (∀ (x : α), x ∈ s → ∃ U, IsOpen U ∧ x ∈ U) → IsOpen s"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} [inst : TopologicalSpace α] {s : Set α}, (∀ x ∈ s, ∃ U, IsOpen U ∧ x ∈ U) → IsOpen s "]},
@@ -289,7 +289,7 @@
    "prompt": "Every non-identity element of a free group is of infinite order.",
    "groups":
    [["∀ {α : Type u_1} [inst : Group α] [inst_1 : IsFreeGroup α] (x : α), x ≠ 1 → ¬IsOfFinOrder x"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u_1} [inst : Group α] [inst_1 : IsFreeGroup α] (x : α), x ≠ 1 → ¬IsOfFinOrder x "]},
@@ -300,7 +300,7 @@
    "For any two relatively prime positive integers $a$ and $b$, every sufficiently large natural number $N$ can be written as a linear combination $ax + by$ of $a$ and $b$, where both $x$ and $y$ are natural numbers.",
    "groups":
    [["∀ {a b : ℕ}, Nat.coprime a b → ∀ (N : ℕ), ∃ x y, N ≤ a * x + b * y"]],
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["∀ {a b : ℕ}, Nat.coprime a b → ∀ N, ∃ x y : ℕ, N ≤ a * x + b * y "]},
@@ -308,7 +308,7 @@
    "some-correct": null,
    "prompt": "Every field is a ring.",
    "groups": [["(K : Type u) → [inst : Field K] → Ring K"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["∀ (K : Type u) [inst : Field K], Ring K "]},
   {"theorem":
@@ -318,7 +318,7 @@
    "If the direct product of two groups is torsion free then each of the groups is torsion free.",
    "groups":
    [["∀ {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : Group H],\n  Monoid.IsTorsionFree (G × H) → Monoid.IsTorsionFree G ∧ Monoid.IsTorsionFree H"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : Group H],\n  Monoid.IsTorsionFree (G × H) → Monoid.IsTorsionFree G ∧ Monoid.IsTorsionFree H "]}],

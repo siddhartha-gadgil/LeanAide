@@ -14,21 +14,21 @@
    "some-correct": null,
    "prompt": "Every prime number is `2` or odd.",
    "groups": [["∀ {p : ℕ}, Nat.Prime p → p = 2 ∨ p % 2 = 1"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["∀ {p : ℕ}, Nat.Prime p → p = 2 ∨ p % 2 = 1 "]},
   {"theorem": "Set.Infinite {n | Odd n}",
    "some-correct": null,
    "prompt": "There are infinitely many odd natural numbers.",
    "groups": [["Set.Infinite {n | Odd n}"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["Set.Infinite {n : ℕ | Odd n} "]},
   {"theorem": "Set.Infinite {p | Nat.Prime p ∧ Odd p}",
    "some-correct": null,
    "prompt": "There are infinitely many odd prime numbers.",
    "groups": [["Set.Infinite {p | Nat.Prime p ∧ Odd p}"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["Set.Infinite {p | Nat.Prime p ∧ Odd p} "]},
   {"theorem":
@@ -38,7 +38,7 @@
    "If a vector space has dimension `2` then it is finite dimensional.",
    "groups":
    [["∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],\n  Module.rank K V = 2 → FiniteDimensional K V"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],\n  Module.rank K V = 2 → FiniteDimensional K V "]},
@@ -46,7 +46,7 @@
    "some-correct": null,
    "prompt": "Every field is a division ring.",
    "groups": [["{K : Type u} → [inst : Field K] → DivisionRing K"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["∀ {K : Type u} [inst : Field K], DivisionRing K "]},
   {"theorem":
@@ -55,7 +55,7 @@
    "prompt": "If a space has dimension `2` then it is finite dimensional.",
    "groups":
    [["∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],\n  Module.rank K V = 2 → FiniteDimensional K V"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],\n  Module.rank K V = 2 → FiniteDimensional K V "]},
@@ -63,14 +63,14 @@
    "some-correct": null,
    "prompt": "Every natural number has a successor.",
    "groups": [["∀ (n : ℕ), ∃ k, n + 1 = k"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["∀ (n : ℕ), ∃ k, n + 1 = k "]},
   {"theorem": "∀ (n : ℕ), n < n + 1",
    "some-correct": null,
    "prompt": "Every natural number is less than its successor.",
    "groups": [["∀ (n : ℕ), n < n + 1"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["∀ (n : ℕ), n < n + 1 "]},
   {"theorem":
@@ -79,7 +79,7 @@
    "prompt": "Every set of Borel measure zero is Lebesgue measurable.",
    "groups":
    [["∀ {α : Type u_1} [inst : MeasurableSpace α] [inst_1 : TopologicalSpace α]\n  [inst_2 : TopologicalSpace.SecondCountableTopology α] [inst_3 : BorelSpace α] (μ : MeasureTheory.Measure α)\n  (s : Set α), ?m.84296 μ s = 0 → MeasurableSet s"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u_1} [inst : MeasurableSpace α] [inst_1 : TopologicalSpace α] [inst_2 : TopologicalSpace.SecondCountableTopology α]\n  [inst_3 : BorelSpace α] (μ : MeasureTheory.Measure α) (s : Set α), ↑↑μ s = 0 → MeasurableSet s "]},
@@ -87,14 +87,14 @@
    "some-correct": null,
    "prompt": "No prime number is a perfect square.",
    "groups": [["∀ {p : ℕ}, Nat.Prime p → ¬∃ t, t * t = p"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["∀ {p : ℕ}, Nat.Prime p → ¬∃ t, t * t = p "]},
   {"theorem": "∀ {p : ℕ} [inst : Fact (Nat.Prime p)], Odd p → p > 2",
    "some-correct": null,
    "prompt": "Every odd prime number is greater than `2`.",
    "groups": [["∀ {p : ℕ} [inst : Fact (Nat.Prime p)], Odd p → p > 2"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["∀ {p : ℕ} [inst : Fact (Nat.Prime p)], Odd p → p > 2 "]},
   {"theorem":
@@ -104,7 +104,7 @@
    "The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares.",
    "groups":
    [["∀ {a b x y u v r s : ℕ},\n  a = x ^ 2 + y ^ 2 + u ^ 2 + v ^ 2 →\n    b = r ^ 2 + s ^ 2 + u ^ 2 + v ^ 2 → ∃ p q r s, a * b = p ^ 2 + q ^ 2 + r ^ 2 + s ^ 2"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {a b x y u v r s : ℕ}, a = x ^ 2 + y ^ 2 + u ^ 2 + v ^ 2 → b = r ^ 2 + s ^ 2 + u ^ 2 + v ^ 2 → ∃ p q r s, a * b = p ^ 2 + q ^ 2 + r ^ 2 + s ^ 2 "]},
@@ -114,7 +114,7 @@
    "prompt": "Every compact topological space is locally compact.",
    "groups":
    [["∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : CompactSpace α], LocallyCompactSpace α"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : CompactSpace α], LocallyCompactSpace α "]},
@@ -124,7 +124,7 @@
    "prompt": "Every continuous function is uniformly continuous.",
    "groups":
    [["∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] [inst_2 : CompactSpace α] (f : α → β),\n  Continuous f → UniformContinuous f"]],
-   "correct": null,
+   "correct": false,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] [inst_2 : CompactSpace α] (f : α → β),\n  Continuous f → UniformContinuous f "]},
@@ -132,7 +132,7 @@
    "some-correct": null,
    "prompt": "`6` is not the sum of two distinct prime numbers.",
    "groups": [["¬∃ p q, Nat.Prime p ∧ Nat.Prime q ∧ p ≠ q ∧ p + q = 6"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["¬∃ (p q : ℕ), Nat.Prime p ∧ Nat.Prime q ∧ p ≠ q ∧ p + q = 6 "]},
@@ -140,14 +140,14 @@
    "some-correct": null,
    "prompt": "No integer is irrational.",
    "groups": [["∀ (z : ℤ), ¬Irrational ↑z"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["∀ (z : ℤ), ¬Irrational ↑z "]},
   {"theorem": "∀ {R : Type u} [inst : Ring R], IsUnit 1",
    "some-correct": null,
    "prompt": "The identity element in a ring is a unit.",
    "groups": [["∀ {R : Type u} [inst : Ring R], IsUnit 1"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["∀ {R : Type u} [inst : Ring R], IsUnit (1 : R) "]},
   {"theorem":
@@ -156,7 +156,7 @@
    "prompt": "Every subgroup of a group is a group.",
    "groups":
    [["{G : Type u_1} → [inst : Group G] → (H : Subgroup G) → Group { x // x ∈ H }"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {G : Type u_1} [inst : Group G] (H : Subgroup G), Group { x // x ∈ H } "]},
@@ -164,28 +164,28 @@
    "some-correct": null,
    "prompt": "The sum of two natural numbers is a natural number.",
    "groups": [["∀ (a b : ℕ), ∃ c, a + b = c"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["∀ (a b : ℕ), ∃ c : ℕ, a + b = c "]},
   {"theorem": "∀ {G : Type u_1} [inst : Group G], IsOfFinOrder 1",
    "some-correct": null,
    "prompt": "The identity element of a group has finite order.",
    "groups": [["∀ {G : Type u_1} [inst : Group G], IsOfFinOrder 1"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["∀ {G : Type u_1} [inst : Group G], IsOfFinOrder 1 "]},
   {"theorem": "Fact (Nat.Prime 7)",
    "some-correct": null,
    "prompt": "`7` is a prime number.",
    "groups": [["Fact (Nat.Prime 7)"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["Fact (Nat.Prime 7) "]},
   {"theorem": "∀ {α : Type u} {s : Set α}, Set.Finite s → ∅ ⊆ s",
    "some-correct": null,
    "prompt": "The empty set is contained in every finite set.",
    "groups": [["∀ {α : Type u} {s : Set α}, Set.Finite s → ∅ ⊆ s"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["∀ {α : Type u} {s : Set α}, Set.Finite s → ∅ ⊆ s "]},
   {"theorem":
@@ -194,7 +194,7 @@
    "prompt": "Every infinite set contains a finite set.",
    "groups":
    [["∀ {α : Type u} {s : Set α}, ¬Set.Finite s → ∃ t, Set.Finite t ∧ t ⊆ s"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} {s : Set α}, ¬Set.Finite s → ∃ t : Set α, Set.Finite t ∧ t ⊆ s "]},
@@ -202,7 +202,7 @@
    "some-correct": null,
    "prompt": "Every commutative ring is a monoid.",
    "groups": [["{R : Type u} → [inst : CommRing R] → Monoid R"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["∀ {R : Type u} [inst : CommRing R], Monoid R "]},
   {"theorem": "∀ (n : ℕ), Odd n → ∃ a b, a ≠ b ∧ n = a + b",
@@ -210,7 +210,7 @@
    "prompt":
    "Every odd natural number is the sum of two distinct natural numbers.",
    "groups": [["∀ (n : ℕ), Odd n → ∃ a b, a ≠ b ∧ n = a + b"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["∀ (n : ℕ), Odd n → ∃ a b : ℕ, a ≠ b ∧ n = a + b "]},
   {"theorem":
@@ -219,7 +219,7 @@
    "prompt": "Every element in the trivial group has finite order.",
    "groups":
    [["∀ {G : Type u_1} [inst : Group G] [inst_1 : Unique G] (x : G), IsOfFinOrder x"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {G : Type u_1} [inst : Group G] [inst_1 : Unique G], ∀ (x : G), IsOfFinOrder x "]},
@@ -227,7 +227,7 @@
    "some-correct": null,
    "prompt": "The square of an even number is even.",
    "groups": [["∀ {n : ℕ}, Even n → Even (n ^ 2)"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["∀ {n : ℕ}, Even n → Even (n ^ 2) "]},
   {"theorem":
@@ -236,7 +236,7 @@
    "prompt": "Every commutative division ring is a field.",
    "groups":
    [["∀ {K : Type u} [inst : CommRing K] [inst_1 : DivisionRing K], IsField K"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {K : Type u} [inst : CommRing K] [inst_1 : DivisionRing K], IsField K "]},
@@ -245,7 +245,7 @@
    "prompt":
    "The image of the identity element under the identity map is the identity element.",
    "groups": [["∀ {α : Type u} [inst : Monoid α], id 1 = 1"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["∀ {α : Type u} [inst : Monoid α], id (1 : α) = 1 "]},
   {"theorem": "∀ {α : Type u} (x : α), Function.IsFixedPt id x",
@@ -253,7 +253,7 @@
    "prompt":
    "Every point is a fixed point of the identity function on a space.",
    "groups": [["∀ {α : Type u} (x : α), Function.IsFixedPt id x"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["∀ {α : Type u} (x : α), Function.IsFixedPt id x "]},
   {"theorem":
@@ -262,7 +262,7 @@
    "prompt": "The diameter of a singleton space is `0`.",
    "groups":
    [["∀ {α : Type u} [inst : PseudoMetricSpace α] {x : α}, Metric.diam {x} = 0"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} [inst : PseudoMetricSpace α] {x : α}, Metric.diam {x} = 0 "]},
@@ -270,7 +270,7 @@
    "some-correct": null,
    "prompt": "Every group is non-empty.",
    "groups": [["∀ {G : Type u} [inst : Group G], Nonempty G"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["∀ {G : Type u} [inst : Group G], Nonempty G "]},
   {"theorem":
@@ -279,7 +279,7 @@
    "prompt": "All connected components of a topological space are connected.",
    "groups":
    [["∀ {α : Type u} [inst : TopologicalSpace α] (x : α), IsConnected (connectedComponent x)"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} [inst : TopologicalSpace α] (x : α), IsConnected (connectedComponent x) "]},
@@ -287,7 +287,7 @@
    "some-correct": null,
    "prompt": "The numbers `3`, `4` and `5` form a Pythagorean triple.",
    "groups": [["PythagoreanTriple 3 4 5"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs": ["PythagoreanTriple 3 4 5 "]},
   {"theorem":
@@ -296,7 +296,7 @@
    "prompt": "A vector space with the empty set as basis is trivial.",
    "groups":
    [["∀ {ι : Type u_1} {K : Type u_2} {V : Type u_3} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],\n  Basis ι K V → (ι → False) → Subsingleton V"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {ι : Type u_1} {K : Type u_2} {V : Type u_3} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V]\n  (h : Basis ι K V) (hι : ι → False), Subsingleton V "]}],
