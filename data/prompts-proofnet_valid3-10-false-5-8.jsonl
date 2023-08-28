@@ -1,0 +1,25 @@
+{"text":"Show that the rationals `ℚ` are not locally compact.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Show that if `X` is a Hausdorff space that is locally compact at the point `x`, then for each neighborhood `U` of `x`, there is a neighborhood `V` of `x` such that `∪ V` is compact and `∪ V ⊆ U`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Show that if `X` has a countable dense subset, every collection of disjoint open sets in `X` is countable.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Show that if `X` is normal, every pair of disjoint closed sets have neighborhoods whose closures are disjoint.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Show that a closed subspace of a normal space is normal.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Show that if `Π X_α` is regular, then so is `X_α`. Assume that each `X_α` is nonempty.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Show that every locally compact Hausdorff space is regular.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Let `X` be completely regular, let `A` and `B` be disjoint closed subsets of `X`. Show that if `A` is compact, there is a continuous function `f: X → [0, 1]` such that `f(A) = {0}` and `f(B) = {1}`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Let `X` be completely regular. Show that `X` is connected if and only if the Stone-Čech compactification of `X` is connected.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Prove that `-(-v) = v` for every `v ∈ V`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Give an example of a nonempty subset `U` of `ℝ^2` such that `U` is closed under addition and under taking additive inverses (meaning `-u ∈ U` whenever `u ∈ U`), but `U` is not a subspace of `ℝ^2`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Prove that the intersection of any collection of subspaces of `V` is a subspace of `V`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Show that every linear map from a one-dimensional vector space to itself is multiplication by some scalar. More precisely, prove that if `dim V = 1` and `T ∈ L(V, V)`, then there exists `a ∈ F` such that `T v = a v` for all `v ∈ V`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Suppose `p ∈ P(ℂ)` has degree `m`. Prove that `p` has `m` distinct roots if and only if `p` and its derivative `p'` have no roots in common.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Suppose that `S, T ∈ L(V)` are such that `S T = T S`. Prove that `null (T - λ I)` is invariant under `S` for every `λ ∈ F`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Suppose `T ∈ L(V)` is such that every vector in `V` is an eigenvector of `T`. Prove that `T` is a scalar multiple of the identity operator.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Suppose that `T ∈ L(V)` has `dim V` distinct eigenvalues and that `S ∈ L(V)` has the same eigenvectors as `T` (not necessarily with the same eigenvalues). Prove that `S T = T S`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Suppose `u, v ∈ V`. Prove that `⟨u, v⟩ = 0` if and only if `||u|| ≤ ||u + a v||` for all `a ∈ F`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Prove that if `V` is a complex inner-product space, then `⟨u, v⟩ = (||u + v||^2 - ||u - v||^2 + ||u + i v||^2 i - ||u - i v||^2 i) / 4` for all `u, v ∈ V`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Suppose `U` is a subspace of `V`. Prove that `U⊥ = {0}` if and only if `U = V`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Prove that if `T ∈ L(V)` is normal, then `range T = range T*`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Suppose `V` is a complex inner-product space and `T ∈ L(V)` is a normal operator such that `T^9 = T^8`. Prove that `T` is self-adjoint and `T^2 = T`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Suppose `T ∈ L(V)` is self-adjoint, `λ ∈ F`, and `ε > 0`. Prove that if there exists `v ∈ V` such that `||v|| = 1` and `||T v - λ v|| < ε`, then `T` has an eigenvalue `λ'` such that `|λ - λ'| < ε`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"For all odd `n` show that `8 | n^2 - 1`.","fullPrompt":"No prompt (maybe using cached data)"}
+{"text":"Show that 2 is divisible by `(1 + i)^2` in `ℤ[i]`.","fullPrompt":"No prompt (maybe using cached data)"}
