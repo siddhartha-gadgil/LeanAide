@@ -24,7 +24,7 @@
      "∀ {r : ℚ} {x : ℝ}, r ≠ 0 → Irrational x → Irrational (↑r + x)",
      "∀ {r : ℚ} {x : ℝ}, r ≠ 0 → Irrational x → Irrational (↑r + x)",
      "∀ {r : ℚ} {x : ℝ}, r ≠ 0 → Irrational x → Irrational (↑r + x)"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {r : ℚ} {x : ℝ}, r ≠ 0 → Irrational x → Irrational (↑r + x) ",
@@ -37,15 +37,15 @@
     "∀ {r : ℚ} {x : ℝ}, r ≠ 0 → Irrational x → Irrational (↑r + x) ",
     "∀ {r : ℚ} {x : ℝ}, r ≠ 0 → Irrational x → Irrational (↑r + x) "]},
   {"theorem": "¬∃ q, q ^ 2 = 12",
-   "some-correct": null,
+   "some-correct": true,
    "prompt": "Prove that there is no rational number whose square is `12`.",
    "groups":
    [["¬∃ q, q ^ 2 = 12", "¬∃ q, q ^ 2 = 12", "¬∃ q, q ^ 2 = 12"],
     ["¬∃ q, q * q = 12", "¬∃ q, q * q = 12", "¬∃ q, q * q = 12"],
     ["Irrational (Real.sqrt 12)", "Irrational (Real.sqrt 12)"],
     ["¬∃ a b, b ≠ 0 ∧ a * a = 12 * (b * b)"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "It takes `q` to be a natural number.",
    "all-elabs":
    ["¬∃ (q : ℚ), q * q = 12 ",
     "¬∃ (q : ℚ), q ^ 2 = 12 ",
@@ -67,7 +67,7 @@
      "∀ {A : Set ℝ}, Set.Nonempty A → BddBelow A → sInf A = -sSup (-A)",
      "∀ (A : Set ℝ), Set.Nonempty A → BddBelow A → sInf A = -sSup (Neg.neg '' A)",
      "∀ {A : Set ℝ}, Set.Nonempty A → BddBelow A → sInf A = -sSup (Neg.neg '' A)"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ (A : Set ℝ), Set.Nonempty A → BddBelow A → sInf A = -sSup (-A) ",
@@ -76,7 +76,7 @@
     "∀ (A : Set ℝ), Set.Nonempty A → BddBelow A → sInf A = -sSup (Neg.neg '' A) ",
     "∀ {A : Set ℝ}, Set.Nonempty A → BddBelow A → sInf A = -sSup (Neg.neg '' A) "]},
   {"theorem": "∀ (z : ℂ), ∃ r w, 0 ≤ r ∧ ?m.1464420 z r w = 1 ∧ z = r * w",
-   "some-correct": null,
+   "some-correct": false,
    "prompt":
    "If `z` is a complex number, prove that there exists an `r ≥ 0` and a complex number `w` with `| w | = 1` such that `z = rw`.",
    "groups":
@@ -87,8 +87,8 @@
     ["∀ (z : ℂ), ∃ r w, 0 ≤ r ∧ ?m.1464026 z r w = 1 ∧ z = ↑r * w"],
     ["∀ (z : ℂ), ∃ r w, 0 ≤ r ∧ ↑Complex.abs w = 1 ∧ z = r * w"],
     ["∀ (z : ℂ), ∃ r w, r ≥ 0 ∧ ?m.1465903 z r w = 1 ∧ z = r * w"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "Absolute value not picked up. For others, coercion is not recognized, or r is taken to be complex.",
    "all-elabs":
    ["∀ (z : ℂ), ∃ (r : ℝ) (w : ℂ), 0 ≤ r ∧ ↑Complex.abs w = 1 ∧ z = ↑r * w ",
     "∀ (z : ℂ), ∃ r w, 0 ≤ r ∧ ↑Complex.abs w = 1 ∧ z = r * w ",
@@ -99,12 +99,12 @@
     "∀ (z : ℂ), ∃ (r : ℝ) (w : ℂ), r ≥ 0 ∧ ↑Complex.abs w = 1 ∧ z = r • w "]},
   {"theorem":
    "∀ {x y : ℂ}, ↑Complex.abs (↑(↑Complex.abs x) - ↑(↑Complex.abs y)) ≤ ↑Complex.abs (x - y)",
-   "some-correct": null,
+   "some-correct": true,
    "prompt": "If `x, y` are complex, prove that `||x|-|y|| ≤ |x-y|`.",
    "groups":
    [["∀ {x y : ℂ}, ↑Complex.abs (↑(↑Complex.abs x) - ↑(↑Complex.abs y)) ≤ ↑Complex.abs (x - y)"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "Coercion not recognized if put explicitly",
    "all-elabs":
    ["∀ {x y : ℂ}, Complex.abs (Complex.abs x - Complex.abs y) ≤ Complex.abs (x - y) "]},
   {"theorem":
@@ -115,21 +115,21 @@
    "groups":
    [["∀ {k : ℕ} [inst : LinearOrderedField ℝ] [inst_1 : NormedAddCommGroup (Fin k → ℝ)] [inst_2 : NormedSpace ℝ (Fin k → ℝ)]\n  {x y : Fin k → ℝ} {r d : ℝ},\n  k ≥ 3 →\n    dist x y = d →\n      d > 0 → r > 0 → 2 * r > d → ∃ f, Function.Injective f ∧ ∀ (n : ℤ), dist (f n) x = r ∧ dist (f n) y = r"],
     ["∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {x y : E} {r d : ℝ},\n  3 ≤ FiniteDimensional.finrank ℝ E →\n    dist x y = d → 0 < d → 0 < r → 2 * r > d → ∃ A, Set.Infinite A ∧ ∀ (z : E), z ∈ A → dist z x = r ∧ dist z y = r"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {x y : E} {r d : ℝ},\n  3 ≤ FiniteDimensional.finrank ℝ E →\n  dist x y = d → 0 < d → 0 < r → 2 * r > d → ∃ A : Set E, Set.Infinite A ∧ ∀ z, z ∈ A → dist z x = r ∧ dist z y = r ",
     "∀ {k : ℕ} [inst : LinearOrderedField ℝ] [inst_1 : NormedAddCommGroup (Fin k → ℝ)] [inst_2 : NormedSpace ℝ (Fin k → ℝ)]\n  {x y : Fin k → ℝ} {r d : ℝ},\n  k ≥ 3 → dist x y = d → d > 0 → r > 0 → 2 * r > d → ∃ f : ℤ → Fin k → ℝ, Function.Injective f ∧ ∀ n : ℤ, dist (f n) x = r ∧ dist (f n) y = r "]},
   {"theorem":
    "∀ {k : ℝ} {a b c r : ℝ}, (∀ (x : ℝ), |x - a| = 2 * |x - b| ↔ |x - c| = r) → 3 * c = 4 * b - a ∧ 3 * r = 2 * |b - a|",
-   "some-correct": null,
+   "some-correct": false,
    "prompt":
    "Suppose `a, b ∈ ℝ^k`. Find `c ∈ ℝ^k` and `r > 0` such that `|x-a|=2|x-b|` if and only if `| x - c | = r`. Prove that `3c = 4b - a` and `3r = 2 |b - a|`.",
    "groups":
    [["∀ {k : ℝ} {a b c r : ℝ}, (∀ (x : ℝ), |x - a| = 2 * |x - b| ↔ |x - c| = r) → 3 * c = 4 * b - a ∧ 3 * r = 2 * |b - a|"],
     ["∀ {V : Type u_1} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace V]\n  [inst_3 : NormedAddTorsor V V] {a b c : V} {r : ℝ},\n  (∀ (x : V), dist x a = 2 * dist x b ↔ dist x c = r) → 3 • c = 4 • b - a ∧ 3 * r = 2 * dist b a"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "a b c are taken to be in ℝ. In others, scalar multiplication not defined for `nat`, otherwise could be correct and a generalization too.",
    "all-elabs":
    ["∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] {a b c : P} {r : ℝ},\n  (∀ x : P, dist x a = 2 * dist x b ↔ dist x c = r) → 3 • c = 4 • b - a ∧ 3 * r = 2 * dist b a ",
     "∀ {V : Type u_1} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace V] [inst_3 : NormedAddTorsor V V],\n  ∀ {a b c : V} {r : ℝ},\n    (∀ x, dist x a = 2 * dist x b ↔ dist x c = r) →\n      3 • c = 4 • b - a ∧ 3 * r = 2 * dist b a ",
@@ -146,7 +146,7 @@
    [["∀ {α : Type u} [inst : MetricSpace α] [inst_1 : TopologicalSpace.SeparableSpace α] {s : Set α},\n  IsClosed s → ∃ t₁ t₂, t₁ ⊆ s ∧ t₂ ⊆ s ∧ Perfect t₁ ∧ Set.Countable t₂ ∧ s = t₁ ∪ t₂"],
     ["∀ {α : Type u} [inst : MetricSpace α] [inst_1 : TopologicalSpace.SeparableSpace α] {s : Set α},\n  IsClosed s → ∃ P C, Perfect P ∧ Set.Countable C ∧ s = P ∪ C"],
     ["∀ {α : Type u} [inst : MetricSpace α] [inst_1 : TopologicalSpace.SeparableSpace α] {s : Set α},\n  IsClosed s → ∃ t, Set.Countable t ∧ s = s \\ t ∪ s ∩ t ∧ Perfect (s \\ t)"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} [inst : MetricSpace α] [inst_1 : TopologicalSpace.SeparableSpace α] {s : Set α},\n  IsClosed s →\n    ∃ (P : Set α), ∃ (C : Set α),\n      Perfect P ∧ Set.Countable C ∧ s = P ∪ C ",
@@ -161,13 +161,13 @@
     "∀ {α : Type u} [inst : MetricSpace α] [inst_1 : TopologicalSpace.SeparableSpace α] {s : Set α},\n  IsClosed s → ∃ t₁ t₂, Set.Countable t₁ ∧ Perfect t₂ ∧ s = t₁ ∪ t₂ "]},
   {"theorem":
    "∀ {α : Type u} {β : Type v} [inst : TopologicalSpace α] [inst_1 : LinearOrderedRing α] [inst_2 : OrderTopology α]\n  [inst_3 : TopologicalSpace β] {s : β → α} {a : α} {f : Filter β},\n  Filter.Tendsto s f (nhds a) → Filter.Tendsto (fun x => |s x|) f (nhds |a|)",
-   "some-correct": null,
+   "some-correct": false,
    "prompt":
    "Prove that convergence of `{s_n}` implies convergence of `{|s_n|}`.",
    "groups":
    [["∀ {α : Type u} {β : Type v} [inst : TopologicalSpace α] [inst_1 : LinearOrderedRing α] [inst_2 : OrderTopology α]\n  [inst_3 : TopologicalSpace β] {s : β → α} {a : α} {f : Filter β},\n  Filter.Tendsto s f (nhds a) → Filter.Tendsto (fun x => |s x|) f (nhds |a|)"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "The statement is a bit ambiguous, by convergence does it mean lim n -> infty? In that case, we want the at_top filter, this is for any filter.",
    "all-elabs":
    ["∀ {α : Type u} {β : Type v} [inst : TopologicalSpace α] [inst_1 : LinearOrderedRing α] [inst_2 : OrderTopology α]\n  [inst_3 : TopologicalSpace β] {s : β → α} {a : α} {f : Filter β},\n  Filter.Tendsto s f (nhds a) → Filter.Tendsto (fun x => abs (s x)) f (nhds (abs a)) "]},
   {"theorem":
@@ -182,8 +182,8 @@
     ["∀ (n : ℕ), Real.sqrt (2 + Real.sqrtTwoAddSeries (0 / 1) n) < 2"],
     ["∀ (n : ℕ),\n  Real.sqrt (2 + Real.sqrtTwoAddSeries (0 / 1) n) < 2 ∧ Filter.Tendsto Real.sqrtTwoAddSeries Filter.atTop (nhds 0)"],
     ["∀ (s : ℕ → ℝ),\n  s 0 = Real.sqrt 2 →\n    (∀ (n : ℕ), s (n + 1) = Real.sqrt (2 + Real.sqrt (s n))) →\n      Filter.Tendsto s Filter.atTop (nhds (Real.sqrt 2)) ∧ ∀ (n : ℕ), s n < 2"]],
-   "correct": null,
-   "comments": "",
+   "correct": true,
+   "comments": "Index shifted by 1.",
    "all-elabs":
    ["∀ (n : ℕ), 0 < Real.sqrtTwoAddSeries (↑0 / ↑1) n ∧ Real.sqrtTwoAddSeries (↑0 / ↑1) n < 2 ",
     "s_nat_converges_lt_2 : ∀ (n : ℕ), 0 < n → Real.sqrtTwoAddSeries 0 n < 2 ",
@@ -203,8 +203,8 @@
      "∀ {α : Type u_1} [inst : LinearOrderedField α] [inst_1 : Archimedean α],\n  Filter.Tendsto (fun n => Finset.sum (Finset.range n) fun i => Real.sqrt (↑i + 1) - Real.sqrt ↑i) Filter.atTop\n    Filter.atTop"],
     ["∀ {α : Type u_1} [inst : LinearOrderedAddCommGroup α] [inst_1 : Archimedean α],\n  Filter.Tendsto (fun n => Finset.sum (Finset.range n) fun i => Real.sqrt ↑(i + 1) - Real.sqrt ↑i) Filter.atTop\n    Filter.atTop"],
     ["∀ {α : Type u_1} [inst : LinearOrderedField α] [inst_1 : TopologicalSpace α] [inst_2 : OrderTopology α]\n  [inst_3 : Archimedean α],\n  Filter.Tendsto (fun n => Finset.sum (Finset.range n) fun i => Real.sqrt (↑i + 1) - Real.sqrt ↑i) Filter.atTop\n    Filter.atTop"]],
-   "correct": null,
-   "comments": "",
+   "correct": true,
+   "comments": "There are some extra assumptions which are not required.",
    "all-elabs":
    ["∀ {α : Type u_1} [inst : LinearOrderedField α] [inst_1 : TopologicalSpace α] [inst_2 : OrderTopology α] [inst_3 : Archimedean α],\n  Filter.Tendsto (fun n => Finset.sum (Finset.range n) fun i => Real.sqrt (i + 1) - Real.sqrt i) Filter.atTop Filter.atTop ",
     "∀ {α : Type u_1} [inst : LinearOrderedField α] [inst_1 : Archimedean α],\n  Filter.Tendsto (fun n => Finset.sum (Finset.range n) fun i => Real.sqrt (i + 1) - Real.sqrt i) Filter.atTop Filter.atTop ",
@@ -228,8 +228,8 @@
     ["∀ {α : Type u} {β : Type v} [inst : PseudoMetricSpace α] [inst_1 : Nonempty β] [inst_2 : SemilatticeSup β] {u : β → α}\n  {ι : Type u_12} {f : ι → β} {p : Filter ι} [inst_3 : Filter.NeBot p],\n  CauchySeq u →\n    Filter.Tendsto f p Filter.atTop →\n      ∀ {a : α}, Filter.Tendsto (u ∘ f) p (nhds a) → Filter.Tendsto u Filter.atTop (nhds a)"],
     ["∀ {α : Type u} {β : Type v} [inst : UniformSpace α] [inst_1 : SemilatticeSup β] {u : β → α},\n  CauchySeq u →\n    ∀ {ι : Type u_1} {l : ι → β} {p : Filter ι} [inst_2 : Filter.NeBot p],\n      Filter.Tendsto l p Filter.atTop →\n        ∀ {a : α}, Filter.Tendsto (u ∘ l) p (nhds a) → Filter.Tendsto u Filter.atTop (nhds a)"],
     ["∀ {α : Type u} {β : Type v} [inst : PseudoMetricSpace α] [inst_1 : Nonempty β] [inst_2 : SemilatticeSup β] {u : β → α},\n  CauchySeq u →\n    ∀ {ι : Type u_1} {f : ι → β} {p : Filter ι} [inst_3 : Filter.NeBot p],\n      Filter.Tendsto f p Filter.atTop →\n        ∀ {a : α}, Filter.Tendsto (u ∘ f) p (nhds a) → Filter.Tendsto u Filter.atTop (nhds a)"]],
-   "correct": null,
-   "comments": "",
+   "correct": true,
+   "comments": "I think the nonempty β assumption is not required.",
    "all-elabs":
    ["∀ {α : Type u} {β : Type v} [inst : UniformSpace α] [inst_1 : SemilatticeSup β] {u : β → α},\n  CauchySeq u →\n    ∀ {ι : Type u_1} {l : ι → β} {p : Filter ι} [inst_2 : Filter.NeBot p],\n      Filter.Tendsto l p Filter.atTop →\n        ∀ {a : α}, Filter.Tendsto (u ∘ l) p (nhds a) → Filter.Tendsto u Filter.atTop (nhds a) ",
     "∀ {α : Type u} {β : Type v} [inst : MetricSpace α] [inst_1 : SemilatticeSup β] {u : β → α},\n  CauchySeq u →\n    ∀ {ι : Type u_1} {f : ι → β} {p : Filter ι} [inst_2 : Filter.NeBot p],\n      Filter.Tendsto f p Filter.atTop →\n        ∀ {a : α}, Filter.Tendsto (u ∘ f) p (nhds a) → Filter.Tendsto u Filter.atTop (nhds a) ",
@@ -257,8 +257,8 @@
     ["∀ {α : Type u_2} [inst : MetricSpace α] [inst_1 : CompleteSpace α] {β : Type u_1} [inst_2 : Encodable β]\n  {f : β → Set α}, (∀ (s : β), IsOpen (f s)) → (∀ (s : β), Dense (f s)) → Set.Nonempty (⋂ (s : β), f s)"],
     ["∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : CompleteSpace X] {β : Type u_2} [inst_2 : Encodable β]\n  {G : β → Set X}, (∀ (n : β), IsOpen (G n)) → (∀ (n : β), Dense (G n)) → Set.Nonempty (⋂ (n : β), G n)"],
     ["∀ {α : Type u_1} [inst : TopologicalSpace α] [inst_1 : BaireSpace α] {S : ℕ → Set α},\n  (∀ (n : ℕ), IsOpen (S n)) → (∀ (n : ℕ), Dense (S n)) → Set.Nonempty (⋂ (n : ℕ), S n)"]],
-   "correct": null,
-   "comments": "",
+   "correct": true,
+   "comments": "Index shifted by 1.",
    "all-elabs":
    ["∀ {X : Type u_1} [inst : MetricSpace X] [inst_1 : CompleteSpace X] {β : Type u_2} [inst_2 : Encodable β]\n  {G : β → Set X}, (∀ (n : β), IsOpen (G n)) → (∀ (n : β), Dense (G n)) → Set.Nonempty (⋂ (n : β), G n) ",
     "∀ {α : Type u_1} [inst : MetricSpace α] [inst_1 : CompleteSpace α] {G : ℕ → Set α},\n  (∀ (n : ℕ), IsOpen (G n)) → (∀ (n : ℕ), Dense (G n)) → Set.Nonempty (⋂ (n : ℕ), G n) ",
@@ -283,7 +283,7 @@
     ["∀ {X : Type u} {Y : Type v} [inst : MetricSpace X] [inst_1 : MetricSpace Y] {f : X → Y} {E : Set X},\n  Continuous f → Set.MapsTo f (closure E) (closure (f '' E))",
      "∀ {X : Type u} {Y : Type v} [inst : MetricSpace X] [inst_1 : MetricSpace Y] {f : X → Y} {E : Set X},\n  Continuous f → Set.MapsTo f (closure E) (closure (f '' E))",
      "∀ {X : Type u} {Y : Type v} [inst : MetricSpace X] [inst_1 : MetricSpace Y] {f : X → Y} {E : Set X},\n  Continuous f → Set.MapsTo f (closure E) (closure (f '' E))"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {X : Type u_1} {Y : Type u_2} [inst : MetricSpace X] [inst_1 : MetricSpace Y] {E : Set X} {f : X → Y},\n  Continuous f → Set.MapsTo f (closure E) (closure (f '' E)) ",
@@ -295,7 +295,7 @@
     "∀ {X : Type u_1} {Y : Type u_2} [inst : MetricSpace X] [inst_1 : MetricSpace Y] {f : X → Y} {E : Set X},\n  Continuous f → Set.MapsTo f (closure E) (closure (f '' E)) "]},
   {"theorem":
    "∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : MetricSpace X]\n  [inst_3 : MetricSpace Y] {f g : X → Y} {E : Set X}, Dense E → Continuous f → Continuous g → Dense (f '' E)",
-   "some-correct": null,
+   "some-correct": false,
    "prompt":
    "Let `f` and `g` be continuous mappings of a metric space `X` into a metric space `Y`, and let `E` be a dense subset of `X`. Prove that `f(E)` is dense in `f(X)`.",
    "groups":
@@ -304,8 +304,8 @@
      "∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : MetricSpace X] [inst_2 : TopologicalSpace Y]\n  [inst_3 : MetricSpace Y] {f g : X → Y} {E : Set X}, Dense E → Continuous f → Continuous g → Dense (f '' E)"],
     ["∀ {X : Type u_12} {Y : Type u_13} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : MetricSpace X]\n  [inst_3 : MetricSpace Y] {f g : X → Y} (E : Set X), Dense E → Continuous f → Continuous g → Dense (f '' E)"],
     ["∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : MetricSpace Y] {E : Set X} {f g : X → Y},\n  Continuous f → Continuous g → Dense E → Dense (f '' E)"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "We get the output that f(E) is dense in Y, not f(X). Same problem occurs for all other outputs.",
    "all-elabs":
    ["∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : MetricSpace Y] {E : Set X} {f g : X → Y},\n  Continuous f → Continuous g → Dense E → Dense (f '' E) ",
     "∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : MetricSpace X] [inst_3 : MetricSpace Y]\n  {f g : X → Y} {E : Set X},\n  Dense E → Continuous f → Continuous g → Dense (f '' E) ",
@@ -314,13 +314,13 @@
     "forall {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : MetricSpace X]\n  [inst_2 : TopologicalSpace Y] [inst_3 : MetricSpace Y] {f g : X -> Y} {E : Set X},\n  Dense E ->\n  Continuous f ->\n  Continuous g ->\n  Dense (f '' E) "]},
   {"theorem":
    "∀ {Y : Type u_1} [inst : TopologicalSpace Y] [inst_1 : NormalSpace Y] {E : Set Y} (f : C(↑E, ℝ)),\n  IsClosed E → ∃ g, ContinuousMap.restrict E g = f",
-   "some-correct": null,
+   "some-correct": false,
    "prompt":
    "If `f` is a real continuous function defined on a closed set `E ⊆ ℝ`, prove that there exist continuous real functions `g` on `ℝ` such that `g(x)=f(x)` for all `x ∈ E`.",
    "groups":
    [["∀ {Y : Type u_1} [inst : TopologicalSpace Y] [inst_1 : NormalSpace Y] {E : Set Y} (f : C(↑E, ℝ)),\n  IsClosed E → ∃ g, ContinuousMap.restrict E g = f"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "The statement is not incorrect, however it is a generalization of what is asked, and misses the condition that `E ⊆ ℝ`. Same thing for others.",
    "all-elabs":
    ["forall {Y : Type u_1} [inst : TopologicalSpace Y] [inst_1 : NormalSpace Y] {E : Set Y} (f : C(↑E, ℝ)),\n  IsClosed E → ∃ g, ContinuousMap.restrict E g = f "]},
   {"theorem":
@@ -331,7 +331,7 @@
    "groups":
    [["∀ {E : Set ℝ}, Metric.Bounded E → ∃ f, UniformContinuous f ∧ ∀ (C : ℝ), ∃ x, x ∈ E ∧ C < |f x|"],
     ["∀ {E : Set ℝ}, Metric.Bounded E → ∃ f, UniformContinuous f ∧ ∀ (M : ℝ), ∃ x H, M < f x"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {E : Set ℝ} (hE : Metric.Bounded E),\n  ∃ (f : ℝ → ℝ), UniformContinuous f ∧ ∀ (M : ℝ), ∃ (x : ℝ) (H : x ∈ E), M < f x ",
@@ -373,8 +373,8 @@
    "groups":
    [["∀ {f : ℝ → ℝ},\n  (∀ {a b c : ℝ}, a < b → f a < c → c < f b → ∃ x, x ∈ Set.Ioo a b ∧ f x = c) →\n    (∀ (q : ℚ), IsClosed {x | f x = ↑q}) → Continuous f"],
     ["∀ {f : ℝ → ℝ},\n  (∀ (a b c : ℝ), f a < c → c < f b → ∃ x, a < x ∧ x < b ∧ f x = c) →\n    (∀ (q : ℚ), IsClosed {x | f x = ↑q}) → Continuous f"]],
-   "correct": null,
-   "comments": "",
+   "correct": true,
+   "comments": "Translation seems refined",
    "all-elabs":
    ["forall {f : ℝ → ℝ},\n  (∀ a b c, f a < c → c < f b → ∃ x, a < x ∧ x < b ∧ f x = c) →\n  (∀ q : ℚ, is_closed {x | f x = q}) →\n  continuous f ",
     "forall {f : ℝ → ℝ},\n  (∀ {a b : ℝ} {c : ℝ}, a < b → f a < c → c < f b → ∃ x, x ∈ set.Ioo a b ∧ f x = c) →\n  (∀ (q : ℚ), is_closed {x : ℝ | f x = ↑q}) →\n  continuous f ",
@@ -393,7 +393,7 @@
     ["∀ {𝕜 : Type u_1} {E : Type u_2} {β : Type u_3} [inst : OrderedSemiring 𝕜] [inst_1 : AddCommMonoid E]\n  [inst_2 : OrderedAddCommMonoid β] [inst_3 : Module 𝕜 E] [inst_4 : Module 𝕜 β] [inst_5 : LinearOrder E] {s : Set E}\n  {f : E → β},\n  Convex 𝕜 s →\n    (∀ ⦃x : E⦄,\n        x ∈ s →\n          ∀ ⦃y : E⦄, y ∈ s → x < y → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → f (a • x + b • y) ≤ a • f x + b • f y) →\n      ConvexOn 𝕜 s f"],
     ["∀ {𝕜 : Type u_1} [inst : LinearOrderedField 𝕜] [inst_1 : TopologicalSpace 𝕜] [inst_2 : OrderTopology 𝕜] {s : Set 𝕜}\n  {f : 𝕜 → 𝕜},\n  ContinuousOn f s → (∀ ⦃x : 𝕜⦄, x ∈ s → ∀ ⦃y : 𝕜⦄, y ∈ s → x < y → f ((x + y) / 2) ≤ (f x + f y) / 2) → ConvexOn 𝕜 s f"],
     ["∀ {s : Set ℝ} {f : ℝ → ℝ},\n  Convex ℝ s →\n    (∀ ⦃x y : ℝ⦄, x ∈ s → y ∈ s → ∀ ⦃a b : ℝ⦄, 0 < a → 0 < b → a + b = 2 → f ((a • x + b • y) / 2) ≤ (f x + f y) / 2) →\n      ConvexOn ℝ s f"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {𝕜 : Type u_1} [inst : LinearOrderedField 𝕜] [inst_1 : TopologicalSpace 𝕜] [inst_2 : OrderTopology 𝕜] {s : Set 𝕜}\n  {f : 𝕜 → 𝕜},\n  ContinuousOn f s →\n    (∀ ⦃x : 𝕜⦄,\n        x ∈ s →\n          ∀ ⦃y : 𝕜⦄, y ∈ s → x < y → f ((x + y) / 2) ≤ (f x + f y) / 2) →\n      ConvexOn 𝕜 s f ",
