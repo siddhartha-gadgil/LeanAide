@@ -27,7 +27,7 @@
      "¬LocallyCompactSpace ℚ",
      "¬LocallyCompactSpace ℚ",
      "¬LocallyCompactSpace ℚ"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["¬LocallyCompactSpace ℚ ",
@@ -51,7 +51,7 @@
      "∀ {α : Type u} [t : TopologicalSpace α] [inst : TopologicalSpace.SeparableSpace α] {ι : Type u_1} {s : ι → Set α}\n  {a : Set ι},\n  Set.PairwiseDisjoint a s →\n    (∀ (i : ι), i ∈ a → IsOpen (s i)) → (∀ (i : ι), i ∈ a → Set.Nonempty (s i)) → Set.Countable a"],
     ["∀ {α : Type u} [t : TopologicalSpace α] [inst : TopologicalSpace.SeparableSpace α] {ι : Type u_1} {s : ι → Set α}\n  {a : Set ι}, Set.PairwiseDisjoint a s → (∀ (i : ι), i ∈ a → IsOpen (s i)) → Set.Countable a",
      "∀ {α : Type u} [t : TopologicalSpace α] [inst : TopologicalSpace.SeparableSpace α] {ι : Type u_1} {s : ι → Set α}\n  {a : Set ι}, Set.PairwiseDisjoint a s → (∀ (i : ι), i ∈ a → IsOpen (s i)) → Set.Countable a"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} [t : TopologicalSpace α] [inst : TopologicalSpace.SeparableSpace α] {ι : Type u_1} {s : ι → Set α}\n  {a : Set ι},\n  Set.PairwiseDisjoint a s →\n    (∀ (i : ι), i ∈ a → IsOpen (s i)) → (∀ (i : ι), i ∈ a → Set.Nonempty (s i)) → Set.Countable a ",
@@ -61,7 +61,7 @@
     "∀ {α : Type u} [t : TopologicalSpace α] [inst : TopologicalSpace.SeparableSpace α] {ι : Type u_1} {s : ι → Set α}\n  {a : Set ι},\n  Set.PairwiseDisjoint a s →\n    (∀ (i : ι), i ∈ a → IsOpen (s i)) → Set.Countable a "]},
   {"theorem":
    "∀ {α : Type u} [inst : TopologicalSpace α] [self : NormalSpace α] {s t : Set α},\n  IsClosed s → IsClosed t → Disjoint s t → ∃ u v, IsOpen u ∧ IsOpen v ∧ s ⊆ u ∧ t ⊆ v ∧ Disjoint (closure u) (closure v)",
-   "some-correct": null,
+   "some-correct": false,
    "prompt":
    "Show that if `X` is normal, every pair of disjoint closed sets have neighborhoods whose closures are disjoint.",
    "groups":
@@ -73,8 +73,8 @@
      "∀ {α : Type u} [inst : TopologicalSpace α] [self : NormalSpace α] ⦃s t : Set α⦄,\n  IsClosed s → IsClosed t → Disjoint s t → ∃ u v, IsOpen u ∧ IsOpen v ∧ s ⊆ u ∧ t ⊆ v ∧ Disjoint (closure u) (closure v)",
      "∀ {α : Type u} [inst : TopologicalSpace α] [self : NormalSpace α] ⦃s t : Set α⦄,\n  IsClosed s → IsClosed t → Disjoint s t → ∃ u v, IsOpen u ∧ IsOpen v ∧ s ⊆ u ∧ t ⊆ v ∧ Disjoint (closure u) (closure v)",
      "∀ {α : Type u} [inst : TopologicalSpace α] [self : NormalSpace α] ⦃s t : Set α⦄,\n  IsClosed s → IsClosed t → Disjoint s t → ∃ u v, IsOpen u ∧ IsOpen v ∧ s ⊆ u ∧ t ⊆ v ∧ Disjoint (closure u) (closure v)"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "This is for open neighborhoods. Same for others.",
    "all-elabs":
    ["∀ {α : Type u} [inst : TopologicalSpace α] [self : NormalSpace α] {s t : Set α},\n  IsClosed s → IsClosed t → Disjoint s t → ∃ u v, IsOpen u ∧ IsOpen v ∧ s ⊆ u ∧ t ⊆ v ∧ Disjoint (closure u) (closure v) ",
     "∀ {α : Type u} [inst : TopologicalSpace α] [self : NormalSpace α] ⦃s t : Set α⦄,\n  IsClosed s → IsClosed t → Disjoint s t → ∃ U₁ U₂, IsOpen U₁ ∧ IsOpen U₂ ∧ s ⊆ U₁ ∧ t ⊆ U₂ ∧ Disjoint (closure U₁) (closure U₂) ",
@@ -96,7 +96,7 @@
      "∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : NormalSpace α] (A : Set α), IsClosed A → NormalSpace { x // x ∈ A }",
      "∀ {α : Type u} [inst : TopologicalSpace α] [self : NormalSpace α] (s : Set α), IsClosed s → NormalSpace { x // x ∈ s }",
      "∀ {α : Type u} [inst : TopologicalSpace α] [self : NormalSpace α] (s : Set α), IsClosed s → NormalSpace { x // x ∈ s }"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : NormalSpace α] {s : Set α},\n  IsClosed s → NormalSpace {x // x ∈ s} ",
@@ -118,7 +118,7 @@
     ["∀ {ι : Type u_1} {X : ι → Type u_2} [inst : (i : ι) → TopologicalSpace (X i)] [inst_1 : ∀ (i : ι), Nonempty (X i)]\n  [inst_2 : ∀ (i : ι), RegularSpace (X i)], RegularSpace ((i : ι) → X i)"],
     ["∀ {ι : Type u_1} {X : ι → Type u_2} [inst : (i : ι) → TopologicalSpace (X i)] [inst_1 : ∀ (i : ι), Nonempty (X i)]\n  [inst_1 : ∀ (i : ι), T2Space (X i)] [inst_2 : TopologicalSpace.SecondCountableTopology ((i : ι) → X i)],\n  RegularSpace ((i : ι) → X i) → ∀ (i : ι), RegularSpace (X i)"],
     ["∀ {ι : Type u_1} {X : ι → Type u_2} [inst : (i : ι) → TopologicalSpace (X i)] [inst_1 : ∀ (i : ι), Nonempty (X i)]\n  [inst_1 : ∀ (i : ι), T2Space (X i)] [inst_2 : ∀ (i : ι), RegularSpace (X i)], RegularSpace ((i : ι) → X i)"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["forall {ι : Type u_1} {X : ι → Type u_2} [inst : (i : ι) → TopologicalSpace (X i)]\n  [inst : (i : ι) → Nonempty (X i)] [inst_1 : (i : ι) → T2Space (X i)] [inst_2 : (i : ι) → RegularSpace (X i)],\n  RegularSpace ((i : ι) → X i) ",
@@ -142,7 +142,7 @@
      "∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : T2Space α] [inst_2 : LocallyCompactSpace α], RegularSpace α",
      "∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : LocallyCompactSpace α] [inst_2 : T2Space α], RegularSpace α",
      "∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : LocallyCompactSpace α] [inst_2 : T2Space α], RegularSpace α"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : LocallyCompactSpace α] [inst_2 : T2Space α], RegularSpace α ",
@@ -157,15 +157,15 @@
     "∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : LocallyCompactSpace α] [inst_2 : T2Space α],\n  RegularSpace α "]},
   {"theorem":
    "∀ {X : Type u_1} [inst : TopologicalSpace X] [inst_1 : NormalSpace X] {A B : Set X},\n  IsClosed A →\n    IsClosed B →\n      Disjoint A B → IsCompact A → ∃ f, Set.EqOn f 0 A ∧ Set.EqOn f 1 B ∧ ∀ (x : X), ?m.2980018 f x ∈ Set.Icc 0 1",
-   "some-correct": null,
+   "some-correct": false,
    "prompt":
    "Let `X` be completely regular, let `A` and `B` be disjoint closed subsets of `X`. Show that if `A` is compact, there is a continuous function `f: X → [0, 1]` such that `f(A) = {0}` and `f(B) = {1}`.",
    "groups":
    [["∀ {X : Type u_1} [inst : TopologicalSpace X] [inst_1 : NormalSpace X] {A B : Set X},\n  IsClosed A →\n    IsClosed B →\n      Disjoint A B → IsCompact A → ∃ f, Set.EqOn f 0 A ∧ Set.EqOn f 1 B ∧ ∀ (x : X), ?m.2980018 f x ∈ Set.Icc 0 1"],
     ["∀ {X : Type u_1} [inst : TopologicalSpace X] [inst_1 : NormalSpace X] [inst_2 : T1Space X] {A B : Set X},\n  IsCompact A →\n    IsClosed B → Disjoint A B → ∃ f, Set.EqOn f 0 A ∧ Set.EqOn f 1 B ∧ ∀ (x : X), ?m.2963658 f x ∈ Set.Icc 0 1"],
     ["∀ {X : Type u_1} [inst : TopologicalSpace X] [inst_1 : T0Space X] [inst_2 : LocallyCompactSpace X] {A B : Set X},\n  IsCompact A →\n    IsClosed A →\n      IsClosed B → Disjoint A B → ∃ f, Set.EqOn f 0 A ∧ Set.EqOn f 1 B ∧ ∀ (x : X), ?m.2971849 f x ∈ Set.Icc 0 1"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "Undefined extra term, not sure if the assumptions imply the space is completely regular. Coercion error in the rest, `↑f`. Last output seems most accurate.",
    "all-elabs":
    ["∀ {X : Type u_1} [inst : TopologicalSpace X] [inst_1 : NormalSpace X] [inst_2 : T1Space X] {A B : Set X},\n  IsCompact A → IsClosed B → Disjoint A B → ∃ f, Set.EqOn (↑f) 0 A ∧ Set.EqOn (↑f) 1 B ∧ ∀ (x : X), ↑f x ∈ Set.Icc 0 1 ",
     "∀ {X : Type u_1} [inst : TopologicalSpace X] [inst_1 : T0Space X] [inst_2 : LocallyCompactSpace X] {A B : Set X},\n  IsCompact A → IsClosed A → IsClosed B → Disjoint A B → ∃ f, Set.EqOn (↑f) 0 A ∧ Set.EqOn (↑f) 1 B ∧ ∀ (x : X), ↑f x ∈ Set.Icc 0 1 ",
@@ -183,7 +183,7 @@
      "∀ {V : Type u_1} [inst : AddGroup V] (v : V), - -v = v",
      "∀ {V : Type u_2} [inst : AddGroup V] (v : V), - -v = v",
      "∀ {V : Type u_1} [inst : AddGroup V] (v : V), - -v = v"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {V : Type u_1} [inst : AddGroup V] (v : V), -(-v) = v ",
@@ -197,13 +197,13 @@
     "∀ {V : Type u_1} [inst : AddGroup V] (v : V), -(-v) = v "]},
   {"theorem":
    "∃ U,\n  (∀ (u v : ℝ × ℝ), u ∈ U → v ∈ U → u + v ∈ U) ∧\n    (∀ (u : ℝ × ℝ), u ∈ U → -u ∈ U) ∧ ¬∀ (a : ℝ) (u : ℝ × ℝ), u ∈ U → (a * u.fst, a * u.snd) ∈ U",
-   "some-correct": null,
+   "some-correct": false,
    "prompt":
    "Give an example of a nonempty subset `U` of `ℝ^2` such that `U` is closed under addition and under taking additive inverses (meaning `-u ∈ U` whenever `u ∈ U`), but `U` is not a subspace of `ℝ^2`.",
    "groups":
    [["∃ U,\n  (∀ (u v : ℝ × ℝ), u ∈ U → v ∈ U → u + v ∈ U) ∧\n    (∀ (u : ℝ × ℝ), u ∈ U → -u ∈ U) ∧ ¬∀ (a : ℝ) (u : ℝ × ℝ), u ∈ U → (a * u.fst, a * u.snd) ∈ U"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "Nonempty condition not present. Also `U` is not recognized as a subspace of `ℝ × ℝ`. Other output has everything except nonempty condition.",
    "all-elabs":
    ["example : ∃ (U : Set (ℝ × ℝ)), (∀ (u v : ℝ × ℝ), u ∈ U → v ∈ U → u + v ∈ U) ∧ (∀ (u : ℝ × ℝ), u ∈ U → -u ∈ U) ∧ ¬(∀ (a : ℝ) (u : ℝ × ℝ), u ∈ U → (a * u.1, a * u.2) ∈ U) "]},
   {"theorem":
@@ -213,13 +213,13 @@
    "Prove that the intersection of any collection of subspaces of `V` is a subspace of `V`.",
    "groups":
    [["{K : Type u} →\n  {V : Type v} →\n    [inst : Field K] →\n      [inst_1 : AddCommGroup V] → [inst_2 : Module K V] → {ι : Sort u_1} → (ι → Submodule K V) → Submodule K V"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {K : Type u} {V : Type v} [inst : Field K] [inst_1 : AddCommGroup V] [inst_2 : Module K V] {ι : Sort u_1}\n  (s : ι → Submodule K V), Submodule K V "]},
   {"theorem":
    "∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V]\n  [inst_3 : FiniteDimensional K V], Module.rank K V = 1 → ∀ (T : V →ₗ[K] V), ∃ a, ∀ (v : V), ↑T v = a • v",
-   "some-correct": null,
+   "some-correct": true,
    "prompt":
    "Show that every linear map from a one-dimensional vector space to itself is multiplication by some scalar. More precisely, prove that if `dim V = 1` and `T ∈ L(V, V)`, then there exists `a ∈ F` such that `T v = a v` for all `v ∈ V`.",
    "groups":
@@ -229,8 +229,8 @@
      "∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V]\n  [inst_3 : FiniteDimensional K V], Module.rank K V = 1 → ∀ (T : V →ₗ[K] V), ∃ a, ∀ (v : V), ↑T v = a • v",
      "∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V]\n  [inst_3 : FiniteDimensional K V], Module.rank K V = 1 → ∀ (T : V →ₗ[K] V), ∃ a, ∀ (v : V), ↑T v = a • v"],
     ["∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],\n  Module.rank K V = 1 → ∀ (T : V →ₗ[K] V), ∃ a, ∀ (v : V), ↑T v = a • v"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "Scalar multiplication not recognized since `a` is not specified to be an element of `K`, also coercion of `T` not recognized. Also it is a generalization since `K` is not a field. Same with other outputs, third output is accurate.",
    "all-elabs":
    ["∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V] [inst_3 : FiniteDimensional K V],\n  Module.rank K V = 1 → ∀ (f : V →ₗ[K] V), ∃ (a : K), ∀ (v : V), ↑f v = a • v ",
     "∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V]\n  [inst_3 : FiniteDimensional K V], Module.rank K V ≤ 1 → ∀ (T : V →ₗ[K] V), ∃ a, ∀ (v : V), ↑T v = a • v ",
@@ -244,13 +244,13 @@
     "∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V]\n  [inst_3 : FiniteDimensional K V], Module.rank K V = 1 → ∀ (T : V →ₗ[K] V), ∃ a : K, ∀ v : V, T v = a • v "]},
   {"theorem":
    "∀ {R : Type u} [inst : CommRing R] [inst_1 : IsDomain R] {p : Polynomial R},\n  Polynomial.natDegree p = ↑Multiset.card (Polynomial.roots p) ↔ ∀ (a : R), Polynomial.rootMultiplicity a p ≤ 1",
-   "some-correct": null,
+   "some-correct": false,
    "prompt":
    "Suppose `p ∈ P(ℂ)` has degree `m`. Prove that `p` has `m` distinct roots if and only if `p` and its derivative `p'` have no roots in common.",
    "groups":
    [["∀ {R : Type u} [inst : CommRing R] [inst_1 : IsDomain R] {p : Polynomial R},\n  Polynomial.natDegree p = ↑Multiset.card (Polynomial.roots p) ↔ ∀ (a : R), Polynomial.rootMultiplicity a p ≤ 1"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "No mention of derivative. Third output is most correct, there seems to be an issue with `Polynomial.derivative`.",
    "all-elabs":
    ["∀ {R : Type u} [inst : CommRing R] [inst_1 : IsDomain R] {p : Polynomial R},\n  Polynomial.natDegree p = Multiset.card (Polynomial.roots p) ↔\n    ∀ (a : R), Polynomial.rootMultiplicity a p ≤ 1 ",
     "∀ {p : Polynomial ℂ} {m : ℕ},\n  Polynomial.natDegree p = m →\n    (p ≠ 0 →\n       (∀ a, Polynomial.IsRoot p a ↔ Polynomial.IsRoot (↑Polynomial.derivative p) a → False) ↔\n         m = Multiset.card (Polynomial.roots p)) ",
@@ -263,8 +263,8 @@
    "Suppose `T ∈ L(V)` is such that every vector in `V` is an eigenvector of `T`. Prove that `T` is a scalar multiple of the identity operator.",
    "groups":
    [["∀ {K : Type u_1} {V : Type u_2} [inst : Field K] [inst_1 : AddCommGroup V] [inst_2 : Module K V] (T : Module.End K V),\n  (∀ (v : V), v ≠ 0 → ∃ c, ↑T v = c • v) → ∃ c, ∀ (v : V), ↑T v = c • v"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "Coercion problem, and cannot identify type of `c`. Second last output is correct.",
    "all-elabs":
    ["∀ {K : Type v} {V : Type w} [inst : Field K] [inst_1 : AddCommGroup V] [inst_2 : Module K V] (T : Module.End K V),\n  (∀ (v : V), v ≠ 0 → ∃ (c : K), Module.End.HasEigenvector T c v) → ∃ (c : K), T = c • LinearMap.id ",
     "∀ {K : Type u} {V : Type v} [inst : Field K] [inst_1 : AddCommGroup V] [inst_2 : Module K V] (T : Module.End K V)\n  (h_eigvec : ∀ (v : V), v ≠ 0 → ∃ (μ : K), T v = μ • v),\n  ∃ (c : K), T = c • LinearMap.id ",
@@ -279,8 +279,8 @@
    "Suppose that `T ∈ L(V)` has `dim V` distinct eigenvalues and that `S ∈ L(V)` has the same eigenvectors as `T` (not necessarily with the same eigenvalues). Prove that `S T = T S`.",
    "groups":
    [["∀ {𝕜 : Type u_1} [inst : Field 𝕜] {V : Type u_2} [inst_1 : AddCommGroup V] [inst_2 : Module 𝕜 V]\n  [inst_3 : FiniteDimensional 𝕜 V] {T S : V →ₗ[𝕜] V},\n  Fintype.card (Module.End.Eigenvalues T) = FiniteDimensional.finrank 𝕜 V →\n    (∀ (x : V) (μ : 𝕜), x ∈ Module.End.eigenspace S μ ↔ x ∈ Module.End.eigenspace T μ) →\n      LinearMap.comp S T = LinearMap.comp T S"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "Get the following error : failed to synthesize instance `Fintype (Module.End.Eigenvalues T)`. Same for other outputs.",
    "all-elabs":
    ["∀ {𝕜 : Type u_1} [inst : Field 𝕜] {V : Type u_2} [inst_1 : AddCommGroup V] [inst_2 : Module 𝕜 V] [inst_3 : FiniteDimensional 𝕜 V]\n  {T S : V →ₗ[𝕜] V},\n  Fintype.card (Module.End.Eigenvalues T) = FiniteDimensional.finrank 𝕜 V →\n    (∀ (x : V) (μ : 𝕜), x ∈ Module.End.eigenspace S μ ↔ x ∈ Module.End.eigenspace T μ) → S.comp T = T.comp S "]},
   {"theorem":
@@ -295,7 +295,7 @@
     ["∀ {𝕜 : Type u_1} {E : Type u_2} [inst : IsROrC 𝕜] [inst_1 : NormedAddCommGroup E] [inst_2 : InnerProductSpace 𝕜 E]\n  {U V : Submodule 𝕜 E}, Uᗮ = ⊥ ↔ U = V",
      "∀ {𝕜 : Type u_1} {E : Type u_2} [inst : IsROrC 𝕜] [inst_1 : NormedAddCommGroup E] [inst_2 : InnerProductSpace 𝕜 E]\n  {U V : Submodule 𝕜 E}, Uᗮ = ⊥ ↔ U = V"],
     ["∀ {𝕜 : Type u_1} {E : Type u_2} [inst : IsROrC 𝕜] [inst_1 : NormedAddCommGroup E] [inst_2 : InnerProductSpace 𝕜 E]\n  {U V : Submodule 𝕜 E}, U ≤ V → Uᗮ = ⊥ ↔ U = V"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {𝕜 : Type u_1} {E : Type u_2} [inst : IsROrC 𝕜] [inst_1 : NormedAddCommGroup E] [inst_2 : InnerProductSpace 𝕜 E]\n  {U V : Submodule 𝕜 E}, U ≤ V → (Uᗮ = ⊥ ↔ U = V) ",
@@ -318,7 +318,7 @@
      "∀ {n : ℕ}, Odd n → 8 ∣ n ^ 2 - 1",
      "∀ {n : ℕ}, Odd n → 8 ∣ n ^ 2 - 1",
      "∀ {n : ℕ}, Odd n → 8 ∣ n ^ 2 - 1"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["forall_odd_n_eight_divides_pow_minus_one : ∀ {n : ℕ}, Odd n → 8 ∣ n ^ 2 - 1 ",
@@ -332,10 +332,10 @@
     "∀ {n : ℕ}, Odd n → 8 ∣ (n ^ 2 - 1) ",
     "∀ {n : ℕ}, Odd n → 8 ∣ (n ^ 2 - 1) "]},
   {"theorem": "IsSquare 2",
-   "some-correct": null,
+   "some-correct": false,
    "prompt": "Show that 2 is divisible by `(1 + i)^2` in `ℤ[i]`.",
    "groups": [["IsSquare 2"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "No information captured.",
    "all-elabs": ["IsSquare 2 "]}],
  "elaborated": 17}
