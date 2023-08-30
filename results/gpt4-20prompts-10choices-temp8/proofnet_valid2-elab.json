@@ -25,8 +25,8 @@
    "Suppose `f'(x) > 0` in `(a, b)`. Prove that `f` is strictly increasing in `(a, b)`, and let `g` be its inverse function. Prove that `g` is differentiable, and that `g'(f(x)) = 1/f'(x)` for `(a < x < b)`.",
    "groups":
    [["∀ {f : ℝ → ℝ} {a b : ℝ},\n  (∀ (x : ℝ), x ∈ Set.Ioo a b → 0 < deriv f x) →\n    StrictMono f ∧\n      ∀ {x : ℝ},\n        x ∈ Set.Ioo a b → ∃ g, (∀ (y : ℝ), y ∈ Set.Ioo (f a) (f b) → (g ∘ f) y = y) ∧ HasDerivAt g (deriv f x)⁻¹ (f x)"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "`g` is differentiable condition is missed; also is a^{-1} = 1/a. Similarly for others.",
    "all-elabs":
    ["∀ {f : ℝ → ℝ} {a b : ℝ},\n  (∀ (x : ℝ), x ∈ Set.Ioo a b → 0 < deriv f x) →\n    (StrictMono f ∧\n      ∀ {x : ℝ},\n        x ∈ Set.Ioo a b →\n          ∃ g, (∀ (y : ℝ), y ∈ Set.Ioo (f a) (f b) → (g ∘ f) y = y) ∧\n                    HasDerivAt g (deriv f x)⁻¹ (f x)) ",
     "∀ {f f' : ℝ → ℝ} {a b : ℝ},\n  ContinuousOn f (Set.Icc a b) →\n    (∀ (x : ℝ), x ∈ Set.Ioo a b → HasDerivAt f (f' x) x) →\n      (∀ (x : ℝ), x ∈ Set.Ioo a b → 0 < f' x) →\n        StrictMonoOn f (Set.Ioo a b) ∧\n          ∃ (g : ℝ → ℝ),\n            ContinuousOn g (Set.Icc (f a) (f b)) ∧\n              (∀ (y : ℝ), y ∈ Set.Ioo (f a) (f b) → HasDerivAt g (1 / f' (g y)) y) ",
@@ -41,7 +41,7 @@
    "groups":
    [["∀ {f : ℝ → ℝ},\n  ContinuousOn f (Set.Ici 0) →\n    DifferentiableOn ℝ f (Set.Ioi 0) →\n      f 0 = 0 → MonotoneOn (deriv f) (Set.Ioi 0) → MonotoneOn (fun x => f x / x) (Set.Ioi 0)"],
     ["∀ {f : ℝ → ℝ},\n  ContinuousOn f (Set.Ici 0) →\n    DifferentiableOn ℝ f (Set.Ioi 0) → f 0 = 0 → Monotone (deriv f) → ∀ ⦃x y : ℝ⦄, 0 < x → x ≤ y → f x / x ≤ f y / y"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {f : ℝ → ℝ},\n  ContinuousOn f (Set.Ici 0) →\n    DifferentiableOn ℝ f (Set.Ioi 0) →\n      f 0 = 0 →\n        Monotone (deriv f) → ∀ ⦃x y : ℝ⦄, 0 < x → x ≤ y → f x / x ≤ f y / y ",
@@ -54,8 +54,8 @@
    "Suppose `a ∈ ℝ^1`, `f` is a twice-differentiable real function on `(a, ∞)`, and `M_0, M_1, M_2` are the least upper bounds of `|f(x)|`, `|f'(x)|`, `|f''(x)|`, respectively, on `(a, ∞)`. Prove that `M_1^2 ≤ 4 M_0 M_2`.",
    "groups":
    [["∀ {a : ℝ} {f : ℝ → ℝ} {M₀ M₁ M₂ : ℝ},\n  Differentiable ℝ f →\n    Differentiable ℝ (deriv f) →\n      (∀ (x : ℝ), a < x → |f x| ≤ M₀) →\n        (∀ (x : ℝ), a < x → |deriv f x| ≤ M₁) → (∀ (x : ℝ), a < x → |deriv^[2] f x| ≤ M₂) → M₁ ^ 2 ≤ 4 * M₀ * M₂"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "Bounds are not defined to be least upper bounds. Same for the rest.",
    "all-elabs":
    ["forall {a : ℝ} {f : ℝ → ℝ} {M₀ M₁ M₂ : ℝ},\n  Differentiable ℝ f → Differentiable ℝ (deriv f) →\n    (∀ x, a < x → abs (f x) ≤ M₀) →\n      (∀ x, a < x → abs (deriv f x) ≤ M₁) →\n        (∀ x, a < x → abs (deriv^[2] f x) ≤ M₂) → M₁ ^ 2 ≤ 4 * M₀ * M₂ "]},
   {"theorem":
@@ -74,7 +74,7 @@
      "∀ {X : Type u_1} [inst : TopologicalSpace X] {A : Set X}, (∀ (x : X), x ∈ A → ∃ U, IsOpen U ∧ x ∈ U ∧ U ⊆ A) → IsOpen A"],
     ["∀ {X : Type u} [inst : TopologicalSpace X] {A : Set X}, (∀ (x : X), x ∈ A → ∃ U, IsOpen U ∧ x ∈ U ∧ U ⊆ A) → IsOpen A"],
     ["∀ {X : Type u_1} [inst : TopologicalSpace X] {A : Set X}, (∀ (x : X), x ∈ A → ∃ U, x ∈ U ∧ IsOpen U ∧ U ⊆ A) → IsOpen A"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {X : Type u_1} [inst : TopologicalSpace X] {A : Set X},\n  (∀ (x : X), x ∈ A → ∃ U, x ∈ U ∧ IsOpen U ∧ U ⊆ A) → IsOpen A ",
@@ -102,8 +102,8 @@
     ["{X : Type u_1} → {ι : Type u} → (ι → TopologicalSpace X) → TopologicalSpace X"],
     ["{X : Type u_1} → {ι : Type u_2} → {T : ι → TopologicalSpace X} → TopologicalSpace X"],
     ["{X : Type u} → Set (TopologicalSpace X) → TopologicalSpace X"]],
-   "correct": null,
-   "comments": "",
+   "correct": true,
+   "comments": "It is true but not capturing the entire essence of the question.",
    "all-elabs":
    ["∀ {X : Type u} {ι : Type u_1} (T : ι → TopologicalSpace X),\n  TopologicalSpace X ",
     "∀ {X : Type u_1} {ι : Type u_2} {T : ι → TopologicalSpace X},\n  TopologicalSpace X ",
@@ -129,7 +129,7 @@
     ["∀ {X : Type u_1} {ι : Type u_2} {T : ι → TopologicalSpace X}, ∃! _inst, ∀ (i : ι), T i ≤ _inst",
      "∀ {X : Type u_1} {ι : Type u_2} (T : ι → TopologicalSpace X), ∃! T_min, ∀ (i : ι), T i ≤ T_min",
      "∀ {X : Type u_1} {ι : Type u_2} {T : ι → TopologicalSpace X}, ∃! t, ∀ (i : ι), T i ≤ t"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {X : Type u_1} {ι : Type u_2} {T : ι → TopologicalSpace X},\n  ∃ t : TopologicalSpace X, (∀ i : ι, T i ≤ t) ∧ ∀ t' : TopologicalSpace X, (∀ i : ι, T i ≤ t') → t ≤ t' ",
@@ -143,13 +143,13 @@
     "∀ {X : Type u_1} {ι : Type u_2} {T : ι → TopologicalSpace X},\n  ∃! (t : TopologicalSpace X), ∀ i, T i ≤ t "]},
   {"theorem":
    "∀ {α : Type u_1} [inst : LinearOrder α] {a b : α}, a < b → ¬b ≤ a",
-   "some-correct": null,
+   "some-correct": false,
    "prompt":
    "Show that the lower limit topology `ℝ_l` and the `K`-topology `ℝ_K` are not comparable.",
    "groups":
    [["∀ {α : Type u_1} [inst : LinearOrder α] {a b : α}, a < b → ¬b ≤ a"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "None seem correct.",
    "all-elabs":
    ["not_le_of_gt : ∀ {α : Type u_1} [inst : LinearOrder α] {a b : α}, a < b → ¬b ≤ a "]},
   {"theorem":
@@ -164,7 +164,7 @@
      "∀ {α : Type u} [inst : TopologicalSpace α] {U A : Set α}, IsOpen U → IsClosed A → IsOpen (U \\ A) ∧ IsClosed (A \\ U)",
      "∀ {α : Type u} [inst : TopologicalSpace α] {U A : Set α}, IsOpen U → IsClosed A → IsOpen (U \\ A) ∧ IsClosed (A \\ U)"],
     ["∀ {X : Type u_1} [inst : TopologicalSpace X] {U A : Set X}, IsOpen U → IsClosed A → IsOpen (U \\ A) ∧ IsClosed (A \\ U)"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u} [inst : TopologicalSpace α] {U A : Set α},\n  IsOpen U → IsClosed A → IsOpen (U \\ A) ∧ IsClosed (A \\ U) ",
@@ -185,8 +185,8 @@
      "∀ {X : Type u} {Y : Type v} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : LinearOrder Y]\n  [inst_3 : OrderTopology Y] {f g : X → Y}, Continuous f → Continuous g → Continuous fun x => min (f x) (g x)"],
     ["∀ {X : Type u} {α : Type v} [inst : TopologicalSpace X] [inst_1 : LinearOrder α] [inst_2 : TopologicalSpace α]\n  [inst_3 : OrderClosedTopology α] {f g : X → α}, Continuous f → Continuous g → Continuous fun x => min (f x) (g x)"],
     ["∀ {X : Type u} {Y : Type v} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : LinearOrder Y]\n  [inst_3 : OrderTopology Y] {f g h : X → Y},\n  (∀ (x : X), h x = min (f x) (g x)) → Continuous f → Continuous g → Continuous h"]],
-   "correct": null,
-   "comments": "",
+   "correct": true,
+   "comments": "The question seems a bit ambigous, what do they mean by ordered set?",
    "all-elabs":
    ["∀ {X : Type u} {Y : Type v} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : LinearOrder Y]\n  [inst_3 : OrderTopology Y] {f g : X → Y},\n  Continuous f → Continuous g → Continuous fun x => min (f x) (g x) ",
     "∀ {X : Type u} {Y : Type v} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : LinearOrder Y]\n  [inst_3 : OrderTopology Y] {f g : X → Y}, Continuous f → Continuous g → Continuous fun x => min (f x) (g x) ",
@@ -209,8 +209,8 @@
     ["∀ {α : Type u_2} {X : α → Type u_1} [inst : (a : α) → TopologicalSpace (X a)] {x : (a : α) → X a}\n  {x₀ : ℕ → (a : α) → X a},\n  Filter.Tendsto x₀ Filter.atTop (nhds x) ↔ ∀ (a : α), Filter.Tendsto (fun n => x₀ n a) Filter.atTop (nhds (x a))",
      "∀ {ι : Type u_2} {X : ι → Type u_1} [_i : (i : ι) → TopologicalSpace (X i)] {x : (i : ι) → X i}\n  {x' : ℕ → (i : ι) → X i},\n  Filter.Tendsto x' Filter.atTop (nhds x) ↔ ∀ (i : ι), Filter.Tendsto (fun n => x' n i) Filter.atTop (nhds (x i))"],
     ["∀ {α : Type u_3} {π : α → Type u_1} [inst : (i : α) → TopologicalSpace (π i)] {x : (i : α) → π i}\n  {x_seq : ℕ → (i : α) → π i},\n  Filter.Tendsto x_seq Filter.atTop (nhds x) ↔ ∀ (i : α), Filter.Tendsto (fun n => x_seq n i) Filter.atTop (nhds (x i))"]],
-   "correct": null,
-   "comments": "",
+   "correct": true,
+   "comments": "Some extra assumptions",
    "all-elabs":
    ["∀ {J : Type u_1} {X : J → Type u_2} [inst : (j : J) → TopologicalSpace (X j)] {x : (j : J) → X j} {x_i : ℕ → (j : J) → X j},\n  Filter.Tendsto x_i Filter.atTop (nhds x) ↔ ∀ (j : J), Filter.Tendsto (fun n => x_i n j) Filter.atTop (nhds (x j)) ",
     "∀ {ι : Type u_2} {π : ι → Type u_3} [inst : (i : ι) → TopologicalSpace (π i)] {p : ℕ → Π i, π i} {x : Π i, π i},\n  Filter.Tendsto p Filter.atTop (nhds x) ↔ ∀ (i : ι), Filter.Tendsto (fun n => p n i) Filter.atTop (nhds (x i)) ",
@@ -223,7 +223,7 @@
     "∀ {ι : Type u_2} {π : ι → Type u_3} [inst : (i : ι) → TopologicalSpace (π i)] {x : (i : ι) → π i} {x_i : ℕ → (i : ι) → π i},\n  Filter.Tendsto x_i Filter.atTop (nhds x) ↔ ∀ (i : ι), Filter.Tendsto (fun n => x_i n i) Filter.atTop (nhds (x i)) "]},
   {"theorem":
    "∀ (x : ℝ), 0 ≤ x → x ≤ 1 → Filter.Tendsto (fun n => x ^ n) Filter.atTop (nhds 0)",
-   "some-correct": null,
+   "some-correct": false,
    "prompt":
    "Define `f_n: [0,1] → ℝ` by the equation `f_n(x) = x^n`. Show that the sequence `(f_n(x))` converges for each `x ∈ [0,1]`.",
    "groups":
@@ -237,8 +237,8 @@
      "∀ (x : ℝ), 0 ≤ x → x ≤ 1 → Filter.Tendsto (fun n => x ^ n) Filter.atTop (nhds 0)",
      "∀ (x : ℝ), x ∈ Set.Icc 0 1 → Filter.Tendsto (fun n => x ^ n) Filter.atTop (nhds 0)"],
     ["∀ (x : ℝ), x ∈ [0, 1] → Filter.Tendsto (fun n => x ^ n) Filter.atTop (nhds 0)"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "True for all points except x = 1. Is adding extra assumptions.",
    "all-elabs":
    ["∀ (x : ℝ) (hx : 0 ≤ x) (hx' : x ≤ 1),\n  Filter.Tendsto (fun n => x ^ n) Filter.atTop (nhds 0) ",
     "∀ (n : ℕ) (x : ℝ), 0 ≤ x → x ≤ 1 → Filter.Tendsto (fun n => x ^ n) Filter.atTop (nhds 0) ",
@@ -252,7 +252,7 @@
     "∀ (x : ℝ) (hx : x ∈ Set.Icc 0 1),\n  Filter.Tendsto (fun n => x ^ n) Filter.atTop (nhds 0) "]},
   {"theorem":
    "∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : MetricSpace Y] {f : X → Y} {ι : Type u_3}\n  {p : Filter ι} {F : ι → X → Y} {x : X} {x_n : ι → X},\n  TendstoUniformly F f p →\n    ContinuousAt f x → Filter.Tendsto x_n p (nhds x) → Filter.Tendsto (fun n => F n (x_n n)) p (nhds (f x))",
-   "some-correct": null,
+   "some-correct": false,
    "prompt":
    "Let `X` be a topological space and let `Y` be a metric space. Let `f_n: X → Y` be a sequence of continuous functions. Let `x_n` be a sequence of points of `X` converging to `x`. Show that if the sequence `(f_n)` converges uniformly to `f`, then `(f_n(x_n))` converges to `f(x)`.",
    "groups":
@@ -266,8 +266,8 @@
      "∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : MetricSpace Y] {f : X → Y} {fn : ℕ → X → Y},\n  TendstoUniformly (fun n x => fn n x) f Filter.atTop →\n    ∀ {x : X} {xn : ℕ → X},\n      Filter.Tendsto xn Filter.atTop (nhds x) → Filter.Tendsto (fun n => fn n (xn n)) Filter.atTop (nhds (f x))"],
     ["∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : MetricSpace Y] {f_n : ℕ → X → Y} {f : X → Y}\n  {x_n : ℕ → X} {x : X},\n  TendstoUniformly f_n f Filter.atTop →\n    Filter.Tendsto x_n Filter.atTop (nhds x) →\n      ContinuousAt f x → Filter.Tendsto (fun n => f_n n (x_n n)) Filter.atTop (nhds (f x))",
      "∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : MetricSpace Y] {f : X → Y} {f_n : ℕ → X → Y}\n  {x_n : ℕ → X} {x : X},\n  TendstoUniformly (fun n => f_n n) f Filter.atTop →\n    Filter.Tendsto x_n Filter.atTop (nhds x) →\n      ContinuousAt f x → Filter.Tendsto (fun n => f_n n (x_n n)) Filter.atTop (nhds (f x))"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "The condition that `f_n` are continuous is missed. Also it uses a general filter instead of `AtTop` on `nat`. Some other outputs use `AtTop` but still incorrect.",
    "all-elabs":
    ["∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : MetricSpace Y] {f : X → Y} {ι : Type u_3}\n  {p : Filter ι} {F : ι → X → Y} {x : X} {x_n : ι → X},\n  TendstoUniformly F f p →\n    Filter.Tendsto x_n p (nhds x) → Filter.Tendsto (fun n => F n (x_n n)) p (nhds (f x)) ",
     "∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : MetricSpace Y] {f : X → Y} {ι : Type u_3}\n  {p : Filter ι} {F : ι → X → Y} {x : X} {x_n : ι → X},\n  TendstoUniformly F f p →\n    ContinuousAt f x → Filter.Tendsto x_n p (nhds x) → Filter.Tendsto (fun n => F n (x_n n)) p (nhds (f x)) ",
