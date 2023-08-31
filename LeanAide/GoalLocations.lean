@@ -57,4 +57,5 @@ open Meta Elab Term in
     IO.println stx.raw.reprint.get!
 
 partial def getSubexpressionMatches (d : DiscrTree α s) 
-    (e : Expr) (explicit? : Bool) : MetaM (Array (List String × α)) := do sorry
+    (e : Expr) (explicit? : Bool) : MetaM (Array (List String × Array α)) := do
+  e.getConvEnters d.getMatch explicit?
