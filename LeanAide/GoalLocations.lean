@@ -62,16 +62,18 @@ def Lean.Meta.DiscrTree.getSubexpressionConvMatches (d : Meta.DiscrTree α s)
   let convEnters ← e.getConvEnters d.getMatch explicit?
   return convEnters.concatMap <| fun (path, as) ↦ as.map (path, ·) 
 
+macro (priority := high) "enter" "[""]" : conv => `(conv| skip)
+
 open Parser Tactic Conv
-syntax (name := targeted_rw) "targeted_rw" rwRule " at " "[" withoutPosition(enterArg,+) "]" : tactic
+syntax (name := targeted_rw) "tgt_rw" (config)? rwRuleSeq (" at " ident)? " entering " "[" withoutPosition(enterArg,*) "]" : tactic
 
 macro_rules
-  | `(tactic| targeted_rw $rule at [$args,*]) =>
-    `(tactic| conv => enter [$args,*]; rw [$rule])
+  | `(tactic| tgt_rw $[$cfg]? $rules $[at $loc]? entering [$args,*]) =>
+    `(tactic| conv $[at $loc]? => enter [$args,*]; rw $[$cfg]? $rules)
 
 example (y : ℕ) : ∀ x : ℕ, y + (x + 0) = x + y := by
-  targeted_rw Nat.add_zero at [x, 1, 2]
-  targeted_rw Nat.add_comm at [x]
+  tgt_rw [Nat.add_zero] entering [x, 1, 2]
+  tgt_rw [Nat.add_comm] entering [x]
   intro; rfl
 
 -- The code below is modified from `Mathlib/Tactic/Rewrites`
@@ -155,7 +157,7 @@ def addRewriteConvSuggestion (ref : Syntax) (path : List String) (rules : List (
     (extraMsg := extraMsg) (origSpan? := origSpan?)
 
 open Lean.Parser.Tactic
-
+-/
 /--
 `rw?` tries to find a lemma which can rewrite the goal.
 
@@ -197,5 +199,4 @@ elab_rules : tactic |
         let newGoal := if r.rfl? = some true then Expr.lit (.strVal "no goals") else r.result.eNew
         addRewriteConvSuggestion tk path [(← Meta.mkConstWithFreshMVarLevels r.name, r.symm)]
           newGoal (origSpan? := ← getRef)
-    (λ _ => throwError "Failed to find a rewrite for some location")
--/  
+    (λ _ => throwError "Failed to find a rewrite for some location")  
