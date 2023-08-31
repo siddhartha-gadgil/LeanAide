@@ -27,29 +27,22 @@ partial def Lean.Expr.getConvEnters (expr : Expr) (φ : Expr → MetaM α)
     let enterArgs ← args'.mapIdxM fun idx arg ↦ do
       let argConvEnters ← arg.getConvEnters φ explicit?
       let enterArg := (if explicit? then "@" else "") ++ s!"{idx.val + 1}"
-      return ( argConvEnters.map <| fun (path, a) ↦
-        (enterArg :: path, a) ) |>.push ([enterArg], ← φ arg)
-    enterArgs.concatMapM pure  
+      return updatePaths [enterArg] argConvEnters |>.push ([enterArg], ← φ arg)
+    return enterArgs.concatMap id
   | .forallE _ _ _ _ => do
     let binders := expr.getForallBinderNames |>.map (·.getRoot.toString)
     let body := expr.getForallBody
-    let bodyConvEnters ← body.getConvEnters φ explicit?
-    return bodyConvEnters.map  fun (path, subexpr) ↦ 
-              (binders ++ path, subexpr) 
+    updatePaths binders <$> body.getConvEnters φ explicit?
   | .lam _ _ _ _ 
   | .letE _ _ _ _ _ =>
     lambdaLetTelescope expr <| fun args body ↦ do
       let binders := args |>.map (·.getName!.toString) |>.toList
-      let bodyConvEnters ← body.getConvEnters φ explicit?
-      return bodyConvEnters.map  fun (path, subexpr) ↦
-                (binders ++ path, subexpr)
+      updatePaths binders <$> body.getConvEnters φ explicit?
   | .mdata _ expr => getConvEnters expr φ explicit?
   | .proj _ _ struct => do
-    let structConvEnters ← struct.getConvEnters φ explicit?
-    return structConvEnters.map fun (path, subexpr) ↦
-                  ("1" :: path, subexpr)
+    updatePaths ["1"] <$> struct.getConvEnters φ explicit?
   | _ => return #[]
-  where updatePaths (pre : List String) (entries : Array (List String × α)) : Array (List String × α) :=
+  where updatePaths (pre : List String) (entries : Array (List String × α)) : MetaM <| Array (List String × α) := do
     entries.map <| fun (path, a) ↦ (pre ++ path, a)
 
 open Meta Elab Term in
