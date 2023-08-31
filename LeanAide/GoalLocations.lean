@@ -30,7 +30,7 @@ partial def Lean.Expr.getConvEnters (expr : Expr) (explicit? : Bool) : MetaM (Ar
         (enterArg :: path, subexpr)
     (enterArgs.push #[([], expr)]).concatMapM pure  
   | .forallE _ _ _ _ => do
-    let binders := expr.getForallBinderNames |>.map Name.toString
+    let binders := expr.getForallBinderNames |>.map (·.getRoot.toString)
     let body := expr.getForallBody
     let bodyConvEnters ← body.getConvEnters explicit?
     return (bodyConvEnters.map  fun (path, subexpr) ↦ 
