@@ -348,7 +348,7 @@ def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true)
     else moduleNames
   let moduleIdxs := moduleNames.filterMap env.getModuleIdx?
 
-  env.constants.toList.toArray.filterMapM fun ⟨nm, ci⟩ ↦ do
+  List.toArray <$> env.constants.toList.filterMapM fun ⟨nm, ci⟩ ↦ do
     let some _ := moduleIdxs.contains <$> env.getModuleIdxFor? nm  | pure none
     let some docstring ← findDocString? env nm | pure none
     let some kind := (
