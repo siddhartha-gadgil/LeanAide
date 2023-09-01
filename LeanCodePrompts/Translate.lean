@@ -357,7 +357,7 @@ def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true)
         | .thmInfo _  => some "theorem"
         |     _       => none 
     ) | pure none
-    let type ← Format.pretty <$> PrettyPrinter.ppExpr ci.type
+    let some type ← try? (Format.pretty <$> PrettyPrinter.ppExpr ci.type) | pure none
     return some ⟨docstring, s!"{kind} : {type} :="⟩
 
 /-- choosing pairs to build a prompt -/
