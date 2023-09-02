@@ -65,7 +65,7 @@ def Lean.Meta.DiscrTree.getSubexpressionConvMatches (d : Meta.DiscrTree α s)
 macro (priority := high) "enter" "[""]" : conv => `(conv| skip)
 
 open Parser Tactic Conv
-syntax (name := targeted_rw) "tgt_rw" (config)? rwRuleSeq (" at " ident)? " entering " "[" withoutPosition(enterArg,*) "]" : tactic
+syntax (name := targeted_rw) "tgt_rw" (config)? rwRuleSeq (" at " ident)? " entering " "[" enterArg,* "]" : tactic
 
 macro_rules
   | `(tactic| tgt_rw $[$cfg]? $rules $[at $loc]? entering [$args,*]) =>
@@ -134,21 +134,29 @@ def rewritesConv (lemmas : Meta.DiscrTree (Name × Bool × Nat) s × Meta.DiscrT
     results
   | results => results
 
-/-
-open Lean.Parser.Tactic Lean.Syntax Std.Tactic.TryThis in
-def addRewriteConvSuggestion (ref : Syntax) (path : List String) (rules : List (Expr × Bool))
-  (type? : Option Expr := none)
+open Elab Term Syntax Parser Tactic Std.Tactic.TryThis
+
+def addTargetedRewriteSuggestion (ref : Syntax) (rules : List (Expr × Bool))
+  (path : List String) (type? : Option Expr := none) (loc? : Option Ident := none)
   (origSpan? : Option Syntax := none) :
-    Elab.Term.TermElabM Unit := do
+    TermElabM Unit := do
   let rules_stx := TSepArray.ofElems <| ← rules.toArray.mapM fun ⟨e, _symm⟩ => do
     let t ← delabToRefinableSyntax e
     if _symm then `(rwRule| ← $t:term) else `(rwRule| $t:term)
-  let tac ← `(tactic| rw [$rules_stx,*])
+  let env ← getEnv
+  let pathArgs : List (TSyntax ``enterArg) ← path.mapM fun arg ↦ do
+    let .ok enter_arg := Parser.runParserCategory env ``enterArg arg | failure
+    return ⟨enter_arg⟩
+  let path_stx := TSepArray.ofElems pathArgs.toArray
+  let tac ← `(tactic| tgt_rw [$rules_stx,*] $[at $loc?]? entering [$path_stx,*])
 
   let mut tacMsg :=
     let rulesMsg := MessageData.sbracket <| MessageData.joinSep
       (rules.map fun ⟨e, _symm⟩ => (if _symm then "← " else "") ++ m!"{e}") ", "
-    m!"rw {rulesMsg}"
+    if let some loc := loc? then
+      m!"tgt_rw {rulesMsg} at {loc} entering {path}"
+    else
+      m!"tgt_rw {rulesMsg} entering {path}"
   let mut extraMsg := ""
   if let some type := type? then
     tacMsg := tacMsg ++ m!"\n-- {type}"
@@ -157,7 +165,7 @@ def addRewriteConvSuggestion (ref : Syntax) (path : List String) (rules : List (
     (extraMsg := extraMsg) (origSpan? := origSpan?)
 
 open Lean.Parser.Tactic
--/
+
 /--
 `rw?` tries to find a lemma which can rewrite the goal.
 
@@ -186,7 +194,7 @@ elab_rules : tactic |
         throwError "Could not find any lemmas which can rewrite the hypothesis {
           ← f.getUserName}"
       for (path, r) in results do
-        addRewriteConvSuggestion tk path [(← Meta.mkConstWithFreshMVarLevels r.name, r.symm)]
+        addTargetedRewriteSuggestion tk [(← Meta.mkConstWithFreshMVarLevels r.name, r.symm)] path
           r.result.eNew (origSpan? := ← getRef)
     -- See https://github.com/leanprover/lean4/issues/2150
     do withMainContext do
@@ -197,6 +205,6 @@ elab_rules : tactic |
         throwError "Could not find any lemmas which can rewrite the goal"
       for (path, r) in results do
         let newGoal := if r.rfl? = some true then Expr.lit (.strVal "no goals") else r.result.eNew
-        addRewriteConvSuggestion tk path [(← Meta.mkConstWithFreshMVarLevels r.name, r.symm)]
+        addTargetedRewriteSuggestion tk [(← Meta.mkConstWithFreshMVarLevels r.name, r.symm)] path
           newGoal (origSpan? := ← getRef)
     (λ _ => throwError "Failed to find a rewrite for some location")  
