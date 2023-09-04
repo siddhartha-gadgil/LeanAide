@@ -336,6 +336,30 @@ def getPromptPairs(s: String)(numSim : Nat)(source: String := "openai_full")
     | s => 
       return Except.error s!"unknown source {s}"
 
+/-- prompts generated from the declarations in the current file. -/
+def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true) : MetaM <| Array (String × String):= do
+  if moduleNames.isEmpty && !useMain? then 
+    return #[]
+  
+  let env ← getEnv
+  let moduleNames := 
+    if useMain? then
+      moduleNames.push env.mainModule
+    else moduleNames
+  let moduleIdxs := moduleNames.filterMap env.getModuleIdx?
+
+  List.toArray <$> env.constants.toList.filterMapM fun ⟨nm, ci⟩ ↦ do
+    let some _ := moduleIdxs.contains <$> env.getModuleIdxFor? nm  | pure none
+    let some docstring ← findDocString? env nm | pure none
+    let some kind := (
+      match ci with
+        | .defnInfo _ => some "def"
+        | .thmInfo _  => some "theorem"
+        |     _       => none 
+    ) | pure none
+    let some type ← try? (Format.pretty <$> PrettyPrinter.ppExpr ci.type) | pure none
+    return some ⟨docstring, s!"{kind} : {type} :="⟩
+
 /-- choosing pairs to build a prompt -/
 def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := docField)
     (theoremField : String := theoremField)

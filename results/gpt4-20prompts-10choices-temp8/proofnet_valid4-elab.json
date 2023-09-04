@@ -25,7 +25,7 @@
      "∀ (x y : ℤ), 7 * x ^ 3 + 2 ≠ y ^ 3",
      "∀ (x y : ℤ), 7 * x ^ 3 + 2 ≠ y ^ 3",
      "∀ {x y : ℤ}, 7 * x ^ 3 + 2 ≠ y ^ 3"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ (x y : ℤ), 7 * x^3 + 2 ≠ y^3 ",
@@ -54,7 +54,7 @@
     ["∀ {p q n : ℕ} [inst : Fact (Nat.Prime p)] [inst_1 : Fact (Nat.Prime q)],\n  p ≠ q → p - 1 ∣ q - 1 → IsCoprime n (p * q) → ↑(n ^ (q - 1)) ≡ 1 [ZMOD ↑p * ↑q]"],
     ["∀ {p q : ℕ} [inst : Fact (Nat.Prime p)] [inst_1 : Fact (Nat.Prime q)],\n  p ≠ 2 → q ≠ 2 → p ≠ q → p - 1 ∣ q - 1 → ∀ {n : ℕ}, IsCoprime n (p * q) → n ^ (q - 1) ≡ 1 [MOD p * q]"],
     ["∀ {p q : ℕ} [inst : Fact (Nat.Prime p)] [inst_1 : Fact (Nat.Prime q)],\n  p ≠ q → p % 2 = 1 → q % 2 = 1 → p - 1 ∣ q - 1 → ∀ {n : ℤ}, IsCoprime n ↑(p * q) → n ^ (q - 1) ≡ 1 [ZMOD ↑(p * q)]"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {p q n : ℕ} [inst : Fact (Nat.Prime p)] [inst_1 : Fact (Nat.Prime q)],\n  p ≠ 2 → q ≠ 2 → p ≠ q → (p - 1) ∣ (q - 1) → IsCoprime n (p * q) → n ^ (q - 1) ≡ 1 [ZMOD (p * q)] ",
@@ -69,21 +69,21 @@
     "∀ {p q : ℕ} [inst : Fact (Nat.Prime p)] [inst_1 : Fact (Nat.Prime q)],\n  p ≠ 2 → q ≠ 2 → p ≠ q → (p - 1) ∣ (q - 1) → ∀ {n : ℕ}, IsCoprime n (p * q) → n ^ (q - 1) ≡ 1 [ZMOD (p * q)] "]},
   {"theorem":
    "∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p % 4 = 3 → ∀ {a : ℕ}, IsPrimitiveRoot a p ↔ orderOf (-↑a) = (p - 1) / 2",
-   "some-correct": null,
+   "some-correct": true,
    "prompt":
    "Consider a prime `p` of the form `4t + 3`. Show that `a` is a primitive root modulo `p` if and only if `-a` has order `(p - 1) / 2`.",
    "groups":
    [["∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p % 4 = 3 → ∀ {a : ℕ}, IsPrimitiveRoot a p ↔ orderOf (-↑a) = (p - 1) / 2"],
     ["∀ {p : ℕ} [inst : Fact (Nat.Prime p)] (a : (ZMod p)ˣ), p % 4 = 3 → (IsPrimitiveRoot a p ↔ orderOf (-a) = (p - 1) / 2)"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "Coercion on a not recognized as `a` has type `nat`. First output right.",
    "all-elabs":
    ["∀ {p : ℕ} [inst : Fact (Nat.Prime p)] (a : (ZMod p)ˣ), p % 4 = 3 → (is_primitive_root a p ↔ order_of (-a) = (p - 1) / 2) ",
     "∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p % 4 = 3 → ∀ {a : ℕ}, IsPrimitiveRoot a p ↔ orderOf (-a : ZMod p) = (p - 1) / 2 ",
     "∀ {p : ℕ} [inst : Fact (Nat.Prime p)] (a : (ZMod p)ˣ),\n  p % 4 = 3 → is_primitive_root a (p - 1) ↔ order_of (-a) = (p - 1) / 2 "]},
   {"theorem":
    "∀ (p : ℕ) [inst : Fact (Nat.Prime p)],\n  p % 2 = 1 → ∀ (a : ℕ), IsPrimitiveRoot a p ↔ ∀ (q : ℕ), Nat.Prime q → q ∣ p - 1 → a ^ ((p - 1) / q) ≠ 1",
-   "some-correct": null,
+   "some-correct": true,
    "prompt":
    "Let `p` be an odd prime. Show that `a` is a primitive root modulo `p` if and only if `a^((p - 1) / q) ≢ 1 (mod p)` for all prime divisors `q` of `p - 1`.",
    "groups":
@@ -92,8 +92,8 @@
     ["∀ {p : ℕ} [inst : Fact (Nat.Prime p)] {a : ZMod p},\n  IsPrimitiveRoot a p ↔ ∀ (q : ℕ), Nat.Prime q → q ∣ p - 1 → a ^ ((p - 1) / q) ≠ 1"],
     ["∀ {p : ℕ} [inst : Fact (Nat.Prime p)] {a : ℕ},\n  (a ≠ 0 → ∀ (q : ℕ), Nat.Prime q → q ∣ p - 1 → a ^ ((p - 1) / q) ≠ 1) ↔ IsPrimitiveRoot a p"],
     ["∀ {p : ℕ} [inst : Fact (Nat.Prime p)],\n  p % 2 = 1 → ∀ {a : ZMod p}, IsPrimitiveRoot a p ↔ ∀ (q : ℕ), Nat.Prime q → q ∣ p - 1 → a ^ ((p - 1) / q) ≠ 1"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "`mod p` condition missed. Second output is correct.",
    "all-elabs":
    ["∀ {p : ℕ} [inst : Fact (Nat.Prime p)] {a : ℕ}, a ≠ 0 → Nat.gcd a p = 1 → (∀ q, Nat.Prime q → q ∣ p - 1 → ¬(a ^ ((p - 1) / q) ≡ 1 [MOD p])) ↔ IsPrimitiveRoot a p ",
     "∀ {p : ℕ} [inst : Fact (Nat.Prime p)] {a : ZMod p}, IsPrimitiveRoot a p ↔ (∀ (q : ℕ), Nat.Prime q → q ∣ p - 1 → a ^ ((p - 1) / q) ≠ 1) ",
@@ -115,7 +115,7 @@
      "∀ {x p : ℕ}, Nat.Prime p → p ∣ x ^ 4 - x ^ 2 + 1 → p % 12 = 1",
      "∀ {x p : ℕ}, Nat.Prime p → p ∣ x ^ 4 - x ^ 2 + 1 → p % 12 = 1"],
     ["∀ {x p : ℕ} [inst : Fact (Nat.Prime p)], p ∣ x ^ 4 - x ^ 2 + 1 → p % 12 = 1"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {x p : ℕ}, Nat.Prime p → p ∣ x^4 - x^2 + 1 → p % 12 = 1 ",
@@ -130,26 +130,26 @@
     "∀ {x p : ℕ}, Nat.Prime p → p ∣ x ^ 4 - x ^ 2 + 1 → p % 12 = 1 "]},
   {"theorem":
    "∃ x1 y1 x2 y2, x1 ≠ x2 ∧ y1 ≠ y2 ∧ x1 ^ 3 + y1 ^ 3 = x2 ^ 3 + y2 ^ 3 ∧ x1 ^ 3 + y1 ^ 3 = 1729",
-   "some-correct": null,
+   "some-correct": false,
    "prompt":
    "Show that 1729 is the smallest positive integer expressible as the sum of two different integral cubes in two ways.",
    "groups":
    [["∃ x1 y1 x2 y2, x1 ≠ x2 ∧ y1 ≠ y2 ∧ x1 ^ 3 + y1 ^ 3 = x2 ^ 3 + y2 ^ 3 ∧ x1 ^ 3 + y1 ^ 3 = 1729"],
     ["∃ a b c d, a ^ 3 + b ^ 3 = c ^ 3 + d ^ 3 ∧ a ≠ c ∧ 0 < a ∧ a < b ∧ c < d ∧ 0 < c ∧ a ^ 3 + b ^ 3 = 1729"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "Missed out on smallest possible condition. Similar for others.",
    "all-elabs":
    ["ℕ.smallest_two_diff_cube_sum_two_ways : ∃ a b c d, a ^ 3 + b ^ 3 = c ^ 3 + d ^ 3 ∧ a ≠ c ∧ 0 < a ∧ a < b ∧ c < d ∧ 0 < c ∧ a ^ 3 + b ^ 3 = 1729 ",
     "smallest_1729 : ∃ x1 y1 x2 y2, x1 ≠ x2 ∧ y1 ≠ y2 ∧ x1 ^ 3 + y1 ^ 3 = x2 ^ 3 + y2 ^ 3 ∧ x1 ^ 3 + y1 ^ 3 = 1729 "]},
   {"theorem":
    "∀ {E : Type u} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {Ω : Set E} {f : E → ℂ},\n  DifferentiableOn ℂ f Ω → IsOpen Ω → (∀ (x : E), x ∈ Ω → (f x).re = (f x).re) → ∀ (x y : E), x ∈ Ω → y ∈ Ω → f x = f y",
-   "some-correct": null,
+   "some-correct": false,
    "prompt":
    "Suppose that `f` is holomorphic in an open set `Ω`. Prove that if `Re(f)` is constant, then `f` is constant.",
    "groups":
    [["∀ {E : Type u} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {Ω : Set E} {f : E → ℂ},\n  DifferentiableOn ℂ f Ω → IsOpen Ω → (∀ (x : E), x ∈ Ω → (f x).re = (f x).re) → ∀ (x y : E), x ∈ Ω → y ∈ Ω → f x = f y"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "Real condition is incorrect. Same for others.",
    "all-elabs":
    ["∀ {E : Type u} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {Ω : Set E} {f : E → ℂ},\n  DifferentiableOn ℂ f Ω → IsOpen Ω → (∀ (x : E), x ∈ Ω → (f x).re = (f x).re) → ∀ (x y : E), x ∈ Ω → y ∈ Ω → f x = f y "]},
   {"theorem":
@@ -159,7 +159,7 @@
    "Suppose that `f` is holomorphic in an open set `Ω`. Prove that if `|f|` is constant, then `f` is constant.",
    "groups":
    [["∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {f : E → ℂ} {Ω : Set E},\n  IsOpen Ω →\n    DifferentiableOn ℂ f Ω → (∀ (x : E), x ∈ Ω → ↑Complex.abs (f x) = ↑Complex.abs (f 0)) → ∀ (x : E), x ∈ Ω → f x = f 0"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {f : E → ℂ} {Ω : Set E},\n  IsOpen Ω → DifferentiableOn ℂ f Ω → (∀ (x : E), x ∈ Ω → Complex.abs (f x) = Complex.abs (f 0)) → ∀ (x : E), x ∈ Ω → f x = f 0 "]},
@@ -171,8 +171,8 @@
    "groups":
    [["∀ (z : ℂ), ↑Complex.abs z = 1 → Summable fun n => z ^ n / (n + 1) ^ 2",
      "∀ (z : ℂ), ↑Complex.abs z = 1 → Summable fun n => z ^ n / (n + 1) ^ 2"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "Coercion problems. Similarly for others, easily fixable.",
    "all-elabs":
    ["∀ (z : ℂ), Complex.abs z = 1 → Summable (λ n => z ^ n / (↑n + 1) ^ 2) ",
     "∀ (z : ℂ), Complex.abs z = 1 → Summable (λ n => z ^ n / (↑n + 1) ^ 2) "]},
@@ -188,8 +188,8 @@
     ["∀ {Ω : Set ℂ} {ϕ : ℂ → ℂ},\n  IsOpen Ω →\n    Metric.Bounded Ω →\n      DifferentiableOn ℂ ϕ Ω → Set.MapsTo ϕ Ω Ω → ∃ z₀, z₀ ∈ Ω ∧ ϕ z₀ = z₀ ∧ HasDerivWithinAt ϕ 1 Ω z₀ → IsLinearMap ℂ ϕ"],
     ["∀ {Ω : Set ℂ},\n  IsOpen Ω →\n    Metric.Bounded Ω →\n      ∀ {ϕ : ℂ → ℂ},\n        DifferentiableOn ℂ ϕ Ω →\n          Set.MapsTo ϕ Ω Ω → ∀ {z₀ : ℂ}, z₀ ∈ Ω → ϕ z₀ = z₀ → HasDerivAt ϕ 1 z₀ → ∀ (z : ℂ), z ∈ Ω → ϕ z = z₀ + (z - z₀)"],
     ["∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {F : Type u_2} [inst_2 : NormedAddCommGroup F]\n  [inst_3 : NormedSpace ℂ F] {Ω : Set ℂ},\n  IsOpen Ω →\n    Metric.Bounded Ω →\n      ∀ {ϕ : ℂ → ℂ},\n        DifferentiableOn ℂ ϕ Ω →\n          Set.MapsTo ϕ Ω Ω → ∃ z₀, z₀ ∈ Ω ∧ (ϕ z₀ = z₀ ∧ HasDerivAt ϕ 1 z₀ → ∃ a b, ∀ (z : ℂ), z ∈ Ω → ϕ z = a * z + b)"]],
-   "correct": null,
-   "comments": "",
+   "correct": true,
+   "comments": "A refined statement",
    "all-elabs":
    ["∀ {Ω : Set ℂ} (hΩ : IsOpen Ω) (h_bdd : Metric.Bounded Ω) {ϕ : ℂ → ℂ},\n  DifferentiableOn ℂ ϕ Ω →\n    Set.MapsTo ϕ Ω Ω →\n      ∀ {z₀ : ℂ}, z₀ ∈ Ω → ϕ z₀ = z₀ → HasDerivAt ϕ 1 z₀ → ∃ (a : ℂ), ∀ (z : ℂ), z ∈ Ω → ϕ z = z₀ + a * (z - z₀) ",
     "theorem linear_if_deriv_eq_one\n  {Ω : Set ℂ} (hΩ : IsOpen Ω) (hbdd : Metric.Bounded Ω) {ϕ : ℂ → ℂ}\n  (hϕ : ∀ z ∈ Ω, AnalyticAt ℂ ϕ z) {z₀ : ℂ} (hz₀ : z₀ ∈ Ω)\n  (hf₁ : ϕ z₀ = z₀) (hf' : HasDerivAt ϕ 1 z₀) :\n  ∃ (a b : ℂ), ∀ z ∈ Ω, ϕ z = a * z + b ",
@@ -199,7 +199,7 @@
     "∀ {Ω : Set ℂ} {ϕ : ℂ → ℂ},\n  IsOpen Ω →\n    Metric.Bounded Ω →\n      DifferentiableOn ℂ ϕ Ω →\n        Set.MapsTo ϕ Ω Ω →\n          ∃ (z₀ : ℂ), z₀ ∈ Ω ∧ ϕ z₀ = z₀ ∧ HasDerivAt ϕ 1 z₀ →\n            ∀ (z : ℂ), z ∈ Ω → ϕ z = z + (ϕ z₀ - z₀) "]},
   {"theorem":
    "∀ {a : ℝ}, 0 < a → ∫ (x : ℝ) in -Real.pi..Real.pi, Real.cos x / (x ^ 2 + a ^ 2) = Real.pi * rexp (-a) / a",
-   "some-correct": null,
+   "some-correct": false,
    "prompt":
    "Show that `∫_{-∞}^{∞} cos x / (x^2 + a^2) dx = π e^{-a} / a` for `a > 0`.",
    "groups":
@@ -207,8 +207,8 @@
      "∀ {a : ℝ}, 0 < a → ∫ (x : ℝ) in -Real.pi..Real.pi, Real.cos x / (x ^ 2 + a ^ 2) = Real.pi * rexp (-a) / a",
      "∀ {a : ℝ}, 0 < a → ∫ (x : ℝ) in -Real.pi..Real.pi, Real.cos x / (x ^ 2 + a ^ 2) = Real.pi * rexp (-a) / a",
      "∀ {a : ℝ}, 0 < a → ∫ (x : ℝ) in -Real.pi..Real.pi, Real.cos x / (x ^ 2 + a ^ 2) = Real.pi * rexp (-a) / a"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "Terms of integrand are hallucinated. Also, `rexp` is hallucinated. Second output comes closest.",
    "all-elabs":
    ["∀ {a : ℝ}, 0 < a → ∫ (x : ℝ) in -Real.pi..Real.pi, Real.cos x / (x ^ 2 + a ^ 2) = Real.pi * Real.exp (-a) / a ",
     "∀ (a : ℝ), 0 < a → ∫ x in Set.Iic ⊤, Real.cos x / (x ^ 2 + a ^ 2) = Real.pi * rexp (-a) / a ",
@@ -217,17 +217,17 @@
     "∀ {a : ℝ}, 0 < a → ∫ (x : ℝ) in -Real.pi..Real.pi, Real.cos x / (x^2 + a^2) = Real.pi * rexp (-a) / a "]},
   {"theorem":
    "∫ (x : ℝ) in ?m.14072390, Real.log (Real.sin (Real.pi * x)) = -Real.log 2",
-   "some-correct": null,
+   "some-correct": true,
    "prompt": "Show that `∫_0^1 log(sin π x) dx = -log 2`.",
    "groups":
    [["∫ (x : ℝ) in ?m.14072390, Real.log (Real.sin (Real.pi * x)) = -Real.log 2"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "Integrand not caught. Other output is correct.",
    "all-elabs":
    ["(∫ (x : ℝ) in 0..1, Real.log (Real.sin (Real.pi * x))) = -Real.log 2 "]},
   {"theorem":
    "∀ {z₁ z₂ z₃ z₄ : ℂ},\n  ↑Complex.abs z₁ = 1 →\n    z₁ ≠ 1 →\n      ↑Complex.abs z₂ = 1 →\n        z₂ ≠ 1 →\n          ↑Complex.abs z₃ = 1 → z₃ ≠ 1 → ↑Complex.abs z₄ = 1 → z₄ ≠ 1 → 3 - z₁ - z₂ - z₃ - z₄ + z₁ * z₂ * z₃ * z₄ ≠ 0",
-   "some-correct": null,
+   "some-correct": true,
    "prompt":
    "For `j ∈ {1, 2, 3, 4}`, let `z_j` be a complex number with `|z_j| = 1` and `z_j ≠ 1`. Prove that `3 - z_1 - z_2 - z_3 - z_4 + z_1 z_2 z_3 z_4 ≠ 0`.",
    "groups":
@@ -241,8 +241,8 @@
      "∀ {z1 z2 z3 z4 : ℂ},\n  z1 ≠ 1 →\n    z2 ≠ 1 →\n      z3 ≠ 1 →\n        z4 ≠ 1 →\n          ↑Complex.normSq z1 = 1 →\n            ↑Complex.normSq z2 = 1 →\n              ↑Complex.normSq z3 = 1 → ↑Complex.normSq z4 = 1 → 3 - z1 - z2 - z3 - z4 + z1 * z2 * z3 * z4 ≠ 0",
      "∀ {z1 z2 z3 z4 : ℂ},\n  ↑Complex.normSq z1 = 1 ∧ z1 ≠ 1 →\n    ↑Complex.normSq z2 = 1 ∧ z2 ≠ 1 →\n      ↑Complex.normSq z3 = 1 ∧ z3 ≠ 1 → ↑Complex.normSq z4 = 1 ∧ z4 ≠ 1 → 3 - z1 - z2 - z3 - z4 + z1 * z2 * z3 * z4 ≠ 0",
      "∀ {z_1 z_2 z_3 z_4 : ℂ},\n  ↑Complex.normSq z_1 = 1 →\n    z_1 ≠ 1 →\n      ↑Complex.normSq z_2 = 1 →\n        z_2 ≠ 1 →\n          ↑Complex.normSq z_3 = 1 →\n            z_3 ≠ 1 → ↑Complex.normSq z_4 = 1 → z_4 ≠ 1 → 3 - z_1 - z_2 - z_3 - z_4 + z_1 * z_2 * z_3 * z_4 ≠ 0"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "Completely accurate except for coercions. Other outputs correct.",
    "all-elabs":
    ["∀ {z₁ z₂ z₃ z₄ : ℂ}, Complex.abs z₁ = 1 → z₁ ≠ 1 → Complex.abs z₂ = 1 → z₂ ≠ 1 → Complex.abs z₃ = 1 → z₃ ≠ 1 → Complex.abs z₄ = 1 → z₄ ≠ 1 →\n  3 - z₁ - z₂ - z₃ - z₄ + z₁ * z₂ * z₃ * z₄ ≠ 0 ",
     "∀ {z₁ z₂ z₃ z₄ : ℂ},\n  z₁ ≠ 1 → Complex.abs z₁ = 1 →\n  z₂ ≠ 1 → Complex.abs z₂ = 1 →\n  z₃ ≠ 1 → Complex.abs z₃ = 1 →\n  z₄ ≠ 1 → Complex.abs z₄ = 1 →\n  3 - z₁ - z₂ - z₃ - z₄ + z₁ * z₂ * z₃ * z₄ ≠ 0 ",
@@ -256,24 +256,24 @@
     "∀ {z_1 z_2 z_3 z_4 : ℂ}, Complex.normSq z_1 = 1 → z_1 ≠ 1 → Complex.normSq z_2 = 1 → z_2 ≠ 1 → Complex.normSq z_3 = 1 → z_3 ≠ 1 → Complex.normSq z_4 = 1 → z_4 ≠ 1 → 3 - z_1 - z_2 - z_3 - z_4 + z_1 * z_2 * z_3 * z_4 ≠ 0 "]},
   {"theorem":
    "∀ {n : ℕ}, 0 < n → ∀ (z : ℂ), ?m.27834600 z ≤ 1 → ¬Polynomial.IsRoot (Polynomial.Chebyshev.T ℂ n) z",
-   "some-correct": null,
+   "some-correct": false,
    "prompt":
    "Let `n` be a positive integer, and let `f_n(z) = n + (n - 1)z + (n - 2)z^2 + ⋯ + z^(n - 1)`. Prove that `f_n` has no roots in the closed unit disk `{z ∈ ℂ: |z| ≤ 1}`.",
    "groups":
    [["∀ {n : ℕ}, 0 < n → ∀ (z : ℂ), ?m.27834600 z ≤ 1 → ¬Polynomial.IsRoot (Polynomial.Chebyshev.T ℂ n) z"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "Something unknown. Other outputs incorrect as well.",
    "all-elabs":
    ["∀ {n : ℕ}, 0 < n → ∀ (z : ℂ), ↑Complex.abs z ≤ 1 → ¬Polynomial.IsRoot (Polynomial.Chebyshev.T ℂ n) z "]},
   {"theorem":
    "∀ (f : ℕ → ℚ),\n  (∀ (n : ℕ), f n = 0 ∨ f n = 1) →\n    ∑' (n : ℕ), f n * (2 / 3) ^ n = 3 / 2 → Irrational (∑' (n : ℕ), ↑(f n) * (1 / 2) ^ ↑n)",
-   "some-correct": null,
+   "some-correct": false,
    "prompt":
    "Suppose that `f(x) = Σ c_i x^i` is a power series for which each coefficient `c_i` is 0 or 1. Show that if `f(2/3) = 3/2`, then `f(1/2)` must be irrational.",
    "groups":
    [["∀ (f : ℕ → ℚ),\n  (∀ (n : ℕ), f n = 0 ∨ f n = 1) →\n    ∑' (n : ℕ), f n * (2 / 3) ^ n = 3 / 2 → Irrational (∑' (n : ℕ), ↑(f n) * (1 / 2) ^ ↑n)"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "Coercion problem. Same with others.",
    "all-elabs":
    ["forall (f : ℕ → ℚ) (h : ∀ n, f n = 0 ∨ f n = 1),\n  ((∑' (n : ℕ), f n * (2/3)^n) = 3/2) → Irrational (∑' (n : ℕ), f n * (1/2)^n) "]},
   {"theorem":
@@ -292,7 +292,7 @@
      "∀ (n : ℕ), n > 0 → ¬Nat.Prime (10 ^ 10 ^ 10 ^ n + 10 ^ 10 ^ n + 10 ^ n - 1)",
      "∀ (n : ℕ), n > 0 → ¬Nat.Prime (10 ^ 10 ^ 10 ^ n + 10 ^ 10 ^ n + 10 ^ n - 1)",
      "∀ (n : ℕ), 0 < n → ¬Nat.Prime (10 ^ 10 ^ 10 ^ n + 10 ^ 10 ^ n + 10 ^ n - 1)"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ (n : ℕ), (0 < n) → ¬Nat.Prime (10^(10^(10^n)) + 10^(10^n) + 10^n - 1) ",
@@ -312,7 +312,7 @@
    "Prove that there exist infinitely many integers `n` such that `n, n + 1, n + 2` are each the sum of the squares of two integers.",
    "groups":
    [["∀ (N : ℕ), ∃ n, N < n ∧ ∃ x1 y1 x2 y2 x3 y3, n = x1 ^ 2 + y1 ^ 2 ∧ n + 1 = x2 ^ 2 + y2 ^ 2 ∧ n + 2 = x3 ^ 2 + y3 ^ 2"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∃ᶠ (n : ℤ) in Filter.atTop, (∃ x y, n = x ^ 2 + y ^ 2) ∧ (∃ u v, n + 1 = u ^ 2 + v ^ 2) ∧ (∃ r s, n + 2 = r ^ 2 + s ^ 2) ",
@@ -333,8 +333,8 @@
    "groups":
    [["∀ {f : ℝ → ℝ},\n  Differentiable ℝ f →\n    (∀ {x : ℝ}, DifferentiableAt ℝ (deriv f) x) →\n      Continuous (deriv (deriv (deriv f))) →\n        ∃ a, deriv (deriv (deriv f)) a * a = 2 * deriv (deriv f) a - 2 * f a + 4 * deriv f a - 6 * a"],
     ["∀ {f : ℝ → ℝ}, (Differentiable ℝ f ∧ ∀ (x : ℝ), deriv^[3] f x = 0) → ∃ a, deriv f a = 0 ∧ deriv^[2] f a = 0"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "Slightly tricky, does not cover that the third derivative exists, so is mathematically incomplete. Also, the statement is incomplete. Similarly with other outputs.",
    "all-elabs":
    ["∀ {f : ℝ → ℝ},\n  (Differentiable ℝ f ∧ ∀ (x : ℝ), (deriv^[3] f) x = 0) →\n    ∃ a, deriv f a = 0 ∧ deriv^[2] f a = 0 ",
     "∀ {f : ℝ → ℝ} (hderiv : ∀ x, DifferentiableAt ℝ (deriv^[3]) x) (x y z : ℝ),\n  ∃ a, deriv^[3] a (x * y * z) = (x * y * z) * (deriv^[3] a x + deriv^[3] a y + deriv^[3] a z) ",
@@ -352,7 +352,7 @@
     ["∀ {α : Type u_1} [inst : TopologicalSpace α] [inst_1 : LinearOrder α] [inst_2 : OrderTopology α] {a : α} {f : ℕ → ℕ}\n  {p : ℕ → α},\n  Function.Injective f →\n    Filter.Tendsto p Filter.atTop (nhds a) → Filter.Tendsto (fun n => p (f n)) Filter.atTop (nhds a)"],
     ["∀ {α : Type u_1} [inst : TopologicalSpace α] {f : ℕ → ℕ} {p : ℕ → α},\n  (Function.Injective f → ∃ a, Filter.Tendsto p Filter.atTop (nhds a)) ↔\n    ∃ a, Filter.Tendsto (p ∘ f) Filter.atTop (nhds a)"],
     ["∀ {α : Type u_1} [inst : TopologicalSpace α] {f : ℕ → ℕ} {p : ℕ → α},\n  Function.Injective f →\n    ∀ (l : α), Filter.Tendsto p Filter.atTop (nhds l) ↔ Filter.Tendsto (p ∘ f) Filter.atTop (nhds l)"]],
-   "correct": null,
+   "correct": true,
    "comments": "",
    "all-elabs":
    ["∀ {α : Type u_1} [inst : TopologicalSpace α] {a : α} {f : ℕ → ℕ} {p q : ℕ → α},\n  Function.Injective f →\n  (∀ k, q k = p (f k)) → (Filter.Tendsto p Filter.atTop (nhds a) ↔ Filter.Tendsto q Filter.atTop (nhds a)) ",
@@ -362,13 +362,13 @@
     "∀ {α : Type u_1} [inst : TopologicalSpace α] {a : α} {f : ℕ → ℕ} {p q : ℕ → α},\n  Function.Injective f →\n  Filter.Tendsto p Filter.atTop (nhds a) →\n  (q = fun k => p (f k)) →\n  Filter.Tendsto q Filter.atTop (nhds a) "]},
   {"theorem":
    "∀ {M : Type u_1} [inst : MetricSpace M],\n  ∃ f,\n    (∀ (U : Set M), IsOpen U → IsClosed (f U)) ∧\n      (∀ (K : Set M), IsClosed K → IsOpen (f K)) ∧\n        (∀ (U₁ U₂ : Set M), IsOpen U₁ → IsOpen U₂ → f U₁ = f U₂ → U₁ = U₂) ∧\n          ∀ (K₁ K₂ : Set M), IsClosed K₁ → IsClosed K₂ → f K₁ = f K₂ → K₁ = K₂",
-   "some-correct": null,
+   "some-correct": false,
    "prompt":
    "Let `𝒯` be the collection of open subsets of a metric space `M`, and `𝒦` the collection of closed subsets. Show that there is a bijection from `𝒯` onto `𝒦`.",
    "groups":
    [["∀ {M : Type u_1} [inst : MetricSpace M],\n  ∃ f,\n    (∀ (U : Set M), IsOpen U → IsClosed (f U)) ∧\n      (∀ (K : Set M), IsClosed K → IsOpen (f K)) ∧\n        (∀ (U₁ U₂ : Set M), IsOpen U₁ → IsOpen U₂ → f U₁ = f U₂ → U₁ = U₂) ∧\n          ∀ (K₁ K₂ : Set M), IsClosed K₁ → IsClosed K₂ → f K₁ = f K₂ → K₁ = K₂"]],
-   "correct": null,
-   "comments": "",
+   "correct": false,
+   "comments": "Cannot identify the type of `f`. Also it is treating `f` and its inverse as the same. Similarly for the other output.",
    "all-elabs":
    ["∀ {M : Type u_1} [inst : MetricSpace M],\n  ∃ (f : Set M → Set M), (∀ (U : Set M), IsOpen U → IsClosed (f U)) ∧ (∀ (K : Set M), IsClosed K → IsOpen (f K)) ∧\n    (∀ (U₁ U₂ : Set M), IsOpen U₁ → IsOpen U₂ → f U₁ = f U₂ → U₁ = U₂) ∧\n    (∀ (K₁ K₂ : Set M), IsClosed K₁ → IsClosed K₂ → f K₁ = f K₂ → K₁ = K₂) "]}],
  "elaborated": 20}

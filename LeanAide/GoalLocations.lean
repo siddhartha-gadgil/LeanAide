@@ -1,123 +1,202 @@
 import Lean.Meta.ExprLens
+import Mathlib.Tactic
 import Std
 
-open Lean
+open Lean Expr 
 
-def Lean.SubExpr.extensions (p : SubExpr.Pos) : Expr → Array (SubExpr.Pos × Expr)
-  | .app fn arg => 
-    if fn.isApp then
-      #[(p.pushAppFn, fn), (p.pushAppArg, arg)]
-    else
-      #[(p.pushAppArg, arg)]
-  | .lam _ _ body _ => #[(p.pushBindingBody, body)]
-  | .forallE _ _ body _ => #[(p.pushBindingBody, body)]
-  | .letE _ type value body _ => #[(p.pushLetVarType, type), (p.pushLetValue, value), (p.pushLetBody, body)]
-  | .mdata _ expr => extensions p expr
-  | .proj _ _ struct => #[(p.pushProj, struct)]
-  |  _ => #[]
+-- TODO Check whether this function already exists
+def Lean.Expr.getName! : Expr → Name
+  | .lam n _ _ _ => n
+  | .letE n _ _ _ _ => n
+  | .forallE n _ _ _ => n
+  | _               => panic! "Unable to get name for expression."
 
-partial def Lean.Expr.allSubExprs (p : SubExpr.Pos) (e : Expr) : Array (SubExpr.Pos × Expr) :=
-  let exts := Lean.SubExpr.extensions p e |>.concatMap fun (pos, subexpr) ↦ allSubExprs pos subexpr
-  exts.push (p, e)
-
-def Lean.Expr.allPositions (e : Expr) : Array SubExpr.Pos := 
-  e.allSubExprs .root |>.map Prod.fst
-
-def Lean.Expr.viewPositions (e : Expr) : MetaM (Array (SubExpr.Pos × String)) :=
-  e.allSubExprs .root |>.mapM fun (pos, subexpr) ↦ do
-    let stx ← PrettyPrinter.delab subexpr
-    return (pos, stx.raw.reprint.get!)
-
-open Meta Elab Term in
-#eval show TermElabM _ from do
-  let stx ← `(term| 1 + 2) 
-  let t ← Term.elabTerm stx none
-  let t ← reduce t
-  return t.allPositions
-
--- The code below has been modified from `ProofWidgets/Demos/Conv`,
--- copyright of Robin Böhne and Wojciech Nawrocki.
-
-private structure SolveReturn where
-  expr : Expr
-  val? : Option String
-  listRest : List Nat
-
-private def solveLevel (expr : Expr) (path : List Nat) : MetaM SolveReturn := match expr with
+open Meta in
+partial def Lean.Expr.getConvEnters (expr : Expr) (φ : Expr → MetaM α)
+    (explicit? : Bool) : MetaM (Array (List String × α)) :=
+  match expr with
   | .app _ _ => do
-    let mut descExp := expr
-    let mut count := 0
-    let mut explicitList := []
-
-    -- we go through the application until we reach the end, counting how many explicit arguments it has and noting whether
-    -- they are explicit or implicit
-    while descExp.isApp do
-      if (←Lean.Meta.inferType descExp.appFn!).bindingInfo!.isExplicit then
-        explicitList := true::explicitList
-        count := count + 1
-      else
-        explicitList := false::explicitList
-      descExp := descExp.appFn!
-
-    -- we get the correct `enter` command by subtracting the number of `true`s in our list
-    let mut mutablePath := path
-    let mut length := count
-    explicitList := List.reverse explicitList
-    while !mutablePath.isEmpty && mutablePath.head! == 0 do
-      if explicitList.head! == true then
-        count := count - 1
-      explicitList := explicitList.tail!
-      mutablePath := mutablePath.tail!
-
-    let mut nextExp := expr
-    while length > count do
-      nextExp := nextExp.appFn!
-      length := length - 1
-    nextExp := nextExp.appArg!
-
-    let pathRest := if mutablePath.isEmpty then [] else mutablePath.tail!
-
-    return { expr := nextExp, val? := toString count , listRest := pathRest }
-
-  | .lam n _ b _ => pure { expr := b, val? := n.getString!, listRest := path.tail! }
-  | .forallE n _ b _ => pure { expr := b, val? := n.getString!, listRest := path.tail! }
-
-  | .mdata _ b => do
-    match b with
-      | Expr.mdata _ _ => return { expr := b, val? := none, listRest := path }
-      | _ => return { expr := b.appFn!.appArg!, val? := none, listRest := path.tail!.tail! }
-
-  | _ => do
-    return { expr := ←(Lean.Core.viewSubexpr path.head! expr), val? := toString (path.head! + 1), listRest := path.tail! }
-
-def Lean.SubExpr.Pos.toConvEnterArg (goalType : Expr) (subexprPos : SubExpr.Pos) : MetaM (List String) := do
-  let mut list := subexprPos.toArray.toList
-  let mut expr := goalType
-  let mut retList := []
-  -- generate list of commands for `enter`
-  while !list.isEmpty do
-    let res ← solveLevel expr list
-    expr := res.expr
-    retList := match res.val? with
-      | none => retList
-      | some val => val::retList
-    list := res.listRest
-
-  -- build `enter [...]` string
-  retList := List.reverse retList
-  return retList
-
-def Lean.Expr.allConvEnterArgs (e : Expr) : MetaM <| Array (List String) :=
-  e.allPositions.filterMapM <| fun pos ↦ do
-    try
-      let arg ← Lean.SubExpr.Pos.toConvEnterArg e pos
-      return some arg
-    catch _ =>
-      return none
+    let fn := expr.getAppFn 
+    let args := expr.getAppArgs
+    let fnInfo ← getFunInfo fn
+    let argsWithBinderInfo := Array.zip args (fnInfo.paramInfo.map (·.isExplicit))
+    let args' :=
+      argsWithBinderInfo.filterMap <| fun (arg, bi) ↦
+        if explicit? || (!explicit? && bi) then
+          some arg
+        else none
+    let enterArgs ← args'.mapIdxM fun idx arg ↦ do
+      let argConvEnters ← arg.getConvEnters φ explicit?
+      let enterArg := (if explicit? then "@" else "") ++ s!"{idx.val + 1}"
+      return argConvEnters.map <| fun (path, a) ↦ (enterArg :: path, a) 
+    return (enterArgs.push #[([], ← φ expr)]).concatMap id
+  | .forallE _ _ _ _ => do
+    let binders := expr.getForallBinderNames |>.map (·.getRoot.toString)
+    let body := expr.getForallBody
+    body.getConvEnters φ explicit? >>= updatePaths binders
+  | .lam _ _ _ _ 
+  | .letE _ _ _ _ _ =>
+    lambdaLetTelescope expr <| fun args body ↦ do
+      let binders := args |>.map (·.getName!.toString) |>.toList
+      body.getConvEnters φ explicit? >>= updatePaths binders
+  | .mdata _ expr => getConvEnters expr φ explicit?
+  | .proj _ _ struct => do
+    struct.getConvEnters φ explicit? >>= updatePaths ["1"]
+  | _ => return #[]
+  where updatePaths (pre : List String) (entries : Array (List String × α)) : 
+      MetaM <| Array (List String × α) := do
+    return ( entries.map <| fun (path, a) ↦ (pre ++ path, a) ) |>.push ([], ← φ expr)
 
 open Meta Elab Term in
 #eval show TermElabM _ from do
   let stx ← `(term| ∀ x, Nat.succ x = 1) 
   let t ← Term.elabTerm stx none
-  let t ← reduce t
-  return t.viewPositions
+  let enters ← t.getConvEnters pure (explicit? := false)
+  for (path, expr) in enters do
+    IO.println path
+    let stx ← PrettyPrinter.delab expr
+    IO.println stx.raw.reprint.get!
+
+def Lean.Meta.DiscrTree.getSubexpressionConvMatches (d : Meta.DiscrTree α s) 
+    (e : Expr) (explicit? : Bool) : MetaM (Array (List String × α)) := do
+  let convEnters ← e.getConvEnters d.getMatch explicit?
+  return convEnters.concatMap <| fun (path, as) ↦ as.map (path, ·) 
+
+macro (priority := high) "enter" "[""]" : conv => `(conv| skip)
+
+open Parser Tactic Conv
+syntax (name := targeted_rw) "tgt_rw" (config)? rwRuleSeq (" at " ident)? " entering " "[" withoutPosition(enterArg,*) "]" : tactic
+
+macro_rules
+  | `(tactic| tgt_rw $[$cfg]? $rules $[at $loc]? entering [$args,*]) =>
+    `(tactic| conv $[at $loc]? => enter [$args,*]; rw $[$cfg]? $rules)
+
+example (y : ℕ) : ∀ x : ℕ, y + (x + 0) = x + y := by
+  tgt_rw [Nat.add_zero] entering [x, 1, 2]
+  tgt_rw [Nat.add_comm] entering [x]
+  intro; rfl
+
+-- The code below is modified from `Mathlib/Tactic/Rewrites`
+-- Copyright of Scott Morrison
+
+open Mathlib.Tactic.Rewrites
+
+/--
+Find lemmas which can rewrite the goal.
+
+This core function returns a monadic list, to allow the caller to decide how long to search.
+See also `rewrites` for a more convenient interface.
+-/
+def rewritesConvCore (lemmas : Meta.DiscrTree (Name × Bool × Nat) s × Meta.DiscrTree (Name × Bool × Nat) s)
+    (goal : MVarId) (target : Expr) (explicit? : Bool) : 
+      MLList MetaM (List String × RewriteResult) := MLList.squash fun _ => do
+
+  -- Get all lemmas which could match some subexpression
+  let candidates := (← lemmas.1.getSubexpressionConvMatches target explicit?)
+    ++ (← lemmas.2.getSubexpressionConvMatches target explicit?)
+
+  -- Sort them by our preferring weighting
+  -- (length of discriminant key, doubled for the forward implication)
+
+  let candidates := candidates.insertionSort fun r s => r.2.2.2 > s.2.2.2
+
+  trace[Tactic.rewrites.lemmas] m!"Candidate rewrite lemmas:\n{candidates}"
+
+  -- Lift to a monadic list, so the caller can decide how much of the computation to run.
+  let candidates := MLList.ofList candidates.toList
+  pure <| candidates.filterMapM fun ⟨path, lem, _symm, weight⟩ => do
+    trace[Tactic.rewrites] "considering {if _symm then "←" else ""}{lem}"
+    let some result ← try? do goal.rewrite target (← Meta.mkConstWithFreshMVarLevels lem) _symm
+      | return none
+    return if result.mvarIds.isEmpty then
+      some (path, ⟨lem, _symm, weight, result, none⟩)
+    else
+      -- TODO Perhaps allow new goals? Try closing them with solveByElim?
+      none
+
+/-- Find lemmas which can rewrite the goal. -/
+def rewritesConv (lemmas : Meta.DiscrTree (Name × Bool × Nat) s × Meta.DiscrTree (Name × Bool × Nat) s)
+    (goal : MVarId) (target : Expr) (stop_at_rfl : Bool := False) (max : Nat := 20)
+    (leavePercentHeartbeats : Nat := 10) (explicit? := false) : MetaM (List (List String × RewriteResult)) := do
+  let results ← rewritesConvCore lemmas goal target explicit?
+    -- Don't use too many heartbeats.
+    |>.whileAtLeastHeartbeatsPercent leavePercentHeartbeats
+    -- Stop if we find a rewrite after which `with_reducible rfl` would succeed.
+    |>.mapM (fun (path, r) ↦ do return (path, ← r.computeRfl)) -- TODO could simply not compute this if stop_at_rfl is False
+    |>.takeUpToFirst (fun (_, r) => stop_at_rfl && r.rfl? = some true)
+    -- Bound the number of results.
+    |>.takeAsList max
+  return match results.filter (fun (_, r) => stop_at_rfl && r.rfl? = some true) with
+  | [] =>
+    -- TODO consider sorting the results,
+    -- e.g. if we use solveByElim to fill arguments,
+    -- prefer results using local hypotheses.
+    results
+  | results => results
+
+/-
+open Lean.Parser.Tactic Lean.Syntax Std.Tactic.TryThis in
+def addRewriteConvSuggestion (ref : Syntax) (path : List String) (rules : List (Expr × Bool))
+  (type? : Option Expr := none)
+  (origSpan? : Option Syntax := none) :
+    Elab.Term.TermElabM Unit := do
+  let rules_stx := TSepArray.ofElems <| ← rules.toArray.mapM fun ⟨e, _symm⟩ => do
+    let t ← delabToRefinableSyntax e
+    if _symm then `(rwRule| ← $t:term) else `(rwRule| $t:term)
+  let tac ← `(tactic| rw [$rules_stx,*])
+
+  let mut tacMsg :=
+    let rulesMsg := MessageData.sbracket <| MessageData.joinSep
+      (rules.map fun ⟨e, _symm⟩ => (if _symm then "← " else "") ++ m!"{e}") ", "
+    m!"rw {rulesMsg}"
+  let mut extraMsg := ""
+  if let some type := type? then
+    tacMsg := tacMsg ++ m!"\n-- {type}"
+    extraMsg := extraMsg ++ s!"\n-- {← PrettyPrinter.ppExpr type}"
+  addSuggestion ref tac (suggestionForMessage? := tacMsg)
+    (extraMsg := extraMsg) (origSpan? := origSpan?)
+
+open Lean.Parser.Tactic
+-/
+/--
+`rw?` tries to find a lemma which can rewrite the goal.
+
+`rw?` should not be left in proofs; it is a search tool, like `apply?`.
+
+Suggestions are printed as `rw [h]` or `rw [←h]`.
+`rw?!` is the "I'm feeling lucky" mode, and will run the first rewrite it finds.
+-/
+syntax (name := rewrites_conv) "targeted_rw?" : tactic
+
+open Elab.Tactic Elab Tactic in
+elab_rules : tactic |
+  `(tactic| targeted_rw?%$tk) => do
+  let lems ← rewriteLemmas.get -- This can be replaced with a custom cache
+  reportOutOfHeartbeats `rewritesConv tk
+  let goal ← getMainGoal
+  -- TODO fix doc of core to say that * fails only if all failed
+  withLocation (Location.targets #[] true)
+    fun f => do
+      let some a ← f.findDecl? | return
+      if a.isImplementationDetail then return
+      let target ← instantiateMVars (← f.getType)
+      let results ← rewritesConv lems goal target (stop_at_rfl := false)
+      reportOutOfHeartbeats `rewritesConv tk
+      if results.isEmpty then
+        throwError "Could not find any lemmas which can rewrite the hypothesis {
+          ← f.getUserName}"
+      for (path, r) in results do
+        addRewriteConvSuggestion tk path [(← Meta.mkConstWithFreshMVarLevels r.name, r.symm)]
+          r.result.eNew (origSpan? := ← getRef)
+    -- See https://github.com/leanprover/lean4/issues/2150
+    do withMainContext do
+      let target ← instantiateMVars (← goal.getType)
+      let results ← rewritesConv lems goal target (stop_at_rfl := true)
+      reportOutOfHeartbeats `rewritesConv tk
+      if results.isEmpty then
+        throwError "Could not find any lemmas which can rewrite the goal"
+      for (path, r) in results do
+        let newGoal := if r.rfl? = some true then Expr.lit (.strVal "no goals") else r.result.eNew
+        addRewriteConvSuggestion tk path [(← Meta.mkConstWithFreshMVarLevels r.name, r.symm)]
+          newGoal (origSpan? := ← getRef)
+    (λ _ => throwError "Failed to find a rewrite for some location")  
