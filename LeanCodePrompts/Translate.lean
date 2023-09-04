@@ -299,13 +299,17 @@ def getPromptPairsBert(s: String)(numSim : Nat)
 
 def getPromptPairsOpenAIexe (s: String)(numSim : Nat)(full: Bool:= true) :
   IO <| Except String (Array (String × String)) := do
-    let script := if full 
-      then "nearest_embeddings_full"
-      else "nearest_embeddings"
-    let outJs ← IO.Process.run {
-      cmd := "lake",
-      args := #["exe", script, s, toString numSim]
-    }
+    -- let script := if full 
+    --   then "nearest_embeddings_full"
+    --   else "nearest_embeddings"
+    -- let outJs ← IO.Process.run {
+    --   cmd := "lake",
+    --   args := #["exe", script, s, toString numSim]
+    -- }
+    let outJs ←
+     if full then
+       getNearestEmbeddingsFull s numSim 2.0
+      else getNearestEmbeddings s numSim 
     match Json.parse outJs with
     | Except.error e => return Except.error e
     | Except.ok js => 
@@ -621,7 +625,7 @@ elab "//-" cb:commentBody  : term => do
   -- querying codex
   let js ← 
     getCodeJson  s (model := "gpt-3.5-turbo") 
-      (embedding := "bert")
+      (embedding := "openai_full")
   -- filtering, autocorrection and selection
   let e ← jsonToExpr' js
   trace[Translate.info] m!"{e}"
@@ -659,7 +663,7 @@ elab "uncurry2" e:term : term => do
 universe u
 
 
-def translateViewM (s: String)(model : String := "gpt-3.5-turbo")(embedding: String := "bert") : TermElabM String := do
+def translateViewM (s: String)(model : String := "gpt-3.5-turbo")(embedding: String := "openai_full") : TermElabM String := do
   let js ← getCodeJson  s (model := model)
         (embedding := embedding)
   let output ← GPT.jsonToExprStrArray js

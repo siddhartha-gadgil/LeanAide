@@ -29571,3 +29571,37 @@ total : 32
 
 elaborated: 25
 
+No valid output from LLM; outputs below
+
+∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 :  AddCommGroupCat V] [inst_2 :  ModuleCat K V],
+  Dimension.dim K V = 2 → FiniteDimensional K V
+
+∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 :  AddCommGroupCat V] [inst_2 :  ModuleCat K V],
+  Dimension.dim K V = 2 → FiniteDimensional K V
+
+∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 :  AddCommGroupCat V] [inst_2 :  ModuleCat K V]
+  (inst_3 : Dimension.dim K V = 2), FiniteDimensional K V
+
+∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 :  AddCommGroupCat V] [inst_2 :  ModuleCat K V]
+  [inst_3 : DimensionModule K V] (h : dimension K V = 2), FiniteDimensional K V
+
+∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 :  AddCommGroupCat V] [inst_2 :  ModuleCat K V],
+  Dimension.dim K V = 2 → FiniteDimensional K V
+
+No valid output from LLM; outputs below
+
+∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 :  AddCommGroupCat V] [inst_2 :  ModuleCat K V],
+  Dimension.dim K V = 2 → FiniteDimensional K V
+
+∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 :  AddCommGroupCat V] [inst_2 :  ModuleCat K V],
+  Dimension.dim K V = 2 → FiniteDimensional K V
+
+∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 :  AddCommGroupCat V] [inst_2 :  ModuleCat K V]
+  (inst_3 : Dimension.dim K V = 2), FiniteDimensional K V
+
+∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 :  AddCommGroupCat V] [inst_2 :  ModuleCat K V]
+  [inst_3 : DimensionModule K V] (h : dimension K V = 2), FiniteDimensional K V
+
+∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 :  AddCommGroupCat V] [inst_2 :  ModuleCat K V],
+  Dimension.dim K V = 2 → FiniteDimensional K V
+
