@@ -7,7 +7,7 @@ import LeanCodePrompts.Translate
 -/
 
 
-set_option trace.Translate.info true 
+-- set_option trace.Translate.info true 
 -- #eval translateViewM "There are infinitely many odd numbers"
 #eval translateViewM "If a vector space has dimension `2` then it is finite dimensional."
 

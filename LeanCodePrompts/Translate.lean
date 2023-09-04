@@ -7,7 +7,7 @@ import LeanAide.TheoremEquality
 import LeanAide.IP
 import LeanCodePrompts.SpawnNearestEmbeddings
 import Std.Tactic.TryThis
-import Mathlib.Util.Pickle
+import Std.Util.Pickle
 
 import LeanCodePrompts.EgsTranslate
 

@@ -78,6 +78,7 @@ lean_exe batchcheck{
 
 lean_exe nearest_embeddings
 
+@[default_target]
 lean_exe nearest_embeddings_full
 
 lean_exe nearest_embeddings_test
@@ -133,4 +134,4 @@ lean_exe extras.depnames{
 require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git"@"master"
 
-require «lean-slides» from git "https://github.com/0art0/lean-slides"@"master"
+-- require «lean-slides» from git "https://github.com/0art0/lean-slides"@"master"

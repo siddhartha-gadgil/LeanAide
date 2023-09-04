@@ -1,5 +1,5 @@
 import LeanCodePrompts.Embeddings
-import Mathlib.Util.Pickle
+import Std.Util.Pickle
 
 def main : IO Unit := do
   let embArrDocs ← readEmbeddingsDocsArray
