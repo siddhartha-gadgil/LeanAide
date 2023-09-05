@@ -18,7 +18,7 @@ unsafe def show_nearest_full (stdin stdout : IO.FS.Stream)
       j.getObjValAs? Nat "n" |>.toOption.getD 10,
       j.getObjValAs? Float "penalty" |>.toOption.getD 2.0,
       j.getObjValAs? Bool "halt" |>.toOption.getD false)
-  logTimed "finding nearest"
+  logTimed s!"finding nearest to `{doc}`"
   let embs ← nearestDocsToDocFull data doc num (penalty := penalty)
   logTimed "found nearest"
   let out := 
@@ -51,18 +51,24 @@ unsafe def main (args: List String) : IO Unit := do
       let doc? := args[0]?
       match doc? with
       | some doc => 
-        let num := (args[1]?.bind fun s => s.toNat?).getD 10
-        logTimed "finding nearest"
-        let embs ← nearestDocsToDocFull data doc num (penalty := 2.0)
-        logTimed "found nearest"
-        IO.println <| 
-          Lean.Json.arr <| 
-            embs.toArray.map fun (doc, thm, isProp) =>
-              Json.mkObj <| [
-                ("docString", Json.str doc),
-                ("theorem", Json.str thm),
-                ("isProp", Json.bool isProp)
-              ] 
+        if doc = ":wake:" then
+          logTimed "waking up"
+          let stdin ← IO.getStdin
+          let stdout ← IO.getStdout
+          show_nearest_full stdin stdout data
+        else
+          let num := (args[1]?.bind fun s => s.toNat?).getD 10
+          logTimed s!"finding nearest to `{doc}`"
+          let embs ← nearestDocsToDocFull data doc num (penalty := 2.0)
+          logTimed "found nearest"
+          IO.println <| 
+            Lean.Json.arr <| 
+              embs.toArray.map fun (doc, thm, isProp) =>
+                Json.mkObj <| [
+                  ("docString", Json.str doc),
+                  ("theorem", Json.str thm),
+                  ("isProp", Json.bool isProp)
+                ] 
       | none =>
         let stdin ← IO.getStdin
         let stdout ← IO.getStdout
