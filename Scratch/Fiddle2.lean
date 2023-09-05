@@ -77,3 +77,7 @@ example (f g : ℕ →   ℕ → ℕ): f = g → ∀ x: ℕ,
 example : 1 = 1 := by
   let _ := 3
   rfl
+
+example : (n: ℕ) → let m := n + 1 ; n + 1 = m := by simp 
+
+#check Eq.mp

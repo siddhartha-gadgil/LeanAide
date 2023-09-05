@@ -6,8 +6,10 @@ import LeanCodePrompts.Translate
 
 -/
 
-
-set_option trace.Translate.info true 
+#eval logTimed "pinging process"
+#eval pingEmbedding
+#eval logTimed "pinged process"
+-- set_option trace.Translate.info true 
 -- #eval translateViewM "There are infinitely many odd numbers"
 #eval translateViewM "If a vector space has dimension `2` then it is finite dimensional."
 
@@ -17,6 +19,6 @@ theorem infinitude_odds : l!"There are infinitely many odd numbers" :=
   by
     sorry 
 
-example : l!"If a vector space has dimension `2` then it is finite dimensional." :=
-  by
-    sorry
+-- example : l!"If a vector space has dimension `2` then it is finite dimensional." :=
+--   by
+--     sorry
