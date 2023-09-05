@@ -37,7 +37,7 @@ initialize nearestEmbeddingsFullProcessRef : IO.Ref
     IO.mkRef <| some child)
 
 def getNearestEmbeddingsFullProcess : IO (IO.Process.Child nearestEmbeddingsFullCmd.toStdioConfig) := do
-  match ← nearestEmbeddingsProcessRef.get with
+  match ← nearestEmbeddingsFullProcessRef.get with
     | some child => return child
     | none =>
       let child ← IO.Process.spawn nearestEmbeddingsFullCmd
