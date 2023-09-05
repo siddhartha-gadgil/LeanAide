@@ -5,10 +5,9 @@ import Std.Util.Pickle
 open Lean
 
 unsafe def show_nearest_full (stdin stdout : IO.FS.Stream)
-  (data: Array ((String × String × Bool) × FloatArray))
-  (logHandle: IO.FS.Handle) : IO Unit := do
+  (data: Array ((String × String × Bool) × FloatArray)): IO Unit := do
   let inp ← stdin.getLine
-  logHandle.putStrLn s!"finding parameter {← IO.monoMsNow}"
+  logTimed "finding parameter"
   let (doc, num, penalty, halt) := 
     match Json.parse inp with
     | Except.error _ => (inp, 10, 2.0, false)
@@ -19,10 +18,9 @@ unsafe def show_nearest_full (stdin stdout : IO.FS.Stream)
       j.getObjValAs? Nat "n" |>.toOption.getD 10,
       j.getObjValAs? Float "penalty" |>.toOption.getD 2.0,
       j.getObjValAs? Bool "halt" |>.toOption.getD false)
-  logHandle.putStrLn s!"finding nearest {← IO.monoMsNow}"
+  logTimed "finding nearest"
   let embs ← nearestDocsToDocFull data doc num (penalty := penalty)
-  logHandle.putStrLn s!"found nearest {← IO.monoMsNow}"
-  logHandle.flush
+  logTimed "found nearest"
   let out := 
     Lean.Json.arr <| 
       embs.toArray.map fun (doc, thm, isProp) =>
@@ -34,15 +32,11 @@ unsafe def show_nearest_full (stdin stdout : IO.FS.Stream)
   stdout.putStrLn out.compress
   stdout.flush
   unless halt do 
-    show_nearest_full stdin stdout data logHandle
+    show_nearest_full stdin stdout data
   return ()
 
 unsafe def main (args: List String) : IO Unit := do
-  let logPath : System.FilePath := 
-    "build/lib/mathlib4-prompts-embeddings.log"
-  let logHandle ← IO.FS.Handle.mk logPath IO.FS.Mode.append
-  logHandle.putStrLn s!"starting process {← IO.monoMsNow}"
-  logHandle.flush
+  logTimed "starting nearest embedding process"
   let picklePath : System.FilePath := "build/lib/mathlib4-prompts-embeddings.olean"
   unless ← picklePath.pathExists do
     IO.eprintln "Fetching embeddings ..."
@@ -51,16 +45,16 @@ unsafe def main (args: List String) : IO Unit := do
       args := #["--output", picklePath.toString, "-s",  "https://math.iisc.ac.in/~gadgil/data/mathlib4-prompts-embeddings.olean"]
     }
     IO.eprintln out
-  logHandle.putStrLn s!"found/downloaded pickle {← IO.monoMsNow}"
+  logTimed "found/downloaded pickle"
   withUnpickle  picklePath <| 
     fun (data : Array <| (String × String × Bool) ×  FloatArray) => do
       let doc? := args[0]?
       match doc? with
       | some doc => 
         let num := (args[1]?.bind fun s => s.toNat?).getD 10
-        logHandle.putStrLn s!"finding nearest {← IO.monoMsNow}"
+        logTimed "finding nearest"
         let embs ← nearestDocsToDocFull data doc num (penalty := 2.0)
-        logHandle.putStrLn s!"found nearest {← IO.monoMsNow}"
+        logTimed "found nearest"
         IO.println <| 
           Lean.Json.arr <| 
             embs.toArray.map fun (doc, thm, isProp) =>
@@ -72,4 +66,4 @@ unsafe def main (args: List String) : IO Unit := do
       | none =>
         let stdin ← IO.getStdin
         let stdout ← IO.getStdout
-        show_nearest_full stdin stdout data logHandle
+        show_nearest_full stdin stdout data

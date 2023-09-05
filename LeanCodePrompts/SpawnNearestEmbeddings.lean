@@ -1,5 +1,6 @@
 import Lean
 import Mathlib.Tactic
+import LeanAide.Config
 open Lean
 
 def nearestEmbeddingsCmd : IO.Process.SpawnArgs := {
@@ -66,6 +67,7 @@ def getNearestEmbeddings (query : String)(numSim : Nat) : IO String := do
 
 
 def getNearestEmbeddingsFull (query : String)(numSim: Nat)(penalty: Float) : IO String := do
+  logTimed "getting process"
   let child ← getNearestEmbeddingsFullProcess 
   let stdin := child.stdin
   let p : JsonNumber := match JsonNumber.fromFloat? penalty with

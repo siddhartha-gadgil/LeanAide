@@ -396,6 +396,7 @@ def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := docField)
 def getCodeJson (s: String)(numSim : Nat:= 8)
   (includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := 0.8)(model: String)
   (embedding: String)(azure: Bool := false) : CoreM Json := do
+  logTimed s!"translating string `{s}` with {numSim} examples" 
   match ← getCachedJson? s with
   | some js => return js
   | none =>    
@@ -417,6 +418,7 @@ def getCodeJson (s: String)(numSim : Nat:= 8)
       let prompt := GPT.makePrompt s pairs
       trace[Translate.info] m!"prompt: \n{prompt.pretty}"
       mkLog prompt
+      logTimed "querying gpt"
       let fullJson ←  match azure with
       | true => 
         azureQuery prompt queryNum temp (model := model)
@@ -424,6 +426,7 @@ def getCodeJson (s: String)(numSim : Nat:= 8)
         gptQuery prompt queryNum temp (model := model)
       let outJson := 
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
+      logTimed "obtained gpt response"
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.erase s)
       cacheJson s outJson 
@@ -465,9 +468,11 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
         elabLog s!"{stx.reprint.get!}"
     mkSyntheticSorry (mkSort levelZero)
   else    
+    logTimed "elaborated outputs, starting majority voting"
     let priority := 
         if fullElaborated.isEmpty then elaborated else fullElaborated
     let groupSorted ← groupThmExprsSorted priority
+    logTimed "finished majority voting"
     return (groupSorted[0]!)[0]!
 
 
@@ -479,6 +484,7 @@ def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array Strin
   let mut fullElaborated : Array Expr := Array.empty
   let mut cache : HashMap String (Except String Expr) := 
     HashMap.empty
+  logTimed "elaborating outputs"
   for out in output do
     -- IO.println s!"elaboration called: {out}"
     let elab? ← 
@@ -508,11 +514,13 @@ def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array Strin
         elabLog s!"{stx.reprint.get!}"
     return none
   else    
+    logTimed "elaborated outputs, starting majority voting"
     let priority := 
         if fullElaborated.isEmpty then elaborated else fullElaborated
     let groupSorted ← groupThmExprsSorted priority
     let thm := (groupSorted[0]!)[0]!
     let gpView ←  groupSorted.mapM (fun gp => gp.mapM (fun e => e.view))
+    logTimed "obtained majority vote"
     return some (thm, elabStrs, gpView)
 
 
@@ -664,6 +672,7 @@ universe u
 
 
 def translateViewM (s: String)(model : String := "gpt-3.5-turbo")(embedding: String := "openai_full") : TermElabM String := do
+  logTimed "starting translation"
   let js ← getCodeJson  s (model := model)
         (embedding := embedding)
   let output ← GPT.jsonToExprStrArray js
@@ -697,7 +706,10 @@ open PrettyPrinter
     getCodeJson  s (numSim := lean_aide.translate.prompt_size.get (← getOptions)) (queryNum := lean_aide.translate.choices.get (← getOptions)) (model := "gpt-3.5-turbo") 
       (embedding := "openai_full")
   let e ← jsonToExpr' js
+  logTimed "obtained expression"
   let stx' ← delab e
+  logTimed "obtained syntax"
   TryThis.addSuggestion stx stx'
+  logTimed "added suggestion"
   return e 
   | _ => throwUnsupportedSyntax
