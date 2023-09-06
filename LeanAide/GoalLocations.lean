@@ -90,8 +90,8 @@ See also `rewrites` for a more convenient interface.
 -- We need to supply the current `MetavarContext` (which will be reused for each lemma application)
 -- because `MLList.squash` executes lazily,
 -- so there is no opportunity for `← getMCtx` to record the context at the call site.
-def rewritesCore (hyps : Array (Expr × Bool × Nat))
-    (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
+def targetedRewritesCore (hyps : Array (Expr × Bool × Nat))
+    (lemmas : Meta.DiscrTree (Name × Bool × Nat) s × Meta.DiscrTree (Name × Bool × Nat) s)
     (ctx : MetavarContext) (goal : MVarId) (target : Expr) :
     MLList MetaM RewriteResult := MLList.squash fun _ => do
   -- Get all lemmas which could match some subexpression
@@ -120,26 +120,26 @@ def rewritesCore (hyps : Array (Expr × Bool × Nat))
   trace[Tactic.rewrites.lemmas] m!"Candidate rewrite lemmas:\n{deduped}"
 
   -- Lift to a monadic list, so the caller can decide how much of the computation to run.
-  let hyps := MLList.ofArray <| hyps.map fun ⟨hyp, symm, weight⟩ => (Sum.inl hyp, symm, weight)
-  let lemmas := MLList.ofArray <| deduped.map fun ⟨lem, symm, weight⟩ => (Sum.inr lem, symm, weight)
+  let hyps := MLList.ofArray <| hyps.map fun ⟨hyp, _symm, weight⟩ => (Sum.inl hyp, _symm, weight)
+  let lemmas := MLList.ofArray <| deduped.map fun ⟨lem, _symm, weight⟩ => (Sum.inr lem, _symm, weight)
 
-  pure <| (hyps |>.append fun _ => lemmas).filterMapM fun ⟨lem, symm, weight⟩ => withMCtx ctx do
+  pure <| (hyps |>.append fun _ => lemmas).filterMapM fun ⟨lem, _symm, weight⟩ => Meta.withMCtx ctx do
     let some expr ← (match lem with
     | .inl hyp => pure (some hyp)
-    | .inr lem => try? <| mkConstWithFreshMVarLevels lem) | return none
-    trace[Tactic.rewrites] m!"considering {if symm then "←" else ""}{expr}"
-    let some result ← try? do goal.rewrite target expr symm
+    | .inr lem => try? <| Meta.mkConstWithFreshMVarLevels lem) | return none
+    trace[Tactic.rewrites] m!"considering {if _symm then "←" else ""}{expr}"
+    let some result ← try? do goal.rewrite target expr _symm
       | return none
     return if result.mvarIds.isEmpty then
-      some ⟨expr, symm, weight, result, none, ← getMCtx⟩
+      some ⟨expr, _symm, weight, result, none, ← getMCtx⟩
     else
       -- TODO Perhaps allow new goals? Try closing them with solveByElim?
       -- A challenge is knowing what suggestions to print if we do so!
       none
 
 /-- Find lemmas which can rewrite the goal. -/
-def rewrites (hyps : Array (Expr × Bool × Nat))
-    (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
+def targetedRewrites (hyps : Array (Expr × Bool × Nat))
+    (lemmas : Meta.DiscrTree (Name × Bool × Nat) s × Meta.DiscrTree (Name × Bool × Nat) s)
     (goal : MVarId) (target : Expr) (stopAtRfl : Bool := false) (max : Nat := 20)
     (leavePercentHeartbeats : Nat := 10) : MetaM (List RewriteResult) := do
   let results ← rewritesCore hyps lemmas (← getMCtx) goal target
@@ -147,7 +147,7 @@ def rewrites (hyps : Array (Expr × Bool × Nat))
     -- (TODO: we later pretty print results; save them here?)
     -- (TODO: a config flag to disable this,
     -- if distinct-but-pretty-print-the-same results are desirable?)
-    |>.dedupBy (fun r => do pure <| (← ppExpr r.result.eNew).pretty)
+    |>.dedupBy (fun r => do pure <| (← Meta.ppExpr r.result.eNew).pretty)
     -- Stop if we find a rewrite after which `with_reducible rfl` would succeed.
     |>.mapM RewriteResult.computeRfl -- TODO could simply not compute this if `stopAtRfl` is False
     |>.takeUpToFirst (fun r => stopAtRfl && r.rfl? = some true)
