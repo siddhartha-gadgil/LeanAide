@@ -62,7 +62,8 @@ def serial (testLines : Array String)(preChecked: Bool := false) : IO Unit := do
         IO.println s!"theorem {corePremise.name?.getD ""} : {corePremise.thm} has no lemmas, terms, true premises"
         IO.println s!"{corePremise.ids} are the ids"
         IO.println "launching proof search"
-        let core := proofSearchCore corePremise.thm {}
+        let core := 
+          proofSearchCore corePremise.thm {apps := ids.map (·, 0.5)}
         let (elaborated, proved, code?) ← 
           core.run' coreContext {env := env} |>.runToIO'
         IO.println "finished proof search"
