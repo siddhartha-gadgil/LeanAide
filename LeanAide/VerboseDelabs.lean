@@ -89,7 +89,7 @@ def delabAppFn : Delab := do
 def delabProj : Delab := do
   let Expr.proj typeName idx _ ← getExpr | unreachable!
   let e ← withProj delabVerbose
-  let field := (getStructureFields (← getEnv) typeName)[idx-1]! 
+  let field := (getStructureFields (← getEnv) typeName)[idx]! 
   let idx := mkIdent (typeName ++ field) 
   `($idx:ident $e:term)
 

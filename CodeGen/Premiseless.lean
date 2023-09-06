@@ -8,6 +8,13 @@ example: ∀ {α : Type u_1} (r : Ordnode α), id r = Ordnode.nil → Ordnode.ni
 
 #print NonarchAddGroupSeminorm.add_le_max'
 
+example : ∀ {G : Type u_7} [inst : AddGroup G]
+  (self : NonarchAddGroupSeminorm G) (r s : G),
+  ZeroHom.toFun self.toZeroHom (r + s) ≤ max (ZeroHom.toFun self.toZeroHom r) (ZeroHom.toFun self.toZeroHom s) :=
+fun G [AddGroup G] self =>  
+  have : self.2 = NonarchAddGroupSeminorm.add_le_max' self := rfl
+  self.2
+
 #check NonUnitalSubring.neg_mem'
 example: ∀ {R : Type u} [inst : NonUnitalNonAssocRing R] (self : NonUnitalSubring R) {x : R},
   x ∈ self.carrier → -x ∈ self.carrier := by
