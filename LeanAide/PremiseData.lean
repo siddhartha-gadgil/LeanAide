@@ -120,6 +120,42 @@ def declToString : Syntax → CoreM String := fun d => do
         IO.println s!"declToString fallback to: {fallback} for {stx}"
         return fallback
 
+def declToThmHead : Syntax → CoreM String := fun d => do
+    match d with
+    | `(letDecl|$n:ident : $type := $val) => 
+        let type := (← ppTerm type).pretty.trim
+        let val := (← ppTerm val).pretty.trim
+        return s!"let {n.getId.toString} : {type} := {val}; " 
+    | `(funBinder|($n:ident : $type:term)) =>
+        let type := (← ppTerm type).pretty.trim
+        return s!"({n.getId.toString} : {type}) → "
+    | `(funImplicitBinder|{$n:ident : $type:term}) =>
+        let type := (← ppTerm type).pretty.trim
+        return "{" ++ s!"{n.getId.toString} : {type}" ++ "} → "
+    | `(instBinder|[$n:ident : $type:term]) =>
+        let type := (← ppTerm type).pretty.trim
+        return s!"[{n.getId.toString} : {type}] → "
+    | `(instBinder|[$type:term]) =>
+        let type := (← ppTerm type).pretty.trim
+        return s!"[{type}] → "
+    | `(funStrictImplicitBinder|⦃$n:ident : $type:term⦄) =>
+        let type := (← ppTerm type).pretty.trim
+        return s!"⦃{n.getId.toString} : {type}⦄ → "
+    | `(funBinder|(_ : $type:term)) =>
+        let type := (← ppTerm type).pretty.trim
+        return s!"(_ : {type}) → "
+    | `(funImplicitBinder|{_ : $type:term}) =>
+        let type := (← ppTerm type).pretty.trim
+        return "{" ++ s!"_ : {type}" ++ "} → "
+    | `(funStrictImplicitBinder|⦃_ : $type:term⦄) =>
+        let type := (← ppTerm type).pretty.trim
+        return s!"⦃_ : {type}⦄ → "
+    | stx => 
+        let fallback := stx.reprint.get! ++ " → "
+        IO.println s!"declToString fallback to: {fallback} for {stx}"
+        return fallback
+
+
 def declInLctx  (d :Syntax) : TermElabM Bool := do 
     match d with
     | `(letDecl|$n:ident : $type := $val) => 
@@ -434,6 +470,7 @@ structure CorePremiseDataDirect where
     context : Array String
     name? :       Option Name  -- name
     type : String
+    thm: String
     typeGroup : String
     ids : Array String
     terms : List CoreTermData
@@ -441,19 +478,21 @@ structure CorePremiseDataDirect where
 deriving Repr, ToJson, FromJson, BEq
 
 def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CoreM CorePremiseDataDirect := do 
-return ⟨← pd.context.mapM declToString, 
-    pd.name?,
-    ← termToString pd.type,
-    ← termToString  pd.typeGroup,
-    pd.ids.map (fun (n, _) => shrink n), 
-    (← pd.terms.toList.mapM (fun td => do 
-       pure ⟨← td.context.mapM declToString,
-       ← termToString td.value, td.isProp⟩)) |>.eraseDups, 
-    ← pd.propProofs.mapM CorePropData.ofPropProof⟩
+    let heads ←  pd.context.mapM declToThmHead
+    let type ← termToString pd.type
+    return ⟨← pd.context.mapM declToString, 
+        pd.name?,
+        type,
+        heads.foldr (fun s c => s ++ c) type,
+        ← termToString  pd.typeGroup,
+        pd.ids.map (fun (n, _) => shrink n), 
+        (← pd.terms.toList.mapM (fun td => do 
+        pure ⟨← td.context.mapM declToString,
+        ← termToString td.value, td.isProp⟩)) |>.eraseDups, 
+        ← pd.propProofs.mapM CorePropData.ofPropProof⟩
 
 structure CorePremiseData extends CorePremiseDataDirect where
     namedLemmas : Array String
-    thm: String := context.foldr (fun id s => id ++ " " ++ s) " : " ++ type
     idString := ids.foldl (fun s id => s ++ id ++ "; ") ""
 deriving Repr, ToJson, FromJson
 
@@ -478,6 +517,7 @@ def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap String String) 
     context := direct.context,
     name? := direct.name?,
     type := direct.type,
+    thm := direct.thm,
     typeGroup := direct.typeGroup,
     ids := direct.ids
     terms := direct.terms,
