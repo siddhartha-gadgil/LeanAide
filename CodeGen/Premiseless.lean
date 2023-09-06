@@ -274,11 +274,11 @@ example: ∀ {G : Type u_1} [inst : Group G] {p p' : Subgroup G} {x : G}, x ∈ 
 
 #print AddSubgroup.IsCommutative.is_comm
 
-#check PGame.fintypeLeftMoves.proof_2
-example: ∀ (x : PGame) {α β : Type u_1} {L : α → PGame} {R : β → PGame}, x = PGame.mk α β L R → PGame.mk α β L R = x := by
-  intro x α β L R h
-  aesop_subst h
-  simp_all only
+-- #check PGame.fintypeLeftMoves.proof_2
+-- example: ∀ (x : PGame) {α β : Type u_1} {L : α → PGame} {R : β → PGame}, x = PGame.mk α β L R → PGame.mk α β L R = x := by
+--   intro x α β L R h
+--   aesop_subst h
+--   simp_all only
 
 
 
@@ -1230,14 +1230,14 @@ example: ∀ {α : Type u_1} [inst : Preorder α] {s : Set α} {x : α}, x ∈ u
 
 #print Subgroup.IsCommutative.is_comm
 
-#check Game.PGame.lf_iff_game_lf
-example: ∀ {x y : PGame}, PGame.Lf x y ↔ Game.Lf (Quotient.mk PGame.setoid x) (Quotient.mk PGame.setoid y) := by
-  intro x y
-  apply Iff.intro
-  · intro a
-    exact a
-  · intro a
-    exact a
+-- #check Game.PGame.lf_iff_game_lf
+-- example: ∀ {x y : PGame}, PGame.Lf x y ↔ Game.Lf (Quotient.mk PGame.setoid x) (Quotient.mk PGame.setoid y) := by
+--   intro x y
+--   apply Iff.intro
+--   · intro a
+--     exact a
+--   · intro a
+--     exact a
 
 
 
@@ -1469,11 +1469,11 @@ example: ∀ {𝕜 : Type u_1} [inst : OrderedSemiring 𝕜] {E : Type u_2} [ins
 
 
 
-#check PGame.uniquePowHalfLeftMoves.proof_1
-example: ∀ (n n_1 : ℕ), n = Nat.succ n_1 → Nat.succ n_1 = n := by
-  intro n n_1 h
-  aesop_subst h
-  simp_all only
+-- #check PGame.uniquePowHalfLeftMoves.proof_1
+-- example: ∀ (n n_1 : ℕ), n = Nat.succ n_1 → Nat.succ n_1 = n := by
+--   intro n n_1 h
+--   aesop_subst h
+--   simp_all only
 
 
 
@@ -1537,9 +1537,9 @@ example: ∀ {V : Type u} (v w : V), SimpleGraph.Adj ⊥ v w ↔ False := by
 
 
 #check unitary.instGroupSubtypeMemSubmonoidToMulOneClassInstMembershipInstSetLikeSubmonoidUnitary.proof_13
-example: ∀ {R : Type u_1} [inst : Monoid R] [inst_1 : StarSemigroup R] (a b : { x // x ∈ unitary R }), a / b = a / b := by
-  intro R inst inst_1 a b
-  simp_all only
+-- example: ∀ {R : Type u_1} [inst : Monoid R] [inst_1 : StarSemigroup R] (a b : { x // x ∈ unitary R }), a / b = a / b := by
+--   intro R inst inst_1 a b
+--   simp_all only
 
 
 
@@ -1889,7 +1889,7 @@ example: ∀ {R : Type u_1} [inst : CommRing R] {J K : Ideal R},
 
 #print OmegaCompletePartialOrder.ContinuousHom.cont
 
-#print PGame.lt_iff_le_and_lf
+-- #print PGame.lt_iff_le_and_lf
 
 #print MonoidHom.mem_range
 
