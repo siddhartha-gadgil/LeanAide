@@ -14,40 +14,13 @@ lean_lib LeanAide {
 lean_lib LeanCodePrompts {
 }
 
-lean_lib StatementAutoformalisation {
-}
 
-lean_lib CodeAction {
-}
-
-lean_lib TacticExtraction {
-}
-
-lean_lib CodeGen
-
-lean_lib notes {
-}
-
-lean_exe datagen{
-  supportInterpreter := true
-}
-
-lean_exe elabdatagen{
-  supportInterpreter := true
-}
 
 @[default_target]
 lean_exe bulkelab {
   supportInterpreter := true
 }
 
-lean_exe chkelab {
-  supportInterpreter := true
-}
-
-lean_exe promptsgen {
-  supportInterpreter := true
-}
 
 lean_exe thmextract {
   supportInterpreter := true

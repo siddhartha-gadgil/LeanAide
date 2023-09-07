@@ -1,6 +1,5 @@
 import Lean.Meta
 import LeanCodePrompts
-import LeanAide.FirstTacticData
 import LeanAide.Config
 open Lean
 
