@@ -1339,6 +1339,10 @@ apply Iff.intro
 
 #print ValuationSubring.mem_unitGroup_iff
 
+example : ∀ {R : Type u_1} [inst : Monoid R] [inst_1 : StarMul R] {U : R},
+  U ∈ unitary R ↔ star U * U = 1 ∧ U * star U = 1:= by 
+  aesop (add safe apply Iff.rfl)
+
 #print OrderDual.le_toDual
 
 #check Valuation.IsEquiv.refl
