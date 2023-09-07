@@ -88,10 +88,12 @@ def delabAppFn : Delab := do
 @[delab proj]
 def delabProj : Delab := do
   let Expr.proj typeName idx _ ← getExpr | unreachable!
-  let e ← withProj delabVerbose
-  let field := (getStructureFields (← getEnv) typeName)[idx]! 
-  let idx := mkIdent (typeName ++ field) 
-  `($idx:ident $e:term)
+  try 
+    let e ← withProj delabVerbose
+    let field := (getStructureFields (← getEnv) typeName)[idx]! 
+    let idx := mkIdent (typeName ++ field) 
+    `($idx:ident $e:term)
+  catch _ => unreachable!
 
 
 @[delab app]
