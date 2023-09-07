@@ -14,15 +14,12 @@ lean_lib LeanAide {
 lean_lib LeanCodePrompts {
 }
 
-@[default_target]
 lean_lib StatementAutoformalisation {
 }
 
-@[default_target]
 lean_lib CodeAction {
 }
 
-@[default_target]
 lean_lib TacticExtraction {
 }
 
@@ -44,7 +41,6 @@ lean_exe bulkelab {
   supportInterpreter := true
 }
 
-@[default_target]
 lean_exe chkelab {
   supportInterpreter := true
 }
@@ -106,7 +102,6 @@ lean_exe moduledeps{
   supportInterpreter := true
 }
 
-@[default_target]
 lean_exe chkthms{
   supportInterpreter := true
 }
