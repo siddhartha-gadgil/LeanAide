@@ -1,8 +1,0 @@
-loading model
-loaded model
-Text computed
-theorem 𝒟 : ∃ (n : ℕ), odd n 
-theorem 𝒦_odd : ∀ n, odd n ↔ n = 0 ∨ n = 1 
-theorem ith (n : ℕ) (h₀ : n ≠ 0) : n.factorization.nat.odd 
-theorem 𝒜 : ∃ n : ℕ, odd n 
-theorem ello : ∀ n : ℕ, odd n → ∀ (m : ℕ), (n ≤ m).factorization → n = m 
