@@ -1,0 +1,7 @@
+val arr = os.read.lines(os.pwd/"rawdata"/"defn-types"/"docs.jsonl")
+val jsarr = arr.map(upickle.default.read[ujson.Obj](_))
+val full = ujson.Arr(jsarr: _*)
+val thmsJs = jsarr.filter(_("isProp").bool)
+val thms = ujson.Arr(thmsJs :_*)
+os.write.over(os.pwd/ "data"/"mathlib4-thms.json", upickle.default.write(thms, 2))
+os.write.over(os.pwd/ "data"/"mathlib4-prompts.json", upickle.default.write(full, 2))
