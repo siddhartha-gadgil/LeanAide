@@ -52,15 +52,15 @@ A few possible prompting styles for autoformalisation include:
 
 -/
 
-/-! ## The closest embeddings to the given statement -/
+/-! ## The closest doc-strings to the given statement -/
 
-elab "#nearest_embeddings" stmt:str : command => do
+elab "#nearest_docstrings" stmt:str : command => do
   let embeddingsRaw ← getNearestEmbeddingsFull stmt.getString 6
   let embeddingsJson ← IO.ofExcept <| Lean.Json.parse embeddingsRaw >>= Lean.Json.getArr?
   for embedding in embeddingsJson do
     IO.println embedding 
 
-#nearest_embeddings "Every even number can be written as the sum of two primes"
+#nearest_docstrings "Every even number can be written as the sum of two primes"
 
 #slides Details /-!
 
@@ -150,12 +150,17 @@ various undergraduate pure mathematics textbooks.
 
 **Overall success rate:** 85%
 
-# Results on ProofNet dataset
+# ProofNet results
 
 | Total | Number elaborated | Number correct |
+|-------|-------------------|----------------|
 | 100   |        69         |      37        |
 
-
+- While the success rate is significantly better than
+  in the ProofNet paper, there is a lot of room for improvement.
+- The main difficulty seems to be in translating formula-heavy statements to Lean.
+- It may be possible to rectify this by building a glossary of Lean notation
+  and including examples from it in the prompt.
 
 -/
 
@@ -170,7 +175,7 @@ def randomFileLine (filePath : System.FilePath) : IO String := do
 
 #slides Conclusion /-!
 
-## Summary
+# Summary
 
 `LeanAIde` is a tool for translating
 natural language theorem statements to Lean code,
@@ -182,7 +187,7 @@ several distinctive features of the Lean theorem prover,
 including its programming and meta-programming capabilities
 and its the vast and unified mathematics library.
 
-## Language models and proof assistants
+# AI and proof assistants
 
 There is potential for combining
 languages models with proof assistants for
@@ -196,7 +201,7 @@ tasks such as
 Such tools can make formalisation of mathematics
 vastly more approachable.
 
-## References
+# References
 
 - Zhangir Azerbayev and Edward W. Ayers. lean-chat: user guide. Lean. 2023. 
   url: https://github.com/zhangir-azerbayev/lean-chat.
