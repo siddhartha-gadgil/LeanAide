@@ -184,30 +184,6 @@ def gptQuery(messages: Json)(n: Nat := 1)
   trace[Translate.info] "OpenAI response: {out.stdout} (stderr: {out.stderr})"
   return Lean.Json.parse out.stdout |>.toOption.get!
 
-def azureQuery(messages: Json)(n: Nat := 1)
-  (temp : JsonNumber := 0.2)
-  (stopTokens: Array String :=  #[":=", "-/"])(model: String) : CoreM Json := do
-  let key? ← azureKey
-  let key := 
-    match key? with
-    | some k => k
-    | none => panic! "OPENAI_API_KEY not set"
-  let dataJs := Json.mkObj [("model", model), ("messages", messages)
-  , ("temperature", Json.num temp), ("n", n), ("max_tokens", 800),
-  ("top_p", Json.num 0.95), ("stop", Json.arr <| stopTokens |>.map Json.str), ("frequency_penalty", 0), ("presence_penalty", 0)
-  ]
-  let data := dataJs.pretty
-  trace[Translate.info] "OpenAI query: {data}"
-  let out ←  IO.Process.output {
-        cmd:= "curl", 
-        args:= #["https://gcrgpt4aoai9.openai.azure.com/openai/deployments/gpt-4/chat/completions?api-version=2023-03-15-preview",
-        "-X", "POST",
-        "-H", "Content-Type: application/json",
-        "-H", "api-key: " ++ key,
-        "--data", data]}
-  trace[Translate.info] "OpenAI response: {out.stdout} (stderr: {out.stderr})"
-  return Lean.Json.parse out.stdout |>.toOption.get!
-
 
 def openAIQuery(prompt: String)(n: Nat := 1)
   (temp : JsonNumber := 0.2)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json :=
@@ -393,7 +369,7 @@ def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := docField)
 -/
 def getCodeJson (s: String)(numSim : Nat:= 8)
   (includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := 0.8)(model: String)
-  (embedding: String)(azure: Bool := false) : CoreM Json := do
+  (embedding: String) : CoreM Json := do
   logTimed s!"translating string `{s}` with {numSim} examples" 
   match ← getCachedJson? s with
   | some js => return js
@@ -417,10 +393,7 @@ def getCodeJson (s: String)(numSim : Nat:= 8)
       trace[Translate.info] m!"prompt: \n{prompt.pretty}"
       mkLog prompt
       logTimed "querying gpt"
-      let fullJson ←  match azure with
-      | true => 
-        azureQuery prompt queryNum temp (model := model)
-      | false =>  
+      let fullJson ← 
         gptQuery prompt queryNum temp (model := model)
       let outJson := 
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])

@@ -7,11 +7,11 @@ open Lean Meta Elab
 def translateWithDataM (s: String)(numSim : Nat:= 10)
   (includeFixed: Bool := Bool.false)(queryNum: Nat := 5)
   (temp : JsonNumber := 0.2)(model: String)
-  (embedding: String)(azure: Bool := false)(repeats: Nat := 0)(sleepTime : Nat := 1)(queryData? : Option <| (HashMap String Json)  ) : 
+  (embedding: String)(repeats: Nat := 0)(sleepTime : Nat := 1)(queryData? : Option <| (HashMap String Json)  ) : 
   TermElabM ((Option (Expr × (Array String) × (Array (Array String)) )) × Array String) := do
   let output ←  match queryData? with
   | none =>  
-    let js ← getCodeJson s numSim includeFixed queryNum temp model embedding azure
+    let js ← getCodeJson s numSim includeFixed queryNum temp model embedding
     GPT.jsonToExprStrArray js
   | some f =>
     let res? := f.find? s.trim
@@ -28,7 +28,7 @@ def translateWithDataM (s: String)(numSim : Nat:= 10)
     IO.println s!"No outputs; repeating ({k} left)"
     elabLog s!"No outputs; repeating ({k} left)"
     IO.sleep (sleepTime * 1000)
-    translateWithDataM s numSim includeFixed queryNum temp model embedding azure k (sleepTime * 2) queryData?
+    translateWithDataM s numSim includeFixed queryNum temp model embedding  k (sleepTime * 2) queryData?
   else
     let res ← arrayToExpr? output 
     return (res, output)
@@ -36,16 +36,16 @@ def translateWithDataM (s: String)(numSim : Nat:= 10)
 def translateWithDataCore (s: String)(numSim : Nat:= 10)
   (includeFixed: Bool := Bool.false)(queryNum: Nat := 5)
   (temp : JsonNumber := 0.2)(model: String)
-  (embedding: String)(azure: Bool := false)(repeats: Nat := 0)
+  (embedding: String)(repeats: Nat := 0)
   (queryData? : Option <| (HashMap String Json)  ) :
   CoreM ((Option (Expr × (Array String) ×  (Array (Array String)) )) × Array String) := 
     (translateWithDataM s 
       numSim includeFixed 
-        queryNum temp model embedding azure repeats
+        queryNum temp model embedding  repeats
         (queryData? := queryData?)).run'.run'
 
 def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := 0.2)(model: String)
-  (embedding: String)(azure: Bool := false)(delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json) ) : TermElabM Json := do
+  (embedding: String)(delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json) ) : TermElabM Json := do
   elabLog s!"Writing to file: {type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp.mantissa}.json"
   let promptsFile := System.mkFilePath ["data",
     s!"prompts-{type}-{numSim}-{includeFixed}-{queryNum}-{temp.mantissa}.jsonl"]
@@ -69,7 +69,7 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed:
     IO.println prompt
     let (res?, outputs) ← 
         translateWithDataM prompt
-          numSim includeFixed queryNum temp model embedding azure 
+          numSim includeFixed queryNum temp model embedding 
           repeats 1 queryData?
     let fullPrompt := (← logs 1).head?.getD "No prompt (maybe using cached data)"
     let js := Json.mkObj [("text", Json.str prompt),
@@ -124,9 +124,9 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed:
             ]
   return js
 
-def checkTranslatedThmsCore(type: String := "thm")(numSim : Nat:= 10)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := 0.2)(model: String)(embedding : String)(azure: Bool := false)(delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json)  ): CoreM Json :=
+def checkTranslatedThmsCore(type: String := "thm")(numSim : Nat:= 10)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := 0.2)(model: String)(embedding : String)(delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json)  ): CoreM Json :=
     (checkTranslatedThmsM type
-      numSim includeFixed queryNum temp model embedding azure delay repeats queryData?).run'.run'
+      numSim includeFixed queryNum temp model embedding delay repeats queryData?).run'.run'
 
 def parsedThmsPrompt : IO (Array String) := do
   let file := System.mkFilePath ["data/parsed_thms.txt"]
