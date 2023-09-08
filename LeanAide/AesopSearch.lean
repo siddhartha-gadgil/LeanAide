@@ -81,6 +81,13 @@ def applyConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMember 
       config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
   return rules.map (·.1)
 
+def safeApplyConstRuleMembers (decl: Name) : MetaM <| Array RuleSetMember := do
+  let stx ← `(attr|aesop safe apply) 
+  let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
+  let rules ← runMetaMAsCoreM $
+      config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
+  return rules.map (·.1)
+
 #check Parser.numLit
 
 /-- Rule set members for `simp` for a global constant proof -/
@@ -295,6 +302,7 @@ structure AesopSearchConfig extends Aesop.Options where
   maxRuleApplicationDepth := 120
   maxRuleApplications := 800
   apps : Array <| Name × Float := #[] 
+  safeApps : Array Name := #[]
   simps : Array Name := #[]
   rws : Array Name := #[]
   forwards : Array <| Name × Float := #[] 
@@ -333,6 +341,9 @@ def AesopSearchConfig.ruleSet (config: AesopSearchConfig) :
   let appRules : Array RuleSetMember := (← config.apps.mapM 
     (fun (n, p) => applyConstRuleMembers n p) 
     ).foldl (fun c r => c ++ r) #[]
+  let safeAppRules : Array RuleSetMember := (← config.safeApps.mapM 
+    (fun n => safeApplyConstRuleMembers n) 
+    ).foldl (fun c r => c ++ r) #[]
   let forwardRules : Array RuleSetMember := (← config.forwards.mapM 
     (fun (n, p) => forwardConstRuleMembers n p) 
     ).foldl (fun c r => c ++ r) #[]
@@ -355,7 +366,7 @@ def AesopSearchConfig.ruleSet (config: AesopSearchConfig) :
       Frontend.getDefaultRuleSet (includeGlobalSimpTheorems := true)
       {}
   let allRules : RuleSet := 
-    ((appRules ++ simpRules ++ tacticRules
+    ((appRules ++ simpRules ++ tacticRules ++ safeAppRules 
      ++ forwardRules ++ destructRules ++ casesRules ++ constructorRules
      ).push (dynamicRuleMember config.dynProb)).foldl
     (fun c r => c.add r) defaultRules

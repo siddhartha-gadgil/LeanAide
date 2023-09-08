@@ -1,3 +1,16 @@
+import Mathlib
+#check LinearEquiv.coe_toContinuousLinearEquiv_symm'
+#check CategoryTheory.Subobject.subobjectOrderIso.proof_6
+#check ContinuousLinearEquiv.contDiffAt_comp_iff
+#check ContinuousLinearMap.coe_flipₗᵢ'
+#check IntermediateField.Lifts.upperBoundAlgHom.proof_5
+#check TensorProduct.LieModule.liftLie_apply
+#check MeasureTheory.condexpL1Clm_of_aestronglyMeasurable'
+#check ContinuousLinearEquiv.arrowCongrEquiv_symm_apply
+#check Module.DirectLimit.lift_unique
+#check ContinuousLinearMap.compLeftContinuousBounded.proof_6
+#check ContinuousLinearMap.coe_flipₗᵢ
+#check ContinuousLinearMap.toSesqForm_apply_coe
 #check ContMDiffWithinAt.comp_of_eq
 #check LieAlgebra.rootSpaceProduct_tmul
 #check DenseInducing.extendRingHom.proof_3
@@ -18,6 +31,7 @@
 #check Mon_.monMonoidal.proof_4
 #check HasFDerivWithinAt.clm_apply
 #check ContinuousLinearMap.adjoint_inner_left
+#check UniversalEnvelopingAlgebra.lift.proof_4
 #check ContinuousLinearEquiv.continuousWithinAt
 #check FreeGroup.instGroupFreeGroup.proof_10
 #check Cardinal.commSemiring.proof_8
@@ -58,7 +72,6 @@
 #check AddMonoidAlgebra.decomposeAux.proof_5
 #check ContinuousLinearMap.flipMultilinear.proof_10
 #check ContinuousMonoidHom.instCommGroupContinuousMonoidHomToMonoidToDivInvMonoidToGroup.proof_14
-#check CategoryTheory.CategoryOfElements.toCostructuredArrow.proof_3
 #check Pretrivialization.continuousLinearMap.proof_4
 #check Finmap.keysLookupEquiv.proof_4
 #check ModuleCat.subobjectModule.proof_4
@@ -78,7 +91,7 @@
 #check CategoryTheory.Idempotents.instAddCommGroupHom.proof_11
 #check AlgebraicGeometry.exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux
 #check ContMDiffWithinAt.comp
-#check ContinuousLinearEquiv.ofHomothety.proof_1
+#check ClassGroup.integralRep.proof_4
 #check TensorProduct.toMatrix_map
 #check MeasureTheory.lpMeasToLpTrimLie_symm_toLp
 #check WittVector.lift.proof_4
@@ -86,15 +99,3 @@
 #check mem_smoothFiberwiseLinear_iff
 #check DoubleCentralizer.instStarAddMonoid.proof_2
 #check LinearMap.smulRightₗ.proof_8
-#check HasStrictFDerivAt.mem_implicitToLocalHomeomorphOfComplemented_source
-#check CategoryTheory.Endofunctor.Coalgebra.functorOfNatTrans.proof_3
-#check isAdjointPair_toLinearMap₂
-#check HasFDerivAt.clm_comp
-#check ZMod.commRing.proof_15
-#check MultilinearMap.mkContinuousLinear.proof_4
-#check latToBddLatCatForgetAdjunction.proof_6
-#check CochainComplex.augmentTruncate.proof_6
-#check SmoothMap.ring.proof_26
-#check CategoryTheory.Pretriangulated.invRotCompRot.proof_4
-#check orthogonalProjection_map_apply
-#check IsBaseChange.lift.proof_6

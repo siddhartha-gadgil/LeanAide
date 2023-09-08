@@ -1,10 +1,19 @@
+import Mathlib
+#check DoubleCentralizer.coeHom.proof_4
+#check CategoryTheory.Limits.MultispanIndex.multicoforkEquivSigmaCofork.proof_5
+#check CochainComplex.mkHomAux.proof_1
+#check TopCat.Presheaf.generateEquivalenceOpensLe_functor'.proof_3
+#check OrthogonalFamily.linearIsometry.proof_4
+#check basis_toMatrix_mul_linearMap_toMatrix_mul_basis_toMatrix
+#check ValuationRing.linearOrderedCommGroupWithZero.proof_8
+#check LinearIsometryEquiv.comp_hasFDerivWithinAt_iff'
+#check CategoryTheory.Functor.mapAction.proof_5
 #check ChainComplex.mk_X_2
 #check CategoryTheory.Limits.evaluationJointlyReflectsLimits.proof_2
 #check NonUnitalStarSubalgebra.iSupLift_mk
 #check TopCat.Presheaf.SheafConditionPairwiseIntersections.isLimitMapConeOfIsLimitSheafConditionFork.proof_4
 #check ExteriorAlgebra.GradedAlgebra.liftι_eq
 #check TopCat.Presheaf.SheafConditionPairwiseIntersections.coneEquivFunctor.proof_3
-#check FreeProduct.lift.proof_3
 #check SubmodulesBasis.toModuleFilterBasis.proof_6
 #check WittVector.lift.proof_2
 #check Representation.linHom.invariantsEquivRepHom_apply_hom
@@ -17,6 +26,7 @@
 #check HasFTaylorSeriesUpToOn.hasStrictFDerivAt
 #check genLoopEquivOfUnique.proof_7
 #check VectorBundleCore.mk.injEq
+#check Mon_.monMonoidal.proof_10
 #check ConvolutionExistsAt.integrable_swap
 #check AlgebraicGeometry.PresheafedSpace.GlueData.opensImagePreimageMap_app
 #check LeftInvariantDerivation.instNegLeftInvariantDerivation.proof_3
@@ -24,7 +34,7 @@
 #check ChainComplex.mk.proof_1
 #check UniqueMDiffOn.image_denseRange
 #check ZMod.instFieldZMod.proof_84
-#check CommRingCat.Colimits.ColimitType.AddGroup.proof_11
+#check TensorProduct.AlgebraTensorModule.congr_symm_tmul
 #check smoothFiberwiseLinear.proof_10
 #check AlgebraicGeometry.LocallyRingedSpace.coproductCofanIsColimit.proof_3
 #check TopCommRingCat.instCategoryTopCommRingCat.proof_3
@@ -45,7 +55,6 @@
 #check ContinuousLinearMap.op_norm_mulLeftRight_apply_apply_le
 #check WeakDual.CharacterSpace.equivAlgHom.proof_5
 #check CategoryTheory.Endofunctor.algebraPreadditive.proof_11
-#check FreeProduct.lift.proof_2
 #check Submodule.equivSubtypeMap.proof_4
 #check hfdifferential.proof_6
 #check ContinuousMap.coeFn_toLp
@@ -90,11 +99,3 @@
 #check normalizedFactorsEquivOfQuotEquiv.proof_5
 #check ContinuousLinearEquiv.comp_coe
 #check CommMon_.EquivLaxBraidedFunctorPunit.commMonToLaxBraided.proof_12
-#check AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.structurePresheafInCommRing.proof_4
-#check CategoryTheory.linearCoyoneda.proof_4
-#check DistribLattice.copy.proof_11
-#check CategoryTheory.isColimitOfEffectiveEpiFamilyStruct.proof_3
-#check tangentMapWithin_comp_at
-#check LeftInvariantDerivation.hasNatScalar.proof_3
-#check Sym2.sym2EquivSym'.proof_5
-#check LinearIsometryEquiv.trans_assoc

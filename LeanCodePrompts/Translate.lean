@@ -9,8 +9,6 @@ import LeanCodePrompts.SpawnNearestEmbeddings
 import Std.Tactic.TryThis
 import Std.Util.Pickle
 
-import LeanCodePrompts.EgsTranslate
-
 open Lean Meta Elab Parser Command
 open Std.Tactic
 
