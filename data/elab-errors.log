@@ -915,3 +915,546 @@ typeclass instance problem is stuck, it is often due to metavariables
   [inst_3 : StarRing A] [inst_4 : Module R A] [inst_5 : IsScalarTower R A A] [inst_6 : SMulCommClass R A A]
   [inst_7 : StarModule R A], Monotone star)
 
+(∀ {α : Type ua} {β : Type ub} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : (a : α) → β},
+  (UniformContinuous f) ↔
+    (∀ (r : Set (β × β)) (a : r ∈ uniformity β), {x : α × α | (f (Prod.fst x), f (Prod.snd x)) ∈ r} ∈ uniformity α))
+unknown universe level 'ua' ; identifiers [α, ua, β, ub, inst, UniformSpace, α, inst_1, UniformSpace, β, f, a, α, β, UniformContinuous, f, r, Set, β, β, a, r, uniformity, β, x, α, α, f, Prod.fst, x, f, Prod.snd, x, r, uniformity, α] (during elaboration) for (∀ {α : Type ua} {β : Type ub} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : (a : α) → β},
+  (UniformContinuous f) ↔
+    (∀ (r : Set (β × β)) (a : r ∈ uniformity β), {x : α × α | (f (Prod.fst x), f (Prod.snd x)) ∈ r} ∈ uniformity α))
+
+(∀ {α : Type u_1} [inst : Preorder α] [inst_1 : OrderTop α] (x : ↑(Set.Iic ⊤)) (y : ↑(Set.Iic ⊤)),
+  (↑{ toFun := ((Equiv.toFun (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1))),
+            invFun := ((Equiv.invFun (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1))),
+            left_inv := (((Equiv.left_inv (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1)))),
+            right_inv := (((Equiv.right_inv (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1)))) }
+        x ≤
+      ↑{ toFun := ((Equiv.toFun (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1))),
+            invFun := ((Equiv.invFun (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1))),
+            left_inv := (((Equiv.left_inv (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1)))),
+            right_inv := (((Equiv.right_inv (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1)))) }
+        y) ↔
+    (↑{ toFun := ((Equiv.toFun (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1))),
+            invFun := ((Equiv.invFun (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1))),
+            left_inv := (((Equiv.left_inv (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1)))),
+            right_inv := (((Equiv.right_inv (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1)))) }
+        x ≤
+      ↑{ toFun := ((Equiv.toFun (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1))),
+            invFun := ((Equiv.invFun (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1))),
+            left_inv := (((Equiv.left_inv (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1)))),
+            right_inv := (((Equiv.right_inv (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1)))) }
+        y))
+type mismatch
+  Set.Iic ⊤
+has type
+  Set ?m.26 : Type ?u.25
+but is expected to have type
+  Sort ?u.21 : Type ?u.21 ; identifiers [α, u_1, inst, Preorder, α, inst_1, OrderTop, α, x, Set.Iic, y, Set.Iic, toFun, Equiv.toFun, Equiv.subtypeUnivEquiv, OrderIso.IicTop.proof_1, invFun, Equiv.invFun, Equiv.subtypeUnivEquiv, OrderIso.IicTop.proof_1, left_inv, Equiv.left_inv, Equiv.subtypeUnivEquiv, OrderIso.IicTop.proof_1, right_inv, Equiv.right_inv, Equiv.subtypeUnivEquiv, OrderIso.IicTop.proof_1, x, toFun, Equiv.toFun, Equiv.subtypeUnivEquiv, OrderIso.IicTop.proof_1, invFun, Equiv.invFun, Equiv.subtypeUnivEquiv, OrderIso.IicTop.proof_1, left_inv, Equiv.left_inv, Equiv.subtypeUnivEquiv, OrderIso.IicTop.proof_1, right_inv, Equiv.right_inv, Equiv.subtypeUnivEquiv, OrderIso.IicTop.proof_1, y, toFun, Equiv.toFun, Equiv.subtypeUnivEquiv, OrderIso.IicTop.proof_1, invFun, Equiv.invFun, Equiv.subtypeUnivEquiv, OrderIso.IicTop.proof_1, left_inv, Equiv.left_inv, Equiv.subtypeUnivEquiv, OrderIso.IicTop.proof_1, right_inv, Equiv.right_inv, Equiv.subtypeUnivEquiv, OrderIso.IicTop.proof_1, x, toFun, Equiv.toFun, Equiv.subtypeUnivEquiv, OrderIso.IicTop.proof_1, invFun, Equiv.invFun, Equiv.subtypeUnivEquiv, OrderIso.IicTop.proof_1, left_inv, Equiv.left_inv, Equiv.subtypeUnivEquiv, OrderIso.IicTop.proof_1, right_inv, Equiv.right_inv, Equiv.subtypeUnivEquiv, OrderIso.IicTop.proof_1, y] (during elaboration) for (∀ {α : Type u_1} [inst : Preorder α] [inst_1 : OrderTop α] (x : ↑(Set.Iic ⊤)) (y : ↑(Set.Iic ⊤)),
+  (↑{ toFun := ((Equiv.toFun (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1))),
+            invFun := ((Equiv.invFun (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1))),
+            left_inv := (((Equiv.left_inv (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1)))),
+            right_inv := (((Equiv.right_inv (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1)))) }
+        x ≤
+      ↑{ toFun := ((Equiv.toFun (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1))),
+            invFun := ((Equiv.invFun (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1))),
+            left_inv := (((Equiv.left_inv (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1)))),
+            right_inv := (((Equiv.right_inv (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1)))) }
+        y) ↔
+    (↑{ toFun := ((Equiv.toFun (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1))),
+            invFun := ((Equiv.invFun (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1))),
+            left_inv := (((Equiv.left_inv (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1)))),
+            right_inv := (((Equiv.right_inv (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1)))) }
+        x ≤
+      ↑{ toFun := ((Equiv.toFun (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1))),
+            invFun := ((Equiv.invFun (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1))),
+            left_inv := (((Equiv.left_inv (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1)))),
+            right_inv := (((Equiv.right_inv (Equiv.subtypeUnivEquiv OrderIso.IicTop.proof_1)))) }
+        y))
+
+(∀ {C : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} C] {A : C},
+  (CategoryTheory.IsSubterminal A) ↔ (∀ ⦃Z : C⦄ (f : Z ⟶ A) (g : Z ⟶ A), f = g))
+unknown universe level 'v₁' ; identifiers [C, u₁, inst, CategoryTheory.Category, v₁, u₁, C, A, C, CategoryTheory.IsSubterminal, A, Z, C, f, Z, A, g, Z, A, f, g] (during elaboration) for (∀ {C : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} C] {A : C},
+  (CategoryTheory.IsSubterminal A) ↔ (∀ ⦃Z : C⦄ (f : Z ⟶ A) (g : Z ⟶ A), f = g))
+
+(∀ {J : Type v} [inst : CategoryTheory.SmallCategory J] {F : CategoryTheory.Functor J CommRingCat} [inst_1 : SizeOf J],
+  sizeOf CommRingCat.Colimits.Prequotient.one = 1)
+typeclass instance problem is stuck, it is often due to metavariables
+  SizeOf (CommRingCat.Colimits.Prequotient ?m.13078) ; identifiers [J, v, inst, CategoryTheory.SmallCategory, J, F, CategoryTheory.Functor, J, CommRingCat, inst_1, SizeOf, J, sizeOf, CommRingCat.Colimits.Prequotient.one] (during elaboration) for (∀ {J : Type v} [inst : CategoryTheory.SmallCategory J] {F : CategoryTheory.Functor J CommRingCat} [inst_1 : SizeOf J],
+  sizeOf CommRingCat.Colimits.Prequotient.one = 1)
+
+(∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} {l : Filter α} {r : (a : β) → (a : γ) → Prop} {f : (a : α) → β}
+  {g : (a : α) → γ}, (Filter.Germ.LiftRel r ↑f ↑g) ↔ (∀ᶠ (x : α) in l, r (f x) (g x)))
+type mismatch
+  g
+has type
+  α → γ : Type (max u_1 u_3)
+but is expected to have type
+  Filter.Germ ?m.223 γ : Type (max ?u.30 u_3) ; identifiers [α, u_1, β, u_2, γ, u_3, l, Filter, α, r, a, β, a, γ, f, a, α, β, g, a, α, γ, Filter.Germ.LiftRel, r, f, g, x, α, l, r, f, x, g, x] (during elaboration) for (∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} {l : Filter α} {r : (a : β) → (a : γ) → Prop} {f : (a : α) → β}
+  {g : (a : α) → γ}, (Filter.Germ.LiftRel r ↑f ↑g) ↔ (∀ᶠ (x : α) in l, r (f x) (g x)))
+
+(∀ {J : Type u₁} [inst : SizeOf J], sizeOf CategoryTheory.Bicone.right = 1)
+typeclass instance problem is stuck, it is often due to metavariables
+  SizeOf (CategoryTheory.Bicone ?m.6881) ; identifiers [J, u₁, inst, SizeOf, J, sizeOf, CategoryTheory.Bicone.right] (during elaboration) for (∀ {J : Type u₁} [inst : SizeOf J], sizeOf CategoryTheory.Bicone.right = 1)
+
+(∀ {L : FirstOrder.Language} (M : Type w) [inst : FirstOrder.Language.Structure L M]
+  {φ : FirstOrder.Language.Sentence L}, (M ⊨ FirstOrder.Language.Formula.not φ) ↔ (¬(M ⊨ φ)))
+ambiguous, possible interpretations 
+  M ⊨ ?m.508 : Prop
+  
+  M ⊨ FirstOrder.Language.Formula.not φ : Prop ; identifiers [L, FirstOrder.Language, M, w, inst, FirstOrder.Language.Structure, L, M, φ, FirstOrder.Language.Sentence, L, M, FirstOrder.Language.Formula.not, φ, M, FirstOrder.Language.Formula.not, φ, M, φ, M, φ] (during elaboration) for (∀ {L : FirstOrder.Language} (M : Type w) [inst : FirstOrder.Language.Structure L M]
+  {φ : FirstOrder.Language.Sentence L}, (M ⊨ FirstOrder.Language.Formula.not φ) ↔ (¬(M ⊨ φ)))
+
+(∀ {J : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} J] [inst_1 : SizeOf J],
+  sizeOf CategoryTheory.BiconeHom.right_id = 1)
+unknown universe level 'v₁' ; identifiers [J, u₁, inst, CategoryTheory.Category, v₁, u₁, J, inst_1, SizeOf, J, sizeOf, CategoryTheory.BiconeHom.right_id] (during elaboration) for (∀ {J : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} J] [inst_1 : SizeOf J],
+  sizeOf CategoryTheory.BiconeHom.right_id = 1)
+
+(∀ {R : Type u_1} [inst : Semiring R] (h : IsField R) (a : R) (b : R), a / b = a / b)
+failed to synthesize instance
+  HDiv R R ?m.293 ; identifiers [R, u_1, inst, Semiring, R, h, IsField, R, a, R, b, R, a, b, a, b] (during elaboration) for (∀ {R : Type u_1} [inst : Semiring R] (h : IsField R) (a : R) (b : R), a / b = a / b)
+
+(∀ {α : Type u_1} {l : List α}, (Multiset.Nodup ↑l) ↔ (List.Nodup l))
+type mismatch
+  l
+has type
+  List α : Type u_1
+but is expected to have type
+  Multiset ?m.117 : Type u_1 ; identifiers [α, u_1, l, List, α, Multiset.Nodup, l, List.Nodup, l] (during elaboration) for (∀ {α : Type u_1} {l : List α}, (Multiset.Nodup ↑l) ↔ (List.Nodup l))
+
+(CategoryTheory.BundledHom.ParentProjection fun {α : Type u_1} (h : AddGroup α) ↦ SubNegMonoid.toAddMonoid)
+typeclass instance problem is stuck, it is often due to metavariables
+  SubNegMonoid ?m.41 ; identifiers [CategoryTheory.BundledHom.ParentProjection, α, u_1, h, AddGroup, α, SubNegMonoid.toAddMonoid] (during elaboration) for (CategoryTheory.BundledHom.ParentProjection fun {α : Type u_1} (h : AddGroup α) ↦ SubNegMonoid.toAddMonoid)
+
+(∀ {ι : Type uι} {E : Type uE} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] [inst_2 : FiniteDimensional ℝ E]
+  {H : Type uH} [inst_3 : TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] {s : Set M} [inst_7 : T2Space M]
+  {f : SmoothBumpCovering ι I M s} {U : (a : M) → Set M},
+  (BumpCovering.IsSubordinate (SmoothBumpCovering.toBumpCovering f) fun (i : ι) ↦ U (SmoothBumpCovering.c s f i)) ↔
+    (SmoothBumpCovering.IsSubordinate f U))
+unknown universe level 'uH' ; identifiers [ι, uι, E, uE, inst, NormedAddCommGroup, E, inst_1, NormedSpace, E, inst_2, FiniteDimensional, E, H, uH, inst_3, TopologicalSpace, H, I, ModelWithCorners, E, H, M, uM, inst_4, TopologicalSpace, M, inst_5, ChartedSpace, H, M, inst_6, SmoothManifoldWithCorners, I, M, s, Set, M, inst_7, T2Space, M, f, SmoothBumpCovering, ι, I, M, s, U, a, M, Set, M, BumpCovering.IsSubordinate, SmoothBumpCovering.toBumpCovering, f, i, ι, U, SmoothBumpCovering.c, s, f, i, SmoothBumpCovering.IsSubordinate, f, U] (during elaboration) for (∀ {ι : Type uι} {E : Type uE} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] [inst_2 : FiniteDimensional ℝ E]
+  {H : Type uH} [inst_3 : TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] {s : Set M} [inst_7 : T2Space M]
+  {f : SmoothBumpCovering ι I M s} {U : (a : M) → Set M},
+  (BumpCovering.IsSubordinate (SmoothBumpCovering.toBumpCovering f) fun (i : ι) ↦ U (SmoothBumpCovering.c s f i)) ↔
+    (SmoothBumpCovering.IsSubordinate f U))
+
+(∀ {α : Type u_2} {β : Type u_3} [inst : SMul α β] {f : Filter α} {g : Filter β} {t : Set β},
+  (t ∈ f • g) ↔ (∃ (t₁ : Set α), ∃ (t₂ : Set β), (t₁ ∈ f) ∧ ((t₂ ∈ g) ∧ (t₁ • t₂ ⊆ t))))
+failed to synthesize instance
+  HSMul (Filter α) (Filter β) ?m.33 ; identifiers [α, u_2, β, u_3, inst, SMul, α, β, f, Filter, α, g, Filter, β, t, Set, β, t, f, g, t₁, Set, α, t₂, Set, β, t₁, f, t₂, g, t₁, t₂, t] (during elaboration) for (∀ {α : Type u_2} {β : Type u_3} [inst : SMul α β] {f : Filter α} {g : Filter β} {t : Set β},
+  (t ∈ f • g) ↔ (∃ (t₁ : Set α), ∃ (t₂ : Set β), (t₁ ∈ f) ∧ ((t₂ ∈ g) ∧ (t₁ • t₂ ⊆ t))))
+
+(∀ {A : Type u_1} [inst : AddZeroClass A] {a : AddSubmonoid A} {b : AddSubmonoid A},
+  (↑{
+            toFun :=
+              ((fun (S : AddSubmonoid A) ↦
+                {
+                  toSubsemigroup :=
+                    (({ carrier := ((↑Multiplicative.toAdd ⁻¹' ↑S)),
+                      mul_mem' :=
+                        (((fun {a : Multiplicative A} ↦
+                          (_ :
+                            ∀ {b : Multiplicative A} (ha : a ∈ ↑Multiplicative.toAdd ⁻¹' ↑S)
+                              (hb : b ∈ ↑Multiplicative.toAdd ⁻¹' ↑S),
+                              ↑Multiplicative.toAdd a + ↑Multiplicative.toAdd b ∈
+                                AddSubsemigroup.carrier (AddSubmonoid.toAddSubsemigroup S))))) })),
+                  one_mem' := (((AddSubmonoid.zero_mem' S))) })),
+            invFun :=
+              ((fun (S : Submonoid (Multiplicative A)) ↦
+                {
+                  toAddSubsemigroup :=
+                    (({ carrier := ((↑Multiplicative.ofAdd ⁻¹' ↑S)),
+                      add_mem' :=
+                        (((fun {a : A} ↦
+                          (_ :
+                            ∀ {b : A} (ha : a ∈ ↑Multiplicative.ofAdd ⁻¹' ↑S) (hb : b ∈ ↑Multiplicative.ofAdd ⁻¹' ↑S),
+                              a * b ∈ Subsemigroup.carrier (Submonoid.toSubsemigroup S))))) })),
+                  zero_mem' := (((Submonoid.one_mem' S))) })),
+            left_inv :=
+              (((fun (x : AddSubmonoid A) ↦
+                (_ :
+                  (fun (S : Submonoid (Multiplicative A)) ↦
+                        {
+                          toAddSubsemigroup :=
+                            (({ carrier := ((↑Multiplicative.ofAdd ⁻¹' ↑S)),
+                              add_mem' :=
+                                (((fun {a : A} ↦
+                                  (_ :
+                                    ∀ {b : A} (ha : a ∈ ↑Multiplicative.ofAdd ⁻¹' ↑S)
+                                      (hb : b ∈ ↑Multiplicative.ofAdd ⁻¹' ↑S),
+                                      a * b ∈ Subsemigroup.carrier (Submonoid.toSubsemigroup S))))) })),
+                          zero_mem' := (((Submonoid.one_mem' S))) })
+                      ((fun (S : AddSubmonoid A) ↦
+                          {
+                            toSubsemigroup :=
+                              (({ carrier := ((↑Multiplicative.toAdd ⁻¹' ↑S)),
+                                mul_mem' :=
+                                  (((fun {a : Multiplicative A} ↦
+                                    (_ :
+                                      ∀ {b : Multiplicative A} (ha : a ∈ ↑Multiplicative.toAdd ⁻¹' ↑S)
+                                        (hb : b ∈ ↑Multiplicative.toAdd ⁻¹' ↑S),
+                                        ↑Multiplicative.toAdd a + ↑Multiplicative.toAdd b ∈
+                                          AddSubsemigroup.carrier (AddSubmonoid.toAddSubsemigroup S))))) })),
+                            one_mem' := (((AddSubmonoid.zero_mem' S))) })
+                        x) =
+                    x)))),
+            right_inv :=
+              (((fun (x : Submonoid (Multiplicative A)) ↦
+                (_ :
+                  (fun (S : AddSubmonoid A) ↦
+                        {
+                          toSubsemigroup :=
+                            (({ carrier := ((↑Multiplicative.toAdd ⁻¹' ↑S)),
+                              mul_mem' :=
+                                (((fun {a : Multiplicative A} ↦
+                                  (_ :
+                                    ∀ {b : Multiplicative A} (ha : a ∈ ↑Multiplicative.toAdd ⁻¹' ↑S)
+                                      (hb : b ∈ ↑Multiplicative.toAdd ⁻¹' ↑S),
+                                      ↑Multiplicative.toAdd a + ↑Multiplicative.toAdd b ∈
+                                        AddSubsemigroup.carrier (AddSubmonoid.toAddSubsemigroup S))))) })),
+                          one_mem' := (((AddSubmonoid.zero_mem' S))) })
+                      ((fun (S : Submonoid (Multiplicative A)) ↦
+                          {
+                            toAddSubsemigroup :=
+                              (({ carrier := ((↑Multiplicative.ofAdd ⁻¹' ↑S)),
+                                add_mem' :=
+                                  (((fun {a : A} ↦
+                                    (_ :
+                                      ∀ {b : A} (ha : a ∈ ↑Multiplicative.ofAdd ⁻¹' ↑S)
+                                        (hb : b ∈ ↑Multiplicative.ofAdd ⁻¹' ↑S),
+                                        a * b ∈ Subsemigroup.carrier (Submonoid.toSubsemigroup S))))) })),
+                            zero_mem' := (((Submonoid.one_mem' S))) })
+                        x) =
+                    x)))) }
+        a ≤
+      ↑{
+            toFun :=
+              ((fun (S : AddSubmonoid A) ↦
+                {
+                  toSubsemigroup :=
+                    (({ carrier := ((↑Multiplicative.toAdd ⁻¹' ↑S)),
+                      mul_mem' :=
+                        (((fun {a : Multiplicative A} ↦
+                          (_ :
+                            ∀ {b : Multiplicative A} (ha : a ∈ ↑Multiplicative.toAdd ⁻¹' ↑S)
+                              (hb : b ∈ ↑Multiplicative.toAdd ⁻¹' ↑S),
+                              ↑Multiplicative.toAdd a + ↑Multiplicative.toAdd b ∈
+                                AddSubsemigroup.carrier (AddSubmonoid.toAddSubsemigroup S))))) })),
+                  one_mem' := (((AddSubmonoid.zero_mem' S))) })),
+            invFun :=
+              ((fun (S : Submonoid (Multiplicative A)) ↦
+                {
+                  toAddSubsemigroup :=
+                    (({ carrier := ((↑Multiplicative.ofAdd ⁻¹' ↑S)),
+                      add_mem' :=
+                        (((fun {a : A} ↦
+                          (_ :
+                            ∀ {b : A} (ha : a ∈ ↑Multiplicative.ofAdd ⁻¹' ↑S) (hb : b ∈ ↑Multiplicative.ofAdd ⁻¹' ↑S),
+                              a * b ∈ Subsemigroup.carrier (Submonoid.toSubsemigroup S))))) })),
+                  zero_mem' := (((Submonoid.one_mem' S))) })),
+            left_inv :=
+              (((fun (x : AddSubmonoid A) ↦
+                (_ :
+                  (fun (S : Submonoid (Multiplicative A)) ↦
+                        {
+                          toAddSubsemigroup :=
+                            (({ carrier := ((↑Multiplicative.ofAdd ⁻¹' ↑S)),
+                              add_mem' :=
+                                (((fun {a : A} ↦
+                                  (_ :
+                                    ∀ {b : A} (ha : a ∈ ↑Multiplicative.ofAdd ⁻¹' ↑S)
+                                      (hb : b ∈ ↑Multiplicative.ofAdd ⁻¹' ↑S),
+                                      a * b ∈ Subsemigroup.carrier (Submonoid.toSubsemigroup S))))) })),
+                          zero_mem' := (((Submonoid.one_mem' S))) })
+                      ((fun (S : AddSubmonoid A) ↦
+                          {
+                            toSubsemigroup :=
+                              (({ carrier := ((↑Multiplicative.toAdd ⁻¹' ↑S)),
+                                mul_mem' :=
+                                  (((fun {a : Multiplicative A} ↦
+                                    (_ :
+                                      ∀ {b : Multiplicative A} (ha : a ∈ ↑Multiplicative.toAdd ⁻¹' ↑S)
+                                        (hb : b ∈ ↑Multiplicative.toAdd ⁻¹' ↑S),
+                                        ↑Multiplicative.toAdd a + ↑Multiplicative.toAdd b ∈
+                                          AddSubsemigroup.carrier (AddSubmonoid.toAddSubsemigroup S))))) })),
+                            one_mem' := (((AddSubmonoid.zero_mem' S))) })
+                        x) =
+                    x)))),
+            right_inv :=
+              (((fun (x : Submonoid (Multiplicative A)) ↦
+                (_ :
+                  (fun (S : AddSubmonoid A) ↦
+                        {
+                          toSubsemigroup :=
+                            (({ carrier := ((↑Multiplicative.toAdd ⁻¹' ↑S)),
+                              mul_mem' :=
+                                (((fun {a : Multiplicative A} ↦
+                                  (_ :
+                                    ∀ {b : Multiplicative A} (ha : a ∈ ↑Multiplicative.toAdd ⁻¹' ↑S)
+                                      (hb : b ∈ ↑Multiplicative.toAdd ⁻¹' ↑S),
+                                      ↑Multiplicative.toAdd a + ↑Multiplicative.toAdd b ∈
+                                        AddSubsemigroup.carrier (AddSubmonoid.toAddSubsemigroup S))))) })),
+                          one_mem' := (((AddSubmonoid.zero_mem' S))) })
+                      ((fun (S : Submonoid (Multiplicative A)) ↦
+                          {
+                            toAddSubsemigroup :=
+                              (({ carrier := ((↑Multiplicative.ofAdd ⁻¹' ↑S)),
+                                add_mem' :=
+                                  (((fun {a : A} ↦
+                                    (_ :
+                                      ∀ {b : A} (ha : a ∈ ↑Multiplicative.ofAdd ⁻¹' ↑S)
+                                        (hb : b ∈ ↑Multiplicative.ofAdd ⁻¹' ↑S),
+                                        a * b ∈ Subsemigroup.carrier (Submonoid.toSubsemigroup S))))) })),
+                            zero_mem' := (((Submonoid.one_mem' S))) })
+                        x) =
+                    x)))) }
+        b) ↔
+    (↑{
+            toFun :=
+              ((fun (S : AddSubmonoid A) ↦
+                {
+                  toSubsemigroup :=
+                    (({ carrier := ((↑Multiplicative.toAdd ⁻¹' ↑S)),
+                      mul_mem' :=
+                        (((fun {a : Multiplicative A} ↦
+                          (_ :
+                            ∀ {b : Multiplicative A} (ha : a ∈ ↑Multiplicative.toAdd ⁻¹' ↑S)
+                              (hb : b ∈ ↑Multiplicative.toAdd ⁻¹' ↑S),
+                              ↑Multiplicative.toAdd a + ↑Multiplicative.toAdd b ∈
+                                AddSubsemigroup.carrier (AddSubmonoid.toAddSubsemigroup S))))) })),
+                  one_mem' := (((AddSubmonoid.zero_mem' S))) })),
+            invFun :=
+              ((fun (S : Submonoid (Multiplicative A)) ↦
+                {
+                  toAddSubsemigroup :=
+                    (({ carrier := ((↑Multiplicative.ofAdd ⁻¹' ↑S)),
+                      add_mem' :=
+                        (((fun {a : A} ↦
+                          (_ :
+                            ∀ {b : A} (ha : a ∈ ↑Multiplicative.ofAdd ⁻¹' ↑S) (hb : b ∈ ↑Multiplicative.ofAdd ⁻¹' ↑S),
+                              a * b ∈ Subsemigroup.carrier (Submonoid.toSubsemigroup S))))) })),
+                  zero_mem' := (((Submonoid.one_mem' S))) })),
+            left_inv :=
+              (((fun (x : AddSubmonoid A) ↦
+                (_ :
+                  (fun (S : Submonoid (Multiplicative A)) ↦
+                        {
+                          toAddSubsemigroup :=
+                            (({ carrier := ((↑Multiplicative.ofAdd ⁻¹' ↑S)),
+                              add_mem' :=
+                                (((fun {a : A} ↦
+                                  (_ :
+                                    ∀ {b : A} (ha : a ∈ ↑Multiplicative.ofAdd ⁻¹' ↑S)
+                                      (hb : b ∈ ↑Multiplicative.ofAdd ⁻¹' ↑S),
+                                      a * b ∈ Subsemigroup.carrier (Submonoid.toSubsemigroup S))))) })),
+                          zero_mem' := (((Submonoid.one_mem' S))) })
+                      ((fun (S : AddSubmonoid A) ↦
+                          {
+                            toSubsemigroup :=
+                              (({ carrier := ((↑Multiplicative.toAdd ⁻¹' ↑S)),
+                                mul_mem' :=
+                                  (((fun {a : Multiplicative A} ↦
+                                    (_ :
+                                      ∀ {b : Multiplicative A} (ha : a ∈ ↑Multiplicative.toAdd ⁻¹' ↑S)
+                                        (hb : b ∈ ↑Multiplicative.toAdd ⁻¹' ↑S),
+                                        ↑Multiplicative.toAdd a + ↑Multiplicative.toAdd b ∈
+                                          AddSubsemigroup.carrier (AddSubmonoid.toAddSubsemigroup S))))) })),
+                            one_mem' := (((AddSubmonoid.zero_mem' S))) })
+                        x) =
+                    x)))),
+            right_inv :=
+              (((fun (x : Submonoid (Multiplicative A)) ↦
+                (_ :
+                  (fun (S : AddSubmonoid A) ↦
+                        {
+                          toSubsemigroup :=
+                            (({ carrier := ((↑Multiplicative.toAdd ⁻¹' ↑S)),
+                              mul_mem' :=
+                                (((fun {a : Multiplicative A} ↦
+                                  (_ :
+                                    ∀ {b : Multiplicative A} (ha : a ∈ ↑Multiplicative.toAdd ⁻¹' ↑S)
+                                      (hb : b ∈ ↑Multiplicative.toAdd ⁻¹' ↑S),
+                                      ↑Multiplicative.toAdd a + ↑Multiplicative.toAdd b ∈
+                                        AddSubsemigroup.carrier (AddSubmonoid.toAddSubsemigroup S))))) })),
+                          one_mem' := (((AddSubmonoid.zero_mem' S))) })
+                      ((fun (S : Submonoid (Multiplicative A)) ↦
+                          {
+                            toAddSubsemigroup :=
+                              (({ carrier := ((↑Multiplicative.ofAdd ⁻¹' ↑S)),
+                                add_mem' :=
+                                  (((fun {a : A} ↦
+                                    (_ :
+                                      ∀ {b : A} (ha : a ∈ ↑Multiplicative.ofAdd ⁻¹' ↑S)
+                                        (hb : b ∈ ↑Multiplicative.ofAdd ⁻¹' ↑S),
+                                        a * b ∈ Subsemigroup.carrier (Submonoid.toSubsemigroup S))))) })),
+                            zero_mem' := (((Submonoid.one_mem' S))) })
+                        x) =
+                    x)))) }
+        a ≤
+      ↑{
+            toFun :=
+              ((fun (S : AddSubmonoid A) ↦
+                {
+                  toSubsemigroup :=
+                    (({ carrier := ((↑Multiplicative.toAdd ⁻¹' ↑S)),
+                      mul_mem' :=
+                        (((fun {a : Multiplicative A} ↦
+                          (_ :
+                            ∀ {b : Multiplicative A} (ha : a ∈ ↑Multiplicative.toAdd ⁻¹' ↑S)
+                              (hb : b ∈ ↑Multiplicative.toAdd ⁻¹' ↑S),
+                              ↑Multiplicative.toAdd a + ↑Multiplicative.toAdd b ∈
+                                AddSubsemigroup.carrier (AddSubmonoid.toAddSubsemigroup S))))) })),
+                  one_mem' := (((AddSubmonoid.zero_mem' S))) })),
+            invFun :=
+              ((fun (S : Submonoid (Multiplicative A)) ↦
+                {
+                  toAddSubsemigroup :=
+                    (({ carrier := ((↑Multiplicative.ofAdd ⁻¹' ↑S)),
+                      add_mem' :=
+                        (((fun {a : A} ↦
+                          (_ :
+                            ∀ {b : A} (ha : a ∈ ↑Multiplicative.ofAdd ⁻¹' ↑S) (hb : b ∈ ↑Multiplicative.ofAdd ⁻¹' ↑S),
+                              a * b ∈ Subsemigroup.carrier (Submonoid.toSubsemigroup S))))) })),
+                  zero_mem' := (((Submonoid.one_mem' S))) })),
+            left_inv :=
+              (((fun (x : AddSubmonoid A) ↦
+                (_ :
+                  (fun (S : Submonoid (Multiplicative A)) ↦
+                        {
+                          toAddSubsemigroup :=
+                            (({ carrier := ((↑Multiplicative.ofAdd ⁻¹' ↑S)),
+                              add_mem' :=
+                                (((fun {a : A} ↦
+                                  (_ :
+                                    ∀ {b : A} (ha : a ∈ ↑Multiplicative.ofAdd ⁻¹' ↑S)
+                                      (hb : b ∈ ↑Multiplicative.ofAdd ⁻¹' ↑S),
+                                      a * b ∈ Subsemigroup.carrier (Submonoid.toSubsemigroup S))))) })),
+                          zero_mem' := (((Submonoid.one_mem' S))) })
+                      ((fun (S : AddSubmonoid A) ↦
+                          {
+                            toSubsemigroup :=
+                              (({ carrier := ((↑Multiplicative.toAdd ⁻¹' ↑S)),
+                                mul_mem' :=
+                                  (((fun {a : Multiplicative A} ↦
+                                    (_ :
+                                      ∀ {b : Multiplicative A} (ha : a ∈ ↑Multiplicative.toAdd ⁻¹' ↑S)
+                                        (hb : b ∈ ↑Multiplicative.toAdd ⁻¹' ↑S),
+                                        ↑Multiplicative.toAdd a + ↑Multiplicative.toAdd b ∈
+                                          AddSubsemigroup.carrier (AddSubmonoid.toAddSubsemigroup S))))) })),
+                            one_mem' := (((AddSubmonoid.zero_mem' S))) })
+                        x) =
+                    x)))),
+            right_inv :=
+              (((fun (x : Submonoid (Multiplicative A)) ↦
+                (_ :
+                  (fun (S : AddSubmonoid A) ↦
+                        {
+                          toSubsemigroup :=
+                            (({ carrier := ((↑Multiplicative.toAdd ⁻¹' ↑S)),
+                              mul_mem' :=
+                                (((fun {a : Multiplicative A} ↦
+                                  (_ :
+                                    ∀ {b : Multiplicative A} (ha : a ∈ ↑Multiplicative.toAdd ⁻¹' ↑S)
+                                      (hb : b ∈ ↑Multiplicative.toAdd ⁻¹' ↑S),
+                                      ↑Multiplicative.toAdd a + ↑Multiplicative.toAdd b ∈
+                                        AddSubsemigroup.carrier (AddSubmonoid.toAddSubsemigroup S))))) })),
+                          one_mem' := (((AddSubmonoid.zero_mem' S))) })
+                      ((fun (S : Submonoid (Multiplicative A)) ↦
+                          {
+                            toAddSubsemigroup :=
+                              (({ carrier := ((↑Multiplicative.ofAdd ⁻¹' ↑S)),
+                                add_mem' :=
+                                  (((fun {a : A} ↦
+                                    (_ :
+                                      ∀ {b : A} (ha : a ∈ ↑Multiplicative.ofAdd ⁻¹' ↑S)
+                                        (hb : b ∈ ↑Multiplicative.ofAdd ⁻¹' ↑S),
+                                        a * b ∈ Subsemigroup.carrier (Submonoid.toSubsemigroup S))))) })),
+                            zero_mem' := (((Submonoid.one_mem' S))) })
+                        x) =
+                    x)))) }
+        b))
+<input>:8:22: expected '}'
+
+(∀ {G : Type u_1} [inst : Group G] {S : Type u_6} (H : S) [inst_1 : SetLike S G] [inst_2 : SubgroupClass S G],
+  ↑↑H = Subtype.val)
+type mismatch
+  H
+has type
+  S : Type u_6
+but is expected to have type
+  Subtype (?m.164168 H) → ?m.164167 H : Sort (imax (max 1 ?u.147) ?u.147) ; identifiers [G, u_1, inst, Group, G, S, u_6, H, S, inst_1, SetLike, S, G, inst_2, SubgroupClass, S, G, H, Subtype.val] (during elaboration) for (∀ {G : Type u_1} [inst : Group G] {S : Type u_6} (H : S) [inst_1 : SetLike S G] [inst_2 : SubgroupClass S G],
+  ↑↑H = Subtype.val)
+
+(∀ {α : Type u_1} [inst : Preorder α] {a : ↑Set.univ} {b : ↑Set.univ},
+  (↑(Equiv.Set.univ α) a ≤ ↑(Equiv.Set.univ α) b) ↔ (↑(Equiv.Set.univ α) a ≤ ↑(Equiv.Set.univ α) b))
+type mismatch
+  Set.univ
+has type
+  Set ?m.9 : Type ?u.8
+but is expected to have type
+  Sort ?u.7 : Type ?u.7 ; identifiers [α, u_1, inst, Preorder, α, a, Set.univ, b, Set.univ, Equiv.Set.univ, α, a, Equiv.Set.univ, α, b, Equiv.Set.univ, α, a, Equiv.Set.univ, α, b] (during elaboration) for (∀ {α : Type u_1} [inst : Preorder α] {a : ↑Set.univ} {b : ↑Set.univ},
+  (↑(Equiv.Set.univ α) a ≤ ↑(Equiv.Set.univ α) b) ↔ (↑(Equiv.Set.univ α) a ≤ ↑(Equiv.Set.univ α) b))
+
+(∀ {J : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} J] [inst_1 : SizeOf J],
+  sizeOf CategoryTheory.BiconeHom.left_id = 1)
+unknown universe level 'v₁' ; identifiers [J, u₁, inst, CategoryTheory.Category, v₁, u₁, J, inst_1, SizeOf, J, sizeOf, CategoryTheory.BiconeHom.left_id] (during elaboration) for (∀ {J : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} J] [inst_1 : SizeOf J],
+  sizeOf CategoryTheory.BiconeHom.left_id = 1)
+
+(∀ {R : Type u} [inst : Ring R] {J : Type w} [inst_1 : CategoryTheory.Category.{v, w} J]
+  {F : CategoryTheory.Functor J (ModuleCat R)} [inst_2 : SizeOf R] [inst_3 : SizeOf J],
+  sizeOf ModuleCat.Colimits.Prequotient.zero = 1)
+typeclass instance problem is stuck, it is often due to metavariables
+  SizeOf (ModuleCat.Colimits.Prequotient ?m.13886) ; identifiers [R, u, inst, Ring, R, J, w, inst_1, CategoryTheory.Category, v, w, J, F, CategoryTheory.Functor, J, ModuleCat, R, inst_2, SizeOf, R, inst_3, SizeOf, J, sizeOf, ModuleCat.Colimits.Prequotient.zero] (during elaboration) for (∀ {R : Type u} [inst : Ring R] {J : Type w} [inst_1 : CategoryTheory.Category.{v, w} J]
+  {F : CategoryTheory.Functor J (ModuleCat R)} [inst_2 : SizeOf R] [inst_3 : SizeOf J],
+  sizeOf ModuleCat.Colimits.Prequotient.zero = 1)
+
+(∀ {R : Type u_1} {R₂ : Type u_3} {M : Type u_9} {M₂ : Type u_12} [inst : Semiring R] [inst_1 : Semiring R₂]
+  [inst_2 : AddCommMonoid M] [inst_3 : AddCommMonoid M₂] [inst_4 : Module R M] [inst_5 : Module R₂ M₂] {τ₁₂ : R →+* R₂}
+  {F : Type u_20} [sc : SemilinearMapClass F τ₁₂ M M₂] [inst_6 : RingHomSurjective τ₁₂] {f : F} {x : M₂},
+  (x ∈ LinearMap.range f) ↔ (∃ (y : M), ↑f y = x))
+unknown universe level 'u_12' ; identifiers [R, u_1, R₂, u_3, M, u_9, M₂, u_12, inst, Semiring, R, inst_1, Semiring, R₂, inst_2, AddCommMonoid, M, inst_3, AddCommMonoid, M₂, inst_4, Module, R, M, inst_5, Module, R₂, M₂, τ₁₂, R, R₂, F, u_20, sc, SemilinearMapClass, F, τ₁₂, M, M₂, inst_6, RingHomSurjective, τ₁₂, f, F, x, M₂, x, LinearMap.range, f, y, M, f, y, x] (during elaboration) for (∀ {R : Type u_1} {R₂ : Type u_3} {M : Type u_9} {M₂ : Type u_12} [inst : Semiring R] [inst_1 : Semiring R₂]
+  [inst_2 : AddCommMonoid M] [inst_3 : AddCommMonoid M₂] [inst_4 : Module R M] [inst_5 : Module R₂ M₂] {τ₁₂ : R →+* R₂}
+  {F : Type u_20} [sc : SemilinearMapClass F τ₁₂ M M₂] [inst_6 : RingHomSurjective τ₁₂] {f : F} {x : M₂},
+  (x ∈ LinearMap.range f) ↔ (∃ (y : M), ↑f y = x))
+
+(∀ {α : Type u} [inst : SizeOf α], sizeOf none = 1)
+typeclass instance problem is stuck, it is often due to metavariables
+  SizeOf (Option ?m.6881) ; identifiers [α, u, inst, SizeOf, α, sizeOf, none] (during elaboration) for (∀ {α : Type u} [inst : SizeOf α], sizeOf none = 1)
+
+(∀ {M : Type u_1} [hM : MonoidWithZero M] (h : ∀ (a : M), (IsUnit a) ∨ (a = 0)) (a : M) (b : M), a / b = a / b)
+failed to synthesize instance
+  HDiv M M ?m.779 ; identifiers [M, u_1, hM, MonoidWithZero, M, h, a, M, IsUnit, a, a, a, M, b, M, a, b, a, b] (during elaboration) for (∀ {M : Type u_1} [hM : MonoidWithZero M] (h : ∀ (a : M), (IsUnit a) ∨ (a = 0)) (a : M) (b : M), a / b = a / b)
+
+(∀ {α : Type u} [inst : SizeOf α], sizeOf LazyList.nil = 1)
+typeclass instance problem is stuck, it is often due to metavariables
+  SizeOf (LazyList ?m.6881) ; identifiers [α, u, inst, SizeOf, α, sizeOf, LazyList.nil] (during elaboration) for (∀ {α : Type u} [inst : SizeOf α], sizeOf LazyList.nil = 1)
+
+(∀ {X : TopCat} {x : ↑X} {y : ↑X} (e : Inseparable x y), nhds y ≤ nhds x)
+type mismatch
+  X
+has type
+  TopCat : Type (?u.3 + 1)
+but is expected to have type
+  Sort ?u.5 : Type ?u.5 ; identifiers [X, TopCat, x, X, y, X, e, Inseparable, x, y, nhds, y, nhds, x] (during elaboration) for (∀ {X : TopCat} {x : ↑X} {y : ↑X} (e : Inseparable x y), nhds y ≤ nhds x)
+
+(∀ {K : Type u_1} {Γ : (a : K) → Type u_2} {Λ : Type u_3} {σ : Type u_4} [inst : SizeOf K]
+  [inst_1 : (a : K) → SizeOf (Γ a)] [inst_2 : SizeOf Λ] [inst_3 : SizeOf σ] (a : (a : σ) → Λ),
+  sizeOf (Turing.TM2.Stmt.goto a) = 1)
+typeclass instance problem is stuck, it is often due to metavariables
+  SizeOf (Turing.TM2.Stmt (?m.6994 a) Λ σ) ; identifiers [K, u_1, Γ, a, K, u_2, Λ, u_3, σ, u_4, inst, SizeOf, K, inst_1, a, K, SizeOf, Γ, a, inst_2, SizeOf, Λ, inst_3, SizeOf, σ, a, a, σ, Λ, sizeOf, Turing.TM2.Stmt.goto, a] (during elaboration) for (∀ {K : Type u_1} {Γ : (a : K) → Type u_2} {Λ : Type u_3} {σ : Type u_4} [inst : SizeOf K]
+  [inst_1 : (a : K) → SizeOf (Γ a)] [inst_2 : SizeOf Λ] [inst_3 : SizeOf σ] (a : (a : σ) → Λ),
+  sizeOf (Turing.TM2.Stmt.goto a) = 1)
+
+(∀ {α : Type u_2} {β : Type u_3} [inst : SMul α β] {t : Set β} {a : α} {x : β},
+  (x ∈ a • t) ↔ (∃ (y : β), (y ∈ t) ∧ (a • y = x)))
+failed to synthesize instance
+  HSMul α (Set β) ?m.29 ; identifiers [α, u_2, β, u_3, inst, SMul, α, β, t, Set, β, a, α, x, β, x, a, t, y, β, y, t, a, y, x] (during elaboration) for (∀ {α : Type u_2} {β : Type u_3} [inst : SMul α β] {t : Set β} {a : α} {x : β},
+  (x ∈ a • t) ↔ (∃ (y : β), (y ∈ t) ∧ (a • y = x)))
+
+(∀ {R : Type u} {A : Type v} [inst : CommSemiring R] [inst_1 : StarRing R] [inst_2 : NonUnitalSemiring A]
+  [inst_3 : StarRing A] [inst_4 : Module R A] [inst_5 : IsScalarTower R A A] [inst_6 : SMulCommClass R A A]
+  [inst_7 : StarModule R A], Monotone star)
+typeclass instance problem is stuck, it is often due to metavariables
+  Preorder ?m.10739 ; identifiers [R, u, A, v, inst, CommSemiring, R, inst_1, StarRing, R, inst_2, NonUnitalSemiring, A, inst_3, StarRing, A, inst_4, Module, R, A, inst_5, IsScalarTower, R, A, A, inst_6, SMulCommClass, R, A, A, inst_7, StarModule, R, A, Monotone, star] (during elaboration) for (∀ {R : Type u} {A : Type v} [inst : CommSemiring R] [inst_1 : StarRing R] [inst_2 : NonUnitalSemiring A]
+  [inst_3 : StarRing A] [inst_4 : Module R A] [inst_5 : IsScalarTower R A A] [inst_6 : SMulCommClass R A A]
+  [inst_7 : StarModule R A], Monotone star)
+
