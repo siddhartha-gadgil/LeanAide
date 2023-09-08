@@ -135,8 +135,6 @@ def consTactics (h: TSyntax `tactic)(s : TSyntax ``tacticSeq):
       `(tacticSeq| $[$ts']*)
   | _ => pure s
 
-#check Array.append
-
 def threadNum : IO Nat := do
   try
     let info ←  IO.FS.readFile <| System.mkFilePath ["/", "proc", "cpuinfo"]
@@ -173,10 +171,6 @@ def List.batches' (l: List α)(numBatches: Nat) : List (List α) :=
 
 def Array.batches' (l: Array α)(numBatches: Nat) : Array (Array α) :=
   (l.toList.batches' numBatches).map (fun l => l.toArray) |>.toArray
-
-#check Json.compress
-
-#check Option.mapM
 
 @[inline] protected def Except.mapM [Monad m] (f : α → m β) 
     (o : Except ε α) : m (Except ε β) := do

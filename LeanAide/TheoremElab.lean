@@ -152,11 +152,11 @@ def elabView (s : String)(opens: List String := [])
 ### Examples for parsing and elaboration
 -/
 
-#eval elabView "theorem (n : Nat) {m: Type} : n  = n"
-#eval elabView "theorem my_name (n : Nat) {m: Type} : n  = n"
-#eval elabView "(n : Nat)  : n  + 1 < n"
-#eval elabView "def eg (n : Nat)  : n  + 1 < n"
-#eval elabView "def  (n : Nat)  : n  + 1 < n"
+-- #eval elabView "theorem (n : Nat) {m: Type} : n  = n"
+-- #eval elabView "theorem my_name (n : Nat) {m: Type} : n  = n"
+-- #eval elabView "(n : Nat)  : n  + 1 < n"
+-- #eval elabView "def eg (n : Nat)  : n  + 1 < n"
+-- #eval elabView "def  (n : Nat)  : n  + 1 < n"
 
 
 

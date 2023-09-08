@@ -13,8 +13,8 @@ def lean4Name? (name: Name) : MetaM (Option Name) := do
   | some name =>
     pure name
 
-#eval lean4Name? `nat.prime -- some (`Nat.Prime, true)
-#eval lean4Name? `nat -- some (`Nat, true)
+-- #eval lean4Name? `nat.prime -- some (`Nat.Prime, true)
+-- #eval lean4Name? `nat -- some (`Nat, true)
 
 partial def lean4NamesSyntax : Syntax → MetaM Syntax := fun stx => do
 match stx with
@@ -56,5 +56,5 @@ elab "lean3named" t:term : term => do
   let t' ← lean4NamesSyntax t
   elabTerm t' none 
 
-#check lean3named nat.prime
-#check lean3named (fun (n: Nat) ↦ nat.prime n) -- handles a mix fine
+-- #check lean3named nat.prime
+-- #check lean3named (fun (n: Nat) ↦ nat.prime n) -- handles a mix fine
