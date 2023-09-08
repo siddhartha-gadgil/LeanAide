@@ -37,6 +37,7 @@ unsafe def show_nearest_full (stdin stdout : IO.FS.Stream)
 
 unsafe def main (args: List String) : IO Unit := do
   logTimed "starting nearest embedding process"
+  IO.eprintln "started process"
   let picklePath : System.FilePath := "build/lib/mathlib4-prompts-embeddings.olean"
   unless ← picklePath.pathExists do
     IO.eprintln "Fetching embeddings ..."
@@ -46,11 +47,14 @@ unsafe def main (args: List String) : IO Unit := do
     }
     IO.eprintln out
   logTimed "found/downloaded pickle"
+  IO.eprintln "found/downloaded pickle"
   withUnpickle  picklePath <| 
     fun (data : Array <| (String × String × Bool) ×  FloatArray) => do
+      IO.eprintln "got pickle as data"
       let doc? := args[0]?
       match doc? with
       | some doc => 
+        IO.eprintln s!"neighbours for argument : `{doc}"
         if doc = ":wake:" then
           logTimed "waking up"
           let stdin ← IO.getStdin
@@ -59,6 +63,7 @@ unsafe def main (args: List String) : IO Unit := do
         else
           let num := (args[1]?.bind fun s => s.toNat?).getD 10
           logTimed s!"finding nearest to `{doc}`"
+          IO.eprintln s!"finding nearest to `{doc}`"
           let embs ← nearestDocsToDocFull data doc num (penalty := 2.0)
           logTimed "found nearest"
           IO.println <| 
