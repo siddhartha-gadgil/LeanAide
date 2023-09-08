@@ -249,23 +249,23 @@ partial def runInRelForallCtx (decls: List Syntax)(c: TermElabM Expr) : TermElab
 def parseContext (s: String) : CoreM <| Except String Syntax := do 
     return parseGroup (← getEnv) s [letDecl, funBinder, funImplicitBinder, funStrictImplicitBinder, instBinder]
 
-#eval parseContext "x : Nat := 0"
-#eval parseContext "(x : Nat)"
+-- #eval parseContext "x : Nat := 0"
+-- #eval parseContext "(x : Nat)"
 
 def roundTripCtx (s: String) : CoreM String := do
     let stx? ← parseContext s
     declToString stx?.toOption.get!
 
-#eval roundTripCtx "x : Nat := 0"
-#eval roundTripCtx "(x : Nat)"
-#eval roundTripCtx "{_ : Nat}"
+-- #eval roundTripCtx "x : Nat := 0"
+-- #eval roundTripCtx "(x : Nat)"
+-- #eval roundTripCtx "{_ : Nat}"
 
-#check mkFreshUserName
+-- #check mkFreshUserName
 def egName : MetaM Name :=
     withLocalDecl `n BinderInfo.default (mkConst ``Nat) fun _ => do
     let nn := (← getLCtx).getUnusedName `n
     return nn
-#eval egName
+-- #eval egName
 
 open Tactic Term
 def introInContext (ctx : List String)(term: String) : TacticM Unit := 
