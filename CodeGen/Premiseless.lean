@@ -1313,6 +1313,11 @@ simp_all only [ge_iff_le, SimpleGraph.inf_adj]
 
 
 #print ONote.fundamentalSequenceProp_inl_some
+example : ∀ (o a : ONote),
+  ONote.FundamentalSequenceProp o (Sum.inl (some a)) ↔
+    ONote.repr o = Order.succ (ONote.repr a) ∧ (ONote.NF o → ONote.NF a) :=by 
+    aesop? (add safe apply Iff.rfl)
+
 
 #check TopCat.Presheaf.stalkCongr.proof_1 -- not elaborated
 
