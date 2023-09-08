@@ -64,7 +64,7 @@ def serial (testLines : Array String)(preChecked: Bool := false) : IO Unit := do
         IO.println "launching proof search"
         let core := 
           proofSearchCore corePremise.thm 
-            {apps := ids.map (·, 0.5), safeApps := ids}
+            {apps := ids.map (·, 0.5), safeApps := #[``Iff.rfl]}
         let (elaborated, proved, code?) ← 
           core.run' coreContext {env := env} |>.runToIO'
         IO.println "finished proof search"
