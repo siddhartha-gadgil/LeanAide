@@ -2,6 +2,8 @@ import LeanSlides
 import Mathlib
 import LeanCodePrompts.Translate
 
+#set_pandoc_options "-V" "theme=white"
+
 #slides Introduction /-!
 
 % LeanAIde
@@ -31,7 +33,7 @@ import LeanCodePrompts.Translate
 -/
 
 /-! ## A quick demonstration of the tool -/
-theorem infinitude_odds : ∀ (n : ℕ), ∃ m, m > n ∧ m % 2 = 1 := 
+theorem infinitude_odds : ∀ (n : ℕ), ∃ m, m > n ∧ Odd m := 
   by sorry
 
 #slides Prompting /-!
@@ -45,13 +47,20 @@ strong effect on the output.
 A few possible prompting styles for autoformalisation include:
 
 - Direct (zero-shot) prompting
-- Fixed few-shot prompting
-- Input-dependent promptings 
+- (Fixed) few-shot prompting
+- Input-dependent prompting
 
 -/
 
 /-! ## The closest embeddings to the given statement -/
-#eval getNearestEmbeddingsFull "Every even number can be written as the sum of two primes" 6 2.0
+
+elab "#nearest_embeddings" stmt:str : command => do
+  let embeddingsRaw ← getNearestEmbeddingsFull stmt.getString 6
+  let embeddingsJson ← IO.ofExcept <| Lean.Json.parse embeddingsRaw >>= Lean.Json.getArr?
+  for embedding in embeddingsJson do
+    IO.println embedding 
+
+#nearest_embeddings "Every even number can be written as the sum of two primes"
 
 #slides Details /-!
 
@@ -71,27 +80,19 @@ semantic relationships between them.
 
 The embedding of the input statement is computed (using OpenAI embeddings)
 and compared with stored embeddings of
-`Mathlib` doc-strings to identify the most similar ones., i.e.,
+`Mathlib` doc-strings to identify the most similar ones.
 
 # Prompting
 
 The prompt to the language model is assembled from the sentence embeddings
-as an alternating dialogue of doc-strings ("from the user") and their corresponding Lean formal statements ("from the assistant").
+as an alternating dialogue of 
+doc-strings ("from the user") and 
+their corresponding Lean formal statements ("from the assistant").
 
 This is sent as a query to the `OpenAI GPT-3.5 Turbo` or `GPT-4` language model via an API call.
 
 Additional configuration options permit adding a few fixed examples to the prompt
 and also using theorems with doc-strings from the current editor window.
-
-# Post-processing
-
-A large part of the Lean mathematics library
-was developed in the `Lean 3` proof assistant,
-before recently transitioning to `Lean 4`.
-
-As `Lean 3` code forms a larger portion of the 
-model's training data, we post-process the output
-to transform any `Lean 3` syntax into `Lean 4`.
 
 # Elaboration filtering
 
@@ -111,8 +112,6 @@ the `aesop` automation tool and
 - a representative of the most common translation is then presented to the user.
 
 -/
-
--- TODO: Example which does not elaborate
 
 #slides Evaluation /-!
 
@@ -140,6 +139,22 @@ consisting of 371 theorem statements drawn from
 various undergraduate pure mathematics textbooks.
 
 # Results
+
+*Parameters:* 20 input-dependent prompts, 10 outputs per sentence, temperature 0.8
+
+|                  | Total | Number elaborated | Number correct |
+|------------------|-------|-------------------|----------------|
+|Normal statements |  40   |         37        |       36       |
+|Silly statements  |  40   |         39        |       36       |
+|False statements  |  37   |         31        |       28       |
+
+**Overall success rate:** 85%
+
+# Results on ProofNet dataset
+
+| Total | Number elaborated | Number correct |
+| 100   |        69         |      37        |
+
 
 
 -/
@@ -209,5 +224,9 @@ vastly more approachable.
  SIGPLAN International Conference on Certified Programs and Proofs. 2020,pp. 85–98.
 - Yuhuai Wu et al. “Autoformalization with large language models”. 
   In: Advances in Neural Information Processing Systems 35 (2022), pp. 32353–32368.
+- Jannis Limperg and Asta Halkjær From. “Aesop: White-Box Best-First
+  Proof Search for Lean”. In: Proceedings of the 12th ACM SIGPLAN In-
+  ternational Conference on Certified Programs and Proofs. 2023, pp. 253–
+  266.
 
 -/
