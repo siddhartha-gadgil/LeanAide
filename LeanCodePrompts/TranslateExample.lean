@@ -15,7 +15,7 @@ import LeanCodePrompts.Translate
 
 #eval translateViewM "Every prime number is either `2` or odd"
 
-theorem infinitude_odds : l!"There are infinitely many odd numbers" :=
+theorem infinitude_odds : l!"There are infinitely many even numbers" :=
   by
     sorry 
 
