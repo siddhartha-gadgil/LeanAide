@@ -54,13 +54,13 @@ A few possible prompting styles for autoformalisation include:
 
 /-! ## The closest doc-strings to the given statement -/
 
-elab "#nearest_docstrings" stmt:str : command => do
-  let embeddingsRaw ← getNearestEmbeddingsFull stmt.getString 6
+elab "#nearest_docstrings" stmt:str n:num : command => do
+  let embeddingsRaw ← getNearestEmbeddingsFull stmt.getString n.getNat
   let embeddingsJson ← IO.ofExcept <| Lean.Json.parse embeddingsRaw >>= Lean.Json.getArr?
   for embedding in embeddingsJson do
     IO.println embedding 
 
-#nearest_docstrings "Every even number can be written as the sum of two primes"
+#nearest_docstrings "Every even number can be written as the sum of two primes" 6
 
 #slides Details /-!
 
@@ -119,7 +119,7 @@ the `aesop` automation tool and
 
 The `LeanAIde` tool is tested against two datasets:
 
-- A custom data-set of around 120 theorem statements at the undergraudate level
+- A custom data-set of around 120 theorem statements at the undergraduate level
 - The `ProofNet` benchmark for statement autoformalisation
 
 # Custom Dataset
@@ -233,5 +233,43 @@ vastly more approachable.
   Proof Search for Lean”. In: Proceedings of the 12th ACM SIGPLAN In-
   ternational Conference on Certified Programs and Proofs. 2023, pp. 253–
   266.
+
+-/
+
+#slides +draft Effects /-!
+
+# Effects of input-dependent prompting
+
+Comparison between fixed and input-dependent
+prompting for four prompts and ten outputs:
+
+---
+
+**Normal theorem statements**
+
+|                           | Total | Number elaborated | Number correct |
+|---------------------------|-------|-------------------|----------------|
+| Input-dependent prompting |  40   |        36         |        32      |
+|    Fixed prompting        |  40   |        32         |        21      |
+
+---
+
+**Silly theorem statements**
+
+|                           | Total | Number elaborated | Number correct |
+|---------------------------|-------|-------------------|----------------|
+| Input-dependent prompting |  40   |        34         |        33      |
+|    Fixed prompting        |  40   |        33         |        28      |
+
+# Effects of post-processing
+
+Comparison of filtering and clustering with
+greedy sampling at temperature zero, for
+10 input-dependent prompts.
+
+|                                     | Total | Number elaborated | Number correct |
+|-------------------------------------|-------|-------------------|----------------|
+| Greedy sampling (normal statements) |  40   |        31         |        30      |
+| Greedy sampling (silly statements)  |  40   |        34         |        33      |
 
 -/
