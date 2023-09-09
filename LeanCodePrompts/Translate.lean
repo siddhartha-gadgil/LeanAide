@@ -32,6 +32,17 @@ register_option lean_aide.translate.definition_penalty : Nat :=
     group := "lean_aide.translate"
     descr := "Penalty for a prompt being from a definition scaled by 10" }
 
+register_option lean_aide.translate.model : String :=
+  { defValue := "gpt-3.5-turbo"
+    group := "lean_aide.translate"
+    descr := "Model to use (gpt-3.5-turbo)." }
+
+register_option lean_aide.translate.embedding : String :=
+  { defValue := "openai_full"
+    group := "lean_aide.translate"
+    descr := "Embedding to use." }
+
+
 def promptSize : CoreM Nat := do
   return  lean_aide.translate.prompt_size.get (← getOptions)
   
@@ -701,8 +712,8 @@ open PrettyPrinter
   | `(l! $s:str) =>
   let s := s.getString
   let js ← 
-    getCodeJson  s (numSim := lean_aide.translate.prompt_size.get (← getOptions)) (queryNum := lean_aide.translate.choices.get (← getOptions)) (model := "gpt-3.5-turbo") 
-      (embedding := "openai_full")
+    getCodeJson  s (numSim := lean_aide.translate.prompt_size.get (← getOptions)) (queryNum := lean_aide.translate.choices.get (← getOptions)) (model := lean_aide.translate.model.get (← getOptions)) 
+      (embedding := lean_aide.translate.embedding.get (← getOptions))
   let e ← jsonToExpr' js
   logTimed "obtained expression"
   let stx' ← delab e
