@@ -2,6 +2,8 @@ import LeanSlides
 import Mathlib
 import LeanCodePrompts.Translate
 
+#set_pandoc_options "-V" "theme=white"
+
 #slides Introduction /-!
 
 % LeanAIde
@@ -31,7 +33,7 @@ import LeanCodePrompts.Translate
 -/
 
 /-! ## A quick demonstration of the tool -/
-theorem infinitude_odds : ∀ (n : ℕ), ∃ m, m > n ∧ m % 2 = 1 := 
+theorem infinitude_odds : ∀ (n : ℕ), ∃ m, m > n ∧ Odd m := 
   by sorry
 
 #slides Prompting /-!
@@ -45,13 +47,20 @@ strong effect on the output.
 A few possible prompting styles for autoformalisation include:
 
 - Direct (zero-shot) prompting
-- Fixed few-shot prompting
-- Input-dependent promptings 
+- (Fixed) few-shot prompting
+- Input-dependent prompting
 
 -/
 
-/-! ## The closest embeddings to the given statement -/
-#eval getNearestEmbeddingsFull "Every even number can be written as the sum of two primes" 6 2.0
+/-! ## The closest doc-strings to the given statement -/
+
+elab "#nearest_docstrings" stmt:str n:num : command => do
+  let embeddingsRaw ← getNearestEmbeddingsFull stmt.getString n.getNat
+  let embeddingsJson ← IO.ofExcept <| Lean.Json.parse embeddingsRaw >>= Lean.Json.getArr?
+  for embedding in embeddingsJson do
+    IO.println embedding 
+
+#nearest_docstrings "Every even number can be written as the sum of two primes" 6
 
 #slides Details /-!
 
@@ -71,27 +80,19 @@ semantic relationships between them.
 
 The embedding of the input statement is computed (using OpenAI embeddings)
 and compared with stored embeddings of
-`Mathlib` doc-strings to identify the most similar ones., i.e.,
+`Mathlib` doc-strings to identify the most similar ones.
 
 # Prompting
 
 The prompt to the language model is assembled from the sentence embeddings
-as an alternating dialogue of doc-strings ("from the user") and their corresponding Lean formal statements ("from the assistant").
+as an alternating dialogue of 
+doc-strings ("from the user") and 
+their corresponding Lean formal statements ("from the assistant").
 
 This is sent as a query to the `OpenAI GPT-3.5 Turbo` or `GPT-4` language model via an API call.
 
 Additional configuration options permit adding a few fixed examples to the prompt
 and also using theorems with doc-strings from the current editor window.
-
-# Post-processing
-
-A large part of the Lean mathematics library
-was developed in the `Lean 3` proof assistant,
-before recently transitioning to `Lean 4`.
-
-As `Lean 3` code forms a larger portion of the 
-model's training data, we post-process the output
-to transform any `Lean 3` syntax into `Lean 4`.
 
 # Elaboration filtering
 
@@ -112,15 +113,13 @@ the `aesop` automation tool and
 
 -/
 
--- TODO: Example which does not elaborate
-
 #slides Evaluation /-!
 
 # Evaluation
 
 The `LeanAIde` tool is tested against two datasets:
 
-- A custom data-set of around 120 theorem statements at the undergraudate level
+- A custom data-set of around 120 theorem statements at the undergraduate level
 - The `ProofNet` benchmark for statement autoformalisation
 
 # Custom Dataset
@@ -141,6 +140,27 @@ various undergraduate pure mathematics textbooks.
 
 # Results
 
+*Parameters:* 20 input-dependent prompts, 10 outputs per sentence, temperature 0.8
+
+|                  | Total | Number elaborated | Number correct |
+|------------------|-------|-------------------|----------------|
+|Normal statements |  40   |         37        |       36       |
+|Silly statements  |  40   |         39        |       36       |
+|False statements  |  37   |         31        |       28       |
+
+**Overall success rate:** 85%
+
+# ProofNet results
+
+| Total | Number elaborated | Number correct |
+|-------|-------------------|----------------|
+| 100   |        69         |      37        |
+
+- While the success rate is significantly better than
+  in the ProofNet paper, there is a lot of room for improvement.
+- The main difficulty seems to be in translating formula-heavy statements to Lean.
+- It may be possible to rectify this by building a glossary of Lean notation
+  and including examples from it in the prompt.
 
 -/
 
@@ -155,7 +175,7 @@ def randomFileLine (filePath : System.FilePath) : IO String := do
 
 #slides Conclusion /-!
 
-## Summary
+# Summary
 
 `LeanAIde` is a tool for translating
 natural language theorem statements to Lean code,
@@ -167,7 +187,7 @@ several distinctive features of the Lean theorem prover,
 including its programming and meta-programming capabilities
 and its the vast and unified mathematics library.
 
-## Language models and proof assistants
+# AI and proof assistants
 
 There is potential for combining
 languages models with proof assistants for
@@ -181,7 +201,7 @@ tasks such as
 Such tools can make formalisation of mathematics
 vastly more approachable.
 
-## References
+# References
 
 - Zhangir Azerbayev and Edward W. Ayers. lean-chat: user guide. Lean. 2023. 
   url: https://github.com/zhangir-azerbayev/lean-chat.
@@ -209,5 +229,47 @@ vastly more approachable.
  SIGPLAN International Conference on Certified Programs and Proofs. 2020,pp. 85–98.
 - Yuhuai Wu et al. “Autoformalization with large language models”. 
   In: Advances in Neural Information Processing Systems 35 (2022), pp. 32353–32368.
+- Jannis Limperg and Asta Halkjær From. “Aesop: White-Box Best-First
+  Proof Search for Lean”. In: Proceedings of the 12th ACM SIGPLAN In-
+  ternational Conference on Certified Programs and Proofs. 2023, pp. 253–
+  266.
+
+-/
+
+#slides +draft Effects /-!
+
+# Effects of input-dependent prompting
+
+Comparison between fixed and input-dependent
+prompting for four prompts and ten outputs:
+
+---
+
+**Normal theorem statements**
+
+|                           | Total | Number elaborated | Number correct |
+|---------------------------|-------|-------------------|----------------|
+| Input-dependent prompting |  40   |        36         |        32      |
+|    Fixed prompting        |  40   |        32         |        21      |
+
+---
+
+**Silly theorem statements**
+
+|                           | Total | Number elaborated | Number correct |
+|---------------------------|-------|-------------------|----------------|
+| Input-dependent prompting |  40   |        34         |        33      |
+|    Fixed prompting        |  40   |        33         |        28      |
+
+# Effects of post-processing
+
+Comparison of filtering and clustering with
+greedy sampling at temperature zero, for
+10 input-dependent prompts.
+
+|                                     | Total | Number elaborated | Number correct |
+|-------------------------------------|-------|-------------------|----------------|
+| Greedy sampling (normal statements) |  40   |        31         |        30      |
+| Greedy sampling (silly statements)  |  40   |        34         |        33      |
 
 -/
