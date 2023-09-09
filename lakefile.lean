@@ -9,6 +9,7 @@ package leanaide {
 lean_lib LeanAide {
 }
 
+lean_lib CodeGen
 
 lean_exe premiseless {
   supportInterpreter := true

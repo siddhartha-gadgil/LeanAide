@@ -298,12 +298,6 @@ partial def shrink (s: String) : String :=
 def getPropMapStr : MetaM <| HashMap String String := do
     let mut count := 0
     let mut skipped := 0
-    let omittedPath := 
-      System.mkFilePath ["CodeGen", "Omitted.lean"]
-    IO.FS.writeFile omittedPath ""
-    let mut propOmittedHandle ←  
-      IO.FS.Handle.mk omittedPath IO.FS.Mode.append
-    propOmittedHandle.putStrLn "import Mathlib"
     let cs ← constantNameValueTypes 
     let mut m : HashMap String String := HashMap.empty
     let mut dfs : Array DefnTypes := #[]
@@ -322,14 +316,10 @@ def getPropMapStr : MetaM <| HashMap String String := do
       else
         if type.approxDepth >= 60 then
           skipped := skipped + 1
-          propOmittedHandle.putStrLn s!"#check {name}"
           if skipped % 100 = 0 then
             let omittedPath := 
               System.mkFilePath ["CodeGen", s!"Omitted{skipped/100}.lean"]
             IO.FS.writeFile omittedPath ""
-            propOmittedHandle ←  
-              IO.FS.Handle.mk omittedPath IO.FS.Mode.append
-            propOmittedHandle.putStrLn "import Mathlib"
 
     let path := System.mkFilePath ["rawdata", "defn-types", "all.jsonl"]
     IO.FS.writeFile path <| jsonLines <| dfs
