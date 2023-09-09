@@ -11,6 +11,8 @@ import LeanCodePrompts.Translate
 
 #eval translateViewM "Every prime number is either `2` or odd"
 
+-- set_option lean_aide.translate.model "gpt-4" -- comment out for gpt-3.5-turbo
+
 theorem infinitude_odds : l!"There are infinitely many odd numbers" :=
   by
     sorry 
