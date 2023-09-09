@@ -20,7 +20,7 @@
   {"git":
    {"url": "https://github.com/leanprover-community/mathlib4.git",
     "subDir?": null,
-    "rev": "01fd4ae9d7d2500add74deb5c5b74db763a38f34",
+    "rev": "686be169f8a0c5157c0ad49a153a8f934146dd8e",
     "opts": {},
     "name": "mathlib",
     "inputRev?": "master",
@@ -44,16 +44,8 @@
   {"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "101f1d041068be39093633e4ebf95f8c6fae2240",
+    "rev": "e8c27f7d90ee71470558efd1bc197fe55068c748",
     "opts": {},
     "name": "std",
     "inputRev?": "main",
-    "inherited": true}},
-  {"git":
-   {"url": "https://github.com/0art0/lean-slides",
-    "subDir?": null,
-    "rev": "a8f7b13587e9658eb1d217899aa5e928ad70cdbc",
-    "opts": {},
-    "name": "«lean-slides»",
-    "inputRev?": "master",
-    "inherited": false}}]}
+    "inherited": true}}]}
