@@ -10,16 +10,11 @@ lean_lib LeanAide {
 }
 
 
-@[default_target]
-lean_exe bulkelab {
-  supportInterpreter := true
-}
-
 lean_exe premiseless {
   supportInterpreter := true
 }
 
-
+@[default_target]
 lean_exe getpremises{
   supportInterpreter := true
 }
