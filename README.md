@@ -31,7 +31,7 @@ though this is not guaranteed to work. If it does not work, you can delete the `
 
 After this open the folder in VS code (or equivalent) with Lean 4 and go to the file `LeanCodePrompts/TranslateExample.lean`. Place the cursor anywhere on one of the comments below and invoke the _code action_ to translate by clicking on the _lightbulb_ or using `ctrl-.`
 
-You can add your own comments and try to translate using the same method. In general, you can `import LeanCodePrompts.CodeActions` in a lean file and use the code-action to translate. You should usually also include `import Mathlib` to include `mathlib`. 
+You can add your own comments and try to translate using the same method. In general, you can `import LeanCodePrompts.CodeAction` in a lean file and use the code-action to translate. You should usually also include `import Mathlib` to include `mathlib`. 
 
 To use in your own project, include this project as a dependency in `lakefile.lean` using the following.
 
