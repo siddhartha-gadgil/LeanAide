@@ -1,5 +1,6 @@
 import Lean.Meta.ExprLens
 import Mathlib.Tactic
+import Init.Conv
 import Std
 
 open Lean Expr 
@@ -92,38 +93,42 @@ See also `rewrites` for a more convenient interface.
 -- so there is no opportunity for `← getMCtx` to record the context at the call site.
 def targetedRewritesCore (hyps : Array (Expr × Bool × Nat))
     (lemmas : Meta.DiscrTree (Name × Bool × Nat) s × Meta.DiscrTree (Name × Bool × Nat) s)
-    (ctx : MetavarContext) (goal : MVarId) (target : Expr) :
-    MLList MetaM RewriteResult := MLList.squash fun _ => do
+    (ctx : MetavarContext) (goal : MVarId) (target : Expr) (explicit? := false) :
+    MLList MetaM (List String × RewriteResult) := MLList.squash fun _ => do
   -- Get all lemmas which could match some subexpression
-  let candidates := (← lemmas.1.getSubexpressionMatches target)
-    ++ (← lemmas.2.getSubexpressionMatches target)
+  let candidates := (← lemmas.1.getSubexpressionConvMatches target explicit?)
+    ++ (← lemmas.2.getSubexpressionConvMatches target explicit?)
 
   -- Sort them by our preferring weighting
   -- (length of discriminant key, doubled for the forward implication)
-  let candidates := candidates.insertionSort fun r s => r.2.2 > s.2.2
+  let candidates := candidates.insertionSort fun r s => r.2.2.2 > s.2.2.2
 
   -- Now deduplicate. We can't use `Array.deduplicateSorted` as we haven't completely sorted,
   -- and in fact want to keep some of the residual ordering from the discrimination tree.
   let mut forward : NameSet := ∅
   let mut backward : NameSet := ∅
   let mut deduped := #[]
-  for (l, s, w) in candidates do
+  for (p, l, s, w) in candidates do
     if s then
       if ¬ backward.contains l then
-        deduped := deduped.push (l, s, w)
+        deduped := deduped.push (p, l, s, w)
         backward := backward.insert l
     else
       if ¬ forward.contains l then
-        deduped := deduped.push (l, s, w)
+        deduped := deduped.push (p, l, s, w)
         forward := forward.insert l
 
   trace[Tactic.rewrites.lemmas] m!"Candidate rewrite lemmas:\n{deduped}"
 
+  let hyps' : Array (List String × Expr × Bool × ℕ) ← hyps.concatMapM fun ⟨hyp, _symm, weight⟩ ↦ do
+    let enters ← hyp.getConvEnters pure explicit?
+    return enters.map fun (path, subhyp) ↦ (path, subhyp, _symm, weight)
+  
   -- Lift to a monadic list, so the caller can decide how much of the computation to run.
-  let hyps := MLList.ofArray <| hyps.map fun ⟨hyp, _symm, weight⟩ => (Sum.inl hyp, _symm, weight)
-  let lemmas := MLList.ofArray <| deduped.map fun ⟨lem, _symm, weight⟩ => (Sum.inr lem, _symm, weight)
+  let hyps := MLList.ofArray <| hyps'.map fun ⟨path, hyp, _symm, weight⟩ => (path, Sum.inl hyp, _symm, weight)
+  let lemmas := MLList.ofArray <| deduped.map fun ⟨path, lem, _symm, weight⟩ => (path, Sum.inr lem, _symm, weight)
 
-  pure <| (hyps |>.append fun _ => lemmas).filterMapM fun ⟨lem, _symm, weight⟩ => Meta.withMCtx ctx do
+  pure <| (hyps |>.append fun _ => lemmas).filterMapM fun ⟨path, lem, _symm, weight⟩ => Meta.withMCtx ctx do
     let some expr ← (match lem with
     | .inl hyp => pure (some hyp)
     | .inr lem => try? <| Meta.mkConstWithFreshMVarLevels lem) | return none
@@ -131,7 +136,7 @@ def targetedRewritesCore (hyps : Array (Expr × Bool × Nat))
     let some result ← try? do goal.rewrite target expr _symm
       | return none
     return if result.mvarIds.isEmpty then
-      some ⟨expr, _symm, weight, result, none, ← getMCtx⟩
+      some ⟨path, expr, _symm, weight, result, none, ← getMCtx⟩
     else
       -- TODO Perhaps allow new goals? Try closing them with solveByElim?
       -- A challenge is knowing what suggestions to print if we do so!
@@ -191,6 +196,18 @@ def addTargetedRewriteSuggestion (ref : Syntax) (rules : List (Expr × Bool))
     extraMsg := extraMsg ++ s!"\n-- {← PrettyPrinter.ppExpr type}"
   addSuggestion ref tac (suggestionForMessage? := tacMsg)
     (extraMsg := extraMsg) (origSpan? := origSpan?)
+
+-- elab stx:"tgt_suggest" : tactic => do
+--   addTargetedRewriteSuggestion stx [(.const `Nat.add_comm [], false)] ["1"]
+
+-- #eval show MetaM _ from do
+--   let env ← getEnv
+--   let arg := "Nat"
+--   return Parser.runParserCategory env ``enterArg arg
+
+-- example : ∀ f : Nat → Nat, ∀ a b : Nat, f (a + b) = f (b + a) := by
+--   intro f a b
+--   tgt_suggest 
 
 open Lean.Parser.Tactic
 
