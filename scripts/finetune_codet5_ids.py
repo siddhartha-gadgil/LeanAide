@@ -30,7 +30,7 @@ print(dataset)
 
 from transformers import RobertaTokenizer
 
-tokenizer = RobertaTokenizer.from_pretrained("Salesforce/codet5-base")
+tokenizer = RobertaTokenizer.from_pretrained("Salesforce/codet5p-220m")
 
 prefix = "Lean proof-identifiers from Theorem: "
 max_input_length = 256
@@ -74,7 +74,7 @@ train_dataset = dataset['train']
 
 
 from transformers import T5ForConditionalGeneration 
-model = T5ForConditionalGeneration.from_pretrained('Salesforce/codet5-base')
+model = T5ForConditionalGeneration.from_pretrained('Salesforce/codet5p-220m')
 model = model.cuda()
 device = torch.device("cuda") # if torch.cuda.is_available() else torch.device("cpu")
 
