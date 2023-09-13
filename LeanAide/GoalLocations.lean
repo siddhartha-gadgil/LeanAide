@@ -146,21 +146,21 @@ def targetedRewritesCore (hyps : Array (Expr × Bool × Nat))
 def targetedRewrites (hyps : Array (Expr × Bool × Nat))
     (lemmas : Meta.DiscrTree (Name × Bool × Nat) s × Meta.DiscrTree (Name × Bool × Nat) s)
     (goal : MVarId) (target : Expr) (stopAtRfl : Bool := false) (max : Nat := 20)
-    (leavePercentHeartbeats : Nat := 10) : MetaM (List RewriteResult) := do
-  let results ← rewritesCore hyps lemmas (← getMCtx) goal target
+    (leavePercentHeartbeats : Nat := 10) : MetaM (List (List String × RewriteResult)) := do
+  let results ← targetedRewritesCore hyps lemmas (← getMCtx) goal target
     -- Don't report duplicate results.
     -- (TODO: we later pretty print results; save them here?)
     -- (TODO: a config flag to disable this,
     -- if distinct-but-pretty-print-the-same results are desirable?)
-    |>.dedupBy (fun r => do pure <| (← Meta.ppExpr r.result.eNew).pretty)
+    |>.dedupBy (fun (_, r) => do pure <| (← Meta.ppExpr r.result.eNew).pretty)
     -- Stop if we find a rewrite after which `with_reducible rfl` would succeed.
-    |>.mapM RewriteResult.computeRfl -- TODO could simply not compute this if `stopAtRfl` is False
-    |>.takeUpToFirst (fun r => stopAtRfl && r.rfl? = some true)
-    -- Don't use too many heartbeats.
+    |>.mapM (fun (path, r) ↦ do pure (path, ← r.computeRfl)) -- TODO could simply not compute this if `stopAtRfl` is False
+    |>.takeUpToFirst (fun (_, r) => stopAtRfl && r.rfl? = some true)
+    -- -- Don't use too many heartbeats.
     |>.whileAtLeastHeartbeatsPercent leavePercentHeartbeats
-    -- Bound the number of results.
+    -- -- Bound the number of results.
     |>.takeAsList max
-  return match results.filter (fun r => stopAtRfl && r.rfl? = some true) with
+  return match results.filter (fun (_, r) => stopAtRfl && r.rfl? = some true) with
   | [] =>
     -- TODO consider sorting the results,
     -- e.g. if we use solveByElim to fill arguments,
