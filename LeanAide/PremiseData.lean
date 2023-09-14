@@ -457,14 +457,15 @@ deriving Repr, ToJson, FromJson, BEq
 structure CorePropData where
     context : Array String
     prop : String
+    thm : String
 deriving Repr, ToJson, FromJson, BEq
 
 def CorePropData.ofPropProof (propPf : PropProofData) : CoreM CorePropData := do
+    let heads ←  propPf.context.mapM declToThmHead
+    let type ← termToString propPf.prop 
     return ⟨← propPf.context.mapM declToString,
-    ← termToString propPf.prop⟩
-
-def CorePropData.thm (data: CorePropData) : String :=
-     data.context.foldr (fun s c => s ++ " " ++ c) s!" : {data.prop}"
+    type,
+    heads.foldr (fun s c => s ++ c) type⟩
 
 structure CorePremiseDataDirect where
     context : Array String
