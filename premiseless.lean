@@ -40,7 +40,10 @@ def serial (testLines : Array String)(preChecked: Bool := false) : IO Unit := do
   let mut premiselessCount := 0
   let mut provedCount := 0
   let mut elaboratedCount := 0
-  let genCode ←  IO.FS.Handle.mk "CodeGen/Premiseless.lean" IO.FS.Mode.write
+  let genCode ←  
+    IO.FS.Handle.mk ("CodeGen"/"Premiseless.lean") IO.FS.Mode.write
+  let premiseLessNames ←  IO.FS.Handle.mk 
+    ("data"/"premiselessNames.txt") IO.FS.Mode.write
   genCode.putStrLn "import Mathlib"
   for l in testLines do
     if count % 100 = 0 then
@@ -59,7 +62,9 @@ def serial (testLines : Array String)(preChecked: Bool := false) : IO Unit := do
         corePremise.terms.isEmpty && 
         corePremise.name?.isSome then
         premiselessCount := premiselessCount + 1
-        IO.println s!"theorem {corePremise.name?.getD ""} : {corePremise.thm} has no lemmas, terms, true premises"
+        let name := corePremise.name?.getD ""
+        premiseLessNames.putStrLn name.toString
+        IO.println s!"theorem {name} : {corePremise.thm} has no lemmas, terms, true premises"
         IO.println s!"{corePremise.ids} are the ids"
         IO.println "launching proof search"
         let core := 
