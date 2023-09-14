@@ -6,6 +6,7 @@ import LeanCodePrompts.Translate
 
 -/
 
+set_option lean_aide.translate.model "gpt4" -- remove to use "gpt-3.5-turbo"
 #eval logTimed "pinging process"
 #eval pingEmbedding
 #eval logTimed "pinged process"
