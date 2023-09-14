@@ -1,5 +1,4 @@
 import Mathlib
-#check CategoryTheory.Functor.mapHomologicalComplex.proof_5
 #check SmoothAt.coordChange
 #check TopCat.GlueData.MkCore.t'.proof_5
 #check Trivialization.symm_apply_eq_mk_continuousLinearEquivAt_symm
@@ -77,6 +76,7 @@ import Mathlib
 #check CategoryTheory.instFullCoalgebraEilenbergMooreToComonadForgetCofreeAdjComparison.proof_1
 #check ContMDiff.clm_precomp
 #check LinearEquiv.submoduleMap.proof_5
+#check CochainComplex.shiftFunctor.proof_4
 #check SimplicialObject.Splitting.toKaroubiNondegComplexIsoN₁.proof_5
 #check Metric.metricSpaceSum.proof_8
 #check MeasureTheory.L1.setToL1_zero_left'

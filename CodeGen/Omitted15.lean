@@ -1,4 +1,10 @@
 import Mathlib
+#check SemiRingCat.HasLimits.limitConeIsLimit.proof_6
+#check HilbertBasis.dense_span
+#check LocalizedModule.instSemiringLocalizedModuleToAddCommMonoidToNonUnitalNonAssocSemiringToNonAssocSemiringToModule.proof_8
+#check HasFDerivWithinAt.clm_comp
+#check ContinuousLinearEquiv.contDiffWithinAt_comp_iff
+#check Surreal.orderedAddCommGroup.proof_6
 #check ContinuousLinearMap.flip.proof_5
 #check LinearMap.SeparatingLeft.congr
 #check CategoryTheory.Limits.IsColimit.homIso'.proof_3
@@ -93,9 +99,3 @@ import Mathlib
 #check CategoryTheory.Limits.Cocones.functoriality.proof_3
 #check ZMod.instFieldZMod.proof_79
 #check CategoryTheory.Comma.coneOfPreservesIsLimit.proof_2
-#check IsPrimitiveRoot.zmodEquivZpowers.proof_4
-#check iteratedFDeriv_succ_eq_comp_right
-#check Types.monoOverEquivalenceSet.proof_11
-#check AlgebraicGeometry.sectionInBasicOpen.proof_7
-#check CategoryTheory.LaxMonoidalFunctor.mapMon.proof_7
-#check LocalHomeomorph.MDifferentiable.range_mfderiv_eq_top

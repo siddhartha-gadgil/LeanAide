@@ -1,4 +1,12 @@
 import Mathlib
+#check FiberwiseLinear.trans_localHomeomorph_apply
+#check CategoryTheory.OplaxFunctor.comp.proof_2
+#check Field.DirectLimit.field.proof_22
+#check Trivialization.continuousLinearMap
+#check AddMonoidHom.addCommMonoid.proof_8
+#check Complex.commRing.proof_12
+#check FiniteDimensional.basisSingleton.proof_6
+#check CategoryTheory.Pretriangulated.invRotateInvRotateInvRotateIso.proof_4
 #check ContinuousLinearEquiv.comp_hasFDerivAt_iff
 #check CategoryTheory.Limits.Cocones.precomposeEquivalence.proof_5
 #check CategoryTheory.Pseudofunctor.mk.injEq
@@ -91,11 +99,3 @@ import Mathlib
 #check CategoryTheory.Monoidal.CommMonFunctorCategoryEquivalence.functor.proof_6
 #check ContinuousLinearMap.projKerOfRightInverse_apply_idem
 #check HomologicalComplex.asFunctor.proof_5
-#check Submodule.adjoint_orthogonalProjection
-#check dist_convolution_le'
-#check MeasureTheory.condexpL2_indicator_of_measurable
-#check exists_embedding_euclidean_of_compact
-#check MeasureTheory.set_integral_condexpL1Clm
-#check IsAlgClosed.lift.SubfieldWithHom.compat
-#check SmoothMap.compLeftAddMonoidHom
-#check CategoryTheory.LaxBraidedFunctor.mapCommMon.proof_2

@@ -1,4 +1,11 @@
 import Mathlib
+#check QuaternionGroup.instGroupQuaternionGroup.proof_3
+#check SimpleGraph.completeAtomicBooleanAlgebra.proof_21
+#check ContinuousLinearMap.postcomp_toFun
+#check CategoryTheory.LaxMonoidalFunctor.mapMon.proof_4
+#check polarCoord.proof_7
+#check ContMDiffOn.contMDiffOn_tangentMapWithin
+#check Homotopy.mkCoinductive.proof_2
 #check CategoryTheory.Limits.constLimAdj.proof_9
 #check Finsupp.lsum.proof_3
 #check orthogonalProjection.proof_3
@@ -92,10 +99,3 @@ import Mathlib
 #check CategoryTheory.Monoidal.functorHasRightDual.proof_5
 #check Trivialization.pullback.proof_12
 #check CategoryTheory.Idempotents.instAddCommGroupHom.proof_15
-#check LocalizedModule.instAddCommGroupLocalizedModuleToAddCommMonoid.proof_3
-#check CategoryTheory.HomOrthogonal.matrixDecomposition.proof_8
-#check CategoryTheory.Monad.algebraPreadditive.proof_16
-#check AddLocalization.r'.proof_2
-#check SmoothBumpCovering.embeddingPiTangent_injective_mfderiv
-#check mfderivWithin_snd
-#check HasMFDerivWithinAt.comp

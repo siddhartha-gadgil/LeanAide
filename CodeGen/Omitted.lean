@@ -14,7 +14,6 @@ import Mathlib
 #check ValuationSubring.principalUnitGroupEquiv.proof_5
 #check Action.forgetMonoidal.proof_7
 #check CategoryTheory.Abelian.BiproductToPushoutIsCokernel.isColimitBiproductToPushout.proof_3
-#check DoubleQuot.quotQuotEquivQuotSupₐ.proof_1
 #check SmoothMap.compLeftAddMonoidHom.proof_2
 #check AlgHom.equalizer.proof_3
 #check SimpleGraph.completeAtomicBooleanAlgebra.proof_25
@@ -99,3 +98,4 @@ import Mathlib
 #check CategoryTheory.Monad.monadMonEquiv.proof_19
 #check FiberBundleCore.localTriv.proof_4
 #check CategoryTheory.Functor.mapShortComplex.proof_4
+#check Multiset.instOrderedCancelAddCommMonoidMultiset.proof_7

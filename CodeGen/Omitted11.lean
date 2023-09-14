@@ -1,4 +1,10 @@
 import Mathlib
+#check CategoryTheory.Under.pushout.proof_7
+#check ContinuousMap.compactConvergenceUniformSpace.proof_4
+#check CategoryTheory.Monoidal.CommMonFunctorCategoryEquivalence.unitIso.proof_9
+#check contMDiffWithinAt_prod_iff
+#check IntermediateField.Lifts.upperBoundIntermediateField.proof_6
+#check CategoryTheory.subterminalsEquivMonoOverTerminal.proof_11
 #check Submodule.sndEquiv.proof_5
 #check Function.Injective.completeAtomicBooleanAlgebra.proof_4
 #check ContinuousLinearEquiv.piRing.proof_17
@@ -28,6 +34,7 @@ import Mathlib
 #check PowerSeries.rescale.proof_4
 #check ContinuousLinearMap.prodMapL.proof_19
 #check fderiv_inverse
+#check CochainComplex.shiftFunctor_map_f
 #check CategoryTheory.MonoOver.inf.proof_5
 #check LinearPMap.semilatticeInf.proof_7
 #check VectorPrebundle.smoothCoordChange.proof_4
@@ -92,10 +99,3 @@ import Mathlib
 #check TopCat.PrelocalPredicate.sheafify.proof_2
 #check MeasureTheory.aestronglyMeasurable'_condexpInd
 #check Action.instLinearActionInstCategoryActionInstPreadditiveActionInstCategoryAction.proof_7
-#check AffineMap.instAddTorsorAffineMapAddGroupIsAddTorsorToAddGroupAffineMapToAddGroupInstAddCommGroupAffineMapAddGroupIsAddTorsorToAddGroup.proof_5
-#check ChainComplex.mkAux
-#check ContMDiff.contMDiff_tangentMap
-#check Pretrivialization.continuousLinearMap.proof_12
-#check PerfectClosure.instCommMonoidPerfectClosure.proof_2
-#check CategoryTheory.Center.ofBraided.proof_10
-#check DihedralGroup.instGroupDihedralGroup.proof_6

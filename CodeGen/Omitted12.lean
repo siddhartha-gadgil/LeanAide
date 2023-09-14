@@ -1,4 +1,11 @@
 import Mathlib
+#check AffineMap.instAddTorsorAffineMapAddGroupIsAddTorsorToAddGroupAffineMapToAddGroupInstAddCommGroupAffineMapAddGroupIsAddTorsorToAddGroup.proof_5
+#check ChainComplex.mkAux
+#check ContMDiff.contMDiff_tangentMap
+#check Pretrivialization.continuousLinearMap.proof_12
+#check PerfectClosure.instCommMonoidPerfectClosure.proof_2
+#check CategoryTheory.Center.ofBraided.proof_10
+#check DihedralGroup.instGroupDihedralGroup.proof_6
 #check TopologicalSpace.Opens.mapMapIso.proof_4
 #check CategoryTheory.Discrete.addMonoidalFunctor.proof_11
 #check CategoryTheory.Comonad.coalgebraPreadditive.proof_4
@@ -22,9 +29,9 @@ import Mathlib
 #check ContinuousMap.toLp_comp_toContinuousMap
 #check ContinuousLinearMap.norm_compSL_le
 #check CategoryTheory.evaluationLeftAdjoint_map_app
+#check ModuleCat.smul.proof_4
 #check Gamma0.proof_4
 #check LieAlgebra.rootSpaceWeightSpaceProductAux.proof_3
-#check DoubleQuot.quotQuotEquivQuotOfLEₐ.proof_1
 #check CategoryTheory.coyoneda.proof_4
 #check CategoryTheory.Limits.Cocone.category.proof_5
 #check TopCat.Presheaf.SheafConditionPairwiseIntersections.coneEquivUnitIsoApp.proof_4
@@ -92,10 +99,3 @@ import Mathlib
 #check hasFDerivAt_convolution_right_with_param
 #check Action.leftRegularTensorIso.proof_4
 #check CategoryTheory.CommSq.rightAdjointLiftStructEquiv.proof_5
-#check QuaternionGroup.instGroupQuaternionGroup.proof_3
-#check SimpleGraph.completeAtomicBooleanAlgebra.proof_21
-#check ContinuousLinearMap.postcomp_toFun
-#check CategoryTheory.LaxMonoidalFunctor.mapMon.proof_4
-#check polarCoord.proof_7
-#check ContMDiffOn.contMDiffOn_tangentMapWithin
-#check Homotopy.mkCoinductive.proof_2

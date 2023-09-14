@@ -1,12 +1,10 @@
 import Mathlib
-#check Multiset.instOrderedCancelAddCommMonoidMultiset.proof_7
 #check Diffeomorph.contMDiffWithinAt_comp_diffeomorph_iff
 #check HasStrictFDerivAt.implicitToLocalHomeomorph_apply_ker
 #check Submodule.iSup_eq_range_dfinsupp_lsum
 #check Algebra.TensorProduct.opAlgEquiv.proof_15
 #check ContinuousLinearMap.adjointAux_apply
 #check ContinuousLinearMap.postcomp_apply
-#check ModuleCat.Colimits.instAddCommGroupColimitType.proof_15
 #check ContinuousLinearEquiv.image_symm_image
 #check Function.Injective.kleeneAlgebra.proof_4
 #check CategoryTheory.Pseudofunctor.mk.inj
@@ -92,6 +90,7 @@ import Mathlib
 #check ContMDiff.cle_arrowCongr
 #check CategoryTheory.Monoidal.functorCategoryMonoidal.proof_7
 #check DoubleCentralizer.instAlgebra.proof_9
+#check CategoryTheory.Pretriangulated.Triangle.shiftFunctorAdd'.proof_4
 #check MonoidAlgebra.liftMagma.proof_5
 #check Field.DirectLimit.field.proof_14
 #check ContinuousLinearEquiv.comp_right_differentiableAt_iff
@@ -99,3 +98,4 @@ import Mathlib
 #check Associates.instCommMonoid.proof_6
 #check Submodule.equivSubtypeMap.proof_6
 #check Action.ofMulActionLimitCone.proof_3
+#check CategoryTheory.Functor.mapHomologicalComplex.proof_5

@@ -98,4 +98,4 @@ import Mathlib
 #check LinearEquiv.ofLeftInverse_apply
 #check AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.mem_carrier_iff
 #check SmoothMap.semiring.proof_19
-#check Complex.addCommGroup.proof_10
+#check ModuleCat.smul.proof_5

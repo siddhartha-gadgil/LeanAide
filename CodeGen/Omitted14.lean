@@ -1,4 +1,11 @@
 import Mathlib
+#check LocalizedModule.instAddCommGroupLocalizedModuleToAddCommMonoid.proof_3
+#check CategoryTheory.HomOrthogonal.matrixDecomposition.proof_8
+#check CategoryTheory.Monad.algebraPreadditive.proof_16
+#check AddLocalization.r'.proof_2
+#check SmoothBumpCovering.embeddingPiTangent_injective_mfderiv
+#check mfderivWithin_snd
+#check HasMFDerivWithinAt.comp
 #check VectorPrebundle.mk.inj
 #check CategoryTheory.Functor.Initial.extendCone.proof_3
 #check Ordinal.monoid.proof_7
@@ -15,7 +22,6 @@ import Mathlib
 #check MeasureTheory.inner_condexpL2_left_eq_right
 #check SmoothVectorBundle.continuousLinearMap.proof_1
 #check convolution_eq_swap
-#check ModuleCat.Colimits.instAddCommGroupColimitType.proof_11
 #check ValuationRing.instLinearOrderValueGroup.proof_4
 #check TopCat.Presheaf.SheafConditionPairwiseIntersections.coneEquivInverse.proof_3
 #check Algebra.leftMulMatrix.proof_7
@@ -45,7 +51,6 @@ import Mathlib
 #check ContinuousLinearEquiv.skewProd_symm_apply
 #check Algebra.pushoutDesc_apply
 #check AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.structurePresheafInCommRing.proof_6
-#check ModuleCat.Colimits.instAddCommGroupColimitType.proof_16
 #check Complex.commRing.proof_11
 #check Function.Injective.coframe.proof_1
 #check IsInvariantSubring.toMulSemiringAction.proof_7
@@ -78,6 +83,7 @@ import Mathlib
 #check homology.mapIso.proof_5
 #check SmoothVectorBundle.pullback
 #check Subalgebra.iSupLift.proof_7
+#check ModuleCat.HasColimit.colimitCocone.proof_2
 #check Basis.constr.proof_5
 #check HasMFDerivWithinAt.mul
 #check ContinuousLinearMap.map_smulₛₗ₂
@@ -93,9 +99,3 @@ import Mathlib
 #check ContinuousMultilinearMap.alternatization.proof_6
 #check UniformSpace.separationSetoid.uniformSpace.proof_4
 #check TopCat.GlueData.ofOpenSubsets_toGlueData_f
-#check SemiRingCat.HasLimits.limitConeIsLimit.proof_6
-#check HilbertBasis.dense_span
-#check LocalizedModule.instSemiringLocalizedModuleToAddCommMonoidToNonUnitalNonAssocSemiringToNonAssocSemiringToModule.proof_8
-#check HasFDerivWithinAt.clm_comp
-#check ContinuousLinearEquiv.contDiffWithinAt_comp_iff
-#check Surreal.orderedAddCommGroup.proof_6

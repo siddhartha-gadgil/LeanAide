@@ -1,4 +1,6 @@
 import Mathlib
+#check RingSubgroupsBasis.toRingFilterBasis.proof_6
+#check CategoryTheory.Limits.colimConstAdj.proof_9
 #check LinearEquiv.coe_toContinuousLinearEquiv_symm'
 #check CategoryTheory.Subobject.subobjectOrderIso.proof_6
 #check ContinuousLinearEquiv.contDiffAt_comp_iff
@@ -60,6 +62,7 @@ import Mathlib
 #check HasStrictFDerivAt.eq_implicitFunction
 #check ContinuousLinearEquiv.comp_fderivWithin
 #check continuousMultilinearCurryRightEquiv_symm_apply'
+#check ModuleCat.smulNatTrans.proof_4
 #check AffineSubspace.directionOfNonempty.proof_2
 #check Trivialization.contMDiffOn_iff
 #check ContMDiff.coordChange
@@ -96,6 +99,3 @@ import Mathlib
 #check MeasureTheory.lpMeasToLpTrimLie_symm_toLp
 #check WittVector.lift.proof_4
 #check Real.commRing.proof_13
-#check mem_smoothFiberwiseLinear_iff
-#check DoubleCentralizer.instStarAddMonoid.proof_2
-#check LinearMap.smulRightₗ.proof_8

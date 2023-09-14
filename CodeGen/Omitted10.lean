@@ -1,4 +1,7 @@
 import Mathlib
+#check mem_smoothFiberwiseLinear_iff
+#check DoubleCentralizer.instStarAddMonoid.proof_2
+#check LinearMap.smulRightₗ.proof_8
 #check HasStrictFDerivAt.mem_implicitToLocalHomeomorphOfComplemented_source
 #check CategoryTheory.Endofunctor.Coalgebra.functorOfNatTrans.proof_3
 #check StarAlgHom.coe_codRestrict
@@ -31,6 +34,7 @@ import Mathlib
 #check MeasureTheory.Lp.compMeasurePreservingₗᵢ_toFun_coe
 #check CategoryTheory.Limits.coconeEquivalenceOpConeOp.proof_8
 #check CategoryTheory.Comma.coneOfPreservesIsLimit.proof_3
+#check ModuleCat.HasColimit.isColimitColimitCocone.proof_2
 #check Equiv.optionSubtype.proof_9
 #check LinearMap.compAlternatingMap.proof_5
 #check ConvolutionExistsAt.integrable
@@ -57,6 +61,7 @@ import Mathlib
 #check MeasureTheory.L1.setToL1_simpleFunc_indicatorConst
 #check LieModule.coe_linearMap_maxTrivLinearMapEquivLieModuleHom_symm
 #check Unitization.starLift.proof_4
+#check CochainComplex.shiftFunctor.proof_3
 #check inCoordinates_tangent_bundle_core_model_space
 #check ContinuousLinearEquiv.hasSum'
 #check CategoryTheory.MonoOver.inf.proof_7
@@ -78,6 +83,7 @@ import Mathlib
 #check ContMDiffAt.clm_apply
 #check ContinuousLinearEquiv.preimage_closure
 #check CategoryTheory.Comma.coconeOfPreservesIsColimit.proof_2
+#check ModuleCat.instModuleαAddCommGroupMkOfSMul'ToSemiringToAddCommMonoidInstAddCommGroupαMkOfSMul'.proof_5
 #check ContinuousLinearMap.flipMultilinear.proof_9
 #check ContinuousLinearEquiv.comp_contDiffWithinAt_iff
 #check ContinuousAlternatingMap.piLinearEquiv_apply
@@ -93,9 +99,3 @@ import Mathlib
 #check Finsupp.liftAddHom.proof_5
 #check CategoryTheory.CostructuredArrow.quotientEquiv.proof_3
 #check ZMod.instFieldZMod.proof_80
-#check CategoryTheory.Under.pushout.proof_7
-#check ContinuousMap.compactConvergenceUniformSpace.proof_4
-#check CategoryTheory.Monoidal.CommMonFunctorCategoryEquivalence.unitIso.proof_9
-#check contMDiffWithinAt_prod_iff
-#check IntermediateField.Lifts.upperBoundIntermediateField.proof_6
-#check CategoryTheory.subterminalsEquivMonoOverTerminal.proof_11

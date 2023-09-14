@@ -1,4 +1,6 @@
 import Mathlib
+#check DirectSum.decomposeLinearEquiv_symm_apply
+#check Field.DirectLimit.field.proof_17
 #check selfAdjointPart.proof_4
 #check HasStrictFDerivAt.implicitFunctionDataOfComplemented.proof_6
 #check CategoryTheory.yonedaLemma.proof_4
@@ -97,5 +99,3 @@ import Mathlib
 #check CategoryTheory.Pi.sum.proof_4
 #check Matrix.SpecialLinearGroup.toLin'.proof_6
 #check ContinuousMultilinearMap.curryFinFinset_apply_const
-#check RingSubgroupsBasis.toRingFilterBasis.proof_6
-#check CategoryTheory.Limits.colimConstAdj.proof_9

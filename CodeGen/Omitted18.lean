@@ -1,4 +1,11 @@
 import Mathlib
+#check CategoryTheory.OplaxFunctor.comp.proof_5
+#check CategoryTheory.Endofunctor.coalgebraPreadditive.proof_14
+#check CategoryTheory.Limits.pullbackDiagonalMapIso.proof_11
+#check SmoothFiberwiseLinear.locality_aux₁
+#check CategoryTheory.StructuredArrow.subobjectEquiv.proof_3
+#check Pretrivialization.continuousLinearMap_symm_apply
+#check Algebra.TensorProduct.algEquivOfLinearEquivTripleTensorProduct
 #check IsPrimitiveRoot.embeddingsEquivPrimitiveRoots.proof_3
 #check AlgebraCat.HasLimits.limitConeIsLimit.proof_8
 #check Polynomial.algebraPi.proof_4
@@ -92,10 +99,3 @@ import Mathlib
 #check MultilinearMap.domDomCongrLinearEquiv'.proof_5
 #check CochainComplex.mkAux.proof_1
 #check convolution_eq_right'
-#check FiberwiseLinear.trans_localHomeomorph_apply
-#check CategoryTheory.OplaxFunctor.comp.proof_2
-#check Field.DirectLimit.field.proof_22
-#check Trivialization.continuousLinearMap
-#check AddMonoidHom.addCommMonoid.proof_8
-#check Complex.commRing.proof_12
-#check FiniteDimensional.basisSingleton.proof_6

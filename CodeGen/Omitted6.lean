@@ -14,6 +14,7 @@ import Mathlib
 #check CategoryTheory.Idempotents.FunctorExtension₁.map.proof_2
 #check Zsqrtd.commRing.proof_12
 #check PadicInt.toZModHom.proof_3
+#check ModuleCat.HasColimit.coconePointSMul.proof_3
 #check SubmodulesBasis.toModuleFilterBasis.proof_7
 #check Submodule.smithNormalFormOfLE.proof_2
 #check SubmodulesBasis.toModuleFilterBasis.proof_3
@@ -98,4 +99,3 @@ import Mathlib
 #check AlgHom.restrictNormalAux.proof_4
 #check CategoryTheory.Functor.mapHomologicalComplex.proof_3
 #check Mon_.limitCone.proof_4
-#check Algebra.TensorProduct.algEquivOfLinearEquivTripleTensorProduct_apply

@@ -1,9 +1,15 @@
 import Mathlib
+#check CategoryTheory.Idempotents.KaroubiHomologicalComplexEquivalence.unitIso.proof_7
+#check MultilinearMap.domDomCongrEquiv.proof_3
+#check ContinuousLinearEquiv.arrowCongrEquiv.proof_2
+#check Ideal.modulePi.proof_6
+#check CategoryTheory.yoneda.proof_5
 #check ChainComplex.mkAux.proof_1
 #check TopCat.GlueData.ofOpenSubsets_toGlueData_V
 #check LinearIsometryEquiv.comp_hasFDerivWithinAt_iff
 #check CategoryTheory.Monoidal.CommMonFunctorCategoryEquivalence.counitIso.proof_8
 #check LinearEquiv.skewProd_symm_apply
+#check ContinuousLinearEquiv.isAddHaarMeasure_map
 #check Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le'
 #check CategoryTheory.Monoidal.functorHasLeftDual.proof_5
 #check ContinuousLinearMap.compSL_apply
@@ -40,6 +46,7 @@ import Mathlib
 #check TensorProduct.AlgebraTensorModule.assoc_tmul
 #check HasStrictFDerivAt.implicitToLocalHomeomorphOfComplemented_fst
 #check CategoryTheory.Sheaf.multiforkEvaluationCone.proof_3
+#check CochainComplex.shiftFunctor.proof_5
 #check DirectSum.IsInternal.isometryL2OfOrthogonalFamily_symm_apply
 #check ContinuousLinearEquiv.trans_toLinearEquiv
 #check CategoryTheory.CosimplicialObject.Augmented.whiskeringObj.proof_3
@@ -92,10 +99,3 @@ import Mathlib
 #check CategoryTheory.Limits.Cones.postcomposeEquivalence.proof_5
 #check Action.instLinearActionInstCategoryActionInstPreadditiveActionInstCategoryAction.proof_8
 #check LeftInvariantDerivation.instAddLeftInvariantDerivation.proof_2
-#check CategoryTheory.OplaxFunctor.comp.proof_5
-#check CategoryTheory.Endofunctor.coalgebraPreadditive.proof_14
-#check CategoryTheory.Limits.pullbackDiagonalMapIso.proof_11
-#check SmoothFiberwiseLinear.locality_aux₁
-#check CategoryTheory.StructuredArrow.subobjectEquiv.proof_3
-#check Pretrivialization.continuousLinearMap_symm_apply
-#check Algebra.TensorProduct.algEquivOfLinearEquivTripleTensorProduct

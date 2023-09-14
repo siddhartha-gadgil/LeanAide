@@ -1,4 +1,5 @@
 import Mathlib
+#check Algebra.TensorProduct.algEquivOfLinearEquivTripleTensorProduct_apply
 #check Ideal.modulePi.proof_5
 #check LinearIsometryEquiv.coe_symm_trans
 #check continuousMultilinearCurryLeftEquiv_symm_apply
@@ -87,6 +88,7 @@ import Mathlib
 #check CategoryTheory.Limits.Cocone.fromStructuredArrow.proof_3
 #check LinearMap.toMatrix₂_toLinearMap₂
 #check Basis.constr.proof_4
+#check QuadraticForm.dualProdProdIsometry.proof_4
 #check HasStrictFDerivAt.tendsto_implicitFunction
 #check ContinuousLinearMap.adjointAux_inner_right
 #check Field.DirectLimit.field.proof_37
@@ -97,5 +99,3 @@ import Mathlib
 #check Sym2.lift₂.proof_4
 #check CategoryTheory.Monoidal.MonFunctorCategoryEquivalence.counitIso.proof_6
 #check Filter.Tendsto.implicitFunction
-#check DirectSum.decomposeLinearEquiv_symm_apply
-#check Field.DirectLimit.field.proof_17

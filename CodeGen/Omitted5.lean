@@ -3,6 +3,7 @@ import Mathlib
 #check CategoryTheory.linearCoyoneda.proof_4
 #check DistribLattice.copy.proof_11
 #check CategoryTheory.isColimitOfEffectiveEpiFamilyStruct.proof_3
+#check CategoryTheory.Pretriangulated.Triangle.shiftFunctor.proof_5
 #check tangentMapWithin_comp_at
 #check LeftInvariantDerivation.hasNatScalar.proof_3
 #check SSet.Augmented.standardSimplex.proof_4
@@ -51,7 +52,6 @@ import Mathlib
 #check SmoothMap.addGroup.proof_7
 #check ContinuousLinearMap.addCommMonoid.proof_8
 #check Profinite.EffectiveEpiFamily.structAux.proof_3
-#check CategoryTheory.regularOfIsPushoutSndOfRegular.proof_4
 #check convolution_assoc
 #check AffineIsometryEquiv.trans.proof_1
 #check Mod_.comap_map_hom

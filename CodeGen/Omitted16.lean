@@ -1,4 +1,10 @@
 import Mathlib
+#check IsPrimitiveRoot.zmodEquivZpowers.proof_4
+#check iteratedFDeriv_succ_eq_comp_right
+#check Types.monoOverEquivalenceSet.proof_11
+#check AlgebraicGeometry.sectionInBasicOpen.proof_7
+#check CategoryTheory.LaxMonoidalFunctor.mapMon.proof_7
+#check LocalHomeomorph.MDifferentiable.range_mfderiv_eq_top
 #check CategoryTheory.Discrete.monoidalFunctor.proof_10
 #check IntermediateField.Lifts.upperBoundAlgHom.proof_3
 #check ContinuousMultilinearMap.compContinuousLinearMapEquivL.proof_6
@@ -9,7 +15,6 @@ import Mathlib
 #check CategoryTheory.Functor.flip.proof_5
 #check CategoryTheory.Monoidal.CommMonFunctorCategoryEquivalence.counitIso.proof_7
 #check CategoryTheory.hasShiftMk.proof_8
-#check DoubleQuot.quotQuotEquivCommₐ.proof_1
 #check LieAlgebra.coe_rootSpaceWeightSpaceProduct_tmul
 #check CategoryTheory.OplaxFunctor.mk.inj
 #check TopCat.Presheaf.SheafConditionPairwiseIntersections.isLimitSheafConditionForkOfIsLimitMapCone.proof_3
@@ -94,8 +99,3 @@ import Mathlib
 #check AlgebraicTopology.AlternatingFaceMapComplex.ε.proof_2
 #check LocalHomeomorph.univUnitBall.proof_7
 #check ContinuousLinearEquiv.comp_hasStrictFDerivAt_iff
-#check CategoryTheory.Idempotents.KaroubiHomologicalComplexEquivalence.unitIso.proof_7
-#check MultilinearMap.domDomCongrEquiv.proof_3
-#check ContinuousLinearEquiv.arrowCongrEquiv.proof_2
-#check Ideal.modulePi.proof_6
-#check CategoryTheory.yoneda.proof_5

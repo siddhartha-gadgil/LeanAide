@@ -1,4 +1,5 @@
 import Mathlib
+#check Complex.addCommGroup.proof_10
 #check DoubleCentralizer.coeHom.proof_4
 #check CategoryTheory.Limits.MultispanIndex.multicoforkEquivSigmaCofork.proof_5
 #check CochainComplex.mkHomAux.proof_1
@@ -78,7 +79,6 @@ import Mathlib
 #check Mon_.EquivLaxMonoidalFunctorPUnit.monToLaxMonoidal.proof_9
 #check LieAlgebra.rootSpaceWeightSpaceProductAux.proof_5
 #check Matrix.SpecialLinearGroup.map.proof_3
-#check AdjoinRoot.Polynomial.quotQuotEquivComm_mk
 #check LinearMap.mkContinuousOfExistsBound₂.proof_5
 #check WeakDual.CharacterSpace.instAlgHomClass.proof_5
 #check mkFactorOrderIsoOfFactorDvdEquiv.proof_5
