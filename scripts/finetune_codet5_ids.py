@@ -87,6 +87,7 @@ trainer = Trainer(
     model=model,
     args=training_args,
     train_dataset=train_dataset,
+    save_strategy="epoch",
 )
 
 trainer.train()
