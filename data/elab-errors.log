@@ -1629,3 +1629,174 @@ unknown universe level 'ua' ; identifiers [α, ua, a, α, b, α, a, b, idRel, a,
 typeclass instance problem is stuck, it is often due to metavariables
   SizeOf (Lists' ?m.6912 true) ; identifiers [α, u, inst, SizeOf, α, sizeOf, Lists'.nil] (during elaboration) for (∀ {α : Type u} [inst : SizeOf α], sizeOf Lists'.nil = 1)
 
+(∀ {α : Type u_1} [inst : AddGroup α] {s : AddSubgroup α} {t : AddSubgroup α} (h : s = t) (_a : α) (_b : α)
+  (h' : Setoid.r _a _b), Setoid.r (id _a) (id _b))
+failed to synthesize instance
+  Setoid α ; identifiers [α, u_1, inst, AddGroup, α, s, AddSubgroup, α, t, AddSubgroup, α, h, s, t, _a, α, _b, α, h', Setoid.r, _a, _b, Setoid.r, id, _a, id, _b] (during elaboration) for (∀ {α : Type u_1} [inst : AddGroup α] {s : AddSubgroup α} {t : AddSubgroup α} (h : s = t) (_a : α) (_b : α)
+  (h' : Setoid.r _a _b), Setoid.r (id _a) (id _b))
+
+(∀ {α : Type u_1} [inst : Preorder α] (S : Set α),
+  (IsOpen (↑WithLowerTopology.ofLower ⁻¹' S)) ↔ (TopologicalSpace.IsOpen S))
+failed to synthesize instance
+  TopologicalSpace α ; identifiers [α, u_1, inst, Preorder, α, S, Set, α, IsOpen, WithLowerTopology.ofLower, S, TopologicalSpace.IsOpen, S] (during elaboration) for (∀ {α : Type u_1} [inst : Preorder α] (S : Set α),
+  (IsOpen (↑WithLowerTopology.ofLower ⁻¹' S)) ↔ (TopologicalSpace.IsOpen S))
+
+(∀ {C : Type u} [inst : SizeOf C], sizeOf CategoryTheory.WithInitial.star = 1)
+typeclass instance problem is stuck, it is often due to metavariables
+  SizeOf (CategoryTheory.WithInitial ?m.6906) ; identifiers [C, u, inst, SizeOf, C, sizeOf, CategoryTheory.WithInitial.star] (during elaboration) for (∀ {C : Type u} [inst : SizeOf C], sizeOf CategoryTheory.WithInitial.star = 1)
+
+(∀ {ι : Type u_1} {R : Type u_3} {A : Type u_5} {x : (a : ι) → A} [inst : CommRing R] [inst_1 : CommRing A]
+  [inst_2 : Algebra R A], (AlgebraicIndependent R x) ↔ (Function.Injective ↑(MvPolynomial.aeval x)))
+type mismatch
+  MvPolynomial.aeval x
+has type
+  MvPolynomial ι ?m.461 →ₐ[?m.461] A : Type (max (max u_1 ?u.459) u_5)
+but is expected to have type
+  ?m.3447 → ?m.3448 : Sort (imax ?u.455 ?u.454) ; identifiers [ι, u_1, R, u_3, A, u_5, x, a, ι, A, inst, CommRing, R, inst_1, CommRing, A, inst_2, Algebra, R, A, AlgebraicIndependent, R, x, Function.Injective, MvPolynomial.aeval, x] (during elaboration) for (∀ {ι : Type u_1} {R : Type u_3} {A : Type u_5} {x : (a : ι) → A} [inst : CommRing R] [inst_1 : CommRing A]
+  [inst_2 : Algebra R A], (AlgebraicIndependent R x) ↔ (Function.Injective ↑(MvPolynomial.aeval x)))
+
+(∀ {ι : Type uι} {E : Type uE} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] [inst_2 : FiniteDimensional ℝ E]
+  {H : Type uH} [inst_3 : TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] {s : Set M} [inst_7 : T2Space M]
+  {f : SmoothBumpCovering ι I M s} {U : (a : M) → Set M},
+  (BumpCovering.IsSubordinate (SmoothBumpCovering.toBumpCovering f) fun (i : ι) ↦ U (SmoothBumpCovering.c s f i)) ↔
+    (SmoothBumpCovering.IsSubordinate f U))
+unknown universe level 'uH' ; identifiers [ι, uι, E, uE, inst, NormedAddCommGroup, E, inst_1, NormedSpace, E, inst_2, FiniteDimensional, E, H, uH, inst_3, TopologicalSpace, H, I, ModelWithCorners, E, H, M, uM, inst_4, TopologicalSpace, M, inst_5, ChartedSpace, H, M, inst_6, SmoothManifoldWithCorners, I, M, s, Set, M, inst_7, T2Space, M, f, SmoothBumpCovering, ι, I, M, s, U, a, M, Set, M, BumpCovering.IsSubordinate, SmoothBumpCovering.toBumpCovering, f, i, ι, U, SmoothBumpCovering.c, s, f, i, SmoothBumpCovering.IsSubordinate, f, U] (during elaboration) for (∀ {ι : Type uι} {E : Type uE} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] [inst_2 : FiniteDimensional ℝ E]
+  {H : Type uH} [inst_3 : TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM} [inst_4 : TopologicalSpace M]
+  [inst_5 : ChartedSpace H M] [inst_6 : SmoothManifoldWithCorners I M] {s : Set M} [inst_7 : T2Space M]
+  {f : SmoothBumpCovering ι I M s} {U : (a : M) → Set M},
+  (BumpCovering.IsSubordinate (SmoothBumpCovering.toBumpCovering f) fun (i : ι) ↦ U (SmoothBumpCovering.c s f i)) ↔
+    (SmoothBumpCovering.IsSubordinate f U))
+
+(∀ {α : Type u_1} {β : Type u_2} {l : Filter α} {f : (a : α) → β} {lb : Filter β},
+  (Filter.Germ.Tendsto (↑f) lb) ↔ (Filter.Tendsto f l lb))
+type mismatch
+  f
+has type
+  α → β : Type (max u_1 u_2)
+but is expected to have type
+  Filter.Germ ?m.120 β : Type (max ?u.18 u_2) ; identifiers [α, u_1, β, u_2, l, Filter, α, f, a, α, β, lb, Filter, β, Filter.Germ.Tendsto, f, lb, Filter.Tendsto, f, l, lb] (during elaboration) for (∀ {α : Type u_1} {β : Type u_2} {l : Filter α} {f : (a : α) → β} {lb : Filter β},
+  (Filter.Germ.Tendsto (↑f) lb) ↔ (Filter.Tendsto f l lb))
+
+(∀ {α : Type u_1} {E : Type u_3} [inst : MeasurableSpace α] [inst_1 : NormedAddCommGroup E] {f : (a : α) → E}
+  {s : Set α} {μ : MeasureTheory.Measure α} (h : MeasureTheory.IntegrableOn f s), MeasureTheory.Integrable f)
+typeclass instance problem is stuck, it is often due to metavariables
+  MeasureTheory.MeasureSpace ?m.218 ; identifiers [α, u_1, E, u_3, inst, MeasurableSpace, α, inst_1, NormedAddCommGroup, E, f, a, α, E, s, Set, α, μ, MeasureTheory.Measure, α, h, MeasureTheory.IntegrableOn, f, s, MeasureTheory.Integrable, f] (during elaboration) for (∀ {α : Type u_1} {E : Type u_3} [inst : MeasurableSpace α] [inst_1 : NormedAddCommGroup E] {f : (a : α) → E}
+  {s : Set α} {μ : MeasureTheory.Measure α} (h : MeasureTheory.IntegrableOn f s), MeasureTheory.Integrable f)
+
+(∀ {R : Type u_1} {R₂ : Type u_3} {M : Type u_9} {M₂ : Type u_12} [inst : Semiring R] [inst_1 : Semiring R₂]
+  [inst_2 : AddCommMonoid M] [inst_3 : AddCommMonoid M₂] [inst_4 : Module R M] [inst_5 : Module R₂ M₂] {τ₁₂ : R →+* R₂}
+  {F : Type u_20} [sc : SemilinearMapClass F τ₁₂ M M₂] {f : F} {g : F} {S : Submodule R M},
+  (S ≤ LinearMap.eqLocus f g) ↔ (Set.EqOn ↑f ↑g ↑S))
+unknown universe level 'u_12' ; identifiers [R, u_1, R₂, u_3, M, u_9, M₂, u_12, inst, Semiring, R, inst_1, Semiring, R₂, inst_2, AddCommMonoid, M, inst_3, AddCommMonoid, M₂, inst_4, Module, R, M, inst_5, Module, R₂, M₂, τ₁₂, R, R₂, F, u_20, sc, SemilinearMapClass, F, τ₁₂, M, M₂, f, F, g, F, S, Submodule, R, M, S, LinearMap.eqLocus, f, g, Set.EqOn, f, g, S] (during elaboration) for (∀ {R : Type u_1} {R₂ : Type u_3} {M : Type u_9} {M₂ : Type u_12} [inst : Semiring R] [inst_1 : Semiring R₂]
+  [inst_2 : AddCommMonoid M] [inst_3 : AddCommMonoid M₂] [inst_4 : Module R M] [inst_5 : Module R₂ M₂] {τ₁₂ : R →+* R₂}
+  {F : Type u_20} [sc : SemilinearMapClass F τ₁₂ M M₂] {f : F} {g : F} {S : Submodule R M},
+  (S ≤ LinearMap.eqLocus f g) ↔ (Set.EqOn ↑f ↑g ↑S))
+
+(∀ {α : Type u_2} [inst : TopologicalSpace α] {U : TopologicalSpace.Opens α}, (Set.Nonempty ↑U) ↔ (∃ (x : α), x ∈ U))
+type mismatch
+  U
+has type
+  TopologicalSpace.Opens α : Type u_2
+but is expected to have type
+  Set ?m.139 : Type ?u.19 ; identifiers [α, u_2, inst, TopologicalSpace, α, U, TopologicalSpace.Opens, α, Set.Nonempty, U, x, α, x, U] (during elaboration) for (∀ {α : Type u_2} [inst : TopologicalSpace α] {U : TopologicalSpace.Opens α}, (Set.Nonempty ↑U) ↔ (∃ (x : α), x ∈ U))
+
+(∀ {R : Type u_1} {R₁ : Type u_2} {M₁ : Type u_6} {n : Type u_18} [inst : CommSemiring R] [inst_1 : CommSemiring R₁]
+  [inst_2 : AddCommMonoid M₁] [inst_3 : Module R₁ M₁] {I₁ : R₁ →+* R} {I₁' : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] R}
+  {v : (a : n) → M₁}, (LinearMap.IsOrthoᵢ B v) ↔ (∀ (i : n) (j : n) (a : i ≠ j), ↑(↑B (v i)) (v j) = 0))
+unknown universe level 'u_18' ; identifiers [R, u_1, R₁, u_2, M₁, u_6, n, u_18, inst, CommSemiring, R, inst_1, CommSemiring, R₁, inst_2, AddCommMonoid, M₁, inst_3, Module, R₁, M₁, I₁, R₁, R, I₁', R₁, R, B, M₁, I₁, M₁, I₁', R, v, a, n, M₁, LinearMap.IsOrthoᵢ, B, v, i, n, j, n, a, i, j, B, v, i, v, j] (during elaboration) for (∀ {R : Type u_1} {R₁ : Type u_2} {M₁ : Type u_6} {n : Type u_18} [inst : CommSemiring R] [inst_1 : CommSemiring R₁]
+  [inst_2 : AddCommMonoid M₁] [inst_3 : Module R₁ M₁] {I₁ : R₁ →+* R} {I₁' : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] R}
+  {v : (a : n) → M₁}, (LinearMap.IsOrthoᵢ B v) ↔ (∀ (i : n) (j : n) (a : i ≠ j), ↑(↑B (v i)) (v j) = 0))
+
+(∀ {M : Type u_1} [inst : Add M] (U : Ultrafilter M) (V : Ultrafilter M) (p : (a : M) → Prop),
+  (∀ᶠ (m : M) in ↑(U + V), p m) ↔ (∀ᶠ (m : M) in ↑U, ∀ᶠ (m' : M) in ↑V, p (m + m')))
+failed to synthesize instance
+  HAdd (Ultrafilter M) (Ultrafilter M) ?m.1575 ; identifiers [M, u_1, inst, Add, M, U, Ultrafilter, M, V, Ultrafilter, M, p, a, M, m, M, U, V, p, m, m, M, U, m', M, V, p, m, m'] (during elaboration) for (∀ {M : Type u_1} [inst : Add M] (U : Ultrafilter M) (V : Ultrafilter M) (p : (a : M) → Prop),
+  (∀ᶠ (m : M) in ↑(U + V), p m) ↔ (∀ᶠ (m : M) in ↑U, ∀ᶠ (m' : M) in ↑V, p (m + m')))
+
+(∀ {B : Type u₁} [inst : CategoryTheory.Bicategory B] {C : Type u₂} [inst_1 : CategoryTheory.Bicategory C]
+  {F : CategoryTheory.OplaxFunctor B C} {G : CategoryTheory.OplaxFunctor B C} {η : F ⟶ G} {θ : F ⟶ G}
+  [inst_2 : SizeOf B] [inst_3 : SizeOf C] (app : (a : B) → η.app a ⟶ θ.app a)
+  (naturality :
+    autoParam
+      (∀ {a : B} {b : B} (f : a ⟶ b),
+        CategoryTheory.CategoryStruct.comp
+            (CategoryTheory.Bicategory.whiskerLeft ((↑(CategoryTheory.OplaxFunctor.toPrelaxFunctor F)).map f) (app b))
+            (CategoryTheory.OplaxNatTrans.naturality θ f) =
+          CategoryTheory.CategoryStruct.comp (CategoryTheory.OplaxNatTrans.naturality η f)
+            (CategoryTheory.Bicategory.whiskerRight (app a) ((↑(CategoryTheory.OplaxFunctor.toPrelaxFunctor G)).map f)))
+      _auto✝),
+  sizeOf (CategoryTheory.OplaxNatTrans.Modification.mk app) = 1)
+<input>:12:11: expected token
+
+(∀ {J : Type u₁} [inst : SizeOf J], sizeOf CategoryTheory.Bicone.left = 1)
+typeclass instance problem is stuck, it is often due to metavariables
+  SizeOf (CategoryTheory.Bicone ?m.6906) ; identifiers [J, u₁, inst, SizeOf, J, sizeOf, CategoryTheory.Bicone.left] (during elaboration) for (∀ {J : Type u₁} [inst : SizeOf J], sizeOf CategoryTheory.Bicone.left = 1)
+
+(∀ {C : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} C] {X : C} {R : CategoryTheory.Sieve X}
+  {S : CategoryTheory.Sieve X} {Y : C} (f : Y ⟶ X), ((R ⊓ S).arrows f) ↔ ((R.arrows f) ∧ (S.arrows f)))
+unknown universe level 'v₁' ; identifiers [C, u₁, inst, CategoryTheory.Category, v₁, u₁, C, X, C, R, CategoryTheory.Sieve, X, S, CategoryTheory.Sieve, X, Y, C, f, Y, X, R, S, arrows, f, R.arrows, f, S.arrows, f] (during elaboration) for (∀ {C : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} C] {X : C} {R : CategoryTheory.Sieve X}
+  {S : CategoryTheory.Sieve X} {Y : C} (f : Y ⟶ X), ((R ⊓ S).arrows f) ↔ ((R.arrows f) ∧ (S.arrows f)))
+
+(∀ (A : Type u_1) [inst : CommRing A] (K : Type u_2) [inst_1 : Field K] [inst_2 : Algebra A K]
+  (a : ValuationRing.ValueGroup A K) (b : ValuationRing.ValueGroup A K), (a < b) ↔ (a < b))
+failed to synthesize instance
+  LT (ValuationRing.ValueGroup A K) ; identifiers [A, u_1, inst, CommRing, A, K, u_2, inst_1, Field, K, inst_2, Algebra, A, K, a, ValuationRing.ValueGroup, A, K, b, ValuationRing.ValueGroup, A, K, a, b, a, b] (during elaboration) for (∀ (A : Type u_1) [inst : CommRing A] (K : Type u_2) [inst_1 : Field K] [inst_2 : Algebra A K]
+  (a : ValuationRing.ValueGroup A K) (b : ValuationRing.ValueGroup A K), (a < b) ↔ (a < b))
+
+(∀ {z : ℂ} {w : ℂ}, (z ≤ w) ↔ ((Complex.re z ≤ Complex.re w) ∧ (Complex.im z = Complex.im w)))
+failed to synthesize instance
+  LE ℂ ; identifiers [z, w, z, w, Complex.re, z, Complex.re, w, Complex.im, z, Complex.im, w] (during elaboration) for (∀ {z : ℂ} {w : ℂ}, (z ≤ w) ↔ ((Complex.re z ≤ Complex.re w) ∧ (Complex.im z = Complex.im w)))
+
+(∀ {K : Type u_1} {Γ : (a : K) → Type u_2} {Λ : Type u_3} {σ : Type u_4} [inst : SizeOf K]
+  [inst_1 : (a : K) → SizeOf (Γ a)] [inst_2 : SizeOf Λ] [inst_3 : SizeOf σ] (a : (a : σ) → Λ),
+  sizeOf (Turing.TM2.Stmt.goto a) = 1)
+typeclass instance problem is stuck, it is often due to metavariables
+  SizeOf (Turing.TM2.Stmt (?m.7019 a) Λ σ) ; identifiers [K, u_1, Γ, a, K, u_2, Λ, u_3, σ, u_4, inst, SizeOf, K, inst_1, a, K, SizeOf, Γ, a, inst_2, SizeOf, Λ, inst_3, SizeOf, σ, a, a, σ, Λ, sizeOf, Turing.TM2.Stmt.goto, a] (during elaboration) for (∀ {K : Type u_1} {Γ : (a : K) → Type u_2} {Λ : Type u_3} {σ : Type u_4} [inst : SizeOf K]
+  [inst_1 : (a : K) → SizeOf (Γ a)] [inst_2 : SizeOf Λ] [inst_3 : SizeOf σ] (a : (a : σ) → Λ),
+  sizeOf (Turing.TM2.Stmt.goto a) = 1)
+
+(∀ {z : ℂ} {w : ℂ}, (z < w) ↔ ((Complex.re z < Complex.re w) ∧ (Complex.im z = Complex.im w)))
+failed to synthesize instance
+  LT ℂ ; identifiers [z, w, z, w, Complex.re, z, Complex.re, w, Complex.im, z, Complex.im, w] (during elaboration) for (∀ {z : ℂ} {w : ℂ}, (z < w) ↔ ((Complex.re z < Complex.re w) ∧ (Complex.im z = Complex.im w)))
+
+(∀ (X : CommRingCat) (x : ↑X) (y : ↑X), 1 = 1)
+type mismatch
+  X
+has type
+  CommRingCat : Type (?u.3 + 1)
+but is expected to have type
+  Sort ?u.5 : Type ?u.5 ; identifiers [X, CommRingCat, x, X, y, X] (during elaboration) for (∀ (X : CommRingCat) (x : ↑X) (y : ↑X), 1 = 1)
+
+(∀ {C : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} C] {X : C} {R : CategoryTheory.Sieve X}
+  {S : CategoryTheory.Sieve X} {Y : C} (f : Y ⟶ X), ((R ⊔ S).arrows f) ↔ ((R.arrows f) ∨ (S.arrows f)))
+unknown universe level 'v₁' ; identifiers [C, u₁, inst, CategoryTheory.Category, v₁, u₁, C, X, C, R, CategoryTheory.Sieve, X, S, CategoryTheory.Sieve, X, Y, C, f, Y, X, R, S, arrows, f, R.arrows, f, S.arrows, f] (during elaboration) for (∀ {C : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} C] {X : C} {R : CategoryTheory.Sieve X}
+  {S : CategoryTheory.Sieve X} {Y : C} (f : Y ⟶ X), ((R ⊔ S).arrows f) ↔ ((R.arrows f) ∨ (S.arrows f)))
+
+(∀ {R : Type u} {A : Type v} [inst : CommSemiring R] [inst_1 : StarRing R] [inst_2 : NonUnitalSemiring A]
+  [inst_3 : StarRing A] [inst_4 : Module R A] [inst_5 : IsScalarTower R A A] [inst_6 : SMulCommClass R A A]
+  [inst_7 : StarModule R A], Monotone star)
+typeclass instance problem is stuck, it is often due to metavariables
+  Preorder ?m.10745 ; identifiers [R, u, A, v, inst, CommSemiring, R, inst_1, StarRing, R, inst_2, NonUnitalSemiring, A, inst_3, StarRing, A, inst_4, Module, R, A, inst_5, IsScalarTower, R, A, A, inst_6, SMulCommClass, R, A, A, inst_7, StarModule, R, A, Monotone, star] (during elaboration) for (∀ {R : Type u} {A : Type v} [inst : CommSemiring R] [inst_1 : StarRing R] [inst_2 : NonUnitalSemiring A]
+  [inst_3 : StarRing A] [inst_4 : Module R A] [inst_5 : IsScalarTower R A A] [inst_6 : SMulCommClass R A A]
+  [inst_7 : StarModule R A], Monotone star)
+
+(∀ {α : Type u_1} {β : Type u_2} {σ : Type u_3} [inst : Primcodable α] [inst_1 : Primcodable β] [inst_2 : Primcodable σ]
+  {f : (a : α) → (a : β) → σ} (hf : Computable₂ f), Partrec₂ fun (a : α) ↦ ↑(f a))
+typeclass instance problem is stuck, it is often due to metavariables
+  Primcodable (?m.287 hf) ; identifiers [α, u_1, β, u_2, σ, u_3, inst, Primcodable, α, inst_1, Primcodable, β, inst_2, Primcodable, σ, f, a, α, a, β, σ, hf, Computable₂, f, Partrec₂, a, α, f, a] (during elaboration) for (∀ {α : Type u_1} {β : Type u_2} {σ : Type u_3} [inst : Primcodable α] [inst_1 : Primcodable β] [inst_2 : Primcodable σ]
+  {f : (a : α) → (a : β) → σ} (hf : Computable₂ f), Partrec₂ fun (a : α) ↦ ↑(f a))
+
+(∀ {K : Type u_1} [inst : Field K] [inst_1 : UniformSpace K] [inst_2 : TopologicalDivisionRing K]
+  [inst_3 : UniformAddGroup K] (a : UniformSpace.Completion K) (b : UniformSpace.Completion K), a / b = a / b)
+failed to synthesize instance
+  HDiv (UniformSpace.Completion K) (UniformSpace.Completion K) ?m.994 ; identifiers [K, u_1, inst, Field, K, inst_1, UniformSpace, K, inst_2, TopologicalDivisionRing, K, inst_3, UniformAddGroup, K, a, UniformSpace.Completion, K, b, UniformSpace.Completion, K, a, b, a, b] (during elaboration) for (∀ {K : Type u_1} [inst : Field K] [inst_1 : UniformSpace K] [inst_2 : TopologicalDivisionRing K]
+  [inst_3 : UniformAddGroup K] (a : UniformSpace.Completion K) (b : UniformSpace.Completion K), a / b = a / b)
+
+(∀ {α : Type ua} {a : α} {b : α}, ((a, b) ∈ idRel) ↔ (a = b))
+unknown universe level 'ua' ; identifiers [α, ua, a, α, b, α, a, b, idRel, a, b] (during elaboration) for (∀ {α : Type ua} {a : α} {b : α}, ((a, b) ∈ idRel) ↔ (a = b))
+
+(∀ {α : Type u} [inst : SizeOf α], sizeOf Lists'.nil = 1)
+typeclass instance problem is stuck, it is often due to metavariables
+  SizeOf (Lists' ?m.6912 true) ; identifiers [α, u, inst, SizeOf, α, sizeOf, Lists'.nil] (during elaboration) for (∀ {α : Type u} [inst : SizeOf α], sizeOf Lists'.nil = 1)
+
