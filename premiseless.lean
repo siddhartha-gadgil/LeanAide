@@ -39,6 +39,7 @@ def serial (testLines : Array String)(preChecked: Bool := false) : IO Unit := do
   let mut count := 0
   let mut premiselessCount := 0
   let mut provedCount := 0
+  let mut provedCountNoids := 0
   let mut elaboratedCount := 0
   let genCode ←  
     IO.FS.Handle.mk ("CodeGen"/"Premiseless.lean") IO.FS.Mode.write
@@ -69,7 +70,7 @@ def serial (testLines : Array String)(preChecked: Bool := false) : IO Unit := do
         IO.println "launching proof search"
         let core := 
           proofSearchCore corePremise.thm 
-            {apps := ids.map (·, 0.5), safeApps := #[``Iff.rfl]}
+            {apps := ids.map (·, 0.5), safeApps := ids}
         let (elaborated, proved, code?) ← 
           core.run' coreContext {env := env} |>.runToIO'
         IO.println "finished proof search"
@@ -86,30 +87,26 @@ def serial (testLines : Array String)(preChecked: Bool := false) : IO Unit := do
               genCode.putStrLn code
             | none => pure ()
           else
-            -- let core := proofSearchCore corePremise.thm #[] #[] #[]
-            -- let (_, proved, code?) ← 
-            --   core.run' coreContext {env := env} |>.runToIO'
-            -- if proved 
-            -- then
-            --   genCode.putStrLn s!"#check {corePremise.name?.getD "none"}"
-            --   IO.println "Result proved without premises"
-            --   provedCount := provedCount + 1
-            --   match code? with
-            --   | some code => 
-            --     genCode.putStrLn code
-            --   | none => pure ()
-            -- else
               genCode.putStrLn s!"#print {corePremise.name?.getD "none"}"
+          let core' := 
+            proofSearchCore corePremise.thm {}
+          let (_, proved', _) ← 
+            core'.run' coreContext {env := env} |>.runToIO'
+          if proved' then
+            IO.println "Result proved without premises"
+            provedCountNoids := provedCountNoids + 1
+          else
+            IO.println "Result not proved without premises"    
         else
           IO.println s!"Result not elaborated"
           genCode.putStrLn 
             s!"#check {corePremise.name?.getD "none"} -- not elaborated"
           IO.println s!"Result not proved"
-        IO.println s!"{count} processed, {premiselessCount} named and premiseless, {provedCount} proved, {elaboratedCount} elaborated"
+        IO.println s!"{count} processed, {premiselessCount} named and premiseless, {provedCount} proved, {provedCountNoids} proved without premises, {elaboratedCount} elaborated"
         IO.println "-------------------"
         genCode.putStrLn ""  
     | none => pure ()
-  IO.println s!"{count} processed, {premiselessCount} premiseless, {provedCount} proved, {elaboratedCount} elaborated"
+  IO.println s!"{count} processed, {premiselessCount} premiseless, {provedCount} proved, {provedCountNoids} proved without premises, {elaboratedCount} elaborated"
 
 
 def main (_: List String) : IO Unit := do
