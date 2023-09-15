@@ -107,6 +107,8 @@ train_dataloader = DataLoader(dataset['train'], shuffle=True, batch_size=8)
 # Now that we've trained a model, let's test it on some examples from the test set.
 model.eval()
 
+# Empty the cache to free up GPU memory
+torch.cuda.empty_cache()
 
 def split_prediction(s):
     return [x.strip() for x in s.split(';')]
