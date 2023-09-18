@@ -11,8 +11,7 @@
   "Command": "\\prod",
   "Explanation": "Denotes finite summation, `Finset.prod`. There are two uses : a. `∏ i in s,f i` denotes the summation over a set `s` of a space `α`, with `f` having domain `α`. We require `s` to be `Finset α`; b. `∏ i : α,f i` requires `Fintype α`.",
   "Link": "https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/BigOperators/Basic.html#Finset.prod",
-  "Examples": ["example : {α : Type v} {s : Finset α} {m : ℕ} {f : α → ℕ} (h₁ : ∀ x ∈ s, f x = m) :
-  ∏ x in s, f x = m ^ (card s)",
+  "Examples": ["example : {α : Type v} {s : Finset α} {m : ℕ} {f : α → ℕ} (h₁ : ∀ x ∈ s, f x = m) : ∏ x in s, f x = m ^ (card s)",
     "example : {β : Type u} {α : Type v} {γ : Type w} [Fintype α] [CommMonoid β] [CommMonoid γ] {G : Type u_2} [MonoidHomClass G β γ] (g : G) (f : α → β) : g (∏ x, f x) = ∏ x, g (f x)",
     "example : {β : Type u} {α : Type v} {γ : Type w} [MulOneClass β] [CommMonoid γ] (f : α → β →* γ) (s : Finset α) (b : β) : (∏ x in s, f x) b = ∏ x in s, f x b "]},
   {"Name": "Subset",
