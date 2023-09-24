@@ -203,7 +203,7 @@ def addTargetedRewriteSuggestion (ref : Syntax) (rules : List (Expr × Bool))
 -- #eval show MetaM _ from do
 --   let env ← getEnv
 --   let arg := "Nat"
---   return Parser.runParserCategory env ``enterArg arg
+--   return Parser.runParserCategory env `ident arg
 
 -- example : ∀ f : Nat → Nat, ∀ a b : Nat, f (a + b) = f (b + a) := by
 --   intro f a b
@@ -219,37 +219,60 @@ open Lean.Parser.Tactic
 Suggestions are printed as `rw [h]` or `rw [←h]`.
 `rw?!` is the "I'm feeling lucky" mode, and will run the first rewrite it finds.
 -/
-syntax (name := tgt_rw?) "tgt_rw?" (" at" ident)? : tactic
+syntax (name := tgt_rewrites) "tgt_rw?" "!"? (ppSpace location)? : tactic
 
--- open Elab.Tactic Elab Tactic in
--- elab_rules : tactic |
---   `(tactic| tgt_rw?%$tk) => do
---   let lems ← rewriteLemmas.get -- This can be replaced with a custom cache
---   reportOutOfHeartbeats `rewritesConv tk
---   let goal ← getMainGoal
---   -- TODO fix doc of core to say that * fails only if all failed
---   withLocation (Location.targets #[] true)
---     fun f => do
---       let some a ← f.findDecl? | return
---       if a.isImplementationDetail then return
---       let target ← instantiateMVars (← f.getType)
---       let results ← rewritesConv lems goal target (stop_at_rfl := false)
---       reportOutOfHeartbeats `rewritesConv tk
---       if results.isEmpty then
---         throwError "Could not find any lemmas which can rewrite the hypothesis {
---           ← f.getUserName}"
---       for (path, r) in results do
---         addTargetedRewriteSuggestion tk [(← Meta.mkConstWithFreshMVarLevels r.name, r.symm)] path
---           r.result.eNew (origSpan? := ← getRef)
---     -- See https://github.com/leanprover/lean4/issues/2150
---     do withMainContext do
---       let target ← instantiateMVars (← goal.getType)
---       let results ← rewritesConv lems goal target (stop_at_rfl := true)
---       reportOutOfHeartbeats `rewritesConv tk
---       if results.isEmpty then
---         throwError "Could not find any lemmas which can rewrite the goal"
---       for (path, r) in results do
---         let newGoal := if r.rfl? = some true then Expr.lit (.strVal "no goals") else r.result.eNew
---         addTargetedRewriteSuggestion tk [(← Meta.mkConstWithFreshMVarLevels r.name, r.symm)] path
---           newGoal (origSpan? := ← getRef)
---     (λ _ => throwError "Failed to find a rewrite for some location")                                                                                                                                   
+open Meta Elab.Tactic Elab Tactic in
+elab_rules : tactic |
+    `(tactic| tgt_rw?%$tk $[!%$lucky]? $[$loc]?) => do
+  let lems ← rewriteLemmas.get
+  reportOutOfHeartbeats `targetedRewrites tk
+  let goal ← getMainGoal
+  -- TODO fix doc of core to say that * fails only if all failed
+  withLocation (expandOptLocation (Lean.mkOptionalNode loc))
+    fun f => do
+      let some a ← f.findDecl? | return
+      if a.isImplementationDetail then return
+      let target ← instantiateMVars (← f.getType)
+      let hyps ← localHypotheses (except := [f])
+      let results ← targetedRewrites hyps lems goal target (stopAtRfl := false)
+      reportOutOfHeartbeats `targetedRewrites tk
+      let nm ← f.getUserName
+      if results.isEmpty then
+        throwError "Could not find any lemmas which can rewrite the hypothesis {nm}"
+      for (path, r) in results do withMCtx r.mctx do
+        addTargetedRewriteSuggestion tk [(r.expr, r.symm)] path
+          r.result.eNew (loc? := .some (.mk <| .ident .none "".toSubstring nm [])) 
+          (origSpan? := ← getRef)
+      if lucky.isSome then
+        match results[0]? with
+        | some (path, r) => do
+            setMCtx r.mctx
+            let replaceResult ← goal.replaceLocalDecl f r.result.eNew r.result.eqProof
+            replaceMainGoal (replaceResult.mvarId :: r.result.mvarIds)
+        | _ => failure
+    -- See https://github.com/leanprover/lean4/issues/2150
+    do withMainContext do
+      let target ← instantiateMVars (← goal.getType)
+      let hyps ← localHypotheses
+      let results ← targetedRewrites hyps lems goal target (stopAtRfl := true)
+      reportOutOfHeartbeats `targetedRewrites tk
+      if results.isEmpty then
+        throwError "Could not find any lemmas which can rewrite the goal"
+      for (path, r) in results do withMCtx r.mctx do
+        let newGoal := if r.rfl? = some true then Expr.lit (.strVal "no goals") else r.result.eNew
+        addTargetedRewriteSuggestion tk [(r.expr, r.symm)] path
+          newGoal (origSpan? := ← getRef)
+      if lucky.isSome then
+        match results[0]? with
+        | some (path, r) => do
+            setMCtx r.mctx
+            replaceMainGoal
+              ((← goal.replaceTargetEq r.result.eNew r.result.eqProof) :: r.result.mvarIds)
+            evalTactic (← `(tactic| try rfl))
+        | _ => failure
+    (fun _ => throwError "Failed to find a rewrite for some location")
+
+@[inherit_doc tgt_rewrites] macro "tgt_rw?!" h:(ppSpace location)? : tactic =>
+  `(tactic| tgt_rw? ! $[$h]?)
+@[inherit_doc tgt_rewrites] macro "tgt_rw!?" h:(ppSpace location)? : tactic =>
+  `(tactic| tgt_rw? ! $[$h]?)
