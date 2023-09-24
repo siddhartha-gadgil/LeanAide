@@ -15,24 +15,6 @@ from datasets import load_dataset
 import torch
 from random import sample
 
-dataset = load_dataset(
-    'json', data_dir='rawdata/premises/ident_strings', data_files="train.jsonl")
-print(dataset)
-
-
-#
-#
-# We need to turn the "theorem" input from above into `input_ids`, and similarly, we need to turn the "identifiers" output from above into `input_ids`, which will serve as the `labels` for the model.
-#
-# In addition, as these models are trained on batches of examples rather than one example at a time, we'll need to pad/truncate both the inputs and labels, such that they are all of the same length. That's why we also will add an `attention_mask` input to the model, such that it knows not to take into account padding tokens when computing attention scores.
-#
-# To summarize:
-# * input: theorem, which is turned into `input_ids` + `attention_mask`
-# * output: ids, which are turned into `labels` (which are the `input_ids` of the docstrings).
-#
-# Below, we define a `preprocess_examples` function, which we can apply on the entire dataset.
-
-
 tokenizer = RobertaTokenizer.from_pretrained("Salesforce/codet5p-220m")
 
 prefix = "Lean proof-identifiers from Theorem: "
@@ -40,68 +22,10 @@ max_input_length = 256
 max_target_length = 256
 
 
-def preprocess_examples(examples):
-    # encode the code-docstring pairs
-    theorems = examples['theorem']
-    ids = examples['identifiers']
-
-    inputs = [prefix + thm for thm in theorems]
-    model_inputs = tokenizer(
-        inputs, max_length=max_input_length, padding="max_length", truncation=True)
-
-    # encode the summaries
-    labels = tokenizer(ids, max_length=max_target_length,
-                       padding="max_length", truncation=True).input_ids
-
-    # important: we need to replace the index of the padding tokens by -100
-    # such that they are not taken into account by the CrossEntropyLoss
-    labels_with_ignore_index = []
-    for labels_example in labels:
-        labels_example = [label if label !=
-                          0 else -100 for label in labels_example]
-        labels_with_ignore_index.append(labels_example)
-
-    model_inputs["labels"] = labels_with_ignore_index
-
-    return model_inputs
-
-
-# Now that we have defined the function, let's call `.map()` on the HuggingFace Dataset object, which allows us to apply this function in batches (by default a batch size of 1,000 is used!) - hence super fast.
-
-
-dataset = dataset.map(preprocess_examples, batched=True)
-
-# Next, let's set the format to "torch" and create PyTorch dataloaders.
-
-dataset.set_format(type="torch", columns=[
-                   'input_ids', 'attention_mask', 'labels'])
-train_dataset = dataset['train']
-# train_dataset = train_dataset.shuffle(seed=42).select(range(10000)) # for testing
-
-
-model = T5ForConditionalGeneration.from_pretrained('Salesforce/codet5p-220m')
+model = T5ForConditionalGeneration.from_pretrained("rawdata/idstrings_codet5_base/trained_model")
 model = model.cuda()
 # if torch.cuda.is_available() else torch.device("cpu")
 device = torch.device("cuda")
-
-
-training_args = TrainingArguments(
-    output_dir="rawdata/idstrings_codet5_base",
-    save_strategy="epoch",)
-
-trainer = Trainer(
-    model=model,
-    args=training_args,
-    train_dataset=train_dataset,
-)
-
-trainer.train()
-
-model.save_pretrained("rawdata/idstrings_codet5_base/trained_model")
-
-train_dataloader = DataLoader(dataset['train'], shuffle=True, batch_size=8)
-
-
 # ## Inference
 #
 # Now that we've trained a model, let's test it on some examples from the test set.
