@@ -168,6 +168,19 @@ def targetedRewrites (hyps : Array (Expr × Bool × Nat))
     results
   | results => results
 
+def runParserDescr (descr : ParserDescr) (input : String) (fileName : String := "<input>") : MetaM Syntax := do
+  let env ← getEnv
+  let categories := (parserExtension.getState env).categories
+  let p ← compileParserDescr categories descr
+  let ictx := mkInputContext input fileName
+  let s := p.fn.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
+  if s.hasError then
+    failure
+  else if input.atEnd s.pos then
+    return s.stxStack.back
+  else
+    failure
+
 open Elab Term Syntax Parser Tactic Std.Tactic.TryThis in
 def addTargetedRewriteSuggestion (ref : Syntax) (rules : List (Expr × Bool))
   (path : List String) (type? : Option Expr := none) (loc? : Option Ident := none)
@@ -176,10 +189,8 @@ def addTargetedRewriteSuggestion (ref : Syntax) (rules : List (Expr × Bool))
   let rules_stx := TSepArray.ofElems <| ← rules.toArray.mapM fun ⟨e, _symm⟩ => do
     let t ← delabToRefinableSyntax e
     if _symm then `(rwRule| ← $t:term) else `(rwRule| $t:term)
-  let env ← getEnv
   let pathArgs : List (TSyntax ``enterArg) ← path.mapM fun arg ↦ do
-    let .ok enter_arg := Parser.runParserCategory env ``enterArg arg | failure
-    return ⟨enter_arg⟩
+    return ⟨← runParserDescr Conv.enterArg arg⟩
   let path_stx := TSepArray.ofElems pathArgs.toArray
   let tac ← `(tactic| tgt_rw [$rules_stx,*] $[at $loc?]? entering [$path_stx,*])
 
@@ -196,18 +207,6 @@ def addTargetedRewriteSuggestion (ref : Syntax) (rules : List (Expr × Bool))
     extraMsg := extraMsg ++ s!"\n-- {← PrettyPrinter.ppExpr type}"
   addSuggestion ref tac (suggestionForMessage? := tacMsg)
     (extraMsg := extraMsg) (origSpan? := origSpan?)
-
--- elab stx:"tgt_suggest" : tactic => do
---   addTargetedRewriteSuggestion stx [(.const `Nat.add_comm [], false)] ["1"]
-
--- #eval show MetaM _ from do
---   let env ← getEnv
---   let arg := "Nat"
---   return Parser.runParserCategory env `ident arg
-
--- example : ∀ f : Nat → Nat, ∀ a b : Nat, f (a + b) = f (b + a) := by
---   intro f a b
---   tgt_suggest 
 
 open Lean.Parser.Tactic
 
