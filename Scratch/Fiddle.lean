@@ -15,6 +15,18 @@ open Mathlib.Prelude.Rename
 
 universe u v
 
+elab "natural:" n:num "only" : term => do
+  return Expr.lit (Literal.natVal n.getNat)
+
+#eval natural: 3 only -- 3
+
+def fillIn : ℕ := natural: 3 only 
+
+def fillIn' : ℕ := natural: 0 only 
+
+
+-- #eval natural: 3 + 4 only -- Error
+
 example :(A B C : Prop) → (f : A → B → C) → (a : A) → (b : B) → C := by
   aesop?   
     
