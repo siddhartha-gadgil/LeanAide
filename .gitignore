@@ -20,3 +20,4 @@ dependency_graph/deps_copy_rep.yaml
 scripts/.ipynb_checkpoints/
 md/
 slides/
+env/
