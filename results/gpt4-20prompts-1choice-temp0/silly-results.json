@@ -6,7 +6,7 @@
         "choices": [
             "∀ {p : ℕ}, Nat.Prime p → p = 2 ∨ p % 2 = 1 "
         ],
-        "bison": "theorem ∀ {p : ℕ}, Nat.Prime p → p = 2 ∨ Odd p "
+        "bison": "∀ {p : ℕ}, Nat.Prime p → p = 2 ∨ p % 2 = 1"
     },
     {
         "docString": "There are infinitely many odd natural numbers.",
@@ -15,7 +15,7 @@
         "choices": [
             "Set.Infinite {n : ℕ | Odd n} "
         ],
-        "bison": "theorem ∀ {α : Type u_1}, ∀ (s : Set α), ¬IsDirected s (fun x x_1 => x < x_1) "
+        "bison": "∀ {n : ℕ}, ∃ᶠ (m : ℕ) in Filter.atTop, Odd m"
     },
     {
         "docString": "The smallest odd prime is `3`.",
@@ -24,7 +24,7 @@
         "choices": [
             "Nat.min_odd_prime = 3 "
         ],
-        "bison": "theorem ∀ (n : ℕ), 3 ≤ n ↔ 3 ∣ n "
+        "bison": "∀ {p : ℕ}, Nat.Prime p → p = 3"
     },
     {
         "docString": "There are infinitely many odd prime numbers.",
@@ -33,7 +33,7 @@
         "choices": [
             "Set.Infinite {p | Nat.Prime p ∧ Odd p} "
         ],
-        "bison": "∀ {α : Type u_1} [inst : Ring α] [inst : DecidableEq α] [inst : DecidableRing α] [inst : NoZeroDivisors α] [inst : LT α] "
+        "bison": "∀ {n : ℕ}, 1 ≤ n → ∃ p, Nat.Prime p ∧ Odd p"
     },
     {
         "docString": "If a vector space has dimension `2` then it is finite dimensional.",
@@ -42,7 +42,7 @@
         "choices": [
             "∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],\n  Module.rank K V = 2 → FiniteDimensional K V "
         ],
-        "bison": "theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],\n  FiniteDimensional.finrank K V = 2 "
+        "bison": "∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V] {ι : Type w}\n  [inst_3 : Fintype ι], FiniteDimensional K V → Module.rank K V = 2 → FiniteDimensional K V"
     },
     {
         "docString": "Every field is a division ring.",
@@ -51,7 +51,7 @@
         "choices": [
             "∀ {K : Type u} [inst : Field K], DivisionRing K "
         ],
-        "bison": "theorem ∀ {α : Type u_1}, IsField α → DivisionRing α "
+        "bison": "∀ {K : Type u_1} [inst : Field K], DivisionRing K"
     },
     {
         "docString": "If a space has dimension `2` then it is finite dimensional.",
@@ -60,7 +60,7 @@
         "choices": [
             "∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],\n  Module.rank K V = 2 → FiniteDimensional K V "
         ],
-        "bison": "theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V]\n  [inst_3 : FiniteDimensional K V], Module.rank K V = 2 "
+        "bison": "∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V]\n  [inst_3 : FiniteDimensional K V] [inst_4 : Finite FiniteDimensional.finrank K V], FiniteDimensional.finrank K V = 2"
     },
     {
         "docString": "Every natural number has a successor.",
@@ -69,7 +69,7 @@
         "choices": [
             "∀ (n : ℕ), ∃ k, n + 1 = k "
         ],
-        "bison": "theorem ∀ {n : ℕ}, ∃ m, m + 1 = n "
+        "bison": "∀ {n : ℕ}, ∃ m, m = n + 1"
     },
     {
         "docString": "Every natural number is less than its successor.",
@@ -78,7 +78,7 @@
         "choices": [
             "∀ (n : ℕ), n < n + 1 "
         ],
-        "bison": "theorem ∀ {α : Type u_1} [inst : LinearOrderWithSucc α] {a : α}, a < a + 1 "
+        "bison": "∀ {α : Type u_1} [inst : LinearOrder α] (a : α), a < a.succ"
     },
     {
         "docString": "Every set is Lebesgue measurable.",
@@ -87,7 +87,7 @@
         "choices": [
             "∀ {α : Type u_1} [inst : MeasurableSpace α], MeasurableSet (Set.Univ : Set α) "
         ],
-        "bison": "theorem ∀ {α : Type u_1} [inst : MeasurableSpace α] [inst_1 : BorelSpace α], ∀ (s : Set α), MeasurableSet s "
+        "bison": "∀ {α : Type u_1} [inst : MeasurableSpace α], ↑↑MeasureTheory.volume (Set.univ) = 1"
     },
     {
         "docString": "Every set of Borel measure zero is Lebesgue measurable.",
@@ -96,7 +96,7 @@
         "choices": [
             "∀ {α : Type u_1} [inst : MeasurableSpace α] [inst_1 : TopologicalSpace α] [inst_2 : TopologicalSpace.SecondCountableTopology α]\n  [inst_3 : BorelSpace α] (μ : MeasureTheory.Measure α) (s : Set α), ↑↑μ s = 0 → MeasurableSet s "
         ],
-        "bison": "theorem ∀ {α : Type u_1} [inst : MeasurableSpace α] [inst_1 : BorelSpace α], ∀ (s : Set α), ↑↑MeasureTheory.volume s = 0 → s ≤ᵐ[↑↑MeasureTheory.volume] ∅ "
+        "bison": "∀ {α : Type u_1} [inst : NormedAddCommGroup α] [inst_1 : NormedSpace ℝ α] [inst_2 : MeasurableSpace α]\n  [inst_3 : BorelSpace α] [inst_4 : FiniteDimensional ℝ α] (μ : MeasureTheory.Measure α)\n  [inst_5 : MeasureTheory.Measure.IsAddHaarMeasure μ] (s : Set α),\n  ↑↑μ s = 0 → MeasurableSet s"
     },
     {
         "docString": "No prime number is a perfect square.",
@@ -105,7 +105,7 @@
         "choices": [
             "∀ {p : ℕ}, Nat.Prime p → ¬∃ t, t * t = p "
         ],
-        "bison": "∀ {p : ℕ}, Nat.Prime p → ¬∃ x, x ^ 2 = p "
+        "bison": "∀ {p : ℕ}, Nat.Prime p → ¬Nat.IsSquare p"
     },
     {
         "docString": "Every odd prime number is greater than `2`.",
@@ -114,7 +114,7 @@
         "choices": [
             "∀ {p : ℕ} [inst : Fact (Nat.Prime p)], Odd p → p > 2 "
         ],
-        "bison": "theorem ∀ {p : ℕ}, Nat.Prime p → p ≠ 2 "
+        "bison": "∀ {p : ℕ} [inst : Nat.Prime p], p ≠ 2"
     },
     {
         "docString": "The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares.",
@@ -123,7 +123,7 @@
         "choices": [
             "∀ {a b x y u v r s : ℕ}, a = x ^ 2 + y ^ 2 + u ^ 2 + v ^ 2 → b = r ^ 2 + s ^ 2 + u ^ 2 + v ^ 2 → ∃ p q r s, a * b = p ^ 2 + q ^ 2 + r ^ 2 + s ^ 2 "
         ],
-        "bison": "theorem ∀ {R : Type u_1} [inst : Ring R] [inst_1 : SeminormedCommRing R] (a b : R),\n  ∃ x y z w, x * x + y * y = a ∧ z * z + w * w = b "
+        "bison": "∀ (a b : ℕ), IsSquare a → IsSquare b → IsSquare (a * b)"
     },
     {
         "docString": "Every compact topological space is locally compact.",
@@ -132,7 +132,7 @@
         "choices": [
             "∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : CompactSpace α], LocallyCompactSpace α "
         ],
-        "bison": "theorem ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : CompactSpace α], LocallyCompactSpace α "
+        "bison": "∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : CompactSpace α], LocallyCompactSpace α"
     },
     {
         "docString": "Every continuous function is uniformly continuous.",
@@ -141,7 +141,7 @@
         "choices": [
             "∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] [inst_2 : CompactSpace α] (f : α → β),\n  Continuous f → UniformContinuous f "
         ],
-        "bison": "theorem ∀ {α : Type u_1} {β : Type u_2} [inst : TopologicalSpace α] [inst_1 : UniformSpace β] {f : α → β},\n  Continuous f → UniformContinuous f "
+        "bison": "∀ {ι : Type u_1} {α : Type u_2} {β : Type u_3} [inst : UniformSpace α] [inst_1 : UniformSpace β] {F : ι → β → α},\n  UniformEquicontinuous F → UniformContinuous (fun x => F x)"
     },
     {
         "docString": "`6` is not the sum of two distinct prime numbers.",
@@ -150,7 +150,7 @@
         "choices": [
             "¬∃ (p q : ℕ), Nat.Prime p ∧ Nat.Prime q ∧ p ≠ q ∧ p + q = 6 "
         ],
-        "bison": "theorem ∀ {p q : ℕ}, Nat.Prime p → Nat.Prime q → p ≠ q → p ≠ 2 → q ≠ 2 → p + q ≠ 6 "
+        "bison": "∀ {p q : ℕ}, Nat.Prime p → Nat.Prime q → p ≠ q → p ≠ q → p + q ≠ 6"
     },
     {
         "docString": "No integer is irrational.",
@@ -159,7 +159,7 @@
         "choices": [
             "∀ (z : ℤ), ¬Irrational ↑z "
         ],
-        "bison": "theorem ∀ {R : Type u_1} [inst : Field R] [inst_1 : NormedAlgebra ℚ R] [inst_2 : NormedSpace ℝ R] [inst_3 : CompleteSpace R],\n  ∀ (r : R), ¬Irrational ↑r "
+        "bison": "∀ {α : Type u_1} [inst : NormedSemiring α] [inst_1 : NormedField α]\n  [inst_2 : NormedAlgebra ℚ α] [inst_3 : NormedAlgebra.IsIntegral ℚ α]\n  (x : ℚ), ¬Irrational ↑x"
     },
     {
         "docString": "The identity element in a ring is a unit.",
@@ -168,7 +168,7 @@
         "choices": [
             "∀ {R : Type u} [inst : Ring R], IsUnit (1 : R) "
         ],
-        "bison": "∀ {R : Type u_1}, IsUnit 1 "
+        "bison": "∀ {R : Type u_1} [inst : Ring R] (x : R), IsUnit x → x ≠ 0"
     },
     {
         "docString": "Every subgroup of a group is a group.",
@@ -177,7 +177,7 @@
         "choices": [
             "∀ {G : Type u_1} [inst : Group G] (H : Subgroup G), Group { x // x ∈ H } "
         ],
-        "bison": "theorem ∀ {G : Type u_1} [inst : Group G], ∀ (H : Subgroup G), Group G "
+        "bison": "∀ {G : Type u_1} [inst : Group G] (H : Subgroup G), ↑H.toGroup.toMonoid.isGroup"
     },
     {
         "docString": "The sum of two natural numbers is a natural number.",
@@ -186,7 +186,7 @@
         "choices": [
             "∀ (a b : ℕ), ∃ c : ℕ, a + b = c "
         ],
-        "bison": "/-- The sum of two natural numbers is a natural number. -/\ntheorem ∀ {m n : ℕ}, m + n ∈ ℕ "
+        "bison": "∀ {m n : ℕ}, m + n ∈ ℕ\n"
     },
     {
         "docString": "The identity element of a group has finite order.",
@@ -195,7 +195,7 @@
         "choices": [
             "∀ {G : Type u_1} [inst : Group G], IsOfFinOrder 1 "
         ],
-        "bison": "theorem ∀ {G : Type u_1} [inst : AddGroup G], IsOfFinAddOrder 0 "
+        "bison": "∀ {G : Type u_1} [inst : Group G], IsOfFinOrder 1"
     },
     {
         "docString": "`7` is a prime number.",
@@ -204,7 +204,7 @@
         "choices": [
             "Fact (Nat.Prime 7) "
         ],
-        "bison": "theorem "
+        "bison": "∀ {p : ℕ}, Nat.Prime p → Nat.Prime ↑p"
     },
     {
         "docString": "There are `3` prime numbers below `8`.",
@@ -213,7 +213,7 @@
         "choices": [
             "Nat.card_prime_below 8 = 3 "
         ],
-        "bison": "/-- The only numbers with empty prime factorization are `0` and `1` -/\ntheorem : ∀ (n : ℕ), Nat.factorization n = 0 ↔ n = 0 ∨ n = 1 "
+        "bison": "∀ {p : ℕ}, p ∈ Nat.primes ∧ p ≤ 7 → Nat.Prime p"
     },
     {
         "docString": "The empty set is contained in every finite set.",
@@ -222,7 +222,7 @@
         "choices": [
             "∀ {α : Type u} {s : Set α}, Set.Finite s → ∅ ⊆ s "
         ],
-        "bison": "/-- The empty set is contained in every finite set. -/\ntheorem ∀ {α : Type u_1} {s : Set α}, Set.Finite s → ∅ ⊆ s "
+        "bison": "∀ {α : Type u} {s : Set α}, Set.Finite s → ∅ ⊆ s"
     },
     {
         "docString": "Every infinite set contains a finite set.",
@@ -231,7 +231,7 @@
         "choices": [
             "∀ {α : Type u} {s : Set α}, ¬Set.Finite s → ∃ t : Set α, Set.Finite t ∧ t ⊆ s "
         ],
-        "bison": "theorem ∀ {α : Type u}, Set.Finite ↑(Set.range id) "
+        "bison": "∀ {α : Type u} [inst : TopologicalSpace α] {s : Set α}, Set.Infinite s → ∃ t, t ⊆ s ∧ Set.Finite t"
     },
     {
         "docString": "Every commutative ring is a monoid.",
@@ -240,7 +240,7 @@
         "choices": [
             "∀ {R : Type u} [inst : CommRing R], Monoid R "
         ],
-        "bison": "∀ {R : Type u_1}, Monoid R "
+        "bison": "∀ {R : Type u_1} [inst : CommRing R], IsMonoid R"
     },
     {
         "docString": "There is no field of order `10`.",
@@ -249,7 +249,7 @@
         "choices": [
             "¬∃ (K : Type u_1) [inst : Field K], Fintype.card K = 10 "
         ],
-        "bison": "theorem ¬∃ K, IsField K ∧ 10 = Cardinal.card K "
+        "bison": "∀ {R : Type u_1} [inst : Semiring R], ¬IsField { x // Cardinal.ord x = 10 }"
     },
     {
         "docString": "Every odd natural number is the sum of two distinct natural numbers.",
@@ -258,7 +258,7 @@
         "choices": [
             "∀ (n : ℕ), Odd n → ∃ a b : ℕ, a ≠ b ∧ n = a + b "
         ],
-        "bison": "theorem ∀ {α : Type u_1} [inst : LinearOrderedRing α] [inst_1 : Archimedean α] {x : α}, 0 < x → ∃ a b, a + b = x ∧ a ≠ b "
+        "bison": "∀ {m n : ℕ}, Odd m → ∃ x y, x ≠ y ∧ m = x + y"
     },
     {
         "docString": "Every element in the trivial group has finite order.",
@@ -267,7 +267,7 @@
         "choices": [
             "∀ {G : Type u_1} [inst : Group G] [inst_1 : Unique G], ∀ (x : G), IsOfFinOrder x "
         ],
-        "bison": "theorem ∀ {G : Type u_1} [inst : AddCommMonoid G] {x : G}, IsOfFinAddOrder x "
+        "bison": "∀ {G : Type u_1} [inst : Group G], ∀ (x : G), IsOfFinOrder x → x ∈ 1⁻¹ • G"
     },
     {
         "docString": "The square of an even number is even.",
@@ -276,7 +276,7 @@
         "choices": [
             "∀ {n : ℕ}, Even n → Even (n ^ 2) "
         ],
-        "bison": "theorem ∀ (n : ℕ), n % 2 = 0 → (n ^ 2 % 2 = 0) "
+        "bison": "∀ (n : ℕ), ↑(↑n * ↑n) % 2 = 0"
     },
     {
         "docString": "Every commutative division ring is a field.",
@@ -285,7 +285,7 @@
         "choices": [
             "∀ {K : Type u} [inst : CommRing K] [inst_1 : DivisionRing K], IsField K "
         ],
-        "bison": "theorem ∀ (α : Type u_1) [inst : DivisionRing α], IsField α "
+        "bison": "∀ {R : Type u} [inst : Semiring R] [inst_1 : DivisionSemiring R], IsField R → ∀ (x y : R), x * y = y * x"
     },
     {
         "docString": "The image of the identity element under the identity map is the identity element.",
@@ -294,7 +294,7 @@
         "choices": [
             "∀ {α : Type u} [inst : Monoid α], id (1 : α) = 1 "
         ],
-        "bison": "∀ {α : Type u} [inst : Ring α], ∀ (x : α), ↑(Ring.Id α) x = x "
+        "bison": "∀ {α : Type u} [inst : Group α] (x : α),\n  ↑(Function.id α) x = x"
     },
     {
         "docString": "Every point is a fixed point of the identity function on a space.",
@@ -303,7 +303,7 @@
         "choices": [
             "∀ {α : Type u} (x : α), Function.IsFixedPt id x "
         ],
-        "bison": "theorem ∀ {α : Type u_1} (f : Ordinal.{u} → Ordinal.{u}), Ordinal.IsNormal f → ∀ (x : Ordinal.{u}), Ordinal.IsFixedPt f x "
+        "bison": "∀ {α : Type u} (f : α → α), Function.IsFixedPt (Function.id) f.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_fun.to_"
     },
     {
         "docString": "The diameter of a singleton space is `0`.",
@@ -312,7 +312,7 @@
         "choices": [
             "∀ {α : Type u} [inst : PseudoMetricSpace α] {x : α}, Metric.diam {x} = 0 "
         ],
-        "bison": "theorem ∀ {α : Type u} [inst : PseudoMetricSpace α], ∀ {x : α}, Metric.diam {x} = 0 "
+        "bison": "∀ {α : Type u} [inst : PseudoMetricSpace α] {x : α}, Metric.diam {x} = 0"
     },
     {
         "docString": "Every group is non-empty.",
@@ -321,7 +321,7 @@
         "choices": [
             "∀ {G : Type u} [inst : Group G], Nonempty G "
         ],
-        "bison": "/-- The empty set is non-empty. -/"
+        "bison": "∀ {α : Type u_1} [inst : Group α], Nonempty α"
     },
     {
         "docString": "All connected components of a topological space are connected.",
@@ -330,7 +330,7 @@
         "choices": [
             "∀ {α : Type u} [inst : TopologicalSpace α] (x : α), IsConnected (connectedComponent x) "
         ],
-        "bison": "theorem ∀ (α : Type u) [inst : TopologicalSpace α] [inst_1 : LinearOrder α], CompletelyNormalSpace α "
+        "bison": "∀ {α : Type u} [inst : TopologicalSpace α] [self : CategoryTheory.ConnectedComponents α],\n  CategoryTheory.IsConnected (CategoryTheory.Component ↑self)"
     },
     {
         "docString": "The ring of integers has a maximal ideal.",
@@ -339,7 +339,7 @@
         "choices": [
             "∀ {K : Type u_1} [inst : Field K] [inst_1 : IsNumberField K], ∃ M, Ideal.IsMaximal M "
         ],
-        "bison": "theorem ∀ {R : Type u_1} [inst : CommRing R], ∃ I, Ideal.IsMaximal I "
+        "bison": "∀ {R : Type u} [inst : CommRing R] [inst_1 : Nontrivial R], ∃ I, Ideal.IsMaximal I"
     },
     {
         "docString": "The numbers `3`, `4` and `5` form a Pythagorean triple.",
@@ -348,7 +348,7 @@
         "choices": [
             "PythagoreanTriple 3 4 5 "
         ],
-        "bison": "/-- Pythagorean triples are interchangeable, i.e `x * x + y * y = y * y + x * x = z * z`.\nThis comes from additive commutativity. -/\ntheorem ∀ {x y z : ℤ}, PythagoreanTriple x y z ↔ PythagoreanTriple y x z "
+        "bison": "PythagoreanTriple 3 4 5"
     },
     {
         "docString": "A vector space with the empty set as basis is trivial.",
@@ -357,6 +357,6 @@
         "choices": [
             "∀ {ι : Type u_1} {K : Type u_2} {V : Type u_3} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V]\n  (h : Basis ι K V) (hι : ι → False), Subsingleton V "
         ],
-        "bison": "theorem ∀ {R : Type u_1} {M : Type u_2} [inst : Semiring R] [inst_1 : NormedAddCommGroup M] [inst_2 : NormedSpace R M]\n  [inst_3 : FiniteDimensional R M],\n  FiniteBasis ∅ R M "
+        "bison": "∀ {R : Type u} [inst : Ring R] {M : Type v} [inst_1 : Semiring M] [inst_2 : Module R M] {ι : Type w}, ι ⊆ ∅ → Basis ι R M"
     }
 ]
