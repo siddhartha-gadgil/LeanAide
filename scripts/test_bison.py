@@ -2,7 +2,7 @@ import vertexai
 import json
 from vertexai.preview.language_models import CodeGenerationModel
 
-filename = 'results/gpt4-20prompts-1choice-temp0/thm-results.json'
+filename = 'results/gpt4-20prompts-1choice-temp0/silly-results.json'
 with open(filename, 'r') as f:
     js_lines = json.loads(f.read())
 
@@ -39,7 +39,9 @@ for js in js_lines:
     except Exception as e:
         print(e)
         print('---')
-        
-
-with open(filename, 'w') as f:
-    f.write(json.dumps(js_lines, indent=4, ensure_ascii=False))
+print('Done')
+filename = 'results/gpt4-20prompts-1choice-temp0/silly-bison-results.json'
+wf = open(filename, 'w', encoding='utf-8')
+json.dump(js_lines, wf, ensure_ascii=False, indent=2)
+print("json dumped")
+wf.close()

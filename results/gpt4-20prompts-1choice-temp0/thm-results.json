@@ -6,7 +6,7 @@
         "choices": [
             "∀ {α : Type u} [inst : TopologicalSpace α],\n  (∀ (K : Set α), IsClosed K → K ≠ univ → IsCompact K) → CompactSpace α "
         ],
-        "bison": "∀ {α : Type u} [inst : TopologicalSpace α] (s : Set α),\n  (∀ (t : Set α), t ∈ ↑s → IsClosed t → t ≠ ∅ → IsCompact t) → IsCompact s"
+        "bison": "∀ {α : Type u} [inst : TopologicalSpace α] (s : Set α),\n  (∀ (t : Set α), t ∈ ↑s → IsClosed t → t ≠ ⊤ → IsCompact t) → IsCompact s"
     },
     {
         "docString": "Every prime that is `1` greater than a multiple of `4` can be expressed as the sum of two squares.",
@@ -33,7 +33,7 @@
         "choices": [
             "∀ {α : Type u_1} [self : Mul α] [self_1 : Add α] [self_2 : Zero α] [self_3 : One α] [self_4 : ∀ (a : α), a * a = a],\n  ∀ (a b : α), a * b = b * a "
         ],
-        "bison": "A ring with all elements idempotent is commutative. \n∀ {α : Type u_1} [self : Ring α] (r : α), r * r = r → ∀ (x y : α), x * y = y * x"
+        "bison": "A ring with all elements idempotent is commutative. \n∀ {α : Type u_1} [self : Ring α] (a : α), a * a = a → ∀ (x y : α), x * y = y * x"
     },
     {
         "docString": "There are infinitely many pairs of primes that differ exactly by `2`.",
@@ -69,7 +69,7 @@
         "choices": [
             "∀ {V : Type u} (G : SimpleGraph V) [inst : Fintype V] [inst_1 : DecidableRel G.Adj],\n  (∀ (v w : V), v ≠ w → ∃! (x : V), SimpleGraph.Adj G x v ∧ SimpleGraph.Adj G x w) →\n  ∃ (x : V), ∀ (v : V), v ≠ x → SimpleGraph.Adj G x v "
         ],
-        "bison": "∀ {V : Type u} (G : SimpleGraph V) [inst : Fintype V] [inst_1 : DecidableRel G.Adj],\n  SimpleGraph.IsTree G → ∃ v, ∀ (w : V), SimpleGraph.Adj G v w → ∀ (u : V), SimpleGraph.Adj G v u"
+        "bison": "∀ {V : Type u} (G : SimpleGraph V) [inst : Fintype V] [inst_1 : DecidableRel G.Adj] (p : SimpleGraph.Pairing G),\n  SimpleGraph.Pairing.IsSingle G p → ∃ v, ∀ (x : V), SimpleGraph.Adj G v x"
     },
     {
         "docString": "The number of partitions with odd parts is equal to the number of partitions with distinct parts.",
@@ -78,7 +78,7 @@
         "choices": [
             "Nat.partitions_with_odd_parts_eq_partitions_with_distinct_parts "
         ],
-        "bison": "_ : ∀ {α : Type u_1} [inst : Fintype α] [inst_1 : Finite α], Finset.card (Partition.IsPartition ↑(Partition.oddParts α)) = Finset.card (Partition.IsPartition ↑(Partition.distinctParts α))"
+        "bison": "∀ {α : Type u_1} [inst : Fintype α] (a : α),\n  ↑(Nat.partitionWithDistinct a) = ↑(Nat.partitionWithOdd a)"
     },
     {
         "docString": "Every non-empty poset in which every chain has an upper bound contains a maximal element.",
@@ -87,7 +87,7 @@
         "choices": [
             "∀ {α : Type u_1} {r : α → α → Prop} [inst : Nonempty α],\n  (∀ (c : Set α), IsChain r c → Set.Nonempty c → ∃ ub, ∀ (a : α), a ∈ c → r a ub) →\n    (∀ {a b c : α}, r a b → r b c → r a c) → ∃ m, ∀ (a : α), r m a → r a m "
         ],
-        "bison": "∀ {α : Type u_1} {r : α → α → Prop} [inst : Nonempty α],\n  (∀ {c : Set α}, IsChain r c → Set.Nonempty c → ∃ ub, ∀ (a : α), a ∈ c → r a ub) →\n    (∀ {a b c : α}, r a b → r b c → r a c) → ∃ m, ∀ (a : α), r m a → r a m"
+        "bison": "∀ {α : Type u_1} {r : α → α → Prop} [inst : Preorder α] [inst_1 : Nonempty α],\n  (∀ (c : Set α), IsChain r c → Set.Nonempty c → ∃ ub, ∀ (a : α), a ∈ c → r a ub) →\n    (∀ {a b c : α}, r a b → r b c → r a c) → ∃ m, ∀ (a : α), r m a → r a m"
     },
     {
         "docString": "A group whose automorphism group is cyclic is Abelian.",
@@ -96,7 +96,7 @@
         "choices": [
             "∀ {G : Type u_1} [inst : Group G] [inst_1 : IsCyclic (Aut G)], CommGroup G "
         ],
-        "bison": "∀ {α : Type u} [inst : Group α] [inst_1 : Finite α] [inst_2 : Fintype α] [inst_3 : IsCyclic α], IsAbelian α"
+        "bison": "∀ {α : Type u} [inst : Group α] [inst_1 : Finite α] (G : Group α), IsCyclic G → IsAbelian G → IsCyclic (Group.Automorphisms G)"
     },
     {
         "docString": "A uniformly continuous function of a uniformly continuous function is uniformly continuous.",
@@ -105,7 +105,7 @@
         "choices": [
             "∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} [inst : UniformSpace α] [inst_1 : UniformSpace β] [inst_2 : UniformSpace γ]\n  {f : α → β} {g : β → γ},\n  UniformContinuous f → UniformContinuous g → UniformContinuous (g ∘ f) "
         ],
-        "bison": "∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} [inst : UniformSpace α] [inst : UniformSpace β] [inst : UniformSpace γ]\n  {f : β → γ} {g : α → β},\n  UniformContinuous f → UniformContinuous g → UniformContinuous (fun x => f (g x))"
+        "bison": "∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} [inst : UniformSpace γ] {f : β → γ} {g : α → β},\n  UniformContinuous f → UniformContinuous g → UniformContinuous (fun x => f (g x))"
     },
     {
         "docString": "A uniformly continuous function of a uniformly continuous function is uniformly continuous.",
@@ -123,7 +123,7 @@
         "choices": [
             "∀ {α : Type u} [inst : TopologicalSpace α], NormalSpace α ↔\n  ∀ (s t : Set α), IsClosed s → IsClosed t → Disjoint s t → ∃ f, Continuous f ∧ ∀ x, x ∈ s → f x = 0 ∧ x ∈ t → f x = 1 "
         ],
-        "bison": "∀ {α : Type u} [inst : TopologicalSpace α] (s t : Set α),\n  IsClosed s → IsClosed t → s ∩ t ⊆ ∅ → ∀ {f : α → Type u_1}, ContinuousOn id s → NormalSpace α"
+        "bison": "∀ {α : Type u} [inst : TopologicalSpace α],\n  NormalSpace α ↔ ∀ (s t : Set α), IsClosed s → IsClosed t → Disjoint s t → ∃ f, ContinuousOn f s ∧ ContinuousOn f t ∧ s ∩ Set.range f = ∅ ∧ t ∩ Set.range f = ∅"
     },
     {
         "docString": "If a function from the unit interval to itself has a point of period three, then it has points of all positive periods.",
