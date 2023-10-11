@@ -4,6 +4,13 @@ import Mathlib
 
 #eval 3 ∣ 4 
 
+#reduce (3: Nat)
+set_option pp.all true in
+#reduce Nat.succ <| Nat.succ Nat.zero
+set_option pp.all true in
+#reduce (0 : Nat)
+#check String
+
 #check Fin.mk -- {n : ℕ} → (val : ℕ) → val < n → Fin n
 
 example : forall {a : ℝ} {f : ℝ → ℝ} {M₀ M₁ M₂ : ℝ},  Differentiable ℝ f → Differentiable ℝ (deriv f) →    (∀ x, a < x → abs (f x) ≤ M₀) →      (∀ x, a < x → abs (deriv f x) ≤ M₁) →        (∀ x, a < x → abs (deriv^[2] f x) ≤ M₂) → M₁ ^ 2 ≤ 4 * M₀ * M₂ := by sorry

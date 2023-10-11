@@ -228,8 +228,14 @@ partial def Lean.Syntax.identsM (stx: Syntax)(context: Array Syntax)(maxDepth? :
         | _ => pure []
 
 
--- -- #eval termKindList
+#eval termKindList
+def tls : MetaM Nat := do
+    let l ← termKindList
+    -- Exclude those with namespace Lean, Std
+    let l := l.filter (fun s => !(s.components.head?.map (fun s => [`Lean, `Std, `Aesop].contains s)).getD false)
+    return l.length
 
+#eval tls
 /-
 partial def Lean.Syntax.termsM (context : Array Syntax)(stx: Syntax)(maxDepth? : Option Nat := none) : MetaM <| List <| TermData   := do
     let tks ← termKindList

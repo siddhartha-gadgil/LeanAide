@@ -125,7 +125,6 @@ partial def Lean.Syntax.premiseDataAuxM (context : ContextSyn)(defnName: Name)(s
     else
     -- IO.println s!"Recursive call:\n{stx}"
     let tks ← termKindList
-    let tks := tks.map (·.1)
     match ← wrappedProp? stx with
     | some prop =>
         let (ts, pfs, ids, ps) ←  

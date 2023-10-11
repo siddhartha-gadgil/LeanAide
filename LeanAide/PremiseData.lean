@@ -577,9 +577,9 @@ def termKinds : MetaM <| SyntaxNodeKindSet :=  do
     let termCat? := getCategory categories `term
     return termCat?.get!.kinds    
 
-def termKindList : MetaM <| List (SyntaxNodeKind × Unit) := do
+def termKindList : MetaM <| List SyntaxNodeKind := do
     let s ← termKinds
-    pure <| s.toList 
+    pure <| s.toList.map (·.1) 
 
 partial def Lean.Syntax.size (stx: Syntax) : Nat := 
     match stx with
