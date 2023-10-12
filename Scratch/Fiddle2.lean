@@ -11,8 +11,10 @@ set_option pp.all true in
 #reduce (0 : Nat)
 #check String
 
+
 #check False.elim
 #print False.elim
+#check @False.rec
 
 #check Fin.mk -- {n : ℕ} → (val : ℕ) → val < n → Fin n
 
