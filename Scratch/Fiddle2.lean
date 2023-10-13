@@ -14,7 +14,12 @@ set_option pp.all true in
 
 #check False.elim
 #print False.elim
-#check @False.rec
+#check @False.rec -- (motive : False → Sort u_1) → (t : False) → motive t
+#check False
+#check @And.rec
+#check @Or.rec
+
+#check @True.rec
 
 #check Fin.mk -- {n : ℕ} → (val : ℕ) → val < n → Fin n
 
