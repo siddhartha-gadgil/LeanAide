@@ -10,8 +10,10 @@ set_option pp.all true in
 set_option pp.all true in
 #reduce (0 : Nat)
 #check String
+example (n: Nat): (instOfNatNat n).1 = n := rfl
 
-
+#print ULift.up
+#print ULift.down
 #check False.elim
 #print False.elim
 #check @False.rec -- (motive : False → Sort u_1) → (t : False) → motive t
