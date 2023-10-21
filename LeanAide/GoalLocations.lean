@@ -5,7 +5,6 @@ import Std
 
 open Lean Expr 
 
--- TODO Check whether this function already exists
 def Lean.Expr.getName! : Expr → Name
   | .lam n _ _ _ => n
   | .letE n _ _ _ _ => n
@@ -120,15 +119,15 @@ def targetedRewritesCore (hyps : Array (Expr × Bool × Nat))
 
   trace[Tactic.rewrites.lemmas] m!"Candidate rewrite lemmas:\n{deduped}"
 
-  let hyps' : Array (List String × Expr × Bool × ℕ) ← hyps.concatMapM fun ⟨hyp, _symm, weight⟩ ↦ do
-    let enters ← hyp.getConvEnters pure explicit?
-    return enters.map fun (path, subhyp) ↦ (path, subhyp, _symm, weight)
+  -- let hyps' : Array (List String × Expr × Bool × ℕ) ← hyps.concatMapM fun ⟨hyp, _symm, weight⟩ ↦ do
+  --   let enters ← hyp.getConvEnters pure explicit?
+  --   return enters.map fun (path, subhyp) ↦ (path, subhyp, _symm, weight)
   
   -- Lift to a monadic list, so the caller can decide how much of the computation to run.
-  let hyps := MLList.ofArray <| hyps'.map fun ⟨path, hyp, _symm, weight⟩ => (path, Sum.inl hyp, _symm, weight)
+  -- let hyps := MLList.ofArray <| hyps'.map fun ⟨path, hyp, _symm, weight⟩ => (path, Sum.inl hyp, _symm, weight)
   let lemmas := MLList.ofArray <| deduped.map fun ⟨path, lem, _symm, weight⟩ => (path, Sum.inr lem, _symm, weight)
 
-  pure <| (hyps |>.append fun _ => lemmas).filterMapM fun ⟨path, lem, _symm, weight⟩ => Meta.withMCtx ctx do
+  pure <| (/-hyps |>.append fun _ =>-/ lemmas).filterMapM fun ⟨path, lem, _symm, weight⟩ => Meta.withMCtx ctx do
     let some expr ← (match lem with
     | .inl hyp => pure (some hyp)
     | .inr lem => try? <| Meta.mkConstWithFreshMVarLevels lem) | return none
@@ -275,3 +274,7 @@ elab_rules : tactic |
   `(tactic| tgt_rw? ! $[$h]?)
 @[inherit_doc tgt_rewrites] macro "tgt_rw!?" h:(ppSpace location)? : tactic =>
   `(tactic| tgt_rw? ! $[$h]?)
+
+example : 1 = 1 := by
+  tgt_rw?
+  sorry
