@@ -14,16 +14,176 @@ example (n: Nat): (instOfNatNat n).1 = n := rfl
 
 #print ULift.up
 #print ULift.down
+#check ULift.down -- {α : Type s} → ULift.{r, s} α → α
+#check ULift
+#check ULift.up_down
 #check False.elim
 #print False.elim
 #check @False.rec -- (motive : False → Sort u_1) → (t : False) → motive t
 #check False
 #check @And.rec
 #check @Or.rec
+#check PUnit.unit
 
 #check @True.rec
 
 #check Fin.mk -- {n : ℕ} → (val : ℕ) → val < n → Fin n
+
+inductive ArrayTree where
+  | leaf (n: Nat) : ArrayTree
+  | node (branches: Array ArrayTree) : ArrayTree 
+
+#check ArrayTree.rec /- {motive_1 : ArrayTree → Sort u} →
+  {motive_2 : Array ArrayTree → Sort u} →
+    {motive_3 : List ArrayTree → Sort u} →
+      ((n : ℕ) → motive_1 (ArrayTree.leaf n)) →
+        ((branches : Array ArrayTree) → motive_2 branches → motive_1 (ArrayTree.node branches)) →
+          ((data : List ArrayTree) → motive_3 data → motive_2 { data := data }) →
+            motive_3 [] →
+              ((head : ArrayTree) → (tail : List ArrayTree) → motive_1 head → motive_3 tail → motive_3 (head :: tail)) →
+                (t : ArrayTree) → motive_1 t -/
+
+#check List.rec /- {α : Type u} →
+  {motive : List α → Sort u_1} →
+    motive [] →
+      ((head : α) → (tail : List α) → motive tail → motive (head :: tail)) → (l : List α) → motive l -/
+
+#check Array.rec -- {α : Type u} → {motive : Array α → Sort u_1} → ((data : List α) → motive { data := data }) → (t : Array α) → motive t
+
+structure Gather where
+  data : List Nat
+  num  : Nat
+  rk: String
+
+#check Gather.rec
+#check Nat.rec
+
+#check Lean.Syntax.rec /- {motive_1 : Lean.Syntax → Sort u} →
+  {motive_2 : Array Lean.Syntax → Sort u} →
+    {motive_3 : List Lean.Syntax → Sort u} →
+      motive_1 Lean.Syntax.missing →
+        ((info : Lean.SourceInfo) →
+            (kind : Lean.SyntaxNodeKind) →
+              (args : Array Lean.Syntax) → motive_2 args → motive_1 (Lean.Syntax.node info kind args)) →
+          ((info : Lean.SourceInfo) → (val : String) → motive_1 (Lean.Syntax.atom info val)) →
+            ((info : Lean.SourceInfo) →
+                (rawVal : Substring) →
+                  (val : Lean.Name) →
+                    (preresolved : List Lean.Syntax.Preresolved) →
+                      motive_1 (Lean.Syntax.ident info rawVal val preresolved)) →
+              ((data : List Lean.Syntax) → motive_3 data → motive_2 { data := data }) →
+                motive_3 [] →
+                  ((head : Lean.Syntax) →
+                      (tail : List Lean.Syntax) → motive_1 head → motive_3 tail → motive_3 (head :: tail)) →
+                    (t : Lean.Syntax) → motive_1 t-/
+
+universe l
+
+abbrev recCandidate := ∀ {motive : (∀ (c : @Lean.Syntax) , Sort l)}
+  {motive_1 : (∀ (c : @Array.{0} @Lean.Syntax) , Sort l)}
+  {motive_2 : (∀ (c : @List.{0} @Lean.Syntax) , Sort l)}
+  (h : motive @Lean.Syntax.missing)
+  (h_0 :
+    (∀ (info : @Lean.SourceInfo) (kind : @Lean.SyntaxNodeKind)
+      (args : @Array.{0} @Lean.Syntax) (ih : motive_1 args) , motive
+      (@Lean.Syntax.node info kind args)))
+  (h_1 :
+    (∀ (info : @Lean.SourceInfo) (val : @String) , motive
+      (@Lean.Syntax.atom info val)))
+  (h_2 :
+    (∀ (info : @Lean.SourceInfo) (rawVal : @Substring) (val : @Lean.Name)
+      (preresolved : @List.{0} @Lean.Syntax.Preresolved) , motive
+      (@Lean.Syntax.ident info rawVal val preresolved)))
+  (h_3 :
+    (∀ (data : @List.{0} @Lean.Syntax) (ih : motive_2 data) , motive_1
+      (@Array.mk.{0} @Lean.Syntax data)))
+  (h_4 : motive_2 (@List.nil.{0} @Lean.Syntax))
+  (h_5 :
+    (∀ (head : @Lean.Syntax) (tail : @List.{0} @Lean.Syntax) (ih : motive head)
+      (ih_0 : motive_2 tail) , motive_2
+      (@List.cons.{0} @Lean.Syntax head tail))) (x : @Lean.Syntax) , motive x  
+
+noncomputable example : recCandidate := Lean.Syntax.rec /- success ⌣ -/
+
+variable (recEg : recCandidate)
+
+inductive ListTree where
+  | leaf (n: Nat) : ListTree
+  | node (rec: List ListTree) : ListTree
+
+#check ListTree.rec /- {motive_1 : ListTree → Sort u} →
+  {motive_2 : List ListTree → Sort u} →
+    ((n : ℕ) → motive_1 (ListTree.leaf n)) →
+      ((rec : List ListTree) → motive_2 rec → motive_1 (ListTree.node rec)) →
+        motive_2 [] →
+          ((head : ListTree) → (tail : List ListTree) → motive_1 head → motive_2 tail → motive_2 (head :: tail)) →
+            (t : ListTree) → motive_1 t -/
+
+#print ListTree.rec
+
+inductive Vec (α : Type) : Nat → Type where
+  | nil : Vec α 0
+  | cons (n: ℕ)(head : α) (tail : Vec α n) : Vec α  (n + 1)
+
+inductive VectorTree where
+  | leaf (n: Nat) : VectorTree
+  | node (n: ℕ) (branches: Vec VectorTree n) : VectorTree
+
+
+#check VectorTree.rec /-
+{motive_1 : VectorTree → Sort u} →
+  {motive_2 : (a : ℕ) → Vec VectorTree a → Sort u} →
+    ((n : ℕ) → motive_1 (VectorTree.leaf n)) →
+      ((n : ℕ) → (branches : Vec VectorTree n) → motive_2 n branches → motive_1 (VectorTree.node n branches)) →
+        motive_2 0 Vec.nil →
+          ((n : ℕ) →
+              (head : VectorTree) →
+                (tail : Vec VectorTree n) → motive_1 head → motive_2 n tail → motive_2 (n + 1) (Vec.cons n head tail)) →
+            (t : VectorTree) → motive_1 t
+-/
+
+-- inductive VectorTree where
+--   | leaf (n: Nat) : VectorTree
+--   | node (n: ℕ) (branches: Vector VectorTree n) : VectorTree
+
+
+inductive MyList (α : Type u) where
+  | nil : MyList α
+  | cons (head : α) (tail : MyList α) : MyList α
+
+inductive MyListTree (α : Type u) where
+  | leaf (a: α) : MyListTree α
+  | node (children: MyList (MyListTree α))(family : Nat → List (MyListTree α )) : MyListTree α
+
+#check MyListTree.rec /- {α : Type u} →
+  {motive_1 : MyListTree α → Sort u_1} →
+    {motive_2 : MyList (MyListTree α) → Sort u_1} →
+      {motive_3 : List (MyListTree α) → Sort u_1} →
+        ((a : α) → motive_1 (MyListTree.leaf a)) →
+          ((children : MyList (MyListTree α)) →
+              (family : ℕ → List (MyListTree α)) →
+                motive_2 children → ((a : ℕ) → motive_3 (family a)) → motive_1 (MyListTree.node children family)) →
+            motive_2 MyList.nil →
+              ((head : MyListTree α) →
+                  (tail : MyList (MyListTree α)) → motive_1 head → motive_2 tail → motive_2 (MyList.cons head tail)) →
+                motive_3 [] →
+                  ((head : MyListTree α) →
+                      (tail : List (MyListTree α)) → motive_1 head → motive_3 tail → motive_3 (head :: tail)) →
+                    (t : MyListTree α) → motive_1 t
+      -/
+
+inductive NatTree where
+  | leaf (n: Nat) : NatTree
+  | node (rec:  Nat →  NatTree) : NatTree
+
+#check NatTree.rec /- {motive : NatTree → Sort u} →
+  ((n : ℕ) → motive (NatTree.leaf n)) →
+    ((rec : ℕ → NatTree) → ((a : ℕ) → motive (rec a)) → motive (NatTree.node rec)) → (t : NatTree) → motive t
+-/
+
+#check Array.rec
+
+#check Nat.rec
 
 example : forall {a : ℝ} {f : ℝ → ℝ} {M₀ M₁ M₂ : ℝ},  Differentiable ℝ f → Differentiable ℝ (deriv f) →    (∀ x, a < x → abs (f x) ≤ M₀) →      (∀ x, a < x → abs (deriv f x) ≤ M₁) →        (∀ x, a < x → abs (deriv^[2] f x) ≤ M₂) → M₁ ^ 2 ≤ 4 * M₀ * M₂ := by sorry
 
