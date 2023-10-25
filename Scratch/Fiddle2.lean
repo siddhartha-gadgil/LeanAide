@@ -2,7 +2,7 @@ import Mathlib
 
 #check List.sum
 
-#eval 3 ∣ 4 
+#eval 3 ∣ 4
 
 #reduce (3: Nat)
 set_option pp.all true in
@@ -31,7 +31,7 @@ example (n: Nat): (instOfNatNat n).1 = n := rfl
 
 inductive ArrayTree where
   | leaf (n: Nat) : ArrayTree
-  | node (branches: Array ArrayTree) : ArrayTree 
+  | node (branches: Array ArrayTree) : ArrayTree
 
 #check ArrayTree.rec /- {motive_1 : ArrayTree → Sort u} →
   {motive_2 : Array ArrayTree → Sort u} →
@@ -101,11 +101,25 @@ abbrev recCandidate := ∀ {motive : (∀ (c : @Lean.Syntax) , Sort l)}
   (h_5 :
     (∀ (head : @Lean.Syntax) (tail : @List.{0} @Lean.Syntax) (ih : motive head)
       (ih_0 : motive_2 tail) , motive_2
-      (@List.cons.{0} @Lean.Syntax head tail))) (x : @Lean.Syntax) , motive x  
+      (@List.cons.{0} @Lean.Syntax head tail))) (x : @Lean.Syntax) , motive x
 
 noncomputable example : recCandidate := Lean.Syntax.rec /- success ⌣ -/
 
+example : @LT.lt.{0} @Nat @instLTNat (@OfNat.ofNat.{0} @Nat 127 (@instOfNatNat 127))
+  @UInt32.size := @of_decide_eq_true
+  (@LT.lt.{0} @Nat @instLTNat (@OfNat.ofNat.{0} @Nat 127 (@instOfNatNat 127))
+    @UInt32.size)
+  (@Nat.decLt (@OfNat.ofNat.{0} @Nat 127 (@instOfNatNat 127)) @UInt32.size)
+  (@Eq.refl.{1} @Bool @Bool.true)
+
 variable (recEg : recCandidate)
+
+#check Lean.TSyntaxArray.raw
+#check Lean.Syntax.mkApp
+#check Char.utf8Size.proof_1
+#print Char.utf8Size.proof_1
+#check UInt32.size
+
 
 inductive ListTree where
   | leaf (n: Nat) : ListTree
@@ -223,15 +237,15 @@ example : ∀ x: ℕ, x + 3 = 3 + x := by
   conv =>
     enter [x, 2]
     rw [Nat.add_comm]
-  intro _ 
+  intro _
   rfl
-   
+
 example (f g : ℕ → ℕ): f = g → ∀ x: ℕ, f (x + 3) = g (3 + x) := by
   conv =>
     intro eqn x
     arg 1
     rw [eqn]
-    arg 1    
+    arg 1
     rw [Nat.add_comm]
   simp
 
@@ -239,18 +253,18 @@ example (f g : ℕ → ℕ): f = g → ∀ x: ℕ, f (x + 3) = g (3 + x) := by
   conv =>
     enter [eqn, x, 2]
     rw [← eqn]
-  conv => 
+  conv =>
     enter [eqn, x, 1]
     rw [Nat.add_comm]
   simp
 
-example (f g : ℕ →   ℕ → ℕ): f = g → ∀ x: ℕ, 
+example (f g : ℕ →   ℕ → ℕ): f = g → ∀ x: ℕ,
     f (x + 3) (4 + x) = g (3 + x) (x + 4) := by
-  conv => 
+  conv =>
     intro
     enter [x, 1, 2]
     rw [Nat.add_comm]
-  conv => 
+  conv =>
     intro
     enter [x, 1, 1]
     rw [Nat.add_comm]
@@ -263,6 +277,6 @@ example : 1 = 1 := by
   let _ := 3
   rfl
 
-example : (n: ℕ) → let m := n + 1 ; n + 1 = m := by simp 
+example : (n: ℕ) → let m := n + 1 ; n + 1 = m := by simp
 
 #check Eq.mp
