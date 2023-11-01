@@ -131,10 +131,10 @@ set_option pp.all true in
 example : 3 ≤ 5  := @Nat.le_of_ble_eq_true 3 5 (@Eq.refl.{1} @Bool @Bool.true)
 example : ¬6 ≤ 5 := @Nat.not_le_of_not_ble_eq_true 6 5 Bool.ff_ne_tt
 
-example : Decidable (3 ≤ 5)  :=
-  Decidable.isTrue <| @Nat.le_of_ble_eq_true 3 5 (@Eq.refl.{1} @Bool @Bool.true)
-example : Decidable (6 ≤ 5) :=
-  Decidable.isFalse <| @Nat.not_le_of_not_ble_eq_true 6 5 Bool.ff_ne_tt
+example : @Decidable (3 ≤ 5)  :=
+  @Decidable.isTrue (3 ≤ 5) <| @Nat.le_of_ble_eq_true 3 5 (@Eq.refl.{1} @Bool @Bool.true)
+example : @Decidable (6 ≤ 5) :=
+  @Decidable.isFalse (6 ≤ 5) <| @Nat.not_le_of_not_ble_eq_true 6 5 @Bool.ff_ne_tt
 
 
 example : false ≠ true := by
