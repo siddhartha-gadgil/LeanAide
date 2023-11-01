@@ -114,12 +114,41 @@ example : @LT.lt.{0} @Nat @instLTNat (@OfNat.ofNat.{0} @Nat 127 (@instOfNatNat 1
 
 variable (recEg : recCandidate)
 
+def ltType := (Decidable.decide (LT.lt (OfNat.ofNat 127) UInt32.size))
+
+#reduce ltType - true
+def checkLt := Decidable.decide (3 ≤ 5 )
+#reduce checkLt -- true
+#check Nat.decLt
+
+theorem tt_eq_tt : true = true := rfl
+set_option pp.all true in
+#reduce tt_eq_tt
+
+#check Nat.le_of_ble_eq_true -- ∀ {n m : ℕ}, Nat.ble n m = true → n ≤ m
+#check Nat.not_le_of_not_ble_eq_true -- ∀ {n m : ℕ}, ¬Nat.ble n m = true → ¬n ≤ m
+
+example : 3 ≤ 5  := @Nat.le_of_ble_eq_true 3 5 (@Eq.refl.{1} @Bool @Bool.true)
+example : ¬6 ≤ 5 := @Nat.not_le_of_not_ble_eq_true 6 5 Bool.ff_ne_tt
+
+example : Decidable (3 ≤ 5)  :=
+  Decidable.isTrue <| @Nat.le_of_ble_eq_true 3 5 (@Eq.refl.{1} @Bool @Bool.true)
+example : Decidable (6 ≤ 5) :=
+  Decidable.isFalse <| @Nat.not_le_of_not_ble_eq_true 6 5 Bool.ff_ne_tt
+
+
+example : false ≠ true := by
+  exact Bool.ff_ne_tt
+
 #check Lean.TSyntaxArray.raw
 #check Lean.Syntax.mkApp
 #check Char.utf8Size.proof_1
 #print Char.utf8Size.proof_1
 #check UInt32.size
-
+#check Nat.le
+#check Decidable.rec /- {p : Prop} →
+  {motive : Decidable p → Sort u} →
+    ((h : ¬p) → motive (isFalse h)) → ((h : p) → motive (isTrue h)) → (t : Decidable p) → motive t -/
 
 inductive ListTree where
   | leaf (n: Nat) : ListTree
