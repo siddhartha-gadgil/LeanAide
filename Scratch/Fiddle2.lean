@@ -11,6 +11,8 @@ set_option pp.all true in
 #reduce (0 : Nat)
 #check String
 example (n: Nat): (instOfNatNat n).1 = n := rfl
+#check Nat.Linear.Poly.cancel
+#check Nat.Linear.ExprCnstr.denote_toNormPoly
 
 #print ULift.up
 #print ULift.down
