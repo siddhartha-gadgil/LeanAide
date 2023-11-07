@@ -138,6 +138,21 @@ example : @Decidable (3 ≤ 5)  :=
 example : @Decidable (6 ≤ 5) :=
   @Decidable.isFalse (6 ≤ 5) <| @Nat.not_le_of_not_ble_eq_true 6 5 @Bool.ff_ne_tt
 
+#check Nat.Linear.ExprCnstr.denote_toNormPoly
+-- set_option maxRecDepth 10000 in
+-- #reduce Nat.Linear.ExprCnstr.denote_toNormPoly
+
+#check Nat.Linear.Expr.var
+#check Nat.Linear.PolyCnstr.isValid
+#check @Bool.rec
+#check Nat.Linear.PolyCnstr.eq
+#check @Prod.rec
+#check Nat.Linear.Poly.cancel
+
+set_option pp.all true in
+#print Nat.Linear.ExprCnstr.denote_toNormPoly
+
+#check Nat.Linear.ExprCnstr.denote_toNormPoly
 
 example : false ≠ true := by
   exact Bool.ff_ne_tt
