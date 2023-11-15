@@ -13,7 +13,7 @@ def Lean.Expr.view (expr: Expr) : MetaM String := do
   return fmt.pretty
 
 partial def showSyntax : Syntax → String
-| Syntax.node _ _ args => 
+| Syntax.node _ _ args =>
   (args.map <| fun s => showSyntax s).foldl (fun acc s => acc ++ " " ++ s) ""
 | Lean.Syntax.atom _ val => val
 | Lean.Syntax.ident _ _ val _ => val.toString
@@ -81,14 +81,14 @@ def EIO.runToIO' (eio: EIO Exception α) : IO α  := do
 
 def EIO.spawnToIO (eio: EIO Exception α) : IO <| Task <| IO α  := do
   let task ←  eio.asTask (prio := Task.Priority.max)
-  return task.map (fun eio => 
+  return task.map (fun eio =>
     match eio with
     | Except.ok x =>
         pure x
     | Except.error e => do
         let msg ←  e.toMessageData.toString
         IO.throwServerError msg)
-    
+
 def EIO.asyncIO (eio: EIO Exception α) : IO α  := do
   let task ← EIO.spawnToIO eio
   task.get
@@ -100,26 +100,26 @@ def getTactics (s : TSyntax ``tacticSeq) : Array (TSyntax `tactic) :=
   | `(tacticSeq| $[$t]*) => t
   | _ => #[]
 
-def appendTactics (s t : TSyntax ``tacticSeq) : 
+def appendTactics (s t : TSyntax ``tacticSeq) :
   MetaM (TSyntax ``tacticSeq) := do
   let ts := getTactics t
   match s with
-  | `(tacticSeq| { $[$t]* }) => 
+  | `(tacticSeq| { $[$t]* }) =>
       let ts' := t ++ ts
       `(tacticSeq| { $[$ts']* })
-  | `(tacticSeq| $[$t]*) => 
+  | `(tacticSeq| $[$t]*) =>
       let ts' := t ++ ts
       `(tacticSeq| $[$ts']*)
   | _ => pure t
 
 def appendTactics' (ts : Array (TSyntax `tactic))
-    (s : TSyntax ``tacticSeq) : 
+    (s : TSyntax ``tacticSeq) :
   MetaM (TSyntax ``tacticSeq) := do
   match s with
-  | `(tacticSeq| { $[$t]* }) => 
+  | `(tacticSeq| { $[$t]* }) =>
       let ts' := ts ++ t
       `(tacticSeq| { $[$ts']* })
-  | `(tacticSeq| $[$t]*) => 
+  | `(tacticSeq| $[$t]*) =>
       let ts' := ts ++ t
       `(tacticSeq| $[$ts']*)
   | _ => `(tacticSeq| $[$ts]*)
@@ -127,10 +127,10 @@ def appendTactics' (ts : Array (TSyntax `tactic))
 def consTactics (h: TSyntax `tactic)(s : TSyntax ``tacticSeq):
   MetaM (TSyntax ``tacticSeq) := do
   match s with
-  | `(tacticSeq| { $[$t]* }) => 
+  | `(tacticSeq| { $[$t]* }) =>
       let ts' := #[h] ++ t
       `(tacticSeq| { $[$ts']* })
-  | `(tacticSeq| $[$t]*) => 
+  | `(tacticSeq| $[$t]*) =>
       let ts' := #[h] ++ t
       `(tacticSeq| $[$ts']*)
   | _ => pure s
@@ -145,14 +145,13 @@ def threadNum : IO Nat := do
     return 4
 
 def jsonLines [ToJson α] (jsl : Array α) : String :=
-  let lines := jsl.map (fun j => toJson j |>.pretty 10000000) 
-      |>.filter (fun l =>  l.length < 9000000)
-  lines.foldl (fun acc l => acc ++ "\n" ++ l) ""
+  let lines := jsl.map (fun j => Json.compress <| toJson j)
+  lines.foldl (fun acc l => acc ++ l ++ "\n") ""
 
 partial def List.batchesAux (l: List α)(size: Nat)(accum : List (List α)) : List (List α) :=
   match l with
   | [] => accum
-  | _ => 
+  | _ =>
     let batch := l.take size
     let rest := l.drop size
     batchesAux rest size (batch::accum)
@@ -164,7 +163,7 @@ def Array.batches (l: Array α)(size: Nat) : Array (Array α) :=
   (l.toList.batches size).map (fun l => l.toArray) |>.toArray
 
 def List.batches' (l: List α)(numBatches: Nat) : List (List α) :=
-  let size := 
+  let size :=
     if l.length % numBatches = 0 then
       l.length / numBatches
     else
@@ -178,13 +177,13 @@ def Array.batches' (l: Array α)(numBatches: Nat) : Array (Array α) :=
 
 #check Option.mapM
 
-@[inline] protected def Except.mapM [Monad m] (f : α → m β) 
+@[inline] protected def Except.mapM [Monad m] (f : α → m β)
     (o : Except ε α) : m (Except ε β) := do
   match o with
   | Except.ok a => return Except.ok (← f a)
   | Except.error e => return Except.error e
 
-/- 
+/-
 Obtaining names of constants
 -/
 
@@ -200,7 +199,7 @@ def isAux (declName : Name) : MetaM  Bool := do
   let env ← getEnv
   return (isAuxRecursor env declName
           || isNoConfusion env declName)
-  
+
 def isNotAux  (declName : Name) : MetaM  Bool := do
   let nAux ← isAux declName
   return (not nAux)
@@ -211,7 +210,7 @@ def isWhiteListed (declName : Name) : MetaM Bool := do
   return !bl
   catch _ => return false
 
-def excludePrefixes := [`Lean, `Std, `IO, 
+def excludePrefixes := [`Lean, `Std, `IO,
           `Char, `String, `ST, `StateT, `Repr, `ReaderT, `EIO, `BaseIO, `UInt8, ``UInt16, ``UInt32, ``UInt64, `Mathlib.Tactic, `Mathlib.Meta, `LeanAide.Meta, `Aesop]
 
 /-- This is a slight modification of `Parser.runParserCategory` due to Scott Morrison/Kim Liesinger. -/
@@ -230,7 +229,7 @@ def parseAsTacticSeq (env : Environment) (input : String) (fileName := "<input>"
 
 /-- Parsing with a group, for example to extract context -/
 def parseGroup (env : Environment) (input : String) (parsers: List Parser) (fileName := "<input>") :
-    Except String Syntax :=      
+    Except String Syntax :=
   match parsers with
   | [] => Except.error "no parsers"
   | head :: tail =>
@@ -252,7 +251,7 @@ def getName? (stx: Syntax) : Option Name :=
 def structuralTerm (stx: Syntax) : MetaM Bool := do
   match getName? stx with
   | none => pure false
-  | some n => 
+  | some n =>
     let check := (``Eq).isPrefixOf n || (``Iff).isPrefixOf n
     -- IO.println s!"function with name: {n}; blocked: {check}"
     return check
