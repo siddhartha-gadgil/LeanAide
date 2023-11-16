@@ -66,7 +66,7 @@ lean_exe extras.lib4chk{
   supportInterpreter := true
 }
 
-lean_exe pickle_embeddings 
+lean_exe pickle_embeddings
 
 lean_exe batchcheck{
   supportInterpreter := true
@@ -110,6 +110,10 @@ lean_exe writedocs {
   supportInterpreter := true
 }
 
+
+lean_exe termexamples {
+  supportInterpreter := true
+}
 
 lean_lib examples
 
