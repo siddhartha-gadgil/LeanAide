@@ -13,7 +13,7 @@ namespace LeanAide.Meta
 def constantNames  : MetaM (Array Name) := do
   let env ← getEnv
   let decls := env.constants.map₁.toArray
-  let allNames := decls.map $ fun (name, _) => name 
+  let allNames := decls.map $ fun (name, _) => name
   let names ← allNames.filterM (isWhiteListed)
   let names := names.filter fun n => !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n))
   return names
@@ -25,7 +25,7 @@ def constantNamesCore  : CoreM (Array Name) :=
 def constantNameTypes  : MetaM (Array (Name ×  Expr)) := do
   let env ← getEnv
   let decls := env.constants.map₁.toArray
-  let allNames := decls.map $ fun (name, dfn) => (name, dfn.type) 
+  let allNames := decls.map $ fun (name, dfn) => (name, dfn.type)
   let names ← allNames.filterM (fun (name, _) => isWhiteListed name)
   return names
 
@@ -41,7 +41,7 @@ def cache (e: Expr) (offs : Array Name) : IO Unit := do
   return ()
 
 /-- given name, optional expression of definition for the corresponding constant -/
-def nameExpr? : Name → MetaM ( Option Expr) := 
+def nameExpr? : Name → MetaM ( Option Expr) :=
   fun name => do
       let info := ((← getEnv).find? name)
       return Option.bind info ConstantInfo.value?
@@ -54,12 +54,12 @@ def inferType?(e: Expr) : MetaM (Option Expr) := do
   catch _ => return none
 
 /-- recursively find (whitelisted) names of constants in an expression; -/
-partial def recExprNames (depth: Nat): Expr → MetaM (Array Name) := 
+partial def recExprNames (depth: Nat): Expr → MetaM (Array Name) :=
   fun e =>
-  do 
+  do
   match depth with
   | 0 => return #[]
-  | k + 1 => 
+  | k + 1 =>
   -- let fmt ← PrettyPrinter.ppExpr e
   -- IO.println s!"expr : {e}"
   match ← getCached? e with
@@ -71,46 +71,46 @@ partial def recExprNames (depth: Nat): Expr → MetaM (Array Name) :=
       | Expr.fvar ..       => return #[]
       | Expr.const name ..  =>
         do
-        if ← (isWhiteListed name) 
-          then return #[name] 
+        if ← (isWhiteListed name)
+          then return #[name]
           else
           if ← (isNotAux name)  then
             match ←  nameExpr?  name with
             | some e => recExprNames k e
             | none => return #[]
-          else pure #[]        
-      | Expr.app f a .. => 
-          do  
+          else pure #[]
+      | Expr.app f a .. =>
+          do
             -- IO.println "app"
-            let ftype? ← inferType? f 
+            let ftype? ← inferType? f
             -- IO.println "got ftype"
-            let expl? := 
+            let expl? :=
               ftype?.map $ fun ftype =>
               (ftype.binderInfo.isExplicit)
             let expl := expl?.getD true
             -- IO.println s!"got expl: {expl}"
-            let s ←  
-              if !expl then 
+            let s ←
+              if !expl then
                 -- IO.println a
                 match a with
                 | Expr.const name ..  =>
                     do
-                    if ← (isWhiteListed name) 
+                    if ← (isWhiteListed name)
                       then
                         return (← recExprNames k f).push name
-                      else recExprNames k f 
-                | _ =>                  
-                  -- IO.println s!"using only f: {f}"   
-                  recExprNames k f 
+                      else recExprNames k f
+                | _ =>
+                  -- IO.println s!"using only f: {f}"
+                  recExprNames k f
                 else return (← recExprNames k f) ++ (← recExprNames k a)
             return s
-      | Expr.lam _ _ b _ => 
+      | Expr.lam _ _ b _ =>
           do
             -- IO.println s!"lam; body: {b}"
-            return ← recExprNames k b 
+            return ← recExprNames k b
       | Expr.forallE _ _ b _ => do
-          return  ← recExprNames k b 
-      | Expr.letE _ _ v b _ => 
+          return  ← recExprNames k b
+      | Expr.letE _ _ v b _ =>
             return (← recExprNames k b) ++ (← recExprNames k v)
       | _ => pure #[]
     cache e res
@@ -120,19 +120,19 @@ partial def recExprNames (depth: Nat): Expr → MetaM (Array Name) :=
 def offSpring? (depth: Nat)(name: Name) : MetaM (Option (Array Name)) := do
   let expr? ← nameExpr?  name
   match expr? with
-  | some e => 
+  | some e =>
     return  some <| (← recExprNames depth e)
   | none =>
-    IO.println s!"no expr for {name}" 
+    IO.println s!"no expr for {name}"
     return none
 
 initialize simplifyCache : IO.Ref (HashMap Expr Expr) ← IO.mkRef HashMap.empty
 
-def Lean.Expr.simplify(e: Expr) : MetaM Expr := do 
-  try 
+def Lean.Expr.simplify(e: Expr) : MetaM Expr := do
+  try
   let cache ← simplifyCache.get
   match cache.find? e with
-  | none => 
+  | none =>
     let ⟨r, _⟩ ← simp e (← Simp.Context.mkDefault)
     simplifyCache.set (cache.insert e r.expr)
     return r.expr
@@ -143,13 +143,13 @@ def excludeSuffixes := #[`dcasesOn, `recOn, `casesOn, `rawCast, `freeVar]
 
 -- #eval (`dcasesOn).isSuffixOf (`AlgebraicGeometry.IsAffine.dcasesOn)
 
-/-- 
-Array of constants, names in their definition, and names in their type. 
+/--
+Array of constants, names in their definition, and names in their type.
 -/
 def offSpringShallowTriple(excludePrefixes: List Name := [])(depth: Nat)
               : MetaM (Unit) :=
   do
-  let keys ←  constantNameTypes  
+  let keys ←  constantNameTypes
   IO.println s!"Tokens: {keys.size}"
   let goodKeys := keys.filter fun (name, _) =>
     !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name))
@@ -178,23 +178,23 @@ def offSpringShallowTriple(excludePrefixes: List Name := [])(depth: Nat)
         IO.println s!"Completed: {count} (out of {goodKeys.size})"
   return ()
 
-  
-def offSpringShallowTripleCore (depth: Nat): 
-    CoreM Unit := 
-          (offSpringShallowTriple excludePrefixes depth).run' 
+
+def offSpringShallowTripleCore (depth: Nat):
+    CoreM Unit :=
+          (offSpringShallowTriple excludePrefixes depth).run'
 
 /-- All constants in the environment with value and type. -/
 def constantNameValueTypes  : MetaM (Array (Name × Expr ×   Expr × Option String)) := do
   let env ← getEnv
   let decls := env.constants.map₁.toArray
-  let allNamesCore := decls.filterMap <| 
+  let allNamesCore := decls.filterMap <|
     fun (name, dfn) => dfn.value? |>.map fun t => (name, t, dfn.type)
-  let allNames ← allNamesCore.mapM <| 
+  let allNames ← allNamesCore.mapM <|
     fun (name, value, type) => do
-      pure <| (name, value, type, ← findDocString? env name )  
+      pure <| (name, value, type, ← findDocString? env name )
   let names ← allNames.filterM (fun (name, _) => isWhiteListed name)
-  let names := names.filter <| 
-    fun (name, _, _)  ↦ !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name)) 
+  let names := names.filter <|
+    fun (name, _, _)  ↦ !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name))
   return names
 
 
@@ -207,12 +207,12 @@ structure DefnTypes where
 
 def propMapFromDefns (dfns : Array DefnTypes) : MetaM <| HashMap Name String := do
     return HashMap.ofList <|
-       dfns.filter (fun d => d.isProp) 
+       dfns.filter (fun d => d.isProp)
         |>.toList.map fun d => (d.name, d.type)
 
 def propMapFromDefnsStr (dfns : Array DefnTypes) : MetaM <| HashMap String String := do
     return HashMap.ofList <|
-       dfns.filter (fun d => d.isProp) 
+       dfns.filter (fun d => d.isProp)
         |>.toList.map fun d => (d.name.toString.trim, d.type)
 
 def groups := ["train", "test", "valid"]
@@ -228,13 +228,13 @@ def splitData (data: Array α) : IO <| HashMap String (Array α) := do
     return img
 namespace DefnTypes
 def getM : MetaM <| Array DefnTypes := do
-    let cs ← constantNameValueTypes 
+    let cs ← constantNameValueTypes
     cs.filterMapM <| fun (name, term, type, doc?) => do
         let depth := type.approxDepth
         if depth > 60 then
           return none
         else
-          let fmt ← Meta.ppExpr type 
+          let fmt ← Meta.ppExpr type
           pure
             (some ⟨name, fmt.pretty, ← isProof term, doc?⟩)
 
@@ -254,19 +254,19 @@ def getWriteSplitM : MetaM <| (Array DefnTypes) × (HashMap Name String) × Hash
     for group in groups do
         let path := System.mkFilePath ["rawdata", "defn-types", group ++ ".jsonl"]
         IO.FS.writeFile path (jsonLines <| split.findD group #[])
-    let pm ← propMapFromDefns dfns 
+    let pm ← propMapFromDefns dfns
     return (dfns, pm, split)
 
-def getWriteSplitCore : CoreM ((Array DefnTypes) × (HashMap Name String) × HashMap String (Array DefnTypes)) := 
+def getWriteSplitCore : CoreM ((Array DefnTypes) × (HashMap Name String) × HashMap String (Array DefnTypes)) :=
     (getWriteSplitM).run'
 
 def getWriteM : MetaM <| (Array DefnTypes) × (HashMap Name String) := do
     let dfns ← getM
     writeM dfns
-    let pm ← propMapFromDefns dfns 
+    let pm ← propMapFromDefns dfns
     return (dfns, pm)
 
-def getWriteCore : CoreM ((Array DefnTypes) × (HashMap Name String)) := 
+def getWriteCore : CoreM ((Array DefnTypes) × (HashMap Name String)) :=
     (getWriteM).run'
 
 end DefnTypes
@@ -278,14 +278,14 @@ def writeDocsM : MetaM Unit := do
   IO.println s!"Total: {dfns.size}"
   DefnTypes.writeM dfns "docs.jsonl"
 
-def writeDocsCore : CoreM Unit := 
+def writeDocsCore : CoreM Unit :=
     (writeDocsM).run'
 
 def getPropMap : MetaM <| HashMap Name String := do
     let dfns ← DefnTypes.getM
     propMapFromDefns dfns
 
-partial def shrink (s: String) : String := 
+partial def shrink (s: String) : String :=
     let step := s.replace "  " " " |>.replace "( " "("
                 |>.replace " )" ")"
                 |>.replace "{ " "{"
@@ -298,13 +298,13 @@ partial def shrink (s: String) : String :=
 def getPropMapStr : MetaM <| HashMap String String := do
     let mut count := 0
     let mut skipped := 0
-    let omittedPath := 
+    let omittedPath :=
       System.mkFilePath ["CodeGen", "Omitted.lean"]
     IO.FS.writeFile omittedPath ""
-    let mut propOmittedHandle ←  
+    let mut propOmittedHandle ←
       IO.FS.Handle.mk omittedPath IO.FS.Mode.append
     propOmittedHandle.putStrLn "import Mathlib"
-    let cs ← constantNameValueTypes 
+    let cs ← constantNameValueTypes
     let mut m : HashMap String String := HashMap.empty
     let mut dfs : Array DefnTypes := #[]
     for (name, value, type, doc?) in cs do
@@ -324,10 +324,10 @@ def getPropMapStr : MetaM <| HashMap String String := do
           skipped := skipped + 1
           propOmittedHandle.putStrLn s!"#check {name}"
           if skipped % 100 = 0 then
-            let omittedPath := 
+            let omittedPath :=
               System.mkFilePath ["CodeGen", s!"Omitted{skipped/100}.lean"]
             IO.FS.writeFile omittedPath ""
-            propOmittedHandle ←  
+            propOmittedHandle ←
               IO.FS.Handle.mk omittedPath IO.FS.Mode.append
             propOmittedHandle.putStrLn "import Mathlib"
 
@@ -335,7 +335,7 @@ def getPropMapStr : MetaM <| HashMap String String := do
     IO.FS.writeFile path <| jsonLines <| dfs
     return m
 
-def propMapCore : CoreM (HashMap String String) := 
+def propMapCore : CoreM (HashMap String String) :=
     (getPropMapStr).run'
 
 def nameViewM? (name: Name) : MetaM <| Option String := do
@@ -347,7 +347,7 @@ def nameViewM? (name: Name) : MetaM <| Option String := do
     | none => pure name.toString
   return fmt
 
-def nameViewCore? (name: Name) : CoreM <| Option String := 
+def nameViewCore? (name: Name) : CoreM <| Option String :=
     (nameViewM? name).run'
 
 end LeanAide.Meta
