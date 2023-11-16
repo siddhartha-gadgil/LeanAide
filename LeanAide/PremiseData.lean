@@ -636,7 +636,10 @@ def termKindExamplesM (choices: Nat := 5) : MetaM <| List Json := do
     let defns ← termKindDefns
     IO.eprintln s!"Found {defns.size} term kinds"
     let examples :=
-        defns.toList.map (fun (k, v) => (k, chooseExamples v choices, v.size))
+        defns.toList.map (fun (k, v) => (k, chooseExamples v choices, v.size)) |>.toArray
+    let examples := examples.qsort (
+        fun (_, _, n) (_, _, m) => n > m
+    ) |>.toList
     return examples.map (fun (k, v, n) => Json.mkObj [("kind", toJson k),
     ("count", n), ("examples",
         Json.arr <| v.toArray.map (fun (n, s, doc?) =>
