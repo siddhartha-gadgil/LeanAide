@@ -621,11 +621,14 @@ def termKindDefns : MetaM <| HashMap Name (Array (Name × String × (Option Stri
         if count % 400 == 0 then
             IO.eprintln s!"Processed {count} constants out of {cs.size}"
         unless type.approxDepth > 50 do
+            try
             let stx ← delab type
             let tks ← termKindsIn stx.raw
             for tk in tks do
             m := m.insert tk (m.findD tk #[] |>.push
                 (name, (← ppTerm stx).pretty, doc?))
+            catch e =>
+                IO.eprintln s!"Error {← e.toMessageData.toString} delaborating {name}"
     return m
 
 def chooseExamples (examples: Array (Name × String × (Option String)))(choices: Nat := 10) : List (Name × String × (Option String)) :=
