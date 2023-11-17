@@ -13,6 +13,9 @@ lean_sys_prompt = """You are a coding assistant who translates from natural lang
 
 sys_prompt = "You are a Mathematics, Lean 4 and coding assistant who translates from natural language to Lean Theorem Prover code following examples, gives hints while coding in Lean 4 and answers questions about Lean 4 and mathematics. Follow EXACTLY the examples given when generating Lean code."
 
+
+math_prompt = "You are a Mathematics assistant and collaborator. Give precise answers to questions about mathematics. If you cannot answer the question, please say so. If you are asked to prove something that is false, please do not prove it but indicate why it is false by disproving or giving counterexamples."
+
 def azure_completions(query, sys_prompt = sys_prompt, examples = [], n=5, deployment_name = deployment_name):
     messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]
     completion = openai.ChatCompletion.create(
