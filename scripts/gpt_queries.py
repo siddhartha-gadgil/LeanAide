@@ -8,11 +8,11 @@ lean_sys_prompt = """You are a coding assistant who translates from natural lang
 sys_prompt = "You are a Mathematics, Lean 4 and coding assistant who translates from natural language to Lean Theorem Prover code following examples, gives hints while coding in Lean 4 and answers questions about Lean 4 and mathematics. Follow EXACTLY the examples given when generating Lean code."
 
 
-def gpt4t_completions(query, sys_prompt = sys_prompt, examples = []):
+def gpt4t_completions(query, sys_prompt = sys_prompt, examples = [], n= 5):
     messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]
     completion = openai.ChatCompletion.create(
         model="gpt-4-1106-preview",
-        n= 5,
+        n= n,
         temperature=0.8,
         messages= messages
     )
