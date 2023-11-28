@@ -149,6 +149,11 @@ example : @Decidable (6 ≤ 5) :=
 #check @Prod.rec
 #check Nat.Linear.Poly.cancel
 
+
+open RealInnerProductSpace
+example: ∀ {k : ℕ} (x : EuclideanSpace ℝ (Fin k)), 2 ≤ k → ∃ y : EuclideanSpace ℝ (Fin k), y ≠ 0 ∧ (⟪x, y⟫ = 0) := by sorry
+
+
 set_option pp.all true in
 #print Nat.Linear.ExprCnstr.denote_toNormPoly
 
