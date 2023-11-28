@@ -114,4 +114,120 @@ Therefore, by Eisenstein's Criterion (with prime number p=4), the polynomial $g(
 
 Finally, because $f(x)$ and $g(y)$ are related by a simple substitution $(y=x+1)$, it can be said that if $g(y)$ is irreducible over Q, then $f(x)$ is also irreducible over Q. Hence, the polynomial $x^4 + x^3 + x^2 + x + 1$ is irreducible over Q.\end{proof}
 
+\begin{question}
+    Find all finite subgroups $G$ such that $G$ has exactly three subgroups.
+\end{question}
+\begin{proof}A finite group $G$ has at least two subgroups: the trivial group $\{e\}$ and the group $G$ itself.
+
+Now if the group $G$ has exactly three subgroups, then there must exist exactly one non-trivial proper subgroup, say $H$. However, since $H$ is a subgroup, it must also contain the trivial group and itself. This means $H$ must be a group such that it has no other proper subgroup, i.e., $H$ must be a simple group.
+
+The only finite simple groups that do not have any proper subgroups other than the trivial group and itself are the cyclic groups of prime order. Thus, $H$ must be a cyclic group of prime order, say $p$. 
+
+So, we have $H \cong \mathbb{Z}_p$ for some prime $p$. Then, the group $G$ must be such that it has a subgroup isomorphic to $\mathbb{Z}_p$ but no other proper subgroups. Hence, the group $G$ must be isomorphic to $\mathbb{Z}_p$ or $\mathbb{Z}_{p^2}$.
+
+Now, we know that $\mathbb{Z}_p$ has exactly two subgroups, which contradicts our assumption that $G$ has exactly three subgroups. Therefore, $G$ cannot be isomorphic to $\mathbb{Z}_p$.
+
+On the other hand, the group $\mathbb{Z}_{p^2}$ has exactly three subgroups: the trivial group, the whole group, and the subgroup of order $p$. Hence, $G$ must be isomorphic to $\mathbb{Z}_{p^2}$ for some prime $p$.
+
+So, the solution to the problem is all groups isomorphic to $\mathbb{Z}_{p^2}$ for some prime number $p$.\end{proof}
+\begin{proof}Let $G$ be a finite group with exactly three subgroups. Then we know that these three subgroups are $G$, the trivial subgroup $\{e\}$, and one non-trivial proper subgroup $H$. 
+
+We know that the order of any subgroup must divide the order of the group by Lagrange's theorem. Let $|G|=n$ and $|H|=m$. Thus, $m|n$ and $1<m<n$.
+
+Also, we know that for any group $G$, the center of the group $Z(G)$ is always a subgroup of $G$. If $Z(G)=G$, then $G$ must be abelian, and in this case, there must be more than 3 subgroups unless $G$ is cyclic. If $Z(G)=\{e\}$, then $G$ is non-abelian of order $n>1$, which also must have more than three subgroups. Thus, $Z(G)$ must be equal to $H$. 
+
+In the case $Z(G)=H$, from the class equation we have the following:
+$|G|=|Z(G)|+\sum |G:C_G(g)|$, where the sum is over one representative from each conjugacy class outside of $Z(G)$. 
+
+Each $|G:C_G(g)|$ term divides $|G|=n$, so it is either $1$, $m$ or $n$. If $|G:C_G(g)|=1$ for some $g$, then $g$ is in $Z(G)=H$, which is a contradiction. If $|G:C_G(g)|=n$ for some $g$, then $|C_G(g)|=1$ which means $g$ is not in $Z(G)$ but commutes with all elements of $G$, hence $g$ must be in $Z(G)$ which is a contradiction. Thus, all $|G:C_G(g)|=m$ which means that $|G:C_G(g)|=|H|$.
+
+Then we have $|G|=|Z(G)|+k|H|$ where $k$ is number of terms in the sum. Since $|G|=n$ and $|Z(G)|=|H|=m$, it follows that $n=m+km$. Therefore, $n=m(k+1)$ which implies $k+1|n$. But we know that $1<m<n$ and $k+1>m$, so we must have $k+1=n$ and $m=1$. 
+
+There is only one group of order 1, the trivial group, so $H$ is the trivial group, contradicting our assumption that $H$ is non-trivial. Therefore, we have a contradiction. 
+
+So, there is no finite group with exactly three subgroups.\end{proof}
+\begin{proof}A finite group $G$ with exactly three subgroups must satisfy the following conditions:
+
+1. $G$ itself is a group, so it is always one of the these three subgroups.
+
+2. The trivial subgroup containing only the identity element is also always a subgroup, so it is the second of these three subgroups.
+
+3. Finally, let's consider the third subgroup, which we'll call $H$. Since $H$ is neither $G$ nor the trivial subgroup, it must be a proper nonzero subgroup of $G$.
+
+4. Since $H$ is the only proper nonzero subgroup of $G$, $H$ must be a maximal subgroup of $G$.
+
+5. By Lagrange's Theorem, the order of $H$ must divide the order of $G$. 
+
+Given these conditions, we can deduce that $G$ must be a cyclic group of prime square order. To see why, first note that if $|G|$ was not a prime square, then either $|G|$ would have additional divisors, meaning that $G$ would have additional subgroups, or $|G|$ would be prime, in which case $H$ would not exist since all proper subgroups of a prime order group are trivial.
+
+Therefore, $|G|=p^2$ for some prime $p$. In this case, the subgroups of $G$ are the trivial group, $G$ itself, and a unique subgroup of order $p$. This is because the cyclic group of order $p^2$ has exactly one subgroup of order $p$ and no other proper subgroups.
+
+Therefore, the finite groups with exactly three subgroups are exactly the cyclic groups of order $p^2$ for prime $p$.
+\end{proof}
+\begin{question}
+    Find all finite subgroups $G$ such that there are exactly three conjugacy classes of elements in $G$.
+\end{question}
+
+\begin{proof}Any finite group $G$ with exactly three conjugacy classes of elements must be isomorphic to one of the following:
+
+1. The cyclic group $C_3$ of order 3. 
+
+2. The symmetric group $S_3$ of order 6.
+
+3. The cyclic group $C_4$ of order 4.
+
+4. The quaternion group $Q_8$ of order 8.
+
+Proof:
+
+Let $G$ be a finite group with exactly three conjugacy classes. Let $n_i$ denote the number of elements in the $i$-th conjugacy class ($1 \leq i \leq 3$) and $|G|$ denote the order of $G$. 
+
+The class equation of a finite group $G$ is given by 
+$$|G| = 1 + n_2 + n_3$$
+where $1$ is the number of elements in the class of the identity element.
+
+Since $G$ is a finite group, it has a finite number of elements, and hence $|G| = 1 + n_2 + n_3$ must be a positive integer.
+
+By the Orthogonality Relations, each $n_i$ divides $|G|$. Thus, the possibilities for $(|G|, n_2, n_3)$ up to rearrangement are $(4, 1, 3)$, $(6, 1, 5)$, $(6, 2, 3)$, and $(8, 1, 7)$.
+
+The first case corresponds to the cyclic group of order 4.
+
+The second and third cases correspond to the symmetric group of order 6.
+
+The fourth case corresponds to the quaternion group of order 8. 
+
+The classification of groups of order $p^2$ (where $p$ is a prime) gives us that the only groups of order 4 are $C_4$ and $C_2	imes C_2$. But $C_2 	imes C_2$ has four conjugacy classes, so the group must be $C_4$. 
+
+The classification of groups of order 6 gives us that the only groups of order 6 are $C_6$ and $S_3$. But $C_6$ has two conjugacy classes, so the group must be $S_3$.
+
+The classification of groups of order 8 gives us that the only groups of order 8 are $C_8, C_4 	imes C_2, D_4$, and $Q_8$. But the first three groups do not have three conjugacy classes, so the group must be $Q_8$.
+
+Therefore, the only finite groups with exactly three conjugacy classes are $C_3, S_3, C_4$, and $Q_8$.
+\end{proof}
+
+\begin{proof}Let us denote the three conjugacy classes by $C_1, C_2, C_3$. Note that the identity element forms a conjugacy class by itself, so we can assume $C_1 = \{e\}$.  Recall that in a finite group, the size of a conjugacy class divides the order of the group. Thus, $|C_2|$ and $|C_3|$ divide $|G|$.
+
+Let $|C_2| = a$, and $|C_3| = b$. Then $|G| = a + b + 1$ and hence both $a$ and $b$ divide $a + b + 1$. This only happens if $a = b = 1$, or $a = 1, b = 2$, or $a = 2, b = 3$. 
+
+The first case $a = b = 1$ gives us the trivial group $G = \{e\}$.
+
+The second case $a = 1, b = 2$ gives us a group of order $4$. The only groups of order $4$ are $\mathbb{Z}_4$ and $\mathbb{Z}_2 	imes \mathbb{Z}_2$, but these have more than three conjugacy classes, so this case gives us no solutions.
+
+The third case $a = 2, b = 3$ gives us a group of order $6$. The only groups of order $6$ are $\mathbb{Z}_6$ and $S_3$, but $\mathbb{Z}_6$ has $6$ conjugacy classes and $S_3$ has exactly three, namely $\{e\}$, $\{(12),(34)\}$ and $\{(123),(132)\}$. Hence, $S_3$ is a solution.
+
+Therefore, the only finite groups with exactly three conjugacy classes are the trivial group and the symmetric group $S_3$.
+\end{proof}
+
+\begin{proof}First recall that the number of conjugacy classes of a group is equal to the number of irreducible representations of the group over the complex numbers (this is a result of the representation theory of finite groups). Furthermore, we know that the sum of the squares of the dimensions of the irreducible representations is equal to the order of the group. 
+
+Assume that the dimensions of the irreducible representations of $G$ are $1, a, b$. The irreducible representation of dimension $1$ is the trivial representation. Then we must have $1 + a^2 + b^2 = |G|$. Moreover, $a, b$ must divide $|G|$ by the result that the degree of an irreducible character divides the group order. 
+
+There are (up to isomorphism) three possibilities for $G$:
+
+1. The cyclic group of order $3$. In this case, $a=b=1$ and the irreducible representations are all of dimension $1$.
+
+2. The symmetric group $S_3$ of order $6$. In this case, $a=1, b=2$. The irreducible representations are of dimensions $1, 1, 2$.
+
+3. The binary tetrahedral group, which is a subgroup of $SU(2)$, the group of $2	imes 2$ unitary matrices with determinant $1$. This group has $24$ elements, so $a=1, b=3$. The irreducible representations are of dimensions $1, 1, 3$.
+\end{proof}
 \end{document}
