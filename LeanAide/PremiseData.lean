@@ -669,8 +669,22 @@ def termKindEgsM (choice: Nat := 5) :
                 IO.eprintln s!"Error {← e.toMessageData.toString} delaborating {name}"
     return m
 
-
 def termKindExamplesM (choices: Nat := 5) : MetaM <| List Json := do
+    let egs ← termKindEgsM choices
+    IO.eprintln s!"Found {egs.size} term kinds"
+    let examples := egs.toArray.qsort (
+        fun (_, n, _, _) (_, m, _, _) => n > m
+    ) |>.toList
+    return examples.map (fun (k, n, v, v') => Json.mkObj [("kind", toJson k),
+    ("count", n), ("examples",
+        Json.arr <| v.map (fun (n, s, doc) =>
+        Json.mkObj [("name", toJson n.toString), ("term", toJson s), ("doc", toJson doc)])),
+        ("noDocExamples",
+        Json.arr <| v'.map (fun (n, s) =>
+        Json.mkObj [("name", toJson n.toString), ("term", toJson s)]))])
+
+
+def termKindExamplesM' (choices: Nat := 5) : MetaM <| List Json := do
     let defns ← termKindDefns
     IO.eprintln s!"Found {defns.size} term kinds"
     let examples :=
