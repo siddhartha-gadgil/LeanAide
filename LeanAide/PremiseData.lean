@@ -635,6 +635,41 @@ def chooseExamples (examples: Array (Name × String × (Option String)))(choices
     let (withDoc, withoutDoc) := examples.toList.partition (fun (_, _, doc?) => doc?.isSome)
     withDoc.take (choices) ++ withoutDoc.take (choices - withDoc.length)
 
+def termKindEgsM (choice: Nat := 5) :
+    MetaM <| HashMap Name
+        (Nat × (Array (Name × String × String)) ×
+         Array (Name × String)) := do
+    let cs ← constantNameValueTypes
+    IO.eprintln s!"Found {cs.size} constants"
+    let mut count := 0
+    let mut m : HashMap Name (Nat × (Array (Name × String × String)) ×
+         Array (Name × String)) := HashMap.empty
+    for ⟨name, type, _, doc?⟩ in cs do
+        count := count + 1
+        if count % 400 == 0 then
+            IO.eprintln s!"Processed {count} constants out of {cs.size}"
+        unless type.approxDepth > 50 do
+            try
+            let stx ← delab type
+            let tks ← termKindsIn stx.raw
+            for tk in tks do
+                let (c, egs, noDocEgs) := m.findD tk ((0, #[], #[]))
+                match doc? with
+                | some doc =>
+                    if egs.size < choice then
+                        m := m.insert tk (c + 1, (egs.push (name, (← ppTerm stx).pretty, doc)), noDocEgs)
+                    else
+                        m := m.insert tk (c + 1, egs, noDocEgs)
+                | none =>
+                    if noDocEgs.size + egs.size < choice then
+                        m := m.insert tk (c + 1, egs, noDocEgs.push (name, (← ppTerm stx).pretty))
+                    else
+                        m := m.insert tk (c + 1, egs, noDocEgs)
+            catch e =>
+                IO.eprintln s!"Error {← e.toMessageData.toString} delaborating {name}"
+    return m
+
+
 def termKindExamplesM (choices: Nat := 5) : MetaM <| List Json := do
     let defns ← termKindDefns
     IO.eprintln s!"Found {defns.size} term kinds"
