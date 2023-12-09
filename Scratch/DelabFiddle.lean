@@ -41,9 +41,8 @@ def delabSyntax (name: Name) : MetaM Syntax :=
 open BigOperators in
 #eval delabViewType `RingHom.map_sum
 
-def openDecls : CoreM <| List OpenDecl := do
-    let ctx ← read
-    return ctx.openDecls
+def openDecls : MetaM <| List OpenDecl := do
+    getOpenDecls
 
 def kindsViewType (name: Name) : MetaM <| List Name :=
     do
@@ -63,5 +62,5 @@ def kindsViewType (name: Name) : MetaM <| List Name :=
 open BigOperators in
 #eval kindsViewType `RingHom.map_sum
 
-open BigOperators in
+open BigOperators
 #eval openDecls

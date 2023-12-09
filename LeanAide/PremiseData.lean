@@ -635,6 +635,7 @@ def chooseExamples (examples: Array (Name × String × (Option String)))(choices
     let (withDoc, withoutDoc) := examples.toList.partition (fun (_, _, doc?) => doc?.isSome)
     withDoc.take (choices) ++ withoutDoc.take (choices - withDoc.length)
 
+open BigOperators
 def termKindEgsM (choice: Nat := 5) :
     MetaM <| HashMap Name
         (Nat × (Array (Name × String × String)) ×
