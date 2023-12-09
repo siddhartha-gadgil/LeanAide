@@ -153,10 +153,15 @@ example : @Decidable (6 ≤ 5) :=
 open RealInnerProductSpace
 example: ∀ {k : ℕ} (x : EuclideanSpace ℝ (Fin k)), 2 ≤ k → ∃ y : EuclideanSpace ℝ (Fin k), y ≠ 0 ∧ (⟪x, y⟫ = 0) := by sorry
 
+#check RingHom.map_sum
+
 open BigOperators
 example: ∀ {C : ℕ → ℝ},
   (∑ i in Finset.range (n + 1), C i / (↑i + 1)) = 0 →
       ∃ x, (Finset.sum (Finset.range (n + 1)) fun i => C i * x ^ i) = 0 := by sorry
+
+#check Finset.sum
+#check RingHom.map_sum
 
 set_option pp.all true in
 #print Nat.Linear.ExprCnstr.denote_toNormPoly

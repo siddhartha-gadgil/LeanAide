@@ -652,6 +652,7 @@ def termKindEgsM (choice: Nat := 5) :
             try
             let stx ← delab type
             let tks ← termKindsIn stx.raw
+            let tks := tks.eraseDups
             for tk in tks do
                 let (c, egs, noDocEgs) := m.findD tk ((0, #[], #[]))
                 match doc? with

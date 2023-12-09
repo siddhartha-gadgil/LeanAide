@@ -1,19 +1,19 @@
 import Lean
 import Mathlib
-import LeanCodePrompts.AesopSearch
+import LeanAide.AesopSearch
 
-open Lean Meta Elab Tactic Parser 
+open Lean Meta Elab Tactic Parser
 
 #eval 3
 
 def slowFibIO : Nat → IO Nat
 | 0 => pure 0
 | 1 => pure 1
-| n + 2 => do return (← slowFibIO (n)) + (←  slowFibIO (n + 1))   
+| n + 2 => do return (← slowFibIO (n)) + (←  slowFibIO (n + 1))
 
 elab "run_io_task" : tactic => do
-  let _  ← (IO.asTask <| 
-    do 
+  let _  ← (IO.asTask <|
+    do
       setFib s!"Computed: {← slowFibIO 34} at {← IO.monoMsNow}"
     ).toIO
   return ()
@@ -46,11 +46,11 @@ example : 4 = 4 := by
 #check evalTactic
 #check runTactic
 
-#check withMVarContext    
+#check withMVarContext
 #check Elab.runFrontend
 
 def useTactic (type : Expr)
-  (tacticCode : TSyntax `Lean.Parser.Tactic.tacticSeq) : TermElabM Expr := 
+  (tacticCode : TSyntax `Lean.Parser.Tactic.tacticSeq) : TermElabM Expr :=
   Term.withoutErrToSorry do
     let code ← `(by $tacticCode)
     let term ← Elab.Term.elabTerm code (some type)
