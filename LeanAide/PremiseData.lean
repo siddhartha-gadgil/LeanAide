@@ -610,11 +610,12 @@ def termKindsIn (stx: Syntax) : MetaM <| List SyntaxNodeKind := do
     let kinds ← termKindList
     termKindsInAux stx kinds
 
-def termKindBestEgsM (choice: Nat := 5) :
+def termKindBestEgsM (choice: Nat := 5)(constantNameValueTypes  := constantNameValueTypes)(termKindList : MetaM <| List SyntaxNodeKind := termKindList) :
     MetaM <| HashMap Name
         (Nat × (Array (Name × Nat × String × String)) ×
          Array (Name × Nat × String)) := do
     let cs ← constantNameValueTypes
+    let kinds ← termKindList
     IO.eprintln s!"Found {cs.size} constants"
     let mut count := 0
     let mut m : HashMap Name (Nat × (Array (Name × Nat × String × String)) ×
@@ -627,7 +628,7 @@ def termKindBestEgsM (choice: Nat := 5) :
         unless depth > 50 do
             try
             let stx ← delab type
-            let tks ← termKindsIn stx.raw
+            let tks ← termKindsInAux stx.raw kinds
             let tks := tks.eraseDups
             for tk in tks do
                 let (c, egs, noDocEgs) := m.findD tk ((0, #[], #[]))
@@ -674,8 +675,8 @@ def termKindBestEgsM (choice: Nat := 5) :
     return m
 
 
-def termKindExamplesM (choices: Nat := 5) : MetaM <| List Json := do
-    let egs ← termKindBestEgsM choices
+def termKindExamplesM (choices: Nat := 5)(constantNameValueTypes  := constantNameValueTypes)(termKindList : MetaM <| List SyntaxNodeKind := termKindList) : MetaM <| List Json := do
+    let egs ← termKindBestEgsM choices constantNameValueTypes termKindList
     IO.eprintln s!"Found {egs.size} term kinds"
     let examples := egs.toArray.qsort (
         fun (_, n, _, _) (_, m, _, _) => n > m

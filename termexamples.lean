@@ -22,8 +22,8 @@ def main : IO Unit := do
   let core := termKindExamplesCore
   let l ← core.run' coreContext {env := env} |>.runToIO'
   let js := toJson l
-  let path := System.mkFilePath ["rawdata", "term-kinds.json"]
+  let path := System.mkFilePath ["data", "term-kinds.json"]
   IO.FS.writeFile path <| js.pretty
   let jsl := jsonLines l.toArray
-  let path := System.mkFilePath ["rawdata", "term-kinds.jsonl"]
+  let path := System.mkFilePath ["data", "term-kinds.jsonl"]
   IO.FS.writeFile path <| jsl
