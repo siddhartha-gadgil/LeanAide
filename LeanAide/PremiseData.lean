@@ -610,35 +610,6 @@ def termKindsIn (stx: Syntax) : MetaM <| List SyntaxNodeKind := do
     let kinds ← termKindList
     termKindsInAux stx kinds
 
-
-def termKindDefns : MetaM <| HashMap Name (Array (Name × String × (Option String))) := do
-    let cs ← constantNameValueTypes
-    IO.eprintln s!"Found {cs.size} constants"
-    let mut count := 0
-    let mut m : HashMap Name (Array (Name × String × (Option String))) := HashMap.empty
-    for ⟨name, type, _, doc?⟩ in cs do
-        count := count + 1
-        if count % 400 == 0 then
-            IO.eprintln s!"Processed {count} constants out of {cs.size}"
-        unless type.approxDepth > 50 do
-            try
-            let stx ← delab type
-            let tks ← termKindsIn stx.raw
-            for tk in tks do
-            m := m.insert tk (m.findD tk #[] |>.push
-                (name, (← ppTerm stx).pretty, doc?))
-            catch e =>
-                IO.eprintln s!"Error {← e.toMessageData.toString} delaborating {name}"
-    return m
-
-def chooseExamples (examples: Array (Name × String × (Option String)))(choices: Nat := 10) : List (Name × String × (Option String)) :=
-    let (withDoc, withoutDoc) := examples.toList.partition (fun (_, _, doc?) => doc?.isSome)
-    withDoc.take (choices) ++ withoutDoc.take (choices - withDoc.length)
-
-#check Array.findIdx?
-#check Array.insertAt
-#check Array.pop
-
 def termKindBestEgsM (choice: Nat := 5) :
     MetaM <| HashMap Name
         (Nat × (Array (Name × Nat × String × String)) ×
@@ -702,40 +673,6 @@ def termKindBestEgsM (choice: Nat := 5) :
                 IO.eprintln s!"Error {← e.toMessageData.toString} delaborating {name}"
     return m
 
-def termKindEgsM (choice: Nat := 5) :
-    MetaM <| HashMap Name
-        (Nat × (Array (Name × String × String)) ×
-         Array (Name × String)) := do
-    let cs ← constantNameValueTypes
-    IO.eprintln s!"Found {cs.size} constants"
-    let mut count := 0
-    let mut m : HashMap Name (Nat × (Array (Name × String × String)) ×
-         Array (Name × String)) := HashMap.empty
-    for ⟨name, type, _, doc?⟩ in cs do
-        count := count + 1
-        if count % 400 == 0 then
-            IO.eprintln s!"Processed {count} constants out of {cs.size}"
-        unless type.approxDepth > 50 do
-            try
-            let stx ← delab type
-            let tks ← termKindsIn stx.raw
-            let tks := tks.eraseDups
-            for tk in tks do
-                let (c, egs, noDocEgs) := m.findD tk ((0, #[], #[]))
-                match doc? with
-                | some doc =>
-                    if egs.size < choice then
-                        m := m.insert tk (c + 1, (egs.push (name, (← ppTerm stx).pretty, doc)), noDocEgs)
-                    else
-                        m := m.insert tk (c + 1, egs, noDocEgs)
-                | none =>
-                    if noDocEgs.size + egs.size < choice then
-                        m := m.insert tk (c + 1, egs, noDocEgs.push (name, (← ppTerm stx).pretty))
-                    else
-                        m := m.insert tk (c + 1, egs, noDocEgs)
-            catch e =>
-                IO.eprintln s!"Error {← e.toMessageData.toString} delaborating {name}"
-    return m
 
 def termKindExamplesM (choices: Nat := 5) : MetaM <| List Json := do
     let egs ← termKindBestEgsM choices
@@ -751,19 +688,6 @@ def termKindExamplesM (choices: Nat := 5) : MetaM <| List Json := do
         Json.arr <| v'.map (fun (n, d, s) =>
         Json.mkObj [("name", toJson n.toString), ("depth", d), ("term", toJson s)]))])
 
-
-def termKindExamplesM' (choices: Nat := 5) : MetaM <| List Json := do
-    let defns ← termKindDefns
-    IO.eprintln s!"Found {defns.size} term kinds"
-    let examples :=
-        defns.toList.map (fun (k, v) => (k, chooseExamples v choices, v.size)) |>.toArray
-    let examples := examples.qsort (
-        fun (_, _, n) (_, _, m) => n > m
-    ) |>.toList
-    return examples.map (fun (k, v, n) => Json.mkObj [("kind", toJson k),
-    ("count", n), ("examples",
-        Json.arr <| v.toArray.map (fun (n, s, doc?) =>
-        Json.mkObj [("name", toJson n.toString), ("term", toJson s), ("doc", toJson doc?)]))])
 
 def termKindExamplesCore (choices: Nat := 5) : CoreM <| List Json := do
     termKindExamplesM choices |>.run' {}
