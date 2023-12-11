@@ -687,6 +687,11 @@ def termKindBestEgsM (choice: Nat := 5) :
                     match noDocEgs.findIdx? (fun (_, d, _) => d > depth) with
                     | some k =>
                         let noDocEgs := noDocEgs.insertAt k (name, depth, (← ppTerm stx).pretty)
+                        let noDocEgs :=
+                            if egs.size + noDocEgs.size > choice then
+                                noDocEgs.pop
+                            else
+                                noDocEgs
                         m := m.insert tk (c + 1, egs, noDocEgs)
                     | none =>
                         if noDocEgs.size + egs.size < choice then
