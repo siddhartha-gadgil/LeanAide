@@ -635,7 +635,67 @@ def chooseExamples (examples: Array (Name × String × (Option String)))(choices
     let (withDoc, withoutDoc) := examples.toList.partition (fun (_, _, doc?) => doc?.isSome)
     withDoc.take (choices) ++ withoutDoc.take (choices - withDoc.length)
 
-open BigOperators
+#check Array.findIdx?
+#check Array.insertAt
+#check Array.pop
+
+def termKindBestEgsM (choice: Nat := 5) :
+    MetaM <| HashMap Name
+        (Nat × (Array (Name × Nat × String × String)) ×
+         Array (Name × Nat × String)) := do
+    let cs ← constantNameValueTypes
+    IO.eprintln s!"Found {cs.size} constants"
+    let mut count := 0
+    let mut m : HashMap Name (Nat × (Array (Name × Nat × String × String)) ×
+         Array (Name × Nat × String)) := HashMap.empty
+    for ⟨name, type, _, doc?⟩ in cs do
+        count := count + 1
+        if count % 400 == 0 then
+            IO.eprintln s!"Processed {count} constants out of {cs.size}"
+        let depth := type.approxDepth.toNat
+        unless depth > 50 do
+            try
+            let stx ← delab type
+            let tks ← termKindsIn stx.raw
+            let tks := tks.eraseDups
+            for tk in tks do
+                let (c, egs, noDocEgs) := m.findD tk ((0, #[], #[]))
+                match doc? with
+                | some doc =>
+                  match egs.findIdx? (fun (_, d, _, _) => d > depth) with
+                  | some k =>
+                    let egs := egs.insertAt k (name, depth, (← ppTerm stx).pretty, doc)
+                    let noDocEgs :=
+                        if egs.size + noDocEgs.size > choice then
+                            noDocEgs.pop
+                        else
+                            noDocEgs
+                    m := m.insert tk (c + 1, egs, noDocEgs)
+                  | none =>
+                    if egs.size < choice then
+                        let egs := egs.push (name, depth, (← ppTerm stx).pretty, doc)
+                        let noDocEgs :=
+                            if egs.size + noDocEgs.size > choice then
+                                noDocEgs.pop
+                            else
+                                noDocEgs
+                        m := m.insert tk (c + 1, egs, noDocEgs)
+                    else
+                        m := m.insert tk (c + 1, egs, noDocEgs)
+                | none =>
+                    match noDocEgs.findIdx? (fun (_, d, _) => d > depth) with
+                    | some k =>
+                        let noDocEgs := noDocEgs.insertAt k (name, depth, (← ppTerm stx).pretty)
+                        m := m.insert tk (c + 1, egs, noDocEgs)
+                    | none =>
+                        if noDocEgs.size + egs.size < choice then
+                            m := m.insert tk (c + 1, egs, noDocEgs.push (name, depth, (← ppTerm stx).pretty))
+                        else
+                            m := m.insert tk (c + 1, egs, noDocEgs)
+            catch e =>
+                IO.eprintln s!"Error {← e.toMessageData.toString} delaborating {name}"
+    return m
+
 def termKindEgsM (choice: Nat := 5) :
     MetaM <| HashMap Name
         (Nat × (Array (Name × String × String)) ×
@@ -672,18 +732,18 @@ def termKindEgsM (choice: Nat := 5) :
     return m
 
 def termKindExamplesM (choices: Nat := 5) : MetaM <| List Json := do
-    let egs ← termKindEgsM choices
+    let egs ← termKindBestEgsM choices
     IO.eprintln s!"Found {egs.size} term kinds"
     let examples := egs.toArray.qsort (
         fun (_, n, _, _) (_, m, _, _) => n > m
     ) |>.toList
     return examples.map (fun (k, n, v, v') => Json.mkObj [("kind", toJson k),
     ("count", n), ("examples",
-        Json.arr <| v.map (fun (n, s, doc) =>
-        Json.mkObj [("name", toJson n.toString), ("term", toJson s), ("doc", toJson doc)])),
+        Json.arr <| v.map (fun (n, d, s, doc) =>
+        Json.mkObj [("name", toJson n.toString), ("depth", d), ("term", toJson s), ("doc", toJson doc)])),
         ("noDocExamples",
-        Json.arr <| v'.map (fun (n, s) =>
-        Json.mkObj [("name", toJson n.toString), ("term", toJson s)]))])
+        Json.arr <| v'.map (fun (n, d, s) =>
+        Json.mkObj [("name", toJson n.toString), ("depth", d), ("term", toJson s)]))])
 
 
 def termKindExamplesM' (choices: Nat := 5) : MetaM <| List Json := do
