@@ -9,10 +9,12 @@ openai.api_version = '2023-05-15' # this might change in the future
 
 deployment_name='leanaide-gpt4'
 
-lean_sys_prompt = """You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples. Follow EXACTLY the examples given"""
+lean_trans_prompt = """You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples. Follow EXACTLY the examples given."""
 
 sys_prompt = """You are a Mathematics, Lean 4 and coding assistant who answers questions about Mathematics and Lean 4, gives hints while coding in Lean 4, 
-and translates from natural language to Lean Theorem Prover code following examples. Follow EXACTLY any examples given when generating Lean code."""
+and translates from natural language to Lean Theorem Prover code."""
+
+trans_prompt = "  Follow EXACTLY any examples given when generating Lean code."
 
 math_prompt="You are a mathematics assistant for research mathematicians and advanced students. Answer mathematical questions with the level of precision and detail expected in graduate level mathematics courses and in mathematics research papers."
 
@@ -29,6 +31,27 @@ def azure_completions(query, sys_prompt = sys_prompt, examples = [], n=5, deploy
 
 def math(query, sys_prompt = math_prompt, examples = [], n=3, deployment_name = deployment_name):
     return azure_completions(query, sys_prompt, examples, n, deployment_name)
+
+def doc_string(theorem, n= 3, is_prop = True):
+    head = "theorem"
+    kind = "theorem"
+    if not(is_prop):
+        head = "def"
+        kind = "definition"
+    text = f"""Describe the following {kind} briefly in natural language, similar to a documentation string. The description should be either a single sentence or a paragraph with 2-3 sentences, and may contain LaTeX math.
+    ```lean
+    {head} {theorem} := by sorry
+    ```
+    """
+    return azure_completions(text, examples = [], n = n)
+
+def informalize(code, n = 3):
+    text = f"""Describe the following Lean code briefly in natural language. The description may contain LaTeX math.
+    ```lean
+    {code}
+    ```
+    """
+    return azure_completions(text, examples = [], n = n)
 
 def gpt4t_completions(query, sys_prompt = sys_prompt, examples = []):
     messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]

@@ -610,16 +610,16 @@ def termKindsIn (stx: Syntax) : MetaM <| List SyntaxNodeKind := do
     let kinds ← termKindList
     termKindsInAux stx kinds
 
-def termKindBestEgsM (choice: Nat := 5)(constantNameValueDocs  := constantNameValueDocs)(termKindList : MetaM <| List SyntaxNodeKind := termKindList) :
+def termKindBestEgsM (choice: Nat := 3)(constantNameValueDocs  := constantNameValueDocs)(termKindList : MetaM <| List SyntaxNodeKind := termKindList) :
     MetaM <| HashMap Name
-        (Nat × (Array (Name × Nat × String × String)) ×
-         Array (Name × Nat × String)) := do
+        (Nat × (Array (Name × Nat × String × Bool ×  String)) ×
+         Array (Name × Nat × String × Bool)) := do
     let cs ← constantNameValueDocs
     let kinds ← termKindList
     IO.eprintln s!"Found {cs.size} constants"
     let mut count := 0
-    let mut m : HashMap Name (Nat × (Array (Name × Nat × String × String)) ×
-         Array (Name × Nat × String)) := HashMap.empty
+    let mut m : HashMap Name (Nat × (Array (Name × Nat × String × Bool × String)) ×
+         Array (Name × Nat × String × Bool)) := HashMap.empty
     for ⟨name, type, doc?⟩ in cs do
         count := count + 1
         if count % 400 == 0 then
@@ -628,6 +628,7 @@ def termKindBestEgsM (choice: Nat := 5)(constantNameValueDocs  := constantNameVa
         unless depth > 50 do
             try
             let stx ← delab type
+            let p ← isProp type
             let tks ← termKindsInAux stx.raw kinds
             let tks := tks.eraseDups
             for tk in tks do
@@ -636,7 +637,7 @@ def termKindBestEgsM (choice: Nat := 5)(constantNameValueDocs  := constantNameVa
                 | some doc =>
                   match egs.findIdx? (fun (_, d, _, _) => d > depth) with
                   | some k =>
-                    let egs := egs.insertAt k (name, depth, (← ppTerm stx).pretty, doc)
+                    let egs := egs.insertAt k (name, depth, (← ppTerm stx).pretty, p, doc)
                     let egs := if egs.size > choice then egs.pop else egs
                     let noDocEgs :=
                         if egs.size + noDocEgs.size > choice then
@@ -646,7 +647,7 @@ def termKindBestEgsM (choice: Nat := 5)(constantNameValueDocs  := constantNameVa
                     m := m.insert tk (c + 1, egs, noDocEgs)
                   | none =>
                     if egs.size < choice then
-                        let egs := egs.push (name, depth, (← ppTerm stx).pretty, doc)
+                        let egs := egs.push (name, depth, (← ppTerm stx).pretty, p, doc)
                         let noDocEgs :=
                             if egs.size + noDocEgs.size > choice then
                                 noDocEgs.pop
@@ -658,7 +659,7 @@ def termKindBestEgsM (choice: Nat := 5)(constantNameValueDocs  := constantNameVa
                 | none =>
                     match noDocEgs.findIdx? (fun (_, d, _) => d > depth) with
                     | some k =>
-                        let noDocEgs := noDocEgs.insertAt k (name, depth, (← ppTerm stx).pretty)
+                        let noDocEgs := noDocEgs.insertAt k (name, depth, (← ppTerm stx).pretty, p)
                         let noDocEgs :=
                             if egs.size + noDocEgs.size > choice then
                                 noDocEgs.pop
@@ -667,7 +668,7 @@ def termKindBestEgsM (choice: Nat := 5)(constantNameValueDocs  := constantNameVa
                         m := m.insert tk (c + 1, egs, noDocEgs)
                     | none =>
                         if noDocEgs.size + egs.size < choice then
-                            m := m.insert tk (c + 1, egs, noDocEgs.push (name, depth, (← ppTerm stx).pretty))
+                            m := m.insert tk (c + 1, egs, noDocEgs.push (name, depth, (← ppTerm stx).pretty, p))
                         else
                             m := m.insert tk (c + 1, egs, noDocEgs)
             catch e =>
@@ -675,7 +676,7 @@ def termKindBestEgsM (choice: Nat := 5)(constantNameValueDocs  := constantNameVa
     return m
 
 
-def termKindExamplesM (choices: Nat := 5)(constantNameValueDocs  := constantNameValueDocs)(termKindList : MetaM <| List SyntaxNodeKind := termKindList) : MetaM <| List Json := do
+def termKindExamplesM (choices: Nat := 3)(constantNameValueDocs  := constantNameValueDocs)(termKindList : MetaM <| List SyntaxNodeKind := termKindList) : MetaM <| List Json := do
     let egs ← termKindBestEgsM choices constantNameValueDocs termKindList
     IO.eprintln s!"Found {egs.size} term kinds"
     let examples := egs.toArray.qsort (
@@ -683,14 +684,14 @@ def termKindExamplesM (choices: Nat := 5)(constantNameValueDocs  := constantName
     ) |>.toList
     return examples.map (fun (k, n, v, v') => Json.mkObj [("kind", toJson k),
     ("count", n), ("examples",
-        Json.arr <| v.map (fun (n, d, s, doc) =>
-        Json.mkObj [("name", toJson n.toString), ("depth", d), ("term", toJson s), ("doc", toJson doc)])),
+        Json.arr <| v.map (fun (n, d, s, p, doc) =>
+        Json.mkObj [("name", toJson n.toString), ("depth", d), ("type", toJson s), ("isProp", toJson p), ("doc", toJson doc)])),
         ("noDocExamples",
-        Json.arr <| v'.map (fun (n, d, s) =>
-        Json.mkObj [("name", toJson n.toString), ("depth", d), ("term", toJson s)]))])
+        Json.arr <| v'.map (fun (n, d, s, p) =>
+        Json.mkObj [("name", toJson n.toString), ("depth", d), ("type", toJson s), ("isProp", toJson p)]))])
 
 
-def termKindExamplesCore (choices: Nat := 5) : CoreM <| List Json := do
+def termKindExamplesCore (choices: Nat := 3) : CoreM <| List Json := do
     termKindExamplesM choices |>.run' {}
 
 structure DefData where
