@@ -210,6 +210,22 @@ def constantNameValueDocs  : MetaM (Array (Name × Expr ×  Option String)) := d
     fun (name, _, _)  ↦ !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name))
   return names
 
+
+def nameValueDocs (consts: Array Name) : MetaM (Array (Name × Expr ×  Option String)) := do
+  let env ← getEnv
+  let decls := consts.filterMap <|
+    fun name => env.find? name |>.map fun dfn => (name, dfn)
+  let allNamesCore := decls.map <|
+    fun (name, dfn) => (name, dfn.type)
+  let allNames ← allNamesCore.mapM <|
+    fun (name,  type) => do
+      pure <| (name,  type, ← findDocString? env name )
+  let names ← allNames.filterM (fun (name, _) => isWhiteListed name)
+  let names := names.filter <|
+    fun (name, _, _)  ↦ !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name))
+  return names
+
+
 structure DefnTypes where
     name: Name
     type: String
