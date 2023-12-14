@@ -4,6 +4,12 @@ import Mathlib
 
 #eval 3 ∣ 4
 
+theorem nat_from_constructors (n: Nat) :
+  n = Nat.zero ∨ ∃ m, n = Nat.succ m := by
+  cases n with
+  | zero => left; rfl
+  | succ m => right; use m
+
 #reduce (3: Nat)
 set_option pp.all true in
 #reduce Nat.succ <| Nat.succ Nat.zero

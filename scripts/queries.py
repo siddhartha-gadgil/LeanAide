@@ -69,4 +69,4 @@ def gpt4t_completions(query, sys_prompt = sys_prompt, examples = []):
 import re
 
 def escape(s):
-    return re.sub(r"(?<=[ ])[\n\r](?=[a-zA-Z])", r"\\n", s)
+    return re.sub(r"(?<=[ ])[\t\r](?=[a-zA-Z])",  r"\\t", re.sub(r"(?<=[ ])[\n\r](?=[a-zA-Z])", r"\\n", s))
