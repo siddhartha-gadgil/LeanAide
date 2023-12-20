@@ -1,7 +1,8 @@
 import json
-import openai
+# import openai
+from queries import azure_embed
 
-inp = open("data/mathlib4-prompts.json", 'r', encoding='utf-8')
+inp = open("rawdata/mathlib4-prompts.json", 'r', encoding='utf-8')
 out = open("rawdata/mathlib4-prompts-embeddings.json", 'w', encoding='utf-8')
 
 # read `inp` and extract json
@@ -10,11 +11,12 @@ count = 0
 print(len(js))
 # for each line, compute the embeddings
 for l in js:
-    response = openai.Embedding.create(
-    input=l["docString"],
-    model="text-embedding-ada-002"
-    )
-    embedding = response['data'][0]['embedding']
+    # response = openai.Embedding.create(
+    # input=l["docString"],
+    # model="text-embedding-ada-002"
+    # )
+    # embedding = response['data'][0]['embedding']
+    embedding = azure_embed(l["docString"])
     l["embedding"] = embedding
     print(l["docString"])
     count = count + 1

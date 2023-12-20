@@ -70,3 +70,10 @@ import re
 
 def escape(s):
     return re.sub(r"(?<=[ ])[\t\r](?=[a-zA-Z])",  r"\\t", re.sub(r"(?<=[ ])[\n\r](?=[a-zA-Z])", r"\\n", s))
+
+def azure_embed(text):
+    response = openai.Embedding.create(
+    input=text,
+    engine="leanaide-embed"
+    )
+    return response['data'][0]['embedding']

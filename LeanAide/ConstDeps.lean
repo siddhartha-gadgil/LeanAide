@@ -257,14 +257,19 @@ def splitData (data: Array α) : IO <| HashMap String (Array α) := do
 namespace DefnTypes
 def getM : MetaM <| Array DefnTypes := do
     let cs ← constantNameValueTypes
-    cs.filterMapM <| fun (name, term, type, doc?) => do
+    IO.println s!"Total: {cs.size}"
+    let mut count := 0
+    let mut dfns : Array DefnTypes := #[]
+    for (name, term, type, doc?) in cs do
+        if count % 1000 = 0 then
+          IO.println s!"count: {count}"
+        count := count + 1
         let depth := type.approxDepth
-        if depth > 60 then
-          return none
-        else
+        unless depth > 60 do
           let fmt ← Meta.ppExpr type
-          pure
-            (some ⟨name, fmt.pretty, ← isProof term, doc?⟩)
+          dfns := dfns.push
+            ⟨name, fmt.pretty, ← isProof term, doc?⟩
+    return dfns
 
 def writeM (dfns : Array DefnTypes)(name: String := "all.json") : MetaM Unit := do
     let jsonl := dfns.map toJson
@@ -300,8 +305,10 @@ def getWriteCore : CoreM ((Array DefnTypes) × (HashMap Name String)) :=
 end DefnTypes
 
 def writeDocsM : MetaM Unit := do
+  IO.println "Getting defn types"
   let dfns ← DefnTypes.getM
   IO.println s!"Total: {dfns.size}"
+  DefnTypes.writeM dfns
   let dfns := dfns.filter (fun d => d.docString?.isSome)
   IO.println s!"Total: {dfns.size}"
   DefnTypes.writeM dfns "docs.jsonl"
