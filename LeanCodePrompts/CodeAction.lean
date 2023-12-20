@@ -17,7 +17,7 @@ def extractTranslationCommentBody : TSyntax ``translationComment → String
 def translationCommentCodeAction : CommandCodeAction := fun _params _snap _ctx _info ↦ do
   let .node (.ofCommandInfo cmdInfo) _ := _info | return #[]
   let doc ← readDoc
-  
+
   let eager := {
     title := "Auto-formalise to Lean."
     kind? := "quickfix",
@@ -31,7 +31,7 @@ def translationCommentCodeAction : CommandCodeAction := fun _params _snap _ctx _
       let res ← EIO.toIO (fun _ ↦ .userError "Translation failed.") <| _snap.runTermElabM doc.meta <|
           translateViewM text
       return { eager with
-        edit? := some <| .ofTextEdit doc.meta.uri {
+        edit? := some <| .ofTextEdit ⟨doc.meta.uri, none⟩ {
           range := doc.meta.text.utf8RangeToLspRange range,
           newText := s!"/-- {text}-/\n{res}"}}
     }]

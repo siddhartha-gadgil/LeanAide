@@ -13,7 +13,7 @@ def main (args: List String) : IO Unit := do
   let nameStr := args.head!
   let name : Name := nameStr.toName 
   let env ← 
-    importModules [
+    importModules #[
     {module:= `LeanAide.ImportList},
     {module:= name}] {}
   let core : CoreM Nat :=  

@@ -11,14 +11,14 @@ def init : IO Unit := do
   initSearchPath (← Lean.findSysroot) initFiles
 
 def environment : IO Environment := do
-  importModules [{module := `Mathlib},
+  importModules #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},    
     {module:= `LeanAide.VerboseDelabs},
     {module:= `LeanAide.Premises},
     {module := `Mathlib}] {}
 
 def environment' : IO Environment := do
-  importModules [{module := `Mathlib},
+  importModules #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},    
     {module:= `LeanAide.ConstDeps},
     {module := `Mathlib}] {}

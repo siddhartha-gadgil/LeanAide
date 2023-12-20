@@ -6,8 +6,9 @@ open Mathlib.Prelude.Rename
 
 
 def lean4Name? (name: Name) : MetaM (Option Name) := do
-  let name? := 
-    ((getRenameMap  (←getEnv)).find? name).map (·.2)
+let m := renameExtension.getState (← getEnv) |>.get
+  let name? :=
+    (m.find? name).map (·.2)
   match name? with
   | none => pure none
   | some name =>
@@ -18,7 +19,7 @@ def lean4Name? (name: Name) : MetaM (Option Name) := do
 
 partial def lean4NamesSyntax : Syntax → MetaM Syntax := fun stx => do
 match stx with
-| Syntax.ident _ _ name .. => 
+| Syntax.ident _ _ name .. =>
     match ← lean4Name? name with
     | some name' => do
         return mkIdent name'
@@ -35,7 +36,7 @@ def parseThm4 (s : String) : TermElabM <| Except String Syntax := do
   | Except.error err => return Except.error err
   | Except.ok stx => return Except.ok <| ← lean4NamesSyntax stx
 
-def elabThm4 (s : String)(opens: List String := []) 
+def elabThm4 (s : String)(opens: List String := [])
   (levelNames : List Lean.Name := levelNames)
   : TermElabM <| Except String Expr := do
   let env ← getEnv
@@ -44,7 +45,7 @@ def elabThm4 (s : String)(opens: List String := [])
   | Except.error err => return Except.error s!"{err} for:\n {s}"
   | Except.ok stx =>
     match ← elabThmFromStx stx opens levelNames with
-    | Except.error err₁ => 
+    | Except.error err₁ =>
       match ← elabThmFromStx (← lean4NamesSyntax stx) opens levelNames with
       | Except.error err₂ => return Except.error s!"{err₁}\n{err₂} (with lean4NamesSyntax)"
       | Except.ok e => return Except.ok e
@@ -52,9 +53,9 @@ def elabThm4 (s : String)(opens: List String := [])
 
 -- for testing
 
-elab "lean3named" t:term : term => do 
+elab "lean3named" t:term : term => do
   let t' ← lean4NamesSyntax t
-  elabTerm t' none 
+  elabTerm t' none
 
 #check lean3named nat.prime
 #check lean3named (fun (n: Nat) ↦ nat.prime n) -- handles a mix fine

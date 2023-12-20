@@ -12,20 +12,20 @@ def readEmbeddingsArray : IO <| Array <| String ×  FloatArray :=  do
   let mut accum := #[]
   let mut docs : Array String := #[]
   for jsLine in jsonArr do
-    let doc := 
+    let doc :=
       match jsLine.getObjValAs? String "docString" with
       | Except.ok doc => doc
-      | Except.error err => panic! s!"error reading docString: {err}" 
-    let embedding':= 
+      | Except.error err => panic! s!"error reading docString: {err}"
+    let embedding':=
       match jsLine.getObjValAs? (List Float) "embedding" with
       | Except.ok embedding => embedding
-      | Except.error err => panic! s!"error reading embedding: {err}" 
+      | Except.error err => panic! s!"error reading embedding: {err}"
     let embedding := embedding'.toFloatArray
     unless docs.contains doc do
       docs := docs.push doc
       accum := accum.push (doc, embedding)
     count := count + 1
-    if count % 1000 == 0 then    
+    if count % 1000 == 0 then
       IO.println s!"read {count} embeddings"
   return accum
 
@@ -37,24 +37,24 @@ def readEmbeddingsDocsArray : IO <| Array <| (String × String) ×  FloatArray :
   let mut accum := #[]
   let mut docs : Array String := #[]
   for jsLine in jsonArr do
-    let doc := 
+    let doc :=
       match jsLine.getObjValAs? String "docString" with
       | Except.ok doc => doc
-      | Except.error err => panic! s!"error reading docString: {err}" 
+      | Except.error err => panic! s!"error reading docString: {err}"
     let thm :=
       match jsLine.getObjValAs? String "type" with
       | Except.ok thm => thm
       | Except.error err => panic! s!"error reading thmString: {err}"
-    let embedding':= 
+    let embedding':=
       match jsLine.getObjValAs? (List Float) "embedding" with
       | Except.ok embedding => embedding
-      | Except.error err => panic! s!"error reading embedding: {err}" 
+      | Except.error err => panic! s!"error reading embedding: {err}"
     let embedding := embedding'.toFloatArray
     unless docs.contains doc do
       docs := docs.push doc
       accum := accum.push ((doc, thm), embedding)
     count := count + 1
-    if count % 1000 == 0 then    
+    if count % 1000 == 0 then
       IO.println s!"read {count} embeddings"
   return accum
 
@@ -66,10 +66,10 @@ def readEmbeddingsFullDocsArray : IO <| Array <| (String × String × Bool) ×  
   let mut accum := #[]
   let mut docs : Array String := #[]
   for jsLine in jsonArr do
-    let doc := 
+    let doc :=
       match jsLine.getObjValAs? String "docString" with
       | Except.ok doc => doc
-      | Except.error err => panic! s!"error reading docString: {err}" 
+      | Except.error err => panic! s!"error reading docString: {err}"
     let thm :=
       match jsLine.getObjValAs? String "type" with
       | Except.ok thm => thm
@@ -78,28 +78,27 @@ def readEmbeddingsFullDocsArray : IO <| Array <| (String × String × Bool) ×  
       match jsLine.getObjValAs? Bool "isProp" with
       | Except.ok isProp => isProp
       | Except.error err => panic! s!"error reading isProp: {err}"
-    let embedding':= 
+    let embedding':=
       match jsLine.getObjValAs? (List Float) "embedding" with
       | Except.ok embedding => embedding
-      | Except.error err => panic! s!"error reading embedding: {err}" 
+      | Except.error err => panic! s!"error reading embedding: {err}"
     let embedding := embedding'.toFloatArray
     unless docs.contains doc do
       docs := docs.push doc
       accum := accum.push ((doc, thm, isProp), embedding)
     count := count + 1
-    if count % 1000 == 0 then    
+    if count % 1000 == 0 then
       IO.println s!"read {count} embeddings"
   return accum
 
 
-unsafe def loadEmbeddingsTest : IO Nat := 
-  withUnpickle  "build/lib/mathlib4-thms-embeddings.olean" <| fun (data: Array <| String ×  FloatArray) => pure data.size
+unsafe def loadEmbeddingsTest : IO Nat :=
+  withUnpickle  ".lake/build/lib/mathlib4-thms-embeddings.olean" <| fun (data: Array <| String ×  FloatArray) => pure data.size
 
-unsafe def loadEmbeddingsDocsTest : IO Nat := 
-  withUnpickle  "build/lib/mathlib4-doc-thms-embeddings.olean" <| fun (data: Array <| (String × String) ×  FloatArray) => pure data.size
+unsafe def loadEmbeddingsDocsTest : IO Nat :=
+  withUnpickle  ".lake/build/lib/mathlib4-doc-thms-embeddings.olean" <| fun (data: Array <| (String × String) ×  FloatArray) => pure data.size
 
-unsafe def loadEmbeddingsFullDocsTest : IO Nat := 
-  withUnpickle  "build/lib/mathlib4-prompts-embeddings.olean" <| fun (data: Array <| (String × String × Bool) ×  FloatArray) => pure data.size
+unsafe def loadEmbeddingsFullDocsTest : IO Nat :=
+  withUnpickle  ".lake/build/lib/mathlib4-prompts-embeddings.olean" <| fun (data: Array <| (String × String × Bool) ×  FloatArray) => pure data.size
 
 -- #eval loadEmbeddingsFullDocsTest
-

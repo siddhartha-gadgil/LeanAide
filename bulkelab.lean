@@ -11,12 +11,12 @@ set_option compiler.extract_closed false
 
 def runBulkElab (p : Parsed) : IO UInt32 := do
   initSearchPath (← Lean.findSysroot) initFiles
-  let type := 
+  let type :=
     p.positionalArg? "input" |>.map (fun s => s.as! String)
     |>.getD "thm"
   let numSim := p.flag? "prompts" |>.map (fun s => s.as! Nat)
     |>.getD 10
-  let includeFixed := p.hasFlag "include_fixed" 
+  let includeFixed := p.hasFlag "include_fixed"
   let queryNum := p.flag? "responses" |>.map (fun s => s.as! Nat)
     |>.getD 5
   let temp10 := p.flag? "temperature" |>.map (fun s => s.as! Nat)
@@ -31,40 +31,40 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
   let repeats := p.flag? "repeats" |>.map (fun s => s.as! Nat)
     |>.getD 0
   let azure := p.hasFlag "azure"
-  let queryData? : Option (HashMap String Json) ←  
-    p.flag? "query_data" |>.map (fun s => s.as! String) |>.mapM 
+  let queryData? : Option (HashMap String Json) ←
+    p.flag? "query_data" |>.map (fun s => s.as! String) |>.mapM
       fun filename => do
         let lines ←  IO.FS.lines filename
         let mut qdMap := HashMap.empty
         for l in lines do
           let json? := Json.parse l
           match json? with
-          | Except.ok json => 
-            let doc := (json.getObjValAs? String "docString" |>.toOption.orElse 
+          | Except.ok json =>
+            let doc := (json.getObjValAs? String "docString" |>.toOption.orElse
             (fun _ => json.getObjValAs? String "doc_string" |>.toOption)
-            ).get! 
+            ).get!
             let out := json.getObjValAs? Json "choices" |>.toOption.get!
             qdMap := qdMap.insert doc out
             IO.println doc
           | Except.error e => do
             throw <| IO.userError s!"Error parsing query data file: {e}"
-          
+
         pure qdMap
 
   let outFile := System.mkFilePath <|
     [p.flag? "output" |>.map (fun s => s.as! String) |>.getD
       s!"results/{type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp10}.json"]
-  let env ← 
-    importModules [{module := `Mathlib},
+  let env ←
+    importModules #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
-    {module:= `LeanCodePrompts.Translate},    
+    {module:= `LeanCodePrompts.Translate},
     {module := `Mathlib}] {}
-  let core := 
+  let core :=
     checkTranslatedThmsCore type
-      numSim includeFixed queryNum temp model embedding azure 
+      numSim includeFixed queryNum temp model embedding azure
       delay repeats queryData?
-  let io? := 
-    core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} 
+  let io? :=
+    core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000}
     {env := env}
   match ← io?.toIO' with
   | Except.ok js =>
@@ -102,5 +102,5 @@ def bulkElab : Cmd := `[Cli|
 
 ]
 
-def main (args: List String) : IO UInt32 := 
+def main (args: List String) : IO UInt32 :=
   bulkElab.validate args

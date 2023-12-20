@@ -4,22 +4,22 @@ import Lean
 import LeanAide.Aides
 open Aesop Lean Meta Elab Parser.Tactic
 
-initialize tacticSuggestions : IO.Ref (Array Syntax.Tactic) 
+initialize tacticSuggestions : IO.Ref (Array Syntax.Tactic)
         ← IO.mkRef #[]
 
-initialize tacticStrings : IO.Ref (Array String) 
+initialize tacticStrings : IO.Ref (Array String)
         ← IO.mkRef #[]
 
-initialize rewriteSuggestions : IO.Ref (Array Syntax.Term) 
+initialize rewriteSuggestions : IO.Ref (Array Syntax.Term)
         ← IO.mkRef #[]
 
 
 
-def getTacticSuggestions: IO (Array Syntax.Tactic) := 
-  tacticSuggestions.get 
+def getTacticSuggestions: IO (Array Syntax.Tactic) :=
+  tacticSuggestions.get
 
-def getTacticStrings: IO (Array String) := 
-  tacticStrings.get 
+def getTacticStrings: IO (Array String) :=
+  tacticStrings.get
 
 def rwTacticSuggestions : MetaM (Array Syntax.Tactic) := do
   let rws ← rewriteSuggestions.get
@@ -35,7 +35,7 @@ def rwAtTacticSuggestions : MetaM (Array Syntax.Tactic) := do
   let rws ← rewriteSuggestions.get
   let mut dynTactics := #[]
   let lctx ←  getLCtx
-  let fvarNames ←  lctx.getFVarIds.toList.tail.mapM (·.getUserName) 
+  let fvarNames ←  lctx.getFVarIds.toList.tail.mapM (·.getUserName)
   for r in rws do
     for n in fvarNames do
       let f := mkIdent n
@@ -63,11 +63,11 @@ def addConstRewrite (decl: Name)(flip: Bool) : MetaM Unit := do
   let stx : Syntax.Term := mkIdent decl
   addRwSuggestions #[stx]
   if flip  then
-    addTacticSuggestion <| ← `(tactic|rw [← $stx])    
+    addTacticSuggestion <| ← `(tactic|rw [← $stx])
   else
     addTacticSuggestion <| ← `(tactic|rw [$stx:term])
 
-def addTacticString (tac: String) : MetaM Unit := do 
+def addTacticString (tac: String) : MetaM Unit := do
   let old ← tacticStrings.get
   tacticStrings.set (old.push tac)
 
@@ -75,14 +75,14 @@ def addTacticString (tac: String) : MetaM Unit := do
 /-- Rule set member for `apply` for a global constant -/
 def applyConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMember := do
   let prob :=  Syntax.mkNumLit s!"{p * 100}"
-  let stx ← `(attr|aesop unsafe $prob:num % apply) 
+  let stx ← `(attr|aesop unsafe $prob:num % apply)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
   let rules ← runMetaMAsCoreM $
       config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
   return rules.map (·.1)
 
 def safeApplyConstRuleMembers (decl: Name) : MetaM <| Array RuleSetMember := do
-  let stx ← `(attr|aesop safe apply) 
+  let stx ← `(attr|aesop safe apply)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
   let rules ← runMetaMAsCoreM $
       config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
@@ -92,7 +92,7 @@ def safeApplyConstRuleMembers (decl: Name) : MetaM <| Array RuleSetMember := do
 
 /-- Rule set members for `simp` for a global constant proof -/
 partial def simpConstRuleMember (decl: Name) : MetaM <| Array RuleSetMember := do
-  let stx ← `(attr|aesop norm simp) 
+  let stx ← `(attr|aesop norm simp)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
   let rules ← runMetaMAsCoreM $
       config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
@@ -101,7 +101,7 @@ partial def simpConstRuleMember (decl: Name) : MetaM <| Array RuleSetMember := d
 /-- Rule set member for `forward` for a global constant -/
 def forwardConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMember := do
   let prob :=  Syntax.mkNumLit s!"{p * 100}"
-  let stx ← `(attr|aesop unsafe $prob:num % forward) 
+  let stx ← `(attr|aesop unsafe $prob:num % forward)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
   let rules ← runMetaMAsCoreM $
       config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
@@ -110,7 +110,7 @@ def forwardConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMembe
 /-- Rule set member for `destruct` for a global constant -/
 def destructConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMember := do
   let prob :=  Syntax.mkNumLit s!"{p * 100}"
-  let stx ← `(attr|aesop unsafe $prob:num % destruct) 
+  let stx ← `(attr|aesop unsafe $prob:num % destruct)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
   let rules ← runMetaMAsCoreM $
       config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
@@ -119,7 +119,7 @@ def destructConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMemb
 /-- Rule set member for `cases` for a global constant -/
 def casesConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMember := do
   let prob :=  Syntax.mkNumLit s!"{p * 100}"
-  let stx ← `(attr|aesop unsafe $prob:num % cases) 
+  let stx ← `(attr|aesop unsafe $prob:num % cases)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
   let rules ← runMetaMAsCoreM $
       config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
@@ -128,7 +128,7 @@ def casesConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMember 
 /-- Rule set member for `constructors` for a global constant -/
 def constructorConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMember := do
   let prob :=  Syntax.mkNumLit s!"{p * 100}"
-  let stx ← `(attr|aesop unsafe $prob:num % constructors) 
+  let stx ← `(attr|aesop unsafe $prob:num % constructors)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
   let rules ← runMetaMAsCoreM $
       config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
@@ -136,7 +136,7 @@ def constructorConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetM
 
 /-- Rule set member for `unfold` for a global constant -/
 def unfoldConstRuleMembers (decl: Name) : MetaM <| Array RuleSetMember := do
-  let stx ← `(attr|aesop norm unfold) 
+  let stx ← `(attr|aesop norm unfold)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
   let rules ← runMetaMAsCoreM $
       config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
@@ -145,7 +145,7 @@ def unfoldConstRuleMembers (decl: Name) : MetaM <| Array RuleSetMember := do
 /-- Rule set member for `tactic` for a global constant -/
 def tacticConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMember := do
   let prob :=  Syntax.mkNumLit s!"{p * 100}"
-  let stx ← `(attr|aesop unsafe $prob:num % tactic) 
+  let stx ← `(attr|aesop unsafe $prob:num % tactic)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
   let rules ← runMetaMAsCoreM $
       config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
@@ -154,52 +154,54 @@ def tacticConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMember
 
 
 def tacticExpr (goal : MVarId) (tac : Syntax.Tactic) :
-    MetaM (Array MVarId × RuleTacScriptBuilder) := 
+    MetaM (Array MVarId × RuleTacScriptBuilder) :=
   goal.withContext do
-  let goalState ← runTactic goal tac 
+  let goalState ← runTactic goal tac
       {errToSorry := false, implicitLambda := false} {}
   let goals := goalState.1.toArray
   let scriptBuilder :=
     ScriptBuilder.ofTactic goals.size (pure tac)
   return (goals, scriptBuilder)
 
+#check Aesop.RuleApplication.mk
+
 def dynamicRuleTac (dynTactics : Array Syntax.Tactic) : RuleTac := fun input => do
-  let goalType ← inferType (mkMVarEx input.goal) 
+  let goalType ← inferType (mkMVarEx input.goal)
   let lctx ←  getLCtx
-  let fvarNames ←  lctx.getFVarIds.toList.tail.mapM (·.getUserName) 
+  let fvarNames ←  lctx.getFVarIds.toList.tail.mapM (·.getUserName)
   trace[leanaide.proof.info] "trying dynamic tactics: {dynTactics} for goal {←ppExpr  goalType}; fvars: {fvarNames}"
   let initialState : SavedState ← saveState
   let appsTacs ← dynTactics.filterMapM fun (tac) => do
     try
       let (goals, scriptBuilder) ← tacticExpr input.goal tac
       let postState ← saveState
-      return some (⟨ goals, postState, scriptBuilder ⟩, tac)      
+      return some (⟨ goals, postState, scriptBuilder, none ⟩, tac)
     catch _ =>
       return none
     finally
       restoreState initialState
   let (apps, dynTactics) := appsTacs.unzip
-  if apps.isEmpty then 
+  if apps.isEmpty then
     throwError "failed to apply any of the tactics"
-  trace[leanaide.proof.info] "applied dynamic tactics {dynTactics}" 
+  trace[leanaide.proof.info] "applied dynamic tactics {dynTactics}"
   return { applications := apps}
 
-def dynamicTactics : RuleTac := fun input => do 
+def dynamicTactics : RuleTac := fun input => do
   let dynTactics ← getTacticSuggestions
-  let rwsAt ← rwAtTacticSuggestions 
-  let tacString ← getTacticStrings 
+  let rwsAt ← rwAtTacticSuggestions
+  let tacString ← getTacticStrings
   let mut parsedTacs : Array Syntax.Tactic := #[]
   for tac in tacString do
     match parseAsTacticSeq (←getEnv) tac with
-      | Except.ok dynTactics => 
+      | Except.ok dynTactics =>
         parsedTacs := parsedTacs.push <| ← `(tactic|($dynTactics))
       | Except.error err => throwError err
   logInfo m!"dynamicTactics: {dynTactics}"
-  dynamicRuleTac (dynTactics ++ rwsAt 
+  dynamicRuleTac (dynTactics ++ rwsAt
     ++ parsedTacs
     ) input
 
-def dynamicRuleMember (p: Float) : RuleSetMember := 
+def dynamicRuleMember (p: Float) : RuleSetMember :=
   let name : RuleName := {
     name := `dynamicTactics
     builder := BuilderName.tactic
@@ -212,7 +214,7 @@ def dynamicRuleMember (p: Float) : RuleSetMember :=
     extra:= ⟨⟨p⟩⟩
     tac := .ruleTac ``dynamicTactics}
 
-def tacticMember (p: Float)(tac : Name) : RuleSetMember := 
+def tacticMember (p: Float)(tac : Name) : RuleSetMember :=
   let name : RuleName := {
     name := tac
     builder := BuilderName.tactic
@@ -251,7 +253,7 @@ def introsWithTransparency (transparency: TransparencyMode) : RuleTac := RuleTac
 
       else
         pure none
-    return (#[goal], scriptBuilder?)
+    return (#[goal], scriptBuilder?, none)
 
 -- @[aesop unsafe 90% tactic]
 def introsWithDefault : RuleTac := introsWithTransparency TransparencyMode.default
@@ -259,11 +261,11 @@ def introsWithAll : RuleTac := introsWithTransparency TransparencyMode.all
 def introsWithReducible : RuleTac := introsWithTransparency TransparencyMode.reducible
 def introsWithInstances : RuleTac := introsWithTransparency TransparencyMode.instances
 
-partial def syntaxNames (stx: Syntax) : List Name := 
+partial def syntaxNames (stx: Syntax) : List Name :=
   match stx with
-  | Syntax.node _ _ args => 
+  | Syntax.node _ _ args =>
     args.toList.bind syntaxNames
-  | Syntax.ident _ _ name _ =>    
+  | Syntax.ident _ _ name _ =>
     [name]
   | _ => []
 
@@ -277,7 +279,7 @@ def syntaxConsts (stx: Syntax) : CoreM <| List Name := do
 def syntaxInductives (stx : Syntax) : CoreM <| List Name := do
   let env ← getEnv
   let consts ← syntaxConsts stx
-  let inductives := consts.filter (fun n => 
+  let inductives := consts.filter (fun n =>
     match env.find? n with
     | some (ConstantInfo.inductInfo _) => true
     | _ => false)
@@ -301,12 +303,12 @@ structure AesopSearchConfig extends Aesop.Options where
   traceScript := true
   maxRuleApplicationDepth := 120
   maxRuleApplications := 800
-  apps : Array <| Name × Float := #[] 
+  apps : Array <| Name × Float := #[]
   safeApps : Array Name := #[]
   simps : Array Name := #[]
   rws : Array Name := #[]
-  forwards : Array <| Name × Float := #[] 
-  destructs : Array <| Name × Float := #[] 
+  forwards : Array <| Name × Float := #[]
+  destructs : Array <| Name × Float := #[]
   cases : Array <| Name × Float := #[]
   constructors : Array <| Name × Float := #[]
   tactics : Array <| Name × Float := #[] -- usually tactics are not named
@@ -322,15 +324,15 @@ def withAndWithoutSimpsList (configs : List AesopSearchConfig)
   (decls: List Name): List AesopSearchConfig :=
   match decls with
   | [] => configs
-  | head :: tail => 
+  | head :: tail =>
     let newConfigs := configs.map (·.addSimp head)
     withAndWithoutSimpsList (newConfigs ++ configs) tail
 
-def withAndWithoutSimps (config: AesopSearchConfig) 
+def withAndWithoutSimps (config: AesopSearchConfig)
   (decls: List Name) : List AesopSearchConfig :=
   withAndWithoutSimpsList [config] decls
 
-def AesopSearchConfig.ruleSet (config: AesopSearchConfig) : 
+def AesopSearchConfig.ruleSet (config: AesopSearchConfig) :
     MetaM RuleSet := do
   clearSuggestions
   for n in config.rws do
@@ -338,26 +340,26 @@ def AesopSearchConfig.ruleSet (config: AesopSearchConfig) :
     addConstRewrite n true
   for t in config.dynTactics do
     addTacticString t
-  let appRules : Array RuleSetMember := (← config.apps.mapM 
-    (fun (n, p) => applyConstRuleMembers n p) 
+  let appRules : Array RuleSetMember := (← config.apps.mapM
+    (fun (n, p) => applyConstRuleMembers n p)
     ).foldl (fun c r => c ++ r) #[]
-  let safeAppRules : Array RuleSetMember := (← config.safeApps.mapM 
-    (fun n => safeApplyConstRuleMembers n) 
+  let safeAppRules : Array RuleSetMember := (← config.safeApps.mapM
+    (fun n => safeApplyConstRuleMembers n)
     ).foldl (fun c r => c ++ r) #[]
-  let forwardRules : Array RuleSetMember := (← config.forwards.mapM 
-    (fun (n, p) => forwardConstRuleMembers n p) 
+  let forwardRules : Array RuleSetMember := (← config.forwards.mapM
+    (fun (n, p) => forwardConstRuleMembers n p)
     ).foldl (fun c r => c ++ r) #[]
   let destructRules : Array RuleSetMember := (← config.destructs.mapM
-    (fun (n, p) => destructConstRuleMembers n p) 
+    (fun (n, p) => destructConstRuleMembers n p)
     ).foldl (fun c r => c ++ r) #[]
   let casesRules : Array RuleSetMember := (← config.cases.mapM
-    (fun (n, p) => casesConstRuleMembers n p) 
+    (fun (n, p) => casesConstRuleMembers n p)
     ).foldl (fun c r => c ++ r) #[]
   let constructorRules : Array RuleSetMember := (← config.constructors.mapM
-    (fun (n, p) => constructorConstRuleMembers n p) 
+    (fun (n, p) => constructorConstRuleMembers n p)
     ).foldl (fun c r => c ++ r) #[]
-  let tacticRules :=  (← 
-    config.tactics.push (``introsWithDefault, 0.9) |>.mapM 
+  let tacticRules :=  (←
+    config.tactics.push (``introsWithDefault, 0.9) |>.mapM
     (fun (n, p) => tacticConstRuleMembers n p)
     ).foldl (fun c r => c ++ r) #[]
   let simpRules ← config.simps.mapM simpConstRuleMember
@@ -365,8 +367,8 @@ def AesopSearchConfig.ruleSet (config: AesopSearchConfig) :
   let defaultRules ←
       Frontend.getDefaultRuleSet (includeGlobalSimpTheorems := true)
       {}
-  let allRules : RuleSet := 
-    ((appRules ++ simpRules ++ tacticRules ++ safeAppRules 
+  let allRules : RuleSet :=
+    ((appRules ++ simpRules ++ tacticRules ++ safeAppRules
      ++ forwardRules ++ destructRules ++ casesRules ++ constructorRules
      ).push (dynamicRuleMember config.dynProb)).foldl
     (fun c r => c.add r) defaultRules
@@ -374,21 +376,21 @@ def AesopSearchConfig.ruleSet (config: AesopSearchConfig) :
 
 
 
-def runAesop (config: AesopSearchConfig): MVarId → MetaM (List MVarId) := fun goal => 
+def runAesop (config: AesopSearchConfig): MVarId → MetaM (List MVarId) := fun goal =>
   goal.withContext do
   let allRules ← config.ruleSet
-  let (goals, _) ← Aesop.search goal allRules config.toOptions 
+  let (goals, _) ← Aesop.search goal allRules config.toOptions
   return goals.toList
 
-def polyAesopRun (configs: List AesopSearchConfig) : 
-    MVarId → MetaM Bool := 
+def polyAesopRun (configs: List AesopSearchConfig) :
+    MVarId → MetaM Bool :=
   fun goal => goal.withContext do
   match configs with
   | [] => return false
   | head :: tail =>
-    let s ← saveState 
+    let s ← saveState
     let allRules ← head.ruleSet
-    let (goals, _) ← Aesop.search goal allRules head.toOptions 
+    let (goals, _) ← Aesop.search goal allRules head.toOptions
     if goals.isEmpty then
       return true
     else

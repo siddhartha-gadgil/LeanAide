@@ -342,7 +342,7 @@ def polyTransformBuild (segs: (Array (String × String)) × String)
         let (pairs, tail) := segs
         if (pairs.size ≥  limit.getD (pairs.size + 1)) then return []
         else 
-        -- IO.println s!"building {pairs.size} segments"
+        -- IO.println s!".lake/building {pairs.size} segments"
         let transformed ← polyTransform pairs.toList transf extraTransf
         -- IO.println s!"transformed to {transformed.length} pieces"
         let strings := 

@@ -112,9 +112,9 @@ def declToString : Syntax → CoreM String := fun d => do
     | `(funImplicitBinder|{_ : $type:term}) =>
         let type := (← ppTerm type).pretty.trim
         return "{" ++ s!"_ : {type}" ++ "}"
-    | `(funStrictImplicitBinder|⦃_ : $type:term⦄) =>
-        let type := (← ppTerm type).pretty.trim
-        return s!"⦃_ : {type}⦄"
+    -- | `(funStrictImplicitBinder|⦃_ : $type:term⦄) =>
+    --     let type := (← ppTerm type).pretty.trim
+    --     return s!"⦃_ : {type}⦄"
     | stx =>
         let fallback := stx.reprint.get!
         IO.println s!"declToString fallback to: {fallback} for {stx}"
@@ -147,9 +147,9 @@ def declToThmHead : Syntax → CoreM String := fun d => do
     | `(funImplicitBinder|{_ : $type:term}) =>
         let type := (← ppTerm type).pretty.trim
         return "{" ++ s!"_ : {type}" ++ "} → "
-    | `(funStrictImplicitBinder|⦃_ : $type:term⦄) =>
-        let type := (← ppTerm type).pretty.trim
-        return s!"⦃_ : {type}⦄ → "
+    -- | `(funStrictImplicitBinder|⦃_ : $type:term⦄) =>
+    --     let type := (← ppTerm type).pretty.trim
+    --     return s!"⦃_ : {type}⦄ → "
     | stx =>
         let fallback := stx.reprint.get! ++ " → "
         IO.println s!"declToString fallback to: {fallback} for {stx}"

@@ -20,7 +20,7 @@ def main : IO Unit := do
   let initTime ← IO.monoMsNow
   initSearchPath (← Lean.findSysroot) initFiles
   let env ← 
-    importModules [{module := `Mathlib},
+    importModules #[{module := `Mathlib},
     {module := `LeanCodePrompts.Basic},
     {module:= `LeanAide.TheoremElab},
     {module := `Mathlib}] {}

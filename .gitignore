@@ -21,6 +21,7 @@ scripts/.ipynb_checkpoints/
 md/
 slides/
 env/
+.lake/
 *.eps
 *.bmp
 *.zip

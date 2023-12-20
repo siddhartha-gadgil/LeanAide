@@ -12,7 +12,7 @@ set_option compiler.extract_closed false
 def main (args: List String) : IO Unit := do
   initSearchPath (← Lean.findSysroot) initFiles
   let env ← 
-    importModules [{module := `Mathlib},
+    importModules #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
     {module := `Mathlib}] {}
   let coreCtx : Core.Context := 
