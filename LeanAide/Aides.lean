@@ -259,3 +259,15 @@ def structuralTerm (stx: Syntax) : MetaM Bool := do
 def openAIKey : IO (Option String) := IO.getEnv "OPENAI_API_KEY"
 
 def azureKey : IO (Option String) := IO.getEnv "AZURE_API_KEY"
+
+def azureEndpoint : IO (Option String) := IO.getEnv "AZURE_OPENAI_ENDPOINT"
+
+def azureURL (deployment: String := "leanaide-gpt4") : IO String := do
+  let endpoint ← azureEndpoint
+  match endpoint with
+  | none => throw <| IO.userError "AZURE_OPENAI_ENDPOINT not set"
+  | some endpoint =>
+    return s!"{endpoint}/openai/deployments/{deployment}/chat/completions?api-version=2023-05-15"
+
+def openAIURL : IO String := do
+  pure "https://api.openai.com/v1/chat/completions"

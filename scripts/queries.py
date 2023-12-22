@@ -11,8 +11,7 @@ deployment_name='leanaide-gpt4'
 
 lean_trans_prompt = """You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples. Follow EXACTLY the examples given."""
 
-sys_prompt = """You are a Mathematics, Lean 4 and coding assistant who answers questions about Mathematics and Lean 4, gives hints while coding in Lean 4, 
-and translates from natural language to Lean Theorem Prover code."""
+sys_prompt = """You are a Mathematics, Lean 4 and coding assistant who answers questions about Mathematics and Lean 4, gives hints while coding in Lean 4. You also translates from natural language to Lean Theorem Prover code and vice versa when asked."""
 
 trans_prompt = "  Follow EXACTLY any examples given when generating Lean code."
 
@@ -46,7 +45,7 @@ def doc_string(theorem, n= 3, is_prop = True):
     return azure_completions(text, examples = [], n = n)
 
 def informalize(code, n = 3):
-    text = f"""Describe the following Lean code briefly in natural language. The description may contain LaTeX math.
+    text = f"""Describe the following Lean code briefly in natural language. The description can contain LaTeX mathematics.
     ```lean
     {code}
     ```
