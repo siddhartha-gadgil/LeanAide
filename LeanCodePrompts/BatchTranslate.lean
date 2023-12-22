@@ -7,18 +7,18 @@ open Lean Meta Elab
 def translateWithDataM (s: String)(numSim : Nat:= 10)
   (includeFixed: Bool := Bool.false)(queryNum: Nat := 5)
   (temp : JsonNumber := 0.2)(model: String)
-  (embedding: String)(azure: Bool := false)(repeats: Nat := 0)(sleepTime : Nat := 1)(queryData? : Option <| (HashMap String Json)  ) : 
+  (embedding: String)(azure: Bool := false)(repeats: Nat := 0)(sleepTime : Nat := 1)(queryData? : Option <| (HashMap String Json)  ) :
   TermElabM ((Option (Expr × (Array String) × (Array (Array String)) )) × Array String) := do
   let output ←  match queryData? with
-  | none =>  
-    let js ← getCodeJson s numSim includeFixed queryNum temp model embedding azure
-    GPT.jsonToExprStrArray js
+  | none =>
+    let js ← getLeanCodeJson s numSim includeFixed queryNum temp model embedding azure
+    GPT.exprStrsFromJson js
   | some f =>
     let res? := f.find? s.trim
     match res? with
-    | none => 
+    | none =>
       throwError s!"no data for {s}"
-    | some js => 
+    | some js =>
       let arr := js.getArr? |>.toOption.get!
       pure <| arr.map fun js => js.getStr!
   if output.isEmpty then
@@ -30,17 +30,17 @@ def translateWithDataM (s: String)(numSim : Nat:= 10)
     IO.sleep (sleepTime * 1000)
     translateWithDataM s numSim includeFixed queryNum temp model embedding azure k (sleepTime * 2) queryData?
   else
-    let res ← arrayToExpr? output 
+    let res ← bestElab? output
     return (res, output)
-  
+
 def translateWithDataCore (s: String)(numSim : Nat:= 10)
   (includeFixed: Bool := Bool.false)(queryNum: Nat := 5)
   (temp : JsonNumber := 0.2)(model: String)
   (embedding: String)(azure: Bool := false)(repeats: Nat := 0)
   (queryData? : Option <| (HashMap String Json)  ) :
-  CoreM ((Option (Expr × (Array String) ×  (Array (Array String)) )) × Array String) := 
-    (translateWithDataM s 
-      numSim includeFixed 
+  CoreM ((Option (Expr × (Array String) ×  (Array (Array String)) )) × Array String) :=
+    (translateWithDataM s
+      numSim includeFixed
         queryNum temp model embedding azure repeats
         (queryData? := queryData?)).run'.run'
 
@@ -49,27 +49,27 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed:
   elabLog s!"Writing to file: {type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp.mantissa}.json"
   let promptsFile := System.mkFilePath ["data",
     s!"prompts-{type}-{numSim}-{includeFixed}-{queryNum}-{temp.mantissa}.jsonl"]
-  let outFile := System.mkFilePath 
-      ["results", 
+  let outFile := System.mkFilePath
+      ["results",
       s!"{type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp.mantissa}.jsonl"]
   IO.FS.writeFile outFile ""
   let outHandle ← IO.FS.Handle.mk outFile IO.FS.Mode.append
   let h ← IO.FS.Handle.mk promptsFile IO.FS.Mode.append
   let file := System.mkFilePath [s!"data/{type}-prompts.txt"]
   let prompts ←  IO.FS.lines file
-  let prompts := 
+  let prompts :=
       prompts.map <| fun s => s.replace "<br>" "\n"
   let mut count := 0
   let mut elaborated := 0
   let mut elabPairs: Array (String × String × (Array String) × Array (Array String)) := #[]
   let mut failed : Array String := #[]
-  for prompt in prompts do 
+  for prompt in prompts do
     trace[Translate.info] m!"{prompt}"
     IO.println ""
     IO.println prompt
-    let (res?, outputs) ← 
+    let (res?, outputs) ←
         translateWithDataM prompt
-          numSim includeFixed queryNum temp model embedding azure 
+          numSim includeFixed queryNum temp model embedding azure
           repeats 1 queryData?
     let fullPrompt := (← logs 1).head?.getD "No prompt (maybe using cached data)"
     let js := Json.mkObj [("text", Json.str prompt),
@@ -90,7 +90,7 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed:
        ("all_elaborations", Json.arr <|thms.map Json.str),
        ("gps", Json.arr <| gps.map (Json.arr ∘ Array.map Json.str))]
       outHandle.putStrLn <| js.compress
-      elabPairs := elabPairs.push (prompt, v, thms, gps) 
+      elabPairs := elabPairs.push (prompt, v, thms, gps)
     | none =>
       elabLog "failed to elaborate"
       IO.println "failed to elaborate"
@@ -102,23 +102,23 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed:
     IO.println s!"elaborated: {elaborated}"
     IO.sleep <| delay * 1000
 
-  let js := 
-    Json.mkObj 
+  let js :=
+    Json.mkObj
       [("total-prompts", count),
         ("elaborated", elaborated),
         ("number-similar-sentences", numSim),
        ("include-fixed", includeFixed),
        ("query-number", queryNum),
        ("temperature", Json.num temp),
-       ("elaborated-prompts", 
-        Json.arr <| ←  elabPairs.mapM <| 
-          fun (p, s, thms, gps) => do 
+       ("elaborated-prompts",
+        Json.arr <| ←  elabPairs.mapM <|
+          fun (p, s, thms, gps) => do
             return Json.mkObj [
             ("prompt", p), ("theorem", s),
             ("all-elabs", Json.arr <| thms.map (Json.str)),
             ("groups", Json.arr <| gps.map (Json.arr ∘ Array.map Json.str)),
-            ("comments", ""), ("correct", Json.null), 
-            ("some-correct", Json.null)   
+            ("comments", ""), ("correct", Json.null),
+            ("some-correct", Json.null)
             ]),
         ("failures", Json.arr <| failed.map (Json.str))
             ]
@@ -133,7 +133,7 @@ def parsedThmsPrompt : IO (Array String) := do
   IO.FS.lines file
 
 
-def elabThmSplit(start? size?: Option Nat := none) : TermElabM ((Array String) × (Array String)) := do 
+def elabThmSplit(start? size?: Option Nat := none) : TermElabM ((Array String) × (Array String)) := do
   let deps ← parsedThmsPrompt
   let deps := deps.toList.drop (start?.getD 0)
   let deps := deps.take (size?.getD (deps.length))
@@ -146,7 +146,7 @@ def elabThmSplit(start? size?: Option Nat := none) : TermElabM ((Array String) �
   IO.println s!"total: {deps.size}"
   for thm in deps do
     IO.println s!"parsing theorem {thm}"
-    let chk ←  hasElab thm 
+    let chk ←  hasElab thm
     count := count + 1
     if chk then
       succ := succ.push thm
@@ -157,23 +157,22 @@ def elabThmSplit(start? size?: Option Nat := none) : TermElabM ((Array String) �
     IO.println s!"elaborated: {succ.size}"
   return (succ, fail)
 
-def elabThmSplitCore(start? size?: Option Nat := none) : CoreM ((Array String) × (Array String)) := 
+def elabThmSplitCore(start? size?: Option Nat := none) : CoreM ((Array String) × (Array String)) :=
   (elabThmSplit start? size?).run'.run'
 
-def outputFromCompletionsM (s: String) : 
+def outputFromCompletionsM (s: String) :
   TermElabM (String) := do
-  let output ← jsonStringToExprStrArray s
+  let output ← exprStrsFromJsonStr s
   let output := output ++ (output.map (fun s => ": " ++ s))
   -- IO.println s!"output: {output}"
-  let res? ← arrayToExpr? output
+  let res? ← bestElab? output
   let js : Json ←  match res? with
   | some (thm, elabs, _) => do
     let thm ←  thm.view
     pure <| Json.mkObj [("success", Bool.true), ("theorem", thm),
-            ("all-elabs", Json.arr <| elabs.map (Json.str))] 
+            ("all-elabs", Json.arr <| elabs.map (Json.str))]
   | none => pure <| Json.mkObj [("success", Bool.false)]
   return js.pretty 10000
 
-def outputFromCompletionsCore (s: String) : CoreM String := 
+def outputFromCompletionsCore (s: String) : CoreM String :=
   (outputFromCompletionsM s).run'.run'
-

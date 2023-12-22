@@ -94,7 +94,7 @@ def makePrompt(query : String)(pairs: Array (String × String)) : Json:= prompt 
 
 def makeFlipPrompt(query : String)(pairs: Array (String × String)) : Json:= prompt sysPrompt (pairs.toList.map (fun (x, y) => (y, x))) query
 
-def jsonToExprStrArray (json: Json) : CoreM (Array String) := do
+def exprStrsFromJson (json: Json) : CoreM (Array String) := do
   let outArr : Array String ←
     match json.getArr? with
     | Except.ok arr =>
@@ -377,7 +377,7 @@ def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := docField)
 
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
-def getCodeJson (s: String)(numSim : Nat:= 8)
+def getLeanCodeJson (s: String)(numSim : Nat:= 8)
   (includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := 0.8)(model: String)
   (embedding: String)(azure: Bool := false) : CoreM Json := do
   logTimed s!"translating string `{s}` with {numSim} examples"
@@ -417,7 +417,7 @@ def getCodeJson (s: String)(numSim : Nat:= 8)
       return outJson
 
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and returns the best choice, throwing an error if nothing elaborates.  -/
-def arrayToExpr (output: Array String) : TermElabM Expr := do
+def bestElab (output: Array String) : TermElabM Expr := do
   trace[Translate.info] m!"output:\n{output}"
   let mut elabStrs : Array String := Array.empty
   let mut elaborated : Array Expr := Array.empty
@@ -461,7 +461,7 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
 
 
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and optionally returns the best choice as well as all elaborated terms (used for batch processing, interactive code uses `arrayToExpr` instead)  -/
-def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array String) × (Array (Array String)) )) := do
+def bestElab? (output: Array String) : TermElabM (Option (Expr× (Array String) × (Array (Array String)) )) := do
   -- IO.println s!"arrayToExpr? called with {output.size} outputs"
   let mut elabStrs : Array String := Array.empty
   let mut elaborated : Array Expr := Array.empty
@@ -508,7 +508,7 @@ def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array Strin
     return some (thm, elabStrs, gpView)
 
 
-def greedyArrayToExpr? (output: Array String) : TermElabM (Option Expr) := do
+def greedyBestExpr? (output: Array String) : TermElabM (Option Expr) := do
     output.findSomeM? <| fun out => do
       let el? ← elabThm4 out
       pure el?.toOption
@@ -548,7 +548,7 @@ def egPrompt := do
 -- #eval leanToPrompt "{  n :  ℕ } ->  Even   (    (   n +  1  ) * n  )"
 
 /-- array of outputs extracted from OpenAI Json -/
-def jsonToExprStrArray (json: Json) : TermElabM (Array String) := do
+def exprStrsFromJson (json: Json) : TermElabM (Array String) := do
   let outArr : Array String ←
     match json.getArr? with
     | Except.ok arr =>
@@ -567,7 +567,7 @@ def jsonToExprStrArray (json: Json) : TermElabM (Array String) := do
   return outArr
 
 /-- array of outputs extracted from Json Array -/
-def jsonStringToExprStrArray (jsString: String) : TermElabM (Array String) := do
+def exprStrsFromJsonStr (jsString: String) : TermElabM (Array String) := do
   try
   let json := Lean.Json.parse  jsString |>.toOption.get!
   let outArr : Array String ←
@@ -591,8 +591,8 @@ def jsonStringToExprStrArray (jsString: String) : TermElabM (Array String) := do
 
 /-- given json returned by open-ai obtain the best translation -/
 def jsonToExpr' (json: Json) : TermElabM Expr := do
-  let output ← GPT.jsonToExprStrArray json
-  arrayToExpr output
+  let output ← GPT.exprStrsFromJson json
+  bestElab output
 
 /-- translation from a comment-like syntax to a theorem statement -/
 elab "//-" cb:commentBody  : term => do
@@ -600,7 +600,7 @@ elab "//-" cb:commentBody  : term => do
   let s := (s.dropRight 2).trim
   -- querying codex
   let js ←
-    getCodeJson  s (model := "gpt-3.5-turbo")
+    getLeanCodeJson  s (model := "gpt-3.5-turbo")
       (embedding := "openai_full")
   -- filtering, autocorrection and selection
   let e ← jsonToExpr' js
@@ -641,11 +641,11 @@ universe u
 
 def translateViewM (s: String)(model : String := "gpt-3.5-turbo")(embedding: String := "openai_full") : TermElabM String := do
   logTimed "starting translation"
-  let js ← getCodeJson  s (model := model)
+  let js ← getLeanCodeJson  s (model := model)
         (embedding := embedding)
-  let output ← GPT.jsonToExprStrArray js
+  let output ← GPT.exprStrsFromJson js
   trace[Translate.info] m!"{output}"
-  let e? ← arrayToExpr? output
+  let e? ← bestElab? output
   match e? with
   | some (e, _) => do
     e.view
@@ -671,7 +671,7 @@ open PrettyPrinter
   | `(l! $s:str) =>
   let s := s.getString
   let js ←
-    getCodeJson  s (numSim := lean_aide.translate.prompt_size.get (← getOptions)) (queryNum := lean_aide.translate.choices.get (← getOptions)) (model := lean_aide.translate.model.get (← getOptions))
+    getLeanCodeJson  s (numSim := lean_aide.translate.prompt_size.get (← getOptions)) (queryNum := lean_aide.translate.choices.get (← getOptions)) (model := lean_aide.translate.model.get (← getOptions))
       (embedding := lean_aide.translate.embedding.get (← getOptions))
   let e ← jsonToExpr' js
   logTimed "obtained expression"
