@@ -258,7 +258,7 @@ def structuralTerm (stx: Syntax) : MetaM Bool := do
 
 def openAIKey : IO (Option String) := IO.getEnv "OPENAI_API_KEY"
 
-def azureKey : IO (Option String) := IO.getEnv "AZURE_API_KEY"
+def azureKey : IO (Option String) := IO.getEnv "AZURE_OPENAI_KEY"
 
 def azureEndpoint : IO (Option String) := IO.getEnv "AZURE_OPENAI_ENDPOINT"
 
