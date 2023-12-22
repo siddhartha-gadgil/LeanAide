@@ -37,11 +37,6 @@ register_option lean_aide.translate.model : String :=
     group := "lean_aide.translate"
     descr := "Model to use (gpt-3.5-turbo)." }
 
-register_option lean_aide.translate.embedding : String :=
-  { defValue := "openai_full"
-    group := "lean_aide.translate"
-    descr := "Embedding to use." }
-
 register_option lean_aide.translate.azure : Bool :=
   { defValue := false
     group := "lean_aide.translate"
@@ -342,17 +337,10 @@ def getPromptPairsOpenAIexe (s: String)(numSim : Nat)(full: Bool:= true) :
         return Except.ok pairs.reverse
 
 /-- choosing pairs to build a prompt -/
-def getPromptPairs(s: String)(numSim : Nat)(source: String := "openai_full")
+def getPromptPairs(s: String)(numSim : Nat)
+-- (source: String := "openai_full")
    : IO <| Except String (Array (String × String)) :=
-   match source with
-    | "bert" =>
-      getPromptPairsBert s numSim
-    | "openai_thms" =>
-      getPromptPairsOpenAIexe s numSim false
-    | "openai_full" =>
       getPromptPairsOpenAIexe s numSim true
-    | s =>
-      return Except.error s!"unknown source {s}"
 
 /-- prompts generated from the declarations in the current file. -/
 def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true) : MetaM <| Array (String × String):= do
@@ -409,7 +397,7 @@ def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := docField)
 -/
 def getLeanCodeJson (s: String)(numSim : Nat:= 8)
   (includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := 0.8)(model: String)
-  (embedding: String)(azure: Bool := false) : CoreM Json := do
+  (azure: Bool := false) : CoreM Json := do
   logTimed s!"translating string `{s}` with {numSim} examples"
   match ← getCachedJson? s with
   | some js => return js
@@ -422,7 +410,7 @@ def getLeanCodeJson (s: String)(numSim : Nat:= 8)
       -- work starts here; before this was caching, polling etc
       let pairs? ←
         if numSim > 0 then
-          getPromptPairs s numSim embedding
+          getPromptPairs s numSim
         else pure <| Except.ok #[]
       match pairs? with
       | Except.error e => throwError e
@@ -631,7 +619,6 @@ elab "//-" cb:commentBody  : term => do
   -- querying codex
   let js ←
     getLeanCodeJson  s (model := "gpt-3.5-turbo")
-      (embedding := "openai_full")
   -- filtering, autocorrection and selection
   let e ← jsonToExpr' js
   trace[Translate.info] m!"{e}"
@@ -669,10 +656,10 @@ elab "uncurry2" e:term : term => do
 universe u
 
 
-def translateViewM (s: String)(model : String := "gpt-3.5-turbo")(embedding: String := "openai_full") (azure: Bool := false) : TermElabM String := do
+def translateViewM (s: String)(model : String := "gpt-3.5-turbo") (azure: Bool := false) : TermElabM String := do
   logTimed "starting translation"
   let js ← getLeanCodeJson  s (model := model)
-        (embedding := embedding) (azure := azure)
+         (azure := azure)
   let output ← GPT.exprStrsFromJson js
   trace[Translate.info] m!"{output}"
   let e? ← bestElab? output
@@ -702,7 +689,7 @@ open PrettyPrinter
   let s := s.getString
   let js ←
     getLeanCodeJson  s (numSim := lean_aide.translate.prompt_size.get (← getOptions)) (queryNum := lean_aide.translate.choices.get (← getOptions)) (model := lean_aide.translate.model.get (← getOptions))
-      (embedding := lean_aide.translate.embedding.get (← getOptions)) (azure := lean_aide.translate.azure.get (← getOptions))
+    (azure := lean_aide.translate.azure.get (← getOptions))
   let e ← jsonToExpr' js
   logTimed "obtained expression"
   let stx' ← delab e
