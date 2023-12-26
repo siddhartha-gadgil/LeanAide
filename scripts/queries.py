@@ -45,7 +45,7 @@ def doc_string(theorem, n= 3, is_prop = True):
     return azure_completions(text, examples = [], n = n)
 
 def informalize(code, n = 3):
-    text = f"""Translate the following Lean 4 code briefly into natural language. The translation can contain LaTeX mathematics. Note that a variable in Lean that has type a proposition can be interpreted as an assumption.
+    text = f"""Translate the following Lean 4 code briefly into natural language. The translation can contain LaTeX mathematics. Note that a variable in Lean that has type a proposition can be interpreted as an assumption. Proofs of theorems have been omitted for brevity but all theorems have been proved.
 
     ```lean
     {code}
