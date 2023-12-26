@@ -635,7 +635,8 @@ def termKindBestEgsM (choice: Nat := 3)(constantNameValueDocs  := constantNameVa
                 let (c, egs, noDocEgs) := m.findD tk ((0, #[], #[]))
                 match doc? with
                 | some doc =>
-                  match egs.findIdx? (fun (_, d, _, _) => d > depth) with
+                  match egs.findIdx? (fun (_, d, _, p', _) =>
+                    d > depth ∨ (¬p' ∧ p)) with
                   | some k =>
                     let egs := egs.insertAt k (name, depth, (← ppTerm stx).pretty, p, doc)
                     let egs := if egs.size > choice then egs.pop else egs
@@ -657,7 +658,8 @@ def termKindBestEgsM (choice: Nat := 3)(constantNameValueDocs  := constantNameVa
                     else
                         m := m.insert tk (c + 1, egs, noDocEgs)
                 | none =>
-                    match noDocEgs.findIdx? (fun (_, d, _) => d > depth) with
+                    match noDocEgs.findIdx? (fun (_, d, _, p') =>
+                    d > depth ∨ (¬p' ∧ p)) with
                     | some k =>
                         let noDocEgs := noDocEgs.insertAt k (name, depth, (← ppTerm stx).pretty, p)
                         let noDocEgs :=
