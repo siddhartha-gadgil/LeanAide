@@ -160,7 +160,7 @@ def gptQuery(messages: Json)(n: Nat := 1)
     | some k => k
     | none => panic! "OPENAI_API_KEY not set"
   let dataJs := Json.mkObj [("model", model), ("messages", messages)
-  , ("temperature", Json.num temp), ("n", n), ("max_tokens", 150), ("stop", Json.arr <| stopTokens |>.map Json.str)
+  , ("temperature", Json.num temp), ("n", n), ("max_tokens", 800), ("stop", Json.arr <| stopTokens |>.map Json.str)
   ]
   let data := dataJs.pretty
   trace[Translate.info] "GPT query: {data}"
@@ -669,6 +669,10 @@ def translateViewM (s: String)(model : String := "gpt-3.5-turbo") (azure: Bool :
   | none => do
     let stx ← output.findSomeM? <| fun s => do
       let exp ←  parseThm4 s
+      let elab? ← elabThm4 s
+      match elab? with
+      | Except.ok expr => trace[Translate.info] m!"elaborated: {expr}"
+      | Except.error e => trace[Translate.warning] m!"elaboration failed: {e} for {s}"
       return exp.toOption |>.map fun stx => stx.reprint.get!
     return stx.getD "False"
 
