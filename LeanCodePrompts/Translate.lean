@@ -656,10 +656,10 @@ elab "uncurry2" e:term : term => do
 universe u
 
 
-def translateViewM (s: String)(model : String := "gpt-3.5-turbo") (azure: Bool := false) : TermElabM String := do
+def translateViewM (s: String)(model : String := "gpt-3.5-turbo") (azure: Bool := false) (numSim: Nat := 8) : TermElabM String := do
   logTimed "starting translation"
   let js ← getLeanCodeJson  s (model := model)
-         (azure := azure)
+         (azure := azure) (numSim := numSim)
   let output ← GPT.exprStrsFromJson js
   trace[Translate.info] m!"{output}"
   let e? ← bestElab? output

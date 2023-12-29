@@ -16,6 +16,8 @@ set_option trace.Translate.info true
 
 #eval translateViewM "Suppose $E\\subset\\mathbb{R}^k$ is uncountable, and let $P$ be the set of accumulation points of $E$. Then $P$ is perfect."
 
+#eval translateViewM "Suppose $E\\subset\\mathbb{R}^k$ is uncountable, and let $P$ be the set of limit points of $E$. Then $P$ is perfect."
+
 #eval translateViewM "Every prime number is either `2` or odd"
 
 -- set_option lean_aide.translate.model "bert"
