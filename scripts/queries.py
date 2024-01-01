@@ -53,6 +53,20 @@ def informalize(code, n = 3):
     """
     return azure_completions(text, examples = [], n = n)
 
+def math_terms(statement, n = 3):
+    text = f"""List all the mathematical terms in the following statement as a JSON list. Exclude meta-mathematical terms like suppose and prove, variable names and symbols.
+
+    {statement}
+    """
+    return math(text, n = n)
+
+def math_synonyms(terms, n = 3):
+    text = f'''For each of the mathematical terms in the following JSON list, give synonyms in JSON format as list of objects with two fields: "term" and "synonyms"
+
+    {terms}
+    '''
+    return math(text, n = n)
+
 def gpt4t_completions(query, sys_prompt = sys_prompt, examples = []):
     messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]
     completion = openai.ChatCompletion.create(
@@ -77,3 +91,16 @@ def azure_embed(text):
     engine="leanaide-embed"
     )
     return response['data'][0]['embedding']
+
+import time
+
+def repeat_query(query_func, argument, default, steps, delay):
+    if steps < 0:
+        return default
+    else:
+        try:
+            return query_func(argument)
+        except:
+            print(f"Error: {steps} steps left. Retrying in {delay} seconds.")
+            time.sleep(delay)
+            return repeat_query(query, default, steps - 1, delay * 2)
