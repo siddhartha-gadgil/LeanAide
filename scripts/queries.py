@@ -54,7 +54,7 @@ def informalize(code, n = 3):
     return azure_completions(text, examples = [], n = n)
 
 def math_terms(statement, n = 3):
-    text = f"""List all the mathematical terms in the following statement as a JSON list. Exclude meta-mathematical terms like suppose and prove, variable names and symbols.
+    text = f"""List all the mathematical terms in the following statement as a JSON list. Exclude meta-mathematical terms like suppose and prove, variable names and symbols. If there are no mathematical terms, return an empty list.
 
     {statement}
     """
