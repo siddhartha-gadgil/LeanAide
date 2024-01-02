@@ -4,6 +4,14 @@ import Mathlib
 
 #eval 3 ∣ 4
 
+def listType : Nat → Type
+  | 0 => List Unit
+  | n + 1 => List (listType n)
+
+def listify : (n : Nat) → listType n
+  | 0 => []
+  | n + 1 => [listify n]
+
 theorem nat_from_constructors (n: Nat) :
   n = Nat.zero ∨ ∃ m, n = Nat.succ m := by
   cases n with
@@ -176,7 +184,7 @@ set_option pp.all true in
 #check TopologicalSpace
 
 example : false ≠ true := by
-  exact Bool.ff_ne_tt
+  exact Bool.not_false'
 
 #check Lean.TSyntaxArray.raw
 #check Lean.Syntax.mkApp

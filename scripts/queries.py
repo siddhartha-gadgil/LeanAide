@@ -104,3 +104,8 @@ def repeat_query(query_func, argument, default, steps, delay):
             print(f"Error: {steps} steps left. Retrying in {delay} seconds.")
             time.sleep(delay)
             return repeat_query(query_func, argument,  default, steps - 1, delay * 2)
+        
+def print_all(ss):
+    for s in ss:
+        print(escape(s))
+        print('---------------------------')
