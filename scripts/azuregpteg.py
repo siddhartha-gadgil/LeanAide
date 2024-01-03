@@ -1,16 +1,17 @@
 # Note: you need to be using OpenAI Python v0.27.0 for the code below to work
-import openai
+from openai import AzureOpenAI
 import os
 
-openai.api_key = os.getenv("AZURE_OPENAI_KEY")
-openai.api_base = os.getenv("AZURE_OPENAI_ENDPOINT") 
-openai.api_type = 'azure'
-openai.api_version = '2023-05-15' # this might change in the future
+client = AzureOpenAI(
+  azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT"), 
+  api_key=os.getenv("AZURE_OPENAI_KEY"),  
+  api_version="2023-05-15"
+)
 
 deployment_name='leanaide-gpt4'
 
-completion = openai.ChatCompletion.create(
-  engine=deployment_name,
+completion = client.chat.completions.create(
+  model=deployment_name,
   n= 5,
   temperature=0.8,
   messages=[
@@ -36,4 +37,4 @@ completion = openai.ChatCompletion.create(
 
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
-print([choice.message['content'].encode().decode('unicode-escape').encode('latin1').decode('utf-8') for choice in completion.choices])
+print([choice.message.content for choice in completion.choices])
