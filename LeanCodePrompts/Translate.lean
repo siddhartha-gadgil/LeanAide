@@ -208,6 +208,7 @@ def genericQuery(url: String)(messages: Json)(n: Nat := 1)
   ]
   let data := dataJs.pretty
   trace[Translate.info] "Model query: {data}"
+  IO.eprintln s!"Querying {url} at {← IO.monoMsNow }"
   let out ←  IO.Process.output {
         cmd:= "curl",
         args:= #[url++"/v1/chat/completions",
@@ -215,6 +216,7 @@ def genericQuery(url: String)(messages: Json)(n: Nat := 1)
         "-H", "Content-Type: application/json",
         "--data", data]}
   trace[Translate.info] "Model response: {out.stdout} (stderr: {out.stderr})"
+  IO.eprintln s!"Received response from {url} at {← IO.monoMsNow }"
   return Lean.Json.parse out.stdout |>.toOption.get!
 
 
