@@ -26,10 +26,10 @@ def forbiddenPrefixes : Array Name :=
   #[`Lean,
     `_private,
     `_regBuiltin,
-    `Std, 
-    `IO, 
-    `Char, 
-    `String, 
+    `Std,
+    `IO,
+    `Char,
+    `String,
     `ST,
     `System,
     `StateT,
@@ -69,12 +69,12 @@ def generatePrompts : MetaM Unit := do
 open Lean
 def main : IO Unit := do
   IO.println "Generating prompts..."
-  let sp : Lean.SearchPath := ["lake-packages/mathlib/build/lib/",  "lake-packages/std/build/lib/", "lake-packages/Qq/build/lib/", "lake-packages/aesop/build/lib/"]
-  initSearchPath (← Lean.findSysroot) sp 
-  let env ← importModules #[{module := `Mathlib}] {} 
-  Prod.fst <$> generatePrompts.toIO 
-    {fileName := "", 
-     fileMap := default, 
-     options := ⟨[(`maxHeartbeats, .ofNat 214920948329)]⟩, 
+  let sp : Lean.SearchPath := [".lake/packages/mathlib/build/lib/",  ".lake/packages/std/build/lib/", ".lake/packages/Qq/build/lib/", ".lake/packages/aesop/build/lib/"]
+  initSearchPath (← Lean.findSysroot) sp
+  let env ← importModules #[{module := `Mathlib}] {}
+  Prod.fst <$> generatePrompts.toIO
+    {fileName := "",
+     fileMap := default,
+     options := ⟨[(`maxHeartbeats, .ofNat 214920948329)]⟩,
      maxHeartbeats := 712467123} {env}
   IO.println s!"Output written to {outputFile}."

@@ -32953,3 +32953,201 @@ No valid output from LLM; outputs below
 ∀ {k : Type u_1} [inst : FiniteDimensionalReal k] {E P :  ZFSet (EuclideanSpace ℝ k)},
   Set.Uncountable E → P = AccumulationPoints E → Perfect P
 
+Writing to file: silly-elab-10-false-5-8.json
+
+success
+
+theorem ∀ (p : ℕ), Nat.Prime p → p = 2 ∨ Odd p
+
+total : 1
+
+elaborated: 1
+
+success
+
+theorem ∀ {n : ℕ}, n ≠ 0 → ∃ m, n ≤ m ∧ m < n + 1 ∧ m % 2 = 1 ∧ ¬∃ k, m = k + 1
+
+total : 2
+
+elaborated: 2
+
+success
+
+theorem ∀ (p : ℕ), Nat.Prime p → p = 3
+
+total : 3
+
+elaborated: 3
+
+success
+
+theorem ∃ n, Nat.Prime (2 * n + 1)
+
+total : 4
+
+elaborated: 4
+
+success
+
+theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],
+  Module.rank K V = 2 → FiniteDimensional K V
+
+total : 5
+
+elaborated: 5
+
+success
+
+theorem {K : Type u} → [inst : Field K] → DivisionRing K
+
+total : 6
+
+elaborated: 6
+
+success
+
+theorem ∀ {𝕜 : Type u_1} {E : Type u_2} [inst : NontriviallyNormedField 𝕜] [inst_1 : CompleteSpace 𝕜] [inst_2 : AddCommGroup E]
+  [inst_3 : TopologicalSpace E] [inst_4 : T2Space E] [inst_5 : TopologicalAddGroup E] [inst_6 : Module 𝕜 E]
+  [inst_7 : ContinuousSMul 𝕜 E] [inst_8 : FiniteDimensional 𝕜 E] (n : ℕ) [inst_9 : Fact (2 ≤ n)], FiniteDimensional 𝕜 E
+
+total : 7
+
+elaborated: 7
+
+success
+
+theorem ∀ (n : ℕ), ∃ m, Nat.succ m = n
+
+total : 8
+
+elaborated: 8
+
+success
+
+theorem ∀ (n : ℕ), n ≤ n + 1
+
+total : 9
+
+elaborated: 9
+
+success
+
+theorem ∀ {α : Type u_6} [inst : MeasurableSpace α] (μ : MeasureTheory.Measure α) (s : Set α),
+  ∃ t, s ⊆ t ∧ MeasurableSet t ∧ ↑↑μ t = ↑↑μ s ∧ ↑↑μ tᶜ = ↑↑μ sᶜ
+
+total : 10
+
+elaborated: 10
+
+No valid output from LLM; outputs below
+
+∀ {α : Type u_6} [inst : TopologicalSpace α] [inst_1 : MeasurableSpace α] [self : BorelSpace α]
+  {s :  ZFSet α} [inst_2 : MeasureTheory.Measure.IsOpenPosMeasure α],
+  MeasureTheory.volume s = 0 → MeasureTheory.Measure.IsLebesgueMeasurable s
+
+∀ {G : Type u_1} [inst : MeasurableSpace G] [inst_1 : MeasureTheory.Measure.IsFiniteMeasure G]
+  {s :  ZFSet G} [inst_2 : MeasurableSpace G] [inst_3 : BorelSpace G], MeasurableSet s → MeasureTheory.measure ℝ s = 0 → MeasurableSet s 
+
+∀ {α : Type u_6} [inst : TopologicalSpace α] [inst_1 : MeasurableSpace α] [inst_2 : SecondCountableTopology α] [self : BorelSpace α]
+  {s :  ZFSet α} [inst_3 : MeasureTheory.Measure.IsOpenPosMeasure α],
+  MeasureTheory.volume s = 0 → s ∈ MeasurableSet α 𝓝[s] self
+
+<input>:2:48: expected token while parsing  ∀ {α : Type u_6} [inst : TopologicalSpace α] [inst_1 : MeasurableSpace α] [inst_2 : BorelSpace α],
+  MeasureTheory.Measure.mk (volume : Set α → ℝ≥0∞) (MeasurableSet.nullMeasurableSet volume) ≤ inst_1 →
+  MeasureTheory.Measure.null (volume) ↔ (inst_1 : MeasurableSpace α) = borel α 
+
+∀ {α : Type u_6} [inst : MeasurableSpace α] [inst_1 : MeasureTheory.Measure α] [inst_2 : TopologicalSpace α] [inst_3 : SecondCountableTopology α]
+  (s :  ZFSet α) [inst_4 : MeasureTheory.Measure.IsOpenPosMeasure μ]
+  [inst_5 : MeasureTheory.Measure.IsOpenPosMeasure (MeasureTheory.Measure.map ( id : α → α) μ)]
+  (h : MeasureTheory.Measure.IsBorel μ s) [inst_6 : MeasureTheory.Measure.IsBorel (MeasureTheory.Measure.map ( id : α → α) μ) s],
+  MeasureTheory.volume s = 0 → s ∈ MeasurableSet (MeasureTheory.volume :  ZFSet α → Prop)
+
+failed to elaborate
+
+outputs: #[ ∀ {α : Type u_6} [inst : TopologicalSpace α] [inst_1 : MeasurableSpace α] [self : BorelSpace α]
+  {s : Set α} [inst_2 : MeasureTheory.Measure.IsOpenPosMeasure α],
+  MeasureTheory.volume s = 0 → MeasureTheory.Measure.IsLebesgueMeasurable s,  ∀ {G : Type u_1} [inst : MeasurableSpace G] [inst_1 : MeasureTheory.Measure.IsFiniteMeasure G]
+  {s : Set G} [inst_2 : MeasurableSpace G] [inst_3 : BorelSpace G], MeasurableSet s → MeasureTheory.measure ℝ s = 0 → MeasurableSet s ,  ∀ {α : Type u_6} [inst : TopologicalSpace α] [inst_1 : MeasurableSpace α] [inst_2 : SecondCountableTopology α] [self : BorelSpace α]
+  {s : Set α} [inst_3 : MeasureTheory.Measure.IsOpenPosMeasure α],
+  MeasureTheory.volume s = 0 → s ∈ MeasurableSet α 𝓝[s] self,  ∀ {α : Type u_6} [inst : TopologicalSpace α] [inst_1 : MeasurableSpace α] [inst_2 : BorelSpace α],
+  MeasureTheory.Measure.mk (volume : Set α → ℝ≥0∞) (MeasurableSet.nullMeasurableSet volume) ≤ inst_1 →
+  MeasureTheory.Measure.null (volume) ↔ (inst_1 : MeasurableSpace α) = borel α ,  ∀ {α : Type u_6} [inst : MeasurableSpace α] [inst_1 : MeasureTheory.Measure α] [inst_2 : TopologicalSpace α] [inst_3 : SecondCountableTopology α]
+  (s : Set α) [inst_4 : MeasureTheory.Measure.IsOpenPosMeasure μ]
+  [inst_5 : MeasureTheory.Measure.IsOpenPosMeasure (MeasureTheory.Measure.map (id : α → α) μ)]
+  (h : MeasureTheory.Measure.IsBorel μ s) [inst_6 : MeasureTheory.Measure.IsBorel (MeasureTheory.Measure.map (id : α → α) μ) s],
+  MeasureTheory.volume s = 0 → s ∈ MeasurableSet (MeasureTheory.volume : Set α → Prop)]
+
+total : 11
+
+elaborated: 10
+
+success
+
+theorem ∀ {p : ℕ}, Nat.Prime p → ¬∃ t, t * t = p
+
+total : 12
+
+elaborated: 11
+
+success
+
+theorem ∀ {p : ℕ}, Nat.Prime p → p % 2 = 1 → 2 < p
+
+total : 13
+
+elaborated: 12
+
+success
+
+theorem ∀ {α : Type u_1} [inst : LinearOrderedCommRing α] (a b : α),
+  IsSquare a ↔
+    ∃ x y z u v,
+      a = x ^ 2 + y ^ 2 + z ^ 2 + u ^ 2 ∧ IsSquare b ↔
+        ∃ x_1 y_1 z_1 u_1 v,
+          b = x_1 ^ 2 + y_1 ^ 2 + z_1 ^ 2 + u_1 ^ 2 → ∃ r s t u, a * b = r ^ 2 + s ^ 2 + t ^ 2 + u ^ 2
+
+total : 14
+
+elaborated: 13
+
+success
+
+theorem ∀ {X : Type u_1} [inst : TopologicalSpace X] [inst_1 : CompactSpace X], LocallyCompactSpace X
+
+total : 15
+
+elaborated: 14
+
+success
+
+theorem ∀ {α : Type u} {β : Type v} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β} [inst_2 : TopologicalSpace α],
+  Continuous f → UniformContinuous f
+
+total : 16
+
+elaborated: 15
+
+success
+
+theorem ¬∃ p p_1, Nat.Prime p ∧ Nat.Prime p_1 ∧ p + p_1 = 6
+
+total : 17
+
+elaborated: 16
+
+success
+
+theorem ∀ {a : ℤ}, Irrational ↑a → a = 0
+
+total : 18
+
+elaborated: 17
+
+success
+
+theorem ∀ {R : Type u_1} [inst : Ring R] (x : R), x = 1 → IsUnit x
+
+total : 19
+
+elaborated: 18
+

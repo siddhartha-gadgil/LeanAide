@@ -19,7 +19,7 @@ partial def showSyntax : Syntax → String
 | Lean.Syntax.ident _ _ val _ => val.toString
 | _ => ""
 
-def leanAidePath : System.FilePath := "lake-packages/leanaide/"
+def leanAidePath : System.FilePath := ".lake/packages/leanaide/"
 
 def reroutePath (fp : System.FilePath) : IO System.FilePath := do
   if ← fp.pathExists then
