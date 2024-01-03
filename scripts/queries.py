@@ -1,11 +1,12 @@
 # Note: you need to be using OpenAI Python v0.27.0 for the code below to work
-import openai
+from openai import AzureOpenAI
 import os
 
-openai.api_key = os.getenv("AZURE_OPENAI_KEY")
-openai.api_base = os.getenv("AZURE_OPENAI_ENDPOINT") 
-openai.api_type = 'azure'
-openai.api_version = '2023-05-15' # this might change in the future
+client = AzureOpenAI(
+  azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT"), 
+  api_key=os.getenv("AZURE_OPENAI_KEY"),  
+  api_version="2023-05-15"
+)
 
 deployment_name='leanaide-gpt4'
 
@@ -19,14 +20,14 @@ math_prompt="You are a mathematics assistant for research mathematicians and adv
 
 def azure_completions(query, sys_prompt = sys_prompt, examples = [], n=5, deployment_name = deployment_name):
     messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]
-    completion = openai.ChatCompletion.create(
-        engine=deployment_name,
+    completion = client.chat.completions.create(
+        model=deployment_name,
         n= n,
         temperature=0.8,
         messages= messages
     )
     # return completion
-    return [choice.message['content'].encode().decode('unicode-escape').encode('latin1').decode('utf-8') for choice in completion.choices] 
+    return [choice.message.content for choice in completion.choices] 
 
 def math(query, sys_prompt = math_prompt, examples = [], n=3, deployment_name = deployment_name):
     return azure_completions(query, sys_prompt, examples, n, deployment_name)
@@ -69,7 +70,7 @@ def math_synonyms(terms, n = 3):
 
 def gpt4t_completions(query, sys_prompt = sys_prompt, examples = []):
     messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]
-    completion = openai.ChatCompletion.create(
+    completion = client.chat.completions.create(
         model="gpt-4-1106-preview",
         n= 5,
         temperature=0.8,
@@ -86,9 +87,9 @@ def escape(s):
     return re.sub(r"(?<=[ ])[\t\r](?=[a-zA-Z])",  r"\\t", re.sub(r"(?<=[ ])[\n\r](?=[a-zA-Z])", r"\\n", s))
 
 def azure_embed(text):
-    response = openai.Embedding.create(
+    response = client.embeddings.create(
     input=text,
-    engine="leanaide-embed"
+    model="text-embedding-ada-002"
     )
     return response['data'][0]['embedding']
 
