@@ -202,25 +202,19 @@ def azureQuery(messages: Json)(n: Nat := 1)
 def genericQuery(url: String)(messages: Json)(n: Nat := 1)
   (temp : JsonNumber := 0.2)
   (stopTokens: Array String :=  #[":=", "-/"])(model: String) : CoreM Json := do
-  let key? ← azureKey
-  let key :=
-    match key? with
-    | some k => k
-    | none => panic! "OPENAI_API_KEY not set"
   let dataJs := Json.mkObj [("model", model), ("messages", messages)
   , ("temperature", Json.num temp), ("n", n), ("max_tokens", 800),
   ("top_p", Json.num 0.95), ("stop", Json.arr <| stopTokens |>.map Json.str), ("frequency_penalty", 0), ("presence_penalty", 0)
   ]
   let data := dataJs.pretty
-  trace[Translate.info] "OpenAI query: {data}"
+  trace[Translate.info] "Model query: {data}"
   let out ←  IO.Process.output {
         cmd:= "curl",
-        args:= #[url,
+        args:= #[url++"/v1/chat/completions",
         "-X", "POST",
         "-H", "Content-Type: application/json",
-        "-H", "api-key: " ++ key,
         "--data", data]}
-  trace[Translate.info] "Azure OpenAI response: {out.stdout} (stderr: {out.stderr})"
+  trace[Translate.info] "Model response: {out.stdout} (stderr: {out.stderr})"
   return Lean.Json.parse out.stdout |>.toOption.get!
 
 
@@ -397,7 +391,8 @@ def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := docField)
 -/
 def getLeanCodeJson (s: String)(numSim : Nat:= 8)
   (includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := 0.8)(model: String)
-  (azure: Bool := false) : CoreM Json := do
+  (azure: Bool := false)
+  (url? : Option String := none) : CoreM Json := do
   logTimed s!"translating string `{s}` with {numSim} examples"
   match ← getCachedJson? s with
   | some js => return js
@@ -425,7 +420,11 @@ def getLeanCodeJson (s: String)(numSim : Nat:= 8)
       | true =>
         azureQuery prompt queryNum temp (model := model)
       | false =>
-        gptQuery prompt queryNum temp (model := model)
+        match url? with
+        | some url =>
+          genericQuery url prompt queryNum temp (model := model)
+        | none =>
+          gptQuery prompt queryNum temp (model := model)
       let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
       logTimed "obtained gpt response"
@@ -656,10 +655,10 @@ elab "uncurry2" e:term : term => do
 universe u
 
 
-def translateViewM (s: String)(model : String := "gpt-3.5-turbo") (azure: Bool := false) (numSim: Nat := 8) : TermElabM String := do
+def translateViewM (s: String)(model : String := "gpt-3.5-turbo") (azure: Bool := false) (url? : Option String := none) (numSim: Nat := 8) : TermElabM String := do
   logTimed "starting translation"
   let js ← getLeanCodeJson  s (model := model)
-         (azure := azure) (numSim := numSim)
+         (azure := azure) (url? := url?) (numSim := numSim)
   let output ← GPT.exprStrsFromJson js
   trace[Translate.info] m!"{output}"
   let e? ← bestElab? output
