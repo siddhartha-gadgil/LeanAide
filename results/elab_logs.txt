@@ -33367,3 +33367,28 @@ total : 37
 
 elaborated: 31
 
+success
+
+theorem ∀ {R : Type u_1} [inst : CommRing R] [inst_1 : IsDomain R] {I : Ideal R}, Ideal.IsMaximal I → ¬I = ⊥
+
+total : 38
+
+elaborated: 32
+
+success
+
+theorem PythagoreanTriple 3 4 5
+
+total : 39
+
+elaborated: 33
+
+success
+
+theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V] {ι : Type w}
+  (s : Set ι), s = ∅ → Module.rank K V = 0
+
+total : 40
+
+elaborated: 34
+
