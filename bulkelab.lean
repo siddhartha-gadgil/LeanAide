@@ -31,6 +31,7 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
   let repeats := p.flag? "repeats" |>.map (fun s => s.as! Nat)
     |>.getD 0
   let azure := p.hasFlag "azure"
+  let url? := p.flag? "url" |>.map (fun s => s.as! String)
   let queryData? : Option (HashMap String Json) ←
     p.flag? "query_data" |>.map (fun s => s.as! String) |>.mapM
       fun filename => do
@@ -61,7 +62,7 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
     {module := `Mathlib}] {}
   let core :=
     checkTranslatedThmsCore type
-      numSim includeFixed queryNum temp model embedding azure
+      numSim includeFixed queryNum temp model embedding azure url?
       delay repeats queryData?
   let io? :=
     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000}
@@ -96,6 +97,7 @@ def bulkElab : Cmd := `[Cli|
     query_data : String; "Query data jsonlines file if cached queries are to be used; should have the result of the 'choices' field of the output and a 'docString' field for the query."
     repeats : Nat; "Number of times to repeat the request (default 0)."
     azure; "Use Azure instead of OpenAI."
+    url : String; "URL to query (for a local server)."
 
   ARGS:
     input : String;      "The input file in the `data` folder."

@@ -32924,3 +32924,32 @@ No valid output from LLM; outputs below
 <input>:2:8: unexpected end of input; expected ':=' or '|' while parsing ∀ {k : ℕ} (E : Set (EuclideanSpace ℝ k)), Set.Uncountable E →
   let P 
 
+No valid output from LLM; outputs below
+
+∀ {k : ℕ} {E :  ZFSet (FinVec k ℝ)}, ¬Set.Countable E → Perfect (AccumulationPoints E)
+
+∀ {k : Type u} [inst : NormedSpace ℝ k] {E P :  ZFSet k},
+  Set.Uncountable E → P = SetOfAccumulationPoints E → Perfect P
+
+∀ {k : Type u} [inst : FiniteDimensional ℝ k] {E :  ZFSet k},
+  ¬Set.Countable E → Perfect (AccumulationPoints E)
+
+∀ {E :  ZFSet (FinVec k ℝ)}, ¬Set.Countable E → Perfect (AccumulationPoints E)
+
+∀ {k : Type u_1} [inst : FiniteDimensional ℝ k] (E :  ZFSet k),
+  ¬Set.Countable E → Perfect (Derivatives E)
+
+∀ {k : ℕ} {E :  ZFSet (FinVec k ℝ)} {P :  ZFSet (FinVec k ℝ)},
+  SetOfAccumulationPoints E = P → ¬Set.Countable E → Perfect P
+
+∀ {k : Type u_1} [inst : FiniteDimensional ℝ k] {E P :  ZFSet k},
+  Set.Countable E → P = AccumulationPoints E → Perfect P
+
+∀ {k : ℕ} {E P :  ZFSet (EuclideanSpace ℝ (Finₓ k))},
+  Set.Countable E → P = {x | IsAccumulationPointOf E x} → Perfect P
+
+∀ {k : ℕ} {E P :  ZFSet (EuclideanSpace ℝ (Finₓ k))}, Set.Uncountable E → P = SetOfAccumulationPoints E → Perfect P
+
+∀ {k : Type u_1} [inst : FiniteDimensionalReal k] {E P :  ZFSet (EuclideanSpace ℝ k)},
+  Set.Uncountable E → P = AccumulationPoints E → Perfect P
+
