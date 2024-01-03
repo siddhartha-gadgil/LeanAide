@@ -33151,3 +33151,219 @@ total : 19
 
 elaborated: 18
 
+success
+
+theorem {G : Type u_1} → [inst : Group G] → (H : Subgroup G) → Group ↥H
+
+total : 20
+
+elaborated: 19
+
+success
+
+theorem ∀ {m n : ℕ}, Ordinal.toPGame ↑m + Ordinal.toPGame ↑n ≈ Ordinal.toPGame (Ordinal.nadd ↑m ↑n)
+
+total : 21
+
+elaborated: 20
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G], IsOfFinOrder 1
+
+total : 22
+
+elaborated: 21
+
+success
+
+theorem Nat.Prime 7
+
+total : 23
+
+elaborated: 22
+
+No valid output from LLM; outputs below
+
+List.length (Nat.primesLT 8) = 3 
+
+List.length (Nat.primesLT 8) = 3 
+
+List.length (Nat.primesBelow 8) = 3 
+
+Finset.card (Nat.primes.toFinset.filter (Nat.Prime)) = 3 
+
+[p : ℕ] [inst : Fact (Nat.Prime p)] [h : p < 8] : ∀ (q : ℕ) [inst_1 : Fact (Nat.Prime q)] [h_1 : q < 8], p = q ∨ p = 2 ∨ p = 3
+
+failed to elaborate
+
+outputs: #[ List.length (Nat.primesLT 8) = 3 ,  List.length (Nat.primesLT 8) = 3 ,  List.length (Nat.primesBelow 8) = 3 ,  Finset.card (Nat.primes.toFinset.filter (Nat.Prime)) = 3 ,  [p : ℕ] [inst : Fact (Nat.Prime p)] [h : p < 8] : ∀ (q : ℕ) [inst_1 : Fact (Nat.Prime q)] [h_1 : q < 8], p = q ∨ p = 2 ∨ p = 3]
+
+total : 24
+
+elaborated: 22
+
+success
+
+theorem ∀ {α : Type u} (s : Finset α), ∅ ⊆ s
+
+total : 25
+
+elaborated: 23
+
+success
+
+theorem ∀ {α : Type u} [inst : Infinite α] (s : Set α), ∃ t, Set.Finite t ∧ t ⊆ s
+
+total : 26
+
+elaborated: 24
+
+success
+
+theorem {R : Type u} → [inst : CommRing R] → MulOneClass R
+
+total : 27
+
+elaborated: 25
+
+No valid output from LLM; outputs below
+
+<input>:1:19: expected ',' while parsing  ¬∃ (K : Type u_1) [inst : Field K], Cardinal.ord (Ordinal.card K) = 10 
+
+<input>:1:19: expected ',' while parsing  ¬∃ (α : Type u_1) [inst : Field α], 10 = Cardinal.mk α
+
+<input>:1:19: expected ',' while parsing  ¬∃ (K : Type u_1) [inst : Field K] (nf : NumberField K) (nf_1 : FiniteDimensional ℚ K), Cardinal.ord (Ordinal.card K) = 10
+
+¬∃ (R : Type u) (inst : Field R), Cardinal.ord R = 10 ∧ ∀ (x : R), x ≠ 0 ∧ x ^ 2 = 1
+
+∀ (K : Type u_1) (R : Type u_2) [inst :  RingCat R] [inst_1 : Field K] [inst_2 :  AlgebraCat K R],
+  ¬IsField R ∧ Fintype.card R = 10 ∧ ∃ (S : IntermediateField K R), ∀ (x : R), x ∈ S ∧ x ∈ S ∧ ¬x = 0
+
+failed to elaborate
+
+outputs: #[ ¬∃ (K : Type u_1) [inst : Field K], Cardinal.ord (Ordinal.card K) = 10 ,  ¬∃ (α : Type u_1) [inst : Field α], 10 = Cardinal.mk α,  ¬∃ (K : Type u_1) [inst : Field K] (nf : NumberField K) (nf_1 : FiniteDimensional ℚ K), Cardinal.ord (Ordinal.card K) = 10,  ¬∃ (R : Type u) (inst : Field R), Cardinal.ord R = 10 ∧ ∀ (x : R), x ≠ 0 ∧ x ^ 2 = 1,  ∀ (K : Type u_1) (R : Type u_2) [inst : Ring R] [inst_1 : Field K] [inst_2 : Algebra K R],
+  ¬IsField R ∧ Fintype.card R = 10 ∧ ∃ (S : IntermediateField K R), ∀ (x : R), x ∈ S ∧ x ∈ S ∧ ¬x = 0]
+
+total : 28
+
+elaborated: 25
+
+success
+
+theorem ∀ {m : ℕ}, Odd m → ∃ a b, m = a + b ∧ Odd a ∧ Odd b ∧ a ≠ b
+
+total : 29
+
+elaborated: 26
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G] (x : G), 1 < orderOf x ↔ x = 1
+
+total : 30
+
+elaborated: 27
+
+success
+
+theorem ∀ (n : ℕ), Even n → Even (n * n)
+
+total : 31
+
+elaborated: 28
+
+No valid output from LLM; outputs below
+
+∀ (R : Type u) [inst : CommDivisionRing R], IsField R 
+
+∀ (R : Type u) [inst : CommDivisionRing R], Field R 
+
+∀ (R : Type u) [inst : DivRing R], IsField R 
+
+∀ {R : Type u} [inst :  CommRingCat R] [inst_1 : CommSemiring R] [inst_2 : HasDistribNeg R]
+  [inst_3 : HasInv R], Field R 
+
+∀ {R : Type u} [inst :  CommRingCat R] [inst_1 : CommSemiring R] [inst_2 : InvertibleMapClass R R Unit], IsField R 
+
+failed to elaborate
+
+outputs: #[ ∀ (R : Type u) [inst : CommDivisionRing R], IsField R ,  ∀ (R : Type u) [inst : CommDivisionRing R], Field R ,  ∀ (R : Type u) [inst : DivRing R], IsField R ,  ∀ {R : Type u} [inst : CommRing R] [inst_1 : CommSemiring R] [inst_2 : HasDistribNeg R]
+  [inst_3 : HasInv R], Field R ,  ∀ {R : Type u} [inst : CommRing R] [inst_1 : CommSemiring R] [inst_2 : InvertibleMapClass R R Unit], IsField R ]
+
+total : 32
+
+elaborated: 28
+
+success
+
+theorem ∀ {α : Type u} [inst : Group α], id 1 = 1
+
+total : 33
+
+elaborated: 29
+
+success
+
+theorem ∀ {α : Type u_1} (x : α), Function.IsFixedPt id x
+
+total : 34
+
+elaborated: 30
+
+No valid output from LLM; outputs below
+
+∀ {α : Type u} [inst : PseudoEMetricSpace α] [inst_1 : Unique α], EMetric.diam (singleton x) = 0 
+
+∀ {α : Type u} [inst : PseudoMetricSpace α], Metric.diam (SingletonTopology α) = 0
+
+<input>:1:96: unexpected end of input; expected ')', ',' or ':' while parsing  ∀ {α : Type u} [inst : PseudoEMetricSpace α], Nonempty α → EMetric.diam (singleton (default (α 
+
+∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : T0Space α], ∀ {x : α}, EMetric.diam ({x} :  ZFSet α) = 0 
+
+∀ {α : Type u} [inst : PseudoEMetricSpace α] {s :  ZFSet α}, Metric.Nonempty s → EMetric.diam s = 0 → s = {a} → ∀ {x y : α}, x ∈ s → y ∈ s → x = y
+
+failed to elaborate
+
+outputs: #[ ∀ {α : Type u} [inst : PseudoEMetricSpace α] [inst_1 : Unique α], EMetric.diam (singleton x) = 0 ,  ∀ {α : Type u} [inst : PseudoMetricSpace α], Metric.diam (SingletonTopology α) = 0,  ∀ {α : Type u} [inst : PseudoEMetricSpace α], Nonempty α → EMetric.diam (singleton (default (α ,  ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : T0Space α], ∀ {x : α}, EMetric.diam ({x} : Set α) = 0 ,  ∀ {α : Type u} [inst : PseudoEMetricSpace α] {s : Set α}, Metric.Nonempty s → EMetric.diam s = 0 → s = {a} → ∀ {x y : α}, x ∈ s → y ∈ s → x = y]
+
+total : 35
+
+elaborated: 30
+
+success
+
+theorem ∀ {α : Type u} [inst : Group α], Nonempty α
+
+total : 36
+
+elaborated: 31
+
+No valid output from LLM; outputs below
+
+∀ {X : Type u} [inst : TopologicalSpace X] [inst_1 :  CompHaus X] (x : X),
+  CategoryTheory.IsConnected (connectedComponent x)
+
+∀ (self : ConnectedSpace X) (x : X), IsConnected (connectedComponent x) 
+
+∀ {X : Type u_3} [inst : TopologicalSpace X] [inst_1 : ConnectedSpace X], ∀ (x : X), CategoryTheory.IsConnected (connectedComponent x) 
+
+∀ {X : Type u} [inst : TopologicalSpace X],
+    ConnectedSpace X → ∀ (j : ConnectedComponents X), CategoryTheory.IsConnected (ConnectedComponents.component j) 
+
+∀ {X : Type u} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace.ConnectedComponents X],
+    ∀ (j : TopologicalSpace.ConnectedComponents X),
+      CategoryTheory.IsConnected (CategoryTheory.Component j)
+
+failed to elaborate
+
+outputs: #[ ∀ {X : Type u} [inst : TopologicalSpace X] [inst_1 : CompHaus X] (x : X),
+  CategoryTheory.IsConnected (connectedComponent x),  ∀ (self : ConnectedSpace X) (x : X), IsConnected (connectedComponent x) ,  ∀ {X : Type u_3} [inst : TopologicalSpace X] [inst_1 : ConnectedSpace X], ∀ (x : X), CategoryTheory.IsConnected (connectedComponent x) ,  ∀ {X : Type u} [inst : TopologicalSpace X],
+    ConnectedSpace X → ∀ (j : ConnectedComponents X), CategoryTheory.IsConnected (ConnectedComponents.component j) ,  ∀ {X : Type u} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace.ConnectedComponents X],
+    ∀ (j : TopologicalSpace.ConnectedComponents X),
+      CategoryTheory.IsConnected (CategoryTheory.Component j)]
+
+total : 37
+
+elaborated: 31
+

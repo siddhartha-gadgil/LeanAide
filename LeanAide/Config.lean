@@ -1,7 +1,7 @@
 import Lean
 open Lean Meta
 
-def initFiles : List System.FilePath := [".lake/build/lib", ".lake/packages/mathlib/build/lib/",  ".lake/packages/std/build/lib/", ".lake/packages/Qq/build/lib/", ".lake/packages/aesop/build/lib/", ".lake/packages/proofwidgets/build/lib" ]
+def initFiles : List System.FilePath := [".lake/build/lib", ".lake/packages/mathlib/",  ".lake/packages/std", ".lake/packages/Qq/", ".lake/packages/aesop/", ".lake/packages/proofwidgets/" ]
 
 initialize
   registerTraceClass `Translate.info
