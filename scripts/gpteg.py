@@ -1,7 +1,14 @@
 # Note: you need to be using OpenAI Python v0.27.0 for the code below to work
 import openai
+import os
 
-completion = openai.ChatCompletion.create(
+from openai import OpenAI
+
+client = OpenAI(
+  api_key=os.environ['OPENAI_API_KEY'],  # this is also the default, it can be omitted
+)
+
+completion = client.chat.completions.create(
   model="gpt-4-1106-preview",
   n= 5,
   temperature=0.8,
@@ -28,4 +35,4 @@ completion = openai.ChatCompletion.create(
 
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
-print([choice.message['content'].encode().decode('unicode-escape').encode('latin1').decode('utf-8') for choice in completion.choices])
+print([choice.message.content for choice in completion.choices])
