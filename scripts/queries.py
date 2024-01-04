@@ -110,3 +110,14 @@ def print_all(ss):
     for s in ss:
         print(escape(s))
         print('---------------------------')
+
+json_proof=r'''Write proofs as a JSON list of proof steps
+
+* Each step an object with two fields, "type" and "content"
+* The "type" being "definition" or "assertion"
+* The "content" of an assertion having fields "claim" and "justification" and possibly a field "using" with results used
+* Each justification should be a single fairly simple sentence. If a longer justification is needed break the step into smaller steps.
+* The "using" field, if present, should be a list of names of results or short statements giving a well-known or previously proved result.
+* If required backtrack in a proof going back to the beginning or an earlier stage.
+
+'''
