@@ -114,10 +114,30 @@ def print_all(ss):
 json_proof=r'''Write proofs as a JSON list of proof steps
 
 * Each step an object with two fields, "type" and "content"
-* The "type" being "definition" or "assertion"
-* The "content" of an assertion having fields "claim" and "justification" and possibly a field "using" with results used
+* The "type" being "definition", "assertion", "assumption", "fix" or "observation"
+* An object with type "definition" should be purely a definition, with consequences separated as assertions or observations.
+* The content of an observation is a statement that is a simple calculation or other result that needs no justification.
+* The "content" of an assertion having fields "claim" and "justification" and a field "using" which is a (possibly empty) list of results used
 * Each justification should be a single fairly simple sentence. If a longer justification is needed break the step into smaller steps.
-* The "using" field, if present, should be a list of names of results or short statements giving a well-known or previously proved result.
+* Each list item in the "using" field should be a name of a theorem/lemmma or short statements giving a well-known or previously proved claim/theorem/lemma. 
+* Wherever possible an item in "using" should be broken into smaller statements.
 * If required backtrack in a proof going back to the beginning or an earlier stage.
 
 '''
+
+json_schema=r'''First write a detailed mathematical solution is standard style. Then write the proof in a fenced code block as a JSON list of proof steps, each of which is one of the following:
+
+- A single field "definition" with the value being a definition. The definition should be purely a definition, with consequences separated as assertions or observations.
+- A single field "assumption" with the value being an assumption.
+- A single field "observation" with the value being a statement that is a simple calculation or other result that needs no justification.
+- A single field "introduction" with a let statement as the value.
+- A single field "theorem" with the statement of a well known result.
+- An assertion with three fields:
+  - "claim" with the value being a statement that is to be proved.
+  - "justification" with the value being a justification for the claim; this should be a single fairly simple sentence; if a longer justification is needed break the step into smaller steps.
+  - "using" with the value being a list of results used, with each item one of:
+      - name of a theorem/lemmma
+      - short statements giving a single well-known or previously proved claim/theorem/lemma (multiple claims should be broken up).
+- A single field "goal" stating a claim that will eventually be proved.
+
+'''  
