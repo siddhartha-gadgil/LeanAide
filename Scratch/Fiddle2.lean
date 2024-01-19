@@ -2,6 +2,19 @@ import Mathlib
 
 #check List.sum
 
+#help term
+
+example (l: ∀n : ℕ , n > 10 → n > 5): (∃ (n : ℕ), n > 10) →  ∃n,   n >  5 := by
+  intro h
+  apply Exists.intro
+  let ⟨n, hn⟩ := h
+  apply l
+  swap
+
+
+  sorry
+  sorry
+
 #eval 3 ∣ 4
 
 def listType : Nat → Type
