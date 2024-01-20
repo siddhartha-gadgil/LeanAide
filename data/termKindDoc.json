@@ -1,20 +1,20 @@
 [{"name": "«term_→⋆ₙₐ_»",
   "doc":
-  "A *non-unital ⋆-algebra homomorphism* is a non-unital algebra homomorphism between\nnon-unital `R`-algebras `A` and `B` equipped with a `star` operation, and this homomorphism is\nalso `star`-preserving. "},
+  "A *non-unital ⋆-algebra homomorphism* `A →⋆ₙₐ B` is a non-unital algebra homomorphism between\nnon-unital `R`-algebras `A` and `B` equipped with a `star` operation, and this homomorphism is\nalso `star`-preserving. "},
  {"name": "Functor.«term_$>_»",
   "doc":
   "If `f` is a functor, if `fb : f β` and `a : α`, then `mapConstRev fb a` is the result of\napplying `f.map` to the constant function `β → α` sending everything to `a`, and then\nevaluating at `fb`. In other words it's `const a <$> fb`. "},
  {"name": "MeasureTheory.«term∫⁻_,_∂_»",
   "doc":
-  "The **lower Lebesgue integral** of a function `f` with respect to a measure `μ`. "},
+  "The **lower Lebesgue integral** `∫⁻_,f∂μ` of a function `f` with respect to a measure `μ`. "},
  {"name": "Submodule.«term_⟂_»",
   "doc":
   "The proposition that two submodules are orthogonal. Has notation `U ⟂ V`. "},
  {"name": "Sym.«term_::ₛ_»",
   "doc":
-  "Inserts an element into the term of `Sym α n`, increasing the length by one.\n"},
+  "Inserts an element into the term of `Sym α n`, increasing the length by one, notated `α::ₛn`.\n"},
  {"name": "Hyperreal.«termℝ*»",
-  "doc": "Hyperreal numbers on the ultrafilter extending the cofinite filter "},
+  "doc": "Hyperreal numbers `ℝ*` on the ultrafilter extending the cofinite filter "},
  {"name": "«term_%_»",
   "doc":
   "`a % b` computes the remainder upon dividing `a` by `b`.\nThe meaning of this notation is type-dependent.\n* For `Nat` and `Int`, `a % 0` is defined to be `a`. "},
@@ -23,7 +23,7 @@
   "\"Dependent\" if-then-else, normally written via the notation `if h : c then t(h) else e(h)`,\nis sugar for `dite c (fun h => t(h)) (fun h => e(h))`, and it is the same as\n`if c then t else e` except that `t` is allowed to depend on a proof `h : c`,\nand `e` can depend on `h : ¬c`. (Both branches use the same name for the hypothesis,\neven though it has different types in the two cases.)\n\nWe use this to be able to communicate the if-then-else condition to the branches.\nFor example, `Array.get arr ⟨i, h⟩` expects a proof `h : i < arr.size` in order to\navoid a bounds check, so you can write `if h : i < arr.size then arr.get ⟨i, h⟩ else ...`\nto avoid the bounds check inside the if branch. (Of course in this case we have only\nlifted the check into an explicit `if`, but we could also use this proof multiple times\nor derive `i < arr.size` from some other proposition that we are checking in the `if`.)\n"},
  {"name": "Class.«term⋃₀_»",
   "doc":
-  "The union of a class is the class of all members of ZFC sets in the class "},
+  "The union `⋃₀_` of a class is the class of all members of ZFC sets in the class "},
  {"name": "«term_⊕_»",
   "doc":
   "`Sum α β`, or `α ⊕ β`, is the disjoint union of types `α` and `β`.\nAn element of `α ⊕ β` is either of the form `.inl a` where `a : α`,\nor `.inr b` where `b : β`.\n"},
@@ -34,13 +34,13 @@
   "doc":
   "The notation `F ⊣ G` stands for `Adjunction F G` representing that `F` is left adjoint to `G` "},
  {"name": "Polynomial.«term_/ₘ_»",
-  "doc": "`divByMonic` gives the quotient of `p` by a monic polynomial `q`. "},
+  "doc": "`divByMonic` denoted `p/ₘq` gives the quotient of `p` by a monic polynomial `q`. "},
  {"name": "ProofWidgets.«termMk_rpc_widget%_»",
   "doc":
   "The elaborator `mk_rpc_widget%` allows writing certain widgets in Lean instead of JavaScript.\nSpecifically, it translates an RPC method of type `MyProps → RequestM (RequestTask Html)`\ninto a widget component of type `Component MyProps`.\n\nEven more specifically, we can write:\n```lean\nopen Lean Server\n\nstructure MyProps where\n  ...\n  deriving RpcEncodable\n\n@[server_rpc_method]\ndef MyComponent.rpc (ps : MyProps) : RequestM (RequestTask Html) :=\n  ...\n\n@[widget_module]\ndef MyComponent : Component MyProps :=\n  mk_rpc_widget% MyComponent.rpc\n```\n\nThis is convenient because we can program the logic that computes an output HTML tree\ngiven input props in Lean directly.\n\n⚠️ However, note that there are several limitations on what such component can do\ncompared to ones written natively in TypeScript or JavaScript:\n- It must be pure, i.e. cannot directly store any React state.\n  Child components may store state as usual.\n- It cannot pass closures as props to the child components that it returns.\n  For example, it is not currently possible to write click event handlers in Lean\n  and pass them to a `<button onClick={..}>` child.\n- Every time the input props change, the infoview has to send a message to the Lean server\n  in order to invoke the RPC method.\n  Thus there can be a noticeable visual delay between the input props changing\n  and the display updating.\n  Consequently, components whose props change at a high frequency\n  (e.g. depending on the mouse position)\n  should not be implemented using this method.\n\n💡 Note that an inverse transformation is already possible.\nGiven `MyComponent : Component MyProps`, we can write:\n```lean\nopen Lean Server\n\n@[server_rpc_method]\ndef MyComponent.rpc (ps : MyProps) : RequestM (RequestTask Html) :=\n  RequestM.asTask do\n    return Html.ofComponent MyComponent ps #[]\n```\n"},
  {"name": "CategoryTheory.Limits.«term⨁_»",
   "doc":
-  "`biproduct f` computes the biproduct of a family of elements `f`. (It is defined as an\nabbreviation for `limit (Discrete.functor f)`, so for most facts about `biproduct f`, you will\njust use general facts about limits and colimits.) "},
+  "`biproduct f` denoted `⨁f` computes the biproduct of a family of elements `f`. (It is defined as an\nabbreviation for `limit (Discrete.functor f)`, so for most facts about `biproduct f`, you will\njust use general facts about limits and colimits.) "},
  {"name": "Lean.Parser.Term.tuple",
   "doc":
   "Tuple notation; `()` is short for `Unit.unit`, `(a, b, c)` for `Prod.mk a (Prod.mk b c)`, etc. "},
@@ -58,12 +58,12 @@
   "`Not p`, or `¬p`, is the negation of `p`. It is defined to be `p → False`,\nso if your goal is `¬p` you can use `intro h` to turn the goal into\n`h : p ⊢ False`, and if you have `hn : ¬p` and `h : p` then `hn h : False`\nand `(hn h).elim` will prove anything.\nFor more information: [Propositional Logic](https://lean-lang.org/theorem_proving_in_lean4/propositions_and_proofs.html#propositional-logic)\n"},
  {"name": "MeasureTheory.«term∫⁻_In_,_»",
   "doc":
-  "The **lower Lebesgue integral** of a function `f` with respect to a measure `μ`. "},
+  "The **lower Lebesgue integral** `∫⁻_In μ, f` of a function `f` with respect to a measure `μ`. "},
  {"name": "CategoryTheory.Limits.«term∐_»",
-  "doc": "notation for categorical coproducts "},
- {"name": "MeasureTheory.«term∫_In_,_»", "doc": "The Bochner integral "},
+  "doc": "notation `∐ _` for categorical coproducts "},
+ {"name": "MeasureTheory.«term∫_In_,_»", "doc": "The Bochner integral `∫_In_,_`"},
  {"name": "CategoryTheory.MonoidalFunctor.«term_⊗⋙_»",
-  "doc": "The composition of two monoidal functors is again monoidal. "},
+  "doc": "The composition `F ⊗⋙ G` of two monoidal functors is again monoidal. "},
  {"name": "Relator.«term_⇒_»",
   "doc": "`(R ⇒ S) f g` means `LiftFun R S f g`. "},
  {"name": "«term_≃ᵐ_»",
