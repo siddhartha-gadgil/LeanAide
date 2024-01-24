@@ -202,138 +202,105 @@
  {"name": "«term_→*_»",
   "doc": "`M →* N` denotes the type of monoid homomorphisms from `M` to `N`. "},
  {"name": "«termLine[_,_,_]»",
-  "doc": "The line between two points, as an affine subspace. "},
+  "doc": "`[k, p₁, p₂]` is notation for `affineSpan k (insert p₁ (@singleton _ _ Set.instSingletonSet p₂))`. It denotes the line between two points `p₁` and `p₂`, as an affine subspace of `k`. "},
  {"name": "«term∅»",
   "doc": "`∅` or `{}` is the empty set or empty collection.\nIt is supported by the `EmptyCollection` typeclass. "},
  {"name": "CategoryTheory.ihom.«term_⟶[_]_»",
   "doc": "`A ⟶[C] B` denotes the internal hom from `A` to `B` "},
  {"name": "Lean.Parser.Term.quotedName", "doc": "A literal of type `Name`. "},
  {"name": "«term_+_»",
-  "doc":
-  "`a + b` computes the sum of `a` and `b`.\nThe meaning of this notation is type-dependent. "},
+  "doc": "`a + b` computes the sum of `a` and `b`.\nThe meaning of this notation is type-dependent. "},
  {"name": "Cardinal.«term_^<_»",
-  "doc":
-  "The function `a ^< b`, defined as the supremum of `a ^ c` for `c < b`. "},
+  "doc": "The function `a ^< b`, defined as the supremum of `a ^ c` for `c < b`. "},
  {"name": "BigOperators.bigsum",
-  "doc":
-  "`∑ x, f x` is notation for `Finset.sum Finset.univ f`. It is the sum of `f x`,\nwhere `x` ranges over the finite domain of `f`. "},
+  "doc": "`∑ x, f x` is notation for `Finset.sum Finset.univ f`. It is the sum of `f x`,\nwhere `x` ranges over the finite domain of `f`. "},
  {"name": "«term_→ₙₐ_»",
-  "doc":
-  "A morphism respecting addition, multiplication, and scalar multiplication. When these arise from\nalgebra structures, this is the same as a not-necessarily-unital morphism of algebras. "},
+  "doc": "`A →ₙₐ B` is notation for `NonUnitalAlgHom _`. It denotes a morphism from `A` to `B` respecting addition, multiplication, and scalar multiplication. When these arise from\nalgebra structures, this is the same as a not-necessarily-unital morphism of algebras. "},
  {"name": "CategoryTheory.«term_⥤ₗ_»",
   "doc": "`C ⥤ₗ D` denotes left exact functors `C ⥤ D` "},
- {"name": "TopCat.Presheaf.«term__*_»", "doc": "push forward of a presheaf"},
+ {"name": "TopCat.Presheaf.«term__*_»", 
+  "doc": "`f _* ℱ` is the push forward of a presheaf `ℱ` along `f`. "},
  {"name": "Mathlib.Notation3.«termExpand_binders%(_=>_)_,_»",
-  "doc":
-  "Expands binders into nested combinators.\nFor example, the familiar exists is given by:\n`expand_binders% (p => Exists p) x y : Nat, x < y`\nwhich expands to the same expression as\n`∃ x y : Nat, x < y`\n"},
+  "doc": "Expands binders into nested combinators.\nFor example, the familiar exists is given by:\n`expand_binders% (p => Exists p) x y : Nat, x < y`\nwhich expands to the same expression as\n`∃ x y : Nat, x < y`\n"},
  {"name": "BigOperators.bigprodin",
-  "doc":
-  "`∏ x in s, f x` is notation for `Finset.prod s f`. It is the product of `f x`,\nwhere `x` ranges over the finite set `s`. "},
+  "doc": "`∏ x in s, f x` is notation for `Finset.prod s f`. It is the product of `f x`,\nwhere `x` ranges over the finite set `s`. "},
  {"name": "Mathlib.Util.includeStr",
   "doc": "A term macro that includes the content of a file, as a string. "},
  {"name": "«term_≤₁_»",
-  "doc":
-  "`p` is one-one reducible to `q` if there is an injective computable function translating questions\nabout `p` to questions about `q`.\n"},
+  "doc": "`p ≤₁ q` is notation for `OneOneReducible`. `p` is one-one reducible to `q`, if there is an injective computable function translating questions\nabout `p` to questions about `q`.\n"},
  {"name": "PSigma.«termΣₗ'_,_»",
-  "doc":
-  "The notation `Σₗ' i, α i` refers to a sigma type which is locally equipped with the\nlexicographic order."},
+  "doc": "The notation `Σₗ' i, α i` refers to a sigma type which is locally equipped with the\nlexicographic order."},
  {"name": "BigOperators.«term∏ᶠ_,_»",
-  "doc":
-  "`∏ᶠ x, f x` is notation for `finprod f`. It is the sum of `f x`, where `x` ranges over the\nmultiplicative support of `f`, if it's finite, one otherwise. Taking the product over multiple\narguments or conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x`"},
+  "doc": "`∏ᶠ x, f x` is notation for `finprod f`. It is the sum of `f x`, where `x` ranges over the\nmultiplicative support of `f`, if it's finite, one otherwise. Taking the product over multiple\narguments or conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x`"},
  {"name": "«term_<|_»",
-  "doc":
-  "Haskell-like pipe operator `<|`. `f <| x` means the same as the same as `f x`,\nexcept that it parses `x` with lower precedence, which means that `f <| g <| x`\nis interpreted as `f (g x)` rather than `(f g) x`.\n"},
+  "doc": "Haskell-like pipe operator `<|`. `f <| x` means the same as `f x`,\nexcept that it parses `x` with lower precedence, which means that `f <| g <| x`\nis interpreted as `f (g x)` rather than `(f g) x`.\n"},
  {"name": "«term_≠_»",
-  "doc":
-  "`a ≠ b`, or `Ne a b` is defined as `¬ (a = b)` or `a = b → False`,\nand asserts that `a` and `b` are not equal.\n"},
+  "doc": "`a ≠ b`, or `Ne a b` is defined as `¬ (a = b)` or `a = b → False`,\nand asserts that `a` and `b` are not equal.\n"},
  {"name": "«term_→ₗ⁅_⁆_»",
-  "doc":
-  "A morphism of Lie algebras is a linear map respecting the bracket operations. "},
+  "doc": "`L →ₗ⁅R⁆ L'` is notation for `LieHom R L L'`. It denotes a morphism of Lie algebras from `L` to `L'`, which is a `R`-linear map respecting the bracket operations. "},
  {"name": "Matrix.vecNotation",
-  "doc":
-  "`![...]` notation is used to construct a vector `Fin n → α` using `Matrix.vecEmpty` and\n`Matrix.vecCons`.\n\nFor instance, `![a, b, c] : Fin 3` is syntax for `vecCons a (vecCons b (vecCons c vecEmpty))`.\n\nNote that this should not be used as syntax for `Matrix` as it generates a term with the wrong type.\nThe `!![a, b; c, d]` syntax (provided by `Matrix.matrixNotation`) should be used instead.\n"},
+  "doc": "`![...]` notation is used to construct a vector `Fin n → α` using `Matrix.vecEmpty` and\n`Matrix.vecCons`.\n\nFor instance, `![a, b, c] : Fin 3` is syntax for `vecCons a (vecCons b (vecCons c vecEmpty))`.\n\nNote that this should not be used as syntax for `Matrix` as it generates a term with the wrong type.\nThe `!![a, b; c, d]` syntax (provided by `Matrix.matrixNotation`) should be used instead.\n"},
  {"name": "Lean.Parser.Term.anonymousCtor",
-  "doc":
-  "The *anonymous constructor* `⟨e, ...⟩` is equivalent to `c e ...` if the\nexpected type is an inductive type with a single constructor `c`.\nIf more terms are given than `c` has parameters, the remaining arguments\nare turned into a new anonymous constructor application. For example,\n`⟨a, b, c⟩ : α × (β × γ)` is equivalent to `⟨a, ⟨b, c⟩⟩`.\n"},
+  "doc": "The *anonymous constructor* `⟨e, ...⟩` is equivalent to `c e ...` if the\nexpected type is an inductive type with a single constructor `c`.\nIf more terms are given than `c` has parameters, the remaining arguments\nare turned into a new anonymous constructor application. For example,\n`⟨a, b, c⟩ : α × (β × γ)` is equivalent to `⟨a, ⟨b, c⟩⟩`.\n"},
  {"name": "List.«term_<:+_»",
-  "doc":
-  "`IsSuffix l₁ l₂`, or `l₁ <:+ l₂`, means that `l₁` is a suffix of `l₂`,\nthat is, `l₂` has the form `t ++ l₁` for some `t`.\n"},
+  "doc": "`IsSuffix l₁ l₂`, or `l₁ <:+ l₂`, means that `l₁` is a suffix of `l₂`,\nthat is, `l₂` has the form `t ++ l₁` for some `t`.\n"},
  {"name": "«term_⁻¹'o_»",
-  "doc":
-  "Given a relation `R` on `β` and a function `f : α → β`, the preimage relation on `α` is defined\nby `x ≤ y ↔ f x ≤ f y`. It is the unique relation on `α` making `f` a `RelEmbedding` (assuming `f`\nis injective). "},
+  "doc": "Given a relation `R` on `β` and a function `f : α → β`, the preimage relation `f⁻¹'o R` on `α` is defined\nby `x ≤ y ↔ f x ≤ f y`. It is the unique relation on `α` making `f` a `RelEmbedding` (assuming `f`\nis injective). "},
  {"name": "«term_≃ₗ⁅_⁆_»",
-  "doc":
-  "An equivalence of Lie algebras is a morphism which is also a linear equivalence. We could\ninstead define an equivalence to be a morphism which is also a (plain) equivalence. However it is\nmore convenient to define via linear equivalence to get `.toLinearEquiv` for free. "},
+  "doc": "An `R`-equivalence of Lie algebras `L` and `L'` denoted `L ≃ₗ⁅R⁆ L'` is a morphism which is also a linear `R`-equivalence. We could\ninstead define an equivalence to be a morphism which is also a (plain) equivalence. However it is\nmore convenient to define via linear equivalence to get `.toLinearEquiv` for free. "},
  {"name": "CategoryTheory.Limits.«term⊥__»",
-  "doc": "Notation for the initial object in `C` "},
+  "doc": "`⊥_ C` is notation for the initial object in `C`. "},
  {"name": "«term⁅_,_⁆»",
-  "doc":
-  "`⁅x, y⁆` is the result of a bracket operation on elements `x` and `y`.\nIt is supported by the `Bracket` typeclass. "},
+  "doc": "`⁅x, y⁆` is the result of a bracket operation on elements `x` and `y`.\nIt is supported by the `Bracket` typeclass. "},
  {"name": "«termCompile_time_search_path%»",
-  "doc":
-  "Term elaborator that retrieves the current `SearchPath`.\n\nTypical usage is `searchPathRef.set compile_time_search_path%`.\n\nThis must not be used in files that are potentially compiled on another machine and then\nimported.\n(That is, if used in an imported file it will embed the search path from whichever machine\ncompiled the `.olean`.)\n"},
+  "doc": "Term elaborator that retrieves the current `SearchPath`.\n\nTypical usage is `searchPathRef.set compile_time_search_path%`.\n\nThis must not be used in files that are potentially compiled on another machine and then\nimported.\n(That is, if used in an imported file it will embed the search path from whichever machine\ncompiled the `.olean`.)\n"},
  {"name": "«term_<|>_»",
-  "doc":
-  "`a <|> b` executes `a` and returns the result, unless it fails in which\ncase it executes and returns `b`. Because `b` is not always executed, it\nis passed as a thunk so it can be forced only when needed.\nThe meaning of this notation is type-dependent. "},
+  "doc": "`a <|> b` executes `a` and returns the result, unless it fails in which\ncase it executes and returns `b`. Because `b` is not always executed, it\nis passed as a thunk so it can be forced only when needed.\nThe meaning of this notation is type-dependent. "},
  {"name": "Lean.Parser.Term.cdot",
-  "doc":
-  "A placeholder for an implicit lambda abstraction's variable. The lambda abstraction is scoped to the surrounding parentheses.\nFor example, `(· + ·)` is equivalent to `fun x y => x + y`.\n"},
+  "doc": "A placeholder for an implicit lambda abstraction's variable. The lambda abstraction is scoped to the surrounding parentheses.\nFor example, `(· + ·)` is equivalent to `fun x y => x + y`.\n"},
  {"name": "MeasureTheory.«term_→ₘ[_]_»",
-  "doc":
-  "The space of equivalence classes of almost everywhere strongly measurable functions, where two\nstrongly measurable functions are equivalent if they agree almost everywhere, i.e.,\nthey differ on a set of measure `0`.  "},
+  "doc": "`α →ₘ[μ] β` is notation for `AEEqFun α β μ`. It denotes the space of equivalence classes of almost everywhere strongly measurable functions, where two\nstrongly measurable functions are equivalent if they agree almost everywhere, i.e.,\nthey differ on a set of measure `0`.  "},
  {"name": "«term_⋖_»", "doc": "Notation for `Covby a b`. "},
  {"name": "Lean.Parser.Term.typeAscription",
-  "doc":
-  "Type ascription notation: `(0 : Int)` instructs Lean to process `0` as a value of type `Int`.\nAn empty type ascription `(e :)` elaborates `e` without the expected type.\nThis is occasionally useful when Lean's heuristics for filling arguments from the expected type\ndo not yield the right result.\n"},
- {"name": "Sum.Lex.«term_⊕ₗ_»", "doc": "The linear sum of two orders "},
+  "doc": "Type ascription notation: `(0 : Int)` instructs Lean to process `0` as a value of type `Int`.\nAn empty type ascription `(e :)` elaborates `e` without the expected type.\nThis is occasionally useful when Lean's heuristics for filling arguments from the expected type\ndo not yield the right result.\n"},
+ {"name": "Sum.Lex.«term_⊕ₗ_»", 
+  "doc": "`α ⊕ₗ β` is notation for `_root_.Lex (Sum α β)`. It denotes the linear sum of two orders `α` and `β`. "},
  {"name": "«term_↪r_»",
-  "doc":
-  "A relation embedding with respect to a given pair of relations `r` and `s`\nis an embedding `f : α ↪ β` such that `r a b ↔ s (f a) (f b)`. "},
+  "doc": "A relation embedding `f : α ↪r β` with respect to a given pair of relations `r` and `s`\nis an embedding `f : α ↪ β` such that `r a b ↔ s (f a) (f b)`. "},
  {"name": "FirstOrder.Language.«term_→ᴸ_»",
-  "doc":
-  "A language homomorphism maps the symbols of one language to symbols of another. "},
+  "doc": "`L →ᴸ L'` denotes a language homomorphism that maps the symbols of one language `L` to symbols of another `L'`. "},
  {"name": "Mathlib.Deriving.Fintype.«termDerive_fintype%_»",
-  "doc":
-  "The term elaborator `derive_fintype% α` tries to synthesize a `Fintype α` instance\nusing all the assumptions in the local context; this can be useful, for example, if one\nneeds an extra `DecidableEq` instance. It works only if `α` is an inductive\ntype that `proxy_equiv% α` can handle. The elaborator makes use of the\nexpected type, so `(derive_fintype% _ : Fintype α)` works.\n\nThis uses `proxy_equiv% α`, so as a side effect it defines `proxyType` and `proxyTypeEquiv` in\nthe namespace associated to the inductive type `α`.\n"},
+  "doc": "The term elaborator `derive_fintype% α` tries to synthesize a `Fintype α` instance\nusing all the assumptions in the local context; this can be useful, for example, if one\nneeds an extra `DecidableEq` instance. It works only if `α` is an inductive\ntype that `proxy_equiv% α` can handle. The elaborator makes use of the\nexpected type, so `(derive_fintype% _ : Fintype α)` works.\n\nThis uses `proxy_equiv% α`, so as a side effect it defines `proxyType` and `proxyTypeEquiv` in\nthe namespace associated to the inductive type `α`.\n"},
  {"name": "«term_→⋆ₙₐ[_]_»",
-  "doc":
-  "A *non-unital ⋆-algebra homomorphism* is a non-unital algebra homomorphism between\nnon-unital `R`-algebras `A` and `B` equipped with a `star` operation, and this homomorphism is\nalso `star`-preserving. "},
+  "doc": "`A →⋆ₙₐ[R] B` denotes a *non-unital ⋆-algebra homomorphism*. It is a non-unital algebra homomorphism between\nnon-unital `R`-algebras `A` and `B` equipped with a `star` operation, and this homomorphism is\nalso `star`-preserving. "},
  {"name": "Mathlib.Tactic.Sat.termFrom_lrat___",
-  "doc":
-  "A macro for producing SAT proofs from CNF / LRAT files.\nThese files are commonly used in the SAT community for writing proofs.\n\nThe input to the `from_lrat` term syntax is two string expressions with\nthe statement (written in CNF format) and the proof (in LRAT format).\nFor example:\n```\ndef foo := from_lrat\n  \"p cnf 2 4  1 2 0  -1 2 0  1 -2 0  -1 -2 0\"\n  \"5 -2 0 4 3 0  5 d 3 4 0  6 1 0 5 1 0  6 d 1 0  7 0 5 2 6 0\"\n```\nproduces a theorem:\n```\nfoo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a ∧ a_1\n```\n\n* You can use this term after `have :=` or in `def foo :=` to produce the term\n  without constraining the type.\n* You can use it when a specific type is expected, but it currently does not\n  pay any attention to the shape of the goal and always produces the same theorem,\n  so you can only use this to do alpha renaming.\n* You can use the `include_str` macro in place of the two strings\n  to load CNF / LRAT files from disk.\n"},
- {"name": "«term_→+o_»", "doc": "Infix notation for `OrderAddMonoidHom`. "},
+  "doc": "A macro for producing SAT proofs from CNF / LRAT files.\nThese files are commonly used in the SAT community for writing proofs.\n\nThe input to the `from_lrat` term syntax is two string expressions with\nthe statement (written in CNF format) and the proof (in LRAT format).\nFor example:\n```\ndef foo := from_lrat\n  \"p cnf 2 4  1 2 0  -1 2 0  1 -2 0  -1 -2 0\"\n  \"5 -2 0 4 3 0  5 d 3 4 0  6 1 0 5 1 0  6 d 1 0  7 0 5 2 6 0\"\n```\nproduces a theorem:\n```\nfoo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a ∧ a_1\n```\n\n* You can use this term after `have :=` or in `def foo :=` to produce the term\n  without constraining the type.\n* You can use it when a specific type is expected, but it currently does not\n  pay any attention to the shape of the goal and always produces the same theorem,\n  so you can only use this to do alpha renaming.\n* You can use the `include_str` macro in place of the two strings\n  to load CNF / LRAT files from disk.\n"},
+ {"name": "«term_→+o_»", 
+  "doc": "`α →+o β` is infix notation for `OrderAddMonoidHom` from `α` to `β`. "},
  {"name": "CategoryTheory.«term_⟦_⟧»",
-  "doc": "shifting an object `X` by `n` is obtained by the notation `X⟦n⟧` "},
+  "doc": "Shifting an object `X` by `n` is obtained by the notation `X⟦n⟧` "},
  {"name": "CategoryTheory.«termReassoc_of%_»",
-  "doc":
-  "`reassoc_of% t`, where `t` is\nan equation `f = g` between morphisms `X ⟶ Y` in a category (possibly after a `∀` binder),\nproduce the equation `∀ {Z} (h : Y ⟶ Z), f ≫ h = g ≫ h`,\nbut with compositions fully right associated and identities removed.\n"},
+  "doc": "`reassoc_of% t`, where `t` is\nan equation `f = g` between morphisms `X ⟶ Y` in a category (possibly after a `∀` binder),\nproduce the equation `∀ {Z} (h : Y ⟶ Z), f ≫ h = g ≫ h`,\nbut with compositions fully right associated and identities removed.\n"},
  {"name": "«term[_]»",
-  "doc":
-  "The syntax `[a, b, c]` is shorthand for `a :: b :: c :: []`, or\n`List.cons a (List.cons b (List.cons c List.nil))`. It allows conveniently constructing\nlist literals.\n\nFor lists of length at least 64, an alternative desugaring strategy is used\nwhich uses let bindings as intermediates as in\n`let left := [d, e, f]; a :: b :: c :: left` to avoid creating very deep expressions.\nNote that this changes the order of evaluation, although it should not be observable\nunless you use side effecting operations like `dbg_trace`.\n"},
+  "doc": "The syntax `[a, b, c]` is shorthand for `a :: b :: c :: []`, or\n`List.cons a (List.cons b (List.cons c List.nil))`. It allows conveniently constructing\nlist literals.\n\nFor lists of length at least 64, an alternative desugaring strategy is used\nwhich uses let bindings as intermediates as in\n`let left := [d, e, f]; a :: b :: c :: left` to avoid creating very deep expressions.\nNote that this changes the order of evaluation, although it should not be observable\nunless you use side effecting operations like `dbg_trace`.\n"},
  {"name": "PiTensorProduct.«term⨂ₜ[_]_,_»",
-  "doc": "pure tensor in tensor product over some index type "},
+  "doc": "`⨂ₜ[R] i, f i` is notation for `tprod R f`. It denotes a pure `R`-tensor in tensor product over some index type. "},
  {"name": "Mathlib.RunCmd.byElab",
-  "doc":
-  "* The `by_elab doSeq` expression runs the `doSeq` as a `TermElabM Expr` to\n  synthesize the expression.\n* `by_elab fun expectedType? ↦ do doSeq` receives the expected type (an `Option Expr`)\n  as well.\n"},
+  "doc": "* The `by_elab doSeq` expression runs the `doSeq` as a `TermElabM Expr` to\n  synthesize the expression.\n* `by_elab fun expectedType? ↦ do doSeq` receives the expected type (an `Option Expr`)\n  as well.\n"},
  {"name": "ZFSet.«term⋃₀_»",
-  "doc":
-  "The union operator, the collection of elements of elements of a ZFC set "},
+  "doc": "`⋃₀ x` is notation for `ZFSet.sUnion x`. It denotes the collection of elements of elements of a ZFC set `x`. "},
  {"name": "«term_→*₀o_»",
-  "doc": "Infix notation for `OrderMonoidWithZeroHom`. "},
+  "doc": "`α →*₀o β` is infix notation for `OrderMonoidWithZeroHom` from `α` to `β`. "},
  {"name": "Std.ExtendedBinder.«term∀ᵉ_,_»",
-  "doc":
-  "The syntax `∀ᵉ (x < 2) (y < 3), p x y` is shorthand for `∀ x < 2, ∀ y < 3, p x y`. "},
+  "doc": "The syntax `∀ᵉ (x < 2) (y < 3), p x y` is shorthand for `∀ x < 2, ∀ y < 3, p x y`. "},
  {"name": "Std.ExtendedBinder.«term∃ᵉ_,_»",
-  "doc":
-  "The syntax `∃ᵉ (x < 2) (y < 3), p x y` is shorthand for `∃ x < 2, ∃ y < 3, p x y`. "},
+  "doc": "The syntax `∃ᵉ (x < 2) (y < 3), p x y` is shorthand for `∃ x < 2, ∃ y < 3, p x y`. "},
  {"name": "OmegaCompletePartialOrder.«term_→𝒄_»",
-  "doc":
-  "A monotone function on `ω`-continuous partial orders is said to be continuous\nif for every chain `c : chain α`, `f (⊔ i, c i) = ⊔ i, f (c i)`.\nThis is just the bundled version of `OrderHom.continuous`. "},
+  "doc": "A monotone function on `ω`-continuous partial orders `α →𝒄 β` is said to be continuous\nif for every chain `c : chain α`, `f (⊔ i, c i) = ⊔ i, f (c i)`.\nThis is just the bundled version of `OrderHom.continuous`. "},
  {"name": "ContinuousLinearMap.«term_∘L_»",
-  "doc": "Composition of bounded linear maps. "},
+  "doc": "`f ∘L g` denotes composition of bounded linear maps `f` and `g`. "},
  {"name": "«term_→₀_»",
-  "doc":
-  "`Finsupp α M`, denoted `α →₀ M`, is the type of functions `f : α → M` such that\n`f x = 0` for all but finitely many `x`. "},
+  "doc": "`Finsupp α M`, denoted `α →₀ M`, is the type of functions `f : α → M` such that\n`f x = 0` for all but finitely many `x`. "},
  {"name": "«term_≃L[_]_»",
   "doc":
   "Continuous linear equivalences between modules. We only put the type classes that are necessary\nfor the definition, although in applications `M` and `M₂` will be topological modules over the\ntopological semiring `R`. "},
