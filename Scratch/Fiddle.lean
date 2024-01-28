@@ -9,7 +9,7 @@ open Mathlib.Prelude.Rename
 
 #check FiniteDimensional.finrank
 #check ContinuousLinearEquiv.preimage_symm_preimage
-#check homology.map_desc_apply
+-- #check homology.map_desc_apply
 #check Submodule.equivMapOfInjective.proof_2
 #check Submodule.equivMapOfInjective
 
@@ -20,22 +20,24 @@ elab "natural:" n:num "only" : term => do
 
 #eval natural: 3 only -- 3
 
-def fillIn : ℕ := natural: 3 only 
+def fillIn : ℕ := natural: 3 only
 
-def fillIn' : ℕ := natural: 0 only 
+def fillIn' : ℕ := natural: 0 only
+
+#check Elab.runFrontend
 
 
 -- #eval natural: 3 + 4 only -- Error
 
 example :(A B C : Prop) → (f : A → B → C) → (a : A) → (b : B) → C := by
-  aesop?   
-    
+  aesop?
+
 
 example: ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V]
   (h : FiniteDimensional.finrank K V = 2), FiniteDimensional K V := by sorry
- 
+
 example (a b c: ℕ) : a + b + c = c + b + a := by
-  conv  => 
+  conv  =>
     congr
     conv =>
       congr
@@ -58,7 +60,7 @@ macro n:term "-₀" m:term : term => do
 
 #check Array.zip
 
-elab(priority:=high) n:term "-" m:term : term => 
+elab(priority:=high) n:term "-" m:term : term =>
   Term.withoutErrToSorry do
   try
     let n' ← Term.elabTermEnsuringType n (mkConst ``Nat)
@@ -76,7 +78,7 @@ elab(priority:=high) n:term "-" m:term : term =>
 #eval 6 - 5 -- 1
 -- #eval 5 - 6 -- error
 
-#eval Json.parse "1.345345674532" |>.toOption |>.get! |>.getNum?|>.toOption |>.get! |>.toFloat 
+#eval Json.parse "1.345345674532" |>.toOption |>.get! |>.getNum?|>.toOption |>.get! |>.toFloat
 
 #eval decide (5 ≤  6)
 
@@ -89,10 +91,10 @@ def purgeFailEg : MetaM DefData := do
 
 open PrettyPrinter in
 
-def delabView (name: Name) : MetaM String := 
+def delabView (name: Name) : MetaM String :=
     do
     let info ←  getConstInfo name
-    let term := info.value?.get! 
+    let term := info.value?.get!
     let stx ←  delab term
     let fmt ←  ppTerm stx
     return fmt.pretty --stx.raw.reprint.get!
@@ -101,15 +103,15 @@ def egComp {α β γ α' : Type} (f : α' → β → γ) (g : (a : α) → α') 
 
 #print egComp
 
-#eval delabView `egComp -- this has the error `f g a b` 
+#eval delabView `egComp -- this has the error `f g a b`
 
-def delabSyntax (name: Name) : MetaM Syntax := 
+def delabSyntax (name: Name) : MetaM Syntax :=
     do
     let info ←  getConstInfo name
-    let term := info.value?.get! 
+    let term := info.value?.get!
     PrettyPrinter.delab term
 
-#eval delabSyntax `egComp 
+#eval delabSyntax `egComp
 
 example : ∀ {α : Type u_1} {f : (a : α) → ENNReal} {s : Finset α} (h : Finset.sum s (fun (a : α) ↦ f a) = 1) (h' : ∀ (a : α) (x : ¬ a ∈ s) , f a = 0) {a : α} (ha : ¬ a ∈ s) , f a = 0   := by sorry
 
@@ -121,7 +123,7 @@ def egChk {α : Type u_1} {β : Type u_2} {s : Set α} {t : Set α} {f : (a : α
 #check egChk
 
 elab "egDelab" d:term : term => do
-  let t ← Term.elabTerm d none 
+  let t ← Term.elabTerm d none
   logInfo m!"term: {t}"
   logInfo m!"purged: {← d.raw.purge}"
   return t
@@ -154,41 +156,27 @@ universe u_1 u_2 u_3
 
 #check egDelab ({α : Type u_2} →  {β : Type u_1} →  {M : Type u_3} →  [CommMonoid M] →  {f : (a : α) → M} →  {s : Set β} →  {g : (a : β) → α} →  (hg : Set.InjOn g (s ∩ Function.mulSupport f ∘ g))  →  1 = 1)
 
-def lean4Name? (name: Name) : MetaM (Option (Name × Bool)) := do
-  let name? := 
-    ((getRenameMap  (←getEnv)).find? name).map (·.2)
-  match name? with
-  | none => pure none
-  | some name =>
-    let check ←  try
-      let _ ← getConstInfo  name
-      pure true
-    catch _ => pure false
-    let _ : Ident := mkIdent name
-    pure (name, check)
-
-#eval lean4Name? `nat.prime -- some (`Nat.Prime, true)
 
 
 
 #eval Lean.Json.parse "{\"x\" : 3, \"y\" : 4, \"z\" : [\"five\", 6]}"
 
 def gedit : IO String := do
-  discard <| IO.Process.spawn { cmd := "gedit"} 
+  discard <| IO.Process.spawn { cmd := "gedit"}
   return "done"
 
 def egType := fun (α : Type) ↦ fun [Mul α] ↦ fun x y : α ↦ x * y
 
-#check egType ℕ 
-#eval egType _ 2 3 
+#check egType ℕ
+#eval egType _ 2 3
 
 #check List.findSome?
 #check List.getLast?_isSome
 #check zero_mem
 #eval (resolveGlobalName `none : MetaM _)
 #print AddSubmonoid.zero_mem
-example: ∀ {M : Type u_1} [ 
-AddZeroClass M] (S : AddSubmonoid M) , 0 ∈ S  := zero_mem 
+example: ∀ {M : Type u_1} [
+AddZeroClass M] (S : AddSubmonoid M) , 0 ∈ S  := zero_mem
 #check FirstOrder.Language.Term.var.sizeOf_spec
 #print false_or
 #print Prop.completeLattice.proof_3
@@ -209,14 +197,14 @@ theorem splitEnd (l: List α)(nontriv : l ≠ []): ∃ (l' : List α) (a : α), 
     simp [List.reverse_reverse] at c
     contradiction
   | (a::l') =>
-    have c' : l.reverse.reverse = (a::l').reverse := by rw [c] 
+    have c' : l.reverse.reverse = (a::l').reverse := by rw [c]
     simp [List.reverse_reverse] at c'
     use l'.reverse, a
 
 
-def splitEnd' [DecidableEq α](l: List α)(_ : l ≠ []): SplitList l := 
+def splitEnd' [DecidableEq α](l: List α)(_ : l ≠ []): SplitList l :=
   match l with
-  | h :: t => 
+  | h :: t =>
     if p:t = [] then
       ⟨[], h, by simp [p]⟩
     else by
@@ -226,14 +214,14 @@ def splitEnd' [DecidableEq α](l: List α)(_ : l ≠ []): SplitList l :=
 termination_by _ l _ => l.length
 
 def mockCancel (l₁ l₂ : List ℤ): List ℤ  :=
-  if c:l₁ = [] then l₂ else 
+  if c:l₁ = [] then l₂ else
   let ⟨l₁', a, _⟩ := splitEnd' l₁ c
   match l₂ with
   | [] => l₁
-  | h :: t => 
+  | h :: t =>
       if h = -a then l₁' ++ t else l₁ ++ l₂
 
-theorem mc_shrink (l₁ l₂ : List ℤ) : 
+theorem mc_shrink (l₁ l₂ : List ℤ) :
   (mockCancel l₁ l₂).length ≤ l₁.length + l₂.length := by
   rw [mockCancel]
   split
@@ -247,7 +235,7 @@ theorem mc_shrink (l₁ l₂ : List ℤ) :
         simp [List.length_append]
         linarith
       · simp [List.length_append]
-        
+
 
 theorem one_is_pos : 0 < 1 := by simp
 
@@ -261,7 +249,8 @@ example : 1 ≤3 := by
   have : 1 ≤ 2
   let _ := 3
   simp
-  simp 
+  decide
+  decide
 
 -- #eval gedit
 #check or_false_iff
@@ -284,7 +273,7 @@ instance : NeZero 1 := ⟨by decide⟩
 syntax (name:= gedit!) "#gedit" : command
 
 open Command in
-@[command_elab gedit!] def elabGedit : CommandElab := 
+@[command_elab gedit!] def elabGedit : CommandElab :=
   fun _ => do
   let _ ← gedit
   return ()
@@ -299,7 +288,7 @@ def stxPurged : MetaM Syntax := do
   let stx? := runParserCategory (← getEnv) `tactic text
   let stx := stx?.toOption.get!
   let stx' := stx.copyHeadTailInfoFrom .missing
-  return stx' 
+  return stx'
 
 def stxPurgedView : MetaM String := do
   let stx ← stxPurged
@@ -314,7 +303,7 @@ instance : HAdd String String Nat :=
 
 #eval "blah" + "Hello"
 
-instance : Zero String where 
+instance : Zero String where
   zero := "zero"
 #eval (0 : String)
 #eval (0 : String × Nat)
@@ -335,7 +324,7 @@ structure EuclideanGeometry extends IncidenceGeometry where
 instance : Coe EuclideanGeometry IncidenceGeometry where
   coe geom := { Point := geom.Point, Line := geom.Line }
 
-def length (geom: EuclideanGeometry) (s: Segment geom) : Nat := 
+def length (geom: EuclideanGeometry) (s: Segment geom) : Nat :=
   geom.distance s.p1 s.p2
 
 def rnd (lo hi: Nat) : Nat := ((IO.rand lo hi).run' ()).get!
@@ -379,16 +368,16 @@ def imps : CoreM <| Array Name := do
 
 #eval egStx
 
-#eval test_stx Nat.zero hint 3 
+#eval test_stx Nat.zero hint 3
 
 #check Lean.Syntax.atom
 
 -- set_option pp.all true
 -- example  : a = a := by
 --     apply Eq.trans
---     rename_i α 
+--     rename_i α
 --     exact rfl
---     rename_i β 
+--     rename_i β
 --     exact rfl
 
 /-
@@ -404,7 +393,7 @@ def runParserCategoryPartial  (catName : Name) (input : String) (fileName := "<i
   -- let s := categoryParserFnImpl catName c s
   if stack.isEmpty &&  s.hasError then
     return    Except.error (s.toErrorMsg c)
-  else 
+  else
     IO.println <| input.extract 0 s.pos
     return Except.ok stack.back
 
@@ -420,7 +409,7 @@ def runParserPartial  (parser : Parser) (input : String) (fileName := "<input>")
   -- let s := categoryParserFnImpl catName c s
   if stack.isEmpty &&  s.hasError then
     return    Except.error (s.toErrorMsg c)
-  else 
+  else
     IO.println <| input.extract 0 s.pos
     return Except.ok stack.back
 
@@ -464,7 +453,7 @@ end"
 
 #eval runParserCategoryPartial `hellotac "theorem blah : Nat := by let x : N := 2 := 3 ; simp"
 
-def ml := "theorem blah : Nat := by 
+def ml := "theorem blah : Nat := by
 let x : N := 2 := 3
 simp"
 
@@ -484,7 +473,7 @@ match ← runParserCategoryPartial `hellotac s with
 
 def getPieces (stx: Syntax) : MetaM (String × String × String) := do
 match stx with
-| `(hellotac|theorem $name:ident : $t:term := by $tac) => 
+| `(hellotac|theorem $name:ident : $t:term := by $tac) =>
     pure (name.raw.reprint.get!, t.raw.reprint.get!, tac.raw.reprint.get!)
 | _ => throwUnsupportedSyntax
 
@@ -499,7 +488,7 @@ match ← runParserCategoryPartial `hellotac s with
 
 #eval (searchPathRef.get : IO _)
 
-def oleanFiles : IO (Array System.FilePath) := do 
+def oleanFiles : IO (Array System.FilePath) := do
   let paths ← searchPathRef.get
   IO.println paths
   Lean.SearchPath.findAllWithExt paths "olean"
@@ -508,7 +497,7 @@ def oleanFiles : IO (Array System.FilePath) := do
 
 #check System.mkFilePath ["."]
 
-def leanFiles : IO (Array System.FilePath) := do 
+def leanFiles : IO (Array System.FilePath) := do
   Lean.SearchPath.findAllWithExt [System.mkFilePath ["./LeanCodePrompts"]] "lean"
 
 #eval leanFiles
@@ -524,7 +513,7 @@ def inducEg := "induction m with
       simp
       let l₂ := gsmul_succ (n + k) x
       simp at l₂
-      rw [l₂] 
+      rw [l₂]
       rw [ih]
       simp
       conv =>
@@ -538,16 +527,16 @@ def inducEg := "induction m with
 
 def contractInductionStx (induction : Syntax) : MetaM Syntax := do
 match induction with
-| `(tactic| induction $name $_:inductionAlts) => 
+| `(tactic| induction $name $_:inductionAlts) =>
   `(tactic| induction $name)
-| `(tactic| cases $name $_:inductionAlts) => 
+| `(tactic| cases $name $_:inductionAlts) =>
   `(tactic| cases $name)
 | _ => return induction
 
 def contractInduction (s: String) : MetaM String := do
 match ← runParserCategoryPartial `tactic s with
 | Except.ok stx => do
-    let stx ←  contractInductionStx stx 
+    let stx ←  contractInductionStx stx
     pure stx.reprint.get!
 | Except.error _ => pure s
 
@@ -568,7 +557,7 @@ def js := Json.mkObj [
 
 open Term
 
-@[term_elab byTactic] def myElabByTactic : TermElab := 
+@[term_elab byTactic] def myElabByTactic : TermElab :=
   fun stx expectedType? => do
   mkSyntheticSorry (mkConst ``Nat)
 

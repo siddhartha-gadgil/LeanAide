@@ -21,7 +21,7 @@ namespace LeanAide.Meta
 open Elab Term in
 /-- Syntax `proof =: prop` for a proof with its type recorded -/
 elab (name:=proved_prop) "(" a:term "=:" b:term ")": term => do
-    let b ← elabType b 
+    let b ← elabType b
     let a ← elabTermEnsuringType a (some b)
     guard (← isProof a)
     return a
@@ -29,7 +29,7 @@ elab (name:=proved_prop) "(" a:term "=:" b:term ")": term => do
 example :=  ((by decide) =: 1 ≤ 2 )
 
 
-open Delaborator SubExpr 
+open Delaborator SubExpr
 def checkExprDepth (e: Expr) : DelabM Unit := do
   let depth ← getDelabBound
   if e.approxDepth > depth then
@@ -43,13 +43,14 @@ def checkDepth : DelabM Unit := do
 
 #check Meta.isProp
 
+open Core
 /-- Modified top-level delaborator to expand if proof to `proof =: prop`-/
-partial def delabVerbose : Delab := 
-  withOptions (fun o => 
+partial def delabVerbose : Delab :=
+  withOptions (fun o =>
                     let o' :=  pp.match.set o false
                     pp.unicode.fun.set o' true)
-  do  
-  checkMaxHeartbeats "delab"
+  do
+  checkSystem "delab"
   let e ← getExpr
   let isProof := !e.isAtomic && (← (try Meta.isProof e catch _ => pure false))
   let k ← getExprKind
@@ -90,12 +91,12 @@ def delabAppFn : Delab := do
 @[delab proj]
 def delabProjVerbose : Delab := do
   let Expr.proj typeName idx _ ← getExpr | unreachable!
-  try 
+  try
     let e ← withProj delabVerbose
-    let field := (getStructureFields (← getEnv) typeName)[idx]! 
-    let idx := mkIdent (typeName ++ field) 
+    let field := (getStructureFields (← getEnv) typeName)[idx]!
+    let idx := mkIdent (typeName ++ field)
     `($idx:ident $e:term)
-  catch _ => 
+  catch _ =>
     delabProj
 
 
@@ -616,7 +617,7 @@ def NameGroups.append (base: NameGroups) (n: Name)(d: Nat): NameGroups :=
     match p with
     | Name.str q "domVar"  => ⟨base.constNames, base.freeVarNames.push q, base.domVarNames⟩
     | _ => ⟨base.constNames, base.freeVarNames.push p, base.domVarNames⟩
-  | Name.str q "domVar"  => 
+  | Name.str q "domVar"  =>
       ⟨base.constNames, base.freeVarNames, base.domVarNames.push q⟩
   | _ => ⟨base.constNames.push (n, d), base.freeVarNames, base.domVarNames⟩
 
@@ -641,14 +642,14 @@ def appStx?(stx : Syntax) : MetaM <| Option (Syntax.Term × Array Syntax.Term) :
     return some (f, args)
   | _ => return none
 
-def proofWithProp? (stx : Syntax) : 
+def proofWithProp? (stx : Syntax) :
   MetaM <| Option (Syntax.Term × Syntax.Term) := do
   match stx with
-  | `(($stx:term =: $typeStx:term)) =>    
+  | `(($stx:term =: $typeStx:term)) =>
     return some (stx, typeStx)
   | _ => return none
 
-def getVar? (stx: Syntax) : Option Name := 
+def getVar? (stx: Syntax) : Option Name :=
 match stx with
 | `(funBinder|($n:ident)) => some n.getId
 | `(funBinder|($n:ident : $_)) => some n.getId
@@ -658,21 +659,21 @@ match stx with
 
 def namedArgument? (stx : Syntax) : MetaM <| Option (Syntax.Term × Syntax) := do
   match stx with
-  | `(namedArgument|($n:ident := $stx:term)) =>    
+  | `(namedArgument|($n:ident := $stx:term)) =>
     return some (stx, n)
   | _ => return none
 
 def letStx? (stx: Syntax) : MetaM <| Option (Ident × Term × Term × Term) := do
   match stx with
-  | `(let $n:ident : $type := $val; $body) =>  
+  | `(let $n:ident : $type := $val; $body) =>
     return some (n, type, val, body)
-  | `(let_fun $n:ident : $type := $val; $body) =>  
+  | `(let_fun $n:ident : $type := $val; $body) =>
     return some (n, type, val, body)
   | _ => return none
 
 def wrappedProp? (stx : Syntax.Term) : MetaM <| Option Syntax.Term := do
   match stx with
-  | `(($stx:term : Prop)) =>    
+  | `(($stx:term : Prop)) =>
     return some stx
   | _ => return none
 
