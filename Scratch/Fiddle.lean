@@ -26,7 +26,7 @@ def fillIn' : ℕ := natural: 0 only
 
 #check Elab.runFrontend
 
-
+#check SlimCheck.Testable
 -- #eval natural: 3 + 4 only -- Error
 
 example :(A B C : Prop) → (f : A → B → C) → (a : A) → (b : B) → C := by

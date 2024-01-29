@@ -68,16 +68,25 @@ def math_synonyms(terms, n = 3):
     '''
     return math(text, n = n)
 
-def gpt4t_completions(query, sys_prompt = sys_prompt, examples = []):
+def gpt4t_completions(query, sys_prompt = sys_prompt, examples = [], n= 3):
     messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]
     completion = client.chat.completions.create(
         model="gpt-4-1106-preview",
-        n= 5,
+        n= n,
         temperature=0.8,
         messages= messages
     )
     # return completion
     return [choice.message['content'].encode().decode('unicode-escape').encode('latin1').decode('utf-8') for choice in completion.choices]
+
+def summarise(text, sys_prompt = math_prompt, examples = [], n = 3):
+    query = f"""Summarise the following mathematical text briefly.
+    The summary should include the main definitions, the statements of the main theorems and the main ideas in the proofs of the theorems. Definitions and theorems should be precisely stated. Include precise statements of the theorems used.
+    
+    ---
+    {text}
+    """
+    return azure_completions(query, sys_prompt, examples, n = n, deployment_name='leanaide-gpt4-32')
 
 # print([choice.message['content'].encode().decode('unicode-escape').encode('latin1').decode('utf-8') for choice in completion.choices])
 
