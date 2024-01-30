@@ -302,77 +302,59 @@
  {"name": "«term_→₀_»",
   "doc": "`Finsupp α M`, denoted `α →₀ M`, is the type of functions `f : α → M` such that\n`f x = 0` for all but finitely many `x`. "},
  {"name": "«term_≃L[_]_»",
-  "doc":
-  "Continuous linear equivalences between modules. We only put the type classes that are necessary\nfor the definition, although in applications `M` and `M₂` will be topological modules over the\ntopological semiring `R`. "},
+  "doc": "`M ≃L[R] M₂` denotes continuous linear equivalences between `R`-modules `M` and `M₂`. We only put the type classes that are necessary\nfor the definition, although in applications `M` and `M₂` will be topological modules over the\ntopological semiring `R`. "},
  {"name": "«term_ᵒᵈ»",
-  "doc":
-  "Type synonym to equip a type with the dual order: `≤` means `≥` and `<` means `>`. `αᵒᵈ` is\nnotation for `OrderDual α`. "},
+  "doc": "`αᵒᵈ` is notation for `OrderDual α`. It denotes a type synonym \nto equip a type with the dual order: `≤` means `≥` and `<` means `>`. "},
  {"name": "«term_<*>_»",
-  "doc":
-  "If `mf : F (α → β)` and `mx : F α`, then `mf <*> mx : F β`.\nIn a monad this is the same as `do let f ← mf; x ← mx; pure (f x)`:\nit evaluates first the function, then the argument, and applies one to the other.\n\nTo avoid surprising evaluation semantics, `mx` is taken \"lazily\", using a\n`Unit → f α` function. "},
+  "doc": "If `mf : F (α → β)` and `mx : F α`, then `mf <*> mx : F β`.\nIn a monad this is the same as `do let f ← mf; x ← mx; pure (f x)`:\nit evaluates first the function, then the argument, and applies one to the other.\n\nTo avoid surprising evaluation semantics, `mx` is taken \"lazily\", using a\n`Unit → f α` function. "},
  {"name": "Lean.withAnnotateTerm",
-  "doc":
-  "`with_annotate_term stx e` annotates the lexical range of `stx : Syntax` with term info for `e`. "},
+  "doc": "`with_annotate_term stx e` annotates the lexical range of `stx : Syntax` with term info for `e`. "},
  {"name": "«term‹_›»",
-  "doc":
-  "`‹t›` resolves to an (arbitrary) hypothesis of type `t`.\nIt is useful for referring to hypotheses without accessible names.\n`t` may contain holes that are solved by unification with the expected type;\nin particular, `‹_›` is a shortcut for `by assumption`.\n"},
- {"name": "«term_>_»", "doc": "`a > b` is an abbreviation for `b < a`. "},
+  "doc": "`‹t›` resolves to an (arbitrary) hypothesis of type `t`.\nIt is useful for referring to hypotheses without accessible names.\n`t` may contain holes that are solved by unification with the expected type;\nin particular, `‹_›` is a shortcut for `by assumption`.\n"},
+ {"name": "«term_>_»", 
+  "doc": "`a > b` is an abbreviation for `b < a`. "},
  {"name": "Filter.«term∀ᶠ_In_,_»",
-  "doc":
-  "`f.Eventually p` or `∀ᶠ x in f, p x` mean that `{x | p x} ∈ f`. E.g., `∀ᶠ x in atTop, p x`\nmeans that `p` holds true for sufficiently large `x`. "},
+  "doc": "`f.Eventually p` or `∀ᶠ x in f, p x` mean that `{x | p x} ∈ f`. E.g., `∀ᶠ x in atTop, p x`\nmeans that `p` holds true for sufficiently large `x`. "},
  {"name": "«term__[_]'_»",
-  "doc":
-  "The syntax `arr[i]` gets the `i`'th element of the collection `arr`.\nIf there are proof side conditions to the application, they will be automatically\ninferred by the `get_elem_tactic` tactic.\n\nThe actual behavior of this class is type-dependent,\nbut here are some important implementations:\n* `arr[i] : α` where `arr : Array α` and `i : Nat` or `i : USize`:\n  does array indexing with no bounds check and a proof side goal `i < arr.size`.\n* `l[i] : α` where `l : List α` and `i : Nat`: index into a list,\n  with proof side goal `i < l.length`.\n* `stx[i] : Syntax` where `stx : Syntax` and `i : Nat`: get a syntax argument,\n  no side goal (returns `.missing` out of range)\n\nThere are other variations on this syntax:\n* `arr[i]`: proves the proof side goal by `get_elem_tactic`\n* `arr[i]!`: panics if the side goal is false\n* `arr[i]?`: returns `none` if the side goal is false\n* `arr[i]'h`: uses `h` to prove the side goal\n"},
+  "doc": "The syntax `arr[i]` gets the `i`'th element of the collection `arr`.\nIf there are proof side conditions to the application, they will be automatically\ninferred by the `get_elem_tactic` tactic.\n\nThe actual behavior of this class is type-dependent,\nbut here are some important implementations:\n* `arr[i] : α` where `arr : Array α` and `i : Nat` or `i : USize`:\n  does array indexing with no bounds check and a proof side goal `i < arr.size`.\n* `l[i] : α` where `l : List α` and `i : Nat`: index into a list,\n  with proof side goal `i < l.length`.\n* `stx[i] : Syntax` where `stx : Syntax` and `i : Nat`: get a syntax argument,\n  no side goal (returns `.missing` out of range)\n\nThere are other variations on this syntax:\n* `arr[i]`: proves the proof side goal by `get_elem_tactic`\n* `arr[i]!`: panics if the side goal is false\n* `arr[i]?`: returns `none` if the side goal is false\n* `arr[i]'h`: uses `h` to prove the side goal\n"},
  {"name": "«term_≃⋆ₐ_»",
-  "doc":
-  "A *⋆-algebra* equivalence is an equivalence preserving addition, multiplication, scalar\nmultiplication and the star operation, which allows for considering both unital and non-unital\nequivalences with a single structure. Currently, `AlgEquiv` requires unital algebras, which is\nwhy this structure does not extend it. "},
+  "doc": "`A ≃⋆ₐ B` is notation for `StarAlgEquiv _ A B`. It denotes a *⋆-algebra* \nequivalence. A *⋆-algebra* equivalence is an equivalence preserving addition, multiplication, scalar\nmultiplication and the star operation, which allows for considering both unital and non-unital\nequivalences with a single structure. Currently, `AlgEquiv` requires unital algebras, which is\nwhy this structure does not extend it. "},
  {"name": "Lean.Parser.Term.let_fun",
-  "doc":
-  "`let_fun x := v; b` is syntax sugar for `(fun x => b) v`.\nIt is very similar to `let x := v; b`, but they are not equivalent.\nIn `let_fun`, the value `v` has been abstracted away and cannot be accessed in `b`.\n"},
+  "doc": "`let_fun x := v; b` is syntax sugar for `(fun x => b) v`.\nIt is very similar to `let x := v; b`, but they are not equivalent.\nIn `let_fun`, the value `v` has been abstracted away and cannot be accessed in `b`.\n"},
  {"name": "BigOperators.bigprod",
-  "doc":
-  "`∏ x, f x` is notation for `Finset.prod Finset.univ f`. It is the product of `f x`,\nwhere `x` ranges over the finite domain of `f`. "},
+  "doc": "`∏ x, f x` is notation for `Finset.prod Finset.univ f`. It is the product of `f x`,\nwhere `x` ranges over the finite domain of `f`. "},
  {"name": "«term_∧_»",
-  "doc":
-  "`And a b`, or `a ∧ b`, is the conjunction of propositions. It can be\nconstructed and destructed like a pair: if `ha : a` and `hb : b` then\n`⟨ha, hb⟩ : a ∧ b`, and if `h : a ∧ b` then `h.left : a` and `h.right : b`.\n"},
+  "doc": "`a ∧ b` is notation for `And a b`. It denotes the conjunction of propositions. It can be\nconstructed and destructed like a pair: if `ha : a` and `hb : b` then\n`⟨ha, hb⟩ : a ∧ b`, and if `h : a ∧ b` then `h.left : a` and `h.right : b`.\n"},
  {"name": "«term_|>_»",
-  "doc":
-  "Haskell-like pipe operator `|>`. `x |> f` means the same as the same as `f x`,\nand it chains such that `x |> f |> g` is interpreted as `g (f x)`.\n"},
+  "doc": "Haskell-like pipe operator `|>`. `x |> f` means the same as the same as `f x`,\nand it chains such that `x |> f |> g` is interpreted as `g (f x)`.\n"},
  {"name": "BigOperators.bigsumin",
-  "doc":
-  "`∑ x in s, f x` is notation for `Finset.sum s f`. It is the sum of `f x`,\nwhere `x` ranges over the finite set `s`. "},
- {"name": "«term_≃ᵤ_»", "doc": "Uniform isomorphism between `α` and `β` "},
+  "doc": "`∑ x in s, f x` is notation for `Finset.sum s f`. It is the sum of `f x`,\nwhere `x` ranges over the finite set `s`. "},
+ {"name": "«term_≃ᵤ_»", 
+  "doc": "`α ≃ᵤ β` is notation for `UniformEquiv`. It denotes a uniform isomorphism between `α` and `β` "},
  {"name": "MeasureTheory.«term_→₁ₛ[_]_»",
-  "doc":
-  "`Lp.simpleFunc` is a subspace of Lp consisting of equivalence classes of an integrable simple\nfunction. "},
+  "doc": "`α →₁ₛ[μ] E` is notation for `@MeasureTheory.Lp.simpleFunc α E _ _ 1 μ`. `Lp.simpleFunc` is a subspace of Lp consisting of equivalence classes of an integrable simple\nfunction. "},
  {"name": "Set.term_''_",
-  "doc":
-  "`f '' s` denotes the image of `s : Set α` under the function `f : α → β`. "},
+  "doc": "`f '' s` denotes the image of `s : Set α` under the function `f : α → β`. "},
  {"name": "«term_ᵈᵐᵃ»",
-  "doc":
-  "If `M` multiplicatively acts on `α`, then `DomMulAct M` acts on `α → β` as well as some\nbundled maps from `α`. This is a type synonym for `MulOpposite M`, so this corresponds to a right\naction of `M`. "},
+  "doc": "`Mᵈᵐᵃ` is notation for `DomMulAct M`. If `M` multiplicatively acts on `α`, then `DomMulAct M` acts on `α → β` as well as some\nbundled maps from `α`. This is a type synonym for `MulOpposite M`, so this corresponds to a right\naction of `M`. "},
  {"name": "«term_≃⋆ₐ[_]_»",
-  "doc":
-  "A *⋆-algebra* equivalence is an equivalence preserving addition, multiplication, scalar\nmultiplication and the star operation, which allows for considering both unital and non-unital\nequivalences with a single structure. Currently, `AlgEquiv` requires unital algebras, which is\nwhy this structure does not extend it. "},
+  "doc": "`A ≃⋆ₐ[R] B` is notation for `StarAlgEquiv R A B`. A *⋆-algebra* equivalence is an equivalence preserving addition, multiplication, scalar\nmultiplication and the star operation, which allows for considering both unital and non-unital\nequivalences with a single structure. Currently, `AlgEquiv` requires unital algebras, which is\nwhy this structure does not extend it. "},
  {"name": "«term_::_»",
-  "doc":
-  "If `a : α` and `l : List α`, then `cons a l`, or `a :: l`, is the\nlist whose first element is `a` and with `l` as the rest of the list. "},
+  "doc": "If `a : α` and `l : List α`, then `cons a l`, or `a :: l`, is the\nlist whose first element is `a` and with `l` as the rest of the list. "},
  {"name": "CategoryTheory.«term_≅_»",
-  "doc": "Notation for an isomorphism in a category. "},
+  "doc": "`X ≅ Y` is notation `Iso X Y`. It denotes an isomorphism in a category. "},
  {"name": "«term_→ₗ⋆[_]_»",
-  "doc":
-  "`M →ₗ⋆[R] N` is the type of `R`-conjugate-linear maps from `M` to `N`. "},
+  "doc": "`M →ₗ⋆[R] N` is notation for `LinearMap (starRingEnd R) M N`. It denotes the type of `R`-conjugate-linear maps from `M` to `N`. "},
  {"name": "FirstOrder.Language.«term_⊨_»",
-  "doc": "A sentence can be evaluated as true or false in a structure. "},
+  "doc": "`M ⊨ φ` is notation for `Sentence.Realize M φ`.A sentence can be evaluated as true or false in a structure. "},
  {"name": "«term_⋊[_]_»",
-  "doc":
-  "The semidirect product of groups `N` and `G`, given a map `φ` from `G` to the automorphism\ngroup of `N`. It the product of sets with the group operation\n`⟨n₁, g₁⟩ * ⟨n₂, g₂⟩ = ⟨n₁ * φ g₁ n₂, g₁ * g₂⟩` "},
- {"name": "«term_↪o_»", "doc": "Notation for an `OrderEmbedding`. "},
+  "doc": "`N ⋊[φ] G` is notation for `SemidirectProduct N G φ`. It denotes the semidirect product of groups `N` and `G`, given a map `φ` from `G` to the automorphism\ngroup of `N`. It is the product of sets with the group operation\n`⟨n₁, g₁⟩ * ⟨n₂, g₂⟩ = ⟨n₁ * φ g₁ n₂, g₁ * g₂⟩` "},
+ {"name": "«term_↪o_»", 
+  "doc": "`f : α ↪o β` is notation for `OrderEmbedding α β`. \nAn order embedding is an embedding `f : α ↪ β` such that `a ≤ b ↔ (f a) ≤ (f b)`. \nThis definition is an abbreviation of `RelEmbedding (≤) (≤)`. "},
  {"name": "«term_<=<_»",
-  "doc": "Right-to-left composition of Kleisli arrows. "},
+  "doc": "`f₂ <=< f₁ a` is notation for `Bind.kleisliLeft f₂ f₁ a`. It denotes right-to-left composition of Kleisli arrows. "},
  {"name": "«term_→SL[_]_»",
-  "doc":
-  "Continuous linear maps between modules. We only put the type classes that are necessary for the\ndefinition, although in applications `M` and `M₂` will be topological modules over the topological\nring `R`. "},
+  "doc": "`_→SL[_]_` is notation for ``. Continuous linear maps between modules. We only put the type classes that are necessary for the\ndefinition, although in applications `M` and `M₂` will be topological modules over the topological\nring `R`. "},
  {"name": "Lean.Parser.Term.inaccessible",
   "doc":
   "`.(e)` marks an \"inaccessible pattern\", which does not influence evaluation of the pattern match, but may be necessary for type-checking.\nIn contrast to regular patterns, `e` may be an arbitrary term of the appropriate type.\n"},
