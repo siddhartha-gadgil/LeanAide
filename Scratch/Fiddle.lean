@@ -26,6 +26,79 @@ def fillIn' : ℕ := natural: 0 only
 
 #check Elab.runFrontend
 
+def checkElabFront(s: String) : IO Bool := do
+  let (_, chk) ← Elab.runFrontend s {} "<input>" `main
+  return chk
+
+#eval checkElabFront "def blah : Nat := 1"
+#eval checkElabFront "theorem two_le_three : 2 ≤ 3  := by decide"
+
+
+def checkDefFront(s: String)(n: Name) : IO Bool := do
+  let (env, _) ← Elab.runFrontend s {} "<input>" `main
+  let seek : Option ConstantInfo :=  env.find? n
+  return seek.isSome
+
+def defFrontValue(s: String)(n: Name) : MetaM String := do
+  let (env, _) ← Elab.runFrontend s {} "<input>" `main
+  let seek? : Option ConstantInfo :=  env.find? n
+  let seek := seek?.get!
+  let val := seek.value?.get!
+  let fmt ←  ppExpr val
+  return fmt.pretty
+
+#eval checkDefFront "def blah : Nat := 1" `blah
+
+#eval defFrontValue "def blah : Nat := 1" `blah
+#eval defFrontValue
+  "theorem two_le_three : 2 ≤ 3  := by decide" `two_le_three
+
+#eval defFrontValue
+  "theorem two_le_three : 2 ≤ 3  := by sorry" `two_le_three
+
+#eval defFrontValue
+  "theorem two_le_three : 2 ≤ 3  := sorry" `two_le_three
+
+def simpleRunFrontend
+    (input : String)
+    (env: Environment)
+    (opts : Options := {})
+    (fileName : String := "<input>")
+    : IO (Environment × Bool) := do
+  let inputCtx := Parser.mkInputContext input fileName
+  let commandState := Command.mkState env (opts := opts)
+  let parserState: ModuleParserState := {}
+  let s ← IO.processCommands inputCtx parserState commandState
+  pure (s.commandState.env, !s.commandState.messages.hasErrors)
+
+def runFrontendM (input: String)(modifyEnv: Bool := false) : MetaM (Environment × Bool) := do
+  let (env, chk) ← simpleRunFrontend input (← getEnv)
+  if modifyEnv then setEnv env
+  return (env, chk)
+
+def defFrontValueM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM String := do
+  let (env, _) ← runFrontendM s modifyEnv
+  let seek? : Option ConstantInfo :=  env.find? n
+  let seek := seek?.get!
+  let val := seek.value?.get!
+  let fmt ←  ppExpr val
+  return fmt.pretty
+
+#eval defFrontValueM "def blah : Nat := 1" `blah
+#eval defFrontValueM
+  "theorem two_le_three : 2 ≤ 3  := by decide" `two_le_three true
+
+#check two_le_three
+
+def two:= 2
+
+#eval defFrontValueM
+  "theorem two_le_three : (two : ℕ) ≤ 3  := by decide" `two_le_three
+
+#check sorry
+#reduce sorry
+#check sorryAx
+
 #check SlimCheck.Testable
 -- #eval natural: 3 + 4 only -- Error
 
