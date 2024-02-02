@@ -35474,3 +35474,1902 @@ total : 40
 
 elaborated: 30
 
+Writing to file: silly-elab-20-false-10-8.json
+
+success
+
+theorem ∀ (p : ℕ), Nat.Prime p → p = 2 ∨ Odd p
+
+total : 1
+
+elaborated: 1
+
+success
+
+theorem ∀ {n : ℕ}, n ≠ 0 → ∃ m, n < m ∧ ¬Even m ∧ n ≤ m ∧ m ≤ n ∧ Odd m
+
+total : 2
+
+elaborated: 2
+
+success
+
+theorem ∀ {p : ℕ}, Nat.Prime p → ¬p = 2 → p = 3 ∨ p = 5 ∨ p = 7
+
+total : 3
+
+elaborated: 3
+
+success
+
+theorem ∀ {n : ℕ}, Odd n → ∃ p, Nat.Prime p ∧ n < p ∧ Odd p
+
+total : 4
+
+elaborated: 4
+
+success
+
+theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],
+  Module.rank K V = 2 → FiniteDimensional K V
+
+total : 5
+
+elaborated: 5
+
+success
+
+theorem {K : Type u_1} → [inst : Field K] → DivisionRing K
+
+total : 6
+
+elaborated: 6
+
+success
+
+theorem ∀ {α : Type u} [inst : Bornology α] {ι : Type v}, (ι → α) → Cardinal.mk ι = 2 → BoundedSpace α
+
+total : 7
+
+elaborated: 7
+
+success
+
+theorem ∀ (n : ℕ), ∃ m, Nat.succ m = n
+
+total : 8
+
+elaborated: 8
+
+success
+
+theorem ∀ (n : ℕ), n < Nat.succ n
+
+total : 9
+
+elaborated: 9
+
+success
+
+theorem ∀ {α : Type u_1} [inst : MeasurableSpace α] (μ : MeasureTheory.Measure α) (s : Set α),
+  MeasurableSet s ∧ ↑↑μ s ≠ ⊤ → ∃ t, s ⊆ t ∧ MeasurableSet t ∧ ↑↑μ t = ↑↑μ s
+
+total : 10
+
+elaborated: 10
+
+No valid output from LLM; outputs below
+
+∀ {α : Type u_6} [inst : TopologicalSpace α] [inst_1 : MeasurableSpace α] [inst_2 : BorelSpace α]
+  {s :  ZFSet α} [MeasurableSet s], ↑↑MeasureTheory.Measure.volume s = 0 → MeasurableSet s 
+
+∀ {α : Type u_6} [inst : TopologicalSpace α] [inst_1 : MeasurableSpace α] [inst_2 : BorelSpace α]
+  (s :  ZFSet α) [inst_3 : MeasureTheory.Measure.IsFiniteMeasure (MeasureTheory.volume : MeasureTheory.Measure α)]
+  (h : MeasureTheory.volume s = 0), MeasurableSet[inst_1] s
+
+∀ {G : Type u_1} [inst : MeasurableSpace G] [inst_1 :  GroupCat G] [inst_2 : MeasurableMul₂ G]
+  (μ : MeasureTheory.Measure G) [inst_3 : MeasureTheory.SigmaFinite μ],
+  MeasurableSet s → ↑↑μ s = 0 → MeasurableSet[MeasurableSpace.toBorelSpace] s
+
+∀ {α : Type u_6} [inst : MeasurableSpace α] [self : BorelSpace α] (μ : MeasureTheory.Measure α),
+  MeasurableSet s → ↑↑μ s = 0 → LebesgueMeasurable s 
+
+<input>:2:73: unexpected end of input while parsing  ∀ {α : Type u_6} [inst : TopologicalSpace α] [inst_1 : MeasurableSpace α] [inst_2 : BorelSpace α]
+  (s : Set α) (h : MeasureTheory.Measure.volume s = 0), MeasurableSet s □
+
+∀ {α : Type u_6} [inst : MeasurableSpace α] [inst_1 : MetricSpace α] [inst_2 : BorelSpace α]
+  [inst_3 : MeasureTheory.Measure.IsOpenPosMeasure μ] {s :  ZFSet α}, μ s = 0 → MeasurableSet s 
+
+∀ {α : Type u_6} [inst : TopologicalSpace α] [h_1 : MeasurableSpace α] [self : BorelSpace α]
+  {s :  ZFSet α} [inst_2 : MeasurableSpace s] (h_2 : ↑↑h_1 s = 0), LebesgueMeasurableSet s
+
+∀ {α : Type u_6} [inst : MeasurableSpace α] [inst_1 : TopologicalSpace α] [B : OpensMeasurableSpace α]
+  {s :  ZFSet α}, MeasureTheory.Measure.Measure.mk B ↑s = 0 → MeasurableSet s
+
+∀ {α : Type u_6} [inst : TopologicalSpace α] [inst_1 : MeasurableSpace α] [inst_2 : BorelSpace α] [self : MeasurableSpace α]
+  (s :  ZFSet α) [inst_3 : MeasureTheory.Measure.IsFiniteMeasure μ] (μ : MeasureTheory.Measure α) [inst_4 : MeasurableSet s],
+  ↑↑μ s = 0 → MeasurableSet[self] s 
+
+<input>:3:55: expected end of input while parsing  ∀ {E : Type u_1} [inst : MeasurableSpace E] [inst_1 : TopologicalSpace E] [inst_2 : MetricSpace E]
+  [inst_3 : BorelSpace E] (μ : MeasureTheory.Measure E) [inst_4 : MeasureTheory.Measure.IsAddHaarMeasure μ],
+  MeasurableSet s → ↑↑μ s = 0 → LebesgueMeasurable s 𝕜 ∞
+
+failed to elaborate
+
+outputs: #[ ∀ {α : Type u_6} [inst : TopologicalSpace α] [inst_1 : MeasurableSpace α] [inst_2 : BorelSpace α]
+  {s : Set α} [MeasurableSet s], ↑↑MeasureTheory.Measure.volume s = 0 → MeasurableSet s ,  ∀ {α : Type u_6} [inst : TopologicalSpace α] [inst_1 : MeasurableSpace α] [inst_2 : BorelSpace α]
+  (s : Set α) [inst_3 : MeasureTheory.Measure.IsFiniteMeasure (MeasureTheory.volume : MeasureTheory.Measure α)]
+  (h : MeasureTheory.volume s = 0), MeasurableSet[inst_1] s,  ∀ {G : Type u_1} [inst : MeasurableSpace G] [inst_1 : Group G] [inst_2 : MeasurableMul₂ G]
+  (μ : MeasureTheory.Measure G) [inst_3 : MeasureTheory.SigmaFinite μ],
+  MeasurableSet s → ↑↑μ s = 0 → MeasurableSet[MeasurableSpace.toBorelSpace] s,  ∀ {α : Type u_6} [inst : MeasurableSpace α] [self : BorelSpace α] (μ : MeasureTheory.Measure α),
+  MeasurableSet s → ↑↑μ s = 0 → LebesgueMeasurable s ,  ∀ {α : Type u_6} [inst : TopologicalSpace α] [inst_1 : MeasurableSpace α] [inst_2 : BorelSpace α]
+  (s : Set α) (h : MeasureTheory.Measure.volume s = 0), MeasurableSet s □,  ∀ {α : Type u_6} [inst : MeasurableSpace α] [inst_1 : MetricSpace α] [inst_2 : BorelSpace α]
+  [inst_3 : MeasureTheory.Measure.IsOpenPosMeasure μ] {s : Set α}, μ s = 0 → MeasurableSet s ,  ∀ {α : Type u_6} [inst : TopologicalSpace α] [h_1 : MeasurableSpace α] [self : BorelSpace α]
+  {s : Set α} [inst_2 : MeasurableSpace s] (h_2 : ↑↑h_1 s = 0), LebesgueMeasurableSet s,  ∀ {α : Type u_6} [inst : MeasurableSpace α] [inst_1 : TopologicalSpace α] [B : OpensMeasurableSpace α]
+  {s : Set α}, MeasureTheory.Measure.Measure.mk B ↑s = 0 → MeasurableSet s,  ∀ {α : Type u_6} [inst : TopologicalSpace α] [inst_1 : MeasurableSpace α] [inst_2 : BorelSpace α] [self : MeasurableSpace α]
+  (s : Set α) [inst_3 : MeasureTheory.Measure.IsFiniteMeasure μ] (μ : MeasureTheory.Measure α) [inst_4 : MeasurableSet s],
+  ↑↑μ s = 0 → MeasurableSet[self] s ,  ∀ {E : Type u_1} [inst : MeasurableSpace E] [inst_1 : TopologicalSpace E] [inst_2 : MetricSpace E]
+  [inst_3 : BorelSpace E] (μ : MeasureTheory.Measure E) [inst_4 : MeasureTheory.Measure.IsAddHaarMeasure μ],
+  MeasurableSet s → ↑↑μ s = 0 → LebesgueMeasurable s 𝕜 ∞]
+
+total : 11
+
+elaborated: 10
+
+success
+
+theorem ∀ {n : ℕ}, Nat.Prime n → ¬IsSquare n ∧ ¬IsSquare (n ^ 2)
+
+total : 12
+
+elaborated: 11
+
+success
+
+theorem ∀ (p : ℕ) [inst : Fact (Nat.Prime p)], Odd p → 2 < p
+
+total : 13
+
+elaborated: 12
+
+success
+
+theorem ∀ (a b x y u v r s : ℕ), a = x ^ 2 + y ^ 2 + u ^ 2 + v ^ 2 ∧ b = r ^ 2 + s ^ 2 ↔ ∃ q p, a * b = q ^ 2 + p ^ 2
+
+total : 14
+
+elaborated: 13
+
+success
+
+theorem ∀ {X : Type u_1} [inst : TopologicalSpace X] [inst_1 : CompactSpace X], LocallyCompactSpace X
+
+total : 15
+
+elaborated: 14
+
+success
+
+theorem ∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β},
+  Continuous f → UniformContinuous f
+
+total : 16
+
+elaborated: 15
+
+success
+
+theorem ∀ (p₁ p₂ p₃ : ℕ), Nat.Prime p₁ → Nat.Prime p₂ → p₁ ≠ p₂ → p₁ ≠ p₃ → p₂ ≠ p₃ → p₁ + p₂ = p₃ → false = true
+
+total : 17
+
+elaborated: 16
+
+success
+
+theorem ∀ (a : ℤ), ¬Irrational ↑a ∧ (0 < Int.natAbs a ∨ a = 0)
+
+total : 18
+
+elaborated: 17
+
+success
+
+theorem ∀ {R : Type u} [inst : Ring R] {r : R}, IsUnit r ↔ r = 1
+
+total : 19
+
+elaborated: 18
+
+success
+
+theorem {G : Type u_1} → [inst : Group G] → (H : Subgroup G) → Group ↥H
+
+total : 20
+
+elaborated: 19
+
+success
+
+theorem ∀ {a b : ℕ}, a + b ∈ Set.range id
+
+total : 21
+
+elaborated: 20
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G] {x : G}, IsOfFinOrder (id x)
+
+total : 22
+
+elaborated: 21
+
+success
+
+theorem ∀ {q : ℕ}, Nat.Prime q ↔ q = 2 ∨ q = 3 ∨ q = 5 ∨ q = 7
+
+total : 23
+
+elaborated: 22
+
+No valid output from LLM; outputs below
+
+List.length (Nat.primesBelow 8) = 3
+
+List.length { p | Nat.Prime p ∧ p < 8 } = 3 
+
+List.length (Nat.Prime.range 8) = 3 
+
+Cardinal.toNat Finset.univ.card
+
+Cardinal.toNat (Filter.card {p : ℕ | Nat.Prime p ∧ p < 8}) = 3
+
+Set.card (Prime ℕ) = 3
+
+Cardinal.toNat (primeBelow' 8) = 3 
+
+<input>:1:150: expected end of input while parsing  Cardinal.toNat Finset.univ.filter Nat.Prime < 8 ∧ Cardinal.toNat Finset.univ.filter Nat.Prime ≤ 3 ∧ ¬Cardinal.toNat Finset.univ.filter Nat.Prime = 8 ↵
+
+Fintype.card ( ZFSet.range 3) ≠ 0 ∧ Fintype.card ( ZFSet.range 3) ≠ 1 ∧ Fintype.card ( ZFSet.range 3) ≠ 2 ∧ ¬Fintype.card ( ZFSet.range 3) = 4
+
+<input>:1:34: expected end of input while parsing  List.length (Nat.primesLT 8) = 3 ~~~~~~ [INST] If the binomial coefficient `n choose k` is divisible by a prime `p`, then either `k` or `n - k` is a multiple of `p`. [/INST] ∀ {n k p : ℕ}, p ∈ Nat.primes → p ∣ Nat.choose n k → k % p = 0 ∨ n - k % p = 0 ~~~~~~
+
+failed to elaborate
+
+outputs: #[ List.length (Nat.primesBelow 8) = 3,  List.length { p | Nat.Prime p ∧ p < 8 } = 3 ,  List.length (Nat.Prime.range 8) = 3 ,  Cardinal.toNat Finset.univ.card,  Cardinal.toNat (Filter.card {p : ℕ | Nat.Prime p ∧ p < 8}) = 3,  Set.card (Prime ℕ) = 3,  Cardinal.toNat (primeBelow' 8) = 3 ,  Cardinal.toNat Finset.univ.filter Nat.Prime < 8 ∧ Cardinal.toNat Finset.univ.filter Nat.Prime ≤ 3 ∧ ¬Cardinal.toNat Finset.univ.filter Nat.Prime = 8 ↵,  Fintype.card (Set.range 3) ≠ 0 ∧ Fintype.card (Set.range 3) ≠ 1 ∧ Fintype.card (Set.range 3) ≠ 2 ∧ ¬Fintype.card (Set.range 3) = 4,  List.length (Nat.primesLT 8) = 3 ~~~~~~ [INST] If the binomial coefficient `n choose k` is divisible by a prime `p`, then either `k` or `n - k` is a multiple of `p`. [/INST] ∀ {n k p : ℕ}, p ∈ Nat.primes → p ∣ Nat.choose n k → k % p = 0 ∨ n - k % p = 0 ~~~~~~]
+
+total : 24
+
+elaborated: 22
+
+success
+
+theorem ∀ {α : Type u} {s : Set α}, Set.Finite s → ∅ ⊆ s
+
+total : 25
+
+elaborated: 23
+
+success
+
+theorem ∀ {α : Type u} {s : Set α}, Infinite ↑s → Set.Finite s ∧ Nonempty ↑s ∧ ∃ t ⊆ s, Set.Finite t
+
+total : 26
+
+elaborated: 24
+
+No valid output from LLM; outputs below
+
+∀ {R : Type u} [inst :  CommRingCat R], IsMonoid R 
+
+∀ {R : Type u} [inst :  CommRingCat R], IsMonoid R 
+
+∀ {R : Type u} [inst :  CommRingCat R], IsMonoid R 
+
+∀ {R : Type u} [inst :  CommRingCat R], IsMonoid R 
+
+∀ {R : Type u} [inst :  CommRingCat R], IsMonoid R 
+
+∀ {R : Type u_1} [inst :  CommRingCat R], IsMonoid R 
+
+∀ {R : Type u_1} [inst :  CommRingCat R], IsMonoid R 
+
+∀ {R : Type u_1} [inst :  CommRingCat R], IsMonoid R 
+
+<input>:1:48: expected end of input while parsing  ∀ {R : Type u} [inst : CommRing R], IsMonoid R ↩
+
+<input>:3:64: expected end of input while parsing  ∀ {R : Type u} [inst : CommRing R], IsMonoid R 
+
+Please note that these are not exact translations of the Lean 4 theorem names, but they capture the essence of the theorems.
+
+failed to elaborate
+
+outputs: #[ ∀ {R : Type u} [inst : CommRing R], IsMonoid R ,  ∀ {R : Type u} [inst : CommRing R], IsMonoid R ,  ∀ {R : Type u} [inst : CommRing R], IsMonoid R ,  ∀ {R : Type u} [inst : CommRing R], IsMonoid R ,  ∀ {R : Type u} [inst : CommRing R], IsMonoid R ,  ∀ {R : Type u_1} [inst : CommRing R], IsMonoid R ,  ∀ {R : Type u_1} [inst : CommRing R], IsMonoid R ,  ∀ {R : Type u_1} [inst : CommRing R], IsMonoid R ,  ∀ {R : Type u} [inst : CommRing R], IsMonoid R ↩,  ∀ {R : Type u} [inst : CommRing R], IsMonoid R 
+
+Please note that these are not exact translations of the Lean 4 theorem names, but they capture the essence of the theorems.]
+
+total : 27
+
+elaborated: 24
+
+success
+
+theorem ∀ (𝕜 : Type u_1) [inst : DivisionRing 𝕜] (a : 𝕜), 10 = a ^ 2 ∨ 10 = a ^ 3 → ¬IsField 𝕜
+
+total : 28
+
+elaborated: 25
+
+success
+
+theorem ∀ {n : ℕ}, Odd n → ∃ a b, a ≠ b ∧ n = a + b ∧ Odd a ∧ Odd b ∧ ∀ (c : ℕ), Odd c → c ≠ a ∧ c ≠ b → Odd (a + b + c)
+
+total : 29
+
+elaborated: 26
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G] {x : G}, IsOfFinOrder x ↔ x = 1
+
+total : 30
+
+elaborated: 27
+
+success
+
+theorem ∀ (n : ℕ), Even n → Even (n * n)
+
+total : 31
+
+elaborated: 28
+
+success
+
+theorem ∀ {R : Type u} [inst : CommRing R] [inst_1 : IsDomain R] [inst_2 : CommGroupWithZero R], IsField R
+
+total : 32
+
+elaborated: 29
+
+success
+
+theorem ∀ {α : Type u} [inst : Group α], id 1 = 1
+
+total : 33
+
+elaborated: 30
+
+success
+
+theorem ∀ {α : Type u} (x : α), Function.IsFixedPt id x
+
+total : 34
+
+elaborated: 31
+
+No valid output from LLM; outputs below
+
+∀ {α : Type u} [inst : TopologicalSpace α] (x : α), EMetric.diam {x} = 0 
+
+∀ {X : Type u_1} [inst : TopologicalSpace X] [inst_1 : T1Space X], EMetric.diam X = 0 
+
+∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : T1Space α], EMetric.diam {x} = 0 
+
+∀ {α : Type u} (x : α), Metric.diam {x} = 0 
+
+∀ {α : Type u} [inst : TopologicalSpace α] {x : α}, IsSingleton x → EMetric.diam x = 0 
+
+∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : T1Space α], EMetric.diam ({x} :  ZFSet α) = 0 
+
+∀ {X : Type u} [inst : TopologicalSpace X] [inst_1 : Singleton X], EMetric.diam X = 0 
+
+∀ {X : Type u_1} [inst : TopologicalSpace X] [inst_1 : T0Space X] (x : X), IsClosed {x} → EMetric.diam {x} = 0 
+
+∀ {X : Type u} [inst : TopologicalSpace X] {x : X}, 𝓕 x = 0 
+
+∀ {X : Type u} [inst : TopologicalSpace X] (x : X), ∀ {y : X}, y = x → Metric.diam {x} = 0 
+
+failed to elaborate
+
+outputs: #[ ∀ {α : Type u} [inst : TopologicalSpace α] (x : α), EMetric.diam {x} = 0 ,  ∀ {X : Type u_1} [inst : TopologicalSpace X] [inst_1 : T1Space X], EMetric.diam X = 0 ,  ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : T1Space α], EMetric.diam {x} = 0 ,  ∀ {α : Type u} (x : α), Metric.diam {x} = 0 ,  ∀ {α : Type u} [inst : TopologicalSpace α] {x : α}, IsSingleton x → EMetric.diam x = 0 ,  ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : T1Space α], EMetric.diam ({x} : Set α) = 0 ,  ∀ {X : Type u} [inst : TopologicalSpace X] [inst_1 : Singleton X], EMetric.diam X = 0 ,  ∀ {X : Type u_1} [inst : TopologicalSpace X] [inst_1 : T0Space X] (x : X), IsClosed {x} → EMetric.diam {x} = 0 ,  ∀ {X : Type u} [inst : TopologicalSpace X] {x : X}, 𝓕 x = 0 ,  ∀ {X : Type u} [inst : TopologicalSpace X] (x : X), ∀ {y : X}, y = x → Metric.diam {x} = 0 ]
+
+total : 35
+
+elaborated: 31
+
+success
+
+theorem ∀ {α : Type u_1} [inst : Group α], Nonempty α
+
+total : 36
+
+elaborated: 32
+
+success
+
+theorem ∀ {X : Type u} [inst : TopologicalSpace X] (x : X), IsConnected (connectedComponent x)
+
+total : 37
+
+elaborated: 33
+
+success
+
+theorem ∀ {R : Type u} [inst : CommRing R] [inst_1 : IsDomain R] {M : Ideal R}, Ideal.IsMaximal M → ¬IsField R → M ≠ ⊥
+
+total : 38
+
+elaborated: 34
+
+success
+
+theorem PythagoreanTriple 3 4 5
+
+total : 39
+
+elaborated: 35
+
+success
+
+theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V] {ι : Type w}
+  [inst_3 : IsEmpty ι], Basis ι K V → Subsingleton V
+
+total : 40
+
+elaborated: 36
+
+Writing to file: false-elab-20-false-10-8.json
+
+success
+
+theorem ∀ {R : Type u} [inst : Semiring R], IsField R ∨ ¬IsField R
+
+total : 1
+
+elaborated: 1
+
+success
+
+theorem ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],
+  FiniteDimensional K V
+
+total : 2
+
+elaborated: 2
+
+success
+
+theorem ∀ (G : Type u_1) [inst : Group G], Monoid.IsTorsion G
+
+total : 3
+
+elaborated: 3
+
+success
+
+theorem ∀ {α : Type u} [inst : Group α] [inst_1 : Fintype α] {p : ℕ} [hp : Fact (Nat.Prime p)],
+  IsSimpleGroup α → Fintype.card α = p ∨ Fintype.card α = 0
+
+total : 4
+
+elaborated: 4
+
+success
+
+theorem ∀ {α : Type u} [inst : Group α] [inst_1 : Fintype α], IsSimpleGroup α
+
+total : 5
+
+elaborated: 5
+
+success
+
+theorem ∀ {α : Type u} [inst : Group α] [inst_1 : Fintype α], Prime (Fintype.card α)
+
+total : 6
+
+elaborated: 6
+
+success
+
+theorem ∀ {α : Type u_1} [inst : MeasurableSpace α] (s : Set α), ?m.1801831 s = 0
+
+total : 7
+
+elaborated: 7
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : CompactSpace α] (s : Set α), IsCompact s
+
+total : 8
+
+elaborated: 8
+
+success
+
+theorem {E : Type u_1} →
+  [inst : NormedAddCommGroup E] →
+    [inst_1 : NormedSpace ℝ E] →
+      [inst_2 : MeasurableSpace E] →
+        [inst_3 : BorelSpace E] →
+          [inst_4 : FiniteDimensional ℝ E] →
+            (μ : MeasureTheory.Measure E) → [inst_5 : MeasureTheory.Measure.IsAddHaarMeasure μ] → Set E → Prop → Prop
+
+total : 9
+
+elaborated: 9
+
+No valid output from LLM; outputs below
+
+∀ {G : Type u_1} [inst :  GroupCat G] [inst_1 : Finite Presentation G] {x : G},
+  IsTorsion x → Finite G 
+
+∀ {G : Type u_1} [inst :  GroupCat G] [inst_1 : Finite Presentation G] [inst_2 : ∃ g : G, ¬IsOfFinOrder g], False
+
+∀ (G : Type u_1) [inst :  GroupCat G] [inst_1 : FinitelyPresented G] {x : G}, Monoid.IsTorsion x → Finite G
+
+∀ (G : Type u_1) [inst :  GroupCat G] [inst_1 :  FintypeCat G],
+  (∃ g : G, ¬IsOfFinOrder g) → Fintype.card G ≠ ⊤ ∧ ¬Infinite G
+
+<input>:2:63: expected end of input while parsing  ∀ {G : Type u_1} [inst : Group G] [inst_1 : FinitePresentation G],
+  ∃ (n : ℕ) (x : G), ∀ g, g ^ n = 1 → g = 1 → x = 1 → Finite G ↵
+
+∀ {G : Type u_1} [inst :  GroupCat G] {f : G →* G} {s :  ZFSet G},
+  Function.Surjective ⇑f → ∃ x : G, Monoid.IsTorsion x → Finite ( ZFSet.image f s) 
+
+<input>:2:60: expected ',' while parsing  ∀ {G : Type u_1} [inst : Group G] {g : G} {n : ℕ},
+  Monoid.IsTorsion (↥G) → ∃ (N : Subgroup G), ∃ (h : g ∈ N) ∧ Finite N → Finite G
+
+∀ {G : Type u_1} [inst :  GroupCat G] {n : ℕ} {x : G} {f : G →* ZMod n} [inst_1 : Function.Surjective f],
+  (∃ m : ℕ, 0 < m ∧ ∃ y : ZMod n, y ≠ 1 ∧ m • x = f y) → Finite G
+
+∀ {G : Type u_1} {n : ℕ} [inst :  GroupCat G] {x : G} (hx : IsOfFinOrder x) [Finite G], IsOfFinOrder x ∨ Finite G ∧ n ≤ Fintype.card G ∧ x ^ n = 1 
+
+<input>:4:45: expected end of input while parsing  ∀ {G : Type u_1} [inst : Group G] {φ : Type u_1 → Type u_2} [inst_1 : Fintype u_1] [inst_2 : ∀ i : u_1, Group (φ i)] [inst_3 : Group G] (f : Σi, φ i → G),
+  (∃ (i : u_1) (x : φ i), ↑f ⟨i, x⟩ ≠ 1) → Finite G ---------------
+
+Please note that these are not complete Lean theorem statements, as they are missing the necessary context and definitions. The actual Lean statements would require additional typeclass assumptions and possibly some additional definitions.
+
+failed to elaborate
+
+outputs: #[ ∀ {G : Type u_1} [inst : Group G] [inst_1 : Finite Presentation G] {x : G},
+  IsTorsion x → Finite G ,  ∀ {G : Type u_1} [inst : Group G] [inst_1 : Finite Presentation G] [inst_2 : ∃ g : G, ¬IsOfFinOrder g], False,  ∀ (G : Type u_1) [inst : Group G] [inst_1 : FinitelyPresented G] {x : G}, Monoid.IsTorsion x → Finite G,  ∀ (G : Type u_1) [inst : Group G] [inst_1 : Fintype G],
+  (∃ g : G, ¬IsOfFinOrder g) → Fintype.card G ≠ ⊤ ∧ ¬Infinite G,  ∀ {G : Type u_1} [inst : Group G] [inst_1 : FinitePresentation G],
+  ∃ (n : ℕ) (x : G), ∀ g, g ^ n = 1 → g = 1 → x = 1 → Finite G ↵,  ∀ {G : Type u_1} [inst : Group G] {f : G →* G} {s : Set G},
+  Function.Surjective ⇑f → ∃ x : G, Monoid.IsTorsion x → Finite (Set.image f s) ,  ∀ {G : Type u_1} [inst : Group G] {g : G} {n : ℕ},
+  Monoid.IsTorsion (↥G) → ∃ (N : Subgroup G), ∃ (h : g ∈ N) ∧ Finite N → Finite G,  ∀ {G : Type u_1} [inst : Group G] {n : ℕ} {x : G} {f : G →* ZMod n} [inst_1 : Function.Surjective f],
+  (∃ m : ℕ, 0 < m ∧ ∃ y : ZMod n, y ≠ 1 ∧ m • x = f y) → Finite G,  ∀ {G : Type u_1} {n : ℕ} [inst : Group G] {x : G} (hx : IsOfFinOrder x) [Finite G], IsOfFinOrder x ∨ Finite G ∧ n ≤ Fintype.card G ∧ x ^ n = 1 ,  ∀ {G : Type u_1} [inst : Group G] {φ : Type u_1 → Type u_2} [inst_1 : Fintype u_1] [inst_2 : ∀ i : u_1, Group (φ i)] [inst_3 : Group G] (f : Σi, φ i → G),
+  (∃ (i : u_1) (x : φ i), ↑f ⟨i, x⟩ ≠ 1) → Finite G ---------------
+
+Please note that these are not complete Lean theorem statements, as they are missing the necessary context and definitions. The actual Lean statements would require additional typeclass assumptions and possibly some additional definitions.]
+
+total : 10
+
+elaborated: 9
+
+success
+
+theorem ∀ {X : Type u} [inst : TopologicalSpace X] {s : Set X}, (∀ x ∈ s, ∃ t, IsClosed t ∧ x ∈ t) → IsClosed s
+
+total : 11
+
+elaborated: 10
+
+No valid output from LLM; outputs below
+
+∀ {X : Type u_1} [inst : TopologicalSpace X], T2Space X ↔ OpenEmbedding (Diagonal X) 
+
+∀ {X : Type u_1} [inst : TopologicalSpace X], T2Space X ↔ IsOpenMap (Diagonal X) 
+
+∀ {X : Type u_1} [inst : TopologicalSpace X], IsHausdorff X ↔ IsOpenEmbedding (Diagonal X) 
+
+∀ {X : Type u_1} [inst : TopologicalSpace X], T2Space X ↔ OpenEmbedding (@diag X) 
+
+∀ (X : Type u_1) [inst : TopologicalSpace X], Nonempty (OpenMap (Diagonal X)) ↔ T2Space X
+
+∀ (X : Type u_1) [inst : TopologicalSpace X], T2Space X ↔ OpenMap (fun (x : X) => (x, x) : X → X × X)
+
+∀ (X : Type u_1) [inst : TopologicalSpace X], T2Space X ↔ ∀ (x : X), OpenEmbedding (diag x) 
+
+∀ (X : TopCatMax.{u}), Nonempty (TopCat.OpenMap X (Diagonal X)) ↔ T2Space X
+
+∀ {X : Type u_1} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace (X × X)] [inst_2 : T2Space X] [inst_3 : T2Space (X × X)],
+  HausdorffSpace X ↔ OpenEmbedding (Diagonal X) 
+
+∀ (X : Type u_3) [inst : TopologicalSpace X], T2Space X ↔ ∀ ⦃U⦄, IsOpen U → IsOpen (Prod.map  id  id U) 
+
+failed to elaborate
+
+outputs: #[ ∀ {X : Type u_1} [inst : TopologicalSpace X], T2Space X ↔ OpenEmbedding (Diagonal X) ,  ∀ {X : Type u_1} [inst : TopologicalSpace X], T2Space X ↔ IsOpenMap (Diagonal X) ,  ∀ {X : Type u_1} [inst : TopologicalSpace X], IsHausdorff X ↔ IsOpenEmbedding (Diagonal X) ,  ∀ {X : Type u_1} [inst : TopologicalSpace X], T2Space X ↔ OpenEmbedding (@diag X) ,  ∀ (X : Type u_1) [inst : TopologicalSpace X], Nonempty (OpenMap (Diagonal X)) ↔ T2Space X,  ∀ (X : Type u_1) [inst : TopologicalSpace X], T2Space X ↔ OpenMap (fun (x : X) => (x, x) : X → X × X),  ∀ (X : Type u_1) [inst : TopologicalSpace X], T2Space X ↔ ∀ (x : X), OpenEmbedding (diag x) ,  ∀ (X : TopCatMax.{u}), Nonempty (TopCat.OpenMap X (Diagonal X)) ↔ T2Space X,  ∀ {X : Type u_1} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace (X × X)] [inst_2 : T2Space X] [inst_3 : T2Space (X × X)],
+  HausdorffSpace X ↔ OpenEmbedding (Diagonal X) ,  ∀ (X : Type u_3) [inst : TopologicalSpace X], T2Space X ↔ ∀ ⦃U⦄, IsOpen U → IsOpen (Prod.map id id U) ]
+
+total : 12
+
+elaborated: 10
+
+success
+
+theorem ∀ {α : Type u_1} [inst : Group α] {x : α}, IsOfFinOrder x → x = 1
+
+total : 13
+
+elaborated: 11
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G] (H : Subgroup G), Monoid.IsTorsionFree ↥H → Monoid.IsTorsionFree G
+
+total : 14
+
+elaborated: 12
+
+No valid output from LLM; outputs below
+
+∀ {α : Type u} {β : Type v} [inst :  GroupCat α] [inst_1 :  GroupCat β] {f : α → β},
+  Function.Injective ⇑f → IsFreeGroup α → IsFreeGroup β → Function.Surjective ⇑f 
+
+∀ {α : Type u_1} {β : Type u_2} [inst :  GroupCat α] [inst_1 :  GroupCat β] (f : α → β),
+  Function.Injective ⇑f → IsFreeGroup α → IsFreeGroup β ∧ Function.Surjective ⇑f 
+
+∀ {α : Type u_6} [inst :  GroupCat α] (f : α → α), Function.Injective ⇑f → Function.Surjective ⇑f 
+
+∀ {G₁ : Type u_1} {G₂ : Type u_2} [inst :  GroupCat G₁] [inst_1 :  GroupCat G₂] {f : G₁ →* G₂}
+  [inst_3 : IsFree G₁] [inst_4 : IsFree G₂] (h : Function.Injective ⇑f), Function.Surjective ⇑f 
+
+∀ {α : Type u} {β : Type v} [inst :  GroupCat α] [inst_1 :  GroupCat β] (f : α → β),
+  IsGroupHom f → Function.Injective ⇑f → ∀ (s :  ZFSet α), Function.Surjective ⇑(Subgroup.of f '' s)
+
+∀ {α : Type u} [inst :  GroupCat α] {β : Type v} [inst_1 :  GroupCat β] (f : α → β) (a : α),
+  IsFreeGroup α → Function.Injective f → ∃ (b : β), IsFreeGroup.mk β b = f a
+
+∀ {α : Type u} {β : Type v} [inst :  GroupCat α] [inst_1 :  GroupCat β] {f : α → β},
+  Function.Injective ⇑f →
+    (∀ (s : List α), Function.Surjective fun n => f (List.cons s.head (List.tail s))) →
+      Function.Surjective ⇑f 
+
+<input>:2:49: expected end of input while parsing  ∀ {α : Type u} {β : Type v} [inst : Group α] [inst_1 : Group β] {f : α → β},
+  Function.Injective ⇑f → ∃ (a : α), f a = β.mk' ∀ x, f x = β.mk' a * x * β.mk' a⁻¹ ∧
+    ∀ y, β.mk' a * y * β.mk' a⁻¹ = β.mk' a → x = y
+
+∀ {α : Type u_1} {β : Type u_2} [inst :  GroupCat α] [inst_1 :  GroupCat β] {f : α → β},
+  IsGroupHom f → Function.Injective ⇑f →
+    Function.Surjective ⇑f →
+      ∀ (g : α →₀ α),
+        Function.Injective g → Function.Surjective (f ∘ FreeGroup.of ∘ g) ∧ Function.Surjective (FreeGroup.of ∘ g ∘ f) 
+
+<input>:5:31: expected ':', ']' or term while parsing  ∀ (G : Type u) [inst : Group G] (f : G → G),
+  Function.Injective f → ∀ (x : G), IsFreeGroup.IsFree (FreeGroup.of (f x)) → x ∈ Set.range f ----
+
+----
+PLEASE WRITE IN LEAN 4 FORMAT [/INST] ∀ (G : Type u) [inst : Group G] (f : G → G),
+  Function.Injective f → ∀ (x : G), IsFreeGroup.IsFree (FreeGroup.of (f x)) → x ∈ Set.range f
+
+failed to elaborate
+
+outputs: #[ ∀ {α : Type u} {β : Type v} [inst : Group α] [inst_1 : Group β] {f : α → β},
+  Function.Injective ⇑f → IsFreeGroup α → IsFreeGroup β → Function.Surjective ⇑f ,  ∀ {α : Type u_1} {β : Type u_2} [inst : Group α] [inst_1 : Group β] (f : α → β),
+  Function.Injective ⇑f → IsFreeGroup α → IsFreeGroup β ∧ Function.Surjective ⇑f ,  ∀ {α : Type u_6} [inst : Group α] (f : α → α), Function.Injective ⇑f → Function.Surjective ⇑f ,  ∀ {G₁ : Type u_1} {G₂ : Type u_2} [inst : Group G₁] [inst_1 : Group G₂] {f : G₁ →* G₂}
+  [inst_3 : IsFree G₁] [inst_4 : IsFree G₂] (h : Function.Injective ⇑f), Function.Surjective ⇑f ,  ∀ {α : Type u} {β : Type v} [inst : Group α] [inst_1 : Group β] (f : α → β),
+  IsGroupHom f → Function.Injective ⇑f → ∀ (s : Set α), Function.Surjective ⇑(Subgroup.of f '' s),  ∀ {α : Type u} [inst : Group α] {β : Type v} [inst_1 : Group β] (f : α → β) (a : α),
+  IsFreeGroup α → Function.Injective f → ∃ (b : β), IsFreeGroup.mk β b = f a,  ∀ {α : Type u} {β : Type v} [inst : Group α] [inst_1 : Group β] {f : α → β},
+  Function.Injective ⇑f →
+    (∀ (s : List α), Function.Surjective fun n => f (List.cons s.head (List.tail s))) →
+      Function.Surjective ⇑f ,  ∀ {α : Type u} {β : Type v} [inst : Group α] [inst_1 : Group β] {f : α → β},
+  Function.Injective ⇑f → ∃ (a : α), f a = β.mk' ∀ x, f x = β.mk' a * x * β.mk' a⁻¹ ∧
+    ∀ y, β.mk' a * y * β.mk' a⁻¹ = β.mk' a → x = y,  ∀ {α : Type u_1} {β : Type u_2} [inst : Group α] [inst_1 : Group β] {f : α → β},
+  IsGroupHom f → Function.Injective ⇑f →
+    Function.Surjective ⇑f →
+      ∀ (g : α →₀ α),
+        Function.Injective g → Function.Surjective (f ∘ FreeGroup.of ∘ g) ∧ Function.Surjective (FreeGroup.of ∘ g ∘ f) ,  ∀ (G : Type u) [inst : Group G] (f : G → G),
+  Function.Injective f → ∀ (x : G), IsFreeGroup.IsFree (FreeGroup.of (f x)) → x ∈ Set.range f ----
+
+----
+PLEASE WRITE IN LEAN 4 FORMAT [/INST] ∀ (G : Type u) [inst : Group G] (f : G → G),
+  Function.Injective f → ∀ (x : G), IsFreeGroup.IsFree (FreeGroup.of (f x)) → x ∈ Set.range f]
+
+total : 15
+
+elaborated: 12
+
+success
+
+theorem ∀ (D : Type u) [inst : DivisionRing D], IsField D ∨ Nonempty (Finite D) ∧ ¬Nonempty D
+
+total : 16
+
+elaborated: 13
+
+success
+
+theorem ∀ (n : ℕ), n ≠ 0 → ∃ p₁ p₂, Nat.Prime p₁ ∧ Nat.Prime p₂ ∧ n = p₁ * p₂
+
+total : 17
+
+elaborated: 14
+
+success
+
+theorem ∀ {a : ℕ}, Even a → ∃ b, a = b * b
+
+total : 18
+
+elaborated: 15
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G] (H : Subgroup G) [inst_1 : Subgroup.Normal H], Subgroup.FiniteIndex H
+
+total : 19
+
+elaborated: 16
+
+No valid output from LLM; outputs below
+
+<input>:2:112: expected end of input while parsing  ∀ {n : Type u_2} {𝕜 : Type u_4} [inst : Fintype n] [inst_1 : IsROrC 𝕜] [inst_2 : DecidableEq n] {A : Matrix n n 𝕜}
+  (hA : Matrix.IsHermitian A), Polynomial.IsRoot (Polynomial.charpoly 𝕜 A) (Matrix.IsHermitian.eigenvalues 𝕜 A) ∀ i
+
+∀ {𝕜 : Type u_1} [inst : IsROrC 𝕜] {n : Type u_2} [inst_1 :  FintypeCat n] {A : Matrix n n 𝕜},
+  IsIntegral ℚ (Matrix.charpoly A) → Polynomial.rootSet ℝ (Matrix.charpoly A) ⊆ Polynomial.rootSet ℂ ↑(Matrix.charpoly A) 
+
+∀ {α : Type u_1} {n : Type u_4} [inst : IsROrC α] {A : Matrix n n α},
+  ∀ i : n, Polynomial.IsRoot (Matrix.charpoly A) (Matrix.diag A i) ↑1
+
+∀ {𝕜 : Type u_1} [inst : IsROrC 𝕜] {n : Type u_2} [inst_1 :  FintypeCat n] {A : Matrix n n 𝕜},
+  Polynomial.aeval (Matrix.det A) (Polynomial.charpoly 𝕜 A) = ↑0 ∧ Polynomial.coeff (Polynomial.charpoly 𝕜 A) 0 ≠ 0
+
+<input>:2:40: expected '.', '[', '{', '|', '⦃' or term while parsing  ∀ {𝕜 : Type u_1} [inst : IsROrC 𝕜] {n : Type u_2} [inst_1 : Fintype n] {A : Matrix n n 𝕜},
+  IsEigenvalue (Matrix.toLinearMap A) λ → IsRoot (Matrix.charpoly A) λ ∧ ‖λ‖ = 1 ∧ IsROrC.re λ = 0
+
+∀ {n : Type u_2} {𝕜 : Type u_4} [inst :  FintypeCat n] [inst_1 : IsROrC 𝕜] {A : Matrix n n 𝕜},
+  IsScalarTower ℚ 𝕜 (Matrix n n 𝕜) → (Polynomial.aeval (Matrix.det A)).IsUnit ∧ Polynomial.IsRoot (Polynomial.aeval (Matrix.det A)) 1
+
+∀ {𝕜 : Type u_1} [inst : IsROrC 𝕜] {n : Type u_4} [inst_1 :  FintypeCat n] {A : Matrix n n 𝕜},
+  Polynomial.charpoly A = Polynomial.map (IsScalarTower.toAlgHom 𝕜 ℝ 𝕜) (Polynomial.charpoly A) ∧
+    (∀ i, Polynomial.IsRoot (Polynomial.charpoly A) (↑(IsROrC.re (Matrix.diag A i))) : ℝ)
+
+∀ {n : Type u_2} {α : Type u_4} [inst :  FintypeCat n] [inst_1 : IsROrC α] (A : Matrix n n α),
+  IsEigenvalue A α ↔ IsRoot (Matrix.charpoly A) α ∧ α.re ∈ (Matrix.eigenvalues A).toFinset ∧ α ≠ 0 ∧ ‖α‖ = 1 ∧ ¬IsUnit α ∧ ¬IsZero α
+
+∀ {α : Type u_1} {n : Type u_2} [inst : IsROrC α] [inst_1 :  FintypeCat n] {A : Matrix n n α},
+  Matrix.charpoly A = (Polynomial.map (algebraMap ℚ α) ↑(Polynomial.charpoly (Matrix.map (algebraMap ℚ α) A))) ∧
+    Polynomial.rootSet ℚ (Polynomial.map (algebraMap ℚ α) ↑(Polynomial.charpoly (Matrix.map (algebraMap ℚ α) A))) =
+    {z | Matrix.IsEigenvalue (Matrix.map (algebraMap ℚ α) A) z} ∧ ∀ z ∈
+    {z | Matrix.IsEigenvalue (Matrix.map (algebraMap ℚ α) A) z}, IsReal (z : ℂ)
+
+∀ {𝕜 : Type u_1} [inst : IsROrC 𝕜] {n : Type u_2} [inst_1 :  FintypeCat n] {A : Matrix n n 𝕜},
+  Polynomial.charpoly A = (Polynomial.X ^ Matrix.natDegree (Matrix.charpoly A) - Polynomial.C (Matrix.det A)) ∧
+    (∀ φ : Matrix.IsHermitian A →* 𝕜, Polynomial.aeval (φ (Matrix.charpoly A)) = Polynomial.X ^ Matrix.natDegree (Matrix.charpoly A)) ∧
+      (∀ (i : n), Polynomial.IsRoot (Polynomial.charpoly A) (Matrix.diag A i))
+
+failed to elaborate
+
+outputs: #[ ∀ {n : Type u_2} {𝕜 : Type u_4} [inst : Fintype n] [inst_1 : IsROrC 𝕜] [inst_2 : DecidableEq n] {A : Matrix n n 𝕜}
+  (hA : Matrix.IsHermitian A), Polynomial.IsRoot (Polynomial.charpoly 𝕜 A) (Matrix.IsHermitian.eigenvalues 𝕜 A) ∀ i,  ∀ {𝕜 : Type u_1} [inst : IsROrC 𝕜] {n : Type u_2} [inst_1 : Fintype n] {A : Matrix n n 𝕜},
+  IsIntegral ℚ (Matrix.charpoly A) → Polynomial.rootSet ℝ (Matrix.charpoly A) ⊆ Polynomial.rootSet ℂ ↑(Matrix.charpoly A) ,  ∀ {α : Type u_1} {n : Type u_4} [inst : IsROrC α] {A : Matrix n n α},
+  ∀ i : n, Polynomial.IsRoot (Matrix.charpoly A) (Matrix.diag A i) ↑1,  ∀ {𝕜 : Type u_1} [inst : IsROrC 𝕜] {n : Type u_2} [inst_1 : Fintype n] {A : Matrix n n 𝕜},
+  Polynomial.aeval (Matrix.det A) (Polynomial.charpoly 𝕜 A) = ↑0 ∧ Polynomial.coeff (Polynomial.charpoly 𝕜 A) 0 ≠ 0,  ∀ {𝕜 : Type u_1} [inst : IsROrC 𝕜] {n : Type u_2} [inst_1 : Fintype n] {A : Matrix n n 𝕜},
+  IsEigenvalue (Matrix.toLinearMap A) λ → IsRoot (Matrix.charpoly A) λ ∧ ‖λ‖ = 1 ∧ IsROrC.re λ = 0,  ∀ {n : Type u_2} {𝕜 : Type u_4} [inst : Fintype n] [inst_1 : IsROrC 𝕜] {A : Matrix n n 𝕜},
+  IsScalarTower ℚ 𝕜 (Matrix n n 𝕜) → (Polynomial.aeval (Matrix.det A)).IsUnit ∧ Polynomial.IsRoot (Polynomial.aeval (Matrix.det A)) 1,  ∀ {𝕜 : Type u_1} [inst : IsROrC 𝕜] {n : Type u_4} [inst_1 : Fintype n] {A : Matrix n n 𝕜},
+  Polynomial.charpoly A = Polynomial.map (IsScalarTower.toAlgHom 𝕜 ℝ 𝕜) (Polynomial.charpoly A) ∧
+    (∀ i, Polynomial.IsRoot (Polynomial.charpoly A) (↑(IsROrC.re (Matrix.diag A i))) : ℝ),  ∀ {n : Type u_2} {α : Type u_4} [inst : Fintype n] [inst_1 : IsROrC α] (A : Matrix n n α),
+  IsEigenvalue A α ↔ IsRoot (Matrix.charpoly A) α ∧ α.re ∈ (Matrix.eigenvalues A).toFinset ∧ α ≠ 0 ∧ ‖α‖ = 1 ∧ ¬IsUnit α ∧ ¬IsZero α,  ∀ {α : Type u_1} {n : Type u_2} [inst : IsROrC α] [inst_1 : Fintype n] {A : Matrix n n α},
+  Matrix.charpoly A = (Polynomial.map (algebraMap ℚ α) ↑(Polynomial.charpoly (Matrix.map (algebraMap ℚ α) A))) ∧
+    Polynomial.rootSet ℚ (Polynomial.map (algebraMap ℚ α) ↑(Polynomial.charpoly (Matrix.map (algebraMap ℚ α) A))) =
+    {z | Matrix.IsEigenvalue (Matrix.map (algebraMap ℚ α) A) z} ∧ ∀ z ∈
+    {z | Matrix.IsEigenvalue (Matrix.map (algebraMap ℚ α) A) z}, IsReal (z : ℂ),  ∀ {𝕜 : Type u_1} [inst : IsROrC 𝕜] {n : Type u_2} [inst_1 : Fintype n] {A : Matrix n n 𝕜},
+  Polynomial.charpoly A = (Polynomial.X ^ Matrix.natDegree (Matrix.charpoly A) - Polynomial.C (Matrix.det A)) ∧
+    (∀ φ : Matrix.IsHermitian A →* 𝕜, Polynomial.aeval (φ (Matrix.charpoly A)) = Polynomial.X ^ Matrix.natDegree (Matrix.charpoly A)) ∧
+      (∀ (i : n), Polynomial.IsRoot (Polynomial.charpoly A) (Matrix.diag A i))]
+
+total : 20
+
+elaborated: 16
+
+success
+
+theorem ∀ {R : Type u} [inst : CommRing R],
+  (∀ (P M : Ideal R), Ideal.IsPrime P → Ideal.IsMaximal M → P ≤ M → P = M) ∧
+    ∀ (P M : Ideal R), Ideal.IsPrime P → Ideal.IsPrime M → (P ≤ M ↔ P = M)
+
+total : 21
+
+elaborated: 17
+
+success
+
+theorem ∀ {α : Type u_4} {β : Type u_5} [inst : UniformSpace α] [inst_1 : UniformSpace β] (self : α ≃ᵤ β), Continuous self.toFun
+
+total : 22
+
+elaborated: 18
+
+No valid output from LLM; outputs below
+
+∀ {α : Type u} {β : Type v} [inst :  UniformSpaceCat β] {f : α → β} [inst_1 : TopologicalSpace α],
+  UniformContinuous f → BddAbove ( ZFSet.range f) 
+
+∀ {α : Type u} {β : Type v} [inst :  UniformSpaceCat β] {f : α → β} [inst_1 : TopologicalSpace α],
+  UniformContinuous f → BddAbove ( ZFSet.range f) 
+
+∀ {α : Type u_1} {β : Type u_2} [inst :  UniformSpaceCat β] {f : α → β} [inst_1 : TopologicalSpace α],
+  UniformContinuous f → BddAbove ( ZFSet.range f) 
+
+∀ {α : Type u_1} {β : Type u_2} [inst :  UniformSpaceCat β] {f : α → β} [inst_1 : TopologicalSpace α],
+  UniformContinuous f → BddAbove ( ZFSet.range f) 
+
+∀ {α : Type u} {β : Type v} [inst :  UniformSpaceCat β] {f : α → β},
+  UniformContinuous f → BddAbove ( ZFSet.range f) 
+
+∀ {α : Type u_1} {β : Type u_2} [inst : LinearOrder α] [inst_1 : TopologicalSpace α] [inst_2 : TopologicalSpace β]
+  [inst_3 : ClosedIciTopology α] [inst_4 : Nonempty α] {f : β → α},
+  UniformContinuous f → BddAbove ( ZFSet.range f) 
+
+∀ {α : Type u_1} {β : Type u_2} [inst : LinearOrder α] [inst_1 : TopologicalSpace α] [inst_2 : TopologicalSpace β]
+  [inst_3 : ClosedIciTopology α] [inst_4 : Nonempty α] {f : β → α},
+  UniformContinuous f → BddAbove ( ZFSet.range f) 
+
+∀ {α : Type u} {β : Type v} [inst :  UniformSpaceCat α] [inst_1 :  UniformSpaceCat β] {f : α → β} [inst_2 : TopologicalSpace α],
+  UniformContinuous f → BddAbove ( ZFSet.range f) 
+
+∀ {α : Type u_1} {β : Type u_2} [inst : LinearOrder α] [inst_1 : TopologicalSpace α] [inst_2 : TopologicalSpace β]
+  [inst_3 : ClosedIicTopology α] {f : β → α},
+  UniformContinuous f → BddAbove ( ZFSet.range f) 
+
+∀ {α : Type u} {β : Type v} [inst :  UniformSpaceCat β] {f : α → β} [inst_1 : TopologicalSpace α],
+  UniformContinuous f → ∀ (u :  ZFSet β), IsOpen u → ∃ V, IsOpen V ∧ f '' (Set.univ :  ZFSet α) ⊆ V ∧ V ⊆ u ∧ IsBounded (Set.Iio V) 
+
+failed to elaborate
+
+outputs: #[ ∀ {α : Type u} {β : Type v} [inst : UniformSpace β] {f : α → β} [inst_1 : TopologicalSpace α],
+  UniformContinuous f → BddAbove (Set.range f) ,  ∀ {α : Type u} {β : Type v} [inst : UniformSpace β] {f : α → β} [inst_1 : TopologicalSpace α],
+  UniformContinuous f → BddAbove (Set.range f) ,  ∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace β] {f : α → β} [inst_1 : TopologicalSpace α],
+  UniformContinuous f → BddAbove (Set.range f) ,  ∀ {α : Type u_1} {β : Type u_2} [inst : UniformSpace β] {f : α → β} [inst_1 : TopologicalSpace α],
+  UniformContinuous f → BddAbove (Set.range f) ,  ∀ {α : Type u} {β : Type v} [inst : UniformSpace β] {f : α → β},
+  UniformContinuous f → BddAbove (Set.range f) ,  ∀ {α : Type u_1} {β : Type u_2} [inst : LinearOrder α] [inst_1 : TopologicalSpace α] [inst_2 : TopologicalSpace β]
+  [inst_3 : ClosedIciTopology α] [inst_4 : Nonempty α] {f : β → α},
+  UniformContinuous f → BddAbove (Set.range f) ,  ∀ {α : Type u_1} {β : Type u_2} [inst : LinearOrder α] [inst_1 : TopologicalSpace α] [inst_2 : TopologicalSpace β]
+  [inst_3 : ClosedIciTopology α] [inst_4 : Nonempty α] {f : β → α},
+  UniformContinuous f → BddAbove (Set.range f) ,  ∀ {α : Type u} {β : Type v} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β} [inst_2 : TopologicalSpace α],
+  UniformContinuous f → BddAbove (Set.range f) ,  ∀ {α : Type u_1} {β : Type u_2} [inst : LinearOrder α] [inst_1 : TopologicalSpace α] [inst_2 : TopologicalSpace β]
+  [inst_3 : ClosedIicTopology α] {f : β → α},
+  UniformContinuous f → BddAbove (Set.range f) ,  ∀ {α : Type u} {β : Type v} [inst : UniformSpace β] {f : α → β} [inst_1 : TopologicalSpace α],
+  UniformContinuous f → ∀ (u : Set β), IsOpen u → ∃ V, IsOpen V ∧ f '' (Set.univ : Set α) ⊆ V ∧ V ⊆ u ∧ IsBounded (Set.Iio V) ]
+
+total : 23
+
+elaborated: 18
+
+success
+
+theorem ∀ {X : Type u} [inst : TopologicalSpace X], (∀ (s : Set X), IsCompact s → IsClosed s) → CompactSpace X
+
+total : 24
+
+elaborated: 19
+
+success
+
+theorem ∀ {R : Type u} [inst : CommRing R] (a b : R), IsIdempotentElem a → IsIdempotentElem b → IsIdempotentElem (a + b)
+
+total : 25
+
+elaborated: 20
+
+No valid output from LLM; outputs below
+
+∀ {α : Type u} [inst : Finite α], Nat.Prime (Nat.card (Fintype.partition α)) 
+
+∀ {α : Type u} [inst : Finite α], Nat.Prime (Fintype.card (Partition α)) 
+
+∀ {α : Type u} [inst : Finite α], Nat.Prime (Nat.card (Finpartition α)) 
+
+∀ {α : Type u} [inst :  FintypeCat α], Nat.Prime (Nat.card (Set.Partition α)) 
+
+∀ {α : Type u} [inst :  FintypeCat α], ∃ p, Nat.Prime p ∧ Fintype.card (Set.Partitions α) = p
+
+∀ {α : Type u_1} [inst :  FintypeCat α] {n : ℕ}, Nat.Prime (partitionFinset α n).card 
+
+∀ {α : Type u} [inst :  FintypeCat α], IsPrime (Fintype.card (Set.Partition α)) ∧ Fintype.card (Set.Partition α) ≠ 0 
+
+∀ {α : Type u} [DecidableEq α] {n : ℕ} (h : Fintype.card α = n), Nat.Prime (Fintype.card (Partition n))
+
+∀ {α : Type u_2} {n : ℕ} [inst : Finite α], Prime (Partitions.card α n) 
+
+<input>:1:105: expected end of input while parsing  ∀ {α : Type u} {n : ℕ} [inst : Fintype α] [inst_1 : Nonempty α], IsPrime (Fintype.card (Partition n α)) 
+failed to elaborate
+
+outputs: #[ ∀ {α : Type u} [inst : Finite α], Nat.Prime (Nat.card (Fintype.partition α)) ,  ∀ {α : Type u} [inst : Finite α], Nat.Prime (Fintype.card (Partition α)) ,  ∀ {α : Type u} [inst : Finite α], Nat.Prime (Nat.card (Finpartition α)) ,  ∀ {α : Type u} [inst : Fintype α], Nat.Prime (Nat.card (Set.Partition α)) ,  ∀ {α : Type u} [inst : Fintype α], ∃ p, Nat.Prime p ∧ Fintype.card (Set.Partitions α) = p,  ∀ {α : Type u_1} [inst : Fintype α] {n : ℕ}, Nat.Prime (partitionFinset α n).card ,  ∀ {α : Type u} [inst : Fintype α], IsPrime (Fintype.card (Set.Partition α)) ∧ Fintype.card (Set.Partition α) ≠ 0 ,  ∀ {α : Type u} [DecidableEq α] {n : ℕ} (h : Fintype.card α = n), Nat.Prime (Fintype.card (Partition n)),  ∀ {α : Type u_2} {n : ℕ} [inst : Finite α], Prime (Partitions.card α n) ,  ∀ {α : Type u} {n : ℕ} [inst : Fintype α] [inst_1 : Nonempty α], IsPrime (Fintype.card (Partition n α)) 
+total : 26
+
+elaborated: 20
+
+No valid output from LLM; outputs below
+
+∀ {α : Type u_1} [inst : Poset α] [h : ∃ a, IsMaximal a] {s :  ZFSet α} {a : α}, IsLeast s a → s = {a} 
+
+∀ {α : Type u_1} {r : α → α → Prop} [inst : PartialOrder α] [inst_1 : IsMaxOrderTop α r] {a b : α}, ¬ r b a → ¬ r a b → a = b
+
+∀ {α : Type u_1} [inst : Lattice α] [inst_1 : IsSimpleOrder α] (s :  ZFSet α),
+  (∃ m, ∀ a ∈ s, a ≤ m) → (∃! m, ∀ a ∈ s, a ≤ m) 
+
+∀ {α : Type u_1} {r : α → α → Prop} [inst : IsPoset α r] {a : α}, IsMaximal a r → ∃! (b : α), IsMinimal b r ∧ r a b ∧ ∀ c, r a c → r b c
+
+∀ {α : Type u_1} {r : α → α → Prop} [inst : PartialOrder α] {a : α},
+  (∃ b, r b a) → (∀ c, r c a → r c b) → Unique a ∨ Unique b ∨ (∀ c, r c a → r c b → r c a)
+
+∀ {α : Type u_1} [inst : PartialOrder α] {a : α} (h : IsMaximal a),
+    ∃! m : α, IsMinimal m ∧ ∀ b, IsMinimal b → m ≤ b → m = b ∧ a ≤ b → b ≤ a → b = a
+
+∀ {α : Type u_1} [inst : PartialOrder α] {s :  ZFSet α} {a : α}, IsMaximal a s →
+  ∃! b, ∀ a ∈ s, ¬a ≤ b ∧ ∀ c, c ∈ s → ¬c ≤ a ↔ c ≤ b
+
+∀ {α : Type u_1} [inst : Poset α] {a : α} (ha : IsMaximal a),
+    (∀ b, b ≤ a → ∃ c, c ≤ b ∧ ¬b ≤ c) → Unique a ∧ ∀ b, b = a ↔ b ≤ a ∧ ¬∃ c, c ≤ b ∧ ¬b ≤ c ∧ ¬b = a ∧ b ≠ a
+
+<input>:1:116: expected end of input while parsing  ∀ {α : Type u} {r : α → α → Prop} [inst : Lattice α] [inst_1 : IsMaxOrderTop α r] {x : α}, IsMax x → ∃! y, IsMin y ,\,\_inst.1 ⊤ ↔ x = y
+
+<input>:3:2: expected identifier while parsing  ∀ {α : Type u_1} [inst : PartialOrder α] [h : ∃ a, IsMaximal a] [h' : ∃! a, IsMinimal a] [h'' : ∀ x, IsMinimal x → x = IsMaximal.maximal] a, IsMinimal a -------------
+
+```
+/-!
+# Basics on First-Order Structures
+This file defines first-order languages and structures in the style of the
+[Flypitch project](https://flypitch.github.io/), as well as several important maps between
+structures.
+
+## Main Definitions
+* A `FirstOrder.Language` defines a language as a pair of functions from the natural numbers to
+  `Type l`. One sends `n` to the type of `n`-ary functions, and the other sends `n` to the type
+  of `n`-ary relations.
+* A `FirstOrder.Language.Structure` interprets the symbols of a given `FirstOrder.Language` in the
+  context of a given type.
+* A `FirstOrder.Language.Hom`, denoted `M →[L] N`, is a map from the `L`-structure `M` to the
+  `L`-structure `N` that commutes with the interpretations of functions, and which preserves the
+  interpretations of relations (although only in the forward direction).
+* A `FirstOrder.Language.Embedding`, denoted `M ↪[L] N`, is an embedding from the `L`-structure `M`
+  to the `L`-structure `N` that commutes with the interpretations of functions, and which preserves
+  the interpretations of relations in both directions.
+* A `FirstOrder.Language.Equiv`, denoted `M ≃[L] N`, is an equivalence from the `L`-structure `M`
+  to the `L`-structure `N` that commutes with the interpretations of functions, and which preserves
+  the interpretations of relations in both directions.
+
+## References
+For the Flypitch project:
+- [J. Han, F. van Doorn, *A formal proof of the independence of the continuum hypothesis*]
+[flypitch_cpp]
+- [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
+the continuum hypothesis*][flypitch_itp]
+
+
+
+failed to elaborate
+
+outputs: #[ ∀ {α : Type u_1} [inst : Poset α] [h : ∃ a, IsMaximal a] {s : Set α} {a : α}, IsLeast s a → s = {a} ,  ∀ {α : Type u_1} {r : α → α → Prop} [inst : PartialOrder α] [inst_1 : IsMaxOrderTop α r] {a b : α}, ¬ r b a → ¬ r a b → a = b,  ∀ {α : Type u_1} [inst : Lattice α] [inst_1 : IsSimpleOrder α] (s : Set α),
+  (∃ m, ∀ a ∈ s, a ≤ m) → (∃! m, ∀ a ∈ s, a ≤ m) ,  ∀ {α : Type u_1} {r : α → α → Prop} [inst : IsPoset α r] {a : α}, IsMaximal a r → ∃! (b : α), IsMinimal b r ∧ r a b ∧ ∀ c, r a c → r b c,  ∀ {α : Type u_1} {r : α → α → Prop} [inst : PartialOrder α] {a : α},
+  (∃ b, r b a) → (∀ c, r c a → r c b) → Unique a ∨ Unique b ∨ (∀ c, r c a → r c b → r c a),  ∀ {α : Type u_1} [inst : PartialOrder α] {a : α} (h : IsMaximal a),
+    ∃! m : α, IsMinimal m ∧ ∀ b, IsMinimal b → m ≤ b → m = b ∧ a ≤ b → b ≤ a → b = a,  ∀ {α : Type u_1} [inst : PartialOrder α] {s : Set α} {a : α}, IsMaximal a s →
+  ∃! b, ∀ a ∈ s, ¬a ≤ b ∧ ∀ c, c ∈ s → ¬c ≤ a ↔ c ≤ b,  ∀ {α : Type u_1} [inst : Poset α] {a : α} (ha : IsMaximal a),
+    (∀ b, b ≤ a → ∃ c, c ≤ b ∧ ¬b ≤ c) → Unique a ∧ ∀ b, b = a ↔ b ≤ a ∧ ¬∃ c, c ≤ b ∧ ¬b ≤ c ∧ ¬b = a ∧ b ≠ a,  ∀ {α : Type u} {r : α → α → Prop} [inst : Lattice α] [inst_1 : IsMaxOrderTop α r] {x : α}, IsMax x → ∃! y, IsMin y ,\,\_inst.1 ⊤ ↔ x = y,  ∀ {α : Type u_1} [inst : PartialOrder α] [h : ∃ a, IsMaximal a] [h' : ∃! a, IsMinimal a] [h'' : ∀ x, IsMinimal x → x = IsMaximal.maximal] a, IsMinimal a -------------
+
+```
+/-!
+# Basics on First-Order Structures
+This file defines first-order languages and structures in the style of the
+[Flypitch project](https://flypitch.github.io/), as well as several important maps between
+structures.
+
+## Main Definitions
+* A `FirstOrder.Language` defines a language as a pair of functions from the natural numbers to
+  `Type l`. One sends `n` to the type of `n`-ary functions, and the other sends `n` to the type
+  of `n`-ary relations.
+* A `FirstOrder.Language.Structure` interprets the symbols of a given `FirstOrder.Language` in the
+  context of a given type.
+* A `FirstOrder.Language.Hom`, denoted `M →[L] N`, is a map from the `L`-structure `M` to the
+  `L`-structure `N` that commutes with the interpretations of functions, and which preserves the
+  interpretations of relations (although only in the forward direction).
+* A `FirstOrder.Language.Embedding`, denoted `M ↪[L] N`, is an embedding from the `L`-structure `M`
+  to the `L`-structure `N` that commutes with the interpretations of functions, and which preserves
+  the interpretations of relations in both directions.
+* A `FirstOrder.Language.Equiv`, denoted `M ≃[L] N`, is an equivalence from the `L`-structure `M`
+  to the `L`-structure `N` that commutes with the interpretations of functions, and which preserves
+  the interpretations of relations in both directions.
+
+## References
+For the Flypitch project:
+- [J. Han, F. van Doorn, *A formal proof of the independence of the continuum hypothesis*]
+[flypitch_cpp]
+- [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
+the continuum hypothesis*][flypitch_itp]
+
+]
+
+total : 27
+
+elaborated: 20
+
+success
+
+theorem ∀ {α : Type u} [inst : CommGroup α], ∃ a, ∀ (g : ?m.44869332 a), IsOfFinOrder g ↔ g = a⁻¹ * g * a
+
+total : 28
+
+elaborated: 21
+
+success
+
+theorem ∀ {α : Type u_1} [inst : TopologicalSpace α] (f : ℝ → ℝ) {x : ℝ},
+  x ∈ Set.Icc 0 1 → Function.IsFixedPt f x → ∀ (n : ℕ), ∃ y ∈ Set.Icc 0 1, Function.IsPeriodicPt f n y
+
+total : 29
+
+elaborated: 22
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] {s t : Set α}, s ∪ t ⊆ sᶜ ∪ tᶜ
+
+total : 30
+
+elaborated: 23
+
+success
+
+theorem ∀ (x : ℚ), Real.sqrt ↑x = ↑(Rat.sqrt x)
+
+total : 31
+
+elaborated: 24
+
+success
+
+theorem {R : Type u} →
+  {M : Type v} →
+    [inst : Ring R] →
+      [inst_1 : AddCommGroup M] →
+        [inst_2 : Module R M] → [inst_3 : Module.Free R M] → [inst : Module.Finite R M] → CommRing R
+
+total : 32
+
+elaborated: 25
+
+No valid output from LLM; outputs below
+
+<input>:1:57: expected '}' while parsing  ∀ {R : Type u_1} [inst : NonUnitalNonAssocSemiring R] {Rˣ : Type u_2} [inst_1 : Group Rˣ],
+  IsCommRing R
+
+∀ {R : Type u_1} [inst : NonUnitalNonAssocSemiring R],
+   GroupCat (Set.univ :  ZFSet Rˣ) →  CommRingCat R 
+
+∀ {R : Type u} [inst :  CommRingCat R], Group.toCommGroup (Set.univ :  ZFSet Rˣ) → ∀ (x y : R), x * y = y * x 
+
+∀ {R : Type u_1} [inst :  CommRingCat R], IsGroup (Set.setOf (IsUnit R)) →  CommRingCat R
+
+<input>:1:36: expected ')' while parsing  ∀ {R : Type u_1} [inst : Ring R] (Rˣ : Subgroup R) [inst_1 : Group Rˣ], CommRing R 
+
+∀ {R : Type u_1} [inst :  RingCat R],
+  IsGroup (Set.univ.image (Units.mkRingHom R : R →* Rˣ)) → ∀ (x y : R), x * y = y * x 
+
+<input>:2:59: expected end of input while parsing  ∀ {R : Type u} [inst : CommRing R],
+  IsGroup (Set.univ : Set Rˣ) → ∀ (x y : R), x * y = y * x ︙
+
+∀ {R : Type u_1} [inst :  RingCat R] {𝕜 : Type u_2} [inst_1 : DivisionRing 𝕜]
+  [inst_2 :  AlgebraCat 𝕜 R], IsGroup (Ring.inverse R) →  CommRingCat R 
+
+<input>:2:65: unexpected end of input while parsing  ∀ {R : Type u_1} [inst : CommRing R],
+  IsGroup (↥(set.univ : set (Rˣ))) → ∀ (a b : R), a * b = b * a ↑
+
+∀ {R : Type u_1} [inst : NonAssocRing R] {α : Type u_2} [inst_1 :  GroupCat α] (f : R →+* α)
+  (x y : R), ∀ (a b : α), f (a * b) = f a * f b → x * y = y * x
+
+failed to elaborate
+
+outputs: #[ ∀ {R : Type u_1} [inst : NonUnitalNonAssocSemiring R] {Rˣ : Type u_2} [inst_1 : Group Rˣ],
+  IsCommRing R,  ∀ {R : Type u_1} [inst : NonUnitalNonAssocSemiring R],
+  Group (Set.univ : Set Rˣ) → CommRing R ,  ∀ {R : Type u} [inst : CommRing R], Group.toCommGroup (Set.univ : Set Rˣ) → ∀ (x y : R), x * y = y * x ,  ∀ {R : Type u_1} [inst : CommRing R], IsGroup (Set.setOf (IsUnit R)) → CommRing R,  ∀ {R : Type u_1} [inst : Ring R] (Rˣ : Subgroup R) [inst_1 : Group Rˣ], CommRing R ,  ∀ {R : Type u_1} [inst : Ring R],
+  IsGroup (Set.univ.image (Units.mkRingHom R : R →* Rˣ)) → ∀ (x y : R), x * y = y * x ,  ∀ {R : Type u} [inst : CommRing R],
+  IsGroup (Set.univ : Set Rˣ) → ∀ (x y : R), x * y = y * x ︙,  ∀ {R : Type u_1} [inst : Ring R] {𝕜 : Type u_2} [inst_1 : DivisionRing 𝕜]
+  [inst_2 : Algebra 𝕜 R], IsGroup (Ring.inverse R) → CommRing R ,  ∀ {R : Type u_1} [inst : CommRing R],
+  IsGroup (↥(set.univ : set (Rˣ))) → ∀ (a b : R), a * b = b * a ↑,  ∀ {R : Type u_1} [inst : NonAssocRing R] {α : Type u_2} [inst_1 : Group α] (f : R →+* α)
+  (x y : R), ∀ (a b : α), f (a * b) = f a * f b → x * y = y * x]
+
+total : 33
+
+elaborated: 25
+
+success
+
+theorem ∀ {n : ℕ}, 10 < n → ∃ x y z, y ∈ {x_1 | ?m.47318208 x y z x_1} ∧ n = x ^ 2 + y ∧ ∃ u v, Nat.Prime u ∧ n = x ^ 2 + y + u
+
+total : 34
+
+elaborated: 26
+
+No valid output from LLM; outputs below
+
+∀ {C : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} C] [inst_1 : CategoryTheory.Limits.HasInitial C]
+  [inst_2 : CategoryTheory.Limits.HasTerminal C],
+  IsIso (CategoryTheory.Limits.initialTerminalComparison C) 
+
+∀ {C : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} C] [inst_1 : CategoryTheory.Limits.HasInitial C]
+  [inst_2 : CategoryTheory.Limits.HasTerminal C],
+  IsIso (CategoryTheory.Limits.initialTerminalComparison C) 
+
+∀ {C : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} C] [inst_1 : CategoryTheory.Limits.HasInitial C]
+  [inst_2 : CategoryTheory.Limits.HasTerminal C], IsIso (CategoryTheory.Limits.initialTerminalAdjunction C).hom 
+
+∀ {C : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} C] [inst_1 : CategoryTheory.Limits.HasInitial C]
+  [inst_2 : CategoryTheory.Limits.HasTerminal C],
+  IsIso (CategoryTheory.Limits.initialTerminalEquiv C) 
+
+∀ {C : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} C] [inst_1 : CategoryTheory.Limits.HasInitial C]
+  [inst_2 : CategoryTheory.Limits.HasTerminal C], ∃ (X : C), CategoryTheory.Limits.IsInitial X ∧ CategoryTheory.Limits.IsTerminal X
+
+∀ {C : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} C] [inst_1 : CategoryTheory.Limits.HasInitial C]
+  [inst_2 : CategoryTheory.Limits.HasTerminal C], CategoryTheory.IsInitial (CategoryTheory.Limits.initial C) ≅
+  CategoryTheory.Limits.terminal C 
+
+∀ {C : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} C] [inst_1 : CategoryTheory.HasInitial C]
+  [inst_2 : CategoryTheory.HasTerminal C],
+  CategoryTheory.IsInitial C → CategoryTheory.IsTerminal C 
+
+∀ {C : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} C] [inst_1 : CategoryTheory.Limits.HasInitial C]
+  [inst_2 : CategoryTheory.Limits.HasTerminal C],
+  (∃ (X : C) (f : X ⟶ ⊥_ C) (g : ⊤_ C ⟶ X), f = CategoryTheory.Limits.initial.to _ ∧ g = CategoryTheory.Limits.terminal.from _) ∧
+  ∀ (X : C) (f : ⊥_ C ⟶ X) (g : X ⟶ ⊤_ C), f = CategoryTheory.Limits.initial.to _ ∧ g = CategoryTheory.Limits.terminal.from _
+
+∀ {C : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} C] [inst_1 : CategoryTheory.Limits.HasInitial C]
+  [inst_2 : CategoryTheory.Limits.HasTerminal C], ∃ I T, CategoryTheory.Limits.IsInitial I ∧ CategoryTheory.Limits.IsTerminal T ∧
+  CategoryTheory.IsIso (CategoryTheory.Limits.initialTerminalAdjunction C). Unit ∧
+  (∀ {X : C}, CategoryTheory.Limits.IsInitial X → CategoryTheory.IsIso (CategoryTheory.Limits.initialTerminalAdjunction C). Unit ) ∧
+  (∀ {X : C}, CategoryTheory.Limits.IsTerminal X → CategoryTheory.IsIso (CategoryTheory.Limits.initialTerminalAdjunction C).counit) ∧
+  (∀ {X : C}, CategoryTheory.Limits.IsInitial X → CategoryTheory.IsIso (CategoryTheory.Limits.initialTerminalAdjunction C). Unit ) ∧
+  (∀ {X : C}, CategoryTheory.Limits.IsTerminal X → CategoryTheory.IsIso (CategoryTheory.Limits.initialTerminalAdjunction C).counit)
+
+∀ {C : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} C] [inst_1 : CategoryTheory.Limits.HasInitial C]
+  [inst_2 : CategoryTheory.Limits.HasTerminal C], ∃ e : CategoryTheory.Limits.Initial C ≅ CategoryTheory.Limits.Terminal C,
+   True ∧ CategoryTheory.Limits.Initial.isColimit (CategoryTheory.Limits.Terminal.isTerminal _) ∧
+  CategoryTheory.Limits.Terminal.isColimit (CategoryTheory.Limits.Initial.isTerminal _) ∧
+  CategoryTheory.Limits.IsInitial.ofUniqueTo _ _ (CategoryTheory.Limits.Terminal.from _)
+    (CategoryTheory.Limits.Terminal.from_unique _ _) ∧
+    CategoryTheory.Limits.IsTerminal.ofUniqueFrom _ _ (CategoryTheory.Limits.Initial.to _)
+      (CategoryTheory.Limits.Initial.to_unique _ _) ∧  True 
+
+failed to elaborate
+
+outputs: #[ ∀ {C : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} C] [inst_1 : CategoryTheory.Limits.HasInitial C]
+  [inst_2 : CategoryTheory.Limits.HasTerminal C],
+  IsIso (CategoryTheory.Limits.initialTerminalComparison C) ,  ∀ {C : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} C] [inst_1 : CategoryTheory.Limits.HasInitial C]
+  [inst_2 : CategoryTheory.Limits.HasTerminal C],
+  IsIso (CategoryTheory.Limits.initialTerminalComparison C) ,  ∀ {C : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} C] [inst_1 : CategoryTheory.Limits.HasInitial C]
+  [inst_2 : CategoryTheory.Limits.HasTerminal C], IsIso (CategoryTheory.Limits.initialTerminalAdjunction C).hom ,  ∀ {C : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} C] [inst_1 : CategoryTheory.Limits.HasInitial C]
+  [inst_2 : CategoryTheory.Limits.HasTerminal C],
+  IsIso (CategoryTheory.Limits.initialTerminalEquiv C) ,  ∀ {C : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} C] [inst_1 : CategoryTheory.Limits.HasInitial C]
+  [inst_2 : CategoryTheory.Limits.HasTerminal C], ∃ (X : C), CategoryTheory.Limits.IsInitial X ∧ CategoryTheory.Limits.IsTerminal X,  ∀ {C : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} C] [inst_1 : CategoryTheory.Limits.HasInitial C]
+  [inst_2 : CategoryTheory.Limits.HasTerminal C], CategoryTheory.IsInitial (CategoryTheory.Limits.initial C) ≅
+  CategoryTheory.Limits.terminal C ,  ∀ {C : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} C] [inst_1 : CategoryTheory.HasInitial C]
+  [inst_2 : CategoryTheory.HasTerminal C],
+  CategoryTheory.IsInitial C → CategoryTheory.IsTerminal C ,  ∀ {C : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} C] [inst_1 : CategoryTheory.Limits.HasInitial C]
+  [inst_2 : CategoryTheory.Limits.HasTerminal C],
+  (∃ (X : C) (f : X ⟶ ⊥_ C) (g : ⊤_ C ⟶ X), f = CategoryTheory.Limits.initial.to _ ∧ g = CategoryTheory.Limits.terminal.from _) ∧
+  ∀ (X : C) (f : ⊥_ C ⟶ X) (g : X ⟶ ⊤_ C), f = CategoryTheory.Limits.initial.to _ ∧ g = CategoryTheory.Limits.terminal.from _,  ∀ {C : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} C] [inst_1 : CategoryTheory.Limits.HasInitial C]
+  [inst_2 : CategoryTheory.Limits.HasTerminal C], ∃ I T, CategoryTheory.Limits.IsInitial I ∧ CategoryTheory.Limits.IsTerminal T ∧
+  CategoryTheory.IsIso (CategoryTheory.Limits.initialTerminalAdjunction C).unit ∧
+  (∀ {X : C}, CategoryTheory.Limits.IsInitial X → CategoryTheory.IsIso (CategoryTheory.Limits.initialTerminalAdjunction C).unit) ∧
+  (∀ {X : C}, CategoryTheory.Limits.IsTerminal X → CategoryTheory.IsIso (CategoryTheory.Limits.initialTerminalAdjunction C).counit) ∧
+  (∀ {X : C}, CategoryTheory.Limits.IsInitial X → CategoryTheory.IsIso (CategoryTheory.Limits.initialTerminalAdjunction C).unit) ∧
+  (∀ {X : C}, CategoryTheory.Limits.IsTerminal X → CategoryTheory.IsIso (CategoryTheory.Limits.initialTerminalAdjunction C).counit),  ∀ {C : Type u₁} [inst : CategoryTheory.Category.{v₁, u₁} C] [inst_1 : CategoryTheory.Limits.HasInitial C]
+  [inst_2 : CategoryTheory.Limits.HasTerminal C], ∃ e : CategoryTheory.Limits.Initial C ≅ CategoryTheory.Limits.Terminal C,
+  true ∧ CategoryTheory.Limits.Initial.isColimit (CategoryTheory.Limits.Terminal.isTerminal _) ∧
+  CategoryTheory.Limits.Terminal.isColimit (CategoryTheory.Limits.Initial.isTerminal _) ∧
+  CategoryTheory.Limits.IsInitial.ofUniqueTo _ _ (CategoryTheory.Limits.Terminal.from _)
+    (CategoryTheory.Limits.Terminal.from_unique _ _) ∧
+    CategoryTheory.Limits.IsTerminal.ofUniqueFrom _ _ (CategoryTheory.Limits.Initial.to _)
+      (CategoryTheory.Limits.Initial.to_unique _ _) ∧ true]
+
+total : 35
+
+elaborated: 26
+
+No valid output from LLM; outputs below
+
+∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] {f : X → Y}
+  {g : Y → Z} [inst_2 : TopologicalSpace Z] [inst_3 : TopologicalSpace Y] [inst_4 : TopologicalSpace X],
+  Continuous (g ∘ f) → Continuous f → Continuous g 
+
+∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β]
+  [inst_2 : TopologicalSpace γ] {f : α → β} {g : β → γ} {h : α → γ},
+  Continuous h → Continuous f → Continuous g → Continuous (h ∘ f ∘ g) → Continuous h ∧ Continuous f ∧ Continuous g 
+
+∀ {X : Type u_1} {Y : Type u_2} {Z : Type u_3} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y]
+  [inst_2 : TopologicalSpace Z] [inst_3 : TopologicalSpace Y] [inst_4 : TopologicalSpace Z] {f : X → Y}
+  {g : Y → Z} [inst_5 : Continuous f] [inst_6 : Continuous g], Continuous (g ∘ f) 
+
+∀ {X : Type u_1} {Y : Type u_2} {Z : Type u_3} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y]
+  [inst_2 : TopologicalSpace Z] {f : X → Y} {g : Y → Z} {p : Filter X} [inst_3 : Filter.NeBot p]
+  [inst_4 : Tendsto f p (𝓝 y)] [inst_5 : Tendsto g (𝓝 y) (𝓝 z)], Continuous g → Continuous f 
+
+∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y]
+  {f : X → Y} {g : Y → X}, Tendsto g (g ∘ f) (Continuous.tendsto f) → Continuous g → Continuous f 
+
+∀ {X : Type u_1} [inst : TopologicalSpace X] {Y : Type u_2} [inst_1 : TopologicalSpace Y] {Z : Type u_3}
+  [inst_2 : TopologicalSpace Z] (f : X → Y) (g : Y → Z) [inst_3 : Continuous g] (h : Continuous f) {a : X},
+  ContinuousAt (g ∘ f) a ↔ ContinuousAt g (f a) ∧ ContinuousAt f a 
+
+∀ {X : Type u_1} {Y : Type u_2} {Z : Type u_3} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y]
+  [inst_2 : TopologicalSpace Z] {f : X → Y} {g : Y → Z} {a b :  ZFSet X}, IsOpen a → IsOpen b → IsPreconnected b → ContinuousOn g b →
+  ContinuousOn f a → ContinuousOn (g ∘ f) a → Continuous f 
+
+∀ {X : Type u_1} {Y : Type u_2} {Z : Type u_3} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y]
+  [inst_2 : TopologicalSpace Z] [inst_3 : TopologicalSpace X] [inst_4 : TopologicalSpace Y] [inst_5 : TopologicalSpace Z]
+  [inst_6 : ContinuousMapClass C X Y] [inst_7 : ContinuousMapClass C Y Z] {f : X → Y} {g : Y → Z},
+  Continuous ((ContinuousMapClass.comp f g : X → Z) : C) → Continuous f → Continuous g 
+
+∀ {α β γ : Type u} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] [inst_2 : TopologicalSpace γ]
+  {f : α → β} {g : β → γ} {s :  ZFSet α} [inst_3 : InstTopologicalClosure α] (hf : ContinuousOn f s) (hg : ContinuousOn g (f '' s))
+  [inst_4 : IsClosed (f '' s)], ContinuousOn g (f '' s) 
+
+<input>:3:1148: unexpected end of input while parsing  ∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] {Z : Type u_3}
+  [inst_2 : TopologicalSpace Z] {f : Y → Z} {g : X → Y} (hf : Continuous f) (hg : Continuous g),
+  Continuous (f ∘ g) → ∀ (x : X), ContinuousAt f (g x) ∧ ContinuousAt g x ∧ ContinuousAt (f ∘ g) x ∨ ContinuousAt f (g x) ∧ ¬ContinuousAt g x ∧ ContinuousAt (f ∘ g) x ∨ ¬ContinuousAt f (g x) ∧ ContinuousAt g x ∧ ContinuousAt (f ∘ g) x ∨ ¬ContinuousAt f (g x) ∧ ¬ContinuousAt g x ∧ ContinuousAt (f ∘ g) x ∨ ContinuousAt f (g x) ∧ ContinuousAt g x ∧ ¬ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧
+
+failed to elaborate
+
+outputs: #[ ∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] {f : X → Y}
+  {g : Y → Z} [inst_2 : TopologicalSpace Z] [inst_3 : TopologicalSpace Y] [inst_4 : TopologicalSpace X],
+  Continuous (g ∘ f) → Continuous f → Continuous g ,  ∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β]
+  [inst_2 : TopologicalSpace γ] {f : α → β} {g : β → γ} {h : α → γ},
+  Continuous h → Continuous f → Continuous g → Continuous (h ∘ f ∘ g) → Continuous h ∧ Continuous f ∧ Continuous g ,  ∀ {X : Type u_1} {Y : Type u_2} {Z : Type u_3} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y]
+  [inst_2 : TopologicalSpace Z] [inst_3 : TopologicalSpace Y] [inst_4 : TopologicalSpace Z] {f : X → Y}
+  {g : Y → Z} [inst_5 : Continuous f] [inst_6 : Continuous g], Continuous (g ∘ f) ,  ∀ {X : Type u_1} {Y : Type u_2} {Z : Type u_3} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y]
+  [inst_2 : TopologicalSpace Z] {f : X → Y} {g : Y → Z} {p : Filter X} [inst_3 : Filter.NeBot p]
+  [inst_4 : Tendsto f p (𝓝 y)] [inst_5 : Tendsto g (𝓝 y) (𝓝 z)], Continuous g → Continuous f ,  ∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y]
+  {f : X → Y} {g : Y → X}, Tendsto g (g ∘ f) (Continuous.tendsto f) → Continuous g → Continuous f ,  ∀ {X : Type u_1} [inst : TopologicalSpace X] {Y : Type u_2} [inst_1 : TopologicalSpace Y] {Z : Type u_3}
+  [inst_2 : TopologicalSpace Z] (f : X → Y) (g : Y → Z) [inst_3 : Continuous g] (h : Continuous f) {a : X},
+  ContinuousAt (g ∘ f) a ↔ ContinuousAt g (f a) ∧ ContinuousAt f a ,  ∀ {X : Type u_1} {Y : Type u_2} {Z : Type u_3} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y]
+  [inst_2 : TopologicalSpace Z] {f : X → Y} {g : Y → Z} {a b : Set X}, IsOpen a → IsOpen b → IsPreconnected b → ContinuousOn g b →
+  ContinuousOn f a → ContinuousOn (g ∘ f) a → Continuous f ,  ∀ {X : Type u_1} {Y : Type u_2} {Z : Type u_3} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y]
+  [inst_2 : TopologicalSpace Z] [inst_3 : TopologicalSpace X] [inst_4 : TopologicalSpace Y] [inst_5 : TopologicalSpace Z]
+  [inst_6 : ContinuousMapClass C X Y] [inst_7 : ContinuousMapClass C Y Z] {f : X → Y} {g : Y → Z},
+  Continuous ((ContinuousMapClass.comp f g : X → Z) : C) → Continuous f → Continuous g ,  ∀ {α β γ : Type u} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace β] [inst_2 : TopologicalSpace γ]
+  {f : α → β} {g : β → γ} {s : Set α} [inst_3 : InstTopologicalClosure α] (hf : ContinuousOn f s) (hg : ContinuousOn g (f '' s))
+  [inst_4 : IsClosed (f '' s)], ContinuousOn g (f '' s) ,  ∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] {Z : Type u_3}
+  [inst_2 : TopologicalSpace Z] {f : Y → Z} {g : X → Y} (hf : Continuous f) (hg : Continuous g),
+  Continuous (f ∘ g) → ∀ (x : X), ContinuousAt f (g x) ∧ ContinuousAt g x ∧ ContinuousAt (f ∘ g) x ∨ ContinuousAt f (g x) ∧ ¬ContinuousAt g x ∧ ContinuousAt (f ∘ g) x ∨ ¬ContinuousAt f (g x) ∧ ContinuousAt g x ∧ ContinuousAt (f ∘ g) x ∨ ¬ContinuousAt f (g x) ∧ ¬ContinuousAt g x ∧ ContinuousAt (f ∘ g) x ∨ ContinuousAt f (g x) ∧ ContinuousAt g x ∧ ¬ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧ ContinuousAt (f ∘ g) x ∧]
+
+total : 36
+
+elaborated: 26
+
+success
+
+theorem ∀ {S : Type u_2} [inst : Semigroup S] {a b c : S}, Commute a b → Commute b c → Commute a c
+
+total : 37
+
+elaborated: 27
+
+success
+
+theorem ∀ {R : Type u_1} {S : Type u_2} [inst : Semiring R] [inst_1 : Semiring S] (f : R →+* S) {r : R}, f r = 0 → r = 0
+
+total : 38
+
+elaborated: 28
+
+success
+
+theorem ∀ {p q : Prop}, (p → q) → q → p
+
+total : 39
+
+elaborated: 29
+
+success
+
+theorem ∀ {m n : ℕ}, (∀ (p : ℕ), Nat.Prime p → p ∣ m ↔ p ∣ n) ↔ m = n
+
+total : 40
+
+elaborated: 30
+
+Writing to file: thm-elab-20-false-10-8.json
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace.NoetherianSpace α] (s : Set α),
+  IsClosed s → s ≠ Set.univ → IsCompact s → IsCompact s
+
+total : 1
+
+elaborated: 1
+
+success
+
+theorem ∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p % 4 = 1 → ∃ a b, a ^ 2 + b ^ 2 = (2 * ↑p - 1) / 4
+
+total : 2
+
+elaborated: 2
+
+success
+
+theorem ∀ {R : Type u_1} [inst : CommRing R] (a b : R),
+  (∃ x y z w, a = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) →
+    (∃ u v t w, b = u ^ 2 + v ^ 2 + t ^ 2 + w ^ 2) → ∃ u v t w, a * b = u ^ 2 + v ^ 2 + t ^ 2 + w ^ 2
+
+total : 3
+
+elaborated: 3
+
+success
+
+theorem ∀ {α : Type u_2} [inst : NonUnitalNonAssocSemiring α] (a x y : α), a * a * (x * y) = x * y ∧ a * a * (y * x) = x * y
+
+total : 4
+
+elaborated: 4
+
+success
+
+theorem ∀ (n : ℕ), n ≠ 0 → Set.Infinite {p | Nat.Prime p ∧ p ≠ n ∧ p = n + 2}
+
+total : 5
+
+elaborated: 5
+
+success
+
+theorem ∀ (D : Type u_1) [inst : Finite D] [inst_1 : DivisionRing D], IsField D
+
+total : 6
+
+elaborated: 6
+
+success
+
+theorem ∀ {X : Type u} {Y : Type v}, ((∃ f, Function.Injective f) ∧ ∃ f, Function.Injective f) → Nonempty (X ≃ Y)
+
+total : 7
+
+elaborated: 7
+
+No valid output from LLM; outputs below
+
+∀ {V : Type} (G : SimpleGraph V) [inst : Finite V] (h : ∀ v w : V, 1 ≤ SimpleGraph.Adj v w ∧ SimpleGraph.Adj w v),
+  ∃ v : V, ∀ w : V, SimpleGraph.Adj v w ∧ SimpleGraph.Adj w v 
+
+∀ {V : Type u} (G : SimpleGraph V) [inst :  FintypeCat V] [inst_1 : DecidableRel G.Adj]
+  [inst_2 : ∀ v w : V, ∃ z, G.Adj v z ∧ G.Adj z w], Nonempty (⋃ v : V, {w | G.Adj v w})
+
+∀ {α : Type u_1} (G : SimpleGraph α) [inst :  FintypeCat α] [inst_1 : DecidableRel G.Adj]
+  [inst_2 : ∀ (x y : α), G.Adj x y → G.Adj y x → Set.Nonempty (G.neighbors x) → Set.Nonempty (G.neighbors y)],
+  ∃ (x : α), ∀ (y : α), G.Adj x y
+
+∀ {V : Type u} {G : SimpleGraph V} [inst :  FintypeCat V] [inst_1 : DecidableRel G.Adj] (G : SimpleGraph V) [inst_2 :
+  ∀ (u v : V), ∃! w, G.Adj w u ∧ G.Adj w v], Nonempty ( ZFSet.range G.neighbors) 
+
+<input>:3:59: unexpected end of input; expected '[MOD', '[PMOD', '[SMOD' or '[ZMOD' while parsing  ∀ {V : Type} (G : SimpleGraph V) [inst : Fintype V] [inst_1 : DecidableRel G.Adj]
+  (H : ∀ v w : V, Fintype.card (Set.Inter (Set.range v.neighbors) (Set.range w.neighbors)) = 1),
+  ∃ (v : V), ∀ (w : V), G.Adj v w ≡ True ∧ G.Adj w v ≡ True
+
+∀ {V : Type u} (G : SimpleGraph V) [inst :  FintypeCat V] [inst_1 : DecidableRel G.Adj] (hG : ∀ (u v : V), SimpleGraph.Adj G u v → SimpleGraph.Adj G v u),
+  G.IsTotallyUniAdj → Nonempty {v : V // ∀ (u : V), SimpleGraph.Adj G v u} 
+
+<input>:2:57: expected ':' while parsing  ∀ {V : Type u} (G : SimpleGraph V) [inst : Fintype V] [inst_1 : DecidableRel G.Adj] (h : ∀ (v) (w),
+  SimpleGraph.card (SimpleGraph.neighbors G v) = 1 → ∃ (u), G.Adj v u ∧ G.Adj u w), Nonempty (Finset.univ.erase v) → ∃ (u), G.Adj v u ∧ G.Adj u (Finset.univ.erase v) 
+
+∀ {V : Type} [inst :  FintypeCat V] [inst_1 :  FintypeCat (Sym2 V)] [inst_2 : DecidableEq V]
+  [inst_3 : DecidableRel (Sym2.rel Dart.Adj)], ¬SimpleGraph.IsEmpty G → ∃ (v : V), ∀ (w : V), SimpleGraph.Adj G v w
+
+∀ (V : Type u) [inst :  FintypeCat V] (G : SimpleGraph V) [inst_1 : SimpleGraph.IsRing G] [inst_2 : ∀ x y : V, SimpleGraph.Adj G x y → ∃ z, SimpleGraph.Adj G x z ∧ SimpleGraph.Adj G z y],
+  Nonempty V ∧ ∃ x, SimpleGraph.forall_adj G x
+
+∀ {V : Type u} [inst :  FintypeCat V] (G : SimpleGraph V) (h : ∀ v w, G.neighbourFinset v ∈ G.neighbourFinset w ∨ G.neighbourFinset w ∈ G.neighbourFinset v ∨ G.Adj v w),
+  Nonempty (Set.Nonempty.rec (fun n hn => Set.Nonempty.rec (fun v hv => Set.Nonempty.rec (fun w hw => ∃ (h : G.Adj v w), G.neighbourFinset v = G.neighbourFinset w) (G.neighbourFinset w ∈ G.neighbourFinset v ∨ G.Adj v w) hw) (G.neighbourFinset v ∈ G.neighbourFinset w ∨ G.Adj v w) hv) (G.neighbourFinset v ∈ G.neighbourFinset w ∧ G.neighbourFinset w ∈ G.neighbourFinset v ∨ G.Adj v w) hn) (G.neighbourFinset v ∈ G.neighbourFinset w ∧ G.neighbourFinset w ∈ G.neighbourFinset v) h
+
+failed to elaborate
+
+outputs: #[ ∀ {V : Type} (G : SimpleGraph V) [inst : Finite V] (h : ∀ v w : V, 1 ≤ SimpleGraph.Adj v w ∧ SimpleGraph.Adj w v),
+  ∃ v : V, ∀ w : V, SimpleGraph.Adj v w ∧ SimpleGraph.Adj w v ,  ∀ {V : Type u} (G : SimpleGraph V) [inst : Fintype V] [inst_1 : DecidableRel G.Adj]
+  [inst_2 : ∀ v w : V, ∃ z, G.Adj v z ∧ G.Adj z w], Nonempty (⋃ v : V, {w | G.Adj v w}),  ∀ {α : Type u_1} (G : SimpleGraph α) [inst : Fintype α] [inst_1 : DecidableRel G.Adj]
+  [inst_2 : ∀ (x y : α), G.Adj x y → G.Adj y x → Set.Nonempty (G.neighbors x) → Set.Nonempty (G.neighbors y)],
+  ∃ (x : α), ∀ (y : α), G.Adj x y,  ∀ {V : Type u} {G : SimpleGraph V} [inst : Fintype V] [inst_1 : DecidableRel G.Adj] (G : SimpleGraph V) [inst_2 :
+  ∀ (u v : V), ∃! w, G.Adj w u ∧ G.Adj w v], Nonempty (Set.range G.neighbors) ,  ∀ {V : Type} (G : SimpleGraph V) [inst : Fintype V] [inst_1 : DecidableRel G.Adj]
+  (H : ∀ v w : V, Fintype.card (Set.Inter (Set.range v.neighbors) (Set.range w.neighbors)) = 1),
+  ∃ (v : V), ∀ (w : V), G.Adj v w ≡ True ∧ G.Adj w v ≡ True,  ∀ {V : Type u} (G : SimpleGraph V) [inst : Fintype V] [inst_1 : DecidableRel G.Adj] (hG : ∀ (u v : V), SimpleGraph.Adj G u v → SimpleGraph.Adj G v u),
+  G.IsTotallyUniAdj → Nonempty {v : V // ∀ (u : V), SimpleGraph.Adj G v u} ,  ∀ {V : Type u} (G : SimpleGraph V) [inst : Fintype V] [inst_1 : DecidableRel G.Adj] (h : ∀ (v) (w),
+  SimpleGraph.card (SimpleGraph.neighbors G v) = 1 → ∃ (u), G.Adj v u ∧ G.Adj u w), Nonempty (Finset.univ.erase v) → ∃ (u), G.Adj v u ∧ G.Adj u (Finset.univ.erase v) ,  ∀ {V : Type} [inst : Fintype V] [inst_1 : Fintype (Sym2 V)] [inst_2 : DecidableEq V]
+  [inst_3 : DecidableRel (Sym2.rel Dart.Adj)], ¬SimpleGraph.IsEmpty G → ∃ (v : V), ∀ (w : V), SimpleGraph.Adj G v w,  ∀ (V : Type u) [inst : Fintype V] (G : SimpleGraph V) [inst_1 : SimpleGraph.IsRing G] [inst_2 : ∀ x y : V, SimpleGraph.Adj G x y → ∃ z, SimpleGraph.Adj G x z ∧ SimpleGraph.Adj G z y],
+  Nonempty V ∧ ∃ x, SimpleGraph.forall_adj G x,  ∀ {V : Type u} [inst : Fintype V] (G : SimpleGraph V) (h : ∀ v w, G.neighbourFinset v ∈ G.neighbourFinset w ∨ G.neighbourFinset w ∈ G.neighbourFinset v ∨ G.Adj v w),
+  Nonempty (Set.Nonempty.rec (fun n hn => Set.Nonempty.rec (fun v hv => Set.Nonempty.rec (fun w hw => ∃ (h : G.Adj v w), G.neighbourFinset v = G.neighbourFinset w) (G.neighbourFinset w ∈ G.neighbourFinset v ∨ G.Adj v w) hw) (G.neighbourFinset v ∈ G.neighbourFinset w ∨ G.Adj v w) hv) (G.neighbourFinset v ∈ G.neighbourFinset w ∧ G.neighbourFinset w ∈ G.neighbourFinset v ∨ G.Adj v w) hn) (G.neighbourFinset v ∈ G.neighbourFinset w ∧ G.neighbourFinset w ∈ G.neighbourFinset v) h]
+
+total : 8
+
+elaborated: 7
+
+No valid output from LLM; outputs below
+
+∀ (n : ℕ), Partitions n.odd_parts.length = Partitions n.distinct_parts.length  Jahrhunderts
+
+∀ (n : ℕ),
+  ((Finpartition.NonCrossing.count (Finpartition.NonCrossing.odd n)).card +
+      (Finpartition.NonCrossing.count (Finpartition.NonCrossing.distinct n)).card) =
+    Fintype.card {x : Finset ℕ // Finset.card x = n}
+
+<input>:1:147: unexpected end of input while parsing  ∀ (n : ℕ), Fintype.card { c : Finpartition n // c.parts.card.even } = Fintype.card { c : Finpartition n // Set.pairwise c.parts.cards.disjoint } ∧
+
+<input>:3:76: expected end of input while parsing  ∀ {α : Type u_1} [inst : Fintype α] {n : ℕ},
+  Fintype.card {s : Finpartition α // s.parts.card.even ∧ ∀ ⦃x⦄, x ∈ s.parts → s.parts ≠ {x}} =
+    Fintype.card {s : Finpartition α // ∀ ⦃x⦄, x ∈ s.parts → s.parts.Nodup} ↩
+
+∀ (n : ℕ), ∃ s : Finset (Finset α), Finset.card s = n →
+    (∀ t ∈ s, Finset.card t % 2 = 1) ↔ Finset.card (s.filter (fun t => ∀ (a : α), a ∈ t → ∀ (b : α), a ≠ b → b ∈ t)) = n 
+
+<input>:1:77: expected end of input while parsing  ∀ (n : ℕ), card (Composition.partition {i : ℕ // n < i}).parts = n.odd_card ↵
+
+<input>:19:5: unexpected end of input while parsing  ∀ (α : Type u_1) [Fintype α] (n : ℕ),
+  Fintype.card { s : Finpartition α // s.parts.card = n ∧ ∀ i ∈ s.parts, s.parts.card i % 2 = 1 } =
+    Fintype.card { s : Finpartition α // s.parts.Nodup ∧ ∀ i ∈ s.parts, i ∈ s.parts } ∧
+    Fintype.card { s : Finpartition α // s.parts.Nodup ∧ ∀ i ∈ s.parts, i = s.parts } ∧
+      n = 0 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 1 } ∧
+      n = 1 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 2 } ∧
+      n = 2 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 3 } ∧
+      n = 3 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 4 } ∧
+      n = 4 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 5 } ∧
+      n = 5 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 6 } ∧
+      n = 6 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 7 } ∧
+      n = 7 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 8 } ∧
+      n = 8 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 9 } ∧
+      n = 9 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 10 } ∧
+      n = 10 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 11 } ∧
+      n = 11 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 12 } ∧
+      n = 12 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 13 } ∧
+      n = 13 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 14 } ∧
+     
+
+∀ {ι : Type uι} [inst :  FintypeCat ι] [inst_1 : LinearOrder ι] (n : ℕ) (s : Finset ι),
+  Fintype.card { t // t ∈ Finset.filter (fun t : Finpartition s =>
+    Fintype.card t.parts = n ∧ (∀ i ∈ t.parts, ¬Fintype.card i.parts % 2 = 0)) } =
+    Fintype.card { t // t ∈ Finset.filter (fun t : Finpartition s =>
+      Fintype.card t.parts = n) } ∧
+      n ≠ 0 →
+        Fintype.card { t // t ∈ Finset.filter (fun t : Finpartition s =>
+          Fintype.card t.parts = n) } =
+          Fintype.card { t // t ∈ Finset.filter (fun t : Finpartition s =>
+            Fintype.card t.parts = n ∧ ∀ i ∈ t.parts, ¬Fintype.card i.parts % 2 = 0) }
+
+<input>:7:102: expected ')', ',' or ':' while parsing  ∀ (α : Type u_1) [inst : Fintype α],
+  (Finset.card {p : Finpartition α | p.parts.card = 2 * n ∧ p.IsEquipartition} =
+      Finset.card {p : Finpartition α | p.parts.card = 2 * n ∧ ¬p.IsEquipartition} ↔
+        Even n) ↔
+      ∀ (n : ℕ),
+        Finset.card {p : Finpartition α | p.parts.card = 2 * n ∧ p.IsEquipartition} =
+          Finset.card {p : Finpartition α | p.parts.card = 2 * n ∧ ¬p.IsEquipartition}  (__root\_.even\_iff\_two\_dvd\_.2 n) ∧ n ≠ 0
+
+<input>:2:124: expected ')', '↑', '↥', '⇑' or term while parsing  ∀ (n : ℕ),
+  (Finset.card {s : Finset ℕ // s.card = n ∧ s.even.card = 0}).card = Finset.card {s : Finset ℕ // s.card = n ∧ s.pairwise (≠)} ∧
+    (n ≤ 3 → Finset.card {s : Finset ℕ // s.card = n ∧ s.even.card = 0}).card =
+      2 ^ ((Fintype.card (Fin n)).choose 2) ∧
+        (n = 4 → Finset.card {s : Finset ℕ // s.card = n ∧ s.even.card = 0}).card = 3 ∧
+          n ≤ 3 → n ≤ 1 → Finset.card {s : Finset ℕ // s.card = n ∧ s.even.card = 0}.card = 1
+
+failed to elaborate
+
+outputs: #[ ∀ (n : ℕ), Partitions n.odd_parts.length = Partitions n.distinct_parts.length  Jahrhunderts,  ∀ (n : ℕ),
+  ((Finpartition.NonCrossing.count (Finpartition.NonCrossing.odd n)).card +
+      (Finpartition.NonCrossing.count (Finpartition.NonCrossing.distinct n)).card) =
+    Fintype.card {x : Finset ℕ // Finset.card x = n},  ∀ (n : ℕ), Fintype.card { c : Finpartition n // c.parts.card.even } = Fintype.card { c : Finpartition n // Set.pairwise c.parts.cards.disjoint } ∧,  ∀ {α : Type u_1} [inst : Fintype α] {n : ℕ},
+  Fintype.card {s : Finpartition α // s.parts.card.even ∧ ∀ ⦃x⦄, x ∈ s.parts → s.parts ≠ {x}} =
+    Fintype.card {s : Finpartition α // ∀ ⦃x⦄, x ∈ s.parts → s.parts.Nodup} ↩,  ∀ (n : ℕ), ∃ s : Finset (Finset α), Finset.card s = n →
+    (∀ t ∈ s, Finset.card t % 2 = 1) ↔ Finset.card (s.filter (fun t => ∀ (a : α), a ∈ t → ∀ (b : α), a ≠ b → b ∈ t)) = n ,  ∀ (n : ℕ), card (Composition.partition {i : ℕ // n < i}).parts = n.odd_card ↵,  ∀ (α : Type u_1) [Fintype α] (n : ℕ),
+  Fintype.card { s : Finpartition α // s.parts.card = n ∧ ∀ i ∈ s.parts, s.parts.card i % 2 = 1 } =
+    Fintype.card { s : Finpartition α // s.parts.Nodup ∧ ∀ i ∈ s.parts, i ∈ s.parts } ∧
+    Fintype.card { s : Finpartition α // s.parts.Nodup ∧ ∀ i ∈ s.parts, i = s.parts } ∧
+      n = 0 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 1 } ∧
+      n = 1 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 2 } ∧
+      n = 2 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 3 } ∧
+      n = 3 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 4 } ∧
+      n = 4 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 5 } ∧
+      n = 5 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 6 } ∧
+      n = 6 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 7 } ∧
+      n = 7 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 8 } ∧
+      n = 8 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 9 } ∧
+      n = 9 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 10 } ∧
+      n = 10 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 11 } ∧
+      n = 11 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 12 } ∧
+      n = 12 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 13 } ∧
+      n = 13 → Fintype.card { s : Finpartition α // s.parts.Nodup ∧ s.parts.card = 14 } ∧
+     ,  ∀ {ι : Type uι} [inst : Fintype ι] [inst_1 : LinearOrder ι] (n : ℕ) (s : Finset ι),
+  Fintype.card { t // t ∈ Finset.filter (fun t : Finpartition s =>
+    Fintype.card t.parts = n ∧ (∀ i ∈ t.parts, ¬Fintype.card i.parts % 2 = 0)) } =
+    Fintype.card { t // t ∈ Finset.filter (fun t : Finpartition s =>
+      Fintype.card t.parts = n) } ∧
+      n ≠ 0 →
+        Fintype.card { t // t ∈ Finset.filter (fun t : Finpartition s =>
+          Fintype.card t.parts = n) } =
+          Fintype.card { t // t ∈ Finset.filter (fun t : Finpartition s =>
+            Fintype.card t.parts = n ∧ ∀ i ∈ t.parts, ¬Fintype.card i.parts % 2 = 0) },  ∀ (α : Type u_1) [inst : Fintype α],
+  (Finset.card {p : Finpartition α | p.parts.card = 2 * n ∧ p.IsEquipartition} =
+      Finset.card {p : Finpartition α | p.parts.card = 2 * n ∧ ¬p.IsEquipartition} ↔
+        Even n) ↔
+      ∀ (n : ℕ),
+        Finset.card {p : Finpartition α | p.parts.card = 2 * n ∧ p.IsEquipartition} =
+          Finset.card {p : Finpartition α | p.parts.card = 2 * n ∧ ¬p.IsEquipartition}  (__root\_.even\_iff\_two\_dvd\_.2 n) ∧ n ≠ 0,  ∀ (n : ℕ),
+  (Finset.card {s : Finset ℕ // s.card = n ∧ s.even.card = 0}).card = Finset.card {s : Finset ℕ // s.card = n ∧ s.pairwise (≠)} ∧
+    (n ≤ 3 → Finset.card {s : Finset ℕ // s.card = n ∧ s.even.card = 0}).card =
+      2 ^ ((Fintype.card (Fin n)).choose 2) ∧
+        (n = 4 → Finset.card {s : Finset ℕ // s.card = n ∧ s.even.card = 0}).card = 3 ∧
+          n ≤ 3 → n ≤ 1 → Finset.card {s : Finset ℕ // s.card = n ∧ s.even.card = 0}.card = 1]
+
+total : 9
+
+elaborated: 7
+
+success
+
+theorem ∀ {α : Type u_1} {r : α → α → Prop} [inst : Nonempty α] (s : Set α),
+  (∀ (c : Set α), IsChain r c → ∃ ub, ∀ a ∈ c, r a ub) →
+    (∀ a ∈ s, ∀ b ∈ s, r a b → r b a) →
+      Nonempty (∀ a ∈ s, ∃ ub, ∀ a ∈ s, r a ub) ∧ Set.Nonempty s → Nonempty (∃ m ∈ s, ∀ a ∈ s, r a m → r m a)
+
+total : 10
+
+elaborated: 8
+
+No valid output from LLM; outputs below
+
+∀ {α : Type u_1} [inst :  GroupCat α], IsCyclic (Aut α) →  CommGroupCat α 
+
+∀ {α : Type u} [inst :  GroupCat α] [inst_1 :  GroupCat (Aut α)], IsCyclic (Aut α) →  CommGroupCat α 
+
+∀ {G : Type u_2} [inst :  GroupCat G], IsCyclic (Automorphisms G) → Group.IsAbelian G 
+
+∀ {G : Type u_2} [inst :  GroupCat G] [inst_1 :  GroupCat (Aut G)] [inst_2 : IsCyclic (Aut G)], IsAbelian G 
+
+∀ {α : Type u_2} [inst :  GroupCat α] (f : α ≃* α), IsCyclic f →  CommGroupCat α 
+
+∀ {α : Type u} [inst :  GroupCat α] [inst_1 :  GroupCat (Aut α)] [inst_2 : IsCyclic inst_1],
+  IsAbelian α 
+
+∀ {α : Type u} [inst :  GroupCat α], Group.IsCyclic (Aut α) → IsAbelian α
+
+∀ {G : Type u_2} [inst :  GroupCat G] [inst_1 : Monoid.IsCyclic (Aut G)] [inst_2 : Nonempty G], IsAbelian G 
+
+∀ {α : Type u_1} [inst :  GroupCat α], Group.IsCyclic (AutomorphismGroup α) →  CommGroupCat α ∧ IsAbelian α
+
+∀ (α : Type u_1) [inst :  GroupCat α] (f : Perm α), IsCyclic (Subgroup.closure ( ZFSet.range f)) →  CommGroupCat α 
+
+failed to elaborate
+
+outputs: #[ ∀ {α : Type u_1} [inst : Group α], IsCyclic (Aut α) → CommGroup α ,  ∀ {α : Type u} [inst : Group α] [inst_1 : Group (Aut α)], IsCyclic (Aut α) → CommGroup α ,  ∀ {G : Type u_2} [inst : Group G], IsCyclic (Automorphisms G) → Group.IsAbelian G ,  ∀ {G : Type u_2} [inst : Group G] [inst_1 : Group (Aut G)] [inst_2 : IsCyclic (Aut G)], IsAbelian G ,  ∀ {α : Type u_2} [inst : Group α] (f : α ≃* α), IsCyclic f → CommGroup α ,  ∀ {α : Type u} [inst : Group α] [inst_1 : Group (Aut α)] [inst_2 : IsCyclic inst_1],
+  IsAbelian α ,  ∀ {α : Type u} [inst : Group α], Group.IsCyclic (Aut α) → IsAbelian α,  ∀ {G : Type u_2} [inst : Group G] [inst_1 : Monoid.IsCyclic (Aut G)] [inst_2 : Nonempty G], IsAbelian G ,  ∀ {α : Type u_1} [inst : Group α], Group.IsCyclic (AutomorphismGroup α) → CommGroup α ∧ IsAbelian α,  ∀ (α : Type u_1) [inst : Group α] (f : Perm α), IsCyclic (Subgroup.closure (Set.range f)) → CommGroup α ]
+
+total : 11
+
+elaborated: 8
+
+success
+
+theorem ∀ {α : Type u} {β : Type v} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β} {g : β → α}
+  [inst_2 : TopologicalSpace β], UniformContinuous f → UniformContinuous g → UniformContinuous (f ∘ g)
+
+total : 12
+
+elaborated: 9
+
+success
+
+theorem ∀ {α : Type u} {β : Type v} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β} {g : β → α}
+  [inst_2 : TopologicalSpace β], UniformContinuous f → UniformContinuous g → UniformContinuous (f ∘ g)
+
+total : 13
+
+elaborated: 10
+
+success
+
+theorem ∀ {X : Type u} [inst : TopologicalSpace X] [self : NormalSpace X] (s t : Set X),
+  IsClosed s → IsClosed t → Disjoint s t → ∃ f, Continuous f ∧ (∀ x ∈ s, f x = 0) ∧ ∀ x ∈ t, f x = 1
+
+total : 14
+
+elaborated: 11
+
+success
+
+theorem ∀ {α : Type u_1} [inst : Nonempty α] (f : α → α) {x : α},
+  Function.IsPeriodicPt f 3 x → ∀ (m : ℕ), 0 < m → ∃ y, Function.IsPeriodicPt f m y
+
+total : 15
+
+elaborated: 12
+
+success
+
+theorem (C : Type u) →
+  [inst : CategoryTheory.Category.{v, u} C] →
+    [inst_1 : CategoryTheory.Limits.HasTerminal C] → Unique (∀ (X : C), Nonempty (X ≅ ⊤_ C))
+
+total : 16
+
+elaborated: 13
+
+success
+
+theorem ∀ {α : Type u} [inst : TopologicalSpace α] {s t : Set α}, sᶜ ∪ tᶜ = (s ∪ t)ᶜ
+
+total : 17
+
+elaborated: 14
+
+success
+
+theorem ∀ {m n k : ℕ}, 0 < m → 0 < n → k * k * k ≠ m * m + n * n → ¬(0 < k → 0 < k → k * k = m * m + n * n)
+
+total : 18
+
+elaborated: 15
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G], (∀ (x : G), orderOf x = 2) → ∀ (x y : G), Commute x y
+
+total : 19
+
+elaborated: 16
+
+success
+
+theorem ∀ {a b : ℕ}, a + 1 ≤ b → Even (a * b)
+
+total : 20
+
+elaborated: 17
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G] (H : Subgroup G), Subgroup.index H = 2 → Subgroup.Normal H
+
+total : 21
+
+elaborated: 18
+
+success
+
+theorem ∀ (G : Type u_1) [inst : Group G] [inst_1 : IsFreeGroup G], Monoid.IsTorsionFree G
+
+total : 22
+
+elaborated: 19
+
+success
+
+theorem ∀ (n : ℕ), 1 < n → ∃ p, Nat.Prime p ∧ p ∣ n
+
+total : 23
+
+elaborated: 20
+
+success
+
+theorem ∀ {α : Type u} [inst : Group α] [inst_1 : Fintype α] {p : ℕ} [hp : Fact (Nat.Prime p)],
+  Fintype.card α = p → IsSimpleGroup α
+
+total : 24
+
+elaborated: 21
+
+success
+
+theorem ∀ (D : Type u_1) [inst : Finite D] [inst_1 : DivisionRing D], IsField D
+
+total : 25
+
+elaborated: 22
+
+success
+
+theorem ∀ {X : Type u} [inst : TopologicalSpace X] [inst_1 : Finite X], CompactSpace X
+
+total : 26
+
+elaborated: 23
+
+success
+
+theorem ∀ {α : Type u_1} {β : Type u_2} [inst : Group α] [inst_1 : Group β] (f : α →* β) [inst_2 : IsFreeGroup α]
+  [inst_3 : IsFreeGroup β], Function.Surjective ⇑f → Function.Injective ⇑f
+
+total : 27
+
+elaborated: 24
+
+success
+
+theorem ∀ {n : ℕ}, 0 < n → Even n → ∃ p q, Nat.Prime p ∧ Nat.Prime q ∧ n = p + q
+
+total : 28
+
+elaborated: 25
+
+No valid output from LLM; outputs below
+
+∀ {n : Type u_1} {α : Type u_2} [inst :  FintypeCat n] [inst_1 : NonAssocSemiring α] (A : Matrix n n α),
+  Polynomial.aeval (Matrix.charpoly A) A = 1 
+
+∀ {R : Type u_1} {M : Type u_2} [inst :  CommRingCat R] [inst_1 : Nontrivial R] [inst_2 :  AddCommGroupCat M] [inst_3 :  ModuleCat R M]
+  [inst_4 : Module.Free R M] [inst_5 : Module.Finite R M] (f : M →ₗ[R] M), LinearMap.charpoly f = Matrix.charpoly ((LinearMap.toMatrix I I) f) 
+
+∀ {R : Type u_1} {M : Type u_2} [inst :  CommRingCat R] [inst_1 : Nontrivial R] [inst_2 :  AddCommGroupCat M] [inst_3 :  ModuleCat R M]
+  [inst_4 : Module.Free R M] [inst_5 : Module.Finite R M] (A : Matrix n n R), Matrix.charpoly A = Matrix.charpoly (Matrix.toLinearMap A) 
+
+∀ {R : Type u_1} {M : Type u_2} [inst :  CommRingCat R] {n : Type u_3} [inst_1 :  FintypeCat n] (M : Matrix n n R) (i : n),
+  Polynomial.eval (Matrix.charpoly M) (Matrix.IsHermitian.eigenvalues M i) = 0 
+
+∀ {R : Type u} {M : Type v} [inst :  CommRingCat R] [inst_1 :  ModuleCat R M] (A : Matrix n n M) (p : Polynomial R),
+  Matrix.toLin' A (Polynomial.eval₂ (Matrix.toLin' A) p A) = p.map (Matrix.toLin' A) 
+
+∀ {𝕜 : Type u_1} [inst : Field 𝕜] {n : Type u_2} [inst_1 :  FintypeCat n] {A : Matrix n n 𝕜},
+  Matrix.charpoly A = Matrix.charpoly (Matrix.mul (Matrix.mul A Matrix.one) Matrix.one)
+
+<input>:2:72: expected end of input while parsing  ∀ {α : Type u_1} {n : Type u_4} [inst : CommRing α] (A : Matrix n n α) {x : α},
+  Polynomial.IsRoot (Polynomial.charpoly A) x ↔ Matrix.IsEigenvalue A x ↵
+
+∀ {n : Type u_1} {α : Type u_2} [inst : DecidableEq n] {R : Type u_3} [inst_1 : CommSemiring R] (M : Matrix n n R),
+  Matrix.charpoly M = Polynomial.X ^ M.trace - Polynomial.C (Matrix.det M) 
+
+∀ {α : Type u_1} [inst :  CommRingCat α] (A : Matrix n n α) (p : α[X]),
+  Polynomial.eval A p = 0 ∧ Polynomial.rootSet α p = {1}
+
+<input>:2:83: expected end of input while parsing  ∀ {𝕜 : Type u_1} [inst : IsROrC 𝕜] {n : Type u_2} [inst_1 : Fintype n] {A : Matrix n n 𝕜},
+  Matrix.charpoly A = Polynomial.X ^ n.card ∧ ∀ (v : n → 𝕜), Matrix.mulVec A v = v ↦ Polynomial.eval (Matrix.charpoly A) (Matrix.det A) ∧ v = Matrix.mulVec (Matrix.invOf (Matrix.det A) ⁻¹) (Matrix.mulVec A (Matrix.invOf (Matrix.det A) ⁻¹)) v
+
+failed to elaborate
+
+outputs: #[ ∀ {n : Type u_1} {α : Type u_2} [inst : Fintype n] [inst_1 : NonAssocSemiring α] (A : Matrix n n α),
+  Polynomial.aeval (Matrix.charpoly A) A = 1 ,  ∀ {R : Type u_1} {M : Type u_2} [inst : CommRing R] [inst_1 : Nontrivial R] [inst_2 : AddCommGroup M] [inst_3 : Module R M]
+  [inst_4 : Module.Free R M] [inst_5 : Module.Finite R M] (f : M →ₗ[R] M), LinearMap.charpoly f = Matrix.charpoly ((LinearMap.toMatrix I I) f) ,  ∀ {R : Type u_1} {M : Type u_2} [inst : CommRing R] [inst_1 : Nontrivial R] [inst_2 : AddCommGroup M] [inst_3 : Module R M]
+  [inst_4 : Module.Free R M] [inst_5 : Module.Finite R M] (A : Matrix n n R), Matrix.charpoly A = Matrix.charpoly (Matrix.toLinearMap A) ,  ∀ {R : Type u_1} {M : Type u_2} [inst : CommRing R] {n : Type u_3} [inst_1 : Fintype n] (M : Matrix n n R) (i : n),
+  Polynomial.eval (Matrix.charpoly M) (Matrix.IsHermitian.eigenvalues M i) = 0 ,  ∀ {R : Type u} {M : Type v} [inst : CommRing R] [inst_1 : Module R M] (A : Matrix n n M) (p : Polynomial R),
+  Matrix.toLin' A (Polynomial.eval₂ (Matrix.toLin' A) p A) = p.map (Matrix.toLin' A) ,  ∀ {𝕜 : Type u_1} [inst : Field 𝕜] {n : Type u_2} [inst_1 : Fintype n] {A : Matrix n n 𝕜},
+  Matrix.charpoly A = Matrix.charpoly (Matrix.mul (Matrix.mul A Matrix.one) Matrix.one),  ∀ {α : Type u_1} {n : Type u_4} [inst : CommRing α] (A : Matrix n n α) {x : α},
+  Polynomial.IsRoot (Polynomial.charpoly A) x ↔ Matrix.IsEigenvalue A x ↵,  ∀ {n : Type u_1} {α : Type u_2} [inst : DecidableEq n] {R : Type u_3} [inst_1 : CommSemiring R] (M : Matrix n n R),
+  Matrix.charpoly M = Polynomial.X ^ M.trace - Polynomial.C (Matrix.det M) ,  ∀ {α : Type u_1} [inst : CommRing α] (A : Matrix n n α) (p : α[X]),
+  Polynomial.eval A p = 0 ∧ Polynomial.rootSet α p = {1},  ∀ {𝕜 : Type u_1} [inst : IsROrC 𝕜] {n : Type u_2} [inst_1 : Fintype n] {A : Matrix n n 𝕜},
+  Matrix.charpoly A = Polynomial.X ^ n.card ∧ ∀ (v : n → 𝕜), Matrix.mulVec A v = v ↦ Polynomial.eval (Matrix.charpoly A) (Matrix.det A) ∧ v = Matrix.mulVec (Matrix.invOf (Matrix.det A) ⁻¹) (Matrix.mulVec A (Matrix.invOf (Matrix.det A) ⁻¹)) v]
+
+total : 29
+
+elaborated: 25
+
+success
+
+theorem ∀ {r : ℝ}, Irrational r → Irrational (Real.sqrt r)
+
+total : 30
+
+elaborated: 26
+
+success
+
+theorem ∀ {α : Type u} [inst : LinearOrderedRing α] {n : α}, n * n = 0 → n = 0
+
+total : 31
+
+elaborated: 27
+
+success
+
+theorem ∀ {R : Type u} [inst : CommRing R] [inst_1 : Fintype R] (P : Ideal R), Ideal.IsPrime P → Ideal.IsMaximal P
+
+total : 32
+
+elaborated: 28
+
+success
+
+theorem ∀ (X : Type u) [inst : TopologicalSpace X], T2Space X ↔ IsClosed {p | p.1 = p.2}
+
+total : 33
+
+elaborated: 29
+
+success
+
+theorem ∀ {α : Type u_1} [inst : TopologicalSpace α] (U : Set α) (x : α → α),
+  ∀ y ∈ U, ∃ V, IsOpen V ∧ y ∈ V ∧ x y ∈ V → U ⊆ V ∧ IsOpen U
+
+total : 34
+
+elaborated: 30
+
+success
+
+theorem ∀ {G : Type u_1} [inst : Group G] [inst_1 : IsFreeGroup G] {x : G}, x ≠ 1 → ¬IsOfFinOrder x
+
+total : 35
+
+elaborated: 31
+
+No valid output from LLM; outputs below
+
+∀ {R : Type u_1} [inst :  CommRingCat R] [inst_1 : DiscreteValuationRing R] (x : R), IsUnit x ↔ IsDedekindDomain.HeightOneSpectrum.intValuationDef v x = 0 
+
+∀ {R : Type u_1} [inst :  CommRingCat R] [inst_1 : DiscreteValuationRing R] (x : R), IsUnit x ↔ IsDedekindDomain.HeightOneSpectrum.intValuationDef R x = 0 
+
+∀ {R : Type u_1} [inst : DiscreteValuationRing R] (v : Valuation R R) (x : R), IsUnit x ↔ v x = 0 
+
+∀ {R : Type u_1} [inst :  CommRingCat R] [inst_1 : IsDomain R] [inst_2 : DiscreteValuationRing R] (v : Valuation R ℤ),
+  IsUnit (v x) ↔ v x = 0 ∧ x ≠ 0 
+
+∀ {R : Type u_1} [inst :  CommRingCat R] [inst_1 : DiscreteValuationRing R] (v : DiscreteValuationRing.HeightOneSpectrum R)
+  (x : R), IsUnit (↑x) ↔ IsDedekindDomain.HeightOneSpectrum.intValuationDef v x = 0 
+
+∀ {R : Type u_1} [inst :  CommRingCat R] [inst_1 : DiscreteValuationRing R] (x : R),
+  IsUnit x ↔ IsUnit (v x) ∧ v x = 0
+
+∀ {R : Type u_1} [inst :  CommRingCat R] [inst_1 : DiscreteValuationRing R] (v : DiscreteValuation R) {x : R},
+  IsUnit x ↔ v x = 0 
+
+∀ {R : Type u_1} [inst :  CommRingCat R] [inst_1 : IsDomain R] [inst_2 : DiscreteValuationRing R]
+  (v : Valuation R ℤ) (x : R), v x = 0 ↔ IsUnit x ∨ x = 0 
+
+∀ {R : Type u_1} [inst :  CommRingCat R] [inst_1 : DiscreteValuationRing R]
+  (v : Valuation R ℤ), Units (NonZeroDivisors R) ↔ v x = 0
+
+∀ {R : Type u_1} [inst :  CommRingCat R] [inst_1 : IsDomain R] [inst_2 : DiscreteValuationRing R]
+  (v : Valuation R ℤ), ∃ x : R, v x = 0 ↔ IsUnit x issenschaftlich
+
+failed to elaborate
+
+outputs: #[ ∀ {R : Type u_1} [inst : CommRing R] [inst_1 : DiscreteValuationRing R] (x : R), IsUnit x ↔ IsDedekindDomain.HeightOneSpectrum.intValuationDef v x = 0 ,  ∀ {R : Type u_1} [inst : CommRing R] [inst_1 : DiscreteValuationRing R] (x : R), IsUnit x ↔ IsDedekindDomain.HeightOneSpectrum.intValuationDef R x = 0 ,  ∀ {R : Type u_1} [inst : DiscreteValuationRing R] (v : Valuation R R) (x : R), IsUnit x ↔ v x = 0 ,  ∀ {R : Type u_1} [inst : CommRing R] [inst_1 : IsDomain R] [inst_2 : DiscreteValuationRing R] (v : Valuation R ℤ),
+  IsUnit (v x) ↔ v x = 0 ∧ x ≠ 0 ,  ∀ {R : Type u_1} [inst : CommRing R] [inst_1 : DiscreteValuationRing R] (v : DiscreteValuationRing.HeightOneSpectrum R)
+  (x : R), IsUnit (↑x) ↔ IsDedekindDomain.HeightOneSpectrum.intValuationDef v x = 0 ,  ∀ {R : Type u_1} [inst : CommRing R] [inst_1 : DiscreteValuationRing R] (x : R),
+  IsUnit x ↔ IsUnit (v x) ∧ v x = 0,  ∀ {R : Type u_1} [inst : CommRing R] [inst_1 : DiscreteValuationRing R] (v : DiscreteValuation R) {x : R},
+  IsUnit x ↔ v x = 0 ,  ∀ {R : Type u_1} [inst : CommRing R] [inst_1 : IsDomain R] [inst_2 : DiscreteValuationRing R]
+  (v : Valuation R ℤ) (x : R), v x = 0 ↔ IsUnit x ∨ x = 0 ,  ∀ {R : Type u_1} [inst : CommRing R] [inst_1 : DiscreteValuationRing R]
+  (v : Valuation R ℤ), Units (NonZeroDivisors R) ↔ v x = 0,  ∀ {R : Type u_1} [inst : CommRing R] [inst_1 : IsDomain R] [inst_2 : DiscreteValuationRing R]
+  (v : Valuation R ℤ), ∃ x : R, v x = 0 ↔ IsUnit x issenschaftlich]
+
+total : 36
+
+elaborated: 31
+
+success
+
+theorem ∀ {a b : ℕ} {x y u v : ℕ},
+  Nat.Coprime a b →
+    ∀ (N : ℕ), ∃ r s, r * a + s * b = N ∧ ∀ (m : ℕ), Nat.Coprime m a → Nat.Coprime m b → ∃ x y, m = a * x + b * y
+
+total : 37
+
+elaborated: 32
+
+success
+
+theorem {K : Type u_1} → [inst : Field K] → Ring K
+
+total : 38
+
+elaborated: 33
+
+success
+
+theorem {R : Type u_1} → [inst : Ring R] → Group Rˣ
+
+total : 39
+
+elaborated: 34
+
+success
+
+theorem ∀ {G H : Type u_1} [inst : Group G] [inst_1 : Group H],
+  Monoid.IsTorsionFree (G × H) → Monoid.IsTorsionFree G → Monoid.IsTorsionFree H
+
+total : 40
+
+elaborated: 35
+
