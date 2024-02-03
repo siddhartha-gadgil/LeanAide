@@ -81,15 +81,31 @@ namespace GPT
 def message (role content : String) : Json :=
   Json.mkObj [("role", role), ("content", content)]
 
-def prompt (sys: String) (egs : List <| String × String)(query : String) : Json :=
+def prompt (sys: String) (egs : List <| String × String)
+  (query : String)(pfx : String := "") : Json :=
   let head := message "system" sys
   let egArr :=
-    egs.bind (fun (ds, thm) => [message "user" ds, message "assistant" thm])
-  Json.arr <| head :: egArr ++ [message "user" query] |>.toArray
+    egs.bind (fun (ds, thm) => [message "user" (pfx ++ ds), message "assistant" thm])
+  Json.arr <| head :: egArr ++ [message "user" (pfx ++ query)] |>.toArray
+
+def syslessPrompt (sys: String)(egs : List <| String × String)
+    (query : String)(pfx : String := "") : Json :=
+  let egsPadded := match egs with
+  | [] => []
+  | (ds, thm) :: _ => (s!"{sys}
+
+{pfx}" ++ ds, thm) :: (egs.map (fun (ds, thm) => (pfx ++ ds, thm)))
+  let egArr :=
+    egsPadded.bind (fun (ds, thm) => [message "user" ds, message "assistant" thm])
+  Json.arr <| egArr ++ [message "user" query] |>.toArray
 
 def sysPrompt := "You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples. Follow EXACTLY the examples given."
 
-def makePrompt(query : String)(pairs: Array (String × String)) : Json:= prompt sysPrompt pairs.toList query
+def makePrompt(query : String)(pairs: Array (String × String))(pfx: String := "")(sysLess: Bool := false) : Json:=
+  if sysLess then
+    syslessPrompt sysPrompt pairs.toList query pfx
+  else
+    prompt sysPrompt pairs.toList query pfx
 
 def makeFlipPrompt(query : String)(pairs: Array (String × String)) : Json:= prompt sysPrompt (pairs.toList.map (fun (x, y) => (y, x))) query
 
@@ -395,7 +411,7 @@ def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := docField)
 def getLeanCodeJson (s: String)(numSim : Nat:= 8)
   (includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := 0.8)(model: String)
   (azure: Bool := false)
-  (url? : Option String := none) : CoreM Json := do
+  (url? : Option String := none)(pfx: String := "")(sysLess: Bool := false) : CoreM Json := do
   logTimed s!"translating string `{s}` with {numSim} examples"
   match ← getCachedJson? s with
   | some js => return js
@@ -415,7 +431,7 @@ def getLeanCodeJson (s: String)(numSim : Nat:= 8)
       | Except.ok pairs => do
       let pairs := if includeFixed then pairs ++ fixedPrompts else pairs
       let pairs  := pairs.filter (fun (s, _) => s.length < 100)
-      let prompt := GPT.makePrompt s pairs
+      let prompt := GPT.makePrompt s pairs pfx sysLess
       trace[Translate.info] m!"prompt: \n{prompt.pretty}"
       mkLog prompt
       logTimed "querying gpt"
