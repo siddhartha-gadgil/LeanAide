@@ -50,7 +50,7 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed:
   let promptsFile := System.mkFilePath ["data",
     s!"prompts-{type}-{numSim}-{includeFixed}-{queryNum}-{temp.mantissa}.jsonl"]
   let outFile := System.mkFilePath
-      ["results",
+      ["results", "model",
       s!"{type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp.mantissa}.jsonl"]
   IO.FS.writeFile outFile ""
   let outHandle ← IO.FS.Handle.mk outFile IO.FS.Mode.append

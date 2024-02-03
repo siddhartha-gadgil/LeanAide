@@ -52,9 +52,13 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
 
         pure qdMap
 
+  let dir := System.mkFilePath <| ["results", model]
+  if !(← dir.pathExists) then
+        IO.FS.createDirAll dir
+
   let outFile := System.mkFilePath <|
-    [p.flag? "output" |>.map (fun s => s.as! String) |>.getD
-      s!"results/{type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp10}.json"]
+    p.flag? "output" |>.map (fun s => [s.as! String]) |>.getD
+      ["results", model, s!"{type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp10}.json"]
   let env ←
     importModules #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
