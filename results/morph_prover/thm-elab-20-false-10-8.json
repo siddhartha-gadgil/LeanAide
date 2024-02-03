@@ -1,0 +1,619 @@
+{"total-prompts": 40,
+ "temperature": 0.8,
+ "query-number": 10,
+ "number-similar-sentences": 20,
+ "include-fixed": false,
+ "failures":
+ ["A finite graph in which every pair of vertices have precisely one common neighbour contains a vertex that is adjacent to all other vertices.",
+  "The number of partitions with odd parts is equal to the number of partitions with distinct parts.",
+  "A group whose automorphism group is cyclic is Abelian.",
+  "Every matrix satisfies its own characteristic polynomial.",
+  "An element of a discrete valuation ring is a unit if and only if it has a valuation of zero."],
+ "elaborated-prompts":
+ [{"theorem":
+   "∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace.NoetherianSpace α] (s : Set α),\n  IsClosed s → s ≠ Set.univ → IsCompact s → IsCompact s",
+   "some-correct": null,
+   "prompt":
+   "If every proper closed subset of a topological space is compact, then the space itself is compact.",
+   "groups":
+   [["∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace.NoetherianSpace α] (s : Set α),\n  IsClosed s → s ≠ Set.univ → IsCompact s → IsCompact s"],
+    ["∀ {X : Type u_1} [inst : TopologicalSpace X], (∀ (s : Set X), IsClosed s → s ≠ Set.univ → IsCompact s) → CompactSpace X"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {X : Type u_1} [inst : TopologicalSpace X] (h : ∀ s : Set X, IsClosed s → s ≠ Set.univ → IsCompact s), CompactSpace X",
+    " ∀ {α : Type u} [inst : TopologicalSpace α] [inst_1 : TopologicalSpace.NoetherianSpace α] (s : Set α), IsClosed s → s ≠ Set.univ → IsCompact s → IsCompact ↑s "]},
+  {"theorem":
+   "∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p % 4 = 1 → ∃ a b, a ^ 2 + b ^ 2 = (2 * ↑p - 1) / 4",
+   "some-correct": null,
+   "prompt":
+   "Every prime that is `1` greater than a multiple of `4` can be expressed as the sum of two squares.",
+   "groups":
+   [["∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p % 4 = 1 → ∃ a b, a ^ 2 + b ^ 2 = (2 * ↑p - 1) / 4"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p % 4 = 1 → ∃ a b : ℤ, a ^ 2 + b ^ 2 = (2 * p - 1) / 4"]},
+  {"theorem":
+   "∀ {R : Type u_1} [inst : CommRing R] (a b : R),\n  (∃ x y z w, a = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) →\n    (∃ u v t w, b = u ^ 2 + v ^ 2 + t ^ 2 + w ^ 2) → ∃ u v t w, a * b = u ^ 2 + v ^ 2 + t ^ 2 + w ^ 2",
+   "some-correct": null,
+   "prompt":
+   "The product of two numbers, each of which is the sum of four squares, is itself a sum of four squares.",
+   "groups":
+   [["∀ {R : Type u_1} [inst : CommRing R] (a b : R),\n  (∃ x y z w, a = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) →\n    (∃ u v t w, b = u ^ 2 + v ^ 2 + t ^ 2 + w ^ 2) → ∃ u v t w, a * b = u ^ 2 + v ^ 2 + t ^ 2 + w ^ 2",
+     "∀ {R : Type u_1} [inst : CommRing R] (a b : R),\n  (∃ x y z w, a = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) →\n    (∃ u v p q, b = u ^ 2 + v ^ 2 + p ^ 2 + q ^ 2) → ∃ p p_1 q q_1, a * b = p ^ 2 + p_1 ^ 2 + q ^ 2 + q_1 ^ 2"],
+    ["∀ {R : Type u_1} [inst : CommRing R] (a b : R),\n  ∃ x y z u v, x ^ 2 + y ^ 2 = a ∧ z ^ 2 + u ^ 2 = b → ∃ r s t n, a * b = r ^ 2 + s ^ 2 + t ^ 2 + n ^ 2"],
+    ["∀ {R : Type u_1} [inst : CommRing R] (a b : R),\n  ∃ x y z w u v,\n    a = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2 ∧ b = u ^ 2 + v ^ 2 + z ^ 2 + w ^ 2 →\n      ∃ r s t u, a * b = r ^ 2 + s ^ 2 + t ^ 2 + u ^ 2"],
+    ["∀ (R : Type u_1) [inst : CommRing R] (a b : R),\n  IsSquare (a ^ 2 + b ^ 2) → IsSquare (a ^ 2 - b ^ 2) → ∃ r s t u, a * b = r ^ 2 + s ^ 2 + t ^ 2 + u ^ 2"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {R : Type u_1} [inst : CommRing R] (a b : R),\n    (∃ x y z w, a = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) →\n      (∃ u v t w, b = u ^ 2 + v ^ 2 + t ^ 2 + w ^ 2) →\n        ∃ u v t w, a * b = u ^ 2 + v ^ 2 + t ^ 2 + w ^ 2 ",
+    " ∀ {R : Type u_1} [inst : CommRing R] (a b : R),\n   ∃ x y z w u v, a = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2 ∧ b = u ^ 2 + v ^ 2 + z ^ 2 + w ^ 2 →\n      ∃ r s t u, a * b = r ^ 2 + s ^ 2 + t ^ 2 + u ^ 2 ",
+    " ∀ (R : Type u_1) [inst : CommRing R] (a b : R),\n  IsSquare (a ^ 2 + b ^ 2) → IsSquare (a ^ 2 - b ^ 2) → ∃ r s t u, a * b = r ^ 2 + s ^ 2 + t ^ 2 + u ^ 2 ",
+    " ∀ {R : Type u_1} [inst : CommRing R] (a b : R),\n    (∃ x y z w, a = x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) →\n      (∃ u v p q, b = u ^ 2 + v ^ 2 + p ^ 2 + q ^ 2) →\n        ∃ p p_1 q q_1, a * b = p ^ 2 + p_1 ^ 2 + q ^ 2 + q_1 ^ 2 ",
+    " ∀ {R : Type u_1} [inst : CommRing R] (a b : R),\n     ∃ x y z u v : R, x ^ 2 + y ^ 2 = a ∧ z ^ 2 + u ^ 2 = b → ∃ r s t n, a * b = r ^ 2 + s ^ 2 + t ^ 2 + n ^ 2 "]},
+  {"theorem":
+   "∀ {α : Type u_2} [inst : NonUnitalNonAssocSemiring α] (a x y : α), a * a * (x * y) = x * y ∧ a * a * (y * x) = x * y",
+   "some-correct": null,
+   "prompt": "A ring with all elements idempotent is commutative.",
+   "groups":
+   [["∀ {α : Type u_2} [inst : NonUnitalNonAssocSemiring α] (a x y : α), a * a * (x * y) = x * y ∧ a * a * (y * x) = x * y"],
+    ["∀ {α : Type u_3} [inst : CommRing α] (a b : α), IsIdempotentElem a → IsIdempotentElem b → Commute a b"],
+    ["∀ {α : Type u_5} [inst : CommRing α] (a : α), a * a = a → Commute a a"],
+    ["∀ {α : Type u_2} [inst : CommRing α] (x y : α),\n  IsIdempotentElem x →\n    IsIdempotentElem y → Commute x y ∧ IsIdempotentElem (x * y) ∧ IsIdempotentElem (y * x) ∧ x + y = 1 ∧ y + x = 1"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {α : Type u_3} [inst : CommRing α] (a b : α), IsIdempotentElem a → IsIdempotentElem b → Commute a b",
+    " ∀ {α : Type u_5} [inst : CommRing α] (a : α), a * a = a → Commute a a",
+    " ∀ {α : Type u_2} [inst : CommRing α] (x y : α), IsIdempotentElem x → IsIdempotentElem y → Commute x y ∧ IsIdempotentElem (x * y) ∧ IsIdempotentElem (y * x) ∧ x + y = 1 ∧ y + x = 1",
+    " ∀ {α : Type u_2} [inst : NonUnitalNonAssocSemiring α] (a : α), ∀ x y : α, a * a * (x * y) = x * y ∧ a * a * (y * x) = x * y"]},
+  {"theorem":
+   "∀ (n : ℕ), n ≠ 0 → Set.Infinite {p | Nat.Prime p ∧ p ≠ n ∧ p = n + 2}",
+   "some-correct": null,
+   "prompt":
+   "There are infinitely many pairs of primes that differ exactly by `2`.",
+   "groups":
+   [["∀ (n : ℕ), n ≠ 0 → Set.Infinite {p | Nat.Prime p ∧ p ≠ n ∧ p = n + 2}"],
+    ["∀ {n : ℕ}, n ≠ 0 → ∃ p q, Nat.Prime p → Nat.Prime q → p % 2 = 0 → q % 2 = 1 → p + 2 = q"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∃ (p q : ℕ), Nat.Prime p ∧ Nat.Prime q ∧ p + 2 = q",
+    " ∃ (p q : ℕ), Nat.Prime p ∧ Nat.Prime q ∧ p + 2 = q ∧ p ≠ q",
+    " ∀ {n : ℕ}, n ≠ 0 → ∃ p q : ℕ, Nat.Prime p → Nat.Prime q → p % 2 = 0 → q % 2 = 1 → p + 2 = q",
+    " ∀ (n : ℕ), n ≠ 0 → Set.Infinite {p | Nat.Prime p ∧ p ≠ n ∧ p = n + 2} "]},
+  {"theorem":
+   "∀ (D : Type u_1) [inst : Finite D] [inst_1 : DivisionRing D], IsField D",
+   "some-correct": null,
+   "prompt": "Every finite division ring is a field.",
+   "groups":
+   [["∀ (D : Type u_1) [inst : Finite D] [inst_1 : DivisionRing D], IsField D",
+     "∀ (R : Type u_1) [inst : Finite R] [inst_1 : DivisionRing R], IsField R"],
+    ["∀ {D : Type u_1} [inst : Finite D] [inst_1 : DivisionRing D], IsField D ∧ Finite D ∧ NoZeroDivisors D"],
+    ["∀ {D : Type u_1} [inst : Finite D] [inst_1 : CommRing D] [inst_2 : IsDomain D], IsField D"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ (D : Type u_1) [inst : Finite D] [inst : DivisionRing D], IsField D ",
+    " ∀ (R : Type u_1) [inst : Finite R] [inst : DivisionRing R], IsField R ",
+    " ∀ {D : Type u_1} [inst : Finite D] [inst_1 : CommRing D] [inst_2 : IsDomain D], IsField D ",
+    " ∀ {D : Type u_1} [inst : Finite D] [inst : DivisionRing D], IsField D ∧ Finite (D) ∧ NoZeroDivisors D"]},
+  {"theorem":
+   "∀ {X : Type u} {Y : Type v}, ((∃ f, Function.Injective f) ∧ ∃ f, Function.Injective f) → Nonempty (X ≃ Y)",
+   "some-correct": null,
+   "prompt":
+   "If each of two types can be mapped injectively into the other, then there is a bijection between them.",
+   "groups":
+   [["∀ {X : Type u} {Y : Type v}, ((∃ f, Function.Injective f) ∧ ∃ f, Function.Injective f) → Nonempty (X ≃ Y)"],
+    ["∀ {α : Type u_1} {β : Type u_2} (f : α → β) (g : β → α), Function.Injective f → Function.Injective g → Nonempty (α ≃ β)"],
+    ["∀ {α : Type u_1} {β : Type u_2} (f : α → β) (g : β → α),\n  Function.Injective f → Function.Injective g → ∃ h, ⇑h = f ∧ ⇑h.symm = g"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {α : Type u_1} {β : Type u_2} (f : α → β) (g : β → α),\n  Function.Injective f → Function.Injective g → Nonempty (α ≃ β) ",
+    " ∀ {α : Type u_1} {β : Type u_2} (f : α → β) (g : β → α),\n  Function.Injective f → Function.Injective g → ∃ h : α ≃ β, ⇑h = f ∧ ⇑h.symm = g ",
+    " ∀ {X : Type u} {Y : Type v},\n  (∃ f : X → Y, Function.Injective f) ∧ (∃ f : Y → X, Function.Injective f) → Nonempty (X ≃ Y) "]},
+  {"theorem":
+   "∀ {α : Type u_1} {r : α → α → Prop} [inst : Nonempty α] (s : Set α),\n  (∀ (c : Set α), IsChain r c → ∃ ub, ∀ a ∈ c, r a ub) →\n    (∀ a ∈ s, ∀ b ∈ s, r a b → r b a) →\n      Nonempty (∀ a ∈ s, ∃ ub, ∀ a ∈ s, r a ub) ∧ Set.Nonempty s → Nonempty (∃ m ∈ s, ∀ a ∈ s, r a m → r m a)",
+   "some-correct": null,
+   "prompt":
+   "Every non-empty poset in which every chain has an upper bound contains a maximal element.",
+   "groups":
+   [["∀ {α : Type u_1} {r : α → α → Prop} [inst : Nonempty α] (s : Set α),\n  (∀ (c : Set α), IsChain r c → ∃ ub, ∀ a ∈ c, r a ub) →\n    (∀ a ∈ s, ∀ b ∈ s, r a b → r b a) →\n      Nonempty (∀ a ∈ s, ∃ ub, ∀ a ∈ s, r a ub) ∧ Set.Nonempty s → Nonempty (∃ m ∈ s, ∀ a ∈ s, r a m → r m a)"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {α : Type u_1} [Preorder α] [Nonempty α] (c : Set α),\n  (∀ (a : α), IsChain (· ≤ ·) c → ∃ ub, ∀ a ∈ c, a ≤ ub) → ∃ m ∈ c, ∀ a ∈ c, a ≤ m ∧ m ≤ a → m = a ∧ m ∈ c",
+    " ∀ {α : Type u_1} [inst : PartialOrder α] (h : ∀ c, IsChain (· ≤ ·) c → ∃ ub, ∀ a ∈ c, a ≤ ub) (c : Set α),\n  c ≠ ∅ → ∃ m, ∀ a ∈ c, a ≤ m ∧ ∀ b ∈ c, m ≤ b → m = b",
+    " ∀ {α : Type u_1} {r : α → α → Prop} [inst : Nonempty α] (s : Set α)\n  (h : ∀ (c : Set α), IsChain r c → ∃ ub, ∀ a ∈ c, r a ub) (hs : ∀ a ∈ s, ∀ b ∈ s, r a b → r b a),\n  Nonempty (∀ a ∈ s, ∃ ub, ∀ a ∈ s, r a ub) ∧ s.Nonempty → Nonempty (∃ m ∈ s, ∀ a ∈ s, r a m → r m a) "]},
+  {"theorem":
+   "∀ {α : Type u} {β : Type v} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β} {g : β → α}\n  [inst_2 : TopologicalSpace β], UniformContinuous f → UniformContinuous g → UniformContinuous (f ∘ g)",
+   "some-correct": null,
+   "prompt":
+   "A uniformly continuous function of a uniformly continuous function is uniformly continuous.",
+   "groups":
+   [["∀ {α : Type u} {β : Type v} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β} {g : β → α}\n  [inst_2 : TopologicalSpace β], UniformContinuous f → UniformContinuous g → UniformContinuous (f ∘ g)"],
+    ["∀ {α : Type u_4} {β : Type u_5} [inst : UniformSpace α] [inst_1 : UniformSpace β] (self : α ≃ᵤ β),\n  UniformContinuous ⇑(UniformEquiv.symm self) → UniformContinuous self.toFun"],
+    ["∀ {α : Type u_4} {β : Type u_5} [inst : UniformSpace α] [inst_1 : UniformSpace β] (self : α ≃ᵤ β),\n  UniformContinuous self.toFun ∧ UniformContinuous self.invFun →\n    UniformContinuous self.toFun ∧ UniformContinuous self.invFun"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {α : Type u_4} {β : Type u_5} [inst : UniformSpace α] [inst_1 : UniformSpace β] (self : α ≃ᵤ β),\n  UniformContinuous self.symm → UniformContinuous self.toFun ",
+    " ∀ {α : Type u_4} {β : Type u_5} [inst : UniformSpace α] [inst_1 : UniformSpace β] (self : α ≃ᵤ β),\n  UniformContinuous self.toFun ∧ UniformContinuous self.invFun → UniformContinuous self.toFun ∧ UniformContinuous self.invFun ",
+    " ∀ {α : Type u} {β : Type v} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β} {g : β → α}\n  [inst_2 : TopologicalSpace β],\n  UniformContinuous f → UniformContinuous g → UniformContinuous (f ∘ g)"]},
+  {"theorem":
+   "∀ {α : Type u} {β : Type v} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β} {g : β → α}\n  [inst_2 : TopologicalSpace β], UniformContinuous f → UniformContinuous g → UniformContinuous (f ∘ g)",
+   "some-correct": null,
+   "prompt":
+   "A uniformly continuous function of a uniformly continuous function is uniformly continuous.",
+   "groups":
+   [["∀ {α : Type u} {β : Type v} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β} {g : β → α}\n  [inst_2 : TopologicalSpace β], UniformContinuous f → UniformContinuous g → UniformContinuous (f ∘ g)"],
+    ["∀ {α : Type u_4} {β : Type u_5} [inst : UniformSpace α] [inst_1 : UniformSpace β] (self : α ≃ᵤ β),\n  UniformContinuous self.toFun → UniformContinuous self.invFun"],
+    ["∀ {α : Type u_4} {β : Type u_5} [inst : UniformSpace α] [inst_1 : UniformSpace β] (self : α ≃ᵤ β),\n  UniformContinuous ⇑(UniformEquiv.symm self) → UniformContinuous self.toFun"],
+    ["∀ {α : Type u_4} {β : Type u_5} [inst : UniformSpace α] [inst_1 : UniformSpace β] (self : α ≃ᵤ β),\n  UniformContinuous self.toFun ∧ UniformContinuous self.invFun →\n    UniformContinuous self.toFun ∧ UniformContinuous self.invFun"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {α : Type u_4} {β : Type u_5} [inst : UniformSpace α] [inst_1 : UniformSpace β] (self : α ≃ᵤ β),\n  UniformContinuous self.toFun → UniformContinuous self.invFun ",
+    " ∀ {α : Type u_4} {β : Type u_5} [inst : UniformSpace α] [inst_1 : UniformSpace β] (self : α ≃ᵤ β),\n  UniformContinuous self.symm → UniformContinuous self.toFun ",
+    " ∀ {α : Type u_4} {β : Type u_5} [inst : UniformSpace α] [inst_1 : UniformSpace β] (self : α ≃ᵤ β),\n  UniformContinuous self.toFun ∧ UniformContinuous self.invFun → UniformContinuous self.toFun ∧ UniformContinuous self.invFun ",
+    " ∀ {α : Type u} {β : Type v} [inst : UniformSpace α] [inst_1 : UniformSpace β] {f : α → β} {g : β → α}\n  [inst_2 : TopologicalSpace β],\n  UniformContinuous f → UniformContinuous g → UniformContinuous (f ∘ g)"]},
+  {"theorem":
+   "∀ {X : Type u} [inst : TopologicalSpace X] [self : NormalSpace X] (s t : Set X),\n  IsClosed s → IsClosed t → Disjoint s t → ∃ f, Continuous f ∧ (∀ x ∈ s, f x = 0) ∧ ∀ x ∈ t, f x = 1",
+   "some-correct": null,
+   "prompt":
+   "A topological space is normal if and only if any two disjoint closed subsets can be separated by a continuous function.",
+   "groups":
+   [["∀ {X : Type u} [inst : TopologicalSpace X] [self : NormalSpace X] (s t : Set X),\n  IsClosed s → IsClosed t → Disjoint s t → ∃ f, Continuous f ∧ (∀ x ∈ s, f x = 0) ∧ ∀ x ∈ t, f x = 1",
+     "∀ {X : Type u} [inst : TopologicalSpace X] [self : NormalSpace X] (s t : Set X),\n  IsClosed s → IsClosed t → Disjoint s t → ∃ f, Continuous f ∧ (∀ x ∈ s, f x = 0) ∧ ∀ x ∈ t, f x = 1"],
+    ["∀ {X : Type u} [inst : TopologicalSpace X],\n  NormalSpace X ↔\n    ∀ (s t : Set X),\n      IsClosed s →\n        IsClosed t →\n          Disjoint s t → ∃ f a a', Disjoint a a' ∧ (∀ x ∈ s, f x ∈ a) ∧ (∀ x ∈ t, f x ∈ a') ∧ IsOpen a ∧ IsOpen a'"],
+    ["∀ {X : Type u_1} [inst : TopologicalSpace X] [inst_1 : NormalSpace X] {s t : Set X},\n  IsClosed s → IsClosed t → Disjoint s t → Nonempty { f // Continuous f ∧ s ⊆ f ⁻¹' Set.Iic 0 ∧ t ⊆ f ⁻¹' Set.Ici 0 }"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {X : Type u} [inst : TopologicalSpace X] [self : NormalSpace X],\n  (s t : Set X) → IsClosed s → IsClosed t → Disjoint s t → ∃ f : X → ℝ, Continuous f ∧ (∀ x ∈ s, f x = 0) ∧ (∀ x ∈ t, f x = 1)",
+    " ∀ {X : Type u} [inst : TopologicalSpace X] [self : NormalSpace X] (s t : Set X), IsClosed s → IsClosed t → Disjoint s t → ∃ f : X → ℝ, Continuous f ∧ (∀ x ∈ s, f x = 0) ∧ (∀ x ∈ t, f x = 1)",
+    " ∀ {X : Type u_1} [inst : TopologicalSpace X] [inst_1 : NormalSpace X] {s t : Set X},\n  IsClosed s → IsClosed t → Disjoint s t → Nonempty { f : X → ℝ // Continuous f ∧ s ⊆ f ⁻¹' Set.Iic 0 ∧ t ⊆ f ⁻¹' Set.Ici 0 } ",
+    " ∀ {X : Type u} [inst : TopologicalSpace X], NormalSpace X ↔\n  ∀ (s t : Set X), IsClosed s → IsClosed t → Disjoint s t → ∃ (f : C(X, ℝ)) (a a' : Set ℝ),\n    Disjoint a a' ∧ (∀ (x : X), x ∈ s → f x ∈ a) ∧ (∀ (x : X), x ∈ t → f x ∈ a') ∧ IsOpen a ∧ IsOpen a'"]},
+  {"theorem":
+   "∀ {α : Type u_1} [inst : Nonempty α] (f : α → α) {x : α},\n  Function.IsPeriodicPt f 3 x → ∀ (m : ℕ), 0 < m → ∃ y, Function.IsPeriodicPt f m y",
+   "some-correct": null,
+   "prompt":
+   "If a function from the unit interval to itself has a point of period three, then it has points of all positive periods.",
+   "groups":
+   [["∀ {α : Type u_1} [inst : Nonempty α] (f : α → α) {x : α},\n  Function.IsPeriodicPt f 3 x → ∀ (m : ℕ), 0 < m → ∃ y, Function.IsPeriodicPt f m y"],
+    ["∀ {α : Type u_1} [inst : Nontrivial α] (f : ℝ → ℝ) {x : ℝ},\n  Function.IsPeriodicPt f 3 x → ∀ (n : ℕ), ∃ y, Function.IsPeriodicPt f n y"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {α : Type u_1} [inst : TopologicalSpace α] (f : ℝ → ℝ) (x : ℝ),\n  Function.IsPeriodicPt f 3 x → ∀ (n : ℕ), ∃ (y : ℝ), Function.IsPeriodicPt f (n * 3) y",
+    " ∀ {α : Type u_1} [inst : Nontrivial α] (f : ℝ → ℝ) {x : ℝ} (_ : Function.IsPeriodicPt f 3 x), ∀ (n : ℕ), ∃ (y : ℝ), Function.IsPeriodicPt f n y",
+    " ∀ {α : Type u_1} [inst : Nonempty α] (f : α → α) {x y : α},\n  Function.IsPeriodicPt f 3 x → Function.IsPeriodicPt f 3 y → ∀ (n : ℕ), Function.IsPeriodicPt f (n + 3) x ∧ Function.IsPeriodicPt f (n + 3) y ",
+    " ∀ {α : Type u_1} [inst : Nonempty α] (f : α → α) {x : α},\n  Function.IsPeriodicPt f 3 x → ∀ (m : ℕ), 0 < m → ∃ y, Function.IsPeriodicPt f m y "]},
+  {"theorem":
+   "(C : Type u) →\n  [inst : CategoryTheory.Category.{v, u} C] →\n    [inst_1 : CategoryTheory.Limits.HasTerminal C] → Unique (∀ (X : C), Nonempty (X ≅ ⊤_ C))",
+   "some-correct": null,
+   "prompt":
+   "A terminal object in a category is unique up to unique isomorphism.",
+   "groups":
+   [["(C : Type u) →\n  [inst : CategoryTheory.Category.{v, u} C] →\n    [inst_1 : CategoryTheory.Limits.HasTerminal C] → Unique (∀ (X : C), Nonempty (X ≅ ⊤_ C))"],
+    ["(C : Type u) →\n  [inst : CategoryTheory.Category.{v, u} C] → [inst_1 : CategoryTheory.Limits.HasTerminal C] → Unique (C ≌ C)"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ (C : Type u) [inst : CategoryTheory.Category.{v, u} C] [inst_1 : CategoryTheory.Limits.HasTerminal C],\n  Unique (C ≌ C) ",
+    " ∀ (C : Type u) [inst : CategoryTheory.Category.{v, u} C] [inst_1 : CategoryTheory.Limits.HasTerminal C],\n  Unique (∀ (X : C), Nonempty (X ≅ ⊤_ C)) "]},
+  {"theorem":
+   "∀ {α : Type u} [inst : TopologicalSpace α] {s t : Set α}, sᶜ ∪ tᶜ = (s ∪ t)ᶜ",
+   "some-correct": null,
+   "prompt":
+   "The complement of the union of two sets is the intersection of their complements.",
+   "groups":
+   [["∀ {α : Type u} [inst : TopologicalSpace α] {s t : Set α}, sᶜ ∪ tᶜ = (s ∪ t)ᶜ",
+     "∀ {α : Type u} [inst : TopologicalSpace α] {s t : Set α}, sᶜ ∪ tᶜ = (s ∪ t)ᶜ",
+     "∀ {α : Type u} [inst : TopologicalSpace α] {s t : Set α}, sᶜ ∪ tᶜ = (s ∪ t)ᶜ",
+     "∀ {α : Type u} [inst : TopologicalSpace α] {s t : Set α}, sᶜ ∪ tᶜ = (s ∪ t)ᶜ",
+     "∀ {α : Type u} [inst : TopologicalSpace α] {s t : Set α}, sᶜ ∪ tᶜ = (s ∪ t)ᶜ",
+     "∀ {α : Type u} [inst : TopologicalSpace α] {s t : Set α}, sᶜ ∪ tᶜ = (s ∪ t)ᶜ"],
+    ["∀ {X : Type u} [inst : TopologicalSpace X] {s t : Set X}, s ∪ tᶜ = sᶜ ∩ tᶜ",
+     "∀ {X : Type u} [inst : TopologicalSpace X] {s t : Set X}, s ∪ tᶜ = sᶜ ∩ tᶜ ∧ t ∪ sᶜ = tᶜ ∩ sᶜ"],
+    ["∀ {α : Type u} [inst : TopologicalSpace α] {s t : Set α}, (s ∪ t)ᶜ = sᶜ ∩ tᶜ"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {α : Type u} [inst : TopologicalSpace α] {s t : Set α}, sᶜ ∪ tᶜ = (s ∪ t)ᶜ ",
+    " ∀ {α : Type u} [inst : TopologicalSpace α] {s t : Set α}, sᶜ ∪ tᶜ = (s ∪ t)ᶜ",
+    " ∀ {α : Type u} [inst : TopologicalSpace α] {s t : Set α}, sᶜ ∪ tᶜ = (s ∪ t)ᶜ",
+    " ∀ {α : Type u} [inst : TopologicalSpace α] {s t : Set α}, sᶜ ∪ tᶜ = (s ∪ t)ᶜ",
+    " ∀ {α : Type u} [inst : TopologicalSpace α] {s t : Set α}, sᶜ ∪ tᶜ = (s ∪ t)ᶜ",
+    " ∀ {α : Type u} [inst : TopologicalSpace α] {s t : Set α}, sᶜ ∪ tᶜ = (s ∪ t)ᶜ",
+    " ∀ {α : Type u} [inst : TopologicalSpace α] {s t : Set α}, (s ∪ t)ᶜ = sᶜ ∩ tᶜ ",
+    " ∀ {X : Type u} [inst : TopologicalSpace X] {s t : Set X}, s ∪ tᶜ = sᶜ ∩ tᶜ",
+    " ∀ {X : Type u} [inst : TopologicalSpace X] {s t : Set X}, s ∪ tᶜ = sᶜ ∩ tᶜ ∧ t ∪ sᶜ = tᶜ ∩ sᶜ"]},
+  {"theorem":
+   "∀ {m n k : ℕ}, 0 < m → 0 < n → k * k * k ≠ m * m + n * n → ¬(0 < k → 0 < k → k * k = m * m + n * n)",
+   "some-correct": null,
+   "prompt":
+   "The sum of the cubes of two positive integers is never equal to the cube of a third integer.",
+   "groups":
+   [["∀ {m n k : ℕ}, 0 < m → 0 < n → k * k * k ≠ m * m + n * n → ¬(0 < k → 0 < k → k * k = m * m + n * n)"],
+    ["∀ {n m k : ℕ}, 0 < n → 0 < m → k ≠ n * n + m * m"],
+    ["∀ {α : Type u} [inst : LinearOrderedRing α] [inst_1 : DivisionRing α] {x y z : α},\n  0 < x → 0 < y → 0 < z → x * x + y * y ≠ z * z"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {n m k : ℕ}, 0 < n → 0 < m → 0 < k → n ^ 3 + m ^ 3 ≠ k ^ 3",
+    " ∀ {x y z : ℕ}, 0 < x → 0 < y → 0 < z → x ^ 3 + y ^ 3 ≠ z ^ 3 ",
+    " ∀ {α : Type u} [inst : LinearOrderedCommRing α] {x y z : α}, 0 < x → 0 < y → 0 < z → x ^ 3 + y ^ 3 ≠ z ^ 3 ",
+    " ∀ {n m k : ℕ}, 0 < n → 0 < m → k ≠ n * n + m * m",
+    " ∀ {x y z : ℕ}, x ≠ 0 → y ≠ 0 → z ≠ 0 → x ^ 3 + y ^ 3 ≠ z ^ 3",
+    " ∀ {m n k : ℕ}, 0 < m → 0 < n → k * k = m ^ 2 + n ^ 2 → k = m ∧ k = n ",
+    " ∀ {n : ℕ}, 0 < n → ∀ m p : ℕ, m ^ 3 + p ^ 3 ≠ n ^ 3 ∧ 0 < m → 0 < p ∧ p ≠ n",
+    " ∀ {α : Type u} [inst : LinearOrderedRing α] [inst_1 : DivisionRing α] {x y z : α}, 0 < x → 0 < y → 0 < z → x * x + y * y ≠ z * z",
+    " ∀ {m n k : ℕ}, 0 < m → 0 < n → k * k * k ≠ m * m + n * n → ¬(0 < k → 0 < k → k * k = m * m + n * n)"]},
+  {"theorem":
+   "∀ {G : Type u_1} [inst : Group G], (∀ (x : G), orderOf x = 2) → ∀ (x y : G), Commute x y",
+   "some-correct": null,
+   "prompt":
+   "If every element of a group `G` has order `2`, then every pair of elements of `G` commutes.",
+   "groups":
+   [["∀ {G : Type u_1} [inst : Group G], (∀ (x : G), orderOf x = 2) → ∀ (x y : G), Commute x y",
+     "∀ {G : Type u_1} [inst : Group G], (∀ (x : G), orderOf x = 2) → ∀ (x y : G), Commute x y",
+     "∀ {G : Type u_1} [inst : Group G], (∀ (x : G), orderOf x = 2) → ∀ (x y : G), Commute x y",
+     "∀ {G : Type u_1} [inst : Group G], (∀ (x : G), orderOf x = 2) → ∀ (x y : G), Commute x y",
+     "∀ {G : Type u_1} [inst : Group G], (∀ (x : G), orderOf x = 2) → ∀ (x y : G), Commute x y"],
+    ["∀ {G : Type u_1} [inst : Group G] (x y : G), orderOf x = 2 → orderOf y = 2 → Commute x y",
+     "∀ {G : Type u_1} [inst : Group G] (x y : G), orderOf x = 2 → orderOf y = 2 → Commute x y"],
+    ["∀ (G : Type u_1) [inst : Group G], (∀ (x : G), IsOfFinOrder x → orderOf x = 2) → ∀ (x y : G), Commute x y"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {G : Type u_1} [inst : Group G], ∀ (x y : G), orderOf x = 2 → orderOf y = 2 → Commute x y",
+    " ∀ {G : Type u_1} [inst : Group G], ∀ (x y : G), orderOf x = 2 → orderOf y = 2 → Commute x y",
+    " ∀ {G : Type u_1} [inst : Group G] (h : ∀ x : G, orderOf x = 2), ∀ (x y : G), Commute x y ",
+    " ∀ {G : Type u_1} [inst : Group G] (h : ∀ x : G, orderOf x = 2), ∀ (x y : G), Commute x y",
+    " ∀ {G : Type u_1} [inst : Group G] (h : ∀ x : G, orderOf x = 2), ∀ x y : G, Commute x y ",
+    " ∀ {G : Type u_1} [inst : Group G],\n  (∀ (x : G), orderOf x = 2) → ∀ (x y : G), Commute x y ",
+    " ∀ {G : Type u_1} [inst : Group G] (H : ∀ x : G, orderOf x = 2), ∀ (x y : G), Commute x y ",
+    " ∀ (G : Type u_1) [inst : Group G] (h : ∀ (x : G), IsOfFinOrder x → orderOf x = 2), ∀ (x y : G), Commute x y "]},
+  {"theorem": "∀ {a b : ℕ}, a + 1 ≤ b → Even (a * b)",
+   "some-correct": null,
+   "prompt": "The product of two consecutive natural numbers is even.",
+   "groups": [["∀ {a b : ℕ}, a + 1 ≤ b → Even (a * b)"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ (n : ℕ), Even (n * (n + 1))",
+    " ∀ (n : ℕ), Even (n * (n + 1))",
+    " ∀ {n : ℕ}, Even (n * (n + 1))",
+    " ∀ n : ℕ, Even (n * (n + 1)) ",
+    " ∀ {a b : ℕ}, a + 1 ≤ b → Even (a * b)",
+    " ∀ (n : ℕ), Even (2 * n) → Even (2 * (n + 1))",
+    " ∀ {n : ℕ}, Even n → Even (n + 1) → ∃ m, 2 * m = n ∨ 2 * m + 1 = n",
+    " ∀ {n : ℕ}, Even (2 * n) ↔ n ≤ 2 ∧ Even n ∧ ¬n = 0 ∧ ¬n = 1",
+    " ∀ {n : ℕ}, (∀ (k : ℕ), k ≤ n ↔ k ∈ Finset.range (n + 1)) → Even (Finset.prod Finset.univ fun k => k)"]},
+  {"theorem":
+   "∀ {G : Type u_1} [inst : Group G] (H : Subgroup G), Subgroup.index H = 2 → Subgroup.Normal H",
+   "some-correct": null,
+   "prompt": "Every index 2 subgroup of a group is normal.",
+   "groups":
+   [["∀ {G : Type u_1} [inst : Group G] (H : Subgroup G), Subgroup.index H = 2 → Subgroup.Normal H",
+     "∀ {G : Type u_1} [inst : Group G] (H : Subgroup G), Subgroup.index H = 2 → Subgroup.Normal H",
+     "∀ {G : Type u_1} [inst : Group G] (H : Subgroup G), Subgroup.index H = 2 → Subgroup.Normal H",
+     "∀ {G : Type u_1} [inst : Group G] {H : Subgroup G}, Subgroup.index H = 2 → Subgroup.Normal H"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {G : Type u_1} [inst : Group G] (H : Subgroup G), Subgroup.index H = 2 → Subgroup.Normal H ",
+    " ∀ {G : Type u_1} [inst : Group G] (H : Subgroup G), Subgroup.index H = 2 → Subgroup.Normal H ",
+    " ∀ {G : Type u_1} [inst : Group G] (H : Subgroup G), Subgroup.index H = 2 → Subgroup.Normal H",
+    " ∀ {G : Type u_1} [inst : Group G] {H : Subgroup G}, Subgroup.index H = 2 → Subgroup.Normal H "]},
+  {"theorem":
+   "∀ (G : Type u_1) [inst : Group G] [inst_1 : IsFreeGroup G], Monoid.IsTorsionFree G",
+   "some-correct": null,
+   "prompt": "Every free group is torsion free.",
+   "groups":
+   [["∀ (G : Type u_1) [inst : Group G] [inst_1 : IsFreeGroup G], Monoid.IsTorsionFree G",
+     "∀ {G : Type u_1} [inst : Group G] [inst_1 : IsFreeGroup G], Monoid.IsTorsionFree G"],
+    ["∀ (G : Type u_1) [inst : Group G], Function.Injective ⇑(MonoidHom.id G) → Monoid.IsTorsionFree G"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ (G : Type u_1) [inst : Group G] [inst_1 : IsFreeGroup G], Monoid.IsTorsionFree G ",
+    " ∀ {G : Type u_1} [inst : Group G] [inst_1 : IsFreeGroup G], Monoid.IsTorsionFree G",
+    " ∀ (G : Type u_1) [inst : Group G], Function.Injective (MonoidHom.id G) → Monoid.IsTorsionFree G"]},
+  {"theorem": "∀ (n : ℕ), 1 < n → ∃ p, Nat.Prime p ∧ p ∣ n",
+   "some-correct": null,
+   "prompt":
+   "Every natural number greater than `1` is divisible by a prime number.",
+   "groups":
+   [["∀ (n : ℕ), 1 < n → ∃ p, Nat.Prime p ∧ p ∣ n",
+     "∀ {n : ℕ}, 1 < n → ∃ p, Nat.Prime p ∧ p ∣ n",
+     "∀ {n : ℕ}, 1 < n → ∃ p, Nat.Prime p ∧ p ∣ n",
+     "∀ {n : ℕ}, 1 < n → ∃ p, Nat.Prime p ∧ p ∣ n"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ (n : ℕ), 1 < n → ∃ p : ℕ, Nat.Prime p ∧ p ∣ n",
+    " ∀ {n : ℕ}, 1 < n → ∃ p : ℕ, Nat.Prime p ∧ p ∣ n",
+    " Set.InjOn Nat.factorization {x | 1 < x} ",
+    " ∀ {n : ℕ}, 1 < n → ∃ (p : ℕ), Nat.Prime p ∧ p ∣ n ",
+    " ∀ {n : ℕ}, 1 < n → ∃ p, Nat.Prime p ∧ p ∣ n",
+    " Set.InjOn (fun (p : ℕ) => Nat.Prime p) {x | 1 < x}"]},
+  {"theorem":
+   "∀ {α : Type u} [inst : Group α] [inst_1 : Fintype α] {p : ℕ} [hp : Fact (Nat.Prime p)],\n  Fintype.card α = p → IsSimpleGroup α",
+   "some-correct": null,
+   "prompt": "A finite torsion-free group is trivial",
+   "groups":
+   [["∀ {α : Type u} [inst : Group α] [inst_1 : Fintype α] {p : ℕ} [hp : Fact (Nat.Prime p)],\n  Fintype.card α = p → IsSimpleGroup α",
+     "∀ {α : Type u} [inst : Group α] [inst_1 : Fintype α] {p : ℕ} [hp : Fact (Nat.Prime p)],\n  Fintype.card α = p → IsSimpleGroup α"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {α : Type u} [inst : Group α] [inst_1 : Fintype α] {p : ℕ} [hp : Fact (Nat.Prime p)],\n  Fintype.card α = p → IsSimpleGroup α ",
+    " ∀ {α : Type u} [inst : Group α] [inst_1 : Fintype α] {p : ℕ} [hp : Fact (Nat.Prime p)],\n  Fintype.card α = p → IsSimpleGroup α"]},
+  {"theorem":
+   "∀ (D : Type u_1) [inst : Finite D] [inst_1 : DivisionRing D], IsField D",
+   "some-correct": null,
+   "prompt": "Every finite division ring is a field.",
+   "groups":
+   [["∀ (D : Type u_1) [inst : Finite D] [inst_1 : DivisionRing D], IsField D",
+     "∀ (R : Type u_1) [inst : Finite R] [inst_1 : DivisionRing R], IsField R"],
+    ["∀ {D : Type u_1} [inst : Finite D] [inst_1 : DivisionRing D], IsField D ∧ Finite D ∧ NoZeroDivisors D"],
+    ["∀ {D : Type u_1} [inst : Finite D] [inst_1 : CommRing D] [inst_2 : IsDomain D], IsField D"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ (D : Type u_1) [inst : Finite D] [inst : DivisionRing D], IsField D ",
+    " ∀ (R : Type u_1) [inst : Finite R] [inst : DivisionRing R], IsField R ",
+    " ∀ {D : Type u_1} [inst : Finite D] [inst_1 : CommRing D] [inst_2 : IsDomain D], IsField D ",
+    " ∀ {D : Type u_1} [inst : Finite D] [inst : DivisionRing D], IsField D ∧ Finite (D) ∧ NoZeroDivisors D"]},
+  {"theorem":
+   "∀ {X : Type u} [inst : TopologicalSpace X] [inst_1 : Finite X], CompactSpace X",
+   "some-correct": null,
+   "prompt": "Every finite topological space is compact.",
+   "groups":
+   [["∀ {X : Type u} [inst : TopologicalSpace X] [inst_1 : Finite X], CompactSpace X",
+     "∀ (X : Type u) [inst : TopologicalSpace X] [inst_1 : Finite X], CompactSpace X"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {X : Type u} [inst : TopologicalSpace X] [inst_1 : Finite X], CompactSpace X ",
+    " ∀ (X : Type u) [inst : TopologicalSpace X] [inst_1 : Finite X], CompactSpace X "]},
+  {"theorem":
+   "∀ {α : Type u_1} {β : Type u_2} [inst : Group α] [inst_1 : Group β] (f : α →* β) [inst_2 : IsFreeGroup α]\n  [inst_3 : IsFreeGroup β], Function.Surjective ⇑f → Function.Injective ⇑f",
+   "some-correct": null,
+   "prompt":
+   "Every surjective homomorphism from a finitely generated free group to itself is injective.",
+   "groups":
+   [["∀ {α : Type u_1} {β : Type u_2} [inst : Group α] [inst_1 : Group β] (f : α →* β) [inst_2 : IsFreeGroup α]\n  [inst_3 : IsFreeGroup β], Function.Surjective ⇑f → Function.Injective ⇑f"],
+    ["∀ {α : Type u} [inst : Group α] {β : Type v} [inst_1 : Group β] (f : α →* β),\n  Function.Surjective ⇑f → Function.Injective ⇑f"],
+    ["∀ {α : Type u} [inst : Group α] (β : Type v) [inst_1 : Group β] (f : α →ₙ* β),\n  Function.Surjective ⇑f → Function.Injective ⇑f"],
+    ["∀ (G : Type u_3) [inst : Group G] [inst_1 : Fintype G] (f : G →* G), Function.Surjective ⇑f → Function.Injective ⇑f"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {α : Type u} [inst : Group α] {β : Type v} [inst_1 : Group β] (f : α →* β),\n  Function.Surjective ⇑f → Function.Injective ⇑f ",
+    " ∀ {α : Type u} [inst : Group α] (β : Type v) [inst_1 : Group β] (f : α →ₙ* β),\n  Function.Surjective ⇑f → Function.Injective ⇑f",
+    " ∀ (G : Type u_3) [inst : Group G] [inst_1 : Fintype G] (f : G →* G),\n  Function.Surjective ⇑f → Function.Injective ⇑f",
+    " ∀ {α : Type u_1} {β : Type u_2} [inst : Group α] [inst_1 : Group β] (f : α →* β) [inst_2 : IsFreeGroup α] [inst_3 : IsFreeGroup β],\n    Function.Surjective ⇑f → Function.Injective ⇑f"]},
+  {"theorem":
+   "∀ {n : ℕ}, 0 < n → Even n → ∃ p q, Nat.Prime p ∧ Nat.Prime q ∧ n = p + q",
+   "some-correct": null,
+   "prompt":
+   "Every positive even integer can be written as the sum of two primes.",
+   "groups":
+   [["∀ {n : ℕ}, 0 < n → Even n → ∃ p q, Nat.Prime p ∧ Nat.Prime q ∧ n = p + q",
+     "∀ (n : ℕ), 0 < n → Even n → ∃ a b, Nat.Prime a ∧ Nat.Prime b ∧ n = a + b",
+     "∀ {n : ℕ}, 0 < n → Even n → ∃ a b, Nat.Prime a ∧ Nat.Prime b ∧ n = a + b"],
+    ["∀ (n : ℕ), 0 < n → n % 2 = 0 → ∃ p q, Nat.Prime p ∧ Nat.Prime q ∧ n = p * q ∧ p < q"],
+    ["∀ {n : ℕ}, 0 < n → Even n → ∃ p q, Prime p ∧ Prime q ∧ n = p + q ∧ p < q"],
+    ["∀ (n : ℕ), n ≠ 0 → n % 2 = 0 → ∃ p q, Nat.Prime p ∧ Nat.Prime q ∧ 2 * p + 2 * q = n"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {n : ℕ}, 0 < n → Even n → ∃ p q, Nat.Prime p ∧ Nat.Prime q ∧ n = p + q",
+    " ∀ (n : ℕ) (_ : 0 < n), Even n → ∃ a b, Nat.Prime a ∧ Nat.Prime b ∧ n = a + b",
+    " ∀ {n : ℕ}, 0 < n → Even n → ∃ a b : ℕ, Nat.Prime a ∧ Nat.Prime b ∧ n = a + b",
+    " ∀ (n : ℕ) (_ : 0 < n) (_ : Even n), ∃ p q, Prime p ∧ Prime q ∧ n = p + q",
+    " ∀ {n : ℕ}, 0 < n → Even n → ∃ p q : ℕ, Prime p ∧ Prime q ∧ n = p + q ∧ p < q",
+    " ∀ (n : ℕ), n ≠ 0 → n % 2 = 0 → ∃ p q, Nat.Prime p ∧ Nat.Prime q ∧ 2 * p + 2 * q = n",
+    " ∀ (n : ℕ) (_ : 0 < n) (h : n % 2 = 0), ∃ p q, Nat.Prime p ∧ Nat.Prime q ∧ n = p * q ∧ p < q"]},
+  {"theorem": "∀ {r : ℝ}, Irrational r → Irrational (Real.sqrt r)",
+   "some-correct": null,
+   "prompt": "The square root of an irrational number is irrational.",
+   "groups":
+   [["∀ {r : ℝ}, Irrational r → Irrational (Real.sqrt r)",
+     "∀ {r : ℝ}, Irrational r → Irrational (Real.sqrt r)",
+     "∀ {r : ℝ} {x : ℝ}, Irrational r → Irrational (Real.sqrt r)"],
+    ["∀ {x : ℚ}, Irrational ↑x → Irrational (Real.sqrt ↑x)"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {r : ℝ} (h : Irrational r), Irrational (Real.sqrt r) ",
+    " ∀ {r : ℝ} (h : Irrational r), Irrational (Real.sqrt r) ",
+    " ∀ {x : ℚ}, Irrational x → Irrational (Real.sqrt x) ",
+    " ∀ {r x : ℝ}, Irrational r → Irrational (Real.sqrt r)"]},
+  {"theorem":
+   "∀ {α : Type u} [inst : LinearOrderedRing α] {n : α}, n * n = 0 → n = 0",
+   "some-correct": null,
+   "prompt": "If the square of a number is even, the number itself is even.",
+   "groups":
+   [["∀ {α : Type u} [inst : LinearOrderedRing α] {n : α}, n * n = 0 → n = 0"],
+    ["∀ {α : Type u} [inst : LinearOrderedRing α] {n : α}, ∃ x, x * x = 2 * n → Even n"],
+    ["∀ {α : Type u} [inst : LinearOrderedRing α] {a b : α}, a * a = 2 * b ↔ Even b ∧ Even a"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {α : Type u} [inst : LinearOrderedRing α] {x : α}, x * x % 2 = 0 → x % 2 = 0 ",
+    " ∀ {α : Type u} [inst : LinearOrderedRing α] {x : α}, x * x % 2 = 0 → x % 2 = 0 ",
+    " ∀ {α : Type u} [inst : LinearOrderedRing α] {x : α}, x * x % 2 = 0 → x % 2 = 0 ",
+    " ∀ {α : Type u} [inst : LinearOrderedRing α] {x : α}, x ^ 2 % 2 = 0 → x % 2 = 0 ",
+    " ∀ {α : Type u} [inst : LinearOrderedRing α] {n : α}, n * n % 2 = 0 → n % 2 = 0 ",
+    " ∀ {α : Type u} [inst : LinearOrderedRing α] (x : α), x ^ 2 % 2 = 0 → x % 2 = 0",
+    " ∀ {α : Type u} [inst : LinearOrderedRing α] {n : α}, ∃ x, x * x = 2 * n → Even n",
+    " ∀ {α : Type u} [inst : LinearOrderedRing α] {a b : α}, a * a = 2 * b ↔ Even b ∧ Even a",
+    " ∀ {α : Type u} [inst : LinearOrderedRing α] {n : α}, n * n = 0 → n = 0 ",
+    " ∀ {α : Type u} [inst : LinearOrderedRing α] {n : α}, ∃ k : α, n ^ 2 = 2 * k → n = 0 ∨ n = 2 * k ∧ k = 0 𝕜"]},
+  {"theorem":
+   "∀ {R : Type u} [inst : CommRing R] [inst_1 : Fintype R] (P : Ideal R), Ideal.IsPrime P → Ideal.IsMaximal P",
+   "some-correct": null,
+   "prompt": "In a finite commutative ring, all prime ideals are maximal.",
+   "groups":
+   [["∀ {R : Type u} [inst : CommRing R] [inst_1 : Fintype R] (P : Ideal R), Ideal.IsPrime P → Ideal.IsMaximal P",
+     "∀ (R : Type u) [inst : CommRing R] [inst_1 : Fintype R] (P : Ideal R), Ideal.IsPrime P → Ideal.IsMaximal P",
+     "∀ (R : Type u) [inst : CommRing R] [inst_1 : Fintype R] (P : Ideal R), Ideal.IsPrime P → Ideal.IsMaximal P",
+     "∀ (R : Type u) [inst : CommRing R] [inst_1 : Fintype R] (P : Ideal R), Ideal.IsPrime P → Ideal.IsMaximal P"],
+    ["∀ {R : Type u} [inst : CommRing R] [inst_1 : Finite R] (P : Ideal R), Ideal.IsPrime P → Ideal.IsMaximal P",
+     "∀ {R : Type u} [inst : CommRing R] [inst_1 : Finite R] (P : Ideal R), Ideal.IsPrime P → Ideal.IsMaximal P",
+     "∀ (R : Type u) [inst : CommRing R] [inst_1 : Finite R] (P : Ideal R), Ideal.IsPrime P → Ideal.IsMaximal P"],
+    ["∀ {R : Type u_1} [inst : CommRing R] [inst_1 : Finite R] (P : Ideal R), Ideal.IsPrime P → Ideal.IsMaximal P"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {R : Type u} [inst : CommRing R] [inst_1 : Finite R], ∀ (P : Ideal R), Ideal.IsPrime P → Ideal.IsMaximal P ",
+    " ∀ {R : Type u} [inst : CommRing R] [Fintype R],\n  (∀ (P : Ideal R), Ideal.IsPrime P → Ideal.IsMaximal P) ",
+    " ∀ {R : Type u} [inst : CommRing R] [inst_1 : Finite R], ∀ (P : Ideal R), Ideal.IsPrime P → Ideal.IsMaximal P",
+    " ∀ (R : Type u) [inst : CommRing R] [Fintype R], ∀ (P : Ideal R), Ideal.IsPrime P → Ideal.IsMaximal P",
+    " ∀ {R : Type u_1} [inst : CommRing R] [inst_1 : Finite R], ∀ (P : Ideal R), Ideal.IsPrime P → Ideal.IsMaximal P ",
+    " ∀ (R : Type u) [inst : CommRing R] [inst_1 : Fintype R], ∀ (P : Ideal R), Ideal.IsPrime P → Ideal.IsMaximal P ",
+    " ∀ (R : Type u) [inst : CommRing R] [inst_1 : Finite R],\n  (P : Ideal R) → Ideal.IsPrime P → Ideal.IsMaximal P ",
+    " ∀ (R : Type u) [inst : CommRing R] [inst_1 : Fintype R], ∀ P : Ideal R, Ideal.IsPrime P → Ideal.IsMaximal P"]},
+  {"theorem":
+   "∀ (X : Type u) [inst : TopologicalSpace X], T2Space X ↔ IsClosed {p | p.1 = p.2}",
+   "some-correct": null,
+   "prompt":
+   "A topological space $X$ is Hausdorff if and only if the diagonal is a closed set in $X × X$.",
+   "groups":
+   [["∀ (X : Type u) [inst : TopologicalSpace X], T2Space X ↔ IsClosed {p | p.1 = p.2}"],
+    ["∀ (X : Type u_3) [inst : TopologicalSpace X], T2Space X ↔ IsClosed {p | p.1 = p.2}"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ (X : Type u_3) [inst : TopologicalSpace X],\n  T2Space X ↔ IsClosed { p : X × X | p.1 = p.2 } ",
+    " ∀ (X : Type u) [inst : TopologicalSpace X], T2Space X ↔ IsClosed {p : X × X | p.1 = p.2}",
+    " ∀ (X : Type u_3) [inst : TopologicalSpace X], T2Space X ↔ IsClosed {x | x.fst = x.snd}"]},
+  {"theorem":
+   "∀ {α : Type u_1} [inst : TopologicalSpace α] (U : Set α) (x : α → α),\n  ∀ y ∈ U, ∃ V, IsOpen V ∧ y ∈ V ∧ x y ∈ V → U ⊆ V ∧ IsOpen U",
+   "some-correct": null,
+   "prompt":
+   "If every point of a subset of a topological space is contained in some open set, the subset itself is open.",
+   "groups":
+   [["∀ {α : Type u_1} [inst : TopologicalSpace α] (U : Set α) (x : α → α),\n  ∀ y ∈ U, ∃ V, IsOpen V ∧ y ∈ V ∧ x y ∈ V → U ⊆ V ∧ IsOpen U"],
+    ["∀ {α : Type u} [inst : TopologicalSpace α] (U : Set α), (∀ x ∈ U, ∃ V, IsOpen V ∧ x ∈ V ∧ V ⊆ U) → IsOpen U"],
+    ["∀ {α : Type u} [inst : TopologicalSpace α] (U : Set α), (∀ x ∈ U, ∃ V, IsOpen V ∧ x ∈ V) → IsOpen U"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {α : Type u} [inst : TopologicalSpace α] (U : Set α),\n  (∀ (x : α), x ∈ U → ∃ (V : Set α), IsOpen V ∧ x ∈ V ∧ V ⊆ U) → IsOpen U ",
+    " ∀ {α : Type u} [inst : TopologicalSpace α] (U : Set α),\n  (∀ (x : α), x ∈ U → ∃ (V : Set α), IsOpen V ∧ x ∈ V) → IsOpen U ",
+    " ∀ {X : Type u} [inst : TopologicalSpace X] {s : Set X},\n  (∀ x : X, x ∈ s → ∃ u, IsOpen u ∧ x ∈ u) → IsOpen s",
+    " ∀ {X : Type u} [inst : TopologicalSpace X] (s t : Set X), ∀ (x : X), x ∈ s → ∃ U, IsOpen U ∧ x ∈ U → x ∈ t → U ⊆ t ∧ IsOpen s ∧ IsClosed t",
+    " ∀ {α : Type u_1} [inst : TopologicalSpace α] (U : Set α) (x : α → α), ∀ y ∈ U, ∃ V : Set α, IsOpen V ∧ y ∈ V ∧ x y ∈ V → U ⊆ V ∧ IsOpen U ",
+    " ∀ {α : Type u} [inst : TopologicalSpace α] (s : Set α) [inst_1 : T1Space α] (x : α) (hx : x ∈ s), ∃ U, IsOpen U ∧ x ∈ U ∧ U ⊆ s ∧ Set.Nonempty (U ∩ s) → IsOpen s"]},
+  {"theorem":
+   "∀ {G : Type u_1} [inst : Group G] [inst_1 : IsFreeGroup G] {x : G}, x ≠ 1 → ¬IsOfFinOrder x",
+   "some-correct": null,
+   "prompt": "Every non-identity element of a free group is of infinite order.",
+   "groups":
+   [["∀ {G : Type u_1} [inst : Group G] [inst_1 : IsFreeGroup G] {x : G}, x ≠ 1 → ¬IsOfFinOrder x",
+     "∀ {G : Type u_1} [inst : Group G] [inst_1 : IsFreeGroup G] {x : G}, x ≠ 1 → ¬IsOfFinOrder x",
+     "∀ {G : Type u_1} [inst : Group G] [inst_1 : IsFreeGroup G] (x : G), x ≠ 1 → ¬IsOfFinOrder x",
+     "∀ {G : Type u_1} [inst : Group G] [inst_1 : IsFreeGroup G] {x : G}, x ≠ 1 → ¬IsOfFinOrder x",
+     "∀ {G : Type u_1} [inst : Group G] [inst_1 : IsFreeGroup G] (g : G), g ≠ 1 → ¬IsOfFinOrder g",
+     "∀ {G : Type u_1} [inst : Group G] [inst_1 : IsFreeGroup G] (g : G), g ≠ 1 → ¬IsOfFinOrder g"],
+    ["∀ {G : Type u} [inst : Group G] [inst_1 : IsFreeGroup G] {x : G}, x ≠ 1 → ¬IsOfFinOrder x"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {G : Type u_1} [inst : Group G] [inst_1 : IsFreeGroup G] {x : G}, x ≠ 1 → ¬IsOfFinOrder x ",
+    " ∀ {G : Type u_1} [inst : Group G] [inst_1 : IsFreeGroup G] {x : G}, x ≠ 1 → ¬IsOfFinOrder x ",
+    " ∀ {G : Type u_1} [inst : Group G] [inst_1 : IsFreeGroup G] (x : G), x ≠ 1 → ¬IsOfFinOrder x ",
+    " ∀ {G : Type u_1} [inst : Group G] [inst_1 : IsFreeGroup G] {x : G}, x ≠ 1 → ¬IsOfFinOrder x",
+    " ∀ {G : Type u_1} [inst : Group G] [inst_1 : IsFreeGroup G] (g : G), g ≠ 1 → ¬IsOfFinOrder g ",
+    " ∀ {G : Type u} [inst : Group G] [inst_1 : IsFreeGroup G] {x : G}, x ≠ 1 → ¬IsOfFinOrder x ",
+    " ∀ {G : Type u_1} [inst : Group G] [inst_1 : IsFreeGroup G] (g : G), g ≠ 1 → ¬IsOfFinOrder g"]},
+  {"theorem":
+   "∀ {a b : ℕ} {x y u v : ℕ},\n  Nat.Coprime a b →\n    ∀ (N : ℕ), ∃ r s, r * a + s * b = N ∧ ∀ (m : ℕ), Nat.Coprime m a → Nat.Coprime m b → ∃ x y, m = a * x + b * y",
+   "some-correct": null,
+   "prompt":
+   "For any two relatively prime positive integers $a$ and $b$, every sufficiently large natural number $N$ can be written as a linear combination $ax + by$ of $a$ and $b$, where both $x$ and $y$ are natural numbers.",
+   "groups":
+   [["∀ {a b : ℕ} {x y u v : ℕ},\n  Nat.Coprime a b →\n    ∀ (N : ℕ), ∃ r s, r * a + s * b = N ∧ ∀ (m : ℕ), Nat.Coprime m a → Nat.Coprime m b → ∃ x y, m = a * x + b * y"],
+    ["∀ {a b : ℕ} {x y u v : ℕ}, Nat.Coprime a b → ∀ (N : ℕ), ∃ r s, a * r + b * s = N"],
+    ["∀ {a b n : ℕ} {x y : ℕ}, Nat.Coprime a b → 0 < a → 0 < b → ∃ x y, n = a * x + b * y"],
+    ["∀ {a b : ℕ} {x y : ℕ} {N : ℕ},\n  a ≠ 0 → b ≠ 0 → Nat.Coprime a b → ∃ x y, a * x + b * y = N ∧ y < N ∧ x < N ∧ (y + x) * (y + x) ≤ 2 * N"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {a b x y u v : ℕ}, Nat.Coprime a b → ∀ N, ∃ r s, a * r + b * s = N",
+    " ∀ {a b n x y : ℕ}, Nat.Coprime a b → 0 < a → 0 < b → ∃ (x y : ℕ), ↑n = a * x + b * y",
+    " ∀ {a b x y u v : ℕ}, Nat.Coprime a b → ∃ r s, ∀ N > max u v, ∃ m n, N = a * m + b * n",
+    " ∀ {a b x y u v n : ℕ}, ∃ n, Nat.Coprime a b → x ≠ 0 → y ≠ 0 → a * u ^ 2 + b * v ^ 2 = n * (a * x + b * y) ",
+    " ∀ {a b x y u v N : ℕ}, Nat.Coprime a b → 0 < a → 0 < b → ∃ u v r s, N = u * a + v * b → a * b * r = a * u * x + b * v * y ",
+    " ∀ {a b x y u v : ℕ}, Nat.Coprime a b → ∀ (N : ℕ) (_hp : 1 < N), ∃ r s, ↑N = ↑a * r + ↑b * s",
+    " ∀ {a b x y N : ℕ}, a ≠ 0 → b ≠ 0 → Nat.Coprime a b → ∃ x y, a * x + b * y = N ∧ y < N ∧ x < N ∧ (y + x) * (y + x) ≤ 2 * N",
+    " ∀ {a b x y u v : ℕ}, Nat.Coprime a b → ∀ (N : ℕ), ∃ r s, r * a + s * b = N ∧ ∀ m, Nat.Coprime m a → Nat.Coprime m b → ∃ x y, m = a * x + b * y",
+    " ∀ {a b x y u v : ℕ} [inst : DecidableEq ℕ] {n : ℕ},\n  a ≠ 0 → b ≠ 0 → Nat.Coprime a b →\n    ∃ N, ∀ n, N ≤ n → ∃ x y u v,\n      a * x + b * y = n ∧ u * a + v * b = n ∧ x < u ∧ y < v ∧ (¬x.Prime ∨ ¬y.Prime) ∧ (¬u.Prime ∨ ¬v.Prime)"]},
+  {"theorem": "{K : Type u_1} → [inst : Field K] → Ring K",
+   "some-correct": null,
+   "prompt": "Every field is a ring.",
+   "groups":
+   [["{K : Type u_1} → [inst : Field K] → Ring K",
+     "{K : Type u_1} → [inst : Field K] → Ring K",
+     "{K : Type u_1} → [inst : Field K] → Ring K"],
+    ["∀ {K : Type u_1} [inst : Field K] {R : Type u_2} [inst_1 : Ring R],\n  K ≃+* R → IsDomain R ∧ ∀ (x : R), ∃ y, x * y = 1 ∨ y * x = 1 ∧ y ≠ 0"],
+    ["{K : Type u} → [inst : Field K] → Ring K"],
+    ["(K : Type u) → [inst : Field K] → Ring K"],
+    ["(K : Type u_1) → [inst : Field K] → Ring K"],
+    ["{F : Type u_2} → [inst : Field F] → Ring F"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {K : Type u_1} [inst : Field K], Ring K ",
+    " ∀ {K : Type u_1} [inst : Field K], Ring K ",
+    " ∀ {K : Type u_1} [inst : Field K], Ring K ",
+    " ∀ {K : Type u} [inst : Field K], Ring K ",
+    " ∀ (K : Type u) [inst : Field K], Ring K ",
+    " ∀ (K : Type u_1) [inst : Field K], Ring K ",
+    " ∀ {F : Type u_2} [inst : Field F], Ring F ",
+    " ∀ {K : Type u_1} [inst : Field K] {R : Type u_2} [inst_1 : Ring R],\n  K ≃+* R → IsDomain R ∧ ∀ (x : R), ∃ (y : R), x * y = 1 ∨ y * x = 1 ∧ y ≠ 0"]},
+  {"theorem": "{R : Type u_1} → [inst : Ring R] → Group Rˣ",
+   "some-correct": null,
+   "prompt": "The set of units in a ring forms a group.",
+   "groups":
+   [["{R : Type u_1} → [inst : Ring R] → Group Rˣ",
+     "{R : Type u_1} → [inst : Ring R] → Group Rˣ"],
+    ["{R : Type u_1} → [inst : GroupWithZero R] → [inst_1 : Invertible 0] → Group Rˣ"],
+    ["{R : Type u_1} → [inst : Ring R] → Group Rˣ"],
+    ["{R : Type u} → [inst : Ring R] → Group Rˣ"],
+    ["{R : Type u_1} → [inst : CommRing R] → Group Rˣ"],
+    ["{R : Type u} → [inst : GroupWithZero R] → GroupWithZero Rˣ"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {R : Type u_1} [inst : Ring R], Group Rˣ ",
+    " ∀ {R : Type u_1} [inst : Ring R], Group Rˣ ",
+    " ∀ {R : Type u_1} [inst : Ring R], Group Rˣ",
+    " ∀ {R : Type u} [inst : Ring R], Group Rˣ ",
+    " ∀ {R : Type u_1} [inst : CommRing R], Group Rˣ ",
+    " ∀ {R : Type u} [inst : GroupWithZero R], GroupWithZero Rˣ",
+    " ∀ {R : Type u_1} [inst : GroupWithZero R] [inst_1 : Invertible (0 : R)], Group Rˣ "]},
+  {"theorem":
+   "∀ {G H : Type u_1} [inst : Group G] [inst_1 : Group H],\n  Monoid.IsTorsionFree (G × H) → Monoid.IsTorsionFree G → Monoid.IsTorsionFree H",
+   "some-correct": null,
+   "prompt":
+   "If the direct product of two groups is torsion free then each of the groups is torsion free.",
+   "groups":
+   [["∀ {G H : Type u_1} [inst : Group G] [inst_1 : Group H],\n  Monoid.IsTorsionFree (G × H) → Monoid.IsTorsionFree G → Monoid.IsTorsionFree H",
+     "∀ {G H : Type u_1} [inst : Group G] [inst_1 : Group H],\n  Monoid.IsTorsionFree (G × H) → Monoid.IsTorsionFree G → Monoid.IsTorsionFree H"],
+    ["∀ {G H : Type u_1} [inst : Group G] [inst_1 : Group H],\n  Monoid.IsTorsionFree (G × H) → Monoid.IsTorsionFree G ∧ Monoid.IsTorsionFree H"]],
+   "correct": null,
+   "comments": "",
+   "all-elabs":
+   [" ∀ {G H : Type u_1} [inst : Group G] [inst_1 : Group H], Monoid.IsTorsionFree (G × H) → Monoid.IsTorsionFree G ∧ Monoid.IsTorsionFree H ",
+    " ∀ {G H : Type u_1} [inst : Group G] [inst_1 : Group H], Monoid.IsTorsionFree (G × H) → Monoid.IsTorsionFree G → Monoid.IsTorsionFree H",
+    " ∀ {G H : Type u_1} [inst : Group G] [inst_1 : Group H], Monoid.IsTorsionFree (G × H) → Monoid.IsTorsionFree G → Monoid.IsTorsionFree H"]}],
+ "elaborated": 35}
