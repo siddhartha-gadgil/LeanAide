@@ -64,14 +64,17 @@ def simpleRunFrontend
     (env: Environment)
     (opts : Options := {})
     (fileName : String := "<input>")
-    : IO (Environment × Bool) := do
+    : MetaM (Environment × MessageLog) := do
   let inputCtx := Parser.mkInputContext input fileName
   let commandState := Command.mkState env (opts := opts)
   let parserState: ModuleParserState := {}
   let s ← IO.processCommands inputCtx parserState commandState
-  pure (s.commandState.env, !s.commandState.messages.hasErrors)
+  let msgLog := s.commandState.messages
+  for msg in msgLog.toList do
+    logInfo msg.data
+  pure (s.commandState.env, s.commandState.messages)
 
-def runFrontendM (input: String)(modifyEnv: Bool := false) : MetaM (Environment × Bool) := do
+def runFrontendM (input: String)(modifyEnv: Bool := false) : MetaM (Environment × MessageLog) := do
   let (env, chk) ← simpleRunFrontend input (← getEnv)
   if modifyEnv then setEnv env
   return (env, chk)
@@ -84,6 +87,15 @@ def defFrontValueM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM String 
   let fmt ←  ppExpr val
   return fmt.pretty
 
+def checkElabFrontM(s: String) : MetaM <| List String := do
+  let (_, log) ← runFrontendM s
+  let mut l := []
+  for msg in log.toList do
+    if msg.severity == MessageSeverity.error then
+      let x ← msg.data.toString
+      l := l.append [x]
+  return l
+
 #eval defFrontValueM "def blah : Nat := 1" `blah
 #eval defFrontValueM
   "theorem two_le_three : 2 ≤ 3  := by decide" `two_le_three true
@@ -94,6 +106,22 @@ def two:= 2
 
 #eval defFrontValueM
   "theorem two_le_three : (two : ℕ) ≤ 3  := by decide" `two_le_three
+
+def bb : String := "
+theorem two_le_four : 2 ≤ 4  := by decide
+
+def x := unknown
+
+def one : Nat := 1
+"
+
+#eval defFrontValueM bb `two_le_three
+#eval defFrontValueM bb `one
+
+#eval checkElabFrontM "def three := 2"
+
+#eval checkElabFrontM bb
+
 
 #check sorry
 #reduce sorry
