@@ -94,7 +94,7 @@ def bulkElab : Cmd := `[Cli|
     o, output : String;    "Output file (default `results/{type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp10}.json`)."
     p, prompts : Nat;      "Number of example prompts (default 10)."
     r, responses : Nat;    "Number of responses to ask for (default 5)."
-    t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t`."
+    t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t` (default 8)."
     m, model : String ; "Model to be used (default `gpt-3.5-turbo`)"
     e, embedding : String; "Embedding to be used (default `openai_full`)"
     d, delay : Nat; "Delay between requests in seconds (default 20)."
