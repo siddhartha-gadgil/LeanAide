@@ -15,6 +15,18 @@ example (l: ∀n : ℕ , n > 10 → n > 5): (∃ (n : ℕ), n > 10) →  ∃n,  
   sorry
   sorry
 
+structure NN where
+  n : Nat
+
+structure MM extends NN where
+  m : Nat
+
+def getN (n: NN) : Nat := n.n
+
+def m : MM := {n := 3, m := 4}
+
+#eval getN m.toNN
+
 #eval 3 ∣ 4
 
 def listType : Nat → Type
