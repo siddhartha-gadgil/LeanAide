@@ -85,7 +85,7 @@ example : (∀ (α : Type u), Monoid.IsTorsionFree (FreeGroup α)) → ({α : Ty
 example : ({α : Type u} → Monoid.IsTorsionFree (FreeGroup α)) → (∀ (α : Type u), Monoid.IsTorsionFree (FreeGroup α)) := sorry
 
 /-- Every natural number greater than `1` is divisible by a Nat.Prime number.  -/
-example : (∀ {n : ℕ}, 1 < n → ∃ p, Nat.Prime p ∧ p ∣ n) → ((n: ℕ) → 
+example : (∀ {n : ℕ}, 1 < n → ∃ p, Nat.Prime p ∧ p ∣ n) → ((n: ℕ) →
   n > 1 → ∃ p: ℕ, Nat.Prime p ∧ (∃ d: ℕ, (p * d) = n)) := sorry
 example : ((n: ℕ) → n > 1 → ∃ p: ℕ, Nat.Prime p ∧ (∃ d: ℕ, (p * d) = n)) → (∀ {n : ℕ}, 1 < n → ∃ p, Nat.Prime p ∧ p ∣ n) := sorry
 
@@ -119,8 +119,8 @@ example : (∀ {α : Type u} [inst : DecidableEq α] {x : FreeGroup α}, x ≠ 1
 example : ({G : Type u} →  [Group G] →  FreeGroup G → (∀ g : G, g ≠ 1 → orderOf g = 0)) → (∀ {α : Type u} [inst : DecidableEq α] {x : FreeGroup α}, x ≠ 1 → ¬IsOfFinOrder x) := sorry
 
 /-- For any two relatively Nat.Prime positive integers $a$ and $b$, every sufficiently large natural number $N$ can be written as a linear combination $ax + by$ of $a$ and $b$, where both $x$ and $y$ are natural numbers. -/
-example : (∀ {m n : ℕ}, 0 < m → 0 < n → Nat.gcd m n = 1 → ∀ (N : ℕ), N > (m * n) → ∃ x y, N = (m * x) + (n * y)) → (∀ a b : ℕ, a > 0 → b > 0 → Nat.coprime a b → ∃ m : ℕ, ∀ N : ℕ, N > m → ∃ x y : ℕ, N = (a*x) + (b*y)) := sorry
-example : (∀ a b : ℕ, a > 0 → b > 0 → Nat.coprime a b → ∃ m : ℕ, ∀ N : ℕ, N > m → ∃ x y : ℕ, N = (a*x) + (b*y)) → (∀ {m n : ℕ}, 0 < m → 0 < n → Nat.gcd m n = 1 → ∀ (N : ℕ), N > (m * n) → ∃ x y, N = (m * x) + (n * y)) := sorry
+example : (∀ {m n : ℕ}, 0 < m → 0 < n → Nat.gcd m n = 1 → ∀ (N : ℕ), N > (m * n) → ∃ x y, N = (m * x) + (n * y)) → (∀ a b : ℕ, a > 0 → b > 0 → Nat.Coprime a b → ∃ m : ℕ, ∀ N : ℕ, N > m → ∃ x y : ℕ, N = (a*x) + (b*y)) := sorry
+example : (∀ a b : ℕ, a > 0 → b > 0 → Nat.Coprime a b → ∃ m : ℕ, ∀ N : ℕ, N > m → ∃ x y : ℕ, N = (a*x) + (b*y)) → (∀ {m n : ℕ}, 0 < m → 0 < n → Nat.gcd m n = 1 → ∀ (N : ℕ), N > (m * n) → ∃ x y, N = (m * x) + (n * y)) := sorry
 
 -- The ones below had no model answers
 
