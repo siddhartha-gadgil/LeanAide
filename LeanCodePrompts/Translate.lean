@@ -201,16 +201,6 @@ initialize webCacheJson : IO.Ref (HashMap String (Json × Json)) ← IO.mkRef (H
 initialize pendingJsonQueries : IO.Ref (HashSet String)
     ← IO.mkRef (HashSet.empty)
 
-initialize logCache : IO.Ref (Array String) ← IO.mkRef (#[])
-
-def mkLog{α : Type _}[ToString α](msg: α) : IO Unit := do
-  let cache ← logCache.get
-  logCache.set (cache.push (toString msg))
-
-def logs (num: Nat) : IO (List String) := do
-  let cache ← logCache.get
-  return cache.reverse.toList.take num
-
 def getCachedJson? (s: String) : IO (Option (Json × Json)) := do
   let cache ← webCacheJson.get
   return cache.find? s
@@ -380,7 +370,6 @@ def getLeanCodeJson (s: String)
       let pairs  := pairs.filter (fun (s, _) => s.length < 100)
       let prompt := GPT.makePrompt s pairs pfx sysLess
       trace[Translate.info] m!"prompt: \n{prompt.pretty}"
-      mkLog prompt
       logTimed "querying server"
       let fullJson ← server.query prompt params
       let outJson :=

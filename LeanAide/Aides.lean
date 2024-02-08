@@ -271,3 +271,14 @@ def azureURL (deployment: String := "leanaide-gpt4") : IO String := do
 
 def openAIURL : IO String := do
   pure "https://api.openai.com/v1/chat/completions"
+
+
+open System IO.FS
+def appendFile (fname : FilePath) (content : String) : IO Unit := do
+  let h ← Handle.mk fname Mode.append
+  h.putStr content
+  h.flush
+
+def appendLog (logFile: String) (content : Json) : IO Unit := do
+  let fname : FilePath := "rawdata/" / (logFile ++ ".jsonl")
+  appendFile fname content.compress
