@@ -9,11 +9,11 @@ def translateWithDataM (s: String)(server: ChatServer)
   (includeFixed: Bool := Bool.false)
   (embedding: String)(repeats: Nat := 0)(sleepTime : Nat := 1)
   (queryData? : Option <| (HashMap String Json)  )(pfx: String := "")(sysLess: Bool := false)  :
-  TermElabM ((Option (Expr × (Array String) × (Array (Array String)) )) × Array String) := do
-  let output ←  match queryData? with
+  TermElabM ((Option (Expr × (Array String) × (Array (Array String)) )) × Array String × (Option String)) := do
+  let (output, prompt?) ←  match queryData? with
   | none =>
-    let js ← getLeanCodeJson s server params numSim includeFixed pfx sysLess
-    GPT.exprStrsFromJson js
+    let (js,prompt) ← getLeanCodeJson s server params numSim includeFixed pfx sysLess
+    pure (← GPT.exprStrsFromJson js, some prompt.pretty)
   | some f =>
     let res? := f.find? s.trim
     match res? with
@@ -21,10 +21,10 @@ def translateWithDataM (s: String)(server: ChatServer)
       throwError s!"no data for {s}"
     | some js =>
       let arr := js.getArr? |>.toOption.get!
-      pure <| arr.map fun js => js.getStr!
+      pure (arr.map fun js => js.getStr!, none)
   if output.isEmpty then
   match repeats with
-  | 0 => return (none, output)
+  | 0 => return (none, output, prompt?)
   | k + 1 =>
     IO.println s!"No outputs; repeating ({k} left)"
     elabLog s!"No outputs; repeating ({k} left)"
@@ -34,7 +34,7 @@ def translateWithDataM (s: String)(server: ChatServer)
       (sleepTime * 2) queryData? pfx sysLess
   else
     let res ← bestElab? output
-    return (res, output)
+    return (res, output, prompt?)
 
 def translateWithDataCore (s: String)(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)
@@ -42,7 +42,7 @@ def translateWithDataCore (s: String)(server: ChatServer)
   (embedding: String)(repeats: Nat := 0)
   (queryData? : Option <| (HashMap String Json)  )
   (pfx: String := "")(sysLess: Bool := false)  :
-  CoreM ((Option (Expr × (Array String) ×  (Array (Array String)) )) × Array String) :=
+  CoreM ((Option (Expr × (Array String) ×  (Array (Array String)) )) × Array String × Option String) :=
     (translateWithDataM s server params
       numSim includeFixed
          embedding repeats
@@ -62,21 +62,21 @@ def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
   let outHandle ← IO.FS.Handle.mk outFile IO.FS.Mode.append
   let h ← IO.FS.Handle.mk promptsFile IO.FS.Mode.append
   let file := System.mkFilePath [s!"data/{type}-prompts.txt"]
-  let prompts ←  IO.FS.lines file
-  let prompts :=
-      prompts.map <| fun s => s.replace "<br>" "\n"
+  let statements ←  IO.FS.lines file
+  let statements :=
+      statements.map <| fun s => s.replace "<br>" "\n"
   let mut count := 0
   let mut elaborated := 0
   let mut elabPairs: Array (String × String × (Array String) × Array (Array String)) := #[]
   let mut failed : Array String := #[]
-  for prompt in prompts do
-    trace[Translate.info] m!"{prompt}"
+  for statement in statements do
+    trace[Translate.info] m!"{statement}"
     IO.println ""
-    IO.println prompt
-    let (res?, outputs) ←
-        translateWithDataM prompt server params numSim includeFixed embedding repeats 0 queryData? pfx sysLess
-    let fullPrompt := (← logs 1).head?.getD "No prompt (maybe using cached data)"
-    let js := Json.mkObj [("text", Json.str prompt),
+    IO.println statement
+    let (res?, outputs, prompt?) ←
+        translateWithDataM statement server params numSim includeFixed embedding repeats 0 queryData? pfx sysLess
+    let fullPrompt := prompt?.getD "No prompt (maybe using cached data)"
+    let js := Json.mkObj [("text", Json.str statement),
        ("fullPrompt", Json.str fullPrompt)]
     h.putStrLn <| js.compress
     count := count + 1
@@ -87,18 +87,18 @@ def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
       elabLog s!"theorem {v}"
       IO.println s!"theorem {v}"
       elaborated := elaborated + 1
-      let js := Json.mkObj [("text", Json.str prompt),
+      let js := Json.mkObj [("text", Json.str statement),
        ("fullPrompt", Json.str fullPrompt),
        ("result", true),
        ("theorem", v),
        ("all_elaborations", Json.arr <|thms.map Json.str),
        ("gps", Json.arr <| gps.map (Json.arr ∘ Array.map Json.str))]
       outHandle.putStrLn <| js.compress
-      elabPairs := elabPairs.push (prompt, v, thms, gps)
+      elabPairs := elabPairs.push (statement, v, thms, gps)
     | none =>
       elabLog "failed to elaborate"
       IO.println "failed to elaborate"
-      failed := failed.push prompt
+      failed := failed.push statement
       elabLog s!"outputs: {outputs}"
     elabLog s!"total : {count}"
     elabLog s!"elaborated: {elaborated}"

@@ -196,7 +196,7 @@ s!"{thm} :=
 Caching, polling etc to avoid repeatedly calling servers
 -/
 
-initialize webCacheJson : IO.Ref (HashMap String Json) ← IO.mkRef (HashMap.empty)
+initialize webCacheJson : IO.Ref (HashMap String (Json × Json)) ← IO.mkRef (HashMap.empty)
 
 initialize pendingJsonQueries : IO.Ref (HashSet String)
     ← IO.mkRef (HashSet.empty)
@@ -211,16 +211,16 @@ def logs (num: Nat) : IO (List String) := do
   let cache ← logCache.get
   return cache.reverse.toList.take num
 
-def getCachedJson? (s: String) : IO (Option Json) := do
+def getCachedJson? (s: String) : IO (Option (Json × Json)) := do
   let cache ← webCacheJson.get
   return cache.find? s
 
-def cacheJson (s: String)(js: Json)  : IO Unit := do
+def cacheJson (s: String)(js: Json × Json)  : IO Unit := do
   let cache ← webCacheJson.get
   webCacheJson.set (cache.insert s js)
   return ()
 
-partial def pollCacheJson (s : String) : IO Json := do
+partial def pollCacheJson (s : String) : IO <| Json × Json := do
   let cache ← webCacheJson.get
   match cache.find? s with
   | some jsBlob => return jsBlob
@@ -358,7 +358,7 @@ def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := docField)
 -/
 def getLeanCodeJson (s: String)
   (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})(numSim : Nat:= 8)
-  (includeFixed: Bool := Bool.false)(pfx: String := "")(sysLess: Bool := false) : CoreM Json := do
+  (includeFixed: Bool := Bool.false)(pfx: String := "")(sysLess: Bool := false) : CoreM <| Json × Json := do
   logTimed s!"translating string `{s}` with {numSim} examples"
   match ← getCachedJson? s with
   | some js => return js
@@ -388,8 +388,8 @@ def getLeanCodeJson (s: String)
       logTimed "obtained gpt response"
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.erase s)
-      cacheJson s outJson
-      return outJson
+      cacheJson s (outJson, prompt)
+      return (outJson, prompt)
 
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and returns the best choice, throwing an error if nothing elaborates.  -/
 def bestElab (output: Array String) : TermElabM Expr := do
@@ -574,7 +574,7 @@ elab "//-" cb:commentBody  : term => do
   let s := cb.raw.getAtomVal
   let s := (s.dropRight 2).trim
   -- querying codex
-  let js ←
+  let (js, _) ←
     getLeanCodeJson  s (params := {model := "gpt-3.5-turbo"})
   -- filtering, autocorrection and selection
   let e ← jsonToExpr' js
@@ -616,7 +616,7 @@ universe u
 def translateViewM (s: String)
   (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8) : TermElabM String := do
   logTimed "starting translation"
-  let js ← getLeanCodeJson  s server params
+  let (js, _) ← getLeanCodeJson  s server params
         (numSim := numSim)
   let output ← GPT.exprStrsFromJson js
   trace[Translate.info] m!"{output}"
@@ -649,7 +649,7 @@ open PrettyPrinter
   match stx with
   | `(l! $s:str) =>
   let s := s.getString
-  let js ←
+  let (js, _) ←
     getLeanCodeJson  s (← chatServer) (← chatParams)
   let e ← jsonToExpr' js
   logTimed "obtained expression"
