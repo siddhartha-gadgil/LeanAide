@@ -405,15 +405,21 @@ def bestElab (output: Array String) : TermElabM Expr := do
           if !expr.hasExprMVar then
             fullElaborated := fullElaborated.push expr
   if elaborated.isEmpty then
-    elabLog "No valid output from LLM; outputs below"
+    let mut errors : Array Json := #[]
     for out in output do
       let stx ← parseThm4 out
       match stx with
       | Except.error err =>
-          elabLog s!"{err} while parsing {out}"
+          errors := errors.push <|
+            Json.mkObj [("parsed", false),
+              ("error", Json.str err), ("output", Json.str out)]
           pure ()
       | Except.ok stx => do
-        elabLog s!"{stx.reprint.get!}"
+        errors := errors.push <|
+            Json.mkObj [("parsed", true),
+              ("syntax", stx.reprint.get!), ("output", Json.str out)]
+    let errorJson := Json.arr errors
+    appendLog "translate_fail_error" errorJson
     mkSyntheticSorry (mkSort levelZero)
   else
     logTimed "elaborated outputs, starting majority voting"
@@ -425,7 +431,7 @@ def bestElab (output: Array String) : TermElabM Expr := do
 
 
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and optionally returns the best choice as well as all elaborated terms (used for batch processing, interactive code uses `arrayToExpr` instead)  -/
-def bestElab? (output: Array String) : TermElabM (Option (Expr× (Array String) × (Array (Array String)) )) := do
+def bestElab? (output: Array String) : TermElabM (Except Json (Expr× (Array String) × (Array (Array String)) )) := do
   -- IO.println s!"arrayToExpr? called with {output.size} outputs"
   let mut elabStrs : Array String := Array.empty
   let mut elaborated : Array Expr := Array.empty
@@ -451,16 +457,21 @@ def bestElab? (output: Array String) : TermElabM (Option (Expr× (Array String) 
           if !expr.hasExprMVar then
             fullElaborated := fullElaborated.push expr
   if elaborated.isEmpty then
-    elabLog "No valid output from LLM; outputs below"
+    let mut errors : Array Json := #[]
     for out in output do
       let stx ← parseThm4 out
       match stx with
       | Except.error err =>
-          elabLog s!"{err} while parsing {out}"
+          errors := errors.push <|
+            Json.mkObj [("parsed", false),
+              ("error", Json.str err), ("output", Json.str out)]
           pure ()
       | Except.ok stx => do
-        elabLog s!"{stx.reprint.get!}"
-    return none
+        errors := errors.push <|
+            Json.mkObj [("parsed", true),
+              ("syntax", stx.reprint.get!), ("output", Json.str out)]
+    let errorJson := Json.arr errors
+    return Except.error errorJson
   else
     logTimed "elaborated outputs, starting majority voting"
     let priority :=
@@ -469,7 +480,7 @@ def bestElab? (output: Array String) : TermElabM (Option (Expr× (Array String) 
     let thm := (groupSorted[0]!)[0]!
     let gpView ←  groupSorted.mapM (fun gp => gp.mapM (fun e => e.view))
     logTimed "obtained majority vote"
-    return some (thm, elabStrs, gpView)
+    return Except.ok (thm, elabStrs, gpView)
 
 
 def greedyBestExpr? (output: Array String) : TermElabM (Option Expr) := do
@@ -482,8 +493,8 @@ def leanToPrompt (thm: String)(numSim : Nat:= 5)(temp : JsonNumber := 0)(textFie
     let pairs? ← getPromptPairs thm numSim
     let pairs := pairs?.toOption.getD #[]
     let prompt := GPT.makeFlipPrompt thm pairs
-    -- elabLog prompt
-    let fullJson ← gptQuery prompt 1 temp (model := model)
+    let fullJson ← (ChatServer.openAI).query prompt
+      {model := model, temp := temp, n := 1}
     let outJson :=
       (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
     let out? := (outJson.getArrVal? 0).bind fun js => js.getObjVal? textField
@@ -611,9 +622,9 @@ def translateViewM (s: String)
   trace[Translate.info] m!"{output}"
   let e? ← bestElab? output
   match e? with
-  | some (e, _) => do
+  | Except.ok (e, _) => do
     e.view
-  | none => do
+  | Except.error _ => do
     let stx ← output.findSomeM? <| fun s => do
       let exp ←  parseThm4 s
       let elab? ← elabThm4 s

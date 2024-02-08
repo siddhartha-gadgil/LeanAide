@@ -26,15 +26,23 @@ def translateWithDataM (s: String)(server: ChatServer)
   match repeats with
   | 0 => return (none, output, prompt?)
   | k + 1 =>
-    IO.println s!"No outputs; repeating ({k} left)"
-    elabLog s!"No outputs; repeating ({k} left)"
+    IO.eprintln s!"No outputs; repeating ({k} left)"
     IO.sleep (sleepTime * 1000)
     translateWithDataM s server params
       numSim includeFixed embedding k
       (sleepTime * 2) queryData? pfx sysLess
   else
     let res ← bestElab? output
-    return (res, output, prompt?)
+    match res with
+    | Except.error jsErr =>
+      let js := Json.mkObj [
+        ("text", Json.str s),
+        ("error", jsErr)]
+      appendLog "translate_fail" js
+      pure ()
+    | Except.ok _ =>
+      pure ()
+    return (res.toOption, output, prompt?)
 
 def translateWithDataCore (s: String)(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)
@@ -52,7 +60,7 @@ def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)
   (includeFixed: Bool := Bool.false)(embedding: String)
   (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json) )(pfx: String := "")(sysLess: Bool := false) : TermElabM Json := do
-  elabLog s!"Writing to file: {type}-elab-{numSim}-{includeFixed}-{params.n}-{params.temp.mantissa}.json"
+  IO.eprintln s!"Writing to file: {type}-elab-{numSim}-{includeFixed}-{params.n}-{params.temp.mantissa}.json"
   let promptsFile := System.mkFilePath ["data",
     s!"prompts-{type}-{numSim}-{includeFixed}-{params.n}-{params.temp.mantissa}.jsonl"]
   let outFile := System.mkFilePath
@@ -73,7 +81,7 @@ def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
     trace[Translate.info] m!"{statement}"
     IO.println ""
     IO.println statement
-    let (res?, outputs, prompt?) ←
+    let (res?, _, prompt?) ←
         translateWithDataM statement server params numSim includeFixed embedding repeats 0 queryData? pfx sysLess
     let fullPrompt := prompt?.getD "No prompt (maybe using cached data)"
     let js := Json.mkObj [("text", Json.str statement),
@@ -82,9 +90,7 @@ def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
     count := count + 1
     match res? with
     | some (e, thms, gps) =>
-      elabLog "success"
       let v ← e.view
-      elabLog s!"theorem {v}"
       IO.println s!"theorem {v}"
       elaborated := elaborated + 1
       let js := Json.mkObj [("text", Json.str statement),
@@ -96,14 +102,10 @@ def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
       outHandle.putStrLn <| js.compress
       elabPairs := elabPairs.push (statement, v, thms, gps)
     | none =>
-      elabLog "failed to elaborate"
-      IO.println "failed to elaborate"
+      IO.eprintln "failed to elaborate"
       failed := failed.push statement
-      elabLog s!"outputs: {outputs}"
-    elabLog s!"total : {count}"
-    elabLog s!"elaborated: {elaborated}"
-    IO.println s!"total : {count}"
-    IO.println s!"elaborated: {elaborated}"
+    IO.eprintln s!"total : {count}"
+    IO.eprintln s!"elaborated: {elaborated}"
     IO.sleep <| delay * 1000
 
   let js :=
@@ -172,7 +174,7 @@ def outputFromCompletionsM (s: String) :
   let output := output ++ (output.map (fun s => ": " ++ s))
   -- IO.println s!"output: {output}"
   let res? ← bestElab? output
-  let js : Json ←  match res? with
+  let js : Json ←  match res?.toOption with
   | some (thm, elabs, _) => do
     let thm ←  thm.view
     pure <| Json.mkObj [("success", Bool.true), ("theorem", thm),
