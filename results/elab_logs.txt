@@ -37401,3 +37401,38 @@ No valid output from LLM; outputs below
 
 ∀ {k : ℕ} {E :  ZFSet (Finₓ k → ℝ)}, ¬Set.Countable E → Perfect {x | IsAccumulationPointOf E x}
 
+No valid output from LLM; outputs below
+
+∀ {k : ℕ} {E :  ZFSet (EuclideanSpace ℝ (Finₓ k))} {P :  ZFSet (EuclideanSpace ℝ (Finₓ k))},
+  P = SetOfAccumulationPoints E → ¬Set.Countable E → Perfect P
+
+∀ {k : ℕ} {E :  ZFSet (EuclideanSpace ℝ (Finₓ k))}, ¬Set.Countable E → Perfect (AccumulationPoints E)
+
+∀ {k : ℕ} {E :  ZFSet (EuclideanSpace ℝ (Finₓ k))} {P :  ZFSet (EuclideanSpace ℝ (Finₓ k))},
+  Set.Uncountable E → P = Deriv E → Perfect P
+
+∀ {k : ℕ} {E :  ZFSet (FinVec k ℝ)}, ¬Set.Countable E → Perfect (AccumulationPoints E)
+
+∀ {k : ℕ} {E P :  ZFSet (EuclideanSpace ℝ (Finₓ k))},
+  Set.Uncountable E → P = SetOfAccumulationPoints E → Perfect P
+
+∀ {k : ℕ} {E :  ZFSet (EuclideanSpace ℝ (Finₓ k))}, ¬Set.Countable E → Perfect (AccumulationPoints E)
+
+∀ {k : ℕ} {E :  ZFSet ( EuclideanSpace ℝ (Finₓ k))} {P :  ZFSet ( EuclideanSpace ℝ (Finₓ k))},
+  P = AccumulationPoints E → ¬Set.Countable E → Perfect P
+
+∀ {k : ℕ} {E :  ZFSet (EuclideanSpace ℝ (Finₓ k))}, ¬Set.Countable E → IsPerfect (AccumulationPoints E)
+
+∀ {k : Type u_1} [inst :  FintypeCat k] {E :  ZFSet (EuclideanSpace ℝ k)}, ¬Set.Countable E → 
+Perfect {x | IsAccumulationPoint E x}
+
+∀ {k : ℕ} {E P :  ZFSet (Finₓ k → ℝ)}, P = {x | IsAccumulationPointOf x E} → (¬Set.Countable E → Perfect P)
+
+No valid output from LLM; outputs below
+
+No valid output from LLM; outputs below
+
+No valid output from LLM; outputs below
+
+No valid output from LLM; outputs below
+

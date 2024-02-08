@@ -43,11 +43,34 @@ register_option lean_aide.translate.azure : Bool :=
     group := "lean_aide.translate"
     descr := "Whether to use Azure OpenAI." }
 
+register_option lean_aide.translate.url? : String :=
+  { defValue := ""
+    group := "lean_aide.translate"
+    descr := "Local url to query. Empty string for none" }
+
 def promptSize : CoreM Nat := do
   return  lean_aide.translate.prompt_size.get (← getOptions)
 
+def chatParams : CoreM ChatParams := do
+  let opts ← getOptions
+  return {
+    n := lean_aide.translate.choices.get opts,
+    temp := 0.8,
+    model := lean_aide.translate.model.get opts
+  }
 
-def fileName := "data/mathlib4-thms.json"
+def chatServer : CoreM ChatServer := do
+  let opts ← getOptions
+  if lean_aide.translate.azure.get opts then
+    return ChatServer.azure
+  else
+    let url := lean_aide.translate.url?.get opts
+    if url.isEmpty then
+      return ChatServer.openAI
+    else
+      return ChatServer.generic url
+
+def fileName := "data/mathlib4-prompts.json"
 
 def lean4mode := decide (fileName ∈ ["data/mathlib4-prompts.json",
         "data/mathlib4-thms.json"])
@@ -359,16 +382,18 @@ def getLeanCodeJson (s: String)(numSim : Nat:= 8)
       let prompt := GPT.makePrompt s pairs pfx sysLess
       trace[Translate.info] m!"prompt: \n{prompt.pretty}"
       mkLog prompt
-      logTimed "querying gpt"
-      let fullJson ←  match azure with
-      | true =>
-        azureQuery prompt queryNum temp (model := model)
-      | false =>
+      logTimed "querying server"
+      let server : ChatServer :=
+        if azure then ChatServer.azure else
         match url? with
-        | some url =>
-          genericQuery url prompt queryNum temp (model := model)
-        | none =>
-          gptQuery prompt queryNum temp (model := model)
+        | some url => ChatServer.generic url
+        | none => ChatServer.openAI
+      let params : ChatParams := {
+        n := queryNum,
+        temp := temp,
+        model := model
+      }
+      let fullJson ← server.query prompt params
       let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
       logTimed "obtained gpt response"
@@ -635,7 +660,7 @@ open PrettyPrinter
   | `(l! $s:str) =>
   let s := s.getString
   let js ←
-    getLeanCodeJson  s (numSim := lean_aide.translate.prompt_size.get (← getOptions)) (queryNum := lean_aide.translate.choices.get (← getOptions)) (model := lean_aide.translate.model.get (← getOptions))
+    getLeanCodeJson  s (numSim := ← promptSize) (queryNum := lean_aide.translate.choices.get (← getOptions)) (model := lean_aide.translate.model.get (← getOptions))
     (azure := lean_aide.translate.azure.get (← getOptions))
   let e ← jsonToExpr' js
   logTimed "obtained expression"
