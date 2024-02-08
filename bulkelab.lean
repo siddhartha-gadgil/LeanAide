@@ -32,6 +32,13 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
     |>.getD 0
   let azure := p.hasFlag "azure"
   let url? := p.flag? "url" |>.map (fun s => s.as! String)
+  let chatServer :=
+    if azure then ChatServer.azure else
+        match url? with
+        | some url => ChatServer.generic url
+        | none => ChatServer.openAI
+  let chatParams : ChatParams :=
+    {model := model, temp := temp, n := queryNum}
   let queryData? : Option (HashMap String Json) ←
     p.flag? "query_data" |>.map (fun s => s.as! String) |>.mapM
       fun filename => do
@@ -65,9 +72,7 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
     {module:= `LeanCodePrompts.Translate},
     {module := `Mathlib}] {}
   let core :=
-    checkTranslatedThmsCore type
-      numSim includeFixed queryNum temp model embedding azure url?
-      delay repeats queryData?
+    checkTranslatedThmsCore type chatServer chatParams numSim includeFixed embedding delay repeats queryData?
   let io? :=
     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000}
     {env := env}

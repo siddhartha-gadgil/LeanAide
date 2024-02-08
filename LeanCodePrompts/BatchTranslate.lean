@@ -4,14 +4,15 @@ import LeanAide.Aides
 open Lean Meta Elab
 
 
-def translateWithDataM (s: String)(numSim : Nat:= 10)
-  (includeFixed: Bool := Bool.false)(queryNum: Nat := 5)
-  (temp : JsonNumber := 0.2)(model: String)
-  (embedding: String)(azure: Bool := false)(url? : Option String := none)(repeats: Nat := 0)(sleepTime : Nat := 1)(queryData? : Option <| (HashMap String Json)  )(pfx: String := "")(sysLess: Bool := false)  :
+def translateWithDataM (s: String)(server: ChatServer)
+  (params: ChatParams)(numSim : Nat:= 10)
+  (includeFixed: Bool := Bool.false)
+  (embedding: String)(repeats: Nat := 0)(sleepTime : Nat := 1)
+  (queryData? : Option <| (HashMap String Json)  )(pfx: String := "")(sysLess: Bool := false)  :
   TermElabM ((Option (Expr × (Array String) × (Array (Array String)) )) × Array String) := do
   let output ←  match queryData? with
   | none =>
-    let js ← getLeanCodeJson s numSim includeFixed queryNum temp model azure url? pfx sysLess
+    let js ← getLeanCodeJson s server params numSim includeFixed pfx sysLess
     GPT.exprStrsFromJson js
   | some f =>
     let res? := f.find? s.trim
@@ -28,31 +29,35 @@ def translateWithDataM (s: String)(numSim : Nat:= 10)
     IO.println s!"No outputs; repeating ({k} left)"
     elabLog s!"No outputs; repeating ({k} left)"
     IO.sleep (sleepTime * 1000)
-    translateWithDataM s numSim includeFixed queryNum temp model embedding azure url? k (sleepTime * 2) queryData? pfx sysLess
+    translateWithDataM s server params
+      numSim includeFixed embedding k
+      (sleepTime * 2) queryData? pfx sysLess
   else
     let res ← bestElab? output
     return (res, output)
 
-def translateWithDataCore (s: String)(numSim : Nat:= 10)
-  (includeFixed: Bool := Bool.false)(queryNum: Nat := 5)
-  (temp : JsonNumber := 0.2)(model: String)
-  (embedding: String)(azure: Bool := false)(url? : Option String := none)(repeats: Nat := 0)
+def translateWithDataCore (s: String)(server: ChatServer)
+  (params: ChatParams)(numSim : Nat:= 10)
+  (includeFixed: Bool := Bool.false)
+  (embedding: String)(repeats: Nat := 0)
   (queryData? : Option <| (HashMap String Json)  )
   (pfx: String := "")(sysLess: Bool := false)  :
   CoreM ((Option (Expr × (Array String) ×  (Array (Array String)) )) × Array String) :=
-    (translateWithDataM s
+    (translateWithDataM s server params
       numSim includeFixed
-        queryNum temp model embedding azure url? repeats
+         embedding repeats
         (queryData? := queryData?) (pfx:= pfx) (sysLess := sysLess)).run'.run'
 
-def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := 0.2)(model: String)
-  (embedding: String)(azure: Bool := false)(url? : Option String := none)(delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json) )(pfx: String := "")(sysLess: Bool := false) : TermElabM Json := do
-  elabLog s!"Writing to file: {type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp.mantissa}.json"
+def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
+  (params: ChatParams)(numSim : Nat:= 10)
+  (includeFixed: Bool := Bool.false)(embedding: String)
+  (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json) )(pfx: String := "")(sysLess: Bool := false) : TermElabM Json := do
+  elabLog s!"Writing to file: {type}-elab-{numSim}-{includeFixed}-{params.n}-{params.temp.mantissa}.json"
   let promptsFile := System.mkFilePath ["data",
-    s!"prompts-{type}-{numSim}-{includeFixed}-{queryNum}-{temp.mantissa}.jsonl"]
+    s!"prompts-{type}-{numSim}-{includeFixed}-{params.n}-{params.temp.mantissa}.jsonl"]
   let outFile := System.mkFilePath
-      ["results", "model",
-      s!"{type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp.mantissa}.jsonl"]
+      ["results", params.model,
+      s!"{type}-elab-{numSim}-{includeFixed}-{params.n}-{params.temp.mantissa}.jsonl"]
   IO.FS.writeFile outFile ""
   let outHandle ← IO.FS.Handle.mk outFile IO.FS.Mode.append
   let h ← IO.FS.Handle.mk promptsFile IO.FS.Mode.append
@@ -69,9 +74,7 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed:
     IO.println ""
     IO.println prompt
     let (res?, outputs) ←
-        translateWithDataM prompt
-          numSim includeFixed queryNum temp model embedding azure url?
-          repeats 1 queryData? pfx sysLess
+        translateWithDataM prompt server params numSim includeFixed embedding repeats 0 queryData? pfx sysLess
     let fullPrompt := (← logs 1).head?.getD "No prompt (maybe using cached data)"
     let js := Json.mkObj [("text", Json.str prompt),
        ("fullPrompt", Json.str fullPrompt)]
@@ -109,8 +112,8 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed:
         ("elaborated", elaborated),
         ("number-similar-sentences", numSim),
        ("include-fixed", includeFixed),
-       ("query-number", queryNum),
-       ("temperature", Json.num temp),
+       ("query-number", params.n),
+       ("temperature", Json.num params.temp),
        ("elaborated-prompts",
         Json.arr <| ←  elabPairs.mapM <|
           fun (p, s, thms, gps) => do
@@ -125,9 +128,11 @@ def checkTranslatedThmsM(type: String := "thm")(numSim : Nat:= 10)(includeFixed:
             ]
   return js
 
-def checkTranslatedThmsCore(type: String := "thm")(numSim : Nat:= 10)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := 0.2)(model: String)(embedding : String)(azure: Bool := false)(url? : Option String := none)(delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json)  )(pfx: String := "")(sysLess: Bool := false) : CoreM Json :=
-    (checkTranslatedThmsM type
-      numSim includeFixed queryNum temp model embedding azure url? delay repeats queryData? pfx sysLess).run'.run'
+def checkTranslatedThmsCore(type: String := "thm")(server: ChatServer)
+  (params: ChatParams)(numSim : Nat:= 10)
+  (includeFixed: Bool := Bool.false)(embedding: String)
+  (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json) )(pfx: String := "")(sysLess: Bool := false): CoreM Json :=
+    (checkTranslatedThmsM type server params numSim includeFixed embedding delay repeats queryData? pfx sysLess).run'.run'
 
 def parsedThmsPrompt : IO (Array String) := do
   let file := System.mkFilePath ["data/parsed_thms.txt"]

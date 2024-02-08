@@ -356,10 +356,9 @@ def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := docField)
 
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
-def getLeanCodeJson (s: String)(numSim : Nat:= 8)
-  (includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := 0.8)(model: String)
-  (azure: Bool := false)
-  (url? : Option String := none)(pfx: String := "")(sysLess: Bool := false) : CoreM Json := do
+def getLeanCodeJson (s: String)
+  (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})(numSim : Nat:= 8)
+  (includeFixed: Bool := Bool.false)(pfx: String := "")(sysLess: Bool := false) : CoreM Json := do
   logTimed s!"translating string `{s}` with {numSim} examples"
   match ← getCachedJson? s with
   | some js => return js
@@ -383,16 +382,6 @@ def getLeanCodeJson (s: String)(numSim : Nat:= 8)
       trace[Translate.info] m!"prompt: \n{prompt.pretty}"
       mkLog prompt
       logTimed "querying server"
-      let server : ChatServer :=
-        if azure then ChatServer.azure else
-        match url? with
-        | some url => ChatServer.generic url
-        | none => ChatServer.openAI
-      let params : ChatParams := {
-        n := queryNum,
-        temp := temp,
-        model := model
-      }
       let fullJson ← server.query prompt params
       let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
@@ -586,7 +575,7 @@ elab "//-" cb:commentBody  : term => do
   let s := (s.dropRight 2).trim
   -- querying codex
   let js ←
-    getLeanCodeJson  s (model := "gpt-3.5-turbo")
+    getLeanCodeJson  s (params := {model := "gpt-3.5-turbo"})
   -- filtering, autocorrection and selection
   let e ← jsonToExpr' js
   trace[Translate.info] m!"{e}"
@@ -624,10 +613,11 @@ elab "uncurry2" e:term : term => do
 universe u
 
 
-def translateViewM (s: String)(model : String := "gpt-3.5-turbo") (azure: Bool := false) (url? : Option String := none) (numSim: Nat := 8) : TermElabM String := do
+def translateViewM (s: String)
+  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8) : TermElabM String := do
   logTimed "starting translation"
-  let js ← getLeanCodeJson  s (model := model)
-         (azure := azure) (url? := url?) (numSim := numSim)
+  let js ← getLeanCodeJson  s server params
+        (numSim := numSim)
   let output ← GPT.exprStrsFromJson js
   trace[Translate.info] m!"{output}"
   let e? ← bestElab? output
@@ -660,8 +650,7 @@ open PrettyPrinter
   | `(l! $s:str) =>
   let s := s.getString
   let js ←
-    getLeanCodeJson  s (numSim := ← promptSize) (queryNum := lean_aide.translate.choices.get (← getOptions)) (model := lean_aide.translate.model.get (← getOptions))
-    (azure := lean_aide.translate.azure.get (← getOptions))
+    getLeanCodeJson  s (← chatServer) (← chatParams)
   let e ← jsonToExpr' js
   logTimed "obtained expression"
   let stx' ← delab e
