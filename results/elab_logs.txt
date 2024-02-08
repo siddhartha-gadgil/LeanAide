@@ -37373,3 +37373,31 @@ total : 40
 
 elaborated: 35
 
+No valid output from LLM; outputs below
+
+∀ {k : ℕ} {E :  ZFSet (EuclideanSpace ℝ (Finₓ k))} {P :  ZFSet (EuclideanSpace ℝ (Finₓ k))},
+  ¬Set.Countable E → P = AccumulationPoints E → Perfect P
+
+∀ {k : ℕ} {E :  ZFSet (EuclideanSpace ℝ (Finₓ k))}, ¬Set.Countable E → Perfect (AccumulationPoints E)
+
+∀ {k : ℕ} {E P :  ZFSet (EuclideanSpace ℝ (Finₓ k))},
+  P = SetOfAccumulationPoints E → ¬Set.Countable E → Perfect P
+
+∀ {k : ℕ} {E :  ZFSet (FinVec k ℝ)}, ¬Set.Countable E → Perfect (AccumulationPoints E)
+
+∀ {k : ℕ} {E P :  ZFSet (EuclideanSpace ℝ (Finₓ k))}, Set.Uncountable E → P = {x | IsAccumulationPointOf E x} → Perfect P
+
+<input>:2:8: unexpected end of input; expected ':=' or '|' while parsing ∀ {k : ℕ} {E : Set (EuclideanSpace ℝ (Finₓ k))}, ¬Set.Countable E →
+  let P 
+
+∀ {k : ℕ} {E :  ZFSet (EuclideanSpace ℝ (Finₓ k))} {P :  ZFSet (EuclideanSpace ℝ (Finₓ k))},
+  Set.Uncountable E → P = {x | IsAccumulationPointOf E x} → Perfect P
+
+∀ {k : ℕ} {E :  ZFSet (EuclideanSpace ℝ (Finₓ k))} {P :  ZFSet (EuclideanSpace ℝ (Finₓ k))},
+  (P = SetOfAccumulationPoints E) → ¬Set.Countable E → Perfect P
+
+<input>:2:8: unexpected end of input; expected ':=' or '|' while parsing ∀ {k : ℕ} {E : Set (EuclideanSpace ℝ (Finₓ k))}, ¬Set.Countable E →
+  let P 
+
+∀ {k : ℕ} {E :  ZFSet (Finₓ k → ℝ)}, ¬Set.Countable E → Perfect {x | IsAccumulationPointOf E x}
+
