@@ -125,13 +125,13 @@ def syslessPrompt (sys: String)(egs : List <| String × String)
 
 def sysPrompt := "You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples. Follow EXACTLY the examples given."
 
-def makePrompt(query : String)(pairs: Array (String × String))(pfx: String := "")(sysLess: Bool := false) : Json:=
+def mkMessages(query : String)(examples: Array (String × String))(pfx: String := "")(sysLess: Bool := false) : Json:=
   if sysLess then
-    syslessPrompt sysPrompt pairs.toList query pfx
+    syslessPrompt sysPrompt examples.toList query pfx
   else
-    prompt sysPrompt pairs.toList query pfx
+    prompt sysPrompt examples.toList query pfx
 
-def makeFlipPrompt(query : String)(pairs: Array (String × String)) : Json:= prompt sysPrompt (pairs.toList.map (fun (x, y) => (y, x))) query
+def makeFlipPrompt(query : String)(examples: Array (String × String)) : Json:= prompt sysPrompt (examples.toList.map (fun (x, y) => (y, x))) query
 
 def exprStrsFromJson (json: Json) : CoreM (Array String) := do
   let outArr : Array String ←
@@ -158,7 +158,7 @@ def exprStrsFromJson (json: Json) : CoreM (Array String) := do
 end GPT
 
 /-- make prompt from prompt pairs -/
-@[deprecated GPT.makePrompt]
+@[deprecated GPT.mkMessages]
 def makePrompt(prompt : String)(pairs: Array (String × String)) : String :=
       pairs.foldr (fun  (ds, thm) acc =>
         -- acc ++ "/-- " ++ ds ++" -/\ntheorem" ++ thm ++ "\n" ++ "\n"
@@ -232,6 +232,13 @@ def elabLog (s: String) : IO Unit := do
 
 def fixedPrompts:= #[("If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.", "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"), ("If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.", "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"), ("If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.", "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"), ("Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.", "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A")]
 
+def fixedPromptTriples:= #[("If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.", "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)", "abs_sum_leq_sum_abs"), ("If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.", "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2", "sum_add_square_sub_square_eq_sum_square"), ("If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.", "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n", "distinct_powers_of_infinite_order_element"), ("Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.", "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A", "subset_of_open_subset_is_open")]
+
+def fixedPromptsJson : Array <| String × Json :=
+  fixedPromptTriples.map (fun (ds, thm, name) =>
+    (ds,
+    Json.mkObj [("docString", ds), ("theorem", thm), ("name", name)]))
+
 def getPromptPairsBert(s: String)(numSim : Nat)
    : IO <| Except String (Array (String × String)) := do
       let jsData := Json.mkObj [
@@ -257,15 +264,8 @@ def getPromptPairsBert(s: String)(numSim : Nat)
       let allPairs := allPairs.toList.eraseDups.toArray
       return Except.ok allPairs.toList.eraseDups.toArray
 
-def getPromptPairsOpenAIexe (s: String)(numSim : Nat)(full: Bool:= true) :
-  IO <| Except String (Array (String × String)) := do
-    -- let script := if full
-    --   then "nearest_embeddings_full"
-    --   else "nearest_embeddings"
-    -- let outJs ← IO.Process.run {
-    --   cmd := "lake",
-    --   args := #["exe", script, s, toString numSim]
-    -- }
+def getNearestDocsOpenAI (s: String)(numSim : Nat)(full: Bool:= true) :
+  IO <| Except String (Array (String × Json)) := do
     let outJs ←
      if full then
        getNearestEmbeddingsFull s numSim 2.0
@@ -276,22 +276,23 @@ def getPromptPairsOpenAIexe (s: String)(numSim : Nat)(full: Bool:= true) :
       match js.getArr? with
       | Except.error e => return Except.error e
       | Except.ok jsArr =>
-        let mut pairs : Array <| String × String := #[]
+        let mut pairs : Array <| String × Json := #[]
         for js in jsArr do
           match js.getObjValAs? String "docString" with
           | Except.error e => return Except.error e
           | Except.ok doc =>
-          match js.getObjValAs? String "theorem" with
-          | Except.error e => return Except.error e
-          | Except.ok thm =>
-            pairs := pairs.push (doc, thm)
+            pairs := pairs.push (doc, js)
         return Except.ok pairs.reverse
 
-/-- choosing pairs to build a prompt -/
-def getPromptPairs(s: String)(numSim : Nat)
+/-- choosing example theorems to build a prompt -/
+def getNearestDocs(s: String)(numSim : Nat)
 -- (source: String := "openai_full")
-   : IO <| Except String (Array (String × String)) :=
-      getPromptPairsOpenAIexe s numSim true
+   : IO <| Except String (Array (String × Json)) :=
+      getNearestDocsOpenAI s numSim true
+
+def simpleExample :String × Json →
+  Option (String × String)
+  | (docString, data) => data.getObjValAs? String "theorem" |>.toOption.map fun thm => (docString, thm)
 
 /-- prompts generated from the declarations in the current file. -/
 def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true) : MetaM <| Array (String × String):= do
@@ -317,7 +318,7 @@ def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true)
     let some type ← try? (Format.pretty <$> PrettyPrinter.ppExpr ci.type) | pure none
     return some ⟨docstring, s!"{kind} : {type} :="⟩
 
-/-- choosing pairs to build a prompt -/
+/-- choosing example theorems to build a prompt -/
 def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := docField)
     (theoremField : String := theoremField)
    : TermElabM (Array (String × String) × IO.Process.Output) := do
@@ -361,24 +362,25 @@ def getLeanCodeJson (s: String)
       -- work starts here; before this was caching, polling etc
       let pairs? ←
         if numSim > 0 then
-          getPromptPairs s numSim
+          getNearestDocs s numSim
         else pure <| Except.ok #[]
       match pairs? with
       | Except.error e => throwError e
       | Except.ok pairs => do
-      let pairs := if includeFixed then pairs ++ fixedPrompts else pairs
+      let pairs := if includeFixed then pairs ++ fixedPromptsJson else pairs
       let pairs  := pairs.filter (fun (s, _) => s.length < 100)
-      let prompt := GPT.makePrompt s pairs pfx sysLess
-      trace[Translate.info] m!"prompt: \n{prompt.pretty}"
+      let examples := pairs.filterMap simpleExample
+      let messages := GPT.mkMessages s examples pfx sysLess
+      trace[Translate.info] m!"prompt: \n{messages.pretty}"
       logTimed "querying server"
-      let fullJson ← server.query prompt params
+      let fullJson ← server.query messages params
       let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
       logTimed "obtained gpt response"
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.erase s)
-      cacheJson s (outJson, prompt)
-      return (outJson, prompt)
+      cacheJson s (outJson, messages)
+      return (outJson, messages)
 
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and returns the best choice, throwing an error if nothing elaborates.  -/
 def bestElab (output: Array String) : TermElabM Expr := do
@@ -490,9 +492,10 @@ def greedyBestExpr? (output: Array String) : TermElabM (Option Expr) := do
 
 /-- reverse translation from `Lean` to natural language -/
 def leanToPrompt (thm: String)(numSim : Nat:= 5)(temp : JsonNumber := 0)(textField : String := "text")(model: String) : TermElabM String := do
-    let pairs? ← getPromptPairs thm numSim
+    let pairs? ← getNearestDocs thm numSim
     let pairs := pairs?.toOption.getD #[]
-    let prompt := GPT.makeFlipPrompt thm pairs
+    let examples := pairs.filterMap simpleExample
+    let prompt := GPT.makeFlipPrompt thm examples
     let fullJson ← (ChatServer.openAI).query prompt
       {model := model, temp := temp, n := 1}
     let outJson :=
