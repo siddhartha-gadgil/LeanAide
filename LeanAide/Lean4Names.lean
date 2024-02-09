@@ -36,7 +36,7 @@ def parseThm4 (s : String) : TermElabM <| Except String Syntax := do
   | Except.error err => return Except.error err
   | Except.ok stx => return Except.ok <| ← lean4NamesSyntax stx
 
-def elabThm4 (s : String)(opens: List String := [])
+def elabThm4 (s : String)
   (levelNames : List Lean.Name := levelNames)
   : TermElabM <| Except String Expr := do
   let env ← getEnv
@@ -52,9 +52,9 @@ def elabThm4 (s : String)(opens: List String := [])
     appendLog "elab_errors" jsError
     return Except.error s!"{err} for:\n {s}"
   | Except.ok stx =>
-    match ← elabThmFromStx stx opens levelNames with
+    match ← elabThmFromStx stx levelNames with
     | Except.error err₁ =>
-      match ← elabThmFromStx (← lean4NamesSyntax stx) opens levelNames with
+      match ← elabThmFromStx (← lean4NamesSyntax stx) levelNames with
       | Except.error err₂ =>
         let jsError := Json.mkObj [
           ("input", s),

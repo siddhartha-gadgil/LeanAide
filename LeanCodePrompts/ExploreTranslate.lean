@@ -1,35 +1,36 @@
 import LeanCodePrompts.Translate
+import LeanCodePrompts.Autocorrect
 import Lean.Meta
 open Lean Meta Elab
-
+/-
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
-def getCodeCustomJson (s: String)(customPrompts : Array (String × String) := #[])(numSim : Nat:= 5)(numKW: Nat := 1)(queryNum: Nat := 5)(temp : JsonNumber := 0.2)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Json := do
+def getCodeCustomJson (s: String)(customPrompts : Array (String × String) := #[])(numSim : Nat:= 5)(numKW: Nat := 1)(queryNum: Nat := 5)(temp : JsonNumber := 0.2)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Json × Json := do
   match ← getCachedJson? s with
   | some js => return js
-  | none =>    
+  | none =>
     let pending ←  pendingJsonQueries.get
-    if pending.contains s then pollCacheJson s 
-    else 
+    if pending.contains s then pollCacheJson s
+    else
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.insert s)
       -- work starts here; before this was caching, polling etc
-      let (pairs, IOOut) ←  
-        if numSim > 0 then  
-          getPromptPairs s numSim 
+      let (pairs, IOOut) ←
+        if numSim > 0 then
+          getPromptPairs s numSim
         else pure (#[], ⟨0, "", ""⟩)
       let pairs := pairs.reverse
-      let pairs := pairs ++ customPrompts 
+      let pairs := pairs ++ customPrompts
       let prompt := makePrompt s pairs
       mkLog prompt
       -- IO.println s!"seeking Codex completions; time : {← IO.monoMsNow}"
       let fullJson ← openAIQuery prompt queryNum temp
       -- IO.println s!"obtained Codex completions; time : {← IO.monoMsNow}"
-      let outJson := 
+      let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.erase s)
-      if IOOut.exitCode = 0 then cacheJson s outJson 
+      if IOOut.exitCode = 0 then cacheJson s outJson
         else throwError m!"Web query error: {IOOut.stderr}"
       return outJson
 
@@ -38,9 +39,9 @@ def polyElabThmTransWithErr (s : String)(limit : Option Nat := none)
   (transf : String → MetaM (Option String) := caseOrBinName?)
   (extraTransf : List (String → MetaM (Option String))
         := [xName?, xxName?, dotName?])
-  (opens: List String := []) 
+
   (levelNames : List Lean.Name := levelNames)
-  : TermElabM <| Except String <| 
+  : TermElabM <| Except String <|
         (Array (Expr × String)) × (Array (String × String)) := do
   -- IO.println s!"started translations for {s}; time : {← IO.monoMsNow}"
   match ← polyIdentMappedFunStx s transf extraTransf opens limit with
@@ -53,7 +54,7 @@ def polyElabThmTransWithErr (s : String)(limit : Option Nat := none)
         -- IO.println s!"obtained elaboration for {funTypeStr}; time : {← IO.monoMsNow}"
         match expE? with
         | Except.ok expE => elabPairs := elabPairs.push (expE, funTypeStr)
-        | Except.error err => 
+        | Except.error err =>
               errorPairs := errorPairs.push (err, funTypeStr)
     return Except.ok (elabPairs, errorPairs)
   | Except.error e => return Except.error e
@@ -76,10 +77,10 @@ def arrayToExprWithErr? (outputs: Array String) : TermElabM <| Except String (St
         for (_ , s) in es do
             elaborated := elaborated.push s
         for (msg, s) in errs do
-            errorLog := errorLog ++ s!"Completion: {out}, Parsed-to: {s}, Failure: {msg}; " 
-  if elaborated.isEmpty then 
+            errorLog := errorLog ++ s!"Completion: {out}, Parsed-to: {s}, Failure: {msg}; "
+  if elaborated.isEmpty then
       return Except.error errorLog
-  else    
+  else
     -- grouping by trying to prove equality and selecting
     -- IO.println s!"grouping and selecting; time : {← IO.monoMsNow}"
     let groupSorted ← groupFuncStrs elaborated
@@ -93,3 +94,4 @@ def translate (s: String)(customPrompts : Array (String × String) := #[])(numSi
   let outputs ← jsonToExprStrArray json
   let out? ← arrayToExprWithErr? outputs
   return out?
+-/

@@ -86,7 +86,7 @@ partial def idents : Syntax → List String
 /--
 Elaborate the statement of a theorem, returning the elaborated expression. The syntax of the statement is liberal: it can be headed with `theorem`, `def`, `example` or nothing and may or may not have a name.
 -/
-def elabThmFromStx (stx : Syntax)(opens: List String := [])
+def elabThmFromStx (stx : Syntax)
   (levelNames : List Lean.Name := levelNames)
   : TermElabM <| Except String Expr := do
     match stx with
@@ -102,12 +102,6 @@ def elabThmFromStx (stx : Syntax)(opens: List String := [])
   where elabAux (type: TSyntax `term)
     (args:  TSyntaxArray `Lean.Parser.Term.bracketedBinder) :
         TermElabM <| Except String Expr := do
-        -- let header := if opens.isEmpty then "" else
-        --   (opens.foldl (fun acc s => acc ++ " " ++ s) "open ") ++ " in "
-        -- let mut argS := ""
-        -- for arg in args do
-        --   argS := argS ++ (arg.raw.reprint.get!) ++ " → "
-        -- let funStx := s!"{header}{argS}{type.raw.reprint.get!}"
         let mut typeStx : TSyntax `term := type
         for arg in args.reverse do
           let stx ← `(Lean.Parser.Term.depArrow|$arg → $typeStx)
@@ -117,54 +111,34 @@ def elabThmFromStx (stx : Syntax)(opens: List String := [])
           let expr ← Term.withoutErrToSorry <|
               Term.elabType typeStx
           Term.synthesizeSyntheticMVarsNoPostponing
-          -- IO.println s!"{(←PrettyPrinter.delab expr).raw.reprint}"
           return Except.ok expr
         catch e =>
           return Except.error s!"{← e.toMessageData.toString} ; identifiers {idents typeStx} (during elaboration) for {typeStx.raw.reprint.get!}"
 
-        -- match Lean.Parser.runParserCategory (← getEnv) `term funStx with
-        -- | Except.ok termStx => Term.withLevelNames levelNames <|
-        --   try
-        --     let expr ← Term.withoutErrToSorry <|
-        --         Term.elabType termStx
-        --     Term.synthesizeSyntheticMVarsNoPostponing
-        --     -- IO.println s!"{(←PrettyPrinter.delab expr).raw.reprint}"
-        --     return Except.ok expr
-        --   catch e =>
-        --     return Except.error s!"{← e.toMessageData.toString} ; identifiers {idents termStx} (during elaboration) for {termStx.reprint.get!}"
-        -- | Except.error e =>
-        --     return Except.error s!"parsed to {funStx}; error while parsing as theorem: {e}"
--- ToDo: Use Syntax, not strings, for all of the above operations
--- ToDo: `open` here is rubbish, should be part of environment
-
-#check TSyntaxArray
-#check Array.foldl
-#check Lean.Parser.Term.bracketedBinder
-
 /--
 Elaborate the statement of a theorem, returning the elaborated expression. The syntax of the statement is liberal: it can be headed with `theorem`, `def`, `example` or nothing and may or may not have a name.
 -/
-def elabThm (s : String)(opens: List String := [])
+def elabThm (s : String)
   (levelNames : List Lean.Name := levelNames)
   : TermElabM <| Except String Expr := do
   let env ← getEnv
   let stx? := Lean.Parser.runParserCategory env `theorem_statement  s
   match stx? with
   | Except.ok stx  =>
-      elabThmFromStx stx opens levelNames
+      elabThmFromStx stx levelNames
   | Except.error e  => return Except.error e
 
 
 
-def elabThmCore (s : String)(opens: List String := [])
+def elabThmCore (s : String)
   (levelNames : List Lean.Name := levelNames)
   : CoreM <| Except String Expr :=
-    (elabThm s opens levelNames).run'.run'
+    (elabThm s levelNames).run'.run'
 
-def elabView (s : String)(opens: List String := [])
+def elabView (s : String)
   (levelNames : List Lean.Name := levelNames)
   : TermElabM <| Except String String := do
-  (← elabThm s opens levelNames).mapM (fun e =>
+  (← elabThm s levelNames).mapM (fun e =>
       do return (← PrettyPrinter.delab e).raw.reprint.get!
   )
 

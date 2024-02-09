@@ -17,7 +17,7 @@ elab "add_aesop_power_tactics" tacs:tactic,* : command => do
   for tac in tacs.getElems do
     `(command| add_aesop_power_tactic $tac) >>= Command.elabCommand ∘ TSyntax.raw
 
--- add_aesop_power_tactics gcongr, ring, linarith, norm_num, positivity, polyrith, ext, norm_cast 
+-- add_aesop_power_tactics gcongr, ring, linarith, norm_num, positivity, polyrith, ext, norm_cast
 
 /-!
 ## Equality of statements
@@ -25,7 +25,7 @@ elab "add_aesop_power_tactics" tacs:tactic,* : command => do
 An API based on Aesop. Should use a refined conguration for `aesop` to make it more effective.
 -/
 
-def provedEqual (e₁ e₂ : Expr) : TermElabM Bool := 
+def provedEqual (e₁ e₂ : Expr) : TermElabM Bool :=
   if e₁ == e₂ then return true else
  withoutModifyingState do
   let type ← mkEq e₁ e₂
@@ -36,7 +36,7 @@ def provedEqual (e₁ e₂ : Expr) : TermElabM Bool :=
   let (remaining, _) := res
   return remaining.isEmpty
 
-def provedEquiv (e₁ e₂ : Expr) : TermElabM Bool := 
+def provedEquiv (e₁ e₂ : Expr) : TermElabM Bool :=
   if e₁ == e₂ then return true else
   withoutModifyingState do
   try
@@ -50,23 +50,23 @@ def provedEquiv (e₁ e₂ : Expr) : TermElabM Bool :=
   catch _ => pure false
 
 
-def compareThms(s₁ s₂ : String)(opens: List String := []) 
+def compareThms(s₁ s₂ : String)
   (levelNames : List Lean.Name := levelNames)
   : TermElabM <| Except String Bool := do
-  let e₁ ← elabThm s₁ opens levelNames
-  let e₂ ← elabThm s₂ opens levelNames
+  let e₁ ← elabThm s₁ levelNames
+  let e₂ ← elabThm s₂ levelNames
   match e₁ with
   | Except.ok e₁ => match e₂ with
-    | Except.ok e₂ => 
+    | Except.ok e₂ =>
         let p ←  (provedEqual e₁ e₂) <||>  (provedEquiv e₁ e₂)
         return Except.ok p
     | Except.error e₂ => return Except.error e₂
   | Except.error e₁ => return Except.error e₁
 
-def compareThmsCore(s₁ s₂ : String)(opens: List String := []) 
+def compareThmsCore(s₁ s₂ : String)
   (levelNames : List Lean.Name := levelNames)
-  : CoreM <| Except String Bool := 
-    (compareThms s₁ s₂ opens levelNames).run'.run'
+  : CoreM <| Except String Bool :=
+    (compareThms s₁ s₂ levelNames).run'.run'
 
 def compareThmExps(e₁ e₂: Expr)
   : TermElabM <| Except String Bool := do
@@ -77,23 +77,23 @@ def compareThmExpsCore(e₁ e₂: Expr)
   : CoreM <| Except String Bool := do
       (compareThmExps e₁ e₂).run'.run'
 
-def equalThms(s₁ s₂ : String)(opens: List String := []) 
+def equalThms(s₁ s₂ : String)
   (levelNames : List Lean.Name := levelNames)
   : TermElabM Bool := do
-  match ← compareThms s₁ s₂ opens levelNames with
+  match ← compareThms s₁ s₂ levelNames with
   | Except.ok p => return p
   | Except.error _ => return false
 
-def groupThms(ss: Array String)(opens: List String := []) 
+def groupThms(ss: Array String)
   (levelNames : List Lean.Name := levelNames)
   : TermElabM (Array (Array String)) := do
     let mut groups: Array (Array String) := Array.empty
     for s in ss do
-      match ← groups.findIdxM? (fun g => 
-          equalThms s g[0]! opens levelNames) with
-      |none  => 
+      match ← groups.findIdxM? (fun g =>
+          equalThms s g[0]! levelNames) with
+      |none  =>
         groups := groups.push #[s]
-      | some j => 
+      | some j =>
         groups := groups.set! j (groups[j]!.push s)
     return groups
 
@@ -101,11 +101,11 @@ def groupThmExprs(ss: Array Expr)
   : TermElabM (Array (Array Expr)) := do
     let mut groups: Array (Array Expr) := Array.empty
     for s in ss do
-      match ← groups.findIdxM? (fun g => 
+      match ← groups.findIdxM? (fun g =>
           provedEquiv s g[0]! ) with
-      |none  => 
+      |none  =>
         groups := groups.push #[s]
-      | some j => 
+      | some j =>
         groups := groups.set! j (groups[j]!.push s)
     return groups
 
@@ -114,27 +114,27 @@ def groupThmExprsSorted(ss: Array Expr)
   let gps ← groupThmExprs ss
   return gps.qsort (fun xs ys => xs.size > ys.size)
 
-def groupTheoremsCore(ss: Array String)(opens: List String := []) 
+def groupTheoremsCore(ss: Array String)
   (levelNames : List Lean.Name := levelNames)
-  : CoreM (Array (Array String)) := 
-    (groupThms ss opens levelNames).run'.run'
+  : CoreM (Array (Array String)) :=
+    (groupThms ss levelNames).run'.run'
 
-def groupThmsSort(ss: Array String)(opens: List String := []) 
+def groupThmsSort(ss: Array String)
   (levelNames : List Lean.Name := levelNames)
   : TermElabM (Array (Array String)) := do
-  let gps ← groupThms ss opens levelNames
+  let gps ← groupThms ss levelNames
   return gps.qsort (fun xs ys => xs.size > ys.size)
 
-def groupThmsSortCore(ss: Array String)(opens: List String := []) 
+def groupThmsSortCore(ss: Array String)
   (levelNames : List Lean.Name := levelNames)
-  : CoreM (Array (Array String)) := 
-    (groupThmsSort ss opens levelNames).run'.run'
+  : CoreM (Array (Array String)) :=
+    (groupThmsSort ss levelNames).run'.run'
 
 example : (∀ {A: Sort}, False → A) ↔ (∀ {A: Sort}, false = true → A) := by
   aesop
 
-example : (∀ (a b c: Nat), 
-  a + (b + c) = (a + b) + c) ↔ (∀ (a b c: Nat), (a + b) + c = a + (b + c)) := by 
+example : (∀ (a b c: Nat),
+  a + (b + c) = (a + b) + c) ↔ (∀ (a b c: Nat), (a + b) + c = a + (b + c)) := by
   aesop
 
 
