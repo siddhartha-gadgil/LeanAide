@@ -280,13 +280,17 @@ def identThmSegments (s : String)
         let err : Except String ((Array (String × String)) × String) := Except.error "not a theorem statement"
         (pure err : MetaM <| Except String ((Array (String × String)) × String))
   | Except.error _  => return Except.error "not a theorem statement"
-  where identsAux (type: Syntax)(args: Array Syntax) :
+  where identsAux (type: TSyntax `term)
+    (args:  TSyntaxArray `Lean.Parser.Term.bracketedBinder) :
         MetaM <| Except String ((Array (String × String)) × String) := do
         let mut argS := ""
         for arg in args do
           argS := argS ++ (showSyntax arg) ++ " -> "
         let funTypeStr := s!"{argS}{showSyntax type}"
-
+        let mut typeStx : TSyntax `term := type
+        for arg in args.reverse do
+          let stx ← `(Lean.Parser.Term.depArrow|$arg → $typeStx)
+          typeStx := ⟨stx.raw⟩
         match Lean.Parser.runParserCategory (← getEnv) `term funTypeStr with
         | Except.ok termStx =>
               let mut fullString := funTypeStr
