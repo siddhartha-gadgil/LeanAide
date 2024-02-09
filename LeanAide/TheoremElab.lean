@@ -112,6 +112,7 @@ def elabThmFromStx (stx : Syntax)(opens: List String := [])
         for arg in args.reverse do
           let stx ← `(Lean.Parser.Term.depArrow|$arg → $typeStx)
           typeStx := ⟨stx.raw⟩
+        Term.withLevelNames levelNames <|
         try
           let expr ← Term.withoutErrToSorry <|
               Term.elabType typeStx
