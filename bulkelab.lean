@@ -31,6 +31,7 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
   let repeats := p.flag? "repeats" |>.map (fun s => s.as! Nat)
     |>.getD 0
   let azure := p.hasFlag "azure"
+  let tag := p.hasFlag "tag"
   let url? := p.flag? "url" |>.map (fun s => s.as! String)
   let chatServer :=
     if azure then ChatServer.azure else
@@ -59,11 +60,19 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
 
         pure qdMap
 
-  let dir := System.mkFilePath <| ["results", model]
+  let dir :=
+    if tag then System.mkFilePath <| ["results", model, ← gitHash]
+    else System.mkFilePath <| ["results", model]
   if !(← dir.pathExists) then
         IO.FS.createDirAll dir
 
-  let outFile := System.mkFilePath <|
+  let outFile :=
+    if tag then
+        System.mkFilePath <|
+    p.flag? "output" |>.map (fun s => [s.as! String]) |>.getD
+      ["results", model, ← gitHash, s!"{type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp10}.json"]
+    else
+    System.mkFilePath <|
     p.flag? "output" |>.map (fun s => [s.as! String]) |>.getD
       ["results", model, s!"{type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp10}.json"]
   let env ←
@@ -72,7 +81,7 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
     {module:= `LeanCodePrompts.Translate},
     {module := `Mathlib}] {}
   let core :=
-    checkTranslatedThmsCore type chatServer chatParams numSim includeFixed embedding delay repeats queryData?
+    checkTranslatedThmsCore type chatServer chatParams numSim includeFixed embedding delay repeats queryData? tag
   let io? :=
     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000}
     {env := env}
@@ -107,6 +116,7 @@ def bulkElab : Cmd := `[Cli|
     repeats : Nat; "Number of times to repeat the request (default 0)."
     azure; "Use Azure instead of OpenAI."
     url : String; "URL to query (for a local server)."
+    tag; "Include the git hash in the results filepath"
 
   ARGS:
     input : String;      "The input file in the `data` folder."

@@ -282,3 +282,7 @@ def appendFile (fname : FilePath) (content : String) : IO Unit := do
 def appendLog (logFile: String) (content : Json) : IO Unit := do
   let fname : FilePath := "rawdata/" / ("log_" ++ logFile ++ ".jsonl")
   appendFile fname content.compress
+
+def gitHash : IO String := do
+  let hash ← IO.Process.output { cmd := "git", args := #["rev-parse", "--short", "HEAD"] }
+  return hash.stdout.trim

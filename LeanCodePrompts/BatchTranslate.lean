@@ -59,13 +59,20 @@ def translateWithDataCore (s: String)(server: ChatServer)
 def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)
   (includeFixed: Bool := Bool.false)(embedding: String)
-  (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json) )(pfx: String := "")(sysLess: Bool := false) : TermElabM Json := do
+  (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json) )(tag: Bool := false)(pfx: String := "")(sysLess: Bool := false) : TermElabM Json := do
   IO.eprintln s!"Writing to file: {type}-elab-{numSim}-{includeFixed}-{params.n}-{params.temp.mantissa}.json"
   let promptsFile := System.mkFilePath ["data",
     s!"prompts-{type}-{numSim}-{includeFixed}-{params.n}-{params.temp.mantissa}.jsonl"]
-  let outFile := System.mkFilePath
+  let outFile :=
+      if tag then
+      System.mkFilePath
+      ["results", params.model, ← gitHash,
+      s!"{type}-elab-{numSim}-{includeFixed}-{params.n}-{params.temp.mantissa}.jsonl"]
+      else
+      System.mkFilePath
       ["results", params.model,
       s!"{type}-elab-{numSim}-{includeFixed}-{params.n}-{params.temp.mantissa}.jsonl"]
+
   IO.FS.writeFile outFile ""
   let outHandle ← IO.FS.Handle.mk outFile IO.FS.Mode.append
   let h ← IO.FS.Handle.mk promptsFile IO.FS.Mode.append
@@ -133,8 +140,8 @@ def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
 def checkTranslatedThmsCore(type: String := "thm")(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)
   (includeFixed: Bool := Bool.false)(embedding: String)
-  (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json) )(pfx: String := "")(sysLess: Bool := false): CoreM Json :=
-    (checkTranslatedThmsM type server params numSim includeFixed embedding delay repeats queryData? pfx sysLess).run'.run'
+  (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json))(tag: Bool := false)(pfx: String := "")(sysLess: Bool := false): CoreM Json :=
+    (checkTranslatedThmsM type server params numSim includeFixed embedding delay repeats queryData? tag pfx sysLess).run'.run'
 
 def parsedThmsPrompt : IO (Array String) := do
   let file := System.mkFilePath ["data/parsed_thms.txt"]
