@@ -57,15 +57,15 @@ def nearestDocsToDocFullEmbedding (data : Array <| (String × String × Bool) ×
   (tuples.map <| fun (((doc, thm, isProp), _), d) => (doc, thm, isProp, d)).toList
 
 
-def nearestDocsToDocFullEmbeddingConc (data : Array <| (String × String × Bool) ×  FloatArray)
+def nearestDocsToDocFullEmbeddingConc (data : Array <| (String × String × Bool × String) ×  FloatArray)
   (embedding : Array Float) (k : Nat)
   (dist: FloatArray → Array Float → Float := distL2Sq)(penalty : Float) :
-   IO <| List (String × String × Bool × Float) := do
-  let tuples : Array <| ((String × String × Bool) × FloatArray) × Float ←
-    bestWithCostConc data (fun ((_, _, isProp), flArr) ↦
+   IO <| List (String × String × Bool × String × Float) := do
+  let tuples : Array <| ((String × String × Bool × String) × FloatArray) × Float ←
+    bestWithCostConc data (fun ((_, _, isProp, _), flArr) ↦
         let d := dist flArr embedding
         if isProp then d else d * penalty) k
-  return (tuples.map <| fun (((doc, thm, isProp), _), d) => (doc, thm, isProp, d)).toList
+  return (tuples.map <| fun (((doc, thm, isProp, name), _), d) => (doc, thm, isProp, name, d)).toList
 
 def embedQuery (doc: String) : IO <| Except String Json := do
   let key? ← openAIKey
@@ -111,9 +111,9 @@ def nearestDocsToDocThms (data: Array ((String × String) × FloatArray))(doc: S
         panic s!"no embedding in query result: {error} in {queryData}"
   | Except.error err => panic! s!"error querying openai: {err}"
 
-def nearestDocsToDocFull (data: Array ((String × String × Bool) × FloatArray))
+def nearestDocsToDocFull (data: Array ((String × String × Bool × String) × FloatArray))
     (doc: String)(k : Nat)(dist: FloatArray → Array Float → Float := distL2Sq)
-    (penalty: Float) : IO (List (String × String × Bool × Float)) := do
+    (penalty: Float) : IO (List (String × String × Bool × String × Float)) := do
   let queryRes? ← embedQuery doc
   -- IO.println "query complete"
   match queryRes? with

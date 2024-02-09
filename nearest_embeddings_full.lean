@@ -5,7 +5,7 @@ import Std.Util.Pickle
 open Lean
 
 unsafe def show_nearest_full (stdin stdout : IO.FS.Stream)
-  (data: Array ((String × String × Bool) × FloatArray)): IO Unit := do
+  (data: Array ((String × String × Bool × String) × FloatArray)): IO Unit := do
   let inp ← stdin.getLine
   logTimed "finding parameter"
   let (doc, num, penalty, halt) :=
@@ -56,7 +56,7 @@ unsafe def main (args: List String) : IO Unit := do
     IO.eprintln out
   logTimed "found/downloaded pickle"
   withUnpickle  picklePath <|
-    fun (data : Array <| (String × String × Bool) ×  FloatArray) => do
+    fun (data : Array <| (String × String × Bool × String) ×  FloatArray) => do
       let doc? := args[0]?
       match doc? with
       | some doc =>
@@ -72,11 +72,12 @@ unsafe def main (args: List String) : IO Unit := do
           logTimed "found nearest"
           IO.println <|
             Lean.Json.arr <|
-              embs.toArray.map fun (doc, thm, isProp, d) =>
+              embs.toArray.map fun (doc, thm, isProp, name, d) =>
                 Json.mkObj <| [
                   ("docString", Json.str doc),
                   ("theorem", Json.str thm),
                   ("isProp", Json.bool isProp),
+                  ("name", Json.str name),
                   ("distance", toJson d)
                 ]
       | none =>

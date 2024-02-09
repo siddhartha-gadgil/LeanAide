@@ -58,7 +58,7 @@ def readEmbeddingsDocsArray : IO <| Array <| (String × String) ×  FloatArray :
       IO.println s!"read {count} embeddings"
   return accum
 
-def readEmbeddingsFullDocsArray : IO <| Array <| (String × String × Bool) ×  FloatArray :=  do
+def readEmbeddingsFullDocsArray : IO <| Array <| (String × String × Bool × String) ×  FloatArray :=  do
   let mut count := 0
   let blob ← IO.FS.readFile "rawdata/mathlib4-prompts-embeddings.json"
   let json := Json.parse blob |>.toOption.get!
@@ -73,11 +73,15 @@ def readEmbeddingsFullDocsArray : IO <| Array <| (String × String × Bool) ×  
     let thm :=
       match jsLine.getObjValAs? String "type" with
       | Except.ok thm => thm
-      | Except.error err => panic! s!"error reading thmString: {err}"
+      | Except.error err => panic! s!"error reading thm: {err}"
     let isProp :=
       match jsLine.getObjValAs? Bool "isProp" with
       | Except.ok isProp => isProp
       | Except.error err => panic! s!"error reading isProp: {err}"
+    let name :=
+      match jsLine.getObjValAs? String "name" with
+      | Except.ok thm => thm
+      | Except.error err => panic! s!"error reading name: {err}"
     let embedding':=
       match jsLine.getObjValAs? (List Float) "embedding" with
       | Except.ok embedding => embedding
@@ -85,7 +89,7 @@ def readEmbeddingsFullDocsArray : IO <| Array <| (String × String × Bool) ×  
     let embedding := embedding'.toFloatArray
     unless docs.contains doc do
       docs := docs.push doc
-      accum := accum.push ((doc, thm, isProp), embedding)
+      accum := accum.push ((doc, thm, isProp, name), embedding)
     count := count + 1
     if count % 1000 == 0 then
       IO.println s!"read {count} embeddings"
