@@ -23,11 +23,12 @@ unsafe def show_nearest_full (stdin stdout : IO.FS.Stream)
   logTimed "found nearest"
   let out :=
     Lean.Json.arr <|
-      embs.toArray.map fun (doc, thm, isProp, d) =>
+      embs.toArray.map fun (doc, thm, isProp, name, d) =>
         Json.mkObj <| [
           ("docString", Json.str doc),
           ("theorem", Json.str thm),
           ("isProp", Json.bool isProp),
+          ("name", Json.str name),
           ("distance", toJson d)
         ]
   stdout.putStrLn out.compress
