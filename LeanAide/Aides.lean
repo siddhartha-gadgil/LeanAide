@@ -276,7 +276,7 @@ def openAIURL : IO String := do
 open System IO.FS
 def appendFile (fname : FilePath) (content : String) : IO Unit := do
   let h ← Handle.mk fname Mode.append
-  h.putStr content
+  h.putStrLn content
   h.flush
 
 def appendLog (logFile: String) (content : Json) : IO Unit := do
