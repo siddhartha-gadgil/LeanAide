@@ -63,9 +63,19 @@ def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Jso
         cmd:= "curl",
         args:= args ++ #["--data", data]}
   trace[Translate.info] "Model response: {out.stdout} (stderr: {out.stderr})"
+  let queryJs := Json.mkObj [
+    ("url", Json.str url),
+    ("arguments", Json.arr <| baseArgs.map (Json.str)),
+    ("data", data)]
   -- IO.eprintln s!"Received response from {url} at {← IO.monoMsNow }; time taken: {(← IO.monoMsNow) - start}"
   match Lean.Json.parse out.stdout with
-  | Except.ok j => return j
-  | Except.error e => panic! s!"Error parsing JSON: {e}; source: {out.stdout}"
+  | Except.ok j =>
+    appendLog "chat_queries"
+      (Json.mkObj [("query", queryJs), ("success", true), ("response", j)])
+    return j
+  | Except.error e =>
+    appendLog "chat_queries"
+      (Json.mkObj [("query", queryJs), ("success", false), ("error", e), ("response", out.stdout)])
+    panic! s!"Error parsing JSON: {e}; source: {out.stdout}"
 
 end ChatServer
