@@ -54,6 +54,7 @@ unsafe def main (args: List String) : IO Unit := do
       cmd := "curl",
       args := #["--output", picklePath.toString, "-s",  "https://math.iisc.ac.in/~gadgil/data/mathlib4-prompts-embeddings.olean"]
     }
+    IO.eprintln "Fetched embeddings"
     IO.eprintln out
   logTimed "found/downloaded pickle"
   withUnpickle  picklePath <|
