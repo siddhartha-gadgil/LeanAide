@@ -99,27 +99,46 @@ def elabThmFromStx (stx : Syntax)(opens: List String := [])
     | `(theorem_statement|$type:term ) =>
       elabAux type #[]
     | _ => return Except.error s!"parsed to unmatched syntax {stx}"
-  where elabAux (type: Syntax)(args: Array Syntax) :
+  where elabAux (type: TSyntax `term)
+    (args:  TSyntaxArray `Lean.Parser.Term.bracketedBinder) :
         TermElabM <| Except String Expr := do
-        let header := if opens.isEmpty then "" else
-          (opens.foldl (fun acc s => acc ++ " " ++ s) "open ") ++ " in "
-        let mut argS := ""
-        for arg in args do
-          argS := argS ++ (arg.reprint.get!) ++ " → "
-        let funStx := s!"{header}{argS}{type.reprint.get!}"
-        match Lean.Parser.runParserCategory (← getEnv) `term funStx with
-        | Except.ok termStx => Term.withLevelNames levelNames <|
-          try
-            let expr ← Term.withoutErrToSorry <|
-                Term.elabType termStx
-            Term.synthesizeSyntheticMVarsNoPostponing
-            -- IO.println s!"{(←PrettyPrinter.delab expr).raw.reprint}"
-            return Except.ok expr
-          catch e =>
-            return Except.error s!"{← e.toMessageData.toString} ; identifiers {idents termStx} (during elaboration) for {termStx.reprint.get!}"
-        | Except.error e =>
-            return Except.error s!"parsed to {funStx}; error while parsing as theorem: {e}"
+        -- let header := if opens.isEmpty then "" else
+        --   (opens.foldl (fun acc s => acc ++ " " ++ s) "open ") ++ " in "
+        -- let mut argS := ""
+        -- for arg in args do
+        --   argS := argS ++ (arg.raw.reprint.get!) ++ " → "
+        -- let funStx := s!"{header}{argS}{type.raw.reprint.get!}"
+        let mut typeStx : TSyntax `term := type
+        for arg in args.reverse do
+          let stx ← `(Lean.Parser.Term.depArrow|$arg → $typeStx)
+          typeStx := ⟨stx.raw⟩
+        try
+          let expr ← Term.withoutErrToSorry <|
+              Term.elabType typeStx
+          Term.synthesizeSyntheticMVarsNoPostponing
+          -- IO.println s!"{(←PrettyPrinter.delab expr).raw.reprint}"
+          return Except.ok expr
+        catch e =>
+          return Except.error s!"{← e.toMessageData.toString} ; identifiers {idents typeStx} (during elaboration) for {typeStx.raw.reprint.get!}"
 
+        -- match Lean.Parser.runParserCategory (← getEnv) `term funStx with
+        -- | Except.ok termStx => Term.withLevelNames levelNames <|
+        --   try
+        --     let expr ← Term.withoutErrToSorry <|
+        --         Term.elabType termStx
+        --     Term.synthesizeSyntheticMVarsNoPostponing
+        --     -- IO.println s!"{(←PrettyPrinter.delab expr).raw.reprint}"
+        --     return Except.ok expr
+        --   catch e =>
+        --     return Except.error s!"{← e.toMessageData.toString} ; identifiers {idents termStx} (during elaboration) for {termStx.reprint.get!}"
+        -- | Except.error e =>
+        --     return Except.error s!"parsed to {funStx}; error while parsing as theorem: {e}"
+-- ToDo: Use Syntax, not strings, for all of the above operations
+-- ToDo: `open` here is rubbish, should be part of environment
+
+#check TSyntaxArray
+#check Array.foldl
+#check Lean.Parser.Term.bracketedBinder
 
 /--
 Elaborate the statement of a theorem, returning the elaborated expression. The syntax of the statement is liberal: it can be headed with `theorem`, `def`, `example` or nothing and may or may not have a name.
