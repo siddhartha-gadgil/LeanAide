@@ -280,5 +280,5 @@ def appendFile (fname : FilePath) (content : String) : IO Unit := do
   h.flush
 
 def appendLog (logFile: String) (content : Json) : IO Unit := do
-  let fname : FilePath := "rawdata/" / (logFile ++ ".jsonl")
+  let fname : FilePath := "rawdata/" / ("log_" ++ logFile ++ ".jsonl")
   appendFile fname content.compress
