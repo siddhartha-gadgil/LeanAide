@@ -348,6 +348,8 @@ def delabLetFun : Delab := do
     -- else
     --   `(let_fun $(mkIdent n) := $stxV; $stxB)
 
+#check delabMData
+
 @[delab mdata]
 def delabMData : Delab := do
   -- checkDepth
@@ -357,8 +359,6 @@ def delabMData : Delab := do
       `(.($s)) -- We only include the inaccessible annotation when we are delaborating patterns
     else
       return s
-  else if isLetFun (← getExpr) && getPPNotation (← getOptions) then
-    withMDataExpr <| delabLetFun
   else if let some _ := isLHSGoal? (← getExpr) then
     withMDataExpr <| withAppFn <| withAppArg <| delabVerbose
   else
