@@ -43,7 +43,7 @@ unsafe def main (args: List String) : IO Unit := do
     if ← picklePath.pathExists then
     try
       withUnpickle  picklePath <|
-        fun (_ : Array <| (String × String × Bool) ×  FloatArray) => do
+        fun (_ : Array <| (String × String × Bool × String) ×  FloatArray) => do
         pure true
     catch _ => pure false
      else pure false
