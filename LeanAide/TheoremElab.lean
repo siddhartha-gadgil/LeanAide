@@ -5,7 +5,7 @@ import Lean.Parser
 import Lean.Parser.Extension
 import LeanAide.Aides
 open Lean Meta Elab Parser  Tactic
- 
+
 /-!
 ## Parsing and Elaboration of statements
 
@@ -38,11 +38,11 @@ def checkThm (s : String) : MetaM Bool := do
   let chk := Lean.Parser.runParserCategory env `theorem_statement  s
   match chk with
   | Except.ok stx  =>
-      IO.println stx 
+      IO.println stx
       pure true
   | Except.error _  => pure false
 
-partial def tokens (s : Syntax) : Array String := 
+partial def tokens (s : Syntax) : Array String :=
 match s with
 | .missing => Array.empty
 | .node _ _ args => args.foldl (fun acc x => acc ++ tokens x) Array.empty
@@ -59,7 +59,7 @@ def getTokens (s: String) : MetaM <| Array String := do
 
 
 /-- split prompts into those that parse -/
-def promptsThmSplit : MetaM ((Array String) × (Array String)) := do 
+def promptsThmSplit : MetaM ((Array String) × (Array String)) := do
   let deps ← thmsPrompt
   let mut succ: Array String := Array.empty
   let mut fail: Array String := Array.empty
@@ -74,7 +74,7 @@ def promptsThmSplit : MetaM ((Array String) × (Array String)) := do
 def promptsThmSplitCore : CoreM ((Array String) × (Array String)) :=
   promptsThmSplit.run'
 
-def levelNames := 
+def levelNames :=
   [`u, `v, `u_1, `u_2, `u_3, `u_4, `u_5, `u_6, `u_7, `u_8, `u_9, `u_10, `u_11, `u₁, `u₂, `uι, `W₁, `W₂, `w₁, `w₂, `u', `v', `uu, `w, `w', `wE, `uE, `x]
 
 partial def idents : Syntax → List String
@@ -86,7 +86,7 @@ partial def idents : Syntax → List String
 /--
 Elaborate the statement of a theorem, returning the elaborated expression. The syntax of the statement is liberal: it can be headed with `theorem`, `def`, `example` or nothing and may or may not have a name.
 -/
-def elabThmFromStx (stx : Syntax)(opens: List String := []) 
+def elabThmFromStx (stx : Syntax)(opens: List String := [])
   (levelNames : List Lean.Name := levelNames)
   : TermElabM <| Except String Expr := do
     match stx with
@@ -99,32 +99,32 @@ def elabThmFromStx (stx : Syntax)(opens: List String := [])
     | `(theorem_statement|$type:term ) =>
       elabAux type #[]
     | _ => return Except.error s!"parsed to unmatched syntax {stx}"
-  where elabAux (type: Syntax)(args: Array Syntax) : 
+  where elabAux (type: Syntax)(args: Array Syntax) :
         TermElabM <| Except String Expr := do
-        let header := if opens.isEmpty then "" else 
+        let header := if opens.isEmpty then "" else
           (opens.foldl (fun acc s => acc ++ " " ++ s) "open ") ++ " in "
         let mut argS := ""
         for arg in args do
-          argS := argS ++ (arg.reprint.get!) ++ " -> "
+          argS := argS ++ (arg.reprint.get!) ++ " → "
         let funStx := s!"{header}{argS}{type.reprint.get!}"
         match Lean.Parser.runParserCategory (← getEnv) `term funStx with
         | Except.ok termStx => Term.withLevelNames levelNames <|
-          try 
-            let expr ← Term.withoutErrToSorry <| 
+          try
+            let expr ← Term.withoutErrToSorry <|
                 Term.elabType termStx
             Term.synthesizeSyntheticMVarsNoPostponing
             -- IO.println s!"{(←PrettyPrinter.delab expr).raw.reprint}"
             return Except.ok expr
-          catch e => 
+          catch e =>
             return Except.error s!"{← e.toMessageData.toString} ; identifiers {idents termStx} (during elaboration) for {termStx.reprint.get!}"
-        | Except.error e => 
-            return Except.error s!"parsed to {funStx}; error while parsing as theorem: {e}" 
+        | Except.error e =>
+            return Except.error s!"parsed to {funStx}; error while parsing as theorem: {e}"
 
 
 /--
 Elaborate the statement of a theorem, returning the elaborated expression. The syntax of the statement is liberal: it can be headed with `theorem`, `def`, `example` or nothing and may or may not have a name.
 -/
-def elabThm (s : String)(opens: List String := []) 
+def elabThm (s : String)(opens: List String := [])
   (levelNames : List Lean.Name := levelNames)
   : TermElabM <| Except String Expr := do
   let env ← getEnv
@@ -136,15 +136,15 @@ def elabThm (s : String)(opens: List String := [])
 
 
 
-def elabThmCore (s : String)(opens: List String := []) 
+def elabThmCore (s : String)(opens: List String := [])
   (levelNames : List Lean.Name := levelNames)
-  : CoreM <| Except String Expr := 
+  : CoreM <| Except String Expr :=
     (elabThm s opens levelNames).run'.run'
 
-def elabView (s : String)(opens: List String := []) 
+def elabView (s : String)(opens: List String := [])
   (levelNames : List Lean.Name := levelNames)
   : TermElabM <| Except String String := do
-  (← elabThm s opens levelNames).mapM (fun e => 
+  (← elabThm s opens levelNames).mapM (fun e =>
       do return (← PrettyPrinter.delab e).raw.reprint.get!
   )
 
@@ -157,7 +157,3 @@ def elabView (s : String)(opens: List String := [])
 #eval elabView "(n : Nat)  : n  + 1 < n"
 #eval elabView "def eg (n : Nat)  : n  + 1 < n"
 #eval elabView "def  (n : Nat)  : n  + 1 < n"
-
-
-
-

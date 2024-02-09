@@ -36,7 +36,7 @@ def translateWithDataM (s: String)(server: ChatServer)
     match res with
     | Except.error jsErr =>
       let js := Json.mkObj [
-        ("text", Json.str s),
+        ("input", Json.str s),
         ("error", jsErr)]
       appendLog "translate_fail" js
       pure ()

@@ -53,7 +53,7 @@ def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Jso
   let url ← server.url
   let authHeader? ← server.authHeader?
   -- IO.eprintln s!"Querying {url} at {← IO.monoMsNow }"
-  let start ← IO.monoMsNow
+  -- let start ← IO.monoMsNow
   let baseArgs :=
     #[url, "-X", "POST", "-H", "Content-Type: application/json"]
   let args := match authHeader? with
@@ -63,7 +63,7 @@ def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Jso
         cmd:= "curl",
         args:= args ++ #["--data", data]}
   trace[Translate.info] "Model response: {out.stdout} (stderr: {out.stderr})"
-  IO.eprintln s!"Received response from {url} at {← IO.monoMsNow }; time taken: {(← IO.monoMsNow) - start}"
+  -- IO.eprintln s!"Received response from {url} at {← IO.monoMsNow }; time taken: {(← IO.monoMsNow) - start}"
   match Lean.Json.parse out.stdout with
   | Except.ok j => return j
   | Except.error e => panic! s!"Error parsing JSON: {e}; source: {out.stdout}"
