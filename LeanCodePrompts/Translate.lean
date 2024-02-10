@@ -105,33 +105,37 @@ namespace GPT
 def message (role content : String) : Json :=
   Json.mkObj [("role", role), ("content", content)]
 
-def prompt (sys: String) (egs : List <| String × String)
-  (query : String)(pfx : String := "") : Json :=
+def prompt (sys: String) (egs : List <| ChatExample)
+  (query : String) : Json :=
   let head := message "system" sys
   let egArr :=
-    egs.bind (fun (ds, thm) => [message "user" (pfx ++ ds), message "assistant" thm])
-  Json.arr <| head :: egArr ++ [message "user" (pfx ++ query)] |>.toArray
+    egs.bind (fun eg  => eg.messages)
+  Json.arr <| head :: egArr ++ [message "user" query] |>.toArray
 
-def syslessPrompt (sys: String)(egs : List <| String × String)
-    (query : String)(pfx : String := "") : Json :=
-  let egsPadded := match egs with
-  | [] => []
-  | (ds, thm) :: _ => (s!"{sys}
+def syslessPrompt (sys: String)(egs : List <| ChatExample)
+    (query : String) : Json :=
+  match egs with
+  | [] =>
+    let queryMessage := s!"{sys}
 
-{pfx}" ++ ds, thm) :: (egs.map (fun (ds, thm) => (pfx ++ ds, thm)))
-  let egArr :=
-    egsPadded.bind (fun (ds, thm) => [message "user" ds, message "assistant" thm])
-  Json.arr <| egArr ++ [message "user" query] |>.toArray
+{query}"
+    Json.arr #[message "user" queryMessage]
+  | eg :: tail =>
+  let headUser := s!"{sys}
+
+eg.user"
+  let headExample : ChatExample := ⟨headUser, eg.assistant⟩
+  Json.arr <| (headExample :: tail).bind (fun eg  => eg.messages) ++ [message "user" query] |>.toArray
 
 def sysPrompt := "You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples. Follow EXACTLY the examples given."
 
-def mkMessages(query : String)(examples: Array (String × String))(pfx: String := "")(sysLess: Bool := false) : Json:=
+def mkMessages(query : String)(examples: Array ChatExample)(sysLess: Bool := false) : Json:=
   if sysLess then
-    syslessPrompt sysPrompt examples.toList query pfx
+    syslessPrompt sysPrompt examples.toList query
   else
-    prompt sysPrompt examples.toList query pfx
+    prompt sysPrompt examples.toList query
 
-def makeFlipPrompt(query : String)(examples: Array (String × String)) : Json:= prompt sysPrompt (examples.toList.map (fun (x, y) => (y, x))) query
+def makeFlipPrompt(query : String)(examples: Array ChatExample) : Json:= prompt sysPrompt (examples.toList.map (fun ⟨x, y⟩  => ⟨y, x⟩)) query
 
 def exprStrsFromJson (json: Json) : CoreM (Array String) := do
   let outArr : Array String ←
@@ -291,8 +295,8 @@ def getNearestDocs(s: String)(numSim : Nat)
       getNearestDocsOpenAI s numSim true
 
 def simpleExample :String × Json →
-  Option (String × String)
-  | (docString, data) => data.getObjValAs? String "theorem" |>.toOption.map fun thm => (docString, thm)
+  Option (ChatExample)
+  | (docString, data) => data.getObjValAs? String "theorem" |>.toOption.map fun thm => {user := docString, assistant:= thm}
 
 /-- prompts generated from the declarations in the current file. -/
 def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true) : MetaM <| Array (String × String):= do
@@ -349,7 +353,7 @@ def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := docField)
 -/
 def getLeanCodeJson (s: String)
   (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})(numSim : Nat:= 8)
-  (includeFixed: Bool := Bool.false)(pfx: String := "")(sysLess: Bool := false) : CoreM <| Json × Json := do
+  (includeFixed: Bool := Bool.false)(sysLess: Bool := false) : CoreM <| Json × Json := do
   logTimed s!"translating string `{s}` with {numSim} examples"
   match ← getCachedJson? s with
   | some js => return js
@@ -370,7 +374,7 @@ def getLeanCodeJson (s: String)
       let pairs := if includeFixed then pairs ++ fixedPromptsJson else pairs
       let pairs  := pairs.filter (fun (s, _) => s.length < 100)
       let examples := pairs.filterMap simpleExample
-      let messages := GPT.mkMessages s examples pfx sysLess
+      let messages := GPT.mkMessages s examples sysLess
       trace[Translate.info] m!"prompt: \n{messages.pretty}"
       logTimed "querying server"
       let fullJson ← server.query messages params

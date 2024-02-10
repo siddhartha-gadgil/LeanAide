@@ -79,3 +79,11 @@ def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Jso
     panic! s!"Error parsing JSON: {e}; source: {out.stdout}"
 
 end ChatServer
+
+structure ChatExample where
+  user : String
+  assistant : String
+
+def ChatExample.messages (ex : ChatExample) : List Json :=
+  [Json.mkObj [("role", "user"), ("content", ex.user)],
+    Json.mkObj [("role", "assistant"), ("content", ex.assistant)]]
