@@ -3,7 +3,9 @@ import LeanAide.Aides
 
 open Lean Meta Elab
 
-
+/--
+Translate a string to a Lean expression using the GPT model, returning the expression, all outputs and the prompt used.
+-/
 def translateWithDataM (s: String)(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)
   (includeFixed: Bool := Bool.false)
@@ -44,6 +46,9 @@ def translateWithDataM (s: String)(server: ChatServer)
       pure ()
     return (res.toOption, output, prompt?)
 
+/--
+Translate a string to a Lean expression using the GPT model, returning the expression, all outputs and the prompt used.
+-/
 def translateWithDataCore (s: String)(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)
   (includeFixed: Bool := Bool.false)
@@ -56,6 +61,9 @@ def translateWithDataCore (s: String)(server: ChatServer)
          embedding repeats
         (queryData? := queryData?) (sysLess := sysLess)).run'.run'
 
+/--
+Translate theorems in a given file and record results in a JSON file.
+-/
 def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)
   (includeFixed: Bool := Bool.false)(embedding: String)
@@ -137,6 +145,9 @@ def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
             ]
   return js
 
+/--
+Translate theorems in a given file and record results in a JSON file.
+-/
 def checkTranslatedThmsCore(type: String := "thm")(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)
   (includeFixed: Bool := Bool.false)(embedding: String)
@@ -147,7 +158,9 @@ def parsedThmsPrompt : IO (Array String) := do
   let file := System.mkFilePath ["data/parsed_thms.txt"]
   IO.FS.lines file
 
-
+/--
+Split theorems based on whether they elaborate
+-/
 def elabThmSplit(start? size?: Option Nat := none) : TermElabM ((Array String) × (Array String)) := do
   let deps ← parsedThmsPrompt
   let deps := deps.toList.drop (start?.getD 0)
@@ -172,9 +185,15 @@ def elabThmSplit(start? size?: Option Nat := none) : TermElabM ((Array String) �
     IO.println s!"elaborated: {succ.size}"
   return (succ, fail)
 
+/--
+Split theorems based on whether they elaborate
+-/
 def elabThmSplitCore(start? size?: Option Nat := none) : CoreM ((Array String) × (Array String)) :=
   (elabThmSplit start? size?).run'.run'
 
+/--
+Check theorems in file and return data on success in elaboration.
+-/
 def outputFromCompletionsM (s: String) :
   TermElabM (String) := do
   let output ← exprStrsFromJsonStr s
@@ -187,7 +206,10 @@ def outputFromCompletionsM (s: String) :
     pure <| Json.mkObj [("success", Bool.true), ("theorem", thm),
             ("all-elabs", Json.arr <| elabs.map (Json.str))]
   | none => pure <| Json.mkObj [("success", Bool.false)]
-  return js.pretty 10000
+  return js.compress
 
+/--
+Check theorems in file and return data on success in elaboration.
+-/
 def outputFromCompletionsCore (s: String) : CoreM String :=
   (outputFromCompletionsM s).run'.run'

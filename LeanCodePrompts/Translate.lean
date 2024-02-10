@@ -48,9 +48,15 @@ register_option lean_aide.translate.url? : String :=
     group := "lean_aide.translate"
     descr := "Local url to query. Empty string for none" }
 
+/--
+Number of similar sentences to query in interactive mode
+-/
 def promptSize : CoreM Nat := do
   return  lean_aide.translate.prompt_size.get (← getOptions)
 
+/--
+Parameters for a chat query in interactive mode
+-/
 def chatParams : CoreM ChatParams := do
   let opts ← getOptions
   return {
@@ -59,6 +65,9 @@ def chatParams : CoreM ChatParams := do
     model := lean_aide.translate.model.get opts
   }
 
+/--
+Chat server to use in interactive mode
+-/
 def chatServer : CoreM ChatServer := do
   let opts ← getOptions
   if lean_aide.translate.azure.get opts then
@@ -70,49 +79,30 @@ def chatServer : CoreM ChatServer := do
     else
       return ChatServer.generic url
 
-def fileName := "data/mathlib4-prompts.json"
-
-def lean4mode := decide (fileName ∈ ["data/mathlib4-prompts.json",
-        "data/mathlib4-thms.json"])
-
-def docField :=
-        if lean4mode then "docString" else "doc_string"
-
-def theoremField :=
-        if lean4mode then "type" else "theorem"
-
-/-- extract prompt pairs from JSON response to local server -/
-def sentenceSimPairs
-  (s: String)
-  (theoremField : String := theoremField)
-   : IO  <| Except String (Array (String × String)) := do
-  let json := Lean.Json.parse  s |>.toOption.get!
-  return do
-    (← json.getArr?).mapM <| fun j => do
-      let lean4mode := fileName ∈ ["data/mathlib4-prompts.json",
-        "data/mathlib4-thms.json"]
-      let docstring ← j.getObjValAs? String docField
-      let typeField :=
-        if lean4mode then "type"
-        else theoremField
-      let thm ← j.getObjValAs? String typeField
-      pure (docstring, thm)
-
--- #eval sentenceSimPairs egSen
-
 namespace GPT
 
+/--
+A Json object representing a chat message
+-/
 def message (role content : String) : Json :=
   Json.mkObj [("role", role), ("content", content)]
 
-def prompt (sys: String) (egs : List <| ChatExample)
+/--
+JSON object for the messages field in a chat prompt,
+assuming that there is a system message at the beginning.
+-/
+def sysMessages (sys: String) (egs : List <| ChatExample)
   (query : String) : Json :=
   let head := message "system" sys
   let egArr :=
     egs.bind (fun eg  => eg.messages)
   Json.arr <| head :: egArr ++ [message "user" query] |>.toArray
 
-def syslessPrompt (sys: String)(egs : List <| ChatExample)
+/--
+JSON object for the messages field in a chat prompt,
+assuming that there is no system message at the beginning.
+-/
+def syslessMessages (sys: String)(egs : List <| ChatExample)
     (query : String) : Json :=
   match egs with
   | [] =>
@@ -127,16 +117,28 @@ eg.user"
   let headExample : ChatExample := ⟨headUser, eg.assistant⟩
   Json.arr <| (headExample :: tail).bind (fun eg  => eg.messages) ++ [message "user" query] |>.toArray
 
+/--
+Default system prompt
+-/
 def sysPrompt := "You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples. Follow EXACTLY the examples given."
 
+/--
+Given a query and a list of examples, build messages for a prompt for OpenAI
+-/
 def mkMessages(query : String)(examples: Array ChatExample)(sysLess: Bool := false) : Json:=
   if sysLess then
-    syslessPrompt sysPrompt examples.toList query
+    syslessMessages sysPrompt examples.toList query
   else
-    prompt sysPrompt examples.toList query
+    sysMessages sysPrompt examples.toList query
 
-def makeFlipPrompt(query : String)(examples: Array ChatExample) : Json:= prompt sysPrompt (examples.toList.map (fun ⟨x, y⟩  => ⟨y, x⟩)) query
+/--
+Flip prompt; should be corrected before use.
+-/
+def makeFlipPrompt(query : String)(examples: Array ChatExample) : Json:= sysMessages sysPrompt (examples.toList.map (fun ⟨x, y⟩  => ⟨y, x⟩)) query
 
+/--
+Extract the output strings from a JSON response
+-/
 def exprStrsFromJson (json: Json) : CoreM (Array String) := do
   let outArr : Array String ←
     match json.getArr? with
@@ -161,30 +163,6 @@ def exprStrsFromJson (json: Json) : CoreM (Array String) := do
 
 end GPT
 
-/-- make prompt from prompt pairs -/
-@[deprecated GPT.mkMessages]
-def makePrompt(prompt : String)(pairs: Array (String × String)) : String :=
-      pairs.foldr (fun  (ds, thm) acc =>
-        -- acc ++ "/-- " ++ ds ++" -/\ntheorem" ++ thm ++ "\n" ++ "\n"
-s!"/-- {ds} -/
-theorem {thm} :=
-
-{acc}"
-          ) s!"/-- {prompt} -/
-theorem "
-
-
-/-- make prompt for reverse translation from prompt pairs -/
-@[deprecated GPT.makeFlipPrompt]
-def makeFlipPrompt(statement : String)(pairs: Array (String × String)) : String :=
-      pairs.foldr (fun  (ds, thm) acc =>
-s!"theorem {thm} :=
-/- {ds} -/
-
-{acc}"
-          ) s!"theorem {statement} :=
-/- "
-
 /-- make prompt for reverse translation from prompt pairs -/
 def makeFlipStatementsPrompt(statement : String)(pairs: Array (String × String)) : String :=
       pairs.foldr (fun  (ds, thm) acc =>
@@ -194,7 +172,6 @@ s!"{thm} :=
 {acc}"
           ) s!"{statement} :=
 /- "
-
 
 /-!
 Caching, polling etc to avoid repeatedly calling servers
@@ -227,47 +204,27 @@ def hasElab (s: String) : TermElabM Bool := do
   let elab? ← elabThm4 s
   return elab?.toOption.isSome
 
-/-- log to file -/
-def elabLog (s: String) : IO Unit := do
-  let logFile := System.mkFilePath ["results/elab_logs.txt"]
-  let h ←  IO.FS.Handle.mk logFile IO.FS.Mode.append
-  h.putStrLn s
-  h.putStrLn ""
-
+/--
+Fixed prompts without names from Lean Chat
+-/
 def fixedPrompts:= #[("If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.", "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"), ("If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.", "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"), ("If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.", "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"), ("Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.", "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A")]
 
+/--
+Fixed prompts with names from Lean Chat
+-/
 def fixedPromptTriples:= #[("If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.", "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)", "abs_sum_leq_sum_abs"), ("If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.", "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2", "sum_add_square_sub_square_eq_sum_square"), ("If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.", "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n", "distinct_powers_of_infinite_order_element"), ("Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.", "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A", "subset_of_open_subset_is_open")]
 
+/--
+Fixed prompts with names from Lean Chat in JSON format
+-/
 def fixedPromptsJson : Array <| String × Json :=
   fixedPromptTriples.map (fun (ds, thm, name) =>
     (ds,
     Json.mkObj [("docString", ds), ("theorem", thm), ("name", name)]))
 
-def getPromptPairsBert(s: String)(numSim : Nat)
-   : IO <| Except String (Array (String × String)) := do
-      let jsData := Json.mkObj [
-        ("filename", fileName),
-        ("field", docField),
-        (docField, s),
-        ("n", numSim),
-        ("model_name", "all-mpnet-base-v2")
-      ]
-      let simJsonOut ←
-        IO.Process.output {cmd:= "curl", args:=
-          #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, s!"{← leanAideIP}/nearest_prompts"]}
-      unless simJsonOut.exitCode == 0 do
-        return Except.error s!"curl failed with exit code {simJsonOut.exitCode}¬{simJsonOut.stderr}"
-      let pairs? ← sentenceSimPairs simJsonOut.stdout theoremField
-      -- IO.println s!"obtained sentence similarity; time : {← IO.monoMsNow}"
-      let allPairs : Array (String × String) ←
-        match pairs? with
-        | Except.error e =>
-            return Except.error e
-        | Except.ok pairs => pure pairs
-      -- logInfo m!"all pairs: {allPairs}"
-      let allPairs := allPairs.toList.eraseDups.toArray
-      return Except.ok allPairs.toList.eraseDups.toArray
-
+/--
+Given a string, find the nearest documentation strings in Mathlib and return the corresponding theorem data.
+-/
 def getNearestDocsOpenAI (s: String)(numSim : Nat)(full: Bool:= true) :
   IO <| Except String (Array (String × Json)) := do
     let outJs ←
@@ -288,13 +245,15 @@ def getNearestDocsOpenAI (s: String)(numSim : Nat)(full: Bool:= true) :
             pairs := pairs.push (doc, js)
         return Except.ok pairs.reverse
 
-/-- choosing example theorems to build a prompt -/
+/--
+Given a string, find the nearest documentation strings in Mathlib and return the corresponding theorem data.
+-/
 def getNearestDocs(s: String)(numSim : Nat)
 -- (source: String := "openai_full")
    : IO <| Except String (Array (String × Json)) :=
       getNearestDocsOpenAI s numSim true
 
-def simpleExample :String × Json →
+def simpleChatExample : String × Json →
   Option (ChatExample)
   | (docString, data) => data.getObjValAs? String "theorem" |>.toOption.map fun thm => {user := docString, assistant:= thm}
 
@@ -322,32 +281,6 @@ def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true)
     let some type ← try? (Format.pretty <$> PrettyPrinter.ppExpr ci.type) | pure none
     return some ⟨docstring, s!"{kind} : {type} :="⟩
 
-/-- choosing example theorems to build a prompt -/
-def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := docField)
-    (theoremField : String := theoremField)
-   : TermElabM (Array (String × String) × IO.Process.Output) := do
-      let jsData := Json.mkObj [
-        ("filename", fileName),
-        ("field", field),
-        (field, s),
-        ("n", numSim),
-        ("model_name", "all-mpnet-base-v2")
-      ]
-      let simJsonOut ←
-        IO.Process.output {cmd:= "curl", args:=
-          #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, s!"{← leanAideIP}/nearest_prompts"]}
-      let pairs? ← sentenceSimPairs simJsonOut.stdout theoremField
-      -- IO.println s!"obtained sentence similarity; time : {← IO.monoMsNow}"
-      let allPairs : Array (String × String) ←
-        match pairs? with
-        | Except.error e =>
-            throwError e
-
-        | Except.ok pairs => pure pairs
-      -- logInfo m!"all pairs: {allPairs}"
-      return (
-          allPairs.toList.eraseDups.toArray, simJsonOut)
-
 
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
@@ -373,7 +306,7 @@ def getLeanCodeJson (s: String)
       | Except.ok pairs => do
       let pairs := if includeFixed then pairs ++ fixedPromptsJson else pairs
       let pairs  := pairs.filter (fun (s, _) => s.length < 100)
-      let examples := pairs.filterMap simpleExample
+      let examples := pairs.filterMap simpleChatExample
       let messages := GPT.mkMessages s examples sysLess
       trace[Translate.info] m!"prompt: \n{messages.pretty}"
       logTimed "querying server"
@@ -436,7 +369,7 @@ def bestElab (output: Array String) : TermElabM Expr := do
     return (groupSorted[0]!)[0]!
 
 
-/-- Given an array of outputs, tries to elaborate them with translation and autocorrection and optionally returns the best choice as well as all elaborated terms (used for batch processing, interactive code uses `arrayToExpr` instead)  -/
+/-- Given an array of outputs, tries to elaborate them with translation and autocorrection and optionally returns the best choice as well as all elaborated terms (used for batch processing, interactive code uses `bestElab` instead)  -/
 def bestElab? (output: Array String) : TermElabM (Except Json (Expr× (Array String) × (Array (Array String)) )) := do
   -- IO.println s!"arrayToExpr? called with {output.size} outputs"
   let mut elabStrs : Array String := Array.empty
@@ -498,7 +431,7 @@ def greedyBestExpr? (output: Array String) : TermElabM (Option Expr) := do
 def leanToPrompt (thm: String)(numSim : Nat:= 5)(temp : JsonNumber := 0)(textField : String := "text")(model: String) : TermElabM String := do
     let pairs? ← getNearestDocs thm numSim
     let pairs := pairs?.toOption.getD #[]
-    let examples := pairs.filterMap simpleExample
+    let examples := pairs.filterMap simpleChatExample
     let prompt := GPT.makeFlipPrompt thm examples
     let fullJson ← (ChatServer.openAI).query prompt
       {model := model, temp := temp, n := 1}
@@ -513,11 +446,6 @@ def leanToPrompt (thm: String)(numSim : Nat:= 5)(temp : JsonNumber := 0)(textFie
 
 def egThm := "theorem eg_thm : ∀ n: Nat, ∃ m : Nat, m > n ∧ m % 2 = 0"
 
-def egPairs := getPromptPairsGeneral egThm 5 "statement" "statement"
-
-def egPrompt := do
-  let (pairs, _) ← egPairs
-  return makeFlipStatementsPrompt egThm pairs
 
 -- #eval egPrompt
 
@@ -588,6 +516,9 @@ elab "//-" cb:commentBody  : term => do
   trace[Translate.info] m!"{e}"
   return e
 
+/--
+Write a theorem in the form `(a : A) ... : type` instead of `(a : A) → ... → type`
+-/
 def uncurriedView(numArgs: Nat)(e: Expr) : MetaM String :=
   match numArgs with
   | 0 => do return " : " ++ (← e.view)
@@ -612,6 +543,9 @@ def uncurriedView(numArgs: Nat)(e: Expr) : MetaM String :=
       return " " ++ argString ++ tail
     | _ => do return " : " ++ (← e.view)
 
+/--
+Write a theorem in the form `(a : A) ... : type` instead of `(a : A) → ... → type`
+-/
 elab "uncurry2" e:term : term => do
   let e ← Term.elabTerm e none
   let e ← uncurriedView 2 e
@@ -619,7 +553,9 @@ elab "uncurry2" e:term : term => do
 
 universe u
 
-
+/--
+Translate a string and output as a string.
+-/
 def translateViewM (s: String)
   (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8) : TermElabM String := do
   logTimed "starting translation"
