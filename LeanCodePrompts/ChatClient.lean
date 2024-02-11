@@ -92,3 +92,24 @@ abbrev ToChatExample := String × Json → Option ChatExample
 
 def simpleChatExample : ToChatExample
   | (docString, data) => data.getObjValAs? String "theorem" |>.toOption.map fun thm => {user := docString, assistant:= thm}
+
+def fullTheorem (js: Json) : Option String := do
+  let thm ← js.getObjValAs? String "theorem" |>.toOption
+  let name ← js.getObjValAs? String "name" |>.toOption
+  return s!"theorem {name} : {thm} := by sorry"
+
+def displaydDoc (doc: String) : String :=
+s!"Consider the mathematical statement written as a Lean documentation string:
+**Theorem:** {doc}
+
+Translate the above mathematical statement into a Lean 4 theorem."
+
+def docChatExample
+  (fullThm: Bool := false)(fullDoc : Bool := false) : ToChatExample
+  | (docString, data) =>
+    do
+    let thm ← data.getObjValAs? String "theorem" |>.toOption
+    let name ← data.getObjValAs? String "name" |>.toOption
+    let user := if fullDoc then displaydDoc docString else docString
+    let assistant := if fullThm then s!"theorem {name} : {thm} := by sorry" else thm
+    return {user := user, assistant := assistant}
