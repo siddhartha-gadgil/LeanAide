@@ -253,10 +253,6 @@ def getNearestDocs(s: String)(numSim : Nat)
    : IO <| Except String (Array (String × Json)) :=
       getNearestDocsOpenAI s numSim true
 
-def simpleChatExample : String × Json →
-  Option (ChatExample)
-  | (docString, data) => data.getObjValAs? String "theorem" |>.toOption.map fun thm => {user := docString, assistant:= thm}
-
 /-- prompts generated from the declarations in the current file. -/
 def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true) : MetaM <| Array (String × String):= do
   if moduleNames.isEmpty && !useMain? then
@@ -286,7 +282,7 @@ def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true)
 -/
 def getLeanCodeJson (s: String)
   (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})(numSim : Nat:= 8)
-  (includeFixed: Bool := Bool.false)(sysLess: Bool := false) : CoreM <| Json × Json := do
+  (includeFixed: Bool := Bool.false)(sysLess: Bool := false)(toChat : ToChatExample := simpleChatExample) : CoreM <| Json × Json := do
   logTimed s!"translating string `{s}` with {numSim} examples"
   match ← getCachedJson? s with
   | some js => return js
@@ -306,7 +302,7 @@ def getLeanCodeJson (s: String)
       | Except.ok pairs => do
       let pairs := if includeFixed then pairs ++ fixedPromptsJson else pairs
       let pairs  := pairs.filter (fun (s, _) => s.length < 100)
-      let examples := pairs.filterMap simpleChatExample
+      let examples := pairs.filterMap toChat
       let messages := GPT.mkMessages s examples sysLess
       trace[Translate.info] m!"prompt: \n{messages.pretty}"
       logTimed "querying server"
@@ -557,10 +553,10 @@ universe u
 Translate a string and output as a string.
 -/
 def translateViewM (s: String)
-  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8) : TermElabM String := do
+  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8)(toChat : ToChatExample := simpleChatExample) : TermElabM String := do
   logTimed "starting translation"
   let (js, _) ← getLeanCodeJson  s server params
-        (numSim := numSim)
+        (numSim := numSim) (toChat := toChat)
   let output ← GPT.exprStrsFromJson js
   trace[Translate.info] m!"{output}"
   let e? ← bestElab? output
@@ -568,14 +564,16 @@ def translateViewM (s: String)
   | Except.ok (e, _) => do
     e.view
   | Except.error _ => do
-    let stx ← output.findSomeM? <| fun s => do
-      let exp ←  parseThm4 s
+    let view? ← output.findSomeM? <| fun s => do
       let elab? ← elabThm4 s
       match elab? with
-      | Except.ok expr => trace[Translate.info] m!"elaborated: {expr}"
-      | Except.error e => trace[Translate.warning] m!"elaboration failed: {e} for {s}"
-      return exp.toOption |>.map fun stx => stx.reprint.get!
-    return stx.getD "False"
+      | Except.ok expr =>
+        trace[Translate.info] m!"elaborated: {expr}"
+        pure <| some (← expr.view)
+      | Except.error e =>
+        trace[Translate.warning] m!"elaboration failed: {e} for {s}"
+        pure none
+    return view?.getD "False"
 
 
 /-- view of string in core; to be run with Snapshot.runCore
@@ -602,3 +600,59 @@ open PrettyPrinter
   logTimed "added suggestion"
   return e
   | _ => throwUnsupportedSyntax
+
+
+/--
+Translate a string to a Lean expression using the GPT model, returning the expression, all outputs and the prompt used.
+-/
+def translateViewWithPromptM (s: String)(server: ChatServer)
+  (params: ChatParams)(numSim : Nat:= 10)
+  (includeFixed: Bool := Bool.false)
+  (embedding: String)(repeats: Nat := 0)(sleepTime : Nat := 1)
+  (queryData? : Option <| (HashMap String Json)  )(sysLess: Bool := false)(toChat : ToChatExample := simpleChatExample)  :
+  TermElabM ((Option (String × (Array String) × (Array (Array String)) )) × Array String × (Option String)) := do
+  let (output, prompt?) ←  match queryData? with
+  | none =>
+    let (js,prompt) ← getLeanCodeJson s server params numSim includeFixed sysLess toChat
+    pure (← GPT.exprStrsFromJson js, some prompt.pretty)
+  | some f =>
+    let res? := f.find? s.trim
+    match res? with
+    | none =>
+      throwError s!"no data for {s}"
+    | some js =>
+      let arr := js.getArr? |>.toOption.get!
+      pure (arr.map fun js => js.getStr!, none)
+  if output.isEmpty then
+  match repeats with
+  | 0 => return (none, output, prompt?)
+  | k + 1 =>
+    IO.eprintln s!"No outputs; repeating ({k} left)"
+    IO.sleep (sleepTime * 1000)
+    translateViewWithPromptM s server params
+      numSim includeFixed embedding k
+      (sleepTime * 2) queryData? sysLess
+  else
+    let res ← bestElab? output
+    match res with
+    | Except.error jsErr =>
+      let js := Json.mkObj [
+        ("input", Json.str s),
+        ("error", jsErr)]
+      appendLog "translate_fail" js
+      pure ()
+    | Except.ok _ =>
+      pure ()
+    let view? ←  res.toOption.mapM <|
+          fun (e, a, b) => do
+            let fmt ←  PrettyPrinter.ppExpr e
+            pure (fmt.pretty, a, b)
+    return (view?, output, prompt?)
+
+def translateViewWithPromptCore (s: String)(server: ChatServer)
+  (params: ChatParams)(numSim : Nat:= 10)
+  (includeFixed: Bool := Bool.false)
+  (embedding: String)(repeats: Nat := 0)(sleepTime : Nat := 1)
+  (queryData? : Option <| (HashMap String Json)  )(sysLess: Bool := false)(toChat : ToChatExample := simpleChatExample)  :
+  CoreM ((Option (String × (Array String) × (Array (Array String)) )) × Array String × (Option String)) :=
+  (translateViewWithPromptM s server params numSim includeFixed embedding repeats sleepTime queryData? sysLess toChat).run'.run'

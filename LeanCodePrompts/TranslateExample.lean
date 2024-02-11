@@ -18,7 +18,7 @@ set_option trace.Translate.info true
 #eval translateViewM "Suppose $E\\subset\\mathbb{R}^k$ is uncountable, and let $P$ be the set of condensation points of $E$. Then $P$ is perfect."
 
 set_option trace.Translate.warning true
-#eval translateViewM "Suppose $E\\subset\\mathbb{R}^k$ is uncountable, and let $P$ be the set of accumulation points of $E$. Then $P$ is perfect."
+#eval translateViewM (params := {model := "gpt-4-1106-preview"}) "Suppose $E\\subset\\mathbb{R}^k$ is uncountable, and let $P$ be the set of accumulation points of $E$. Then $P$ is perfect."
 
 #eval translateViewM "Suppose $E\\subset\\mathbb{R}^k$ is uncountable, and let $P$ be the set of limit points of $E$. Then $P$ is perfect."
 

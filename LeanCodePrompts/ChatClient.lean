@@ -8,7 +8,7 @@ structure ChatParams where
   temp : JsonNumber := 0.2
   stopTokens : Array String :=  #[":=", "-/"]
   model : String := "gpt-3.5-turbo"
-  max_tokens : Nat := 800
+  max_tokens : Nat := 1600
 
 inductive ChatServer where
   | openAI
@@ -87,3 +87,8 @@ structure ChatExample where
 def ChatExample.messages (ex : ChatExample) : List Json :=
   [Json.mkObj [("role", "user"), ("content", ex.user)],
     Json.mkObj [("role", "assistant"), ("content", ex.assistant)]]
+
+abbrev ToChatExample := String × Json → Option ChatExample
+
+def simpleChatExample : ToChatExample
+  | (docString, data) => data.getObjValAs? String "theorem" |>.toOption.map fun thm => {user := docString, assistant:= thm}

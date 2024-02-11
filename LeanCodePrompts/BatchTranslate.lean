@@ -10,11 +10,11 @@ def translateWithDataM (s: String)(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)
   (includeFixed: Bool := Bool.false)
   (embedding: String)(repeats: Nat := 0)(sleepTime : Nat := 1)
-  (queryData? : Option <| (HashMap String Json)  )(sysLess: Bool := false)  :
+  (queryData? : Option <| (HashMap String Json)  )(sysLess: Bool := false)(toChat : ToChatExample := simpleChatExample)  :
   TermElabM ((Option (Expr × (Array String) × (Array (Array String)) )) × Array String × (Option String)) := do
   let (output, prompt?) ←  match queryData? with
   | none =>
-    let (js,prompt) ← getLeanCodeJson s server params numSim includeFixed sysLess
+    let (js,prompt) ← getLeanCodeJson s server params numSim includeFixed sysLess toChat
     pure (← GPT.exprStrsFromJson js, some prompt.pretty)
   | some f =>
     let res? := f.find? s.trim
@@ -54,12 +54,13 @@ def translateWithDataCore (s: String)(server: ChatServer)
   (includeFixed: Bool := Bool.false)
   (embedding: String)(repeats: Nat := 0)
   (queryData? : Option <| (HashMap String Json)  )
-  (sysLess: Bool := false)  :
+  (sysLess: Bool := false)(toChat : ToChatExample := simpleChatExample)  :
   CoreM ((Option (Expr × (Array String) ×  (Array (Array String)) )) × Array String × Option String) :=
     (translateWithDataM s server params
       numSim includeFixed
          embedding repeats
-        (queryData? := queryData?) (sysLess := sysLess)).run'.run'
+        (queryData? := queryData?) (sysLess := sysLess)
+        (toChat := toChat)).run'.run'
 
 /--
 Translate theorems in a given file and record results in a JSON file.
@@ -67,7 +68,7 @@ Translate theorems in a given file and record results in a JSON file.
 def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)
   (includeFixed: Bool := Bool.false)(embedding: String)
-  (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json) )(tag: Bool := false)(sysLess: Bool := false) : TermElabM Json := do
+  (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json) )(tag: Bool := false)(sysLess: Bool := false)(toChat : ToChatExample := simpleChatExample) : TermElabM Json := do
   IO.eprintln s!"Writing to file: {type}-elab-{numSim}-{includeFixed}-{params.n}-{params.temp.mantissa}.json"
   let promptsFile := System.mkFilePath ["data",
     s!"prompts-{type}-{numSim}-{includeFixed}-{params.n}-{params.temp.mantissa}.jsonl"]
@@ -97,7 +98,7 @@ def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
     IO.println ""
     IO.println statement
     let (res?, _, prompt?) ←
-        translateWithDataM statement server params numSim includeFixed embedding repeats 0 queryData? sysLess
+        translateWithDataM statement server params numSim includeFixed embedding repeats 0 queryData? sysLess toChat
     let fullPrompt := prompt?.getD "No prompt (maybe using cached data)"
     let js := Json.mkObj [("text", Json.str statement),
        ("fullPrompt", Json.str fullPrompt)]
@@ -151,8 +152,8 @@ Translate theorems in a given file and record results in a JSON file.
 def checkTranslatedThmsCore(type: String := "thm")(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)
   (includeFixed: Bool := Bool.false)(embedding: String)
-  (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json))(tag: Bool := false)(sysLess: Bool := false): CoreM Json :=
-    (checkTranslatedThmsM type server params numSim includeFixed embedding delay repeats queryData? tag sysLess).run'.run'
+  (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json))(tag: Bool := false)(sysLess: Bool := false) (toChat : ToChatExample := simpleChatExample): CoreM Json :=
+    (checkTranslatedThmsM type server params numSim includeFixed embedding delay repeats queryData? tag sysLess toChat).run'.run'
 
 def parsedThmsPrompt : IO (Array String) := do
   let file := System.mkFilePath ["data/parsed_thms.txt"]
