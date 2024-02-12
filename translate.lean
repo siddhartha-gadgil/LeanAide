@@ -58,7 +58,16 @@ def runTranslate (p : Parsed) : IO UInt32 := do
       IO.eprintln prompt.pretty
       IO.eprintln "---"
     match translation? with
-    | some (s, _, _) =>
+    | some (s, elabs, gps) =>
+      if p.hasFlag "show_elaborated" then
+        IO.eprintln "Elaborated terms:"
+        for out in elabs do
+          IO.eprintln out
+        IO.eprintln "---"
+        IO.eprintln "Top group:"
+        for out in gps[0]! do
+          IO.eprintln out
+        IO.eprintln "---"
       IO.eprintln "Translation:"
       IO.println s
       return 0
@@ -88,6 +97,7 @@ def translate : Cmd := `[Cli|
     azure; "Use Azure instead of OpenAI."
     url : String; "URL to query (for a local server)."
     show_prompt; "Output the prompt to the LLM."
+    show_elaborated; "Output the elaborated terms"
 
   ARGS:
     input : String;      "The input file in the `data` folder."
