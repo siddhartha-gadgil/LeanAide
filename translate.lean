@@ -64,10 +64,11 @@ def runTranslate (p : Parsed) : IO UInt32 := do
         for out in elabs do
           IO.eprintln out
         IO.eprintln "---"
-        IO.eprintln "Top group:"
-        for out in gps[0]! do
-          IO.eprintln out
-        IO.eprintln "---"
+        IO.eprintln "Groups:"
+        for gp in gps do
+          for out in gp do
+            IO.eprintln out
+          IO.eprintln "---"
       IO.eprintln "Translation:"
       IO.println s
       return 0

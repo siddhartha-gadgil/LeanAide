@@ -391,6 +391,7 @@ def bestElab? (output: Array String) : TermElabM (Except Json (Expr× (Array Str
           elabStrs := elabStrs.push out
           if !expr.hasExprMVar then
             fullElaborated := fullElaborated.push expr
+          else IO.eprintln s!"mvar in {out}; expr: {← expr.view}"
   if elaborated.isEmpty then
     let mut errors : Array Json := #[]
     for out in output do
@@ -409,9 +410,10 @@ def bestElab? (output: Array String) : TermElabM (Except Json (Expr× (Array Str
     return Except.error errorJson
   else
     logTimed "elaborated outputs, starting majority voting"
-    let priority :=
-        if fullElaborated.isEmpty then elaborated else fullElaborated
-    let groupSorted ← groupThmExprsSorted priority
+    -- let priority :=
+    --     if fullElaborated.isEmpty then elaborated else fullElaborated
+    -- IO.eprintln s!"grouping priority: {priority.size}"
+    let groupSorted ← groupThmExprsSorted elaborated -- priority
     let thm := (groupSorted[0]!)[0]!
     let gpView ←  groupSorted.mapM (fun gp => gp.mapM (fun e => e.view))
     logTimed "obtained majority vote"
