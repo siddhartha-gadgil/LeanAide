@@ -391,7 +391,6 @@ def bestElab? (output: Array String) : TermElabM (Except Json (Expr× (Array Str
           elabStrs := elabStrs.push out
           if !expr.hasExprMVar then
             fullElaborated := fullElaborated.push expr
-          else IO.eprintln s!"mvar in {out}; expr: {← expr.view}"
   if elaborated.isEmpty then
     let mut errors : Array Json := #[]
     for out in output do
