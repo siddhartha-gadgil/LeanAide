@@ -41,6 +41,12 @@ lean_exe bulkelab {
   supportInterpreter := true
 }
 
+@[default_target]
+lean_exe translate {
+  supportInterpreter := true
+}
+
+
 lean_exe chkelab {
   supportInterpreter := true
 }
