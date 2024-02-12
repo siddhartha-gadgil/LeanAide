@@ -96,13 +96,24 @@ def simpleChatExample : ToChatExample
 def fullTheorem (js: Json) : Option String := do
   let thm ← js.getObjValAs? String "theorem" |>.toOption
   let name ← js.getObjValAs? String "name" |>.toOption
-  return s!"theorem {name} : {thm} := by sorry"
+  let isProp ← js.getObjValAs? Bool "isProp" |>.toOption
+  return if isProp then
+    s!"theorem {name} : {thm} := by sorry"
+  else
+    s!"def {name} : {thm} := sorry"
 
-def displaydDoc (doc: String) : String :=
-s!"Consider the mathematical statement written as a Lean documentation string:
-**Theorem:** {doc}
+def displaydDoc (doc: String)(isProp: Bool) : String :=
+  if (isProp) then s!"Consider the mathematical theorem.
+**Theorem:**
+{doc}
+---
+Translate the above mathematical statement into a Lean 4 `theorem` with proof `by sorry`. Give the Lean code only"
+  else s!"Consider the mathematical definition.
+**Definition:**
+{doc}
+---
+Translate the above mathematical definition into a Lean 4 `def` with value `by sorry`. Give the Lean code only"
 
-Translate the above mathematical statement into a Lean 4 theorem."
 
 def docChatExample
   (fullThm: Bool := false)(fullDoc : Bool := false) : ToChatExample
@@ -110,6 +121,8 @@ def docChatExample
     do
     let thm ← data.getObjValAs? String "theorem" |>.toOption
     let name ← data.getObjValAs? String "name" |>.toOption
-    let user := if fullDoc then displaydDoc docString else docString
+    let isProp ← data.getObjValAs? Bool "isProp" |>.toOption
+    let user := if fullDoc then displaydDoc docString isProp else
+      docString
     let assistant := if fullThm then s!"theorem {name} : {thm} := by sorry" else thm
     return {user := user, assistant := assistant}

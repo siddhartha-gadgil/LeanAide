@@ -603,35 +603,19 @@ open PrettyPrinter
 
 
 /--
-Translate a string to a Lean expression using the GPT model, returning the expression, all outputs and the prompt used.
+Translate a string to a Lean expression using the GPT model, returning three componenst:
+* The expression, all elaborated expressions, grouped expressions
+* All outputs from the LLM
+* The prompt used for the LLM.
 -/
-def translateViewWithPromptM (s: String)(server: ChatServer)
+def translateViewVerboseM (s: String)(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)
-  (includeFixed: Bool := Bool.false)
-  (embedding: String)(repeats: Nat := 0)(sleepTime : Nat := 1)
-  (queryData? : Option <| (HashMap String Json)  )(sysLess: Bool := false)(toChat : ToChatExample := simpleChatExample)  :
-  TermElabM ((Option (String × (Array String) × (Array (Array String)) )) × Array String × (Option String)) := do
-  let (output, prompt?) ←  match queryData? with
-  | none =>
-    let (js,prompt) ← getLeanCodeJson s server params numSim includeFixed sysLess toChat
-    pure (← GPT.exprStrsFromJson js, some prompt.pretty)
-  | some f =>
-    let res? := f.find? s.trim
-    match res? with
-    | none =>
-      throwError s!"no data for {s}"
-    | some js =>
-      let arr := js.getArr? |>.toOption.get!
-      pure (arr.map fun js => js.getStr!, none)
+  (sysLess: Bool := false)(toChat : ToChatExample := simpleChatExample)  :
+  TermElabM ((Option (String × (Array String) × (Array (Array String)) )) × Array String × Json) := do
+  let (js,prompt) ← getLeanCodeJson s server params numSim false sysLess toChat
+  let output ← GPT.exprStrsFromJson js
   if output.isEmpty then
-  match repeats with
-  | 0 => return (none, output, prompt?)
-  | k + 1 =>
-    IO.eprintln s!"No outputs; repeating ({k} left)"
-    IO.sleep (sleepTime * 1000)
-    translateViewWithPromptM s server params
-      numSim includeFixed embedding k
-      (sleepTime * 2) queryData? sysLess
+     return (none, output, prompt)
   else
     let res ← bestElab? output
     match res with
@@ -647,12 +631,10 @@ def translateViewWithPromptM (s: String)(server: ChatServer)
           fun (e, a, b) => do
             let fmt ←  PrettyPrinter.ppExpr e
             pure (fmt.pretty, a, b)
-    return (view?, output, prompt?)
+    return (view?, output, prompt)
 
-def translateViewWithPromptCore (s: String)(server: ChatServer)
+def translateViewVerboseCore (s: String)(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)
-  (includeFixed: Bool := Bool.false)
-  (embedding: String)(repeats: Nat := 0)(sleepTime : Nat := 1)
-  (queryData? : Option <| (HashMap String Json)  )(sysLess: Bool := false)(toChat : ToChatExample := simpleChatExample)  :
-  CoreM ((Option (String × (Array String) × (Array (Array String)) )) × Array String × (Option String)) :=
-  (translateViewWithPromptM s server params numSim includeFixed embedding repeats sleepTime queryData? sysLess toChat).run'.run'
+  (sysLess: Bool := false)(toChat : ToChatExample := simpleChatExample)  :
+  CoreM ((Option (String × (Array String) × (Array (Array String)))) × Array String × Json) :=
+  (translateViewVerboseM s server params numSim sysLess toChat).run'.run'
