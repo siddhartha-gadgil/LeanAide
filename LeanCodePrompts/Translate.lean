@@ -95,7 +95,7 @@ def sysMessages (sys: String) (egs : List <| ChatExample)
   (query : String) : Json :=
   let head := message "system" sys
   let egArr :=
-    egs.bind (fun eg  => eg.messages)
+    egs >>= (fun eg  => eg.messages)
   Json.arr <| head :: egArr ++ [message "user" query] |>.toArray
 
 /--
@@ -434,7 +434,7 @@ def leanToPrompt (thm: String)(numSim : Nat:= 5)(temp : JsonNumber := 0)(textFie
       {model := model, temp := temp, n := 1}
     let outJson :=
       (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
-    let out? := (outJson.getArrVal? 0).bind fun js => js.getObjVal? textField
+    let out? := (outJson.getArrVal? 0) >>= fun js => js.getObjVal? textField
     let outJson :=
         match (out?) with
         | Except.error s => Json.str s!"query for translation failed: {s}"
@@ -497,8 +497,12 @@ def exprStrsFromJsonStr (jsString: String) : TermElabM (Array String) := do
 
 
 /-- given json returned by open-ai obtain the best translation -/
-def jsonToExpr' (json: Json) : TermElabM Expr := do
+def jsonToExpr' (json: Json)(splitOutput := false) : TermElabM Expr := do
   let output ← GPT.exprStrsFromJson json
+  let output := if splitOutput
+    then
+      splitColEqSegments output
+    else output
   bestElab output
 
 /-- translation from a comment-like syntax to a theorem statement -/
@@ -509,7 +513,7 @@ elab "//-" cb:commentBody  : term => do
   let (js, _) ←
     getLeanCodeJson  s (params := {model := "gpt-3.5-turbo"})
   -- filtering, autocorrection and selection
-  let e ← jsonToExpr' js
+  let e ← jsonToExpr' js !(← chatParams).stopColEq
   trace[Translate.info] m!"{e}"
   return e
 
@@ -560,6 +564,7 @@ def translateViewM (s: String)
         (numSim := numSim) (toChat := toChat)
   let output ← GPT.exprStrsFromJson js
   trace[Translate.info] m!"{output}"
+  let output := params.splitOutputs output
   let e? ← bestElab? output
   match e? with
   | Except.ok (e, _) => do
@@ -593,7 +598,7 @@ open PrettyPrinter
   let s := s.getString
   let (js, _) ←
     getLeanCodeJson  s (← chatServer) (← chatParams)
-  let e ← jsonToExpr' js
+  let e ← jsonToExpr' js !(← chatParams).stopColEq
   logTimed "obtained expression"
   let stx' ← delab e
   logTimed "obtained syntax"
@@ -618,6 +623,7 @@ def translateViewVerboseM (s: String)(server: ChatServer)
   if output.isEmpty then
      return (none, output, prompt)
   else
+    let output := params.splitOutputs output
     let res ← bestElab? output
     match res with
     | Except.error jsErr =>

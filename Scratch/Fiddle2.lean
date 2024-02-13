@@ -15,6 +15,22 @@ example (l: ∀n : ℕ , n > 10 → n > 5): (∃ (n : ℕ), n > 10) →  ∃n,  
   sorry
   sorry
 
+#check AddCommGroupCat.cokernelIsoQuotient
+#print AddCommGroupCat.cokernelIsoQuotient
+#check String.splitOn
+#eval "let this := that; other := this".splitOn ":="
+#check List.scanl
+#check List.dropLast
+
+def colEqSegments (s: String) : List String :=
+  let pieces := s.splitOn ":="
+  match pieces with
+  | [] => []
+  | head :: tail =>
+    tail.scanl (fun acc x => acc ++ ":=" ++ x) head |>.map (String.trim)
+
+#eval colEqSegments "def strange : let this := that; List this := other"
+
 structure NN where
   n : Nat
 

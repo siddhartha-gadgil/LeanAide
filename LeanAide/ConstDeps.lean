@@ -44,7 +44,7 @@ def cache (e: Expr) (offs : Array Name) : IO Unit := do
 def nameExpr? : Name → MetaM ( Option Expr) :=
   fun name => do
       let info := ((← getEnv).find? name)
-      return Option.bind info ConstantInfo.value?
+      return info >>= ConstantInfo.value?
 
 /-- optionally infer type of expression -/
 def inferType?(e: Expr) : MetaM (Option Expr) := do

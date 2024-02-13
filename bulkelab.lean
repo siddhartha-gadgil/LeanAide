@@ -39,7 +39,8 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
         | some url => ChatServer.generic url
         | none => ChatServer.openAI
   let chatParams : ChatParams :=
-    {model := model, temp := temp, n := queryNum}
+    let params: ChatParams := {model := model, temp := temp, n := queryNum}
+    params.withoutStop (p.hasFlag "no_stop")
   let queryData? : Option (HashMap String Json) ←
     p.flag? "query_data" |>.map (fun s => s.as! String) |>.mapM
       fun filename => do
@@ -117,6 +118,7 @@ def bulkElab : Cmd := `[Cli|
     azure; "Use Azure instead of OpenAI."
     url : String; "URL to query (for a local server)."
     tag; "Include the git hash in the results filepath"
+    no_stop; "Don't use `:=` as a stop token."
 
   ARGS:
     input : String;      "The input file in the `data` folder."

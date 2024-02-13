@@ -6,9 +6,30 @@ open Lean Meta
 structure ChatParams where
   n : Nat := 1
   temp : JsonNumber := 0.2
-  stopTokens : Array String :=  #[":=", "-/"]
+  stopTokens : Array String :=  #[":=", "-/", "\n\n"]
   model : String := "gpt-3.5-turbo"
   max_tokens : Nat := 1600
+
+namespace ChatParams
+def stopColEq (params: ChatParams) : Bool :=
+  params.stopTokens.contains ":="
+
+def splitOutputs (params: ChatParams)
+  (outputs : Array String) : Array String :=
+  if stopColEq params then
+    outputs
+  else
+    let outs := outputs.toList.bind colEqSegments
+    outs.toArray
+
+def noStop (p: ChatParams) : ChatParams :=
+  {p with stopTokens := #["\n\n"]}
+
+def withoutStop (p: ChatParams)(stopless: Bool) : ChatParams :=
+  if stopless then noStop p else p
+
+end ChatParams
+
 
 inductive ChatServer where
   | openAI

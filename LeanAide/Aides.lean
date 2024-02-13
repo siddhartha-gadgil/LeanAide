@@ -3,6 +3,7 @@ import Lean.Meta
 import Lean.Elab
 import Lean.Parser
 import Lean.Parser.Extension
+import Std.Data.List.Basic
 import LeanAide.Config
 
 open Lean Meta Elab Parser Tactic
@@ -204,6 +205,8 @@ def isNotAux  (declName : Name) : MetaM  Bool := do
   let nAux ← isAux declName
   return (not nAux)
 
+#check isBlackListed
+
 def isWhiteListed (declName : Name) : MetaM Bool := do
   try
   let bl ← isBlackListed  declName
@@ -286,3 +289,13 @@ def appendLog (logFile: String) (content : Json) : IO Unit := do
 def gitHash : IO String := do
   let hash ← IO.Process.output { cmd := "git", args := #["rev-parse", "--short", "HEAD"] }
   return hash.stdout.trim
+
+def colEqSegments (s: String) : List String :=
+  let pieces := s.splitOn ":="
+  match pieces with
+  | [] => []
+  | head :: tail =>
+    tail.scanl (fun acc x => acc ++ ":=" ++ x) head |>.map (String.trim)
+
+def splitColEqSegments (ss: Array String) : Array String :=
+  ss.toList.bind colEqSegments |>.toArray
