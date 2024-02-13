@@ -366,7 +366,7 @@ def bestElab (output: Array String) : TermElabM Expr := do
 
 
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and optionally returns the best choice as well as all elaborated terms (used for batch processing, interactive code uses `bestElab` instead)  -/
-def bestElab? (output: Array String) : TermElabM (Except Json (Expr× (Array String) × (Array (Array String)) )) := do
+def bestElab? (output: Array String)(maxVoting: Nat := 5) : TermElabM (Except Json (Expr× (Array String) × (Array (Array String)) )) := do
   -- IO.println s!"arrayToExpr? called with {output.size} outputs"
   let mut elabStrs : Array String := Array.empty
   let mut elaborated : Array Expr := Array.empty
@@ -412,7 +412,7 @@ def bestElab? (output: Array String) : TermElabM (Except Json (Expr× (Array Str
     -- let priority :=
     --     if fullElaborated.isEmpty then elaborated else fullElaborated
     -- IO.eprintln s!"grouping priority: {priority.size}"
-    let groupSorted ← groupThmExprsSorted elaborated -- priority
+    let groupSorted ← groupThmExprsSorted (elaborated.toList.take maxVoting).toArray -- priority
     let thm := (groupSorted[0]!)[0]!
     let gpView ←  groupSorted.mapM (fun gp => gp.mapM (fun e => e.view))
     logTimed "obtained majority vote"
