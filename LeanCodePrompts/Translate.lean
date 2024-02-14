@@ -227,6 +227,10 @@ Given a string, find the nearest documentation strings in Mathlib and return the
 -/
 def getNearestDocsOpenAI (s: String)(numSim : Nat)(full: Bool:= true) :
   IO <| Except String (Array (String × Json)) := do
+    let picklePath : System.FilePath := ".lake"/ "build" / "lib" /"mathlib4-prompts-embeddings.olean"
+    let check ← picklePath.pathExists
+    unless check do
+      return Except.error "Mathlib embeddings not found; run `lake exe fetch_embeddings` first to fetch them."
     let outJs ←
      if full then
        getNearestEmbeddingsFull s numSim 2.0

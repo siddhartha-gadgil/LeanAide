@@ -83,6 +83,8 @@ lean_exe nearest_embeddings
 @[default_target]
 lean_exe nearest_embeddings_full
 
+lean_exe fetch_embeddings
+
 lean_exe nearest_embeddings_test
 
 lean_exe getpremises{
