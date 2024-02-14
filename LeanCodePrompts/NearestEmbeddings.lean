@@ -1,4 +1,5 @@
 import Lean
+import Cache.IO
 import LeanAide.Aides
 import Mathlib
 open Std Lean
@@ -76,13 +77,11 @@ def embedQuery (doc: String) : IO <| Except String Json := do
   let dataJs := Json.mkObj
       [("input", doc), ("model", "text-embedding-ada-002")]
   let data := dataJs.pretty
-  let out ←  IO.Process.output {
-        cmd:= "curl",
-        args:= #["https://api.openai.com/v1/embeddings",
+  let out ←  Cache.IO.runCurl #["https://api.openai.com/v1/embeddings",
         "-H", "Authorization: Bearer " ++ key,
         "-H", "Content-Type: application/json",
-        "--data", data]}
-  return Lean.Json.parse out.stdout
+        "--data", data]
+  return Lean.Json.parse out
 
 -- #eval embedQuery "There are infinitely many odd numbers"
 

@@ -2,30 +2,31 @@ import LeanCodePrompts.NearestEmbeddings
 import LeanAide.Aides
 import Lean.Data.Json
 import Std.Util.Pickle
-open Lean
+import Cache.IO
+open Lean Cache.IO
 
 unsafe def show_nearest (stdin stdout : IO.FS.Stream)(data: Array ((String × String) × FloatArray)) : IO Unit := do
   let inp ← stdin.getLine
-  let (doc, num, halt) := 
+  let (doc, num, halt) :=
     match Json.parse inp with
     | Except.error _ => (inp, 10, false)
-    | Except.ok j => 
-      (j.getObjValAs? String "docString" |>.toOption.orElse 
-        (fun _ => j.getObjValAs? String "doc_string" |>.toOption) 
-        |>.getD inp, 
+    | Except.ok j =>
+      (j.getObjValAs? String "docString" |>.toOption.orElse
+        (fun _ => j.getObjValAs? String "doc_string" |>.toOption)
+        |>.getD inp,
       j.getObjValAs? Nat "n" |>.toOption.getD 10,
       j.getObjValAs? Bool "halt" |>.toOption.getD false)
   let embs ← nearestDocsToDocThms data doc num
-  let out := 
-    Lean.Json.arr <| 
+  let out :=
+    Lean.Json.arr <|
       embs.toArray.map fun (doc, thm) =>
         Json.mkObj <| [
           ("docString", Json.str doc),
           ("theorem", Json.str thm)
-        ] 
+        ]
   stdout.putStrLn out.compress
   stdout.flush
-  unless halt do 
+  unless halt do
     show_nearest stdin stdout data
   return ()
 
@@ -33,25 +34,24 @@ unsafe def main (args: List String) : IO Unit := do
   let picklePath : System.FilePath := ".lake/build/lib/mathlib4-doc-thms-embeddings.olean"
   unless ← picklePath.pathExists do
     IO.eprintln "Fetching embeddings ..."
-    let out ← IO.Process.run {
-      cmd := "curl",
-      args := #["--output", picklePath.toString, "-s",  "https://math.iisc.ac.in/~gadgil/data/mathlib4-doc-thms-embeddings.olean"]
-    }
+    let out ← runCurl
+      #["--output", picklePath.toString, "-s",  "https://math.iisc.ac.in/~gadgil/data/mathlib4-doc-thms-embeddings.olean"]
+
     IO.println out
-  withUnpickle  picklePath <| 
+  withUnpickle  picklePath <|
     fun (data : Array <| (String × String) ×  FloatArray) => do
       let doc? := args[0]?
       match doc? with
-      | some doc => 
+      | some doc =>
         let num := (args[1]?.bind fun s => s.toNat?).getD 10
         let embs ← nearestDocsToDocThms data doc num
-        IO.println <| 
-          Lean.Json.arr <| 
+        IO.println <|
+          Lean.Json.arr <|
             embs.toArray.map fun (doc, thm) =>
               Json.mkObj <| [
                 ("docString", Json.str doc),
                 ("theorem", Json.str thm)
-              ] 
+              ]
       | none =>
         let stdin ← IO.getStdin
         let stdout ← IO.getStdout

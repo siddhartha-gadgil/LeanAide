@@ -1,8 +1,9 @@
 import LeanCodePrompts.NearestEmbeddings
+import Cache.IO
 import LeanAide.Aides
 import Lean.Data.Json
 import Std.Util.Pickle
-open Lean
+open Lean Cache.IO
 
 unsafe def show_nearest_full (stdin stdout : IO.FS.Stream)
   (data: Array ((String × String × Bool × String) × FloatArray)): IO Unit := do
@@ -50,10 +51,8 @@ unsafe def main (args: List String) : IO Unit := do
      else pure false
   unless picklePresent do
     IO.eprintln "Fetching embeddings ..."
-    let out ← IO.Process.run {
-      cmd := "curl",
-      args := #["--output", picklePath.toString, "-s",  "https://math.iisc.ac.in/~gadgil/data/mathlib4-prompts-embeddings.olean"]
-    }
+    let out ← runCurl #["--output", picklePath.toString, "-s",  "https://math.iisc.ac.in/~gadgil/data/mathlib4-prompts-embeddings.olean"]
+
     IO.eprintln "Fetched embeddings"
     IO.eprintln out
   logTimed "found/downloaded pickle"

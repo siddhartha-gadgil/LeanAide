@@ -11,18 +11,18 @@ def slowFibIO : Nat → IO Nat
 | 1 => pure 1
 | n + 2 => do return (← slowFibIO (n)) + (←  slowFibIO (n + 1))
 
-elab "run_io_task" : tactic => do
-  let _  ← (IO.asTask <|
-    do
-      setFib s!"Computed: {← slowFibIO 34} at {← IO.monoMsNow}"
-    ).toIO
-  return ()
+-- elab "run_io_task" : tactic => do
+--   let _  ← (IO.asTask <|
+--     do
+--       setFib s!"Computed: {← slowFibIO 34} at {← IO.monoMsNow}"
+--     ).toIO
+--   return ()
 
-example : 4 = 4 := by
-  run_io_task
-  rfl
+-- example : 4 = 4 := by
+--   run_io_task
+--   rfl
 
-#eval getFib
+-- #eval getFib
 
 #check Core.CoreM.run -- {α : Type} → CoreM α → Core.Context → Core.State → EIO Exception (α × Core.State)
 #check Meta.MetaM.run /-{α : Type} →
