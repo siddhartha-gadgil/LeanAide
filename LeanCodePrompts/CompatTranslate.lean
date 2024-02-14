@@ -9,7 +9,7 @@ import LeanCodePrompts.EgsTranslate
 
 open Lean Meta Elab Parser Command
 
-def fileName := "data/safe_prompts.json"
+def fileName := "extra_resources/safe_prompts.json"
 
 /-- extract prompt pairs from JSON response to local server -/
 def sentenceSimPairs
@@ -19,55 +19,55 @@ def sentenceSimPairs
   let json := Lean.Json.parse  s |>.toOption.get!
   return do
     (← json.getArr?).mapM <| fun j => do
-      let lean4mode := fileName ∈ ["data/mathlib4-prompts.json",
-        "data/mathlib4-thms.json"]
-      let docField := 
+      let lean4mode := fileName ∈ ["resources/mathlib4-prompts.json",
+        "resources/mathlib4-thms.json"]
+      let docField :=
         if lean4mode then "docString" else "doc_string"
-      let docstring ← j.getObjValAs? String docField 
-      let typeField := 
+      let docstring ← j.getObjValAs? String docField
+      let typeField :=
         if lean4mode then "type"
         else theoremField
       let thm ← j.getObjValAs? String typeField
-      pure (docstring, thm) 
+      pure (docstring, thm)
 
 -- #eval sentenceSimPairs egSen
 
 namespace GPT
 
 def message (role content : String) : Json :=
-  Json.mkObj [("role", role), ("content", content)] 
+  Json.mkObj [("role", role), ("content", content)]
 
 def prompt (sys: String) (egs : List <| String × String)(query : String) : Json :=
   let head := message "system" sys
-  let egArr := 
+  let egArr :=
     egs.bind (fun (ds, thm) => [message "user" ds, message "assistant" thm])
   Json.arr <| head :: egArr ++ [message "user" query] |>.toArray
 
 def sysPrompt := "You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples. Follow EXACTLY the examples given."
 
-def makePrompt(query : String)(pairs: Array (String × String)) : Json:= prompt sysPrompt pairs.toList query 
+def makePrompt(query : String)(pairs: Array (String × String)) : Json:= prompt sysPrompt pairs.toList query
 
 def makeFlipPrompt(query : String)(pairs: Array (String × String)) : Json:= prompt sysPrompt (pairs.toList.map (fun (x, y) => (y, x))) query
 
 def jsonToExprStrArray (json: Json) : TermElabM (Array String) := do
-  let outArr : Array String ← 
+  let outArr : Array String ←
     match json.getArr? with
-    | Except.ok arr => 
-        let parsedArr : Array String ← 
+    | Except.ok arr =>
+        let parsedArr : Array String ←
           arr.filterMapM <| fun js =>
             match js.getObjVal? "message" with
-            | Except.ok jsobj => 
+            | Except.ok jsobj =>
                 match jsobj.getObjVal? "content" with
                 | Except.ok jsstr =>
                   match jsstr.getStr? with
                   | Except.ok str => pure (some str)
-                  | Except.error e => 
+                  | Except.error e =>
                     throwError m!"json string expected but got {js}, error: {e}"
                 | Except.error _ =>
                   throwError m!"no content field in {jsobj}"
             | Except.error _ =>
                 throwError m!"no message field in {js}"
-            
+
         pure parsedArr
     | Except.error e => throwError m!"json parsing error: {e}"
 
@@ -75,8 +75,8 @@ end GPT
 
 /-- make prompt from prompt pairs -/
 @[deprecated GPT.makePrompt]
-def makePrompt(prompt : String)(pairs: Array (String × String)) : String := 
-      pairs.foldr (fun  (ds, thm) acc => 
+def makePrompt(prompt : String)(pairs: Array (String × String)) : String :=
+      pairs.foldr (fun  (ds, thm) acc =>
         -- acc ++ "/-- " ++ ds ++" -/\ntheorem" ++ thm ++ "\n" ++ "\n"
 s!"/-- {ds} -/
 theorem {thm} :=
@@ -88,32 +88,32 @@ theorem "
 
 /-- make prompt for reverse translation from prompt pairs -/
 @[deprecated GPT.makeFlipPrompt]
-def makeFlipPrompt(statement : String)(pairs: Array (String × String)) : String := 
-      pairs.foldr (fun  (ds, thm) acc => 
-s!"theorem {thm} := 
+def makeFlipPrompt(statement : String)(pairs: Array (String × String)) : String :=
+      pairs.foldr (fun  (ds, thm) acc =>
+s!"theorem {thm} :=
 /- {ds} -/
 
 {acc}"
-          ) s!"theorem {statement} := 
+          ) s!"theorem {statement} :=
 /- "
 
 /-- make prompt for reverse translation from prompt pairs -/
-def makeFlipStatementsPrompt(statement : String)(pairs: Array (String × String)) : String := 
-      pairs.foldr (fun  (ds, thm) acc => 
-s!"{thm} := 
+def makeFlipStatementsPrompt(statement : String)(pairs: Array (String × String)) : String :=
+      pairs.foldr (fun  (ds, thm) acc =>
+s!"{thm} :=
 /- {ds} -/
 
 {acc}"
-          ) s!"{statement} := 
+          ) s!"{statement} :=
 /- "
 
-def openAIKey : IO (Option String) := IO.getEnv "OPENAI_API_KEY"
+-- def openAIKey : IO (Option String) := IO.getEnv "OPENAI_API_KEY"
 
 /--query OpenAI Codex with given prompt and parameters -/
 def codexQuery(prompt: String)(n: Nat := 1)
   (temp : JsonNumber := 0.2)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json := do
   let key? ← openAIKey
-  let key := 
+  let key :=
     match key? with
     | some k => k
     | none => panic! "OPENAI_API_KEY not set"
@@ -121,7 +121,7 @@ def codexQuery(prompt: String)(n: Nat := 1)
   let data := dataJs.pretty
   trace[Translate.info] "OpenAI query: {data}"
   let out ←  IO.Process.run {
-        cmd:= "curl", 
+        cmd:= "curl",
         args:= #["https://api.openai.com/v1/completions",
         "-X", "POST",
         "-H", "Authorization: Bearer " ++ key,
@@ -132,7 +132,7 @@ def codexQuery(prompt: String)(n: Nat := 1)
 def gptQuery(messages: Json)(n: Nat := 1)
   (temp : JsonNumber := 0.2)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json := do
   let key? ← openAIKey
-  let key := 
+  let key :=
     match key? with
     | some k => k
     | none => panic! "OPENAI_API_KEY not set"
@@ -142,7 +142,7 @@ def gptQuery(messages: Json)(n: Nat := 1)
   let data := dataJs.pretty
   trace[Translate.info] "OpenAI query: {data}"
   let out ←  IO.Process.output {
-        cmd:= "curl", 
+        cmd:= "curl",
         args:= #["https://api.openai.com/v1/chat/completions",
         "-X", "POST",
         "-H", "Authorization: Bearer " ++ key,
@@ -153,7 +153,7 @@ def gptQuery(messages: Json)(n: Nat := 1)
 
 def openAIQuery(prompt: String)(n: Nat := 1)
   (temp : JsonNumber := 0.2)(stopTokens: Array String :=  #[":=", "-/"]) : MetaM Json :=
-  codexQuery prompt n temp stopTokens 
+  codexQuery prompt n temp stopTokens
 
 /-!
 Caching, polling etc to avoid repeatedly calling servers
@@ -161,7 +161,7 @@ Caching, polling etc to avoid repeatedly calling servers
 
 initialize webCacheJson : IO.Ref (HashMap String Json) ← IO.mkRef (HashMap.empty)
 
-initialize pendingJsonQueries : IO.Ref (HashSet String) 
+initialize pendingJsonQueries : IO.Ref (HashSet String)
     ← IO.mkRef (HashSet.empty)
 
 initialize logCache : IO.Ref (Array String) ← IO.mkRef (#[])
@@ -226,19 +226,19 @@ def getPromptPairs(s: String)(numSim : Nat)(numKW: Nat)
         ("n", numSim),
         ("model_name", "all-mpnet-base-v2")
       ]
-      let simJsonOut ←  
-        IO.Process.output {cmd:= "curl", args:= 
+      let simJsonOut ←
+        IO.Process.output {cmd:= "curl", args:=
           #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, s!"{← leanAideIP}/nearest_prompts"]}
       let pairs? ← sentenceSimPairs simJsonOut.stdout "theorem"
       -- IO.println s!"obtained sentence similarity; time : {← IO.monoMsNow}"
-      let allPairs : Array (String × String) ← 
+      let allPairs : Array (String × String) ←
         match pairs? with
         | Except.error e =>
-            throwError e            
-        | Except.ok pairs => pure pairs    
-      -- logInfo m!"all pairs: {allPairs}"        
+            throwError e
+        | Except.ok pairs => pure pairs
+      -- logInfo m!"all pairs: {allPairs}"
       let allPairs := allPairs.toList.eraseDups.toArray
-      let pairs -- := allPairs -- 
+      let pairs -- := allPairs --
         ←  allPairs.filterM (fun (_, s) => do
             isElabPrompt s )
       return (pairs.toList.eraseDups.toArray, simJsonOut)
@@ -254,18 +254,18 @@ def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := "doc_string"
         ("n", numSim),
         ("model_name", "all-mpnet-base-v2")
       ]
-      let simJsonOut ←  
-        IO.Process.output {cmd:= "curl", args:= 
+      let simJsonOut ←
+        IO.Process.output {cmd:= "curl", args:=
           #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, s!"{← leanAideIP}/nearest_prompts"]}
       let pairs? ← sentenceSimPairs simJsonOut.stdout theoremField
       -- IO.println s!"obtained sentence similarity; time : {← IO.monoMsNow}"
-      let allPairs : Array (String × String) ← 
+      let allPairs : Array (String × String) ←
         match pairs? with
         | Except.error e =>
             throwError e
-            
-        | Except.ok pairs => pure pairs    
-      -- logInfo m!"all pairs: {allPairs}"        
+
+        | Except.ok pairs => pure pairs
+      -- logInfo m!"all pairs: {allPairs}"
       return (
           allPairs.toList.eraseDups.toArray, simJsonOut)
 
@@ -275,29 +275,29 @@ def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := "doc_string"
 def getCodeJson (s: String)(numSim : Nat:= 8)(numKW: Nat := 0)(includeFixed: Bool := Bool.false)(queryNum: Nat := 5)(temp : JsonNumber := 0.2)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM Json := do
   match ← getCachedJson? s with
   | some js => return js
-  | none =>    
+  | none =>
     let pending ←  pendingJsonQueries.get
-    if pending.contains s then pollCacheJson s 
-    else 
+    if pending.contains s then pollCacheJson s
+    else
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.insert s)
       -- work starts here; before this was caching, polling etc
-      let (pairs, IOOut) ←  
-        if numSim > 0 then  
-          getPromptPairs s numSim numKW scoreBound matchBound 
+      let (pairs, IOOut) ←
+        if numSim > 0 then
+          getPromptPairs s numSim numKW scoreBound matchBound
         else pure (#[], ⟨0, "", ""⟩)
       let pairs := if includeFixed then pairs ++ fixedPrompts else pairs
-      let pairs  := pairs.filter (fun (s, _) => s.length < 100) 
+      let pairs  := pairs.filter (fun (s, _) => s.length < 100)
       let prompt := GPT.makePrompt s pairs
       trace[Translate.info] m!"prompt: \n{prompt.pretty}"
       -- mkLog prompt
-      let fullJson ← 
-        gptQuery prompt queryNum temp 
-      let outJson := 
+      let fullJson ←
+        gptQuery prompt queryNum temp
+      let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.erase s)
-      if IOOut.exitCode = 0 then cacheJson s outJson 
+      if IOOut.exitCode = 0 then cacheJson s outJson
         else throwError m!"Web query error: {IOOut.stderr}"
       return outJson
 
@@ -314,7 +314,7 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
       | Except.error _ => pure ()
       | Except.ok es =>
         for (_ , _, s) in es do
-            elaborated := elaborated.push s 
+            elaborated := elaborated.push s
   if elaborated.isEmpty then do
     -- information with failed logs
     logWarning m!"No valid output from Codex; outputs below"
@@ -323,7 +323,7 @@ def arrayToExpr (output: Array String) : TermElabM Expr := do
       for str in polyOut do
         logWarning m!"{str}"
     mkSyntheticSorry (mkSort levelZero)
-  else    
+  else
     -- grouping by trying to prove equality and selecting
     let groupSorted ← groupFuncStrs elaborated
     let topStr := (groupSorted[0]!)[0]!
@@ -345,7 +345,7 @@ def arrayToStx (output: Array String) : TermElabM Syntax := do
       | Except.error _ => pure ()
       | Except.ok es =>
         for (_ , _, s) in es do
-            elaborated := elaborated.push s 
+            elaborated := elaborated.push s
   if elaborated.isEmpty then do
     -- information with failed logs
     logWarning m!"No valid output from Codex; outputs below"
@@ -354,7 +354,7 @@ def arrayToStx (output: Array String) : TermElabM Syntax := do
       for str in polyOut do
         logWarning m!"{str}"
     pure Syntax.missing
-  else    
+  else
     -- grouping by trying to prove equality and selecting
     let groupSorted ← groupFuncStrs elaborated
     let topStr := (groupSorted[0]!)[0]!
@@ -375,18 +375,18 @@ def arrayToExpr? (output: Array String) : TermElabM (Option (Expr× (Array Strin
       | Except.error _ => pure ()
       | Except.ok es =>
         for (expr, _, s) in es do
-          elaborated := elaborated.push s 
+          elaborated := elaborated.push s
           if !expr.hasExprMVar then
             fullElaborated := fullElaborated.push s
-  if elaborated.isEmpty then 
+  if elaborated.isEmpty then
     elabLog "No valid output from LLM; outputs below"
     for out in output do
       let polyOut ←  polyStrThmTrans out
       for str in polyOut do
         elabLog s!"{str}"
     return none
-  else    
-    let priority := 
+  else
+    let priority :=
         if fullElaborated.isEmpty then elaborated else fullElaborated
     let groupSorted ← groupFuncStrs priority
     let topStr := (groupSorted[0]!)[0]!
@@ -408,12 +408,12 @@ def leanToPrompt (thm: String)(numSim : Nat:= 5)(numKW: Nat := 1)(temp : JsonNum
     let prompt := GPT.makeFlipPrompt thm pairs
     -- elabLog prompt
     let fullJson ← gptQuery prompt 1 temp
-    let outJson := 
+    let outJson :=
       (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
     let out? := (outJson.getArrVal? 0).bind fun js => js.getObjVal? textField
-    let outJson := 
+    let outJson :=
         match (out?) with
-        | Except.error s => Json.str s!"query for translation failed: {s}" 
+        | Except.error s => Json.str s!"query for translation failed: {s}"
         | Except.ok js => js
     return outJson.getStr!
 
@@ -424,12 +424,12 @@ def statementToDoc (thm: String)(numSim : Nat:= 5)(temp : JsonNumber := 0) : Ter
     let prompt := makeFlipStatementsPrompt thm pairs
     -- elabLog prompt
     let fullJson ← openAIQuery prompt 1 temp
-    let outJson := 
+    let outJson :=
       (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
     let out? := (outJson.getArrVal? 0).bind fun js => js.getObjVal? "text"
-    let outJson := 
+    let outJson :=
         match (out?) with
-        | Except.error s => Json.str s!"query for translation failed: {s}" 
+        | Except.error s => Json.str s!"query for translation failed: {s}"
         | Except.ok js => js
     return outJson.getStr!
 
@@ -453,16 +453,16 @@ def egPrompt := do
 
 /-- array of outputs extracted from OpenAI Json -/
 def jsonToExprStrArray (json: Json) : TermElabM (Array String) := do
-  let outArr : Array String ← 
+  let outArr : Array String ←
     match json.getArr? with
-    | Except.ok arr => 
-        let parsedArr : Array String ← 
+    | Except.ok arr =>
+        let parsedArr : Array String ←
           arr.filterMapM <| fun js =>
             match js.getObjVal? "text" with
               | Except.ok jsstr =>
                 match jsstr.getStr? with
                 | Except.ok str => pure (some str)
-                | Except.error e => 
+                | Except.error e =>
                   throwError m!"json string expected but got {js}, error: {e}"
               | Except.error _ =>
                 throwError m!"no text field"
@@ -474,14 +474,14 @@ def jsonToExprStrArray (json: Json) : TermElabM (Array String) := do
 def jsonStringToExprStrArray (jsString: String) : TermElabM (Array String) := do
   try
   let json := Lean.Json.parse  jsString |>.toOption.get!
-  let outArr : Array String ← 
+  let outArr : Array String ←
     match json.getArr? with
-    | Except.ok arr => 
-        let parsedArr : Array String ← 
+    | Except.ok arr =>
+        let parsedArr : Array String ←
           arr.filterMapM <| fun js =>
             match js.getStr? with
             | Except.ok str => pure (some str)
-            | Except.error e => 
+            | Except.error e =>
               throwError m!"json string expected but got {js}, error: {e}"
         pure parsedArr
     | Except.error _ => pure #[jsString]
@@ -501,7 +501,7 @@ def jsonToExpr' (json: Json) : TermElabM Expr := do
 /-- translation from a comment-like syntax to a theorem statement -/
 elab "//-" cb:commentBody  : term => do
   let s := cb.raw.getAtomVal
-  let s := (s.dropRight 2).trim  
+  let s := (s.dropRight 2).trim
   -- querying codex
   let js ← getCodeJson  s
   -- filtering, autocorrection and selection
@@ -512,7 +512,7 @@ elab "//-" cb:commentBody  : term => do
 def uncurriedView(numArgs: Nat)(e: Expr) : MetaM String :=
   match numArgs with
   | 0 => do return " : " ++ (← e.view)
-  | k +1 => 
+  | k +1 =>
     match e with
     | Expr.forallE n t _ bi => do
       let core := s!"{n.eraseMacroScopes} : {← t.view}"
@@ -523,8 +523,8 @@ def uncurriedView(numArgs: Nat)(e: Expr) : MetaM String :=
       | BinderInfo.instImplicit =>
         if (`inst).isPrefixOf n then s!"[{typeString}]"
           else s!"[{core}]"
-      | BinderInfo.default => s!"({core})" 
-      let tail : String ← 
+      | BinderInfo.default => s!"({core})"
+      let tail : String ←
         withLocalDecl `func BinderInfo.default e fun func =>
           withLocalDecl n bi t fun arg => do
             let fx := mkAppN func #[arg]
@@ -551,14 +551,12 @@ def translateViewM (s: String) : TermElabM String := do
     e.view
   | none => do
     let stx ← output.findSomeM? <| fun s => do
-      let exp ←  identMappedFunStx s 
+      let exp ←  identMappedFunStx s
       return exp.toOption
     return stx.getD "False"
 
 
 /-- view of string in core; to be run with Snapshot.runCore
 -/
-def translateViewCore (s: String) : CoreM String := 
+def translateViewCore (s: String) : CoreM String :=
   (translateViewM s).run'.run'
-
-

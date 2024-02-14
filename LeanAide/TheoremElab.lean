@@ -13,7 +13,7 @@ These can be headed with `theorem`, `def`, `example` or nothing and may or may n
 -/
 
 def depsPrompt : IO (Array String) := do
-  let file ← reroutePath <| System.mkFilePath ["data/types.txt"]
+  let file ← reroutePath <| System.mkFilePath ["extra_resources/types.txt"]
   IO.FS.lines file
 
 declare_syntax_cat theorem_head
@@ -29,7 +29,7 @@ syntax (theorem_head)? (ident)? bracketedBinder*  ":" term : theorem_statement
 syntax term : theorem_statement
 
 def thmsPrompt : IO (Array String) := do
-  let file ← reroutePath <| System.mkFilePath ["data/thms.txt"]
+  let file ← reroutePath <| System.mkFilePath ["extra_resources/thms.txt"]
   IO.FS.lines file
 
 /-- check whether a string parses as a theorem -/

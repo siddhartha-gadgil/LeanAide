@@ -27,7 +27,7 @@ structure DeclarationWithDocstring extends Declaration where
 deriving Inhabited, Repr
 
 open Lean in
-/-- Convert a `ConstantInfo` in the environment into a `Declaration`. 
+/-- Convert a `ConstantInfo` in the environment into a `Declaration`.
   This is used to extract `Declaration`s from the environment by their name. -/
 def Declaration.fromConstantInfo (ci : ConstantInfo) (extractValue? := false) : MetaM <| _root_.Declaration := do
   let type ← Format.pretty <$> PrettyPrinter.ppExpr ci.type
@@ -37,8 +37,8 @@ def Declaration.fromConstantInfo (ci : ConstantInfo) (extractValue? := false) : 
     openNamespaces := #[]
     args := "",
     type := type,
-    value := (if extractValue? then 
-      ← ci.value?.mapM <| Functor.map Format.pretty ∘ PrettyPrinter.ppExpr 
+    value := (if extractValue? then
+      ← ci.value?.mapM <| Functor.map Format.pretty ∘ PrettyPrinter.ppExpr
               else none).getD "sorry"
   }
 
@@ -58,11 +58,11 @@ def DeclarationWithDocstring.fromName? (nm : Name) : MetaM <| Option Declaration
 open Lean in
 /-- All declarations from the current environment. -/
 def Declaration.envDecls (moduleNames : Array Name := .empty) (useMain? : Bool := true) : MetaM <| Array _root_.Declaration := do
-  if moduleNames.isEmpty && !useMain? then 
+  if moduleNames.isEmpty && !useMain? then
     return #[]
-  
+
   let env ← getEnv
-  let moduleNames := 
+  let moduleNames :=
     if useMain? then
       moduleNames.push env.mainModule
     else moduleNames
@@ -75,11 +75,11 @@ def Declaration.envDecls (moduleNames : Array Name := .empty) (useMain? : Bool :
 open Lean in
 /-- All declarations with documentation from the current environment. -/
 def DeclarationWithDocstring.envDecls (moduleNames : Array Name := .empty) (useMain? : Bool := true) : MetaM <| Array DeclarationWithDocstring := do
-  if moduleNames.isEmpty && !useMain? then 
+  if moduleNames.isEmpty && !useMain? then
     return #[]
 
   let env ← getEnv
-  let moduleNames := 
+  let moduleNames :=
     if useMain? then
       moduleNames.push env.mainModule
     else moduleNames
@@ -118,17 +118,17 @@ def DeclarationWithDocstring.toString : DeclarationWithDocstring → String
 def DeclarationWithDocstring.printType : DeclarationWithDocstring → String
   | ⟨decl, _⟩ => decl.printType
 
-/-- Display a `DeclarationWithDocstring` as a message where 
+/-- Display a `DeclarationWithDocstring` as a message where
   the user describes the declaration in natural language and the assistant replies with the formal code. -/
 def DeclarationWithDocstring.toMessage (decl : DeclarationWithDocstring) : Array Lean.Json :=
   #[mkMessage "user" decl.docstring, mkMessage "assistant" decl.toDeclaration.toString]
 
 /-- Build a prompt from a list of `DeclarationWithDocstring`s. Note that the declarations are printed in the reverse order. -/
-def buildPrompt (toMessage : DeclarationWithDocstring → Array Lean.Json) 
+def buildPrompt (toMessage : DeclarationWithDocstring → Array Lean.Json)
   (decls : Array DeclarationWithDocstring) (suffix : String) : Array Lean.Json :=
     decls.foldr
     -- this builds the prompt backwards
-    (fun d prompt => (toMessage d) ++ prompt) 
+    (fun d prompt => (toMessage d) ++ prompt)
     #[mkMessage "user" suffix]
 
 /-- Read a `Declaration` from `JSON` format. -/
@@ -183,7 +183,7 @@ syntax "[" term+ "]" : argument
 def argument.toString : TSyntax `argument → String :=
   TSyntax.toString!
 
-def arguments.toString : TSyntaxArray `argument → String := 
+def arguments.toString : TSyntaxArray `argument → String :=
   Array.joinWith " " ∘ .map argument.toString
 
 declare_syntax_cat kind
@@ -228,7 +228,7 @@ syntax (openNamespaces)? decl : declWithNamespaces
 
 def declWithNamespaces.toDeclaration : TSyntax `declWithNamespaces → _root_.Declaration
   | `(declWithNamespaces| $[$ns?:openNamespaces]? $d:decl) =>
-    { decl.toDeclaration d with 
+    { decl.toDeclaration d with
       openNamespaces := ns?.eliminate openNamespaces.toArray .empty }
   | _ => panic! "Expected `declWithNamespaces`"
 
@@ -236,9 +236,9 @@ declare_syntax_cat declWithDocstring
 syntax (openNamespaces)? docComment decl : declWithDocstring
 
 def declWithDocstring.toDeclarationWithDocstring : TSyntax `declWithDocstring → MetaM DeclarationWithDocstring
-  | `(declWithDocstring| $[$ns?:openNamespaces]? $doc:docComment $d:decl) => 
-  do pure <| { 
-    toDeclaration := declWithNamespaces.toDeclaration <| 
+  | `(declWithDocstring| $[$ns?:openNamespaces]? $doc:docComment $d:decl) =>
+  do pure <| {
+    toDeclaration := declWithNamespaces.toDeclaration <|
                   ← `(declWithNamespaces| $[$ns?:openNamespaces]? $d:decl),
     docstring := ← getDocStringText doc }
   | _ => panic! "Expected `declWithDocstring`"
@@ -267,16 +267,16 @@ def Declaration.typeCheck (env : MetaM Environment := getEnv) (decl : _root_.Dec
   let stx? := Lean.Parser.runParserCategory (← env) `term type
   match stx? with
     | .error e => return .error e
-    | .ok stx => try 
-      let _ := Term.withAutoBoundImplicit <| 
-                Term.withoutErrToSorry <| 
+    | .ok stx => try
+      let _ := Term.withAutoBoundImplicit <|
+                Term.withoutErrToSorry <|
                   elabType stx
       return .ok ()
     catch e => return .error <| ← e.toMessageData.toString
-      
+
 /-- Perform the type-checking of a `Declaration` with a given list of imports. -/
 def Declaration.typeCheckWithImports (ns : List Lean.Name) (decl : Declaration) := do
-  let env := liftM <| Lean.importModules (ns.map ({module := ·})) {}
+  let env := liftM <| Lean.importModules (ns.toArray.map (fun ns => {module := ns})) {}
   decl.typeCheck env
 
 /-- Check whether a `DeclarationWithDocstring` represents a type-correct `Lean` declaration. -/

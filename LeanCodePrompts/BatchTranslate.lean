@@ -171,7 +171,7 @@ def elabThmSplit(start? size?: Option Nat := none) : TermElabM ((Array String) √
   let mut succ: Array String := Array.empty
   let mut fail: Array String := Array.empty
   let mut count := start?.getD 0
-  let succFile := System.mkFilePath ["data/elab_thms.txt"]
+  let succFile := System.mkFilePath ["extra_resources", "elab_thms.txt"]
   let h ‚Üê IO.FS.Handle.mk succFile IO.FS.Mode.append
   IO.println s!"total: {deps.size}"
   for thm in deps do

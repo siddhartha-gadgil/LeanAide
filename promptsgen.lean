@@ -45,7 +45,7 @@ def forbiddenPrefixes : Array Name :=
 
 def blacklistFiles := [`StatementAutoformalisation.Declaration]
 
-def outputFile : System.FilePath := "data/mathlib4-prompts.json"
+def outputFile : System.FilePath := "extra_resources/mathlib4-prompts.json"
 
 open Lean in
 def generatePrompts : MetaM Unit := do

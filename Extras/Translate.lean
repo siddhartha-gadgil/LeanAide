@@ -13,10 +13,10 @@ import LeanCodePrompts.Translate
 open Lean Meta Elab Parser Command
 open Std.Tactic
 
-def fileName := "data/mathlib4-prompts.json"
+def fileName := "resources/mathlib4-prompts.json"
 
-def lean4mode := decide (fileName ∈ ["data/mathlib4-prompts.json",
-        "data/mathlib4-thms.json"])
+def lean4mode := decide (fileName ∈ ["resources/mathlib4-prompts.json",
+        "resources/mathlib4-thms.json"])
 
 def docField :=
         if lean4mode then "docString" else "doc_string"
@@ -32,8 +32,8 @@ def sentenceSimPairs
   let json := Lean.Json.parse  s |>.toOption.get!
   return do
     (← json.getArr?).mapM <| fun j => do
-      let lean4mode := fileName ∈ ["data/mathlib4-prompts.json",
-        "data/mathlib4-thms.json"]
+      let lean4mode := fileName ∈ ["resources/mathlib4-prompts.json",
+        "resources/mathlib4-thms.json"]
       let docstring ← j.getObjValAs? String docField
       let typeField :=
         if lean4mode then "type"

@@ -3,9 +3,9 @@ import LeanAide.FirstTacticData
 import LeanCodePrompts.Translate
 import Lean
 
-open Lean Meta Elab Tactic Parser 
+open Lean Meta Elab Tactic Parser
 
-initialize cacheTacticJson : IO.Ref (HashMap String Json) ← IO.mkRef (HashMap.empty) 
+initialize cacheTacticJson : IO.Ref (HashMap String Json) ← IO.mkRef (HashMap.empty)
 
 def getTacticString : TacticM String := do
   let s ← saveState
@@ -15,7 +15,7 @@ def getTacticString : TacticM String := do
   let mut statement := ""
   for decl in decls do
     match decl with
-    | some <| LocalDecl.ldecl _ _ n t .. => 
+    | some <| LocalDecl.ldecl _ _ n t .. =>
       statement := statement ++ s!"({n.eraseMacroScopes} : {← t.view}) "
       pure ()
     | some <| LocalDecl.cdecl _ _ n t bi _ => do
@@ -27,8 +27,8 @@ def getTacticString : TacticM String := do
       | BinderInfo.instImplicit =>
         if (`inst).isPrefixOf n then s!"[{typeString}]"
           else s!"[{core}]"
-      | BinderInfo.default => s!"({core})" 
-      statement := statement ++ argString ++ " " 
+      | BinderInfo.default => s!"({core})"
+      statement := statement ++ argString ++ " "
       pure ()
     | none => pure ()
   statement := statement ++ ": " ++ (←  target.view)
@@ -42,7 +42,7 @@ elab "name_inacessibles" : tactic => do
   let mut statement := "rename_i"
   for decl in decls do
     match decl with
-    | some <| LocalDecl.ldecl _ _ n .. => 
+    | some <| LocalDecl.ldecl _ _ n .. =>
       if n != n.eraseMacroScopes then
         statement := statement ++ s!" {n.eraseMacroScopes}"
       pure ()
@@ -57,15 +57,15 @@ elab "name_inacessibles" : tactic => do
       | Except.ok tac => do
         evalTactic tac
       | Except.error e => do
-        throwError e     
+        throwError e
 
-elab "show_goal" : tactic => 
-  withMainContext do  
+elab "show_goal" : tactic =>
+  withMainContext do
     let view ← getTacticString
     logInfo view
     return ()
 
-def silly {α  : Type}(n m : Nat)[DecidableEq α] : n + m = n + m := by 
+def silly {α  : Type}(n m : Nat)[DecidableEq α] : n + m = n + m := by
     show_goal
     let a  := n
     let _ : a = a := rfl
@@ -75,24 +75,24 @@ def silly {α  : Type}(n m : Nat)[DecidableEq α] : n + m = n + m := by
 
 def silly' : (n m : Nat)  →  n + m = n + m := by
     intros
-    show_goal  
+    show_goal
     rfl
     done
 
 example : (n m : Nat)  →  n + m = n + m := by
     intros
-    name_inacessibles  
+    name_inacessibles
     rfl
     done
 
 structure TacticStateProxy where
   binders: Array <| Name ×  BinderInfo
   letData : Array <| Name × Expr × Expr
-  target : Expr 
+  target : Expr
 
-def getTacticStateProxy : TacticM <| Option TacticStateProxy := 
+def getTacticStateProxy : TacticM <| Option TacticStateProxy :=
   withoutModifyingState do
-  try 
+  try
     let target ← getMainTarget
     let lctx ←  getLCtx
     let decls := lctx.decls
@@ -101,7 +101,7 @@ def getTacticStateProxy : TacticM <| Option TacticStateProxy :=
     let mut fvars : Array Expr := #[]
     for decl in decls do
       match decl with
-      | some <| LocalDecl.ldecl _ _ n t b .. => 
+      | some <| LocalDecl.ldecl _ _ n t b .. =>
         let t ← mkForallFVars fvars t
         let b ← mkLambdaFVars fvars b
         letData := letData.push (n, t, b)
@@ -117,12 +117,12 @@ def getTacticStateProxy : TacticM <| Option TacticStateProxy :=
 
 #check List.allM
 
-def equalStates (s₁ s₂ : TacticStateProxy) : TacticM Bool := 
+def equalStates (s₁ s₂ : TacticStateProxy) : TacticM Bool :=
    withMainContext do
-    return s₁.binders == s₂.binders 
-            && s₁.letData.size == s₂.letData.size && 
-            (← isDefEq s₁.target s₂.target) && 
-            (← (List.range s₁.letData.size).allM (fun i => 
+    return s₁.binders == s₂.binders
+            && s₁.letData.size == s₂.letData.size &&
+            (← isDefEq s₁.target s₂.target) &&
+            (← (List.range s₁.letData.size).allM (fun i =>
               let (n₁, t₁, b₁) := s₁.letData.get! i
               let (n₂, t₂, b₂) := s₂.letData.get! i
               return n₁ == n₂ && (← isDefEq t₁ t₂ <&&> isDefEq b₁ b₂)))
@@ -141,22 +141,22 @@ def firstEffectiveTactic (tacStrings: List String)(warnOnly: Bool := Bool.true) 
       let tac? := runParserCategory env `tactic tacString
       match tac? with
       | Except.ok tac => do
-          Term.withoutErrToSorry do 
+          Term.withoutErrToSorry do
             evalTactic tac
           let gs ← getUnsolvedGoals
           if gs.isEmpty then
               logInfo m!"tactic `{tacString}` was effective"
-              return 
+              return
           else
-            let check : Bool ← 
-            try 
-              let s₂? ← getTacticStateProxy  
+            let check : Bool ←
+            try
+              let s₂? ← getTacticStateProxy
               match s₁?, s₂? with
-              | some s₁, some s₂ => equalStates s₁ s₂          
+              | some s₁, some s₂ => equalStates s₁ s₂
               | _,_ => pure Bool.true
             catch _ =>
-              -- logWarning 
-                -- m!"Failed to check state after {tacString}; error : {e.toMessageData}" 
+              -- logWarning
+                -- m!"Failed to check state after {tacString}; error : {e.toMessageData}"
               pure Bool.true
             if check then
               s.restore
@@ -171,17 +171,17 @@ def firstEffectiveTactic (tacStrings: List String)(warnOnly: Bool := Bool.true) 
                 s.restore
               else
                 logInfo m!"tactic `{tacString}` was effective"
-                return 
-      | Except.error _ => 
+                return
+      | Except.error _ =>
         pure ()
     catch _ =>
       s.restore
   unless warnOnly do
     throwError m!"No effective tactic found for {goal} in {tacStrings}"
-  logWarning "No tactic in the list was effective" 
+  logWarning "No tactic in the list was effective"
 
- 
-elab "first_effective_tactic" : tactic => 
+
+elab "first_effective_tactic" : tactic =>
   withMainContext do
     firstEffectiveTactic ["unparsable", "exact blah", "intros", "rfl"]
 
@@ -191,7 +191,7 @@ def silly'' (n m : Nat)  : n + m = n + m := by
     first_effective_tactic
 
 def silly''' : (n m : Nat)  →  n + m = n + m := by
-    first_effective_tactic 
+    first_effective_tactic
     rfl
 
 def silly'''' : (n m : Nat)  →  n + m = n + m := by
@@ -200,47 +200,47 @@ def silly'''' : (n m : Nat)  →  n + m = n + m := by
 def getTacticPrompts(s: String)(numSim : Nat)
    : TermElabM (Array String) := do
       let jsData := Json.mkObj [
-        ("filename", "data/lean4-thms.json"),
+        ("filename", "extra_resources/lean4-thms.json"),
         ("field", "core-prompt"),
         ("core-prompt", s),
         ("n", numSim),
         ("model_name", "all-mpnet-base-v2")
       ]
-      let simJsonOut ←   
-        IO.Process.output {cmd:= "curl", args:= 
+      let simJsonOut ←
+        IO.Process.output {cmd:= "curl", args:=
           #["-X", "POST", "-H", "Content-type: application/json", "-d", jsData.pretty, s!"{← leanAideIP}/nearest_prompts"]}
       if simJsonOut.exitCode > 0 then
         throwError m!"Failed to get prompts from server: {simJsonOut.stderr}"
       else
-        let json := 
-          Lean.Json.parse  simJsonOut.stdout |>.toOption.get! 
+        let json :=
+          Lean.Json.parse  simJsonOut.stdout |>.toOption.get!
         match json.getArr? with
-        | Except.ok arr => 
+        | Except.ok arr =>
           let mut prompts := #[]
           for j in arr do
             match j.getObjVal? "tactic-prompt" with
             | Except.ok s =>
               match s.getStr? with
-              | Except.ok s => 
+              | Except.ok s =>
                 prompts := prompts.push s
-              | Except.error e => 
+              | Except.error e =>
                 throwError m!"Failed to parse json {j}; error: {e}"
             | Except.error e =>
               throwError m!"Failed to parse json {j}; error: {e}"
           return prompts
-        | Except.error e => 
+        | Except.error e =>
             throwError m!"Failed to parse json: {e}"
 
 
 
 def fourSquaresPrompt := ": ∀ p : Nat, Prime p → (p % 4 = 1) → ∃ a b : Nat, a ^ 2 + b ^ 2 = p"
 
--- #eval getTacticPrompts fourSquaresPrompt 20 
+-- #eval getTacticPrompts fourSquaresPrompt 20
 
 def makeTacticPrompt (n: Nat)  : TacticM String := do
   let core ← getTacticString
   let prompts ← getTacticPrompts core n
-  let prompt := prompts.foldr (fun  p acc => 
+  let prompt := prompts.foldr (fun  p acc =>
 s!"{p}
 
 {acc}"
@@ -251,23 +251,23 @@ theorem {core} := by "
 def tacticList : TacticM <| List String := do
   let core ← getTacticString
   let prompts ← getTacticPrompts core 5
-  let promptPairs := prompts.map (fun p => 
+  let promptPairs := prompts.map (fun p =>
     let arr := p.splitOn ":= by"
     (arr.get! 0++ ":= by", arr.get! 1))
   let prompt := GPT.makePrompt core promptPairs
-  -- let prompt ← makeTacticPrompt 20 
+  -- let prompt ← makeTacticPrompt 20
   let cache ← cacheTacticJson.get
   let fullJson ←
     match cache.find? prompt.pretty with
     | some json => pure json
-    | none =>  
+    | none =>
       let res ← gptQuery prompt 5 ⟨8, 1⟩ #[";", "sorry", "\n"]
       cacheTacticJson.set <| cache.insert prompt.pretty res
       pure res
-  let outJson := 
+  let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
   let arr ← GPT.jsonToExprStrArray outJson
-  let arr := arr.map (fun s => 
+  let arr := arr.map (fun s =>
       if s.endsWith "<" then s.dropRight 1 |>.trim else s.trim)
   return arr.toList.eraseDups
 
@@ -287,17 +287,17 @@ elab "aide!" : tactic =>
     let tacStrings := tacStrings.filter (fun s => s != "sorry" && s != "admit")
     firstEffectiveTactic tacStrings Bool.false
 
-macro "aide" : tactic => 
+macro "aide" : tactic =>
   `(tactic| (aide? ; save))
 
 
-elab "show_tactic_prompt" : tactic => 
-  withMainContext do  
+elab "show_tactic_prompt" : tactic =>
+  withMainContext do
     let view ← makeTacticPrompt 20
     logInfo view
     return ()
 
-elab "lookahead" tac:tactic : tactic => 
+elab "lookahead" tac:tactic : tactic =>
   withMainContext do
     let s ← saveState
     try
@@ -310,9 +310,9 @@ elab "lookahead" tac:tactic : tactic =>
 
 
 def lookaheadTactics (ss: List String) : List String :=
-    ss.map (fun s => s!"{s} ; done") ++ 
+    ss.map (fun s => s!"{s} ; done") ++
     ss.map (fun s => s!"({s} <;> (lookahead aide!)) ; done") ++
-    ss.map (fun s => s!"{s} <;> (lookahead aide!)") ++ 
+    ss.map (fun s => s!"{s} <;> (lookahead aide!)") ++
     ss
 
 example : 1 = 1 := by
