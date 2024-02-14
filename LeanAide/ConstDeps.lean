@@ -304,7 +304,7 @@ def getWriteCore : CoreM ((Array DefnTypes) × (HashMap Name String)) :=
 
 end DefnTypes
 
-def writeDocsM : MetaM Unit := do
+def writeDocsM : MetaM <| Json := do
   IO.println "Getting defn types"
   let dfns ← DefnTypes.getM
   IO.println s!"Total: {dfns.size}"
@@ -312,8 +312,9 @@ def writeDocsM : MetaM Unit := do
   let dfns := dfns.filter (fun d => d.docString?.isSome)
   IO.println s!"Total: {dfns.size}"
   DefnTypes.writeM dfns "docs.jsonl"
+  return Json.arr <| dfns.map toJson
 
-def writeDocsCore : CoreM Unit :=
+def writeDocsCore : CoreM <| Json :=
     (writeDocsM).run'
 
 def getPropMap : MetaM <| HashMap Name String := do
