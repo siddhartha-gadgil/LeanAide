@@ -26,6 +26,7 @@ def egFmt (name: Name) : MetaM Format := do
 
 #check Lean.Parser.Command.optDeclSig
 #check bracketedBinderF
+#check Term.depArrow
 
 #eval egFmt `three
 

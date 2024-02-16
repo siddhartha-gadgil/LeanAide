@@ -143,7 +143,14 @@ def foldContext (type: Syntax.Term) : List Syntax → CoreM (Syntax.Term)
         IO.println s!"foldContext: {x} could not be folded"
         return type
 
-
+partial def arrowHeads (type: Syntax.Term)
+    (accum: Array ContextTerm := #[]) :
+        CoreM <| (Array Syntax) × Syntax.Term := do
+    match type with
+    | `(depArrow|$bb → $body) => do
+        let accum := accum.push bb
+        arrowHeads body accum
+    | _ => return (accum, type)
 
 def declToString : Syntax → CoreM String := fun d => do
     match d with
@@ -326,84 +333,6 @@ def roundTripCtx (s: String) : CoreM String := do
 -- #eval roundTripCtx "{_ : Nat}"
 
 -- #check mkFreshUserName
-def egName : MetaM Name :=
-    withLocalDecl `n BinderInfo.default (mkConst ``Nat) fun _ => do
-    let nn := (← getLCtx).getUnusedName `n
-    return nn
-#eval egName
-
-open Tactic Term
-def introInContext (ctx : List String)(term: String) : TacticM Unit :=
-    withMainContext do
-    for c in ctx do
-        let stx? ← parseContext c
-        match stx? with
-        | Except.error e => throwError s!"Error {e} parsing declaration {c}"
-        | Except.ok stx =>
-         unless ← declInLctx stx do
-            throwError s!"Declaration {c} not in local context"
-    let term? :=
-     runParserCategory (←getEnv) `term term
-    match term? with
-    | Except.error e =>
-        throwError s!"Error {e} parsing term {term}"
-    | Except.ok term =>
-        let term' : Syntax.Term := ⟨term⟩
-        withoutErrToSorry do
-        withSynthesize do
-        try
-            let term  ←  Term.elabTerm term' none
-            let type ← inferType term
-            let name := `θ
-            let lctx ← getLCtx
-            let name := lctx.getUnusedName name
-            let relGoal ←  (←getMainGoal).define name type term
-            replaceMainGoal [relGoal]
-        catch e =>
-            throwError s!"Error {← e.toMessageData.toString} elaborating term {term}"
-    pure ()
-
-elab "intro_in"  ctx:strLit* "!!" t:strLit  : tactic => do
-    let dcls := ctx.toList.map (fun s => s.getString)
-    introInContext dcls t.getString
-
-example (n m : Nat) : 1 = 1 := by
-    let θ := 2 -- name to avoid
-    intro_in "(n : Nat)" "{m : Nat}" !! "n + 1 + m"
-    rfl
-
-def usingRelContext (ctx : List String)(type: String) : TacticM Unit :=
-    withMainContext do
-    let mut decls : Array Syntax := #[]
-    for c in ctx do
-        let stx? ← parseContext c
-        match stx? with
-        | Except.error e => throwError s!"Error {e} parsing declaration {c}"
-        | Except.ok stx =>
-         unless ← declInLctx stx do
-            decls := decls.push stx
-    let type? :=
-     runParserCategory (←getEnv) `term type
-    match type? with
-    | Except.error e =>
-        throwError s!"Error {e} parsing type {type}"
-    | Except.ok type =>
-        let type' : Syntax.Term := ⟨type⟩
-        let type ←  runInRelForallCtx decls.toList <|
-            withoutErrToSorry do
-            withSynthesize do
-            Term.elabType type'
-        usingM type
-    pure ()
-
-elab "using_in"  ctx:strLit* "!!" t:strLit  : tactic => do
-    let dcls := ctx.toList.map (fun s => s.getString)
-    usingRelContext dcls t.getString
-
-example (n: Nat) : 1 = 1 := by
-    using_in "(m : Nat)" "(n: Nat)" !! "n + m = m + n"
-    · intro m ; apply Nat.add_comm
-    · intros ; rfl
 
 instance : ToJsonM (ContextSyn) := ⟨fun (ds: ContextSyn) => do
 let s : Array Json ← ds.mapM fun d => do
