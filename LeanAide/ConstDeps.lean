@@ -231,6 +231,7 @@ structure DefnTypes where
     type: String
     isProp : Bool
     docString? : Option String
+    value : Option String
     deriving Repr, ToJson, FromJson
 
 def propMapFromDefns (dfns : Array DefnTypes) : MetaM <| HashMap Name String := do
@@ -267,8 +268,13 @@ def getM : MetaM <| Array DefnTypes := do
         let depth := type.approxDepth
         unless depth > 60 do
           let fmt ← Meta.ppExpr type
+          let isProp ← isProof term
+          let value :=
+            if isProp
+              then none
+              else some <| (← Meta.ppExpr term).pretty
           dfns := dfns.push
-            ⟨name, fmt.pretty, ← isProof term, doc?⟩
+            ⟨name, fmt.pretty, isProp, doc?, value⟩
     return dfns
 
 def writeM (dfns : Array DefnTypes)(name: String := "all.json") : MetaM Unit := do
@@ -347,7 +353,8 @@ def getPropMapStr : MetaM <| HashMap String String := do
       if !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && type.approxDepth < 60 then
         let fmt ← ppExpr type
         let isProp ← isProof value
-        let dfn : DefnTypes := ⟨name, fmt.pretty, isProp, doc?⟩
+        let value? := if isProp then none else some <| (← ppExpr value).pretty
+        let dfn : DefnTypes := ⟨name, fmt.pretty, isProp, doc?, value?⟩
         dfs := dfs.push dfn
         if count % 1000 = 0 then
           IO.println s!"count: {count}"

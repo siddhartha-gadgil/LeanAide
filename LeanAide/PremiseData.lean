@@ -82,78 +82,143 @@ def termToString : Syntax.Term → CoreM String :=
 instance : ToJsonM Syntax.Term := ⟨fun (d: Syntax.Term) ↦ do
     termToString d⟩
 
+abbrev ContextTerm := TSyntax [`ident, `Lean.Parser.Term.hole, `Lean.Parser.Term.bracketedBinder]
+
 abbrev ContextSyn := Array Syntax
 
 open Lean.Parser.Term
+
+def getBinders : List Syntax → MetaM (Option (List ContextTerm))
+| [] => none
+| x :: ys => do
+    let tail? ←  getBinders ys
+    match tail? with
+    | none => return none
+    | some t => match x with
+        | `(bracketedBinderF|($n:ident : $type:term)) => do
+            let s ← `(bracketedBinderF|($n:ident : $type:term))
+            return some (s :: t)
+        | `(bracketedBinderF|{$n:ident : $type:term}) => do
+            let s ← `(bracketedBinderF|{$n:ident : $type:term})
+            return some (s :: t)
+        | `(bracketedBinderF|(_ : $type:term)) => do
+            let s ← `(bracketedBinderF|(_ : $type:term))
+            return some (s :: t)
+        | `(bracketedBinderF|{_ : $type:term}) => do
+            let s ← `(bracketedBinderF|{_ : $type:term})
+            return some (s :: t)
+        | `(bracketedBinderF|[$n:ident : $type:term]) => do
+            let s ← `(bracketedBinderF|[$n:ident : $type:term])
+            return some (s :: t)
+        | `(bracketedBinderF|[$type:term]) => do
+            let s ← `(bracketedBinderF|[$type:term])
+            return some (s :: t)
+        | `(bracketedBinderF|⦃$n:ident : $type:term⦄) => do
+            let s ← `(bracketedBinderF|⦃$n:ident : $type:term⦄)
+            return some (s :: t)
+        | _ => none
+
+def foldContext (type: Syntax.Term) : List Syntax → CoreM (Syntax.Term)
+| [] => return type
+| x :: ys => do
+    let tailType ← foldContext type ys
+    match x with
+    | `(letDecl|$n:ident : $type := $val) => do
+        `(let $n : $type := $val; $tailType)
+    | `(bracketedBinderF|($n:ident : $type:term)) => do
+        `(($n : $type) → $tailType)
+    | `(bracketedBinderF|{$n:ident : $type:term}) => do
+        `({$n : $type} → $tailType)
+    | `(bracketedBinderF|(_ : $type:term)) => do
+        `((_ : $type) → $tailType)
+    | `(bracketedBinderF|{_ : $type:term}) => do
+        `({_ : $type} → $tailType)
+    | `(bracketedBinderF|[$n:ident : $type:term]) => do
+        `([$n : $type] → $tailType)
+    | `(bracketedBinderF|[$type:term]) => do
+        `([$type] → $tailType)
+    | `(bracketedBinderF|⦃$n:ident : $type:term⦄) => do
+        `(($n : $type) → $tailType)
+    | _ =>
+        IO.println s!"foldContext: {x} could not be folded"
+        return type
+
+
+
 def declToString : Syntax → CoreM String := fun d => do
     match d with
-    | `(letDecl|$n:ident : $type := $val) =>
-        let type := (← ppTerm type).pretty.trim
-        let val := (← ppTerm val).pretty.trim
-        return s!"{n.getId.toString} : {type} := {val}"
-    | `(funBinder|($n:ident : $type:term)) =>
-        let type := (← ppTerm type).pretty.trim
-        return s!"({n.getId.toString} : {type})"
-    | `(funImplicitBinder|{$n:ident : $type:term}) =>
-        let type := (← ppTerm type).pretty.trim
-        return "{" ++ s!"{n.getId.toString} : {type}" ++ "}"
-    | `(instBinder|[$n:ident : $type:term]) =>
-        let type := (← ppTerm type).pretty.trim
-        return s!"[{n.getId.toString} : {type}]"
-    | `(instBinder|[$type:term]) =>
-        let type := (← ppTerm type).pretty.trim
-        return s!"[{type}]"
-    | `(funStrictImplicitBinder|⦃$n:ident : $type:term⦄) =>
-        let type := (← ppTerm type).pretty.trim
-        return s!"⦃{n.getId.toString} : {type}⦄"
-    | `(funBinder|(_ : $type:term)) =>
-        let type := (← ppTerm type).pretty.trim
-        return s!"(_ : {type})"
-    | `(funImplicitBinder|{_ : $type:term}) =>
-        let type := (← ppTerm type).pretty.trim
-        return "{" ++ s!"_ : {type}" ++ "}"
-    -- | `(funStrictImplicitBinder|⦃_ : $type:term⦄) =>
+    | `(letDecl|$_:ident : $_ := $_) =>
+        let fmt ← ppCategory `letDecl d
+        return fmt.pretty.trim
+        -- let type := (← ppTerm type).pretty.trim
+        -- let val := (← ppTerm val).pretty.trim
+        -- -- return s!"{n.getId.toString} : {type} := {val}"
+    | _ =>
+        let fmt ← ppCategory `bracketedBinderF d
+        return fmt.pretty.trim
+    -- | `(funBinder|($n:ident : $type:term)) =>
     --     let type := (← ppTerm type).pretty.trim
-    --     return s!"⦃_ : {type}⦄"
-    | stx =>
-        let fallback := stx.reprint.get!
-        IO.println s!"declToString fallback to: {fallback} for {stx}"
-        return fallback
+    --     return s!"({n.getId.toString} : {type})"
+    -- | `(funImplicitBinder|{$n:ident : $type:term}) =>
+    --     let type := (← ppTerm type).pretty.trim
+    --     return "{" ++ s!"{n.getId.toString} : {type}" ++ "}"
+    -- | `(instBinder|[$n:ident : $type:term]) =>
+    --     let type := (← ppTerm type).pretty.trim
+    --     return s!"[{n.getId.toString} : {type}]"
+    -- | `(instBinder|[$type:term]) =>
+    --     let type := (← ppTerm type).pretty.trim
+    --     return s!"[{type}]"
+    -- | `(funStrictImplicitBinder|⦃$n:ident : $type:term⦄) =>
+    --     let type := (← ppTerm type).pretty.trim
+    --     return s!"⦃{n.getId.toString} : {type}⦄"
+    -- | `(funBinder|(_ : $type:term)) =>
+    --     let type := (← ppTerm type).pretty.trim
+    --     return s!"(_ : {type})"
+    -- | `(funImplicitBinder|{_ : $type:term}) =>
+    --     let type := (← ppTerm type).pretty.trim
+    --     return "{" ++ s!"_ : {type}" ++ "}"
+    -- -- | `(funStrictImplicitBinder|⦃_ : $type:term⦄) =>
+    -- --     let type := (← ppTerm type).pretty.trim
+    -- --     return s!"⦃_ : {type}⦄"
+    -- | stx =>
+    --     let fallback := stx.reprint.get!
+    --     IO.println s!"declToString fallback to: {fallback} for {stx}"
+    --     return fallback
 
-def declToThmHead : Syntax → CoreM String := fun d => do
-    match d with
-    | `(letDecl|$n:ident : $type := $val) =>
-        let type := (← ppTerm type).pretty.trim
-        let val := (← ppTerm val).pretty.trim
-        return s!"let {n.getId.toString} : {type} := {val}; "
-    | `(funBinder|($n:ident : $type:term)) =>
-        let type := (← ppTerm type).pretty.trim
-        return s!"({n.getId.toString} : {type}) → "
-    | `(funImplicitBinder|{$n:ident : $type:term}) =>
-        let type := (← ppTerm type).pretty.trim
-        return "{" ++ s!"{n.getId.toString} : {type}" ++ "} → "
-    | `(instBinder|[$n:ident : $type:term]) =>
-        let type := (← ppTerm type).pretty.trim
-        return s!"[{n.getId.toString} : {type}] → "
-    | `(instBinder|[$type:term]) =>
-        let type := (← ppTerm type).pretty.trim
-        return s!"[{type}] → "
-    | `(funStrictImplicitBinder|⦃$n:ident : $type:term⦄) =>
-        let type := (← ppTerm type).pretty.trim
-        return s!"⦃{n.getId.toString} : {type}⦄ → "
-    | `(funBinder|(_ : $type:term)) =>
-        let type := (← ppTerm type).pretty.trim
-        return s!"(_ : {type}) → "
-    | `(funImplicitBinder|{_ : $type:term}) =>
-        let type := (← ppTerm type).pretty.trim
-        return "{" ++ s!"_ : {type}" ++ "} → "
-    -- | `(funStrictImplicitBinder|⦃_ : $type:term⦄) =>
-    --     let type := (← ppTerm type).pretty.trim
-    --     return s!"⦃_ : {type}⦄ → "
-    | stx =>
-        let fallback := stx.reprint.get! ++ " → "
-        IO.println s!"declToString fallback to: {fallback} for {stx}"
-        return fallback
+-- def declToThmHead : Syntax → CoreM String := fun d => do
+--     match d with
+--     | `(letDecl|$n:ident : $type := $val) =>
+--         let type := (← ppTerm type).pretty.trim
+--         let val := (← ppTerm val).pretty.trim
+--         return s!"let {n.getId.toString} : {type} := {val}; "
+--     | `(funBinder|($n:ident : $type:term)) =>
+--         let type := (← ppTerm type).pretty.trim
+--         return s!"({n.getId.toString} : {type}) → "
+--     | `(funImplicitBinder|{$n:ident : $type:term}) =>
+--         let type := (← ppTerm type).pretty.trim
+--         return "{" ++ s!"{n.getId.toString} : {type}" ++ "} → "
+--     | `(instBinder|[$n:ident : $type:term]) =>
+--         let type := (← ppTerm type).pretty.trim
+--         return s!"[{n.getId.toString} : {type}] → "
+--     | `(instBinder|[$type:term]) =>
+--         let type := (← ppTerm type).pretty.trim
+--         return s!"[{type}] → "
+--     | `(funStrictImplicitBinder|⦃$n:ident : $type:term⦄) =>
+--         let type := (← ppTerm type).pretty.trim
+--         return s!"⦃{n.getId.toString} : {type}⦄ → "
+--     | `(funBinder|(_ : $type:term)) =>
+--         let type := (← ppTerm type).pretty.trim
+--         return s!"(_ : {type}) → "
+--     | `(funImplicitBinder|{_ : $type:term}) =>
+--         let type := (← ppTerm type).pretty.trim
+--         return "{" ++ s!"_ : {type}" ++ "} → "
+--     -- | `(funStrictImplicitBinder|⦃_ : $type:term⦄) =>
+--     --     let type := (← ppTerm type).pretty.trim
+--     --     return s!"⦃_ : {type}⦄ → "
+--     | stx =>
+--         let fallback := stx.reprint.get! ++ " → "
+--         IO.println s!"declToString fallback to: {fallback} for {stx}"
+--         return fallback
 
 
 def declInLctx  (d :Syntax) : TermElabM Bool := do
@@ -249,18 +314,18 @@ partial def runInRelForallCtx (decls: List Syntax)(c: TermElabM Expr) : TermElab
 def parseContext (s: String) : CoreM <| Except String Syntax := do
     return parseGroup (← getEnv) s [letDecl, funBinder, funImplicitBinder, funStrictImplicitBinder, instBinder]
 
-#eval parseContext "x : Nat := 0"
-#eval parseContext "(x : Nat)"
+-- #eval parseContext "x : Nat := 0"
+-- #eval parseContext "(x : Nat)"
 
 def roundTripCtx (s: String) : CoreM String := do
     let stx? ← parseContext s
     declToString stx?.toOption.get!
 
-#eval roundTripCtx "x : Nat := 0"
-#eval roundTripCtx "(x : Nat)"
-#eval roundTripCtx "{_ : Nat}"
+-- #eval roundTripCtx "x : Nat := 0"
+-- #eval roundTripCtx "(x : Nat)"
+-- #eval roundTripCtx "{_ : Nat}"
 
-#check mkFreshUserName
+-- #check mkFreshUserName
 def egName : MetaM Name :=
     withLocalDecl `n BinderInfo.default (mkConst ``Nat) fun _ => do
     let nn := (← getLCtx).getUnusedName `n
@@ -444,9 +509,8 @@ def PremiseData.writeFull (data: PremiseData)(group: String)(handles: HashMap (S
                 | some h => pure h
                 | none =>
                     IO.throwServerError "No handle for 'all' in full"
-    if l.length < 9000000 then
-                        h.putStrLn  l
-                        gh.putStrLn l
+    h.putStrLn  l
+    gh.putStrLn l
 
 structure CoreTermData where
     context : Array String
@@ -461,11 +525,11 @@ structure CorePropData where
 deriving Repr, ToJson, FromJson, BEq
 
 def CorePropData.ofPropProof (propPf : PropProofData) : CoreM CorePropData := do
-    let heads ←  propPf.context.mapM declToThmHead
     let type ← termToString propPf.prop
+    let thm ← foldContext propPf.prop propPf.context.toList
     return ⟨← propPf.context.mapM declToString,
     type,
-    heads.foldr (fun s c => s ++ c) type⟩
+    ← termToString thm⟩
 
 structure CorePremiseDataDirect where
     context : Array String
@@ -479,12 +543,12 @@ structure CorePremiseDataDirect where
 deriving Repr, ToJson, FromJson, BEq
 
 def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CoreM CorePremiseDataDirect := do
-    let heads ←  pd.context.mapM declToThmHead
+    let thm ← foldContext pd.type pd.context.toList
     let type ← termToString pd.type
     return ⟨← pd.context.mapM declToString,
         pd.name?,
         type,
-        heads.foldr (fun s c => s ++ c) type,
+        ← termToString thm,
         ← termToString  pd.typeGroup,
         pd.ids.map (fun (n, _) => shrink n),
         (← pd.terms.toList.mapM (fun td => do
@@ -541,9 +605,8 @@ def write (data: CorePremiseData)(group: String)(handles: HashMap (String × Str
                 | some h => pure h
                 | none =>
                     IO.throwServerError "No handle for 'all' in core"
-    if l.length < 9000000 then
-                        h.putStrLn  l
-                        gh.putStrLn l
+    h.putStrLn  l
+    gh.putStrLn l
 
 end CorePremiseData
 
@@ -709,21 +772,23 @@ structure DefData where
 structure IdentData where
     context : Array String
     type : String
+    thm: String
     ids : Array String
     deriving Inhabited, ToJson, FromJson
 
 structure IdentPair where
     context : Array String
     type : String
+    thm: String
     id : String
 deriving Inhabited, ToJson
 
 namespace IdentData
 
 def write (data: IdentData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
-    let thm := data.context.foldr (fun s c => s ++ " " ++ c) s!" : {data.type}"
+    let thm := data.thm
     let js := Json.mkObj [("theorem", thm), ("identifiers", toJson data.ids)]
-    let l := js.pretty 10000000
+    let l := js.compress
     let gh ← match handles.find? ("identifiers", group) with
                 | some h => pure h
                 | none =>
@@ -732,15 +797,14 @@ def write (data: IdentData)(group: String)(handles: HashMap (String × String) I
                 | some h => pure h
                 | none =>
                     IO.throwServerError "No handle for 'all' in indentifiers"
-    if l.length < 9000000 then
-                        h.putStrLn  l
-                        gh.putStrLn l
+    h.putStrLn  l
+    gh.putStrLn l
 
 def writeString (data: IdentData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
-    let thm := data.context.foldr (fun s c => s ++ c) s!" : {data.type}"
+    let thm := data.thm
     let idString : String := data.ids.foldl (fun s i => s ++ i ++ "; ") ""
     let js := Json.mkObj [("theorem", thm), ("identifiers", idString)]
-    let l := js.pretty 10000000
+    let l := js.compress
     let gh ← match handles.find? ("ident_strings", group) with
                 | some h => pure h
                 | none =>
@@ -749,25 +813,24 @@ def writeString (data: IdentData)(group: String)(handles: HashMap (String × Str
                 | some h => pure h
                 | none =>
                     IO.throwServerError "No handle for 'all' in indentifiers"
-    if l.length < 9000000 then
-                        h.putStrLn  l
-                        gh.putStrLn l
+    h.putStrLn  l
+    gh.putStrLn l
 
 
 def unfold (data: IdentData) : Array IdentPair :=
-    data.ids.map (fun id => ⟨data.context, data.type, id⟩)
+    data.ids.map (fun id => ⟨data.context, data.type, data.thm, id⟩)
 
 def ofCorePremiseData (data: CorePremiseData) : IdentData :=
-    ⟨data.context, data.type, data.ids⟩
+    ⟨data.context, data.type, data.thm, data.ids⟩
 
 end IdentData
 
 namespace IdentPair
 
 def write (data: IdentPair)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
-    let thm := data.context.foldr (fun s c => s ++ " " ++ c) s!" : {data.type}"
+    let thm := data.thm
     let js := Json.mkObj [("theorem", thm), ("identifier", toJson data.id)]
-    let l := js.pretty 10000000
+    let l := js.compress
     let gh ← match handles.find? ("ident_pairs", group) with
                 | some h => pure h
                 | none =>
@@ -776,9 +839,8 @@ def write (data: IdentPair)(group: String)(handles: HashMap (String × String) I
                 | some h => pure h
                 | none =>
                     IO.throwServerError "No handle for 'all' in indent_pairs"
-    if l.length < 9000000 then
-                        h.putStrLn  l
-                        gh.putStrLn l
+    h.putStrLn  l
+    gh.putStrLn l
 
 end IdentPair
 
@@ -788,15 +850,16 @@ def contextString (context : Array String) : String :=
 structure LemmaPair where
     thmContext : Array String
     thmType : String
+    thm: String
     lemmaType : String -- have only this for named lemmas
 
 namespace LemmaPair
 
-def thm (data: LemmaPair) : String := data.thmContext.foldr (fun s c => s ++ c) s!" : {data.thmType}"
+-- def thm (data: LemmaPair) : String := data.thmContext.foldr (fun s c => s ++ c) s!" : {data.thmType}"
 
 def write (data: LemmaPair)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
     let js := Json.mkObj [("theorem", data.thm), ("lemma", data.lemmaType)]
-    let l := js.pretty 10000000
+    let l := js.compress
     let gh ← match handles.find? ("lemma_pairs", group) with
                 | some h => pure h
                 | none =>
@@ -805,13 +868,13 @@ def write (data: LemmaPair)(group: String)(handles: HashMap (String × String) I
                 | some h => pure h
                 | none =>
                     IO.throwServerError "No handle for 'all' in lemma_pairs"
-    if l.length < 9000000 then
-                        h.putStrLn  l
-                        gh.putStrLn l
+
+    h.putStrLn  l
+    gh.putStrLn l
 
 def ofCorePremiseData (data: CorePremiseData) : Array LemmaPair :=
-    data.lemmas.map (fun l => ⟨data.context, data.type, l.thm⟩) ++
-    data.namedLemmas.map (fun l => ⟨data.context, data.type, l⟩)
+    data.lemmas.map (fun l => ⟨data.context, data.type, data.thm, l.thm⟩) ++
+    data.namedLemmas.map (fun l => ⟨data.context, data.type, data.thm, l⟩)
 
 end LemmaPair
 
@@ -835,7 +898,7 @@ def write (data: TermPair)(group: String)(handles: HashMap (String × String) IO
         ("term", data.term),
         ("is_prop", data.isProp)
         ]
-    let l := js.pretty 10000000
+    let l := js.compress
     let gh ← match handles.find? ("term_pairs", group) with
                 | some h => pure h
                 | none =>
@@ -844,9 +907,8 @@ def write (data: TermPair)(group: String)(handles: HashMap (String × String) IO
                 | some h => pure h
                 | none =>
                     IO.throwServerError "No handle for 'all' in term_pairs"
-    if l.length < 9000000 then
-                        h.putStrLn  l
-                        gh.putStrLn l
+    h.putStrLn  l
+    gh.putStrLn l
 
 def ofCorePremiseData (data: CorePremiseData) : List TermPair :=
     data.terms.map (fun t =>
@@ -855,12 +917,13 @@ def ofCorePremiseData (data: CorePremiseData) : List TermPair :=
 end TermPair
 
 def IdentData.filter (d: IdentData)(p : String → Bool) : IdentData :=
-    {context:= d.context, type := d.type, ids := d.ids.filter p}
+    {context:= d.context, type := d.type, thm := d.thm, ids := d.ids.filter p}
 
 def DefData.identData (d: DefData) : CoreM <| List IdentData := do
     d.premises.mapM (fun p => do
         pure {
                 context:= ← p.context.mapM declToString
                 type := ← termToString p.type
+                thm := ← termToString p.type
                 ids :=
                     p.ids.map (·.1) |>.toList.eraseDups.toArray})
