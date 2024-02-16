@@ -714,6 +714,7 @@ structure IdentData where
     context : Array String
     type : String
     thm: String
+    statement : String
     ids : Array String
     deriving Inhabited, ToJson, FromJson
 
@@ -762,7 +763,7 @@ def unfold (data: IdentData) : Array IdentPair :=
     data.ids.map (fun id => ⟨data.context, data.type, data.thm, id⟩)
 
 def ofCorePremiseData (data: CorePremiseData) : IdentData :=
-    ⟨data.context, data.type, data.thm, data.ids⟩
+    ⟨data.context, data.type, data.thm, data.statement, data.ids⟩
 
 end IdentData
 
@@ -826,6 +827,8 @@ end LemmaPair
 structure TermPair where
     thmContext : Array String
     thmType : String
+    thm: String
+    statement: String
     termContext : Array String
     term : String
     isProp: Bool
@@ -833,12 +836,10 @@ structure TermPair where
 
 namespace TermPair
 
-def thm (data: TermPair) : String :=
-    data.thmContext.foldr (fun s c => s ++ " " ++ c) s!" : {data.thmType}"
-
 def write (data: TermPair)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
     let js := Json.mkObj [
         ("theorem", data.thm),
+        ("statement", data.statement),
         ("term_context", contextString data.termContext),
         ("term", data.term),
         ("is_prop", data.isProp)
@@ -857,12 +858,12 @@ def write (data: TermPair)(group: String)(handles: HashMap (String × String) IO
 
 def ofCorePremiseData (data: CorePremiseData) : List TermPair :=
     data.terms.map (fun t =>
-        ⟨data.context, data.type, t.context, t.value, t.isProp⟩)
+        ⟨data.context, data.type, data.thm, data.statement, t.context, t.value, t.isProp⟩)
 
 end TermPair
 
 def IdentData.filter (d: IdentData)(p : String → Bool) : IdentData :=
-    {context:= d.context, type := d.type, thm := d.thm, ids := d.ids.filter p}
+    {context:= d.context, type := d.type, thm := d.thm, statement := d.statement, ids := d.ids.filter p}
 
 def DefData.identData (d: DefData) : CoreM <| List IdentData := do
     d.premises.mapM (fun p => do
@@ -870,5 +871,6 @@ def DefData.identData (d: DefData) : CoreM <| List IdentData := do
                 context:= ← p.context.mapM declToString
                 type := ← termToString p.type
                 thm := ← termToString p.type
+                statement := ← p.statement
                 ids :=
                     p.ids.map (·.1) |>.toList.eraseDups.toArray})
