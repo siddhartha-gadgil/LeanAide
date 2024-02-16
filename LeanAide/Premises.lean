@@ -346,7 +346,7 @@ def PremiseData.ofNames (names: List Name) : MetaM (List PremiseData) := do
 
 def PremiseData.writeBatch (names: List Name)(group: String)
     (handles: HashMap (String × String) IO.FS.Handle)
-    (propMap : HashMap String String)(tag: String := "anonymous")(verbose: Bool := false) : MetaM Nat := do
+    (propMap : HashMap String (String × String))(tag: String := "anonymous")(verbose: Bool := false) : MetaM Nat := do
     let mut count := 0
     let mut premiseCount := 0
     for name in names do
@@ -385,7 +385,7 @@ def PremiseData.writeBatch (names: List Name)(group: String)
 
 def PremiseData.writeBatchCore (names: List Name)(group: String)
     (handles: HashMap (String × String) IO.FS.Handle)
-    (propMap : HashMap String String)(tag: String := "anonymous")(verbose: Bool := false) : CoreM Nat :=
+    (propMap : HashMap String (String × String))(tag: String := "anonymous")(verbose: Bool := false) : CoreM Nat :=
     PremiseData.writeBatch names group handles propMap tag verbose |>.run'
 
 def CorePremiseData.ofNameM? (name: Name) :
@@ -406,7 +406,7 @@ def CorePremiseData.writeTest (names: List Name) : MetaM Unit := do
     let path := System.mkFilePath ["data", "tests", "premises.json"]
     IO.FS.writeFile path <| (toJson cores).pretty
 
-def propList : MetaM <| Array (String × String) := do
+def propList : MetaM <| Array (String × (String × String)) := do
     let propMap ← getPropMapStr
     return propMap.toArray
 

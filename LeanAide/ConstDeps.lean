@@ -236,10 +236,10 @@ structure DefnTypes where
     statement : String
     deriving Repr, ToJson, FromJson
 
-def propMapFromDefns (dfns : Array DefnTypes) : MetaM <| HashMap Name String := do
+def propMapFromDefns (dfns : Array DefnTypes) : MetaM <| HashMap Name (String × String) := do
     return HashMap.ofList <|
        dfns.filter (fun d => d.isProp)
-        |>.toList.map fun d => (d.name, d.type)
+        |>.toList.map fun d => (d.name, (d.type, d.statement))
 
 
 def groups := ["train", "test", "valid"]
@@ -289,7 +289,7 @@ def writeM (dfns : Array DefnTypes)(name: String := "all.json") : MetaM Unit := 
         handle.putStrLn l
 
 /-- Saving to file and returning for convenience along with map -/
-def getWriteSplitM : MetaM <| (Array DefnTypes) × (HashMap Name String) × HashMap String (Array DefnTypes) := do
+def getWriteSplitM : MetaM <| (Array DefnTypes) × (HashMap Name (String × String)) × HashMap String (Array DefnTypes) := do
     let dfns ← getM
     writeM dfns
     let split ← splitData dfns
@@ -299,16 +299,16 @@ def getWriteSplitM : MetaM <| (Array DefnTypes) × (HashMap Name String) × Hash
     let pm ← propMapFromDefns dfns
     return (dfns, pm, split)
 
-def getWriteSplitCore : CoreM ((Array DefnTypes) × (HashMap Name String) × HashMap String (Array DefnTypes)) :=
+def getWriteSplitCore : CoreM ((Array DefnTypes) × (HashMap Name (String × String)) × HashMap String (Array DefnTypes)) :=
     (getWriteSplitM).run'
 
-def getWriteM : MetaM <| (Array DefnTypes) × (HashMap Name String) := do
+def getWriteM : MetaM <| (Array DefnTypes) × (HashMap Name (String × String)) := do
     let dfns ← getM
     writeM dfns
     let pm ← propMapFromDefns dfns
     return (dfns, pm)
 
-def getWriteCore : CoreM ((Array DefnTypes) × (HashMap Name String)) :=
+def getWriteCore : CoreM ((Array DefnTypes) × (HashMap Name (String × String))) :=
     (getWriteM).run'
 
 end DefnTypes
@@ -326,7 +326,7 @@ def writeDocsM : MetaM <| Json := do
 def writeDocsCore : CoreM <| Json :=
     (writeDocsM).run'
 
-def getPropMap : MetaM <| HashMap Name String := do
+def getPropMap : MetaM <| HashMap Name (String × String) := do
     let dfns ← DefnTypes.getM
     propMapFromDefns dfns
 
@@ -340,7 +340,7 @@ partial def shrink (s: String) : String :=
                 |>.trim
     if step == s then s else shrink step
 
-def getPropMapStr : MetaM <| HashMap String String := do
+def getPropMapStr : MetaM <| HashMap String (String × String) := do
     let mut count := 0
     let mut skipped := 0
     let omittedPath :=
@@ -350,7 +350,7 @@ def getPropMapStr : MetaM <| HashMap String String := do
       IO.FS.Handle.mk omittedPath IO.FS.Mode.append
     propOmittedHandle.putStrLn "import Mathlib"
     let cs ← constantNameValueTypes
-    let mut m : HashMap String String := HashMap.empty
+    let mut m : HashMap String (String × String) := HashMap.empty
     let mut dfs : Array DefnTypes := #[]
     for (name, value, type, doc?) in cs do
       if !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && type.approxDepth < 60 then
@@ -370,7 +370,7 @@ def getPropMapStr : MetaM <| HashMap String String := do
           IO.println s!"count: {count}"
           IO.println s!"skipped: {skipped}"
         if isProp then
-          m := m.insert name.toString.trim fmt.pretty
+          m := m.insert name.toString.trim (fmt.pretty, statement)
         count := count + 1
       else
         if type.approxDepth >= 60 then
@@ -388,7 +388,7 @@ def getPropMapStr : MetaM <| HashMap String String := do
     IO.FS.writeFile path <| jsonLines <| dfs
     return m
 
-def propMapCore : CoreM (HashMap String String) :=
+def propMapCore : CoreM (HashMap String (String × String)) :=
     (getPropMapStr).run'
 
 def nameViewM? (name: Name) : MetaM <| Option String := do

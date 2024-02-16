@@ -368,6 +368,9 @@ structure PropProofData where
     depth: Nat
 deriving Repr, BEq
 
+def PropProofData.statement (pd: PropProofData) : CoreM String := do
+    mkStatement none pd.prop none true
+
 instance : ToJsonM PropProofData :=
 ⟨fun (data: PropProofData) => do
     return Json.mkObj ([
@@ -449,6 +452,7 @@ structure CorePropData where
     context : Array String
     prop : String
     thm : String
+    statement : String
 deriving Repr, ToJson, FromJson, BEq
 
 def CorePropData.ofPropProof (propPf : PropProofData) : CoreM CorePropData := do
@@ -456,7 +460,8 @@ def CorePropData.ofPropProof (propPf : PropProofData) : CoreM CorePropData := do
     let thm ← foldContext propPf.prop propPf.context.toList
     return ⟨← propPf.context.mapM declToString,
     type,
-    ← termToString thm⟩
+    ← termToString thm,
+    ← propPf.statement⟩
 
 structure CorePremiseDataDirect where
     context : Array String
@@ -486,7 +491,7 @@ def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CoreM CorePremiseD
         ← pd.propProofs.mapM CorePropData.ofPropProof⟩
 
 structure CorePremiseData extends CorePremiseDataDirect where
-    namedLemmas : Array String
+    namedLemmas : Array (String × String)
     idString := ids.foldl (fun s id => s ++ id ++ "; ") ""
 deriving Repr, ToJson, FromJson
 
@@ -496,17 +501,18 @@ def checkName (name: Name) : MetaM Bool := do
 
 -- #eval checkName `Or.inl
 
-def getDefn? (name: String)(propMap: HashMap String String) : MetaM <| Option String := do
+def getDefn? (name: String)(propMap : HashMap String (String × String)) : MetaM <| Option (String × String) := do
     match propMap.find? name with
-    | some s => return some s
+    | some ss => return some ss
     | none => do
     let l ← resolveGlobalName name
     let names := l.map (fun (n, _) => n.toString)
-    return names.findSome? (fun n => propMap.find? n)
+    return names.findSome? (fun n =>
+        (propMap.find? n))
 
 namespace CorePremiseData
 
-def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap String String) : MetaM CorePremiseData := do
+def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap String (String × String)) : MetaM CorePremiseData := do
     return {
     context := direct.context,
     name? := direct.name?,
@@ -521,7 +527,7 @@ def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap String String) 
         fun id =>  getDefn? id propMap)
     }
 
-def fromPremiseData (pd: PremiseData)(propMap : HashMap String String) : MetaM CorePremiseData := do
+def fromPremiseData (pd: PremiseData)(propMap : HashMap String (String × String)) : MetaM CorePremiseData := do
     CorePremiseData.fromDirect (← CorePremiseDataDirect.fromPremiseData pd) propMap
 
 
@@ -550,12 +556,12 @@ fun data ↦
     ⟨data.context, data.name?, data.defnName, data.type, data.typeGroup, data.proof, data.typeSize, data.proofSize, (data.terms.map (fun td => td.increaseDepth d)), (data.propProofs.map (fun p => p.increaseDepth d)),
         (data.ids.map (fun (n,  m) => (n,  m + d))) ⟩
 
-def coreData (data: PremiseData)(propMap : HashMap String String) : MetaM CorePremiseData :=
+def coreData (data: PremiseData)(propMap : HashMap String (String × String)) : MetaM CorePremiseData :=
     CorePremiseData.fromPremiseData data propMap
 
 def write (data: PremiseData)(group: String)
     (handles: HashMap (String × String) IO.FS.Handle)
-    (propMap : HashMap String String) : MetaM Unit := do
+    (propMap : HashMap String (String × String)) : MetaM Unit := do
         data.writeFull group handles
         let coreData ←  CorePremiseData.fromPremiseData data propMap
         coreData.write group handles
@@ -788,6 +794,7 @@ structure LemmaPair where
     thm: String
     statement : String
     lemmaType : String -- have only this for named lemmas
+    lemmaStatement : String
 
 namespace LemmaPair
 
@@ -810,9 +817,9 @@ def write (data: LemmaPair)(group: String)(handles: HashMap (String × String) I
 
 def ofCorePremiseData (data: CorePremiseData) : Array LemmaPair :=
     data.lemmas.map (fun l =>
-        ⟨data.context, data.type, data.thm, data.statement, l.thm⟩) ++
-    data.namedLemmas.map (fun l =>
-        ⟨data.context, data.type, data.thm, data.statement, l⟩)
+        ⟨data.context, data.type, data.thm, data.statement, l.thm, l.statement⟩) ++
+    data.namedLemmas.map (fun (type, statement) =>
+        ⟨data.context, data.type, data.thm, data.statement, type, statement⟩)
 
 end LemmaPair
 
