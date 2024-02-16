@@ -2,6 +2,7 @@ import Lean
 import Lean.Meta
 import Init.System
 import LeanAide.Aides
+import LeanAide.StatementSyntax
 open Lean Meta Elab
 
 set_option synthInstance.maxHeartbeats 1000000
@@ -232,6 +233,7 @@ structure DefnTypes where
     isProp : Bool
     docString? : Option String
     value : Option String
+    statement : String
     deriving Repr, ToJson, FromJson
 
 def propMapFromDefns (dfns : Array DefnTypes) : MetaM <| HashMap Name String := do
@@ -239,10 +241,6 @@ def propMapFromDefns (dfns : Array DefnTypes) : MetaM <| HashMap Name String := 
        dfns.filter (fun d => d.isProp)
         |>.toList.map fun d => (d.name, d.type)
 
-def propMapFromDefnsStr (dfns : Array DefnTypes) : MetaM <| HashMap String String := do
-    return HashMap.ofList <|
-       dfns.filter (fun d => d.isProp)
-        |>.toList.map fun d => (d.name.toString.trim, d.type)
 
 def groups := ["train", "test", "valid"]
 
@@ -273,8 +271,13 @@ def getM : MetaM <| Array DefnTypes := do
             if isProp
               then none
               else some <| (← Meta.ppExpr term).pretty
+          let typeStx ← PrettyPrinter.delab type
+          let valueStx ←  PrettyPrinter.delab term
+          let valueStx? := if isProp then none else some valueStx
+          let statement ←
+            mkStatement (some name) typeStx valueStx? isProp
           dfns := dfns.push
-            ⟨name, fmt.pretty, isProp, doc?, value⟩
+            ⟨name, fmt.pretty, isProp, doc?, value, statement⟩
     return dfns
 
 def writeM (dfns : Array DefnTypes)(name: String := "all.json") : MetaM Unit := do
@@ -354,7 +357,14 @@ def getPropMapStr : MetaM <| HashMap String String := do
         let fmt ← ppExpr type
         let isProp ← isProof value
         let value? := if isProp then none else some <| (← ppExpr value).pretty
-        let dfn : DefnTypes := ⟨name, fmt.pretty, isProp, doc?, value?⟩
+        let typeStx ← PrettyPrinter.delab type
+        let valueStx ←  PrettyPrinter.delab value
+        let valueStx? := if isProp then none else some valueStx
+        let statement ←
+            mkStatement (some name) typeStx valueStx? isProp
+
+        let dfn : DefnTypes :=
+          ⟨name, fmt.pretty, isProp, doc?, value?, statement⟩
         dfs := dfs.push dfn
         if count % 1000 = 0 then
           IO.println s!"count: {count}"
