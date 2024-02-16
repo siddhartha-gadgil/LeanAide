@@ -88,6 +88,7 @@ abbrev ContextSyn := Array Syntax
 
 open Lean.Parser.Term
 
+
 def getBinders : List Syntax → MetaM (Option (List ContextTerm))
 | [] => none
 | x :: ys => do
@@ -145,12 +146,33 @@ def foldContext (type: Syntax.Term) : List Syntax → CoreM (Syntax.Term)
 
 partial def arrowHeads (type: Syntax.Term)
     (accum: Array ContextTerm := #[]) :
-        CoreM <| (Array Syntax) × Syntax.Term := do
+        CoreM <| (Array ContextTerm) × Syntax.Term := do
     match type with
     | `(depArrow|$bb → $body) => do
         let accum := accum.push bb
         arrowHeads body accum
     | _ => return (accum, type)
+
+
+def mkStatementStx (name?: Option Name)(type: Syntax.Term)
+    (value?: Option Syntax.Term)(isProp: Bool) :
+        CoreM (TSyntax `command) := do
+    let (ctxs, tailType) ← arrowHeads type
+    let value := value?.getD (← `(by sorry))
+    let name := mkIdent <| name?.getD Name.anonymous
+    if isProp
+    then
+        `(command| theorem $name $ctxs* : $tailType := $value)
+    else
+        `(command| def $name:ident $ctxs* : $tailType := $value)
+
+def mkStatement (name?: Option Name)(type: Syntax.Term)
+    (value?: Option Syntax.Term)(isProp: Bool) :
+        CoreM String := do
+    let stx ← mkStatementStx name? type value? isProp
+    let fmt ← ppCategory `command stx
+    return fmt.pretty
+
 
 def declToString : Syntax → CoreM String := fun d => do
     match d with
@@ -424,7 +446,12 @@ instance : ToJsonM PremiseData :=
         ("ids", ← toJsonM data.ids)
         ])⟩
 
-def PremiseData.writeFull (data: PremiseData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : CoreM Unit := do
+namespace PremiseData
+
+def statement (pd: PremiseData) : CoreM String := do
+    mkStatement pd.name? pd.type none true
+
+def writeFull (data: PremiseData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : CoreM Unit := do
     let l := (← toJsonM data).pretty 10000000
     -- IO.println s!"Handles:  {handles.toList.map (fun (k, _) => k)}"
     let key := ("full", group)
@@ -440,6 +467,8 @@ def PremiseData.writeFull (data: PremiseData)(group: String)(handles: HashMap (S
                     IO.throwServerError "No handle for 'all' in full"
     h.putStrLn  l
     gh.putStrLn l
+
+end PremiseData
 
 structure CoreTermData where
     context : Array String
@@ -465,6 +494,7 @@ structure CorePremiseDataDirect where
     name? :       Option Name  -- name
     type : String
     thm: String
+    statement : String
     typeGroup : String
     ids : Array String
     terms : List CoreTermData
@@ -478,6 +508,7 @@ def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CoreM CorePremiseD
         pd.name?,
         type,
         ← termToString thm,
+        ← pd.statement,
         ← termToString  pd.typeGroup,
         pd.ids.map (fun (n, _) => shrink n),
         (← pd.terms.toList.mapM (fun td => do
@@ -512,6 +543,7 @@ def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap String String) 
     name? := direct.name?,
     type := direct.type,
     thm := direct.thm,
+    statement := direct.statement,
     typeGroup := direct.typeGroup,
     ids := direct.ids
     terms := direct.terms,
@@ -698,6 +730,11 @@ structure DefData where
     premises : List PremiseData -- empty if depth exceeds bound
     deriving Inhabited,  Repr
 
+def DefData.statement (data: DefData)(omitProofs: Bool := true) :
+        CoreM String := do
+    let value? := if omitProofs && data.isProp then none else some data.value
+    mkStatement (some data.name) data.type value? data.isProp
+
 structure IdentData where
     context : Array String
     type : String
@@ -780,6 +817,7 @@ structure LemmaPair where
     thmContext : Array String
     thmType : String
     thm: String
+    statement : String
     lemmaType : String -- have only this for named lemmas
 
 namespace LemmaPair
@@ -802,8 +840,10 @@ def write (data: LemmaPair)(group: String)(handles: HashMap (String × String) I
     gh.putStrLn l
 
 def ofCorePremiseData (data: CorePremiseData) : Array LemmaPair :=
-    data.lemmas.map (fun l => ⟨data.context, data.type, data.thm, l.thm⟩) ++
-    data.namedLemmas.map (fun l => ⟨data.context, data.type, data.thm, l⟩)
+    data.lemmas.map (fun l =>
+        ⟨data.context, data.type, data.thm, data.statement, l.thm⟩) ++
+    data.namedLemmas.map (fun l =>
+        ⟨data.context, data.type, data.thm, data.statement, l⟩)
 
 end LemmaPair
 
