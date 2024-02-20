@@ -124,100 +124,101 @@ def foldContext (type: Syntax.Term) : List Syntax → CoreM (Syntax.Term)
     match x with
     | `(letDecl|$n:ident : $type := $val) => do
         `(let $n : $type := $val; $tailType)
-    | `(bracketedBinderF|($n:ident : $type:term)) => do
+    | `(funBinder|($n:ident : $type:term)) => do
         `(($n : $type) → $tailType)
-    | `(bracketedBinderF|{$n:ident : $type:term}) => do
+    | `(funImplicitBinder |{$n:ident : $type:term}) => do
         `({$n : $type} → $tailType)
-    | `(bracketedBinderF|(_ : $type:term)) => do
+    | `(funBinder|(_ : $type:term)) => do
         `((_ : $type) → $tailType)
-    | `(bracketedBinderF|{_ : $type:term}) => do
+    | `(funImplicitBinder|{_ : $type:term}) => do
         `({_ : $type} → $tailType)
-    | `(bracketedBinderF|[$n:ident : $type:term]) => do
+    | `(instBinder|[$n:ident : $type:term]) => do
         `([$n : $type] → $tailType)
-    | `(bracketedBinderF|[$type:term]) => do
+    | `(instBinder|[$type:term]) => do
         `([$type] → $tailType)
     | `(bracketedBinderF|⦃$n:ident : $type:term⦄) => do
         `(($n : $type) → $tailType)
     | _ =>
-        IO.println s!"foldContext: {x} could not be folded"
+        IO.println s!"foldContext: {x}, i.e., {x.reprint.get!} could not be folded"
         return type
 
 #check letDecl
 
 def declToString : Syntax → CoreM String := fun d => do
     match d with
-    | `(letDecl|$_:ident : $_ := $_) =>
-        let fmt ← ppCategory `letDecl d
-        return fmt.pretty.trim
-        -- let type := (← ppTerm type).pretty.trim
-        -- let val := (← ppTerm val).pretty.trim
-        -- -- return s!"{n.getId.toString} : {type} := {val}"
-    | _ =>
-        let fmt ← ppCategory `bracketedBinderF d
-        return fmt.pretty.trim
-    -- | `(funBinder|($n:ident : $type:term)) =>
+    -- | `(letDecl|$_:ident : $_ := $_) =>
+    --     let fmt ← ppCategory `letDecl d
+    --     return fmt.pretty.trim
+    --     -- let type := (← ppTerm type).pretty.trim
+    --     -- let val := (← ppTerm val).pretty.trim
+    --     -- -- return s!"{n.getId.toString} : {type} := {val}"
+    -- | _ =>
+    --     IO.println s!"Trying to show: {d.reprint.get!}"
+    --     let fmt ← ppCategory `bracketedBinderF d
+    --     return fmt.pretty.trim
+    | `(funBinder|($n:ident : $type:term)) =>
+        let type := (← ppTerm type).pretty.trim
+        return s!"({n.getId.toString} : {type})"
+    | `(funImplicitBinder|{$n:ident : $type:term}) =>
+        let type := (← ppTerm type).pretty.trim
+        return "{" ++ s!"{n.getId.toString} : {type}" ++ "}"
+    | `(instBinder|[$n:ident : $type:term]) =>
+        let type := (← ppTerm type).pretty.trim
+        return s!"[{n.getId.toString} : {type}]"
+    | `(instBinder|[$type:term]) =>
+        let type := (← ppTerm type).pretty.trim
+        return s!"[{type}]"
+    | `(funStrictImplicitBinder|⦃$n:ident : $type:term⦄) =>
+        let type := (← ppTerm type).pretty.trim
+        return s!"⦃{n.getId.toString} : {type}⦄"
+    | `(funBinder|(_ : $type:term)) =>
+        let type := (← ppTerm type).pretty.trim
+        return s!"(_ : {type})"
+    | `(funImplicitBinder|{_ : $type:term}) =>
+        let type := (← ppTerm type).pretty.trim
+        return "{" ++ s!"_ : {type}" ++ "}"
+    -- | `(funStrictImplicitBinder|⦃_ : $type:term⦄) =>
     --     let type := (← ppTerm type).pretty.trim
-    --     return s!"({n.getId.toString} : {type})"
-    -- | `(funImplicitBinder|{$n:ident : $type:term}) =>
-    --     let type := (← ppTerm type).pretty.trim
-    --     return "{" ++ s!"{n.getId.toString} : {type}" ++ "}"
-    -- | `(instBinder|[$n:ident : $type:term]) =>
-    --     let type := (← ppTerm type).pretty.trim
-    --     return s!"[{n.getId.toString} : {type}]"
-    -- | `(instBinder|[$type:term]) =>
-    --     let type := (← ppTerm type).pretty.trim
-    --     return s!"[{type}]"
-    -- | `(funStrictImplicitBinder|⦃$n:ident : $type:term⦄) =>
-    --     let type := (← ppTerm type).pretty.trim
-    --     return s!"⦃{n.getId.toString} : {type}⦄"
-    -- | `(funBinder|(_ : $type:term)) =>
-    --     let type := (← ppTerm type).pretty.trim
-    --     return s!"(_ : {type})"
-    -- | `(funImplicitBinder|{_ : $type:term}) =>
-    --     let type := (← ppTerm type).pretty.trim
-    --     return "{" ++ s!"_ : {type}" ++ "}"
-    -- -- | `(funStrictImplicitBinder|⦃_ : $type:term⦄) =>
-    -- --     let type := (← ppTerm type).pretty.trim
-    -- --     return s!"⦃_ : {type}⦄"
-    -- | stx =>
-    --     let fallback := stx.reprint.get!
-    --     IO.println s!"declToString fallback to: {fallback} for {stx}"
-    --     return fallback
+    --     return s!"⦃_ : {type}⦄"
+    | stx =>
+        let fallback := stx.reprint.get!
+        IO.println s!"declToString fallback to: {fallback} for {stx}"
+        return fallback
 
--- def declToThmHead : Syntax → CoreM String := fun d => do
---     match d with
---     | `(letDecl|$n:ident : $type := $val) =>
---         let type := (← ppTerm type).pretty.trim
---         let val := (← ppTerm val).pretty.trim
---         return s!"let {n.getId.toString} : {type} := {val}; "
---     | `(funBinder|($n:ident : $type:term)) =>
---         let type := (← ppTerm type).pretty.trim
---         return s!"({n.getId.toString} : {type}) → "
---     | `(funImplicitBinder|{$n:ident : $type:term}) =>
---         let type := (← ppTerm type).pretty.trim
---         return "{" ++ s!"{n.getId.toString} : {type}" ++ "} → "
---     | `(instBinder|[$n:ident : $type:term]) =>
---         let type := (← ppTerm type).pretty.trim
---         return s!"[{n.getId.toString} : {type}] → "
---     | `(instBinder|[$type:term]) =>
---         let type := (← ppTerm type).pretty.trim
---         return s!"[{type}] → "
---     | `(funStrictImplicitBinder|⦃$n:ident : $type:term⦄) =>
---         let type := (← ppTerm type).pretty.trim
---         return s!"⦃{n.getId.toString} : {type}⦄ → "
---     | `(funBinder|(_ : $type:term)) =>
---         let type := (← ppTerm type).pretty.trim
---         return s!"(_ : {type}) → "
---     | `(funImplicitBinder|{_ : $type:term}) =>
---         let type := (← ppTerm type).pretty.trim
---         return "{" ++ s!"_ : {type}" ++ "} → "
---     -- | `(funStrictImplicitBinder|⦃_ : $type:term⦄) =>
---     --     let type := (← ppTerm type).pretty.trim
---     --     return s!"⦃_ : {type}⦄ → "
---     | stx =>
---         let fallback := stx.reprint.get! ++ " → "
---         IO.println s!"declToString fallback to: {fallback} for {stx}"
---         return fallback
+def declToThmHead : Syntax → CoreM String := fun d => do
+    match d with
+    | `(letDecl|$n:ident : $type := $val) =>
+        let type := (← ppTerm type).pretty.trim
+        let val := (← ppTerm val).pretty.trim
+        return s!"let {n.getId.toString} : {type} := {val}; "
+    | `(funBinder|($n:ident : $type:term)) =>
+        let type := (← ppTerm type).pretty.trim
+        return s!"({n.getId.toString} : {type}) → "
+    | `(funImplicitBinder|{$n:ident : $type:term}) =>
+        let type := (← ppTerm type).pretty.trim
+        return "{" ++ s!"{n.getId.toString} : {type}" ++ "} → "
+    | `(instBinder|[$n:ident : $type:term]) =>
+        let type := (← ppTerm type).pretty.trim
+        return s!"[{n.getId.toString} : {type}] → "
+    | `(instBinder|[$type:term]) =>
+        let type := (← ppTerm type).pretty.trim
+        return s!"[{type}] → "
+    | `(funStrictImplicitBinder|⦃$n:ident : $type:term⦄) =>
+        let type := (← ppTerm type).pretty.trim
+        return s!"⦃{n.getId.toString} : {type}⦄ → "
+    | `(funBinder|(_ : $type:term)) =>
+        let type := (← ppTerm type).pretty.trim
+        return s!"(_ : {type}) → "
+    | `(funImplicitBinder|{_ : $type:term}) =>
+        let type := (← ppTerm type).pretty.trim
+        return "{" ++ s!"_ : {type}" ++ "} → "
+    -- | `(funStrictImplicitBinder|⦃_ : $type:term⦄) =>
+    --     let type := (← ppTerm type).pretty.trim
+    --     return s!"⦃_ : {type}⦄ → "
+    | stx =>
+        let fallback := stx.reprint.get! ++ " → "
+        IO.println s!"declToString fallback to: {fallback} for {stx}"
+        return fallback
 
 
 def declInLctx  (d :Syntax) : TermElabM Bool := do
@@ -803,7 +804,7 @@ namespace LemmaPair
 -- def thm (data: LemmaPair) : String := data.thmContext.foldr (fun s c => s ++ c) s!" : {data.thmType}"
 
 def write (data: LemmaPair)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
-    let js := Json.mkObj [("theorem", data.thm), ("lemma", data.lemmaType)]
+    let js := Json.mkObj [("theorem", data.statement), ("lemma", data.lemmaStatement), ("theorem-type", data.thmType), ("lemma-type", data.lemmaType)]
     let l := js.compress
     let gh ← match handles.find? ("lemma_pairs", group) with
                 | some h => pure h
