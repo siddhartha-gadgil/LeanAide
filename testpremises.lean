@@ -40,7 +40,7 @@ def main (args: List String) : IO Unit := do
         let lines := lines.filterMap (fun l => (Lean.Json.parse l).toOption)
         let dfns : Array DefnTypes :=
           lines.filterMap (fun l=>  (fromJson? l).toOption)
-        let propList := dfns.toList.filter (·.isProp) |>.map (fun d => (d.name.toString, d.type))
+        let propList := dfns.toList.filter (·.isProp) |>.map (fun d => (d.name.toString, (d.type, d.statement)))
         pure <| HashMap.ofList propList
     else
         IO.println s!"File {path} not found, running to generate it"

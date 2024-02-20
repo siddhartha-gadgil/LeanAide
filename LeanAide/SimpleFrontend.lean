@@ -5,7 +5,7 @@ open Lean Meta Elab Parser
 /-!
 Code from Lean 4 copied, simplified and customized. The main change is that instead of parsing the imports the current environment is used. In the entry point `simpleRunFrontend` the environment is passed as an argument.
 
-In the `runFrontendM` function the environment is modified if the `modifyEnv` flag is set to true. The `defFrontValueM` function is used to get the value of a definition in the environment. The `checkElabFrontM` function is used to check if the code has any errors.
+In the `runFrontendM` function the environment is modified if the `modifyEnv` flag is set to true. The `elabFrontDefValueM` function is used to get the value of a definition in the environment. The `checkElabFrontM` function is used to check if the code has any errors.
 -/
 
 def simpleRunFrontend
@@ -25,11 +25,17 @@ def runFrontendM (input: String)(modifyEnv: Bool := false) : MetaM (Environment 
   if modifyEnv then setEnv env
   return (env, chk)
 
-def defFrontValueM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM String := do
+def elabFrontDefExprM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM Expr := do
   let (env, _) ← runFrontendM s modifyEnv
   let seek? : Option ConstantInfo :=  env.find? n
-  let seek := seek?.get!
-  let val := seek.value?.get!
+  match seek? with
+  | none => throwError "Definition not found"
+  | some seek => match seek.value? with
+    | none => throwError "Definition has no value"
+    | some val => return val
+
+def elabFrontDefViewM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM String := do
+  let val ← elabFrontDefExprM s n modifyEnv
   let fmt ←  ppExpr val
   return fmt.pretty
 
@@ -41,6 +47,14 @@ def checkElabFrontM(s: String) : MetaM <| List String := do
       let x ← msg.data.toString
       l := l.append [x]
   return l
+
+def leanBlock (s: String) : String :=
+  let fullSplit := s.splitOn "```lean"
+  let split := if fullSplit.length > 1
+    then fullSplit.get! 1 else
+    s.splitOn "```" |>.get! 1
+  split.splitOn "```" |>.get! 0
+
 
 -- Not efficient, should generate per command if this is needed
 def newDeclarations (s: String) : MetaM <| List Name := do
