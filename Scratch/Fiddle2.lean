@@ -1,6 +1,8 @@
 import Mathlib
 
 #check List.sum
+#check Nat.le_of_lt
+
 
 #help term
 

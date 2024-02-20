@@ -23,7 +23,10 @@ def mkStatementStx (name?: Option Name)(type: Syntax.Term)
         CoreM (TSyntax `command) := do
     let (ctxs, tailType) ← arrowHeads type
     let value := value?.getD (← `(by sorry))
-    let name := mkIdent <| name?.getD Name.anonymous
+    let hash := hash type.raw.reprint
+    let inner_name :=
+        Name.num (Name.mkSimple "anonymous_lemma") hash.toNat
+    let name := mkIdent <| name?.getD inner_name
     if isProp
     then
         `(command| theorem $name $ctxs* : $tailType := $value)

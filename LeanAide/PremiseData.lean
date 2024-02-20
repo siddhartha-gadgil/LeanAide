@@ -142,6 +142,7 @@ def foldContext (type: Syntax.Term) : List Syntax → CoreM (Syntax.Term)
         IO.println s!"foldContext: {x} could not be folded"
         return type
 
+#check letDecl
 
 def declToString : Syntax → CoreM String := fun d => do
     match d with

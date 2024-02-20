@@ -197,7 +197,7 @@ partial def Lean.Syntax.premiseDataAuxM (context : ContextSyn)(defnName: Name)(s
     | some (body, args) =>
         let args ← args.mapM (fun arg => purgeContext arg)
         let prev ←  /- data for subterm; not an instantiation;
-        inherits proposition group: if this is a proof, so would the previous term and hence we will have a group.  -/
+        inherits proposition group: if this is a proof, so is the previous term and hence we will have a group.  -/
             premiseDataAuxM (context ++ args) defnName body propHead? false (maxDepth?.map (· -1))
         let (ts, pfs, ids, ps) := prev
         -- if ids.size > 0 then
@@ -360,7 +360,7 @@ def PremiseData.writeBatch (names: List Name)(group: String)
         | none => pure ()
         | some defn =>
             if verbose then
-                IO.println s!"Writing {defn.name}"
+                IO.eprintln s!"Writing {defn.name}"
             for premise in defn.premises do
                 premise.write group handles propMap
                 let coreData ← premise.coreData propMap
