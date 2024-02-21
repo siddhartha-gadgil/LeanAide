@@ -25,7 +25,7 @@ def mkStatementStx (name?: Option Name)(type: Syntax.Term)
     let value := value?.getD (← `(by sorry))
     let hash := hash type.raw.reprint
     let inner_name :=
-        Name.num (Name.mkSimple "anonymous_lemma") hash.toNat
+        Name.num (Name.mkSimple "aux") hash.toNat
     let name := mkIdent <| name?.getD inner_name
     if isProp
     then

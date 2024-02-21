@@ -41,3 +41,14 @@ def egFmt₀  : MetaM Format := do
 #check mkIdent
 
 #print Nat.add
+
+def trivialEquality : Syntax → MetaM Bool
+  | `($a = $b) => return a == b
+  | _ => return false
+
+#eval do
+  let stx ← `(1 = 2)
+  let b ← trivialEquality stx
+  let stx' ← `(1 = 1)
+  let b' ← trivialEquality stx'
+  return (b, b')

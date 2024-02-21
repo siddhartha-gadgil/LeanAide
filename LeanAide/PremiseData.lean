@@ -370,8 +370,11 @@ structure PropProofData where
     depth: Nat
 deriving Repr, BEq
 
+def PropProofData.thm (pd: PropProofData) : CoreM Syntax.Term := do
+    foldContext pd.prop pd.context.toList
+
 def PropProofData.statement (pd: PropProofData) : CoreM String := do
-    mkStatement none pd.prop none true
+    mkStatement none (← pd.thm) none true
 
 instance : ToJsonM PropProofData :=
 ⟨fun (data: PropProofData) => do
@@ -422,8 +425,11 @@ instance : ToJsonM PremiseData :=
 
 namespace PremiseData
 
+def thm (pd: PremiseData) : CoreM Syntax.Term := do
+    foldContext pd.type pd.context.toList
+
 def statement (pd: PremiseData) : CoreM String := do
-    mkStatement pd.name? pd.type none true
+    mkStatement pd.name? (← pd.thm) none true
 
 def writeFull (data: PremiseData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : CoreM Unit := do
     let l := (← toJsonM data).pretty 10000000

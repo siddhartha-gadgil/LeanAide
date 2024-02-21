@@ -156,8 +156,9 @@ partial def Lean.Syntax.premiseDataAuxM (context : ContextSyn)(defnName: Name)(s
             premiseDataAuxM context defnName proof (some newPropHead) false (maxDepth?.map (· -1))
         let (ts, pfs, ids, ps) := prev
         let proof ←  purgeTerm proof
+        let trivial := propHead?.isSome || (← trivialEquality prop)
         let newPfs :=
-            if propHead?.isSome then -- exclude lemma if in prior group
+            if trivial then -- exclude lemma if in prior group
                 pfs
             else
                 let headPf : PropProofData :=
@@ -168,7 +169,7 @@ partial def Lean.Syntax.premiseDataAuxM (context : ContextSyn)(defnName: Name)(s
         return (ts.map (fun t ↦ t.increaseDepth 1),
                 newPfs,
                 ids.map (fun (s, m) => (s, m + 1)),
-                head :: ps)
+                if trivial then ps else head :: ps)
     | none =>
     match ← letStx? stx with -- term is a let
     | some (n, type, val, body) =>

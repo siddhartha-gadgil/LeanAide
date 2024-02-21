@@ -299,3 +299,7 @@ def colEqSegments (s: String) : List String :=
 
 def splitColEqSegments (ss: Array String) : Array String :=
   ss.toList.bind colEqSegments |>.toArray
+
+def trivialEquality : Syntax → CoreM Bool
+  | `($a = $b) => return a == b
+  | _ => return false
