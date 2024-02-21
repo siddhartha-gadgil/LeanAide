@@ -359,6 +359,7 @@ def getPropMapStr : MetaM <| HashMap String (String × String) := do
     let mut dfs : Array DefnTypes := #[]
     for (name, value, type, doc?) in cs do
       if !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && type.approxDepth < 60 then
+      try
         let fmt ← ppExpr type
         let isProp ← isProof value
         let value? := if isProp then none else some <| (← ppExpr value).pretty
@@ -377,6 +378,9 @@ def getPropMapStr : MetaM <| HashMap String (String × String) := do
         if isProp then
           m := m.insert name.toString.trim (fmt.pretty, statement)
         count := count + 1
+      catch e =>
+        let msg := e.toMessageData
+        IO.eprintln s!"Failed to process {name}; error {← msg.toString}"
       else
         if type.approxDepth >= 60 then
           skipped := skipped + 1

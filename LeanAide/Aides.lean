@@ -214,7 +214,7 @@ def isWhiteListed (declName : Name) : MetaM Bool := do
   catch _ => return false
 
 def excludePrefixes := [`Lean, `Std, `IO,
-          `Char, `String, `ST, `StateT, `Repr, `ReaderT, `EIO, `BaseIO, `UInt8, ``UInt16, ``UInt32, ``UInt64, `Mathlib.Tactic, `Mathlib.Meta, `LeanAide.Meta, `Aesop, `Qq]
+          `Char, `String, `ST, `StateT, `Repr, `ReaderT, `EIO, `BaseIO, `UInt8, ``UInt16, ``UInt32, ``UInt64, `Mathlib.Tactic, `Mathlib.Meta, `LeanAide.Meta, `Aesop, `Qq, `Slimcheck]
 
 /-- This is a slight modification of `Parser.runParserCategory` due to Scott Morrison/Kim Liesinger. -/
 def parseAsTacticSeq (env : Environment) (input : String) (fileName := "<input>") :
