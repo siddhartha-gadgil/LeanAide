@@ -182,7 +182,8 @@ def declToString : Syntax → CoreM String := fun d => do
     --     return s!"⦃_ : {type}⦄"
     | stx =>
         let fallback := stx.reprint.get!
-        IO.println s!"declToString fallback to: {fallback} for {stx}"
+        appendLog "decl" <| Json.str fallback
+        -- IO.println s!"declToString fallback to: {fallback} for {stx}"
         return fallback
 
 def declToThmHead : Syntax → CoreM String := fun d => do
@@ -217,7 +218,8 @@ def declToThmHead : Syntax → CoreM String := fun d => do
     --     return s!"⦃_ : {type}⦄ → "
     | stx =>
         let fallback := stx.reprint.get! ++ " → "
-        IO.println s!"declToString fallback to: {fallback} for {stx}"
+        appendLog "decl_head" <| Json.str fallback
+        -- IO.println s!"declToString fallback to: {fallback} for {stx}"
         return fallback
 
 
