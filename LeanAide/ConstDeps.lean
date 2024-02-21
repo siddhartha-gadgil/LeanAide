@@ -28,6 +28,7 @@ def constantNameTypes  : MetaM (Array (Name ×  Expr)) := do
   let decls := env.constants.map₁.toArray
   let allNames := decls.map $ fun (name, dfn) => (name, dfn.type)
   let names ← allNames.filterM (fun (name, _) => isWhiteListed name)
+  let names := names.filter fun (n, _) => !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n))
   return names
 
 initialize exprRecCache : IO.Ref (HashMap Expr (Array Name)) ← IO.mkRef (HashMap.empty)
