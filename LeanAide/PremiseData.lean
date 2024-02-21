@@ -730,6 +730,7 @@ structure IdentPair where
     context : Array String
     type : String
     thm: String
+    statement: String
     id : String
 deriving Inhabited, ToJson
 
@@ -737,7 +738,7 @@ namespace IdentData
 
 def write (data: IdentData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
     let thm := data.thm
-    let js := Json.mkObj [("theorem", thm), ("identifiers", toJson data.ids)]
+    let js := Json.mkObj [("theorem", thm), ("statement", data.statement), ("identifiers", toJson data.ids)]
     let l := js.compress
     let gh ← match handles.find? ("identifiers", group) with
                 | some h => pure h
@@ -753,7 +754,7 @@ def write (data: IdentData)(group: String)(handles: HashMap (String × String) I
 def writeString (data: IdentData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
     let thm := data.thm
     let idString : String := data.ids.foldl (fun s i => s ++ i ++ "; ") ""
-    let js := Json.mkObj [("theorem", thm), ("identifiers", idString)]
+    let js := Json.mkObj [("theorem", thm), ("statement", data.statement), ("identifiers", idString)]
     let l := js.compress
     let gh ← match handles.find? ("ident_strings", group) with
                 | some h => pure h
@@ -768,7 +769,7 @@ def writeString (data: IdentData)(group: String)(handles: HashMap (String × Str
 
 
 def unfold (data: IdentData) : Array IdentPair :=
-    data.ids.map (fun id => ⟨data.context, data.type, data.thm, id⟩)
+    data.ids.map (fun id => ⟨data.context, data.type, data.thm, data.statement, id⟩)
 
 def ofCorePremiseData (data: CorePremiseData) : IdentData :=
     ⟨data.context, data.type, data.thm, data.statement, data.ids⟩
@@ -779,7 +780,7 @@ namespace IdentPair
 
 def write (data: IdentPair)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
     let thm := data.thm
-    let js := Json.mkObj [("theorem", thm), ("identifier", toJson data.id)]
+    let js := Json.mkObj [("theorem", thm), ("statement", data.statement), ("identifier", toJson data.id)]
     let l := js.compress
     let gh ← match handles.find? ("ident_pairs", group) with
                 | some h => pure h
