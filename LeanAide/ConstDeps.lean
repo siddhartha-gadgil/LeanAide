@@ -265,6 +265,7 @@ def getM : MetaM <| Array DefnTypes := do
         count := count + 1
         let depth := type.approxDepth
         unless depth > 60 do
+        try
           let fmt ← Meta.ppExpr type
           let isProp ← isProof term
           let value :=
@@ -278,6 +279,9 @@ def getM : MetaM <| Array DefnTypes := do
             mkStatement (some name) typeStx valueStx? isProp
           dfns := dfns.push
             ⟨name, fmt.pretty, isProp, doc?, value, statement⟩
+        catch e =>
+          let msg := e.toMessageData
+          IO.eprintln s!"Failed to process {name}; error {← msg.toString}"
     return dfns
 
 def writeM (dfns : Array DefnTypes)(name: String := "all.json") : MetaM Unit := do
