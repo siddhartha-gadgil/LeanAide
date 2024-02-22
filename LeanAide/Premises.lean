@@ -289,14 +289,18 @@ def DefData.getM? (name: Name)(term type: Expr) : MetaM (Option  DefData) :=  wi
     do
     if term.approxDepth > (← getDelabBound) || type.approxDepth > (← getDelabBound) then return none
     else
-    let (stx, _) ←  delabCore term {} (delabVerbose)
-    let (tstx, _) ←  delabCore type {} (delabVerbose)
-    let isProp ← Meta.isProof term
-    let premises ←
-        Lean.Syntax.premiseDataM #[] stx tstx isProp (some name) name
-    let typeDepth := type.approxDepth
-    let valueDepth := term.approxDepth
-    return some {name := name, type := ← purgeTerm tstx, value := ← purgeTerm stx, isProp := isProp, typeDepth := typeDepth.toNat, valueDepth := valueDepth.toNat, premises := premises.eraseDups}
+    try
+        let (stx, _) ←  delabCore term {} (delabVerbose)
+        let (tstx, _) ←  delabCore type {} (delabVerbose)
+        let isProp ← Meta.isProof term
+        let premises ←
+            Lean.Syntax.premiseDataM #[] stx tstx isProp (some name) name
+        let typeDepth := type.approxDepth
+        let valueDepth := term.approxDepth
+        return some {name := name, type := ← purgeTerm tstx, value := ← purgeTerm stx, isProp := isProp, typeDepth := typeDepth.toNat, valueDepth := valueDepth.toNat, premises := premises.eraseDups}
+    catch ex =>
+        IO.println s!"Error {← ex.toMessageData.toString} getting {name}"
+        return none
 
 def DefData.ofNameM? (name: Name) : MetaM (Option DefData) := do
     let info ←  getConstInfo name
