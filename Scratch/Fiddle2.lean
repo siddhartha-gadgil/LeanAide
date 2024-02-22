@@ -6,6 +6,8 @@ import Mathlib
 
 #help term
 
+example :  ∃ (R : Type u), [CommRing R] →   ¬IsField R := by sorry
+
 example (l: ∀n : ℕ , n > 10 → n > 5): (∃ (n : ℕ), n > 10) →  ∃n,   n >  5 := by
   intro h
   apply Exists.intro

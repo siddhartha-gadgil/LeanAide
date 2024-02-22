@@ -43,6 +43,8 @@ def checkDepth : DelabM Unit := do
 
 #check Meta.isProp
 
+#check delab
+
 open Core
 /-- Modified top-level delaborator to expand if proof to `proof =: prop`-/
 partial def delabVerbose : Delab :=
@@ -90,12 +92,11 @@ def delabAppFn : Delab := do
 
 @[delab proj]
 def delabProjVerbose : Delab := do
-  let Expr.proj typeName idx _ ← getExpr | unreachable!
+  let Expr.proj _ idx _ ← getExpr | unreachable!
   try
     let e ← withProj delabVerbose
-    let field := (getStructureFields (← getEnv) typeName)[idx]!
-    let idx := mkIdent (typeName ++ field)
-    `($idx:ident $e:term)
+    let idx := Syntax.mkLit fieldIdxKind (toString (idx + 1));
+    `($(e).$idx:fieldIdx)
   catch _ =>
     delabProj
 
@@ -406,6 +407,7 @@ def withBindingBodyUnusedName {α} (d : Syntax → DelabM α) : DelabM α := do
   let stxN ← annotateCurPos (mkIdent n)
   withBindingBody n $ d stxN
 
+#check delabLam
 /-- `delabBinders` modified to never group -/
 private partial def delabBinders (delabGroup : Array Syntax → Syntax → Delab) : optParam (Array Syntax) #[] → Delab
   | curNames => do
