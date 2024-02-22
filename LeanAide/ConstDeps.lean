@@ -289,6 +289,8 @@ def writeM (dfns : Array DefnTypes)(name: String := "all.json") : MetaM Unit := 
     let jsonl := dfns.map toJson
     let jsonc := jsonl.map Json.compress
     let path := System.mkFilePath ["rawdata", "defn-types", name]
+    if ← path.pathExists then
+        IO.FS.writeFile path ""
     let handle ←  IO.FS.Handle.mk path IO.FS.Mode.append
     for l in jsonc do
         handle.putStrLn l
