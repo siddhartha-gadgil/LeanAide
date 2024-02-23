@@ -6,7 +6,7 @@ def top_math_terms(statement):
     return math_terms(statement, 1)[0]
 
 js = []
-with open("data/mathlib4-prompts.json", 'r', encoding='utf-8') as inp:
+with open("resources/mathlib4-prompts.json", 'r', encoding='utf-8') as inp:
     js = json.load(inp)
 
 def add_terms(start, stop):

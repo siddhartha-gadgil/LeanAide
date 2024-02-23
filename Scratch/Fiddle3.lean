@@ -52,3 +52,5 @@ def trivialEquality : Syntax → MetaM Bool
   let stx' ← `(1 = 1)
   let b' ← trivialEquality stx'
   return (b, b')
+
+open Tactic

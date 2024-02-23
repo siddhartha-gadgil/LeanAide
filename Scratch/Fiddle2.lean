@@ -19,6 +19,14 @@ example (l: ∀n : ℕ , n > 10 → n > 5): (∃ (n : ℕ), n > 10) →  ∃n,  
   sorry
   sorry
 
+#check Real.sin
+
+open Real in
+example : ∀(x: ℝ), (x + sin x + cos (tan x)) * 2 =
+  2 * cos (tan x) + 2 * x + sin x + sin x := by
+  intro x
+  ring
+
 #check AddCommGroupCat.cokernelIsoQuotient
 #print AddCommGroupCat.cokernelIsoQuotient
 #check String.splitOn

@@ -61,17 +61,6 @@ def defFrontValue(s: String)(n: Name) : MetaM String := do
   "theorem two_le_three : 2 ≤ 3  := sorry" `two_le_three
 
 
-#eval defFrontValueM "def blah : Nat := 1" `blah
-#eval defFrontValueM
-  "theorem two_le_three : 2 ≤ 3  := by decide" `two_le_three true
-
-#check two_le_three
-
-def two:= 2
-
-#eval defFrontValueM
-  "theorem two_le_three : (two : ℕ) ≤ 3  := by decide" `two_le_three
-
 def bb : String := "
 theorem two_le_four : 2 ≤ 4  := by decide
 
@@ -79,9 +68,6 @@ def x := unknown
 
 def one : Nat := 1
 "
-
-#eval defFrontValueM bb `two_le_three
-#eval defFrontValueM bb `one
 
 #eval checkElabFrontM "def three := 2"
 

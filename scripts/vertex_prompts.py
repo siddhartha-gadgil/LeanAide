@@ -1,6 +1,6 @@
 import json
 
-with open('data/mathlib4-prompts.json', 'r') as f:
+with open('resources/mathlib4-prompts.json', 'r') as f:
     json_data = json.load(f)
 
 with open('rawdata/training-prompts.jsonl', 'w') as wf:

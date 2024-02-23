@@ -2,7 +2,7 @@ import json
 # import openai
 from queries import azure_embed
 
-inp = open("data/mathlib4-prompts.json", 'r', encoding='utf-8')
+inp = open("resources/mathlib4-prompts.json", 'r', encoding='utf-8')
 out = open("rawdata/mathlib4-prompts-embeddings.json", 'w', encoding='utf-8')
 
 # read `inp` and extract json
