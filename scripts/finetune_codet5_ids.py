@@ -35,7 +35,7 @@ print(dataset)
 
 tokenizer = RobertaTokenizer.from_pretrained("Salesforce/codet5p-220m")
 
-prefix = "Lean proof-identifiers from Theorem: "
+prefix = "Premises: "
 max_input_length = 256
 max_target_length = 256
 
@@ -79,14 +79,14 @@ train_dataset = dataset['train']
 # train_dataset = train_dataset.shuffle(seed=42).select(range(10000)) # for testing
 
 
-model = T5ForConditionalGeneration.from_pretrained('Salesforce/codet5p-220m')
-model = model.cuda()
+model = T5ForConditionalGeneration.from_pretrained('Salesforce/codet5p-220m', device_map='auto')
+# model = model.cuda()
 # if torch.cuda.is_available() else torch.device("cpu")
 device = torch.device("cuda")
 
 
 training_args = TrainingArguments(
-    output_dir="rawdata/idstrings_codet5_base",
+    output_dir="rawdata/idstrings_codet5p_220m",
     save_strategy="epoch",)
 
 trainer = Trainer(
