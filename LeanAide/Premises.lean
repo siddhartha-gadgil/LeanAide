@@ -372,6 +372,7 @@ def PremiseData.writeBatch (names: List Name)(group: String)
                 let identData :=
                     IdentData.ofCorePremiseData coreData
                 identData.write group handles
+                identData.writeString group handles
                 let identPairs := identData.unfold
                 for identPair in identPairs do
                     identPair.write group handles

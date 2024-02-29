@@ -100,11 +100,12 @@ def delabProjVerbose : Delab := do
   catch _ =>
     delabProj
 
-
+#check delabAppExplicitCore
 @[delab app]
 def delabAppExplicit : Delab := do
   checkDepth
-  let paramKinds ← getParamKinds
+  let e ← getExpr
+  let paramKinds ← getParamKinds (e.getAppFn) (e.getAppArgs)
   let tagAppFn ← getPPOption getPPTagAppFns
   let (fnStx, _, argStxs) ← withAppFnArgs
     (do
@@ -157,7 +158,8 @@ def unexpandStructureInstance (stx : Syntax) : Delab := whenPPOption getPPStruct
 def delabAppImplicit : Delab := do
   checkDepth
   -- TODO: always call the unexpanders, make them guard on the right # args?
-  let paramKinds ← getParamKinds
+  let e ← getExpr
+  let paramKinds ← getParamKinds (e.getAppFn) (e.getAppArgs)
   if ← getPPOption getPPExplicit then
     if paramKinds.any (fun param => !param.isRegularExplicit) then failure
 
@@ -197,7 +199,7 @@ def delabAppImplicit : Delab := do
       pure (fnStx, paramKinds.tailD [], argStxs))
   let stx := Syntax.mkApp fnStx argStxs
   -- let stx ← wrapInType (← getExpr) stx
-  if ← isRegularApp then
+  if ← isRegularApp (← getExpr).getAppNumArgs then
     (guard (← getPPOption getPPNotation) *> unexpandRegularApp stx)
     <|> (guard (← getPPOption getPPStructureInstances) *> unexpandStructureInstance stx)
     <|> pure stx
