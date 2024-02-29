@@ -654,11 +654,11 @@ def writeBatchDefnsM (start batch : Nat) : MetaM Nat  := do
                 let idData := 
                     idData.map (fun d ↦ d.filter 
                         (names.contains · ))
-                let l := (toJson defData).pretty 10000000
+                let l := (toJson defData).compress
                 if l.length < 9000000 then
                     h.putStrLn  l
                 for d in idData do
-                    let l := (toJson d).pretty 10000000
+                    let l := (toJson d).compress
                     if l.length < 9000000 then
                     h'.putStrLn l
         count := count + 1    
@@ -722,7 +722,7 @@ def writePremisesM  : MetaM Nat  := do
                     premisesDone := premisesDone.push premiseHead
                     IO.print "premise new; "
                     let premise := premise.filterIds (names.contains · )
-                    let l := (toJson premise).pretty 10000000
+                    let l := (toJson premise).compress
                     if l.length < 9000000 then
                         h.putStrLn  l
                         gh.putStrLn l
@@ -737,7 +737,7 @@ def writePremisesM  : MetaM Nat  := do
                 ("is_prop", toJson defData.isProp),
                 ("type", toJson <| ←  defData.type.purge)
             ]
-            let l := idData.pretty 10000000
+            let l := idData.compress
             if l.length < 9000000 then
                 hId.putStrLn l
         count := count + 1    

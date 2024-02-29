@@ -434,7 +434,7 @@ def statement (pd: PremiseData) : CoreM String := do
     mkStatement pd.name? (← pd.thm) none true
 
 def writeFull (data: PremiseData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : CoreM Unit := do
-    let l := (← toJsonM data).pretty 10000000
+    let l := (← toJsonM data).compress
     -- IO.println s!"Handles:  {handles.toList.map (fun (k, _) => k)}"
     let key := ("full", group)
     -- IO.println s!"Key: {key}, contained in handles: {handles.contains key}"
@@ -542,7 +542,7 @@ def fromPremiseData (pd: PremiseData)(propMap : HashMap String (String × String
 
 
 def write (data: CorePremiseData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
-    let l := (toJson data).pretty 10000000
+    let l := (toJson data).compress
     let gh ← match handles.find? ("core", group) with
                 | some h => pure h
                 | none =>
