@@ -73,83 +73,94 @@ def addTacticString (tac: String) : MetaM Unit := do
 
 
 /-- Rule set member for `apply` for a global constant -/
-def applyConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMember := do
+def applyConstRuleMembers (goal: MVarId)(name: Name)(p: Float) :
+  TermElabM <| Array LocalRuleSetMember := do
   let prob :=  Syntax.mkNumLit s!"{p * 100}"
-  let stx ← `(attr|aesop unsafe $prob:num % apply)
+  let id := mkIdent name
+  let stx ← `(attr|aesop unsafe $prob:num % apply $id:ident)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
-  let rules ← runMetaMAsCoreM $
-      config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
-  return rules.map (·.1)
+  let rules ← runTermElabMAsCoreM $
+      config.rules.concatMapM (·.buildAdditionalLocalRules goal)
+  return rules
 
-def safeApplyConstRuleMembers (decl: Name) : MetaM <| Array RuleSetMember := do
-  let stx ← `(attr|aesop safe apply)
+def safeApplyConstRuleMembers (goal: MVarId)(name: Name) :
+  TermElabM <| Array LocalRuleSetMember := do
+  let id := mkIdent name
+  let stx ← `(attr|aesop safe apply $id:ident)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
-  let rules ← runMetaMAsCoreM $
-      config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
-  return rules.map (·.1)
+  let rules ← runTermElabMAsCoreM $
+      config.rules.concatMapM (·.buildAdditionalLocalRules goal)
+  return rules
 
 #check Parser.numLit
 
 /-- Rule set members for `simp` for a global constant proof -/
-partial def simpConstRuleMember (decl: Name) : MetaM <| Array RuleSetMember := do
-  let stx ← `(attr|aesop norm simp)
+partial def simpConstRuleMember (goal: MVarId)(name: Name) : TermElabM <| Array LocalRuleSetMember := do
+  let id := mkIdent name
+  let stx ← `(attr|aesop norm simp $id:ident)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
-  let rules ← runMetaMAsCoreM $
-      config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
-  return rules.map (·.1)
+  let rules ← runTermElabMAsCoreM $
+      config.rules.concatMapM (·.buildAdditionalLocalRules goal)
+  return rules
 
 /-- Rule set member for `forward` for a global constant -/
-def forwardConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMember := do
+def forwardConstRuleMembers (goal: MVarId)(name: Name)(p: Float) : TermElabM <| Array LocalRuleSetMember := do
   let prob :=  Syntax.mkNumLit s!"{p * 100}"
-  let stx ← `(attr|aesop unsafe $prob:num % forward)
+  let id := mkIdent name
+  let stx ← `(attr|aesop unsafe $prob:num % forward $id:ident)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
-  let rules ← runMetaMAsCoreM $
-      config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
-  return rules.map (·.1)
+  let rules ← runTermElabMAsCoreM $
+      config.rules.concatMapM (·.buildAdditionalLocalRules goal)
+  return rules
 
 /-- Rule set member for `destruct` for a global constant -/
-def destructConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMember := do
+def destructConstRuleMembers (goal: MVarId)(name: Name)(p: Float) : TermElabM <| Array LocalRuleSetMember := do
+  let id := mkIdent name
   let prob :=  Syntax.mkNumLit s!"{p * 100}"
-  let stx ← `(attr|aesop unsafe $prob:num % destruct)
+  let stx ← `(attr|aesop unsafe $prob:num % destruct $id:ident)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
-  let rules ← runMetaMAsCoreM $
-      config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
-  return rules.map (·.1)
+  let rules ← runTermElabMAsCoreM $
+      config.rules.concatMapM (·.buildAdditionalLocalRules goal)
+  return rules
 
 /-- Rule set member for `cases` for a global constant -/
-def casesConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMember := do
+def casesConstRuleMembers (goal: MVarId)(name: Name)(p: Float) : TermElabM <| Array LocalRuleSetMember := do
+  let id := mkIdent name
   let prob :=  Syntax.mkNumLit s!"{p * 100}"
-  let stx ← `(attr|aesop unsafe $prob:num % cases)
+  let stx ← `(attr|aesop unsafe $prob:num % cases $id:ident)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
-  let rules ← runMetaMAsCoreM $
-      config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
-  return rules.map (·.1)
+  let rules ← runTermElabMAsCoreM $
+      config.rules.concatMapM (·.buildAdditionalLocalRules goal)
+  return rules
 
 /-- Rule set member for `constructors` for a global constant -/
-def constructorConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMember := do
+def constructorConstRuleMembers (goal: MVarId)(name: Name)(p: Float) : TermElabM <| Array LocalRuleSetMember := do
   let prob :=  Syntax.mkNumLit s!"{p * 100}"
-  let stx ← `(attr|aesop unsafe $prob:num % constructors)
+  let id := mkIdent name
+  let stx ← `(attr|aesop unsafe $prob:num % constructors $id:ident)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
-  let rules ← runMetaMAsCoreM $
-      config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
-  return rules.map (·.1)
+  let rules ← runTermElabMAsCoreM $
+      config.rules.concatMapM (·.buildAdditionalLocalRules goal)
+  return rules
 
 /-- Rule set member for `unfold` for a global constant -/
-def unfoldConstRuleMembers (decl: Name) : MetaM <| Array RuleSetMember := do
-  let stx ← `(attr|aesop norm unfold)
+def unfoldConstRuleMembers (goal: MVarId)(name: Name) : TermElabM <| Array LocalRuleSetMember := do
+  let id := mkIdent name
+  let stx ← `(attr|aesop norm unfold $id:ident)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
-  let rules ← runMetaMAsCoreM $
-      config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
-  return rules.map (·.1)
+  let rules ← runTermElabMAsCoreM $
+      config.rules.concatMapM (·.buildAdditionalLocalRules goal)
+  return rules
 
 /-- Rule set member for `tactic` for a global constant -/
-def tacticConstRuleMembers (decl: Name)(p: Float) : MetaM <| Array RuleSetMember := do
+def tacticConstRuleMembers (goal: MVarId)(name: Name)(p: Float) : TermElabM <| Array LocalRuleSetMember := do
+  let id := mkIdent name
   let prob :=  Syntax.mkNumLit s!"{p * 100}"
-  let stx ← `(attr|aesop unsafe $prob:num % tactic)
+  let stx ← `(attr|aesop unsafe $prob:num % tactic $id:ident)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
-  let rules ← runMetaMAsCoreM $
-      config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
-  return rules.map (·.1)
+  let rules ← runTermElabMAsCoreM $
+      config.rules.concatMapM (·.buildAdditionalLocalRules goal)
+  return rules
 
 
 
@@ -201,28 +212,30 @@ def dynamicTactics : RuleTac := fun input => do
     ++ parsedTacs
     ) input
 
-def dynamicRuleMember (p: Float) : RuleSetMember :=
+def dynamicRuleMember (p: Float) : BaseRuleSetMember :=
   let name : RuleName := {
     name := `dynamicTactics
     builder := BuilderName.tactic
     phase := PhaseName.«unsafe»
     scope := ScopeName.global
   }
-  RuleSetMember.unsafeRule {
+  BaseRuleSetMember.unsafeRule {
     name:= name
+    pattern? := none
     indexingMode := IndexingMode.unindexed
     extra:= ⟨⟨p⟩⟩
     tac := .ruleTac ``dynamicTactics}
 
-def tacticMember (p: Float)(tac : Name) : RuleSetMember :=
+def tacticMember (p: Float)(tac : Name) : BaseRuleSetMember :=
   let name : RuleName := {
     name := tac
     builder := BuilderName.tactic
     phase := PhaseName.«unsafe»
     scope := ScopeName.global
   }
-  RuleSetMember.unsafeRule {
+  BaseRuleSetMember.unsafeRule {
     name:= name
+    pattern? := none
     indexingMode := IndexingMode.unindexed
     extra:= ⟨⟨p⟩⟩
     tac := .tacticM tac}
@@ -332,64 +345,66 @@ def withAndWithoutSimps (config: AesopSearchConfig)
   (decls: List Name) : List AesopSearchConfig :=
   withAndWithoutSimpsList [config] decls
 
-def AesopSearchConfig.ruleSet (config: AesopSearchConfig) :
-    MetaM RuleSet := do
+def AesopSearchConfig.ruleSet (config: AesopSearchConfig)(goal: MVarId) :
+    TermElabM LocalRuleSet := do
   clearSuggestions
   for n in config.rws do
     addConstRewrite n false
     addConstRewrite n true
   for t in config.dynTactics do
     addTacticString t
-  let appRules : Array RuleSetMember := (← config.apps.mapM
-    (fun (n, p) => applyConstRuleMembers n p)
+  let appRules : Array LocalRuleSetMember := (← config.apps.mapM
+    (fun (n, p) => applyConstRuleMembers goal n p)
     ).foldl (fun c r => c ++ r) #[]
-  let safeAppRules : Array RuleSetMember := (← config.safeApps.mapM
-    (fun n => safeApplyConstRuleMembers n)
+  let safeAppRules : Array LocalRuleSetMember := (← config.safeApps.mapM
+    (fun n => safeApplyConstRuleMembers goal n)
     ).foldl (fun c r => c ++ r) #[]
-  let forwardRules : Array RuleSetMember := (← config.forwards.mapM
-    (fun (n, p) => forwardConstRuleMembers n p)
+  let forwardRules : Array LocalRuleSetMember := (← config.forwards.mapM
+    (fun (n, p) => forwardConstRuleMembers goal n p)
     ).foldl (fun c r => c ++ r) #[]
-  let destructRules : Array RuleSetMember := (← config.destructs.mapM
-    (fun (n, p) => destructConstRuleMembers n p)
+  let destructRules : Array LocalRuleSetMember := (← config.destructs.mapM
+    (fun (n, p) => destructConstRuleMembers goal n p)
     ).foldl (fun c r => c ++ r) #[]
-  let casesRules : Array RuleSetMember := (← config.cases.mapM
-    (fun (n, p) => casesConstRuleMembers n p)
+  let casesRules : Array LocalRuleSetMember := (← config.cases.mapM
+    (fun (n, p) => casesConstRuleMembers goal n p)
     ).foldl (fun c r => c ++ r) #[]
-  let constructorRules : Array RuleSetMember := (← config.constructors.mapM
-    (fun (n, p) => constructorConstRuleMembers n p)
+  let constructorRules : Array LocalRuleSetMember := (← config.constructors.mapM
+    (fun (n, p) => constructorConstRuleMembers goal n p)
     ).foldl (fun c r => c ++ r) #[]
   let tacticRules :=  (←
     config.tactics.push (``introsWithDefault, 0.9) |>.mapM
-    (fun (n, p) => tacticConstRuleMembers n p)
+    (fun (n, p) => tacticConstRuleMembers goal n p)
     ).foldl (fun c r => c ++ r) #[]
-  let simpRules ← config.simps.mapM simpConstRuleMember
+  let simpRules ← config.simps.mapM
+    fun n => simpConstRuleMember goal n
   let simpRules := simpRules.foldl (fun c r => c ++ r) #[]
-  let defaultRules ←
-      Frontend.getDefaultRuleSet (includeGlobalSimpTheorems := true)
-      {}
-  let allRules : RuleSet :=
+  let allRules : Array LocalRuleSetMember :=
     ((appRules ++ simpRules ++ tacticRules ++ safeAppRules
      ++ forwardRules ++ destructRules ++ casesRules ++ constructorRules
-     ).push (dynamicRuleMember config.dynProb)).foldl
-    (fun c r => c.add r) defaultRules
+     ).push (LocalRuleSetMember.global (
+        GlobalRuleSetMember.base <| dynamicRuleMember config.dynProb)))
+
+  let allRules :=
+    allRules.foldl (fun c r => c.add r) ∅
   return allRules
 
+#check LocalRuleSet
+#check Frontend.getGlobalRuleSet
 
-
-def runAesop (config: AesopSearchConfig): MVarId → MetaM (List MVarId) := fun goal =>
+def runAesop (config: AesopSearchConfig): MVarId → TermElabM (List MVarId) := fun goal =>
   goal.withContext do
-  let allRules ← config.ruleSet
+  let allRules ← config.ruleSet goal
   let (goals, _) ← Aesop.search goal allRules config.toOptions
   return goals.toList
 
 def polyAesopRun (configs: List AesopSearchConfig) :
-    MVarId → MetaM Bool :=
+    MVarId → TermElabM Bool :=
   fun goal => goal.withContext do
   match configs with
   | [] => return false
   | head :: tail =>
     let s ← saveState
-    let allRules ← head.ruleSet
+    let allRules ← head.ruleSet goal
     let (goals, _) ← Aesop.search goal allRules head.toOptions
     if goals.isEmpty then
       return true

@@ -139,6 +139,6 @@ lean_exe extras.depnames{
 
 
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git"@"v4.5.0"
+  "https://github.com/leanprover-community/mathlib4.git"@"v4.6.0"
 
 -- require «lean-slides» from git "https://github.com/0art0/lean-slides"@"master"
