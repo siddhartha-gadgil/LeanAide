@@ -497,7 +497,7 @@ def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CoreM CorePremiseD
         ← termToString thm,
         ← pd.statement,
         ← termToString  pd.typeGroup,
-        pd.ids.map (fun (n, _) => shrink n),
+        pd.ids.map (fun (n, _) => shrink n) |>.toList.eraseDups.toArray,
         (← pd.terms.toList.mapM (fun td => do
         pure ⟨← td.context.mapM declToString,
         ← termToString td.value, td.isProp⟩)) |>.eraseDups,
@@ -537,7 +537,8 @@ def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap String (String 
     ids := direct.ids
     terms := direct.terms,
     lemmas := direct.lemmas,
-    namedLemmas := ←  direct.ids.filterMapM (
+    namedLemmas := ←
+        direct.ids.toList.eraseDups.toArray.filterMapM (
         fun id =>  getDefn? id propMap)
     }
 
