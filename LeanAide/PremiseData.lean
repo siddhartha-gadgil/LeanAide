@@ -398,6 +398,7 @@ fun data ↦
 structure PremiseData  where
  context : ContextSyn -- variables, types, binders
  name? :       Option Name  -- name
+ doc? :      Option String  -- documentation
  defnName: Name -- name of definition from which it arose
  type :       Syntax.Term  -- proposition
  typeGroup : Syntax.Term  -- proposition group
@@ -476,6 +477,7 @@ def CorePropData.ofPropProof (propPf : PropProofData) : CoreM CorePropData := do
 structure CorePremiseDataDirect where
     context : Array String
     name? :       Option Name  -- name
+    doc? :      Option String  -- documentation
     type : String
     thm: String
     statement : String
@@ -490,6 +492,7 @@ def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CoreM CorePremiseD
     let type ← termToString pd.type
     return ⟨← pd.context.mapM declToString,
         pd.name?,
+        pd.doc?,
         type,
         ← termToString thm,
         ← pd.statement,
@@ -526,6 +529,7 @@ def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap String (String 
     return {
     context := direct.context,
     name? := direct.name?,
+    doc? := direct.doc?,
     type := direct.type,
     thm := direct.thm,
     statement := direct.statement,
@@ -559,11 +563,11 @@ end CorePremiseData
 namespace PremiseData
 
 def filterIds (pd: PremiseData)(p: Name → Bool) : PremiseData :=
-    ⟨pd.context, pd.name?, pd.defnName,  pd.type, pd.typeGroup, pd.proof, pd.typeSize, pd.proofSize, pd.terms, pd.propProofs, pd.ids.filter (fun (n, _) => p n)⟩
+    ⟨pd.context, pd.name?, pd.doc?, pd.defnName,  pd.type, pd.typeGroup, pd.proof, pd.typeSize, pd.proofSize, pd.terms, pd.propProofs, pd.ids.filter (fun (n, _) => p n)⟩
 
 def increaseDepth (d: Nat) : PremiseData → PremiseData :=
 fun data ↦
-    ⟨data.context, data.name?, data.defnName, data.type, data.typeGroup, data.proof, data.typeSize, data.proofSize, (data.terms.map (fun td => td.increaseDepth d)), (data.propProofs.map (fun p => p.increaseDepth d)),
+    ⟨data.context, data.name?, data.doc?, data.defnName, data.type, data.typeGroup, data.proof, data.typeSize, data.proofSize, (data.terms.map (fun td => td.increaseDepth d)), (data.propProofs.map (fun p => p.increaseDepth d)),
         (data.ids.map (fun (n,  m) => (n,  m + d))) ⟩
 
 def coreData (data: PremiseData)(propMap : HashMap String (String × String)) : MetaM CorePremiseData :=
@@ -801,6 +805,8 @@ def contextString (context : Array String) : String :=
     context.foldr (fun s c => s ++ " " ++ c) ""
 
 structure LemmaPair where
+    name?: Option Name
+    doc? : Option String
     thmContext : Array String
     thmType : String
     thm: String
@@ -813,7 +819,14 @@ namespace LemmaPair
 -- def thm (data: LemmaPair) : String := data.thmContext.foldr (fun s c => s ++ c) s!" : {data.thmType}"
 
 def write (data: LemmaPair)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
-    let js := Json.mkObj [("theorem", data.statement), ("lemma", data.lemmaStatement), ("theorem-type", data.thmType), ("lemma-type", data.lemmaType)]
+    let d : List (String × Json) := [("theorem", data.statement), ("lemma", data.lemmaStatement), ("theorem-type", data.thmType), ("lemma-type", data.lemmaType)]
+    let d := match data.name? with
+        | some n => ("name", toJson n.toString) :: d
+        | none => d
+    let d := match data.doc? with
+        | some doc => ("doc_string", toJson doc) :: d
+        | none => d
+    let js := Json.mkObj d
     let l := js.compress
     let gh ← match handles.find? ("lemma_pairs", group) with
                 | some h => pure h
@@ -829,9 +842,9 @@ def write (data: LemmaPair)(group: String)(handles: HashMap (String × String) I
 
 def ofCorePremiseData (data: CorePremiseData) : Array LemmaPair :=
     data.lemmas.map (fun l =>
-        ⟨data.context, data.type, data.thm, data.statement, l.thm, l.statement⟩) ++
+        ⟨data.name?, data.doc?, data.context, data.type, data.thm, data.statement, l.thm, l.statement⟩) ++
     data.namedLemmas.map (fun (type, statement) =>
-        ⟨data.context, data.type, data.thm, data.statement, type, statement⟩)
+        ⟨data.name?, data.doc?, data.context, data.type, data.thm, data.statement, type, statement⟩)
 
 end LemmaPair
 

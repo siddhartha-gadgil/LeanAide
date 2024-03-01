@@ -165,7 +165,7 @@ partial def Lean.Syntax.premiseDataAuxM (context : ContextSyn)(defnName: Name)(s
                     ⟨context, prop, proof, prop.raw.size, proof.raw.size, 0⟩
                 pfs.map (fun s ↦ s.increaseDepth 1) |>.push headPf
         let head : PremiseData :=
-            ⟨context, none, defnName, prop, newPropHead, proof, prop.raw.size, proof.raw.size, ts, pfs, ids⟩
+            ⟨context, none, none, defnName, prop, newPropHead, proof, prop.raw.size, proof.raw.size, ts, pfs, ids⟩
         return (ts.map (fun t ↦ t.increaseDepth 1),
                 newPfs,
                 ids.map (fun (s, m) => (s, m + 1)),
@@ -272,8 +272,11 @@ def Lean.Syntax.premiseDataM (context : Array Syntax)
     let (ts, pfs, ids, ps) ←
         premiseDataAuxM context defnName proof (some prop) false maxDepth?
     if includeHead then
+        let doc? ← match name? with
+            | some name =>  findDocString? (← getEnv) name
+            | none => pure none
         let head : PremiseData :=
-            ⟨context, name?, defnName, ← purgeTerm prop,
+            ⟨context, name?, doc?, defnName, ← purgeTerm prop,
             ← purgeTerm prop, ← purgeTerm proof, (← purgeTerm prop).raw.size,
             (← purgeTerm proof).raw.size, ts, pfs, ids⟩
         return head :: ps
