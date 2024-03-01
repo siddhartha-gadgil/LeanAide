@@ -536,7 +536,7 @@ def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap String (String 
     typeGroup := direct.typeGroup,
     ids := direct.ids
     terms := direct.terms,
-    lemmas := direct.lemmas,
+    lemmas := direct.lemmas.toList.eraseDups.toArray,
     namedLemmas := ←
         direct.ids.toList.eraseDups.toArray.filterMapM (
         fun id =>  getDefn? id propMap)
