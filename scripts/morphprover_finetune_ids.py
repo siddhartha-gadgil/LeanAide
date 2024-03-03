@@ -98,8 +98,7 @@ dataset = dataset.map(preprocess_examples)
 
 # Next, let's set the format to "torch" and create PyTorch dataloaders.
 
-dataset.set_format(type="torch", columns=[
-                   'input_ids', 'attention_mask', 'labels'])
+dataset.set_format(type="torch", columns=['theorem', 'statement', 'identifiers', 'text'])
 train_dataset = dataset['train']
 # train_dataset = train_dataset.shuffle(seed=42).select(range(10000)) # for testing
 
