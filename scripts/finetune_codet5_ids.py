@@ -6,14 +6,23 @@
 # This is adapted from a notebook for training a CodeT5 model on generating documentation for Ruby code.
 
 
-from transformers import T5ForConditionalGeneration
 import json
 from transformers import TrainingArguments, Trainer
 from torch.utils.data import DataLoader
-from transformers import RobertaTokenizer
 from datasets import load_dataset
 import torch
 from random import sample
+
+from transformers import T5ForConditionalGeneration, AutoTokenizer
+
+checkpoint = "Salesforce/codet5p-220m"
+device = "cuda" # for GPU usage or "cpu" for CPU usage
+
+tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+model = T5ForConditionalGeneration.from_pretrained(checkpoint,
+                                                   device_map='auto')
+
+
 
 dataset = load_dataset(
     'json', data_dir='rawdata/premises/ident_strings', data_files="train.jsonl")
@@ -33,10 +42,8 @@ print(dataset)
 # Below, we define a `preprocess_examples` function, which we can apply on the entire dataset.
 
 
-tokenizer = RobertaTokenizer.from_pretrained("Salesforce/codet5p-220m")
-
 prefix = "Premises: "
-max_input_length = 256
+max_input_length = 1024
 max_target_length = 256
 
 
@@ -78,11 +85,6 @@ dataset.set_format(type="torch", columns=[
 train_dataset = dataset['train']
 # train_dataset = train_dataset.shuffle(seed=42).select(range(10000)) # for testing
 
-
-model = T5ForConditionalGeneration.from_pretrained('Salesforce/codet5p-220m', device_map='auto')
-# model = model.cuda()
-# if torch.cuda.is_available() else torch.device("cpu")
-device = torch.device("cuda")
 
 
 training_args = TrainingArguments(
