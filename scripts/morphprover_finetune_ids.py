@@ -83,8 +83,7 @@ def preprocess_examples(examples):
         "role": "assistant",
         "content": ids
     }]
-    text = tokenizer.apply_chat_template(chat, max_length=max_input_length, padding="max_length", truncation=True,
-                                         tokenize=False)
+    text = tokenizer.apply_chat_template(chat, tokenize=False)
 
     # encode the summaries
     model_inputs = {"text" : text}
