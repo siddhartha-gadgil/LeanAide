@@ -81,7 +81,7 @@ def preprocess_examples(examples):
     },
     {
         "role": "assistant",
-        "content": ids
+        "content": json.dumps(ids)
     }]
     text = tokenizer.apply_chat_template(chat, tokenize=False)
 
