@@ -37,7 +37,7 @@ model = AutoModelForCausalLMWithValueHead.from_pretrained(
 
 tokenizer = AutoTokenizer.from_pretrained(model_id)
 
-
+tokenizer.add_special_tokens({'pad_token': '[PAD]'})
 
 dataset = load_dataset(
     'json', data_dir='rawdata/premises/ident_strings', data_files="train.jsonl")
