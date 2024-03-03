@@ -94,7 +94,7 @@ def preprocess_examples(examples):
 # Now that we have defined the function, let's call `.map()` on the HuggingFace Dataset object, which allows us to apply this function in batches (by default a batch size of 1,000 is used!) - hence super fast.
 
 
-dataset = dataset.map(preprocess_examples, batched=True)
+dataset = dataset.map(preprocess_examples)
 
 # Next, let's set the format to "torch" and create PyTorch dataloaders.
 
