@@ -94,7 +94,7 @@ accelerator = Accelerator(fsdp_plugin=fsdp_plugin)
 # Then create a `formatting_func` to structure training examples as prompts.
 
 def formatting_func(example):
-    text = f"### Question: {example['input']}\n ### Answer: {example['output']}"
+    text = f"[INST]The following is a Lean theorem preceded by a docstring:\n/-- {example['doc_string']} -/\n{example['theorem']}\n State a theorem that is used in the proof of the above result[/INST]\n{example['lemma']}"
     return text
 
 # ### 2. Load Base Model
@@ -107,7 +107,7 @@ def formatting_func(example):
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 
-base_model_id = "mistralai/Mistral-7B-v0.2"
+base_model_id = "mistralai/Mistral-7B-v0.1"
 bnb_config = BitsAndBytesConfig(
     load_in_4bit=True,
     bnb_4bit_use_double_quant=True,

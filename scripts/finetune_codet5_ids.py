@@ -111,7 +111,7 @@ model.eval()
 torch.cuda.empty_cache()
 
 def split_prediction(s):
-    return [x.strip() for x in s.split(';')]
+    return json.loads(s)
 
 
 class PredictionScores:

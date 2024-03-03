@@ -505,7 +505,7 @@ def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CoreM CorePremiseD
 
 structure CorePremiseData extends CorePremiseDataDirect where
     namedLemmas : Array (String × String)
-    idString := ids.foldl (fun s id => s ++ id ++ "; ") ""
+    idString := toJson ids |>.compress
 deriving Repr, ToJson, FromJson
 
 def checkName (name: Name) : MetaM Bool := do
@@ -526,21 +526,10 @@ def getDefn? (name: String)(propMap : HashMap String (String × String)) : MetaM
 namespace CorePremiseData
 
 def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap String (String × String)) : MetaM CorePremiseData := do
-    return {
-    context := direct.context,
-    name? := direct.name?,
-    doc? := direct.doc?,
-    type := direct.type,
-    thm := direct.thm,
-    statement := direct.statement,
-    typeGroup := direct.typeGroup,
-    ids := direct.ids
-    terms := direct.terms,
-    lemmas := direct.lemmas.toList.eraseDups.toArray,
-    namedLemmas := ←
-        direct.ids.toList.eraseDups.toArray.filterMapM (
-        fun id =>  getDefn? id propMap)
-    }
+    return {direct with
+        namedLemmas := ←
+            direct.ids.toList.eraseDups.toArray.filterMapM (
+            fun id =>  getDefn? id propMap)}
 
 def fromPremiseData (pd: PremiseData)(propMap : HashMap String (String × String)) : MetaM CorePremiseData := do
     CorePremiseData.fromDirect (← CorePremiseDataDirect.fromPremiseData pd) propMap
@@ -564,7 +553,7 @@ end CorePremiseData
 namespace PremiseData
 
 def filterIds (pd: PremiseData)(p: Name → Bool) : PremiseData :=
-    ⟨pd.context, pd.name?, pd.doc?, pd.defnName,  pd.type, pd.typeGroup, pd.proof, pd.typeSize, pd.proofSize, pd.terms, pd.propProofs, pd.ids.filter (fun (n, _) => p n)⟩
+    {pd with ids := pd.ids.filter (fun (n, _) => p n)}
 
 def increaseDepth (d: Nat) : PremiseData → PremiseData :=
 fun data ↦
@@ -729,6 +718,8 @@ structure IdentData where
     context : Array String
     type : String
     thm: String
+    name?: Option Name
+    doc? : Option String
     statement : String
     ids : Array String
     deriving Inhabited, ToJson, FromJson
@@ -760,7 +751,7 @@ def write (data: IdentData)(group: String)(handles: HashMap (String × String) I
 
 def writeString (data: IdentData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
     let thm := data.thm
-    let idString : String := data.ids.foldl (fun s i => s ++ i ++ "; ") ""
+    let idString : String := toJson data.ids |>.compress
     let js := Json.mkObj [("theorem", thm), ("statement", data.statement), ("identifiers", idString)]
     let l := js.compress
     let gh ← match handles.find? ("ident_strings", group) with
@@ -779,7 +770,7 @@ def unfold (data: IdentData) : Array IdentPair :=
     data.ids.map (fun id => ⟨data.context, data.type, data.thm, data.statement, id⟩)
 
 def ofCorePremiseData (data: CorePremiseData) : IdentData :=
-    ⟨data.context, data.type, data.thm, data.statement, data.ids⟩
+    ⟨data.context, data.type, data.thm, data.name?, data.doc?, data.statement, data.ids⟩
 
 end IdentData
 
@@ -888,7 +879,7 @@ def ofCorePremiseData (data: CorePremiseData) : List TermPair :=
 end TermPair
 
 def IdentData.filter (d: IdentData)(p : String → Bool) : IdentData :=
-    {context:= d.context, type := d.type, thm := d.thm, statement := d.statement, ids := d.ids.filter p}
+    {d with ids := d.ids.filter p}
 
 def DefData.identData (d: DefData) : CoreM <| List IdentData := do
     d.premises.mapM (fun p => do
@@ -896,6 +887,8 @@ def DefData.identData (d: DefData) : CoreM <| List IdentData := do
                 context:= ← p.context.mapM declToString
                 type := ← termToString p.type
                 thm := ← termToString p.type
+                name? := p.name?
+                doc? := p.doc?
                 statement := ← p.statement
                 ids :=
                     p.ids.map (·.1) |>.toList.eraseDups.toArray})
