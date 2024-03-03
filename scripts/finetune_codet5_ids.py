@@ -31,12 +31,12 @@ print(dataset)
 
 #
 #
-# We need to turn the "theorem" input from above into `input_ids`, and similarly, we need to turn the "identifiers" output from above into `input_ids`, which will serve as the `labels` for the model.
+# We need to turn the "statement" input from above into `input_ids`, and similarly, we need to turn the "identifiers" output from above into `input_ids`, which will serve as the `labels` for the model.
 #
 # In addition, as these models are trained on batches of examples rather than one example at a time, we'll need to pad/truncate both the inputs and labels, such that they are all of the same length. That's why we also will add an `attention_mask` input to the model, such that it knows not to take into account padding tokens when computing attention scores.
 #
 # To summarize:
-# * input: theorem, which is turned into `input_ids` + `attention_mask`
+# * input: statement, which is turned into `input_ids` + `attention_mask`
 # * output: ids, which are turned into `labels` (which are the `input_ids` of the docstrings).
 #
 # Below, we define a `preprocess_examples` function, which we can apply on the entire dataset.
@@ -49,10 +49,10 @@ max_target_length = 256
 
 def preprocess_examples(examples):
     # encode the code-docstring pairs
-    theorems = examples['theorem']
+    statements = examples['statement']
     ids = examples['identifiers']
 
-    inputs = [prefix + thm for thm in theorems]
+    inputs = [prefix + thm for thm in statements]
     model_inputs = tokenizer(
         inputs, max_length=max_input_length, padding="max_length", truncation=True)
 
@@ -157,7 +157,7 @@ covered = 0
 
 with open('rawdata/premises/identifiers/codet5_test_data.jsonl', 'w', encoding='utf-8') as f:
     for d in test_ids:
-        gens = generate_ids(d['theorem'])
+        gens = generate_ids(d['statement'])
         d['generated'] = gens
         scores = PredictionScores(d['identifiers'], gens)
         d['target_size'] = scores.target_size
