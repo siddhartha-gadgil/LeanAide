@@ -30,7 +30,7 @@ lora_config = LoraConfig(
 model = AutoModelForCausalLMWithValueHead.from_pretrained(
     model_id, 
     peft_config=lora_config,
-    load_in_4Bits=True,
+    load_in_4bit=True,
 )
 
 
