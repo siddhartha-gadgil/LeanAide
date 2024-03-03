@@ -89,7 +89,8 @@ train_dataset = dataset['train']
 
 training_args = TrainingArguments(
     output_dir="rawdata/idstrings_codet5p_220m",
-    save_strategy="epoch",)
+    save_strategy="epoch",
+    per_device_train_batch_size=2,)
 
 trainer = Trainer(
     model=model,
