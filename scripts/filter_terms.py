@@ -7,7 +7,8 @@ def filter_terms(set='train'):
         for obj in reader:
             term = obj['term']
             thm = obj['theorem']
-            if term not in thm:
+            context = obj['term_context']
+            if (term not in thm) and (term not in context):
                 examples.append(obj)
             else:
                 rejected += 1
