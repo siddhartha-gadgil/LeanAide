@@ -88,7 +88,7 @@ train_dataset = dataset['train']
 
 
 training_args = TrainingArguments(
-    output_dir="rawdata/idstrings_codet5p_220m",
+    output_dir="rawdata/idstrings_codet5p-220m",
     save_strategy="epoch",
     per_device_train_batch_size=4,)
 
@@ -100,7 +100,7 @@ trainer = Trainer(
 
 trainer.train()
 
-model.save_pretrained("rawdata/idstrings_codet5_base/trained_model")
+model.save_pretrained("rawdata/idstrings_codet5p-220m/trained_model")
 
 train_dataloader = DataLoader(dataset['train'], shuffle=True, batch_size=8)
 

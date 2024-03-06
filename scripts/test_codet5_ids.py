@@ -8,10 +8,7 @@
 
 from transformers import T5ForConditionalGeneration
 import json
-from transformers import TrainingArguments, Trainer
-from torch.utils.data import DataLoader
 from transformers import RobertaTokenizer
-from datasets import load_dataset
 import torch
 from random import sample
 
@@ -22,8 +19,8 @@ max_input_length = 256
 max_target_length = 256
 
 
-model = T5ForConditionalGeneration.from_pretrained("rawdata/idstrings_codet5_base/trained_model")
-model = model.cuda()
+model = T5ForConditionalGeneration.from_pretrained("rawdata/idstrings_codet5p-220m/trained_model", device_map='auto')
+# model = model.cuda()
 # if torch.cuda.is_available() else torch.device("cpu")
 device = torch.device("cuda")
 # ## Inference
@@ -35,7 +32,7 @@ model.eval()
 torch.cuda.empty_cache()
 
 def split_prediction(s):
-    return [x.strip() for x in s.split(';')]
+    return json.loads(s)
 
 
 class PredictionScores:
