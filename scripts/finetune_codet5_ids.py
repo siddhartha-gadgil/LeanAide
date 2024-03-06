@@ -20,9 +20,10 @@ device = "cuda" # for GPU usage or "cpu" for CPU usage
 
 tokenizer = AutoTokenizer.from_pretrained(checkpoint)
 model = T5ForConditionalGeneration.from_pretrained(checkpoint,
-                                                   device_map='auto')
+                                                #    device_map='auto'
+                                                   )
 
-
+model = model.to(device)
 
 dataset = load_dataset(
     'json', data_dir='rawdata/premises/ident_strings', data_files="train.jsonl")
