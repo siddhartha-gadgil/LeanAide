@@ -8,6 +8,20 @@ def egStx₀  : MetaM Syntax := do
 
 #eval egStx₀
 
+#check Lean.Environment.getModuleIdx?
+#check Lean.Environment.getModuleIdxFor? -- (env : Environment) (moduleName : Name) : Option ModuleIdx
+
+#check Lean.Environment.header
+#check EnvironmentHeader.moduleData
+#check EnvironmentHeader.mainModule
+#check ModuleData.constants
+
+def myName: MetaM Name :=  do
+  let env ← getEnv
+  pure env.mainModule
+#eval myName
+
+
 open Lean.Parser.Term Parser
 def bracketedBinderT : Parser := bracketedBinder true
 
