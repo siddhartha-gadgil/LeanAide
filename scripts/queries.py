@@ -51,6 +51,13 @@ def nearesest_neighbour(query, n = 10):
     # return completion
     return json.loads(result.stdout)
 
+def statement(js):
+    if js['isProp']:
+        kind = "theorem"
+    else:
+        kind = "def"
+    return f"{kind} {js['name']}: {js['theorem']} := by sorry"
+
 def math(query, sys_prompt = math_prompt, examples = [], n=3, deployment_name = deployment_name):
     return azure_completions(query, sys_prompt, examples, n, deployment_name)
 
