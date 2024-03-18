@@ -17,6 +17,8 @@ if "lakefile.lean"  not in os.listdir(homedir):
 
 resources = os.path.join(homedir, "resources")
 
+llm_dir = os.path.join(homedir, "llm_data")
+
 templates = json.load(open(os.path.join(resources, "templates.json")))
 
 with open(os.path.join(resources, "ProofJson.md"), 'r') as f:
@@ -42,6 +44,12 @@ def azure_completions(query, sys_prompt = sys_prompt, examples = [], n=5, deploy
     )
     # return completion
     return [choice.message.content for choice in completion.choices] 
+
+import subprocess
+def nearesest_neighbour(query, n = 10):
+    result = subprocess.run(["lake", "exe", "nearest_embeddings_full", query, str(n)], capture_output=True, text=True, cwd=homedir)
+    # return completion
+    return json.loads(result.stdout)
 
 def math(query, sys_prompt = math_prompt, examples = [], n=3, deployment_name = deployment_name):
     return azure_completions(query, sys_prompt, examples, n, deployment_name)
