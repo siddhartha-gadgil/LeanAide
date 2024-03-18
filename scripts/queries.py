@@ -1,6 +1,9 @@
 # Note: you need to be using OpenAI Python v0.27.0 for the code below to work
 from openai import AzureOpenAI
 import os
+from pathlib import Path
+import json
+from string import Template
 
 client = AzureOpenAI(
   azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT"), 
@@ -8,15 +11,26 @@ client = AzureOpenAI(
   api_version="2023-05-15"
 )
 
+homedir = Path(".")
+if "lakefile.lean"  not in os.listdir(homedir):
+    homedir = Path("..")
+
+resources = os.path.join(homedir, "resources")
+
+templates = json.load(open(os.path.join(resources, "templates.json")))
+
+with open(os.path.join(resources, "ProofJson.md"), 'r') as f:
+    proof_json= f.read()
+
 deployment_name='leanaide-gpt4'
 
-lean_trans_prompt = """You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples. Follow EXACTLY the examples given."""
+lean_trans_prompt = templates['lean_trans_prompt']
 
-sys_prompt = """You are a Mathematics, Lean 4 and coding assistant who answers questions about Mathematics and Lean 4, gives hints while coding in Lean 4. You also translates from natural language to Lean Theorem Prover code and vice versa when asked."""
+sys_prompt = templates['sys_prompt']
 
-trans_prompt = "  Follow EXACTLY any examples given when generating Lean code."
+trans_prompt = templates['translate_sys_prompt']
 
-math_prompt="You are a mathematics assistant for research mathematicians and advanced students. Answer mathematical questions with the level of precision and detail expected in graduate level mathematics courses and in mathematics research papers."
+math_prompt=templates['math_sys_prompt']
 
 def azure_completions(query, sys_prompt = sys_prompt, examples = [], n=5, deployment_name = deployment_name):
     messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]
@@ -38,34 +52,19 @@ def doc_string(theorem, n= 3, is_prop = True):
     if not(is_prop):
         head = "def"
         kind = "definition"
-    text = f"""Describe the following {kind} briefly in natural language, similar to a documentation string. The description should be either a single sentence or a paragraph with 2-3 sentences, and may contain LaTeX mathematics.
-    ```lean
-    {head} {theorem} := by sorry
-    ```
-    """
+    text = Template(templates['doc_string']).substitute(head = head, theorem = theorem, kind = kind)    
     return azure_completions(text, examples = [], n = n)
 
 def informalize(code, n = 3):
-    text = f"""Translate the following Lean 4 code briefly into natural language. The translation can contain LaTeX mathematics. Note that a variable in Lean that has type a proposition can be interpreted as an assumption. Proofs of theorems have been omitted for brevity but all theorems have been proved.
-
-    ```lean
-    {code}
-    ```
-    """
+    text = Template(templates['informalize']).substitute(code = code)
     return azure_completions(text, examples = [], n = n)
 
 def math_terms(statement, n = 3):
-    text = f"""List all the mathematical terms in the following statement as a JSON list. Exclude meta-mathematical terms like suppose and prove, variable names and symbols. If there are no mathematical terms, return an empty list.
-
-    {statement}
-    """
+    text = Template(templates['math_terms']).substitute(statement = statement)
     return math(text, n = n)
 
 def math_synonyms(terms, n = 3):
-    text = f'''For each of the mathematical terms in the following JSON list, give synonyms in JSON format as list of objects with two fields: "term" and "synonyms"
-
-    {terms}
-    '''
+    text = Template(templates['math_synonyms']).substitute(terms = terms)
     return math(text, n = n)
 
 def gpt4t_completions(query, sys_prompt = sys_prompt, examples = [], n= 3):
@@ -80,12 +79,7 @@ def gpt4t_completions(query, sys_prompt = sys_prompt, examples = [], n= 3):
     return [choice.message['content'].encode().decode('unicode-escape').encode('latin1').decode('utf-8') for choice in completion.choices]
 
 def summarise(text, sys_prompt = math_prompt, examples = [], n = 3):
-    query = f"""Summarise the following mathematical text briefly.
-    The summary should include the main definitions, the statements of the main theorems and the main ideas in the proofs of the theorems. Definitions and theorems should be precisely stated. Include precise statements of the theorems used.
-    
-    ---
-    {text}
-    """
+    query = Template(templates['summarise']).substitute(text = text)
     return azure_completions(query, sys_prompt, examples, n = n, deployment_name='leanaide-gpt4-32')
 
 # print([choice.message['content'].encode().decode('unicode-escape').encode('latin1').decode('utf-8') for choice in completion.choices])
