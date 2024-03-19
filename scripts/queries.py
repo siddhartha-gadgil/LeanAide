@@ -38,11 +38,43 @@ trans_prompt = templates['translate_sys_prompt']
 
 math_prompt=templates['math_sys_prompt']
 
+def split_by_markdown_heading(filename, head = "### "):
+  """Splits a markdown document based on second-level headings (##) and includes the heading.
+
+  Args:
+      filename: The path to the markdown document.
+
+  Returns:
+      A list of strings, where each element is a section of the document including its heading.
+  """
+  sections = []
+  current_section = ""
+  with open(filename, "r", encoding="utf-8") as f:
+    for line in f:
+      if line.startswith(head):
+        # New section, add previous section and start a new one
+        if current_section:
+          sections.append(current_section)
+        current_section = line.strip()  # Include the heading without leading/trailing whitespace
+      else:
+        current_section += line
+  # Add the last section after the loop
+  if current_section:
+    sections.append(current_section)
+  return sections
+
 
 class ChatClient:
+    verbose = False
+
+    def set_verbose(self, verbose = True):
+        self.verbose = verbose
+
     def __init__(self, client = client_gpt , model="gpt-4-turbo-preview"):
         self.client = client
         self.model = model
+        self.data_path = os.path.join(llm_dir, model)
+        os.makedirs(self.data_path, exist_ok=True)
 
     def choices(self, query, sys_prompt = sys_prompt, examples = [], n= 3):
         messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]
@@ -60,6 +92,83 @@ class ChatClient:
 
     def math(self, query, sys_prompt = math_prompt, examples = [], n=3, deployment_name = deployment_name):
         return self.completions(query, sys_prompt, examples, n)
+
+    def prove(self, theorem, n= 3):
+        query = Template(templates['prove']).substitute(theorem = theorem)
+        return self.math(query, n = n)
+    
+    def save_proof(self, theorem, label, n= 3):
+        proofs = self.prove(theorem, n = n)
+        js = {"theorem": theorem, "proofs": proofs}
+        if self.verbose:
+            print(json.dumps(js, indent=2, ensure_ascii=False))
+        json.dump(js, open(os.path.join(self.data_path, label + "-proof.json"), "w"), ensure_ascii=False)
+        return js
+    
+    def solve(self, problem, n= 3):
+        query = Template(templates['solve']).substitute(problem = problem)
+        return self.math(query, n = n)
+    
+    def save_solution(self, problem, label, n= 3):
+        solutions = self.solve(problem, n = n)
+        js = {"problem": problem, "solutions": solutions}
+        if self.verbose:
+            print(json.dumps(js, indent=2, ensure_ascii=False))
+        json.dump(js, open(os.path.join(self.data_path, label + "-solution.json"), "w"), ensure_ascii=False)
+        return js
+    
+    def solution_to_theory(self, problem, solution, label, n= 3):
+        query = Template(templates['solution_to_theory']).substitute(problem = problem, solution = solution)
+        return self.math(query, n = n)
+
+    def save_solution_to_theory(self, problem, solution, label, n= 3):
+        solutions_json = self.save_solution(problem, label, n = n)
+        theories = []
+        solutions = json.loads(solutions_json)['solutions']
+        for solution in solutions:
+            theories.append(self.solution_to_theory(problem, solution, label, n = n))
+        js = {"problem": problem, "solutions": solutions, "theories" : theories}
+        if self.verbose:
+            print(json.dumps(js, indent=2, ensure_ascii=False))
+        json.dump(js, open(os.path.join(self.data_path, label + "-solutions_theories.json"), "w"), ensure_ascii=False)
+        return js
+
+    def make_structured(self, text, n= 3):
+        query = Template(templates['make_structured']).substitute(text = text)
+        return self.completions(query, n = n)
+    
+    def save_structured(self, text, label, n= 3):
+        structured_texts = self.make_structured(text, n = n)
+        js = {"text": text, "structured": json.loads(structured_texts)}
+        if self.verbose:
+            print(json.dumps(js, indent=2, ensure_ascii=False))
+        json.dump(js, open(os.path.join(self.data_path, label + "-structured.json"), "w"), ensure_ascii=False)
+        return js
+    
+    def prove_and_structure(self, theorem, label, n= 3):
+        proofs_js = self.save_proof(theorem, label, n = n)
+        structured_proofs = []
+        proofs = json.loads(proofs_js)['proofs']
+        for proof in proofs:
+            text = Template(templates['theorem_proof']).substitute(theorem = theorem, proof = proof)
+            structured_proofs.append(self.save_structured(text, label, n = n))
+        js = {"theorem": theorem, "proofs": proofs, "structured_proofs" : structured_proofs}
+        if self.verbose:
+            print(json.dumps(js, indent=2, ensure_ascii=False))
+        json.dump(js, open(os.path.join(self.data_path, label + "-structures_proofs.json"), "w"), ensure_ascii=False)
+        return js
+    
+    def solve_and_structure(self, problem, label, n= 3):
+        solutions_js = self.save_solution_to_theory(problem, label, n = n)
+        structured_solutions = []
+        theories = json.loads(solutions_js)['theories']
+        for text in theories:
+            structured_solutions.append(self.save_structured(text, label, n = n))
+        js = {"problem": problem, "solutions": json.loads(solutions_js)['solutions'], "theories" : theories, "structured_solutions" : structured_solutions}
+        if self.verbose:
+            print(json.dumps(js, indent=2, ensure_ascii=False))
+        json.dump(js, open(os.path.join(self.data_path, label + "-structures_solutions.json"), "w"), ensure_ascii=False)
+        return js
 
     def doc_string(self, theorem, n= 3, is_prop = True):
         head = "theorem"
@@ -85,10 +194,37 @@ class ChatClient:
     def summarise(self, text, sys_prompt = math_prompt, examples = [], n = 3):
         query = Template(templates['summarise']).substitute(text = text)
         return self.completions(query, sys_prompt, examples, n = n, deployment_name='leanaide-gpt4-32')
+    
+    def save_incremental_structure(self, texts, label, n = 1):
+        structured_texts = []
+        summaries = []
+        for text in texts:
+            if summaries:
+                summary = summaries[-1]
+                summary_text = ""
+                for s in summary:
+                    summary_text += s + "\n-------------\n"
+                query = Template(templates['extend_structure']).substitute(text = text, summary = summary)
+            else:
+                query = Template(templates['make_structured']).substitute(text = text)    
+            structured_text = self.completions(query, n = n)
+            structured_texts.append(structured_text)
+        js = {"texts": texts, "structured_texts": structured_texts}
+        if self.verbose:
+            print(json.dumps(js, indent=2, ensure_ascii=False))
+        json.dump(js, open(os.path.join(self.data_path, label + "-long-structured.json"), "w"), ensure_ascii=False)
+        return js
+    
+    def save_long_structured(self, text, label, n = 1):
+        texts = split_by_markdown_heading(text)
+        return self.save_incremental_structure(texts, label, n = n)
 
 class AzureChatClient(ChatClient):
     def __init__(self, deployment_name = deployment_name):
         self.deployment_name = deployment_name
+        self.client = client_azure
+        self.data_path = os.path.join(llm_dir, "azure", deployment_name)
+        os.makedirs(self.data_path, exist_ok=True)
 
     def choices(self, query, sys_prompt = sys_prompt, examples = [], n= 3):
         messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]
@@ -226,3 +362,4 @@ json_schema=r'''First write a detailed mathematical solution is standard style. 
 - A single field "goal" stating a claim that will eventually be proved.
 
 '''  
+
