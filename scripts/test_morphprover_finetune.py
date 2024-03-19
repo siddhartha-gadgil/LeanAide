@@ -7,7 +7,7 @@ import sys
 # model_id= "morph-labs/morph-prover-v0-7b"
 model_id = sys.argv[1]
 tokenizer = AutoTokenizer.from_pretrained(model_id)
-model = AutoModelForCausalLM.from_pretrained(model_id)
+model = AutoModelForCausalLM.from_pretrained(model_id, load_in_4bit=True)
 
 device = 'cuda'
 model = model.to(device)
