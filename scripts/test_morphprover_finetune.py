@@ -30,7 +30,7 @@ def preprocess_examples(example):
         "content": prompt
     },
     ]
-    input_ids = tokenizer.apply_chat_template(chat, tokenize=True)
+    input_ids = tokenizer.apply_chat_template(chat, tokenize=True, return_tensors='pt')
 
     return input_ids
 
