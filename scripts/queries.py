@@ -5,11 +5,20 @@ from pathlib import Path
 import json
 from string import Template
 
-client = AzureOpenAI(
+client_azure = AzureOpenAI(
   azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT"), 
   api_key=os.getenv("AZURE_OPENAI_KEY"),  
   api_version="2023-05-15"
 )
+
+from openai import OpenAI
+
+client_gpt = OpenAI(
+  api_key=os.environ['OPENAI_API_KEY'],  # this is also the default, it can be omitted
+)
+
+deployment_name='leanaide-gpt4'
+
 
 homedir = Path(".")
 if "lakefile.lean"  not in os.listdir(homedir):
@@ -21,11 +30,6 @@ llm_dir = os.path.join(homedir, "llm_data")
 
 templates = json.load(open(os.path.join(resources, "templates.json")))
 
-with open(os.path.join(resources, "ProofJson.md"), 'r') as f:
-    proof_json= f.read()
-
-deployment_name='leanaide-gpt4'
-
 lean_trans_prompt = templates['lean_trans_prompt']
 
 sys_prompt = templates['sys_prompt']
@@ -34,19 +38,70 @@ trans_prompt = templates['translate_sys_prompt']
 
 math_prompt=templates['math_sys_prompt']
 
-def azure_completions(query, sys_prompt = sys_prompt, examples = [], n=5, deployment_name = deployment_name):
-    messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]
-    completion = client.chat.completions.create(
-        model=deployment_name,
-        n= n,
-        temperature=0.8,
-        messages= messages
-    )
-    # return completion
-    return [choice.message.content for choice in completion.choices] 
 
+class ChatClient:
+    def __init__(self, client = client_gpt , model="gpt-4-turbo-preview"):
+        self.client = client
+        self.model = model
+
+    def choices(self, query, sys_prompt = sys_prompt, examples = [], n= 3):
+        messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]
+        completion = self.client.chat.completions.create(
+            model=self.model,
+            n= n,
+            temperature=0.8,
+            messages= messages
+        )
+        return completion.choices
+
+    def completions(self, query, sys_prompt = sys_prompt, examples = [], n= 3):
+        choices = self.choices(query, sys_prompt, examples, n)
+        return [choice.message.content for choice in choices]
+
+    def math(self, query, sys_prompt = math_prompt, examples = [], n=3, deployment_name = deployment_name):
+        return self.completions(query, sys_prompt, examples, n)
+
+    def doc_string(self, theorem, n= 3, is_prop = True):
+        head = "theorem"
+        kind = "theorem"
+        if not(is_prop):
+            head = "def"
+            kind = "definition"
+        text = Template(templates['doc_string']).substitute(head = head, theorem = theorem, kind = kind)    
+        return self.completions(text, examples = [], n = n)
+
+    def informalize(self, code, n = 3):
+        text = Template(templates['informalize']).substitute(code = code)
+        return self.completions(text, examples = [], n = n)
+
+    def math_terms(self, statement, n = 3):
+        text = Template(templates['math_terms']).substitute(statement = statement)
+        return self.math(text, n = n)
+
+    def math_synonyms(self, terms, n = 3):
+        text = Template(templates['math_synonyms']).substitute(terms = terms)
+        return math(text, n = n)
+
+    def summarise(self, text, sys_prompt = math_prompt, examples = [], n = 3):
+        query = Template(templates['summarise']).substitute(text = text)
+        return self.completions(query, sys_prompt, examples, n = n, deployment_name='leanaide-gpt4-32')
+
+class AzureChatClient(ChatClient):
+    def __init__(self, deployment_name = deployment_name):
+        self.deployment_name = deployment_name
+
+    def choices(self, query, sys_prompt = sys_prompt, examples = [], n= 3):
+        messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]
+        completion = client_azure.chat.completions.create(
+            model=self.deployment_name,
+            n= n,
+            temperature=0.8,
+            messages= messages
+        )
+        return completion.choices
+    
 import subprocess
-def nearesest_neighbour(query, n = 10):
+def nearest_embeddings(query, n = 10):
     result = subprocess.run(["lake", "exe", "nearest_embeddings_full", query, str(n)], capture_output=True, text=True, cwd=homedir)
     # return completion
     return json.loads(result.stdout)
@@ -57,6 +112,29 @@ def statement(js):
     else:
         kind = "def"
     return f"{kind} {js['name']}: {js['theorem']} := by sorry"
+
+def azure_completions(query, sys_prompt = sys_prompt, examples = [], n=5, deployment_name = deployment_name):
+    messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]
+    completion = client_azure.chat.completions.create(
+        model=deployment_name,
+        n= n,
+        temperature=0.8,
+        messages= messages
+    )
+    # return completion
+    return [choice.message.content for choice in completion.choices] 
+
+def gpt4t_completions(query, sys_prompt = sys_prompt, examples = [], n= 3):
+    messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]
+    completion = client_gpt.chat.completions.create(
+        model="gpt-4-turbo-preview",
+        n= n,
+        temperature=0.8,
+        messages= messages
+    )
+    # return completion
+    return [choice.message.content for choice in completion.choices]
+
 
 def math(query, sys_prompt = math_prompt, examples = [], n=3, deployment_name = deployment_name):
     return azure_completions(query, sys_prompt, examples, n, deployment_name)
@@ -82,17 +160,6 @@ def math_synonyms(terms, n = 3):
     text = Template(templates['math_synonyms']).substitute(terms = terms)
     return math(text, n = n)
 
-def gpt4t_completions(query, sys_prompt = sys_prompt, examples = [], n= 3):
-    messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]
-    completion = client.chat.completions.create(
-        model="gpt-4-1106-preview",
-        n= n,
-        temperature=0.8,
-        messages= messages
-    )
-    # return completion
-    return [choice.message['content'].encode().decode('unicode-escape').encode('latin1').decode('utf-8') for choice in completion.choices]
-
 def summarise(text, sys_prompt = math_prompt, examples = [], n = 3):
     query = Template(templates['summarise']).substitute(text = text)
     return azure_completions(query, sys_prompt, examples, n = n, deployment_name='leanaide-gpt4-32')
@@ -105,7 +172,7 @@ def escape(s):
     return re.sub(r"(?<=[ ])[\t\r](?=[a-zA-Z])",  r"\\t", re.sub(r"(?<=[ ])[\n\r](?=[a-zA-Z])", r"\\n", s))
 
 def azure_embed(text):
-    response = client.embeddings.create(
+    response = client_azure.embeddings.create(
     input=text,
     model="text-embedding-ada-002"
     )

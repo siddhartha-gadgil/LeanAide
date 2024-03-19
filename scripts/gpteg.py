@@ -1,5 +1,4 @@
 # Note: you need to be using OpenAI Python v0.27.0 for the code below to work
-import openai
 import os
 
 from openai import OpenAI
@@ -9,7 +8,7 @@ client = OpenAI(
 )
 
 completion = client.chat.completions.create(
-  model="gpt-4-1106-preview",
+  model="gpt-4-turbo-preview",
   n= 5,
   temperature=0.8,
   messages=[
