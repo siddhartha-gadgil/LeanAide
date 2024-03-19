@@ -4,6 +4,20 @@ import os
 from pathlib import Path
 import json
 from string import Template
+import subprocess
+
+def nearest_embeddings(query, n = 10):
+    result = subprocess.run(["lake", "exe", "nearest_embeddings_full", query, str(n)], capture_output=True, text=True, cwd=homedir)
+    # return completion
+    return json.loads(result.stdout)
+
+def statement(js):
+    if js['isProp']:
+        kind = "theorem"
+    else:
+        kind = "def"
+    return f"{kind} {js['name']}: {js['theorem']} := by sorry"
+
 
 client_azure = AzureOpenAI(
   azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT"), 
@@ -17,8 +31,15 @@ client_gpt = OpenAI(
   api_key=os.environ['OPENAI_API_KEY'],  # this is also the default, it can be omitted
 )
 
-deployment_name='leanaide-gpt4'
+from mistralai.client import MistralClient
+from mistralai.models.chat_completion import ChatMessage
 
+api_key = os.environ["MISTRAL_API_KEY"]
+model = "mistral-large-latest"
+
+client_mistral = MistralClient(api_key=api_key)
+
+deployment_name='leanaide-gpt4'
 
 homedir = Path(".")
 if "lakefile.lean"  not in os.listdir(homedir):
@@ -86,8 +107,23 @@ class ChatClient:
         )
         return completion.choices
 
-    def completions(self, query, sys_prompt = sys_prompt, examples = [], n= 3):
-        choices = self.choices(query, sys_prompt, examples, n)
+    def choices_json(self, query, sys_prompt = sys_prompt, examples = [], n= 3):
+        messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]
+        completion = self.client.chat.completions.create(
+            model=self.model,
+            n= n,
+            temperature=0.8,
+            response_format={"type": "json_object"},
+            messages= messages
+        )
+        return completion.choices
+
+
+    def completions(self, query, sys_prompt = sys_prompt, examples = [], n= 3, ensure_json = False):
+        if ensure_json:
+            choices = self.choices_json(query, sys_prompt, examples, n)
+        else:
+            choices = self.choices(query, sys_prompt, examples, n)
         return [choice.message.content for choice in choices]
 
     def math(self, query, sys_prompt = math_prompt, examples = [], n=3, deployment_name = deployment_name):
@@ -104,6 +140,10 @@ class ChatClient:
             print(json.dumps(js, indent=2, ensure_ascii=False))
         json.dump(js, open(os.path.join(self.data_path, label + "-proof.json"), "w"), ensure_ascii=False)
         return js
+    
+    def prove_with_outline(self, theorem, label, n= 3):
+        query = Template(templates['prove_with_outline']).substitute(theorem = theorem)
+        return self.math(query, n = n)
     
     def solve(self, problem, n= 3):
         query = Template(templates['solve']).substitute(problem = problem)
@@ -193,7 +233,7 @@ class ChatClient:
 
     def summarise(self, text, sys_prompt = math_prompt, examples = [], n = 3):
         query = Template(templates['summarise']).substitute(text = text)
-        return self.completions(query, sys_prompt, examples, n = n, deployment_name='leanaide-gpt4-32')
+        return self.completions(query, sys_prompt, examples, n = n, ensure_json = True)
     
     def save_incremental_structure(self, texts, label, n = 1):
         structured_texts = []
@@ -218,6 +258,19 @@ class ChatClient:
     def save_long_structured(self, text, label, n = 1):
         texts = split_by_markdown_heading(text)
         return self.save_incremental_structure(texts, label, n = n)
+    
+    def add_statements(self, text, n = 3):
+        query = Template(templates['add_statements']).substitute(text = text)
+        return self.completions(query, n = n)
+    
+    def save_add_statements(self, texts, label, n = 1):
+        with_statements = self.add_statements(texts, n = n)
+        js = {"texts": texts, "with_statements": with_statements}
+        if self.verbose:
+            print(json.dumps(js, indent=2, ensure_ascii=False))
+        json.dump(js, open(os.path.join(self.data_path, label + "-with-names.json"), "w"), ensure_ascii=False)
+        return js
+
 
 class AzureChatClient(ChatClient):
     def __init__(self, deployment_name = deployment_name):
@@ -236,18 +289,32 @@ class AzureChatClient(ChatClient):
         )
         return completion.choices
     
-import subprocess
-def nearest_embeddings(query, n = 10):
-    result = subprocess.run(["lake", "exe", "nearest_embeddings_full", query, str(n)], capture_output=True, text=True, cwd=homedir)
-    # return completion
-    return json.loads(result.stdout)
+    def choices_json(self, query, sys_prompt = sys_prompt, examples = [], n= 3):
+        messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]
+        completion = client_azure.chat.completions.create(
+            model=self.deployment_name,
+            n= n,
+            temperature=0.8,
+            response_format={"type": "json_object"},
+            messages= messages
+        )
+        return completion.choices
 
-def statement(js):
-    if js['isProp']:
-        kind = "theorem"
-    else:
-        kind = "def"
-    return f"{kind} {js['name']}: {js['theorem']} := by sorry"
+class MistralChatClient(ChatClient):
+    def __init__(self):
+        self.model = "mistral-large-latest"
+        self.client = client_mistral
+        self.data_path = os.path.join(llm_dir, "mistral", model)
+        os.makedirs(self.data_path, exist_ok=True)    
+
+    def choices(self, query, sys_prompt=sys_prompt,  n=3):
+        messages = [ChatMessage(role="user", content=sys_prompt+'\n------\n'+ query)]
+        completion = self.client.chat(
+            model=self.model,
+            temperature=0.8,
+            messages=messages
+        )
+        return completion.choices
 
 def azure_completions(query, sys_prompt = sys_prompt, examples = [], n=5, deployment_name = deployment_name):
     messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]
