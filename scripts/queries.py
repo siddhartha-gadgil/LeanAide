@@ -283,10 +283,10 @@ def process_problem(client, problem, name, n= 3):
 def process_problem_file(filename, client = default_client):
     client.set_verbose()
     sols = []
-    with open(os.path.join(resources, filename)) as f:
-        kvs = json.loads(f)
-        for name, problem in kvs.items():
-            solution = process_problem(client, problem=problem, name=name)
+    with open(os.path.join(resources, filename), encoding='UTF-8') as f:
+        kvs = json.load(f)
+        for entry in kvs:
+            solution = process_problem(client, problem=entry['problem'], name=entry['name'])
             sols.append(solution)
     return sols
 

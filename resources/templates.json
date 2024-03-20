@@ -5,7 +5,7 @@
   "math_sys_prompt": "You are a mathematics assistant for research mathematicians and advanced students. Answer mathematical questions with the level of precision and detail expected in graduate level mathematics courses and in mathematics research papers. Be concise and give only what is asked for, avoiding phrases like 'Here is the proof'.",
   "theorem_proof": "##Theorem:\n${theorem}\n## Proof\n${proof}\n",
   "prove": "Prove the following theorem:\n## Theorem \n${theorem}\n\nGive only the proof.",
-  "solve": "Solve the following problem:\n## Problem \n${theorem}\n\nGive only the solution.",
+  "solve": "Solve the following problem:\n## Problem \n${problem}\n\nGive only the solution.",
   "solution to theory" :"The following is a mathematical problem and its solution\n## Problem\n${problem}\n## Solution\n${solution}\n-----\n\nRewrite this as one or more theorems and their proofs.",
   "prove_or_disprove": "Prove or disprove the following theorem:\n## Theorem \n${theorem}\n",
   "make_structured": "Your goal is to write the following mathematics in a specific JSON format, `ProofJSON`, which is described as follows:\n\n${proof_json}\n\nTranslate the following proof into the `ProofJSON` format.\n${text}\n",
