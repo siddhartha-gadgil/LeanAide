@@ -51,6 +51,9 @@ llm_dir = os.path.join(homedir, "llm_data")
 
 templates = json.load(open(os.path.join(resources, "templates.json")))
 
+with open(os.path.join(resources, "ProofJson.md"), 'r') as f:
+    proof_json = f.read()
+
 lean_trans_prompt = templates['lean_trans_prompt']
 
 sys_prompt = templates['sys_prompt']
@@ -156,7 +159,7 @@ class ChatClient:
         return self.math(query, n = n)
 
     def make_structured(self, text, n= 3):
-        query = Template(templates['make_structured']).substitute(text = text)
+        query = Template(templates['make_structured']).substitute(text = text, proof_json = proof_json)
         return self.completions(query, n = n)
         
     def doc_string(self, theorem, n= 3, is_prop = True):
@@ -181,7 +184,7 @@ class ChatClient:
         return math(text, n = n)
 
     def add_statements(self, text, n = 3):
-        query = Template(templates['add_statements']).substitute(text = text)
+        query = Template(templates['add_statements']).substitute(json = text)
         return self.completions(query, n = n)
 
     def summarize(self, text, sys_prompt = math_prompt, examples = [], n = 3):
@@ -262,12 +265,12 @@ def process_problem(client, problem, name, n= 3):
     client.dump(data, name, 'solve')
     theories = []
     for sol in solutions:
-        theory = client.problem_to_theory(problem, sol, n=1)[0]
+        theory = client.solution_to_theory(problem, sol, n=1)[0]
         theories.append(theory)
     data['theories'] = theories
     client.dump(data, name, 'solve_theory')
     structured_texts = []
-    theory_structureds = ''
+    theory_structureds = []
     for theory in theories:
         structured = client.make_structured(theory, n = n)
         structured_texts = structured_texts + structured
@@ -276,10 +279,10 @@ def process_problem(client, problem, name, n= 3):
     client.dump(data, name, 'solve_theory_structured')
     texts_with_statements = []
     for structured in structured_texts:
-        with_statements = client.add_statements(structured)
+        with_statements = client.add_statements(structured, n = 2)
         texts_with_statements = texts_with_statements + with_statements
     data['texts_with_statements'] = texts_with_statements
-    client.dump(data, 'solve_with_statements')
+    client.dump(data, name, 'solve_with_statements')
     return data
 
 def process_problem_file(filename, client = default_client):

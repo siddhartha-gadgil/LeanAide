@@ -6,7 +6,7 @@
   "theorem_proof": "##Theorem:\n${theorem}\n## Proof\n${proof}\n",
   "prove": "Prove the following theorem:\n## Theorem \n${theorem}\n\nGive only the proof.",
   "solve": "Solve the following problem:\n## Problem \n${problem}\n\nGive only the solution.",
-  "solution to theory" :"The following is a mathematical problem and its solution\n## Problem\n${problem}\n## Solution\n${solution}\n-----\n\nRewrite this as one or more theorems and their proofs.",
+  "solution_to_theory" :"The following is a mathematical problem and its solution\n## Problem\n${problem}\n## Solution\n${solution}\n-----\n\nRewrite this as one or more theorems and their proofs.",
   "prove_or_disprove": "Prove or disprove the following theorem:\n## Theorem \n${theorem}\n",
   "make_structured": "Your goal is to write the following mathematics in a specific JSON format, `ProofJSON`, which is described as follows:\n\n${proof_json}\n\nTranslate the following proof into the `ProofJSON` format.\n${text}\n",
   "extend_structured": "Your goal is to write the following mathematics in a specific JSON format, `ProofJSON`, which is described as follows:\n\n${proof_json}\n\nThe following is a summary of the results of the earlier sections of the document in a simpler JSON format, with proofs omitted.\n\n${preceding}\n---------\n\nTranslate the following proof into the `ProofJSON` format.\n${text}\n",
