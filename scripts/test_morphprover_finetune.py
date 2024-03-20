@@ -37,7 +37,7 @@ def preprocess_examples(example):
 with open('rawdata/premises/doc_lemma_pairs/test.jsonl') as f:
     test_ids = [json.loads(line) for line in f]
 
-test_ids = sample(test_ids, 100) # for testing
+test_ids = sample(test_ids, 500) # for testing
 print('Test set size:', len(test_ids))
 
 def generate_ids(example, temperature=1.5, num_return_sequences=8, max_length=2048):
@@ -60,7 +60,7 @@ def generate_ids(example, temperature=1.5, num_return_sequences=8, max_length=20
     return gens
 
 count = 0
-with open('rawdata/premises/doc_lemma_pairs/morphprover_test_data.jsonl', 'w', encoding='utf-8') as f:
+with open('results/morphprover_finetune_lemmas.jsonl', 'w', encoding='utf-8') as f:
     for d in test_ids:
         gens = generate_ids(d)
         d['generated'] = gens
