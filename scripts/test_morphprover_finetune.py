@@ -40,7 +40,7 @@ with open('rawdata/premises/doc_lemma_pairs/test.jsonl') as f:
 test_ids = sample(test_ids, 1000) # for testing
 print('Test set size:', len(test_ids))
 
-def generate_ids(example, temperature=1.5, num_return_sequences=8, max_length=256):
+def generate_ids(example, temperature=1.5, num_return_sequences=8, max_length=1024):
     input_ids = preprocess_examples(example).to(device)
     gen_tokens = model.generate(
         input_ids,
@@ -50,16 +50,16 @@ def generate_ids(example, temperature=1.5, num_return_sequences=8, max_length=25
         max_length=max_length,
     )
     gen_text = tokenizer.batch_decode(gen_tokens, skip_special_tokens=True)
-    return gen_text
+    return gen_text[len(example):]
 
 count = 0
-with open('rawdata/premises/identifiers/codet5_test_data.jsonl', 'w', encoding='utf-8') as f:
+with open('rawdata/premises/doc_lemma_pairs/morphprover_test_data.jsonl', 'w', encoding='utf-8') as f:
     for d in test_ids:
         gens = generate_ids(d)
         d['generated'] = gens
         f.write(json.dumps(d, ensure_ascii=False) + '\n')
         count += 1
-        if count % 20 == 0:
+        if count % 5 == 0:
             print(count)
             print('theorem:', d['theorem'])
             print('Lemmas:\n', json.dumps(gens, ensure_ascii=False, indent=2))
