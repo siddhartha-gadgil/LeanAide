@@ -41,7 +41,8 @@ test_ids = sample(test_ids, 1000) # for testing
 print('Test set size:', len(test_ids))
 
 def generate_ids(example, temperature=1.5, num_return_sequences=8, max_length=1024):
-    input_ids, head = preprocess_examples(example).to(device)
+    input_ids, head = preprocess_examples(example)
+    input_ids = input_ids.to(device)
     gen_tokens = model.generate(
         input_ids,
         do_sample=True,
