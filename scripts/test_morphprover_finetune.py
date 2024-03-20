@@ -52,9 +52,11 @@ def generate_ids(example, temperature=1.5, num_return_sequences=8, max_length=20
     )
     gen_text = tokenizer.batch_decode(gen_tokens, skip_special_tokens=True)
     print(gen_text)
-    gens = [gen[len(head):] for gen in gen_text]
-    for gen in gen_text:
-        print (f"head: {head};\nexcluding head: {gen[len(head):]}")
+    gens = [gen[(len(head)-2):] for gen in gen_text]
+    print(f"head: {head}")
+    print("Lemmmas: ")
+    for gen in gens:
+        print (gen)
     return gens
 
 count = 0
