@@ -52,8 +52,10 @@ def generate_ids(example, temperature=1.5, num_return_sequences=8, max_length=20
     )
     gen_text = tokenizer.batch_decode(gen_tokens, skip_special_tokens=True)
     print(gen_text)
-    print (f"head: {head};\nexcluding head: {gen_text[len(head):]}")
-    return gen_text[len(head):]
+    gens = [gen[len(head):] for gen in gen_text]
+    for gen in gen_text:
+        print (f"head: {head};\nexcluding head: {gen[len(head):]}")
+    return gens
 
 count = 0
 with open('rawdata/premises/doc_lemma_pairs/morphprover_test_data.jsonl', 'w', encoding='utf-8') as f:
