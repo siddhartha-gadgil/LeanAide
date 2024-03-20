@@ -99,11 +99,13 @@ class ChatClient:
 
     def dump(self, data, name, task):
         wd = os.path.join(self.data_path, name)
-        os.makedirs(wd)
-        with open(os.path.join(wd, task)) as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
+        os.makedirs(wd, exist_ok=True)
+        print(wd)
+        print(f"Verbose: {self.verbose}")
         if self.verbose:
-            json.dumps(data, ensure_ascii=False, indent=2)
+            print(json.dumps(data, ensure_ascii=False, indent=2))
+        with open(os.path.join(wd, task+".json"), 'w') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
 
     def choices(self, query, sys_prompt = sys_prompt, examples = [], n= 3):
         messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]
@@ -282,10 +284,13 @@ def process_problem(client, problem, name, n= 3):
 
 def process_problem_file(filename, client = default_client):
     client.set_verbose()
+    print(f"Processing {filename}")
+    print(f"Verbose: {client.verbose}")
     sols = []
     with open(os.path.join(resources, filename), encoding='UTF-8') as f:
         kvs = json.load(f)
         for entry in kvs:
+            print("Processing", entry['name'])
             solution = process_problem(client, problem=entry['problem'], name=entry['name'])
             sols.append(solution)
     return sols
