@@ -31,8 +31,8 @@ def preprocess_examples(example):
     },
     ]
     input_ids = tokenizer.apply_chat_template(chat, tokenize=True, return_tensors='pt')
-
-    return input_ids
+    head = tokenizer.apply_chat_template(chat, tokenize=False, return_tensors='pt')
+    return input_ids, head
 
 with open('rawdata/premises/doc_lemma_pairs/test.jsonl') as f:
     test_ids = [json.loads(line) for line in f]
@@ -41,7 +41,7 @@ test_ids = sample(test_ids, 1000) # for testing
 print('Test set size:', len(test_ids))
 
 def generate_ids(example, temperature=1.5, num_return_sequences=8, max_length=1024):
-    input_ids = preprocess_examples(example).to(device)
+    input_ids, head = preprocess_examples(example).to(device)
     gen_tokens = model.generate(
         input_ids,
         do_sample=True,
@@ -50,7 +50,8 @@ def generate_ids(example, temperature=1.5, num_return_sequences=8, max_length=10
         max_length=max_length,
     )
     gen_text = tokenizer.batch_decode(gen_tokens, skip_special_tokens=True)
-    return gen_text[len(example):]
+    print (f"head: {head};\nexcluding head: {gen_text[len(head):]}")
+    return gen_text[len(head):]
 
 count = 0
 with open('rawdata/premises/doc_lemma_pairs/morphprover_test_data.jsonl', 'w', encoding='utf-8') as f:
