@@ -1,0 +1,8 @@
+{
+  "problem": "Let $A$ be a square matrix. Prove that if $A^2$ is invertible then $A$ is invertible.",
+  "solutions": [
+    "In order for a matrix $A$ to be invertible, there must exist a matrix $B$ such that $AB = BA = I$, where $I$ is the identity matrix. \n\nSuppose $A^2$ is invertible, then it has an inverse, say $(A^2)^{-1}$. \n\nWe need to show that $A$ has an inverse. We claim that $A(A^2)^{-1}$ is the inverse of $A$. \n\nTo verify that, we can check both conditions:\n\n1. $A \\cdot A(A^2)^{-1} = A^2 (A^2)^{-1} = I$\n2. $A(A^2)^{-1} \\cdot A = A^2 (A^2)^{-1} = I$\n\nSo both conditions hold, hence $A$ is invertible.",
+    "Suppose $A^2$ is invertible. Then there exists a matrix $B$ such that $A^2B = BA^2 = I$.\n\nWe will claim that $BA$ is the inverse of $A$. To prove this we multiply $A$ with $BA$ from both side:\n\n$A(BA) = (AB)A = A^2B = I$ and $(BA)A = B(AA) = BA^2 = BI = B$.\n\nTherefore, $A$ is invertible.",
+    "Assume that $A^2$ is invertible. Therefore, there exists a matrix $B$ such that $A^2B = BA^2 = I$, where $I$ is the identity matrix. \n\nTo show that $A$ is invertible, we need to find a matrix $C$ such that $AC = CA = I$. We can take $C = ABA$. \n\nThen $AC = A(ABA) = A^2B = I$ and $CA = (ABA)A = AB(A^2) = AB = BA = A(BA^2) = AI = A$, so $A$ is indeed invertible."
+  ]
+}
