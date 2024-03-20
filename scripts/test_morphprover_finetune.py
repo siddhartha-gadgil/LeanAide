@@ -40,7 +40,7 @@ with open('rawdata/premises/doc_lemma_pairs/test.jsonl') as f:
 test_ids = sample(test_ids, 1000) # for testing
 print('Test set size:', len(test_ids))
 
-def generate_ids(example, temperature=1.5, num_return_sequences=8, max_length=1024):
+def generate_ids(example, temperature=1.5, num_return_sequences=8, max_length=2048):
     input_ids, head = preprocess_examples(example)
     input_ids = input_ids.to(device)
     gen_tokens = model.generate(
@@ -51,6 +51,7 @@ def generate_ids(example, temperature=1.5, num_return_sequences=8, max_length=10
         max_length=max_length,
     )
     gen_text = tokenizer.batch_decode(gen_tokens, skip_special_tokens=True)
+    print(gen_text)
     print (f"head: {head};\nexcluding head: {gen_text[len(head):]}")
     return gen_text[len(head):]
 
