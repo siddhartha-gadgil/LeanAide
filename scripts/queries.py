@@ -97,6 +97,14 @@ class ChatClient:
         self.data_path = os.path.join(llm_dir, model)
         os.makedirs(self.data_path, exist_ok=True)
 
+    def dump(self, data, name, task):
+        wd = os.path.join(self.data_path, name)
+        os.makedirs(wd)
+        with open(os.path.join(wd, task)) as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        if self.verbose:
+            json.dumps(data, ensure_ascii=False, indent=2)
+
     def choices(self, query, sys_prompt = sys_prompt, examples = [], n= 3):
         messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]
         completion = self.client.chat.completions.create(
@@ -132,15 +140,7 @@ class ChatClient:
     def prove(self, theorem, n= 3):
         query = Template(templates['prove']).substitute(theorem = theorem)
         return self.math(query, n = n)
-    
-    def save_proof(self, theorem, label, n= 3):
-        proofs = self.prove(theorem, n = n)
-        js = {"theorem": theorem, "proofs": proofs}
-        if self.verbose:
-            print(json.dumps(js, indent=2, ensure_ascii=False))
-        json.dump(js, open(os.path.join(self.data_path, label + "-proof.json"), "w"), ensure_ascii=False)
-        return js
-    
+        
     def prove_with_outline(self, theorem, label, n= 3):
         query = Template(templates['prove_with_outline']).substitute(theorem = theorem)
         return self.math(query, n = n)
@@ -148,68 +148,15 @@ class ChatClient:
     def solve(self, problem, n= 3):
         query = Template(templates['solve']).substitute(problem = problem)
         return self.math(query, n = n)
-    
-    def save_solution(self, problem, label, n= 3):
-        solutions = self.solve(problem, n = n)
-        js = {"problem": problem, "solutions": solutions}
-        if self.verbose:
-            print(json.dumps(js, indent=2, ensure_ascii=False))
-        json.dump(js, open(os.path.join(self.data_path, label + "-solution.json"), "w"), ensure_ascii=False)
-        return js
-    
-    def solution_to_theory(self, problem, solution, label, n= 3):
+        
+    def solution_to_theory(self, problem, solution, n= 3):
         query = Template(templates['solution_to_theory']).substitute(problem = problem, solution = solution)
         return self.math(query, n = n)
-
-    def save_solution_to_theory(self, problem, solution, label, n= 3):
-        solutions_json = self.save_solution(problem, label, n = n)
-        theories = []
-        solutions = json.loads(solutions_json)['solutions']
-        for solution in solutions:
-            theories.append(self.solution_to_theory(problem, solution, label, n = n))
-        js = {"problem": problem, "solutions": solutions, "theories" : theories}
-        if self.verbose:
-            print(json.dumps(js, indent=2, ensure_ascii=False))
-        json.dump(js, open(os.path.join(self.data_path, label + "-solutions_theories.json"), "w"), ensure_ascii=False)
-        return js
 
     def make_structured(self, text, n= 3):
         query = Template(templates['make_structured']).substitute(text = text)
         return self.completions(query, n = n)
-    
-    def save_structured(self, text, label, n= 3):
-        structured_texts = self.make_structured(text, n = n)
-        js = {"text": text, "structured": json.loads(structured_texts)}
-        if self.verbose:
-            print(json.dumps(js, indent=2, ensure_ascii=False))
-        json.dump(js, open(os.path.join(self.data_path, label + "-structured.json"), "w"), ensure_ascii=False)
-        return js
-    
-    def prove_and_structure(self, theorem, label, n= 3):
-        proofs_js = self.save_proof(theorem, label, n = n)
-        structured_proofs = []
-        proofs = json.loads(proofs_js)['proofs']
-        for proof in proofs:
-            text = Template(templates['theorem_proof']).substitute(theorem = theorem, proof = proof)
-            structured_proofs.append(self.save_structured(text, label, n = n))
-        js = {"theorem": theorem, "proofs": proofs, "structured_proofs" : structured_proofs}
-        if self.verbose:
-            print(json.dumps(js, indent=2, ensure_ascii=False))
-        json.dump(js, open(os.path.join(self.data_path, label + "-structures_proofs.json"), "w"), ensure_ascii=False)
-        return js
-    
-    def solve_and_structure(self, problem, label, n= 3):
-        solutions_js = self.save_solution_to_theory(problem, label, n = n)
-        structured_solutions = []
-        theories = json.loads(solutions_js)['theories']
-        for text in theories:
-            structured_solutions.append(self.save_structured(text, label, n = n))
-        js = {"problem": problem, "solutions": json.loads(solutions_js)['solutions'], "theories" : theories, "structured_solutions" : structured_solutions}
-        if self.verbose:
-            print(json.dumps(js, indent=2, ensure_ascii=False))
-        json.dump(js, open(os.path.join(self.data_path, label + "-structures_solutions.json"), "w"), ensure_ascii=False)
-        return js
-
+        
     def doc_string(self, theorem, n= 3, is_prop = True):
         head = "theorem"
         kind = "theorem"
@@ -231,8 +178,12 @@ class ChatClient:
         text = Template(templates['math_synonyms']).substitute(terms = terms)
         return math(text, n = n)
 
-    def summarise(self, text, sys_prompt = math_prompt, examples = [], n = 3):
-        query = Template(templates['summarise']).substitute(text = text)
+    def add_statements(self, text, n = 3):
+        query = Template(templates['add_statements']).substitute(text = text)
+        return self.completions(query, n = n)
+
+    def summarize(self, text, sys_prompt = math_prompt, examples = [], n = 3):
+        query = Template(templates['summarize']).substitute(text = text)
         return self.completions(query, sys_prompt, examples, n = n, ensure_json = True)
     
     def save_incremental_structure(self, texts, label, n = 1):
@@ -254,22 +205,7 @@ class ChatClient:
             print(json.dumps(js, indent=2, ensure_ascii=False))
         json.dump(js, open(os.path.join(self.data_path, label + "-long-structured.json"), "w"), ensure_ascii=False)
         return js
-    
-    def save_long_structured(self, text, label, n = 1):
-        texts = split_by_markdown_heading(text)
-        return self.save_incremental_structure(texts, label, n = n)
-    
-    def add_statements(self, text, n = 3):
-        query = Template(templates['add_statements']).substitute(text = text)
-        return self.completions(query, n = n)
-    
-    def save_add_statements(self, texts, label, n = 1):
-        with_statements = self.add_statements(texts, n = n)
-        js = {"texts": texts, "with_statements": with_statements}
-        if self.verbose:
-            print(json.dumps(js, indent=2, ensure_ascii=False))
-        json.dump(js, open(os.path.join(self.data_path, label + "-with-names.json"), "w"), ensure_ascii=False)
-        return js
+            
 
 
 class AzureChatClient(ChatClient):
@@ -300,6 +236,7 @@ class AzureChatClient(ChatClient):
         )
         return completion.choices
 
+default_client = AzureChatClient()
 class MistralChatClient(ChatClient):
     def __init__(self):
         self.model = "mistral-large-latest"
@@ -316,6 +253,46 @@ class MistralChatClient(ChatClient):
         )
         return completion.choices
 
+def process_problem(client, problem, name, n= 3):
+    data = {"problem": problem}
+    solutions = client.solve(problem, n)
+    data['solutions'] = solutions
+    client.dump(data, name, 'solve')
+    theories = []
+    for sol in solutions:
+        theory = client.problem_to_theory(problem, sol, n=1)[0]
+        theories.append(theory)
+    data['theories'] = theories
+    client.dump(data, name, 'solve_theory')
+    structured_texts = []
+    theory_structureds = ''
+    for theory in theories:
+        structured = client.make_structured(theory, n = n)
+        structured_texts = structured_texts + structured
+        theory_structureds.append({"theory": theory, "structured": structured})
+    data['structured_texts'] = structured_texts
+    client.dump(data, name, 'solve_theory_structured')
+    texts_with_statements = []
+    for structured in structured_texts:
+        with_statements = client.add_statements(structured)
+        texts_with_statements = texts_with_statements + with_statements
+    data['texts_with_statements'] = texts_with_statements
+    client.dump(data, 'solve_with_statements')
+    return data
+
+def process_problem_file(filename, client = default_client):
+    client.set_verbose()
+    sols = []
+    with open(os.path.join(resources, filename)) as f:
+        kvs = json.loads(f)
+        for name, problem in kvs.items():
+            solution = process_problem(client, problem=problem, name=name)
+            sols.append(solution)
+    return sols
+
+
+
+# The code below is deprecated. One should use the classes above.
 def azure_completions(query, sys_prompt = sys_prompt, examples = [], n=5, deployment_name = deployment_name):
     messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]
     completion = client_azure.chat.completions.create(
