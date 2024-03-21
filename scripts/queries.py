@@ -87,6 +87,34 @@ def split_by_markdown_heading(filename, head = "### "):
     sections.append(current_section)
   return sections
 
+import re
+
+def extract_json_block(text):
+    """Extracts a code-fenced JSON block from the text, returning the original text if no block is found.
+
+    Args:
+        text: The text body containing potential JSON blocks.
+
+    Returns:
+        The extracted JSON code block if found, otherwise the original text.
+    """
+
+    match = re.search(r"\n```json\n(.*?)\n```", text, flags=re.DOTALL)
+    if match:
+        json_block = match.group(1)
+        try:
+            # Validate the JSON syntax for a more robust check
+            json.loads(json_block)
+            return json_block
+        except json.JSONDecodeError:
+            # If it's not valid JSON, give a warning.
+            print("Warning: Found a JSON block, but it is not valid JSON.")
+            return json_block
+    else:
+        return text
+
+# Example usage (same as before)
+
 
 class ChatClient:
     verbose = False
@@ -186,6 +214,10 @@ class ChatClient:
     def add_statements(self, text, n = 3):
         query = Template(templates['add_statements']).substitute(json = text)
         return self.completions(query, n = n)
+    
+    def expand_deductions(self, text, n = 3):
+        query = Template(templates['expand_deductions']).substitute(json = text)
+        return self.completions(query, n = n)
 
     def summarize(self, text, sys_prompt = math_prompt, examples = [], n = 3):
         query = Template(templates['summarize']).substitute(text = text)
@@ -258,7 +290,7 @@ class MistralChatClient(ChatClient):
         )
         return completion.choices
 
-def process_problem(client, problem, name, n= 3):
+def process_problem(client, problem, name, n = 3, m =2):
     data = {"problem": problem}
     solutions = client.solve(problem, n)
     data['solutions'] = solutions
@@ -270,19 +302,31 @@ def process_problem(client, problem, name, n= 3):
     data['theories'] = theories
     client.dump(data, name, 'solve_theory')
     structured_texts = []
+    raw_structured_texts = []
     theory_structureds = []
     for theory in theories:
-        structured = client.make_structured(theory, n = n)
-        structured_texts = structured_texts + structured
+        raw_structureds = client.make_structured(theory, n = m)
+        raw_structured_texts = raw_structured_texts + raw_structureds
+        structureds =  [extract_json_block(s) for s in raw_structureds]
+        structured_texts = structured_texts + structureds
         theory_structureds.append({"theory": theory, "structured": structured})
     data['structured_texts'] = structured_texts
+    data['raw_structured_texts'] = raw_structured_texts
     client.dump(data, name, 'solve_theory_structured')
     texts_with_statements = []
     for structured in structured_texts:
-        with_statements = client.add_statements(structured, n = 2)
+        with_statements = client.add_statements(structured, n = m)
+        with_statements = [extract_json_block(s) for s in with_statements]
         texts_with_statements = texts_with_statements + with_statements
     data['texts_with_statements'] = texts_with_statements
     client.dump(data, name, 'solve_with_statements')
+    deductions_expanded = []
+    for text in texts_with_statements:
+        expanded = client.expand_deductions(text, n = m)
+        expanded = [extract_json_block(s) for s in expanded]
+        deductions_expanded = deductions_expanded + expanded
+    data['deductions_expanded'] = deductions_expanded
+    client.dump(data, name, 'solve_with_expanded_deductions')
     return data
 
 def process_problem_file(filename, client = default_client):
