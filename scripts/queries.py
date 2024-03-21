@@ -104,14 +104,20 @@ def extract_json_block(text):
         json_block = match.group(1)
         try:
             # Validate the JSON syntax for a more robust check
-            json.loads(json_block)
-            return json_block
+            js = json.loads(json_block)
+            return js
         except json.JSONDecodeError:
             # If it's not valid JSON, give a warning.
             print("Warning: Found a JSON block, but it is not valid JSON.")
             return json_block
     else:
         return text
+
+def json_text(js):
+    try:
+        return json.dumps(js, ensure_ascii=False, indent = 2)
+    except:
+        return js
 
 # Example usage (same as before)
 
@@ -160,7 +166,7 @@ class ChatClient:
         return completion.choices
 
 
-    def completions(self, query, sys_prompt = sys_prompt, examples = [], n= 3, ensure_json = False):
+    def completions(self, query, sys_prompt = math_prompt, examples = [], n= 3, ensure_json = False):
         if ensure_json:
             choices = self.choices_json(query, sys_prompt, examples, n)
         else:
@@ -309,12 +315,13 @@ def process_problem(client, problem, name, n = 3, m =2):
         raw_structured_texts = raw_structured_texts + raw_structureds
         structureds =  [extract_json_block(s) for s in raw_structureds]
         structured_texts = structured_texts + structureds
-        theory_structureds.append({"theory": theory, "structured": structured})
+        theory_structureds.append({"theory": theory, "structured": structureds})
     data['structured_texts'] = structured_texts
     data['raw_structured_texts'] = raw_structured_texts
     client.dump(data, name, 'solve_theory_structured')
     texts_with_statements = []
     for structured in structured_texts:
+        structured = json_text(structured)
         with_statements = client.add_statements(structured, n = m)
         with_statements = [extract_json_block(s) for s in with_statements]
         texts_with_statements = texts_with_statements + with_statements
@@ -322,6 +329,7 @@ def process_problem(client, problem, name, n = 3, m =2):
     client.dump(data, name, 'solve_with_statements')
     deductions_expanded = []
     for text in texts_with_statements:
+        text = json_text(text)
         expanded = client.expand_deductions(text, n = m)
         expanded = [extract_json_block(s) for s in expanded]
         deductions_expanded = deductions_expanded + expanded

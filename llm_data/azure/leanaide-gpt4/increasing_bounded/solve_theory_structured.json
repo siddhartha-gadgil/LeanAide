@@ -1,24 +1,357 @@
 {
   "problem": "Prove or disprove: Suppose $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
   "solutions": [
-    "The statement is true. \n\nSince $f'(x) > 0$ for all $x \\in \\mathbb{R}$, this means $f$ is strictly increasing. \n\nNow, suppose to the contrary that $f$ is bounded. Then there exist real numbers $M$ and $m$ such that $m \\leq f(x) \\leq M$ for all $x \\in \\mathbb{R}$. \n\nSince $f$ is continuous and $[m, M]$ is a closed interval, the image of $f$ is a closed interval $[m, M]$ by the Extreme Value Theorem, hence it achieves its maximum and minimum.\n\nBut as $f$ is strictly increasing, it can either achieve its maximum or its minimum, but not both, which contradicts the Extreme Value Theorem. \n\nHence, the assumption that $f$ is bounded is false, and $f$ is unbounded.",
-    "The statement is true. \n\nTo see this, consider any point $x_0 \\in \\mathbb{R}$. Since $f'(x) > 0$ for all $x \\in \\mathbb{R}$, the function $f$ is strictly increasing. \n\nThus, for any $x > x_0$, we have $f(x) > f(x_0)$; i.e., $f$ is unbounded above. \n\nSimilarly, for any $x < x_0$, we have $f(x) < f(x_0)$; i.e., $f$ is unbounded below. \n\nTherefore, the function $f$ is unbounded.",
-    "The statement is true. \n\nIf $f'(x) > 0$ for all $x \\in \\mathbb{R}$, then by the Mean Value Theorem, for any $a < b$ in $\\mathbb{R}$, there exists some $c$ in $(a, b)$ such that $f'(c) = \\frac{f(b) - f(a)}{b - a} > 0$. This implies $f(b) > f(a)$. \n\nThus $f$ is strictly increasing and therefore $f(x)$ is unbounded as $x \\rightarrow \\infty$ or $x \\rightarrow -\\infty$. Specifically, $f(x)$ goes to $-\\infty$ as $x$ goes to $-\\infty$ and $f(x)$ goes to $\\infty$ as $x$ goes to $\\infty$."
+    "This statement is true. Suppose $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function with $f'(x) > 0$ for all $x \\in \\mathbb{R}$. \n\nSince $f'(x) > 0$ for all $x \\in \\mathbb{R}$, the function $f$ is strictly increasing. \n\nNow, pick any $M > 0$. Since $f$ is strictly increasing, there exists some $x_1 \\in \\mathbb{R}$ such that $f(x_1) > M$. Similarly, for any $M < 0$, there exists some $x_2 \\in \\mathbb{R}$ such that $f(x_2) < M$. \n\nHence, the function $f$ is unbounded.",
+    "The statement is true. \n\nWe first note that $f'(x) > 0$ for all $x \\in \\mathbb{R}$ implies that $f$ is strictly increasing. \n\nNow, we show that $f$ is unbounded. Suppose for the sake of contradiction that $f$ is bounded. Then, there exists an $M > 0$ such that $|f(x)| \\leq M$ for all $x \\in \\mathbb{R}$. \n\nChoose arbitrary $x_0 \\in \\mathbb{R}$. Since $f$ is strictly increasing, we have $f(x) < f(x_0) + M$ for all $x < x_0$ and $f(x) > f(x_0) - M$ for all $x > x_0$. However, this contradicts the assumption that $f$ is bounded. \n\nTherefore, $f$ must be unbounded.",
+    "The claim is true. \n\nThe function $f$ is strictly increasing because $f'(x)>0$ for all $x \\in \\mathbb{R}$, by the Mean Value Theorem. This means that for any $M > 0$, there exists $x_M \\in \\mathbb{R}$ such that $f(x_M) > M$. Hence, $f$ is unbounded above. \n\nSimilarly, since $f$ is strictly increasing, for any $M < 0$, there exists $x_M \\in \\mathbb{R}$ such that $f(x_M) < M$. Hence, $f$ is unbounded below. \n\nTherefore, $f$ is unbounded."
   ],
   "theories": [
-    "**Theorem 1**: A continuous and strictly increasing function $f: \\mathbb{R} \\to \\mathbb{R}$ is unbounded.\n\n**Proof**: Assume for contradiction that $f$ is bounded. Then there exist real numbers $M$ and $m$ such that $m \\leq f(x) \\leq M$ for all $x \\in \\mathbb{R}$. \n\nDue to continuity of $f$, and $[m, M]$ being a closed interval, the image of $f$ is a closed interval $[m, M]$. Therefore, $f$ achieves its maximum and minimum by the Extreme Value Theorem.\n\nHowever, owning to $f$ being strictly increasing, it can either achieve its maximum or its minimum, but not both. This contradicts the Extreme Value Theorem, thus implying that the assumption that $f$ is bounded is incorrect. Therefore, $f$ is unbounded.\n\n**Theorem 2**: If $f: \\mathbb{R} \\to \\mathbb{R}$ is continuous and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is unbounded.\n\n**Proof**: From the hypothesis, $f'(x) > 0$ for all $x \\in \\mathbb{R}$. This implies that $f$ is strictly increasing. By Theorem 1, $f$ is unbounded. Therefore, if $f'(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ must be unbounded.",
-    "**Theorem 1**: Suppose $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is strictly increasing.\n\n**Proof of Theorem 1**: Choose any two points $x_1, x_2 \\in \\mathbb{R}$ such that $x_1 < x_2$. Then by the mean value theorem, there exists a point $c$ in $(x_1, x_2)$ such that $f'(c) = \\frac{f(x_2) - f(x_1)}{x_2 - x_1}$. Since $f'(x) > 0$ for all $x \\in \\mathbb{R}$, we have $f'(c) > 0$. Therefore, $f(x_2) - f(x_1) > 0$, or equivalently $f(x_2) > f(x_1)$. This holds for any $x_1, x_2 \\in \\mathbb{R}$ with $x_1 < x_2$, hence $f$ is strictly increasing.\n\n**Theorem 2**: If $f:\\mathbb{R} \\to \\mathbb{R}$ is strictly increasing, then $f$ is unbounded.\n\n**Proof of Theorem 2**: Let $x_0$ be any point in $\\mathbb{R}$. For any number $M > f(x_0)$, since $f$ is strictly increasing, there exists $x_1 > x_0$ such that $f(x_1) > M$. This shows that $f$ is unbounded above. Similarly, for any number $M < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < M$. This shows that $f$ is unbounded below. Therefore, $f$ is unbounded.",
-    "**Theorem 1:** Suppose $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is strictly increasing.\n\n**Proof:** Assume $a < b$ for any $a, b \\in \\mathbb{R}$. By the Mean Value Theorem, there exists a $c \\in (a, b)$ such that $f'(c) = \\frac{f(b) - f(a)}{b - a}$. Given that $f'(x) > 0$ for all $x$, it follows that $f'(c) > 0$. Therefore, $f(b) > f(a)$, which means $f$ is strictly increasing.\n\n**Theorem 2:** If $f:\\mathbb{R} \\to \\mathbb{R}$ is a strictly increasing continuous function, then $f$ is unbounded.\n\n**Proof:** Since $f$ is strictly increasing, for any real number $M$, there exists $x \\in \\mathbb{R}$ such that $f(x) > M$. Hence, $f(x)$ is unbounded as $x \\rightarrow \\infty$. Similarly, for any real number $N$, there exists $x \\in \\mathbb{R}$ such that $f(x) < N$. Hence, $f(x)$ is also unbounded as $x \\rightarrow -\\infty$. Thus, $f$ is unbounded."
+    "Theorem: Given a continuous function $f:\\mathbb{R} \\to \\mathbb{R}$ where $f'(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly increasing. \n\nProof: Consider any $x_1, x_2 \\in \\mathbb{R}$ such that $x_1 < x_2$. The Mean Value Theorem guarantees the existence of a point $c$ in the open interval $(x_1, x_2)$ satisfying $f'(c) = (f(x_2) - f(x_1)) / (x_2 - x_1)$. Since $f'(c) > 0$, we conclude $f(x_2) > f(x_1)$. Thus, the function $f$ is strictly increasing. \n\nTheorem: Given a strictly increasing continuous function $f:\\mathbb{R} \\to \\mathbb{R}$, $f$ is unbounded.\n\nProof: For $f$ to be bounded, there would exist $M > 0$ such that $|f(x)| \\leq M$ for all $x \\in \\mathbb{R}$. Given that $f$ is strictly increasing, for each $M > 0$, we can always find $x_1 \\in \\mathbb{R}$ such that $f(x_1) > M$. Similarly, for each $M < 0$, we can always find $x_2 \\in \\mathbb{R}$ such that $f(x_2) < M$. This contradicts the definition of boundedness, thus $f$ must be unbounded.",
+    "**Theorem 1:**\nSuppose $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is strictly increasing.\n\n**Proof of Theorem 1:**\nConsider arbitrary $x, y \\in \\mathbb{R}$ with $x < y$. Then by the Mean Value Theorem, there exists $c \\in (x, y)$ such that $f'(c) = \\frac{f(y) - f(x)}{y - x}$. Given that $f'(c) > 0$, it must be that $f(y) - f(x) > 0$, i.e., $f(y) > f(x)$. Thus, $f$ is strictly increasing.\n\n**Theorem 2:**\nSuppose $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous, strictly increasing function. Then $f$ is unbounded.\n\n**Proof of Theorem 2:**\nAssume for contradiction that $f$ is bounded. Then, there exists an $M > 0$ such that $|f(x)| \\leq M$ for all $x \\in \\mathbb{R}$.\n\nChoose arbitrary $x_0 \\in \\mathbb{R}$. Since $f$ is strictly increasing, we have $f(x) < f(x_0) + M$ for all $x < x_0$ and $f(x) > f(x_0) - M$ for all $x > x_0$. This contradicts the assumption that $f$ is bounded, hence $f$ is unbounded.",
+    "Theorem 1: Suppose $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is strictly increasing.\n\nProof of Theorem 1: By the Mean Value Theorem, if $f'(x)>0$ for all $x \\in \\mathbb{R}$, then for any $a < b$ in $\\mathbb{R}$, there exists $c \\in (a, b)$ such that $f'(c) = \\frac{f(b)-f(a)}{b-a}$. Since $f'(c) > 0$, it follows that $f(b) > f(a)$, i.e., $f$ is strictly increasing.\n\nTheorem 2: Suppose $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous and strictly increasing function. Then $f$ is unbounded.\n\nProof of Theorem 2: Suppose $f$ is strictly increasing. Then for any given $M > 0$, there exists $x_M \\in \\mathbb{R}$ such that $f(x_M) > M$. Therefore, $f$ is unbounded above. Similarly, for any $M < 0$, there exists $x_M \\in \\mathbb{R}$ such that $f(x_M) < M$. Therefore, $f$ is unbounded below. Hence, $f$ is unbounded."
   ],
   "structured_texts": [
-    "The translation of the above proofs into `ProofJSON` format would look like this:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"A continuous and strictly increasing function $f: \\\\mathbb{R} \\\\to \\\\mathbb{R}$ is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume for contradiction that $f$ is bounded.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Then there exist real numbers $M$ and $m$ such that $m \\\\leq f(x) \\\\leq M$ for all $x \\\\in \\\\mathbb{R}$.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Due to continuity of $f$, and $[m, M]$ being a closed interval, the image of $f$ is a closed interval $[m, M]$. Therefore, $f$ achieves its maximum and minimum by the Extreme Value Theorem.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"However, owning to $f$ being strictly increasing, it can either achieve its maximum or its minimum, but not both.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"This contradicts the Extreme Value Theorem, thus implying that the assumption that $f$ is bounded is incorrect.\",\n        \"deduced-from\": [\n          \"Extreme Value Theorem\",\n          \"f is strictly increasing\"\n        ]\n      },\n      {\n        \"type\": \"conclusion\",\n        \"statement\": \"Therefore, $f$ is unbounded.\"\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 2\",\n    \"statement\": \"If $f: \\\\mathbb{R} \\\\to \\\\mathbb{R}$ is continuous and $f'(x) > 0$ for all $x \\\\in \\\\mathbb{R}$, then $f$ is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"observation\",\n        \"statement\": \"From the hypothesis, $f'(x) > 0$ for all $x \\\\in \\\\mathbb{R}$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"This implies that $f$ is strictly increasing.\",\n        \"deduced-from\": [\n          \"$f'(x) > 0$ for all $x \\\\in \\\\mathbb{R}$\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"By Theorem 1, $f$ is unbounded.\",\n        \"deduced-from\": [\n          \"Theorem 1\"\n        ]\n      },\n      {\n        \"type\": \"conclusion\",\n        \"statement\": \"Therefore, if $f'(x) > 0$ for all $x \\\\in \\\\mathbb{R}$, then $f$ must be unbounded.\"\n      }\n    ]\n  }\n]\n```\nNote: The \"conclusion\" type is not explicitly mentioned in the original `ProofJSON` description, but it can be used to represent the final statement in a proof, similar to an assertion but without the need for any \"deduced-from\" or \"justification\" fields. If this is not acceptable, the \"conclusion\" type can be replaced with the \"assertion\" type, but with an empty \"deduced-from\" list and no \"justification\" field.",
-    "Here is the `ProofJSON` representation of the proofs provided:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"A continuous and strictly increasing function f: R -> R is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume for contradiction that f is bounded.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Then there exist real numbers M and m such that m <= f(x) <= M for all x in R.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Due to continuity of f, and [m, M] being a closed interval, the image of f is a closed interval [m, M].\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Therefore, f achieves its maximum and minimum by the Extreme Value Theorem.\",\n        \"deduced-from\": [\"The Extreme Value Theorem\"],\n        \"justification\": \"The theorem states that a continuous function on a closed interval achieves its maximum and minimum.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"However, owning to f being strictly increasing, it can either achieve its maximum or its minimum, but not both.\",\n        \"deduced-from\": [\"Definition of strictly increasing function\"],\n        \"justification\": \"A strictly increasing function continues to increase as we move along the x-axis, thus it cannot achieve both maximum and minimum.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"This contradicts the Extreme Value Theorem, thus implying that the assumption that f is bounded is incorrect.\",\n        \"deduced-from\": [\"The Extreme Value Theorem\"],\n        \"justification\": \"The contradiction arises because we previously established using the Extreme Value Theorem that f achieves both maximum and minimum.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Therefore, f is unbounded.\"\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 2\",\n    \"statement\": \"If f: R -> R is continuous and f'(x) > 0 for all x in R, then f is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"observation\",\n        \"statement\": \"From the hypothesis, f'(x) > 0 for all x in R.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"This implies that f is strictly increasing.\",\n        \"deduced-from\": [],\n        \"justification\": \"If the derivative of a function is positive for all x, then the function is strictly increasing.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"By Theorem 1, f is unbounded.\",\n        \"deduced-from\": [\"Theorem 1\"],\n        \"justification\": \"Theorem 1 proves that a continuous and strictly increasing function is unbounded.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Therefore, if f'(x) > 0 for all x in R, then f must be unbounded.\"\n      }\n    ]\n  }\n]\n```",
-    "Here is how the two theorems and their proofs can be translated into the `ProofJSON` format:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"A continuous and strictly increasing function f: R → R is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume for contradiction that f is bounded.\"\n      }, \n      {\n        \"type\": \"let\",\n        \"variable\": \"M and m\",\n        \"value\": \"Real numbers such that m ≤ f(x) ≤ M for all x in R.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Due to continuity of f, and [m, M] being a closed interval, the image of f is a closed interval [m, M].\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Therefore, f achieves its maximum and minimum by the Extreme Value Theorem.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Due to f being strictly increasing, it can either achieve its maximum or its minimum, but not both.\",\n        \"deduced-from\": [\"f is strictly increasing\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"This contradicts the Extreme Value Theorem, thus implying that the assumption that f is bounded is incorrect.\",\n        \"deduced-from\": [\"Extreme Value Theorem\"]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Therefore, f is unbounded.\"\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 2\",\n    \"statement\": \"If f: R → R is continuous and f'(x) > 0 for all x in R, then f is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"f'(x) > 0 for all x in R.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"This implies that f is strictly increasing.\",\n        \"deduced-from\": [\"f'(x) > 0 for all x in R\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"By Theorem 1, f is unbounded.\",\n        \"deduced-from\": [\"Theorem 1\"]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Therefore, if f'(x) > 0 for all x in R, then f must be unbounded.\"\n      }\n    ]\n  }\n]\n```\nIn this JSON representation, each theorem is represented as its own JSON object within the main JSON array. Each step of the proof is represented as its own JSON object within the \"proof\" array of the theorem JSON object. The steps of the proof are represented in the order they appear in the original proof, and the types of the JSON objects are chosen based on what each step of the proof is doing.",
-    "Here is the `ProofJson` format of the two theorems along with their proofs:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"Suppose f:R -> R is a continuous function such that f'(x) > 0 for all x in R. Then f is strictly increasing.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"choose\",\n        \"variable\": \"two points x1, x2 in R\",\n        \"property\": \"x1 < x2\",\n        \"existence\": [\n          {\n            \"type\": \"assertion\",\n            \"claim\": \"There exists a point c in (x1, x2) such that f'(c) = (f(x2) - f(x1)) / (x2 - x1).\",\n            \"deduced-from\": [\n              {\n                \"result\": \"Mean value theorem\"\n              }\n            ]\n          },\n          {\n            \"type\": \"assertion\",\n            \"claim\": \"f'(c) > 0\",\n            \"deduced-from\": [\n              {\n                \"result\": \"f'(x) > 0 for all x in R\"\n              }\n            ]\n          },\n          {\n            \"type\": \"assertion\",\n            \"claim\": \"f(x2) - f(x1) > 0\",\n            \"deduced-from\": [\n              {\n                \"result\": \"f'(c) > 0\"\n              }\n            ]\n          },\n          {\n            \"type\": \"assertion\",\n            \"claim\": \"f(x2) > f(x1)\",\n            \"deduced-from\": [\n              {\n                \"result\": \"f(x2) - f(x1) > 0\"\n              }\n            ]\n          }\n        ]\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 2\",\n    \"statement\": \"If f:R -> R is strictly increasing, then f is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"x0\",\n        \"value\": \"any point in R\",\n        \"existence\": [\n          {\n            \"type\": \"assertion\",\n            \"claim\": \"For any number M > f(x0), there exists x1 > x0 such that f(x1) > M.\",\n            \"deduced-from\": [\n              {\n                \"result\": \"f is strictly increasing\"\n              }\n            ]\n          },\n          {\n            \"type\": \"assertion\",\n            \"claim\": \"f is unbounded above\",\n            \"deduced-from\": [\n              {\n                \"result\": \"For any number M > f(x0), there exists x1 > x0 such that f(x1) > M.\"\n              }\n            ]\n          },\n          {\n            \"type\": \"assertion\",\n            \"claim\": \"For any number M < f(x0), there exists x2 < x0 such that f(x2) < M.\",\n            \"deduced-from\": [\n              {\n                \"result\": \"f is strictly increasing\"\n              }\n            ]\n          },\n          {\n            \"type\": \"assertion\",\n            \"claim\": \"f is unbounded below\",\n            \"deduced-from\": [\n              {\n                \"result\": \"For any number M < f(x0), there exists x2 < x0 such that f(x2) < M.\"\n              }\n            ]\n          },\n          {\n            \"type\": \"assertion\",\n            \"claim\": \"f is unbounded\",\n            \"deduced-from\": [\n              {\n                \"result\": \"f is unbounded above\"\n              },\n              {\n                \"result\": \"f is unbounded below\"\n              }\n            ]\n          }\n        ]\n      }\n    ]\n  }\n]\n```",
-    "Sure, I will translate the given mathematical proofs into `ProofJSON` format.\n\n```json\n[\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 1\",\n        \"statement\": \"Suppose f:R→R is a continuous function such that f'(x) > 0 for all x in R. Then f is strictly increasing.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"choose\",\n                \"variable\": \"(x1, x2)\",\n                \"property\": \"any two points in R such that x1 < x2\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"There exists a point c in (x1, x2) such that f'(c) = (f(x2) - f(x1)) / (x2 - x1).\",\n                \"deduced-from\": [\"mean value theorem\"]\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"f'(c) > 0\",\n                \"deduced-from\": [\"Given that f'(x) > 0 for all x in R\"]\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"f(x2) - f(x1) > 0, or equivalently f(x2) > f(x1).\",\n                \"deduced-from\": [\"f'(c) > 0\"]\n            },\n            {\n                \"type\": \"conclusion\",\n                \"statement\": \"This holds for any x1, x2 in R with x1 < x2, hence f is strictly increasing.\"\n            }\n        ]\n    },\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 2\",\n        \"statement\": \"If f:R→R is strictly increasing, then f is unbounded.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"let\",\n                \"variable\": \"x0\",\n                \"value\": \"any point in R\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"For any number M > f(x0), there exists x1 > x0 such that f(x1) > M.\",\n                \"deduced-from\": [\"The function f is strictly increasing\"]\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"This shows that f is unbounded above.\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"For any number M < f(x0), there exists x2 < x0 such that f(x2) < M.\",\n                \"deduced-from\": [\"The function f is strictly increasing\"]\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"This shows that f is unbounded below.\"\n            },\n            {\n                \"type\": \"conclusion\",\n                \"statement\": \"Therefore, f is unbounded.\"\n            }\n        ]\n    }\n]\n```\nThis JSON object represents the provided mathematical proofs from the problem. For each theorem, a proof structure is provided. Depending on the type of statement (assertion, observation, conclusion), the required fields are filled accordingly.",
-    "Here is the `ProofJSON` representation of the provided proofs:\n\n```\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"Suppose f: R -> R is a continuous function such that f'(x) > 0 for all x in R. Then f is strictly increasing.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"choose\",\n        \"variable\": \"x1, x2\",\n        \"property\": \"x1, x2 in R and x1 < x2\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"There exists a point c in (x1, x2) such that f'(c) = (f(x2) - f(x1)) / (x2 - x1).\",\n        \"deduced-from\": [\n          {\n            \"result\": \"Mean Value Theorem\",\n            \"applied-to\": \"f on the interval (x1, x2)\"\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Since f'(x) > 0 for all x in R, we have f'(c) > 0.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Therefore, f(x2) - f(x1) > 0, or equivalently f(x2) > f(x1).\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"This holds for any x1, x2 in R with x1 < x2, hence f is strictly increasing.\",\n        \"deduced-from\": []\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 2\",\n    \"statement\": \"If f: R -> R is strictly increasing, then f is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"x0\",\n        \"value\": \"any point in R\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For any number M > f(x0), there exists x1 > x0 such that f(x1) > M.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"f is strictly increasing\"\n          }\n        ],\n        \"justification\": \"By the strictly increasing property of f, for any M > f(x0), we can find an x1 > x0 such that f(x1) > M.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For any number M < f(x0), there exists x2 < x0 such that f(x2) < M.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"f is strictly increasing\"\n          }\n        ],\n        \"justification\": \"By the strictly increasing property of f, for any M < f(x0), we can find an x2 < x0 such that f(x2) < M.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Therefore, f is unbounded.\"\n      }\n    ]\n  }\n]\n```",
-    "Here is the JSON representation of the proofs in the `ProofJson` format:\n\n```json\n[\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 1\",\n        \"statement\": \"Suppose f:R -> R is a continuous function such that f'(x) > 0 for all x in R. Then f is strictly increasing.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"assumption\",\n                \"statement\": \"Assume a < b for any a, b in R.\"\n            },\n            {\n                \"type\": \"theorem\",\n                \"statement\": \"By the Mean Value Theorem, there exists a c in (a, b) such that f'(c) = (f(b) - f(a)) / (b - a).\",\n                \"status\": \"recalled\",\n                \"cite\": \"Mean Value Theorem\"\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"Given that f'(x) > 0 for all x, it follows that f'(c) > 0.\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"Therefore, f(b) > f(a).\",\n                \"deduced-from\": [\"f'(c) > 0\"]\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"This means f is strictly increasing.\",\n                \"deduced-from\": [\"f(b) > f(a)\"]\n            }\n        ]\n    },\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 2\",\n        \"statement\": \"If f:R -> R is a strictly increasing continuous function, then f is unbounded.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"assumption\",\n                \"statement\": \"Since f is strictly increasing,\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"For any real number M, there exists x in R such that f(x) > M.\",\n                \"deduced-from\": [\"f is strictly increasing\"]\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"Hence, f(x) is unbounded as x -> infinity.\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"Similarly, for any real number N, there exists x in R such that f(x) < N.\",\n                \"deduced-from\": [\"f is strictly increasing\"]\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"Hence, f(x) is also unbounded as x -> -infinity.\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"Thus, f is unbounded.\",\n                \"deduced-from\": [\"f(x) is unbounded as x -> infinity\", \"f(x) is unbounded as x -> -infinity\"]\n            }\n        ]\n    }\n]\n```",
-    "The `ProofJSON` representation of the above mathematical proof is as follows:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"Suppose f: R -> R is a continuous function such that f'(x) > 0 for all x in R. Then f is strictly increasing.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume a < b for any a, b in R.\"\n      },\n      {\n        \"type\": \"theorem\",\n        \"statement\": \"By the Mean Value Theorem, there exists a c in (a, b) such that f'(c) = (f(b) - f(a)) / (b - a).\",\n        \"status\": \"recalled\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Given that f'(x) > 0 for all x, it follows that f'(c) > 0.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Therefore, f(b) > f(a), which means f is strictly increasing.\",\n        \"deduced-from\": [\"Given that f'(x) > 0 for all x, it follows that f'(c) > 0.\"]\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 2\",\n    \"statement\": \"If f: R -> R is a strictly increasing continuous function, then f is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Since f is strictly increasing, for any real number M, there exists x in R such that f(x) > M.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Hence, f(x) is unbounded as x -> infinity.\",\n        \"deduced-from\": [\"Since f is strictly increasing, for any real number M, there exists x in R such that f(x) > M.\"]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Similarly, for any real number N, there exists x in R such that f(x) < N.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Hence, f(x) is also unbounded as x -> -infinity.\",\n        \"deduced-from\": [\"Similarly, for any real number N, there exists x in R such that f(x) < N.\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Thus, f is unbounded.\",\n        \"deduced-from\": [\"Hence, f(x) is unbounded as x -> infinity.\", \"Hence, f(x) is also unbounded as x -> -infinity.\"]\n      }\n    ]\n  }\n]\n```",
-    "Here is how you translate the given mathematical proofs into the `ProofJSON` format:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"Suppose f: R -> R is a continuous function such that f'(x) > 0 for all x in R. Then f is strictly increasing.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume a < b for any a, b in R.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"There exists a c in (a, b) such that f'(c) = (f(b) - f(a)) / (b - a)\",\n        \"deduced-from\": [\n          \"Mean Value Theorem\"\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"f'(x) > 0 for all x\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"f'(c) > 0\",\n        \"deduced-from\": [\n          \"f'(x) > 0 for all x\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"f(b) > f(a)\",\n        \"deduced-from\": [\n          \"f'(c) > 0\",\n          \"f'(c) = (f(b) - f(a)) / (b - a)\"\n        ]\n      },\n      {\n        \"type\": \"conclusion\",\n        \"statement\": \"f is strictly increasing.\"\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 2\",\n    \"statement\": \"If f: R -> R is a strictly increasing continuous function, then f is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"f is strictly increasing.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For any real number M, there exists x in R such that f(x) > M. Hence, f(x) is unbounded as x -> infinity\",\n        \"deduced-from\": [\n          \"f is strictly increasing\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For any real number N, there exists x in R such that f(x) < N. Hence, f(x) is also unbounded as x -> -infinity\",\n        \"deduced-from\": [\n          \"f is strictly increasing\"\n        ]\n      },\n      {\n        \"type\": \"conclusion\",\n        \"statement\": \"f is unbounded.\"\n      }\n    ]\n  }\n]\n```\n\nPlease note that \"R\" is used as a representation for the real number set ℝ, \"f': R -> R\" is the derivative of function f, and \"x -> infinity\" signifies x tends to infinity. Similarly, \"x -> -infinity\" signifies x tends to negative infinity."
+    [
+      {
+        "type": "theorem",
+        "name": "theorem_1",
+        "statement": "Given a continuous function $f: \\mathbb{R} \\to \\mathbb{R}$ where $f'(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly increasing.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "x_1, x_2",
+            "value": "Any $x_1, x_2 \\in \\mathbb{R}$ such that $x_1 < x_2$"
+          },
+          {
+            "type": "choose",
+            "variable": "c",
+            "property": "$c$ in the open interval $(x_1, x_2)$ satisfying $f'(c) = (f(x_2) - f(x_1)) / (x_2 - x_1)$",
+            "existence": [
+              {
+                "type": "theorem",
+                "statement": "Mean Value Theorem",
+                "status": "recalled"
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "$f(x_2) > f(x_1)$",
+            "deduced-from": [
+              "Given $f'(c) > 0$"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "theorem",
+        "name": "theorem_2",
+        "statement": "Given a strictly increasing continuous function $f: \\mathbb{R} \\to \\mathbb{R}$, $f$ is unbounded",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "M",
+            "value": "A number $M > 0$ such that $|f(x)| \\leq M$ for all $x \\in \\mathbb{R}$ if $f$ was bounded"
+          },
+          {
+            "type": "choose",
+            "variable": "x_1",
+            "property": "$x_1 \\in \\mathbb{R}$ such that $f(x_1) > M$",
+            "existence": [
+              {
+                "type": "assertion",
+                "claim": "$f$ is strictly increasing",
+                "justification": "Given by assumption"
+              }
+            ]
+          },
+          {
+            "type": "choose",
+            "variable": "x_2",
+            "property": "$x_2 \\in \\mathbb{R}$ such that $f(x_2) < M$",
+            "existence": [
+              {
+                "type": "assertion",
+                "claim": "$f$ is strictly increasing",
+                "justification": "Given by assumption"
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "$f$ is unbounded",
+            "justification": "As there exists no such M that satisfies the boundedness condition for $f$"
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "strictly_increasing_continuous_function",
+        "statement": "Given a continuous function f: R -> R where f'(x) > 0 for all x in R, f is strictly increasing.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "x_1, x_2",
+            "value": "any real numbers such that x_1 < x_2"
+          },
+          {
+            "type": "choose",
+            "variable": "c",
+            "property": "a point in the open interval (x_1, x_2) satisfying f'(c) = (f(x_2) - f(x_1)) / (x_2 - x_1)",
+            "existence": [
+              {
+                "type": "theorem",
+                "name": "mean_value_theorem",
+                "status": "recalled"
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "f(x_2) > f(x_1)",
+            "deduced-from": [
+              {
+                "result": "f'(c) > 0",
+                "applied-to": "c"
+              }
+            ],
+            "justification": "Since f'(c) > 0, we conclude f(x_2) > f(x_1)."
+          },
+          {
+            "type": "conclusion",
+            "statement": "The function f is strictly increasing."
+          }
+        ]
+      },
+      {
+        "type": "theorem",
+        "name": "unbounded_strictly_increasing_continuous_function",
+        "statement": "Given a strictly increasing continuous function f:R -> R, f is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assume",
+            "statement": "For f to be bounded, there exists M > 0 such that |f(x)| <= M for all x in R."
+          },
+          {
+            "type": "assertion",
+            "claim": "For each M > 0, we can always find x_1 in R such that f(x_1) > M.",
+            "deduced-from": [
+              {
+                "result": "f is strictly increasing"
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "For each M < 0, we can always find x_2 in R such that f(x_2) < M.",
+            "deduced-from": [
+              {
+                "result": "f is strictly increasing"
+              }
+            ]
+          },
+          {
+            "type": "conclusion",
+            "statement": "This contradicts the definition of boundedness, thus f must be unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "Suppose f: R -> R is a continuous function such that f'(x) > 0 for all x in R. Then f is strictly increasing.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "x, y",
+            "value": "arbitrary elements in R with x < y"
+          },
+          {
+            "type": "choose",
+            "variable": "c",
+            "property": "c in (x, y) such that f'(c) = (f(y) - f(x))/(y - x)",
+            "existence": {
+              "type": "observation",
+              "statement": "This follows from the Mean Value Theorem."
+            }
+          },
+          {
+            "type": "assertion",
+            "claim": "f(y) - f(x) > 0",
+            "deduced-from": [
+              {
+                "result": "f'(c) > 0",
+                "applied-to": "c"
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, f is strictly increasing."
+          }
+        ]
+      },
+      {
+        "type": "theorem",
+        "name": "Theorem 2",
+        "statement": "Suppose f: R -> R is a continuous, strictly increasing function. Then f is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for contradiction that f is bounded. Then, there exists an M > 0 such that |f(x)| <= M for all x in R."
+          },
+          {
+            "type": "let",
+            "variable": "x_0",
+            "value": "an arbitrary element in R"
+          },
+          {
+            "type": "assertion",
+            "claim": "f(x) < f(x_0) + M for all x < x_0 and f(x) > f(x_0) - M for all x > x_0",
+            "deduced-from": [
+              {
+                "result": "f is strictly increasing",
+                "applied-to": "x"
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "This contradicts the assumption that f is bounded, hence f is unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "Suppose f: R -> R is a continuous function such that f'(x) > 0 for all x in R. Then f is strictly increasing.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "x, y",
+            "value": "arbitrary elements of R such that x < y"
+          },
+          {
+            "type": "choose",
+            "variable": "c",
+            "property": "an element in the interval (x, y) such that f'(c) = (f(y) - f(x)) / (y - x)",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "Such c exists due to the Mean Value Theorem."
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "f(y) - f(x) > 0",
+            "deduced-from": [
+              {
+                "result": "f'(c) > 0",
+                "applied-to": "c"
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Hence, f(y) > f(x), thus f is strictly increasing."
+          }
+        ]
+      },
+      {
+        "type": "theorem",
+        "name": "Theorem 2",
+        "statement": "Suppose f: R -> R is a continuous, strictly increasing function. Then f is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for contradiction that f is bounded. Then, there exists an M > 0 such that |f(x)| <= M for all x in R."
+          },
+          {
+            "type": "let",
+            "variable": "x_0",
+            "value": "an arbitrary element of R"
+          },
+          {
+            "type": "assertion",
+            "claim": "f(x) < f(x_0) + M for all x < x_0 and f(x) > f(x_0) - M for all x > x_0",
+            "deduced-from": [
+              "f is strictly increasing"
+            ],
+            "justification": "Since f is strictly increasing."
+          },
+          {
+            "type": "observation",
+            "statement": "This contradicts the assumption that f is bounded, hence f is unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "Suppose f: R → R is a continuous function such that f'(x) > 0 for all x ∈ R. Then f is strictly increasing.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "f: R → R is a continuous function such that f'(x) > 0 for all x ∈ R."
+          },
+          {
+            "type": "assertion",
+            "claim": "f is strictly increasing.",
+            "deduced-from": [
+              {
+                "result": "Mean Value Theorem",
+                "applied-to": "f and its derivative"
+              }
+            ],
+            "justification": "From Mean Value Theorem, for any a < b in R, there exists c ∈ (a, b) such that f'(c) = (f(b)-f(a)) / (b-a). Since f'(c) > 0, it follows that f(b) > f(a)."
+          }
+        ]
+      },
+      {
+        "type": "theorem",
+        "name": "Theorem 2",
+        "statement": "Suppose f:R → R is a continuous and strictly increasing function. Then f is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "f: R → R is a continuous and strictly increasing function."
+          },
+          {
+            "type": "assertion",
+            "claim": "f is unbounded.",
+            "deduced-from": [],
+            "justification": "Suppose f is strictly increasing. Then for any given M > 0, there exists x_M ∈ R such that f(x_M) > M. Therefore, f is unbounded above. Similarly, for any M < 0, there exists x_M ∈ R such that f(x_M) < M. Therefore, f is unbounded below."
+          }
+        ]
+      }
+    ],
+    "Here is how these theorems and their proofs would be translated into ProofJSON format:\n\n```\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"Suppose $f:\\\\mathbb{R} \\\\to \\\\mathbb{R}$ is a continuous function such that $f'(x) > 0$ for all $x \\\\in \\\\mathbb{R}$. Then $f$ is strictly increasing.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For any $a < b$ in $\\\\mathbb{R}$, there exists $c \\\\in (a, b)$ such that $f'(c) = \\\\frac{f(b)-f(a)}{b-a}$.\",\n        \"deduced-from\": [\"Mean Value Theorem\", {\"result\": \"$f'(x)>0$ for all $x \\\\in \\\\mathbb{R}$\"}]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$f(b) > f(a)$\",\n        \"deduced-from\": [\"$f'(c) > 0$\", \"$f'(c) = \\\\frac{f(b)-f(a)}{b-a}$\"]\n      },\n      {\n        \"type\": \"conclusion\",\n        \"claim\": \"$f$ is strictly increasing.\"\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 2\",\n    \"statement\": \"Suppose $f:\\\\mathbb{R} \\\\to \\\\mathbb{R}$ is a continuous and strictly increasing function. Then $f$ is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For any given $M > 0$, there exists $x_M \\\\in \\\\mathbb{R}$ such that $f(x_M) > M$.\",\n        \"deduced-from\": [\"$f$ is strictly increasing\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$f$ is unbounded above.\",\n        \"deduced-from\": [\"For any given $M > 0$, there exists $x_M \\\\in \\\\mathbb{R}$ such that $f(x_M) > M$\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For any given $M < 0$, there exists $x_M \\\\in \\\\mathbb{R}$ such that $f(x_M) < M$.\",\n        \"deduced-from\": [\"$f$ is strictly increasing\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$f$ is unbounded below.\",\n        \"deduced-from\": [\"For any given $M < 0$, there exists $x_M \\\\in \\\\mathbb{R}$ such that $f(x_M) < M$\"]\n      },\n      {\n        \"type\": \"conclusion\",\n        \"claim\": \"$f$ is unbounded.\"\n      }\n    ]\n  }\n]\n```\n\nNote: The type \"conclusion\" is not clearly defined in your ProofJSON schema, but I used it here as a logical final step to mark the end of the proof. If this is not appropriate, you might need to modify the JSON accordingly."
+  ],
+  "raw_structured_texts": [
+    "Here is how the proof translates into the `ProofJSON` format:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"theorem_1\",\n    \"statement\": \"Given a continuous function $f: \\\\mathbb{R} \\\\to \\\\mathbb{R}$ where $f'(x) > 0$ for all $x \\\\in \\\\mathbb{R}$, $f$ is strictly increasing.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"x_1, x_2\",\n        \"value\": \"Any $x_1, x_2 \\\\in \\\\mathbb{R}$ such that $x_1 < x_2$\"\n      },\n      {\n        \"type\": \"choose\",\n        \"variable\": \"c\",\n        \"property\": \"$c$ in the open interval $(x_1, x_2)$ satisfying $f'(c) = (f(x_2) - f(x_1)) / (x_2 - x_1)$\",\n        \"existence\": [\n          {\n            \"type\": \"theorem\",\n            \"statement\": \"Mean Value Theorem\",\n            \"status\": \"recalled\"\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$f(x_2) > f(x_1)$\",\n        \"deduced-from\": [\n          \"Given $f'(c) > 0$\"\n        ]\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"theorem_2\",\n    \"statement\": \"Given a strictly increasing continuous function $f: \\\\mathbb{R} \\\\to \\\\mathbb{R}$, $f$ is unbounded\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"M\",\n        \"value\": \"A number $M > 0$ such that $|f(x)| \\\\leq M$ for all $x \\\\in \\\\mathbb{R}$ if $f$ was bounded\"\n      },\n      {\n        \"type\": \"choose\",\n        \"variable\": \"x_1\",\n        \"property\": \"$x_1 \\\\in \\\\mathbb{R}$ such that $f(x_1) > M$\",\n        \"existence\": [\n          {\n            \"type\": \"assertion\",\n            \"claim\": \"$f$ is strictly increasing\",\n            \"justification\": \"Given by assumption\"\n          }\n        ]\n      },\n      {\n        \"type\": \"choose\",\n        \"variable\": \"x_2\",\n        \"property\": \"$x_2 \\\\in \\\\mathbb{R}$ such that $f(x_2) < M$\",\n        \"existence\": [\n          {\n            \"type\": \"assertion\",\n            \"claim\": \"$f$ is strictly increasing\",\n            \"justification\": \"Given by assumption\"\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$f$ is unbounded\",\n        \"justification\": \"As there exists no such M that satisfies the boundedness condition for $f$\"\n      }\n    ]\n  }\n]\n```",
+    "Here is the `ProofJSON` translation of the theorems and their proofs:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"strictly_increasing_continuous_function\",\n    \"statement\": \"Given a continuous function f: R -> R where f'(x) > 0 for all x in R, f is strictly increasing.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"x_1, x_2\",\n        \"value\": \"any real numbers such that x_1 < x_2\"\n      },\n      {\n        \"type\": \"choose\",\n        \"variable\": \"c\",\n        \"property\": \"a point in the open interval (x_1, x_2) satisfying f'(c) = (f(x_2) - f(x_1)) / (x_2 - x_1)\",\n        \"existence\": [\n          {\n            \"type\": \"theorem\",\n            \"name\": \"mean_value_theorem\",\n            \"status\": \"recalled\"\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"f(x_2) > f(x_1)\",\n        \"deduced-from\": [\n          {\n            \"result\": \"f'(c) > 0\",\n            \"applied-to\": \"c\"\n          }\n        ],\n        \"justification\": \"Since f'(c) > 0, we conclude f(x_2) > f(x_1).\"\n      },\n      {\n        \"type\": \"conclusion\",\n        \"statement\": \"The function f is strictly increasing.\"\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"unbounded_strictly_increasing_continuous_function\",\n    \"statement\": \"Given a strictly increasing continuous function f:R -> R, f is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assume\",\n        \"statement\": \"For f to be bounded, there exists M > 0 such that |f(x)| <= M for all x in R.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For each M > 0, we can always find x_1 in R such that f(x_1) > M.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"f is strictly increasing\"\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For each M < 0, we can always find x_2 in R such that f(x_2) < M.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"f is strictly increasing\"\n          }\n        ]\n      },\n      {\n        \"type\": \"conclusion\",\n        \"statement\": \"This contradicts the definition of boundedness, thus f must be unbounded.\"\n      }\n    ]\n  }\n]\n```",
+    "Here's how you might translate these two theorems and their proofs into the ProofJSON format:\n\n```json\n[\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 1\",\n        \"statement\": \"Suppose f: R -> R is a continuous function such that f'(x) > 0 for all x in R. Then f is strictly increasing.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"let\",\n                \"variable\": \"x, y\",\n                \"value\": \"arbitrary elements in R with x < y\"\n            },\n            {\n                \"type\": \"choose\",\n                \"variable\": \"c\",\n                \"property\": \"c in (x, y) such that f'(c) = (f(y) - f(x))/(y - x)\",\n                \"existence\": {\n                    \"type\": \"observation\",\n                    \"statement\": \"This follows from the Mean Value Theorem.\"\n                }\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"f(y) - f(x) > 0\",\n                \"deduced-from\": [\n                    {\n                        \"result\": \"f'(c) > 0\",\n                        \"applied-to\": \"c\"\n                    }\n                ]\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"Therefore, f is strictly increasing.\"\n            }\n        ]\n    },\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 2\",\n        \"statement\": \"Suppose f: R -> R is a continuous, strictly increasing function. Then f is unbounded.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"assumption\",\n                \"statement\": \"Assume for contradiction that f is bounded. Then, there exists an M > 0 such that |f(x)| <= M for all x in R.\"\n            },\n            {\n                \"type\": \"let\",\n                \"variable\": \"x_0\",\n                \"value\": \"an arbitrary element in R\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"f(x) < f(x_0) + M for all x < x_0 and f(x) > f(x_0) - M for all x > x_0\",\n                \"deduced-from\": [\n                    {\n                        \"result\": \"f is strictly increasing\",\n                        \"applied-to\": \"x\"\n                    }\n                ]\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"This contradicts the assumption that f is bounded, hence f is unbounded.\"\n            }\n        ]\n    }\n]\n```\nThis JSON structure represents the theorems and their proofs, where each part of the proof is broken down into specific steps such as assuming something for the sake of contradiction, letting some variables take particular values, and deducing certain facts from the given conditions. Each step is represented by a JSON object with a type indicating the kind of step and other fields providing the necessary information for that step.",
+    "Here is the `ProofJSON` representation of the two theorems and their proofs.\n\n```json\n[\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 1\",\n        \"statement\": \"Suppose f: R -> R is a continuous function such that f'(x) > 0 for all x in R. Then f is strictly increasing.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"let\",\n                \"variable\": \"x, y\",\n                \"value\": \"arbitrary elements of R such that x < y\"\n            },\n            {\n                \"type\": \"choose\",\n                \"variable\": \"c\",\n                \"property\": \"an element in the interval (x, y) such that f'(c) = (f(y) - f(x)) / (y - x)\",\n                \"existence\": [\n                    {\n                        \"type\": \"observation\",\n                        \"statement\": \"Such c exists due to the Mean Value Theorem.\"\n                    }\n                ]\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"f(y) - f(x) > 0\",\n                \"deduced-from\": [\n                    {\n                        \"result\": \"f'(c) > 0\",\n                        \"applied-to\": \"c\"\n                    }\n                ]\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"Hence, f(y) > f(x), thus f is strictly increasing.\"\n            }\n        ]\n    },\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 2\",\n        \"statement\": \"Suppose f: R -> R is a continuous, strictly increasing function. Then f is unbounded.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"assumption\",\n                \"statement\": \"Assume for contradiction that f is bounded. Then, there exists an M > 0 such that |f(x)| <= M for all x in R.\"\n            },\n            {\n                \"type\": \"let\",\n                \"variable\": \"x_0\",\n                \"value\": \"an arbitrary element of R\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"f(x) < f(x_0) + M for all x < x_0 and f(x) > f(x_0) - M for all x > x_0\",\n                \"deduced-from\": [\n                    \"f is strictly increasing\"\n                ],\n                \"justification\": \"Since f is strictly increasing.\"\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"This contradicts the assumption that f is bounded, hence f is unbounded.\"\n            }\n        ]\n    }\n]\n``` \n\nThis JSON object represents the two theorems and their proofs, showing the logical steps, the deductions made, and the statements made in the proofs. Each theorem is an object in the list, and their proofs are represented as nested lists of JSON objects, each representing a step in the proof.",
+    "The `ProofJSON` format for the given proofs is as follows:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"Suppose f: R → R is a continuous function such that f'(x) > 0 for all x ∈ R. Then f is strictly increasing.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"f: R → R is a continuous function such that f'(x) > 0 for all x ∈ R.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"f is strictly increasing.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"Mean Value Theorem\",\n            \"applied-to\": \"f and its derivative\"\n          }\n        ],\n        \"justification\": \"From Mean Value Theorem, for any a < b in R, there exists c ∈ (a, b) such that f'(c) = (f(b)-f(a)) / (b-a). Since f'(c) > 0, it follows that f(b) > f(a).\"\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 2\",\n    \"statement\": \"Suppose f:R → R is a continuous and strictly increasing function. Then f is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"f: R → R is a continuous and strictly increasing function.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"f is unbounded.\",\n        \"deduced-from\": [],\n        \"justification\": \"Suppose f is strictly increasing. Then for any given M > 0, there exists x_M ∈ R such that f(x_M) > M. Therefore, f is unbounded above. Similarly, for any M < 0, there exists x_M ∈ R such that f(x_M) < M. Therefore, f is unbounded below.\"\n      }\n    ]\n  }\n]\n```\n\nThis `ProofJSON` format represents the proofs of Theorem 1 and Theorem 2 in a structured and machine-readable format. The proof of each theorem is broken down into a sequence of assumptions and assertions, with each assertion indicating the claim, the results it is deduced from, and a justification explaining how the claim follows from these results.",
+    "Here is how these theorems and their proofs would be translated into ProofJSON format:\n\n```\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"Suppose $f:\\\\mathbb{R} \\\\to \\\\mathbb{R}$ is a continuous function such that $f'(x) > 0$ for all $x \\\\in \\\\mathbb{R}$. Then $f$ is strictly increasing.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For any $a < b$ in $\\\\mathbb{R}$, there exists $c \\\\in (a, b)$ such that $f'(c) = \\\\frac{f(b)-f(a)}{b-a}$.\",\n        \"deduced-from\": [\"Mean Value Theorem\", {\"result\": \"$f'(x)>0$ for all $x \\\\in \\\\mathbb{R}$\"}]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$f(b) > f(a)$\",\n        \"deduced-from\": [\"$f'(c) > 0$\", \"$f'(c) = \\\\frac{f(b)-f(a)}{b-a}$\"]\n      },\n      {\n        \"type\": \"conclusion\",\n        \"claim\": \"$f$ is strictly increasing.\"\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 2\",\n    \"statement\": \"Suppose $f:\\\\mathbb{R} \\\\to \\\\mathbb{R}$ is a continuous and strictly increasing function. Then $f$ is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For any given $M > 0$, there exists $x_M \\\\in \\\\mathbb{R}$ such that $f(x_M) > M$.\",\n        \"deduced-from\": [\"$f$ is strictly increasing\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$f$ is unbounded above.\",\n        \"deduced-from\": [\"For any given $M > 0$, there exists $x_M \\\\in \\\\mathbb{R}$ such that $f(x_M) > M$\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For any given $M < 0$, there exists $x_M \\\\in \\\\mathbb{R}$ such that $f(x_M) < M$.\",\n        \"deduced-from\": [\"$f$ is strictly increasing\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$f$ is unbounded below.\",\n        \"deduced-from\": [\"For any given $M < 0$, there exists $x_M \\\\in \\\\mathbb{R}$ such that $f(x_M) < M$\"]\n      },\n      {\n        \"type\": \"conclusion\",\n        \"claim\": \"$f$ is unbounded.\"\n      }\n    ]\n  }\n]\n```\n\nNote: The type \"conclusion\" is not clearly defined in your ProofJSON schema, but I used it here as a logical final step to mark the end of the proof. If this is not appropriate, you might need to modify the JSON accordingly."
   ]
 }

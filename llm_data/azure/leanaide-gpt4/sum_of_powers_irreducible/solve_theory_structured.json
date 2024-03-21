@@ -1,24 +1,320 @@
 {
   "problem": "Prove that the polynomial $x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.",
   "solutions": [
-    "Assume for contradiction, that the polynomial $f(x) = x^4 + x^3 + x^2 + x + 1$ is reducible over the rationals. Then, it must be a product of two polynomials of degree 2 or one linear and one cubic polynomial.\n\nWe know that the roots of $f(x)$ are the fifth roots of unity, excluding 1. Therefore, we need to consider its reciprocal polynomial $f(1/x) = x^4f(1/x) = x^4 + x^3 + x^2 + x + 1$. \n\nThe roots of the reciprocal polynomial are the reciprocals of the roots of $f(x)$, which are also the fifth roots of unity. Hence, they lie on the unit circle in $\\mathbb{C}$.\n\nAssume $f(x)$ can be factored into lower degree polynomials with rational coefficients. Then, the roots of these factored polynomials must also lie on the unit circle. However, any rational root of a polynomial must be a divisor of the constant term, as per the Rational Root Theorem, and the only divisors of 1 are $\\pm 1$. Therefore, the only possible rational roots are $\\pm 1$, and neither are roots of $f(x)$.\n\nThus, $f(x)$ cannot be factored into lower degree polynomials with rational coefficients, and it is irreducible over the rationals.",
-    "The polynomial $x^4 + x^3 + x^2 + x + 1$ can be written as $(x^5 - 1) / (x - 1)$. The roots of the polynomial $x^5 - 1 = 0$ are the fifth roots of unity, which are given by $e^{2k\\pi i/5}$ for $k = 0, 1, 2, 3, 4$. Removing the root $x = 1$ leaves us with the fourth roots of unity that are not real, namely $e^{2\\pi i/5}, e^{4\\pi i/5}, e^{6\\pi i/5}, e^{8\\pi i/5}$. These numbers are not roots of any polynomial of degree less than 4 with rational coefficients, thus our polynomial is irreducible over the rationals by the definition of irreducibility.",
-    "We will use the Eisenstein's criterion, which states that if there exists a prime number $p$ such that $p$ divides all the coefficients of a polynomial except for the leading coefficient, and $p^2$ does not divide the constant term, then the polynomial is irreducible over the rationals.\n\nThe given polynomial is $x^4 + x^3 + x^2 + x + 1$. Here, all coefficients are 1. Note that 1 is not a prime number, so we cannot directly apply the Eisenstein's criterion. However, we can apply the criterion to a simple manipulation of the polynomial.\n\nConsider the polynomial $x^4 + x^3 + x^2 + x + 1 - x^5 = -x^5 + x^4 + x^3 + x^2 + x + 1 = 0$.\n\nNow, every coefficient except the leading one is divisible by the prime number 1, and the constant term 1 is not divisible by $1^2 = 1$. Hence, by the Eisenstein criterion, the polynomial $-x^5 + x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.\n\nNow, $-x^5 + x^4 + x^3 + x^2 + x + 1 = 0$ is equivalent to $x^5 = x^4 + x^3 + x^2 + x + 1 = 0$. Thus, the original polynomial $x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals."
+    "Let $f(x) = x^4 + x^3 + x^2 + x + 1$. \n\nAssume by contradiction that $f(x)$ is reducible over $\\mathbb{Q}$, thus $f(x) = g(x)h(x)$ for some non-constant polynomials $g(x), h(x)$ in $\\mathbb{Q}[x]$. \n\nNotice that $f(x)$ is a factor of $x^5 - 1 = (x - 1)(x^4 + x^3 + x^2 + x + 1)$. \n\nSince $x^5 - 1$ has distinct roots and $x - 1$ has degree 1, any non-constant divisor of $f(x)$ must also share a root with $f(x)$. \n\nHowever, the roots of $f(x)$ are the fifth roots of unity except $1$, which are not in $\\mathbb{Q}$. \n\nHence, $g(x), h(x)$ cannot have a root in $\\mathbb{Q}$, which contradicts that $g(x), h(x)$ are polynomials over $\\mathbb{Q}$ and non-constant since every non-constant polynomial over a field has a root in its algebraic closure.\n\nThus, $f(x)$ is irreducible over $\\mathbb{Q}$.",
+    "The polynomial $p(x) = x^4 + x^3 + x^2 + x + 1$ can be written in the form $x^4 + x^3 + x^2 + x + 1 = 0$. \n\nThis is equivalent to $x^5 - 1 = 0$, which has roots that are the 5th roots of unity. \n\nThese roots include $x = 1$ and the roots of the given polynomial.\n\nNow note that $p(x)$ is a factor of $x^5 - 1 = (x-1)p(x)$ in $\\mathbb{Q}[x]$. \n\nSince the roots of $x^5 - 1$ are $1$, $\\omega$, $\\omega^2$, $\\omega^3$, $\\omega^4$ where $\\omega = e^{2\\pi i / 5}$, and 1 is a root of $x-1$, the roots of $p(x)$ must be $\\omega$, $\\omega^2$, $\\omega^3$, $\\omega^4$.\n\nSince these roots are not in $\\mathbb{Q}$, the polynomial $p(x)$ is irreducible over $\\mathbb{Q}$ by the definition of an irreducible polynomial.",
+    "Consider f(x) = $x^4 + x^3 + x^2 + x + 1$.\n\nWe will use the substitution $y = x + \\frac{1}{x}$, which gives us $y^2 = x^2 + 2 + \\frac{1}{x^2}$. \n\nSubstituting $x^2 + \\frac{1}{x^2}$ with $y^2 - 2$ in $f(x)$, we get $f(x) = (y^2 - 2)^2 + y(y^2 - 2) + 1$. Expanding this expression, we get $y^4 - 3y^2 + 1$.\n\nIf $f(x)$ were reducible over the rationals, the polynomial in $y$, $y^4 - 3y^2 + 1$, would also be reducible. But using Eisenstein's criterion on $p = 3$, we see that $y^4 - 3y^2 + 1$ is irreducible over the rationals.\n\nTherefore, $f(x)$ is irreducible over the rationals."
   ],
   "theories": [
-    "**Theorem 1**: The polynomial $x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.\n\n**Proof**: \n\nAssume to the contrary that the polynomial $f(x) = x^4 + x^3 + x^2 + x + 1$ is reducible over the rationals. This implies it can be factored as a product of two polynomials of degree 2, or a product of one linear and one cubic polynomial.\n\nThe roots of $f(x)$ are the fifth roots of unity excluding 1. Therefore, we also consider its reciprocal polynomial $f(1/x) = x^4f(1/x) = x^4 + x^3 + x^2 + x + 1$. The roots of this reciprocal polynomial are the reciprocals of the roots of $f(x)$, which are also the fifth roots of unity, and lie on the unit circle in $\\mathbb{C}$.\n\nIf $f(x)$ could be factored into lower degree polynomials with rational coefficients, the roots of these factored polynomials would also have to lie on the unit circle. However, the Rational Root Theorem states that any rational root of a polynomial must be a divisor of its constant term. The only divisors of 1 are $\\pm 1$, neither of which are roots of $f(x)$. \n\nThis contradiction implies that $f(x)$ cannot be factored into lower degree polynomials with rational coefficients. Therefore, $f(x)$ is irreducible over the rationals.",
-    "Theorem: The polynomial $x^4 + x^3 + x^2 + x + 1$ is irreducible over the field of rational numbers $\\mathbb{Q}$.\n\nProof: The given polynomial can be expressed in the form $(x^5 - 1) / (x - 1)$. Observe that the roots of the polynomial $x^5 - 1 = 0$ are the fifth roots of unity, which are given by complex numbers of the form $e^{2k\\pi i/5}$ for $k = 0, 1, 2, 3, 4$. Upon removing the root $x = 1$, we are left with the roots of the original polynomial, namely the non-real fourth roots of unity $e^{2\\pi i/5}, e^{4\\pi i/5}, e^{6\\pi i/5}, e^{8\\pi i/5}$. \n\nTo show that these numbers are not roots of any polynomial of degree less than 4 with rational coefficients, we can use a contradiction argument: suppose there exists a polynomial $p(x)$ with degree less than 4 and with rational coefficients such that $p(e^{2\\pi i/5}) = 0$. However, the minimal polynomial of $e^{2\\pi i/5}$ over $\\mathbb{Q}$ is $x^4 + x^3 + x^2 + x + 1$, which has degree 4. This leads to a contradiction, and thus no such polynomial $p(x)$ exists.\n\nAs a consequence of this, the polynomial $x^4 + x^3 + x^2 + x + 1$ is irreducible over $\\mathbb{Q}$, as by definition a polynomial is irreducible over a field if it cannot be factored into a product of polynomials of lesser degree with coefficients in that field.",
-    "Theorem: The polynomial $x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.\n\nProof: We can establish this irreducibility by using Eisenstein's Criterion, which however, can't be applied directly to this polynomial, as 1 isn't a prime number. \n\nWe can get around this by considering $x^4 + x^3 + x^2 + x + 1 - x^5 = -x^5 + x^4 + x^3 + x^2 + x + 1$. The coefficients of this manipulated polynomial are divisible by the prime number 1, excluding the leading coefficient, and the constant term 1 cannot be divided by $1^2 = 1$.\n\nHence, Eisenstein's Criterion indicates that this polynomial is irreducible over the rationals. Given that $-x^5 + x^4 + x^3 + x^2 + x + 1$ is equivalent to $x^5 = x^4 + x^3 + x^2 + x + 1$, it follows that $x^4 + x^3 + x^2 + x + 1$ is also irreducible over the rationals. Therefore, the theorem is proven."
+    "Theorem: The polynomial $f(x) = x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.\n\nProof: \nSuppose for contradiction that $f(x)$ is reducible over $\\mathbb{Q}$. This implies that $f(x) = g(x)h(x)$ for some non-constant polynomials $g(x), h(x)$ in $\\mathbb{Q}[x]$. \n\nObserve that $f(x)$ is a factor of $x^5 - 1 = (x - 1)(x^4 + x^3 + x^2 + x + 1)$. This polynomial $x^5 - 1$ has distinct roots and the polynomial $x - 1$ has degree 1. Thus, any non-constant divisor of $f(x)$ must also share a root with $f(x)$. \n\nThe roots of $f(x)$ are the fifth roots of unity except $1$, which are not rational. Therefore, neither $g(x)$ nor $h(x)$ can have a root in $\\mathbb{Q}$.\n\nHowever, by the Fundamental Theorem of Algebra, $g(x)$ and $h(x)$, as non-constant polynomials over $\\mathbb{Q}$, must have a root in its algebraic closure, which is a contradiction.\n\nHence, our initial assumption must be false, and the polynomial $f(x)$ is irreducible over $\\mathbb{Q}$.\n",
+    "Theorem: The polynomial $p(x) = x^4 + x^3 + x^2 + x + 1$ is irreducible over $\\mathbb{Q}$.\n\nProof: Observe that the polynomial $p(x)$ can be obtained by factoring $x-1$ out of the polynomial $x^5 - 1 = 0$. That is, $x^5 - 1 = (x-1)p(x)$ in $\\mathbb{Q}[x]$. \n\nNow, the roots of $x^5 - 1 = 0$ are the 5th roots of unity, which are $1$, $\\omega$, $\\omega^2$, $\\omega^3$, $\\omega^4$ where $\\omega = e^{2\\pi i / 5}$. Among these roots, 1 is the root of $x-1$, so the roots of $p(x)$ must be the remaining roots of unity, that is, $\\omega$, $\\omega^2$, $\\omega^3$, $\\omega^4$.\n\nSince these roots are not rational, and a polynomial is irreducible over a field if and only if it has no roots in that field, we conclude that the polynomial $p(x)$ is irreducible over $\\mathbb{Q}$.",
+    "**Theorem 1:**  \nThe polynomial $y^4 - 3y^2 + 1$ is irreducible over the rationals.\n\n**Proof:**  \nWe use Eisenstein's criterion with prime p=3. The coefficients of $y^4 - 3y^2 + 1$ are not divisible by 3, the coefficient of the term $y^2$ is divisible by $3^2$ but not by $3^3$, and the constant term is not divisible by $3^2$. Thus, by Eisenstein's criterion, the polynomial $y^4 - 3y^2 + 1$ is irreducible over the rationals.\n\n**Theorem 2:**  \nThe polynomial $x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.\n\n**Proof:**  \nConsider the polynomial $f(x) = x^4 + x^3 + x^2 + x + 1$. We introduce the substitution $y = x + \\frac{1}{x}$, which gives $y^2 = x^2 + 2 + \\frac{1}{x^2}$. Substituting $x^2 + \\frac{1}{x^2}$ with $y^2 - 2$ in $f(x)$, we get $f(x) = (y^2 - 2)^2 + y(y^2 - 2) + 1 = y^4 - 3y^2 + 1$. From theorem 1, we know $y^4 - 3y^2 + 1$ is irreducible over the rationals. Thus, if $f(x)$ were reducible over the rationals, then $y^4 - 3y^2 + 1$ would also be reducible, which is a contradiction. Hence, $f(x)$ is irreducible over the rationals."
   ],
   "structured_texts": [
-    "Here is the provided proof translated into the `ProofJSON` format:\n\n```json\n[\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 1\",\n        \"statement\": \"The polynomial x^4 + x^3 + x^2 + x + 1 is irreducible over the rationals.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"assumption\",\n                \"statement\": \"Assume to the contrary that the polynomial f(x) = x^4 + x^3 + x^2 + x + 1 is reducible over the rationals.\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"This implies it can be factored as a product of two polynomials of degree 2, or a product of one linear and one cubic polynomial.\"\n            },\n            {\n                \"type\": \"definition\",\n                \"term\": \"roots of f(x)\",\n                \"statement\": \"The roots of f(x) are the fifth roots of unity excluding 1.\"\n            },\n            {\n                \"type\": \"definition\",\n                \"term\": \"reciprocal polynomial f(1/x)\",\n                \"statement\": \"We also consider its reciprocal polynomial f(1/x) = x^4f(1/x) = x^4 + x^3 + x^2 + x + 1.\"\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"The roots of this reciprocal polynomial are the reciprocals of the roots of f(x), which are also the fifth roots of unity, and lie on the unit circle in Complex plane.\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"If f(x) could be factored into lower degree polynomials with rational coefficients, the roots of these factored polynomials would also have to lie on the unit circle.\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"The Rational Root Theorem states that any rational root of a polynomial must be a divisor of its constant term. The only divisors of 1 are ± 1, neither of which are roots of f(x).\",\n                \"deduced-from\": [\"Rational Root Theorem\"]\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"This contradiction implies that f(x) cannot be factored into lower degree polynomials with rational coefficients.\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"Therefore, f(x) is irreducible over the rationals.\"\n            }\n        ]\n    }\n]\n```",
-    "Here is your mathematical proof translated into `ProofJSON`:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"The polynomial x^4 + x^3 + x^2 + x + 1 is irreducible over the rationals.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume to the contrary that the polynomial f(x) = x^4 + x^3 + x^2 + x + 1 is reducible over the rationals.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"This implies it can be factored as a product of two polynomials of degree 2, or a product of one linear and one cubic polynomial.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The roots of f(x) are the fifth roots of unity excluding 1.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Consider its reciprocal polynomial f(1/x) = x^4f(1/x) = x^4 + x^3 + x^2 + x + 1. The roots of this reciprocal polynomial are the reciprocals of the roots of f(x), which are also the fifth roots of unity, and lie on the unit circle in the complex plane.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"If f(x) could be factored into lower degree polynomials with rational coefficients, the roots of these factored polynomials would also have to lie on the unit circle.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"Reciprocal of roots are also roots\",\n            \"applied-to\": \"f(x) and unit circle\"\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The Rational Root Theorem states that any rational root of a polynomial must be a divisor of its constant term.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The only divisors of 1 are ±1, neither of which are roots of f(x).\",\n        \"deduced-from\": [\n          {\n            \"result\": \"Rational Root Theorem\",\n            \"applied-to\": \"f(x)\"\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"This contradiction implies that f(x) cannot be factored into lower degree polynomials with rational coefficients.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"Contradiction argument\",\n            \"applied-to\": \"f(x) and rational coefficients\"\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Therefore, f(x) is irreducible over the rationals.\"\n      }\n    ]\n  }\n]\n```",
-    "Here is the described proof translated into the `ProofJSON` format:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"The polynomial x^4 + x^3 + x^2 + x + 1 is irreducible over the rationals\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume to the contrary that the polynomial f(x) = x^4 + x^3 + x^2 + x + 1 is reducible over the rationals\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"This implies it can be factored as a product of two polynomials of degree 2, or a product of one linear and one cubic polynomial\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The roots of f(x) are the fifth roots of unity excluding 1\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Consider its reciprocal polynomial f(1/x) = x^4f(1/x) = x^4 + x^3 + x^2 + x + 1, whose roots are the reciprocals of the roots of f(x), which are also the fifth roots of unity, and lie on the unit circle in C\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"If f(x) could be factored into lower degree polynomials with rational coefficients, the roots of these factored polynomials would also have to lie on the unit circle\",\n        \"deduced-from\": [\n          {\n            \"result\": \"roots of a polynomial are also roots of its factors\",\n            \"applied-to\": \"f(x)\"\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The Rational Root Theorem states that any rational root of a polynomial must be a divisor of its constant term\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The only divisors of 1 are ±1, neither of which are roots of f(x)\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"f(x) cannot be factored into lower degree polynomials with rational coefficients\",\n        \"deduced-from\": [\n          \"Rational Root Theorem applied to the constant term 1\",\n          \"roots of f(x) are ±1\"\n        ],\n        \"justification\": \"Contradiction from the assumed reducibility and the Rational Root Theorem\"\n      },\n      {\n        \"type\": \"conclusion\",\n        \"statement\": \"Therefore, f(x) is irreducible over the rationals\"\n      }\n    ]\n  }\n]\n```\n\nThis JSON structure reflects the logical flow of the proof, making it easier to understand and analyze programmatically.",
-    "Your theorem and proof translated into the `ProofJSON` format would be something like this:\n\n```json\n[\n    {\n        \"type\": \"theorem\",\n        \"name\": \"irreducibility of polynomial\",\n        \"statement\": \"The polynomial x^4 + x^3 + x^2 + x + 1 is irreducible over the field of rational numbers Q\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"definition\",\n                \"term\": \"Irreducible Polynomial\",\n                \"statement\": \"A polynomial is said to be irreducible over a field if it cannot be factored into a product of polynomials of lesser degree with coefficients in that field.\"\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"The polynomial x^4 + x^3 + x^2 + x + 1 can be expressed in the form (x^5 - 1) / (x - 1)\"\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"The roots of the polynomial x^5 - 1 = 0 are the fifth roots of unity, namely the complex numbers of the form e^{2k*pi*i/5} for k = 0, 1, 2, 3, 4\"\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"Removing the root x = 1, we are left with the roots of the original polynomial, namely the non-real fourth roots of unity e^{2*pi*i/5}, e^{4*pi*i/5}, e^{6*pi*i/5}, e^{8*pi*i/5}\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"These numbers are not roots of any polynomial of degree less than 4 with rational coefficients\",\n                \"deduced-from\": [\n                    {\n                        \"result\": \"contradiction argument\", \n                        \"applied-to\": \"Suppose there exists a polynomial p(x) with degree less than 4 and with rational coefficients such that p(e^{2*pi*i/5}) = 0\"\n                    },\n                    {\n                        \"result\": \"minimal polynomial\", \n                        \"applied-to\": \"However, the minimal polynomial of e^{2*pi*i/5} over Q is x^4 + x^3 + x^2 + x + 1, which has degree 4\"\n                    }\n                ],\n                \"justification\": \"This leads to a contradiction, and thus no such polynomial p(x) exists\"\n            }\n        ]\n    }\n]\n```\n\nThis JSON structure represents your proof. It begins with the type \"theorem\" and includes a statement of the theorem, its status as \"proved\", and a proof. The proof itself is a list of mathematical JSON blocks following the ProofJSON structure, including a definition and several observations and assertions. Each of these blocks contain their respective statements and additional fields as required by the ProofJSON structure.",
-    "Here is the representation of the proof in the `ProofJSON` format:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Irreducibility of polynomial\",\n    \"statement\": \"The polynomial x^4 + x^3 + x^2 + x + 1 is irreducible over the field of rational numbers Q.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The given polynomial can be expressed in the form (x^5 - 1) / (x - 1).\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The roots of the polynomial x^5 - 1 = 0 are the fifth roots of unity, which are given by complex numbers of the form e^(2k*pi*i/5) for k = 0, 1, 2, 3, 4. Upon removing the root x = 1, we are left with the roots of the original polynomial, namely the non-real fourth roots of unity e^(2*pi*i/5), e^(4*pi*i/5), e^(6*pi*i/5), e^(8*pi*i/5).\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"These numbers are not roots of any polynomial of degree less than 4 with rational coefficients.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"Suppose there exists a polynomial p(x) with degree less than 4 and with rational coefficients such that p(e^(2*pi*i/5)) = 0. However, the minimal polynomial of e^(2*pi*i/5) over Q is x^4 + x^3 + x^2 + x + 1, which has degree 4.\",\n            \"justification\": \"This leads to a contradiction, and thus no such polynomial p(x) exists.\"\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"As a consequence of this, the polynomial x^4 + x^3 + x^2 + x + 1 is irreducible over Q, as by definition a polynomial is irreducible over a field if it cannot be factored into a product of polynomials of lesser degree with coefficients in that field.\"\n      }\n    ]\n  }\n]\n```",
-    "In `ProofJSON` format, the above theorem and its proof would be written as follows:\n\n```json\n[\n    {\n        \"type\": \"theorem\",\n        \"name\": \"irreducibility_of_polynomial\",\n        \"statement\": \"The polynomial x^4 + x^3 + x^2 + x + 1 is irreducible over the field of rational numbers Q.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"observation\",\n                \"statement\": \"The given polynomial can be expressed in the form (x^5 - 1) / (x - 1).\"\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"The roots of the polynomial x^5 - 1 = 0 are the fifth roots of unity, which are given by complex numbers of the form e^(2k*pi*i/5) for k = 0, 1, 2, 3, 4. Upon removing the root x = 1, we are left with the roots of the original polynomial, namely the non-real fourth roots of unity e^(2*pi*i/5), e^(4*pi*i/5), e^(6*pi*i/5), e^(8*pi*i/5).\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"These numbers are not roots of any polynomial of degree less than 4 with rational coefficients.\",\n                \"deduced-from\": [\n                    {\n                        \"result\": \"suppose there exists a polynomial p(x) with degree less than 4 and with rational coefficients such that p(e^(2*pi*i/5)) = 0\",\n                        \"justification\": \"However, the minimal polynomial of e^(2*pi*i/5) over Q is x^4 + x^3 + x^2 + x + 1, which has degree 4. This leads to a contradiction, and thus no such polynomial p(x) exists.\"\n                    }\n                ]\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"As a consequence of this, the polynomial x^4 + x^3 + x^2 + x + 1 is irreducible over Q, as by definition a polynomial is irreducible over a field if it cannot be factored into a product of polynomials of lesser degree with coefficients in that field.\"\n            }\n        ]\n    }\n]\n``` \n\nThis JSON object represents the theorem and its proof. The theorem is proved by a sequence of observations and an assertion. Each of these steps is represented by a separate JSON object in the \"proof\" field of the theorem.",
-    "Here is the JSON representation of the proof using the ProofJSON format.\n\n```json\n[\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Irreducibility of polynomial\",\n        \"statement\": \"The polynomial x^4 + x^3 + x^2 + x + 1 is irreducible over the rationals.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"observation\",\n                \"statement\": \"Eisenstein's Criterion can't be applied directly to this polynomial, as 1 isn't a prime number.\"\n            },\n            {\n                \"type\": \"let\",\n                \"variable\": \"Manipulated Polynomial\",\n                \"value\": \"x^4 + x^3 + x^2 + x + 1 - x^5 = -x^5 + x^4 + x^3 + x^2 + x + 1\"\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"The coefficients of the manipulated polynomial are divisible by the prime number 1, excluding the leading coefficient, and the constant term 1 cannot be divided by 1^2 = 1.\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"Eisenstein's Criterion indicates that this polynomial is irreducible over the rationals.\",\n                \"deduced-from\": [\n                    {\n                        \"result\": \"Manipulated Polynomial\",\n                        \"applied-to\": \"Eisenstein's Criterion\"\n                    }\n                ]\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"-x^5 + x^4 + x^3 + x^2 + x + 1 is equivalent to x^5 = x^4 + x^3 + x^2 + x + 1\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"x^4 + x^3 + x^2 + x + 1 is also irreducible over the rationals\",\n                \"deduced-from\": [\n                    {\n                        \"result\": \"Equivalence of polynomials\",\n                        \"applied-to\": \"Irreducibility of manipulated polynomial\"\n                    }\n                ]\n            }\n        ]\n    }\n]\n```\n\nIn this JSON, we first state our theorem, and then give a proof. The proof is an array of steps, each of which is an observation, a let statement, or an assertion. Each step has a type and a statement, claim or value, depending on the type. If the step is a claim, we also provide a list of results from which it was deduced.",
-    "The `ProofJSON` representation of the proof would be as follows:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Polynomial Irreducibility\",\n    \"statement\": \"The polynomial $x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"We can establish this irreducibility by using Eisenstein's Criterion, which however, can't be applied directly to this polynomial, as 1 isn't a prime number.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"Polynomial Manipulation\",\n        \"value\": \"$x^4 + x^3 + x^2 + x + 1 - x^5 = -x^5 + x^4 + x^3 + x^2 + x + 1$. The coefficients of this manipulated polynomial are divisible by the prime number 1, excluding the leading coefficient, and the constant term 1 cannot be divided by $1^2 = 1$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Eisenstein's Criterion indicates that this polynomial is irreducible over the rationals.\",\n        \"deduced-from\": [\"Polynomial Manipulation\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Given that $-x^5 + x^4 + x^3 + x^2 + x + 1$ is equivalent to $x^5 = x^4 + x^3 + x^2 + x + 1$, it follows that $x^4 + x^3 + x^2 + x + 1$ is also irreducible over the rationals.\",\n        \"deduced-from\": [\"Polynomial Manipulation\"]\n      }\n    ]\n  }\n]\n```\n\nNote: In this JSON representation, we have used `name` field in `theorem` to give the theorem a name \"Polynomial Irreducibility\". Also, we have used `let` statement to introduce the manipulated polynomial and named it \"Polynomial Manipulation\". This name is later used in `deduced-from` field to indicate that the claims are derived from it.",
-    "Here is a translation of the provided proof using the `ProofJSON` description:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Irreducibility of polynomial\",\n    \"statement\": \"The polynomial x^4 + x^3 + x^2 + x + 1 is irreducible over the rationals.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Eisenstein's Criterion cannot be applied directly to this polynomial, as 1 isn't a prime number.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"By considering x^4 + x^3 + x^2 + x + 1 - x^5 = -x^5 + x^4 + x^3 + x^2 + x + 1, the coefficients of this manipulated polynomial are divisible by the prime number 1, excluding the leading coefficient, and the constant term 1 cannot be divided by 1^2 = 1.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"Eisenstein's Criterion\"\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"-x^5 + x^4 + x^3 + x^2 + x + 1 is equivalent to x^5 = x^4 + x^3 + x^2 + x + 1, so x^4 + x^3 + x^2 + x + 1 is also irreducible over the rationals.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"Eisenstein's Criterion\"\n          }\n        ]\n      }\n    ]\n  }\n]\n```\nThis JSON array represents a list of statements, each of which is a step in the mathematical proof. The first object is an assertion of a theorem, followed by observations and assertions required to establish this theorem. The names of the theorems or concepts used in each step (Eisenstein's Criterion) are referred to in the \"deduced-from\" fields of the assertions."
+    [
+      {
+        "type": "theorem",
+        "name": "Irreducibility of f(x)",
+        "statement": "The polynomial f(x) = x^4 + x^3 + x^2 + x + 1 is irreducible over the rationals.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "f(x) is reducible over Q."
+          },
+          {
+            "type": "observation",
+            "statement": "This implies that f(x) = g(x)h(x) for some non-constant polynomials g(x), h(x) in Q[x]."
+          },
+          {
+            "type": "observation",
+            "statement": "f(x) is a factor of x^5 - 1 = (x - 1)(x^4 + x^3 + x^2 + x + 1)."
+          },
+          {
+            "type": "assertion",
+            "claim": "Any non-constant divisor of f(x) must also share a root with f(x).",
+            "deduced-from": [
+              "f(x) is a factor of x^5 - 1",
+              "The polynomial x^5 - 1 has distinct roots",
+              "The polynomial x - 1 has degree 1"
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "The roots of f(x) are the fifth roots of unity except 1, which are not rational."
+          },
+          {
+            "type": "assertion",
+            "claim": "Neither g(x) nor h(x) can have a root in Q.",
+            "deduced-from": [
+              "Any non-constant divisor of f(x) must also share a root with f(x)",
+              "The roots of f(x) are the fifth roots of unity except 1"
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "By the Fundamental Theorem of Algebra, g(x) and h(x), as non-constant polynomials over Q, must have a root in its algebraic closure."
+          },
+          {
+            "type": "observation",
+            "statement": "This is a contradiction."
+          },
+          {
+            "type": "observation",
+            "statement": "Hence, our initial assumption must be false, and the polynomial f(x) is irreducible over Q."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "theorem_polynomial_irreducible",
+        "statement": "The polynomial f(x) = x^4 + x^3 + x^2 + x + 1 is irreducible over the rationals.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Suppose for contradiction that f(x) is reducible over Q. This implies that f(x) = g(x)h(x) for some non-constant polynomials g(x), h(x) in Q[x]."
+          },
+          {
+            "type": "observation",
+            "statement": "f(x) is a factor of x^5 - 1 = (x - 1)(x^4 + x^3 + x^2 + x + 1). This polynomial x^5 - 1 has distinct roots and the polynomial x - 1 has degree 1. Thus, any non-constant divisor of f(x) must also share a root with f(x)."
+          },
+          {
+            "type": "observation",
+            "statement": "The roots of f(x) are the fifth roots of unity except 1, which are not rational. Therefore, neither g(x) nor h(x) can have a root in Q."
+          },
+          {
+            "type": "assertion",
+            "claim": "g(x) and h(x), as non-constant polynomials over Q, must have a root in its algebraic closure",
+            "deduced-from": [
+              "Fundamental Theorem of Algebra"
+            ],
+            "justification": "However, this is a contradiction."
+          },
+          {
+            "type": "assertion",
+            "claim": "f(x) is irreducible over Q",
+            "justification": "Hence, our initial assumption must be false"
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Polynomial irreducibility",
+        "statement": "The polynomial p(x) = x^4 + x^3 + x^2 + x + 1 is irreducible over Q",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "observation",
+            "statement": "The polynomial p(x) can be obtained by factoring x-1 out of the polynomial x^5 - 1 = 0",
+            "name": "factor-out"
+          },
+          {
+            "type": "observation",
+            "statement": "The roots of x^5 - 1 = 0 are the 5th roots of unity which are 1, w, w^2, w^3, w^4 where w = e^(2pi*i/5)",
+            "name": "roots-of-unity"
+          },
+          {
+            "type": "assertion",
+            "claim": "The roots of p(x) are the remaining roots of unity, that is, w, w^2, w^3, w^4",
+            "deduced-from": [
+              {
+                "result": "factor-out",
+                "applied-to": "x"
+              },
+              {
+                "result": "roots-of-unity",
+                "applied-to": "x"
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "These roots are not rational",
+            "deduced-from": [
+              "The roots of p(x) are complex numbers."
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "The polynomial p(x) is irreducible over Q",
+            "deduced-from": [
+              "A polynomial is irreducible over a field if and only if it has no roots in that field",
+              "These roots are not rational"
+            ]
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem",
+        "statement": "The polynomial p(x) = x^4 + x^3 + x^2 + x + 1 is irreducible over Q.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "observation",
+            "statement": "The polynomial p(x) can be obtained by factoring x-1 out of the polynomial x^5 - 1 = 0. That is, x^5 - 1 = (x-1)p(x) in Q[x]."
+          },
+          {
+            "type": "observation",
+            "statement": "The roots of x^5 - 1 = 0 are the 5th roots of unity, which are 1, w, w^2, w^3, w^4 where w = e^(2pi i / 5). Among these roots, 1 is the root of x-1, so the roots of p(x) must be the remaining roots of unity, that is, w, w^2, w^3, w^4."
+          },
+          {
+            "type": "assertion",
+            "claim": "The roots of p(x) are not rational.",
+            "deduced-from": [
+              "The roots of p(x) are the 5th roots of unity except 1"
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "A polynomial is irreducible over a field if and only if it has no roots in that field."
+          },
+          {
+            "type": "assertion",
+            "claim": "The polynomial p(x) = x^4 + x^3 + x^2 + x + 1 is irreducible over Q.",
+            "deduced-from": [
+              "The roots of p(x) are not rational",
+              "A polynomial is irreducible over a field if and only if it has no roots in that field"
+            ]
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "The polynomial y^4 - 3y^2 + 1 is irreducible over the rationals.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "observation",
+            "statement": "The coefficients of y^4 - 3y^2 + 1 are not divisible by 3, the coefficient of the term y^2 is divisible by 3^2 but not by 3^3, and the constant term is not divisible by 3^2."
+          },
+          {
+            "type": "assertion",
+            "claim": "The polynomial y^4 - 3y^2 + 1 is irreducible over the rationals.",
+            "deduced-from": [
+              "Eisenstein's criterion"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "theorem",
+        "name": "Theorem 2",
+        "statement": "The polynomial x^4 + x^3 + x^2 + x + 1 is irreducible over the rationals.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "f(x)",
+            "value": "x^4 + x^3 + x^2 + x + 1"
+          },
+          {
+            "type": "let",
+            "variable": "y",
+            "value": "x + 1/x"
+          },
+          {
+            "type": "observation",
+            "statement": "y^2 = x^2 + 2 + 1/x^2"
+          },
+          {
+            "type": "have",
+            "value": "Substituting x^2 + 1/x^2 with y^2 - 2 in f(x), we get f(x) = (y^2 - 2)^2 + y(y^2 - 2) + 1 = y^4 - 3y^2 + 1"
+          },
+          {
+            "type": "assertion",
+            "claim": "f(x) is irreducible over the rationals.",
+            "deduced-from": [
+              {
+                "result": "Theorem 1",
+                "applied-to": "y^4 - 3y^2 + 1"
+              }
+            ],
+            "justification": "If f(x) were reducible over the rationals, then y^4 - 3y^2 + 1 would also be reducible, which is a contradiction. Hence, f(x) is irreducible over the rationals"
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "name": "theorem1",
+        "type": "theorem",
+        "statement": "The polynomial y^4 - 3y^2 + 1 is irreducible over the rationals.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "observation",
+            "statement": "The coefficients of y^4 - 3y^2 + 1 are not divisible by 3, the coefficient of the term y^2 is divisible by 3^2 but not by 3^3, and the constant term is not divisible by 3^2."
+          },
+          {
+            "type": "assertion",
+            "claim": "The polynomial y^4 - 3y^2 + 1 is irreducible over the rationals.",
+            "deduced-from": [
+              {
+                "result": "Eisenstein's criterion",
+                "applied-to": "y^4 - 3y^2 + 1 with prime p=3"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "theorem2",
+        "type": "theorem",
+        "statement": "The polynomial x^4 + x^3 + x^2 + x + 1 is irreducible over the rationals.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "definition",
+            "term": "f(x)",
+            "statement": "f(x) = x^4 + x^3 + x^2 + x + 1"
+          },
+          {
+            "type": "let",
+            "variable": "y",
+            "value": "x + 1/x"
+          },
+          {
+            "type": "observation",
+            "statement": "y^2 = x^2 + 2 + 1/x^2"
+          },
+          {
+            "type": "observation",
+            "statement": "Substituting x^2 + 1/x^2 with y^2 - 2 in f(x), we get f(x) = (y^2 - 2)^2 + y(y^2 - 2) + 1 = y^4 - 3y^2 + 1"
+          },
+          {
+            "type": "assertion",
+            "claim": "f(x) is irreducible over the rationals.",
+            "deduced-from": [
+              {
+                "result": "theorem1"
+              },
+              {
+                "result": "Contradiction",
+                "applied-to": "If f(x) were reducible over the rationals, then y^4 - 3y^2 + 1 would also be reducible. But we know y^4 - 3y^2 + 1 is irreducible over the rationals."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  ],
+  "raw_structured_texts": [
+    "Here is the `ProofJSON` representation of the provided proof.\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Irreducibility of f(x)\",\n    \"statement\": \"The polynomial f(x) = x^4 + x^3 + x^2 + x + 1 is irreducible over the rationals.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"f(x) is reducible over Q.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"This implies that f(x) = g(x)h(x) for some non-constant polynomials g(x), h(x) in Q[x].\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"f(x) is a factor of x^5 - 1 = (x - 1)(x^4 + x^3 + x^2 + x + 1).\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Any non-constant divisor of f(x) must also share a root with f(x).\",\n        \"deduced-from\": [\n          \"f(x) is a factor of x^5 - 1\",\n          \"The polynomial x^5 - 1 has distinct roots\",\n          \"The polynomial x - 1 has degree 1\"\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The roots of f(x) are the fifth roots of unity except 1, which are not rational.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Neither g(x) nor h(x) can have a root in Q.\",\n        \"deduced-from\": [\n          \"Any non-constant divisor of f(x) must also share a root with f(x)\",\n          \"The roots of f(x) are the fifth roots of unity except 1\"\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"By the Fundamental Theorem of Algebra, g(x) and h(x), as non-constant polynomials over Q, must have a root in its algebraic closure.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"This is a contradiction.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Hence, our initial assumption must be false, and the polynomial f(x) is irreducible over Q.\"\n      }\n    ]\n  }\n]\n```",
+    "Here's the JSON representation of the proof:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"theorem_polynomial_irreducible\",\n    \"statement\": \"The polynomial f(x) = x^4 + x^3 + x^2 + x + 1 is irreducible over the rationals.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Suppose for contradiction that f(x) is reducible over Q. This implies that f(x) = g(x)h(x) for some non-constant polynomials g(x), h(x) in Q[x].\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"f(x) is a factor of x^5 - 1 = (x - 1)(x^4 + x^3 + x^2 + x + 1). This polynomial x^5 - 1 has distinct roots and the polynomial x - 1 has degree 1. Thus, any non-constant divisor of f(x) must also share a root with f(x).\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The roots of f(x) are the fifth roots of unity except 1, which are not rational. Therefore, neither g(x) nor h(x) can have a root in Q.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"g(x) and h(x), as non-constant polynomials over Q, must have a root in its algebraic closure\",\n        \"deduced-from\": [\n          \"Fundamental Theorem of Algebra\"\n        ],\n        \"justification\": \"However, this is a contradiction.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"f(x) is irreducible over Q\",\n        \"justification\": \"Hence, our initial assumption must be false\"\n      }\n    ]\n  }\n]\n```\nThis JSON object represents the initial theorem statement and its complete proof as a sequence of mathematical statements (assumptions, observations, assertions). Each statement corresponds to a sentence or a block of sentences in the original proof.",
+    "Here is your proof translated into the `ProofJSON` format:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Polynomial irreducibility\",\n    \"statement\": \"The polynomial p(x) = x^4 + x^3 + x^2 + x + 1 is irreducible over Q\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The polynomial p(x) can be obtained by factoring x-1 out of the polynomial x^5 - 1 = 0\",\n        \"name\": \"factor-out\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The roots of x^5 - 1 = 0 are the 5th roots of unity which are 1, w, w^2, w^3, w^4 where w = e^(2pi*i/5)\",\n        \"name\": \"roots-of-unity\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The roots of p(x) are the remaining roots of unity, that is, w, w^2, w^3, w^4\",\n        \"deduced-from\": [\n          {\n            \"result\": \"factor-out\",\n            \"applied-to\": \"x\"\n          },\n          {\n            \"result\": \"roots-of-unity\",\n            \"applied-to\": \"x\"\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"These roots are not rational\",\n        \"deduced-from\": [\n          \"The roots of p(x) are complex numbers.\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The polynomial p(x) is irreducible over Q\",\n        \"deduced-from\": [\n          \"A polynomial is irreducible over a field if and only if it has no roots in that field\",\n          \"These roots are not rational\"\n        ]\n      }\n    ]\n  }\n]\n```\n\nThis JSON represents the proof of the theorem stating that the polynomial $p(x) = x^4 + x^3 + x^2 + x + 1$ is irreducible over $\\mathbb{Q}$. The proof begins with two observations about the polynomial and its roots, and then makes three assertions about the roots and the irreducibility of the polynomial, using the previous observations and known results.",
+    "Here is the `ProofJSON` representation of the given proof:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem\",\n    \"statement\": \"The polynomial p(x) = x^4 + x^3 + x^2 + x + 1 is irreducible over Q.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The polynomial p(x) can be obtained by factoring x-1 out of the polynomial x^5 - 1 = 0. That is, x^5 - 1 = (x-1)p(x) in Q[x].\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The roots of x^5 - 1 = 0 are the 5th roots of unity, which are 1, w, w^2, w^3, w^4 where w = e^(2pi i / 5). Among these roots, 1 is the root of x-1, so the roots of p(x) must be the remaining roots of unity, that is, w, w^2, w^3, w^4.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The roots of p(x) are not rational.\",\n        \"deduced-from\": [\n          \"The roots of p(x) are the 5th roots of unity except 1\"\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"A polynomial is irreducible over a field if and only if it has no roots in that field.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The polynomial p(x) = x^4 + x^3 + x^2 + x + 1 is irreducible over Q.\",\n        \"deduced-from\": [\n          \"The roots of p(x) are not rational\",\n          \"A polynomial is irreducible over a field if and only if it has no roots in that field\"\n        ]\n      }\n    ]\n  }\n]\n```\nThis JSON data structure represents the proof in a structured way with each mathematical statement and assertion being represented as an object in the JSON array. Notice that the proof of the theorem is represented as a nested ProofJSON block inside the \"proof\" field of the \"theorem\" object. The proof sequence is represented as an array of mathematical statements and observations, each one building on the previous ones, leading to the final assertion which is the claim of the theorem.",
+    "Here is the `ProofJSON` representation of the above proofs:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"The polynomial y^4 - 3y^2 + 1 is irreducible over the rationals.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The coefficients of y^4 - 3y^2 + 1 are not divisible by 3, the coefficient of the term y^2 is divisible by 3^2 but not by 3^3, and the constant term is not divisible by 3^2.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The polynomial y^4 - 3y^2 + 1 is irreducible over the rationals.\",\n        \"deduced-from\": [\n          \"Eisenstein's criterion\"\n        ]\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 2\",\n    \"statement\": \"The polynomial x^4 + x^3 + x^2 + x + 1 is irreducible over the rationals.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"f(x)\",\n        \"value\": \"x^4 + x^3 + x^2 + x + 1\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"y\",\n        \"value\": \"x + 1/x\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"y^2 = x^2 + 2 + 1/x^2\"\n      },\n      {\n        \"type\": \"have\",\n        \"value\": \"Substituting x^2 + 1/x^2 with y^2 - 2 in f(x), we get f(x) = (y^2 - 2)^2 + y(y^2 - 2) + 1 = y^4 - 3y^2 + 1\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"f(x) is irreducible over the rationals.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"Theorem 1\",\n            \"applied-to\": \"y^4 - 3y^2 + 1\"\n          }\n        ],\n        \"justification\": \"If f(x) were reducible over the rationals, then y^4 - 3y^2 + 1 would also be reducible, which is a contradiction. Hence, f(x) is irreducible over the rationals\"\n      }\n    ]\n  }\n]\n```\nThis `ProofJSON` object represents two theorem proofs. The first theorem proof, named \"Theorem 1\", proves that the polynomial \"y^4 - 3y^2 + 1\" is irreducible over the rationals. The second theorem proof, named \"Theorem 2\", proves that the polynomial \"x^4 + x^3 + x^2 + x + 1\" is irreducible over the rationals. The proof of \"Theorem 2\" refers to \"Theorem 1\".",
+    "Here is the `ProofJSON` representation of the proof:\n\n```json\n[\n    {\n        \"name\": \"theorem1\",\n        \"type\": \"theorem\",\n        \"statement\": \"The polynomial y^4 - 3y^2 + 1 is irreducible over the rationals.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"observation\",\n                \"statement\": \"The coefficients of y^4 - 3y^2 + 1 are not divisible by 3, the coefficient of the term y^2 is divisible by 3^2 but not by 3^3, and the constant term is not divisible by 3^2.\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"The polynomial y^4 - 3y^2 + 1 is irreducible over the rationals.\",\n                \"deduced-from\": [\n                    {\n                        \"result\": \"Eisenstein's criterion\",\n                        \"applied-to\": \"y^4 - 3y^2 + 1 with prime p=3\"\n                    }\n                ]\n            }\n        ]\n    },\n    {\n        \"name\": \"theorem2\",\n        \"type\": \"theorem\",\n        \"statement\": \"The polynomial x^4 + x^3 + x^2 + x + 1 is irreducible over the rationals.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"definition\",\n                \"term\": \"f(x)\",\n                \"statement\": \"f(x) = x^4 + x^3 + x^2 + x + 1\"\n            },\n            {\n                \"type\": \"let\",\n                \"variable\": \"y\",\n                \"value\": \"x + 1/x\"\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"y^2 = x^2 + 2 + 1/x^2\"\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"Substituting x^2 + 1/x^2 with y^2 - 2 in f(x), we get f(x) = (y^2 - 2)^2 + y(y^2 - 2) + 1 = y^4 - 3y^2 + 1\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"f(x) is irreducible over the rationals.\",\n                \"deduced-from\": [\n                    {\n                        \"result\": \"theorem1\"\n                    },\n                    {\n                        \"result\": \"Contradiction\",\n                        \"applied-to\": \"If f(x) were reducible over the rationals, then y^4 - 3y^2 + 1 would also be reducible. But we know y^4 - 3y^2 + 1 is irreducible over the rationals.\"\n                    }\n                ]\n            }\n        ]\n    }\n]\n```"
   ]
 }

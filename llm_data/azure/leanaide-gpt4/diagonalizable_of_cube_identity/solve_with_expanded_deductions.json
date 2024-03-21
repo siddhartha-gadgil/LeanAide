@@ -465,5 +465,417 @@
         ]
       }
     ]
+  ],
+  "deductions_expanded": [
+    "Here is the processed `ProofJSON`:\n\n```\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"diagonalizable_matrix_theorem\",\n    \"statement\": \"Let $A$ be a square matrix such that $A^3 = I$. Then $A$ is diagonalizable.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"$A$\",\n        \"value\": \"a square matrix such that $A^3 = I$\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$A$ is annihilated by the polynomial $p(x) = x^3 - 1\",\n        \"deduced-from\": [\n          {\n            \"name\": \"$A^3 = I$\",\n            \"statement\": \"A is a square matrix such that $A^3 = I$\",\n            \"applied-to\": {\n              \"$A$\": \"A\"\n            },\n            \"assumptions-satisfied\": [\"A is a square matrix\"]\n          }\n        ],\n        \"statement\": \"If $A$ is a square matrix such that $A^3 = I$, then $A$ is annihilated by the polynomial $p(x) = x^3 - 1$\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"This polynomial can be factorized as $p(x) = (x - 1)(x - ω)(x - ω^2)$, where $ω = e^{2 π i/3}$.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The factors $(x - ω)$ and $(x - ω^2)$ combine to form the quadratic $x^2 + x + 1$, which has no roots in common with the factor $x - 1$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The roots of the minimal polynomial of $A$ are distinct.\",\n        \"deduced-from\": [\n          {\n            \"name\": \"polynomial factorization\",\n            \"statement\": \"If a polynomial can be factorized such that its factors have no roots in common, then the roots of the polynomial are distinct\",\n            \"applied-to\": {\n              \"polynomial\": \"p(x) = x^3 - 1\"\n            },\n            \"assumptions-satisfied\": [\"p(x) = (x - 1)(x - ω)(x - ω^2)$\"]\n          }\n        ],\n        \"statement\": \"If $A$ is a square matrix such that $A^3 = I$ and $A$ is annihilated by the polynomial $p(x) = x^3 - 1$ which can be factorized as $p(x) = (x - 1)(x - ω)(x - ω^2)$, then the roots of the minimal polynomial of $A$ are distinct.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"It is a known result that a matrix is diagonalizable if and only if its minimal polynomial has no repeated roots.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$A$ is diagonalizable.\",\n        \"deduced-from\": [\n          {\n            \"name\": \"The roots of the minimal polynomial of $A$ are distinct.\",\n            \"statement\": \"If the roots of the minimal polynomial of a square matrix $A$ are distinct then $A$ is diagonalizable\",\n            \"applied-to\": {\n              \"$A$\": \"A\"\n            },\n            \"assumptions-satisfied\": [\"The roots of the minimal polynomial of $A$ are distinct\"]\n          },\n          {\n            \"name\": \"a matrix is diagonalizable if and only if its minimal polynomial has no repeated roots\",\n            \"statement\": \"A matrix is diagonalizable if and only if its minimal polynomial has no repeated roots\",\n            \"applied-to\": {\n              \"matrix\": \"A\"\n            },\n            \"assumptions-satisfied\": [\"The roots of the minimal polynomial of $A$ are distinct\"]\n          }\n        ],\n        \"justification\": \"Since the roots of the minimal polynomial of A are distinct and a matrix is diagonalizable if and only if its minimal polynomial has no repeated roots, we conclude that A is diagonalizable.\",\n        \"statement\": \"If $A$ is a square matrix such that $A^3 = I$, $A$ is annihilated by the polynomial $p(x) = x^3 - 1$ which can be factorized as $p(x) = (x - 1)(x - ω)(x - ω^2)$, and the roots of the minimal polynomial of $A$ are distinct, then $A$ is diagonalizable.\"\n      }\n    ]\n  }\n]\n```\n\nFor each `assertion`, the `claim` follows from the results in `deduced_from`, and I have added the requested fields.",
+    "The JSON you provided does not have any reference to `Lagrange's theorem` or `the order of Z divides 10`. However, I can provide an example of how to modify the JSON based on the assertions present in your provided JSON. Please note that assumptions are assumed to be satisfied for the purpose of this example, and that this is a somewhat complex and not fully specified operation, so the specifics of the transformations might not match exactly what you have in mind.\n\nThe first assertion is:\n```\n    {\n        \"type\": \"assertion\",\n        \"claim\": \"$A$ is annihilated by the polynomial $p(x) = x^3 - 1$\",\n        \"deduced-from\": [\"$A^3 = I$\"],\n        \"statement\": \"If $A$ is a square matrix such that $A^3 = I$, then $A$ is annihilated by the polynomial $p(x) = x^3 - 1$\"\n    },\n```\n\nThis could be transformed to:\n```\n    {\n        \"type\": \"assertion\",\n        \"claim\": \"$A$ is annihilated by the polynomial $p(x) = x^3 - 1$\",\n        \"deduced-from\": [\n            {\n                \"name\": \"Cube root of unity\",\n                \"statement\": \"If $A^3 = I$, then $A$ is annihilated by the polynomial $p(x) = x^3 - 1$\",\n                \"applied-to\": {\"A\": \"A\"},\n                \"assumptions-satisfied\": [\"$A^3 = I$\"]\n            }\n        ],\n        \"statement\": \"If $A$ is a square matrix such that $A^3 = I$, then $A$ is annihilated by the polynomial $p(x) = x^3 - 1$\"\n    },\n```\n\nThe last assertion is:\n```\n    {\n        \"type\": \"assertion\",\n        \"claim\": \"$A$ is diagonalizable.\",\n        \"deduced-from\": [\"The roots of the minimal polynomial of $A$ are distinct.\", \"a matrix is diagonalizable if and only if its minimal polynomial has no repeated roots\"],\n        \"justification\": \"Since the roots of the minimal polynomial of A are distinct and a matrix is diagonalizable if and only if its minimal polynomial has no repeated roots, we conclude that A is diagonalizable.\",\n        \"statement\": \"If $A$ is a square matrix such that $A^3 = I$, $A$ is annihilated by the polynomial $p(x) = x^3 - 1$ which can be factorized as $p(x) = (x - 1)(x - \\\\\\\\omega)(x - \\\\\\\\omega^2)$, and the roots of the minimal polynomial of $A$ are distinct, then $A$ is diagonalizable.\"\n    }\n```\n\nThis could be transformed to:\n```\n    {\n        \"type\": \"assertion\",\n        \"claim\": \"$A$ is diagonalizable.\",\n        \"deduced-from\": [\n            {\n                \"name\": \"Distinct roots\",\n                \"statement\": \"The roots of the minimal polynomial of $A$ are distinct.\",\n                \"applied-to\": {\"A\": \"A\"},\n                \"assumptions-satisfied\": [\"$A^3 = I$\", \"$A$ is annihilated by the polynomial $p(x) = x^3 - 1$\", \"$p(x) = (x - 1)(x - \\\\\\\\omega)(x - \\\\\\\\omega^2)$\"]\n            },\n            {\n                \"name\": \"Diagonalization criterion\",\n                \"statement\": \"A matrix is diagonalizable if and only if its minimal polynomial has no repeated roots.\",\n                \"applied-to\": {\"A\": \"A\"},\n                \"assumptions-satisfied\": [\"The roots of the minimal polynomial of $A$ are distinct.\"]\n            }\n        ],\n        \"statement\": \"If $A$ is a square matrix such that $A^3 = I$, $A$ is annihilated by the polynomial $p(x) = x^3 - 1$ which can be factorized as $p(x) = (x - 1)(x - \\\\\\\\omega)(x - \\\\\\\\omega^2)$, and the roots of the minimal polynomial of $A$ are distinct, then $A$ is diagonalizable.\"\n    }\n```\n\nIn each case, we have replaced elements of `deduced-from` with objects containing a theorem name, the statement of the theorem, how the theorem is applied to the current situation, and what assumptions are needed and are satisfied.",
+    [
+      {
+        "type": "theorem",
+        "name": "diagonalizable_matrix_theorem",
+        "statement": "Let $A$ be a square matrix such that $A^3 = I$. Then $A$ is diagonalizable.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "$A$",
+            "value": "a square matrix such that $A^3 = I$"
+          },
+          {
+            "type": "assertion",
+            "claim": "$A$ is annihilated by the polynomial $p(x) = x^3 - 1$",
+            "deduced-from": [
+              {
+                "name": "$A^3 = I$",
+                "statement": "If $A^3 = I$, then $A$ is annihilated by the polynomial $p(x) = x^3 - 1$.",
+                "applied-to": {
+                  "A": "$A$"
+                },
+                "assumptions-satisfied": [
+                  "$A$ is a square matrix"
+                ]
+              }
+            ],
+            "statement": "If $A^3 = I$, then $A$ is annihilated by the polynomial $p(x) = x^3 - 1$."
+          },
+          {
+            "type": "observation",
+            "statement": "This polynomial can be factorized as $p(x) = (x - 1)(x - \\\\omega)(x - \\\\omega^2)$, where $\\\\omega$ is a primitive third root of unity (i.e., $\\\\omega = e^{2 \\\\pi i/3}$)."
+          },
+          {
+            "type": "observation",
+            "statement": "The factors $(x - \\\\omega)$ and $(x - \\\\omega^2)$ combine to form the quadratic $x^2 + x + 1$, which has no roots in common with the factor $x - 1$."
+          },
+          {
+            "type": "assertion",
+            "claim": "The roots of the minimal polynomial of $A$ are distinct.",
+            "deduced-from": [
+              {
+                "name": "polynomial factorization",
+                "statement": "If the polynomial is factorized as $p(x) = (x - 1)(x - \\\\omega)(x - \\\\omega^2)$, then the roots of the minimal polynomial of $A$ are distinct.",
+                "applied-to": {
+                  "A": "$A$"
+                },
+                "assumptions-satisfied": [
+                  "The polynomial $p(x)$ is factorized as $(x - 1)(x - \\\\omega)(x - \\\\omega^2)$"
+                ]
+              }
+            ],
+            "statement": "If the polynomial is factorized as $p(x) = (x - 1)(x - \\\\omega)(x - \\\\omega^2)$, then the roots of the minimal polynomial of $A$ are distinct."
+          },
+          {
+            "type": "observation",
+            "statement": "It is a known result that a matrix is diagonalizable if and only if its minimal polynomial has no repeated roots."
+          },
+          {
+            "type": "assertion",
+            "claim": "$A$ is diagonalizable.",
+            "deduced-from": [
+              {
+                "name": "The roots of the minimal polynomial of $A$ are distinct.",
+                "statement": "If the roots of the minimal polynomial of $A$ are distinct and a matrix is diagonalizable if and only if its minimal polynomial has no repeated roots, then $A$ is diagonalizable.",
+                "applied-to": {
+                  "A": "$A$"
+                },
+                "assumptions-satisfied": [
+                  "$A$ is a square matrix",
+                  "Its minimal polynomial has no repeated roots"
+                ]
+              },
+              {
+                "name": "a matrix is diagonalizable if and only if its minimal polynomial has no repeated roots",
+                "statement": "If a matrix's minimal polynomial has no repeated roots, then the matrix is diagonalizable.",
+                "applied-to": {
+                  "A": "$A$"
+                },
+                "assumptions-satisfied": [
+                  "$A$ is a square matrix",
+                  "Its minimal polynomial has no repeated roots"
+                ]
+              }
+            ],
+            "statement": "If the roots of the minimal polynomial of $A$ are distinct and a matrix is diagonalizable if and only if its minimal polynomial has no repeated roots, then $A$ is diagonalizable.",
+            "justification": "Since the roots of the minimal polynomial of A are distinct and a matrix is diagonalizable if and only if its minimal polynomial has no repeated roots, we conclude that A is diagonalizable."
+          }
+        ]
+      }
+    ],
+    "First, let's look at each `assertion` object and check if the `claim` indeed follows from the results in the `deduced_from` section.\n\n1. `$A$ is annihilated by the polynomial $p(x) = x^3 - 1$`:\n\n   The claim actually follows from the `deduced_from` result, which is `$A^3 = I$`.\n\n2. `The roots of the minimal polynomial of $A$ are distinct.`\n\n   The claim does not follow directly from the `deduced_from` result, which is `polynomial factorization`. The factorization shows that the polynomial $p(x) = x^3 - 1$ has distinct roots, but it does not directly imply that the minimal polynomial of $A$ has distinct roots.\n\n3. `$A$ is diagonalizable.`\n\n   The claim follows from the `deduced_from` results, which are `The roots of the minimal polynomial of $A$ are distinct.` and `a matrix is diagonalizable if and only if its minimal polynomial has no repeated roots`.\n\nNext, for each `assertion` object where the claim follows from the `deduced_from` results, let's expand each result in the `deduced_from` list:\n\n1. `$A$ is annihilated by the polynomial $p(x) = x^3 - 1$`:\n\n   ```json\n   \"deduced_from\": [\n     {\n       \"name\": \"Cayley-Hamilton theorem\",\n       \"statement\": \"If $A^k = I$ for some positive integer $k$, then $A$ is annihilated by the polynomial $p(x) = x^k - 1$\",\n       \"applied-to\": {\"A\": \"$A$\", \"k\": \"3\"},\n       \"assumptions-satisfied\": [\"$A$ is a square matrix\", \"$A^3 = I$\"]\n     }\n   ]\n   ```\n\n3. `$A$ is diagonalizable.`:\n\n   ```json\n   \"deduced_from\": [\n     {\n       \"name\": \"Polynomial factorization\",\n       \"statement\": \"If the polynomial $p(x) = (x - 1)(x - \\\\\\\\\\\\\\\\omega)(x - \\\\\\\\\\\\\\\\omega^2)$, then the roots of the minimal polynomial of $A$ are distinct.\",\n       \"applied-to\": {\"A\": \"$A$\", \"p(x)\": \"$x^3 - 1$\"},\n       \"assumptions-satisfied\": [\"$p(x) = x^3 - 1$\", \"$A$ is a square matrix\"]\n     },\n     {\n       \"name\": \"Diagonalizability criterion\",\n       \"statement\": \"A matrix is diagonalizable if and only if its minimal polynomial has no repeated roots.\",\n       \"applied-to\": {\"A\": \"$A$\"},\n       \"assumptions-satisfied\": [\"The roots of the minimal polynomial of $A$ are distinct.\"]\n     }\n   ]\n   ```",
+    "Looking at the JSON, we can see the structure of the argument and its various components. \n\nThe first `assertion` in the `proof` has a `claim` that is proven directly, it does not have a `deduced_from` field. So no changes are required for this one.\n\nThe second `assertion` claim also does not have a `deduced-from` field, so it doesn't need any changes as well.\n\nThe third `assertion` has a `claim` \"The roots of the minimal polynomial of A are distinct\", and it has a `deduced_from` field: \"The factors (x - ω) and (x - ω²) combine to form the quadratic x² + x + 1, which has no roots in common with the factor x - 1.\". It follows from the statement in the `deduced_from` field, so no error needs to be added.\n\nThe fourth `assertion` has a `claim` \"A is diagonalizable.\", and it has a `deduced_from` field: \"Diagonalizability Criterion\" and \"The roots of the minimal polynomial of A are distinct\". The claim follows logically from these two results, so no error needs to be added.\n\nNow let's expand the theorems in the `deduced_from` list:\n\n```\n{\n    \"type\": \"assertion\",\n    \"claim\": \"A is diagonalizable.\",\n    \"statement\": \"If A is a square matrix such that A³ = I and the roots of the minimal polynomial of A are distinct, then A is diagonalizable.\",\n    \"deduced-from\": [\n        {\n            \"name\": \"Diagonalizability Criterion\",\n            \"statement\": \"A matrix is diagonalizable if and only if its minimal polynomial has no repeated roots.\",\n            \"applied-to\": { \"A\": \"A\" },\n            \"assumptions-satisfied\": [\n                \"A is a square matrix\",\n                \"A³ = I\",\n                \"The roots of the minimal polynomial of A are distinct\"\n            ]\n        },\n        {\n            \"result\": \"The roots of the minimal polynomial of A are distinct.\",\n            \"implicit-assumptions\": [\n                \"A is a square matrix\",\n                \"A³ = I\",\n                \"A is annihilated by the polynomial x³ - 1\"\n            ]\n        }\n    ]\n}\n```\n\nEach of the terms in the `deduced_from` list now has fields `name`, `statement`, `applied-to`, and `assumptions-satisfied`.",
+    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"A is Diagonalizable\",\n    \"statement\": \"Let A be a square matrix such that A³ = I. Then A is diagonalizable.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A is a square matrix such that A³ = I.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"p(x)\",\n        \"value\": \"x³ - 1\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"A is annihilated by the polynomial p(x).\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"p(x) can be factorized as (x - 1)(x - ω)(x - ω²), where ω is a primitive third root of unity (i.e., ω = e^(2πi / 3)).\",\n        \"statement\": \"If p(x) = x³ - 1, then p(x) can be factorized as (x - 1)(x - ω)(x - ω²), where ω is a primitive third root of unity (i.e., ω = e^(2πi / 3)).\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The roots of the minimal polynomial of A are distinct.\",\n        \"statement\": \"If A is a square matrix such that A³ = I and A is annihilated by the polynomial x³ - 1, then the roots of the minimal polynomial of A are distinct.\",\n        \"deduced-from\": [\n          {\n            \"name\": \"Factorization of p(x)\",\n            \"statement\": \"If p(x) can be factorized as (x - 1)(x - ω)(x - ω²), where ω is a primitive third root of unity, then the factors (x - ω) and (x - ω²) combine to form the quadratic x² + x + 1, which has no roots in common with the factor x - 1.\",\n            \"applied-to\": {\"p(x)\": \"x³ - 1\"},\n            \"assumptions-satisfied\": [\"A is a square matrix such that A³ = I\", \"A is annihilated by the polynomial p(x)\"]\n          }\n        ]\n      },\n      ...\n    ]\n  }\n]",
+    "The `ProofJSON` format you've provided is a great way to organize mathematical proofs in a structured way. Regarding your request, I'll go through each `assertion` object and check whether the `claim` indeed follows from the results in `deduced_from`. Here's the updated `ProofJSON`:\n\n```\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"A is Diagonalizable\",\n    \"statement\": \"Let A be a square matrix such that A³ = I. Then A is diagonalizable.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A is a square matrix such that A³ = I.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"p(x)\",\n        \"value\": \"x³ - 1\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"A is annihilated by the polynomial p(x).\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"p(x) can be factorized as (x - 1)(x - ω)(x - ω²), where ω is a primitive third root of unity (i.e., ω = e^(2πi / 3)).\",\n        \"statement\": \"Given a square matrix A such that A³ = I, we define a polynomial p(x) = x³ - 1. Then, p(x) can be factorized as (x - 1)(x - ω)(x - ω²), where ω is a primitive third root of unity (i.e., ω = e^(2πi / 3)).\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The factors (x - ω) and (x - ω²) combine to form the quadratic x² + x + 1, which has no roots in common with the factor x - 1.\",\n        \"statement\": \"The factors (x - ω) and (x - ω²) of the polynomial p(x) = x³ - 1 combine to form the quadratic x² + x + 1, which has no roots in common with the factor x - 1.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The roots of the minimal polynomial of A are distinct.\",\n        \"statement\": \"Given that the factors (x - ω) and (x - ω²) of the polynomial p(x) = x³ - 1 combine to form the quadratic x² + x + 1 and have no roots in common with the factor x - 1, the roots of the minimal polynomial of A are distinct.\",\n        \"deduced-from\": [\n          {\n            \"name\": \"Factorization of the polynomial\",\n            \"statement\": \"The factors (x - ω) and (x - ω²) combine to form the quadratic x² + x + 1, which has no roots in common with the factor x - 1.\",\n            \"applied-to\": {\"p(x)\": \"p(x)\"},\n            \"assumptions-satisfied\": [\"A is a square matrix such that A³ = I\"]\n          }\n        ]\n      },\n      {\n        \"type\": \"theorem\",\n        \"name\": \"Diagonalizability Criterion\",\n        \"statement\": \"A matrix is diagonalizable if and only if its minimal polynomial has no repeated roots.\",\n        \"status\": \"recalled\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is diagonalizable.\",\n        \"statement\": \"Given that A is a square matrix such that A³ = I, and given that the roots of the minimal polynomial of A are distinct as per Diagonalizability Criterion, A is diagonalizable.\",\n        \"deduced-from\": [\n          {\n            \"name\": \"Diagonalizability Criterion\",\n            \"statement\": \"A matrix is diagonalizable if and only if its minimal polynomial has no repeated roots.\",\n            \"applied-to\": {\"A\": \"A\"},\n            \"assumptions-satisfied\": [\"A is a square matrix such that A³ = I\", \"The roots of the minimal polynomial of A are distinct.\"]\n          },\n          {\n            \"name\": \"Distinct roots of the polynomial\",\n            \"statement\": \"The roots of the minimal polynomial of A are distinct.\",\n            \"applied-to\": {\"A\": \"A\"},\n            \"assumptions-satisfied\": [\"A is a square matrix such that A³ = I\"]\n          }\n        ]\n      }\n    ]\n  }\n]\n```\n\nIn this updated `ProofJSON`, each `assertion` has been updated to include `name`, `statement`, `applied-to`, and `assumptions-satisfied` for each `deduced_from` theorem. The claims in each `assertion` do seem to logically follow from the results listed in `deduced_from`, so no `error` fields were added.",
+    [
+      {
+        "type": "theorem",
+        "name": "A is Diagonalizable",
+        "statement": "Let A be a square matrix such that A³ = I. Then A is diagonalizable.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "A is a square matrix such that A³ = I."
+          },
+          {
+            "type": "let",
+            "variable": "p(x)",
+            "value": "x³ - 1"
+          },
+          {
+            "type": "observation",
+            "statement": "A is annihilated by the polynomial p(x)."
+          },
+          {
+            "type": "assertion",
+            "claim": "p(x) can be factorized as (x - 1)(x - ω)(x - ω²), where ω is a primitive third root of unity (i.e., ω = e^(2πi / 3)).",
+            "statement": "Given a square matrix A such that A³ = I, we define a polynomial p(x) = x³ - 1. Then, p(x) can be factorized as (x - 1)(x - ω)(x - ω²), where ω is a primitive third root of unity (i.e., ω = e^(2πi / 3))."
+          },
+          {
+            "type": "assertion",
+            "claim": "The factors (x - ω) and (x - ω²) combine to form the quadratic x² + x + 1, which has no roots in common with the factor x - 1.",
+            "statement": "The factors (x - ω) and (x - ω²) of the polynomial p(x) = x³ - 1 combine to form the quadratic x² + x + 1, which has no roots in common with the factor x - 1."
+          },
+          {
+            "type": "assertion",
+            "claim": "The roots of the minimal polynomial of A are distinct.",
+            "statement": "Given that the factors (x - ω) and (x - ω²) of the polynomial p(x) = x³ - 1 combine to form the quadratic x² + x + 1 and have no roots in common with the factor x - 1, the roots of the minimal polynomial of A are distinct.",
+            "deduced-from": [
+              {
+                "name": "Factoring",
+                "statement": "If a polynomial can be factorized into distinct factors, then the roots of the polynomial are distinct.",
+                "applied-to": "p(x)",
+                "assumptions-satisfied": [
+                  "The factors (x - ω) and (x - ω²) combine to form the quadratic x² + x + 1, which has no roots in common with the factor x - 1."
+                ]
+              }
+            ]
+          },
+          {
+            "type": "theorem",
+            "name": "Diagonalizability Criterion",
+            "statement": "A matrix is diagonalizable if and only if its minimal polynomial has no repeated roots.",
+            "status": "recalled"
+          },
+          {
+            "type": "assertion",
+            "claim": "A is diagonalizable.",
+            "statement": "Given that A is a square matrix such that A³ = I, and given that the roots of the minimal polynomial of A are distinct as per Diagonalizability Criterion, A is diagonalizable.",
+            "deduced-from": [
+              {
+                "name": "Diagonalizability Criterion",
+                "statement": "A matrix is diagonalizable if and only if its minimal polynomial has no repeated roots.",
+                "applied-to": "A",
+                "assumptions-satisfied": [
+                  "A is a square matrix such that A³ = I",
+                  "The roots of the minimal polynomial of A are distinct."
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    {
+      "type": "assertion",
+      "claim": "A^3 - I = 0",
+      "deduced-from": [
+        "A^3 = I"
+      ],
+      "justification": "The given condition can be reformulated.",
+      "statement": "If a square matrix A satisfies A^3 = I, then A^3 - I = 0."
+    },
+    "The task you're proposing involves editing JSON data. This is typically done programmatically and is not something that can be handled by a Lean 4 assistant, which is designed for answering questions about Lean 4 and assisting with mathematics. However, I can guide you through the process of how you might approach this task.\n\nHere's a simplified idea of what you might need to do in a Python-like pseudocode:\n\n```python\nimport json\n\n# Load your JSON data\ndata = json.loads(json_string)\n\n# Iterate through each theorem\nfor theorem in data:\n   # Iterate through each assertion in the proofs\n   for assertion in theorem['proof']:\n      # Check if the claim is correctly deduced\n      if is_correctly_deduced(assertion['claim'], assertion['deduced-from']):\n         # If it is, expand each theorem in `deduced-from`\n         for i, result in enumerate(assertion['deduced-from']):\n            expanded_result = expand_result(result)\n            assertion['deduced-from'][i] = expanded_result\n      else:\n         # If it isn't, insert an error field\n         assertion['error'] = 'The claim does not follow from the results in `deduced-from`.'\n\n# Convert the data back to a JSON string\njson_string = json.dumps(data)\n```\n\nThe `is_correctly_deduced` function would, in your real implementation, contain the logic to determine whether a claim is correctly deduced from the results. The `expand_result` function would be responsible for converting a result into the desired format with fields `name`, `statement`, `applied-to`, and `assumptions-satisfied`.\n\nThis is a rather complex task that requires a good understanding of the JSON data structure you're working with and the logic of your mathematical proofs. It could involve natural language processing if the claims and results are provided as human-readable strings, or symbolic computation if the claims and results can be represented symbolically. You may want to consider using a computational algebra system or theorem-proving software to help with this analysis.",
+    "Given that the `ProofJSON` format you provided does not include specific instances of `deduced_from` containing theorems or results, it is not possible to directly expand them into the form you specified. However, I can explain the general approach to check and expand the claims based on `deduced_from`.\n\nFor every object of type `assertion`, we would need to:\n- Understand the mathematical logic behind the `claim` and the results in `deduced_from`.\n- Check if the `claim` is a logical consequence of the results in `deduced_from`. If it does not follow logically, add an `error` field with an appropriate description.\n    - For example, if `claim` is \"A matrix is symmetric\" but `deduced_from` only includes \"Matrix is square\", we would add `error` with \"Being square does not imply symmetry for a matrix.\"\n- If the `claim` does follow logically, for every theorem or result in `deduced_from`, we create a new dictionary with the following keys:\n    - `name`: The name of the theorem/result.\n    - `statement`: The statement of the theorem/result.\n    - `applied-to`: A dictionary mapping the variables in the theorem/result to their actual values in our context.\n    - `assumptions-satisfied`: A list of assumptions we have verified to hold in our context.\n\nFor instance, consider an `assertion` object as follows:\n\n```\n{\n    \"type\": \"assertion\",\n    \"claim\": \"A is diagonalizable\",\n    \"deduced_from\": [\"The minimal polynomial of A has distinct roots.\", \"Spectral Theorem\"],\n    \"justification\": \"...\",\n    \"statement\": \"...\"\n}\n```\n\nIf we check and find that the `claim` does follow from `deduced_from`, we would expand `Spectral Theorem` into:\n\n```\n{\n    \"name\": \"Spectral Theorem\",\n    \"statement\": \"A matrix is diagonalizable if and only if its minimal polynomial factors into distinct linear factors over the field.\",\n    \"applied-to\": {\"A\": \"A\"},\n    \"assumptions-satisfied\": [\"A is a square matrix\", \"The field is C\"]\n}\n```\n\nThis assumes that we are working in context where `A` is a square matrix, and the field is complex numbers.\n\nThe exact checks, expansions, and assumptions would depend on the specifics of the `claim`, `deduced_from`, and the mathematical context.",
+    "The JSON format does not support adding fields and expanding data within it, as it is not a programming language. It is a lightweight data-interchange format that is easy for humans to read and write, and easy for machines to parse and generate. \n\nWhile the JSON can be parsed and manipulated using a programming language, the exact operations that you are asking for (i.e., checking whether a claim follows from its deductions, expanding theorem objects, replacing fields) require human judgement and complex logical reasoning that would be hard to implement as automated operations in a programming language. \n\nHowever, to proceed with your request, here is a Python code snippet that could interpret this JSON and perform similar operations:\n\n```python\nimport json\n\ndata = json.loads('your-json-string')\nfor theorem in data:\n    if theorem['type'] == 'theorem':\n        for assertion in theorem['proof']:\n            if assertion['type'] == 'assertion':\n                # Check whether the claim indeed follows from the results in deduced_from\n                # This requires complex logical reasoning and is not trivial to implement in code\n                # If not, add a field error with a description of the error\n                if not check_claim(assertion):\n                    assertion['error'] = 'Description of the error'\n                else:\n                    # If the claim follows from the deduced_from results\n                    # Expand each theorem in the deduced_from list to have fields name, statement,\n                    # applied-to, assumptions-satisfied\n                    expanded = expand_theorem(assertion)\n                    assertion['deduced-from'] = [expanded]\n```\n\nThe functions `check_claim` and `expand_theorem` are placeholders for functions that would need to implement the complex logic you described. Implementing these functions is not trivial and is outside the scope of this assistant. It would likely involve using a formal logic system or theorem prover, and would require expert knowledge in those areas.",
+    "Since the `ProofJSON` format is a proposed schema and there's no established library to process this format, I will manually process each `assertion` object.\n\nFor Theorem 1:\n\nThe assertions in Theorem 1 do not have a `deduced_from` field, so there's no need to check for validity. \n\nFor Theorem 2:\n\nSimilar to Theorem 1, the assertions in Theorem 2 also do not have a `deduced_from` field.\n\nFor Theorem 3:\n\nThe last two `assertion`s in Theorem 3 have the `deduced_from` field:\n\n- `\"Since by Theorem 1 the minimal polynomial of $A$ divides a polynomial with distinct roots, it must also have distinct roots\"`: This claim does follow from Theorem 1. Theorem 1 object in `deduced_from` can be expanded as follows:\n\n  ```\n  {\n    \"name\": \"Theorem 1\",\n    \"statement\": \"If A is a square matrix such that $A^3 = I$, then the minimal polynomial of $A$, which is the monic polynomial of least degree that annihilates $A$, must divide $x^3 - 1\",\n    \"applied-to\": {\n      \"A\": \"A\"\n    },\n    \"assumptions-satisfied\": [\"A^3 = I\"]\n  }\n  ```\n\n- `\"A is diagonalizable\"`: This claim follows from the assumption of Theorem 3 and the previous assertion. But there is no explicit `deduced_from` field mentioning the reliance on the previous assertion. \n\nSo, there's an implicit assumption that this `assertion` is based on the previous `assertion`. We could add an `error` field to make this explicit as follows:\n\n```\n{\n  \"type\": \"assertion\",\n  \"claim\": \"$A$ is diagonalizable\",\n  \"justification\": \"According to the Spectral Theorem and the previous assertion\",\n  \"statement\": \"If A is a square matrix such that its minimal polynomial has no multiple roots, and according to the Spectral Theorem, A is diagonalizable if and only if its minimal polynomial factors into distinct linear factors over the field, then A is diagonalizable\",\n  \"error\": \"The dependence on the previous assertion is not explicitly stated in the `deduced_from` field\"\n}\n```",
+    [
+      {
+        "type": "assertion",
+        "claim": "We can reformulate $A^3 = I$ as $A^3 - I = 0$, or $(A-I)(A^2+A+I)=0$",
+        "justification": "Basic algebra",
+        "statement": "If A is a square matrix such that $A^3 = I$, then we can reformulate $A^3 = I$ as $A^3 - I = 0$, or $(A-I)(A^2+A+I)=0$"
+      },
+      {
+        "type": "assertion",
+        "claim": "The minimal polynomial of $A$, which is the monic polynomial of least degree that annihilates $A$, must divide $x^3 - 1",
+        "justification": "Definition of minimal polynomial",
+        "statement": "If A is a square matrix such that $A^3 = I$, then the minimal polynomial of $A$, which is the monic polynomial of least degree that annihilates $A$, must divide $x^3 - 1"
+      }
+    ],
+    "From your explanation, it seems you desire to have a more intuitive and detailed `deduced_from` field that provides clearer context for the claims made. Based on this, I will go through the provided JSON and perform the necessary tasks. \n\nLet's talk about the `deduced_from` field in the third theorem (Theorem 3). The `deduced_from` field here is:\n```\n\"deduced-from\": [\n  {\n    \"result\": \"Theorem 1\",\n    \"applied-to\": \"A\"\n  }\n]\n```\nThe claim in this assertion is \n\"Since by Theorem 1 the minimal polynomial of $A$ divides a polynomial with distinct roots, it must also have distinct roots\"\n\nAnalyzing the contents of `deduced_from` and the claim, it is clear that the claim indeed follows from the result mentioned in `deduced_from` (Theorem 1), as the claim is about the minimal polynomial of $A$ dividing a polynomial with distinct roots, which is the topic of Theorem 1.\n\nWe can then expand the `deduced_from` field as you asked. Here is the modified `deduced_from` field:\n\n```\n\"deduced-from\": [\n  {\n    \"name\": \"Theorem 1\",\n    \"statement\": \"If $A^3 = I$ for a square matrix $A$, then the minimal polynomial of $A$ divides $x^3 - 1 = (x-1)(x^2+x+1)\",\n    \"applied-to\": {\n      \"A\": \"A square matrix such that its minimal polynomial has no multiple roots\"\n    },\n    \"assumptions-satisfied\": [\"$A$ is a square matrix\", \"$A^3 = I$\"]\n  }\n]\n```\n\nIn this updated `deduced_from` field, `name` and `statement` provide the name and statement of Theorem 1. `applied-to` specifies the particular case where Theorem 1 is applied. `assumptions-satisfied` lists the assumptions that are satisfied for the application of Theorem 1.\n\nI have assumed that you only need help with how to properly expand the `deduced_from` field and check if the claim follows from the `deduced_from` results. If you need this operation to be performed on the entire JSON, that would be a larger task and it would be good to clarify that point.",
+    [
+      {
+        "result": "Theorem 1",
+        "name": "Theorem 1",
+        "statement": "If $A^3 = I$ for a square matrix $A$, then the minimal polynomial of $A$ divides $x^3 - 1 = (x-1)(x^2+x+1)$",
+        "applied-to": "A",
+        "assumptions-satisfied": [
+          "A is a square matrix",
+          "$A^3 = I$"
+        ]
+      }
+    ],
+    "For each object of type 'assertion', it is necessary to manually verify whether the 'claim' indeed follows from the results in 'deduced_from'. This requires a deep understanding of the mathematical content being expressed. \n\nFor example, let's take the first 'assertion' in your JSON:\n\n```JSON\n{\n  \"type\": \"assertion\",\n  \"statement\": \"If a square matrix A satisfies A^3 = I and the polynomial p(x) = x^3 - 1, then p(A) = 0.\",\n  \"claim\": \"p(A) = 0\",\n  \"deduced-from\": [\n    \"A^3 = I\",\n    \"p(x) = x^3 - 1\"\n  ],\n  \"justification\": \"p(A) annihilates A\"\n}\n```\n\nTo check whether the 'claim' `p(A) = 0` indeed follows from `A^3 = I` and `p(x) = x^3 - 1`, we substitute A into the polynomial `p(x) = x^3 - 1`. This gives `p(A) = A^3 - I`. Since `A^3 = I`, we have `p(A) = I - I = 0`. Therefore, the 'claim' indeed follows from the results in 'deduced_from', and there is no `error`.\n\nExpanding each theorem in the 'deduced_from' list to have fields `name`, `statement`, `applied-to`, `assumptions-satisfied` requires a similar understanding of the mathematical content, as well as a standard set of available theorems (e.g., Lagrange's theorem) and their statements.\n\nFor continuing with the example, in your JSON, we don't have any theorem used in 'deduced_from', so there's no replacement. However, if there was a theorem such as `Lagrange's theorem`, we could replace it with an object similar to what you have described.\n\nPlease provide additional information, if there's a specific assertion claim or theorem you want to have checked or expanded.",
+    "This task is less about coding in Lean 4 and more about data manipulation in whatever programming language you are using (e.g., Python, JavaScript, etc.). The work involves examining each `assertion` object in the JSON data, checking if the `claim` follows logically from the `deduced_from` list, and then reformatting the `deduced_from` list as per your instructions.\n\nHere is a Python-style pseudocode for what you're asking:\n\n```python\n\nfor theorem in proof_json:\n  for assertion in theorem['proof']:\n    if assertion['type'] == 'assertion':\n      # Check if assertion['claim'] follows from assertion['deduced_from']\n      # If not, add an error message\n      if not claim_follows_from_deduced_from(assertion['claim'], assertion['deduced_from']):\n        assertion['error'] = 'Claim does not follow from deduced results'\n        \n      # If yes, replace each theorem in 'deduced_from' with the required object\n      else:\n        new_deduced_from = []\n        for item in assertion['deduced_from']:\n          new_deduced_from.append({\n              'name': item,\n              'statement': get_statement(item),\n              'applied-to': get_applied_to(item),\n              'assumptions-satisfied': get_assumptions_satisfied(item)\n          })\n        assertion['deduced_from'] = new_deduced_from\n```\n\nNote: The functions `claim_follows_from_deduced_from`, `get_statement`, `get_applied_to`, and `get_assumptions_satisfied` are hypothetical and would need to be defined according to your specific rules and data. \n\nAlso, this code assumes that `proof_json` is a Python list containing the JSON data. If the data is in raw JSON format, you would need to first parse it into a Python list using `json.loads()`.",
+    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"If a square matrix A satisfies A^3 = I, then A is diagonalizable.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A^3 = I\"\n      },\n      {\n        \"type\": \"definition\",\n        \"statement\": \"The polynomial p(x) = x^3 - 1\",\n        \"term\": \"p(x)\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"p(A) = 0\",\n        \"statement\": \"If a square matrix A satisfies A^3 = I and the polynomial p(x) = x^3 - 1, then p(A) = 0\",\n        \"deduced-from\": [\n          {\n            \"name\": \"A^3 = I\",\n            \"statement\": \"A square matrix A satisfies A^3 = I\",\n            \"applied-to\": {\n              \"A\": \"A\"\n            },\n            \"assumptions-satisfied\": [\"A^3 = I\"]\n          },\n          {\n            \"name\": \"p(x) = x^3 - 1\",\n            \"statement\": \"The polynomial p(x) = x^3 - 1\",\n            \"applied-to\": {\n              \"x\": \"A\"\n            },\n            \"assumptions-satisfied\": [\"The polynomial p(x) = x^3 - 1\"]\n          }\n        ],\n        \"justification\": \"p(A) annihilates A\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The roots of p(x) are 1, e^{2pi i/3}, and e^{-2pi i/3}, all of which are distinct.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The minimal polynomial of A must also have distinct roots.\",\n        \"statement\": \"If the roots of the polynomial p(x) = x^3 - 1 are 1, e^{2pi i/3}, and e^{-2pi i/3}, all of which are distinct, then the minimal polynomial of A must also have distinct roots.\",\n        \"deduced-from\": [\n          {\n            \"name\": \"p(x) = x^3 - 1\",\n            \"statement\": \"The polynomial p(x) = x^3 - 1\",\n            \"applied-to\": {\n              \"x\": \"A\"\n            },\n            \"assumptions-satisfied\": [\"The polynomial p(x) = x^3 - 1\"]\n          },\n          {\n            \"name\": \"The roots of p(x) are 1, e^{2pi i/3}, and e^{-2pi i/3}, all of which are distinct.\",\n            \"statement\": \"The roots of the polynomial p(x) = x^3 - 1 are 1, e^{2pi i/3}, and e^{-2pi i/3}, all of which are distinct.\",\n            \"applied-to\": {\n              \"x\": \"A\"\n            },\n            \"assumptions-satisfied\": [\"The roots of p(x) are 1, e^{2pi i/3}, and e^{-2pi i/3}, all of which are distinct.\"]\n          }\n        ],\n        \"justification\": \"The minimal polynomial of A must divide p(x).\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is diagonalizable.\",\n        \"statement\": \"If the minimal polynomial of a square matrix A has distinct roots, then A is diagonalizable.\",\n        \"deduced-from\": [\n          {\n            \"name\": \"The minimal polynomial of A must also have distinct roots.\",\n            \"statement\": \"The minimal polynomial of a square matrix A has distinct roots\",\n            \"applied-to\": {\n              \"A\": \"A\"\n            },\n            \"assumptions-satisfied\": [\"The minimal polynomial of A must also have distinct roots.\"]\n          }\n        ],\n        \"justification\": \"A square matrix is diagonalizable if and only if its minimal polynomial is a product of distinct linear factors.\"\n      }\n    ]\n  }\n]\n\nAll claims logically follow from the results in 'deduced_from'. Therefore, there is no need to add an 'error' field.",
+    "Here is the revised JSON. No errors were found in the original and all claims followed from the results in `deduced_from`.\n\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"If a square matrix A satisfies A^3 = I, then A is diagonalizable.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A^3 = I\"\n      },\n      {\n        \"type\": \"definition\",\n        \"statement\": \"The polynomial p(x) = x^3 - 1\",\n        \"term\": \"p(x)\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"p(A) = 0\",\n        \"statement\": \"If a square matrix A satisfies A^3 = I and the polynomial p(x) = x^3 - 1, then p(A) = 0\",\n        \"deduced-from\": [\n          {\n            \"name\": \"A^3 = I\",\n            \"statement\": \"A^3 = I\",\n            \"applied-to\": {\"A\": \"A\"},\n            \"assumptions-satisfied\": [\"A is a square matrix\"]\n          },\n          {\n            \"name\": \"p(x) = x^3 - 1\",\n            \"statement\": \"p(x) = x^3 - 1\",\n            \"applied-to\": {\"x\": \"A\"},\n            \"assumptions-satisfied\": [\"A is a square matrix\"]\n          }\n        ],\n        \"justification\": \"p(A) annihilates A\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The roots of p(x) are 1, e^{2pi i/3}, and e^{-2pi i/3}, all of which are distinct.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The minimal polynomial of A must also have distinct roots.\",\n        \"statement\": \"If the roots of the polynomial p(x) = x^3 - 1 are 1, e^{2pi i/3}, and e^{-2pi i/3}, all of which are distinct, then the minimal polynomial of A must also have distinct roots.\",\n        \"deduced-from\": [\n          {\n            \"name\": \"p(x) = x^3 - 1\",\n            \"statement\": \"p(x) = x^3 - 1\",\n            \"applied-to\": {\"x\": \"A\"},\n            \"assumptions-satisfied\": [\"A is a square matrix\"]\n          },\n          {\n            \"name\": \"The roots of p(x) are 1, e^{2pi i/3}, and e^{-2pi i/3}, all of which are distinct.\",\n            \"statement\": \"The roots of p(x) are 1, e^{2pi i/3}, and e^{-2pi i/3}, all of which are distinct.\",\n            \"applied-to\": {\"x\": \"p(x)\"},\n            \"assumptions-satisfied\": [\"p(x) is a polynomial\"]\n          }\n        ],\n        \"justification\": \"The minimal polynomial of A must divide p(x).\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is diagonalizable.\",\n        \"statement\": \"If the minimal polynomial of a square matrix A has distinct roots, then A is diagonalizable.\",\n        \"deduced-from\": [\n          {\n            \"name\": \"The minimal polynomial of A must also have distinct roots.\",\n            \"statement\": \"The minimal polynomial of A must also have distinct roots.\",\n            \"applied-to\": {\"A\": \"A\"},\n            \"assumptions-satisfied\": [\"A is a square matrix\"]\n          }\n        ],\n        \"justification\": \"A square matrix is diagonalizable if and only if its minimal polynomial is a product of distinct linear factors.\"\n      }\n    ]\n  }\n]",
+    {
+      "name": "A^3 = I",
+      "statement": "A^3 = I",
+      "applied-to": {
+        "A": "A"
+      },
+      "assumptions-satisfied": []
+    },
+    "The JSON provided is a structured description of a proof. However, it's important to note that the assertions and their dependencies are described at a high level and don't directly map to mathematical theorems or their applications in the way the question suggests. That is, there isn't a clear and direct translation of each assertion into a named theorem with a specific mathematical statement, as in the Lagrange's theorem example. \n\nAs a result, while it is possible to verify that each assertion's `claim` follows from the previous statements and observations in the proof (the `deduced_from` field), there isn't enough information in the provided JSON to expand each assertion into an object that includes a `name`, `statement`, `applied-to`, and `assumptions-satisfied`, as the question requests.\n\nThat said, here's a review of each `assertion`:\n\n1. Assertion: \"The polynomial p(x) = x^3 - 1 annihilates A.\"\n   - This follows logically from the assumption \"A^3 = I\", as it is the definition of a polynomial that annihilates a matrix.\n\n2. Assertion: \"The minimal polynomial of A must also have distinct roots.\"\n   - This follows logically from the observations \"The minimal polynomial of A must divide p(x)\" and \"The roots of p(x) are 1, e^{2πi/3}, and e^{-2πi/3}, all of which are distinct\". \n\n3. Assertion: \"A is diagonalizable.\"\n   - This follows logically from the assertion \"The minimal polynomial of A must also have distinct roots\" and the observation \"A square matrix is diagonalizable if and only if its minimal polynomial is a product of distinct linear factors.\"\n\nIn all cases, the `claim` in each `assertion` follows from the results in the `deduced_from` field. However, without additional information, these can't be expanded into the requested format with `name`, `statement`, `applied-to`, and `assumptions-satisfied` fields.",
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "If a square matrix A satisfies A^3 = I, then A is diagonalizable.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "A^3 = I"
+          },
+          {
+            "type": "assertion",
+            "claim": "The polynomial p(x) = x^3 - 1 annihilates A.",
+            "deduced-from": [
+              {
+                "name": "Assumption",
+                "statement": "A^3 = I",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": []
+              }
+            ],
+            "statement": "If A^3 = I, then the polynomial p(x) = x^3 - 1 annihilates A.",
+            "justification": "By definition of a polynomial that annihilates a matrix."
+          },
+          {
+            "type": "observation",
+            "statement": "The minimal polynomial of A must divide p(x)."
+          },
+          {
+            "type": "observation",
+            "statement": "The roots of p(x) are 1, e^{2πi/3}, and e^{-2πi/3}, all of which are distinct."
+          },
+          {
+            "type": "assertion",
+            "claim": "The minimal polynomial of A must also have distinct roots.",
+            "deduced-from": [
+              {
+                "name": "Observation 1",
+                "statement": "The minimal polynomial of A must divide p(x).",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  "The polynomial p(x) = x^3 - 1 annihilates A"
+                ]
+              },
+              {
+                "name": "Observation 2",
+                "statement": "The roots of p(x) are 1, e^{2πi/3}, and e^{-2πi/3}, all of which are distinct.",
+                "applied-to": {
+                  "p(x)": "p(x)"
+                },
+                "assumptions-satisfied": [
+                  "The polynomial p(x) = x^3 - 1"
+                ]
+              }
+            ],
+            "statement": "If the minimal polynomial of A must divide p(x) and the roots of p(x) are 1, e^{2πi/3}, and e^{-2πi/3}, all of which are distinct, then the minimal polynomial of A must also have distinct roots."
+          },
+          {
+            "type": "assertion",
+            "claim": "A is diagonalizable.",
+            "deduced-from": [
+              {
+                "name": "Assertion 1",
+                "statement": "The minimal polynomial of A must also have distinct roots.",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  "The minimal polynomial of A must divide p(x)",
+                  "The roots of p(x) are 1, e^{2πi/3}, and e^{-2πi/3}, all of which are distinct"
+                ]
+              },
+              {
+                "name": "Criterion for diagonalizability",
+                "statement": "A square matrix is diagonalizable if and only if its minimal polynomial is a product of distinct linear factors.",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  "The minimal polynomial of A must also have distinct roots"
+                ]
+              }
+            ],
+            "statement": "If the minimal polynomial of A must also have distinct roots and a square matrix is diagonalizable if and only if its minimal polynomial is a product of distinct linear factors, then A is diagonalizable.",
+            "justification": "By the criterion for a matrix to be diagonalizable."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "If a square matrix A satisfies A^3 = I, then A is diagonalizable.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "A^3 = I"
+          },
+          {
+            "type": "assertion",
+            "claim": "The polynomial p(x) = x^3 - 1 annihilates A.",
+            "deduced-from": [
+              {
+                "result": "A^3 = I",
+                "name": "Matrix Cubed Identity",
+                "statement": "If A^3 = I, then the polynomial p(x) = x^3 - 1 annihilates A.",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  "A^3 = I"
+                ]
+              }
+            ],
+            "statement": "If A^3 = I, then the polynomial p(x) = x^3 - 1 annihilates A.",
+            "justification": "By definition of a polynomial that annihilates a matrix."
+          },
+          {
+            "type": "observation",
+            "statement": "The minimal polynomial of A must divide p(x)."
+          },
+          {
+            "type": "observation",
+            "statement": "The roots of p(x) are 1, e^{2πi/3}, and e^{-2πi/3}, all of which are distinct."
+          },
+          {
+            "type": "assertion",
+            "claim": "The minimal polynomial of A must also have distinct roots.",
+            "deduced-from": [
+              {
+                "result": "The minimal polynomial of A must divide p(x).",
+                "name": "Minimal Polynomial Property",
+                "statement": "The minimal polynomial of a matrix must divide any polynomial that annihilates the matrix.",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  "The polynomial p(x) = x^3 - 1 annihilates A"
+                ]
+              },
+              {
+                "result": "The roots of p(x) are 1, e^{2πi/3}, and e^{-2πi/3}, all of which are distinct.",
+                "name": "Roots of Polynomial",
+                "statement": "The roots of the polynomial p(x) = x^3 - 1 are 1, e^{2πi/3}, and e^{-2πi/3}, all of which are distinct.",
+                "applied-to": {},
+                "assumptions-satisfied": []
+              }
+            ],
+            "statement": "If the minimal polynomial of A must divide p(x) and the roots of p(x) are 1, e^{2πi/3}, and e^{-2πi/3}, all of which are distinct, then the minimal polynomial of A must also have distinct roots."
+          },
+          {
+            "type": "assertion",
+            "claim": "A is diagonalizable.",
+            "deduced-from": [
+              {
+                "result": "The minimal polynomial of A must also have distinct roots.",
+                "name": "Distinct Roots of Minimal Polynomial",
+                "statement": "If the minimal polynomial of a matrix has distinct roots, the matrix is diagonalizable.",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  "The minimal polynomial of A has distinct roots"
+                ]
+              },
+              {
+                "result": "A square matrix is diagonalizable if and only if its minimal polynomial is a product of distinct linear factors.",
+                "name": "Matrix Diagonalizability",
+                "statement": "A square matrix is diagonalizable if and only if its minimal polynomial is a product of distinct linear factors.",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  "The minimal polynomial of A has distinct roots"
+                ]
+              }
+            ],
+            "statement": "If the minimal polynomial of A must also have distinct roots and a square matrix is diagonalizable if and only if its minimal polynomial is a product of distinct linear factors, then A is diagonalizable.",
+            "justification": "By the criterion for a matrix to be diagonalizable."
+          }
+        ]
+      }
+    ]
   ]
 }

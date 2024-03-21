@@ -1,24 +1,345 @@
 {
   "problem": "Let $A$ be a square matrix. Prove that if $A^3 = I$ then $A$ is diagonalizable.",
   "solutions": [
-    "The characteristic polynomial of $A$ is a polynomial of degree $n$ (where $n$ is the size of $A$), and it splits into linear factors over the complex numbers. Therefore, it has exactly $n$ roots, counting multiplicity. \n\nBecause $A^3 = I$, the minimal polynomial of $A$ divides $x^3 - 1$. Therefore, the minimal polynomial of $A$ is a product of distinct factors of $x^3 - 1 = (x - 1)(x - e^{2\\pi i/3})(x - e^{4\\pi i/3})$, where $e^{2\\pi i/3}$ and $e^{4\\pi i/3}$ are the cube roots of unity. \n\nSince each of these factors is linear, the minimal polynomial of $A$ is a product of distinct linear factors, and it follows that $A$ is diagonalizable.",
-    "The characteristic polynomial of $A$ is a degree $n$ polynomial, hence it has exactly $n$ complex roots (counting multiplicity), say $\\lambda_1, \\lambda_2, \\ldots, \\lambda_n$. Because $A^3 = I$, the characteristic polynomial of $A$ divides $x^3 - 1 = 0$. Therefore, each $\\lambda_i$ is a root of $x^3 - 1 = 0$. \n\nThis cubic equation has three distinct roots in the complex plane: $1, e^{2\\pi i/3}, e^{4\\pi i/3}$. Therefore, the minimal polynomial of $A$ cannot have any repeated roots, as the minimal polynomial divides the characteristic polynomial and repeated roots in the characteristic polynomial would correspond to repeated roots in the minimal polynomial.\n\nThe matrix $A$ is diagonalizable if and only if its minimal polynomial is a product of distinct linear factors. Hence, $A$ is diagonalizable.",
-    "The characteristic polynomial of $A^3-I=0$ is $(\\lambda^3-1)=0$. This has three distinct roots, namely $\\lambda = 1, e^{2\\pi i/3}, e^{-2\\pi i/3}$. Since $A$ is a complex matrix, it follows that the minimal polynomial of $A$ divides $(\\lambda-1)(\\lambda-e^{2\\pi i/3})(\\lambda-e^{-2\\pi i/3})$, and therefore has distinct roots. By the spectral theorem, $A$ is diagonalizable."
+    "We will use the fact that a matrix is diagonalizable if and only if its minimal polynomial has no repeated roots.\n\nGiven $A^3 = I$, it means that the polynomial $p(x) = x^3 - 1$ annihilates $A$. Now, we factorize this polynomial as $p(x) = (x - 1)(x - \\omega)(x - \\omega^2)$, where $\\omega$ is a primitive third root of unity (i.e., $\\omega = e^{2 \\pi i/3}$). \n\nNotice that $(x - \\omega)(x - \\omega^2) = x^2 + x + 1$ has no roots in common with $x - 1$, hence the roots of the minimal polynomial of $A$ cannot repeat. \n\nTherefore, $A$ is diagonalizable.",
+    "The minimal polynomial of $A$ divides $x^3 - 1 = (x-1)(x^2+x+1)$. Note that $x^3 - 1 = 0$ has three distinct roots in $\\mathbb{C}$. Hence, the minimal polynomial of $A$ cannot have multiple roots. Therefore, $A$ is diagonalizable.",
+    "The polynomial $p(x) = x^3 - 1$ annihilates $A$, i.e., $p(A) = A^3 - I = 0$. Therefore, the minimal polynomial of $A$ divides $x^3 - 1$. The roots of $x^3 - 1 = 0$ are 1, $e^{2\\pi i/3}$, and $e^{-2\\pi i/3}$, all of which are distinct. Hence, the minimal polynomial of $A$ has distinct roots.\n\nA matrix is diagonalizable if and only if its minimal polynomial is a product of distinct linear factors. Thus, $A$ is diagonalizable."
   ],
   "theories": [
-    "**Theorem 1:** The characteristic polynomial of a square matrix splits into linear factors over the complex numbers.\n\n**Proof:** The characteristic polynomial of a square matrix is the polynomial obtained by taking the determinant of the matrix minus a variable times the identity matrix. The Fundamental Theorem of Algebra guarantees that this polynomial, which has degree equal to the size of the matrix, has exactly as many roots, counting multiplicities, as its degree when considered over the complex numbers. Hence, it splits into linear factors over the complex numbers.\n\n**Theorem 2:** If $A^3 = I$, then the minimal polynomial of $A$ divides $x^3 - 1$.\n\n**Proof:** The minimal polynomial of a matrix is the monic polynomial of least degree that the matrix satisfies. If $A^3 = I$, then $A$ satisfies the polynomial equation $x^3 - 1 = 0$, so the minimal polynomial of $A$ must divide $x^3 - 1$.\n\n**Theorem 3:** If a matrix's minimal polynomial is a product of distinct linear factors, then the matrix is diagonalizable.\n\n**Proof:** A matrix is diagonalizable if and only if its minimal polynomial has no repeated roots. If the minimal polynomial is a product of distinct linear factors, then it has no repeated roots. Therefore, the matrix is diagonalizable.\n\n**Corollary:** If $A^3 = I$ for a square matrix $A$, then $A$ is diagonalizable.\n\n**Proof:** From Theorem 2, the minimal polynomial of $A$ divides $x^3 - 1$, so the minimal polynomial of $A$ is a product of distinct factors of $x^3 - 1 = (x - 1)(x - e^{2\\pi i/3})(x - e^{4\\pi i/3})$. Hence, by Theorem 3, $A$ is diagonalizable.",
-    "### Theorem 1:\nLet $A$ be a square matrix. If $A^3 = I$ then $A$ is diagonalizable.\n\n### Proof:\nAssume $A$ is a square matrix with the property that $A^3 = I$. The characteristic polynomial of $A$ is a degree $n$ polynomial, therefore it has exactly $n$ complex roots (counting multiplicity), denoted as $\\lambda_1, \\lambda_2, \\ldots, \\lambda_n$. Due to the property $A^3 = I$, we know that the characteristic polynomial of $A$ divides $x^3 - 1 = 0$, inferring that each $\\lambda_i$ is a root of $x^3 - 1 = 0$.\n\nThe polynomial $x^3 - 1 = 0$ has three distinct roots in the complex plane: $1, e^{2\\pi i/3}, e^{4\\pi i/3}$. Because the minimal polynomial divides the characteristic polynomial, repeated roots in the characteristic polynomial would imply repeated roots in the minimal polynomial. However, this contradicts the fact that $x^3 - 1 = 0$ has distinct roots. Hence, the minimal polynomial of $A$ contains only distinct roots.\n\nWe know that a matrix is diagonalizable if and only if its minimal polynomial is a product of distinct linear factors. Given that the minimal polynomial of $A$ has distinct roots, we conclude that $A$ is diagonalizable.",
-    "**Theorem 1:**\nLet $A$ be a square complex matrix. If $A^3 = I$, then $A$ is diagonalizable. \n\n**Proof:**\nIf $A^3 = I$, then the characteristic polynomial of $A$ satisfies the equation $\\lambda^3 - 1 = 0$. This equation has three distinct roots: $\\lambda = 1, e^{2\\pi i/3}, e^{-2\\pi i/3}$. Hence, the minimal polynomial of $A$ divides $(\\lambda-1)(\\lambda-e^{2\\pi i/3})(\\lambda-e^{-2\\pi i/3})$. Since the minimal polynomial has distinct roots, it follows that $A$ is diagonalizable as per the spectral theorem."
+    "Theorem: Let $A$ be a square matrix such that $A^3 = I$. Then $A$ is diagonalizable.\n\nProof: If $A^3 = I$, then $A$ is annihilated by the polynomial $p(x) = x^3 - 1$. This polynomial can be factorized as $p(x) = (x - 1)(x - \\omega)(x - \\omega^2)$, where $\\omega$ is a primitive third root of unity (i.e., $\\omega = e^{2 \\pi i/3}$). \n\nThe factors $(x - \\omega)$ and $(x - \\omega^2)$ combine to form the quadratic $x^2 + x + 1$, which has no roots in common with the factor $x - 1$. This implies that the roots of the minimal polynomial of $A$ are distinct. \n\nIt is a known result that a matrix is diagonalizable if and only if its minimal polynomial has no repeated roots. Thus, we conclude that $A$ is diagonalizable.",
+    "**Theorem 1**: If $A^3 = I$ for a square matrix $A$, then the minimal polynomial of $A$ divides $x^3 - 1 = (x-1)(x^2+x+1)$.\n\n**Proof**: Given that $A^3 = I$, we can reformulate it as $A^3 - I = 0$, or $(A-I)(A^2+A+I)=0$. This is a polynomial equation in $A$ of degree 3. Therefore, the minimal polynomial of $A$, which is the monic polynomial of least degree that annihilates $A$, must divide $x^3 - 1$.\n\n**Theorem 2**: The polynomial $x^3 - 1 = 0$ has three distinct roots in $\\mathbb{C}$.\n\n**Proof**: The cubic equation $x^3 - 1 = 0$ has roots given by the cube roots of unity. These roots are 1, $e^{2\\pi i/3}$, and $e^{4\\pi i/3}$, which are three distinct numbers in $\\mathbb{C}$.\n\n**Theorem 3**: If the minimal polynomial of a square matrix has no multiple roots, the matrix is diagonalizable.\n\n**Proof**: According to the Spectral Theorem, a matrix is diagonalizable if and only if its minimal polynomial factors into distinct linear factors over the field. Since by Theorem 1 the minimal polynomial of $A$ divides a polynomial with distinct roots, it must also have distinct roots. Therefore, according to this theorem, $A$ is diagonalizable.",
+    "Theorem 1: \nIf a square matrix $A$ satisfies $A^3 = I$, then $A$ is diagonalizable.\n\nProof 1:\nIf $A^3 = I$, then the polynomial $p(x) = x^3 - 1$ annihilates $A$, meaning that $p(A) = 0$. The minimal polynomial of $A$ must divide $p(x)$. The roots of $p(x)$ are 1, $e^{2\\pi i/3}$, and $e^{-2\\pi i/3}$, all of which are distinct. Therefore, the minimal polynomial of $A$ must also have distinct roots. By the criterion for a matrix to be diagonalizable, which states that a square matrix is diagonalizable if and only if its minimal polynomial is a product of distinct linear factors, we conclude that $A$ is diagonalizable."
   ],
   "structured_texts": [
-    "Here is a translation of your theorems and corollary into the `ProofJSON` format:\n\n```JSON\n[\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 1\",\n        \"statement\": \"The characteristic polynomial of a square matrix splits into linear factors over the complex numbers.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"definition\",\n                \"statement\": \"The characteristic polynomial of a square matrix is the polynomial obtained by taking the determinant of the matrix minus a variable times the identity matrix.\",\n                \"term\": \"Characteristic polynomial\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"The Fundamental Theorem of Algebra guarantees that this polynomial, which has degree equal to the size of the matrix, has exactly as many roots, counting multiplicities, as its degree when considered over the complex numbers.\",\n                \"deduced-from\": [\"Fundamental Theorem of Algebra\"]\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"Hence, it splits into linear factors over the complex numbers.\"\n            }\n        ]\n    },\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 2\",\n        \"statement\": \"If A^3 = I, then the minimal polynomial of A divides x^3 - 1.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"definition\",\n                \"statement\": \"The minimal polynomial of a matrix is the monic polynomial of least degree that the matrix satisfies.\",\n                \"term\": \"Minimal polynomial\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"If A^3 = I, then A satisfies the polynomial equation x^3 - 1 = 0, so the minimal polynomial of A must divide x^3 - 1.\",\n                \"deduced-from\": [\"Definition of Minimal polynomial\"]\n            }\n        ]\n    },\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 3\",\n        \"statement\": \"If a matrix's minimal polynomial is a product of distinct linear factors, then the matrix is diagonalizable.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"A matrix is diagonalizable if and only if its minimal polynomial has no repeated roots.\",\n                \"deduced-from\": [\"Definition of Diagonalizable matrix\"]\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"If the minimal polynomial is a product of distinct linear factors, then it has no repeated roots.\",\n                \"deduced-from\": [\"Definition of Minimal polynomial\"]\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"Therefore, the matrix is diagonalizable.\"\n            }\n        ]\n    },\n    {\n        \"type\": \"corollary\",\n        \"name\": \"Corollary\",\n        \"statement\": \"If A^3 = I for a square matrix A, then A is diagonalizable.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"From Theorem 2, the minimal polynomial of A divides x^3 - 1, so the minimal polynomial of A is a product of distinct factors of x^3 - 1 = (x - 1)(x - e^{2πi/3})(x - e^{4πi/3}).\",\n                \"deduced-from\": [\"Theorem 2\"]\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"Hence, by Theorem 3, A is diagonalizable.\",\n                \"deduced-from\": [\"Theorem 3\"]\n            }\n        ]\n    }\n]\n```\n\nThis JSON format represents the structure of your mathematical proofs and can be parsed by a program that understands the `ProofJSON` format. Note that some of the mathematical symbols have been replaced with their text equivalents for compatibility with JSON.\n",
-    "The proof translated into the `ProofJSON` format would look like this:\n\n```json \n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"The characteristic polynomial of a square matrix splits into linear factors over the complex numbers.\",\n    \"status\": \"proved\",\n    \"proof\": [\n        {\n            \"type\": \"definition\",\n            \"statement\": \"The characteristic polynomial of a square matrix is the polynomial obtained by taking the determinant of the matrix minus a variable times the identity matrix.\"\n        },\n        {\n            \"type\": \"theorem\",\n            \"statement\": \"The Fundamental Theorem of Algebra guarantees that this polynomial, which has degree equal to the size of the matrix, has exactly as many roots, counting multiplicities, as its degree when considered over the complex numbers.\"\n        },\n        {\n            \"type\": \"observation\",\n            \"statement\": \"Hence, it splits into linear factors over the complex numbers.\"\n        }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 2\",\n    \"statement\": \"If A^3 = I, then the minimal polynomial of A divides x^3 - 1.\",\n    \"status\": \"proved\",\n    \"proof\": [\n        {\n            \"type\": \"definition\",\n            \"statement\": \"The minimal polynomial of a matrix is the monic polynomial of least degree that the matrix satisfies.\"\n        },\n        {\n            \"type\": \"assertion\",\n            \"claim\": \"If A^3 = I, then A satisfies the polynomial equation x^3 - 1 = 0\",\n            \"deduced-from\": [\n              \"A^3 = I\"\n            ]\n        },\n        {\n            \"type\": \"observation\",\n            \"statement\": \"so the minimal polynomial of A must divide x^3 - 1.\"\n        }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 3\",\n    \"statement\": \"If a matrix's minimal polynomial is a product of distinct linear factors, then the matrix is diagonalizable.\",\n    \"status\": \"proved\",\n    \"proof\": [\n        {\n            \"type\": \"definition\",\n            \"statement\": \"A matrix is diagonalizable if and only if its minimal polynomial has no repeated roots.\"\n        },\n        {\n            \"type\": \"assertion\",\n            \"claim\": \"If the minimal polynomial is a product of distinct linear factors, then it has no repeated roots.\",\n            \"deduced-from\": [\n              \"Minimal polynomial is a product of distinct linear factors\"\n            ]\n        },\n        {\n            \"type\": \"observation\",\n            \"statement\": \"Therefore, the matrix is diagonalizable.\"\n        }\n    ]\n  },\n  {\n    \"type\": \"corollary\",\n    \"name\": \"Corollary\",\n    \"statement\": \"If A^3 = I for a square matrix A, then A is diagonalizable.\",\n    \"status\": \"proved\",\n    \"proof\": [\n        {\n            \"type\": \"assertion\",\n            \"claim\": \"From Theorem 2, the minimal polynomial of A divides x^3 - 1\",\n            \"deduced-from\": [\n              \"Theorem 2\"\n            ]\n        },\n        {\n            \"type\": \"assertion\",\n            \"claim\": \"so the minimal polynomial of A is a product of distinct factors of x^3 - 1 = (x - 1)(x - e^{2\\\\pi i/3})(x - e^{4\\\\pi i/3})\",\n            \"deduced-from\": [\n              \"Minimal polynomial of A divides x^3 - 1\"\n            ]\n        },\n        {\n            \"type\": \"assertion\",\n            \"claim\": \"Hence, by Theorem 3, A is diagonalizable.\",\n            \"deduced-from\": [\n              \"Theorem 3\",\n              \"Minimal polynomial of A is a product of distinct factors\"\n            ]\n        }\n    ]\n  }\n]\n```",
-    "Here is the `ProofJSON` format for the above theorems and corollary.\n\n```json\n[\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 1\",\n        \"statement\": \"The characteristic polynomial of a square matrix splits into linear factors over the complex numbers.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"definition\",\n                \"statement\": \"The characteristic polynomial of a square matrix is the polynomial obtained by taking the determinant of the matrix minus a variable times the identity matrix.\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"The Fundamental Theorem of Algebra guarantees that this polynomial, which has degree equal to the size of the matrix, has exactly as many roots, counting multiplicities, as its degree when considered over the complex numbers.\",\n                \"deduced-from\": [\"The Fundamental Theorem of Algebra\"]\n            },\n            {\n                \"type\": \"conclusion\",\n                \"statement\": \"Hence, it splits into linear factors over the complex numbers.\"\n            }\n        ]\n    },\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 2\",\n        \"statement\": \"If A^3 = I, then the minimal polynomial of A divides x^3 - 1.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"definition\",\n                \"statement\": \"The minimal polynomial of a matrix is the monic polynomial of least degree that the matrix satisfies.\"\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"If A^3 = I, then A satisfies the polynomial equation x^3 - 1 = 0.\"\n            },\n            {\n                \"type\": \"conclusion\",\n                \"statement\": \"So the minimal polynomial of A must divide x^3 - 1.\"\n            }\n        ]\n    },\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 3\",\n        \"statement\": \"If a matrix's minimal polynomial is a product of distinct linear factors, then the matrix is diagonalizable.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"definition\",\n                \"statement\": \"A matrix is diagonalizable if and only if its minimal polynomial has no repeated roots.\"\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"If the minimal polynomial is a product of distinct linear factors, then it has no repeated roots.\"\n            },\n            {\n                \"type\": \"conclusion\",\n                \"statement\": \"Therefore, the matrix is diagonalizable.\"\n            }\n        ]\n    },\n    {\n        \"type\": \"corollary\",\n        \"name\": \"Corollary\",\n        \"statement\": \"If A^3 = I for a square matrix A, then A is diagonalizable.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"From Theorem 2, the minimal polynomial of A divides x^3 - 1.\",\n                \"deduced-from\": [\"Theorem 2\"]\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"So the minimal polynomial of A is a product of distinct factors of x^3 - 1 = (x - 1)(x - e^{2\\\\pi i/3})(x - e^{4\\\\pi i/3}).\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"Hence, by Theorem 3, A is diagonalizable.\",\n                \"deduced-from\": [\"Theorem 3\"]\n            }\n        ]\n    }\n]\n```\nThe `ProofJSON` format represents the mathematical concepts and associated explanations in a structured format that can be used for further processing, such as rendering in different formats, linguistic analysis, or machine reasoning.",
-    "Here's the proof translated into `ProofJSON` format:\n\n```json\n[\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 1\",\n        \"statement\": \"Let $A$ be a square matrix. If $A^3 = I$ then $A$ is diagonalizable.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"assumption\",\n                \"statement\": \"$A$ is a square matrix with the property that $A^3 = I$.\"\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"The characteristic polynomial of $A$ is a degree $n$ polynomial, therefore it has exactly $n$ complex roots (counting multiplicity), denoted as $\\\\lambda_1, \\\\lambda_2, \\\\ldots, \\\\lambda_n$.\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"Each $\\\\lambda_i$ is a root of $x^3 - 1 = 0$\",\n                \"deduced-from\": [\"Due to the property $A^3 = I$, we know that the characteristic polynomial of $A$ divides $x^3 - 1 = 0$.\"]\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"The polynomial $x^3 - 1 = 0$ has three distinct roots in the complex plane: $1, e^{2\\\\pi i/3}, e^{4\\\\pi i/3}$.\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"The minimal polynomial of $A$ contains only distinct roots.\",\n                \"deduced-from\": [\n                    \"Repeated roots in the characteristic polynomial would imply repeated roots in the minimal polynomial.\", \n                    \"This contradicts the fact that $x^3 - 1 = 0$ has distinct roots.\"\n                ]\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"$A$ is diagonalizable.\",\n                \"deduced-from\": [\n                    \"A matrix is diagonalizable if and only if its minimal polynomial is a product of distinct linear factors.\", \n                    \"The minimal polynomial of $A$ has distinct roots.\"\n                ]\n            }\n        ]\n    }\n]\n```\n\nPlease note that this is just an example of the translation, and there may be other valid ways to represent the same proof in the `ProofJSON` format.",
-    "The requested `ProofJSON` representation of the proof is:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"Let A be a square matrix. If A^3 = I then A is diagonalizable.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A is a square matrix with the property that A^3 = I.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The characteristic polynomial of A is a degree n polynomial, therefore it has exactly n complex roots (counting multiplicity), denoted as λ_1, λ_2, ..., λ_n.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Each λ_i is a root of x^3 - 1 = 0\",\n        \"deduced-from\": [\n          \"A^3 = I\"\n        ],\n        \"justification\": \"Due to the property A^3 = I, we know that the characteristic polynomial of A divides x^3 - 1 = 0, inferring that each λ_i is a root of x^3 - 1 = 0.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The polynomial x^3 - 1 = 0 has three distinct roots in the complex plane: 1, e^(2πi/3), e^(4πi/3).\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The minimal polynomial of A contains only distinct roots.\",\n        \"deduced-from\": [\n          \"The polynomial x^3 - 1 = 0 has three distinct roots in the complex plane: 1, e^(2πi/3), e^(4πi/3).\"\n        ],\n        \"justification\": \"Because the minimal polynomial divides the characteristic polynomial, repeated roots in the characteristic polynomial would imply repeated roots in the minimal polynomial. However, this contradicts the fact that x^3 - 1 = 0 has distinct roots.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is diagonalizable.\",\n        \"deduced-from\": [\n          \"The minimal polynomial of A contains only distinct roots.\"\n        ],\n        \"justification\": \"We know that a matrix is diagonalizable if and only if its minimal polynomial is a product of distinct linear factors. Given that the minimal polynomial of A has distinct roots, we conclude that A is diagonalizable.\"\n      }\n    ]\n  }\n]\n```",
-    "Here is the provided proof in the `ProofJSON` format:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"Let $A$ be a square matrix. If $A^3 = I$ then $A$ is diagonalizable.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"$A$\",\n        \"value\": \"a square matrix\"\n      },\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"$A^3 = I$\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The characteristic polynomial of $A$ is a degree $n$ polynomial, therefore it has exactly $n$ complex roots (counting multiplicity), denoted as $\\lambda_1, \\lambda_2, \\ldots, \\lambda_n$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Each $\\lambda_i$ is a root of $x^3 - 1 = 0$.\",\n        \"deduced-from\": [\n          \"The characteristic polynomial of $A$ divides $x^3 - 1 = 0$\",\n          \"The property $A^3 = I$\"\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The polynomial $x^3 - 1 = 0$ has three distinct roots in the complex plane: $1, e^{2\\pi i/3}, e^{4\\pi i/3}$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The minimal polynomial of $A$ contains only distinct roots.\",\n        \"deduced-from\": [\n          \"The minimal polynomial divides the characteristic polynomial\",\n          \"Repeated roots in the characteristic polynomial would imply repeated roots in the minimal polynomial\",\n          \"$x^3 - 1 = 0$ has distinct roots\"\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"A matrix is diagonalizable if and only if its minimal polynomial is a product of distinct linear factors.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$A$ is diagonalizable.\",\n        \"deduced-from\": [\n          \"The minimal polynomial of $A$ has distinct roots\"\n        ]\n      }\n    ]\n  }\n]\n```",
-    "Here is the proof translated into the `ProofJSON` format:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"Let A be a square complex matrix. If A^3 = I, then A is diagonalizable.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Let A be a square complex matrix\"\n      },\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A^3 = I\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The characteristic polynomial of A satisfies the equation λ^3 - 1 = 0\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"This equation has three distinct roots: λ = 1, e^(2πi/3), e^(-2πi/3)\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The minimal polynomial of A divides (λ-1)(λ-e^(2πi/3))(λ-e^(-2πi/3))\",\n        \"deduced-from\": [\n          \"The characteristic polynomial of A satisfies the equation λ^3 - 1 = 0\",\n          \"This equation has three distinct roots: λ = 1, e^(2πi/3), e^(-2πi/3)\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Since the minimal polynomial has distinct roots, A is diagonalizable\",\n        \"deduced-from\": [\n          \"The minimal polynomial of A divides (λ-1)(λ-e^(2πi/3))(λ-e^(-2πi/3))\"\n        ],\n        \"justification\": \"This follows from the spectral theorem.\"\n      }\n    ]\n  }\n]\n```\n\nIn this JSON representation, the main theorem and its proof are encapsulated in a JSON array. Each step of the proof is represented as a separate JSON object with its type and statement, and links to previous steps when necessary. The last step of the proof specifically mentions the spectral theorem as a justification. Thus, the JSON representation provides a structured, detailed formulation of the proof.",
-    "Your proof translated into the `ProofJSON` format would look like this:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"status\": \"stated\",\n    \"statement\": \"Let A be a square complex matrix. If A^3 = I, then A is diagonalizable.\"\n  },\n  {\n    \"type\": \"let\",\n    \"variable\": \"A\",\n    \"value\": \"a square complex matrix\"\n  },\n  {\n    \"type\": \"assumption\",\n    \"statement\": \"A^3 = I\"\n  },\n  {\n    \"type\": \"assertion\",\n    \"claim\": \"The characteristic polynomial of A satisfies the equation λ^3 - 1 = 0\",\n    \"deduced-from\": [\n      {\n        \"result\": \"A^3 = I\",\n        \"applied-to\": \"A\"\n      }\n    ]\n  },\n  {\n    \"type\": \"observation\",\n    \"statement\": \"The equation λ^3 - 1 = 0 has three distinct roots: λ = 1, e^{2πi/3}, e^{-2πi/3}\"\n  },\n  {\n    \"type\": \"assertion\",\n    \"claim\": \"The minimal polynomial of A divides (λ-1)(λ-e^{2πi/3})(λ-e^{-2πi/3})\",\n    \"deduced-from\": [\n      {\n        \"result\": \"The equation λ^3 - 1 = 0 has three distinct roots\",\n        \"applied-to\": \"A\"\n      }\n    ]\n  },\n  {\n    \"type\": \"assertion\",\n    \"claim\": \"A is diagonalizable\",\n    \"deduced-from\": [\n      {\n        \"result\": \"The minimal polynomial of A divides (λ-1)(λ-e^{2πi/3})(λ-e^{-2πi/3})\",\n        \"applied-to\": \"A\"\n      },\n      {\n        \"result\": \"Spectral theorem\"\n      }\n    ],\n    \"justification\": \"Since the minimal polynomial has distinct roots, it follows that A is diagonalizable as per the spectral theorem.\"\n  }\n]\n```",
-    "The proof written in `ProofJSON` would be:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"Let A be a square complex matrix. If A^3 = I, then A is diagonalizable.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A^3 = I\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The characteristic polynomial of A satisfies the equation λ^3 - 1 = 0.\",\n        \"deduced-from\": [\"A^3 = I\"],\n        \"justification\": \"By the properties of the characteristic polynomial and the given assumption.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The equation λ^3 - 1 = 0 has three distinct roots: λ = 1, e^(2πi/3), e^(-2πi/3).\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The minimal polynomial of A divides (λ-1)(λ-e^(2πi/3))(λ-e^(-2πi/3)).\",\n        \"deduced-from\": [\"The characteristic polynomial of A satisfies the equation λ^3 - 1 = 0.\", \"The equation λ^3 - 1 = 0 has three distinct roots: λ = 1, e^(2πi/3), e^(-2πi/3).\"],\n        \"justification\": \"By the properties of the minimal polynomial.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is diagonalizable.\",\n        \"deduced-from\": [\"The minimal polynomial of A divides (λ-1)(λ-e^(2πi/3))(λ-e^(-2πi/3)).\"],\n        \"justification\": \"By the spectral theorem, since the minimal polynomial has distinct roots.\"\n      }\n    ]\n  }\n]\n```\nThis proof consists of five main steps: taking the assumption, asserting that the characteristic polynomial satisfies the equation, observing that the equation has distinct roots, asserting that the minimal polynomial divides the product of differences of λ and the roots, and finally asserting that A is diagonalizable. Each of these steps is represented as its own ProofJSON object. The overall proof is contained within the proof field of the theorem object, which is itself a list of ProofJSON objects."
+    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"diagonalizable_matrix_theorem\",\n    \"statement\": \"Let $A$ be a square matrix such that $A^3 = I$. Then $A$ is diagonalizable.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"$A$\",\n        \"value\": \"a square matrix such that $A^3 = I$\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$A$ is annihilated by the polynomial $p(x) = x^3 - 1$\",\n        \"deduced-from\": [\"$A^3 = I$\"]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"This polynomial can be factorized as $p(x) = (x - 1)(x - \\omega)(x - \\omega^2)$, where $\\omega$ is a primitive third root of unity (i.e., $\\omega = e^{2 \\pi i/3}$).\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The factors $(x - \\omega)$ and $(x - \\omega^2)$ combine to form the quadratic $x^2 + x + 1$, which has no roots in common with the factor $x - 1$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The roots of the minimal polynomial of $A$ are distinct.\",\n        \"deduced-from\": [\"polynomial factorization\"]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"It is a known result that a matrix is diagonalizable if and only if its minimal polynomial has no repeated roots.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$A$ is diagonalizable.\",\n        \"deduced-from\": [\"The roots of the minimal polynomial of $A$ are distinct.\", \"a matrix is diagonalizable if and only if its minimal polynomial has no repeated roots\"],\n        \"justification\": \"Since the roots of the minimal polynomial of A are distinct and a matrix is diagonalizable if and only if its minimal polynomial has no repeated roots, we conclude that A is diagonalizable.\"\n      }\n    ]\n  }\n]",
+    [
+      {
+        "type": "theorem",
+        "name": "A is Diagonalizable",
+        "statement": "Let A be a square matrix such that A³ = I. Then A is diagonalizable.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "A is a square matrix such that A³ = I."
+          },
+          {
+            "type": "let",
+            "variable": "p(x)",
+            "value": "x³ - 1"
+          },
+          {
+            "type": "observation",
+            "statement": "A is annihilated by the polynomial p(x)."
+          },
+          {
+            "type": "assertion",
+            "claim": "p(x) can be factorized as (x - 1)(x - ω)(x - ω²), where ω is a primitive third root of unity (i.e., ω = e^(2πi / 3))."
+          },
+          {
+            "type": "assertion",
+            "claim": "The factors (x - ω) and (x - ω²) combine to form the quadratic x² + x + 1, which has no roots in common with the factor x - 1."
+          },
+          {
+            "type": "assertion",
+            "claim": "The roots of the minimal polynomial of A are distinct.",
+            "deduced-from": [
+              "The factors (x - ω) and (x - ω²) combine to form the quadratic x² + x + 1, which has no roots in common with the factor x - 1."
+            ]
+          },
+          {
+            "type": "theorem",
+            "name": "Diagonalizability Criterion",
+            "statement": "A matrix is diagonalizable if and only if its minimal polynomial has no repeated roots.",
+            "status": "recalled"
+          },
+          {
+            "type": "assertion",
+            "claim": "A is diagonalizable.",
+            "deduced-from": [
+              {
+                "result": "Diagonalizability Criterion",
+                "applied-to": "A"
+              },
+              "The roots of the minimal polynomial of A are distinct."
+            ]
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "If A^3 = I for a square matrix A, then the minimal polynomial of A divides x^3 - 1 = (x-1)(x^2+x+1).",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assertion",
+            "claim": "A^3 - I = 0",
+            "deduced-from": [
+              "A^3 = I"
+            ],
+            "justification": "The given condition can be reformulated."
+          },
+          {
+            "type": "assertion",
+            "claim": "(A-I)(A^2+A+I) = 0",
+            "deduced-from": [
+              "A^3 - I = 0"
+            ],
+            "justification": "This is a polynomial equation in A of degree 3."
+          },
+          {
+            "type": "assertion",
+            "claim": "The minimal polynomial of A must divide x^3 - 1",
+            "deduced-from": [
+              "(A-I)(A^2+A+I) = 0"
+            ],
+            "justification": "The minimal polynomial of A is the monic polynomial of least degree that annihilates A."
+          }
+        ]
+      },
+      {
+        "type": "theorem",
+        "name": "Theorem 2",
+        "statement": "The polynomial x^3 - 1 = 0 has three distinct roots in C.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assertion",
+            "claim": "The roots are 1, e^(2pi i/3), and e^(4pi i/3)",
+            "deduced-from": [
+              "x^3 - 1 = 0"
+            ],
+            "justification": "The cubic equation x^3 - 1 = 0 has roots given by the cube roots of unity."
+          },
+          {
+            "type": "observation",
+            "statement": "These roots are three distinct numbers in C."
+          }
+        ]
+      },
+      {
+        "type": "theorem",
+        "name": "Theorem 3",
+        "statement": "If the minimal polynomial of a square matrix has no multiple roots, the matrix is diagonalizable.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assertion",
+            "claim": "The minimal polynomial of A has distinct roots.",
+            "deduced-from": [
+              "Theorem 1",
+              "Theorem 2"
+            ],
+            "justification": "Since by Theorem 1 the minimal polynomial of A divides a polynomial with distinct roots, it must also have distinct roots."
+          },
+          {
+            "type": "assertion",
+            "claim": "A is diagonalizable.",
+            "deduced-from": [
+              "The minimal polynomial of A has distinct roots."
+            ],
+            "justification": "According to the Spectral Theorem, a matrix is diagonalizable if and only if its minimal polynomial factors into distinct linear factors over the field."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "If $A^3 = I$ for a square matrix $A$, then the minimal polynomial of $A$ divides $x^3 - 1 = (x-1)(x^2+x+1)$",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "A",
+            "value": "A square matrix such that $A^3 = I$"
+          },
+          {
+            "type": "assertion",
+            "claim": "We can reformulate $A^3 = I$ as $A^3 - I = 0$, or $(A-I)(A^2+A+I)=0$",
+            "justification": "Basic algebra"
+          },
+          {
+            "type": "observation",
+            "statement": "This is a polynomial equation in $A$ of degree 3"
+          },
+          {
+            "type": "assertion",
+            "claim": "The minimal polynomial of $A$, which is the monic polynomial of least degree that annihilates $A$, must divide $x^3 - 1$",
+            "justification": "Definition of minimal polynomial"
+          }
+        ]
+      },
+      {
+        "type": "theorem",
+        "name": "Theorem 2",
+        "statement": "The polynomial $x^3 - 1 = 0$ has three distinct roots in $\\mathbb{C}$",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assertion",
+            "claim": "The cubic equation $x^3 - 1 = 0$ has roots given by the cube roots of unity",
+            "justification": "Fundamental theorem of algebra"
+          },
+          {
+            "type": "assertion",
+            "claim": "These roots are 1, $e^{2\\pi i/3}$, and $e^{4\\pi i/3}$, which are three distinct numbers in $\\mathbb{C}$",
+            "justification": "Properties of complex numbers and cube roots of unity"
+          }
+        ]
+      },
+      {
+        "type": "theorem",
+        "name": "Theorem 3",
+        "statement": "If the minimal polynomial of a square matrix has no multiple roots, the matrix is diagonalizable",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "A",
+            "value": "A square matrix such that its minimal polynomial has no multiple roots"
+          },
+          {
+            "type": "assertion",
+            "claim": "According to the Spectral Theorem, a matrix is diagonalizable if and only if its minimal polynomial factors into distinct linear factors over the field",
+            "justification": "Spectral Theorem"
+          },
+          {
+            "type": "assertion",
+            "claim": "Since by Theorem 1 the minimal polynomial of $A$ divides a polynomial with distinct roots, it must also have distinct roots",
+            "deduced-from": [
+              {
+                "result": "Theorem 1",
+                "applied-to": "A"
+              }
+            ],
+            "justification": "Polynomial division properties"
+          },
+          {
+            "type": "assertion",
+            "claim": "$A$ is diagonalizable",
+            "justification": "According to the Spectral Theorem and the previous assertion"
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "If a square matrix A satisfies A^3 = I, then A is diagonalizable.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "A^3 = I"
+          },
+          {
+            "type": "definition",
+            "statement": "The polynomial p(x) = x^3 - 1",
+            "term": "p(x)"
+          },
+          {
+            "type": "assertion",
+            "claim": "p(A) = 0",
+            "deduced-from": [
+              "A^3 = I",
+              "p(x) = x^3 - 1"
+            ],
+            "justification": "p(A) annihilates A"
+          },
+          {
+            "type": "observation",
+            "statement": "The roots of p(x) are 1, e^{2pi i/3}, and e^{-2pi i/3}, all of which are distinct."
+          },
+          {
+            "type": "assertion",
+            "claim": "The minimal polynomial of A must also have distinct roots.",
+            "deduced-from": [
+              "p(x) = x^3 - 1",
+              "The roots of p(x) are 1, e^{2pi i/3}, and e^{-2pi i/3}, all of which are distinct."
+            ],
+            "justification": "The minimal polynomial of A must divide p(x)."
+          },
+          {
+            "type": "assertion",
+            "claim": "A is diagonalizable.",
+            "deduced-from": [
+              "The minimal polynomial of A must also have distinct roots."
+            ],
+            "justification": "A square matrix is diagonalizable if and only if its minimal polynomial is a product of distinct linear factors."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "If a square matrix A satisfies A^3 = I, then A is diagonalizable.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "A^3 = I"
+          },
+          {
+            "type": "assertion",
+            "claim": "The polynomial p(x) = x^3 - 1 annihilates A.",
+            "deduced-from": [
+              {
+                "result": "A^3 = I"
+              }
+            ],
+            "justification": "By definition of a polynomial that annihilates a matrix"
+          },
+          {
+            "type": "observation",
+            "statement": "The minimal polynomial of A must divide p(x)."
+          },
+          {
+            "type": "observation",
+            "statement": "The roots of p(x) are 1, e^{2πi/3}, and e^{-2πi/3}, all of which are distinct."
+          },
+          {
+            "type": "assertion",
+            "claim": "The minimal polynomial of A must also have distinct roots.",
+            "deduced-from": [
+              {
+                "result": "The minimal polynomial of A must divide p(x)."
+              },
+              {
+                "result": "The roots of p(x) are 1, e^{2πi/3}, and e^{-2πi/3}, all of which are distinct."
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A is diagonalizable.",
+            "deduced-from": [
+              {
+                "result": "The minimal polynomial of A must also have distinct roots."
+              },
+              {
+                "result": "A square matrix is diagonalizable if and only if its minimal polynomial is a product of distinct linear factors."
+              }
+            ],
+            "justification": "By the criterion for a matrix to be diagonalizable."
+          }
+        ]
+      }
+    ]
+  ],
+  "raw_structured_texts": [
+    "Here's the proof translated into the `ProofJSON` format:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"diagonalizable_matrix_theorem\",\n    \"statement\": \"Let $A$ be a square matrix such that $A^3 = I$. Then $A$ is diagonalizable.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"$A$\",\n        \"value\": \"a square matrix such that $A^3 = I$\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$A$ is annihilated by the polynomial $p(x) = x^3 - 1$\",\n        \"deduced-from\": [\"$A^3 = I$\"]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"This polynomial can be factorized as $p(x) = (x - 1)(x - \\omega)(x - \\omega^2)$, where $\\omega$ is a primitive third root of unity (i.e., $\\omega = e^{2 \\pi i/3}$).\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The factors $(x - \\omega)$ and $(x - \\omega^2)$ combine to form the quadratic $x^2 + x + 1$, which has no roots in common with the factor $x - 1$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The roots of the minimal polynomial of $A$ are distinct.\",\n        \"deduced-from\": [\"polynomial factorization\"]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"It is a known result that a matrix is diagonalizable if and only if its minimal polynomial has no repeated roots.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$A$ is diagonalizable.\",\n        \"deduced-from\": [\"The roots of the minimal polynomial of $A$ are distinct.\", \"a matrix is diagonalizable if and only if its minimal polynomial has no repeated roots\"],\n        \"justification\": \"Since the roots of the minimal polynomial of A are distinct and a matrix is diagonalizable if and only if its minimal polynomial has no repeated roots, we conclude that A is diagonalizable.\"\n      }\n    ]\n  }\n]\n```",
+    "Here is the proof in the `ProofJSON` format.\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"A is Diagonalizable\",\n    \"statement\": \"Let A be a square matrix such that A³ = I. Then A is diagonalizable.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A is a square matrix such that A³ = I.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"p(x)\",\n        \"value\": \"x³ - 1\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"A is annihilated by the polynomial p(x).\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"p(x) can be factorized as (x - 1)(x - ω)(x - ω²), where ω is a primitive third root of unity (i.e., ω = e^(2πi / 3)).\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The factors (x - ω) and (x - ω²) combine to form the quadratic x² + x + 1, which has no roots in common with the factor x - 1.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The roots of the minimal polynomial of A are distinct.\",\n        \"deduced-from\": [\"The factors (x - ω) and (x - ω²) combine to form the quadratic x² + x + 1, which has no roots in common with the factor x - 1.\"]\n      },\n      {\n        \"type\": \"theorem\",\n        \"name\": \"Diagonalizability Criterion\",\n        \"statement\": \"A matrix is diagonalizable if and only if its minimal polynomial has no repeated roots.\",\n        \"status\": \"recalled\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is diagonalizable.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"Diagonalizability Criterion\",\n            \"applied-to\": \"A\"\n          },\n          \"The roots of the minimal polynomial of A are distinct.\"\n        ]\n      }\n    ]\n  }\n]\n```",
+    "Here is the `ProofJSON` representation for the given proofs:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"If A^3 = I for a square matrix A, then the minimal polynomial of A divides x^3 - 1 = (x-1)(x^2+x+1).\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A^3 - I = 0\",\n        \"deduced-from\": [\n          \"A^3 = I\"\n        ],\n        \"justification\": \"The given condition can be reformulated.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"(A-I)(A^2+A+I) = 0\",\n        \"deduced-from\": [\n          \"A^3 - I = 0\"\n        ],\n        \"justification\": \"This is a polynomial equation in A of degree 3.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The minimal polynomial of A must divide x^3 - 1\",\n        \"deduced-from\": [\n          \"(A-I)(A^2+A+I) = 0\"\n        ],\n        \"justification\": \"The minimal polynomial of A is the monic polynomial of least degree that annihilates A.\"\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 2\",\n    \"statement\": \"The polynomial x^3 - 1 = 0 has three distinct roots in C.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The roots are 1, e^(2pi i/3), and e^(4pi i/3)\",\n        \"deduced-from\": [\n          \"x^3 - 1 = 0\"\n        ],\n        \"justification\": \"The cubic equation x^3 - 1 = 0 has roots given by the cube roots of unity.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"These roots are three distinct numbers in C.\"\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 3\",\n    \"statement\": \"If the minimal polynomial of a square matrix has no multiple roots, the matrix is diagonalizable.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The minimal polynomial of A has distinct roots.\",\n        \"deduced-from\": [\n          \"Theorem 1\",\n          \"Theorem 2\"\n        ],\n        \"justification\": \"Since by Theorem 1 the minimal polynomial of A divides a polynomial with distinct roots, it must also have distinct roots.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is diagonalizable.\",\n        \"deduced-from\": [\n          \"The minimal polynomial of A has distinct roots.\"\n        ],\n        \"justification\": \"According to the Spectral Theorem, a matrix is diagonalizable if and only if its minimal polynomial factors into distinct linear factors over the field.\"\n      }\n    ]\n  }\n]\n```",
+    "The given theorems and their respective proofs can be represented in the ProofJSON format as follows:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"If $A^3 = I$ for a square matrix $A$, then the minimal polynomial of $A$ divides $x^3 - 1 = (x-1)(x^2+x+1)$\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"A\",\n        \"value\": \"A square matrix such that $A^3 = I$\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"We can reformulate $A^3 = I$ as $A^3 - I = 0$, or $(A-I)(A^2+A+I)=0$\",\n        \"justification\": \"Basic algebra\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"This is a polynomial equation in $A$ of degree 3\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The minimal polynomial of $A$, which is the monic polynomial of least degree that annihilates $A$, must divide $x^3 - 1$\",\n        \"justification\": \"Definition of minimal polynomial\"\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 2\",\n    \"statement\": \"The polynomial $x^3 - 1 = 0$ has three distinct roots in $\\\\mathbb{C}$\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The cubic equation $x^3 - 1 = 0$ has roots given by the cube roots of unity\",\n        \"justification\": \"Fundamental theorem of algebra\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"These roots are 1, $e^{2\\\\pi i/3}$, and $e^{4\\\\pi i/3}$, which are three distinct numbers in $\\\\mathbb{C}$\",\n        \"justification\": \"Properties of complex numbers and cube roots of unity\"\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 3\",\n    \"statement\": \"If the minimal polynomial of a square matrix has no multiple roots, the matrix is diagonalizable\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"A\",\n        \"value\": \"A square matrix such that its minimal polynomial has no multiple roots\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"According to the Spectral Theorem, a matrix is diagonalizable if and only if its minimal polynomial factors into distinct linear factors over the field\",\n        \"justification\": \"Spectral Theorem\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Since by Theorem 1 the minimal polynomial of $A$ divides a polynomial with distinct roots, it must also have distinct roots\",\n        \"deduced-from\": [{\"result\": \"Theorem 1\", \"applied-to\": \"A\"}],\n        \"justification\": \"Polynomial division properties\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$A$ is diagonalizable\",\n        \"justification\": \"According to the Spectral Theorem and the previous assertion\"\n      }\n    ]\n  }\n]\n```\n\nIn the JSON representation, each theorem is represented as a separate object with `type` set to \"theorem\". The statement of the theorem is given in the `statement` field and the status of the theorem (in this case \"proved\") is given in the `status` field. The proof of the theorem is represented in the `proof` field as a list of steps, each represented as an object. The steps can be assertions, observations, or let statements as required. Each step includes a `type` field, and additional fields like `claim`, `justification`, `statement`, `variable`, and `value` as required. The `deduced-from` field is used to indicate the results used in the proof.",
+    "Based on the provided instructions, the proof can be formatted into `ProofJSON` as follows:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"If a square matrix A satisfies A^3 = I, then A is diagonalizable.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A^3 = I\"\n      },\n      {\n        \"type\": \"definition\",\n        \"statement\": \"The polynomial p(x) = x^3 - 1\",\n        \"term\": \"p(x)\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"p(A) = 0\",\n        \"deduced-from\": [\n          \"A^3 = I\",\n          \"p(x) = x^3 - 1\"\n        ],\n        \"justification\": \"p(A) annihilates A\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The roots of p(x) are 1, e^{2pi i/3}, and e^{-2pi i/3}, all of which are distinct.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The minimal polynomial of A must also have distinct roots.\",\n        \"deduced-from\": [\n          \"p(x) = x^3 - 1\",\n          \"The roots of p(x) are 1, e^{2pi i/3}, and e^{-2pi i/3}, all of which are distinct.\"\n        ],\n        \"justification\": \"The minimal polynomial of A must divide p(x).\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is diagonalizable.\",\n        \"deduced-from\": [\n          \"The minimal polynomial of A must also have distinct roots.\"\n        ],\n        \"justification\": \"A square matrix is diagonalizable if and only if its minimal polynomial is a product of distinct linear factors.\"\n      }\n    ]\n  }\n]\n```\nThis JSON object represents the given proof in the `ProofJSON` format. Note that the assumptions, definitions, assertions, and observations are all represented as separate objects within the proof array of the theorem object.",
+    "Here is how the proof can be represented in `ProofJSON` format:\n\n```json\n[\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 1\",\n        \"statement\": \"If a square matrix A satisfies A^3 = I, then A is diagonalizable.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"assumption\",\n                \"statement\": \"A^3 = I\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"The polynomial p(x) = x^3 - 1 annihilates A.\",\n                \"deduced-from\": [\n                    {\n                        \"result\": \"A^3 = I\"\n                    }\n                ],\n                \"justification\": \"By definition of a polynomial that annihilates a matrix\"\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"The minimal polynomial of A must divide p(x).\"\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"The roots of p(x) are 1, e^{2πi/3}, and e^{-2πi/3}, all of which are distinct.\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"The minimal polynomial of A must also have distinct roots.\",\n                \"deduced-from\": [\n                    {\n                        \"result\": \"The minimal polynomial of A must divide p(x).\"\n                    },\n                    {\n                        \"result\": \"The roots of p(x) are 1, e^{2πi/3}, and e^{-2πi/3}, all of which are distinct.\"\n                    }\n                ]\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"A is diagonalizable.\",\n                \"deduced-from\": [\n                    {\n                        \"result\": \"The minimal polynomial of A must also have distinct roots.\"\n                    },\n                    {\n                        \"result\": \"A square matrix is diagonalizable if and only if its minimal polynomial is a product of distinct linear factors.\"\n                    }\n                ],\n                \"justification\": \"By the criterion for a matrix to be diagonalizable.\"\n            }\n        ]\n    }\n]\n```"
   ]
 }
