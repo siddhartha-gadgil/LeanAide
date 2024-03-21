@@ -12,13 +12,15 @@ Each statement is a JSON object with a *type* field and additional fields depend
   * Additional fields: 
     * **statement**: the mathematical observation.
 * **type**: "assertion".
-  * A mathematical statement that can be deduced from the context, easily enough that it need not be stated as a theorem (or lemma).
+  * A mathematical statement that can be deduced from the context, easily enough that it need not be stated as a theorem (or lemma). For example: `as H is a subgroup of Z/10Z, the order of H divides 10`. 
   * Additional fields: 
-    * **claim**: the mathematical claim.
+    * **claim**: the mathematical claim being asserted, not including justifications or what is used. In the above example, `the order of H divides 10`.
     * **deduced-from**: a JSON list of results used to prove the claim, each result either the name of a theorem or a short statement previously proved. 
       * A member of the list can be an object with fields "result" and "applied-to" to specify to what the result is applied.
       * The "applied-to" field can also be an object if we need to specify more than one variable instantiated in the application.
+      * In the above example, the list would contain the statement that `H is a subgroup of Z/10Z` and `Lagrange's theorem`.
     * **justification** (optional):a justification for the claim; this should be a single fairly simple sentence; if a longer justification is needed break the step into smaller steps. This can be omitted if the reduction is a logical consequence of the results in the **deduced-from** list.
+  * Do not use this type for claims that will be proved eventually, instead use the type "theorem", "lemma" or "claim". This type is only for assertions that it is expected the reader can deduce at this point. 
 * **type**: "theorem".
   * The statement of a mathematical theorem, lemma or claim.
   * We either have just a statement, or a proof is either given, or the statement has been proved either earlier or in the literature.
