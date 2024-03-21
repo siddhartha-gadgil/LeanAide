@@ -111,7 +111,13 @@ def extract_json_block(text):
             print("Warning: Found a JSON block, but it is not valid JSON.")
             return json_block
     else:
-        return text
+        try:
+            # Validate the JSON syntax for a more robust check
+            js = json.loads(text)
+            return js
+        except json.JSONDecodeError:
+            # If it's not valid JSON, give a warning.
+            return text
 
 def json_text(js):
     try:
