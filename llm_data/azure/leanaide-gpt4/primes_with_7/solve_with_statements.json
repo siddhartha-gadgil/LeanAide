@@ -1,62 +1,87 @@
 {
   "problem": "Prove that there are infinitely many primes with last digit 7.",
   "solutions": [
-    "## Solution\nAssume for contradiction that there are only finitely many such primes. Let these primes be $p_1,p_2,...,p_n$, and consider the number \n\n$N = 10p_1p_2...p_n - 3$. \n\nThe last digit of $N$ is 7, and $N$ is not divisible by any of the primes $p_1, p_2,...,p_n$ since it leaves a remainder of $-3$ upon division by any of them. Either $N$ is prime, in which case it is a prime ending in 7 not in our list, or it is composite. In the latter case, all of its prime divisors are primes ending in a digit other than 7, contradicting the fact that all integers ending in 7 have a prime divisor ending in 7. \n\nThis contradiction implies there must be infinitely many primes ending in 7.",
-    "Suppose that there are finitely many primes which end in 7, say $p_1, p_2, ..., p_n$. Let's construct a number $N = 10\\cdot(p_1 p_2\\cdots p_n) - 3$. Notice that the last digit of $N$ is 7.\n\nIf $N$ is prime, we have found a new prime that ends with 7. \n\nIf $N$ is not prime, then it has a prime divisor $p$. Notice that $p$ cannot end with 2, 5, or 0, since $N$ is odd and not divisible by 5. Therefore, $p$ must end with either 3, 7, or 9. But $p$ cannot end with 3 or 9, because this would imply that $N$ ends with 3 or 9 due to the divisibility rule for 3 and 9. So, $p$ must end with 7.\n\nHowever, notice that $p$ cannot be among $p_1, p_2, ..., p_n$. Indeed, for any $i$, we have $N \\equiv -3 \\mod p_i$, but $N \\equiv 7 \\mod p_i$ (since $N$ ends with 7), which is a contradiction. \n\nTherefore, $p$ is a new prime that ends with 7, not among $p_1, p_2, ..., p_n$. \n\nIn either case, we have found a new prime that ends with 7, contradicting our assumption that there are only finitely many such primes. Therefore, there must be infinitely many primes which end in 7.",
-    "Solution:\n\nAssume for contradiction that there are only finitely many such primes, say $p_1, p_2, \\ldots, p_n$, where each $p_i$ ends in 7. We construct a number N as follows:\n\nN = $p_1p_2...p_n$ * 10 + 7\n\nNote that N is a natural number which ends in 7. We have two cases to consider:\n\n1) N is prime: In this case, N is a prime that ends in 7 and is not among the primes $p_1, p_2, \\ldots, p_n$, which contradicts our assumption.\n\n2) N is not prime: If N is not a prime, then it must have a prime divisor q that ends in 7 (since any prime greater than 5 must end in 1, 3, 7, or 9 and the last digit of N is 7). This prime q cannot be among $p_1, p_2, ..., p_n$, because q divides N and leaves a remainder of 7 when divided into N, but q divides $p_1p_2...p_n$ exactly. Hence, q is a prime that ends in 7 which is not among the primes $p_1, p_2, ..., p_n$, contradicting our assumption.\n\nIn either case, we get a contradiction. Hence, our assumption was wrong, and there must be infinitely many primes that end in 7."
+    "By contradiction, suppose that there are only finitely many primes that end with the digit 7, and label them as $p_1, p_2, \\ldots, p_n$. Construct a new number $P = (10*p_1*p_2*\\ldots*p_n) - 3$.\n\nNotice that $P$ ends with the digit 7, because $10*p_1*p_2*\\ldots*p_n$ will end with a 0 and subtracting 3 changes the last digit to 7.\n\nIf $P$ is a prime number, we found a new prime number ending with 7 which contradicts our assumption that $p_1, p_2, \\ldots, p_n$ were the only such primes. \n\nIf $P$ is not a prime number, then it must be divisible by some prime number. However, $P$ cannot be divisible by any of the primes $p_1, p_2, \\ldots, p_n$, because it would leave a remainder of 3 when divided by any of these primes. Thus, it must be divisible by a prime number that ends with 7 and is not in our original list, contradicting our assumption that $p_1, p_2, \\ldots, p_n$ were the only primes ending with 7.\n\nThus, there are infinitely many primes ending with 7.",
+    "Assume the contrary, that there are only finitely many primes with the last digit 7, say p1, p2, ..., pn. \n\nLet P=10*(p1*p2*...*pn) + 7. \n\nP ends in 7.\n\nIf P is prime, then P is a prime ending in 7, not in our list, contradiction.\n\nIf P is not prime, then all of its prime divisors end in 1, 3, 7, or 9. It can't be divided by any prime ending in 1, 3, or 9 as it leaves a remainder of 7 when divided by 10. It can't be divided by any prime ending in 7, as it leaves a remainder of 7 when divided by any of p1, p2, ..., pn. So P must be prime, contradiction.\n\nSo there are infinitely many primes with last digit 7.",
+    "Suppose that there are finitely many primes ending in 7, say $p_1, p_2, ..., p_k$. Construct a number $N$ by multiplying these primes and subtracting 10: $N = p_1 * p_2 * ... * p_k - 10$. This number $N$ ends in 7. \n\nNow, $N$ is not divisible by any of $p_1, p_2, ..., p_k$ because it leaves a remainder of 10 when divided by any of these primes. Therefore, if $N$ is not prime, any prime divisor of $N$ must end in 7 and be different from $p_1, p_2, ..., p_k$. \n\nSo in either case (if $N$ is prime or not), there is a prime number that ends in 7 and is not in the original list. This contradiction shows that there must be infinitely many primes ending in 7."
   ],
   "theories": [
-    "**Theorem:**\nThere are infinitely many primes with last digit 7.\n\n**Proof:**\nAssume to the contrary that there exist only finitely many such primes. Denote these primes as $p_1,p_2,...,p_n$.\n\nConsider the number $N = 10p_1p_2...p_n - 3$. Notably, $N$ ends in 7 and is not divisible by any of the primes $p_1, p_2,...,p_n$ as it would leave a remainder of $-3$ upon division by any of them.\n\nNow, $N$ is either a prime number or a composite number. \n\n1. If $N$ is prime, then $N$ becomes a prime number ending in 7 that does not belong to our initial list of primes $p_1, p_2,...,p_n$, presenting a contradiction.\n\n2. If $N$ is composite, then all of its prime divisors end in a digit other than 7. This contradicts the fact that every integer ending in 7 has a prime factor that ends in 7.\n\nTherefore, in either case, a contradiction arises. Hence, the assumption that there are only finitely many primes ending in 7 is false, establishing that there are infinitely many such primes. QED.",
-    "Theorem: There are infinitely many primes with a last digit of 7.\n\nProof: Assume to the contrary that there are only finitely many such primes, say $p_1, p_2, ..., p_n$. Construct a number $N = 10\\cdot(p_1 p_2\\cdots p_n) - 3$. The last digit of $N$ is 7.\n\nCase 1: If $N$ is prime, we have a contradiction because $N$ is a new prime with the last digit 7.\n\nCase 2: If $N$ is composite, then it has a prime divisor $p$. $N$ being odd and not divisible by 5 means $p$ cannot end with 2, 5, or 0. Therefore, $p$ must end with either 3, 7, or 9. But $p$ cannot end with 3 or 9, because this would imply $N$ ends with 3 or 9, which contradicts our construction of $N$, so $p$ must end with 7. \n\nNote also that $p$ can't be any of $p_1, p_2, ..., p_n$ because for any $i$, $N \\equiv -3 \\mod p_i$, but also $N \\equiv 7 \\mod p_i$, a contradiction. Hence, $p$ is a new prime that ends with 7, which contradicts our assumption that there were only $n$ such primes.\n\nIn both cases, we arrive at a contradiction, which concludes the proof.",
-    "**Theorem:** There are infinitely many prime numbers that end in the digit 7.\n\n**Proof:** Assume towards contradiction that there are only finitely many primes ending in 7, and enumerate them as $p_1, p_2, \\ldots, p_n$. Construct a new number $N = p_1p_2...p_n \\cdot 10 + 7$; clearly, $N$ ends in 7.\n\nIf $N$ is prime, it contradicts our assumption since it is not in the list $p_1, p_2, \\ldots, p_n$.\n\nIf $N$ is composite, it must have a prime divisor that ends in 7 (as $N$ ends in 7 and any prime greater than 5 ends in 1, 3, 7, or 9). This prime, say $q$, is not among the primes $p_1, p_2, \\ldots, p_n$ since $q$ divides $N$ and leaves a remainder of 7, but $q$ divides $p_1p_2...p_n$ exactly. This again contradicts our assumption.\n\nTherefore, in both cases, we have derived a contradiction, and hence, our original assumption is incorrect. Therefore, there exist infinitely many primes that end in 7."
+    "{\n  \"Theorem_1\": {\n    \"Statement\": \"There are infinitely many primes with last digit 7.\",\n    \"Proof\": \"Assume for contradiction that there are only finitely many primes ending with the digit 7, denoted as p1, p2, ..., pn. Construct a new number P = 10*p1*p2*...*pn - 3, which also ends with the digit 7. If P is prime, this contradicts our initial assumption. If P is not prime, it must be divisible by some prime number. However, P leaves a remainder of 3 when divided by any of p1, p2, ..., pn, so it must be divisible by a prime not in our original list and ending with 7, again contradicting our initial assumption. Therefore, there must be infinitely many primes ending with 7.\"\n  }\n}",
+    "{\n\"Theorem 1\": \"There are infinitely many prime numbers with the last digit 7.\",\n\"Proof 1\": \"Assume for contradiction that there are only finitely many primes with the last digit 7, denoted as p1, p2, ..., pn. Construct a number P such that P equals 10 times the product of these primes plus 7. The number P also ends in 7. If P is prime, it contradicts the assumption as it is not in our list. If P is not prime, it cannot be divided by any prime ending in 1, 3, or 9 because P leaves a remainder of 7 when divided by 10. Moreover, it cannot be divided by any prime ending in 7 because it leaves a remainder of 7 when divided by any of the primes p1, p2, ..., pn. Thus, P must be prime, which contradicts the assumption again. Therefore, there are infinitely many primes with the last digit 7.\"\n}",
+    "## Theorem\nThere are infinitely many prime numbers that end in the digit 7.\n\n## Proof\nAssume for contradiction that there are finitely many such primes. Let these primes be denoted by $p_1, p_2, ..., p_k$. Define a number $N = p_1 * p_2 * ... * p_k - 10$. By construction, $N$ ends in the digit 7.\n\n$N$ is not divisible by any of $p_1, p_2, ..., p_k$ because it leaves a remainder of 10 when divided by any of these primes. Thus, if $N$ is not a prime number, it must have a prime divisor that ends in 7 and is different from $p_1, p_2, ..., p_k$. \n\nTherefore, whether $N$ is prime or not, there exists a prime number that ends in 7 and is not in our original list. This contradicts our assumption that there were only finitely many such primes. Therefore, there must be infinitely many prime numbers that end in the digit 7."
   ],
   "structured_texts": [
     [
       {
         "type": "theorem",
-        "name": "Infinitely many primes end in 7",
+        "name": "Theorem_1",
         "statement": "There are infinitely many primes with last digit 7.",
         "status": "proved",
         "proof": [
           {
             "type": "assumption",
-            "statement": "Assume to the contrary that there exist only finitely many primes ending in 7."
+            "statement": "Assume for contradiction that there are only finitely many primes ending with the digit 7, denoted as p1, p2, ..., pn."
           },
           {
             "type": "let",
-            "variable": "p_i",
-            "value": "These primes are denoted as $p_1,p_2,...,p_n$."
-          },
-          {
-            "type": "let",
-            "variable": "N",
-            "value": "Consider the number $N = 10p_1p_2...p_n - 3$."
-          },
-          {
-            "type": "observation",
-            "statement": "$N$ ends in 7 and is not divisible by any of the primes $p_1, p_2,...,p_n$ as it would leave a remainder of $-3$ upon division by any of them."
+            "variable": "P",
+            "value": "10*p1*p2*...*pn - 3",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "P is a well-defined integer which ends with the digit 7."
+              }
+            ]
           },
           {
             "type": "split_by",
-            "term": "$N$",
+            "term": "P",
             "cases": [
               {
-                "case": "$N$ is prime",
+                "case": "P is prime",
                 "content": [
                   {
                     "type": "assertion",
-                    "claim": "$N$ becomes a prime number ending in 7 that does not belong to our initial list of primes $p_1, p_2,...,p_n$.",
-                    "justification": "This presents a contradiction."
+                    "claim": "This contradicts our initial assumption.",
+                    "deduced-from": [
+                      "Our initial assumption"
+                    ]
                   }
                 ]
               },
               {
-                "case": "$N$ is composite",
+                "case": "P is not prime",
                 "content": [
                   {
                     "type": "assertion",
-                    "claim": "All of its prime divisors end in a digit other than 7.",
-                    "justification": "This contradicts the fact that every integer ending in 7 has a prime factor that ends in 7."
+                    "claim": "P must be divisible by some prime number.",
+                    "deduced-from": [
+                      "The definition of a composite number"
+                    ]
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "P leaves a remainder of 3 when divided by any of p1, p2, ..., pn",
+                    "deduced-from": [
+                      "The definition of P",
+                      "The division algorithm"
+                    ]
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "P must be divisible by a prime not in our original list and ending with 7",
+                    "deduced-from": [
+                      "The claim that P must be divisible by some prime number",
+                      "The claim that P leaves a remainder of 3 when divided by any of p1, p2, ..., pn"
+                    ],
+                    "justification": "By the process of elimination, this prime must end with 7."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "This contradicts our initial assumption.",
+                    "deduced-from": [
+                      "Our initial assumption"
+                    ]
                   }
                 ]
               }
@@ -64,12 +89,216 @@
           },
           {
             "type": "assertion",
-            "claim": "The assumption that there are only finitely many primes ending in 7 is false.",
-            "justification": "Therefore, in either case, a contradiction arises."
+            "claim": "There must be infinitely many primes ending with 7.",
+            "justification": "This is the result of the contradiction."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem_1",
+        "statement": "There are infinitely many primes with last digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for contradiction that there are only finitely many primes ending with the digit 7, denoted as p1, p2, ..., pn."
+          },
+          {
+            "type": "let",
+            "variable": "P",
+            "value": "10*p1*p2*...*pn - 3",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "P is a well-defined number that ends with the digit 7."
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "If P is prime, this contradicts our initial assumption.",
+            "deduced-from": [
+              "P is prime"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "If P is not prime, it must be divisible by some prime number.",
+            "deduced-from": [
+              "Fundamental theorem of arithmetic"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "P leaves a remainder of 3 when divided by any of p1, p2, ..., pn.",
+            "deduced-from": [
+              "Definition of P"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "P must be divisible by a prime not in our original list and ending with 7, again contradicting our initial assumption.",
+            "deduced-from": [
+              "P is divisible by some prime number",
+              "P leaves a remainder of 3 when divided by any of p1, p2, ..., pn."
+            ]
           },
           {
             "type": "observation",
-            "statement": "Hence, there are infinitely many primes ending in 7."
+            "statement": "Therefore, there must be infinitely many primes ending with 7."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "There are infinitely many prime numbers with the last digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "There are only finitely many primes with the last digit 7, denoted as p1, p2, ..., pn."
+          },
+          {
+            "type": "let",
+            "variable": "P",
+            "value": "10 times the product of p1, p2, ..., pn plus 7",
+            "statement": "Construct a number P such that P equals 10 times the product of these primes plus 7. The number P also ends in 7."
+          },
+          {
+            "type": "split_by",
+            "condition": "P is prime",
+            "cases": [
+              {
+                "case": "P is prime",
+                "content": [
+                  {
+                    "type": "assertion",
+                    "claim": "P is not in our list of primes ending in 7",
+                    "justification": "By the construction of P, it is a new prime number different from p1, p2, ..., pn."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "This contradicts the assumption",
+                    "justification": "By the contradiction method, our assumption that there are only finitely many primes with the last digit 7 is incorrect."
+                  }
+                ]
+              },
+              {
+                "case": "P is not prime",
+                "content": [
+                  {
+                    "type": "assertion",
+                    "claim": "P cannot be divided by any prime ending in 1, 3, or 9",
+                    "justification": "Because P leaves a remainder of 7 when divided by 10."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "P cannot be divided by any prime ending in 7",
+                    "justification": "Because it leaves a remainder of 7 when divided by any of the primes p1, p2, ..., pn."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "P must be prime",
+                    "justification": "As P cannot be divided by any other prime numbers, it must be a prime."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "This contradicts the assumption",
+                    "justification": "By the contradiction method, our assumption that there are only finitely many primes with the last digit 7 is incorrect."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "Therefore, there are infinitely many primes with the last digit 7",
+            "justification": "We arrived at a contradiction under the assumption that there are only finitely many primes with the last digit 7, therefore there must be infinitely many such primes."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "There are infinitely many prime numbers with the last digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "There are only finitely many primes with the last digit 7, denoted as p1, p2, ..., pn."
+          },
+          {
+            "type": "let",
+            "variable": "P",
+            "value": "10 times the product of these primes plus 7"
+          },
+          {
+            "type": "observation",
+            "statement": "P ends in 7."
+          },
+          {
+            "type": "split_by",
+            "term": "P",
+            "cases": [
+              {
+                "case": "P is prime",
+                "content": [
+                  {
+                    "type": "assertion",
+                    "claim": "P is not in our list of primes ending in 7",
+                    "deduced-from": [
+                      "Our definition of P"
+                    ],
+                    "justification": "This contradicts our assumption"
+                  }
+                ]
+              },
+              {
+                "case": "P is not prime",
+                "content": [
+                  {
+                    "type": "assertion",
+                    "claim": "P cannot be divided by any prime ending in 1, 3 or 9",
+                    "deduced-from": [
+                      "P leaves a remainder of 7 when divided by 10"
+                    ],
+                    "justification": "This is because the remainder when dividing P by 10 is 7"
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "P cannot be divided by any prime ending in 7",
+                    "deduced-from": [
+                      "P leaves a remainder of 7 when divided by any of the primes p1, p2, ..., pn"
+                    ],
+                    "justification": "This is a consequence of the construction of P"
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "P must be prime",
+                    "deduced-from": [
+                      "P cannot be divided by any prime"
+                    ],
+                    "justification": "P cannot be divided by any prime, therefore it must be prime"
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "P contradicts our assumption that there are only finitely many primes with the last digit 7",
+                    "deduced-from": [
+                      "P is prime and not in our list"
+                    ],
+                    "justification": "This conclusion contradicts our initial assumption"
+                  }
+                ]
+              }
+            ]
           }
         ]
       }
@@ -78,125 +307,54 @@
       {
         "type": "theorem",
         "name": "InfinitelyManyPrimesEndIn7",
-        "statement": "There are infinitely many primes with last digit 7.",
+        "statement": "There are infinitely many prime numbers that end in the digit 7.",
         "status": "proved",
         "proof": [
           {
             "type": "assumption",
-            "statement": "There exist only finitely many primes ending in 7, denoted as p1, p2, ..., pn."
+            "statement": "Assume for contradiction that there are finitely many such primes."
+          },
+          {
+            "type": "let",
+            "variable": "p",
+            "value": "These primes be denoted by $p_1, p_2, ..., p_k$."
           },
           {
             "type": "let",
             "variable": "N",
-            "value": "10*p1*p2*...*pn - 3",
-            "existence": [
-              {
-                "type": "observation",
-                "statement": "N ends in 7 and is not divisible by any of the primes p1, p2,...,pn as it would leave a remainder of -3 upon division by any of them."
-              }
-            ]
+            "value": "Define a number $N = p_1 * p_2 * ... * p_k - 10$. By construction, $N$ ends in the digit 7."
           },
           {
-            "type": "split_by",
-            "term": "N",
-            "cases": [
-              {
-                "case": "N is prime",
-                "content": [
-                  {
-                    "type": "assertion",
-                    "claim": "N is a prime number ending in 7 that does not belong to our initial list of primes p1, p2,...,pn",
-                    "deduced-from": [
-                      "N is not divisible by any of the primes p1, p2,...,pn"
-                    ],
-                    "justification": "This contradicts our initial assumption."
-                  }
-                ]
-              },
-              {
-                "case": "N is composite",
-                "content": [
-                  {
-                    "type": "assertion",
-                    "claim": "All of N's prime divisors end in a digit other than 7",
-                    "deduced-from": [
-                      "N is not divisible by any of the primes p1, p2,...,pn"
-                    ],
-                    "justification": "This contradicts the fact that every integer ending in 7 has a prime factor that ends in 7."
-                  }
-                ]
-              }
+            "type": "observation",
+            "statement": "$N$ is not divisible by any of $p_1, p_2, ..., p_k$ because it leaves a remainder of 10 when divided by any of these primes."
+          },
+          {
+            "type": "assertion",
+            "claim": "If $N$ is not a prime number, it must have a prime divisor that ends in 7 and is different from $p_1, p_2, ..., p_k$.",
+            "deduced-from": [
+              "$N$ is not divisible by any of $p_1, p_2, ..., p_k$"
             ]
           },
           {
             "type": "assertion",
-            "claim": "There are infinitely many primes ending in 7",
+            "claim": "Whether $N$ is prime or not, there exists a prime number that ends in 7 and is not in our original list.",
             "deduced-from": [
-              "Contradiction arises in either case"
-            ],
-            "justification": "Hence, the assumption that there are only finitely many primes ending in 7 is false."
-          }
-        ]
-      }
-    ],
-    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Infinitely many primes end with 7\",\n    \"statement\": \"There are infinitely many primes with a last digit of 7.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume to the contrary that there are only finitely many such primes, say $p_1, p_2, ..., p_n$.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"N\",\n        \"value\": \"Construct a number $N = 10\\cdot(p_1 p_2\\cdots p_n) - 3$. The last digit of $N$ is 7.\"\n      },\n      {\n        \"type\": \"split_by\",\n        \"condition\": \"Whether $N$ is prime or composite\",\n        \"cases\": [\n          {\n            \"case\": \"$N$ is prime\",\n            \"content\": [\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"$N$ is a new prime with the last digit 7, contradicting the assumption\",\n                \"deduced-from\": []\n              }\n            ]\n          },\n          {\n            \"case\": \"$N$ is composite\",\n            \"content\": [\n              {\n                \"type\": \"choose\",\n                \"variable\": \"p\",\n                \"property\": \"$N$ has a prime divisor $p$\"\n              },\n              {\n                \"type\": \"observation\",\n                \"statement\": \"$N$ being odd and not divisible by 5 means $p$ cannot end with 2, 5, or 0. Therefore, $p$ must end with either 3, 7, or 9.\"\n              },\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"$p$ ends with 7\",\n                \"deduced-from\": [\n                  {\n                    \"result\": \"$p$ cannot end with 3 or 9 because that would imply $N$ ends with 3 or 9, contradicting our construction of $N$\"\n                  }\n                ]\n              },\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"$p$ is not one of $p_1, p_2, ..., p_n$\",\n                \"deduced-from\": [\n                  {\n                    \"result\": \"For any $i$, $N \\\\equiv -3 \\\\mod p_i$, but also $N \\\\equiv 7 \\\\mod p_i$, a contradiction\"\n                  }\n                ]\n              },\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"$p$ is a new prime that ends with 7, contradicting the assumption\",\n                \"deduced-from\": []\n              }\n            ]\n          }\n        ]\n      }\n    ]\n  }\n]",
-    [
-      {
-        "type": "theorem",
-        "name": "There are infinitely many primes with a last digit of 7",
-        "statement": "There are infinitely many primes with a last digit of 7",
-        "status": "proved",
-        "proof": [
-          {
-            "type": "assumption",
-            "statement": "Assume to the contrary that there are only finitely many such primes, say p_1, p_2, ..., p_n"
-          },
-          {
-            "type": "let",
-            "variable": "N",
-            "value": "10*(p_1*p_2*...*p_n) - 3",
-            "justification": "Construct a number N such that the last digit of N is 7"
-          },
-          {
-            "type": "split_by",
-            "term": "N",
-            "cases": [
-              {
-                "case": "If N is prime",
-                "content": [
-                  {
-                    "type": "observation",
-                    "statement": "We have a contradiction because N is a new prime with the last digit 7"
-                  }
-                ]
-              },
-              {
-                "case": "If N is composite",
-                "content": [
-                  {
-                    "type": "choose",
-                    "variable": "p",
-                    "property": "N has a prime divisor p"
-                  },
-                  {
-                    "type": "observation",
-                    "statement": "N being odd and not divisible by 5 means p cannot end with 2, 5, or 0. Therefore, p must end with either 3, 7, or 9"
-                  },
-                  {
-                    "type": "observation",
-                    "statement": "But p cannot end with 3 or 9, because this would imply N ends with 3 or 9, which contradicts our construction of N, so p must end with 7"
-                  },
-                  {
-                    "type": "observation",
-                    "statement": "p can't be any of p_1, p_2, ..., p_n because for any i, N is congruent to -3 mod p_i, but also N is congruent to 7 mod p_i, a contradiction. Hence, p is a new prime that ends with 7, which contradicts our assumption"
-                  }
-                ]
-              }
+              "If $N$ is not a prime number, it must have a prime divisor that ends in 7 and is different from $p_1, p_2, ..., p_k$."
             ]
           },
           {
-            "type": "observation",
-            "statement": "In both cases, we arrive at a contradiction, which concludes the proof"
+            "type": "assertion",
+            "claim": "This contradicts our assumption that there were only finitely many such primes.",
+            "deduced-from": [
+              "Whether $N$ is prime or not, there exists a prime number that ends in 7 and is not in our original list."
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "Therefore, there must be infinitely many prime numbers that end in the digit 7.",
+            "deduced-from": [
+              "This contradicts our assumption that there were only finitely many such primes."
+            ]
           }
         ]
       }
@@ -210,486 +368,130 @@
         "proof": [
           {
             "type": "assumption",
-            "name": "Finite primes assumption",
-            "statement": "Assume towards contradiction that there are only finitely many primes ending in 7, enumerated as p_1, p_2, ..., p_n."
+            "statement": "Assume for contradiction that there are finitely many primes ending in the digit 7."
+          },
+          {
+            "type": "let",
+            "variable": "p_1, p_2, ..., p_k",
+            "value": "The finitely many primes ending in the digit 7."
           },
           {
             "type": "let",
             "variable": "N",
-            "value": "p_1p_2...p_n * 10 + 7",
-            "observation": "N ends in 7."
-          },
-          {
-            "type": "split_by",
-            "condition": "N is prime or not",
-            "cases": [
-              {
-                "case": "N is prime",
-                "content": [
-                  {
-                    "type": "assertion",
-                    "claim": "N is not in the list p_1, p_2, ..., p_n.",
-                    "deduced-from": [
-                      "Finite primes assumption"
-                    ],
-                    "justification": "By the definition of N, it is not in the list p_1, p_2, ..., p_n."
-                  }
-                ]
-              },
-              {
-                "case": "N is composite",
-                "content": [
-                  {
-                    "type": "observation",
-                    "statement": "N must have a prime divisor that ends in 7 (as N ends in 7 and any prime greater than 5 ends in 1, 3, 7, or 9)."
-                  },
-                  {
-                    "type": "choose",
-                    "variable": "q",
-                    "property": "q is a prime divisor of N that is not among the primes p_1, p_2, ..., p_n",
-                    "existence": [
-                      {
-                        "type": "assertion",
-                        "claim": "q divides N and leaves a remainder of 7, but q divides p_1p_2...p_n exactly.",
-                        "deduced-from": [
-                          "N"
-                        ],
-                        "justification": "By the definition of N and q."
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
+            "value": "p_1 * p_2 * ... * p_k - 10",
+            "observation": "By construction, N ends in the digit 7."
           },
           {
             "type": "assertion",
-            "claim": "The original assumption is incorrect.",
-            "deduced-from": [
-              "Finite primes assumption"
-            ],
-            "justification": "In both cases, we have derived a contradiction."
+            "claim": "N is not divisible by any of p_1, p_2, ..., p_k.",
+            "justification": "N leaves a remainder of 10 when divided by any of these primes."
+          },
+          {
+            "type": "assertion",
+            "claim": "If N is not a prime number, it must have a prime divisor that ends in 7 and is different from p_1, p_2, ..., p_k."
+          },
+          {
+            "type": "assertion",
+            "claim": "Whether N is prime or not, there exists a prime number that ends in 7 and is not in our original list.",
+            "justification": "From the previous assertions."
+          },
+          {
+            "type": "assertion",
+            "claim": "This contradicts our assumption that there were only finitely many such primes."
           },
           {
             "type": "observation",
-            "statement": "Therefore, there exist infinitely many primes that end in 7."
-          }
-        ]
-      }
-    ],
-    [
-      {
-        "type": "theorem",
-        "name": "Infinitely many primes ending in 7",
-        "statement": "There are infinitely many prime numbers that end in the digit 7.",
-        "status": "proved",
-        "proof": [
-          {
-            "type": "assumption",
-            "statement": "There are only finitely many primes ending in 7, denoted as p_1, p_2, ..., p_n."
-          },
-          {
-            "type": "let",
-            "variable": "N",
-            "value": "p_1p_2...p_n * 10 + 7",
-            "existence": [
-              {
-                "type": "observation",
-                "statement": "N is well defined and ends in 7."
-              }
-            ]
-          },
-          {
-            "type": "split_by",
-            "term": "N",
-            "cases": [
-              {
-                "case": "N is prime",
-                "content": [
-                  {
-                    "type": "assertion",
-                    "claim": "N is not in the list p_1, p_2, ..., p_n.",
-                    "justification": "N is constructed from the product of p_1, p_2, ..., p_n and is not in the list."
-                  }
-                ]
-              },
-              {
-                "case": "N is composite",
-                "content": [
-                  {
-                    "type": "assertion",
-                    "claim": "N has a prime divisor q that ends in 7, and q is not in the list p_1, p_2, ..., p_n.",
-                    "justification": "q divides N and leaves a remainder of 7, but q divides p_1p_2...p_n exactly."
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "type": "assertion",
-            "claim": "There exist infinitely many primes that end in 7.",
-            "justification": "In both cases, a contradiction was derived from the initial assumption, therefore the assumption is incorrect."
+            "statement": "Therefore, there must be infinitely many prime numbers that end in the digit 7."
           }
         ]
       }
     ]
   ],
   "raw_structured_texts": [
-    "Here is the `ProofJSON` representation for the given proof:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Infinitely many primes end in 7\",\n    \"statement\": \"There are infinitely many primes with last digit 7.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume to the contrary that there exist only finitely many primes ending in 7.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"p_i\",\n        \"value\": \"These primes are denoted as $p_1,p_2,...,p_n$.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"N\",\n        \"value\": \"Consider the number $N = 10p_1p_2...p_n - 3$.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"$N$ ends in 7 and is not divisible by any of the primes $p_1, p_2,...,p_n$ as it would leave a remainder of $-3$ upon division by any of them.\"\n      },\n      {\n        \"type\": \"split_by\",\n        \"term\": \"$N$\",\n        \"cases\": [\n          {\n            \"case\": \"$N$ is prime\",\n            \"content\": [\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"$N$ becomes a prime number ending in 7 that does not belong to our initial list of primes $p_1, p_2,...,p_n$.\",\n                \"justification\": \"This presents a contradiction.\"\n              }\n            ]\n          },\n          {\n            \"case\": \"$N$ is composite\",\n            \"content\": [\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"All of its prime divisors end in a digit other than 7.\",\n                \"justification\": \"This contradicts the fact that every integer ending in 7 has a prime factor that ends in 7.\"\n              }\n            ]\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The assumption that there are only finitely many primes ending in 7 is false.\",\n        \"justification\": \"Therefore, in either case, a contradiction arises.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Hence, there are infinitely many primes ending in 7.\"\n      }\n    ]\n  }\n]\n```\nPlease note that the `ProofJSON` format is designed to describe a wide variety of mathematical proofs. The specific JSON representation of a proof may vary slightly depending on the exact structure and language of the original proof.",
-    "Here's how you can represent the given proof in the `ProofJSON` format:\n\n```json\n[\n    {\n        \"type\": \"theorem\",\n        \"name\": \"InfinitelyManyPrimesEndIn7\",\n        \"statement\": \"There are infinitely many primes with last digit 7.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"assumption\",\n                \"statement\": \"There exist only finitely many primes ending in 7, denoted as p1, p2, ..., pn.\"\n            },\n            {\n                \"type\": \"let\",\n                \"variable\": \"N\",\n                \"value\": \"10*p1*p2*...*pn - 3\",\n                \"existence\": [\n                    {\n                        \"type\": \"observation\",\n                        \"statement\": \"N ends in 7 and is not divisible by any of the primes p1, p2,...,pn as it would leave a remainder of -3 upon division by any of them.\"\n                    }\n                ]\n            },\n            {\n                \"type\": \"split_by\",\n                \"term\": \"N\",\n                \"cases\": [\n                    {\n                        \"case\": \"N is prime\",\n                        \"content\": [\n                            {\n                                \"type\": \"assertion\",\n                                \"claim\": \"N is a prime number ending in 7 that does not belong to our initial list of primes p1, p2,...,pn\",\n                                \"deduced-from\": [\"N is not divisible by any of the primes p1, p2,...,pn\"],\n                                \"justification\": \"This contradicts our initial assumption.\"\n                            }\n                        ]\n                    },\n                    {\n                        \"case\": \"N is composite\",\n                        \"content\": [\n                            {\n                                \"type\": \"assertion\",\n                                \"claim\": \"All of N's prime divisors end in a digit other than 7\",\n                                \"deduced-from\": [\"N is not divisible by any of the primes p1, p2,...,pn\"],\n                                \"justification\": \"This contradicts the fact that every integer ending in 7 has a prime factor that ends in 7.\"\n                            }\n                        ]\n                    }\n                ]\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"There are infinitely many primes ending in 7\",\n                \"deduced-from\": [\"Contradiction arises in either case\"],\n                \"justification\": \"Hence, the assumption that there are only finitely many primes ending in 7 is false.\"\n            }\n        ]\n    }\n]\n```",
-    "Here is the `ProofJSON` representation of the given proof:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Infinitely many primes end with 7\",\n    \"statement\": \"There are infinitely many primes with a last digit of 7.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume to the contrary that there are only finitely many such primes, say $p_1, p_2, ..., p_n$.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"N\",\n        \"value\": \"Construct a number $N = 10\\cdot(p_1 p_2\\cdots p_n) - 3$. The last digit of $N$ is 7.\"\n      },\n      {\n        \"type\": \"split_by\",\n        \"condition\": \"Whether $N$ is prime or composite\",\n        \"cases\": [\n          {\n            \"case\": \"$N$ is prime\",\n            \"content\": [\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"$N$ is a new prime with the last digit 7, contradicting the assumption\",\n                \"deduced-from\": []\n              }\n            ]\n          },\n          {\n            \"case\": \"$N$ is composite\",\n            \"content\": [\n              {\n                \"type\": \"choose\",\n                \"variable\": \"p\",\n                \"property\": \"$N$ has a prime divisor $p$\"\n              },\n              {\n                \"type\": \"observation\",\n                \"statement\": \"$N$ being odd and not divisible by 5 means $p$ cannot end with 2, 5, or 0. Therefore, $p$ must end with either 3, 7, or 9.\"\n              },\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"$p$ ends with 7\",\n                \"deduced-from\": [\n                  {\n                    \"result\": \"$p$ cannot end with 3 or 9 because that would imply $N$ ends with 3 or 9, contradicting our construction of $N$\"\n                  }\n                ]\n              },\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"$p$ is not one of $p_1, p_2, ..., p_n$\",\n                \"deduced-from\": [\n                  {\n                    \"result\": \"For any $i$, $N \\\\equiv -3 \\\\mod p_i$, but also $N \\\\equiv 7 \\\\mod p_i$, a contradiction\"\n                  }\n                ]\n              },\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"$p$ is a new prime that ends with 7, contradicting the assumption\",\n                \"deduced-from\": []\n              }\n            ]\n          }\n        ]\n      }\n    ]\n  }\n]\n```\n\nThis `ProofJSON` represents the given proof, converting the steps of the proof to a structured JSON format. It includes the types of statements (\"theorem\", \"assumption\", \"let\", \"split_by\", \"assertion\", \"observation\", and \"choose\") and the necessary fields for each type.",
-    "The theorem and proof can be translated into the `ProofJSON` format as follows:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"There are infinitely many primes with a last digit of 7\",\n    \"statement\": \"There are infinitely many primes with a last digit of 7\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume to the contrary that there are only finitely many such primes, say p_1, p_2, ..., p_n\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"N\",\n        \"value\": \"10*(p_1*p_2*...*p_n) - 3\",\n        \"justification\": \"Construct a number N such that the last digit of N is 7\"\n      },\n      {\n        \"type\": \"split_by\",\n        \"term\": \"N\",\n        \"cases\": [\n          {\n            \"case\": \"If N is prime\",\n            \"content\": [\n              {\n                \"type\": \"observation\",\n                \"statement\": \"We have a contradiction because N is a new prime with the last digit 7\"\n              }\n            ]\n          },\n          {\n            \"case\": \"If N is composite\",\n            \"content\": [\n              {\n                \"type\": \"choose\",\n                \"variable\": \"p\",\n                \"property\": \"N has a prime divisor p\"\n              },\n              {\n                \"type\": \"observation\",\n                \"statement\": \"N being odd and not divisible by 5 means p cannot end with 2, 5, or 0. Therefore, p must end with either 3, 7, or 9\"\n              },\n              {\n                \"type\": \"observation\",\n                \"statement\": \"But p cannot end with 3 or 9, because this would imply N ends with 3 or 9, which contradicts our construction of N, so p must end with 7\"\n              },\n              {\n                \"type\": \"observation\",\n                \"statement\": \"p can't be any of p_1, p_2, ..., p_n because for any i, N is congruent to -3 mod p_i, but also N is congruent to 7 mod p_i, a contradiction. Hence, p is a new prime that ends with 7, which contradicts our assumption\"\n              }\n            ]\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"In both cases, we arrive at a contradiction, which concludes the proof\"\n      }\n    ]\n  }\n]\n```",
-    "Here is the ProofJSON version of the provided proof:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Infinitely many primes ending in 7\",\n    \"statement\": \"There are infinitely many prime numbers that end in the digit 7.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"name\": \"Finite primes assumption\",\n        \"statement\": \"Assume towards contradiction that there are only finitely many primes ending in 7, enumerated as p_1, p_2, ..., p_n.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"N\",\n        \"value\": \"p_1p_2...p_n * 10 + 7\",\n        \"observation\": \"N ends in 7.\"\n      },\n      {\n        \"type\": \"split_by\",\n        \"condition\": \"N is prime or not\",\n        \"cases\": [\n          {\n            \"case\": \"N is prime\",\n            \"content\": [\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"N is not in the list p_1, p_2, ..., p_n.\",\n                \"deduced-from\": [\"Finite primes assumption\"],\n                \"justification\": \"By the definition of N, it is not in the list p_1, p_2, ..., p_n.\"\n              }\n            ]\n          },\n          {\n            \"case\": \"N is composite\",\n            \"content\": [\n              {\n                \"type\": \"observation\",\n                \"statement\": \"N must have a prime divisor that ends in 7 (as N ends in 7 and any prime greater than 5 ends in 1, 3, 7, or 9).\"\n              },\n              {\n                \"type\": \"choose\",\n                \"variable\": \"q\",\n                \"property\": \"q is a prime divisor of N that is not among the primes p_1, p_2, ..., p_n\",\n                \"existence\": [\n                  {\n                    \"type\": \"assertion\",\n                    \"claim\": \"q divides N and leaves a remainder of 7, but q divides p_1p_2...p_n exactly.\",\n                    \"deduced-from\": [\"N\"],\n                    \"justification\": \"By the definition of N and q.\"\n                  }\n                ]\n              }\n            ]\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The original assumption is incorrect.\",\n        \"deduced-from\": [\"Finite primes assumption\"],\n        \"justification\": \"In both cases, we have derived a contradiction.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Therefore, there exist infinitely many primes that end in 7.\"\n      }\n    ]\n  }\n]\n```",
-    "Here is the ProofJSON for the given proof:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Infinitely many primes ending in 7\",\n    \"statement\": \"There are infinitely many prime numbers that end in the digit 7.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"There are only finitely many primes ending in 7, denoted as p_1, p_2, ..., p_n.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"N\",\n        \"value\": \"p_1p_2...p_n * 10 + 7\",\n        \"existence\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"N is well defined and ends in 7.\"\n          }\n        ]\n      },\n      {\n        \"type\": \"split_by\",\n        \"term\": \"N\",\n        \"cases\": [\n          {\n            \"case\": \"N is prime\",\n            \"content\": [\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"N is not in the list p_1, p_2, ..., p_n.\",\n                \"justification\": \"N is constructed from the product of p_1, p_2, ..., p_n and is not in the list.\"\n              }\n            ]\n          },\n          {\n            \"case\": \"N is composite\",\n            \"content\": [\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"N has a prime divisor q that ends in 7, and q is not in the list p_1, p_2, ..., p_n.\",\n                \"justification\": \"q divides N and leaves a remainder of 7, but q divides p_1p_2...p_n exactly.\"\n              }\n            ]\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"There exist infinitely many primes that end in 7.\",\n        \"justification\": \"In both cases, a contradiction was derived from the initial assumption, therefore the assumption is incorrect.\"\n      }\n    ]\n  }\n]\n```"
+    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem_1\",\n    \"statement\": \"There are infinitely many primes with last digit 7.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume for contradiction that there are only finitely many primes ending with the digit 7, denoted as p1, p2, ..., pn.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"P\",\n        \"value\": \"10*p1*p2*...*pn - 3\",\n        \"existence\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"P is a well-defined integer which ends with the digit 7.\"\n          }\n        ]\n      },\n      {\n        \"type\": \"split_by\",\n        \"term\": \"P\",\n        \"cases\": [\n          {\n            \"case\": \"P is prime\",\n            \"content\": [\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"This contradicts our initial assumption.\",\n                \"deduced-from\": [\n                  \"Our initial assumption\"\n                ]\n              }\n            ]\n          },\n          {\n            \"case\": \"P is not prime\",\n            \"content\": [\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"P must be divisible by some prime number.\",\n                \"deduced-from\": [\n                  \"The definition of a composite number\"\n                ]\n              },\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"P leaves a remainder of 3 when divided by any of p1, p2, ..., pn\",\n                \"deduced-from\": [\n                  \"The definition of P\",\n                  \"The division algorithm\"\n                ]\n              },\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"P must be divisible by a prime not in our original list and ending with 7\",\n                \"deduced-from\": [\n                  \"The claim that P must be divisible by some prime number\",\n                  \"The claim that P leaves a remainder of 3 when divided by any of p1, p2, ..., pn\"\n                ],\n                \"justification\": \"By the process of elimination, this prime must end with 7.\"\n              },\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"This contradicts our initial assumption.\",\n                \"deduced-from\": [\n                  \"Our initial assumption\"\n                ]\n              }\n            ]\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"There must be infinitely many primes ending with 7.\",\n        \"justification\": \"This is the result of the contradiction.\"\n      }\n    ]\n  }\n]",
+    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem_1\",\n    \"statement\": \"There are infinitely many primes with last digit 7.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume for contradiction that there are only finitely many primes ending with the digit 7, denoted as p1, p2, ..., pn.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"P\",\n        \"value\": \"10*p1*p2*...*pn - 3\",\n        \"existence\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"P is a well-defined number that ends with the digit 7.\"\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"If P is prime, this contradicts our initial assumption.\",\n        \"deduced-from\": [\n          \"P is prime\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"If P is not prime, it must be divisible by some prime number.\",\n        \"deduced-from\": [\n          \"Fundamental theorem of arithmetic\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"P leaves a remainder of 3 when divided by any of p1, p2, ..., pn.\",\n        \"deduced-from\": [\n          \"Definition of P\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"P must be divisible by a prime not in our original list and ending with 7, again contradicting our initial assumption.\",\n        \"deduced-from\": [\n          \"P is divisible by some prime number\",\n          \"P leaves a remainder of 3 when divided by any of p1, p2, ..., pn.\"\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Therefore, there must be infinitely many primes ending with 7.\"\n      }\n    ]\n  }\n]",
+    "[\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 1\",\n        \"statement\": \"There are infinitely many prime numbers with the last digit 7.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"assumption\",\n                \"statement\": \"There are only finitely many primes with the last digit 7, denoted as p1, p2, ..., pn.\"\n            },\n            {\n                \"type\": \"let\",\n                \"variable\": \"P\",\n                \"value\": \"10 times the product of p1, p2, ..., pn plus 7\",\n                \"statement\": \"Construct a number P such that P equals 10 times the product of these primes plus 7. The number P also ends in 7.\"\n            },\n            {\n                \"type\": \"split_by\",\n                \"condition\": \"P is prime\",\n                \"cases\": [\n                    {\n                        \"case\": \"P is prime\",\n                        \"content\": [\n                            {\n                                \"type\": \"assertion\",\n                                \"claim\": \"P is not in our list of primes ending in 7\",\n                                \"justification\": \"By the construction of P, it is a new prime number different from p1, p2, ..., pn.\"\n                            },\n                            {\n                                \"type\": \"assertion\",\n                                \"claim\": \"This contradicts the assumption\",\n                                \"justification\": \"By the contradiction method, our assumption that there are only finitely many primes with the last digit 7 is incorrect.\"\n                            }\n                        ]\n                    },\n                    {\n                        \"case\": \"P is not prime\",\n                        \"content\": [\n                            {\n                                \"type\": \"assertion\",\n                                \"claim\": \"P cannot be divided by any prime ending in 1, 3, or 9\",\n                                \"justification\": \"Because P leaves a remainder of 7 when divided by 10.\"\n                            },\n                            {\n                                \"type\": \"assertion\",\n                                \"claim\": \"P cannot be divided by any prime ending in 7\",\n                                \"justification\": \"Because it leaves a remainder of 7 when divided by any of the primes p1, p2, ..., pn.\"\n                            },\n                            {\n                                \"type\": \"assertion\",\n                                \"claim\": \"P must be prime\",\n                                \"justification\": \"As P cannot be divided by any other prime numbers, it must be a prime.\"\n                            },\n                            {\n                                \"type\": \"assertion\",\n                                \"claim\": \"This contradicts the assumption\",\n                                \"justification\": \"By the contradiction method, our assumption that there are only finitely many primes with the last digit 7 is incorrect.\"\n                            }\n                        ]\n                    }\n                ]\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"Therefore, there are infinitely many primes with the last digit 7\",\n                \"justification\": \"We arrived at a contradiction under the assumption that there are only finitely many primes with the last digit 7, therefore there must be infinitely many such primes.\"\n            }\n        ]\n    }\n]",
+    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"There are infinitely many prime numbers with the last digit 7.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"There are only finitely many primes with the last digit 7, denoted as p1, p2, ..., pn.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"P\",\n        \"value\": \"10 times the product of these primes plus 7\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"P ends in 7.\"\n      },\n      {\n        \"type\": \"split_by\",\n        \"term\": \"P\",\n        \"cases\": [\n          {\n            \"case\": \"P is prime\",\n            \"content\": [\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"P is not in our list of primes ending in 7\",\n                \"deduced-from\": [\"Our definition of P\"],\n                \"justification\": \"This contradicts our assumption\"\n              }\n            ]\n          },\n          {\n            \"case\": \"P is not prime\",\n            \"content\": [\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"P cannot be divided by any prime ending in 1, 3 or 9\",\n                \"deduced-from\": [\"P leaves a remainder of 7 when divided by 10\"],\n                \"justification\": \"This is because the remainder when dividing P by 10 is 7\"\n              },\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"P cannot be divided by any prime ending in 7\",\n                \"deduced-from\": [\"P leaves a remainder of 7 when divided by any of the primes p1, p2, ..., pn\"],\n                \"justification\": \"This is a consequence of the construction of P\"\n              },\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"P must be prime\",\n                \"deduced-from\": [\"P cannot be divided by any prime\"],\n                \"justification\": \"P cannot be divided by any prime, therefore it must be prime\"\n              },\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"P contradicts our assumption that there are only finitely many primes with the last digit 7\",\n                \"deduced-from\": [\"P is prime and not in our list\"],\n                \"justification\": \"This conclusion contradicts our initial assumption\"\n              }\n            ]\n          }\n        ]\n      }\n    ]\n  }\n]",
+    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"InfinitelyManyPrimesEndIn7\",\n    \"statement\": \"There are infinitely many prime numbers that end in the digit 7.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume for contradiction that there are finitely many such primes.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"p\",\n        \"value\": \"These primes be denoted by $p_1, p_2, ..., p_k$.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"N\",\n        \"value\": \"Define a number $N = p_1 * p_2 * ... * p_k - 10$. By construction, $N$ ends in the digit 7.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"$N$ is not divisible by any of $p_1, p_2, ..., p_k$ because it leaves a remainder of 10 when divided by any of these primes.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"If $N$ is not a prime number, it must have a prime divisor that ends in 7 and is different from $p_1, p_2, ..., p_k$.\",\n        \"deduced-from\": [\"$N$ is not divisible by any of $p_1, p_2, ..., p_k$\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Whether $N$ is prime or not, there exists a prime number that ends in 7 and is not in our original list.\",\n        \"deduced-from\": [\"If $N$ is not a prime number, it must have a prime divisor that ends in 7 and is different from $p_1, p_2, ..., p_k$.\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"This contradicts our assumption that there were only finitely many such primes.\",\n        \"deduced-from\": [\"Whether $N$ is prime or not, there exists a prime number that ends in 7 and is not in our original list.\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Therefore, there must be infinitely many prime numbers that end in the digit 7.\",\n        \"deduced-from\": [\"This contradicts our assumption that there were only finitely many such primes.\"]\n      }\n    ]\n  }\n]",
+    "[{\n    \"type\": \"theorem\",\n    \"name\": \"Infinitely many primes ending in 7\",\n    \"statement\": \"There are infinitely many prime numbers that end in the digit 7.\",\n    \"status\": \"proved\",\n    \"proof\": [\n        {\n            \"type\": \"assumption\",\n            \"statement\": \"Assume for contradiction that there are finitely many primes ending in the digit 7.\"\n        },\n        {\n            \"type\": \"let\",\n            \"variable\": \"p_1, p_2, ..., p_k\",\n            \"value\": \"The finitely many primes ending in the digit 7.\"\n        },\n        {\n            \"type\": \"let\",\n            \"variable\": \"N\",\n            \"value\": \"p_1 * p_2 * ... * p_k - 10\",\n            \"observation\": \"By construction, N ends in the digit 7.\"\n        },\n        {\n            \"type\": \"assertion\",\n            \"claim\": \"N is not divisible by any of p_1, p_2, ..., p_k.\",\n            \"justification\": \"N leaves a remainder of 10 when divided by any of these primes.\"\n        },\n        {\n            \"type\": \"assertion\",\n            \"claim\": \"If N is not a prime number, it must have a prime divisor that ends in 7 and is different from p_1, p_2, ..., p_k.\"\n        },\n        {\n            \"type\": \"assertion\",\n            \"claim\": \"Whether N is prime or not, there exists a prime number that ends in 7 and is not in our original list.\",\n            \"justification\": \"From the previous assertions.\"\n        },\n        {\n            \"type\": \"assertion\",\n            \"claim\": \"This contradicts our assumption that there were only finitely many such primes.\"\n        },\n        {\n            \"type\": \"observation\",\n            \"statement\": \"Therefore, there must be infinitely many prime numbers that end in the digit 7.\"\n        }\n    ]\n}]"
   ],
   "texts_with_statements": [
     [
       {
         "type": "theorem",
-        "name": "Infinitely many primes end in 7",
+        "name": "Theorem_1",
         "statement": "There are infinitely many primes with last digit 7.",
         "status": "proved",
         "proof": [
           {
             "type": "assumption",
-            "statement": "Assume to the contrary that there exist only finitely many primes ending in 7."
+            "statement": "Assume for contradiction that there are only finitely many primes ending with the digit 7, denoted as p1, p2, ..., pn."
           },
           {
             "type": "let",
-            "variable": "p_i",
-            "value": "These primes are denoted as $p_1,p_2,...,p_n$."
-          },
-          {
-            "type": "let",
-            "variable": "N",
-            "value": "Consider the number $N = 10p_1p_2...p_n - 3$."
-          },
-          {
-            "type": "observation",
-            "statement": "$N$ ends in 7 and is not divisible by any of the primes $p_1, p_2,...,p_n$ as it would leave a remainder of $-3$ upon division by any of them."
-          },
-          {
-            "type": "split_by",
-            "term": "$N$",
-            "cases": [
-              {
-                "case": "$N$ is prime",
-                "content": [
-                  {
-                    "type": "assertion",
-                    "statement": "If the number $N$ is prime, then $N$ becomes a prime number ending in 7 that does not belong to our initial list of primes $p_1, p_2,...,p_n$.",
-                    "claim": "$N$ becomes a prime number ending in 7 that does not belong to our initial list of primes $p_1, p_2,...,p_n$.",
-                    "justification": "This presents a contradiction."
-                  }
-                ]
-              },
-              {
-                "case": "$N$ is composite",
-                "content": [
-                  {
-                    "type": "assertion",
-                    "statement": "If the number $N$ is composite, then all of its prime divisors end in a digit other than 7.",
-                    "claim": "All of its prime divisors end in a digit other than 7.",
-                    "justification": "This contradicts the fact that every integer ending in 7 has a prime factor that ends in 7."
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "type": "assertion",
-            "statement": "Given the list of primes $p_1, p_2,...,p_n$, the assumption that there are only finitely many primes ending in 7 is false.",
-            "claim": "The assumption that there are only finitely many primes ending in 7 is false.",
-            "justification": "Therefore, in either case, a contradiction arises."
-          },
-          {
-            "type": "observation",
-            "statement": "Hence, there are infinitely many primes ending in 7."
-          }
-        ]
-      }
-    ],
-    [
-      {
-        "type": "theorem",
-        "name": "Infinitely many primes end in 7",
-        "statement": "There are infinitely many primes with last digit 7.",
-        "status": "proved",
-        "proof": [
-          {
-            "type": "assumption",
-            "statement": "Assume to the contrary that there exist only finitely many primes ending in 7."
-          },
-          {
-            "type": "let",
-            "variable": "p_i",
-            "value": "These primes are denoted as $p_1,p_2,...,p_n$."
-          },
-          {
-            "type": "let",
-            "variable": "N",
-            "value": "Consider the number $N = 10p_1p_2...p_n - 3$."
-          },
-          {
-            "type": "observation",
-            "statement": "$N$ ends in 7 and is not divisible by any of the primes $p_1, p_2,...,p_n$ as it would leave a remainder of $-3$ upon division by any of them."
-          },
-          {
-            "type": "split_by",
-            "term": "$N$",
-            "cases": [
-              {
-                "case": "$N$ is prime",
-                "content": [
-                  {
-                    "type": "assertion",
-                    "claim": "$N$ becomes a prime number ending in 7 that does not belong to our initial list of primes $p_1, p_2,...,p_n$.",
-                    "justification": "This presents a contradiction.",
-                    "statement": "If $N$ is prime, then it becomes a prime number ending in 7 that does not belong to our initial list of primes $p_1, p_2,...,p_n$."
-                  }
-                ]
-              },
-              {
-                "case": "$N$ is composite",
-                "content": [
-                  {
-                    "type": "assertion",
-                    "claim": "All of its prime divisors end in a digit other than 7.",
-                    "justification": "This contradicts the fact that every integer ending in 7 has a prime factor that ends in 7.",
-                    "statement": "If $N$ is composite, then all of its prime divisors end in a digit other than 7."
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "type": "assertion",
-            "claim": "The assumption that there are only finitely many primes ending in 7 is false.",
-            "justification": "Therefore, in either case, a contradiction arises.",
-            "statement": "Under the assumption that there are only finitely many primes ending in 7, we get a contradiction, hence the assumption is false."
-          },
-          {
-            "type": "observation",
-            "statement": "Hence, there are infinitely many primes ending in 7."
-          }
-        ]
-      }
-    ],
-    {
-      "type": "assertion",
-      "statement": "If N is a number that ends in 7, is not divisible by any of the primes p1, p2,...,pn and N is prime, then there exists a prime number ending in 7 that does not belong to our initial list of primes p1, p2,...,pn",
-      "claim": "N is a prime number ending in 7 that does not belong to our initial list of primes p1, p2,...,pn",
-      "deduced-from": [
-        "N is not divisible by any of the primes p1, p2,...,pn"
-      ],
-      "justification": "This contradicts our initial assumption."
-    },
-    "Here is the updated `ProofJSON`:\n\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"InfinitelyManyPrimesEndIn7\",\n    \"statement\": \"There are infinitely many primes with last digit 7.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"There exist only finitely many primes ending in 7, denoted as p1, p2, ..., pn.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"N\",\n        \"value\": \"10*p1*p2*...*pn - 3\",\n        \"existence\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"N ends in 7 and is not divisible by any of the primes p1, p2,...,pn as it would leave a remainder of -3 upon division by any of them.\"\n          }\n        ]\n      },\n      {\n        \"type\": \"split_by\",\n        \"term\": \"N\",\n        \"cases\": [\n          {\n            \"case\": \"N is prime\",\n            \"content\": [\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"N is a prime number ending in 7 that does not belong to our initial list of primes p1, p2,...,pn\",\n                \"deduced-from\": [\n                  \"N is not divisible by any of the primes p1, p2,...,pn\"\n                ],\n                \"justification\": \"This contradicts our initial assumption.\",\n                \"statement\": \"If N ends in 7 and is not divisible by any of the primes p1, p2,...,pn, thus leaving a remainder of -3 upon division by any of them, then N is a new prime number ending in 7 that does not belong to our initial list of primes p1, p2,...,pn\"\n              }\n            ]\n          },\n          {\n            \"case\": \"N is composite\",\n            \"content\": [\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"All of N's prime divisors end in a digit other than 7\",\n                \"deduced-from\": [\n                  \"N is not divisible by any of the primes p1, p2,...,pn\"\n                ],\n                \"justification\": \"This contradicts the fact that every integer ending in 7 has a prime factor that ends in 7.\",\n                \"statement\": \"If N ends in 7 and is not divisible by any of the primes p1, p2,...,pn, thus leaving a remainder of -3 upon division by any of them, then all of N's prime divisors end in a digit other than 7\"\n              }\n            ]\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"There are infinitely many primes ending in 7\",\n        \"deduced-from\": [\n          \"Contradiction arises in either case\"\n        ],\n        \"justification\": \"Hence, the assumption that there are only finitely many primes ending in 7 is false.\",\n        \"statement\": \"If we assume that there are only finitely many primes ending in 7 and find a contradiction, then there are infinitely many primes ending in 7\"\n      }\n    ]\n  }\n]",
-    "Here is the updated `ProofJSON` with the `statement` field added to each `assertion` object:\n\n\"[\\n  {\\n    \\\"type\\\": \\\"theorem\\\",\\n    \\\"name\\\": \\\"Infinitely many primes end with 7\\\",\\n    \\\"statement\\\": \\\"There are infinitely many primes with a last digit of 7.\\\",\\n    \\\"status\\\": \\\"proved\\\",\\n    \\\"proof\\\": [\\n      {\\n        \\\"type\\\": \\\"assumption\\\",\\n        \\\"statement\\\": \\\"Assume to the contrary that there are only finitely many such primes, say $p_1, p_2, ..., p_n$.\\\"\\n      },\\n      {\\n        \\\"type\\\": \\\"let\\\",\\n        \\\"variable\\\": \\\"N\\\",\\n        \\\"value\\\": \\\"Construct a number $N = 10\\\\cdot(p_1 p_2\\\\cdots p_n) - 3$. The last digit of $N$ is 7.\\\"\\n      },\\n      {\\n        \\\"type\\\": \\\"split_by\\\",\\n        \\\"condition\\\": \\\"Whether $N$ is prime or composite\\\",\\n        \\\"cases\\\": [\\n          {\\n            \\\"case\\\": \\\"$N$ is prime\\\",\\n            \\\"content\\\": [\\n              {\\n                \\\"type\\\": \\\"assertion\\\",\\n                \\\"claim\\\": \\\"$N$ is a new prime with the last digit 7, contradicting the assumption\\\",\\n                \\\"statement\\\": \\\"If $N$ is a new prime with the last digit 7, then this contradicts the assumption that there are only finitely many such primes\\\",\\n                \\\"deduced-from\\\": []\\n              }\\n            ]\\n          },\\n          {\\n            \\\"case\\\": \\\"$N$ is composite\\\",\\n            \\\"content\\\": [\\n              {\\n                \\\"type\\\": \\\"choose\\\",\\n                \\\"variable\\\": \\\"p\\\",\\n                \\\"property\\\": \\\"$N$ has a prime divisor $p$\\\"\\n              },\\n              {\\n                \\\"type\\\": \\\"observation\\\",\\n                \\\"statement\\\": \\\"$N$ being odd and not divisible by 5 means $p$ cannot end with 2, 5, or 0. Therefore, $p$ must end with either 3, 7, or 9.\\\"\\n              },\\n              {\\n                \\\"type\\\": \\\"assertion\\\",\\n                \\\"claim\\\": \\\"$p$ ends with 7\\\",\\n                \\\"statement\\\": \\\"If $N$ is composite and has a prime divisor $p$, and $N$ being odd and not divisible by 5, then $p$ must end with 7\\\",\\n                \\\"deduced-from\\\": [\\n                  {\\n                    \\\"result\\\": \\\"$p$ cannot end with 3 or 9 because that would imply $N$ ends with 3 or 9, contradicting our construction of $N$\\\"\\n                  }\\n                ]\\n              },\\n              {\\n                \\\"type\\\": \\\"assertion\\\",\\n                \\\"claim\\\": \\\"$p$ is not one of $p_1, p_2, ..., p_n$\\\",\\n                \\\"statement\\\": \\\"If $p$ is a prime divisor of $N$ and $p$ ends with 7, then $p$ is not one of $p_1, p_2, ..., p_n$\\\",\\n                \\\"deduced-from\\\": [\\n                  {\\n                    \\\"result\\\": \\\"For any $i$, $N \\\\\\\\equiv -3 \\\\\\\\mod p_i$, but also $N \\\\\\\\equiv 7 \\\\\\\\mod p_i$, a contradiction\\\"\\n                  }\\n                ]\\n              },\\n              {\\n                \\\"type\\\": \\\"assertion\\\",\\n                \\\"claim\\\": \\\"$p$ is a new prime that ends with 7, contradicting the assumption\\\",\\n                \\\"statement\\\": \\\"If $p$ is a prime divisor of $N$, $p$ ends with 7, and $p$ is not one of $p_1, p_2, ..., p_n$, then $p$ is a new prime that ends with 7, contradicting the assumption that there are only finitely many such primes\\\",\\n                \\\"deduced-from\\\": []\\n              }\\n            ]\\n          }\\n        ]\\n      }\\n    ]\\n  }\\n]\"",
-    [
-      {
-        "type": "theorem",
-        "name": "Infinitely many primes end with 7",
-        "statement": "There are infinitely many primes with a last digit of 7.",
-        "status": "proved",
-        "proof": [
-          {
-            "type": "assumption",
-            "statement": "Assume to the contrary that there are only finitely many such primes, say $p_1, p_2, ..., p_n$."
-          },
-          {
-            "type": "let",
-            "variable": "N",
-            "value": "Construct a number $N = 10*(p_1 p_2...p_n) - 3$. The last digit of $N$ is 7."
-          },
-          {
-            "type": "split_by",
-            "condition": "Whether $N$ is prime or composite",
-            "cases": [
-              {
-                "case": "$N$ is prime",
-                "content": [
-                  {
-                    "type": "assertion",
-                    "claim": "$N$ is a new prime with the last digit 7, contradicting the assumption",
-                    "statement": "If N is prime and ends with 7, then we have a contradiction for the assumption that there are only finitely many such primes.",
-                    "deduced-from": []
-                  }
-                ]
-              },
-              {
-                "case": "$N$ is composite",
-                "content": [
-                  {
-                    "type": "choose",
-                    "variable": "p",
-                    "property": "$N$ has a prime divisor $p$"
-                  },
-                  {
-                    "type": "observation",
-                    "statement": "$N$ being odd and not divisible by 5 means $p$ cannot end with 2, 5, or 0. Therefore, $p$ must end with either 3, 7, or 9."
-                  },
-                  {
-                    "type": "assertion",
-                    "claim": "$p$ ends with 7",
-                    "statement": "If N ends with 7 and N has a prime divisor p, then p must end with 7.",
-                    "deduced-from": [
-                      {
-                        "result": "$p$ cannot end with 3 or 9 because that would imply $N$ ends with 3 or 9, contradicting our construction of $N$"
-                      }
-                    ]
-                  },
-                  {
-                    "type": "assertion",
-                    "claim": "$p$ is not one of $p_1, p_2, ..., p_n$",
-                    "statement": "If p ends with 7 and N is congruent to -3 modulo p_i for any i, and N is also congruent to 7 modulo p_i, then p is not one of $p_1, p_2, ..., p_n$.",
-                    "deduced-from": [
-                      {
-                        "result": "For any $i$, $N \\equiv -3 \\mod p_i$, but also $N \\equiv 7 \\mod p_i$, a contradiction"
-                      }
-                    ]
-                  },
-                  {
-                    "type": "assertion",
-                    "claim": "$p$ is a new prime that ends with 7, contradicting the assumption",
-                    "statement": "If p is not one of $p_1, p_2, ..., p_n$ and ends with 7, then p is a new prime that contradicts the assumption.",
-                    "deduced-from": []
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    ],
-    "Your JSON does not contain any objects of type `\"assertion\"`, so there is no object to add the field `\"statement\"`. However, I understand your question and will provide a general example of how an object of type `\"assertion\"` might be modified according to your instructions:\n\nBefore:\n```\n{\n  \"type\": \"assertion\",\n  \"claim\": \"H is a subgroup of Z/10\",\n  \"deduced-from\": [\"the order of Z divides 10\"]\n}\n```\n\nAfter:\n```\n{\n  \"type\": \"assertion\",\n  \"claim\": \"H is a subgroup of Z/10\",\n  \"deduced-from\": [\"the order of Z divides 10\"],\n  \"statement\": \"If the order of Z divides 10, then H is a subgroup of Z/10\"\n}\n```\n\nIn this example, we have added the field `\"statement\"` to the object which combines the `claim` and the `deduced-from` into a single, self-contained statement. Note that this is a simplified example and the creation of the `statement` field may be more complex depending on the nature and number of the `deduced-from` statements.",
-    "The provided JSON body does not contain any object of type \"assertion\". The present objects are of type \"theorem\", \"assumption\", \"let\", \"split_by\", \"observation\", and \"choose\". Therefore, it's not possible to add a \"statement\" field to the objects of type \"assertion\".\n\nPlease provide a valid JSON schema with \"assertion\" objects so we can proceed to add the requested field.",
-    [
-      {
-        "type": "theorem",
-        "name": "Infinitely many primes ending in 7",
-        "statement": "There are infinitely many prime numbers that end in the digit 7.",
-        "status": "proved",
-        "proof": [
-          {
-            "type": "assumption",
-            "name": "Finite primes assumption",
-            "statement": "Assume towards contradiction that there are only finitely many primes ending in 7, enumerated as p_1, p_2, ..., p_n."
-          },
-          {
-            "type": "let",
-            "variable": "N",
-            "value": "p_1p_2...p_n * 10 + 7",
-            "observation": "N ends in 7."
-          },
-          {
-            "type": "split_by",
-            "condition": "N is prime or not",
-            "cases": [
-              {
-                "case": "N is prime",
-                "content": [
-                  {
-                    "type": "assertion",
-                    "claim": "N is not in the list p_1, p_2, ..., p_n.",
-                    "deduced-from": [
-                      "Finite primes assumption"
-                    ],
-                    "justification": "By the definition of N, it is not in the list p_1, p_2, ..., p_n.",
-                    "statement": "Assuming that there are only finitely many primes ending in 7, enumerated as p_1, p_2, ..., p_n, and let N = p_1p_2...p_n * 10 + 7, N is not in the list p_1, p_2, ..., p_n."
-                  }
-                ]
-              },
-              {
-                "case": "N is composite",
-                "content": [
-                  {
-                    "type": "observation",
-                    "statement": "N must have a prime divisor that ends in 7 (as N ends in 7 and any prime greater than 5 ends in 1, 3, 7, or 9)."
-                  },
-                  {
-                    "type": "choose",
-                    "variable": "q",
-                    "property": "q is a prime divisor of N that is not among the primes p_1, p_2, ..., p_n",
-                    "existence": [
-                      {
-                        "type": "assertion",
-                        "claim": "q divides N and leaves a remainder of 7, but q divides p_1p_2...p_n exactly.",
-                        "deduced-from": [
-                          "N"
-                        ],
-                        "justification": "By the definition of N and q.",
-                        "statement": "If N = p_1p_2...p_n * 10 + 7 and q is a prime divisor of N that is not among the primes p_1, p_2, ..., p_n, then q divides N and leaves a remainder of 7, but q divides p_1p_2...p_n exactly."
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "type": "assertion",
-            "claim": "The original assumption is incorrect.",
-            "deduced-from": [
-              "Finite primes assumption"
-            ],
-            "justification": "In both cases, we have derived a contradiction.",
-            "statement": "If we assume that there are only finitely many primes ending in 7, enumerated as p_1, p_2, ..., p_n, and let N = p_1p_2...p_n * 10 + 7, then the original assumption is incorrect."
-          },
-          {
-            "type": "observation",
-            "statement": "Therefore, there exist infinitely many primes that end in 7."
-          }
-        ]
-      }
-    ],
-    "Here are the revised assertion objects with added `statement` fields:\n\n1. \n```JSON\n{\n  \"type\": \"assertion\",\n  \"claim\": \"N is not in the list p_1, p_2, ..., p_n.\",\n  \"statement\": \"Given that there are only finitely many primes ending in 7 (p_1, p_2, ..., p_n) and N is defined as p_1p_2...p_n * 10 + 7, we assert that N is not in the list p_1, p_2, ..., p_n.\",\n  \"deduced-from\": [\n    \"Finite primes assumption\"\n  ],\n  \"justification\": \"By the definition of N, it is not in the list p_1, p_2, ..., p_n.\"\n}\n```\n\n2. \n```JSON\n{\n  \"type\": \"assertion\",\n  \"claim\": \"q divides N and leaves a remainder of 7, but q divides p_1p_2...p_n exactly.\",\n  \"statement\": \"Assuming N is defined as p_1p_2...p_n * 10 + 7 and q is a prime divisor of N that is not among the primes p_1, p_2, ..., p_n, we assert that q divides N and leaves a remainder of 7, but q divides p_1p_2...p_n exactly.\",\n  \"deduced-from\": [\n    \"N\"\n  ],\n  \"justification\": \"By the definition of N and q.\"\n}\n```\n\n3. \n```JSON\n{\n  \"type\": \"assertion\",\n  \"claim\": \"The original assumption is incorrect.\",\n  \"statement\": \"Given there are only finitely many primes ending in 7 (p_1, p_2, ..., p_n) and N is either a prime not in the list or composite with a prime divisor not in the list, we assert that the original assumption is incorrect.\",\n  \"deduced-from\": [\n    \"Finite primes assumption\"\n  ],\n  \"justification\": \"In both cases, we have derived a contradiction.\"\n}\n```",
-    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Infinitely many primes ending in 7\",\n    \"statement\": \"There are infinitely many prime numbers that end in the digit 7.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"There are only finitely many primes ending in 7, denoted as p_1, p_2, ..., p_n.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"N\",\n        \"value\": \"p_1p_2...p_n * 10 + 7\",\n        \"existence\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"N is well defined and ends in 7.\"\n          }\n        ]\n      },\n      {\n        \"type\": \"split_by\",\n        \"term\": \"N\",\n        \"cases\": [\n          {\n            \"case\": \"N is prime\",\n            \"content\": [\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"N is not in the list p_1, p_2, ..., p_n.\",\n                \"statement\": \"If N is prime and N is the product of finitely many primes ending in 7 plus 7, then N is not in the list of these primes.\",\n                \"justification\": \"N is constructed from the product of p_1, p_2, ..., p_n and is not in the list.\"\n              }\n            ]\n          },\n          {\n            \"case\": \"N is composite\",\n            \"content\": [\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"N has a prime divisor q that ends in 7, and q is not in the list p_1, p_2, ..., p_n.\",\n                \"statement\": \"If N is a composite number and N is the product of finitely many primes ending in 7 plus 7, then N has a prime divisor q that ends in 7, and q is not in the list of these primes.\",\n                \"justification\": \"q divides N and leaves a remainder of 7, but q divides p_1p_2...p_n exactly.\"\n              }\n            ]\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"There exist infinitely many primes that end in 7.\",\n        \"statement\": \"If the assumption that there are only finitely many primes ending in 7 leads to a contradiction, then there exist infinitely many primes that end in 7.\",\n        \"justification\": \"In both cases, a contradiction was derived from the initial assumption, therefore the assumption is incorrect.\"\n      }\n    ]\n  }\n]",
-    [
-      {
-        "type": "theorem",
-        "name": "Infinitely many primes ending in 7",
-        "statement": "There are infinitely many prime numbers that end in the digit 7.",
-        "status": "proved",
-        "proof": [
-          {
-            "type": "assumption",
-            "statement": "There are only finitely many primes ending in 7, denoted as p_1, p_2, ..., p_n."
-          },
-          {
-            "type": "let",
-            "variable": "N",
-            "value": "p_1p_2...p_n * 10 + 7",
+            "variable": "P",
+            "value": "10*p1*p2*...*pn - 3",
             "existence": [
               {
                 "type": "observation",
-                "statement": "N is well defined and ends in 7."
+                "statement": "P is a well-defined integer which ends with the digit 7."
               }
             ]
           },
           {
             "type": "split_by",
-            "term": "N",
+            "term": "P",
             "cases": [
               {
-                "case": "N is prime",
+                "case": "P is prime",
                 "content": [
                   {
                     "type": "assertion",
-                    "claim": "N is not in the list p_1, p_2, ..., p_n.",
-                    "justification": "N is constructed from the product of p_1, p_2, ..., p_n and is not in the list.",
-                    "statement": "If N is prime and N is defined as the product of p_1, p_2, ..., p_n times 10 plus 7, then N is not in the list p_1, p_2, ..., p_n."
+                    "claim": "This contradicts our initial assumption.",
+                    "deduced-from": [
+                      "Our initial assumption"
+                    ],
+                    "statement": "If for contradiction there are only finitely many primes ending with the digit 7, and P is a prime number, then this contradicts our initial assumption."
                   }
                 ]
               },
               {
-                "case": "N is composite",
+                "case": "P is not prime",
                 "content": [
                   {
                     "type": "assertion",
-                    "claim": "N has a prime divisor q that ends in 7, and q is not in the list p_1, p_2, ..., p_n.",
-                    "justification": "q divides N and leaves a remainder of 7, but q divides p_1p_2...p_n exactly.",
-                    "statement": "If N is composite and N is defined as the product of p_1, p_2, ..., p_n times 10 plus 7, then N has a prime divisor q that ends in 7, and q is not in the list p_1, p_2, ..., p_n."
+                    "claim": "P must be divisible by some prime number.",
+                    "deduced-from": [
+                      "The definition of a composite number"
+                    ],
+                    "statement": "If P is not prime, then P must be divisible by some prime number."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "P leaves a remainder of 3 when divided by any of p1, p2, ..., pn",
+                    "deduced-from": [
+                      "The definition of P",
+                      "The division algorithm"
+                    ],
+                    "statement": "If P is defined as 10*p1*p2*...*pn - 3, then P leaves a remainder of 3 when divided by any of p1, p2, ..., pn."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "P must be divisible by a prime not in our original list and ending with 7",
+                    "deduced-from": [
+                      "The claim that P must be divisible by some prime number",
+                      "The claim that P leaves a remainder of 3 when divided by any of p1, p2, ..., pn"
+                    ],
+                    "justification": "By the process of elimination, this prime must end with 7.",
+                    "statement": "If P must be divisible by some prime number and P leaves a remainder of 3 when divided by any of p1, p2, ..., pn, then P must be divisible by a prime not in our original list and ending with 7."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "This contradicts our initial assumption.",
+                    "deduced-from": [
+                      "Our initial assumption"
+                    ],
+                    "statement": "If P is divisible by a prime not in our original list and ending with 7, then this contradicts our initial assumption."
                   }
                 ]
               }
@@ -697,9 +499,768 @@
           },
           {
             "type": "assertion",
-            "claim": "There exist infinitely many primes that end in 7.",
-            "justification": "In both cases, a contradiction was derived from the initial assumption, therefore the assumption is incorrect.",
-            "statement": "If there are only finitely many primes ending in 7 and a number N is defined as the product of all these primes times 10 plus 7, then a contradiction arises; therefore there exist infinitely many primes that end in 7."
+            "claim": "There must be infinitely many primes ending with 7.",
+            "justification": "This is the result of the contradiction.",
+            "statement": "If the assumption that there are only finitely many primes ending with the digit 7 leads to a contradiction, then there must be infinitely many primes ending with 7."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem_1",
+        "statement": "There are infinitely many primes with last digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for contradiction that there are only finitely many primes ending with the digit 7, denoted as p1, p2, ..., pn."
+          },
+          {
+            "type": "let",
+            "variable": "P",
+            "value": "10*p1*p2*...*pn - 3",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "P is a well-defined integer which ends with the digit 7."
+              }
+            ]
+          },
+          {
+            "type": "split_by",
+            "term": "P",
+            "cases": [
+              {
+                "case": "P is prime",
+                "content": [
+                  {
+                    "type": "assertion",
+                    "claim": "This contradicts our initial assumption.",
+                    "deduced-from": [
+                      "Our initial assumption"
+                    ],
+                    "statement": "If P is prime, then this contradicts our initial assumption that there are only finitely many primes ending with the digit 7."
+                  }
+                ]
+              },
+              {
+                "case": "P is not prime",
+                "content": [
+                  {
+                    "type": "assertion",
+                    "claim": "P must be divisible by some prime number.",
+                    "deduced-from": [
+                      "The definition of a composite number"
+                    ],
+                    "statement": "If P is not prime, then P must be divisible by some prime number."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "P leaves a remainder of 3 when divided by any of p1, p2, ..., pn",
+                    "deduced-from": [
+                      "The definition of P",
+                      "The division algorithm"
+                    ],
+                    "statement": "P leaves a remainder of 3 when divided by any of p1, p2, ..., pn."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "P must be divisible by a prime not in our original list and ending with 7",
+                    "deduced-from": [
+                      "The claim that P must be divisible by some prime number",
+                      "The claim that P leaves a remainder of 3 when divided by any of p1, p2, ..., pn"
+                    ],
+                    "statement": "P must be divisible by a prime not in our original list and ending with 7."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "This contradicts our initial assumption.",
+                    "deduced-from": [
+                      "Our initial assumption"
+                    ],
+                    "statement": "This contradicts our initial assumption that there are only finitely many primes ending with the digit 7."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "There must be infinitely many primes ending with 7.",
+            "justification": "This is the result of the contradiction.",
+            "statement": "There must be infinitely many primes ending with 7, as a result of the contradiction."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem_1",
+        "statement": "There are infinitely many primes with last digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for contradiction that there are only finitely many primes ending with the digit 7, denoted as p1, p2, ..., pn."
+          },
+          {
+            "type": "let",
+            "variable": "P",
+            "value": "10*p1*p2*...*pn - 3",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "P is a well-defined number that ends with the digit 7."
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "If P is prime, this contradicts our initial assumption.",
+            "deduced-from": [
+              "P is prime"
+            ],
+            "statement": "Assume that there are only finitely many primes ending with 7, denoted as p1, p2, ..., pn and let P be the number calculated as 10*p1*p2*...*pn - 3. If P is prime, this contradicts the initial assumption."
+          },
+          {
+            "type": "assertion",
+            "claim": "If P is not prime, it must be divisible by some prime number.",
+            "deduced-from": [
+              "Fundamental theorem of arithmetic"
+            ],
+            "statement": "If the number P, calculated as 10*p1*p2*...*pn - 3 is not prime, it must be divisible by some prime number, as per the Fundamental theorem of arithmetic."
+          },
+          {
+            "type": "assertion",
+            "claim": "P leaves a remainder of 3 when divided by any of p1, p2, ..., pn.",
+            "deduced-from": [
+              "Definition of P"
+            ],
+            "statement": "The number P, defined as 10*p1*p2*...*pn - 3, leaves a remainder of 3 when divided by any of p1, p2, ..., pn."
+          },
+          {
+            "type": "assertion",
+            "claim": "P must be divisible by a prime not in our original list and ending with 7, again contradicting our initial assumption.",
+            "deduced-from": [
+              "P is divisible by some prime number",
+              "P leaves a remainder of 3 when divided by any of p1, p2, ..., pn."
+            ],
+            "statement": "If the number P, calculated as 10*p1*p2*...*pn - 3, leaves a remainder of 3 when divided by any of p1, p2, ..., pn and is divisible by some prime number, then P must be divisible by a prime not in our original list and ending with 7, contradicting our initial assumption."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, there must be infinitely many primes ending with 7."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem_1",
+        "statement": "There are infinitely many primes with last digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for contradiction that there are only finitely many primes ending with the digit 7, denoted as p1, p2, ..., pn."
+          },
+          {
+            "type": "let",
+            "variable": "P",
+            "value": "10*p1*p2*...*pn - 3",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "P is a well-defined number that ends with the digit 7."
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "If P is prime, this contradicts our initial assumption.",
+            "deduced-from": [
+              "P is prime"
+            ],
+            "statement": "Given P = 10*p1*p2*...*pn - 3, if P is prime, this contradicts our initial assumption that there are only finitely many primes ending with the digit 7."
+          },
+          {
+            "type": "assertion",
+            "claim": "If P is not prime, it must be divisible by some prime number.",
+            "deduced-from": [
+              "Fundamental theorem of arithmetic"
+            ],
+            "statement": "If P = 10*p1*p2*...*pn - 3 is not prime, then by the Fundamental theorem of arithmetic, it must be divisible by some prime number."
+          },
+          {
+            "type": "assertion",
+            "claim": "P leaves a remainder of 3 when divided by any of p1, p2, ..., pn.",
+            "deduced-from": [
+              "Definition of P"
+            ],
+            "statement": "Given P = 10*p1*p2*...*pn - 3, it leaves a remainder of 3 when divided by any of p1, p2, ..., pn."
+          },
+          {
+            "type": "assertion",
+            "claim": "P must be divisible by a prime not in our original list and ending with 7, again contradicting our initial assumption.",
+            "deduced-from": [
+              "P is divisible by some prime number",
+              "P leaves a remainder of 3 when divided by any of p1, p2, ..., pn."
+            ],
+            "statement": "Given P = 10*p1*p2*...*pn - 3, and if P is not prime, then it must be divisible by a prime not in our original list and ending with 7, again contradicting our initial assumption that there are only finitely many primes ending with the digit 7."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, there must be infinitely many primes ending with 7."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "There are infinitely many prime numbers with the last digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "There are only finitely many primes with the last digit 7, denoted as p1, p2, ..., pn."
+          },
+          {
+            "type": "let",
+            "variable": "P",
+            "value": "10 times the product of p1, p2, ..., pn plus 7",
+            "statement": "Construct a number P such that P equals 10 times the product of these primes plus 7. The number P also ends in 7."
+          },
+          {
+            "type": "split_by",
+            "condition": "P is prime",
+            "cases": [
+              {
+                "case": "P is prime",
+                "content": [
+                  {
+                    "type": "assertion",
+                    "claim": "P is not in our list of primes ending in 7",
+                    "justification": "By the construction of P, it is a new prime number different from p1, p2, ..., pn.",
+                    "statement": "If P is a prime number that equals to 10 times the product of a finite list of primes ending in 7 plus 7, then P is not in the list of primes."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "This contradicts the assumption",
+                    "justification": "By the contradiction method, our assumption that there are only finitely many primes with the last digit 7 is incorrect.",
+                    "statement": "If there exists a prime number P that is not in the list of a finite number of primes ending in 7, then this contradicts the assumption that there are only finitely many primes ending in 7."
+                  }
+                ]
+              },
+              {
+                "case": "P is not prime",
+                "content": [
+                  {
+                    "type": "assertion",
+                    "claim": "P cannot be divided by any prime ending in 1, 3, or 9",
+                    "justification": "Because P leaves a remainder of 7 when divided by 10.",
+                    "statement": "If P is a number that equals to 10 times the product of a finite list of primes ending in 7 plus 7 and P is not prime, then P cannot be divided by any prime ending in 1, 3, or 9."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "P cannot be divided by any prime ending in 7",
+                    "justification": "Because it leaves a remainder of 7 when divided by any of the primes p1, p2, ..., pn.",
+                    "statement": "If P is a number that equals to 10 times the product of a finite list of primes ending in 7 plus 7 and P is not prime, then P cannot be divided by any prime ending in 7."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "P must be prime",
+                    "justification": "As P cannot be divided by any other prime numbers, it must be a prime.",
+                    "statement": "If P is a number that equals to 10 times the product of a finite list of primes ending in 7 plus 7 and P cannot be divided by any prime, then P must be a prime."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "This contradicts the assumption",
+                    "justification": "By the contradiction method, our assumption that there are only finitely many primes with the last digit 7 is incorrect.",
+                    "statement": "If P is a prime number that is not in the list of a finite number of primes ending in 7, then this contradicts the assumption that there are only finitely many primes ending in 7."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "Therefore, there are infinitely many primes with the last digit 7",
+            "justification": "We arrived at a contradiction under the assumption that there are only finitely many primes with the last digit 7, therefore there must be infinitely many such primes.",
+            "statement": "If the assumption that there are only finitely many primes with the last digit 7 leads to a contradiction, then there must be infinitely many primes with the last digit 7."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "There are infinitely many prime numbers with the last digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "There are only finitely many primes with the last digit 7, denoted as p1, p2, ..., pn."
+          },
+          {
+            "type": "let",
+            "variable": "P",
+            "value": "10 times the product of p1, p2, ..., pn plus 7",
+            "statement": "Construct a number P such that P equals 10 times the product of these primes plus 7. The number P also ends in 7."
+          },
+          {
+            "type": "split_by",
+            "condition": "P is prime",
+            "cases": [
+              {
+                "case": "P is prime",
+                "content": [
+                  {
+                    "type": "assertion",
+                    "claim": "P is not in our list of primes ending in 7",
+                    "justification": "By the construction of P, it is a new prime number different from p1, p2, ..., pn.",
+                    "statement": "Assuming that there are only finitely many primes with the last digit 7, denoted as p1, p2, ..., pn, and letting P equal 10 times the product of these primes plus 7, P is not in our list of primes ending in 7."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "This contradicts the assumption",
+                    "justification": "By the contradiction method, our assumption that there are only finitely many primes with the last digit 7 is incorrect.",
+                    "statement": "Assuming that there are only finitely many primes with the last digit 7, denoted as p1, p2, ..., pn, and letting P equal 10 times the product of these primes plus 7, this contradicts the assumption."
+                  }
+                ]
+              },
+              {
+                "case": "P is not prime",
+                "content": [
+                  {
+                    "type": "assertion",
+                    "claim": "P cannot be divided by any prime ending in 1, 3, or 9",
+                    "justification": "Because P leaves a remainder of 7 when divided by 10.",
+                    "statement": "Assuming that there are only finitely many primes with the last digit 7, denoted as p1, p2, ..., pn, and letting P equal 10 times the product of these primes plus 7, and assuming P is not prime, P cannot be divided by any prime ending in 1, 3, or 9."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "P cannot be divided by any prime ending in 7",
+                    "justification": "Because it leaves a remainder of 7 when divided by any of the primes p1, p2, ..., pn.",
+                    "statement": "Assuming that there are only finitely many primes with the last digit 7, denoted as p1, p2, ..., pn, and letting P equal 10 times the product of these primes plus 7, and assuming P is not prime, P cannot be divided by any prime ending in 7."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "P must be prime",
+                    "justification": "As P cannot be divided by any other prime numbers, it must be a prime.",
+                    "statement": "Assuming that there are only finitely many primes with the last digit 7, denoted as p1, p2, ..., pn, and letting P equal 10 times the product of these primes plus 7, and assuming P is not prime and P cannot be divided by any prime ending in 1, 3, 7 or 9, P must be prime."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "This contradicts the assumption",
+                    "justification": "By the contradiction method, our assumption that there are only finitely many primes with the last digit 7 is incorrect.",
+                    "statement": "Assuming that there are only finitely many primes with the last digit 7, denoted as p1, p2, ..., pn, and letting P equal 10 times the product of these primes plus 7, and assuming P is not prime and P cannot be divided by any prime ending in 1, 3, 7 or 9, this contradicts the assumption."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "Therefore, there are infinitely many primes with the last digit 7",
+            "justification": "We arrived at a contradiction under the assumption that there are only finitely many primes with the last digit 7, therefore there must be infinitely many such primes.",
+            "statement": "We arrived at a contradiction under the assumption that there are only finitely many primes with the last digit 7, therefore there must be infinitely many such primes."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "There are infinitely many prime numbers with the last digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "There are only finitely many primes with the last digit 7, denoted as p1, p2, ..., pn."
+          },
+          {
+            "type": "let",
+            "variable": "P",
+            "value": "10 times the product of these primes plus 7"
+          },
+          {
+            "type": "observation",
+            "statement": "P ends in 7."
+          },
+          {
+            "type": "split_by",
+            "term": "P",
+            "cases": [
+              {
+                "case": "P is prime",
+                "content": [
+                  {
+                    "type": "assertion",
+                    "claim": "P is not in our list of primes ending in 7",
+                    "deduced-from": [
+                      "Our definition of P"
+                    ],
+                    "justification": "This contradicts our assumption",
+                    "statement": "If P is a prime and is defined as 10 times the product of the primes p1, p2, ..., pn plus 7, then P is not in the list of primes p1, p2, ..., pn."
+                  }
+                ]
+              },
+              {
+                "case": "P is not prime",
+                "content": [
+                  {
+                    "type": "assertion",
+                    "claim": "P cannot be divided by any prime ending in 1, 3 or 9",
+                    "deduced-from": [
+                      "P leaves a remainder of 7 when divided by 10"
+                    ],
+                    "justification": "This is because the remainder when dividing P by 10 is 7",
+                    "statement": "If P is defined as 10 times the product of the primes p1, p2, ..., pn plus 7 and leaves a remainder of 7 when divided by 10, then P cannot be divided by any prime ending in 1, 3 or 9."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "P cannot be divided by any prime ending in 7",
+                    "deduced-from": [
+                      "P leaves a remainder of 7 when divided by any of the primes p1, p2, ..., pn"
+                    ],
+                    "justification": "This is a consequence of the construction of P",
+                    "statement": "If P is defined as 10 times the product of the primes p1, p2, ..., pn plus 7 and leaves a remainder of 7 when divided by any of the primes p1, p2, ..., pn, then P cannot be divided by any prime ending in 7."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "P must be prime",
+                    "deduced-from": [
+                      "P cannot be divided by any prime"
+                    ],
+                    "justification": "P cannot be divided by any prime, therefore it must be prime",
+                    "statement": "If P cannot be divided by any prime, then it must be prime."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "P contradicts our assumption that there are only finitely many primes with the last digit 7",
+                    "deduced-from": [
+                      "P is prime and not in our list"
+                    ],
+                    "justification": "This conclusion contradicts our initial assumption",
+                    "statement": "If P is prime and not in the list of primes p1, p2, ..., pn, then this contradicts our assumption that there are only finitely many primes with the last digit 7."
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "There are infinitely many prime numbers with the last digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "There are only finitely many primes with the last digit 7, denoted as p1, p2, ..., pn."
+          },
+          {
+            "type": "let",
+            "variable": "P",
+            "value": "10 times the product of these primes plus 7"
+          },
+          {
+            "type": "observation",
+            "statement": "P ends in 7."
+          },
+          {
+            "type": "split_by",
+            "term": "P",
+            "cases": [
+              {
+                "case": "P is prime",
+                "content": [
+                  {
+                    "type": "assertion",
+                    "claim": "P is not in our list of primes ending in 7",
+                    "deduced-from": [
+                      "Our definition of P"
+                    ],
+                    "justification": "This contradicts our assumption",
+                    "statement": "If P is defined as 10 times the product of a finite list of primes ending in 7 plus 7, then P is not in that list"
+                  }
+                ]
+              },
+              {
+                "case": "P is not prime",
+                "content": [
+                  {
+                    "type": "assertion",
+                    "claim": "P cannot be divided by any prime ending in 1, 3 or 9",
+                    "deduced-from": [
+                      "P leaves a remainder of 7 when divided by 10"
+                    ],
+                    "justification": "This is because the remainder when dividing P by 10 is 7",
+                    "statement": "If P is defined as 10 times the product of a finite list of primes ending in 7 plus 7, and P leaves a remainder of 7 when divided by 10, then P cannot be divided by any prime ending in 1, 3 or 9"
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "P cannot be divided by any prime ending in 7",
+                    "deduced-from": [
+                      "P leaves a remainder of 7 when divided by any of the primes p1, p2, ..., pn"
+                    ],
+                    "justification": "This is a consequence of the construction of P",
+                    "statement": "If P is defined as 10 times the product of a finite list of primes ending in 7 plus 7, and P leaves a remainder of 7 when divided by any of these primes, then P cannot be divided by any of them"
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "P must be prime",
+                    "deduced-from": [
+                      "P cannot be divided by any prime"
+                    ],
+                    "justification": "P cannot be divided by any prime, therefore it must be prime",
+                    "statement": "If P is defined as 10 times the product of a finite list of primes ending in 7 plus 7, and P cannot be divided by any prime, then P must be prime"
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "P contradicts our assumption that there are only finitely many primes with the last digit 7",
+                    "deduced-from": [
+                      "P is prime and not in our list"
+                    ],
+                    "justification": "This conclusion contradicts our initial assumption",
+                    "statement": "If P is defined as 10 times the product of a finite list of primes ending in 7 plus 7, and P is prime and not in our list, then this contradicts our assumption that there are only finitely many primes with the last digit 7"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "InfinitelyManyPrimesEndIn7",
+        "statement": "There are infinitely many prime numbers that end in the digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for contradiction that there are finitely many such primes."
+          },
+          {
+            "type": "let",
+            "variable": "p",
+            "value": "These primes be denoted by $p_1, p_2, ..., p_k$."
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "Define a number $N = p_1 * p_2 * ... * p_k - 10$. By construction, $N$ ends in the digit 7."
+          },
+          {
+            "type": "observation",
+            "statement": "$N$ is not divisible by any of $p_1, p_2, ..., p_k$ because it leaves a remainder of 10 when divided by any of these primes."
+          },
+          {
+            "type": "assertion",
+            "claim": "If $N$ is not a prime number, it must have a prime divisor that ends in 7 and is different from $p_1, p_2, ..., p_k$.",
+            "deduced-from": [
+              "$N$ is not divisible by any of $p_1, p_2, ..., p_k$"
+            ],
+            "statement": "If $N$ is not divisible by any of the primes $p_1, p_2, ..., p_k$ and $N$ is not a prime number, then $N$ must have a prime divisor that ends in 7 and is different from $p_1, p_2, ..., p_k$."
+          },
+          {
+            "type": "assertion",
+            "claim": "Whether $N$ is prime or not, there exists a prime number that ends in 7 and is not in our original list.",
+            "deduced-from": [
+              "If $N$ is not a prime number, it must have a prime divisor that ends in 7 and is different from $p_1, p_2, ..., p_k$."
+            ],
+            "statement": "Given that if $N$ is not a prime number, it must have a prime divisor that ends in 7 and is different from $p_1, p_2, ..., p_k$, it follows that whether $N$ is prime or not, there exists a prime number that ends in 7 and is not in our original list."
+          },
+          {
+            "type": "assertion",
+            "claim": "This contradicts our assumption that there were only finitely many such primes.",
+            "deduced-from": [
+              "Whether $N$ is prime or not, there exists a prime number that ends in 7 and is not in our original list."
+            ],
+            "statement": "If there exists a prime number that ends in 7 and is not in our original list, whether $N$ is prime or not, this contradicts our assumption that there were only finitely many such primes."
+          },
+          {
+            "type": "assertion",
+            "claim": "Therefore, there must be infinitely many prime numbers that end in the digit 7.",
+            "deduced-from": [
+              "This contradicts our assumption that there were only finitely many such primes."
+            ],
+            "statement": "Given that our assumption that there were only finitely many such primes is contradicted, it follows that there must be infinitely many prime numbers that end in the digit 7."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "InfinitelyManyPrimesEndIn7",
+        "statement": "There are infinitely many prime numbers that end in the digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for contradiction that there are finitely many such primes."
+          },
+          {
+            "type": "let",
+            "variable": "p",
+            "value": "These primes be denoted by $p_1, p_2, ..., p_k$."
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "Define a number $N = p_1 * p_2 * ... * p_k - 10$. By construction, $N$ ends in the digit 7."
+          },
+          {
+            "type": "observation",
+            "statement": "$N$ is not divisible by any of $p_1, p_2, ..., p_k$ because it leaves a remainder of 10 when divided by any of these primes."
+          },
+          {
+            "type": "assertion",
+            "claim": "If $N$ is not a prime number, it must have a prime divisor that ends in 7 and is different from $p_1, p_2, ..., p_k$.",
+            "deduced-from": [
+              "$N$ is not divisible by any of $p_1, p_2, ..., p_k$"
+            ],
+            "statement": "Given the primes $p_1, p_2, ..., p_k$ and a number $N = p_1 * p_2 * ... * p_k - 10$ which is not divisible by any of these primes, if $N$ is not a prime number, it must have a prime divisor that ends in 7 and is different from these primes."
+          },
+          {
+            "type": "assertion",
+            "claim": "Whether $N$ is prime or not, there exists a prime number that ends in 7 and is not in our original list.",
+            "deduced-from": [
+              "If $N$ is not a prime number, it must have a prime divisor that ends in 7 and is different from $p_1, p_2, ..., p_k$."
+            ],
+            "statement": "Given the primes $p_1, p_2, ..., p_k$ and a number $N = p_1 * p_2 * ... * p_k - 10$ which is not divisible by any of these primes, whether $N$ is prime or not, there exists a prime number that ends in 7 and is not in the original list."
+          },
+          {
+            "type": "assertion",
+            "claim": "This contradicts our assumption that there were only finitely many such primes.",
+            "deduced-from": [
+              "Whether $N$ is prime or not, there exists a prime number that ends in 7 and is not in our original list."
+            ],
+            "statement": "Assuming that there are finitely many primes $p_1, p_2, ..., p_k$, and given a number $N = p_1 * p_2 * ... * p_k - 10$ not divisible by any of these primes, the existence of a prime number that ends in 7 and is not in the original list contradicts our assumption."
+          },
+          {
+            "type": "assertion",
+            "claim": "Therefore, there must be infinitely many prime numbers that end in the digit 7.",
+            "deduced-from": [
+              "This contradicts our assumption that there were only finitely many such primes."
+            ],
+            "statement": "Given the contradiction arising from the assumption of finitely many primes ending in 7, there must be infinitely many prime numbers that end in the digit 7."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Infinitely many primes ending in 7",
+        "statement": "There are infinitely many prime numbers that end in the digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for contradiction that there are finitely many primes ending in the digit 7."
+          },
+          {
+            "type": "let",
+            "variable": "p_1, p_2, ..., p_k",
+            "value": "The finitely many primes ending in the digit 7."
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "p_1 * p_2 * ... * p_k - 10",
+            "observation": "By construction, N ends in the digit 7."
+          },
+          {
+            "type": "assertion",
+            "claim": "N is not divisible by any of p_1, p_2, ..., p_k.",
+            "justification": "N leaves a remainder of 10 when divided by any of these primes.",
+            "statement": "If N is the product of the finitely many primes ending in the digit 7 minus 10, then N is not divisible by any of these primes."
+          },
+          {
+            "type": "assertion",
+            "claim": "If N is not a prime number, it must have a prime divisor that ends in 7 and is different from p_1, p_2, ..., p_k.",
+            "statement": "If N, constructed as the product of the finitely many primes ending in the digit 7 minus 10, is not a prime number, it must have a prime divisor that ends in 7 and is different from these primes."
+          },
+          {
+            "type": "assertion",
+            "claim": "Whether N is prime or not, there exists a prime number that ends in 7 and is not in our original list.",
+            "justification": "From the previous assertions.",
+            "statement": "Even if N, constructed as the product of the finitely many primes ending in the digit 7 minus 10, is or isn't a prime number, there exists a prime number that ends in 7 and isn't in our original list."
+          },
+          {
+            "type": "assertion",
+            "claim": "This contradicts our assumption that there were only finitely many such primes.",
+            "statement": "The existence of a prime number that ends in 7 and isn't in our original list contradicts our assumption that there were only finitely many such primes."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, there must be infinitely many prime numbers that end in the digit 7."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Infinitely many primes ending in 7",
+        "statement": "There are infinitely many prime numbers that end in the digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for contradiction that there are finitely many primes ending in the digit 7."
+          },
+          {
+            "type": "let",
+            "variable": "p_1, p_2, ..., p_k",
+            "value": "The finitely many primes ending in the digit 7."
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "p_1 * p_2 * ... * p_k - 10",
+            "observation": "By construction, N ends in the digit 7."
+          },
+          {
+            "type": "assertion",
+            "claim": "N is not divisible by any of p_1, p_2, ..., p_k.",
+            "justification": "N leaves a remainder of 10 when divided by any of these primes.",
+            "statement": "If we let p_1, p_2, ..., p_k be the finitely many primes ending in the digit 7, and let N be p_1 * p_2 * ... * p_k - 10, then N is not divisible by any of p_1, p_2, ..., p_k."
+          },
+          {
+            "type": "assertion",
+            "claim": "If N is not a prime number, it must have a prime divisor that ends in 7 and is different from p_1, p_2, ..., p_k.",
+            "statement": "If we let p_1, p_2, ..., p_k be the finitely many primes ending in the digit 7, and let N be p_1 * p_2 * ... * p_k - 10, then if N is not a prime number, it must have a prime divisor that ends in 7 and is different from p_1, p_2, ..., p_k."
+          },
+          {
+            "type": "assertion",
+            "claim": "Whether N is prime or not, there exists a prime number that ends in 7 and is not in our original list.",
+            "justification": "From the previous assertions.",
+            "statement": "If we let p_1, p_2, ..., p_k be the finitely many primes ending in the digit 7, and let N be p_1 * p_2 * ... * p_k - 10, then whether N is prime or not, there exists a prime number that ends in 7 and is not in our original list."
+          },
+          {
+            "type": "assertion",
+            "claim": "This contradicts our assumption that there were only finitely many such primes.",
+            "statement": "If we assume for contradiction that there are finitely many primes ending in the digit 7, and we let p_1, p_2, ..., p_k be these primes, and let N be p_1 * p_2 * ... * p_k - 10, then this leads to a contradiction, as there must exist a prime number that ends in 7 and is not in our original list."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, there must be infinitely many prime numbers that end in the digit 7."
           }
         ]
       }

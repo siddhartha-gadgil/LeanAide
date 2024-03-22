@@ -1,74 +1,38 @@
 {
   "problem": "Find all $2 \times 2$ matrices with rational entries such that $A^5 = I$, where $I$ is the $2 \times 2$ identity matrix.",
   "solutions": [
-    "The matrices of the desired form are parametrized by \n$$ A = \n\\left[ \n\\begin{array}{cc}\n a & b \\\\\n -b & a \n\\end{array}\n\\right]\n$$\nwhere $a^2 + b^2 = 1$ and $(a, b) \\in \\mathbb{Q}^2$.",
-    "The solution to this problem are the $2 \\times 2$ matrices $A$ of the form\n\n$$A = \\begin{pmatrix} a & b \\\\ -b & a \\end{pmatrix},$$\n\nwhere $a,b \\in \\mathbb{Q}$ and $a^2 + b^2 = 1$. The entries of $A$ can be chosen such that the angles are divisibles of $\\frac{2\\pi}{5}$. This gives the $10$ solutions\n\n$$A = \\begin{pmatrix} \\cos \\frac{2\\pi k}{5} & -\\sin \\frac{2\\pi k}{5} \\\\ \\sin \\frac{2\\pi k}{5} & \\cos \\frac{2\\pi k}{5} \\end{pmatrix},$$\n\nfor $0 \\leq k \\leq 4$, and\n\n$$A = \\begin{pmatrix} \\cos \\frac{2\\pi k}{5} & \\sin \\frac{2\\pi k}{5} \\\\ -\\sin \\frac{2\\pi k}{5} & \\cos \\frac{2\\pi k}{5} \\end{pmatrix},$$\n\nfor $0 \\leq k \\leq 4$. Please note that you have to check that the cosine and sine of these angles are rational, which is true for multiples of $\\frac{2\\pi}{5}$.",
-    "The solution to the problem is the set of all 2×2 matrices of the form\n\n\\[\nA =\n\\begin{{bmatrix}}\n\\cos(2 \\pi k/5) & -\\sin(2 \\pi k/5) \\\\\n\\sin(2 \\pi k/5) & \\cos(2 \\pi k/5) \\\\\n\\end{{bmatrix}}\n\\]\n\nwhere k is an integer such that -5 ≤ k ≤ 5. \n\nHowever, since we require rational entries, we must have cos(2πk/5) and sin(2πk/5) both rational. This occurs only for k = 0, ±5, resulting in the following solutions:\n\n\\[\nA =\n\\begin{{bmatrix}}\n1 & 0 \\\\\n0 & 1 \\\\\n\\end{{bmatrix}}, \\quad\n\\begin{{bmatrix}}\n-1 & 0 \\\\\n0 & -1 \\\\\n\\end{{bmatrix}}\n\\]"
+    "The solutions are all $2 \\times 2$ matrices of the form:\n\n$$\n\\begin{bmatrix}\n    \\cos\\theta       & -\\sin\\theta  \\\\\n    \\sin\\theta       & \\cos\\theta  \n\\end{bmatrix}\n$$\n\nwhere $\\theta = \\frac{2k\\pi}{5}$ for $k \\in \\{0, 1, 2, 3, 4\\}$, and where the sine and cosine values are rational. This gives the five solutions:\n\n$$\n\\begin{bmatrix}\n    1       & 0  \\\\\n    0       & 1  \n\\end{bmatrix},\n\\begin{bmatrix}\n    \\frac{1+\\sqrt{5}}{4}       & -\\frac{1-\\sqrt{5}}{4}  \\\\\n    \\frac{1-\\sqrt{5}}{4}       & \\frac{1+\\sqrt{5}}{4}  \n\\end{bmatrix},\n\\begin{bmatrix}\n    -\\frac{1+\\sqrt{5}}{4}       & -\\frac{1-\\sqrt{5}}{4}  \\\\\n    \\frac{1-\\sqrt{5}}{4}       & -\\frac{1+\\sqrt{5}}{4}  \n\\end{bmatrix},\n\\begin{bmatrix}\n    \\frac{1+\\sqrt{5}}{4}       & \\frac{1-\\sqrt{5}}{4}  \\\\\n    -\\frac{1-\\sqrt{5}}{4}       & \\frac{1+\\sqrt{5}}{4}  \n\\end{bmatrix},\n\\begin{bmatrix}\n    -\\frac{1+\\sqrt{5}}{4}       & \\frac{1-\\sqrt{5}}{4}  \\\\\n    -\\frac{1-\\sqrt{5}}{4}       & -\\frac{1+\\sqrt{5}}{4}  \n\\end{bmatrix}\n$$",
+    "The solutions are the 2x2 matrices\n$$\nA = \\begin{bmatrix} \\cos(\\frac{2\\pi k}{5}) & -\\sin(\\frac{2\\pi k}{5}) \\\\ \\sin(\\frac{2\\pi k}{5}) & \\cos(\\frac{2\\pi k}{5}) \\end{bmatrix}\n$$\nfor $k = 0, 1, 2, 3, 4$. \n\nThe matrices with rational entries are then\n$$\nA = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}, \nA = \\begin{bmatrix} -1 & 0 \\\\ 0 & -1 \\end{bmatrix}.\n$$\nThese are the only 2x2 matrices with rational entries such that $A^5 = I$.",
+    "The solution to this problem is that A can be any $2 \\times 2$ matrix of the form \n\n$$A = \\begin{pmatrix} \\cos(2k\\pi/5) & -\\sin(2k\\pi/5) \\\\ \\sin(2k\\pi/5) & \\cos(2k\\pi/5) \\end{pmatrix}$$\n\nwhere $k \\in \\mathbb{Z}$ and the entries are interpreted as rationals via their trigonometric representations as sums of powers of the primitive $5^{th}$ roots of unity $\\cos(2\\pi/5) + i\\sin(2\\pi/5)$. The five possible matrices correspond to $k = 0, 1, 2, 3, 4$."
   ],
   "theories": [
-    "**Theorem 1:** Let A be a 2x2 matrix with rational entries that satisfies the equation A^5 = I, where I is the 2x2 identity matrix. Then A can be expressed in the form \n\n    A = [ a  b]\n        [-b  a]\n\nwhere a and b are rational numbers satisfying a^2 + b^2 = 1.\n\n**Proof:** Suppose A^5 = I for a 2x2 matrix A with rational entries. Then the eigenvalues of A are 5th roots of 1, namely 1, cos(2π/5) + isin(2π/5), cos(4π/5) + isin(4π/5), cos(6π/5) + isin(6π/5), and cos(8π/5) + isin(8π/5). Any 2x2 matrix with rational entries and 5th roots of unity as its eigenvalues can be diagonalized over the complex numbers, giving us a 2x2 matrix with entries in Q(ζ_5), the smallest subfield of the complex numbers containing the 5th roots of unity. But a 2x2 matrix with entries in Q(ζ_5) is equivalent to our original matrix A, so any such matrix can be expressed in the form given above, with a^2 + b^2 = 1 and (a,b) ∈ Q^2. This completes the proof.\n\n**Theorem 2:** The set of all 2x2 matrices with rational entries that satisfy A^5 = I is parametrized by pairs of rational numbers (a, b) that satisfy a^2 + b^2 = 1.\n\n**Proof:** From Theorem 1, we know that any 2x2 matrix A with rational entries that satisfies A^5 = I can be expressed in the form given above. The condition a^2 + b^2 = 1 is a circle of radius 1 in the plane Q^2 of rational numbers, and every point on this circle corresponds to a unique 2x2 matrix A with the property that A^5 = I. Thus, the set of all such matrices is parametrized by pairs of rational numbers (a, b) that satisfy a^2 + b^2 = 1.",
-    "**Theorem 1:** All $2 \\times 2$ matrices with rational entries $A = \\begin{pmatrix} a & b \\\\ -b & a \\end{pmatrix}$ where $a,b \\in \\mathbb{Q}$ and $a^2 + b^2 = 1$ satisfy the property that $A^5 = I$.\n\n**Proof:** For this type of matrix, we can express $A$ in terms of complex numbers as $A = \\begin{pmatrix} a - bi & 0 \\\\ 0 & a + bi \\end{pmatrix}$. Here $a$ and $b$ are real numbers, so $a - bi$ and $a + bi$ are conjugate complex numbers whose product is $(a - bi)(a + bi) = a^2 + b^2 = 1$. It follows that $(a - bi)^5 = (a + bi)^5 = 1$, and hence $A^5 = I$.\n\n**Theorem 2:** All $2 \\times 2$ matrices $A$ with rational entries that satisfy $A^5 = I$ are of two forms: \n\n(i) $A = \\begin{pmatrix} \\cos \\frac{2\\pi k}{5} & -\\sin \\frac{2\\pi k}{5} \\\\ \\sin \\frac{2\\pi k}{5} & \\cos \\frac{2\\pi k}{5} \\end{pmatrix}$, for $0 \\leq k \\leq 4$, and \n\n(ii) $A = \\begin{pmatrix} \\cos \\frac{2\\pi k}{5} & \\sin \\frac{2\\pi k}{5} \\\\ -\\sin \\frac{2\\pi k}{5} & \\cos \\frac{2\\pi k}{5} \\end{pmatrix}$, for $0 \\leq k \\leq 4$.\n\n**Proof:** The eigenvalues of such a matrix $A$ are roots of a quadratic polynomial with rational coefficients, hence they are either two distinct real numbers, a double real number, or a pair of conjugate complex numbers. In any case, their fifth powers must be $1$, thus they must be fifth roots of unity. These are $1, e^{2\\pi i/5}, e^{4\\pi i/5}, e^{6\\pi i/5}$, and $e^{8\\pi i/5}$.  Only $1$ and $e^{4\\pi i/5}$ are real, leading to matrices of the first form (with $k=0$ and $k=2$). The remaining ones lead to matrices of the second form. The cosine and sine of multiples of $\\frac{2\\pi}{5}$ are rational, completing the proof.",
-    "**Theorem 1:** Let A be a 2x2 matrix with rational entries. If A^5 = I, where I is the 2x2 identity matrix, then A is either the 2x2 identity matrix or its negative.\n\n**Proof of Theorem 1:** \n\nA 2x2 matrix A satisfying A^5 = I can be written in the form \n\\[\nA =\n\\begin{{bmatrix}}\n\\cos(2 \\pi k/5) & -\\sin(2 \\pi k/5) \\\\\n\\sin(2 \\pi k/5) & \\cos(2 \\pi k/5) \\\\\n\\end{{bmatrix}}\n\\]\nfor some integer k such that -5 ≤ k ≤ 5. \n\nThis form arises from the fact that A^5 = I signifies that A has order 5, which implies that any eigenvalue λ of A satisfies λ^5 = 1. Therefore, λ is a 5th root of unity, and hence is of the form λ = exp(2πik/5) for some integer -5 ≤ k ≤ 5. This gives the stated form for A.\n\nHowever, since A has rational entries, cos(2πk/5) and sin(2πk/5) must both be rational. These values are rational if and only if k = 0, ±5, as these are the only values for which cos(2πk/5) and sin(2πk/5) are rational numbers. \n\nSubstituting these values gives the matrices A = \n\\[\n\\begin{{bmatrix}}\n1 & 0 \\\\\n0 & 1 \\\\\n\\end{{bmatrix}} \\quad \\text{and} \\quad \n\\begin{{bmatrix}}\n-1 & 0 \\\\\n0 & -1 \\\\\n\\end{{bmatrix}}\n\\]\nwhich are the 2x2 identity matrix and its negative, respectively. ∎"
+    "Theorem 1: If $A$ is a $2 \\times 2$ matrix with rational entries such that $A^5 = I$, then $A$ is of the form \n\\[\n\\begin{bmatrix}\n    \\cos\\theta       & -\\sin\\theta  \\\\\n    \\sin\\theta       & \\cos\\theta  \n\\end{bmatrix}\n\\]\nwhere $\\theta = \\frac{2k\\pi}{5}$ for some $k \\in \\{0, 1, 2, 3, 4\\}$.\n\nProof: This follows directly from the spectral theorem, which guarantees that a $2 \\times 2$ matrix that is a fifth root of the identity can be diagonalized, and thus can be written in the form given with the stated conditions on $\\theta$. \n\nTheorem 2: The set of all $2 \\times 2$ matrices with rational entries such that $A^5 = I$ is given by\n\\[\n\\left\\{\n\\begin{bmatrix}\n    1       & 0  \\\\\n    0       & 1  \n\\end{bmatrix},\n\\begin{bmatrix}\n    \\frac{1+\\sqrt{5}}{4}       & -\\frac{1-\\sqrt{5}}{4}  \\\\\n    \\frac{1-\\sqrt{5}}{4}       & \\frac{1+\\sqrt{5}}{4}  \n\\end{bmatrix},\n\\begin{bmatrix}\n    -\\frac{1+\\sqrt{5}}{4}       & -\\frac{1-\\sqrt{5}}{4}  \\\\\n    \\frac{1-\\sqrt{5}}{4}       & -\\frac{1+\\sqrt{5}}{4}  \n\\end{bmatrix},\n\\begin{bmatrix}\n    \\frac{1+\\sqrt{5}}{4}       & \\frac{1-\\sqrt{5}}{4}  \\\\\n    -\\frac{1-\\sqrt{5}}{4}       & \\frac{1+\\sqrt{5}}{4}  \n\\end{bmatrix},\n\\begin{bmatrix}\n    -\\frac{1+\\sqrt{5}}{4}       & \\frac{1-\\sqrt{5}}{4}  \\\\\n    -\\frac{1-\\sqrt{5}}{4}       & -\\frac{1+\\sqrt{5}}{4}  \n\\end{bmatrix}\n\\right\\}.\n\\]\n\nProof: This is a direct computation using the form for the matrices from Theorem 1 and the values for $\\theta$. After evaluating the sine and cosine functions, we obtain the matrices in the set.",
+    "Theorem 1: The solutions to the equation $A^5 = I$ for a $2 \\times 2$ matrix $A$ are given by \n\n$$\nA = \\begin{bmatrix} \\cos(\\frac{2\\pi k}{5}) & -\\sin(\\frac{2\\pi k}{5}) \\\\ \\sin(\\frac{2\\pi k}{5}) & \\cos(\\frac{2\\pi k}{5}) \\end{bmatrix}\n$$\n\nfor $k = 0, 1, 2, 3, 4$.\n\nProof 1: Omitted.\n\nTheorem 2: The only $2 \\times 2$ matrices with rational entries that satisfy $A^5 = I$ are \n\n$$\nA = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}, \nA = \\begin{bmatrix} -1 & 0 \\\\ 0 & -1 \\end{bmatrix}.\n$$\n\nProof 2: Omitted.",
+    "Theorem 1: Any $2 \\times 2$ matrix $A$ with rational entries satisfying the equation $A^5 = I$, where $I$ is the $2 \\times 2$ identity matrix, is of the form \n$$A = \\begin{pmatrix} \\cos(2k\\pi/5) & -\\sin(2k\\pi/5) \\\\ \\sin(2k\\pi/5) & \\cos(2k\\pi/5) \\end{pmatrix},$$\nwhere $k \\in \\mathbb{Z}$ and the entries are interpreted as rationals via their trigonometric representations as sums of powers of the primitive $5^{th}$ roots of unity $\\cos(2\\pi/5) + i\\sin(2\\pi/5)$.\n\nProof: Let $A$ be a $2 \\times 2$ matrix satisfying the given condition. Then, by the spectral theorem, $A$ is unitarily equivalent to a diagonal matrix. The eigenvalues of $A$, which are the entries of the aforementioned diagonal matrix, are 5th roots of 1. They are of the form $e^{\\frac{2\\pi i k}{5}}$, where $k \\in \\{0, 1, 2, 3, 4\\}$. By trigonometric identities, we can write these roots in the required form.\n\nTheorem 2: There are exactly five $2 \\times 2$ matrices with rational entries that satisfy the equation $A^5 = I$, where $I$ is the $2 \\times 2$ identity matrix.\n\nProof: From the above proof, it is clear that the number of such matrices is equal to the number of distinct 5th roots of 1, which is 5, corresponding to $k = 0, 1, 2, 3, 4$. Therefore, there are exactly five such matrices."
   ],
   "structured_texts": [
     [
       {
         "type": "theorem",
         "name": "Theorem 1",
-        "statement": "Let A be a 2x2 matrix with rational entries that satisfies the equation A^5 = I, where I is the 2x2 identity matrix. Then A can be expressed in the form A = [ a  b][-b  a] where a and b are rational numbers satisfying a^2 + b^2 = 1.",
+        "statement": "If $A$ is a $2 \\times 2$ matrix with rational entries such that $A^5 = I$, then $A$ is of the form $\\begin{bmatrix} \\cos\\theta & -\\sin\\theta \\\\ \\sin\\theta & \\cos\\theta \\end{bmatrix}$ where $\\theta = \\frac{2k\\pi}{5}$ for some $k \\in \\{0, 1, 2, 3, 4\\}$.",
         "status": "proved",
         "proof": [
           {
-            "type": "assumption",
-            "statement": "Suppose A^5 = I for a 2x2 matrix A with rational entries."
-          },
-          {
             "type": "observation",
-            "statement": "The eigenvalues of A are 5th roots of 1."
-          },
-          {
-            "type": "observation",
-            "statement": "Any 2x2 matrix with rational entries and 5th roots of unity as its eigenvalues can be diagonalized over the complex numbers."
-          },
-          {
-            "type": "observation",
-            "statement": "A 2x2 matrix with entries in Q(ζ_5) is equivalent to our original matrix A."
-          },
-          {
-            "type": "assertion",
-            "claim": "Any such matrix can be expressed in the form given above, with a^2 + b^2 = 1 and (a,b) ∈ Q^2.",
-            "justification": "From diagonalization and equivalence argument."
+            "statement": "This follows directly from the spectral theorem, which guarantees that a $2 \\times 2$ matrix that is a fifth root of the identity can be diagonalized, and thus can be written in the form given with the stated conditions on $\\theta$."
           }
         ]
       },
       {
         "type": "theorem",
         "name": "Theorem 2",
-        "statement": "The set of all 2x2 matrices with rational entries that satisfy A^5 = I is parametrized by pairs of rational numbers (a, b) that satisfy a^2 + b^2 = 1.",
+        "statement": "The set of all $2 \\times 2$ matrices with rational entries such that $A^5 = I$ is given by $\\left\\{ \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}, \\begin{bmatrix} \\frac{1+\\sqrt{5}}{4} & -\\frac{1-\\sqrt{5}}{4} \\\\ \\frac{1-\\sqrt{5}}{4} & \\frac{1+\\sqrt{5}}{4} \\end{bmatrix}, \\begin{bmatrix} -\\frac{1+\\sqrt{5}}{4} & -\\frac{1-\\sqrt{5}}{4} \\\\ \\frac{1-\\sqrt{5}}{4} & -\\frac{1+\\sqrt{5}}{4} \\end{bmatrix}, \\begin{bmatrix} \\frac{1+\\sqrt{5}}{4} & \\frac{1-\\sqrt{5}}{4} \\\\ -\\frac{1-\\sqrt{5}}{4} & \\frac{1+\\sqrt{5}}{4} \\end{bmatrix}, \\begin{bmatrix} -\\frac{1+\\sqrt{5}}{4} & \\frac{1-\\sqrt{5}}{4} \\\\ -\\frac{1-\\sqrt{5}}{4} & -\\frac{1+\\sqrt{5}}{4} \\end{bmatrix} \\right\\}$.",
         "status": "proved",
         "proof": [
           {
-            "type": "assertion",
-            "claim": "Any 2x2 matrix A with rational entries that satisfies A^5 = I can be expressed in the form given in Theorem 1.",
-            "deduced-from": [
-              {
-                "result": "Theorem 1"
-              }
-            ]
-          },
-          {
             "type": "observation",
-            "statement": "The condition a^2 + b^2 = 1 is a circle of radius 1 in the plane Q^2 of rational numbers."
-          },
-          {
-            "type": "assertion",
-            "claim": "Every point on this circle corresponds to a unique 2x2 matrix A with the property that A^5 = I.",
-            "justification": "From the form of A given in Theorem 1."
-          },
-          {
-            "type": "assertion",
-            "claim": "The set of all such matrices is parametrized by pairs of rational numbers (a, b) that satisfy a^2 + b^2 = 1.",
-            "justification": "From the correspondence between points on the circle and 2x2 matrices A with A^5 = I."
+            "statement": "This is a direct computation using the form for the matrices from Theorem 1 and the values for $\\theta$. After evaluating the sine and cosine functions, we obtain the matrices in the set."
           }
         ]
       }
@@ -76,55 +40,39 @@
     [
       {
         "type": "theorem",
-        "name": "Theorem 1",
-        "statement": "Let A be a 2x2 matrix with rational entries that satisfies the equation A^5 = I, where I is the 2x2 identity matrix. Then A can be expressed in the form A = [ a  b]  [-b  a] where a and b are rational numbers satisfying a^2 + b^2 = 1.",
+        "name": "theorem_1",
+        "statement": "If A is a 2x2 matrix with rational entries such that A^5 = I, then A is of the form [[cos(theta), -sin(theta)], [sin(theta), cos(theta)]] where theta = (2k*pi)/5 for some k in {0, 1, 2, 3, 4}.",
         "status": "proved",
         "proof": [
           {
-            "type": "let",
-            "variable": "A",
-            "value": "a 2x2 matrix with rational entries that satisfies the equation A^5 = I, where I is the 2x2 identity matrix"
-          },
-          {
-            "type": "observation",
-            "statement": "The eigenvalues of A are 5th roots of 1, namely 1, cos(2π/5) + isin(2π/5), cos(4π/5) + isin(4π/5), cos(6π/5) + isin(6π/5), and cos(8π/5) + isin(8π/5)."
-          },
-          {
             "type": "assertion",
-            "claim": "Any 2x2 matrix with rational entries and 5th roots of unity as its eigenvalues can be diagonalized over the complex numbers, giving us a 2x2 matrix with entries in Q(ζ_5), the smallest subfield of the complex numbers containing the 5th roots of unity.",
+            "claim": "A is of the form [[cos(theta), -sin(theta)], [sin(theta), cos(theta)]] where theta = (2k*pi)/5 for some k in {0, 1, 2, 3, 4}.",
             "deduced-from": [
-              "Diagonalization theorem",
-              "Definition of Q(ζ_5)"
-            ]
-          },
-          {
-            "type": "assertion",
-            "claim": "A 2x2 matrix with entries in Q(ζ_5) is equivalent to our original matrix A, so any such matrix can be expressed in the form given above, with a^2 + b^2 = 1 and (a,b) ∈ Q^2.",
-            "deduced-from": [
-              "Equivalence of matrices"
+              "A^5 = I",
+              "A is a 2x2 matrix with rational entries",
+              {
+                "result": "spectral theorem",
+                "applied-to": "A"
+              }
             ]
           }
         ]
       },
       {
         "type": "theorem",
-        "name": "Theorem 2",
-        "statement": "The set of all 2x2 matrices with rational entries that satisfy A^5 = I is parametrized by pairs of rational numbers (a, b) that satisfy a^2 + b^2 = 1.",
+        "name": "theorem_2",
+        "statement": "The set of all 2x2 matrices with rational entries such that A^5 = I is given by {[[1, 0], [0, 1]], [[(1+sqrt(5))/4, -(1-sqrt(5))/4], [(1-sqrt(5))/4, (1+sqrt(5))/4]], [[-(1+sqrt(5))/4, -(1-sqrt(5))/4], [(1-sqrt(5))/4, -(1+sqrt(5))/4]], [[(1+sqrt(5))/4, (1-sqrt(5))/4], [-(1-sqrt(5))/4, (1+sqrt(5))/4]], [[-(1+sqrt(5))/4, (1-sqrt(5))/4], [-(1-sqrt(5))/4, -(1+sqrt(5))/4]]}.",
         "status": "proved",
         "proof": [
           {
-            "type": "observation",
-            "statement": "From Theorem 1, we know that any 2x2 matrix A with rational entries that satisfies A^5 = I can be expressed in the form given above."
-          },
-          {
-            "type": "observation",
-            "statement": "The condition a^2 + b^2 = 1 is a circle of radius 1 in the plane Q^2 of rational numbers, and every point on this circle corresponds to a unique 2x2 matrix A with the property that A^5 = I."
-          },
-          {
             "type": "assertion",
-            "claim": "Thus, the set of all such matrices is parametrized by pairs of rational numbers (a, b) that satisfy a^2 + b^2 = 1.",
+            "claim": "The set of all 2x2 matrices with rational entries such that A^5 = I is given by {[[1, 0], [0, 1]], [[(1+sqrt(5))/4, -(1-sqrt(5))/4], [(1-sqrt(5))/4, (1+sqrt(5))/4]], [[-(1+sqrt(5))/4, -(1-sqrt(5))/4], [(1-sqrt(5))/4, -(1+sqrt(5))/4]], [[(1+sqrt(5))/4, (1-sqrt(5))/4], [-(1-sqrt(5))/4, (1+sqrt(5))/4]], [[-(1+sqrt(5))/4, (1-sqrt(5))/4], [-(1-sqrt(5))/4, -(1+sqrt(5))/4]]}.",
             "deduced-from": [
-              "Definition of parametrization"
+              "theorem_1",
+              {
+                "result": "direct computation",
+                "applied-to": "A"
+              }
             ]
           }
         ]
@@ -134,237 +82,160 @@
       {
         "type": "theorem",
         "name": "Theorem 1",
-        "statement": "All 2x2 matrices with rational entries A = [[a, b], [-b, a]] where a,b are elements of Q and a^2 + b^2 = 1 satisfy the property that A^5 = I.",
+        "statement": "The solutions to the equation $A^5 = I$ for a $2 \\times 2$ matrix $A$ are given by $A = \\begin{bmatrix} \\cos(\\frac{2\\pi k}{5}) & -\\sin(\\frac{2\\pi k}{5}) \\\\ \\sin(\\frac{2\\pi k}{5}) & \\cos(\\frac{2\\pi k}{5}) \\end{bmatrix}$ for $k = 0, 1, 2, 3, 4$.",
+        "status": "stated",
+        "proof": []
+      },
+      {
+        "type": "theorem",
+        "name": "Theorem 2",
+        "statement": "The only $2 \\times 2$ matrices with rational entries that satisfy $A^5 = I$ are $A = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}, A = \\begin{bmatrix} -1 & 0 \\\\ 0 & -1 \\end{bmatrix}$.",
+        "status": "stated",
+        "proof": []
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "The solutions to the equation $A^5 = I$ for a $2 \\times 2$ matrix $A$ are given by $A = \\begin{bmatrix} \\cos(\\frac{2\\pi k}{5}) & -\\sin(\\frac{2\\pi k}{5}) \\\\ \\sin(\\frac{2\\pi k}{5}) & \\cos(\\frac{2\\pi k}{5}) \\end{bmatrix}$ for $k = 0, 1, 2, 3, 4$.",
+        "status": "stated",
+        "proof": []
+      },
+      {
+        "type": "theorem",
+        "name": "Theorem 2",
+        "statement": "The only $2 \\times 2$ matrices with rational entries that satisfy $A^5 = I$ are $A = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$, $A = \\begin{bmatrix} -1 & 0 \\\\ 0 & -1 \\end{bmatrix}$.",
+        "status": "stated",
+        "proof": []
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "theorem 1",
+        "statement": "Any 2x2 matrix A with rational entries satisfying the equation A^5 = I, where I is the 2x2 identity matrix, is of the form A = [[cos(2kπ/5), -sin(2kπ/5)], [sin(2kπ/5), cos(2kπ/5)]], where k is an integer and the entries are interpreted as rationals via their trigonometric representations as sums of powers of the primitive 5th roots of unity cos(2π/5) + isin(2π/5).",
         "status": "proved",
         "proof": [
           {
             "type": "let",
             "variable": "A",
-            "value": "[[a, b], [-b, a]]"
+            "value": "a 2x2 matrix satisfying A^5 = I"
+          },
+          {
+            "type": "assertion",
+            "claim": "A is unitarily equivalent to a diagonal matrix",
+            "deduced-from": [
+              "spectral theorem"
+            ]
           },
           {
             "type": "observation",
-            "statement": "A can be expressed in terms of complex numbers as A = [[a - bi, 0], [0, a + bi]]."
+            "statement": "The eigenvalues of A are 5th roots of 1, of the form e^(2πik/5) for k in {0, 1, 2, 3, 4}."
+          },
+          {
+            "type": "observation",
+            "statement": "These roots can be written in the required form using trigonometric identities."
+          }
+        ]
+      },
+      {
+        "type": "theorem",
+        "name": "theorem 2",
+        "statement": "There are exactly five 2x2 matrices with rational entries that satisfy the equation A^5 = I, where I is the 2x2 identity matrix.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assertion",
+            "claim": "The number of such matrices is equal to the number of distinct 5th roots of 1, which is 5",
+            "deduced-from": [
+              {
+                "result": "theorem 1",
+                "applied-to": "A"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "Any 2x2 matrix A with rational entries satisfying the equation A^5 = I, where I is the 2x2 identity matrix, is of the form A = [[cos(2kπ/5), -sin(2kπ/5)], [sin(2kπ/5), cos(2kπ/5)]], where k is an integer and the entries are interpreted as rationals via their trigonometric representations as sums of powers of the primitive 5th roots of unity cos(2π/5) + i*sin(2π/5).",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "A",
+            "value": "2x2 matrix satisfying A^5 = I"
           },
           {
             "type": "assertion",
-            "claim": "(a - bi)^5 = (a + bi)^5 = 1",
+            "claim": "A is unitarily equivalent to a diagonal matrix",
             "deduced-from": [
-              "(a - bi)(a + bi) = a^2 + b^2 = 1"
+              "Spectral theorem"
             ]
           },
           {
             "type": "assertion",
-            "claim": "A^5 = I",
+            "claim": "Eigenvalues of A are 5th roots of 1 and are of the form e^(2πik/5) where k belongs to {0, 1, 2, 3, 4}",
             "deduced-from": [
-              "(a - bi)^5 = (a + bi)^5 = 1"
-            ]
+              "Definition of eigenvalues",
+              "Unitary equivalence to a diagonal matrix"
+            ],
+            "justification": "Eigenvalues of a matrix are unaltered by unitary equivalence transformations."
+          },
+          {
+            "type": "assertion",
+            "claim": "Eigenvalues can be written in the required form using trigonometric identities",
+            "deduced-from": [
+              "Form of eigenvalues"
+            ],
+            "justification": "Euler's formula allows representation of complex roots in trigonometric form."
           }
         ]
       },
       {
         "type": "theorem",
         "name": "Theorem 2",
-        "statement": "All 2x2 matrices A with rational entries that satisfy A^5 = I are of two forms: (i) A = [[cos(2πk/5), -sin(2πk/5)], [sin(2πk/5), cos(2πk/5)]], for 0 <= k <= 4, and (ii) A = [[cos(2πk/5), sin(2πk/5)], [-sin(2πk/5), cos(2πk/5)]], for 0 <= k <= 4.",
+        "statement": "There are exactly five 2x2 matrices with rational entries that satisfy the equation A^5 = I, where I is the 2x2 identity matrix.",
         "status": "proved",
         "proof": [
           {
-            "type": "let",
-            "variable": "A",
-            "value": "A"
+            "type": "use",
+            "variable": "result",
+            "value": "Theorem 1"
           },
           {
             "type": "assertion",
-            "claim": "The eigenvalues of A are roots of a quadratic polynomial with rational coefficients",
-            "justification": "From the properties of eigenvalues and rational matrices."
-          },
-          {
-            "type": "assertion",
-            "claim": "The eigenvalues are either two distinct real numbers, a double real number, or a pair of conjugate complex numbers",
-            "justification": "From the properties of eigenvalues and rational matrices."
-          },
-          {
-            "type": "assertion",
-            "claim": "The fifth powers of the eigenvalues must be 1",
+            "claim": "The number of such matrices is equal to the number of distinct 5th roots of 1",
             "deduced-from": [
-              "A^5 = I"
-            ]
-          },
-          {
-            "type": "assertion",
-            "claim": "The eigenvalues must be fifth roots of unity",
-            "justification": "From the property of roots of unity."
-          },
-          {
-            "type": "assertion",
-            "claim": "1 and e^(4πi/5) are real, leading to matrices of the first form (with k=0 and k=2)",
-            "justification": "From the properties of roots of unity and trigonometry."
-          },
-          {
-            "type": "assertion",
-            "claim": "The remaining ones lead to matrices of the second form",
-            "justification": "From the properties of roots of unity and trigonometry."
-          },
-          {
-            "type": "assertion",
-            "claim": "The cosine and sine of multiples of 2π/5 are rational",
-            "justification": "From the properties of rational numbers and trigonometry."
-          }
-        ]
-      }
-    ],
-    [
-      {
-        "type": "theorem",
-        "name": "Theorem 1",
-        "statement": "All 2x2 matrices with rational entries A = ((a, b), (-b, a)) where a,b ∈ Q and a^2 + b^2 = 1 satisfy the property that A^5 = I",
-        "status": "proved",
-        "proof": [
-          {
-            "type": "observation",
-            "statement": "For this type of matrix, we can express A in terms of complex numbers as A = ((a - bi, 0), (0, a + bi)). Here a and b are real numbers, so a - bi and a + bi are conjugate complex numbers whose product is (a - bi)(a + bi) = a^2 + b^2 = 1."
-          },
-          {
-            "type": "assertion",
-            "claim": "(a - bi)^5 = (a + bi)^5 = 1, and hence A^5 = I",
-            "deduced-from": [
-              "(a - bi)(a + bi) = a^2 + b^2 = 1"
-            ]
-          }
-        ]
-      },
-      {
-        "type": "theorem",
-        "name": "Theorem 2",
-        "statement": "All 2x2 matrices A with rational entries that satisfy A^5 = I are of two forms: (i) A = ((cos(2πk/5), -sin(2πk/5)), (sin(2πk/5), cos(2πk/5))), for 0 ≤ k ≤ 4, and (ii) A = ((cos(2πk/5), sin(2πk/5)), (-sin(2πk/5), cos(2πk/5))), for 0 ≤ k ≤ 4",
-        "status": "proved",
-        "proof": [
-          {
-            "type": "observation",
-            "statement": "The eigenvalues of such a matrix A are roots of a quadratic polynomial with rational coefficients, hence they are either two distinct real numbers, a double real number, or a pair of conjugate complex numbers. In any case, their fifth powers must be 1, thus they must be fifth roots of unity. These are 1, e^(2πi/5), e^(4πi/5), e^(6πi/5), and e^(8πi/5)."
-          },
-          {
-            "type": "assertion",
-            "claim": "Only 1 and e^(4πi/5) are real, leading to matrices of the first form (with k=0 and k=2). The remaining ones lead to matrices of the second form. The cosine and sine of multiples of 2π/5 are rational, completing the proof.",
-            "deduced-from": [
-              "The eigenvalues of such a matrix A are roots of a quadratic polynomial with rational coefficients, hence they are either two distinct real numbers, a double real number, or a pair of conjugate complex numbers. In any case, their fifth powers must be 1, thus they must be fifth roots of unity. These are 1, e^(2πi/5), e^(4πi/5), e^(6πi/5), and e^(8πi/5)."
-            ]
-          }
-        ]
-      }
-    ],
-    [
-      {
-        "type": "theorem",
-        "name": "Theorem 1",
-        "statement": "Let A be a 2x2 matrix with rational entries. If A^5 = I, where I is the 2x2 identity matrix, then A is either the 2x2 identity matrix or its negative.",
-        "status": "proved",
-        "proof": [
-          {
-            "type": "let",
-            "variable": "A",
-            "value": "a 2x2 matrix with rational entries such that A^5 = I"
+              "Theorem 1"
+            ],
+            "justification": "Matrices are determined by their eigenvalues."
           },
           {
             "type": "observation",
-            "statement": "A can be written in the form [cos(2πk/5), -sin(2πk/5), sin(2πk/5), cos(2πk/5)] for some integer k such that -5 <= k <= 5"
+            "statement": "There are 5 distinct 5th roots of 1, corresponding to k = 0, 1, 2, 3, 4."
           },
           {
             "type": "assertion",
-            "claim": "A has order 5, which implies that any eigenvalue λ of A satisfies λ^5 = 1",
+            "claim": "Therefore, there are exactly five such matrices",
             "deduced-from": [
-              "A^5 = I"
+              "Number of distinct 5th roots of 1"
             ]
-          },
-          {
-            "type": "assertion",
-            "claim": "λ is a 5th root of unity, and hence is of the form λ = exp(2πik/5) for some integer -5 <= k <= 5",
-            "deduced-from": [
-              "λ^5 = 1"
-            ]
-          },
-          {
-            "type": "assertion",
-            "claim": "cos(2πk/5) and sin(2πk/5) must both be rational",
-            "deduced-from": [
-              "A has rational entries"
-            ]
-          },
-          {
-            "type": "assertion",
-            "claim": "cos(2πk/5) and sin(2πk/5) are rational if and only if k = 0, ±5",
-            "deduced-from": [
-              "cos(2πk/5) and sin(2πk/5) are rational"
-            ]
-          },
-          {
-            "type": "let",
-            "variable": "A",
-            "value": "the 2x2 matrix which equals either [1, 0, 0, 1] or [-1, 0, 0, -1]",
-            "deduced-from": [
-              "k = 0 or k = ±5"
-            ]
-          }
-        ]
-      }
-    ],
-    [
-      {
-        "type": "theorem",
-        "name": "Theorem 1",
-        "statement": "Let A be a 2x2 matrix with rational entries. If A^5 = I, where I is the 2x2 identity matrix, then A is either the 2x2 identity matrix or its negative.",
-        "status": "proved",
-        "proof": [
-          {
-            "type": "assertion",
-            "claim": "A 2x2 matrix A satisfying A^5 = I can be written in the form [[cos(2*pi*k/5), -sin(2*pi*k/5)], [sin(2*pi*k/5), cos(2*pi*k/5)]] for some integer k such that -5 ≤ k ≤ 5.",
-            "deduced-from": [
-              {
-                "result": "A^5 = I implies that A has order 5"
-              },
-              {
-                "result": "A has order 5 implies that any eigenvalue λ of A satisfies λ^5 = 1"
-              },
-              {
-                "result": "λ^5 = 1 implies that λ is a 5th root of unity"
-              },
-              {
-                "result": "λ is a 5th root of unity implies that λ = exp(2*pi*i*k/5) for some integer -5 ≤ k ≤ 5"
-              }
-            ]
-          },
-          {
-            "type": "assertion",
-            "claim": "cos(2*pi*k/5) and sin(2*pi*k/5) are rational iff k = 0, ±5",
-            "deduced-from": [
-              {
-                "result": "A has rational entries"
-              }
-            ]
-          },
-          {
-            "type": "assertion",
-            "claim": "Substituting these values gives the matrices A = [[1, 0], [0, 1]] and A = [[-1, 0], [0, -1]]",
-            "deduced-from": [
-              {
-                "result": "k = 0, ±5"
-              }
-            ]
-          },
-          {
-            "type": "observation",
-            "statement": "A = [[1, 0], [0, 1]] and A = [[-1, 0], [0, -1]] are the 2x2 identity matrix and its negative, respectively."
           }
         ]
       }
     ]
   ],
   "raw_structured_texts": [
-    "The corresponding ProofJSON format for the two theorems and their proofs would be:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"Let A be a 2x2 matrix with rational entries that satisfies the equation A^5 = I, where I is the 2x2 identity matrix. Then A can be expressed in the form A = [ a  b][-b  a] where a and b are rational numbers satisfying a^2 + b^2 = 1.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Suppose A^5 = I for a 2x2 matrix A with rational entries.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The eigenvalues of A are 5th roots of 1.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Any 2x2 matrix with rational entries and 5th roots of unity as its eigenvalues can be diagonalized over the complex numbers.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"A 2x2 matrix with entries in Q(ζ_5) is equivalent to our original matrix A.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Any such matrix can be expressed in the form given above, with a^2 + b^2 = 1 and (a,b) ∈ Q^2.\",\n        \"justification\": \"From diagonalization and equivalence argument.\"\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 2\",\n    \"statement\": \"The set of all 2x2 matrices with rational entries that satisfy A^5 = I is parametrized by pairs of rational numbers (a, b) that satisfy a^2 + b^2 = 1.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Any 2x2 matrix A with rational entries that satisfies A^5 = I can be expressed in the form given in Theorem 1.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"Theorem 1\"\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The condition a^2 + b^2 = 1 is a circle of radius 1 in the plane Q^2 of rational numbers.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Every point on this circle corresponds to a unique 2x2 matrix A with the property that A^5 = I.\",\n        \"justification\": \"From the form of A given in Theorem 1.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The set of all such matrices is parametrized by pairs of rational numbers (a, b) that satisfy a^2 + b^2 = 1.\",\n        \"justification\": \"From the correspondence between points on the circle and 2x2 matrices A with A^5 = I.\"\n      }\n    ]\n  }\n]\n```\n\nIn the above JSON, the proofs are broken down into smaller steps, which include assumptions, observations, and assertions. Each assertion provides a mathematical claim along with a justification or reference to the theorem from which it is deduced.",
-    "Here is the translation of the two theorems and their proofs into the `ProofJSON` format:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"Let A be a 2x2 matrix with rational entries that satisfies the equation A^5 = I, where I is the 2x2 identity matrix. Then A can be expressed in the form A = [ a  b]  [-b  a] where a and b are rational numbers satisfying a^2 + b^2 = 1.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"A\",\n        \"value\": \"a 2x2 matrix with rational entries that satisfies the equation A^5 = I, where I is the 2x2 identity matrix\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The eigenvalues of A are 5th roots of 1, namely 1, cos(2π/5) + isin(2π/5), cos(4π/5) + isin(4π/5), cos(6π/5) + isin(6π/5), and cos(8π/5) + isin(8π/5).\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Any 2x2 matrix with rational entries and 5th roots of unity as its eigenvalues can be diagonalized over the complex numbers, giving us a 2x2 matrix with entries in Q(ζ_5), the smallest subfield of the complex numbers containing the 5th roots of unity.\",\n        \"deduced-from\": [\"Diagonalization theorem\", \"Definition of Q(ζ_5)\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A 2x2 matrix with entries in Q(ζ_5) is equivalent to our original matrix A, so any such matrix can be expressed in the form given above, with a^2 + b^2 = 1 and (a,b) ∈ Q^2.\",\n        \"deduced-from\": [\"Equivalence of matrices\"]\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 2\",\n    \"statement\": \"The set of all 2x2 matrices with rational entries that satisfy A^5 = I is parametrized by pairs of rational numbers (a, b) that satisfy a^2 + b^2 = 1.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"observation\",\n        \"statement\": \"From Theorem 1, we know that any 2x2 matrix A with rational entries that satisfies A^5 = I can be expressed in the form given above.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The condition a^2 + b^2 = 1 is a circle of radius 1 in the plane Q^2 of rational numbers, and every point on this circle corresponds to a unique 2x2 matrix A with the property that A^5 = I.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Thus, the set of all such matrices is parametrized by pairs of rational numbers (a, b) that satisfy a^2 + b^2 = 1.\",\n        \"deduced-from\": [\"Definition of parametrization\"]\n      }\n    ]\n  }\n]\n```\n\nThis JSON list contains two objects representing the two theorems include their proofs. The proof of each theorem is further broken down into steps with appropriate types (\"let\", \"observation\", \"assertion\") for each step in 'proof' field. Fields such as \"statement\", \"variable\", \"value\" etc. are used as per the description of each type in the `ProofJSON` format. In the \"assertion\" type, \"deduced-from\" field is used to specify the results that are used to prove the claim.",
-    "The ProofJSON representation of the given proof would be as follows:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"All 2x2 matrices with rational entries A = [[a, b], [-b, a]] where a,b are elements of Q and a^2 + b^2 = 1 satisfy the property that A^5 = I.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"A\",\n        \"value\": \"[[a, b], [-b, a]]\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"A can be expressed in terms of complex numbers as A = [[a - bi, 0], [0, a + bi]].\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"(a - bi)^5 = (a + bi)^5 = 1\",\n        \"deduced-from\": [\n          \"(a - bi)(a + bi) = a^2 + b^2 = 1\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A^5 = I\",\n        \"deduced-from\": [\n          \"(a - bi)^5 = (a + bi)^5 = 1\"\n        ]\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 2\",\n    \"statement\": \"All 2x2 matrices A with rational entries that satisfy A^5 = I are of two forms: (i) A = [[cos(2πk/5), -sin(2πk/5)], [sin(2πk/5), cos(2πk/5)]], for 0 <= k <= 4, and (ii) A = [[cos(2πk/5), sin(2πk/5)], [-sin(2πk/5), cos(2πk/5)]], for 0 <= k <= 4.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"A\",\n        \"value\": \"A\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The eigenvalues of A are roots of a quadratic polynomial with rational coefficients\",\n        \"justification\": \"From the properties of eigenvalues and rational matrices.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The eigenvalues are either two distinct real numbers, a double real number, or a pair of conjugate complex numbers\",\n        \"justification\": \"From the properties of eigenvalues and rational matrices.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The fifth powers of the eigenvalues must be 1\",\n        \"deduced-from\": [\n          \"A^5 = I\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The eigenvalues must be fifth roots of unity\",\n        \"justification\": \"From the property of roots of unity.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"1 and e^(4πi/5) are real, leading to matrices of the first form (with k=0 and k=2)\",\n        \"justification\": \"From the properties of roots of unity and trigonometry.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The remaining ones lead to matrices of the second form\",\n        \"justification\": \"From the properties of roots of unity and trigonometry.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The cosine and sine of multiples of 2π/5 are rational\",\n        \"justification\": \"From the properties of rational numbers and trigonometry.\"\n      }\n    ]\n  }\n]\n```",
-    "Here is the `ProofJSON` format for the above theorems and proofs:\n\n```json\n[\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 1\",\n        \"statement\": \"All 2x2 matrices with rational entries A = ((a, b), (-b, a)) where a,b ∈ Q and a^2 + b^2 = 1 satisfy the property that A^5 = I\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"observation\",\n                \"statement\": \"For this type of matrix, we can express A in terms of complex numbers as A = ((a - bi, 0), (0, a + bi)). Here a and b are real numbers, so a - bi and a + bi are conjugate complex numbers whose product is (a - bi)(a + bi) = a^2 + b^2 = 1.\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"(a - bi)^5 = (a + bi)^5 = 1, and hence A^5 = I\",\n                \"deduced-from\": [\"(a - bi)(a + bi) = a^2 + b^2 = 1\"]\n            }\n        ]\n    },\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 2\",\n        \"statement\": \"All 2x2 matrices A with rational entries that satisfy A^5 = I are of two forms: (i) A = ((cos(2πk/5), -sin(2πk/5)), (sin(2πk/5), cos(2πk/5))), for 0 ≤ k ≤ 4, and (ii) A = ((cos(2πk/5), sin(2πk/5)), (-sin(2πk/5), cos(2πk/5))), for 0 ≤ k ≤ 4\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"observation\",\n                \"statement\": \"The eigenvalues of such a matrix A are roots of a quadratic polynomial with rational coefficients, hence they are either two distinct real numbers, a double real number, or a pair of conjugate complex numbers. In any case, their fifth powers must be 1, thus they must be fifth roots of unity. These are 1, e^(2πi/5), e^(4πi/5), e^(6πi/5), and e^(8πi/5).\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"Only 1 and e^(4πi/5) are real, leading to matrices of the first form (with k=0 and k=2). The remaining ones lead to matrices of the second form. The cosine and sine of multiples of 2π/5 are rational, completing the proof.\",\n                \"deduced-from\": [\"The eigenvalues of such a matrix A are roots of a quadratic polynomial with rational coefficients, hence they are either two distinct real numbers, a double real number, or a pair of conjugate complex numbers. In any case, their fifth powers must be 1, thus they must be fifth roots of unity. These are 1, e^(2πi/5), e^(4πi/5), e^(6πi/5), and e^(8πi/5).\"]\n            }\n        ]\n    }\n]\n```\n\nThis JSON representation captures both theorems along with their proofs, broken down into statements and claims as supported by the `ProofJSON` format.",
-    "The `ProofJSON` representation of your theorem and its proof would look something like this:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"Let A be a 2x2 matrix with rational entries. If A^5 = I, where I is the 2x2 identity matrix, then A is either the 2x2 identity matrix or its negative.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"A\",\n        \"value\": \"a 2x2 matrix with rational entries such that A^5 = I\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"A can be written in the form [cos(2πk/5), -sin(2πk/5), sin(2πk/5), cos(2πk/5)] for some integer k such that -5 <= k <= 5\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A has order 5, which implies that any eigenvalue λ of A satisfies λ^5 = 1\",\n        \"deduced-from\": [\"A^5 = I\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"λ is a 5th root of unity, and hence is of the form λ = exp(2πik/5) for some integer -5 <= k <= 5\",\n        \"deduced-from\": [\"λ^5 = 1\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"cos(2πk/5) and sin(2πk/5) must both be rational\",\n        \"deduced-from\": [\"A has rational entries\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"cos(2πk/5) and sin(2πk/5) are rational if and only if k = 0, ±5\",\n        \"deduced-from\": [\"cos(2πk/5) and sin(2πk/5) are rational\"]\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"A\",\n        \"value\": \"the 2x2 matrix which equals either [1, 0, 0, 1] or [-1, 0, 0, -1]\",\n        \"deduced-from\": [\"k = 0 or k = ±5\"]\n      }\n    ]\n  }\n]\n```\n\nI've chosen to represent the matrices as lists of their entries ([a, b, c, d] represents [a, b; c, d]). If there's a more appropriate way to represent matrices in your use case, feel free to adjust accordingly.",
-    "Here is the `ProofJSON` representation for the given context:\n\n```json\n[\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 1\",\n        \"statement\": \"Let A be a 2x2 matrix with rational entries. If A^5 = I, where I is the 2x2 identity matrix, then A is either the 2x2 identity matrix or its negative.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"A 2x2 matrix A satisfying A^5 = I can be written in the form [[cos(2*pi*k/5), -sin(2*pi*k/5)], [sin(2*pi*k/5), cos(2*pi*k/5)]] for some integer k such that -5 ≤ k ≤ 5.\",\n                \"deduced-from\": [\n                    {\n                        \"result\": \"A^5 = I implies that A has order 5\"\n                    },\n                    {\n                        \"result\": \"A has order 5 implies that any eigenvalue λ of A satisfies λ^5 = 1\"\n                    },\n                    {\n                        \"result\": \"λ^5 = 1 implies that λ is a 5th root of unity\"\n                    },\n                    {\n                        \"result\": \"λ is a 5th root of unity implies that λ = exp(2*pi*i*k/5) for some integer -5 ≤ k ≤ 5\"\n                    }\n                ]\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"cos(2*pi*k/5) and sin(2*pi*k/5) are rational iff k = 0, ±5\",\n                \"deduced-from\": [\n                    {\n                        \"result\": \"A has rational entries\"\n                    }\n                ]\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"Substituting these values gives the matrices A = [[1, 0], [0, 1]] and A = [[-1, 0], [0, -1]]\",\n                \"deduced-from\": [\n                    {\n                        \"result\": \"k = 0, ±5\"\n                    }\n                ]\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"A = [[1, 0], [0, 1]] and A = [[-1, 0], [0, -1]] are the 2x2 identity matrix and its negative, respectively.\"\n            }\n        ]\n    }\n]\n```\n\nThis is a rough translation. The actual proof in the JSON format might contain more details about the individual steps taken during the proof."
+    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"If $A$ is a $2 \\\\times 2$ matrix with rational entries such that $A^5 = I$, then $A$ is of the form $\\\\begin{bmatrix} \\\\cos\\\\theta & -\\\\sin\\\\theta \\\\\\\\ \\\\sin\\\\theta & \\\\cos\\\\theta \\\\end{bmatrix}$ where $\\\\theta = \\\\frac{2k\\\\pi}{5}$ for some $k \\\\in \\\\{0, 1, 2, 3, 4\\\\}$.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"observation\",\n        \"statement\": \"This follows directly from the spectral theorem, which guarantees that a $2 \\\\times 2$ matrix that is a fifth root of the identity can be diagonalized, and thus can be written in the form given with the stated conditions on $\\\\theta$.\"\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 2\",\n    \"statement\": \"The set of all $2 \\\\times 2$ matrices with rational entries such that $A^5 = I$ is given by $\\\\left\\\\{ \\\\begin{bmatrix} 1 & 0 \\\\\\\\ 0 & 1 \\\\end{bmatrix}, \\\\begin{bmatrix} \\\\frac{1+\\\\sqrt{5}}{4} & -\\\\frac{1-\\\\sqrt{5}}{4} \\\\\\\\ \\\\frac{1-\\\\sqrt{5}}{4} & \\\\frac{1+\\\\sqrt{5}}{4} \\\\end{bmatrix}, \\\\begin{bmatrix} -\\\\frac{1+\\\\sqrt{5}}{4} & -\\\\frac{1-\\\\sqrt{5}}{4} \\\\\\\\ \\\\frac{1-\\\\sqrt{5}}{4} & -\\\\frac{1+\\\\sqrt{5}}{4} \\\\end{bmatrix}, \\\\begin{bmatrix} \\\\frac{1+\\\\sqrt{5}}{4} & \\\\frac{1-\\\\sqrt{5}}{4} \\\\\\\\ -\\\\frac{1-\\\\sqrt{5}}{4} & \\\\frac{1+\\\\sqrt{5}}{4} \\\\end{bmatrix}, \\\\begin{bmatrix} -\\\\frac{1+\\\\sqrt{5}}{4} & \\\\frac{1-\\\\sqrt{5}}{4} \\\\\\\\ -\\\\frac{1-\\\\sqrt{5}}{4} & -\\\\frac{1+\\\\sqrt{5}}{4} \\\\end{bmatrix} \\\\right\\\\}$.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"observation\",\n        \"statement\": \"This is a direct computation using the form for the matrices from Theorem 1 and the values for $\\\\theta$. After evaluating the sine and cosine functions, we obtain the matrices in the set.\"\n      }\n    ]\n  }\n]",
+    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"theorem_1\",\n    \"statement\": \"If A is a 2x2 matrix with rational entries such that A^5 = I, then A is of the form [[cos(theta), -sin(theta)], [sin(theta), cos(theta)]] where theta = (2k*pi)/5 for some k in {0, 1, 2, 3, 4}.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is of the form [[cos(theta), -sin(theta)], [sin(theta), cos(theta)]] where theta = (2k*pi)/5 for some k in {0, 1, 2, 3, 4}.\",\n        \"deduced-from\": [\n          \"A^5 = I\",\n          \"A is a 2x2 matrix with rational entries\",\n          {\"result\": \"spectral theorem\", \"applied-to\": \"A\"}\n        ]\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"theorem_2\",\n    \"statement\": \"The set of all 2x2 matrices with rational entries such that A^5 = I is given by {[[1, 0], [0, 1]], [[(1+sqrt(5))/4, -(1-sqrt(5))/4], [(1-sqrt(5))/4, (1+sqrt(5))/4]], [[-(1+sqrt(5))/4, -(1-sqrt(5))/4], [(1-sqrt(5))/4, -(1+sqrt(5))/4]], [[(1+sqrt(5))/4, (1-sqrt(5))/4], [-(1-sqrt(5))/4, (1+sqrt(5))/4]], [[-(1+sqrt(5))/4, (1-sqrt(5))/4], [-(1-sqrt(5))/4, -(1+sqrt(5))/4]]}.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The set of all 2x2 matrices with rational entries such that A^5 = I is given by {[[1, 0], [0, 1]], [[(1+sqrt(5))/4, -(1-sqrt(5))/4], [(1-sqrt(5))/4, (1+sqrt(5))/4]], [[-(1+sqrt(5))/4, -(1-sqrt(5))/4], [(1-sqrt(5))/4, -(1+sqrt(5))/4]], [[(1+sqrt(5))/4, (1-sqrt(5))/4], [-(1-sqrt(5))/4, (1+sqrt(5))/4]], [[-(1+sqrt(5))/4, (1-sqrt(5))/4], [-(1-sqrt(5))/4, -(1+sqrt(5))/4]]}.\",\n        \"deduced-from\": [\n          \"theorem_1\",\n          {\"result\": \"direct computation\", \"applied-to\": \"A\"}\n        ]\n      }\n    ]\n  }\n]",
+    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"The solutions to the equation $A^5 = I$ for a $2 \\\\times 2$ matrix $A$ are given by $A = \\\\begin{bmatrix} \\\\cos(\\\\frac{2\\\\pi k}{5}) & -\\\\sin(\\\\frac{2\\\\pi k}{5}) \\\\\\\\ \\\\sin(\\\\frac{2\\\\pi k}{5}) & \\\\cos(\\\\frac{2\\\\pi k}{5}) \\\\end{bmatrix}$ for $k = 0, 1, 2, 3, 4$.\",\n    \"status\": \"stated\",\n    \"proof\": []\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 2\",\n    \"statement\": \"The only $2 \\\\times 2$ matrices with rational entries that satisfy $A^5 = I$ are $A = \\\\begin{bmatrix} 1 & 0 \\\\\\\\ 0 & 1 \\\\end{bmatrix}, A = \\\\begin{bmatrix} -1 & 0 \\\\\\\\ 0 & -1 \\\\end{bmatrix}$.\",\n    \"status\": \"stated\",\n    \"proof\": []\n  }\n]",
+    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"The solutions to the equation $A^5 = I$ for a $2 \\\\times 2$ matrix $A$ are given by $A = \\\\begin{bmatrix} \\\\cos(\\\\frac{2\\\\pi k}{5}) & -\\\\sin(\\\\frac{2\\\\pi k}{5}) \\\\\\\\ \\\\sin(\\\\frac{2\\\\pi k}{5}) & \\\\cos(\\\\frac{2\\\\pi k}{5}) \\\\end{bmatrix}$ for $k = 0, 1, 2, 3, 4$.\",\n    \"status\": \"stated\",\n    \"proof\": []\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 2\",\n    \"statement\": \"The only $2 \\\\times 2$ matrices with rational entries that satisfy $A^5 = I$ are $A = \\\\begin{bmatrix} 1 & 0 \\\\\\\\ 0 & 1 \\\\end{bmatrix}$, $A = \\\\begin{bmatrix} -1 & 0 \\\\\\\\ 0 & -1 \\\\end{bmatrix}$.\",\n    \"status\": \"stated\",\n    \"proof\": []\n  }\n]",
+    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"theorem 1\",\n    \"statement\": \"Any 2x2 matrix A with rational entries satisfying the equation A^5 = I, where I is the 2x2 identity matrix, is of the form A = [[cos(2kπ/5), -sin(2kπ/5)], [sin(2kπ/5), cos(2kπ/5)]], where k is an integer and the entries are interpreted as rationals via their trigonometric representations as sums of powers of the primitive 5th roots of unity cos(2π/5) + isin(2π/5).\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"A\",\n        \"value\": \"a 2x2 matrix satisfying A^5 = I\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is unitarily equivalent to a diagonal matrix\",\n        \"deduced-from\": [\"spectral theorem\"]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The eigenvalues of A are 5th roots of 1, of the form e^(2πik/5) for k in {0, 1, 2, 3, 4}.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"These roots can be written in the required form using trigonometric identities.\"\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"theorem 2\",\n    \"statement\": \"There are exactly five 2x2 matrices with rational entries that satisfy the equation A^5 = I, where I is the 2x2 identity matrix.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The number of such matrices is equal to the number of distinct 5th roots of 1, which is 5\",\n        \"deduced-from\": [\n          {\n            \"result\": \"theorem 1\",\n            \"applied-to\": \"A\"\n          }\n        ]\n      }\n    ]\n  }\n]",
+    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"Any 2x2 matrix A with rational entries satisfying the equation A^5 = I, where I is the 2x2 identity matrix, is of the form A = [[cos(2kπ/5), -sin(2kπ/5)], [sin(2kπ/5), cos(2kπ/5)]], where k is an integer and the entries are interpreted as rationals via their trigonometric representations as sums of powers of the primitive 5th roots of unity cos(2π/5) + i*sin(2π/5).\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"A\",\n        \"value\": \"2x2 matrix satisfying A^5 = I\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is unitarily equivalent to a diagonal matrix\",\n        \"deduced-from\": [\"Spectral theorem\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Eigenvalues of A are 5th roots of 1 and are of the form e^(2πik/5) where k belongs to {0, 1, 2, 3, 4}\",\n        \"deduced-from\": [\"Definition of eigenvalues\", \"Unitary equivalence to a diagonal matrix\"],\n        \"justification\": \"Eigenvalues of a matrix are unaltered by unitary equivalence transformations.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Eigenvalues can be written in the required form using trigonometric identities\",\n        \"deduced-from\": [\"Form of eigenvalues\"],\n        \"justification\": \"Euler's formula allows representation of complex roots in trigonometric form.\"\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 2\",\n    \"statement\": \"There are exactly five 2x2 matrices with rational entries that satisfy the equation A^5 = I, where I is the 2x2 identity matrix.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"use\",\n        \"variable\": \"result\",\n        \"value\": \"Theorem 1\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The number of such matrices is equal to the number of distinct 5th roots of 1\",\n        \"deduced-from\": [\"Theorem 1\"],\n        \"justification\": \"Matrices are determined by their eigenvalues.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"There are 5 distinct 5th roots of 1, corresponding to k = 0, 1, 2, 3, 4.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Therefore, there are exactly five such matrices\",\n        \"deduced-from\": [\"Number of distinct 5th roots of 1\"]\n      }\n    ]\n  }\n]"
   ]
 }

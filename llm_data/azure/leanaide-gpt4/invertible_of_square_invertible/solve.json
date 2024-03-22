@@ -1,8 +1,8 @@
 {
   "problem": "Let $A$ be a square matrix. Prove that if $A^2$ is invertible then $A$ is invertible.",
   "solutions": [
-    "Assume $A^2$ is invertible. Then there exists a matrix $B$ such that $A^2B = BA^2 = I$, where $I$ is the identity matrix.\n\nConsider the product $A(AB)$. We have:\n\n$A(AB) = A^2B = I$.\n\nSo $AB = B' = A^{-1}$, where $B'$ is the inverse of $A$.\n\nThus, $A$ is invertible.",
-    "Let's denote $B = A^2$. Since $B$ is invertible, there exists a matrix $B^{-1}$ such that $BB^{-1} = B^{-1}B = I$.\n\nWe know that $B = A^2 = AA$, so we can write the previous expressions as $AAB^{-1} = B^{-1}AA = I$. \n\nLet's take $C = AB^{-1}$. Then we have $AC = CA = I$, so $C$ is the inverse of $A$, which means $A$ is invertible.",
-    "Suppose $A^2$ is invertible. This means there exists a matrix $B$ such that $A^2B=BA^2=I$, where $I$ is the identity matrix.\n\nMultiplying both sides of $A^2B=I$ by $A$ from the left gives $A(A^2B)=(AA^2)B=A^3B=AI=A$ (because $A^2B=I$). Therefore, $AB=A$.\n\nSimilarly, multiplying both sides of $BA^2=I$ by $A$ from the right gives $B(AA^2)=(BA^2)A=B(A^3)=BI=B$, so $BA=B$.\n\nThus, $A$ has a two-sided inverse (namely $B$), so $A$ is invertible."
+    "The statement is true. If $A^2$ is invertible, then there exists a matrix $B$ such that $A^2B = BA^2 = I$. Multiplying both sides of $A^2B = I$ on the right by $A$ gives $A(AB) = I$, so $A$ is invertible.",
+    "The assertion is true. \n\nThe reason for this is that if a square matrix $A$ is not invertible, then it has a zero determinant. Because the determinant of $A^2$ is the square of the determinant of $A$, if $A$ has a zero determinant, then $A^2$ will also have a zero determinant, which means $A^2$ is not invertible. \n\nSo, if $A^2$ is invertible, it cannot be the case that $A$ is not invertible. Therefore, $A$ must be invertible.",
+    "If $A^2$ is invertible, there exists a matrix $B$ such that $A^2 * B = B * A^2 = I$. Now consider the product $(A * (B * A)) * A$. This is just $A * (B * (A * A)) = A * ((B * A^2) = A * I = A$. But this is also $((A * B) * A) * A = (I * A) = A$. Therefore, $A * (B * A) = I$. Similarly, if we right multiply by $A$, we get that $(B * A) * A = I$. Thus, the matrix $B * A$ is both a left and a right inverse of $A$, and therefore $A$ is invertible."
   ]
 }

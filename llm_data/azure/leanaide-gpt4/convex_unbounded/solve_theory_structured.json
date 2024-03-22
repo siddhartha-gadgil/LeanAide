@@ -1,103 +1,45 @@
 {
   "problem": "Suppose $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$. Prove that $f$ is unbounded.",
   "solutions": [
-    "Suppose $f$ were bounded. Then the Extreme Value Theorem implies that there exist points $a, b \\in \\mathbb{R}$ such that $f(a) = \\inf_{x \\in \\mathbb{R}} f(x)$ and $f(b) = \\sup_{x \\in \\mathbb{R}} f(x)$. \n\nNow, since $f''(x) > 0$ for all $x \\in \\mathbb{R}$, this means $f$ is strictly convex. A strictly convex function achieves its infimum and supremum at the endpoints of the interval. But since the domain is $\\mathbb{R}$, there are no endpoints, which contradicts the existence of $a$ and $b$. Therefore, $f$ must be unbounded.",
-    "The assumption that $f''(x) > 0$ for all $x \\in \\mathbb{R}$ implies that $f$ is strictly convex. \n\nConsider the limit as $x$ approaches $\\infty$. If $f(x)$ were to approach a finite limit as $x \\rightarrow \\infty$, then by the definition of limit, for some sufficiently large $x$, $f(x)$ would be arbitrarily close to that limit, say $L$. But then, given the strict convexity of $f$, for any $x' > x$, $f(x') > f(x)$, which contradicts the assumption that $f(x)$ is close to $L$. Hence, $f(x)$ is unbounded as $x \\rightarrow \\infty$.\n\nA similar argument can be made for $x \\rightarrow -\\infty$. Hence, $f$ is unbounded.",
-    "Assume for contradiction that $f$ is bounded. Then, there exist real numbers $M$ and $m$ such that $m \\leq f(x) \\leq M$ for all $x \\in \\mathbb{R}$.\n\nSince $f''(x) > 0$ for all $x \\in \\mathbb{R}$, the function $f$ is strictly convex. Then, by the characterization of convex functions, for any $x<y<z$ we have\n\n$$\\frac{f(y)-f(x)}{y-x} \\leq \\frac{f(z)-f(y)}{z-y}.$$\n\nLetting $y \\to x^+$ and $y \\to z^-$, we can conclude that $f'$ is nondecreasing.\n\nSuppose there exist $a,b \\in \\mathbb{R}$ such that $f'(a)<0$ and $f'(b)>0$. By the Intermediate Value Theorem (since $f'$ is nondecreasing and hence continuous), for every $c \\in (f'(a),f'(b))$, there exists $d \\in (a,b)$ such that $f'(d)=c$. Therefore, $f'$ takes both negative and positive values, contradicting the assumption that $f$ is bounded.\n\nHence, we must have $f'(x) \\leq 0$ for all $x \\in \\mathbb{R}$ or $f'(x) \\geq 0$ for all $x \\in \\mathbb{R}$. However, both these cases would contradict the property that $f''(x) > 0$ for all $x \\in \\mathbb{R}$, leading to a contradiction.\n\nTherefore, this contradiction shows that our initial assumption that $f$ is bounded must be false. Hence, $f$ is unbounded."
+    "The statement is false. The function $f(x) = x^2$ is a counterexample. It is continuous, its second derivative is positive for all $x \\in \\mathbb{R}$, but it is not unbounded. Its range is $[0, \\infty)$.",
+    "The statement is false. Consider the function $f(x) = x^2$. It is continuous on $\\mathbb{R}$ and its second derivative is $f''(x) = 2 > 0$ for all $x \\in \\mathbb{R}$. However, $f$ is not unbounded. Instead, it is unbounded only above (as $x \\rightarrow +\\infty$), but it is bounded below (specifically, $f(x) \\geq 0$ for all $x \\in \\mathbb{R}$).",
+    "The assumption $f''(x) > 0$ for all $x \\in \\mathbb{R}$ means that $f$ is a strictly convex function. From the properties of convex functions, we know that a strictly convex function cannot be bounded. Therefore, $f$ is unbounded."
   ],
   "theories": [
-    "## Theorem 1\nIf $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is unbounded.\n\n## Proof\nAssume, for the sake of contradiction, that $f$ is bounded. By the Extreme Value Theorem, there exist $a, b \\in \\mathbb{R}$ such that $f(a) = \\inf_{x \\in \\mathbb{R}} f(x)$ and $f(b) = \\sup_{x \\in \\mathbb{R}} f(x)$.\n\nAs $f''(x) > 0$ for all $x \\in \\mathbb{R}$, the function $f$ is strictly convex. This implies that a strictly convex function can only achieve its infimum and supremum at the endpoints of its interval.\n\nHowever, the domain of $f$ is $\\mathbb{R}$, which has no endpoints. This leads to a contradiction with our earlier assumption that $f$ is bounded.\n\nHence, the function $f$ must be unbounded. This completes the proof.",
-    "Theorem 1: Suppose $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f(x)$ is unbounded as $x \\rightarrow \\infty$.\n\nProof: If $f''(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is strictly convex. Suppose $f(x)$ approaches a finite limit $L$ as $x \\rightarrow \\infty$. Then for some sufficiently large $x$, $f(x)$ is arbitrarily close to $L$. However, due to the strict convexity of $f$, for any $x' > x$, $f(x') > f(x)$, contradicting the assumption that $f(x)$ is close to $L$. Therefore, $f(x)$ is unbounded as $x \\rightarrow \\infty$.\n\nTheorem 2: Suppose $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f(x)$ is unbounded as $x \\rightarrow -\\infty$.\n\nProof: The proof is analogous to the proof of Theorem 1, but considering $x \\rightarrow -\\infty$. Again, we assume that $f''(x) > 0$ for all $x \\in \\mathbb{R}$, implying that $f$ is strictly convex. If $f(x)$ were to approach a finite limit $L$ as $x \\rightarrow -\\infty$, then for some sufficiently small $x$ (i.e., a large negative number), $f(x)$ would be arbitrarily close to $L$. However, due to the strict convexity of $f$, for any $x' < x$, $f(x') > f(x)$, contradicting the assumption that $f(x)$ is close to $L$. Therefore, $f(x)$ is unbounded as $x \\rightarrow -\\infty$.",
-    "**Theorem 1:** If $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function and $f''(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is strictly convex.\n\n**Proof:** The second derivative test for convexity states that if the second derivative of a function is positive at all points in its domain, then the function is strictly convex. Hence, if $f''(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is strictly convex.\n\n**Theorem 2:** If $f$ is strictly convex, its derivative $f'$ is nondecreasing.\n\n**Proof:** By the characterization of convex functions, for any $x<y<z$, we have\n\n$$\\frac{f(y)-f(x)}{y-x} \\leq \\frac{f(z)-f(y)}{z-y}.$$\n\nLetting $y \\to x^+$ and $y \\to z^-$, we conclude that $f'$ is nondecreasing.\n\n**Theorem 3:** If $f''(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is unbounded.\n\n**Proof:** By contradiction, suppose $f$ is bounded. Then, by Theorem 1, $f$ is strictly convex and by Theorem 2, $f'$ is nondecreasing. Suppose there exist $a,b \\in \\mathbb{R}$ such that $f'(a)<0$ and $f'(b)>0$. By the Intermediate Value Theorem, for every $c \\in (f'(a),f'(b))$, there exists $d \\in (a,b)$ such that $f'(d)=c$. This contradicts the assumption that $f$ is bounded. Hence,  $f'(x) \\leq 0$ for all $x \\in \\mathbb{R}$ or $f'(x) \\geq 0$ for all $x \\in \\mathbb{R}$. Both of these contradict $f''(x) > 0$ for all $x \\in \\mathbb{R}$. Therefore, the initial assumption that $f$ is bounded must be false. Hence, $f$ is unbounded."
+    "{\n  \"Theorems\": [\n    {\n      \"Statement\": \"Suppose $f: \\\\mathbb{R} \\\\to \\\\mathbb{R}$ is a continuous function such that $f''(x) > 0$ for all $x \\\\in \\\\mathbb{R}$. Then $f$ is unbounded.\",\n      \"Proof\": \"This theorem is false. A counterexample is the function $f(x) = x^2$. This function is continuous and its second derivative is $f''(x) = 2$, which is positive for all $x \\\\in \\\\mathbb{R}$. However, it is not unbounded as its range is $[0, \\\\infty)$.\"\n    }\n  ]\n}",
+    "## Theorem 1\nSuppose $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is not necessarily unbounded.\n\n## Proof\nTake $f(x) = x^2$ as a counterexample. This function is continuous on $\\mathbb{R}$ and its second derivative is $f''(x) = 2 > 0$ for all $x \\in \\mathbb{R}$. However, $f$ is not unbounded. Thus, the original statement is false.\n\n## Theorem 2\nIf $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function and $f''(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is unbounded above.\n\n## Proof\nConsider again the function $f(x) = x^2$. As $x \\rightarrow +\\infty$, $f(x) \\rightarrow +\\infty$. Therefore, $f$ is unbounded above.\n\n## Theorem 3\nIf $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function and $f''(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ may be bounded below.\n\n## Proof\nIn our example function $f(x) = x^2$, we have $f(x) \\geq 0$ for all $x \\in \\mathbb{R}$. Hence, $f$ is bounded below and the statement is true.",
+    "## Theorem 1\nIf a function f:R→R is continuous and f''(x) > 0 for all x in R, then f is a strictly convex function.\n\n## Proof\nThe second derivative test is a sufficient condition for a function to be strictly convex on its domain. Therefore, if f''(x) > 0 for all x in R, then f is strictly convex.\n\n## Theorem 2\nIf a function f:R→R is strictly convex, then f is unbounded.\n\n## Proof\nBy the properties of convex functions, a strictly convex function cannot be bounded. Hence, if f is strictly convex, then f is unbounded."
   ],
   "structured_texts": [
     [
       {
         "type": "theorem",
-        "name": "Theorem 1",
-        "statement": "If f: ℝ → ℝ is a continuous function such that f''(x) > 0 for all x ∈ ℝ, then f is unbounded.",
+        "name": "T1",
+        "statement": "Suppose $f: \\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
         "status": "proved",
         "proof": [
           {
-            "type": "assumption",
-            "statement": "f: ℝ → ℝ is a continuous function such that f''(x) > 0 for all x ∈ ℝ."
-          },
-          {
-            "type": "assumption",
-            "statement": "For the sake of contradiction, assume that f is bounded."
-          },
-          {
             "type": "assertion",
-            "claim": "There exist a, b ∈ ℝ such that f(a) = inf_{x ∈ ℝ} f(x) and f(b) = sup_{x ∈ ℝ} f(x).",
-            "deduced-from": [
-              "f is bounded",
-              "Extreme Value Theorem"
-            ]
+            "claim": "This theorem is false.",
+            "deduced-from": []
           },
           {
-            "type": "observation",
-            "statement": "As f''(x) > 0 for all x ∈ ℝ, the function f is strictly convex."
-          },
-          {
-            "type": "assertion",
-            "claim": "A strictly convex function can only achieve its infimum and supremum at the endpoints of its interval.",
-            "deduced-from": [
-              "f is strictly convex"
-            ]
-          },
-          {
-            "type": "observation",
-            "statement": "The domain of f is ℝ, which has no endpoints."
-          },
-          {
-            "type": "assertion",
-            "claim": "This leads to a contradiction with our earlier assumption that f is bounded.",
-            "deduced-from": [
-              "f achieves its infimum and supremum at the endpoints of its interval",
-              "The domain of f has no endpoints"
-            ]
-          },
-          {
-            "type": "observation",
-            "statement": "Hence, the function f must be unbounded."
-          }
-        ]
-      }
-    ],
-    [
-      {
-        "type": "theorem",
-        "name": "Theorem 1",
-        "statement": "If f:R to R is a continuous function such that f''(x) > 0 for all x in R, then f is unbounded.",
-        "status": "proved",
-        "proof": [
-          {
-            "type": "assumption",
-            "statement": "Assume, for the sake of contradiction, that f is bounded."
-          },
-          {
-            "type": "assertion",
-            "claim": "There exist a, b in R such that f(a) = inf_{x in R} f(x) and f(b) = sup_{x in R} f(x).",
-            "deduced-from": [
+            "type": "example",
+            "description": "The function $f(x) = x^2$",
+            "properties": [
               {
-                "result": "Extreme Value Theorem",
-                "applied-to": "the bounded function f"
+                "type": "observation",
+                "statement": "This function is continuous."
+              },
+              {
+                "type": "observation",
+                "statement": "Its second derivative is $f''(x) = 2$, which is positive for all $x \\in \\mathbb{R}$."
+              },
+              {
+                "type": "observation",
+                "statement": "It is not unbounded as its range is $[0, \\infty)$."
               }
             ]
-          },
-          {
-            "type": "observation",
-            "statement": "As f''(x) > 0 for all x in R, the function f is strictly convex. This implies that a strictly convex function can only achieve its infimum and supremum at the endpoints of its interval."
-          },
-          {
-            "type": "assertion",
-            "claim": "However, the domain of f is R, which has no endpoints. This leads to a contradiction with our earlier assumption that f is bounded.",
-            "justification": "R, being an open interval, has no endpoints."
-          },
-          {
-            "type": "assertion",
-            "claim": "Hence, the function f must be unbounded.",
-            "justification": "This follows from the contradiction obtained."
           }
         ]
       }
@@ -106,105 +48,58 @@
       {
         "type": "theorem",
         "name": "Theorem 1",
-        "statement": "Suppose f:R -> R is a continuous function such that f''(x) > 0 for all x in R. Then f(x) is unbounded as x approaches infinity.",
+        "statement": "Suppose $f: \\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
         "status": "proved",
         "proof": [
           {
-            "type": "assumption",
-            "statement": "f''(x) > 0 for all x in R."
+            "type": "definition",
+            "term": "f",
+            "statement": "$f: \\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$."
           },
           {
-            "type": "assertion",
-            "claim": "f is strictly convex",
-            "deduced-from": [
-              "f''(x) > 0 for all x in R"
-            ],
-            "justification": "A function is strictly convex if its second derivative is greater than zero."
+            "type": "observation",
+            "statement": "This theorem is false."
           },
           {
-            "type": "assumption",
-            "statement": "f(x) approaches a finite limit L as x approaches infinity."
-          },
-          {
-            "type": "assertion",
-            "claim": "f(x') > f(x) for any x' > x",
-            "deduced-from": [
-              "f is strictly convex"
-            ],
-            "justification": "Due to the strict convexity of f."
-          },
-          {
-            "type": "assertion",
-            "claim": "f(x) is unbounded as x approaches infinity",
-            "deduced-from": [
-              "f(x') > f(x) for any x' > x",
-              "f(x) approaches a finite limit L as x approaches infinity"
-            ],
-            "justification": "Contradiction arises from the assumption that f(x) is close to L."
-          }
-        ]
-      },
-      {
-        "type": "theorem",
-        "name": "Theorem 2",
-        "statement": "Suppose f:R -> R is a continuous function such that f''(x) > 0 for all x in R. Then f(x) is unbounded as x approaches negative infinity.",
-        "status": "proved",
-        "proof": [
-          {
-            "type": "assumption",
-            "statement": "f''(x) > 0 for all x in R."
-          },
-          {
-            "type": "assertion",
-            "claim": "f is strictly convex",
-            "deduced-from": [
-              "f''(x) > 0 for all x in R"
-            ],
-            "justification": "A function is strictly convex if its second derivative is greater than zero."
-          },
-          {
-            "type": "assumption",
-            "statement": "f(x) approaches a finite limit L as x approaches negative infinity."
-          },
-          {
-            "type": "assertion",
-            "claim": "f(x') > f(x) for any x' < x",
-            "deduced-from": [
-              "f is strictly convex"
-            ],
-            "justification": "Due to the strict convexity of f."
-          },
-          {
-            "type": "assertion",
-            "claim": "f(x) is unbounded as x approaches negative infinity",
-            "deduced-from": [
-              "f(x') > f(x) for any x' < x",
-              "f(x) approaches a finite limit L as x approaches negative infinity"
-            ],
-            "justification": "Contradiction arises from the assumption that f(x) is close to L."
+            "type": "example",
+            "description": "the function $f(x) = x^2$",
+            "properties": [
+              {
+                "type": "observation",
+                "statement": "This function is continuous"
+              },
+              {
+                "type": "observation",
+                "statement": "Its second derivative is $f''(x) = 2$, which is positive for all $x \\in \\mathbb{R}$"
+              },
+              {
+                "type": "observation",
+                "statement": "It is not unbounded as its range is $[0, \\infty)$"
+              }
+            ]
           }
         ]
       }
     ],
-    "Here is the `ProofJSON` representation of the provided theorems and proofs:\n\n```\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"Suppose f: R -> R is a continuous function such that f''(x) > 0 for all x in R. Then f(x) is unbounded as x -> infinity.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"observation\",\n        \"statement\": \"If f''(x) > 0 for all x in R, then f is strictly convex.\"\n      },\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Suppose f(x) approaches a finite limit L as x -> infinity.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For some sufficiently large x, f(x) is arbitrarily close to L.\",\n        \"deduced-from\": [\"The assumption that f(x) approaches a finite limit L as x -> infinity\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Due to the strict convexity of f, for any x' > x, f(x') > f(x).\",\n        \"deduced-from\": [\"The observation that f is strictly convex if f''(x) > 0\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Therefore, f(x) is unbounded as x -> infinity.\",\n        \"justification\": \"Contradicts the assumption that f(x) is close to L.\"\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 2\",\n    \"statement\": \"Suppose f: R -> R is a continuous function such that f''(x) > 0 for all x in R. Then f(x) is unbounded as x -> -infinity.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"observation\",\n        \"statement\": \"If f''(x) > 0 for all x in R, then f is strictly convex.\"\n      },\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Suppose f(x) approaches a finite limit L as x -> -infinity.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For some sufficiently small x (i.e., a large negative number), f(x) is arbitrarily close to L.\",\n        \"deduced-from\": [\"The assumption that f(x) approaches a finite limit L as x -> -infinity\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Due to the strict convexity of f, for any x' < x, f(x') > f(x).\",\n        \"deduced-from\": [\"The observation that f is strictly convex if f''(x) > 0\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Therefore, f(x) is unbounded as x -> -infinity.\",\n        \"justification\": \"Contradicts the assumption that f(x) is close to L.\"\n      }\n    ]\n  }\n]\n```\n\nNote that in the `ProofJSON` format, we first state the theorems, then provide their proofs. Each step in the proof is clearly delineated, and the logical flow is maintained. For each assertion, we indicate the statements or observations it is deduced from, providing a clear chain of reasoning. The final assertion in each proof provides the conclusion of the theorem.",
-    "Here is the `ProofJSON` representation of the above proofs:\n\n```\n[\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 1\",\n        \"statement\": \"If f:R -> R is a continuous function and f''(x) > 0 for all x in R, then f is strictly convex.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"f is strictly convex.\",\n                \"deduced-from\": [\n                    \"The second derivative test for convexity\",\n                    \"f''(x) > 0 for all x in R\"\n                ]\n            }\n        ]\n    },\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 2\",\n        \"statement\": \"If f is strictly convex, its derivative f' is nondecreasing.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"f' is nondecreasing.\",\n                \"deduced-from\": [\n                    \"The characterization of convex functions\",\n                    \"For any x<y<z, (f(y)-f(x))/(y-x) <= (f(z)-f(y))/(z-y)\"\n                ]\n            }\n        ]\n    },\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 3\",\n        \"statement\": \"If f''(x) > 0 for all x in R, then f is unbounded.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"assumption\",\n                \"statement\": \"f is bounded.\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"f is strictly convex.\",\n                \"deduced-from\": [\n                    \"Theorem 1\"\n                ]\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"f' is nondecreasing.\",\n                \"deduced-from\": [\n                    \"Theorem 2\"\n                ]\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"f' is nondecreasing and f''(x) > 0 for all x in R contradict the assumption that f is bounded.\",\n                \"deduced-from\": [\n                    {\n                        \"result\": \"The Intermediate Value Theorem\",\n                        \"applied-to\": \"the values f'(a), f'(b), and the interval (f'(a),f'(b))\"\n                    },\n                    \"f''(x) > 0 for all x in R\"\n                ]\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"f is unbounded.\",\n                \"deduced-from\": [\n                    \"Contradiction from the assumption that f is bounded.\"\n                ]\n            }\n        ]\n    }\n]\n```\n\nThis `ProofJSON` representation is a list of three theorems, each of which has a proof composed of multiple assertions. In these assertions, the \"deduced-from\" fields specify the underlying basis for each step in the proof. For instance, in the proof of Theorem 3, the application of the Intermediate Value Theorem is specified in the \"deduced-from\" field for the claim that the boundedness of $f$ contradicts the nondecreasing nature of $f'$ and the positivity of $f''$.",
     [
       {
         "type": "theorem",
         "name": "Theorem 1",
-        "statement": "If f:ℝ →ℝ is a continuous function and f''(x) > 0 for all x in ℝ, then f is strictly convex",
+        "statement": "Suppose f:R -> R is a continuous function such that f''(x) > 0 for all x in R. Then f is not necessarily unbounded.",
         "status": "proved",
         "proof": [
           {
-            "type": "observation",
-            "statement": "The second derivative test for convexity states that if the second derivative of a function is positive at all points in its domain, then the function is strictly convex",
-            "name": "second derivative test"
-          },
-          {
-            "type": "assertion",
-            "claim": "If f''(x) > 0 for all x in ℝ, then f is strictly convex",
-            "deduced-from": [
-              "second derivative test"
+            "type": "example",
+            "description": "f(x) = x^2",
+            "properties": [
+              {
+                "type": "observation",
+                "statement": "This function is continuous on R and its second derivative is f''(x) = 2 > 0 for all x in R."
+              },
+              {
+                "type": "observation",
+                "statement": "However, f is not unbounded."
+              }
             ]
           }
         ]
@@ -212,76 +107,212 @@
       {
         "type": "theorem",
         "name": "Theorem 2",
-        "statement": "If f is strictly convex, its derivative f' is nondecreasing",
+        "statement": "If f:R -> R is a continuous function and f''(x) > 0 for all x in R, then f is unbounded above.",
         "status": "proved",
         "proof": [
           {
-            "type": "assertion",
-            "claim": "For any x<y<z we have (f(y)-f(x))/(y-x) ≤ (f(z)-f(y))/(z-y)",
-            "justification": "This is a characterization of convex functions"
-          },
-          {
-            "type": "assertion",
-            "claim": "As y approaches x from the right and y approaches z from the left, we conclude that f' is nondecreasing",
-            "justification": "This follows from the previous claim"
+            "type": "example",
+            "description": "f(x) = x^2",
+            "properties": [
+              {
+                "type": "observation",
+                "statement": "As x approaches +infinity, f(x) approaches +infinity."
+              },
+              {
+                "type": "observation",
+                "statement": "Therefore, f is unbounded above."
+              }
+            ]
           }
         ]
       },
       {
         "type": "theorem",
         "name": "Theorem 3",
-        "statement": "If f''(x) > 0 for all x in ℝ, then f is unbounded",
+        "statement": "If f:R -> R is a continuous function and f''(x) > 0 for all x in R, then f may be bounded below.",
         "status": "proved",
         "proof": [
           {
-            "type": "assumption",
-            "statement": "Suppose f is bounded"
-          },
-          {
-            "type": "assertion",
-            "claim": "If f is bounded, then by Theorem 1, f is strictly convex and by Theorem 2, f' is nondecreasing",
-            "deduced-from": [
-              "Theorem 1",
-              "Theorem 2"
+            "type": "example",
+            "description": "f(x) = x^2",
+            "properties": [
+              {
+                "type": "observation",
+                "statement": "In this function, we have f(x) >= 0 for all x in R."
+              },
+              {
+                "type": "observation",
+                "statement": "Hence, f is bounded below."
+              }
             ]
-          },
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "Suppose f:R -> R is a continuous function such that f''(x) > 0 for all x in R. Then f is not necessarily unbounded.",
+        "status": "proved",
+        "proof": [
           {
-            "type": "assumption",
-            "statement": "Suppose there exist a,b in ℝ such that f'(a)<0 and f'(b)>0"
+            "type": "example",
+            "description": "f(x) = x^2",
+            "properties": [
+              {
+                "type": "observation",
+                "statement": "This function is continuous on R and its second derivative is f''(x) = 2 > 0 for all x in R."
+              },
+              {
+                "type": "assertion",
+                "claim": "f is not unbounded.",
+                "deduced-from": [
+                  "definition of unbounded"
+                ],
+                "justification": "For example, f(0) = 0"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "theorem",
+        "name": "Theorem 2",
+        "statement": "If f:R -> R is a continuous function and f''(x) > 0 for all x in R, then f is unbounded above.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "use",
+            "variable": "f",
+            "value": "f(x) = x^2"
           },
           {
             "type": "assertion",
-            "claim": "By the Intermediate Value Theorem, for every c in (f'(a),f'(b)), there exists d in (a,b) such that f'(d)=c",
+            "claim": "f is unbounded above.",
             "deduced-from": [
-              "Intermediate Value Theorem"
+              "definition of unbounded",
+              {
+                "result": "limit property",
+                "applied-to": {
+                  "variable": "x",
+                  "value": "+infinity"
+                }
+              }
             ],
-            "justification": "This contradicts the assumption that f is bounded"
+            "justification": "As x -> +infinity, f(x) -> +infinity."
+          }
+        ]
+      },
+      {
+        "type": "theorem",
+        "name": "Theorem 3",
+        "statement": "If f:R -> R is a continuous function and f''(x) > 0 for all x in R, then f may be bounded below.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "use",
+            "variable": "f",
+            "value": "f(x) = x^2"
           },
           {
             "type": "assertion",
-            "claim": "Hence, f'(x) ≤ 0 for all x in ℝ or f'(x) ≥ 0 for all x in ℝ",
-            "justification": "This follows from the previous claim and the assumption that f'(a)<0 and f'(b)>0"
-          },
+            "claim": "f is bounded below.",
+            "deduced-from": [
+              "definition of bounded",
+              {
+                "result": "property of squaring",
+                "applied-to": {
+                  "variable": "x",
+                  "value": "any real number"
+                }
+              }
+            ],
+            "justification": "As f(x) = x^2 >= 0 for all x in R."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "theorem1",
+        "statement": "If a function f:R→R is continuous and f''(x) > 0 for all x in R, then f is a strictly convex function.",
+        "status": "proved",
+        "proof": [
           {
             "type": "assertion",
-            "claim": "Both of these contradict f''(x) > 0 for all x in ℝ",
-            "justification": "This is a contradiction"
-          },
+            "claim": "f is a strictly convex function.",
+            "deduced-from": [
+              "f: R → R is continuous",
+              "f''(x) > 0 for all x in R",
+              "Second derivative test"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "theorem",
+        "name": "theorem2",
+        "statement": "If a function f:R→R is strictly convex, then f is unbounded.",
+        "status": "proved",
+        "proof": [
           {
             "type": "assertion",
-            "claim": "Therefore, the initial assumption that f is bounded must be false. Hence, f is unbounded",
-            "justification": "This is a contradiction, and thus, the initial assumption is false"
+            "claim": "f is unbounded.",
+            "deduced-from": [
+              "f: R → R is strictly convex",
+              "Properties of convex functions"
+            ]
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "If a function f: R→R is continuous and f''(x) > 0 for all x in R, then f is a strictly convex function.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assertion",
+            "claim": "f is a strictly convex function.",
+            "deduced-from": [
+              {
+                "result": "The second derivative test",
+                "applied-to": "f"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "theorem",
+        "name": "Theorem 2",
+        "statement": "If a function f:R→R is strictly convex, then f is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assertion",
+            "claim": "f is unbounded.",
+            "deduced-from": [
+              {
+                "result": "The properties of convex functions",
+                "applied-to": "f"
+              }
+            ]
           }
         ]
       }
     ]
   ],
   "raw_structured_texts": [
-    "The `ProofJSON` format for the above theorem and its proof would look as follows:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"If f: ℝ → ℝ is a continuous function such that f''(x) > 0 for all x ∈ ℝ, then f is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"f: ℝ → ℝ is a continuous function such that f''(x) > 0 for all x ∈ ℝ.\"\n      },\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"For the sake of contradiction, assume that f is bounded.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"There exist a, b ∈ ℝ such that f(a) = inf_{x ∈ ℝ} f(x) and f(b) = sup_{x ∈ ℝ} f(x).\",\n        \"deduced-from\": [\n          \"f is bounded\",\n          \"Extreme Value Theorem\"\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"As f''(x) > 0 for all x ∈ ℝ, the function f is strictly convex.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A strictly convex function can only achieve its infimum and supremum at the endpoints of its interval.\",\n        \"deduced-from\": [\"f is strictly convex\"]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The domain of f is ℝ, which has no endpoints.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"This leads to a contradiction with our earlier assumption that f is bounded.\",\n        \"deduced-from\": [\"f achieves its infimum and supremum at the endpoints of its interval\", \"The domain of f has no endpoints\"]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Hence, the function f must be unbounded.\"\n      }\n    ]\n  }\n]\n```\n\nIn this JSON representation of the proof, each step of the reasoning is captured as an object in the `proof` array. Each object includes the type of statement (like an assumption, assertion, or observation), and the content of the statement. Assertions also include from what they were deduced. The whole proof is wrapped in a `theorem` object, which includes the statement of the theorem and its proof status as \"proved\".",
-    "Here is the above proof translated into `ProofJSON` format:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"If f:R to R is a continuous function such that f''(x) > 0 for all x in R, then f is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume, for the sake of contradiction, that f is bounded.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"There exist a, b in R such that f(a) = inf_{x in R} f(x) and f(b) = sup_{x in R} f(x).\",\n        \"deduced-from\": [\n          {\n            \"result\": \"Extreme Value Theorem\",\n            \"applied-to\": \"the bounded function f\"\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"As f''(x) > 0 for all x in R, the function f is strictly convex. This implies that a strictly convex function can only achieve its infimum and supremum at the endpoints of its interval.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"However, the domain of f is R, which has no endpoints. This leads to a contradiction with our earlier assumption that f is bounded.\",\n        \"justification\": \"R, being an open interval, has no endpoints.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Hence, the function f must be unbounded.\",\n        \"justification\": \"This follows from the contradiction obtained.\"\n      }\n    ]\n  }\n]\n```\nThe overall structure of the proof is maintained as a list of JSON objects, each corresponding to a step in the proof. These include an assumption, assertions, and observations. The use of the Extreme Value Theorem is explicitly mentioned in one of the assertions. The final assertion completes the proof by stating that the function must be unbounded, following the contradiction obtained earlier.",
-    "Here is the proof translated into the ProofJSON format. Note that the proof is quite extensive and involves several steps, so it has been broken down into smaller parts for easier readability.\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"Suppose f:R -> R is a continuous function such that f''(x) > 0 for all x in R. Then f(x) is unbounded as x approaches infinity.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"f''(x) > 0 for all x in R.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"f is strictly convex\",\n        \"deduced-from\": [\"f''(x) > 0 for all x in R\"],\n        \"justification\": \"A function is strictly convex if its second derivative is greater than zero.\"\n      },\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"f(x) approaches a finite limit L as x approaches infinity.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"f(x') > f(x) for any x' > x\",\n        \"deduced-from\": [\"f is strictly convex\"],\n        \"justification\": \"Due to the strict convexity of f.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"f(x) is unbounded as x approaches infinity\",\n        \"deduced-from\": [\"f(x') > f(x) for any x' > x\", \"f(x) approaches a finite limit L as x approaches infinity\"],\n        \"justification\": \"Contradiction arises from the assumption that f(x) is close to L.\"\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 2\",\n    \"statement\": \"Suppose f:R -> R is a continuous function such that f''(x) > 0 for all x in R. Then f(x) is unbounded as x approaches negative infinity.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"f''(x) > 0 for all x in R.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"f is strictly convex\",\n        \"deduced-from\": [\"f''(x) > 0 for all x in R\"],\n        \"justification\": \"A function is strictly convex if its second derivative is greater than zero.\"\n      },\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"f(x) approaches a finite limit L as x approaches negative infinity.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"f(x') > f(x) for any x' < x\",\n        \"deduced-from\": [\"f is strictly convex\"],\n        \"justification\": \"Due to the strict convexity of f.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"f(x) is unbounded as x approaches negative infinity\",\n        \"deduced-from\": [\"f(x') > f(x) for any x' < x\", \"f(x) approaches a finite limit L as x approaches negative infinity\"],\n        \"justification\": \"Contradiction arises from the assumption that f(x) is close to L.\"\n      }\n    ]\n  }\n]\n```\n\nThe ProofJSON format allows for a structured and systematic representation of mathematical proofs and statements, which can be beneficial for both computer processing and human understanding.",
-    "Here is the `ProofJSON` representation of the provided theorems and proofs:\n\n```\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"Suppose f: R -> R is a continuous function such that f''(x) > 0 for all x in R. Then f(x) is unbounded as x -> infinity.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"observation\",\n        \"statement\": \"If f''(x) > 0 for all x in R, then f is strictly convex.\"\n      },\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Suppose f(x) approaches a finite limit L as x -> infinity.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For some sufficiently large x, f(x) is arbitrarily close to L.\",\n        \"deduced-from\": [\"The assumption that f(x) approaches a finite limit L as x -> infinity\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Due to the strict convexity of f, for any x' > x, f(x') > f(x).\",\n        \"deduced-from\": [\"The observation that f is strictly convex if f''(x) > 0\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Therefore, f(x) is unbounded as x -> infinity.\",\n        \"justification\": \"Contradicts the assumption that f(x) is close to L.\"\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 2\",\n    \"statement\": \"Suppose f: R -> R is a continuous function such that f''(x) > 0 for all x in R. Then f(x) is unbounded as x -> -infinity.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"observation\",\n        \"statement\": \"If f''(x) > 0 for all x in R, then f is strictly convex.\"\n      },\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Suppose f(x) approaches a finite limit L as x -> -infinity.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For some sufficiently small x (i.e., a large negative number), f(x) is arbitrarily close to L.\",\n        \"deduced-from\": [\"The assumption that f(x) approaches a finite limit L as x -> -infinity\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Due to the strict convexity of f, for any x' < x, f(x') > f(x).\",\n        \"deduced-from\": [\"The observation that f is strictly convex if f''(x) > 0\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Therefore, f(x) is unbounded as x -> -infinity.\",\n        \"justification\": \"Contradicts the assumption that f(x) is close to L.\"\n      }\n    ]\n  }\n]\n```\n\nNote that in the `ProofJSON` format, we first state the theorems, then provide their proofs. Each step in the proof is clearly delineated, and the logical flow is maintained. For each assertion, we indicate the statements or observations it is deduced from, providing a clear chain of reasoning. The final assertion in each proof provides the conclusion of the theorem.",
-    "Here is the `ProofJSON` representation of the above proofs:\n\n```\n[\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 1\",\n        \"statement\": \"If f:R -> R is a continuous function and f''(x) > 0 for all x in R, then f is strictly convex.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"f is strictly convex.\",\n                \"deduced-from\": [\n                    \"The second derivative test for convexity\",\n                    \"f''(x) > 0 for all x in R\"\n                ]\n            }\n        ]\n    },\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 2\",\n        \"statement\": \"If f is strictly convex, its derivative f' is nondecreasing.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"f' is nondecreasing.\",\n                \"deduced-from\": [\n                    \"The characterization of convex functions\",\n                    \"For any x<y<z, (f(y)-f(x))/(y-x) <= (f(z)-f(y))/(z-y)\"\n                ]\n            }\n        ]\n    },\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 3\",\n        \"statement\": \"If f''(x) > 0 for all x in R, then f is unbounded.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"assumption\",\n                \"statement\": \"f is bounded.\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"f is strictly convex.\",\n                \"deduced-from\": [\n                    \"Theorem 1\"\n                ]\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"f' is nondecreasing.\",\n                \"deduced-from\": [\n                    \"Theorem 2\"\n                ]\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"f' is nondecreasing and f''(x) > 0 for all x in R contradict the assumption that f is bounded.\",\n                \"deduced-from\": [\n                    {\n                        \"result\": \"The Intermediate Value Theorem\",\n                        \"applied-to\": \"the values f'(a), f'(b), and the interval (f'(a),f'(b))\"\n                    },\n                    \"f''(x) > 0 for all x in R\"\n                ]\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"f is unbounded.\",\n                \"deduced-from\": [\n                    \"Contradiction from the assumption that f is bounded.\"\n                ]\n            }\n        ]\n    }\n]\n```\n\nThis `ProofJSON` representation is a list of three theorems, each of which has a proof composed of multiple assertions. In these assertions, the \"deduced-from\" fields specify the underlying basis for each step in the proof. For instance, in the proof of Theorem 3, the application of the Intermediate Value Theorem is specified in the \"deduced-from\" field for the claim that the boundedness of $f$ contradicts the nondecreasing nature of $f'$ and the positivity of $f''$.",
-    "Here's the translation of the proofs into the `ProofJSON` format:\n\n```json\n[\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 1\",\n        \"statement\": \"If f:ℝ →ℝ is a continuous function and f''(x) > 0 for all x in ℝ, then f is strictly convex\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"observation\",\n                \"statement\": \"The second derivative test for convexity states that if the second derivative of a function is positive at all points in its domain, then the function is strictly convex\",\n                \"name\": \"second derivative test\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"If f''(x) > 0 for all x in ℝ, then f is strictly convex\",\n                \"deduced-from\": [\"second derivative test\"]\n            }\n        ]\n    },\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 2\",\n        \"statement\": \"If f is strictly convex, its derivative f' is nondecreasing\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"For any x<y<z we have (f(y)-f(x))/(y-x) ≤ (f(z)-f(y))/(z-y)\",\n                \"justification\": \"This is a characterization of convex functions\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"As y approaches x from the right and y approaches z from the left, we conclude that f' is nondecreasing\",\n                \"justification\": \"This follows from the previous claim\"\n            }\n        ]\n    },\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 3\",\n        \"statement\": \"If f''(x) > 0 for all x in ℝ, then f is unbounded\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"assumption\",\n                \"statement\": \"Suppose f is bounded\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"If f is bounded, then by Theorem 1, f is strictly convex and by Theorem 2, f' is nondecreasing\",\n                \"deduced-from\": [\"Theorem 1\", \"Theorem 2\"]\n            },\n            {\n                \"type\": \"assumption\",\n                \"statement\": \"Suppose there exist a,b in ℝ such that f'(a)<0 and f'(b)>0\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"By the Intermediate Value Theorem, for every c in (f'(a),f'(b)), there exists d in (a,b) such that f'(d)=c\",\n                \"deduced-from\": [\"Intermediate Value Theorem\"],\n                \"justification\": \"This contradicts the assumption that f is bounded\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"Hence, f'(x) ≤ 0 for all x in ℝ or f'(x) ≥ 0 for all x in ℝ\",\n                \"justification\": \"This follows from the previous claim and the assumption that f'(a)<0 and f'(b)>0\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"Both of these contradict f''(x) > 0 for all x in ℝ\",\n                \"justification\": \"This is a contradiction\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"Therefore, the initial assumption that f is bounded must be false. Hence, f is unbounded\",\n                \"justification\": \"This is a contradiction, and thus, the initial assumption is false\"\n            }\n        ]\n    }\n]\n```"
+    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"T1\",\n    \"statement\": \"Suppose $f: \\\\mathbb{R} \\\\to \\\\mathbb{R}$ is a continuous function such that $f''(x) > 0$ for all $x \\\\in \\\\mathbb{R}$. Then $f$ is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"This theorem is false.\",\n        \"deduced-from\": []\n      },\n      {\n        \"type\": \"example\",\n        \"description\": \"The function $f(x) = x^2$\",\n        \"properties\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"This function is continuous.\"\n          },\n          {\n            \"type\": \"observation\",\n            \"statement\": \"Its second derivative is $f''(x) = 2$, which is positive for all $x \\\\in \\\\mathbb{R}$.\"\n          },\n          {\n            \"type\": \"observation\",\n            \"statement\": \"It is not unbounded as its range is $[0, \\\\infty)$.\"\n          }\n        ]\n      }\n    ]\n  }\n]",
+    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"Suppose $f: \\\\mathbb{R} \\\\to \\\\mathbb{R}$ is a continuous function such that $f''(x) > 0$ for all $x \\\\in \\\\mathbb{R}$. Then $f$ is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"definition\",\n        \"term\": \"f\",\n        \"statement\": \"$f: \\\\mathbb{R} \\\\to \\\\mathbb{R}$ is a continuous function such that $f''(x) > 0$ for all $x \\\\in \\\\mathbb{R}$.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"This theorem is false.\"\n      },\n      {\n        \"type\": \"example\",\n        \"description\": \"the function $f(x) = x^2$\",\n        \"properties\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"This function is continuous\"\n          },\n          {\n            \"type\": \"observation\",\n            \"statement\": \"Its second derivative is $f''(x) = 2$, which is positive for all $x \\\\in \\\\mathbb{R}$\"\n          },\n          {\n            \"type\": \"observation\",\n            \"statement\": \"It is not unbounded as its range is $[0, \\\\infty)$\"\n          }\n        ]\n      }\n    ]\n  }\n]",
+    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"Suppose f:R -> R is a continuous function such that f''(x) > 0 for all x in R. Then f is not necessarily unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"example\",\n        \"description\": \"f(x) = x^2\",\n        \"properties\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"This function is continuous on R and its second derivative is f''(x) = 2 > 0 for all x in R.\"\n          },\n          {\n            \"type\": \"observation\",\n            \"statement\": \"However, f is not unbounded.\"\n          }\n        ]\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 2\",\n    \"statement\": \"If f:R -> R is a continuous function and f''(x) > 0 for all x in R, then f is unbounded above.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"example\",\n        \"description\": \"f(x) = x^2\",\n        \"properties\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"As x approaches +infinity, f(x) approaches +infinity.\"\n          },\n          {\n            \"type\": \"observation\",\n            \"statement\": \"Therefore, f is unbounded above.\"\n          }\n        ]\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 3\",\n    \"statement\": \"If f:R -> R is a continuous function and f''(x) > 0 for all x in R, then f may be bounded below.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"example\",\n        \"description\": \"f(x) = x^2\",\n        \"properties\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"In this function, we have f(x) >= 0 for all x in R.\"\n          },\n          {\n            \"type\": \"observation\",\n            \"statement\": \"Hence, f is bounded below.\"\n          }\n        ]\n      }\n    ]\n  }\n]\n",
+    "[\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 1\",\n        \"statement\": \"Suppose f:R -> R is a continuous function such that f''(x) > 0 for all x in R. Then f is not necessarily unbounded.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"example\",\n                \"description\": \"f(x) = x^2\",\n                \"properties\": [\n                    {\n                        \"type\": \"observation\",\n                        \"statement\": \"This function is continuous on R and its second derivative is f''(x) = 2 > 0 for all x in R.\"\n                    },\n                    {\n                        \"type\": \"assertion\",\n                        \"claim\": \"f is not unbounded.\",\n                        \"deduced-from\": [\n                            \"definition of unbounded\"\n                        ],\n                        \"justification\": \"For example, f(0) = 0\"\n                    }\n                ]\n            }\n        ]\n    },\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 2\",\n        \"statement\": \"If f:R -> R is a continuous function and f''(x) > 0 for all x in R, then f is unbounded above.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"use\",\n                \"variable\": \"f\",\n                \"value\": \"f(x) = x^2\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"f is unbounded above.\",\n                \"deduced-from\": [\n                    \"definition of unbounded\",\n                    {\n                        \"result\": \"limit property\",\n                        \"applied-to\": {\n                            \"variable\": \"x\",\n                            \"value\": \"+infinity\"\n                        }\n                    }\n                ],\n                \"justification\": \"As x -> +infinity, f(x) -> +infinity.\"\n            }\n        ]\n    },\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 3\",\n        \"statement\": \"If f:R -> R is a continuous function and f''(x) > 0 for all x in R, then f may be bounded below.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"use\",\n                \"variable\": \"f\",\n                \"value\": \"f(x) = x^2\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"f is bounded below.\",\n                \"deduced-from\": [\n                    \"definition of bounded\",\n                    {\n                        \"result\": \"property of squaring\",\n                        \"applied-to\": {\n                            \"variable\": \"x\",\n                            \"value\": \"any real number\"\n                        }\n                    }\n                ],\n                \"justification\": \"As f(x) = x^2 >= 0 for all x in R.\"\n            }\n        ]\n    }\n]",
+    "[\n    {\n        \"type\": \"theorem\",\n        \"name\": \"theorem1\",\n        \"statement\": \"If a function f:R→R is continuous and f''(x) > 0 for all x in R, then f is a strictly convex function.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"f is a strictly convex function.\",\n                \"deduced-from\": [\n                    \"f: R → R is continuous\",\n                    \"f''(x) > 0 for all x in R\",\n                    \"Second derivative test\"\n                ]\n            }\n        ]\n    },\n    {\n        \"type\": \"theorem\",\n        \"name\": \"theorem2\",\n        \"statement\": \"If a function f:R→R is strictly convex, then f is unbounded.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"f is unbounded.\",\n                \"deduced-from\": [\n                    \"f: R → R is strictly convex\",\n                    \"Properties of convex functions\"\n                ]\n            }\n        ]\n    }\n]",
+    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"If a function f: R→R is continuous and f''(x) > 0 for all x in R, then f is a strictly convex function.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"f is a strictly convex function.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"The second derivative test\",\n            \"applied-to\": \"f\"\n          }\n        ]\n      }\n    ]\n  },\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 2\",\n    \"statement\": \"If a function f:R→R is strictly convex, then f is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"f is unbounded.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"The properties of convex functions\",\n            \"applied-to\": \"f\"\n          }\n        ]\n      }\n    ]\n  }\n]"
   ]
 }

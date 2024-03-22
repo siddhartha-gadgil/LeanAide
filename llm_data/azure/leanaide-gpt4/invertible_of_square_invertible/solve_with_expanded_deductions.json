@@ -1,50 +1,46 @@
 {
   "problem": "Let $A$ be a square matrix. Prove that if $A^2$ is invertible then $A$ is invertible.",
   "solutions": [
-    "Assume $A^2$ is invertible. Then there exists a matrix $B$ such that $A^2B = BA^2 = I$, where $I$ is the identity matrix.\n\nConsider the product $A(AB)$. We have:\n\n$A(AB) = A^2B = I$.\n\nSo $AB = B' = A^{-1}$, where $B'$ is the inverse of $A$.\n\nThus, $A$ is invertible.",
-    "Let's denote $B = A^2$. Since $B$ is invertible, there exists a matrix $B^{-1}$ such that $BB^{-1} = B^{-1}B = I$.\n\nWe know that $B = A^2 = AA$, so we can write the previous expressions as $AAB^{-1} = B^{-1}AA = I$. \n\nLet's take $C = AB^{-1}$. Then we have $AC = CA = I$, so $C$ is the inverse of $A$, which means $A$ is invertible.",
-    "Suppose $A^2$ is invertible. This means there exists a matrix $B$ such that $A^2B=BA^2=I$, where $I$ is the identity matrix.\n\nMultiplying both sides of $A^2B=I$ by $A$ from the left gives $A(A^2B)=(AA^2)B=A^3B=AI=A$ (because $A^2B=I$). Therefore, $AB=A$.\n\nSimilarly, multiplying both sides of $BA^2=I$ by $A$ from the right gives $B(AA^2)=(BA^2)A=B(A^3)=BI=B$, so $BA=B$.\n\nThus, $A$ has a two-sided inverse (namely $B$), so $A$ is invertible."
+    "The statement is true. If $A^2$ is invertible, then there exists a matrix $B$ such that $A^2B = BA^2 = I$. Multiplying both sides of $A^2B = I$ on the right by $A$ gives $A(AB) = I$, so $A$ is invertible.",
+    "The assertion is true. \n\nThe reason for this is that if a square matrix $A$ is not invertible, then it has a zero determinant. Because the determinant of $A^2$ is the square of the determinant of $A$, if $A$ has a zero determinant, then $A^2$ will also have a zero determinant, which means $A^2$ is not invertible. \n\nSo, if $A^2$ is invertible, it cannot be the case that $A$ is not invertible. Therefore, $A$ must be invertible.",
+    "If $A^2$ is invertible, there exists a matrix $B$ such that $A^2 * B = B * A^2 = I$. Now consider the product $(A * (B * A)) * A$. This is just $A * (B * (A * A)) = A * ((B * A^2) = A * I = A$. But this is also $((A * B) * A) * A = (I * A) = A$. Therefore, $A * (B * A) = I$. Similarly, if we right multiply by $A$, we get that $(B * A) * A = I$. Thus, the matrix $B * A$ is both a left and a right inverse of $A$, and therefore $A$ is invertible."
   ],
   "theories": [
-    "**Theorem:** If $A$ is a square matrix and $A^2$ is invertible, then $A$ is invertible.\n\n**Proof:** \nSuppose $A^2$ is invertible. This implies the existence of a matrix $B$ such that $A^2B = BA^2 = I$, where $I$ is the identity matrix.\nNotice that we can rewrite the equation $A^2B = I$ as $A(AB) = I$. This implies that the matrix $AB$ behaves as the inverse of $A$, since by definition of the inverse of a matrix, $A*A^{-1} = I$.\nHence, we conclude that $A$ is invertible. QED.\n",
-    "Theorem: If the square of a square matrix is invertible, then the matrix itself is also invertible.\n\nProof: Assume that $A$ is a square matrix and $B = A^2$. Given that $B$ is invertible, there exists a matrix $B^{-1}$ such that $BB^{-1} = B^{-1}B = I$. \n\nSubstituting $B = A^2 = AA$ into these equations results in $AAB^{-1} = B^{-1}AA = I$. \n\nBy defining $C = AB^{-1}$, we obtain $AC = CA = I$. Therefore, $C$ serves as the inverse of $A$, which confirms that $A$ is indeed invertible. This completes the proof.",
-    "Theorem: If $A^2$ is invertible for a square matrix $A$, then $A$ is invertible.\n\nProof: \nAssume $A^2$ is invertible. Consequently, there exists a matrix $B$ such that $A^2B=BA^2=I$, with $I$ being the identity matrix.\n\nFirst, consider the equation $A^2B=I$. Multiply both sides of this equation by $A$ on the left, yielding $A(A^2B)=(AA^2)B=A^3B$. Since $A^2B=I$, we have $A^3B=AI$, which simplifies to $A$. Therefore, we arrive at $AB=A$.\n\nSecond, examine the equation $BA^2=I$. Multiplying both sides of this equation by $A$ on the right yields $B(AA^2)=(BA^2)A=B(A^3)$. Replacing $A^2$ with $I$ again, we get $B(A^3)=BI$, which simplifies to $B$. Therefore, we have $BA=B$.\n\nFrom the above, $A$ has a two-sided inverse $B$, hence $A$ is invertible."
+    "## Theorem 1\nLet $A$ be a square matrix. If $A^2$ is invertible then $A$ is invertible.\n\n## Proof 1\nAssume $A^2$ is invertible. Then there exists a matrix $B$ such that $A^2B = BA^2 = I$. Multiplying both sides of the equation $A^2B = I$ on the right by $A$ gives $A(AB) = I$. Thus, $A$ is invertible.",
+    "{\n\"Theorem\": \"Let A be a square matrix. If A^2 is invertible then A is also invertible.\",\n\"Proof\": \"Assume A is not invertible. Then it has a zero determinant. Because the determinant of A^2 is the square of the determinant of A, if A has a zero determinant, then A^2 will also have a zero determinant, implying A^2 is not invertible. This contradicts the assumption that A^2 is invertible. Therefore, the assumption that A is not invertible must be false, implying A is invertible.\"\n}",
+    "Theorem: Let A be a square matrix. If A squared is invertible then A is also invertible.\n\nProof: Suppose A squared is invertible. Then there exists a matrix B such that A squared multiplied by B equals B multiplied by A squared equals the identity matrix. Considering the product A times (B times A) times A, we see that this equals A since this is equivalent to A times the identity. By associating differently, this can also be seen to equal (A times B) times A squared, which equals A times the identity, hence A. Therefore A times (B times A) equals the identity. Similarly, if we multiply from the right by A, we get that (B times A) times A equals the identity. Therefore the matrix B times A is both a left inverse and a right inverse of A. Hence A is invertible."
   ],
   "structured_texts": [
     [
       {
         "type": "theorem",
-        "name": "invertible_square_matrix",
-        "statement": "If A is a square matrix and A^2 is invertible, then A is invertible.",
+        "name": "Theorem 1",
+        "statement": "Let A be a square matrix. If A^2 is invertible then A is invertible.",
         "status": "proved",
         "proof": [
           {
             "type": "assumption",
-            "statement": "A^2 is invertible."
+            "statement": "A^2 is invertible"
           },
           {
-            "type": "observation",
-            "statement": "There exists a matrix B such that A^2B = BA^2 = I, where I is the identity matrix."
-          },
-          {
-            "type": "observation",
-            "statement": "The equation A^2B = I can be rewritten as A(AB) = I."
-          },
-          {
-            "type": "assertion",
-            "claim": "AB behaves as the inverse of A.",
-            "deduced-from": [
-              "A(AB) = I",
-              "Definition of the inverse of a matrix"
+            "type": "let",
+            "variable": "B",
+            "value": "The inverse of A^2",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "There exists a matrix B such that A^2B = BA^2 = I"
+              }
             ]
           },
           {
             "type": "assertion",
-            "claim": "A is invertible.",
+            "claim": "A is invertible",
             "deduced-from": [
-              "AB behaves as the inverse of A",
-              "Definition of invertible matrix"
-            ]
+              "A^2 is invertible",
+              "There exists a matrix B such that A^2B = BA^2 = I"
+            ],
+            "justification": "Multiplying both sides of the equation A^2B = I on the right by A gives A(AB) = I"
           }
         ]
       }
@@ -52,86 +48,31 @@
     [
       {
         "type": "theorem",
-        "name": "square_matrix_invertibility",
-        "statement": "If A is a square matrix and A^2 is invertible, then A is invertible.",
+        "statement": "Let A be a square matrix. If A^2 is invertible then A is invertible.",
         "status": "proved",
         "proof": [
           {
             "type": "assumption",
-            "statement": "A^2 is invertible."
+            "statement": "A^2 is invertible"
           },
           {
             "type": "choose",
             "variable": "B",
-            "property": "A^2 * B = B * A^2 = I, where I is the identity matrix."
-          },
-          {
-            "type": "observation",
-            "statement": "We can rewrite the equation A^2 * B = I as A * (A * B) = I."
-          },
-          {
-            "type": "assertion",
-            "claim": "The matrix A * B behaves as the inverse of A, since by definition of the inverse of a matrix, A * A^{-1} = I.",
-            "deduced-from": [
-              "We can rewrite the equation A^2 * B = I as A * (A * B) = I."
-            ]
-          },
-          {
-            "type": "assertion",
-            "claim": "A is invertible.",
-            "deduced-from": [
-              "The matrix A * B behaves as the inverse of A, since by definition of the inverse of a matrix, A * A^{-1} = I."
-            ]
-          }
-        ]
-      }
-    ],
-    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Matrix Invertibility Theorem\",\n    \"statement\": \"If the square of a square matrix is invertible, then the matrix itself is also invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Let A be a square matrix and B = A^2. B is invertible.\"\n      },\n      {\n        \"type\": \"definition\",\n        \"statement\": \"There exists a matrix B^-1 such that BB^-1 = B^-1B = I\",\n        \"term\": \"inverse matrix\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Substituting B = A^2 = AA into these equations results in AAB^-1 = B^-1AA = I\",\n        \"deduced-from\": [\"B = A^2\", \"BB^-1 = B^-1B = I\"],\n        \"justification\": \"substituting B with AA\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"C\",\n        \"value\": \"AB^-1\",\n        \"justification\": \"defining C = AB^-1\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"AC = CA = I\",\n        \"deduced-from\": [\"C = AB^-1\", \"AAB^-1 = B^-1AA = I\"],\n        \"justification\": \"multiplying A and C\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"C is the inverse of A\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is invertible\",\n        \"deduced-from\": [\"AC = CA = I\"],\n        \"justification\": \"definition of invertibility\"\n      },\n    ]\n  }\n]",
-    [
-      {
-        "type": "theorem",
-        "name": "inverse_of_square_matrix",
-        "statement": "If the square of a square matrix is invertible, then the matrix itself is also invertible.",
-        "status": "proved",
-        "proof": [
-          {
-            "type": "assumption",
-            "statement": "A is a square matrix and B = A^2. B is invertible."
-          },
-          {
-            "type": "observation",
-            "statement": "There exists a matrix B^{-1} such that BB^{-1} = B^{-1}B = I."
-          },
-          {
-            "type": "let",
-            "variable": "C",
-            "value": "AB^{-1}",
+            "property": "A^2B = BA^2 = I",
             "existence": [
               {
                 "type": "observation",
-                "statement": "Substituting B = A^2 = AA into BB^{-1} = I leads to AAB^{-1} = I."
+                "statement": "Such a B exists because A^2 is invertible"
               }
             ]
           },
           {
             "type": "observation",
-            "statement": "Using the definition of C, we have AC = CA = I."
+            "statement": "Multiplying both sides of the equation A^2B = I on the right by A gives A(AB) = I"
           },
           {
-            "type": "assertion",
-            "claim": "C serves as the inverse of A.",
-            "deduced-from": [
-              "AC = CA = I"
-            ],
-            "justification": "By definition of the inverse of a matrix."
-          },
-          {
-            "type": "assertion",
-            "claim": "A is invertible.",
-            "deduced-from": [
-              "C serves as the inverse of A"
-            ],
-            "justification": "By definition of invertibility of a matrix."
+            "type": "observation",
+            "statement": "Thus, A is invertible"
           }
         ]
       }
@@ -139,8 +80,7 @@
     [
       {
         "type": "theorem",
-        "name": "A square matrix A is invertible if A^2 is invertible.",
-        "statement": "If A^2 is invertible for a square matrix A, then A is invertible.",
+        "statement": "Let A be a square matrix. If A^2 is invertible then A is also invertible.",
         "status": "proved",
         "proof": [
           {
@@ -149,34 +89,44 @@
           },
           {
             "type": "let",
-            "variable": "B",
-            "value": "An invertible matrix such that A^2B=BA^2=I, with I being the identity matrix."
+            "variable": "A",
+            "value": "A is a square matrix."
           },
           {
-            "type": "assertion",
-            "claim": "AB = A",
-            "deduced-from": [
-              {
-                "result": "A^2B=I",
-                "applied-to": "multiplied by A on the left"
-              }
-            ],
-            "justification": "From the equation A(A^2B)=(AA^2)B=A^3B. Since A^2B=I, we have A^3B=AI, which simplifies to A."
-          },
-          {
-            "type": "assertion",
-            "claim": "BA = B",
-            "deduced-from": [
-              {
-                "result": "BA^2=I",
-                "applied-to": "multiplied by A on the right"
-              }
-            ],
-            "justification": "From the equation B(AA^2)=(BA^2)A=B(A^3). Replacing A^2 with I again, we get B(A^3)=BI, which simplifies to B."
+            "type": "assumption",
+            "statement": "A is not invertible."
           },
           {
             "type": "observation",
-            "statement": "From the above, A has a two-sided inverse B, hence A is invertible."
+            "statement": "A has a zero determinant."
+          },
+          {
+            "type": "observation",
+            "statement": "The determinant of A^2 is the square of the determinant of A."
+          },
+          {
+            "type": "observation",
+            "statement": "If A has a zero determinant, then A^2 will also have a zero determinant."
+          },
+          {
+            "type": "observation",
+            "statement": "A^2 is not invertible."
+          },
+          {
+            "type": "assertion",
+            "claim": "This contradicts the assumption that A^2 is invertible.",
+            "deduced-from": [
+              "A^2 is not invertible.",
+              "A^2 is invertible."
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "The assumption that A is not invertible must be false."
+          },
+          {
+            "type": "observation",
+            "statement": "A is invertible."
           }
         ]
       }
@@ -184,71 +134,252 @@
     [
       {
         "type": "theorem",
-        "name": "A square invertible implies A invertible",
-        "statement": "If A^2 is invertible for a square matrix A, then A is invertible.",
+        "name": "Invertibility of square matrices",
+        "statement": "Let A be a square matrix. If A^2 is invertible then A is also invertible.",
         "status": "proved",
         "proof": [
           {
             "type": "assumption",
-            "statement": "A^2 is invertible."
+            "statement": "Assume A is not invertible."
+          },
+          {
+            "type": "assertion",
+            "claim": "A has a zero determinant.",
+            "deduced-from": [
+              "A is not invertible"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "The determinant of A^2 is the square of the determinant of A.",
+            "deduced-from": [
+              "Property of determinants of square matrices"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A^2 has a zero determinant.",
+            "deduced-from": [
+              "A has a zero determinant",
+              "The determinant of A^2 is the square of the determinant of A"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A^2 is not invertible.",
+            "deduced-from": [
+              "A^2 has a zero determinant"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "This contradicts the assumption that A^2 is invertible.",
+            "deduced-from": [
+              "A^2 is not invertible",
+              "A^2 is invertible"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A is invertible.",
+            "justification": "Therefore, the assumption that A is not invertible must be false, implying A is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Invertibility theorem",
+        "statement": "Let A be a square matrix. If A squared is invertible then A is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "A squared is invertible."
           },
           {
             "type": "choose",
             "variable": "B",
-            "property": "A^2B=BA^2=I, with I being the identity matrix.",
+            "property": "A squared multiplied by B equals B multiplied by A squared equals the identity matrix.",
             "existence": [
               {
                 "type": "observation",
-                "statement": "Invertibility of A^2 implies existence of such a B."
+                "statement": "Existence of B is given by the assumption that A squared is invertible."
               }
             ]
           },
           {
             "type": "assertion",
-            "claim": "AB=A",
+            "claim": "A times (B times A) equals the identity.",
             "deduced-from": [
               {
-                "result": "A^2B=I",
-                "applied-to": "A"
+                "result": "B is an inverse of A squared",
+                "applied-to": "A squared"
               }
-            ],
-            "justification": "Multiply both sides of A^2B=I by A on the left, yielding A(A^2B)=(AA^2)B=A^3B. Since A^2B=I, we have A^3B=AI, which simplifies to A."
+            ]
           },
           {
             "type": "assertion",
-            "claim": "BA=B",
+            "claim": "(B times A) times A equals the identity.",
             "deduced-from": [
               {
-                "result": "BA^2=I",
-                "applied-to": "A"
+                "result": "B is an inverse of A squared",
+                "applied-to": "A squared"
               }
-            ],
-            "justification": "Multiply both sides of BA^2=I by A on the right, yielding B(AA^2)=(BA^2)A=B(A^3). Replacing A^2 with I again, we get B(A^3)=BI, which simplifies to B."
+            ]
           },
           {
             "type": "observation",
-            "statement": "A has a two-sided inverse B, hence A is invertible."
+            "statement": "The matrix B times A is both a left inverse and a right inverse of A."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, A is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Invertibility of A given A squared is invertible",
+        "statement": "Let A be a square matrix. If A squared is invertible then A is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assume",
+            "statement": "A squared is invertible"
+          },
+          {
+            "type": "choose",
+            "variable": "B",
+            "property": "A squared multiplied by B equals B multiplied by A squared equals the identity matrix"
+          },
+          {
+            "type": "observation",
+            "statement": "A times (B times A) times A equals A times the identity"
+          },
+          {
+            "type": "observation",
+            "statement": "(A times B) times A squared equals A times the identity"
+          },
+          {
+            "type": "assertion",
+            "claim": "A times (B times A) equals the identity",
+            "deduced-from": [
+              "A times (B times A) times A equals A times the identity",
+              "(A times B) times A squared equals A times the identity"
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "(B times A) times A equals the identity"
+          },
+          {
+            "type": "assertion",
+            "claim": "The matrix B times A is both a left inverse and a right inverse of A",
+            "deduced-from": [
+              "A times (B times A) equals the identity",
+              "(B times A) times A equals the identity"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A is invertible",
+            "deduced-from": [
+              "The matrix B times A is both a left inverse and a right inverse of A"
+            ]
           }
         ]
       }
     ]
   ],
   "raw_structured_texts": [
-    "Here is the provided proof translated into the `ProofJSON` format:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"invertible_square_matrix\",\n    \"statement\": \"If A is a square matrix and A^2 is invertible, then A is invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A^2 is invertible.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"There exists a matrix B such that A^2B = BA^2 = I, where I is the identity matrix.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The equation A^2B = I can be rewritten as A(AB) = I.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"AB behaves as the inverse of A.\",\n        \"deduced-from\": [\n          \"A(AB) = I\",\n          \"Definition of the inverse of a matrix\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is invertible.\",\n        \"deduced-from\": [\n          \"AB behaves as the inverse of A\",\n          \"Definition of invertible matrix\"\n        ]\n      }\n    ]\n  }\n]\n``` \n\nThis JSON contains a list with a single ProofJSON object, which represents a theorem. The proof of the theorem contains a list of ProofJSON objects of types *assumption*, *observation*, and *assertion* that are used to logically derive and prove the theorem.",
-    "Here is the provided proof represented in the `ProofJSON` format:\n\n```json\n[\n    {\n        \"type\": \"theorem\",\n        \"name\": \"square_matrix_invertibility\",\n        \"statement\": \"If A is a square matrix and A^2 is invertible, then A is invertible.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"assumption\",\n                \"statement\": \"A^2 is invertible.\"\n            },\n            {\n                \"type\": \"choose\",\n                \"variable\": \"B\",\n                \"property\": \"A^2 * B = B * A^2 = I, where I is the identity matrix.\"\n            },\n            {\n                \"type\": \"observation\",\n                \"statement\": \"We can rewrite the equation A^2 * B = I as A * (A * B) = I.\"\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"The matrix A * B behaves as the inverse of A, since by definition of the inverse of a matrix, A * A^{-1} = I.\",\n                \"deduced-from\": [\"We can rewrite the equation A^2 * B = I as A * (A * B) = I.\"]\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"A is invertible.\",\n                \"deduced-from\": [\"The matrix A * B behaves as the inverse of A, since by definition of the inverse of a matrix, A * A^{-1} = I.\"]\n            }\n        ]\n    }\n]\n```\nIn this `ProofJSON`, the proof of the theorem is broken down into several steps: the assumption, the choice of a matrix B such that `A^2 * B = I`, an observation about the equation, and two assertions based on these observations. Each assertion specifies the claim being made and what it is deduced from.",
-    "Here's the translation of the theorem and its proof into `ProofJSON` format:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Matrix Invertibility Theorem\",\n    \"statement\": \"If the square of a square matrix is invertible, then the matrix itself is also invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Let A be a square matrix and B = A^2. B is invertible.\"\n      },\n      {\n        \"type\": \"definition\",\n        \"statement\": \"There exists a matrix B^-1 such that BB^-1 = B^-1B = I\",\n        \"term\": \"inverse matrix\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Substituting B = A^2 = AA into these equations results in AAB^-1 = B^-1AA = I\",\n        \"deduced-from\": [\"B = A^2\", \"BB^-1 = B^-1B = I\"],\n        \"justification\": \"substituting B with AA\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"C\",\n        \"value\": \"AB^-1\",\n        \"justification\": \"defining C = AB^-1\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"AC = CA = I\",\n        \"deduced-from\": [\"C = AB^-1\", \"AAB^-1 = B^-1AA = I\"],\n        \"justification\": \"multiplying A and C\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"C is the inverse of A\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is invertible\",\n        \"deduced-from\": [\"AC = CA = I\"],\n        \"justification\": \"definition of invertibility\"\n      },\n    ]\n  }\n]\n```\n\nIn the JSON representation, each mathematical concept or steps in the proof is represented as a separate JSON object, with the `type` field indicating the kind of concept or step it is, and the other fields providing additional information. For example, the `assumption` type is used to represent the initial assumption about the square matrix $A$ and $B$ = $A^2$. The `assertion` type is used to represent logical deductions that follow from previous statements. The `let` type is used to introduce a new matrix $C$, and the `observation` and `definition` types are used to state and define mathematical terms or properties.",
-    "The proof in `ProofJSON` format will be:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"inverse_of_square_matrix\",\n    \"statement\": \"If the square of a square matrix is invertible, then the matrix itself is also invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A is a square matrix and B = A^2. B is invertible.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"There exists a matrix B^{-1} such that BB^{-1} = B^{-1}B = I.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"C\",\n        \"value\": \"AB^{-1}\",\n        \"existence\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"Substituting B = A^2 = AA into BB^{-1} = I leads to AAB^{-1} = I.\"\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Using the definition of C, we have AC = CA = I.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"C serves as the inverse of A.\",\n        \"deduced-from\": [\"AC = CA = I\"],\n        \"justification\": \"By definition of the inverse of a matrix.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is invertible.\",\n        \"deduced-from\": [\"C serves as the inverse of A\"],\n        \"justification\": \"By definition of invertibility of a matrix.\"\n      }\n    ]\n  }\n]\n```",
-    "Here is the representation in `ProofJSON` format:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"A square matrix A is invertible if A^2 is invertible.\",\n    \"statement\": \"If A^2 is invertible for a square matrix A, then A is invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A^2 is invertible.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"B\",\n        \"value\": \"An invertible matrix such that A^2B=BA^2=I, with I being the identity matrix.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"AB = A\",\n        \"deduced-from\": [\n          {\n            \"result\": \"A^2B=I\",\n            \"applied-to\": \"multiplied by A on the left\"\n          }\n        ],\n        \"justification\": \"From the equation A(A^2B)=(AA^2)B=A^3B. Since A^2B=I, we have A^3B=AI, which simplifies to A.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"BA = B\",\n        \"deduced-from\": [\n          {\n            \"result\": \"BA^2=I\",\n            \"applied-to\": \"multiplied by A on the right\"\n          }\n        ],\n        \"justification\": \"From the equation B(AA^2)=(BA^2)A=B(A^3). Replacing A^2 with I again, we get B(A^3)=BI, which simplifies to B.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"From the above, A has a two-sided inverse B, hence A is invertible.\"\n      }\n    ]\n  }\n]\n```",
-    "Here is the proof represented in `ProofJSON` format:\n\n```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"A square invertible implies A invertible\",\n    \"statement\": \"If A^2 is invertible for a square matrix A, then A is invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A^2 is invertible.\"\n      },\n      {\n        \"type\": \"choose\",\n        \"variable\": \"B\",\n        \"property\": \"A^2B=BA^2=I, with I being the identity matrix.\",\n        \"existence\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"Invertibility of A^2 implies existence of such a B.\"\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"AB=A\",\n        \"deduced-from\": [\n          {\n            \"result\": \"A^2B=I\",\n            \"applied-to\": \"A\"\n          }\n        ],\n        \"justification\": \"Multiply both sides of A^2B=I by A on the left, yielding A(A^2B)=(AA^2)B=A^3B. Since A^2B=I, we have A^3B=AI, which simplifies to A.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"BA=B\",\n        \"deduced-from\": [\n          {\n            \"result\": \"BA^2=I\",\n            \"applied-to\": \"A\"\n          }\n        ],\n        \"justification\": \"Multiply both sides of BA^2=I by A on the right, yielding B(AA^2)=(BA^2)A=B(A^3). Replacing A^2 with I again, we get B(A^3)=BI, which simplifies to B.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"A has a two-sided inverse B, hence A is invertible.\"\n      }\n    ]\n  }\n]\n```\n\nThis JSON represents each step of the proof of the theorem \"If A^2 is invertible for a square matrix A, then A is invertible\". Each step in the proof is represented as a separate object within the `proof` array. The type of each step corresponds to its role within the proof, and the fields within each object detail the specific operations or claims made in that step."
+    "[\n    {\n        \"type\": \"theorem\",\n        \"name\": \"Theorem 1\",\n        \"statement\": \"Let A be a square matrix. If A^2 is invertible then A is invertible.\",\n        \"status\": \"proved\",\n        \"proof\": [\n            {\n                \"type\": \"assumption\",\n                \"statement\": \"A^2 is invertible\"\n            },\n            {\n                \"type\": \"let\",\n                \"variable\": \"B\",\n                \"value\": \"The inverse of A^2\",\n                \"existence\": [\n                    {\n                        \"type\": \"observation\",\n                        \"statement\": \"There exists a matrix B such that A^2B = BA^2 = I\"\n                    }\n                ]\n            },\n            {\n                \"type\": \"assertion\",\n                \"claim\": \"A is invertible\",\n                \"deduced-from\": [\n                    \"A^2 is invertible\",\n                    \"There exists a matrix B such that A^2B = BA^2 = I\"\n                ],\n                \"justification\": \"Multiplying both sides of the equation A^2B = I on the right by A gives A(AB) = I\"\n            }\n        ]\n    }\n]",
+    "[\n  {\n    \"type\": \"theorem\",\n    \"statement\": \"Let A be a square matrix. If A^2 is invertible then A is invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A^2 is invertible\"\n      },\n      {\n        \"type\": \"choose\",\n        \"variable\": \"B\",\n        \"property\": \"A^2B = BA^2 = I\",\n        \"existence\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"Such a B exists because A^2 is invertible\"\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Multiplying both sides of the equation A^2B = I on the right by A gives A(AB) = I\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Thus, A is invertible\"\n      }\n    ]\n  }\n]",
+    "[\n  {\n    \"type\": \"theorem\",\n    \"statement\": \"Let A be a square matrix. If A^2 is invertible then A is also invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A^2 is invertible.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"A\",\n        \"value\": \"A is a square matrix.\"\n      },\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A is not invertible.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"A has a zero determinant.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The determinant of A^2 is the square of the determinant of A.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"If A has a zero determinant, then A^2 will also have a zero determinant.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"A^2 is not invertible.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"This contradicts the assumption that A^2 is invertible.\",\n        \"deduced-from\": [\n          \"A^2 is not invertible.\",\n          \"A^2 is invertible.\"\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The assumption that A is not invertible must be false.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"A is invertible.\"\n      }\n    ]\n  }\n]",
+    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Invertibility of square matrices\",\n    \"statement\": \"Let A be a square matrix. If A^2 is invertible then A is also invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume A is not invertible.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A has a zero determinant.\",\n        \"deduced-from\": [\"A is not invertible\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The determinant of A^2 is the square of the determinant of A.\",\n        \"deduced-from\": [\"Property of determinants of square matrices\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A^2 has a zero determinant.\",\n        \"deduced-from\": [\"A has a zero determinant\", \"The determinant of A^2 is the square of the determinant of A\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A^2 is not invertible.\",\n        \"deduced-from\": [\"A^2 has a zero determinant\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"This contradicts the assumption that A^2 is invertible.\",\n        \"deduced-from\": [\"A^2 is not invertible\", \"A^2 is invertible\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is invertible.\",\n        \"justification\": \"Therefore, the assumption that A is not invertible must be false, implying A is invertible.\"\n      }\n    ]\n  }\n]",
+    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Invertibility theorem\",\n    \"statement\": \"Let A be a square matrix. If A squared is invertible then A is also invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A squared is invertible.\"\n      },\n      {\n        \"type\": \"choose\",\n        \"variable\": \"B\",\n        \"property\": \"A squared multiplied by B equals B multiplied by A squared equals the identity matrix.\",\n        \"existence\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"Existence of B is given by the assumption that A squared is invertible.\"\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A times (B times A) equals the identity.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"B is an inverse of A squared\",\n            \"applied-to\": \"A squared\"\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"(B times A) times A equals the identity.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"B is an inverse of A squared\",\n            \"applied-to\": \"A squared\"\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The matrix B times A is both a left inverse and a right inverse of A.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Therefore, A is invertible.\"\n      }\n    ]\n  }\n]",
+    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Invertibility of A given A squared is invertible\",\n    \"statement\": \"Let A be a square matrix. If A squared is invertible then A is also invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assume\",\n        \"statement\": \"A squared is invertible\"\n      },\n      {\n        \"type\": \"choose\",\n        \"variable\": \"B\",\n        \"property\": \"A squared multiplied by B equals B multiplied by A squared equals the identity matrix\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"A times (B times A) times A equals A times the identity\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"(A times B) times A squared equals A times the identity\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A times (B times A) equals the identity\",\n        \"deduced-from\": [\n          \"A times (B times A) times A equals A times the identity\",\n          \"(A times B) times A squared equals A times the identity\"\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"(B times A) times A equals the identity\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The matrix B times A is both a left inverse and a right inverse of A\",\n        \"deduced-from\": [\n          \"A times (B times A) equals the identity\",\n          \"(B times A) times A equals the identity\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is invertible\",\n        \"deduced-from\": [\n          \"The matrix B times A is both a left inverse and a right inverse of A\"\n        ]\n      }\n    ]\n  }\n]"
   ],
   "texts_with_statements": [
-    "Here is the body of mathematics in the `ProofJSON` format, updated to include a `statement` for each `assertion`:\n\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"invertible_square_matrix\",\n    \"statement\": \"If A is a square matrix and A^2 is invertible, then A is invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A^2 is invertible.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"There exists a matrix B such that A^2B = BA^2 = I, where I is the identity matrix.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The equation A^2B = I can be rewritten as A(AB) = I.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"AB behaves as the inverse of A.\",\n        \"deduced-from\": [\n          \"A(AB) = I\",\n          \"Definition of the inverse of a matrix\"\n        ],\n        \"statement\": \"If A^2 is invertible and A(AB) = I, then AB behaves as the inverse of A.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is invertible.\",\n        \"deduced-from\": [\n          \"AB behaves as the inverse of A\",\n          \"Definition of invertible matrix\"\n        ],\n        \"statement\": \"If AB behaves as the inverse of A, then A is invertible.\"\n      }\n    ]\n  }\n]\n\nPlease note that the `statement` field added to each `assertion` includes the deduced-from elements and forms a larger conditional statement, making it self-contained.",
-    "Sure, here is a modified JSON with self-contained statements in each assertion:\n\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"invertible_square_matrix\",\n    \"statement\": \"If A is a square matrix and A^2 is invertible, then A is invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A^2 is invertible.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"There exists a matrix B such that A^2B = BA^2 = I, where I is the identity matrix.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The equation A^2B = I can be rewritten as A(AB) = I.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"AB behaves as the inverse of A.\",\n        \"deduced-from\": [\n          \"A(AB) = I\",\n          \"Definition of the inverse of a matrix\"\n        ],\n        \"statement\": \"Given that the equation A^2B = I can be rewritten as A(AB) = I and the definition of the inverse of a matrix, AB behaves as the inverse of A.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is invertible.\",\n        \"deduced-from\": [\n          \"AB behaves as the inverse of A\",\n          \"Definition of invertible matrix\"\n        ],\n        \"statement\": \"Given that AB behaves as the inverse of A and the definition of an invertible matrix, A is invertible.\"\n      }\n    ]\n  }\n]",
     [
       {
         "type": "theorem",
-        "name": "square_matrix_invertibility",
-        "statement": "If A is a square matrix and A^2 is invertible, then A is invertible.",
+        "name": "Theorem 1",
+        "statement": "Let A be a square matrix. If A^2 is invertible then A is invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "A^2 is invertible"
+          },
+          {
+            "type": "let",
+            "variable": "B",
+            "value": "The inverse of A^2",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "There exists a matrix B such that A^2B = BA^2 = I"
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A is invertible",
+            "statement": "If A^2 is invertible and there exists a matrix B such that A^2B = BA^2 = I, then A is invertible",
+            "deduced-from": [
+              "A^2 is invertible",
+              "There exists a matrix B such that A^2B = BA^2 = I"
+            ],
+            "justification": "Multiplying both sides of the equation A^2B = I on the right by A gives A(AB) = I"
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "Let A be a square matrix. If A^2 is invertible then A is invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "A^2 is invertible"
+          },
+          {
+            "type": "let",
+            "variable": "B",
+            "value": "The inverse of A^2",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "There exists a matrix B such that A^2B = BA^2 = I"
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A is invertible",
+            "deduced-from": [
+              "A^2 is invertible",
+              "There exists a matrix B such that A^2B = BA^2 = I"
+            ],
+            "justification": "Multiplying both sides of the equation A^2B = I on the right by A gives A(AB) = I",
+            "statement": "If A is a square matrix and A^2 is invertible, then there exists a matrix B such that A^2B = BA^2 = I, then A is invertible."
+          }
+        ]
+      }
+    ],
+    "The provided JSON does not contain any objects of type `assertion`, so no modifications are necessary. The JSON remains unchanged:\n\n[\n  {\n    \"type\": \"theorem\",\n    \"statement\": \"Let A be a square matrix. If A^2 is invertible then A is invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A^2 is invertible\"\n      },\n      {\n        \"type\": \"choose\",\n        \"variable\": \"B\",\n        \"property\": \"A^2B = BA^2 = I\",\n        \"existence\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"Such a B exists because A^2 is invertible\"\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Multiplying both sides of the equation A^2B = I on the right by A gives A(AB) = I\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Thus, A is invertible\"\n      }\n    ]\n  }\n]",
+    "There are no objects of type `assertion` in the given JSON body. Therefore, the JSON remains unchanged:\n\n[\n  {\n    \"type\": \"theorem\",\n    \"statement\": \"Let A be a square matrix. If A^2 is invertible then A is invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A^2 is invertible\"\n      },\n      {\n        \"type\": \"choose\",\n        \"variable\": \"B\",\n        \"property\": \"A^2B = BA^2 = I\",\n        \"existence\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"Such a B exists because A^2 is invertible\"\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Multiplying both sides of the equation A^2B = I on the right by A gives A(AB) = I\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Thus, A is invertible\"\n      }\n    ]\n  }\n]",
+    [
+      {
+        "type": "theorem",
+        "statement": "Let A be a square matrix. If A^2 is invertible then A is also invertible.",
         "status": "proved",
         "proof": [
           {
@@ -256,340 +387,661 @@
             "statement": "A^2 is invertible."
           },
           {
-            "type": "choose",
-            "variable": "B",
-            "property": "A^2 * B = B * A^2 = I, where I is the identity matrix."
+            "type": "let",
+            "variable": "A",
+            "value": "A is a square matrix."
+          },
+          {
+            "type": "assumption",
+            "statement": "A is not invertible."
           },
           {
             "type": "observation",
-            "statement": "We can rewrite the equation A^2 * B = I as A * (A * B) = I."
+            "statement": "A has a zero determinant."
+          },
+          {
+            "type": "observation",
+            "statement": "The determinant of A^2 is the square of the determinant of A."
+          },
+          {
+            "type": "observation",
+            "statement": "If A has a zero determinant, then A^2 will also have a zero determinant."
+          },
+          {
+            "type": "observation",
+            "statement": "A^2 is not invertible."
           },
           {
             "type": "assertion",
-            "claim": "The matrix A * B behaves as the inverse of A, since by definition of the inverse of a matrix, A * A^{-1} = I.",
+            "claim": "This contradicts the assumption that A^2 is invertible.",
             "deduced-from": [
-              "We can rewrite the equation A^2 * B = I as A * (A * B) = I."
+              "A^2 is not invertible.",
+              "A^2 is invertible."
             ],
-            "statement": "If we can rewrite the equation A^2 * B = I as A * (A * B) = I, then the matrix A * B behaves as the inverse of A, since by definition of the inverse of a matrix, A * A^{-1} = I."
+            "statement": "Let A be a square matrix. If A^2 is invertible and A^2 is not invertible, this contradicts the assumption that A^2 is invertible."
           },
           {
-            "type": "assertion",
-            "claim": "A is invertible.",
-            "deduced-from": [
-              "The matrix A * B behaves as the inverse of A, since by definition of the inverse of a matrix, A * A^{-1} = I."
-            ],
-            "statement": "If the matrix A * B behaves as the inverse of A, since by definition of the inverse of a matrix, A * A^{-1} = I, then A is invertible."
+            "type": "observation",
+            "statement": "The assumption that A is not invertible must be false."
+          },
+          {
+            "type": "observation",
+            "statement": "A is invertible."
           }
         ]
       }
     ],
-    "Here's the revised `ProofJSON`:\n\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"square_matrix_invertibility\",\n    \"statement\": \"If A is a square matrix and A^2 is invertible, then A is invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A^2 is invertible.\"\n      },\n      {\n        \"type\": \"choose\",\n        \"variable\": \"B\",\n        \"property\": \"A^2 * B = B * A^2 = I, where I is the identity matrix.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"We can rewrite the equation A^2 * B = I as A * (A * B) = I.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The matrix A * B behaves as the inverse of A, since by definition of the inverse of a matrix, A * A^{-1} = I.\",\n        \"deduced-from\": [\n          \"We can rewrite the equation A^2 * B = I as A * (A * B) = I.\"\n        ],\n        \"statement\": \"If we can rewrite the equation A^2 * B = I as A * (A * B) = I, then the matrix A * B behaves as the inverse of A, since by definition of the inverse of a matrix, A * A^{-1} = I.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is invertible.\",\n        \"deduced-from\": [\n          \"The matrix A * B behaves as the inverse of A, since by definition of the inverse of a matrix, A * A^{-1} = I.\"\n        ],\n        \"statement\": \"If the matrix A * B behaves as the inverse of A, since by definition of the inverse of a matrix, A * A^{-1} = I, then A is invertible.\"\n      }\n    ]\n  }\n]\n\nFor each assertion, I have added a `statement` field which is a self-contained statement of the assertion. This includes all the assumptions and relevant details.",
-    "Here is the updated JSON with the `statement` field added to each `assertion` object:\n\n\"[\\n  {\\n    \\\"type\\\": \\\"theorem\\\",\\n    \\\"name\\\": \\\"Matrix Invertibility Theorem\\\",\\n    \\\"statement\\\": \\\"If the square of a square matrix is invertible, then the matrix itself is also invertible.\\\",\\n    \\\"status\\\": \\\"proved\\\",\\n    \\\"proof\\\": [\\n      {\\n        \\\"type\\\": \\\"assumption\\\",\\n        \\\"statement\\\": \\\"Let A be a square matrix and B = A^2. B is invertible.\\\"\\n      },\\n      {\\n        \\\"type\\\": \\\"definition\\\",\\n        \\\"statement\\\": \\\"There exists a matrix B^-1 such that BB^-1 = B^-1B = I\\\",\\n        \\\"term\\\": \\\"inverse matrix\\\"\\n      },\\n      {\\n        \\\"type\\\": \\\"assertion\\\",\\n        \\\"claim\\\": \\\"Substituting B = A^2 = AA into these equations results in AAB^-1 = B^-1AA = I\\\",\\n        \\\"deduced-from\\\": [\\\"B = A^2\\\", \\\"BB^-1 = B^-1B = I\\\"],\\n        \\\"justification\\\": \\\"substituting B with AA\\\",\\n        \\\"statement\\\": \\\"If B = A^2 = AA and BB^-1 = B^-1B = I, then substituting B with AA results in AAB^-1 = B^-1AA = I\\\"\\n      },\\n      {\\n        \\\"type\\\": \\\"let\\\",\\n        \\\"variable\\\": \\\"C\\\",\\n        \\\"value\\\": \\\"AB^-1\\\",\\n        \\\"justification\\\": \\\"defining C = AB^-1\\\"\\n      },\\n      {\\n        \\\"type\\\": \\\"assertion\\\",\\n        \\\"claim\\\": \\\"AC = CA = I\\\",\\n        \\\"deduced-from\\\": [\\\"C = AB^-1\\\", \\\"AAB^-1 = B^-1AA = I\\\"],\\n        \\\"justification\\\": \\\"multiplying A and C\\\",\\n        \\\"statement\\\": \\\"If C = AB^-1 and AAB^-1 = B^-1AA = I, then AC = CA = I\\\"\\n      },\\n      {\\n        \\\"type\\\": \\\"observation\\\",\\n        \\\"statement\\\": \\\"C is the inverse of A\\\"\\n      },\\n      {\\n        \\\"type\\\": \\\"assertion\\\",\\n        \\\"claim\\\": \\\"A is invertible\\\",\\n        \\\"deduced-from\\\": [\\\"AC = CA = I\\\"],\\n        \\\"justification\\\": \\\"definition of invertibility\\\",\\n        \\\"statement\\\": \\\"If AC = CA = I, then A is invertible\\\"\\n      },\\n    ]\\n  }\\n]\" \n\nEach `assertion` object now has a `statement` field which gives a single sentence that fully encapsulates the claim of the assertion and the assumptions it's based on.",
-    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Matrix Invertibility Theorem\",\n    \"statement\": \"If the square of a square matrix is invertible, then the matrix itself is also invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Let A be a square matrix and B = A^2. B is invertible.\"\n      },\n      {\n        \"type\": \"definition\",\n        \"statement\": \"There exists a matrix B^-1 such that BB^-1 = B^-1B = I\",\n        \"term\": \"inverse matrix\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Substituting B = A^2 = AA into these equations results in AAB^-1 = B^-1AA = I\",\n        \"deduced-from\": [\"B = A^2\", \"BB^-1 = B^-1B = I\"],\n        \"justification\": \"substituting B with AA\",\n        \"statement\": \"If B = A^2 and BB^-1 = B^-1B = I, then substituting B = A^2 = AA into these equations results in AAB^-1 = B^-1AA = I\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"C\",\n        \"value\": \"AB^-1\",\n        \"justification\": \"defining C = AB^-1\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"AC = CA = I\",\n        \"deduced-from\": [\"C = AB^-1\", \"AAB^-1 = B^-1AA = I\"],\n        \"justification\": \"multiplying A and C\",\n        \"statement\": \"If C = AB^-1 and AAB^-1 = B^-1AA = I, then AC = CA = I\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"C is the inverse of A\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is invertible\",\n        \"deduced-from\": [\"AC = CA = I\"],\n        \"justification\": \"definition of invertibility\",\n        \"statement\": \"If AC = CA = I, then A is invertible\"\n      },\n    ]\n  }\n]",
     [
       {
         "type": "theorem",
-        "name": "inverse_of_square_matrix",
-        "statement": "If the square of a square matrix is invertible, then the matrix itself is also invertible.",
+        "statement": "Let A be a square matrix. If A^2 is invertible then A is also invertible.",
         "status": "proved",
         "proof": [
           {
             "type": "assumption",
-            "statement": "A is a square matrix and B = A^2. B is invertible."
-          },
-          {
-            "type": "observation",
-            "statement": "There exists a matrix B^{-1} such that BB^{-1} = B^{-1}B = I."
+            "statement": "A^2 is invertible."
           },
           {
             "type": "let",
-            "variable": "C",
-            "value": "AB^{-1}",
+            "variable": "A",
+            "value": "A is a square matrix."
+          },
+          {
+            "type": "assumption",
+            "statement": "A is not invertible."
+          },
+          {
+            "type": "observation",
+            "statement": "A has a zero determinant."
+          },
+          {
+            "type": "observation",
+            "statement": "The determinant of A^2 is the square of the determinant of A."
+          },
+          {
+            "type": "observation",
+            "statement": "If A has a zero determinant, then A^2 will also have a zero determinant."
+          },
+          {
+            "type": "observation",
+            "statement": "A^2 is not invertible."
+          },
+          {
+            "type": "assertion",
+            "claim": "This contradicts the assumption that A^2 is invertible.",
+            "deduced-from": [
+              "A^2 is not invertible.",
+              "A^2 is invertible."
+            ],
+            "statement": "If A^2 is invertible and A^2 is not invertible, then this contradicts the assumption that A^2 is invertible."
+          },
+          {
+            "type": "observation",
+            "statement": "The assumption that A is not invertible must be false."
+          },
+          {
+            "type": "observation",
+            "statement": "A is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Invertibility of square matrices",
+        "statement": "Let A be a square matrix. If A^2 is invertible then A is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume A is not invertible."
+          },
+          {
+            "type": "assertion",
+            "claim": "A has a zero determinant.",
+            "statement": "If A is not invertible, then A has a zero determinant.",
+            "deduced-from": [
+              "A is not invertible"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "The determinant of A^2 is the square of the determinant of A.",
+            "statement": "Let A be a square matrix. Then the determinant of A^2 is the square of the determinant of A.",
+            "deduced-from": [
+              "Property of determinants of square matrices"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A^2 has a zero determinant.",
+            "statement": "If A has a zero determinant and the determinant of A^2 is the square of the determinant of A, then A^2 has a zero determinant.",
+            "deduced-from": [
+              "A has a zero determinant",
+              "The determinant of A^2 is the square of the determinant of A"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A^2 is not invertible.",
+            "statement": "If A^2 has a zero determinant, then A^2 is not invertible.",
+            "deduced-from": [
+              "A^2 has a zero determinant"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "This contradicts the assumption that A^2 is invertible.",
+            "statement": "If A^2 is not invertible and A^2 is invertible, then this contradicts the assumption that A^2 is invertible.",
+            "deduced-from": [
+              "A^2 is not invertible",
+              "A^2 is invertible"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A is invertible.",
+            "statement": "If the assumption that A is not invertible contradicts the assumption that A^2 is invertible, then A is invertible.",
+            "justification": "Therefore, the assumption that A is not invertible must be false, implying A is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Invertibility of square matrices",
+        "statement": "Let A be a square matrix. If A^2 is invertible then A is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume A is not invertible."
+          },
+          {
+            "type": "assertion",
+            "claim": "A has a zero determinant.",
+            "statement": "If A is not invertible then A has a zero determinant.",
+            "deduced-from": [
+              "A is not invertible"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "The determinant of A^2 is the square of the determinant of A.",
+            "statement": "Let A be a square matrix. The determinant of A^2 is the square of the determinant of A.",
+            "deduced-from": [
+              "Property of determinants of square matrices"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A^2 has a zero determinant.",
+            "statement": "If A is a square matrix and A has a zero determinant, then A^2 has a zero determinant.",
+            "deduced-from": [
+              "A has a zero determinant",
+              "The determinant of A^2 is the square of the determinant of A"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A^2 is not invertible.",
+            "statement": "If A is a square matrix and A^2 has a zero determinant, then A^2 is not invertible.",
+            "deduced-from": [
+              "A^2 has a zero determinant"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "This contradicts the assumption that A^2 is invertible.",
+            "statement": "If A is a square matrix, A^2 is not invertible and A^2 is invertible, then this contradicts the assumption that A^2 is invertible.",
+            "deduced-from": [
+              "A^2 is not invertible",
+              "A^2 is invertible"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A is invertible.",
+            "statement": "Therefore, if A is a square matrix and the assumption that A is not invertible leads to a contradiction, then A is invertible.",
+            "justification": "Therefore, the assumption that A is not invertible must be false, implying A is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Invertibility theorem",
+        "statement": "Let A be a square matrix. If A squared is invertible then A is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "A squared is invertible."
+          },
+          {
+            "type": "choose",
+            "variable": "B",
+            "property": "A squared multiplied by B equals B multiplied by A squared equals the identity matrix.",
             "existence": [
               {
                 "type": "observation",
-                "statement": "Substituting B = A^2 = AA into BB^{-1} = I leads to AAB^{-1} = I."
+                "statement": "Existence of B is given by the assumption that A squared is invertible."
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A times (B times A) equals the identity.",
+            "deduced-from": [
+              {
+                "result": "B is an inverse of A squared",
+                "applied-to": "A squared"
+              }
+            ],
+            "statement": "If B is an inverse of A squared, then A times (B times A) equals the identity."
+          },
+          {
+            "type": "assertion",
+            "claim": "(B times A) times A equals the identity.",
+            "deduced-from": [
+              {
+                "result": "B is an inverse of A squared",
+                "applied-to": "A squared"
+              }
+            ],
+            "statement": "If B is an inverse of A squared, then (B times A) times A equals the identity."
+          },
+          {
+            "type": "observation",
+            "statement": "The matrix B times A is both a left inverse and a right inverse of A."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, A is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Invertibility theorem",
+        "statement": "Let A be a square matrix. If A squared is invertible then A is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "A squared is invertible."
+          },
+          {
+            "type": "choose",
+            "variable": "B",
+            "property": "A squared multiplied by B equals B multiplied by A squared equals the identity matrix.",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "Existence of B is given by the assumption that A squared is invertible."
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A times (B times A) equals the identity.",
+            "statement": "If B is an inverse of A squared, then A times (B times A) equals the identity.",
+            "deduced-from": [
+              {
+                "result": "B is an inverse of A squared",
+                "applied-to": "A squared"
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "(B times A) times A equals the identity.",
+            "statement": "If B is an inverse of A squared, then (B times A) times A equals the identity.",
+            "deduced-from": [
+              {
+                "result": "B is an inverse of A squared",
+                "applied-to": "A squared"
               }
             ]
           },
           {
             "type": "observation",
-            "statement": "Using the definition of C, we have AC = CA = I."
+            "statement": "The matrix B times A is both a left inverse and a right inverse of A."
           },
           {
-            "type": "assertion",
-            "claim": "C serves as the inverse of A.",
-            "statement": "If A is a square matrix, B = A^2 is invertible, and C = AB^{-1}, then C serves as the inverse of A.",
-            "deduced-from": [
-              "AC = CA = I"
-            ],
-            "justification": "By definition of the inverse of a matrix."
-          },
-          {
-            "type": "assertion",
-            "claim": "A is invertible.",
-            "statement": "If A is a square matrix, B = A^2 is invertible, and C = AB^{-1} is the inverse of A, then A is invertible.",
-            "deduced-from": [
-              "C serves as the inverse of A"
-            ],
-            "justification": "By definition of invertibility of a matrix."
+            "type": "observation",
+            "statement": "Therefore, A is invertible."
           }
         ]
       }
     ],
-    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"inverse_of_square_matrix\",\n    \"statement\": \"If the square of a square matrix is invertible, then the matrix itself is also invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A is a square matrix and B = A^2. B is invertible.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"There exists a matrix B^{-1} such that BB^{-1} = B^{-1}B = I.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"C\",\n        \"value\": \"AB^{-1}\",\n        \"existence\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"Substituting B = A^2 = AA into BB^{-1} = I leads to AAB^{-1} = I.\"\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Using the definition of C, we have AC = CA = I.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"C serves as the inverse of A.\",\n        \"deduced-from\": [\n          \"AC = CA = I\"\n        ],\n        \"justification\": \"By definition of the inverse of a matrix.\",\n        \"statement\": \"Given that A is a square matrix and B = A^2 is invertible, let C = AB^{-1} such that AAB^{-1} = I and AC = CA = I, then C serves as the inverse of A.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is invertible.\",\n        \"deduced-from\": [\n          \"C serves as the inverse of A\"\n        ],\n        \"justification\": \"By definition of invertibility of a matrix.\",\n        \"statement\": \"Given that A is a square matrix and B = A^2 is invertible, let C = AB^{-1} (where AC = CA = I) serve as the inverse of A, then A is invertible.\"\n      }\n    ]\n  }\n]",
     [
       {
         "type": "theorem",
-        "name": "A square matrix A is invertible if A^2 is invertible.",
-        "statement": "If A^2 is invertible for a square matrix A, then A is invertible.",
+        "name": "Invertibility of A given A squared is invertible",
+        "statement": "Let A be a square matrix. If A squared is invertible then A is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assume",
+            "statement": "A squared is invertible"
+          },
+          {
+            "type": "choose",
+            "variable": "B",
+            "property": "A squared multiplied by B equals B multiplied by A squared equals the identity matrix"
+          },
+          {
+            "type": "observation",
+            "statement": "A times (B times A) times A equals A times the identity"
+          },
+          {
+            "type": "observation",
+            "statement": "(A times B) times A squared equals A times the identity"
+          },
+          {
+            "type": "assertion",
+            "claim": "A times (B times A) equals the identity",
+            "deduced-from": [
+              "A times (B times A) times A equals A times the identity",
+              "(A times B) times A squared equals A times the identity"
+            ],
+            "statement": "If A times (B times A) times A equals A times the identity and (A times B) times A squared equals A times the identity, then A times (B times A) equals the identity."
+          },
+          {
+            "type": "observation",
+            "statement": "(B times A) times A equals the identity"
+          },
+          {
+            "type": "assertion",
+            "claim": "The matrix B times A is both a left inverse and a right inverse of A",
+            "deduced-from": [
+              "A times (B times A) equals the identity",
+              "(B times A) times A equals the identity"
+            ],
+            "statement": "If A times (B times A) equals the identity and (B times A) times A equals the identity, then the matrix B times A is both a left inverse and a right inverse of A."
+          },
+          {
+            "type": "assertion",
+            "claim": "A is invertible",
+            "deduced-from": [
+              "The matrix B times A is both a left inverse and a right inverse of A"
+            ],
+            "statement": "If the matrix B times A is both a left inverse and a right inverse of A, then A is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Invertibility of A given A squared is invertible",
+        "statement": "Let A be a square matrix. If A squared is invertible then A is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assume",
+            "statement": "A squared is invertible"
+          },
+          {
+            "type": "choose",
+            "variable": "B",
+            "property": "A squared multiplied by B equals B multiplied by A squared equals the identity matrix"
+          },
+          {
+            "type": "observation",
+            "statement": "A times (B times A) times A equals A times the identity"
+          },
+          {
+            "type": "observation",
+            "statement": "(A times B) times A squared equals A times the identity"
+          },
+          {
+            "type": "assertion",
+            "claim": "A times (B times A) equals the identity",
+            "statement": "If A times (B times A) times A equals A times the identity and (A times B) times A squared equals A times the identity, then A times (B times A) equals the identity",
+            "deduced-from": [
+              "A times (B times A) times A equals A times the identity",
+              "(A times B) times A squared equals A times the identity"
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "(B times A) times A equals the identity"
+          },
+          {
+            "type": "assertion",
+            "claim": "The matrix B times A is both a left inverse and a right inverse of A",
+            "statement": "If A times (B times A) equals the identity and (B times A) times A equals the identity, then the matrix B times A is both a left inverse and a right inverse of A",
+            "deduced-from": [
+              "A times (B times A) equals the identity",
+              "(B times A) times A equals the identity"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A is invertible",
+            "statement": "If the matrix B times A is both a left inverse and a right inverse of A, then A is invertible",
+            "deduced-from": [
+              "The matrix B times A is both a left inverse and a right inverse of A"
+            ]
+          }
+        ]
+      }
+    ]
+  ],
+  "deductions_expanded": [
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "Let A be a square matrix. If A^2 is invertible then A is invertible.",
         "status": "proved",
         "proof": [
           {
             "type": "assumption",
-            "statement": "A^2 is invertible."
+            "statement": "A^2 is invertible"
           },
           {
             "type": "let",
             "variable": "B",
-            "value": "An invertible matrix such that A^2B=BA^2=I, with I being the identity matrix."
+            "value": "The inverse of A^2",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "There exists a matrix B such that A^2B = BA^2 = I"
+              }
+            ]
           },
           {
             "type": "assertion",
-            "claim": "AB = A",
-            "statement": "If A^2 is invertible for a square matrix A and B is an invertible matrix such that A^2B=BA^2=I, then AB=A.",
+            "claim": "A is invertible",
+            "statement": "If A^2 is invertible and there exists a matrix B such that A^2B = BA^2 = I, then A is invertible",
             "deduced-from": [
               {
-                "result": "A^2B=I",
-                "applied-to": "multiplied by A on the left"
+                "name": "Matrix Invertibility",
+                "statement": "A matrix is invertible if and only if it can be multiplied by another matrix to yield the identity matrix.",
+                "applied-to": {
+                  "A": "AB",
+                  "B": "A"
+                },
+                "assumptions-satisfied": [
+                  "A^2 is invertible",
+                  "There exists a matrix B such that A^2B = BA^2 = I"
+                ]
               }
             ],
-            "justification": "From the equation A(A^2B)=(AA^2)B=A^3B. Since A^2B=I, we have A^3B=AI, which simplifies to A."
-          },
-          {
-            "type": "assertion",
-            "claim": "BA = B",
-            "statement": "If A^2 is invertible for a square matrix A and B is an invertible matrix such that A^2B=BA^2=I, then BA=B.",
-            "deduced-from": [
-              {
-                "result": "BA^2=I",
-                "applied-to": "multiplied by A on the right"
-              }
-            ],
-            "justification": "From the equation B(AA^2)=(BA^2)A=B(A^3). Replacing A^2 with I again, we get B(A^3)=BI, which simplifies to B."
-          },
-          {
-            "type": "observation",
-            "statement": "From the above, A has a two-sided inverse B, hence A is invertible."
+            "justification": "Multiplying both sides of the equation A^2B = I on the right by A gives A(AB) = I"
           }
         ]
       }
     ],
-    "Sure. Here is the revised JSON:\n\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"A square matrix A is invertible if A^2 is invertible.\",\n    \"statement\": \"If A^2 is invertible for a square matrix A, then A is invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A^2 is invertible.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"B\",\n        \"value\": \"An invertible matrix such that A^2B=BA^2=I, with I being the identity matrix.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"AB = A\",\n        \"statement\": \"If A^2 is invertible and B is an invertible matrix such that A^2B=BA^2=I, then AB = A.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"A^2B=I\",\n            \"applied-to\": \"multiplied by A on the left\"\n          }\n        ],\n        \"justification\": \"From the equation A(A^2B)=(AA^2)B=A^3B. Since A^2B=I, we have A^3B=AI, which simplifies to A.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"BA = B\",\n        \"statement\": \"If A^2 is invertible and B is an invertible matrix such that A^2B=BA^2=I, then BA = B.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"BA^2=I\",\n            \"applied-to\": \"multiplied by A on the right\"\n          }\n        ],\n        \"justification\": \"From the equation B(AA^2)=(BA^2)A=B(A^3). Replacing A^2 with I again, we get B(A^3)=BI, which simplifies to B.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"From the above, A has a two-sided inverse B, hence A is invertible.\"\n      }\n    ]\n  }\n]",
-    "Here's how the `ProofJSON` would look like after adding a \"statement\" field to each object of type \"assertion\":\n\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"A square invertible implies A invertible\",\n    \"statement\": \"If A^2 is invertible for a square matrix A, then A is invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A^2 is invertible.\"\n      },\n      {\n        \"type\": \"choose\",\n        \"variable\": \"B\",\n        \"property\": \"A^2B=BA^2=I, with I being the identity matrix.\",\n        \"existence\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"Invertibility of A^2 implies existence of such a B.\"\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"AB=A\",\n        \"statement\": \"If A^2 is invertible, and there exists a B such that A^2B=I, then AB=A.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"A^2B=I\",\n            \"applied-to\": \"A\"\n          }\n        ],\n        \"justification\": \"Multiply both sides of A^2B=I by A on the left, yielding A(A^2B)=(AA^2)B=A^3B. Since A^2B=I, we have A^3B=AI, which simplifies to A.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"BA=B\",\n        \"statement\": \"If A^2 is invertible, and there exists a B such that BA^2=I, then BA=B.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"BA^2=I\",\n            \"applied-to\": \"A\"\n          }\n        ],\n        \"justification\": \"Multiply both sides of BA^2=I by A on the right, yielding B(AA^2)=(BA^2)A=B(A^3). Replacing A^2 with I again, we get B(A^3)=BI, which simplifies to B.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"A has a two-sided inverse B, hence A is invertible.\"\n      }\n    ]\n  }\n]\n\nIn this example, the \"statement\" field in each \"assertion\" object describes the full context of the claim being made in that assertion. It includes not only the claim itself but also any assumptions or conditions necessary to make that claim.",
-    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"A square invertible implies A invertible\",\n    \"statement\": \"If A^2 is invertible for a square matrix A, then A is invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A^2 is invertible.\"\n      },\n      {\n        \"type\": \"choose\",\n        \"variable\": \"B\",\n        \"property\": \"A^2B=BA^2=I, with I being the identity matrix.\",\n        \"existence\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"Invertibility of A^2 implies existence of such a B.\"\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"AB=A\",\n        \"statement\": \"If A^2 is invertible and A^2B=I for some B, then AB=A.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"A^2B=I\",\n            \"applied-to\": \"A\"\n          }\n        ],\n        \"justification\": \"Multiply both sides of A^2B=I by A on the left, yielding A(A^2B)=(AA^2)B=A^3B. Since A^2B=I, we have A^3B=AI, which simplifies to A.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"BA=B\",\n        \"statement\": \"If A^2 is invertible and BA^2=I for some B, then BA=B.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"BA^2=I\",\n            \"applied-to\": \"A\"\n          }\n        ],\n        \"justification\": \"Multiply both sides of BA^2=I by A on the right, yielding B(AA^2)=(BA^2)A=B(A^3). Replacing A^2 with I again, we get B(A^3)=BI, which simplifies to B.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"A has a two-sided inverse B, hence A is invertible.\"\n      }\n    ]\n  }\n]"
-  ],
-  "deductions_expanded": [
-    "Here is the updated body of mathematics in the `ProofJSON` format:\n\n```\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"invertible_square_matrix\",\n    \"statement\": \"If A is a square matrix and A^2 is invertible, then A is invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A^2 is invertible.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"There exists a matrix B such that A^2B = BA^2 = I, where I is the identity matrix.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The equation A^2B = I can be rewritten as A(AB) = I.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"AB behaves as the inverse of A.\",\n        \"deduced_from\": [\n          {\n            \"name\": \"Property of matrix multiplication\",\n            \"statement\": \"If there exists a matrix B such that A(AB) = I, then AB behaves as the inverse of A.\",\n            \"applied-to\": {\"A\": \"A\", \"B\": \"B\"},\n            \"assumptions-satisfied\": [\"A is a square matrix\", \"B is such that A(AB) = I\"]\n          },\n          {\n            \"name\": \"Definition of the inverse of a matrix\",\n            \"statement\": \"A matrix B is said to be the inverse of a matrix A if AB = BA = I.\",\n            \"applied-to\": {\"A\": \"A\", \"B\": \"B\"},\n            \"assumptions-satisfied\": [\"A and B are square matrices\", \"AB = BA = I\"]\n          }\n        ],\n        \"statement\": \"If A^2 is invertible and A(AB) = I, then AB behaves as the inverse of A.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is invertible.\",\n        \"deduced_from\": [\n          {\n            \"name\": \"AB behaves as the inverse of A\",\n            \"statement\": \"If AB = BA = I, then A is invertible.\",\n            \"applied-to\": {\"A\": \"A\", \"B\": \"B\"},\n            \"assumptions-satisfied\": [\"A and B are square matrices\", \"AB = BA = I\"]\n          },\n          {\n            \"name\": \"Definition of invertible matrix\",\n            \"statement\": \"A matrix A is said to be invertible if there exists a matrix B such that AB = BA = I.\",\n            \"applied-to\": {\"A\": \"A\"},\n            \"assumptions-satisfied\": [\"A is a square matrix\", \"There exists a matrix B such that AB = BA = I\"]\n          }\n        ],\n        \"statement\": \"If AB behaves as the inverse of A, then A is invertible.\"\n      }\n    ]\n  }\n]\n```\n\nPlease note that this body of mathematics assumes that the reader is familiar with the basics of matrix algebra and does not explain concepts like matrix inversion, square matrix, identity matrix, or matrix multiplication in depth. It might be difficult for a novice to follow without background knowledge.",
-    {
-      "type": "assertion",
-      "claim": "AB behaves as the inverse of A.",
-      "deduced-from": [
-        {
-          "name": "Matrix Multiplication Identity",
-          "statement": "If we have A(AB) = I for some matrices A and B, then AB acts as the inverse of A.",
-          "applied-to": {
-            "A": "A",
-            "B": "AB",
-            "I": "I"
-          },
-          "assumptions-satisfied": [
-            "A^2 is invertible",
-            "A(AB) = I"
-          ]
-        },
-        {
-          "name": "Definition of the inverse of a matrix",
-          "statement": "A matrix B is the inverse of a matrix A if AB = BA = I.",
-          "applied-to": {
-            "A": "A",
-            "B": "AB",
-            "I": "I"
-          },
-          "assumptions-satisfied": [
-            "A(AB) = I"
-          ]
-        }
-      ],
-      "statement": "If A^2 is invertible and A(AB) = I, then AB behaves as the inverse of A."
-    },
-    "Given that this is a text-based request, I can't directly modify the JSON. However, I can describe the modifications and provide the resulting modified JSON. \n\nThe two assertions in your JSON need to be checked:\n\n1. Assertion 1: \"AB behaves as the inverse of A.\"\n   Deduced from: \"A(AB) = I\" and \"Definition of the inverse of a matrix\".\n   \n   Here, the claim logically follows from the `deduced_from` entries. The product of a matrix and its inverse is the identity matrix by definition, so if A(AB) = I, AB can indeed be considered the inverse of A.\n\n2. Assertion 2: \"A is invertible.\"\n   Deduced from: \"AB behaves as the inverse of A\" and \"Definition of invertible matrix\"\n\n   This claim also follows logically. If AB behaves as the inverse of A, then A is invertible by definition.\n\nSince both claims follow logically, there are no errors to add. We can now proceed to expand the `deduced_from` entries for each assertion:\n\n1. Assertion 1: \"AB behaves as the inverse of A.\"\n   The `deduced_from` field becomes:\n   [{\"name\": \"Multiplication by inverse\", \"statement\": \"A X = I\", \"applied-to\": {\"A\": \"A\", \"X\": \"AB\"}, \"assumptions-satisfied\": [\"A and AB are matrices\", \"I is the identity matrix\"] }, \n   {\"name\": \"Definition of the inverse of a matrix\", \"statement\": \"If AX = I, then X is the inverse of A\", \"applied-to\": {\"A\": \"A\", \"X\": \"AB\"}, \"assumptions-satisfied\": [\"AX = I\"]}]\n\n2. Assertion 2: \"A is invertible.\"\n   The `deduced_from` field becomes:\n   [{\"name\": \"Existence of inverse\", \"statement\": \"X is the inverse of A\", \"applied-to\": {\"A\": \"A\", \"X\": \"AB\"}, \"assumptions-satisfied\": [\"X behaves as the inverse of A\"] }, \n   {\"name\": \"Definition of invertible matrix\", \"statement\": \"If A has an inverse, then A is invertible\", \"applied-to\": {\"A\": \"A\"}, \"assumptions-satisfied\": [\"A has an inverse\"]}]\n\nPlease note that this is a simplification, and the actual expansion might require more detailed assumptions and statements.\n\n",
     [
       {
         "type": "theorem",
-        "name": "invertible_square_matrix",
-        "statement": "If A is a square matrix and A^2 is invertible, then A is invertible.",
+        "name": "Theorem 1",
+        "statement": "Let A be a square matrix. If A^2 is invertible then A is invertible.",
         "status": "proved",
         "proof": [
           {
             "type": "assumption",
-            "statement": "A^2 is invertible."
+            "statement": "A^2 is invertible"
           },
           {
-            "type": "observation",
-            "statement": "There exists a matrix B such that A^2B = BA^2 = I, where I is the identity matrix."
-          },
-          {
-            "type": "observation",
-            "statement": "The equation A^2B = I can be rewritten as A(AB) = I."
+            "type": "let",
+            "variable": "B",
+            "value": "The inverse of A^2",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "There exists a matrix B such that A^2B = BA^2 = I"
+              }
+            ]
           },
           {
             "type": "assertion",
-            "claim": "AB behaves as the inverse of A.",
+            "claim": "A is invertible",
+            "statement": "If A^2 is invertible and there exists a matrix B such that A^2B = BA^2 = I, then A is invertible",
             "deduced-from": [
               {
-                "name": "Identity equation",
-                "statement": "Equivalent to the identity equation, A(AB) = I.",
+                "name": "Statement 1",
+                "statement": "A^2 is invertible",
                 "applied-to": {
-                  "A": "A",
-                  "AB": "AB"
+                  "A": "A"
                 },
                 "assumptions-satisfied": [
-                  "The equation A^2B = I can be rewritten as A(AB) = I"
+                  "A is a square matrix"
                 ]
               },
               {
-                "name": "Definition of the inverse of a matrix",
-                "statement": "If a matrix A and a matrix B satisfy the equation A*B = I, then B is the inverse of A.",
+                "name": "Observation 1",
+                "statement": "There exists a matrix B such that A^2B = BA^2 = I",
                 "applied-to": {
                   "A": "A",
-                  "B": "AB"
+                  "B": "The inverse of A^2"
                 },
                 "assumptions-satisfied": [
-                  "The equation A^2B = I can be rewritten as A(AB) = I"
+                  "A^2 is invertible"
                 ]
               }
             ],
-            "statement": "Given that the equation A^2B = I can be rewritten as A(AB) = I and the definition of the inverse of a matrix, AB behaves as the inverse of A."
-          },
-          {
-            "type": "assertion",
-            "claim": "A is invertible.",
-            "deduced-from": [
-              "AB behaves as the inverse of A",
-              {
-                "name": "Definition of invertible matrix",
-                "statement": "A matrix is invertible if there exists another matrix that behaves as its inverse.",
-                "applied-to": {
-                  "A": "A",
-                  "B": "AB"
-                },
-                "assumptions-satisfied": [
-                  "AB behaves as the inverse of A"
-                ]
-              }
-            ],
-            "statement": "Given that AB behaves as the inverse of A and the definition of an invertible matrix, A is invertible."
+            "justification": "Multiplying both sides of the equation A^2B = I on the right by A gives A(AB) = I"
           }
-        ]
-      }
-    ],
-    {
-      "type": "assertion",
-      "claim": "The matrix A * B behaves as the inverse of A, since by definition of the inverse of a matrix, A * A^{-1} = I.",
-      "deduced-from": [
-        "We can rewrite the equation A^2 * B = I as A * (A * B) = I."
-      ],
-      "statement": "If we can rewrite the equation A^2 * B = I as A * (A * B) = I, then the matrix A * B behaves as the inverse of A, since by definition of the inverse of a matrix, A * A^{-1} = I."
-    },
-    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"square_matrix_invertibility\",\n    \"statement\": \"If A is a square matrix and A^2 is invertible, then A is invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A^2 is invertible.\"\n      },\n      {\n        \"type\": \"choose\",\n        \"variable\": \"B\",\n        \"property\": \"A^2 * B = B * A^2 = I, where I is the identity matrix.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"We can rewrite the equation A^2 * B = I as A * (A * B) = I.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The matrix A * B behaves as the inverse of A, since by definition of the inverse of a matrix, A * A^{-1} = I.\",\n        \"deduced-from\": [\n          {\n            \"name\": \"Rewriting matrix equation\",\n            \"statement\": \"We can rewrite the equation A^2 * B = I as A * (A * B) = I.\",\n            \"applied-to\": {\"A\": \"A\", \"B\": \"B\"},\n            \"assumptions-satisfied\": [\"A^2 * B = I\"]\n          }\n        ],\n        \"statement\": \"If we can rewrite the equation A^2 * B = I as A * (A * B) = I, then the matrix A * B behaves as the inverse of A, since by definition of the inverse of a matrix, A * A^{-1} = I.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is invertible.\",\n        \"error\": \"The claim 'A is invertible' does not directly follow from 'The matrix A * B behaves as the inverse of A, since by definition of the inverse of a matrix, A * A^{-1} = I.' We need to also show that A * B is equal to B * A.\",\n        \"deduced-from\": [\n          {\n            \"name\": \"Matrix invertibility\",\n            \"statement\": \"The matrix A * B behaves as the inverse of A, since by definition of the inverse of a matrix, A * A^{-1} = I.\",\n            \"applied-to\": {\"A\": \"A\", \"B\": \"B\"},\n            \"assumptions-satisfied\": [\"A^2 * B = I\"]\n          }\n        ],\n        \"statement\": \"If the matrix A * B behaves as the inverse of A, since by definition of the inverse of a matrix, A * A^{-1} = I, then A is invertible.\"\n      }\n    ]\n  }\n]",
-    [
-      {
-        "name": "Rewrite equation",
-        "statement": "We can rewrite the equation A^2 * B = I as A * (A * B) = I",
-        "applied-to": {
-          "A": "matrix A",
-          "B": "matrix B",
-          "I": "identity matrix"
-        },
-        "assumptions-satisfied": [
-          "A^2 * B = I"
         ]
       }
     ],
     [
       {
         "type": "theorem",
-        "name": "square_matrix_invertibility",
-        "statement": "If A is a square matrix and A^2 is invertible, then A is invertible.",
+        "name": "Theorem 1",
+        "statement": "Let A be a square matrix. If A^2 is invertible then A is invertible.",
         "status": "proved",
         "proof": [
           {
             "type": "assumption",
-            "statement": "A^2 is invertible."
+            "statement": "A^2 is invertible"
           },
           {
-            "type": "choose",
+            "type": "let",
             "variable": "B",
-            "property": "A^2 * B = B * A^2 = I, where I is the identity matrix."
-          },
-          {
-            "type": "observation",
-            "statement": "We can rewrite the equation A^2 * B = I as A * (A * B) = I."
+            "value": "The inverse of A^2",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "There exists a matrix B such that A^2B = BA^2 = I"
+              }
+            ]
           },
           {
             "type": "assertion",
-            "claim": "The matrix A * B behaves as the inverse of A, since by definition of the inverse of a matrix, A * A^{-1} = I.",
+            "claim": "A is invertible",
             "deduced-from": [
               {
-                "name": "Matrix multiplication commutativity",
-                "statement": "The equation A^2 * B = I can be rewritten as A * (A * B) = I.",
+                "name": "invertible matrix",
+                "statement": "If A^2 is invertible, then there exists a matrix B such that A^2B = BA^2 = I",
+                "applied-to": {
+                  "A": "A",
+                  "B": "B"
+                },
+                "assumptions-satisfied": [
+                  "A^2 is invertible"
+                ]
+              }
+            ],
+            "justification": "Multiplying both sides of the equation A^2B = I on the right by A gives A(AB) = I",
+            "statement": "If A is a square matrix and A^2 is invertible, then there exists a matrix B such that A^2B = BA^2 = I, then A is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "Let A be a square matrix. If A^2 is invertible then A is invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "A^2 is invertible"
+          },
+          {
+            "type": "let",
+            "variable": "B",
+            "value": "The inverse of A^2",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "There exists a matrix B such that A^2B = BA^2 = I"
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A is invertible",
+            "deduced_from": [
+              {
+                "name": "A^2 is invertible",
+                "statement": "If A^2 is invertible, then there exists a matrix B such that A^2B = BA^2 = I",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  "A^2 is invertible"
+                ]
+              },
+              {
+                "name": "There exists a matrix B such that A^2B = BA^2 = I",
+                "statement": "If there exists a matrix B such that A^2B = BA^2 = I, then A is invertible",
                 "applied-to": {
                   "A": "A",
                   "B": "B"
                 },
                 "assumptions-satisfied": [
                   "A^2 is invertible",
-                  "A^2 * B = B * A^2 = I"
+                  "There exists a matrix B such that A^2B = BA^2 = I"
                 ]
               }
-            ]
-          },
-          {
-            "type": "assertion",
-            "claim": "A is invertible.",
-            "deduced-from": [
-              {
-                "name": "Matrix invertibility",
-                "statement": "If the matrix A * B behaves as the inverse of A, then A is invertible.",
-                "applied-to": {
-                  "A": "A",
-                  "B": "B"
-                },
-                "assumptions-satisfied": [
-                  "A * B behaves as the inverse of A"
-                ]
-              }
-            ]
+            ],
+            "justification": "Multiplying both sides of the equation A^2B = I on the right by A gives A(AB) = I",
+            "statement": "If A is a square matrix and A^2 is invertible, then there exists a matrix B such that A^2B = BA^2 = I, then A is invertible."
           }
         ]
       }
     ],
-    "The `ProofJSON` format you've provided doesn't seem to include any direct references to specific theorems in the `deduced_from` list. However, I can provide a general approach for checking whether the `claim` follows from the `deduced_from` results and how you might expand on the deduced theorems.\n\n1. For each `assertion`, iterate through its `deduced_from` list.\n2. For each entry in `deduced_from`, look up the corresponding theorem or definition.\n3. Check whether all conditions of the theorem are satisfied by the current context.\n   - If no, add an `error` field to the `assertion` with a description of the unsatisfied condition.\n   - If yes, build a new JSON object for the theorem, including the `name`, `statement`, `applied-to` (mapping from the theorem's variables to the terms in the current context), and `assumptions-satisfied` (a list of assumptions that were satisfied in order for the theorem to be applied).\n4. Replace the original entry in `deduced_from` with this new JSON object.\n\nHere's a pseudocode example for how this might look:\n\n```\nfor assertion in theorem['proof']:\n  if assertion['type'] == 'assertion':\n    new_deduced_from = []\n    for deduced_from in assertion['deduced_from']:\n      theorem = get_theorem(deduced_from)\n      if not theorem_satisfied(theorem, assertion):\n        assertion['error'] = f\"Theorem {theorem['name']} not satisfied\"\n        continue\n      new_deduced_from.append({\n        \"name\": theorem['name'],\n        \"statement\": theorem['statement'],\n        \"applied-to\": get_applied_to(theorem, assertion),\n        \"assumptions-satisfied\": get_assumptions_satisfied(theorem, assertion)\n      })\n    assertion['deduced_from'] = new_deduced_from\n```\n\nPlease note that the functions `get_theorem`, `theorem_satisfied`, `get_applied_to`, and `get_assumptions_satisfied` are placeholders and would need to be implemented according to your specific needs.",
-    "Unfortunately, `ProofJSON` format is hypothetical and not a known standard, so I cannot process it in the way you requested. But, I can show you how to handle similar situations in a more standard context, like while working with Lean 4 theorem prover.\n\nIn Lean 4, each theorem or lemma will be a stand-alone statement that is proved from other known facts, assumptions, or previously proved theorems. It's up to the coder to ensure that the logical deductions are valid. Lean 4 itself is designed to check that all steps are logically valid and that the assumptions are satisfied for each step.\n\nFor example, consider this Lean 4 code:\n\n```Lean\nimport algebra.group\n\nvariables (G : Type*) [group G] (H : set G) [is_subgroup H] (n : ℕ)\n\ntheorem order_divides_card_group : fintype.card H ∣ fintype.card G :=\nby apply is_subgroup.card_subgroup_dvd_card\n\n#check order_divides_card_group\n```\n\nIn this case, `order_divides_card_group` is a theorem about subgroups, stating that the order of a subgroup `H` divides the order of the group `G`. The assumptions for this theorem are that `H` is a subgroup of `G` and both `H` and `G` are finite (`fintype`).\n\nThe Lean 4 system ensures that the theorem is validly deduced from the assumptions, and if we wanted to use this theorem later, we would need to supply a subgroup and a group that satisfy the conditions. \n\nIn general, while working with Lean 4, the coder's skill, understanding, and the Lean 4 system itself ensure the logical validity of theorems and their applications.",
-    "The given JSON object represents a proof of the \"Matrix Invertibility Theorem\". Let's go through each `assertion` object.\n\n1. The first `assertion` has the `claim`: \"Substituting B = A^2 = AA into these equations results in AAB^-1 = B^-1AA = I\". The `deduced_from` fields are \"B = A^2\" and \"BB^-1 = B^-1B = I\". This claim indeed follows from these results as per the provided `justification`, so there is no need to add an `error` field. As for expanding the `deduced_from` list, this seems to be based on direct substitution rather than the application of a specific theorem, so it might not be feasible in this case.\n\n2. The second `assertion` has the `claim`: \"AC = CA = I\". The `deduced_from` fields are \"C = AB^-1\" and \"AAB^-1 = B^-1AA = I\". This claim indeed follows from these results as per the provided `justification`, so again, there is no need to add an `error` field. As for expanding the `deduced_from` list, again this seems to be based on direct substitution and multiplication, not the application of a specific theorem.\n\n3. The third `assertion` has the `claim`: \"A is invertible\". The `deduced_from` field is \"AC = CA = I\". This claim indeed follows from this result as per the provided `justification` and the definition of invertibility, so there is no need to add an `error` field. As for expanding the `deduced_from` list, again this seems to be based on the definition of invertibility, not the application of a specific theorem.\n\nSo in this case, we wouldn't add any `error` fields, and we wouldn't be able to expand the `deduced_from` lists as described because the `assertions` in this proof don't seem to be based on the application of specific theorems but on direct algebraic manipulations and definitions.",
-    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Matrix Invertibility Theorem\",\n    \"statement\": \"If the square of a square matrix is invertible, then the matrix itself is also invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Let A be a square matrix and B = A^2. B is invertible.\"\n      },\n      {\n        \"type\": \"definition\",\n        \"statement\": \"There exists a matrix B^-1 such that BB^-1 = B^-1B = I\",\n        \"term\": \"inverse matrix\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Substituting B = A^2 = AA into these equations results in AAB^-1 = B^-1AA = I\",\n        \"deduced-from\": [\n          {\n            \"name\": \"Matrix Square Equality\",\n            \"statement\": \"B = A^2\",\n            \"applied-to\": {\n              \"A\": \"A\",\n              \"B\": \"B\"\n            },\n            \"assumptions-satisfied\": [\"A is a square matrix\", \"B = A^2\"]\n          },\n          {\n            \"name\": \"Matrix Invertibility Definition\",\n            \"statement\": \"BB^-1 = B^-1B = I\",\n            \"applied-to\": {\n              \"B\": \"B\",\n              \"B^-1\": \"B^-1\"\n            },\n            \"assumptions-satisfied\": [\"B is invertible\"]\n          }\n        ],\n        \"justification\": \"substituting B with AA\",\n        \"statement\": \"If B = A^2 and BB^-1 = B^-1B = I, then substituting B = A^2 = AA into these equations results in AAB^-1 = B^-1AA = I\"\n      },\n      ...\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is invertible\",\n        \"deduced-from\": [\n          {\n            \"name\": \"Matrix Multiplication Identity\",\n            \"statement\": \"AC = CA = I\",\n            \"applied-to\": {\n              \"A\": \"A\",\n              \"C\": \"C\"\n            },\n            \"assumptions-satisfied\": [\"A is a square matrix\", \"C = AB^-1\"]\n          }\n        ],\n        \"justification\": \"definition of invertibility\",\n        \"statement\": \"If AC = CA = I, then A is invertible\"\n      }\n    ]\n  }\n]",
-    "For the first assertion, the claim is \"C serves as the inverse of A.\" The results in `deduced_from` include \"AC = CA = I\". Indeed, this result is exactly the definition of the inverse matrix, so the claim is valid. Therefore, the expanded `deduced_from` field is:\n\n```\n[\n  {\n    \"name\": \"Definition of the inverse matrix\",\n    \"statement\": \"A matrix B is the inverse of a matrix A if and only if AB = BA = I\",\n    \"applied-to\": {\"A\": \"A\", \"B\": \"C\"},\n    \"assumptions-satisfied\": [\"AC = CA = I\"]\n  }\n]\n```\n\nFor the second assertion, the claim is \"A is invertible.\" The result in `deduced_from` is \"C serves as the inverse of A\". Since invertibility of a matrix is defined as the existence of an inverse matrix, and we have already shown that C is the inverse of A, the claim is valid. Therefore, the expanded `deduced_from` field is:\n\n```\n[\n  {\n    \"name\": \"Definition of invertibility of a matrix\",\n    \"statement\": \"A matrix A is invertible if and only if there exists a matrix B such that AB = BA = I\",\n    \"applied-to\": {\"A\": \"A\", \"B\": \"C\"},\n    \"assumptions-satisfied\": [\"C serves as the inverse of A\"]\n  }\n]\n```\nI hope this helps! If you have any further questions, please let me know.",
-    "I will examine each assertion in the given JSON and check whether the claim follows from the results listed in the `deduced_from` field. After that, I will expand the theorem in the `deduced_from` list by adding the fields `name`, `statement`, `applied-to`, and `assumptions-satisfied`.\n\nHere is the processed JSON:\n\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"inverse_of_square_matrix\",\n    \"statement\": \"If the square of a square matrix is invertible, then the matrix itself is also invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A is a square matrix and B = A^2. B is invertible.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"There exists a matrix B^{-1} such that BB^{-1} = B^{-1}B = I.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"C\",\n        \"value\": \"AB^{-1}\",\n        \"existence\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"Substituting B = A^2 = AA into BB^{-1} = I leads to AAB^{-1} = I.\"\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Using the definition of C, we have AC = CA = I.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"C serves as the inverse of A.\",\n        \"statement\": \"If A is a square matrix, B = A^2 is invertible, and C = AB^{-1}, then C serves as the inverse of A.\",\n        \"deduced-from\": [\n          {\n            \"name\": \"Matrix Inverse Definition\",\n            \"statement\": \"A matrix A is invertible if there exists a matrix C such that AC = CA = I\",\n            \"applied-to\": { \"A\": \"A\", \"C\": \"C\" },\n            \"assumptions-satisfied\": [\"AC = CA = I\"]\n          }\n        ],\n        \"justification\": \"By definition of the inverse of a matrix.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is invertible.\",\n        \"statement\": \"If A is a square matrix, B = A^2 is invertible, and C = AB^{-1} is the inverse of A, then A is invertible.\",\n        \"deduced-from\": [\n          {\n            \"name\": \"Matrix Invertibility\",\n            \"statement\": \"A matrix is invertible if it has an inverse\",\n            \"applied-to\": { \"A\": \"A\" },\n            \"assumptions-satisfied\": [\"C serves as the inverse of A\"]\n          }\n        ],\n        \"justification\": \"By definition of invertibility of a matrix.\"\n      }\n    ]\n  }\n]\n\nIn the above JSON, each `assertion` object has been verified to correctly follow from the previous proof steps and theorems applied. Additionally, each `deduced_from` reference has been expanded into a fuller object with a `name`, `statement`, `applied-to`, and `assumptions-satisfied` field. This provides additional clarity and understanding of how the theorem was applied in the logical argument.",
-    "Given the nature of the `ProofJSON` format, this task would typically be performed by a program rather than manually due to its complexity, repetitiveness, and requirement for precision. \n\nHowever, for the purpose of this question, here is the manual check for each object of type `assertion`:\n\n1. Assertion 1:\n    - Claim: \"C serves as the inverse of A.\"\n    - Deduced from: [\"AC = CA = I\"]\n    - Check: The claim \"C serves as the inverse of A.\" does follow from the result \"AC = CA = I\" as per the definition of the inverse of a matrix. Hence, there is no need to add an `error` field.\n    - Expanded `deduced_from`: { \"name\": \"Definition of Inverse Matrix\", \"statement\": \"If for a square matrix A and B, AB = BA = I, then B is the inverse of A\", \"applied-to\": {\"A\": \"A\", \"B\": \"C\"}, \"assumptions-satisfied\": [\"A and C are square matrices\", \"AC = CA = I\"] }\n\n2. Assertion 2:\n    - Claim: \"A is invertible.\"\n    - Deduced from: [\"C serves as the inverse of A\"]\n    - Check: The claim \"A is invertible.\" does follow from the result \"C serves as the inverse of A\" as per the definition of invertibility of a matrix. Hence, there is no need to add an `error` field.\n    - Expanded `deduced_from`: { \"name\": \"Definition of Invertibility of a Matrix\", \"statement\": \"A square matrix A is invertible if there exists a matrix B such that AB = BA = I\", \"applied-to\": {\"A\": \"A\", \"B\": \"C\"}, \"assumptions-satisfied\": [\"A and C are square matrices\", \"C serves as the inverse of A\"] }\n\nNote that this process ideally should be automated for efficiency and accuracy.",
-    "Here is the `ProofJSON` after checking and expansion: \n\n```\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"inverse_of_square_matrix\",\n    \"statement\": \"If the square of a square matrix is invertible, then the matrix itself is also invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A is a square matrix and B = A^2. B is invertible.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"There exists a matrix B^{-1} such that BB^{-1} = B^{-1}B = I.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"C\",\n        \"value\": \"AB^{-1}\",\n        \"existence\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"Substituting B = A^2 = AA into BB^{-1} = I leads to AAB^{-1} = I.\"\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Using the definition of C, we have AC = CA = I.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"C serves as the inverse of A.\",\n        \"deduced-from\": [\n          {\n            \"name\": \"Definition of matrix inverse\",\n            \"statement\": \"A matrix C is the inverse of A if AC = CA = I.\",\n            \"applied-to\": {\"A\": \"A\", \"C\": \"C\"},\n            \"assumptions-satisfied\": [\"AC = CA = I\"]\n          }\n        ],\n        \"justification\": \"By definition of the inverse of a matrix.\",\n        \"statement\": \"Given that A is a square matrix and B = A^2 is invertible, let C = AB^{-1} such that AAB^{-1} = I and AC = CA = I, then C serves as the inverse of A.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A is invertible.\",\n        \"deduced-from\": [\n          {\n            \"name\": \"Definition of matrix invertibility\",\n            \"statement\": \"A matrix A is invertible if there exists a matrix C serving as its inverse.\",\n            \"applied-to\": {\"A\": \"A\", \"C\": \"C\"},\n            \"assumptions-satisfied\": [\"C serves as the inverse of A\"]\n          }\n        ],\n        \"justification\": \"By definition of invertibility of a matrix.\",\n        \"statement\": \"Given that A is a square matrix and B = A^2 is invertible, let C = AB^{-1} (where AC = CA = I) serve as the inverse of A, then A is invertible.\"\n      }\n    ]\n  }\n]\n```\n\nFor both assertions, the `claim` does indeed follow from the results in `deduced_from`. So no `error` field is added. Each theorem in the `deduced_from` list was expanded to have fields `name`, `statement`, `applied-to`, `assumptions-satisfied`.",
-    "Here is the modified body of mathematics in the `ProofJSON` format:\n\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"A square matrix A is invertible if A^2 is invertible.\",\n    \"statement\": \"If A^2 is invertible for a square matrix A, then A is invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A^2 is invertible.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"B\",\n        \"value\": \"An invertible matrix such that A^2B=BA^2=I, with I being the identity matrix.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"AB = A\",\n        \"statement\": \"If A^2 is invertible for a square matrix A and B is an invertible matrix such that A^2B=BA^2=I, then AB=A.\",\n        \"deduced-from\": [\n          {\n            \"name\": \"Matrix multiplication\",\n            \"statement\": \"If A^2B=I, then A(A^2B)=AI\",\n            \"applied-to\": \"A^2B with A on the left\",\n            \"assumptions-satisfied\": [\"A^2B=I\"]\n          }\n        ],\n        \"justification\": \"From the equation A(A^2B)=(AA^2)B=A^3B. Since A^2B=I, we have A^3B=AI, which simplifies to A.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"BA = B\",\n        \"statement\": \"If A^2 is invertible for a square matrix A and B is an invertible matrix such that A^2B=BA^2=I, then BA=B.\",\n        \"deduced-from\": [\n          {\n            \"name\": \"Matrix multiplication\",\n            \"statement\": \"If BA^2=I, then (BA^2)A=BI\",\n            \"applied-to\": \"BA^2 with A on the right\",\n            \"assumptions-satisfied\": [\"BA^2=I\"]\n          }\n        ],\n        \"justification\": \"From the equation B(AA^2)=(BA^2)A=B(A^3). Replacing A^2 with I again, we get B(A^3)=BI, which simplifies to B.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"From the above, A has a two-sided inverse B, hence A is invertible.\"\n      }\n    ]\n  }\n]\n\nEach `assertion` type now includes the additional fields for each theorem in the `deduced_from` list. The `claim` follows from the `deduced_from` results and each theorem in the `deduced_from` list now has fields `name`, `statement`, `applied-to`, `assumptions-satisfied`. Also, there are no `error` fields because the `claim` follows from the `deduced_from` results.",
-    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"A square matrix A is invertible if A^2 is invertible.\",\n    \"statement\": \"If A^2 is invertible for a square matrix A, then A is invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A^2 is invertible.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"B\",\n        \"value\": \"An invertible matrix such that A^2B=BA^2=I, with I being the identity matrix.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"AB = A\",\n        \"statement\": \"If A^2 is invertible for a square matrix A and B is an invertible matrix such that A^2B=BA^2=I, then AB=A.\",\n        \"deduced-from\": [\n          {\n            \"name\": \"Matrix multiplication properties\",\n            \"statement\": \"For all matrices A, B, and C, A(BC) = (AB)C and (AB)C = A(BC)\",\n            \"result\": \"A^2B=I\",\n            \"applied-to\": \"multiplied by A on the left\",\n            \"assumptions-satisfied\": [\"A is a matrix\", \"B is a matrix\", \"I is the identity matrix\"]\n          }\n        ],\n        \"justification\": \"From the equation A(A^2B)=(AA^2)B=A^3B. Since A^2B=I, we have A^3B=AI, which simplifies to A.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"BA = B\",\n        \"statement\": \"If A^2 is invertible for a square matrix A and B is an invertible matrix such that A^2B=BA^2=I, then BA=B.\",\n        \"deduced-from\": [\n          {\n            \"name\": \"Matrix multiplication properties\",\n            \"statement\": \"For all matrices A, B, and C, AB(C) = A(BC) and A(BC) = AB(C)\",\n            \"result\": \"BA^2=I\",\n            \"applied-to\": \"multiplied by A on the right\",\n            \"assumptions-satisfied\": [\"A is a matrix\", \"B is a matrix\", \"I is the identity matrix\"]\n          }\n        ],\n        \"justification\": \"From the equation B(AA^2)=(BA^2)A=B(A^3). Replacing A^2 with I again, we get B(A^3)=BI, which simplifies to B.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"From the above, A has a two-sided inverse B, hence A is invertible.\"\n      }\n    ]\n  }\n] \n\nNote: The assertions seem to be correct based on the deductions. So, there are no \"error\" fields added. The mathematical manipulations and reasoning provided appear to be sound, and thus the claims do indeed follow from the results stated in the `deduced_from` fields.",
+    "The provided JSON does not contain any objects of type \"assertion\". Therefore, no modifications are necessary. The JSON remains unchanged.",
+    "The provided JSON does not contain any objects of type `assertion`, so no modifications are necessary. The JSON remains unchanged:\n\n[\n  {\n    \"type\": \"theorem\",\n    \"statement\": \"Let A be a square matrix. If A^2 is invertible then A is invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A^2 is invertible\"\n      },\n      {\n        \"type\": \"choose\",\n        \"variable\": \"B\",\n        \"property\": \"A^2B = BA^2 = I\",\n        \"existence\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"Such a B exists because A^2 is invertible\"\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Multiplying both sides of the equation A^2B = I on the right by A gives A(AB) = I\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Thus, A is invertible\"\n      }\n    ]\n  }\n]",
+    "Since there are no objects of type `assertion` in the given JSON body, no modifications are necessary. Therefore, the JSON remains unchanged:\n\n[\n  {\n    \"type\": \"theorem\",\n    \"statement\": \"Let A be a square matrix. If A^2 is invertible then A is invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A^2 is invertible\"\n      },\n      {\n        \"type\": \"choose\",\n        \"variable\": \"B\",\n        \"property\": \"A^2B = BA^2 = I\",\n        \"existence\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"Such a B exists because A^2 is invertible\"\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Multiplying both sides of the equation A^2B = I on the right by A gives A(AB) = I\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Thus, A is invertible\"\n      }\n    ]\n  }\n]",
+    "Since there are no objects of type `assertion` in the given JSON body, there are no modifications needed. The JSON remains unchanged:\n\n[\n  {\n    \"type\": \"theorem\",\n    \"statement\": \"Let A be a square matrix. If A^2 is invertible then A is invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"A^2 is invertible\"\n      },\n      {\n        \"type\": \"choose\",\n        \"variable\": \"B\",\n        \"property\": \"A^2B = BA^2 = I\",\n        \"existence\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"Such a B exists because A^2 is invertible\"\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Multiplying both sides of the equation A^2B = I on the right by A gives A(AB) = I\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Thus, A is invertible\"\n      }\n    ]\n  }\n]",
     [
       {
         "type": "theorem",
-        "name": "A square matrix A is invertible if A^2 is invertible.",
-        "statement": "If A^2 is invertible for a square matrix A, then A is invertible.",
+        "statement": "Let A be a square matrix. If A^2 is invertible then A is also invertible.",
         "status": "proved",
         "proof": [
           {
@@ -598,122 +1050,1163 @@
           },
           {
             "type": "let",
-            "variable": "B",
-            "value": "An invertible matrix such that A^2B=BA^2=I, with I being the identity matrix."
+            "variable": "A",
+            "value": "A is a square matrix."
+          },
+          {
+            "type": "assumption",
+            "statement": "A is not invertible."
+          },
+          {
+            "type": "observation",
+            "statement": "A has a zero determinant."
+          },
+          {
+            "type": "observation",
+            "statement": "The determinant of A^2 is the square of the determinant of A."
+          },
+          {
+            "type": "observation",
+            "statement": "If A has a zero determinant, then A^2 will also have a zero determinant."
+          },
+          {
+            "type": "observation",
+            "statement": "A^2 is not invertible."
           },
           {
             "type": "assertion",
-            "claim": "AB = A",
-            "statement": "If A^2 is invertible and B is an invertible matrix such that A^2B=BA^2=I, then AB = A.",
+            "claim": "This contradicts the assumption that A^2 is invertible.",
             "deduced-from": [
               {
-                "name": "Matrix multiplication is associative",
-                "statement": "For any matrices A, B, and C, (AB)C=A(BC).",
+                "name": "A^2 is not invertible.",
+                "statement": "If A has a zero determinant, then A^2 will also have a zero determinant.",
                 "applied-to": {
-                  "A": "A",
-                  "B": "A^2",
-                  "C": "B"
+                  "A": "A"
                 },
                 "assumptions-satisfied": [
-                  "A, A^2, and B are matrices"
+                  "A has a zero determinant"
+                ]
+              },
+              {
+                "name": "A^2 is invertible.",
+                "statement": "A^2 is invertible.",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": []
+              }
+            ],
+            "statement": "Let A be a square matrix. If A^2 is invertible and A^2 is not invertible, this contradicts the assumption that A^2 is invertible."
+          },
+          {
+            "type": "observation",
+            "statement": "The assumption that A is not invertible must be false."
+          },
+          {
+            "type": "observation",
+            "statement": "A is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let A be a square matrix. If A^2 is invertible then A is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "A^2 is invertible."
+          },
+          {
+            "type": "let",
+            "variable": "A",
+            "value": "A is a square matrix."
+          },
+          {
+            "type": "assumption",
+            "statement": "A is not invertible."
+          },
+          {
+            "type": "observation",
+            "statement": "A has a zero determinant."
+          },
+          {
+            "type": "observation",
+            "statement": "The determinant of A^2 is the square of the determinant of A."
+          },
+          {
+            "type": "observation",
+            "statement": "If A has a zero determinant, then A^2 will also have a zero determinant."
+          },
+          {
+            "type": "observation",
+            "statement": "A^2 is not invertible."
+          },
+          {
+            "type": "assertion",
+            "claim": "This contradicts the assumption that A^2 is invertible.",
+            "deduced-from": [
+              {
+                "name": "Contradiction",
+                "statement": "If a statement and its contradiction are both true, then an error arises.",
+                "applied-to": {
+                  "statement": "A^2 is invertible",
+                  "contradiction": "A^2 is not invertible"
+                },
+                "assumptions-satisfied": [
+                  "A^2 is invertible",
+                  "A^2 is not invertible"
                 ]
               }
             ],
-            "justification": "From the equation A(A^2B)=(AA^2)B=A^3B. Since A^2B=I, we have A^3B=AI, which simplifies to A."
+            "statement": "Let A be a square matrix. If A^2 is invertible and A^2 is not invertible, this contradicts the assumption that A^2 is invertible."
+          },
+          {
+            "type": "observation",
+            "statement": "The assumption that A is not invertible must be false."
+          },
+          {
+            "type": "observation",
+            "statement": "A is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let A be a square matrix. If A^2 is invertible then A is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "A^2 is invertible."
+          },
+          {
+            "type": "let",
+            "variable": "A",
+            "value": "A is a square matrix."
+          },
+          {
+            "type": "assumption",
+            "statement": "A is not invertible."
+          },
+          {
+            "type": "observation",
+            "statement": "A has a zero determinant."
+          },
+          {
+            "type": "observation",
+            "statement": "The determinant of A^2 is the square of the determinant of A."
+          },
+          {
+            "type": "observation",
+            "statement": "If A has a zero determinant, then A^2 will also have a zero determinant."
+          },
+          {
+            "type": "observation",
+            "statement": "A^2 is not invertible."
           },
           {
             "type": "assertion",
-            "claim": "BA = B",
-            "statement": "If A^2 is invertible and B is an invertible matrix such that A^2B=BA^2=I, then BA = B.",
+            "claim": "This contradicts the assumption that A^2 is invertible.",
             "deduced-from": [
               {
-                "name": "Matrix multiplication is associative",
-                "statement": "For any matrices A, B, and C, (AB)C=A(BC).",
+                "name": "Invertibility and determinant",
+                "statement": "A square matrix is invertible if and only if its determinant is nonzero.",
                 "applied-to": {
-                  "A": "B",
-                  "B": "A^2",
+                  "matrix": "A^2"
+                },
+                "assumptions-satisfied": [
+                  "A^2 is a square matrix"
+                ]
+              },
+              {
+                "name": "Determinant of product",
+                "statement": "The determinant of the product of two matrices is the product of their determinants.",
+                "applied-to": {
+                  "matrix1": "A",
+                  "matrix2": "A"
+                },
+                "assumptions-satisfied": [
+                  "A is a square matrix"
+                ]
+              }
+            ],
+            "statement": "If A^2 is invertible and A^2 is not invertible, then this contradicts the assumption that A^2 is invertible."
+          },
+          {
+            "type": "observation",
+            "statement": "The assumption that A is not invertible must be false."
+          },
+          {
+            "type": "observation",
+            "statement": "A is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let A be a square matrix. If A^2 is invertible then A is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "A^2 is invertible."
+          },
+          {
+            "type": "let",
+            "variable": "A",
+            "value": "A is a square matrix."
+          },
+          {
+            "type": "assumption",
+            "statement": "A is not invertible."
+          },
+          {
+            "type": "observation",
+            "statement": "A has a zero determinant."
+          },
+          {
+            "type": "observation",
+            "statement": "The determinant of A^2 is the square of the determinant of A."
+          },
+          {
+            "type": "observation",
+            "statement": "If A has a zero determinant, then A^2 will also have a zero determinant."
+          },
+          {
+            "type": "observation",
+            "statement": "A^2 is not invertible."
+          },
+          {
+            "type": "assertion",
+            "claim": "This contradicts the assumption that A^2 is invertible.",
+            "deduced-from": [
+              {
+                "name": "A^2 is not invertible.",
+                "statement": "If A^2 has a zero determinant, then A^2 is not invertible.",
+                "applied-to": {
+                  "A^2": "A^2"
+                },
+                "assumptions-satisfied": [
+                  "A^2 has a zero determinant"
+                ]
+              },
+              {
+                "name": "A^2 is invertible.",
+                "statement": "If A^2 is invertible, then A^2 has a non-zero determinant.",
+                "applied-to": {
+                  "A^2": "A^2"
+                },
+                "assumptions-satisfied": [
+                  "A^2 is invertible"
+                ]
+              }
+            ],
+            "statement": "If A^2 is invertible and A^2 is not invertible, then this contradicts the assumption that A^2 is invertible."
+          },
+          {
+            "type": "observation",
+            "statement": "The assumption that A is not invertible must be false."
+          },
+          {
+            "type": "observation",
+            "statement": "A is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Invertibility of square matrices",
+        "statement": "Let A be a square matrix. If A^2 is invertible then A is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume A is not invertible."
+          },
+          {
+            "type": "assertion",
+            "claim": "A has a zero determinant.",
+            "statement": "If A is not invertible, then A has a zero determinant.",
+            "deduced-from": [
+              {
+                "name": "Invertibility and determinant",
+                "statement": "If A is not invertible, then A has a zero determinant.",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  "A is not invertible"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "The determinant of A^2 is the square of the determinant of A.",
+            "statement": "Let A be a square matrix. Then the determinant of A^2 is the square of the determinant of A.",
+            "deduced-from": [
+              {
+                "name": "Property of determinants of square matrices",
+                "statement": "Let A be a square matrix. Then the determinant of A^2 is the square of the determinant of A.",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  "A is a square matrix"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A^2 has a zero determinant.",
+            "statement": "If A has a zero determinant and the determinant of A^2 is the square of the determinant of A, then A^2 has a zero determinant.",
+            "deduced-from": [
+              {
+                "name": "Zero determinant and square",
+                "statement": "If A has a zero determinant and the determinant of A^2 is the square of the determinant of A, then A^2 has a zero determinant.",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  "A has a zero determinant",
+                  "The determinant of A^2 is the square of the determinant of A"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A^2 is not invertible.",
+            "statement": "If A^2 has a zero determinant, then A^2 is not invertible.",
+            "deduced-from": [
+              {
+                "name": "Determinant zero and invertibility",
+                "statement": "If A^2 has a zero determinant, then A^2 is not invertible.",
+                "applied-to": {
+                  "A^2": "A^2"
+                },
+                "assumptions-satisfied": [
+                  "A^2 has a zero determinant"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "This contradicts the assumption that A^2 is invertible.",
+            "statement": "If A^2 is not invertible and A^2 is invertible, then this contradicts the assumption that A^2 is invertible.",
+            "deduced-from": [
+              {
+                "name": "Contradiction",
+                "statement": "If A^2 is not invertible and A^2 is invertible, then this contradicts the assumption that A^2 is invertible.",
+                "applied-to": {
+                  "A^2": "A^2"
+                },
+                "assumptions-satisfied": [
+                  "A^2 is not invertible",
+                  "A^2 is invertible"
+                ]
+              }
+            ],
+            "error": "The contradiction is not a valid deduction as the same claim cannot be both true and false."
+          },
+          {
+            "type": "assertion",
+            "claim": "A is invertible.",
+            "statement": "If the assumption that A is not invertible contradicts the assumption that A^2 is invertible, then A is invertible.",
+            "justification": "Therefore, the assumption that A is not invertible must be false, implying A is invertible.",
+            "error": "The contradiction is not properly established due to the error in the previous step. Thus, this claim does not automatically follow."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Invertibility of square matrices",
+        "statement": "Let A be a square matrix. If A^2 is invertible then A is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume A is not invertible."
+          },
+          {
+            "type": "assertion",
+            "claim": "A has a zero determinant.",
+            "statement": "If A is not invertible, then A has a zero determinant.",
+            "deduced-from": [
+              {
+                "name": "Noninvertible matrix has zero determinant",
+                "statement": "If a matrix A is not invertible, then it has a zero determinant.",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  "A is not invertible"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "The determinant of A^2 is the square of the determinant of A.",
+            "statement": "Let A be a square matrix. Then the determinant of A^2 is the square of the determinant of A.",
+            "deduced-from": [
+              {
+                "name": "Property of determinants of square matrices",
+                "statement": "If A is a square matrix, then the determinant of A^2 is the square of the determinant of A.",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  "A is a square matrix"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A^2 has a zero determinant.",
+            "statement": "If A has a zero determinant and the determinant of A^2 is the square of the determinant of A, then A^2 has a zero determinant.",
+            "deduced-from": [
+              {
+                "name": "Zero determinant property",
+                "statement": "If a matrix A has a zero determinant and the determinant of A^2 is the square of the determinant of A, then A^2 has a zero determinant.",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  "A has a zero determinant",
+                  "The determinant of A^2 is the square of the determinant of A"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A^2 is not invertible.",
+            "statement": "If A^2 has a zero determinant, then A^2 is not invertible.",
+            "deduced-from": [
+              {
+                "name": "Zero determinant implies non-invertibility",
+                "statement": "If a square matrix A^2 has a zero determinant, then it is not invertible.",
+                "applied-to": {
+                  "A^2": "A^2"
+                },
+                "assumptions-satisfied": [
+                  "A^2 has a zero determinant"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "This contradicts the assumption that A^2 is invertible.",
+            "statement": "If A^2 is not invertible and A^2 is invertible, then this contradicts the assumption that A^2 is invertible.",
+            "deduced-from": [
+              {
+                "name": "Contradiction",
+                "statement": "If a statement and its negation are both true, then a contradiction occurs.",
+                "applied-to": {
+                  "Statement": "A^2 is invertible"
+                },
+                "assumptions-satisfied": [
+                  "A^2 is not invertible",
+                  "A^2 is invertible"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A is invertible.",
+            "statement": "If the assumption that A is not invertible contradicts the assumption that A^2 is invertible, then A is invertible.",
+            "justification": "Therefore, the assumption that A is not invertible must be false, implying A is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Invertibility of square matrices",
+        "statement": "Let A be a square matrix. If A^2 is invertible then A is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume A is not invertible."
+          },
+          {
+            "type": "assertion",
+            "claim": "A has a zero determinant.",
+            "statement": "If A is not invertible then A has a zero determinant.",
+            "deduced-from": [
+              {
+                "name": "Invertibility and determinant",
+                "statement": "A square matrix is invertible if and only if its determinant is nonzero.",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  "A is a square matrix",
+                  "A is not invertible"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "The determinant of A^2 is the square of the determinant of A.",
+            "statement": "Let A be a square matrix. The determinant of A^2 is the square of the determinant of A.",
+            "deduced-from": [
+              {
+                "name": "Property of determinants of square matrices",
+                "statement": "The determinant of a square matrix raised to a power is the determinant of the matrix raised to that power.",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  "A is a square matrix"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A^2 has a zero determinant.",
+            "statement": "If A is a square matrix and A has a zero determinant, then A^2 has a zero determinant.",
+            "deduced-from": [
+              {
+                "name": "Zero determinant property",
+                "statement": "If the determinant of a square matrix is zero, then the determinant of the matrix raised to any power is also zero.",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  "A is a square matrix",
+                  "A has a zero determinant"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A^2 is not invertible.",
+            "statement": "If A is a square matrix and A^2 has a zero determinant, then A^2 is not invertible.",
+            "deduced-from": [
+              {
+                "name": "Invertibility and determinant",
+                "statement": "A square matrix is invertible if and only if its determinant is nonzero.",
+                "applied-to": {
+                  "A^2": "A^2"
+                },
+                "assumptions-satisfied": [
+                  "A^2 is a square matrix",
+                  "A^2 has a zero determinant"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "This contradicts the assumption that A^2 is invertible.",
+            "statement": "If A is a square matrix, A^2 is not invertible and A^2 is invertible, then this contradicts the assumption that A^2 is invertible.",
+            "deduced-from": [
+              {
+                "name": "Logic",
+                "statement": "A statement and its negation cannot both be true.",
+                "applied-to": {
+                  "statement": "A^2 is invertible",
+                  "negation": "A^2 is not invertible"
+                },
+                "assumptions-satisfied": [
+                  "A^2 is invertible",
+                  "A^2 is not invertible"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A is invertible.",
+            "statement": "Therefore, if A is a square matrix and the assumption that A is not invertible leads to a contradiction, then A is invertible.",
+            "justification": "Therefore, the assumption that A is not invertible must be false, implying A is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Invertibility of square matrices",
+        "statement": "Let A be a square matrix. If A^2 is invertible then A is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume A is not invertible."
+          },
+          {
+            "type": "assertion",
+            "claim": "A has a zero determinant.",
+            "statement": "If A is not invertible then A has a zero determinant.",
+            "deduced-from": [
+              {
+                "name": "Property of invertible matrices",
+                "statement": "A matrix is invertible if and only if its determinant is nonzero.",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  "A is a matrix"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "The determinant of A^2 is the square of the determinant of A.",
+            "statement": "Let A be a square matrix. The determinant of A^2 is the square of the determinant of A.",
+            "deduced-from": [
+              {
+                "name": "Property of determinants of square matrices",
+                "statement": "The determinant of A^2 is the square of the determinant of A.",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  "A is a square matrix"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A^2 has a zero determinant.",
+            "statement": "If A is a square matrix and A has a zero determinant, then A^2 has a zero determinant.",
+            "deduced-from": [
+              {
+                "name": "A has a zero determinant",
+                "statement": "If A is not invertible then A has a zero determinant.",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  "A is not invertible"
+                ]
+              },
+              {
+                "name": "The determinant of A^2 is the square of the determinant of A",
+                "statement": "The determinant of A^2 is the square of the determinant of A.",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  "A is a square matrix"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A^2 is not invertible.",
+            "statement": "If A is a square matrix and A^2 has a zero determinant, then A^2 is not invertible.",
+            "deduced-from": [
+              {
+                "name": "Property of invertible matrices",
+                "statement": "A matrix is invertible if and only if its determinant is nonzero.",
+                "applied-to": {
+                  "A": "A^2"
+                },
+                "assumptions-satisfied": [
+                  "A^2 is a matrix"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "This contradicts the assumption that A^2 is invertible.",
+            "statement": "If A is a square matrix, A^2 is not invertible and A^2 is invertible, then this contradicts the assumption that A^2 is invertible.",
+            "deduced-from": [
+              {
+                "name": "A^2 is not invertible",
+                "statement": "If A is a square matrix and A^2 has a zero determinant, then A^2 is not invertible.",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  "A is a square matrix"
+                ]
+              },
+              {
+                "name": "A^2 is invertible",
+                "statement": "A^2 is invertible.",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  ""
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A is invertible.",
+            "statement": "Therefore, if A is a square matrix and the assumption that A is not invertible leads to a contradiction, then A is invertible.",
+            "justification": "Therefore, the assumption that A is not invertible must be false, implying A is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Invertibility theorem",
+        "statement": "Let A be a square matrix. If A squared is invertible then A is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "A squared is invertible."
+          },
+          {
+            "type": "choose",
+            "variable": "B",
+            "property": "A squared multiplied by B equals B multiplied by A squared equals the identity matrix.",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "Existence of B is given by the assumption that A squared is invertible."
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A times (B times A) equals the identity.",
+            "deduced-from": [
+              {
+                "name": "Matrix Invertibility",
+                "statement": "If B is an inverse of a matrix M, then for any matrix A, A times (B times A) equals A.",
+                "applied-to": {
+                  "M": "A squared",
+                  "B": "B",
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  "B is an inverse of A squared"
+                ]
+              }
+            ],
+            "error": "The claim doesn't follow from the given result. A times (B times A) might not equal the identity even if B is an inverse of A squared."
+          },
+          {
+            "type": "assertion",
+            "claim": "(B times A) times A equals the identity.",
+            "deduced-from": [
+              {
+                "name": "Matrix Invertibility",
+                "statement": "If B is an inverse of a matrix M, then for any matrix A, (B times A) times A equals A.",
+                "applied-to": {
+                  "M": "A squared",
+                  "B": "B",
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  "B is an inverse of A squared"
+                ]
+              }
+            ],
+            "error": "The claim doesn't follow from the given result. (B times A) times A might not equal the identity even if B is an inverse of A squared."
+          },
+          {
+            "type": "observation",
+            "statement": "The matrix B times A is both a left inverse and a right inverse of A."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, A is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Invertibility theorem",
+        "statement": "Let A be a square matrix. If A squared is invertible then A is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "A squared is invertible."
+          },
+          {
+            "type": "choose",
+            "variable": "B",
+            "property": "A squared multiplied by B equals B multiplied by A squared equals the identity matrix.",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "Existence of B is given by the assumption that A squared is invertible."
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A times (B times A) equals the identity.",
+            "error": "The claim does not directly follow from the statement that B is an inverse of A squared.",
+            "deduced-from": [
+              {
+                "result": "B is an inverse of A squared",
+                "applied-to": "A squared"
+              }
+            ],
+            "statement": "If B is an inverse of A squared, then A times (B times A) equals the identity."
+          },
+          {
+            "type": "assertion",
+            "claim": "(B times A) times A equals the identity.",
+            "error": "The claim does not directly follow from the statement that B is an inverse of A squared.",
+            "deduced-from": [
+              {
+                "result": "B is an inverse of A squared",
+                "applied-to": "A squared"
+              }
+            ],
+            "statement": "If B is an inverse of A squared, then (B times A) times A equals the identity."
+          },
+          {
+            "type": "observation",
+            "statement": "The matrix B times A is both a left inverse and a right inverse of A."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, A is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Invertibility theorem",
+        "statement": "Let A be a square matrix. If A squared is invertible then A is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "A squared is invertible."
+          },
+          {
+            "type": "choose",
+            "variable": "B",
+            "property": "A squared multiplied by B equals B multiplied by A squared equals the identity matrix.",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "Existence of B is given by the assumption that A squared is invertible."
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A times (B times A) equals the identity.",
+            "statement": "If B is an inverse of A squared, then A times (B times A) equals the identity.",
+            "deduced-from": [
+              {
+                "name": "properties of matrix multiplication and inverse",
+                "statement": "If B is an inverse of A squared, then A times (B times A) equals the identity.",
+                "applied-to": {
+                  "A": "A",
+                  "B": "B"
+                },
+                "assumptions-satisfied": [
+                  "A and B are square matrices",
+                  "B is an inverse of A squared"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "(B times A) times A equals the identity.",
+            "statement": "If B is an inverse of A squared, then (B times A) times A equals the identity.",
+            "deduced-from": [
+              {
+                "name": "properties of matrix multiplication and inverse",
+                "statement": "If B is an inverse of A squared, then (B times A) times A equals the identity.",
+                "applied-to": {
+                  "A": "A",
+                  "B": "B"
+                },
+                "assumptions-satisfied": [
+                  "A and B are square matrices",
+                  "B is an inverse of A squared"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "The matrix B times A is both a left inverse and a right inverse of A."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, A is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Invertibility theorem",
+        "statement": "Let A be a square matrix. If A squared is invertible then A is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "A squared is invertible."
+          },
+          {
+            "type": "choose",
+            "variable": "B",
+            "property": "A squared multiplied by B equals B multiplied by A squared equals the identity matrix.",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "Existence of B is given by the assumption that A squared is invertible."
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A times (B times A) equals the identity.",
+            "statement": "If B is an inverse of A squared, then A times (B times A) equals the identity.",
+            "deduced-from": [
+              {
+                "name": "Inverse of a square matrix",
+                "statement": "If B is an inverse of A squared, then A times (B times A) equals the identity.",
+                "applied-to": {
+                  "A": "A",
+                  "B": "B"
+                },
+                "assumptions-satisfied": [
+                  "A squared is invertible",
+                  "B is an inverse of A squared"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "(B times A) times A equals the identity.",
+            "statement": "If B is an inverse of A squared, then (B times A) times A equals the identity.",
+            "deduced-from": [
+              {
+                "name": "Inverse of a square matrix",
+                "statement": "If B is an inverse of A squared, then (B times A) times A equals the identity.",
+                "applied-to": {
+                  "A": "A",
+                  "B": "B"
+                },
+                "assumptions-satisfied": [
+                  "A squared is invertible",
+                  "B is an inverse of A squared"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "The matrix B times A is both a left inverse and a right inverse of A."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, A is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Invertibility of A given A squared is invertible",
+        "statement": "Let A be a square matrix. If A squared is invertible then A is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assume",
+            "statement": "A squared is invertible"
+          },
+          {
+            "type": "choose",
+            "variable": "B",
+            "property": "A squared multiplied by B equals B multiplied by A squared equals the identity matrix"
+          },
+          {
+            "type": "observation",
+            "statement": "A times (B times A) times A equals A times the identity"
+          },
+          {
+            "type": "observation",
+            "statement": "(A times B) times A squared equals A times the identity"
+          },
+          {
+            "type": "assertion",
+            "claim": "A times (B times A) equals the identity",
+            "deduced-from": [
+              {
+                "name": "Matrix multiplication associative property",
+                "statement": "For any matrices X, Y, and Z, we have (X times Y) times Z equals X times (Y times Z)",
+                "applied-to": {
+                  "X": "A",
+                  "Y": "B times A",
+                  "Z": "A"
+                },
+                "assumptions-satisfied": [
+                  "A, B times A, and A are matrices"
+                ]
+              },
+              {
+                "name": "Matrix multiplication with identity matrix",
+                "statement": "Multiplication of any matrix X with the identity matrix results in X",
+                "applied-to": {
+                  "X": "A"
+                },
+                "assumptions-satisfied": [
+                  "A is a matrix"
+                ]
+              }
+            ],
+            "error": "While the general form of the results used in the proof are correct, there is a logical jump in the deduction. The results do not demonstrate that A times (B times A) equals the identity."
+          },
+          {
+            "type": "observation",
+            "statement": "(B times A) times A equals the identity"
+          },
+          {
+            "type": "assertion",
+            "claim": "The matrix B times A is both a left inverse and a right inverse of A",
+            "deduced-from": [
+              "A times (B times A) equals the identity",
+              "(B times A) times A equals the identity"
+            ],
+            "error": "The claim cannot be derived from the given 'deduced_from' results because the first one has previously been marked as erroneous."
+          },
+          {
+            "type": "assertion",
+            "claim": "A is invertible",
+            "deduced-from": [
+              "The matrix B times A is both a left inverse and a right inverse of A"
+            ],
+            "error": "The previous claim, which this claim is based on, was marked as erroneous. As such, this claim cannot be validated."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Invertibility of A given A squared is invertible",
+        "statement": "Let A be a square matrix. If A squared is invertible then A is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assume",
+            "statement": "A squared is invertible"
+          },
+          {
+            "type": "choose",
+            "variable": "B",
+            "property": "A squared multiplied by B equals B multiplied by A squared equals the identity matrix"
+          },
+          {
+            "type": "observation",
+            "statement": "A times (B times A) times A equals A times the identity"
+          },
+          {
+            "type": "observation",
+            "statement": "(A times B) times A squared equals A times the identity"
+          },
+          {
+            "type": "assertion",
+            "claim": "A times (B times A) equals the identity",
+            "deduced-from": [
+              {
+                "name": "Multiplicative associativity",
+                "statement": "For matrix multiplication, (A times (B times A)) times A equals A times ((B times A) times A)",
+                "applied-to": {
+                  "A": "A",
+                  "B": "B times A",
                   "C": "A"
                 },
                 "assumptions-satisfied": [
-                  "A, A^2, and B are matrices"
+                  "A, B, and C are matrices"
+                ]
+              },
+              {
+                "name": "Multiplicative identity",
+                "statement": "A times the identity equals A",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  "A is a matrix"
                 ]
               }
-            ],
-            "justification": "From the equation B(AA^2)=(BA^2)A=B(A^3). Replacing A^2 with I again, we get B(A^3)=BI, which simplifies to B."
+            ]
           },
           {
             "type": "observation",
-            "statement": "From the above, A has a two-sided inverse B, hence A is invertible."
-          }
-        ]
-      }
-    ],
-    "Let's go through the assertions one by one:\n\n1. \"AB = A\"\n\n   `Deduced_from` result: \"A^2B=I\" applied to \"multiplied by A on the left\"\n   \n   The computation indeed justifies the claim. To expand the `deduced_from` result:\n   \n   ```\n   \"name\": \"Multiplication of an invertible matrix by another matrix\",\n   \"statement\": \"If A^2B=I, then multiplying both sides by A on the left gives AB=A.\",\n   \"applied-to\": {\"A\": \"A\", \"B\": \"B\"},\n   \"assumptions-satisfied\": [\"A^2 and B are matrices\", \"A^2B=I\"]\n   ```\n\n2. \"BA = B\"\n\n   `Deduced_from` result: \"BA^2=I\" applied to \"multiplied by A on the right\"\n   \n   The computation also justifies this claim. To expand the `deduced_from` result:\n\n   ```\n   \"name\": \"Multiplication of a matrix by an invertible matrix\",\n   \"statement\": \"If BA^2=I, then multiplying both sides by A on the right gives BA=B.\",\n   \"applied-to\": {\"A\": \"A\", \"B\": \"B\"},\n   \"assumptions-satisfied\": [\"A^2 and B are matrices\", \"BA^2=I\"]\n   ```\n\nSo, in this case, there's no need to add an `error` field as both claims correctly follow from the `deduced_from` results.",
-    [
-      {
-        "type": "theorem",
-        "name": "A square invertible implies A invertible",
-        "statement": "If A^2 is invertible for a square matrix A, then A is invertible.",
-        "status": "proved",
-        "proof": [
-          {
-            "type": "assumption",
-            "statement": "A^2 is invertible."
+            "statement": "(B times A) times A equals the identity"
           },
           {
-            "type": "choose",
-            "variable": "B",
-            "property": "A^2B=BA^2=I, with I being the identity matrix.",
-            "existence": [
+            "type": "assertion",
+            "claim": "The matrix B times A is both a left inverse and a right inverse of A",
+            "deduced-from": [
               {
-                "type": "observation",
-                "statement": "Invertibility of A^2 implies existence of such a B."
+                "name": "Definition of left and right inverse",
+                "statement": "If A times X equals the identity and X times A equals the identity, then X is both a left inverse and a right inverse of A",
+                "applied-to": {
+                  "A": "A",
+                  "X": "B times A"
+                },
+                "assumptions-satisfied": [
+                  "A and X are matrices"
+                ]
               }
             ]
           },
           {
             "type": "assertion",
-            "claim": "AB=A",
-            "statement": "If A^2 is invertible, and there exists a B such that A^2B=I, then AB=A.",
+            "claim": "A is invertible",
             "deduced-from": [
               {
-                "name": "Multiplication Identity Equality",
-                "statement": "Given any matrix A, if B is an inverse of A such that AB=I, then AB=A.",
+                "name": "Definition of invertibility",
+                "statement": "If A has a left inverse and a right inverse, then A is invertible",
                 "applied-to": {
-                  "A": "A",
-                  "B": "A^2B"
+                  "A": "A"
                 },
                 "assumptions-satisfied": [
-                  "A^2 is invertible",
-                  "A^2B is an inverse of A"
+                  "A is a matrix"
                 ]
               }
-            ],
-            "justification": "Multiply both sides of A^2B=I by A on the left, yielding A(A^2B)=(AA^2)B=A^3B. Since A^2B=I, we have A^3B=AI, which simplifies to A."
-          },
-          {
-            "type": "assertion",
-            "claim": "BA=B",
-            "statement": "If A^2 is invertible, and there exists a B such that BA^2=I, then BA=B.",
-            "deduced-from": [
-              {
-                "name": "Multiplication Identity Equality",
-                "statement": "Given any matrix A, if B is an inverse of A such that BA=I, then BA=B.",
-                "applied-to": {
-                  "A": "A",
-                  "B": "BA^2"
-                },
-                "assumptions-satisfied": [
-                  "A^2 is invertible",
-                  "BA^2 is an inverse of A"
-                ]
-              }
-            ],
-            "justification": "Multiply both sides of BA^2=I by A on the right, yielding B(AA^2)=(BA^2)A=B(A^3). Replacing A^2 with I again, we get B(A^3)=BI, which simplifies to B."
-          },
-          {
-            "type": "observation",
-            "statement": "A has a two-sided inverse B, hence A is invertible."
+            ]
           }
         ]
       }
@@ -721,71 +2214,174 @@
     [
       {
         "type": "theorem",
-        "name": "A square invertible implies A invertible",
-        "statement": "If A^2 is invertible for a square matrix A, then A is invertible.",
+        "name": "Invertibility of A given A squared is invertible",
+        "statement": "Let A be a square matrix. If A squared is invertible then A is also invertible.",
         "status": "proved",
         "proof": [
           {
-            "type": "assumption",
-            "statement": "A^2 is invertible."
+            "type": "assume",
+            "statement": "A squared is invertible"
           },
           {
             "type": "choose",
             "variable": "B",
-            "property": "A^2B=BA^2=I, with I being the identity matrix.",
-            "existence": [
-              {
-                "type": "observation",
-                "statement": "Invertibility of A^2 implies existence of such a B."
-              }
-            ]
+            "property": "A squared multiplied by B equals B multiplied by A squared equals the identity matrix"
+          },
+          {
+            "type": "observation",
+            "statement": "A times (B times A) times A equals A times the identity"
+          },
+          {
+            "type": "observation",
+            "statement": "(A times B) times A squared equals A times the identity"
           },
           {
             "type": "assertion",
-            "claim": "AB=A",
-            "statement": "If A^2 is invertible, and there exists a B such that A^2B=I, then AB=A.",
+            "claim": "A times (B times A) equals the identity",
+            "statement": "If A times (B times A) times A equals A times the identity and (A times B) times A squared equals A times the identity, then A times (B times A) equals the identity",
             "deduced-from": [
               {
-                "name": "Multiplying both sides of A^2B=I by A",
-                "statement": "If A^2B=I, then A(A^2B)=(AA^2)B=A^3B.",
+                "name": "Matrix multiplication",
+                "statement": "For any matrices A, B, C, if AB = I and AC = I, then ABC = I",
                 "applied-to": {
-                  "A^2B": "I",
-                  "A": "A"
+                  "A": "A",
+                  "B": "(B times A)",
+                  "C": "A"
                 },
                 "assumptions-satisfied": [
-                  "A^2 is invertible",
-                  "A is a square matrix"
-                ]
-              }
-            ]
-          },
-          {
-            "type": "assertion",
-            "claim": "BA=B",
-            "statement": "If A^2 is invertible, and there exists a B such that BA^2=I, then BA=B.",
-            "deduced-from": [
-              {
-                "name": "Multiplying both sides of BA^2=I by A",
-                "statement": "If BA^2=I, then B(AA^2)=(BA^2)A=B(A^3).",
-                "applied-to": {
-                  "BA^2": "I",
-                  "A": "A"
-                },
-                "assumptions-satisfied": [
-                  "A^2 is invertible",
-                  "A is a square matrix"
+                  "A times (B times A) times A equals A times the identity",
+                  "(A times B) times A squared equals A times the identity"
                 ]
               }
             ]
           },
           {
             "type": "observation",
-            "statement": "A has a two-sided inverse B, hence A is invertible."
+            "statement": "(B times A) times A equals the identity"
+          },
+          {
+            "type": "assertion",
+            "claim": "The matrix B times A is both a left inverse and a right inverse of A",
+            "statement": "If A times (B times A) equals the identity and (B times A) times A equals the identity, then the matrix B times A is both a left inverse and a right inverse of A",
+            "deduced-from": [
+              {
+                "name": "Matrix Inverse Definition",
+                "statement": "A matrix X is a left and right inverse of a matrix Y if XY = I and YX = I",
+                "applied-to": {
+                  "X": "(B times A)",
+                  "Y": "A"
+                },
+                "assumptions-satisfied": [
+                  "A times (B times A) equals the identity",
+                  "(B times A) times A equals the identity"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A is invertible",
+            "statement": "If the matrix B times A is both a left inverse and a right inverse of A, then A is invertible",
+            "deduced-from": [
+              {
+                "name": "Matrix Invertibility",
+                "statement": "A matrix is invertible if and only if it has a left inverse and a right inverse",
+                "applied-to": {
+                  "A": "A"
+                },
+                "assumptions-satisfied": [
+                  "The matrix B times A is both a left inverse and a right inverse of A"
+                ]
+              }
+            ]
           }
         ]
       }
     ],
-    "Your instruction involves manipulating a JSON schema and is not directly related to Lean 4 or mathematical theorems in Lean 4. However, I can guide you on how you might approach this problem in a general programming context.\n\nYou will need to iterate over each object in the JSON schema, checking each object's type. If the type is \"assertion\", you will need to verify whether the claim made in the assertion follows logically from the results listed in the object's \"deduced_from\" field. This process will involve applying logical reasoning, and depending on the complexity of the reasoning involved, may require complex algorithmic or even AI-based processes.\n\nIf the claim does not follow from the results, you would add an \"error\" field to the object with a description of the error. This could be done in most programming languages with a simple assignment operation, setting the \"error\" field of the object to the desired error message.\n\nIf the claim does follow from the results, your task is to expand each result in the \"deduced_from\" field into an object with the fields \"name\", \"statement\", \"applied-to\", and \"assumptions-satisfied\". This will involve looking up each result in a database or other source of information where the details of the result (its name, statement, and any assumptions it relies on) can be found.\n\nOnce these details are obtained, they can be used to form the expanded object. The \"applied-to\" field would map the variables in the result's statement to the corresponding elements in the original claim, while the \"assumptions-satisfied\" field would list any assumptions listed in the result's details that are confirmed to be satisfied.\n\nThis process would be repeated for each result in the \"deduced_from\" field, replacing the original result with the newly-formed object. \n\nAgain, this is a general description of what you might do in a typical programming language, and the specific code would depend on the language and the libraries you're using.",
-    "I will analyze the assertions in your `ProofJSON` to verify if the claims indeed follow from the `deduced_from` results.\n\n1. Assertion 1:\n    - Claim: \"AB=A\"\n    - Deduced from: \"A^2B=I\"\n    - After applying the multiplication by A on both sides, the equation becomes \"A^3B=A\", which simplifies to \"AB=A\" after replacing \"A^2\" with \"I\". Hence, the claim follows from the `deduced_from` result.\n\n    Expanded `deduced_from` object:\n    ```\n    {\n        \"name\": \"Matrix multiplication\",\n        \"statement\": \"If A^2B=I for some B, then multiplying both sides by A yields A(A^2B)=A\",\n        \"applied-to\": {\"A\": \"A\", \"B\": \"B\"},\n        \"assumptions-satisfied\": [\"A^2 is invertible\", \"A^2B=I\"]\n    }\n    ```\n    \n\n2. Assertion 2:\n    - Claim: \"BA=B\"\n    - Deduced from: \"BA^2=I\"\n    - After applying the multiplication by A on the right side, the equation becomes \"B(A^3)=B\", which simplifies to \"BA=B\" after replacing \"A^2\" with \"I\". Hence, the claim follows from the `deduced_from` result.\n\n    Expanded `deduced_from` object:\n    ```\n    {\n        \"name\": \"Matrix multiplication\",\n        \"statement\": \"If BA^2=I for some B, then multiplying both sides by A yields B(AA^2)=B\",\n        \"applied-to\": {\"A\": \"A\", \"B\": \"B\"},\n        \"assumptions-satisfied\": [\"A^2 is invertible\", \"BA^2=I\"]\n    }\n    ```\n\nIn conclusion, all assertions in this `ProofJSON` are correct, and the claims indeed follow from the results in `deduced_from`. The theorem \"A square invertible implies A invertible\" is correctly proved in this `ProofJSON`."
+    [
+      {
+        "type": "theorem",
+        "name": "Invertibility of A given A squared is invertible",
+        "statement": "Let A be a square matrix. If A squared is invertible then A is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assume",
+            "statement": "A squared is invertible"
+          },
+          {
+            "type": "choose",
+            "variable": "B",
+            "property": "A squared multiplied by B equals B multiplied by A squared equals the identity matrix"
+          },
+          {
+            "type": "observation",
+            "statement": "A times (B times A) times A equals A times the identity"
+          },
+          {
+            "type": "observation",
+            "statement": "(A times B) times A squared equals A times the identity"
+          },
+          {
+            "type": "assertion",
+            "claim": "A times (B times A) equals the identity",
+            "statement": "If A times (B times A) times A equals A times the identity and (A times B) times A squared equals A times the identity, then A times (B times A) equals the identity",
+            "deduced-from": [
+              {
+                "name": "Matrix multiplication associativity",
+                "statement": "If A times (B times A) times A equals A times the identity and (A times B) times A squared equals A times the identity, then A times (B times A) equals the identity",
+                "applied-to": {
+                  "A": "A",
+                  "B": "B"
+                },
+                "assumptions-satisfied": [
+                  "Matrix multiplication is associative"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "(B times A) times A equals the identity"
+          },
+          {
+            "type": "assertion",
+            "claim": "The matrix B times A is both a left inverse and a right inverse of A",
+            "statement": "If A times (B times A) equals the identity and (B times A) times A equals the identity, then the matrix B times A is both a left inverse and a right inverse of A",
+            "deduced-from": [
+              {
+                "name": "Definition of inverse",
+                "statement": "If A times (B times A) equals the identity and (B times A) times A equals the identity, then the matrix B times A is both a left inverse and a right inverse of A",
+                "applied-to": {
+                  "A": "A",
+                  "B": "B"
+                },
+                "assumptions-satisfied": [
+                  "Matrix multiplication is associative"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "A is invertible",
+            "statement": "If the matrix B times A is both a left inverse and a right inverse of A, then A is invertible",
+            "deduced-from": [
+              {
+                "name": "Invertibility definition",
+                "statement": "If the matrix B times A is both a left inverse and a right inverse of A, then A is invertible",
+                "applied-to": {
+                  "A": "A",
+                  "B": "B"
+                },
+                "assumptions-satisfied": [
+                  "Matrix B times A is both a left inverse and a right inverse of A"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
   ]
 }
