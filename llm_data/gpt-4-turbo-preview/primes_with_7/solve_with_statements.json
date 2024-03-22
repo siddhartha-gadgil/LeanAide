@@ -1,0 +1,851 @@
+{
+  "problem": "Prove that there are infinitely many primes with last digit 7.",
+  "solutions": [
+    "Assume for contradiction that there are only finitely many primes with last digit 7, and let them be \\(p_1, p_2, \\ldots, p_n\\). Consider the number \\(N = 10\\prod_{i=1}^{n}p_i + 7\\). Clearly, \\(N\\) ends in 7 and is greater than each \\(p_i\\).\n\nSince \\(N\\) is not divisible by any prime ending in 7 (by construction), if \\(N\\) is prime, we have found a prime ending in 7 not in our list, a contradiction. If \\(N\\) is not prime, it must have a prime factor not in our list, since otherwise, \\(N\\) would be divisible by 10, which it is not (its last digit is 7). Any prime factor of \\(N\\) not among \\(p_1, \\ldots, p_n\\) that divides \\(N\\) cannot end in 1, 3, or 9, for such a factor would make \\(N\\) end in a digit other than 7, given the form of \\(N\\). Thus, this prime factor must end in 7, providing the contradiction. \n\nHence, there must be infinitely many primes with last digit 7.",
+    "Consider the numbers of the form \\(10k + 7\\) where \\(k\\) is a natural number. Clearly, some of these numbers must be prime, or else they would all have prime factors other than themselves, implying that all primes divide some number of the form \\(10m\\), which is not possible since there are primes that do not divide 10 directly.\n\nAssume for contradiction that there are only finitely many primes of the form \\(10k + 7\\), say \\(p_1, p_2, ..., p_n\\). Consider the number \\(N = 10(p_1p_2...p_n) - 3\\). Note that \\(N\\) ends in a 7 because \\(10 \\times \\text{anything} - 3\\) will always end in 7. \n\nFor each \\(p_i\\) in our finite list, \\(N\\) is obviously not divisible by \\(p_i\\) since \\(N + 3 = 10(p_1p_2...p_n)\\) is divisible by \\(p_i\\), but \\(N\\) would leave a remainder of 3 upon division by \\(p_i\\), not 0. Hence, \\(N\\) has a prime factor that is not in our list, which contradicts our assumption that we have listed all primes of the form \\(10k + 7\\).\n\nTherefore, there must be infinitely many primes with the last digit 7.",
+    "Suppose there are only finitely many primes with last digit 7, say \\(p_1, p_2, \\ldots, p_n\\). Consider the number \\(N = 10\\cdot(p_1p_2 \\cdots p_n) - 3\\). Clearly, \\(N\\) ends in 7. Also, \\(N\\) is not divisible by any of \\(p_1, p_2, \\ldots, p_n\\), for if it were, \\(10\\cdot(p_1p_2 \\cdots p_n)\\) would leave a remainder of 3 upon division by any of these primes, which is impossible. Hence, either \\(N\\) itself is a prime number ending in 7, which is not in the list \\(p_1, p_2, \\ldots, p_n\\), or it has a prime divisor that ends in 7 and is not among \\(p_1, p_2, \\ldots, p_n\\). In either case, we have a contradiction. Therefore, there must be infinitely many primes with last digit 7."
+  ],
+  "theories": [
+    "## Theorem\nThere are infinitely many primes with last digit 7.\n\n### Proof\nAssume, for the sake of contradiction, that the set of all primes with last digit 7 is finite. Let this set be denoted by \\(S = \\{p_1, p_2, \\ldots, p_n\\}\\), where \\(n\\) is a positive integer. Consider the number \\(N = 10\\prod_{i=1}^{n}p_i + 7\\). By construction, \\(N\\) ends in 7 and is strictly greater than any \\(p_i\\) in \\(S\\).\n\nFirst, note that \\(N\\) is not divisible by any prime in \\(S\\) since if a prime \\(p_i\\) in \\(S\\) divided \\(N\\), then \\(N\\) would be congruent to 7 modulo \\(p_i\\), which contradicts the construction of \\(N\\).\n\nIf \\(N\\) itself is prime, then it is a prime with last digit 7 not included in our original set \\(S\\), contradicting our assumption that \\(S\\) contains all such primes.\n\nIf \\(N\\) is composite, it must have a prime factor not in \\(S\\). This prime factor cannot end in 1, 3, or 9 without forcing \\(N\\) to end in a digit other than 7, due to the multiplicative properties of the decimal system. Therefore, any new prime factor of \\(N\\) must end in 7, providing a contradiction to our original assumption that all primes ending in 7 are contained in \\(S\\).\n\nThus, under both possible conditions for \\(N\\), we arrive at a contradiction, implying our original assumption that there are only finitely many primes with last digit 7 is false. Therefore, there must be infinitely many primes with last digit 7.",
+    "## Theorem\nThere are infinitely many primes with the last digit 7.\n\n### Proof\nConsider the arithmetic progression defined by \\(10k + 7\\) for \\(k \\in \\mathbb{N}\\). We aim to show that this progression contains infinitely many primes. \n\n**Step 1**: Observe that if there were only finitely many such primes, say \\(p_1, p_2, ..., p_n\\), we can construct a particular number that leads to a contradiction.\n\n**Step 2**: Construct the number \\(N = 10(p_1p_2...p_n) - 3\\). By construction, \\(N\\) ends in 7, fitting the form of numbers we are considering.\n\n**Step 3**: We show that \\(N\\) cannot be divisible by any of the primes \\(p_1, p_2, ..., p_n\\). For any \\(p_i\\), \\(N + 3 = 10(p_1p_2...p_n)\\) is divisible by \\(p_i\\), but \\(N\\) leaves a remainder of 3 when divided by \\(p_i\\), not zero.\n\n**Step 4**: Since \\(N\\) is not divisible by any \\(p_i\\), and since it is greater than 1 and ends in 7, it must have a prime factor that is not in our initial list and similarly ends in 7. This contradicts our assumption of having listed all such primes.\n\n**Conclusion**: By contradiction, there must be infinitely many primes that end in the digit 7.",
+    "**Theorem:** There are infinitely many primes with the last digit 7.\n\n**Proof:** Assume, for the sake of contradiction, that there exists a finite number of primes whose last digit is 7, denoted as \\(p_1, p_2, \\ldots, p_n\\). Construct the number \\(N = 10\\cdot(p_1p_2 \\cdots p_n) - 3\\). It is evident that \\(N\\) ends in 7. Moreover, \\(N\\) cannot be divisible by any of the primes \\(p_1, p_2, \\ldots, p_n\\). To see this, note that if \\(N\\) were divisible by any \\(p_i\\) (for some \\(i\\) between 1 and \\(n\\)), then \\(10\\cdot(p_1p_2 \\cdots p_n)\\) would yield a remainder of 3 upon division by \\(p_i\\), which is a contradiction since \\(p_i\\) divides \\(10\\cdot(p_1p_2 \\cdots p_n)\\) perfectly. Therefore, \\(N\\) is either prime itself, contradicting the assumption that all primes ending in 7 are among \\(p_1, p_2, \\ldots, p_n\\), or it has a prime divisor not in the list \\(p_1, p_2, \\ldots, p_n\\) that necessarily ends in 7, contradicting the assumption of finiteness. Thus, our initial assumption must be false, implying the infinitude of primes with the last digit 7."
+  ],
+  "structured_texts": [
+    [
+      {
+        "type": "theorem",
+        "name": "Infinitely many primes with last digit 7",
+        "statement": "There are infinitely many primes with last digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "The set of all primes with last digit 7 is finite."
+          },
+          {
+            "type": "let",
+            "variable": "S",
+            "value": "{p_1, p_2, ..., p_n}"
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "10*product(p_i for i=1 to n) + 7"
+          },
+          {
+            "type": "observation",
+            "statement": "N ends in 7 and is strictly greater than any p_i in S."
+          },
+          {
+            "type": "observation",
+            "statement": "N is not divisible by any prime in S."
+          },
+          {
+            "type": "split_by",
+            "condition": "N is prime or N is composite",
+            "cases": [
+              {
+                "case": "N is prime",
+                "content": [
+                  {
+                    "type": "observation",
+                    "statement": "N is a prime with last digit 7 not included in S, contradicting the assumption."
+                  }
+                ]
+              },
+              {
+                "case": "N is composite",
+                "content": [
+                  {
+                    "type": "observation",
+                    "statement": "N has a prime factor not in S that must end in 7, contradicting the assumption."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Under both conditions for N, we arrive at a contradiction."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, there must be infinitely many primes with last digit 7."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Infinitely many primes with last digit 7",
+        "statement": "There are infinitely many primes with last digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "The set of all primes with last digit 7 is finite."
+          },
+          {
+            "type": "let",
+            "variable": "S",
+            "value": "{p_1, p_2, ..., p_n}"
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "10*product(p_i for i=1 to n) + 7"
+          },
+          {
+            "type": "observation",
+            "statement": "N ends in 7 and is strictly greater than any p_i in S."
+          },
+          {
+            "type": "observation",
+            "statement": "N is not divisible by any prime in S."
+          },
+          {
+            "type": "split_by",
+            "condition": "N is prime or composite",
+            "cases": [
+              {
+                "case": "N is prime",
+                "content": [
+                  {
+                    "type": "observation",
+                    "statement": "N is a prime with last digit 7 not included in S."
+                  }
+                ]
+              },
+              {
+                "case": "N is composite",
+                "content": [
+                  {
+                    "type": "observation",
+                    "statement": "N must have a prime factor not in S ending in 7."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Both possible conditions for N imply a contradiction."
+          },
+          {
+            "type": "observation",
+            "statement": "The assumption that there are only finitely many primes with last digit 7 is false."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Infinitely many primes ending in 7",
+        "statement": "There are infinitely many primes with the last digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "observation",
+            "statement": "Consider the arithmetic progression defined by 10k + 7 for k in N. We aim to show that this progression contains infinitely many primes."
+          },
+          {
+            "type": "assumption",
+            "statement": "Assume there were only finitely many such primes, say p1, p2, ..., pn."
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "10(p1p2...pn) - 3",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "By construction, N ends in 7, fitting the form of numbers we are considering."
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "N cannot be divisible by any of the primes p1, p2, ..., pn. For any pi, N + 3 = 10(p1p2...pn) is divisible by pi, but N leaves a remainder of 3 when divided by pi, not zero."
+          },
+          {
+            "type": "observation",
+            "statement": "Since N is not divisible by any pi, and since it is greater than 1 and ends in 7, it must have a prime factor that is not in our initial list and similarly ends in 7. This contradicts our assumption of having listed all such primes."
+          },
+          {
+            "type": "conclusion",
+            "statement": "By contradiction, there must be infinitely many primes that end in the digit 7."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Infinitely many primes ending in 7",
+        "statement": "There are infinitely many primes with the last digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "observation",
+            "statement": "Consider the arithmetic progression defined by 10k + 7 for k in N."
+          },
+          {
+            "type": "suffices",
+            "goal": "To show this progression contains infinitely many primes.",
+            "deduced-from": [
+              {
+                "result": "Consider arithmetic progressions with a common difference of 10."
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "If there were only finitely many such primes, say p1, p2, ..., pn, we can construct a particular number that leads to a contradiction.",
+            "deduced-from": [
+              "Assuming finitely many primes in the progression"
+            ]
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "10(p1p2...pn) - 3",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "N ends in 7, fitting the form of numbers we are considering."
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "N cannot be divisible by any of the primes p1, p2, ..., pn.",
+            "deduced-from": [
+              {
+                "result": "For any pi, N + 3 = 10(p1p2...pn) is divisible by pi, but N leaves a remainder of 3 when divided by pi, not zero."
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "Since N is not divisible by any pi, and since it is greater than 1 and ends in 7, it must have a prime factor that is not in our initial list and similarly ends in 7.",
+            "deduced-from": [
+              "N's divisibility properties",
+              "N ends in 7"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "This contradicts our assumption of having listed all such primes.",
+            "deduced-from": [
+              "Existence of a prime factor of N not in the initial list"
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "By contradiction, there must be infinitely many primes that end in the digit 7."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Infinitude of primes ending in 7",
+        "statement": "There are infinitely many primes with the last digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "There exists a finite number of primes whose last digit is 7, denoted as p1, p2, ..., pn."
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "10*(p1*p2*...*pn) - 3",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "N is constructed such that it ends in 7."
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "N cannot be divisible by any of the primes p1, p2, ..., pn.",
+            "deduced-from": [
+              {
+                "result": "If N were divisible by any pi, then 10*(p1*p2*...*pn) would yield a remainder of 3 upon division by pi, which is a contradiction.",
+                "applied-to": "N"
+              }
+            ],
+            "justification": "Since pi divides 10*(p1*p2*...*pn) perfectly, it cannot leave a remainder."
+          },
+          {
+            "type": "assertion",
+            "claim": "N is either prime itself, contradicting the assumption that all primes ending in 7 are among p1, p2, ..., pn, or it has a prime divisor not in the list p1, p2, ..., pn that necessarily ends in 7, contradicting the assumption of finiteness.",
+            "deduced-from": [
+              "N cannot be divisible by any of the primes p1, p2, ..., pn."
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Our initial assumption must be false, implying the infinitude of primes with the last digit 7."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "infinitely many primes with last digit 7",
+        "statement": "There are infinitely many primes with the last digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "there exists a finite number of primes whose last digit is 7, denoted as $p_1, p_2, \\ldots, p_n$."
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "$10\\cdot(p_1p_2 \\cdots p_n) - 3$"
+          },
+          {
+            "type": "observation",
+            "statement": "N ends in 7."
+          },
+          {
+            "type": "assertion",
+            "claim": "N cannot be divisible by any of the primes $p_1, p_2, \\ldots, p_n$.",
+            "deduced-from": [
+              {
+                "result": "if N were divisible by any $p_i$, then $10\\cdot(p_1p_2 \\cdots p_n)$ would yield a remainder of 3 upon division by $p_i$",
+                "applied-to": "$p_i$"
+              },
+              "which is a contradiction since $p_i$ divides $10\\cdot(p_1p_2 \\cdots p_n)$ perfectly."
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "N is either prime itself, contradicting the assumption that all primes ending in 7 are among $p_1, p_2, \\ldots, p_n$, or it has a prime divisor not in the list $p_1, p_2, \\ldots, p_n$ that necessarily ends in 7, contradicting the assumption of finiteness."
+          },
+          {
+            "type": "observation",
+            "statement": "Our initial assumption must be false, implying the infinitude of primes with the last digit 7."
+          }
+        ]
+      }
+    ]
+  ],
+  "raw_structured_texts": [
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Infinitely many primes with last digit 7\",\n    \"statement\": \"There are infinitely many primes with last digit 7.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"The set of all primes with last digit 7 is finite.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"S\",\n        \"value\": \"{p_1, p_2, ..., p_n}\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"N\",\n        \"value\": \"10*product(p_i for i=1 to n) + 7\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"N ends in 7 and is strictly greater than any p_i in S.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"N is not divisible by any prime in S.\"\n      },\n      {\n        \"type\": \"split_by\",\n        \"condition\": \"N is prime or N is composite\",\n        \"cases\": [\n          {\n            \"case\": \"N is prime\",\n            \"content\": [\n              {\n                \"type\": \"observation\",\n                \"statement\": \"N is a prime with last digit 7 not included in S, contradicting the assumption.\"\n              }\n            ]\n          },\n          {\n            \"case\": \"N is composite\",\n            \"content\": [\n              {\n                \"type\": \"observation\",\n                \"statement\": \"N has a prime factor not in S that must end in 7, contradicting the assumption.\"\n              }\n            ]\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Under both conditions for N, we arrive at a contradiction.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Therefore, there must be infinitely many primes with last digit 7.\"\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Infinitely many primes with last digit 7\",\n    \"statement\": \"There are infinitely many primes with last digit 7.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"The set of all primes with last digit 7 is finite.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"S\",\n        \"value\": \"{p_1, p_2, ..., p_n}\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"N\",\n        \"value\": \"10*product(p_i for i=1 to n) + 7\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"N ends in 7 and is strictly greater than any p_i in S.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"N is not divisible by any prime in S.\"\n      },\n      {\n        \"type\": \"split_by\",\n        \"condition\": \"N is prime or composite\",\n        \"cases\": [\n          {\n            \"case\": \"N is prime\",\n            \"content\": [\n              {\n                \"type\": \"observation\",\n                \"statement\": \"N is a prime with last digit 7 not included in S.\"\n              }\n            ]\n          },\n          {\n            \"case\": \"N is composite\",\n            \"content\": [\n              {\n                \"type\": \"observation\",\n                \"statement\": \"N must have a prime factor not in S ending in 7.\"\n              }\n            ]\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Both possible conditions for N imply a contradiction.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The assumption that there are only finitely many primes with last digit 7 is false.\"\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Infinitely many primes ending in 7\",\n    \"statement\": \"There are infinitely many primes with the last digit 7.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Consider the arithmetic progression defined by 10k + 7 for k in N. We aim to show that this progression contains infinitely many primes.\"\n      },\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume there were only finitely many such primes, say p1, p2, ..., pn.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"N\",\n        \"value\": \"10(p1p2...pn) - 3\",\n        \"existence\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"By construction, N ends in 7, fitting the form of numbers we are considering.\"\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"N cannot be divisible by any of the primes p1, p2, ..., pn. For any pi, N + 3 = 10(p1p2...pn) is divisible by pi, but N leaves a remainder of 3 when divided by pi, not zero.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Since N is not divisible by any pi, and since it is greater than 1 and ends in 7, it must have a prime factor that is not in our initial list and similarly ends in 7. This contradicts our assumption of having listed all such primes.\"\n      },\n      {\n        \"type\": \"conclusion\",\n        \"statement\": \"By contradiction, there must be infinitely many primes that end in the digit 7.\"\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Infinitely many primes ending in 7\",\n    \"statement\": \"There are infinitely many primes with the last digit 7.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Consider the arithmetic progression defined by 10k + 7 for k in N.\"\n      },\n      {\n        \"type\": \"suffices\",\n        \"goal\": \"To show this progression contains infinitely many primes.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"Consider arithmetic progressions with a common difference of 10.\"\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"If there were only finitely many such primes, say p1, p2, ..., pn, we can construct a particular number that leads to a contradiction.\",\n        \"deduced-from\": [\"Assuming finitely many primes in the progression\"]\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"N\",\n        \"value\": \"10(p1p2...pn) - 3\",\n        \"existence\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"N ends in 7, fitting the form of numbers we are considering.\"\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"N cannot be divisible by any of the primes p1, p2, ..., pn.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"For any pi, N + 3 = 10(p1p2...pn) is divisible by pi, but N leaves a remainder of 3 when divided by pi, not zero.\"\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Since N is not divisible by any pi, and since it is greater than 1 and ends in 7, it must have a prime factor that is not in our initial list and similarly ends in 7.\",\n        \"deduced-from\": [\"N's divisibility properties\", \"N ends in 7\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"This contradicts our assumption of having listed all such primes.\",\n        \"deduced-from\": [\"Existence of a prime factor of N not in the initial list\"]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"By contradiction, there must be infinitely many primes that end in the digit 7.\"\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Infinitude of primes ending in 7\",\n    \"statement\": \"There are infinitely many primes with the last digit 7.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"There exists a finite number of primes whose last digit is 7, denoted as p1, p2, ..., pn.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"N\",\n        \"value\": \"10*(p1*p2*...*pn) - 3\",\n        \"existence\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"N is constructed such that it ends in 7.\"\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"N cannot be divisible by any of the primes p1, p2, ..., pn.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"If N were divisible by any pi, then 10*(p1*p2*...*pn) would yield a remainder of 3 upon division by pi, which is a contradiction.\",\n            \"applied-to\": \"N\"\n          }\n        ],\n        \"justification\": \"Since pi divides 10*(p1*p2*...*pn) perfectly, it cannot leave a remainder.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"N is either prime itself, contradicting the assumption that all primes ending in 7 are among p1, p2, ..., pn, or it has a prime divisor not in the list p1, p2, ..., pn that necessarily ends in 7, contradicting the assumption of finiteness.\",\n        \"deduced-from\": [\n          \"N cannot be divisible by any of the primes p1, p2, ..., pn.\"\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Our initial assumption must be false, implying the infinitude of primes with the last digit 7.\"\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"infinitely many primes with last digit 7\",\n    \"statement\": \"There are infinitely many primes with the last digit 7.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"there exists a finite number of primes whose last digit is 7, denoted as $p_1, p_2, \\\\ldots, p_n$.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"N\",\n        \"value\": \"$10\\\\cdot(p_1p_2 \\\\cdots p_n) - 3$\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"N ends in 7.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"N cannot be divisible by any of the primes $p_1, p_2, \\\\ldots, p_n$.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"if N were divisible by any $p_i$, then $10\\\\cdot(p_1p_2 \\\\cdots p_n)$ would yield a remainder of 3 upon division by $p_i$\",\n            \"applied-to\": \"$p_i$\"\n          },\n          \"which is a contradiction since $p_i$ divides $10\\\\cdot(p_1p_2 \\\\cdots p_n)$ perfectly.\"\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"N is either prime itself, contradicting the assumption that all primes ending in 7 are among $p_1, p_2, \\\\ldots, p_n$, or it has a prime divisor not in the list $p_1, p_2, \\\\ldots, p_n$ that necessarily ends in 7, contradicting the assumption of finiteness.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Our initial assumption must be false, implying the infinitude of primes with the last digit 7.\"\n      }\n    ]\n  }\n]\n```"
+  ],
+  "texts_with_statements": [
+    [
+      {
+        "type": "theorem",
+        "name": "Infinitely many primes with last digit 7",
+        "statement": "There are infinitely many primes with last digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "The set of all primes with last digit 7 is finite."
+          },
+          {
+            "type": "let",
+            "variable": "S",
+            "value": "{p_1, p_2, ..., p_n}"
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "10*product(p_i for i=1 to n) + 7"
+          },
+          {
+            "type": "observation",
+            "statement": "N ends in 7 and is strictly greater than any p_i in S."
+          },
+          {
+            "type": "observation",
+            "statement": "N is not divisible by any prime in S."
+          },
+          {
+            "type": "split_by",
+            "condition": "N is prime or N is composite",
+            "cases": [
+              {
+                "case": "N is prime",
+                "content": [
+                  {
+                    "type": "observation",
+                    "statement": "N is a prime with last digit 7 not included in S, contradicting the assumption."
+                  }
+                ]
+              },
+              {
+                "case": "N is composite",
+                "content": [
+                  {
+                    "type": "observation",
+                    "statement": "N has a prime factor not in S that must end in 7, contradicting the assumption."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Under both conditions for N, we arrive at a contradiction."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, there must be infinitely many primes with last digit 7."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Infinitely many primes with last digit 7",
+        "statement": "There are infinitely many primes with last digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "The set of all primes with last digit 7 is finite."
+          },
+          {
+            "type": "let",
+            "variable": "S",
+            "value": "{p_1, p_2, ..., p_n}"
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "10*product(p_i for i=1 to n) + 7"
+          },
+          {
+            "type": "observation",
+            "statement": "N ends in 7 and is strictly greater than any p_i in S."
+          },
+          {
+            "type": "observation",
+            "statement": "N is not divisible by any prime in S."
+          },
+          {
+            "type": "split_by",
+            "condition": "N is prime or composite",
+            "cases": [
+              {
+                "case": "N is prime",
+                "content": [
+                  {
+                    "type": "observation",
+                    "statement": "N is a prime with last digit 7 not included in S."
+                  }
+                ]
+              },
+              {
+                "case": "N is composite",
+                "content": [
+                  {
+                    "type": "observation",
+                    "statement": "N must have a prime factor not in S ending in 7."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Both possible conditions for N imply a contradiction."
+          },
+          {
+            "type": "observation",
+            "statement": "The assumption that there are only finitely many primes with last digit 7 is false."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Infinitely many primes ending in 7",
+        "statement": "There are infinitely many primes with the last digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "observation",
+            "statement": "Consider the arithmetic progression defined by 10k + 7 for k in N. We aim to show that this progression contains infinitely many primes."
+          },
+          {
+            "type": "assumption",
+            "statement": "Assume there were only finitely many such primes, say p1, p2, ..., pn."
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "10(p1p2...pn) - 3",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "By construction, N ends in 7, fitting the form of numbers we are considering."
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "N cannot be divisible by any of the primes p1, p2, ..., pn. For any pi, N + 3 = 10(p1p2...pn) is divisible by pi, but N leaves a remainder of 3 when divided by pi, not zero."
+          },
+          {
+            "type": "observation",
+            "statement": "Since N is not divisible by any pi, and since it is greater than 1 and ends in 7, it must have a prime factor that is not in our initial list and similarly ends in 7. This contradicts our assumption of having listed all such primes."
+          },
+          {
+            "type": "conclusion",
+            "statement": "By contradiction, there must be infinitely many primes that end in the digit 7."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Infinitely many primes ending in 7",
+        "statement": "There are infinitely many primes with the last digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "observation",
+            "statement": "Consider the arithmetic progression defined by 10k + 7 for k in N."
+          },
+          {
+            "type": "suffices",
+            "goal": "To show this progression contains infinitely many primes.",
+            "deduced-from": [
+              {
+                "result": "Consider arithmetic progressions with a common difference of 10."
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "If there were only finitely many such primes, say p1, p2, ..., pn, we can construct a particular number that leads to a contradiction.",
+            "statement": "Assuming there are only finitely many primes in the arithmetic progression defined by 10k + 7, we can construct a number N that leads to a contradiction.",
+            "deduced-from": [
+              "Assuming finitely many primes in the progression"
+            ]
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "10(p1p2...pn) - 3",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "N ends in 7, fitting the form of numbers we are considering."
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "N cannot be divisible by any of the primes p1, p2, ..., pn.",
+            "statement": "Given N = 10(p1p2...pn) - 3, N cannot be divisible by any of the primes p1, p2, ..., pn, since for any pi, N + 3 = 10(p1p2...pn) is divisible by pi, but N itself leaves a remainder of 3 when divided by pi.",
+            "deduced-from": [
+              {
+                "result": "For any pi, N + 3 = 10(p1p2...pn) is divisible by pi, but N leaves a remainder of 3 when divided by pi, not zero."
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "Since N is not divisible by any pi, and since it is greater than 1 and ends in 7, it must have a prime factor that is not in our initial list and similarly ends in 7.",
+            "statement": "Since N = 10(p1p2...pn) - 3 is not divisible by any of the primes p1, p2, ..., pn, and it is a number greater than 1 that ends in 7, it must have a prime factor that ends in 7 and is not among the primes p1, p2, ..., pn.",
+            "deduced-from": [
+              "N's divisibility properties",
+              "N ends in 7"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "This contradicts our assumption of having listed all such primes.",
+            "statement": "The existence of a prime factor of N = 10(p1p2...pn) - 3, which ends in 7 and is not in the initial list of primes p1, p2, ..., pn, contradicts our assumption of having listed all such primes.",
+            "deduced-from": [
+              "Existence of a prime factor of N not in the initial list"
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "By contradiction, there must be infinitely many primes that end in the digit 7."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Infinitely many primes ending in 7",
+        "statement": "There are infinitely many primes with the last digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "observation",
+            "statement": "Consider the arithmetic progression defined by 10k + 7 for k in N."
+          },
+          {
+            "type": "suffices",
+            "goal": "To show this progression contains infinitely many primes.",
+            "deduced-from": [
+              {
+                "result": "Consider arithmetic progressions with a common difference of 10."
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "If there were only finitely many such primes, say p1, p2, ..., pn, we can construct a particular number that leads to a contradiction.",
+            "statement": "Assuming there are finitely many primes in the arithmetic progression 10k + 7, say p1, p2, ..., pn, we can construct a particular number N = 10(p1p2...pn) - 3 that leads to a contradiction.",
+            "deduced-from": [
+              "Assuming finitely many primes in the progression"
+            ]
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "10(p1p2...pn) - 3",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "N ends in 7, fitting the form of numbers we are considering."
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "N cannot be divisible by any of the primes p1, p2, ..., pn.",
+            "statement": "Given N = 10(p1p2...pn) - 3, N cannot be divisible by any of the primes p1, p2, ..., pn because for any pi, N + 3 = 10(p1p2...pn) is divisible by pi, but N leaves a remainder of 3 when divided by pi, not zero.",
+            "deduced-from": [
+              {
+                "result": "For any pi, N + 3 = 10(p1p2...pn) is divisible by pi, but N leaves a remainder of 3 when divided by pi, not zero."
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "Since N is not divisible by any pi, and since it is greater than 1 and ends in 7, it must have a prime factor that is not in our initial list and similarly ends in 7.",
+            "statement": "Given N = 10(p1p2...pn) - 3, which is not divisible by any of the primes p1, p2, ..., pn, and since N is greater than 1 and ends in 7, it must have a prime factor that is not in our initial list, which similarly ends in 7.",
+            "deduced-from": [
+              "N's divisibility properties",
+              "N ends in 7"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "This contradicts our assumption of having listed all such primes.",
+            "statement": "The existence of a prime factor of N = 10(p1p2...pn) - 3 that is not in the initial list of primes p1, p2, ..., pn and ends in 7 contradicts our assumption of having listed all such primes.",
+            "deduced-from": [
+              "Existence of a prime factor of N not in the initial list"
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "By contradiction, there must be infinitely many primes that end in the digit 7."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Infinitude of primes ending in 7",
+        "statement": "There are infinitely many primes with the last digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "There exists a finite number of primes whose last digit is 7, denoted as p1, p2, ..., pn."
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "10*(p1*p2*...*pn) - 3",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "N is constructed such that it ends in 7."
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "N cannot be divisible by any of the primes p1, p2, ..., pn.",
+            "deduced-from": [
+              {
+                "result": "If N were divisible by any pi, then 10*(p1*p2*...*pn) would yield a remainder of 3 upon division by pi, which is a contradiction.",
+                "applied-to": "N"
+              }
+            ],
+            "justification": "Since pi divides 10*(p1*p2*...*pn) perfectly, it cannot leave a remainder.",
+            "statement": "Assuming there exists a finite number of primes whose last digit is 7, denoted as p1, p2, ..., pn, and letting N = 10*(p1*p2*...*pn) - 3, N cannot be divisible by any of the primes p1, p2, ..., pn."
+          },
+          {
+            "type": "assertion",
+            "claim": "N is either prime itself, contradicting the assumption that all primes ending in 7 are among p1, p2, ..., pn, or it has a prime divisor not in the list p1, p2, ..., pn that necessarily ends in 7, contradicting the assumption of finiteness.",
+            "deduced-from": [
+              "N cannot be divisible by any of the primes p1, p2, ..., pn."
+            ],
+            "statement": "Assuming there exists a finite number of primes whose last digit is 7, denoted as p1, p2, ..., pn, and letting N = 10*(p1*p2*...*pn) - 3, N is either prime itself or it has a prime divisor not in the list p1, p2, ..., pn that necessarily ends in 7, thus contradicting the assumption of finiteness."
+          },
+          {
+            "type": "observation",
+            "statement": "Our initial assumption must be false, implying the infinitude of primes with the last digit 7."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Infinitude of primes ending in 7",
+        "statement": "There are infinitely many primes with the last digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "There exists a finite number of primes whose last digit is 7, denoted as p1, p2, ..., pn."
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "10*(p1*p2*...*pn) - 3",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "N is constructed such that it ends in 7."
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "statement": "Given N = 10*(p1*p2*...*pn) - 3, which ends in 7, N cannot be divisible by any of the primes p1, p2, ..., pn.",
+            "claim": "N cannot be divisible by any of the primes p1, p2, ..., pn.",
+            "deduced-from": [
+              {
+                "result": "If N were divisible by any pi, then 10*(p1*p2*...*pn) would yield a remainder of 3 upon division by pi, which is a contradiction.",
+                "applied-to": "N"
+              }
+            ],
+            "justification": "Since pi divides 10*(p1*p2*...*pn) perfectly, it cannot leave a remainder."
+          },
+          {
+            "type": "assertion",
+            "statement": "Given N = 10*(p1*p2*...*pn) - 3, which ends in 7 and cannot be divisible by any of the primes p1, p2, ..., pn, N is either prime itself or it has a prime divisor not in the list p1, p2, ..., pn that necessarily ends in 7, contradicting the assumption of finiteness.",
+            "claim": "N is either prime itself, contradicting the assumption that all primes ending in 7 are among p1, p2, ..., pn, or it has a prime divisor not in the list p1, p2, ..., pn that necessarily ends in 7, contradicting the assumption of finiteness.",
+            "deduced-from": [
+              "N cannot be divisible by any of the primes p1, p2, ..., pn."
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Our initial assumption must be false, implying the infinitude of primes with the last digit 7."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "infinitely many primes with last digit 7",
+        "statement": "There are infinitely many primes with the last digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "there exists a finite number of primes whose last digit is 7, denoted as $p_1, p_2, \\ldots, p_n$."
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "$10\\cdot(p_1p_2 \\cdots p_n) - 3$"
+          },
+          {
+            "type": "observation",
+            "statement": "N ends in 7."
+          },
+          {
+            "type": "assertion",
+            "statement": "Given a finite number of primes whose last digit is 7, denoted as $p_1, p_2, \\ldots, p_n$, and let $N = 10\\cdot(p_1p_2 \\cdots p_n) - 3$, then $N$ cannot be divisible by any of the primes $p_1, p_2, \\ldots, p_n$.",
+            "claim": "N cannot be divisible by any of the primes $p_1, p_2, \\ldots, p_n$.",
+            "deduced-from": [
+              {
+                "result": "if N were divisible by any $p_i$, then $10\\cdot(p_1p_2 \\cdots p_n)$ would yield a remainder of 3 upon division by $p_i$",
+                "applied-to": "$p_i$"
+              },
+              "which is a contradiction since $p_i$ divides $10\\cdot(p_1p_2 \\cdots p_n)$ perfectly."
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "N is either prime itself, contradicting the assumption that all primes ending in 7 are among $p_1, p_2, \\ldots, p_n$, or it has a prime divisor not in the list $p_1, p_2, \\ldots, p_n$ that necessarily ends in 7, contradicting the assumption of finiteness."
+          },
+          {
+            "type": "observation",
+            "statement": "Our initial assumption must be false, implying the infinitude of primes with the last digit 7."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "infinitely many primes with last digit 7",
+        "statement": "There are infinitely many primes with the last digit 7.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "there exists a finite number of primes whose last digit is 7, denoted as $p_1, p_2, \\ldots, p_n$."
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "$10\\cdot(p_1p_2 \\cdots p_n) - 3$"
+          },
+          {
+            "type": "observation",
+            "statement": "N ends in 7."
+          },
+          {
+            "type": "assertion",
+            "statement": "Assuming there exists a finite number of primes whose last digit is 7, denoted as $p_1, p_2, \\ldots, p_n$, and letting $N = 10\\cdot(p_1p_2 \\cdots p_n) - 3$, then $N$ cannot be divisible by any of the primes $p_1, p_2, \\ldots, p_n$ because if $N$ were divisible by any $p_i$, then $10\\cdot(p_1p_2 \\cdots p_n)$ would yield a remainder of 3 upon division by $p_i$, which is a contradiction since $p_i$ divides $10\\cdot(p_1p_2 \\cdots p_n)$ perfectly.",
+            "claim": "N cannot be divisible by any of the primes $p_1, p_2, \\ldots, p_n$.",
+            "deduced-from": [
+              {
+                "result": "if N were divisible by any $p_i$, then $10\\cdot(p_1p_2 \\cdots p_n)$ would yield a remainder of 3 upon division by $p_i$",
+                "applied-to": "$p_i$"
+              },
+              "which is a contradiction since $p_i$ divides $10\\cdot(p_1p_2 \\cdots p_n)$ perfectly."
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "N is either prime itself, contradicting the assumption that all primes ending in 7 are among $p_1, p_2, \\ldots, p_n$, or it has a prime divisor not in the list $p_1, p_2, \\ldots, p_n$ that necessarily ends in 7, contradicting the assumption of finiteness."
+          },
+          {
+            "type": "observation",
+            "statement": "Our initial assumption must be false, implying the infinitude of primes with the last digit 7."
+          }
+        ]
+      }
+    ]
+  ]
+}

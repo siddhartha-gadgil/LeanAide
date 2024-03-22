@@ -1,0 +1,1147 @@
+{
+  "problem": "Find all $2 \times 2$ matrices with rational entries such that $A^5 = I$, where $I$ is the $2 \times 2$ identity matrix.",
+  "solutions": [
+    "\\[\n\\left\\{ \n\\begin{pmatrix}\n1 & 0 \\\\\n0 & 1\n\\end{pmatrix},\n\\begin{pmatrix}\n-1 & 0 \\\\\n0 & -1\n\\end{pmatrix}\n\\right\\}\n\\]",
+    "\\[\n\\left\\{\n\\begin{pmatrix}\n1 & 0 \\\\\n0 & 1\n\\end{pmatrix},\n\\begin{pmatrix}\n-1 & 0 \\\\\n0 & -1\n\\end{pmatrix}\n\\right\\}\n\\]",
+    "\\[\n\\left\\{ \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}, \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}, \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}, \\begin{pmatrix} -1 & -1 \\\\ 1 & 0 \\end{pmatrix}, \\begin{pmatrix} 0 & -1 \\\\ 1 & 1 \\end{pmatrix}, \\begin{pmatrix} 1 & 1 \\\\ -1 & 0 \\end{pmatrix} \\right\\}\n\\]"
+  ],
+  "theories": [
+    "### Theorem\nLet $A$ be a $2 \\times 2$ matrix with rational entries. Then $A^5 = I$, where $I$ is the $2 \\times 2$ identity matrix, if and only if $A$ is one of the following matrices:\n\\[A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} \\quad \\text{or} \\quad A = \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}.\\]\n\n### Proof\nLet $A = \\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$ be a $2 \\times 2$ matrix with rational entries such that $A^5 = I$.\n\n1. **Characteristic Polynomial and Eigenvalues**: The characteristic polynomial of $A$ is given by $\\chi_A(\\lambda) = \\lambda^2 - (a + d)\\lambda + (ad - bc) = 0$. Since $A^5 = I$, the eigenvalues of $A$ must satisfy $\\lambda^5 = 1$. The only rational solutions to $\\lambda^5 = 1$ are $\\lambda = 1$ and $\\lambda = -1$.\n\n2. **Determining $a, b, c, d$ for $\\lambda = 1$**: If $\\lambda = 1$, then for $A$ to have $\\lambda = 1$ as an eigenvalue, we must have $a + d = 2$ and $ad - bc = 1$. The simplest solution satisfying these conditions with rational entries is when $A$ is the identity matrix, $A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$.\n\n3. **Determining $a, b, c, d$ for $\\lambda = -1$**: If $\\lambda = -1$, then for $A$ to have $\\lambda = -1$ as an eigenvalue, we must have $a + d = -2$ and $ad - bc = 1$. The simplest solution satisfying these conditions with rational entries is when $A = \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}$.\n\n4. **Exclusion of Other Matrices**: Suppose there exists another matrix $A$ with rational entries such that $A^5 = I$. By the fundamental theorem of algebra, the characteristic polynomial of $A$ can have at most two distinct roots, which must be among the fifth roots of unity. However, since the entries of $A$ are rational, and the only rational fifth roots of unity are $\\lambda = 1$ and $\\lambda = -1$, the only possible eigenvalues of $A$ are $\\pm 1$. Any other matrix with rational entries that satisfies $A^5 = I$ must also have these eigenvalues. The specific forms of $A$ are directly tied to these eigenvalues and the requirement that $A$ has rational entries. Hence, no other matrices with rational entries satisfy $A^5 = I$ except for the two matrices listed.\n\nTherefore, the only $2 \\times 2$ matrices with rational entries such that $A^5 = I$ are $\\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$ and $\\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}$.",
+    "### Theorem 1\nA $2 \\times 2$ matrix $A$ with rational entries satisfies $A^5 = I$ if and only if $A = I$ or $A = -I$, where $I$ is the $2 \\times 2$ identity matrix.\n\n### Proof\nLet $A = \\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$ be a $2 \\times 2$ matrix with rational entries. Since $A^5 = I$, the eigenvalues $\\lambda$ of $A$ must satisfy $\\lambda^5 = 1$. The only rational solutions to this equation are $\\lambda = 1$ and $\\lambda = -1$.\n\nIf $\\lambda = 1$, the eigenvalues of $A$ are both 1, and since $A$ has rational entries and satisfies a polynomial equation with leading coefficient $1$ ($A^5 - I = 0$), by the Rational Root Theorem, the minimal polynomial dividing $x^5 - 1$ for $A$ must be $x - 1$. Hence, $A - I = 0$, implying $A = I$.\n\nIf $\\lambda = -1$, the eigenvalues of $A$ are both -1, and by a similar argument, the minimal polynomial for $A$ must be $x + 1$. Thus, $A + I = 0$, implying $A = -I$.\n\nTo see that no other matrices satisfy this condition, note that any other rational eigenvalue solution of $\\lambda^5 = 1$ would lead to a contradiction, as the only rational roots are $\\lambda = 1$ or $\\lambda = -1$. Further, any other structure for $A$ would not allow it to satisfy $A^5 = I$ due to the constraints on its eigenvalues and the requirement for rational entries.\n\nHence, the only $2 \\times 2$ matrices with rational entries that satisfy $A^5 = I$ are $A = I$ and $A = -I$.",
+    "### Theorem\nThe only $2 \\times 2$ matrices with rational entries that satisfy $A^5 = I$, where $I$ is the $2 \\times 2$ identity matrix, are\n\\[ \\left\\{ \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}, \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}, \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}, \\begin{pmatrix} -1 & -1 \\\\ 1 & 0 \\end{pmatrix}, \\begin{pmatrix} 0 & -1 \\\\ 1 & 1 \\end{pmatrix}, \\begin{pmatrix} 1 & 1 \\\\ -1 & 0 \\end{pmatrix} \\right\\} \\]\n\n### Proof\nLet $A = \\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$ be a $2 \\times 2$ matrix with rational entries satisfying $A^5 = I$. By the Cayley-Hamilton theorem, $A$ satisfies its own characteristic equation. The characteristic polynomial of $A$ is given by $p(\\lambda) = \\lambda^2 - (a+d)\\lambda + (ad-bc) = 0$. Since $A^5 = I$, the eigenvalues of $A$ must be the fifth roots of unity: $\\lambda = 1, -1, \\zeta, \\zeta^2, \\zeta^3, \\zeta^4$, where $\\zeta$ is a primitive fifth root of unity.\n\nHowever, since $A$ has rational entries, its eigenvalues, which solve a polynomial with rational coefficients, must either be rational or occur in conjugate pairs. The roots of unity $\\zeta, \\zeta^2, \\zeta^3, \\zeta^4$ are not rational, and they do not form pairs of rational conjugates. Thus, the only possible eigenvalues for $A$ are $1$ and $-1$.\n\nFor $A$ to have $1$ as an eigenvalue of multiplicity two, $A$ must be $I$. For $A$ to have $-1$ as an eigenvalue of multiplicity two, $A$ must be $-I$.\n\nFor $A$ to have eigenvalues $1$ and $-1$, it must be similar to a Jordan block with eigenvalue $-1$ or $1$. Since $\\zeta$ and its powers are not applicable, we are left with matrices that cyclically permute the basis vectors or negate them. Inspection and algebraic manipulation give us the matrices \n\\[ \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}, \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}, \\begin{pmatrix} -1 & -1 \\\\ 1 & 0 \\end{pmatrix}, \\begin{pmatrix} 0 & -1 \\\\ 1 & 1 \\end{pmatrix}, \\begin{pmatrix} 1 & 1 \\\\ -1 & 0 \\end{pmatrix} \\]\nas the only other solutions besides the identity matrix.\n\nTherefore, the solution set is complete, as given in the theorem statement."
+  ],
+  "structured_texts": [
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $A$ be a $2 \\times 2$ matrix with rational entries. Then $A^5 = I$, where $I$ is the $2 \\times 2$ identity matrix, if and only if $A$ is one of the following matrices: $A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$ or $A = \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}$.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "A",
+            "value": "$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$",
+            "existence": [
+              {
+                "type": "assertion",
+                "claim": "$A^5 = I$",
+                "deduced-from": [
+                  "Given"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "The characteristic polynomial of $A$ is given by $\\chi_A(\\lambda) = \\lambda^2 - (a + d)\\lambda + (ad - bc) = 0$. Since $A^5 = I$, the eigenvalues of $A$ must satisfy $\\lambda^5 = 1$. The only rational solutions to $\\lambda^5 = 1$ are $\\lambda = 1$ and $\\lambda = -1$.",
+            "deduced-from": [
+              "Characteristic polynomial definition",
+              "Eigenvalue properties for matrices with $A^n = I$"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "If $\\lambda = 1$, then $A$ is the identity matrix.",
+            "deduced-from": [
+              "$a + d = 2$",
+              "$ad - bc = 1$",
+              "Solutions for rational entries"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "If $\\lambda = -1$, then $A = \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}$.",
+            "deduced-from": [
+              "$a + d = -2$",
+              "$ad - bc = 1$",
+              "Solutions for rational entries"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "No other matrices with rational entries satisfy $A^5 = I$ except for the two matrices listed.",
+            "deduced-from": [
+              "Fundamental theorem of algebra",
+              "Rational fifth roots of unity are $\\lambda = 1$ and $\\lambda = -1$"
+            ]
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $A$ be a $2 \\times 2$ matrix with rational entries. Then $A^5 = I$, where $I$ is the $2 \\times 2$ identity matrix, if and only if $A$ is one of the following matrices: $A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$ or $A = \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}$.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "A",
+            "value": "$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$",
+            "existence": [
+              {
+                "type": "assertion",
+                "claim": "$A$ is a $2 \\times 2$ matrix with rational entries such that $A^5 = I$.",
+                "deduced-from": []
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "The characteristic polynomial of $A$ is given by $\\chi_A(\\lambda) = \\lambda^2 - (a + d)\\lambda + (ad - bc) = 0$. Since $A^5 = I$, the eigenvalues of $A$ must satisfy $\\lambda^5 = 1$. The only rational solutions to $\\lambda^5 = 1$ are $\\lambda = 1$ and $\\lambda = -1$."
+          },
+          {
+            "type": "assertion",
+            "claim": "For $\\lambda = 1$, the simplest solution with rational entries is $A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$.",
+            "deduced-from": [
+              "a + d = 2",
+              "ad - bc = 1"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "For $\\lambda = -1$, the simplest solution with rational entries is $A = \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}$.",
+            "deduced-from": [
+              "a + d = -2",
+              "ad - bc = 1"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "No other matrices with rational entries satisfy $A^5 = I$ except for the two matrices listed.",
+            "deduced-from": [
+              {
+                "result": "fundamental theorem of algebra",
+                "applied-to": "characteristic polynomial of $A$"
+              },
+              "the only rational fifth roots of unity are $\\lambda = 1$ and $\\lambda = -1$"
+            ],
+            "justification": "The specific forms of $A$ are directly tied to these eigenvalues and the requirement that $A$ has rational entries."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "A $2 \\times 2$ matrix $A$ with rational entries satisfies $A^5 = I$ if and only if $A = I$ or $A = -I$, where $I$ is the $2 \\times 2$ identity matrix.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "$A$",
+            "value": "$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$",
+            "existence": [],
+            "well_defined": [],
+            "uniqueness": []
+          },
+          {
+            "type": "observation",
+            "statement": "The eigenvalues $\\lambda$ of $A$ must satisfy $\\lambda^5 = 1$."
+          },
+          {
+            "type": "observation",
+            "statement": "The only rational solutions to this equation are $\\lambda = 1$ and $\\lambda = -1$."
+          },
+          {
+            "type": "split_by",
+            "condition": "$\\lambda$",
+            "cases": [
+              {
+                "case": "$\\lambda = 1$",
+                "content": [
+                  {
+                    "type": "observation",
+                    "statement": "The eigenvalues of $A$ are both 1."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "$A - I = 0$, implying $A = I$.",
+                    "deduced-from": [
+                      {
+                        "result": "Rational Root Theorem",
+                        "applied-to": "$A^5 - I = 0$"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "case": "$\\lambda = -1$",
+                "content": [
+                  {
+                    "type": "observation",
+                    "statement": "The eigenvalues of $A$ are both -1."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "$A + I = 0$, implying $A = -I$.",
+                    "deduced-from": [
+                      {
+                        "result": "Rational Root Theorem",
+                        "applied-to": "$A^5 - I = 0$"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "No other matrices satisfy this condition, as any other rational eigenvalue solution of $\\lambda^5 = 1$ would lead to a contradiction, and any other structure for $A$ would not allow it to satisfy $A^5 = I$ due to the constraints on its eigenvalues and the requirement for rational entries."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "A $2 \\times 2$ matrix $A$ with rational entries satisfies $A^5 = I$ if and only if $A = I$ or $A = -I$, where $I$ is the $2 \\times 2$ identity matrix.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "A",
+            "value": "\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}"
+          },
+          {
+            "type": "observation",
+            "statement": "The eigenvalues $\\lambda$ of $A$ must satisfy $\\lambda^5 = 1$."
+          },
+          {
+            "type": "observation",
+            "statement": "The only rational solutions to this equation are $\\lambda = 1$ and $\\lambda = -1$."
+          },
+          {
+            "type": "split_by",
+            "term": "$\\lambda$",
+            "cases": [
+              {
+                "case": "$\\lambda = 1$",
+                "content": [
+                  {
+                    "type": "observation",
+                    "statement": "The eigenvalues of $A$ are both 1."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "The minimal polynomial dividing $x^5 - 1$ for $A$ must be $x - 1$.",
+                    "deduced-from": [
+                      "Rational Root Theorem",
+                      "$A^5 - I = 0$"
+                    ]
+                  },
+                  {
+                    "type": "observation",
+                    "statement": "$A - I = 0$, implying $A = I$."
+                  }
+                ]
+              },
+              {
+                "case": "$\\lambda = -1$",
+                "content": [
+                  {
+                    "type": "observation",
+                    "statement": "The eigenvalues of $A$ are both -1."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "The minimal polynomial for $A$ must be $x + 1$.",
+                    "deduced-from": [
+                      "Rational Root Theorem",
+                      "$A^5 - I = 0$"
+                    ]
+                  },
+                  {
+                    "type": "observation",
+                    "statement": "$A + I = 0$, implying $A = -I$."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "No other matrices satisfy this condition, as the only rational eigenvalue solutions of $\\lambda^5 = 1$ are $\\lambda = 1$ and $\\lambda = -1$. Further, any other structure for $A$ would not satisfy $A^5 = I$ due to the constraints on its eigenvalues and the requirement for rational entries."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "The only $2 \\times 2$ matrices with rational entries that satisfy $A^5 = I$, where $I$ is the $2 \\times 2$ identity matrix, are $\\left\\{ \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}, \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}, \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}, \\begin{pmatrix} -1 & -1 \\\\ 1 & 0 \\end{pmatrix}, \\begin{pmatrix} 0 & -1 \\\\ 1 & 1 \\end{pmatrix}, \\begin{pmatrix} 1 & 1 \\\\ -1 & 0 \\end{pmatrix} \\right\\}$",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "A",
+            "value": "$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "$A^5 = I$ given"
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "By the Cayley-Hamilton theorem, $A$ satisfies its own characteristic equation."
+          },
+          {
+            "type": "observation",
+            "statement": "The characteristic polynomial of $A$ is $p(\\lambda) = \\lambda^2 - (a+d)\\lambda + (ad-bc) = 0$."
+          },
+          {
+            "type": "observation",
+            "statement": "Since $A^5 = I$, the eigenvalues of $A$ must be the fifth roots of unity: $\\lambda = 1, -1, \\zeta, \\zeta^2, \\zeta^3, \\zeta^4$, where $\\zeta$ is a primitive fifth root of unity."
+          },
+          {
+            "type": "observation",
+            "statement": "Since $A$ has rational entries, its eigenvalues must either be rational or occur in conjugate pairs."
+          },
+          {
+            "type": "assertion",
+            "claim": "The only possible eigenvalues for $A$ are $1$ and $-1$.",
+            "deduced-from": [
+              "eigenvalues must be rational or in conjugate pairs",
+              "the roots of unity $\\zeta, \\zeta^2, \\zeta^3, \\zeta^4$ are not rational nor form rational conjugates"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "For $A$ to have $1$ as an eigenvalue of multiplicity two, $A$ must be $I$. For $A$ to have $-1$ as an eigenvalue of multiplicity two, $A$ must be $-I$.",
+            "deduced-from": [
+              "the only possible eigenvalues for $A$ are $1$ and $-1$"
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "For $A$ to have eigenvalues $1$ and $-1$, it must be similar to a Jordan block with eigenvalue $-1$ or $1$."
+          },
+          {
+            "type": "observation",
+            "statement": "Inspection and algebraic manipulation give us the matrices $\\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}, \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}, \\begin{pmatrix} -1 & -1 \\\\ 1 & 0 \\end{pmatrix}, \\begin{pmatrix} 0 & -1 \\\\ 1 & 1 \\end{pmatrix}, \\begin{pmatrix} 1 & 1 \\\\ -1 & 0 \\end{pmatrix}$ as the only other solutions besides the identity matrix."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, the solution set is complete, as given in the theorem statement."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Only Rational 2x2 Matrices satisfying A^5 = I",
+        "statement": "The only $2 \\times 2$ matrices with rational entries that satisfy $A^5 = I$, where $I$ is the $2 \\times 2$ identity matrix, are $\\left\\{ \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}, \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}, \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}, \\begin{pmatrix} -1 & -1 \\\\ 1 & 0 \\end{pmatrix}, \\begin{pmatrix} 0 & -1 \\\\ 1 & 1 \\end{pmatrix}, \\begin{pmatrix} 1 & 1 \\\\ -1 & 0 \\end{pmatrix} \\right\\}$",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "A",
+            "value": "$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$"
+          },
+          {
+            "type": "observation",
+            "statement": "By the Cayley-Hamilton theorem, $A$ satisfies its own characteristic equation. The characteristic polynomial of $A$ is $p(\\lambda) = \\lambda^2 - (a+d)\\lambda + (ad-bc) = 0$."
+          },
+          {
+            "type": "observation",
+            "statement": "Since $A^5 = I$, the eigenvalues of $A$ must be the fifth roots of unity: $\\lambda = 1, -1, \\zeta, \\zeta^2, \\zeta^3, \\zeta^4$, where $\\zeta$ is a primitive fifth root of unity."
+          },
+          {
+            "type": "assertion",
+            "claim": "The only possible eigenvalues for $A$ are $1$ and $-1$.",
+            "deduced-from": [
+              "Eigenvalues must be rational or occur in conjugate pairs for matrices with rational entries."
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "For $A$ to have $1$ as an eigenvalue of multiplicity two, $A$ must be $I$. For $A$ to have $-1$ as an eigenvalue of multiplicity two, $A$ must be $-I$.",
+            "deduced-from": []
+          },
+          {
+            "type": "assertion",
+            "claim": "For $A$ to have eigenvalues $1$ and $-1$, it must be similar to a Jordan block with eigenvalue $-1$ or $1$.",
+            "deduced-from": []
+          },
+          {
+            "type": "observation",
+            "statement": "Inspection and algebraic manipulation give us the matrices $\\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}, \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}, \\begin{pmatrix} -1 & -1 \\\\ 1 & 0 \\end{pmatrix}, \\begin{pmatrix} 0 & -1 \\\\ 1 & 1 \\end{pmatrix}, \\begin{pmatrix} 1 & 1 \\\\ -1 & 0 \\end{pmatrix}$ as the only other solutions besides the identity matrix."
+          }
+        ]
+      }
+    ]
+  ],
+  "raw_structured_texts": [
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"statement\": \"Let $A$ be a $2 \\\\times 2$ matrix with rational entries. Then $A^5 = I$, where $I$ is the $2 \\\\times 2$ identity matrix, if and only if $A$ is one of the following matrices: $A = \\\\begin{pmatrix} 1 & 0 \\\\\\\\ 0 & 1 \\\\end{pmatrix}$ or $A = \\\\begin{pmatrix} -1 & 0 \\\\\\\\ 0 & -1 \\\\end{pmatrix}$.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"A\",\n        \"value\": \"$\\\\begin{pmatrix} a & b \\\\\\\\ c & d \\\\end{pmatrix}$\",\n        \"existence\": [\n          {\n            \"type\": \"assertion\",\n            \"claim\": \"$A^5 = I$\",\n            \"deduced-from\": [\"Given\"]\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The characteristic polynomial of $A$ is given by $\\\\chi_A(\\\\lambda) = \\\\lambda^2 - (a + d)\\\\lambda + (ad - bc) = 0$. Since $A^5 = I$, the eigenvalues of $A$ must satisfy $\\\\lambda^5 = 1$. The only rational solutions to $\\\\lambda^5 = 1$ are $\\\\lambda = 1$ and $\\\\lambda = -1$.\",\n        \"deduced-from\": [\"Characteristic polynomial definition\", \"Eigenvalue properties for matrices with $A^n = I$\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"If $\\\\lambda = 1$, then $A$ is the identity matrix.\",\n        \"deduced-from\": [\"$a + d = 2$\", \"$ad - bc = 1$\", \"Solutions for rational entries\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"If $\\\\lambda = -1$, then $A = \\\\begin{pmatrix} -1 & 0 \\\\\\\\ 0 & -1 \\\\end{pmatrix}$.\",\n        \"deduced-from\": [\"$a + d = -2$\", \"$ad - bc = 1$\", \"Solutions for rational entries\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"No other matrices with rational entries satisfy $A^5 = I$ except for the two matrices listed.\",\n        \"deduced-from\": [\"Fundamental theorem of algebra\", \"Rational fifth roots of unity are $\\\\lambda = 1$ and $\\\\lambda = -1$\"]\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"statement\": \"Let $A$ be a $2 \\\\times 2$ matrix with rational entries. Then $A^5 = I$, where $I$ is the $2 \\\\times 2$ identity matrix, if and only if $A$ is one of the following matrices: $A = \\\\begin{pmatrix} 1 & 0 \\\\\\\\ 0 & 1 \\\\end{pmatrix}$ or $A = \\\\begin{pmatrix} -1 & 0 \\\\\\\\ 0 & -1 \\\\end{pmatrix}$.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"A\",\n        \"value\": \"$\\\\begin{pmatrix} a & b \\\\\\\\ c & d \\\\end{pmatrix}$\",\n        \"existence\": [\n          {\n            \"type\": \"assertion\",\n            \"claim\": \"$A$ is a $2 \\\\times 2$ matrix with rational entries such that $A^5 = I$.\",\n            \"deduced-from\": []\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The characteristic polynomial of $A$ is given by $\\\\chi_A(\\\\lambda) = \\\\lambda^2 - (a + d)\\\\lambda + (ad - bc) = 0$. Since $A^5 = I$, the eigenvalues of $A$ must satisfy $\\\\lambda^5 = 1$. The only rational solutions to $\\\\lambda^5 = 1$ are $\\\\lambda = 1$ and $\\\\lambda = -1$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For $\\\\lambda = 1$, the simplest solution with rational entries is $A = \\\\begin{pmatrix} 1 & 0 \\\\\\\\ 0 & 1 \\\\end{pmatrix}$.\",\n        \"deduced-from\": [\n          \"a + d = 2\",\n          \"ad - bc = 1\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For $\\\\lambda = -1$, the simplest solution with rational entries is $A = \\\\begin{pmatrix} -1 & 0 \\\\\\\\ 0 & -1 \\\\end{pmatrix}$.\",\n        \"deduced-from\": [\n          \"a + d = -2\",\n          \"ad - bc = 1\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"No other matrices with rational entries satisfy $A^5 = I$ except for the two matrices listed.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"fundamental theorem of algebra\",\n            \"applied-to\": \"characteristic polynomial of $A$\"\n          },\n          \"the only rational fifth roots of unity are $\\\\lambda = 1$ and $\\\\lambda = -1$\"\n        ],\n        \"justification\": \"The specific forms of $A$ are directly tied to these eigenvalues and the requirement that $A$ has rational entries.\"\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"A $2 \\\\times 2$ matrix $A$ with rational entries satisfies $A^5 = I$ if and only if $A = I$ or $A = -I$, where $I$ is the $2 \\\\times 2$ identity matrix.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"$A$\",\n        \"value\": \"$\\\\begin{pmatrix} a & b \\\\\\\\ c & d \\\\end{pmatrix}$\",\n        \"existence\": [],\n        \"well_defined\": [],\n        \"uniqueness\": []\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The eigenvalues $\\\\lambda$ of $A$ must satisfy $\\\\lambda^5 = 1$.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The only rational solutions to this equation are $\\\\lambda = 1$ and $\\\\lambda = -1$.\"\n      },\n      {\n        \"type\": \"split_by\",\n        \"condition\": \"$\\\\lambda$\",\n        \"cases\": [\n          {\n            \"case\": \"$\\\\lambda = 1$\",\n            \"content\": [\n              {\n                \"type\": \"observation\",\n                \"statement\": \"The eigenvalues of $A$ are both 1.\"\n              },\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"$A - I = 0$, implying $A = I$.\",\n                \"deduced-from\": [\n                  {\n                    \"result\": \"Rational Root Theorem\",\n                    \"applied-to\": \"$A^5 - I = 0$\"\n                  }\n                ]\n              }\n            ]\n          },\n          {\n            \"case\": \"$\\\\lambda = -1$\",\n            \"content\": [\n              {\n                \"type\": \"observation\",\n                \"statement\": \"The eigenvalues of $A$ are both -1.\"\n              },\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"$A + I = 0$, implying $A = -I$.\",\n                \"deduced-from\": [\n                  {\n                    \"result\": \"Rational Root Theorem\",\n                    \"applied-to\": \"$A^5 - I = 0$\"\n                  }\n                ]\n              }\n            ]\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"No other matrices satisfy this condition, as any other rational eigenvalue solution of $\\\\lambda^5 = 1$ would lead to a contradiction, and any other structure for $A$ would not allow it to satisfy $A^5 = I$ due to the constraints on its eigenvalues and the requirement for rational entries.\"\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"A $2 \\\\times 2$ matrix $A$ with rational entries satisfies $A^5 = I$ if and only if $A = I$ or $A = -I$, where $I$ is the $2 \\\\times 2$ identity matrix.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"A\",\n        \"value\": \"\\\\begin{pmatrix} a & b \\\\\\\\ c & d \\\\end{pmatrix}\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The eigenvalues $\\\\lambda$ of $A$ must satisfy $\\\\lambda^5 = 1$.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The only rational solutions to this equation are $\\\\lambda = 1$ and $\\\\lambda = -1$.\"\n      },\n      {\n        \"type\": \"split_by\",\n        \"term\": \"$\\\\lambda$\",\n        \"cases\": [\n          {\n            \"case\": \"$\\\\lambda = 1$\",\n            \"content\": [\n              {\n                \"type\": \"observation\",\n                \"statement\": \"The eigenvalues of $A$ are both 1.\"\n              },\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"The minimal polynomial dividing $x^5 - 1$ for $A$ must be $x - 1$.\",\n                \"deduced-from\": [\n                  \"Rational Root Theorem\",\n                  \"$A^5 - I = 0$\"\n                ]\n              },\n              {\n                \"type\": \"observation\",\n                \"statement\": \"$A - I = 0$, implying $A = I$.\"\n              }\n            ]\n          },\n          {\n            \"case\": \"$\\\\lambda = -1$\",\n            \"content\": [\n              {\n                \"type\": \"observation\",\n                \"statement\": \"The eigenvalues of $A$ are both -1.\"\n              },\n              {\n                \"type\": \"assertion\",\n                \"claim\": \"The minimal polynomial for $A$ must be $x + 1$.\",\n                \"deduced-from\": [\n                  \"Rational Root Theorem\",\n                  \"$A^5 - I = 0$\"\n                ]\n              },\n              {\n                \"type\": \"observation\",\n                \"statement\": \"$A + I = 0$, implying $A = -I$.\"\n              }\n            ]\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"No other matrices satisfy this condition, as the only rational eigenvalue solutions of $\\\\lambda^5 = 1$ are $\\\\lambda = 1$ and $\\\\lambda = -1$. Further, any other structure for $A$ would not satisfy $A^5 = I$ due to the constraints on its eigenvalues and the requirement for rational entries.\"\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"statement\": \"The only $2 \\\\times 2$ matrices with rational entries that satisfy $A^5 = I$, where $I$ is the $2 \\\\times 2$ identity matrix, are $\\\\left\\\\{ \\\\begin{pmatrix} 1 & 0 \\\\\\\\ 0 & 1 \\\\end{pmatrix}, \\\\begin{pmatrix} -1 & 0 \\\\\\\\ 0 & -1 \\\\end{pmatrix}, \\\\begin{pmatrix} 0 & 1 \\\\\\\\ -1 & -1 \\\\end{pmatrix}, \\\\begin{pmatrix} -1 & -1 \\\\\\\\ 1 & 0 \\\\end{pmatrix}, \\\\begin{pmatrix} 0 & -1 \\\\\\\\ 1 & 1 \\\\end{pmatrix}, \\\\begin{pmatrix} 1 & 1 \\\\\\\\ -1 & 0 \\\\end{pmatrix} \\\\right\\\\}$\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"A\",\n        \"value\": \"$\\\\begin{pmatrix} a & b \\\\\\\\ c & d \\\\end{pmatrix}$\",\n        \"existence\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"$A^5 = I$ given\"\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"By the Cayley-Hamilton theorem, $A$ satisfies its own characteristic equation.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The characteristic polynomial of $A$ is $p(\\\\lambda) = \\\\lambda^2 - (a+d)\\\\lambda + (ad-bc) = 0$.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Since $A^5 = I$, the eigenvalues of $A$ must be the fifth roots of unity: $\\\\lambda = 1, -1, \\\\zeta, \\\\zeta^2, \\\\zeta^3, \\\\zeta^4$, where $\\\\zeta$ is a primitive fifth root of unity.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Since $A$ has rational entries, its eigenvalues must either be rational or occur in conjugate pairs.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The only possible eigenvalues for $A$ are $1$ and $-1$.\",\n        \"deduced-from\": [\n          \"eigenvalues must be rational or in conjugate pairs\",\n          \"the roots of unity $\\\\zeta, \\\\zeta^2, \\\\zeta^3, \\\\zeta^4$ are not rational nor form rational conjugates\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For $A$ to have $1$ as an eigenvalue of multiplicity two, $A$ must be $I$. For $A$ to have $-1$ as an eigenvalue of multiplicity two, $A$ must be $-I$.\",\n        \"deduced-from\": [\n          \"the only possible eigenvalues for $A$ are $1$ and $-1$\"\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"For $A$ to have eigenvalues $1$ and $-1$, it must be similar to a Jordan block with eigenvalue $-1$ or $1$.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Inspection and algebraic manipulation give us the matrices $\\\\begin{pmatrix} -1 & 0 \\\\\\\\ 0 & -1 \\\\end{pmatrix}, \\\\begin{pmatrix} 0 & 1 \\\\\\\\ -1 & -1 \\\\end{pmatrix}, \\\\begin{pmatrix} -1 & -1 \\\\\\\\ 1 & 0 \\\\end{pmatrix}, \\\\begin{pmatrix} 0 & -1 \\\\\\\\ 1 & 1 \\\\end{pmatrix}, \\\\begin{pmatrix} 1 & 1 \\\\\\\\ -1 & 0 \\\\end{pmatrix}$ as the only other solutions besides the identity matrix.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Therefore, the solution set is complete, as given in the theorem statement.\"\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Only Rational 2x2 Matrices satisfying A^5 = I\",\n    \"statement\": \"The only $2 \\\\times 2$ matrices with rational entries that satisfy $A^5 = I$, where $I$ is the $2 \\\\times 2$ identity matrix, are $\\\\left\\\\{ \\\\begin{pmatrix} 1 & 0 \\\\\\\\ 0 & 1 \\\\end{pmatrix}, \\\\begin{pmatrix} -1 & 0 \\\\\\\\ 0 & -1 \\\\end{pmatrix}, \\\\begin{pmatrix} 0 & 1 \\\\\\\\ -1 & -1 \\\\end{pmatrix}, \\\\begin{pmatrix} -1 & -1 \\\\\\\\ 1 & 0 \\\\end{pmatrix}, \\\\begin{pmatrix} 0 & -1 \\\\\\\\ 1 & 1 \\\\end{pmatrix}, \\\\begin{pmatrix} 1 & 1 \\\\\\\\ -1 & 0 \\\\end{pmatrix} \\\\right\\\\}$\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"A\",\n        \"value\": \"$\\\\begin{pmatrix} a & b \\\\\\\\ c & d \\\\end{pmatrix}$\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"By the Cayley-Hamilton theorem, $A$ satisfies its own characteristic equation. The characteristic polynomial of $A$ is $p(\\\\lambda) = \\\\lambda^2 - (a+d)\\\\lambda + (ad-bc) = 0$.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Since $A^5 = I$, the eigenvalues of $A$ must be the fifth roots of unity: $\\\\lambda = 1, -1, \\\\zeta, \\\\zeta^2, \\\\zeta^3, \\\\zeta^4$, where $\\\\zeta$ is a primitive fifth root of unity.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The only possible eigenvalues for $A$ are $1$ and $-1$.\",\n        \"deduced-from\": [\n          \"Eigenvalues must be rational or occur in conjugate pairs for matrices with rational entries.\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For $A$ to have $1$ as an eigenvalue of multiplicity two, $A$ must be $I$. For $A$ to have $-1$ as an eigenvalue of multiplicity two, $A$ must be $-I$.\",\n        \"deduced-from\": []\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For $A$ to have eigenvalues $1$ and $-1$, it must be similar to a Jordan block with eigenvalue $-1$ or $1$.\",\n        \"deduced-from\": []\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Inspection and algebraic manipulation give us the matrices $\\\\begin{pmatrix} -1 & 0 \\\\\\\\ 0 & -1 \\\\end{pmatrix}, \\\\begin{pmatrix} 0 & 1 \\\\\\\\ -1 & -1 \\\\end{pmatrix}, \\\\begin{pmatrix} -1 & -1 \\\\\\\\ 1 & 0 \\\\end{pmatrix}, \\\\begin{pmatrix} 0 & -1 \\\\\\\\ 1 & 1 \\\\end{pmatrix}, \\\\begin{pmatrix} 1 & 1 \\\\\\\\ -1 & 0 \\\\end{pmatrix}$ as the only other solutions besides the identity matrix.\"\n      }\n    ]\n  }\n]\n```"
+  ],
+  "texts_with_statements": [
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $A$ be a $2 \\times 2$ matrix with rational entries. Then $A^5 = I$, where $I$ is the $2 \\times 2$ identity matrix, if and only if $A$ is one of the following matrices: $A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$ or $A = \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}$.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "A",
+            "value": "$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$",
+            "existence": [
+              {
+                "type": "assertion",
+                "claim": "$A^5 = I$",
+                "deduced-from": [
+                  "Given"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "The characteristic polynomial of $A$ is given by $\\chi_A(\\lambda) = \\lambda^2 - (a + d)\\lambda + (ad - bc) = 0$. Since $A^5 = I$, the eigenvalues of $A$ must satisfy $\\lambda^5 = 1$. The only rational solutions to $\\lambda^5 = 1$ are $\\lambda = 1$ and $\\lambda = -1$.",
+            "deduced-from": [
+              "Characteristic polynomial definition",
+              "Eigenvalue properties for matrices with $A^n = I$"
+            ],
+            "statement": "Let $A$ be a $2 \\times 2$ matrix with rational entries such that $A^5 = I$. The characteristic polynomial of $A$ is given by $\\chi_A(\\lambda) = \\lambda^2 - (a + d)\\lambda + (ad - bc) = 0$. Since $A^5 = I$, the eigenvalues of $A$ must satisfy $\\lambda^5 = 1$. The only rational solutions to $\\lambda^5 = 1$ are $\\lambda = 1$ and $\\lambda = -1$."
+          },
+          {
+            "type": "assertion",
+            "claim": "If $\\lambda = 1$, then $A$ is the identity matrix.",
+            "deduced-from": [
+              "$a + d = 2$",
+              "$ad - bc = 1$",
+              "Solutions for rational entries"
+            ],
+            "statement": "Let $A$ be a $2 \\times 2$ matrix with rational entries such that $A^5 = I$ and the eigenvalues of $A$ satisfy $\\lambda^5 = 1$. If $\\lambda = 1$, then the conditions $a + d = 2$ and $ad - bc = 1$ imply $A$ is the identity matrix."
+          },
+          {
+            "type": "assertion",
+            "claim": "If $\\lambda = -1$, then $A = \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}$.",
+            "deduced-from": [
+              "$a + d = -2$",
+              "$ad - bc = 1$",
+              "Solutions for rational entries"
+            ],
+            "statement": "Let $A$ be a $2 \\times 2$ matrix with rational entries such that $A^5 = I$ and the eigenvalues of $A$ satisfy $\\lambda^5 = 1$. If $\\lambda = -1$, then the conditions $a + d = -2$ and $ad - bc = 1$ imply $A = \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "No other matrices with rational entries satisfy $A^5 = I$ except for the two matrices listed.",
+            "deduced-from": [
+              "Fundamental theorem of algebra",
+              "Rational fifth roots of unity are $\\lambda = 1$ and $\\lambda = -1$"
+            ],
+            "statement": "Let $A$ be a $2 \\times 2$ matrix with rational entries such that $A^5 = I$. No other matrices with rational entries satisfy $A^5 = I$ except for the two matrices: $A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$ or $A = \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}$."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $A$ be a $2 \\times 2$ matrix with rational entries. Then $A^5 = I$, where $I$ is the $2 \\times 2$ identity matrix, if and only if $A$ is one of the following matrices: $A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$ or $A = \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}$.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "A",
+            "value": "$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$",
+            "existence": [
+              {
+                "type": "assertion",
+                "claim": "$A^5 = I$",
+                "deduced-from": [
+                  "Given"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "The characteristic polynomial of $A$ is given by $\\chi_A(\\lambda) = \\lambda^2 - (a + d)\\lambda + (ad - bc) = 0$. Since $A^5 = I$, the eigenvalues of $A$ must satisfy $\\lambda^5 = 1$. The only rational solutions to $\\lambda^5 = 1$ are $\\lambda = 1$ and $\\lambda = -1$.",
+            "deduced-from": [
+              "Characteristic polynomial definition",
+              "Eigenvalue properties for matrices with $A^n = I$"
+            ],
+            "statement": "Given a $2 \\times 2$ matrix $A$ with rational entries and $A^5 = I$, the characteristic polynomial of $A$ is given by $\\chi_A(\\lambda) = \\lambda^2 - (a + d)\\lambda + (ad - bc) = 0$, and the only rational solutions to $\\lambda^5 = 1$ are $\\lambda = 1$ and $\\lambda = -1$. Thus the eigenvalues of $A$ must be $\\lambda = 1$ or $\\lambda = -1$."
+          },
+          {
+            "type": "assertion",
+            "claim": "If $\\lambda = 1$, then $A$ is the identity matrix.",
+            "deduced-from": [
+              "$a + d = 2$",
+              "$ad - bc = 1$",
+              "Solutions for rational entries"
+            ],
+            "statement": "Given a $2 \\times 2$ matrix $A$ with rational entries and eigenvalues satisfying $\\lambda^5 = 1$, if $\\lambda = 1$, then the only matrix $A$ with these properties is the identity matrix, based on the conditions $a + d = 2$ and $ad - bc = 1$."
+          },
+          {
+            "type": "assertion",
+            "claim": "If $\\lambda = -1$, then $A = \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}$.",
+            "deduced-from": [
+              "$a + d = -2$",
+              "$ad - bc = 1$",
+              "Solutions for rational entries"
+            ],
+            "statement": "Given a $2 \\times 2$ matrix $A$ with rational entries and eigenvalues satisfying $\\lambda^5 = 1$, if $\\lambda = -1$, then the only matrix $A$ with these properties is $\\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}$, based on the conditions $a + d = -2$ and $ad - bc = 1$."
+          },
+          {
+            "type": "assertion",
+            "claim": "No other matrices with rational entries satisfy $A^5 = I$ except for the two matrices listed.",
+            "deduced-from": [
+              "Fundamental theorem of algebra",
+              "Rational fifth roots of unity are $\\lambda = 1$ and $\\lambda = -1$"
+            ],
+            "statement": "Given a $2 \\times 2$ matrix $A$ with rational entries and $A^5 = I$, no other matrices with rational entries satisfy $A^5 = I$ except for the identity matrix and $\\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}$, as the only rational fifth roots of unity are $\\lambda = 1$ and $\\lambda = -1$."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $A$ be a $2 \\times 2$ matrix with rational entries. Then $A^5 = I$, where $I$ is the $2 \\times 2$ identity matrix, if and only if $A$ is one of the following matrices: $A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$ or $A = \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}$.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "A",
+            "value": "$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$",
+            "existence": [
+              {
+                "type": "assertion",
+                "claim": "$A$ is a $2 \\times 2$ matrix with rational entries such that $A^5 = I$.",
+                "deduced-from": []
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "The characteristic polynomial of $A$ is given by $\\chi_A(\\lambda) = \\lambda^2 - (a + d)\\lambda + (ad - bc) = 0$. Since $A^5 = I$, the eigenvalues of $A$ must satisfy $\\lambda^5 = 1$. The only rational solutions to $\\lambda^5 = 1$ are $\\lambda = 1$ and $\\lambda = -1$."
+          },
+          {
+            "type": "assertion",
+            "claim": "For $\\lambda = 1$, the simplest solution with rational entries is $A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$.",
+            "statement": "Let $A$ be a $2 \\times 2$ matrix with rational entries such that $A^5 = I$. For $\\lambda = 1$, the simplest solution with rational entries is $A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$, given the eigenvalues of $A$ must satisfy $\\lambda^5 = 1$ and considering $a + d = 2$ and $ad - bc = 1$.",
+            "deduced-from": [
+              "a + d = 2",
+              "ad - bc = 1"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "For $\\lambda = -1$, the simplest solution with rational entries is $A = \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}$.",
+            "statement": "Let $A$ be a $2 \\times 2$ matrix with rational entries such that $A^5 = I$. For $\\lambda = -1$, the simplest solution with rational entries is $A = \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}$, given the eigenvalues of $A$ must satisfy $\\lambda^5 = 1$ and considering $a + d = -2$ and $ad - bc = 1$.",
+            "deduced-from": [
+              "a + d = -2",
+              "ad - bc = 1"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "No other matrices with rational entries satisfy $A^5 = I$ except for the two matrices listed.",
+            "statement": "Let $A$ be a $2 \\times 2$ matrix with rational entries such that $A^5 = I$. No other matrices with rational entries satisfy $A^5 = I$ except for $A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$ and $A = \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}$, as shown by the fundamental theorem of algebra applied to the characteristic polynomial of $A$ and considering that the only rational fifth roots of unity are $\\lambda = 1$ and $\\lambda = -1$.",
+            "deduced-from": [
+              {
+                "result": "fundamental theorem of algebra",
+                "applied-to": "characteristic polynomial of $A$"
+              },
+              "the only rational fifth roots of unity are $\\lambda = 1$ and $\\lambda = -1$"
+            ],
+            "justification": "The specific forms of $A$ are directly tied to these eigenvalues and the requirement that $A$ has rational entries."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $A$ be a $2 \\times 2$ matrix with rational entries. Then $A^5 = I$, where $I$ is the $2 \\times 2$ identity matrix, if and only if $A$ is one of the following matrices: $A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$ or $A = \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}$.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "A",
+            "value": "$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$",
+            "existence": [
+              {
+                "type": "assertion",
+                "claim": "$A$ is a $2 \\times 2$ matrix with rational entries such that $A^5 = I$.",
+                "deduced-from": []
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "The characteristic polynomial of $A$ is given by $\\chi_A(\\lambda) = \\lambda^2 - (a + d)\\lambda + (ad - bc) = 0$. Since $A^5 = I$, the eigenvalues of $A$ must satisfy $\\lambda^5 = 1$. The only rational solutions to $\\lambda^5 = 1$ are $\\lambda = 1$ and $\\lambda = -1$."
+          },
+          {
+            "type": "assertion",
+            "claim": "For $\\lambda = 1$, the simplest solution with rational entries is $A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$.",
+            "deduced-from": [
+              "a + d = 2",
+              "ad - bc = 1"
+            ],
+            "statement": "Let $A$ be a $2 \\times 2$ matrix with rational entries such that $A^5 = I$. For $\\lambda = 1$, given $a + d = 2$ and $ad - bc = 1$, the simplest solution for $A$ is $A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "For $\\lambda = -1$, the simplest solution with rational entries is $A = \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}$.",
+            "deduced-from": [
+              "a + d = -2",
+              "ad - bc = 1"
+            ],
+            "statement": "Let $A$ be a $2 \\times 2$ matrix with rational entries such that $A^5 = I$. For $\\lambda = -1$, given $a + d = -2$ and $ad - bc = 1$, the simplest solution for $A$ is $A = \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "No other matrices with rational entries satisfy $A^5 = I$ except for the two matrices listed.",
+            "deduced-from": [
+              {
+                "result": "fundamental theorem of algebra",
+                "applied-to": "characteristic polynomial of $A$"
+              },
+              "the only rational fifth roots of unity are $\\lambda = 1$ and $\\lambda = -1$"
+            ],
+            "justification": "The specific forms of $A$ are directly tied to these eigenvalues and the requirement that $A$ has rational entries.",
+            "statement": "Let $A$ be a $2 \\times 2$ matrix with rational entries such that $A^5 = I$. Given the fundamental theorem of algebra applied to the characteristic polynomial of $A$ and that the only rational fifth roots of unity are $\\lambda = 1$ and $\\lambda = -1$, no other matrices with rational entries satisfy $A^5 = I$ except for the two matrices listed."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "A $2 \\times 2$ matrix $A$ with rational entries satisfies $A^5 = I$ if and only if $A = I$ or $A = -I$, where $I$ is the $2 \\times 2$ identity matrix.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "$A$",
+            "value": "$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$",
+            "existence": [],
+            "well_defined": [],
+            "uniqueness": []
+          },
+          {
+            "type": "observation",
+            "statement": "The eigenvalues $\\lambda$ of $A$ must satisfy $\\lambda^5 = 1$."
+          },
+          {
+            "type": "observation",
+            "statement": "The only rational solutions to this equation are $\\lambda = 1$ and $\\lambda = -1$."
+          },
+          {
+            "type": "split_by",
+            "condition": "$\\lambda$",
+            "cases": [
+              {
+                "case": "$\\lambda = 1$",
+                "content": [
+                  {
+                    "type": "observation",
+                    "statement": "The eigenvalues of $A$ are both 1."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "$A - I = 0$, implying $A = I$.",
+                    "deduced-from": [
+                      {
+                        "result": "Rational Root Theorem",
+                        "applied-to": "$A^5 - I = 0$"
+                      }
+                    ],
+                    "statement": "If $A$ is a $2 \\times 2$ matrix with rational entries and eigenvalues both 1, then $A = I$, as deduced from the Rational Root Theorem applied to $A^5 - I = 0$."
+                  }
+                ]
+              },
+              {
+                "case": "$\\lambda = -1$",
+                "content": [
+                  {
+                    "type": "observation",
+                    "statement": "The eigenvalues of $A$ are both -1."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "$A + I = 0$, implying $A = -I$.",
+                    "deduced-from": [
+                      {
+                        "result": "Rational Root Theorem",
+                        "applied-to": "$A^5 - I = 0$"
+                      }
+                    ],
+                    "statement": "If $A$ is a $2 \\times 2$ matrix with rational entries and eigenvalues both -1, then $A = -I$, as deduced from the Rational Root Theorem applied to $A^5 - I = 0$."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "No other matrices satisfy this condition, as any other rational eigenvalue solution of $\\lambda^5 = 1$ would lead to a contradiction, and any other structure for $A$ would not allow it to satisfy $A^5 = I$ due to the constraints on its eigenvalues and the requirement for rational entries."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "A $2 \\times 2$ matrix $A$ with rational entries satisfies $A^5 = I$ if and only if $A = I$ or $A = -I$, where $I$ is the $2 \\times 2$ identity matrix.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "$A$",
+            "value": "$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$",
+            "existence": [],
+            "well_defined": [],
+            "uniqueness": []
+          },
+          {
+            "type": "observation",
+            "statement": "The eigenvalues $\\lambda$ of $A$ must satisfy $\\lambda^5 = 1$."
+          },
+          {
+            "type": "observation",
+            "statement": "The only rational solutions to this equation are $\\lambda = 1$ and $\\lambda = -1$."
+          },
+          {
+            "type": "split_by",
+            "condition": "$\\lambda$",
+            "cases": [
+              {
+                "case": "$\\lambda = 1$",
+                "content": [
+                  {
+                    "type": "observation",
+                    "statement": "The eigenvalues of $A$ are both 1."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "$A - I = 0$, implying $A = I$.",
+                    "statement": "Given a $2 \\times 2$ matrix $A$ with rational entries and eigenvalues of $A$ are both 1, we have $A - I = 0$, implying $A = I$.",
+                    "deduced-from": [
+                      {
+                        "result": "Rational Root Theorem",
+                        "applied-to": "$A^5 - I = 0$"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "case": "$\\lambda = -1$",
+                "content": [
+                  {
+                    "type": "observation",
+                    "statement": "The eigenvalues of $A$ are both -1."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "$A + I = 0$, implying $A = -I$.",
+                    "statement": "Given a $2 \\times 2$ matrix $A$ with rational entries and eigenvalues of $A$ are both -1, we have $A + I = 0$, implying $A = -I$.",
+                    "deduced-from": [
+                      {
+                        "result": "Rational Root Theorem",
+                        "applied-to": "$A^5 - I = 0$"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "No other matrices satisfy this condition, as any other rational eigenvalue solution of $\\lambda^5 = 1$ would lead to a contradiction, and any other structure for $A$ would not allow it to satisfy $A^5 = I$ due to the constraints on its eigenvalues and the requirement for rational entries."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "A $2 \\times 2$ matrix $A$ with rational entries satisfies $A^5 = I$ if and only if $A = I$ or $A = -I$, where $I$ is the $2 \\times 2$ identity matrix.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "A",
+            "value": "\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}"
+          },
+          {
+            "type": "observation",
+            "statement": "The eigenvalues $\\lambda$ of $A$ must satisfy $\\lambda^5 = 1$."
+          },
+          {
+            "type": "observation",
+            "statement": "The only rational solutions to this equation are $\\lambda = 1$ and $\\lambda = -1$."
+          },
+          {
+            "type": "split_by",
+            "term": "$\\lambda$",
+            "cases": [
+              {
+                "case": "$\\lambda = 1$",
+                "content": [
+                  {
+                    "type": "observation",
+                    "statement": "The eigenvalues of $A$ are both 1."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "The minimal polynomial dividing $x^5 - 1$ for $A$ must be $x - 1$.",
+                    "deduced-from": [
+                      "Rational Root Theorem",
+                      "$A^5 - I = 0$"
+                    ],
+                    "statement": "Given a $2 \\times 2$ matrix $A$ with rational entries, if $A^5 = I$, then the minimal polynomial dividing $x^5 - 1$ for $A$ must be $x - 1$, based on the Rational Root Theorem."
+                  },
+                  {
+                    "type": "observation",
+                    "statement": "$A - I = 0$, implying $A = I$."
+                  }
+                ]
+              },
+              {
+                "case": "$\\lambda = -1$",
+                "content": [
+                  {
+                    "type": "observation",
+                    "statement": "The eigenvalues of $A$ are both -1."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "The minimal polynomial for $A$ must be $x + 1$.",
+                    "deduced-from": [
+                      "Rational Root Theorem",
+                      "$A^5 - I = 0$"
+                    ],
+                    "statement": "Given a $2 \\times 2$ matrix $A$ with rational entries, if $A^5 = I$, then the minimal polynomial for $A$ must be $x + 1$, according to the Rational Root Theorem."
+                  },
+                  {
+                    "type": "observation",
+                    "statement": "$A + I = 0$, implying $A = -I$."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "No other matrices satisfy this condition, as the only rational eigenvalue solutions of $\\lambda^5 = 1$ are $\\lambda = 1$ and $\\lambda = -1$. Further, any other structure for $A$ would not satisfy $A^5 = I$ due to the constraints on its eigenvalues and the requirement for rational entries."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "A $2 \\times 2$ matrix $A$ with rational entries satisfies $A^5 = I$ if and only if $A = I$ or $A = -I$, where $I$ is the $2 \\times 2$ identity matrix.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "A",
+            "value": "\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}"
+          },
+          {
+            "type": "observation",
+            "statement": "The eigenvalues $\\lambda$ of $A$ must satisfy $\\lambda^5 = 1$."
+          },
+          {
+            "type": "observation",
+            "statement": "The only rational solutions to this equation are $\\lambda = 1$ and $\\lambda = -1$."
+          },
+          {
+            "type": "split_by",
+            "term": "$\\lambda$",
+            "cases": [
+              {
+                "case": "$\\lambda = 1$",
+                "content": [
+                  {
+                    "type": "observation",
+                    "statement": "The eigenvalues of $A$ are both 1."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "The minimal polynomial dividing $x^5 - 1$ for $A$ must be $x - 1$.",
+                    "deduced-from": [
+                      "Rational Root Theorem",
+                      "$A^5 - I = 0$"
+                    ],
+                    "statement": "Given a $2 \\times 2$ matrix $A = \\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$ with rational entries and eigenvalues both equal to 1, the minimal polynomial dividing $x^5 - 1$ for $A$ must be $x - 1$, due to the Rational Root Theorem and the condition $A^5 - I = 0$."
+                  },
+                  {
+                    "type": "observation",
+                    "statement": "$A - I = 0$, implying $A = I$."
+                  }
+                ]
+              },
+              {
+                "case": "$\\lambda = -1$",
+                "content": [
+                  {
+                    "type": "observation",
+                    "statement": "The eigenvalues of $A$ are both -1."
+                  },
+                  {
+                    "type": "assertion",
+                    "claim": "The minimal polynomial for $A$ must be $x + 1$.",
+                    "deduced-from": [
+                      "Rational Root Theorem",
+                      "$A^5 - I = 0$"
+                    ],
+                    "statement": "Given a $2 \\times 2$ matrix $A = \\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$ with rational entries and eigenvalues both equal to -1, the minimal polynomial for $A$ must be $x + 1$, as deduced from the Rational Root Theorem and the condition $A^5 - I = 0$."
+                  },
+                  {
+                    "type": "observation",
+                    "statement": "$A + I = 0$, implying $A = -I$."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "No other matrices satisfy this condition, as the only rational eigenvalue solutions of $\\lambda^5 = 1$ are $\\lambda = 1$ and $\\lambda = -1$. Further, any other structure for $A$ would not satisfy $A^5 = I$ due to the constraints on its eigenvalues and the requirement for rational entries."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "The only $2 \\times 2$ matrices with rational entries that satisfy $A^5 = I$, where $I$ is the $2 \\times 2$ identity matrix, are $\\left\\{ \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}, \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}, \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}, \\begin{pmatrix} -1 & -1 \\\\ 1 & 0 \\end{pmatrix}, \\begin{pmatrix} 0 & -1 \\\\ 1 & 1 \\end{pmatrix}, \\begin{pmatrix} 1 & 1 \\\\ -1 & 0 \\end{pmatrix} \\right\\}$",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "A",
+            "value": "$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "$A^5 = I$ given"
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "By the Cayley-Hamilton theorem, $A$ satisfies its own characteristic equation."
+          },
+          {
+            "type": "observation",
+            "statement": "The characteristic polynomial of $A$ is $p(\\lambda) = \\lambda^2 - (a+d)\\lambda + (ad-bc) = 0$."
+          },
+          {
+            "type": "observation",
+            "statement": "Since $A^5 = I$, the eigenvalues of $A$ must be the fifth roots of unity: $\\lambda = 1, -1, \\zeta, \\zeta^2, \\zeta^3, \\zeta^4$, where $\\zeta$ is a primitive fifth root of unity."
+          },
+          {
+            "type": "observation",
+            "statement": "Since $A$ has rational entries, its eigenvalues must either be rational or occur in conjugate pairs."
+          },
+          {
+            "type": "assertion",
+            "claim": "The only possible eigenvalues for $A$ are $1$ and $-1$.",
+            "statement": "If $A = \\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$ is a $2 \\times 2$ matrix with rational entries that satisfies $A^5 = I$, where $I$ is the $2 \\times 2$ identity matrix, then the only possible eigenvalues for $A$ are $1$ and $-1$, because eigenvalues must be rational or occur in conjugate pairs and the roots of unity $\\zeta, \\zeta^2, \\zeta^3, \\zeta^4$ are neither rational nor form rational conjugates.",
+            "deduced-from": [
+              "eigenvalues must be rational or in conjugate pairs",
+              "the roots of unity $\\zeta, \\zeta^2, \\zeta^3, \\zeta^4$ are not rational nor form rational conjugates"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "For $A$ to have $1$ as an eigenvalue of multiplicity two, $A$ must be $I$. For $A$ to have $-1$ as an eigenvalue of multiplicity two, $A$ must be $-I$.",
+            "statement": "Given a $2 \\times 2$ matrix with rational entries $A = \\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$ that satisfies $A^5 = I$, where $I$ is the $2 \\times 2$ identity matrix, if $A$ has the eigenvalue $1$ with multiplicity two, then $A$ must be $I$. Similarly, if $A$ has the eigenvalue $-1$ with multiplicity two, then $A$ must be $-I$, given that the only possible eigenvalues for $A$ are $1$ and $-1$.",
+            "deduced-from": [
+              "the only possible eigenvalues for $A$ are $1$ and $-1$"
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "For $A$ to have eigenvalues $1$ and $-1$, it must be similar to a Jordan block with eigenvalue $-1$ or $1$."
+          },
+          {
+            "type": "observation",
+            "statement": "Inspection and algebraic manipulation give us the matrices $\\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}, \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}, \\begin{pmatrix} -1 & -1 \\\\ 1 & 0 \\end{pmatrix}, \\begin{pmatrix} 0 & -1 \\\\ 1 & 1 \\end{pmatrix}, \\begin{pmatrix} 1 & 1 \\\\ -1 & 0 \\end{pmatrix}$ as the only other solutions besides the identity matrix."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, the solution set is complete, as given in the theorem statement."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "The only $2 \\times 2$ matrices with rational entries that satisfy $A^5 = I$, where $I$ is the $2 \\times 2$ identity matrix, are $\\left\\{ \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}, \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}, \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}, \\begin{pmatrix} -1 & -1 \\\\ 1 & 0 \\end{pmatrix}, \\begin{pmatrix} 0 & -1 \\\\ 1 & 1 \\end{pmatrix}, \\begin{pmatrix} 1 & 1 \\\\ -1 & 0 \\end{pmatrix} \\right\\}$",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "A",
+            "value": "$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "$A^5 = I$ given"
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "By the Cayley-Hamilton theorem, $A$ satisfies its own characteristic equation."
+          },
+          {
+            "type": "observation",
+            "statement": "The characteristic polynomial of $A$ is $p(\\lambda) = \\lambda^2 - (a+d)\\lambda + (ad-bc) = 0$."
+          },
+          {
+            "type": "observation",
+            "statement": "Since $A^5 = I$, the eigenvalues of $A$ must be the fifth roots of unity: $\\lambda = 1, -1, \\zeta, \\zeta^2, \\zeta^3, \\zeta^4$, where $\\zeta$ is a primitive fifth root of unity."
+          },
+          {
+            "type": "observation",
+            "statement": "Since $A$ has rational entries, its eigenvalues must either be rational or occur in conjugate pairs."
+          },
+          {
+            "type": "assertion",
+            "statement": "Given a $2 \\times 2$ matrix $A$ with rational entries that satisfies $A^5 = I$, the only possible eigenvalues for $A$ are $1$ and $-1$, because the eigenvalues must be rational or occur in conjugate pairs, and the roots of unity $\\zeta, \\zeta^2, \\zeta^3, \\zeta^4$ are not rational nor do they form rational conjugates.",
+            "claim": "The only possible eigenvalues for $A$ are $1$ and $-1$.",
+            "deduced-from": [
+              "eigenvalues must be rational or in conjugate pairs",
+              "the roots of unity $\\zeta, \\zeta^2, \\zeta^3, \\zeta^4$ are not rational nor form rational conjugates"
+            ]
+          },
+          {
+            "type": "assertion",
+            "statement": "Given a $2 \\times 2$ matrix $A$ with rational entries that satisfies $A^5 = I$ and considering that the only possible eigenvalues for $A$ are $1$ and $-1$, for $A$ to have $1$ as an eigenvalue of multiplicity two, $A$ must be $I$, and for $A$ to have $-1$ as an eigenvalue of multiplicity two, $A$ must be $-I$.",
+            "claim": "For $A$ to have $1$ as an eigenvalue of multiplicity two, $A$ must be $I$. For $A$ to have $-1$ as an eigenvalue of multiplicity two, $A$ must be $-I$.",
+            "deduced-from": [
+              "the only possible eigenvalues for $A$ are $1$ and $-1$"
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "For $A$ to have eigenvalues $1$ and $-1$, it must be similar to a Jordan block with eigenvalue $-1$ or $1$."
+          },
+          {
+            "type": "observation",
+            "statement": "Inspection and algebraic manipulation give us the matrices $\\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}, \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}, \\begin{pmatrix} -1 & -1 \\\\ 1 & 0 \\end{pmatrix}, \\begin{pmatrix} 0 & -1 \\\\ 1 & 1 \\end{pmatrix}, \\begin{pmatrix} 1 & 1 \\\\ -1 & 0 \\end{pmatrix}$ as the only other solutions besides the identity matrix."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, the solution set is complete, as given in the theorem statement."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Only Rational 2x2 Matrices satisfying A^5 = I",
+        "statement": "The only $2 \\times 2$ matrices with rational entries that satisfy $A^5 = I$, where $I$ is the $2 \\times 2$ identity matrix, are $\\left\\{ \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}, \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}, \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}, \\begin{pmatrix} -1 & -1 \\\\ 1 & 0 \\end{pmatrix}, \\begin{pmatrix} 0 & -1 \\\\ 1 & 1 \\end{pmatrix}, \\begin{pmatrix} 1 & 1 \\\\ -1 & 0 \\end{pmatrix} \\right\\}$",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "A",
+            "value": "$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$"
+          },
+          {
+            "type": "observation",
+            "statement": "By the Cayley-Hamilton theorem, $A$ satisfies its own characteristic equation. The characteristic polynomial of $A$ is $p(\\lambda) = \\lambda^2 - (a+d)\\lambda + (ad-bc) = 0$."
+          },
+          {
+            "type": "observation",
+            "statement": "Since $A^5 = I$, the eigenvalues of $A$ must be the fifth roots of unity: $\\lambda = 1, -1, \\zeta, \\zeta^2, \\zeta^3, \\zeta^4$, where $\\zeta$ is a primitive fifth root of unity."
+          },
+          {
+            "type": "assertion",
+            "claim": "The only possible eigenvalues for $A$ are $1$ and $-1$.",
+            "statement": "Given a $2 \\times 2$ matrix $A$ with rational entries satisfying $A^5 = I$, the only possible eigenvalues for $A$ are $1$ and $-1$, since eigenvalues must be rational or occur in conjugate pairs for matrices with rational entries.",
+            "deduced-from": [
+              "Eigenvalues must be rational or occur in conjugate pairs for matrices with rational entries."
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "For $A$ to have $1$ as an eigenvalue of multiplicity two, $A$ must be $I$. For $A$ to have $-1$ as an eigenvalue of multiplicity two, $A$ must be $-I$.",
+            "statement": "Given a $2 \\times 2$ matrix $A$ with rational entries satisfying $A^5 = I$, for $A$ to have $1$ as an eigenvalue of multiplicity two, $A$ must be the identity matrix $I$. Similarly, for $A$ to have $-1$ as an eigenvalue of multiplicity two, $A$ must be $-I$.",
+            "deduced-from": []
+          },
+          {
+            "type": "assertion",
+            "claim": "For $A$ to have eigenvalues $1$ and $-1$, it must be similar to a Jordan block with eigenvalue $-1$ or $1$.",
+            "statement": "Given a $2 \\times 2$ matrix $A$ with rational entries satisfying $A^5 = I$, for $A$ to have eigenvalues $1$ and $-1$, it must be similar to a Jordan block with eigenvalue $-1$ or $1$.",
+            "deduced-from": []
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Only Rational 2x2 Matrices satisfying A^5 = I",
+        "statement": "The only $2 \\times 2$ matrices with rational entries that satisfy $A^5 = I$, where $I$ is the $2 \\times 2$ identity matrix, are $\\left\\{ \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}, \\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}, \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}, \\begin{pmatrix} -1 & -1 \\\\ 1 & 0 \\end{pmatrix}, \\begin{pmatrix} 0 & -1 \\\\ 1 & 1 \\end{pmatrix}, \\begin{pmatrix} 1 & 1 \\\\ -1 & 0 \\end{pmatrix} \\right\\}$",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "A",
+            "value": "$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$"
+          },
+          {
+            "type": "observation",
+            "statement": "By the Cayley-Hamilton theorem, $A$ satisfies its own characteristic equation. The characteristic polynomial of $A$ is $p(\\lambda) = \\lambda^2 - (a+d)\\lambda + (ad-bc) = 0$."
+          },
+          {
+            "type": "observation",
+            "statement": "Since $A^5 = I$, the eigenvalues of $A$ must be the fifth roots of unity: $\\lambda = 1, -1, \\zeta, \\zeta^2, \\zeta^3, \\zeta^4$, where $\\zeta$ is a primitive fifth root of unity."
+          },
+          {
+            "type": "assertion",
+            "claim": "The only possible eigenvalues for $A$ are $1$ and $-1$.",
+            "statement": "Given a $2 \\times 2$ matrix $A$ with rational entries that satisfies $A^5 = I$, the only possible eigenvalues for $A$ are $1$ and $-1$, since eigenvalues must be rational or occur in conjugate pairs for matrices with rational entries.",
+            "deduced-from": [
+              "Eigenvalues must be rational or occur in conjugate pairs for matrices with rational entries."
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "For $A$ to have $1$ as an eigenvalue of multiplicity two, $A$ must be $I$. For $A$ to have $-1$ as an eigenvalue of multiplicity two, $A$ must be $-I$.",
+            "statement": "Given a $2 \\times 2$ matrix $A$ with rational entries that satisfies $A^5 = I$, for $A$ to have $1$ as an eigenvalue of multiplicity two, $A$ must be the identity matrix $I$. Similarly, for $A$ to have $-1$ as an eigenvalue of multiplicity two, $A$ must be the matrix $-I$.",
+            "deduced-from": []
+          },
+          {
+            "type": "assertion",
+            "claim": "For $A$ to have eigenvalues $1$ and $-1$, it must be similar to a Jordan block with eigenvalue $-1$ or $1$.",
+            "statement": "Given a $2 \\times 2$ matrix $A$ with rational entries that satisfies $A^5 = I$, for $A$ to have eigenvalues $1$ and $-1$, it must be similar to a Jordan block with eigenvalue $-1$ or $1$.",
+            "deduced-from": []
+          }
+        ]
+      }
+    ]
+  ]
+}

@@ -1,0 +1,786 @@
+{
+  "problem": "Prove that the polynomial $x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.",
+  "solutions": [
+    "The polynomial $x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals by Eisenstein's criterion applied to its reciprocal polynomial $x^4(x^4 + x^3 + x^2 + x + 1) = x^8 + x^7 + x^6 + x^5 + x^4$, after the change of variables $x \\mapsto x+1$. Specifically, for the reciprocal polynomial $x^8 + x^7 + x^6 + x^5 + x^4$, consider it as a polynomial in $x+1$. It becomes $(x+1)^8 + (x+1)^7 + (x+1)^6 + (x+1)^5 + (x+1)^4$, which can be expanded and simplified to a form where all terms, except the leading one, are divisible by 2, but not all coefficients are divisible by $2^2$. Therefore, by Eisenstein's criterion, the original polynomial is irreducible over the rationals.",
+    "To prove that the polynomial $f(x) = x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals, consider the polynomial $g(x) = f(x-1) = (x-1)^4 + (x-1)^3 + (x-1)^2 + (x-1) + 1$. Expanding and simplifying, we get $g(x) = x^4 - 4x^3 + 6x^2 - 4x + 1$. Now, applying Eisenstein's criterion with the prime $p=2$, we observe that $p$ divides all the coefficients of $g(x)$ except the leading coefficient, $p^2$ does not divide the constant term, and the leading coefficient is not divisible by $p$. Therefore, $g(x)$ is irreducible over the rationals, which implies that $f(x)$ is also irreducible over the rationals.",
+    "The polynomial $x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals by applying Eisenstein's criterion to the polynomial $x^4(x + 1) + x^3(x + 1) + x^2(x + 1) + x(x + 1) + (x + 1) = x^5 - 1$, after substituting $x = y+1$, which gives $y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$. Since 5 is a prime that divides all the coefficients except the leading one and does not divide the constant term squared, the original polynomial is irreducible over the rationals."
+  ],
+  "theories": [
+    "## Theorem\nThe polynomial $p(x) = x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.\n\n### Proof\nConsider the polynomial $p(x)$. Its reciprocal polynomial is given by $x^4p(\\frac{1}{x}) = x^4 + x^3 + x^2 + x + 1$, which, after multiplying by $x^4$, becomes $x^8 + x^7 + x^6 + x^5 + x^4$. \n\nLet us perform a change of variables with $x \\mapsto x+1$. This substitution transforms the reciprocal polynomial into \n$$q(x) = (x+1)^8 + (x+1)^7 + (x+1)^6 + (x+1)^5 + (x+1)^4.$$ \n\nExpanding $q(x)$ and collecting like terms yields a polynomial where every term, except the leading term, is divisible by 2. Specifically, this is because the binomial expansion of each term $(x+1)^n$ for $n \\geq 4$ will include terms of the form $\\binom{n}{k}x^k$ for $1 \\leq k \\leq n$, and since $\\binom{n}{k}$ is even for $1 \\leq k < n$ when $n \\geq 4$, all coefficients, except for the leading coefficient, are divisible by 2. However, not all coefficients are divisible by $2^2$, since the constant term in the expansion will not be.\n\nAccording to Eisenstein's criterion, for a polynomial $f(x) = a_nx^n + a_{n-1}x^{n-1} + \\dots + a_1x + a_0$ with integer coefficients, if there exists a prime number $p$ such that $p \\mid a_i$ for all $i < n$, $p^2 \\not\\mid a_0$, and $p \\nmid a_n$, then $f(x)$ is irreducible over the rationals. \n\nApplying this criterion to $q(x)$, with $p=2$, it follows that $q(x)$, and hence the original polynomial $p(x)$, is irreducible over the rationals.",
+    "### Theorem\nThe polynomial $f(x) = x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.\n\n### Proof\nConsider the polynomial $g(x) = f(x-1) = (x-1)^4 + (x-1)^3 + (x-1)^2 + (x-1) + 1$. After expanding and simplifying, we obtain $g(x) = x^4 - 4x^3 + 6x^2 - 4x + 1$. We apply Eisenstein's criterion to $g(x)$ with the prime $p = 2$. The prime $p$ divides all the coefficients of $g(x)$ except for the leading coefficient. Moreover, $p^2 = 4$ does not divide the constant term, and the leading coefficient is not divisible by $p$. By Eisenstein's criterion, $g(x)$ is irreducible over the rationals. Since $g(x)$ is obtained from $f(x)$ by a change of variables, and irreducibility is preserved under such transformations, $f(x)$ is also irreducible over the rationals.",
+    "### Theorem\nThe polynomial $x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.\n\n### Proof\nConsider the transformation $x = y + 1$. Applying this to the polynomial $x^4 + x^3 + x^2 + x + 1$ results in the polynomial $((y + 1)^4 + (y + 1)^3 + (y + 1)^2 + (y + 1) + 1) - 1$, which simplifies to $(y + 1)^5 - 1$. Expanding this yields $y^5 + 5y^4 + 10y^3 + 10y^2 + 5y + 1 - 1 = y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$. This is a consequence of the binomial theorem and the arithmetic operations performed.\n\nEisenstein's criterion states that a polynomial $p(x) = a_nx^n + a_{n-1}x^{n-1} + \\cdots + a_1x + a_0$ is irreducible over the rational numbers if there exists a prime number $p$ such that:\n\n1. $p$ divides $a_i$ for all $i < n$,\n2. $p$ does not divide $a_n$, and\n3. $p^2$ does not divide $a_0$.\n\nFor our transformed polynomial $y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$, choosing $p = 5$ satisfies all three conditions of Eisenstein's criterion:\n\n1. $5$ divides all coefficients except the leading one ($5y^4$, $10y^3$, $10y^2$, $5y$).\n2. $5$ does not divide the coefficient of $y^5$ (which is 1).\n3. $5^2$ (or $25$) does not divide the constant term (since there is no constant term in this case, this condition is trivially met).\n\nTherefore, by Eisenstein's criterion, the polynomial $y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$ is irreducible over the rationals. Since the irreducibility of a polynomial is invariant under a linear change of variables, the original polynomial $x^4 + x^3 + x^2 + x + 1$ is also irreducible over the rationals."
+  ],
+  "structured_texts": [
+    [
+      {
+        "type": "theorem",
+        "statement": "The polynomial $p(x) = x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "p(x)",
+            "value": "$x^4 + x^3 + x^2 + x + 1$"
+          },
+          {
+            "type": "observation",
+            "statement": "The reciprocal polynomial is given by $x^4p(\\frac{1}{x}) = x^4 + x^3 + x^2 + x + 1$, which, after multiplying by $x^4$, becomes $x^8 + x^7 + x^6 + x^5 + x^4$."
+          },
+          {
+            "type": "let",
+            "variable": "q(x)",
+            "value": "$(x+1)^8 + (x+1)^7 + (x+1)^6 + (x+1)^5 + (x+1)^4$",
+            "justification": "Let us perform a change of variables with $x \\mapsto x+1$. This substitution transforms the reciprocal polynomial into $q(x)$."
+          },
+          {
+            "type": "observation",
+            "statement": "Expanding $q(x)$ and collecting like terms yields a polynomial where every term, except the leading term, is divisible by 2. Specifically, this is because the binomial expansion of each term $(x+1)^n$ for $n \\geq 4$ will include terms of the form $\\binom{n}{k}x^k$ for $1 \\leq k \\leq n$, and since $\\binom{n}{k}$ is even for $1 \\leq k < n$ when $n \\geq 4$, all coefficients, except for the leading coefficient, are divisible by 2. However, not all coefficients are divisible by $2^2$, since the constant term in the expansion will not be."
+          },
+          {
+            "type": "definition",
+            "term": "Eisenstein's criterion",
+            "statement": "For a polynomial $f(x) = a_nx^n + a_{n-1}x^{n-1} + \\dots + a_1x + a_0$ with integer coefficients, if there exists a prime number $p$ such that $p \\mid a_i$ for all $i < n$, $p^2 \\not\\mid a_0$, and $p \\nmid a_n$, then $f(x)$ is irreducible over the rationals."
+          },
+          {
+            "type": "assertion",
+            "claim": "$q(x)$, and hence the original polynomial $p(x)$, is irreducible over the rationals.",
+            "deduced-from": [
+              {
+                "result": "Eisenstein's criterion",
+                "applied-to": {
+                  "polynomial": "$q(x)$",
+                  "prime": "2"
+                }
+              }
+            ],
+            "justification": "Applying Eisenstein's criterion to $q(x)$, with $p=2$, it follows that $q(x)$ is irreducible over the rationals."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "irreducibility of p(x)",
+        "statement": "The polynomial $p(x) = x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "p(x)",
+            "value": "$x^4 + x^3 + x^2 + x + 1$"
+          },
+          {
+            "type": "observation",
+            "statement": "The reciprocal polynomial of $p(x)$ is given by $x^4p(\\frac{1}{x}) = x^4 + x^3 + x^2 + x + 1$, which after multiplying by $x^4$, becomes $x^8 + x^7 + x^6 + x^5 + x^4$."
+          },
+          {
+            "type": "let",
+            "variable": "x",
+            "value": "x+1"
+          },
+          {
+            "type": "observation",
+            "statement": "The substitution transforms the reciprocal polynomial into $q(x) = (x+1)^8 + (x+1)^7 + (x+1)^6 + (x+1)^5 + (x+1)^4$."
+          },
+          {
+            "type": "observation",
+            "statement": "Expanding $q(x)$ and collecting like terms yields a polynomial where every term, except the leading term, is divisible by 2."
+          },
+          {
+            "type": "observation",
+            "statement": "Specifically, this is because the binomial expansion of each term $(x+1)^n$ for $n \\geq 4$ will include terms of the form $\\binom{n}{k}x^k$ for $1 \\leq k \\leq n$, and since $\\binom{n}{k}$ is even for $1 \\leq k < n$ when $n \\geq 4$, all coefficients, except for the leading coefficient, are divisible by 2. However, not all coefficients are divisible by $2^2$, since the constant term in the expansion will not be."
+          },
+          {
+            "type": "definition",
+            "term": "Eisenstein's criterion",
+            "statement": "For a polynomial $f(x) = a_nx^n + a_{n-1}x^{n-1} + \\dots + a_1x + a_0$ with integer coefficients, if there exists a prime number $p$ such that $p \\mid a_i$ for all $i < n$, $p^2 \\not\\mid a_0$, and $p \\nmid a_n$, then $f(x)$ is irreducible over the rationals."
+          },
+          {
+            "type": "assertion",
+            "claim": "$q(x)$, and hence the original polynomial $p(x)$, is irreducible over the rationals.",
+            "deduced-from": [
+              {
+                "result": "Eisenstein's criterion",
+                "applied-to": "$q(x)$ with $p=2$"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "The polynomial $f(x) = x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "$g(x)$",
+            "value": "$f(x-1) = (x-1)^4 + (x-1)^3 + (x-1)^2 + (x-1) + 1$"
+          },
+          {
+            "type": "observation",
+            "statement": "After expanding and simplifying, we obtain $g(x) = x^4 - 4x^3 + 6x^2 - 4x + 1$."
+          },
+          {
+            "type": "let",
+            "variable": "$p$",
+            "value": "2"
+          },
+          {
+            "type": "assertion",
+            "claim": "The prime $p$ divides all the coefficients of $g(x)$ except for the leading coefficient.",
+            "deduced-from": []
+          },
+          {
+            "type": "assertion",
+            "claim": "$p^2 = 4$ does not divide the constant term, and the leading coefficient is not divisible by $p$.",
+            "deduced-from": []
+          },
+          {
+            "type": "assertion",
+            "claim": "By Eisenstein's criterion, $g(x)$ is irreducible over the rationals.",
+            "deduced-from": [
+              {
+                "result": "Eisenstein's criterion",
+                "applied-to": "$g(x)$ with $p=2$"
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "Since $g(x)$ is obtained from $f(x)$ by a change of variables, and irreducibility is preserved under such transformations, $f(x)$ is also irreducible over the rationals.",
+            "deduced-from": [
+              {
+                "result": "irreducibility is preserved under change of variables",
+                "applied-to": {
+                  "from": "$g(x)$",
+                  "to": "$f(x)$"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Irreducibility of f(x)",
+        "statement": "The polynomial $f(x) = x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "g(x)",
+            "value": "$f(x-1) = (x-1)^4 + (x-1)^3 + (x-1)^2 + (x-1) + 1$"
+          },
+          {
+            "type": "observation",
+            "statement": "After expanding and simplifying, $g(x) = x^4 - 4x^3 + 6x^2 - 4x + 1$."
+          },
+          {
+            "type": "let",
+            "variable": "p",
+            "value": "2"
+          },
+          {
+            "type": "observation",
+            "statement": "The prime $p$ divides all the coefficients of $g(x)$ except for the leading coefficient."
+          },
+          {
+            "type": "observation",
+            "statement": "$p^2 = 4$ does not divide the constant term, and the leading coefficient is not divisible by $p$."
+          },
+          {
+            "type": "assertion",
+            "claim": "$g(x)$ is irreducible over the rationals.",
+            "deduced-from": [
+              {
+                "result": "Eisenstein's criterion",
+                "applied-to": {
+                  "polynomial": "$g(x)$",
+                  "prime": "$p$"
+                }
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "$f(x)$ is irreducible over the rationals.",
+            "deduced-from": [
+              "$g(x)$ is irreducible over the rationals.",
+              "irreducibility is preserved under change of variables"
+            ],
+            "justification": "Since $g(x)$ is obtained from $f(x)$ by a change of variables"
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Irreducibility of polynomial",
+        "statement": "The polynomial $x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "x",
+            "value": "y + 1"
+          },
+          {
+            "type": "observation",
+            "statement": "Applying the transformation $x = y + 1$ to the polynomial $x^4 + x^3 + x^2 + x + 1$ results in the polynomial $((y + 1)^4 + (y + 1)^3 + (y + 1)^2 + (y + 1) + 1) - 1$, which simplifies to $(y + 1)^5 - 1$. Expanding this yields $y^5 + 5y^4 + 10y^3 + 10y^2 + 5y + 1 - 1 = y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$. This is a consequence of the binomial theorem and the arithmetic operations performed."
+          },
+          {
+            "type": "definition",
+            "term": "Eisenstein's criterion",
+            "statement": "A polynomial $p(x) = a_nx^n + a_{n-1}x^{n-1} + \\cdots + a_1x + a_0$ is irreducible over the rational numbers if there exists a prime number $p$ such that: (1) $p$ divides $a_i$ for all $i < n$, (2) $p$ does not divide $a_n$, and (3) $p^2$ does not divide $a_0$."
+          },
+          {
+            "type": "assertion",
+            "claim": "The polynomial $y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$ satisfies Eisenstein's criterion with $p = 5$.",
+            "deduced-from": [
+              {
+                "result": "Eisenstein's criterion",
+                "applied-to": "$y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$"
+              }
+            ],
+            "justification": "$5$ divides all coefficients except the leading one, $5$ does not divide the coefficient of $y^5$, and $5^2$ does not divide the constant term (since there is no constant term)."
+          },
+          {
+            "type": "observation",
+            "statement": "Since the irreducibility of a polynomial is invariant under a linear change of variables, the original polynomial $x^4 + x^3 + x^2 + x + 1$ is also irreducible over the rationals."
+          }
+        ]
+      }
+    ],
+    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Irreducibility of x^4 + x^3 + x^2 + x + 1 over Q\",\n    \"statement\": \"The polynomial $x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"x\",\n        \"value\": \"y + 1\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Applying $x = y + 1$ to $x^4 + x^3 + x^2 + x + 1$ results in $((y + 1)^4 + (y + 1)^3 + (y + 1)^2 + (y + 1) + 1) - 1 = (y + 1)^5 - 1$. After expansion, we get $y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$. This follows from the binomial theorem and arithmetic operations.\"\n      },\n      {\n        \"type\": \"definition\",\n        \"term\": \"Eisenstein's criterion\",\n        \"statement\": \"A polynomial $p(x) = a_nx^n + a_{n-1}x^{n-1} + \\cdots + a_1x + a_0$ is irreducible over the rational numbers if there exists a prime $p$ such that (1) $p$ divides $a_i$ for all $i < n$, (2) $p$ does not divide $a_n$, and (3) $p^2$ does not divide $a_0$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The polynomial $y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$ satisfies Eisenstein's criterion with $p=5$.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"Eisenstein's criterion\",\n            \"applied-to\": {\n              \"polynomial\": \"$y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$\",\n              \"p\": \"5\"\n            }\n          }\n        ],\n        \"justification\": \"$5$ divides all coefficients except the leading one, $5$ does not divide the coefficient of $y^5$ (which is 1), and $5^2$ does not divide the constant term (as there is no constant term).\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Since the irreducibility of a polynomial is invariant under a linear change of variables, the original polynomial $x^4 + x^3 + x^2 + x + 1$ is also irreducible over the rationals.\"\n      }\n    ]\n  }\n]"
+  ],
+  "raw_structured_texts": [
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"statement\": \"The polynomial $p(x) = x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"p(x)\",\n        \"value\": \"$x^4 + x^3 + x^2 + x + 1$\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The reciprocal polynomial is given by $x^4p(\\\\frac{1}{x}) = x^4 + x^3 + x^2 + x + 1$, which, after multiplying by $x^4$, becomes $x^8 + x^7 + x^6 + x^5 + x^4$.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"q(x)\",\n        \"value\": \"$(x+1)^8 + (x+1)^7 + (x+1)^6 + (x+1)^5 + (x+1)^4$\",\n        \"justification\": \"Let us perform a change of variables with $x \\\\mapsto x+1$. This substitution transforms the reciprocal polynomial into $q(x)$.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Expanding $q(x)$ and collecting like terms yields a polynomial where every term, except the leading term, is divisible by 2. Specifically, this is because the binomial expansion of each term $(x+1)^n$ for $n \\\\geq 4$ will include terms of the form $\\\\binom{n}{k}x^k$ for $1 \\\\leq k \\\\leq n$, and since $\\\\binom{n}{k}$ is even for $1 \\\\leq k < n$ when $n \\\\geq 4$, all coefficients, except for the leading coefficient, are divisible by 2. However, not all coefficients are divisible by $2^2$, since the constant term in the expansion will not be.\"\n      },\n      {\n        \"type\": \"definition\",\n        \"term\": \"Eisenstein's criterion\",\n        \"statement\": \"For a polynomial $f(x) = a_nx^n + a_{n-1}x^{n-1} + \\\\dots + a_1x + a_0$ with integer coefficients, if there exists a prime number $p$ such that $p \\\\mid a_i$ for all $i < n$, $p^2 \\\\not\\\\mid a_0$, and $p \\\\nmid a_n$, then $f(x)$ is irreducible over the rationals.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$q(x)$, and hence the original polynomial $p(x)$, is irreducible over the rationals.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"Eisenstein's criterion\",\n            \"applied-to\": {\n              \"polynomial\": \"$q(x)$\",\n              \"prime\": \"2\"\n            }\n          }\n        ],\n        \"justification\": \"Applying Eisenstein's criterion to $q(x)$, with $p=2$, it follows that $q(x)$ is irreducible over the rationals.\"\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"irreducibility of p(x)\",\n    \"statement\": \"The polynomial $p(x) = x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"p(x)\",\n        \"value\": \"$x^4 + x^3 + x^2 + x + 1$\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The reciprocal polynomial of $p(x)$ is given by $x^4p(\\\\frac{1}{x}) = x^4 + x^3 + x^2 + x + 1$, which after multiplying by $x^4$, becomes $x^8 + x^7 + x^6 + x^5 + x^4$.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"x\",\n        \"value\": \"x+1\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The substitution transforms the reciprocal polynomial into $q(x) = (x+1)^8 + (x+1)^7 + (x+1)^6 + (x+1)^5 + (x+1)^4$.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Expanding $q(x)$ and collecting like terms yields a polynomial where every term, except the leading term, is divisible by 2.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Specifically, this is because the binomial expansion of each term $(x+1)^n$ for $n \\\\geq 4$ will include terms of the form $\\\\binom{n}{k}x^k$ for $1 \\\\leq k \\\\leq n$, and since $\\\\binom{n}{k}$ is even for $1 \\\\leq k < n$ when $n \\\\geq 4$, all coefficients, except for the leading coefficient, are divisible by 2. However, not all coefficients are divisible by $2^2$, since the constant term in the expansion will not be.\"\n      },\n      {\n        \"type\": \"definition\",\n        \"term\": \"Eisenstein's criterion\",\n        \"statement\": \"For a polynomial $f(x) = a_nx^n + a_{n-1}x^{n-1} + \\\\dots + a_1x + a_0$ with integer coefficients, if there exists a prime number $p$ such that $p \\\\mid a_i$ for all $i < n$, $p^2 \\\\not\\\\mid a_0$, and $p \\\\nmid a_n$, then $f(x)$ is irreducible over the rationals.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$q(x)$, and hence the original polynomial $p(x)$, is irreducible over the rationals.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"Eisenstein's criterion\",\n            \"applied-to\": \"$q(x)$ with $p=2$\"\n          }\n        ]\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"statement\": \"The polynomial $f(x) = x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"$g(x)$\",\n        \"value\": \"$f(x-1) = (x-1)^4 + (x-1)^3 + (x-1)^2 + (x-1) + 1$\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"After expanding and simplifying, we obtain $g(x) = x^4 - 4x^3 + 6x^2 - 4x + 1$.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"$p$\",\n        \"value\": \"2\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The prime $p$ divides all the coefficients of $g(x)$ except for the leading coefficient.\",\n        \"deduced-from\": []\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$p^2 = 4$ does not divide the constant term, and the leading coefficient is not divisible by $p$.\",\n        \"deduced-from\": []\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"By Eisenstein's criterion, $g(x)$ is irreducible over the rationals.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"Eisenstein's criterion\",\n            \"applied-to\": \"$g(x)$ with $p=2$\"\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Since $g(x)$ is obtained from $f(x)$ by a change of variables, and irreducibility is preserved under such transformations, $f(x)$ is also irreducible over the rationals.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"irreducibility is preserved under change of variables\",\n            \"applied-to\": {\n              \"from\": \"$g(x)$\",\n              \"to\": \"$f(x)$\"\n            }\n          }\n        ]\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Irreducibility of f(x)\",\n    \"statement\": \"The polynomial $f(x) = x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"g(x)\",\n        \"value\": \"$f(x-1) = (x-1)^4 + (x-1)^3 + (x-1)^2 + (x-1) + 1$\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"After expanding and simplifying, $g(x) = x^4 - 4x^3 + 6x^2 - 4x + 1$.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"p\",\n        \"value\": \"2\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The prime $p$ divides all the coefficients of $g(x)$ except for the leading coefficient.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"$p^2 = 4$ does not divide the constant term, and the leading coefficient is not divisible by $p$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$g(x)$ is irreducible over the rationals.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"Eisenstein's criterion\",\n            \"applied-to\": {\n              \"polynomial\": \"$g(x)$\",\n              \"prime\": \"$p$\"\n            }\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$f(x)$ is irreducible over the rationals.\",\n        \"deduced-from\": [\n          \"$g(x)$ is irreducible over the rationals.\",\n          \"irreducibility is preserved under change of variables\"\n        ],\n        \"justification\": \"Since $g(x)$ is obtained from $f(x)$ by a change of variables\"\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Irreducibility of polynomial\",\n    \"statement\": \"The polynomial $x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"x\",\n        \"value\": \"y + 1\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Applying the transformation $x = y + 1$ to the polynomial $x^4 + x^3 + x^2 + x + 1$ results in the polynomial $((y + 1)^4 + (y + 1)^3 + (y + 1)^2 + (y + 1) + 1) - 1$, which simplifies to $(y + 1)^5 - 1$. Expanding this yields $y^5 + 5y^4 + 10y^3 + 10y^2 + 5y + 1 - 1 = y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$. This is a consequence of the binomial theorem and the arithmetic operations performed.\"\n      },\n      {\n        \"type\": \"definition\",\n        \"term\": \"Eisenstein's criterion\",\n        \"statement\": \"A polynomial $p(x) = a_nx^n + a_{n-1}x^{n-1} + \\\\cdots + a_1x + a_0$ is irreducible over the rational numbers if there exists a prime number $p$ such that: (1) $p$ divides $a_i$ for all $i < n$, (2) $p$ does not divide $a_n$, and (3) $p^2$ does not divide $a_0$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The polynomial $y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$ satisfies Eisenstein's criterion with $p = 5$.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"Eisenstein's criterion\",\n            \"applied-to\": \"$y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$\"\n          }\n        ],\n        \"justification\": \"$5$ divides all coefficients except the leading one, $5$ does not divide the coefficient of $y^5$, and $5^2$ does not divide the constant term (since there is no constant term).\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Since the irreducibility of a polynomial is invariant under a linear change of variables, the original polynomial $x^4 + x^3 + x^2 + x + 1$ is also irreducible over the rationals.\"\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Irreducibility of x^4 + x^3 + x^2 + x + 1 over Q\",\n    \"statement\": \"The polynomial $x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"x\",\n        \"value\": \"y + 1\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Applying $x = y + 1$ to $x^4 + x^3 + x^2 + x + 1$ results in $((y + 1)^4 + (y + 1)^3 + (y + 1)^2 + (y + 1) + 1) - 1 = (y + 1)^5 - 1$. After expansion, we get $y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$. This follows from the binomial theorem and arithmetic operations.\"\n      },\n      {\n        \"type\": \"definition\",\n        \"term\": \"Eisenstein's criterion\",\n        \"statement\": \"A polynomial $p(x) = a_nx^n + a_{n-1}x^{n-1} + \\cdots + a_1x + a_0$ is irreducible over the rational numbers if there exists a prime $p$ such that (1) $p$ divides $a_i$ for all $i < n$, (2) $p$ does not divide $a_n$, and (3) $p^2$ does not divide $a_0$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The polynomial $y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$ satisfies Eisenstein's criterion with $p=5$.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"Eisenstein's criterion\",\n            \"applied-to\": {\n              \"polynomial\": \"$y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$\",\n              \"p\": \"5\"\n            }\n          }\n        ],\n        \"justification\": \"$5$ divides all coefficients except the leading one, $5$ does not divide the coefficient of $y^5$ (which is 1), and $5^2$ does not divide the constant term (as there is no constant term).\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Since the irreducibility of a polynomial is invariant under a linear change of variables, the original polynomial $x^4 + x^3 + x^2 + x + 1$ is also irreducible over the rationals.\"\n      }\n    ]\n  }\n]\n```"
+  ],
+  "texts_with_statements": [
+    [
+      {
+        "type": "theorem",
+        "statement": "The polynomial $p(x) = x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "p(x)",
+            "value": "$x^4 + x^3 + x^2 + x + 1$"
+          },
+          {
+            "type": "observation",
+            "statement": "The reciprocal polynomial is given by $x^4p(\\frac{1}{x}) = x^4 + x^3 + x^2 + x + 1$, which, after multiplying by $x^4$, becomes $x^8 + x^7 + x^6 + x^5 + x^4$."
+          },
+          {
+            "type": "let",
+            "variable": "q(x)",
+            "value": "$(x+1)^8 + (x+1)^7 + (x+1)^6 + (x+1)^5 + (x+1)^4$",
+            "justification": "Let us perform a change of variables with $x \\mapsto x+1$. This substitution transforms the reciprocal polynomial into $q(x)$."
+          },
+          {
+            "type": "observation",
+            "statement": "Expanding $q(x)$ and collecting like terms yields a polynomial where every term, except the leading term, is divisible by 2. Specifically, this is because the binomial expansion of each term $(x+1)^n$ for $n \\geq 4$ will include terms of the form $\\binom{n}{k}x^k$ for $1 \\leq k \\leq n$, and since $\\binom{n}{k}$ is even for $1 \\leq k < n$ when $n \\geq 4$, all coefficients, except for the leading coefficient, are divisible by 2. However, not all coefficients are divisible by $2^2$, since the constant term in the expansion will not be."
+          },
+          {
+            "type": "definition",
+            "term": "Eisenstein's criterion",
+            "statement": "For a polynomial $f(x) = a_nx^n + a_{n-1}x^{n-1} + \\dots + a_1x + a_0$ with integer coefficients, if there exists a prime number $p$ such that $p \\mid a_i$ for all $i < n$, $p^2 \\not\\mid a_0$, and $p \\nmid a_n$, then $f(x)$ is irreducible over the rationals."
+          },
+          {
+            "type": "assertion",
+            "claim": "$q(x)$, and hence the original polynomial $p(x)$, is irreducible over the rationals.",
+            "statement": "Given the polynomial $q(x) = (x+1)^8 + (x+1)^7 + (x+1)^6 + (x+1)^5 + (x+1)^4$ where every term, except the leading term, is divisible by 2, but not all coefficients are divisible by $2^2$, and applying Eisenstein's criterion with prime $p=2$, it follows that $q(x)$, and hence the original polynomial $p(x) = x^4 + x^3 + x^2 + x + 1$, is irreducible over the rationals.",
+            "deduced-from": [
+              {
+                "result": "Eisenstein's criterion",
+                "applied-to": {
+                  "polynomial": "$q(x)$",
+                  "prime": "2"
+                }
+              }
+            ],
+            "justification": "Applying Eisenstein's criterion to $q(x)$, with $p=2$, it follows that $q(x)$ is irreducible over the rationals."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "The polynomial $p(x) = x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "p(x)",
+            "value": "$x^4 + x^3 + x^2 + x + 1$"
+          },
+          {
+            "type": "observation",
+            "statement": "The reciprocal polynomial is given by $x^4p(\\frac{1}{x}) = x^4 + x^3 + x^2 + x + 1$, which, after multiplying by $x^4$, becomes $x^8 + x^7 + x^6 + x^5 + x^4$."
+          },
+          {
+            "type": "let",
+            "variable": "q(x)",
+            "value": "$(x+1)^8 + (x+1)^7 + (x+1)^6 + (x+1)^5 + (x+1)^4$",
+            "justification": "Let us perform a change of variables with $x \\mapsto x+1$. This substitution transforms the reciprocal polynomial into $q(x)$."
+          },
+          {
+            "type": "observation",
+            "statement": "Expanding $q(x)$ and collecting like terms yields a polynomial where every term, except the leading term, is divisible by 2. Specifically, this is because the binomial expansion of each term $(x+1)^n$ for $n \\geq 4$ will include terms of the form $\\binom{n}{k}x^k$ for $1 \\leq k \\leq n$, and since $\\binom{n}{k}$ is even for $1 \\leq k < n$ when $n \\geq 4$, all coefficients, except for the leading coefficient, are divisible by 2. However, not all coefficients are divisible by $2^2$, since the constant term in the expansion will not be."
+          },
+          {
+            "type": "definition",
+            "term": "Eisenstein's criterion",
+            "statement": "For a polynomial $f(x) = a_nx^n + a_{n-1}x^{n-1} + \\dots + a_1x + a_0$ with integer coefficients, if there exists a prime number $p$ such that $p \\mid a_i$ for all $i < n$, $p^2 \\not\\mid a_0$, and $p \\nmid a_n$, then $f(x)$ is irreducible over the rationals."
+          },
+          {
+            "type": "assertion",
+            "claim": "$q(x)$, and hence the original polynomial $p(x)$, is irreducible over the rationals.",
+            "statement": "Given the polynomial $q(x) = (x+1)^8 + (x+1)^7 + (x+1)^6 + (x+1)^5 + (x+1)^4$, which is a transformation by substitution of the polynomial $p(x) = x^4 + x^3 + x^2 + x + 1$ with $x \\mapsto x+1$, and by applying Eisenstein's criterion with the prime $2$, it is established that $q(x)$, and hence $p(x)$, is irreducible over the rationals.",
+            "deduced-from": [
+              {
+                "result": "Eisenstein's criterion",
+                "applied-to": {
+                  "polynomial": "$q(x)$",
+                  "prime": "2"
+                }
+              }
+            ],
+            "justification": "Applying Eisenstein's criterion to $q(x)$, with $p=2$, it follows that $q(x)$ is irreducible over the rationals."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "irreducibility of p(x)",
+        "statement": "The polynomial $p(x) = x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "p(x)",
+            "value": "$x^4 + x^3 + x^2 + x + 1$"
+          },
+          {
+            "type": "observation",
+            "statement": "The reciprocal polynomial of $p(x)$ is given by $x^4p(\\frac{1}{x}) = x^4 + x^3 + x^2 + x + 1$, which after multiplying by $x^4$, becomes $x^8 + x^7 + x^6 + x^5 + x^4$."
+          },
+          {
+            "type": "let",
+            "variable": "x",
+            "value": "x+1"
+          },
+          {
+            "type": "observation",
+            "statement": "The substitution transforms the reciprocal polynomial into $q(x) = (x+1)^8 + (x+1)^7 + (x+1)^6 + (x+1)^5 + (x+1)^4$."
+          },
+          {
+            "type": "observation",
+            "statement": "Expanding $q(x)$ and collecting like terms yields a polynomial where every term, except the leading term, is divisible by 2."
+          },
+          {
+            "type": "observation",
+            "statement": "Specifically, this is because the binomial expansion of each term $(x+1)^n$ for $n \\geq 4$ will include terms of the form $\\binom{n}{k}x^k$ for $1 \\leq k \\leq n$, and since $\\binom{n}{k}$ is even for $1 \\leq k < n$ when $n \\geq 4$, all coefficients, except for the leading coefficient, are divisible by 2. However, not all coefficients are divisible by $2^2$, since the constant term in the expansion will not be."
+          },
+          {
+            "type": "definition",
+            "term": "Eisenstein's criterion",
+            "statement": "For a polynomial $f(x) = a_nx^n + a_{n-1}x^{n-1} + \\dots + a_1x + a_0$ with integer coefficients, if there exists a prime number $p$ such that $p \\mid a_i$ for all $i < n$, $p^2 \\not\\mid a_0$, and $p \\nmid a_n$, then $f(x)$ is irreducible over the rationals."
+          },
+          {
+            "type": "assertion",
+            "claim": "$q(x)$, and hence the original polynomial $p(x)$, is irreducible over the rationals.",
+            "statement": "Given the polynomial $p(x) = x^4 + x^3 + x^2 + x + 1$, and its transformation to $q(x) = (x+1)^8 + (x+1)^7 + (x+1)^6 + (x+1)^5 + (x+1)^4$ where every term except the leading term is divisible by 2 but not $2^2$, according to Eisenstein's criterion with $p=2$, $q(x)$ and hence $p(x)$ is irreducible over the rationals.",
+            "deduced-from": [
+              {
+                "result": "Eisenstein's criterion",
+                "applied-to": "$q(x)$ with $p=2"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "irreducibility of p(x)",
+        "statement": "The polynomial $p(x) = x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "p(x)",
+            "value": "$x^4 + x^3 + x^2 + x + 1$"
+          },
+          {
+            "type": "observation",
+            "statement": "The reciprocal polynomial of $p(x)$ is given by $x^4p(\\frac{1}{x}) = x^4 + x^3 + x^2 + x + 1$, which after multiplying by $x^4$, becomes $x^8 + x^7 + x^6 + x^5 + x^4$."
+          },
+          {
+            "type": "let",
+            "variable": "x",
+            "value": "x+1"
+          },
+          {
+            "type": "observation",
+            "statement": "The substitution transforms the reciprocal polynomial into $q(x) = (x+1)^8 + (x+1)^7 + (x+1)^6 + (x+1)^5 + (x+1)^4$."
+          },
+          {
+            "type": "observation",
+            "statement": "Expanding $q(x)$ and collecting like terms yields a polynomial where every term, except the leading term, is divisible by 2."
+          },
+          {
+            "type": "observation",
+            "statement": "Specifically, this is because the binomial expansion of each term $(x+1)^n$ for $n \\geq 4$ will include terms of the form $\\binom{n}{k}x^k$ for $1 \\leq k \\leq n$, and since $\\binom{n}{k}$ is even for $1 \\leq k < n$ when $n \\geq 4$, all coefficients, except for the leading coefficient, are divisible by 2. However, not all coefficients are divisible by $2^2$, since the constant term in the expansion will not be."
+          },
+          {
+            "type": "definition",
+            "term": "Eisenstein's criterion",
+            "statement": "For a polynomial $f(x) = a_nx^n + a_{n-1}x^{n-1} + \\dots + a_1x + a_0$ with integer coefficients, if there exists a prime number $p$ such that $p \\mid a_i$ for all $i < n$, $p^2 \\not\\mid a_0$, and $p \\nmid a_n$, then $f(x)$ is irreducible over the rationals."
+          },
+          {
+            "type": "assertion",
+            "claim": "$q(x)$, and hence the original polynomial $p(x)$, is irreducible over the rationals.",
+            "deduced-from": [
+              {
+                "result": "Eisenstein's criterion",
+                "applied-to": "$q(x)$ with $p=2$"
+              }
+            ],
+            "statement": "Given the polynomial $p(x) = x^4 + x^3 + x^2 + x + 1$ and its transformation to $q(x) = (x+1)^8 + (x+1)^7 + (x+1)^6 + (x+1)^5 + (x+1)^4$, where every term except the leading term is divisible by 2 but not by $2^2$, and considering Eisenstein's criterion with $p=2$, it follows that $q(x)$, and hence $p(x)$, is irreducible over the rationals."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "The polynomial $f(x) = x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "$g(x)$",
+            "value": "$f(x-1) = (x-1)^4 + (x-1)^3 + (x-1)^2 + (x-1) + 1$"
+          },
+          {
+            "type": "observation",
+            "statement": "After expanding and simplifying, we obtain $g(x) = x^4 - 4x^3 + 6x^2 - 4x + 1$."
+          },
+          {
+            "type": "let",
+            "variable": "$p$",
+            "value": "2"
+          },
+          {
+            "type": "assertion",
+            "statement": "Given $g(x) = x^4 - 4x^3 + 6x^2 - 4x + 1$ and let $p=2$, the prime $p$ divides all the coefficients of $g(x)$ except for the leading coefficient.",
+            "claim": "The prime $p$ divides all the coefficients of $g(x)$ except for the leading coefficient.",
+            "deduced-from": []
+          },
+          {
+            "type": "assertion",
+            "statement": "Given $g(x) = x^4 - 4x^3 + 6x^2 - 4x + 1$ and let $p=2$, $p^2 = 4$ does not divide the constant term, and the leading coefficient is not divisible by $p$.",
+            "claim": "$p^2 = 4$ does not divide the constant term, and the leading coefficient is not divisible by $p$.",
+            "deduced-from": []
+          },
+          {
+            "type": "assertion",
+            "statement": "Given $g(x) = x^4 - 4x^3 + 6x^2 - 4x + 1$ and let $p=2$, by Eisenstein's criterion, $g(x)$ is irreducible over the rationals.",
+            "claim": "By Eisenstein's criterion, $g(x)$ is irreducible over the rationals.",
+            "deduced-from": [
+              {
+                "result": "Eisenstein's criterion",
+                "applied-to": "$g(x)$ with $p=2$"
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "statement": "Given $g(x) = x^4 - 4x^3 + 6x^2 - 4x + 1$ and let $p=2$, since $g(x)$ is obtained from $f(x)$ by a change of variables, and irreducibility is preserved under such transformations, $f(x)$ is also irreducible over the rationals.",
+            "claim": "Since $g(x)$ is obtained from $f(x)$ by a change of variables, and irreducibility is preserved under such transformations, $f(x)$ is also irreducible over the rationals.",
+            "deduced-from": [
+              {
+                "result": "irreducibility is preserved under change of variables",
+                "applied-to": {
+                  "from": "$g(x)$",
+                  "to": "$f(x)$"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "The polynomial $f(x) = x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "$g(x)$",
+            "value": "$f(x-1) = (x-1)^4 + (x-1)^3 + (x-1)^2 + (x-1) + 1$"
+          },
+          {
+            "type": "observation",
+            "statement": "After expanding and simplifying, we obtain $g(x) = x^4 - 4x^3 + 6x^2 - 4x + 1$."
+          },
+          {
+            "type": "let",
+            "variable": "$p$",
+            "value": "2"
+          },
+          {
+            "type": "assertion",
+            "claim": "The prime $p$ divides all the coefficients of $g(x)$ except for the leading coefficient.",
+            "statement": "Given $g(x) = x^4 - 4x^3 + 6x^2 - 4x + 1$, and letting $p=2$, the prime $p$ divides all the coefficients of $g(x)$ except for the leading coefficient.",
+            "deduced-from": []
+          },
+          {
+            "type": "assertion",
+            "claim": "$p^2 = 4$ does not divide the constant term, and the leading coefficient is not divisible by $p$.",
+            "statement": "Given $g(x) = x^4 - 4x^3 + 6x^2 - 4x + 1$, and letting $p=2$, it is observed that $p^2 = 4$ does not divide the constant term, and the leading coefficient is not divisible by $p$.",
+            "deduced-from": []
+          },
+          {
+            "type": "assertion",
+            "claim": "By Eisenstein's criterion, $g(x)$ is irreducible over the rationals.",
+            "statement": "Given $g(x) = x^4 - 4x^3 + 6x^2 - 4x + 1$ and letting $p=2$, which divides all the coefficients of $g(x)$ except for the leading coefficient, and since $p^2 = 4$ does not divide the constant term, by Eisenstein's criterion, $g(x)$ is irreducible over the rationals.",
+            "deduced-from": [
+              {
+                "result": "Eisenstein's criterion",
+                "applied-to": "$g(x)$ with $p=2$"
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "Since $g(x)$ is obtained from $f(x)$ by a change of variables, and irreducibility is preserved under such transformations, $f(x)$ is also irreducible over the rationals.",
+            "statement": "Given $g(x) = x^4 - 4x^3 + 6x^2 - 4x + 1$ is irreducible over the rationals by Eisenstein's criterion with $p=2$, and since $g(x)$ is obtained from $f(x) = x^4 + x^3 + x^2 + x + 1$ by a change of variables, irreducibility is preserved under such transformations, hence $f(x)$ is also irreducible over the rationals.",
+            "deduced-from": [
+              {
+                "result": "irreducibility is preserved under change of variables",
+                "applied-to": {
+                  "from": "$g(x)$",
+                  "to": "$f(x)$"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Irreducibility of f(x)",
+        "statement": "The polynomial $f(x) = x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "g(x)",
+            "value": "$f(x-1) = (x-1)^4 + (x-1)^3 + (x-1)^2 + (x-1) + 1$"
+          },
+          {
+            "type": "observation",
+            "statement": "After expanding and simplifying, $g(x) = x^4 - 4x^3 + 6x^2 - 4x + 1$."
+          },
+          {
+            "type": "let",
+            "variable": "p",
+            "value": "2"
+          },
+          {
+            "type": "observation",
+            "statement": "The prime $p$ divides all the coefficients of $g(x)$ except for the leading coefficient."
+          },
+          {
+            "type": "observation",
+            "statement": "$p^2 = 4$ does not divide the constant term, and the leading coefficient is not divisible by $p$."
+          },
+          {
+            "type": "assertion",
+            "claim": "$g(x)$ is irreducible over the rationals.",
+            "deduced-from": [
+              {
+                "result": "Eisenstein's criterion",
+                "applied-to": {
+                  "polynomial": "$g(x)$",
+                  "prime": "$p$"
+                }
+              }
+            ],
+            "statement": "Given $g(x) = x^4 - 4x^3 + 6x^2 - 4x + 1$ and a prime $p = 2$, which divides all coefficients of $g(x)$ except for the leading coefficient, and $p^2 = 4$ does not divide the constant term while the leading coefficient is not divisible by $p$, it follows by Eisenstein's criterion that $g(x)$ is irreducible over the rationals."
+          },
+          {
+            "type": "assertion",
+            "claim": "$f(x)$ is irreducible over the rationals.",
+            "deduced-from": [
+              "$g(x)$ is irreducible over the rationals.",
+              "irreducibility is preserved under change of variables"
+            ],
+            "justification": "Since $g(x)$ is obtained from $f(x)$ by a change of variables",
+            "statement": "Given $g(x) = x^4 - 4x^3 + 6x^2 - 4x + 1$ is irreducible over the rationals, $f(x) = x^4 + x^3 + x^2 + x + 1$ is also irreducible over the rationals because irreducibility is preserved under the change of variables used to obtain $g(x)$ from $f(x)$."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Irreducibility of f(x)",
+        "statement": "The polynomial $f(x) = x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "g(x)",
+            "value": "$f(x-1) = (x-1)^4 + (x-1)^3 + (x-1)^2 + (x-1) + 1$"
+          },
+          {
+            "type": "observation",
+            "statement": "After expanding and simplifying, $g(x) = x^4 - 4x^3 + 6x^2 - 4x + 1$."
+          },
+          {
+            "type": "let",
+            "variable": "p",
+            "value": "2"
+          },
+          {
+            "type": "observation",
+            "statement": "The prime $p$ divides all the coefficients of $g(x)$ except for the leading coefficient."
+          },
+          {
+            "type": "observation",
+            "statement": "$p^2 = 4$ does not divide the constant term, and the leading coefficient is not divisible by $p$."
+          },
+          {
+            "type": "assertion",
+            "claim": "$g(x)$ is irreducible over the rationals.",
+            "deduced-from": [
+              {
+                "result": "Eisenstein's criterion",
+                "applied-to": {
+                  "polynomial": "$g(x)$",
+                  "prime": "$p$"
+                }
+              }
+            ],
+            "statement": "Given $g(x) = x^4 - 4x^3 + 6x^2 - 4x + 1$ and a prime $p=2$, which divides all the coefficients of $g(x)$ except for the leading coefficient, and $p^2 = 4$ does not divide the constant term, then $g(x)$ is irreducible over the rationals by Eisenstein's criterion."
+          },
+          {
+            "type": "assertion",
+            "claim": "$f(x)$ is irreducible over the rationals.",
+            "deduced-from": [
+              "$g(x)$ is irreducible over the rationals.",
+              "irreducibility is preserved under change of variables"
+            ],
+            "justification": "Since $g(x)$ is obtained from $f(x)$ by a change of variables",
+            "statement": "Given $g(x) = x^4 - 4x^3 + 6x^2 - 4x + 1$ is irreducible over the rationals, and irreducibility is preserved under change of variables, then $f(x) = x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Irreducibility of polynomial",
+        "statement": "The polynomial $x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "x",
+            "value": "y + 1"
+          },
+          {
+            "type": "observation",
+            "statement": "Applying the transformation $x = y + 1$ to the polynomial $x^4 + x^3 + x^2 + x + 1$ results in the polynomial $((y + 1)^4 + (y + 1)^3 + (y + 1)^2 + (y + 1) + 1) - 1$, which simplifies to $(y + 1)^5 - 1$. Expanding this yields $y^5 + 5y^4 + 10y^3 + 10y^2 + 5y + 1 - 1 = y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$. This is a consequence of the binomial theorem and the arithmetic operations performed."
+          },
+          {
+            "type": "definition",
+            "term": "Eisenstein's criterion",
+            "statement": "A polynomial $p(x) = a_nx^n + a_{n-1}x^{n-1} + \\cdots + a_1x + a_0$ is irreducible over the rational numbers if there exists a prime number $p$ such that: (1) $p$ divides $a_i$ for all $i < n$, (2) $p$ does not divide $a_n$, and (3) $p^2$ does not divide $a_0$."
+          },
+          {
+            "type": "assertion",
+            "claim": "The polynomial $y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$ satisfies Eisenstein's criterion with $p = 5$.",
+            "deduced-from": [
+              {
+                "result": "Eisenstein's criterion",
+                "applied-to": "$y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$"
+              }
+            ],
+            "justification": "$5$ divides all coefficients except the leading one, $5$ does not divide the coefficient of $y^5$, and $5^2$ does not divide the constant term (since there is no constant term).",
+            "statement": "After applying the transformation $x = y + 1$ to the polynomial $x^4 + x^3 + x^2 + x + 1$, resulting in the polynomial $y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$, it satisfies Eisenstein's criterion with $p = 5$, implying its irreducibility over the rationals."
+          },
+          {
+            "type": "observation",
+            "statement": "Since the irreducibility of a polynomial is invariant under a linear change of variables, the original polynomial $x^4 + x^3 + x^2 + x + 1$ is also irreducible over the rationals."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Irreducibility of polynomial",
+        "statement": "The polynomial $x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "let",
+            "variable": "x",
+            "value": "y + 1"
+          },
+          {
+            "type": "observation",
+            "statement": "Applying the transformation $x = y + 1$ to the polynomial $x^4 + x^3 + x^2 + x + 1$ results in the polynomial $((y + 1)^4 + (y + 1)^3 + (y + 1)^2 + (y + 1) + 1) - 1$, which simplifies to $(y + 1)^5 - 1$. Expanding this yields $y^5 + 5y^4 + 10y^3 + 10y^2 + 5y + 1 - 1 = y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$. This is a consequence of the binomial theorem and the arithmetic operations performed."
+          },
+          {
+            "type": "definition",
+            "term": "Eisenstein's criterion",
+            "statement": "A polynomial $p(x) = a_nx^n + a_{n-1}x^{n-1} + \\cdots + a_1x + a_0$ is irreducible over the rational numbers if there exists a prime number $p$ such that: (1) $p$ divides $a_i$ for all $i < n$, (2) $p$ does not divide $a_n$, and (3) $p^2$ does not divide $a_0$."
+          },
+          {
+            "type": "assertion",
+            "claim": "The polynomial $y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$ satisfies Eisenstein's criterion with $p = 5$.",
+            "statement": "After applying the transformation $x = y + 1$ to the polynomial $x^4 + x^3 + x^2 + x + 1$, resulting in the polynomial $y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$, this polynomial satisfies Eisenstein's criterion with $p = 5$.",
+            "deduced-from": [
+              {
+                "result": "Eisenstein's criterion",
+                "applied-to": "$y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$"
+              }
+            ],
+            "justification": "$5$ divides all coefficients except the leading one, $5$ does not divide the coefficient of $y^5$, and $5^2$ does not divide the constant term (since there is no constant term)."
+          },
+          {
+            "type": "observation",
+            "statement": "Since the irreducibility of a polynomial is invariant under a linear change of variables, the original polynomial $x^4 + x^3 + x^2 + x + 1$ is also irreducible over the rationals."
+          }
+        ]
+      }
+    ],
+    "[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Irreducibility of x^4 + x^3 + x^2 + x + 1 over Q\",\n    \"statement\": \"The polynomial $x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"x\",\n        \"value\": \"y + 1\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Applying $x = y + 1$ to $x^4 + x^3 + x^2 + x + 1$ results in $((y + 1)^4 + (y + 1)^3 + (y + 1)^2 + (y + 1) + 1) - 1 = (y + 1)^5 - 1$. After expansion, we get $y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$. This follows from the binomial theorem and arithmetic operations.\"\n      },\n      {\n        \"type\": \"definition\",\n        \"term\": \"Eisenstein's criterion\",\n        \"statement\": \"A polynomial $p(x) = a_nx^n + a_{n-1}x^{n-1} + \\cdots + a_1x + a_0$ is irreducible over the rational numbers if there exists a prime $p$ such that (1) $p$ divides $a_i$ for all $i < n$, (2) $p$ does not divide $a_n$, and (3) $p^2$ does not divide $a_0$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The polynomial $y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$ satisfies Eisenstein's criterion with $p=5$.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"Eisenstein's criterion\",\n            \"applied-to\": {\n              \"polynomial\": \"$y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$\",\n              \"p\": \"5\"\n            }\n          }\n        ],\n        \"justification\": \"$5$ divides all coefficients except the leading one, $5$ does not divide the coefficient of $y^5$ (which is 1), and $5^2$ does not divide the constant term (as there is no constant term).\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Since the irreducibility of a polynomial is invariant under a linear change of variables, the original polynomial $x^4 + x^3 + x^2 + x + 1$ is also irreducible over the rationals.\"\n      }\n    ]\n  }\n]"
+  ]
+}

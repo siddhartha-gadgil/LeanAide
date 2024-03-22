@@ -1,0 +1,1097 @@
+{
+  "problem": "Suppose $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$. Prove that $f$ is unbounded.",
+  "solutions": [
+    "Suppose, for the sake of contradiction, that $f$ is bounded. Then there exist real numbers $M$ and $m$ such that $m \\leq f(x) \\leq M$ for all $x \\in \\mathbb{R}$. Since $f$ is continuous on $\\mathbb{R}$ and $\\mathbb{R}$ is connected, $f(\\mathbb{R})$ is also connected in $\\mathbb{R}$, implying that $f(\\mathbb{R})$ is an interval. Given that $f(\\mathbb{R})$ is bounded and connected, it must be a closed interval $[m, M]$. \n\nBecause $f''(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly convex. This means that for any two points $x_1, x_2 \\in \\mathbb{R}$, with $x_1 < x_2$, the line segment connecting $(x_1, f(x_1))$ and $(x_2, f(x_2))$ lies above the graph of $f$ for all $x \\in (x_1, x_2)$. This implies that $f$ cannot have both a maximum and a minimum value in $\\mathbb{R}$ since a strict convex function is strictly increasing or strictly decreasing beyond some points on the real line. \n\nHowever, our assumption that $f$ is bounded above by $M$ and below by $m$ implies that $f$ has both a maximum and a minimum value in $\\mathbb{R}$, which contradicts the property of strict convexity. This contradiction arises from the assumption that $f$ is bounded. Therefore, $f$ must be unbounded.",
+    "Assume for contradiction that $f$ is bounded. Since $f''(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly convex. This implies that for any $x_1 < x_2 < x_3$ in $\\mathbb{R}$, the slope of the secant line through $(x_1, f(x_1))$ and $(x_3, f(x_3))$ is greater than the slope of the secant line through $(x_1, f(x_1))$ and $(x_2, f(x_2))$, i.e.,\n\n\\[\n\\frac{f(x_3) - f(x_1)}{x_3 - x_1} > \\frac{f(x_2) - f(x_1)}{x_2 - x_1}.\n\\]\n\nThis can be extended to show that as $x \\to \\infty$, the slope of the secant lines, and hence the tangents (since $f$ is differentiable as a consequence of $f$ being twice differentiable), approach infinity, which contradicts the boundedness of $f$. Similarly, as $x \\to -\\infty$, the slope of the secant lines indicates that $f$ must decrease without bound, again contradicting the boundedness of $f$. Therefore, $f$ must be unbounded.",
+    "Suppose, for the sake of contradiction, that \\(f\\) is bounded. Then, there exist real numbers \\(M\\) and \\(m\\) such that \\(m \\leq f(x) \\leq M\\) for all \\(x \\in \\mathbb{R}\\).\n\nSince \\(f\\) is continuous on \\(\\mathbb{R}\\) and differentiable with \\(f''(x) > 0\\) for all \\(x \\in \\mathbb{R}\\), \\(f'\\) is strictly increasing on \\(\\mathbb{R}\\). This means that for any \\(x_1, x_2 \\in \\mathbb{R}\\) with \\(x_1 < x_2\\), we have \\(f'(x_1) < f'(x_2)\\).\n\nIf \\(f'\\) is strictly increasing, then there cannot exist two points \\(x_1\\) and \\(x_2\\) (with \\(x_1 < x_2\\)) such that \\(f(x_1) = f(x_2)\\), because that would imply \\(f'\\) has a zero between \\(x_1\\) and \\(x_2\\) (by Rolle's Theorem), contradicting the fact that \\(f'\\) must be strictly increasing or decreasing between any two points due to \\(f'' > 0\\).\n\nThus, \\(f\\) must be either strictly increasing or strictly decreasing over the entire real line. In either case, \\(f\\) cannot be bounded as it must approach either \\(\\infty\\) or \\(-\\infty\\) as \\(x\\) approaches \\(\\infty\\) or \\(-\\infty\\), respectively. This contradicts our assumption that \\(f\\) is bounded. Therefore, \\(f\\) must be unbounded."
+  ],
+  "theories": [
+    "### Theorem\nLet $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.\n\n### Proof\nAssume for contradiction that $f$ is bounded. Thus, there exist real numbers $M$ and $m$ such that for all $x \\in \\mathbb{R}$, we have $m \\leq f(x) \\leq M$. Since $f$ is continuous on the connected set $\\mathbb{R}$, the image $f(\\mathbb{R})$ is connected, implying $f(\\mathbb{R})$ is an interval. The boundedness of $f$ indicates that $f(\\mathbb{R})$ is the closed interval $[m, M]$.\n\nGiven $f''(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly convex. This property entails that for any $x_1, x_2 \\in \\mathbb{R}$ with $x_1 < x_2$, the graph of $f$ for $x \\in (x_1, x_2)$ lies strictly below the line segment connecting $(x_1, f(x_1))$ and $(x_2, f(x_2))$. Hence, $f$ cannot attain both a maximum and a minimum on $\\mathbb{R}$, as a strictly convex function does not allow for such extremal values to coexist over the entire real line.\n\nHowever, the assumption of boundedness contradicts the nature of strict convexity by implying the existence of both a global maximum and minimum, which is impossible for a strictly convex function. This contradiction suggests that the original assumption of $f$ being bounded is false. Therefore, $f$ must be unbounded.",
+    "### Theorem 1\nIf $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is unbounded.\n\n#### Proof\nAssume, for the sake of contradiction, that $f$ is bounded. Given that $f''(x) > 0$ for all $x \\in \\mathbb{R}$, it follows that $f$ is strictly convex. This strict convexity implies for any three points $x_1 < x_2 < x_3$ in $\\mathbb{R}$, the slope of the secant line connecting the points $(x_1, f(x_1))$ and $(x_3, f(x_3))$ is greater than the slope of the secant line connecting the points $(x_1, f(x_1))$ and $(x_2, f(x_2))$, i.e.,\n\n\\[\n\\frac{f(x_3) - f(x_1)}{x_3 - x_1} > \\frac{f(x_2) - f(x_1)}{x_2 - x_1}.\n\\]\n\nThis property leads to the conclusion that as $x$ tends to infinity, the slope of these secant lines, which approach the slope of the tangent lines due to the differentiability of $f$, must also tend to infinity. This means that the rate of increase of $f(x)$ as $x \\to \\infty$ has no upper bound, contradicting the assumption that $f$ is bounded above.\n\nSimilarly, considering $x$ tending to $-\\infty$, the slope of the secant lines (and hence the tangent lines) indicates that $f(x)$ decreases without bound, contradicting the assumption that $f$ is bounded below.\n\nTherefore, under the assumption that $f''(x) > 0$ for all $x \\in \\mathbb{R}$, the function $f$ must be unbounded.",
+    "### Theorem\nLet \\(f:\\mathbb{R} \\to \\mathbb{R}\\) be a continuous function with \\(f''(x) > 0\\) for all \\(x \\in \\mathbb{R}\\). Then, \\(f\\) is unbounded.\n\n### Proof\nAssume, towards a contradiction, that \\(f\\) is bounded. Hence, there exist \\(M, m \\in \\mathbb{R}\\) such that \\(m \\leq f(x) \\leq M\\) for all \\(x \\in \\mathbb{R}\\).\n\nGiven \\(f''(x) > 0\\) for all \\(x \\in \\mathbb{R}\\), it follows that \\(f'\\) is strictly increasing over \\(\\mathbb{R}\\). Consequently, for any \\(x_1, x_2 \\in \\mathbb{R}\\) with \\(x_1 < x_2\\), \\(f'(x_1) < f'(x_2)\\).\n\nThe strict monotonicity of \\(f'\\) implies that \\(f\\) does not have two distinct points \\(x_1, x_2\\) (where \\(x_1 < x_2\\)) such that \\(f(x_1) = f(x_2)\\). This is because, if it were the case, then Rolle's Theorem would guarantee the existence of a point \\(\\xi \\in (x_1, x_2)\\) where \\(f'(\\xi) = 0\\), contradicting the strict increase of \\(f'\\) on \\(\\mathbb{R}\\).\n\nTherefore, \\(f\\) must be strictly monotonic over \\(\\mathbb{R}\\). Since a strictly monotonic function on \\(\\mathbb{R}\\) cannot be bounded (as it must approach infinity or negative infinity as \\(x\\) approaches infinity or negative infinity, respectively), we arrive at a contradiction. Thus, \\(f\\) is unbounded."
+  ],
+  "structured_texts": [
+    [
+      {
+        "type": "theorem",
+        "name": "Main Theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for contradiction that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M",
+            "value": "a real number such that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$"
+          },
+          {
+            "type": "let",
+            "variable": "m",
+            "value": "a real number such that $m \\leq f(x)$ for all $x \\in \\mathbb{R}$"
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f$ is continuous on the connected set $\\mathbb{R}$, the image $f(\\mathbb{R})$ is connected, implying $f(\\mathbb{R})$ is an interval."
+          },
+          {
+            "type": "observation",
+            "statement": "The boundedness of $f$ indicates that $f(\\mathbb{R})$ is the closed interval $[m, M]$."
+          },
+          {
+            "type": "observation",
+            "statement": "Given $f''(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly convex."
+          },
+          {
+            "type": "assertion",
+            "claim": "$f$ cannot attain both a maximum and a minimum on $\\mathbb{R}$.",
+            "deduced-from": [
+              "strict convexity of $f$"
+            ],
+            "justification": "A strictly convex function does not allow for such extremal values to coexist over the entire real line."
+          },
+          {
+            "type": "assertion",
+            "claim": "The assumption of boundedness contradicts the nature of strict convexity.",
+            "deduced-from": [
+              {
+                "result": "strict convexity of $f$",
+                "applied-to": "$f$"
+              },
+              "boundedness of $f$ implies existence of both a global maximum and minimum"
+            ],
+            "justification": "This is impossible for a strictly convex function."
+          },
+          {
+            "type": "observation",
+            "statement": "This contradiction suggests that the original assumption of $f$ being bounded is false."
+          },
+          {
+            "type": "assertion",
+            "claim": "$f$ must be unbounded.",
+            "deduced-from": [
+              "contradiction"
+            ]
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for contradiction that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M",
+            "value": "an upper bound of $f$ on $\\mathbb{R}$"
+          },
+          {
+            "type": "let",
+            "variable": "m",
+            "value": "a lower bound of $f$ on $\\mathbb{R}$"
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f$ is continuous on the connected set $\\mathbb{R}$, the image $f(\\mathbb{R})$ is connected, implying $f(\\mathbb{R})$ is an interval."
+          },
+          {
+            "type": "observation",
+            "statement": "The boundedness of $f$ indicates that $f(\\mathbb{R})$ is the closed interval $[m, M]$."
+          },
+          {
+            "type": "observation",
+            "statement": "Given $f''(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly convex."
+          },
+          {
+            "type": "assertion",
+            "claim": "A strictly convex function cannot attain both a maximum and a minimum on $\\mathbb{R}$.",
+            "deduced-from": [
+              {
+                "result": "strict convexity"
+              }
+            ],
+            "justification": "A strictly convex function's graph lies strictly below the line segment connecting any two points on the graph, preventing global maxima and minima."
+          },
+          {
+            "type": "observation",
+            "statement": "However, the assumption of boundedness contradicts the nature of strict convexity by implying the existence of both a global maximum and minimum."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, the original assumption of $f$ being bounded is false."
+          },
+          {
+            "type": "observation",
+            "statement": "Hence, $f$ must be unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "If $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume, for the sake of contradiction, that $f$ is bounded."
+          },
+          {
+            "type": "observation",
+            "statement": "Given that $f''(x) > 0$ for all $x \\in \\mathbb{R}$, it follows that $f$ is strictly convex."
+          },
+          {
+            "type": "assertion",
+            "claim": "For any three points $x_1 < x_2 < x_3$ in $\\mathbb{R}$, the slope of the secant line connecting the points $(x_1, f(x_1))$ and $(x_3, f(x_3))$ is greater than the slope of the secant line connecting the points $(x_1, f(x_1))$ and $(x_2, f(x_2))$.",
+            "deduced-from": [
+              "strict convexity of $f$"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "As $x \\to \\infty$, the slope of these secant lines, which approach the slope of the tangent lines due to the differentiability of $f$, must also tend to infinity.",
+            "deduced-from": [
+              "differentiability of $f$",
+              "strict convexity of $f$"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "This means that the rate of increase of $f(x)$ as $x \\to \\infty$ has no upper bound, contradicting the assumption that $f$ is bounded above.",
+            "deduced-from": [
+              "As $x \\to \\infty$, the slope of tangent lines to $f$ tends to infinity."
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "Similarly, considering $x$ tending to $-\\infty$, the slope of the secant lines (and hence the tangent lines) indicates that $f(x)$ decreases without bound, contradicting the assumption that $f$ is bounded below.",
+            "deduced-from": [
+              "As $x \\to -\\infty$, the slope of tangent lines to $f$ tends to infinity."
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "Therefore, under the assumption that $f''(x) > 0$ for all $x \\in \\mathbb{R}$, the function $f$ must be unbounded.",
+            "deduced-from": [
+              "contradiction to $f$ being bounded above",
+              "contradiction to $f$ being bounded below"
+            ]
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "If $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume, for the sake of contradiction, that $f$ is bounded."
+          },
+          {
+            "type": "observation",
+            "statement": "Given that $f''(x) > 0$ for all $x \\in \\mathbb{R}$, it follows that $f$ is strictly convex."
+          },
+          {
+            "type": "observation",
+            "statement": "This strict convexity implies for any three points $x_1 < x_2 < x_3$ in $\\mathbb{R}$, the slope of the secant line connecting the points $(x_1, f(x_1))$ and $(x_3, f(x_3))$ is greater than the slope of the secant line connecting the points $(x_1, f(x_1))$ and $(x_2, f(x_2))$, i.e., $\\frac{f(x_3) - f(x_1)}{x_3 - x_1} > \\frac{f(x_2) - f(x_1)}{x_2 - x_1}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "The slope of these secant lines, which approach the slope of the tangent lines due to the differentiability of $f$, must also tend to infinity as $x \\to \\infty$.",
+            "deduced-from": [
+              "Differentiability of $f$",
+              "Property of strictly convex functions"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "This means that the rate of increase of $f(x)$ as $x \\to \\infty$ has no upper bound, contradicting the assumption that $f$ is bounded above.",
+            "deduced-from": [
+              "The slope of the tangent lines tends to infinity as $x \\to \\infty$"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "Similarly, considering $x$ tending to $-\\infty$, the slope of the secant lines (and hence the tangent lines) indicates that $f(x)$ decreases without bound, contradicting the assumption that $f$ is bounded below.",
+            "deduced-from": [
+              "The slope of the tangent lines tends to infinity as $x \\to -\\infty$"
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, under the assumption that $f''(x) > 0$ for all $x \\in \\mathbb{R}$, the function $f$ must be unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function with $f''(x) > 0$ for all $x \\in \\mathbb{R}$. Then, $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume, towards a contradiction, that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M, m",
+            "value": "Real numbers such that $m \\leq f(x) \\leq M$ for all $x \\in \\mathbb{R}$"
+          },
+          {
+            "type": "observation",
+            "statement": "Given $f''(x) > 0$ for all $x \\in \\mathbb{R}$, it follows that $f'$ is strictly increasing over $\\mathbb{R}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "For any $x_1, x_2 \\in \\mathbb{R}$ with $x_1 < x_2$, $f'(x_1) < f'(x_2)$.",
+            "deduced-from": [
+              "strictly increasing"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "$f$ does not have two distinct points $x_1, x_2$ (where $x_1 < x_2$) such that $f(x_1) = f(x_2)$.",
+            "deduced-from": [
+              {
+                "result": "Rolle's Theorem",
+                "applied-to": "contradicting the strict increase of $f'$ on $\\mathbb{R}$"
+              }
+            ],
+            "justification": "This is because, if it were the case, then Rolle's Theorem would guarantee the existence of a point $\\xi \\in (x_1, x_2)$ where $f'(\\xi) = 0$, contradicting the strict increase of $f'$ on $\\mathbb{R}$."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, $f$ must be strictly monotonic over $\\mathbb{R}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "A strictly monotonic function on $\\mathbb{R}$ cannot be bounded.",
+            "deduced-from": [
+              "it must approach infinity or negative infinity as $x$ approaches infinity or negative infinity, respectively"
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Thus, $f$ is unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function with $f''(x) > 0$ for all $x \\in \\mathbb{R}$. Then, $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume, towards a contradiction, that $f$ is bounded."
+          },
+          {
+            "type": "assertion",
+            "claim": "There exist $M, m \\in \\mathbb{R}$ such that $m \\leq f(x) \\leq M$ for all $x \\in \\mathbb{R}$.",
+            "deduced-from": [
+              "Assume, towards a contradiction, that $f$ is bounded."
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Given $f''(x) > 0$ for all $x \\in \\mathbb{R}$, it follows that $f'$ is strictly increasing over $\\mathbb{R}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "For any $x_1, x_2 \\in \\mathbb{R}$ with $x_1 < x_2$, $f'(x_1) < f'(x_2)$.",
+            "deduced-from": [
+              "$f'$ is strictly increasing over $\\mathbb{R}$"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "$f$ does not have two distinct points $x_1, x_2$ (where $x_1 < x_2$) such that $f(x_1) = f(x_2)$.",
+            "deduced-from": [
+              {
+                "result": "Rolle's Theorem",
+                "applied-to": "$f$ is continuous and $f'$ is strictly increasing"
+              }
+            ],
+            "justification": "If $f(x_1) = f(x_2)$ for $x_1 < x_2$, there would exist a point $\\xi \\in (x_1, x_2)$ where $f'(\\xi) = 0$, contradicting the strict increase of $f'$ on $\\mathbb{R}$."
+          },
+          {
+            "type": "observation",
+            "statement": "$f$ must be strictly monotonic over $\\mathbb{R}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "A strictly monotonic function on $\\mathbb{R}$ cannot be bounded.",
+            "deduced-from": [
+              "$f$ is strictly monotonic over $\\mathbb{R}$"
+            ],
+            "justification": "As it must approach infinity or negative infinity as $x$ approaches infinity or negative infinity, respectively."
+          },
+          {
+            "type": "assertion",
+            "claim": "$f$ is unbounded.",
+            "deduced-from": [
+              "A strictly monotonic function on $\\mathbb{R}$ cannot be bounded."
+            ],
+            "justification": "Arriving at a contradiction with the assumption that $f$ is bounded."
+          }
+        ]
+      }
+    ]
+  ],
+  "raw_structured_texts": [
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Main Theorem\",\n    \"statement\": \"Let $f:\\\\mathbb{R} \\\\to \\\\mathbb{R}$ be a continuous function such that $f''(x) > 0$ for all $x \\\\in \\\\mathbb{R}$. Then $f$ is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume for contradiction that $f$ is bounded.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"M\",\n        \"value\": \"a real number such that $f(x) \\\\leq M$ for all $x \\\\in \\\\mathbb{R}$\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"m\",\n        \"value\": \"a real number such that $m \\\\leq f(x)$ for all $x \\\\in \\\\mathbb{R}$\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Since $f$ is continuous on the connected set $\\\\mathbb{R}$, the image $f(\\\\mathbb{R})$ is connected, implying $f(\\\\mathbb{R})$ is an interval.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The boundedness of $f$ indicates that $f(\\\\mathbb{R})$ is the closed interval $[m, M]$.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Given $f''(x) > 0$ for all $x \\\\in \\\\mathbb{R}$, $f$ is strictly convex.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$f$ cannot attain both a maximum and a minimum on $\\\\mathbb{R}$.\",\n        \"deduced-from\": [\n          \"strict convexity of $f$\"\n        ],\n        \"justification\": \"A strictly convex function does not allow for such extremal values to coexist over the entire real line.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The assumption of boundedness contradicts the nature of strict convexity.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"strict convexity of $f$\",\n            \"applied-to\": \"$f$\"\n          },\n          \"boundedness of $f$ implies existence of both a global maximum and minimum\"\n        ],\n        \"justification\": \"This is impossible for a strictly convex function.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"This contradiction suggests that the original assumption of $f$ being bounded is false.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$f$ must be unbounded.\",\n        \"deduced-from\": [\n          \"contradiction\"\n        ]\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"statement\": \"Let $f:\\\\mathbb{R} \\\\to \\\\mathbb{R}$ be a continuous function such that $f''(x) > 0$ for all $x \\\\in \\\\mathbb{R}$. Then $f$ is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume for contradiction that $f$ is bounded.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"M\",\n        \"value\": \"an upper bound of $f$ on $\\\\mathbb{R}$\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"m\",\n        \"value\": \"a lower bound of $f$ on $\\\\mathbb{R}$\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Since $f$ is continuous on the connected set $\\\\mathbb{R}$, the image $f(\\\\mathbb{R})$ is connected, implying $f(\\\\mathbb{R})$ is an interval.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"The boundedness of $f$ indicates that $f(\\\\mathbb{R})$ is the closed interval $[m, M]$.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Given $f''(x) > 0$ for all $x \\\\in \\\\mathbb{R}$, $f$ is strictly convex.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A strictly convex function cannot attain both a maximum and a minimum on $\\\\mathbb{R}$.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"strict convexity\"\n          }\n        ],\n        \"justification\": \"A strictly convex function's graph lies strictly below the line segment connecting any two points on the graph, preventing global maxima and minima.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"However, the assumption of boundedness contradicts the nature of strict convexity by implying the existence of both a global maximum and minimum.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Therefore, the original assumption of $f$ being bounded is false.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Hence, $f$ must be unbounded.\"\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"If $f:\\\\mathbb{R} \\\\to \\\\mathbb{R}$ is a continuous function such that $f''(x) > 0$ for all $x \\\\in \\\\mathbb{R}$, then $f$ is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume, for the sake of contradiction, that $f$ is bounded.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Given that $f''(x) > 0$ for all $x \\\\in \\\\mathbb{R}$, it follows that $f$ is strictly convex.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For any three points $x_1 < x_2 < x_3$ in $\\\\mathbb{R}$, the slope of the secant line connecting the points $(x_1, f(x_1))$ and $(x_3, f(x_3))$ is greater than the slope of the secant line connecting the points $(x_1, f(x_1))$ and $(x_2, f(x_2))$.\",\n        \"deduced-from\": [\n          \"strict convexity of $f$\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"As $x \\\\to \\\\infty$, the slope of these secant lines, which approach the slope of the tangent lines due to the differentiability of $f$, must also tend to infinity.\",\n        \"deduced-from\": [\n          \"differentiability of $f$\",\n          \"strict convexity of $f$\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"This means that the rate of increase of $f(x)$ as $x \\\\to \\\\infty$ has no upper bound, contradicting the assumption that $f$ is bounded above.\",\n        \"deduced-from\": [\n          \"As $x \\\\to \\\\infty$, the slope of tangent lines to $f$ tends to infinity.\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Similarly, considering $x$ tending to $-\\\\infty$, the slope of the secant lines (and hence the tangent lines) indicates that $f(x)$ decreases without bound, contradicting the assumption that $f$ is bounded below.\",\n        \"deduced-from\": [\n          \"As $x \\\\to -\\\\infty$, the slope of tangent lines to $f$ tends to infinity.\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Therefore, under the assumption that $f''(x) > 0$ for all $x \\\\in \\\\mathbb{R}$, the function $f$ must be unbounded.\",\n        \"deduced-from\": [\n          \"contradiction to $f$ being bounded above\",\n          \"contradiction to $f$ being bounded below\"\n        ]\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Theorem 1\",\n    \"statement\": \"If $f:\\\\mathbb{R} \\\\to \\\\mathbb{R}$ is a continuous function such that $f''(x) > 0$ for all $x \\\\in \\\\mathbb{R}$, then $f$ is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume, for the sake of contradiction, that $f$ is bounded.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Given that $f''(x) > 0$ for all $x \\\\in \\\\mathbb{R}$, it follows that $f$ is strictly convex.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"This strict convexity implies for any three points $x_1 < x_2 < x_3$ in $\\\\mathbb{R}$, the slope of the secant line connecting the points $(x_1, f(x_1))$ and $(x_3, f(x_3))$ is greater than the slope of the secant line connecting the points $(x_1, f(x_1))$ and $(x_2, f(x_2))$, i.e., $\\\\frac{f(x_3) - f(x_1)}{x_3 - x_1} > \\\\frac{f(x_2) - f(x_1)}{x_2 - x_1}$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The slope of these secant lines, which approach the slope of the tangent lines due to the differentiability of $f$, must also tend to infinity as $x \\\\to \\\\infty$.\",\n        \"deduced-from\": [\n          \"Differentiability of $f$\",\n          \"Property of strictly convex functions\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"This means that the rate of increase of $f(x)$ as $x \\\\to \\\\infty$ has no upper bound, contradicting the assumption that $f$ is bounded above.\",\n        \"deduced-from\": [\n          \"The slope of the tangent lines tends to infinity as $x \\\\to \\\\infty$\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Similarly, considering $x$ tending to $-\\\\infty$, the slope of the secant lines (and hence the tangent lines) indicates that $f(x)$ decreases without bound, contradicting the assumption that $f$ is bounded below.\",\n        \"deduced-from\": [\n          \"The slope of the tangent lines tends to infinity as $x \\\\to -\\\\infty$\"\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Therefore, under the assumption that $f''(x) > 0$ for all $x \\\\in \\\\mathbb{R}$, the function $f$ must be unbounded.\"\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"statement\": \"Let $f:\\\\mathbb{R} \\\\to \\\\mathbb{R}$ be a continuous function with $f''(x) > 0$ for all $x \\\\in \\\\mathbb{R}$. Then, $f$ is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume, towards a contradiction, that $f$ is bounded.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"M, m\",\n        \"value\": \"Real numbers such that $m \\\\leq f(x) \\\\leq M$ for all $x \\\\in \\\\mathbb{R}$\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Given $f''(x) > 0$ for all $x \\\\in \\\\mathbb{R}$, it follows that $f'$ is strictly increasing over $\\\\mathbb{R}$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For any $x_1, x_2 \\\\in \\\\mathbb{R}$ with $x_1 < x_2$, $f'(x_1) < f'(x_2)$.\",\n        \"deduced-from\": [\n          \"strictly increasing\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$f$ does not have two distinct points $x_1, x_2$ (where $x_1 < x_2$) such that $f(x_1) = f(x_2)$.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"Rolle's Theorem\",\n            \"applied-to\": \"contradicting the strict increase of $f'$ on $\\\\mathbb{R}$\"\n          }\n        ],\n        \"justification\": \"This is because, if it were the case, then Rolle's Theorem would guarantee the existence of a point $\\\\xi \\\\in (x_1, x_2)$ where $f'(\\\\xi) = 0$, contradicting the strict increase of $f'$ on $\\\\mathbb{R}$.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Therefore, $f$ must be strictly monotonic over $\\\\mathbb{R}$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A strictly monotonic function on $\\\\mathbb{R}$ cannot be bounded.\",\n        \"deduced-from\": [\n          \"it must approach infinity or negative infinity as $x$ approaches infinity or negative infinity, respectively\"\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Thus, $f$ is unbounded.\"\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"statement\": \"Let $f:\\\\mathbb{R} \\\\to \\\\mathbb{R}$ be a continuous function with $f''(x) > 0$ for all $x \\\\in \\\\mathbb{R}$. Then, $f$ is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume, towards a contradiction, that $f$ is bounded.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"There exist $M, m \\\\in \\\\mathbb{R}$ such that $m \\\\leq f(x) \\\\leq M$ for all $x \\\\in \\\\mathbb{R}$.\",\n        \"deduced-from\": [\n          \"Assume, towards a contradiction, that $f$ is bounded.\"\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Given $f''(x) > 0$ for all $x \\\\in \\\\mathbb{R}$, it follows that $f'$ is strictly increasing over $\\\\mathbb{R}$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For any $x_1, x_2 \\\\in \\\\mathbb{R}$ with $x_1 < x_2$, $f'(x_1) < f'(x_2)$.\",\n        \"deduced-from\": [\n          \"$f'$ is strictly increasing over $\\\\mathbb{R}$\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$f$ does not have two distinct points $x_1, x_2$ (where $x_1 < x_2$) such that $f(x_1) = f(x_2)$.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"Rolle's Theorem\",\n            \"applied-to\": \"$f$ is continuous and $f'$ is strictly increasing\"\n          }\n        ],\n        \"justification\": \"If $f(x_1) = f(x_2)$ for $x_1 < x_2$, there would exist a point $\\\\xi \\\\in (x_1, x_2)$ where $f'(\\\\xi) = 0$, contradicting the strict increase of $f'$ on $\\\\mathbb{R}$.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"$f$ must be strictly monotonic over $\\\\mathbb{R}$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A strictly monotonic function on $\\\\mathbb{R}$ cannot be bounded.\",\n        \"deduced-from\": [\n          \"$f$ is strictly monotonic over $\\\\mathbb{R}$\"\n        ],\n        \"justification\": \"As it must approach infinity or negative infinity as $x$ approaches infinity or negative infinity, respectively.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$f$ is unbounded.\",\n        \"deduced-from\": [\n          \"A strictly monotonic function on $\\\\mathbb{R}$ cannot be bounded.\"\n        ],\n        \"justification\": \"Arriving at a contradiction with the assumption that $f$ is bounded.\"\n      }\n    ]\n  }\n]\n```"
+  ],
+  "texts_with_statements": [
+    [
+      {
+        "type": "theorem",
+        "name": "Main Theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for contradiction that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M",
+            "value": "a real number such that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$"
+          },
+          {
+            "type": "let",
+            "variable": "m",
+            "value": "a real number such that $m \\leq f(x)$ for all $x \\in \\mathbb{R}$"
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f$ is continuous on the connected set $\\mathbb{R}$, the image $f(\\mathbb{R})$ is connected, implying $f(\\mathbb{R})$ is an interval."
+          },
+          {
+            "type": "observation",
+            "statement": "The boundedness of $f$ indicates that $f(\\mathbb{R})$ is the closed interval $[m, M]$."
+          },
+          {
+            "type": "observation",
+            "statement": "Given $f''(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly convex."
+          },
+          {
+            "type": "assertion",
+            "claim": "$f$ cannot attain both a maximum and a minimum on $\\mathbb{R}$.",
+            "deduced-from": [
+              "strict convexity of $f$"
+            ],
+            "justification": "A strictly convex function does not allow for such extremal values to coexist over the entire real line.",
+            "statement": "Given a continuous function $f: \\mathbb{R} \\to \\mathbb{R}$ that is strictly convex because $f''(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ cannot attain both a maximum and a minimum on $\\mathbb{R}$. This follows since a strictly convex function does not allow for such extremal values to coexist over the entire real line."
+          },
+          {
+            "type": "assertion",
+            "claim": "The assumption of boundedness contradicts the nature of strict convexity.",
+            "deduced-from": [
+              {
+                "result": "strict convexity of $f$",
+                "applied-to": "$f$"
+              },
+              "boundedness of $f$ implies existence of both a global maximum and minimum"
+            ],
+            "justification": "This is impossible for a strictly convex function.",
+            "statement": "Assuming for contradiction that $f$ is bounded, with values between some real numbers $m$ and $M$ for all $x \\in \\mathbb{R}$, contradicts the nature of strict convexity of $f$ because $f''(x) > 0$ for all $x \\in \\mathbb{R}$ implies $f$ is strictly convex and cannot have both a global maximum and minimum. This is impossible for a strictly convex function."
+          },
+          {
+            "type": "observation",
+            "statement": "This contradiction suggests that the original assumption of $f$ being bounded is false."
+          },
+          {
+            "type": "assertion",
+            "claim": "$f$ must be unbounded.",
+            "deduced-from": [
+              "contradiction"
+            ],
+            "statement": "Given a continuous function $f: \\mathbb{R} \\to \\mathbb{R}$ with $f''(x) > 0$ for all $x \\in \\mathbb{R}$, the contradiction arising from the assumption that $f$ is bounded implies that $f$ must be unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Main Theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for contradiction that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M",
+            "value": "a real number such that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$"
+          },
+          {
+            "type": "let",
+            "variable": "m",
+            "value": "a real number such that $m \\leq f(x)$ for all $x \\in \\mathbb{R}$"
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f$ is continuous on the connected set $\\mathbb{R}$, the image $f(\\mathbb{R})$ is connected, implying $f(\\mathbb{R})$ is an interval."
+          },
+          {
+            "type": "observation",
+            "statement": "The boundedness of $f$ indicates that $f(\\mathbb{R})$ is the closed interval $[m, M]$."
+          },
+          {
+            "type": "observation",
+            "statement": "Given $f''(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly convex."
+          },
+          {
+            "type": "assertion",
+            "claim": "$f$ cannot attain both a maximum and a minimum on $\\mathbb{R}$.",
+            "deduced-from": [
+              "strict convexity of $f$"
+            ],
+            "justification": "A strictly convex function does not allow for such extremal values to coexist over the entire real line.",
+            "statement": "If $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function with $f''(x) > 0$ for all $x \\in \\mathbb{R}$, implying strict convexity, then $f$ cannot attain both a maximum and a minimum on $\\mathbb{R}$. This follows because a strictly convex function does not allow for such extremal values to coexist over the entire real line."
+          },
+          {
+            "type": "assertion",
+            "claim": "The assumption of boundedness contradicts the nature of strict convexity.",
+            "deduced-from": [
+              {
+                "result": "strict convexity of $f$",
+                "applied-to": "$f$"
+              },
+              "boundedness of $f$ implies existence of both a global maximum and minimum"
+            ],
+            "justification": "This is impossible for a strictly convex function.",
+            "statement": "Assuming $f:\\mathbb{R} \\to \\mathbb{R}$ is a bounded function, with bounds $M$ and $m$ such that $f(x) \\leq M$ and $m \\leq f(x)$ for all $x \\in \\mathbb{R}$, contradicts the nature of $f$ being strictly convex (where $f''(x) > 0$ for all $x \\in \\mathbb{R}$). This is because the assumption of boundedness implies the existence of both a global maximum and minimum, which is impossible for a strictly convex function."
+          },
+          {
+            "type": "observation",
+            "statement": "This contradiction suggests that the original assumption of $f$ being bounded is false."
+          },
+          {
+            "type": "assertion",
+            "claim": "$f$ must be unbounded.",
+            "deduced-from": [
+              "contradiction"
+            ],
+            "statement": "Given a continuous function $f:\\mathbb{R} \\to \\mathbb{R}$ where $f''(x) > 0$ for all $x \\in \\mathbb{R}$, leading to the contradiction of $f$ both being strictly convex and assumed bounded, it follows that $f$ must be unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for contradiction that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M",
+            "value": "an upper bound of $f$ on $\\mathbb{R}$"
+          },
+          {
+            "type": "let",
+            "variable": "m",
+            "value": "a lower bound of $f$ on $\\mathbb{R}$"
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f$ is continuous on the connected set $\\mathbb{R}$, the image $f(\\mathbb{R})$ is connected, implying $f(\\mathbb{R})$ is an interval."
+          },
+          {
+            "type": "observation",
+            "statement": "The boundedness of $f$ indicates that $f(\\mathbb{R})$ is the closed interval $[m, M]$."
+          },
+          {
+            "type": "observation",
+            "statement": "Given $f''(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly convex."
+          },
+          {
+            "type": "assertion",
+            "claim": "A strictly convex function cannot attain both a maximum and a minimum on $\\mathbb{R}$.",
+            "deduced-from": [
+              {
+                "result": "strict convexity"
+              }
+            ],
+            "justification": "A strictly convex function's graph lies strictly below the line segment connecting any two points on the graph, preventing global maxima and minima.",
+            "statement": "Given that $f$ is continuous on $\\mathbb{R}$, and given $f''(x) > 0$ for all $x \\in \\mathbb{R}$ implying $f$ is strictly convex, $f$ cannot attain both a maximum and a minimum on $\\mathbb{R}$. "
+          },
+          {
+            "type": "observation",
+            "statement": "However, the assumption of boundedness contradicts the nature of strict convexity by implying the existence of both a global maximum and minimum."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, the original assumption of $f$ being bounded is false."
+          },
+          {
+            "type": "observation",
+            "statement": "Hence, $f$ must be unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for contradiction that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M",
+            "value": "an upper bound of $f$ on $\\mathbb{R}$"
+          },
+          {
+            "type": "let",
+            "variable": "m",
+            "value": "a lower bound of $f$ on $\\mathbb{R}$"
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f$ is continuous on the connected set $\\mathbb{R}$, the image $f(\\mathbb{R})$ is connected, implying $f(\\mathbb{R})$ is an interval."
+          },
+          {
+            "type": "observation",
+            "statement": "The boundedness of $f$ indicates that $f(\\mathbb{R})$ is the closed interval $[m, M]$."
+          },
+          {
+            "type": "observation",
+            "statement": "Given $f''(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly convex."
+          },
+          {
+            "type": "assertion",
+            "claim": "A strictly convex function cannot attain both a maximum and a minimum on $\\mathbb{R}$.",
+            "statement": "Given $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f''(x) > 0$ for all $x \\in \\mathbb{R}$, implying $f$ is strictly convex, a strictly convex function cannot attain both a maximum and a minimum on $\\mathbb{R}$. This is under the assumption that $f$ has an upper bound $M$ and a lower bound $m$ on $\\mathbb{R}$.",
+            "deduced-from": [
+              {
+                "result": "strict convexity"
+              }
+            ],
+            "justification": "A strictly convex function's graph lies strictly below the line segment connecting any two points on the graph, preventing global maxima and minima."
+          },
+          {
+            "type": "observation",
+            "statement": "However, the assumption of boundedness contradicts the nature of strict convexity by implying the existence of both a global maximum and minimum."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, the original assumption of $f$ being bounded is false."
+          },
+          {
+            "type": "observation",
+            "statement": "Hence, $f$ must be unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "If $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume, for the sake of contradiction, that $f$ is bounded."
+          },
+          {
+            "type": "observation",
+            "statement": "Given that $f''(x) > 0$ for all $x \\in \\mathbb{R}$, it follows that $f$ is strictly convex."
+          },
+          {
+            "type": "assertion",
+            "claim": "For any three points $x_1 < x_2 < x_3$ in $\\mathbb{R}$, the slope of the secant line connecting the points $(x_1, f(x_1))$ and $(x_3, f(x_3))$ is greater than the slope of the secant line connecting the points $(x_1, f(x_1))$ and $(x_2, f(x_2))$.",
+            "deduced-from": [
+              "strict convexity of $f$"
+            ],
+            "statement": "Given that $f:\\mathbb{R} \\to \\mathbb{R}$ is strictly convex, for any three points $x_1 < x_2 < x_3$ in $\\mathbb{R}$, the slope of the secant line connecting the points $(x_1, f(x_1))$ and $(x_3, f(x_3))$ is greater than the slope of the secant line connecting the points $(x_1, f(x_1))$ and $(x_2, f(x_2))$."
+          },
+          {
+            "type": "assertion",
+            "claim": "As $x \\to \\infty$, the slope of these secant lines, which approach the slope of the tangent lines due to the differentiability of $f$, must also tend to infinity.",
+            "deduced-from": [
+              "differentiability of $f$",
+              "strict convexity of $f$"
+            ],
+            "statement": "Given that $f:\\mathbb{R} \\to \\mathbb{R}$ is both differentiable and strictly convex, as $x \\to \\infty$, the slope of the secant lines, which approach the slope of the tangent lines, must also tend to infinity."
+          },
+          {
+            "type": "assertion",
+            "claim": "This means that the rate of increase of $f(x)$ as $x \\to \\infty$ has no upper bound, contradicting the assumption that $f$ is bounded above.",
+            "deduced-from": [
+              "As $x \\to \\infty$, the slope of tangent lines to $f$ tends to infinity."
+            ],
+            "statement": "Given that as $x \\to \\infty$, the slope of the tangent lines to $f:\\mathbb{R} \\to \\mathbb{R}$ tends to infinity, this implies that the rate of increase of $f(x)$ as $x \\to \\infty$ has no upper bound, contradicting the assumption that $f$ is bounded above."
+          },
+          {
+            "type": "assertion",
+            "claim": "Similarly, considering $x$ tending to $-\\infty$, the slope of the secant lines (and hence the tangent lines) indicates that $f(x)$ decreases without bound, contradicting the assumption that $f$ is bounded below.",
+            "deduced-from": [
+              "As $x \\to -\\infty$, the slope of tangent lines to $f$ tends to infinity."
+            ],
+            "statement": "Considering $x$ tending to $-\\infty$, the slope of the secant lines (and hence the tangent lines) to $f:\\mathbb{R} \\to \\mathbb{R}$ indicates that $f(x)$ decreases without bound, contradicting the assumption that $f$ is bounded below."
+          },
+          {
+            "type": "assertion",
+            "claim": "Therefore, under the assumption that $f''(x) > 0$ for all $x \\in \\mathbb{R}$, the function $f$ must be unbounded.",
+            "deduced-from": [
+              "contradiction to $f$ being bounded above",
+              "contradiction to $f$ being bounded below"
+            ],
+            "statement": "Therefore, under the assumption that $f''(x) > 0$ for all $x \\in \\mathbb{R}$, the function $f:\\mathbb{R} \\to \\mathbb{R}$ must be unbounded, contradicting the initial assumption that $f$ is bounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "If $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume, for the sake of contradiction, that $f$ is bounded."
+          },
+          {
+            "type": "observation",
+            "statement": "Given that $f''(x) > 0$ for all $x \\in \\mathbb{R}$, it follows that $f$ is strictly convex."
+          },
+          {
+            "type": "assertion",
+            "claim": "For any three points $x_1 < x_2 < x_3$ in $\\mathbb{R}$, the slope of the secant line connecting the points $(x_1, f(x_1))$ and $(x_3, f(x_3))$ is greater than the slope of the secant line connecting the points $(x_1, f(x_1))$ and $(x_2, f(x_2))$.",
+            "statement": "Given a function $f:\\mathbb{R}\\to\\mathbb{R}$ that is strictly convex, for any three points $x_1 < x_2 < x_3$ in $\\mathbb{R}$, the slope of the secant line connecting the points $(x_1, f(x_1))$ and $(x_3, f(x_3))$ is greater than the slope of the secant line connecting the points $(x_1, f(x_1))$ and $(x_2, f(x_2))$.",
+            "deduced-from": [
+              "strict convexity of $f$"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "As $x \\to \\infty$, the slope of these secant lines, which approach the slope of the tangent lines due to the differentiability of $f$, must also tend to infinity.",
+            "statement": "Given a function $f:\\mathbb{R}\\to\\mathbb{R}$ that is strictly convex and differentiable, as $x \\to \\infty$, the slope of secant lines, which approach the slope of the tangent lines, must also tend to infinity.",
+            "deduced-from": [
+              "differentiability of $f$",
+              "strict convexity of $f$"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "This means that the rate of increase of $f(x)$ as $x \\to \\infty$ has no upper bound, contradicting the assumption that $f$ is bounded above.",
+            "statement": "Given a function $f:\\mathbb{R}\\to\\mathbb{R}$ that is differentiable and for which the slope of tangent lines tends to infinity as $x \\to \\infty$, it implies that the rate of increase of $f(x)$ as $x \\to \\infty$ has no upper bound, contradicting the assumption that $f$ is bounded above.",
+            "deduced-from": [
+              "As $x \\to \\infty$, the slope of tangent lines to $f$ tends to infinity."
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "Similarly, considering $x$ tending to $-\\infty$, the slope of the secant lines (and hence the tangent lines) indicates that $f(x)$ decreases without bound, contradicting the assumption that $f$ is bounded below.",
+            "statement": "Given a function $f:\\mathbb{R}\\to\\mathbb{R}$ that is differentiable and for which the slope of tangent lines tends to infinity as $x \\to -\\infty$, it implies that $f(x)$ decreases without bound, contradicting the assumption that $f$ is bounded below.",
+            "deduced-from": [
+              "As $x \\to -\\infty$, the slope of tangent lines to $f$ tends to infinity."
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "Therefore, under the assumption that $f''(x) > 0$ for all $x \\in \\mathbb{R}$, the function $f$ must be unbounded.",
+            "statement": "Under the assumption that $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function with $f''(x) > 0$ for all $x \\in \\mathbb{R}$, leading to contradictions to both $f$ being bounded above and below, it must be concluded that $f$ is unbounded.",
+            "deduced-from": [
+              "contradiction to $f$ being bounded above",
+              "contradiction to $f$ being bounded below"
+            ]
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "If $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume, for the sake of contradiction, that $f$ is bounded."
+          },
+          {
+            "type": "observation",
+            "statement": "Given that $f''(x) > 0$ for all $x \\in \\mathbb{R}$, it follows that $f$ is strictly convex."
+          },
+          {
+            "type": "observation",
+            "statement": "This strict convexity implies for any three points $x_1 < x_2 < x_3$ in $\\mathbb{R}$, the slope of the secant line connecting the points $(x_1, f(x_1))$ and $(x_3, f(x_3))$ is greater than the slope of the secant line connecting the points $(x_1, f(x_1))$ and $(x_2, f(x_2))$, i.e., $\\frac{f(x_3) - f(x_1)}{x_3 - x_1} > \\frac{f(x_2) - f(x_1)}{x_2 - x_1}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "The slope of these secant lines, which approach the slope of the tangent lines due to the differentiability of $f$, must also tend to infinity as $x \\to \\infty$.",
+            "deduced-from": [
+              "Differentiability of $f$",
+              "Property of strictly convex functions"
+            ],
+            "statement": "If $f:\\mathbb{R} \\to \\mathbb{R}$ is a differentiable and strictly convex function, then the slope of the secant lines, which approach the slope of the tangent lines, tends to infinity as $x \\to \\infty$."
+          },
+          {
+            "type": "assertion",
+            "claim": "This means that the rate of increase of $f(x)$ as $x \\to \\infty$ has no upper bound, contradicting the assumption that $f$ is bounded above.",
+            "deduced-from": [
+              "The slope of the tangent lines tends to infinity as $x \\to \\infty$"
+            ],
+            "statement": "Given a function $f:\\mathbb{R} \\to \\mathbb{R}$ such that the slope of its tangent lines tends to infinity as $x \\to \\infty$, this implies that the rate of increase of $f(x)$ as $x \\to \\infty$ has no upper bound, contradicting any assumption that $f$ is bounded above."
+          },
+          {
+            "type": "assertion",
+            "claim": "Similarly, considering $x$ tending to $-\\infty$, the slope of the secant lines (and hence the tangent lines) indicates that $f(x)$ decreases without bound, contradicting the assumption that $f$ is bounded below.",
+            "deduced-from": [
+              "The slope of the tangent lines tends to infinity as $x \\to -\\infty$"
+            ],
+            "statement": "Given a function $f:\\mathbb{R} \\to \\mathbb{R}$ such that the slope of its tangent lines tends to infinity as $x \\to -\\infty$, this indicates that $f(x)$ decreases without bound, contradicting any assumption that $f$ is bounded below."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, under the assumption that $f''(x) > 0$ for all $x \\in \\mathbb{R}$, the function $f$ must be unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Theorem 1",
+        "statement": "If $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume, for the sake of contradiction, that $f$ is bounded."
+          },
+          {
+            "type": "observation",
+            "statement": "Given that $f''(x) > 0$ for all $x \\in \\mathbb{R}$, it follows that $f$ is strictly convex."
+          },
+          {
+            "type": "observation",
+            "statement": "This strict convexity implies for any three points $x_1 < x_2 < x_3$ in $\\mathbb{R}$, the slope of the secant line connecting the points $(x_1, f(x_1))$ and $(x_3, f(x_3))$ is greater than the slope of the secant line connecting the points $(x_1, f(x_1))$ and $(x_2, f(x_2))$, i.e., $\\frac{f(x_3) - f(x_1)}{x_3 - x_1} > \\frac{f(x_2) - f(x_1)}{x_2 - x_1}$."
+          },
+          {
+            "type": "assertion",
+            "statement": "If $f:\\mathbb{R} \\to \\mathbb{R}$ is a differentiable and strictly convex function, then the slope of secant lines, which approach the slope of the tangent lines, must also tend to infinity as $x \\to \\infty$, indicating that the rate of increase of $f(x)$ as $x \\to \\infty$ has no upper bound.",
+            "claim": "The slope of these secant lines, which approach the slope of the tangent lines due to the differentiability of $f$, must also tend to infinity as $x \\to \\infty$.",
+            "deduced-from": [
+              "Differentiability of $f$",
+              "Property of strictly convex functions"
+            ]
+          },
+          {
+            "type": "assertion",
+            "statement": "Given $f:\\mathbb{R} \\to \\mathbb{R}$ is a differentiable function that is strictly convex, the fact that the slope of the tangent lines tends to infinity as $x \\to \\infty$ implies that the rate of increase of $f(x)$ as $x \\to \\infty$ has no upper bound, contradicting the assumption that $f$ is bounded above.",
+            "claim": "This means that the rate of increase of $f(x)$ as $x \\to \\infty$ has no upper bound, contradicting the assumption that $f$ is bounded above.",
+            "deduced-from": [
+              "The slope of the tangent lines tends to infinity as $x \\to \\infty$"
+            ]
+          },
+          {
+            "type": "assertion",
+            "statement": "Given $f:\\mathbb{R} \\to \\mathbb{R}$ is a differentiable function that is strictly convex, considering $x$ tending to $-\\infty$, the slope of the secant lines (and hence the tangent lines) tends to infinity, indicating that $f(x)$ decreases without bound, which contradicts the assumption that $f$ is bounded below.",
+            "claim": "Similarly, considering $x$ tending to $-\\infty$, the slope of the secant lines (and hence the tangent lines) indicates that $f(x)$ decreases without bound, contradicting the assumption that $f$ is bounded below.",
+            "deduced-from": [
+              "The slope of the tangent lines tends to infinity as $x \\to -\\infty$"
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, under the assumption that $f''(x) > 0$ for all $x \\in \\mathbb{R}$, the function $f$ must be unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function with $f''(x) > 0$ for all $x \\in \\mathbb{R}$. Then, $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume, towards a contradiction, that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M, m",
+            "value": "Real numbers such that $m \\leq f(x) \\leq M$ for all $x \\in \\mathbb{R}$"
+          },
+          {
+            "type": "observation",
+            "statement": "Given $f''(x) > 0$ for all $x \\in \\mathbb{R}$, it follows that $f'$ is strictly increasing over $\\mathbb{R}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "For any $x_1, x_2 \\in \\mathbb{R}$ with $x_1 < x_2$, $f'(x_1) < f'(x_2)$.",
+            "deduced-from": [
+              "strictly increasing"
+            ],
+            "statement": "Given $f''(x) > 0$ for all $x \\in \\mathbb{R}$, for any $x_1, x_2 \\in \\mathbb{R}$ with $x_1 < x_2$, $f'(x_1) < f'(x_2)$ because $f'$ is strictly increasing over $\\mathbb{R}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "$f$ does not have two distinct points $x_1, x_2$ (where $x_1 < x_2$) such that $f(x_1) = f(x_2)$.",
+            "deduced-from": [
+              {
+                "result": "Rolle's Theorem",
+                "applied-to": "contradicting the strict increase of $f'$ on $\\mathbb{R}$"
+              }
+            ],
+            "justification": "This is because, if it were the case, then Rolle's Theorem would guarantee the existence of a point $\\xi \\in (x_1, x_2)$ where $f'(\\xi) = 0$, contradicting the strict increase of $f'$ on $\\mathbb{R}$.",
+            "statement": "Given $f''(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ does not have two distinct points $x_1, x_2$ (where $x_1 < x_2$) such that $f(x_1) = f(x_2)$, because this would contradict the strict increase of $f'$ on $\\mathbb{R}$ as guaranteed by Rolle's Theorem."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, $f$ must be strictly monotonic over $\\mathbb{R}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "A strictly monotonic function on $\\mathbb{R}$ cannot be bounded.",
+            "deduced-from": [
+              "it must approach infinity or negative infinity as $x$ approaches infinity or negative infinity, respectively"
+            ],
+            "statement": "Given $f''(x) > 0$ for all $x \\in \\mathbb{R}$ and $f$ is strictly monotonic over $\\mathbb{R}$, $f$ cannot be bounded because it must approach infinity or negative infinity as $x$ approaches infinity or negative infinity, respectively."
+          },
+          {
+            "type": "observation",
+            "statement": "Thus, $f$ is unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function with $f''(x) > 0$ for all $x \\in \\mathbb{R}$. Then, $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume, towards a contradiction, that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M, m",
+            "value": "Real numbers such that $m \\leq f(x) \\leq M$ for all $x \\in \\mathbb{R}$"
+          },
+          {
+            "type": "observation",
+            "statement": "Given $f''(x) > 0$ for all $x \\in \\mathbb{R}$, it follows that $f'$ is strictly increasing over $\\mathbb{R}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "For any $x_1, x_2 \\in \\mathbb{R}$ with $x_1 < x_2$, $f'(x_1) < f'(x_2)$.",
+            "deduced-from": [
+              "strictly increasing"
+            ],
+            "statement": "Given $f''(x) > 0$ for all $x \\in \\mathbb{R}$, if $x_1, x_2 \\in \\mathbb{R}$ with $x_1 < x_2$, then $f'(x_1) < f'(x_2)$."
+          },
+          {
+            "type": "assertion",
+            "claim": "$f$ does not have two distinct points $x_1, x_2$ (where $x_1 < x_2$) such that $f(x_1) = f(x_2)$.",
+            "deduced-from": [
+              {
+                "result": "Rolle's Theorem",
+                "applied-to": "contradicting the strict increase of $f'$ on $\\mathbb{R}$"
+              }
+            ],
+            "justification": "This is because, if it were the case, then Rolle's Theorem would guarantee the existence of a point $\\xi \\in (x_1, x_2)$ where $f'(\\xi) = 0$, contradicting the strict increase of $f'$ on $\\mathbb{R}$.",
+            "statement": "Given $f''(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ does not have two distinct points $x_1, x_2$ (where $x_1 < x_2$) such that $f(x_1) = f(x_2)$ because Rolle's Theorem would imply the existence of a point $\\xi \\in (x_1, x_2)$ where $f'(\\xi) = 0$, contradicting the strict increase of $f'$ on $\\mathbb{R}$."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, $f$ must be strictly monotonic over $\\mathbb{R}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "A strictly monotonic function on $\\mathbb{R}$ cannot be bounded.",
+            "deduced-from": [
+              "it must approach infinity or negative infinity as $x$ approaches infinity or negative infinity, respectively"
+            ],
+            "statement": "Given $f''(x) > 0$ for all $x \\in \\mathbb{R}$, a strictly monotonic function on $\\mathbb{R}$, such as $f$, cannot be bounded because it must approach infinity or negative infinity as $x$ approaches infinity or negative infinity, respectively."
+          },
+          {
+            "type": "observation",
+            "statement": "Thus, $f$ is unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function with $f''(x) > 0$ for all $x \\in \\mathbb{R}$. Then, $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume, towards a contradiction, that $f$ is bounded."
+          },
+          {
+            "type": "assertion",
+            "claim": "There exist $M, m \\in \\mathbb{R}$ such that $m \\leq f(x) \\leq M$ for all $x \\in \\mathbb{R}$.",
+            "deduced-from": [
+              "Assume, towards a contradiction, that $f$ is bounded."
+            ],
+            "statement": "Assuming $f:\\mathbb{R} \\to \\mathbb{R}$ is bounded, there exist $M, m \\in \\mathbb{R}$ such that $m \\leq f(x) \\leq M$ for all $x \\in \\mathbb{R}$. "
+          },
+          {
+            "type": "observation",
+            "statement": "Given $f''(x) > 0$ for all $x \\in \\mathbb{R}$, it follows that $f'$ is strictly increasing over $\\mathbb{R}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "For any $x_1, x_2 \\in \\mathbb{R}$ with $x_1 < x_2$, $f'(x_1) < f'(x_2)$.",
+            "deduced-from": [
+              "$f'$ is strictly increasing over $\\mathbb{R}$"
+            ],
+            "statement": "Given $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f''(x) > 0$ for all $x \\in \\mathbb{R}$, for any $x_1, x_2 \\in \\mathbb{R}$ with $x_1 < x_2$, it follows that $f'(x_1) < f'(x_2)$. "
+          },
+          {
+            "type": "assertion",
+            "claim": "$f$ does not have two distinct points $x_1, x_2$ (where $x_1 < x_2$) such that $f(x_1) = f(x_2)$.",
+            "deduced-from": [
+              {
+                "result": "Rolle's Theorem",
+                "applied-to": "$f$ is continuous and $f'$ is strictly increasing"
+              }
+            ],
+            "justification": "If $f(x_1) = f(x_2)$ for $x_1 < x_2$, there would exist a point $\\xi \\in (x_1, x_2)$ where $f'(\\xi) = 0$, contradicting the strict increase of $f'$ on $\\mathbb{R}$. ",
+            "statement": "Given $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f''(x) > 0$ for all $x \\in \\mathbb{R}$, it is not possible for $f$ to have two distinct points $x_1, x_2$ (where $x_1 < x_2$) such that $f(x_1) = f(x_2)$ because it would contradict the strict increase of $f'$ on $\\mathbb{R}$. "
+          },
+          {
+            "type": "observation",
+            "statement": "$f$ must be strictly monotonic over $\\mathbb{R}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "A strictly monotonic function on $\\mathbb{R}$ cannot be bounded.",
+            "deduced-from": [
+              "$f$ is strictly monotonic over $\\mathbb{R}$"
+            ],
+            "justification": "As it must approach infinity or negative infinity as $x$ approaches infinity or negative infinity, respectively.",
+            "statement": "Given $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f''(x) > 0$ for all $x \\in \\mathbb{R}$, leading to $f$ being strictly monotonic over $\\mathbb{R}$, such a function cannot be bounded as it must approach infinity or negative infinity as $x$ approaches infinity or negative infinity, respectively. "
+          },
+          {
+            "type": "assertion",
+            "claim": "$f$ is unbounded.",
+            "deduced-from": [
+              "A strictly monotonic function on $\\mathbb{R}$ cannot be bounded."
+            ],
+            "justification": "Arriving at a contradiction with the assumption that $f$ is bounded.",
+            "statement": "Given $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f''(x) > 0$ for all $x \\in \\mathbb{R}$, it follows that $f$ must be unbounded, contradicting the assumption that it is bounded. "
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function with $f''(x) > 0$ for all $x \\in \\mathbb{R}$. Then, $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume, towards a contradiction, that $f$ is bounded."
+          },
+          {
+            "type": "assertion",
+            "claim": "There exist $M, m \\in \\mathbb{R}$ such that $m \\leq f(x) \\leq M$ for all $x \\in \\mathbb{R}$.",
+            "deduced-from": [
+              "Assume, towards a contradiction, that $f$ is bounded."
+            ],
+            "statement": "Assuming that $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function with $f''(x) > 0$ for all $x \\in \\mathbb{R}$ and assuming towards a contradiction that $f$ is bounded, there exist $M, m \\in \\mathbb{R}$ such that $m \\leq f(x) \\leq M$ for all $x \\in \\mathbb{R}$."
+          },
+          {
+            "type": "observation",
+            "statement": "Given $f''(x) > 0$ for all $x \\in \\mathbb{R}$, it follows that $f'$ is strictly increasing over $\\mathbb{R}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "For any $x_1, x_2 \\in \\mathbb{R}$ with $x_1 < x_2$, $f'(x_1) < f'(x_2)$.",
+            "deduced-from": [
+              "$f'$ is strictly increasing over $\\mathbb{R}$"
+            ],
+            "statement": "Given $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function with $f''(x) > 0$ for all $x \\in \\mathbb{R}$, for any $x_1, x_2 \\in \\mathbb{R}$ with $x_1 < x_2$, it follows that $f'(x_1) < f'(x_2)$."
+          },
+          {
+            "type": "assertion",
+            "claim": "$f$ does not have two distinct points $x_1, x_2$ (where $x_1 < x_2$) such that $f(x_1) = f(x_2)$.",
+            "deduced-from": [
+              {
+                "result": "Rolle's Theorem",
+                "applied-to": "$f$ is continuous and $f'$ is strictly increasing"
+              }
+            ],
+            "justification": "If $f(x_1) = f(x_2)$ for $x_1 < x_2$, there would exist a point $\\xi \\in (x_1, x_2)$ where $f'(\\xi) = 0$, contradicting the strict increase of $f'$ on $\\mathbb{R}$.",
+            "statement": "Given $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function with $f''(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ does not have two distinct points $x_1, x_2$ (where $x_1 < x_2$) such that $f(x_1) = f(x_2)$ because this would contradict Rolle's Theorem given that $f'$ is strictly increasing."
+          },
+          {
+            "type": "observation",
+            "statement": "$f$ must be strictly monotonic over $\\mathbb{R}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "A strictly monotonic function on $\\mathbb{R}$ cannot be bounded.",
+            "deduced-from": [
+              "$f$ is strictly monotonic over $\\mathbb{R}$"
+            ],
+            "justification": "As it must approach infinity or negative infinity as $x$ approaches infinity or negative infinity, respectively.",
+            "statement": "Given $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function with $f''(x) > 0$ for all $x \\in \\mathbb{R}$ and is strictly monotonic over $\\mathbb{R}$, it cannot be bounded."
+          },
+          {
+            "type": "assertion",
+            "claim": "$f$ is unbounded.",
+            "deduced-from": [
+              "A strictly monotonic function on $\\mathbb{R}$ cannot be bounded."
+            ],
+            "justification": "Arriving at a contradiction with the assumption that $f$ is bounded.",
+            "statement": "Given $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function with $f''(x) > 0$ for all $x \\in \\mathbb{R}$ and assuming towards a contradiction that $f$ is bounded, it follows that $f$ is actually unbounded, contradicting the initial assumption."
+          }
+        ]
+      }
+    ]
+  ]
+}

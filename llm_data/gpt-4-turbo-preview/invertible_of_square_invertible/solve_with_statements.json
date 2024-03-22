@@ -1,0 +1,944 @@
+{
+  "problem": "Let $A$ be a square matrix. Prove that if $A^2$ is invertible then $A$ is invertible.",
+  "solutions": [
+    "Assume $A^2$ is invertible. Then there exists a matrix $B$ such that $A^2B = BA^2 = I$, where $I$ is the identity matrix.\n\nLet $C = AB$. Then, we see that $AC = A(AB) = A^2B = I$.\n\nThus, a right inverse for $A$ exists. Since $A$ is a square matrix, the existence of a right inverse also implies the existence of a left inverse (this follows from the rank-nullity theorem or by considering the determinant of $A$), thus proving $A$ is invertible.",
+    "Assume $A^2$ is invertible. This means there exists a matrix $B$ such that $A^2 B = BA^2 = I$, where $I$ is the identity matrix. Notice that $A(A B) = (AA)B = A^2B = I$. Hence, $AB$ is the inverse of $A$, which proves $A$ is invertible.",
+    "If $A^2$ is invertible, then there exists a matrix $B$ such that $A^2B = BA^2 = I$ where $I$ is the identity matrix. Now consider the matrix $AB$. We have $(AB)A = A(BA) = A^2B = I$. Thus, $A$ has a right inverse. Similarly, considering $BA$, we get $A(BA) = (AB)A = I$, demonstrating that $A$ also has a left inverse. Therefore, $A$ is invertible."
+  ],
+  "theories": [
+    "### Theorem\nLet $A$ be a square matrix. If $A^2$ is invertible, then $A$ is invertible.\n\n### Proof\nAssume $A^2$ is invertible. By definition, this means there exists a matrix $B$ such that $A^2B = I$ and $BA^2 = I$, where $I$ is the identity matrix.\n\nConsider the matrix $C = AB$. We compute $AC$ as follows:\n$$\nAC = A(AB) = A^2B = I.\n$$\nThe equation $AC = I$ shows that a right inverse for $A$ exists, which is $C = AB$.\n\nGiven that $A$ is a square matrix, the existence of a right inverse for $A$ implies that $A$ also has a left inverse. This conclusion is supported by the rank-nullity theorem or by considering the determinant of $A$. \n\nTherefore, $A$ is invertible, completing the proof.",
+    "### Theorem\nLet $A$ be a square matrix. If $A^2$ is invertible, then $A$ is also invertible.\n\n### Proof\nGiven that $A^2$ is invertible, there exists a matrix $B$ such that $A^2 B = B A^2 = I$, where $I$ is the identity matrix. Consider the product $A(A B)$. We can rewrite this as $(AA)B = A^2B = I$. This shows that $AB$ acts as a right inverse for $A$. Similarly, considering the product $(BA)A$, we have $B(AA) = BA^2 = I$, demonstrating that $BA$ acts as a left inverse for $A$. Since $A$ has both a left inverse and a right inverse, $A$ is invertible, and $AB = BA = I$ confirms that $B$ is indeed the inverse of $A$.",
+    "```json\n{\n  \"theorems\": [\n    {\n      \"name\": \"Invertibility of A given A^2 is invertible\",\n      \"statement\": \"Let $A$ be a square matrix. If $A^2$ is invertible, then $A$ is invertible.\",\n      \"proof\": \"Suppose $A^2$ is invertible. Then, there exists a matrix $B$ such that $A^2B = BA^2 = I$, where $I$ is the identity matrix. Consider the matrix product $AB$. It follows that $(AB)A = A(BA) = A^2B = I$. Thus, $A$ has a right inverse. Similarly, considering the product $BA$, we have $A(BA) = (AB)A = I$, showing that $A$ also has a left inverse. Consequently, $A$ is invertible.\"\n    }\n  ]\n}\n```"
+  ],
+  "structured_texts": [
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $A$ be a square matrix. If $A^2$ is invertible, then $A$ is invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "$A^2$ is invertible."
+          },
+          {
+            "type": "definition",
+            "statement": "There exists a matrix $B$ such that $A^2B = I$ and $BA^2 = I$, where $I$ is the identity matrix.",
+            "term": "invertible"
+          },
+          {
+            "type": "let",
+            "variable": "C",
+            "value": "AB"
+          },
+          {
+            "type": "observation",
+            "statement": "$AC = A(AB) = A^2B = I$."
+          },
+          {
+            "type": "assertion",
+            "claim": "A right inverse for $A$ exists, which is $C = AB$.",
+            "deduced-from": [
+              "$AC = I$"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "$A$ also has a left inverse.",
+            "deduced-from": [
+              {
+                "result": "the existence of a right inverse for a square matrix implies the existence of a left inverse",
+                "applied-to": {
+                  "matrix": "$A$"
+                }
+              },
+              "rank-nullity theorem",
+              "considering the determinant of $A$"
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, $A$ is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $A$ be a square matrix. If $A^2$ is invertible, then $A$ is invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "$A^2$ is invertible."
+          },
+          {
+            "type": "definition",
+            "statement": "There exists a matrix $B$ such that $A^2B = I$ and $BA^2 = I$, where $I$ is the identity matrix.",
+            "term": "invertible"
+          },
+          {
+            "type": "let",
+            "variable": "C",
+            "value": "AB"
+          },
+          {
+            "type": "observation",
+            "statement": "$AC = A(AB) = A^2B = I$."
+          },
+          {
+            "type": "assertion",
+            "claim": "A right inverse for $A$ exists, which is $C = AB$.",
+            "deduced-from": [
+              "$AC = I$"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "$A$ also has a left inverse.",
+            "deduced-from": [
+              {
+                "result": "the existence of a right inverse for $A$",
+                "applied-to": "$A$ is a square matrix"
+              },
+              "rank-nullity theorem",
+              "considering the determinant of $A$"
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, $A$ is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $A$ be a square matrix. If $A^2$ is invertible, then $A$ is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "$A^2$ is invertible"
+          },
+          {
+            "type": "let",
+            "variable": "B",
+            "value": "a matrix such that $A^2 B = B A^2 = I$",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "By the definition of invertibility, there exists a matrix $B$ such that $A^2 B = B A^2 = I$."
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Consider the product $A(A B)$. We can rewrite this as $(AA)B = A^2B = I$."
+          },
+          {
+            "type": "assertion",
+            "claim": "$AB$ acts as a right inverse for $A$.",
+            "deduced-from": [
+              "$(AA)B = A^2B = I$"
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Considering the product $(BA)A$, we have $B(AA) = BA^2 = I$."
+          },
+          {
+            "type": "assertion",
+            "claim": "$BA$ acts as a left inverse for $A$.",
+            "deduced-from": [
+              "$B(AA) = BA^2 = I$"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "$A$ is invertible.",
+            "deduced-from": [
+              {
+                "result": "$AB$ acts as a right inverse for $A$."
+              },
+              {
+                "result": "$BA$ acts as a left inverse for $A$."
+              }
+            ],
+            "justification": "Since $A$ has both a left inverse and a right inverse."
+          },
+          {
+            "type": "assertion",
+            "claim": "$AB = BA = I$ confirms that $B$ is indeed the inverse of $A$.",
+            "deduced-from": [
+              "$A$ is invertible."
+            ]
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $A$ be a square matrix. If $A^2$ is invertible, then $A$ is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "$A^2$ is invertible."
+          },
+          {
+            "type": "let",
+            "variable": "B",
+            "value": "a matrix such that $A^2 B = B A^2 = I$, where $I$ is the identity matrix.",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "Since $A^2$ is invertible, there exists a matrix $B$ such that $A^2 B = B A^2 = I$."
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Considering the product $A(AB)$, we can rewrite this as $(AA)B = A^2B = I$."
+          },
+          {
+            "type": "observation",
+            "statement": "This shows that $AB$ acts as a right inverse for $A$."
+          },
+          {
+            "type": "observation",
+            "statement": "Similarly, considering the product $(BA)A$, we have $B(AA) = BA^2 = I$."
+          },
+          {
+            "type": "observation",
+            "statement": "This demonstrates that $BA$ acts as a left inverse for $A$."
+          },
+          {
+            "type": "assertion",
+            "claim": "$A$ is invertible, and $AB = BA = I$ confirms that $B$ is indeed the inverse of $A$.",
+            "deduced-from": [
+              {
+                "result": "$AB$ acts as a right inverse for $A$."
+              },
+              {
+                "result": "$BA$ acts as a left inverse for $A$."
+              }
+            ],
+            "justification": "Since $A$ has both a left inverse and a right inverse, it is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Invertibility of A given A^2 is invertible",
+        "statement": "Let $A$ be a square matrix. If $A^2$ is invertible, then $A$ is invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Suppose $A^2$ is invertible."
+          },
+          {
+            "type": "let",
+            "variable": "$B$",
+            "value": "a matrix such that $A^2B = BA^2 = I$, where $I$ is the identity matrix."
+          },
+          {
+            "type": "observation",
+            "statement": "Considering the matrix product $AB$, it follows that $(AB)A = A(BA) = A^2B = I$."
+          },
+          {
+            "type": "observation",
+            "statement": "Thus, $A$ has a right inverse."
+          },
+          {
+            "type": "observation",
+            "statement": "Similarly, considering the product $BA$, we have $A(BA) = (AB)A = I$."
+          },
+          {
+            "type": "observation",
+            "statement": "Showing that $A$ also has a left inverse."
+          },
+          {
+            "type": "observation",
+            "statement": "Consequently, $A$ is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Invertibility of A given A^2 is invertible",
+        "statement": "Let $A$ be a square matrix. If $A^2$ is invertible, then $A$ is invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "$A^2$ is invertible."
+          },
+          {
+            "type": "let",
+            "variable": "$B$",
+            "value": "a matrix such that $A^2B = BA^2 = I$",
+            "existence": [
+              {
+                "type": "assertion",
+                "claim": "There exists a matrix $B$ such that $A^2B = BA^2 = I$",
+                "deduced-from": [
+                  "$A^2$ is invertible."
+                ]
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Considering $AB$, $(AB)A = A(BA) = A^2B = I$."
+          },
+          {
+            "type": "observation",
+            "statement": "$A$ has a right inverse."
+          },
+          {
+            "type": "observation",
+            "statement": "Considering $BA$, $A(BA) = (AB)A = I$."
+          },
+          {
+            "type": "observation",
+            "statement": "$A$ has a left inverse."
+          },
+          {
+            "type": "assertion",
+            "claim": "$A$ is invertible.",
+            "deduced-from": [
+              "$A$ has a right inverse.",
+              "$A$ has a left inverse."
+            ]
+          }
+        ]
+      }
+    ]
+  ],
+  "raw_structured_texts": [
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"statement\": \"Let $A$ be a square matrix. If $A^2$ is invertible, then $A$ is invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"$A^2$ is invertible.\"\n      },\n      {\n        \"type\": \"definition\",\n        \"statement\": \"There exists a matrix $B$ such that $A^2B = I$ and $BA^2 = I$, where $I$ is the identity matrix.\",\n        \"term\": \"invertible\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"C\",\n        \"value\": \"AB\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"$AC = A(AB) = A^2B = I$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A right inverse for $A$ exists, which is $C = AB$.\",\n        \"deduced-from\": [\n          \"$AC = I$\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$A$ also has a left inverse.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"the existence of a right inverse for a square matrix implies the existence of a left inverse\",\n            \"applied-to\": {\n              \"matrix\": \"$A$\"\n            }\n          },\n          \"rank-nullity theorem\",\n          \"considering the determinant of $A$\"\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Therefore, $A$ is invertible.\"\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"statement\": \"Let $A$ be a square matrix. If $A^2$ is invertible, then $A$ is invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"$A^2$ is invertible.\"\n      },\n      {\n        \"type\": \"definition\",\n        \"statement\": \"There exists a matrix $B$ such that $A^2B = I$ and $BA^2 = I$, where $I$ is the identity matrix.\",\n        \"term\": \"invertible\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"C\",\n        \"value\": \"AB\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"$AC = A(AB) = A^2B = I$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"A right inverse for $A$ exists, which is $C = AB$.\",\n        \"deduced-from\": [\"$AC = I$\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$A$ also has a left inverse.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"the existence of a right inverse for $A$\",\n            \"applied-to\": \"$A$ is a square matrix\"\n          },\n          \"rank-nullity theorem\",\n          \"considering the determinant of $A$\"\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Therefore, $A$ is invertible.\"\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"statement\": \"Let $A$ be a square matrix. If $A^2$ is invertible, then $A$ is also invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"$A^2$ is invertible\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"B\",\n        \"value\": \"a matrix such that $A^2 B = B A^2 = I$\",\n        \"existence\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"By the definition of invertibility, there exists a matrix $B$ such that $A^2 B = B A^2 = I$.\"\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Consider the product $A(A B)$. We can rewrite this as $(AA)B = A^2B = I$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$AB$ acts as a right inverse for $A$.\",\n        \"deduced-from\": [\n          \"$(AA)B = A^2B = I$\"\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Considering the product $(BA)A$, we have $B(AA) = BA^2 = I$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$BA$ acts as a left inverse for $A$.\",\n        \"deduced-from\": [\n          \"$B(AA) = BA^2 = I$\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$A$ is invertible.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"$AB$ acts as a right inverse for $A$.\"\n          },\n          {\n            \"result\": \"$BA$ acts as a left inverse for $A$.\"\n          }\n        ],\n        \"justification\": \"Since $A$ has both a left inverse and a right inverse.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$AB = BA = I$ confirms that $B$ is indeed the inverse of $A$.\",\n        \"deduced-from\": [\n          \"$A$ is invertible.\"\n        ]\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"statement\": \"Let $A$ be a square matrix. If $A^2$ is invertible, then $A$ is also invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"$A^2$ is invertible.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"B\",\n        \"value\": \"a matrix such that $A^2 B = B A^2 = I$, where $I$ is the identity matrix.\",\n        \"existence\": [\n          {\n            \"type\": \"observation\",\n            \"statement\": \"Since $A^2$ is invertible, there exists a matrix $B$ such that $A^2 B = B A^2 = I$.\"\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Considering the product $A(AB)$, we can rewrite this as $(AA)B = A^2B = I$.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"This shows that $AB$ acts as a right inverse for $A$.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Similarly, considering the product $(BA)A$, we have $B(AA) = BA^2 = I$.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"This demonstrates that $BA$ acts as a left inverse for $A$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$A$ is invertible, and $AB = BA = I$ confirms that $B$ is indeed the inverse of $A$.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"$AB$ acts as a right inverse for $A$.\"\n          },\n          {\n            \"result\": \"$BA$ acts as a left inverse for $A$.\"\n          }\n        ],\n        \"justification\": \"Since $A$ has both a left inverse and a right inverse, it is invertible.\"\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Invertibility of A given A^2 is invertible\",\n    \"statement\": \"Let $A$ be a square matrix. If $A^2$ is invertible, then $A$ is invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Suppose $A^2$ is invertible.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"$B$\",\n        \"value\": \"a matrix such that $A^2B = BA^2 = I$, where $I$ is the identity matrix.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Considering the matrix product $AB$, it follows that $(AB)A = A(BA) = A^2B = I$.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Thus, $A$ has a right inverse.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Similarly, considering the product $BA$, we have $A(BA) = (AB)A = I$.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Showing that $A$ also has a left inverse.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Consequently, $A$ is invertible.\"\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Invertibility of A given A^2 is invertible\",\n    \"statement\": \"Let $A$ be a square matrix. If $A^2$ is invertible, then $A$ is invertible.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"$A^2$ is invertible.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"$B$\",\n        \"value\": \"a matrix such that $A^2B = BA^2 = I$\",\n        \"existence\": [\n          {\n            \"type\": \"assertion\",\n            \"claim\": \"There exists a matrix $B$ such that $A^2B = BA^2 = I$\",\n            \"deduced-from\": [\n              \"$A^2$ is invertible.\"\n            ]\n          }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Considering $AB$, $(AB)A = A(BA) = A^2B = I$.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"$A$ has a right inverse.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Considering $BA$, $A(BA) = (AB)A = I$.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"$A$ has a left inverse.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$A$ is invertible.\",\n        \"deduced-from\": [\n          \"$A$ has a right inverse.\",\n          \"$A$ has a left inverse.\"\n        ]\n      }\n    ]\n  }\n]\n```"
+  ],
+  "texts_with_statements": [
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $A$ be a square matrix. If $A^2$ is invertible, then $A$ is invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "$A^2$ is invertible."
+          },
+          {
+            "type": "definition",
+            "statement": "There exists a matrix $B$ such that $A^2B = I$ and $BA^2 = I$, where $I$ is the identity matrix.",
+            "term": "invertible"
+          },
+          {
+            "type": "let",
+            "variable": "C",
+            "value": "AB"
+          },
+          {
+            "type": "observation",
+            "statement": "$AC = A(AB) = A^2B = I$."
+          },
+          {
+            "type": "assertion",
+            "claim": "A right inverse for $A$ exists, which is $C = AB$.",
+            "statement": "Given that $A^2$ is invertible and there exists a matrix $B$ such that $A^2B = I$ and $BA^2 = I$, and if we let $C = AB$, then a right inverse for $A$ exists, which is $C = AB$.",
+            "deduced-from": [
+              "$AC = I$"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "$A$ also has a left inverse.",
+            "statement": "Given that $A^2$ is invertible and there exists a matrix $B$ such that $A^2B = I$ and $BA^2 = I$, and if we let $C = AB$, then $A$ also has a left inverse based on the existence of a right inverse for a square matrix implying the existence of a left inverse, the rank-nullity theorem, and considering the determinant of $A$.",
+            "deduced-from": [
+              {
+                "result": "the existence of a right inverse for a square matrix implies the existence of a left inverse",
+                "applied-to": {
+                  "matrix": "$A$"
+                }
+              },
+              "rank-nullity theorem",
+              "considering the determinant of $A$"
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, $A$ is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $A$ be a square matrix. If $A^2$ is invertible, then $A$ is invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "$A^2$ is invertible."
+          },
+          {
+            "type": "definition",
+            "statement": "There exists a matrix $B$ such that $A^2B = I$ and $BA^2 = I$, where $I$ is the identity matrix.",
+            "term": "invertible"
+          },
+          {
+            "type": "let",
+            "variable": "C",
+            "value": "AB"
+          },
+          {
+            "type": "observation",
+            "statement": "$AC = A(AB) = A^2B = I$."
+          },
+          {
+            "type": "assertion",
+            "claim": "A right inverse for $A$ exists, which is $C = AB$.",
+            "deduced-from": [
+              "$AC = I$"
+            ],
+            "statement": "Given a square matrix $A$ and a matrix $B$ such that $A^2B = I$, let $C = AB$. Then a right inverse for $A$ exists, which is $C = AB$, because $AC = A(AB) = A^2B = I$."
+          },
+          {
+            "type": "assertion",
+            "claim": "$A$ also has a left inverse.",
+            "deduced-from": [
+              {
+                "result": "the existence of a right inverse for a square matrix implies the existence of a left inverse",
+                "applied-to": {
+                  "matrix": "$A$"
+                }
+              },
+              "rank-nullity theorem",
+              "considering the determinant of $A$"
+            ],
+            "statement": "Given a square matrix $A$ and a matrix $B$ such that $A^2B = I$, and considering that $A$ has a right inverse which implies the existence of a left inverse by the rank-nullity theorem and considering the determinant of $A$, $A$ also has a left inverse."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, $A$ is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $A$ be a square matrix. If $A^2$ is invertible, then $A$ is invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "$A^2$ is invertible."
+          },
+          {
+            "type": "definition",
+            "statement": "There exists a matrix $B$ such that $A^2B = I$ and $BA^2 = I$, where $I$ is the identity matrix.",
+            "term": "invertible"
+          },
+          {
+            "type": "let",
+            "variable": "C",
+            "value": "AB"
+          },
+          {
+            "type": "observation",
+            "statement": "$AC = A(AB) = A^2B = I$."
+          },
+          {
+            "type": "assertion",
+            "claim": "A right inverse for $A$ exists, which is $C = AB$.",
+            "statement": "If $A^2$ is invertible and we let $C = AB$, then a right inverse for $A$ exists, which is $C = AB$, because $AC = A(AB) = A^2B = I$.",
+            "deduced-from": [
+              "$AC = I$"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "$A$ also has a left inverse.",
+            "statement": "Given $A^2$ is invertible and considering $A$ is a square matrix and a right inverse $C = AB$ exists for $A$, $A$ also has a left inverse using the rank-nullity theorem and considering the determinant of $A$.",
+            "deduced-from": [
+              {
+                "result": "the existence of a right inverse for $A$",
+                "applied-to": "$A$ is a square matrix"
+              },
+              "rank-nullity theorem",
+              "considering the determinant of $A$"
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, $A$ is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $A$ be a square matrix. If $A^2$ is invertible, then $A$ is invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "$A^2$ is invertible."
+          },
+          {
+            "type": "definition",
+            "statement": "There exists a matrix $B$ such that $A^2B = I$ and $BA^2 = I$, where $I$ is the identity matrix.",
+            "term": "invertible"
+          },
+          {
+            "type": "let",
+            "variable": "C",
+            "value": "AB"
+          },
+          {
+            "type": "observation",
+            "statement": "$AC = A(AB) = A^2B = I$."
+          },
+          {
+            "type": "assertion",
+            "claim": "A right inverse for $A$ exists, which is $C = AB$.",
+            "deduced-from": [
+              "$AC = I$"
+            ],
+            "statement": "Given $A^2$ is invertible and $C = AB$, a right inverse for $A$ exists, which is $C = AB$, because $AC = A(AB) = A^2B = I$."
+          },
+          {
+            "type": "assertion",
+            "claim": "$A$ also has a left inverse.",
+            "deduced-from": [
+              {
+                "result": "the existence of a right inverse for $A$",
+                "applied-to": "$A$ is a square matrix"
+              },
+              "rank-nullity theorem",
+              "considering the determinant of $A$"
+            ],
+            "statement": "Given $A$ is a square matrix and considering the determinant of $A$ and the rank-nullity theorem, $A$ also has a left inverse, deduced from the existence of a right inverse for $A$."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, $A$ is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $A$ be a square matrix. If $A^2$ is invertible, then $A$ is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "$A^2$ is invertible"
+          },
+          {
+            "type": "let",
+            "variable": "B",
+            "value": "a matrix such that $A^2 B = B A^2 = I$",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "By the definition of invertibility, there exists a matrix $B$ such that $A^2 B = B A^2 = I$."
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Consider the product $A(A B)$. We can rewrite this as $(AA)B = A^2B = I$."
+          },
+          {
+            "type": "assertion",
+            "statement": "If $A^2$ is invertible with a certain matrix $B$ such that $A^2 B = B A^2 = I$, then $AB$ acts as a right inverse for $A$.",
+            "claim": "$AB$ acts as a right inverse for $A$.",
+            "deduced-from": [
+              "$(AA)B = A^2B = I$"
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Considering the product $(BA)A$, we have $B(AA) = BA^2 = I$."
+          },
+          {
+            "type": "assertion",
+            "statement": "If $A^2$ is invertible with a certain matrix $B$ such that $A^2 B = B A^2 = I$, then $BA$ acts as a left inverse for $A$.",
+            "claim": "$BA$ acts as a left inverse for $A$.",
+            "deduced-from": [
+              "$B(AA) = BA^2 = I$"
+            ]
+          },
+          {
+            "type": "assertion",
+            "statement": "If $A^2$ is invertible with a certain matrix $B$ such that $A^2 B = B A^2 = I$, and we can show that $AB$ acts as a right inverse and $BA$ acts as a left inverse for $A$, then $A$ is invertible.",
+            "claim": "$A$ is invertible.",
+            "deduced-from": [
+              {
+                "result": "$AB$ acts as a right inverse for $A$."
+              },
+              {
+                "result": "$BA$ acts as a left inverse for $A$."
+              }
+            ],
+            "justification": "Since $A$ has both a left inverse and a right inverse."
+          },
+          {
+            "type": "assertion",
+            "statement": "If $A^2$ is invertible and $A$ is shown to be invertible by having both a left and a right inverse, then $AB = BA = I$ confirms that $B$ is indeed the inverse of $A$.",
+            "claim": "$AB = BA = I$ confirms that $B$ is indeed the inverse of $A$.",
+            "deduced-from": [
+              "$A$ is invertible."
+            ]
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $A$ be a square matrix. If $A^2$ is invertible, then $A$ is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "$A^2$ is invertible"
+          },
+          {
+            "type": "let",
+            "variable": "B",
+            "value": "a matrix such that $A^2 B = B A^2 = I$",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "By the definition of invertibility, there exists a matrix $B$ such that $A^2 B = B A^2 = I$."
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Consider the product $A(A B)$. We can rewrite this as $(AA)B = A^2B = I$."
+          },
+          {
+            "type": "assertion",
+            "claim": "$AB$ acts as a right inverse for $A$.",
+            "deduced-from": [
+              "$(AA)B = A^2B = I$"
+            ],
+            "statement": "Let $A$ be a square matrix and let $B$ be a matrix such that $A^2 B = B A^2 = I$. If $(AA)B = A^2B = I$, then $AB$ acts as a right inverse for $A$."
+          },
+          {
+            "type": "observation",
+            "statement": "Considering the product $(BA)A$, we have $B(AA) = BA^2 = I$."
+          },
+          {
+            "type": "assertion",
+            "claim": "$BA$ acts as a left inverse for $A$.",
+            "deduced-from": [
+              "$B(AA) = BA^2 = I$"
+            ],
+            "statement": "Let $A$ be a square matrix and let $B$ be a matrix such that $A^2 B = B A^2 = I$. If $B(AA) = BA^2 = I$, then $BA$ acts as a left inverse for $A$."
+          },
+          {
+            "type": "assertion",
+            "claim": "$A$ is invertible.",
+            "deduced-from": [
+              {
+                "result": "$AB$ acts as a right inverse for $A$."
+              },
+              {
+                "result": "$BA$ acts as a left inverse for $A$."
+              }
+            ],
+            "justification": "Since $A$ has both a left inverse and a right inverse.",
+            "statement": "Let $A$ be a square matrix and let $B$ be a matrix such that $A^2 B = B A^2 = I$. If $AB$ acts as a right inverse for $A$ and $BA$ acts as a left inverse for $A$, then $A$ is invertible."
+          },
+          {
+            "type": "assertion",
+            "claim": "$AB = BA = I$ confirms that $B$ is indeed the inverse of $A$.",
+            "deduced-from": [
+              "$A$ is invertible."
+            ],
+            "statement": "Let $A$ be a square matrix and let $B$ be a matrix such that $A^2 B = B A^2 = I$. If $A$ is invertible, then $AB = BA = I$ confirms that $B$ is indeed the inverse of $A$."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $A$ be a square matrix. If $A^2$ is invertible, then $A$ is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "$A^2$ is invertible."
+          },
+          {
+            "type": "let",
+            "variable": "B",
+            "value": "a matrix such that $A^2 B = B A^2 = I$, where $I$ is the identity matrix.",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "Since $A^2$ is invertible, there exists a matrix $B$ such that $A^2 B = B A^2 = I$."
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Considering the product $A(AB)$, we can rewrite this as $(AA)B = A^2B = I$."
+          },
+          {
+            "type": "observation",
+            "statement": "This shows that $AB$ acts as a right inverse for $A$."
+          },
+          {
+            "type": "observation",
+            "statement": "Similarly, considering the product $(BA)A$, we have $B(AA) = BA^2 = I$."
+          },
+          {
+            "type": "observation",
+            "statement": "This demonstrates that $BA$ acts as a left inverse for $A$."
+          },
+          {
+            "type": "assertion",
+            "claim": "$A$ is invertible, and $AB = BA = I$ confirms that $B$ is indeed the inverse of $A$.",
+            "statement": "Let $A$ be a square matrix and let $B$ be a matrix such that $A^2 B = B A^2 = I$, where $I$ is the identity matrix. If $A^2$ is invertible, then $A$ is invertible, and $AB = BA = I$ confirms that $B$ is indeed the inverse of $A$.",
+            "deduced-from": [
+              {
+                "result": "$AB$ acts as a right inverse for $A$."
+              },
+              {
+                "result": "$BA$ acts as a left inverse for $A$."
+              }
+            ],
+            "justification": "Since $A$ has both a left inverse and a right inverse, it is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $A$ be a square matrix. If $A^2$ is invertible, then $A$ is also invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "$A^2$ is invertible."
+          },
+          {
+            "type": "let",
+            "variable": "B",
+            "value": "a matrix such that $A^2 B = B A^2 = I$, where $I$ is the identity matrix.",
+            "existence": [
+              {
+                "type": "observation",
+                "statement": "Since $A^2$ is invertible, there exists a matrix $B$ such that $A^2 B = B A^2 = I$."
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Considering the product $A(AB)$, we can rewrite this as $(AA)B = A^2B = I$."
+          },
+          {
+            "type": "observation",
+            "statement": "This shows that $AB$ acts as a right inverse for $A$."
+          },
+          {
+            "type": "observation",
+            "statement": "Similarly, considering the product $(BA)A$, we have $B(AA) = BA^2 = I$."
+          },
+          {
+            "type": "observation",
+            "statement": "This demonstrates that $BA$ acts as a left inverse for $A$."
+          },
+          {
+            "type": "assertion",
+            "claim": "$A$ is invertible, and $AB = BA = I$ confirms that $B$ is indeed the inverse of $A$.",
+            "deduced-from": [
+              {
+                "result": "$AB$ acts as a right inverse for $A$."
+              },
+              {
+                "result": "$BA$ acts as a left inverse for $A$."
+              }
+            ],
+            "justification": "Since $A$ has both a left inverse and a right inverse, it is invertible.",
+            "statement": "Let $A$ be a square matrix and let $B$ be a matrix such that $A^2 B = B A^2 = I$, where $I$ is the identity matrix. If $A^2$ is invertible, then $A$ is invertible and $AB = BA = I$ confirms that $B$ is the inverse of $A$."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Invertibility of A given A^2 is invertible",
+        "statement": "Let $A$ be a square matrix. If $A^2$ is invertible, then $A$ is invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Suppose $A^2$ is invertible."
+          },
+          {
+            "type": "let",
+            "variable": "$B$",
+            "value": "a matrix such that $A^2B = BA^2 = I$, where $I$ is the identity matrix."
+          },
+          {
+            "type": "observation",
+            "statement": "Considering the matrix product $AB$, it follows that $(AB)A = A(BA) = A^2B = I$."
+          },
+          {
+            "type": "observation",
+            "statement": "Thus, $A$ has a right inverse."
+          },
+          {
+            "type": "observation",
+            "statement": "Similarly, considering the product $BA$, we have $A(BA) = (AB)A = I$."
+          },
+          {
+            "type": "observation",
+            "statement": "Showing that $A$ also has a left inverse."
+          },
+          {
+            "type": "observation",
+            "statement": "Consequently, $A$ is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Invertibility of A given A^2 is invertible",
+        "statement": "Let $A$ be a square matrix. If $A^2$ is invertible, then $A$ is invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "$A^2$ is invertible."
+          },
+          {
+            "type": "let",
+            "variable": "$B$",
+            "value": "a matrix such that $A^2B = BA^2 = I$",
+            "existence": [
+              {
+                "type": "assertion",
+                "claim": "There exists a matrix $B$ such that $A^2B = BA^2 = I$",
+                "deduced-from": [
+                  "$A^2$ is invertible."
+                ],
+                "statement": "If $A^2$ is invertible, then there exists a matrix $B$ such that $A^2B = BA^2 = I$."
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Considering $AB$, $(AB)A = A(BA) = A^2B = I$."
+          },
+          {
+            "type": "observation",
+            "statement": "$A$ has a right inverse."
+          },
+          {
+            "type": "observation",
+            "statement": "Considering $BA$, $A(BA) = (AB)A = I$."
+          },
+          {
+            "type": "observation",
+            "statement": "$A$ has a left inverse."
+          },
+          {
+            "type": "assertion",
+            "claim": "$A$ is invertible.",
+            "deduced-from": [
+              "$A$ has a right inverse.",
+              "$A$ has a left inverse."
+            ],
+            "statement": "If $A^2$ is invertible and there exists a matrix $B$ such that $A^2B = BA^2 = I$, then $A$ is invertible."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Invertibility of A given A^2 is invertible",
+        "statement": "Let $A$ be a square matrix. If $A^2$ is invertible, then $A$ is invertible.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "$A^2$ is invertible."
+          },
+          {
+            "type": "let",
+            "variable": "$B$",
+            "value": "a matrix such that $A^2B = BA^2 = I$",
+            "existence": [
+              {
+                "type": "assertion",
+                "claim": "There exists a matrix $B$ such that $A^2B = BA^2 = I$",
+                "deduced-from": [
+                  "$A^2$ is invertible."
+                ],
+                "statement": "Given that $A^2$ is invertible, there exists a matrix $B$ such that $A^2B = BA^2 = I$."
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Considering $AB$, $(AB)A = A(BA) = A^2B = I$."
+          },
+          {
+            "type": "observation",
+            "statement": "$A$ has a right inverse."
+          },
+          {
+            "type": "observation",
+            "statement": "Considering $BA$, $A(BA) = (AB)A = I$."
+          },
+          {
+            "type": "observation",
+            "statement": "$A$ has a left inverse."
+          },
+          {
+            "type": "assertion",
+            "claim": "$A$ is invertible.",
+            "deduced-from": [
+              "$A$ has a right inverse.",
+              "$A$ has a left inverse."
+            ],
+            "statement": "Given that $A$ has both a right and a left inverse, it follows that $A$ is invertible."
+          }
+        ]
+      }
+    ]
+  ]
+}

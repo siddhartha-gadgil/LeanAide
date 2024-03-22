@@ -1,0 +1,2938 @@
+{
+  "problem": "Prove or disprove: Suppose $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+  "solutions": [
+    "The statement is true.",
+    "The statement is true.",
+    "The statement is true."
+  ],
+  "theories": [
+    "### Theorem\nLet $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.\n\n### Proof\nAssume for the sake of contradiction that $f$ is bounded. Then, there exist real numbers $M$ and $m$ such that for all $x \\in \\mathbb{R}$, $m \\leq f(x) \\leq M$. Since $f$ is continuous on $\\mathbb{R}$ and differentiable with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, it follows that $f$ is strictly increasing on $\\mathbb{R}$. \n\nConsider any $x_0 \\in \\mathbb{R}$. Since $f$ is strictly increasing, for any $x > x_0$, we have $f(x) > f(x_0)$. By choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large, contradicting the assumption that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$. Similarly, by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small, contradicting the assumption that $f(x) \\geq m$ for all $x \\in \\mathbb{R}$.\n\nTherefore, our initial assumption that $f$ is bounded must be false. Hence, $f$ is unbounded.",
+    "### Theorem\nSuppose $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.\n\n### Proof\nSince $f$ is differentiable on $\\mathbb{R}$ and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly increasing on $\\mathbb{R}$. Let $x_0 \\in \\mathbb{R}$ be any point. For any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$. This follows from the Intermediate Value Theorem applied to the continuous function $f$ on the interval $[x_0, x_1]$ and the fact that $f$ is strictly increasing, ensuring that $f(x_1) > f(x_0)$ and thus $f(x)$ can be made arbitrarily large by choosing $x_1$ sufficiently large.\n\nSimilarly, for any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$ by the same reasoning but applied to the decreasing behavior of $f$ as we move to the left of $x_0$.\n\nTherefore, $f$ is unbounded above and unbounded below, which means $f$ is unbounded on $\\mathbb{R}$.",
+    "### Theorem\nLet $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function. If $f'(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is unbounded.\n\n### Proof\nAssume for contradiction that $f$ is bounded. Then there exists a real number $M > 0$ such that $|f(x)| \\leq M$ for all $x \\in \\mathbb{R}$. Since $f'(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly increasing on $\\mathbb{R}$.\n\nConsider the interval $[0, N]$ for some $N > 0$. Since $f$ is continuous on $[0, N]$ and differentiable on $(0, N)$ with $f'(x) > 0$, by the Mean Value Theorem, there exists a $c \\in (0, N)$ such that \n\\[f'(c) = \\frac{f(N) - f(0)}{N - 0} > 0.\\]\n\nAs $f$ is strictly increasing, $f(N) > f(0)$, and thus $f(N) - f(0) > 0$. Since $f'(c) > 0$, the difference $f(N) - f(0)$ must also increase as $N$ increases, and because $f'(x) > 0$ for all $x$, this difference continues to grow without bound as $N$ becomes arbitrarily large.\n\nTherefore, for a sufficiently large $N$, we must have $|f(N)| > M$, contradicting the assumption that $f$ is bounded. Hence, the function $f$ must be unbounded.\n"
+  ],
+  "structured_texts": [
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for the sake of contradiction that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M",
+            "value": "a real number such that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$"
+          },
+          {
+            "type": "let",
+            "variable": "m",
+            "value": "a real number such that $m \\leq f(x)$ for all $x \\in \\mathbb{R}$"
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f$ is continuous on $\\mathbb{R}$ and differentiable with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, it follows that $f$ is strictly increasing on $\\mathbb{R}$."
+          },
+          {
+            "type": "let",
+            "variable": "x_0",
+            "value": "any real number"
+          },
+          {
+            "type": "observation",
+            "statement": "For any $x > x_0$, we have $f(x) > f(x_0)$, since $f$ is strictly increasing."
+          },
+          {
+            "type": "assertion",
+            "claim": "By choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large.",
+            "deduced-from": [
+              "the function $f$ is strictly increasing"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "This contradicts the assumption that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$.",
+            "deduced-from": [
+              "By choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large."
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "Similarly, by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small.",
+            "deduced-from": [
+              "the function $f$ is strictly increasing"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "This contradicts the assumption that $f(x) \\geq m$ for all $x \\in \\mathbb{R}$.",
+            "deduced-from": [
+              "by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small."
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, our initial assumption that $f$ is bounded must be false."
+          },
+          {
+            "type": "observation",
+            "statement": "Hence, $f$ is unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for the sake of contradiction that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M",
+            "value": "a real number such that for all $x \\in \\mathbb{R}$, $f(x) \\leq M$"
+          },
+          {
+            "type": "let",
+            "variable": "m",
+            "value": "a real number such that for all $x \\in \\mathbb{R}$, $m \\leq f(x)$"
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f$ is continuous on $\\mathbb{R}$ and differentiable with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, it follows that $f$ is strictly increasing on $\\mathbb{R}$."
+          },
+          {
+            "type": "let",
+            "variable": "x_0",
+            "value": "any real number"
+          },
+          {
+            "type": "assertion",
+            "claim": "For any $x > x_0$, we have $f(x) > f(x_0)$.",
+            "deduced-from": [
+              {
+                "result": "$f$ is strictly increasing on $\\mathbb{R}$",
+                "applied-to": "$x_0$"
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "By choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large, contradicting the assumption that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$.",
+            "deduced-from": [
+              "For any $x > x_0$, we have $f(x) > f(x_0)$."
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "Similarly, by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small, contradicting the assumption that $f(x) \\geq m$ for all $x \\in \\mathbb{R}$.",
+            "deduced-from": [
+              "For any $x > x_0$, we have $f(x) > f(x_0)$."
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, our initial assumption that $f$ is bounded must be false. Hence, $f$ is unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Main Theorem",
+        "statement": "Suppose $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "$f$ is differentiable on $\\mathbb{R}$ and $f'(x) > 0$ for all $x \\in \\mathbb{R}$."
+          },
+          {
+            "type": "observation",
+            "statement": "$f$ is strictly increasing on $\\mathbb{R}$."
+          },
+          {
+            "type": "let",
+            "variable": "$x_0$",
+            "value": "any point in $\\mathbb{R}$"
+          },
+          {
+            "type": "assertion",
+            "claim": "For any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+            "deduced-from": [
+              {
+                "result": "Intermediate Value Theorem",
+                "applied-to": {
+                  "function": "$f$",
+                  "interval": "$[x_0, x_1]$"
+                }
+              },
+              "strictly increasing nature of $f$"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "Similarly, for any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+            "deduced-from": [
+              {
+                "result": "Intermediate Value Theorem",
+                "applied-to": {
+                  "function": "$f$",
+                  "interval": "$[x_2, x_0]$"
+                }
+              },
+              "strictly increasing nature of $f$",
+              "observation about behavior to the left of $x_0$"
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, $f$ is unbounded above and unbounded below, meaning $f$ is unbounded on $\\mathbb{R}$."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "f is unbounded",
+        "statement": "Suppose $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "$f$ is differentiable on $\\mathbb{R}$ and $f'(x) > 0$ for all $x \\in \\mathbb{R}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "$f$ is strictly increasing on $\\mathbb{R}$.",
+            "deduced-from": [
+              {
+                "result": "Intermediate Value Theorem",
+                "applied-to": "$f$ on any interval in $\\mathbb{R}$"
+              },
+              "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+            ]
+          },
+          {
+            "type": "let",
+            "variable": "$x_0$",
+            "value": "any point in $\\mathbb{R}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "For any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+            "deduced-from": [
+              "Intermediate Value Theorem",
+              "$f$ is strictly increasing"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "For any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+            "deduced-from": [
+              "Intermediate Value Theorem",
+              {
+                "result": "$f$ is strictly increasing",
+                "applied-to": {
+                  "result": "moving to the left of $x_0$",
+                  "implies": "decreasing behavior of $f$"
+                }
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "$f$ is unbounded above and unbounded below, which means $f$ is unbounded on $\\mathbb{R}$.",
+            "deduced-from": [
+              "For any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+              "For any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$."
+            ]
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function. If $f'(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for contradiction that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M",
+            "value": "a real number $M > 0$ such that $|f(x)| \\leq M$ for all $x \\in \\mathbb{R}$."
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f'(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly increasing on $\\mathbb{R}$."
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "some $N > 0$."
+          },
+          {
+            "type": "assertion",
+            "claim": "There exists a $c \\in (0, N)$ such that $f'(c) = \\frac{f(N) - f(0)}{N - 0} > 0$.",
+            "deduced-from": [
+              {
+                "result": "Mean Value Theorem",
+                "applied-to": {
+                  "interval": "[0, N]",
+                  "function": "$f$"
+                }
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "As $f$ is strictly increasing, $f(N) > f(0)$, and thus $f(N) - f(0) > 0$."
+          },
+          {
+            "type": "assertion",
+            "claim": "The difference $f(N) - f(0)$ must increase as $N$ increases, and because $f'(x) > 0$ for all $x$, this difference continues to grow without bound as $N$ becomes arbitrarily large.",
+            "deduced-from": [
+              "$f'(x) > 0$ for all $x \\in \\mathbb{R}$",
+              "As $f$ is strictly increasing, $f(N) > f(0)$, and thus $f(N) - f(0) > 0$."
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "For a sufficiently large $N$, we must have $|f(N)| > M$, contradicting the assumption that $f$ is bounded.",
+            "justification": "Since the difference $f(N) - f(0)$ grows without bound and $f$ is increasing."
+          },
+          {
+            "type": "observation",
+            "statement": "Hence, the function $f$ must be unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function. If $f'(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for contradiction that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M",
+            "value": "a real number $M > 0$ such that $|f(x)| \\leq M$ for all $x \\in \\mathbb{R}$"
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f'(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly increasing on $\\mathbb{R}$."
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "some $N > 0$"
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f$ is continuous on $[0, N]$ and differentiable on $(0, N)$ with $f'(x) > 0$, by the Mean Value Theorem, there exists a $c \\in (0, N)$ such that $f'(c) = \\frac{f(N) - f(0)}{N - 0} > 0$."
+          },
+          {
+            "type": "observation",
+            "statement": "As $f$ is strictly increasing, $f(N) > f(0)$, and thus $f(N) - f(0) > 0$. Since $f'(c) > 0$, the difference $f(N) - f(0)$ must also increase as $N$ increases."
+          },
+          {
+            "type": "observation",
+            "statement": "This difference continues to grow without bound as $N$ becomes arbitrarily large."
+          },
+          {
+            "type": "assertion",
+            "claim": "For a sufficiently large $N$, we must have $|f(N)| > M$",
+            "deduced-from": [
+              "the assumption that $f$ is bounded",
+              "the difference $f(N) - f(0)$ grows without bound as $N$ increases"
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Contradicting the assumption that $f$ is bounded. Hence, the function $f$ must be unbounded."
+          }
+        ]
+      }
+    ]
+  ],
+  "raw_structured_texts": [
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"statement\": \"Let $f:\\\\mathbb{R} \\\\to \\\\mathbb{R}$ be a continuous function such that $f'(x) > 0$ for all $x \\\\in \\\\mathbb{R}$. Then $f$ is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume for the sake of contradiction that $f$ is bounded.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"M\",\n        \"value\": \"a real number such that $f(x) \\\\leq M$ for all $x \\\\in \\\\mathbb{R}$\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"m\",\n        \"value\": \"a real number such that $m \\\\leq f(x)$ for all $x \\\\in \\\\mathbb{R}$\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Since $f$ is continuous on $\\\\mathbb{R}$ and differentiable with $f'(x) > 0$ for all $x \\\\in \\\\mathbb{R}$, it follows that $f$ is strictly increasing on $\\\\mathbb{R}$.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"x_0\",\n        \"value\": \"any real number\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"For any $x > x_0$, we have $f(x) > f(x_0)$, since $f$ is strictly increasing.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"By choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large.\",\n        \"deduced-from\": [\n          \"the function $f$ is strictly increasing\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"This contradicts the assumption that $f(x) \\\\leq M$ for all $x \\\\in \\\\mathbb{R}$.\",\n        \"deduced-from\": [\n          \"By choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large.\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Similarly, by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small.\",\n        \"deduced-from\": [\n          \"the function $f$ is strictly increasing\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"This contradicts the assumption that $f(x) \\\\geq m$ for all $x \\\\in \\\\mathbb{R}$.\",\n        \"deduced-from\": [\n          \"by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small.\"\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Therefore, our initial assumption that $f$ is bounded must be false.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Hence, $f$ is unbounded.\"\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"statement\": \"Let $f:\\\\mathbb{R} \\\\to \\\\mathbb{R}$ be a continuous function such that $f'(x) > 0$ for all $x \\\\in \\\\mathbb{R}$. Then $f$ is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume for the sake of contradiction that $f$ is bounded.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"M\",\n        \"value\": \"a real number such that for all $x \\\\in \\\\mathbb{R}$, $f(x) \\\\leq M$\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"m\",\n        \"value\": \"a real number such that for all $x \\\\in \\\\mathbb{R}$, $m \\\\leq f(x)$\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Since $f$ is continuous on $\\\\mathbb{R}$ and differentiable with $f'(x) > 0$ for all $x \\\\in \\\\mathbb{R}$, it follows that $f$ is strictly increasing on $\\\\mathbb{R}$.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"x_0\",\n        \"value\": \"any real number\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For any $x > x_0$, we have $f(x) > f(x_0)$.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"$f$ is strictly increasing on $\\\\mathbb{R}$\",\n            \"applied-to\": \"$x_0$\"\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"By choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large, contradicting the assumption that $f(x) \\\\leq M$ for all $x \\\\in \\\\mathbb{R}$.\",\n        \"deduced-from\": [\n          \"For any $x > x_0$, we have $f(x) > f(x_0)$.\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Similarly, by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small, contradicting the assumption that $f(x) \\\\geq m$ for all $x \\\\in \\\\mathbb{R}$.\",\n        \"deduced-from\": [\n          \"For any $x > x_0$, we have $f(x) > f(x_0)$.\"\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Therefore, our initial assumption that $f$ is bounded must be false. Hence, $f$ is unbounded.\"\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"Main Theorem\",\n    \"statement\": \"Suppose $f:\\\\mathbb{R} \\\\to \\\\mathbb{R}$ is a continuous function such that $f'(x) > 0$ for all $x \\\\in \\\\mathbb{R}$. Then $f$ is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"$f$ is differentiable on $\\\\mathbb{R}$ and $f'(x) > 0$ for all $x \\\\in \\\\mathbb{R}$.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"$f$ is strictly increasing on $\\\\mathbb{R}$.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"$x_0$\",\n        \"value\": \"any point in $\\\\mathbb{R}$\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"Intermediate Value Theorem\",\n            \"applied-to\": {\n              \"function\": \"$f$\",\n              \"interval\": \"$[x_0, x_1]$\"\n            }\n          },\n          \"strictly increasing nature of $f$\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"Similarly, for any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"Intermediate Value Theorem\",\n            \"applied-to\": {\n              \"function\": \"$f$\",\n              \"interval\": \"$[x_2, x_0]$\"\n            }\n          },\n          \"strictly increasing nature of $f$\",\n          \"observation about behavior to the left of $x_0$\"\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Therefore, $f$ is unbounded above and unbounded below, meaning $f$ is unbounded on $\\\\mathbb{R}$.\"\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"name\": \"f is unbounded\",\n    \"statement\": \"Suppose $f:\\\\mathbb{R} \\\\to \\\\mathbb{R}$ is a continuous function such that $f'(x) > 0$ for all $x \\\\in \\\\mathbb{R}$. Then $f$ is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"$f$ is differentiable on $\\\\mathbb{R}$ and $f'(x) > 0$ for all $x \\\\in \\\\mathbb{R}$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$f$ is strictly increasing on $\\\\mathbb{R}$.\",\n        \"deduced-from\": [\n          {\n            \"result\": \"Intermediate Value Theorem\",\n            \"applied-to\": \"$f$ on any interval in $\\\\mathbb{R}$\"\n          },\n          \"$f'(x) > 0$ for all $x \\\\in \\\\mathbb{R}$\"\n        ]\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"$x_0$\",\n        \"value\": \"any point in $\\\\mathbb{R}$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.\",\n        \"deduced-from\": [\n          \"Intermediate Value Theorem\",\n          \"$f$ is strictly increasing\"\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.\",\n        \"deduced-from\": [\n          \"Intermediate Value Theorem\",\n          {\n            \"result\": \"$f$ is strictly increasing\",\n            \"applied-to\": {\n              \"result\": \"moving to the left of $x_0$\",\n              \"implies\": \"decreasing behavior of $f$\"\n            }\n          }\n        ]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"$f$ is unbounded above and unbounded below, which means $f$ is unbounded on $\\\\mathbb{R}$.\",\n        \"deduced-from\": [\n          \"For any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.\",\n          \"For any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.\"\n        ]\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"statement\": \"Let $f:\\\\mathbb{R} \\\\to \\\\mathbb{R}$ be a continuous function. If $f'(x) > 0$ for all $x \\\\in \\\\mathbb{R}$, then $f$ is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume for contradiction that $f$ is bounded.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"M\",\n        \"value\": \"a real number $M > 0$ such that $|f(x)| \\\\leq M$ for all $x \\\\in \\\\mathbb{R}$.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Since $f'(x) > 0$ for all $x \\\\in \\\\mathbb{R}$, $f$ is strictly increasing on $\\\\mathbb{R}$.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"N\",\n        \"value\": \"some $N > 0$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"There exists a $c \\\\in (0, N)$ such that $f'(c) = \\\\frac{f(N) - f(0)}{N - 0} > 0$.\",\n        \"deduced-from\": [\n          { \"result\": \"Mean Value Theorem\", \"applied-to\": { \"interval\": \"[0, N]\", \"function\": \"$f$\" } }\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"As $f$ is strictly increasing, $f(N) > f(0)$, and thus $f(N) - f(0) > 0$.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"The difference $f(N) - f(0)$ must increase as $N$ increases, and because $f'(x) > 0$ for all $x$, this difference continues to grow without bound as $N$ becomes arbitrarily large.\",\n        \"deduced-from\": [\"$f'(x) > 0$ for all $x \\\\in \\\\mathbb{R}$\", \"As $f$ is strictly increasing, $f(N) > f(0)$, and thus $f(N) - f(0) > 0$.\"]\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For a sufficiently large $N$, we must have $|f(N)| > M$, contradicting the assumption that $f$ is bounded.\",\n        \"justification\": \"Since the difference $f(N) - f(0)$ grows without bound and $f$ is increasing.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Hence, the function $f$ must be unbounded.\"\n      }\n    ]\n  }\n]\n```",
+    "```json\n[\n  {\n    \"type\": \"theorem\",\n    \"statement\": \"Let $f:\\\\mathbb{R} \\\\to \\\\mathbb{R}$ be a continuous function. If $f'(x) > 0$ for all $x \\\\in \\\\mathbb{R}$, then $f$ is unbounded.\",\n    \"status\": \"proved\",\n    \"proof\": [\n      {\n        \"type\": \"assumption\",\n        \"statement\": \"Assume for contradiction that $f$ is bounded.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"M\",\n        \"value\": \"a real number $M > 0$ such that $|f(x)| \\\\leq M$ for all $x \\\\in \\\\mathbb{R}$\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Since $f'(x) > 0$ for all $x \\\\in \\\\mathbb{R}$, $f$ is strictly increasing on $\\\\mathbb{R}$.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"N\",\n        \"value\": \"some $N > 0$\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Since $f$ is continuous on $[0, N]$ and differentiable on $(0, N)$ with $f'(x) > 0$, by the Mean Value Theorem, there exists a $c \\\\in (0, N)$ such that $f'(c) = \\\\frac{f(N) - f(0)}{N - 0} > 0$.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"As $f$ is strictly increasing, $f(N) > f(0)$, and thus $f(N) - f(0) > 0$. Since $f'(c) > 0$, the difference $f(N) - f(0)$ must also increase as $N$ increases.\"\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"This difference continues to grow without bound as $N$ becomes arbitrarily large.\"\n      },\n      {\n        \"type\": \"assertion\",\n        \"claim\": \"For a sufficiently large $N$, we must have $|f(N)| > M$\",\n        \"deduced-from\": [\n          \"the assumption that $f$ is bounded\",\n          \"the difference $f(N) - f(0)$ grows without bound as $N$ increases\"\n        ]\n      },\n      {\n        \"type\": \"observation\",\n        \"statement\": \"Contradicting the assumption that $f$ is bounded. Hence, the function $f$ must be unbounded.\"\n      }\n    ]\n  }\n]\n```"
+  ],
+  "texts_with_statements": [
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for the sake of contradiction that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M",
+            "value": "a real number such that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$"
+          },
+          {
+            "type": "let",
+            "variable": "m",
+            "value": "a real number such that $m \\leq f(x)$ for all $x \\in \\mathbb{R}$"
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f$ is continuous on $\\mathbb{R}$ and differentiable with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, it follows that $f$ is strictly increasing on $\\mathbb{R}$."
+          },
+          {
+            "type": "let",
+            "variable": "x_0",
+            "value": "any real number"
+          },
+          {
+            "type": "observation",
+            "statement": "For any $x > x_0$, we have $f(x) > f(x_0)$, since $f$ is strictly increasing."
+          },
+          {
+            "type": "assertion",
+            "claim": "By choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large.",
+            "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and assume for the sake of contradiction that $f$ is bounded by some real number $M$. If $f$ is strictly increasing on $\\mathbb{R}$, then by choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large.",
+            "deduced-from": [
+              "the function $f$ is strictly increasing"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "This contradicts the assumption that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$.",
+            "statement": "Given a continuous function $f:\\mathbb{R} \\to \\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and assuming $f(x)$ is bounded above by some real number $M$, the fact that we can make $f(x)$ arbitrarily large by choosing $x$ sufficiently large contradicts the assumption that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$.",
+            "deduced-from": [
+              "By choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large."
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "Similarly, by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small.",
+            "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and assume for the sake of contradiction that $f$ is bounded below by some real number $m$. If $f$ is strictly increasing on $\\mathbb{R}$, then by taking $x$ sufficiently negative (i.e., $x < x_0$ where $x_0$ is any real number), we can make $f(x)$ arbitrarily small.",
+            "deduced-from": [
+              "the function $f$ is strictly increasing"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "This contradicts the assumption that $f(x) \\geq m$ for all $x \\in \\mathbb{R}$.",
+            "statement": "Given a continuous function $f:\\mathbb{R} \\to \\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and assuming $f(x)$ is bounded below by some real number $m$, the fact that we can make $f(x)$ arbitrarily small by taking $x$ sufficiently negative contradicts the assumption that $f(x) \\geq m$ for all $x \\in \\mathbb{R}$.",
+            "deduced-from": [
+              "by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small."
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, our initial assumption that $f$ is bounded must be false."
+          },
+          {
+            "type": "observation",
+            "statement": "Hence, $f$ is unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for the sake of contradiction that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M",
+            "value": "a real number such that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$"
+          },
+          {
+            "type": "let",
+            "variable": "m",
+            "value": "a real number such that $m \\leq f(x)$ for all $x \\in \\mathbb{R}$"
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f$ is continuous on $\\mathbb{R}$ and differentiable with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, it follows that $f$ is strictly increasing on $\\mathbb{R}$."
+          },
+          {
+            "type": "let",
+            "variable": "x_0",
+            "value": "any real number"
+          },
+          {
+            "type": "observation",
+            "statement": "For any $x > x_0$, we have $f(x) > f(x_0)$, since $f$ is strictly increasing."
+          },
+          {
+            "type": "assertion",
+            "claim": "By choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large.",
+            "deduced-from": [
+              "the function $f$ is strictly increasing"
+            ],
+            "statement": "Given a real number $M$ such that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$, and assuming $f$ is continuous on $\\mathbb{R}$ and strictly increasing, by choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large, which contradicts the boundedness of $f$."
+          },
+          {
+            "type": "assertion",
+            "claim": "This contradicts the assumption that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$.",
+            "deduced-from": [
+              "By choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large."
+            ],
+            "statement": "Given the continuous and strictly increasing nature of $f$ on $\\mathbb{R}$, the fact that by choosing $x$ sufficiently large we can make $f(x)$ arbitrarily large contradicts the assumption that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "Similarly, by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small.",
+            "deduced-from": [
+              "the function $f$ is strictly increasing"
+            ],
+            "statement": "Given a real number $m$ such that $m \\leq f(x)$ for all $x \\in \\mathbb{R}$, and assuming $f$ is continuous on $\\mathbb{R}$ and strictly increasing, by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small, which contradicts the boundedness of $f$ from below."
+          },
+          {
+            "type": "assertion",
+            "claim": "This contradicts the assumption that $f(x) \\geq m$ for all $x \\in \\mathbb{R}$.",
+            "deduced-from": [
+              "by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small."
+            ],
+            "statement": "Given the continuous and strictly increasing nature of $f$ on $\\mathbb{R}$, the fact that by taking $x < x_0$ and making $x$ sufficiently negative we can make $f(x)$ arbitrarily small contradicts the assumption that $f(x) \\geq m$ for all $x \\in \\mathbb{R}$."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for the sake of contradiction that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M",
+            "value": "a real number such that for all $x \\in \\mathbb{R}$, $f(x) \\leq M"
+          },
+          {
+            "type": "let",
+            "variable": "m",
+            "value": "a real number such that for all $x \\in \\mathbb{R}$, $m \\leq f(x)"
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f$ is continuous on $\\mathbb{R}$ and differentiable with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, it follows that $f$ is strictly increasing on $\\mathbb{R}$."
+          },
+          {
+            "type": "let",
+            "variable": "x_0",
+            "value": "any real number"
+          },
+          {
+            "type": "assertion",
+            "claim": "For any $x > x_0$, we have $f(x) > f(x_0)$.",
+            "deduced-from": [
+              {
+                "result": "$f$ is strictly increasing on $\\mathbb{R}$",
+                "applied-to": "$x_0$"
+              }
+            ],
+            "statement": "Given $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, for any $x > x_0$, we have $f(x) > f(x_0)$ because $f$ is strictly increasing on $\\mathbb{R}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "By choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large, contradicting the assumption that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$.",
+            "deduced-from": [
+              "For any $x > x_0$, we have $f(x) > f(x_0)$."
+            ],
+            "statement": "Assuming $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and given a real number $M$ such that for all $x \\in \\mathbb{R}$, $f(x) \\leq M$, by choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large, contradicting the assumption that $f$ is bounded."
+          },
+          {
+            "type": "assertion",
+            "claim": "Similarly, by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small, contradicting the assumption that $f(x) \\geq m$ for all $x \\in \\mathbb{R}$.",
+            "deduced-from": [
+              "For any $x > x_0$, we have $f(x) > f(x_0)$."
+            ],
+            "statement": "Assuming $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and given a real number $m$ such that for all $x \\in \\mathbb{R}$, $m \\leq f(x)$, by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small, contradicting the assumption that $f$ is bounded."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, our initial assumption that $f$ is bounded must be false. Hence, $f$ is unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for the sake of contradiction that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M",
+            "value": "a real number such that for all $x \\in \\mathbb{R}$, $f(x) \\leq M"
+          },
+          {
+            "type": "let",
+            "variable": "m",
+            "value": "a real number such that for all $x \\in \\mathbb{R}$, $m \\leq f(x)"
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f$ is continuous on $\\mathbb{R}$ and differentiable with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, it follows that $f$ is strictly increasing on $\\mathbb{R}$."
+          },
+          {
+            "type": "let",
+            "variable": "x_0",
+            "value": "any real number"
+          },
+          {
+            "type": "assertion",
+            "claim": "For any $x > x_0$, we have $f(x) > f(x_0)$.",
+            "statement": "Given a continuous function $f:\\mathbb{R} \\to \\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, for any real number $x_0$, if $x > x_0$, then $f(x) > f(x_0)$. This is because $f$ is strictly increasing on $\\mathbb{R}$. ",
+            "deduced-from": [
+              {
+                "result": "$f$ is strictly increasing on $\\mathbb{R}$",
+                "applied-to": "$x_0$"
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "By choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large, contradicting the assumption that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$.",
+            "statement": "Assuming $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and given $M$ is a real number such that for all $x \\in \\mathbb{R}$, $f(x) \\leq M$, by choosing $x$ sufficiently large beyond any real number $x_0$, $f(x)$ can be made larger than $f(x_0)$, which contradicts the boundedness of $f$ by $M$.",
+            "deduced-from": [
+              "For any $x > x_0$, we have $f(x) > f(x_0)$."
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "Similarly, by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small, contradicting the assumption that $f(x) \\geq m$ for all $x \\in \\mathbb{R}$.",
+            "statement": "Assuming $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and given $m$ is a real number such that for all $x \\in \\mathbb{R}$, $f(x) \\geq m$, by taking $x$ sufficiently negative below any real number $x_0$, $f(x)$ becomes smaller than $f(x_0)$, which contradicts the assumption that $f(x) \\geq m$ for all $x \\in \\mathbb{R}$.",
+            "deduced-from": [
+              "For any $x > x_0$, we have $f(x) > f(x_0)$."
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, our initial assumption that $f$ is bounded must be false. Hence, $f$ is unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Main Theorem",
+        "statement": "Suppose $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "$f$ is differentiable on $\\mathbb{R}$ and $f'(x) > 0$ for all $x \\in \\mathbb{R}$."
+          },
+          {
+            "type": "observation",
+            "statement": "$f$ is strictly increasing on $\\mathbb{R}$."
+          },
+          {
+            "type": "let",
+            "variable": "$x_0$",
+            "value": "any point in $\\mathbb{R}$"
+          },
+          {
+            "type": "assertion",
+            "statement": "Given $f$ is differentiable on $\\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$ and $f$ is strictly increasing on $\\mathbb{R}$, for any given point $x_0$ in $\\mathbb{R}$ and any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+            "claim": "For any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+            "deduced-from": [
+              {
+                "result": "Intermediate Value Theorem",
+                "applied-to": {
+                  "function": "$f$",
+                  "interval": "$[x_0, x_1]$"
+                }
+              },
+              "strictly increasing nature of $f$"
+            ]
+          },
+          {
+            "type": "assertion",
+            "statement": "Given $f$ is differentiable on $\\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$ and $f$ is strictly increasing on $\\mathbb{R}$, for any given point $x_0$ in $\\mathbb{R}$ and any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+            "claim": "Similarly, for any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+            "deduced-from": [
+              {
+                "result": "Intermediate Value Theorem",
+                "applied-to": {
+                  "function": "$f$",
+                  "interval": "$[x_2, x_0]$"
+                }
+              },
+              "strictly increasing nature of $f$",
+              "observation about behavior to the left of $x_0$"
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, $f$ is unbounded above and unbounded below, meaning $f$ is unbounded on $\\mathbb{R}$."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Main Theorem",
+        "statement": "Suppose $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "$f$ is differentiable on $\\mathbb{R}$ and $f'(x) > 0$ for all $x \\in \\mathbb{R}$."
+          },
+          {
+            "type": "observation",
+            "statement": "$f$ is strictly increasing on $\\mathbb{R}$."
+          },
+          {
+            "type": "let",
+            "variable": "$x_0$",
+            "value": "any point in $\\mathbb{R}$"
+          },
+          {
+            "type": "assertion",
+            "claim": "For any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+            "statement": "Given a differentiable function $f$ on $\\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and letting $x_0$ be any point in $\\mathbb{R}$, for any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+            "deduced-from": [
+              {
+                "result": "Intermediate Value Theorem",
+                "applied-to": {
+                  "function": "$f$",
+                  "interval": "$[x_0, x_1]$"
+                }
+              },
+              "strictly increasing nature of $f$"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "Similarly, for any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+            "statement": "Given a differentiable function $f$ on $\\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and letting $x_0$ be any point in $\\mathbb{R}$, for any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+            "deduced-from": [
+              {
+                "result": "Intermediate Value Theorem",
+                "applied-to": {
+                  "function": "$f$",
+                  "interval": "$[x_2, x_0]$"
+                }
+              },
+              "strictly increasing nature of $f$",
+              "observation about behavior to the left of $x_0$"
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, $f$ is unbounded above and unbounded below, meaning $f$ is unbounded on $\\mathbb{R}$."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "f is unbounded",
+        "statement": "Suppose $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "$f$ is differentiable on $\\mathbb{R}$ and $f'(x) > 0$ for all $x \\in \\mathbb{R}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "$f$ is strictly increasing on $\\mathbb{R}$.",
+            "statement": "Given $f$ is differentiable on $\\mathbb{R}$ and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly increasing on $\\mathbb{R}$ by the Intermediate Value Theorem applied to $f$ on any interval in $\\mathbb{R}$.",
+            "deduced-from": [
+              {
+                "result": "Intermediate Value Theorem",
+                "applied-to": "$f$ on any interval in $\\mathbb{R}$"
+              },
+              "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+            ]
+          },
+          {
+            "type": "let",
+            "variable": "$x_0$",
+            "value": "any point in $\\mathbb{R}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "For any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+            "statement": "Given $f$ is differentiable on $\\mathbb{R}$, $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and $f$ is strictly increasing on $\\mathbb{R}$, for any $M > f(x_0)$ and for any $x_0$ in $\\mathbb{R}$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+            "deduced-from": [
+              "Intermediate Value Theorem",
+              "$f$ is strictly increasing"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "For any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+            "statement": "Given $f$ is differentiable on $\\mathbb{R}$, $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and $f$ is strictly increasing on $\\mathbb{R}$, for any $m < f(x_0)$ and any $x_0$ in $\\mathbb{R}$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+            "deduced-from": [
+              "Intermediate Value Theorem",
+              {
+                "result": "$f$ is strictly increasing",
+                "applied-to": {
+                  "result": "moving to the left of $x_0$",
+                  "implies": "decreasing behavior of $f$"
+                }
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "$f$ is unbounded above and unbounded below, which means $f$ is unbounded on $\\mathbb{R}$.",
+            "statement": "Given $f$ is differentiable on $\\mathbb{R}$, $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and $f$ is strictly increasing on $\\mathbb{R}$, $f$ is unbounded above and unbounded below for any $x_0$ in $\\mathbb{R}$, which means $f$ is unbounded on $\\mathbb{R}$. This follows because for any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$, and for any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+            "deduced-from": [
+              "For any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+              "For any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$."
+            ]
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "f is unbounded",
+        "statement": "Suppose $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "$f$ is differentiable on $\\mathbb{R}$ and $f'(x) > 0$ for all $x \\in \\mathbb{R}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "$f$ is strictly increasing on $\\mathbb{R}$.",
+            "statement": "If $f$ is differentiable on $\\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is strictly increasing on $\\mathbb{R}$. This follows from the Intermediate Value Theorem applied to $f$ on any interval in $\\mathbb{R}$ and the positivity of $f'$ on $\\mathbb{R}$. ",
+            "deduced-from": [
+              {
+                "result": "Intermediate Value Theorem",
+                "applied-to": "$f$ on any interval in $\\mathbb{R}$"
+              },
+              "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+            ]
+          },
+          {
+            "type": "let",
+            "variable": "$x_0$",
+            "value": "any point in $\\mathbb{R}$. "
+          },
+          {
+            "type": "assertion",
+            "claim": "For any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+            "statement": "Let $x_0$ be any point in $\\mathbb{R}$. If $f$ is differentiable on $\\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, implying that $f$ is strictly increasing on $\\mathbb{R}$, then for any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$. This is a consequence of the Intermediate Value Theorem and the strictly increasing nature of $f$.",
+            "deduced-from": [
+              "Intermediate Value Theorem",
+              "$f$ is strictly increasing"
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "For any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+            "statement": "Let $x_0$ be any point in $\\mathbb{R}$. Given that $f$ is differentiable on $\\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, indicating $f$ is strictly increasing on $\\mathbb{R}$, then for any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$. This assertion relies on the Intermediate Value Theorem and the strictly increasing behavior of $f$ when moving to the left of $x_0$, which implies a decreasing behavior of $f$ in terms of values.",
+            "deduced-from": [
+              "Intermediate Value Theorem",
+              {
+                "result": "$f$ is strictly increasing",
+                "applied-to": {
+                  "result": "moving to the left of $x_0$",
+                  "implies": "decreasing behavior of $f$"
+                }
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "$f$ is unbounded above and unbounded below, which means $f$ is unbounded on $\\mathbb{R}$.",
+            "statement": "Let $x_0$ be any point in $\\mathbb{R}$. Assuming $f$ is differentiable on $\\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and thus $f$ is strictly increasing on $\\mathbb{R}$, it follows that $f$ is unbounded above and unbounded below, and therefore unbounded on $\\mathbb{R}$. This conclusion is derived from the existence of $x_1 > x_0$ for any $M > f(x_0)$ such that $f(x_1) > M$, and the existence of $x_2 < x_0$ for any $m < f(x_0)$ such that $f(x_2) < m$.",
+            "deduced-from": [
+              "For any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+              "For any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$."
+            ]
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function. If $f'(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for contradiction that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M",
+            "value": "a real number $M > 0$ such that $|f(x)| \\leq M$ for all $x \\in \\mathbb{R}$."
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f'(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly increasing on $\\mathbb{R}$."
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "some $N > 0$."
+          },
+          {
+            "type": "assertion",
+            "claim": "There exists a $c \\in (0, N)$ such that $f'(c) = \\frac{f(N) - f(0)}{N - 0} > 0$.",
+            "deduced-from": [
+              {
+                "result": "Mean Value Theorem",
+                "applied-to": {
+                  "interval": "[0, N]",
+                  "function": "$f$"
+                }
+              }
+            ],
+            "statement": "Given a continuous function $f: \\mathbb{R} \\to \\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$ and some $N > 0$, there exists a $c \\in (0, N)$ such that $f'(c) = \\frac{f(N) - f(0)}{N - 0} > 0$, by the Mean Value Theorem."
+          },
+          {
+            "type": "observation",
+            "statement": "As $f$ is strictly increasing, $f(N) > f(0)$, and thus $f(N) - f(0) > 0$."
+          },
+          {
+            "type": "assertion",
+            "claim": "The difference $f(N) - f(0)$ must increase as $N$ increases, and because $f'(x) > 0$ for all $x$, this difference continues to grow without bound as $N$ becomes arbitrarily large.",
+            "deduced-from": [
+              "$f'(x) > 0$ for all $x \\in \\mathbb{R}$",
+              "As $f$ is strictly increasing, $f(N) > f(0)$, and thus $f(N) - f(0) > 0$."
+            ],
+            "statement": "Assuming $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, the difference $f(N) - f(0)$ must increase as $N > 0$ increases, indicating this difference grows without bound as $N$ becomes arbitrarily large."
+          },
+          {
+            "type": "assertion",
+            "claim": "For a sufficiently large $N$, we must have $|f(N)| > M$, contradicting the assumption that $f$ is bounded.",
+            "justification": "Since the difference $f(N) - f(0)$ grows without bound and $f$ is increasing.",
+            "statement": "If $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous, $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and $f$ is assumed to be bounded by some $M > 0$, then for a sufficiently large $N > 0$, it must hold that $|f(N)| > M$, which contradicts the assumption that $f$ is bounded."
+          },
+          {
+            "type": "observation",
+            "statement": "Hence, the function $f$ must be unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function. If $f'(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for contradiction that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M",
+            "value": "a real number $M > 0$ such that $|f(x)| \\leq M$ for all $x \\in \\mathbb{R}$."
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f'(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly increasing on $\\mathbb{R}$."
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "some $N > 0$."
+          },
+          {
+            "type": "assertion",
+            "claim": "There exists a $c \\in (0, N)$ such that $f'(c) = \\frac{f(N) - f(0)}{N - 0} > 0$.",
+            "deduced-from": [
+              {
+                "result": "Mean Value Theorem",
+                "applied-to": {
+                  "interval": "[0, N]",
+                  "function": "$f$"
+                }
+              }
+            ],
+            "statement": "Given $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, there exists a $c \\in (0, N)$ such that $f'(c) = \\frac{f(N) - f(0)}{N} > 0$, by the Mean Value Theorem applied to $f$ on the interval $[0, N]$."
+          },
+          {
+            "type": "observation",
+            "statement": "As $f$ is strictly increasing, $f(N) > f(0)$, and thus $f(N) - f(0) > 0$."
+          },
+          {
+            "type": "assertion",
+            "claim": "The difference $f(N) - f(0)$ must increase as $N$ increases, and because $f'(x) > 0$ for all $x$, this difference continues to grow without bound as $N$ becomes arbitrarily large.",
+            "deduced-from": [
+              "$f'(x) > 0$ for all $x \\in \\mathbb{R}$",
+              "As $f$ is strictly increasing, $f(N) > f(0)$, and thus $f(N) - f(0) > 0$."
+            ],
+            "statement": "Given $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, the difference $f(N) - f(0)$ must increase as $N$ increases. Since $f$ is strictly increasing, this difference grows without bound as $N$ becomes arbitrarily large."
+          },
+          {
+            "type": "assertion",
+            "claim": "For a sufficiently large $N$, we must have $|f(N)| > M$, contradicting the assumption that $f$ is bounded.",
+            "justification": "Since the difference $f(N) - f(0)$ grows without bound and $f$ is increasing.",
+            "statement": "Assume $f:\\mathbb{R} \\to \\mathbb{R}$ is bounded by some $M > 0$ such that $|f(x)| \\leq M$ for all $x \\in \\mathbb{R}$ and $f'(x) > 0$ for all $x$. Then, for a sufficiently large $N$, $|f(N)| > M$, contradicting the assumption that $f$ is bounded."
+          },
+          {
+            "type": "observation",
+            "statement": "Hence, the function $f$ must be unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function. If $f'(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for contradiction that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M",
+            "value": "a real number $M > 0$ such that $|f(x)| \\leq M$ for all $x \\in \\mathbb{R}$"
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f'(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly increasing on $\\mathbb{R}$."
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "some $N > 0$"
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f$ is continuous on $[0, N]$ and differentiable on $(0, N)$ with $f'(x) > 0$, by the Mean Value Theorem, there exists a $c \\in (0, N)$ such that $f'(c) = \\frac{f(N) - f(0)}{N - 0} > 0$."
+          },
+          {
+            "type": "observation",
+            "statement": "As $f$ is strictly increasing, $f(N) > f(0)$, and thus $f(N) - f(0) > 0$. Since $f'(c) > 0$, the difference $f(N) - f(0)$ must also increase as $N$ increases."
+          },
+          {
+            "type": "observation",
+            "statement": "This difference continues to grow without bound as $N$ becomes arbitrarily large."
+          },
+          {
+            "type": "assertion",
+            "claim": "For a sufficiently large $N$, we must have $|f(N)| > M$",
+            "deduced-from": [
+              "the assumption that $f$ is bounded",
+              "the difference $f(N) - f(0)$ grows without bound as $N$ increases"
+            ],
+            "statement": "Assume for contradiction that there exists a real number $M > 0$ such that $|f(x)| \\leq M$ for all $x \\in \\mathbb{R}$. Given that $f$ is continuous on $\\mathbb{R}$, strictly increasing, and the difference $f(N) - f(0)$ grows without bound as $N$ becomes arbitrarily large, for a sufficiently large $N$, we must have $|f(N)| > M$."
+          },
+          {
+            "type": "observation",
+            "statement": "Contradicting the assumption that $f$ is bounded. Hence, the function $f$ must be unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function. If $f'(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for contradiction that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M",
+            "value": "a real number $M > 0$ such that $|f(x)| \\leq M$ for all $x \\in \\mathbb{R}$"
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f'(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly increasing on $\\mathbb{R}$."
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "some $N > 0$"
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f$ is continuous on $[0, N]$ and differentiable on $(0, N)$ with $f'(x) > 0$, by the Mean Value Theorem, there exists a $c \\in (0, N)$ such that $f'(c) = \\frac{f(N) - f(0)}{N - 0} > 0$."
+          },
+          {
+            "type": "observation",
+            "statement": "As $f$ is strictly increasing, $f(N) > f(0)$, and thus $f(N) - f(0) > 0$. Since $f'(c) > 0$, the difference $f(N) - f(0)$ must also increase as $N$ increases."
+          },
+          {
+            "type": "observation",
+            "statement": "This difference continues to grow without bound as $N$ becomes arbitrarily large."
+          },
+          {
+            "type": "assertion",
+            "claim": "For a sufficiently large $N$, we must have $|f(N)| > M$",
+            "deduced-from": [
+              "the assumption that $f$ is bounded",
+              "the difference $f(N) - f(0)$ grows without bound as $N$ increases"
+            ],
+            "statement": "Assume for contradiction that $f$ is bounded by some real number $M > 0$ such that $|f(x)| \\leq M$ for all $x \\in \\mathbb{R}$. Given that the difference $f(N) - f(0)$ grows without bound as $N$ increases, for a sufficiently large $N$, we must have $|f(N)| > M$, contradicting the assumption."
+          },
+          {
+            "type": "observation",
+            "statement": "Contradicting the assumption that $f$ is bounded. Hence, the function $f$ must be unbounded."
+          }
+        ]
+      }
+    ]
+  ],
+  "deductions_expanded": [
+    [
+      {
+        "type": "assertion",
+        "claim": "By choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large.",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and assume for the sake of contradiction that $f$ is bounded by some real number $M$. If $f$ is strictly increasing on $\\mathbb{R}$, then by choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large.",
+        "deduced-from": [
+          {
+            "name": "the function $f$ is strictly increasing",
+            "statement": "If $f$ is strictly increasing on $\\mathbb{R}$, then for any $x_1, x_2 \\in \\mathbb{R}$ with $x_1 < x_2$, it follows that $f(x_1) < f(x_2)$.",
+            "applied-to": {
+              "f": "$f$",
+              "x_1": "$x_0$",
+              "x_2": "$x$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is continuous on $\\mathbb{R}$",
+              "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "assertion",
+        "claim": "This contradicts the assumption that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$.",
+        "statement": "Given a continuous function $f:\\mathbb{R} \\to \\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and assuming $f(x)$ is bounded above by some real number $M$, the fact that we can make $f(x)$ arbitrarily large by choosing $x$ sufficiently large contradicts the assumption that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$.",
+        "deduced-from": [
+          {
+            "name": "By choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large.",
+            "statement": "If $f$ is strictly increasing on $\\mathbb{R}$, then by choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large.",
+            "applied-to": {
+              "f": "$f$",
+              "x": "sufficiently large $x$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is strictly increasing on $\\mathbb{R}$"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "assertion",
+        "claim": "Similarly, by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small.",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and assume for the sake of contradiction that $f$ is bounded below by some real number $m$. If $f$ is strictly increasing on $\\mathbb{R}$, then by taking $x$ sufficiently negative (i.e., $x < x_0$ where $x_0$ is any real number), we can make $f(x)$ arbitrarily small.",
+        "deduced-from": [
+          {
+            "name": "the function $f$ is strictly increasing",
+            "statement": "If $f$ is strictly increasing on $\\mathbb{R}$, then for any $x_1, x_2 \\in \\mathbb{R}$ with $x_1 < x_2$, it follows that $f(x_1) < f(x_2)$.",
+            "applied-to": {
+              "f": "$f$",
+              "x_1": "$x$",
+              "x_2": "$x_0$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is continuous on $\\mathbb{R}$",
+              "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "assertion",
+        "claim": "This contradicts the assumption that $f(x) \\geq m$ for all $x \\in \\mathbb{R}$.",
+        "statement": "Given a continuous function $f:\\mathbb{R} \\to \\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and assuming $f(x)$ is bounded below by some real number $m$, the fact that we can make $f(x)$ arbitrarily small by taking $x$ sufficiently negative contradicts the assumption that $f(x) \\geq m$ for all $x \\in \\mathbb{R}$.",
+        "deduced-from": [
+          {
+            "name": "by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small.",
+            "statement": "If $f$ is strictly increasing on $\\mathbb{R}$, then by taking $x$ sufficiently negative (i.e., $x < x_0$ where $x_0$ is any real number), we can make $f(x)$ arbitrarily small.",
+            "applied-to": {
+              "f": "$f$",
+              "x": "sufficiently negative $x$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is strictly increasing on $\\mathbb{R}$"
+            ]
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "assertion",
+        "claim": "By choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large.",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and assume for the sake of contradiction that $f$ is bounded by some real number $M$. If $f$ is strictly increasing on $\\mathbb{R}$, then by choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large.",
+        "deduced-from": [
+          {
+            "name": "the function $f$ is strictly increasing",
+            "statement": "If $f$ is strictly increasing on $\\mathbb{R}$, then for any $x_0 \\in \\mathbb{R}$, choosing $x > x_0$ results in $f(x) > f(x_0)$.",
+            "applied-to": {
+              "f": "$f$",
+              "x_0": "any real number"
+            },
+            "assumptions-satisfied": [
+              "$f$ is continuous and differentiable on $\\mathbb{R}$",
+              "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "assertion",
+        "claim": "This contradicts the assumption that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$.",
+        "statement": "Given a continuous function $f:\\mathbb{R} \\to \\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and assuming $f(x)$ is bounded above by some real number $M$, the fact that we can make $f(x)$ arbitrarily large by choosing $x$ sufficiently large contradicts the assumption that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$.",
+        "deduced-from": [
+          {
+            "name": "By choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large.",
+            "statement": "If $f$ is strictly increasing on $\\mathbb{R}$, then by choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large.",
+            "applied-to": {
+              "f": "$f$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is continuous and differentiable on $\\mathbb{R}$",
+              "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "assertion",
+        "claim": "Similarly, by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small.",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and assume for the sake of contradiction that $f$ is bounded below by some real number $m$. If $f$ is strictly increasing on $\\mathbb{R}$, then by taking $x$ sufficiently negative (i.e., $x < x_0$ where $x_0$ is any real number), we can make $f(x)$ arbitrarily small.",
+        "deduced-from": [
+          {
+            "name": "the function $f$ is strictly increasing",
+            "statement": "If $f$ is strictly increasing on $\\mathbb{R}$, then for any $x_0 \\in \\mathbb{R}$, choosing $x < x_0$ results in $f(x) < f(x_0)$.",
+            "applied-to": {
+              "f": "$f$",
+              "x_0": "any real number"
+            },
+            "assumptions-satisfied": [
+              "$f$ is continuous and differentiable on $\\mathbb{R}$",
+              "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "assertion",
+        "claim": "This contradicts the assumption that $f(x) \\geq m$ for all $x \\in \\mathbb{R}$.",
+        "statement": "Given a continuous function $f:\\mathbb{R} \\to \\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and assuming $f(x)$ is bounded below by some real number $m$, the fact that we can make $f(x)$ arbitrarily small by taking $x$ sufficiently negative contradicts the assumption that $f(x) \\geq m$ for all $x \\in \\mathbb{R}$.",
+        "deduced-from": [
+          {
+            "name": "by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small.",
+            "statement": "If $f$ is strictly increasing on $\\mathbb{R}$, then by taking $x$ sufficiently negative, we can make $f(x)$ arbitrarily small.",
+            "applied-to": {
+              "f": "$f$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is continuous and differentiable on $\\mathbb{R}$",
+              "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+            ]
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "assertion",
+        "claim": "By choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large.",
+        "deduced-from": [
+          {
+            "name": "Property of strictly increasing functions",
+            "statement": "If a function $f$ is strictly increasing on $\\mathbb{R}$, then for any $x > x_0$, $f(x) > f(x_0)$.",
+            "applied-to": {
+              "f": "$f$",
+              "x_0": "$x_0$",
+              "x": "a value greater than $x_0$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is strictly increasing on $\\mathbb{R}$"
+            ]
+          }
+        ],
+        "statement": "Given a real number $M$ such that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$, and assuming $f$ is continuous on $\\mathbb{R}$ and strictly increasing, by choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large, which contradicts the boundedness of $f$."
+      },
+      {
+        "type": "assertion",
+        "claim": "This contradicts the assumption that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$.",
+        "deduced-from": [
+          {
+            "name": "Contradiction from unbounded behavior",
+            "statement": "If a function $f$ can be made arbitrarily large for sufficiently large $x$, it cannot be bounded above by any real number $M$.",
+            "applied-to": {
+              "f": "$f$",
+              "M": "$M$"
+            },
+            "assumptions-satisfied": [
+              "The function $f$ can be made arbitrarily large for sufficiently large $x$"
+            ]
+          }
+        ],
+        "statement": "Given the continuous and strictly increasing nature of $f$ on $\\mathbb{R}$, the fact that by choosing $x$ sufficiently large we can make $f(x)$ arbitrarily large contradicts the assumption that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$."
+      },
+      {
+        "type": "assertion",
+        "claim": "Similarly, by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small.",
+        "deduced-from": [
+          {
+            "name": "Property of strictly increasing functions",
+            "statement": "If a function $f$ is strictly increasing on $\\mathbb{R}$, then for any $x < x_0$, $f(x) < f(x_0)$.",
+            "applied-to": {
+              "f": "$f$",
+              "x_0": "$x_0$",
+              "x": "a value less than $x_0$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is strictly increasing on $\\mathbb{R}$"
+            ]
+          }
+        ],
+        "statement": "Given a real number $m$ such that $m \\leq f(x)$ for all $x \\in \\mathbb{R}$, and assuming $f$ is continuous on $\\mathbb{R}$ and strictly increasing, by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small, which contradicts the boundedness of $f$ from below."
+      },
+      {
+        "type": "assertion",
+        "claim": "This contradicts the assumption that $f(x) \\geq m$ for all $x \\in \\mathbb{R}$.",
+        "deduced-from": [
+          {
+            "name": "Contradiction from unbounded behavior",
+            "statement": "If a function $f$ can be made arbitrarily small for sufficiently negative $x$, it cannot be bounded below by any real number $m$.",
+            "applied-to": {
+              "f": "$f$",
+              "m": "$m$"
+            },
+            "assumptions-satisfied": [
+              "The function $f$ can be made arbitrarily small for sufficiently negative $x$"
+            ]
+          }
+        ],
+        "statement": "Given the continuous and strictly increasing nature of $f$ on $\\mathbb{R}$, the fact that by taking $x < x_0$ and making $x$ sufficiently negative we can make $f(x)$ arbitrarily small contradicts the assumption that $f(x) \\geq m$ for all $x \\in \\mathbb{R}$."
+      }
+    ],
+    [
+      {
+        "type": "assertion",
+        "claim": "By choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large.",
+        "deduced-from": [
+          {
+            "name": "the function $f$ is strictly increasing",
+            "statement": "If $f$ is strictly increasing on $\\mathbb{R}$, for any $x_1 < x_2$, it holds that $f(x_1) < f(x_2)$.",
+            "applied-to": {
+              "x_1": "x_0",
+              "x_2": "x"
+            },
+            "assumptions-satisfied": [
+              "$f$ is strictly increasing on $\\mathbb{R}$"
+            ]
+          }
+        ],
+        "statement": "Given a real number $M$ such that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$, and assuming $f$ is continuous on $\\mathbb{R}$ and strictly increasing, by choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large, which contradicts the boundedness of $f$."
+      },
+      {
+        "type": "assertion",
+        "claim": "This contradicts the assumption that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$.",
+        "deduced-from": [
+          {
+            "name": "By choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large.",
+            "statement": "Given a real number $M$ such that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$, and assuming $f$ is continuous on $\\mathbb{R}$ and strictly increasing, by choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large.",
+            "applied-to": {
+              "M": "M"
+            },
+            "assumptions-satisfied": [
+              "$f$ is continuous on $\\mathbb{R}$",
+              "$f$ is strictly increasing on $\\mathbb{R}$",
+              "There exists a real number $M$ such that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$"
+            ]
+          }
+        ],
+        "statement": "Given the continuous and strictly increasing nature of $f$ on $\\mathbb{R}$, the fact that by choosing $x$ sufficiently large we can make $f(x)$ arbitrarily large contradicts the assumption that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$."
+      },
+      {
+        "type": "assertion",
+        "claim": "Similarly, by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small.",
+        "deduced-from": [
+          {
+            "name": "the function $f$ is strictly increasing",
+            "statement": "If $f$ is strictly increasing on $\\mathbb{R}$, for any $x_1 < x_2$, it holds that $f(x_1) < f(x_2)$.",
+            "applied-to": {
+              "x_1": "x",
+              "x_2": "x_0"
+            },
+            "assumptions-satisfied": [
+              "$f$ is strictly increasing on $\\mathbb{R}$"
+            ]
+          }
+        ],
+        "statement": "Given a real number $m$ such that $m \\leq f(x)$ for all $x \\in \\mathbb{R}$, and assuming $f$ is continuous on $\\mathbb{R}$ and strictly increasing, by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small, which contradicts the boundedness of $f$ from below."
+      },
+      {
+        "type": "assertion",
+        "claim": "This contradicts the assumption that $f(x) \\geq m$ for all $x \\in \\mathbb{R}$.",
+        "deduced-from": [
+          {
+            "name": "by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small.",
+            "statement": "Given a real number $m$ such that $m \\leq f(x)$ for all $x \\in \\mathbb{R}$, and assuming $f$ is continuous on $\\mathbb{R}$ and strictly increasing, by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small.",
+            "applied-to": {
+              "m": "m"
+            },
+            "assumptions-satisfied": [
+              "$f$ is continuous on $\\mathbb{R}$",
+              "$f$ is strictly increasing on $\\mathbb{R}$",
+              "There exists a real number $m$ such that $m \\leq f(x)$ for all $x \\in \\mathbb{R}$"
+            ]
+          }
+        ],
+        "statement": "Given the continuous and strictly increasing nature of $f$ on $\\mathbb{R}$, the fact that by taking $x < x_0$ and making $x$ sufficiently negative we can make $f(x)$ arbitrarily small contradicts the assumption that $f(x) \\geq m$ for all $x \\in \\mathbb{R}$."
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for the sake of contradiction that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M",
+            "value": "a real number such that for all $x \\in \\mathbb{R}$, $f(x) \\leq M"
+          },
+          {
+            "type": "let",
+            "variable": "m",
+            "value": "a real number such that for all $x \\in \\mathbb{R}$, $m \\leq f(x)"
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f$ is continuous on $\\mathbb{R}$ and differentiable with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, it follows that $f$ is strictly increasing on $\\mathbb{R}$."
+          },
+          {
+            "type": "let",
+            "variable": "x_0",
+            "value": "any real number"
+          },
+          {
+            "type": "assertion",
+            "claim": "For any $x > x_0$, we have $f(x) > f(x_0)$.",
+            "deduced-from": [
+              {
+                "name": "Strictly Increasing Function Property",
+                "statement": "If a function $f$ is strictly increasing on a domain $D$, then for any $x_1, x_2 \\in D$ with $x_1 < x_2$, we have $f(x_1) < f(x_2)$.",
+                "applied-to": {
+                  "f": "$f$",
+                  "D": "$\\mathbb{R}$",
+                  "x_1": "$x_0$",
+                  "x_2": "$x > x_0$"
+                },
+                "assumptions-satisfied": [
+                  "$f$ is continuous on $\\mathbb{R}$",
+                  "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+                ]
+              }
+            ],
+            "statement": "Given $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, for any $x > x_0$, we have $f(x) > f(x_0)$ because $f$ is strictly increasing on $\\mathbb{R}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "By choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large, contradicting the assumption that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$.",
+            "deduced-from": [
+              {
+                "name": "Consequence of Strictly Increasing Function",
+                "statement": "If a function $f$ is strictly increasing on $\\mathbb{R}$ and is bounded, then for a sufficiently large $x$, $f(x)$ cannot exceed a certain bound $M$.",
+                "applied-to": {
+                  "f": "$f$",
+                  "M": "$M$"
+                },
+                "assumptions-satisfied": [
+                  "$f$ is strictly increasing on $\\mathbb{R}$",
+                  "$f$ is assumed to be bounded"
+                ]
+              }
+            ],
+            "statement": "Assuming $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and given a real number $M$ such that for all $x \\in \\mathbb{R}$, $f(x) \\leq M$, by choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large, contradicting the assumption that $f$ is bounded.",
+            "error": "The provided statement misinterprets the outcome of a strictly increasing function on $\\mathbb{R}$. Correctly, a strictly increasing function on $\\mathbb{R}$ that is assumed to be bounded contradicts the nature of strict increase if a bound is given."
+          },
+          {
+            "type": "assertion",
+            "claim": "Similarly, by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small, contradicting the assumption that $f(x) \\geq m$ for all $x \\in \\mathbb{R}$.",
+            "deduced-from": [
+              "For any $x > x_0$, we have $f(x) > f(x_0)$."
+            ],
+            "statement": "Assuming $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and given a real number $m$ such that for all $x \\in \\mathbb{R}$, $m \\leq f(x)$, by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small, contradicting the assumption that $f$ is bounded.",
+            "error": "The claim's logic is flawed since $f(x)$ cannot become arbitrarily small given that $f'(x) > 0$ for all $x\\in\\mathbb{R}$ implies $f$ is strictly increasing. The assumption of making $f(x)$ arbitrarily small conflicts with the property of $f$ being strictly increasing."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, our initial assumption that $f$ is bounded must be false. Hence, $f$ is unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for the sake of contradiction that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M",
+            "value": "a real number such that for all $x \\in \\mathbb{R}$, $f(x) \\leq M"
+          },
+          {
+            "type": "let",
+            "variable": "m",
+            "value": "a real number such that for all $x \\in \\mathbb{R}$, $m \\leq f(x)"
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f$ is continuous on $\\mathbb{R}$ and differentiable with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, it follows that $f$ is strictly increasing on $\\mathbb{R}$."
+          },
+          {
+            "type": "let",
+            "variable": "x_0",
+            "value": "any real number"
+          },
+          {
+            "type": "assertion",
+            "claim": "For any $x > x_0$, we have $f(x) > f(x_0)$.",
+            "deduced-from": [
+              {
+                "result": "$f$ is strictly increasing on $\\mathbb{R}$",
+                "applied-to": "$x_0$",
+                "name": "Property of Strictly Increasing Functions",
+                "statement": "If a function $f$ is strictly increasing on a domain $D$, then for any two points $x_1, x_2 \\in D$ with $x_1 < x_2$, we have $f(x_1) < f(x_2)$.",
+                "assumptions-satisfied": [
+                  "$f:\\mathbb{R} \\to \\mathbb{R}$ is continuous",
+                  "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+                ]
+              }
+            ],
+            "statement": "Given $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, for any $x > x_0$, we have $f(x) > f(x_0)$ because $f$ is strictly increasing on $\\mathbb{R}$."
+          },
+          {
+            "type": "assertion",
+            "claim": "By choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large, contradicting the assumption that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$.",
+            "deduced-from": [
+              {
+                "result": "For any $x > x_0$, we have $f(x) > f(x_0)$.",
+                "name": "Consequence of Strictly Increasing Functions",
+                "statement": "If for any $x > x_0$, $f(x) > f(x_0)$, then by choosing $x$ sufficiently large, $f(x)$ can be made arbitrarily large.",
+                "applied-to": {
+                  "$x_0$": "any real number"
+                },
+                "assumptions-satisfied": [
+                  "$f$ is strictly increasing on $\\mathbb{R}$"
+                ]
+              }
+            ],
+            "statement": "Assuming $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and given a real number $M$ such that for all $x \\in \\mathbb{R}$, $f(x) \\leq M$, by choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large, contradicting the assumption that $f$ is bounded."
+          },
+          {
+            "type": "assertion",
+            "claim": "Similarly, by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small, contradicting the assumption that $f(x) \\geq m$ for all $x \\in \\mathbb{R}$.",
+            "deduced-from": [
+              {
+                "result": "For any $x > x_0$, we have $f(x) > f(x_0)$.",
+                "name": "Improper Application",
+                "statement": "The given result implies $f(x)$ can be made large for $x > x_0$. It does not directly support making $f(x)$ small for $x < x_0$ because we only know $f$ is strictly increasing.",
+                "applied-to": {
+                  "$x_0$": "any real number"
+                },
+                "assumptions-satisfied": [
+                  "$f$ is strictly increasing on $\\mathbb{R}$"
+                ],
+                "error": "The claim assumes $f(x)$ can be made arbitrarily small for $x < x_0$ based solely on $f$ being strictly increasing, which is incorrect without additional information about $f$'s behavior for $x < x_0$."
+              }
+            ],
+            "statement": "Assuming $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and given a real number $m$ such that for all $x \\in \\mathbb\\{R}$, $m \\leq f(x)$, by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small, contradicting the assumption that $f$ is bounded."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, our initial assumption that $f$ is bounded must be false. Hence, $f$ is unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for the sake of contradiction that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M",
+            "value": "a real number such that for all $x \\in \\mathbb{R}$, $f(x) \\leq M"
+          },
+          {
+            "type": "let",
+            "variable": "m",
+            "value": "a real number such that for all $x \\in \\mathbb{R}$, $m \\leq f(x)"
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f$ is continuous on $\\mathbb{R}$ and differentiable with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, it follows that $f$ is strictly increasing on $\\mathbb{R}$."
+          },
+          {
+            "type": "let",
+            "variable": "x_0",
+            "value": "any real number"
+          },
+          {
+            "type": "assertion",
+            "claim": "For any $x > x_0$, we have $f(x) > f(x_0)$.",
+            "statement": "Given a continuous function $f:\\mathbb{R} \\to \\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, for any real number $x_0$, if $x > x_0$, then $f(x) > f(x_0)$. This is because $f$ is strictly increasing on $\\mathbb{R}$. ",
+            "deduced-from": [
+              {
+                "result": "$f$ is strictly increasing on $\\mathbb{R}$",
+                "applied-to": {
+                  "f": "$f$",
+                  "x": "$x_0$"
+                },
+                "name": "Strictly increasing property",
+                "statement": "If $f'(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is strictly increasing on $\\mathbb{R}$.",
+                "assumptions-satisfied": [
+                  "$f:\\mathbb{R} \\to \\mathbb{R}$ is continuous",
+                  "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "By choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large, contradicting the assumption that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$.",
+            "statement": "Assuming $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and given $M$ is a real number such that for all $x \\in \\mathbb{R}$, $f(x) \\leq M$, by choosing $x$ sufficiently large beyond any real number $x_0$, $f(x)$ can be made larger than $f(x_0)$, which contradicts the boundedness of $f$ by $M$.",
+            "deduced-from": [
+              {
+                "result": "For any $x > x_0$, we have $f(x) > f(x_0)$.",
+                "name": "Strictly increasing property",
+                "statement": "If $f'(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is strictly increasing on $\\mathbb{R}$.",
+                "applied-to": {
+                  "f": "$f$",
+                  "x": "$x_0$"
+                },
+                "assumptions-satisfied": [
+                  "$f:\\mathbb{R} \\to \\mathbb{R}$ is continuous",
+                  "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "Similarly, by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small, contradicting the assumption that $f(x) \\geq m$ for all $x \\in \\mathbb{R}$.",
+            "statement": "Assuming $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and given $m$ is a real number such that for all $x \\in \\mathbb{R}$, $f(x) \\geq m$, by taking $x$ sufficiently negative below any real number $x_0$, $f(x)$ becomes smaller than $f(x_0)$, which contradicts the assumption that $f(x) \\geq m$ for all $x \\in \\mathbb{R}$.",
+            "error": "The claim mistakenly assumes $f(x)$ can become arbitrarily small, which contradicts the given property of $f$ being increasing."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, our initial assumption that $f$ is bounded must be false. Hence, $f$ is unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for the sake of contradiction that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M",
+            "value": "a real number such that for all $x \\in \\mathbb{R}$, $f(x) \\leq M"
+          },
+          {
+            "type": "let",
+            "variable": "m",
+            "value": "a real number such that for all $x \\in \\mathbb{R}$, $m \\leq f(x)"
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f$ is continuous on $\\mathbb{R}$ and differentiable with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, it follows that $f$ is strictly increasing on $\\mathbb{R}$."
+          },
+          {
+            "type": "let",
+            "variable": "x_0",
+            "value": "any real number"
+          },
+          {
+            "type": "assertion",
+            "claim": "For any $x > x_0$, we have $f(x) > f(x_0)$.",
+            "statement": "Given a continuous function $f:\\mathbb{R} \\to \\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, for any real number $x_0$, if $x > x_0$, then $f(x) > f(x_0)$. This is because $f$ is strictly increasing on $\\mathbb{R}$. ",
+            "deduced-from": [
+              {
+                "name": "Strictly increasing function property",
+                "statement": "If a function $g$ is strictly increasing on $\\mathbb{R}$, then for any $x_1 < x_2$, $g(x_1) < g(x_2)$.",
+                "applied-to": {
+                  "g": "$f$",
+                  "x_1": "$x_0$",
+                  "x_2": "$x$"
+                },
+                "assumptions-satisfied": [
+                  "$f$ is strictly increasing on $\\mathbb{R}$"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "By choosing $x$ sufficiently large, we can make $f(x)$ arbitrarily large, contradicting the assumption that $f(x) \\leq M$ for all $x \\in \\mathbb{R}$.",
+            "statement": "Assuming $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and given $M$ is a real number such that for all $x \\in \\mathbb{R}$, $f(x) \\leq M$, by choosing $x$ sufficiently large beyond any real number $x_0$, $f(x)$ can be made larger than $f(x_0)$, which contradicts the boundedness of $f$ by $M$.",
+            "deduced-from": [
+              {
+                "name": "Strictly increasing function property",
+                "statement": "If a function $g$ is strictly increasing on $\\mathbb{R}$, then for any $x_1 < x_2$, $g(x_1) < g(x_2)$.",
+                "applied-to": {
+                  "g": "$f$",
+                  "x_1": "$x_0$",
+                  "x_2": "any $x > x_0$"
+                },
+                "assumptions-satisfied": [
+                  "$f$ is strictly increasing on $\\mathbb{R}$"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "claim": "Similarly, by taking $x < x_0$ and making $x$ sufficiently negative, we can make $f(x)$ arbitrarily small, contradicting the assumption that $f(x) \\geq m$ for all $x \\in \\mathbb{R}$.",
+            "statement": "Assuming $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and given $m$ is a real number such that for all $x \\in \\mathbb{R}$, $f(x) \\geq m$, by taking $x$ sufficiently negative below any real number $x_0$, $f(x)$ becomes smaller than $f(x_0)$, which contradicts the assumption that $f(x) \\geq m$ for all $x \\in \\mathbb{R}$.",
+            "deduced-from": [
+              {
+                "name": "Strictly increasing function property",
+                "statement": "If a function $g$ is strictly increasing on $\\mathbb{R}$, then for any $x_1 < x_2$, $g(x_1) < g(x_2)$.",
+                "applied-to": {
+                  "g": "$f$",
+                  "x_1": "any $x < x_0$",
+                  "x_2": "$x_0$"
+                },
+                "assumptions-satisfied": [
+                  "$f$ is strictly increasing on $\\mathbb{R}$"
+                ]
+              }
+            ],
+            "error": "The claim incorrectly deduces that $f(x)$ can be made arbitrarily small. Given $f'(x) > 0$, $f(x)$ increases without bound as $x$ decreases, not decrease."
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, our initial assumption that $f$ is bounded must be false. Hence, $f$ is unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "name": "Main Theorem",
+        "statement": "Suppose $f:\\mathbb{R} \\to \\mathbb{R}$ is a continuous function such that $f'(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "$f$ is differentiable on $\\mathbb{R}$ and $f'(x) > 0$ for all $x \\in \\mathbb{R}$."
+          },
+          {
+            "type": "observation",
+            "statement": "$f$ is strictly increasing on $\\mathbb{R}$."
+          },
+          {
+            "type": "let",
+            "variable": "$x_0$",
+            "value": "any point in $\\mathbb{R}$"
+          },
+          {
+            "type": "assertion",
+            "statement": "Given $f$ is differentiable on $\\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$ and $f$ is strictly increasing on $\\mathbb{R}$, for any given point $x_0$ in $\\mathbb{R}$ and any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+            "claim": "For any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+            "deduced-from": [
+              {
+                "result": "Intermediate Value Theorem",
+                "name": "Intermediate Value Theorem",
+                "statement": "If a function $f$ is continuous on a closed interval $[a, b]$, and $N$ is any number between $f(a)$ and $f(b)$ inclusive, then there exists at least one number $c$ in the interval such that $f(c) = N$.",
+                "applied-to": {
+                  "function": "$f$",
+                  "interval": "$[x_0, x_1]$",
+                  "N": "$M$"
+                },
+                "assumptions-satisfied": [
+                  "$f$ is continuous on $\\mathbb{R}$",
+                  "$M$ is between $f(x_0)$ and some $f(x_1)$ for $x_1 > x_0$ due to the strictly increasing nature of $f$"
+                ]
+              },
+              {
+                "result": "strictly increasing nature of $f$",
+                "name": "Monotonic Function Property",
+                "statement": "A function $f$ that is strictly increasing on an interval $I$ satisfies $f(x) < f(y)$ for all $x, y \\in I$ with $x < y$.",
+                "applied-to": {
+                  "function": "$f$",
+                  "interval": "$\\mathbb{R}$"
+                },
+                "assumptions-satisfied": [
+                  "$f$ is differentiable on $\\mathbb{R}$",
+                  "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assertion",
+            "statement": "Given $f$ is differentiable on $\\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$ and $f$ is strictly increasing on $\\mathbb{R}$, for any given point $x_0$ in $\\mathbb{R}$ and any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+            "claim": "Similarly, for any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+            "deduced-from": [
+              {
+                "result": "Intermediate Value Theorem",
+                "name": "Intermediate Value Theorem",
+                "statement": "If a function $f$ is continuous on a closed interval $[a, b]$, and $N$ is any number between $f(a)$ and $f(b)$ inclusive, then there exists at least one number $c$ in the interval such that $f(c) = N$.",
+                "applied-to": {
+                  "function": "$f$",
+                  "interval": "$[x_2, x_0]$",
+                  "N": "$m$"
+                },
+                "assumptions-satisfied": [
+                  "$f$ is continuous on $\\mathbb{R}$",
+                  "$m$ is between some $f(x_2)$ for $x_2 < x_0$ and $f(x_0)$ due to the strictly increasing nature of $f$"
+                ]
+              },
+              {
+                "result": "strictly increasing nature of $f$",
+                "name": "Monotonic Function Property",
+                "statement": "A function $f$ that is strictly increasing on an interval $I$ satisfies $f(x) < f(y)$ for all $x, y \\in I$ with $x < y$.",
+                "applied-to": {
+                  "function": "$f$",
+                  "interval": "$\\mathbb{R}$"
+                },
+                "assumptions-satisfied": [
+                  "$f$ is differentiable on $\\mathbb{R}$",
+                  "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+                ]
+              },
+              {
+                "result": "observation about behavior to the left of $x_0$",
+                "error": "This is an unsupported assumption and not a formal result."
+              }
+            ]
+          },
+          {
+            "type": "observation",
+            "statement": "Therefore, $f$ is unbounded above and unbounded below, meaning $f$ is unbounded on $\\mathbb{R}$."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "assertion",
+        "statement": "Given $f$ is differentiable on $\\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$ and $f$ is strictly increasing on $\\mathbb{R}$, for any given point $x_0$ in $\\mathbb{R}$ and any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+        "claim": "For any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+        "deduced-from": [
+          {
+            "result": {
+              "name": "Intermediate Value Theorem",
+              "statement": "If a function $f$ is continuous on a closed interval $[a, b]$, and $N$ is any number between $f(a)$ and $f(b)$, inclusive, then there exists at least one number $c$ in the interval $[a, b]$ such that $f(c) = N$.",
+              "applied-to": {
+                "function": "$f$",
+                "interval": "$[x_0, x_1]$",
+                "N": "$M$"
+              },
+              "assumptions-satisfied": [
+                "$f$ is continuous on $\\mathbb{R}$",
+                "$M$ is between $f(x_0)$ and $f(x_1)$"
+              ]
+            }
+          },
+          {
+            "name": "strictly increasing nature of $f$",
+            "statement": "A function $f$ is strictly increasing on an interval if for any two numbers $x$ and $y$ in the interval with $x < y$, it holds that $f(x) < f(y)$.",
+            "applied-to": {
+              "function": "$f$",
+              "interval": "$\\mathbb{R}$",
+              "x": "$x_0$",
+              "y": "$x_1$",
+              "f(x)": "$f(x_0)$",
+              "f(y)": "$f(x_1)$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is differentiable on $\\mathbb{R}$",
+              "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "assertion",
+        "statement": "Given $f$ is differentiable on $\\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$ and $f$ is strictly increasing on $\\mathbb{R}$, for any given point $x_0$ in $\\mathbb{R}$ and any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+        "claim": "Similarly, for any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+        "deduced-from": [
+          {
+            "result": {
+              "name": "Intermediate Value Theorem",
+              "statement": "If a function $f$ is continuous on a closed interval $[a, b]$, and $N$ is any number between $f(a)$ and $f(b)$, inclusive, then there exists at least one number $c$ in the interval $[a, b]$ such that $f(c) = N$.",
+              "applied-to": {
+                "function": "$f$",
+                "interval": "$[x_2, x_0]$",
+                "N": "$m$"
+              },
+              "assumptions-satisfied": [
+                "$f$ is continuous on $\\mathbb{R}$",
+                "$m$ is between $f(x_2)$ and $f(x_0)$"
+              ]
+            }
+          },
+          {
+            "name": "strictly increasing nature of $f$",
+            "statement": "A function $f$ is strictly increasing on an interval if for any two numbers $x$ and $y$ in the interval with $x < y$, it holds that $f(x) < f(y)$.",
+            "applied-to": {
+              "function": "$f$",
+              "interval": "$\\mathbb{R}$",
+              "x": "$x_2$",
+              "y": "$x_0$",
+              "f(x)": "$f(x_2)$",
+              "f(y)": "$f(x_0)$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is differentiable on $\\mathbb{R}$",
+              "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+            ]
+          }
+        ],
+        "error": "The claim incorrectly applies the Intermediate Value Theorem; it needs the function to achieve all values between $f(x_2)$ and $f(x_0)$, not that it is strictly increasing. The correct reasoning involves the function being strictly increasing and unbounded."
+      }
+    ],
+    [
+      {
+        "type": "assertion",
+        "claim": "For any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+        "statement": "Given a differentiable function $f$ on $\\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and letting $x_0$ be any point in $\\mathbb{R}$, for any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+        "deduced-from": [
+          {
+            "result": "Intermediate Value Theorem",
+            "name": "Intermediate Value Theorem",
+            "statement": "If a function $f$ is continuous on the interval $[a, b]$, and $N$ is any number between $f(a)$ and $f(b)$, then there exists some $c \\in [a, b]$ such that $f(c) = N$.",
+            "applied-to": {
+              "function": "$f$",
+              "interval": "$[x_0, x_1]$",
+              "N": "$M$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is continuous on $\\mathbb{R}$",
+              "$M$ is between $f(x_0)$ and $f(x_1)$ (implicitly, assuming such $x_1$ exists)"
+            ]
+          },
+          {
+            "result": "strictly increasing nature of $f$",
+            "name": "Property of Strictly Increasing Functions",
+            "statement": "If a function $f$ is strictly increasing on an interval, then for any two points $x$ and $y$ in that interval with $x < y$, $f(x) < f(y)$.",
+            "applied-to": {
+              "x": "$x_0$",
+              "y": "$x_1$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is strictly increasing on $\\mathbb{R}$"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "assertion",
+        "claim": "Similarly, for any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+        "statement": "Given a differentiable function $f$ on $\\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and letting $x_0$ be any point in $\\mathbb{R}$, for any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+        "deduced-from": [
+          {
+            "result": "Intermediate Value Theorem",
+            "name": "Intermediate Value Theorem",
+            "statement": "If a function $f$ is continuous on the interval $[a, b]$, and $N$ is any number between $f(a)$ and $f(b)$, then there exists some $c \\in [a, b]$ such that $f(c) = N$.",
+            "applied-to": {
+              "function": "$f$",
+              "interval": "$[x_2, x_0]$",
+              "N": "$m$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is continuous on $\\mathbb{R}$",
+              "$m$ is between $f(x_2)$ and $f(x_0)$ (implicitly, assuming such $x_2$ exists)"
+            ]
+          },
+          {
+            "result": "strictly increasing nature of $f$",
+            "name": "Property of Strictly Increasing Functions",
+            "statement": "If a function $f$ is strictly increasing on an interval, then for any two points $x$ and $y$ in that interval with $x < y$, $f(x) < f(y)$.",
+            "applied-to": {
+              "x": "$x_2$",
+              "y": "$x_0$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is strictly increasing on $\\mathbb{R}$"
+            ]
+          },
+          {
+            "result": "observation about behavior to the left of $x_0$",
+            "error": "This assertion does not directly follow from the provided observations and theorems. The claim depends on the properties of strictly increasing functions and the continuity of $f$, but an explicit observational result about behavior to the left of $x_0$ is not provided."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "assertion",
+        "claim": "For any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+        "statement": "Given a differentiable function $f$ on $\\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and letting $x_0$ be any point in $\\mathbb{R}$, for any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+        "deduced-from": [
+          {
+            "result": "Intermediate Value Theorem",
+            "name": "Intermediate Value Theorem",
+            "statement": "If $f$ is continuous on a closed interval $[a, b]$, and $N$ is any number between $f(a)$ and $f(b)$, inclusive, then there exists at least one number $c$ in the interval such that $f(c) = N$.",
+            "applied-to": {
+              "function": "$f$",
+              "interval": "$[x_0, x_1]$",
+              "N": "$M$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is continuous on $\\mathbb{R}$",
+              "$M$ is a number between $f(x_0)$ and $f(x_1)$"
+            ]
+          },
+          {
+            "result": "strictly increasing nature of $f$",
+            "name": "Property of Strictly Increasing Functions",
+            "statement": "If $f$ is strictly increasing on $\\mathbb{R}$, then for any $x_1 > x_0$, $f(x_1) > f(x_0)$.",
+            "applied-to": {
+              "x_1": "$x_1$",
+              "x_0": "$x_0$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is strictly increasing on $\\mathbb{R}$"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "assertion",
+        "claim": "Similarly, for any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+        "statement": "Given a differentiable function $f$ on $\\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and letting $x_0$ be any point in $\\mathbb{R}$, for any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+        "deduced-from": [
+          {
+            "result": "Intermediate Value Theorem",
+            "name": "Intermediate Value Theorem",
+            "statement": "If $f$ is continuous on a closed interval $[a, b]$, and $N$ is any number between $f(a)$ and $f(b)$, inclusive, then there exists at least one number $c$ in the interval such that $f(c) = N$.",
+            "applied-to": {
+              "function": "$f$",
+              "interval": "$[x_2, x_0]$",
+              "N": "$m$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is continuous on $\\mathbb{R}$",
+              "$m$ is a number between $f(x_2)$ and $f(x_0)$"
+            ]
+          },
+          {
+            "result": "strictly increasing nature of $f$",
+            "name": "Property of Strictly Increasing Functions",
+            "statement": "If $f$ is strictly increasing on $\\mathbb{R}$, then for any $x_2 < x_0$, $f(x_2) < f(x_0)$.",
+            "applied-to": {
+              "x_2": "$x_2$",
+              "x_0": "$x_0$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is strictly increasing on $\\mathbb{R}$"
+            ]
+          },
+          {
+            "result": "observation about behavior to the left of $x_0$",
+            "error": "The observation about behavior to the left of $x_0$ is not formally stated and cannot be directly applied without further clarification."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "assertion",
+        "claim": "$f$ is strictly increasing on $\\mathbb{R}$.",
+        "statement": "Given $f$ is differentiable on $\\mathbb{R}$ and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly increasing on $\\mathbb{R}$ by the Intermediate Value Theorem applied to $f$ on any interval in $\\mathbb{R}$.",
+        "deduced-from": [
+          {
+            "result": "Intermediate Value Theorem",
+            "name": "Intermediate Value Theorem",
+            "statement": "If a function $f$ is continuous on a closed interval $[a, b]$, then it takes on every value between $f(a)$ and $f(b)$ at some point within the interval.",
+            "applied-to": "$f$ on any interval in $\\mathbb{R}$",
+            "assumptions-satisfied": [
+              "$f$ is continuous on $\\mathbb{R}$"
+            ]
+          },
+          {
+            "result": "$f'(x) > 0$ for all $x \\in \\mathbb{R}$",
+            "name": "Monotonicity from Derivative Sign",
+            "statement": "If $f'$ exists and $f'(x) > 0$ for all $x$ in an interval, then $f$ is strictly increasing on that interval.",
+            "applied-to": {
+              "function": "$f$",
+              "interval": "$\\mathbb{R}$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is differentiable on $\\mathbb{R}$",
+              "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "assertion",
+        "claim": "For any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+        "statement": "Given $f$ is differentiable on $\\mathbb{R}$, $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and $f$ is strictly increasing on $\\mathbb{R}$, for any $M > f(x_0)$ and for any $x_0$ in $\\mathbb{R}$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+        "deduced-from": [
+          {
+            "name": "Intermediate Value Theorem",
+            "statement": "If a function $f$ is continuous on a closed interval $[a, b]$, then it takes on every value between $f(a)$ and $f(b)$ at some point within the interval.",
+            "applied-to": "$f$ between $x_0$ and any $x_1 > x_0$",
+            "assumptions-satisfied": [
+              "$f$ is continuous on $[x_0, x_1]$"
+            ]
+          },
+          {
+            "name": "$f$ is strictly increasing",
+            "statement": "A function $f$ is strictly increasing on an interval if for any two points $x_1, x_2$ in the interval with $x_1 < x_2$, it follows that $f(x_1) < f(x_2)$.",
+            "applied-to": "$f$ over $\\mathbb{R}$",
+            "assumptions-satisfied": [
+              "$f$ is differentiable on $\\mathbb{R}$",
+              "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "assertion",
+        "claim": "For any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+        "statement": "Given $f$ is differentiable on $\\mathbb{R}$, $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and $f$ is strictly increasing on $\\mathbb{R}$, for any $m < f(x_0)$ and any $x_0$ in $\\mathbb{R}$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+        "deduced-from": [
+          {
+            "name": "Intermediate Value Theorem",
+            "statement": "If a function $f$ is continuous on a closed interval $[a, b]$, then it takes on every value between $f(a)$ and $f(b)$ at some point within the interval.",
+            "applied-to": "$f$ between any $x_2 < x_0$ and $x_0$",
+            "assumptions-satisfied": [
+              "$f$ is continuous on $[x_2, x_0]$"
+            ]
+          },
+          {
+            "result": "$f$ is strictly increasing",
+            "name": "Decreasing behavior from strict increase",
+            "statement": "A function $f$ that is strictly increasing on an interval implies that for any $x_0$ in the interval, moving to the left (decreasing $x$) results in $f(x)$ being lower than $f(x_0)$.",
+            "applied-to": {
+              "function": "$f$",
+              "point": "$x_0$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is strictly increasing on $\\mathbb{R}$"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "assertion",
+        "claim": "$f$ is unbounded above and unbounded below, which means $f$ is unbounded on $\\mathbb{R}$.",
+        "statement": "Given $f$ is differentiable on $\\mathbb{R}$, $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and $f$ is strictly increasing on $\\mathbb{R}$, $f$ is unbounded above and unbounded below for any $x_0$ in $\\mathbb{R}$, which means $f$ is unbounded on $\\mathbb{R}$. This follows because for any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$, and for any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+        "deduced-from": [
+          {
+            "name": "Unboundedness above",
+            "statement": "A function $f$ is unbounded above if for any $M > f(x_0)$, there exists some $x_1 > x_0$ such that $f(x_1) > M$.",
+            "applied-to": {
+              "function": "$f$",
+              "point": "$x_0$",
+              "value": "$M$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is strictly increasing on $\\mathbb{R}$",
+              "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+            ]
+          },
+          {
+            "name": "Unboundedness below",
+            "statement": "A function $f$ is unbounded below if for any $m < f(x_0)$, there exists some $x_2 < x_0$ such that $f(x_2) < m$.",
+            "applied-to": {
+              "function": "$f$",
+              "point": "$x_0$",
+              "value": "$m$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is strictly increasing on $\\mathbb{R}$",
+              "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+            ]
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "assertion",
+        "claim": "$f$ is strictly increasing on $\\mathbb{R}$.",
+        "statement": "Given $f$ is differentiable on $\\mathbb{R}$ and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly increasing on $\\mathbb{R}$ by the Intermediate Value Theorem applied to $f$ on any interval in $\\mathbb{R}$. This conclusion, however, is incorrect as the property should be deduced from the Mean Value Theorem, not the Intermediate Value Theorem.",
+        "deduced-from": [
+          {
+            "result": "Intermediate Value Theorem",
+            "applied-to": "$f$ on any interval in $\\mathbb{R}$",
+            "error": "The Intermediate Value Theorem guarantees that $f$ attains every value between $f(a)$ and $f(b)$ for any interval $[a, b]$. It does not imply that $f$ is strictly increasing. The correct theorem to apply here is the Mean Value Theorem."
+          },
+          "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+        ]
+      },
+      {
+        "type": "assertion",
+        "claim": "For any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+        "statement": "Given $f$ is differentiable on $\\mathbb{R}$, $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and $f$ is strictly increasing on $\\mathbb{R}$, for any $M > f(x_0)$ and for any $x_0$ in $\\mathbb{R}$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+        "deduced-from": [
+          {
+            "name": "Intermediate Value Theorem",
+            "statement": "If a function $f$ is continuous on a closed interval $[a, b]$, then it takes on every value between $f(a)$ and $f(b)$ at least once.",
+            "applied-to": {
+              "function": "$f$",
+              "interval": "$[x_0, x_1]$",
+              "value": "$M$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is continuous on $\\mathbb{R}$",
+              "$M > f(x_0)$"
+            ],
+            "error": "The Intermediate Value Theorem ensures that $f$ takes on every value between $f(a)$ and $f(b)$, but it does not directly ensure the existence of $x_1 > x_0$ such that $f(x_1) > M$ given $f'(x) > 0$. The correct rationale should involve the properties of continuous and strictly increasing functions."
+          },
+          {
+            "name": "$f$ is strictly increasing",
+            "statement": "If $f'(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is strictly increasing.",
+            "applied-to": {
+              "function": "$f$",
+              "domain": "$\\mathbb{R}$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is differentiable on $\\mathbb{R}$",
+              "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "assertion",
+        "claim": "For any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+        "statement": "Given $f$ is differentiable on $\\mathbb{R}$, $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and $f$ is strictly increasing on $\\mathbb{R}$, for any $m < f(x_0)$ and any $x_0$ in $\\mathbb{R}$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+        "deduced-from": [
+          {
+            "name": "Intermediate Value Theorem",
+            "statement": "If a function $f$ is continuous on a closed interval $[a, b]$, then it takes on every value between $f(a)$ and $f(b)$ at least once.",
+            "applied-to": {
+              "function": "$f$",
+              "interval": "$[x_2, x_0]$",
+              "value": "$m$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is continuous on $\\mathbb{R}$",
+              "$m < f(x_0)$"
+            ],
+            "error": "The Intermediate Value Theorem ensures that $f$ takes on every value between $f(a)$ and $f(b)$, but it does not directly prove the existence of $x_2 < x_0$ such that $f(x_2) < m$ given $f'(x) > 0$. The assertion inaccurately uses the Intermediate Value Theorem to deduce properties about strictly increasing functions."
+          },
+          {
+            "result": "$f$ is strictly increasing",
+            "applied-to": {
+              "result": "moving to the left of $x_0$",
+              "implies": "decreasing behavior of $f$"
+            },
+            "error": "This explanation contains a conceptual misunderstanding. A strictly increasing function does not exhibit decreasing behavior when moving to the left of a point. The assertion seems to misinterpret the concept of strict monotonicity."
+          }
+        ]
+      },
+      {
+        "type": "assertion",
+        "claim": "$f$ is unbounded above and unbounded below, which means $f$ is unbounded on $\\mathbb{R}$.",
+        "statement": "Given $f$ is differentiable on $\\mathbb{R}$, $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and $f$ is strictly increasing on $\\mathbb{R}$, $f$ is unbounded above and unbounded below for any $x_0$ in $\\mathbb{R}$, which means $f$ is unbounded on $\\mathbb{R}$. This follows because for any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$, and for any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+        "deduced-from": [
+          "For any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+          "For any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$."
+        ],
+        "error": "The assertions used to deduce this claim have critical conceptual errors and inaccuracies in their application of the Intermediate Value Theorem and misunderstanding of strictly increasing functions' properties. Therefore, this claim's logic is fundamentally flawed as it stands."
+      }
+    ],
+    [
+      {
+        "type": "assertion",
+        "claim": "$f$ is strictly increasing on $\\mathbb{R}$.",
+        "statement": "If $f$ is differentiable on $\\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is strictly increasing on $\\mathbb{R}$. This follows from the Intermediate Value Theorem applied to $f$ on any interval in $\\mathbb{R}$ and the positivity of $f'$ on $\\mathbb{R}$.",
+        "deduced-from": [
+          {
+            "name": "Intermediate Value Theorem",
+            "statement": "If $f$ is continuous on $[a, b]$ and $N$ is any number between $f(a)$ and $f(b)$, then there exists a $c$ in $[a, b]$ such that $f(c) = N$.",
+            "applied-to": "$f$ on any interval in $\\mathbb{R}$",
+            "assumptions-satisfied": [
+              "$f$ is continuous on any interval in $\\mathbb{R}$"
+            ]
+          },
+          {
+            "result": "$f'(x) > 0$ for all $x \\in \\mathbb{R}$",
+            "name": "Positivity of derivative implies increasing function",
+            "statement": "If $f'(x) > 0$ for all $x$ in its domain, then $f$ is strictly increasing on its domain.",
+            "applied-to": "$f$ over $\\mathbb{R}$",
+            "assumptions-satisfied": [
+              "$f$ is differentiable on $\\mathbb{R}$",
+              "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "assertion",
+        "claim": "For any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+        "statement": "Let $x_0$ be any point in $\\mathbb{R}$. If $f$ is differentiable on $\\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, implying that $f$ is strictly increasing on $\\mathbb{R}$, then for any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$. This is a consequence of the Intermediate Value Theorem and the strictly increasing nature of $f$.",
+        "deduced-from": [
+          {
+            "name": "Intermediate Value Theorem",
+            "statement": "If $f$ is continuous on $[a, b]$ and $N$ is any number between $f(a)$ and $f(b)$, then there exists a $c$ in $[a, b]$ such that $f(c) = N$.",
+            "applied-to": "$f$ on any interval in $\\mathbb{R}$",
+            "assumptions-satisfied": [
+              "$f$ is continuous on any interval in $\\mathbb{R}$"
+            ]
+          },
+          {
+            "name": "$f$ is strictly increasing",
+            "statement": "If $f$ is strictly increasing on its domain, then for any $x_0$ in the domain and $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+            "applied-to": "$f$ over $\\mathbb{R}$",
+            "assumptions-satisfied": [
+              "$f$ is strictly increasing on $\\mathbb{R}$"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "assertion",
+        "claim": "For any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+        "statement": "Let $x_0$ be any point in $\\mathbb{R}$. Given that $f$ is differentiable on $\\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, indicating $f$ is strictly increasing on $\\mathbb{R}$, then for any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$. This assertion relies on the Intermediate Value Theorem and the strictly increasing behavior of $f$ when moving to the left of $x_0$, which implies a decreasing behavior of $f$ in terms of values.",
+        "deduced-from": [
+          {
+            "name": "Intermediate Value Theorem",
+            "statement": "If $f$ is continuous on $[a, b]$ and $N$ is any number between $f(a)$ and $f(b)$, then there exists a $c$ in $[a, b]$ such that $f(c) = N$.",
+            "applied-to": "$f$ on any interval in $\\mathbb{R}$",
+            "assumptions-satisfied": [
+              "$f$ is continuous on any interval in $\\mathbb{R}$"
+            ]
+          },
+          {
+            "result": "$f$ is strictly increasing",
+            "name": "Strictly increasing function implies values less than $f(x_0)$ exist to the left of $x_0$",
+            "statement": "If $f$ is strictly increasing on its domain, then for any $x_0$ in the domain and $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+            "applied-to": "$f$ over $\\mathbb{R}$",
+            "assumptions-satisfied": [
+              "$f$ is strictly increasing on $\\mathbb{R}$"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "assertion",
+        "claim": "$f$ is unbounded above and unbounded below, which means $f$ is unbounded on $\\mathbb{R}$.",
+        "statement": "Let $x_0$ be any point in $\\mathbb{R}$. Assuming $f$ is differentiable on $\\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and thus $f$ is strictly increasing on $\\mathbb{R}$, it follows that $f$ is unbounded above and unbounded below, and therefore unbounded on $\\mathbb{R}$. This conclusion is derived from the existence of $x_1 > x_0$ for any $M > f(x_0)$ such that $f(x_1) > M$, and the existence of $x_2 < x_0$ for any $m < f(x_0)$ such that $f(x_2) < m$.",
+        "deduced-from": [
+          {
+            "name": "For any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+            "statement": "If $f$ is strictly increasing on its domain, then for any $x_0$ in the domain and $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+            "applied-to": "$f$ over $\\mathbb{R}$, $M > f(x_0)$",
+            "assumptions-satisfied": [
+              "$f$ is strictly increasing on $\\mathbb{R}$"
+            ]
+          },
+          {
+            "name": "For any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+            "statement": "If $f$ is strictly increasing on its domain, then for any $x_0$ in the domain and $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+            "applied-to": "$f$ over $\\mathbb{R}$, $m < f(x_0)$",
+            "assumptions-satisfied": [
+              "$f$ is strictly increasing on $\\mathbb{R}$"
+            ]
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "assertion",
+        "claim": "$f$ is strictly increasing on $\\mathbb{R}$.",
+        "statement": "If $f$ is differentiable on $\\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is strictly increasing on $\\mathbb{R}$. This follows from the Intermediate Value Theorem applied to $f$ on any interval in $\\mathbb{R}$ and the positivity of $f'$ on $\\mathbb{R}$.",
+        "deduced-from": [
+          {
+            "name": "Intermediate Value Theorem",
+            "statement": "If $f$ is continuous on $[a, b]$ and $d$ is between $f(a)$ and $f(b)$, there exists $c \\in [a, b]$ such that $f(c) = d$.",
+            "applied-to": "$f$ on any interval in $\\mathbb{R}$",
+            "assumptions-satisfied": [
+              "$f$ is continuous on $\\mathbb{R}$"
+            ]
+          },
+          "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+        ]
+      },
+      {
+        "type": "assertion",
+        "claim": "For any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+        "statement": "Let $x_0$ be any point in $\\mathbb{R}$. If $f$ is differentiable on $\\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, implying that $f$ is strictly increasing on $\\mathbb{R}$, then for any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$. This is a consequence of the Intermediate Value Theorem and the strictly increasing nature of $f$.",
+        "deduced-from": [
+          {
+            "name": "Intermediate Value Theorem",
+            "statement": "If $f$ is continuous on $[a, b]$ and $d$ is between $f(a)$ and $f(b)$, there exists $c \\in [a, b]$ such that $f(c) = d$.",
+            "applied-to": {
+              "a": "$x_0$",
+              "b": "for some $x_1 > x_0$",
+              "d": "$M$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is continuous on $\\mathbb{R}$"
+            ]
+          },
+          {
+            "result": "$f$ is strictly increasing",
+            "applied-to": "all of $\\mathbb{R}$"
+          }
+        ]
+      },
+      {
+        "type": "assertion",
+        "claim": "For any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$.",
+        "statement": "Let $x_0$ be any point in $\\mathbb{R}$. Given that $f$ is differentiable on $\\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, indicating $f$ is strictly increasing on $\\mathbb{R}$, then for any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$. This assertion relies on the Intermediate Value Theorem and the strictly increasing behavior of $f$ when moving to the left of $x_0$, which implies a decreasing behavior of $f$ in terms of values.",
+        "deduced-from": [
+          {
+            "name": "Intermediate Value Theorem",
+            "statement": "If $f$ is continuous on $[a, b]$ and $d$ is between $f(a)$ and $f(b)$, there exists $c \\in [a, b]$ such that $f(c) = d$.",
+            "applied-to": {
+              "a": "for some $x_2 < x_0$",
+              "b": "$x_0$",
+              "d": "$m$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is continuous on $\\mathbb{R}$"
+            ]
+          },
+          {
+            "result": "$f$ is strictly increasing",
+            "applied-to": {
+              "result": "moving to the left of $x_0$",
+              "implies": "decreasing behavior of $f$"
+            }
+          }
+        ]
+      },
+      {
+        "type": "assertion",
+        "claim": "$f$ is unbounded above and unbounded below, which means $f$ is unbounded on $\\mathbb{R}$.",
+        "statement": "Let $x_0$ be any point in $\\mathbb{R}$. Assuming $f$ is differentiable on $\\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and thus $f$ is strictly increasing on $\\mathbb{R}$, it follows that $f$ is unbounded above and unbounded below, and therefore unbounded on $\\mathbb{R}$. This conclusion is derived from the existence of $x_1 > x_0$ for any $M > f(x_0)$ such that $f(x_1) > M$, and the existence of $x_2 < x_0$ for any $m < f(x_0)$ such that $f(x_2) < m$.",
+        "deduced-from": [
+          "For any $M > f(x_0)$, there exists $x_1 > x_0$ such that $f(x_1) > M$.",
+          "For any $m < f(x_0)$, there exists $x_2 < x_0$ such that $f(x_2) < m$."
+        ]
+      }
+    ],
+    [
+      {
+        "type": "assertion",
+        "claim": "There exists a $c \\in (0, N)$ such that $f'(c) = \\frac{f(N) - f(0)}{N - 0} > 0$.",
+        "deduced-from": [
+          {
+            "result": "Mean Value Theorem",
+            "applied-to": {
+              "interval": "[0, N]",
+              "function": "$f$"
+            },
+            "name": "Mean Value Theorem",
+            "statement": "If $f$ is continuous on $[a, b]$ and differentiable on $(a, b)$, then there exists at least one $c \\in (a, b)$ such that $f'(c) = \\frac{f(b) - f(a)}{b - a}$.",
+            "assumptions-satisfied": [
+              "$f$ is continuous on $[0, N]$",
+              "$f$ is differentiable on $(0, N)$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+            ]
+          }
+        ],
+        "statement": "Given a continuous function $f: \\mathbb{R} \\to \\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$ and some $N > 0$, there exists a $c \\in (0, N)$ such that $f'(c) = \\frac{f(N) - f(0)}{N - 0} > 0$, by the Mean Value Theorem."
+      },
+      {
+        "type": "assertion",
+        "claim": "The difference $f(N) - f(0)$ must increase as $N$ increases, and because $f'(x) > 0$ for all $x$, this difference continues to grow without bound as $N$ becomes arbitrarily large.",
+        "deduced-from": [
+          {
+            "result": "$f'(x) > 0$ for all $x \\in \\mathbb{R}$",
+            "name": "Property of strictly increasing functions",
+            "statement": "If $f'(x) > 0$ for all $x$ in its domain, then $f$ is strictly increasing.",
+            "applied-to": {
+              "function": "$f$",
+              "domain": "$\\mathbb{R}$"
+            },
+            "assumptions-satisfied": [
+              "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+            ]
+          },
+          {
+            "result": "As $f$ is strictly increasing, $f(N) > f(0)$, and thus $f(N) - f(0) > 0$.",
+            "name": "Consequence of a strictly increasing function",
+            "statement": "For a strictly increasing function $f$, if $a < b$, then $f(a) < f(b)$.",
+            "applied-to": {
+              "function": "$f$",
+              "a": "0",
+              "b": "$N$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is strictly increasing",
+              "0 < N"
+            ]
+          }
+        ],
+        "statement": "Assuming $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, the difference $f(N) - f(0)$ must increase as $N > 0$ increases, indicating this difference grows without bound as $N$ becomes arbitrarily large."
+      },
+      {
+        "type": "assertion",
+        "claim": "For a sufficiently large $N$, we must have $|f(N)| > M$, contradicting the assumption that $f$ is bounded.",
+        "justification": "Since the difference $f(N) - f(0)$ grows without bound and $f$ is increasing.",
+        "statement": "If $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous, $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and $f$ is assumed to be bounded by some $M > 0$, then for a sufficiently large $N > 0$, it must hold that $|f(N)| > M$, which contradicts the assumption that $f$ is bounded.",
+        "error": "The claim directly deduces an unbounded nature from the strictly increasing difference without considering the bounds on $f(0)$. An additional argument needed to account for the absolute value of $f(N)$ exceeding $M$."
+      }
+    ],
+    [
+      {
+        "type": "assertion",
+        "claim": "There exists a $c \\in (0, N)$ such that $f'(c) = \\frac{f(N) - f(0)}{N - 0} > 0$.",
+        "deduced-from": [
+          {
+            "result": "Mean Value Theorem",
+            "applied-to": {
+              "interval": "[0, N]",
+              "function": "$f$"
+            },
+            "name": "Mean Value Theorem",
+            "statement": "If a function $f$ is continuous on the closed interval $[a, b]$ and differentiable on the open interval $(a, b)$, then there exists at least one $c \\in (a, b)$ such that $f'(c) = \\frac{f(b) - f(a)}{b - a}$.",
+            "assumptions-satisfied": [
+              "$f$ is continuous on $[0, N]$",
+              "$f$ is differentiable on $(0, N)$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+            ]
+          }
+        ],
+        "statement": "Given a continuous function $f: \\mathbb{R} \\to \\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$ and some $N > 0$, there exists a $c \\in (0, N)$ such that $f'(c) = \\frac{f(N) - f(0)}{N - 0} > 0$, by the Mean Value Theorem."
+      },
+      {
+        "type": "assertion",
+        "claim": "The difference $f(N) - f(0)$ must increase as $N$ increases, and because $f'(x) > 0$ for all $x$, this difference continues to grow without bound as $N$ becomes arbitrarily large.",
+        "deduced-from": [
+          {
+            "result": "$f'(x) > 0$ for all $x \\in \\mathbb{R}$",
+            "name": "Property of strictly increasing functions",
+            "statement": "If $f'(x) > 0$ for all $x$ in its domain, then $f$ is strictly increasing.",
+            "applied-to": {
+              "function": "$f$",
+              "domain": "$\\mathbb{R}$"
+            },
+            "assumptions-satisfied": [
+              "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+            ]
+          },
+          {
+            "result": "As $f$ is strictly increasing, $f(N) > f(0)$, and thus $f(N) - f(0) > 0$.",
+            "name": "Property of differences in strictly increasing functions",
+            "statement": "If $f$ is strictly increasing on its domain, then for any two points $a, b$ in its domain with $a < b$, $f(b) - f(a) > 0$.",
+            "applied-to": {
+              "function": "$f$",
+              "points": "0, N",
+              "domain": "$\\mathbb{R}$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is strictly increasing",
+              "$0 < N$"
+            ]
+          }
+        ],
+        "statement": "Assuming $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, the difference $f(N) - f(0)$ must increase as $N > 0$ increases, indicating this difference grows without bound as $N$ becomes arbitrarily large."
+      },
+      {
+        "type": "assertion",
+        "claim": "For a sufficiently large $N$, we must have $|f(N)| > M$, contradicting the assumption that $f$ is bounded.",
+        "deduced-from": [
+          {
+            "result": "Since the difference $f(N) - f(0)$ grows without bound and $f$ is increasing.",
+            "error": "The conclusion that $|f(N)| > M$ for sufficiently large $N$ cannot be directly deduced from the premise without additional argumentation or premises."
+          }
+        ],
+        "statement": "If $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous, $f'(x) > 0$ for all $x \\in \\mathbb{R}$, and $f$ is assumed to be bounded by some $M > 0$, then for a sufficiently large $N > 0$, it must hold that $|f(N)| > M$, which contradicts the assumption that $f$ is bounded."
+      }
+    ],
+    [
+      {
+        "type": "assertion",
+        "claim": "There exists a $c \\in (0, N)$ such that $f'(c) = \\frac{f(N) - f(0)}{N - 0} > 0$.",
+        "deduced-from": [
+          {
+            "result": "Mean Value Theorem",
+            "applied-to": {
+              "interval": "[0, N]",
+              "function": "$f$"
+            },
+            "name": "Mean Value Theorem",
+            "statement": "If $f$ is continuous on [a, b] and differentiable on (a, b), then there exists a $c \\in (a, b)$ such that $f'(c) = \\frac{f(b)-f(a)}{b-a}$.",
+            "assumptions-satisfied": [
+              "$f$ is continuous on $[0, N]$",
+              "$f$ is differentiable on $(0, N)$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+            ]
+          }
+        ],
+        "statement": "Given $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, there exists a $c \\in (0, N)$ such that $f'(c) = \\frac{f(N) - f(0)}{N} > 0$, by the Mean Value Theorem applied to $f$ on the interval $[0, N]$."
+      },
+      {
+        "type": "assertion",
+        "claim": "The difference $f(N) - f(0)$ must increase as $N$ increases, and because $f'(x) > 0$ for all $x$, this difference continues to grow without bound as $N$ becomes arbitrarily large.",
+        "deduced-from": [
+          {
+            "result": "$f'(x) > 0$ for all $x \\in \\mathbb{R}$",
+            "name": "Property of strictly increasing functions",
+            "statement": "If $f'(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is strictly increasing.",
+            "applied-to": {
+              "function": "$f$"
+            },
+            "assumptions-satisfied": [
+              "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+            ]
+          },
+          {
+            "result": "As $f$ is strictly increasing, $f(N) > f(0)$, and thus $f(N) - f(0) > 0$.",
+            "name": "Consequence of strictly increasing function",
+            "statement": "If $f$ is strictly increasing, then for any $x, y$ with $x < y$, $f(x) < f(y)$.",
+            "applied-to": {
+              "x": "0",
+              "y": "N",
+              "function": "$f$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is strictly increasing on $\\mathbb{R}$"
+            ]
+          }
+        ],
+        "statement": "Given $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, the difference $f(N) - f(0)$ must increase as $N$ increases. Since $f$ is strictly increasing, this difference grows without bound as $N$ becomes arbitrarily large."
+      },
+      {
+        "type": "assertion",
+        "claim": "For a sufficiently large $N$, we must have $|f(N)| > M$, contradicting the assumption that $f$ is bounded.",
+        "justification": "Since the difference $f(N) - f(0)$ grows without bound and $f$ is increasing.",
+        "statement": "Assume $f:\\mathbb{R} \\to \\mathbb{R}$ is bounded by some $M > 0$ such that $|f(x)| \\leq M$ for all $x \\in \\mathbb{R}$ and $f'(x) > 0$ for all $x$. Then, for a sufficiently large $N$, $|f(N)| > M$, contradicting the assumption that $f$ is bounded.",
+        "deduced-from": [
+          {
+            "result": "The difference $f(N) - f(0)$ must increase as $N$ increases, and because $f'(x) > 0$ for all $x$, this difference continues to grow without bound as $N$ becomes arbitrarily large.",
+            "name": "Unbounded growth due to strictly increasing nature",
+            "statement": "If the difference $f(y) - f(x)$ for $y > x$ grows without bound, then $f$ is unbounded.",
+            "applied-to": {
+              "x": "0",
+              "y": "N",
+              "function": "$f$"
+            },
+            "assumptions-satisfied": [
+              "$f'(x) > 0$ for all $x \\in \\mathbb{R}$ implying $f$ is strictly increasing",
+              "There exists $N$ making $|f(N) - f(0)|$ arbitrarily large"
+            ]
+          }
+        ],
+        "error": "The conclusion that $|f(N)| > M$ for some large $N$ directly contradicts the assumption without considering $f(0)$ and the fact that the growth of $f$ could be bounded below. Proper justification requires addressing the potential bound on $f(0)$."
+      }
+    ],
+    [
+      {
+        "type": "assertion",
+        "claim": "There exists a $c \\in (0, N)$ such that $f'(c) = \\frac{f(N) - f(0)}{N - 0} > 0$.",
+        "deduced-from": [
+          {
+            "result": "Mean Value Theorem",
+            "applied-to": {
+              "interval": "[0, N]",
+              "function": "$f$"
+            },
+            "name": "Mean Value Theorem",
+            "statement": "If $f$ is a function that is continuous on the closed interval $[a, b]$ and differentiable on the open interval $(a, b)$, then there exists a $c$ in $(a, b)$ such that $f'(c) = \\frac{f(b) - f(a)}{b - a}$.",
+            "assumptions-satisfied": [
+              "$f:\\mathbb{R} \\to \\mathbb{R}$ is continuous on $[0, N]$",
+              "$f'(x) > 0$ for all $x \\in \\mathbb{R}$ implies $f$ is differentiable on $(0, N)$"
+            ]
+          }
+        ],
+        "statement": "Given $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, there exists a $c \\in (0, N)$ such that $f'(c) = \\frac{f(N) - f(0)}{N} > 0$, by the Mean Value Theorem applied to $f$ on the interval $[0, N]$."
+      },
+      {
+        "type": "assertion",
+        "claim": "The difference $f(N) - f(0)$ must increase as $N$ increases, and because $f'(x) > 0$ for all $x$, this difference continues to grow without bound as $N$ becomes arbitrarily large.",
+        "deduced-from": [
+          {
+            "result": "$f'(x) > 0$ for all $x \\in \\mathbb{R}$",
+            "name": "Property of strictly increasing functions",
+            "statement": "If $f'(x) > 0$ for all $x$ in its domain, then $f$ is strictly increasing in its domain.",
+            "applied-to": {
+              "function": "$f$",
+              "domain": "$\\mathbb{R}$"
+            },
+            "assumptions-satisfied": [
+              "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+            ]
+          }
+        ],
+        "statement": "Given $f:\\mathbb{R} \\to \\mathbb{R}$ is continuous and $f'(x) > 0$ for all $x \\in \\mathbb{R}$, the difference $f(N) - f(0)$ must increase as $N$ increases. Since $f$ is strictly increasing, this difference grows without bound as $N$ becomes arbitrarily large."
+      }
+    ],
+    [
+      {
+        "type": "assertion",
+        "claim": "For a sufficiently large $N$, we must have $|f(N)| > M$",
+        "deduced-from": [
+          {
+            "name": "boundedness assumption",
+            "statement": "Assume for contradiction that there exists a real number $M > 0$ such that $|f(x)| \\leq M$ for all $x \\in \\mathbb{R}$.",
+            "applied-to": {
+              "M": "$M > 0$",
+              "f": "$f:\\mathbb{R} \\to \\mathbb{R}$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is continuous on $\\mathbb{R}$",
+              "$f$ is differentiable on $\\mathbb{R}$ with $f'(x) > 0$"
+            ]
+          },
+          {
+            "name": "increasing difference",
+            "statement": "Given that $f$ is continuous on $\\mathbb{R}$, strictly increasing, and the difference $f(N) - f(0)$ grows without bound as $N$ becomes arbitrarily large.",
+            "applied-to": {
+              "f": "$f:\\mathbb{R} \\to \\mathbb{R}$",
+              "N": "arbitrarily large $N$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is continuous on $\\mathbb{R}$",
+              "$f$ is strictly increasing on $\\mathbb{R}$"
+            ]
+          }
+        ],
+        "statement": "Assume for contradiction that there exists a real number $M > 0$ such that $|f(x)| \\leq M$ for all $x \\in \\mathbb{R}$. Given that $f$ is continuous on $\\mathbb{R}$, strictly increasing, and the difference $f(N) - f(0)$ grows without bound as $N$ becomes arbitrarily large, for a sufficiently large $N$, we must have $|f(N)| > M$."
+      }
+    ],
+    [
+      {
+        "type": "assertion",
+        "claim": "For a sufficiently large $N$, we must have $|f(N)| > M$",
+        "deduced-from": [
+          {
+            "name": "Assumption of boundedness",
+            "statement": "Assume for contradiction that there exists a real number $M > 0$ such that $|f(x)| \\leq M$ for all $x \\in \\mathbb{R}$",
+            "applied-to": {
+              "M": "$M$",
+              "f(x)": "$f(x)$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is a function from $\\mathbb{R}$ to $\\mathbb{R}$"
+            ]
+          },
+          {
+            "name": "Growth of difference",
+            "statement": "Given that $f$ is continuous on $\\mathbb{R}$, strictly increasing, and the difference $f(N) - f(0)$ grows without bound as $N$ becomes arbitrarily large",
+            "applied-to": {
+              "N": "arbitrarily large $N$",
+              "f(N) - f(0)": "the difference $f(N) - f(0)$"
+            },
+            "assumptions-satisfied": [
+              "$f$ is continuous on $\\mathbb{R}$",
+              "$f$ is strictly increasing",
+              "the difference $f(N) - f(0)$ grows without bound as $N$ increases"
+            ]
+          }
+        ],
+        "statement": "Assume for contradiction that there exists a real number $M > 0$ such that $|f(x)| \\leq M$ for all $x \\in \\mathbb{R}$. Given that $f$ is continuous on $\\mathbb{R}$, strictly increasing, and the difference $f(N) - f(0)$ grows without bound as $N$ becomes arbitrarily large, for a sufficiently large $N$, we must have $|f(N)| > M$."
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function. If $f'(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for contradiction that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M",
+            "value": "a real number $M > 0$ such that $|f(x)| \\leq M$ for all $x \\in \\mathbb{R}$"
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f'(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly increasing on $\\mathbb{R}$."
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "some $N > 0$"
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f$ is continuous on $[0, N]$ and differentiable on $(0, N)$ with $f'(x) > 0$, by the Mean Value Theorem, there exists a $c \\in (0, N)$ such that $f'(c) = \\frac{f(N) - f(0)}{N - 0} > 0$."
+          },
+          {
+            "type": "observation",
+            "statement": "As $f$ is strictly increasing, $f(N) > f(0)$, and thus $f(N) - f(0) > 0$. Since $f'(c) > 0$, the difference $f(N) - f(0)$ must also increase as $N$ increases."
+          },
+          {
+            "type": "observation",
+            "statement": "This difference continues to grow without bound as $N$ becomes arbitrarily large."
+          },
+          {
+            "type": "assertion",
+            "claim": "For a sufficiently large $N$, we must have $|f(N)| > M$",
+            "deduced-from": [
+              {
+                "name": "boundedness assumption",
+                "statement": "Assume for contradiction that $f$ is bounded by some real number $M > 0$ such that $|f(x)| \\leq M$ for all $x \\in \\mathbb{R}$.",
+                "applied-to": {
+                  "f": "$f$",
+                  "M": "$M$"
+                },
+                "assumptions-satisfied": [
+                  "$f$ is continuous on $\\mathbb{R}$",
+                  "$f$ is differentiable on $\\mathbb{R}$ with $f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+                ]
+              },
+              {
+                "name": "growth of difference",
+                "statement": "Given that the difference $f(N) - f(0)$ grows without bound as $N$ increases.",
+                "applied-to": {
+                  "f(N)": "$f(N)$",
+                  "f(0)": "$f(0)$",
+                  "N": "arbitrarily large $N$"
+                },
+                "assumptions-satisfied": [
+                  "$f$ is continuous and differentiable on $(0, N)$ with $f'(x) > 0$"
+                ]
+              }
+            ],
+            "statement": "Assume for contradiction that $f$ is bounded by some real number $M > 0$ such that $|f(x)| \\leq M$ for all $x \\in \\mathbb{R}$. Given that the difference $f(N) - f(0)$ grows without bound as $N$ increases, for a sufficiently large $N$, we must have $|f(N)| > M$, contradicting the assumption."
+          },
+          {
+            "type": "observation",
+            "statement": "Contradicting the assumption that $f$ is bounded. Hence, the function $f$ must be unbounded."
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "theorem",
+        "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function. If $f'(x) > 0$ for all $x \\in \\mathbb{R}$, then $f$ is unbounded.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "assumption",
+            "statement": "Assume for contradiction that $f$ is bounded."
+          },
+          {
+            "type": "let",
+            "variable": "M",
+            "value": "a real number $M > 0$ such that $|f(x)| \\leq M$ for all $x \\in \\mathbb{R}$"
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f'(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly increasing on $\\mathbb{R}$."
+          },
+          {
+            "type": "let",
+            "variable": "N",
+            "value": "some $N > 0$"
+          },
+          {
+            "type": "observation",
+            "statement": "Since $f$ is continuous on $[0, N]$ and differentiable on $(0, N)$ with $f'(x) > 0$, by the Mean Value Theorem, there exists a $c \\in (0, N)$ such that $f'(c) = \\frac{f(N) - f(0)}{N - 0} > 0$."
+          },
+          {
+            "type": "observation",
+            "statement": "As $f$ is strictly increasing, $f(N) > f(0)$, and thus $f(N) - f(0) > 0$. Since $f'(c) > 0$, the difference $f(N) - f(0)$ must also increase as $N$ increases."
+          },
+          {
+            "type": "observation",
+            "statement": "This difference continues to grow without bound as $N$ becomes arbitrarily large."
+          },
+          {
+            "type": "assertion",
+            "claim": "For a sufficiently large $N$, we must have $|f(N)| > M$",
+            "deduced-from": [
+              {
+                "name": "Assumption that $f$ is bounded",
+                "statement": "Assume for contradiction that $f$ is bounded by some real number $M > 0$ such that $|f(x)| \\leq M$ for all $x \\in \\mathbb{R}$",
+                "applied-to": {},
+                "assumptions-satisfied": []
+              },
+              {
+                "name": "Observation that the difference $f(N) - f(0)$ grows without bound as $N$ increases",
+                "statement": "Given that the difference $f(N) - f(0)$ grows without bound as $N$ increases, for a sufficiently large $N$, $f(N) - f(0)$ becomes arbitrarily large.",
+                "applied-to": {},
+                "assumptions-satisfied": [
+                  "$f$ is a continuous function on $\\mathbb{R}$",
+                  "$f'(x) > 0$ for all $x \\in \\mathbb{R}$"
+                ]
+              }
+            ],
+            "statement": "Assume for contradiction that $f$ is bounded by some real number $M > 0$ such that $|f(x)| \\leq M$ for all $x \\in \\mathbb{R}$. Given that the difference $f(N) - f(0)$ grows without bound as $N$ increases, for a sufficiently large $N$, we must have $|f(N)| > M$, contradicting the assumption."
+          },
+          {
+            "type": "observation",
+            "statement": "Contradicting the assumption that $f$ is bounded. Hence, the function $f$ must be unbounded."
+          }
+        ]
+      }
+    ]
+  ]
+}
