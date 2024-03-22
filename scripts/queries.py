@@ -125,8 +125,28 @@ def json_text(js):
     except:
         return js
 
-# Example usage (same as before)
+def has_type(data, target_type = "assertion"):
+  """Checks if any JSON object within a nested structure has a key "type" with the specified value.
 
+  Args:
+      data: The JSON list or object to be searched.
+      target_type: The desired type value to search for (defaults to "assertion").
+
+  Returns:
+      True if at least one object has the key "type" with the specified value, False otherwise.
+  """
+  if isinstance(data, dict):
+    for key, value in data.items():
+      if key == "type" and value == target_type:
+        return True
+      # Recursively check nested objects
+      if has_type(value, target_type):
+        return True
+  elif isinstance(data, list):
+    for item in data:
+      if has_type(item, target_type):
+        return True
+  return False
 
 class ChatClient:
     verbose = False
@@ -327,17 +347,23 @@ def process_problem(client, problem, name, n = 3, m =2):
     client.dump(data, name, 'solve_theory_structured')
     texts_with_statements = []
     for structured in structured_texts:
-        structured = json_text(structured)
-        with_statements = client.add_statements(structured, n = m)
-        with_statements = [extract_json_block(s) for s in with_statements]
+        structured_text = json_text(structured)
+        if has_type(structured, "assertion"):
+            with_statements = client.add_statements(structured_text, n = m)
+            with_statements = [extract_json_block(s) for s in with_statements]
+        else:
+            with_statements = [structured]
         texts_with_statements = texts_with_statements + with_statements
     data['texts_with_statements'] = texts_with_statements
     client.dump(data, name, 'solve_with_statements')
     deductions_expanded = []
-    for text in texts_with_statements:
-        text = json_text(text)
-        expanded = client.expand_deductions(text, n = m)
-        expanded = [extract_json_block(s) for s in expanded]
+    for js in texts_with_statements:
+        text = json_text(js)
+        if has_type(js, "assertion"):
+            expanded = client.expand_deductions(text, n = m)
+            expanded = [extract_json_block(s) for s in expanded]
+        else:
+            expanded = [js]
         deductions_expanded = deductions_expanded + expanded
     data['deductions_expanded'] = deductions_expanded
     client.dump(data, name, 'solve_with_expanded_deductions')
