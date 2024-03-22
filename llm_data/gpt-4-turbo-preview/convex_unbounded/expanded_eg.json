@@ -1,0 +1,298 @@
+{
+  "source": [
+    {
+      "type": "theorem",
+      "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+      "status": "proved",
+      "proof": [
+        {
+          "type": "assumption",
+          "statement": "Assume for contradiction that $f$ is bounded."
+        },
+        {
+          "type": "let",
+          "variable": "M",
+          "value": "an upper bound of $f$ on $\\mathbb{R}$"
+        },
+        {
+          "type": "let",
+          "variable": "m",
+          "value": "a lower bound of $f$ on $\\mathbb{R}$"
+        },
+        {
+          "type": "observation",
+          "statement": "Since $f$ is continuous on the connected set $\\mathbb{R}$, the image $f(\\mathbb{R})$ is connected, implying $f(\\mathbb{R})$ is an interval."
+        },
+        {
+          "type": "observation",
+          "statement": "The boundedness of $f$ indicates that $f(\\mathbb{R})$ is the closed interval $[m, M]$."
+        },
+        {
+          "type": "observation",
+          "statement": "Given $f''(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly convex."
+        },
+        {
+          "type": "assertion",
+          "claim": "A strictly convex function cannot attain both a maximum and a minimum on $\\mathbb{R}$.",
+          "deduced-from": [
+            {
+              "result": "strict convexity",
+              "name": "Properties of Strict Convexity",
+              "statement": "A strictly convex function on $\\mathbb{R}$ cannot have both a global maximum and a global minimum.",
+              "applied-to": {
+                "function": "$f$"
+              },
+              "assumptions-satisfied": [
+                "$f$ is continuous on $\\mathbb{R}$",
+                "$f''(x) > 0$ for all $x \\in \\mathbb{R}$"
+              ]
+            }
+          ],
+          "justification": "A strictly convex function's graph lies strictly below the line segment connecting any two points on the graph, preventing global maxima and minima.",
+          "statement": "Given that $f$ is continuous on $\\mathbb{R}$, and given $f''(x) > 0$ for all $x \\in \\mathbb{R}$ implying $f$ is strictly convex, $f$ cannot attain both a maximum and a minimum on $\\mathbb{R}$. "
+        },
+        {
+          "type": "observation",
+          "statement": "However, the assumption of boundedness contradicts the nature of strict convexity by implying the existence of both a global maximum and minimum."
+        },
+        {
+          "type": "observation",
+          "statement": "Therefore, the original assumption of $f$ being bounded is false."
+        },
+        {
+          "type": "observation",
+          "statement": "Hence, $f$ must be unbounded."
+        }
+      ]
+    }
+  ],
+  "observations_expanded": [
+    {
+      "type": "theorem",
+      "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+      "status": "proved",
+      "proof": [
+        {
+          "type": "assumption",
+          "statement": "Assume for contradiction that $f$ is bounded."
+        },
+        {
+          "type": "let",
+          "variable": "M",
+          "value": "an upper bound of $f$ on $\\mathbb{R}$"
+        },
+        {
+          "type": "let",
+          "variable": "m",
+          "value": "a lower bound of $f$ on $\\mathbb{R}$"
+        },
+        {
+          "type": "observation",
+          "statement": "Since $f$ is continuous on the connected set $\\mathbb{R}$, the image $f(\\mathbb{R})$ is connected, implying $f(\\mathbb{R})$ is an interval."
+        },
+        {
+          "type": "assertion",
+          "claim": "$f(\\mathbb{R})$ is the closed interval $[m, M]$.",
+          "deduced-from": [
+            "boundedness of $f$",
+            "continuity of $f$ on $\\mathbb{R}$",
+            "the image of a continuous function on a connected set is connected"
+          ],
+          "statement": "The boundedness and continuity of $f$ indicate that $f(\\mathbb{R})$ is the closed interval $[m, M]$."
+        },
+        {
+          "type": "theorem",
+          "name": "Properties of Strict Convexity",
+          "statement": "Given $f''(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly convex.",
+          "status": "stated"
+        },
+        {
+          "type": "assertion",
+          "claim": "A strictly convex function cannot attain both a maximum and a minimum on $\\mathbb{R}$.",
+          "deduced-from": [
+            {
+              "result": "Properties of Strict Convexity",
+              "applied-to": {
+                "function": "$f$"
+              }
+            }
+          ],
+          "justification": "A strictly convex function's graph lies strictly below the line segment connecting any two points on the graph, preventing global maxima and minima."
+        },
+        {
+          "type": "assertion",
+          "claim": "The assumption of boundedness contradicts the nature of strict convexity.",
+          "deduced-from": [
+            "boundedness of $f$",
+            "strict convexity of $f$"
+          ],
+          "justification": "Boundedness implies the existence of both a global maximum and minimum, which is impossible for a strictly convex function."
+        },
+        {
+          "type": "observation",
+          "statement": "Therefore, the original assumption of $f$ being bounded is false."
+        },
+        {
+          "type": "observation",
+          "statement": "Hence, $f$ must be unbounded."
+        }
+      ]
+    }
+  ],
+  "deductions_expanded": [
+    {
+      "type": "theorem",
+      "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+      "status": "proved",
+      "proof": [
+        {
+          "type": "assumption",
+          "statement": "Assume for contradiction that $f$ is bounded."
+        },
+        {
+          "type": "let",
+          "variable": "M",
+          "value": "an upper bound of $f$ on $\\mathbb{R}$"
+        },
+        {
+          "type": "let",
+          "variable": "m",
+          "value": "a lower bound of $f$ on $\\mathbb{R}$"
+        },
+        {
+          "type": "observation",
+          "statement": "Since $f$ is continuous on the connected set $\\mathbb{R}$, the image $f(\\mathbb{R})$ is connected, implying $f(\\mathbb{R})$ is an interval."
+        },
+        {
+          "type": "assertion",
+          "claim": "$f(\\mathbb{R})$ is the closed interval $[m, M]$.",
+          "deduced-from": [
+            "boundedness of $f$",
+            "continuity of $f$ on $\\mathbb{R}$",
+            "the image of a continuous function on a connected set is connected"
+          ],
+          "statement": "The boundedness and continuity of $f$ indicate that $f(\\mathbb{R})$ is the closed interval $[m, M]$."
+        },
+        {
+          "type": "theorem",
+          "name": "Properties of Strict Convexity",
+          "statement": "Given $f''(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly convex.",
+          "status": "stated"
+        },
+        {
+          "type": "assertion",
+          "claim": "A strictly convex function cannot attain both a maximum and a minimum on $\\mathbb{R}$.",
+          "deduced-from": [
+            {
+              "result": "Properties of Strict Convexity",
+              "applied-to": {
+                "function": "$f$"
+              }
+            }
+          ],
+          "justification": "A strictly convex function's graph lies strictly below the line segment connecting any two points on the graph, preventing global maxima and minima.",
+          "name": "Properties of Strict Convexity",
+          "statement": "Given $f''(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly convex.",
+          "applied-to": {
+            "function": "$f$"
+          },
+          "assumptions-satisfied": [
+            "$f''(x) > 0$ for all $x \\in \\mathbb{R}$"
+          ]
+        },
+        {
+          "type": "assertion",
+          "claim": "The assumption of boundedness contradicts the nature of strict convexity.",
+          "deduced-from": [
+            "boundedness of $f$",
+            "strict convexity of $f$"
+          ],
+          "justification": "Boundedness implies the existence of both a global maximum and minimum, which is impossible for a strictly convex function."
+        },
+        {
+          "type": "observation",
+          "statement": "Therefore, the original assumption of $f$ being bounded is false."
+        },
+        {
+          "type": "observation",
+          "statement": "Hence, $f$ must be unbounded."
+        }
+      ]
+    }
+  ],
+  "justifications_expanded": [
+    {
+      "type": "theorem",
+      "statement": "Let $f:\\mathbb{R} \\to \\mathbb{R}$ be a continuous function such that $f''(x) > 0$ for all $x \\in \\mathbb{R}$. Then $f$ is unbounded.",
+      "status": "proved",
+      "proof": [
+        {
+          "type": "assumption",
+          "statement": "Assume for contradiction that $f$ is bounded."
+        },
+        {
+          "type": "let",
+          "variable": "M",
+          "value": "an upper bound of $f$ on $\\mathbb{R}$"
+        },
+        {
+          "type": "let",
+          "variable": "m",
+          "value": "a lower bound of $f$ on $\\mathbb{R}$"
+        },
+        {
+          "type": "observation",
+          "statement": "Since $f$ is continuous on the connected set $\\mathbb{R}$, the image $f(\\mathbb{R})$ is connected, implying $f(\\mathbb{R})$ is an interval."
+        },
+        {
+          "type": "assertion",
+          "claim": "$f(\\mathbb{R})$ is the closed interval $[m, M]$.",
+          "deduced-from": [
+            "boundedness of $f$",
+            "continuity of $f$ on $\\mathbb{R}$",
+            "the image of a continuous function on a connected set is connected"
+          ]
+        },
+        {
+          "type": "theorem",
+          "name": "Properties of Strict Convexity",
+          "statement": "Given $f''(x) > 0$ for all $x \\in \\mathbb{R}$, $f$ is strictly convex.",
+          "status": "stated"
+        },
+        {
+          "type": "lemma",
+          "name": "Convex Functions and Extrema",
+          "statement": "A strictly convex function cannot attain both a maximum and a minimum on $\\mathbb{R}$.",
+          "status": "proved",
+          "proof": [
+            {
+              "type": "observation",
+              "statement": "A strictly convex function's graph lies strictly below the line segment connecting any two points on the graph."
+            },
+            {
+              "type": "observation",
+              "statement": "Therefore, it cannot have both a global maximum and minimum on $\\mathbb{R}$."
+            }
+          ]
+        },
+        {
+          "type": "assertion",
+          "claim": "The assumption of boundedness contradicts the nature of strict convexity.",
+          "deduced-from": [
+            "boundedness of $f$",
+            "strict convexity of $f",
+            "Convex Functions and Extrema"
+          ]
+        },
+        {
+          "type": "observation",
+          "statement": "Therefore, the original assumption of $f$ being bounded is false."
+        },
+        {
+          "type": "observation",
+          "statement": "Hence, $f$ must be unbounded."
+        }
+      ]
+    }
+  ]
+}

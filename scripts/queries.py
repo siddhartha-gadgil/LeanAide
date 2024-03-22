@@ -170,6 +170,11 @@ class ChatClient:
         with open(os.path.join(wd, task+".json"), 'w') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
+    def load(self, name, task):
+        wd = os.path.join(self.data_path, name)
+        with open(os.path.join(wd, task+".json"), 'r') as f:
+            return json.load(f)
+
     def choices(self, query, sys_prompt = sys_prompt, examples = [], n= 3):
         messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]
         completion = self.client.chat.completions.create(
@@ -249,6 +254,14 @@ class ChatClient:
     
     def expand_deductions(self, text, n = 3):
         query = Template(templates['expand_deductions']).substitute(json = text)
+        return self.completions(query, n = n)
+    
+    def expand_observations(self, text, n = 3):
+        query = Template(templates['expand_observations']).substitute(json = text, proof_json = proof_json)
+        return self.completions(query, n = n)
+    
+    def expand_justifications(self, text, n = 3):
+        query = Template(templates['expand_justifications']).substitute(json = text, proof_json = proof_json)
         return self.completions(query, n = n)
 
     def summarize(self, text, sys_prompt = math_prompt, examples = [], n = 3):
