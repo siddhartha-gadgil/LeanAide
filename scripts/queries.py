@@ -99,7 +99,7 @@ def extract_json_block(text):
         The extracted JSON code block if found, otherwise the original text.
     """
 
-    match = re.search(r"\n```json\n(.*?)\n```", text, flags=re.DOTALL)
+    match = re.search(r"```json\n(.*?)\n```", text, flags=re.DOTALL)
     if match:
         json_block = match.group(1)
         try:
