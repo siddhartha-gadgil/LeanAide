@@ -48,12 +48,17 @@ def checkElabFrontM(s: String) : MetaM <| List String := do
       l := l.append [x]
   return l
 
-def leanBlock (s: String) : String :=
-  let fullSplit := s.splitOn "```lean"
+def codeBlock (code: String) (s: String) : String :=
+  let fullSplit := s.splitOn s!"```{code}"
   let split := if fullSplit.length > 1
     then fullSplit.get! 1 else
     s.splitOn "```" |>.get! 1
   split.splitOn "```" |>.get! 0
+
+def codeBlock? (code: String) (s: String) : Option String := do
+  let split ←   s.splitOn s!"```{code}" |>.get? 1 |>.orElse fun _ =>
+    s.splitOn "```" |>.get? 1
+  split.splitOn "```" |>.get? 0
 
 
 -- Not efficient, should generate per command if this is needed

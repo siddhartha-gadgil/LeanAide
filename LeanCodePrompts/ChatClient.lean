@@ -2,7 +2,7 @@ import Lean
 import Cache.IO
 import LeanAide.Aides
 
-open Lean Meta
+open Lean Meta System
 
 structure ChatParams where
   n : Nat := 1
@@ -31,6 +31,36 @@ def withoutStop (p: ChatParams)(stopless: Bool) : ChatParams :=
 
 end ChatParams
 
+def llmDir := FilePath.mk "llm_data"
+def resources := FilePath.mk "resources"
+
+def templates : IO Json := do
+  let path := resources / "templates.json"
+  let js ← IO.FS.readFile path
+  match Json.parse js with
+  | Except.ok j => return j
+  | Except.error e =>
+    IO.throwServerError s!"Error parsing JSON: {e}; source: {js}"
+
+def getTemplate (name: String) : IO String := do
+  let js ← templates
+  match js.getObjValAs? String name with
+  | Except.ok s => return s
+  | _ =>
+    IO.throwServerError s!"Template {name} not found"
+
+def fillTemplate (template: String)(args: List <| String × String) :
+    String :=
+  args.foldl (fun s (x, y) => s.replace ("${" ++ x ++ "}") y) template
+
+def fromTemplate (name: String)(args: List <| String × String) :
+    IO String := do
+  let template ← getTemplate name
+  return fillTemplate template args
+
+def proofJson : IO String := do
+  let path := resources / "ProofJson.md"
+  IO.FS.readFile path
 
 inductive ChatServer where
   | openAI
@@ -62,7 +92,7 @@ def authHeader? : ChatServer → IO (Option String)
       | some k => k
       | none => panic! "AZURE_OPENAI_KEY not set"
     return some <| "api-key: " ++ key
-  | generic _ =>
+  | generic .. =>
     return none
 
 def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Json := do
@@ -97,6 +127,34 @@ def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Jso
     appendLog "chat_queries"
       (Json.mkObj [("query", queryJs), ("success", false), ("error", e), ("response", output)])
     panic! s!"Error parsing JSON: {e}; source: {output}"
+
+def dataPath (server: ChatServer)(params: ChatParams) : IO  FilePath := do
+  match server with
+  | azure deployment => do
+    let path := llmDir / "azure" / deployment
+    IO.FS.createDirAll path
+    return path
+  | _ => do
+    let path := llmDir / params.model
+    IO.FS.createDirAll path
+    return path
+
+def dump (server: ChatServer)(params: ChatParams)(data : Json)
+    (name: String) (task : String): IO Unit := do
+  let path ← dataPath server params
+  let path := path / name
+  IO.FS.createDirAll path
+  IO.FS.writeFile (path / s!"{task}.json") <| data.pretty
+
+def load (server: ChatServer)(params: ChatParams)(name: String)
+    (task : String) : IO Json := do
+  let path ← dataPath server params
+  let path := path / name / s!"{task}.json"
+  let js ← IO.FS.readFile path
+  match Json.parse js with
+  | Except.ok j => return j
+  | Except.error e =>
+    IO.throwServerError s!"Error parsing JSON: {e}; source: {js}"
 
 end ChatServer
 
