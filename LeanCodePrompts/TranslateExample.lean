@@ -6,7 +6,7 @@ import LeanCodePrompts.Translate
 
 -/
 
-set_option lean_aide.translate.model "gpt-4-1106-preview" -- remove to use "gpt-3.5-turbo"
+set_option lean_aide.translate.model "gpt-4-turbo-preview" -- remove to use "gpt-3.5-turbo"
 set_option trace.Translate.info true
 
 -- Testing local server at the given url

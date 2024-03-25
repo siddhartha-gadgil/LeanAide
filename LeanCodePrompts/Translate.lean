@@ -79,89 +79,12 @@ def chatServer : CoreM ChatServer := do
     else
       return ChatServer.generic url
 
-namespace GPT
-
-/--
-A Json object representing a chat message
--/
-def message (role content : String) : Json :=
-  Json.mkObj [("role", role), ("content", content)]
-
-/--
-JSON object for the messages field in a chat prompt,
-assuming that there is a system message at the beginning.
--/
-def sysMessages (sys: String) (egs : List <| ChatExample)
-  (query : String) : Json :=
-  let head := message "system" sys
-  let egArr :=
-    egs >>= (fun eg  => eg.messages)
-  Json.arr <| head :: egArr ++ [message "user" query] |>.toArray
-
-/--
-JSON object for the messages field in a chat prompt,
-assuming that there is no system message at the beginning.
--/
-def syslessMessages (sys: String)(egs : List <| ChatExample)
-    (query : String) : Json :=
-  match egs with
-  | [] =>
-    let queryMessage := s!"{sys}
-
-{query}"
-    Json.arr #[message "user" queryMessage]
-  | eg :: tail =>
-  let headUser := s!"{sys}
-
-eg.user"
-  let headExample : ChatExample := ⟨headUser, eg.assistant⟩
-  Json.arr <| (headExample :: tail).bind (fun eg  => eg.messages) ++ [message "user" query] |>.toArray
-
-/--
-Default system prompt
--/
-def sysPrompt := "You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples. Follow EXACTLY the examples given."
-
-/--
-Given a query and a list of examples, build messages for a prompt for OpenAI
--/
-def mkMessages(query : String)(examples: Array ChatExample)(sysLess: Bool := false) : Json:=
-  if sysLess then
-    syslessMessages sysPrompt examples.toList query
-  else
-    sysMessages sysPrompt examples.toList query
 
 /--
 Flip prompt; should be corrected before use.
 -/
-def makeFlipPrompt(query : String)(examples: Array ChatExample) : Json:= sysMessages sysPrompt (examples.toList.map (fun ⟨x, y⟩  => ⟨y, x⟩)) query
+def GPT.makeFlipPrompt(query : String)(examples: Array ChatExample) : Json:= sysMessages sysPrompt (examples.toList.map (fun ⟨x, y⟩  => ⟨y, x⟩)) query
 
-/--
-Extract the output strings from a JSON response
--/
-def exprStrsFromJson (json: Json) : CoreM (Array String) := do
-  let outArr : Array String ←
-    match json.getArr? with
-    | Except.ok arr =>
-        let parsedArr : Array String ←
-          arr.filterMapM <| fun js =>
-            match js.getObjVal? "message" with
-            | Except.ok jsobj =>
-                match jsobj.getObjVal? "content" with
-                | Except.ok jsstr =>
-                  match jsstr.getStr? with
-                  | Except.ok str => pure (some str)
-                  | Except.error e =>
-                    throwError m!"json string expected but got {js}, error: {e}"
-                | Except.error _ =>
-                  throwError m!"no content field in {jsobj}"
-            | Except.error _ =>
-                throwError m!"no message field in {js}"
-
-        pure parsedArr
-    | Except.error e => throwError m!"json parsing error: {e}"
-
-end GPT
 
 /-- make prompt for reverse translation from prompt pairs -/
 def makeFlipStatementsPrompt(statement : String)(pairs: Array (String × String)) : String :=
@@ -307,7 +230,7 @@ def getLeanCodeJson (s: String)
       let pairs := if includeFixed then pairs ++ fixedPromptsJson else pairs
       let pairs  := pairs.filter (fun (s, _) => s.length < 100)
       let examples := pairs.filterMap toChat
-      let messages := GPT.mkMessages s examples sysLess
+      let messages ← GPT.mkMessages s examples (← transPrompt) sysLess
       trace[Translate.info] m!"prompt: \n{messages.pretty}"
       logTimed "querying server"
       let fullJson ← server.query messages params
@@ -502,7 +425,7 @@ def exprStrsFromJsonStr (jsString: String) : TermElabM (Array String) := do
 
 /-- given json returned by open-ai obtain the best translation -/
 def jsonToExpr' (json: Json)(splitOutput := false) : TermElabM Expr := do
-  let output ← GPT.exprStrsFromJson json
+  let output ← getMessageContents json
   let output := if splitOutput
     then
       splitColEqSegments output
@@ -566,7 +489,7 @@ def translateViewM (s: String)
   logTimed "starting translation"
   let (js, _) ← getLeanCodeJson  s server params
         (numSim := numSim) (toChat := toChat)
-  let output ← GPT.exprStrsFromJson js
+  let output ← getMessageContents js
   trace[Translate.info] m!"{output}"
   let output := params.splitOutputs output
   let e? ← bestElab? output
@@ -623,7 +546,7 @@ def translateViewVerboseM (s: String)(server: ChatServer)
   (sysLess: Bool := false)(toChat : ToChatExample := simpleChatExample)  :
   TermElabM ((Option (String × (Array String) × (Array (Array String)) )) × Array String × Json) := do
   let (js,prompt) ← getLeanCodeJson s server params numSim false sysLess toChat
-  let output ← GPT.exprStrsFromJson js
+  let output ← getMessageContents js
   if output.isEmpty then
      return (none, output, prompt)
   else

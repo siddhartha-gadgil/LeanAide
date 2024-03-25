@@ -58,7 +58,7 @@ lean_trans_prompt = templates['lean_trans_prompt']
 
 sys_prompt = templates['sys_prompt']
 
-trans_prompt = templates['translate_sys_prompt']
+trans_prompt = templates['sys_prompt'] + ' ' + templates['translate_sys_prompt']
 
 math_prompt=templates['math_sys_prompt']
 
@@ -204,7 +204,7 @@ class ChatClient:
             choices = self.choices(query, sys_prompt, examples, n)
         return [choice.message.content for choice in choices]
 
-    def math(self, query, sys_prompt = math_prompt, examples = [], n=3, deployment_name = deployment_name):
+    def math(self, query, sys_prompt = math_prompt, examples = [], n = 3):
         return self.completions(query, sys_prompt, examples, n)
 
     def prove(self, theorem, n= 3):

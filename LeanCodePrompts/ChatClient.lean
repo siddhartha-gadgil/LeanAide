@@ -4,9 +4,32 @@ import LeanAide.Aides
 
 open Lean Meta System
 
+/--
+Extracts the content of the message field from a JSON object,
+following the OpenAI API format.
+-/
+def getMessageContents (json: Json) : CoreM (Array String) := do
+  let outArr : Array String ←
+    match json.getArr? with
+    | Except.ok arr =>
+        let parsedArr : Array String ←
+          arr.filterMapM <| fun js =>
+            match js.getObjVal? "message" with
+            | Except.ok jsobj =>
+                match jsobj.getObjValAs? String "content" with
+                | Except.ok str =>
+                  pure (some str)
+                | Except.error _ =>
+                  throwError m!"no  string content field in {jsobj}"
+            | Except.error _ =>
+                throwError m!"no message field in {js}"
+
+        pure parsedArr
+    | Except.error e => throwError m!"json parsing error: {e}"
+
 structure ChatParams where
   n : Nat := 1
-  temp : JsonNumber := 0.2
+  temp : JsonNumber := 0.8
   stopTokens : Array String :=  #[":=", "-/", "\n\n"]
   model : String := "gpt-3.5-turbo"
   max_tokens : Nat := 1600
@@ -61,6 +84,8 @@ def fromTemplate (name: String)(args: List <| String × String) :
 def proofJson : IO String := do
   let path := resources / "ProofJson.md"
   IO.FS.readFile path
+
+
 
 inductive ChatServer where
   | openAI
@@ -204,3 +229,80 @@ def docChatExample
       docString
     let assistant := if fullThm then s!"theorem {name} : {thm} := by sorry" else thm
     return {user := user, assistant := assistant}
+
+
+namespace GPT
+
+/--
+A Json object representing a chat message
+-/
+def message (role content : String) : Json :=
+  Json.mkObj [("role", role), ("content", content)]
+
+/--
+JSON object for the messages field in a chat prompt,
+assuming that there is a system message at the beginning.
+-/
+def sysMessages (sys: String) (egs : List <| ChatExample)
+  (query : String) : Json :=
+  let head := message "system" sys
+  let egArr :=
+    egs.bind (fun eg  => eg.messages)
+  Json.arr <| head :: egArr ++ [message "user" query] |>.toArray
+
+/--
+JSON object for the messages field in a chat prompt,
+assuming that there is no system message at the beginning.
+-/
+def syslessMessages (sys: String)(egs : List <| ChatExample)
+    (query : String) : Json :=
+  match egs with
+  | [] =>
+    let queryMessage := s!"{sys}
+
+{query}"
+    Json.arr #[message "user" queryMessage]
+  | eg :: tail =>
+  let headUser := s!"{sys}
+
+eg.user"
+  let headExample : ChatExample := ⟨headUser, eg.assistant⟩
+  Json.arr <| (headExample :: tail).bind (fun eg  => eg.messages) ++ [message "user" query] |>.toArray
+
+/--
+Default system prompt
+-/
+def sysPrompt := "You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples. Follow EXACTLY the examples given."
+
+/--
+Given a query and a list of examples, build messages for a prompt for OpenAI
+-/
+def mkMessages(query : String)(examples: Array ChatExample)
+  (sysPrompt: String)(sysLess: Bool := false) : IO Json:= do
+  if sysLess then
+    return syslessMessages sysPrompt examples.toList query
+  else
+    return sysMessages sysPrompt examples.toList query
+
+
+end GPT
+
+def mathPrompt := getTemplate "math_sys_prompt"
+
+def sysPrompt := getTemplate "sys_prompt"
+
+def transPrompt : IO String := do
+  let sys ← sysPrompt
+  let trans ← getTemplate "translate_sys_prompt"
+  return s!"{sys} {trans}"
+
+#eval mathPrompt
+#eval sysPrompt
+#eval transPrompt
+
+def ChatServer.completions (server: ChatServer) (params: ChatParams)
+  (query: String)(examples: List ChatExample)(messages : Json) : CoreM (Array String) := do
+
+  let data ← ChatServer.query server messages params
+  let outputs ← getMessageContents data
+  return outputs

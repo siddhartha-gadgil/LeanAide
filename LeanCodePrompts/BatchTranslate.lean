@@ -15,7 +15,7 @@ def translateWithDataM (s: String)(server: ChatServer)
   let (output, prompt?) ←  match queryData? with
   | none =>
     let (js,prompt) ← getLeanCodeJson s server params numSim includeFixed sysLess toChat
-    pure (← GPT.exprStrsFromJson js, some prompt.pretty)
+    pure (← getMessageContents js, some prompt.pretty)
   | some f =>
     let res? := f.find? s.trim
     match res? with
