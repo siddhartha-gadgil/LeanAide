@@ -36,10 +36,10 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
   let chatServer :=
     if azure then ChatServer.azure else
         match url? with
-        | some url => ChatServer.generic url
-        | none => ChatServer.openAI
+        | some url => ChatServer.generic model url
+        | none => ChatServer.openAI model
   let chatParams : ChatParams :=
-    let params: ChatParams := {model := model, temp := temp, n := queryNum}
+    let params: ChatParams := {temp := temp, n := queryNum}
     params.withoutStop (p.hasFlag "no_stop")
   let queryData? : Option (HashMap String Json) ←
     p.flag? "query_data" |>.map (fun s => s.as! String) |>.mapM

@@ -30,10 +30,10 @@ def runTranslate (p : Parsed) : IO UInt32 := do
   let chatServer :=
     if azure then ChatServer.azure else
         match url? with
-        | some url => ChatServer.generic url
-        | none => ChatServer.openAI
+        | some url => ChatServer.generic model url
+        | none => ChatServer.openAI model
   let chatParams : ChatParams :=
-    {model := model, temp := temp, n := queryNum}
+    {temp := temp, n := queryNum}
 
   let dir :=
     if tag then System.mkFilePath <| ["results", model, ← gitHash]

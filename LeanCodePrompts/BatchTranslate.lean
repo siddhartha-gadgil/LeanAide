@@ -76,11 +76,11 @@ def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
   let outFile :=
       if tag then
       System.mkFilePath
-      ["results", params.model, ← gitHash,
+      ["results", server.model, ← gitHash,
       s!"{type}-elab-{numSim}-{includeFixed}-{params.n}-{params.temp.mantissa}.jsonl"]
       else
       System.mkFilePath
-      ["results", params.model,
+      ["results", server.model,
       s!"{type}-elab-{numSim}-{includeFixed}-{params.n}-{params.temp.mantissa}.jsonl"]
 
   IO.FS.writeFile outFile ""

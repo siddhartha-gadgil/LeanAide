@@ -31,7 +31,6 @@ structure ChatParams where
   n : Nat := 1
   temp : JsonNumber := 0.8
   stopTokens : Array String :=  #[":=", "-/", "\n\n"]
-  model : String := "gpt-3.5-turbo"
   max_tokens : Nat := 1600
 
 namespace ChatParams
@@ -88,29 +87,35 @@ def proofJson : IO String := do
 
 
 inductive ChatServer where
-  | openAI
+  | openAI (model: String := "gpt-3.5-turbo")
   | azure (deployment: String := "leanaide-gpt4")
-  | generic (url: String)
+      (model: String := "GPT-4")
+  | generic (model: String) (url: String)
 
 namespace ChatServer
 
 def url : ChatServer → IO String
-  | openAI =>
+  | openAI _ =>
       return "https://api.openai.com/v1/chat/completions"
-  | azure deployment =>
+  | azure deployment _ =>
       azureURL deployment
-  | generic url =>
+  | generic _ url =>
       return url++"/v1/chat/completions"
 
+def model : ChatServer → String
+  | openAI model => model
+  | azure _ model => model
+  | generic model _ => model
+
 def authHeader? : ChatServer → IO (Option String)
-  | openAI => do
+  | openAI _ => do
     let key? ← openAIKey
     let key :=
     match key? with
       | some k => k
       | none => panic! "OPENAI_API_KEY not set"
     return some <|"Authorization: Bearer " ++ key
-  | azure _ => do
+  | azure .. => do
     let key? ← azureKey
     let key :=
     match key? with
@@ -121,7 +126,7 @@ def authHeader? : ChatServer → IO (Option String)
     return none
 
 def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Json := do
-  let dataJs := Json.mkObj [("model", params.model), ("messages", messages)
+  let dataJs := Json.mkObj [("model", server.model), ("messages", messages)
   , ("temperature", Json.num params.temp), ("n", params.n), ("max_tokens", params.max_tokens),
   ("stop", Json.arr <| params.stopTokens |>.map Json.str)
   ]
@@ -153,27 +158,27 @@ def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Jso
       (Json.mkObj [("query", queryJs), ("success", false), ("error", e), ("response", output)])
     panic! s!"Error parsing JSON: {e}; source: {output}"
 
-def dataPath (server: ChatServer)(params: ChatParams) : IO  FilePath := do
+def dataPath (server: ChatServer) : IO  FilePath := do
   match server with
-  | azure deployment => do
+  | azure deployment _ => do
     let path := llmDir / "azure" / deployment
     IO.FS.createDirAll path
     return path
   | _ => do
-    let path := llmDir / params.model
+    let path := llmDir / server.model
     IO.FS.createDirAll path
     return path
 
-def dump (server: ChatServer)(params: ChatParams)(data : Json)
+def dump (server: ChatServer)(data : Json)
     (name: String) (task : String): IO Unit := do
-  let path ← dataPath server params
+  let path ← dataPath server
   let path := path / name
   IO.FS.createDirAll path
   IO.FS.writeFile (path / s!"{task}.json") <| data.pretty
 
 def load (server: ChatServer)(params: ChatParams)(name: String)
     (task : String) : IO Json := do
-  let path ← dataPath server params
+  let path ← dataPath server
   let path := path / name / s!"{task}.json"
   let js ← IO.FS.readFile path
   match Json.parse js with

@@ -61,23 +61,23 @@ def chatParams : CoreM ChatParams := do
   let opts ← getOptions
   return {
     n := lean_aide.translate.choices.get opts,
-    temp := 0.8,
-    model := lean_aide.translate.model.get opts
+    temp := 0.8
   }
 
 /--
 Chat server to use in interactive mode
 -/
 def chatServer : CoreM ChatServer := do
+  let model := lean_aide.translate.model.get (← getOptions)
   let opts ← getOptions
   if lean_aide.translate.azure.get opts then
     return ChatServer.azure
   else
     let url := lean_aide.translate.url?.get opts
     if url.isEmpty then
-      return ChatServer.openAI
+      return ChatServer.openAI model
     else
-      return ChatServer.generic url
+      return ChatServer.generic model url
 
 
 /--
@@ -352,13 +352,13 @@ def greedyBestExpr? (output: Array String) : TermElabM (Option Expr) := do
       pure el?.toOption
 
 /-- reverse translation from `Lean` to natural language -/
-def leanToPrompt (thm: String)(numSim : Nat:= 5)(temp : JsonNumber := 0)(textField : String := "text")(model: String) : TermElabM String := do
+def leanToPrompt (thm: String)(numSim : Nat:= 5)(temp : JsonNumber := 0)(textField : String := "text") : TermElabM String := do
     let pairs? ← getNearestDocs thm numSim
     let pairs := pairs?.toOption.getD #[]
     let examples := pairs.filterMap simpleChatExample
     let prompt := GPT.makeFlipPrompt thm examples
     let fullJson ← (ChatServer.openAI).query prompt
-      {model := model, temp := temp, n := 1}
+      {temp := temp, n := 1}
     let outJson :=
       (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
     let out? := (outJson.getArrVal? 0) >>= fun js => js.getObjVal? textField
@@ -438,7 +438,7 @@ elab "//-" cb:commentBody  : term => do
   let s := (s.dropRight 2).trim
   -- querying codex
   let (js, _) ←
-    getLeanCodeJson  s (params := {model := "gpt-3.5-turbo"})
+    getLeanCodeJson  s
   -- filtering, autocorrection and selection
   let e ← jsonToExpr' js !(← chatParams).stopColEq
   trace[Translate.info] m!"{e}"
