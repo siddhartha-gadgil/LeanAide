@@ -176,7 +176,7 @@ def dump (server: ChatServer)(data : Json)
   IO.FS.createDirAll path
   IO.FS.writeFile (path / s!"{task}.json") <| data.pretty
 
-def load (server: ChatServer)(params: ChatParams)(name: String)
+def load (server: ChatServer)(name: String)
     (task : String) : IO Json := do
   let path ← dataPath server
   let path := path / name / s!"{task}.json"
@@ -300,14 +300,99 @@ def transPrompt : IO String := do
   let sys ← sysPrompt
   let trans ← getTemplate "translate_sys_prompt"
   return s!"{sys} {trans}"
+namespace ChatServer
 
-#eval mathPrompt
-#eval sysPrompt
-#eval transPrompt
-
-def ChatServer.completions (server: ChatServer) (params: ChatParams)
-  (query: String)(examples: List ChatExample)(messages : Json) : CoreM (Array String) := do
-
+def completions (server: ChatServer)
+  (queryString: String)(sysPrompt: String)(n: Nat := 3)
+  (params: ChatParams := {n := n, stopTokens := #[]})
+  (examples: Array ChatExample := #[]): CoreM (Array String) := do
+  let messages ←  GPT.mkMessages queryString examples sysPrompt
   let data ← ChatServer.query server messages params
   let outputs ← getMessageContents data
   return outputs
+
+def mathCompletions (server: ChatServer)
+  (queryString: String)(n: Nat := 3)
+  (params: ChatParams := {n := n, stopTokens := #[]})
+  (examples: Array ChatExample := #[]): CoreM (Array String) := do
+  let sysPrompt ← mathPrompt
+  ChatServer.completions server queryString sysPrompt n params examples
+
+def prove (server: ChatServer)
+  (thm: String)(n: Nat := 3)
+  (params: ChatParams := {n := n, stopTokens := #[]})
+  (examples: Array ChatExample := #[]): CoreM (Array String) := do
+  let queryString ← fromTemplate "prove" [("theorem", thm)]
+  ChatServer.mathCompletions server queryString n params examples
+
+def prove_with_outline (server: ChatServer)
+  (thm outline: String)(n: Nat := 3)
+  (params: ChatParams := {n := n, stopTokens := #[]})
+  (examples: Array ChatExample := #[]): CoreM (Array String) := do
+  let queryString ← fromTemplate "prove_with_outline" [("theorem", thm), ("outline", outline)]
+  ChatServer.mathCompletions server queryString n params examples
+
+def solve (server: ChatServer)
+  (problem: String)(n: Nat := 3)
+  (params: ChatParams := {n := n, stopTokens := #[]})
+  (examples: Array ChatExample := #[]): CoreM (Array String) := do
+  let queryString ← fromTemplate "solve" [("problem", problem)]
+  ChatServer.mathCompletions server queryString n params examples
+
+def solution_to_theory (server: ChatServer)
+  (problem solution: String)(n: Nat := 3)
+  (params: ChatParams := {n := n, stopTokens := #[]})
+  (examples: Array ChatExample := #[]): CoreM (Array String) := do
+  let queryString ← fromTemplate "solution_to_theory" [("problem", problem), ("solution", solution)]
+  ChatServer.mathCompletions server queryString n params examples
+
+def make_structured (server: ChatServer)
+  (text: String)(n: Nat := 3)
+  (params: ChatParams := {n := n, stopTokens := #[]})
+  (examples: Array ChatExample := #[]): CoreM (Array String) := do
+  let queryString ← fromTemplate "make_structured" [("text", text)]
+  ChatServer.mathCompletions server queryString n params examples
+
+def informalize (server: ChatServer)
+  (code: String)(n: Nat := 3)
+  (params: ChatParams := {n := n, stopTokens := #[]})
+  (examples: Array ChatExample := #[]): CoreM (Array String) := do
+  let text ← fromTemplate "informalize" [("code", code)]
+  ChatServer.completions server text (← sysPrompt) n params examples
+
+def add_statements (server: ChatServer)
+  (text: String)(n: Nat := 3)
+  (params: ChatParams := {n := n, stopTokens := #[]})
+  (examples: Array ChatExample := #[]): CoreM (Array String) := do
+  let queryString ← fromTemplate "add_statements" [("json", text)]
+  ChatServer.mathCompletions server queryString n params examples
+
+def expand_deductions (server: ChatServer)
+  (text: String)(n: Nat := 3)
+  (params: ChatParams := {n := n, stopTokens := #[]})
+  (examples: Array ChatExample := #[]): CoreM (Array String) := do
+  let queryString ← fromTemplate "expand_deductions" [("json", text)]
+  ChatServer.mathCompletions server queryString n params examples
+
+def expand_observations (server: ChatServer)
+  (text: String)(n: Nat := 3)
+  (params: ChatParams := {n := n, stopTokens := #[]})
+  (examples: Array ChatExample := #[]): CoreM (Array String) := do
+  let queryString ← fromTemplate "expand_observations" [("json", text)]
+  ChatServer.mathCompletions server queryString n params examples
+
+def expand_justifications (server: ChatServer)
+  (text: String)(n: Nat := 3)
+  (params: ChatParams := {n := n, stopTokens := #[]})
+  (examples: Array ChatExample := #[]): CoreM (Array String) := do
+  let queryString ← fromTemplate "expand_justifications" [("json", text)]
+  ChatServer.mathCompletions server queryString n params examples
+
+def summarize (server: ChatServer)
+  (text: String)
+  (examples: Array ChatExample := #[])(n: Nat := 3)
+  : CoreM (Array String) := do
+  let queryString ← fromTemplate "summarize" [("text", text)]
+  ChatServer.mathCompletions server queryString n {n := n, stopTokens := #[]} examples
+
+end ChatServer

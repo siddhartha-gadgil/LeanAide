@@ -211,8 +211,8 @@ class ChatClient:
         query = Template(templates['prove']).substitute(theorem = theorem)
         return self.math(query, n = n)
         
-    def prove_with_outline(self, theorem, label, n= 3):
-        query = Template(templates['prove_with_outline']).substitute(theorem = theorem)
+    def prove_with_outline(self, theorem, outline, n= 3):
+        query = Template(templates['prove_with_outline']).substitute(theorem = theorem, outline = outline)
         return self.math(query, n = n)
     
     def solve(self, problem, n= 3):
