@@ -3,12 +3,12 @@ import Mathlib
 open Lean Meta Elab Term Tactic
 open Mathlib.Prelude.Rename
 
-def usingM (type: Expr) : TacticM Unit := 
+def usingM (type: Expr) : TacticM Unit :=
   withMainContext do
-  let goal ← getMainGoal 
+  let goal ← getMainGoal
   let target ←  mkArrow type (← getMainTarget)
   let goal1 ← mkFreshExprMVar type
-  let goal2 ← mkFreshExprMVar target 
+  let goal2 ← mkFreshExprMVar target
   goal.assign (mkApp goal2 goal1)
   replaceMainGoal [goal1.mvarId!, goal2.mvarId!]
 
@@ -22,6 +22,6 @@ example : 1 ≤ 3 := by
   · apply Nat.le_succ
   · intro h
     apply Nat.le_step
-    assumption  
+    assumption
 
 #check getLocalDeclFromUserName

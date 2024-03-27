@@ -112,19 +112,49 @@ macro n:term "-₀" m:term : term => do
 
 #check Array.zip
 
+-- elab(priority:=high) n:term "-" m:term : term =>
+--   Term.withoutErrToSorry do
+--   try
+--     let n' ← Term.elabTermEnsuringType n (mkConst ``Nat)
+--     let m' ← Term.elabTermEnsuringType m (mkConst ``Nat)
+--     let inequality ← mkAppM ``LE.le #[m', n']
+--     let pf ← Term.elabTermEnsuringType (← `(by decide)) inequality
+--     Term.synthesizeSyntheticMVarsNoPostponing
+--     mkAppM ``minus #[n', m', pf]
+--   catch _ =>
+--     let n ← Term.elabTerm n none
+--     let m ← Term.elabTerm m none
+--     mkAppM ``HSub.hSub #[n, m]
+
 elab(priority:=high) n:term "-" m:term : term =>
   Term.withoutErrToSorry do
+  let (n', m') ←
+    try
+      let n' ← Term.elabTermEnsuringType n (mkConst ``Nat)
+      let m' ← Term.elabTermEnsuringType m (mkConst ``Nat)
+      pure (n', m')
+    catch _ =>
+      let n ← Term.elabTerm n none
+      let m ← Term.elabTerm m none
+      pure (n, m)
+  let nType ← inferType n'
+  let mType ← inferType m'
+  if (← isDefEq nType (mkConst ``Nat)) && (← isDefEq mType (mkConst ``Nat)) then
+  let inequality ← mkAppM ``LE.le #[m', n']
+  let mvar ← mkFreshExprMVar inequality
+  let mvarId := mvar.mvarId!
+  let (l, _) ←
   try
-    let n' ← Term.elabTermEnsuringType n (mkConst ``Nat)
-    let m' ← Term.elabTermEnsuringType m (mkConst ``Nat)
-    let inequality ← mkAppM ``LE.le #[m', n']
-    let pf ← Term.elabTermEnsuringType (← `(by decide)) inequality
-    Term.synthesizeSyntheticMVarsNoPostponing
-    mkAppM ``minus #[n', m', pf]
+    runTactic mvarId (← `(tactic|decide))
   catch _ =>
-    let n ← Term.elabTerm n none
-    let m ← Term.elabTerm m none
-    mkAppM ``HSub.hSub #[n, m]
+    pure ([mvarId], {})
+  unless l.isEmpty do
+    throwError s!"failed to prove inequality {← ppExpr inequality}"
+  mkAppM ``minus #[n', m', mvar]
+  else
+    mkAppM ``HSub.hSub #[n', m']
+
+#check runTactic
 
 #eval (5 : ℤ) - (6 : ℤ)
 #eval 6 - 5 -- 1
@@ -263,7 +293,7 @@ def splitEnd' [DecidableEq α](l: List α)(_ : l ≠ []): SplitList l :=
       let ⟨l'', a, w⟩ := splitEnd' t p
       use h :: l'', a
       simp [w]
-termination_by _ l _ => l.length
+termination_by l.length
 
 def mockCancel (l₁ l₂ : List ℤ): List ℤ  :=
   if c:l₁ = [] then l₂ else
@@ -302,7 +332,7 @@ example : 1 ≤3 := by
   let _ := 3
   simp
   decide
-  decide
+
 
 -- #eval gedit
 #check or_false_iff
