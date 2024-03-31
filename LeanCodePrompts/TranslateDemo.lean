@@ -9,6 +9,8 @@ theorem infinitude_odds : l!"There are infinitely many odd numbers" :=
   by
     sorry
 
+set_option trace.Translate.info true
+
 example : l!"If a vector space has dimension `2` then it is finite dimensional." :=
   by
     sorry

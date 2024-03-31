@@ -1,6 +1,5 @@
 import Lean
 import Mathlib
-import LeanAide.AesopSearch
 
 open Lean Meta Elab Tactic Parser
 

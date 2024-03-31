@@ -459,9 +459,9 @@ def escape(s):
 def azure_embed(text):
     response = client_azure.embeddings.create(
     input=text,
-    model="text-embedding-ada-002"
+    model="leanaide-embed"
     )
-    return response['data'][0]['embedding']
+    return response.data[0].embedding
 
 import time
 

@@ -3,7 +3,7 @@ import Mathlib
 #check List.sum
 #check Nat.le_of_lt
 
-
+#check 1 ∈ [2, 3]
 #help term
 
 example :  ∃ (R : Type u), [CommRing R] →   ¬IsField R := by sorry

@@ -1,6 +1,6 @@
 import Lean
 
-open Lean Meta Elab Term PrettyPrinter
+open Lean Meta Elab Term Parser Command Tactic
 
 def egStx₀  : MetaM Syntax := do
   let stx ← `(command| def three := 1 + 2)
@@ -15,12 +15,22 @@ def egStx₀  : MetaM Syntax := do
 #check EnvironmentHeader.moduleData
 #check EnvironmentHeader.mainModule
 #check ModuleData.constants
+#check sepBy1IndentSemicolon
+#check MetaM
+
+syntax commandSeq := sepBy1IndentSemicolon(command)
+
+def commands : TSyntax `commandSeq → Array (TSyntax `command)
+  | `(commandSeq| $cs*) => cs
+  | _ => #[]
+
+def toCommandSeq : Array (TSyntax `command) → CoreM (TSyntax `commandSeq)
+  | cs => `(commandSeq| $cs*)
 
 def myName: MetaM Name :=  do
   let env ← getEnv
   pure env.mainModule
 #eval myName
-
 
 open Lean.Parser.Term Parser
 def bracketedBinderT : Parser := bracketedBinder true
