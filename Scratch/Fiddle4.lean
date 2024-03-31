@@ -68,3 +68,15 @@ def diffNat (n: Nat)(m: Nat := n) : Nat :=
 #eval diffNat 4 3
 
 #eval diffNat 4
+
+opaque P : Prop
+
+axiom p_eq_true : P = True
+
+example  : P := by
+  aesop (add unsafe (by rw [p_eq_true]))
+
+example : MetaM Syntax := do
+  let stx ← `(rule_expr|(by rw [p_eq_true]))
+  let stx' ← `(rule_expr| apply Nat.add)
+  `(tactic| aesop (add unsafe [$stx, $stx']))
