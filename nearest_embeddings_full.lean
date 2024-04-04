@@ -40,7 +40,7 @@ unsafe def show_nearest_full (stdin stdout : IO.FS.Stream)
 
 unsafe def main (args: List String) : IO Unit := do
   logTimed "starting nearest embedding process"
-  let picklePath : System.FilePath := ".lake"/ "build" / "lib" /"mathlib4-prompts-embeddings.olean"
+  let picklePath ← picklePath
   let picklePresent ←
     if ← picklePath.pathExists then
     try
@@ -51,7 +51,7 @@ unsafe def main (args: List String) : IO Unit := do
      else pure false
   unless picklePresent do
     IO.eprintln "Fetching embeddings ..."
-    let out ← runCurl #["--output", picklePath.toString, "-s",  "https://math.iisc.ac.in/~gadgil/data/mathlib4-prompts-embeddings.olean"]
+    let out ← runCurl #["--output", picklePath.toString, "-s",  "https://math.iisc.ac.in/~gadgil/data/{picklePath.fileName.get!}"]
 
     IO.eprintln "Fetched embeddings"
     IO.eprintln out

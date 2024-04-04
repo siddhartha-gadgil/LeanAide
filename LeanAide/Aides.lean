@@ -145,6 +145,15 @@ def threadNum : IO Nat := do
   catch _ =>
     return 4
 
+def leanToolchain : IO String := do
+  let inp ← IO.FS.readFile "lean-toolchain"
+  return inp.trim.drop ("leanprover/lean4:".length)
+
+#eval leanToolchain
+
+def picklePath : IO System.FilePath :=
+  return ".lake"/ "build" / "lib" /"mathlib4-prompts-embeddings.olean"
+
 def jsonLines [ToJson α] (jsl : Array α) : String :=
   let lines := jsl.map (fun j => Json.compress <| toJson j)
   lines.foldl (fun acc l => acc ++ l ++ "\n") ""

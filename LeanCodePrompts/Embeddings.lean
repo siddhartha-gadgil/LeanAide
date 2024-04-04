@@ -102,7 +102,7 @@ unsafe def loadEmbeddingsTest : IO Nat :=
 unsafe def loadEmbeddingsDocsTest : IO Nat :=
   withUnpickle  ".lake/build/lib/mathlib4-doc-thms-embeddings.olean" <| fun (data: Array <| (String × String) ×  FloatArray) => pure data.size
 
-unsafe def loadEmbeddingsFullDocsTest : IO Nat :=
-  withUnpickle  ".lake/build/lib/mathlib4-prompts-embeddings.olean" <| fun (data: Array <| (String × String × Bool) ×  FloatArray) => pure data.size
+unsafe def loadEmbeddingsFullDocsTest : IO Nat := do
+  withUnpickle  (← picklePath) <| fun (data: Array <| (String × String × Bool) ×  FloatArray) => pure data.size
 
 -- #eval loadEmbeddingsFullDocsTest
