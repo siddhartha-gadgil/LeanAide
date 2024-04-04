@@ -151,8 +151,9 @@ def leanToolchain : IO String := do
 
 #eval leanToolchain
 
-def picklePath : IO System.FilePath :=
-  return ".lake"/ "build" / "lib" /"mathlib4-prompts-embeddings.olean"
+def picklePath : IO System.FilePath := do
+  return ".lake"/ "build" / "lib" /
+    s!"mathlib4-prompts-embeddings-{← leanToolchain}.olean"
 
 def jsonLines [ToJson α] (jsl : Array α) : String :=
   let lines := jsl.map (fun j => Json.compress <| toJson j)
