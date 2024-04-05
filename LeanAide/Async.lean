@@ -4,7 +4,7 @@ import Lean.Meta.Tactic.TryThis
 import Aesop
 
 open Lean Meta Elab Term Tactic Core Parser Tactic
-open Std.Tactic
+open Lean.Meta.Tactic
 
 /-!
 A cleaner version is in `RunAsync`.

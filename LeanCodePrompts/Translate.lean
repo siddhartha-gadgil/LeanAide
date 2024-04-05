@@ -11,7 +11,6 @@ import Std.Util.Pickle
 import LeanCodePrompts.ChatClient
 
 open Lean Meta Elab Parser Command
-open Std.Tactic
 
 register_option lean_aide.translate.prompt_size : Nat :=
   { defValue := 10
@@ -515,7 +514,7 @@ def translateViewCore (s: String) : CoreM String :=
 
 syntax (name := ltrans) "l!" str : term
 
-open PrettyPrinter
+open PrettyPrinter Tactic
 
 @[term_elab ltrans] def ltransImpl : Term.TermElab :=
   fun stx _ => do

@@ -11,7 +11,7 @@ import Std.Util.Pickle
 import LeanCodePrompts.Translate
 
 open Lean Meta Elab Parser Command
-open Std.Tactic
+open Lean.Meta.Tactic
 
 def fileName := "resources/mathlib4-prompts.json"
 
