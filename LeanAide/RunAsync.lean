@@ -1,6 +1,6 @@
 import Lean
 import LeanAide.Aides
-import Std.Tactic.TryThis
+import Lean.Meta.Tactic.TryThis
 import Aesop
 
 open Lean Meta Elab Term Tactic Core Parser Tactic
@@ -40,7 +40,7 @@ register_option aided_by.delay : Nat :=
     descr := "Time to wait after launching a task." }
 
 def isSorry (tacticCode: TSyntax `tactic) : TermElabM Bool := do
-  let goal ← mkFreshExprMVar (mkConst ``False) 
+  let goal ← mkFreshExprMVar (mkConst ``False)
   try
     let (goals, _) ← Elab.runTactic  goal.mvarId! tacticCode
     return goals.isEmpty
@@ -68,11 +68,11 @@ def GoalKey.get : TacticM GoalKey := do
 
 section Caches
 
-initialize tacticCache : IO.Ref (HashMap GoalKey ProofState) 
+initialize tacticCache : IO.Ref (HashMap GoalKey ProofState)
         ← IO.mkRef ∅
 
-initialize spawnedKeys : 
-  IO.Ref (HashSet <| GoalKey) 
+initialize spawnedKeys :
+  IO.Ref (HashSet <| GoalKey)
         ← IO.mkRef  ∅
 
 def isSpawned (key : GoalKey) : IO Bool := do
@@ -85,7 +85,7 @@ def markSpawned (key : GoalKey)  : IO Unit := do
 def putTactic (key : GoalKey) (s : ProofState) : MetaM Unit := do
   tacticCache.modify fun m => m.insert key s
 
-def getStates (key : GoalKey) : TacticM (Option ProofState) := do  
+def getStates (key : GoalKey) : TacticM (Option ProofState) := do
   let m ← tacticCache.get
   return m.find? key
 
@@ -96,20 +96,20 @@ def clearCache : IO Unit := do
 end Caches
 
 def getMsgTacticD (default : TSyntax ``tacticSeq)  : CoreM <| (TSyntax ``tacticSeq) × (List Message) := do
-  let msgLog ← Core.getMessageLog  
+  let msgLog ← Core.getMessageLog
   let msgs := msgLog.toList
   let mut tac : TSyntax ``tacticSeq := default
   for msg in msgs do
     let msg := msg.data
-    let msg ← msg.toString 
+    let msg ← msg.toString
     match msg.dropPrefix? "Try this:" with
-    | none => 
+    | none =>
       pure ()
     | some msg => do
-      let parsedMessage := 
+      let parsedMessage :=
         parseAsTacticSeq (←getEnv) msg.toString.trimLeft
       match parsedMessage with
-      | Except.ok tac' => 
+      | Except.ok tac' =>
         resetMessageLog
         tac:=  tac'
       | _ =>
@@ -119,18 +119,18 @@ def getMsgTacticD (default : TSyntax ``tacticSeq)  : CoreM <| (TSyntax ``tacticS
 
 
 
-def runAndCacheM (tacticCode : TSyntax ``tacticSeq) 
-  (goal: MVarId) (target : Expr)  : MetaM Unit := 
-  goal.withContext do 
+def runAndCacheM (tacticCode : TSyntax ``tacticSeq)
+  (goal: MVarId) (target : Expr)  : MetaM Unit :=
+  goal.withContext do
     let lctx ← getLCtx
     let key : GoalKey := { goal := target, lctx := lctx.decls.toList }
     if ←isSpawned key then
       return ()
-    markSpawned key 
+    markSpawned key
     let core₀ ← getThe Core.State
     let meta₀ ← getThe Meta.State
     try
-      let (goals, ts) ← runTactic  goal tacticCode 
+      let (goals, ts) ← runTactic  goal tacticCode
       unless goals.isEmpty do
         throwError m!"Tactic not finishing, remaining goals:\n{goals}"
       let (code, msgs) ← getMsgTacticD tacticCode
@@ -140,21 +140,21 @@ def runAndCacheM (tacticCode : TSyntax ``tacticSeq)
         term?   := some ts
         script := code
         messages := msgs
-        }     
+        }
       putTactic key s
     catch _ =>
     set core₀
     set meta₀
 
-def runAndCacheIO (tacticCode : TSyntax ``tacticSeq) (goal: MVarId) (target : Expr) 
-  (mctx : Meta.Context) (ms : Meta.State) 
+def runAndCacheIO (tacticCode : TSyntax ``tacticSeq) (goal: MVarId) (target : Expr)
+  (mctx : Meta.Context) (ms : Meta.State)
   (cctx : Core.Context) (cs: Core.State) : IO Unit :=
-  let eio := 
+  let eio :=
   (runAndCacheM tacticCode goal target).run' mctx ms |>.run' cctx cs
   let res := eio.runToIO'
   res
 
-def fetchProof  : TacticM ProofState := 
+def fetchProof  : TacticM ProofState :=
   focus do
   let key ← GoalKey.get
   let goal ← getMainGoal
@@ -167,35 +167,35 @@ def fetchProof  : TacticM ProofState :=
 syntax (name := autoTacs) "aided_by" ("from_by")? tacticSeq "do" (tacticSeq)? : tactic
 
 macro "by#" tacs:tacticSeq : term =>
-  `(by 
+  `(by
   aided_by from_by aesop? do $tacs)
 
 macro "by#"  : term =>
-  `(by 
+  `(by
   aided_by from_by aesop? do)
 
 
-@[tactic autoTacs] def autoStartImpl : Tactic := fun stx => 
+@[tactic autoTacs] def autoStartImpl : Tactic := fun stx =>
 withMainContext do
 match stx with
-| `(tactic| aided_by from_by $auto? do $tacticCode) => 
+| `(tactic| aided_by from_by $auto? do $tacticCode) =>
     autoStartImplAux stx auto? tacticCode true
-| `(tactic| aided_by $auto? do $tacticCode) => 
+| `(tactic| aided_by $auto? do $tacticCode) =>
     autoStartImplAux stx auto? tacticCode false
 | `(tactic| aided_by from_by $auto? do) => do
-    autoStartImplAux' stx auto? true    
+    autoStartImplAux' stx auto? true
 | `(tactic| aided_by $auto? do) => do
-    autoStartImplAux' stx auto? false    
+    autoStartImplAux' stx auto? false
 | _ => throwUnsupportedSyntax
 where
-  initialSearch (stx: Syntax) 
-    (autoCode : TSyntax `Lean.Parser.Tactic.tacticSeq)(fromBy: Bool) : TacticM Unit := 
+  initialSearch (stx: Syntax)
+    (autoCode : TSyntax `Lean.Parser.Tactic.tacticSeq)(fromBy: Bool) : TacticM Unit :=
     withMainContext do
     if (← getUnsolvedGoals).isEmpty then
-        return () 
-    let ioSeek : IO Unit := runAndCacheIO 
-      autoCode  (← getMainGoal) (← getMainTarget) 
-              (← readThe Meta.Context) (← getThe Meta.State ) 
+        return ()
+    let ioSeek : IO Unit := runAndCacheIO
+      autoCode  (← getMainGoal) (← getMainTarget)
+              (← readThe Meta.Context) (← getThe Meta.State )
               (← readThe Core.Context) (← getThe Core.State)
     let _ ← ioSeek.asTask
     try
@@ -206,12 +206,12 @@ where
         if fromBy then
           TryThis.addSuggestion stx (← `(by $script))
         else
-          TryThis.addSuggestion stx script         
+          TryThis.addSuggestion stx script
     catch _ =>
       pure ()
   autoStartImplAux (stx: Syntax)
   (autoCode : TSyntax `Lean.Parser.Tactic.tacticSeq)
-  (tacticCode : TSyntax ``tacticSeq)(fromBy: Bool) : TacticM Unit := 
+  (tacticCode : TSyntax ``tacticSeq)(fromBy: Bool) : TacticM Unit :=
   withMainContext do
     initialSearch stx autoCode fromBy
     let allTacs := getTactics tacticCode
@@ -228,9 +228,9 @@ where
           else
             TryThis.addSuggestion stx (← `(tacticSeq|$[$cumTacs]*))
         return ()
-      let ioSeek : IO Unit := runAndCacheIO 
-        autoCode  (← getMainGoal) (← getMainTarget) 
-                (← readThe Meta.Context) (← getThe Meta.State ) 
+      let ioSeek : IO Unit := runAndCacheIO
+        autoCode  (← getMainGoal) (← getMainTarget)
+                (← readThe Meta.Context) (← getThe Meta.State )
                 (← readThe Core.Context) (← getThe Core.State)
       let _ ← ioSeek.asTask
       try
@@ -245,17 +245,17 @@ where
           return ()
       catch _ =>
         pure ()
-  autoStartImplAux' (stx: Syntax) 
-    (autoCode : TSyntax `Lean.Parser.Tactic.tacticSeq)(fromBy: Bool) : TacticM Unit := 
+  autoStartImplAux' (stx: Syntax)
+    (autoCode : TSyntax `Lean.Parser.Tactic.tacticSeq)(fromBy: Bool) : TacticM Unit :=
     withMainContext do
     initialSearch stx autoCode fromBy
     if (← getUnsolvedGoals).isEmpty then
-        return () 
+        return ()
 
 
 namespace leanaide.auto
 
-scoped macro (priority := high) "by" tacs?:(tacticSeq)? : term => 
+scoped macro (priority := high) "by" tacs?:(tacticSeq)? : term =>
   match tacs? with
   | none => `(by aided_by from_by aesop? do)
   | some tacs => `(by aided_by from_by aesop? do $tacs)

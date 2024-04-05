@@ -1,6 +1,6 @@
 import Lean
 import LeanAide.Aides
-import Std.Tactic.TryThis
+import Lean.Meta.Tactic.TryThis
 import Aesop
 
 open Lean Meta Elab Term Tactic Core Parser Tactic

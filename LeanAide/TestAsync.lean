@@ -1,7 +1,7 @@
 import LeanAide.RunAsync
 import Aesop
 import Mathlib.Tactic
-import Std.Tactic.TryThis
+import Lean.Meta.Tactic.TryThis
 
 -- Solving in the background
 /--

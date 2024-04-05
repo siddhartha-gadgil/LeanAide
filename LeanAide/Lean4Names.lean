@@ -6,7 +6,7 @@ open Mathlib.Prelude.Rename
 
 
 def lean4Name? (name: Name) : MetaM (Option Name) := do
-let m := renameExtension.getState (← getEnv) |>.get
+  let m := renameExtension.getState (← getEnv) |>.get
   let name? :=
     (m.find? name).map (·.2)
   match name? with

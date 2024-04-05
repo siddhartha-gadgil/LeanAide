@@ -6,7 +6,7 @@ import LeanAide.Lean4Names
 import LeanAide.TheoremEquality
 import LeanAide.IP
 import LeanCodePrompts.SpawnNearestEmbeddings
-import Std.Tactic.TryThis
+import Lean.Meta.Tactic.TryThis
 import Std.Util.Pickle
 import LeanCodePrompts.Translate
 
