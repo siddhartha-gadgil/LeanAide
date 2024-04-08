@@ -47,6 +47,11 @@ register_option lean_aide.translate.url? : String :=
     group := "lean_aide.translate"
     descr := "Local url to query. Empty string for none" }
 
+register_option lean_aide.translate.greedy : Bool :=
+  { defValue := false
+    group := "lean_aide.translate"
+    descr := "Whether to choose the first elaboration." }
+
 /--
 Number of similar sentences to query in interactive mode
 -/
@@ -62,6 +67,9 @@ def chatParams : CoreM ChatParams := do
     n := lean_aide.translate.choices.get opts,
     temp := 0.8
   }
+
+def greedy : CoreM Bool := do
+  return lean_aide.translate.greedy.get (← getOptions)
 
 /--
 Chat server to use in interactive mode
@@ -424,13 +432,18 @@ def exprStrsFromJsonStr (jsString: String) : TermElabM (Array String) := do
 
 
 /-- given json returned by open-ai obtain the best translation -/
-def jsonToExpr' (json: Json)(splitOutput := false) : TermElabM Expr := do
+def jsonToExpr' (json: Json)(greedy: Bool)(splitOutput := false) : TermElabM Expr := do
   let output ← getMessageContents json
   let output := if splitOutput
     then
       splitColEqSegments output
     else output
-  bestElab output
+  if greedy then
+    match ← greedyBestExpr? output with
+    | some e => return e
+    | none => throwError "no elaboration found"
+  else
+    bestElab output
 
 /-- translation from a comment-like syntax to a theorem statement -/
 elab "//-" cb:commentBody  : term => do
@@ -440,7 +453,7 @@ elab "//-" cb:commentBody  : term => do
   let (js, _) ←
     getLeanCodeJson  s
   -- filtering, autocorrection and selection
-  let e ← jsonToExpr' js !(← chatParams).stopColEq
+  let e ← jsonToExpr' js true !(← chatParams).stopColEq
   trace[Translate.info] m!"{e}"
   return e
 
@@ -525,7 +538,7 @@ open PrettyPrinter Tactic
   let s := s.getString
   let (js, _) ←
     getLeanCodeJson  s (← chatServer) (← chatParams)
-  let e ← jsonToExpr' js !(← chatParams).stopColEq
+  let e ← jsonToExpr' js (← greedy) !(← chatParams).stopColEq
   logTimed "obtained expression"
   let stx' ← delab e
   logTimed "obtained syntax"
