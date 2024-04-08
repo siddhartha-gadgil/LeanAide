@@ -318,6 +318,33 @@ def getWriteM : MetaM <| (Array DefnTypes) × (HashMap Name (String × String)) 
 def getWriteCore : CoreM ((Array DefnTypes) × (HashMap Name (String × String))) :=
     (getWriteM).run'
 
+def withDoc (dfn: DefnTypes) : String :=
+  match dfn.docString? with
+  | some doc => s!"/-- {doc} -/\n{dfn.statement}"
+  | none => dfn.statement
+
+def fromName? (name : Name) : MetaM <| Option DefnTypes := do
+  let env ← getEnv
+  let doc? ← findDocString? env name
+  let info? := env.find? name
+  match info? with
+    | some (.defnInfo dfn) =>
+        let term := dfn.value
+        let type := dfn.type
+        let fmt ← Meta.ppExpr type
+        let isProp ← isProof term
+        let value :=
+          if isProp
+            then none
+            else some <| (← Meta.ppExpr term).pretty
+        let typeStx ← PrettyPrinter.delab type
+        let valueStx ←  PrettyPrinter.delab term
+        let valueStx? := if isProp then none else some valueStx
+        let statement ←
+          mkStatement (some name) typeStx valueStx? isProp
+        return some ⟨name, fmt.pretty, isProp, doc?, value, statement⟩
+    | _ => return none
+
 end DefnTypes
 
 def writeDocsM : MetaM <| Json := do

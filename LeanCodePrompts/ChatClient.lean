@@ -30,7 +30,7 @@ def getMessageContents (json: Json) : CoreM (Array String) := do
 structure ChatParams where
   n : Nat := 1
   temp : JsonNumber := 0.8
-  stopTokens : Array String :=  #[":=", "-/", "\n\n"]
+  stopTokens : Array String :=  #[]
   max_tokens : Nat := 1600
 
 namespace ChatParams
