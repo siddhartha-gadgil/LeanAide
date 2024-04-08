@@ -235,8 +235,11 @@ def getLeanCodeJson (s: String)
       | Except.ok pairs => do
       let pairs := if includeFixed then pairs ++ fixedPromptsJson else pairs
       let pairs  := pairs.filter (fun (s, _) => s.length < 100)
+      let pairs := pairs.map fun (doc, thm) =>
+        ("Translate the following statement into Lean 4:\n## Theorem: " ++ doc ++ "\n\nGive ONLY the Lean code", thm)
       let examples := pairs.filterMap toChat
-      let messages ← GPT.mkMessages s examples (← transPrompt) sysLess
+      let s' := "Translate the following statement into Lean 4:\n## Theorem: " ++ s ++ "\n\nGive ONLY the Lean code"
+      let messages ← GPT.mkMessages s' examples (← transPrompt) sysLess
       trace[Translate.info] m!"prompt: \n{messages.pretty}"
       logTimed "querying server"
       let fullJson ← server.query messages params

@@ -82,7 +82,7 @@ def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
       System.mkFilePath
       ["results", server.model,
       s!"{type}-elab-{numSim}-{includeFixed}-{params.n}-{params.temp.mantissa}.jsonl"]
-
+  IO.println s!"Writing to {outFile}"
   IO.FS.writeFile outFile ""
   let outHandle ← IO.FS.Handle.mk outFile IO.FS.Mode.append
   let h ← IO.FS.Handle.mk promptsFile IO.FS.Mode.append

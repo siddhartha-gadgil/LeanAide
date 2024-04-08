@@ -34,7 +34,7 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
   let tag := p.hasFlag "tag"
   let url? := p.flag? "url" |>.map (fun s => s.as! String)
   let chatServer :=
-    if azure then ChatServer.azure else
+    if azure then ChatServer.azure (model := model) else
         match url? with
         | some url => ChatServer.generic model url
         | none => ChatServer.openAI model
@@ -66,7 +66,6 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
     else System.mkFilePath <| ["results", model]
   if !(← dir.pathExists) then
         IO.FS.createDirAll dir
-
   let outFile :=
     if tag then
         System.mkFilePath <|
