@@ -355,6 +355,15 @@ partial def polyParser (parser: Parser) (input: String) (fileName := "<input>") 
     else
       return (← polyParser parser tail fileName)
 
+partial def lineBlocks (input: String) : List String :=
+  let tail := input.dropWhile (fun c => c != '\n') |>.drop 1
+    if tail.isEmpty then
+      [input]
+    else
+      let tailBlocks := lineBlocks tail
+      let head := input.takeWhile (fun c => c != '\n')
+      head :: (tailBlocks.map (fun b => head ++ "\n" ++ b)) ++ tailBlocks
+
 #check String.dropWhile
 
 #check '\n'

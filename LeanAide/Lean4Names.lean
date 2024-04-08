@@ -36,7 +36,7 @@ def parseThm4 (s : String) : TermElabM <| Except String Syntax := do
   | Except.error err => return Except.error err
   | Except.ok stx => return Except.ok <| ← lean4NamesSyntax stx
 
-partial def elabThm4 (s : String)
+def elabThm4Aux (s : String)
   (levelNames : List Lean.Name := levelNames)
   : TermElabM <| Except String Expr := do
   let env ← getEnv
@@ -44,10 +44,6 @@ partial def elabThm4 (s : String)
     Lean.Parser.runParserCategory env `theorem_statement  s
   match stx? with
   | Except.error err =>
-    let stx? ←  polyParser
-      (Parser.categoryParser `theorem_statement 0) s
-    match stx? with
-    | none =>
       let jsError :=
         Json.mkObj [
         ("input", s),
@@ -56,8 +52,6 @@ partial def elabThm4 (s : String)
         ]
       appendLog "elab_errors" jsError
       return Except.error s!"{err} for:\n {s}"
-    | some stx =>
-      elaborate stx
   | Except.ok stx =>
     elaborate stx
   where elaborate (stx) := do
@@ -66,22 +60,31 @@ partial def elabThm4 (s : String)
       match ← elabThmFromStx (← lean4NamesSyntax stx) levelNames with
       | Except.error err₂ =>
         logInfo m!"failed to elaborate {stx} with error {err₁} (with lean4NamesSyntax)"
-        let tail := s.dropWhile (fun c => c != '\n') |>.drop 1 |>.trim
-        if !tail.isEmpty then
-          elabThm4 tail
-        else
-          let jsError := Json.mkObj [
-            ("input", s),
-            ("parsed", true),
-            ("elab-error", err₁),
-            ("elab-error-lean4names", err₂)
-            ]
-          appendLog "elab_errors" jsError
-          return Except.error s!"{err₁}\n{err₂} (with lean4NamesSyntax)"
+        let jsError := Json.mkObj [
+          ("input", s),
+          ("parsed", true),
+          ("elab-error", err₁),
+          ("elab-error-lean4names", err₂)
+          ]
+        appendLog "elab_errors" jsError
+        return Except.error s!"{err₁}\n{err₂} (with lean4NamesSyntax)"
       | Except.ok e => return Except.ok e
     | Except.ok e => return  Except.ok e
 
 -- for testing
+
+def elabThm4 (s : String)
+  (levelNames : List Lean.Name := levelNames)
+  : TermElabM <| Except String Expr := do
+  match ← elabThm4Aux s levelNames with
+  | Except.error err =>
+      let groups := lineBlocks s
+      let elabs? ←  groups.findSomeM? (fun s => do
+        pure (← elabThm4Aux s levelNames).toOption)
+      match elabs? with
+      | none => return Except.error err
+      | some e => return Except.ok e
+  | Except.ok e => return Except.ok e
 
 elab "lean3named" t:term : term => do
   let t' ← lean4NamesSyntax t
@@ -97,4 +100,5 @@ def egLines := "Yes, a vector space with dimension `2` is indeed finite dimensio
 
      Please note that `Module.rank K V = 2` is the way to express that the vector space `V` over the field `K` has dimension `2` in Lean. The `→` is logical implication."
 
-#eval elabThm4 egLines
+-- #eval elabThm4 egLines
+#eval lineBlocks egLines
