@@ -507,7 +507,7 @@ def translateViewM (s: String)
         (numSim := numSim) (toChat := toChat)
   let output ← getMessageContents js
   trace[Translate.info] m!"{output}"
-  let output := params.splitOutputs output
+  -- let output := params.splitOutputs output
   let e? ← bestElab? output
   match e? with
   | Except.ok (e, _) => do
@@ -566,7 +566,7 @@ def translateViewVerboseM (s: String)(server: ChatServer)
   if output.isEmpty then
      return (none, output, prompt)
   else
-    let output := params.splitOutputs output
+    -- let output := params.splitOutputs output
     let res ← bestElab? output
     match res with
     | Except.error jsErr =>

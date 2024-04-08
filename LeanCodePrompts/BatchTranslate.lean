@@ -34,7 +34,7 @@ def translateWithDataM (s: String)(server: ChatServer)
       numSim includeFixed embedding k
       (sleepTime * 2) queryData? sysLess
   else
-    let output := params.splitOutputs output
+    -- let output := params.splitOutputs output
     let res ← bestElab? output
     match res with
     | Except.error jsErr =>
