@@ -252,7 +252,8 @@ def bestElab (output: Array String) : TermElabM Expr := do
     -- IO.println s!"elaboration called: {out}"
     let elab? ←
       match cache.find? out with
-      | some elab? => pure elab?
+      | some elab? =>
+        pure elab?
       | none =>
         let res ← elabThm4 out
         cache := cache.insert out res
@@ -262,6 +263,7 @@ def bestElab (output: Array String) : TermElabM Expr := do
       | Except.ok expr =>
           elaborated := elaborated.push expr
           elabStrs := elabStrs.push out
+          trace[Translate.info] m!"elaborated: {out}"
           if !expr.hasExprMVar then
             fullElaborated := fullElaborated.push expr
   if elaborated.isEmpty then

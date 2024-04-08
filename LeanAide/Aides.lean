@@ -326,3 +326,35 @@ def codeBlock? (code: String) (s: String) : Option String := do
   let split ←   s.splitOn s!"```{code}" |>.get? 1 |>.orElse fun _ =>
     s.splitOn "```" |>.get? 1
   split.splitOn "```" |>.get? 0
+
+def partialParser  (parser : Parser) (input : String) (fileName := "<input>") : MetaM <| Except String (Syntax × String × String) := do
+  let env ← getEnv
+  -- let c := mkParserContext (mkInputContext input fileName) { env := env, options := {} }
+  let p := andthenFn whitespace parser.fn
+  let ictx := mkInputContext input fileName
+  let s := p.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
+  let stack := s.stxStack.toSubarray.as.filter fun s => !s.hasMissing
+  if stack.isEmpty &&  s.hasError then
+    return Except.error (s.toErrorMsg ictx)
+  else
+    let head := input.extract 0 s.pos
+    let stx := stack.back
+    return Except.ok (stx, head, input.drop head.length)
+
+partial def polyParser (parser: Parser) (input: String) (fileName := "<input>") : MetaM <| Option  Syntax := do
+  -- logInfo s!"parsing {input}"
+  match (← partialParser parser input fileName) with
+  | Except.ok (stx, _, _) =>
+    -- logInfo s!"parsed {stx}"
+    return some stx
+  | Except.error _ =>
+    let tail := input.dropWhile (fun c => c != '\n') |>.drop 1 |>.trim
+    if tail.isEmpty then
+      -- logInfo "no more input; tail empty"
+      return none
+    else
+      return (← polyParser parser tail fileName)
+
+#check String.dropWhile
+
+#check '\n'
