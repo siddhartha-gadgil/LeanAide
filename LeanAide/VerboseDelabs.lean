@@ -132,7 +132,7 @@ def delabAppExplicit : Delab := do
 def unexpandStructureInstance (stx : Syntax) : Delab := whenPPOption getPPStructureInstances do
   let env ← getEnv
   let e ← getExpr
-  let some s ← pure $ e.isConstructorApp? env | failure
+  let some s ← isConstructorApp? e | failure
   guard $ isStructure env s.induct;
   /- If implicit arguments should be shown, and the structure has parameters, we should not
      pretty print using { ... }, because we will not be able to see the parameters. -/
@@ -154,56 +154,57 @@ def unexpandStructureInstance (stx : Syntax) : Delab := whenPPOption getPPStruct
   `({ $fields,* $[: $tyStx]? })
 
 
-@[delab app]
-def delabAppImplicit : Delab := do
-  checkDepth
-  -- TODO: always call the unexpanders, make them guard on the right # args?
-  let e ← getExpr
-  let paramKinds ← getParamKinds (e.getAppFn) (e.getAppArgs)
-  if ← getPPOption getPPExplicit then
-    if paramKinds.any (fun param => !param.isRegularExplicit) then failure
+-- @[delab app]
+-- def delabAppImplicit : Delab := do
+--   checkDepth
+--   -- TODO: always call the unexpanders, make them guard on the right # args?
+--   let e ← getExpr
+--   let paramKinds ← getParamKinds (e.getAppFn) (e.getAppArgs)
+--   if ← getPPOption getPPExplicit then
+--     if paramKinds.any (fun param => !param.isRegularExplicit) then failure
 
-  -- If the application has an implicit function type, fall back to delabAppExplicit.
-  -- This is e.g. necessary for `@Eq`.
-  let isImplicitApp ← try
-      let ty ← whnf (← inferType (← getExpr))
-      pure <| ty.isForall && (ty.binderInfo == BinderInfo.implicit || ty.binderInfo == BinderInfo.instImplicit)
-    catch _ => pure false
-  if isImplicitApp then failure
+--   -- If the application has an implicit function type, fall back to delabAppExplicit.
+--   -- This is e.g. necessary for `@Eq`.
+--   let isImplicitApp ← try
+--       let ty ← whnf (← inferType (← getExpr))
+--       pure <| ty.isForall && (ty.binderInfo == BinderInfo.implicit || ty.binderInfo == BinderInfo.instImplicit)
+--     catch _ => pure false
+--   if isImplicitApp then failure
 
-  let tagAppFn ← getPPOption getPPTagAppFns
-  let (fnStx, _, argStxs) ← withAppFnArgs
-    (withOptionAtCurrPos `pp.tagAppFns tagAppFn <|
-      return (← delabAppFn, paramKinds.toList, #[]))
-    (fun (fnStx, paramKinds, argStxs) => do
-      let arg ← getExpr
-      let opts ← getOptions
-      let mkNamedArg (name : Name) (argStx : Syntax) : DelabM Syntax := do
-        `(Parser.Term.namedArgument| ($(mkIdent name) := $argStx))
-      let argStx? : Option Syntax ←
-        if ← getPPOption getPPAnalysisSkip then pure none
-        else if ← getPPOption getPPAnalysisHole then `(_)
-        else
-          match paramKinds with
-          | [] => delabVerbose
-          | param :: rest =>
-            if param.defVal.isSome && rest.isEmpty then
-              let v := param.defVal.get!
-              if !v.hasLooseBVars && v == arg then pure none else delabVerbose
-            else if !param.isRegularExplicit && param.defVal.isNone then
-              if ← getPPOption getPPAnalysisNamedArg <||> (pure (param.name == `motive) <&&> shouldShowMotive arg opts) then some <$> mkNamedArg param.name (← delabVerbose) else pure none
-            else delabVerbose
-      let argStxs := match argStx? with
-        | none => argStxs
-        | some stx => argStxs.push stx
-      pure (fnStx, paramKinds.tailD [], argStxs))
-  let stx := Syntax.mkApp fnStx argStxs
-  -- let stx ← wrapInType (← getExpr) stx
-  if ← isRegularApp (← getExpr).getAppNumArgs then
-    (guard (← getPPOption getPPNotation) *> unexpandRegularApp stx)
-    <|> (guard (← getPPOption getPPStructureInstances) *> unexpandStructureInstance stx)
-    <|> pure stx
-  else pure stx
+--   let tagAppFn ← getPPOption getPPTagAppFns
+--   let (fnStx, _, argStxs) ← withAppFnArgs
+--     (withOptionAtCurrPos `pp.tagAppFns tagAppFn <|
+--       return (← delabAppFn, paramKinds.toList, #[]))
+--     (fun (fnStx, paramKinds, argStxs) => do
+--       let arg ← getExpr
+--       let opts ← getOptions
+--       let mkNamedArg (name : Name) (argStx : Syntax) : DelabM Syntax := do
+--         `(Parser.Term.namedArgument| ($(mkIdent name) := $argStx))
+--       let argStx? : Option Syntax ←
+--         if ← getPPOption getPPAnalysisSkip then pure none
+--         else if ← getPPOption getPPAnalysisHole then `(_)
+--         else
+--           match paramKinds with
+--           | [] => delabVerbose
+--           | param :: rest =>
+--             if param.defVal.isSome && rest.isEmpty then
+--               let v := param.defVal.get!
+--               if !v.hasLooseBVars && v == arg then pure none else delabVerbose
+--             else if !param.isRegularExplicit && param.defVal.isNone then
+--               if ← getPPOption getPPAnalysisNamedArg <||> (pure (param.name == `motive) <&&> shouldShowMotive arg opts) then some <$> mkNamedArg param.name (← delabVerbose) else pure none
+--             else delabVerbose
+--       let argStxs := match argStx? with
+--         | none => argStxs
+--         | some stx => argStxs.push stx
+--       pure (fnStx, paramKinds.tailD [], argStxs))
+--   let stx := Syntax.mkApp fnStx argStxs
+--   -- let stx ← wrapInType (← getExpr) stx
+--   if ← pure shouldUnexpand <&&> getPPOption getPPStructureInstances then
+--     -- Try using the structure instance unexpander.
+--     -- It only makes sense applying this to the entire application, since structure instances cannot themselves be applied.
+--     if let some stx ← (some <$> unexpandStructureInstance stx) <|> pure none then
+--       return stx
+--   else pure stx
 
 
 /--
