@@ -58,7 +58,25 @@ def getDescriptionM (name: Name) : MetaM <| Option String := do
 
 -- #eval getDescriptionM ``Iff.rfl
 
+def egFreq := Json.mkObj [("name", "Iff.rfl"), ("freq", 4882)]
+
+def addDescription (js: Json) : MetaM Json := do
+  let name? := js.getObjValAs? String "name"
+  let modified? ← name?.mapM fun name => do
+    let desc? ← getDescriptionM name.toName
+    match desc? with
+      | some desc =>
+        let newObj := Json.mkObj [("description", desc)]
+        return js.mergeObj newObj
+      | none => return js
+  return modified?.toOption.getD js
+
+-- #eval addDescription egFreq
+
 def getDescriptionCore (name: Name) : CoreM <| Option String :=
   (getDescriptionM name).run' {}
+
+def addDescriptionCore (js: Json) : CoreM Json :=
+  (addDescription js).run' {}
 
 end LeanAide.Meta
