@@ -118,6 +118,10 @@ lean_exe writedocs {
   supportInterpreter := true
 }
 
+lean_exe writedescs {
+  supportInterpreter := true
+}
+
 
 lean_exe termexamples {
   supportInterpreter := true

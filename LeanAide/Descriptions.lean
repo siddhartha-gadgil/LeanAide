@@ -31,13 +31,14 @@ def theoremAndDefs (name: Name) : MetaM <|
 #eval theoremAndDefs ``List.length_cons
 
 
-def theoremPrompt (name: Name) : MetaM <| Option String := do
+def theoremPrompt (name: Name) : MetaM <| Option (String × String) := do
   (← theoremAndDefs name).mapM fun (statement, dfns) =>
     if dfns.isEmpty then
-      fromTemplate "describe_theorem" [("theorem", statement)]
+      return (← fromTemplate "describe_theorem" [("theorem", statement)], statement)
     else
       let defsBlob := dfns.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
-      fromTemplate "describe_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trim)]
+      return (← fromTemplate "describe_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trim)],
+      statement)
 
 #eval theoremPrompt ``List.length_cons
 
@@ -45,38 +46,38 @@ def theoremPrompt (name: Name) : MetaM <| Option String := do
 
 #eval theoremPrompt ``Eq.subst
 
-def getDescriptionM (name: Name) : MetaM <| Option String := do
+def getDescriptionM (name: Name) : MetaM <| Option (String × String) := do
   let prompt? ← theoremPrompt name
   let server := ChatServer.azure
-  prompt?.mapM fun prompt => do
+  prompt?.mapM fun (prompt, statement) => do
     let messages ← GPT.mkMessages prompt #[] (← sysPrompt)
     let fullJson ←  server.query messages {}
     let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
     let contents ← getMessageContents outJson
-    return contents[0]!
+    return (contents[0]!, statement)
 
 -- #eval getDescriptionM ``Iff.rfl
 
 def egFreq := Json.mkObj [("name", "Iff.rfl"), ("freq", 4882)]
 
-def addDescription (js: Json) : MetaM Json := do
+def addDescription (js: Json) : MetaM (Json × Bool) := do
   let name? := js.getObjValAs? String "name"
   let modified? ← name?.mapM fun name => do
     let desc? ← getDescriptionM name.toName
     match desc? with
-      | some desc =>
-        let newObj := Json.mkObj [("description", desc)]
-        return js.mergeObj newObj
-      | none => return js
-  return modified?.toOption.getD js
+      | some (desc, statement) =>
+        let newObj := Json.mkObj [("statement", statement), ("description", desc)]
+        return (js.mergeObj newObj, true)
+      | none => return (js, false)
+  return modified?.toOption.getD (js, false)
 
 -- #eval addDescription egFreq
 
-def getDescriptionCore (name: Name) : CoreM <| Option String :=
+def getDescriptionCore (name: Name) : CoreM <| Option (String × String) :=
   (getDescriptionM name).run' {}
 
-def addDescriptionCore (js: Json) : CoreM Json :=
+def addDescriptionCore (js: Json) : CoreM (Json × Bool) :=
   (addDescription js).run' {}
 
 end LeanAide.Meta
