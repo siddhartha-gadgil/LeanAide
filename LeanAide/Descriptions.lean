@@ -24,6 +24,7 @@ def theoremAndDefs (name: Name) : MetaM <|
         let defs ←  defNames.filterMapM <| fun n =>
           DefnTypes.defFromName? n.toName
         let defViews := defs.map <| fun df => df.withDoc
+        let defViews := defViews.filter fun df => df.length < 600
         return some (statement, defViews)
     | _ => return none
 
@@ -43,5 +44,21 @@ def theoremPrompt (name: Name) : MetaM <| Option String := do
 #eval theoremPrompt ``Nat.le_succ
 
 #eval theoremPrompt ``Eq.subst
+
+def getDescriptionM (name: Name) : MetaM <| Option String := do
+  let prompt? ← theoremPrompt name
+  let server := ChatServer.azure
+  prompt?.mapM fun prompt => do
+    let messages ← GPT.mkMessages prompt #[] (← sysPrompt)
+    let fullJson ←  server.query messages {}
+    let outJson :=
+        (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
+    let contents ← getMessageContents outJson
+    return contents[0]!
+
+-- #eval getDescriptionM ``Iff.rfl
+
+def getDescriptionCore (name: Name) : CoreM <| Option String :=
+  (getDescriptionM name).run' {}
 
 end LeanAide.Meta
