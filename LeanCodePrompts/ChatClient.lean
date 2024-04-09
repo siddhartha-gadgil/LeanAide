@@ -325,6 +325,7 @@ def prove (server: ChatServer)
   let queryString ← fromTemplate "prove" [("theorem", thm)]
   ChatServer.mathCompletions server queryString n params examples
 
+
 def prove_with_outline (server: ChatServer)
   (thm outline: String)(n: Nat := 3)
   (params: ChatParams := {n := n, stopTokens := #[]})
