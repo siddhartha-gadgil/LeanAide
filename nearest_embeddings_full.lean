@@ -92,12 +92,12 @@ unsafe def main (args: List String) : IO Unit := do
               let b := (data[j]!).2
               dists := dists.push <| distL2Sq a b.data
         let sorted := dists.qsort (· < ·) |>.toList
-        IO.println <| sorted.take 50
-        IO.println <| sorted.reverse.take 50
-        for j in [0:sorted.length / 100] do
-          IO.println <|
-            (j.toFloat * 10000/ sorted.length.toFloat, sorted[j *100]!)
-        IO.println data.size
+        IO.eprintln <| sorted.take 50
+        IO.eprintln <| sorted.reverse.take 50
+        for j in [0:sorted.length / 10] do
+          IO.eprintln <|
+            (j.toFloat * 10/ sorted.length.toFloat * data.size.toFloat, sorted[j *10]!)
+        IO.eprintln data.size
       | none =>
         let stdin ← IO.getStdin
         let stdout ← IO.getStdout
