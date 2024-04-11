@@ -1,12 +1,12 @@
 import Lean.Data
 open Lean
 
-variable (α : Type)[DecidableEq α][Inhabited α]
-
-structure Cluster where
+structure Cluster(α : Type)[Inhabited α] where
   pivot : α
   elements : Array α
 deriving Repr, Inhabited
+
+variable {α : Type}[Inhabited α]
 
 partial def epsilonClustersAux  (epsilon: Float)
     (distance : α -> α -> Float) (elements : Array α)
@@ -23,7 +23,7 @@ partial def epsilonClustersAux  (epsilon: Float)
 
 def epsilonClusters (epsilon: Float) (distance : α -> α -> Float)
     (elements : Array α) : IO (Array (Cluster α))  := do
-  epsilonClustersAux α epsilon distance elements #[]
+  epsilonClustersAux epsilon distance elements #[]
 
 def Cluster.nearest (epsilon: Float)(cs : Array <| Cluster α)(x : α)
   (distance : α -> α -> Float) : α :=
@@ -55,9 +55,9 @@ def Cluster.nearest (epsilon: Float)(cs : Array <| Cluster α)(x : α)
         if d < bd then (y, d)
         else (b, bd)) (best, bound)
 
-inductive EpsilonTree where
-  | leaf : Array α -> EpsilonTree
-  | node : Float × Array (α × EpsilonTree) -> EpsilonTree
+inductive EpsilonTree (α : Type)[Inhabited α] where
+  | leaf : Array α -> EpsilonTree α
+  | node : Float × Array (α × EpsilonTree α ) -> EpsilonTree α
 deriving Inhabited, Repr
 
 namespace EpsilonTree
@@ -66,7 +66,7 @@ partial def refine (tree: EpsilonTree α)(epsilon: Float)
     IO (EpsilonTree α) := do
   match tree with
   | EpsilonTree.leaf elements =>
-    let clusters ← epsilonClusters α epsilon distance (elements)
+    let clusters ← epsilonClusters epsilon distance (elements)
     return EpsilonTree.node (epsilon, clusters.map (fun c =>
       (c.pivot, EpsilonTree.leaf c.elements)))
   | EpsilonTree.node (ε, children) =>
@@ -80,12 +80,12 @@ def multiRefine (tree: EpsilonTree α)(epsilons : List Float)
   match epsilons with
   | [] => return tree
   | ε::rest => do
-    let tree' ← tree.refine α ε distance
+    let tree' ← tree.refine ε distance
     multiRefine tree' rest distance
 
 def build (elements : Array α)(epsilons : List Float)
   (distance : α -> α -> Float) : IO (EpsilonTree α) :=
-  multiRefine α (EpsilonTree.leaf elements) epsilons distance
+  multiRefine (EpsilonTree.leaf elements) epsilons distance
 
 partial def nearest (tree : EpsilonTree α)(x : α)
     (distance : α -> α -> Float): α :=
@@ -118,13 +118,13 @@ def randomClustered : IO <| Float × Float ×
       let n ←  IO.rand 0 10000
       pure <| n.toFloat / 100.0)
   let clusters ←
-    epsilonClusters Float 7.0 (fun x y => (x - y).abs) randoms.toArray
-  let best := Cluster.nearest Float 7.0 clusters 43.3295
+    epsilonClusters 7.0 (fun x y => (x - y).abs) randoms.toArray
+  let best := Cluster.nearest 7.0 clusters 43.3295
     (fun x y => (x - y).abs)
   let tree ←
-    EpsilonTree.build Float randoms.toArray [7.0, 1.5]
+    EpsilonTree.build randoms.toArray [7.0, 1.5]
       (fun x y => (x - y).abs)
-  let best' := tree.nearest Float 43.3295 (fun x y => (x - y).abs)
+  let best' := tree.nearest 43.3295 (fun x y => (x - y).abs)
   return (best, best', clusters)
 
 
