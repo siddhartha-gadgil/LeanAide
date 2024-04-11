@@ -192,9 +192,9 @@ structure ChatExample where
   user : String
   assistant : String
 
-def ChatExample.messages (ex : ChatExample) : List Json :=
+def ChatExample.messages (ex : ChatExample)(responder := "assistant") : List Json :=
   [Json.mkObj [("role", "user"), ("content", ex.user)],
-    Json.mkObj [("role", "assistant"), ("content", ex.assistant)]]
+    Json.mkObj [("role", responder), ("content", ex.assistant)]]
 
 abbrev ToChatExample := String × Json → Option ChatExample
 

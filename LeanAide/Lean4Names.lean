@@ -59,7 +59,7 @@ def elabThm4Aux (s : String)
     | Except.error err₁ =>
       match ← elabThmFromStx (← lean4NamesSyntax stx) levelNames with
       | Except.error err₂ =>
-        logInfo m!"failed to elaborate {stx} with error {err₁} (with lean4NamesSyntax)"
+        -- logInfo m!"failed to elaborate {stx} with error {err₁} (with lean4NamesSyntax)"
         let jsError := Json.mkObj [
           ("input", s),
           ("parsed", true),

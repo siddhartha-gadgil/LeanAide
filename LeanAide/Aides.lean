@@ -149,8 +149,6 @@ def leanToolchain : IO String := do
   let inp ← IO.FS.readFile "lean-toolchain"
   return inp.trim.drop ("leanprover/lean4:".length)
 
-#eval leanToolchain
-
 def picklePath : IO System.FilePath := do
   return ".lake"/ "build" / "lib" /
     s!"mathlib4-prompts-embeddings-{← leanToolchain}.olean"
