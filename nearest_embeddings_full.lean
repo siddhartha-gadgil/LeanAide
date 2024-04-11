@@ -81,23 +81,6 @@ unsafe def main (args: List String) : IO Unit := do
                   ("name", Json.str name),
                   ("distance", toJson d)
                 ]
-        -- Temporary hijack for distance data
-        let rands ←  (List.replicate 100 0).mapM fun _ =>
-          IO.rand 0 (data.size - 1)
-        let mut dists := #[]
-        for i in rands do
-          for j in rands do
-            if i < j then
-              let a := (data[i]!).2
-              let b := (data[j]!).2
-              dists := dists.push <| distL2Sq a b.data
-        let sorted := dists.qsort (· < ·) |>.toList
-        IO.eprintln <| sorted.take 50
-        IO.eprintln <| sorted.reverse.take 50
-        for j in [0:sorted.length / 10] do
-          IO.eprintln <|
-            (j.toFloat * 10/ sorted.length.toFloat * data.size.toFloat, sorted[j *10]!)
-        IO.eprintln data.size
       | none =>
         let stdin ← IO.getStdin
         let stdout ← IO.getStdout
