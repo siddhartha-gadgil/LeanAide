@@ -1,42 +1,15 @@
 import Lean
 import Cache.IO
 import LeanAide.Aides
+import LeanCodePrompts.EpsilonClusters
 import Mathlib
 open Std Lean
-
-
-def insertByMemo (l: Array <| α × Float)(cost : α → Float)(sizeBound: Nat)
-    (x : α) (cx? : Option Float := none) : Array <| α × Float :=
-  match sizeBound with
-  | 0 => l
-  | k + 1 =>
-    let cx := match cx? with
-    | some c => c
-    | none => cost x
-    match l.findIdx? (fun (_, cy) => cx < cy) with
-    | some idx =>
-      l.insertAt idx (x, cx) |>.shrink (k + 1)
-    | none => l.push (x, cx) |>.shrink (k + 1)
-
 
 def distL2Sq (v₁ : FloatArray) (v₂ : Array Float) : Float :=
   let squaredDiffs : Array Float :=
     (v₁.data.zip v₂).map (fun (x, y) => (x - y) * (x - y))
   squaredDiffs.foldl (Float.add) 0.0
 
-def bestWithCost (l: Array <| α)
-  (cost : α → Float)(n: Nat): Array <| α × Float :=
-  l.foldl (fun (acc : Array <| α × Float) (x: α) =>
-    insertByMemo acc cost n x none) #[]
-
-def bestWithCostConc (l: Array <| α)
-  (cost : α → Float)(n: Nat): IO <| Array <| α × Float := do
-  let groups := l.batches' <| ← threadNum
-  let tasks := groups.map <| fun group => Task.spawn <| fun _ =>
-    bestWithCost group cost n
-  let resultGroups := tasks.map Task.get
-  let results := resultGroups.foldl (fun acc group => acc ++ group) #[]
-  return results.qsort (fun (_, c₁) (_, c₂) => c₁ < c₂) |>.shrink n
 
 def nearestDocsToDocEmbedding (data : Array <| (String × String) ×  FloatArray)
   (embedding : Array Float) (k : Nat)

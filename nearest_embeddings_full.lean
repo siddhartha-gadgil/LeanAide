@@ -1,4 +1,5 @@
 import LeanCodePrompts.NearestEmbeddings
+import LeanCodePrompts.EpsilonClusters
 import Cache.IO
 import LeanAide.Aides
 import Lean.Data.Json
@@ -87,6 +88,11 @@ unsafe def main (args: List String) : IO Unit := do
                   ("distance", toJson d)
                 ]
           IO.eprintln s!"Time taken: {finish - start} ms"
+          -- IO.eprintln "Clustering with epsilon 0.5"
+          -- let clusters ← epsilonClusters 0.4 (fun (_, a) (_, b) =>
+          --   distL2Sq a b.data) data
+          -- IO.eprintln s!"Found {clusters.size} clusters"
+          -- IO.eprintln s!"Sizes: {clusters.map (·.elements.size)}"
       | none =>
         let stdin ← IO.getStdin
         let stdout ← IO.getStdout
