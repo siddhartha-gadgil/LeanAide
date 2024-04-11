@@ -32,11 +32,28 @@ def Cluster.nearest (epsilon: Float)(cs : Array <| Cluster α)(x : α)
   let d₀ := distance sorted[0]!.pivot x
   let candidates := sorted.takeWhile (fun c =>
     distance c.pivot x < epsilon + d₀)
-  let allElements :=
-    candidates.foldl (fun acc c => acc ++ c.elements) #[]
-  let sorted' :=
-    allElements.qsort (fun a b => distance a x < distance b x)
-  sorted'[0]!
+  let (best, _) :=
+    candidates.foldl (fun (best, bd) cl =>
+      let d := distance cl.pivot x
+      if d < bd + epsilon then
+        let (best', dist') :=
+          arrayMin cl.elements x distance best bd
+        if dist' < bd then (best', dist')
+          else (best, bd)
+      else (best, bd)) (sorted[0]!.pivot, d₀)
+  -- let allElements :=
+  --   candidates.foldl (fun acc c => acc ++ c.elements) #[]
+  -- let sorted' :=
+  --   allElements.qsort (fun a b => distance a x < distance b x)
+  -- sorted'[0]!
+  best
+  where
+    arrayMin (a : Array α)(x : α)(distance : α -> α -> Float)
+      (best: α)(bound: Float) : α × Float :=
+      a.foldl (fun (b, bd) y =>
+        let d := distance y x
+        if d < bd then (y, d)
+        else (b, bd)) (best, bound)
 
 inductive EpsilonTree where
   | leaf : Array α -> EpsilonTree
@@ -89,25 +106,25 @@ partial def nearest (tree : EpsilonTree α)(x : α)
         let dist' := distance best' x
         if dist' < bd then (best', dist')
           else (best, bd)
-      else (best, bd)) (x, d₀)
+      else (best, bd)) (sorted[0]!.1, d₀)
     best
 
 end EpsilonTree
 
 def randomClustered : IO <| Float × Float ×
    (Array <| Cluster Float) := do
-  let randoms ←  (List.replicate 1000 0).mapM
+  let randoms ←  (List.replicate 10 0).mapM
     (fun _ => do
       let n ←  IO.rand 0 10000
       pure <| n.toFloat / 100.0)
   let clusters ←
     epsilonClusters Float 7.0 (fun x y => (x - y).abs) randoms.toArray
-  let best := Cluster.nearest Float 7.0 clusters 73.3295
+  let best := Cluster.nearest Float 7.0 clusters 43.3295
     (fun x y => (x - y).abs)
   let tree ←
     EpsilonTree.build Float randoms.toArray [7.0, 1.5]
       (fun x y => (x - y).abs)
-  let best' := tree.nearest Float 73.3295 (fun x y => (x - y).abs)
+  let best' := tree.nearest Float 43.3295 (fun x y => (x - y).abs)
   return (best, best', clusters)
 
 
