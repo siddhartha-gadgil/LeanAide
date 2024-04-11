@@ -81,13 +81,16 @@ partial def nearest (tree : EpsilonTree α)(x : α)
       distance a x < distance b x)
     let d₀ := distance sorted[0]!.1 x
     let candidates := sorted.takeWhile (fun (a, _) =>
-      distance a x < ε + d₀)
-    let recBest := candidates.map (fun (_, t) =>
-      nearest t x distance)
-    let sorted' := recBest.qsort (fun a b =>
-      distance a x < distance b x)
-    sorted'[0]!
-
+      distance a x < d₀ + ε)
+    let (best, _) := candidates.foldl (fun (best, bd) (pivot, t) =>
+      let d := distance pivot x
+      if d < bd + ε then
+        let best' := t.nearest x distance
+        let dist' := distance best' x
+        if dist' < bd then (best', dist')
+          else (best, bd)
+      else (best, bd)) (x, d₀)
+    best
 
 end EpsilonTree
 
@@ -95,8 +98,8 @@ def randomClustered : IO <| Float × Float ×
    (Array <| Cluster Float) := do
   let randoms ←  (List.replicate 1000 0).mapM
     (fun _ => do
-      let n ←  IO.rand 0 1000
-      pure <| n.toFloat / 10.0)
+      let n ←  IO.rand 0 10000
+      pure <| n.toFloat / 100.0)
   let clusters ←
     epsilonClusters Float 7.0 (fun x y => (x - y).abs) randoms.toArray
   let best := Cluster.nearest Float 7.0 clusters 73.3295
