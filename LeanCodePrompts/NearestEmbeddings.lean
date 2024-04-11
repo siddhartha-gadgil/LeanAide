@@ -29,8 +29,6 @@ def bestWithCost (l: Array <| α)
   l.foldl (fun (acc : Array <| α × Float) (x: α) =>
     insertByMemo acc cost n x none) #[]
 
-#check Task.spawn
-
 def bestWithCostConc (l: Array <| α)
   (cost : α → Float)(n: Nat): IO <| Array <| α × Float := do
   let groups := l.batches' <| ← threadNum
