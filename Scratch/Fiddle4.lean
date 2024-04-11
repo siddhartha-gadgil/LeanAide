@@ -80,3 +80,10 @@ example : MetaM Syntax := do
   let stx ← `(rule_expr|(by rw [p_eq_true]))
   let stx' ← `(rule_expr| apply Nat.add)
   `(tactic| aesop (add unsafe [$stx, $stx']))
+
+def myName: MetaM Name :=  do
+  let env ← getEnv
+  pure env.mainModule
+
+
+#eval myName
