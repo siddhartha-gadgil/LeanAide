@@ -44,13 +44,13 @@ def bestWithCostConc (l: Array <| α)
 
 structure Cluster(α : Type)[Inhabited α] where
   pivot : α
-  epsilon : Float
+  ε : Float
   elements : Array α
 deriving Repr, Inhabited
 
 variable {α : Type}[Inhabited α][BEq α]
 
-partial def epsilonClustersAux  (epsilon: Float)
+partial def epsilonClustersAux  (ε: Float)
     (distance : α -> α -> Float) (minSize : Nat) (elements : Array α)
     (accum : Array <| Cluster α) : IO (Array (Cluster α))  := do
   if elements.isEmpty then
@@ -60,11 +60,11 @@ partial def epsilonClustersAux  (epsilon: Float)
     let pivot := elements[idx]!
     -- IO.eprintln s!"Found pivot"
     let (group, rest) :=
-      elements.split (fun x => distance x pivot < epsilon)
+      elements.split (fun x => distance x pivot < ε)
     -- IO.eprintln s!"Split into {group.size} and {rest.size}"
     let (cluster, tail) ← do
       if group.size ≥ minSize then
-        pure ({pivot := pivot, elements := group, epsilon := epsilon},
+        pure ({pivot := pivot, elements := group, ε := ε},
         rest)
       else
         let elementsWithWeights :=
@@ -73,12 +73,12 @@ partial def epsilonClustersAux  (epsilon: Float)
         let group := elementsWithWeights.map (·.1)
         let rest := elements.filter (fun x => !(group.contains x))
         pure
-          ({pivot := pivot, elements := group,epsilon := max}, rest)
-    epsilonClustersAux epsilon distance minSize tail (accum.push cluster)
+          ({pivot := pivot, elements := group,ε := max}, rest)
+    epsilonClustersAux ε distance minSize tail (accum.push cluster)
 
-def epsilonClusters (epsilon: Float) (distance : α -> α -> Float)
+def epsilonClusters (ε: Float) (distance : α -> α -> Float)
     (minSize: Nat) (elements : Array α) : IO (Array (Cluster α))  := do
-  epsilonClustersAux epsilon distance minSize elements #[]
+  epsilonClustersAux ε distance minSize elements #[]
 
 variable {β : Type}[Inhabited β][BEq β]
 
@@ -89,10 +89,10 @@ def Cluster.nearest (cs : Array <| Cluster α)(x : β)
     withDistance.qsort (fun (_, d1) (_, d2) => d1 < d2)
   let d₀ := sorted[0]!.2
   let candidates := sorted.filter (fun (c, d) =>
-    d < c.epsilon + d₀)
+    d < c.ε + d₀)
   let (best, _) :=
     candidates.foldl (fun (best, bd) (cl, d) =>
-      if d < bd + cl.epsilon then
+      if d < bd + cl.ε then
         let (best', dist') :=
           arrayMin cl.elements x distance best bd
         if dist' < bd then (best', dist')
@@ -115,7 +115,7 @@ def Cluster.kNearest (k: Nat)(cs : Array <| Cluster α)(x : β)
   let best :=
     sorted.foldl (fun best (cl, d) =>
       let check: Bool := match best[k - 1]? with
-        | some (_, bd) => d < bd + cl.epsilon
+        | some (_, bd) => d < bd + cl.ε
         | none => true
       if check == true then
         bestWithCost cl.elements (fun y => distance y x) k best
@@ -125,23 +125,23 @@ def Cluster.kNearest (k: Nat)(cs : Array <| Cluster α)(x : β)
 
 inductive EpsilonTree (α : Type)[Inhabited α] where
   | leaf : Array α -> EpsilonTree α
-  | node : Float × Array (α × EpsilonTree α ) -> EpsilonTree α
+  | node : Array (Float × α × EpsilonTree α ) -> EpsilonTree α
 deriving Inhabited, Repr
 
 namespace EpsilonTree
-partial def refine (tree: EpsilonTree α)(epsilon: Float)
+partial def refine (tree: EpsilonTree α)(ε: Float)
   (distance : α -> α -> Float)(minSize: Nat):
     IO (EpsilonTree α) := do
   match tree with
   | EpsilonTree.leaf elements =>
-    let clusters ← epsilonClusters epsilon distance minSize (elements)
-    return EpsilonTree.node (epsilon, clusters.map (fun c =>
-      (c.pivot, EpsilonTree.leaf c.elements)))
-  | EpsilonTree.node (ε, children) =>
-    let children' ← children.mapM (fun (x, t) => do
-      let t' ← t.refine epsilon distance minSize
-      return (x, t'))
-    return EpsilonTree.node (ε, children')
+    let clusters ← epsilonClusters ε distance minSize (elements)
+    return EpsilonTree.node (clusters.map (fun c =>
+      (c.ε, c.pivot, EpsilonTree.leaf c.elements)))
+  | EpsilonTree.node children =>
+    let children' ← children.mapM (fun (ε', (x, t)) => do
+      let t' ← t.refine ε distance minSize
+      return (ε', x, t'))
+    return EpsilonTree.node children'
 
 def multiRefine (tree: EpsilonTree α)(epsilons : List (Float × Nat))
   (distance : α -> α -> Float) : IO (EpsilonTree α) :=
@@ -161,20 +161,20 @@ partial def nearest (tree : EpsilonTree α)(x : α)
   | .leaf elements =>
     let best := bestWithCost elements (fun y => distance y x) 1
     best[0]!.1
-  | .node (ε, children) =>
-    let sorted := children.qsort (fun (a, _) (b, _) =>
+  | .node children =>
+    let sorted := children.qsort (fun (_, a, _) (_, b, _) =>
       distance a x < distance b x)
-    let d₀ := distance sorted[0]!.1 x
-    let candidates := sorted.filter (fun (a, _) =>
+    let d₀ := distance sorted[0]!.2.1 x
+    let candidates := sorted.filter (fun (ε, a, _) =>
       distance a x < d₀ + ε)
-    let (best, _) := candidates.foldl (fun (best, bd) (pivot, t) =>
+    let (best, _) := candidates.foldl (fun (best, bd) (ε, pivot, t) =>
       let d := distance pivot x
       if d < bd + ε then
         let best' := t.nearest x distance
         let dist' := distance best' x
         if dist' < bd then (best', dist')
           else (best, bd)
-      else (best, bd)) (sorted[0]!.1, d₀)
+      else (best, bd)) (sorted[0]!.2.1, d₀)
     best
 
 end EpsilonTree
