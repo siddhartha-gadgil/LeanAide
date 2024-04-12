@@ -41,7 +41,10 @@ def bestWithCostConc (l: Array <| α)
   let results := resultGroups.foldl (fun acc group => acc ++ group) #[]
   return results.qsort (fun (_, c₁) (_, c₂) => c₁ < c₂) |>.shrink n
 
-
+/--
+A cluster is a set of elements with a pivot element and a
+maximum distance `ε` from the pivot.
+-/
 structure Cluster(α : Type)[Inhabited α] where
   pivot : α
   ε : Float
@@ -50,6 +53,9 @@ deriving Repr, Inhabited
 
 variable {α : Type}[Inhabited α][BEq α]
 
+/--
+Recursively divide a set of elements into clusters with a maximum.
+-/
 partial def epsilonClustersAux  (ε: Float)
     (distance : α -> α -> Float) (minSize : Nat) (elements : Array α)
     (accum : Array <| Cluster α) : IO (Array (Cluster α))  := do
@@ -76,12 +82,20 @@ partial def epsilonClustersAux  (ε: Float)
           ({pivot := pivot, elements := group,ε := max}, rest)
     epsilonClustersAux ε distance minSize tail (accum.push cluster)
 
+/--
+Divide a set of elements into clusters with a target maximum distance `ε`,
+and a minimum size `minSize`. If the minimum size is not reached, the
+cluster is expanded to include the `minSize` closest elements.
+-/
 def epsilonClusters (ε: Float) (distance : α -> α -> Float)
     (minSize: Nat) (elements : Array α) : IO (Array (Cluster α))  := do
   epsilonClustersAux ε distance minSize elements #[]
 
 variable {β : Type}[Inhabited β][BEq β]
 
+/--
+Nearest point to a given point `x` in a set of clusters.
+-/
 def Cluster.nearest (cs : Array <| Cluster α)(x : β)
   (distance : α -> β  -> Float) : α :=
   let withDistance := cs.map (fun c => (c, distance c.pivot x))
@@ -107,6 +121,9 @@ def Cluster.nearest (cs : Array <| Cluster α)(x : β)
         if d < bd then (y, d)
         else (b, bd)) (best, bound)
 
+/--
+The `k` nearest points to a given point `x` in a set of clusters.
+-/
 def Cluster.kNearest (k: Nat)(cs : Array <| Cluster α)(x : β)
   (distance : α -> β  -> Float) : Array (α × Float) :=
   let withDistance := cs.map (fun c => (c, distance c.pivot x))
@@ -123,12 +140,25 @@ def Cluster.kNearest (k: Nat)(cs : Array <| Cluster α)(x : β)
         best) #[]
   best
 
+/--
+A tree of recusively defined clusters.
+-/
 inductive EpsilonTree (α : Type)[Inhabited α] where
+  /--
+  A leaf node contains a set of elements (with no structure).
+  -/
   | leaf : Array α -> EpsilonTree α
+  /--
+  A node contains a set of trees, each with a pivot element and a
+  maximum distance `ε` from the pivot.
+  -/
   | node : Array (Float × α × EpsilonTree α ) -> EpsilonTree α
 deriving Inhabited, Repr
 
 namespace EpsilonTree
+/--
+Refine a tree by dividing each leaf node into clusters with a target maximum distance `ε` from the pivot and a minimum size `minSize`.
+-/
 partial def refine (tree: EpsilonTree α)(ε: Float)
   (distance : α -> α -> Float)(minSize: Nat):
     IO (EpsilonTree α) := do
@@ -143,6 +173,9 @@ partial def refine (tree: EpsilonTree α)(ε: Float)
       return (ε', x, t'))
     return EpsilonTree.node children'
 
+/--
+Iteratively refine a tree by dividing each leaf node into clusters with a target maximum distance `ε` from the pivot and a minimum size `minSize`.
+-/
 def multiRefine (tree: EpsilonTree α)(epsilons : List (Float × Nat))
   (distance : α -> α -> Float) : IO (EpsilonTree α) :=
   match epsilons with
@@ -151,10 +184,16 @@ def multiRefine (tree: EpsilonTree α)(epsilons : List (Float × Nat))
     let tree' ← tree.refine ε distance minSize
     multiRefine tree' rest distance
 
+/--
+Build a tree by iteratively dividing a set of elements into clusters with a target maximum distance `ε` from the pivot and a minimum size `minSize`.
+-/
 def build (elements : Array α)(epsilons : List (Float × Nat))
   (distance : α -> α -> Float) : IO (EpsilonTree α) :=
   multiRefine (EpsilonTree.leaf elements) epsilons distance
 
+/--
+Find the nearest point to a given point `x` in a tree.
+-/
 partial def nearest (tree : EpsilonTree α)(x : α)
     (distance : α -> α -> Float): α :=
   match tree with
