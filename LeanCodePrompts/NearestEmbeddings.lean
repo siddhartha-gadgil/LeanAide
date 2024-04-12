@@ -58,7 +58,10 @@ def embedQuery (doc: String) : IO <| Except String Json := do
 
 
 def nearestDocsToDocThms (data: Array ((String × String) × FloatArray))(doc: String)(k : Nat)(dist: FloatArray → Array Float → Float := distL2Sq) : IO (List (String × String)) := do
+  let start ← IO.monoMsNow
   let queryRes? ← embedQuery doc
+  let finish ← IO.monoMsNow
+  IO.eprintln s!"query time: {finish - start}"
   -- IO.println "query complete"
   match queryRes? with
   | Except.ok queryRes =>
@@ -84,7 +87,10 @@ def nearestDocsToDocThms (data: Array ((String × String) × FloatArray))(doc: S
 def nearestDocsToDocFull (data: Array ((String × String × Bool × String) × FloatArray))
     (doc: String)(k : Nat)(dist: FloatArray → Array Float → Float := distL2Sq)
     (penalty: Float) : IO (List (String × String × Bool × String × Float)) := do
+  let start ← IO.monoMsNow
   let queryRes? ← embedQuery doc
+  let finish ← IO.monoMsNow
+  IO.eprintln s!"query time: {finish - start}"
   -- IO.println "query complete"
   match queryRes? with
   | Except.ok queryRes =>
