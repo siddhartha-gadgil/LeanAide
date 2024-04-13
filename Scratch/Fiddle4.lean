@@ -87,3 +87,32 @@ def myName: MetaM Name :=  do
 
 
 #eval myName
+
+
+initialize mn : IO.Mutex Nat
+        ← IO.Mutex.new 0
+
+def mnVal : IO Nat := mn.atomically do
+  let m ← get
+  pure m
+
+def mnIncr : IO Unit := mn.atomically do
+  modify (· + 1)
+
+def mnSet (n: Nat) : IO Unit := mn.atomically do
+  set n
+
+structure Description (α : Sort u) where
+  text : String
+
+example : Description Prop := ⟨ "This is a proposition" ⟩ -- it is not
+example : Description Nat := ⟨ "Three" ⟩ -- again, it is not
+
+opaque Description.extract [Inhabited α] : Description α → α
+
+def quote [Inhabited α] (text: String) : α :=
+  Description.extract ⟨ text ⟩ -- arbitrary
+
+def not_three : Nat := Description.extract ⟨ "Three" ⟩ -- 0
+
+def not_four : Nat := quote "four" -- 0

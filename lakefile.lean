@@ -129,7 +129,8 @@ lean_exe termexamples {
 
 lean_lib examples
 
-lean_lib LeanAideScratch
+lean_lib Scratch {
+}
 
 lean_lib Extras
 
