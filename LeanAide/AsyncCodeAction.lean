@@ -10,19 +10,19 @@ def textEdits (text: FileMap) : IO <| Array TextEdit := do
   for (k, s) in m.toArray do
     match s.tailPos? with
     | none => pure ()
-    | some tailPos => 
+    | some tailPos =>
       let current := source.extract k.pos tailPos
-      let checkStart : Bool := 
+      let checkStart : Bool :=
         match s.preScript with
           | none => false
           | some pre => pre.trim == current.trim
       let edit : TextEdit := {
         range := ⟨text.leanPosToLspPos <| text.toPosition k.pos, text.leanPosToLspPos <| text.toPosition tailPos⟩
-        newText := 
-          if checkStart 
+        newText :=
+          if checkStart
             then
               let stx := s.script
-              let stx' := stx.raw.copyHeadTailInfoFrom .missing 
+              let stx' := stx.raw.copyHeadTailInfoFrom .missing
               stx'.reprint.get!.trimRight
           else current  -- ++ s!"/-change detected: {s.preScript.get!} to {current}-/"
       }
@@ -31,19 +31,20 @@ def textEdits (text: FileMap) : IO <| Array TextEdit := do
   pure edits
 
 
-@[code_action_provider] def fillInProofs : CodeActionProvider := fun params _ => do
+@[code_action_provider] def fillInProofs : CodeActionProvider := fun _ _ => do
   let doc ← readDoc
+  let vi := doc.versionedIdentifier
   let text := doc.meta.text
   let edits ← textEdits text
   let ws : IO WorkspaceEdit := do
     let mut ws : WorkspaceEdit := ∅
     for edit in edits do
-      ws := ws ++ (WorkspaceEdit.ofTextEdit params.textDocument.uri edit)
+      ws := ws ++ (WorkspaceEdit.ofTextEdit vi edit)
     return ws
-  let ca : CodeAction := { 
-    title := "Fill in Async Proofs", 
-    kind? := "quickfix", 
+  let ca : CodeAction := {
+    title := "Fill in Async Proofs",
+    kind? := "quickfix",
   }
-  
-  return #[{ eager := ca, lazy? := some $ return {ca with 
+
+  return #[{ eager := ca, lazy? := some $ return {ca with
   edit? := some <| ← ws}}]

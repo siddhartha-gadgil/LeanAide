@@ -219,23 +219,27 @@ partial def nearest (tree : EpsilonTree α)(x : α)
 end EpsilonTree
 
 def randomClustered : IO <| Float × Float × (Array (Float × Float)) ×
+  (List Float) ×
    (Array <| Cluster Float) := do
-  let randoms ←  (List.replicate 20 0).mapM
+  let a := 32
+  let randoms ←  (List.replicate 200 0).mapM
     (fun _ => do
-      let n ←  IO.rand 0 10000
+      let n ←  IO.rand 0 100000
       pure <| n.toFloat / 100.0)
   let clusters ←
     epsilonClusters 3.0 (fun x y => (x - y).abs)
     2  randoms.toArray
-  let best := Cluster.nearest clusters 43.3295
+  let best := Cluster.nearest clusters a
     (fun x y => (x - y).abs)
-  let best2 := Cluster.kNearest 3 clusters 43.3295
+  let best2 := Cluster.kNearest 3 clusters a
     (fun x y => (x - y).abs)
   let tree ←
     EpsilonTree.build randoms.toArray [(7.0, 2), (1.5, 1)]
       (fun x y => (x - y).abs)
-  let best' := tree.nearest 43.3295 (fun x y => (x - y).abs)
-  return (best, best', best2, clusters)
+  let best' := tree.nearest a (fun x y => (x - y).abs)
+  let sorted := randoms.toArray.qsort
+    fun x y => (x - a).abs < (y - a).abs
+  return (best, best', best2, sorted.toList.take 10, clusters)
 
 
 #eval randomClustered
