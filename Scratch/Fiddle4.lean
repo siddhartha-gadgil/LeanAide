@@ -116,3 +116,25 @@ def quote [Inhabited α] (text: String) : α :=
 def not_three : Nat := Description.extract ⟨ "Three" ⟩ -- 0
 
 def not_four : Nat := quote "four" -- 0
+
+#reduce not_four -- Description.extract { text := "four" }
+
+def descString : Expr → MetaM String := fun expr =>
+  do
+    let type ← inferType expr
+    let descType ← mkAppM ``Description #[type]
+    let mvar ←  mkFreshExprMVar (some descType)
+    let sExp ←  mkAppM ``Description.extract #[mvar]
+    if ← isDefEq sExp expr then
+      match (← whnf mvar).getAppFnArgs with
+      | (``Description.mk, #[_, Expr.lit (Literal.strVal s)]) => pure s
+      | _ => throwError m!"{mvar} is not a string"
+    else
+      throwError m!"{expr} not from a description"
+
+elab "desc"  x:term : term => do
+  let x ← elabTerm x none
+  let s ← descString x
+  return Expr.lit (Literal.strVal s)
+
+#check desc not_four
