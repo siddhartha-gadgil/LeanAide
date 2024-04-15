@@ -52,6 +52,11 @@ register_option lean_aide.translate.greedy : Bool :=
     group := "lean_aide.translate"
     descr := "Whether to choose the first elaboration." }
 
+register_option lean_aide.translate.has_sysprompt : Bool :=
+  { defValue := true
+    group := "lean_aide.translate"
+    descr := "Whether the server has a system prompt." }
+
 /--
 Number of similar sentences to query in interactive mode
 -/
@@ -71,6 +76,9 @@ def chatParams : CoreM ChatParams := do
 def greedy : CoreM Bool := do
   return lean_aide.translate.greedy.get (← getOptions)
 
+def hasSysPrompt : CoreM Bool := do
+  return lean_aide.translate.has_sysprompt.get (← getOptions)
+
 /--
 Chat server to use in interactive mode
 -/
@@ -84,7 +92,7 @@ def chatServer : CoreM ChatServer := do
     if url.isEmpty then
       return ChatServer.openAI model
     else
-      return ChatServer.generic model url
+      return ChatServer.generic model url (← hasSysPrompt)
 
 
 /--
@@ -215,7 +223,7 @@ def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true)
 -/
 def getLeanCodeJson (s: String)
   (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})(numSim : Nat:= 8)
-  (includeFixed: Bool := Bool.false)(sysLess: Bool := false)(toChat : ToChatExample := simpleChatExample) : CoreM <| Json × Json := do
+  (includeFixed: Bool := Bool.false)(toChat : ToChatExample := simpleChatExample) : CoreM <| Json × Json := do
   logTimed s!"translating string `{s}` with {numSim} examples"
   match ← getCachedJson? s with
   | some js => return js
@@ -239,7 +247,7 @@ def getLeanCodeJson (s: String)
         ("Translate the following statement into Lean 4:\n## Theorem: " ++ doc ++ "\n\nGive ONLY the Lean code", thm)
       let examples := pairs.filterMap toChat
       let s' := "Translate the following statement into Lean 4:\n## Theorem: " ++ s ++ "\n\nGive ONLY the Lean code"
-      let messages ← GPT.mkMessages s' examples (← transPrompt) sysLess
+      let messages ← GPT.mkMessages s' examples (← transPrompt) !server.hasSysPropmpt
       trace[Translate.info] m!"prompt: \n{messages.pretty}"
       logTimed "querying server"
       let fullJson ← server.query messages params
@@ -559,9 +567,9 @@ Translate a string to a Lean expression using the GPT model, returning three com
 -/
 def translateViewVerboseM (s: String)(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)
-  (sysLess: Bool := false)(toChat : ToChatExample := simpleChatExample)  :
+  (toChat : ToChatExample := simpleChatExample)  :
   TermElabM ((Option (String × (Array String) × (Array (Array String)) )) × Array String × Json) := do
-  let (js,prompt) ← getLeanCodeJson s server params numSim false sysLess toChat
+  let (js,prompt) ← getLeanCodeJson s server params numSim false toChat
   let output ← getMessageContents js
   if output.isEmpty then
      return (none, output, prompt)
@@ -585,6 +593,6 @@ def translateViewVerboseM (s: String)(server: ChatServer)
 
 def translateViewVerboseCore (s: String)(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)
-  (sysLess: Bool := false)(toChat : ToChatExample := simpleChatExample)  :
+  (toChat : ToChatExample := simpleChatExample)  :
   CoreM ((Option (String × (Array String) × (Array (Array String)))) × Array String × Json) :=
-  (translateViewVerboseM s server params numSim sysLess toChat).run'.run'
+  (translateViewVerboseM s server params numSim toChat).run'.run'

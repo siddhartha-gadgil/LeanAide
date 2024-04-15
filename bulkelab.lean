@@ -33,10 +33,11 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
   let azure := p.hasFlag "azure"
   let tag := p.hasFlag "tag"
   let url? := p.flag? "url" |>.map (fun s => s.as! String)
+  let sysLess := p.hasFlag "no_sysprompt"
   let chatServer :=
     if azure then ChatServer.azure (model := model) else
         match url? with
-        | some url => ChatServer.generic model url
+        | some url => ChatServer.generic model url !sysLess
         | none => ChatServer.openAI model
   let chatParams : ChatParams :=
     let params: ChatParams := {temp := temp, n := queryNum}
@@ -118,6 +119,7 @@ def bulkElab : Cmd := `[Cli|
     url : String; "URL to query (for a local server)."
     tag; "Include the git hash in the results filepath"
     no_stop; "Don't use `:=` as a stop token."
+    no_sysprompt; "The model has no system prompt (not relevant for GPT models)."
 
   ARGS:
     input : String;      "The input file in the `data` folder."

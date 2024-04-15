@@ -90,7 +90,7 @@ inductive ChatServer where
   | openAI (model: String := "gpt-3.5-turbo")
   | azure (deployment: String := "leanaide-gpt4")
       (model: String := "GPT-4")
-  | generic (model: String) (url: String)
+  | generic (model: String) (url: String) (hasSysPropmpt : Bool)
 
 namespace ChatServer
 
@@ -99,13 +99,18 @@ def url : ChatServer → IO String
       return "https://api.openai.com/v1/chat/completions"
   | azure deployment _ =>
       azureURL deployment
-  | generic _ url =>
+  | generic _ url _ =>
       return url++"/v1/chat/completions"
 
 def model : ChatServer → String
   | openAI model => model
   | azure _ model => model
-  | generic model _ => model
+  | generic model _ _ => model
+
+def hasSysPropmpt : ChatServer → Bool
+  | openAI _ => true
+  | azure _ _ => true
+  | generic _ _ b => b
 
 def authHeader? : ChatServer → IO (Option String)
   | openAI _ => do
@@ -306,7 +311,7 @@ def completions (server: ChatServer)
   (queryString: String)(sysPrompt: String)(n: Nat := 3)
   (params: ChatParams := {n := n, stopTokens := #[]})
   (examples: Array ChatExample := #[]): CoreM (Array String) := do
-  let messages ←  GPT.mkMessages queryString examples sysPrompt
+  let messages ←  GPT.mkMessages queryString examples sysPrompt !(server.hasSysPropmpt)
   let data ← ChatServer.query server messages params
   let outputs ← getMessageContents data
   return outputs

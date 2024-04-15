@@ -25,12 +25,13 @@ def runTranslate (p : Parsed) : IO UInt32 := do
     |>.getD "gpt-3.5-turbo"
   let azure := p.hasFlag "azure"
   let tag := p.hasFlag "tag"
+  let sysLess := p.hasFlag "no_sysprompt"
   let url? := p.flag? "url" |>.map (fun s => s.as! String)
   let showPrompt := p.hasFlag "show_prompt"
   let chatServer :=
     if azure then ChatServer.azure else
         match url? with
-        | some url => ChatServer.generic model url
+        | some url => ChatServer.generic model url !sysLess
         | none => ChatServer.openAI model
   let chatParams : ChatParams :=
     {temp := temp, n := queryNum}
@@ -99,6 +100,7 @@ def translate : Cmd := `[Cli|
     url : String; "URL to query (for a local server)."
     show_prompt; "Output the prompt to the LLM."
     show_elaborated; "Output the elaborated terms"
+    no_sysprompt; "The model has no system prompt (not relevant for GPT models)."
 
   ARGS:
     input : String;      "The input file in the `data` folder."
