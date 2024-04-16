@@ -138,3 +138,22 @@ elab "desc"  x:term : term => do
   return Expr.lit (Literal.strVal s)
 
 #check desc not_four
+
+def sampleNats (lo hi n: Nat) : MetaM (Format) := do
+  let sample ←  List.replicate n 0 |>.mapM fun _ =>
+    IO.rand lo hi
+  let s := sample.toString
+  let stx? := Parser.runParserCategory (← getEnv) `term s
+  match stx? with
+  | Except.ok stx =>
+    let stx : TSyntax `term := ⟨ stx ⟩
+    let lst := mkIdent `List
+    let nat := mkIdent `Nat
+    let sample := mkIdent `sample
+    let result ← `(command|def $sample : $lst $nat := $stx)
+    logInfo m!"{← ppCommand result}.pretty"
+    ppCommand result
+  | Except.error err =>
+    throwError m!"{err}"
+
+#eval sampleNats 0 10 5

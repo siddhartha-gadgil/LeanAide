@@ -260,24 +260,18 @@ def sysMessages (sys: String) (egs : List <| ChatExample)
     egs.bind (fun eg  => eg.messages)
   Json.arr <| head :: egArr ++ [message "user" query] |>.toArray
 
+def syslessAnswer := "Sure. I will answer precisely and concisely following instructions"
+
 /--
 JSON object for the messages field in a chat prompt,
 assuming that there is no system message at the beginning.
 -/
 def syslessMessages (sys: String)(egs : List <| ChatExample)
     (query : String) : Json :=
-  match egs with
-  | [] =>
-    let queryMessage := s!"{sys}
-
-{query}"
-    Json.arr #[message "user" queryMessage]
-  | eg :: tail =>
-  let headUser := s!"{sys}
-
-eg.user"
-  let headExample : ChatExample := ⟨headUser, eg.assistant⟩
-  Json.arr <| (headExample :: tail).bind (fun eg  => eg.messages) ++ [message "user" query] |>.toArray
+  let headEg : ChatExample := ⟨sys, syslessAnswer⟩
+  let egArr :=
+    (headEg :: egs).bind (fun eg  => eg.messages)
+  Json.arr <| egArr ++ [message "user" query] |>.toArray
 
 /--
 Default system prompt

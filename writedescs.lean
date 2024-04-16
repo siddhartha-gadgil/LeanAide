@@ -57,7 +57,7 @@ def main : IO Unit := do
           handle.flush
           if check then
             IO.println s!"Added {js.compress}"
-            IO.sleep 30000
+            IO.sleep 10000
           else
             IO.println s!"Skipped {js.compress}"
           count := count + 1

@@ -55,7 +55,7 @@ def translateWithDataCore (s: String)(server: ChatServer)
   (includeFixed: Bool := Bool.false)
   (embedding: String)(repeats: Nat := 0)
   (queryData? : Option <| (HashMap String Json)  )
-  (sysLess: Bool := false)(toChat : ToChatExample := simpleChatExample)  :
+  (toChat : ToChatExample := simpleChatExample)  :
   CoreM ((Option (Expr × (Array String) ×  (Array (Array String)) )) × Array String × Option String) :=
     (translateWithDataM s server params
       numSim includeFixed
