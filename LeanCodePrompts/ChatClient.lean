@@ -31,7 +31,7 @@ structure ChatParams where
   n : Nat := 1
   temp : JsonNumber := 0.8
   stopTokens : Array String :=  #[]
-  max_tokens : Nat := 1600
+  maxTokens : Nat := 1600
 
 namespace ChatParams
 def stopColEq (params: ChatParams) : Bool :=
@@ -132,7 +132,7 @@ def authHeader? : ChatServer → IO (Option String)
 
 def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Json := do
   let dataJs := Json.mkObj [("model", server.model), ("messages", messages)
-  , ("temperature", Json.num params.temp), ("n", params.n), ("max_tokens", params.max_tokens),
+  , ("temperature", Json.num params.temp), ("n", params.n), ("max_tokens", params.maxTokens),
   ("stop", Json.arr <| params.stopTokens |>.map Json.str)
   ]
   let data := dataJs.pretty

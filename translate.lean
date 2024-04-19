@@ -25,6 +25,8 @@ def runTranslate (p : Parsed) : IO UInt32 := do
     |>.getD "gpt-3.5-turbo"
   let azure := p.hasFlag "azure"
   let tag := p.hasFlag "tag"
+  let maxTokens := p.flag? "max_tokens" |>.map (fun s => s.as! Nat)
+    |>.getD 1600
   let sysLess := p.hasFlag "no_sysprompt"
   let url? := p.flag? "url" |>.map (fun s => s.as! String)
   let showPrompt := p.hasFlag "show_prompt"
@@ -34,7 +36,7 @@ def runTranslate (p : Parsed) : IO UInt32 := do
         | some url => ChatServer.generic model url !sysLess
         | none => ChatServer.openAI model
   let chatParams : ChatParams :=
-    {temp := temp, n := queryNum}
+    {temp := temp, n := queryNum, maxTokens := maxTokens}
 
   let dir :=
     if tag then System.mkFilePath <| ["results", model, ← gitHash]
@@ -100,6 +102,7 @@ def translate : Cmd := `[Cli|
     url : String; "URL to query (for a local server)."
     show_prompt; "Output the prompt to the LLM."
     show_elaborated; "Output the elaborated terms"
+    max_tokens : Nat; "Maximum tokens to use in the translation."
     no_sysprompt; "The model has no system prompt (not relevant for GPT models)."
 
   ARGS:

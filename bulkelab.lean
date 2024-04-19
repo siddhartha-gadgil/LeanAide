@@ -30,6 +30,8 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
     |>.getD 20
   let repeats := p.flag? "repeats" |>.map (fun s => s.as! Nat)
     |>.getD 0
+  let maxTokens := p.flag? "max_tokens" |>.map (fun s => s.as! Nat)
+    |>.getD 1600
   let azure := p.hasFlag "azure"
   let tag := p.hasFlag "tag"
   let url? := p.flag? "url" |>.map (fun s => s.as! String)
@@ -40,7 +42,8 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
         | some url => ChatServer.generic model url !sysLess
         | none => ChatServer.openAI model
   let chatParams : ChatParams :=
-    let params: ChatParams := {temp := temp, n := queryNum}
+    let params: ChatParams :=
+      {temp := temp, n := queryNum, maxTokens := maxTokens}
     params.withoutStop (p.hasFlag "no_stop")
   let queryData? : Option (HashMap String Json) ←
     p.flag? "query_data" |>.map (fun s => s.as! String) |>.mapM
@@ -119,6 +122,7 @@ def bulkElab : Cmd := `[Cli|
     url : String; "URL to query (for a local server)."
     tag; "Include the git hash in the results filepath"
     no_stop; "Don't use `:=` as a stop token."
+    max_tokens : Nat; "Maximum tokens to use in the translation."
     no_sysprompt; "The model has no system prompt (not relevant for GPT models)."
 
   ARGS:
