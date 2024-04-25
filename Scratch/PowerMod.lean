@@ -57,7 +57,7 @@ theorem odd_powerMod (a b m n : ℕ) :
 
 open Lean Meta Elab Tactic
 
-def simplifyPowMod (a b m n : ℕ): MVarId → MetaM (List (MVarId)) :=
+def simplifyPowMod (a b m : ℕ): MVarId → MetaM (List (MVarId)) :=
   fun mvarId =>
     mvarId.withContext do
     let rec loop (b : ℕ)(mvarId : MVarId) :  MetaM Unit := do
@@ -99,25 +99,25 @@ def simplifyPowMod (a b m n : ℕ): MVarId → MetaM (List (MVarId)) :=
     mkEq modExp nExp
 
 elab "simplify_power_mod"
-    a:num "^" b:num "%" m:num "=" n:num : tactic =>
+    a:num "^" b:num "%" m:num  : tactic =>
     liftMetaTactic <|
-      simplifyPowMod a.getNat b.getNat m.getNat n.getNat
+      simplifyPowMod a.getNat b.getNat m.getNat
 
 example : 2 ^ 0 % 121 = 1 := by
-  simplify_power_mod 2 ^ 0 % 121 = 1
+  simplify_power_mod 2 ^ 0 % 121
 
 example : 2 ^ 1 % 121 = 2 := by
-  simplify_power_mod 2 ^ 1 % 121 = 2
+  simplify_power_mod 2 ^ 1 % 121
 
 example : 2 ^ 2 % 121 = 4 := by
-  simplify_power_mod 2 ^ 2 % 121 = 4
+  simplify_power_mod 2 ^ 2 % 121
 
 example : 2 ^ 3 % 3 = 2 := by
-  simplify_power_mod 2 ^ 3 % 3 = 2
+  simplify_power_mod 2 ^ 3 % 3
 
 
 example : 2 ^ 30 % 3 = 1 := by
-  simplify_power_mod 2 ^ 30 % 3 = 1
+  simplify_power_mod 2 ^ 30 % 3
 
 #eval 2 ^ 30 % 3
 
@@ -141,6 +141,11 @@ example : 2 ^ 30 % 3 = 1 := by
 #eval powerMod 2232421124 5013838 121 -- 23
 
 #eval  2^30485 % 2381 -- 1872
+
+theorem egTest : 2 ^ 30485 % 2381 = 1872 := by
+  simplify_power_mod 2 ^ 30485 % 2381
+
+#check egTest
 
 -- example: 2232421124 ^ 10027676 % 121 = 45 := by
 --   apply even_powerMod 2232421124 5013838 121 23
