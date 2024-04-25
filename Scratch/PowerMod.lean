@@ -60,10 +60,9 @@ open Lean Meta Elab Tactic
 def simplifyPowMod (a b m n : ℕ): MVarId → MetaM (List (MVarId)) :=
   fun mvarId =>
     mvarId.withContext do
-    let rec loop (b n : ℕ)(mvarId : MVarId) :  MetaM Unit := do
+    let rec loop (b : ℕ)(mvarId : MVarId) :  MetaM Unit := do
       if b = 0 then
-        let expr ← (mkAppM ``zero_powerMod #[Expr.lit (Literal.natVal a), Expr.lit (Literal.natVal m),
-        Expr.lit (Literal.natVal n)])
+        let expr ← (mkAppM ``zero_powerMod #[Expr.lit (Literal.natVal a), Expr.lit (Literal.natVal m)])
         mvarId.assign expr
       else
         if b % 2 = 0 then
@@ -76,7 +75,7 @@ def simplifyPowMod (a b m n : ℕ): MVarId → MetaM (List (MVarId)) :=
             #[Expr.lit (Literal.natVal a), Expr.lit (Literal.natVal b'), Expr.lit (Literal.natVal m),
             Expr.lit (Literal.natVal n'), mvar'])
           mvarId.assign expr
-          loop (b/2) n' mvarId'
+          loop (b/2)  mvarId'
         else
           let b' := b/2
           let n' := powerMod a (b/2) m
@@ -87,8 +86,8 @@ def simplifyPowMod (a b m n : ℕ): MVarId → MetaM (List (MVarId)) :=
             #[Expr.lit (Literal.natVal a), Expr.lit (Literal.natVal b'), Expr.lit (Literal.natVal m),
             Expr.lit (Literal.natVal n'), mvar'])
           mvarId.assign expr
-          loop (b/2) n' mvarId'
-    loop b n mvarId
+          loop (b/2)  mvarId'
+    loop b  mvarId
     return []
   where eqnExpr (a b m n : ℕ) : MetaM Expr := do
     let aExp := mkNatLit a
@@ -103,6 +102,24 @@ elab "simplify_power_mod"
     a:num "^" b:num "%" m:num "=" n:num : tactic =>
     liftMetaTactic <|
       simplifyPowMod a.getNat b.getNat m.getNat n.getNat
+
+example : 2 ^ 0 % 121 = 1 := by
+  simplify_power_mod 2 ^ 0 % 121 = 1
+
+example : 2 ^ 1 % 121 = 2 := by
+  simplify_power_mod 2 ^ 1 % 121 = 2
+
+example : 2 ^ 2 % 121 = 4 := by
+  simplify_power_mod 2 ^ 2 % 121 = 4
+
+example : 2 ^ 3 % 3 = 2 := by
+  simplify_power_mod 2 ^ 3 % 3 = 2
+
+
+example : 2 ^ 30 % 3 = 1 := by
+  simplify_power_mod 2 ^ 30 % 3 = 1
+
+#eval 2 ^ 30 % 3
 
 #check liftMetaTactic
 #check Meta.apply
