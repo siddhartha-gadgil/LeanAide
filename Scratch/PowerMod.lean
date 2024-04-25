@@ -60,6 +60,11 @@ open Lean Meta Elab Tactic
 def simplifyPowMod (a b m : ℕ): MVarId → MetaM (List (MVarId)) :=
   fun mvarId =>
     mvarId.withContext do
+    let n := powerMod a b m
+    let expectedType ← eqnExpr a b m n
+    let goalType ← mvarId.getType
+    if !(← isDefEq goalType expectedType) then
+      throwError s!"unexpected type: goal is {← ppExpr goalType}; computation gives {← ppExpr expectedType}"
     let rec loop (b : ℕ)(mvarId : MVarId) :  MetaM Unit := do
       if b = 0 then
         let expr ← (mkAppM ``zero_powerMod #[Expr.lit (Literal.natVal a), Expr.lit (Literal.natVal m)])
