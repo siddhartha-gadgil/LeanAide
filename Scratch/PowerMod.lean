@@ -67,7 +67,7 @@ def simplifyPowMod (a b m : ℕ): MVarId → MetaM (List (MVarId)) :=
       throwError s!"unexpected type: goal is {← ppExpr goalType}; computation gives {← ppExpr expectedType}"
     let rec loop (b : ℕ)(mvarId : MVarId) :  MetaM Unit := do
       if b = 0 then
-        let expr ← (mkAppM ``zero_powerMod #[Expr.lit (Literal.natVal a), Expr.lit (Literal.natVal m)])
+        let expr ← (mkAppM ``zero_powerMod #[toExpr  a, toExpr  m])
         mvarId.assign expr
       else
         if b % 2 = 0 then
@@ -77,8 +77,8 @@ def simplifyPowMod (a b m : ℕ): MVarId → MetaM (List (MVarId)) :=
           let mvarId' ← mkFreshMVarId
           let mvar' ← mkFreshExprMVarWithId mvarId' (some prevGoal)
           let expr ← (mkAppM ``even_powerMod
-            #[Expr.lit (Literal.natVal a), Expr.lit (Literal.natVal b'), Expr.lit (Literal.natVal m),
-            Expr.lit (Literal.natVal n'), mvar'])
+            #[toExpr  a, toExpr  b', toExpr  m,
+            toExpr  n', mvar'])
           mvarId.assign expr
           loop (b/2)  mvarId'
         else
@@ -88,8 +88,8 @@ def simplifyPowMod (a b m : ℕ): MVarId → MetaM (List (MVarId)) :=
           let mvarId' ← mkFreshMVarId
           let mvar' ← mkFreshExprMVarWithId mvarId' (some prevGoal)
           let expr ← (mkAppM ``odd_powerMod
-            #[Expr.lit (Literal.natVal a), Expr.lit (Literal.natVal b'), Expr.lit (Literal.natVal m),
-            Expr.lit (Literal.natVal n'), mvar'])
+            #[toExpr  a, toExpr  b', toExpr  m,
+            toExpr  n', mvar'])
           mvarId.assign expr
           loop (b/2)  mvarId'
     loop b  mvarId
@@ -123,6 +123,8 @@ example : 2 ^ 3 % 3 = 2 := by
 
 example : 2 ^ 30 % 3 = 1 := by
   simplify_power_mod 2 ^ 30 % 3
+
+
 
 #eval 2 ^ 30 % 3
 
