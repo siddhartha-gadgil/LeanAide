@@ -15,9 +15,10 @@ def block (name: Name)(js: Json) : Option String :=
   let statement? := js.getObjValAs? String "statement"
   match desc?, statement? with
   | Except.ok desc, Except.ok statement =>
-    let statement := if (statement.splitOn "/--").length > 0 then statement.splitOn "-/" |>.getD 1 (statement) else statement
-
     let statement := statement.replace ":= by sorry" ""
+    let statement := statement.replace "by sorry" "" |>.trim
+    let statement := if statement.endsWith ":=" then statement.dropRight 2 else statement
+    let statement := if (statement.splitOn "/--").length > 0 then statement.splitOn "-/" |>.getD 1 (statement) else statement
     some s!"<tr><td><h4>Name: {name}</h4>\n<h5>{statement}</h5>\n<p>{desc}</p>\n</td></tr>\n"
   | _, _ => none
 
@@ -46,8 +47,8 @@ def main : IO Unit := do
   let indexHandle ← IO.FS.Handle.mk (System.mkFilePath ["rawdata", "docs", "index.html"]) IO.FS.Mode.append
   indexHandle.putStrLn "<ul class=\"lead\">"
   let mut moduleCount := 1
-  for i in [0:50] do
-    let (module, consts) := mp.get! i
+  for pair in mp do
+    let (module, consts) := pair
     let mut count := 0
     let file := System.mkFilePath ["rawdata", "docs", s!"{module}.html"]
     IO.FS.writeFile file head
