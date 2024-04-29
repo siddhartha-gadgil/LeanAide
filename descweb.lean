@@ -45,22 +45,23 @@ def main : IO Unit := do
   IO.FS.writeFile (System.mkFilePath ["rawdata", "docs", "index.html"]) head
   let indexHandle ← IO.FS.Handle.mk (System.mkFilePath ["rawdata", "docs", "index.html"]) IO.FS.Mode.append
   indexHandle.putStrLn "<ul class=\"lead\">"
+  let mut moduleCount := 1
   for i in [0:50] do
     let (module, consts) := mp.get! i
-    let mut counts := 0
+    let mut count := 0
     let file := System.mkFilePath ["rawdata", "docs", s!"{module}.html"]
     IO.FS.writeFile file head
     let h ← IO.FS.Handle.mk file IO.FS.Mode.append
-    IO.println s!"Module: {module}"
+    IO.println s!"Module: {module} ({moduleCount} of {mp.size})"
     h.putStrLn s!"<h2>Module: {module}</h2>\n<table class=\"table table-striped\">\n<tbody>"
     for n in consts do
       match dataMap.find? n with
       | some js =>
         match block n js with
         | some ul =>
-          IO.println ul
+          -- IO.println ul
           h.putStr ul
-          counts := counts + 1
+          count := count + 1
         | none =>
           -- IO.println s!"skipped (no description): {n}"
           pure ()
@@ -70,9 +71,11 @@ def main : IO Unit := do
     h.putStrLn "</tbody>\n</table>"
     h.putStrLn tail
     h.flush
-    if counts > 0 then
+    moduleCount := moduleCount + 1
+    if count > 0 then
       indexHandle.putStrLn s!"<li><a href=\"{module}.html\">{module}</a></li>"
 
-    IO.println "-----------------"
+    -- IO.println "-----------------"
   indexHandle.putStrLn "</ul>"
   indexHandle.putStrLn tail
+  indexHandle.flush
