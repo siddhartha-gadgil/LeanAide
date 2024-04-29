@@ -47,6 +47,7 @@ def main : IO Unit := do
   let indexHandle ← IO.FS.Handle.mk (System.mkFilePath ["rawdata", "docs", "index.html"]) IO.FS.Mode.append
   indexHandle.putStrLn "<ul class=\"lead\">"
   let mut moduleCount := 1
+  let mp := mp.qsort (fun a b => toString a.1 < toString b.1)
   for pair in mp do
     let (module, consts) := pair
     let mut count := 0
