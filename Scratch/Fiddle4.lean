@@ -159,3 +159,21 @@ def sampleNats (lo hi n: Nat) : MetaM (Format) := do
 #eval sampleNats 0 10 5
 #print max_min_distrib_left
 #print max
+
+#check Lean.Environment.getModuleIdx?
+def modules : CoreM (Array Name) := do
+  let env ← getEnv
+  let mods := env.header.moduleNames
+  let mods := mods.filter <| fun name => (`Lean).isPrefixOf name
+  pure mods
+
+#eval modules
+
+def someData : CoreM (List (Array Name)) := do
+  let env ← getEnv
+  let mods := env.header.moduleData |>.toList.take 20
+  let names := mods.map (fun data => data.constNames)
+  return names
+
+#eval someData
+#check Array.zip
