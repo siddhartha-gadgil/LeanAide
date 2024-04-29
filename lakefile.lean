@@ -126,6 +126,10 @@ lean_exe rewritedescs {
   supportInterpreter := true
 }
 
+lean_exe descweb {
+  supportInterpreter := true
+}
+
 lean_exe termexamples {
   supportInterpreter := true
 }
