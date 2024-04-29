@@ -14,7 +14,11 @@ def block (name: Name)(js: Json) : Option String :=
   let desc? := js.getObjValAs? String "description"
   let statement? := js.getObjValAs? String "statement"
   match desc?, statement? with
-  | Except.ok desc, Except.ok statement => some s!"<tr><td><h4>Name: {name}</h4>\n<h5>{statement}</h5>\n<p>{desc}</p>\n</td></tr>\n"
+  | Except.ok desc, Except.ok statement =>
+    let statement := if (statement.splitOn "/--").length > 0 then statement.splitOn "-/" |>.getD 1 (statement) else statement
+
+    let statement := statement.replace ":= by sorry" ""
+    some s!"<tr><td><h4>Name: {name}</h4>\n<h5>{statement}</h5>\n<p>{desc}</p>\n</td></tr>\n"
   | _, _ => none
 
 def main : IO Unit := do
@@ -36,11 +40,10 @@ def main : IO Unit := do
   let mp ← core.run' coreContext {env := env} |>.runToIO'
   IO.println s!"{mp.size} module pairs"
   IO.println s!"{dataMap.size} descriptions"
-  let head ← IO.FS.readFile (System.mkFilePath ["rawdata", "docs", "head.html"])
-  let tail ← IO.FS.readFile (System.mkFilePath ["rawdata", "docs", "tail.html"])
+  let head ← IO.FS.readFile (System.mkFilePath ["resources", "desc_head.html"])
+  let tail ← IO.FS.readFile (System.mkFilePath ["resources", "desc_tail.html"])
   IO.FS.writeFile (System.mkFilePath ["rawdata", "docs", "index.html"]) head
   let indexHandle ← IO.FS.Handle.mk (System.mkFilePath ["rawdata", "docs", "index.html"]) IO.FS.Mode.append
-  indexHandle.putStrLn "<h1>LeanAide data</h1>"
   indexHandle.putStrLn "<ul class=\"lead\">"
   for i in [0:50] do
     let (module, consts) := mp.get! i
