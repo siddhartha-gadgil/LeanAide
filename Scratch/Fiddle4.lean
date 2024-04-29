@@ -157,3 +157,5 @@ def sampleNats (lo hi n: Nat) : MetaM (Format) := do
     throwError m!"{err}"
 
 #eval sampleNats 0 10 5
+#print max_min_distrib_left
+#print max

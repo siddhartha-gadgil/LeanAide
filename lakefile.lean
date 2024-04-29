@@ -122,6 +122,9 @@ lean_exe writedescs {
   supportInterpreter := true
 }
 
+lean_exe rewritedescs {
+  supportInterpreter := true
+}
 
 lean_exe termexamples {
   supportInterpreter := true

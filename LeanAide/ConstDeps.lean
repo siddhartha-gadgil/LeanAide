@@ -237,6 +237,19 @@ structure DefnTypes where
     statement : String
     deriving Repr, ToJson, FromJson
 
+structure ConstructorTypes where
+    name: Name
+    induc : Name
+    type: String
+    docString? : Option String
+    deriving Repr, ToJson, FromJson
+
+structure InductiveTypes where
+    name: Name
+    type: String
+    docString? : Option String
+    deriving Repr, ToJson, FromJson
+
 def propMapFromDefns (dfns : Array DefnTypes) : MetaM <| HashMap Name (String × String) := do
     return HashMap.ofList <|
        dfns.filter (fun d => d.isProp)
@@ -362,8 +375,33 @@ def defFromName? (name : Name) : MetaM <| Option DefnTypes := do
 
 end DefnTypes
 
+def InductiveTypes.fromName? (name : Name) : MetaM <| Option InductiveTypes := do
+  let env ← getEnv
+  let doc? ← findDocString? env name
+  let info? := env.find? name
+  match info? with
+    | some (.inductInfo dfn) =>
+        let type := dfn.type
+        let fmt ← Meta.ppExpr type
+        return some ⟨name, fmt.pretty, doc?⟩
+    | _ => return none
+
+def ConstructorTypes.fromName? (name : Name) : MetaM <| Option ConstructorTypes := do
+  let env ← getEnv
+  let doc? ← findDocString? env name
+  let info? := env.find? name
+  match info? with
+    | some (.ctorInfo dfn) =>
+        let type := dfn.type
+        let fmt ← Meta.ppExpr type
+        let ind := dfn.induct
+        return some ⟨name, ind, fmt.pretty, doc?⟩
+    | _ => return none
+
 #eval DefnTypes.thmFromName? ``List.length_cons
 #eval DefnTypes.defFromName? ``List.length
+
+#eval DefnTypes.defFromName? ``Fin.val
 
 def writeDocsM : MetaM <| Json := do
   IO.println "Getting defn types"

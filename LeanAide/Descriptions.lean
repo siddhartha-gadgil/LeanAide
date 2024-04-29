@@ -40,6 +40,31 @@ def theoremPrompt (name: Name) : MetaM <| Option (String × String) := do
       return (← fromTemplate "describe_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trim)],
       statement)
 
+def needsInd (name: Name) : MetaM <| Option (List Name) := do
+  let env ← getEnv
+  let info? := env.find? name
+  match info? with
+    | some (.thmInfo dfn) =>
+        let type := dfn.type
+        let typeStx ← PrettyPrinter.delab type
+        let valueStx? := none
+        let _ ←
+          mkStatement (some name) typeStx valueStx? true
+        let defNames := idents typeStx |>.eraseDups
+        let defs ←  defNames.filterMapM <| fun n =>
+          DefnTypes.defFromName? n.toName
+        if defs.isEmpty then
+          let inds ←  defNames.filterMapM <| fun n =>
+            InductiveTypes.fromName? n.toName
+          let ctors ←  defNames.filterMapM <| fun n =>
+            ConstructorTypes.fromName? n.toName
+          let names := inds.map (·.name) ++ ctors.map (·.name)
+          let names:= names.filter (fun n => !(``Nat).isPrefixOf n)
+          if names.isEmpty then return none
+          else return some names
+        else return none
+    | _ => return none
+
 #eval theoremPrompt ``List.length_cons
 
 #eval theoremPrompt ``Nat.le_succ
@@ -79,5 +104,8 @@ def getDescriptionCore (name: Name) : CoreM <| Option (String × String) :=
 
 def addDescriptionCore (js: Json) : CoreM (Json × Bool) :=
   (addDescription js).run' {}
+
+def needsIndCore (name: Name) : CoreM <| Option (List Name)  :=
+  (needsInd name).run' {}
 
 end LeanAide.Meta
