@@ -10,16 +10,21 @@ set_option compiler.extract_closed false
 def coreContext : Core.Context := {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000
     }
 
-def block (name: Name)(js: Json) : Option String :=
+def block? (name: Name)(js: Json) : Option String :=
   let desc? := js.getObjValAs? String "description"
   let statement? := js.getObjValAs? String "statement"
   match desc?, statement? with
   | Except.ok desc, Except.ok statement =>
+    let concise :=
+      match js.getObjValAs? String "concise-description" with
+      | Except.ok cd => cd
+      | Except.error _ =>
+        panic!"No concise description for {name}"
     let statement := statement.replace ":= by sorry" ""
     let statement := statement.replace "by sorry" "" |>.trim
     let statement := if statement.endsWith ":=" then statement.dropRight 2 else statement
     let statement := if (statement.splitOn "/--").length > 0 then statement.splitOn "-/" |>.getD 1 (statement) else statement
-    some s!"<tr><td><h4><code>{name}</code></h4>\n<h5>{statement}</h5>\n<p>{desc}</p>\n</td></tr>\n"
+    some s!"<tr><td><h4><code>{name}</code></h4>\n<h5>{statement}</h5>\n<p>{desc}</p>\n<p>More concisely: <em>{concise}</em></p>\n</td></tr>\n"
   | _, _ => none
 
 def main : IO Unit := do
@@ -63,7 +68,7 @@ def main : IO Unit := do
     for n in consts do
       match dataMap.find? (toString n) with
       | some js =>
-        match block n js with
+        match block? n js with
         | some ul =>
           -- IO.println ul
           h.putStr ul
