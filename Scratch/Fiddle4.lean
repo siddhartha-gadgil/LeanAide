@@ -181,3 +181,7 @@ def someData : CoreM (List (Array Name)) := do
 #check Nat.Prime
 
 #check getModuleDoc? -- getModuleDoc? : Environment → Name → Option String
+
+example : 2 ≤ 1 := by
+  try slim_check
+  sorry
