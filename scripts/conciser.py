@@ -30,15 +30,14 @@ Give a concise, single-sentence mathematical statement of the theorem. Give ONLY
 
 # Trial version
 
+count = 0
 with jsonlines.open("rawdata/premises/ident_pairs/descriptions.jsonl", "r") as reader:
-    for js in reader:
-        name = js["name"]
-        if "description" in js:
-            description = js["description"]
-            print(name)
-            print(description)
-            print("-----")
-            print(prompt(description))
-            print ("------")
-            print(get_response(prompt(description))) 
-            print("-----")
+    with jsonlines.open("rawdata/premises/ident_pairs/descs.jsonl", "w") as writer:
+        for js in reader:
+            name = js["name"]
+            print(f"Processing {name}; {count} examples processed.")
+            count += 1            
+            if "description" in js:
+                description = js["description"]
+                js['concise-description'] = get_response(prompt(description)) 
+            writer.write(js)
