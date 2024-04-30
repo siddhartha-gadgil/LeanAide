@@ -49,13 +49,17 @@ def main : IO Unit := do
   let mut moduleCount := 1
   let mp := mp.qsort (fun a b => toString a.1 < toString b.1)
   for pair in mp do
-    let (module, consts) := pair
+    let (module, consts, docs) := pair
     let mut count := 0
     let file := System.mkFilePath ["rawdata", "docs", s!"{module}.html"]
     IO.FS.writeFile file head
     let h ← IO.FS.Handle.mk file IO.FS.Mode.append
     IO.println s!"Module: {module} ({moduleCount} of {mp.size})"
-    h.putStrLn s!"<h3>Module: {module}</h3>\n<table class=\"table table-striped\">\n<tbody>"
+    h.putStrLn s!"<h3>Module: {module}</h3>"
+    for doc in docs do
+      h.putStrLn s!"<zero-md><script type=\"text/markdown\">\n{doc}\n</script></zero-md>"
+      h.putStrLn "<hr>"
+    h.putStrLn "<table class=\"table table-striped\">\n<tbody>"
     for n in consts do
       match dataMap.find? (toString n) with
       | some js =>

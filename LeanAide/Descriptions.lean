@@ -108,13 +108,19 @@ def addDescriptionCore (js: Json) : CoreM (Json × Bool) :=
 def needsIndCore (name: Name) : CoreM <| Option (List Name)  :=
   (needsInd name).run' {}
 
-def modulePairs : CoreM <| Array (Name × Array Name) := do
+def modulePairs : CoreM <| Array (Name × Array Name × Array String) := do
   let env ← getEnv
   let modData := env.header.moduleData
   let mods := env.header.moduleNames
   let internal := [`LeanAide, `LeanCodePrompts, `Scratch]
   let pairs := (mods.zip modData).filter fun (name, _) =>
     !internal.any (fun pre => pre.isPrefixOf name)
-  return pairs.map (fun (name, data) => (name, data.constNames))
+  let withDocs ←   pairs.mapM fun (name, data) => do
+    let docs? := getModuleDoc? env name
+    let docs := docs?.getD #[]
+    let docs := docs.map <| fun md : ModuleDoc => md.doc
+    return (name, data, docs)
+  return withDocs.map
+      (fun (name, data, docs) => (name, data.constNames, docs))
 
 end LeanAide.Meta

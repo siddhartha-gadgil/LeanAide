@@ -179,3 +179,5 @@ def someData : CoreM (List (Array Name)) := do
 #check Array.zip
 #check findDocString? -- findDocString? : Environment → Name → Option String
 #check Nat.Prime
+
+#check getModuleDoc? -- getModuleDoc? : Environment → Name → Option String
