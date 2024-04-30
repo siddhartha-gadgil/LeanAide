@@ -36,5 +36,5 @@ with jsonlines.open("rawdata/premises/ident_pairs/descriptions.jsonl", "r") as r
         print(name)
         print(description)
         print("-----")
-        print(get_response(prompt(description))) 
+        print(get_response("Tell me a joke")) 
         print("-----")
