@@ -32,9 +32,10 @@ Give a concise, single-sentence mathematical statement of the theorem. Give ONLY
 with jsonlines.open("rawdata/premises/ident_pairs/descriptions.jsonl", "r") as reader:
     for js in reader:
         name = js["name"]
-        description = js["description"]
-        print(name)
-        print(description)
-        print("-----")
-        print(get_response("Tell me a joke")) 
-        print("-----")
+        if "description" in js:
+            description = js["description"]
+            print(name)
+            print(description)
+            print("-----")
+            print(get_response("Tell me a joke")) 
+            print("-----")
