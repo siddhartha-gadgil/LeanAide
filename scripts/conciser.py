@@ -20,12 +20,13 @@ def get_response(prompt):
     return response.choices[0].message.content
 
 def prompt (description):
-    f"""The following is a description of the statement of a theorem in Lean 4.
+    text = f"""The following is a description of the statement of a theorem in Lean 4.
 ---
 {description}
 ---
 Give a concise, single-sentence mathematical statement of the theorem. Give ONLY the statement
 """
+    return text
 
 # Trial version
 
@@ -38,5 +39,6 @@ with jsonlines.open("rawdata/premises/ident_pairs/descriptions.jsonl", "r") as r
             print(description)
             print("-----")
             print(prompt(description))
-            print(get_response("Tell me a joke")) 
+            print ("------")
+            print(get_response(prompt(description))) 
             print("-----")
