@@ -177,3 +177,4 @@ def someData : CoreM (List (Array Name)) := do
 
 #eval someData
 #check Array.zip
+#check findDocString? -- findDocString? : Environment → Name → Option String

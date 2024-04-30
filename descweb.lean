@@ -19,7 +19,7 @@ def block (name: Name)(js: Json) : Option String :=
     let statement := statement.replace "by sorry" "" |>.trim
     let statement := if statement.endsWith ":=" then statement.dropRight 2 else statement
     let statement := if (statement.splitOn "/--").length > 0 then statement.splitOn "-/" |>.getD 1 (statement) else statement
-    some s!"<tr><td><h4>Name: {name}</h4>\n<h5>{statement}</h5>\n<p>{desc}</p>\n</td></tr>\n"
+    some s!"<tr><td><h4><code>{name}</code></h4>\n<h5>{statement}</h5>\n<p>{desc}</p>\n</td></tr>\n"
   | _, _ => none
 
 def main : IO Unit := do
@@ -55,7 +55,7 @@ def main : IO Unit := do
     IO.FS.writeFile file head
     let h ← IO.FS.Handle.mk file IO.FS.Mode.append
     IO.println s!"Module: {module} ({moduleCount} of {mp.size})"
-    h.putStrLn s!"<h2>Module: {module}</h2>\n<table class=\"table table-striped\">\n<tbody>"
+    h.putStrLn s!"<h3>Module: {module}</h3>\n<table class=\"table table-striped\">\n<tbody>"
     for n in consts do
       match dataMap.find? n with
       | some js =>
