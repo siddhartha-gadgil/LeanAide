@@ -7,7 +7,7 @@ sys.path.append("/home/ayushagrawal/FSTAR/AI4F-star")
 from openai_query import chat
 import os
 
-fixed_prompts = 
+# fixed_prompts = 
 
 def run_cmd_elaborate(jsonl_file,data_type):
     try:  

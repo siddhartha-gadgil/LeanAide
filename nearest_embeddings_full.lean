@@ -62,37 +62,28 @@ unsafe def main (args: List String) : IO Unit := do
       let doc? := args[0]?
       match doc? with
       | some doc =>
-        if doc = ":wake:" then
-          logTimed "waking up"
-          let stdin ← IO.getStdin
-          let stdout ← IO.getStdout
-          let start ← IO.monoMsNow
-          show_nearest_full stdin stdout data
-          let finish ← IO.monoMsNow
-          IO.eprintln s!"Time taken: {finish - start} ms"
-        else
-          let num := (args[1]?.bind fun s => s.toNat?).getD 10
-          logTimed s!"finding nearest to `{doc}`"
-          let start ← IO.monoMsNow
-          let embs ← nearestDocsToDocFull data doc num (penalty := 2.0)
-          let finish ← IO.monoMsNow
-          logTimed "found nearest"
-          IO.println <|
-            Lean.Json.arr <|
-              embs.toArray.map fun (doc, thm, isProp, name, d) =>
-                Json.mkObj <| [
-                  ("docString", Json.str doc),
-                  ("theorem", Json.str thm),
-                  ("isProp", Json.bool isProp),
-                  ("name", Json.str name),
-                  ("distance", toJson d)
-                ]
-          IO.eprintln s!"Time taken: {finish - start} ms"
-          -- IO.eprintln "Clustering with epsilon 0.5"
-          -- let clusters ← epsilonClusters 0.4 (fun (_, a) (_, b) =>
-          --   distL2Sq a b.data) data
-          -- IO.eprintln s!"Found {clusters.size} clusters"
-          -- IO.eprintln s!"Sizes: {clusters.map (·.elements.size)}"
+        let num := (args[1]?.bind fun s => s.toNat?).getD 10
+        logTimed s!"finding nearest to `{doc}`"
+        let start ← IO.monoMsNow
+        let embs ← nearestDocsToDocFull data doc num (penalty := 2.0)
+        IO.println <|
+          Lean.Json.arr <|
+            embs.toArray.map fun (doc, thm, isProp, name, d) =>
+              Json.mkObj <| [
+                ("docString", Json.str doc),
+                ("theorem", Json.str thm),
+                ("isProp", Json.bool isProp),
+                ("name", Json.str name),
+                ("distance", toJson d)
+              ]
+        let finish ← IO.monoMsNow
+        logTimed "found nearest"
+        IO.eprintln s!"Time taken: {finish - start} ms"
+        -- IO.eprintln "Clustering with epsilon 0.5"
+        -- let clusters ← epsilonClusters 0.4 (fun (_, a) (_, b) =>
+        --   distL2Sq a b.data) data
+        -- IO.eprintln s!"Found {clusters.size} clusters"
+        -- IO.eprintln s!"Sizes: {clusters.map (·.elements.size)}"
       | none =>
         let stdin ← IO.getStdin
         let stdout ← IO.getStdout

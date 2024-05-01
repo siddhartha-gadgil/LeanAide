@@ -20,7 +20,7 @@ for l in js:
     l["embedding"] = embedding
     print(l["docString"])
     count = count + 1
-    print(count)
+    print(f"Completed {count} out of {len(js)}")
 
 # write the embeddings to `out`
 json.dump(js, out, indent=4, ensure_ascii=False)

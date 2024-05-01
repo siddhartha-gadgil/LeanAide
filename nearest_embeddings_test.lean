@@ -4,14 +4,14 @@ open Lean
 
 def nearestEmbeddingsCmd : IO.Process.SpawnArgs := {
   cmd := "lake",
-  args := #["exe", "nearest_embeddings"],
+  args := #["exe", "nearest_embeddings_full"],
   cwd := ".",
   stdin := .piped,
   stdout := .piped,
   stderr := .piped
 }
 
-initialize nearestEmbeddingsProcessRef : IO.Ref 
+initialize nearestEmbeddingsProcessRef : IO.Ref
   (Option <| IO.Process.Child nearestEmbeddingsCmd.toStdioConfig) ← IO.mkRef none
 
 def getNearestEmbeddingsProcess : IO (IO.Process.Child nearestEmbeddingsCmd.toStdioConfig) := do
@@ -23,7 +23,7 @@ def getNearestEmbeddingsProcess : IO (IO.Process.Child nearestEmbeddingsCmd.toSt
       return child
 
 def queryNearestEmbeddingsProcess (queries : Array String) : IO (Array String) := do
-  let child ← getNearestEmbeddingsProcess 
+  let child ← getNearestEmbeddingsProcess
   let stdin := child.stdin
   let mut outputs : Array String := #[]
   for query in queries do
