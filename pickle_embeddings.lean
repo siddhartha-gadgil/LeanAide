@@ -1,9 +1,13 @@
 import LeanCodePrompts.Embeddings
 import Std.Util.Pickle
 
-def main : IO Unit := do
+def main (args: List String) : IO Unit := do
+  let fileName := args.getD 0 "mathlib4-prompts-embeddings.json"
+  let descField := args.getD 1 "docString"
   let blob ←
     IO.FS.readFile <|
-      System.mkFilePath ["rawdata", "mathlib4-prompts-embeddings.json"]
-  let embArrFullDocs ← readEmbeddingsFullDocsArray blob "docString"
-  pickle (← picklePath "docString") embArrFullDocs
+      System.mkFilePath ["rawdata", fileName]
+  let embArrFullDocs ← readEmbeddingsFullDocsArray blob descField
+  let outPath ← picklePath descField
+  pickle outPath embArrFullDocs
+  IO.println s!"Pickle file written to {outPath} for field {descField}"
