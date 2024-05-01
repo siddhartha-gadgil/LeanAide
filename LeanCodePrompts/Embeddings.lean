@@ -58,18 +58,17 @@ def readEmbeddingsDocsArray : IO <| Array <| (String × String) ×  FloatArray :
       IO.println s!"read {count} embeddings"
   return accum
 
-def readEmbeddingsFullDocsArray : IO <| Array <| (String × String × Bool × String) ×  FloatArray :=  do
+def readEmbeddingsFullDocsArray (blob descField: String) : IO <| Array <| (String × String × Bool × String) ×  FloatArray :=  do
   let mut count := 0
-  let blob ← IO.FS.readFile "rawdata/mathlib4-prompts-embeddings.json"
   let json := Json.parse blob |>.toOption.get!
   let jsonArr := json.getArr? |>.toOption.get!
   let mut accum := #[]
   let mut docs : Array String := #[]
   for jsLine in jsonArr do
     let doc :=
-      match jsLine.getObjValAs? String "docString" with
+      match jsLine.getObjValAs? String descField with
       | Except.ok doc => doc
-      | Except.error err => panic! s!"error reading docString: {err}"
+      | Except.error err => panic! s!"error reading {descField}: {err}"
     let thm :=
       match jsLine.getObjValAs? String "type" with
       | Except.ok thm => thm
@@ -103,6 +102,6 @@ unsafe def loadEmbeddingsDocsTest : IO Nat :=
   withUnpickle  ".lake/build/lib/mathlib4-doc-thms-embeddings.olean" <| fun (data: Array <| (String × String) ×  FloatArray) => pure data.size
 
 unsafe def loadEmbeddingsFullDocsTest : IO Nat := do
-  withUnpickle  (← picklePath) <| fun (data: Array <| (String × String × Bool) ×  FloatArray) => pure data.size
+  withUnpickle  (← picklePath "docString") <| fun (data: Array <| (String × String × Bool) ×  FloatArray) => pure data.size
 
 -- #eval loadEmbeddingsFullDocsTest

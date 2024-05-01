@@ -4,7 +4,7 @@ open Lean Cache.IO
 
 
 unsafe def main (args: List String) : IO UInt32 := do
-  let picklePath ← picklePath
+  let picklePath ← picklePath "docString"
   if (← picklePath.pathExists) &&
     !(args.get? 0 == some "--force") then
     IO.eprintln s!"Embeddings already present at {picklePath}, use --force to redownload."

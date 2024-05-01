@@ -41,7 +41,7 @@ unsafe def show_nearest_full (stdin stdout : IO.FS.Stream)
 
 unsafe def main (args: List String) : IO Unit := do
   logTimed "starting nearest embedding process"
-  let picklePath ← picklePath
+  let picklePath ← picklePath "docString"
   let picklePresent ←
     if ← picklePath.pathExists then
     try

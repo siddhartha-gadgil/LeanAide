@@ -165,7 +165,7 @@ Given a string, find the nearest documentation strings in Mathlib and return the
 -/
 def getNearestDocsOpenAI (s: String)(numSim : Nat)(full: Bool:= true) :
   IO <| Except String (Array (String × Json)) := do
-    let check ← (← picklePath).pathExists
+    let check ← (← picklePath "docString").pathExists
     unless check do
       return Except.error "Mathlib embeddings not found; run `lake exe fetch_embeddings` first to fetch them."
     let outJs ←
