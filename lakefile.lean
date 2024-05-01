@@ -130,6 +130,11 @@ lean_exe descweb {
   supportInterpreter := true
 }
 
+lean_exe descdetails {
+  supportInterpreter := true
+}
+
+
 lean_exe termexamples {
   supportInterpreter := true
 }

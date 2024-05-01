@@ -344,7 +344,7 @@ def thmFromName? (name : Name) : MetaM <| Option DefnTypes := do
     | some (.thmInfo dfn) =>
         let type := dfn.type
         let fmt ← Meta.ppExpr type
-        let isProp := false
+        let isProp := true
         let value := none
         let typeStx ← PrettyPrinter.delab type
         let valueStx? := none
@@ -352,6 +352,9 @@ def thmFromName? (name : Name) : MetaM <| Option DefnTypes := do
           mkStatement (some name) typeStx valueStx? isProp
         return some ⟨name, fmt.pretty, isProp, doc?, value, statement⟩
     | _ => return none
+
+def thmFromNameCore? (name : Name) : CoreM <| Option DefnTypes :=
+    (thmFromName? name).run'
 
 def defFromName? (name : Name) : MetaM <| Option DefnTypes := do
   let env ← getEnv
@@ -412,6 +415,8 @@ def writeDocsM : MetaM <| Json := do
   IO.println s!"Total: {dfns.size}"
   DefnTypes.writeM dfns "docs.jsonl"
   return Json.arr <| dfns.map toJson
+
+#check Json.mergeObj
 
 def writeDocsCore : CoreM <| Json :=
     (writeDocsM).run'
