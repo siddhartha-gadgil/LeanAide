@@ -58,7 +58,7 @@ def readEmbeddingsDocsArray : IO <| Array <| (String × String) ×  FloatArray :
       IO.println s!"read {count} embeddings"
   return accum
 
-def readEmbeddingsFullDocsArray (blob descField: String) : IO <| Array <| (String × String × Bool × String) ×  FloatArray :=  do
+def readEmbeddingsFullDocsArray (blob descField embedField: String) : IO <| Array <| (String × String × Bool × String) ×  FloatArray :=  do
   let mut count := 0
   let json := Json.parse blob |>.toOption.get!
   let jsonArr := json.getArr? |>.toOption.get!
@@ -82,7 +82,7 @@ def readEmbeddingsFullDocsArray (blob descField: String) : IO <| Array <| (Strin
       | Except.ok thm => thm
       | Except.error err => panic! s!"error reading name: {err}"
     let embedding':=
-      match jsLine.getObjValAs? (List Float) "embedding" with
+      match jsLine.getObjValAs? (List Float) embedField with
       | Except.ok embedding => embedding
       | Except.error err => panic! s!"error reading embedding: {err}"
     let embedding := embedding'.toFloatArray
