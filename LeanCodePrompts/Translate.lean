@@ -576,6 +576,14 @@ open PrettyPrinter Tactic
   return e
   | _ => throwUnsupportedSyntax
 
+def findTheorem? (s: String) : TermElabM (Option Name) := do
+  let (js, _, prompts) ← getLeanCodeJson s
+  let output ← getMessageContents js
+  trace[Translate.info] m!"thmPairs: {prompts}"
+  let thmPairs := prompts.reverse.map (fun (_, js) =>
+    (js.getObjValAs? String "name" |>.toOption.get! |>.toName,
+    js.getObjValAs? String "theorem" |>.toOption.get!))
+  matchElab? output thmPairs
 
 /--
 Translate a string to a Lean expression using the GPT model, returning three componenst:

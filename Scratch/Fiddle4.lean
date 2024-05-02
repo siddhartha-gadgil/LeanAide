@@ -185,3 +185,5 @@ def someData : CoreM (List (Array Name)) := do
 example : 2 ≤ 1 := by
   try slim_check
   sorry
+
+#check Nat.infinite_setOf_prime
