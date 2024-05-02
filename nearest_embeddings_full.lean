@@ -39,9 +39,7 @@ unsafe def show_nearest_full (stdin stdout : IO.FS.Stream)
     show_nearest_full stdin stdout data
   return ()
 
-unsafe def main (args: List String) : IO Unit := do
-  logTimed "starting nearest embedding process"
-  let descField := args.getD 1 "docString"
+unsafe def checkAndFetch (descField: String) : IO Unit := do
   let picklePath ← picklePath descField
   let picklePresent ←
     if ← picklePath.pathExists then
@@ -54,15 +52,19 @@ unsafe def main (args: List String) : IO Unit := do
   unless picklePresent do
     IO.eprintln "Fetching embeddings ..."
     let out ← runCurl #["--output", picklePath.toString, "-s",  "https://math.iisc.ac.in/~gadgil/data/{picklePath.fileName.get!}"]
-
     IO.eprintln "Fetched embeddings"
     IO.eprintln out
-  logTimed "found/downloaded pickle"
+
+unsafe def main (args: List String) : IO Unit := do
+  for descField in ["docString", "description", "concise-description"] do
+    checkAndFetch descField
+  match args.get? 0 with
+  | some doc =>
+  logTimed "starting nearest embedding process"
+  let descField := args.getD 1 "docString"
+  let picklePath ← picklePath descField
   withUnpickle  picklePath <|
     fun (data : Array <| (String × String × Bool × String) ×  FloatArray) => do
-      let doc? := args[0]?
-      match doc? with
-      | some doc =>
         let num := (args[1]?.bind fun s => s.toNat?).getD 10
         logTimed s!"finding nearest to `{doc}`"
         let start ← IO.monoMsNow
@@ -84,7 +86,10 @@ unsafe def main (args: List String) : IO Unit := do
         --   distL2Sq a b.data) data
         -- IO.eprintln s!"Found {clusters.size} clusters"
         -- IO.eprintln s!"Sizes: {clusters.map (·.elements.size)}"
-      | none =>
+  | none =>
+    withUnpickle (← picklePath "docString") <|
+    fun (data : Array <| (String × String × Bool × String) ×  FloatArray) => do
+        IO.eprintln "Enter the document string to find the nearest embeddings"
         let stdin ← IO.getStdin
         let stdout ← IO.getStdout
         show_nearest_full stdin stdout data
