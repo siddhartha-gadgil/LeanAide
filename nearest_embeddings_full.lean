@@ -7,20 +7,28 @@ import Std.Util.Pickle
 open Lean Cache.IO
 
 unsafe def show_nearest_full (stdin stdout : IO.FS.Stream)
-  (data: Array ((String × String × Bool × String) × FloatArray)): IO Unit := do
+  (docStringData: Array ((String × String × Bool × String) × FloatArray))
+  (descData: Array ((String × String × Bool × String) × FloatArray))
+  (concDescData: Array ((String × String × Bool × String) × FloatArray)): IO Unit := do
   let inp ← stdin.getLine
   logTimed "finding parameter"
-  let (doc, num, penalty, halt) :=
+  let (descField, doc, num, penalty, halt) :=
     match Json.parse inp with
-    | Except.error _ => (inp, 10, 2.0, false)
+    | Except.error _ => ("docString", inp, 10, 2.0, false)
     | Except.ok j =>
-      (j.getObjValAs? String "docString" |>.toOption.orElse
+      (j.getObjValAs? String "descField" |>.toOption.getD "docString",
+        j.getObjValAs? String "docString" |>.toOption.orElse
         (fun _ => j.getObjValAs? String "doc_string" |>.toOption)
         |>.getD inp,
       j.getObjValAs? Nat "n" |>.toOption.getD 10,
       j.getObjValAs? Float "penalty" |>.toOption.getD 2.0,
       j.getObjValAs? Bool "halt" |>.toOption.getD false)
   logTimed s!"finding nearest to `{doc}`"
+  let data := match descField with
+    | "docString" => docStringData
+    | "description" => descData
+    | "concise-description" => concDescData
+    | _ => docStringData
   let embs ← nearestDocsToDocFull data doc num (penalty := penalty)
   logTimed "found nearest"
   let out :=
@@ -36,7 +44,7 @@ unsafe def show_nearest_full (stdin stdout : IO.FS.Stream)
   stdout.putStrLn out.compress
   stdout.flush
   unless halt do
-    show_nearest_full stdin stdout data
+    show_nearest_full stdin stdout docStringData descData concDescData
   return ()
 
 unsafe def checkAndFetch (descField: String) : IO Unit := do
@@ -81,15 +89,18 @@ unsafe def main (args: List String) : IO Unit := do
         let finish ← IO.monoMsNow
         logTimed "found nearest"
         IO.eprintln s!"Time taken: {finish - start} ms"
-        -- IO.eprintln "Clustering with epsilon 0.5"
-        -- let clusters ← epsilonClusters 0.4 (fun (_, a) (_, b) =>
-        --   distL2Sq a b.data) data
-        -- IO.eprintln s!"Found {clusters.size} clusters"
-        -- IO.eprintln s!"Sizes: {clusters.map (·.elements.size)}"
   | none =>
-    withUnpickle (← picklePath "docString") <|
-    fun (data : Array <| (String × String × Bool × String) ×  FloatArray) => do
+    withUnpickle (← picklePath "docString") <|fun
+    (docStringData : Array <| (String × String × Bool × String) ×  FloatArray) =>
+    do
+    withUnpickle (← picklePath "description") <|fun
+    (descData : Array <| (String × String × Bool × String) ×  FloatArray) =>
+    do
+    withUnpickle (← picklePath "concise-description") <|fun
+    (concDescData : Array <| (String × String × Bool × String) ×  FloatArray) =>
+
+    do
         IO.eprintln "Enter the document string to find the nearest embeddings"
         let stdin ← IO.getStdin
         let stdout ← IO.getStdout
-        show_nearest_full stdin stdout data
+        show_nearest_full stdin stdout docStringData descData concDescData
