@@ -370,6 +370,24 @@ def greedyBestExpr? (output: Array String) : TermElabM (Option Expr) := do
       let el? ← elabThm4 out
       pure el?.toOption
 
+def matchElab? (output: Array String)(defs : Array <| Name × String):
+  TermElabM (Option Name) := do
+  let elabDefs : Array (Name × Expr) ←  defs.filterMapM (fun (nm, s) => do
+    let el? ← elabThm4 s
+    let el? := el?.toOption
+    pure <| el?.map (fun e => (nm, e)))
+  output.findSomeM? (fun out => do
+    let el? ← elabThm4Aux out
+    match el? with
+    | Except.error _ => pure none
+    | Except.ok e₁ =>
+      let pair? ← elabDefs.findM? (fun (_, e₂) => do
+        let eq? ← provedEqual e₁ e₂
+        pure eq?)
+      pure <| pair?.map (fun (nm, _) => nm))
+
+#check Option.mapM
+
 /-- reverse translation from `Lean` to natural language -/
 def leanToPrompt (thm: String)(numSim : Nat:= 5)(temp : JsonNumber := 0)(textField : String := "text") : TermElabM String := do
     let pairs? ← getNearestDocs thm numSim
