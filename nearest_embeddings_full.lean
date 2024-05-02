@@ -6,7 +6,7 @@ import Lean.Data.Json
 import Std.Util.Pickle
 open Lean Cache.IO
 
-unsafe def show_nearest (stdin stdout : IO.FS.Stream)
+unsafe def show_nearest_full (stdin stdout : IO.FS.Stream)
   (data: Array ((String × String × Bool × String) × FloatArray)): IO Unit := do
   let inp ← stdin.getLine
   logTimed "finding parameter"
@@ -36,7 +36,7 @@ unsafe def show_nearest (stdin stdout : IO.FS.Stream)
   stdout.putStrLn out.compress
   stdout.flush
   unless halt do
-    show_nearest stdin stdout data
+    show_nearest_full stdin stdout data
   return ()
 
 unsafe def main (args: List String) : IO Unit := do
@@ -67,7 +67,6 @@ unsafe def main (args: List String) : IO Unit := do
         let start ← IO.monoMsNow
         let embs ← nearestDocsToDocFull data doc num (penalty := 2.0)
         IO.println <|
-          show_nearest
             embs.toArray.map fun (doc, thm, isProp, name, d) =>
               Json.mkObj <| [
                 ("docString", Json.str doc),
@@ -90,4 +89,3 @@ unsafe def main (args: List String) : IO Unit := do
         show_nearest_full stdin stdout data
 
 #check FloatArray
-show_nearest
