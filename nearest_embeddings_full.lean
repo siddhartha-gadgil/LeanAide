@@ -41,7 +41,8 @@ unsafe def show_nearest_full (stdin stdout : IO.FS.Stream)
 
 unsafe def main (args: List String) : IO Unit := do
   logTimed "starting nearest embedding process"
-  let picklePath ← picklePath "docString"
+  let descField := args.getD 1 "docString"
+  let picklePath ← picklePath descField
   let picklePresent ←
     if ← picklePath.pathExists then
     try
@@ -69,7 +70,7 @@ unsafe def main (args: List String) : IO Unit := do
         IO.println <|
             embs.toArray.map fun (doc, thm, isProp, name, d) =>
               Json.mkObj <| [
-                ("docString", Json.str doc),
+                (descField, Json.str doc),
                 ("theorem", Json.str thm),
                 ("isProp", Json.bool isProp),
                 ("name", Json.str name),
@@ -87,5 +88,3 @@ unsafe def main (args: List String) : IO Unit := do
         let stdin ← IO.getStdin
         let stdout ← IO.getStdout
         show_nearest_full stdin stdout data
-
-#check FloatArray
