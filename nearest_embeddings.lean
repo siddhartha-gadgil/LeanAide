@@ -1,28 +1,37 @@
 import LeanCodePrompts.NearestEmbeddings
+import LeanCodePrompts.EpsilonClusters
+import Cache.IO
 import LeanAide.Aides
 import Lean.Data.Json
 import Std.Util.Pickle
-import Cache.IO
 open Lean Cache.IO
 
-unsafe def show_nearest (stdin stdout : IO.FS.Stream)(data: Array ((String × String) × FloatArray)) : IO Unit := do
+unsafe def show_nearest (stdin stdout : IO.FS.Stream)
+  (data: Array ((String × String × Bool × String) × FloatArray)): IO Unit := do
   let inp ← stdin.getLine
-  let (doc, num, halt) :=
+  logTimed "finding parameter"
+  let (doc, num, penalty, halt) :=
     match Json.parse inp with
-    | Except.error _ => (inp, 10, false)
+    | Except.error _ => (inp, 10, 2.0, false)
     | Except.ok j =>
       (j.getObjValAs? String "docString" |>.toOption.orElse
         (fun _ => j.getObjValAs? String "doc_string" |>.toOption)
         |>.getD inp,
       j.getObjValAs? Nat "n" |>.toOption.getD 10,
+      j.getObjValAs? Float "penalty" |>.toOption.getD 2.0,
       j.getObjValAs? Bool "halt" |>.toOption.getD false)
-  let embs ← nearestDocsToDocThms data doc num
+  logTimed s!"finding nearest to `{doc}`"
+  let embs ← nearestDocsToDocFull data doc num (penalty := penalty)
+  logTimed "found nearest"
   let out :=
     Lean.Json.arr <|
-      embs.toArray.map fun (doc, thm) =>
+      embs.toArray.map fun (doc, thm, isProp, name, d) =>
         Json.mkObj <| [
           ("docString", Json.str doc),
-          ("theorem", Json.str thm)
+          ("theorem", Json.str thm),
+          ("isProp", Json.bool isProp),
+          ("name", Json.str name),
+          ("distance", toJson d)
         ]
   stdout.putStrLn out.compress
   stdout.flush
@@ -30,29 +39,51 @@ unsafe def show_nearest (stdin stdout : IO.FS.Stream)(data: Array ((String × St
     show_nearest stdin stdout data
   return ()
 
-unsafe def main (args: List String) : IO Unit := do
-  let picklePath : System.FilePath := ".lake/build/lib/mathlib4-doc-thms-embeddings.olean"
-  unless ← picklePath.pathExists do
+unsafe def checkAndFetch (descField: String) : IO Unit := do
+  let picklePath ← picklePath descField
+  let picklePresent ←
+    if ← picklePath.pathExists then
+    try
+      withUnpickle  picklePath <|
+        fun (_ : Array <| (String × String × Bool × String) ×  FloatArray) => do
+        pure true
+    catch _ => pure false
+     else pure false
+  unless picklePresent do
     IO.eprintln "Fetching embeddings ..."
-    let out ← runCurl
-      #["--output", picklePath.toString, "-s",  "https://math.iisc.ac.in/~gadgil/data/mathlib4-doc-thms-embeddings.olean"]
+    let out ← runCurl #["--output", picklePath.toString, "-s",  "https://math.iisc.ac.in/~gadgil/data/{picklePath.fileName.get!}"]
+    IO.eprintln "Fetched embeddings"
+    IO.eprintln out
 
-    IO.println out
-  withUnpickle  picklePath <|
-    fun (data : Array <| (String × String) ×  FloatArray) => do
+unsafe def main (args: List String) : IO Unit := do
+  logTimed "starting nearest embedding process"
+  for descField in ["docString", "description", "concise-description"] do
+    checkAndFetch descField
+  withUnpickle  (← picklePath "docString") <|
+    fun (data : Array <| (String × String × Bool × String) ×  FloatArray) => do
       let doc? := args[0]?
       match doc? with
       | some doc =>
         let num := (args[1]?.bind fun s => s.toNat?).getD 10
-        let embs ← nearestDocsToDocThms data doc num
+        logTimed s!"finding nearest to `{doc}`"
+        let start ← IO.monoMsNow
+        let embs ← nearestDocsToDocFull data doc num (penalty := 2.0)
         IO.println <|
           Lean.Json.arr <|
-            embs.toArray.map fun (doc, thm) =>
+            embs.toArray.map fun (doc, thm, isProp, name, d) =>
               Json.mkObj <| [
                 ("docString", Json.str doc),
-                ("theorem", Json.str thm)
+                ("theorem", Json.str thm),
+                ("isProp", Json.bool isProp),
+                ("name", Json.str name),
+                ("distance", toJson d)
               ]
+        let finish ← IO.monoMsNow
+        logTimed "found nearest"
+        IO.eprintln s!"Time taken: {finish - start} ms"
       | none =>
         let stdin ← IO.getStdin
         let stdout ← IO.getStdout
         show_nearest stdin stdout data
+
+#check FloatArray

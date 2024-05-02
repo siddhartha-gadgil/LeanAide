@@ -4,7 +4,7 @@ open Lean Cache.IO
 
 
 unsafe def main (args: List String) : IO UInt32 := do
-  let descField := args.getD 1 "docString"
+  let descField := args.getD 0 "docString"
   let picklePath ← picklePath descField
   if (← picklePath.pathExists) &&
     (args.all <| fun x => x != "--force") then
