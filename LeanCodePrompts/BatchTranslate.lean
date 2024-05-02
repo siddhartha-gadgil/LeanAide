@@ -14,7 +14,7 @@ def translateWithDataM (s: String)(server: ChatServer)
   TermElabM ((Option (Expr × (Array String) × (Array (Array String)) )) × Array String × (Option String)) := do
   let (output, prompt?) ←  match queryData? with
   | none =>
-    let (js,prompt) ← getLeanCodeJson s server params numSim includeFixed  toChat
+    let (js,prompt, _) ← getLeanCodeJson s server params numSim includeFixed  toChat
     pure (← getMessageContents js, some prompt.pretty)
   | some f =>
     let res? := f.find? s.trim

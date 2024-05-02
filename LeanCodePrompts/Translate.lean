@@ -115,21 +115,21 @@ s!"{thm} :=
 Caching, polling etc to avoid repeatedly calling servers
 -/
 
-initialize webCacheJson : IO.Ref (HashMap String (Json × Json)) ← IO.mkRef (HashMap.empty)
+initialize webCacheJson : IO.Ref (HashMap String (Json × Json × Array (String × Json))) ← IO.mkRef (HashMap.empty)
 
 initialize pendingJsonQueries : IO.Ref (HashSet String)
     ← IO.mkRef (HashSet.empty)
 
-def getCachedJson? (s: String) : IO (Option (Json × Json)) := do
+def getCachedJson? (s: String) : IO (Option (Json × Json × Array (String × Json))) := do
   let cache ← webCacheJson.get
   return cache.find? s
 
-def cacheJson (s: String)(js: Json × Json)  : IO Unit := do
+def cacheJson (s: String)(js: Json × Json × Array (String × Json))  : IO Unit := do
   let cache ← webCacheJson.get
   webCacheJson.set (cache.insert s js)
   return ()
 
-partial def pollCacheJson (s : String) : IO <| Json × Json := do
+partial def pollCacheJson (s : String) : IO <| Json × Json × Array (String × Json) := do
   let cache ← webCacheJson.get
   match cache.find? s with
   | some jsBlob => return jsBlob
@@ -223,7 +223,7 @@ def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true)
 -/
 def getLeanCodeJson (s: String)
   (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})(numSim : Nat:= 8)
-  (includeFixed: Bool := Bool.false)(toChat : ToChatExample := simpleChatExample) : CoreM <| Json × Json := do
+  (includeFixed: Bool := Bool.false)(toChat : ToChatExample := simpleChatExample) : CoreM <| Json × Json × Array (String × Json) := do
   logTimed s!"translating string `{s}` with {numSim} examples"
   match ← getCachedJson? s with
   | some js => return js
@@ -256,8 +256,8 @@ def getLeanCodeJson (s: String)
       logTimed "obtained gpt response"
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.erase s)
-      cacheJson s (outJson, messages)
-      return (outJson, messages)
+      cacheJson s (outJson, messages, pairs)
+      return (outJson, messages, pairs)
 
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and returns the best choice, throwing an error if nothing elaborates.  -/
 def bestElab (output: Array String) : TermElabM Expr := do
@@ -569,7 +569,7 @@ def translateViewVerboseM (s: String)(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)
   (toChat : ToChatExample := simpleChatExample)  :
   TermElabM ((Option (String × (Array String) × (Array (Array String)) )) × Array String × Json) := do
-  let (js,prompt) ← getLeanCodeJson s server params numSim false toChat
+  let (js,prompt, _) ← getLeanCodeJson s server params numSim false toChat
   let output ← getMessageContents js
   if output.isEmpty then
      return (none, output, prompt)
