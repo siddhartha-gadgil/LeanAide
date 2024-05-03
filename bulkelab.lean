@@ -85,7 +85,7 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
     {module:= `LeanCodePrompts.Translate},
     {module := `Mathlib}] {}
   let core :=
-    checkTranslatedThmsCore type chatServer chatParams numSim includeFixed embedding delay repeats queryData? tag
+    checkTranslatedThmsCore type chatServer chatParams numSim 0 includeFixed embedding delay repeats queryData? tag
   let io? :=
     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000}
     {env := env}

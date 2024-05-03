@@ -16,6 +16,8 @@ def runTranslate (p : Parsed) : IO UInt32 := do
     |>.getD "thm"
   let numSim := p.flag? "prompts" |>.map (fun s => s.as! Nat)
     |>.getD 20
+  let numConcise := p.flag? "concise_descriptions" |>.map (fun s => s.as! Nat)
+    |>.getD 2
   let queryNum := p.flag? "responses" |>.map (fun s => s.as! Nat)
     |>.getD 10
   let temp10 := p.flag? "temperature" |>.map (fun s => s.as! Nat)
@@ -50,7 +52,7 @@ def runTranslate (p : Parsed) : IO UInt32 := do
     {module:= `LeanCodePrompts.Translate},
     {module := `Mathlib}] {}
   let core :=
-    translateViewVerboseCore type chatServer chatParams numSim
+    translateViewVerboseCore type chatServer chatParams numSim numConcise
   let io? :=
     core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 0, maxRecDepth := 1000000}
     {env := env}
@@ -95,6 +97,7 @@ def translate : Cmd := `[Cli|
   FLAGS:
     include_fixed;         "Include the 'Lean Chat' fixed prompts."
     p, prompts : Nat;      "Number of example prompts (default 20)."
+    concise_descriptions : Nat; "Number of example descriptions (default 2)."
     r, responses : Nat;    "Number of responses to ask for (default 10)."
     t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t` (default 8)."
     m, model : String ; "Model to be used (default `gpt-3.5-turbo`)"

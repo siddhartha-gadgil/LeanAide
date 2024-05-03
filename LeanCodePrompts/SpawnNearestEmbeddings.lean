@@ -12,7 +12,7 @@ def nearestEmbeddingsCmd : IO.Process.SpawnArgs := {
   stderr := .piped
 }
 
-initialize nearestEmbeddingsProcessRef : IO.Ref 
+initialize nearestEmbeddingsProcessRef : IO.Ref
   (Option <| IO.Process.Child nearestEmbeddingsCmd.toStdioConfig) ← IO.mkRef none
 
 def getNearestEmbeddingsProcess : IO (IO.Process.Child nearestEmbeddingsCmd.toStdioConfig) := do
@@ -32,8 +32,8 @@ def nearestEmbeddingsFullCmd : IO.Process.SpawnArgs := {
   stderr := .piped
 }
 
-initialize nearestEmbeddingsFullProcessRef : IO.Ref 
-  (Option <| IO.Process.Child nearestEmbeddingsFullCmd.toStdioConfig) ← (do 
+initialize nearestEmbeddingsFullProcessRef : IO.Ref
+  (Option <| IO.Process.Child nearestEmbeddingsFullCmd.toStdioConfig) ← (do
     let child ← IO.Process.spawn nearestEmbeddingsFullCmd
     IO.mkRef <| some child)
 
@@ -47,7 +47,7 @@ def getNearestEmbeddingsFullProcess : IO (IO.Process.Child nearestEmbeddingsFull
 
 
 def queryNearestEmbeddingsProcess (queries : Array String) : IO (Array String) := do
-  let child ← getNearestEmbeddingsProcess 
+  let child ← getNearestEmbeddingsProcess
   let stdin := child.stdin
   let mut outputs : Array String := #[]
   for query in queries do
@@ -58,7 +58,7 @@ def queryNearestEmbeddingsProcess (queries : Array String) : IO (Array String) :
   return outputs
 
 def getNearestEmbeddings (query : String)(numSim : Nat) : IO String := do
-  let child ← getNearestEmbeddingsProcess 
+  let child ← getNearestEmbeddingsProcess
   let stdin := child.stdin
   let jsQuery := Json.mkObj [("n" , numSim), ("docString", query)]
   stdin.putStrLn jsQuery.compress
@@ -66,15 +66,17 @@ def getNearestEmbeddings (query : String)(numSim : Nat) : IO String := do
   child.stdout.getLine
 
 
-def getNearestEmbeddingsFull (query : String)(numSim: Nat)(penalty: Float) : IO String := do
+def getNearestEmbeddingsFull
+  (query : String)(numSim: Nat)(penalty: Float)
+  (descField: String := "docString") : IO String := do
   logTimed "getting process"
-  let child ← getNearestEmbeddingsFullProcess 
+  let child ← getNearestEmbeddingsFullProcess
   let stdin := child.stdin
   let p : JsonNumber := match JsonNumber.fromFloat? penalty with
   | Sum.inl _ => 2.0
   | Sum.inr n => n
-  let jsQuery := Json.mkObj 
-    [("n" , numSim), ("docString", query), 
+  let jsQuery := Json.mkObj
+    [("n" , numSim), ("docString", query), ("descField", descField),
     ("penalty", Json.num p)]
   stdin.putStrLn jsQuery.compress
   stdin.flush
