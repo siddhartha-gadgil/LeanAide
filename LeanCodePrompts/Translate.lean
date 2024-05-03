@@ -15,7 +15,13 @@ open Lean Meta Elab Parser Command
 register_option lean_aide.translate.prompt_size : Nat :=
   { defValue := 10
     group := "lean_aide.translate"
-    descr := "Number of document strings in a prompt (default 8)" }
+    descr := "Number of document strings in a prompt (default 10)" }
+
+register_option lean_aide.translate.concise_desc_size : Nat :=
+  { defValue := 0
+    group := "lean_aide.translate"
+    descr := "Number of concise descriptions in a prompt (default 0)" }
+
 
 register_option lean_aide.translate.choices : Nat :=
   { defValue := 10
@@ -62,6 +68,13 @@ Number of similar sentences to query in interactive mode
 -/
 def promptSize : CoreM Nat := do
   return  lean_aide.translate.prompt_size.get (← getOptions)
+
+/--
+Number of similar concise descriptions to query in interactive mode
+-/
+def conciseDescSize : CoreM Nat := do
+  return  lean_aide.translate.concise_desc_size.get (← getOptions)
+
 
 /--
 Parameters for a chat query in interactive mode
@@ -578,6 +591,7 @@ open PrettyPrinter Tactic
   let s := s.getString
   let (js, _) ←
     getLeanCodeJson  s (← chatServer) (← chatParams)
+      (← promptSize) (← conciseDescSize)
   let e ← jsonToExpr' js (← greedy) !(← chatParams).stopColEq
   logTimed "obtained expression"
   let stx' ← delab e
