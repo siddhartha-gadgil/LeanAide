@@ -1,7 +1,7 @@
 import Lean
 import Mathlib
 
-open Lean Meta Elab Term PrettyPrinter Tactic
+open Lean Meta Elab Term PrettyPrinter Tactic Parser
 
 @[aesop unsafe 10% tactic]
 def myRing : TacticM Unit := do
@@ -76,10 +76,22 @@ axiom p_eq_true : P = True
 example  : P := by
   aesop (add unsafe (by rw [p_eq_true]))
 
-example : MetaM Syntax := do
-  let stx ← `(rule_expr|(by rw [p_eq_true]))
-  let stx' ← `(rule_expr| apply Nat.add)
+#check Aesop.Frontend.Parser.«tactic_clause(Add_)»
+
+open Lean.Parser.Tactic
+
+def egStx : MetaM Syntax := do
+  let tac ← `(tacticSeq| rw [p_eq_true])
+  let n := Syntax.mkNumLit <| toString (10 + 20)
+  let stx ← `(rule_expr|(unsafe $n% by $tac))
+  let stx' ← `(rule_expr| unsafe apply Nat.add)
+  let stx₁ ← `(rule_expr| safe Nat.add)
+  let cl ← `(tactic_clause| (add $stx))
+  let cls := #[cl, cl]
+  let check ← `(tactic| aesop $cls*)
   `(tactic| aesop (add unsafe [$stx, $stx']))
+
+#eval egStx
 
 def myName: MetaM Name :=  do
   let env ← getEnv
@@ -187,3 +199,4 @@ example : 2 ≤ 1 := by
   sorry
 
 #check Nat.infinite_setOf_prime
+#check lambdaTelescope

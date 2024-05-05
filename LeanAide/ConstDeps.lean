@@ -118,6 +118,42 @@ partial def recExprNames (depth: Nat): Expr → MetaM (Array Name) :=
     cache e res
     return res
 
+#check lambdaTelescope
+
+partial def getSorryTypes (e: Expr) : MetaM (Array Expr) := do
+  match e with
+  | .app (.const ``sorryAx _) a => return #[a]
+  | Expr.app f a  =>
+    return (← getSorryTypes f) ++ (← getSorryTypes a)
+  | Expr.lam .. =>
+    lambdaTelescope e fun xs b => do
+      let inner ← getSorryTypes b
+      inner.mapM <| mkForallFVars xs
+  | Expr.forallE _ _ b _ =>
+    getSorryTypes b
+  | Expr.letE .. =>
+      lambdaLetTelescope e fun xs b => do
+      let inner ← getSorryTypes b
+      inner.mapM <| mkForallFVars xs
+  | .proj _ _ s => getSorryTypes s
+  | _ => pure #[]
+
+-- elab "show_sorries" t:term : term => do
+--   let value ← Term.elabTerm t none
+--   let value' ← reduce value
+--   let sorries ← getSorryTypes value'
+--   logInfo s!"{sorries.size} sorries in {← ppExpr value} with types:"
+--   for s in sorries do
+--     logInfo s!"{← ppExpr s}"
+--   return value
+
+-- def withSorry (n: Nat) : Nat := match n with
+--   | 0 => by sorry
+--   | _ => by sorry
+
+-- #print withSorry
+
+-- #check show_sorries withSorry
 /-- names that are offspring of the constant with a given name -/
 def offSpring? (depth: Nat)(name: Name) : MetaM (Option (Array Name)) := do
   let expr? ← nameExpr?  name
