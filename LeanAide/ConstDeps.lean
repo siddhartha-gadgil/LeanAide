@@ -138,22 +138,44 @@ partial def getSorryTypes (e: Expr) : MetaM (Array Expr) := do
   | .proj _ _ s => getSorryTypes s
   | _ => pure #[]
 
--- elab "show_sorries" t:term : term => do
---   let value ← Term.elabTerm t none
---   let value' ← reduce value
---   let sorries ← getSorryTypes value'
---   logInfo s!"{sorries.size} sorries in {← ppExpr value} with types:"
---   for s in sorries do
---     logInfo s!"{← ppExpr s}"
---   return value
+elab "show_sorries" t:term : term => do
+  let value ← Term.elabTerm t none
+  let value' ← reduce value
+  logInfo s!"{← ppExpr value'}"
+  let sorries ← getSorryTypes value'
+  logInfo s!"{sorries.size} sorries in {← ppExpr value} with types:"
+  for s in sorries do
+    logInfo s!"{← ppExpr s}"
+  return value
 
--- def withSorry (n: Nat) : Nat := match n with
---   | 0 => by sorry
---   | _ => by sorry
+elab "show_sorries#" n:ident : term => do
+  let env ← getEnv
+  let value' :=
+    (env.find? n.getId).get!.value!
+  -- logInfo s!"{← ppExpr value'}"
+  let sorries ← getSorryTypes value'
+  logInfo s!"{sorries.size} sorries in {n} with types:"
+  for s in sorries do
+    logInfo s!"{← ppExpr s}"
+  return value'
 
--- #print withSorry
 
--- #check show_sorries withSorry
+def withSorry (n: Nat) : Nat := match n with
+  | 0 => by sorry
+  | k + 1 => by sorry
+
+def withSorry' (n m: Nat) : n + m = m + n := by
+  induction n with
+  | zero => simp
+  | succ n ih => sorry
+
+#print withSorry
+#print withSorry'
+
+#check show_sorries withSorry
+#check show_sorries withSorry'
+#check show_sorries# LeanAide.Meta.withSorry'
+
 /-- names that are offspring of the constant with a given name -/
 def offSpring? (depth: Nat)(name: Name) : MetaM (Option (Array Name)) := do
   let expr? ← nameExpr?  name
