@@ -80,12 +80,12 @@ example  : P := by
 
 open Lean.Parser.Tactic
 
-def egStx : MetaM Syntax := do
+def egStx : MetaM <| TSyntax `tactic := do
   let tac ← `(tacticSeq| rw [p_eq_true])
   let n := Syntax.mkNumLit <| toString (10 + 20)
   let stx ← `(rule_expr|(unsafe $n% by $tac))
   let stx' ← `(rule_expr| unsafe apply Nat.add)
-  let stx₁ ← `(rule_expr| safe Nat.add)
+  let stx₁ ← `(rule_expr| unsafe 10% Nat.add)
   let cl ← `(tactic_clause| (add $stx))
   let cls := #[cl, cl]
   let check ← `(tactic| aesop $cls*)
