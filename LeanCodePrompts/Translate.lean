@@ -406,11 +406,24 @@ def matchElab? (output: Array String)(defs : Array <| Name × String):
     | Except.error _ => pure none
     | Except.ok e₁ =>
       let pair? ← elabDefs.findM? (fun (_, e₂) => do
-        let eq? ← provedEqual e₁ e₂
-        pure eq?)
+        provedEquiv e₁ e₂)
       pure <| pair?.map (fun (nm, _) => nm))
 
-#check Option.mapM
+def sufficientElab? (output: Array String)(defs : Array <| Name × String):
+  TermElabM (Option Name) := do
+  let elabDefs : Array (Name × Expr) ←  defs.filterMapM (fun (nm, s) => do
+    let el? ← elabThm4 s
+    let el? := el?.toOption
+    pure <| el?.map (fun e => (nm, e)))
+  output.findSomeM? (fun out => do
+    let el? ← elabThm4Aux out
+    match el? with
+    | Except.error _ => pure none
+    | Except.ok e₁ =>
+      let pair? ← elabDefs.findM? (fun (_, e₂) => do
+        provedSufficient e₁ e₂)
+      pure <| pair?.map (fun (nm, _) => nm))
+
 
 /-- reverse translation from `Lean` to natural language -/
 def leanToPrompt (thm: String)(numSim : Nat:= 5)(numConcise : Nat := 0)(temp : JsonNumber := 0)(textField : String := "text") : TermElabM String := do

@@ -28,6 +28,11 @@ def ofTactic (t: TSyntax ``tacticSeq)(wt?: Option Nat := none) : MetaM <| TSynta
     let n := Syntax.mkNumLit <| toString wt
     `(rule_expr| unsafe $n:num% (by $t))
 
+def sorryRule (wt: Nat := 10) :
+  MetaM <| TSyntax `Aesop.rule_expr := do
+  let stx ← `(tacticSeq|sorry)
+  ofTactic stx (some wt)
+
 def rewrite (e: Syntax.Term)(wt? : Option Nat := none)
   (flip: Bool := false) : MetaM <| TSyntax `Aesop.rule_expr := do
   let tacM :=
@@ -80,6 +85,9 @@ axiom p_eq_q : p = q
 
 example : p = q := by
   aesop_fold [p_eq_q]; []
+
+example : False := by
+  aesop_fold []; [sorry]
 
 end AesopSyntax
 end LeanAide.Meta

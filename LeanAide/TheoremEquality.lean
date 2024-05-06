@@ -49,6 +49,16 @@ def provedEquiv (e₁ e₂ : Expr) : TermElabM Bool :=
   return remaining.isEmpty
   catch _ => pure false
 
+def provedSufficient (e₁ e₂ : Expr) : TermElabM Bool :=
+  if e₁ == e₂ then return true else
+  withoutModifyingState do
+  let type ← mkArrow e₁ e₂
+  let mvar ← mkFreshExprMVar <| some type
+  let mvarId := mvar.mvarId!
+  let stx ← `(tactic| aesop)
+  let res ←  runTactic mvarId stx
+  let (remaining, _) := res
+  return remaining.isEmpty
 
 def compareThms(s₁ s₂ : String)
   (levelNames : List Lean.Name := levelNames)
