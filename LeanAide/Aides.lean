@@ -69,7 +69,7 @@ def Lean.MessageData.toCrudeString (msg: MessageData) : String :=
   | .ofPPFormat _ => "ofPPFormat"
   | .tagged _ l => l.toCrudeString
   | .group l => l.toCrudeString
-  | .trace _ s _ _ => s.toCrudeString
+  | .trace _ s .. => s.toCrudeString
   | .ofGoal _ => "ofGoal"
 
 def EIO.runToIO' (eio: EIO Exception α) : IO α  := do

@@ -12,30 +12,30 @@ def init : IO Unit := do
 
 def environment : IO Environment := do
   importModules #[{module := `Mathlib},
-    {module:= `LeanAide.TheoremElab},    
+    {module:= `LeanAide.TheoremElab},
     {module:= `LeanAide.VerboseDelabs},
     {module:= `LeanAide.Premises},
     {module := `Mathlib}] {}
 
 def environment' : IO Environment := do
   importModules #[{module := `Mathlib},
-    {module:= `LeanAide.TheoremElab},    
+    {module:= `LeanAide.TheoremElab},
     {module:= `LeanAide.ConstDeps},
     {module := `Mathlib}] {}
 
 
-def coreContext : Core.Context := {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]
-    }   
+def coreContext : Core.Context := {fileName := "", fileMap := {source := "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]
+    }
 
 def main (_: List String) : IO Unit := do
   init
   let env ← environment
   let env' ← environment'
-  let propMap ←  
+  let propMap ←
     propMapCore.run' coreContext {env := env'} |>.runToIO'
   IO.println s!"Obtained prop-map: {propMap.size} entries"
   let propNames := propMap.toArray.map (·.1)
-  let groupedNames ←  splitData propNames 
+  let groupedNames ←  splitData propNames
   let handles ← fileHandles
   let concurrency := (← threadNum) * 3 / 4
   IO.println s!"Using {concurrency} threads"
@@ -44,11 +44,11 @@ def main (_: List String) : IO Unit := do
     let allNames := groupedNames[group].get!
     IO.println s!"Definitions in group {group}: {allNames.size}"
     let batches := allNames.batches' concurrency
-    let batches := batches.map (fun batch => batch.map (·.toName) |>.toList) 
+    let batches := batches.map (fun batch => batch.map (·.toName) |>.toList)
     IO.println s!"Made {batches.size} batches"
     let batches' := batches.zip (Array.range batches.size)
     let tasks ←  batches'.mapM fun (names, k) => do
-        let writeCore := PremiseData.writeBatchCore names group handles propMap s!"batch: {k}"  
+        let writeCore := PremiseData.writeBatchCore names group handles propMap s!"batch: {k}"
         let t ← writeCore.run' coreContext {env := env} |>.spawnToIO
         pure (t, k)
     IO.println "Spawned tasks"
@@ -59,7 +59,7 @@ def main (_: List String) : IO Unit := do
       IO.println s!"Task {k} finished with premises: {← task.get}"
     -- let unifyTasks ← BaseIO.mapTasks pure tasks.toList
     -- let getTasks := unifyTasks.get
-    -- discard <| getTasks.mapM id 
+    -- discard <| getTasks.mapM id
     IO.println s!"Done {group}"
   IO.println s!"Done: all tasks completed"
   return ()

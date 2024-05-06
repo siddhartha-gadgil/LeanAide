@@ -39,9 +39,9 @@ def runTranslate (p : Parsed) : IO UInt32 := do
         | none => ChatServer.openAI model
   let chatParams : ChatParams :=
     {temp := temp, n := queryNum, maxTokens := maxTokens}
-
+  let gh ← gitHash
   let dir :=
-    if tag then System.mkFilePath <| ["results", model, ← gitHash]
+    if tag then System.mkFilePath <| ["results", model, gh]
     else System.mkFilePath <| ["results", model]
   if !(← dir.pathExists) then
         IO.FS.createDirAll dir
@@ -54,7 +54,7 @@ def runTranslate (p : Parsed) : IO UInt32 := do
   let core :=
     translateViewVerboseCore type chatServer chatParams numSim numConcise
   let io? :=
-    core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 0, maxRecDepth := 1000000}
+    core.run' {fileName := "", fileMap := {source := "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
     {env := env}
   match ← io?.toIO' with
   | Except.ok (translation?, output, prompt) =>
