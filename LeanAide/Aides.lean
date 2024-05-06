@@ -149,7 +149,7 @@ def leanToolchain : IO String := do
   let inp ← IO.FS.readFile "lean-toolchain"
   return inp.trim.drop ("leanprover/lean4:".length)
 
-#eval leanToolchain
+-- #eval leanToolchain
 
 def picklePath (descField : String) : IO System.FilePath := do
   let name := if descField == "docString" then "prompts" else descField
@@ -185,9 +185,9 @@ def List.batches' (l: List α)(numBatches: Nat) : List (List α) :=
 def Array.batches' (l: Array α)(numBatches: Nat) : Array (Array α) :=
   (l.toList.batches' numBatches).map (fun l => l.toArray) |>.toArray
 
-#check Json.compress
+-- #check Json.compress
 
-#check Option.mapM
+-- #check Option.mapM
 
 @[inline] protected def Except.mapM [Monad m] (f : α → m β)
     (o : Except ε α) : m (Except ε β) := do
@@ -216,7 +216,7 @@ def isNotAux  (declName : Name) : MetaM  Bool := do
   let nAux ← isAux declName
   return (not nAux)
 
-#check isBlackListed
+-- #check isBlackListed
 
 def isWhiteListed (declName : Name) : MetaM Bool := do
   try
@@ -365,6 +365,6 @@ partial def lineBlocks (input: String) : List String :=
       let head := input.takeWhile (fun c => c != '\n')
       head :: (tailBlocks.map (fun b => head ++ "\n" ++ b)) ++ tailBlocks
 
-#check String.dropWhile
+-- #check String.dropWhile
 
-#check '\n'
+-- #check '\n'

@@ -4,7 +4,7 @@ import Std.Util.Pickle
 def main (args: List String) : IO Unit := do
   let fileName := args.getD 0 "mathlib4-prompts-embeddings.json"
   let descField := args.getD 1 "docString"
-  let embedField := args.getD 2 "embeddings"
+  let embedField := args.getD 2 "embedding"
   let blob ←
     IO.FS.readFile <|
       System.mkFilePath ["rawdata", fileName]
