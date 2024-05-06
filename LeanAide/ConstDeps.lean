@@ -340,11 +340,10 @@ def getM : MetaM <| Array DefnTypes := do
         try
           let fmt ← Meta.ppExpr type
           let isProp ← isProof term
-          let v ← Meta.ppExpr term
           let value :=
             if isProp
               then none
-              else some <| v.pretty
+              else some <| (← Meta.ppExpr term).pretty
           let typeStx ← PrettyPrinter.delab type
           let valueStx ←  PrettyPrinter.delab term
           let valueStx? := if isProp then none else some valueStx
@@ -511,8 +510,7 @@ def getPropMapStr : MetaM <| HashMap String (String × String) := do
       try
         let fmt ← ppExpr type
         let isProp ← isProof value
-        let v ← ppExpr value
-        let value? := if isProp then none else some <| v.pretty
+        let value? := if isProp then none else some <| (← ppExpr value).pretty
         let typeStx ← PrettyPrinter.delab type
         let valueStx ←  PrettyPrinter.delab value
         let valueStx? := if isProp then none else some valueStx

@@ -15,7 +15,7 @@ def main : IO Unit := do
     {module := `Mathlib}] {}
   let core := offSpringShallowTripleCore 100
   let io? :=
-    core.run' {fileName := "", fileMap := {source := "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000, options := ⟨[(`synthInstance.maxHeartbeats, (DataValue.ofNat 100000))]⟩} {env := env}
+    core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000, options := ⟨[(`synthInstance.maxHeartbeats, (DataValue.ofNat 100000))]⟩} {env := env}
     match ← io?.toIO' with
     | Except.ok _ =>
       IO.println s!"obtained triples"

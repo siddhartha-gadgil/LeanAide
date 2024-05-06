@@ -66,9 +66,9 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
             throw <| IO.userError s!"Error parsing query data file: {e}"
 
         pure qdMap
-  let gh ← gitHash
+
   let dir :=
-    if tag then System.mkFilePath <| ["results", model, gh]
+    if tag then System.mkFilePath <| ["results", model, ← gitHash]
     else System.mkFilePath <| ["results", model]
   if !(← dir.pathExists) then
         IO.FS.createDirAll dir
@@ -76,7 +76,7 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
     if tag then
         System.mkFilePath <|
     p.flag? "output" |>.map (fun s => [s.as! String]) |>.getD
-      ["results", model, gh, s!"{type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp10}.json"]
+      ["results", model, ← gitHash, s!"{type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp10}.json"]
     else
     System.mkFilePath <|
     p.flag? "output" |>.map (fun s => [s.as! String]) |>.getD
@@ -89,7 +89,7 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
   let core :=
     checkTranslatedThmsCore type chatServer chatParams numSim numConcise includeFixed embedding delay repeats queryData? tag
   let io? :=
-    core.run' {fileName := "", fileMap := {source :="", positions:= #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000}
+    core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000}
     {env := env}
   match ← io?.toIO' with
   | Except.ok js =>

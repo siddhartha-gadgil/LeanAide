@@ -242,4 +242,4 @@ def randomClustered : IO <| Float × Float × (Array (Float × Float)) ×
   return (best, best', best2, sorted.toList.take 10, clusters)
 
 
--- #eval randomClustered
+#eval randomClustered
