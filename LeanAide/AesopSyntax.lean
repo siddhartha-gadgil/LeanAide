@@ -17,6 +17,10 @@ def ofTerm (t: Syntax.Term)(wt?: Option Nat := none) : MetaM <| TSyntax `Aesop.r
     let n := Syntax.mkNumLit <| toString wt
     `(rule_expr| unsafe $n:num% ($t))
 
+def ofName (n: Name)(wt?: Option Nat := none) : MetaM <| TSyntax `Aesop.rule_expr := do
+  let t := mkIdent n
+  ofTerm t wt?
+
 def ofTactic (t: TSyntax ``tacticSeq)(wt?: Option Nat := none) : MetaM <| TSyntax `Aesop.rule_expr := do
   match wt? with
   | none => `(rule_expr| unsafe (by $t))
@@ -34,12 +38,23 @@ def rewrite (e: Syntax.Term)(wt? : Option Nat := none)
   let tac ← tacM
   ofTactic tac wt?
 
+def rewriteName (n: Name)(wt? : Option Nat := none)
+  (flip: Bool := false) : MetaM <| TSyntax `Aesop.rule_expr := do
+  let t := mkIdent n
+  rewrite t wt? flip
+
 end RuleExpr
 
 def fold (rules : Array <| TSyntax `Aesop.rule_expr) :
   MetaM <| Syntax.Tactic  := do
   let clauses ← rules.mapM fun r => `(tactic_clause| (add $r))
   `(tactic| aesop $clauses*)
+
+def runFold (rules : Array <| TSyntax `Aesop.rule_expr) :
+    TacticM Unit := do
+  let stx ← fold rules
+  evalTactic stx
+  return ()
 
 elab "aesop_fold" "["ts:term ,*"]"* ";" "["tacs:tacticSeq ,*"]"*  : tactic => do
   let terms :=  ts.getElems
