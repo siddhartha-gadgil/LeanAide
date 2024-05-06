@@ -1,7 +1,7 @@
 import LeanAide.ImportList
 import Lean.Meta
 import LeanAide.Config
-open Lean Meta 
+open Lean Meta
 
 set_option maxHeartbeats 10000000
 set_option maxRecDepth 1000
@@ -11,16 +11,16 @@ set_option compiler.extract_closed false
 def main (args: List String) : IO Unit := do
   initSearchPath (← Lean.findSysroot) initFiles
   let nameStr := args.head!
-  let name : Name := nameStr.toName 
-  let env ← 
+  let name : Name := nameStr.toName
+  let env ←
     importModules #[
     {module:= `LeanAide.ImportList},
     {module:= name}] {}
-  let core : CoreM Nat :=  
+  let core : CoreM Nat :=
      writeImport nameStr
-  let io? := 
-    core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]
-    } 
+  let io? :=
+    core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]
+    }
     {env := env}
   match ← io?.toIO' with
   | Except.ok cursor =>

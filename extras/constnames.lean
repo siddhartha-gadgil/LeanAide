@@ -16,7 +16,7 @@ def main : IO Unit := do
     {module := `LeanAide.ConstDeps}] {}
   let core := constantNamesCore
   let io? :=
-    core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
+    core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
     match ← io?.toIO' with
     | Except.ok res =>
       IO.println s!"obtained constants: {res.size}"

@@ -11,16 +11,16 @@ set_option compiler.extract_closed false
 def main (args: List String) : IO Unit := do
   initSearchPath (← Lean.findSysroot) initFiles
   let completions := (args.getD 0 "thm")
-  let env ← 
+  let env ←
     importModules #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
-    
+
     {module:= `LeanCodePrompts.Translate},
     {module := `Mathlib}] {}
-  let core := 
-    outputFromCompletionsCore completions      
-  let io? := 
-    core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} 
+  let core :=
+    outputFromCompletionsCore completions
+  let io? :=
+    core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000}
     {env := env}
   match ← io?.toIO' with
   | Except.ok js =>
@@ -28,6 +28,6 @@ def main (args: List String) : IO Unit := do
   | Except.error e =>
     do
       let msg ← e.toMessageData.toString
-      let js := Json.mkObj [("error", Json.str msg)]      
+      let js := Json.mkObj [("error", Json.str msg)]
       IO.println <| js.pretty 100000
   return ()

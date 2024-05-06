@@ -18,21 +18,21 @@ def chkDocs : String :=
 A theorem can be given in one of two forms
 
 - the word `theorem` followed by a name, then the arguments, a `:`, finally the statement, or
-- the arguments, a `:`, and the statement. 
+- the arguments, a `:`, and the statement.
 
 The following examples are of these two forms:
 
-- `theorem nonsense(n : Nat) (m : Nat) : n = m` 
+- `theorem nonsense(n : Nat) (m : Nat) : n = m`
 - `(p : Nat)(q: Nat) : p = q`
 
-Note that the arguments can be implicit or explicit. 
+Note that the arguments can be implicit or explicit.
 
-The underlying code also supports `open` for namespaces but this demo version does not use these. 
+The underlying code also supports `open` for namespaces but this demo version does not use these.
 "
 
 def main (args: List String) : IO Unit := do
   initSearchPath (← Lean.findSysroot) initFiles
-  let env ← 
+  let env ←
     importModules #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
     {module := `Mathlib}] {}
@@ -40,11 +40,11 @@ def main (args: List String) : IO Unit := do
   | [] => IO.println chkDocs
   | s::[] => do
     let core := elabThmCore <| mkCap s
-    let io? := 
-    core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
+    let io? :=
+    core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
     match ← io?.toIO' with
     | Except.ok res =>
-      match res with 
+      match res with
       | Except.ok expr =>
         IO.println "success"
         IO.println expr
@@ -57,11 +57,11 @@ def main (args: List String) : IO Unit := do
       IO.println <| ← m.toString
   | s₁ :: s₂ :: [] => do
     let core := compareThmsCore (mkCap s₁) (mkCap s₂)
-    let io? := 
-    core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
+    let io? :=
+    core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
     match ← io?.toIO' with
     | Except.ok res =>
-      match res with 
+      match res with
       | Except.ok expr =>
         IO.println "success"
         IO.println expr

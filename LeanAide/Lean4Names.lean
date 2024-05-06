@@ -90,8 +90,8 @@ elab "lean3named" t:term : term => do
   let t' ← lean4NamesSyntax t
   elabTerm t' none
 
-#check lean3named nat.prime
-#check lean3named (fun (n: Nat) ↦ nat.prime n) -- handles a mix fine
+-- #check lean3named nat.prime
+-- #check lean3named (fun (n: Nat) ↦ nat.prime n) -- handles a mix fine
 
 def egLines := "Yes, a vector space with dimension `2` is indeed finite dimensional. In the language of Lean theorem prover, you don't need to write an explicit proof for this, because the fact that the space has dimension `2` already implies that it is finite dimensional. However, if you want to insist on having an explicit statement, it could be something like:
 
@@ -101,4 +101,4 @@ def egLines := "Yes, a vector space with dimension `2` is indeed finite dimensio
      Please note that `Module.rank K V = 2` is the way to express that the vector space `V` over the field `K` has dimension `2` in Lean. The `→` is logical implication."
 
 -- #eval elabThm4 egLines
-#eval lineBlocks egLines
+-- #eval lineBlocks egLines
