@@ -7,10 +7,11 @@ This file defines tactics that falls back to sorry if the target passes a check 
 -/
 open Lean Meta Elab Tactic
 
-def checkedSorry (allowType: Bool := false) : TacticM Unit := do
+def checkedSorry (checkType: Expr → MetaM Bool) : TacticM Unit := do
   let s ← Tactic.saveState
-  unless allowType || (← isProp (← getMainTarget)) do
-    throwError "checkedSorry failed: not a proposition"
+  let check ← checkType (← getMainTarget)
+  unless check do
+    throwError "checkedSorry failed: not a proposition or other requirement"
   try
     evalTactic (← `(tactic|slim_check))
     s.restore
@@ -25,9 +26,9 @@ def checkedSorry (allowType: Bool := false) : TacticM Unit := do
       evalTactic (← `(tactic|sorry))
 
 
-elab "checked_sorry" : tactic => checkedSorry
+elab "checked_sorry" : tactic => checkedSorry (isProp)
 
-elab "checked_sorry'" : tactic => checkedSorry true
+elab "checked_sorry'" : tactic => checkedSorry (fun _ => pure true)
 
 
 example : 1 + 1 = 2 := by checked_sorry
