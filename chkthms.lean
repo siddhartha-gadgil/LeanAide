@@ -31,7 +31,7 @@ The underlying code also supports `open` for namespaces but this demo version do
 "
 
 def main (args: List String) : IO Unit := do
-  initSearchPath (← Lean.findSysroot) initFiles
+  searchPathRef.set compile_time_search_path%
   let env ←
     importModules #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},

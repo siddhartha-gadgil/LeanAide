@@ -9,7 +9,7 @@ set_option compiler.extract_closed false
 
 
 def main (args: List String) : IO Unit := do
-  initSearchPath (← Lean.findSysroot) initFiles
+  searchPathRef.set compile_time_search_path%
   let nameStr := args.head!
   let name : Name := nameStr.toName
   let env ←

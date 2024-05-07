@@ -18,7 +18,7 @@ def promptsIO : IO (Array String) := do
 def main : IO Unit := do
   IO.println "starting"
   let initTime ← IO.monoMsNow
-  initSearchPath (← Lean.findSysroot) initFiles
+  searchPathRef.set compile_time_search_path%
   let env ←
     importModules #[{module := `Mathlib},
     {module := `LeanCodePrompts.Basic},

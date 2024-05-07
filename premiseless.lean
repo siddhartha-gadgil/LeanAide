@@ -110,7 +110,7 @@ def serial (testLines : Array String)(preChecked: Bool := false) : IO Unit := do
 
 
 def main (_: List String) : IO Unit := do
-  initSearchPath (← Lean.findSysroot) initFiles
+  searchPathRef.set compile_time_search_path%
   -- let env ← environment
   let testLines :=
     (← IO.FS.lines (System.mkFilePath ["rawdata", "premises", "core", "test.jsonl"]))

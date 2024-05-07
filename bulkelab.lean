@@ -10,7 +10,7 @@ set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
 def runBulkElab (p : Parsed) : IO UInt32 := do
-  initSearchPath (← Lean.findSysroot) initFiles
+  searchPathRef.set compile_time_search_path%
   let type :=
     p.positionalArg? "input" |>.map (fun s => s.as! String)
     |>.getD "thm"
