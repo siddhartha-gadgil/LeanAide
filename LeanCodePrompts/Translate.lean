@@ -185,10 +185,12 @@ def getNearestDocsOpenAI (s: String)(numSim : Nat)(numConcise: Nat)(full: Bool:=
      if full then
        getNearestEmbeddingsFull s numSim 2.0
       else getNearestEmbeddings s numSim
+    logTimed "obtained neighbours"
     let outJs' ←
       if numConcise > 0 then
       getNearestEmbeddingsFull s numConcise 2.0 "concise-description"
       else pure <| (Json.arr #[]).compress
+    logTimed "obtained concise descriptions"
     match Json.parse outJs, Json.parse outJs'  with
     | Except.error e, _ => return Except.error e
     | _, Except.error e => return Except.error e

@@ -78,9 +78,13 @@ def getNearestEmbeddingsFull
   let jsQuery := Json.mkObj
     [("n" , numSim), ("docString", query), ("descField", descField),
     ("penalty", Json.num p)]
+  logTimed "sending query"
   stdin.putStrLn jsQuery.compress
   stdin.flush
-  child.stdout.getLine
+  logTimed "getting response"
+  let inp ← child.stdout.getLine
+  logTimed "got response"
+  return inp
 
 def pingEmbedding : IO Bool := do
   let proc? ← nearestEmbeddingsFullProcessRef.get

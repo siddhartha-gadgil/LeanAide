@@ -90,6 +90,7 @@ unsafe def main (args: List String) : IO Unit := do
         logTimed "found nearest"
         IO.eprintln s!"Time taken: {finish - start} ms"
   | none =>
+    logTimed "No arguments provided, starting interactive mode"
     withUnpickle (← picklePath "docString") <|fun
     (docStringData : Array <| (String × String × Bool × String) ×  FloatArray) =>
     do
