@@ -24,4 +24,4 @@ example : 1 ≤ 3 := by
     apply Nat.le_step
     assumption
 
-#check getLocalDeclFromUserName
+-- #check getLocalDeclFromUserName

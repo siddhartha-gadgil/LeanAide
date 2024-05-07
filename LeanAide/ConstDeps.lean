@@ -118,7 +118,7 @@ partial def recExprNames (depth: Nat): Expr → MetaM (Array Name) :=
     cache e res
     return res
 
-#check lambdaTelescope
+-- #check lambdaTelescope
 
 partial def getSorryTypes (e: Expr) : MetaM (Array Expr) := do
   match e with
@@ -159,22 +159,25 @@ elab "show_sorries#" n:ident : term => do
     logInfo s!"{← ppExpr s}"
   return value'
 
-
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 def withSorry (n: Nat) : Nat := match n with
   | 0 => by sorry
   | k + 1 => by sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 def withSorry' (n m: Nat) : n + m = m + n := by
   induction n with
   | zero => simp
   | succ n ih => sorry
 
-#print withSorry
-#print withSorry'
+-- #print withSorry
+-- #print withSorry'
 
-#check show_sorries withSorry
-#check show_sorries withSorry'
-#check show_sorries# LeanAide.Meta.withSorry'
+-- #check show_sorries withSorry
+-- #check show_sorries withSorry'
+-- #check show_sorries# LeanAide.Meta.withSorry'
 
 /-- names that are offspring of the constant with a given name -/
 def offSpring? (depth: Nat)(name: Name) : MetaM (Option (Array Name)) := do
@@ -460,10 +463,10 @@ def ConstructorTypes.fromName? (name : Name) : MetaM <| Option ConstructorTypes 
         return some ⟨name, ind, fmt.pretty, doc?⟩
     | _ => return none
 
-#eval DefnTypes.thmFromName? ``List.length_cons
-#eval DefnTypes.defFromName? ``List.length
+-- #eval DefnTypes.thmFromName? ``List.length_cons
+-- #eval DefnTypes.defFromName? ``List.length
 
-#eval DefnTypes.defFromName? ``Fin.val
+-- #eval DefnTypes.defFromName? ``Fin.val
 
 def writeDocsM : MetaM <| Json := do
   IO.println "Getting defn types"
@@ -475,7 +478,7 @@ def writeDocsM : MetaM <| Json := do
   DefnTypes.writeM dfns "docs.jsonl"
   return Json.arr <| dfns.map toJson
 
-#check Json.mergeObj
+-- #check Json.mergeObj
 
 def writeDocsCore : CoreM <| Json :=
     (writeDocsM).run'
