@@ -1,11 +1,12 @@
 import Lean
 import Mathlib.Tactic
 import LeanAide.Config
+import LeanCodePrompts.NearestEmbeddings
 open Lean
 
-def getNearestEmbeddingsFull
+def getNearestEmbeddingsExe
   (query : String)(numSim: Nat)(penalty: Float)
-  (descField: String := "docString") : IO String := do
+  (descField: String) : IO String := do
   let exePath := System.mkFilePath [".", ".lake", "build", "bin", "nearest_embeddings"]
   if !(← exePath.pathExists) then
     let _ ←  IO.Process.run {cmd := "lake", args := #["build",  "nearest_embeddings"], cwd := "."}
@@ -22,3 +23,25 @@ def getNearestEmbeddingsFull
   let inp ← IO.Process.run {cmd := cmd, args := #[jsQuery.compress]}
   logTimed "got response"
   return inp
+
+def getNearestEmbeddingsFull
+  (query : String)(numSim: Nat)(penalty: Float)
+  (descField: String := "docString")
+  (dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.empty) : IO String := do
+  match dataMap.find? descField with
+  | none =>
+    getNearestEmbeddingsExe query numSim penalty descField
+  | some data =>
+    let embs ←
+      nearestDocsToDocFull data query numSim (penalty := penalty)
+    let out :=
+      Lean.Json.arr <|
+        embs.toArray.map fun (doc, thm, isProp, name, d) =>
+          Json.mkObj <| [
+            ("docString", Json.str doc),
+            ("theorem", Json.str thm),
+            ("isProp", Json.bool isProp),
+            ("name", Json.str name),
+            ("distance", toJson d)
+          ]
+    return out.compress

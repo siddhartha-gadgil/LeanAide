@@ -50,7 +50,8 @@ def runTranslate (p : Parsed) : IO UInt32 := do
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanCodePrompts.Translate}] {}
   let core :=
-    translateViewVerboseCore type chatServer chatParams numSim numConcise
+    translateViewVerboseCore type chatServer chatParams numSim
+      numConcise (dataMap := HashMap.empty)
   let io? :=
     core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
     {env := env}
