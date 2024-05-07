@@ -6,39 +6,6 @@ import Lean.Data.Json
 import Std.Util.Pickle
 open Lean Cache.IO
 
-unsafe def show_nearest (stdin stdout : IO.FS.Stream)
-  (data: Array ((String × String × Bool × String) × FloatArray)): IO Unit := do
-  let inp ← stdin.getLine
-  logTimed "finding parameter"
-  let (doc, num, penalty, halt) :=
-    match Json.parse inp with
-    | Except.error _ => (inp, 10, 2.0, false)
-    | Except.ok j =>
-      (j.getObjValAs? String "docString" |>.toOption.orElse
-        (fun _ => j.getObjValAs? String "doc_string" |>.toOption)
-        |>.getD inp,
-      j.getObjValAs? Nat "n" |>.toOption.getD 10,
-      j.getObjValAs? Float "penalty" |>.toOption.getD 2.0,
-      j.getObjValAs? Bool "halt" |>.toOption.getD false)
-  logTimed s!"finding nearest to `{doc}`"
-  let embs ← nearestDocsToDocFull data doc num (penalty := penalty)
-  logTimed "found nearest"
-  let out :=
-    Lean.Json.arr <|
-      embs.toArray.map fun (doc, thm, isProp, name, d) =>
-        Json.mkObj <| [
-          ("docString", Json.str doc),
-          ("theorem", Json.str thm),
-          ("isProp", Json.bool isProp),
-          ("name", Json.str name),
-          ("distance", toJson d)
-        ]
-  stdout.putStrLn out.compress
-  stdout.flush
-  unless halt do
-    show_nearest stdin stdout data
-  return ()
-
 unsafe def checkAndFetch (descField: String) : IO Unit := do
   let picklePath ← picklePath descField
   let picklePresent ←
@@ -56,34 +23,33 @@ unsafe def checkAndFetch (descField: String) : IO Unit := do
     IO.eprintln out
 
 unsafe def main (args: List String) : IO Unit := do
-  logTimed "starting nearest embedding process"
   for descField in ["docString", "description", "concise-description"] do
     checkAndFetch descField
-  withUnpickle  (← picklePath "docString") <|
+  let inp := args.get! 0
+  let (descField, doc, num, penalty) :=
+    match Json.parse inp with
+    | Except.error _ => ("docString", inp, 10, 2.0)
+    | Except.ok j =>
+      (j.getObjValAs? String "descField" |>.toOption.getD "docString",
+        j.getObjValAs? String "docString" |>.toOption.orElse
+        (fun _ => j.getObjValAs? String "doc_string" |>.toOption)
+        |>.getD inp,
+      j.getObjValAs? Nat "n" |>.toOption.getD 10,
+      j.getObjValAs? Float "penalty" |>.toOption.getD 2.0)
+  logTimed s!"finding nearest to `{doc}`"
+  let picklePath ← picklePath descField
+  withUnpickle  picklePath <|
     fun (data : Array <| (String × String × Bool × String) ×  FloatArray) => do
-      let doc? := args[0]?
-      match doc? with
-      | some doc =>
-        let num := (args[1]?.bind fun s => s.toNat?).getD 10
-        logTimed s!"finding nearest to `{doc}`"
-        let start ← IO.monoMsNow
-        let embs ← nearestDocsToDocFull data doc num (penalty := 2.0)
-        IO.println <|
-          Lean.Json.arr <|
-            embs.toArray.map fun (doc, thm, isProp, name, d) =>
-              Json.mkObj <| [
-                ("docString", Json.str doc),
-                ("theorem", Json.str thm),
-                ("isProp", Json.bool isProp),
-                ("name", Json.str name),
-                ("distance", toJson d)
-              ]
-        let finish ← IO.monoMsNow
-        logTimed "found nearest"
-        IO.eprintln s!"Time taken: {finish - start} ms"
-      | none =>
-        let stdin ← IO.getStdin
-        let stdout ← IO.getStdout
-        show_nearest stdin stdout data
-
-#check FloatArray
+    let embs ← nearestDocsToDocFull data doc num (penalty := penalty)
+    logTimed "found nearest"
+    let out :=
+      Lean.Json.arr <|
+        embs.toArray.map fun (doc, thm, isProp, name, d) =>
+          Json.mkObj <| [
+            ("docString", Json.str doc),
+            ("theorem", Json.str thm),
+            ("isProp", Json.bool isProp),
+            ("name", Json.str name),
+            ("distance", toJson d)
+          ]
+    IO.print out.compress
