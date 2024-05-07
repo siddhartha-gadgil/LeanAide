@@ -46,6 +46,9 @@ lean_exe translate {
   supportInterpreter := true
 }
 
+lean_exe ctranslate {
+  supportInterpreter := true
+}
 
 lean_exe chkelab {
   supportInterpreter := true

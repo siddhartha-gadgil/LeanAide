@@ -32,6 +32,7 @@ def getNearestEmbeddingsFull
   | none =>
     getNearestEmbeddingsExe query numSim penalty descField
   | some data =>
+    logTimed s!"got data for {descField}"
     let embs ←
       nearestDocsToDocFull data query numSim (penalty := penalty)
     let out :=
