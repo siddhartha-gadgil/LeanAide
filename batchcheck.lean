@@ -127,8 +127,8 @@ def main (args: List String) : IO Unit := do
           let core := groupTheoremsCore elabs
               let io? :=
               core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
-              match ← io?.toIO' with
-              | Except.ok res =>
+          match ← io?.toIO' with
+          | Except.ok res =>
                 let gps := toJson res
                 entry := entry.push ("grouped", gps)
               | Except.error e =>
