@@ -176,15 +176,13 @@ def fixedPromptsJson : Array <| String × Json :=
 /--
 Given a string, find the nearest documentation strings in Mathlib and return the corresponding theorem data.
 -/
-def getNearestDocsOpenAI (s: String)(numSim : Nat)(numConcise: Nat)(full: Bool:= true) :
+def getNearestDocsOpenAI (s: String)(numSim : Nat)(numConcise: Nat) :
   IO <| Except String (Array (String × Json)) := do
     let check ← (← picklePath "docString").pathExists
     unless check do
       return Except.error "Mathlib embeddings not found; run `lake exe fetch_embeddings` first to fetch them."
     let outJs ←
-     if full then
        getNearestEmbeddingsFull s numSim 2.0
-      else getNearestEmbeddings s numSim
     logTimed "obtained neighbours"
     let outJs' ←
       if numConcise > 0 then
@@ -218,7 +216,7 @@ Given a string, find the nearest documentation strings in Mathlib and return the
 def getNearestDocs(s: String)(numSim : Nat)(numConcise: Nat)
 -- (source: String := "openai_full")
    : IO <| Except String (Array (String × Json)) :=
-      getNearestDocsOpenAI s numSim numConcise true
+      getNearestDocsOpenAI s numSim numConcise
 
 /-- prompts generated from the declarations in the current file. -/
 def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true) : MetaM <| Array (String × String):= do
