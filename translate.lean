@@ -10,9 +10,7 @@ set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
 def runTranslate (p : Parsed) : IO UInt32 := do
-  IO.eprintln "Starting..."
   initSearchPath (← Lean.findSysroot) initFiles
-  IO.eprintln "Search path initialized"
   let type :=
     p.positionalArg? "input" |>.map (fun s => s.as! String)
     |>.getD "thm"
@@ -47,23 +45,16 @@ def runTranslate (p : Parsed) : IO UInt32 := do
     else System.mkFilePath <| ["results", model]
   if !(← dir.pathExists) then
         IO.FS.createDirAll dir
-  IO.eprintln "Directory created"
-  let env' ← importModules #[{module := `Mathlib}] {}
-  IO.eprintln "Modules imported (dummy)"
   let env ←
     importModules #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanCodePrompts.Translate}] {}
-  IO.eprintln "Modules imported"
   let core :=
     translateViewVerboseCore type chatServer chatParams numSim numConcise
-  IO.eprintln "Running translation..."
   let io? :=
     core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
     {env := env}
-  IO.eprintln "Translation complete"
   let io?' ← io?.toIO'
-  IO.eprintln "IO'ed"
   match io?' with
   | Except.ok (translation?, output, prompt) =>
     IO.eprintln "Ran successfully"
