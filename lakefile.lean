@@ -125,6 +125,10 @@ lean_exe writedescs {
   supportInterpreter := true
 }
 
+lean_exe writedescs_docs {
+  supportInterpreter := true
+}
+
 lean_exe rewritedescs {
   supportInterpreter := true
 }
