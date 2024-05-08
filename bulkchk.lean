@@ -18,8 +18,8 @@ def promptsIO : IO (Array String) := do
 def main : IO Unit := do
   IO.println "starting"
   let initTime ← IO.monoMsNow
-  initSearchPath (← Lean.findSysroot) initFiles
-  let env ← 
+  searchPathRef.set compile_time_search_path%
+  let env ←
     importModules #[{module := `Mathlib},
     {module := `LeanCodePrompts.Basic},
     {module:= `LeanAide.TheoremElab},
@@ -32,11 +32,11 @@ def main : IO Unit := do
   for s in prompts do
     -- IO.println s!"parsing: {s}"
     let core := elabThmCore s
-    let io? := 
-    core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
+    let io? :=
+    core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
     match ← io?.toIO' with
     | Except.ok res =>
-      match res with 
+      match res with
       | Except.ok expr =>
         -- IO.println "success"
         -- IO.println expr
@@ -63,11 +63,11 @@ def main : IO Unit := do
       let s₂ := elabs[j]!
       if s₁ = s₂ then ids := ids + 1
       let core := compareThmsCore s₁ s₂
-      let io? := 
-      core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
+      let io? :=
+      core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
       match ← io?.toIO' with
       | Except.ok res =>
-        match res with 
+        match res with
         | Except.ok expr =>
           -- IO.println "success"
           -- IO.println expr

@@ -61,7 +61,7 @@ def nearestDocsToDocThms (data: Array ((String × String) × FloatArray))(doc: S
   let start ← IO.monoMsNow
   let queryRes? ← embedQuery doc
   let finish ← IO.monoMsNow
-  IO.eprintln s!"query time: {finish - start}"
+  IO.eprintln s!"query time ??: {finish - start}"
   -- IO.println "query complete"
   match queryRes? with
   | Except.ok queryRes =>

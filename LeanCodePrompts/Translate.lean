@@ -176,19 +176,19 @@ def fixedPromptsJson : Array <| String × Json :=
 /--
 Given a string, find the nearest documentation strings in Mathlib and return the corresponding theorem data.
 -/
-def getNearestDocsOpenAI (s: String)(numSim : Nat)(numConcise: Nat)(full: Bool:= true) :
+def getNearestDocsOpenAI (s: String)(numSim : Nat)(numConcise: Nat)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray))) :
   IO <| Except String (Array (String × Json)) := do
     let check ← (← picklePath "docString").pathExists
     unless check do
       return Except.error "Mathlib embeddings not found; run `lake exe fetch_embeddings` first to fetch them."
     let outJs ←
-     if full then
-       getNearestEmbeddingsFull s numSim 2.0
-      else getNearestEmbeddings s numSim
+       getNearestEmbeddingsFull s numSim 2.0 (dataMap := dataMap)
+    logTimed "obtained neighbours"
     let outJs' ←
       if numConcise > 0 then
-      getNearestEmbeddingsFull s numConcise 2.0 "concise-description"
+      getNearestEmbeddingsFull s numConcise 2.0 "concise-description" (dataMap := dataMap)
       else pure <| (Json.arr #[]).compress
+    logTimed "obtained concise descriptions"
     match Json.parse outJs, Json.parse outJs'  with
     | Except.error e, _ => return Except.error e
     | _, Except.error e => return Except.error e
@@ -213,10 +213,10 @@ def getNearestDocsOpenAI (s: String)(numSim : Nat)(numConcise: Nat)(full: Bool:=
 /--
 Given a string, find the nearest documentation strings in Mathlib and return the corresponding theorem data.
 -/
-def getNearestDocs(s: String)(numSim : Nat)(numConcise: Nat)
+def getNearestDocs(s: String)(numSim : Nat)(numConcise: Nat)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)))
 -- (source: String := "openai_full")
    : IO <| Except String (Array (String × Json)) :=
-      getNearestDocsOpenAI s numSim numConcise true
+      getNearestDocsOpenAI s numSim numConcise dataMap
 
 /-- prompts generated from the declarations in the current file. -/
 def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true) : MetaM <| Array (String × String):= do
@@ -247,7 +247,7 @@ def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true)
 -/
 def getLeanCodeJson (s: String)
   (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})(numSim : Nat:= 8)(numConcise: Nat := 0)
-  (includeFixed: Bool := Bool.false)(toChat : ToChatExample := simpleChatExample) : CoreM <| Json × Json × Array (String × Json) := do
+  (includeFixed: Bool := Bool.false)(toChat : ToChatExample := simpleChatExample)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.empty) : CoreM <| Json × Json × Array (String × Json) := do
   logTimed s!"translating string `{s}` with {numSim} examples"
   match ← getCachedJson? s with
   | some js => return js
@@ -260,7 +260,7 @@ def getLeanCodeJson (s: String)
       -- work starts here; before this was caching, polling etc
       let pairs? ←
         if numSim > 0 then
-          getNearestDocs s numSim numConcise
+          getNearestDocs s numSim numConcise dataMap
         else pure <| Except.ok #[]
       match pairs? with
       | Except.error e => throwError e
@@ -426,8 +426,9 @@ def sufficientElab? (output: Array String)(defs : Array <| Name × String):
 
 
 /-- reverse translation from `Lean` to natural language -/
-def leanToPrompt (thm: String)(numSim : Nat:= 5)(numConcise : Nat := 0)(temp : JsonNumber := 0)(textField : String := "text") : TermElabM String := do
-    let pairs? ← getNearestDocs thm numSim numConcise
+def leanToPrompt (thm: String)(numSim : Nat:= 5)(numConcise : Nat := 0)(temp : JsonNumber := 0)(textField : String := "text") (dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray))) : TermElabM String := do
+    let pairs? ←
+      getNearestDocs thm numSim numConcise dataMap
     let pairs := pairs?.toOption.getD #[]
     let examples := pairs.filterMap simpleChatExample
     let prompt := GPT.makeFlipPrompt thm examples
@@ -517,9 +518,11 @@ elab "//-" cb:commentBody  : term => do
   let s := (s.dropRight 2).trim
   -- querying codex
   let (js, _) ←
-    getLeanCodeJson  s
+    getLeanCodeJson  s (dataMap := HashMap.empty)
+      (numSim := 8) (numConcise := 0)
   -- filtering, autocorrection and selection
-  let e ← jsonToExpr' js true !(← chatParams).stopColEq
+  let e ←
+    jsonToExpr' js true !(← chatParams).stopColEq
   trace[Translate.info] m!"{e}"
   return e
 
@@ -564,10 +567,11 @@ universe u
 Translate a string and output as a string.
 -/
 def translateViewM (s: String)
-  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8)(toChat : ToChatExample := simpleChatExample) : TermElabM String := do
+  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8)(toChat : ToChatExample := simpleChatExample)
+  (dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.empty ) : TermElabM String := do
   logTimed "starting translation"
   let (js, _) ← getLeanCodeJson  s server params
-        (numSim := numSim) (toChat := toChat)
+        (numSim := numSim) (toChat := toChat) (dataMap := dataMap)
   let output ← getMessageContents js
   trace[Translate.info] m!"{output}"
   -- let output := params.splitOutputs output
@@ -591,7 +595,7 @@ def translateViewM (s: String)
 /-- view of string in core; to be run with Snapshot.runCore
 -/
 def translateViewCore (s: String) : CoreM String :=
-  (translateViewM s).run'.run'
+  (translateViewM s (dataMap := HashMap.empty)).run'.run'
 
 syntax (name := ltrans) "l!" str : term
 
@@ -631,10 +635,10 @@ Translate a string to a Lean expression using the GPT model, returning three com
 -/
 def translateViewVerboseM (s: String)(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)(numConcise: Nat := 0)
-  (toChat : ToChatExample := simpleChatExample)  :
+  (toChat : ToChatExample := simpleChatExample)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)))  :
   TermElabM ((Option (String × (Array String) × (Array (Array String)) )) × Array String × Json) := do
   let (js,prompt, _) ←
-    getLeanCodeJson s server params numSim numConcise false toChat
+    getLeanCodeJson s server params numSim numConcise false toChat dataMap
   let output ← getMessageContents js
   if output.isEmpty then
      return (none, output, prompt)
@@ -658,6 +662,6 @@ def translateViewVerboseM (s: String)(server: ChatServer)
 
 def translateViewVerboseCore (s: String)(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)(numConcise: Nat := 0)
-  (toChat : ToChatExample := simpleChatExample)  :
+  (toChat : ToChatExample := simpleChatExample)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.empty) :
   CoreM ((Option (String × (Array String) × (Array (Array String)))) × Array String × Json) :=
-  (translateViewVerboseM s server params numSim numConcise toChat).run'.run'
+  (translateViewVerboseM s server params numSim numConcise toChat dataMap).run'.run'

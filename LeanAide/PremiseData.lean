@@ -142,7 +142,7 @@ def foldContext (type: Syntax.Term) : List Syntax → CoreM (Syntax.Term)
         IO.println s!"foldContext: {x}, i.e., {x.reprint.get!} could not be folded"
         return type
 
-#check letDecl
+-- #check letDecl
 
 def declToString : Syntax → CoreM String := fun d => do
     match d with
@@ -518,7 +518,7 @@ def getDefn? (name: String)(propMap : HashMap String (String × String)) : MetaM
     match propMap.find? name with
     | some ss => return some ss
     | none => do
-    let l ← resolveGlobalName name
+    let l ← resolveGlobalName name.toName
     let names := l.map (fun (n, _) => n.toString)
     return names.findSome? (fun n =>
         (propMap.find? n))
@@ -553,7 +553,7 @@ end CorePremiseData
 namespace PremiseData
 
 def filterIds (pd: PremiseData)(p: Name → Bool) : PremiseData :=
-    {pd with ids := pd.ids.filter (fun (n, _) => p n)}
+    {pd with ids := pd.ids.filter (fun (n, _) => p n.toName)}
 
 def increaseDepth (d: Nat) : PremiseData → PremiseData :=
 fun data ↦

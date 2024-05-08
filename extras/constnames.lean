@@ -9,14 +9,14 @@ set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
 def main : IO Unit := do
-  initSearchPath (← Lean.findSysroot) initFiles
+  searchPathRef.set compile_time_search_path%
   let env ←
     importModules #[
     {module := `Mathlib},
     {module := `LeanAide.ConstDeps}] {}
   let core := constantNamesCore
   let io? :=
-    core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
+    core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
     match ← io?.toIO' with
     | Except.ok res =>
       IO.println s!"obtained constants: {res.size}"

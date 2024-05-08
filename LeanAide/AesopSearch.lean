@@ -92,7 +92,7 @@ def safeApplyConstRuleMembers (goal: MVarId)(name: Name) :
       config.rules.concatMapM (·.buildAdditionalLocalRules goal)
   return rules
 
-#check Parser.numLit
+-- #check Parser.numLit
 
 /-- Rule set members for `simp` for a global constant proof -/
 partial def simpConstRuleMember (goal: MVarId)(name: Name) : TermElabM <| Array LocalRuleSetMember := do
@@ -174,7 +174,7 @@ def tacticExpr (goal : MVarId) (tac : Syntax.Tactic) :
     ScriptBuilder.ofTactic goals.size (pure tac)
   return (goals, scriptBuilder)
 
-#check Aesop.RuleApplication.mk
+-- #check Aesop.RuleApplication.mk
 
 def dynamicRuleTac (dynTactics : Array Syntax.Tactic) : RuleTac := fun input => do
   let goalType ← inferType (mkMVarEx input.goal)
@@ -309,8 +309,8 @@ def syntaxStructProjs (stx: Syntax) : CoreM <| List Name := do
   let structProjs ← inductives.mapM structProjs
   return structProjs.join
 
-#eval structProjs ``And
-#check And.left
+-- #eval structProjs ``And
+-- #check And.left
 
 structure AesopSearchConfig extends Aesop.Options where
   traceScript := true
@@ -388,8 +388,8 @@ def AesopSearchConfig.ruleSet (config: AesopSearchConfig)(goal: MVarId) :
     allRules.foldl (fun c r => c.add r) ∅
   return allRules
 
-#check LocalRuleSet
-#check Frontend.getGlobalRuleSet
+-- #check LocalRuleSet
+-- #check Frontend.getGlobalRuleSet
 
 def runAesop (config: AesopSearchConfig): MVarId → TermElabM (List MVarId) := fun goal =>
   goal.withContext do

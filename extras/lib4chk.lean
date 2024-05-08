@@ -21,8 +21,8 @@ def main : IO Unit := do
   let file := System.mkFilePath ["data/lib4_outputs.txt"]
   let lines ← IO.FS.lines file
   IO.println "loaded file"
-  initSearchPath (← Lean.findSysroot) initFiles
-  let env ← 
+  searchPathRef.set compile_time_search_path%
+  let env ←
     importModules #[{module := `Mathlib},
     {module := `LeanCodePrompts.Basic},
     {module:= `LeanAide.TheoremElab},
@@ -35,11 +35,11 @@ def main : IO Unit := do
   for s in lines do
     -- IO.println s!"parsing: {s}"
     let core := elabThmCore s
-    let io? := 
-    core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
+    let io? :=
+    core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
     match ← io?.toIO' with
     | Except.ok res =>
-      match res with 
+      match res with
       | Except.ok _ =>
         IO.println "success"
         elabs:= elabs.push s

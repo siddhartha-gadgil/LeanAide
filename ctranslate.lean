@@ -9,7 +9,7 @@ set_option maxHeartbeats 10000000
 set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
-def runTranslate (p : Parsed) : IO UInt32 := do
+unsafe def runTranslate (p : Parsed) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
   let type :=
     p.positionalArg? "input" |>.map (fun s => s.as! String)
@@ -49,9 +49,17 @@ def runTranslate (p : Parsed) : IO UInt32 := do
     importModules #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanCodePrompts.Translate}] {}
+  withUnpickle (← picklePath "docString")
+    <|fun (docStringData : Array <| (String × String × Bool × String) ×  FloatArray) => do
+  withUnpickle (← picklePath "description")
+    <|fun (descData : Array <| (String × String × Bool × String) ×  FloatArray) =>  do
+  withUnpickle (← picklePath "concise-description")
+    <|fun (concDescData : Array <| (String × String × Bool × String) ×  FloatArray) => do
+  let dataMap :
+    HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
   let core :=
     translateViewVerboseCore type chatServer chatParams numSim
-      numConcise (dataMap := HashMap.empty)
+      numConcise (dataMap := dataMap)
   let io? :=
     core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
     {env := env}
@@ -91,7 +99,7 @@ def runTranslate (p : Parsed) : IO UInt32 := do
       IO.eprintln msg
       return 1
 
-def translate : Cmd := `[Cli|
+unsafe def translate : Cmd := `[Cli|
   translate VIA runTranslate;
   "Elaborate a set of inputs and report whether successful and the result if successful."
 
@@ -114,5 +122,5 @@ def translate : Cmd := `[Cli|
 
 ]
 
-def main (args: List String) : IO UInt32 :=
+unsafe def main (args: List String) : IO UInt32 :=
   translate.validate args

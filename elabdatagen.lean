@@ -12,7 +12,7 @@ set_option compiler.extract_closed false
 def main (args: List String) : IO Unit := do
   let start? := (args.get? 0).bind (fun x => x.toNat?)
   let size? := (args.get? 1).bind (fun x => x.toNat?)
-  initSearchPath (← Lean.findSysroot) initFiles
+  searchPathRef.set compile_time_search_path%
   let env ←
     importModules #[{module := `Mathlib},
     {module := `LeanCodePrompts.Basic},
@@ -22,7 +22,7 @@ def main (args: List String) : IO Unit := do
     {module := `Mathlib}] {}
   let core := elabThmSplitCore start? size?
   let io? :=
-    core.run' {fileName := "", fileMap := ⟨"", #[], #[]⟩, maxHeartbeats := 100000000000, maxRecDepth := 1000000}
+    core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000}
     {env := env}
   match ← io?.toIO' with
   | Except.ok (succ, fail) =>
