@@ -19,7 +19,11 @@ def main : IO Unit := do
   let dataPath : System.FilePath := ("rawdata"/ "premises" / "ident_pairs"/"descs.jsonl")
   let jsData ←
       IO.FS.lines dataPath
-  let data :=  jsData.filterMap (fun js => Json.parse js |>.toOption)
+  let dataPathDocs : System.FilePath := ("rawdata"/ "premises" / "ident_pairs"/"descs_docs.jsonl")
+  let jsDataDocs ←
+      IO.FS.lines dataPathDocs
+  let data :=
+    (jsData ++ jsDataDocs).filterMap (fun js => Json.parse js |>.toOption)
   let outPath := System.mkFilePath ["resources", "mathlib4-descs.jsonl"]
   IO.FS.writeFile outPath ""
   let h ← IO.FS.Handle.mk outPath IO.FS.Mode.append
