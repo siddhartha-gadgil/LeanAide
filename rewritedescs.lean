@@ -16,7 +16,7 @@ def main : IO Unit := do
     IO.FS.readFile
     ("rawdata"/ "premises" / "ident_pairs"/"frequencies.json")
   let input? := Json.parse sourceJson
-  searchPathRef.set compile_time_search_path%
+  initSearchPath (← Lean.findSysroot) initFiles
   let env ←
     importModules #[
     {module := `Mathlib},

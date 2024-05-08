@@ -21,7 +21,7 @@ def main : IO Unit := do
   let file := System.mkFilePath ["data/lib4_outputs.txt"]
   let lines ← IO.FS.lines file
   IO.println "loaded file"
-  searchPathRef.set compile_time_search_path%
+  initSearchPath (← Lean.findSysroot) initFiles
   let env ←
     importModules #[{module := `Mathlib},
     {module := `LeanCodePrompts.Basic},

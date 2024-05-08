@@ -10,7 +10,7 @@ set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
 def runTranslate (p : Parsed) : IO UInt32 := do
-  searchPathRef.set compile_time_search_path%
+  initSearchPath (← Lean.findSysroot) initFiles
   let type :=
     p.positionalArg? "input" |>.map (fun s => s.as! String)
     |>.getD "thm"

@@ -12,7 +12,7 @@ def coreContext : Core.Context := {fileName := "", fileMap := {source:= "", posi
     }
 
 def main : IO Unit := do
-  searchPathRef.set compile_time_search_path%
+  initSearchPath (← Lean.findSysroot) initFiles
   let env ←
     importModules #[
     {module := `Mathlib},

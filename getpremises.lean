@@ -8,7 +8,7 @@ set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
 def init : IO Unit := do
-  searchPathRef.set compile_time_search_path%
+  initSearchPath (← Lean.findSysroot) initFiles
 
 def environment : IO Environment := do
   importModules #[{module := `Mathlib},
