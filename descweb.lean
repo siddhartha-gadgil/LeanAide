@@ -33,7 +33,7 @@ def main : IO Unit := do
     importModules #[
     {module := `Mathlib},
     {module := `LeanAide.ConstDeps}] {}
-  let dataPath : System.FilePath := ("rawdata"/ "premises" / "ident_pairs"/"descs.jsonl")
+  let dataPath : System.FilePath := ("resources"/ "mathlib4-descs.jsonl")
   let jsData ←
       IO.FS.lines dataPath
   let data :=  jsData.filterMap (fun js => Json.parse js |>.toOption)
