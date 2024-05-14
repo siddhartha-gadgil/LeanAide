@@ -73,6 +73,7 @@ unsafe def main (args: List String) : IO Unit := do
   let picklePath ← picklePath descField
   withUnpickle  picklePath <|
     fun (data : Array <| (String × String × Bool × String) ×  FloatArray) => do
+        IO.eprintln s!"Searching among {data.size} embeddings"
         let num := (args[1]?.bind fun s => s.toNat?).getD 10
         logTimed s!"finding nearest to `{doc}`"
         let start ← IO.monoMsNow
@@ -90,6 +91,7 @@ unsafe def main (args: List String) : IO Unit := do
         logTimed "found nearest"
         IO.eprintln s!"Time taken: {finish - start} ms"
   | none =>
+    logTimed "No arguments provided, starting interactive mode"
     withUnpickle (← picklePath "docString") <|fun
     (docStringData : Array <| (String × String × Bool × String) ×  FloatArray) =>
     do
