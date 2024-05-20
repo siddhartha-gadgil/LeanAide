@@ -80,7 +80,7 @@ def wrapInType (e: Expr)(stx: Term) : Delab := do
 open Lean.Parser.Term
 open TSyntax.Compat
 
-def fvarPrefix : Name := "freeVariable"
+def fvarPrefix : Name := "freeVariable" |>.toName
 
 def delabAppFn : Delab := do
   if (← getExpr).consumeMData.isConst then
@@ -206,33 +206,34 @@ def unexpandStructureInstance (stx : Syntax) : Delab := whenPPOption getPPStruct
 --       return stx
 --   else pure stx
 
+#check delabNamedPattern
 
-/--
-  Extract arguments of motive applications from the matcher type.
-  For the example below: `#[#[`([])], #[`(a::as)]]` -/
-private partial def delabPatterns (st : AppMatchState) : DelabM (Array (Array Term)) :=
-  withReader (fun ctx => { ctx with inPattern := true, optionsPerPos := {} }) do
-    let ty ← instantiateForall st.matcherTy st.params
-    -- need to reduce `let`s that are lifted into the matcher type
-    forallTelescopeReducing ty fun params _ => do
-      -- skip motive and discriminators
-      let alts := Array.ofSubarray params[1 + st.discrs.size:]
-      alts.mapIdxM fun idx alt => do
-        let ty ← inferType alt
-        -- TODO: this is a hack; we are accessing the expression out-of-sync with the position
-        -- Currently, we reset `optionsPerPos` at the beginning of `delabPatterns` to avoid
-        -- incorrectly considering annotations.
-        withTheReader SubExpr ({ · with expr := ty }) $
-          usingNames st.varNames[idx]! do
-            withAppFnArgs (pure #[]) (fun pats => do pure $ pats.push (← delabVerbose))
-where
-  usingNames {α} (varNames : Array Name) (x : DelabM α) : DelabM α :=
-    usingNamesAux 0 varNames x
-  usingNamesAux {α} (i : Nat) (varNames : Array Name) (x : DelabM α) : DelabM α :=
-    if i < varNames.size then
-      withBindingBody varNames[i]! <| usingNamesAux (i+1) varNames x
-    else
-      x
+-- /--
+--   Extract arguments of motive applications from the matcher type.
+--   For the example below: `#[#[`([])], #[`(a::as)]]` -/
+-- private partial def delabPatterns (st : AppMatchState) : DelabM (Array (Array Term)) :=
+--   withReader (fun ctx => { ctx with inPattern := true, optionsPerPos := {} }) do
+--     let ty ← instantiateForall st.matcherTy.expr st.params
+--     -- need to reduce `let`s that are lifted into the matcher type
+--     forallTelescopeReducing ty fun params _ => do
+--       -- skip motive and discriminators
+--       let alts := Array.ofSubarray params[1 + st.discrs.size:]
+--       alts.mapIdxM fun idx alt => do
+--         let ty ← inferType alt
+--         -- TODO: this is a hack; we are accessing the expression out-of-sync with the position
+--         -- Currently, we reset `optionsPerPos` at the beginning of `delabPatterns` to avoid
+--         -- incorrectly considering annotations.
+--         withTheReader SubExpr ({ · with expr := ty }) $
+--           usingNames st.varNames[idx]! do
+--             withAppFnArgs (pure #[]) (fun pats => do pure $ pats.push (← delabVerbose))
+-- where
+--   usingNames {α} (varNames : Array Name) (x : DelabM α) : DelabM α :=
+--     usingNamesAux 0 varNames x
+--   usingNamesAux {α} (i : Nat) (varNames : Array Name) (x : DelabM α) : DelabM α :=
+--     if i < varNames.size then
+--       withBindingBody varNames[i]! <| usingNamesAux (i+1) varNames x
+--     else
+--       x
 
 /-- Skip `numParams` binders, and execute `x varNames` where `varNames` contains the new binder names. -/
 private partial def skippingBinders {α} (numParams : Nat) (x : Array Name → DelabM α) : DelabM α :=
@@ -267,75 +268,76 @@ where
             mkLambdaFVars xs (mkAppN e xs)
         withTheReader SubExpr (fun ctx => { ctx with expr := e }) visitLambda
 
-/--
-  Delaborate applications of "matchers" such as
-  ```
-  List.map.match_1 : {α : Type _} →
-    (motive : List α → Sort _) →
-      (x : List α) → (Unit → motive List.nil) → ((a : α) → (as : List α) → motive (a :: as)) → motive x
-  ```
--/
-@[delab app]
-def delabAppMatch : Delab := whenPPOption getPPNotation <| whenPPOption getPPMatch do
-  checkDepth
-  -- incrementally fill `AppMatchState` from arguments
-  let st ← withAppFnArgs
-    (do
-      let (Expr.const c us) ← getExpr | failure
-      let (some info) ← getMatcherInfo? c | failure
-      let matcherTy ← instantiateTypeLevelParams (← getConstInfo c) us
-      return { matcherTy, info : AppMatchState })
-    (fun st => do
-      if st.params.size < st.info.numParams then
-        return { st with params := st.params.push (← getExpr) }
-      else if st.motive.isNone then
-        -- store motive argument separately
-        let lamMotive ← getExpr
-        let piMotive ← lambdaTelescope lamMotive fun xs body => mkForallFVars xs body
-        -- TODO: pp.analyze has not analyzed `piMotive`, only `lamMotive`
-        -- Thus the binder types won't have any annotations
-        let piStx ← withTheReader SubExpr (fun cfg => { cfg with expr := piMotive }) delabVerbose
-        let named ← getPPOption getPPAnalysisNamedArg
-        return { st with motive := (piStx, lamMotive), motiveNamed := named }
-      else if st.discrs.size < st.info.numDiscrs then
-        let idx := st.discrs.size
-        let discr ← delabVerbose
-        if let some hName := st.info.discrInfos[idx]!.hName? then
-          -- TODO: we should check whether the corresponding binder name, matches `hName`.
-          -- If it does not we should pretty print this `match` as a regular application.
-          return { st with discrs := st.discrs.push (← `(matchDiscr| $(mkIdent hName) : $discr)) }
-        else
-          return { st with discrs := st.discrs.push (← `(matchDiscr| $discr:term)) }
-      else if st.rhss.size < st.info.altNumParams.size then
-        /- We save the variables names here to be able to implement safe_shadowing.
-           The pattern delaboration must use the names saved here. -/
-        let (varNames, rhs) ← skippingBinders st.info.altNumParams[st.rhss.size]! fun varNames => do
-          let rhs ← delabVerbose
-          return (varNames, rhs)
-        return { st with rhss := st.rhss.push rhs, varNames := st.varNames.push varNames }
-      else
-        return { st with moreArgs := st.moreArgs.push (← delabVerbose) })
+#check delabAppMatch
+-- /--
+--   Delaborate applications of "matchers" such as
+--   ```
+--   List.map.match_1 : {α : Type _} →
+--     (motive : List α → Sort _) →
+--       (x : List α) → (Unit → motive List.nil) → ((a : α) → (as : List α) → motive (a :: as)) → motive x
+--   ```
+-- -/
+-- @[delab app]
+-- def delabAppMatch : Delab := whenPPOption getPPNotation <| whenPPOption getPPMatch do
+--   checkDepth
+--   -- incrementally fill `AppMatchState` from arguments
+--   let st ← withAppFnArgs
+--     (do
+--       let (Expr.const c us) ← getExpr | failure
+--       let (some info) ← getMatcherInfo? c | failure
+--       let matcherTy ← instantiateTypeLevelParams (← getConstInfo c) us
+--       return { matcherTy, info : AppMatchState })
+--     (fun st => do
+--       if st.params.size < st.info.numParams then
+--         return { st with params := st.params.push (← getExpr) }
+--       else if st.motive.isNone then
+--         -- store motive argument separately
+--         let lamMotive ← getExpr
+--         let piMotive ← lambdaTelescope lamMotive fun xs body => mkForallFVars xs body
+--         -- TODO: pp.analyze has not analyzed `piMotive`, only `lamMotive`
+--         -- Thus the binder types won't have any annotations
+--         let piStx ← withTheReader SubExpr (fun cfg => { cfg with expr := piMotive }) delabVerbose
+--         let named ← getPPOption getPPAnalysisNamedArg
+--         return { st with motive := (piStx, lamMotive), motiveNamed := named }
+--       else if st.discrs.size < st.info.numDiscrs then
+--         let idx := st.discrs.size
+--         let discr ← delabVerbose
+--         if let some hName := st.info.discrInfos[idx]!.hName? then
+--           -- TODO: we should check whether the corresponding binder name, matches `hName`.
+--           -- If it does not we should pretty print this `match` as a regular application.
+--           return { st with discrs := st.discrs.push (← `(matchDiscr| $(mkIdent hName) : $discr)) }
+--         else
+--           return { st with discrs := st.discrs.push (← `(matchDiscr| $discr:term)) }
+--       else if st.rhss.size < st.info.altNumParams.size then
+--         /- We save the variables names here to be able to implement safe_shadowing.
+--            The pattern delaboration must use the names saved here. -/
+--         let (varNames, rhs) ← skippingBinders st.info.altNumParams[st.rhss.size]! fun varNames => do
+--           let rhs ← delabVerbose
+--           return (varNames, rhs)
+--         return { st with rhss := st.rhss.push rhs, varNames := st.varNames.push varNames }
+--       else
+--         return { st with moreArgs := st.moreArgs.push (← delabVerbose) })
 
-  if st.discrs.size < st.info.numDiscrs || st.rhss.size < st.info.altNumParams.size then
-    -- underapplied
-    failure
+--   if st.discrs.size < st.info.numDiscrs || st.rhss.size < st.info.altNumParams.size then
+--     -- underapplied
+--     failure
 
-  match st.discrs, st.rhss with
-  | #[discr], #[] =>
-    let stx ← `(nomatch $discr)
-    return Syntax.mkApp stx st.moreArgs
-  | _,        #[] => failure
-  | _,        _   =>
-    let pats ← delabPatterns st
-    let stx ← do
-      let (piStx, lamMotive) := st.motive.get!
-      let opts ← getOptions
-      -- TODO: disable the match if other implicits are needed?
-      if ← pure st.motiveNamed <||> shouldShowMotive lamMotive opts then
-        `(match (motive := $piStx) $[$st.discrs:matchDiscr],* with $[| $pats,* => $st.rhss]*)
-      else
-        `(match $[$st.discrs:matchDiscr],* with $[| $pats,* => $st.rhss]*)
-    return Syntax.mkApp stx st.moreArgs
+--   match st.discrs, st.rhss with
+--   | #[discr], #[] =>
+--     let stx ← `(nomatch $discr)
+--     return Syntax.mkApp stx st.moreArgs
+--   | _,        #[] => failure
+--   | _,        _   =>
+--     let pats ← delabPatterns st
+--     let stx ← do
+--       let (piStx, lamMotive) := st.motive.get!
+--       let opts ← getOptions
+--       -- TODO: disable the match if other implicits are needed?
+--       if ← pure st.motiveNamed <||> shouldShowMotive lamMotive opts then
+--         `(match (motive := $piStx) $[$st.discrs:matchDiscr],* with $[| $pats,* => $st.rhss]*)
+--       else
+--         `(match $[$st.discrs:matchDiscr],* with $[| $pats,* => $st.rhss]*)
+--     return Syntax.mkApp stx st.moreArgs
 
 /--
   Delaborate applications of the form `(fun x => b) v` as `let_fun x := v; b`

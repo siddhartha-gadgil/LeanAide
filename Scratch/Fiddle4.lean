@@ -200,3 +200,16 @@ example : 2 ≤ 1 := by
 
 #check Nat.infinite_setOf_prime
 #check lambdaTelescope
+
+def omitEg : MetaM Syntax := do
+  let stx ← `(⋯)
+  let stx' ← `(($stx : Nat))
+  pure stx'
+
+#check delab
+#check withOptions
+
+set_option pp.match false in
+set_option pp.proofs false in
+set_option pp.proofs.withType true in
+#print List.get
