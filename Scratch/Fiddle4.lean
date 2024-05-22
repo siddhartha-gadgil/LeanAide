@@ -213,3 +213,10 @@ set_option pp.match false in
 set_option pp.proofs false in
 set_option pp.proofs.withType true in
 #print List.get
+
+set_option pp.proofs.threshold 40
+
+set_option pp.match false in
+set_option pp.proofs false in
+set_option pp.proofs.withType true in
+#print List.sizeOf_dedupKeys

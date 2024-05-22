@@ -25,7 +25,7 @@ universe u v w u_1 u_2 u_3 u₁ u₂ u₃
 open LeanAide.Meta
 
 set_option pp.match false
-set_option pp.structureProjections false
+set_option pp.fieldNotation false
 
 /-- Remove the added `=: prop` from syntax -/
 partial def Lean.Syntax.purge: Syntax → MetaM Syntax := fun stx ↦ do
@@ -286,7 +286,7 @@ def Lean.Syntax.premiseDataM (context : Array Syntax)
 def DefData.getM? (name: Name)(term type: Expr) : MetaM (Option  DefData) :=  withOptions (fun o =>
                     let o' :=  pp.match.set o false
                     let o'' :=
-                        pp.structureProjections.set o' false
+                        pp.fieldNotation.set o' false
                     pp.unicode.fun.set o'' true
                     )
     do
@@ -327,7 +327,7 @@ def verboseView? (name: Name) : MetaM (Option String) :=
     withOptions (fun o =>
                     let o' :=  pp.match.set o false
                     let o'' :=
-                        pp.structureProjections.set o' false
+                        pp.fieldNotation.set o' false
                     pp.unicode.fun.set o'' true)
     do
     let info ←  getConstInfo name
