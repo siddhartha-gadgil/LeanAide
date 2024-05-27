@@ -364,6 +364,18 @@ partial def lineBlocks (input: String) : List String :=
       let head := input.takeWhile (fun c => c != '\n')
       head :: (tailBlocks.map (fun b => head ++ "\n" ++ b)) ++ tailBlocks
 
+
+
+def termKinds : MetaM <| SyntaxNodeKindSet :=  do
+    let env ← getEnv
+    let categories := (parserExtension.getState env).categories
+    let termCat? := getCategory categories `term
+    return termCat?.get!.kinds
+
+def termKindList : MetaM <| List SyntaxNodeKind := do
+    let s ← termKinds
+    pure <| s.toList.map (·.1)
+
 -- #check String.dropWhile
 
 -- #check '\n'

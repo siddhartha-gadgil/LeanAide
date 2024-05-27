@@ -574,16 +574,6 @@ end PremiseData
 
 
 
-def termKinds : MetaM <| SyntaxNodeKindSet :=  do
-    let env ← getEnv
-    let categories := (parserExtension.getState env).categories
-    let termCat? := getCategory categories `term
-    return termCat?.get!.kinds
-
-def termKindList : MetaM <| List SyntaxNodeKind := do
-    let s ← termKinds
-    pure <| s.toList.map (·.1)
-
 partial def Lean.Syntax.size (stx: Syntax) : Nat :=
     match stx with
     | Syntax.ident _ _ _ _ => 1

@@ -220,3 +220,5 @@ set_option pp.match false in
 set_option pp.proofs false in
 set_option pp.proofs.withType true in
 #print List.sizeOf_dedupKeys
+
+#check Syntax.getKind
