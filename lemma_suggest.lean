@@ -29,6 +29,7 @@ unsafe def main  : IO Unit := do
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanCodePrompts.Translate}] {}
   let source ← IO.FS.readFile ("rawdata" / "premises" / "ident_pairs" / "more-frequencies.json")
+  let h ← IO.FS.Handle.mk ("rawdata" / "premises" / "ident_pairs" / "lemmas.json") IO.FS.Mode.append
   let jsSource ←  match Json.parse source with
     | Except.error _ => IO.throwServerError "failed to parse"
     | Except.ok j => pure j
@@ -47,38 +48,40 @@ unsafe def main  : IO Unit := do
   let num := 10
   let picklePath ← picklePath descField
   let penalty := 2.0
-  let cacheMap ← getCachedDescriptionsMap
-  IO.println s!"{cacheMap.size} descriptions in cache\n"
   withUnpickle  picklePath <|
     fun (data : Array <| (String × String × Bool × String) ×  FloatArray) => do
     let mut count := 0
     count := count + 1
+    let mut cacheMap ← getCachedDescriptionsMap
     for name in names[:3] do
-    IO.println s!"{count} {name}"
-    let core := getDescriptionCachedCore name cacheMap
-    let io? ←
-      core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000} {env := env} |>.runToIO'
-    match io? with
-    | none =>
-      IO.println "failed to obtain description"
-    | some json =>
-      IO.println json.pretty
-      let doc? := json.getObjValAs? String descField
-      match doc? with
-      | Except.error _ => IO.println "failed to obtain description"
-      | Except.ok  doc =>
-        let embs ← nearestDocsToDocFull data doc num (penalty := penalty)
-        let nameDescs := embs.map fun (doc, _, _, name, _) =>
-          (name.toName, doc)
-      -- logTimed "found nearest"
-      -- let out :=
-      --   Lean.Json.arr <|
-      --     embs.toArray.map fun (doc, thm, isProp, name, d) =>
-      --       Json.mkObj <| [
-      --         ("docString", Json.str doc),
-      --         ("theorem", Json.str thm),
-      --         ("isProp", Json.bool isProp),
-      --         ("name", Json.str name),
-      --         ("distance", toJson d)
-      --       ]
-      -- IO.print out.compress
+      IO.println s!"{count} {name}"
+      IO.println s!"{cacheMap.size} descriptions in cache\n"
+      let core := getDescriptionCachedCore name cacheMap
+      let io? ←
+        core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000} {env := env} |>.runToIO'
+      match io? with
+      | none =>
+        IO.println "failed to obtain description"
+      | some json =>
+        IO.println json.pretty
+        cacheMap := cacheMap.insert name json
+        let doc? := json.getObjValAs? String descField
+        match doc? with
+        | Except.error _ => IO.println "failed to obtain description"
+        | Except.ok  doc =>
+          let embs ← nearestDocsToDocFull data doc num (penalty := penalty)
+          let lemmaPairs := embs.map fun (doc, _, _, name, _) =>
+            (name.toName, doc)
+          let core := lemmaChatQueryCore? name.toName doc 12 lemmaPairs
+          let io? ←
+            core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000} {env := env} |>.runToIO'
+          match io? with
+          | none =>
+            IO.println "failed to obtain chat"
+          | some arr =>
+            IO.println s!"Obtained lemmas for {name}"
+            for s in arr do
+              IO.println s
+            let js := Json.mkObj [("name", name), ("lemmas", toJson arr)]
+            h.putStrLn js.compress
+            IO.sleep 10000
