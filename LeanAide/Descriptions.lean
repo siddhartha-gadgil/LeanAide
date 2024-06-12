@@ -209,4 +209,84 @@ def getDescriptionCachedCore (name: String)
   (cacheMap: HashMap String Json) : CoreM (Option Json) :=
   (getDescriptionCached name cacheMap).run' {}
 
+def lemmaUserPrompt' (name: Name)(description: String) :
+  MetaM <| Option String := do
+  let env ← getEnv
+  let info? := env.find? name
+  match info? with
+    | some (.thmInfo dfn) =>
+        let type := dfn.type
+        let thm ← ppExpr type
+        let thm := thm.pretty
+        fromTemplate "suggest_lemma"
+          [("description", description), ("theorem", thm), ("name", name.toString)]
+    | _ => return none
+
+/--
+If theorem type is known, which is the case for nearest embeddings.
+-/
+def lemmaUserPrompt (name: Name)(thm description: String) :
+  IO <| String := do
+      fromTemplate "suggest_lemma"
+          [("description", description), ("theorem", thm), ("name", name.toString)]
+
+def lemmaChatExamples (name: Name)(description: String) : MetaM <|
+  Option (Array ChatExample) := do
+  let env ← getEnv
+  let info? := env.find? name
+  match info? with
+    | some (.thmInfo dfn) =>
+        let type := dfn.type
+        let thm ← ppExpr type
+        let thm := thm.pretty
+        let consts := dfn.value.getUsedConstants
+        let consts := consts.filter fun name =>
+          !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name))
+        let consts := consts.filter fun name =>
+          ![``Eq.mp, ``Eq.mpr, ``congrArg, ``id].contains name
+        let lemmas ← consts.filterMapM theoremStatement
+        let userPrompt ← lemmaUserPrompt name thm description
+        return some <| lemmas.map fun l =>
+          {user := userPrompt, assistant := l}
+    | _ => return none
+
+def allLemmaChatExamples (pairs: List (Name × String)) : MetaM <|
+  Array ChatExample := do
+  let examples ← pairs.filterMapM fun (name, desc) =>
+    lemmaChatExamples name desc
+  return examples.foldl (init := #[]) (· ++ ·)
+
+def selectedChatExamples (n: Nat) (pairs: List (Name × String)) : MetaM <|
+  List ChatExample := do
+  let examples ← allLemmaChatExamples pairs
+  List.range n |>.mapM fun _ => do
+    let i ← IO.rand 0 (examples.size - 1)
+    pure <| examples.get! i
+
+def lemmaChatMessageM? (name: Name)(description: String)(n: Nat)
+  (lemmaPairs: List (Name × String)) : MetaM <| Option Json := do
+  let examples ← selectedChatExamples n lemmaPairs
+  let query? ← lemmaUserPrompt' name description
+  let sys ← sysPrompt
+  query?.mapM fun query =>
+    GPT.mkMessages query examples.toArray sys
+
+def lemmaChatQueryM? (name: Name)(description: String)(n: Nat)
+  (lemmaPairs: List (Name × String)) : MetaM <| Option (Array String) := do
+  let messages? ← lemmaChatMessageM? name description n lemmaPairs
+  let server := ChatServer.azure
+  let params : ChatParams := {n := 10}
+  match messages? with
+  | some messages =>
+    let fullJson ←  server.query messages params
+    let outJson :=
+        (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
+    let contents ←  getMessageContents outJson
+    return some contents
+  | none => return none
+
+def lemmaChatQueryCore? (name: Name)(description: String)(n: Nat)
+  (lemmaPairs: List (Name × String)) : CoreM <| Option (Array String) :=
+  (lemmaChatQueryM? name description n lemmaPairs).run' {}
+
 end LeanAide.Meta

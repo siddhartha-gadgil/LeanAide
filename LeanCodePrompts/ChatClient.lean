@@ -196,6 +196,7 @@ end ChatServer
 structure ChatExample where
   user : String
   assistant : String
+deriving FromJson, ToJson, Repr, DecidableEq, Inhabited
 
 def ChatExample.messages (ex : ChatExample)(responder := "assistant") : List Json :=
   [Json.mkObj [("role", "user"), ("content", ex.user)],

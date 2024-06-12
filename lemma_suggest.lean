@@ -52,6 +52,7 @@ unsafe def main  : IO Unit := do
   withUnpickle  picklePath <|
     fun (data : Array <| (String × String × Bool × String) ×  FloatArray) => do
     let mut count := 0
+    count := count + 1
     for name in names[:3] do
     IO.println s!"{count} {name}"
     let core := getDescriptionCachedCore name cacheMap
@@ -62,17 +63,22 @@ unsafe def main  : IO Unit := do
       IO.println "failed to obtain description"
     | some json =>
       IO.println json.pretty
-    count := count + 1
-    -- let embs ← nearestDocsToDocFull data doc num (penalty := penalty)
-    -- logTimed "found nearest"
-    -- let out :=
-    --   Lean.Json.arr <|
-    --     embs.toArray.map fun (doc, thm, isProp, name, d) =>
-    --       Json.mkObj <| [
-    --         ("docString", Json.str doc),
-    --         ("theorem", Json.str thm),
-    --         ("isProp", Json.bool isProp),
-    --         ("name", Json.str name),
-    --         ("distance", toJson d)
-    --       ]
-    -- IO.print out.compress
+      let doc? := json.getObjValAs? String descField
+      match doc? with
+      | Except.error _ => IO.println "failed to obtain description"
+      | Except.ok  doc =>
+        let embs ← nearestDocsToDocFull data doc num (penalty := penalty)
+        let nameDescs := embs.map fun (doc, _, _, name, _) =>
+          (name.toName, doc)
+      -- logTimed "found nearest"
+      -- let out :=
+      --   Lean.Json.arr <|
+      --     embs.toArray.map fun (doc, thm, isProp, name, d) =>
+      --       Json.mkObj <| [
+      --         ("docString", Json.str doc),
+      --         ("theorem", Json.str thm),
+      --         ("isProp", Json.bool isProp),
+      --         ("name", Json.str name),
+      --         ("distance", toJson d)
+      --       ]
+      -- IO.print out.compress
