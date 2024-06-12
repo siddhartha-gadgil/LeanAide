@@ -55,7 +55,7 @@ def main : IO Unit := do
           | Except.error _ =>
               IO.println s!"Failed to parse JSON"
           | Except.ok name => do
-            let core := needsIndCore name
+            let core := needsIndCore name.toName
             let names? ← core.run' coreContext {env := env} |>.runToIO'
             match names? with
             | none => pure ()

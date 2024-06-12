@@ -90,6 +90,10 @@ lean_exe fetch_embeddings
 
 lean_exe nearest_embeddings_test
 
+lean_exe lemma_suggest{
+  supportInterpreter := true
+}
+
 lean_exe getpremises{
   supportInterpreter := true
 }

@@ -28,8 +28,50 @@ def theoremAndDefs (name: Name) : MetaM <|
         return some (statement, defViews)
     | _ => return none
 
-#eval theoremAndDefs ``List.length_cons
+def theoremStatement (name: Name) : MetaM <|
+  Option (String) := do
+  let env ← getEnv
+  let info? := env.find? name
+  match info? with
+    | some (.thmInfo dfn) =>
+        let type := dfn.type
+        let typeStx ← PrettyPrinter.delab type
+        let valueStx? := none
+        let statement ←
+          mkStatement (some name) typeStx valueStx? true
+        let doc? ← findDocString? env name
+        let statement := match doc? with
+          | some doc => s!"/-- {doc} -/\n" ++ statement
+          | none => statement
+        return some statement
+    | _ => return none
 
+def theoremAndLemmas (name: Name) : MetaM <|
+  Option (String × (Array String)) := do
+  let env ← getEnv
+  let info? := env.find? name
+  match info? with
+    | some (.thmInfo dfn) =>
+        let type := dfn.type
+        let typeStx ← PrettyPrinter.delab type
+        let valueStx? := none
+        let statement ←
+          mkStatement (some name) typeStx valueStx? true
+        let doc? ← findDocString? env name
+        let statement := match doc? with
+          | some doc => s!"/-- {doc} -/\n" ++ statement
+          | none => statement
+        let consts := dfn.value.getUsedConstants
+        let consts := consts.filter fun name =>
+          !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name))
+        let consts := consts.filter fun name =>
+          ![``Eq.mp, ``Eq.mpr, ``congrArg, ``id].contains name
+        let lemmas ← consts.filterMapM theoremStatement
+        return some (statement, lemmas)
+    | _ => return none
+
+#eval theoremAndDefs ``List.length_cons
+#eval theoremAndLemmas ``Nat.le_of_ble_eq_true
 
 def theoremPrompt (name: Name) : MetaM <| Option (String × String) := do
   (← theoremAndDefs name).mapM fun (statement, dfns) =>
@@ -122,5 +164,49 @@ def modulePairs : CoreM <| Array (Name × Array Name × Array String) := do
     return (name, data, docs)
   return withDocs.map
       (fun (name, data, docs) => (name, data.constNames, docs))
+
+def descCachePath : IO System.FilePath := pure
+  ("rawdata"/ "premises" / "ident_pairs"/"extra-descriptions.jsonl")
+
+def getCachedDescriptions : IO (Array Json) := do
+  let path ← descCachePath
+  if ← path.pathExists then
+    let lines ← IO.FS.lines path
+    let jsons := lines.filterMap fun js => Json.parse js |>.toOption
+    return jsons
+  else return #[]
+
+def cacheDescription (js: Json) : IO Unit := do
+  let path ← descCachePath
+  let jsStr := js.compress
+  if ← path.pathExists then
+    let h ← IO.FS.Handle.mk path IO.FS.Mode.append
+    h.putStrLn jsStr
+  else IO.FS.writeFile path (jsStr ++ "\n")
+
+def getCachedDescriptionsMap : IO (HashMap String Json) := do
+  let cached ← getCachedDescriptions
+  let pairs := cached.filterMap fun js => do
+    let name? := js.getObjValAs? String "name" |>.toOption
+    name?.map fun name => (name, js)
+  return pairs.foldl (init := {}) fun m (name, js) => m.insert name js
+
+def getDescriptionCached (name: String)
+  (cacheMap: HashMap String Json) : MetaM (Option Json) := do
+  match cacheMap.find? name with
+  | some js => return some js
+  | none =>
+    let desc? ← getDescriptionM name.toName
+    match desc? with
+      | some (desc, statement) =>
+        let js := Json.mkObj [("name", name),
+          ("statement", statement), ("description", desc)]
+        cacheDescription js
+        return some js
+      | none => return none
+
+def getDescriptionCachedCore (name: String)
+  (cacheMap: HashMap String Json) : CoreM (Option Json) :=
+  (getDescriptionCached name cacheMap).run' {}
 
 end LeanAide.Meta
