@@ -29,7 +29,22 @@ unsafe def main  : IO Unit := do
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanCodePrompts.Translate}] {}
   let source ← IO.FS.readFile ("rawdata" / "premises" / "ident_pairs" / "more-frequencies.json")
-  let h ← IO.FS.Handle.mk ("rawdata" / "premises" / "ident_pairs" / "lemmas.json") IO.FS.Mode.append
+  let outFile : System.FilePath := "rawdata" / "premises" / "ident_pairs" / "lemmas.json"
+  let outLines ← IO.FS.lines outFile
+  let preNames := outLines.filterMap fun line =>
+    match Json.parse line with
+    | Except.error _ => none
+    | Except.ok j => j.getObjValAs? String "name" |>.toOption
+  let errFile : System.FilePath := "rawdata" / "premises" / "ident_pairs" / "lemma-errors.txt"
+  let errLines ←
+    if ← errFile.pathExists then
+      IO.FS.lines errFile
+    else
+      pure #[]
+  let preNames := preNames ++ errLines
+  let errH ← IO.FS.Handle.mk errFile IO.FS.Mode.append
+  IO.eprintln s!"{preNames.size} names already done\n"
+  let h ← IO.FS.Handle.mk outFile IO.FS.Mode.append
   let jsSource ←  match Json.parse source with
     | Except.error _ => IO.throwServerError "failed to parse"
     | Except.ok j => pure j
@@ -41,7 +56,8 @@ unsafe def main  : IO Unit := do
   IO.println s!"{jsArray.size} theorems with frequency 2\n"
   let names := jsArray.filterMap fun js =>
     js.getObjValAs? String "name" |>.toOption
-  IO.println s!"{names.size} names\n"
+  let names := names.filter fun name => !preNames.contains name
+  IO.println s!"{names.size} names remaining\n"
   for descField in ["docString", "description", "concise-description"] do
     checkAndFetch descField
   let descField := "description"
@@ -62,12 +78,15 @@ unsafe def main  : IO Unit := do
       match io? with
       | none =>
         IO.println "failed to obtain description"
+        errH.putStrLn name
       | some json =>
         IO.println json.pretty
         cacheMap := cacheMap.insert name json
         let doc? := json.getObjValAs? String descField
         match doc? with
-        | Except.error _ => IO.println "failed to obtain description"
+        | Except.error _ =>
+          IO.println "failed to obtain description"
+          errH.putStrLn name
         | Except.ok  doc =>
           let embs ← nearestDocsToDocFull data doc num (penalty := penalty)
           let lemmaPairs := embs.map fun (doc, _, _, name, _) =>
@@ -78,10 +97,11 @@ unsafe def main  : IO Unit := do
           match io? with
           | none =>
             IO.println "failed to obtain chat"
-          | some arr =>
+            errH.putStrLn name
+          | some (arr, thm, lemmas) =>
             IO.println s!"Obtained lemmas for {name}"
             for s in arr do
               IO.println s
-            let js := Json.mkObj [("name", name), ("lemmas", toJson arr)]
+            let js := Json.mkObj [("name", name), ("theorem", thm), ("suggested-lemmas", toJson arr), ("lemmas", toJson lemmas)]
             h.putStrLn js.compress
             IO.sleep 10000

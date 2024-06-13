@@ -272,21 +272,23 @@ def lemmaChatMessageM? (name: Name)(description: String)(n: Nat)
     GPT.mkMessages query examples.toArray sys
 
 def lemmaChatQueryM? (name: Name)(description: String)(n: Nat)
-  (lemmaPairs: List (Name × String)) : MetaM <| Option (Array String) := do
+  (lemmaPairs: List (Name × String)) : MetaM <| Option (Array String × String × Array String) := do
   let messages? ← lemmaChatMessageM? name description n lemmaPairs
+  let thmLemmas? ← theoremAndLemmas name
   let server := ChatServer.azure
   let params : ChatParams := {n := 10}
-  match messages? with
-  | some messages =>
+  match (messages?, thmLemmas?) with
+  | (some messages, some (thm, lemmas)) =>
     let fullJson ←  server.query messages params
     let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
     let contents ←  getMessageContents outJson
-    return some contents
-  | none => return none
+    return some (contents, thm, lemmas)
+  | _ => return none
 
 def lemmaChatQueryCore? (name: Name)(description: String)(n: Nat)
-  (lemmaPairs: List (Name × String)) : CoreM <| Option (Array String) :=
+  (lemmaPairs: List (Name × String)) :
+    CoreM <| Option (Array String × String × Array String) :=
   (lemmaChatQueryM? name description n lemmaPairs).run' {}
 
 end LeanAide.Meta
