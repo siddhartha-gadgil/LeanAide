@@ -30,11 +30,15 @@ unsafe def main  : IO Unit := do
     {module:= `LeanCodePrompts.Translate}] {}
   let source ← IO.FS.readFile ("rawdata" / "premises" / "ident_pairs" / "more-frequencies.json")
   let outFile : System.FilePath := "rawdata" / "premises" / "ident_pairs" / "lemmas.json"
-  let outLines ← IO.FS.lines outFile
-  let preNames := outLines.filterMap fun line =>
-    match Json.parse line with
-    | Except.error _ => none
-    | Except.ok j => j.getObjValAs? String "name" |>.toOption
+  let preNames ←
+    match ← outFile.pathExists with
+    | true =>
+      let outLines ← IO.FS.lines outFile
+      outLines.filterMapM fun line =>
+      match Json.parse line with
+      | Except.error _ => pure none
+      | Except.ok j => pure <| j.getObjValAs? String "name" |>.toOption
+    | false => pure #[]
   let errFile : System.FilePath := "rawdata" / "premises" / "ident_pairs" / "lemma-errors.txt"
   let errLines ←
     if ← errFile.pathExists then
