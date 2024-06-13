@@ -71,10 +71,10 @@ unsafe def main  : IO Unit := do
   withUnpickle  picklePath <|
     fun (data : Array <| (String × String × Bool × String) ×  FloatArray) => do
     let mut count := 0
-    count := count + 1
     let mut cacheMap ← getCachedDescriptionsMap
     for name in names do
       IO.println s!"{count} {name}"
+      count := count + 1
       IO.println s!"{cacheMap.size} descriptions in cache\n"
       let core := getDescriptionCachedCore name cacheMap
       let io? ←
