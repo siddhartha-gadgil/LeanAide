@@ -29,7 +29,7 @@ unsafe def main  : IO Unit := do
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanCodePrompts.Translate}] {}
   let source ← IO.FS.readFile ("rawdata" / "premises" / "ident_pairs" / "more-frequencies.json")
-  let outFile : System.FilePath := "rawdata" / "premises" / "ident_pairs" / "lemmas.json"
+  let outFile : System.FilePath := "rawdata" / "premises" / "ident_pairs" / "lemmas.jsonl"
   let preNames ←
     match ← outFile.pathExists with
     | true =>
