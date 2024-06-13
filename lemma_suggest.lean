@@ -73,7 +73,7 @@ unsafe def main  : IO Unit := do
     let mut count := 0
     count := count + 1
     let mut cacheMap ← getCachedDescriptionsMap
-    for name in names[:3] do
+    for name in names do
       IO.println s!"{count} {name}"
       IO.println s!"{cacheMap.size} descriptions in cache\n"
       let core := getDescriptionCachedCore name cacheMap
