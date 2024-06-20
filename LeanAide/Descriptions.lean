@@ -285,7 +285,7 @@ def lemmaChatQueryM? (name: Name)(description: String)(n: Nat)
   let messages? ← lemmaChatMessageM? name description n lemmaPairs
   let thmLemmas? ← theoremAndLemmas name filteredNames
   let server := ChatServer.azure
-  let params : ChatParams := {n := 15, temp := 1.6}
+  let params : ChatParams := {n := 12, temp := 1.6}
   match (messages?, thmLemmas?) with
   | (some messages, some (thm, lemmas)) =>
     let fullJson ←  server.query messages params

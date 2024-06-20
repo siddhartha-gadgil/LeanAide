@@ -111,4 +111,4 @@ unsafe def main  : IO Unit := do
               IO.println s
             let js := Json.mkObj [("name", name), ("theorem", thm), ("suggested-lemmas", toJson arr), ("lemmas", toJson lemmas)]
             h.putStrLn js.compress
-            IO.sleep 10000
+            IO.sleep 20000
