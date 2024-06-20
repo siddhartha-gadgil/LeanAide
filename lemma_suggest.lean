@@ -29,7 +29,10 @@ unsafe def main  : IO Unit := do
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanCodePrompts.Translate}] {}
   let source ← IO.FS.readFile ("rawdata" / "premises" / "ident_pairs" / "more-frequencies.json")
-  let outFile : System.FilePath := "rawdata" / "premises" / "ident_pairs" / "lemmas.jsonl"
+  let outDir : System.FilePath := "rawdata" / "premises" / "lemma_predictions"
+  if !(← outDir.pathExists) then
+    IO.FS.createDirAll outDir
+  let outFile : System.FilePath := outDir / "lemmas.jsonl"
   let preNames ←
     match ← outFile.pathExists with
     | true =>
@@ -39,7 +42,7 @@ unsafe def main  : IO Unit := do
       | Except.error _ => pure none
       | Except.ok j => pure <| j.getObjValAs? String "name" |>.toOption
     | false => pure #[]
-  let errFile : System.FilePath := "rawdata" / "premises" / "ident_pairs" / "lemma-errors.txt"
+  let errFile : System.FilePath := outDir / "lemma-errors.txt"
   let errLines ←
     if ← errFile.pathExists then
       IO.FS.lines errFile
@@ -65,7 +68,7 @@ unsafe def main  : IO Unit := do
   for descField in ["docString", "description", "concise-description"] do
     checkAndFetch descField
   let descField := "description"
-  let num := 10
+  let num := 20
   let picklePath ← picklePath descField
   let penalty := 2.0
   withUnpickle  picklePath <|

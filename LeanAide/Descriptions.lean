@@ -46,7 +46,17 @@ def theoremStatement (name: Name) : MetaM <|
         return some statement
     | _ => return none
 
-def theoremAndLemmas (name: Name) : MetaM <|
+def filteredNames (names: Array Name) : Array Name :=
+  let common := [``Eq.mp, ``Eq.mpr, ``congrArg, ``id, ``Eq.refl, ``trans, ``of_eq_true, ``trans, ``rfl, `symm, ``eq_self, `Eq, ``congr, ``propext, ``funext, ``Exists.intro, `left, `right, ``Iff.rfl, ``iff_self, `CategoryTheory.Functor.toPrefunctor, ``forall_congr, ``Eq.rec, ``Eq.ndrec, `Iff, ``And.left, ``And.right, ``And.intro, ``And.elim, ``And.rec, ``implies_congr, `obj, `map, ``And, `app, `hom, ``Not, ``Exists, ``eq_true, `self, ``HEq, ``HEq.refl, `congr_arg, `congr_fun, ``Subtype.property, ``Iff.trans, ``False, ``eq_false, ``true, ``false, ``not_false_eq_true, ``Trans.trans, ``True, ``inferInstance, `Set.ext,
+  `elim, `inst]
+  names.filter fun n =>
+    !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n)) &&
+    !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf n)) &&
+    !common.contains n
+
+
+def theoremAndLemmas (name: Name)
+  (lemmaFilter : Array Name → Array Name := id) : MetaM <|
   Option (String × (Array String)) := do
   let env ← getEnv
   let info? := env.find? name
@@ -66,6 +76,7 @@ def theoremAndLemmas (name: Name) : MetaM <|
           !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name))
         let consts := consts.filter fun name =>
           ![``Eq.mp, ``Eq.mpr, ``congrArg, ``id].contains name
+        let consts := lemmaFilter consts
         let lemmas ← consts.filterMapM theoremStatement
         return some (statement, lemmas)
     | _ => return none
@@ -230,6 +241,7 @@ def lemmaUserPrompt (name: Name)(thm description: String) :
       fromTemplate "suggest_lemma"
           [("description", description), ("theorem", thm), ("name", name.toString)]
 
+
 def lemmaChatExamples (name: Name)(description: String) : MetaM <|
   Option (Array ChatExample) := do
   let env ← getEnv
@@ -240,10 +252,7 @@ def lemmaChatExamples (name: Name)(description: String) : MetaM <|
         let thm ← ppExpr type
         let thm := thm.pretty
         let consts := dfn.value.getUsedConstants
-        let consts := consts.filter fun name =>
-          !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name))
-        let consts := consts.filter fun name =>
-          ![``Eq.mp, ``Eq.mpr, ``congrArg, ``id].contains name
+        let consts := filteredNames consts
         let lemmas ← consts.filterMapM theoremStatement
         let userPrompt ← lemmaUserPrompt name thm description
         return some <| lemmas.map fun l =>
@@ -274,9 +283,9 @@ def lemmaChatMessageM? (name: Name)(description: String)(n: Nat)
 def lemmaChatQueryM? (name: Name)(description: String)(n: Nat)
   (lemmaPairs: List (Name × String)) : MetaM <| Option (Array String × String × Array String) := do
   let messages? ← lemmaChatMessageM? name description n lemmaPairs
-  let thmLemmas? ← theoremAndLemmas name
+  let thmLemmas? ← theoremAndLemmas name filteredNames
   let server := ChatServer.azure
-  let params : ChatParams := {n := 10}
+  let params : ChatParams := {n := 15, temp := 1.6}
   match (messages?, thmLemmas?) with
   | (some messages, some (thm, lemmas)) =>
     let fullJson ←  server.query messages params
