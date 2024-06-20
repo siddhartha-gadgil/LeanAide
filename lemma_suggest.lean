@@ -106,7 +106,7 @@ unsafe def main  : IO Unit := do
             IO.println "failed to obtain chat"
             errH.putStrLn name
           | some (arr, thm, lemmas) =>
-            IO.println s!"Obtained lemmas for {name}"
+            IO.println s!"Obtained lemmas for {name}: {arr.size} lemmas"
             for s in arr do
               IO.println s
             let js := Json.mkObj [("name", name), ("theorem", thm), ("suggested-lemmas", toJson arr), ("lemmas", toJson lemmas)]
