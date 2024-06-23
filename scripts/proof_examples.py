@@ -4,9 +4,13 @@ from os.path import join
 from pathlib import Path
 from string import Template
 
+homedir = Path(".")
+if "lakefile.lean"  not in os.listdir(homedir):
+    homedir = Path("..")
+
 def proofs():
     pairs = []
-    for root, _, files in os.walk(join('llm_data', 'gpt-4-turbo-preview')):
+    for root, _, files in os.walk(join(homedir,join('llm_data', 'gpt-4-turbo-preview'))):
         for file in files:
             if file == "solve.json":
                 filepath = os.path.join(root, file)
@@ -23,9 +27,7 @@ def theorem_proof (problem, solution):
 {solution}
 """.replace('\\\\', '\\')
 
-homedir = Path(".")
-if "lakefile.lean"  not in os.listdir(homedir):
-    homedir = Path("..")
+
 resources = os.path.join(homedir, "resources")
 
 proof_template = open(os.path.join(resources, "JsonTemplate.md")).read()
