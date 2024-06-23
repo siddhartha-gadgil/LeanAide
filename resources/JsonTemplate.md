@@ -80,5 +80,5 @@ ${proof}
 
 ---
 
-Write the following proof in the JSON format. Note that the proof may be incorrect. If any step is incorrect, ambiguous or needs more proof, add a field **error** to any of the above types of objects. The **error** field should be a string describing the error. 
+Write the following proof in the JSON format. Note that the proof may be incorrect. If any step is incorrect or ambiguous add a field **error** to any of the above types of objects describing the error. If a step needs more proof, add a field **incomplete** to the step, with a text asking for the missing proof.
 
