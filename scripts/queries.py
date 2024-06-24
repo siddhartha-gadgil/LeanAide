@@ -326,7 +326,7 @@ class MistralChatClient(ChatClient):
         self.data_path = os.path.join(llm_dir, "mistral", model)
         os.makedirs(self.data_path, exist_ok=True)    
 
-    def choices(self, query, sys_prompt=sys_prompt,  n=3):
+    def choices(self, query, sys_prompt=sys_prompt, examples = [], n=3):
         messages = [ChatMessage(role="user", content=sys_prompt+'\n------\n'+ query)]
         completion = self.client.chat(
             model=self.model,

@@ -1,6 +1,6 @@
 The following is a JSON format for proofs. 
 
-Each JSON object has a "type" field. The possible values for this field are: "define", "observe", "assert", "theorem", "question", "problem", "assume", "let", "have", "consider", "choose", "proof", "cases", "induction", "case", "remark". An object can also have a "name" field, which is a string, to be used for reference (for instance it may be the name of a theorem). The different types of objects and their additional fields are as follows:
+Each JSON object has a "type" field. The possible values for this field are: "define", "observe", "assert", "theorem", "question", "problem", "assume", "let", "have", "choose", "proof", "cases", "induction", "case". An object can also have a "name" field, which is a string, to be used for reference (for instance it may be the name of a theorem). The different types of objects and their additional fields are as follows:
 
 * **Fix**: For a statement introducing a new variable.
   * Additional fields: 
@@ -11,9 +11,6 @@ Each JSON object has a "type" field. The possible values for this field are: "de
     * **Variable**: the variable being defined.
     * **Value**: the value being assigned to the variable.
 * **Have**: This is an anonymous let/fix statement, introducing an anonymous object such as a topology, group action etc to be used implicitly.
-  * Additional fields: 
-    * **Value**: the value of the anonymous object being introduced.
-* **Consider**: This is an anonymous let/fix statement, focussing on an anonymous object such as a topology, group action etc to be used implicitly.
   * Additional fields: 
     * **Value**: the value of the anonymous object being introduced.
 * **Assume**: A mathematical assumption being made. In case this is a variable or structure being introduced, use the **let** or **have** type.
@@ -33,7 +30,7 @@ Each JSON object has a "type" field. The possible values for this field are: "de
     * **Statement**: the mathematical observation.
 * **Assert**: A mathematical statement whose proof is a straightforward consequence of given results following some method.
   * Additional fields: 
-    * **Claim**: the mathematical claim being asserted, NOT INCLUDING proofs, justifications or results used. The claim should be purely a logical statement which is the *consequence* obtained.
+    * **Claim**: the mathematical claim being asserted, not including justifications or what is used.
     * **Deduced_from**: a JSON list of results used to prove the claim, each result either the name of a theorem or a short statement previously proved.
     * **Proof-method** (optional): the method of proof for the claim; this should be a single phrase or a fairly simple sentence; if a longer justification is needed break the step into smaller steps.
 * **Theorem**: The statement of a mathematical theorem, lemma or claim.
@@ -74,17 +71,22 @@ Each JSON object has a "type" field. The possible values for this field are: "de
   * Additional fields: 
     * **Assumption**: the assumption being made to contradict.
     * **Proof**: a ProofJSON block proving the negation of the assumption.
-* **Remark**: A remark or comment that is not mathematical, instead being for motivation, attention, sectioning etc.
-  * Additional fields: 
-    * **Statement**: the remark or comment.
 
 The following is a mathematical proof, which may or may not be correct, which is to be written in the JSON format:
 
 ---
 
-${proof}
+## Theorem: Let $A$ be a square matrix. Prove that if $A^2$ is invertible then $A$ is invertible.
+## Proof: 
+Assume $A^2$ is invertible. Then there exists a matrix $B$ such that $A^2B = BA^2 = I$, where $I$ is the identity matrix.
+
+Let $C = AB$. Then, we see that $AC = A(AB) = A^2B = I$.
+
+Thus, a right inverse for $A$ exists. Since $A$ is a square matrix, the existence of a right inverse also implies the existence of a left inverse (this follows from the rank-nullity theorem or by considering the determinant of $A$), thus proving $A$ is invertible.
+
 
 ---
 
 Write the following proof in the JSON format. Note that the proof may be incorrect. If any step is incorrect or ambiguous, add a field **error** to any of the above types of objects describing the error. If a step needs more proof, add a field **missing** which is a JSON list of **problem** fields which are problems that need to be solved or results that need to be proved to complete the proof. For missing details use a **missing** field, not an **error** field.
 
+'
