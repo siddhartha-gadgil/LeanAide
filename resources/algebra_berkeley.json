@@ -1,23 +1,23 @@
 {
     "Problem 6.1.1": {
         "Problem": "_Let \\(G\\) be the collection of 2\\(\\times\\)2 real matrices with nonzero determinant. Define the product of two elements in \\(G\\) as the usual matrix product. group,\\(\\wp\\)center_\n\n1. _Show that_ \\(G\\) _is a group._\n2. _Find the_ center\\__\\(Z\\) \\_of_ \\(G\\)_; that is, the set of all elements_ \\(z\\) _of_ \\(G\\) _such that_ \\(az=za\\) _for all_ \\(a\\in G\\)_._\n3. _Show that the set_ \\(O\\) _of real orthogonal matrices is a subgroup of_ \\(G\\) _(a matrix is_ orthogonal _if_ \\(AA^{t}=I\\)_, where_ \\(A^{t}\\) _denotes the transpose of A). Show by example that_ \\(O\\) _is not a normal subgroup._\n4. _Find a nontrivial homomorphism from_ \\(G\\) _onto an abelian group._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.1.2": {
         "Problem": "_Let \\(G\\) be the set of 3\\(\\times\\)3 real matrices with zeros below the diagonal and ones on the diagonal._\n\n1. _Prove_ \\(G\\) _is a group under matrix multiplication._\n2. _Determine the center of_ \\(G\\)_._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.1.3": {
         "Problem": "_For each of the following either give an example or else prove that no such example is possible._\n\n1. _A nonabelian group.\\_2. \\_A finite abelian group that is not cyclic._\n2. _An infinite group with a subgroup of index_ \\(5\\)_._\n3. _Two finite groups that have the same order but are not isomorphic._\n4. _A group_ \\(G\\) _with a subgroup_ \\(H\\) _that is_ not _normal._\n5. _A nonabelian group with no normal subgroups except the whole group and the unit element._\n6. _A group_ \\(G\\) _with a normal subgroup_ \\(H\\) _such that the factor group_ \\(G/H\\) _is_ not _isomorphic to any subgroup of_ \\(G\\)_._\n7. _A group_ \\(G\\) _with a subgroup_ \\(H\\) _which has index_ \\(2\\) _but is_ not _normal._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.1.4": {
         "Problem": "_Let \\(R\\) be a ring with multiplicative identity \\(1\\). Call \\(x\\in R\\) a unit if \\(xy=1\\) for some \\(y\\in R\\). Let \\(G(R)\\) denote the set of units._\n\n1. _Prove_ \\(G(R)\\) _is a multiplicative group._\n2. _Let_ \\(R\\) _be the ring of complex numbers_ \\(a+bi\\)_, where_ \\(a\\) _and_ \\(b\\) _are integers. Prove_ \\(G(R)\\) _is isomorphic to_ \\(\\mathbb{Z}_{4}\\) _(the additive group of integers modulo* \\(4\\)*).\\_",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.1.5": {
         "Problem": "_In the triangular network in \\(\\mathbb{R}^{2}\\) which is depicted below, the points \\(P_{0}\\), \\(P*{1}\\), \\(P*{2}\\), and \\(P*{3}\\) are respectively \\((0,0)\\), \\((1,0)\\), \\((0,1)\\), and \\((1,1)\\). Describe the structure of the group of all Euclidean transformations of \\(\\mathbb{R}^{2}\\) which leave this network invariant.*",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.1.6": {
         "Problem": "_Does the set \\(G=\\{a\\in\\mathbb{R}\\mid a>0,a\\neq 1\\}\\) form a group with the operation \\(a\\*b=a^{\\log b}\\)?_",
@@ -25,7 +25,7 @@
     },
     "Problem 6.1.7": {
         "Problem": "_Let \\(G\\) be a finite group. A conjugacy class is a set of the form_\n\n\\[C(a)=\\{bab^{-1}\\mid b\\in G\\}\\]\n\n_for some \\(a\\in G\\)._\n\n1. _Prove that the number of elements in a conjugacy class divides the order of_ \\(G\\)_._\n2. _Do all conjugacy classes have the same number of elements?_\n3. _If_ \\(G\\) _has only two conjugacy classes, prove_ \\(G\\) _has order_ \\(2\\)_._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.1.8": {
         "Problem": "_Let \\(G\\) be a finite nontrivial group with the property that for any two elements \\(a\\) and \\(b\\) in \\(G\\) different from the identity, there is an element \\(c\\) in \\(G\\) such that \\(b=c^{-1}ac\\). Prove that \\(G\\) has order \\(2\\)._",
@@ -33,7 +33,7 @@
     },
     "Problem 6.1.9": {
         "Problem": "_For a \\(p\\)-group of order \\(p^{4}\\), assume the center of \\(G\\) has order \\(p^{2}\\). Determine the number of conjugacy classes of \\(G\\)._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.1.10": {
         "Problem": "_In a commutative group \\(G\\), let the element \\(a\\) have order \\(r\\), let \\(b\\) have order \\(s\\)\\((r,s<\\infty)\\), and assume that the greatest common divisor of \\(r\\) and \\(s\\) is \\(1\\). Show that \\(ab\\) has order \\(rs\\)._",
@@ -41,7 +41,7 @@
     },
     "Problem 6.1.11": {
         "Problem": "_Let \\(G\\) be a group. For any subset \\(X\\) of \\(G\\), define its centralizer \\(C(X)\\) to be \\(\\{y\\in G\\mid xy=yx,\\forall x\\in X\\}\\). Prove the following:_\n\n1. _If_ \\(X\\subset Y\\)_, then_ \\(C(Y)\\subset C(X)\\)_._\n2. \\(X\\subset C\\left(C(X)\\right)\\)_._\n3. \\(C(X)=C\\left(C\\left(C(X)\\right)\\right)\\)_._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.1.12": {
         "Problem": "_Let \\(D\\) be a group of order \\(2n\\), where \\(n\\) is odd, with a subgroup \\(H\\) of order \\(n\\) satisfying \\(xhx^{-1}=h^{-1}\\) for all \\(h\\) in \\(H\\) and all \\(x\\) in \\(D\\setminus H\\). Prove that \\(H\\) is commutative and that every element of \\(D\\setminus H\\) is of order \\(2\\)._\n\n### Homomorphisms and Subgroups",
@@ -49,7 +49,7 @@
     },
     "Problem 6.2.1": {
         "Problem": "_How many homomorphisms are there from the group \\(\\mathbb{Z}_{2}\\times\\mathbb{Z}_{2}\\) to the symmetric group on three letters?_",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.2.2": {
         "Problem": "_Let \\(\\mathbb{C}\\)\\({}^{*}\\) be the multiplicative group of nonzero complex numbers. Suppose that \\(H\\) is a subgroup of finite index of \\(\\mathbb{C}\\)\\({}^{*}\\). Prove that \\(H=\\mathbb{C}\\)\\({}^{\\*}\\)._",
@@ -69,19 +69,19 @@
     },
     "Problem 6.2.7": {
         "Problem": "_Let \\(G\\) be an additive group, and \\(u,v:G\\to G\\) homomorphisms. Show that the map \\(f:G\\to G\\), \\(f(x)=x-v\\left(u(x)\\right)\\) is surjective if the map \\(h:G\\to G\\), \\(h(x)=x-u\\left(v(x)\\right)\\) is surjective._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.2.8": {
         "Problem": "_Let \\(H\\) be the group of integers \\(\\mathrm{mod}p\\), under addition, where \\(p\\) is a prime number. Suppose that \\(n\\) is an integer satisfying \\(1\\leq n\\leq p\\), and let \\(G\\) be the group \\(H\\times H\\times\\cdots\\times H\\) (\\(n\\) factors). Show that \\(G\\) has no automorphism of order \\(p^{2}\\)._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.2.9": {
         "Problem": "_Let \\(G\\) be a group and \\(H\\) a subgroup of index \\(n<\\infty\\). Prove or disprove the following statements:_\n\n1. _If_ \\(a\\in G\\)_, then_ \\(a^{n}\\in H\\)_._\n2. _If_ \\(a\\in G\\)_, then for some_ \\(k\\)_,_ \\(0<k\\leq n\\)_, we have_ \\(a^{k}\\in H\\)_._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.2.10": {
         "Problem": "_Find all automorphisms of the additive group of rational numbers._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.2.12": {
         "Problem": "_Let \\(A\\) be an additively written abelian group, and \\(f,g:A\\to A\\) two group homomorphisms. Define the group homomorphisms \\(i,j:A\\to A\\) by_\n\n\\[i(a)=a-g\\left(f(a)\\right),\\ \\ \\ \\ j(a)=a-f\\left(g(a)\\right)\\ \\ \\ \\ \\ (a\\in A).\\]\n\n_Prove that the kernel of \\(i\\) is isomorphic to the kernel of \\(j\\)._",
@@ -89,19 +89,19 @@
     },
     "Problem 6.2.13": {
         "Problem": "_Let \\(G\\) be a group and \\(H\\) and \\(K\\) subgroups such that \\(H\\) has a finite index in \\(G\\). Prove that \\(K\\cap H\\) has a finite index in \\(K\\)._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.2.14": {
         "Problem": "_Suppose the group \\(G\\) has a nontrivial subgroup \\(H\\) which is contained in every nontrivial subgroup of \\(G\\). Prove that \\(H\\) is contained in the center of \\(G\\)._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.2.15": {
         "Problem": "_Let \\(G\\) be a group generated by \\(n\\) elements. Find an upper bound \\(N(n,k)\\) for the number of subgroups \\(H\\) of \\(G\\) with the index \\([G:H]=k\\)._\n\n### Cyclic Groups",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.3.2": {
         "Problem": "_Let \\(G\\) be the group \\(\\mathbb{Q}\\left/\\mathbb{Z}\\right.\\) Show that for every positive integer \\(t\\), \\(G\\) has a unique cyclic subgroup of order \\(t\\)._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.3.3": {
         "Problem": "1. _Let_ \\(G\\) _be a cyclic group, and let_ \\(a,b\\in G\\) _be elements which are not squares. Prove that_ \\(ab\\) _is a square._\n2. _Give an example to show that this result is false if the group is not cyclic._",
@@ -109,7 +109,7 @@
     },
     "Problem 6.3.4": {
         "Problem": "_Prove that any group of order \\(77\\) is cyclic._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.3.5": {
         "Problem": "_Let \\(G\\) be a group of order \\(2p\\), where \\(p\\) is an odd prime. Assume that \\(G\\) has a normal subgroup of order \\(2\\). Prove that \\(G\\) is cyclic._",
@@ -117,15 +117,15 @@
     },
     "Problem 6.3.6": {
         "Problem": "_A finite abelian group \\(G\\) has the property that for each positive integer \\(n\\) the set \\(\\{x\\in G\\,|\\,x^{n}=1\\}\\) has at most \\(n\\) elements. Prove that \\(G\\) is cyclic, and deduce that every finite field has cyclic multiplicative group._\n\n### Normality, Quotients, and Homomorphisms",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.4.1": {
         "Problem": "_Let \\(H\\) be a subgroup of a finite group \\(G\\)._\n\n1. _Show that_ \\(H\\) _has the same number of left cosets as right cosets._\n\n[MISSING_PAGE_FAIL:97]",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.4.10": {
         "Problem": "_Suppose \\(H_{i}\\) is a normal subgroup of a group \\(G\\) for \\(1\\leq i\\leq k\\), such that \\(H*{i}\\cap H*{j}=\\{1\\}\\) for \\(i\\neq j\\). Prove that \\(G\\) contains a subgroup isomorphic to \\(H*{1}\\times H*{2}\\times\\cdots\\times H*{k}\\) if \\(k=2\\), but not necessarily if \\(k\\geq 3\\).*",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.4.11": {
         "Problem": "\\(G\\) _is a group of order \\(n\\), \\(H\\) a proper subgroup of order \\(m\\), and \\((n/m)!<2n\\). Prove \\(G\\) has a proper normal subgroup different from the identity._",
@@ -149,11 +149,11 @@
     },
     "Problem 6.4.17": {
         "Problem": "_Let \\(H\\) be the quotient of an abelian group \\(G\\) by a subgroup \\(K\\). Prove or disprove each of the following statements:_\n\n1. _If_ \\(H\\) _is finite cyclic then_ \\(G\\) _is isomorphic to the direct product of_ \\(H\\) _and_ \\(K\\)_._\n2. _If_ \\(H\\) _is a direct product of infinite cyclic groups then_ \\(G\\) _is isomorphic to the direct product of_ \\(H\\) _and_ \\(K\\)_._\n\n### \\(S*{n}\\), \\(A*{n}\\), \\(D\\_{n}\\),...",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.5.1": {
         "Problem": "_Let \\(\\mathbf{F}_{2}=\\{0,1\\}\\) be the field with two elements. Let \\(G\\) be the group of invertible 2\\(\\times\\)2 matrices with entries in \\(\\mathbf{F}_{2}\\). Show that \\(G\\) is isomorphic to \\(S_{3}\\), the group of permutations of three objects.\\_",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.5.2": {
         "Problem": "_Let \\(S_{n}\\) denote the group of permutations of \\(n\\) letters. Find four different subgroups of \\(S*{4}\\) isomorphic to \\(S*{3}\\) and nine isomorphic to \\(S*{2}\\).*",
@@ -165,15 +165,15 @@
     },
     "Problem 6.5.4": {
         "Problem": "_Let \\(G\\) be a subgroup of the symmetric group on six letters, \\(\\mathrm{S}_{6}\\). Assume that \\(G\\) has an element of order \\(6\\). Prove that \\(G\\) has a normal subgroup \\(H\\) of index \\(2\\).\\_",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.5.5": {
         "Problem": "_Let \\(S_{7}\\) be the group of permutations of a set of seven elements. Find all \\(n\\) such that some element of \\(S*{7}\\) has order \\(n\\).*",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.5.6": {
         "Problem": "\\(S*{9}\\) \\_is the group of permutations of the set of integers from \\(1\\) to \\(9\\).*\n\n1. _Exhibit an element of_ \\(S*{9}\\) \\_of order* \\(20\\)_._\n2. _Prove that no element of_ \\(S*{9}\\) \\_has order* \\(18\\)_._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.5.7": {
         "Problem": "_Let \\(S_{9}\\) denote the group of permutations of \\(\\{1,2,\\ldots,9\\}\\) and let \\(A*{9}\\) be the subgroup consisting of all even permutations. Denote by \\(1\\in S*{9}\\) the identity permutation. Determine the minimum of all positive integers \\(m\\) such that every \\(\\sigma\\in S*{9}\\) satisfies \\(\\sigma^{m}=1\\). Determine also the minimum of all positive integers \\(m\\) such that every \\(\\sigma\\in A*{9}\\) satisfies \\(\\sigma^{m}=1\\).\\_",
@@ -185,11 +185,11 @@
     },
     "Problem 6.5.10": {
         "Problem": "_Let \\(G\\) be a group of permutations of a set \\(S\\) of \\(n\\) elements. Assume \\(G\\) is transitive; that is, for any \\(x\\) and \\(y\\) in \\(S\\), there is some \\(\\sigma\\in G\\) with \\(\\sigma(x)=y\\)._\n\n1. _Prove that_ \\(n\\) _divides the order of_ \\(G\\)_._\n2. _Suppose_ \\(n=4\\)_. For which integers_ \\(k\\geq 1\\) _can such a_ \\(G\\) _have order_ \\(4k\\)",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.5.11": {
         "Problem": "_Let \\(G\\) be a transitive subgroup of the group \\(S_{n}\\) of permutations of the set \\(\\{1,\\ldots,n\\}.\\) Suppose that \\(G\\) is a simple group and that \\(\\sim\\) is an equivalence relation on \\(\\{1,\\ldots,n\\}\\) such that \\(i\\sim j\\) implies that \\(\\sigma(i)\\sim\\sigma(j)\\) for all \\(\\sigma\\in G\\). What can you conclude about the relationship \\(\\sim\\)?\\_",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.5.12": {
         "Problem": "_Let \\(D_{n}\\) be the dihedral group, the group of rigid motions of a regular n-gon \\((n\\geq 3).\\) (It is a noncommutative group of order \\(2n\\).) Determine its center \\(C=\\{c\\in D*{n}\\mid cx=xc\\ for\\ all\\ x\\in D*{n}\\}.\\)\\_",
@@ -201,7 +201,7 @@
     },
     "Problem 6.6.1": {
         "Problem": "_Let \\(G\\) be a finite group and \\(G_{1}=G\\times G\\). Suppose that \\(G*{1}\\) has exactly four normal subgroups. Show that \\(G\\) is simple and nonabelian.*",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.6.2": {
         "Problem": "_Prove that \\(\\mathbb{Q}\\), the additive group of rational numbers, cannot be written as the direct sum of two nontrivial subgroups. Note: See also Problems 6.3.1 and 6.7.2._",
@@ -213,11 +213,11 @@
     },
     "Problem 6.6.5": {
         "Problem": "_Let \\(A\\) be a subgroup of an abelian group \\(B.\\) Assume that \\(A\\) is a direct summand of \\(B\\), i.e., there exists a subgroup \\(X\\) of \\(B\\) such that \\(A\\cap X=0\\) and such that \\(B=X+A.\\) Suppose that \\(C\\) is a subgroup of \\(B\\) satisfying \\(A\\subset C\\subset B.\\) Is \\(A\\) necessarily a direct summand of \\(C\\)?_",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.7.1": {
         "Problem": "_Let \\(\\mathbb{Q}_{+}\\) be the multiplicative group of positive rational numbers.\\_\n\n1. _Is_ \\(\\mathbb{Q}_{+}\\) \\_torsion free?_\n2. _Is_ \\(\\mathbb{Q}_{+}\\) \\_free?_",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.7.2": {
         "Problem": "_Prove that the additive group of \\(\\mathbb{Q}\\), the rational number field, is not finitely generated._\n\n_Note: See also Problems 6.3.1 and 6.6.2._",
@@ -229,7 +229,7 @@
     },
     "Problem 6.7.7": {
         "Problem": "_Let \\(G_{n}\\) be the free group on \\(n\\) generators. Show that \\(G*{2}\\) and \\(G*{3}\\) are not isomorphic.\\_",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.7.8": {
         "Problem": "_Let \\(G\\) be an abelian group which is generated by, at most, \\(n\\) elements. Show that each subgroup of \\(G\\) is again generated by, at most, \\(n\\) elements._",
@@ -237,7 +237,7 @@
     },
     "Problem 6.7.9": {
         "Problem": "_Determine all finitely generated abelian groups \\(G\\) which have only finitely many automorphisms._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.7.10": {
         "Problem": "_Let \\(A\\) be a finite abelian group, and \\(m\\) the maximum of the orders of the elements of \\(A\\). Put \\(S=\\{a\\in A\\mid|a|=m\\}\\). Prove that \\(A\\) is generated by \\(S\\)._\n\n### 6.8 Finite Groups",
@@ -253,31 +253,31 @@
     },
     "Problem 6.8.3": {
         "Problem": "_Prove that any group of order \\(6\\) is isomorphic to either \\(\\mathbb{Z}_{6}\\) or \\(S*{3}\\) (the group of permutations of three objects).*",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.8.4": {
         "Problem": "1. _Show that, to within isomorphism, there is just one noncyclic group_ \\(G\\) _of order_ \\(4\\)_._\n2. _Show that the group of automorphisms of_ \\(G\\) _is isomorphic to the permutation group_ \\(S*{3}\\)*.\\_",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.8.5": {
         "Problem": "_Find all abelian groups of order \\(8\\), up to isomorphism. Then identify which type occurs in each of_\n\n1. \\(\\left(\\mathbb{Z}_{15}\\right)^{\\star}\\)_,\\_\n2. \\(\\left(\\mathbb{Z}_{17}\\right)^{\\star}/(\\pm 1)\\)_,\\_\n3. _the roots of_ \\(z^{8}-1\\) _in_ \\(\\mathbb{C}\\)_,_\n4. \\(\\mathbf{F}_{8}^{+}\\)_,\\_\n5. \\(\\left(\\mathbb{Z}_{16}\\right)^{\\star}\\)_.\\_\n\n\\(\\mathbf{F}_{8}\\) \\_is the field of eight elements, and_ \\(\\mathbf{F}_{8}^{+}\\) \\_is its underlying additive group;_ \\(R^{\\star}\\) _is the group of invertible elements in the ring_ \\(R\\)_, under multiplication._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.8.7": {
         "Problem": "_Prove that if \\(p\\) is prime then every group of order \\(p^{2}\\) is abelian._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.8.8": {
         "Problem": "_Classify up to isomorphism all groups of order \\(45\\)._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.8.9": {
         "Problem": "_Classify abelian groups of order \\(80\\) up to isomorphism._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.8.10": {
         "Problem": "_Let \\(S\\) be a collection of abelian groups, each of order \\(720\\), no two of which are isomorphic. What is the maximum cardinality \\(S\\) can have?_",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.8.11": {
         "Problem": "_Find (up to isomorphism) all groups of order \\(2p\\), where \\(p\\) is a prime (\\(p\\geq 2\\))._",
@@ -289,11 +289,11 @@
     },
     "Problem 6.9.1": {
         "Problem": "_Let \\(M\\) be the ring of real 2\\(\\times\\)2 matrices and \\(S\\subset M\\) the subring of matrices of the form_\n\n\\[\\left(\\begin{array}{cc}a&-b\\\\ b&a\\end{array}\\right).\\]\n\n1. _Exhibit (without proof) an isomorphism between_ \\(S\\) _and_ \\(\\mathbb{C}\\) _._\n2. _Prove that_ \\[A=\\left(\\begin{array}{cc}0&3\\\\ -4&1\\end{array}\\right)\\] _lies in a subring isomorphic to_ \\(S\\)_._\n3. _Prove that there is an_ \\(X\\in M\\) _such that_ \\(X^{4}+13X=A\\)_._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.9.2": {
         "Problem": "_Prove that there exists only one automorphism of the field of real numbers; namely the identity automorphism._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.9.3": {
         "Problem": "_Suppose addition and multiplication are defined on \\(\\mathbb{C}\\,^{n}\\), complex \\(n\\)-space, coordinatewise, making \\(\\mathbb{C}\\,^{n}\\) into a ring. Find all ring homomorphisms of \\(\\mathbb{C}\\,^{n}\\) onto \\(\\mathbb{C}\\)._",
@@ -321,7 +321,7 @@
     },
     "Problem 6.9.10": {
         "Problem": "_Let \\(D\\) be an ordered integral domain and \\(a\\in D\\). Prove that_\n\n\\[a^{2}-a+1>0.\\]",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.9.11": {
         "Problem": "_Prove that \\(\\mathbb{Q}\\left[x,y\\right]/\\langle x^{2}+y^{2}-1\\rangle\\) is an integral domain and that its field of fractions is isomorphic to the field of rational functions \\(\\mathbb{Q}\\left(t\\right)\\)._\n\n### Ideals",
@@ -329,7 +329,7 @@
     },
     "Problem 6.10.1": {
         "Problem": "_Let \\(A\\) be the ring of real 2\\(\\times\\)2 matrices of the form \\(\\left(\\begin{smallmatrix}a&b\\\\ 0&c\\end{smallmatrix}\\right)\\). What are the 2-sided ideals in \\(A\\)? Justify your answer._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.10.4": {
         "Problem": "_Let \\(\\mathbf{F}\\) be a field and let \\(X\\) be a finite set. Let \\(R(X,\\mathbf{F})\\) be the ring of all functions from \\(X\\) to \\(\\mathbf{F}\\), endowed with the pointwise operations. What are the maximal ideals of \\(R(X,\\mathbf{F})\\)?_",
@@ -357,7 +357,7 @@
     },
     "Problem 6.10.10": {
         "Problem": "1. _Let_ \\(\\mathbf{M}\\) _be one of the following fields:_ \\(\\mathbb{R}\\)_,_ \\(\\mathbb{C}\\) _,_ \\(\\mathbb{Q}\\) _, and_ \\(\\mathbf{F}_{9}\\) _(the field with nine elements). Let* \\(\\mathfrak{I}\\subset\\mathbf{M}[x]\\) \\_be the ideal generated by* \\(x^{4}+2x-2\\)_. For which choices of_ \\(\\mathbf{M}\\) _is the ring_ \\(\\mathbf{M}[x]/\\mathfrak{I}\\) _a field?_",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.10.11": {
         "Problem": "1. _Let_ \\(R\\) _be a principal ideal domain and let_ \\(\\mathfrak{I}\\) _and_ \\(\\mathfrak{I}\\) _be nonzero ideals in_ \\(R\\)_. Show that_ \\(\\mathfrak{I}\\mathfrak{I}=\\mathfrak{I}\\cap\\mathfrak{I}\\) _if and only if_ \\(\\mathfrak{I}+\\mathfrak{I}=R\\)_._\n\n### Polynomials",
@@ -365,7 +365,7 @@
     },
     "Problem 6.11.1": {
         "Problem": "1. _By the Fundamental Theorem of Algebra, the polynomial_ \\(x^{3}+2x^{2}+7x+1\\) _has three complex roots,_ \\(\\alpha*{1}\\)*,_ \\(\\alpha_{2}\\)_, and_ \\(\\alpha*{3}\\)*. Compute* \\(\\alpha*{1}^{3}+\\alpha*{2}^{3}+\\alpha*{3}^{3}\\)_._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.11.2": {
         "Problem": "1. _Suppose the complex number_ \\(\\alpha\\) _is a root of a polynomial of degree_ \\(n\\) _with rational coefficients. Prove that_ \\(1/\\alpha\\) _is also a root of a polynomial of degree_ \\(n\\) _with rational coefficients._",
@@ -397,11 +397,11 @@
     },
     "Problem 6.11.10": {
         "Problem": "_In the ring \\(\\mathbb{Z}[x]\\) of polynomials in one variable over the integers, show that the ideal \\(\\mathfrak{I}\\) generated by \\(5\\) and \\(x^{2}+2\\) is a maximal ideal._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.11.11": {
         "Problem": "_let \\(\\mathbb{Z}_{n}\\) denote the ring of integers modulo n. Let \\(\\mathbb{Z}_{n}[x]\\) be the ring of polynomials with coefficients in \\(\\mathbb{Z}_{n}\\). Let \\(\\mathfrak{I}\\) denote the ideal in \\(\\mathbb{Z}_{n}[x]\\) generated by \\(x^{2}+x+1\\)._\n\n1. _For which values of n,_ \\(1\\leq n\\leq 10\\)_, is the quotient ring_ \\(\\mathbb{Z}_{n}[x]/\\mathfrak{I}\\) \\_a field?_\n2. _Give the multiplication table for_ \\(\\mathbb{Z}_{2}/\\mathfrak{I}\\)_.\\_",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.11.12": {
         "Problem": "_Let \\(\\mathbb{Z}\\) be the ring of integers, \\(p\\) a prime, and \\(\\mathbf{F}_{p}=\\mathbb{Z}/p\\mathbb{Z}\\) the field of \\(p\\) elements. Let \\(x\\) be an indeterminate, and set \\(R*{1}=\\mathbf{F}*{p}[x]/\\langle x^{2}-2\\rangle\\), \\(R*{2}=\\mathbf{F}*{p}[x]/\\langle x^{2}-3\\rangle\\). Determine whether the rings \\(R*{1}\\) and \\(R*{2}\\) are isomorphic in each of the cases \\(p=2,5,11\\).\\_",
@@ -413,7 +413,7 @@
     },
     "Problem 6.11.15": {
         "Problem": "1. _In_ \\(\\mathbb{R}[x]\\)_, consider the set of polynomials_ \\(f(x)\\) _for which_ \\(f(2)=f^{\\prime}(2)=f^{\\prime\\prime}(2)=0\\)_. Prove that this set forms an ideal and find its monic generator._\n2. _Do the polynomials such that_ \\(f(2)=0\\) _and_ \\(f^{\\prime}(3)=0\\) _form an ideal?_",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.11.16": {
         "Problem": "_Find all automorphisms of \\(\\mathbb{Z}[x]\\), the ring of polynomials over \\(\\mathbb{Z}\\)._",
@@ -421,15 +421,15 @@
     },
     "Problem 6.11.17": {
         "Problem": "_Let \\(R\\) denote the ring of polynomials over a field \\(\\mathbb{F}\\). Let \\(p_{1},\\ldots,p*{n}\\) be elements of \\(R\\). Prove that the greatest common divisor of \\(p*{1},\\ldots,p*{n}\\) is \\(1\\) if and only if there is an \\(n\\times n\\) matrix over \\(R\\) of determinant \\(1\\) whose first row is \\((p*{1},\\ldots,p*{n})\\).*",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.11.18": {
         "Problem": "_Let \\(f(x)\\) be a polynomial over \\(\\mathbb{Z}_{p}\\), the field of integers mod \\(p\\). Let \\(g(x)=x^{p}-x\\). Show that the greatest common divisor of \\(f(x)\\) and \\(g(x)\\) is the product of the distinct linear factors of \\(f(x)\\).\\_",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.11.19": {
         "Problem": "_Let \\(\\mathbb{F}\\) be a subfield of a field \\(\\mathbb{K}\\). Let \\(p\\) and \\(q\\) be polynomials over \\(\\mathbb{F}\\). Prove that their \\(\\gcd\\) (greatest common divisor) in the ring of polynomials over \\(\\mathbb{F}\\) is the same as their \\(\\gcd\\) in the ring of polynomials over \\(\\mathbb{K}\\)._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.11.21": {
         "Problem": "_Let \\(\\mathbb{Z}\\) be the ring of integers and \\(\\mathbb{Z}[x]\\) the polynomial ring over \\(\\mathbb{Z}\\). Show that_\n\n\\[x^{6}+539x^{5}-511x+847\\]\n\n_is irreducible in \\(\\mathbb{Z}[x]\\)._",
@@ -449,19 +449,19 @@
     },
     "Problem 6.11.26": {
         "Problem": "_Factor \\(x^{4}+x^{3}+x+3\\) completely in \\(\\mathbb{Z}_{5}[x]\\).\\_",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.11.27": {
         "Problem": "1. _How many different monic irreducible polynomials of degree_ \\(2\\) _are there over the field_ \\(\\mathbb{Z}_{5}\\)_?\\_\n2. _How many different monic irreducible polynomials of degree_ \\(3\\) _are there over the field_ \\(\\mathbb{Z}_{5}\\)_?\\_",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.11.28": {
         "Problem": "_Is \\(x^{4}+1\\) irreducible over the field of real numbers? The field of rational numbers? A field with \\(16\\) elements?_",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.11.29": {
         "Problem": "_Decompose \\(x^{4}-4\\) and \\(x^{3}-2\\) into irreducibles over \\(\\mathbb{R}\\), over \\(\\mathbb{Z}\\), and over \\(\\mathbb{Z}_{3}\\) (the integers modulo \\(3\\)).\\_",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.11.30": {
         "Problem": "_Let \\(a\\) be an element in a field \\(\\mathbf{F}\\) and let \\(p\\) be a prime. Assume \\(a\\) is not a \\(p^{th}\\) power. Show that the polynomial \\(x^{p}-a\\) is irreducible in \\(\\mathbf{F}[x]\\)._",
@@ -481,7 +481,7 @@
     },
     "Problem 6.11.34": {
         "Problem": "_Let \\(\\mathbf{F}\\) be a finite field with \\(q\\) elements and let \\(x\\) be an indeterminate. For \\(f\\) a polynomial in \\(\\mathbf{F}[x]\\), let \\(\\varphi_{f}\\) denote the corresponding function of \\(\\mathbf{F}\\) into \\(\\mathbf{F}\\), defined by \\(\\varphi*{f}(a)=f(a)\\), \\((a\\in\\mathbf{F})\\). Prove that if \\(\\varphi\\) is any function of \\(\\mathbf{F}\\) into \\(\\mathbf{F}\\), then there is an \\(f\\) in \\(\\mathbf{F}[x]\\) such that \\(\\varphi=\\varphi*{f}\\). Prove that \\(f\\) is uniquely determined by \\(\\varphi\\) to within addition of a multiple of \\(x^{q}-x\\).\\_\n\n### 6.12 Fields and Their Extensions",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.12.2": {
         "Problem": "_Prove that every finite integral domain is a field._",
@@ -541,7 +541,7 @@
     },
     "Problem 6.13.2": {
         "Problem": "_Let \\(m\\geq 0\\) be an integer. Let \\(a_{1},a*{2},\\ldots,a*{m}\\) be integers and let\\_\n\n\\[f(x)=\\sum*{i=1}^{m}\\frac{a*{i}x^{i}}{i!}\\]\n\n_Show that if \\(d\\geq 0\\) is an integer then \\(f(x)^{d}/d!\\) can be expressed in the form_\n\n\\[\\sum*{i=0}^{md}\\frac{b*{i}x\\_{i}}{i!}\\]\n\n_where the \\(b_{i}\\) are integers.\\_",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.13.3": {
         "Problem": "_Let \\(p\\) be an odd prime. Let \\(Q(p)\\) be the set of integers \\(a\\), \\(0\\leq a\\leq p-1\\), for which the congruence_\n\n\\[x^{2}\\equiv a\\pmod{p}\\]\n\n_has a solution. Show that \\(Q(p)\\) has cardinality \\((p+1)/2\\)._",
@@ -573,11 +573,11 @@
     },
     "Problem 6.13.10": {
         "Problem": "_Suppose that \\(n>1\\) is an integer. Prove that the sum_\n\n\\[1+\\frac{1}{2}+\\cdots+\\frac{1}{n}\\]\n\n_is not an integer._",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.13.12": {
         "Problem": "_Let \\(a_{1},a*{2},\\ldots,a*{10}\\) be integers with \\(1\\leq a*{i}\\leq 25\\), for \\(1\\leq i\\leq 10\\). Prove that there exist integers \\(n*{1},n*{2},\\ldots,n*{10}\\), not all zero, such that\\_\n\n\\[\\prod*{i=1}^{10}a*{i}^{n\\_{i}}=1.\\]",
-        "Solution": "null"
+        "Solution": null
     },
     "Problem 6.13.13": {
         "Problem": "_The number \\(21982145917308330487013369\\) is the thirteenth power of a positive integer. Which positive integer?_",
