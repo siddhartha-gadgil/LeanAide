@@ -3,6 +3,7 @@ import json
 from os.path import join
 from pathlib import Path
 from string import Template
+from queries import *
 
 homedir = Path(".")
 if "lakefile.lean"  not in os.listdir(homedir):
@@ -62,3 +63,32 @@ def proof_group_queries():
             queries.append(Template(proof_template).substitute(proof=statement))
         groups.append(queries)
     return groups, problems
+
+def berkeley(filename):
+    with open(os.path.join(resources, filename)) as f:
+        js_data = json.load(f)
+        query_js = []
+        for k,v in js_data.items():
+            if v['Solution'] is not None:
+                js = v
+                js['number'] = k
+                statement = theorem_proof(js['Problem'], js['Solution'])
+                js['statement'] = statement
+                js['query'] = Template(proof_template).substitute(proof=statement)
+                query_js.append(js)
+        return query_js
+    
+rawdata = os.path.join(homedir, "rawdata")
+
+def structured_berkeley(filename, client = default_client):
+    js_data = berkeley(filename)
+    count = 0
+    for js in js_data:
+        print(js['number'])
+        js['structured'] = client.math(js['query'])
+        count += 1
+        print(f"Processed {count} queries out of {len(js_data)}")
+        time.sleep(20)
+    with open(os.path.join(rawdata, filename), 'w') as f:
+        json.dump(js_data, f, ensure_ascii=False, indent=2)
+    return js_data
