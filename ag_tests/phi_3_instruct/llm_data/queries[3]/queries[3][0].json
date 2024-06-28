@@ -1,0 +1,44 @@
+ ```json
+[
+  {
+    "type": "theorem",
+    "name": "Matrix Power Diagonalizability",
+    "hypothesis": [
+      {
+        "type": "assert",
+        "statement": {
+          "type": "consider",
+          "value": "Let $A$ be a square matrix."
+        }
+      },
+      {
+        "type": "assert",
+        "statement": "If $A^3 = I$, then $A$ meets the polynomial equation $p(x) = x^3 - 1$."
+      }
+    ],
+    "conclusion": "Then $A$ is diagonalizable.",
+    "status": "proved"
+  },
+  {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "observe",
+        "statement": "Since $A^3 = I$, $A$ satisfies the polynomial equation $p(x) = x^3 - 1$."
+      },
+      {
+        "type": "observe",
+        "statement": "The roots of $p(x)$ are the cube roots of unity, namely $1, \omega, \omega^2$, where $\omega = e^{2\pi i/3}$ is a primitive cube root of unity."
+      },
+      {
+        "type": "observe",
+        "statement": "These roots are distinct, hence the minimal polynomial of $A$ must divide $p(x)$ and also have distinct roots."
+      },
+      {
+        "type": "assert",
+        "statement": "Therefore, $A$ is diagonalizable."
+      }
+    ]
+  }
+]
+```

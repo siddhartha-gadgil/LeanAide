@@ -1,0 +1,32 @@
+ ```json
+[
+  {
+    "type": "theorem",
+    "hypothesis": [],
+    "conclusion": "The polynomial x^4 + x^3 + x^2 + x + 1 is irreducible over the rationals.",
+    "status": "proved",
+    "proof": [
+      {
+        "type": "observe",
+        "statement": "Consider the reciprocal polynomial x^4(x^4 + x^3 + x^2 + x + 1) = x^8 + x^7 + x^6 + x^5 + x^4."
+      },
+      {
+        "type": "have",
+        "value": "The updated polynomial after the change of variables x -> x+1 is (x+1)^8 + (x+1)^7 + (x+1)^6 + (x+1)^5 + (x+1)^4."
+      },
+      {
+        "type": "assert",
+        "claim": "All terms, except the leading one, are divisible by 2, but not all coefficients are divisible by ^2.",
+        "deduced_from": ["Expanding and simplifying (x+1)^8 + (x+1)^7 + (x+1)^6 + (x+1)^5 + (x+1)^4 according to the binomial theorem"]
+      },
+      {
+        "type": "prove",
+        "steps": [
+          {
+            "type": "consider",
+            "value": "Apply Eisenstein's criterion to the polynomial x^8 + x^7 + x^6 + x^5 + x^4 + 1.",
+            "proof-method": "Eisenstein's Criterion states that a polynomial is irreducible over the rationals if all coefficients are divisible by a prime p, the leading coefficient is not divisible by p^2, and the constant term is not divisible by p^2."
+          },
+          {
+            "type": "assume",
+            "statement": "All coefficients of the polynomial x^8 + x^7 + x^6 + x^5 + x^4 + x^3 + x^2 + x + 1 are all divisible by 2

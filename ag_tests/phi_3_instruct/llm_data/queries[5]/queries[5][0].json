@@ -1,0 +1,75 @@
+ ```json
+{
+  "type": "theorem",
+  "hypothesis": [
+    {
+      "type": "fix",
+      "variable": "A",
+      "value": {
+        "type": "matrix",
+        "dimensions": "2x2",
+        "entries": "rational"
+      }
+    }
+  ],
+  "conclusion": {
+    "type": "matrix",
+    "dimensions": "2x2",
+    "value": "I"
+  },
+  "proof": [
+    {
+      "type": "fix",
+      "variable": "I_matrix_1",
+      "value": {
+        "type": "matrix",
+        "dimensions": "2x2",
+        "entries": [
+          [1, 0],
+          [0, 1]
+        ]
+      }
+    },
+    {
+      "type": "fix",
+      "variable": "I_matrix_2",
+      "value": {
+        "type": "matrix",
+        "dimensions": "2x2",
+        "entries": [
+          [-1, 0],
+          [0, -1]
+        ]
+      }
+    },
+    {
+      "type": "assert",
+      "claim": {
+        "type": "matrix",
+        "value": "I",
+        "name": "A_matrix_1^5"
+      },
+      "deduced_from": [
+        "I_matrix_1"
+      ]
+    },
+    {
+      "type": "assert",
+      "claim": {
+        "type": "matrix",
+        "value": "I",
+        "name": "I_matrix_2^5"
+      },
+      "deduced_from": [
+        "I_matrix_2"
+      ]
+    },
+    {
+      "type": "assert",
+      "claim": {
+        "type": "result",
+        "statement": "A is a 2x2 matrix with rational entries such that A^5 = I"
+      },
+      "deduced_from": [
+        {
+          "I_matrix_1":

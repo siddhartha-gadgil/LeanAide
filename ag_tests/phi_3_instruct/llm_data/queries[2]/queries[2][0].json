@@ -1,0 +1,68 @@
+ Here is the provided proof in the JSON format:
+
+```json
+{
+  "type": "theorem",
+  "hypothesis": [
+    {
+      "type": "fix",
+      "variable": "f",
+      "kind": {
+        "properties": ["function"],
+        "domain": "R",
+        "codomain": "R"
+      }
+    },
+    {
+      "type": "assert",
+      "statement": "f'(x) > 0 for all x in R"
+    }
+  ],
+  "conclusion": {
+    "type": "assert",
+    "statement": "f is unbounded"
+  },
+  "status": "proved",
+  "proof": [
+    {
+      "type": "let",
+      "variable": "g",
+      "value": "ln(f(x))"
+    },
+    {
+      "type": "observe",
+      "statement": "g is a differentiable function as f is a continuous and differentiable function"
+    },
+    {
+      "type": "apply",
+      "theorem": "chain rule",
+      "hypothesis": [
+        {
+          "type": "fix",
+          "variable": "g'",
+          "kind": {
+            "properties": ["existence"],
+            "relation": "g'(x) = f'(x)/f(x)"
+          }
+        }
+      ],
+      "deduced_from": [
+        {
+          "type": "theorem",
+          "statement": "chain rule"
+        }
+      ]
+    },
+    {
+      "type": "observe",
+      "statement": "Using the Mean Value Theorem (MVT), for all x < y, there exists a c in (x, y) such that (ln(f(y)) - ln(f(x)))/ (y - x) = g'(c)"
+    },
+    {
+      "type": "apply",
+      "theorem": "Mean Value Theorem",
+      "hypothesis": [
+        {
+          "type": "fix",
+          "variable": "g(c)",
+          "kind": {
+            "properties": ["

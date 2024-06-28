@@ -1,0 +1,52 @@
+ ```json
+[
+  {
+    "type": "theorem",
+    "hypothesis": [
+      {
+        "type": "fix",
+        "variable": "A",
+        "kind": "square matrix"
+      }
+    ],
+    "conclusion": "A is invertible",
+    "proof": [
+      {
+        "type": "let",
+        "variable": "B",
+        "value": "exists such that A^2B = BA^2 = I"
+      },
+      {
+        "type": "observe",
+        "statement": "If A^2B = I, then AB has a right inverse."
+      },
+      {
+        "type": "observe",
+        "statement": "If BA^2 = I, then BA has a left inverse."
+      },
+      {
+        "type": "observe",
+        "statement": "From AB = A^2B^(-1) and BA = B^(-1)A^2, where B^(-1) is the inverse of B."
+      },
+      {
+        "type": "observe",
+        "statement": "AB has a right inverse."
+      },
+      {
+        "type": "observe",
+        "statement": "BA has a left inverse."
+      },
+      {
+        "type": "assert",
+        "claim": "A has a right and left inverse",
+        "deduced_from": ["AB has a right inverse", "BA has a left inverse"]
+      },
+      {
+        "type": "assert",
+        "claim": "A is invertible",
+        "deduced_from": "A has a right and left inverse"
+      }
+    ]
+  }
+]
+```

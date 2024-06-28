@@ -1,0 +1,87 @@
+{
+
+  "type": "theorem",
+
+  "statement": "Suppose f: R -> R is a continuous function such that f''(x) > 0 for all x in R. Prove that f is unbounded.",
+
+  "hypothesis": [
+
+    {
+
+      "type": "let",
+
+      "variable": "f",
+
+      "value": "a continuous function from R to R such that f''(x) > 0 for all x in R"
+
+    }
+
+  ],
+
+  "conclusion": "f is unbounded",
+
+  "status": "proved",
+
+  "proof": [
+
+    {
+
+      "type": "let",
+
+      "variable": "slope_infinity",
+
+      "value": "slope of the secant lines as x approaches infinity"
+
+    },
+
+    {
+
+      "type": "let",
+
+      "variable": "slope_minus_infinity",
+
+      "value": "slope of the secant lines as x approaches negative infinity"
+
+    },
+
+    {
+
+      "type": "assert",
+
+      "claim": "f''(x) > 0 implies f is convex",
+
+      "deduced_from": [],
+
+      "proof-method": "Definition of convex functions with positive second derivative."
+
+    },
+
+    {
+
+      "type": "observe",
+
+      "statement": "f being convex implies f is unbounded if bounded".
+
+      "f''(x) > 0 always implies that "all x is in all real numbers implies "x in all real numbers".
+
+      "Convex functions implies "
+
+    },
+
+    {
+
+      "type": "theoremthat ",
+
+      "assertion": "all x is in all numbers: "
+
+      "assertion": "All",
+
+      "all " and "a positive and implied and numbers: "and "number implies "
+
+      "there can:
+
+      "examples:
+
+      "example: "Example:
+
+        one of "assume:

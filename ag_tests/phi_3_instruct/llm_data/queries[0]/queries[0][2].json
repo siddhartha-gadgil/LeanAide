@@ -1,0 +1,45 @@
+ ```json
+[
+  {
+    "type": "theorem",
+    "hypothesis": [],
+    "conclusion": "The polynomial $x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.",
+    "status": "stated"
+  },
+  {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assume",
+        "statement": "Consider the polynomial $x^4 + x^3 + x^2 + x + 1$.",
+        "value": {}
+      },
+      {
+        "type": "transform",
+        "statement": "Substitute $x = y + 1$ to obtain $y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$.",
+        "value": {}
+      },
+      {
+        "type": "apply-theorem",
+        "theorem": "Eisenstein's Criterion",
+        "claim": "The transformed polynomial $y^5 + 5y^4 + 10y^3 + 10y^2 + 5y$ is irreducible over the rationals.",
+        "proof-method": "5 divides all coefficients except the leading one and does not divide the constant term squared.",
+        "value": {}
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, the original polynomial $x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.",
+        "value": {}
+      }
+    ]
+  },
+  {
+    "type": "remark",
+    "statement": "Note:",
+    "details": {
+      "note": "The substitution $x = y + 1$ is used to make the polynomial's coefficients have a common factor (5) for Eisenstein's Criterion application.",
+      "value": {}
+    }
+  }
+]
+```

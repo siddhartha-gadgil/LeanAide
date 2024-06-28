@@ -1,0 +1,65 @@
+ ```
+[
+  {
+    "type": "theorem",
+    "hypothesis": [
+      {
+        "fix": {
+          "variable": "f",
+          "kind": {
+            "function": {
+              "domain": "real numbers",
+              "codomain": "real numbers"
+            }
+          }
+        }
+      },
+      {
+        "assume": {
+          "statement": "f''(x) > 0 for all x in real numbers"
+        }
+      }
+    ],
+    "conclusion": {
+      "statement": "f is unbounded"
+    },
+    "status": "proved"
+  },
+  {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assume",
+        "statement": "Suppose, for the sake of contradiction, that f is bounded.",
+        "status": "stated"
+      },
+      {
+        "type": "fix",
+        "variable": "m",
+        "value": "infimum of f's range"
+      },
+      {
+        "type": "fix",
+        "variable": "M",
+        "value": "supremum of f's range"
+      },
+      {
+        "type": "consider",
+        "value": "f's range being a closed interval [m, M]",
+        "error": "The claim that f(x*' s a complex structure without clear translation to basic interval theory. Context for more JSON constructs can be interpreted in various ways."
+      },
+      {
+        "type": "assert",
+          "Statements": [
+            {
+              "statement": "Need more information: that",
+                    "Assumption: A strict convexity of f to be considered by f's example unknown object, e.g., e.g., recall, deter needs more information: RequiresMore"
+      }
+      {
+        "value": "Introducing a kind { }
+          fields
+        "More
+        Variable values. Example calls for fix cases "an example:
+            Example: same as needed further 23
+            "value kind: ""
+            "and abstract object kind: None

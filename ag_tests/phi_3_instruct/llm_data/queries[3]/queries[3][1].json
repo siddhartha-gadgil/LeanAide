@@ -1,0 +1,48 @@
+ ```json
+[
+  {
+    "type": "theorem",
+    "hypothesis": [
+      {
+        "type": "assume",
+        "statement": "Let A be a square matrix."
+      }
+    ],
+    "conclusion": "A is diagonalizable.",
+    "status": "proved",
+    "proof": [
+      {
+        "type": "observe",
+        "statement": "Since A^3 = I, A satisfies the polynomial equation x^3 - 1 = 0."
+      },
+      {
+        "type": "observe",
+        "statement": "The roots of x^3 - 1 = 0 are 1, omega, and omega^2, where omega = e^(2*pi*i/3)."
+      },
+      {
+        "type": "observe",
+        "statement": "Hence, the minimal polynomial of A divides x^3 - 1 = (x - 1)(x - omega)(x - omega^2)."
+      },
+      {
+        "type": "observe",
+        "statement": "The polynomial x^3 - 1 has distinct roots, so its factors are distinct linear factors."
+      },
+      {
+        "type": "assert",
+        "claim": "The minimal polynomial of A must also split into distinct linear factors over the complex numbers.",
+        "deduced_from": ["previous statements"],
+        "proof-method": "A matrix's minimal polynomial dividing a polynomial with distinct linear factors implies its minimal polynomial also splits into distinct linear factors over the complex numbers."
+      },
+      {
+        "type": "remember",
+        "name": "A fundamental result in linear algebra",
+        "statement": "A matrix is diagonalizable over complex numbers if and only if its minimal polynomial can be expressed as a product of distinct linear factors."
+      },
+      {
+        "type": "assert",
+        "claim": "A is diagonalizable over the complex numbers.",
+        "deduced_from": ["previous statements"],
+        "proof-method": "Since conditions met for matrix diagonalizability are satisfied by A, it follows that A is diagonalizable."
+      }
+    ]
+  }

@@ -1,0 +1,50 @@
+ ```json
+[
+  {
+    "type": "theorem",
+    "hypothesis": [],
+    "conclusion": "There are infinitely many primes with last digit 7.",
+    "status": "proved"
+  },
+  {
+    "type": "let",
+    "variable": "N",
+    "value": "10(p_1p_2...p_n) - 3"
+  },
+  {
+    "type": "asseverate",
+    "statement": "N ends in a 7, because 10 times anything minus 3 will always end in 7.",
+    "deduced_from": []
+  },
+  {
+    "type": "assume",
+    "statement": "There are only finitely many primes of the form 10k + 7, say p_1, p_2, ..., p_n."
+  },
+  {
+    "type": "case",
+    "condition": "N is divisible by p_i",
+    "proof": [
+      {
+        "type": "observe",
+        "statement": "N is obviously not divisible by any p_i since N + 3 is divisible by p_i but N would leave a remainder of 3 upon division by p_i, not 0.",
+        "error": "This statement assumes that N is odd, without explicitly stating or justifying why it must be odd. It should provide proof or explanation as to why N is indeed odd. An error could arise if an even number is mistakenly omitted, leading to a potential oversight."
+      }
+    ]
+  },
+  {
+    "type": "case",
+    "condition": "all primes dividing N",
+    "proof": [
+      {
+        "type": "theorem",
+        "hypothesis": [],
+        "conclusion": "N has a prime divisor which divides N.",
+        "status": "proved",
+        "proof": [
+          {
+            "type": "proof"
+          ],
+            "proof": "Theorem: that the initialization of theorems: a number infimum:
+  {
+            "type": "observe: proof
+                            "observe":

@@ -2,7 +2,7 @@ from openai import OpenAI
 def phigen(problem:str):
     # Create an OpenAI client with your deepinfra token and endpoint
     openai = OpenAI(
-        api_key="<API-KEY>",
+        api_key="QzwpN2uucSoYHrrnFWb0ktOKkwd2ELvn",
         base_url="https://api.deepinfra.com/v1/openai",
     )
 

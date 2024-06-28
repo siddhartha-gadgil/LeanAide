@@ -1,0 +1,63 @@
+ ```json
+[
+  {
+    "type": "theorem",
+    "hypothesis": [
+      {
+        "type": "fix",
+        "variable": "p1",
+        "kind": "prime"
+      },
+      {
+        "type": "fix",
+        "variable": "p2",
+        "kind": "prime"
+      },
+      {
+        "type": "fix",
+        "variable": "p3",
+        "kind": "prime"
+      },
+      {
+        "type": "fix",
+        "variable": "p4",
+        "kind": "prime"
+      },
+      {
+        "type": "fix",
+        "variable": "p5",
+        "kind": "prime"
+      }
+    ],
+    "conclusion": "There are infinitely many primes with last digit 7.",
+    "status": "proved"
+  },
+  {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assume",
+        "statement": "Assume for contradiction that there are only finitely many primes with last digit 7, and that they are \(p_1, p_2, p_3, p_4, p_5\)."
+      },
+      {
+        "type": "let",
+        "variable": "N",
+        "value": "10*prod(p1, p2, p3, p4, p5) + 7"
+      },
+      {
+        "type": "assert",
+        "claim": "Number N ends in 7 and is greater than each \(p_i\).",
+        "deducted_from": ["N ends with 7"]
+      },
+      {
+        "type": "assert",
+        "claim": "N is not divisible by any prime ending in 7",
+        "deducted_from": ["N is not divisible by any prime ending in 1 justification of any"]
+      },
+      {
+        "type": "assume",
+        "statement": "N is not divisible by anything"
+        "deducted_from": ["N is not"]
+      },
+      {
+        "

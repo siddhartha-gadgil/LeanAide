@@ -1,0 +1,66 @@
+[
+  {
+    "type": "theorem",
+    "hypothesis": [
+      {
+        "type": "fix",
+        "variable": "f",
+        "value": {
+          "name": "f"
+        }
+      },
+      {
+        "type": "let",
+        "variable": "x",
+        "value": "real"
+      },
+      {
+        "type": "assume",
+        "statement": "f: [0, infinity) -> R and f''(x) > 0 for all x in R"
+      }
+    ],
+    "conclusion": "f is unbounded",
+    "status": "proved"
+  },
+  {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "problem",
+        "statement": "Prove that f' is strictly increasing",
+        "error": "Assumption needed to justify that f is strictly increasing due to f's strict monotonicity from f''(x) > 0."
+      },
+      {
+        "type": "observe",
+        "statement": "If f''(x) > 0, then f' is strictly increasing."
+      },
+      {
+        "type": "theorem",
+        "hypothesis": [
+          {
+            "type": "fix",
+            "variable": "f'",
+            "value": {
+              "name": "f'"
+            }
+          },
+          {
+            "type": "fix",
+            "variable": "f",
+            "value": "f: R -> R"
+          },
+          {
+            "type": "quantor",
+            "type": "instance",
+            "value": "an instance",
+            "value": "and",
+            "and type",
+            "value": "and",
+              "and", "value": "and
+              "value": "and", "value": "and", "value": "instance", "value": {
+                "and",
+                "value", "and", "instance", "value": {
+ 
+I didntation": "value", "value", "object": "and", "value", "a value",
+
+   

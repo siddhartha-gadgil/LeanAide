@@ -1,0 +1,39 @@
+ ```json
+[
+  {
+    "type": "Theorem",
+    "Hypothesis": [],
+    "Conclusion": "The polynomial $x^4 + x^3 + x^2 + x + 1$ is irreducible over the rationals.",
+    "Status": "proved",
+    "Proof": [
+      {
+        "type": "Let",
+        "Variable": "x",
+        "Value": "x-1"
+      },
+      {
+        "type": "Observe",
+        "Statement": "Consider the polynomial $g(x) = f(x-1) = (x-1)^4 + (x-1)^3 + (x-1)^2 + (x-1) + 1$ and expand and simplify to get $g(x) = x^4 - 4x^3 + 6x^2 - 4x + 1$."
+      },
+      {
+        "type": "Assert",
+        "Claim": "The polynomial $g(x)$ is reducible over the rationals.",
+        "Deduced_from": [
+          "Apply Eisenstein's criterion to the polynomial $g(x)$."
+        ],
+        "Proof-method": "Applying Eisenstein's criterion to the polynomial with prime $p=2$."
+      },
+      {
+        "type": "Case",
+        "Condition": "Assume Eisenstein's criterion does not apply to $g(x)$ with prime $p=2$.",
+        "Proof": [
+          {
+            "type": "Observe",
+            "Statement": "According to Eisenstein's criterion, it should be proven that $2$ divides all coefficients of $g(x)$ except the leading coefficient, $2^2$ does not divide the constant term, and the leading coefficient is not divisible by $2$.",
+            "Error": "Incorrect statement: If $p=2$ divides the leading coefficient, the statement is incorrectly applying Eisenstein's criterion. The leading coefficient should not be divisible by $p$, and it is divisible by $2$ in the proof."
+          }
+        ]
+      },
+      {
+        "type": "Assert",
+        "

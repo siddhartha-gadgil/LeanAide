@@ -1,0 +1,43 @@
+ ```json
+{
+  "type": "theorem",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "A",
+      "value": "a square matrix"
+    },
+    {
+      "type": "observe",
+      "statement": "A^3 = I"
+    }
+  ],
+  "conclusion": "A is diagonalizable",
+  "proof": [
+    {
+      "type": "assert",
+      "claim": "The minimal polynomial of A, m_A(x), divides x^3 - 1",
+      "deduced_from": ["Given A^3 = I"]
+    },
+    {
+      "type": "observation",
+      "statement": "x^3 - 1 = (x - 1)(x^2 + x + 1)",
+      "deduced_from": ["The factored form of the polynomial x^3 - 1"]
+    },
+    {
+      "type": "observe",
+      "statement": "The roots of x^3 - 1 = 0 are distinct (1, a complex root ω, and ω^2 where ω is a primitive third root of unity)"
+    },
+    {
+      "type": "observe",
+      "statement": "The minimal polynomial m_A(x) has distinct roots."
+    },
+    {
+      "type": "assert",
+      "claim": "A is diagonalizable",
+      "deduced_from": ["The fact that the minimal polynomial m_A(x) has distinct roots"]
+    }
+  ],
+  "status": "proved"
+}
+```

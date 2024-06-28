@@ -1,0 +1,65 @@
+ ```json
+{
+  "type": "theorem",
+  "name": "Unbounded Continuous Function with Positive Derivative",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "value": {
+        "kind": "function",
+        "definition": {
+          "domain": "R",
+          "codomain": "R"
+        }
+      }
+    },
+    {
+      "type": "assume",
+      "statement": "f is continuous"
+    },
+    {
+      "type": "assume",
+      "statement": "f'(x) > 0 for all x in R"
+    }
+  ],
+  "conclusion": "",
+  "status": "proved",
+  "steps": [
+    {
+      "type": "let",
+      "variable": "c",
+      "value": {
+        "kind": "real number",
+        "properties": {
+          "positive": true
+        }
+      }
+    },
+    {
+      "type": "assert",
+      "claim": "f(x + c) > f(x) for all x in R",
+      "deduced_from": [
+        "Statement",
+        "Continuity of f"
+      ]
+    },
+    {
+      "type": "observe",
+      "statement": "Since f is continuous and f'(x) > 0 for all x, f is strictly increasing. This implies f(x + c) > f(x)"
+    },
+    {
+      "type": "assert",
+      "claim": "f is unbounded",
+      "deduced_from": [
+        "claim: f(x + c) > f(x) for all x in R"
+      ],
+      "proof-method": "By assuming f is bounded and deriving a contradiction, we prove f is unbounded."
+    },
+    {
+      "type": "error",
+      "statement": "Illustration of contradiction is missing. A clearer step-by-step reasoning is required to derive contradiction."
+    },
+    {
+      "type": "problem",
+      "statement": "Pro

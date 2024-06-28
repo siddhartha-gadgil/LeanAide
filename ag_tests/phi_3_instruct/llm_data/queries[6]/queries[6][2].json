@@ -1,0 +1,38 @@
+ ```json
+{
+  "statement": "Theorem: Prove that there are infinitely many primes with last digit 7.",
+  "proof": {
+    "steps": [
+      {
+        "type": "Assumption",
+        "statement": "Suppose there are only finitely many primes with last digit 7, say \(p_1, p_2, \ldots, p_n\).",
+        "error": null
+      },
+      {
+        "type": "Operation",
+        "statement": "Consider the number \(N = 10\cdot(p_1p_2 \cdots p_n) - 3\).",
+        "error": null
+      },
+      {
+        "type": "Observation",
+        "statement": "Clearly, \(N\) ends in 7.",
+        "error": null
+      },
+      {
+        "type": "Observation",
+        "statement": "Also, \(N\) is not divisible by any of \(p_1, p_2, \ldots, p_n\).",
+        "error": null
+      },
+      {
+        "type": "Observation",
+        "statement": "For if \(N\) were divisible by any of these primes, \(10\cdot(p_1p_2 \cdots p_n)\) would leave a remainder of 3 upon division by that prime, which is impossible.",
+        "error": null
+      },
+      {
+        "type": "Assert",
+        "statement": "Either \(N\) itself is a prime number ending in 7, which is not in the list \(p_1, p_2, \ldots, p_n\), or it has a prime divisor that ends in 7 and is not among \(p_1, p_2, \ldots, p_n\).",
+        "claim": "Either N itself is a prime number ending in 7, which is not in the list \(p_1, p_2, \ldots, p_n\), or it has a prime divisor that ends in 7 and is not among \(p_1, p_2, \ldots, p_n\).",
+        "error": null
+      },
+      {
+        "type": "

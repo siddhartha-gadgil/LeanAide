@@ -1,0 +1,50 @@
+ ```json
+[
+  {
+    "type": "theorem",
+    "hypothesis": [
+      {
+        "type": "let",
+        "variable": "A",
+        "value": "A is a square matrix."
+      }
+    ],
+    "conclusion": "If A^2 is invertible, then A is invertible.",
+    "status": "proved",
+    "proof": [
+      {
+        "type": "assume",
+        "statement": "A^2 is invertible."
+      },
+      {
+        "type": "let",
+        "variable": "B",
+        "value": "A matrix such that A^2B = BA^2 = I, where I is the identity matrix."
+      },
+      {
+        "type": "let",
+        "variable": "C",
+        "value": "AB"
+      },
+      {
+        "type": "observe",
+        "statement": "AC = A(AB) = A^2B = I."
+      },
+      {
+        "type": "assert",
+        "claim": "A has a right inverse.",
+        "deduced_from": ["AC = I"]
+      },
+      {
+        "type": "remarks",
+        "statement": "Since A is a square matrix, the existence of a right inverse also implies the existence of a left inverse (this follows from the rank-nullity theorem or by considering the determinant of A)."
+      },
+      {
+        "type": "assert",
+        "claim": "A is invertible.",
+        "deduced_from": ["A has a right inverse", "A has a left inverse"]
+      }
+    ]
+  }
+]
+```

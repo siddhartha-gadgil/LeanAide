@@ -1,0 +1,45 @@
+ ```json
+[
+  {
+    "type": "theorem",
+    "hypothesis": [
+      {
+        "type": "let",
+        "variable": "f",
+        "value": "f:\u211d -> \u211d is a continuous function"
+      },
+      {
+        "type": "let",
+        "variable": "f'(x)",
+        "value": "f'(x) > 0 for all x \u2208 \u211d"
+      }
+    ],
+    "conclusion": "f is unbounded",
+    "status": "proved",
+    "proof": [
+      {
+        "type": "let",
+        "variable": "x0",
+        "value": "x0 \u2208 \u211d such that f'(x0) > 0"
+      },
+      {
+        "type": "observe",
+        "statement": "By the Mean Value Theorem, there exists some c in the interval [x0, x] such that f(x) - f(x0) = f'(c) * (x - x0) for any x > x0."
+      },
+      {
+        "type": "assume",
+        "statement": "For x \u2265 x0, we can write f(x) = f(x0) + f'(c) * (x - x0)."
+      },
+      {
+        "type": "observe",
+        "statement": "Since f'(c) > 0, as x increases, f'(c) * (x - x0) increases, thus f(x) increases without bound."
+      },
+      {
+        "type": "assert",
+        "claim": "f(x) is unbounded as x increases.",
+        "deduced_from": []
+      }
+    ]
+  }
+]
+```

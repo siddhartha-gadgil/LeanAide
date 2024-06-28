@@ -1,0 +1,50 @@
+ ```json
+{
+  "type": "theorem",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "A",
+      "value": "a square matrix"
+    },
+    {
+      "type": "assume",
+      "statement": "A^2 is invertible"
+    }
+  ],
+  "conclusion": "A is invertible",
+  "status": "proved",
+  "proof": {
+    "steps": [
+      {
+        "type": "assume",
+        "statement": "A^2 is invertible",
+        "additional": {
+          "Existence": [
+            {
+              "type": "fix",
+              "variable": "B",
+              "kind": "a matrix such that AB = BA = I"
+            }
+          ]
+        }
+      },
+      {
+        "type": "observation",
+        "statement": "A(AB) = (AA)B = I"
+      },
+      {
+        "type": "assert",
+        "claim": "AB is the inverse of A",
+        "deduced_from": [
+          "A(AB) = I"
+        ]
+      },
+      {
+        "type": "observe",
+        "statement": "Since AB is the inverse of A, A is invertible"
+      }
+    ]
+  }
+}
+```
