@@ -3,7 +3,7 @@
 # This is a wrapper script, that automatically download ammonite from GitHub release pages
 # You can give the required mill version with AMM_VERSION env variable
 # If no version is given, it falls back to the value of DEFAULT_AMM_VERSION
-DEFAULT_AMM_VERSION=2.5.4
+DEFAULT_AMM_VERSION=2.5.11
 
 set -e
 

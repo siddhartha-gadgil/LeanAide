@@ -79,3 +79,4 @@ out/
 target/
 *.xopp
 *.swp
+.scala-build/
