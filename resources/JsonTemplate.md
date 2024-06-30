@@ -33,8 +33,8 @@ Each JSON object has a "type" field. The possible values for this field are: "de
     * **Term**: the term being defined.
 * **Observe**: A mathematical statement whose proof is a simple calculation or deduction hence can be omitted.
   * Additional fields: 
-    * **Statement**: the mathematical observation.
-    * The statement should be a CLAIM only, not containing justification or words like "therefore", "then", "hence" and "so". A statement saying that one claim holds because another claim holds should be split into two **observe**/**assert** statements.
+    * **Claim**: the mathematical observation being claimed.
+    * The statement should be a CLAIM only, not containing justification or words like "therefore", "then", "hence" and "so". A statement saying that one claim holds because another claim holds should either be an **assert** statement or be split into two or more **observe**/**assert** statements.
 * **Assert**: A mathematical statement whose proof is a straightforward consequence of given results following some method.
   * Additional fields: 
     * **Claim**: the mathematical claim being asserted, NOT INCLUDING proofs, justifications or results used. The claim should be purely a logical statement which is the *consequence* obtained.
