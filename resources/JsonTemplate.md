@@ -5,14 +5,17 @@ Each JSON object has a "type" field. The possible values for this field are: "de
 * **Fix**: For a statement introducing a new variable.
   * Additional fields: 
     * **Variable**: the variable being defined.
-    * **Kind**: the type and (optionally) properties of the variable.
-* **Let**: For a statement introducing a new variable which has a given explicit value.
+    * **Kind**: the type of the variable, such as `real number`, `function from S to T`, `element of G` etc.
+    * **Property**: (optional) specific properties of the variable beyond the kind.
+* **Let**: For a statement introducing a new variable which has a given EXPLICIT and UNIQUE value.  
   * Additional fields: 
     * **Variable**: the variable being defined.
     * **Value**: the value being assigned to the variable.
-* **Have**: This is an anonymous let/fix statement, introducing an anonymous object such as a topology, group action etc to be used implicitly.
+    * * If the value is not unique, then this SHOULD INSTEAD BE a **fix** or **choose** statement (use **choose** if existence of element with the property is proved and used).
+* **Have**: This is an anonymous let/fix statement, introducing an ANONYMOUS object such as a topology, group action etc to be used implicitly.
   * Additional fields: 
     * **Value**: the value of the anonymous object being introduced.
+  * If the object has name or notation, use **let** or **fix** instead.
 * **Consider**: This is an anonymous let/fix statement, focussing on an anonymous object such as a topology, group action etc to be used implicitly.
   * Additional fields: 
     * **Value**: the value of the anonymous object being introduced.
@@ -31,6 +34,7 @@ Each JSON object has a "type" field. The possible values for this field are: "de
 * **Observe**: A mathematical statement whose proof is a simple calculation or deduction hence can be omitted.
   * Additional fields: 
     * **Statement**: the mathematical observation.
+    * The statement should be a CLAIM only, not containing justification or words like "therefore", "then", "hence" and "so". A statement saying that one claim holds because another claim holds should be split into two **observe**/**assert** statements.
 * **Assert**: A mathematical statement whose proof is a straightforward consequence of given results following some method.
   * Additional fields: 
     * **Claim**: the mathematical claim being asserted, NOT INCLUDING proofs, justifications or results used. The claim should be purely a logical statement which is the *consequence* obtained.
