@@ -78,3 +78,7 @@ def trivialEquality : Syntax → MetaM Bool
   return (b, b')
 
 open Tactic
+
+example : {n: Nat} →  (a : Fin n) →  a = a := by
+  intro n a
+  rfl

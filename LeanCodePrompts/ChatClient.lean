@@ -90,6 +90,7 @@ inductive ChatServer where
   | openAI (model: String := "gpt-3.5-turbo")
   | azure (deployment: String := "leanaide-gpt4")
       (model: String := "GPT-4")
+  | google (model: String := "gemini-1.5-pro-001") (location: String := "asia-south1")
   | generic (model: String) (url: String) (hasSysPropmpt : Bool)
 
 namespace ChatServer
@@ -99,6 +100,8 @@ def url : ChatServer → IO String
       return "https://api.openai.com/v1/chat/completions"
   | azure deployment _ =>
       azureURL deployment
+  | google _ location =>
+      return s!"https://{location}-aiplatform.googleapis.com/v1beta1/projects/{← projectID}/locations/{location}/endpoints/openapi/chat/completions "
   | generic _ url _ =>
       return url++"/v1/chat/completions"
 
@@ -106,11 +109,13 @@ def model : ChatServer → String
   | openAI model => model
   | azure _ model => model
   | generic model _ _ => model
+  | google model _ => "google/" ++ model
 
 def hasSysPropmpt : ChatServer → Bool
   | openAI _ => true
   | azure _ _ => true
   | generic _ _ b => b
+  | google _ _ => true
 
 def authHeader? : ChatServer → IO (Option String)
   | openAI _ => do
@@ -129,6 +134,9 @@ def authHeader? : ChatServer → IO (Option String)
     return some <| "api-key: " ++ key
   | generic .. =>
     return none
+  | google _ _ => do
+    let key ← IO.Process.run {cmd := "gcloud", args := #["auth", "print-access-token"]}
+    return some <|"Authorization: Bearer " ++ key.trim
 
 def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Json := do
   let dataJs := Json.mkObj [("model", server.model), ("messages", messages)

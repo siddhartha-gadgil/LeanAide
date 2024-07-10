@@ -285,6 +285,11 @@ def azureURL (deployment: String := "leanaide-gpt4") : IO String := do
 def openAIURL : IO String := do
   pure "https://api.openai.com/v1/chat/completions"
 
+def projectID : IO String := do
+  let id ← IO.getEnv "PROJECT_ID"
+  match id with
+  | none => throw <| IO.userError "PROJECT_ID not set"
+  | some id => return id
 
 open System IO.FS
 def appendFile (fname : FilePath) (content : String) : IO Unit := do
