@@ -332,6 +332,12 @@ def codeBlock? (code: String) (s: String) : Option String := do
     s.splitOn "```" |>.get? 1
   split.splitOn "```" |>.get? 0
 
+def extractJson (s: String) : Json :=
+  let code := codeBlock? "json" s |>.getD s
+  match Json.parse code with
+  | Except.ok j => j
+  | Except.error _ => Json.str code
+
 def partialParser  (parser : Parser) (input : String) (fileName := "<input>") : MetaM <| Except String (Syntax × String × String) := do
   let env ← getEnv
   -- let c := mkParserContext (mkInputContext input fileName) { env := env, options := {} }

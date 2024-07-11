@@ -108,7 +108,7 @@ def url : ChatServer → IO String
       azureURL deployment
   | google _ location => do
       let url ←  pure s!"https://{location}-aiplatform.googleapis.com/v1beta1/projects/{← projectID}/locations/{location}/endpoints/openapi/chat/completions"
-      IO.eprintln s!"Google URL: {url}"
+      -- IO.eprintln s!"Google URL: {url}"
       return url
   | generic _ url _ =>
       return url++"/v1/chat/completions"
@@ -325,8 +325,12 @@ def completions (server: ChatServer)
   (examples: Array ChatExample := #[]): CoreM (Array String) := do
   let messages ←  GPT.mkMessages queryString examples sysPrompt !(server.hasSysPropmpt)
   let data ← ChatServer.query server messages params
-  let outputs ← getMessageContents data
-  return outputs
+  match data.getObjValAs? Json "choices" with
+  | Except.error _ =>
+    throwError m!"no choices field in {data}"
+  | Except.ok data =>
+    let outputs ← getMessageContents data
+    return outputs
 
 def mathCompletions (server: ChatServer)
   (queryString: String)(n: Nat := 3)
@@ -336,11 +340,12 @@ def mathCompletions (server: ChatServer)
   ChatServer.completions server queryString sysPrompt n params examples
 
 def structuredProof (server: ChatServer)
-  (pf: String)(n: Nat := 3)
+  (pf: String)(n: Nat := 1)
   (params: ChatParams := {n := n, stopTokens := #[]})
-  (examples: Array ChatExample := #[]): CoreM (Array String) := do
+  (examples: Array ChatExample := #[]): CoreM (Array Json) := do
   let queryString ← structuredProofQuery pf
-  ChatServer.mathCompletions server queryString n params examples
+  let outs ← ChatServer.mathCompletions server queryString n params examples
+  return outs.map extractJson
 
 
 def prove (server: ChatServer)
@@ -422,3 +427,5 @@ def summarize (server: ChatServer)
   ChatServer.mathCompletions server queryString n {n := n, stopTokens := #[]} examples
 
 end ChatServer
+
+def proofExample := "## Theorem: Let $A$ be a square matrix. Prove that if $A^3 = I$ then $A$ is diagonalizable.\n## Proof: \nSince $A^3 = I$, $A$ satisfies the polynomial equation $p(x) = x^3 - 1$. The roots of $p(x)$ are the cube roots of unity, namely $1, \\omega, \\omega^2$, where $\\omega = e^{2\\pi i/3}$ is a primitive cube root of unity. These roots are distinct, so the minimal polynomial of $A$ must divide $p(x)$ and also have distinct roots. Therefore, $A$ is diagonalizable."
