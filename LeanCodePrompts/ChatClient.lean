@@ -84,7 +84,13 @@ def proofJson : IO String := do
   let path := resources / "ProofJson.md"
   IO.FS.readFile path
 
+def jsonProofTemplate  : IO String := do
+  let path := resources / "JsonTemplate.md"
+  IO.FS.readFile path
 
+def structuredProofQuery (pf: String) : IO String := do
+  let template ← jsonProofTemplate
+  return fillTemplate template [("proof", pf)]
 
 inductive ChatServer where
   | openAI (model: String := "gpt-3.5-turbo")
@@ -100,8 +106,10 @@ def url : ChatServer → IO String
       return "https://api.openai.com/v1/chat/completions"
   | azure deployment _ =>
       azureURL deployment
-  | google _ location =>
-      return s!"https://{location}-aiplatform.googleapis.com/v1beta1/projects/{← projectID}/locations/{location}/endpoints/openapi/chat/completions "
+  | google _ location => do
+      let url ←  pure s!"https://{location}-aiplatform.googleapis.com/v1beta1/projects/{← projectID}/locations/{location}/endpoints/openapi/chat/completions"
+      IO.eprintln s!"Google URL: {url}"
+      return url
   | generic _ url _ =>
       return url++"/v1/chat/completions"
 
@@ -139,10 +147,11 @@ def authHeader? : ChatServer → IO (Option String)
     return some <|"Authorization: Bearer " ++ key.trim
 
 def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Json := do
+  let stopJs := Json.mkObj <| if params.stopTokens.isEmpty then [] else
+    [("stop", Json.arr <| params.stopTokens |>.map Json.str)]
   let dataJs := Json.mkObj [("model", server.model), ("messages", messages)
-  , ("temperature", Json.num params.temp), ("n", params.n), ("max_tokens", params.maxTokens),
-  ("stop", Json.arr <| params.stopTokens |>.map Json.str)
-  ]
+  , ("temperature", Json.num params.temp), ("n", params.n), ("max_tokens", params.maxTokens)]
+  let dataJs := dataJs.mergeObj stopJs
   let data := dataJs.pretty
   trace[Translate.info] "Model query: {data}"
   let url ← server.url
@@ -325,6 +334,14 @@ def mathCompletions (server: ChatServer)
   (examples: Array ChatExample := #[]): CoreM (Array String) := do
   let sysPrompt ← mathPrompt
   ChatServer.completions server queryString sysPrompt n params examples
+
+def structuredProof (server: ChatServer)
+  (pf: String)(n: Nat := 3)
+  (params: ChatParams := {n := n, stopTokens := #[]})
+  (examples: Array ChatExample := #[]): CoreM (Array String) := do
+  let queryString ← structuredProofQuery pf
+  ChatServer.mathCompletions server queryString n params examples
+
 
 def prove (server: ChatServer)
   (thm: String)(n: Nat := 3)

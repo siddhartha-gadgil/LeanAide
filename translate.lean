@@ -23,8 +23,9 @@ def runTranslate (p : Parsed) : IO UInt32 := do
   let temp10 := p.flag? "temperature" |>.map (fun s => s.as! Nat)
     |>.getD 8
   let temp : JsonNumber := ⟨temp10, 1⟩
+  let gemini := p.hasFlag "gemini"
   let model := p.flag? "model" |>.map (fun s => s.as! String)
-    |>.getD "gpt-3.5-turbo"
+    |>.getD (if gemini then "gemini-1.5-pro-001" else "gpt-3.5-turbo")
   let azure := p.hasFlag "azure"
   let tag := p.hasFlag "tag"
   let maxTokens := p.flag? "max_tokens" |>.map (fun s => s.as! Nat)
@@ -34,6 +35,7 @@ def runTranslate (p : Parsed) : IO UInt32 := do
   let showPrompt := p.hasFlag "show_prompt"
   let chatServer :=
     if azure then ChatServer.azure else
+    if gemini then ChatServer.google model else
         match url? with
         | some url => ChatServer.generic model url !sysLess
         | none => ChatServer.openAI model
@@ -103,6 +105,7 @@ def translate : Cmd := `[Cli|
     t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t` (default 8)."
     m, model : String ; "Model to be used (default `gpt-3.5-turbo`)"
     azure; "Use Azure instead of OpenAI."
+    gemini; "Use Gemini instead of OpenAI."
     url : String; "URL to query (for a local server)."
     show_prompt; "Output the prompt to the LLM."
     show_elaborated; "Output the elaborated terms"
