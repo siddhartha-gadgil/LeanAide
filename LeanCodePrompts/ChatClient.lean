@@ -1,6 +1,7 @@
 import Lean
 import Cache.IO
 import LeanAide.Aides
+import LeanAide.Template
 
 open Lean Meta System
 
@@ -53,44 +54,6 @@ def withoutStop (p: ChatParams)(stopless: Bool) : ChatParams :=
 
 end ChatParams
 
-def llmDir := FilePath.mk "llm_data"
-def resources := FilePath.mk "resources"
-
-def templates : IO Json := do
-  let path := resources / "templates.json"
-  let js ← IO.FS.readFile path
-  match Json.parse js with
-  | Except.ok j => return j
-  | Except.error e =>
-    IO.throwServerError s!"Error parsing JSON: {e}; source: {js}"
-
-def getTemplate (name: String) : IO String := do
-  let js ← templates
-  match js.getObjValAs? String name with
-  | Except.ok s => return s
-  | _ =>
-    IO.throwServerError s!"Template {name} not found"
-
-def fillTemplate (template: String)(args: List <| String × String) :
-    String :=
-  args.foldl (fun s (x, y) => s.replace ("${" ++ x ++ "}") y) template
-
-def fromTemplate (name: String)(args: List <| String × String) :
-    IO String := do
-  let template ← getTemplate name
-  return fillTemplate template args
-
-def proofJson : IO String := do
-  let path := resources / "ProofJson.md"
-  IO.FS.readFile path
-
-def jsonProofTemplate  : IO String := do
-  let path := resources / "JsonTemplate.md"
-  IO.FS.readFile path
-
-def structuredProofQuery (pf: String) : IO String := do
-  let template ← jsonProofTemplate
-  return fillTemplate template [("proof", pf)]
 
 inductive ChatServer where
   | openAI (model: String := "gpt-3.5-turbo")
