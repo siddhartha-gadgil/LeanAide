@@ -59,9 +59,19 @@ def structuredProofQuery (pf: String) : IO String := do
 def jsonField (json: Json) (field : String) : String :=
   json.getObjValAs? String field |>.toOption.getD ""
 
+def jsonField? (json: Json) (field : String) : Option String :=
+  json.getObjValAs? String field |>.toOption
+
 def jsonFieldPairs (json: Json) (fields: List String) :
     List (String × String) :=
   fields.map (fun f => (f, jsonField json f))
+
+def jsonFieldPairs' (json: Json) (fields: List String) :
+    List (String × String) :=
+  fields.filterMap (fun f =>
+    let field? := jsonField? json f
+    field?.map (fun field => (f, field)))
+
 
 def fieldsFromTemplate (template: String) : List String :=
   let pieces := template.splitOn "${"
@@ -74,10 +84,30 @@ def fillTemplateJson (template: String)(json: Json)
      : String :=
   fillTemplate template <| jsonFieldPairs json (fieldsFromTemplate template)
 
+def fillTemplateJson? (template: String)(json: Json)
+     : Option String :=
+  let fields := fieldsFromTemplate template
+  let filled := jsonFieldPairs' json fields
+  if filled.length = fields.length then
+    some <| fillTemplate template filled
+  else none
 
 def fromComponentTemplate (name: String)(json: Json)
     : IO String := do
   let template ← getComponentTemplate name
   return fillTemplateJson template json
+
+def fromComponentTemplates (names: List String)(json: Json)
+    : IO (Option String) := do
+  match names with
+  | [] =>
+    IO.eprintln s!"No component templates filled from {json}"
+    return none
+  | name :: names => do
+    let template ← getComponentTemplate name
+    match fillTemplateJson? template json with
+    | some filled => return some filled
+    | none => fromComponentTemplates names json
+
 
 #eval fieldsFromTemplate "The matrix $A$ satisfies the polynomial equation $p(x) = x^3 - 1$ by ${proof}."
