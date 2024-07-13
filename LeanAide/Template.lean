@@ -48,12 +48,16 @@ def proofJson : IO String := do
   let path := resources / "ProofJson.md"
   IO.FS.readFile path
 
-def jsonProofTemplate  : IO String := do
+def jsonProofTemplateFull  : IO String := do
   let path := resources / "JsonTemplate.md"
   IO.FS.readFile path
 
-def structuredProofQuery (pf: String) : IO String := do
-  let template ← jsonProofTemplate
+def jsonProofInstructions : IO String := do
+  let path := resources / "ProofJsonShorter.md"
+  IO.FS.readFile path
+
+def structuredProofQueryFull (pf: String) : IO String := do
+  let template ← jsonProofTemplateFull
   return fillTemplate template [("proof", pf)]
 
 def jsonField (json: Json) (field : String) : String :=

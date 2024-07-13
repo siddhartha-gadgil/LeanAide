@@ -302,15 +302,6 @@ def mathCompletions (server: ChatServer)
   let sysPrompt ← mathPrompt
   ChatServer.completions server queryString sysPrompt n params examples
 
-def structuredProof (server: ChatServer)
-  (pf: String)(n: Nat := 1)
-  (params: ChatParams := {n := n, stopTokens := #[]})
-  (examples: Array ChatExample := #[]): CoreM (Array Json) := do
-  let queryString ← structuredProofQuery pf
-  let outs ← ChatServer.mathCompletions server queryString n params examples
-  return outs.map extractJson
-
-
 def prove (server: ChatServer)
   (thm: String)(n: Nat := 3)
   (params: ChatParams := {n := n, stopTokens := #[]})
@@ -334,12 +325,43 @@ def solve (server: ChatServer)
   ChatServer.mathCompletions server queryString n params examples
 
 def solution_to_theory (server: ChatServer)
-  (problem solution: String)(n: Nat := 3)
+  (problem solution: String)(n: Nat := 1)
   (params: ChatParams := {n := n, stopTokens := #[]})
   (examples: Array ChatExample := #[]): CoreM (Array String) := do
   let queryString ← fromTemplate "solution_to_theory" [("problem", problem), ("solution", solution)]
   ChatServer.mathCompletions server queryString n params examples
 
+def structuredProof (server: ChatServer)
+  (pf: String)(n: Nat := 1)
+  (params: ChatParams := {n := n, stopTokens := #[]})
+  : CoreM (Array Json) := do
+  let instructions ← jsonProofInstructions
+  let init : ChatExample := {
+    user := instructions
+    assistant := "Please provide the theorem and proof. I will translated this into ProofJSON format."
+  }
+  let examples := #[init]
+  let outs ← ChatServer.mathCompletions server pf n params examples
+  return outs.map extractJson
+
+def structuredProofFromSolution (server: ChatServer)
+  (problem solution: String)(n: Nat := 1)
+  (params: ChatParams := {n := n, stopTokens := #[]})
+  (examples: Array ChatExample := #[]) : CoreM (Array Json) := do
+  let theories ← solution_to_theory server problem solution n params examples
+  let results ← theories.mapM (structuredProof server)
+  return results.foldl (· ++ ·) #[]
+
+@[deprecated structuredProof]
+def structuredProofFull (server: ChatServer)
+  (pf: String)(n: Nat := 1)
+  (params: ChatParams := {n := n, stopTokens := #[]})
+  (examples: Array ChatExample := #[]): CoreM (Array Json) := do
+  let queryString ← structuredProofQueryFull pf
+  let outs ← ChatServer.mathCompletions server queryString n params examples
+  return outs.map extractJson
+
+@[deprecated structuredProof]
 def make_structured (server: ChatServer)
   (text: String)(n: Nat := 3)
   (params: ChatParams := {n := n, stopTokens := #[]})
