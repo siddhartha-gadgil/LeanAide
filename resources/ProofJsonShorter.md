@@ -8,7 +8,7 @@ Each JSON object has a "type" field. The possible values for this field are: "de
     * **Value**: (optional) the value being assigned to the variable.
     * **Kind**: (optional) the type of the variable, such as `real number`, `function from S to T`, `element of G` etc.
     * **Property**: (optional) specific properties of the variable beyond the kind.
-* **Assume**: A mathematical assumption being made. In case this is a variable or structure being introduced, use the **let** or **have** type.
+* **Assume**: A mathematical assumption being made. In case this is a variable or structure being introduced, use a **let** statement.
   * Additional fields: 
     * **Statement**: the mathematical assumption.
 * **Define**: A mathematical definition.
