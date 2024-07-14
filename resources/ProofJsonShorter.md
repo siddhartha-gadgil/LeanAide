@@ -19,7 +19,7 @@ Each JSON object has a "type" field. The possible values for this field are: "de
   * Additional fields: 
     * **Claim**: the mathematical claim being asserted, NOT INCLUDING proofs, justifications or results used. The claim should be purely a logical statement which is the *consequence* obtained.
     * **Deduced_from**: (optional) a JSON list of results used to prove the claim, each result either the name of a theorem or a short statement previously proved.
-    * **Proof-method**: (optional) the method of proof for the claim; this should be a single phrase or a fairly simple sentence; if a longer justification is needed break the step into smaller steps.
+    * **Proof-method**: (optional) the method of proof for the claim; this should be a single phrase or a fairly simple sentence; if a longer justification is needed break the step into smaller steps. If the method is deduction from a result, use the **deduced_from** field.
 * **Theorem**: The statement of a mathematical theorem, lemma or claim.
   * Additional fields: 
     * **Hypothesis**: a JSON list of data and assumptions, **let** and **assume** statements.
