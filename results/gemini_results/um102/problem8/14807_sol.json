@@ -1,0 +1,57 @@
+{
+  "type": "theorem",
+  "name": "Circulation at the Origin",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "<anonymous>",
+      "kind": "linear differential equation",
+      "property": "system of equations",
+      "value": "\\( \\dot{x}=-y \\) and \\( \\dot{y}=x \\)"
+    }
+  ],
+  "conclusion": "The origin is a circulation.",
+  "status": "proved",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "(c)  We are given the system of differential equations:"
+      },
+      {
+        "type": "assert",
+        "claim": "\\( \\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}. \\)",
+        "proof-method": "Rewriting the given system in matrix form"
+      },
+      {
+        "type": "assert",
+        "claim": "\\( \\begin{vmatrix} \\lambda & 1 \\\\ -1 & \\lambda \\end{vmatrix} =0 \\)",
+        "proof-method": "Setting up the characteristic equation to find the eigenvalues"
+      },
+      {
+        "type": "assert",
+        "claim": "\\( \\lambda^2 +1 = 0 \\)",
+        "proof-method": "Expanding the determinant"
+      },
+      {
+        "type": "conclude",
+        "statement": "\\( \\lambda = \\pm i \\)",
+        "deduced_from": [
+          "\\( \\lambda^2 +1 = 0 \\)"
+        ],
+        "proof-method": "Solving for \\( \\lambda \\)"
+      },
+      {
+        "type": "missing",
+        "statement": [
+          {
+            "type": "problem",
+            "statement": "Explain how the eigenvalues being \\( \\pm i \\) implies the origin is a circulation.",
+            "solved": false
+          }
+        ]
+      }
+    ]
+  }
+}

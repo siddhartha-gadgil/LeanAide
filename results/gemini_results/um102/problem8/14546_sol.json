@@ -1,0 +1,105 @@
+{
+  "type": "theorem",
+  "name": "Origin is a Circulation for a Linear System",
+  "status": "proved",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x(t)",
+      "kind": "real function"
+    },
+    {
+      "type": "let",
+      "variable": "y(t)",
+      "kind": "real function"
+    },
+    {
+      "type": "assume",
+      "statement": "The functions x(t) and y(t) satisfy the system of differential equations: dx/dt = -y and dy/dt = x"
+    }
+  ],
+  "conclusion": "The origin (0, 0) is a circulation of the given system of differential equations.",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "To prove the origin is a circulation, we need to show that solutions near the origin spiral around it. We'll achieve this by analyzing the eigenvalues and eigenvectors of the system's matrix."
+      },
+      {
+        "type": "let",
+        "variable": "A",
+        "kind": "matrix",
+        "value": "[[0, -1], [1, 0]]"
+      },
+      {
+        "type": "assert",
+        "claim": "The matrix A represents the given system of differential equations.",
+        "proof-method": "Direct verification: The matrix form d/dt [x, y] = A [x, y] corresponds to the given equations."
+      },
+      {
+        "type": "problem",
+        "statement": "Find the eigenvalues of matrix A.",
+        "solved": true,
+        "answer": "[i, -i]",
+        "proof": {
+          "type": "proof",
+          "steps": [
+            {
+              "type": "remark",
+              "statement": "The eigenvalues are found by solving the characteristic equation det(A - λI) = 0"
+            },
+            {
+              "type": "assert",
+              "claim": "The characteristic equation is λ^2 + 1 = 0",
+              "proof-method": "Direct calculation of the determinant."
+            },
+            {
+              "type": "conclude",
+              "statement": "The solutions are λ = i and λ = -i"
+            }
+          ]
+        }
+      },
+      {
+        "type": "remark",
+        "statement": "The eigenvalues are purely imaginary, indicating a center-type behavior.  We'll now find the eigenvectors."
+      },
+      {
+        "type": "problem",
+        "statement": "Find the eigenvector corresponding to eigenvalue  λ = i.",
+        "solved": true,
+        "answer": "[1, i]",
+        "proof": {
+          "type": "proof",
+          "steps": [
+            {
+              "type": "remark",
+              "statement": "We need to solve the equation (A - iI)v = 0 for the eigenvector v."
+            },
+            {
+              "type": "missing",
+              "statement": "Steps for solving the eigenvector equation are missing here."
+            },
+            {
+              "type": "conclude",
+              "statement": "A solution (up to scaling) is v = [1, i]"
+            }
+          ]
+        }
+      },
+      {
+        "type": "remark",
+        "statement": "A similar calculation can be done for λ = -i, but the key point is that the general solution will involve sines and cosines due to the imaginary eigenvalues, leading to a spiral."
+      },
+      {
+        "type": "missing",
+        "statement": "Explicitly stating the general solution and showing it represents a circulation around the origin is missing."
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, the origin is a circulation for the given system of differential equations."
+      }
+    ]
+  }
+}

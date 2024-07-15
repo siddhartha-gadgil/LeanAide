@@ -49,6 +49,8 @@ Each JSON object has a "type" field. The possible values for this field are: "de
 * **Cases**: A case split in a proof.
   * Additional fields: 
     * **On**: the variable, condition or property on which the case split is being done.
+    * **Split-kind**: one of "match" (for pattern matching), "condition" (if based on a condition being true or false) and "groups" (for more complex cases).
+    * **Exhaustiveness**: (optional) Proof that the case split is exhaustive for complex splits. 
     * **Proof-cases**: a JSON list of cases in the case split, which are all objects of type **case**.
 * **Contradiction**: A proof by contradiction.
   * Additional fields: 

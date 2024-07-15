@@ -1,0 +1,44 @@
+{
+  "type": "theorem",
+  "name": "Saddle Point of a Linear System",
+  "status": "proved",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "<anonymous>",
+      "kind": "differential equation system",
+      "property": "linear",
+      "value": "\\(\\dot{x} = y\\) and \\(\\dot{y} = x\\)"
+    }
+  ],
+  "conclusion": "The origin is a saddle point of the given system of differential equations.",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "To determine the nature of the equilibrium point at the origin, we'll analyze the eigenvalues of the system's coefficient matrix."
+      },
+      {
+        "type": "let",
+        "variable": "A",
+        "kind": "matrix",
+        "value": "\\(\\begin{pmatrix} 0 & 1 \\\\ 1 & 0 \\end{pmatrix}\\)",
+        "property": "coefficient matrix of the system"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of A are \\( \\lambda_1 = 1 \\) and \\( \\lambda_2 = -1 \\).",
+        "proof-method": "direct calculation"
+      },
+      {
+        "type": "remark",
+        "statement": "Since the eigenvalues have opposite signs (one positive, one negative), we can conclude the following:"
+      },
+      {
+        "type": "conclude",
+        "statement": "The origin is a saddle point of the linear system \\( \\dot{x} = y \\) and \\( \\dot{y} = x \\)."
+      }
+    ]
+  }
+}

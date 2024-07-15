@@ -1,0 +1,81 @@
+{
+  "type": "theorem",
+  "name": "Saddle Point of a Linear System",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x",
+      "kind": "function of time"
+    },
+    {
+      "type": "let",
+      "variable": "y",
+      "kind": "function of time"
+    },
+    {
+      "type": "assume",
+      "statement": "The functions x and y satisfy the system of differential equations \\( \\dot{x} = y \\) and \\( \\dot{y} = x \\)."
+    }
+  ],
+  "conclusion": "The origin is a saddle point of the given system of differential equations.",
+  "status": "proved",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We will rewrite the system in matrix form and analyze the eigenvalues of the coefficient matrix."
+      },
+      {
+        "type": "let",
+        "variable": "A",
+        "value": "[[0, 1], [1, 0]]",
+        "kind": "matrix"
+      },
+      {
+        "type": "let",
+        "variable": "X",
+        "value": "[x, y]",
+        "kind": "vector"
+      },
+      {
+        "type": "assert",
+        "claim": "The system of differential equations can be written as \\( \\mathbf{X'} = A\\mathbf{X} \\).",
+        "proof-method": "direct computation"
+      },
+      {
+        "type": "assert",
+        "claim": "The trace of A is 0.",
+        "proof-method": "direct computation"
+      },
+      {
+        "type": "let",
+        "variable": "Tr(A)",
+        "value": "0"
+      },
+      {
+        "type": "assert",
+        "claim": "The determinant of A is -1.",
+        "proof-method": "direct computation"
+      },
+      {
+        "type": "let",
+        "variable": "Det(A)",
+        "value": "-1"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of A are 1 and -1.",
+        "deduced_from": [
+          "Formula for eigenvalues of a 2x2 matrix",
+          "Values of Tr(A) and Det(A)"
+        ],
+        "proof-method": "substitution into the quadratic formula"
+      },
+      {
+        "type": "conclude",
+        "statement": "Since the eigenvalues of A have opposite signs, the origin is a saddle point for the given system of differential equations."
+      }
+    ]
+  }
+}

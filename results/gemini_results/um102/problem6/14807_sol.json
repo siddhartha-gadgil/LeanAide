@@ -1,0 +1,60 @@
+{
+  "type": "theorem",
+  "name": "Saddle Point of a Linear System",
+  "status": "proved",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "Linear differential equation",
+      "value": "\\(\\dot{x}=y\\) and \\(\\dot{y}=x\\)"
+    }
+  ],
+  "conclusion": "The origin is a saddle point of the given linear dynamical system.",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "A",
+        "value": "\\(\\begin{pmatrix} 0 & 1 \\\\ 1 & 0 \\end{pmatrix}\\)",
+        "kind": "matrix representation of the linear system"
+      },
+      {
+        "type": "remark",
+        "statement": "To determine the nature of the equilibrium point at the origin, we analyze the eigenvalues of matrix A."
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of A are the solutions to the characteristic equation: \\(|A - \\lambda I| = 0\\)",
+        "deduced_from": [
+          "Definition of eigenvalues of a matrix"
+        ]
+      },
+      {
+        "type": "let",
+        "variable": "I",
+        "kind": "identity matrix",
+        "property": "same size as A"
+      },
+      {
+        "type": "assert",
+        "claim": "The characteristic equation becomes: \\(\\begin{vmatrix} -\\lambda & 1 \\\\ 1 & -\\lambda \\end{vmatrix} = 0\\)",
+        "proof-method": "Substituting A and I into the characteristic equation"
+      },
+      {
+        "type": "assert",
+        "claim": "This simplifies to the quadratic equation: \\(\\lambda^2 - 1 = 0\\)",
+        "proof-method": "Calculating the determinant"
+      },
+      {
+        "type": "assert",
+        "claim": "The solutions to the quadratic equation are: \\(\\lambda = \\pm 1\\)",
+        "proof-method": "Solving the quadratic equation"
+      },
+      {
+        "type": "conclude",
+        "statement": "Since one eigenvalue (1) is positive and the other (-1) is negative, the origin is a saddle point of the linear dynamical system."
+      }
+    ]
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "type": "theorem",
+  "name": "Circulation at the Origin",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x(t)",
+      "kind": "function",
+      "property": "solution to the differential equation dx/dt = -y"
+    },
+    {
+      "type": "let",
+      "variable": "y(t)",
+      "kind": "function",
+      "property": "solution to the differential equation dy/dt = x"
+    }
+  ],
+  "conclusion": "The system of differential equations dx/dt = -y and dy/dt = x has a solution trajectory that forms a circle, indicating circulation around the origin in the xy-plane.",
+  "status": "proved",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We begin by expressing the given system of differential equations in matrix form."
+      },
+      {
+        "type": "let",
+        "variable": "A",
+        "value": "[[0, -1],[1, 0]]",
+        "kind": "matrix"
+      },
+      {
+        "type": "assert",
+        "claim": "The system can be written as d/dt[x, y] = A[x, y]",
+        "proof-method": "direct substitution"
+      },
+      {
+        "type": "remark",
+        "statement": "To find the general solution, we need to determine the eigenvalues and eigenvectors of matrix A."
+      },
+      {
+        "type": "assert",
+        "claim": "The characteristic equation of A is det(A - λI) = λ² + 1 = 0",
+        "proof-method": "calculation"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues are λ₁ = i and λ₂ = -i",
+        "deduced_from": [
+          "characteristic equation"
+        ],
+        "proof-method": "solving the quadratic equation"
+      },
+      {
+        "type": "remark",
+        "statement": "Next, we find the eigenvectors corresponding to each eigenvalue."
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvector v₁ corresponding to λ₁ = i is [1, i]",
+        "proof-method": "solving the system (A - iI)v₁ = 0"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvector v₂ corresponding to λ₂ = -i is [1, -i]",
+        "proof-method": "solving the system (A + iI)v₂ = 0"
+      },
+      {
+        "type": "remark",
+        "statement": "With two linearly independent eigenvectors, we can express the general solution of the system."
+      },
+      {
+        "type": "let",
+        "variable": "c₁",
+        "kind": "constant"
+      },
+      {
+        "type": "let",
+        "variable": "c₂",
+        "kind": "constant"
+      },
+      {
+        "type": "assert",
+        "claim": "The general solution is [x(t), y(t)] = c₁e^(it)[1, i] + c₂e^(-it)[1, -i]",
+        "proof-method": "using the eigenvalues and eigenvectors"
+      },
+      {
+        "type": "assert",
+        "claim": "Expanding, we get x(t) = c₁e^(it) + c₂e^(-it) and y(t) = c₁ie^(it) - c₂ie^(-it)",
+        "proof-method": "algebraic manipulation"
+      },
+      {
+        "type": "remark",
+        "statement": "Recognizing that e^(it) and e^(-it) represent cosine and sine functions through Euler's formula, we can conclude that the solution describes a circular trajectory."
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, the system of differential equations exhibits circulation around the origin in the xy-plane."
+      }
+    ]
+  }
+}

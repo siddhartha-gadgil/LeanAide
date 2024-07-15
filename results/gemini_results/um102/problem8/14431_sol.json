@@ -1,0 +1,78 @@
+{
+  "type": "theorem",
+  "name": "Circulation at the Origin",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x(t)",
+      "kind": "function of time"
+    },
+    {
+      "type": "let",
+      "variable": "y(t)",
+      "kind": "function of time"
+    },
+    {
+      "type": "assume",
+      "statement": "The functions x(t) and y(t) satisfy the system of differential equations:  \\( \\dot{x} = -y \\) and \\( \\dot{y} = x \\)."
+    }
+  ],
+  "conclusion": "The origin (x = 0, y = 0) is a center, which means the system exhibits circulation.",
+  "status": "proved",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We will prove this by analyzing the eigenvalues of the matrix representing the system of differential equations."
+      },
+      {
+        "type": "let",
+        "variable": "A",
+        "kind": "matrix",
+        "value": "\\( \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix} \\)"
+      },
+      {
+        "type": "assert",
+        "claim": "The given system of differential equations can be written in matrix form as \\( \\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = A \\begin{pmatrix} x \\\\ y \\end{pmatrix} \\)",
+        "proof-method": "direct computation"
+      },
+      {
+        "type": "assert",
+        "claim": "The trace of A is 0.",
+        "proof-method": "direct computation"
+      },
+      {
+        "type": "assert",
+        "claim": "The determinant of A is 1.",
+        "proof-method": "direct computation"
+      },
+      {
+        "type": "let",
+        "variable": "\\( \\lambda \\)",
+        "kind": "eigenvalue of A"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of A are the roots of the characteristic equation: det(A - \\( \\lambda \\)I) = 0",
+        "deduced_from": [
+          "definition of eigenvalues of a matrix"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The characteristic equation is equivalent to \\( \\lambda^2 + 1 = 0 \\).",
+        "proof-method": "direct computation"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues are \\( \\lambda = \\pm i \\)",
+        "proof-method": "solving the characteristic equation"
+      },
+      {
+        "type": "conclude",
+        "statement": "Since the trace of A is 0 and the determinant of A is positive, the origin is a center, indicating circulation according to trace-determinant phase plane analysis."
+      }
+    ]
+  }
+}

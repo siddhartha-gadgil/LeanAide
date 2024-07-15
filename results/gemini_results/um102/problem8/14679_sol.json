@@ -1,0 +1,47 @@
+{
+  "type": "theorem",
+  "name": "Circulation at Origin",
+  "Hypothesis": [],
+  "Conclusion": "The origin is a circulation for the linear differential equation system \\( \\dot{x}=-y \\) and \\( \\dot{y}=x \\).",
+  "Status": "proved",
+  "Proof": {
+    "type": "proof",
+    "Steps": [
+      {
+        "type": "let",
+        "Variable": "r",
+        "Kind": "real number",
+        "Property": "element of the open interval (0, \\(\\infty\\))"
+      },
+      {
+        "type": "let",
+        "Variable": "\\(\\theta t\\)",
+        "Kind": "real number",
+        "Property": "element of the closed interval [-\\(\\pi\\), \\(\\pi\\)]"
+      },
+      {
+        "type": "let",
+        "Variable": "y",
+        "Value": "\\( r\\sin{\\theta t} \\)"
+      },
+      {
+        "type": "let",
+        "Variable": "x",
+        "Value": "\\( r\\cos{\\theta t} \\)"
+      },
+      {
+        "type": "assert",
+        "Claim": "\\( \\dot{x} = -r\\sin{\\theta t} = -y \\) and \\( \\dot{y} = r\\cos{\\theta t} = x \\)",
+        "Proof-method": "Direct computation from the definitions"
+      },
+      {
+        "type": "remark",
+        "Statement": "The phase portrait for this system is a circulation around the origin."
+      },
+      {
+        "type": "conclude",
+        "Statement": "Hence, the origin is a circulation."
+      }
+    ]
+  }
+}
