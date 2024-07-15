@@ -128,7 +128,7 @@ def getDescriptionM (name: Name) : MetaM <| Option (String × String) := do
   let prompt? ← theoremPrompt name
   let server := ChatServer.azure
   prompt?.mapM fun (prompt, statement) => do
-    let messages ← GPT.mkMessages prompt #[] (← sysPrompt)
+    let messages ← mkMessages prompt #[] (← sysPrompt)
     let fullJson ←  server.query messages {}
     let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
@@ -278,7 +278,7 @@ def lemmaChatMessageM? (name: Name)(description: String)(n: Nat)
   let query? ← lemmaUserPrompt' name description
   let sys ← sysPrompt
   query?.mapM fun query =>
-    GPT.mkMessages query examples.toArray sys
+    mkMessages query examples.toArray sys
 
 def lemmaChatQueryM? (name: Name)(description: String)(n: Nat)
   (lemmaPairs: List (Name × String)) : MetaM <| Option (Array String × String × Array String) := do

@@ -222,7 +222,6 @@ def docChatExample
     return {user := user, assistant := assistant}
 
 
-namespace GPT
 
 /--
 A Json object representing a chat message
@@ -254,10 +253,8 @@ def syslessMessages (sys: String)(egs : List <| ChatExample)
     (headEg :: egs).bind (fun eg  => eg.messages)
   Json.arr <| egArr ++ [message "user" query] |>.toArray
 
-/--
-Default system prompt
--/
-def sysPrompt := "You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples. Follow EXACTLY the examples given."
+
+def sysPrompt' := "You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples. Follow EXACTLY the examples given."
 
 /--
 Given a query and a list of examples, build messages for a prompt for OpenAI
@@ -270,7 +267,6 @@ def mkMessages(query : String)(examples: Array ChatExample)
     return sysMessages sysPrompt examples.toList query
 
 
-end GPT
 
 def mathPrompt := getTemplate "math_sys_prompt"
 
@@ -286,7 +282,7 @@ def completions (server: ChatServer)
   (queryString: String)(sysPrompt: String)(n: Nat := 3)
   (params: ChatParams := {n := n, stopTokens := #[]})
   (examples: Array ChatExample := #[]): CoreM (Array String) := do
-  let messages ←  GPT.mkMessages queryString examples sysPrompt !(server.hasSysPropmpt)
+  let messages ←  mkMessages queryString examples sysPrompt !(server.hasSysPropmpt)
   let data ← ChatServer.query server messages params
   match data.getObjValAs? Json "choices" with
   | Except.error _ =>

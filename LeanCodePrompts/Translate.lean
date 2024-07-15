@@ -111,7 +111,7 @@ def chatServer : CoreM ChatServer := do
 /--
 Flip prompt; should be corrected before use.
 -/
-def GPT.makeFlipPrompt(query : String)(examples: Array ChatExample) : Json:= sysMessages sysPrompt (examples.toList.map (fun ⟨x, y⟩  => ⟨y, x⟩)) query
+def makeFlipPrompt(query : String)(examples: Array ChatExample) : Json:= sysMessages sysPrompt' (examples.toList.map (fun ⟨x, y⟩  => ⟨y, x⟩)) query
 
 
 /-- make prompt for reverse translation from prompt pairs -/
@@ -271,7 +271,7 @@ def getLeanCodeJson (s: String)
         ("Translate the following statement into Lean 4:\n## Theorem: " ++ doc ++ "\n\nGive ONLY the Lean code", thm)
       let examples := pairs.filterMap toChat
       let s' := "Translate the following statement into Lean 4:\n## Theorem: " ++ s ++ "\n\nGive ONLY the Lean code"
-      let messages ← GPT.mkMessages s' examples (← transPrompt) !server.hasSysPropmpt
+      let messages ← mkMessages s' examples (← transPrompt) !server.hasSysPropmpt
       trace[Translate.info] m!"prompt: \n{messages.pretty}"
       logTimed "querying server"
       let fullJson ← server.query messages params
@@ -431,7 +431,7 @@ def leanToPrompt (thm: String)(numSim : Nat:= 5)(numConcise : Nat := 0)(temp : J
       getNearestDocs thm numSim numConcise dataMap
     let pairs := pairs?.toOption.getD #[]
     let examples := pairs.filterMap simpleChatExample
-    let prompt := GPT.makeFlipPrompt thm examples
+    let prompt := makeFlipPrompt thm examples
     let fullJson ← (ChatServer.openAI).query prompt
       {temp := temp, n := 1}
     let outJson :=

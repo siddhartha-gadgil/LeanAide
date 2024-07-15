@@ -74,8 +74,8 @@ def jsonToExprStrArray (json: Json) : TermElabM (Array String) := do
 end GPT
 
 /-- make prompt from prompt pairs -/
-@[deprecated GPT.makePrompt]
-def makePrompt(prompt : String)(pairs: Array (String × String)) : String :=
+@[deprecated makePrompt]
+def makePrompt'(prompt : String)(pairs: Array (String × String)) : String :=
       pairs.foldr (fun  (ds, thm) acc =>
         -- acc ++ "/-- " ++ ds ++" -/\ntheorem" ++ thm ++ "\n" ++ "\n"
 s!"/-- {ds} -/
@@ -87,8 +87,8 @@ theorem "
 
 
 /-- make prompt for reverse translation from prompt pairs -/
-@[deprecated GPT.makeFlipPrompt]
-def makeFlipPrompt(statement : String)(pairs: Array (String × String)) : String :=
+@[deprecated makeFlipPrompt]
+def makeFlipPrompt'(statement : String)(pairs: Array (String × String)) : String :=
       pairs.foldr (fun  (ds, thm) acc =>
 s!"theorem {thm} :=
 /- {ds} -/
@@ -288,7 +288,7 @@ def getCodeJson (s: String)(numSim : Nat:= 8)(numKW: Nat := 0)(includeFixed: Boo
         else pure (#[], ⟨0, "", ""⟩)
       let pairs := if includeFixed then pairs ++ fixedPrompts else pairs
       let pairs  := pairs.filter (fun (s, _) => s.length < 100)
-      let prompt := GPT.makePrompt s pairs
+      let prompt := makePrompt s pairs
       trace[Translate.info] m!"prompt: \n{prompt.pretty}"
       -- mkLog prompt
       let fullJson ←
@@ -405,7 +405,7 @@ def greedyArrayToExpr? (output: Array String) : TermElabM (Option Expr) := do
 /-- reverse translation from `Lean` to natural language -/
 def leanToPrompt (thm: String)(numSim : Nat:= 5)(numKW: Nat := 1)(temp : JsonNumber := 0)(scoreBound: Float := 0.2)(matchBound: Nat := 15)(textField : String := "text") : TermElabM String := do
     let (pairs, _) ← getPromptPairs thm numSim numKW scoreBound matchBound
-    let prompt := GPT.makeFlipPrompt thm pairs
+    let prompt := makeFlipPrompt thm pairs
     -- elabLog prompt
     let fullJson ← gptQuery prompt 1 temp
     let outJson :=
@@ -495,7 +495,7 @@ def jsonStringToExprStrArray (jsString: String) : TermElabM (Array String) := do
 
 /-- given json returned by open-ai obtain the best translation -/
 def jsonToExpr' (json: Json) : TermElabM Expr := do
-  let output ← GPT.jsonToExprStrArray json
+  let output ← jsonToExprStrArray json
   arrayToExpr output
 
 /-- translation from a comment-like syntax to a theorem statement -/
@@ -543,7 +543,7 @@ universe u
 
 def translateViewM (s: String) : TermElabM String := do
   let js ← getCodeJson  s
-  let output ← GPT.jsonToExprStrArray js
+  let output ← jsonToExprStrArray js
   trace[Translate.info] m!"{output}"
   let e? ← arrayToExpr? output
   match e? with

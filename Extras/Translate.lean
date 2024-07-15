@@ -97,8 +97,8 @@ def getPromptPairsGeneral(s: String)(numSim : Nat)(field: String := docField)
 
 
 /-- make prompt for reverse translation from prompt pairs -/
-@[deprecated GPT.makeFlipPrompt]
-def makeFlipPrompt(statement : String)(pairs: Array (String × String)) : String :=
+@[deprecated makeFlipPrompt]
+def makeFlipPrompt'(statement : String)(pairs: Array (String × String)) : String :=
       pairs.foldr (fun  (ds, thm) acc =>
 s!"theorem {thm} :=
 /- {ds} -/
@@ -109,7 +109,7 @@ s!"theorem {thm} :=
 
 
 /-- make prompt from prompt pairs -/
-@[deprecated GPT.mkMessages]
+@[deprecated mkMessages']
 def makePrompt(prompt : String)(pairs: Array (String × String)) : String :=
       pairs.foldr (fun  (ds, thm) acc =>
         -- acc ++ "/-- " ++ ds ++" -/\ntheorem" ++ thm ++ "\n" ++ "\n"

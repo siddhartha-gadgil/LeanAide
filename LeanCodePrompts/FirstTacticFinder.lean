@@ -254,7 +254,7 @@ def tacticList : TacticM <| List String := do
   let promptPairs := prompts.map (fun p =>
     let arr := p.splitOn ":= by"
     (arr.get! 0++ ":= by", arr.get! 1))
-  let prompt := GPT.makePrompt core promptPairs
+  let prompt := makePrompt core promptPairs
   -- let prompt ← makeTacticPrompt 20
   let cache ← cacheTacticJson.get
   let fullJson ←
@@ -266,7 +266,7 @@ def tacticList : TacticM <| List String := do
       pure res
   let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
-  let arr ← GPT.jsonToExprStrArray outJson
+  let arr ← jsonToExprStrArray outJson
   let arr := arr.map (fun s =>
       if s.endsWith "<" then s.dropRight 1 |>.trim else s.trim)
   return arr.toList.eraseDups

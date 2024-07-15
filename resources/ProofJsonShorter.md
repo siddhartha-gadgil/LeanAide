@@ -1,6 +1,6 @@
 The following is a JSON format for proofs, which we call `ProofJSON`.
 
-Each JSON object has a "type" field. The possible values for this field are: "define", "assert", "theorem", "problem", "assume", "let", "proof", "cases", "induction", "case", "remark". An object can also have a "name" field, which is a string, to be used for reference (for instance it may be the name of a theorem). The different types of objects and their additional fields are as follows:
+Each JSON object has a "type" field. The possible values for this field are: "define", "assert", "theorem", "problem", "assume", "let", "proof", "cases", "induction", "case", "conclude", "remark". An object can also have a "name" field, which is a string, to be used for reference (for instance it may be the name of a theorem). The different types of objects and their additional fields are as follows:
 
 * **Let**: For a statement introducing a new variable with given value, type and/or property.
   * Additional fields 
@@ -54,10 +54,13 @@ Each JSON object has a "type" field. The possible values for this field are: "de
   * Additional fields: 
     * **Assumption**: the assumption being made to contradict.
     * **Proof**: a JSON block proving the negation of the assumption.
+* **Conclude**: A conclusion in a proof, typically the last statement in a proof block.
+  * Additional fields: 
+    * **Statement**: the conclusion.
 * **Remark**: A remark or comment that is NOT MATHEMATICAL, instead being for motivation, attention, sectioning etc.
   * Additional fields: 
     * **Statement**: the remark or comment.
 
-If a step needs more proof, have a field **missing** which is a JSON list of **problem** fields which are problems that need to be solved or results that need to be proved to complete the proof. For missing details use a **missing** field, not an **error** field.
+If a step needs more proof or the proof of a theorem is incomplete, add a field **missing** (to the corresponding object) which is a JSON list of **problem** fields which are problems that need to be solved or results that need to be proved to complete the proof. For errors in the proof, such as a claimed statement being false, add an **error** field to the corresponding object. For missing details (if there are no false statements or errors) use a **missing** field, not an **error** field.
 
 Rewrite the following theorem and proof into `ProofJSON` format:
