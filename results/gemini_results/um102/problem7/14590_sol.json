@@ -1,0 +1,67 @@
+{
+  "type": "theorem",
+  "name": "Origin as a Source for a Linear System",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x",
+      "kind": "function of time"
+    },
+    {
+      "type": "let",
+      "variable": "y",
+      "kind": "function of time"
+    },
+    {
+      "type": "assume",
+      "statement": "The functions x and y satisfy the system of differential equations: \\( \\dot{x} = x \\) and \\( \\dot{y} = y \\)."
+    }
+  ],
+  "conclusion": "The origin (0, 0) is a source for the given system of differential equations.",
+  "status": "proved",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We analyze the linear system by finding its eigenvalues and eigenvectors."
+      },
+      {
+        "type": "let",
+        "variable": "X",
+        "value": "\\(\\begin{pmatrix} x \\\\ y \\end{pmatrix}\\)",
+        "kind": "vector function of time"
+      },
+      {
+        "type": "assert",
+        "claim": "The system can be written in matrix form as \\( \\dot{X} = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} X \\).",
+        "proof-method": "Direct rewriting of the given system."
+      },
+      {
+        "type": "let",
+        "variable": "A",
+        "value": "\\(\\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}\\)",
+        "kind": "matrix"
+      },
+      {
+        "type": "assert",
+        "claim": "The trace of A is 2 and its determinant is 1.",
+        "proof-method": "Direct computation from the definition of trace and determinant."
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of A are both equal to 1.",
+        "proof-method": "Solving the characteristic equation of A."
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvectors of A span all of \\( \\mathbb{R}^2 \\).",
+        "proof-method": "Since A is the identity matrix, every non-zero vector is an eigenvector."
+      },
+      {
+        "type": "conclude",
+        "statement": "Since both eigenvalues are positive and the eigenvectors span the entire phase space, the origin is a source."
+      }
+    ]
+  }
+}

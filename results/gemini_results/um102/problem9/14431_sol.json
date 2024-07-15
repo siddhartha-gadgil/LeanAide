@@ -1,0 +1,73 @@
+{
+  "type": "theorem",
+  "name": "Spiral Sink",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x(t)",
+      "kind": "real function"
+    },
+    {
+      "type": "let",
+      "variable": "y(t)",
+      "kind": "real function"
+    },
+    {
+      "type": "assume",
+      "statement": "The functions x(t) and y(t) satisfy the system of differential equations:  dx/dt = y and dy/dt = -x - y"
+    }
+  ],
+  "conclusion": "The origin is a spiral sink for the given system of differential equations.",
+  "status": "proved",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We will use the trace and determinant of the matrix representation of the system to determine the type of critical point at the origin."
+      },
+      {
+        "type": "let",
+        "variable": "A",
+        "kind": "matrix",
+        "value": "[[0, 1], [-1, -1]]",
+        "property": "matrix representation of the system of differential equations"
+      },
+      {
+        "type": "assert",
+        "claim": "The trace of A is -1",
+        "proof-method": "direct calculation"
+      },
+      {
+        "type": "let",
+        "variable": "Tr(A)",
+        "value": "-1",
+        "kind": "real number"
+      },
+      {
+        "type": "assert",
+        "claim": "The determinant of A is 1",
+        "proof-method": "direct calculation"
+      },
+      {
+        "type": "let",
+        "variable": "Det(A)",
+        "value": "1",
+        "kind": "real number"
+      },
+      {
+        "type": "assert",
+        "claim": "The square of the trace of A is less than 4 times the determinant of A, and the trace of A is negative.",
+        "deduced_from": [
+          "Tr(A) = -1",
+          "Det(A) = 1"
+        ],
+        "proof-method": "substitution"
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, the origin is a spiral sink."
+      }
+    ]
+  }
+}

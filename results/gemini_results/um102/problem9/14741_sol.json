@@ -1,0 +1,83 @@
+{
+  "type": "theorem",
+  "name": "Origin as Circulation",
+  "Hypothesis": [
+    {
+      "type": "let",
+      "Variable": "<anonymous>",
+      "Value": "x' = y",
+      "Kind": "differential equation"
+    },
+    {
+      "type": "let",
+      "Variable": "<anonymous>",
+      "Value": "y' = -x - y",
+      "Kind": "differential equation"
+    }
+  ],
+  "Conclusion": "The origin is a circulation point for the given system of differential equations.",
+  "Status": "proved",
+  "Proof": {
+    "type": "proof",
+    "Steps": [
+      {
+        "type": "remark",
+        "Statement": "We analyze the eigenvalues of the system's matrix representation."
+      },
+      {
+        "type": "let",
+        "Variable": "A",
+        "Value": "[[0, 1], [-1, -1]]",
+        "Kind": "matrix"
+      },
+      {
+        "type": "assert",
+        "Claim": "The system can be written as dv/dt = Av, where v = [x, y]^T.",
+        "Proof-method": "direct rewriting of the given equations"
+      },
+      {
+        "type": "let",
+        "Variable": "λ_1",
+        "Value": "exp(2πi/3)",
+        "Kind": "complex number"
+      },
+      {
+        "type": "let",
+        "Variable": "λ_2",
+        "Value": "exp(4πi/3)",
+        "Kind": "complex number"
+      },
+      {
+        "type": "assert",
+        "Claim": "The eigenvalues of A are  λ_1 and λ_2.",
+        "Deduced_from": [
+          "characteristic equation of a matrix"
+        ],
+        "Proof-method": "Solving the characteristic equation det(A - λI) = 0"
+      },
+      {
+        "type": "assert",
+        "Claim": "An eigenvector corresponding to λ_1 is [1, exp(2πi/3)]^T.",
+        "Proof-method": "Solving the equation Av = λv for v using the value of λ_1"
+      },
+      {
+        "type": "assert",
+        "Claim": "The solutions to the system involve complex exponentials due to the complex eigenvalues.",
+        "Deduced_from": [
+          "theory of linear differential equations with constant coefficients"
+        ]
+      },
+      {
+        "type": "assert",
+        "Claim": "Any linear combination of solutions with complex exponentials simplifies to a real-valued solution.",
+        "Deduced_from": [
+          "original system having real coefficients"
+        ]
+      },
+      {
+        "type": "conclude",
+        "Statement": "Since the eigenvalues are complex conjugates with non-zero imaginary parts, the origin is a circulation point."
+      }
+    ]
+  }
+}

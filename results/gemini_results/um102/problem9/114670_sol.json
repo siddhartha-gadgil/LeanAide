@@ -1,0 +1,76 @@
+{
+  "type": "theorem",
+  "name": "Circulation at the Origin",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "<anonymous>",
+      "kind": "differential equation",
+      "property": "linear",
+      "value": "\\dot{x} = y"
+    },
+    {
+      "type": "let",
+      "variable": "<anonymous>",
+      "kind": "differential equation",
+      "property": "linear",
+      "value": "\\dot{y} = -x - y"
+    }
+  ],
+  "conclusion": "The origin is a center for the given system of differential equations.",
+  "status": "proved",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We need to determine the eigenvalues of the matrix associated with the system."
+      },
+      {
+        "type": "let",
+        "variable": "A",
+        "kind": "matrix",
+        "value": "\\begin{pmatrix}\n\\frac{1 - \\sqrt{3}i}{2} & 1 \\\\\n-1 & \\frac{-1 - \\sqrt{3}i}{2}\n\\end{pmatrix}"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of A are the solutions to the characteristic equation:  \\begin{vmatrix} \\frac{1-\\sqrt{3}i}{2} - \\lambda & 1 \\\\ -1 & \\frac{-1-\\sqrt{3}i}{2} - \\lambda \\end{vmatrix} = 0.",
+        "proof-method": "Definition of eigenvalues"
+      },
+      {
+        "type": "assert",
+        "claim": "The characteristic equation simplifies to  $\\lambda^2 + \\sqrt{3} i \\lambda - 1 = 0$.",
+        "proof-method": "Algebraic simplification"
+      },
+      {
+        "type": "assert",
+        "claim": "The solutions to the quadratic equation are $\\lambda = \\frac{-\\sqrt{3} i \\pm \\sqrt{(\\sqrt{3} i)^2 - 4 \\cdot 1 \\cdot -1}}{2} = \\frac{-\\sqrt{3} i \\pm 2i}{2} = \\frac{1 - \\sqrt{3} i}{2}, \\frac{-1 - \\sqrt{3} i}{2}$.",
+        "proof-method": "Quadratic formula"
+      },
+      {
+        "type": "let",
+        "variable": "\\lambda_1",
+        "value": "\\frac{1 - \\sqrt{3} i}{2}"
+      },
+      {
+        "type": "assert",
+        "claim": "An eigenvector corresponding to $\\lambda_1$ is $\\mathbf{v}_1 = \\begin{pmatrix} 1 + \\sqrt{3} i \\\\ -1 + \\sqrt{3} i \\end{pmatrix}$.",
+        "proof-method": "Solving the system of equations $(A - \\lambda_1 I)\\mathbf{v}_1 = \\mathbf{0}$"
+      },
+      {
+        "type": "let",
+        "variable": "\\lambda_2",
+        "value": "\\frac{-1 - \\sqrt{3} i}{2}"
+      },
+      {
+        "type": "assert",
+        "claim": "An eigenvector corresponding to $\\lambda_2$ is $\\mathbf{v}_2 = \\begin{pmatrix} 2 \\\\ 1 + \\sqrt{3} i \\end{pmatrix}$.",
+        "proof-method": "Solving the system of equations $(A - \\lambda_2 I)\\mathbf{v}_2 = \\mathbf{0}$"
+      },
+      {
+        "type": "conclude",
+        "statement": "Since the eigenvalues are complex conjugates with nonzero imaginary parts, the origin is a center."
+      }
+    ]
+  }
+}

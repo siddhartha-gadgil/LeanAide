@@ -1,0 +1,57 @@
+{
+  "type": "problem",
+  "name": "Points on Ellipsoid Furthest from Origin",
+  "statement": "Find the points on the ellipsoid $x^2 + 2y^2 + 3z^2 = 1$ that are furthest from the origin.",
+  "solved": true,
+  "answer": "The points (1, 0, 0) and (-1, 0, 0) are the points on the ellipsoid that are furthest from the origin.",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "To find the points on the ellipsoid furthest from the origin, we need to maximize the distance from a point (x, y, z) on the ellipsoid to the origin. This distance is given by  √(x² + y² + z²)."
+      },
+      {
+        "type": "let",
+        "variable": "f(x, y, z)",
+        "value": "√(x² + y² + z²)",
+        "kind": "function"
+      },
+      {
+        "type": "remark",
+        "statement": "We want to maximize f subject to the constraint x² + 2y² + 3z² = 1."
+      },
+      {
+        "type": "remark",
+        "statement": "Using the constraint, we can rewrite f as a function of two variables:"
+      },
+      {
+        "type": "let",
+        "variable": "f(y, z)",
+        "value": "√(1 - 2y² - 3z² + y² + z²) = √(1 - y² - 2z²)",
+        "kind": "function"
+      },
+      {
+        "type": "remark",
+        "statement": "To find the critical points of f, we set its gradient equal to zero:"
+      },
+      {
+        "type": "assert",
+        "claim": "∇f = (∂f/∂y, ∂f/∂z) = (-y/√(1-y²- 2z²), -2z/√(1-y²- 2z²)) = (0, 0)",
+        "proof-method": "calculus"
+      },
+      {
+        "type": "remark",
+        "statement": "This gives us y = 0 and z = 0. Substituting these values into the constraint equation, we get x = ±1. Thus, the critical points are (1, 0, 0) and (-1, 0, 0)."
+      },
+      {
+        "type": "remark",
+        "statement": "To confirm that these points correspond to maximum distances, we can consider another point on the ellipsoid, for example, (0, 1/√2, 0). The distance of this point from the origin is 1/√2, which is less than the distance of (1, 0, 0) and (-1, 0, 0) from the origin (which is 1)."
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, the points (1, 0, 0) and (-1, 0, 0) are the points on the ellipsoid that are furthest from the origin."
+      }
+    ]
+  }
+}

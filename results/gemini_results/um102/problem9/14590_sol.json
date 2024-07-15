@@ -1,0 +1,63 @@
+{
+  "type": "theorem",
+  "name": "Spiral Sink for a Linear System",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x(t)",
+      "kind": "real-valued function"
+    },
+    {
+      "type": "let",
+      "variable": "y(t)",
+      "kind": "real-valued function"
+    },
+    {
+      "type": "assume",
+      "statement": "The functions x(t) and y(t) satisfy the system of differential equations: \\(\\dot{x} = y\\) and \\(\\dot{y} = -x - y\\)."
+    }
+  ],
+  "conclusion": "The origin is a spiral sink for the given system of differential equations.",
+  "status": "proved",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We analyze the linear system using its matrix form."
+      },
+      {
+        "type": "let",
+        "variable": "X",
+        "value": "\\(\\begin{pmatrix} x \\\\ y \\end{pmatrix}\\)",
+        "kind": "vector"
+      },
+      {
+        "type": "assert",
+        "claim": "The system can be written as \\( \\dot{X} = \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix} X \\).",
+        "proof-method": "Direct substitution from the given equations."
+      },
+      {
+        "type": "let",
+        "variable": "\\(\\Delta\\)",
+        "value": "1",
+        "kind": "determinant of the coefficient matrix"
+      },
+      {
+        "type": "let",
+        "variable": "trace",
+        "value": "-1",
+        "kind": "trace of the coefficient matrix"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of the coefficient matrix are \\( -\frac{1}{2} + \frac{\\sqrt{3}}{2} i  \\) and \\( -\frac{1}{2} - \frac{\\sqrt{3}}{2} i  \\).",
+        "proof-method": "Standard calculation using the characteristic equation."
+      },
+      {
+        "type": "conclude",
+        "statement": "Since the eigenvalues are complex conjugates with a negative real part, the origin is a spiral sink."
+      }
+    ]
+  }
+}

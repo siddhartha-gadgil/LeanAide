@@ -1,0 +1,72 @@
+{
+  "type": "theorem",
+  "name": "Circulation of Linear System",
+  "status": "proved",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x(t)",
+      "kind": "function of time"
+    },
+    {
+      "type": "let",
+      "variable": "y(t)",
+      "kind": "function of time"
+    },
+    {
+      "type": "assume",
+      "statement": "The functions x(t) and y(t) satisfy the system of differential equations \\( \\dot{x} = y \\) and \\( \\dot{y} = -x - y \\)."
+    }
+  ],
+  "conclusion": "The origin is a circulation for the given system of differential equations.",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "A",
+        "kind": "matrix",
+        "value": "$\\begin{pmatrix} 0 & 1\\\\ -1 & -1\\end{pmatrix}$"
+      },
+      {
+        "type": "assert",
+        "claim": "The system of differential equations can be written in matrix form as $\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = A \\begin{pmatrix} x \\\\ y \\end{pmatrix}$.",
+        "proof-method": "direct rewriting of the given equations"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of A are  $\\lambda_1 = \\frac{-1 + \\sqrt{3}i}{2}$ and $\\lambda_2 = \\frac{-1 - \\sqrt{3}i}{2}$.",
+        "proof-method": "Solving the characteristic equation  $\\text{det}(A-\\lambda I) = 0$"
+      },
+      {
+        "type": "remark",
+        "statement": "We only need to find one eigenvector to determine the behavior of the system"
+      },
+      {
+        "type": "assert",
+        "claim": "An eigenvector corresponding to $\\lambda_1$ is $\\begin{pmatrix} \\frac{\\sqrt{3}i - 1}{2} \\\\ 1 \\end{pmatrix}$.",
+        "proof-method": "Solving the system of equations $(A - \\lambda_1 I)X = 0$"
+      },
+      {
+        "type": "assert",
+        "claim": "The general solution of the system is $X(t) = \\alpha e^{\\lambda_1 t}  \\begin{pmatrix} \\frac{\\sqrt{3}i - 1}{2} \\\\ 1 \\end{pmatrix} + \\beta e^{\\lambda_2 t} \\begin{pmatrix} \\frac{\\sqrt{3}i + 1}{2} \\\\ 1 \\end{pmatrix}$, where $\\alpha$ and $\\beta$ are arbitrary constants.",
+        "proof-method": "standard theory of linear systems of differential equations"
+      },
+      {
+        "type": "missing",
+        "statement": [
+          {
+            "type": "problem",
+            "statement": "Show that the real and imaginary parts of the solutions are sinusoidal with constant amplitude.",
+            "solved": false
+          },
+          {
+            "type": "problem",
+            "statement": "Conclude from the previous step that the trajectories are elliptical, hence the origin is a center (which is a type of circulation).",
+            "solved": false
+          }
+        ]
+      }
+    ]
+  }
+}

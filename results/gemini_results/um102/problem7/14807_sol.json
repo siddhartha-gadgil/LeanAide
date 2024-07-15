@@ -1,0 +1,68 @@
+{
+  "type": "theorem",
+  "name": "Origin as Source in a Linear System",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x",
+      "kind": "function of time"
+    },
+    {
+      "type": "let",
+      "variable": "y",
+      "kind": "function of time"
+    },
+    {
+      "type": "assume",
+      "statement": "The functions x and y satisfy the system of differential equations: \\( \\dot{x} = x \\) and \\( \\dot{y} = y \\)"
+    }
+  ],
+  "conclusion": "The origin (0, 0) is a source for the given system of differential equations.",
+  "status": "proved",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We will analyze the eigenvalues of the coefficient matrix to determine the stability of the origin."
+      },
+      {
+        "type": "assert",
+        "claim": "The given system can be written in matrix form as \\( \\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}  \\)",
+        "proof-method": "Direct rewriting of the given equations."
+      },
+      {
+        "type": "let",
+        "variable": "A",
+        "value": "\\( \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} \\)",
+        "kind": "matrix"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of A are the solutions to the characteristic equation \\( |A - \\lambda I| = 0 \\)",
+        "deduced_from": [
+          "Definition of eigenvalues of a matrix"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The characteristic equation is \\( \\begin{vmatrix} 1-\\lambda & 0 \\\\ 0 & 1-\\lambda  \\end{vmatrix} = 0 \\)",
+        "proof-method": "Substitution of A and I (the identity matrix) into the characteristic equation"
+      },
+      {
+        "type": "assert",
+        "claim": "The characteristic equation simplifies to \\( (1-\\lambda)^2 = 0 \\)",
+        "proof-method": "Calculation of the determinant"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues are \\( \\lambda = 1, 1 \\)",
+        "proof-method": "Solving the simplified characteristic equation"
+      },
+      {
+        "type": "conclude",
+        "statement": "Since both eigenvalues (\\( \\lambda_1 \\) and \\( \\lambda_2 \\)) are positive (\\( 0 < \\lambda_1, \\lambda_2 \\)), the origin is a source for the given linear system."
+      }
+    ]
+  }
+}

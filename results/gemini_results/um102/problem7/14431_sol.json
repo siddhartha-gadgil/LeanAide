@@ -1,0 +1,62 @@
+{
+  "type": "theorem",
+  "name": "Origin as Source",
+  "status": "proved",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x(t)",
+      "kind": "function",
+      "property": "solution to the differential equation dx/dt = x"
+    },
+    {
+      "type": "let",
+      "variable": "y(t)",
+      "kind": "function",
+      "property": "solution to the differential equation dy/dt = y"
+    }
+  ],
+  "conclusion": "The origin (0, 0) is a source for the given system of differential equations.",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We analyze the eigenvalues of the matrix representing the system."
+      },
+      {
+        "type": "let",
+        "variable": "A",
+        "value": "[[1, 0], [0, 1]]",
+        "kind": "matrix"
+      },
+      {
+        "type": "assert",
+        "claim": "The system can be written in matrix form as d/dt [x, y] = A [x, y].",
+        "proof-method": "Direct substitution"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of A are the solutions to the characteristic equation det(A - λI) = 0, where I is the identity matrix.",
+        "proof-method": "From the theory of linear systems of differential equations"
+      },
+      {
+        "type": "assert",
+        "claim": "det(A - λI) = (1 - λ)^2",
+        "proof-method": "Calculation"
+      },
+      {
+        "type": "assert",
+        "claim": "The only eigenvalue of A is λ = 1.",
+        "deduced_from": [
+          "det(A - λI) = (1 - λ)^2"
+        ],
+        "proof-method": "Solving the equation (1 - λ)^2 = 0"
+      },
+      {
+        "type": "conclude",
+        "statement": "Since the only eigenvalue of A is positive, the origin is a source for the system of differential equations."
+      }
+    ]
+  }
+}
