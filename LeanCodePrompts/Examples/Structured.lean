@@ -11,7 +11,98 @@ def structExampl := gemini.structuredProof proofExample
 
 def structExamplFlash := gemini.structuredProof proofExample
 
+def numina :=
+  ChatServer.generic (model := "AI-MO/NuminaMath-7B-TIR") (url := "10.134.13.103:8000")
 
+def mistral :=
+  ChatServer.generic (model := "mistralai/Mistral-7B-Instruct-v0.3") (url := "10.134.13.103:8000")
+
+def numinaExample := numina.structuredProof proofExample
+/-
+#[{"type": "theorem",
+ "status": "proved",
+ "proof":
+ {"steps":
+  [{"type": "assert",
+    "statement": "A satisfies the polynomial equation p(x) = x^3 - 1"},
+   {"type": "assert",
+    "statement":
+    "The roots of p(x) are the cube roots of unity: 1, omega, omega^2, where omega = e^{2pi i / 3}"},
+   {"type": "assert",
+    "statement":
+    "These roots are distinct, so the minimal polynomial of A must divide p(x) and also have distinct roots"},
+   {"type": "assert", "statement": "Therefore, A is diagonalizable"}]},
+ "name": "Theorem: A matrix A satisfying A^3 = I is diagonalizable",
+ "hypothesis":
+ [{"variable": "A",
+   "type": "let",
+   "property": "square matrix",
+   "kind": "matrix"},
+  {"type": "assert", "statement": "A^3 = I"}],
+ "conclusion": "A is diagonalizable"}]
+
+-/
+-- #eval numinaExample
+
+def mistralExample := mistral.structuredProof proofExample
+/-
+#[{"type": "theorem",
+ "Status": "proved",
+ "Proof":
+ {"Steps":
+  [{"type": "assert",
+    "Deduced_from": ["Assumption"],
+    "Claim": "A satisfies the polynomial equation p(x) = x^3 - 1."},
+   {"type": "assert",
+    "Deduced_from": ["Assertion"],
+    "Claim":
+    "The roots of p(x) are 1, ω, and ω^2, where ω = e^(2πi/3) is a primitive cube root of unity."},
+   {"type": "assert",
+    "Deduced_from": ["Assertion"],
+    "Claim": "These roots are distinct."},
+   {"type": "assert",
+    "Deduced_from": ["Assertion", "Assertion", "Assertion"],
+    "Claim":
+    "The minimal polynomial of A must divide p(x) and also have distinct roots."},
+   {"type": "conclude", "Statement": "A is diagonalizable."}]},
+ "Hypothesis":
+ [{"type": "assume", "Statement": "A is a square matrix and A^3 = I"}],
+ "Conclusion": "A is diagonalizable"}]
+-/
+-- #eval mistralExample
+
+/-
+#[{"type": "theorem",
+ "name": "Diagonalizability of Matrices Satisfying A^3 = I",
+ "Status": "proved",
+ "Proof":
+ {"type": "proof",
+  "Steps":
+  [{"type": "assert",
+    "Deduced_from": ["$A^3 = I$"],
+    "Claim": "The minimal polynomial of $A$ divides $x^3 - 1$."},
+   {"type": "assert",
+    "Proof-method": "direct computation",
+    "Claim":
+    "The roots of $x^3 - 1$ are $1, \\omega, \\omega^2$, where $\\omega = e^{2 \\pi i / 3}$."},
+   {"type": "assert",
+    "Proof-method": "direct verification",
+    "Claim": "The roots $1, \\omega, \\omega^2$ are distinct."},
+   {"type": "assert",
+    "Deduced_from":
+    ["The minimal polynomial of $A$ divides $x^3 - 1$",
+     "The roots of $x^3 - 1$ are $1, \\omega, \\omega^2$",
+     "The roots $1, \\omega, \\omega^2$ are distinct."],
+    "Claim": "The minimal polynomial of $A$ has distinct roots."},
+   {"type": "conclude",
+    "Statement": "$A$ is diagonalizable.",
+    "Deduced_from": ["The minimal polynomial of $A$ has distinct roots."]}]},
+ "Hypothesis":
+ [{"type": "let", "Variable": "A", "Kind": "square matrix"},
+  {"type": "assume", "Statement": "$A^3 = I$"}],
+ "Conclusion": "A is diagonalizable."}]
+-/
+-- #eval structExampl
 /-
 #[[{"type": "theorem",
   "status": "stated",
