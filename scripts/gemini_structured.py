@@ -11,6 +11,7 @@ if "lakefile.lean"  not in os.listdir(homedir):
     homedir = Path("..")
 
 resources = join(homedir, "resources")
+results = join(homedir, "results")
 
 project_id = os.environ['PROJECT_ID']
 
@@ -41,8 +42,9 @@ def structured_proof_from_image(thm, path):
     return pf, structured_proof(thm, pf)
 
 from google.cloud import storage
+client = storage.Client()
+bucket = client.bucket('leanaide')
 def images_in_gs(prefix):
-    client = storage.Client()
     blobs = client.list_blobs('leanaide', prefix=prefix)    
     return [blob.name for blob in blobs if blob.content_type == 'image/png']
 
@@ -53,6 +55,22 @@ def solutions_from_images(thm, prefix):
         pf, structured = structured_proof_from_image(thm, path)
         triples.append((path, pf, structured))
     return triples
+
+import pathlib, json
+gemini_results = join(results, "gemini_results")
+pathlib.Path(gemini_results).mkdir(parents=True, exist_ok=True)
+
+def write_structured_proofs(prefix):
+    thm_blob = bucket.blob(f"{prefix}theorem.md")
+    with thm_blob.open("r") as f:
+        thm = f.read()
+    triples = solutions_from_images(thm, prefix)
+    for triple in triples:
+        path, pf, structured = triple
+        with open(join(gemini_results, path.replace("/", "_").replace(".png", ".json")), "w") as f:
+            json.dump(structured, f, ensure_ascii=False, indent=2)
+        with open(join(gemini_results, path.replace("/", "_").replace(".png", "_sol.md")), "w") as f:
+            f.write(f"## Theorem: {thm}\n\n## Proof: {pf}")
 
 # thm = "The map $p \colon \mathbb{R}^2 \to X$, defined by $p(x,y) = (x, y^2)$, is a covering map, where $X = \{(x,y) \in \mathbb{R}^2 : y \ge 0\}$."
 

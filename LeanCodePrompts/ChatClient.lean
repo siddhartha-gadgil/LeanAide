@@ -60,7 +60,7 @@ inductive ChatServer where
   | azure (deployment: String := "leanaide-gpt4")
       (model: String := "GPT-4")
   | google (model: String := "gemini-1.5-pro-001") (location: String := "asia-south1")
-  | generic (model: String) (url: String) (hasSysPropmpt : Bool)
+  | generic (model: String) (url: String) (hasSysPropmpt : Bool := false)
 
 namespace ChatServer
 
