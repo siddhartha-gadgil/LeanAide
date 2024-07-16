@@ -107,24 +107,17 @@ def extract_json_block(text):
             js = json.loads(json_block)
             return js
         except json.JSONDecodeError:
-            try:
-                js = json.loads(json_block.replace('\\', '\\\\'))
-            except json.JSONDecodeError:
-                # If it's not valid JSON, give a warning.
-                print("Warning: Found a JSON block, but it is not valid JSON.")
-                return json_block
+            # If it's not valid JSON, give a warning.
+            print("Warning: Found a JSON block, but it is not valid JSON.")
+            return json_block
     else:
         try:
             # Validate the JSON syntax for a more robust check
-            js = json.loads(json_block)
+            js = json.loads(text)
             return js
         except json.JSONDecodeError:
-            try:
-                js = json.loads(json_block.replace('\\', '\\\\'))
-            except json.JSONDecodeError:
-                # If it's not valid JSON, give a warning.
-                print("Warning: Found a JSON block, but it is not valid JSON.")
-                return json_block
+            # If it's not valid JSON, give a warning.
+            return text
 
 def json_text(js):
     try:
