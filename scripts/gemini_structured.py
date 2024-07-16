@@ -1,7 +1,7 @@
 import os
 from os.path import join
 from pathlib import Path
-from .queries import extract_json_block
+from .queries import extract_json_block, ChatClient
 
 import vertexai
 from vertexai.generative_models import GenerativeModel, Part
@@ -87,6 +87,7 @@ def write_structured_proofs_simple(prefix):
         with open(output_file, "w") as f:
             f.write(f"## Theorem: {thm}\n\n## Proof: {pf}")
 
+client = ChatClient()
 import itertools
 def write_structured_proofs(prefix):
     thm_blob = bucket.blob(f"{prefix}theorem.md")
@@ -101,6 +102,12 @@ def write_structured_proofs(prefix):
         output_file.parent.mkdir(exist_ok=True, parents=True)
         with open(output_file, "w") as f:
             json.dump(structured, f, ensure_ascii=False, indent=2)
+        prompt = structure_prompt(thm, pf)
+        gpt_structured = client.math(prompt)
+        output_file = Path(join(gemini_results, path + "_sol_gpt.md"))
+        output_file.parent.mkdir(exist_ok=True, parents=True)
+        with open(output_file, "w") as f:
+            f.write(f"## Theorem: {thm}\n\n## Proof: {gpt_structured}")
         output_file = Path(join(gemini_results, path + "_sol.md"))
         output_file.parent.mkdir(exist_ok=True, parents=True)
         with open(output_file, "w") as f:
