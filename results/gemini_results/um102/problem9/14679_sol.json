@@ -1,69 +1,88 @@
 {
   "type": "theorem",
-  "name": "Circulation of Linear System",
-  "status": "proved",
-  "hypothesis": [
+  "name": "Circulation at the Origin",
+  "Hypothesis": [
     {
       "type": "let",
-      "variable": "x(t)",
-      "kind": "function of time"
+      "Variable": "<anonymous>",
+      "Property": "Linear differential equation",
+      "Value": "\\(\\dot{x} = y\\)"
     },
     {
       "type": "let",
-      "variable": "y(t)",
-      "kind": "function of time"
-    },
-    {
-      "type": "assume",
-      "statement": "The functions x(t) and y(t) satisfy the system of differential equations \\( \\dot{x} = y \\) and \\( \\dot{y} = -x - y \\)."
+      "Variable": "<anonymous>",
+      "Property": "Linear differential equation",
+      "Value": "\\(\\dot{y} = -x - y\\)"
     }
   ],
-  "conclusion": "The origin is a circulation for the given system of differential equations.",
+  "Conclusion": "The origin is a circulation.",
+  "status": "proved",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "let",
-        "variable": "A",
-        "kind": "matrix",
-        "value": "$\\begin{pmatrix} 0 & 1\\\\ -1 & -1\\end{pmatrix}$"
+        "Variable": "A",
+        "Value": "\\(\\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}\\)",
+        "Kind": "matrix"
       },
       {
         "type": "assert",
-        "claim": "The system of differential equations can be written in matrix form as $\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = A \\begin{pmatrix} x \\\\ y \\end{pmatrix}$.",
-        "proof-method": "direct rewriting of the given equations"
+        "claim": "The system of differential equations can be written as \\(\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = A \\begin{pmatrix} x \\\\ y \\end{pmatrix}\\)",
+        "Proof-method": "Rewriting the given equations in matrix form."
       },
       {
         "type": "assert",
-        "claim": "The eigenvalues of A are  $\\lambda_1 = \\frac{-1 + \\sqrt{3}i}{2}$ and $\\lambda_2 = \\frac{-1 - \\sqrt{3}i}{2}$.",
-        "proof-method": "Solving the characteristic equation  $\\text{det}(A-\\lambda I) = 0$"
+        "Claim": "The characteristic equation of A is  \\((-λ)(-1-λ) + 1 = 0\\)",
+        "Proof-method": "Using the definition of the characteristic equation of a matrix."
+      },
+      {
+        "type": "assert",
+        "Claim": "The characteristic equation simplifies to \\(λ^2 + λ + 1 = 0\\)",
+        "Proof-method": "Algebraic simplification."
+      },
+      {
+        "type": "let",
+        "Variable": "λ₁",
+        "Value": "\\(\\frac{-1 + \\sqrt{3}i}{2}\\)",
+        "Kind": "Eigenvalue of A"
+      },
+      {
+        "type": "let",
+        "Variable": "λ₂",
+        "Value": "\\(\\frac{-1 - \\sqrt{3}i}{2}\\)",
+        "Kind": "Eigenvalue of A"
+      },
+      {
+        "type": "assert",
+        "Claim": "The roots of the characteristic equation are  \\(λ_1 = \\frac{-1 + \\sqrt{3}i}{2}\\) and \\(λ_2 = \\frac{-1 - \\sqrt{3}i}{2}\\)",
+        "Proof-method": "Applying the quadratic formula."
+      },
+      {
+        "type": "assert",
+        "Claim": "The eigenvectors corresponding to \\(λ_1\\) are of the form \\(α\\begin{pmatrix} \\frac{\\sqrt{3} - 1}{2} \\\\ 1 \\end{pmatrix}\\), where \\(α\\) is a scalar.",
+        "Proof-method": "Solving the system of equations \\((A - λ_1I)\\mathbf{v} = \\mathbf{0}\\)."
+      },
+      {
+        "type": "let",
+        "Variable": "X(t)",
+        "Value": "\\(αe^{λ_1 t} \\begin{pmatrix} \\frac{\\sqrt{3} - 1}{2} \\\\ 1 \\end{pmatrix} + βe^{λ_2 t} \\begin{pmatrix} \\frac{\\sqrt{3} + 1}{2} \\\\ 1 \\end{pmatrix}\\)",
+        "Kind": "general solution to the system of differential equations"
       },
       {
         "type": "remark",
-        "statement": "We only need to find one eigenvector to determine the behavior of the system"
-      },
-      {
-        "type": "assert",
-        "claim": "An eigenvector corresponding to $\\lambda_1$ is $\\begin{pmatrix} \\frac{\\sqrt{3}i - 1}{2} \\\\ 1 \\end{pmatrix}$.",
-        "proof-method": "Solving the system of equations $(A - \\lambda_1 I)X = 0$"
-      },
-      {
-        "type": "assert",
-        "claim": "The general solution of the system is $X(t) = \\alpha e^{\\lambda_1 t}  \\begin{pmatrix} \\frac{\\sqrt{3}i - 1}{2} \\\\ 1 \\end{pmatrix} + \\beta e^{\\lambda_2 t} \\begin{pmatrix} \\frac{\\sqrt{3}i + 1}{2} \\\\ 1 \\end{pmatrix}$, where $\\alpha$ and $\\beta$ are arbitrary constants.",
-        "proof-method": "standard theory of linear systems of differential equations"
+        "Statement": "The general solution involves complex eigenvalues, indicating a circulation."
       },
       {
         "type": "missing",
-        "statement": [
+        "Problem": [
           {
             "type": "problem",
-            "statement": "Show that the real and imaginary parts of the solutions are sinusoidal with constant amplitude.",
-            "solved": false
+            "statement": "Show that the real part of the eigenvalues is zero, implying the trajectories circle the origin."
           },
           {
             "type": "problem",
-            "statement": "Conclude from the previous step that the trajectories are elliptical, hence the origin is a center (which is a type of circulation).",
-            "solved": false
+            "statement": "Further analysis of the phase portrait or the general solution is needed to definitively conclude the origin is a circulation and not a center."
           }
         ]
       }

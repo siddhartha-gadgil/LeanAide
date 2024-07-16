@@ -1,0 +1,116 @@
+{
+  "type": "theorem",
+  "name": "Continuity at (0,0)",
+  "Hypothesis": [
+    {
+      "type": "let",
+      "Variable": "f",
+      "Kind": "function from R^2 to R",
+      "Property": "given by f(x,y) = x if y=x^3 and f(x,y)=0 if y != x^3"
+    }
+  ],
+  "Conclusion": "The function f is continuous at (0,0).",
+  "Status": "proved",
+  "Proof": {
+    "type": "proof",
+    "Steps": [
+      {
+        "type": "remark",
+        "Statement": "We use the definition of continuity."
+      },
+      {
+        "type": "let",
+        "Variable": "<anonymous>",
+        "Statement": "f: R^2 -> R is given by f(x,y) = xy if y=x^3 and f(x,y)=0 if y != x^3"
+      },
+      {
+        "type": "let",
+        "Variable": "x_0",
+        "Value": "(0,0)"
+      },
+      {
+        "type": "assert",
+        "Claim": "f(0,0) = 0",
+        "Proof-method": "Direct computation from the definition of f"
+      },
+      {
+        "type": "let",
+        "Variable": "epsilon",
+        "Kind": "positive real number"
+      },
+      {
+        "type": "let",
+        "Variable": "delta",
+        "Value": "epsilon",
+        "Kind": "positive real number"
+      },
+      {
+        "type": "assume",
+        "Statement": "||(x,y) - (0,0)|| < delta"
+      },
+      {
+        "type": "assert",
+        "Claim": "||x|| < delta",
+        "Proof-method": "sqrt(x^2 + y^2) < delta implies |x| < delta"
+      },
+      {
+        "type": "cases",
+        "On": "f(x,y)",
+        "Split-kind": "match",
+        "Proof-cases": [
+          {
+            "type": "case",
+            "Condition": "f(x,y) = 0",
+            "Proof": {
+              "type": "proof",
+              "Steps": [
+                {
+                  "type": "assert",
+                  "Claim": "||f(x,y) - f(0,0)|| = 0",
+                  "Proof-method": "Using f(0,0) = 0"
+                },
+                {
+                  "type": "conclude",
+                  "Statement": "||f(x,y) - f(0,0)|| < epsilon"
+                }
+              ]
+            }
+          },
+          {
+            "type": "case",
+            "Condition": "f(x,y) = x",
+            "Proof": {
+              "type": "proof",
+              "Steps": [
+                {
+                  "type": "assert",
+                  "Claim": "||f(x,y) - f(0,0)|| = ||x||",
+                  "Proof-method": "Using f(0,0) = 0"
+                },
+                {
+                  "type": "assert",
+                  "Claim": "||f(x,y) - f(0,0)|| < delta",
+                  "Deduced_from": [
+                    "||x|| < delta"
+                  ]
+                },
+                {
+                  "type": "conclude",
+                  "Statement": "||f(x,y) - f(0,0)|| < epsilon"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "Statement": "For all epsilon > 0 there exists delta > 0 such that if ||(x,y) - (0,0)|| < delta then  ||f(x,y) - f(0,0)|| < epsilon"
+      },
+      {
+        "type": "conclude",
+        "Statement": "f(x,y) is continuous at (0,0) by the definition of continuity."
+      }
+    ]
+  }
+}

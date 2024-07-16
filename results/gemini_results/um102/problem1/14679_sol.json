@@ -1,0 +1,111 @@
+{
+  "type": "theorem",
+  "name": "Continuity of a Piecewise Function at (0,0)",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from R^2 to R",
+      "property": "given by f(x,y) = x if y=x^2 and f(x,y) = 0 if y != x^2"
+    }
+  ],
+  "conclusion": "The function f is continuous at (0,0).",
+  "status": "proved",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "define",
+        "term": "continuous at a point",
+        "statement": "A function f:R^2 -> R is continuous at a point x_0 if for a given ε > 0, there exists a δ ∈ R such that for all x satisfying ||x-x_0||< δ, it holds that ||f(x)-f(x_0)||< ε."
+      },
+      {
+        "type": "let",
+        "variable": "ε",
+        "kind": "real number",
+        "property": "ε > 0"
+      },
+      {
+        "type": "let",
+        "variable": "x_0",
+        "kind": "element of R^2",
+        "value": "(0,0)"
+      },
+      {
+        "type": "assert",
+        "claim": "f(x_0) = 0",
+        "proof-method": "Direct evaluation"
+      },
+      {
+        "type": "cases",
+        "on": "y",
+        "split-kind": "condition",
+        "proof-cases": [
+          {
+            "type": "case",
+            "condition": "y != x^2",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assert",
+                  "claim": "f(x) = 0",
+                  "proof-method": "By definition of f"
+                },
+                {
+                  "type": "assert",
+                  "claim": "||f(x)-f(x_0)|| = 0",
+                  "deduced_from": [
+                    "f(x) = 0",
+                    "f(x_0) = 0"
+                  ]
+                },
+                {
+                  "type": "conclude",
+                  "statement": "Any δ > 0 satisfies the continuity condition."
+                }
+              ]
+            }
+          },
+          {
+            "type": "case",
+            "condition": "y = x^2",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assume",
+                  "statement": "||x - x_0|| < δ"
+                },
+                {
+                  "type": "assert",
+                  "claim": "||x - x_0|| = sqrt(x^2 + y^2) = sqrt(x^2 + x^4) = |x|sqrt(1 + x^2) < δ",
+                  "proof-method": "Substitution and algebraic manipulation"
+                },
+                {
+                  "type": "assert",
+                  "claim": "|x| < δ / sqrt(1 + x^2)",
+                  "proof-method": "Algebraic manipulation"
+                },
+                {
+                  "type": "let",
+                  "variable": "δ",
+                  "value": "ε * sqrt(1 + x^4)"
+                },
+                {
+                  "type": "assert",
+                  "claim": "||f(x) - f(x_0)|| = |x| <  ε",
+                  "proof-method": "By choice of δ and the fact that sqrt(1 + x^4) > 0"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "For any given ε > 0, there exists a δ > 0 such that ||x - x_0|| < δ implies ||f(x) - f(x_0)|| < ε. Hence, f(x,y) is continuous at (0,0)."
+      }
+    ]
+  }
+}

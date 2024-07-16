@@ -1,0 +1,59 @@
+{
+  "type": "theorem",
+  "name": "Gradient of f(x,y) = x^3 - 3x + y^2",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "value": "x^3 - 3x + y^2",
+      "kind": "function from R^2 to R"
+    }
+  ],
+  "conclusion": "The gradient of f is zero at the points (1,0) and (-1,0).",
+  "status": "proved",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We need to find the points (x,y) where the gradient of f is the zero vector."
+      },
+      {
+        "type": "let",
+        "variable": "∇f",
+        "value": "(3x^2 - 3)i + 2yj",
+        "kind": "gradient of f"
+      },
+      {
+        "type": "assert",
+        "claim": "∇f = 0",
+        "proof-method": "setting the gradient equal to the zero vector"
+      },
+      {
+        "type": "assert",
+        "claim": "3x^2 - 3 = 0 and 2y = 0",
+        "proof-method": "comparing components of the vectors in the previous step"
+      },
+      {
+        "type": "assert",
+        "claim": "x = 1 or x = -1",
+        "deduced_from": [
+          "3x^2 - 3 = 0"
+        ],
+        "proof-method": "solving the equation"
+      },
+      {
+        "type": "assert",
+        "claim": "y = 0",
+        "deduced_from": [
+          "2y = 0"
+        ],
+        "proof-method": "solving the equation"
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, the points at which the gradient of f is zero are (1,0) and (-1,0)."
+      }
+    ]
+  }
+}

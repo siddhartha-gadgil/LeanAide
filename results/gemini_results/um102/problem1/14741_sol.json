@@ -1,0 +1,89 @@
+{
+  "type": "theorem",
+  "name": "Continuity of f at (0, 0)",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from R^2 to R",
+      "property": "given by\n\\[\nf(x, y)=\\left\\{\\begin{array}{ll}\nx, & \\text { if } y=x^{3} \\\\\n0, & \\text { if } y \\neq x^{3}\n\\end{array}\\right.\n\\]"
+    }
+  ],
+  "conclusion": "The function \\( f \\) is continuous at \\( (0,0) \\).",
+  "status": "proved",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "<anonymous>",
+        "statement": "Pick an arbitrary \\( \\epsilon > 0 \\)."
+      },
+      {
+        "type": "let",
+        "variable": "<anonymous>",
+        "statement": "Let \\( \\delta = \\frac{\\epsilon}{2} \\)."
+      },
+      {
+        "type": "assume",
+        "statement": "\\( ||(x, y)|| < \\delta \\)"
+      },
+      {
+        "type": "assert",
+        "claim": "\\( \\sqrt{x^2 + y^2} < \\delta \\)",
+        "deduced_from": [
+          "Previous step",
+          "Definition of norm"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "\\( |x| < \\delta \\)",
+        "deduced_from": [
+          "Previous step"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "\\( |x| < \\epsilon \\)",
+        "deduced_from": [
+          "Previous step",
+          "Definition of delta"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "\\( f(x) = x \\) or \\( f(x) = 0 \\)",
+        "deduced_from": [
+          "Definition of f"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "\\( ||(x, y)|| < \\delta \\implies ||f(x) - f(0)|| < \\epsilon \\)",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Need to rigorously prove this implication, considering both cases of the definition of f(x)."
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "\\( ||(x, y) - (0, 0)|| < \\delta \\implies ||f(x, y) - f(0, 0)|| < \\epsilon \\)",
+        "deduced_from": [
+          "Previous step",
+          "\\( f(0, 0) = 0 \\)"
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "\\( \\epsilon > 0 \\) was arbitrary. \\( \\therefore \\epsilon > 0 \\) \\( \\exists \\) \\( \\delta > 0 \\) s.t \n\\( ||(x, y) - (0, 0)|| < \\delta \\implies ||f(x, y) - f(0, 0)|| < \\epsilon \\)"
+      },
+      {
+        "type": "conclude",
+        "statement": "\\( \\therefore f \\) is continuous at \\( (0, 0) \\)."
+      }
+    ]
+  }
+}

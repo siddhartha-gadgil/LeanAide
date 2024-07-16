@@ -1,119 +1,27 @@
 {
   "type": "theorem",
-  "name": "Circulation at the Origin for a Linear System",
-  "status": "proved",
-  "hypothesis": [
+  "name": "Circulation at the Origin",
+  "Hypothesis": [
     {
       "type": "let",
-      "variable": "Linear differential equation",
-      "value": "\\( \\dot{x}=y \\) and \\( \\dot{y}=-x-y\\)"
+      "Variable": "<anonymous>",
+      "Statement": "We consider the linear dynamical system given by the differential equations \\( \\dot{x}=y \\) and \\( \\dot{y}=-x-y \\)."
     }
   ],
-  "conclusion": "The origin is a circulation point for the given linear differential equation.",
-  "proof": {
-    "type": "proof",
-    "steps": [
-      {
-        "type": "let",
-        "variable": "A",
-        "value": "\\(\\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}\\)",
-        "kind": "matrix"
-      },
-      {
-        "type": "let",
-        "variable": "\\(\\textbf{v}_1\\)",
-        "value": "\\(\\begin{pmatrix} 2 \\\\ 1 \\end{pmatrix}\\)",
-        "kind": "vector"
-      },
-      {
-        "type": "let",
-        "variable": "\\(\\textbf{v}_2\\)",
-        "value": "\\(\\begin{pmatrix} -1 \\\\ 2 \\end{pmatrix}\\)",
-        "kind": "vector"
-      },
-      {
-        "type": "assert",
-        "claim": "\\(A\\textbf{v}_1 = \\begin{pmatrix} 1 \\\\ -3 \\end{pmatrix}\\)",
-        "proof-method": "Calculation"
-      },
-      {
-        "type": "remark",
-        "statement": "The calculation of \\(A\\textbf{v}_1\\) is shown below for clarity, although not strictly necessary in the `ProofJSON` format as it is a direct computation."
-      },
-      {
-        "type": "proof",
-        "steps": [
-          {
-            "type": "assert",
-            "claim": "\\(A\\textbf{v}_1 = \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix} \\begin{pmatrix} 2 \\\\ 1 \\end{pmatrix} \\)",
-            "deduced_from": [
-              "Definition of A",
-              "Definition of \\(\\textbf{v}_1\\)"
-            ]
-          },
-          {
-            "type": "assert",
-            "claim": "\\( = \\frac{1}{2} \\begin{pmatrix} 0 & 2 \\\\ -2 & -2 \\end{pmatrix} \\begin{pmatrix} 2 \\\\ 1 \\end{pmatrix} \\)",
-            "proof-method": "Scalar multiplication"
-          },
-          {
-            "type": "assert",
-            "claim": "\\( = \\frac{1}{2} \\begin{pmatrix} 2 \\\\ -6 \\end{pmatrix} \\)",
-            "proof-method": "Matrix multiplication"
-          },
-          {
-            "type": "conclude",
-            "statement": "\\( = \\begin{pmatrix} 1 \\\\ -3 \\end{pmatrix} \\)",
-            "proof-method": "Scalar multiplication"
-          }
-        ]
-      },
-      {
-        "type": "assert",
-        "claim": "\\(A\\textbf{v}_2 =  \\begin{pmatrix} 2 \\\\ -1 \\end{pmatrix}\\)",
-        "proof-method": "Calculation"
-      },
-      {
-        "type": "remark",
-        "statement": "The calculation of \\(A\\textbf{v}_2\\) is shown below for clarity, although not strictly necessary in the `ProofJSON` format as it is a direct computation."
-      },
-      {
-        "type": "proof",
-        "steps": [
-          {
-            "type": "assert",
-            "claim": "\\( A\\textbf{v}_2 = \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix} \\begin{pmatrix} -1 \\\\ 2 \\end{pmatrix} \\)",
-            "deduced_from": [
-              "Definition of A",
-              "Definition of \\(\\textbf{v}_2\\)"
-            ]
-          },
-          {
-            "type": "assert",
-            "claim": "\\( = \\frac{1}{2} \\begin{pmatrix} 0 & 2 \\\\ -2 & -2 \\end{pmatrix} \\begin{pmatrix} -1 \\\\ 2 \\end{pmatrix} \\)",
-            "proof-method": "Scalar multiplication"
-          },
-          {
-            "type": "assert",
-            "claim": "\\( = \\frac{1}{2} \\begin{pmatrix} 4 \\\\ -2 \\end{pmatrix} \\)",
-            "proof-method": "Matrix multiplication"
-          },
-          {
-            "type": "conclude",
-            "statement": "\\( = \\begin{pmatrix} 2 \\\\ -1 \\end{pmatrix} \\)",
-            "proof-method": "Scalar multiplication"
-          }
-        ]
-      },
-      {
-        "type": "missing",
-        "statement": [
-          {
-            "type": "problem",
-            "statement": "Relate the calculated values of \\(A\\textbf{v}_1\\) and \\(A\\textbf{v}_2\\) to the concept of circulation around the origin."
-          }
-        ]
-      }
-    ]
-  }
+  "Conclusion": "The origin is a circulation for the given dynamical system.",
+  "Status": "stated",
+  "missing": [
+    {
+      "type": "problem",
+      "Statement": "The given text does not provide a complete or coherent proof of the theorem.  To proceed, we need to determine the eigenvalues of the matrix \\(A = \\begin{pmatrix} 0 & 1\\\\ -1 & -1 \\end{pmatrix} \\) and analyze the behavior of the system based on these eigenvalues.  Specifically, we need to show that the eigenvalues are purely imaginary, indicating a center at the origin and thus circulation."
+    },
+    {
+      "type": "problem",
+      "Statement": "Many of the calculations and steps in the provided text are incomplete or unclear. For instance, the reduction of matrix \\(A\\), the derivation of \\(A_{v_{1}}\\), and the calculations involving \\(Av_{1}\\) and \\(Av_{2}\\) need to be clarified and completed for the proof to be meaningful."
+    },
+    {
+      "type": "problem",
+      "Statement": "The vectors \\(\\vec{x}\\) and \\(\\vec{y}\\) are introduced in the beginning but their relevance and purpose in the proof are not clear. Their connection to the eigenvalues, eigenvectors, or the overall behavior of the system needs to be established."
+    }
+  ]
 }

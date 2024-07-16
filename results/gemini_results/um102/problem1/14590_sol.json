@@ -1,0 +1,98 @@
+{
+  "type": "theorem",
+  "name": "Continuity at (0,0)",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from R^2 to R",
+      "property": "given by\nf(x, y) = \\begin{cases}\nx, & \\text{ if } y = x^3 \\\\\n0, & \\text{ if } y \\neq x^3\n\\end{cases}"
+    }
+  ],
+  "conclusion": "The function \\( f \\) is continuous at \\( (0,0) \\).",
+  "status": "proved",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "To prove that \\( f \\) is continuous at \\( (0,0) \\), we need to show that for all \\( \\epsilon > 0 \\), there exists a \\( \\delta > 0 \\) such that  \\( ||(x,y) - (0,0)|| < \\delta \\implies |f(x,y) - f(0,0)| < \\epsilon \\)."
+      },
+      {
+        "type": "assert",
+        "claim": "f(0,0) = 0",
+        "proof-method": "Direct computation using the definition of f(x,y)."
+      },
+      {
+        "type": "remark",
+        "statement": "Therefore, we need to prove:  \\( ||(x,y)|| < \\delta \\implies |f(x,y)| < \\epsilon \\)"
+      },
+      {
+        "type": "let",
+        "variable": "\\delta",
+        "value": "min(1/2, \\epsilon/2)"
+      },
+      {
+        "type": "remark",
+        "statement": "We will now show that this choice of \\( \\delta \\) works."
+      },
+      {
+        "type": "cases",
+        "on": "\\epsilon",
+        "split-kind": "condition",
+        "proof-cases": [
+          {
+            "type": "case",
+            "condition": "\\epsilon > 1",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assert",
+                  "claim": "\\delta = 1/2",
+                  "proof-method": "By the definition of \\delta as min(1/2, \\epsilon/2)."
+                },
+                {
+                  "type": "assert",
+                  "claim": "For any (x,y) such that \\( ||(x,y)|| < \\delta \\), we have \\( f(x,y) = 0 < \\epsilon \\) or \\( f(x,y) = \\sqrt[3]{x} < \\sqrt{x^2 + y^2} < \\delta = \\epsilon \\).",
+                  "proof-method": "By the definition of f(x,y) and because \\( \\delta = 1/2 < 1 \\)."
+                },
+                {
+                  "type": "conclude",
+                  "statement": "\\( ||(x,y)|| < \\delta \\implies |f(x,y)| < \\epsilon \\)"
+                }
+              ]
+            }
+          },
+          {
+            "type": "case",
+            "condition": "\\epsilon \\le 1",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assert",
+                  "claim": "\\delta = \\epsilon/2",
+                  "proof-method": "By the definition of \\delta as min(1/2, \\epsilon/2)."
+                },
+                {
+                  "type": "assert",
+                  "claim": "For any (x,y) such that \\( ||(x,y)|| < \\delta \\), we have \\( f(x,y) = 0 < \\epsilon \\) or \\( f(x,y) = \\sqrt[3]{x} < \\sqrt{x^2 + y^2} < \\delta = \\epsilon/2 < \\epsilon \\).",
+                  "proof-method": "By the definition of f(x,y) and because \\( \\delta = \\epsilon/2 < 1/2 \\)."
+                },
+                {
+                  "type": "conclude",
+                  "statement": "\\( ||(x,y)|| < \\delta \\implies |f(x,y)| < \\epsilon \\)"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Hence, \\( f \\) is continuous at \\( (0,0) \\)."
+      }
+    ]
+  }
+}

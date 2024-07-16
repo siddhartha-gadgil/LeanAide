@@ -1,1 +1,71 @@
-"{\n  \"type\": \"theorem\",\n  \"name\": \"Spiral Sink of Linear System\",\n  \"hypothesis\": [\n    {\n      \"type\": \"let\",\n      \"variable\": \"<anonymous>\",\n      \"kind\": \"differential equation\",\n      \"property\": \"linear\",\n      \"value\": \"\\\\dot{x} = y, \\\\quad \\\\dot{y} = -x-y\"\n    }\n  ],\n  \"conclusion\": \"The origin is a spiral sink for the given system of differential equations.\",\n  \"status\": \"proved\",\n  \"proof\": {\n    \"type\": \"proof\",\n    \"steps\": [\n      {\n        \"type\": \"remark\",\n        \"statement\": \"To determine the nature of the equilibrium point at the origin, we analyze the eigenvalues of the system's coefficient matrix.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"A\",\n        \"kind\": \"matrix\",\n        \"value\": \"\\\\begin{pmatrix} 0 & 1 \\\\\\ -1 & -1 \\\\end{pmatrix}\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"The eigenvalues of matrix A are the solutions to the characteristic equation:  \\\\(|A - \\\\lambda I| = 0 \\\\).\",\n        \"proof-method\": \"Definition of eigenvalues\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"The characteristic equation for matrix A is  $\\\\lambda^2 + \\\\lambda + 1 = 0$.\",\n        \"proof-method\": \"Expanding the determinant \\\\(|A - \\\\lambda I| = \\\\begin{vmatrix} -\\\\lambda & 1 \\\\\\ -1 & -1-\\\\lambda \\\\end{vmatrix} = 0 \\\\)\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"\\\\lambda\",\n        \"kind\": \"eigenvalue of A\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"The solutions to the characteristic equation are $\\\\lambda = \\\\frac{-1 \\\\pm \\\\sqrt{3}i}{2}$.\",\n        \"proof-method\": \"Solving the quadratic equation $\\\\lambda^2 + \\\\lambda + 1 = 0$\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"The real part of the eigenvalue $\\\\lambda$ is negative.\",\n        \"proof-method\": \"Direct computation: Re($\\\\lambda$) = -\\\\frac{1}{2}\"\n      },\n      {\n        \"type\": \"conclude\",\n        \"statement\": \"Since the real part of the eigenvalue is negative, the system spirals towards the origin as  t \\\\to \\\\infty. Therefore, the origin is a spiral sink.\"\n      }\n    ]\n  }\n}\n"
+{
+  "type": "theorem",
+  "name": "Spiral Sink at Origin",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x(t)",
+      "kind": "real function"
+    },
+    {
+      "type": "let",
+      "variable": "y(t)",
+      "kind": "real function"
+    },
+    {
+      "type": "assume",
+      "statement": "The functions x(t) and y(t) satisfy the system of differential equations: \\( \\dot{x}=y \\) and \\( \\dot{y}=-x-y \\)"
+    }
+  ],
+  "conclusion": "The origin (0,0) is a spiral sink for the given system of differential equations.",
+  "status": "proved",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We analyze the eigenvalues of the matrix representing the system."
+      },
+      {
+        "type": "assert",
+        "claim": "The system can be represented in matrix form as: \\( \\begin{pmatrix} \\dot x \\\\ \\dot y \\end{pmatrix} = \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix} \\)",
+        "proof-method": "Rewriting the system in matrix form"
+      },
+      {
+        "type": "let",
+        "variable": "A",
+        "value": "\\( \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix} \\)",
+        "kind": "matrix"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of A are given by solving the characteristic equation: \\( |A - \\lambda I| = 0 \\)",
+        "proof-method": "Standard method to find eigenvalues"
+      },
+      {
+        "type": "assert",
+        "claim": "The characteristic equation becomes:  \\( \\begin{vmatrix} -\\lambda & 1 \\\\ -1 & -1-\\lambda \\end{vmatrix} = 0 \\)",
+        "proof-method": "Substituting the matrix A and identity matrix I"
+      },
+      {
+        "type": "calculation",
+        "calculation": [
+          "\\( \\lambda(\\lambda + 1) + 1 = 0 \\)",
+          "\\( \\lambda^2 + \\lambda + 1 = 0 \\)",
+          "\\( \\lambda = \\frac{-1 \\pm \\sqrt{3}i}{2} \\)"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The real part of both eigenvalues is \\( \\frac{-1}{2} \\)",
+        "deduced_from": [
+          "Calculation of eigenvalues"
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Since the real part of the eigenvalues is negative, the origin is a spiral sink, attracting trajectories as \\( t \\to \\infty \\)."
+      }
+    ]
+  }
+}

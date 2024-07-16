@@ -1,0 +1,98 @@
+{
+  "type": "theorem",
+  "name": "Continuity at (0,0)",
+  "Hypothesis": [
+    {
+      "type": "let",
+      "Variable": "f",
+      "Kind": "function from R^2 to R",
+      "Property": "given by\nf(x, y)=\\begin{cases}\nx, & \\text { if } y=x^{3} \\\\\n0, & \\text { if } y \\neq x^{3}\n\\end{cases}"
+    }
+  ],
+  "Conclusion": "The function \\( f \\) is continuous at \\( (0,0) \\).",
+  "Status": "proved",
+  "Proof": {
+    "type": "proof",
+    "Steps": [
+      {
+        "type": "remark",
+        "Statement": "We will proceed by proving a contradiction."
+      },
+      {
+        "type": "assume",
+        "Statement": "Assume that \\(f\\) is continuous at (0,0)."
+      },
+      {
+        "type": "let",
+        "Variable": "<anonymous>",
+        "Kind": "real number",
+        "Property": "\\( \\epsilon > 0 \\)"
+      },
+      {
+        "type": "assert",
+        "Claim": "There exists \\(\\delta > 0\\) such that for all \\( (x, y) \\in \\mathbb{R}^2 \\) with  \\(\\|(x, y) - (0, 0)\\| < \\delta\\), we have \\(|f(x, y) - f(0, 0)| < \\epsilon\\).",
+        "Deduced_from": [
+          "definition of continuity"
+        ]
+      },
+      {
+        "type": "let",
+        "Variable": "(x,y)",
+        "Kind": "element of R^2",
+        "Property": "\\(\\|(x, y) - (0, 0)\\| < \\delta\\)"
+      },
+      {
+        "type": "assert",
+        "Claim": "\\(\\|(x, y) - (0, 0)\\| = \\|(x, y)\\| = \\sqrt{x^2 + y^2} < \\delta\\)",
+        "Proof-method": "direct computation"
+      },
+      {
+        "type": "assert",
+        "Claim": "\\(\\epsilon \\|(x, y)\\| < \\epsilon \\delta\\)",
+        "Proof-method": "multiplying the previous inequality by \\(\\epsilon\\)"
+      },
+      {
+        "type": "assert",
+        "Claim": "\\(\\|f(x, y) - f(0, 0)\\| = \\left\\| \\frac{xy}{x^2 + y^2} - 0 \\right\\|\\)",
+        "Proof-method": "definition of \\(f\\) and the fact that \\(f(0,0) = 0\\)"
+      },
+      {
+        "type": "assert",
+        "Claim": "\\(\\left\\| \\frac{xy}{x^2 + y^2} - 0 \\right\\| = \\left\\| \\frac{xy}{x^2 + y^2} \\right\\| = \\frac{|x| \\cdot |y|}{x^2 + y^2} \\leq \\frac{\\sqrt{x^2 + y^2} \\cdot \\sqrt{x^2 + y^2}}{x^2 + y^2} = \\frac{x^2 + y^2}{x^2 + y^2} = 1\\)",
+        "Proof-method": "triangle inequality and the fact that \\(|x| \\leq \\sqrt{x^2 + y^2}\\) and \\(|y| \\leq \\sqrt{x^2 + y^2}\\)"
+      },
+      {
+        "type": "remark",
+        "Statement": "We will now arrive at a contradiction by choosing specific values for \\(x\\) and \\(y\\)."
+      },
+      {
+        "type": "let",
+        "Variable": "x",
+        "Value": "\\( \\frac{\\delta}{2} \\)"
+      },
+      {
+        "type": "let",
+        "Variable": "y",
+        "Value": "\\( \\frac{\\delta}{2} \\)"
+      },
+      {
+        "type": "assert",
+        "Claim": "\\( \\|(x, y) - (0, 0)\\| = \\sqrt{\\left(\\frac{\\delta}{2}\\right)^2 + \\left(\\frac{\\delta}{2}\\right)^2} = \\frac{\\delta}{\\sqrt{2}} < \\delta \\)",
+        "Proof-method": "direct computation"
+      },
+      {
+        "type": "assert",
+        "Claim": "\\( |f(x, y) - f(0, 0)| = \\left|\\frac{\\left(\\frac{\\delta}{2}\\right)\\left(\\frac{\\delta}{2}\\right)}{\\left(\\frac{\\delta}{2}\\right)^2 + \\left(\\frac{\\delta}{2}\\right)^2}\\right| = \\frac{1}{2} \\)",
+        "Proof-method": "direct computation"
+      },
+      {
+        "type": "remark",
+        "Statement": "Since \\(\\epsilon > 0\\) was arbitrary, we can choose \\(\\epsilon < \\frac{1}{2}\\). This means we have found \\((x,y)\\) such that \\( \\|(x, y) - (0, 0)\\| < \\delta \\) but \\(|f(x, y) - f(0, 0)| \\geq \\epsilon \\), contradicting our assumption that \\(f\\) is continuous at \\((0,0)\\)."
+      },
+      {
+        "type": "conclude",
+        "Statement": "Therefore, the function \\(f\\) is not continuous at \\((0, 0)\\)."
+      }
+    ]
+  }
+}

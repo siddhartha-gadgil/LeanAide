@@ -1,0 +1,111 @@
+{
+  "type": "theorem",
+  "name": "Continuity of a Piecewise Function at (0,0)",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from R^2 to R",
+      "property": "given by f(x,y) = x if y=x^3 and f(x,y) = 0 if y != x^3"
+    }
+  ],
+  "conclusion": "The function f is continuous at (0,0).",
+  "status": "proved",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We need to show that for every epsilon > 0, there exists a delta > 0 such that if ||(x,y)-(0,0)|| < delta, then ||f(x,y)-f(0,0)|| < epsilon."
+      },
+      {
+        "type": "let",
+        "variable": "<anonymous>",
+        "kind": "real number",
+        "property": "epsilon > 0"
+      },
+      {
+        "type": "cases",
+        "on": "(x,y)",
+        "split-kind": "condition",
+        "proof-cases": [
+          {
+            "type": "case",
+            "condition": "y != x^3",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assert",
+                  "claim": "|f(x,y)| = 0",
+                  "proof-method": "By the definition of f(x,y) when y != x^3"
+                },
+                {
+                  "type": "assert",
+                  "claim": "For any delta > 0, if ||(x,y)-(0,0)|| = ||(x,y)|| < delta, then ||f(x,y) - f(0,0)|| = 0 < epsilon",
+                  "proof-method": "Since |f(x,y)| = 0 and f(0,0) = 0"
+                }
+              ]
+            }
+          },
+          {
+            "type": "case",
+            "condition": "y = x^3",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assert",
+                  "claim": "f(x,y) = x",
+                  "proof-method": "By the definition of f(x,y) when y = x^3"
+                },
+                {
+                  "type": "assert",
+                  "claim": "||f(x,y) - f(0,0)|| = |x|",
+                  "calculation": [
+                    "||f(x,y) - f(0,0)|| = ||x - 0||",
+                    "||x - 0|| = |x|"
+                  ]
+                },
+                {
+                  "type": "let",
+                  "variable": "<anonymous>",
+                  "kind": "real number",
+                  "property": "delta > 0 such that ||(x,y)-(0,0)|| = ||(x,x^3)|| < delta"
+                },
+                {
+                  "type": "assert",
+                  "claim": "sqrt(x^2 + x^6) < delta",
+                  "proof-method": "By the definition of the Euclidean norm"
+                },
+                {
+                  "type": "assert",
+                  "claim": "|x| < |x|sqrt(1+x^4) < delta",
+                  "proof-method": "Since x^4 >= 0, we know that 1 + x^4 >= 1, and so sqrt(1 + x^4) >= 1"
+                },
+                {
+                  "type": "let",
+                  "variable": "delta",
+                  "value": "epsilon"
+                },
+                {
+                  "type": "assert",
+                  "claim": "|x| < epsilon",
+                  "proof-method": "Since |x| < delta and delta = epsilon"
+                },
+                {
+                  "type": "conclude",
+                  "statement": "||f(x,y) - f(0,0)|| = |x| < epsilon"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, f is continuous at (0,0)."
+      }
+    ]
+  }
+}

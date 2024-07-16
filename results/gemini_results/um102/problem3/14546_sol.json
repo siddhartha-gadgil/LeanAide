@@ -1,0 +1,52 @@
+{
+  "type": "theorem",
+  "name": "Gradient of f(x,y) = x^3 - 3x + y^2",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "value": "x^3 - 3x + y^2",
+      "kind": "function from R^2 to R"
+    }
+  ],
+  "conclusion": "The gradient of f is zero at the points (1,0) and (-1,0).",
+  "status": "proved",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "∇f(x,y) = (3x^2 - 3)î + 2yĵ",
+        "proof-method": "Direct computation of partial derivatives"
+      },
+      {
+        "type": "let",
+        "variable": "(x,y)",
+        "kind": "point in R^2",
+        "property": "∇f(x,y) = 0"
+      },
+      {
+        "type": "assert",
+        "claim": "3x^2 - 3 = 0 and 2y = 0",
+        "deduced_from": [
+          "∇f(x,y) = (3x^2 - 3)î + 2yĵ",
+          "(x,y) is a point where ∇f(x,y) = 0"
+        ],
+        "proof-method": "For the gradient to be zero, both components must be zero."
+      },
+      {
+        "type": "assert",
+        "claim": "x = 1 or x = -1, and y = 0",
+        "deduced_from": [
+          "3x^2 - 3 = 0 and 2y = 0"
+        ],
+        "proof-method": "Solving the equations"
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, the gradient of f is zero at the points (1,0) and (-1,0)."
+      }
+    ],
+    "error": "The proof incorrectly claims that the gradient is zero at (2/3, 0). The correct points are (1,0) and (-1,0)."
+  }
+}

@@ -1,72 +1,49 @@
 {
   "type": "theorem",
-  "name": "Spiral Sink",
-  "hypothesis": [
+  "name": "Spiral Sink for a Linear System",
+  "Hypothesis": [
     {
       "type": "let",
-      "variable": "x(t)",
-      "kind": "real function"
-    },
-    {
-      "type": "let",
-      "variable": "y(t)",
-      "kind": "real function"
-    },
-    {
-      "type": "assume",
-      "statement": "The functions x(t) and y(t) satisfy the system of differential equations:  dx/dt = y and dy/dt = -x - y"
+      "Variable": "<anonymous>",
+      "Property": "linear differential equation",
+      "Value": "\\( \\dot{x}=y \\) and \\( \\dot{y}=-x-y\\)"
     }
   ],
-  "conclusion": "The origin is a spiral sink for the given system of differential equations.",
-  "status": "proved",
-  "proof": {
+  "Conclusion": "The origin is a spiral sink for the given system of differential equations.",
+  "Status": "proved",
+  "Proof": {
     "type": "proof",
-    "steps": [
+    "Steps": [
       {
         "type": "remark",
-        "statement": "We will use the trace and determinant of the matrix representation of the system to determine the type of critical point at the origin."
-      },
-      {
-        "type": "let",
-        "variable": "A",
-        "kind": "matrix",
-        "value": "[[0, 1], [-1, -1]]",
-        "property": "matrix representation of the system of differential equations"
+        "Statement": "We begin by writing the system in matrix form."
       },
       {
         "type": "assert",
-        "claim": "The trace of A is -1",
-        "proof-method": "direct calculation"
+        "Claim": "The system can be represented as  \\( (\\begin{matrix} \\dot{x} \\\\ \\dot{y} \\end{matrix}) \\) = A\\( (\\begin{matrix} x \\\\ y \\end{matrix}) \\) = \\( (\\begin{matrix} y \\\\ -x-y \\end{matrix}) \\), where A =  \\( (\\begin{matrix} 0 & 1 \\\\ -1 & -1 \\end{matrix}) \\).",
+        "Proof-method": "Direct rewriting of the given equations."
       },
       {
-        "type": "let",
-        "variable": "Tr(A)",
-        "value": "-1",
-        "kind": "real number"
-      },
-      {
-        "type": "assert",
-        "claim": "The determinant of A is 1",
-        "proof-method": "direct calculation"
-      },
-      {
-        "type": "let",
-        "variable": "Det(A)",
-        "value": "1",
-        "kind": "real number"
+        "type": "remark",
+        "Statement": "We will now analyze the trace and determinant of matrix A to determine the type of critical point at the origin."
       },
       {
         "type": "assert",
-        "claim": "The square of the trace of A is less than 4 times the determinant of A, and the trace of A is negative.",
-        "deduced_from": [
+        "Claim": "Tr(A) = -1 and Det(A) = 1",
+        "Proof-method": "Direct calculation from the matrix A."
+      },
+      {
+        "type": "assert",
+        "Claim": "[Tr(A)]$^2$ < 4Det(A) & Tr(A) < 0",
+        "Deduced_from": [
           "Tr(A) = -1",
           "Det(A) = 1"
         ],
-        "proof-method": "substitution"
+        "Proof-method": "Substitution of the values of the trace and determinant."
       },
       {
         "type": "conclude",
-        "statement": "Therefore, the origin is a spiral sink."
+        "Statement": "Since the trace is negative and the trace squared is less than four times the determinant, the origin is a spiral sink."
       }
     ]
   }

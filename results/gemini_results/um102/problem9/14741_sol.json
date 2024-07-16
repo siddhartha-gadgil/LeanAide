@@ -1,82 +1,72 @@
 {
   "type": "theorem",
-  "name": "Origin as Circulation",
+  "name": "Circulation at the Origin",
   "Hypothesis": [
     {
       "type": "let",
       "Variable": "<anonymous>",
-      "Value": "x' = y",
-      "Kind": "differential equation"
-    },
-    {
-      "type": "let",
-      "Variable": "<anonymous>",
-      "Value": "y' = -x - y",
-      "Kind": "differential equation"
+      "Property": "Linear differential equation",
+      "Value": "\\( \\dot{x}=y \\) and \\( \\dot{y}=-x-y\\)"
     }
   ],
-  "Conclusion": "The origin is a circulation point for the given system of differential equations.",
+  "Conclusion": "The origin is a circulation.",
   "Status": "proved",
   "Proof": {
     "type": "proof",
     "Steps": [
       {
         "type": "remark",
-        "Statement": "We analyze the eigenvalues of the system's matrix representation."
+        "Statement": "We begin by rewriting the given system of differential equations in matrix form."
+      },
+      {
+        "type": "assert",
+        "Claim": "\\( \\frac{d}{dt} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 0 & 1 \\\\ -1 & -1 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} \\)",
+        "Deduced_from": [
+          "\\( \\dot{x}=y \\)",
+          "\\( \\dot{y}=-x-y\\)"
+        ]
       },
       {
         "type": "let",
         "Variable": "A",
-        "Value": "[[0, 1], [-1, -1]]",
+        "Value": "\\(\\begin{bmatrix} 0 & 1 \\\\ -1 & -1 \\end{bmatrix}\\)",
         "Kind": "matrix"
       },
       {
         "type": "assert",
-        "Claim": "The system can be written as dv/dt = Av, where v = [x, y]^T.",
-        "Proof-method": "direct rewriting of the given equations"
-      },
-      {
-        "type": "let",
-        "Variable": "λ_1",
-        "Value": "exp(2πi/3)",
-        "Kind": "complex number"
-      },
-      {
-        "type": "let",
-        "Variable": "λ_2",
-        "Value": "exp(4πi/3)",
-        "Kind": "complex number"
-      },
-      {
-        "type": "assert",
-        "Claim": "The eigenvalues of A are  λ_1 and λ_2.",
+        "Claim": "\\( \\dot{v} = Av \\)",
         "Deduced_from": [
-          "characteristic equation of a matrix"
-        ],
-        "Proof-method": "Solving the characteristic equation det(A - λI) = 0"
-      },
-      {
-        "type": "assert",
-        "Claim": "An eigenvector corresponding to λ_1 is [1, exp(2πi/3)]^T.",
-        "Proof-method": "Solving the equation Av = λv for v using the value of λ_1"
-      },
-      {
-        "type": "assert",
-        "Claim": "The solutions to the system involve complex exponentials due to the complex eigenvalues.",
-        "Deduced_from": [
-          "theory of linear differential equations with constant coefficients"
+          "\\( \\frac{d}{dt} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 0 & 1 \\\\ -1 & -1 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} \\)",
+          "\\(A = \\begin{bmatrix} 0 & 1 \\\\ -1 & -1 \\end{bmatrix}\\)"
         ]
       },
       {
-        "type": "assert",
-        "Claim": "Any linear combination of solutions with complex exponentials simplifies to a real-valued solution.",
-        "Deduced_from": [
-          "original system having real coefficients"
-        ]
+        "type": "remark",
+        "Statement": "Next, we find the eigenvalues of matrix A."
       },
       {
-        "type": "conclude",
-        "Statement": "Since the eigenvalues are complex conjugates with non-zero imaginary parts, the origin is a circulation point."
+        "type": "assert",
+        "Claim": "The characteristic equation of \\(A\\) is \\( \\lambda^2 + \\lambda + 1 = 0 \\).",
+        "Proof-method": "Using the formula for the characteristic equation of a 2x2 matrix."
+      },
+      {
+        "type": "assert",
+        "Claim": "The eigenvalues are \\( \\lambda_1 = \\frac{-1 + i\\sqrt{3}}{2} = e^{\\frac{i2\\pi}{3}} \\) and \\( \\lambda_2 = \\frac{-1 - i\\sqrt{3}}{2} = e^{\\frac{i4\\pi}{3}} \\).",
+        "Proof-method": "Solving the quadratic equation \\( \\lambda^2 + \\lambda + 1 = 0 \\)."
+      },
+      {
+        "type": "remark",
+        "Statement": "The eigenvalues are complex conjugates with non-zero imaginary parts.  This indicates a circulation at the origin."
+      },
+      {
+        "type": "missing",
+        "Problem": [
+          {
+            "type": "problem",
+            "Statement": "To rigorously conclude that the origin is a circulation, one should find the eigenvectors corresponding to the eigenvalues and analyze the behavior of the solutions near the origin. Show that the eigenvectors are complex and linearly independent.",
+            "Solved": false
+          }
+        ]
       }
     ]
   }
