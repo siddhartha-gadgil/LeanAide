@@ -88,7 +88,23 @@ def split_by_markdown_heading(filename, head = "### "):
   return sections
 
 import re
+def json_formatter(input:str):
+    input = input.replace("\\\\\\\\", "\\\\")
+    input = input.replace("\\\\\\", "\\\\")
 
+    if input.lstrip()[0] != '{':
+        #assert input.lstrip()[0] == '"', 'Invalid input'
+        input = input[1:-1]
+
+        pattern = r'(?<!\\)\\([a-zA-Z]+)'
+
+        # Perform the replacement with the corrected pattern
+        modified_input = re.sub(pattern, r'\\\\\1', input)
+    else:
+        modified_input = input
+
+    return modified_input
+    
 def extract_json_block(text):
     """Extracts a code-fenced JSON block from the text, returning the original text if no block is found.
 
@@ -104,6 +120,7 @@ def extract_json_block(text):
         json_block = match.group(1)
         try:
             # Validate the JSON syntax for a more robust check
+            js = json_formatter(js)
             js = json.loads(json_block)
             return js
         except json.JSONDecodeError:
