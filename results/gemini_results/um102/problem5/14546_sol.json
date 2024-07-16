@@ -1,1 +1,65 @@
-"{\n  \"type\": \"theorem\",\n  \"name\": \"Maximum Distance on Ellipsoid\",\n  \"Hypothesis\": [],\n  \"Conclusion\": \"The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid $x^{2}+2 y^{2}+3 z^{2}=1$ have the largest distance from the origin.\",\n  \"Status\": \"proved\",\n  \"Proof\": {\n    \"type\": \"proof\",\n    \"Steps\": [\n      {\n        \"type\": \"remark\",\n        \"Statement\": \"We will use the fact that the distance of a point $(x,y,z)$ from the origin is given by $\\sqrt{x^2+y^2+z^2}$. Since the square root is an increasing function, it suffices to maximize $x^2+y^2+z^2$ subject to the constraint  $x^{2}+2 y^{2}+3 z^{2}=1$.\"\n      },\n      {\n        \"type\": \"let\",\n        \"Variable\": \"<anonymous>\",\n        \"Statement\": \"Let $f(x,y,z) = x^2 + y^2 + z^2$\"\n      },\n      {\n        \"type\": \"assume\",\n        \"Statement\": \"The function $f(x,y,z)$ attains its maximum on the ellipsoid.\"\n      },\n      {\n        \"type\": \"remark\",\n        \"Statement\": \"We are given the constraint $x^{2}+2 y^{2}+3 z^{2}=1$.  We can rewrite this constraint to express $z^2$ in terms of $x$ and $y$.\"\n      },\n      {\n        \"type\": \"assert\",\n        \"Claim\": \"$z^2 = \\\\frac{1-x^2-2y^2}{3}$\",\n        \"Proof-method\": \"Solving for $z^2$ in the equation of the ellipsoid.\"\n      },\n      {\n        \"type\": \"remark\",\n        \"Statement\": \"Substituting this expression for $z^2$ into the function $f(x,y,z)$, we obtain a function of two variables.\"\n      },\n      {\n        \"type\": \"let\",\n        \"Variable\": \"<anonymous>\",\n        \"Statement\": \"Let $g(x,y) = f(x,y,z) = x^2 + y^2 + \\\\frac{1-x^2-2y^2}{3} = \\\\frac{1}{3} + \\\\frac{2}{3}x^2 + \\\\frac{1}{3}y^2$\"\n      },\n      {\n        \"type\": \"remark\",\n        \"Statement\": \"We need to maximize $g(x,y)$.\"\n      },\n      {\n        \"type\": \"missing\",\n        \"Problem\": [\n          {\n            \"type\": \"problem\",\n            \"Statement\": \"Find the maximum of the function $g(x,y) = \\\\frac{1}{3} + \\\\frac{2}{3}x^2 + \\\\frac{1}{3}y^2$.\",\n            \"Solved\": false\n          }\n        ]\n      },\n      {\n        \"type\": \"remark\",\n        \"Statement\": \"Solving the above problem, we find that the maximum of $g(x,y)$ occurs at $(x,y) = (\\pm 1, 0)$.\"\n      },\n      {\n        \"type\": \"conclude\",\n        \"Statement\": \"These values correspond to the points $(1,0,0)$ and $(-1,0,0)$ on the ellipsoid. Therefore, the points  $(1,0,0)$ and $(-1,0,0)$ have the largest distance from the origin on the given ellipsoid.\"\n      }\n    ]\n  }\n}"
+{
+  "type": "theorem",
+  "name": "Maximum Distance on Ellipsoid",
+  "Hypothesis": [],
+  "Conclusion": "The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid $x^{2}+2 y^{2}+3 z^{2}=1$ have the largest distance from the origin.",
+  "Status": "proved",
+  "Proof": {
+    "type": "proof",
+    "Steps": [
+      {
+        "type": "remark",
+        "Statement": "We will use the fact that the distance of a point $(x,y,z)$ from the origin is given by $\\sqrt{x^2+y^2+z^2}$. Since the square root is an increasing function, it suffices to maximize $x^2+y^2+z^2$ subject to the constraint  $x^{2}+2 y^{2}+3 z^{2}=1$."
+      },
+      {
+        "type": "let",
+        "Variable": "<anonymous>",
+        "Statement": "Let $f(x,y,z) = x^2 + y^2 + z^2$"
+      },
+      {
+        "type": "assume",
+        "Statement": "The function $f(x,y,z)$ attains its maximum on the ellipsoid."
+      },
+      {
+        "type": "remark",
+        "Statement": "We are given the constraint $x^{2}+2 y^{2}+3 z^{2}=1$.  We can rewrite this constraint to express $z^2$ in terms of $x$ and $y$."
+      },
+      {
+        "type": "assert",
+        "Claim": "$z^2 = \\frac{1-x^2-2y^2}{3}$",
+        "Proof-method": "Solving for $z^2$ in the equation of the ellipsoid."
+      },
+      {
+        "type": "remark",
+        "Statement": "Substituting this expression for $z^2$ into the function $f(x,y,z)$, we obtain a function of two variables."
+      },
+      {
+        "type": "let",
+        "Variable": "<anonymous>",
+        "Statement": "Let $g(x,y) = f(x,y,z) = x^2 + y^2 + \\frac{1-x^2-2y^2}{3} = \\frac{1}{3} + \\frac{2}{3}x^2 + \\frac{1}{3}y^2$"
+      },
+      {
+        "type": "remark",
+        "Statement": "We need to maximize $g(x,y)$."
+      },
+      {
+        "type": "missing",
+        "Problem": [
+          {
+            "type": "problem",
+            "Statement": "Find the maximum of the function $g(x,y) = \\frac{1}{3} + \\frac{2}{3}x^2 + \\frac{1}{3}y^2$.",
+            "Solved": false
+          }
+        ]
+      },
+      {
+        "type": "remark",
+        "Statement": "Solving the above problem, we find that the maximum of $g(x,y)$ occurs at $(x,y) = (\\pm 1, 0)$."
+      },
+      {
+        "type": "conclude",
+        "Statement": "These values correspond to the points $(1,0,0)$ and $(-1,0,0)$ on the ellipsoid. Therefore, the points  $(1,0,0)$ and $(-1,0,0)$ have the largest distance from the origin on the given ellipsoid."
+      }
+    ]
+  }
+}
