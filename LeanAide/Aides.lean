@@ -275,7 +275,7 @@ def azureKey : IO (Option String) := IO.getEnv "AZURE_OPENAI_KEY"
 
 def azureEndpoint : IO (Option String) := IO.getEnv "AZURE_OPENAI_ENDPOINT"
 
-def azureURL (deployment: String := "leanaide-gpt4") : IO String := do
+def azureURL (deployment: String := "GPT4TestDeployment") : IO String := do
   let endpoint ← azureEndpoint
   match endpoint with
   | none => throw <| IO.userError "AZURE_OPENAI_ENDPOINT not set"

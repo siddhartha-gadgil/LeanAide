@@ -8,7 +8,7 @@ client = AzureOpenAI(
   api_version="2023-05-15"
 )
 
-deployment_name='leanaide-gpt4'
+deployment_name='GPT4TestDeployment'
 
 completion = client.chat.completions.create(
   model=deployment_name,

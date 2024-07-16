@@ -39,7 +39,7 @@ model = "mistral-large-latest"
 
 client_mistral = MistralClient(api_key=api_key)
 
-deployment_name='leanaide-gpt4'
+deployment_name='GPT4TestDeployment'
 
 homedir = Path(".")
 if "lakefile.lean"  not in os.listdir(homedir):
@@ -447,7 +447,7 @@ def math_synonyms(terms, n = 3):
 
 def summarise(text, sys_prompt = math_prompt, examples = [], n = 3):
     query = Template(templates['summarise']).substitute(text = text)
-    return azure_completions(query, sys_prompt, examples, n = n, deployment_name='leanaide-gpt4-32')
+    return azure_completions(query, sys_prompt, examples, n = n, deployment_name='GPT4TestDeployment-32')
 
 # print([choice.message['content'].encode().decode('unicode-escape').encode('latin1').decode('utf-8') for choice in completion.choices])
 
