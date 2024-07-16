@@ -23,14 +23,14 @@ def solution_from_image(image_path):
     response = model.generate_content([
           "Extract text with LaTeX from the following mathematics solution",
           Part.from_uri(f"gs://leanaide/{image_path}", mime_type="image/png"),
-          "Also, rewrite the extracted text as a clean mathematical proof with full sentences, conjuctions etc"])
+          "Also, rewrite the extracted text as a clean mathematical proof with full sentences, conjuctions etc. Note that this will be used to CHECK the correctness of the original proof, so DO NOT make corrections or complete proofs, only clean up the language."])
     return response.text
 
 def solution_from_images(image_paths):
     response = model.generate_content([
           "Extract text with LaTeX from the following mathematics solution"]+ 
           [Part.from_uri(f"gs://leanaide/{image_path}", mime_type="image/png") for image_path in image_paths] +
-          ["Also, rewrite the extracted text as a clean mathematical proof with full sentences, conjuctions etc"])
+          ["Also, rewrite the extracted text as a clean mathematical proof with full sentences, conjuctions etc. Note that this will be used to CHECK the correctness of the original proof, so DO NOT make corrections or complete proofs, only clean up the language."])
     return response.text
 
 proof_json = open(join(resources, "ProofJsonShorter.md")).read()
