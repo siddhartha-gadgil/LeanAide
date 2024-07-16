@@ -1,0 +1,95 @@
+{
+  "type": "theorem",
+  "name": "Maximum Distance on Ellipsoid",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$(1, 0, 0)$ and $(-1, 0, 0)$ are points on the ellipsoid $x^2 + 2y^2 + 3z^2 = 1$"
+    },
+    {
+      "type": "assume",
+      "statement": "Any continuous function on the ellipsoid attains its maximum"
+    }
+  ],
+  "conclusion": "The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid $x^2 + 2y^2 + 3z^2 = 1$ have the largest distance from the origin.",
+  "status": "proved",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "We have to maximize the distance $\\sqrt{x^2 + y^2 + z^2}$ from the origin."
+      },
+      {
+        "type": "define",
+        "statement": "Let $r = \\sqrt{x^2 + y^2 + z^2}$.",
+        "term": "r"
+      },
+      {
+        "type": "assert",
+        "claim": "To maximize $r$, it suffices to maximize $r^2 = x^2 + y^2 + z^2$."
+      },
+      {
+        "type": "let",
+        "variable": "f",
+        "value": "$x^2 + y^2 + z^2$",
+        "kind": "function"
+      },
+      {
+        "type": "assert",
+        "claim": "We need to maximize $f = x^2 + y^2 + z^2$ subject to the constraint $g = x^2 + 2y^2 + 3z^2 = 1$."
+      },
+      {
+        "type": "assert",
+        "claim": "We can use Lagrange multipliers since both $f$ and $g$ are infinitely differentiable."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\nabla f = (2x, 2y, 2z)$ and $\\nabla g = (2x, 4y, 6z)$."
+      },
+      {
+        "type": "assert",
+        "claim": "At a maximum point, $\\nabla f = \\lambda \\nabla g$, which gives $(2x, 2y, 2z) = (2\\lambda x, 4\\lambda y, 6\\lambda z)$."
+      },
+      {
+        "type": "cases",
+        "on": "$\\lambda$",
+        "split-kind": "condition",
+        "proof-cases": [
+          {
+            "type": "case",
+            "condition": "$\\lambda = 1$",
+            "proof": {
+              "type": "assert",
+              "claim": "$(x, 0, 0) = (\\pm 1, 0, 0)$ and $r^2 = 1$ since the point must satisfy $g$."
+            }
+          },
+          {
+            "type": "case",
+            "condition": "$\\lambda = \\frac{1}{2}$",
+            "proof": {
+              "type": "assert",
+              "claim": "$(0, y, 0) = (0, \\pm \\frac{1}{\\sqrt{2}}, 0)$ and $r^2 = \\frac{1}{2}$."
+            }
+          },
+          {
+            "type": "case",
+            "condition": "$\\lambda = \\frac{1}{3}$",
+            "proof": {
+              "type": "assert",
+              "claim": "$(0, 0, z) = (0, 0, \\pm \\frac{1}{\\sqrt{3}})$ and $r^2 = \\frac{1}{3}$."
+            }
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Hence we see that the maximum value of $r^2$ is $1$."
+      },
+      {
+        "type": "conclude",
+        "statement": "The maximum distance from the origin is $1$ and the points at which this distance is achieved are $(\\pm 1, 0, 0)$."
+      }
+    ]
+  }
+}

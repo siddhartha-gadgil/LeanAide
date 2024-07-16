@@ -1,1 +1,139 @@
-"{\n  \"type\": \"theorem\",\n  \"name\": \"Maximum distance from origin on ellipsoid\",\n  \"hypothesis\": [],\n  \"conclusion\": \"The points (1, 0, 0) and (-1, 0, 0) on the ellipsoid  \\( x^{2}+2 y^{2}+3 z^{2}=1 \\) have the largest distance from the origin.\",\n  \"status\": \"proved\",\n  \"proof\": {\n    \"type\": \"proof\",\n    \"steps\": [\n      {\n        \"type\": \"remark\",\n        \"statement\": \"We will use the method of Lagrange multipliers to find the maximum distance.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"g\",\n        \"kind\": \"function from R^3 to R\",\n        \"property\": \"g(x,y,z) = x^2 + 2y^2 + 3z^2\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"f\",\n        \"kind\": \"function from R^3 to R\",\n        \"property\": \"f(x,y,z) = x^2 + y^2 + z^2\"\n      },\n      {\n        \"type\": \"remark\",\n        \"statement\": \"Note that f(x,y,z) gives the square of the distance from the origin to the point (x,y,z).\"\n      },\n      {\n        \"type\": \"remark\",\n        \"statement\": \"We need to maximize f(x,y,z) subject to the constraint g(x,y,z) = 1.\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"The gradient of g at (x,y,z) is (2x, 4y, 6z)\",\n        \"proof-method\": \"direct calculation\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"The gradient of f at (x,y,z) is (2x, 2y, 2z)\",\n        \"proof-method\": \"direct calculation\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"At a constrained extremum of f, the gradients of f and g are proportional\",\n        \"deduced_from\": [\"Method of Lagrange Multipliers\"],\n        \"proof-method\": \"Applying the method of Lagrange multipliers\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"There exists a real number lambda such that (2x, 4y, 6z) = lambda * (2x, 2y, 2z)\",\n        \"deduced_from\": [\n          \"The gradient of g at (x,y,z) is (2x, 4y, 6z)\",\n          \"The gradient of f at (x,y,z) is (2x, 2y, 2z)\",\n          \"At a constrained extremum of f, the gradients of f and g are proportional\"\n        ],\n        \"proof-method\": \"previous results\"\n      },\n      {\n        \"type\": \"cases\",\n        \"on\": \"lambda\",\n        \"split-kind\": \"match\",\n        \"proof-cases\": [\n          {\n            \"type\": \"case\",\n            \"condition\": \"lambda = 1\",\n            \"proof\": {\n              \"type\": \"proof\",\n              \"steps\": [\n                {\n                  \"type\": \"conclude\",\n                  \"statement\": \"In this case, we must have y = z = 0, and substituting into the equation g(x,y,z) = 1 gives x = 1 or x = -1.  Therefore, the points (1, 0, 0) and (-1, 0, 0) are potential points where the maximum distance is achieved.\"\n                }\n              ]\n            }\n          },\n          {\n            \"type\": \"case\",\n            \"condition\": \"lambda = 2\",\n            \"proof\": {\n              \"type\": \"proof\",\n              \"steps\": [\n                {\n                  \"type\": \"conclude\",\n                  \"statement\": \"In this case, we must have x = z = 0, and substituting into the equation g(x,y,z) = 1 gives y = 1/2 or y = -1/2.  Therefore, the points (0, 1/2, 0) and (0, -1/2, 0) are potential points where the maximum distance is achieved.\"\n                }\n              ]\n            }\n          },\n          {\n            \"type\": \"case\",\n            \"condition\": \"lambda = 3\",\n            \"proof\": {\n              \"type\": \"proof\",\n              \"steps\": [\n                {\n                  \"type\": \"conclude\",\n                  \"statement\": \"In this case, we must have x = y = 0, and substituting into the equation g(x,y,z) = 1 gives z = 1/sqrt(3) or z = -1/sqrt(3).  Therefore, the points (0, 0, 1/sqrt(3)) and (0, 0, -1/sqrt(3)) are potential points where the maximum distance is achieved.\"\n                }\n              ]\n            }\n          }\n        ]\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"The maximum value of f(x,y,z) is 1\",\n        \"proof-method\": \"direct calculation\"\n      },\n      {\n        \"type\": \"conclude\",\n        \"statement\": \"The points (1, 0, 0) and (-1, 0, 0) are the only points where the maximum distance is achieved.  This is because the value of f(x,y,z) at these points is 1, which is greater than the value of f(x,y,z) at all other potential points.\"\n      }\n    ]\n  }\n}"
+{
+  "type": "theorem",
+  "name": "Largest Distance on Ellipsoid",
+  "Hypothesis": [],
+  "Conclusion": "The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid $x^{2}+2 y^{2}+3 z^{2}=1$ have the largest distance from the origin.",
+  "status": "proved",
+  "Proof": {
+    "type": "proof",
+    "Steps": [
+      {
+        "type": "let",
+        "Variable": "g",
+        "Kind": "function from $\\mathbb{R}^3$ to $\\mathbb{R}$",
+        "Property": " $g(x,y,z) = x^2 + xy + 2z^2$"
+      },
+      {
+        "type": "let",
+        "Variable": "f",
+        "Kind": "function from $\\mathbb{R}^3$ to $\\mathbb{R}$",
+        "Property": "$f(x,y,z) = x^2 + y^2 + z^2$"
+      },
+      {
+        "type": "remark",
+        "Statement": "Note that for a given point $(x,y,z)$,  $f$ returns the square of the point's distance $d$ from the origin. Maximizing $d$ is equivalent to maximizing $d^2$ since $d \\ge 0$."
+      },
+      {
+        "type": "remark",
+        "Statement": "The problem is to maximize $f$ subject to the constraint $g(x,y,z) = 1$.  We know that at a restricted extremum of $f$, $\\nabla g = \\mathbf{0}$ and $\\nabla f = \\lambda \\nabla g$ (Lagrange multipliers)."
+      },
+      {
+        "type": "assert",
+        "Claim": "$\\nabla g (x,y,z) = \\begin{pmatrix}  2x + y \\\\ x \\\\ 4z \\end{pmatrix}$ and $\\nabla f (x,y,z) = \\begin{pmatrix}  2x \\\\ 2y \\\\ 2z \\end{pmatrix}$",
+        "Proof-method": "Direct calculation of the gradients"
+      },
+      {
+        "type": "assert",
+        "Claim": "$\\begin{pmatrix}  2x \\\\ 2y \\\\ 2z \\end{pmatrix} = \\lambda \\begin{pmatrix}  2x + y \\\\ x \\\\ 4z \\end{pmatrix}$",
+        "Proof-method": "Using the Lagrange multiplier condition $\\nabla f = \\lambda \\nabla g$"
+      },
+      {
+        "type": "assert",
+        "Claim": "$\\begin{cases} 2x = \\lambda 2x \\\\ 4y = \\lambda 2y \\\\ 6z = \\lambda 4z\\end{cases}$",
+        "Proof-method": "Rewriting the vector equation as a system of equations"
+      },
+      {
+        "type": "cases",
+        "On": "$\\lambda$",
+        "Split-kind": "condition",
+        "Proof-cases": [
+          {
+            "type": "case",
+            "Condition": "$\\lambda = 1$ and $y = z = 0$",
+            "Proof": {
+              "type": "proof",
+              "Steps": [
+                {
+                  "type": "assert",
+                  "Claim": "$x^2 = 1$",
+                  "Proof-method": "Substituting $y=z=0$ into $g(x,y,z) = 1$"
+                },
+                {
+                  "type": "assert",
+                  "Claim": "$x = 1$ or $x=-1$",
+                  "Deduced_from": [
+                    "$x^2=1$"
+                  ],
+                  "Proof-method": "Solving for x"
+                },
+                {
+                  "type": "assert",
+                  "Claim": "$f(1,0,0) = f(-1,0,0) = 1$",
+                  "Proof-method": "Substituting $x = \\pm 1$ and $y = z = 0$ into $f(x,y,z)$"
+                }
+              ]
+            }
+          },
+          {
+            "type": "case",
+            "Condition": "$\\lambda = 2$ and $x = z = 0$",
+            "Proof": {
+              "type": "proof",
+              "Steps": [
+                {
+                  "type": "assert",
+                  "Claim": "$2y^2=1$",
+                  "Proof-method": "Substituting $x=z=0$ into $g(x,y,z) = 1$"
+                },
+                {
+                  "type": "assert",
+                  "Claim": "$y^2 = \\frac{1}{2}$ and therefore $y= \\pm\\frac{1}{\\sqrt{2}}$",
+                  "Deduced_from": [
+                    "$2y^2=1$"
+                  ],
+                  "Proof-method": "Solving for y"
+                },
+                {
+                  "type": "assert",
+                  "Claim": "$f(0, \\frac{1}{\\sqrt{2}}, 0) = f(0, \\frac{-1}{\\sqrt{2}}, 0) = \\frac{1}{2}$",
+                  "Proof-method": "Substituting $x=z=0$ and  $y = \\pm \\frac{1}{\\sqrt{2}}$ into $f(x,y,z)$"
+                }
+              ]
+            }
+          },
+          {
+            "type": "case",
+            "Condition": "$\\lambda = 3$ and $x = y = 0$",
+            "Proof": {
+              "type": "proof",
+              "Steps": [
+                {
+                  "type": "assert",
+                  "Claim": "$2z^2=1$",
+                  "Proof-method": "Substituting $x=y=0$ into $g(x,y,z) = 1$"
+                },
+                {
+                  "type": "assert",
+                  "Claim": "$z^2 = \\frac{1}{2}$ and therefore $z= \\pm\\frac{1}{\\sqrt{2}}$",
+                  "Deduced_from": [
+                    "$2z^2=1$"
+                  ],
+                  "Proof-method": "Solving for z"
+                },
+                {
+                  "type": "assert",
+                  "Claim": "$f(0, 0, \\frac{1}{\\sqrt{2}}) = f(0, 0, \\frac{-1}{\\sqrt{2}}) = \\frac{1}{2}$",
+                  "Proof-method": "Substituting $x=y=0$ and $z = \\pm \\frac{1}{\\sqrt{2}}$ into $f(x,y,z)$"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "type": "remark",
+        "Statement": "Since $f$ is maximum in Case 1, the points $(1,0,0)$ and $(-1,0,0)$ have the largest distance from the origin, which is given by $d = 1$."
+      }
+    ]
+  }
+}

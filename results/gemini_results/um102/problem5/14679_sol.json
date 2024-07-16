@@ -1,138 +1,119 @@
 {
   "type": "theorem",
-  "name": "Maximum Distance on Ellipsoid",
-  "hypothesis": [
-    {
-      "type": "let",
-      "variable": "Ellipsoid",
-      "property": "defined by the equation $x^2 + 2y^2 + 3z^2 = 1$"
-    }
-  ],
-  "conclusion": "The points (1, 0, 0) and (-1, 0, 0) on the ellipsoid have the largest distance from the origin.",
+  "name": "Largest Distance on Ellipsoid",
+  "hypothesis": [],
+  "conclusion": "The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid $x^{2}+2 y^{2}+3 z^{2}=1$ have the largest distance from the origin.",
   "status": "proved",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "let",
-        "variable": "f(x, y, z)",
-        "value": "x^2 + 2y^2 + 3z^2 - 1"
+        "variable": "f(x,y,z)",
+        "value": "$x^2 + 2y^2 + 3z^2 - 1$",
+        "kind": "function"
       },
       {
         "type": "let",
-        "variable": "g(x, y, z)",
-        "value": "x^2 + y^2 + z^2 - r^2",
+        "variable": "g(x,y,z)",
+        "value": "$x^2 + y^2 + z^2 - r^2$",
         "kind": "spherical function"
       },
       {
+        "type": "remark",
+        "statement": "To maximize the distance from the origin, we find where the gradient of the ellipsoid function, $\\nabla f$, is parallel to the gradient of the spherical function, $\\nabla g$."
+      },
+      {
         "type": "assume",
-        "statement": "f(x, y, z) is in the same direction as g(x, y, z)"
+        "statement": "$\\nabla f$ is in the same direction as $\\nabla g$."
       },
       {
         "type": "assert",
-        "claim": "∇f is in the same direction as ∇g",
-        "deduced_from": [
-          "f(x, y, z) is in the same direction as g(x, y, z)"
-        ]
+        "claim": "$\\nabla f = \\lambda \\nabla g$ for some scalar $\\lambda$",
+        "proof-method": "This is the condition for two vectors to be parallel."
       },
       {
         "type": "assert",
-        "claim": "∇f = λ∇g",
-        "proof-method": "Expressing the directional relationship mathematically"
+        "claim": "$(2x\\hat{i}+4y\\hat{j}+6z\\hat{k})=\\lambda(2x\\hat{i}+2y\\hat{j}+2z\\hat{k})$",
+        "proof-method": "Expanding the gradients of $f$ and $g$."
       },
       {
-        "type": "assert",
-        "claim": "(2x i + 4y j + 6z k) = λ(2x i + 2y j + 2z k)",
-        "proof-method": "Expanding the gradients"
+        "type": "remark",
+        "statement": "Equating the components of the vectors gives us three cases:"
       },
       {
         "type": "cases",
-        "on": "Equating individual components",
+        "on": "$\\lambda$",
         "split-kind": "match",
         "proof-cases": [
           {
             "type": "case",
-            "condition": "2 = 2λ",
+            "condition": "$\\lambda = 1$",
             "proof": {
               "type": "proof",
               "steps": [
                 {
                   "type": "assert",
-                  "claim": "λ = 1",
-                  "proof-method": "Simplification"
+                  "claim": "$x = y = 0$",
+                  "proof-method": "From the component-wise equality of the gradients."
                 },
                 {
                   "type": "assert",
-                  "claim": "x - y = 0",
-                  "proof-method": "Substitution"
+                  "claim": "The points on the ellipsoid satisfying these conditions are $(1,0,0)$ and $(-1,0,0)$",
+                  "proof-method": "Substituting $x=y=0$ into the equation of the ellipsoid."
                 },
                 {
                   "type": "assert",
-                  "claim": "This leads to the points (+1, 0, 0) and (-1, 0, 0) on the ellipsoid",
-                  "proof-method": "Solving for x, y, and z"
-                },
-                {
-                  "type": "assert",
-                  "claim": "The distance from the origin for these points is 1",
-                  "proof-method": "Calculating the distance"
+                  "claim": "The distance from the origin, $r$, is 1.",
+                  "proof-method": "Direct calculation."
                 }
               ]
             }
           },
           {
             "type": "case",
-            "condition": "4 = 2λ",
+            "condition": "$\\lambda = 2$",
             "proof": {
               "type": "proof",
               "steps": [
                 {
                   "type": "assert",
-                  "claim": "λ = 2",
-                  "proof-method": "Simplification"
+                  "claim": "$y = z = 0$",
+                  "proof-method": "From the component-wise equality of the gradients."
                 },
                 {
                   "type": "assert",
-                  "claim": "y - z = 0",
-                  "proof-method": "Substitution"
+                  "claim": "The point on the ellipsoid satisfying these conditions is $(0,\\pm \\frac{1}{\\sqrt{2}}, 0)$",
+                  "proof-method": "Substituting $y=z=0$ into the equation of the ellipsoid."
                 },
                 {
                   "type": "assert",
-                  "claim": "This leads to points on the ellipsoid where x = (1/√2) and y = z = 0",
-                  "proof-method": "Solving for x, y, and z"
-                },
-                {
-                  "type": "assert",
-                  "claim": "The distance from the origin for these points is (1/√2)",
-                  "proof-method": "Calculating the distance"
+                  "claim": "The distance from the origin, $r$, is $\\frac{1}{\\sqrt{2}}$",
+                  "proof-method": "Direct calculation."
                 }
               ]
             }
           },
           {
             "type": "case",
-            "condition": "6 = 2λ",
+            "condition": "$\\lambda = 3$",
             "proof": {
               "type": "proof",
               "steps": [
                 {
                   "type": "assert",
-                  "claim": "λ = 3",
-                  "proof-method": "Simplification"
+                  "claim": "$x = y = 0$",
+                  "proof-method": "From the component-wise equality of the gradients."
                 },
                 {
                   "type": "assert",
-                  "claim": "k - z = 0 (This appears to be a typo and should likely be x - z = 0)",
-                  "proof-method": "Substitution"
+                  "claim": "The point on the ellipsoid satisfying these conditions is $(0, 0, \\pm \\frac{1}{\\sqrt{3}})$",
+                  "proof-method": "Substituting $x=y=0$ into the equation of the ellipsoid."
                 },
                 {
                   "type": "assert",
-                  "claim": "This leads to points on the ellipsoid where z = (1/√3) and x = y = 0",
-                  "proof-method": "Solving for x, y, and z (assuming the typo is corrected)"
-                },
-                {
-                  "type": "assert",
-                  "claim": "The distance from the origin for these points is (1/√3)",
-                  "proof-method": "Calculating the distance"
+                  "claim": "The distance from the origin, $r$, is $\\frac{1}{\\sqrt{3}}$",
+                  "proof-method": "Direct calculation."
                 }
               ]
             }
@@ -141,7 +122,7 @@
       },
       {
         "type": "conclude",
-        "statement": "Comparing the distances from the origin in each case, we find that the points (+1, 0, 0) and (-1, 0, 0) from Case (i) have the largest distance."
+        "statement": "Comparing the distances in the three cases, we see that the points $(1,0,0)$ and $(-1,0,0)$  have the largest distance from the origin."
       }
     ]
   }

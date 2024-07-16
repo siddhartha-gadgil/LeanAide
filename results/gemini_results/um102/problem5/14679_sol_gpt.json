@@ -1,0 +1,104 @@
+{
+  "type": "theorem",
+  "name": "Maximum Distance on Ellipsoid",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "Any continuous function on the ellipsoid $x^2 + 2y^2 + 3z^2 = 1$ attains its maximum."
+    }
+  ],
+  "conclusion": "The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid $x^2 + 2y^2 + 3z^2 = 1$ have the largest distance from the origin.",
+  "status": "proved",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "f(x,y,z)",
+        "value": "x^2 + 2y^2 + 3z^2 - 1",
+        "kind": "function"
+      },
+      {
+        "type": "let",
+        "variable": "g(x,y,z)",
+        "value": "x^2 + y^2 + z^2 - r^2",
+        "kind": "function",
+        "property": "spherical function"
+      },
+      {
+        "type": "assume",
+        "statement": "$\\nabla f$ is in the same direction as $\\nabla g$"
+      },
+      {
+        "type": "assert",
+        "claim": "\\nabla f = \\lambda \\nabla g"
+      },
+      {
+        "type": "assert",
+        "claim": "(2x\\hat{i} + 4y\\hat{j} + 6z\\hat{k}) = \\lambda (2x\\hat{i} + 2y\\hat{j} + 2z\\hat{k})"
+      },
+      {
+        "type": "cases",
+        "on": "\\lambda",
+        "split-kind": "condition",
+        "proof-cases": [
+          {
+            "type": "case",
+            "condition": "\\lambda = 1",
+            "proof": {
+              "type": "assert",
+              "claim": "x = \\pm 1, y = 0, z = 0",
+              "proof-method": "equating individual components"
+            }
+          },
+          {
+            "type": "case",
+            "condition": "\\lambda = 2",
+            "proof": {
+              "type": "assert",
+              "claim": "x = 0, y = \\pm \\frac{1}{\\sqrt{2}}, z = 0",
+              "proof-method": "equating individual components"
+            }
+          },
+          {
+            "type": "case",
+            "condition": "\\lambda = 3",
+            "proof": {
+              "type": "assert",
+              "claim": "x = 0, y = 0, z = \\pm \\frac{1}{\\sqrt{3}}",
+              "proof-method": "equating individual components"
+            }
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "In Case (i), $r = 1$",
+        "deduced_from": [
+          "x = \\pm 1, y = 0, z = 0"
+        ],
+        "proof-method": "calculation"
+      },
+      {
+        "type": "assert",
+        "claim": "In Case (ii), $r = \\frac{1}{\\sqrt{2}}$",
+        "deduced_from": [
+          "x = 0, y = \\pm \\frac{1}{\\sqrt{2}}, z = 0"
+        ],
+        "proof-method": "calculation"
+      },
+      {
+        "type": "assert",
+        "claim": "In Case (iii), $r = \\frac{1}{\\sqrt{3}}$",
+        "deduced_from": [
+          "x = 0, y = 0, z = \\pm \\frac{1}{\\sqrt{3}}"
+        ],
+        "proof-method": "calculation"
+      },
+      {
+        "type": "conclude",
+        "statement": "Clearly, Case (i) has the point on the ellipsoid with the largest distance from the origin. These points are $(\\pm 1, 0, 0)$."
+      }
+    ]
+  }
+}

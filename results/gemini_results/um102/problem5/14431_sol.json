@@ -8,104 +8,84 @@
       "property": "Defined by the equation $x^2 + 2y^2 + 3z^2 = 1$"
     }
   ],
-  "conclusion": "The points (1, 0, 0) and (-1, 0, 0) on the ellipsoid have the largest distance from the origin.",
+  "conclusion": "The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid have the largest distance from the origin.",
   "status": "proved",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "remark",
-        "statement": "To find the point on the ellipsoid furthest from the origin, we maximize the distance formula subject to the ellipsoid equation."
+        "statement": "To find the point on the ellipsoid furthest from the origin, we maximize the distance function subject to the ellipsoid equation."
       },
       {
         "type": "let",
-        "variable": "f",
+        "variable": "$f(x,y,z)$",
         "value": "$\\sqrt{x^2 + y^2 + z^2}$",
-        "kind": "function"
+        "kind": "Distance function"
+      },
+      {
+        "type": "assert",
+        "claim": "$f(x,y,z) = \\sqrt{1-y^2 -2z^2}$",
+        "deduced_from": [
+          "Ellipsoid equation"
+        ],
+        "proof-method": "Substituting $x^2 = 1 - 2y^2 - 3z^2$ from the ellipsoid equation into the distance function."
       },
       {
         "type": "remark",
-        "statement": "This represents the distance of a point (x, y, z) from the origin."
+        "statement": "For $f$ to be maximized, its gradient must be zero."
       },
       {
         "type": "assert",
-        "claim": "$f = \\sqrt{1-y^2 - 2z^2}$",
+        "claim": "$\\nabla f = \\frac{\\partial f}{\\partial y}\\hat{j} + \\frac{\\partial f}{\\partial z}\\hat{k} = 0$",
+        "proof-method": "Setting the gradient of $f$ to zero."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{1}{2\\sqrt{1-y^2 - 2z^2}}(-2y)\\hat{j} + \\frac{1}{2\\sqrt{1-y^2-2z^2}}(-4z)\\hat{k} = 0$",
+        "proof-method": "Computing the partial derivatives."
+      },
+      {
+        "type": "assert",
+        "claim": "$y=0$ and $z=0$",
         "deduced_from": [
-          "Equation of the ellipsoid",
-          "Definition of f"
+          "$\\frac{1}{2\\sqrt{1-y^2 - 2z^2}}(-2y)\\hat{j} + \\frac{1}{2\\sqrt{1-y^2-2z^2}}(-4z)\\hat{k} = 0$"
         ],
-        "proof-method": "Substituting the ellipsoid equation into the function f."
-      },
-      {
-        "type": "remark",
-        "statement": "To find the maximum of f, we set its gradient to zero."
+        "proof-method": "Solving the system of equations."
       },
       {
         "type": "assert",
-        "claim": "$\\nabla f = 0$",
-        "proof-method": "Necessary condition for the extremum of a function."
-      },
-      {
-        "type": "assert",
-        "claim": "$\\frac{\\partial f}{\\partial y} \\hat{j} + \\frac{\\partial f}{\\partial z} \\hat{k} = 0$",
+        "claim": "$x= \\pm 1$",
         "deduced_from": [
-          "$\\nabla f = 0$"
-        ],
-        "proof-method": "Expanding the gradient in Cartesian coordinates."
-      },
-      {
-        "type": "assert",
-        "claim": "$\\frac{1}{2\\sqrt{1-y^2-2z^2}} (-2y)\\hat{j} + \\frac{1}{2\\sqrt{1-y^2-2z^2}}(-4z) \\hat{k} = 0$",
-        "deduced_from": [
-          "$\\frac{\\partial f}{\\partial y} \\hat{j} + \\frac{\\partial f}{\\partial z} \\hat{k} = 0$"
-        ],
-        "proof-method": "Calculating the partial derivatives."
-      },
-      {
-        "type": "assert",
-        "claim": "$y = 0$ and $z = 0$",
-        "deduced_from": [
-          "$\\frac{1}{2\\sqrt{1-y^2-2z^2}} (-2y)\\hat{j} + \\frac{1}{2\\sqrt{1-y^2-2z^2}}(-4z) \\hat{k} = 0$"
-        ],
-        "proof-method": "Solving the equation for y and z."
-      },
-      {
-        "type": "assert",
-        "claim": "$x = 1$ or $x = -1$",
-        "deduced_from": [
-          "Equation of the ellipsoid",
           "$y=0$",
-          "$z=0$"
+          "$z=0$",
+          "Ellipsoid equation"
         ],
-        "proof-method": "Substituting y = 0 and z = 0 into the ellipsoid equation and solving for x."
+        "proof-method": "Substituting $y=0$ and $z=0$ into the ellipsoid equation."
       },
       {
         "type": "remark",
-        "statement": "This gives us two potential extremum points: (1, 0, 0) and (-1, 0, 0)."
-      },
-      {
-        "type": "remark",
-        "statement": "To confirm these are maxima, we need to find a point on the ellipsoid closer to the origin."
+        "statement": "Therefore, the extremum points are $(1,0,0)$ and $(-1,0,0)$. These could be maxima or minima."
       },
       {
         "type": "let",
-        "variable": "P",
-        "value": "$(0,\\frac{1}{\\sqrt{2}},0)$",
-        "kind": "point on the ellipsoid"
+        "variable": "$P$",
+        "value": "$(0, 1/\\sqrt{2}, 0)$",
+        "kind": "Point on the ellipsoid"
       },
       {
         "type": "assert",
-        "claim": "Distance of P from origin is $\\frac{1}{\\sqrt{2}}$",
-        "proof-method": "Direct calculation using the distance formula."
+        "claim": "Distance from $P$ to the origin is $1/\\sqrt{2}$",
+        "proof-method": "Direct calculation."
       },
       {
         "type": "assert",
-        "claim": "Distance of (1, 0, 0) and (-1, 0, 0) from origin is 1",
-        "proof-method": "Direct calculation using the distance formula."
+        "claim": "Distance from $(1,0,0)$ and $(-1,0,0)$ to the origin is $1$",
+        "proof-method": "Direct calculation."
       },
       {
         "type": "conclude",
-        "statement": "Since $\\frac{1}{\\sqrt{2}} < 1$, the points (1, 0, 0) and (-1, 0, 0) are further from the origin than a point on the ellipsoid, and thus are the points on the ellipsoid furthest from the origin."
+        "statement": "Since $(1,0,0)$ and $(-1,0,0)$ have a larger distance from the origin than another point on the ellipsoid, they must represent the maximum distance."
       }
     ]
   }

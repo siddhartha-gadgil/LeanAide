@@ -21,14 +21,14 @@ vertexai.init(project=project_id, location="asia-south1")
 
 def solution_from_image(image_path):
     response = model.generate_content([
-          "Extract text with LaTeX from the following mathematics solution",
+          "Extract text with LaTeX from the following mathematics solution (using `$` to enclose LaTeX formulas)",
           Part.from_uri(f"gs://leanaide/{image_path}", mime_type="image/png"),
           "Also, rewrite the extracted text as a clean mathematical proof with full sentences, conjuctions etc. Note that this will be used to CHECK the correctness of the original proof, so DO NOT make corrections or complete proofs, only clean up the language."])
     return response.text
 
 def solution_from_images(image_paths):
     response = model.generate_content([
-          "Extract text with LaTeX from the following mathematics solution"]+ 
+          "Extract text with LaTeX from the following mathematics solution (using `$` to enclose LaTeX formulas)"]+ 
           [Part.from_uri(f"gs://leanaide/{image_path}", mime_type="image/png") for image_path in image_paths] +
           ["Also, rewrite the extracted text as a clean mathematical proof with full sentences, conjuctions etc. Note that this will be used to CHECK the correctness of the original proof, so DO NOT make corrections or complete proofs, only clean up the language."])
     return response.text
@@ -103,11 +103,12 @@ def write_structured_proofs(prefix):
         with open(output_file, "w") as f:
             json.dump(structured, f, ensure_ascii=False, indent=2)
         prompt = structure_prompt(thm, pf)
-        gpt_structured = chat_client.math(prompt)
-        output_file = Path(join(gemini_results, path + "_sol_gpt.md"))
+        gpt_structured_raw = chat_client.math(prompt)
+        gpt_structured = extract_json_block(gpt_structured_raw[0])
+        output_file = Path(join(gemini_results, path + "_sol_gpt.json"))
         output_file.parent.mkdir(exist_ok=True, parents=True)
         with open(output_file, "w") as f:
-            f.write(f"## Theorem: {thm}\n\n## Proof: {gpt_structured}")
+            json.dump(gpt_structured, f, ensure_ascii=False, indent=2)
         output_file = Path(join(gemini_results, path + "_sol.md"))
         output_file.parent.mkdir(exist_ok=True, parents=True)
         with open(output_file, "w") as f:

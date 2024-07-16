@@ -1,0 +1,138 @@
+{
+  "type": "theorem",
+  "name": "Maximum Distance on Ellipsoid",
+  "hypothesis": [
+    {
+      "type": "define",
+      "statement": "g: \\mathbb{R}^3 \\rightarrow \\mathbb{R} \\text{ defined by } g(x,y,z) = x^2 + xy + 2z^2",
+      "term": "g"
+    },
+    {
+      "type": "define",
+      "statement": "f: \\mathbb{R}^3 \\rightarrow \\mathbb{R} \\text{ defined by } f(x,y,z) = x^2 + y^2 + z^2",
+      "term": "f"
+    },
+    {
+      "type": "assume",
+      "statement": "Any continuous function on the ellipsoid attains its maximum."
+    }
+  ],
+  "conclusion": {
+    "type": "assert",
+    "claim": "The points (1, 0, 0) and (-1, 0, 0) on the ellipsoid x^{2}+2 y^{2}+3 z^{2}=1 have the largest distance from the origin."
+  },
+  "status": "proved",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "d",
+        "value": "f(x,y,z)",
+        "kind": "real number",
+        "property": "square of the distance from the origin"
+      },
+      {
+        "type": "assert",
+        "claim": "Maximizing $d$ is equivalent to maximizing $d^2$ since $d \\ge 0$."
+      },
+      {
+        "type": "assert",
+        "claim": "The problem is to maximize $f$ subject to the constraint $g(x,y,z) = 1$."
+      },
+      {
+        "type": "assert",
+        "claim": "At a restricted extremum of $f$, $\\nabla f = \\lambda \\nabla g$ (Lagrange multipliers).",
+        "deduced_from": [
+          "Theory of Lagrange multipliers"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The gradients are $\\nabla g = \\begin{pmatrix}  \\frac{\\partial g}{\\partial x} \\\\ \\frac{\\partial g}{\\partial y} \\\\ \\frac{\\partial g}{\\partial z} \\end{pmatrix}$ and $\\nabla f = \\begin{pmatrix}  \\frac{\\partial f}{\\partial x} \\\\ \\frac{\\partial f}{\\partial y} \\\\ \\frac{\\partial f}{\\partial z} \\end{pmatrix}$."
+      },
+      {
+        "type": "assert",
+        "claim": "Therefore, $\\nabla g (x,y,z) = \\begin{pmatrix}  2x + y \\\\ x \\\\ 4z \\end{pmatrix}$ and $\\nabla f (x,y,z) = \\begin{pmatrix}  2x \\\\ 2y \\\\ 2z \\end{pmatrix}$."
+      },
+      {
+        "type": "assert",
+        "claim": "This gives the equation $\\begin{pmatrix}  2x \\\\ 2y \\\\ 2z \\end{pmatrix} = \\lambda \\begin{pmatrix}  2x + y \\\\ x \\\\ 4z \\end{pmatrix}$, which leads to the system of equations $\\begin{cases} 2x = \\lambda (2x + y) \\\\ 2y = \\lambda x \\\\ 2z = \\lambda (4z) \\end{cases}$."
+      },
+      {
+        "type": "cases",
+        "on": "values of $\\lambda$",
+        "split-kind": "condition",
+        "proof-cases": [
+          {
+            "type": "case",
+            "condition": "$\\lambda = 1$ and $y = z = 0$",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assume",
+                  "statement": "$y = z = 0$"
+                },
+                {
+                  "type": "assert",
+                  "claim": "Substituting $y=z=0$ into $g(x,y,z) = 1$, we get $x^2 = 1$, which implies $x = 1$ or $x=-1$."
+                },
+                {
+                  "type": "assert",
+                  "claim": "Substituting $x = \\pm 1$ and $y = z = 0$ into $f(x,y,z)$, we get $f(1,0,0) = f(-1,0,0) = 1$."
+                }
+              ]
+            }
+          },
+          {
+            "type": "case",
+            "condition": "$\\lambda = 2$ and $x = z = 0$",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assume",
+                  "statement": "$x = z = 0$"
+                },
+                {
+                  "type": "assert",
+                  "claim": "Substituting $x=z=0$ into $g(x,y,z) = 1$, we get $2y^2=1$, which implies $y^2 = \\frac{1}{2}$ and therefore $y= \\pm\\frac{1}{\\sqrt{2}}$."
+                },
+                {
+                  "type": "assert",
+                  "claim": "Substituting $x=z=0$ and $y = \\pm \\frac{1}{\\sqrt{2}}$ into $f(x,y,z)$, we get $f(0, \\frac{1}{\\sqrt{2}}, 0) = f(0, \\frac{-1}{\\sqrt{2}}, 0) = \\frac{1}{2}$."
+                }
+              ]
+            }
+          },
+          {
+            "type": "case",
+            "condition": "$\\lambda = 3$ and $x = y = 0$",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assume",
+                  "statement": "$x = y = 0$"
+                },
+                {
+                  "type": "assert",
+                  "claim": "Substituting $x=y=0$ into $g(x,y,z) = 1$, we get $3z^2=1$, which implies $z^2 = \\frac{1}{3}$ and therefore $z= \\pm\\frac{1}{\\sqrt{3}}$."
+                },
+                {
+                  "type": "assert",
+                  "claim": "Substituting $x=y=0$ and $z = \\pm \\frac{1}{\\sqrt{3}}$ into $f(x,y,z)$, we get $f(0, 0, \\frac{1}{\\sqrt{3}}) = f(0, 0, \\frac{-1}{\\sqrt{3}}) = \\frac{1}{3}$."
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Since $f$ is maximum in Case 1, the points $(1,0,0)$ and $(-1,0,0)$ have the largest distance from the origin, which is given by $d = 1$."
+      }
+    ]
+  }
+}
