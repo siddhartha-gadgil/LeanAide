@@ -1,56 +1,111 @@
 {
-  "type": "problem",
-  "name": "Points on Ellipsoid Furthest from Origin",
-  "statement": "Find the points on the ellipsoid $x^2 + 2y^2 + 3z^2 = 1$ that are furthest from the origin.",
-  "solved": true,
-  "answer": "The points (1, 0, 0) and (-1, 0, 0) are the points on the ellipsoid that are furthest from the origin.",
+  "type": "theorem",
+  "name": "Maximum Distance on Ellipsoid",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "Ellipsoid",
+      "property": "Defined by the equation $x^2 + 2y^2 + 3z^2 = 1$"
+    }
+  ],
+  "conclusion": "The points (1, 0, 0) and (-1, 0, 0) on the ellipsoid have the largest distance from the origin.",
+  "status": "proved",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "remark",
-        "statement": "To find the points on the ellipsoid furthest from the origin, we need to maximize the distance from a point (x, y, z) on the ellipsoid to the origin. This distance is given by  √(x² + y² + z²)."
+        "statement": "To find the point on the ellipsoid furthest from the origin, we maximize the distance formula subject to the ellipsoid equation."
       },
       {
         "type": "let",
-        "variable": "f(x, y, z)",
-        "value": "√(x² + y² + z²)",
+        "variable": "f",
+        "value": "$\\sqrt{x^2 + y^2 + z^2}$",
         "kind": "function"
       },
       {
         "type": "remark",
-        "statement": "We want to maximize f subject to the constraint x² + 2y² + 3z² = 1."
-      },
-      {
-        "type": "remark",
-        "statement": "Using the constraint, we can rewrite f as a function of two variables:"
-      },
-      {
-        "type": "let",
-        "variable": "f(y, z)",
-        "value": "√(1 - 2y² - 3z² + y² + z²) = √(1 - y² - 2z²)",
-        "kind": "function"
-      },
-      {
-        "type": "remark",
-        "statement": "To find the critical points of f, we set its gradient equal to zero:"
+        "statement": "This represents the distance of a point (x, y, z) from the origin."
       },
       {
         "type": "assert",
-        "claim": "∇f = (∂f/∂y, ∂f/∂z) = (-y/√(1-y²- 2z²), -2z/√(1-y²- 2z²)) = (0, 0)",
-        "proof-method": "calculus"
+        "claim": "$f = \\sqrt{1-y^2 - 2z^2}$",
+        "deduced_from": [
+          "Equation of the ellipsoid",
+          "Definition of f"
+        ],
+        "proof-method": "Substituting the ellipsoid equation into the function f."
       },
       {
         "type": "remark",
-        "statement": "This gives us y = 0 and z = 0. Substituting these values into the constraint equation, we get x = ±1. Thus, the critical points are (1, 0, 0) and (-1, 0, 0)."
+        "statement": "To find the maximum of f, we set its gradient to zero."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\nabla f = 0$",
+        "proof-method": "Necessary condition for the extremum of a function."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{\\partial f}{\\partial y} \\hat{j} + \\frac{\\partial f}{\\partial z} \\hat{k} = 0$",
+        "deduced_from": [
+          "$\\nabla f = 0$"
+        ],
+        "proof-method": "Expanding the gradient in Cartesian coordinates."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{1}{2\\sqrt{1-y^2-2z^2}} (-2y)\\hat{j} + \\frac{1}{2\\sqrt{1-y^2-2z^2}}(-4z) \\hat{k} = 0$",
+        "deduced_from": [
+          "$\\frac{\\partial f}{\\partial y} \\hat{j} + \\frac{\\partial f}{\\partial z} \\hat{k} = 0$"
+        ],
+        "proof-method": "Calculating the partial derivatives."
+      },
+      {
+        "type": "assert",
+        "claim": "$y = 0$ and $z = 0$",
+        "deduced_from": [
+          "$\\frac{1}{2\\sqrt{1-y^2-2z^2}} (-2y)\\hat{j} + \\frac{1}{2\\sqrt{1-y^2-2z^2}}(-4z) \\hat{k} = 0$"
+        ],
+        "proof-method": "Solving the equation for y and z."
+      },
+      {
+        "type": "assert",
+        "claim": "$x = 1$ or $x = -1$",
+        "deduced_from": [
+          "Equation of the ellipsoid",
+          "$y=0$",
+          "$z=0$"
+        ],
+        "proof-method": "Substituting y = 0 and z = 0 into the ellipsoid equation and solving for x."
       },
       {
         "type": "remark",
-        "statement": "To confirm that these points correspond to maximum distances, we can consider another point on the ellipsoid, for example, (0, 1/√2, 0). The distance of this point from the origin is 1/√2, which is less than the distance of (1, 0, 0) and (-1, 0, 0) from the origin (which is 1)."
+        "statement": "This gives us two potential extremum points: (1, 0, 0) and (-1, 0, 0)."
+      },
+      {
+        "type": "remark",
+        "statement": "To confirm these are maxima, we need to find a point on the ellipsoid closer to the origin."
+      },
+      {
+        "type": "let",
+        "variable": "P",
+        "value": "$(0,\\frac{1}{\\sqrt{2}},0)$",
+        "kind": "point on the ellipsoid"
+      },
+      {
+        "type": "assert",
+        "claim": "Distance of P from origin is $\\frac{1}{\\sqrt{2}}$",
+        "proof-method": "Direct calculation using the distance formula."
+      },
+      {
+        "type": "assert",
+        "claim": "Distance of (1, 0, 0) and (-1, 0, 0) from origin is 1",
+        "proof-method": "Direct calculation using the distance formula."
       },
       {
         "type": "conclude",
-        "statement": "Therefore, the points (1, 0, 0) and (-1, 0, 0) are the points on the ellipsoid that are furthest from the origin."
+        "statement": "Since $\\frac{1}{\\sqrt{2}} < 1$, the points (1, 0, 0) and (-1, 0, 0) are further from the origin than a point on the ellipsoid, and thus are the points on the ellipsoid furthest from the origin."
       }
     ]
   }

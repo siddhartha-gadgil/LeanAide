@@ -87,7 +87,7 @@ def write_structured_proofs_simple(prefix):
         with open(output_file, "w") as f:
             f.write(f"## Theorem: {thm}\n\n## Proof: {pf}")
 
-client = ChatClient()
+chat_client = ChatClient()
 import itertools
 def write_structured_proofs(prefix):
     thm_blob = bucket.blob(f"{prefix}theorem.md")
@@ -103,7 +103,7 @@ def write_structured_proofs(prefix):
         with open(output_file, "w") as f:
             json.dump(structured, f, ensure_ascii=False, indent=2)
         prompt = structure_prompt(thm, pf)
-        gpt_structured = client.math(prompt)
+        gpt_structured = chat_client.math(prompt)
         output_file = Path(join(gemini_results, path + "_sol_gpt.md"))
         output_file.parent.mkdir(exist_ok=True, parents=True)
         with open(output_file, "w") as f:
