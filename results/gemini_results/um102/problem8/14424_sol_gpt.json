@@ -1,1 +1,73 @@
-"{\n  \"type\": \"theorem\",\n  \"name\": \"Circulation of Origin for a Linear Differential Equation\",\n  \"hypothesis\": [\n    {\n      \"type\": \"assume\",\n      \"statement\": \"$\\dot{x} = -y$\"\n    },\n    {\n      \"type\": \"assume\",\n      \"statement\": \"$\\dot{y} = x$\"\n    }\n  ],\n  \"conclusion\": \"The origin is a circulation.\",\n  \"status\": \"incomplete proof\",\n  \"proof\": {\n    \"type\": \"proof\",\n    \"steps\": [\n      {\n        \"type\": \"let\",\n        \"variable\": \"A\",\n        \"value\": \"$\\\\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\\\end{pmatrix}$\",\n        \"kind\": \"matrix\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"$\\\\begin{pmatrix} \\\\dot{x} \\\\ \\\\dot{y} \\\\end{pmatrix} = A \\\\begin{pmatrix} x \\\\ y \\\\end{pmatrix}$\",\n        \"proof-method\": \"Matrix representation of the system of equations\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"$A^2 = -I$\",\n        \"proof-method\": \"Direct matrix multiplication\",\n        \"calculation\": [\n          {\n            \"step\": \"$A^2 = \\\\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\\\end{pmatrix} \\\\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\\\end{pmatrix}$\",\n            \"justification\": \"Definition of $A$\"\n          },\n          {\n            \"step\": \"$A^2 = \\\\begin{pmatrix} (0)(0) + (-1)(1) & (0)(-1) + (-1)(0) \\\\ (1)(0) + (0)(1) & (1)(-1) + (0)(0) \\\\end{pmatrix}$\",\n            \"justification\": \"Matrix multiplication steps\"\n          },\n          {\n            \"step\": \"$A^2 = \\\\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\\\end{pmatrix}$\",\n            \"justification\": \"Simplification\"\n          },\n          {\n            \"step\": \"$A^2 = -I$\",\n            \"justification\": \"Definition of the identity matrix $I$\"\n          }\n        ]\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"The origin is a circulation.\",\n        \"proof-method\": \"Matrix analysis and properties of the differential equation\",\n        \"errors\": [\n          {\n            \"type\": \"conclude\",\n            \"statement\": \"Origin is a circulation\",\n            \"error\": \"The term 'circulation' is not clearly defined, and the steps to conclude this are missing.\"\n          }\n        ]\n      }\n    ],\n    \"missing\": [\n      {\n        \"type\": \"problem\",\n        \"statement\": \"Clarify and prove the term 'circulation' in the context of the origin for the given differential equation.\"\n      }\n    ]\n  }\n}"
+{
+  "type": "theorem",
+  "name": "Circulation of Origin for a Linear Differential Equation",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = -y$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = x$"
+    }
+  ],
+  "conclusion": "The origin is a circulation.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "A",
+        "value": "$\\begin{pmatrix} 0 & -1 \\ 1 & 0 \\end{pmatrix}$",
+        "kind": "matrix"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\begin{pmatrix} \\dot{x} \\ \\dot{y} \\end{pmatrix} = A \\begin{pmatrix} x \\ y \\end{pmatrix}$",
+        "proof-method": "Matrix representation of the system of equations"
+      },
+      {
+        "type": "assert",
+        "claim": "$A^2 = -I$",
+        "proof-method": "Direct matrix multiplication",
+        "calculation": [
+          {
+            "step": "$A^2 = \\begin{pmatrix} 0 & -1 \\ 1 & 0 \\end{pmatrix} \\begin{pmatrix} 0 & -1 \\ 1 & 0 \\end{pmatrix}$",
+            "justification": "Definition of $A$"
+          },
+          {
+            "step": "$A^2 = \\begin{pmatrix} (0)(0) + (-1)(1) & (0)(-1) + (-1)(0) \\ (1)(0) + (0)(1) & (1)(-1) + (0)(0) \\end{pmatrix}$",
+            "justification": "Matrix multiplication steps"
+          },
+          {
+            "step": "$A^2 = \\begin{pmatrix} -1 & 0 \\ 0 & -1 \\end{pmatrix}$",
+            "justification": "Simplification"
+          },
+          {
+            "step": "$A^2 = -I$",
+            "justification": "Definition of the identity matrix $I$"
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The origin is a circulation.",
+        "proof-method": "Matrix analysis and properties of the differential equation",
+        "errors": [
+          {
+            "type": "conclude",
+            "statement": "Origin is a circulation",
+            "error": "The term 'circulation' is not clearly defined, and the steps to conclude this are missing."
+          }
+        ]
+      }
+    ],
+    "missing": [
+      {
+        "type": "problem",
+        "statement": "Clarify and prove the term 'circulation' in the context of the origin for the given differential equation."
+      }
+    ]
+  }
+}
