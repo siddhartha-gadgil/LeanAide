@@ -1,1 +1,58 @@
-"{\n  \"type\": \"theorem\",\n  \"name\": \"Maximum Distance from Origin on Ellipsoid\",\n  \"hypothesis\": [\n    {\n      \"type\": \"assume\",\n      \"statement\": \"Any continuous function on the ellipsoid $x^2 + 2y^2 + 3z^2 = 1$ attains its maximum.\"\n    }\n  ],\n  \"conclusion\": \"The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid $x^2 + 2y^2 + 3z^2 = 1$ have the largest distance from the origin.\",\n  \"status\": \"proved\",\n  \"proof\": {\n    \"type\": \"proof\",\n    \"steps\": [\n      {\n        \"type\": \"assert\",\n        \"claim\": \"$x^2 + 2y^2 + 3z^2 \\leq 1$\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"$\\\\frac{1}{2} x^2 + \\\\frac{1 - x - 2m}{3}$\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"$x \\\\in [0, 1]$\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"$x \\\\in [\\\\frac{1}{2}, \\\\frac{4}{n}]$\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"$x \\\\in [0, \\\\frac{1}{2}]$\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"$x^2 + 2xy + 3y^2 \\\\leq m$\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"$2(x^2 + 2xy + 1 \\\\geq m^2)$\"\n      },\n      {\n        \"type\": \"conclude\",\n        \"statement\": \"Therefore, the points $(1, 0, 0)$ and $(-1, 0, 0)$ have the largest distance from the origin.\"\n      },\n      {\n        \"type\": \"missing\",\n        \"problems\": [\n          {\n            \"type\": \"problem\",\n            \"statement\": \"Complete the proof by showing that these points indeed have the largest distance from the origin using the given assumptions.\"\n          }\n        ]\n      }\n    ]\n  }\n}"
+{
+  "type": "theorem",
+  "name": "Maximum Distance from Origin on Ellipsoid",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "Any continuous function on the ellipsoid $x^2 + 2y^2 + 3z^2 = 1$ attains its maximum."
+    }
+  ],
+  "conclusion": "The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid $x^2 + 2y^2 + 3z^2 = 1$ have the largest distance from the origin.",
+  "status": "proved",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$x^2 + 2y^2 + 3z^2 \\leq 1$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{1}{2} x^2 + \\frac{1 - x - 2m}{3}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$x \\in [0, 1]$"
+      },
+      {
+        "type": "assert",
+        "claim": "$x \\in [\\frac{1}{2}, \\frac{4}{n}]$"
+      },
+      {
+        "type": "assert",
+        "claim": "$x \\in [0, \\frac{1}{2}]$"
+      },
+      {
+        "type": "assert",
+        "claim": "$x^2 + 2xy + 3y^2 \\leq m$"
+      },
+      {
+        "type": "assert",
+        "claim": "$2(x^2 + 2xy + 1 \\geq m^2)$"
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, the points $(1, 0, 0)$ and $(-1, 0, 0)$ have the largest distance from the origin."
+      },
+      {
+        "type": "missing",
+        "problems": [
+          {
+            "type": "problem",
+            "statement": "Complete the proof by showing that these points indeed have the largest distance from the origin using the given assumptions."
+          }
+        ]
+      }
+    ]
+  }
+}
