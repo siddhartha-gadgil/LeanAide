@@ -120,13 +120,18 @@ def extract_json_block(text):
         json_block = match.group(1)
         try:
             # Validate the JSON syntax for a more robust check
-            js = json_formatter(js)
             js = json.loads(json_block)
             return js
         except json.JSONDecodeError:
-            # If it's not valid JSON, give a warning.
-            print("Warning: Found a JSON block, but it is not valid JSON.")
-            return json_block
+            try:
+                # Validate the JSON syntax for a more robust check
+                json_block = json_formatter(json_block)
+                js = json.loads(json_block)
+                return js
+            except json.JSONDecodeError:
+                # If it's not valid JSON, give a warning.
+                print("Warning: Found a JSON block, but it is not valid JSON.")
+                return json_block
     else:
         try:
             # Validate the JSON syntax for a more robust check
