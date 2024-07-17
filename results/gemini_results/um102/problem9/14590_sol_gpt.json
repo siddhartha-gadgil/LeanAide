@@ -1,0 +1,56 @@
+[
+  {
+    "type": "theorem",
+    "name": "origin is circulation",
+    "hypothesis": [
+      {
+        "type": "assume",
+        "statement": "$\\dot{x} = y$"
+      },
+      {
+        "type": "assume",
+        "statement": "$\\dot{y} = -x - y$"
+      }
+    ],
+    "conclusion": "the origin is circulation",
+    "status": "wrong proof",
+    "error": "Misinterpretation of eigenvalues; the correct conclusion should be about the nature of the origin (spiral sink)."
+  },
+  {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\dot{X} = \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix} X$",
+        "deduced_from": [
+          "$\\dot{x} = y$",
+          "$\\dot{y} = -x - y$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The determinant $\\Delta = 1$ and trace $= -1$",
+        "proof-method": "Direct computation"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues are $-\\frac{1}{2} + \\frac{\\sqrt{3}}{2}i$ and $-\\frac{1}{2} - \\frac{\\sqrt{3}}{2}i$",
+        "proof-method": "Calculation",
+        "calculation": [
+          {
+            "step": "Eigenvalues of $\\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}$",
+            "justification": {
+              "step": "Solve $\\det(\\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix} - \\lambda I) = 0$",
+              "justification": "Characteristic polynomial"
+            }
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Hence it is a spiral sink",
+        "error": "The eigenvalues indicate a spiral sink, not 'circulation'. The conclusion misinterprets the nature of the fixed point."
+      }
+    ]
+  }
+]

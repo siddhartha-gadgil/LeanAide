@@ -1,0 +1,26 @@
+{
+  "type": "theorem",
+  "name": "Origin as a Source",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x(t)",
+      "kind": "function",
+      "property": "solution to the differential equation $\\dot{x} = x$"
+    },
+    {
+      "type": "let",
+      "variable": "y(t)",
+      "kind": "function",
+      "property": "solution to the differential equation $\\dot{y} = y$"
+    }
+  ],
+  "conclusion": "The origin (0, 0) is a source for the system of linear differential equations $\\dot{x} = x$, $\\dot{y} = y$.",
+  "status": "incomplete proof",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "The provided proof incorrectly identifies the origin as a sink and contains errors in calculating eigenvalues and eigenvectors.  A complete proof should correctly determine the eigenvalues of the matrix A, show that they are both positive (indicating a source), and possibly include an analysis of the eigenvectors to illustrate the flow of solutions away from the origin."
+    }
+  ]
+}

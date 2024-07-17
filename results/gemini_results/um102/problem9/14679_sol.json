@@ -1,90 +1,99 @@
 {
   "type": "theorem",
-  "name": "Circulation at the Origin",
-  "Hypothesis": [
+  "name": "Circulation of Linear System",
+  "hypothesis": [
     {
       "type": "let",
-      "Variable": "<anonymous>",
-      "Property": "Linear differential equation",
-      "Value": "\\(\\dot{x} = y\\)"
+      "variable": "<anonymous>",
+      "value": "$\\dot{x}=y$",
+      "kind": "differential equation"
     },
     {
       "type": "let",
-      "Variable": "<anonymous>",
-      "Property": "Linear differential equation",
-      "Value": "\\(\\dot{y} = -x - y\\)"
+      "variable": "<anonymous>",
+      "value": "$\\dot{y}=-x-y$",
+      "kind": "differential equation"
     }
   ],
-  "Conclusion": "The origin is a circulation.",
-  "status": "proved",
+  "conclusion": "The origin is a circulation for the given system of linear differential equations.",
+  "status": "incomplete proof",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Determine the type of critical point at the origin based on the obtained general solution $X(t)$.",
+      "solved": false
+    }
+  ],
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "let",
-        "Variable": "A",
-        "Value": "\\(\\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}\\)",
-        "Kind": "matrix"
-      },
-      {
-        "type": "assert",
-        "claim": "The system of differential equations can be written as \\(\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = A \\begin{pmatrix} x \\\\ y \\end{pmatrix}\\)",
-        "Proof-method": "Rewriting the given equations in matrix form."
-      },
-      {
-        "type": "assert",
-        "Claim": "The characteristic equation of A is  \\((-λ)(-1-λ) + 1 = 0\\)",
-        "Proof-method": "Using the definition of the characteristic equation of a matrix."
-      },
-      {
-        "type": "assert",
-        "Claim": "The characteristic equation simplifies to \\(λ^2 + λ + 1 = 0\\)",
-        "Proof-method": "Algebraic simplification."
-      },
-      {
-        "type": "let",
-        "Variable": "λ₁",
-        "Value": "\\(\\frac{-1 + \\sqrt{3}i}{2}\\)",
-        "Kind": "Eigenvalue of A"
-      },
-      {
-        "type": "let",
-        "Variable": "λ₂",
-        "Value": "\\(\\frac{-1 - \\sqrt{3}i}{2}\\)",
-        "Kind": "Eigenvalue of A"
-      },
-      {
-        "type": "assert",
-        "Claim": "The roots of the characteristic equation are  \\(λ_1 = \\frac{-1 + \\sqrt{3}i}{2}\\) and \\(λ_2 = \\frac{-1 - \\sqrt{3}i}{2}\\)",
-        "Proof-method": "Applying the quadratic formula."
-      },
-      {
-        "type": "assert",
-        "Claim": "The eigenvectors corresponding to \\(λ_1\\) are of the form \\(α\\begin{pmatrix} \\frac{\\sqrt{3} - 1}{2} \\\\ 1 \\end{pmatrix}\\), where \\(α\\) is a scalar.",
-        "Proof-method": "Solving the system of equations \\((A - λ_1I)\\mathbf{v} = \\mathbf{0}\\)."
-      },
-      {
-        "type": "let",
-        "Variable": "X(t)",
-        "Value": "\\(αe^{λ_1 t} \\begin{pmatrix} \\frac{\\sqrt{3} - 1}{2} \\\\ 1 \\end{pmatrix} + βe^{λ_2 t} \\begin{pmatrix} \\frac{\\sqrt{3} + 1}{2} \\\\ 1 \\end{pmatrix}\\)",
-        "Kind": "general solution to the system of differential equations"
+        "variable": "A",
+        "value": "$\\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}$",
+        "kind": "matrix"
       },
       {
         "type": "remark",
-        "Statement": "The general solution involves complex eigenvalues, indicating a circulation."
+        "statement": "The given system can be written in matrix form as $\\begin{pmatrix} \\dot x \\\\ \\dot y  \\end{pmatrix} = A \\begin{pmatrix} x \\\\ y \\end{pmatrix}$."
       },
       {
-        "type": "missing",
-        "Problem": [
+        "type": "assert",
+        "claim": "The characteristic equation of A is $(-\\lambda)(-\\lambda -1)+1 = 0$.",
+        "proof-method": "This is obtained by setting the determinant of $(A - \\lambda I)$ to zero."
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of A are $\\lambda_1 = \\dfrac{-1+\\sqrt{3}i}{2}$ and $\\lambda_2 = \\dfrac{-1-\\sqrt{3}i}{2}$.",
+        "deduced_from": [
+          "Characteristic equation of A"
+        ],
+        "calculation": [
+          "$(-\\lambda)(-\\lambda -1)+1 = 0$",
+          "$\\implies \\lambda^2 + \\lambda +1 = 0$",
+          "$\\implies \\lambda_1 = \\dfrac{-1+\\sqrt{3}i}{2}, \\lambda_2 = \\dfrac{-1-\\sqrt{3}i}{2}$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "An eigenvector corresponding to $\\lambda_1$ is $v_1 = \\begin{pmatrix} \\sqrt{3}i - 1 \\\\ 2 \\end{pmatrix}$.",
+        "proof-method": "Solving the system of equations $(A - \\lambda_1 I)v_1 = 0$",
+        "calculation": [
+          "$\\begin{pmatrix} \\dfrac{-1-\\sqrt{3}i}{2} & 1 \\\\ -1 & \\dfrac{-1-\\sqrt{3}i}{2}\\end{pmatrix}\\begin{pmatrix} a\\\\ b\\end{pmatrix} = 0$",
+          "$\\implies -a(\\dfrac{1-\\sqrt{3}i}{2})-ab = 0$",
+          "$\\implies a = -b\\dfrac{(1+\\sqrt{3}i)}{2}$",
+          "$\\implies b = \\dfrac{-a(1-\\sqrt{3}i)}{(1+\\sqrt{3}i)(1-\\sqrt{3}i)} = \\dfrac{-a(1-\\sqrt{3}i)}{2}$",
+          "$\\implies v_1 = \\begin{pmatrix} \\sqrt{3}i - 1 \\\\ 2 \\end{pmatrix}$"
+        ],
+        "errors": [
           {
-            "type": "problem",
-            "statement": "Show that the real part of the eigenvalues is zero, implying the trajectories circle the origin."
-          },
-          {
-            "type": "problem",
-            "statement": "Further analysis of the phase portrait or the general solution is needed to definitively conclude the origin is a circulation and not a center."
+            "type": "remark",
+            "statement": "There's an error in simplifying the equation from the matrix. It should result in  $-a(\\dfrac{1+\\sqrt{3}i}{2})-b = 0$ which then leads to different values for $a$ and $b$."
           }
         ]
+      },
+      {
+        "type": "assert",
+        "claim": "An eigenvector corresponding to $\\lambda_2$ is $v_2 = \\begin{pmatrix} 1+\\sqrt{3}i \\\\ 2 \\end{pmatrix}$.",
+        "proof-method": "Solving the system of equations $(A - \\lambda_2 I)v_2 = 0$",
+        "calculation": [
+          "$\\begin{pmatrix} \\dfrac{1+\\sqrt{3}i}{2} & 1 \\\\ -1 &  \\dfrac{-1+\\sqrt{3}i}{2}\\end{pmatrix}\\begin{pmatrix} a\\\\ b\\end{pmatrix} = \\begin{pmatrix} 0 \\\\ 0 \\end{pmatrix}$",
+          "$\\implies a(\\dfrac{1+\\sqrt{3}i}{2}) = b  \\quad ; \\quad -a = b (\\dfrac{\\sqrt{3}i - 1}{2})$",
+          "$\\implies a(\\dfrac{1+\\sqrt{3}i}{2}) = b$",
+          "$\\implies v_2 = \\begin{pmatrix} 1+\\sqrt{3}i \\\\ 2 \\end{pmatrix}$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The general solution to the system is $X(t) = \\alpha e^{\\lambda_1 t}  \\begin{pmatrix} \\sqrt{3}i - 1 \\\\ 2 \\end{pmatrix} + \\beta e^{\\lambda_2 t}  \\begin{pmatrix} \\sqrt{3}i + 1 \\\\ 2 \\end{pmatrix}$.",
+        "deduced_from": [
+          "Eigenvalues and eigenvectors of A"
+        ],
+        "proof-method": "Using the standard method of solving linear systems with constant coefficients"
+      },
+      {
+        "type": "remark",
+        "statement": "To determine if the origin is a circulation, we need to analyze the behavior of the general solution $X(t)$ as $t$ approaches infinity. This analysis will depend on the nature of the eigenvalues  $\\lambda_1$ and $\\lambda_2$."
       }
     ]
   }

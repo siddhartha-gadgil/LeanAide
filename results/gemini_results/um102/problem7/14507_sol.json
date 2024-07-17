@@ -1,0 +1,89 @@
+{
+  "type": "theorem",
+  "name": "Origin as a Source",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x(t)",
+      "kind": "function",
+      "property": "solution to the differential equation $\\dot{x} = x$"
+    },
+    {
+      "type": "let",
+      "variable": "y(t)",
+      "kind": "function",
+      "property": "solution to the differential equation $\\dot{y} = y$"
+    }
+  ],
+  "conclusion": "The origin is a source for the system of linear differential equations $\\dot{x} = x$ and $\\dot{y} = y$.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We can rewrite the system in matrix form."
+      },
+      {
+        "type": "assert",
+        "claim": "The system can be written as $X' = AX$ where $X = \\begin{bmatrix} x \\\\ y \\end{bmatrix}$ and $A = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$.",
+        "proof-method": "Substitution"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of A are both 1.",
+        "proof-method": "Direct calculation"
+      },
+      {
+        "type": "assert",
+        "claim": "Every vector is an eigenvector of A.",
+        "deduced_from": [
+          "A is the identity matrix"
+        ],
+        "proof-method": "Direct verification"
+      },
+      {
+        "type": "assert",
+        "claim": "The solution to the system is of the form $X(t) = V_0 e^{\\frac{\\lambda}{1} t}$.",
+        "missing steps": [
+          {
+            "type": "problem",
+            "statement": "Prove the general solution to a linear system is a linear combination of eigenvectors multiplied by $e^{\\lambda t}$",
+            "solved": false
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$X(t) \\to \\infty$ as $t \\to \\infty$",
+        "errors": [
+          {
+            "type": "remark",
+            "statement": "This statement is incorrect. Since any vector is an eigenvector and $\\lambda = 1$, the solution should be $X(t) = V_0e^t$.  So $X(t)$ approaches infinity in the direction of $V_0$."
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$X(t) \\to V_0$ as ...",
+        "errors": [
+          {
+            "type": "remark",
+            "statement": "This statement is incomplete. It seems like you were trying to describe the behavior as $t \\to -\\infty$, but the conclusion is unclear."
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The origin is a source for the system.",
+        "missing steps": [
+          {
+            "type": "problem",
+            "statement": "Provide a more rigorous justification for why the origin is a source, perhaps by relating the behavior of the solutions to the definition of a source.",
+            "solved": false
+          }
+        ]
+      }
+    ]
+  }
+}

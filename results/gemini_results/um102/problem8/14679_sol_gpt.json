@@ -1,0 +1,71 @@
+{
+  "type": "theorem",
+  "name": "Origin is Circulation for Linear Differential Equation",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x}=-y$ and $\\dot{y}=x$"
+    }
+  ],
+  "conclusion": "The origin is a circulation.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "y",
+        "value": "r \\sin(\\theta t)",
+        "kind": "function",
+        "property": "$r \\in (0, \\infty)$, $t \\in [-\\pi, \\pi]$"
+      },
+      {
+        "type": "let",
+        "variable": "x",
+        "value": "r \\cos(\\theta t)",
+        "kind": "function"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\dot{x} = -r \\sin(t) = -y$",
+        "proof-method": "Substitute $y = r \\sin(\\theta t)$ and calculate $\\dot{x}$",
+        "errors": [
+          {
+            "type": "problem",
+            "statement": "Incorrect differentiation; should be $\\dot{x} = -r \\sin(\\theta t) \\cdot \\theta$ instead of $-r \\sin(t)$"
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\dot{y} = r \\cos(t) = x$",
+        "proof-method": "Substitute $x = r \\cos(\\theta t)$ and calculate $\\dot{y}$",
+        "errors": [
+          {
+            "type": "problem",
+            "statement": "Incorrect differentiation; should be $\\dot{y} = r \\cos(\\theta t) \\cdot \\theta$ instead of $r \\cos(t)$"
+          }
+        ]
+      },
+      {
+        "type": "remark",
+        "statement": "The phase portrait for this is (INSERT IMAGE OF PHASE PORTRAIT HERE)"
+      },
+      {
+        "type": "conclude",
+        "statement": "Hence, Origin is a Circulation.",
+        "error": "The proof is incomplete and the correct phase portrait needs to be established."
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Correct differentiation of $x$ and $y$ with respect to $t$"
+    },
+    {
+      "type": "problem",
+      "statement": "Illustrating the correct phase portrait to show the origin is a circulation"
+    }
+  ]
+}

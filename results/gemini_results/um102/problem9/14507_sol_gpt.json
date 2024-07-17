@@ -1,0 +1,100 @@
+{
+  "type": "theorem",
+  "name": "Circulation at Origin",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = y$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = -x - y$"
+    }
+  ],
+  "conclusion": "The origin is circulation",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\begin{bmatrix} \\dot{x} \\\\ \\dot{y} \\end{bmatrix} = \\begin{bmatrix} 0 & 1 \\\\ -1 & -1 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
+        "deduced_from": [
+          "$\\dot{x} = y$",
+          "$\\dot{y} = -x - y$"
+        ],
+        "proof-method": "Matrix representation of the system"
+      },
+      {
+        "type": "define",
+        "statement": "$X' = AX$",
+        "term": "$X$",
+        "Property": "System state vector"
+      },
+      {
+        "type": "assert",
+        "claim": "$|A - \\lambda I| = \\begin{vmatrix} -\\lambda & 1 \\\\ -1 & -1-\\lambda \\end{vmatrix} = 0$",
+        "deduced_from": [
+          "$A = \\begin{bmatrix} 0 & 1 \\\\ -1 & -1 \\end{bmatrix}$"
+        ],
+        "proof-method": "Characteristic equation"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda^2 + \\lambda + 1 = 0$",
+        "proof-method": "Simplifying the characteristic equation"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda = \\frac{-1 \\pm \\sqrt{1-4}}{2}$",
+        "proof-method": "Quadratic formula"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda = \\frac{-1 \\pm i\\sqrt{3}}{2} = \\frac{-1}{2} \\pm \\frac{\\sqrt{3}i}{2}$",
+        "proof-method": "Simplifying"
+      },
+      {
+        "type": "assert",
+        "claim": "The imaginary part of $\\lambda$ ($\\pm \\frac{\\sqrt{3}i}{2}$) indicates circulation",
+        "proof-method": "Eigenvalue analysis"
+      },
+      {
+        "type": "assert",
+        "claim": "The real part of $\\lambda$ ($-\\frac{1}{2}$) indicates a spiraling decay",
+        "proof-method": "Eigenvalue analysis"
+      },
+      {
+        "type": "assert",
+        "claim": "$X(t) = \\alpha e^{-\\frac{t}{2}}F(t)$, where $F(t)$ is the circulation-equivalent part of $X(t)$",
+        "proof-method": "Solution form of linear differential equations with complex eigenvalues"
+      },
+      {
+        "type": "assert",
+        "claim": "$X(t) \\to 0$ as $t \\to \\infty$",
+        "proof-method": "Exponential decay"
+      },
+      {
+        "type": "conclude",
+        "statement": "So, the origin acts as a SPIRAL SINK.",
+        "errors": [
+          {
+            "statement": "The statement 'The origin is circulation' does not imply 'The origin acts as a SPIRAL SINK' directly."
+          }
+        ]
+      }
+    ],
+    "errors": [
+      {
+        "statement": "The proof does not justify why the origin is specifically called 'circulation'. The conclusion explains a spiral sink but does not link it back to 'circulation' properly."
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Clarify the definition of 'circulation' in the context of this problem and how it relates to a spiral sink.",
+      "solved": false
+    }
+  ]
+}

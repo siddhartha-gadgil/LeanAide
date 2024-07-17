@@ -1,0 +1,58 @@
+{
+  "type": "theorem",
+  "name": "Circulation at the Origin",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "<anonymous>",
+      "value": "$\\dot{x} = y$ and $\\dot{y} = -x - y$",
+      "kind": "linear differential equation"
+    }
+  ],
+  "conclusion": "The origin is a circulation for the given system of differential equations.",
+  "status": "incomplete proof",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Prove that a system with complex eigenvalues whose real part is negative corresponds to a spiral sink (circulation).",
+      "solved": false
+    }
+  ],
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "The system can be written in matrix form as $\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}$",
+        "proof-method": "Rewriting the given equations."
+      },
+      {
+        "type": "remark",
+        "statement": "We need to find the eigenvalues of the matrix A = $\\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}$ to analyze the system's behavior."
+      },
+      {
+        "type": "assert",
+        "claim": "The characteristic equation is $(-\\lambda)(-1-\\lambda) + 1 = 0$",
+        "proof-method": "Using the formula det(A - λI) = 0, where I is the identity matrix."
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues are $\\lambda = \\frac{-1 \\pm \\sqrt{3}i}{2}$",
+        "calculation": [
+          "$(-\\lambda)(-1-\\lambda) + 1 = 0$",
+          "$\\lambda^2 + \\lambda + 1 = 0$",
+          "$\\lambda = \\frac{-1 \\pm \\sqrt{-3}}{2 \\cdot 1} = \\frac{-1 \\pm \\sqrt{3}i}{2}$",
+          {
+            "step": "The roots are complex with a negative real part.",
+            "justification": "Observation"
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Since the eigenvalues are complex with a negative real part, the origin is a spiral sink, implying circulation.",
+        "error": "The conclusion about circulation based solely on eigenvalues is not complete. A more rigorous proof or reference to a theorem is needed to establish the connection between complex eigenvalues with a negative real part and the circulation behavior."
+      }
+    ]
+  }
+}

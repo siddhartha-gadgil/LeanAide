@@ -1,49 +1,54 @@
 {
   "type": "theorem",
-  "name": "Spiral Sink for a Linear System",
-  "Hypothesis": [
+  "name": "Spiral Sink",
+  "status": "wrong proof",
+  "hypothesis": [
     {
       "type": "let",
-      "Variable": "<anonymous>",
-      "Property": "linear differential equation",
-      "Value": "\\( \\dot{x}=y \\) and \\( \\dot{y}=-x-y\\)"
+      "variable": "x(t)",
+      "kind": "function of time",
+      "property": "satisfies the differential equation $\\dot{x} = y$"
+    },
+    {
+      "type": "let",
+      "variable": "y(t)",
+      "kind": "function of time",
+      "property": "satisfies the differential equation $\\dot{y} = -x-y$"
     }
   ],
-  "Conclusion": "The origin is a spiral sink for the given system of differential equations.",
-  "Status": "proved",
-  "Proof": {
+  "conclusion": "The linear system of differential equations given by $\\dot{x} = y$ and $\\dot{y} = -x -y$ has a spiral sink at the origin.",
+  "proof": {
     "type": "proof",
-    "Steps": [
+    "steps": [
       {
         "type": "remark",
-        "Statement": "We begin by writing the system in matrix form."
+        "statement": "We will rewrite the system in matrix form and analyze the trace and determinant of the coefficient matrix."
       },
       {
         "type": "assert",
-        "Claim": "The system can be represented as  \\( (\\begin{matrix} \\dot{x} \\\\ \\dot{y} \\end{matrix}) \\) = A\\( (\\begin{matrix} x \\\\ y \\end{matrix}) \\) = \\( (\\begin{matrix} y \\\\ -x-y \\end{matrix}) \\), where A =  \\( (\\begin{matrix} 0 & 1 \\\\ -1 & -1 \\end{matrix}) \\).",
-        "Proof-method": "Direct rewriting of the given equations."
+        "claim": "The system can be written in matrix form as $\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}$.",
+        "proof-method": "direct computation"
       },
       {
-        "type": "remark",
-        "Statement": "We will now analyze the trace and determinant of matrix A to determine the type of critical point at the origin."
-      },
-      {
-        "type": "assert",
-        "Claim": "Tr(A) = -1 and Det(A) = 1",
-        "Proof-method": "Direct calculation from the matrix A."
+        "type": "let",
+        "variable": "A",
+        "value": "{\\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}}",
+        "kind": "matrix"
       },
       {
         "type": "assert",
-        "Claim": "[Tr(A)]$^2$ < 4Det(A) & Tr(A) < 0",
-        "Deduced_from": [
-          "Tr(A) = -1",
-          "Det(A) = 1"
-        ],
-        "Proof-method": "Substitution of the values of the trace and determinant."
+        "claim": "$Tr(A) = -1$ and $Det(A) = 1$",
+        "proof-method": "direct computation"
+      },
+      {
+        "type": "assert",
+        "claim": "$[Tr(A)]^2 < 4 Det(A)$ and $Tr(A) < 0$",
+        "proof-method": "substitution"
       },
       {
         "type": "conclude",
-        "Statement": "Since the trace is negative and the trace squared is less than four times the determinant, the origin is a spiral sink."
+        "statement": "Therefore, the origin is a spiral sink.",
+        "error": "The condition $[Tr(A)]^2 < 4 Det(A)$ and $Tr(A) < 0$ implies that the origin is a spiral sink *only if the eigenvalues of A are complex*. However, this was not verified in the proof, and in fact the eigenvalues are real in this case, so the origin is a node, not a spiral sink."
       }
     ]
   }

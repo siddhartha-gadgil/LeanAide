@@ -1,0 +1,58 @@
+{
+  "type": "theorem",
+  "name": "Circulation at the Origin",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x(t)",
+      "kind": "function",
+      "property": "solution of the differential equation $\\dot{x} = -y$"
+    },
+    {
+      "type": "let",
+      "variable": "y(t)",
+      "kind": "function",
+      "property": "solution of the differential equation $\\dot{y} = x$"
+    }
+  ],
+  "conclusion": "The origin (0, 0) is a center for the system of linear differential equations.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We need to analyze the eigenvalues of the matrix associated with the system."
+      },
+      {
+        "type": "assert",
+        "claim": "The system can be written in matrix form as $(\\dot{x} \\\\ \\dot{y}) = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0  \\end{pmatrix} \\begin{pmatrix} x \\\\ y  \\end{pmatrix}$.",
+        "proof-method": "Rewriting the given equations in matrix form."
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of the matrix $\\begin{pmatrix} 0 & -1 \\\\ 1 & 0  \\end{pmatrix}$ are $\\lambda = \\pm i$.",
+        "calculation": [
+          "$\\begin{vmatrix} 0-\\lambda & -1 \\\\ 1 & 0 - \\lambda  \\end{vmatrix} =  \\begin{vmatrix} -\\lambda & -1 \\\\ 1 & -\\lambda \\end{vmatrix} = 0$",
+          "$\\lambda^2 + 1 = 0$",
+          "$\\lambda = \\pm i$"
+        ]
+      },
+      {
+        "type": "remark",
+        "statement": "The eigenvalues are purely imaginary."
+      },
+      {
+        "type": "conclude",
+        "statement": "Since the eigenvalues are purely imaginary, the origin is a center.",
+        "error": "This conclusion requires further justification. While purely imaginary eigenvalues suggest a center, we need to rule out the possibility of a spiral. This can be done by showing the system has no damping."
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Prove that the system of differential equations has no damping term, ensuring the origin is a center and not a spiral."
+    }
+  ]
+}

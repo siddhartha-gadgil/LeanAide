@@ -1,27 +1,90 @@
 {
   "type": "theorem",
   "name": "Circulation at the Origin",
-  "Hypothesis": [
+  "hypothesis": [
     {
       "type": "let",
-      "Variable": "<anonymous>",
-      "Statement": "We consider the linear dynamical system given by the differential equations \\( \\dot{x}=y \\) and \\( \\dot{y}=-x-y \\)."
+      "variable": "<anonymous>",
+      "property": "linear differential equation",
+      "value": "$\\dot{x} = y$"
+    },
+    {
+      "type": "let",
+      "variable": "<anonymous>",
+      "property": "linear differential equation",
+      "value": "$\\dot{y} = -x - y$"
     }
   ],
-  "Conclusion": "The origin is a circulation for the given dynamical system.",
-  "Status": "stated",
+  "conclusion": "The origin is a circulation for the given system of linear differential equations.",
+  "status": "incomplete proof",
   "missing": [
     {
       "type": "problem",
-      "Statement": "The given text does not provide a complete or coherent proof of the theorem.  To proceed, we need to determine the eigenvalues of the matrix \\(A = \\begin{pmatrix} 0 & 1\\\\ -1 & -1 \\end{pmatrix} \\) and analyze the behavior of the system based on these eigenvalues.  Specifically, we need to show that the eigenvalues are purely imaginary, indicating a center at the origin and thus circulation."
-    },
-    {
-      "type": "problem",
-      "Statement": "Many of the calculations and steps in the provided text are incomplete or unclear. For instance, the reduction of matrix \\(A\\), the derivation of \\(A_{v_{1}}\\), and the calculations involving \\(Av_{1}\\) and \\(Av_{2}\\) need to be clarified and completed for the proof to be meaningful."
-    },
-    {
-      "type": "problem",
-      "Statement": "The vectors \\(\\vec{x}\\) and \\(\\vec{y}\\) are introduced in the beginning but their relevance and purpose in the proof are not clear. Their connection to the eigenvalues, eigenvectors, or the overall behavior of the system needs to be established."
+      "statement": "The proof does not demonstrate circulation.  It finds eigenvalues and eigenvectors, but does not connect these to the concept of circulation at the origin. More explanation is needed to connect the eigenvalues and eigenvectors to the behavior of the system near the origin and why that behavior constitutes circulation."
     }
-  ]
+  ],
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "A",
+        "kind": "matrix",
+        "value": "$\\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}$"
+      },
+      {
+        "type": "let",
+        "variable": "M",
+        "kind": "matrix",
+        "value": "$\\begin{pmatrix} \\lambda & 1 \\\\ -1 & \\lambda -1 \\end{pmatrix}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\det(M) = \\lambda^2 - \\lambda + 1 = 0$",
+        "proof-method": "Calculation of determinant"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda = \\frac{1 \\pm \\sqrt{-3}}{2} = \\frac{1}{2} \\pm \\frac{\\sqrt{3}}{2}i$",
+        "deduced_from": [
+          "$\\det(M) = \\lambda^2 - \\lambda + 1 = 0$"
+        ],
+        "proof-method": "Solving the quadratic equation"
+      },
+      {
+        "type": "let",
+        "variable": "\\lambda",
+        "value": "\\frac{1}{2} + \\frac{\\sqrt{3}}{2}i"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvector corresponding to $\\lambda = \\frac{1}{2} + \\frac{\\sqrt{3}}{2}i$ is $V_1 = \\begin{pmatrix} 1 \\\\ \\frac{-1}{2} + \\frac{\\sqrt{3}}{2}i \\end{pmatrix}$",
+        "proof-method": "Calculation (not shown)"
+      },
+      {
+        "type": "let",
+        "variable": "\\lambda",
+        "value": "\\frac{1}{2} - \\frac{\\sqrt{3}}{2}i"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvector corresponding to $\\lambda = \\frac{1}{2} - \\frac{\\sqrt{3}}{2}i$ is $V_2 = \\begin{pmatrix} 1 \\\\ \\frac{-1}{2} - \\frac{\\sqrt{3}}{2}i \\end{pmatrix}$",
+        "proof-method": "Calculation (not shown)"
+      },
+      {
+        "type": "assert",
+        "claim": "$AV_1 = \\frac{1}{2}V_1 - \\frac{\\sqrt{3}}{2}V_2$",
+        "proof-method": "Calculation (not shown)"
+      },
+      {
+        "type": "assert",
+        "claim": "$AV_2 = -\\frac{1}{2}V_2 + \\frac{\\sqrt{3}}{2}V_1$",
+        "proof-method": "Calculation (not shown)"
+      },
+      {
+        "type": "remark",
+        "statement": "The proof ends here without connecting the calculations to the concept of circulation."
+      }
+    ]
+  }
 }

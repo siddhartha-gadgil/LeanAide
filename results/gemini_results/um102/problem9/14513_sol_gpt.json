@@ -1,0 +1,116 @@
+{
+  "type": "theorem",
+  "name": "Origin is a Spiral Sink",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = y$ and $\\dot{y} = -x - y$"
+    }
+  ],
+  "conclusion": "The origin is a spiral sink.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "A",
+        "value": "\\begin{bmatrix} 0 & 1 \\\\ -1 & -1 \\end{bmatrix}"
+      },
+      {
+        "type": "assert",
+        "claim": "The system can be written as $X' = AX$",
+        "deduced_from": [
+          "$\\dot{x} = y$ and $\\dot{y} = -x - y$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The characteristic equation is $\\lambda^2 + \\lambda + 1 = 0$",
+        "proof-method": "Calculation using $\\text{det}(A - \\lambda I) = 0$",
+        "calculation": [
+          "$\\text{det}(\\begin{bmatrix} -\\lambda & 1 \\\\ -1 & -1 - \\lambda \\end{bmatrix}) = (\\lambda)(\\lambda + 1) + 1 = 0$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda = \\dfrac{-1 \\pm \\sqrt{1-4}}{2} = \\dfrac{-1}{2} \\pm i \\dfrac{\\sqrt{3}}{2}$",
+        "deduced_from": [
+          "$\\lambda^2 + \\lambda + 1 = 0$"
+        ]
+      },
+      {
+        "type": "assume",
+        "statement": "$\\lambda = \\dfrac{-1}{2} + i \\dfrac{\\sqrt{3}}{2}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$(A - \\lambda I) \\begin{bmatrix} x \\\\ y \\end{bmatrix} = 0$",
+        "proof-method": "Solving for eigenvectors"
+      },
+      {
+        "type": "assert",
+        "claim": "$(\\frac{-1}{2} - i \\frac{\\sqrt{3}}{2})x + y = 0$",
+        "deduced_from": [
+          "$(A - \\lambda I) \\begin{bmatrix} x \\\\ y \\end{bmatrix} = 0$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$y = (\\frac{1}{2} + i \\frac{\\sqrt{3}}{2})x$"
+      },
+      {
+        "type": "let",
+        "variable": "V_2",
+        "value": "\\begin{bmatrix} 1 \\\\ \\frac{1}{2} + i \\frac{\\sqrt{3}}{2} \\end{bmatrix}",
+        "kind": "eigenvector"
+      },
+      {
+        "type": "assert",
+        "claim": "$X(t) = \\alpha e^{\\begin{bmatrix} 1 \\\\ -1 + i \\frac{\\sqrt{3}}{2} \\end{bmatrix} t}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$X(t) = \\alpha e^{-\\frac{t}{2}} \\begin{bmatrix} 2\\cos(\\frac{\\sqrt{3}}{2} t) + 2i \\sin(\\frac{\\sqrt{3}}{2} t) \\\\ [\\cos(\\frac{\\sqrt{3}}{2} t) - i\\sin(\\frac{\\sqrt{3}}{2} t)] + i[\\cos(\\frac{\\sqrt{3}}{2} t) - \\sin(\\frac{\\sqrt{3}}{2} t)] \\end{bmatrix}$",
+        "proof-method": "Expanding the exponential"
+      },
+      {
+        "type": "assert",
+        "claim": "$X(t) = \\alpha e^{-\\frac{t}{2}} \\begin{bmatrix} 2 \\cos(\\frac{\\sqrt{3}}{2} t) \\\\ \\frac{-1}{2} \\cos(\\frac{\\sqrt{3}}{2} t) - \\frac{\\sqrt{3}}{2} \\sin(\\frac{\\sqrt{3}}{2} t) \\end{bmatrix}$",
+        "proof-method": "Simplification"
+      },
+      {
+        "type": "assert",
+        "claim": "$Re \\, X(t) = \\alpha e^{-\\frac{t}{2}} \\begin{bmatrix} \\cos(\\frac{\\sqrt{3}}{2} t) \\\\ \\frac{-1}{2} \\cos(\\frac{\\sqrt{3}}{2} t) - \\frac{\\sqrt{3}}{2} \\sin(\\frac{\\sqrt{3}}{2} t) \\end{bmatrix}$",
+        "proof-method": "Taking the real part"
+      },
+      {
+        "type": "assert",
+        "claim": "$Im \\, X(t) = \\alpha e^{-\\frac{t}{2}} \\begin{bmatrix} \\sin(\\frac{\\sqrt{3}}{2} t) \\\\ \\frac{\\sqrt{3}}{2} \\cos(\\frac{\\sqrt{3}}{2} t) - \\frac{1}{2} \\sin(\\frac{\\sqrt{3}}{2} t) \\end{bmatrix}$",
+        "proof-method": "Taking the imaginary part"
+      },
+      {
+        "type": "assert",
+        "claim": "These are solutions to $X' = AX$"
+      },
+      {
+        "type": "assert",
+        "claim": "General Solution: $X(t) = \\alpha e^{-\\frac{t}{2}} \\begin{bmatrix} 2 \\cos(\\frac{\\sqrt{3}}{2} t) \\\\ \\frac{-1}{2} \\cos(\\frac{\\sqrt{3}}{2} t) - \\frac{\\sqrt{3}}{2} \\sin(\\frac{\\sqrt{3}}{2} t) \\end{bmatrix} + \\beta e^{-\\frac{t}{2}} \\begin{bmatrix} 2 \\sin(\\frac{\\sqrt{3}}{2} t) \\\\ \\frac{\\sqrt{3}}{2} \\cos(\\frac{\\sqrt{3}}{2} t) - \\frac{1}{2} \\sin(\\frac{\\sqrt{3}}{2} t) \\end{bmatrix}$"
+      },
+      {
+        "type": "assert",
+        "claim": "This is a spiral sink as it has a negative exponential and spirals around due to the sinusoidal functions.",
+        "errors": [
+          "The assertion that the origin is a spiral sink (in terms of stability and nature) should be supported by a more rigorous analysis, possibly using Lyapunov functions or analyzing the eigenvalues and their real parts explicitly."
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Provide a more rigorous justification for the stability and nature (spiral sink) of the origin.",
+      "solved": false
+    }
+  ]
+}

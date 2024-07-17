@@ -1,0 +1,38 @@
+{
+  "type": "theorem",
+  "name": "Spiral Source",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x(t)",
+      "kind": "real-valued function"
+    },
+    {
+      "type": "let",
+      "variable": "y(t)",
+      "kind": "real-valued function"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = y$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = -x - y$"
+    }
+  ],
+  "conclusion": "The origin is a spiral source for the system of differential equations given by $\\dot{x} = y$ and $\\dot{y} = -x - y$",
+  "status": "incomplete proof",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Show that the eigenvalues of the matrix associated with the system of differential equations have non-zero real and imaginary parts. This will imply that the origin is a spiral.",
+      "solved": false
+    },
+    {
+      "type": "problem",
+      "statement": "Determine the direction of the spiral (inwards or outwards) by analyzing the sign of the real part of the eigenvalues or by examining the vector field near the origin.",
+      "solved": false
+    }
+  ]
+}

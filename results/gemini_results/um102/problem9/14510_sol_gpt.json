@@ -1,0 +1,39 @@
+{
+  "type": "theorem",
+  "name": "Origin is a spiral source",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = y$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = -x - y$"
+    }
+  ],
+  "conclusion": "The origin is a spiral source.",
+  "status": "incomplete proof",
+  "proof": {
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\dot{x} = y$ and $\\dot{y} = -x - y$"
+      },
+      {
+        "type": "remark",
+        "statement": "[Image of a spiral source]"
+      },
+      {
+        "type": "conclude",
+        "statement": "... origin is a spiral source.",
+        "error": "The proof is incomplete. The steps showing that the origin is a spiral source based on the given differential equations are missing."
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Provide a detailed proof that the origin is a spiral source for the given system of linear differential equations."
+    }
+  ]
+}

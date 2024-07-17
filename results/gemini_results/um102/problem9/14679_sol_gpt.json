@@ -1,0 +1,74 @@
+{
+  "type": "theorem",
+  "name": "Theorem 1",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "The linear differential equation \\( \\dot{x}=y \\) and \\( \\dot{y}=-x-y \\)."
+    }
+  ],
+  "conclusion": "The origin is a center (i.e., the origin is a point around which the system exhibits a circular motion).",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\begin{pmatrix} \\dot x \\\\ \\dot y \\end{pmatrix} = \\begin{pmatrix} 0 & 1 \\\\ -x & -y \\end{pmatrix} = A \\begin{pmatrix} x \\\\ y \\end{pmatrix}$",
+        "proof-method": "Direct computation"
+      },
+      {
+        "type": "assert",
+        "claim": "$A = \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}$",
+        "proof-method": "Direct computation"
+      },
+      {
+        "type": "assert",
+        "claim": "The characteristic equation of $A$ is $\\lambda^2 + \\lambda + 1 = 0$",
+        "proof-method": "Direct computation of the characteristic polynomial"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of $A$ are $\\lambda_1 = \\dfrac{-1+\\sqrt{3}i}{2}$ and $\\lambda_2 = \\dfrac{-1-\\sqrt{3}i}{2}$",
+        "proof-method": "Solving the characteristic equation"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvector corresponding to $\\lambda_1$ is $\\begin{pmatrix} \\sqrt{3}i - 1 \\\\ 2 \\end{pmatrix}$",
+        "proof-method": "Solving $\\left(A - \\lambda_1 I\\right)v_1 = 0$",
+        "calculation": [
+          "$\\begin{pmatrix} \\dfrac{-1-\\sqrt{3}i}{2} & 1 \\\\ -1 & \\dfrac{-1-\\sqrt{3}i}{2} \\end{pmatrix}\\begin{pmatrix} a\\\\ b\\end{pmatrix} = 0$",
+          "$-a\\left(\\dfrac{1-\\sqrt{3}i}{2}\\right)-ab = 0$",
+          "$a = -b\\dfrac{(1+\\sqrt{3}i)}{2}$",
+          "$b = \\dfrac{-a(1-\\sqrt{3}i)}{(1+\\sqrt{3}i)(1-\\sqrt{3}i)} = \\dfrac{-a(1-\\sqrt{3}i)}{2}$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvector corresponding to $\\lambda_2$ is $\\begin{pmatrix} 1+\\sqrt{3}i \\\\ 2 \\end{pmatrix}$",
+        "proof-method": "Solving $\\left(A - \\lambda_2 I\\right)v_2 = 0$",
+        "calculation": [
+          "$\\begin{pmatrix} \\dfrac{1+\\sqrt{3}i}{2} & 1 \\\\ -1 & \\dfrac{-1+\\sqrt{3}i}{2} \\end{pmatrix}\\begin{pmatrix} a \\\\ b \\end{pmatrix} = 0$",
+          "$a\\left(\\dfrac{1+\\sqrt{3}i}{2}\\right) = b$",
+          "$-a = b \\left(\\dfrac{\\sqrt{3}i - 1}{2}\\right)$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The general solution to the system of differential equations is $X(t) = \\alpha e^{\\lambda_1 t} \\begin{pmatrix} \\sqrt{3}i - 1 \\\\ 2 \\end{pmatrix} + \\beta e^{\\lambda_2 t} \\begin{pmatrix} \\sqrt{3}i + 1 \\\\ 2 \\end{pmatrix}$",
+        "proof-method": "Combining solutions of the linear homogeneous system"
+      },
+      {
+        "type": "remark",
+        "statement": "The proof seems to be incomplete and lacks the final step showing that the origin is a center."
+      }
+    ],
+    "missing": [
+      {
+        "type": "problem",
+        "statement": "Prove that the general solution $X(t)$ implies that the origin is a center.",
+        "solved": false
+      }
+    ]
+  }
+}

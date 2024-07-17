@@ -1,0 +1,50 @@
+{
+  "type": "theorem",
+  "name": "Origin is a circulation for the given differential equations",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = -y$ and $\\dot{y} = x$"
+    }
+  ],
+  "conclusion": "The origin is a circulation point.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\dot{X} = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix} X$",
+        "proof-method": "Matrix form of the system"
+      },
+      {
+        "type": "assert",
+        "claim": "The determinant is $1$ and the trace is $0$",
+        "calculation": [
+          "Determinant: $\\det\\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix} = 1$",
+          "Trace: $\\text{tr}\\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix} = 0$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues are $i$ and $-i$",
+        "proof-method": "Solving characteristic equation $\\lambda^2 + 1 = 0$"
+      },
+      {
+        "type": "conclude",
+        "statement": "It is a circulation",
+        "error": "Incorrect definition and applicability of circulation based on eigenvalues; the correct concept involves the stability and nature of the eigenvalues, not just their imaginary nature."
+      }
+    ],
+    "errors": [
+      "The proof incorrectly concludes circulation based on eigenvalues without proper justification. The correct argument should involve showing that the system represents a rotation around the origin."
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Properly justify why eigenvalues $i$ and $-i$ imply circulation around the origin.",
+      "solved": false
+    }
+  ]
+}

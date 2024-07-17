@@ -1,0 +1,38 @@
+{
+  "type": "theorem",
+  "name": "Origin is a source for the differential equations",
+  "Hypothesis": [
+    {
+      "type": "let",
+      "Variable": "x",
+      "Kind": "function",
+      "Property": "$\\dot{x} = x$"
+    },
+    {
+      "type": "let",
+      "Variable": "y",
+      "Kind": "function",
+      "Property": "$\\dot{y} = y$"
+    }
+  ],
+  "Conclusion": "The origin is a source.",
+  "Status": "wrong proof",
+  "Proof": {
+    "type": "proof",
+    "Steps": [
+      {
+        "type": "assert",
+        "Claim": "$\\dot{x} = x$ and $\\dot{y} = y$",
+        "Deduced_from": [
+          "$\\dot{x} = x$",
+          "$\\dot{y} = y$"
+        ]
+      },
+      {
+        "type": "conclude",
+        "Statement": "The origin is a source.",
+        "Error": "The conclusion that the origin is a source is not justified by the given steps. Additional steps are required to show that the origin is a source, such as showing that solutions diverge from the origin over time."
+      }
+    ]
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "type": "theorem",
+  "name": "Source or Sink at the Origin for Linear Differential Equations",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "The system of differential equations is given by \\( \\dot{x} = x \\) and \\( \\dot{y} = y \\)."
+    }
+  ],
+  "conclusion": "The origin is a source.",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "<anonymous>",
+        "value": "\\begin{pmatrix} \\dot{u} \\\\ \\dot{y} \\end{pmatrix} = A \\begin{pmatrix} u \\\\ y \\end{pmatrix}",
+        "property": "where \\( A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} \\)."
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of \\(A\\) are 1 and 1.",
+        "proof-method": "Calculation of the eigenvalues of a diagonal matrix"
+      },
+      {
+        "type": "assert",
+        "claim": "The origin is a source because both eigenvalues are positive.",
+        "proof-method": "Eigenvalue analysis"
+      },
+      {
+        "type": "conclude",
+        "statement": "Hence, the origin is a source.",
+        "error": "The proof contains errors and inconsistencies. The eigenvalues were not computed correctly, and the final classification of the origin as a source or sink contradicts the initial steps."
+      }
+    ],
+    "errors": [
+      "The claim \\( \\lambda_1 < 0 < \\lambda_2 \\) contradicts the correct eigenvalues.",
+      "Inconsistencies in the classification of the origin being a source or sink."
+    ]
+  }
+}

@@ -1,75 +1,100 @@
 {
   "type": "theorem",
-  "name": "Circulation at the Origin",
+  "name": "Circulation at Origin",
   "hypothesis": [
     {
       "type": "let",
       "variable": "<anonymous>",
-      "kind": "differential equation",
+      "kind": "System of differential equations",
       "property": "linear",
-      "value": "\\dot{x} = y"
-    },
-    {
-      "type": "let",
-      "variable": "<anonymous>",
-      "kind": "differential equation",
-      "property": "linear",
-      "value": "\\dot{y} = -x - y"
+      "value": "$\\dot{x} = y$, $\\dot{y} = -x - y$"
     }
   ],
-  "conclusion": "The origin is a center for the given system of differential equations.",
-  "status": "proved",
+  "conclusion": "The origin is a circulation point for the given system of differential equations.",
+  "status": "incomplete proof",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "The provided proof attempts to determine the eigenvectors of a matrix. However, the connection between this matrix and the concept of 'circulation' for the given system of differential equations is not established. Provide justification for why finding the eigenvectors of this specific matrix is relevant to proving the origin is a circulation point.",
+      "solved": false
+    },
+    {
+      "type": "problem",
+      "statement": "The proof does not reach a conclusion about the origin being a circulation point.  It needs to relate the calculated eigenvectors to the behavior of the system near the origin to justify the claim of circulation.",
+      "solved": false
+    }
+  ],
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "remark",
-        "statement": "We need to determine the eigenvalues of the matrix associated with the system."
-      },
-      {
-        "type": "let",
-        "variable": "A",
-        "kind": "matrix",
-        "value": "\\begin{pmatrix}\n\\frac{1 - \\sqrt{3}i}{2} & 1 \\\\\n-1 & \\frac{-1 - \\sqrt{3}i}{2}\n\\end{pmatrix}"
+        "statement": "The proof appears to begin by presenting a matrix. However, the origin or relevance of this matrix to the given system of differential equations is not stated."
       },
       {
         "type": "assert",
-        "claim": "The eigenvalues of A are the solutions to the characteristic equation:  \\begin{vmatrix} \\frac{1-\\sqrt{3}i}{2} - \\lambda & 1 \\\\ -1 & \\frac{-1-\\sqrt{3}i}{2} - \\lambda \\end{vmatrix} = 0.",
-        "proof-method": "Definition of eigenvalues"
+        "claim": "The matrix associated with the system is $\\begin{pmatrix} \\frac{1 - \\sqrt{3}i}{2} & 1 \\\\ -1 & \\frac{-1 - \\sqrt{3}i}{2}  \\end{pmatrix}$.",
+        "missing steps": [
+          {
+            "type": "problem",
+            "statement": "Show how the provided matrix is obtained from the given system of differential equations.",
+            "solved": false
+          }
+        ]
+      },
+      {
+        "type": "remark",
+        "statement": "The proof proceeds to calculate eigenvectors. However, it is unclear which eigenvalue each calculation corresponds to."
       },
       {
         "type": "assert",
-        "claim": "The characteristic equation simplifies to  $\\lambda^2 + \\sqrt{3} i \\lambda - 1 = 0$.",
-        "proof-method": "Algebraic simplification"
+        "claim": "An eigenvector for one of the eigenvalues is $V_1 = \\begin{pmatrix} \\frac{-\\sqrt{3}i - 1}{2} \\\\ 1 \\end{pmatrix}$.",
+        "calculation": [
+          {
+            "step": "$\\begin{pmatrix} \\frac{1 - \\sqrt{3}i}{2} & 1 \\\\ -1 & \\frac{-1 - \\sqrt{3}i}{2}  \\end{pmatrix}  \\begin{pmatrix} a \\\\ b \\end{pmatrix} = \\begin{pmatrix} 0 \\\\ 0 \\end{pmatrix}$",
+            "justification": "Eigenvector equation"
+          },
+          {
+            "step": "$-a \\begin{pmatrix} \\frac{1 - \\sqrt{3}i}{2}  \\\\ 2  \\end{pmatrix} = ab$",
+            "justification": "Rearranging the equations"
+          },
+          {
+            "step": "$a = -b \\begin{pmatrix} \\frac{1 + \\sqrt{3}i}{2} \\end{pmatrix}$",
+            "justification": "Solving for $a$"
+          },
+          {
+            "step": "$b = \\frac{-2a(1 - \\sqrt{3}i)}{(1 + \\sqrt{3}i)(1 - \\sqrt{3}i)} = \\frac{-a (1 - \\sqrt{3}i)}{2}$",
+            "justification": "Substituting and simplifying"
+          }
+        ]
       },
       {
         "type": "assert",
-        "claim": "The solutions to the quadratic equation are $\\lambda = \\frac{-\\sqrt{3} i \\pm \\sqrt{(\\sqrt{3} i)^2 - 4 \\cdot 1 \\cdot -1}}{2} = \\frac{-\\sqrt{3} i \\pm 2i}{2} = \\frac{1 - \\sqrt{3} i}{2}, \\frac{-1 - \\sqrt{3} i}{2}$.",
-        "proof-method": "Quadratic formula"
-      },
-      {
-        "type": "let",
-        "variable": "\\lambda_1",
-        "value": "\\frac{1 - \\sqrt{3} i}{2}"
-      },
-      {
-        "type": "assert",
-        "claim": "An eigenvector corresponding to $\\lambda_1$ is $\\mathbf{v}_1 = \\begin{pmatrix} 1 + \\sqrt{3} i \\\\ -1 + \\sqrt{3} i \\end{pmatrix}$.",
-        "proof-method": "Solving the system of equations $(A - \\lambda_1 I)\\mathbf{v}_1 = \\mathbf{0}$"
-      },
-      {
-        "type": "let",
-        "variable": "\\lambda_2",
-        "value": "\\frac{-1 - \\sqrt{3} i}{2}"
-      },
-      {
-        "type": "assert",
-        "claim": "An eigenvector corresponding to $\\lambda_2$ is $\\mathbf{v}_2 = \\begin{pmatrix} 2 \\\\ 1 + \\sqrt{3} i \\end{pmatrix}$.",
-        "proof-method": "Solving the system of equations $(A - \\lambda_2 I)\\mathbf{v}_2 = \\mathbf{0}$"
-      },
-      {
-        "type": "conclude",
-        "statement": "Since the eigenvalues are complex conjugates with nonzero imaginary parts, the origin is a center."
+        "claim": "An eigenvector for the other eigenvalue is $V_2 = \\begin{pmatrix} \\frac{1 + \\sqrt{3}i}{2} \\\\ 1 \\end{pmatrix}$.",
+        "errors": [
+          {
+            "type": "error",
+            "statement": "The calculation for the second eigenvector contains an error. In the step where $-a$ is equated to $b \\begin{pmatrix} \\frac{\\sqrt{3}i - 1}{2}  \\end{pmatrix}$, the sign within the matrix on the right-hand side is incorrect. It should be $b \\begin{pmatrix} \\frac{-\\sqrt{3}i - 1}{2}  \\end{pmatrix}$, leading to a different eigenvector."
+          }
+        ],
+        "calculation": [
+          {
+            "step": "$\\begin{pmatrix} \\frac{1 + \\sqrt{3}i}{2} & 1 \\\\ -1 & \\frac{-1 + \\sqrt{3}i}{2}  \\end{pmatrix} \\begin{pmatrix} a \\\\ b \\end{pmatrix} = \\begin{pmatrix} 0 \\\\ 0 \\end{pmatrix}$",
+            "justification": "Eigenvector equation (with potential error in the matrix)"
+          },
+          {
+            "step": "$a \\begin{pmatrix} \\frac{1 + \\sqrt{3}i}{2} \\\\ 2  \\end{pmatrix} = b$",
+            "justification": "Rearranging the equations"
+          },
+          {
+            "step": "$-a = b  \\begin{pmatrix} \\frac{\\sqrt{3}i - 1}{2}  \\end{pmatrix}$",
+            "justification": "Solving for $-a$ (incorrect sign in the matrix)"
+          },
+          {
+            "step": "$a  \\begin{pmatrix} \\frac{1 + \\sqrt{3}i}{2}  \\end{pmatrix} = b$",
+            "justification": "Solving for $b$"
+          }
+        ]
       }
     ]
   }

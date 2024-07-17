@@ -1,0 +1,165 @@
+{
+  "type": "theorem",
+  "name": "Origin is a circulation point",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x",
+      "kind": "function of time"
+    },
+    {
+      "type": "let",
+      "variable": "y",
+      "kind": "function of time"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = y$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = -x - y$"
+    }
+  ],
+  "conclusion": "The origin is a circulation point",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\frac{dn}{dy} = y$",
+        "errors": [
+          "Incorrect differentiation definition"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$y = -x - y$",
+        "errors": [
+          "Repeated hypothesis, not a new result"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{dy}{dn} = -n - y$",
+        "errors": [
+          "Incorrect differentiation definition"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$dn = y \\, dy$",
+        "errors": [
+          "Incorrect integration without proper substitution"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\int dn = \\int y \\, dy$",
+        "errors": [
+          "Incorrect integral without limits or justification"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$dy = -n \\, dn - y \\, dn$",
+        "errors": [
+          "Incorrect relationship between differentials"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\int dy = - \\int n \\, dn - \\int y \\, dn$",
+        "errors": [
+          "Incorrect integration without proper substitution"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$n = \\frac{y^2}{2}$",
+        "errors": [
+          "Incorrect solution of integration"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$y = -\\frac{n^2}{2} - yn$",
+        "errors": [
+          "Incorrect expression and relationship"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$2n = y^2$",
+        "errors": [
+          "Incorrect algebraic manipulation"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$2y = -n^2 - 2ny$",
+        "errors": [
+          "Incorrect algebraic manipulation"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$y^2 - 2n = 0$",
+        "errors": [
+          "Incorrect expression simplification"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$n^2 + 2ny + 2y = 0$",
+        "errors": [
+          "Incorrect equation formed"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$y^2 - 2n = n^2 + 2ny + 2y$",
+        "errors": [
+          "Incorrect equation simplification"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$n^2 - y^2 + 2ny + 2n + 2y = 0 = f$",
+        "errors": [
+          "Incorrect formulation of function f"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\Delta f = 2n - 2y + 2y + 2 + 2 = 2n + 4$",
+        "errors": [
+          "Incorrect computation of gradient"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "At origin $\\Delta f = 4$",
+        "errors": [
+          "Incorrect assumption and calculation at origin"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "At origin it is a single.",
+        "errors": [
+          "Incorrect conclusion about the nature of the origin"
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "$\\boxed{0}$",
+        "errors": [
+          "Unjustified conclusion"
+        ]
+      }
+    ]
+  },
+  "error": "Proof contains multiple algebraic and differentiation errors and does not correctly establish that the origin is a circulation point."
+}

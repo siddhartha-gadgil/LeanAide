@@ -1,0 +1,64 @@
+{
+  "type": "theorem",
+  "name": "Stability of the origin for the given differential equations",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x(t)",
+      "kind": "function of time",
+      "property": "solution to the differential equation $\\dot{x}=y$"
+    },
+    {
+      "type": "let",
+      "variable": "y(t)",
+      "kind": "function of time",
+      "property": "solution to the differential equation $\\dot{y}=-x-y$"
+    }
+  ],
+  "conclusion": "The origin is a spiral sink for the given system.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}$",
+        "proof-method": "Rewrite the system in matrix form"
+      },
+      {
+        "type": "assert",
+        "claim": "$|A - \\lambda I| = 0 \\implies \\begin{vmatrix} -\\lambda & 1 \\\\ -1 & -1-\\lambda \\end{vmatrix} = 0$",
+        "deduced_from": [
+          "Rewrite the system in matrix form"
+        ],
+        "proof-method": "Calculate the characteristic polynomial of the matrix"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda(\\lambda + 1) + 1 = 0 \\implies \\lambda^2 + \\lambda + 1 = 0 \\implies \\lambda = \\frac{-1 \\pm \\sqrt{3}i}{2}$",
+        "proof-method": "Solve the characteristic polynomial"
+      },
+      {
+        "type": "assert",
+        "claim": "$Re(\\lambda) = -\\frac{1}{2}$",
+        "proof-method": "Extract the real part of the eigenvalues"
+      },
+      {
+        "type": "conclude",
+        "statement": "Since the real part of the eigenvalues is negative, the origin is a spiral sink."
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Clarify the conclusion about the spiral sink behavior from the eigenvalues"
+    }
+  ],
+  "errors": [
+    {
+      "type": "problem",
+      "statement": "The conclusion about the spiral sink needs a more detailed analysis of the system dynamics"
+    }
+  ]
+}

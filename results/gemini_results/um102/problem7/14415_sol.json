@@ -1,0 +1,82 @@
+{
+  "type": "theorem",
+  "name": "Origin as a Source",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x(t)",
+      "kind": "function",
+      "property": "solution to the differential equation $\\dot{x} = x$"
+    },
+    {
+      "type": "let",
+      "variable": "y(t)",
+      "kind": "function",
+      "property": "solution to the differential equation $\\dot{y} = y$"
+    }
+  ],
+  "conclusion": "The origin (0, 0) is a source for the system of differential equations $\\dot{x} = x$ and $\\dot{y} = y$.",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We will attempt to solve the system and analyze the behavior of solutions near the origin."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{dx}{dt} = x$ and $\\frac{dy}{dt} = y$",
+        "deduced_from": [
+          "Hypothesis"
+        ],
+        "proof-method": "Directly from the given differential equations."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\log \\frac{dx}{x} = dt$ and $\\frac{dy}{y} = dt$",
+        "proof-method": "Separation of variables.",
+        "errors": [
+          {
+            "type": "error",
+            "statement": "Incorrect manipulation of differentials. Should be $\\frac{1}{x} dx = dt$ and $\\frac{1}{y} dy = dt$."
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\log \\frac{x}{x_0} = t + c$ and $\\log \\frac{y}{y_0} = t + c_1$",
+        "proof-method": "Integration of both sides.",
+        "missing steps": [
+          {
+            "type": "problem",
+            "statement": "Clarify the meaning of $x_0$ and $y_0$. Are these initial conditions?",
+            "solved": false
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{x}{x_0} = Ae^t$ and $\\frac{y}{y_0} = Be^t$",
+        "proof-method": "Exponentiating both sides and using properties of logarithms.",
+        "missing steps": [
+          {
+            "type": "problem",
+            "statement": "Define the constants A and B.",
+            "solved": false
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "The solutions are of the form $x = x_0 Ae^t$ and $y = y_0 Be^t$, indicating exponential growth in both x and y directions. Therefore, the origin is a saddle.",
+        "errors": [
+          {
+            "type": "error",
+            "statement": "The conclusion that the origin is a saddle is incorrect. Exponential growth in both x and y directions indicates a source, not a saddle."
+          }
+        ]
+      }
+    ]
+  }
+}

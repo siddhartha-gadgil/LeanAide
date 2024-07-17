@@ -4,99 +4,198 @@
   "hypothesis": [
     {
       "type": "let",
-      "variable": "x(t)",
-      "kind": "function",
-      "property": "solution to the differential equation dx/dt = -y"
+      "variable": "x",
+      "kind": "function of t",
+      "property": "satisfies the differential equation $\\dot{x}=-y$"
     },
     {
       "type": "let",
-      "variable": "y(t)",
-      "kind": "function",
-      "property": "solution to the differential equation dy/dt = x"
+      "variable": "y",
+      "kind": "function of t",
+      "property": "satisfies the differential equation $\\dot{y}=x$"
     }
   ],
-  "conclusion": "The system of differential equations dx/dt = -y and dy/dt = x has a solution trajectory that forms a circle, indicating circulation around the origin in the xy-plane.",
-  "status": "proved",
+  "conclusion": "The origin is a circulation for the system of differential equations.",
+  "status": "incomplete proof",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "The provided proof derives a solution showing trajectories lie on circles. However, it does not connect this to the definition of a circulation for a system of differential equations. Provide a definition of circulation and show that the derived solution satisfies this definition.",
+      "solved": false
+    },
+    {
+      "type": "problem",
+      "statement": "The characteristic equation is stated to be $\\lambda^2 = 1$. Show the derivation of this equation.",
+      "solved": false
+    },
+    {
+      "type": "problem",
+      "statement": "The proof skips the steps to solve the matrix equation  $\\dfrac{d}{dt} \\begin{bmatrix} x \\\\ y \\end{bmatrix} =  \\begin{bmatrix} i & 0 \\\\ 0 & -i \\end{bmatrix}  \\begin{bmatrix} x \\\\ y \\end{bmatrix}$. Provide the complete derivation for this solution.",
+      "solved": false
+    }
+  ],
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "remark",
-        "statement": "We begin by expressing the given system of differential equations in matrix form."
+        "statement": "The proof begins by rewriting the system of equations in matrix form."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\dfrac{d}{dt} \\begin{bmatrix} x \\\\ y \\end{bmatrix} =  \\begin{bmatrix} -1 & 1 \\\\ 1 & 0 \\end{bmatrix}  \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
+        "deduced_from": [
+          "$\\dot{x}=-y$",
+          "$\\dot{y}=x$"
+        ]
       },
       {
         "type": "let",
         "variable": "A",
-        "value": "[[0, -1],[1, 0]]",
-        "kind": "matrix"
+        "value": "\\begin{bmatrix} -1 & 1 \\\\ 1 & 0 \\end{bmatrix}"
       },
       {
         "type": "assert",
-        "claim": "The system can be written as d/dt[x, y] = A[x, y]",
-        "proof-method": "direct substitution"
-      },
-      {
-        "type": "remark",
-        "statement": "To find the general solution, we need to determine the eigenvalues and eigenvectors of matrix A."
-      },
-      {
-        "type": "assert",
-        "claim": "The characteristic equation of A is det(A - λI) = λ² + 1 = 0",
-        "proof-method": "calculation"
+        "claim": "The characteristic equation of A is $\\lambda^2 = 1$",
+        "missing steps": [
+          {
+            "type": "problem",
+            "statement": "Derive the characteristic equation from the matrix A.",
+            "solved": false
+          }
+        ]
       },
       {
         "type": "assert",
-        "claim": "The eigenvalues are λ₁ = i and λ₂ = -i",
+        "claim": "$\\lambda_1 = i e^{\\frac{i\\pi}{2}}$ and $\\lambda_2 = -i = e^{\\frac{-i\\pi}{2}}$",
         "deduced_from": [
-          "characteristic equation"
-        ],
-        "proof-method": "solving the quadratic equation"
+          "$\\lambda^2 = 1$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$|\\lambda_1| = |\\lambda_2| = 1$",
+        "deduced_from": [
+          "$\\lambda_1 = i e^{\\frac{i\\pi}{2}}$",
+          "$\\lambda_2 = -i = e^{\\frac{-i\\pi}{2}}$"
+        ]
       },
       {
         "type": "remark",
-        "statement": "Next, we find the eigenvectors corresponding to each eigenvalue."
+        "statement": "Next, the eigenvectors are computed."
       },
       {
         "type": "assert",
-        "claim": "The eigenvector v₁ corresponding to λ₁ = i is [1, i]",
-        "proof-method": "solving the system (A - iI)v₁ = 0"
+        "claim": "$v_1 = \\begin{pmatrix} i \\\\ 1 \\end{pmatrix}$ is an eigenvector corresponding to $\\lambda_1$",
+        "calculation": [
+          {
+            "step": "$Av_1 = e^{\\frac{i \\pi}{2}} v_1$",
+            "justification": "Eigenvector equation"
+          },
+          {
+            "step": "\\begin{bmatrix} -1 & 1 \\\\ 1 & 0 \\end{bmatrix}  \\begin{bmatrix} x \\\\ y \\end{bmatrix} = i \\begin{bmatrix} x \\\\ y \\end{bmatrix}",
+            "justification": "Substituting values"
+          },
+          {
+            "step": "$-x + y = ix$ & $x = iy$",
+            "justification": "Simplifying"
+          },
+          {
+            "step": "$\\therefore v_1 = \\begin{pmatrix} i \\\\ 1 \\end{pmatrix}$",
+            "justification": "Choosing y=1"
+          }
+        ]
       },
       {
         "type": "assert",
-        "claim": "The eigenvector v₂ corresponding to λ₂ = -i is [1, -i]",
-        "proof-method": "solving the system (A + iI)v₂ = 0"
+        "claim": "$v_2 = \\begin{pmatrix} -i \\\\ 1 \\end{pmatrix}$ is an eigenvector corresponding to $\\lambda_2$",
+        "calculation": [
+          {
+            "step": "$Av_2 = -iv_2$",
+            "justification": "Eigenvector equation"
+          },
+          {
+            "step": "\\begin{bmatrix} -1 & 1 \\\\ 1 & 0 \\end{bmatrix}  \\begin{bmatrix} x \\\\ y \\end{bmatrix} = -i \\begin{bmatrix} x \\\\ y \\end{bmatrix}",
+            "justification": "Substituting values"
+          },
+          {
+            "step": "$-x + y = -ix$ & $x = -iy$",
+            "justification": "Simplifying"
+          },
+          {
+            "step": "$\\therefore v_2 = \\begin{pmatrix} -i \\\\ 1 \\end{pmatrix}$",
+            "justification": "Choosing y=1"
+          }
+        ]
       },
       {
         "type": "remark",
-        "statement": "With two linearly independent eigenvectors, we can express the general solution of the system."
-      },
-      {
-        "type": "let",
-        "variable": "c₁",
-        "kind": "constant"
-      },
-      {
-        "type": "let",
-        "variable": "c₂",
-        "kind": "constant"
+        "statement": "The proof continues by rewriting the matrix equation in terms of the eigenvalues and eigenvectors."
       },
       {
         "type": "assert",
-        "claim": "The general solution is [x(t), y(t)] = c₁e^(it)[1, i] + c₂e^(-it)[1, -i]",
-        "proof-method": "using the eigenvalues and eigenvectors"
+        "claim": "$\\dfrac{d}{dt} \\begin{bmatrix} x \\\\ y \\end{bmatrix} =  \\begin{bmatrix} i & 0 \\\\ 0 & -i \\end{bmatrix}  \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
+        "errors": [
+          "This step lacks justification. The matrix on the right-hand side is not derived from the previous steps."
+        ]
       },
       {
         "type": "assert",
-        "claim": "Expanding, we get x(t) = c₁e^(it) + c₂e^(-it) and y(t) = c₁ie^(it) - c₂ie^(-it)",
-        "proof-method": "algebraic manipulation"
+        "claim": "\\begin{bmatrix} x \\\\ y \\end{bmatrix} = x(t) \\begin{pmatrix} i \\\\ 1 \\end{pmatrix} + y(t) \\begin{pmatrix} -i \\\\ 1 \\end{pmatrix}",
+        "errors": [
+          "This step is unclear. It seems to express the solution in terms of the eigenvectors, but does not explain how it's derived."
+        ]
       },
       {
-        "type": "remark",
-        "statement": "Recognizing that e^(it) and e^(-it) represent cosine and sine functions through Euler's formula, we can conclude that the solution describes a circular trajectory."
+        "type": "assert",
+        "claim": "$\\dfrac{dx}{dt} = ix$",
+        "missing steps": [
+          {
+            "type": "problem",
+            "statement": "Show the steps to derive this equation from the previous matrix equation.",
+            "solved": false
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$x = c_1 e^{it}$",
+        "deduced_from": [
+          "$\\dfrac{dx}{dt} = ix$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\dfrac{dy}{dt} = -iy$",
+        "missing steps": [
+          {
+            "type": "problem",
+            "statement": "Show the steps to derive this equation from the previous matrix equation.",
+            "solved": false
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$y = c_2 e^{-it}$",
+        "deduced_from": [
+          "$\\dfrac{dy}{dt} = -iy$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$|x| = |c_1|$ & $|y| = |c_2|$ do not change with $t$ time",
+        "deduced_from": [
+          "$x = c_1 e^{it}$",
+          "$y = c_2 e^{-it}$"
+        ]
       },
       {
         "type": "conclude",
-        "statement": "Therefore, the system of differential equations exhibits circulation around the origin in the xy-plane."
+        "statement": "The trajectory is a circulation.",
+        "errors": [
+          "This conclusion needs further justification. While the derived equations describe circular trajectories, the connection to the definition of circulation for a system of differential equations is missing."
+        ]
       }
     ]
   }

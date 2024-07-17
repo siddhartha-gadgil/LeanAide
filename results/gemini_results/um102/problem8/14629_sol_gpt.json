@@ -1,0 +1,123 @@
+{
+  "type": "theorem",
+  "name": "Origin is a source for a linear differential equation",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = -y$ and $\\dot{y} = x$"
+    }
+  ],
+  "conclusion": "The origin is a source",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "j",
+        "value": "n"
+      },
+      {
+        "type": "let",
+        "variable": "i",
+        "value": "-y"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{dn}{dy} = -y$",
+        "proof-method": "Differentiation"
+      },
+      {
+        "type": "assert",
+        "claim": "$dn = -y \\, dy$",
+        "proof-method": "Rewriting the differential"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\int dn = \\int -y \\, dy$",
+        "proof-method": "Integration"
+      },
+      {
+        "type": "assert",
+        "claim": "$n = \\frac{-y^2}{2}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$2n = -y^2$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{dy}{dn} = n$",
+        "deduced_from": [
+          "j = n"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$dy = n \\, dn$",
+        "proof-method": "Rewriting the differential"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\int dy = \\int n \\, dn$",
+        "proof-method": "Integration"
+      },
+      {
+        "type": "assert",
+        "claim": "$y = \\frac{n^2}{2}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$2y = n^2$"
+      },
+      {
+        "type": "assert",
+        "claim": "$n^2 - 2y = 0$"
+      },
+      {
+        "type": "assert",
+        "claim": "$y^2 + 2n = 0$"
+      },
+      {
+        "type": "assert",
+        "claim": "$y^2 + 2n = n^2 - 2y$"
+      },
+      {
+        "type": "assert",
+        "claim": "$x^2 - y^2 - 2x - 2y = 0$",
+        "errors": [
+          "Incorrect manipulation"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$x^2 - 2x - (y^2 + 2y) = 0 = f$",
+        "errors": [
+          "Incorrect manipulation"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\nabla f = 2n - 2 - (2y + 2) = 2x - 2y - 4$",
+        "errors": [
+          "Incorrect gradient calculation"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "At the origin $\\nabla f = -4$",
+        "errors": [
+          "Incorrect calculation"
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "At the origin it is a source",
+        "error": "Incorrect conclusion based on erroneous calculations"
+      }
+    ],
+    "errors": [
+      "Incorrect manipulation and calculations leading to wrong conclusion."
+    ]
+  }
+}

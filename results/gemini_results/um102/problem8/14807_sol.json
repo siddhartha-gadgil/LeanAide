@@ -5,52 +5,55 @@
     {
       "type": "let",
       "variable": "<anonymous>",
-      "kind": "linear differential equation",
-      "property": "system of equations",
-      "value": "\\( \\dot{x}=-y \\) and \\( \\dot{y}=x \\)"
+      "kind": "differential equations",
+      "property": "linear",
+      "value": "$\\dot{x}=-y$, $\\dot{y}=x$"
     }
   ],
-  "conclusion": "The origin is a circulation.",
-  "status": "proved",
+  "conclusion": "The origin is a circulation for the given system of differential equations.",
+  "status": "incomplete proof",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Prove that the eigenvalues of the matrix $\\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix}$ being purely imaginary implies the origin is a circulation for the given system of differential equations."
+    }
+  ],
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "remark",
-        "statement": "(c)  We are given the system of differential equations:"
+        "statement": "We will rewrite the system of equations in matrix form and find the eigenvalues of the corresponding matrix."
       },
       {
         "type": "assert",
-        "claim": "\\( \\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}. \\)",
-        "proof-method": "Rewriting the given system in matrix form"
+        "claim": "The system of equations can be written in matrix form as $\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}$.",
+        "proof-method": "Rewriting the system of equations."
       },
       {
         "type": "assert",
-        "claim": "\\( \\begin{vmatrix} \\lambda & 1 \\\\ -1 & \\lambda \\end{vmatrix} =0 \\)",
-        "proof-method": "Setting up the characteristic equation to find the eigenvalues"
+        "claim": "The characteristic equation of the matrix $\\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix}$ is given by $|\\mathbf{A}-\\lambda \\mathbf{I}| = 0$.",
+        "proof-method": "Definition of characteristic equation."
       },
       {
         "type": "assert",
-        "claim": "\\( \\lambda^2 +1 = 0 \\)",
-        "proof-method": "Expanding the determinant"
+        "claim": "The characteristic equation expands to  $\\begin{vmatrix} -\\lambda & -1 \\\\ 1 & -\\lambda \\end{vmatrix} = 0$.",
+        "proof-method": "Substitution."
+      },
+      {
+        "type": "assert",
+        "claim": "The characteristic equation simplifies to $\\lambda^2 + 1 = 0$.",
+        "proof-method": "Evaluating the determinant."
+      },
+      {
+        "type": "assert",
+        "claim": "Solving for $\\lambda$, we get $\\lambda = \\pm i$.",
+        "proof-method": "Solving the quadratic equation."
       },
       {
         "type": "conclude",
-        "statement": "\\( \\lambda = \\pm i \\)",
-        "deduced_from": [
-          "\\( \\lambda^2 +1 = 0 \\)"
-        ],
-        "proof-method": "Solving for \\( \\lambda \\)"
-      },
-      {
-        "type": "missing",
-        "statement": [
-          {
-            "type": "problem",
-            "statement": "Explain how the eigenvalues being \\( \\pm i \\) implies the origin is a circulation.",
-            "solved": false
-          }
-        ]
+        "statement": "Since the eigenvalues are purely imaginary, the origin is a circulation.",
+        "error": "This conclusion requires further justification as the relationship between purely imaginary eigenvalues and circulation behavior is not explicitly established in the provided steps."
       }
     ]
   }

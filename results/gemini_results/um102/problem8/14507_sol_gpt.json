@@ -1,0 +1,116 @@
+{
+  "type": "theorem",
+  "name": "Origin is Circulation",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = -y$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = x$"
+    }
+  ],
+  "conclusion": "The origin is a point of circulation.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\begin{bmatrix} \\dot{x} \\\\ \\dot{y} \\end{bmatrix} = \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
+        "proof-method": "Matrix form representation of the system of differential equations"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\dot{X} = AX$",
+        "proof-method": "Let $X = \\begin{bmatrix} x \\\\ y \\end{bmatrix}$ and $A = \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$|A - \\lambda I| = 0$",
+        "proof-method": "Characteristic equation of matrix $A$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\begin{vmatrix} -\\lambda & -1 \\\\ 1 & -\\lambda \\end{vmatrix} = 0$",
+        "proof-method": "Calculation of the determinant"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda^2 + 1 = 0$",
+        "proof-method": "Simplification of the determinant equation"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda = \\pm i$",
+        "proof-method": "Solving for $\\lambda$"
+      },
+      {
+        "type": "assert",
+        "claim": "For $\\lambda = i$, $\\begin{bmatrix} -i & -1 \\\\ 1 & -i \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = 0$",
+        "proof-method": "Substitution of $\\lambda = i$ into $(A - \\lambda I)\\begin{bmatrix} x \\\\ y \\end{bmatrix} = 0$"
+      },
+      {
+        "type": "assert",
+        "claim": "$x = iy$",
+        "proof-method": "Solving the system of equations $\\begin{aligned} -xi - y &= 0 \\\\ x - iy &= 0 \\end{aligned}$"
+      },
+      {
+        "type": "assert",
+        "claim": "For $\\lambda = -i$, $\\begin{bmatrix} i & -1 \\\\ 1 & i \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = 0$",
+        "proof-method": "Substitution of $\\lambda = -i$ into $(A - \\lambda I)\\begin{bmatrix} x \\\\ y \\end{bmatrix} = 0$"
+      },
+      {
+        "type": "assert",
+        "claim": "$x = y/i$",
+        "proof-method": "Solving the system $\\begin{aligned} xi - y &= 0 \\end{aligned}$"
+      },
+      {
+        "type": "assert",
+        "claim": "General solution: $X(t) = \\alpha \\begin{pmatrix} i \\\\ 1 \\end{pmatrix} e^{it} + \\beta \\begin{pmatrix} 1 \\\\ i \\end{pmatrix} e^{-it}$",
+        "proof-method": "Linear combination of eigenvectors and exponentials of eigenvalues"
+      },
+      {
+        "type": "assert",
+        "claim": "$x^2 + y^2 = a$",
+        "proof-method": "Expanding and rearranging terms of the general solution"
+      },
+      {
+        "type": "assert",
+        "claim": "$x(t)$ and $y(t)$ are periodic functions",
+        "proof-method": "Observation from the general solution"
+      },
+      {
+        "type": "assert",
+        "claim": "The trajectory of the solution is a circle centered at the origin",
+        "proof-method": "Since $x^2 + y^2 = a$ and $x(t)$, $y(t)$ are periodic"
+      },
+      {
+        "type": "assert",
+        "claim": "The distance from the origin remains constant over time",
+        "proof-method": "From the equation $x^2 + y^2 = a$"
+      },
+      {
+        "type": "assert",
+        "claim": "The direction of motion depends on the signs of $\\alpha$ and $\\beta$",
+        "proof-method": "Analysis of the general solution",
+        "missing steps": [
+          {
+            "type": "problem",
+            "statement": "Justification of anti-clockwise motion for $\\alpha < 0$ and clockwise motion for $\\beta < 0$"
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "The origin is a point of circulation."
+      }
+    ],
+    "errors": [
+      {
+        "statement": "The proof does not fully justify the direction of motion based on the signs of $\\alpha$ and $\\beta$."
+      }
+    ]
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "type": "theorem",
+  "name": "Origin is a circulation point",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x",
+      "kind": "function of time $t$"
+    },
+    {
+      "type": "let",
+      "variable": "y",
+      "kind": "function of time $t$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = y$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = -x - y$"
+    }
+  ],
+  "conclusion": "The origin is a circulation point.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\frac{d}{dt} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 0 & 1 \\\\ -1 & -1 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
+        "proof-method": "Direct differentiation"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\dot{v} = A v$ where $A = \\begin{bmatrix} 0 & 1 \\\\ -1 & -1 \\end{bmatrix}$",
+        "proof-method": "Matrix form of the linear differential equations"
+      },
+      {
+        "type": "assert",
+        "claim": "The characteristic polynomial of $A$ is $\\lambda^2 + \\lambda + 1 = 0$",
+        "proof-method": "Characteristic equation $\\det(A - \\lambda I) = 0$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda_1 = \\frac{-1 + i \\sqrt{3}}{2}$ and $\\lambda_2 = \\frac{-1 - i \\sqrt{3}}{2}$",
+        "proof-method": "Solving the characteristic polynomial"
+      },
+      {
+        "type": "assert",
+        "claim": "To find the eigenvectors: $A v_1 = e^{\\frac{i 2 \\pi}{3}} v_1$ and $A v_2 = e^{\\frac{i 4 \\pi}{3}} v_2$",
+        "proof-method": "Eigenvalue equation"
+      },
+      {
+        "type": "assert",
+        "claim": "$e^{\\frac{i 2 \\pi}{3}} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 0 & 1 \\\\ -1 & -1 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
+        "proof-method": "Substitution of eigenvalue $\\lambda_1$"
+      },
+      {
+        "type": "assert",
+        "claim": "$y = x e^{\\frac{i 2 \\pi}{3}}$ and $-x - y = e^{\\frac{i 2 \\pi}{3}} y$",
+        "proof-method": "Solving the system of equations"
+      },
+      {
+        "type": "conclude",
+        "statement": "The proof is incomplete as it does not show that the origin is a circulation point.",
+        "error": "The steps fail to connect the eigenvalues and eigenvectors to the stability and circulation of the origin."
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Show how the eigenvalues and eigenvectors imply circulation around the origin.",
+      "solved": false
+    }
+  ]
+}

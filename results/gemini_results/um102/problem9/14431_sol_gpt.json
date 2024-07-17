@@ -1,0 +1,99 @@
+{
+  "type": "theorem",
+  "name": "Spiral Sink at Origin",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = y$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = -x - y$"
+    }
+  ],
+  "conclusion": "The origin is a spiral sink.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "A",
+        "value": "$\\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}$",
+        "kind": "matrix"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = A \\begin{pmatrix} x \\\\ y \\end{pmatrix}$",
+        "deduced_from": [
+          "$\\dot{x} = y$",
+          "$\\dot{y} = -x - y$"
+        ],
+        "proof-method": "Matrix form of system of differential equations"
+      },
+      {
+        "type": "assert",
+        "claim": "$Tr(A) = -1$",
+        "calculation": [
+          {
+            "step": "$Tr(A) = 0 + (-1) = -1$"
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$Det(A) = 1$",
+        "calculation": [
+          {
+            "step": "$Det(A) = (0)(-1) - (1)(-1) = 1$"
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$[Tr(A)]^2 < 4 Det(A)$",
+        "calculation": [
+          {
+            "step": "$(-1)^2 = 1$"
+          },
+          {
+            "step": "$4 Det(A) = 4 \\cdot 1 = 4$"
+          },
+          {
+            "step": "$1 < 4$"
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$Tr(A) < 0$",
+        "calculation": [
+          {
+            "step": "$-1 < 0$"
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "This is an example of a spiral sink",
+        "deduced_from": [
+          "$[Tr(A)]^2 < 4 Det(A)$",
+          "$Tr(A) < 0$"
+        ],
+        "proof-method": "Properties of the eigenvalues of the matrix A"
+      },
+      {
+        "type": "conclude",
+        "statement": "Hence, the origin is a spiral sink.",
+        "error": "The proof lacks a detailed justification for why the conditions on the trace and determinant imply a spiral sink. The eigenvalues of the matrix should be computed to confirm this."
+      }
+    ],
+    "missing steps": [
+      {
+        "type": "problem",
+        "statement": "Compute the eigenvalues of matrix $A$ to confirm it is a spiral sink.",
+        "solved": false
+      }
+    ]
+  }
+}

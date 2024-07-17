@@ -1,0 +1,38 @@
+{
+  "type": "theorem",
+  "name": "Origin as Source",
+  "status": "incomplete proof",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x",
+      "kind": "function of t"
+    },
+    {
+      "type": "let",
+      "variable": "y",
+      "kind": "function of t"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = x$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = y$"
+    }
+  ],
+  "conclusion": "The origin is a source for the system of differential equations $\\dot{x} = x$ and $\\dot{y} = y$.",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Solve the differential equations $\\dot{x} = x$ and $\\dot{y} = y$.",
+      "solved": false
+    },
+    {
+      "type": "problem",
+      "statement": "Analyze the solutions near (0,0) to show that the origin is a source, i.e., all trajectories move away from the origin as t goes to infinity.",
+      "solved": false
+    }
+  ]
+}

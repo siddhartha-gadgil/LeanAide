@@ -1,0 +1,49 @@
+{
+  "type": "theorem",
+  "name": "Origin is circulation",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "The linear differential equations are $\\dot{x}=y$ and $\\dot{y}=-x-y$."
+    }
+  ],
+  "conclusion": "The origin is circulation.",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "The matrix representation of the system is $\\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}$.",
+        "proof-method": "Writing the system as $\\frac{d}{dt}\\begin{pmatrix} x \\\\ y \\end{pmatrix} = \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}$."
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of the matrix $\\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}$ are $\\lambda_1 = \\frac{-1 + \\sqrt{3}i}{2}$ and $\\lambda_2 = \\frac{-1 - \\sqrt{3}i}{2}$.",
+        "proof-method": "Solving the characteristic polynomial $\\det(\\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix} - \\lambda I)$."
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvector for $\\lambda_1 = \\frac{-1 + \\sqrt{3}i}{2}$ is $V_1 = \\begin{pmatrix} \\frac{-\\sqrt{3}i - 1}{2} \\\\ 1 \\end{pmatrix}$.",
+        "proof-method": "Solving $(A - \\lambda_1 I)V_1 = 0$.",
+        "errors": [
+          "The matrix given in the proof does not correspond to the system of differential equations."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvector for $\\lambda_2 = \\frac{-1 - \\sqrt{3}i}{2}$ is $V_2 = \\begin{pmatrix} \\frac{\\sqrt{3}i - 1}{2} \\\\ 1 \\end{pmatrix}$.",
+        "proof-method": "Solving $(A - \\lambda_2 I)V_2 = 0$.",
+        "errors": [
+          "The matrix given in the proof does not correspond to the system of differential equations."
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "The origin is a center.",
+        "error": "The matrix used in the proof is incorrect, and the conclusion does not follow from the given steps."
+      }
+    ]
+  },
+  "error": "The proof uses an incorrect matrix and contains incorrect calculations."
+}

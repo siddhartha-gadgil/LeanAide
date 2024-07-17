@@ -1,0 +1,41 @@
+{
+  "type": "theorem",
+  "name": "Origin Circulation",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = -y$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = x$"
+    }
+  ],
+  "conclusion": "The origin is a circulation.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\dot{x} = -y$ and $\\dot{y} = x$",
+        "deduced_from": [
+          "$\\dot{x} = -y$",
+          "$\\dot{y} = x$"
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, the origin is a circulation.",
+        "error": "The conclusion that the origin is circulation is not justified by the given statements. Further steps are required to prove this."
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Show that the origin is a circulation point for the system $\\dot{x} = -y$ and $\\dot{y} = x$.",
+      "solved": false
+    }
+  ]
+}

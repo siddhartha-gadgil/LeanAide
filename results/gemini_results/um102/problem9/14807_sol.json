@@ -1,70 +1,63 @@
 {
   "type": "theorem",
-  "name": "Spiral Sink at Origin",
-  "hypothesis": [
+  "name": "Spiral Sink for Linear System",
+  "Hypothesis": [
     {
       "type": "let",
-      "variable": "x(t)",
-      "kind": "real function"
-    },
-    {
-      "type": "let",
-      "variable": "y(t)",
-      "kind": "real function"
-    },
-    {
-      "type": "assume",
-      "statement": "The functions x(t) and y(t) satisfy the system of differential equations: \\( \\dot{x}=y \\) and \\( \\dot{y}=-x-y \\)"
+      "Variable": "<anonymous>",
+      "Kind": "differential equations",
+      "Property": "linear system",
+      "Value": "$\\dot{x} = y$, $\\dot{y} = -x - y$"
     }
   ],
-  "conclusion": "The origin (0,0) is a spiral sink for the given system of differential equations.",
-  "status": "proved",
-  "proof": {
+  "Conclusion": "The origin is a spiral sink for the given system of differential equations.",
+  "Status": "wrong proof",
+  "Proof": {
     "type": "proof",
-    "steps": [
+    "Steps": [
       {
         "type": "remark",
-        "statement": "We analyze the eigenvalues of the matrix representing the system."
+        "Statement": "We analyze the eigenvalues of the system's matrix."
       },
       {
         "type": "assert",
-        "claim": "The system can be represented in matrix form as: \\( \\begin{pmatrix} \\dot x \\\\ \\dot y \\end{pmatrix} = \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix} \\)",
-        "proof-method": "Rewriting the system in matrix form"
+        "Claim": "The system can be written in matrix form as $\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}$",
+        "Proof-method": "Rewriting the system"
       },
       {
         "type": "let",
-        "variable": "A",
-        "value": "\\( \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix} \\)",
-        "kind": "matrix"
+        "Variable": "A",
+        "Kind": "matrix",
+        "Value": "$\\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}$"
       },
       {
         "type": "assert",
-        "claim": "The eigenvalues of A are given by solving the characteristic equation: \\( |A - \\lambda I| = 0 \\)",
-        "proof-method": "Standard method to find eigenvalues"
+        "Claim": "The characteristic equation is $|A - \\lambda I| = 0$",
+        "Proof-method": "Standard result in linear algebra"
       },
       {
         "type": "assert",
-        "claim": "The characteristic equation becomes:  \\( \\begin{vmatrix} -\\lambda & 1 \\\\ -1 & -1-\\lambda \\end{vmatrix} = 0 \\)",
-        "proof-method": "Substituting the matrix A and identity matrix I"
-      },
-      {
-        "type": "calculation",
-        "calculation": [
-          "\\( \\lambda(\\lambda + 1) + 1 = 0 \\)",
-          "\\( \\lambda^2 + \\lambda + 1 = 0 \\)",
-          "\\( \\lambda = \\frac{-1 \\pm \\sqrt{3}i}{2} \\)"
+        "Claim": "The characteristic equation simplifies to $\\lambda^2 + \\lambda + 1 = 0$",
+        "Calculation": [
+          "$\\begin{vmatrix} -\\lambda & 1 \\\\ -1 & -1-\\lambda \\end{vmatrix} = 0$",
+          "$\\lambda(\\lambda + 1) + 1 = 0$",
+          "$\\lambda^2 + \\lambda + 1 = 0$"
         ]
       },
       {
         "type": "assert",
-        "claim": "The real part of both eigenvalues is \\( \\frac{-1}{2} \\)",
-        "deduced_from": [
-          "Calculation of eigenvalues"
-        ]
+        "Claim": "The eigenvalues are $\\lambda = \\frac{-1 \\pm \\sqrt{3}i}{2}$",
+        "Proof-method": "Solving the quadratic equation"
+      },
+      {
+        "type": "assert",
+        "Claim": "The real part of the eigenvalues is negative: $Re(\\lambda) = -\\frac{1}{2}$",
+        "Proof-method": "Inspection"
       },
       {
         "type": "conclude",
-        "statement": "Since the real part of the eigenvalues is negative, the origin is a spiral sink, attracting trajectories as \\( t \\to \\infty \\)."
+        "Statement": "Since the real part of the eigenvalues is negative, the origin is a spiral sink.",
+        "Error": "While a negative real part of the eigenvalues implies convergence to the origin, it does not guarantee a spiral behavior. The presence of the imaginary part only indicates oscillation, which could result in either a spiral or a center. Further analysis, like examining the eigenvectors or phase portrait, is needed to confirm the spiral nature."
       }
     ]
   }

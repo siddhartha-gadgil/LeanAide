@@ -1,0 +1,158 @@
+{
+  "type": "theorem",
+  "name": "Origin Stability",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "The linear differential system is given by $\\dot{x} = y$ and $\\dot{y} = -x - y$"
+    }
+  ],
+  "conclusion": "The origin is a spiral sink.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "The problem aims to find the solution to the system of differential equations represented in matrix form as $AX = \\lambda X$",
+        "proof-method": "Matrix representation of the system of differential equations."
+      },
+      {
+        "type": "let",
+        "variable": "A",
+        "value": "[[0, 1], [-1, -1]]",
+        "kind": "matrix"
+      },
+      {
+        "type": "assert",
+        "claim": "To find the eigenvalues of matrix $A$, we solve the characteristic equation $\\det(A - \\lambda I) = 0$",
+        "proof-method": "Definition of eigenvalues."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\det\\begin{bmatrix}-\\lambda & 1 \\\\ -1 & -1-\\lambda\\end{bmatrix} = 0$",
+        "deduced_from": [
+          "Characteristic equation"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$(-\\lambda)(-1 - \\lambda) + 1 = 0$",
+        "deduced_from": [
+          "Determinant calculation"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda^2 + \\lambda + 1 = 0$",
+        "deduced_from": [
+          "Quadratic equation formulation"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda = \\frac{-1 \\pm \\sqrt{1^2 - 4}}{2}$",
+        "deduced_from": [
+          "Quadratic formula"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda = \\frac{-1 \\pm \\sqrt{-3}}{2} = \\frac{-1\\pm\\sqrt{3}i}{2}$",
+        "deduced_from": [
+          "Discriminant calculation"
+        ]
+      },
+      {
+        "type": "let",
+        "variable": "lambda_1",
+        "value": "\\frac{-1 + \\sqrt{3}i}{2}"
+      },
+      {
+        "type": "let",
+        "variable": "lambda_2",
+        "value": "\\frac{-1 - \\sqrt{3}i}{2}"
+      },
+      {
+        "type": "assert",
+        "claim": "For $\\lambda_1$, $(A - \\lambda I)\\begin{bmatrix}x \\\\ y\\end{bmatrix} = \\begin{bmatrix}0 \\\\ 0\\end{bmatrix}$",
+        "deduced_from": [
+          "Eigenvalue definition"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\begin{bmatrix}\\frac{1}{2} - \\frac{\\sqrt{3}i}{2} & 1 \\\\ -1 & -1 + \\frac{1}{2} - \\frac{\\sqrt{3}i}{2}\\end{bmatrix} \\begin{bmatrix}x \\\\ y\\end{bmatrix} = \\begin{bmatrix}0 \\\\ 0\\end{bmatrix}$",
+        "deduced_from": [
+          "Matrix substitution"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$(\\frac{-1 - \\sqrt{3}i}{2})(x) + y = 0$",
+        "deduced_from": [
+          "Matrix equation simplification"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$y = (\\frac{-1+\\sqrt{3}i}{2})x$",
+        "deduced_from": [
+          "Equation simplification"
+        ]
+      },
+      {
+        "type": "let",
+        "variable": "v_1",
+        "value": "[1, \\frac{-1+\\sqrt{3}i}{2}]",
+        "kind": "eigenvector"
+      },
+      {
+        "type": "assert",
+        "claim": "The general solution for $X_1(t)$ is $X_1(t) = \\lambda e^{\\lambda_1 t} v_1$",
+        "deduced_from": [
+          "Eigenvalue and eigenvector solution"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$X_1(t) = \\lambda e^{(\\frac{-1+\\sqrt{3}i}{2})t} \\begin{bmatrix}1 \\\\ \\frac{-1 + \\sqrt{3}i}{2}\\end{bmatrix}$",
+        "deduced_from": [
+          "Substitution of $\\lambda_1$ and $v_1$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$X_1(t) = \\lambda e^{- \\frac{1}{2}t} \\begin{bmatrix}e^{\\frac{\\sqrt{3}i}{2}t} \\\\ e^{i(\\frac{-\\sqrt{3}}{2} + \\frac{3}{2})t}\\end{bmatrix}$",
+        "deduced_from": [
+          "Splitting exponential terms"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$X_1(t) = \\lambda e^{\\frac{-1}{2}t} \\begin{bmatrix}\\cos(\\frac{\\sqrt{3}}{2}t) + i\\sin(\\frac{\\sqrt{3}}{2}t) \\\\ e^{\\frac{-\\sqrt{3}i}{2}t + \\frac{3i}{2}t}\\end{bmatrix}$",
+        "deduced_from": [
+          "Euler's formula"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The origin would be a spiral sink.",
+        "proof-method": "Observation from the form of the solution."
+      },
+      {
+        "type": "assert",
+        "claim": "The general solution of the system is given as a linear combination of the real and imaginary parts of the solution: $X(t) = c_1 X_{Re} + c_2 X_{Im}$",
+        "proof-method": "Linear combination of solutions."
+      }
+    ],
+    "errors": [
+      {
+        "statement": "Incomplete justification for concluding that the origin is a spiral sink."
+      },
+      {
+        "statement": "Further analysis required for stability and behavior of the solution."
+      }
+    ]
+  }
+}

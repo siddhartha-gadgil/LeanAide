@@ -1,0 +1,133 @@
+{
+  "type": "theorem",
+  "name": "Origin as Circulation",
+  "Hypothesis": [
+    {
+      "type": "let",
+      "Variable": "<anonymous>",
+      "Statement": "We are given the linear differential equation $\\dot{x} = y$ and $\\dot{y} = -x-y$"
+    }
+  ],
+  "Conclusion": "The origin is a circulation for the given system of differential equations.",
+  "Status": "incomplete proof",
+  "Missing": [
+    {
+      "type": "problem",
+      "Statement": "Show that the solution curves spiral around the origin.",
+      "Solved": false
+    },
+    {
+      "type": "problem",
+      "Statement": "Explain why the negative exponential term in the solution implies that the trajectories approach the origin as $t$ goes to infinity.",
+      "Solved": false
+    }
+  ],
+  "Proof": {
+    "type": "proof",
+    "Steps": [
+      {
+        "type": "let",
+        "Variable": "A",
+        "Value": "$\\begin{bmatrix} 0 & 1 \\\\ -1 & -1 \\end{bmatrix}$",
+        "Statement": "Let $A = \\begin{bmatrix} 0 & 1 \\\\ -1 & -1 \\end{bmatrix}$"
+      },
+      {
+        "type": "assert",
+        "Claim": "The system of differential equations can be written as $X' = AX$",
+        "Proof-method": "Rewriting the system in matrix form"
+      },
+      {
+        "type": "assert",
+        "Claim": "The characteristic equation of A is  $(\\lambda)(\\lambda + 1) - (-1)(1) = 0$",
+        "Proof-method": "Using the definition of the characteristic equation"
+      },
+      {
+        "type": "assert",
+        "Claim": "The characteristic equation simplifies to $\\lambda^2 + \\lambda + 1 = 0$",
+        "Proof-method": "Algebraic simplification"
+      },
+      {
+        "type": "assert",
+        "Claim": "The solutions to the characteristic equation are $\\lambda = \\dfrac{-1 \\pm \\sqrt{1-4}}{2} = \\dfrac{-1}{2} \\pm i \\dfrac{\\sqrt{3}}{2}$",
+        "Proof-method": "Using the quadratic formula"
+      },
+      {
+        "type": "assume",
+        "Statement": "Assume $\\lambda = \\dfrac{-1}{2} + i\\dfrac{\\sqrt{3}}{2}$"
+      },
+      {
+        "type": "assert",
+        "Claim": "An eigenvector corresponding to $\\lambda$ can be found by solving $(A - \\lambda I)\\begin{bmatrix} x \\\\ y \\end{bmatrix} = 0$",
+        "Proof-method": "Using the definition of eigenvectors"
+      },
+      {
+        "type": "assert",
+        "Claim": "The equation $(A - \\lambda I)\\begin{bmatrix} x \\\\ y \\end{bmatrix} = 0$ simplifies to $(\\frac{-1}{2} - i \\frac{\\sqrt{3}}{2})x + y = 0$",
+        "Proof-method": "Matrix multiplication and substitution"
+      },
+      {
+        "type": "assert",
+        "Claim": "Solving for $y$, we get $y = (\\frac{1}{2} + i \\frac{\\sqrt{3}}{2})x$",
+        "Proof-method": "Algebraic manipulation"
+      },
+      {
+        "type": "assert",
+        "Claim": "Therefore, $V_2 = \\begin{bmatrix} 1 \\\\ \\frac{1}{2} + i \\frac{\\sqrt{3}}{2} \\end{bmatrix}$ is an eigenvector corresponding to $\\lambda$",
+        "Proof-method": "Choosing $x=1$ and using the derived relationship between x and y"
+      },
+      {
+        "type": "assert",
+        "Claim": "A solution to the system is $X(t) = \\alpha e^{\\begin{bmatrix} 1 \\\\ -1 + i \\frac{\\sqrt{3}}{2} \\end{bmatrix}t}$",
+        "Errors": [
+          "The exponent should be $\\left( \\frac{-1}{2} + i \\frac{\\sqrt{3}}{2} \\right)t$, not $\\begin{bmatrix} 1 \\\\ -1 + i \\frac{\\sqrt{3}}{2} \\end{bmatrix}t$"
+        ],
+        "Proof-method": "Using the eigenvalue and eigenvector"
+      },
+      {
+        "type": "assert",
+        "Claim": "Expanding the solution, we get $X(t) = \\alpha e^{\\frac{-t}{2} } \\begin{bmatrix} 2\\cos(\\frac{\\sqrt{3}}{2}t) + 2i\\sin(\\frac{\\sqrt{3}}{2}t) \\\\ [\\cos(\\frac{\\sqrt{3}}{2}t)-i\\sin(\\frac{\\sqrt{3}}{2}t)] + i[\\cos(\\frac{\\sqrt{3}}{2}t) - \\sin(\\frac{\\sqrt{3}}{2}t)]\\end{bmatrix}$",
+        "Errors": [
+          "The expansion of the exponential term is incorrect. It appears to be a mix of real and complex parts, and the coefficients are not consistent with the previous step."
+        ],
+        "Proof-method": "Expanding the exponential and using Euler's formula"
+      },
+      {
+        "type": "assert",
+        "Claim": "This simplifies to $X(t) = \\alpha e^{\\frac{-t}{2}} \\begin{bmatrix} 2 \\cos(\\frac{\\sqrt{3}}{2}t) \\\\ \\frac{-1}{2} \\cos(\\frac{\\sqrt{3}}{2}t) - \\frac{\\sqrt{3}}{2}\\sin(\\frac{\\sqrt{3}}{2}t)\\end{bmatrix}$",
+        "Proof-method": "Algebraic simplification"
+      },
+      {
+        "type": "assert",
+        "Claim": "The real part of $X(t)$ is $Re \\ X(t) = \\alpha e^{\\frac{-t}{2}} \\begin{bmatrix} \\cos(\\frac{\\sqrt{3}}{2}t) \\\\ \\frac{-1}{2}\\cos(\\frac{\\sqrt{3}}{2}t) - \\frac{\\sqrt{3}}{2} \\sin(\\frac{\\sqrt{3}}{2}t)\\end{bmatrix}$ and the imaginary part of $X(t)$ is $Im \\ X(t) = \\alpha e^{\\frac{-t}{2}} \\begin{bmatrix} \\sin(\\frac{\\sqrt{3}}{2}t) \\\\ \\frac{\\sqrt{3}}{2} \\cos(\\frac{\\sqrt{3}}{2}t) - \\frac{1}{2}\\sin(\\frac{\\sqrt{3}}{2}t)\\end{bmatrix}$",
+        "Proof-method": "Extracting real and imaginary parts"
+      },
+      {
+        "type": "assert",
+        "Claim": "These are solutions to $X' = AX$",
+        "Proof-method": "Verification by substitution"
+      },
+      {
+        "type": "assert",
+        "Claim": "The general solution is $X(t) = \\alpha e^{\\frac{-t}{2}} \\begin{bmatrix} 2\\cos(\\frac{\\sqrt{3}}{2}t) \\\\ \\frac{-1}{2}\\cos(\\frac{\\sqrt{3}}{2}t) - \\frac{\\sqrt{3}}{2} \\sin(\\frac{\\sqrt{3}}{2}t)\\end{bmatrix} + \\beta e^{\\frac{-t}{2}} \\begin{bmatrix} 2\\sin(\\frac{\\sqrt{3}}{2}t) \\\\ \\frac{\\sqrt{3}}{2} \\cos(\\frac{\\sqrt{3}}{2}t) - \\frac{1}{2}\\sin(\\frac{\\sqrt{3}}{2}t)\\end{bmatrix}$",
+        "Proof-method": "Using the principle of superposition for linear homogeneous equations"
+      },
+      {
+        "type": "assert",
+        "Claim": "This describes a spiral sink, as it has a negative exponential and spirals due to the sinusoidal functions.",
+        "Missing steps": [
+          {
+            "type": "problem",
+            "Statement": "Show that the solution curves spiral around the origin.",
+            "Solved": false
+          },
+          {
+            "type": "problem",
+            "Statement": "Explain why the negative exponential term in the solution implies that the trajectories approach the origin as $t$ goes to infinity.",
+            "Solved": false
+          }
+        ],
+        "Proof-method": "Analyzing the form of the general solution"
+      }
+    ]
+  }
+}

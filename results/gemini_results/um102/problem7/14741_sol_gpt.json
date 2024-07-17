@@ -1,0 +1,100 @@
+{
+  "type": "theorem",
+  "name": "Source of the Origin",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = x$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = y$"
+    }
+  ],
+  "conclusion": "The origin is a source.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\frac{d}{dt} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
+        "proof-method": "Direct computation"
+      },
+      {
+        "type": "let",
+        "variable": "A",
+        "value": "$\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$",
+        "kind": "matrix"
+      },
+      {
+        "type": "assert",
+        "claim": "$v = Av$",
+        "deduced_from": [
+          "$\\frac{d}{dt} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = A \\begin{bmatrix} x \\\\ y \\end{bmatrix}$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda_1 = \\lambda_2 = 1$ and the eigenspace is 2-dimensional",
+        "proof-method": "Eigenvalue and eigenspace computation"
+      },
+      {
+        "type": "let",
+        "variable": "v_1",
+        "value": "$(1, 0)$",
+        "kind": "eigenvector"
+      },
+      {
+        "type": "let",
+        "variable": "v_2",
+        "value": "$(0, 1)$",
+        "kind": "eigenvector"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{dx}{dt} = x \\implies x = c_1 e^t$",
+        "proof-method": "Solving the differential equation"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{dy}{dt} = y \\implies y = c_2 e^t$",
+        "proof-method": "Solving the differential equation"
+      },
+      {
+        "type": "assert",
+        "claim": "$y = \\frac{c_2}{c_1} x = kx$",
+        "proof-method": "Relation between $x$ and $y$"
+      },
+      {
+        "type": "assert",
+        "claim": "$|x|$ and $|y|$ increase as $t$ increases",
+        "proof-method": "Observation"
+      },
+      {
+        "type": "assert",
+        "claim": "The trajectory would be straight lines emerging from the origin",
+        "deduced_from": [
+          "$y = kx$",
+          "$|x|$ and $|y|$ increase as $t$ increases"
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "The origin is a source",
+        "errors": [
+          {
+            "statement": "Lack of rigorous justification for the statement that $|x|$ and $|y|$ increase as $t$ increases."
+          }
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Provide a rigorous justification for why $|x|$ and $|y|$ increase as $t$ increases.",
+      "solved": false
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "type": "theorem",
+  "name": "Source of Origin for Linear Differential Equation",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "\\dot{x} = x"
+    },
+    {
+      "type": "assume",
+      "statement": "\\dot{y} = y"
+    }
+  ],
+  "conclusion": "The origin is a source.",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} x \\\\ y \\end{pmatrix} = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}",
+        "proof-method": "Definition of differential equations."
+      },
+      {
+        "type": "let",
+        "variable": "A",
+        "value": "\\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}"
+      },
+      {
+        "type": "assert",
+        "claim": "Eigenvalues of A are \\lambda_1 = 1, \\lambda_2 = 1",
+        "calculation": [
+          "A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}",
+          "A - \\lambda I = 0",
+          "det(A - \\lambda I) = (1 - \\lambda)(1 - \\lambda) = 0",
+          "\\lambda_1 = 1, \\lambda_2 = 1"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "Eigenvector is any vector \\begin{pmatrix} a \\\\ b \\end{pmatrix}, a, b \\in \\mathbb{R}",
+        "proof-method": "Eigenvector equation."
+      },
+      {
+        "type": "assert",
+        "claim": "Solutions of the differential equation are \\begin{pmatrix} x(t) \\\\ y(t) \\end{pmatrix} = e^t \\begin{pmatrix} \\alpha \\\\ \\beta \\end{pmatrix}",
+        "calculation": [
+          "x(t) = \\alpha e^t",
+          "y(t) = \\beta e^t"
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Origin is a source",
+        "error": "Wrong eigenvalues used in concluding the nature of the origin."
+      }
+    ],
+    "errors": [
+      "The eigenvalues of the system matrix are incorrectly stated as \\lambda_1 = 0 and \\lambda_2 = 1. The correct eigenvalues are \\lambda_1 = 1 and \\lambda_2 = 1.",
+      "The conclusion about the origin being a source is not justified by the provided proof steps."
+    ]
+  }
+}

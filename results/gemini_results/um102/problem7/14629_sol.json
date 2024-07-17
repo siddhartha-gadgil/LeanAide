@@ -1,0 +1,139 @@
+{
+  "type": "theorem",
+  "name": "Origin of a System of Linear Differential Equations",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x(t)",
+      "kind": "function",
+      "property": "solution of the differential equation $\\dot{x} = x$"
+    },
+    {
+      "type": "let",
+      "variable": "y(t)",
+      "kind": "function",
+      "property": "solution of the differential equation $\\dot{y} = y$"
+    }
+  ],
+  "conclusion": "The origin (0, 0) is a source for the system of linear differential equations $\\dot{x} = x$, $\\dot{y} = y$",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\frac{dx}{dy} = x$ and $\\frac{dy}{dx} = y$",
+        "deduced_from": [
+          "$\\dot{x} = x$",
+          "$\\dot{y} = y$"
+        ],
+        "errors": [
+          "The correct equations are $\\frac{dx}{dt} = x$ and $\\frac{dy}{dt} = y$. Dividing these equations does not give $\\frac{dx}{dy}$ or $\\frac{dy}{dx}$."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{1}{x} dx = dy$ and $\\frac{1}{y} dy = dx$",
+        "deduced_from": [
+          "$\\frac{dx}{dy} = x$",
+          "$\\frac{dy}{dx} = y$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\log x = y$ and $\\log y = x$",
+        "deduced_from": [
+          "$\\frac{1}{x} dx = dy$",
+          "$\\frac{1}{y} dy = dx$"
+        ],
+        "proof-method": "Integrating both sides"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\log x - y = 0$ and $\\log y - x = 0$",
+        "deduced_from": [
+          "$\\log x = y$",
+          "$\\log y = x$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\log x - y = \\log y - x$",
+        "deduced_from": [
+          "$\\log x - y = 0$",
+          "$\\log y - x = 0$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\log x - \\log y + x - y = 0$",
+        "deduced_from": [
+          "$\\log x - y = \\log y - x$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\log(\\frac{x}{y}) + x - y = 0$",
+        "deduced_from": [
+          "$\\log x - \\log y + x - y = 0$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\log(\\frac{x}{y}) = y - x$",
+        "deduced_from": [
+          "$\\log(\\frac{x}{y}) + x - y = 0$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{x}{y} = e^{y-x}$",
+        "deduced_from": [
+          "$\\log(\\frac{x}{y}) = y - x$"
+        ],
+        "proof-method": "Exponentiating both sides"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{x}{y} = \\frac{e^y}{e^x}$",
+        "deduced_from": [
+          "$\\frac{x}{y} = e^{y-x}$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$x e^x = y e^y$",
+        "deduced_from": [
+          "$\\frac{x}{y} = \\frac{e^y}{e^x}$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$x e^x - y e^y = 0$",
+        "deduced_from": [
+          "$x e^x = y e^y$"
+        ]
+      },
+      {
+        "type": "let",
+        "variable": "f",
+        "value": "$x e^x - y e^y$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\nabla f =  xe^x + e^x - (ye^y + e^y) = e^x(x+1) - e^y(y+1)$"
+      },
+      {
+        "type": "assert",
+        "claim": "At the origin, $\\nabla f = 0$"
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, the origin is a saddle.",
+        "errors": [
+          "$\\nabla f = 0$ at the origin does not imply that the origin is a saddle. Further analysis, such as finding the eigenvalues of the Jacobian matrix, is required to determine the type of critical point."
+        ]
+      }
+    ]
+  }
+}

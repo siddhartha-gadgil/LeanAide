@@ -1,0 +1,87 @@
+{
+  "type": "theorem",
+  "name": "Circulation of the origin for a linear differential equation",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = -y$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = x$"
+    }
+  ],
+  "conclusion": "The origin is circulation.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "A",
+        "value": "$\\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}$"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of $A$ are $i$ and $-i$",
+        "deduced_from": [],
+        "proof-method": "Eigenvalue calculation",
+        "errors": [
+          "Incomplete calculation and verification of eigenvalues."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The solution is $X(t) = e^{it} \\begin{pmatrix} 1 \\\\ i \\end{pmatrix}$",
+        "deduced_from": [
+          "Linear differential equation solution for matrix exponentiation"
+        ],
+        "proof-method": "Matrix exponentiation",
+        "errors": [
+          "Incomplete explanation and steps for deriving the solution."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\begin{pmatrix} \\cos t + i \\sin t \\\\ i \\cos t - \\sin t \\end{pmatrix} \\begin{pmatrix} 1 \\\\ i \\end{pmatrix}$",
+        "deduced_from": [
+          "Solution form"
+        ],
+        "proof-method": "Multiplying exponentiated terms",
+        "errors": [
+          "Incorrect form of the multiplication and missing steps."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$X(t) = \\begin{pmatrix} \\cos t \\\\- \\sin t \\end{pmatrix} + i \\begin{pmatrix} \\sin t \\\\ \\cos t \\end{pmatrix}$",
+        "proof-method": "Separation of real and imaginary parts",
+        "errors": [
+          "Incorrect separation of terms and missing steps."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$X_{\\text{Re}}(t) = \\begin{pmatrix} \\cos t \\\\ -\\sin t \\end{pmatrix}$ and $X_{\\text{Im}}(t) = \\begin{pmatrix} \\sin t \\cos t \\end{pmatrix}$",
+        "proof-method": "Identifying real and imaginary components",
+        "errors": [
+          "Incorrect identification of components."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The origin is a saddle point",
+        "proof-method": "Eigenvalue analysis",
+        "errors": [
+          "Incorrect conclusion; correct analysis shows a center or circulation."
+        ]
+      }
+    ],
+    "missing": [
+      {
+        "type": "problem",
+        "statement": "Complete eigenvalue calculation and verify the nature of the origin."
+      }
+    ]
+  }
+}

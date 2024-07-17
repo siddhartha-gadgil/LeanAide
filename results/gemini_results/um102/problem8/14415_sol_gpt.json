@@ -1,0 +1,53 @@
+{
+  "type": "theorem",
+  "name": "For the linear differential equation \\( \\dot{x}=-y \\) and \\( \\dot{y}=x \\), prove that the origin is circulation.",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = -y$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = x$"
+    }
+  ],
+  "conclusion": "The origin is circulation.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\ddot{x} = -x$",
+        "deduced_from": [
+          "$\\dot{x} = -y$",
+          "$\\dot{y} = x$"
+        ],
+        "proof-method": "Differentiation of $\\dot{x} = -y$ and substitution of $\\dot{y} = x$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{d^2 x}{dt^2} = -x$",
+        "deduced_from": [
+          "$\\ddot{x} = -x$"
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "It's a sink.",
+        "errors": [
+          {
+            "type": "conclude",
+            "statement": "The conclusion that it is a sink is incorrect. The correct analysis of the system shows that the origin exhibits circular motion, as evidenced by the equations $\\ddot{x} = -x$ and $\\ddot{y} = -y$ forming a harmonic oscillator."
+          }
+        ]
+      }
+    ],
+    "missing": [
+      {
+        "type": "problem",
+        "statement": "Properly analyze the system to conclude the nature of the origin."
+      }
+    ]
+  }
+}

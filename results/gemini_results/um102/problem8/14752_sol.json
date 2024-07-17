@@ -1,0 +1,126 @@
+{
+  "type": "theorem",
+  "name": "Circulation at the Origin",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x(t)",
+      "kind": "function",
+      "property": "solution to differential equation $\\dot{x}=-y$"
+    },
+    {
+      "type": "let",
+      "variable": "y(t)",
+      "kind": "function",
+      "property": "solution to differential equation $\\dot{y} = x$"
+    }
+  ],
+  "conclusion": "The system of differential equations describes a circulation about the origin.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We are given the system of differential equations $AX=X'$ where $A = \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}$.  To solve this, we will find the eigenvalues and eigenvectors of $A$."
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of $A$ are $\\lambda = \\pm i$.",
+        "proof-method": "Solving the characteristic equation.",
+        "calculation": [
+          {
+            "step": "$det (A - \\lambda I) = 0$",
+            "justification": "Definition of eigenvalues."
+          },
+          {
+            "step": "$ det \\left( \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix} + \\begin{bmatrix} -\\lambda & 0 \\\\ 0 & -\\lambda \\end{bmatrix} \\right) = 0$",
+            "justification": "Substituting the matrix A and the identity matrix."
+          },
+          {
+            "step": "$ det \\begin{bmatrix} -\\lambda & -1 \\\\ 1 & -\\lambda \\end{bmatrix} = 0$",
+            "justification": "Simplifying."
+          },
+          {
+            "step": "$\\lambda^2 + 1 = 0$",
+            "justification": "Computing the determinant."
+          },
+          {
+            "step": "$\\lambda^2 = -1$",
+            "justification": "Rearranging."
+          },
+          {
+            "step": "$\\lambda = \\pm i$",
+            "justification": "Solving for $\\lambda$."
+          }
+        ]
+      },
+      {
+        "type": "remark",
+        "statement": "Let's start with the eigenvalue  $\\lambda_1 = i$."
+      },
+      {
+        "type": "assert",
+        "claim": "An eigenvector corresponding to $\\lambda_1 = i$ is $\\begin{bmatrix} 1 \\\\ -i \\end{bmatrix}$.",
+        "proof-method": "Solving the system $(A-\\lambda I)X=0$",
+        "calculation": [
+          {
+            "step": "$ \\begin{bmatrix} -i & -1 \\\\ 1 & -i \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 0 \\\\ 0 \\end{bmatrix}$",
+            "justification": "Plugging in $\\lambda_1 = i$ into $(A-\\lambda I)X=0$."
+          },
+          {
+            "step": "$ -ix - y = 0$",
+            "justification": "Expanding the matrix equation."
+          },
+          {
+            "step": "$ +x -iy = 0$",
+            "justification": "Second equation is redundant"
+          },
+          {
+            "step": "$ x = iy$",
+            "justification": "Solving for x"
+          },
+          {
+            "step": "$\\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} iy \\\\ y \\end{bmatrix}$",
+            "justification": "Rewriting in vector form"
+          },
+          {
+            "step": "$\\begin{bmatrix} x \\\\ y \\end{bmatrix} = y\\begin{bmatrix} i \\\\ 1 \\end{bmatrix}$",
+            "justification": "Factoring out y"
+          }
+        ]
+      },
+      {
+        "type": "remark",
+        "statement": "A solution to the system of differential equations could then be given by $X(t) = e^t \\begin{bmatrix} 1 \\\\ -i \\end{bmatrix}$. However, this solution involves complex numbers and we are seeking real solutions."
+      },
+      {
+        "type": "assert",
+        "claim": " $X(t) = \\begin{bmatrix} i sin \\theta + cos \\theta \\\\ sin \\theta - i cos \\theta \\end{bmatrix}$ where $\\theta = t$ is a solution to the system of differential equations.",
+        "proof-method": "Using Euler's formula and simplifying.",
+        "missing steps": [
+          {
+            "type": "problem",
+            "statement": "Show the intermediate steps to arrive at the given solution."
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The solution can be written as $X(t) = \\begin{bmatrix} cos \\theta \\\\ sin \\theta \\end{bmatrix} + i \\begin{bmatrix} sin \\theta \\\\ -cos \\theta \\end{bmatrix}$ where $\\theta = t$",
+        "proof-method": "Rewriting the previous expression."
+      },
+      {
+        "type": "assert",
+        "claim": "The general solution is $X(t) = c_1 X_{Re} + c_2 X_{im}$, where  $X_{Re} = \\begin{bmatrix} cos \\theta \\\\ sin \\theta \\end{bmatrix}$ and $X_{im} = \\begin{bmatrix} sin \\theta \\\\ -cos \\theta \\end{bmatrix}$. This solution describes a circulation about the origin. ",
+        "proof-method": "Interpreting the solution.",
+        "missing steps": [
+          {
+            "type": "problem",
+            "statement": "Explain why the given solution represents a circulation about the origin."
+          }
+        ]
+      }
+    ]
+  }
+}

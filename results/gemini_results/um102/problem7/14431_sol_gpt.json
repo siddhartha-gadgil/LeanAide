@@ -1,0 +1,84 @@
+{
+  "type": "theorem",
+  "name": "Source at Origin for Linear Differential Equation",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = x$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = y$"
+    }
+  ],
+  "conclusion": "The origin is a source.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "X",
+        "value": "\\begin{pmatrix} x \\\\ y \\end{pmatrix}",
+        "kind": "vector"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\dot{X} = AX$",
+        "deduced_from": [
+          "$\\dot{x} = x$",
+          "$\\dot{y} = y$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$A \\begin{pmatrix} x \\\\ y \\end{pmatrix} = \\begin{pmatrix} x \\\\ y \\end{pmatrix}$",
+        "deduced_from": [
+          "Matrix form of the system of equations"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$A = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$",
+        "proof-method": "Comparing coefficients"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\text{Tr}(A) = 2$",
+        "deduced_from": [
+          "$A = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\det(A) = 1$",
+        "deduced_from": [
+          "$A = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda = \\frac{1}{2} \\left[ 2 \\pm \\sqrt{4-4} \\right] = 1$",
+        "proof-method": "Characteristic polynomial"
+      },
+      {
+        "type": "assert",
+        "claim": "The only eigenvalue is $\\lambda = 1$, which is positive.",
+        "deduced_from": [
+          "$\\lambda = 1$"
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Hence, the origin is a source.",
+        "error": "The proof does not justify why having a positive eigenvalue implies the origin is a source. The argument needs to address the behavior of trajectories near the origin."
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Justify why a positive eigenvalue implies the origin is a source."
+    }
+  ]
+}

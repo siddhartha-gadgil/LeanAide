@@ -1,0 +1,132 @@
+{
+  "type": "theorem",
+  "name": "Circulation at Origin",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x(t)",
+      "kind": "function",
+      "property": "solution of the linear differential equation $\\dot{x}=-y$"
+    },
+    {
+      "type": "let",
+      "variable": "y(t)",
+      "kind": "function",
+      "property": "solution of the linear differential equation $\\dot{y}=x$"
+    }
+  ],
+  "conclusion": "The origin is a point of circulation for the system of linear differential equations $\\dot{x}=-y$ and $\\dot{y}=x$.",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "j",
+        "value": "n",
+        "kind": "unknown"
+      },
+      {
+        "type": "remark",
+        "statement": "It is not clear what $j$ and $n$ represent in this context. Are they supposed to be $\\dot{x}$ and $\\dot{y}$? This should be clarified."
+      },
+      {
+        "type": "assume",
+        "statement": "$i=-y$"
+      },
+      {
+        "type": "remark",
+        "statement": "Similar to $j$ and $n$, the meaning of  $i$ is not clear and should be defined."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{dn}{dy}=-y$",
+        "deduced_from": [
+          "$j=n$",
+          "$i=-y$"
+        ],
+        "proof-method": "The justification for this step is unclear. It seems to be treating $\\dot{x}$ and $\\dot{y}$ as variables independent of $x$ and $y$, which is incorrect."
+      },
+      {
+        "type": "assert",
+        "claim": "$n=\\frac{-y^2}{2}$",
+        "calculation": [
+          "$dn=-ydy$",
+          "$\\int dn =\\int -ydy$",
+          "$n=\\frac{-y^2}{2}$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$2n=-y^2$",
+        "deduced_from": [
+          "$n=\\frac{-y^2}{2}$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{dy}{dn}=n$",
+        "deduced_from": [
+          "$j=n$"
+        ],
+        "proof-method": "Similar to before, the justification here is unclear and likely incorrect."
+      },
+      {
+        "type": "assert",
+        "claim": "$y=\\frac{n^2}{2}$",
+        "calculation": [
+          "$dy=ndn$",
+          "$\\int dy = \\int ndn$",
+          "$y=\\frac{n^2}{2}$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$n^2-2y=0$",
+        "deduced_from": [
+          "$y=\\frac{n^2}{2}$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$y^2+2n=0$",
+        "proof-method": "The source of this equation is not explained."
+      },
+      {
+        "type": "assert",
+        "claim": "$x^2-y^2-2x-2y=0$",
+        "deduced_from": [
+          "$y^2+2n=0$",
+          "$y^2+2n=n^2-2y$"
+        ],
+        "proof-method": "This step uses the incorrect assumption that $n$ and $x$ are interchangeable."
+      },
+      {
+        "type": "let",
+        "variable": "f",
+        "value": "$x^2-2x-(y^2+2y)$",
+        "kind": "function"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\nabla f = 2n-2-(2y+2)=2x-2y-4$",
+        "deduced_from": [
+          "$f= x^2-2x-(y^2+2y)$"
+        ],
+        "proof-method": "Again, this incorrectly assumes $n$ and $x$ are interchangeable."
+      },
+      {
+        "type": "assert",
+        "claim": "At the origin $\\nabla f = -4$",
+        "deduced_from": [
+          "$\\nabla f = 2x-2y-4$"
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, at the origin it is a source.",
+        "error": "The conclusion does not follow from the previous steps. Even if the calculations were correct, the gradient of $f$ being nonzero at the origin does not imply the origin is a source for the given system of differential equations."
+      }
+    ]
+  }
+}

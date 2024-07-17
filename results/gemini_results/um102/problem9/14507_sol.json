@@ -1,0 +1,124 @@
+{
+  "type": "theorem",
+  "name": "Spiral Sink Theorem",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "<anonymous>",
+      "kind": "differential equation system",
+      "property": "linear",
+      "value": "$\\begin{cases} \\dot{x} = y \\\\ \\dot{y} = -x - y \\end{cases}$"
+    }
+  ],
+  "conclusion": "The origin is a spiral sink for the given system of differential equations.",
+  "status": "incomplete proof",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Show that the imaginary part of the eigenvalues of the matrix $A = \\begin{bmatrix} 0 & 1 \\\\ -1 & -1 \\end{bmatrix}$ corresponds to a circulation around the origin.",
+      "solved": false
+    },
+    {
+      "type": "problem",
+      "statement": "Prove that the real part of the eigenvalues being negative implies a decay towards the origin.",
+      "solved": false
+    }
+  ],
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We begin by rewriting the system in matrix form."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\begin{bmatrix} \\dot{x} \\\\ \\dot{y} \\end{bmatrix} = \\begin{bmatrix} 0 & 1 \\\\ -1 & -1 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
+        "proof-method": "Rewriting the given system of equations."
+      },
+      {
+        "type": "let",
+        "variable": "A",
+        "kind": "matrix",
+        "value": "$\\begin{bmatrix} 0 & 1 \\\\ -1 & -1 \\end{bmatrix}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\dot{X} = AX$",
+        "proof-method": "Using matrix notation for the system of equations."
+      },
+      {
+        "type": "remark",
+        "statement": "We find the eigenvalues of matrix A."
+      },
+      {
+        "type": "assert",
+        "claim": "$|A - \\lambda I| = \\begin{vmatrix} -\\lambda & 1 \\\\ -1 & -1-\\lambda \\end{vmatrix} = 0$",
+        "proof-method": "Setting up the characteristic equation to find eigenvalues."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda(1+\\lambda) + 1 = 0$",
+        "proof-method": "Calculating the determinant."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda^2 + \\lambda + 1 = 0$",
+        "proof-method": "Simplifying the equation."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda = \\dfrac{-1 \\pm \\sqrt{1-4}}{2}$",
+        "proof-method": "Solving the quadratic equation using the quadratic formula."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda = \\dfrac{-1 \\pm i\\sqrt{3}}{2} = \\dfrac{-1}{2} \\pm \\dfrac{\\sqrt{3}i}{2}$",
+        "proof-method": "Simplifying the expression."
+      },
+      {
+        "type": "assert",
+        "claim": "The imaginary part of $\\lambda$ ($\\pm \\frac{\\sqrt{3}i}{2}$) gives a circulation.",
+        "errors": [
+          {
+            "type": "error",
+            "statement": "This statement requires further justification. The presence of an imaginary part in the eigenvalue does imply oscillation, but it does not guarantee a circular circulation around the origin."
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The real part of $\\lambda$ $(= -\\frac{1}{2})$, when superposed on the circulation, gives a spiraling decay with time.",
+        "errors": [
+          {
+            "type": "error",
+            "statement": "While a negative real part does imply decay towards the origin, the superposition with the oscillation leading to a spiral needs a more rigorous proof."
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "As $t\\to \\infty$, $X(t) \\to 0$.",
+        "errors": [
+          {
+            "type": "error",
+            "statement": "This conclusion is based on the previous erroneous assumptions and needs to be revisited."
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "So, the origin acts as a SPIRAL SINK.",
+        "error": "The conclusion is not fully justified due to errors in the proof."
+      },
+      {
+        "type": "remark",
+        "statement": "[Image of a spiral converging to the origin]"
+      },
+      {
+        "type": "remark",
+        "statement": "Sense of spiral depends on the sign of parameters."
+      }
+    ]
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "type": "theorem",
+  "name": "Circulation at the Origin",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "<anonymous>",
+      "kind": "differential equation",
+      "property": "linear",
+      "value": "$\\dot{x} = y$"
+    },
+    {
+      "type": "let",
+      "variable": "<anonymous>",
+      "kind": "differential equation",
+      "property": "linear",
+      "value": "$\\dot{y} = -x - y$"
+    }
+  ],
+  "conclusion": "The origin is a circulation for the given system of differential equations.",
+  "status": "incomplete proof",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Determine the eigenvalues of the matrix $A = \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}$.",
+      "solved": false
+    },
+    {
+      "type": "problem",
+      "statement": "Based on the eigenvalues of $A$, classify the equilibrium point at the origin (e.g., stable node, unstable node, saddle, center, spiral).",
+      "solved": false
+    },
+    {
+      "type": "problem",
+      "statement": "Prove that the classification of the origin as a circulation is consistent with the behavior of the system's trajectories.",
+      "solved": false
+    }
+  ],
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We can express the given system of differential equations in matrix form."
+      },
+      {
+        "type": "assert",
+        "claim": "$ \\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = A \\begin{pmatrix} x \\\\ y \\end{pmatrix} $ where $A = \\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}$",
+        "proof-method": "Rewriting the system in matrix form."
+      },
+      {
+        "type": "remark",
+        "statement": "To determine the nature of the equilibrium point at the origin, we need to analyze the eigenvalues of matrix $A$."
+      },
+      {
+        "type": "remark",
+        "statement": "Further steps are needed to calculate the eigenvalues and interpret their implications for the system's behavior."
+      }
+    ]
+  }
+}

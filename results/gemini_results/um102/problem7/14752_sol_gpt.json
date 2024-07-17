@@ -1,0 +1,85 @@
+{
+  "type": "theorem",
+  "name": "Source of Origin for Linear Differential Equation",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x}=x$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y}=y$"
+    }
+  ],
+  "conclusion": "The origin is a source.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$AX = x'$ where $A = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$ and $X = \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
+        "proof-method": "Substitute the values of $A$ and $X$."
+      },
+      {
+        "type": "assert",
+        "claim": "To find the eigenvalues, we solve the equation $\\det(A - dI) = 0$",
+        "proof-method": "Standard method to find eigenvalues."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\det \\begin{bmatrix} 1-d & 0 \\\\ 0 & 1-d \\end{bmatrix} = 0$",
+        "proof-method": "Substitute $A$ and $I$ and compute the determinant."
+      },
+      {
+        "type": "assert",
+        "claim": "$(1-d)(1-d) = 0$",
+        "proof-method": "simplify the determinant equation."
+      },
+      {
+        "type": "assert",
+        "claim": "$d = 1$",
+        "proof-method": "Solve the polynomial equation."
+      },
+      {
+        "type": "assert",
+        "claim": "Thus $d_1 = d_2 = 1$",
+        "proof-method": "Conclude from the roots of the characteristic equation."
+      },
+      {
+        "type": "assert",
+        "claim": "$(A - I)\\begin{bmatrix} c_1 \\\\ c_2 \\end{bmatrix} = \\begin{bmatrix} 0 \\\\ 0 \\end{bmatrix}$",
+        "proof-method": "Use the eigenvalues found."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\begin{bmatrix} 0 & 0 \\\\ 0 & 0 \\end{bmatrix} \\begin{bmatrix} c_1 \\\\ c_2 \\end{bmatrix} = \\begin{bmatrix} 0 \\\\ 0 \\end{bmatrix}$",
+        "proof-method": "Substitute $A - I$."
+      },
+      {
+        "type": "assert",
+        "claim": "Thus Above $v$ stops for $\\forall v \\in \\mathbb{R}^2$",
+        "errors": [
+          "This statement is unclear and could be incorrect; needs rigorous justification."
+        ]
+      },
+      {
+        "type": "let",
+        "variable": "$v_1$",
+        "value": "$\\begin{bmatrix} 1 \\\\ 1 \\end{bmatrix}$",
+        "kind": "Basis vector"
+      },
+      {
+        "type": "assert",
+        "claim": "$X(t) = \\lambda e^t \\begin{bmatrix} 1 \\\\ 1 \\end{bmatrix}$ is the general solution",
+        "proof-method": "Use the basis vector and the form of the solution for linear differential equations."
+      }
+    ],
+    "missing": [
+      {
+        "type": "problem",
+        "statement": "Show that the origin is a source using the general solution $X(t) = \\lambda e^t \\begin{bmatrix} 1 \\\\ 1 \\end{bmatrix}$."
+      }
+    ]
+  }
+}

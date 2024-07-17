@@ -1,0 +1,80 @@
+{
+  "type": "theorem",
+  "name": "Source of the Linear Differential Equation",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = x$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = y$"
+    }
+  ],
+  "conclusion": "The origin is a source.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$X' = AX$",
+        "deduced_from": [
+          "$\\dot{x} = x$",
+          "$\\dot{y} = y$"
+        ],
+        "proof-method": "Combination of the differential equations"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\begin{bmatrix} \\dot{x} \\\\ \\dot{y} \\end{bmatrix} = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
+        "deduced_from": [
+          "$\\dot{x} = x$",
+          "$\\dot{y} = y$"
+        ],
+        "proof-method": "Matrix representation of the system"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues are repeated, $\\lambda = 1$",
+        "deduced_from": [
+          "$\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$"
+        ],
+        "proof-method": "Eigenvalue computation of the identity matrix"
+      },
+      {
+        "type": "assert",
+        "claim": "Every vector is an eigenvector of the identity transform",
+        "deduced_from": [
+          "The identity matrix"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$X(t) = V_0 e^{\\lambda t}$",
+        "deduced_from": [
+          "Solution to the linear system with eigenvalue $\\lambda$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$X(t) \\to \\infty$ as $t \\to \\infty$",
+        "proof-method": "Behavior of the exponential function $e^{\\lambda t}$ with $\\lambda = 1$"
+      },
+      {
+        "type": "conclude",
+        "statement": "This is a diverging dynamical system, and since each phase line is concurrent at the origin, the origin acts as a source.",
+        "errors": [
+          "The explanation is not rigorous and lacks details on why the origin acts as a source."
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Provide a rigorous explanation of why the origin acts as a source based on the phase portrait and diverging trajectories.",
+      "solved": false
+    }
+  ]
+}

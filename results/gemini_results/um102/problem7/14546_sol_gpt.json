@@ -1,0 +1,52 @@
+{
+  "type": "theorem",
+  "name": "Origin is a source for the given linear differential equations",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "The linear differential equations \\( \\dot{x} = x \\) and \\( \\dot{y} = y \\)."
+    }
+  ],
+  "conclusion": "The origin is a source.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "A",
+        "value": "\\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}",
+        "kind": "matrix"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\dot{x} = Ax$",
+        "deduced_from": [
+          "The differential equations \\( \\dot{x} = x \\) and \\( \\dot{y} = y \\)."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The matrix $A$ has eigenvalues $1, 1$ with corresponding eigenvectors $\\begin{pmatrix} 1 \\\\ 0 \\end{pmatrix}$ and $\\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix}$",
+        "proof-method": "Eigenvalue and eigenvector calculation"
+      },
+      {
+        "type": "assert",
+        "claim": "$x(t) = c_1 e^t \\begin{pmatrix} 1 \\\\ 0 \\end{pmatrix} + c_2 e^t \\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix}$",
+        "missing steps": [
+          {
+            "type": "problem",
+            "statement": "Derive the general solution for the system of linear differential equations."
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "From these we get $x(t) = (c_1 e^t, c_2 e^t)$",
+        "errors": [
+          "The expression $x(t, (c_1 + c_2) - c_1) = 0$ is incorrect and unclear."
+        ]
+      }
+    ]
+  }
+}

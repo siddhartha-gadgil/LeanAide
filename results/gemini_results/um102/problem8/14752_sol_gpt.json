@@ -1,0 +1,110 @@
+{
+  "type": "theorem",
+  "name": "Circulation at the Origin for a Linear Differential System",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "A",
+      "value": "\\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}",
+      "kind": "matrix"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = -y$ and $\\dot{y} = x$"
+    }
+  ],
+  "conclusion": "The origin is a center (circulation).",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "X",
+        "value": "\\begin{bmatrix} x \\\\ y \\end{bmatrix}",
+        "kind": "vector"
+      },
+      {
+        "type": "assert",
+        "claim": "$AX = X'$",
+        "calculation": [
+          "$\\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} -y \\\\ x \\end{bmatrix}$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\det(A - \\lambda I) = 0$",
+        "calculation": [
+          "$\\det \\left( \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix} - \\begin{bmatrix} \\lambda & 0 \\\\ 0 & \\lambda \\end{bmatrix} \\right) = 0$",
+          "$\\det \\begin{bmatrix} -\\lambda & -1 \\\\ 1 & -\\lambda \\end{bmatrix} = 0$",
+          "$\\lambda^2 + 1 = 0$",
+          "$\\lambda^2 = -1$",
+          "$\\lambda = \\pm i$"
+        ]
+      },
+      {
+        "type": "let",
+        "variable": " \\lambda_1",
+        "value": "i",
+        "kind": "eigenvalue"
+      },
+      {
+        "type": "let",
+        "variable": " \\lambda_2",
+        "value": "-i",
+        "kind": "eigenvalue"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvector corresponding to $\\lambda_1 = i$ is $\\begin{bmatrix} 1 \\\\ -i \\end{bmatrix}$",
+        "calculation": [
+          "$\\begin{bmatrix} -i & -1 \\\\ 1 & -i \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 0 \\\\ 0 \\end{bmatrix}$",
+          "$-ix - y = 0, x = iy$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "A general solution to the system is $X(t) = e^{it} \\begin{bmatrix} 1 \\\\ -i \\end{bmatrix}$",
+        "calculation": [
+          {
+            "step": "$X(t) = e^{it} \\begin{bmatrix} 1 \\\\ -i \\end{bmatrix}$",
+            "justification": "Solution involves complex numbers"
+          },
+          {
+            "step": "$e^{it} = \\cos t + i \\sin t$",
+            "justification": "Euler's formula"
+          }
+        ],
+        "errors": [
+          "We are seeking real solutions"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$X(t) = \\begin{bmatrix} \\cos t \\\\ \\sin t \\end{bmatrix} + i \\begin{bmatrix} \\sin t \\\\ -\\cos t \\end{bmatrix}$",
+        "calculation": [
+          "$\\begin{bmatrix} \\cos t \\\\ \\sin t \\end{bmatrix} + i \\begin{bmatrix} \\sin t \\\\ -\\cos t \\end{bmatrix}$",
+          "$X_{Re} = \\begin{bmatrix} \\cos t \\\\ \\sin t \\end{bmatrix}$",
+          "$X_{Im} = \\begin{bmatrix} \\sin t \\\\ -\\cos t \\end{bmatrix}$"
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Thus, the solution describes a circulation about the origin: $X(t) = c_1 X_{Re} + c_2 X_{Im}$",
+        "errors": [
+          "The use of complex eigenvectors needs to be justified within the context of real solutions."
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Justify the use of complex eigenvectors for a real solution."
+    },
+    {
+      "type": "problem",
+      "statement": "Explicitly show how the real part of the solution leads to a circular trajectory around the origin."
+    }
+  ]
+}

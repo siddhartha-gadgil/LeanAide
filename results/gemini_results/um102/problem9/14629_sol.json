@@ -1,0 +1,132 @@
+{
+  "type": "theorem",
+  "name": "Circulation at the Origin",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "<anonymous>",
+      "kind": "differential equations",
+      "property": "linear",
+      "value": "$\\dot{x} = y$ and $\\dot{y} = -x - y$"
+    }
+  ],
+  "conclusion": "The origin is a circulation for the given system of differential equations.",
+  "status": "incomplete proof",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Provide a definition for 'circulation' in the context of a system of differential equations."
+    },
+    {
+      "type": "problem",
+      "statement": "Clarify the meaning and relevance of the equation '$x=y$' and the variable '$n$' in the provided proof attempt."
+    }
+  ],
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "The proof appears to be analyzing a specific trajectory where $x=y$ and introduces a variable $n$. The connection to the concept of 'circulation' is unclear."
+      },
+      {
+        "type": "assert",
+        "claim": "$dn = y\\,dy$",
+        "missing steps": [
+          {
+            "type": "problem",
+            "statement": "Explain the derivation of this equation and the role of the variable '$n$'."
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$n = \\frac{y^2}{2}$",
+        "deduced_from": [
+          "$dn = y\\,dy$"
+        ],
+        "proof-method": "Integration of both sides"
+      },
+      {
+        "type": "assert",
+        "claim": "$dy = -n\\,dn - y\\,dn$",
+        "missing steps": [
+          {
+            "type": "problem",
+            "statement": "Explain the derivation of this equation."
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$y = -\\frac{n^2}{2} - yn$",
+        "deduced_from": [
+          "$dy = -n\\,dn - y\\,dn$"
+        ],
+        "proof-method": "Integration of both sides"
+      },
+      {
+        "type": "assert",
+        "claim": "$2y = -n^2 - 2ny$",
+        "deduced_from": [
+          "$y = -\\frac{n^2}{2} - yn$"
+        ],
+        "proof-method": "Multiplication of both sides by 2"
+      },
+      {
+        "type": "assert",
+        "claim": "$n^2 + 2ny + 2y = 0$",
+        "deduced_from": [
+          "$2y = -n^2 - 2ny$"
+        ],
+        "proof-method": "Rearranging terms"
+      },
+      {
+        "type": "assert",
+        "claim": "$y^2 - 2n = n^2 + 2ny + 2y$",
+        "errors": [
+          {
+            "type": "error",
+            "statement": "This equation appears to be derived by adding unrelated expressions from previous steps. Its purpose and logical connection to the proof are unclear."
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$n^2 - y^2 + 2ny + 2n + 2y = 0 = f$",
+        "deduced_from": [
+          "$y^2 - 2n = n^2 + 2ny + 2y$"
+        ],
+        "proof-method": "Rearranging terms and defining the expression as 'f'"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\Delta f = 2n - 2y + 2y + 2 + 2 = 2n + 4$",
+        "errors": [
+          {
+            "type": "error",
+            "statement": "The meaning of '$\\Delta f$' is not defined, and its calculation appears to involve arbitrary manipulation of terms from the expression 'f'."
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "At origin $\\Delta f = 4$",
+        "deduced_from": [
+          "$\\Delta f = 2n + 4$"
+        ],
+        "proof-method": "Substitution (presumably $n=0$ at the origin, although this is not explicitly stated)"
+      },
+      {
+        "type": "conclude",
+        "statement": "At the origin it is a single. $\\boxed{0}$",
+        "errors": [
+          {
+            "type": "error",
+            "statement": "The conclusion is unclear and lacks justification. The terms 'single' and '$\\boxed{0}$' are not explained in the context of the proof."
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "type": "theorem",
+  "name": "Origin as Source",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x",
+      "kind": "function of t",
+      "property": "satisfies the differential equation $\\dot{x} = x$"
+    },
+    {
+      "type": "let",
+      "variable": "y",
+      "kind": "function of t",
+      "property": "satisfies the differential equation $\\dot{y} = y$"
+    }
+  ],
+  "conclusion": "The origin is a source for the linear system of differential equations given by $\\dot{x} = x$ and $\\dot{y} = y$",
+  "status": "incomplete proof",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Show that the eigenvalues of the matrix  $\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$ are both positive.  Connect this result to the definition of a source for a system of linear differential equations."
+    }
+  ]
+}

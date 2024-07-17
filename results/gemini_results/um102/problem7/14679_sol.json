@@ -1,62 +1,90 @@
 {
   "type": "theorem",
-  "name": "Origin as a Source",
+  "name": "Origin as a Source in a Linear System",
   "hypothesis": [
     {
       "type": "let",
       "variable": "<anonymous>",
-      "statement": "We are given the linear dynamical system \\( \\dot{x}=x \\) and \\( \\dot{y}=y \\)"
+      "kind": "differential equation system",
+      "property": "linear",
+      "value": "$\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} x \\\\ y \\end{pmatrix}$"
     }
   ],
-  "conclusion": "The origin is a source for the given dynamical system.",
-  "status": "proved",
+  "conclusion": "The origin is a source for the given system of differential equations.",
+  "status": "incomplete proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
-        "type": "remark",
-        "statement": "To prove the origin is a source, we need to find the general solution of the system and analyze its behavior."
-      },
-      {
         "type": "assert",
-        "claim": "The given system can be written in matrix form as \\( \\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix} \\).",
-        "proof-method": "Direct rewriting of the system."
+        "claim": "The system can be written in matrix form as $\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}$",
+        "proof-method": "Rewriting the system"
       },
       {
         "type": "let",
         "variable": "A",
-        "value": "\\(\\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}\\)",
-        "statement": "Let \\(A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}\\)."
+        "kind": "matrix",
+        "value": "$\\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$"
       },
       {
         "type": "assert",
-        "claim": "The eigenvalues of A are \\(\\lambda_1 = \\lambda_2 = 1\\).",
-        "proof-method": "Solving the characteristic equation \\( det(A - \\lambda I) = 0 \\)."
+        "claim": "The eigenvalues of $A$ are $\\lambda_1 = 0$ and $\\lambda_2 = 1$",
+        "errors": [
+          {
+            "type": "remark",
+            "statement": "The eigenvalues of the identity matrix are both 1, not 0 and 1."
+          }
+        ]
       },
       {
         "type": "assert",
-        "claim": "The eigenvectors of A are any vectors of the form \\( \\begin{pmatrix} a \\\\ b \\end{pmatrix} \\), where a and b are real numbers.",
-        "proof-method": "Solving the system of equations \\( (A - \\lambda I) \\mathbf{v} = \\mathbf{0} \\) for \\( \\lambda = 1 \\)."
+        "claim": "The eigenvectors are of the form $\\begin{pmatrix} a \\\\ b \\end{pmatrix}$, where $a, b \\in \\mathbb{R}$",
+        "missing steps": [
+          {
+            "type": "problem",
+            "statement": "Show that any vector can be an eigenvector for this specific matrix."
+          }
+        ]
       },
       {
         "type": "assert",
-        "claim": "The general solution of the system is \\( X(t) = e^t \\begin{pmatrix} c_1 \\\\ c_2 \\end{pmatrix} \\), where \\(c_1\\) and \\(c_2\\) are arbitrary constants.",
-        "deduced_from": [
-          "The eigenvalues and eigenvectors of A"
-        ],
-        "proof-method": "Using the standard method for solving linear systems of differential equations with repeated eigenvalues."
+        "claim": "The solutions of the differential equation are of the form $x(t) = \\alpha e^t + \\beta e^t$",
+        "errors": [
+          {
+            "type": "remark",
+            "statement": "This solution only considers the x-coordinate. The general solution should be in the form of $X(t) = c_1 \\mathbf{v_1} e^{\\lambda_1 t} + c_2 \\mathbf{v_2} e^{\\lambda_2 t}$ for a system of differential equations."
+          }
+        ]
       },
       {
-        "type": "remark",
-        "statement": "The general solution shows that all trajectories are straight lines emanating from the origin."
+        "type": "assert",
+        "claim": "$\\begin{pmatrix} x \\\\ y \\end{pmatrix} = \\begin{pmatrix} e^t \\\\ e^t \\end{pmatrix}$",
+        "missing steps": [
+          {
+            "type": "problem",
+            "statement": "Explain how this specific solution is derived from the general solution."
+          }
+        ]
       },
       {
-        "type": "remark",
-        "statement": "Since the eigenvalue is positive (\\( \\lambda = 1 \\)), the trajectories move away from the origin as t increases."
+        "type": "assert",
+        "claim": "$X(t) = e^t \\begin{pmatrix} \\alpha \\\\ \\beta \\end{pmatrix}$",
+        "missing steps": [
+          {
+            "type": "problem",
+            "statement": "Explain the relationship between this vector form and the previous equations for x(t) and the vector (x, y)."
+          }
+        ]
       },
       {
         "type": "conclude",
-        "statement": "Therefore, the origin is a source for the given dynamical system."
+        "statement": "Therefore, the origin is a source.",
+        "errors": [
+          {
+            "type": "remark",
+            "statement": "The proof does not adequately demonstrate why the origin is a source. It needs to analyze the behavior of solutions as t approaches infinity (or negative infinity) and show that trajectories move away from the origin."
+          }
+        ]
       }
     ]
   }

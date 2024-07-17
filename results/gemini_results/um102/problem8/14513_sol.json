@@ -1,0 +1,141 @@
+{
+  "type": "theorem",
+  "name": "Circulation at the Origin",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x(t)",
+      "kind": "function of time",
+      "property": "satisfies the differential equation $\\dot{x}=-y$"
+    },
+    {
+      "type": "let",
+      "variable": "y(t)",
+      "kind": "function of time",
+      "property": "satisfies the differential equation $\\dot{y}=x$"
+    }
+  ],
+  "conclusion": "The origin is a circulation for the system of differential equations given by $\\dot{x}=-y$ and $\\dot{y}=x$.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We can write the given system of differential equations in matrix form."
+      },
+      {
+        "type": "let",
+        "variable": "X",
+        "value": "$\\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
+        "kind": "vector"
+      },
+      {
+        "type": "let",
+        "variable": "A",
+        "value": "$\\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}$",
+        "kind": "matrix"
+      },
+      {
+        "type": "assert",
+        "claim": "The system of differential equations can be written as $X' = AX$",
+        "proof-method": "direct substitution"
+      },
+      {
+        "type": "remark",
+        "statement": "To determine the nature of the solutions, we find the eigenvalues and eigenvectors of the matrix A."
+      },
+      {
+        "type": "problem",
+        "statement": "Find the eigenvalues of A.",
+        "solved": true,
+        "answer": "$\\lambda = \\pm i$",
+        "proof": {
+          "type": "proof",
+          "steps": [
+            {
+              "type": "assert",
+              "claim": "The characteristic equation is  $\\lambda^2 + 1 = 0$.",
+              "proof-method": "using $\\det(A-\\lambda I)=0$"
+            },
+            {
+              "type": "assert",
+              "claim": "The solutions to the characteristic equation are $\\lambda^2 = -1 \\implies \\lambda = \\pm i$",
+              "proof-method": "solving the quadratic equation"
+            }
+          ]
+        }
+      },
+      {
+        "type": "problem",
+        "statement": "Find the eigenvectors corresponding to $\\lambda_1 = i$",
+        "solved": true,
+        "answer": "$V = \\begin{bmatrix} 1 \\\\ -i \\end{bmatrix}$",
+        "proof": {
+          "type": "proof",
+          "steps": [
+            {
+              "type": "assert",
+              "claim": "We need to solve the equation $(A-\\lambda I) \\begin{bmatrix} x \\\\ y \\end{bmatrix} = 0$ for $\\lambda=i$",
+              "proof-method": "definition of eigenvector"
+            },
+            {
+              "type": "assert",
+              "claim": "This gives us $\\begin{bmatrix} -i & -1 \\\\ 1 & -i \\end{bmatrix}\\begin{bmatrix} x \\\\ y \\end{bmatrix} = 0$",
+              "proof-method": "substitution"
+            },
+            {
+              "type": "assert",
+              "claim": "This simplifies to the equations $-ix-y=0$ and $y=-ix$",
+              "proof-method": "matrix multiplication"
+            },
+            {
+              "type": "conclude",
+              "statement": "Therefore, $V = \\begin{bmatrix} 1 \\\\ -i \\end{bmatrix}$ is an eigenvector corresponding to $\\lambda_1=i$",
+              "error": "The conclusion should state that any scalar multiple of this vector is also an eigenvector"
+            }
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "The solution to the system of differential equations is then $X(t) = \\alpha e^{it}\\begin{bmatrix} 1 \\\\ -i \\end{bmatrix}$.",
+        "proof-method": "Using the eigenvalue and eigenvector"
+      },
+      {
+        "type": "assert",
+        "claim": "Expanding the solution, we get $X(t) = \\alpha \\begin{bmatrix} \\cos t + i \\sin t \\\\ \\sin t - i \\cos t \\end{bmatrix}$",
+        "proof-method": "Using Euler's formula: $e^{it} = \\cos t + i\\sin t$"
+      },
+      {
+        "type": "let",
+        "variable": "$X_{Re}(t)$",
+        "value": "$\\alpha \\begin{bmatrix} \\cos t \\\\ \\sin t \\end{bmatrix}$",
+        "kind": "real part of the solution"
+      },
+      {
+        "type": "let",
+        "variable": "$X_{Im}(t)$",
+        "value": "$\\alpha \\begin{bmatrix} \\sin t \\\\ - \\cos t \\end{bmatrix}$",
+        "kind": "imaginary part of the solution"
+      },
+      {
+        "type": "assert",
+        "claim": "Both $X_{Re}(t)$ and $X_{Im}(t)$ are solutions to $X'=AX$",
+        "proof-method": "direct substitution"
+      },
+      {
+        "type": "assert",
+        "claim": "The general solution is $X(t) = \\alpha \\begin{bmatrix} \\cos t \\\\ \\sin t \\end{bmatrix} + \\beta \\begin{bmatrix} \\sin t \\\\ - \\cos t \\end{bmatrix}$",
+        "proof-method": "linear combination of solutions"
+      },
+      {
+        "type": "missing",
+        "problem": {
+          "type": "problem",
+          "statement": "Show that the general solution represents a circulation because it remains at a constant distance from the origin and has a period of $2\\pi$."
+        }
+      }
+    ]
+  }
+}

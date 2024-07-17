@@ -1,0 +1,24 @@
+{
+  "type": "theorem",
+  "name": "Circulation at the Origin",
+  "Hypothesis": [
+    {
+      "type": "let",
+      "Variable": "<anonymous>",
+      "Property": "Linear differential equation system",
+      "Value": "$\\dot{x} = -y$, $\\dot{y} = x$"
+    }
+  ],
+  "Conclusion": "The origin is a circulation point for the given system of differential equations.",
+  "Status": "incomplete proof",
+  "Missing": [
+    {
+      "type": "problem",
+      "Statement": "Provide a definition for a 'circulation point' in the context of dynamical systems. Explain what properties a point must possess to be considered a circulation point."
+    },
+    {
+      "type": "problem",
+      "Statement": "Demonstrate how the given system of differential equations, $\\dot{x} = -y$ and $\\dot{y} = x$, satisfies the properties of a circulation point at the origin. Show the necessary calculations and explanations."
+    }
+  ]
+}

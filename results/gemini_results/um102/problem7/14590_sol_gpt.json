@@ -1,0 +1,75 @@
+{
+  "type": "theorem",
+  "name": "Source of the Origin for Linear Differential Equations",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = x$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = y$"
+    }
+  ],
+  "conclusion": "The origin is a source.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\dot{X} = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} X$",
+        "deduced_from": [
+          "$\\dot{x} = x$",
+          "$\\dot{y} = y$"
+        ],
+        "proof-method": "Combining the differential equations into matrix form"
+      },
+      {
+        "type": "assert",
+        "claim": "The trace of the matrix is $2$",
+        "calculation": [
+          "trace $= 1 + 1 = 2$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The determinant of the matrix is $1$",
+        "calculation": [
+          "determinant $= 1 \\cdot 1 - 0 \\cdot 0 = 1$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of the matrix are $(1, 1)$",
+        "calculation": [
+          {
+            "step": "$\\lambda I - A = \\begin{pmatrix} \\lambda - 1 & 0 \\\\ 0 & \\lambda - 1 \\end{pmatrix}$",
+            "justification": "Characteristic polynomial $\\lambda^2 - 2\\lambda + 1 = 0$"
+          },
+          {
+            "step": "Eigenvalues are the roots of $\\lambda^2 - 2\\lambda + 1 = 0$",
+            "justification": "Solving the quadratic equation"
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvectors span all of $\\mathbb{R}^2$",
+        "proof-method": "Since the matrix is the identity matrix"
+      },
+      {
+        "type": "conclude",
+        "statement": "It is a source",
+        "error": "The proof does not clearly justify why the origin is a source based on the eigenvalues and their implications for the system stability."
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Clearly explain why having eigenvalues $(1, 1)$ implies that the origin is a source.",
+      "solved": false
+    }
+  ]
+}

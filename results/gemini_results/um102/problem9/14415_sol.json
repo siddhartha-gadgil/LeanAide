@@ -1,0 +1,59 @@
+{
+  "type": "theorem",
+  "name": "Circulation at the Origin",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x(t)",
+      "kind": "function",
+      "property": "solution of the differential equation $\\dot{x} = y$"
+    },
+    {
+      "type": "let",
+      "variable": "y(t)",
+      "kind": "function",
+      "property": "solution of the differential equation $\\dot{y} = -x - y$"
+    }
+  ],
+  "conclusion": "The origin (0, 0) is a point of circulation for the system of differential equations.",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We will analyze the second derivative of x(t) to determine the behavior of the system near the origin."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\ddot{x} = -x - y$",
+        "deduced_from": [
+          "$\\dot{x} = y$",
+          "$\\dot{y} = -x - y$"
+        ],
+        "proof-method": "Differentiating the equation $\\dot{x} = y$ with respect to t."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{d^2x}{dt^2} = - (\\frac{dx}{dt} + \\frac{dy}{dt})$",
+        "deduced_from": [
+          "$\\ddot{x} = -x - y$",
+          "$\\dot{x} = y$",
+          "$\\dot{y} = -x - y$"
+        ],
+        "proof-method": "Substituting $\\dot{x}$ and $\\dot{y}$ into the previous equation."
+      },
+      {
+        "type": "conclude",
+        "statement": "The origin is a saddle point, which implies circulation.",
+        "error": "The conclusion that the origin is a saddle point based on the derived equation is incorrect. This equation alone does not provide enough information to determine the type of critical point."
+      }
+    ],
+    "errors": [
+      {
+        "type": "problem",
+        "statement": "The proof incorrectly concludes the origin is a saddle point based on an insufficient condition. A more rigorous analysis of the eigenvalues of the system's Jacobian matrix is required to correctly classify the critical point."
+      }
+    ]
+  }
+}

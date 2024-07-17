@@ -1,0 +1,68 @@
+{
+  "type": "theorem",
+  "name": "Source of the origin for the linear differential equation",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = x$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = y$"
+    }
+  ],
+  "conclusion": "The origin is a source.",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$X' = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix} X$",
+        "proof-method": "System of differential equations in matrix form"
+      },
+      {
+        "type": "assert",
+        "claim": "The matrix $\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$ has eigenvalues $\\lambda = 1$",
+        "deduced_from": [
+          "$\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$"
+        ],
+        "proof-method": "Calculation of eigenvalues"
+      },
+      {
+        "type": "assert",
+        "claim": "Every vector $V \\in \\mathbb{R}^2$ is an eigenvector",
+        "proof-method": "Direct multiplication",
+        "errors": [
+          "This is incorrect. Not every vector $V \\in \\mathbb{R}^2$ is an eigenvector. Only non-zero multiples of the eigenvectors of the matrix are eigenvectors."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The solution for this system is $X(t) = \\alpha e^t V + t V e^{Rt^2}$",
+        "errors": [
+          "The proposed general solution $X(t) = \\alpha e^t V + t V e^{Rt^2}$ is incorrect. The correct general solution should be $X(t) = \\alpha e^t V$ where $V$ is an eigenvector corresponding to the eigenvalue 1."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "These are straight line solutions moving away from the origin",
+        "deduced_from": [
+          "The nature of the exponentials $e^t$ with positive exponent"
+        ],
+        "proof-method": "Observation from the solution $X(t) = \\alpha e^t V$",
+        "errors": [
+          "This step relies on the incorrect general solution stated earlier."
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "This system is a source.",
+        "errors": [
+          "Due to the errors in the eigenvector assertion and the solution form, the conclusion that the system is a source is not justified by the given proof."
+        ]
+      }
+    ]
+  },
+  "error": "The proof contains incorrect assertions about eigenvectors and the solution of the system, leading to an unjustified conclusion."
+}

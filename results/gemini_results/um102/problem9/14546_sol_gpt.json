@@ -1,0 +1,62 @@
+{
+  "type": "theorem",
+  "name": "For the linear differential equation \\( \\dot{x}=y \\) and \\( \\dot{y}=-x-y \\). Prove that the origin is circulation.",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "The system of linear differential equations is given by \\( \\dot{x}=y \\) and \\( \\dot{y}=-x-y \\)."
+    }
+  ],
+  "conclusion": "The origin is a center.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "A",
+        "value": "\\begin{pmatrix} 0 & 1 \\\\ -1 & -1 \\end{pmatrix}"
+      },
+      {
+        "type": "assert",
+        "claim": "We want to reduce \\( M = \\begin{pmatrix} \\lambda & 1 \\\\ -1 & \\lambda -1 \\end{pmatrix} \\)"
+      },
+      {
+        "type": "assert",
+        "claim": "\\( \\det(M) = \\lambda^2 - \\lambda + 1 = 0 \\)"
+      },
+      {
+        "type": "assert",
+        "claim": "\\(\\lambda = \\frac{1 \\pm \\sqrt{-3}}{2} = \\frac{1}{2} \\pm \\frac{\\sqrt{3}}{2}i \\)"
+      },
+      {
+        "type": "let",
+        "variable": "V_1",
+        "value": "\\begin{pmatrix} 1 \\\\ \\frac{-1}{2} + \\frac{\\sqrt{3}}{2}i \\end{pmatrix}",
+        "property": "eigenvector corresponding to \\( \\lambda = \\frac{1}{2} + \\frac{\\sqrt{3}}{2}i \\)"
+      },
+      {
+        "type": "let",
+        "variable": "V_2",
+        "value": "\\begin{pmatrix} 1 \\\\ \\frac{-1}{2} - \\frac{\\sqrt{3}}{2}i \\end{pmatrix}",
+        "property": "eigenvector corresponding to \\( \\lambda = \\frac{1}{2} - \\frac{\\sqrt{3}}{2}i \\)"
+      },
+      {
+        "type": "assert",
+        "claim": "\\(AV_1 = \\frac{1}{2}V_1 - \\frac{\\sqrt{3}}{2}V_2\\)"
+      },
+      {
+        "type": "assert",
+        "claim": "\\(AV_2 = -\\frac{1}{2}V_2 + \\frac{\\sqrt{3}}{2}V_1\\)"
+      },
+      {
+        "type": "conclude",
+        "statement": "The origin is a center.",
+        "error": "The proof does not establish that the origin is a center. It shows the eigenvalues are complex with zero real part, which indicates a center, but does not conclude definitively about the stability."
+      }
+    ],
+    "errors": [
+      "The conclusion about the origin being a center is not fully justified. Additional steps regarding the stability and phase plane analysis are required."
+    ]
+  }
+}

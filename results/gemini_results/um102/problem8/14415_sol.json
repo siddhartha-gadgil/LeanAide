@@ -1,0 +1,50 @@
+{
+  "type": "theorem",
+  "name": "Circulation at the Origin",
+  "hypothesis": [
+    {
+      "type": "let",
+      "Variable": "x(t)",
+      "Kind": "function of time",
+      "Property": "satisfies the differential equation $\\dot{x}=-y$"
+    },
+    {
+      "type": "let",
+      "Variable": "y(t)",
+      "Kind": "function of time",
+      "Property": "satisfies the differential equation $\\dot{y}=x$"
+    }
+  ],
+  "conclusion": "The origin (x=0, y=0) is a circulation for the given system of differential equations.",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\ddot{x} = -x$",
+        "deduced_from": [
+          "$\\dot{x} = - y$",
+          "$\\dot{y} = x$"
+        ],
+        "proof-method": "Differentiating the first equation with respect to time and substituting the second equation."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{d^2x}{dt^2} = -x$",
+        "proof-method": "Rewriting the previous equation using Leibniz notation."
+      },
+      {
+        "type": "conclude",
+        "statement": "The origin is a sink.",
+        "error": "The conclusion that the origin is a sink is incorrect. While the given proof correctly derives the equation of a simple harmonic oscillator, this implies the origin is a center, not a sink. A sink implies trajectories converge to the origin, while a center implies trajectories circle around the origin."
+      }
+    ],
+    "errors": [
+      {
+        "type": "remark",
+        "statement": "The proof incorrectly concludes that the origin is a sink.  The equation $\\ddot{x} = -x$ describes a simple harmonic oscillator, which corresponds to a center, not a sink, in the phase plane."
+      }
+    ]
+  }
+}

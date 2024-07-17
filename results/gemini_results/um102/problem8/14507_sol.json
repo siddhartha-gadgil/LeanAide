@@ -1,0 +1,225 @@
+{
+  "type": "theorem",
+  "name": "Circulation at the Origin",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x(t)",
+      "kind": "function",
+      "property": "solution of the differential equation $\\dot{x}=-y$"
+    },
+    {
+      "type": "let",
+      "variable": "y(t)",
+      "kind": "function",
+      "property": "solution of the differential equation $\\dot{y}=x$"
+    }
+  ],
+  "conclusion": "The origin (0, 0) is a point of circulation for the system of differential equations given by $\\dot{x}=-y$ and $\\dot{y}=x$.",
+  "status": "incomplete proof",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Show that the equation $x^2 + y^2 = a$ holds for some constant $a$, where $x$ and $y$ are derived from the general solution of the system of differential equations.",
+      "solved": false
+    },
+    {
+      "type": "problem",
+      "statement": "Prove that a solution trajectory following a circular path around the origin with constant distance implies that the origin is a point of circulation for the system.",
+      "solved": false
+    }
+  ],
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We can represent the system of differential equations in matrix form:"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\begin{bmatrix} \\dot{x} \\\\ \\dot{y} \\end{bmatrix} = \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
+        "proof-method": "Rewriting the system in matrix form."
+      },
+      {
+        "type": "let",
+        "variable": "$\\dot{X}$",
+        "value": "$\\begin{bmatrix} \\dot{x} \\\\ \\dot{y} \\end{bmatrix}$"
+      },
+      {
+        "type": "let",
+        "variable": "A",
+        "value": "$\\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\dot{X} = AX$",
+        "proof-method": "Using the defined variables."
+      },
+      {
+        "type": "remark",
+        "statement": "To find the eigenvalues ($\\lambda$) of matrix A, we solve the characteristic equation:"
+      },
+      {
+        "type": "assert",
+        "claim": "$|A-\\lambda I| = 0$",
+        "proof-method": "Definition of the characteristic equation."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\begin{vmatrix} -\\lambda & -1 \\\\ 1 & -\\lambda \\end{vmatrix} = 0$",
+        "proof-method": "Substituting the matrix A and the identity matrix I."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda^2 + 1 = 0$",
+        "proof-method": "Calculating the determinant."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda = \\pm i$",
+        "proof-method": "Solving the quadratic equation."
+      },
+      {
+        "type": "remark",
+        "statement": "The eigenvalues are complex conjugates: $\\lambda = i$ and $\\lambda = -i$."
+      },
+      {
+        "type": "remark",
+        "statement": "**For $\\lambda = i$:**"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\begin{bmatrix} -i & -1 \\\\ 1 & -i \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = 0$",
+        "proof-method": "Substituting $\\lambda = i$ into $(A-\\lambda I)\\begin{bmatrix} x \\\\ y \\end{bmatrix} = 0$."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\begin{aligned} -xi - y &= 0 \\\\ x-iy &=0 \\end{aligned}$",
+        "proof-method": "Expanding the matrix equation."
+      },
+      {
+        "type": "assert",
+        "claim": "$x = iy$",
+        "proof-method": "Solving the system of equations."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\begin{pmatrix} i \\\\ 1 \\end{pmatrix}$ is an eigenvector corresponding to $\\lambda = i$",
+        "proof-method": "Verification"
+      },
+      {
+        "type": "remark",
+        "statement": "**For $\\lambda = -i$:**"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\begin{bmatrix} i & -1 \\\\ 1 & i \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = 0$",
+        "proof-method": "Substituting $\\lambda = -i$ into $(A-\\lambda I)\\begin{bmatrix} x \\\\ y \\end{bmatrix} = 0$."
+      },
+      {
+        "type": "assert",
+        "claim": "$xi - y = 0$",
+        "proof-method": "Expanding the matrix equation."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\begin{pmatrix} 1 \\\\ i \\end{pmatrix}$ is an eigenvector corresponding to $\\lambda = -i$",
+        "proof-method": "Verification"
+      },
+      {
+        "type": "remark",
+        "statement": "**General Solution:**"
+      },
+      {
+        "type": "assert",
+        "claim": "$X(t) = \\vec{V_1}e^{\\lambda_1 t} + \\vec{V_2}e^{\\lambda_2 t}$",
+        "proof-method": "General solution for a system of linear differential equations with constant coefficients."
+      },
+      {
+        "type": "assert",
+        "claim": "$X(t) =  \\alpha \\begin{pmatrix} i \\\\ 1 \\end{pmatrix} (\\cos t + i \\sin t) + \\beta \\begin{pmatrix} 1 \\\\ i \\end{pmatrix} (\\cos t -i \\sin t)$",
+        "proof-method": "Substituting the eigenvalues and eigenvectors."
+      },
+      {
+        "type": "let",
+        "variable": "$\\alpha$",
+        "kind": "constant"
+      },
+      {
+        "type": "let",
+        "variable": "$\\beta$",
+        "kind": "constant"
+      },
+      {
+        "type": "assert",
+        "claim": "$X(t) = \\begin{pmatrix} \\beta \\cos t - \\alpha \\sin t + i (\\alpha \\cos t - \\beta \\sin t)\\\\ \\alpha \\cos t + \\beta \\sin t + i(\\alpha \\sin t + \\beta \\cos t) \\end{pmatrix}$",
+        "proof-method": "Expanding and rearranging the terms."
+      },
+      {
+        "type": "assert",
+        "claim": "$x^2 + y^2 = a$",
+        "deduced_from": [
+          "the general solution X(t)",
+          "$\\alpha$ and $\\beta$ are constants"
+        ],
+        "missing steps": [
+          {
+            "type": "problem",
+            "statement": "Show the intermediate steps to derive $x^2 + y^2 = a$ from the general solution X(t)."
+          }
+        ],
+        "errors": [
+          {
+            "type": "error",
+            "statement": "The proof does not provide the steps to derive $x^2 + y^2 = a$ from the general solution, making it unclear how this equation is obtained."
+          }
+        ]
+      },
+      {
+        "type": "remark",
+        "statement": "We observe that:"
+      },
+      {
+        "type": "assert",
+        "claim": "$x$ is a function of $\\alpha$ and $\\beta$ only, and not explicitly dependent on  $t$.",
+        "proof-method": "By inspection of the general solution."
+      },
+      {
+        "type": "assert",
+        "claim": "$y$ is also a function of $\\alpha$ and $\\beta$ only.",
+        "proof-method": "By inspection of the general solution."
+      },
+      {
+        "type": "assert",
+        "claim": "Both $x$ and $y$ are periodic functions.",
+        "proof-method": "Due to the presence of trigonometric functions in the general solution."
+      },
+      {
+        "type": "remark",
+        "statement": "These observations, along with the equation $x^2+y^2=a$, suggest that the trajectory of the solution in the phase plane is a circle centered at the origin."
+      },
+      {
+        "type": "remark",
+        "statement": "The distance from the origin remains constant over time, only the phase of the solution changes."
+      },
+      {
+        "type": "remark",
+        "statement": "The direction of motion along the circular trajectory depends on the signs of $\\alpha$ and $\\beta$:"
+      },
+      {
+        "type": "assert",
+        "claim": "The motion is anti-clockwise for $\\alpha < 0$."
+      },
+      {
+        "type": "assert",
+        "claim": "The motion is clockwise for $\\beta < 0$."
+      },
+      {
+        "type": "conclude",
+        "statement": "The origin is a point of circulation for the system.",
+        "error": "The proof does not rigorously establish the connection between the observed behavior (circular trajectory, constant distance from the origin) and the definition of a circulation point. Additional steps are needed to mathematically prove that the origin satisfies the conditions of a circulation point."
+      }
+    ]
+  }
+}

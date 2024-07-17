@@ -1,0 +1,145 @@
+{
+  "type": "theorem",
+  "name": "Circulation at the origin",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = -y$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = x$"
+    }
+  ],
+  "conclusion": "The origin is a center, and the trajectory is a circulation.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\dfrac{d}{dt} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} -1 & 1 \\\\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
+        "proof-method": "Given"
+      },
+      {
+        "type": "let",
+        "variable": "A",
+        "value": "$\\begin{bmatrix} -1 & 1 \\\\ 1 & 0 \\end{bmatrix}$",
+        "kind": "matrix"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\dot{v} = Av$",
+        "proof-method": "Matrix notation"
+      },
+      {
+        "type": "assert",
+        "claim": "The characteristic equation of $A$ is $\\lambda^2 + 1 = 0$",
+        "proof-method": "Characteristic polynomial"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda_1 = i$, $\\lambda_2 = -i$",
+        "proof-method": "Solving the characteristic equation"
+      },
+      {
+        "type": "let",
+        "variable": "$\\lambda_1$",
+        "value": "$i$",
+        "kind": "eigenvalue"
+      },
+      {
+        "type": "let",
+        "variable": "$\\lambda_2$",
+        "value": "$-i$",
+        "kind": "eigenvalue"
+      },
+      {
+        "type": "assert",
+        "claim": "$|\\lambda_1| = |\\lambda_2| = 1$",
+        "proof-method": "Magnitude of eigenvalues"
+      },
+      {
+        "type": "define",
+        "term": "$v_1$",
+        "statement": "$A v_1 = i v_1$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\begin{bmatrix} -1 & 1 \\\\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = i \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
+        "proof-method": "Eigenvector definition for $\\lambda_1$"
+      },
+      {
+        "type": "assert",
+        "claim": "$-x + y = ix$ and $x = iy$",
+        "proof-method": "Matrix equation"
+      },
+      {
+        "type": "assert",
+        "claim": "$v_1 = \\begin{pmatrix} i \\\\ 1 \\end{pmatrix}$",
+        "proof-method": "Solving the system"
+      },
+      {
+        "type": "define",
+        "term": "$v_2$",
+        "statement": "$A v_2 = -i v_2$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\begin{bmatrix} -1 & 1 \\\\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = -i \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
+        "proof-method": "Eigenvector definition for $\\lambda_2$"
+      },
+      {
+        "type": "assert",
+        "claim": "$-x + y = -ix$ and $x = -iy$",
+        "proof-method": "Matrix equation"
+      },
+      {
+        "type": "assert",
+        "claim": "$v_2 = \\begin{pmatrix} -i \\\\ 1 \\end{pmatrix}$",
+        "proof-method": "Solving the system"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\dfrac{d}{dt} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} i & 0 \\\\ 0 & -i \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
+        "proof-method": "Diagonalization error",
+        "errors": [
+          {
+            "statement": "Diagonalization is incorrect."
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\begin{bmatrix} x \\\\ y \\end{bmatrix} = x(t) \\begin{pmatrix} i \\\\ 1 \\end{pmatrix} + y(t) \\begin{pmatrix} -i \\\\ 1 \\end{pmatrix}$",
+        "proof-method": "Solution form"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\dfrac{dx}{dt} = ix$ implies $x = c_1 e^{it}$",
+        "proof-method": "Solving ODE"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\dfrac{dy}{dt} = -iy$ implies $y = c_2 e^{-it}$",
+        "proof-method": "Solving ODE"
+      },
+      {
+        "type": "assert",
+        "claim": "$|x| = |c_1|$ and $|y| = |c_2|$ do not change with $t$",
+        "proof-method": "Magnitude of exponential functions"
+      },
+      {
+        "type": "conclude",
+        "statement": "The trajectory is a circulation."
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Correct the diagonalization process.",
+      "solved": false
+    }
+  ]
+}

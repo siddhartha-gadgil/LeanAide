@@ -1,0 +1,65 @@
+{
+  "type": "theorem",
+  "name": "For the linear differential equation $\\dot{x}=x$ and $\\dot{y}=y$. Prove that the origin is a source.",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = x$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = y$"
+    }
+  ],
+  "conclusion": "The origin is a source.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\dot{x} = x + 0y$ and $\\dot{y} = ax + y$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}$"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of $A$ are $1$ and $1$",
+        "proof-method": "Calculation"
+      },
+      {
+        "type": "assert",
+        "claim": "$0 < \\lambda_1, \\lambda_2$ and both are $> 0$",
+        "errors": [
+          "Incorrect assumption about the sign of the eigenvalues. The statement $0 < \\lambda_1, \\lambda_2$ is redundant given $\\lambda_1 = \\lambda_2 = 1$."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "Both $e^{\\lambda t}$ terms scale proportionately, indicating a source.",
+        "errors": [
+          "Insufficient justification. More explanation is needed as to why positive eigenvalues imply that the origin is a source."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{x}{y} = e^{(1-\\lambda_2)t}$ which is constant, implying a straight line slope.",
+        "errors": [
+          "Incorrect conclusion. The ratio $\\frac{x}{y}$ does not necessarily remain constant as $t$ varies. Need correct justification."
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "This will be a source.",
+        "errors": [
+          "The conclusion is not properly justified based on the given steps."
+        ]
+      }
+    ],
+    "errors": [
+      "The proof lacks complete and correct justifications for the claims made. Specific errors are noted in the individual assertions."
+    ]
+  }
+}
