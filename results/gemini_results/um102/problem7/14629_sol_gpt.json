@@ -1,1 +1,88 @@
-"{\n  \"type\": \"theorem\",\n  \"name\": \"Origin is a Saddle for the System \\( \\dot{x} = x \\) and \\( \\dot{y} = y \\)\",\n  \"hypothesis\": [\n    {\n      \"type\": \"assume\",\n      \"statement\": \"$\\\\dot{x} = x$\"\n    },\n    {\n      \"type\": \"assume\",\n      \"statement\": \"$\\\\dot{y} = y$\"\n    }\n  ],\n  \"conclusion\": \"The origin is a saddle for the given system.\",\n  \"status\": \"wrong proof\",\n  \"proof\": {\n    \"type\": \"proof\",\n    \"steps\": [\n      {\n        \"type\": \"assert\",\n        \"claim\": \"$\\\\frac{dx}{dy} = x$ and $\\\\frac{dy}{dx} = y$\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"$\\\\frac{1}{x} dx = dy$ and $\\\\frac{1}{y} dy = dx$\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"Integrating these equations gives $\\\\log\\,x = y$ and $\\\\log\\,y = x$\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"$\\\\log\\,x - y = 0$ and $\\\\log\\,y - x = 0$\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"$\\\\log\\,x - y  = \\\\log\\,y - x$\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"$\\\\log\\\\frac{x}{y} + x - y = 0$\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"$\\\\log\\\\frac{x}{y} = y - x$\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"$\\\\frac{x}{y} = e^{y-x}$\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"$\\\\frac{x}{y} = \\\\frac{e^{y}}{e^{x}}$\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"$x e^{x} = y e^{y}$\"\n      },\n      {\n        \"type\": \"define\",\n        \"statement\": \"Let $f = x e^{x} - y e^{y}$\",\n        \"term\": \"$f$\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"$\\\\nabla f =  xe^{x} + e^{x} - (ye^{y} + e^{y})$\",\n        \"calculation\": [\n          \"e^{x}(x+1) - e^{y}(y+1)\"\n        ]\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"At the origin, $\\\\nabla f = 0$\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"Therefore, the origin is a saddle\",\n        \"errors\": [\n          {\n            \"type\": \"remark\",\n            \"statement\": \"The conclusion that the origin is a saddle is incorrect. The correct classification can be obtained by analyzing the eigenvalues of the Jacobian matrix at the origin.\"\n          }\n        ]\n      }\n    ]\n  },\n  \"error\": \"The conclusion that the origin is a saddle is incorrect.\"\n}"
+{
+  "type": "theorem",
+  "name": "Origin is a Saddle for the System \\( \\dot{x} = x \\) and \\( \\dot{y} = y \\)",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = x$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = y$"
+    }
+  ],
+  "conclusion": "The origin is a saddle for the given system.",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\frac{dx}{dy} = x$ and $\\frac{dy}{dx} = y$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{1}{x} dx = dy$ and $\\frac{1}{y} dy = dx$"
+      },
+      {
+        "type": "assert",
+        "claim": "Integrating these equations gives $\\log\\,x = y$ and $\\log\\,y = x$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\log\\,x - y = 0$ and $\\log\\,y - x = 0$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\log\\,x - y  = \\log\\,y - x$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\log\\frac{x}{y} + x - y = 0$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\log\\frac{x}{y} = y - x$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{x}{y} = e^{y-x}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{x}{y} = \\frac{e^{y}}{e^{x}}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$x e^{x} = y e^{y}$"
+      },
+      {
+        "type": "define",
+        "statement": "Let $f = x e^{x} - y e^{y}$",
+        "term": "$f$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\nabla f =  xe^{x} + e^{x} - (ye^{y} + e^{y})$",
+        "calculation": [
+          "e^{x}(x+1) - e^{y}(y+1)"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "At the origin, $\\nabla f = 0$"
+      },
+      {
+        "type": "assert",
+        "claim": "Therefore, the origin is a saddle",
+        "errors": [
+          {
+            "type": "remark",
+            "statement": "The conclusion that the origin is a saddle is incorrect. The correct classification can be obtained by analyzing the eigenvalues of the Jacobian matrix at the origin."
+          }
+        ]
+      }
+    ]
+  },
+  "error": "The conclusion that the origin is a saddle is incorrect."
+}
