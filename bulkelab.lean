@@ -9,7 +9,7 @@ set_option maxHeartbeats 10000000
 set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
-def runBulkElab (p : Parsed) : IO UInt32 := do
+unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
   initSearchPath (← Lean.findSysroot) initFiles
   let type :=
     p.positionalArg? "input" |>.map (fun s => s.as! String)
@@ -88,8 +88,16 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanCodePrompts.Translate},
     {module := `Mathlib}] {}
+  withUnpickle (← picklePath "docString")
+    <|fun (docStringData : Array <| (String × String × Bool × String) ×  FloatArray) => do
+  withUnpickle (← picklePath "description")
+    <|fun (descData : Array <| (String × String × Bool × String) ×  FloatArray) =>  do
+  withUnpickle (← picklePath "concise-description")
+    <|fun (concDescData : Array <| (String × String × Bool × String) ×  FloatArray) => do
+  let dataMap :
+    HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
   let core :=
-    checkTranslatedThmsCore type chatServer chatParams numSim numConcise numDesc includeFixed embedding delay repeats queryData? tag
+    checkTranslatedThmsCore type chatServer chatParams numSim numConcise numDesc includeFixed embedding delay repeats queryData? tag (dataMap := dataMap)
   let io? :=
     core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000}
     {env := env}
@@ -107,7 +115,7 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
 
   return 0
 
-def bulkElab : Cmd := `[Cli|
+unsafe def bulkElab : Cmd := `[Cli|
   bulkelab VIA runBulkElab;
   "Elaborate a set of inputs and report whether successful and the result if successful."
 
@@ -136,5 +144,5 @@ def bulkElab : Cmd := `[Cli|
 
 ]
 
-def main (args: List String) : IO UInt32 :=
+unsafe def main (args: List String) : IO UInt32 :=
   bulkElab.validate args
