@@ -7,14 +7,14 @@ open Lean Meta Elab
 Translate a string to a Lean expression using the GPT model, returning the expression, all outputs and the prompt used.
 -/
 def translateWithDataM (s: String)(server: ChatServer)
-  (params: ChatParams)(numSim : Nat:= 10)(numConcise : Nat := 0)
+  (params: ChatParams)(numSim : Nat:= 10)(numConcise : Nat := 0)(numDesc: Nat := 0)
   (includeFixed: Bool := Bool.false)
   (embedding: String)(repeats: Nat := 0)(sleepTime : Nat := 1)
   (queryData? : Option <| (HashMap String Json)  )(toChat : ToChatExample := simpleChatExample)  :
   TermElabM ((Option (Expr × (Array String) × (Array (Array String)) )) × Array String × (Option String)) := do
   let (output, prompt?) ←  match queryData? with
   | none =>
-    let (js,prompt, _) ← getLeanCodeJson s server params numSim numConcise includeFixed  toChat
+    let (js,prompt, _) ← getLeanCodeJson s server params numSim numConcise numDesc includeFixed  toChat
     pure (← getMessageContents js, some prompt.pretty)
   | some f =>
     let res? := f.find? s.trim
@@ -31,7 +31,7 @@ def translateWithDataM (s: String)(server: ChatServer)
     IO.eprintln s!"No outputs; repeating ({k} left)"
     IO.sleep (sleepTime * 1000)
     translateWithDataM s server params
-      numSim numConcise includeFixed embedding k
+      numSim numConcise numDesc includeFixed embedding k
       (sleepTime * 2) queryData?
   else
     -- let output := params.splitOutputs output
@@ -51,14 +51,14 @@ def translateWithDataM (s: String)(server: ChatServer)
 Translate a string to a Lean expression using the GPT model, returning the expression, all outputs and the prompt used.
 -/
 def translateWithDataCore (s: String)(server: ChatServer)
-  (params: ChatParams)(numSim : Nat:= 10)(numConcise : Nat := 0)
+  (params: ChatParams)(numSim : Nat:= 10)(numConcise : Nat := 0)(numDesc: Nat := 0)
   (includeFixed: Bool := Bool.false)
   (embedding: String)(repeats: Nat := 0)
   (queryData? : Option <| (HashMap String Json)  )
   (toChat : ToChatExample := simpleChatExample)  :
   CoreM ((Option (Expr × (Array String) ×  (Array (Array String)) )) × Array String × Option String) :=
     (translateWithDataM s server params
-      numSim numConcise includeFixed
+      numSim numConcise numDesc includeFixed
          embedding repeats
         (queryData? := queryData?)
         (toChat := toChat)).run'.run'
@@ -67,7 +67,7 @@ def translateWithDataCore (s: String)(server: ChatServer)
 Translate theorems in a given file and record results in a JSON file.
 -/
 def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
-  (params: ChatParams)(numSim : Nat:= 10)(numConcise : Nat := 0)
+  (params: ChatParams)(numSim : Nat:= 10)(numConcise : Nat := 0)(numDesc: Nat := 0)
   (includeFixed: Bool := Bool.false)(embedding: String)
   (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json) )(tag: Bool := false)(toChat : ToChatExample := simpleChatExample) : TermElabM Json := do
   IO.eprintln s!"Writing to file: {type}-elab-{numSim}-{includeFixed}-{params.n}-{params.temp.mantissa}.json"
@@ -100,7 +100,7 @@ def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
     IO.println ""
     IO.println statement
     let (res?, _, prompt?) ←
-        translateWithDataM statement server params numSim numConcise includeFixed embedding repeats 0 queryData? toChat
+        translateWithDataM statement server params numSim numConcise numDesc includeFixed embedding repeats 0 queryData? toChat
     let fullPrompt := prompt?.getD "No prompt (maybe using cached data)"
     let js := Json.mkObj [("text", Json.str statement),
        ("fullPrompt", Json.str fullPrompt)]
@@ -152,10 +152,10 @@ def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
 Translate theorems in a given file and record results in a JSON file.
 -/
 def checkTranslatedThmsCore(type: String := "thm")(server: ChatServer)
-  (params: ChatParams)(numSim : Nat:= 10)(numConcise : Nat := 0)
+  (params: ChatParams)(numSim : Nat:= 10)(numConcise : Nat := 0)(numDesc : Nat := 2)
   (includeFixed: Bool := Bool.false)(embedding: String)
   (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json))(tag: Bool := false) (toChat : ToChatExample := simpleChatExample): CoreM Json :=
-    (checkTranslatedThmsM type server params numSim numConcise includeFixed embedding delay repeats queryData? tag toChat).run'.run'
+    (checkTranslatedThmsM type server params numSim numConcise numDesc includeFixed embedding delay repeats queryData? tag toChat).run'.run'
 
 def parsedThmsPrompt : IO (Array String) := do
   let file := System.mkFilePath ["data/parsed_thms.txt"]
