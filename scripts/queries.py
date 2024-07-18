@@ -91,16 +91,15 @@ import re
 def json_formatter(input:str):
     input = input.replace("\\\\\\\\", "\\\\")
     input = input.replace("\\\\\\", "\\\\")
-
-    if input.lstrip()[0] != '{':
-        #assert input.lstrip()[0] == '"', 'Invalid input'
-        input = input[1:-1]
-
+    
+    if input.lstrip()[0] == '{':
+        #assert input.lstrip()[0] == '{', 'Invalid input'
         pattern = r'(?<!\\)\\([a-zA-Z,()]+)'
 
         # Perform the replacement with the corrected pattern
         modified_input = re.sub(pattern, r'\\\\\1', input)
     else:
+        print("Warning: Invalid JSON block Input.")
         modified_input = input
 
     return modified_input
