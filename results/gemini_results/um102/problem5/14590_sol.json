@@ -1,1 +1,155 @@
-"{\n  \"type\": \"theorem\",\n  \"name\": \"Maximum Distance on Ellipsoid\",\n  \"hypothesis\": [\n    {\n      \"type\": \"let\",\n      \"variable\": \"Ellipsoid\",\n      \"property\": \"Defined by the equation $x^{2}+2 y^{2}+3 z^{2}=1$\"\n    }\n  ],\n  \"conclusion\": \"The points (1, 0, 0) and (-1, 0, 0) on the ellipsoid have the largest distance from the origin.\",\n  \"status\": \"incomplete proof\",\n  \"missing\": [\n    {\n      \"type\": \"problem\",\n      \"statement\": \"Show that the points $(\\pm 1, 0, 0)$ satisfy the constraint equation $x^2 + 2y^2 + 3z^2 = 1$.\",\n      \"solved\": false\n    },\n    {\n      \"type\": \"problem\",\n      \"statement\": \"Rigorously justify why the Lagrange multiplier method guarantees finding the maximum distance in this case.\",\n      \"solved\": false\n    }\n  ],\n  \"proof\": {\n    \"type\": \"proof\",\n    \"steps\": [\n      {\n        \"type\": \"remark\",\n        \"statement\": \"We want to maximize the distance from the origin to a point on the ellipsoid.\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"Constraint\",\n        \"value\": \"$x^2 + 2y^2 + 3z^2 = 1$\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"Distance\",\n        \"value\": \"$\\\\sqrt{x^2 + y^2 + z^2}$\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"Maximizing the distance is equivalent to maximizing $f(x, y, z) = x^2 + y^2 + z^2$\",\n        \"proof-method\": \"Monotonicity of the square root function\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"We can use the method of Lagrange multipliers to find the maximum of $f$ subject to the constraint.\",\n        \"deduced_from\": [\n          \"The functions $f$ and the constraint function are infinitely differentiable.\"\n        ]\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"$\\\\nabla f$\",\n        \"value\": \"$(2x, 2y, 2z)$\"\n      },\n      {\n        \"type\": \"let\",\n        \"variable\": \"$\\\\nabla g$\",\n        \"value\": \"$(2x, 4y, 6z)$\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"At a maximum point, $\\\\nabla f = \\\\lambda \\\\nabla g$ for some Lagrange multiplier $\\\\lambda$\",\n        \"proof-method\": \"Lagrange multiplier method\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"This gives us the equation $(2x, 2y, 2z) = (2\\\\lambda x, 4\\\\lambda y, 6\\\\lambda z)$\",\n        \"proof-method\": \"Substituting the gradients\"\n      },\n      {\n        \"type\": \"cases\",\n        \"on\": \"Value of $\\\\lambda$\",\n        \"proof-cases\": [\n          {\n            \"type\": \"case\",\n            \"condition\": \"$\\\\lambda = 1$\",\n            \"proof\": {\n              \"type\": \"proof\",\n              \"steps\": [\n                {\n                  \"type\": \"assert\",\n                  \"claim\": \"We have $(x, 0, 0) = (\\\\pm 1, 0, 0)$\",\n                  \"proof-method\": \"Solving the equation from the Lagrange multiplier condition\"\n                },\n                {\n                  \"type\": \"assert\",\n                  \"claim\": \"This implies $r^2 = x^2 + y^2 + z^2 = 1$\",\n                  \"proof-method\": \"Direct calculation\"\n                },\n                {\n                  \"type\": \"remark\",\n                  \"statement\": \"We need to verify if these points satisfy the constraint equation.\"\n                }\n              ]\n            }\n          },\n          {\n            \"type\": \"case\",\n            \"condition\": \"$\\\\lambda = \\\\frac{1}{2}$\",\n            \"proof\": {\n              \"type\": \"proof\",\n              \"steps\": [\n                {\n                  \"type\": \"assert\",\n                  \"claim\": \"We have $(0, y, 0) = (0, \\\\pm \\\\frac{1}{\\\\sqrt{2}}, 0)$\",\n                  \"proof-method\": \"Solving the equation from the Lagrange multiplier condition\"\n                },\n                {\n                  \"type\": \"assert\",\n                  \"claim\": \"This results in $r^2 = \\\\frac{1}{2}$\",\n                  \"proof-method\": \"Direct calculation\"\n                }\n              ]\n            }\n          },\n          {\n            \"type\": \"case\",\n            \"condition\": \"$\\\\lambda = \\\\frac{1}{3}$\",\n            \"proof\": {\n              \"type\": \"proof\",\n              \"steps\": [\n                {\n                  \"type\": \"assert\",\n                  \"claim\": \"We have $(0, 0, z) = (0, 0, \\\\pm \\\\frac{1}{\\\\sqrt{3}})$\",\n                  \"proof-method\": \"Solving the equation from the Lagrange multiplier condition\"\n                },\n                {\n                  \"type\": \"assert\",\n                  \"claim\": \"This leads to $r^2 = \\\\frac{1}{3}$\",\n                  \"proof-method\": \"Direct calculation\"\n                }\n              ]\n            }\n          }\n        ]\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"The maximum value of $r^2$ is 1\",\n        \"proof-method\": \"Comparing the values obtained in the different cases\",\n        \"errors\": [\n          \"The proof does not explicitly rule out other possible values of $\\\\lambda$ that may lead to a larger $r^2$\"\n        ]\n      },\n      {\n        \"type\": \"conclude\",\n        \"statement\": \"Therefore, the maximum distance from the origin is 1, and the corresponding points are $(\\\\pm 1, 0, 0)$\"\n      }\n    ]\n  }\n}"
+{
+  "type": "theorem",
+  "name": "Maximum Distance on Ellipsoid",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "Ellipsoid",
+      "property": "Defined by the equation $x^{2}+2 y^{2}+3 z^{2}=1$"
+    }
+  ],
+  "conclusion": "The points (1, 0, 0) and (-1, 0, 0) on the ellipsoid have the largest distance from the origin.",
+  "status": "incomplete proof",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Show that the points $(\\pm 1, 0, 0)$ satisfy the constraint equation $x^2 + 2y^2 + 3z^2 = 1$.",
+      "solved": false
+    },
+    {
+      "type": "problem",
+      "statement": "Rigorously justify why the Lagrange multiplier method guarantees finding the maximum distance in this case.",
+      "solved": false
+    }
+  ],
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We want to maximize the distance from the origin to a point on the ellipsoid."
+      },
+      {
+        "type": "let",
+        "variable": "Constraint",
+        "value": "$x^2 + 2y^2 + 3z^2 = 1$"
+      },
+      {
+        "type": "let",
+        "variable": "Distance",
+        "value": "$\\sqrt{x^2 + y^2 + z^2}$"
+      },
+      {
+        "type": "assert",
+        "claim": "Maximizing the distance is equivalent to maximizing $f(x, y, z) = x^2 + y^2 + z^2$",
+        "proof-method": "Monotonicity of the square root function"
+      },
+      {
+        "type": "assert",
+        "claim": "We can use the method of Lagrange multipliers to find the maximum of $f$ subject to the constraint.",
+        "deduced_from": [
+          "The functions $f$ and the constraint function are infinitely differentiable."
+        ]
+      },
+      {
+        "type": "let",
+        "variable": "$\\nabla f$",
+        "value": "$(2x, 2y, 2z)$"
+      },
+      {
+        "type": "let",
+        "variable": "$\\nabla g$",
+        "value": "$(2x, 4y, 6z)$"
+      },
+      {
+        "type": "assert",
+        "claim": "At a maximum point, $\\nabla f = \\lambda \\nabla g$ for some Lagrange multiplier $\\lambda$",
+        "proof-method": "Lagrange multiplier method"
+      },
+      {
+        "type": "assert",
+        "claim": "This gives us the equation $(2x, 2y, 2z) = (2\\lambda x, 4\\lambda y, 6\\lambda z)$",
+        "proof-method": "Substituting the gradients"
+      },
+      {
+        "type": "cases",
+        "on": "Value of $\\lambda$",
+        "proof-cases": [
+          {
+            "type": "case",
+            "condition": "$\\lambda = 1$",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assert",
+                  "claim": "We have $(x, 0, 0) = (\\pm 1, 0, 0)$",
+                  "proof-method": "Solving the equation from the Lagrange multiplier condition"
+                },
+                {
+                  "type": "assert",
+                  "claim": "This implies $r^2 = x^2 + y^2 + z^2 = 1$",
+                  "proof-method": "Direct calculation"
+                },
+                {
+                  "type": "remark",
+                  "statement": "We need to verify if these points satisfy the constraint equation."
+                }
+              ]
+            }
+          },
+          {
+            "type": "case",
+            "condition": "$\\lambda = \\frac{1}{2}$",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assert",
+                  "claim": "We have $(0, y, 0) = (0, \\pm \\frac{1}{\\sqrt{2}}, 0)$",
+                  "proof-method": "Solving the equation from the Lagrange multiplier condition"
+                },
+                {
+                  "type": "assert",
+                  "claim": "This results in $r^2 = \\frac{1}{2}$",
+                  "proof-method": "Direct calculation"
+                }
+              ]
+            }
+          },
+          {
+            "type": "case",
+            "condition": "$\\lambda = \\frac{1}{3}$",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assert",
+                  "claim": "We have $(0, 0, z) = (0, 0, \\pm \\frac{1}{\\sqrt{3}})$",
+                  "proof-method": "Solving the equation from the Lagrange multiplier condition"
+                },
+                {
+                  "type": "assert",
+                  "claim": "This leads to $r^2 = \\frac{1}{3}$",
+                  "proof-method": "Direct calculation"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The maximum value of $r^2$ is 1",
+        "proof-method": "Comparing the values obtained in the different cases",
+        "errors": [
+          "The proof does not explicitly rule out other possible values of $\\lambda$ that may lead to a larger $r^2$"
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, the maximum distance from the origin is 1, and the corresponding points are $(\\pm 1, 0, 0)$"
+      }
+    ]
+  }
+}
