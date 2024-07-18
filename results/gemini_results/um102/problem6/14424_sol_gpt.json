@@ -1,0 +1,101 @@
+{
+  "type": "theorem",
+  "name": "Saddle Point at Origin",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x",
+      "kind": "function of time"
+    },
+    {
+      "type": "let",
+      "variable": "y",
+      "kind": "function of time"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = y$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = x$"
+    }
+  ],
+  "conclusion": "The origin is a saddle point.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "<anonymous>",
+        "value": "$\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = A \\begin{pmatrix} x \\\\ y \\end{pmatrix}$",
+        "kind": "system of linear differential equations",
+        "property": "$A = \\begin{pmatrix} 0 & 1 \\\\ 1 & 0 \\end{pmatrix}$"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of $A$ are $\\lambda = \\pm 1$",
+        "proof-method": "Characteristic polynomial $\\det(A - \\lambda I) = 0$",
+        "calculation": [
+          "$\\det\\begin{pmatrix} -\\lambda & 1 \\\\ 1 & -\\lambda \\end{pmatrix} = \\lambda^2 - 1 = 0$",
+          "$\\lambda^2 = 1$",
+          "$\\lambda = \\pm 1$"
+        ]
+      },
+      {
+        "type": "let",
+        "variable": "<anonymous>",
+        "value": "$\\lambda = 1$",
+        "kind": "eigenvalue"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvector corresponding to $\\lambda = 1$ is $\\begin{pmatrix} 1 \\\\ 1 \\end{pmatrix}$",
+        "proof-method": "Solve $(A - I)\\begin{pmatrix} a \\\\ b \\end{pmatrix} = 0$",
+        "calculation": [
+          "$\\begin{pmatrix} -1 & 1 \\\\ 1 & -1 \\end{pmatrix} \\begin{pmatrix} a \\\\ b \\end{pmatrix} = 0$",
+          "$-a + b = 0$",
+          "$a = b$",
+          "$v_1 = \\begin{pmatrix} 1 \\\\ 1 \\end{pmatrix}$"
+        ],
+        "errors": [
+          "Incorrect notation, the solution should be expressed in terms of a parameter."
+        ]
+      },
+      {
+        "type": "let",
+        "variable": "<anonymous>",
+        "value": "$\\lambda = -1$",
+        "kind": "eigenvalue"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvector corresponding to $\\lambda = -1$ is $\\begin{pmatrix} -1 \\\\ 1 \\end{pmatrix}$",
+        "proof-method": "Solve $(A + I)\\begin{pmatrix} a \\\\ b \\end{pmatrix} = 0$",
+        "calculation": [
+          "$\\begin{pmatrix} 1 & 1 \\\\ 1 & 1 \\end{pmatrix} \\begin{pmatrix} a \\\\ b \\end{pmatrix} = 0$",
+          "$a + b = 0$",
+          "$a = -b$",
+          "$v_2 = \\begin{pmatrix} -1 \\\\ 1 \\end{pmatrix}$"
+        ],
+        "errors": [
+          "Incorrect matrix equation, the correct eigenvector should be computed again."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda_2 < 0 < \\lambda_1$",
+        "proof-method": "Analysis of eigenvalues"
+      },
+      {
+        "type": "conclude",
+        "statement": "Hence the origin is a saddle point",
+        "errors": [
+          "Eigenvector calculations need to be corrected",
+          "A deeper analysis should be done to classify the equilibrium point properly."
+        ]
+      }
+    ]
+  }
+}

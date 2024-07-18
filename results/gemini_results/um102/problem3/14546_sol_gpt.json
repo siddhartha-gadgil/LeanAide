@@ -1,0 +1,94 @@
+{
+  "type": "theorem",
+  "name": "Gradient of f is zero at specific points",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "value": "x^3 - 3x + y^2",
+      "kind": "function from R^2 to R"
+    },
+    {
+      "type": "assume",
+      "statement": "x, y ∈ ℝ"
+    }
+  ],
+  "conclusion": "At the points (1,0) and (-1,0) the gradient of f is zero.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "define",
+        "statement": "f(x, y) = x^3 - 3x + y^2",
+        "term": "f"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\nabla f(x, y) = \\frac{\\partial f}{\\partial x} \\hat{i} + \\frac{\\partial f}{\\partial y} \\hat{j}$",
+        "deduced_from": [
+          "Definition of gradient"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{\\partial f}{\\partial x} = 3x^2 - 3$ and $\\frac{\\partial f}{\\partial y} = 2y$",
+        "deduced_from": [
+          "Partial differentiation of f"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\nabla f(x, y) = (3x^2 - 3) \\hat{i} + 2y \\hat{j}$",
+        "deduced_from": [
+          "Substitution of partial derivatives into the gradient"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "If $\\nabla f = 0$, then $3x^2 - 3 = 0$ and $2y = 0$",
+        "deduced_from": [
+          "Setting the gradient to zero"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "Solving $3x^2 - 3 = 0$ gives $x = 1$ or $x = -1$",
+        "proof-method": "Algebraic solution"
+      },
+      {
+        "type": "assert",
+        "claim": "Solving $2y = 0$ gives $y = 0$",
+        "proof-method": "Algebraic solution"
+      },
+      {
+        "type": "assert",
+        "claim": "Therefore, $\\nabla f = 0$ at $(1,0)$ and $(-1,0)$",
+        "deduced_from": [
+          "Solutions for x and y"
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "$\\nabla f$ is zero at $(1,0)$ and $(-1,0)$",
+        "errors": [
+          {
+            "statement": "Misstatement in the problem: Incorrect function definition in step 2.",
+            "detail": "Step 2 incorrectly defines $f(x, y)$ as $x^2 - 3xy + y^2$ instead of $x^3 - 3x + y^2$. Therefore, the gradient calculations and subsequent steps are incorrect."
+          },
+          {
+            "statement": "Incorrect points: Erroneously concludes that $\\nabla f = 0$ at $(0,1)$ instead of $(-1,0)$",
+            "detail": "The correct points where $\\nabla f = 0$ should be $(1,0)$ and $(-1,0)$"
+          }
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Correctly define the function f and recompute its gradient.",
+      "solved": false
+    }
+  ]
+}

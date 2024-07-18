@@ -1,50 +1,75 @@
 {
   "type": "theorem",
-  "name": "Gradient of f(x, y) = x^3 - 3x + y^2",
+  "name": "Gradient of f(x,y) at (1,0) and (-1,0)",
   "hypothesis": [
     {
       "type": "let",
-      "variable": "f(x, y)",
-      "value": "x^{3}-3 x+y^{2}",
-      "kind": "function from R^2 to R"
+      "variable": "f",
+      "value": "$f(x, y) = x^{3} - 3x + y^{2}$",
+      "kind": "function from $\\mathbb{R}^2$ to $\\mathbb{R}$"
     }
   ],
-  "conclusion": "The gradient of f is zero at the points (1, 0) and (-1, 0).",
-  "status": "proved",
+  "conclusion": "The gradient of $f$ is zero at the points $(1,0)$ and $(-1,0)$.",
+  "status": "wrong proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
-        "type": "let",
-        "variable": "f(x, y)",
-        "value": "x^3 - 3x + y^2",
-        "kind": "function from R^2 to R"
+        "type": "remark",
+        "statement": "We first compute the gradient of $f$."
       },
       {
         "type": "assert",
-        "claim": "The gradient of f(x, y) is given by (3x^2 - 3)i + (2y)j.",
-        "proof-method": "Direct calculation",
-        "calculation": [
-          "∇f(x, y) = (∂f/∂x)i + (∂f/∂y)j",
-          "∇f(x, y) = (3x^2 - 3)i + (2y)j"
+        "claim": "$\\nabla f(x,y) = \\frac{\\partial f(x,y)}{\\partial x} \\hat{i} + \\frac{\\partial f(x,y)}{\\partial y} \\hat{j}$",
+        "deduced_from": [
+          "Definition of gradient"
         ]
       },
       {
         "type": "assert",
-        "claim": "The gradient of f is zero at (1, 0) and (-1, 0).",
-        "proof-method": "Solving the equation ∇f(x, y) = 0",
-        "calculation": [
-          "∇f(x, y) = 0",
-          "(3x^2 - 3)i + (2y)j = 0",
-          "3x^2 - 3 = 0 and 2y = 0",
-          "x = 1 or x = -1, and y = 0",
-          "(x, y) = {(1, 0), (-1, 0)}"
+        "claim": "$\\nabla f(x,y) = (3x^2 - 3)\\hat{i} + (2y)\\hat{j}$",
+        "proof-method": "Direct computation of partial derivatives"
+      },
+      {
+        "type": "remark",
+        "statement": "We now find the points where the gradient is zero."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\nabla f(x,y) = 0$",
+        "errors": [
+          "This assumes the conclusion and attempts to prove it. We should be setting the components of the gradient to zero and then solving for x and y."
         ]
+      },
+      {
+        "type": "assert",
+        "claim": "$3x^2 - 3 = 0 \\land 2y = 0$",
+        "deduced_from": [
+          "Previous step"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$x = 1 \\land y = 0$",
+        "deduced_from": [
+          "Previous step"
+        ],
+        "proof-method": "Solving the equations"
+      },
+      {
+        "type": "assert",
+        "claim": "$x = -1 \\land y = 0$",
+        "deduced_from": [
+          "Previous step"
+        ],
+        "proof-method": "Solving the equations"
       },
       {
         "type": "conclude",
-        "statement": "Therefore, the gradient of f is zero at the points (1, 0) and (-1, 0)."
+        "statement": "$\\therefore (x,y) = \\{(1,0), (-1,0)\\}$",
+        "error": "The proof incorrectly assumes the conclusion and does not directly show that the gradient is zero at the given points."
       }
     ]
-  }
+  },
+  "error": "The proof assumes the conclusion that the gradient is zero at the points, rather than independently deriving it."
 }

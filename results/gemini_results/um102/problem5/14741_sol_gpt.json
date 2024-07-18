@@ -1,67 +1,70 @@
 {
   "type": "theorem",
-  "name": "Maximum Distance on Ellipsoid",
+  "name": "Maximal Distance from Origin on Ellipsoid",
   "hypothesis": [
     {
-      "type": "define",
-      "statement": "g: \\mathbb{R}^3 \\rightarrow \\mathbb{R} \\text{ defined by } g(x,y,z) = x^2 + xy + 2z^2",
-      "term": "g"
-    },
-    {
-      "type": "define",
-      "statement": "f: \\mathbb{R}^3 \\rightarrow \\mathbb{R} \\text{ defined by } f(x,y,z) = x^2 + y^2 + z^2",
-      "term": "f"
-    },
-    {
       "type": "assume",
-      "statement": "Any continuous function on the ellipsoid attains its maximum."
+      "statement": "Any continuous function on the ellipsoid $x^2 + 2y^2 + 3z^2 = 1$ attains its maximum."
     }
   ],
-  "conclusion": {
-    "type": "assert",
-    "claim": "The points (1, 0, 0) and (-1, 0, 0) on the ellipsoid x^{2}+2 y^{2}+3 z^{2}=1 have the largest distance from the origin."
-  },
-  "status": "proved",
+  "conclusion": "The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid $x^2 + 2y^2 + 3z^2 = 1$ have the largest distance from the origin.",
+  "status": "incomplete proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
-        "type": "let",
-        "variable": "d",
-        "value": "f(x,y,z)",
-        "kind": "real number",
-        "property": "square of the distance from the origin"
+        "type": "define",
+        "term": "g",
+        "statement": "$g: \\mathbb{R}^3 \\to \\mathbb{R}$ given by $g(x, y, z) = x^2 + 2y^2 + 3z^2$"
+      },
+      {
+        "type": "define",
+        "term": "f",
+        "statement": "$f: \\mathbb{R}^3 \\to \\mathbb{R}$ given by $f(x, y, z) = x^2 + y^2 + z^2$"
       },
       {
         "type": "assert",
-        "claim": "Maximizing $d$ is equivalent to maximizing $d^2$ since $d \\ge 0$."
+        "claim": "Maximizing $d$ is equivalent to maximizing $d^2$ for $d \\ge 0$."
       },
       {
         "type": "assert",
-        "claim": "The problem is to maximize $f$ subject to the constraint $g(x,y,z) = 1$."
+        "claim": "The problem reduces to maximizing $f$ under the constraint $g(x, y, z) = 1$."
       },
       {
         "type": "assert",
-        "claim": "At a restricted extremum of $f$, $\\nabla f = \\lambda \\nabla g$ (Lagrange multipliers).",
-        "deduced_from": [
-          "Theory of Lagrange multipliers"
+        "claim": "At the restricted extremum of $f$, the gradients $\\nabla g$ and $\\nabla f$ are parallel (Lagrange multipliers)."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\nabla g = (2x, 4y, 6z)$",
+        "proof-method": "Calculation",
+        "calculation": [
+          "g(x, y, z) = x^2 + 2y^2 + 3z^2",
+          "∂g/∂x = 2x",
+          "∂g/∂y = 4y",
+          "∂g/∂z = 6z",
+          "∴ ∇g = (2x, 4y, 6z)"
         ]
       },
       {
         "type": "assert",
-        "claim": "The gradients are $\\nabla g = \\begin{pmatrix}  \\frac{\\partial g}{\\partial x} \\\\ \\frac{\\partial g}{\\partial y} \\\\ \\frac{\\partial g}{\\partial z} \\end{pmatrix}$ and $\\nabla f = \\begin{pmatrix}  \\frac{\\partial f}{\\partial x} \\\\ \\frac{\\partial f}{\\partial y} \\\\ \\frac{\\partial f}{\\partial z} \\end{pmatrix}$."
+        "claim": "$\\nabla f = (2x, 2y, 2z)$",
+        "proof-method": "Calculation",
+        "calculation": [
+          "f(x, y, z) = x^2 + y^2 + z^2",
+          "∂f/∂x = 2x",
+          "∂f/∂y = 2y",
+          "∂f/∂z = 2z",
+          "∴ ∇f = (2x, 2y, 2z)"
+        ]
       },
       {
         "type": "assert",
-        "claim": "Therefore, $\\nabla g (x,y,z) = \\begin{pmatrix}  2x + y \\\\ x \\\\ 4z \\end{pmatrix}$ and $\\nabla f (x,y,z) = \\begin{pmatrix}  2x \\\\ 2y \\\\ 2z \\end{pmatrix}$."
-      },
-      {
-        "type": "assert",
-        "claim": "This gives the equation $\\begin{pmatrix}  2x \\\\ 2y \\\\ 2z \\end{pmatrix} = \\lambda \\begin{pmatrix}  2x + y \\\\ x \\\\ 4z \\end{pmatrix}$, which leads to the system of equations $\\begin{cases} 2x = \\lambda (2x + y) \\\\ 2y = \\lambda x \\\\ 2z = \\lambda (4z) \\end{cases}$."
+        "claim": "$(2x, 4y, 6z) = \\lambda (2x, 2y, 2z)$"
       },
       {
         "type": "cases",
-        "on": "values of $\\lambda$",
+        "on": "λ",
         "split-kind": "condition",
         "proof-cases": [
           {
@@ -71,16 +74,30 @@
               "type": "proof",
               "steps": [
                 {
-                  "type": "assume",
-                  "statement": "$y = z = 0$"
+                  "type": "assert",
+                  "claim": "Substituting $y = z = 0$ into $g(x, y, z) = 1$ yields $x^2 = 1$.",
+                  "proof-method": "Calculation",
+                  "calculation": [
+                    "g(x, y, z) = 1",
+                    "x^2 + 2(0)^2 + 3(0)^2 = 1",
+                    "x^2 = 1"
+                  ]
                 },
                 {
                   "type": "assert",
-                  "claim": "Substituting $y=z=0$ into $g(x,y,z) = 1$, we get $x^2 = 1$, which implies $x = 1$ or $x=-1$."
+                  "claim": "The points $x = 1$ and $x = -1$ follow.",
+                  "deduced_from": [
+                    "x^2 = 1"
+                  ]
                 },
                 {
                   "type": "assert",
-                  "claim": "Substituting $x = \\pm 1$ and $y = z = 0$ into $f(x,y,z)$, we get $f(1,0,0) = f(-1,0,0) = 1$."
+                  "claim": "Evaluating $f$ at $(1, 0, 0)$ gives $f(1, 0, 0) = 1$. Also, $f(-1, 0, 0) = 1$.",
+                  "proof-method": "Calculation",
+                  "calculation": [
+                    "f(1, 0, 0) = 1^2 + 0^2 + 0^2 = 1",
+                    "f(-1, 0, 0) = (-1)^2 + 0^2 + 0^2 = 1"
+                  ]
                 }
               ]
             }
@@ -92,16 +109,31 @@
               "type": "proof",
               "steps": [
                 {
-                  "type": "assume",
-                  "statement": "$x = z = 0$"
+                  "type": "assert",
+                  "claim": "Substituting $x = z = 0$ into $g(x, y, z) = 1$ yields $2y^2 = 1$, so $y^2 = \\frac{1}{2}$.",
+                  "proof-method": "Calculation",
+                  "calculation": [
+                    "g(x, y, z) = 1",
+                    "0^2 + 2y^2 + 0^2 = 1",
+                    "2y^2 = 1",
+                    "y^2 = 1/2"
+                  ]
                 },
                 {
                   "type": "assert",
-                  "claim": "Substituting $x=z=0$ into $g(x,y,z) = 1$, we get $2y^2=1$, which implies $y^2 = \\frac{1}{2}$ and therefore $y= \\pm\\frac{1}{\\sqrt{2}}$."
+                  "claim": "The points $y = \\pm \\frac{1}{\\sqrt{2}}$ follow.",
+                  "deduced_from": [
+                    "y^2 = 1/2"
+                  ]
                 },
                 {
                   "type": "assert",
-                  "claim": "Substituting $x=z=0$ and $y = \\pm \\frac{1}{\\sqrt{2}}$ into $f(x,y,z)$, we get $f(0, \\frac{1}{\\sqrt{2}}, 0) = f(0, \\frac{-1}{\\sqrt{2}}, 0) = \\frac{1}{2}$."
+                  "claim": "Evaluating $f$ at $(0, \\pm \\frac{1}{\\sqrt{2}}, 0)$ gives $f\\left(0, \\pm \\frac{1}{\\sqrt{2}}, 0\\right) = \\frac{1}{2}$.",
+                  "proof-method": "Calculation",
+                  "calculation": [
+                    "f(0, 1/√2, 0) = 0^2 + (1/√2)^2 + 0^2 = 1/2",
+                    "f(0, -1/√2, 0) = 0^2 + (-1/√2)^2 + 0^2 = 1/2"
+                  ]
                 }
               ]
             }
@@ -113,16 +145,31 @@
               "type": "proof",
               "steps": [
                 {
-                  "type": "assume",
-                  "statement": "$x = y = 0$"
+                  "type": "assert",
+                  "claim": "Substituting $x = y = 0$ into $g(x, y, z) = 1$ yields $3z^2 = 1$, so $z^2 = \\frac{1}{3}$.",
+                  "proof-method": "Calculation",
+                  "calculation": [
+                    "g(x, y, z) = 1",
+                    "0^2 + 0^2 + 3z^2 = 1",
+                    "3z^2 = 1",
+                    "z^2 = 1/3"
+                  ]
                 },
                 {
                   "type": "assert",
-                  "claim": "Substituting $x=y=0$ into $g(x,y,z) = 1$, we get $3z^2=1$, which implies $z^2 = \\frac{1}{3}$ and therefore $z= \\pm\\frac{1}{\\sqrt{3}}$."
+                  "claim": "The points $z = \\pm \\frac{1}{\\sqrt{3}}$ follow.",
+                  "deduced_from": [
+                    "z^2 = 1/3"
+                  ]
                 },
                 {
                   "type": "assert",
-                  "claim": "Substituting $x=y=0$ and $z = \\pm \\frac{1}{\\sqrt{3}}$ into $f(x,y,z)$, we get $f(0, 0, \\frac{1}{\\sqrt{3}}) = f(0, 0, \\frac{-1}{\\sqrt{3}}) = \\frac{1}{3}$."
+                  "claim": "Evaluating $f$ at $(0, 0, \\pm \\frac{1}{\\sqrt{3}})$ gives $f\\left(0, 0, \\pm \\frac{1}{\\sqrt{3}}\\right) = \\frac{1}{3}$.",
+                  "proof-method": "Calculation",
+                  "calculation": [
+                    "f(0, 0, 1/√3) = 0^2 + 0^2 + (1/√3)^2 = 1/3",
+                    "f(0, 0, -1/√3) = 0^2 + 0^2 + (-1/√3)^2 = 1/3"
+                  ]
                 }
               ]
             }
@@ -131,8 +178,19 @@
       },
       {
         "type": "conclude",
-        "statement": "Since $f$ is maximum in Case 1, the points $(1,0,0)$ and $(-1,0,0)$ have the largest distance from the origin, which is given by $d = 1$."
+        "statement": "The points $(1, 0, 0)$ and $(-1, 0, 0)$ have the largest distance from the origin, given by $d^2 = 1$.",
+        "error": "Incorrect conclusion that points $(1, 0, 0)$ and $(-1, 0, 0)$ have the largest distance based solely on case 1. Case 3 evaluates a higher distance function value."
       }
+    ],
+    "errors": [
+      "The proof does not correctly conclude the maximum distance points due to neglecting the actual maximum value from case comparisons."
     ]
-  }
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Verify and compare the values of function $f$ for all cases to correctly identify the maximum distance points.",
+      "solved": false
+    }
+  ]
 }

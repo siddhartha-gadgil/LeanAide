@@ -1,53 +1,55 @@
 {
   "type": "theorem",
-  "name": "Maximal Distance on Ellipsoid",
+  "name": "Largest distance from the origin on the ellipsoid",
   "hypothesis": [
     {
       "type": "assume",
-      "statement": "x^2 + 2y^2 + 3z^2 = 1"
+      "statement": "Any continuous function on the ellipsoid $x^2 + 2y^2 + 3z^2 = 1$ attains its maximum."
     },
     {
-      "type": "assume",
-      "statement": "Any continuous function on the ellipsoid attains its maximum"
+      "type": "let",
+      "variable": "f",
+      "value": "x^2 + y^2 + z^2",
+      "kind": "function",
+      "property": "The function to be maximized."
+    },
+    {
+      "type": "let",
+      "variable": "g",
+      "value": "x^2 + 2y^2 + 3z^2 - 1",
+      "kind": "function",
+      "property": "The constraint function for the ellipsoid."
     }
   ],
-  "conclusion": "The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid $x^2 + 2y^2 + 3z^2 = 1$ have the largest distance from the origin.",
-  "status": "proved",
+  "conclusion": "The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid $x^{2}+2 y^{2}+3 z^{2}=1$ have the largest distance from the origin.",
+  "status": "incomplete proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "let",
-        "variable": "f(x, y, z)",
-        "value": "x^2 + y^2 + z^2",
-        "kind": "function"
-      },
-      {
-        "type": "let",
-        "variable": "g(x, y, z)",
-        "value": "x^2 + 2y^2 + 3z^2 - 1",
-        "kind": "function"
+        "variable": "F",
+        "value": "f - \\lambda g",
+        "kind": "function",
+        "property": "Using the concept of Lagrange multipliers."
       },
       {
         "type": "assert",
-        "claim": "To maximize $f(x, y, z)$ subject to $g(x, y, z) = 0$, use Lagrange multipliers.",
-        "proof-method": "concept of Lagrange multipliers"
-      },
-      {
-        "type": "let",
-        "variable": "F(x, y, z, \\lambda)",
-        "value": "f(x, y, z) - \\lambda g(x, y, z)",
-        "kind": "function"
+        "claim": "\\nabla F = 0"
       },
       {
         "type": "assert",
-        "claim": "At maxima or minima, $\\nabla F = 0$",
-        "proof-method": "property of Lagrange multipliers"
+        "claim": "\\nabla((1-\\lambda)x^2 + (1-2\\lambda)y^2 + (1-3\\lambda)z^2 + \\lambda) = 0",
+        "deduced_from": [
+          "\\nabla F = 0"
+        ]
       },
       {
         "type": "assert",
-        "claim": "$\\nabla F = (1-\\lambda)2x \\hat{i} + (1-2\\lambda)2y \\hat{j} + (1-3\\lambda)2z \\hat{k} = 0$",
-        "proof-method": "calculation of gradient"
+        "claim": "(1-\\lambda)2x \\hat{i} + (1-2\\lambda)2y \\hat{j} + (1-3\\lambda)2z \\hat{k} = 0",
+        "deduced_from": [
+          "\\nabla((1-\\lambda)x^2 + (1-2\\lambda)y^2 + (1-3\\lambda)z^2 + \\lambda) = 0"
+        ]
       },
       {
         "type": "cases",
@@ -64,19 +66,16 @@
                   "type": "assert",
                   "claim": "y = 0, z = 0",
                   "deduced_from": [
-                    "\\lambda = 1"
+                    "(1-\\lambda)2x \\hat{i} + (1-2\\lambda)2y \\hat{j} + (1-3\\lambda)2z \\hat{k} = 0"
                   ]
                 },
                 {
                   "type": "assert",
                   "claim": "x = \\pm 1",
                   "deduced_from": [
-                    "x^2 + 2y^2 + 3z^2 = 1"
-                  ]
-                },
-                {
-                  "type": "conclude",
-                  "statement": "x^2 + y^2 + z^2 = 1"
+                    "y = 0, z = 0"
+                  ],
+                  "proof-method": "Substituting into the constraint equation"
                 }
               ]
             }
@@ -91,19 +90,16 @@
                   "type": "assert",
                   "claim": "x = 0, z = 0",
                   "deduced_from": [
-                    "\\lambda = \\frac{1}{2}"
+                    "(1-\\lambda)2x \\hat{i} + (1-2\\lambda)2y \\hat{j} + (1-3\\lambda)2z \\hat{k} = 0"
                   ]
                 },
                 {
                   "type": "assert",
                   "claim": "y = \\pm \\frac{1}{\\sqrt{2}}",
                   "deduced_from": [
-                    "x^2 + 2y^2 + 3z^2 = 1"
-                  ]
-                },
-                {
-                  "type": "conclude",
-                  "statement": "x^2 + y^2 + z^2 = \\frac{1}{2}"
+                    "x = 0, z = 0"
+                  ],
+                  "proof-method": "Substituting into the constraint equation"
                 }
               ]
             }
@@ -118,19 +114,16 @@
                   "type": "assert",
                   "claim": "x = 0, y = 0",
                   "deduced_from": [
-                    "\\lambda = \\frac{1}{3}"
+                    "(1-\\lambda)2x \\hat{i} + (1-2\\lambda)2y \\hat{j} + (1-3\\lambda)2z \\hat{k} = 0"
                   ]
                 },
                 {
                   "type": "assert",
                   "claim": "z = \\pm \\frac{1}{\\sqrt{3}}",
                   "deduced_from": [
-                    "x^2 + 2y^2 + 3z^2 = 1"
-                  ]
-                },
-                {
-                  "type": "conclude",
-                  "statement": "x^2 + y^2 + z^2 = \\frac{1}{3}"
+                    "x = 0, y = 0"
+                  ],
+                  "proof-method": "Substituting into the constraint equation"
                 }
               ]
             }
@@ -139,21 +132,29 @@
             "type": "case",
             "condition": "x = y = z = 0",
             "proof": {
-              "type": "proof",
-              "steps": [
-                {
-                  "type": "conclude",
-                  "statement": "x^2 + y^2 + z^2 = 0"
-                }
-              ]
+              "type": "assert",
+              "claim": "x^2 + y^2 + z^2 = 0",
+              "proof-method": "Substituting into the constraint equation"
             }
           }
         ]
       },
       {
         "type": "conclude",
-        "statement": "The maximum value of $x^2 + y^2 + z^2$ is 1, corresponding to the points $(1, 0, 0)$ and $(-1, 0, 0)$."
+        "statement": "The maximum value of $x^2 + y^2 + z^2$ is obtained at the points $(1, 0, 0)$ and $(-1, 0, 0)$. These points have the largest distance from the origin."
       }
     ]
-  }
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Justify that $\\lambda = 1$ corresponds to the maximum value of $x^2 + y^2 + z^2$ rather than other values of $\\lambda$.",
+      "solved": false
+    }
+  ],
+  "errors": [
+    {
+      "statement": "The proof does not provide justification for why $\\lambda = 1$ corresponds to the maximum rather than other values of $\\lambda$."
+    }
+  ]
 }

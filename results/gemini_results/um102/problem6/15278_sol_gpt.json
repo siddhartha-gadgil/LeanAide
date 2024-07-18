@@ -1,0 +1,65 @@
+{
+  "type": "theorem",
+  "name": "Saddle Point at the Origin",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = y$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = x$"
+    }
+  ],
+  "conclusion": "The origin $(0, 0)$ is a saddle point.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\dot{x} = Ax$ where $A = \\begin{pmatrix} 0 & 1 \\\\ 1 & 0 \\end{pmatrix}$",
+        "proof-method": "Matrix representation of the system."
+      },
+      {
+        "type": "assert",
+        "claim": "The characteristic equation of $A$ is $\\lambda^2 - 1 = 0$",
+        "deduced_from": [
+          "$|A - \\lambda I| = 0$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of $A$ are $\\lambda_1 = 1$ and $\\lambda_2 = -1$",
+        "deduced_from": [
+          "Solving $\\lambda^2 - 1 = 0$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda_2 < 0 < \\lambda_1$"
+      },
+      {
+        "type": "assert",
+        "claim": "The origin is a saddle point.",
+        "proof-method": "Since the eigenvalues are of opposite signs, the origin is a saddle point.",
+        "errors": [
+          "The argument requires a more detailed explanation about why opposite sign eigenvalues imply a saddle point."
+        ]
+      },
+      {
+        "type": "remark",
+        "statement": "$e^t$, $e^{-t}$: If any one goes to $0$, the other one shoots to $\\infty$.",
+        "errors": [
+          "This is an incomplete justification and should be expanded to rigorously explain the behavior of the solutions."
+        ]
+      }
+    ],
+    "errors": [
+      {
+        "type": "remark",
+        "statement": "The proof lacks a rigorous justification that the opposite sign of the eigenvalues implies a saddle point. Additionally, the behavior of the solutions needs a more formal explanation."
+      }
+    ]
+  }
+}

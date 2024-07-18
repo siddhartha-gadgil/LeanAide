@@ -1,0 +1,135 @@
+{
+  "type": "theorem",
+  "name": "Saddle Point at Origin",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = y$ and $\\dot{y} = x$"
+    }
+  ],
+  "conclusion": "The origin is a saddle point.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$x \\propto y$ and $\\dot{y} \\propto n$",
+        "proof-method": "Given relationships"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\dot{n} \\propto y$",
+        "proof-method": "From $x \\propto y$ and $\\dot{y} \\propto n$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{dn}{du} \\propto y$",
+        "proof-method": "Rewrite $\\dot{n} \\propto y$"
+      },
+      {
+        "type": "assert",
+        "claim": "$dn \\propto y \\, dy$",
+        "proof-method": "Rewrite $\\frac{dn}{du} \\propto y$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\int dn \\propto \\int y \\, dy$",
+        "proof-method": "Integrate both sides"
+      },
+      {
+        "type": "assert",
+        "claim": "$n \\propto \\frac{y^2}{2}$",
+        "proof-method": "Integrate"
+      },
+      {
+        "type": "assert",
+        "claim": "$y^2 \\propto 2n$",
+        "proof-method": "From $n \\propto \\frac{y^2}{2}$"
+      },
+      {
+        "type": "conclude",
+        "statement": "This equation represents a parabola symmetric with respect to the $x$-axis"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\dot{y} \\propto n$",
+        "proof-method": "Given relationship"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{dy}{dn} \\propto n$",
+        "proof-method": "Rewrite $\\dot{y} \\propto n$"
+      },
+      {
+        "type": "assert",
+        "claim": "$dy \\propto n \\, dn$",
+        "proof-method": "Rewrite $\\frac{dy}{dn} \\propto n$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\int dy \\propto \\int n \\, dn$",
+        "proof-method": "Integrate both sides"
+      },
+      {
+        "type": "assert",
+        "claim": "$y \\propto \\frac{n^2}{2}$",
+        "proof-method": "Integrate"
+      },
+      {
+        "type": "assert",
+        "claim": "$n^2 \\propto 2y$",
+        "proof-method": "From $y \\propto \\frac{n^2}{2}$"
+      },
+      {
+        "type": "conclude",
+        "statement": "This equation represents a parabola symmetric with respect to the $y$-axis"
+      },
+      {
+        "type": "assert",
+        "claim": "$y^2 - 2x = 0$",
+        "proof-method": "Given equation"
+      },
+      {
+        "type": "assert",
+        "claim": "$y^2 - 2n = -2\\gamma$",
+        "proof-method": "Rewrite $y^2 - 2x = 0$"
+      },
+      {
+        "type": "define",
+        "term": "function $f$",
+        "statement": "$f = n^2 - y^2 + 2n - 2y = 0$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\nabla (n^2 + 2n - y^2 - 2y) = ((2n + 2)\\hat{n} - (2y + 2)\\hat{y})$",
+        "proof-method": "Calculate gradient"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\nabla f = 2\\hat{n} - 2 \\hat{y}$ at the origin",
+        "proof-method": "Evaluate at origin"
+      },
+      {
+        "type": "assert",
+        "claim": "$x^2 - 2y = 0$",
+        "proof-method": "Given equation"
+      },
+      {
+        "type": "conclude",
+        "statement": "The sign will be a source",
+        "error": "Non sequitur; requires further justification or correction."
+      }
+    ],
+    "errors": [
+      "The proof does not clearly establish why the origin is a saddle point.",
+      "There are unexplained steps and not all variables are clearly defined."
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Establish the conditions for the origin to be a saddle point for the given system."
+    }
+  ]
+}

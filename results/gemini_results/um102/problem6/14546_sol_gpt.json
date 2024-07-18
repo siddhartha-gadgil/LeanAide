@@ -1,0 +1,71 @@
+{
+  "type": "theorem",
+  "name": "Saddle point at the origin",
+  "hypothesis": [
+    {
+      "type": "define",
+      "term": "linear differential equation",
+      "statement": "$\\dot{x} = y$ and $\\dot{y} = x$"
+    }
+  ],
+  "conclusion": "The origin is a saddle point.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "<anonymous>",
+        "kind": "function",
+        "property": "solutions of the differential equations"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{d^2 x}{dt^2} = x$",
+        "deduced_from": [
+          "$\\frac{dx}{dt} = y$",
+          "$\\frac{dy}{dt} = x$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$x = Ae^{\\lambda t}$",
+        "proof-method": "solving the second-order differential equation"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues are $\\pm i$",
+        "proof-method": "characteristic equation"
+      },
+      {
+        "type": "assert",
+        "claim": "The corresponding eigenvectors are $\\begin{pmatrix} 1 \\\\ i \\end{pmatrix}$ and $\\begin{pmatrix} 1 \\\\ -i \\end{pmatrix}$",
+        "deduced_from": [
+          "eigenvalue computation"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$e^{it} \\begin{pmatrix} 1 \\\\ -i \\end{pmatrix} = \\begin{pmatrix} \\cos t \\\\ -\\sin t \\end{pmatrix} + i \\begin{pmatrix} \\sin t \\\\ -\\cos t \\end{pmatrix}$",
+        "proof-method": "Euler's formula"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\begin{pmatrix} x(t) \\\\ y(t) \\end{pmatrix} = \\begin{pmatrix} \\cos t \\\\ \\sin t \\end{pmatrix} + C \\begin{pmatrix} \\sin t \\\\ -\\cos t \\end{pmatrix}$",
+        "proof-method": "combining real and imaginary parts"
+      },
+      {
+        "type": "conclude",
+        "statement": "The origin is not a saddle point.",
+        "error": "incorrect conclusion based on the eigenvalues and eigenvectors calculated"
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Correctly classify the stability of the origin using the correct eigenvalues and eigenvectors.",
+      "solved": false
+    }
+  ]
+}

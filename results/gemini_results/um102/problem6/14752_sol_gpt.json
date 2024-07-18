@@ -1,0 +1,113 @@
+{
+  "type": "theorem",
+  "name": "Saddle Point at the Origin",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = y$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = x$"
+    }
+  ],
+  "conclusion": "The origin is a saddle point.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$A \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} y \\\\ x \\end{bmatrix}$",
+        "deduced_from": [
+          "$\\dot{x} = y$",
+          "$\\dot{y} = x$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$A = \\begin{bmatrix} 0 & 1 \\\\ 1 & 0 \\end{bmatrix}$",
+        "proof-method": "Comparison of matrix multiplication results."
+      },
+      {
+        "type": "let",
+        "variable": "$\\lambda$",
+        "kind": "eigenvalue of $A$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\det(A - \\lambda I) = 0$",
+        "proof-method": "Definition of eigenvalue."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda^2 - 1 = 0$",
+        "deduced_from": [
+          "$\\det(A - \\lambda I) = 0$"
+        ],
+        "calculation": [
+          "$\\det \\begin{bmatrix} -\\lambda & 1 \\\\ 1 & -\\lambda \\end{bmatrix} = \\lambda^2 - 1$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda = \\pm 1$",
+        "deduced_from": [
+          "$\\lambda^2 - 1 = 0$"
+        ]
+      },
+      {
+        "type": "let",
+        "variable": "$v_1$",
+        "value": "$\\begin{bmatrix} 1 \\\\ 1 \\end{bmatrix}$",
+        "kind": "eigenvector associated with $\\lambda = 1$"
+      },
+      {
+        "type": "assert",
+        "claim": "$(A - I) \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 0 \\\\ 0 \\end{bmatrix}$",
+        "proof-method": "Substitution of $\\lambda = 1$ into the eigenvalue equation.",
+        "calculation": [
+          "$\\begin{bmatrix} -1 & 1 \\\\ 1 & -1 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 0 \\\\ 0 \\end{bmatrix}$",
+          "$-x + y = 0$",
+          "$x = y$"
+        ]
+      },
+      {
+        "type": "let",
+        "variable": "$v_2$",
+        "value": "$\\begin{bmatrix} 1 \\\\ -1 \\end{bmatrix}$",
+        "kind": "eigenvector associated with $\\lambda = -1$"
+      },
+      {
+        "type": "assert",
+        "claim": "$(A + I) \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 0 \\\\ 0 \\end{bmatrix}$",
+        "proof-method": "Substitution of $\\lambda = -1$ into the eigenvalue equation.",
+        "calculation": [
+          "$\\begin{bmatrix} 1 & 1 \\\\ 1 & 1 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 0 \\\\ 0 \\end{bmatrix}$",
+          "$x + y = 0$",
+          "$x = -y$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$x(t) = \\alpha e^t \\begin{bmatrix} 1 \\\\ 1 \\end{bmatrix} + \\beta e^{-t} \\begin{bmatrix} 1 \\\\ -1 \\end{bmatrix}$",
+        "proof-method": "General solution using eigenvalues and eigenvectors."
+      },
+      {
+        "type": "assert",
+        "claim": "The origin is a saddle point.",
+        "proof-method": "Analysis of the general solution.",
+        "errors": [
+          "The final assertion lacks thorough justification connecting the general solution to the classification of the origin as a saddle point. Stability analysis is missing."
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Perform stability analysis of the general solution to classify the origin as a saddle point.",
+      "solved": false
+    }
+  ]
+}

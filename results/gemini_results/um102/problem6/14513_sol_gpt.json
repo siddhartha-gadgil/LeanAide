@@ -1,0 +1,90 @@
+{
+  "type": "theorem",
+  "name": "Saddle Point of Origin",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = y$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = x$"
+    }
+  ],
+  "conclusion": "The origin is a saddle point.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\dot{x} = \\begin{bmatrix} 0 & 1 \\\\ 1 & 0 \\end{bmatrix} x$",
+        "deduced_from": [
+          "$\\dot{x} = y$",
+          "$\\dot{y} = x$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The characteristic equation of the matrix is $\\lambda^2 - 1 = 0$",
+        "deduced_from": [
+          "matrix characteristic polynomial calculation"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues are $\\lambda = 1$ and $\\lambda = -1$",
+        "deduced_from": [
+          "solution of $\\lambda^2 - 1 = 0$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "For $\\lambda = 1$, the eigenvector is $v_1 = \\begin{bmatrix} 1 \\\\ 1 \\end{bmatrix}$",
+        "deduced_from": [
+          "eigenvector calculation for $\\lambda = 1$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "For $\\lambda = -1$, the eigenvector is $v_2 = \\begin{bmatrix} 1 \\\\ -1 \\end{bmatrix}$",
+        "deduced_from": [
+          "eigenvector calculation for $\\lambda = -1$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The general solution of the system is $x(t) = c_1 e^t \\begin{bmatrix} 1 \\\\ 1 \\end{bmatrix} + c_2 e^{-t} \\begin{bmatrix} 1 \\\\ -1 \\end{bmatrix}$",
+        "deduced_from": [
+          "eigenvalue/eigenvector solution of linear systems"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "This system represents a saddle point",
+        "proof-method": "Along the eigenvector associated with $\\lambda=1$, $x$ approaches 0 as $t$ approaches infinity. Along the eigenvector associated with $\\lambda=-1$, $x$ approaches infinity as $t$ approaches infinity."
+      },
+      {
+        "type": "conclude",
+        "statement": "The origin is a saddle point."
+      }
+    ],
+    "errors": [
+      {
+        "statement": "For $\\lambda = -1$, the matrix $A - \\lambda I$ should be $\\begin{bmatrix} 1 & 1 \\\\ 1 & 1 \\end{bmatrix}$, which is incorrect. The correct matrix is $\\begin{bmatrix} 1 & -1 \\\\ -1 & 1 \\end{bmatrix}$",
+        "error": "wrong calculation"
+      },
+      {
+        "statement": "The proof should include analysis on stability of the general solution to conclude it represents a saddle point.",
+        "error": "missing detail"
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Analyze the stability of the general solution to conclude that the origin is a saddle point",
+      "solved": false
+    }
+  ]
+}

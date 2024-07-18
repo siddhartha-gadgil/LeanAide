@@ -1,61 +1,53 @@
 {
   "type": "theorem",
-  "name": "Gradient of f(x,y) = x^3 - 3x + y^2",
+  "name": "Gradient of f(x, y) = x^3 - 3x + y^2",
   "hypothesis": [
     {
       "type": "let",
-      "variable": "f(x,y)",
-      "value": "x^3 - 3x + y^2",
+      "variable": "f",
+      "value": "x^{3}-3 x+y^{2}",
       "kind": "function from R^2 to R"
-    },
-    {
-      "type": "let",
-      "variable": "x",
-      "kind": "element of R"
-    },
-    {
-      "type": "let",
-      "variable": "y",
-      "kind": "element of R"
     }
   ],
-  "conclusion": "The gradient of f is zero at the points (1,0) and (-1,0).",
-  "status": "proved",
+  "conclusion": "The gradient of $f$ is zero at the points $(1, 0)$ and $(-1, 0)$.",
+  "status": "wrong proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
+        "type": "let",
+        "variable": "f(x, y)",
+        "value": "x^3 - 3x + y^2"
+      },
+      {
+        "type": "assert",
+        "claim": "The gradient of $f$ is $$\\nabla f(x, y) = \\left( \\frac{\\partial f}{\\partial x} \\hat{i} + \\frac{\\partial f}{\\partial y} \\hat{j} \\right) = \\left( (3x^2-3)\\hat{i} + 2y \\hat{j} \\right).$$",
+        "proof-method": "Direct computation"
+      },
+      {
         "type": "remark",
-        "statement": "We begin by computing the gradient of f."
+        "statement": "Note that $\\hat{i}$ and $\\hat{j}$ are the standard basis for $\\mathbb{R}^2$."
       },
       {
         "type": "assert",
-        "claim": "∇f(x,y) = (3x^2 - 3)î + 2yĵ",
-        "proof-method": "Direct calculation"
-      },
-      {
-        "type": "remark",
-        "statement": "To find the points where the gradient is zero, we set the gradient equal to zero and solve for x and y."
+        "claim": "Setting the gradient equal to zero, we have $$(3x^2 - 3) \\hat{i} + 2y \\hat{j} = 0.$$",
+        "proof-method": "To find the points where the gradient is zero"
       },
       {
         "type": "assert",
-        "claim": "(3x^2 - 3)î + 2yĵ = 0",
-        "proof-method": "Setting the gradient equal to zero"
-      },
-      {
-        "type": "assert",
-        "claim": "3x^2 - 3 = 0, 2y = 0",
-        "proof-method": "Setting each component of the vector equation to zero"
-      },
-      {
-        "type": "assert",
-        "claim": "x = ± 1, y = 0",
-        "proof-method": "Solving the equations"
-      },
-      {
-        "type": "conclude",
-        "statement": "Therefore, the points where the gradient of f is zero are (1,0) and (-1,0)."
+        "claim": "Thus, $3x^2 - 3 = 0$ and $2y = 0$, which implies $x = \\pm 1$ and $y=0$. Therefore, the points $(x, y)$ are $(1, 0)$ and $(-1, 0)$.",
+        "deduced_from": [
+          "$(3x^2 - 3) \\hat{i} + 2y \\hat{j} = 0$"
+        ],
+        "errors": [
+          {
+            "type": "problem",
+            "statement": "The proof incorrectly concludes that the gradient is zero only at (1, 0) and (-1, 0) by setting the gradient to zero and solving for x and y. This approach finds the critical points where the gradient is zero, but it doesn't prove that the gradient is zero only at those points. ",
+            "solved": false
+          }
+        ]
       }
     ]
-  }
+  },
+  "error": "The proof incorrectly concludes that the gradient is zero only at (1, 0) and (-1, 0) by setting the gradient to zero and solving for x and y. This approach finds the critical points where the gradient is zero, but it doesn't prove that the gradient is zero only at those points."
 }

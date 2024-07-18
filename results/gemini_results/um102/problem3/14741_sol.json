@@ -1,52 +1,56 @@
 {
   "type": "theorem",
-  "name": "Gradient zero theorem",
-  "Hypothesis": [
+  "name": "Gradient of f(x,y) = x^3 - 3x + y^2",
+  "hypothesis": [
     {
       "type": "let",
-      "Variable": "f",
-      "Value": "x^{3}-3 x+y^{2}",
-      "Kind": "function from R^2 to R"
+      "variable": "f",
+      "value": "x^{3}-3 x+y^{2}",
+      "kind": "function from R^2 to R"
     }
   ],
-  "Conclusion": "The gradient of \\( f \\) is zero at the points (1,0) and (-1,0).",
-  "Status": "proved",
-  "Proof": {
+  "conclusion": "The gradient of $f$ at the points $(1,0)$ and $(-1,0)$ is zero.",
+  "status": "wrong proof",
+  "proof": {
     "type": "proof",
-    "Steps": [
+    "steps": [
       {
         "type": "remark",
-        "Statement": "We know that the gradient of $f$ is given by $$\\nabla f(x,y) = \\bigg(\\frac{\\delta f}{\\delta x}, \\frac{\\delta f}{\\delta y}\\bigg).$$"
+        "statement": "We know that the gradient of $f$ is given by  $\\nabla f(x,y) = (\\frac{\\partial f}{\\partial x},\\frac{\\partial f}{\\partial y})$. "
       },
       {
         "type": "assert",
-        "Claim": "$\\nabla f(x,y) = (3x^2 - 3, 2y)$",
-        "Proof-method": "Calculating partial derivatives"
+        "claim": "$\\nabla f(x,y) = (3x^2-3, 2y)$",
+        "proof-method": "By taking partial derivatives"
       },
       {
         "type": "remark",
-        "Statement": "To find the points where $\\nabla f(x,y) = 0$"
+        "statement": "To find the points where $\\nabla f(x,y) = 0$"
       },
       {
         "type": "assert",
-        "Claim": "$(3x^2 - 3, 2y) = (0,0)$",
-        "Proof-method": "Setting the gradient equal to zero"
+        "claim": "$(3x^2-3, 2y)=(0,0)$",
+        "errors": [
+          {
+            "type": "remark",
+            "statement": "This assumes that the gradient being zero is equivalent to the gradient at (x,y) being the zero vector. "
+          }
+        ]
       },
       {
         "type": "assert",
-        "Claim": "y = 0",
-        "Deduced_from": ["$(3x^2 - 3, 2y) = (0,0)$"],
-        "Proof-method": "Solving the equation  2y = 0"
+        "claim": "$2y=0 \\implies y = 0$",
+        "proof-method": "From the second component of the equation"
       },
       {
         "type": "assert",
-        "Claim": "x = 1 or  x = -1",
-        "Deduced_from": ["$(3x^2 - 3, 2y) = (0,0)$"],
-        "Proof-method": "Solving the equation 3x^2 - 3 = 0"
+        "claim": "$3x^2-3 = 0 \\implies x = 1$ or $x = -1$",
+        "proof-method": "Solving for x"
       },
       {
         "type": "conclude",
-        "Statement": "Therefore, the points where the gradient of $f$ is zero are $(1, 0)$ & $(-1, 0)$."
+        "statement": "The points where the gradient of $f$ is zero are $(1,0)$ & $(-1,0)$.",
+        "error": "The conclusion is not justified by the proof, as it only finds points where the gradient is the zero vector."
       }
     ]
   }

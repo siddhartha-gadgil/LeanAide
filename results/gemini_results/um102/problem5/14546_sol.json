@@ -1,64 +1,100 @@
 {
   "type": "theorem",
   "name": "Maximum Distance on Ellipsoid",
-  "Hypothesis": [],
-  "Conclusion": "The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid $x^{2}+2 y^{2}+3 z^{2}=1$ have the largest distance from the origin.",
-  "Status": "proved",
-  "Proof": {
+  "hypothesis": [],
+  "conclusion": "The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid $x^{2}+2 y^{2}+3 z^{2}=1$ have the largest distance from the origin.",
+  "status": "incomplete proof",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "It is not clear what the variable $n$ represents and how it relates to the distance from the origin.",
+      "solved": false
+    },
+    {
+      "type": "problem",
+      "statement": "The connection between the provided inequalities and the goal of maximizing the distance from the origin on the ellipsoid is not established.",
+      "solved": false
+    },
+    {
+      "type": "problem",
+      "statement": "The introduction of variables $y$ and $z$ in the final inequality is abrupt and lacks context within the proof's structure.",
+      "solved": false
+    }
+  ],
+  "proof": {
     "type": "proof",
-    "Steps": [
-      {
-        "type": "remark",
-        "Statement": "We will use the fact that the distance of a point $(x,y,z)$ from the origin is given by $\\sqrt{x^2+y^2+z^2}$. Since the square root is an increasing function, it suffices to maximize $x^2+y^2+z^2$ subject to the constraint  $x^{2}+2 y^{2}+3 z^{2}=1$."
-      },
-      {
-        "type": "let",
-        "Variable": "<anonymous>",
-        "Statement": "Let $f(x,y,z) = x^2 + y^2 + z^2$"
-      },
-      {
-        "type": "assume",
-        "Statement": "The function $f(x,y,z)$ attains its maximum on the ellipsoid."
-      },
-      {
-        "type": "remark",
-        "Statement": "We are given the constraint $x^{2}+2 y^{2}+3 z^{2}=1$.  We can rewrite this constraint to express $z^2$ in terms of $x$ and $y$."
-      },
+    "steps": [
       {
         "type": "assert",
-        "Claim": "$z^2 = \\frac{1-x^2-2y^2}{3}$",
-        "Proof-method": "Solving for $z^2$ in the equation of the ellipsoid."
-      },
-      {
-        "type": "remark",
-        "Statement": "Substituting this expression for $z^2$ into the function $f(x,y,z)$, we obtain a function of two variables."
-      },
-      {
-        "type": "let",
-        "Variable": "<anonymous>",
-        "Statement": "Let $g(x,y) = f(x,y,z) = x^2 + y^2 + \\frac{1-x^2-2y^2}{3} = \\frac{1}{3} + \\frac{2}{3}x^2 + \\frac{1}{3}y^2$"
-      },
-      {
-        "type": "remark",
-        "Statement": "We need to maximize $g(x,y)$."
-      },
-      {
-        "type": "missing",
-        "Problem": [
+        "claim": "$x^2 + 2x^3 + 3x^5 \\leq n$",
+        "missing": [
           {
             "type": "problem",
-            "Statement": "Find the maximum of the function $g(x,y) = \\frac{1}{3} + \\frac{2}{3}x^2 + \\frac{1}{3}y^2$.",
-            "Solved": false
+            "statement": "The validity of this initial inequality and its relevance to the theorem's objective are unclear.",
+            "solved": false
           }
         ]
       },
       {
-        "type": "remark",
-        "Statement": "Solving the above problem, we find that the maximum of $g(x,y)$ occurs at $(x,y) = (\\pm 1, 0)$."
+        "type": "assert",
+        "claim": "$\\frac{x^2}{5} + \\frac{1-x^2}{5}  + \\frac{x^2+x^3}{5} + \\frac{x^3+x^5}{5} + \\frac{2x^4+x^5}{5} \\leq n$",
+        "deduced_from": [
+          "Previous inequality"
+        ],
+        "proof-method": "Algebraic manipulation"
       },
       {
-        "type": "conclude",
-        "Statement": "These values correspond to the points $(1,0,0)$ and $(-1,0,0)$ on the ellipsoid. Therefore, the points  $(1,0,0)$ and $(-1,0,0)$ have the largest distance from the origin on the given ellipsoid."
+        "type": "let",
+        "variable": "x",
+        "kind": "Real number",
+        "property": "$x \\in [0,1]$"
+      },
+      {
+        "type": "let",
+        "variable": "$x^2$",
+        "kind": "Real number",
+        "property": "$x^2 \\in [0,\\frac{1}{2}]$"
+      },
+      {
+        "type": "let",
+        "variable": "$x^3$",
+        "kind": "Real number",
+        "property": "$x^3 \\in [0,1]$"
+      },
+      {
+        "type": "let",
+        "variable": "$x^5$",
+        "kind": "Real number",
+        "property": "$x^5 \\in [0,\\frac{1}{2}]$"
+      },
+      {
+        "type": "assert",
+        "claim": "$x^2 + 2x^3 + 3x^5 \\leq n$",
+        "errors": [
+          "This step merely restates the initial inequality without providing new information or advancing the proof."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\forall x \\quad \\leq 2.9$",
+        "errors": [
+          "The notation is unclear. It seems to imply that all values of  'x' are less than or equal to 2.9, which contradicts the previously established range of  $x \\in [0,1]$."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$2(x^2 + 2x^3 + 3x^5) \\leq 2(2) \\leq (-(x^4) + 4y^3 + 6z^5)(2)$",
+        "errors": [
+          "The variables 'y' and 'z' appear without prior introduction or justification.",
+          "The relationship between this inequality and the previous steps or the theorem's statement is unclear."
+        ],
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Explain the relevance and derivation of this final inequality.",
+            "solved": false
+          }
+        ]
       }
     ]
   }

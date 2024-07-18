@@ -1,0 +1,74 @@
+{
+  "type": "theorem",
+  "name": "Linear System Saddle Point",
+  "status": "incomplete proof",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "<anonymous>",
+      "kind": "differential equation system",
+      "property": "linear",
+      "value": "$\\begin{cases} \\dot{x} = y \\\\ \\dot{y} = x \\end{cases}$"
+    }
+  ],
+  "conclusion": "The origin is a saddle point of the given system.",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Show that the eigenvalues of the matrix $A = \\begin{pmatrix} 0 & 1 \\\\ 1 & 0 \\end{pmatrix}$ are $\\lambda_1 = 1$ and $\\lambda_2 = -1$.",
+      "solved": true,
+      "proof": {
+        "type": "proof",
+        "steps": [
+          {
+            "type": "assert",
+            "claim": "The eigenvalues of $A$ are the solutions to the characteristic equation $|A - \\lambda I| = 0$.",
+            "deduced_from": [
+              "Eigenvalue definition"
+            ]
+          },
+          {
+            "type": "assert",
+            "claim": "The characteristic equation simplifies to $\\lambda^2 - 1 = 0$.",
+            "calculation": [
+              "\\begin{aligned} |A - \\lambda I| &= \\begin{vmatrix} 0 - \\lambda & 1 \\\\ 1 & 0 - \\lambda \\end{vmatrix} \\\\ &= (-\\lambda)(-\\lambda) - (1)(1) \\\\ &= \\lambda^2 - 1 = 0 \\end{aligned}"
+            ]
+          },
+          {
+            "type": "conclude",
+            "statement": "Solving the quadratic equation, we find $\\lambda_1 = 1$ and $\\lambda_2 = -1$."
+          }
+        ]
+      }
+    },
+    {
+      "type": "problem",
+      "statement": "Prove that having one positive and one negative eigenvalue implies the origin is a saddle point.",
+      "solved": false,
+      "missing": [
+        {
+          "type": "problem",
+          "statement": "Find the general solution of the system using the eigenvalues and eigenvectors."
+        },
+        {
+          "type": "problem",
+          "statement": "Analyze the behavior of the solutions as $t \\to \\infty$ and $t \\to -\\infty$."
+        },
+        {
+          "type": "problem",
+          "statement": "Relate the behavior of the solutions to the definition of a saddle point."
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "type": "remark",
+      "statement": "The proof incorrectly states \"$\\dot{n} = 0.n + 1.y$\" which seems to be a typo and should be \"$\\dot{x} = 0.x + 1.y$\"."
+    },
+    {
+      "type": "remark",
+      "statement": "The proof lacks a clear connection between the calculated eigenvalues and the conclusion that the origin is a saddle point. It only mentions \"$e^t$, $e^{-t}$\" and a vague statement about one going to 0 and the other to infinity."
+    }
+  ]
+}

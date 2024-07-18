@@ -1,0 +1,64 @@
+{
+  "type": "theorem",
+  "name": "Saddle Point at the Origin for Linear Differential Equation",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = y$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = x$"
+    }
+  ],
+  "conclusion": "The origin is a saddle point.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "The system can be written in matrix form as $\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 0 & 1 \\\\ 1 & 0 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}$."
+      },
+      {
+        "type": "let",
+        "variable": "A",
+        "value": "$\\begin{pmatrix} 0 & 1 \\\\ 1 & 0 \\end{pmatrix}$",
+        "kind": "matrix"
+      },
+      {
+        "type": "assert",
+        "claim": "$X' = AX$"
+      },
+      {
+        "type": "assert",
+        "claim": "The characteristic equation of $A$ is $\\det(A - \\lambda I) = 0$."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\det\\begin{pmatrix} -\\lambda & 1 \\\\ 1 & -\\lambda \\end{pmatrix} = \\lambda^2 - 1 = 0$"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of $A$ are $\\lambda = \\pm 1$."
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues are $\\lambda_1 = 1, \\lambda_2 = -1$."
+      },
+      {
+        "type": "assert",
+        "claim": "Since $\\lambda_1 < 0 < \\lambda_2$, the system has a saddle at the origin.",
+        "errors": [
+          "The correct condition for a saddle point involves having eigenvalues with opposite signs, but here $\\lambda_1 = 1 > 0$ and $\\lambda_2 = -1 < 0$. The conclusion is technically correct but the reasoning should be clarified."
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Clarify the reasoning for the saddle point conclusion."
+    }
+  ]
+}
