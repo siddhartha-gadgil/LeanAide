@@ -1,3 +1,4 @@
+```json
 {
   "type": "theorem",
   "name": "Maximum Distance Points on Ellipsoid",
@@ -115,3 +116,4 @@
     }
   ]
 }
+```

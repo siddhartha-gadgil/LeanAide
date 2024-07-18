@@ -42,15 +42,17 @@ def structured_proof(thm, pf):
     response = model.generate_content([
         structure_prompt(thm, pf)
     ])
-    return extract_json_block(response.text)
+    return extract_json_block(response.text), response.text
 
 def structured_proof_from_image(thm, path):
     pf = solution_from_image(path)
-    return pf, structured_proof(thm, pf)
+    structured, source = structured_proof(thm, pf)
+    return pf, structured, source
 
 def structured_proof_from_images(thm, paths):
     pf = solution_from_images(paths)
-    return pf, structured_proof(thm, pf)
+    structured, source = structured_proof(thm, pf)
+    return pf, structured, source
 
 from google.cloud import storage
 client = storage.Client()
@@ -97,7 +99,11 @@ def write_structured_proofs(prefix):
     image_path_groups = [(key, list(group)) for key, group in itertools.groupby(all_image_paths, lambda s: s.split("_")[0])]
     for path, image_paths in image_path_groups:
         print(path, image_paths)
-        pf, structured = structured_proof_from_images(thm, image_paths)
+        pf, structured, source = structured_proof_from_images(thm, image_paths)
+        output_file = Path(join(gemini_results, path + "_sol.json.raw"))
+        output_file.parent.mkdir(exist_ok=True, parents=True)
+        with open(output_file, "w") as f:
+            f.write(source)
         output_file = Path(join(gemini_results, path + "_sol.json"))
         output_file.parent.mkdir(exist_ok=True, parents=True)
         with open(output_file, "w") as f:
@@ -105,6 +111,10 @@ def write_structured_proofs(prefix):
         prompt = structure_prompt(thm, pf)
         gpt_structured_raw = chat_client.math(prompt)
         gpt_structured = extract_json_block(gpt_structured_raw[0])
+        output_file = Path(join(gemini_results, path + "_sol_gpt.json.raw"))
+        output_file.parent.mkdir(exist_ok=True, parents=True)
+        with open(output_file, "w") as f:
+            f.write(gpt_structured_raw[0])
         output_file = Path(join(gemini_results, path + "_sol_gpt.json"))
         output_file.parent.mkdir(exist_ok=True, parents=True)
         with open(output_file, "w") as f:

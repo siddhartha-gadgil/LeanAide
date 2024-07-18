@@ -1,0 +1,105 @@
+```json
+{
+  "type": "theorem",
+  "name": "Maximal distance from origin on ellipsoid",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "Any continuous function on the ellipsoid $x^2 + 2y^2 + 3z^2 = 1$ attains its maximum."
+    }
+  ],
+  "conclusion": "The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid $x^2 + 2y^2 + 3z^2 = 1$ have the largest distance from the origin.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$x^2 + 2xy + 3y^2 \leq 1$"
+      },
+      {
+        "type": "assert",
+        "claim": "$x \in [0, 1]$, $x \in [\\frac{1}{2}, \\frac{4}{7}]$, $x \in [0, \\frac{1}{10}]$",
+        "errors": [
+          "The intervals for $x$ are not correctly derived from the ellipsoid equation $x^2 + 2y^2 + 3z^2 = 1$."
+        ]
+      },
+      {
+        "type": "cases",
+        "on": "$x^2 + 2xy + 3y^2$",
+        "split-kind": "condition",
+        "proof-cases": [
+          {
+            "type": "case",
+            "condition": "$x^2 + 2xy + 3y^2 = m$",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assert",
+                  "claim": "",
+                  "errors": [
+                    "Case 1 is not properly justified or elaborated."
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "type": "case",
+            "condition": "$2 < 9$",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assert",
+                  "claim": "",
+                  "errors": [
+                    "Case 2 does not logically follow from the hypothesis and needs more detailed explanation."
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "errors": [
+          "The cases are not relevant to proving the theorem."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$2(x^2 + 2xy + 3y^2) \leq 2()$",
+        "errors": [
+          "The assertion is incorrect and improperly formulated."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$2(-x^2 + 4y^2) \leq 4y^2 + 6y^2$",
+        "errors": [
+          "The assertion is incorrect and improperly formulated."
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Correctly derive the intervals for $x$ from the ellipsoid equation $x^2 + 2y^2 + 3z^2 = 1$."
+    },
+    {
+      "type": "problem",
+      "statement": "Properly justify and elaborate cases relevant to the proof."
+    },
+    {
+      "type": "problem",
+      "statement": "Correctly formulate and prove assertions related to the maximization problem on the ellipsoid."
+    }
+  ],
+  "errors": [
+    "The proof contains logical errors and irrelevant cases.",
+    "The assertions are incorrectly formulated.",
+    "The intervals for $x$ are not derived correctly."
+  ]
+}
+```

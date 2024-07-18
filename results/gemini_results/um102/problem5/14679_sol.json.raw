@@ -1,3 +1,4 @@
+```json
 {
   "type": "theorem",
   "name": "Points on Ellipsoid with Largest Distance from Origin",
@@ -145,3 +146,5 @@
     ]
   }
 }
+
+```

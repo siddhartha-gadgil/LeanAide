@@ -1,3 +1,4 @@
+```json
 {
   "type": "theorem",
   "name": "Max Distance on Ellipsoid",
@@ -63,11 +64,7 @@
                 {
                   "type": "assert",
                   "claim": "$(x, 0, 0) = (\\pm 1, 0, 0)$",
-                  "deduced_from": [
-                    "$2x = 2\\lambda x$",
-                    "$2y = 4\\lambda y$",
-                    "$2z = 6\\lambda z$"
-                  ]
+                  "deduced_from": ["$2x = 2\\lambda x$", "$2y = 4\\lambda y$", "$2z = 6\\lambda z$"]
                 }
               ]
             }
@@ -81,9 +78,7 @@
                 {
                   "type": "assert",
                   "claim": "$(0, y, 0) = (0, \\pm\\sqrt{\\frac{1}{2}}, 0)$",
-                  "deduced_from": [
-                    "$2y = 4\\lambda y$"
-                  ]
+                  "deduced_from": ["$2y = 4\\lambda y$"]
                 }
               ]
             }
@@ -97,9 +92,7 @@
                 {
                   "type": "assert",
                   "claim": "$(0, 0, z) = (0, 0, \\pm\\sqrt{\\frac{1}{3}})$",
-                  "deduced_from": [
-                    "$2z = 6\\lambda z$"
-                  ]
+                  "deduced_from": ["$2z = 6\\lambda z$"]
                 }
               ]
             }
@@ -116,3 +109,4 @@
     ]
   }
 }
+```

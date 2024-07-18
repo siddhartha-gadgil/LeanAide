@@ -1,3 +1,4 @@
+```json
 {
   "type": "theorem",
   "name": "Largest distance on ellipsoid",
@@ -126,3 +127,4 @@
     }
   ]
 }
+```
