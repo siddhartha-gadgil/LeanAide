@@ -1,0 +1,58 @@
+{
+  "type": "theorem",
+  "name": "Saddle point of a linear differential equation",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x",
+      "kind": "function of time $t$",
+      "property": "differentiable"
+    },
+    {
+      "type": "let",
+      "variable": "y",
+      "kind": "function of time $t$",
+      "property": "differentiable"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = y$ and $\\dot{y} = x$"
+    }
+  ],
+  "conclusion": "The origin is a saddle point.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\ddot{x} = \\dot{y} = x$",
+        "deduced_from": [
+          "$\\dot{y} = x$"
+        ],
+        "calculation": [
+          "$\\ddot{x} = \\frac{d^2 x}{dt^2}$",
+          "$\\dot{y} = x \\implies \\ddot{x} = x$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{d^2 x}{dt^2} = x$",
+        "deduced_from": [
+          "$\\ddot{x} = x$"
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "It's a source (the function)",
+        "error": "The statement does not provide enough proof that the origin is a saddle point, and the conclusion does not logically follow from the previous steps."
+      }
+    ],
+    "errors": [
+      {
+        "type": "remark",
+        "statement": "The proof lacks a proper stability analysis of the linear system around the origin. Specifically, the eigenvalues of the system matrix should be considered to determine the nature of the critical point."
+      }
+    ]
+  }
+}

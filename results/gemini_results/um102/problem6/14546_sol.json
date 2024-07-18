@@ -1,43 +1,81 @@
 {
   "type": "theorem",
   "name": "Saddle Point of a Linear System",
-  "status": "proved",
+  "status": "incomplete proof",
   "hypothesis": [
     {
       "type": "let",
       "variable": "<anonymous>",
-      "kind": "differential equation system",
+      "kind": "differential equations",
       "property": "linear",
-      "value": "\\(\\dot{x} = y\\) and \\(\\dot{y} = x\\)"
+      "value": "$\\dot{x} = y$, $\\dot{y} = x$"
     }
   ],
   "conclusion": "The origin is a saddle point of the given system of differential equations.",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "The provided proof attempts to find a general solution, but does not adequately demonstrate the existence of eigenvalues with opposite signs, which is crucial for classifying the origin as a saddle point. Show that the eigenvalues of the system's coefficient matrix are indeed real and have opposite signs."
+    }
+  ],
   "proof": {
     "type": "proof",
     "steps": [
       {
-        "type": "remark",
-        "statement": "To determine the nature of the equilibrium point at the origin, we'll analyze the eigenvalues of the system's coefficient matrix."
+        "type": "assert",
+        "claim": "$\\frac{d^2 x}{dt^2} = x$",
+        "calculation": [
+          {
+            "step": "$\\frac{d^2 x}{dt^2} = \\frac{dy}{dt}$",
+            "justification": "Differentiating $\\dot{x} = y$ with respect to $t$"
+          },
+          {
+            "step": "$\\frac{d^2 x}{dt^2} = x$",
+            "justification": "Substituting $\\dot{y} = x$"
+          }
+        ]
       },
       {
-        "type": "let",
-        "variable": "A",
-        "kind": "matrix",
-        "value": "\\(\\begin{pmatrix} 0 & 1 \\\\ 1 & 0 \\end{pmatrix}\\)",
-        "property": "coefficient matrix of the system"
+        "type": "remark",
+        "statement": "The proof proceeds to solve this second-order differential equation. However, there are errors in the subsequent steps."
       },
       {
         "type": "assert",
-        "claim": "The eigenvalues of A are \\( \\lambda_1 = 1 \\) and \\( \\lambda_2 = -1 \\).",
-        "proof-method": "direct calculation"
+        "claim": "$x = Ae^t  \\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix}$ when $A = \\begin{pmatrix} 1 \\\\ 0 \\end{pmatrix}$",
+        "errors": [
+          "This solution is incorrect. The correct general solution involves both $e^t$ and $e^{-t}$ terms to account for both eigenvalues of the system."
+        ]
       },
       {
-        "type": "remark",
-        "statement": "Since the eigenvalues have opposite signs (one positive, one negative), we can conclude the following:"
+        "type": "assert",
+        "claim": "The eigenvalues are $\\pm i$, with corresponding eigenvectors $(^1_i)$ and $(^{-i}_1)$",
+        "errors": [
+          "The eigenvalues of the system are actually $\\pm 1$, not $\\pm i$. The eigenvectors are also incorrect."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$y, x \\in \\mathbb{R} \\implies e^{it}  \\begin{pmatrix} 1 \\\\ -i \\end{pmatrix} = \\begin{pmatrix} cos \\, t \\\\ -sin \\, t\\end{pmatrix} + i \\begin{pmatrix} sin \\, t \\\\ - cos \\, t \\end{pmatrix}$",
+        "errors": [
+          "This step seems to be an attempt to express complex solutions in terms of real functions. However, the presence of imaginary units in the eigenvectors is incorrect, as the eigenvalues should be real."
+        ]
+      },
+      {
+        "type": "let",
+        "variable": "$X_{(t)}$",
+        "value": "$\\begin{pmatrix} cos \\, t \\\\ sin \\, t \\end{pmatrix}$"
+      },
+      {
+        "type": "let",
+        "variable": "$Y_{(t)}$",
+        "value": "$\\begin{pmatrix} sin \\, t \\\\ - cos \\, t \\end{pmatrix}$"
       },
       {
         "type": "conclude",
-        "statement": "The origin is a saddle point of the linear system \\( \\dot{x} = y \\) and \\( \\dot{y} = x \\)."
+        "statement": "Therefore, the origin is stable.",
+        "errors": [
+          "The conclusion is not justified. The provided calculations do not correctly analyze the stability of the origin. Moreover, classifying the origin as simply \"stable\" is insufficient; it needs to be specifically identified as a saddle point based on the eigenvalues."
+        ]
       }
     ]
   }

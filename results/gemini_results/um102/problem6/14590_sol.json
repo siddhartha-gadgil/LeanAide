@@ -1,52 +1,63 @@
 {
   "type": "theorem",
   "name": "Saddle Point of a Linear System",
-  "hypothesis": [],
-  "conclusion": "The linear dynamical system given by \\( \\dot{x}=y \\) and \\( \\dot{y}=x\\) has a saddle point at the origin.",
-  "status": "proved",
+  "status": "wrong proof",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "<anonymous>",
+      "kind": "differential equation system",
+      "property": "linear",
+      "value": "$\\begin{cases} \\dot{x} = y \\\\ \\dot{y} = x \\end{cases}$"
+    }
+  ],
+  "conclusion": "The origin is a saddle point of the given system of differential equations.",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "remark",
-        "statement": "We will rewrite the system in matrix form and analyze the eigenvalues of the coefficient matrix."
+        "statement": "We will analyze the eigenvalues of the coefficient matrix to determine the type of the equilibrium point at the origin."
       },
       {
         "type": "let",
-        "variable": "\\(\\dot{X}\\)",
-        "value": "\\( \\begin{pmatrix} \\dot{x} \\ \\dot{y} \\end{pmatrix} \\)"
+        "variable": "X",
+        "kind": "vector",
+        "value": "$\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix}$"
       },
       {
         "type": "let",
-        "variable": "\\(X\\)",
-        "value": "\\( \\begin{pmatrix} x \\ y \\end{pmatrix} \\)"
+        "variable": "X",
+        "kind": "vector",
+        "value": "$\\begin{pmatrix} x \\\\ y \\end{pmatrix}$"
       },
       {
         "type": "assert",
-        "claim": "The given system can be written as \\( \\dot{X} = \\begin{pmatrix} 0 & 1 \\ 1 & 0 \\end{pmatrix} X \\).",
-        "proof-method": "Substitution"
-      },
-      {
-        "type": "let",
-        "variable": "\\(A\\)",
-        "value": "\\(\\begin{pmatrix} 0 & 1 \\ 1 & 0 \\end{pmatrix} \\)"
-      },
-      {
-        "type": "assert",
-        "claim": "The trace of \\(A\\) is 0 and the determinant of \\(A\\) is -1.",
-        "proof-method": "Direct calculation"
+        "claim": "$\\dot{X} = \\begin{pmatrix} 0 & 1 \\\\ 1 & 0 \\end{pmatrix} X$",
+        "proof-method": "rewriting the system in matrix form",
+        "errors": [
+          "The variable X is defined twice with different meanings, leading to an inconsistent system."
+        ]
       },
       {
         "type": "assert",
-        "claim": "The eigenvalues of \\(A\\) are 1 and -1.",
+        "claim": "The trace of the coefficient matrix is 0 and the determinant is -1.",
+        "calculation": [
+          "trace $= 0 + 0 = 0$",
+          "$\\Delta = (0)(0) - (1)(1) = -1$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of the coefficient matrix are 1 and -1.",
         "deduced_from": [
-          "The trace of \\(A\\) is 0 and the determinant of \\(A\\) is -1."
-        ],
-        "proof-method": "Solving the characteristic equation"
+          "The eigenvalues are the roots of the characteristic equation, which is determined by the trace and determinant of the matrix."
+        ]
       },
       {
         "type": "conclude",
-        "statement": "Since the eigenvalues of the coefficient matrix have opposite signs, the equilibrium point at the origin is a saddle point."
+        "statement": "Since the eigenvalues have opposite signs, the origin is a saddle point.",
+        "error": "While the conclusion is correct, the proof leading to it has errors due to the inconsistent definition of the variable X."
       }
     ]
   }

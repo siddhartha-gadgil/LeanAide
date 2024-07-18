@@ -1,0 +1,58 @@
+{
+  "type": "theorem",
+  "name": "Gradient Zero Points",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "value": "x^3 - 3x + y^2",
+      "kind": "function from ℝ^2 to ℝ",
+      "property": "for x, y ∈ ℝ"
+    }
+  ],
+  "conclusion": "At the points (1,0) and (-1,0) the gradient of f is zero",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "define",
+        "term": "∇f(x, y)",
+        "statement": "∇f(x, y) = \\left( \\frac{\\partial f}{\\partial x} \\hat{i} + \\frac{\\partial f}{\\partial y} \\hat{j} \\right) = \\left( (3x^2-3)\\hat{i} + 2y \\hat{j} \\right)"
+      },
+      {
+        "type": "assume",
+        "statement": "∇f(x, y) = 0"
+      },
+      {
+        "type": "assert",
+        "claim": "3x^2 - 3 = 0 and 2y = 0",
+        "proof-method": "Equating each component of the gradient to zero"
+      },
+      {
+        "type": "assert",
+        "claim": "x = ±1 and y = 0",
+        "deduced_from": [
+          "3x^2 - 3 = 0",
+          "2y = 0"
+        ],
+        "proof-method": "Solving the resulting equations"
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, the points (x, y) are (1, 0) and (-1, 0)"
+      }
+    ],
+    "errors": [
+      {
+        "error": "The steps should explicitly show solving 3x^2 - 3 = 0 leading to x = ±1, and 2y = 0 leading to y = 0."
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Explicitly solve 3x^2 - 3 = 0 and 2y = 0"
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "type": "theorem",
+  "name": "Saddle Point of a Linear System",
+  "status": "incomplete proof",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x",
+      "kind": "function of t"
+    },
+    {
+      "type": "let",
+      "variable": "y",
+      "kind": "function of t"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = y$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = x$"
+    }
+  ],
+  "conclusion": "The origin is a saddle point of the system of differential equations $\\dot{x} = y$, $\\dot{y} = x$.",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We will analyze the eigenvalues of the coefficient matrix of the system."
+      },
+      {
+        "type": "assert",
+        "claim": "The system can be written in matrix form as $(\\dot{x}, \\dot{y})^T = A (x, y)^T$, where $A = \\begin{pmatrix} 0 & 1 \\\\ 1 & 0 \\end{pmatrix}$.",
+        "proof-method": "Rewriting the system in matrix form."
+      },
+      {
+        "type": "assert",
+        "claim": "The characteristic equation of $A$ is $\\lambda^2 - 1 = 0$.",
+        "proof-method": "Calculating $\\text{det}(A - \\lambda I) = 0$."
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of $A$ are $\\lambda = 1$ and $\\lambda = -1$.",
+        "proof-method": "Solving the characteristic equation."
+      },
+      {
+        "type": "assert",
+        "claim": "For $\\lambda = 1$, an eigenvector is $v_1 = \\begin{pmatrix} 1 \\\\ 1 \\end{pmatrix}$.",
+        "calculation": [
+          {
+            "step": "\\begin{pmatrix} -1 & 1 \\\\ 1 & -1 \\end{pmatrix} \\begin{pmatrix} a \\\\ b \\end{pmatrix} = \\begin{pmatrix} 0 \\\\ 0 \\end{pmatrix}",
+            "justification": "Solving $(A - \\lambda I)v = 0$"
+          },
+          {
+            "step": "-a + b = 0",
+            "justification": "From the first row"
+          },
+          {
+            "step": "Choosing $a = 1$, we get $b=1$",
+            "justification": "Choosing a value for $a$"
+          }
+        ],
+        "errors": [
+          {
+            "type": "problem",
+            "statement": "The calculation uses $\\begin{pmatrix} u \\\\ y \\end{pmatrix}$ on the right-hand side instead of $\\begin{pmatrix} 0 \\\\ 0 \\end{pmatrix}$.",
+            "solved": false
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "For $\\lambda = -1$, an eigenvector is $v_2 = \\begin{pmatrix} -1 \\\\ 1 \\end{pmatrix}$.",
+        "calculation": [
+          {
+            "step": "\\begin{pmatrix} 1 & 1 \\\\ 1 & 1 \\end{pmatrix} \\begin{pmatrix} a \\\\ b \\end{pmatrix} = \\begin{pmatrix} 0 \\\\ 0 \\end{pmatrix}",
+            "justification": "Solving $(A - \\lambda I)v = 0$"
+          },
+          {
+            "step": "a = -b",
+            "justification": "From the first row"
+          }
+        ],
+        "errors": [
+          {
+            "type": "problem",
+            "statement": "The calculation uses $\\begin{pmatrix} u \\\\ y \\end{pmatrix}$ on the right-hand side instead of $\\begin{pmatrix} 0 \\\\ 0 \\end{pmatrix}$.",
+            "solved": false
+          },
+          {
+            "type": "problem",
+            "statement": "The choice of $a$ and $b$ to get the eigenvector is not specified.",
+            "solved": false
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "Since $\\lambda_2 < 0 < \\lambda_1$, the origin is a saddle point.",
+        "deduced_from": [
+          "Eigenvalues of opposite signs imply a saddle point"
+        ],
+        "errors": [
+          {
+            "type": "problem",
+            "statement": "The indices of the eigenvalues are not defined clearly.",
+            "solved": false
+          }
+        ]
+      }
+    ],
+    "missing": [
+      {
+        "type": "problem",
+        "statement": "A clear explanation of why having eigenvalues of opposite signs implies a saddle point is needed.",
+        "solved": false
+      }
+    ]
+  }
+}

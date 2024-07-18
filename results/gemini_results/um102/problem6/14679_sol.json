@@ -1,65 +1,71 @@
 {
   "type": "theorem",
   "name": "Saddle Point of a Linear System",
-  "Hypothesis": [
+  "status": "incomplete proof",
+  "hypothesis": [
     {
       "type": "let",
-      "Variable": "<anonymous>",
-      "Statement": "We consider the linear differential equation \\( \\dot{x}=y \\) and \\( \\dot{y}=x\\)."
+      "variable": "<anonymous>",
+      "kind": "differential equation system",
+      "property": "linear",
+      "value": "$\\dot{x} = y$, $\\dot{y} = x$"
     }
   ],
-  "Conclusion": "The origin is a saddle point of the given linear system.",
-  "Status": "proved",
-  "Proof": {
+  "conclusion": "The origin is a saddle point of the given system of differential equations.",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Provide the definition of a saddle point in the context of linear systems of differential equations.",
+      "solved": false
+    }
+  ],
+  "proof": {
     "type": "proof",
-    "Steps": [
+    "steps": [
       {
-        "type": "remark",
-        "Statement": "We begin by writing the system in matrix form."
+        "type": "assert",
+        "claim": "The system can be written in matrix form as $\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = A \\begin{pmatrix} x \\\\ y \\end{pmatrix}$, where $A = \\begin{pmatrix} 0 & 1 \\\\ 1 & 0 \\end{pmatrix}$.",
+        "proof-method": "Rewriting the system in matrix form."
       },
       {
         "type": "assert",
-        "Claim": "The given differential equation can be written as \\( \\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = A \\begin{pmatrix} x \\\\ y \\end{pmatrix} = \\begin{pmatrix} y \\\\ x \\end{pmatrix} \\), where \\( A = \\begin{pmatrix} 0 & 1 \\\\ 1 & 0 \\end{pmatrix} \\).",
-        "Proof-method": "Direct rewriting of the given equations."
-      },
-      {
-        "type": "remark",
-        "Statement": "To determine the nature of the equilibrium point at the origin, we need to find the eigenvalues and eigenvectors of matrix \\(A\\)."
-      },
-      {
-        "type": "assert",
-        "Claim": "The eigenvalues of \\(A\\) are \\(\\lambda = \\pm 1\\).",
-        "Proof-method": "Solving the characteristic equation \\( \\lambda^2 - 1 = 0 \\)."
-      },
-      {
-        "type": "remark",
-        "Statement": "Now we find the eigenvectors corresponding to each eigenvalue."
-      },
-      {
-        "type": "let",
-        "Variable": "\\(\\lambda_1\\)",
-        "Value": "1",
-        "Statement": "Let \\(\\lambda_1 = 1\\) be the first eigenvalue."
+        "claim": "The eigenvalues of $A$ are $\\lambda_1 = 1$ and $\\lambda_2 = -1$.",
+        "calculation": [
+          "$\\lambda^2 - 1 = 0$",
+          "$\\lambda = \\pm 1$"
+        ]
       },
       {
         "type": "assert",
-        "Claim": "The eigenvector corresponding to \\(\\lambda_1 = 1\\) is \\(\\mathbf{v}_1 = \\begin{pmatrix} 1 \\\\ 1 \\end{pmatrix}\\).",
-        "Proof-method": "Solving the equation \\( (A - \\lambda_1 I)\\mathbf{v} = \\mathbf{0} \\) which simplifies to \\( -a + b = 0 \\), giving us the eigenvector \\( \\mathbf{v}_1 = \\begin{pmatrix} 1 \\\\ 1 \\end{pmatrix} \\)."
-      },
-      {
-        "type": "let",
-        "Variable": "\\(\\lambda_2\\)",
-        "Value": "-1",
-        "Statement": "Let \\(\\lambda_2 = -1\\) be the second eigenvalue."
+        "claim": "The eigenvector corresponding to $\\lambda_1 = 1$ is $V_1 = \\begin{pmatrix} 1 \\\\ 1 \\end{pmatrix}$.",
+        "calculation": [
+          {
+            "step": "\\begin{pmatrix} -1 & 1 \\\\ 1 & -1 \\end{pmatrix} \\begin{pmatrix} a \\\\ b \\end{pmatrix} = \\begin{pmatrix} 0 \\\\ 0 \\end{pmatrix}",
+            "justification": "Eigenvector equation for $\\lambda_1 = 1$"
+          },
+          "$-a + b = 0$",
+          "$a = b$",
+          "$V_1 = \\begin{pmatrix} 1 \\\\ 1 \\end{pmatrix}$"
+        ]
       },
       {
         "type": "assert",
-        "Claim": "The eigenvector corresponding to \\(\\lambda_2 = -1\\) is \\(\\mathbf{v}_2 = \\begin{pmatrix} -1 \\\\ 1 \\end{pmatrix}\\).",
-        "Proof-method": "Solving the equation \\( (A - \\lambda_2 I)\\mathbf{v} = \\mathbf{0} \\) which simplifies to \\( a + b = 0 \\), giving us the eigenvector \\( \\mathbf{v}_2 = \\begin{pmatrix} -1 \\\\ 1 \\end{pmatrix} \\)."
+        "claim": "The eigenvector corresponding to $\\lambda_2 = -1$ is $V_2 = \\begin{pmatrix} -1 \\\\ 1 \\end{pmatrix}$.",
+        "calculation": [
+          {
+            "step": "\\begin{pmatrix} 1 & 1 \\\\ 1 & 1 \\end{pmatrix} \\begin{pmatrix} a \\\\ b \\end{pmatrix} = \\begin{pmatrix} 0 \\\\ 0 \\end{pmatrix}",
+            "justification": "Eigenvector equation for $\\lambda_2 = -1$"
+          },
+          "$a = -b$",
+          "$V_2 = \\begin{pmatrix} -1 \\\\ 1 \\end{pmatrix}$"
+        ]
       },
       {
         "type": "conclude",
-        "Statement": "Since \\( \\lambda_2 < 0 < \\lambda_1 \\) (one eigenvalue is positive and the other negative), the origin is a saddle point."
+        "statement": "Since $\\lambda_2 < 0 < \\lambda_1$, the origin is a saddle point.",
+        "errors": [
+          "The conclusion does not follow directly from the inequality of eigenvalues. A proper definition of a saddle point and its relation to eigenvalues is needed."
+        ]
       }
     ]
   }

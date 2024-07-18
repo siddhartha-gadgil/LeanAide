@@ -1,0 +1,111 @@
+{
+  "type": "theorem",
+  "name": "The origin is a saddle for the given differential equations",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = y$ and $\\dot{y} = x$"
+    }
+  ],
+  "conclusion": "The origin is a saddle.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\frac{d}{dt} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 0 & 1 \\\\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
+        "deduced_from": [
+          "$\\dot{x} = y$",
+          "$\\dot{y} = x$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\dot{v} = Av$ where $A = \\begin{bmatrix} 0 & 1 \\\\ 1 & 0 \\end{bmatrix}$",
+        "deduced_from": [
+          "$\\frac{d}{dt} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 0 & 1 \\\\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The characteristic equation of $A$ is $\\lambda^{2} - 1 = 0$",
+        "proof-method": "Characteristic polynomial of $A$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda_{1} = 1$ and $\\lambda_{2} = -1$",
+        "deduced_from": [
+          "The characteristic equation of $A$ is $\\lambda^{2} - 1 = 0$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "Eigenvector corresponding to $\\lambda_{1} = 1$ is $v_{1} = \\begin{pmatrix} 1 \\\\ 1 \\end{pmatrix}$",
+        "proof-method": "Solving $Av = \\lambda v$ for $\\lambda = 1$"
+      },
+      {
+        "type": "assert",
+        "claim": "Eigenvector corresponding to $\\lambda_{2} = -1$ is $v_{2} = \\begin{pmatrix} 1 \\\\ -1 \\end{pmatrix}$",
+        "proof-method": "Solving $Av = \\lambda v$ for $\\lambda = -1$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{d}{dt} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 0 & 1 \\\\ 1 & 4 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
+        "errors": [
+          "Incorrect matrix entry, should be $\\begin{bmatrix} 0 & 1 \\\\ 1 & 0 \\end{bmatrix}$ instead of $\\begin{bmatrix} 0 & 1 \\\\ 1 & 4 \\end{bmatrix}$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{dx}{dt} = x$",
+        "deduced_from": [
+          "$\\frac{d}{dt} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 0 & 1 \\\\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$x = c_{1}e^{t}$",
+        "deduced_from": [
+          "$\\frac{dx}{dt} = x$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{dy}{dt} = -y$",
+        "deduced_from": [
+          "$\\frac{d}{dt} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 0 & 1 \\\\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$y = c_{2} e^{-t}$",
+        "deduced_from": [
+          "$\\frac{dy}{dt} = -y$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$xy = c_{1}c_{2} = k$ (hyperbola)",
+        "deduced_from": [
+          "$x = c_{1}e^{t}$",
+          "$y = c_{2} e^{-t}$"
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "The trajectory is a saddle with the axes along $(1, 1)$ and $(1, -1)$",
+        "errors": [
+          "The analysis of the trajectory as a saddle is incomplete and lacks a rigorous conclusion."
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "A complete and rigorous analysis of the system's phase portrait to conclude that the origin is a saddle point.",
+      "solved": false
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "type": "theorem",
+  "name": "Saddle Point of a Linear System",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "<anonymous>",
+      "value": "$\\dot{x} = y$",
+      "kind": "differential equation"
+    },
+    {
+      "type": "let",
+      "variable": "<anonymous>",
+      "value": "$\\dot{y} = x$",
+      "kind": "differential equation"
+    }
+  ],
+  "conclusion": "The system of differential equations $\\dot{x} = y$, $\\dot{y} = x$ has a saddle point at the origin.",
+  "status": "incomplete proof",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Show that the solution $x(t) = \\alpha e^t \\begin{bmatrix} 1 \\\\ 1 \\end{bmatrix} + \\beta e^{-t} \\begin{bmatrix} 1 \\\\ -1 \\end{bmatrix}$ corresponds to a saddle point at the origin.",
+      "solved": false
+    }
+  ],
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We can write the system of differential equations in matrix form."
+      },
+      {
+        "type": "let",
+        "variable": "A",
+        "value": "$\\begin{bmatrix} 0 & 1 \\\\ 1 & 0 \\end{bmatrix}$",
+        "kind": "matrix"
+      },
+      {
+        "type": "assert",
+        "claim": "The system of differential equations is equivalent to  $A \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} \\dot{y} \\\\ \\dot{x} \\end{bmatrix}$.",
+        "proof-method": "Rewriting the given equations in matrix form"
+      },
+      {
+        "type": "remark",
+        "statement": "To find the eigenvalues of $A$, we solve the characteristic equation."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\det(A - \\lambda I) = 0$",
+        "proof-method": "Definition of eigenvalues"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda^2 - 1 = 0$",
+        "deduced_from": [
+          "$\\det(A - \\lambda I) = 0$",
+          "$A = \\begin{bmatrix} 0 & 1 \\\\ 1 & 0 \\end{bmatrix}$"
+        ],
+        "proof-method": "Expanding the determinant and simplifying"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda = \\pm 1$",
+        "deduced_from": [
+          "$\\lambda^2 - 1 = 0$"
+        ],
+        "proof-method": "Solving the quadratic equation"
+      },
+      {
+        "type": "remark",
+        "statement": "Now we find the eigenvectors corresponding to each eigenvalue."
+      },
+      {
+        "type": "case",
+        "condition": "$\\lambda_1 = 1$",
+        "proof": {
+          "type": "proof",
+          "steps": [
+            {
+              "type": "assert",
+              "claim": "$(A - I) \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 0 \\\\ 0 \\end{bmatrix}$",
+              "proof-method": "Definition of eigenvectors"
+            },
+            {
+              "type": "assert",
+              "claim": "$x = y$",
+              "deduced_from": [
+                "$(A - I) \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 0 \\\\ 0 \\end{bmatrix}$"
+              ],
+              "proof-method": "Solving the system of equations"
+            },
+            {
+              "type": "let",
+              "variable": "$v_1$",
+              "value": "$\\begin{bmatrix} 1 \\\\ 1 \\end{bmatrix}$",
+              "kind": "eigenvector corresponding to $\\lambda_1 = 1$"
+            }
+          ]
+        }
+      },
+      {
+        "type": "case",
+        "condition": "$\\lambda_2 = -1$",
+        "proof": {
+          "type": "proof",
+          "steps": [
+            {
+              "type": "assert",
+              "claim": "$(A + I) \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 0 \\\\ 0 \\end{bmatrix}$",
+              "proof-method": "Definition of eigenvectors"
+            },
+            {
+              "type": "assert",
+              "claim": "$-x = y$",
+              "deduced_from": [
+                "$(A + I) \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 0 \\\\ 0 \\end{bmatrix}$"
+              ],
+              "proof-method": "Solving the system of equations"
+            },
+            {
+              "type": "let",
+              "variable": "$v_2$",
+              "value": "$\\begin{bmatrix} 1 \\\\ -1 \\end{bmatrix}$",
+              "kind": "eigenvector corresponding to $\\lambda_2 = -1$"
+            }
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "The general solution to the system of differential equations is given by $x(t) = \\alpha e^t \\begin{bmatrix} 1 \\\\ 1 \\end{bmatrix} + \\beta e^{-t} \\begin{bmatrix} 1 \\\\ -1 \\end{bmatrix}$, where $\\alpha$ and $\\beta$ are constants.",
+        "proof-method": "Using the eigenvalues and eigenvectors to construct the general solution",
+        "errors": [
+          "The proof should explicitly mention how the general solution is constructed from the eigenvalues and eigenvectors."
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "This solution corresponds to a saddle point at the origin.",
+        "errors": [
+          "The proof does not provide justification for why the given solution corresponds to a saddle point."
+        ]
+      }
+    ]
+  }
+}

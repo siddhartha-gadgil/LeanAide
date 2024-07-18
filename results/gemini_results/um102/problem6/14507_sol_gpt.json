@@ -1,0 +1,112 @@
+{
+  "type": "theorem",
+  "name": "Origin is Saddle Point",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x}=y$ and $\\dot{y}=x$"
+    }
+  ],
+  "conclusion": "The origin is a saddle point.",
+  "status": "incomplete proof",
+  "proof": {
+    "steps": [
+      {
+        "type": "let",
+        "variable": "X",
+        "value": "$\\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
+        "kind": "vector"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\dot{X} = \\begin{bmatrix} 0 & 1 \\\\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
+        "proof-method": "Matrix form of the system"
+      },
+      {
+        "type": "let",
+        "variable": "A",
+        "value": "$\\begin{bmatrix} 0 & 1 \\\\ 1 & 0 \\end{bmatrix}$",
+        "kind": "matrix"
+      },
+      {
+        "type": "assert",
+        "claim": "The characteristic equation is $|A - \\lambda I| = 0$",
+        "proof-method": "Definition of eigenvalues"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\begin{vmatrix} -\\lambda & 1 \\\\ 1 & -\\lambda \\end{vmatrix} = 0$",
+        "proof-method": "Simplification of the characteristic equation"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda^2 - 1 = 0$",
+        "proof-method": "Determinant of the matrix"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda = \\pm 1$",
+        "proof-method": "Solving the quadratic equation"
+      },
+      {
+        "type": "assert",
+        "claim": "For $\\lambda = 1$, $\\begin{bmatrix} -1 & 1 \\\\ 1 & -1 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 0 \\\\ 0 \\end{bmatrix}$",
+        "proof-method": "Substitution into the eigenvalue equation"
+      },
+      {
+        "type": "assert",
+        "claim": "$-x + y = 0$ or $x = y$",
+        "proof-method": "Solving the system of equations"
+      },
+      {
+        "type": "assert",
+        "claim": "A corresponding eigenvector is $\\begin{bmatrix} 1 \\\\ 1 \\end{bmatrix}$",
+        "proof-method": "Substitution of $x = y$"
+      },
+      {
+        "type": "assert",
+        "claim": "For $\\lambda = -1$, $\\begin{bmatrix} 1 & 1 \\\\ 1 & 1 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 0 \\\\ 0 \\end{bmatrix}$",
+        "proof-method": "Substitution into the eigenvalue equation"
+      },
+      {
+        "type": "assert",
+        "claim": "$x = -y$",
+        "proof-method": "Solving the system of equations"
+      },
+      {
+        "type": "assert",
+        "claim": "A corresponding eigenvector is $\\begin{bmatrix} -1 \\\\ 1 \\end{bmatrix}$",
+        "proof-method": "Substitution of $x = -y$"
+      },
+      {
+        "type": "assert",
+        "claim": "The general solution is $X(t) = \\alpha X_1(t) + \\beta X_2(t) = \\alpha \\begin{bmatrix} 1 \\\\ 1 \\end{bmatrix} e^t + \\beta \\begin{bmatrix} -1 \\\\ 1 \\end{bmatrix} e^{-t}$",
+        "proof-method": "Combination of eigenvectors"
+      },
+      {
+        "type": "assert",
+        "claim": "For $t \\to \\infty$, $X(t) \\approx \\alpha X_1(t)$ and for $t \\to -\\infty$, $X(t) \\approx \\beta X_2(t)$",
+        "proof-method": "Behavior of exponential functions"
+      },
+      {
+        "type": "assert",
+        "claim": "The origin is a saddle point due to the intersection of the stable and unstable lines",
+        "proof-method": "Observation of the general solution"
+      },
+      {
+        "type": "remark",
+        "statement": "$(1, 1)$ and $(1, -1)$ were chosen as sample vectors along the eigenvector lines"
+      },
+      {
+        "type": "remark",
+        "statement": "$\\alpha, \\beta \\in \\mathbb{R}$"
+      }
+    ],
+    "errors": [
+      {
+        "type": "conclude",
+        "statement": "The proof does not adequately show that the origin is a saddle point."
+      }
+    ]
+  }
+}

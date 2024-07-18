@@ -1,52 +1,51 @@
 {
   "type": "theorem",
-  "name": "Gradient of f(x, y) = x^3 - 3x + y^2 at (1, 0) and (-1, 0)",
+  "name": "Gradient of f(x, y) = x^3 - 3x + y^2",
   "hypothesis": [
     {
       "type": "let",
       "variable": "f",
-      "value": "x^{3}-3 x+y^{2}",
-      "kind": "function from R^2 to R"
-    },
-    {
-      "type": "let",
-      "variable": "x",
-      "kind": "element of R"
-    },
-    {
-      "type": "let",
-      "variable": "y",
-      "kind": "element of R"
+      "value": "$f(x, y) = x^3 - 3x + y^2$",
+      "kind": "function from $\\mathbb{R}^2$ to $\\mathbb{R}$"
     }
   ],
-  "conclusion": "The gradient of f is zero at the points (1, 0) and (-1, 0).",
-  "status": "proved",
+  "conclusion": "The gradient of $f$ is zero at the points $(1, 0)$ and $(-1, 0)$.",
+  "status": "wrong proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "assert",
-        "claim": "∇f = (∂f/∂x, ∂f/∂y) = (3x^2 - 3, 2y)",
-        "proof-method": "Definition of gradient and partial differentiation"
+        "claim": "$\\nabla f = (\\frac{\\partial f}{\\partial x}, \\frac{\\partial f}{\\partial y}) = (3x^2 - 3, 2y)$",
+        "proof-method": "Direct computation"
       },
       {
         "type": "assert",
-        "claim": "For the gradient to be zero, both components must be zero.",
-        "proof-method": "Property of vectors"
+        "claim": "For the gradient to be zero, each component must be zero.",
+        "proof-method": "Definition of zero vector"
       },
       {
         "type": "assert",
-        "claim": "3x^2 - 3 = 0 implies x = ±1",
-        "proof-method": "Solving the quadratic equation"
+        "claim": "$3x^2 - 3 = 0 \\implies x = \\pm 1$",
+        "calculation": [
+          "$3x^2 - 3 = 0$",
+          "$x^2 - 1 = 0$",
+          "$(x-1)(x+1)=0$",
+          "$x = 1$ or $x=-1$"
+        ]
       },
       {
         "type": "assert",
-        "claim": "2y = 0 implies y = 0",
-        "proof-method": "Solving the linear equation"
+        "claim": "$2y = 0 \\implies y = 0$",
+        "calculation": [
+          "$2y = 0$",
+          "$y=0$"
+        ]
       },
       {
         "type": "conclude",
-        "statement": "Therefore, the points where the gradient of f is zero are (1, 0) and (-1, 0)."
+        "statement": "$\\implies$ The points are $(1, 0)$, $(-1, 0)$",
+        "error": "The proof incorrectly concludes that the gradient is zero at the points $(1,0)$ and $(-1,0)$ just because the partial derivatives are zero at those points. It needs to show that both partial derivatives are zero at those points *simultaneously*."
       }
     ]
   }

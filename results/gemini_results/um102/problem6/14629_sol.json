@@ -1,0 +1,107 @@
+{
+  "type": "theorem",
+  "name": "Saddle Point of a Linear System",
+  "status": "wrong proof",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "x",
+      "kind": "function of time"
+    },
+    {
+      "type": "let",
+      "variable": "y",
+      "kind": "function of time"
+    },
+    {
+      "type": "assume",
+      "statement": "The functions $x$ and $y$ satisfy the system of differential equations $\\dot{x} = y$ and $\\dot{y} = x$"
+    }
+  ],
+  "conclusion": "The origin is a saddle point of the system of differential equations.",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "The proof appears to be attempting to analyze the phase portrait of the system, but makes several errors and uses unclear notation."
+      },
+      {
+        "type": "assert",
+        "claim": "$y^2 \\propto 2n$",
+        "proof-method": "The proof derives this equation by incorrectly assuming $x \\propto y$ and $\\dot{y} \\propto n$, then manipulating these proportionalities as if they were equations. Additionally, the variable $n$ and the constant of proportionality $u$ are not defined.",
+        "calculation": [
+          {
+            "step": "$\\dot{n} \\propto y$",
+            "justification": "Unclear assumption."
+          },
+          {
+            "step": "$\\frac{dn}{du} \\propto y$",
+            "justification": "Rewriting the proportionality using an undefined variable $u$."
+          },
+          {
+            "step": "$dn \\propto y \\, dy$",
+            "justification": "Treating the proportionality as an equation."
+          },
+          {
+            "step": "$\\int dn \\propto \\int y \\, dy$",
+            "justification": "Integrating both sides."
+          },
+          {
+            "step": "$n \\propto \\frac{y^2}{2}$",
+            "justification": "Result of integration."
+          },
+          {
+            "step": "$y^2 \\propto 2n$",
+            "justification": "Rearranging the previous equation."
+          }
+        ],
+        "errors": [
+          "The use of proportionality is incorrect.",
+          "The variables $n$ and $u$ are not defined.",
+          "The steps involve treating proportionalities as equations without justification."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The graph of $y^2 \\propto 2n$ will be a parabola symmetric to $x$ axis.",
+        "errors": [
+          "The statement is based on an incorrect derivation and an undefined variable $n$."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$n^2 \\propto 2y$",
+        "proof-method": "The proof derives this equation following a similar flawed approach as before, using incorrect assumptions and treating proportionalities as equations.",
+        "errors": [
+          "Similar errors as in the previous derivation."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The graph of $n^2 \\propto 2y$ will be a parabola symmetric to $y$ axis.",
+        "errors": [
+          "The statement is based on an incorrect derivation and an undefined variable $n$."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "At the origin, $\\nabla f = 2\\hat{n} - 2 \\hat{y}$, where $f = n^2 - y^2 + 2n - 2y$",
+        "proof-method": "The proof introduces a function $f$ and calculates its gradient. However, the connection of this function to the original problem and the significance of its gradient at the origin are not explained.",
+        "errors": [
+          "Unclear relevance to the problem.",
+          "The variable $n$ is still undefined."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The sign will be a source.",
+        "proof-method": "The proof makes this conclusion without clear justification. It's unclear what 'sign' refers to, and the reasoning behind determining it to be a 'source' is absent.",
+        "errors": [
+          "Unclear statement and lack of justification."
+        ]
+      }
+    ],
+    "error": "The proof contains numerous errors and unclear statements, making it incorrect."
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "type": "theorem",
+  "name": "Gradient Zero Points",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f(x, y)",
+      "value": "$x^{3}-3 x+y^{2}$",
+      "kind": "function from $\\mathbb{R}^2$ to $\\mathbb{R}$"
+    },
+    {
+      "type": "assume",
+      "statement": "$x, y \\in \\mathbb{R}$"
+    }
+  ],
+  "conclusion": "The gradient of $f$ is zero at the points $(1,0)$ and $(-1,0)$.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$f(x,y) = x^3 - 3x + y^2$",
+        "proof-method": "Given function"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\nabla f = 0$",
+        "proof-method": "Setting gradient to zero",
+        "calculation": [
+          "($\\frac{\\partial f}{\\partial x}\\hat{i} + \\frac{\\partial f}{\\partial y}\\hat{j}) = 0\\hat{i} + 0\\hat{j}$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{\\partial f}{\\partial x} = 3x^2 - 3 = 0$",
+        "proof-method": "Partial derivative with respect to $x$"
+      },
+      {
+        "type": "assert",
+        "claim": "$x^2 = 1 \\implies x = \\pm 1$",
+        "proof-method": "Solving the equation"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{\\partial f}{\\partial y} = 2y = 0 \\implies y = 0$",
+        "proof-method": "Partial derivative with respect to $y$"
+      },
+      {
+        "type": "assert",
+        "claim": "The points at which $\\nabla f$ is zero are $(1,0)$ and $(-1,0)$.",
+        "proof-method": "Combining results"
+      },
+      {
+        "type": "conclude",
+        "statement": "$\\nabla f = (3x^2 - 3)\\hat{i} + 2y\\hat{j}$"
+      }
+    ],
+    "errors": [
+      "The formulation of some of the steps appears incomplete or incorrect. For instance, steps are repetitive and the final conclusion step is not fully justified.",
+      "The proof does not explicitly calculate the gradient components before setting them to zero."
+    ]
+  }
+}

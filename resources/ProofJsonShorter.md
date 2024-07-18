@@ -21,7 +21,7 @@ Each JSON object has a "type" field. The possible values for this field are: "de
     * **Deduced_from**: (optional) a JSON list of results used to prove the claim, each result either the name of a theorem or a short statement previously proved.
     * **Proof-method**: (optional) the method of proof for the claim; this should be a single phrase or a fairly simple sentence; if a longer justification is needed break the step into smaller steps. If the method is deduction from a result, use the **deduced_from** field.
     * **Calculation**: (optional) a JSON list of calculation steps, with each step either a JSON string (for an equality, inequality etc) or a JSON object with two fields, **step** (the step) and **justification** (the justification for the step).
-    * **Missing steps**: (optional) a JSON list of **problem** fields which are problems that need to be solved or results that need to be proved to complete the proof.
+    * **Missing**: (optional) a JSON list of **problem** fields which are problems that need to be solved or results that need to be proved to complete the proof. Standard results/criteria may be omitted from the proof: include them in the **deduced_from** field.
     * **Errors**: (optional) a JSON list of errors in the proof.
 * **Theorem**: The statement of a mathematical theorem, lemma or claim.
   * Additional fields: 
@@ -33,14 +33,14 @@ Each JSON object has a "type" field. The possible values for this field are: "de
       * **Ref**: reference to earlier proof, if the status is "proved earlier" or "proved later".
       * **Cite**: reference to literature or external sources, if the status is "recalled"; for well known results, this is omitted.
       * **Error**: the error in the proof, if the status is "wrong proof".
-      * **Missing**: a JSON list of **problem** fields which are problems that need to be solved or results that need to be proved to complete the proof, if the status is "incomplete proof".  
+      * **Missing**: a JSON list of **problem** fields which are problems that need to be solved or results that need to be proved to complete the proof, if the status is "incomplete proof". Standard results/criteria may be omitted from the proof.  
 * **Problem**: A mathematical problem that is not a theorem, such as "Find ..."
   * Additional fields: 
     * **Statement**: the problem statement.
     * **Solved**: Boolean field whether the solution is given.
     * **Answer**: (optional) If the "solved" field is true, the answer to the problem (without justification).
     * **Proof**: (optional) If the "solved" field is true, a `ProofJSON` block giving a proof that the answer is correct.
-    * **Missing steps**: (optional) a JSON list of **problem** fields which are problems that need to be solved or results that need to be proved to complete the proof.
+    * **Missing**: (optional) a JSON list of **problem** fields which are problems that need to be solved or results that need to be proved to complete the proof. Standard results/criteria may be omitted from the proof.
     * **Errors**: (optional) a JSON list of errors in the proof.
 * **Proof**: A proof of a theorem, lemma or claim.
   * Additional fields: 

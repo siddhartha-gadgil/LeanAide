@@ -4,124 +4,103 @@
   "hypothesis": [
     {
       "type": "assume",
-      "statement": "Any continuous function on the ellipsoid $x^2 + 2y^2 + 3z^2 = 1$ attains its maximum."
+      "statement": "Any continuous function on the ellipsoid $x^{2}+2 y^{2}+3 z^{2}=1$ attains its maximum."
     }
   ],
-  "conclusion": "The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid $x^2 + 2y^2 + 3z^2 = 1$ have the largest distance from the origin.",
-  "status": "proved",
+  "conclusion": "The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid $x^{2}+2 y^{2}+3 z^{2}=1$ have the largest distance from the origin.",
+  "status": "incomplete proof",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "The proof incorrectly asserts that  $\\nabla F = 0$ implies each component is 0. This is true for $x_o$, $y_o$, $z_o$ being nonzero. The cases when one or more of them are zero need to be handled separately.",
+      "solved": false
+    }
+  ],
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "let",
-        "variable": "<anonymous>",
-        "statement": "Given $x^2 + 2y^2 + 3z^2 = 1$. To maximize $x^2 + y^2 + z^2$, let $f(x,y,z) = x^2 + y^2 + z^2$ & $g(x,y,z) = x^2 + 2y^2 + 3z^2 - 1$."
+        "variable": "f(x,y,z)",
+        "value": "$x^2 + y^2 + z^2$",
+        "kind": "function"
+      },
+      {
+        "type": "let",
+        "variable": "g(x,y,z)",
+        "value": "$x^2 + 2y^2 + 3z^2 - 1$",
+        "kind": "function"
       },
       {
         "type": "remark",
-        "statement": "Using the concept of Lagrange multipliers, let $F(x,y,z) = f - \\lambda g$."
+        "statement": "We want to maximize $f(x,y,z)$ subject to the constraint $g(x,y,z) = 0$. We use the method of Lagrange multipliers."
+      },
+      {
+        "type": "let",
+        "variable": "F(x,y,z)",
+        "value": "$f - \\lambda g$",
+        "kind": "function"
       },
       {
         "type": "assert",
-        "claim": "At maxima or minima, $\\nabla F = 0$.",
-        "proof-method": "Necessary condition for the extremum of a function subject to constraints."
+        "claim": "At maxima or minima of $f$ subject to the constraint, $\\nabla F = 0$",
+        "deduced_from": [
+          "Theory of Lagrange Multipliers"
+        ]
       },
       {
         "type": "assert",
         "claim": "$\\nabla ((1-\\lambda)x^2 + (1-2\\lambda)y^2 + (1-3\\lambda)z^2 + \\lambda) = 0$",
-        "deduced_from": [
-          "$\\nabla F = 0$",
-          "$F(x,y,z) = f - \\lambda g$",
-          "$f(x,y,z) = x^2 + y^2 + z^2$",
-          "$g(x,y,z) = x^2 + 2y^2 + 3z^2 - 1$"
-        ],
-        "proof-method": "Substitution"
+        "proof-method": "expanding $\\nabla F = 0$"
       },
       {
         "type": "assert",
-        "claim": "$(1-\\lambda)2x \\hat{i} + (1-2\\lambda)2y \\hat{j} + (1-3\\lambda)2z \\hat{k} = 0$",
-        "proof-method": "Calculating the gradient"
+        "claim": "$(1-\\lambda).2x \\hat{i} + (1-2\\lambda)2y \\hat{j}  + (1-3\\lambda)2z \\hat{k}=0$",
+        "proof-method": "calculating the gradient"
       },
       {
         "type": "cases",
         "on": "$\\lambda$",
-        "split-kind": "match",
+        "split-kind": "condition",
         "proof-cases": [
           {
             "type": "case",
-            "condition": "$\\lambda = 1$, then $y_o = z_o = 0$",
+            "condition": "$\\lambda = 1$",
             "proof": {
               "type": "proof",
               "steps": [
                 {
-                  "type": "assert",
-                  "claim": "$x_o = \\pm 1$",
-                  "deduced_from": [
-                    "$y_o = z_o = 0$",
-                    "$x^2 + 2y^2 + 3z^2 = 1$"
-                  ],
-                  "proof-method": "Substitution"
-                },
-                {
                   "type": "conclude",
-                  "statement": "Therefore, $x_o^2 + y_o^2 + z_o^2 = 1$"
+                  "statement": "$y_o = z_o = 0$",
+                  "error": "The proof incorrectly asserts that  $\\nabla F = 0$ implies each component is 0. This is true for $x_o$, $y_o$, $z_o$ being nonzero. The cases when one or more of them are zero need to be handled separately."
                 }
               ]
             }
           },
           {
             "type": "case",
-            "condition": "$\\lambda = \\frac{1}{2}$, then $x_o = z_o = 0$",
+            "condition": "$\\lambda = \\frac{1}{2}$",
             "proof": {
               "type": "proof",
               "steps": [
                 {
-                  "type": "assert",
-                  "claim": "$y_o = \\pm \\frac{1}{\\sqrt{2}}$",
-                  "deduced_from": [
-                    "$x_o = z_o = 0$",
-                    "$x^2 + 2y^2 + 3z^2 = 1$"
-                  ],
-                  "proof-method": "Substitution"
-                },
-                {
                   "type": "conclude",
-                  "statement": "Therefore, $x_o^2 + y_o^2 + z_o^2 = \\frac{1}{2}$"
+                  "statement": "$x_o = z_o = 0$",
+                  "error": "The proof incorrectly asserts that  $\\nabla F = 0$ implies each component is 0. This is true for $x_o$, $y_o$, $z_o$ being nonzero. The cases when one or more of them are zero need to be handled separately."
                 }
               ]
             }
           },
           {
             "type": "case",
-            "condition": "$\\lambda = \\frac{1}{3}$, then $x_o = y_o = 0$",
-            "proof": {
-              "type": "proof",
-              "steps": [
-                {
-                  "type": "assert",
-                  "claim": "$z_o = \\pm \\frac{1}{\\sqrt{3}}$",
-                  "deduced_from": [
-                    "$x_o = y_o = 0$",
-                    "$x^2 + 2y^2 + 3z^2 = 1$"
-                  ],
-                  "proof-method": "Substitution"
-                },
-                {
-                  "type": "conclude",
-                  "statement": "Therefore, $x_o^2 + y_o^2 + z_o^2 = \\frac{1}{3}$"
-                }
-              ]
-            }
-          },
-          {
-            "type": "case",
-            "condition": "$x_o = y_o = z_o = 0$",
+            "condition": "$\\lambda = \\frac{1}{3}$",
             "proof": {
               "type": "proof",
               "steps": [
                 {
                   "type": "conclude",
-                  "statement": "Therefore, $x_o^2 + y_o^2 + z_o^2 = 0$"
+                  "statement": "$x_o = y_o = 0$",
+                  "error": "The proof incorrectly asserts that  $\\nabla F = 0$ implies each component is 0. This is true for $x_o$, $y_o$, $z_o$ being nonzero. The cases when one or more of them are zero need to be handled separately."
                 }
               ]
             }
@@ -129,8 +108,14 @@
         ]
       },
       {
-        "type": "conclude",
-        "statement": "The maximum value of $x_o^2 + y_o^2 + z_o^2$ is 1, which we get when the points are $(1,0,0)$ or $(-1,0,0)$."
+        "type": "assert",
+        "claim": "The possible points are $(1,0,0), (-1,0,0), (0, \\frac{1}{\\sqrt{2}}, 0), (0, -\\frac{1}{\\sqrt{2}}, 0), (0, 0, \\frac{1}{\\sqrt{3}}), (0, 0, -\\frac{1}{\\sqrt{3}})$",
+        "proof-method": "solving for $x,y,z$ for each case of $\\lambda$ and using the constraint $g(x,y,z)=0$"
+      },
+      {
+        "type": "assert",
+        "claim": "The maximum value of $x^2 + y^2 + z^2$ is achieved when $(x,y,z) = (1,0,0)$ or $(-1,0,0)$",
+        "proof-method": "comparing the values of $x^2 + y^2 + z^2$ for each of the possible points"
       }
     ]
   }

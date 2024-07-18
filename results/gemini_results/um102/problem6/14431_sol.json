@@ -4,77 +4,56 @@
   "hypothesis": [
     {
       "type": "let",
-      "variable": "x",
-      "kind": "function of time"
+      "variable": "x(t)",
+      "kind": "real-valued function"
     },
     {
       "type": "let",
-      "variable": "y",
-      "kind": "function of time"
+      "variable": "y(t)",
+      "kind": "real-valued function"
     },
     {
       "type": "assume",
-      "statement": "The functions x and y satisfy the system of differential equations \\( \\dot{x} = y \\) and \\( \\dot{y} = x \\)."
+      "statement": "The functions $x(t)$ and $y(t)$ satisfy the system of differential equations $\\dot{x} = y$ and $\\dot{y} = x$."
     }
   ],
-  "conclusion": "The origin is a saddle point of the given system of differential equations.",
-  "status": "proved",
+  "conclusion": "The origin is a saddle point of the system of differential equations.",
+  "status": "incomplete proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "remark",
-        "statement": "We will rewrite the system in matrix form and analyze the eigenvalues of the coefficient matrix."
+        "statement": "We need to analyze the eigenvalues of the coefficient matrix of the system."
+      },
+      {
+        "type": "assert",
+        "claim": "The system can be written in matrix form as $\\begin{bmatrix} \\dot{x} \\\\ \\dot{y} \\end{bmatrix} = \\begin{bmatrix} 0 & 1 \\\\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$.",
+        "proof-method": "Direct rewriting of the given system."
       },
       {
         "type": "let",
         "variable": "A",
-        "value": "[[0, 1], [1, 0]]",
+        "value": "{\\begin{bmatrix} 0 & 1 \\\\ 1 & 0 \\end{bmatrix}}",
         "kind": "matrix"
-      },
-      {
-        "type": "let",
-        "variable": "X",
-        "value": "[x, y]",
-        "kind": "vector"
-      },
-      {
-        "type": "assert",
-        "claim": "The system of differential equations can be written as \\( \\mathbf{X'} = A\\mathbf{X} \\).",
-        "proof-method": "direct computation"
-      },
-      {
-        "type": "assert",
-        "claim": "The trace of A is 0.",
-        "proof-method": "direct computation"
-      },
-      {
-        "type": "let",
-        "variable": "Tr(A)",
-        "value": "0"
-      },
-      {
-        "type": "assert",
-        "claim": "The determinant of A is -1.",
-        "proof-method": "direct computation"
-      },
-      {
-        "type": "let",
-        "variable": "Det(A)",
-        "value": "-1"
       },
       {
         "type": "assert",
         "claim": "The eigenvalues of A are 1 and -1.",
-        "deduced_from": [
-          "Formula for eigenvalues of a 2x2 matrix",
-          "Values of Tr(A) and Det(A)"
-        ],
-        "proof-method": "substitution into the quadratic formula"
+        "calculation": [
+          "$\\text{Tr}(A) = 0 + 0 = 0$",
+          "$\\text{Det}(A) = (0)(0) - (1)(1) = -1$",
+          {
+            "step": "$\\lambda = \\frac{1}{2}[\\text{Tr}(A) \\pm \\sqrt{(\\text{Tr}(A))^2 - 4 \\text{Det}(A)}] = \\frac{1}{2}[0 \\pm \\sqrt{0^2 - 4(-1)}] = \\frac{1}{2}[0 \\pm 2]$",
+            "justification": "Formula for eigenvalues of a 2x2 matrix."
+          },
+          "$\\lambda = 1$ or $\\lambda = -1$"
+        ]
       },
       {
         "type": "conclude",
-        "statement": "Since the eigenvalues of A have opposite signs, the origin is a saddle point for the given system of differential equations."
+        "statement": "Since the eigenvalues of the coefficient matrix have opposite signs, the origin is a saddle point.",
+        "error": "The conclusion requires justification. While having eigenvalues of opposite signs is a characteristic of saddle points for linear systems, a more detailed explanation connecting eigenvalues to the behavior of the system near the origin is needed."
       }
     ]
   }

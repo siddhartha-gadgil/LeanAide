@@ -1,52 +1,64 @@
 {
   "type": "theorem",
-  "name": "Gradient of f(x,y) = x^3 - 3x + y^2",
+  "name": "Gradient of f(x,y)",
   "hypothesis": [
     {
       "type": "let",
       "variable": "f",
-      "value": "x^3 - 3x + y^2",
-      "kind": "function from R^2 to R"
+      "value": "$f(x, y)=x^{3}-3 x+y^{2}$",
+      "kind": "function from $\\mathbb{R}^2$ to $\\mathbb{R}$"
     }
   ],
-  "conclusion": "The gradient of f is zero at the points (1,0) and (-1,0).",
-  "status": "proved",
+  "conclusion": "The gradient of $f$ is zero at the points $(1,0)$ and $(-1,0)$.",
+  "status": "wrong proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
-        "type": "assert",
-        "claim": "∇f(x,y) = (3x^2 - 3)î + 2yĵ",
-        "proof-method": "Direct computation of partial derivatives"
-      },
-      {
-        "type": "let",
-        "variable": "(x,y)",
-        "kind": "point in R^2",
-        "property": "∇f(x,y) = 0"
+        "type": "remark",
+        "statement": "We first compute the gradient of $f$."
       },
       {
         "type": "assert",
-        "claim": "3x^2 - 3 = 0 and 2y = 0",
-        "deduced_from": [
-          "∇f(x,y) = (3x^2 - 3)î + 2yĵ",
-          "(x,y) is a point where ∇f(x,y) = 0"
+        "claim": "$\\nabla f(x,y) = (2x -3) \\hat{i} + 2y \\hat{j}$",
+        "calculation": [
+          "$\\nabla f(x,y) = \\frac{\\partial f}{\\partial x} \\hat{i} + \\frac{\\partial f}{\\partial y} \\hat{j}$",
+          "$= (2x -3) \\hat{i} + 2y \\hat{j}$"
         ],
-        "proof-method": "For the gradient to be zero, both components must be zero."
+        "errors": [
+          {
+            "type": "remark",
+            "statement": "The partial derivative $\\frac{\\partial f}{\\partial x}$ is incorrect. The correct derivative is $\\frac{\\partial f}{\\partial x} = 3x^2 - 3$."
+          }
+        ]
       },
       {
         "type": "assert",
-        "claim": "x = 1 or x = -1, and y = 0",
+        "claim": "If $\\nabla f = 0$, then $x = 1$ & $y = 0$",
         "deduced_from": [
-          "3x^2 - 3 = 0 and 2y = 0"
+          "Previous step"
         ],
-        "proof-method": "Solving the equations"
+        "calculation": [
+          {
+            "step": "$3x - 3 = 0$ & $2y = 0$",
+            "justification": "Setting the components of the gradient to zero."
+          },
+          {
+            "step": "$x = 1$ & $y = 0$",
+            "justification": "Solving the equations."
+          }
+        ]
       },
       {
         "type": "conclude",
-        "statement": "Therefore, the gradient of f is zero at the points (1,0) and (-1,0)."
+        "statement": "$\\therefore \\nabla f = 0$ at $(1,0)$ & $(0,1)$",
+        "errors": [
+          {
+            "type": "remark",
+            "statement": "The conclusion is not justified since we only found a necessary condition for the gradient to be zero. Moreover, the point $(0,1)$ does not make the gradient zero even with the incorrect derivative, and the point $(-1,0)$ which does make the gradient zero is missed."
+          }
+        ]
       }
-    ],
-    "error": "The proof incorrectly claims that the gradient is zero at (2/3, 0). The correct points are (1,0) and (-1,0)."
+    ]
   }
 }

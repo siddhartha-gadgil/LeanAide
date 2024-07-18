@@ -8,48 +8,41 @@
     },
     {
       "type": "assume",
-      "statement": "Any continuous function on the ellipsoid attains its maximum"
+      "statement": "Any continuous function on the ellipsoid attains its maximum."
     }
   ],
-  "conclusion": "The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid $x^2 + 2y^2 + 3z^2 = 1$ have the largest distance from the origin.",
-  "status": "proved",
+  "conclusion": "The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid $x^{2}+2 y^{2}+3 z^{2}=1$ have the largest distance from the origin.",
+  "status": "incomplete proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "assert",
-        "claim": "We have to maximize the distance $\\sqrt{x^2 + y^2 + z^2}$ from the origin."
+        "claim": "We need to maximize the distance $\\sqrt{x^2 + y^2 + z^2}$"
+      },
+      {
+        "type": "assert",
+        "claim": "We can equivalently maximize $x^2 + y^2 + z^2 = f$"
+      },
+      {
+        "type": "assert",
+        "claim": "We can use Lagrange multipliers because $f$ and the constraint functions are infinitely differentiable."
       },
       {
         "type": "define",
-        "statement": "Let $r = \\sqrt{x^2 + y^2 + z^2}$.",
-        "term": "r"
+        "term": "gradients",
+        "statement": "$\\nabla f = (2x, 2y, 2z)$ and $\\nabla g = (2x, 4y, 6z)$"
       },
       {
         "type": "assert",
-        "claim": "To maximize $r$, it suffices to maximize $r^2 = x^2 + y^2 + z^2$."
-      },
-      {
-        "type": "let",
-        "variable": "f",
-        "value": "$x^2 + y^2 + z^2$",
-        "kind": "function"
+        "claim": "At a maximum point, $\\nabla f = \\lambda \\nabla g$",
+        "deduced_from": [
+          "gradients"
+        ]
       },
       {
         "type": "assert",
-        "claim": "We need to maximize $f = x^2 + y^2 + z^2$ subject to the constraint $g = x^2 + 2y^2 + 3z^2 = 1$."
-      },
-      {
-        "type": "assert",
-        "claim": "We can use Lagrange multipliers since both $f$ and $g$ are infinitely differentiable."
-      },
-      {
-        "type": "assert",
-        "claim": "$\\nabla f = (2x, 2y, 2z)$ and $\\nabla g = (2x, 4y, 6z)$."
-      },
-      {
-        "type": "assert",
-        "claim": "At a maximum point, $\\nabla f = \\lambda \\nabla g$, which gives $(2x, 2y, 2z) = (2\\lambda x, 4\\lambda y, 6\\lambda z)$."
+        "claim": "$(2x, 2y, 2z) = (2\\lambda x, 4\\lambda y, 6\\lambda z)$"
       },
       {
         "type": "cases",
@@ -61,7 +54,11 @@
             "condition": "$\\lambda = 1$",
             "proof": {
               "type": "assert",
-              "claim": "$(x, 0, 0) = (\\pm 1, 0, 0)$ and $r^2 = 1$ since the point must satisfy $g$."
+              "claim": "$(x, 0, 0) = (\\pm 1, 0, 0)$",
+              "deduced_from": [
+                "$(2x, 2y, 2z) = (2\\lambda x, 4\\lambda y, 6\\lambda z)$"
+              ],
+              "proof-method": "Solve for $x, y, z$"
             }
           },
           {
@@ -69,7 +66,11 @@
             "condition": "$\\lambda = \\frac{1}{2}$",
             "proof": {
               "type": "assert",
-              "claim": "$(0, y, 0) = (0, \\pm \\frac{1}{\\sqrt{2}}, 0)$ and $r^2 = \\frac{1}{2}$."
+              "claim": "$(0, y, 0) = (0, \\pm \\frac{1}{\\sqrt{2}}, 0)$",
+              "deduced_from": [
+                "$(2x, 2y, 2z) = (2\\lambda x, 4\\lambda y, 6\\lambda z)$"
+              ],
+              "proof-method": "Solve for $x, y, z$"
             }
           },
           {
@@ -77,19 +78,36 @@
             "condition": "$\\lambda = \\frac{1}{3}$",
             "proof": {
               "type": "assert",
-              "claim": "$(0, 0, z) = (0, 0, \\pm \\frac{1}{\\sqrt{3}})$ and $r^2 = \\frac{1}{3}$."
+              "claim": "$(0, 0, z) = (0, 0, \\pm \\frac{1}{\\sqrt{3}})$",
+              "deduced_from": [
+                "$(2x, 2y, 2z) = (2\\lambda x, 4\\lambda y, 6\\lambda z)$"
+              ],
+              "proof-method": "Solve for $x, y, z$"
             }
           }
         ]
       },
       {
-        "type": "conclude",
-        "statement": "Hence we see that the maximum value of $r^2$ is $1$."
+        "type": "assert",
+        "claim": "The maximum value of $r^2$ is 1",
+        "deduced_from": [
+          "$(x, 0, 0) = (\\pm 1, 0, 0)$",
+          "$(0, y, 0) = (0, \\pm \\frac{1}{\\sqrt{2}}, 0)$",
+          "$(0, 0, z) = (0, 0, \\pm \\frac{1}{\\sqrt{3}})$"
+        ]
       },
       {
         "type": "conclude",
-        "statement": "The maximum distance from the origin is $1$ and the points at which this distance is achieved are $(\\pm 1, 0, 0)$."
+        "statement": "The max distance from the origin is 1, and the points are $(\\pm 1, 0, 0)$",
+        "error": "The proof does not justify why $(\\pm 1, 0, 0)$ are the only points of maximum distance with the given constraints."
       }
     ]
-  }
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Verify if $(\\pm 1, 0, 0)$ satisfy the constraint equation $x^2 + 2y^2 + 3z^2 = 1$.",
+      "solved": false
+    }
+  ]
 }

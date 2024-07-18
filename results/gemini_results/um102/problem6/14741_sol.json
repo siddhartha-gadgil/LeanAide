@@ -1,149 +1,108 @@
 {
   "type": "theorem",
   "name": "Saddle Point of a Linear System",
-  "status": "proved",
   "hypothesis": [
     {
       "type": "let",
-      "variable": "x(t)",
-      "kind": "real function"
-    },
-    {
-      "type": "let",
-      "variable": "y(t)",
-      "kind": "real function"
-    },
-    {
-      "type": "assume",
-      "statement": "The functions x(t) and y(t) satisfy the system of differential equations: \\( \\dot{x} = y \\) and \\( \\dot{y} = -x \\)"
+      "variable": "<anonymous>",
+      "kind": "differential equations",
+      "property": "linear system",
+      "value": "$\\dot{x} = y$ and $\\dot{y} = x$"
     }
   ],
-  "conclusion": "The origin (0, 0) is a saddle point of the system of differential equations.",
+  "conclusion": "The origin is a saddle point of the given linear system.",
+  "status": "incomplete proof",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Show that the solution curves approach the origin as $t \\to \\infty$ along the eigenvector $(1,-1)$ and approach infinity along the eigenvector $(1,1)$.",
+      "solved": false
+    },
+    {
+      "type": "problem",
+      "statement": "Use the Hartman-Grobman theorem to conclude that the linear system is topologically equivalent to its linearization at the origin, which implies that the origin is a saddle point.",
+      "solved": false
+    }
+  ],
   "proof": {
     "type": "proof",
     "steps": [
       {
-        "type": "remark",
-        "statement": "We begin by rewriting the system in matrix form."
-      },
-      {
-        "type": "let",
-        "variable": "v",
-        "value": "{bmatrix} x \\\\ y {bmatrix}",
-        "kind": "vector"
-      },
-      {
-        "type": "let",
-        "variable": "A",
-        "value": "{bmatrix} 0 & 1 \\\\ -1 & 0 {bmatrix}",
-        "kind": "matrix"
+        "type": "assert",
+        "claim": "The given system can be written in matrix form as $\\dot{v} = Av$, where $v = \\begin{bmatrix} x \\\\ y \\end{bmatrix}$ and $A = \\begin{bmatrix} 0 & 1 \\\\ 1 & 0 \\end{bmatrix}$.",
+        "proof-method": "direct computation"
       },
       {
         "type": "assert",
-        "claim": "The system of differential equations can be written as \\( \\dot{v} = Av \\).",
-        "proof-method": "direct substitution"
-      },
-      {
-        "type": "remark",
-        "statement": "Next, we find the eigenvalues and eigenvectors of matrix A."
+        "claim": "The eigenvalues of $A$ are $\\lambda_1 = 1$ and $\\lambda_2 = -1$.",
+        "proof-method": "solving the characteristic equation $\\lambda^2 - 1 = 0$"
       },
       {
         "type": "assert",
-        "claim": "The characteristic equation of A is \\( \\lambda^2 + 1 = 0 \\).",
-        "proof-method": "By definition, the characteristic equation is found by solving  \\( det(A - \\lambda I) = 0 \\)."
-      },
-      {
-        "type": "assert",
-        "claim": "The eigenvalues of A are \\( \\lambda_1 = i \\) and \\( \\lambda_2 = -i \\).",
-        "deduced_from": [
-          "The characteristic equation of A is \\( \\lambda^2 + 1 = 0 \\)."
+        "claim": "The eigenvector corresponding to $\\lambda_1 = 1$ is $v_1 = \\begin{pmatrix} 1 \\\\ 1 \\end{pmatrix}$.",
+        "calculation": [
+          {
+            "step": "$Av_1 = \\begin{bmatrix} 0 & 1 \\\\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} x_1 \\\\ y_1 \\end{bmatrix} = \\begin{bmatrix} y_1 \\\\ x_1 \\end{bmatrix} = \\lambda_1 v_1 = \\begin{bmatrix} x_1 \\\\ y_1 \\end{bmatrix}$",
+            "justification": "definition of eigenvector"
+          },
+          {
+            "step": "$y_1 = x_1$",
+            "justification": "comparing components"
+          },
+          {
+            "step": "$v_1 = \\begin{pmatrix} 1 \\\\ 1 \\end{pmatrix}$",
+            "justification": "choosing $x_1 = 1$"
+          }
         ]
       },
       {
-        "type": "remark",
-        "statement": "To find the eigenvectors, we solve the equation \\( (A - \\lambda I)v = 0 \\) for each eigenvalue."
-      },
-      {
-        "type": "case",
-        "condition": "For \\( \\lambda_1 = i \\)",
-        "proof": {
-          "type": "proof",
-          "steps": [
-            {
-              "type": "assert",
-              "claim": "The equation \\( (A - \\lambda_1 I)v_1 = 0 \\) becomes \\( {bmatrix} -i & 1 \\\\ -1 & -i {bmatrix} {bmatrix} x_1 \\\\ y_1 {bmatrix} = {bmatrix} 0 \\\\ 0 {bmatrix} \\).",
-              "proof-method": "substitution"
-            },
-            {
-              "type": "assert",
-              "claim": "Solving the system of equations, we get \\( y_1 = ix_1 \\).",
-              "proof-method": "algebraic manipulation"
-            },
-            {
-              "type": "assert",
-              "claim": "Choosing \\( x_1 = 1 \\), we obtain the eigenvector \\( v_1 = {pmatrix} 1 \\\\ i {pmatrix} \\)."
-            }
-          ]
-        }
-      },
-      {
-        "type": "case",
-        "condition": "For \\( \\lambda_2 = -i \\)",
-        "proof": {
-          "type": "proof",
-          "steps": [
-            {
-              "type": "assert",
-              "claim": "The equation \\( (A - \\lambda_2 I)v_2 = 0 \\) becomes \\( {bmatrix} i & 1 \\\\ -1 & i {bmatrix} {bmatrix} x_2 \\\\ y_2 {bmatrix} = {bmatrix} 0 \\\\ 0 {bmatrix} \\).",
-              "proof-method": "substitution"
-            },
-            {
-              "type": "assert",
-              "claim": "Solving the system of equations, we get \\( y_2 = -ix_2 \\).",
-              "proof-method": "algebraic manipulation"
-            },
-            {
-              "type": "assert",
-              "claim": "Choosing \\( x_2 = 1 \\), we obtain the eigenvector \\( v_2 = {pmatrix} 1 \\\\ -i {pmatrix} \\)."
-            }
-          ]
-        }
-      },
-      {
-        "type": "remark",
-        "statement": "The general solution can be written as a linear combination of the eigenvectors."
-      },
-      {
         "type": "assert",
-        "claim": "The general solution is \\( {bmatrix} x \\\\ y {bmatrix} = x(t) {pmatrix} 1 \\\\ i {pmatrix} + y(t){pmatrix} 1 \\\\ -i {pmatrix} \\).",
-        "proof-method": "Using the principle of superposition for linear systems"
-      },
-      {
-        "type": "remark",
-        "statement": "Substituting this back into the matrix equation and solving the resulting system of differential equations, we get:"
-      },
-      {
-        "type": "assert",
-        "claim": "\\( x = C_1 e^t \\) and \\( y = C_2 e^{-t} \\)",
-        "missing": [
+        "claim": "The eigenvector corresponding to $\\lambda_2 = -1$ is $v_2 = \\begin{pmatrix} 1 \\\\ -1 \\end{pmatrix}$.",
+        "calculation": [
           {
-            "type": "problem",
-            "statement": "Show the steps for solving the system of differential equations obtained after substituting the general solution back into the matrix equation."
+            "step": "$Av_2 = \\begin{bmatrix} 0 & 1 \\\\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} x_2 \\\\ y_2 \\end{bmatrix} = \\begin{bmatrix} y_2 \\\\ x_2 \\end{bmatrix} = \\lambda_2 v_2 = \\begin{bmatrix} -x_2 \\\\ -y_2 \\end{bmatrix}$",
+            "justification": "definition of eigenvector"
+          },
+          {
+            "step": "$y_2 = -x_2$",
+            "justification": "comparing components"
+          },
+          {
+            "step": "$v_2 = \\begin{pmatrix} 1 \\\\ -1 \\end{pmatrix}$",
+            "justification": "choosing $x_2 = 1$"
           }
         ]
       },
       {
         "type": "remark",
-        "statement": "Multiplying these equations, we get an equation for the trajectories:"
+        "statement": "The following part of the proof contains errors."
       },
       {
         "type": "assert",
-        "claim": "\\( xy = C_1 C_2 = k \\), which represents a hyperbola.",
-        "proof-method": "algebraic manipulation"
+        "claim": "The system of differential equations can be rewritten as $\\frac{d}{dt} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 0 & 1 \\\\ 1 & 4 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$, where $\\begin{bmatrix} x \\\\ y \\end{bmatrix} \\equiv x(c_1, 1) + y(c_1, -1)$.",
+        "errors": [
+          "The matrix $\\begin{bmatrix} 0 & 1 \\\\ 1 & 4 \\end{bmatrix}$ is incorrect and does not follow from the previous steps. The correct matrix should still be $A = \\begin{bmatrix} 0 & 1 \\\\ 1 & 0 \\end{bmatrix}$.",
+          "The expression $\\begin{bmatrix} x \\\\ y \\end{bmatrix} \\equiv x(c_1, 1) + y(c_1, -1)$ is unclear and seems to be mixing up vectors and scalars."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The solutions to the system are given by $x = c_1 e^t$ and $y = c_2 e^{-t}$.",
+        "errors": [
+          "These solutions are derived using the incorrect matrix from the previous step and are therefore also incorrect."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The trajectories of the system are hyperbolas given by $xy = c_1 c_2 = k$.",
+        "errors": [
+          "This conclusion is based on the incorrect solutions and is therefore also incorrect."
+        ]
       },
       {
         "type": "conclude",
-        "statement": "Since the trajectories are hyperbolas, the origin (0, 0) is a saddle point."
+        "statement": "Therefore, the origin is a saddle point.",
+        "error": "This conclusion is not justified by the previous steps, which contain errors."
       }
     ]
   }
