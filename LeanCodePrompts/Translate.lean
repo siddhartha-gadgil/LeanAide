@@ -181,18 +181,23 @@ def getNearestDocsOpenAI (s: String)(numSim : Nat)(numConcise: Nat)(numDesc : Na
     let check ← (← picklePath "docString").pathExists
     unless check do
       return Except.error "Mathlib embeddings not found; run `lake exe fetch_embeddings` first to fetch them."
+    let start ← IO.monoMsNow
+    let queryRes? ← embedQuery s
+    let finish ← IO.monoMsNow
+    IO.eprintln s!"Embedding query time: {finish - start}"
     let outJs ←
-       getNearestEmbeddingsFull s numSim 2.0 (dataMap := dataMap)
+       getNearestEmbeddingsFull s queryRes? numSim 2.0 (dataMap := dataMap)
     logTimed "obtained neighbours"
     let outJs' ←
       if numConcise > 0 then
-      getNearestEmbeddingsFull s numConcise 2.0 "concise-description" (dataMap := dataMap)
-      else pure <| (Json.arr #[]).compress
-    let outJs'' ←
-      if numDesc > 0 then
-      getNearestEmbeddingsFull s numDesc 2.0 "description" (dataMap := dataMap)
+      getNearestEmbeddingsFull s queryRes? numConcise 2.0 "concise-description" (dataMap := dataMap)
       else pure <| (Json.arr #[]).compress
     logTimed "obtained concise descriptions"
+    let outJs'' ←
+      if numDesc > 0 then
+      getNearestEmbeddingsFull s queryRes? numDesc 2.0 "description" (dataMap := dataMap)
+      else pure <| (Json.arr #[]).compress
+    logTimed "obtained descriptions"
     match Json.parse outJs, Json.parse outJs', Json.parse outJs''  with
     | Except.error e, _, _ => return Except.error e
     | _, Except.error e, _ => return Except.error e

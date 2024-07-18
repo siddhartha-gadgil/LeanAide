@@ -84,13 +84,9 @@ def nearestDocsToDocThms (data: Array ((String × String) × FloatArray))(doc: S
         panic s!"no embedding in query result: {error} in {queryData}"
   | Except.error err => panic! s!"error querying openai: {err}"
 
-def nearestDocsToDocFull (data: Array ((String × String × Bool × String) × FloatArray))
-    (doc: String)(k : Nat)(dist: FloatArray → Array Float → Float := distL2Sq)
+def nearestDocsToDocFromEmb (data: Array ((String × String × Bool × String) × FloatArray))
+    (queryRes?: Except String Json)(k : Nat)(dist: FloatArray → Array Float → Float := distL2Sq)
     (penalty: Float) : IO (List (String × String × Bool × String × Float)) := do
-  let start ← IO.monoMsNow
-  let queryRes? ← embedQuery doc
-  let finish ← IO.monoMsNow
-  IO.eprintln s!"query time: {finish - start}"
   -- IO.println "query complete"
   match queryRes? with
   | Except.ok queryRes =>
@@ -113,3 +109,12 @@ def nearestDocsToDocFull (data: Array ((String × String × Bool × String) × F
       | Except.error error =>
         panic s!"no embedding in query result: {error} in {queryData}"
   | Except.error err => panic! s!"error querying openai: {err}"
+
+def nearestDocsToDocFull (data: Array ((String × String × Bool × String) × FloatArray))
+    (doc: String)(k : Nat)(dist: FloatArray → Array Float → Float := distL2Sq)
+    (penalty: Float) : IO (List (String × String × Bool × String × Float)) := do
+  let start ← IO.monoMsNow
+  let queryRes? ← embedQuery doc
+  let finish ← IO.monoMsNow
+  IO.eprintln s!"query time: {finish - start}"
+  nearestDocsToDocFromEmb data queryRes? k dist penalty

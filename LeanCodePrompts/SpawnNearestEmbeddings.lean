@@ -25,7 +25,7 @@ def getNearestEmbeddingsExe
   return inp
 
 def getNearestEmbeddingsFull
-  (query : String)(numSim: Nat)(penalty: Float)
+  (query: String)(queryRes? : Except String Json)(numSim: Nat)(penalty: Float)
   (descField: String := "docString")
   (dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.empty) : IO String := do
   match dataMap.find? descField with
@@ -34,7 +34,7 @@ def getNearestEmbeddingsFull
   | some data =>
     logTimed s!"got data for {descField}"
     let embs ←
-      nearestDocsToDocFull data query numSim (penalty := penalty)
+      nearestDocsToDocFromEmb data queryRes? numSim (penalty := penalty)
     let out :=
       Lean.Json.arr <|
         embs.toArray.map fun (doc, thm, isProp, name, d) =>

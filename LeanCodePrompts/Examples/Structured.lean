@@ -1,6 +1,8 @@
 import LeanCodePrompts.ChatClient
 open Lean
 
+def proofExample := "## Theorem: Let $A$ be a square matrix. Prove that if $A^3 = I$ then $A$ is diagonalizable.\n## Proof: \nSince $A^3 = I$, $A$ satisfies the polynomial equation $p(x) = x^3 - 1$. The roots of $p(x)$ are the cube roots of unity, namely $1, \\omega, \\omega^2$, where $\\omega = e^{2\\pi i/3}$ is a primitive cube root of unity. These roots are distinct, so the minimal polynomial of $A$ must divide $p(x)$ and also have distinct roots. Therefore, $A$ is diagonalizable."
+
 #eval proofExample
 
 def gemini := ChatServer.google
