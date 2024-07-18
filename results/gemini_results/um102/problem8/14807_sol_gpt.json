@@ -1,1 +1,64 @@
-"{\n  \"type\": \"theorem\",\n  \"name\": \"Circulation at the origin for a linear differential system\",\n  \"hypothesis\": [\n    {\n      \"type\": \"assume\",\n      \"statement\": \"$\\dot{x} = -y$\"\n    },\n    {\n      \"type\": \"assume\",\n      \"statement\": \"$\\dot{y} = x$\"\n    }\n  ],\n  \"conclusion\": \"The origin is a circulation point for the system.\",\n  \"status\": \"incomplete proof\",\n  \"proof\": {\n    \"type\": \"proof\",\n    \"steps\": [\n      {\n        \"type\": \"assert\",\n        \"claim\": \"$\\\\begin{pmatrix} \\\\dot{x} \\\\ \\\\dot{y} \\\\end{pmatrix} = \\\\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\\\end{pmatrix} \\\\begin{pmatrix} x \\\\ y \\\\end{pmatrix}$\",\n        \"proof-method\": \"Substitution\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"$|\\\\mathbf{A}-\\\\lambda \\\\mathbf{I}| = 0$\",\n        \"deduced_from\": [\n          \"Characteristic equation of a matrix\"\n        ]\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"$\\\\begin{vmatrix} -\\\\lambda & -1 \\\\ 1 & -\\\\lambda \\\\end{vmatrix} = 0$\",\n        \"proof-method\": \"Determinant calculation\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"$\\\\lambda^2 + 1 = 0$\",\n        \"proof-method\": \"Simplification of determinant\"\n      },\n      {\n        \"type\": \"assert\",\n        \"claim\": \"$\\\\lambda = \\\\pm i$\",\n        \"proof-method\": \"Solving quadratic equation\"\n      },\n      {\n        \"type\": \"conclude\",\n        \"statement\": \"The eigenvalues are purely imaginary, thus the origin is a circulation point.\",\n        \"error\": \"The conclusion that the origin is a circulation point requires more justification, specifically about the nature of the trajectories around the origin, which is not provided here.\"\n      }\n    ]\n  },\n  \"missing\": [\n    {\n      \"type\": \"problem\",\n      \"statement\": \"Prove that the nature of the trajectories around the origin is circular.\"\n    }\n  ],\n  \"errors\": [\n    {\n      \"statement\": \"The proof concludes circulation based only on the eigenvalues being purely imaginary, without discussing the trajectories.\"\n    }\n  ]\n}"
+{
+  "type": "theorem",
+  "name": "Circulation at the origin for a linear differential system",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\dot{x} = -y$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = x$"
+    }
+  ],
+  "conclusion": "The origin is a circulation point for the system.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\begin{pmatrix} \\dot{x} \\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 0 & -1 \\ 1 & 0 \\end{pmatrix} \\begin{pmatrix} x \\ y \\end{pmatrix}$",
+        "proof-method": "Substitution"
+      },
+      {
+        "type": "assert",
+        "claim": "$|\\mathbf{A}-\\lambda \\mathbf{I}| = 0$",
+        "deduced_from": [
+          "Characteristic equation of a matrix"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\begin{vmatrix} -\\lambda & -1 \\ 1 & -\\lambda \\end{vmatrix} = 0$",
+        "proof-method": "Determinant calculation"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda^2 + 1 = 0$",
+        "proof-method": "Simplification of determinant"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lambda = \\pm i$",
+        "proof-method": "Solving quadratic equation"
+      },
+      {
+        "type": "conclude",
+        "statement": "The eigenvalues are purely imaginary, thus the origin is a circulation point.",
+        "error": "The conclusion that the origin is a circulation point requires more justification, specifically about the nature of the trajectories around the origin, which is not provided here."
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Prove that the nature of the trajectories around the origin is circular."
+    }
+  ],
+  "errors": [
+    {
+      "statement": "The proof concludes circulation based only on the eigenvalues being purely imaginary, without discussing the trajectories."
+    }
+  ]
+}

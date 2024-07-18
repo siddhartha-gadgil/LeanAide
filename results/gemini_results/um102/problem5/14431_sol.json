@@ -1,1 +1,104 @@
-"{\n  \"type\": \"theorem\",\n  \"name\": \"Maximum Distance on Ellipsoid\",\n  \"Hypothesis\": [\n    {\n      \"type\": \"let\",\n      \"Variable\": \"Ellipsoid\",\n      \"Property\": \"Points on the ellipsoid satisfy the equation $x^2 + 2y^2 + 3z^2 = 1$\"\n    },\n    {\n      \"type\": \"assume\",\n      \"Statement\": \"Any continuous function on the ellipsoid attains its maximum.\"\n    }\n  ],\n  \"Conclusion\": \"The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid have the largest distance from the origin.\",\n  \"Status\": \"incomplete proof\",\n  \"Missing\": [\n    {\n      \"type\": \"problem\",\n      \"Statement\": \"Prove that the function $f = \\sqrt{x^2 + y^2 + z^2}$ subject to the constraint $x^2 + 2y^2 + 3z^2 = 1$ has a maximum.\",\n      \"Solved\": false\n    },\n    {\n      \"type\": \"problem\",\n      \"Statement\": \"Show rigorously that finding points where $\\\\nabla f = 0$ gives all possible maxima and minima of $f$ subject to the constraint.\",\n      \"Solved\": false\n    }\n  ],\n  \"Proof\": {\n    \"type\": \"proof\",\n    \"Steps\": [\n      {\n        \"type\": \"remark\",\n        \"Statement\": \"To find the point on the ellipsoid furthest from the origin, we maximize the distance function $\\\\sqrt{x^2 + y^2 + z^2}$ subject to the constraint of the ellipsoid's equation.\"\n      },\n      {\n        \"type\": \"let\",\n        \"Variable\": \"f\",\n        \"Value\": \"$\\\\sqrt{x^2 + y^2 + z^2}$\",\n        \"Kind\": \"function\"\n      },\n      {\n        \"type\": \"assert\",\n        \"Claim\": \"$f = \\\\sqrt{1 - y^2 - 2z^2}$\",\n        \"Deduced_from\": [\n          \"Equation of the ellipsoid\",\n          \"Definition of f\"\n        ],\n        \"Proof-method\": \"Substituting the constraint $x^2 = 1 - 2y^2 - 3z^2$ into the function $f$.\"\n      },\n      {\n        \"type\": \"assert\",\n        \"Claim\": \"$\\\\nabla f = 0$ at the maximum of $f$\",\n        \"Deduced_from\": [\n          \"$f$ is a continuous function\",\n          \"A continuous function has a zero gradient at its maximum\"\n        ]\n      },\n      {\n        \"type\": \"assert\",\n        \"Claim\": \"$y = 0$ and $z = 0$ at the extremum\",\n        \"Deduced_from\": [\"$\\\\nabla f = 0$\"],\n        \"Calculation\": [\n          \"$\\\\frac{\\\\partial f}{\\\\partial y} \\\\hat{j} + \\\\frac{\\\\partial f}{\\\\partial z} \\\\hat{k} = 0$\",\n          \"{ \\\"step\\\": \\\"$\\\\frac{1}{2 \\\\sqrt{1 - y^2 - 2z^2}} (-2y) \\\\hat{j} + \\\\frac{1}{2 \\\\sqrt{1 - y^2 - 2z^2}} (-4z) \\\\hat{k} = 0$\\\", \\\"justification\\\": \\\"Evaluating partial derivatives\\\" }\"\n        ]\n      },\n      {\n        \"type\": \"assert\",\n        \"Claim\": \"The extremum points are $(1, 0, 0)$ and $(-1, 0, 0)$\",\n        \"Deduced_from\": [\n          \"$y = 0$ and $z = 0$ at the extremum\",\n          \"Equation of the ellipsoid\"\n        ],\n        \"Proof-method\": \"Substituting $y=0$ and $z=0$ into the equation $x^2 + 2y^2 + 3z^2 = 1$ gives $x = \\\\pm 1$.\"\n      },\n      {\n        \"type\": \"remark\",\n        \"Statement\": \"We need to show that these extremum points are maxima and not minima.\"\n      },\n      {\n        \"type\": \"let\",\n        \"Variable\": \"Point\",\n        \"Value\": \"$(0, 1/\\\\sqrt{2}, 0)$\",\n        \"Property\": \"Lies on the ellipsoid\"\n      },\n      {\n        \"type\": \"assert\",\n        \"Claim\": \"The distance of $(0, 1/\\\\sqrt{2}, 0)$ from the origin is $1/\\\\sqrt{2}$\",\n        \"Proof-method\": \"Direct calculation using the distance formula.\"\n      },\n      {\n        \"type\": \"assert\",\n        \"Claim\": \"The distance of $(1, 0, 0)$ and $(-1, 0, 0)$ from the origin is 1\",\n        \"Proof-method\": \"Direct calculation using the distance formula.\"\n      },\n      {\n        \"type\": \"conclude\",\n        \"Statement\": \"Since $1 > 1/\\\\sqrt{2}$, the points $(1, 0, 0)$ and $(-1, 0, 0)$ have a larger distance from the origin than the point $(0, 1/\\\\sqrt{2}, 0)$ on the ellipsoid. Therefore, $(1, 0, 0)$ and $(-1, 0, 0)$ are the points on the ellipsoid farthest from the origin.\",\n        \"Error\": \"This argument only shows that (1,0,0) and (-1,0,0) are local maxima. To show they are global maxima, we need to compare their distance to the distance of all other points on the ellipsoid, not just one specific point.\"\n      }\n    ]\n  }\n}"
+{
+  "type": "theorem",
+  "name": "Maximum Distance on Ellipsoid",
+  "Hypothesis": [
+    {
+      "type": "let",
+      "Variable": "Ellipsoid",
+      "Property": "Points on the ellipsoid satisfy the equation $x^2 + 2y^2 + 3z^2 = 1$"
+    },
+    {
+      "type": "assume",
+      "Statement": "Any continuous function on the ellipsoid attains its maximum."
+    }
+  ],
+  "Conclusion": "The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid have the largest distance from the origin.",
+  "Status": "incomplete proof",
+  "Missing": [
+    {
+      "type": "problem",
+      "Statement": "Prove that the function $f = \\sqrt{x^2 + y^2 + z^2}$ subject to the constraint $x^2 + 2y^2 + 3z^2 = 1$ has a maximum.",
+      "Solved": false
+    },
+    {
+      "type": "problem",
+      "Statement": "Show rigorously that finding points where $\\nabla f = 0$ gives all possible maxima and minima of $f$ subject to the constraint.",
+      "Solved": false
+    }
+  ],
+  "Proof": {
+    "type": "proof",
+    "Steps": [
+      {
+        "type": "remark",
+        "Statement": "To find the point on the ellipsoid furthest from the origin, we maximize the distance function $\\sqrt{x^2 + y^2 + z^2}$ subject to the constraint of the ellipsoid's equation."
+      },
+      {
+        "type": "let",
+        "Variable": "f",
+        "Value": "$\\sqrt{x^2 + y^2 + z^2}$",
+        "Kind": "function"
+      },
+      {
+        "type": "assert",
+        "Claim": "$f = \\sqrt{1 - y^2 - 2z^2}$",
+        "Deduced_from": [
+          "Equation of the ellipsoid",
+          "Definition of f"
+        ],
+        "Proof-method": "Substituting the constraint $x^2 = 1 - 2y^2 - 3z^2$ into the function $f$."
+      },
+      {
+        "type": "assert",
+        "Claim": "$\\nabla f = 0$ at the maximum of $f$",
+        "Deduced_from": [
+          "$f$ is a continuous function",
+          "A continuous function has a zero gradient at its maximum"
+        ]
+      },
+      {
+        "type": "assert",
+        "Claim": "$y = 0$ and $z = 0$ at the extremum",
+        "Deduced_from": ["$\\nabla f = 0$"],
+        "Calculation": [
+          "$\\frac{\\partial f}{\\partial y} \\hat{j} + \\frac{\\partial f}{\\partial z} \\hat{k} = 0$",
+          "{ \"step\": \"$\\frac{1}{2 \\sqrt{1 - y^2 - 2z^2}} (-2y) \\hat{j} + \\frac{1}{2 \\sqrt{1 - y^2 - 2z^2}} (-4z) \\hat{k} = 0$\", \"justification\": \"Evaluating partial derivatives\" }"
+        ]
+      },
+      {
+        "type": "assert",
+        "Claim": "The extremum points are $(1, 0, 0)$ and $(-1, 0, 0)$",
+        "Deduced_from": [
+          "$y = 0$ and $z = 0$ at the extremum",
+          "Equation of the ellipsoid"
+        ],
+        "Proof-method": "Substituting $y=0$ and $z=0$ into the equation $x^2 + 2y^2 + 3z^2 = 1$ gives $x = \\pm 1$."
+      },
+      {
+        "type": "remark",
+        "Statement": "We need to show that these extremum points are maxima and not minima."
+      },
+      {
+        "type": "let",
+        "Variable": "Point",
+        "Value": "$(0, 1/\\sqrt{2}, 0)$",
+        "Property": "Lies on the ellipsoid"
+      },
+      {
+        "type": "assert",
+        "Claim": "The distance of $(0, 1/\\sqrt{2}, 0)$ from the origin is $1/\\sqrt{2}$",
+        "Proof-method": "Direct calculation using the distance formula."
+      },
+      {
+        "type": "assert",
+        "Claim": "The distance of $(1, 0, 0)$ and $(-1, 0, 0)$ from the origin is 1",
+        "Proof-method": "Direct calculation using the distance formula."
+      },
+      {
+        "type": "conclude",
+        "Statement": "Since $1 > 1/\\sqrt{2}$, the points $(1, 0, 0)$ and $(-1, 0, 0)$ have a larger distance from the origin than the point $(0, 1/\\sqrt{2}, 0)$ on the ellipsoid. Therefore, $(1, 0, 0)$ and $(-1, 0, 0)$ are the points on the ellipsoid farthest from the origin.",
+        "Error": "This argument only shows that (1,0,0) and (-1,0,0) are local maxima. To show they are global maxima, we need to compare their distance to the distance of all other points on the ellipsoid, not just one specific point."
+      }
+    ]
+  }
+}

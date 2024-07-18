@@ -96,7 +96,7 @@ def json_formatter(input:str):
         #assert input.lstrip()[0] == '"', 'Invalid input'
         input = input[1:-1]
 
-        pattern = r'(?<!\\)\\([a-zA-Z]+)'
+        pattern = r'(?<!\\)\\([a-zA-Z,()]+)'
 
         # Perform the replacement with the corrected pattern
         modified_input = re.sub(pattern, r'\\\\\1', input)
