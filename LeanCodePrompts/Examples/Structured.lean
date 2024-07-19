@@ -43,7 +43,7 @@ def mathstralEgs : CoreM (List (List String)) := do
   ["1", "3", "5"].mapM fun problem =>
     [best, worst].mapM (fun student => mathstralWrite problem student)
 
-#eval mathstralWrite "7" worst
+#eval mathstralWrite "3" best
 
 def numinaExample := numina.structuredProof proofExample
 /-
@@ -204,3 +204,35 @@ def mistralExample := mistral.structuredProof proofExample
 
 -/
 -- #eval structExampl
+
+def jsEg := "{\n  \"ProofJSON\": {\n   \"theorem\": {\n      \"Hypothesis\": [\n       {\n          \"type\": \"define\",\n          \"Statement\": \"Let $ f(x, y)=x^{3}-3 x+y^{2} $ for $ x, y \\in \\mathbb{R} $.\"\n        }\n      ],\n    \"Conclusion\": \"Prove that at the points (1,0) and (-1,0) the gradient of $ f $ is zero.\",\n      \"Status\": \"proved\"\n    },\n    \"proof\": {\n    \"steps\": [\n       {\n         \"type\": \"assert\",\n       \"Claim\": \"The function is $ f(x, y) = x^2 - 3xy + y^2
+$.\",\n        \"Deduced_from\": [],\n         \"Proof-method\": \"Given problem statement.\"\n      },\n        {\n
+  \"type\": \"assert\",\n         \"Claim\": \"The gradient of a function $f(x, y) $ is $\\nabla f(x, y) = \\frac{\\partial
+ f}{\\partial x} \\hat{i} + \\frac{\\partial f}{\\partial y} \\hat{j} $.\",\n          \"Deduced_from\": [],\n         \"Proof-me
+thod\": \"Textbook definition of gradient.\"\n        },\n        {\n          \"type\": \"assert\",\n         \"Claim\": \"$\\nabla f(x, y) = (2x -3) \\hat{i} + 2y \\hat{j}$.\",\n          \"Deduced_from\": [\n           \"The function is $ f(x, y) = x^2
+- 3xy + y^2 $.\",\n            \"The gradient of a function $ f(x, y) $ is $ \\nabla f(x, y) = \\frac{\\partial f}{\\partial
+ x} \\hat{i} + \\frac{\\partial f}{\\partial y} \\hat{j} $.\"\n          ],\n          \"Calculation\": [\n            \"Step 1\":
+ {\n              \"step\": \"Compute $\\frac{\\partial f}{\\partial x}$.\",\n              \"justification\": \"Using the parti
+al derivative formula and the given function $ f(x, y) = x^2 - 3xy + y^2 $.\"\n            },\n            \"Step 2\": {\n
+        \"step\": \"Compute $\\frac{\\partial f}{\\partial y}$.\",\n              \"justification\": \"Using the partial derivat
+ive formula and the given function $ f(x, y) = x^2 - 3xy + y^2 $.\"\n            }\n          ]\n        },\n        {\n
+  \"type\": \"assert\",\n          \"Claim\": \"If $\\nabla f = 0$, then $3x - 3 = 0$ and $2y = 0$.\",\n          \"Dedu
+ced_from\": [\n            \"$\\nabla f(x, y) = (2x -3) \\hat{i} + 2y \\hat{j}$\"\n          ],\n          \"Calculation\": [\n
+           \"Step 1\": {\n              \"step\": \"Set $\\frac{\\partial f}{\\partial x} = 0$.\",\n              \"justificatio
+n\": \"Since $\\nabla f = 0$, its partial derivative with respect to $x$ must be zero.\"\n            },\n            \"Step
+ 2\": {\n              \"step\": \"Set $\\frac{\\partial f}{\\partial y} = 0$.\",\n              \"justification\": \"Since $\
+\nabla f = 0$, its partial derivative with respect to $y$ must be zero.\"\n            }\n          ]\n        },\n        {\n
+          \"type\": \"assert\",\n          \"Claim\": \"$x = 1$ and $y = 0$.\",\n          \"Deduced_from\": [\n
+\"If $\\nabla f = 0$, then $3x - 3 = 0$ and $2y = 0$.\"\n          ],\n          \"Calculation\": [\n            \"Step
+1\": {\n              \"step\": \"Solve $3x - 3 = 0$ for $x$.\",\n              \"justification\": \"Using basic algebra.\"\
+n            },\n            \"Step 2\": {\n              \"step\": \"Solve $2y = 0$ for $y$.\",\n              \"justificat
+ion\": \"Using basic algebra.\"\n            }\n          ]\n        },\n        {\n          \"type\": \"assert\",\n          \"Cla
+im\": \"$\\nabla f = 0$ at $(1,0)$ and $(0,1)$.\",\n          \"Deduced_from\": [\n            \"$x = 1$ and $y =
+0$.\"\n          ],\n          \"Calculation\": [\n            \"Step 1\": {\n              \"step\": \"Substitute $x = 1$ and
+ $y = 0$ into $\\nabla f(x, y) = (2x -3) \\hat{i} + 2y \\hat{j}$.\",\n              \"justification\": \"Using the expressio
+n for $\\nabla f$.\"\n            }"
+
+def escapeJson (s: String) := s.replace "\\" "\\\\" |>.replace "\n" " "
+#eval escapeJson jsEg
+#eval Json.parse (escapeJson jsEg)
+#eval (escapeJson jsEg).toList.drop 1270 |>.take 15 |>.toString

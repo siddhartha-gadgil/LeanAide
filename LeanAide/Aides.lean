@@ -334,9 +334,26 @@ def codeBlock? (code: String) (s: String) : Option String := do
 
 def extractJson (s: String) : Json :=
   let code := codeBlock? "json" s |>.getD s
-  match Json.parse code with
+  let code := code.trim
+  let code' :=
+    code.replace "\n" " " |>.replace "\t" " " |>.replace "\\" "\\\\"
+  match Json.parse code' with
   | Except.ok j => j
   | Except.error _ => Json.str code
+
+def extractJsonM (s: String) : CoreM Json :=
+  let code := codeBlock? "json" s |>.getD s
+  let code := code.trim
+  match Json.parse code with
+  | Except.ok j => do
+    logInfo s!"parsed JSON: {j}"
+    appendLog "json_parsed" j
+    return j
+  | Except.error e => do
+    logWarning  m!"Error parsing JSON: {e}"
+    appendLog "json_error" (Json.str code)
+    appendLog "json_error" (Json.str e)
+    return Json.str code
 
 def partialParser  (parser : Parser) (input : String) (fileName := "<input>") : MetaM <| Except String (Syntax × String × String) := do
   let env ← getEnv

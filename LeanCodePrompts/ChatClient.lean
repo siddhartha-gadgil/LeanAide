@@ -338,7 +338,7 @@ def structuredProof (server: ChatServer)
   }
   let examples := #[init]
   let outs ← ChatServer.mathCompletions server pf n params examples
-  return outs.map extractJson
+  outs.mapM extractJsonM
 
 def structuredProofRaw (server: ChatServer)
   (pf: String)(n: Nat := 1)

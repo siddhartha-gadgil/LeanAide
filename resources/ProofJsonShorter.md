@@ -71,4 +71,4 @@ Each JSON object has a "type" field. The possible values for this field are: "de
   * Additional fields: 
     * **Statement**: the remark or comment.
 
-Rewrite the following theorem and proof into `ProofJSON` format. Note that the proof may not be complete and may have some errors, which you should note in the appropriate fields. The theorem and proof are as follows:
+Rewrite the following theorem and proof into `ProofJSON` format. Note that the proof may not be complete and may have some errors, which you should note in the appropriate fields. Output JSON only. The theorem and proof are as follows:
