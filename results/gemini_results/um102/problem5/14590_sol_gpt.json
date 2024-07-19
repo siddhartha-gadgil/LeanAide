@@ -1,53 +1,48 @@
 {
   "type": "theorem",
-  "name": "Max Distance on Ellipsoid",
+  "name": "Maximum Distance on Ellipsoid",
   "hypothesis": [
     {
       "type": "assume",
-      "statement": "Any continuous function on the ellipsoid $x^2 + 2y^2 + 3z^2 = 1$ attains its maximum."
+      "statement": "$(1, 0, 0)$ and $(-1, 0, 0)$ are points on the ellipsoid $x^2 + 2y^2 + 3z^2 = 1$"
+    },
+    {
+      "type": "assume",
+      "statement": "Any continuous function on the ellipsoid attains its maximum."
     }
   ],
-  "conclusion": "The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid $x^2 + 2y^2 + 3z^2 = 1$ have the largest distance from the origin.",
+  "conclusion": "The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid $x^{2}+2 y^{2}+3 z^{2}=1$ have the largest distance from the origin.",
   "status": "incomplete proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
-        "type": "let",
-        "variable": "f",
-        "value": "$x^2 + y^2 + z^2$",
-        "kind": "function"
-      },
-      {
-        "type": "assume",
-        "statement": "Our constraint is $x^2 + 2y^2 + 3z^2 = 1$."
+        "type": "assert",
+        "claim": "We need to maximize the distance $\\sqrt{x^2 + y^2 + z^2}$"
       },
       {
         "type": "assert",
-        "claim": "Maximizing the distance $\\sqrt{x^2 + y^2 + z^2}$ is equivalent to maximizing $f = x^2 + y^2 + z^2$."
+        "claim": "We can equivalently maximize $x^2 + y^2 + z^2 = f$"
       },
       {
         "type": "assert",
-        "claim": "Since $f$ and the constraint equation are infinitely differentiable, we can use Lagrange multipliers."
+        "claim": "We can use Lagrange multipliers because $f$ and the constraint functions are infinitely differentiable."
       },
       {
         "type": "define",
-        "statement": "$\\nabla f = (2x, 2y, 2z)$",
-        "term": "Gradient of $f$"
-      },
-      {
-        "type": "define",
-        "statement": "$\\nabla g = (2x, 4y, 6z)$",
-        "term": "Gradient of $g = x^2 + 2y^2 + 3z^2 - 1$"
-      },
-      {
-        "type": "assume",
-        "statement": "At a maximum point, $\\nabla f = \\lambda \\nabla g$ for some scalar $\\lambda$."
+        "term": "gradients",
+        "statement": "$\\nabla f = (2x, 2y, 2z)$ and $\\nabla g = (2x, 4y, 6z)$"
       },
       {
         "type": "assert",
-        "claim": "This gives us the equation $(2x, 2y, 2z) = (2\\lambda x, 4\\lambda y, 6\\lambda z)$",
-        "proof-method": "Setting gradients equal"
+        "claim": "At a maximum point, $\\nabla f = \\lambda \\nabla g$",
+        "deduced_from": [
+          "gradients"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$(2x, 2y, 2z) = (2\\lambda x, 4\\lambda y, 6\\lambda z)$"
       },
       {
         "type": "cases",
@@ -58,61 +53,61 @@
             "type": "case",
             "condition": "$\\lambda = 1$",
             "proof": {
-              "type": "proof",
-              "steps": [
-                {
-                  "type": "assert",
-                  "claim": "$(x, 0, 0) = (\\pm 1, 0, 0)$",
-                  "deduced_from": [
-                    "$2x = 2\\lambda x$",
-                    "$2y = 4\\lambda y$",
-                    "$2z = 6\\lambda z$"
-                  ]
-                }
-              ]
+              "type": "assert",
+              "claim": "$(x, 0, 0) = (\\pm 1, 0, 0)$",
+              "deduced_from": [
+                "$(2x, 2y, 2z) = (2\\lambda x, 4\\lambda y, 6\\lambda z)$"
+              ],
+              "proof-method": "Solve for $x, y, z$"
             }
           },
           {
             "type": "case",
-            "condition": "$\\lambda = 2$",
+            "condition": "$\\lambda = \\frac{1}{2}$",
             "proof": {
-              "type": "proof",
-              "steps": [
-                {
-                  "type": "assert",
-                  "claim": "$(0, y, 0) = (0, \\pm\\sqrt{\\frac{1}{2}}, 0)$",
-                  "deduced_from": [
-                    "$2y = 4\\lambda y$"
-                  ]
-                }
-              ]
+              "type": "assert",
+              "claim": "$(0, y, 0) = (0, \\pm \\frac{1}{\\sqrt{2}}, 0)$",
+              "deduced_from": [
+                "$(2x, 2y, 2z) = (2\\lambda x, 4\\lambda y, 6\\lambda z)$"
+              ],
+              "proof-method": "Solve for $x, y, z$"
             }
           },
           {
             "type": "case",
-            "condition": "$\\lambda = 3$",
+            "condition": "$\\lambda = \\frac{1}{3}$",
             "proof": {
-              "type": "proof",
-              "steps": [
-                {
-                  "type": "assert",
-                  "claim": "$(0, 0, z) = (0, 0, \\pm\\sqrt{\\frac{1}{3}})$",
-                  "deduced_from": [
-                    "$2z = 6\\lambda z$"
-                  ]
-                }
-              ]
+              "type": "assert",
+              "claim": "$(0, 0, z) = (0, 0, \\pm \\frac{1}{\\sqrt{3}})$",
+              "deduced_from": [
+                "$(2x, 2y, 2z) = (2\\lambda x, 4\\lambda y, 6\\lambda z)$"
+              ],
+              "proof-method": "Solve for $x, y, z$"
             }
           }
         ]
       },
       {
+        "type": "assert",
+        "claim": "The maximum value of $r^2$ is 1",
+        "deduced_from": [
+          "$(x, 0, 0) = (\\pm 1, 0, 0)$",
+          "$(0, y, 0) = (0, \\pm \\frac{1}{\\sqrt{2}}, 0)$",
+          "$(0, 0, z) = (0, 0, \\pm \\frac{1}{\\sqrt{3}})$"
+        ]
+      },
+      {
         "type": "conclude",
-        "statement": "The maximum value of $r^2 = 1$ and the points achieving this are $(\\pm 1, 0, 0)$. Hence, the maximum distance from the origin is $\\sqrt{1} = 1$."
+        "statement": "The max distance from the origin is 1, and the points are $(\\pm 1, 0, 0)$",
+        "error": "The proof does not justify why $(\\pm 1, 0, 0)$ are the only points of maximum distance with the given constraints."
       }
-    ],
-    "errors": [
-      "The constraint in the proof initially states $x^2 = 1$, which is incorrect. The correct constraint should be $x^2 + 2y^2 + 3z^2 = 1$."
     ]
-  }
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Verify if $(\\pm 1, 0, 0)$ satisfy the constraint equation $x^2 + 2y^2 + 3z^2 = 1$.",
+      "solved": false
+    }
+  ]
 }

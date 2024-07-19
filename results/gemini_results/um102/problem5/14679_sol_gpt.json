@@ -1,6 +1,6 @@
 {
   "type": "theorem",
-  "name": "Largest distance on ellipsoid",
+  "name": "Largest distance from origin on ellipsoid",
   "hypothesis": [
     {
       "type": "assume",
@@ -15,14 +15,13 @@
       {
         "type": "let",
         "variable": "f(x,y,z)",
-        "value": "x^2 + 2y^2 + 3z^2 - 1",
-        "kind": "function"
+        "value": "x^2 + 2y^2 + 3z^2 - 1"
       },
       {
         "type": "let",
         "variable": "g(x,y,z)",
-        "value": "x^2 + y^2 - z^2 - r^2",
-        "kind": "function"
+        "value": "x^2 + y^2 + z^2 - r^2",
+        "kind": "spherical function"
       },
       {
         "type": "assert",
@@ -30,7 +29,11 @@
       },
       {
         "type": "assert",
-        "claim": "$\\nabla f = \\lambda \\nabla g \\implies (2x \\hat{i} + 4y\\hat{j} + 6z\\hat{k} ) = \\lambda (2x \\hat{i} + 2y \\hat{j} + 2z \\hat{k})$"
+        "claim": "$\\nabla f = \\lambda \\nabla g$"
+      },
+      {
+        "type": "assert",
+        "claim": "$(2x \\hat{i} + 4y \\hat{j} + 6z \\hat{k}) = \\lambda (2x \\hat{i} + 2y \\hat{j} + 2z \\hat{k})$"
       },
       {
         "type": "cases",
@@ -39,63 +42,54 @@
         "proof-cases": [
           {
             "type": "case",
-            "condition": "$2 = 2\\lambda$",
+            "condition": "$\\lambda = 2$",
             "proof": {
               "type": "proof",
               "steps": [
                 {
                   "type": "assert",
-                  "claim": "$\\lambda = 1 \\implies x = y = z = 0$"
+                  "claim": "$2x = 2 \\implies x = 1$ and $y = z = 0$"
                 },
                 {
-                  "type": "assert",
-                  "claim": "The distance from the origin is $r = 1$"
+                  "type": "conclude",
+                  "statement": "$x = \\pm 1$, $y = z = 0$",
+                  "error": "The distance calculation is not explicitly checked here."
                 }
               ]
             }
           },
           {
             "type": "case",
-            "condition": "$4 = 2\\lambda$",
+            "condition": "$\\lambda = 4$",
             "proof": {
               "type": "proof",
               "steps": [
                 {
                   "type": "assert",
-                  "claim": "$\\lambda = 2 \\implies x = z = 0$"
+                  "claim": "$4y = 4 \\implies y = 1$ and $x = z = 0$"
                 },
                 {
-                  "type": "assert",
-                  "claim": "$y = \\pm \\frac{1}{\\sqrt{2}}$"
-                },
-                {
-                  "type": "assert",
-                  "claim": "$r^2 = \\frac{1}{2}$"
-                },
-                {
-                  "type": "assert",
-                  "claim": "The distance from the origin is $r = \\frac{1}{\\sqrt{2}}$"
+                  "type": "conclude",
+                  "statement": "$y = \\pm \\frac{1}{\\sqrt{2}}$, $x = z = 0$",
+                  "error": "The distance calculation is incorrect."
                 }
               ]
             }
           },
           {
             "type": "case",
-            "condition": "$6 = 2\\lambda$",
+            "condition": "$\\lambda = 6$",
             "proof": {
               "type": "proof",
               "steps": [
                 {
                   "type": "assert",
-                  "claim": "$\\lambda = 3 \\implies x = y = 0$"
+                  "claim": "$6z = 6 \\implies z = 1$ and $x = y = 0$"
                 },
                 {
-                  "type": "assert",
-                  "claim": "$z = \\pm \\frac{1}{\\sqrt{3}}$"
-                },
-                {
-                  "type": "assert",
-                  "claim": "The distance from the origin is $r = \\frac{1}{\\sqrt{3}}$"
+                  "type": "conclude",
+                  "statement": "$z = \\frac{1}{\\sqrt{3}}$, $x = y = 0$",
+                  "error": "The distance calculation is incorrect."
                 }
               ]
             }
@@ -104,25 +98,25 @@
       },
       {
         "type": "assert",
-        "claim": "Clearly, Case $(i)$ has the point on the ellipsoid with largest distance from the origin."
+        "claim": "Clearly, Case $(i)$ has the point on the ellipsoid with largest distance from the origin.",
+        "errors": [
+          "The conclusion that Case $(i)$ has the largest distance is not justified by comparing the distances."
+        ]
       },
       {
         "type": "conclude",
-        "statement": "These points are $(\\pm 1, 0, 0)$ and $(-1, 0, 0)$. ",
-        "error": "Incorrect duplication in the conclusion."
+        "statement": "These points are $(\\pm 1, 0, 0)$"
       }
     ]
   },
   "missing": [
     {
       "type": "problem",
-      "statement": "Verify that $(1, 0, 0)$ and $(-1, 0, 0)$ satisfy the ellipsoid equation $x^2 + 2y^2 + 3z^2 = 1$.",
-      "solved": false
+      "statement": "Verify the distance calculations for Cases $(ii)$ and $(iii)$."
     },
     {
       "type": "problem",
-      "statement": "Correctly conclude the unique points $(1, 0, 0)$ and $(-1, 0, 0)$.",
-      "solved": false
+      "statement": "Properly justify that $(\\pm 1, 0, 0)$ have the largest distance from the origin."
     }
   ]
 }

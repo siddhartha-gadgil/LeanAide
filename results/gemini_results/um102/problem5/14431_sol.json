@@ -1,116 +1,103 @@
 {
   "type": "theorem",
   "name": "Maximum Distance on Ellipsoid",
-  "hypothesis": [
+  "Hypothesis": [
     {
       "type": "let",
-      "variable": "Ellipsoid",
-      "property": "Defined by the equation $x^2 + 2y^2 + 3z^2 = 1$"
+      "Variable": "Ellipsoid",
+      "Property": "Points on the ellipsoid satisfy the equation $x^2 + 2y^2 + 3z^2 = 1$"
+    },
+    {
+      "type": "assume",
+      "Statement": "Any continuous function on the ellipsoid attains its maximum."
     }
   ],
-  "conclusion": "The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid have the largest distance from the origin.",
-  "status": "incomplete proof",
-  "missing": [
+  "Conclusion": "The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid have the largest distance from the origin.",
+  "Status": "incomplete proof",
+  "Missing": [
     {
       "type": "problem",
-      "statement": "Prove that any continuous function on the ellipsoid attains its maximum.",
-      "solved": false
+      "Statement": "Prove that the function $f = \\sqrt{x^2 + y^2 + z^2}$ subject to the constraint $x^2 + 2y^2 + 3z^2 = 1$ has a maximum.",
+      "Solved": false
+    },
+    {
+      "type": "problem",
+      "Statement": "Show rigorously that finding points where $\\nabla f = 0$ gives all possible maxima and minima of $f$ subject to the constraint.",
+      "Solved": false
     }
   ],
-  "proof": {
+  "Proof": {
     "type": "proof",
-    "steps": [
+    "Steps": [
       {
         "type": "remark",
-        "statement": "To find the points farthest from the origin, we maximize the distance function subject to the constraint of the ellipsoid."
+        "Statement": "To find the point on the ellipsoid furthest from the origin, we maximize the distance function $\\sqrt{x^2 + y^2 + z^2}$ subject to the constraint of the ellipsoid's equation."
       },
       {
         "type": "let",
-        "variable": "f",
-        "value": "$\\sqrt{x^2 + y^2 + z^2}$",
-        "kind": "function",
-        "property": "Represents the distance of a point $(x, y, z)$ from the origin."
+        "Variable": "f",
+        "Value": "$\\sqrt{x^2 + y^2 + z^2}$",
+        "Kind": "function"
       },
       {
         "type": "assert",
-        "claim": "$f = \\sqrt{1-y^2 - 2z^2}$",
-        "deduced_from": [
-          "Equation of the ellipsoid"
+        "Claim": "$f = \\sqrt{1 - y^2 - 2z^2}$",
+        "Deduced_from": [
+          "Equation of the ellipsoid",
+          "Definition of f"
         ],
-        "proof-method": "Substituting the constraint $x^2 + 2y^2 + 3z^2 = 1$ into the function $f$."
+        "Proof-method": "Substituting the constraint $x^2 = 1 - 2y^2 - 3z^2$ into the function $f$."
       },
       {
         "type": "assert",
-        "claim": "$\\nabla f = 0$",
-        "proof-method": "For $f$ to be maximum, its gradient must be zero."
-      },
-      {
-        "type": "assert",
-        "claim": "$\\frac{1}{2\\sqrt{1-y^2 - 2z^2}} (-2y) \\hat{j} + \\frac{1}{2\\sqrt{1-y^2 - 2z^2}} (-4z)\\hat{k} = 0$",
-        "deduced_from": [
-          "$\\nabla f = \\frac{\\partial f}{\\partial y}\\hat{j} + \\frac{\\partial f}{\\partial z}\\hat{k}$"
+        "Claim": "$\\nabla f = 0$ at the maximum of $f$",
+        "Deduced_from": [
+          "$f$ is a continuous function",
+          "A continuous function has a zero gradient at its maximum"
         ]
       },
       {
         "type": "assert",
-        "claim": "$y = 0$ and $z = 0$",
-        "deduced_from": [
-          "$\\frac{1}{2\\sqrt{1-y^2 - 2z^2}} (-2y) \\hat{j} + \\frac{1}{2\\sqrt{1-y^2 - 2z^2}} (-4z)\\hat{k} = 0$"
-        ],
-        "proof-method": "Solving the equation"
-      },
-      {
-        "type": "assert",
-        "claim": "$x = \\pm 1$",
-        "deduced_from": [
-          "$y = 0$",
-          "$z = 0$",
-          "Equation of the ellipsoid"
-        ],
-        "proof-method": "Substituting $y=0$ and $z=0$ into the equation of the ellipsoid ($x^2 + 2y^2 + 3z^2 = 1$)."
-      },
-      {
-        "type": "assert",
-        "claim": "The extremum points are $(1,0,0)$ and $(-1,0,0)$.",
-        "deduced_from": [
-          "$x = \\pm 1$",
-          "$y = 0$",
-          "$z = 0$"
+        "Claim": "$y = 0$ and $z = 0$ at the extremum",
+        "Deduced_from": ["$\\nabla f = 0$"],
+        "Calculation": [
+          "$\\frac{\\partial f}{\\partial y} \\hat{j} + \\frac{\\partial f}{\\partial z} \\hat{k} = 0$",
+          "{ \"step\": \"$\\frac{1}{2 \\sqrt{1 - y^2 - 2z^2}} (-2y) \\hat{j} + \\frac{1}{2 \\sqrt{1 - y^2 - 2z^2}} (-4z) \\hat{k} = 0$\", \"justification\": \"Evaluating partial derivatives\" }"
         ]
       },
       {
+        "type": "assert",
+        "Claim": "The extremum points are $(1, 0, 0)$ and $(-1, 0, 0)$",
+        "Deduced_from": [
+          "$y = 0$ and $z = 0$ at the extremum",
+          "Equation of the ellipsoid"
+        ],
+        "Proof-method": "Substituting $y=0$ and $z=0$ into the equation $x^2 + 2y^2 + 3z^2 = 1$ gives $x = \\pm 1$."
+      },
+      {
         "type": "remark",
-        "statement": "These points could be either minimum or maximum points. We need to show they are maxima."
+        "Statement": "We need to show that these extremum points are maxima and not minima."
       },
       {
         "type": "let",
-        "variable": "Point",
-        "value": "$(0, \\frac{1}{\\sqrt{2}}, 0)$",
-        "property": "A point on the ellipsoid."
+        "Variable": "Point",
+        "Value": "$(0, 1/\\sqrt{2}, 0)$",
+        "Property": "Lies on the ellipsoid"
       },
       {
         "type": "assert",
-        "claim": "Distance of $(0, \\frac{1}{\\sqrt{2}}, 0)$ from origin is $\\frac{1}{\\sqrt{2}}$",
-        "proof-method": "Direct calculation using the distance formula."
+        "Claim": "The distance of $(0, 1/\\sqrt{2}, 0)$ from the origin is $1/\\sqrt{2}$",
+        "Proof-method": "Direct calculation using the distance formula."
       },
       {
         "type": "assert",
-        "claim": "Distance of $(1, 0, 0)$ & $(-1, 0, 0)$ from origin is $1$",
-        "proof-method": "Direct calculation using the distance formula."
-      },
-      {
-        "type": "assert",
-        "claim": "$(1, 0, 0)$ & $(-1, 0, 0)$ have the largest distance from origin",
-        "deduced_from": [
-          "Distance of $(0, \\frac{1}{\\sqrt{2}}, 0)$ from origin is $\\frac{1}{\\sqrt{2}}$",
-          "Distance of $(1, 0, 0)$ & $(-1, 0, 0)$ from origin is $1$"
-        ],
-        "proof-method": "Since $\\frac{1}{\\sqrt{2}} < 1$, the points $(1, 0, 0)$ and $(-1, 0, 0)$ are farther from the origin than $(0, \\frac{1}{\\sqrt{2}}, 0)$."
+        "Claim": "The distance of $(1, 0, 0)$ and $(-1, 0, 0)$ from the origin is 1",
+        "Proof-method": "Direct calculation using the distance formula."
       },
       {
         "type": "conclude",
-        "statement": "Therefore, the points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid have the largest distance from the origin.",
-        "error": "The proof only shows that the points (1, 0, 0) and (-1, 0, 0) are farther than one other point on the ellipsoid. To conclude these points have the largest distance, it needs to be shown that no other point on the ellipsoid is farther."
+        "Statement": "Since $1 > 1/\\sqrt{2}$, the points $(1, 0, 0)$ and $(-1, 0, 0)$ have a larger distance from the origin than the point $(0, 1/\\sqrt{2}, 0)$ on the ellipsoid. Therefore, $(1, 0, 0)$ and $(-1, 0, 0)$ are the points on the ellipsoid farthest from the origin.",
+        "Error": "This argument only shows that (1,0,0) and (-1,0,0) are local maxima. To show they are global maxima, we need to compare their distance to the distance of all other points on the ellipsoid, not just one specific point."
       }
     ]
   }

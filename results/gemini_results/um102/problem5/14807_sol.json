@@ -7,22 +7,18 @@
       "statement": "Any continuous function on the ellipsoid $x^{2}+2 y^{2}+3 z^{2}=1$ attains its maximum."
     }
   ],
-  "conclusion": "The points (1, 0, 0) and (-1, 0, 0) on the ellipsoid $x^{2}+2 y^{2}+3 z^{2}=1$ have the largest distance from the origin.",
+  "conclusion": "The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid $x^{2}+2 y^{2}+3 z^{2}=1$ have the largest distance from the origin.",
   "status": "incomplete proof",
   "missing": [
     {
       "type": "problem",
-      "statement": "The proof only shows that the points (1, 0, 0) and (-1, 0, 0) give a local maximum of the distance from the origin. It needs to be shown that this is also a global maximum on the ellipsoid.",
+      "statement": "The proof incorrectly asserts that  $\\nabla F = 0$ implies each component is 0. This is true for $x_o$, $y_o$, $z_o$ being nonzero. The cases when one or more of them are zero need to be handled separately.",
       "solved": false
     }
   ],
   "proof": {
     "type": "proof",
     "steps": [
-      {
-        "type": "remark",
-        "statement": "We want to maximize the distance from the origin, which is given by  $\\sqrt{x^2 + y^2 + z^2}$. Since the square root is a monotonically increasing function, it suffices to maximize $x^2 + y^2 + z^2$ subject to the constraint $x^2 + 2y^2 + 3z^2 = 1$."
-      },
       {
         "type": "let",
         "variable": "f(x,y,z)",
@@ -37,35 +33,35 @@
       },
       {
         "type": "remark",
-        "statement": "We use the method of Lagrange multipliers to find the critical points."
+        "statement": "We want to maximize $f(x,y,z)$ subject to the constraint $g(x,y,z) = 0$. We use the method of Lagrange multipliers."
       },
       {
         "type": "let",
         "variable": "F(x,y,z)",
         "value": "$f - \\lambda g$",
-        "kind": "Lagrange function"
+        "kind": "function"
       },
       {
         "type": "assert",
-        "claim": "At maxima or minima, $\\nabla F = 0$",
+        "claim": "At maxima or minima of $f$ subject to the constraint, $\\nabla F = 0$",
         "deduced_from": [
-          "Lagrange multiplier method"
+          "Theory of Lagrange Multipliers"
         ]
       },
       {
         "type": "assert",
-        "claim": "$\\nabla[(1 - \\lambda) x^2 + (1 - 2 \\lambda)y^2 + (1- 3 \\lambda)z^2 + \\lambda] = 0$",
-        "proof-method": "Substituting the expressions for f and g"
+        "claim": "$\\nabla ((1-\\lambda)x^2 + (1-2\\lambda)y^2 + (1-3\\lambda)z^2 + \\lambda) = 0$",
+        "proof-method": "expanding $\\nabla F = 0$"
       },
       {
         "type": "assert",
-        "claim": "$(1 - \\lambda).2x \\hat{i} + (1 - 2 \\lambda)2y \\hat{j} + (1- 3 \\lambda)2z \\hat{k} = 0$",
-        "proof-method": "Calculating the gradient"
+        "claim": "$(1-\\lambda).2x \\hat{i} + (1-2\\lambda)2y \\hat{j}  + (1-3\\lambda)2z \\hat{k}=0$",
+        "proof-method": "calculating the gradient"
       },
       {
         "type": "cases",
         "on": "$\\lambda$",
-        "split-kind": "match",
+        "split-kind": "condition",
         "proof-cases": [
           {
             "type": "case",
@@ -74,18 +70,9 @@
               "type": "proof",
               "steps": [
                 {
-                  "type": "assert",
-                  "claim": "$y_o = z_o = 0$",
-                  "proof-method": "From the gradient equation"
-                },
-                {
-                  "type": "assert",
-                  "claim": "$x_o = \\pm 1$",
-                  "proof-method": "Substituting into the constraint equation $g(x,y,z) = 0$"
-                },
-                {
                   "type": "conclude",
-                  "statement": "Therefore, for $\\lambda = 1$, we get the points (1, 0, 0) and (-1, 0, 0) and the distance from the origin is $x_o^2 + y_o^2 + z_o^2 = 1$"
+                  "statement": "$y_o = z_o = 0$",
+                  "error": "The proof incorrectly asserts that  $\\nabla F = 0$ implies each component is 0. This is true for $x_o$, $y_o$, $z_o$ being nonzero. The cases when one or more of them are zero need to be handled separately."
                 }
               ]
             }
@@ -97,18 +84,9 @@
               "type": "proof",
               "steps": [
                 {
-                  "type": "assert",
-                  "claim": "$x_o = z_o = 0$",
-                  "proof-method": "From the gradient equation"
-                },
-                {
-                  "type": "assert",
-                  "claim": "$y = \\pm \\frac{1}{\\sqrt{2}}$",
-                  "proof-method": "Substituting into the constraint equation  $g(x,y,z) = 0$"
-                },
-                {
                   "type": "conclude",
-                  "statement": "Therefore, for $\\lambda = \\frac{1}{2}$, we get the points (0, 1/√2, 0) and (0, -1/√2, 0) and the distance from the origin is $x_o^2 + y_o^2 + z_o^2 = \\frac{1}{2}$"
+                  "statement": "$x_o = z_o = 0$",
+                  "error": "The proof incorrectly asserts that  $\\nabla F = 0$ implies each component is 0. This is true for $x_o$, $y_o$, $z_o$ being nonzero. The cases when one or more of them are zero need to be handled separately."
                 }
               ]
             }
@@ -120,31 +98,9 @@
               "type": "proof",
               "steps": [
                 {
-                  "type": "assert",
-                  "claim": "$x_o = y_o = 0$",
-                  "proof-method": "From the gradient equation"
-                },
-                {
-                  "type": "assert",
-                  "claim": "$z_o = \\pm \\frac{1}{\\sqrt{3}}$",
-                  "proof-method": "Substituting into the constraint equation $g(x,y,z) = 0$"
-                },
-                {
                   "type": "conclude",
-                  "statement": "Therefore, for $\\lambda = \\frac{1}{3}$, we get the points (0, 0, 1/√3) and (0, 0, -1/√3) and the distance from the origin is $x_o^2 + y_o^2 + z_o^2 = \\frac{1}{3}$"
-                }
-              ]
-            }
-          },
-          {
-            "type": "case",
-            "condition": "$x_o = y_o = z_o = 0$",
-            "proof": {
-              "type": "proof",
-              "steps": [
-                {
-                  "type": "conclude",
-                  "statement": "This case is not possible as it does not satisfy the constraint equation $g(x,y,z) = 0$"
+                  "statement": "$x_o = y_o = 0$",
+                  "error": "The proof incorrectly asserts that  $\\nabla F = 0$ implies each component is 0. This is true for $x_o$, $y_o$, $z_o$ being nonzero. The cases when one or more of them are zero need to be handled separately."
                 }
               ]
             }
@@ -152,8 +108,14 @@
         ]
       },
       {
-        "type": "conclude",
-        "statement": "Comparing the distances obtained in the above cases, we see that the maximum distance of 1 is achieved at the points (1, 0, 0) and (-1, 0, 0)."
+        "type": "assert",
+        "claim": "The possible points are $(1,0,0), (-1,0,0), (0, \\frac{1}{\\sqrt{2}}, 0), (0, -\\frac{1}{\\sqrt{2}}, 0), (0, 0, \\frac{1}{\\sqrt{3}}), (0, 0, -\\frac{1}{\\sqrt{3}})$",
+        "proof-method": "solving for $x,y,z$ for each case of $\\lambda$ and using the constraint $g(x,y,z)=0$"
+      },
+      {
+        "type": "assert",
+        "claim": "The maximum value of $x^2 + y^2 + z^2$ is achieved when $(x,y,z) = (1,0,0)$ or $(-1,0,0)$",
+        "proof-method": "comparing the values of $x^2 + y^2 + z^2$ for each of the possible points"
       }
     ]
   }

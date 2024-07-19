@@ -1,192 +1,160 @@
 {
   "type": "theorem",
-  "name": "Maximum Distance from Origin on Ellipsoid",
+  "name": "Largest distance from the origin on the ellipsoid",
   "hypothesis": [
     {
       "type": "assume",
-      "statement": "$x^2 + 2y^2 + 3z^2 = 1$ (ellipsoid equation)"
+      "statement": "Any continuous function on the ellipsoid $x^2 + 2y^2 + 3z^2 = 1$ attains its maximum."
     },
     {
-      "type": "assume",
-      "statement": "Any continuous function on the ellipsoid attains its maximum"
+      "type": "let",
+      "variable": "f",
+      "value": "x^2 + y^2 + z^2",
+      "kind": "function",
+      "property": "The function to be maximized."
+    },
+    {
+      "type": "let",
+      "variable": "g",
+      "value": "x^2 + 2y^2 + 3z^2 - 1",
+      "kind": "function",
+      "property": "The constraint function for the ellipsoid."
     }
   ],
-  "conclusion": "The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid $x^2 + 2y^2 + 3z^2 = 1$ have the largest distance from the origin.",
+  "conclusion": "The points $(1, 0, 0)$ and $(-1, 0, 0)$ on the ellipsoid $x^{2}+2 y^{2}+3 z^{2}=1$ have the largest distance from the origin.",
   "status": "incomplete proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "let",
-        "variable": "f(x,y,z)",
-        "value": "$x^2 + y^2 + z^2$",
-        "kind": "function"
-      },
-      {
-        "type": "let",
-        "variable": "g(x,y,z)",
-        "value": "$x^2 + 2y^2 + 3z^2 - 1$",
-        "kind": "function"
+        "variable": "F",
+        "value": "f - \\lambda g",
+        "kind": "function",
+        "property": "Using the concept of Lagrange multipliers."
       },
       {
         "type": "assert",
-        "claim": "Using Lagrange multipliers",
-        "proof-method": "concept of Lagrange multipliers"
-      },
-      {
-        "type": "let",
-        "variable": "F(x,y,z,\\lambda)",
-        "value": "$f(x,y,z) - \\lambda g(x,y,z)$",
-        "kind": "function"
+        "claim": "\\nabla F = 0"
       },
       {
         "type": "assert",
-        "claim": "$\\nabla F = 0$ at maxima or minima",
-        "proof-method": "property of Lagrange multipliers"
-      },
-      {
-        "type": "assert",
-        "claim": "$\\nabla[(1 - \\lambda) x^2 + (1 - 2 \\lambda)y^2 + (1- 3 \\lambda)z^2 + \\lambda] = 0$",
+        "claim": "\\nabla((1-\\lambda)x^2 + (1-2\\lambda)y^2 + (1-3\\lambda)z^2 + \\lambda) = 0",
         "deduced_from": [
-          "$\\nabla F = 0$"
+          "\\nabla F = 0"
         ]
       },
       {
         "type": "assert",
-        "claim": "$(1 - \\lambda).2x \\hat{i} + (1 - 2 \\lambda)2y \\hat{j} + (1- 3 \\lambda)2z \\hat{k} = 0$",
+        "claim": "(1-\\lambda)2x \\hat{i} + (1-2\\lambda)2y \\hat{j} + (1-3\\lambda)2z \\hat{k} = 0",
         "deduced_from": [
-          "$\\nabla[(1 - \\lambda) x^2 + (1 - 2 \\lambda)y^2 + (1- 3 \\lambda)z^2 + \\lambda] = 0$"
+          "\\nabla((1-\\lambda)x^2 + (1-2\\lambda)y^2 + (1-3\\lambda)z^2 + \\lambda) = 0"
         ]
       },
       {
         "type": "cases",
-        "on": "$\\lambda$",
+        "on": "\\lambda",
         "split-kind": "condition",
         "proof-cases": [
           {
             "type": "case",
-            "condition": "$\\lambda = 1$",
+            "condition": "\\lambda = 1",
             "proof": {
               "type": "proof",
               "steps": [
                 {
                   "type": "assert",
-                  "claim": "$y = 0$ and $z = 0$",
-                  "proof-method": "from equation"
-                },
-                {
-                  "type": "assert",
-                  "claim": "$x = \\pm 1$",
-                  "proof-method": "substitute $y = 0$ and $z = 0$ into ellipsoid equation"
-                },
-                {
-                  "type": "assert",
-                  "claim": "$x^2 + y^2 + z^2 = 1$",
+                  "claim": "y = 0, z = 0",
                   "deduced_from": [
-                    "$x = \\pm 1$",
-                    "$y = 0$",
-                    "$z = 0$"
+                    "(1-\\lambda)2x \\hat{i} + (1-2\\lambda)2y \\hat{j} + (1-3\\lambda)2z \\hat{k} = 0"
                   ]
+                },
+                {
+                  "type": "assert",
+                  "claim": "x = \\pm 1",
+                  "deduced_from": [
+                    "y = 0, z = 0"
+                  ],
+                  "proof-method": "Substituting into the constraint equation"
                 }
               ]
             }
           },
           {
             "type": "case",
-            "condition": "$\\lambda = \\frac{1}{2}$",
+            "condition": "\\lambda = \\frac{1}{2}",
             "proof": {
               "type": "proof",
               "steps": [
                 {
                   "type": "assert",
-                  "claim": "$x = 0$ and $z = 0$",
-                  "proof-method": "from equation"
-                },
-                {
-                  "type": "assert",
-                  "claim": "$y = \\pm \\frac{1}{\\sqrt{2}}$",
-                  "proof-method": "substitute $x = 0$ and $z = 0$ into ellipsoid equation"
-                },
-                {
-                  "type": "assert",
-                  "claim": "$x^2 + y^2 + z^2 = \\frac{1}{2}$",
+                  "claim": "x = 0, z = 0",
                   "deduced_from": [
-                    "$x = 0$",
-                    "$y = \\pm \\frac{1}{\\sqrt{2}}$",
-                    "$z = 0$"
+                    "(1-\\lambda)2x \\hat{i} + (1-2\\lambda)2y \\hat{j} + (1-3\\lambda)2z \\hat{k} = 0"
                   ]
+                },
+                {
+                  "type": "assert",
+                  "claim": "y = \\pm \\frac{1}{\\sqrt{2}}",
+                  "deduced_from": [
+                    "x = 0, z = 0"
+                  ],
+                  "proof-method": "Substituting into the constraint equation"
                 }
               ]
             }
           },
           {
             "type": "case",
-            "condition": "$\\lambda = \\frac{1}{3}$",
+            "condition": "\\lambda = \\frac{1}{3}",
             "proof": {
               "type": "proof",
               "steps": [
                 {
                   "type": "assert",
-                  "claim": "$x = 0$ and $y = 0$",
-                  "proof-method": "from equation"
-                },
-                {
-                  "type": "assert",
-                  "claim": "$z = \\pm \\frac{1}{\\sqrt{3}}$",
-                  "proof-method": "substitute $x = 0$ and $y = 0$ into ellipsoid equation"
-                },
-                {
-                  "type": "assert",
-                  "claim": "$x^2 + y^2 + z^2 = \\frac{1}{3}$",
+                  "claim": "x = 0, y = 0",
                   "deduced_from": [
-                    "$x = 0$",
-                    "$y = 0$",
-                    "$z = \\pm \\frac{1}{\\sqrt{3}}$"
+                    "(1-\\lambda)2x \\hat{i} + (1-2\\lambda)2y \\hat{j} + (1-3\\lambda)2z \\hat{k} = 0"
                   ]
+                },
+                {
+                  "type": "assert",
+                  "claim": "z = \\pm \\frac{1}{\\sqrt{3}}",
+                  "deduced_from": [
+                    "x = 0, y = 0"
+                  ],
+                  "proof-method": "Substituting into the constraint equation"
                 }
               ]
             }
           },
           {
             "type": "case",
-            "condition": "$\\lambda = 0$",
+            "condition": "x = y = z = 0",
             "proof": {
               "type": "assert",
-              "claim": "$x = 0$, $y = 0$, $z = 0$",
-              "proof-method": "from equation"
-            },
-            "steps": [
-              {
-                "type": "assert",
-                "claim": "$x^2 + y^2 + z^2 = 0$",
-                "deduced_from": [
-                  "$x = 0$",
-                  "$y = 0$",
-                  "$z = 0$"
-                ]
-              }
-            ]
+              "claim": "x^2 + y^2 + z^2 = 0",
+              "proof-method": "Substituting into the constraint equation"
+            }
           }
         ]
       },
       {
         "type": "conclude",
-        "statement": "The maximum value of $x^2 + y^2 + z^2$ is obtained when the points are $(1,0,0)$ or $(-1,0,0)$. However, the proof has some missing justifications."
+        "statement": "The maximum value of $x^2 + y^2 + z^2$ is obtained at the points $(1, 0, 0)$ and $(-1, 0, 0)$. These points have the largest distance from the origin."
       }
     ]
   },
   "missing": [
     {
       "type": "problem",
-      "statement": "Justify that there are no other critical points or values of $\\lambda$ to be considered.",
+      "statement": "Justify that $\\lambda = 1$ corresponds to the maximum value of $x^2 + y^2 + z^2$ rather than other values of $\\lambda$.",
       "solved": false
     }
   ],
   "errors": [
     {
-      "type": "assert",
-      "claim": "The proof does not include a verification that all critical points are covered.",
-      "proof-method": "missing justifications"
+      "statement": "The proof does not provide justification for why $\\lambda = 1$ corresponds to the maximum rather than other values of $\\lambda$."
     }
   ]
 }
