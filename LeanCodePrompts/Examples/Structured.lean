@@ -19,6 +19,32 @@ def numina :=
 def mistral :=
   ChatServer.generic (model := "mistralai/Mistral-7B-Instruct-v0.3") (url := "10.134.13.103:8000")
 
+def mathstral :=
+  ChatServer.generic (model := "mistralai/mathstral-7B-v0.1") (url := "10.134.13.103:8000")
+
+def worst := "14546"
+def best := "14590"
+
+def basePath : System.FilePath := "results" / "gemini_results" / "um102"
+
+def readSol (problem student : String) : IO String := do
+  IO.FS.readFile (basePath / s!"problem{problem}" / s!"{student}_sol.md")
+
+#eval readSol "5" best
+
+def mathstralWrite (problem student : String) : CoreM String := do
+  let sol ← readSol problem student
+  let resArr ←  mathstral.structuredProof sol
+  let res := resArr[0]!
+  IO.FS.writeFile (basePath / s!"problem{problem}" / s!"{student}_mathstral.json") (res.pretty)
+  return res.pretty
+
+def mathstralEgs : CoreM (List (List String)) := do
+  ["1", "3", "5"].mapM fun problem =>
+    [best, worst].mapM (fun student => mathstralWrite problem student)
+
+
+
 def numinaExample := numina.structuredProof proofExample
 /-
 #[{"type": "theorem",

@@ -51,7 +51,7 @@ llm_dir = os.path.join(homedir, "llm_data")
 
 templates = json.load(open(os.path.join(resources, "templates.json")))
 
-with open(os.path.join(resources, "ProofJson.md"), 'r') as f:
+with open(os.path.join(resources, "ProofJsonShorter.md"), 'r') as f:
     proof_json = f.read()
 
 lean_trans_prompt = templates['lean_trans_prompt']
