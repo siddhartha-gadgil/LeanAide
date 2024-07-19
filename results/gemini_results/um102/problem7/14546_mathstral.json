@@ -1,0 +1,44 @@
+{"type": "theorem",
+ "status": "proved",
+ "proof":
+ {"type": "proof",
+  "steps":
+  [{"type": "assert",
+    "proof-method": "Direct substitution",
+    "deduced_from": ["Theorem 1"],
+    "claim": "x = A x"},
+   {"type": "cases",
+    "split-kind": "match",
+    "proof-cases":
+    [{"type": "case",
+      "proof":
+      {"type": "proof",
+       "steps":
+       [{"type": "assert",
+         "proof-method": "Using the eigenvector",
+         "deduced_from": ["Theorem 3"],
+         "claim": "x = c1 expt {1 0}^T = c1 e^t {1 0}^T"},
+        {"type": "assert",
+         "proof-method": "Using the eigenvector",
+         "deduced_from": ["Theorem 4"],
+         "claim":
+         "Similarly, y = c2 e^t {0 1}^T, hence x(t, c1 + c2 - c1) = 0"}]},
+      "condition": "Eigenvalue = 1, Eigenvector = {1 0}^T"}],
+    "on": "Eigenvectors",
+    "exhaustiveness":
+    {"type": "assert",
+     "proof-method": "Eigenvalue decomposition",
+     "deduced_from": ["Theorem 2"],
+     "claim":
+     "The eigenvalues and eigenvectors of A form a complete set of solutions"}}]},
+ "name": "Stable Convergence of Linear Differential Equations",
+ "hypothesis":
+ [{"variable": "A",
+   "value": "begin{pmatrix} 1 & 0 \\ 0 & 1 end{pmatrix}",
+   "type": "let",
+   "kind": "matrix"},
+  {"type": "assume",
+   "statement":
+   "The matrix A has eigenvalue 1 and eigenvector {1 0}^T, {0 1}^T"}],
+ "conclusion":
+ "The origin is a source for the linear differential equation {xdot = x, ydot = y}."}

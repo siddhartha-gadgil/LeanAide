@@ -340,6 +340,19 @@ def structuredProof (server: ChatServer)
   let outs ← ChatServer.mathCompletions server pf n params examples
   return outs.map extractJson
 
+def structuredProofRaw (server: ChatServer)
+  (pf: String)(n: Nat := 1)
+  (params: ChatParams := {n := n, stopTokens := #[]})
+  : CoreM (Array String) := do
+  let instructions ← jsonProofInstructions
+  let init : ChatExample := {
+    user := instructions
+    assistant := "Please provide the theorem and proof. I will translated this into ProofJSON format."
+  }
+  let examples := #[init]
+  let outs ← ChatServer.mathCompletions server pf n params examples
+  return outs
+
 def structuredProofFromSolution (server: ChatServer)
   (problem solution: String)(n: Nat := 1)
   (params: ChatParams := {n := n, stopTokens := #[]})

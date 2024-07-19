@@ -1,0 +1,116 @@
+ Note that the problem statement is not in ProofJSON format. Here's how to translate it:
+
+```json
+{
+  "theorem": {
+    "name": "Continuity of f at (0,0)",
+    "hypothesis": [
+      {
+        "assert": {
+          "claim": "Let \( f: \mathbb{R}^{2} \rightarrow \mathbb{R} \) be the function given by \( f(x, y)=\left\{\begin{array}{ll}
+                                                                    x, & \text { if } y=x^{3} \\
+                                                                    0, & \text { if } y \neq x^{3}
+                                                                  \end{array}\right.  ",
+          "proof-method": "Definition of the function"
+        }
+      }
+    ],
+    "conclusion": "Prove that the function \( f \) is continuous at \( (0,0) \)",
+    "status": "proved"
+  },
+  "proof": {
+    "steps": [
+      {
+        "assert": {
+          "claim": "To prove that for all $\epsilon > 0$, there exists a $\delta > 0$ such that: $$||x - 0|| < \delta \implies |f(x) - f(0)| < \epsilon$$",
+          "proof-method": "Epsilon-Delta definition of continuity."
+        }
+      },
+      {
+        "let": {
+          "variable": "$\delta$",
+          "value": "min($\frac{1}{2}, \frac{\epsilon}{2}$)
+        }
+      },
+      {
+        "remark": {
+          "statement": "Note that $f(0) = 0^3 = 0$ (as $(0,0)$ follows $y=x^3$)."
+        }
+      },
+      {
+        "assert": {
+          "claim": "$$||x|| < \delta \implies ||f(x)|| < \epsilon$$",
+          "proof-method": "Choosing appropriate $\delta$"
+        }
+      },
+      {
+        "remark": {
+          "statement": "Considering the open ball of radius $\delta$:  $(||x|| = \sqrt{x^2 + y^2} < \delta)$.",
+          "proof-method": "Definition of open ball"
+        }
+      },
+      {
+        "cases": {
+          "on": "$\epsilon$",
+          "split-kind": "condition",
+          "proof-cases": [
+            {
+              "condition": "if $\epsilon > 1$",
+              "proof": {
+                "steps": [
+                  {
+                    "assert": {
+                      "claim": "f(x,y) = 0 < $\epsilon$",
+                      "proof-method": "Definition of f",
+                      "calculation": [
+                        {
+                          "step": "f(x,y) = 0",
+                          "justification": "Definition of f"
+                        },
+                        {
+                          "step": "0 < $\epsilon$",
+                          "justification": "Given $\epsilon > 1$"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "assert": {
+                      "claim": "$f(x,y) = \sqrt[3]{x} < \sqrt{x^2 + y^2} < \delta = \epsilon$",
+                      "proof-method": "Definition of f and $\delta$",
+                      "calculation": [
+                        {
+                          "step": "f(x,y) = $\sqrt[3]{x}$",
+                          "justification": "Definition of f"
+                        },
+                        {
+                          "step": "$\sqrt[3]{x} < \sqrt{x^2 + y^2}$",
+                          "justification": "Triangle Inequality"
+                        },
+                        {
+                          "step": "$\sqrt{x^2 + y^2} < \delta$",
+                          "justification": "Definition of $\delta$"
+                        },
+                        {
+                          "step": "$\delta = \epsilon$",
+                          "justification": "Definition of $\delta$"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "conclude": {
+          "statement": "Hence it is continuous at $(0,0)$",
+          "proof-method": "Definition of continuity"
+        }
+      }
+    ]
+  }
+}
+```
