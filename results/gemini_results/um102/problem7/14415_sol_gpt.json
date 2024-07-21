@@ -1,6 +1,6 @@
 {
   "type": "theorem",
-  "name": "Source of the Origin",
+  "name": "Origin as Source for Linear Differential Equation",
   "hypothesis": [
     {
       "type": "assume",
@@ -11,68 +11,77 @@
       "statement": "$\\dot{y} = y$"
     }
   ],
-  "conclusion": "The origin is a source for the given system of differential equations.",
-  "status": "incomplete proof",
+  "conclusion": "The origin is a source.",
+  "status": "wrong proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "assert",
         "claim": "$\\frac{dx}{dt} = x$",
-        "proof-method": "Given"
-      },
-      {
-        "type": "assert",
-        "claim": "$\\frac{dy}{dt} = y$",
-        "proof-method": "Given"
+        "deduced_from": [
+          "$\\dot{x} = x$"
+        ]
       },
       {
         "type": "assert",
         "claim": "$\\frac{dx}{x} = dt$",
-        "proof-method": "Separation of variables"
-      },
-      {
-        "type": "assert",
-        "claim": "$\\frac{dy}{y} = dt$",
-        "proof-method": "Separation of variables"
+        "deduced_from": [
+          "$\\frac{dx}{dt} = x$"
+        ]
       },
       {
         "type": "assert",
         "claim": "$\\log \\frac{x}{x_0} = t + c_1$",
-        "proof-method": "Integration"
+        "deduced_from": [
+          "$\\frac{dx}{x} = dt$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$x = Ae^t$",
+        "deduced_from": [
+          "$\\log \\frac{x}{x_0} = t + c_1$"
+        ],
+        "proof-method": "Exponentiating both sides"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{dy}{dt} = y$",
+        "deduced_from": [
+          "$\\dot{y} = y$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{dy}{y} = dt$",
+        "deduced_from": [
+          "$\\frac{dy}{dt} = y$"
+        ]
       },
       {
         "type": "assert",
         "claim": "$\\log \\frac{y}{y_0} = t + c_2$",
-        "proof-method": "Integration"
+        "deduced_from": [
+          "$\\frac{dy}{y} = dt$"
+        ]
       },
       {
         "type": "assert",
-        "claim": "$\\frac{x}{x_0} = Ae^t$",
-        "proof-method": "Exponentiation"
+        "claim": "$y = Be^t$",
+        "deduced_from": [
+          "$\\log \\frac{y}{y_0} = t + c_2$"
+        ],
+        "proof-method": "Exponentiating both sides"
       },
       {
         "type": "assert",
-        "claim": "$\\frac{y}{y_0} = Be^t$",
-        "proof-method": "Exponentiation"
-      },
-      {
-        "type": "conclude",
-        "statement": "It's a saddle saddle",
-        "error": "Incorrect classification; should be justified as a source."
+        "claim": "It's a saddle",
+        "errors": [
+          "Incorrect conclusion. The origin is a source as both eigenvalues are positive."
+        ]
       }
     ]
   },
-  "missing": [
-    {
-      "type": "problem",
-      "statement": "Justify why the origin is a source based on the solutions for $x$ and $y$."
-    }
-  ],
-  "errors": [
-    {
-      "type": "remark",
-      "statement": "The term 'saddle' is incorrect; the system actually represents a source."
-    }
-  ]
+  "error": "The proof incorrectly concludes that the origin is a saddle instead of a source. The correct conclusion based on the given differential equations is that the origin is a source since the eigenvalues are both equal to 1, which have positive real parts."
 }

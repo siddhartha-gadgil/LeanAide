@@ -1,111 +1,26 @@
 {
   "type": "theorem",
-  "name": "Origin as Source of Linear System",
+  "name": null,
+  "status": "incomplete proof",
   "hypothesis": [
     {
       "type": "let",
-      "variable": "x",
-      "kind": "function of time"
-    },
-    {
-      "type": "let",
-      "variable": "y",
-      "kind": "function of time"
-    },
-    {
-      "type": "assume",
-      "statement": "The functions $x$ and $y$ satisfy the linear differential equations $\\dot{x} = x$ and $\\dot{y} = y$."
+      "variable": "<anonymous>",
+      "kind": "System of differential equations",
+      "value": "$ \\dot{x}=x $ and $ \\dot{y}=y $"
     }
   ],
-  "conclusion": "The origin is a source for the given system of linear differential equations.",
-  "status": "incomplete proof",
+  "conclusion": "The origin is a source for the given system of differential equations.",
   "missing": [
     {
       "type": "problem",
-      "statement": "Show that the given general solution does indeed correspond to a source at the origin. This requires appealing to the definition of a source for a system of linear differential equations."
+      "statement": "Show that the general solution to the system is of the form $\\mathbf{x(t)} = c_1 e^t \\begin{bmatrix} 1 \\ 0 \\end{bmatrix} + c_2 e^t \\begin{bmatrix} 0 \\ 1 \\end{bmatrix}$ for arbitrary constants $c_1, c_2$.",
+      "solved": false
+    },
+    {
+      "type": "problem",
+      "statement": "Use the general solution to show that the origin is a source.",
+      "solved": false
     }
-  ],
-  "proof": {
-    "type": "proof",
-    "steps": [
-      {
-        "type": "remark",
-        "statement": "The provided proof attempts to determine the eigenvalues and eigenvectors of the coefficient matrix associated with the system of differential equations."
-      },
-      {
-        "type": "let",
-        "variable": "A",
-        "kind": "matrix",
-        "value": "$\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$"
-      },
-      {
-        "type": "assert",
-        "claim": "The eigenvalues of $A$ are $d_1=d_2=1$.",
-        "calculation": [
-          {
-            "step": "$\\det(A - dI) = 0$",
-            "justification": "To find eigenvalues, we solve for $d$ in this equation."
-          },
-          {
-            "step": "$\\det\\begin{bmatrix} 1-d & 0 \\\\ 0 & 1-d\\end{bmatrix} = 0$",
-            "justification": "Substituting the matrix $A$ and the identity matrix $I$."
-          },
-          {
-            "step": "$(1-d)(1-d) = 0$",
-            "justification": "Calculating the determinant."
-          },
-          {
-            "step": "$d=1$",
-            "justification": "Solving for $d$."
-          },
-          {
-            "step": "Thus $d_1 = d_2 = 1$",
-            "justification": "Since the equation for $d$ has a double root."
-          }
-        ]
-      },
-      {
-        "type": "assert",
-        "claim": "The equation $(A - I)\\begin{bmatrix} c_1 \\\\ c_2 \\end{bmatrix} = \\begin{bmatrix} 0 \\\\ 0\\end{bmatrix}$ is true for all $(c_1, c_2) \\in \\mathbb{R}^2$.",
-        "calculation": [
-          {
-            "step": "$(A - I)\\begin{bmatrix} c_1 \\\\ c_2 \\end{bmatrix} = \\begin{bmatrix} 0 \\\\ 0\\end{bmatrix}$",
-            "justification": "Equation to find the eigenvector."
-          },
-          {
-            "step": "$\\begin{bmatrix} 0 & 0 \\\\ 0 & 0\\end{bmatrix} \\begin{bmatrix} c_1 \\\\ c_2 \\end{bmatrix} = \\begin{bmatrix} 0 \\\\ 0\\end{bmatrix}$",
-            "justification": "Substituting $A$ and $I$."
-          },
-          {
-            "step": "Above is true for $\\forall (c_1, c_2) \\in \\mathbb{R}^2$",
-            "justification": "The equation holds regardless of the values of $c_1$ and $c_2$."
-          }
-        ]
-      },
-      {
-        "type": "let",
-        "variable": "v_1",
-        "value": "$(1,1)$",
-        "kind": "eigenvector"
-      },
-      {
-        "type": "assert",
-        "claim": "$X(t) = \\mathbf{x}e^t\\begin{bmatrix} 1 \\\\ 1\\end{bmatrix}$ is the general solution of the system of differential equations.",
-        "errors": [
-          {
-            "type": "remark",
-            "statement": "The provided expression for $X(t)$ is not a general solution for the given system. The correct general solution is $\\begin{bmatrix} x(t) \\\\ y(t) \\end{bmatrix} = c_1 e^t \\begin{bmatrix} 1 \\\\ 0 \\end{bmatrix} + c_2 e^t \\begin{bmatrix} 0 \\\\ 1 \\end{bmatrix}$, which reflects that each eigenvalue has an associated linearly independent eigenvector."
-          }
-        ]
-      },
-      {
-        "type": "conclude",
-        "statement": "This curve is a source.",
-        "error": {
-          "type": "remark",
-          "statement": "The conclusion that the curve is a source is not adequately justified. While the eigenvalues being positive is indicative of a source, a complete proof requires demonstrating that the trajectories of the system move away from the origin as $t \\to \\infty$."
-        }
-      }
-    ]
-  }
+  ]
 }

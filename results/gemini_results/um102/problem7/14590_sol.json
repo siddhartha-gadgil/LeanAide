@@ -1,56 +1,59 @@
 {
   "type": "theorem",
-  "name": "Source at the Origin",
+  "name": "Origin of Linear System as Source",
   "hypothesis": [
     {
       "type": "let",
       "variable": "<anonymous>",
-      "kind": "linear differential equation",
-      "property": "$\\dot{x} = x$ and $ \\dot{y} = y$"
+      "kind": "differential equations",
+      "property": "linear",
+      "value": "$\\dot{x} = x$, $\\dot{y} = y$"
     }
   ],
-  "conclusion": "The origin is a source for the given system of linear differential equations.",
+  "conclusion": "The origin is a source for the given system of differential equations.",
   "status": "incomplete proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "remark",
-        "statement": "The proof seems to be missing a section. Starting directly from part b)."
+        "statement": "We will use the eigenvalues of the matrix corresponding to this linear system to classify the origin."
       },
       {
         "type": "assert",
-        "claim": "The system can be written in matrix form as $\\dot{X} = \\begin{pmatrix} 1 & 0 \\ 0 & 1 \\end{pmatrix} X$",
-        "missing": [
+        "claim": "$\\dot{X} = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} X$",
+        "proof-method": "Rewriting the system in matrix form"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of the matrix $\\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$ are both 1.",
+        "calculation": [
           {
-            "type": "problem",
-            "statement": "Show how the system of equations $\\dot{x} = x$ and $\\dot{y} = y$ can be represented in the given matrix form.",
-            "solved": false
+            "step": "trace = 2, $\\Delta = 1$",
+            "justification": "Calculating the trace and determinant of the matrix"
+          },
+          {
+            "step": "eigenvalues = (1, 1)",
+            "justification": "Solving the characteristic equation"
           }
         ]
       },
       {
         "type": "assert",
-        "claim": "The trace of the matrix is 2 and the determinant is 1.",
-        "proof-method": "Direct calculation from the matrix."
-      },
-      {
-        "type": "assert",
-        "claim": "The eigenvalues are (1,1)",
-        "deduced_from": [
-          "The eigenvalues are the roots of the characteristic polynomial, which is given by $(1-\\lambda)^2$ for this matrix"
-        ]
-      },
-      {
-        "type": "assert",
-        "claim": "The eigenvectors span all of $\\mathbb{R}^2$",
-        "proof-method": "The matrix is the identity matrix, so every vector is an eigenvector."
+        "claim": "The eigenvectors span all of $\\mathbb{R}^2$.",
+        "proof-method": "Direct computation, noting that the matrix is the identity matrix."
       },
       {
         "type": "conclude",
-        "statement": "Therefore, the origin is a source.",
-        "error": "The proof does not explain how the eigenvalues and eigenvectors being discussed imply that the origin is a source. More justification is needed, specifically connecting these properties to the behavior of trajectories near the origin."
+        "statement": "The origin is a source.",
+        "error": "The proof does not explicitly use the fact that the eigenvalues are positive to conclude that the origin is a source."
       }
     ]
-  }
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Explicitly state the connection between the positive eigenvalues and the origin being a source, using known results about the classification of linear systems."
+    }
+  ]
 }

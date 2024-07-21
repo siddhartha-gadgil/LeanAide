@@ -38,9 +38,18 @@ proof_json = open(join(resources, "ProofJsonShorter.md")).read()
 def structure_prompt(thm, pf):
     return f"{proof_json}\n---\n\n## Theorem: {thm}\n\n## Proof: {pf}\n"
 
+def structure_prompt_with_knowns(thm, pf, knowns):
+    return f"{proof_json}\n---\n\n## Theorem: {thm}\n\n## Proof: {pf}\n\n---\n\nThe following are known results that can be used without proof, even implicitly. DO NOT report the use of these results as errors or missing steps.\n\n## Known results: \n\n{knowns}\n"
+
 def structured_proof(thm, pf):
     response = model.generate_content([
         structure_prompt(thm, pf)
+    ])
+    return extract_json_block(response.text)
+
+def structured_proof_with_knowns(thm, pf, knowns):
+    response = model.generate_content([
+        structure_prompt_with_knowns(thm, pf, knowns)
     ])
     return extract_json_block(response.text)
 
@@ -51,6 +60,10 @@ def structured_proof_from_image(thm, path):
 def structured_proof_from_images(thm, paths):
     pf = solution_from_images(paths)
     return pf, structured_proof(thm, pf)
+
+def structured_proof_from_images_with_knowns(thm, paths, knowns):
+    pf = solution_from_images(paths)
+    return pf, structured_proof_with_knowns(thm, pf, knowns)
 
 from google.cloud import storage
 client = storage.Client()
@@ -114,6 +127,34 @@ def write_structured_proofs(prefix):
         with open(output_file, "w") as f:
             f.write(f"## Theorem: {thm}\n\n## Proof: {pf}")
 
+
+def write_structured_proofs_with_knowns(prefix):
+    thm_blob = bucket.blob(f"{prefix}theorem.md")
+    with thm_blob.open("r") as f:
+        thm = f.read()
+    knowns_blob = bucket.blob(f"{prefix}knowns.md")
+    with knowns_blob.open("r") as f:
+        knowns = f.read()
+    all_image_paths = images_in_gs(prefix)
+    image_path_groups = [(key, list(group)) for key, group in itertools.groupby(all_image_paths, lambda s: s.split("_")[0])]
+    for path, image_paths in image_path_groups:
+        print(path, image_paths)
+        pf, structured = structured_proof_from_images_with_knowns(thm, image_paths, knowns)
+        output_file = Path(join(gemini_results, path + "_sol.json"))
+        output_file.parent.mkdir(exist_ok=True, parents=True)
+        with open(output_file, "w") as f:
+            json.dump(structured, f, ensure_ascii=False, indent=2)
+        prompt = structure_prompt_with_knowns(thm, pf, knowns)
+        gpt_structured_raw = chat_client.math(prompt)
+        gpt_structured = extract_json_block(gpt_structured_raw[0])
+        output_file = Path(join(gemini_results, path + "_sol_gpt.json"))
+        output_file.parent.mkdir(exist_ok=True, parents=True)
+        with open(output_file, "w") as f:
+            json.dump(gpt_structured, f, ensure_ascii=False, indent=2)
+        output_file = Path(join(gemini_results, path + "_sol.md"))
+        output_file.parent.mkdir(exist_ok=True, parents=True)
+        with open(output_file, "w") as f:
+            f.write(f"## Theorem: {thm}\n\n## Proof: {pf}")
 
 # thm = "The map $p \colon \mathbb{R}^2 \to X$, defined by $p(x,y) = (x, y^2)$, is a covering map, where $X = \{(x,y) \in \mathbb{R}^2 : y \ge 0\}$."
 

@@ -1,104 +1,61 @@
 {
   "type": "theorem",
-  "name": "Origin as Source for a Linear System",
+  "name": "Origin of a linear system",
+  "status": "wrong proof",
   "hypothesis": [
     {
       "type": "let",
       "variable": "<anonymous>",
-      "kind": "differential equation",
-      "property": "linear",
-      "value": "$\\dot{x}=x$"
-    },
-    {
-      "type": "let",
-      "variable": "<anonymous>",
-      "kind": "differential equation",
-      "property": "linear",
-      "value": "$\\dot{y}=y$"
+      "kind": "system of linear ordinary differential equations",
+      "property": "given by the matrix $\\begin{pmatrix} \\dot x \\\\ \\dot y \\end{pmatrix} = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}$"
     }
   ],
-  "conclusion": "The origin is a source for the given system of differential equations.",
-  "status": "incomplete proof",
-  "missing": [
-    {
-      "type": "problem",
-      "statement": "Show that the eigenvalues of the matrix $A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$ are both positive.",
-      "solved": false
-    },
-    {
-      "type": "problem",
-      "statement": "Explain how the eigenvalues being positive implies the origin is a source.",
-      "solved": false
-    }
-  ],
+  "conclusion": "The origin is a source.",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "assert",
-        "claim": "The system can be written in matrix form as $\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}$.",
-        "proof-method": "Rewriting the system in matrix form"
+        "claim": "$\\begin{pmatrix} \\dot x \\\\ \\dot y \\end{pmatrix} = \\begin{pmatrix} x \\\\ y \\end{pmatrix} = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}$",
+        "proof-method": "rewriting the system in matrix form"
       },
       {
         "type": "let",
         "variable": "A",
-        "kind": "matrix",
-        "value": "\\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}"
+        "value": "$\\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$"
       },
       {
         "type": "assert",
-        "claim": "The eigenvalues of $A$ are $\\lambda_1 = 0$ and $\\lambda_2 = 1$.",
+        "claim": "Eigenvalues of $A$ are $\\lambda_1 = 0$, $\\lambda_2 = 1$",
         "errors": [
           {
             "type": "remark",
-            "statement": "The eigenvalues of the identity matrix are both 1, not 0 and 1."
+            "statement": "The eigenvalues of $A$ are both 1, not 0 and 1."
           }
         ]
       },
       {
         "type": "assert",
-        "claim": "The eigenvectors of $A$ are any vectors of the form $\\begin{pmatrix} a \\\\ b \\end{pmatrix}$, where $a, b \\in \\mathbb{R}$.",
-        "proof-method": "Direct calculation"
+        "claim": "Eigenvector is any vector $\\begin{pmatrix} a \\\\ b \\end{pmatrix}$, $a, b \\in \\mathbb{R}$",
+        "proof-method": "By the definition of eigenvectors"
       },
       {
         "type": "assert",
-        "claim": "The solutions of the differential equation are of the form $x(t) = \\alpha e^t + \\beta e^t$.",
-        "errors": [
+        "claim": "Solutions of this Diff. eqn. are\n$$X(t) = \\alpha e^t + \\beta e^t$$ \n$$\\begin{pmatrix} x \\\\ y \\end{pmatrix} = \\begin{pmatrix} e^t \\\\ e^t \\end{pmatrix}$$ \n$$X(t) = e^t \\begin{pmatrix} \\alpha \\\\ \\beta \\end{pmatrix}$$",
+        "missing": [
           {
-            "type": "remark",
-            "statement": "This solution is incorrect. The correct general solution should be $x(t) = \\alpha e^t$, $y(t) = \\beta e^t$."
-          }
-        ]
-      },
-      {
-        "type": "assert",
-        "claim": "The general solution can be written as $\\begin{pmatrix} x \\\\ y \\end{pmatrix} = \\begin{pmatrix} e^t \\\\ e^t \\end{pmatrix}$.",
-        "errors": [
-          {
-            "type": "remark",
-            "statement": "This is not the general solution. This represents only one specific solution."
-          }
-        ]
-      },
-      {
-        "type": "assert",
-        "claim": "The general solution can also be expressed as $X(t) = e^t \\begin{pmatrix} \\alpha \\\\ \\beta \\end{pmatrix}$.",
-        "errors": [
-          {
-            "type": "remark",
-            "statement": "While this representation is correct, it doesn't directly lead to the conclusion."
+            "type": "problem",
+            "statement": "Show how the general solution is obtained from the eigenvalues and eigenvectors"
           }
         ]
       },
       {
         "type": "conclude",
-        "statement": "Therefore, the origin is a source.",
-        "errors": [
-          {
-            "type": "remark",
-            "statement": "The proof lacks a clear justification for this conclusion based on the presented calculations and the definition of a source."
-          }
-        ]
+        "statement": "Origin is Source",
+        "error": {
+          "type": "remark",
+          "statement": "The conclusion that the origin is a source does not follow from the last assertion, and requires further justification. Moreover, the eigenvalues are incorrect, though the conclusion would follow from the (incorrect) eigenvalue of 0."
+        }
       }
     ]
   }

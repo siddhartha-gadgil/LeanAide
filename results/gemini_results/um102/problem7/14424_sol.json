@@ -1,73 +1,87 @@
 {
   "type": "theorem",
-  "name": "Origin as Source in Linear System",
-  "status": "wrong proof",
+  "name": "Source at origin",
   "hypothesis": [
     {
       "type": "let",
-      "variable": "Linear differential equations",
-      "value": "$\\dot{x} = x$ and $\\dot{y} = y$"
+      "variable": "<anonymous>",
+      "kind": "System of Linear differential equations",
+      "property": "$\\dot{x}=x$ and $\\dot{y}=y$"
     }
   ],
-  "conclusion": "The origin is a source for the given system of linear differential equations.",
+  "conclusion": "The origin is a source for the given system of equations.",
+  "status": "wrong proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
-        "type": "assert",
-        "claim": "$\\begin{pmatrix} \\dot{u} \\\\ \\dot{y} \\end{pmatrix} = A \\begin{pmatrix} u \\\\ y \\end{pmatrix}$  where $A = \\begin{pmatrix} 1 & 0\\\\ 0 & 1 \\end{pmatrix}$",
-        "proof-method": "Rewrite the system of equations in matrix form.",
-        "errors": [
-          "The variable 'u' appears without introduction and likely represents 'x'."
-        ]
+        "type": "remark",
+        "statement": "There seems to be an error in the proof. The provided equations use variables $u$ and $y$ instead of $x$ and $y$ as given in the theorem statement. We will proceed with $u$ and $y$ for this proof."
       },
       {
-        "type": "remark",
-        "statement": "Eigenvalues"
+        "type": "assert",
+        "claim": "The system can be written in matrix form as $\\begin{pmatrix} \\dot{u} \\ \\dot{y} \\end{pmatrix} = A \\begin{pmatrix} u \\ y \\end{pmatrix}$, where $A = \\begin{pmatrix} 1 & 6 \\ 0 & 1 \\end{pmatrix}$.",
+        "proof-method": "Rewriting the given system of equations in matrix form."
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of matrix A need to be determined to classify the origin.",
+        "deduced_from": [
+          "For a system of linear ordinary differential equations in two variables given by the $2 \\times 2$ matrix $A$, The origin is a source if the eigenvalues of $A$ have positive real part.",
+          "For a system of linear ordinary differential equations in two variables given by the $2 \\times 2$ matrix $A$, The origin is a sink if the eigenvalues of $A$ have negative real part.",
+          "For a system of linear ordinary differential equations in two variables given by the $2 \\times 2$ matrix $A$, The origin is a saddle if the eigenvalues of $A$ have opposite signs.",
+          "For a system of linear ordinary differential equations in two variables given by the $2 \\times 2$ matrix $A$, The origin is a circulation/centre if the eigenvalues of $A$ are purely imaginary."
+        ]
       },
       {
         "type": "assert",
         "claim": "$\\lambda_1 < 0 < \\lambda_2$",
         "errors": [
-          "This assertion is incorrect for the given matrix A. The eigenvalues are both 1."
+          {
+            "type": "problem",
+            "statement": "The statement incorrectly claims that one eigenvalue is positive and the other is negative without any calculation.  Moreover, the matrix $A$ actually has a repeated eigenvalue of $+1$."
+          }
         ]
       },
       {
-        "type": "assert",
-        "claim": "The origin is a sink.",
-        "deduced_from": [
-          "$\\lambda_1 < 0 < \\lambda_2$"
-        ],
+        "type": "conclude",
+        "statement": "Hence the origin is sink.",
         "errors": [
-          "This conclusion is incorrect. While a sink would have both eigenvalues negative, the given system has positive eigenvalues, making the origin a source."
+          {
+            "type": "problem",
+            "statement": "The conclusion is incorrect. Since both eigenvalues of A are positive, the origin is a source, not a sink."
+          }
         ]
       },
       {
+        "type": "remark",
+        "statement": "The following section seems to recalculate the eigenvalues and eigenvectors, but with errors."
+      },
+      {
         "type": "assert",
-        "claim": "Eigenvalue $\\lambda = -1$",
-        "errors": [
-          "This contradicts the earlier incorrect assertion about eigenvalues. The actual eigenvalue is 1."
+        "claim": "Eigenvalue $\\lambda = +1$",
+        "proof-method": "Calculation",
+        "calculation": [
+          "$\\det(A - \\lambda I) = \\det\\begin{pmatrix} 1-\\lambda & 6 \\ 0 & 1-\\lambda \\end{pmatrix} = (1-\\lambda)^2 = 0$",
+          "Therefore, $\\lambda = +1$ is the eigenvalue (with multiplicity 2)."
         ]
       },
       {
         "type": "problem",
-        "statement": "For $\\lambda_1 = 1$, solve $\\begin{pmatrix} 1 & 1 \\\\ 1 & 1 \\end{pmatrix} \\begin{pmatrix} a \\\\ b \\end{pmatrix} = \\begin{pmatrix} 4 \\\\ 4 \\end{pmatrix}$",
-        "solved": true,
-        "answer": "$a = -b$",
+        "statement": "Find the eigenvector for $\\lambda = 1$.",
+        "solved": false,
         "errors": [
-          "The right-hand side of the equation appears to be arbitrarily chosen. For eigenvectors, it should be the zero vector."
+          {
+            "type": "problem",
+            "statement": "The provided calculation for the eigenvector is incorrect. The correct eigenvector (up to scalar multiplication) is $\\begin{pmatrix} 1 \\ 0 \\end{pmatrix}$."
+          }
         ]
       },
       {
-        "type": "problem",
-        "statement": "For $\\lambda_2 = -1$, solve $\\begin{pmatrix} -1 & 1 \\\\ 1 & -1 \\end{pmatrix} \\begin{pmatrix} a \\\\ b \\end{pmatrix} = \\begin{pmatrix} n \\\\ y \\end{pmatrix}$",
-        "solved": true,
-        "answer": "$a = -b$",
-        "errors": [
-          "Similar to the previous problem, the right-hand side seems arbitrary. Additionally, 'n' appears without definition."
-        ]
+        "type": "remark",
+        "statement": "The proof attempts to calculate eigenvectors for $\\lambda = 1$ and $\\lambda = -1$, but the calculations are incorrect and unnecessary as the eigenvalue 1 has multiplicity 2."
       }
-    ],
-    "error": "The proof contains several errors in the eigenvalue calculation, leading to a wrong classification of the origin."
-  }
+    ]
+  },
+  "error": "The proof contains several errors, including an incorrect claim about the eigenvalues and an incorrect conclusion. The calculation of the eigenvector is also incorrect."
 }

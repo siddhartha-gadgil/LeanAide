@@ -1,6 +1,6 @@
 {
   "type": "theorem",
-  "name": "Source of the Origin",
+  "name": "Source of the origin for the linear differential equation",
   "hypothesis": [
     {
       "type": "assume",
@@ -18,52 +18,78 @@
     "steps": [
       {
         "type": "assert",
-        "claim": "$\\dot{x} = x + 0 \\cdot y$"
-      },
-      {
-        "type": "assert",
-        "claim": "$\\dot{y} = 0 \\cdot x + y$"
-      },
-      {
-        "type": "assert",
-        "claim": "$\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}$",
-        "proof-method": "Matrix form of the system."
-      },
-      {
-        "type": "assert",
-        "claim": "Eigenvalues of $A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$ are $\\lambda_1 = 1$ and $\\lambda_2 = 1$",
-        "proof-method": "Direct calculation of eigenvalues."
-      },
-      {
-        "type": "assert",
-        "claim": "$0 < \\lambda_1, \\lambda_2$"
-      },
-      {
-        "type": "assert",
-        "claim": "Both eigenvalues are positive, so the solutions $e^{\\lambda t}$ scale proportionately.",
-        "proof-method": "Exponential growth of solutions."
-      },
-      {
-        "type": "assert",
-        "claim": "This implies the origin is a source."
-      },
-      {
-        "type": "assert",
-        "claim": "$\\frac{x}{y} = e^{(1-\\lambda_2)t}$ is constant.",
+        "claim": "$\\dot{x} = x + 0 \\cdot y$ and $\\dot{y} = a \\cdot x + 1 \\cdot y$",
+        "deduced_from": [
+          "$\\dot{x} = x$",
+          "$\\dot{y} = y$"
+        ],
         "errors": [
-          "The expression $e^{(1-\\lambda_2)t}$ should be evaluated with respect to both eigenvalues being equal to 1."
+          "Incorrect form assumed for $\\dot{y}$. Should be $\\dot{y} = y$ as given in the assumptions."
         ]
       },
       {
         "type": "assert",
-        "claim": "The slope is a straight line."
-      }
-    ],
-    "errors": [
+        "claim": "$\\begin{pmatrix} \\dot{x} \\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 1 & 0 \\ 0 & 1 \\end{pmatrix} \\begin{pmatrix} x \\ y \\end{pmatrix}$",
+        "deduced_from": [
+          "$\\dot{x} = x$",
+          "$\\dot{y} = y$"
+        ]
+      },
       {
-        "type": "problem",
-        "statement": "The proof lacks rigor in concluding that $\\frac{x}{y} = e^{(1-\\lambda_2)t}$ is constant. This needs further justification."
+        "type": "let",
+        "variable": "A",
+        "value": "$\\begin{pmatrix} 1 & 0 \\ 0 & 1 \\end{pmatrix}$",
+        "kind": "matrix"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of $A$ are $1, 1$",
+        "deduced_from": [
+          "standard eigenvalue calculation for diagonal matrices"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$0 < \\lambda_1, \\lambda_2$",
+        "deduced_from": [
+          "eigenvalues $1, 1$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "Since $\\lambda_1 > 0$ and $\\lambda_2 > 0$, both eigenvalues are greater than $0$ and solutions will scale proportionately as $e^{\\lambda t}$",
+        "deduced_from": [
+          "exponential growth of solutions to linear ODEs with positive eigenvalues"
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "This will be a source.",
+        "errors": [
+          "Conclusion needs more rigorous justification.",
+          "The intermediate steps are not clearly linked to the conclusion."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{x}{y} = e^{(1-\\lambda_2) t} = \\text{const.}$",
+        "errors": [
+          "Incorrect claim. It should be $\\frac{x}{y} = const$ if $\\lambda_1 = \\lambda_2$."
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "The slope is a straight line.",
+        "errors": [
+          "This statement is not derived correctly from the differential equations."
+        ]
       }
     ]
-  }
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Provide a rigorous justification that the origin is indeed a source based on the eigenvalues of $A$."
+    }
+  ]
 }

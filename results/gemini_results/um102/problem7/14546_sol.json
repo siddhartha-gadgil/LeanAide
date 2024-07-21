@@ -1,13 +1,20 @@
 {
   "type": "theorem",
-  "name": "Origin as Source",
+  "name": "Source at Origin",
   "hypothesis": [
     {
       "type": "let",
       "variable": "<anonymous>",
-      "kind": "differential equations",
+      "kind": "differential equation",
       "property": "linear",
-      "value": "$\\dot{x} = x$, $\\dot{y} = y$"
+      "value": "$\\dot{x} = x$"
+    },
+    {
+      "type": "let",
+      "variable": "<anonymous>",
+      "kind": "differential equation",
+      "property": "linear",
+      "value": "$\\dot{y} = y$"
     }
   ],
   "conclusion": "The origin is a source for the given system of differential equations.",
@@ -17,54 +24,59 @@
     "steps": [
       {
         "type": "assert",
-        "claim": "$x = \\lambda x$",
+        "claim": "The system of equations can be written in matrix form as $\\dot{x} = Ax$ where $A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$.",
+        "proof-method": "Converting a system of linear differential equations to matrix form."
+      },
+      {
+        "type": "assert",
+        "claim": "The matrix $A$ has eigenvalues $1, 1$ and corresponding eigenvectors $\\begin{pmatrix} 1 \\\\ 0 \\end{pmatrix}, \\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix}$.",
         "errors": [
-          "This equation doesn't make sense in this context. It seems to be confusing eigenvalues with the variables themselves."
-        ]
-      },
-      {
-        "type": "assert",
-        "claim": "$x$ is $Ax$ where $A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$",
-        "proof-method": "rewriting the system in matrix form"
-      },
-      {
-        "type": "assert",
-        "claim": "The matrix $A$ has eigenvalues $1, 1$ and corresponding eigenvectors $\\begin{pmatrix} 1 \\\\ 0 \\end{pmatrix}$, $\\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix}$",
-        "proof-method": "standard calculation"
-      },
-      {
-        "type": "assert",
-        "claim": "$x \\begin{pmatrix} 1 \\\\ 0 \\end{pmatrix} + e^t \\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix}$",
-        "errors": [
-          "It is unclear what this expression represents. It seems to be attempting to write the general solution, but is missing terms and context."
-        ],
-        "missing": [
           {
-            "type": "problem",
-            "statement": "How does the general solution of the system relate to the eigenvectors and eigenvalues?",
-            "solved": false
+            "type": "remark",
+            "statement": "The eigenvectors are switched. The eigenvector corresponding to eigenvalue 1 is $\\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix}$, and the eigenvector corresponding to eigenvalue 1 is $\\begin{pmatrix} 1 \\\\ 0 \\end{pmatrix}$."
           }
         ]
       },
       {
         "type": "assert",
-        "claim": "$\\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix}$ are eigenvectors",
+        "claim": "The general solution of the system is given by $x \\begin{pmatrix} 1 \\\\ 0 \\end{pmatrix} + e^t \\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix}$.",
         "errors": [
-          "This statement is redundant, as the eigenvectors were already stated correctly before."
+          {
+            "type": "remark",
+            "statement": "The general solution should be a linear combination of the eigenvectors multiplied by $e^{\\lambda t}$ where $\\lambda$ are the eigenvalues. The correct general solution is  $C_1 e^t \\begin{pmatrix} 1 \\\\ 0 \\end{pmatrix} + C_2 e^t \\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix}$ where $C_1$ and $C_2$ are arbitrary constants."
+          }
         ]
       },
       {
         "type": "assert",
-        "claim": "$tr(A) = \\lambda_1 - \\lambda_2 = 2$",
-        "errors": [
-          "The trace of a matrix is the *sum* of the eigenvalues, not the difference: $tr(A) = \\lambda_1 + \\lambda_2 = 2$"
-        ]
+        "claim": "$tr(A) = 1 + 1 = 2$",
+        "proof-method": "Direct calculation."
+      },
+      {
+        "type": "remark",
+        "statement": "The trace of A is not relevant to determining the type of critical point."
       },
       {
         "type": "problem",
-        "statement": "Use the eigenvalues and eigenvectors to analyze the behavior of the system near the origin and conclude whether it is a source.",
+        "statement": "Show that the eigenvalues of A have positive real parts.",
         "solved": false
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, the origin is a source.",
+        "errors": [
+          {
+            "type": "remark",
+            "statement": "The conclusion is not justified since the proof is incomplete."
+          }
+        ]
       }
     ]
-  }
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Use the fact that the eigenvalues of A have positive real parts to conclude that the origin is a source."
+    }
+  ]
 }

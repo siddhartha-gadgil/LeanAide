@@ -1,6 +1,6 @@
 {
   "type": "theorem",
-  "name": "Source at the origin for the linear differential equation",
+  "name": "Origin is a source",
   "hypothesis": [
     {
       "type": "assume",
@@ -11,9 +11,10 @@
       "statement": "$\\dot{y} = y$"
     }
   ],
-  "conclusion": "The origin is a source",
+  "conclusion": "The origin is a source.",
   "status": "incomplete proof",
   "proof": {
+    "type": "proof",
     "steps": [
       {
         "type": "assert",
@@ -25,7 +26,7 @@
       },
       {
         "type": "assert",
-        "claim": "$\\left(\\begin{smallmatrix} \\dot{n} \\\\ \\dot{y} \\end{smallmatrix}\\right) = \\left(\\begin{smallmatrix} 1 & 0 \\\\ 0 & 1 \\end{smallmatrix}\\right) \\left(\\begin{smallmatrix} n \\\\ y \\end{smallmatrix}\\right)$"
+        "claim": "$(\\begin{smallmatrix} \\dot{n} \\\\ \\dot{y} \\end{smallmatrix}) = (\\begin{smallmatrix} 1 & 0 \\\\ 0 & 1 \\end{smallmatrix})(\\begin{smallmatrix} n \\\\ y \\end{smallmatrix})$"
       },
       {
         "type": "assert",
@@ -33,23 +34,27 @@
       },
       {
         "type": "assert",
-        "claim": "$|A - \\lambda I| = 0 \\implies \\left|\\begin{smallmatrix} (1-\\lambda) & 0 \\\\ 0 & (1-\\lambda) \\end{smallmatrix}\\right| = 0$"
+        "claim": "$|A - \\lambda I| = 0 \\implies \\begin{vmatrix} (1 - \\lambda) & 0 \\\\ 0 & (1 - \\lambda) \\end{vmatrix} = 0$"
       },
       {
         "type": "assert",
         "claim": "$\\lambda = 1, 1$"
       },
       {
+        "type": "assert",
+        "claim": "$\\therefore 0 < \\lambda_1, \\lambda_2$"
+      },
+      {
         "type": "conclude",
-        "statement": "$0 < \\lambda_1, \\lambda_2$ implies source at the origin",
-        "error": "The proof does not explain why $0 < \\lambda_1, \\lambda_2$ implies that the origin is a source."
+        "statement": "The origin is a source.",
+        "error": "The proof does not explain why eigenvalues $\\lambda_1, \\lambda_2 > 0$ imply that the origin is a source."
       }
     ]
   },
   "missing": [
     {
       "type": "problem",
-      "statement": "Explain why $0 < \\lambda_1, \\lambda_2$ implies that the origin is a source."
+      "statement": "Explain why positive eigenvalues imply that the origin is a source."
     }
   ]
 }

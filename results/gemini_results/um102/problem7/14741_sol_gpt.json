@@ -1,6 +1,6 @@
 {
   "type": "theorem",
-  "name": "Source at the Origin for Linear Differential Equations",
+  "name": "Source at Origin for Given Linear Differential Equations",
   "hypothesis": [
     {
       "type": "assume",
@@ -11,76 +11,82 @@
       "statement": "$\\dot{y} = y$"
     }
   ],
-  "conclusion": "The origin is a source for the system",
+  "conclusion": "The origin is a source.",
   "status": "incomplete proof",
   "proof": {
-    "type": "proof",
     "steps": [
       {
         "type": "assert",
         "claim": "$\\frac{d}{dt} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
-        "proof-method": "Matrix representation of the system"
-      },
-      {
-        "type": "let",
-        "variable": "A",
-        "value": "$\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$",
-        "kind": "matrix"
+        "deduced_from": [
+          "$\\dot{x} = x$",
+          "$\\dot{y} = y$"
+        ]
       },
       {
         "type": "assert",
-        "claim": "$v = Av$",
-        "proof-method": "Eigenvalue equation for matrix $A$"
+        "claim": "$v = Av$ where $A = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$"
       },
       {
         "type": "assert",
-        "claim": "$\\lambda_{1} = \\lambda_{2} = 1$, the eigenvalues of $A$",
-        "proof-method": "Calculation of eigenvalues"
+        "claim": "$\\lambda_1 = \\lambda_2 = 1$",
+        "proof-method": "Eigenvalue calculation"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenspace is 2-dimensional",
+        "proof-method": "Dimension of eigenspace"
       },
       {
         "type": "let",
-        "variable": "v_1",
+        "variable": "$v_1$",
         "value": "$(1, 0)$",
-        "kind": "eigenvector"
+        "kind": "eigenvector of $A$"
       },
       {
         "type": "let",
-        "variable": "v_2",
+        "variable": "$v_2$",
         "value": "$(0, 1)$",
-        "kind": "eigenvector"
+        "kind": "eigenvector of $A$"
       },
       {
         "type": "assert",
-        "claim": "$\\frac{dx}{dt} = x \\implies x = c_{1}e^{t}$",
-        "proof-method": "Solving the differential equation for $x$"
+        "claim": "$x = c_1 e^t$",
+        "proof-method": "Solution to $\\frac{dx}{dt} = x$"
       },
       {
         "type": "assert",
-        "claim": "$\\frac{dy}{dt} = y \\implies y = c_{2}e^{t}$",
-        "proof-method": "Solving the differential equation for $y$"
+        "claim": "$y = c_2 e^t$",
+        "proof-method": "Solution to $\\frac{dy}{dt} = y$"
       },
       {
         "type": "assert",
-        "claim": "$y = \\frac{c_{2}}{c_{1}} x = kx$",
-        "proof-method": "Relationship between $x$ and $y$"
+        "claim": "$y = \\frac{c_2}{c_1} x = kx$",
+        "deduced_from": [
+          "$x = c_1 e^t$",
+          "$y = c_2 e^t$"
+        ]
       },
       {
         "type": "assert",
         "claim": "$|x|$ and $|y|$ increase with increasing $t$",
-        "proof-method": "Exponential growth of solutions"
+        "proof-method": "Exponential growth"
       },
       {
         "type": "conclude",
-        "statement": "The trajectory would be straight lines emerging from the origin, hence the origin is a source",
-        "error": "The conclusion is not fully justified; a rigorous proof of the source property is missing"
+        "statement": "The trajectory would be straight lines emerging from the origin."
+      },
+      {
+        "type": "conclude",
+        "statement": "Origin is source.",
+        "error": "The deduction that the origin is a source is correct, but the reasoning was not completely rigorous."
       }
     ]
   },
   "missing": [
     {
       "type": "problem",
-      "statement": "Rigorous proof that the origin is a source for the system",
-      "solved": false
+      "statement": "Justify rigorously that the eigenvalues having positive real part implies the origin is a source."
     }
   ]
 }

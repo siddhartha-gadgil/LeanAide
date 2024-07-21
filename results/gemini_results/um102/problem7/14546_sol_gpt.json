@@ -1,50 +1,64 @@
 {
   "type": "theorem",
-  "name": "Origin as Source for Linear Differential Equations",
+  "name": "Source of Linear Differential System",
   "hypothesis": [
     {
-      "type": "assume",
-      "statement": "The linear differential equations $\\dot{x}=x$ and $\\dot{y}=y$."
+      "type": "let",
+      "variable": "x",
+      "kind": "function of time",
+      "property": "solution to the differential equation $\\dot{x} = x$"
+    },
+    {
+      "type": "let",
+      "variable": "y",
+      "kind": "function of time",
+      "property": "solution to the differential equation $\\dot{y} = y$"
     }
   ],
   "conclusion": "The origin is a source.",
   "status": "incomplete proof",
   "proof": {
+    "type": "proof",
     "steps": [
       {
         "type": "assert",
-        "claim": "$x = \\lambda x$",
-        "proof-method": "Standard form of linear differential equations."
+        "claim": "$\\dot{x} = x$ and $\\dot{y} = y$ can be written as $\\dot{\\mathbf{x}} = A\\mathbf{x}$ where $A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$",
+        "proof-method": "Direct transformation",
+        "calculation": [
+          "$\\dot{\\mathbf{x}} = \\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix}$",
+          "$A \\mathbf{x} = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix} = \\begin{pmatrix} x \\\\ y \\end{pmatrix}$"
+        ]
       },
       {
         "type": "assert",
-        "claim": "$x$ is $Ax$ where $A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$",
-        "proof-method": "Identifying the matrix representation of the differential system."
+        "claim": "The matrix $A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$ has eigenvalues $1, 1$",
+        "proof-method": "Eigenvalue computation"
       },
       {
         "type": "assert",
-        "claim": "This matrix has eigenvalues $1, 1$ and corresponding eigenvectors $\\begin{pmatrix} 1 \\\\ 0 \\end{pmatrix}$ and $\\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix}$",
-        "proof-method": "Standard eigenvalue computation for identity matrix."
-      },
-      {
-        "type": "assert",
-        "claim": "$x = e^t \\begin{pmatrix} 1 \\\\ 0 \\end{pmatrix} + e^t \\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix}$",
-        "proof-method": "Solution to the differential equation using the eigenvalues and eigenvectors."
-      },
-      {
-        "type": "assume",
-        "statement": "We take $\\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix}$ as eigenvectors."
-      },
-      {
-        "type": "assert",
-        "claim": "$\\text{tr}(A) = \\lambda_1 + \\lambda_2 = 2$",
-        "proof-method": "Standard trace computation of matrix $A$."
+        "claim": "The eigenvectors corresponding to the eigenvalues $1, 1$ are $\\begin{pmatrix} 1 \\\\ 0 \\end{pmatrix}$ and $\\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix}$",
+        "proof-method": "Eigenvector computation"
       },
       {
         "type": "conclude",
-        "statement": "Therefore, the origin is a source.",
-        "error": "The proof does not justify why the computed trace and eigenvalues imply that the origin is a source. The reasoning for the stability of the origin needs to be provided."
+        "statement": "Therefore, the origin is a source because the eigenvalues of $A$ are positive."
       }
     ]
-  }
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Justify the final step that the origin is a source using the known results about the eigenvalues."
+    }
+  ],
+  "errors": [
+    {
+      "type": "remark",
+      "statement": "Incorrect vector notation in the transformation to $\\mathbf{x}$."
+    },
+    {
+      "type": "remark",
+      "statement": "Inconsistent eigenvector representation in the proof."
+    }
+  ]
 }

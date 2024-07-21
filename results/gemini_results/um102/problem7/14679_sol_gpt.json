@@ -1,14 +1,11 @@
 {
   "type": "theorem",
-  "name": "Origin is a source for the given differential equations",
+  "name": "Source at Origin",
   "hypothesis": [
     {
-      "type": "assume",
-      "statement": "$\\dot{x} = x$"
-    },
-    {
-      "type": "assume",
-      "statement": "$\\dot{y} = y$"
+      "type": "define",
+      "term": "linear differential equation",
+      "statement": "$\\dot{x}=x$ and $\\dot{y}=y$"
     }
   ],
   "conclusion": "The origin is a source.",
@@ -18,58 +15,60 @@
     "steps": [
       {
         "type": "assert",
-        "claim": "$\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} x \\\\ y \\end{pmatrix} = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}$",
-        "proof-method": "Matrix representation of the differential equations"
+        "claim": "$\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} x \\\\ y \\end{pmatrix} = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}$"
       },
       {
         "type": "let",
         "variable": "A",
-        "value": "$\\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$",
-        "kind": "matrix"
+        "value": "$\\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$"
       },
       {
         "type": "assert",
-        "claim": "Eigenvalues of $A$ are $\\lambda_1 = 1$, $\\lambda_2 = 1$",
-        "proof-method": "Characteristic polynomial"
+        "claim": "The eigenvalues of $A$ are $\\lambda_1 = 1$ and $\\lambda_2 = 1$.",
+        "proof-method": "Calculation of eigenvalues"
       },
       {
         "type": "assert",
-        "claim": "Eigenvector corresponding to $\\lambda_1$ and $\\lambda_2$ is $\\begin{pmatrix} a \\\\ b \\end{pmatrix}$, $a, b \\in \\mathbb{R}$",
-        "proof-method": "Solving $A - \\lambda I$"
+        "claim": "Eigenvector is any vector $\\begin{pmatrix} a \\\\ b \\end{pmatrix}, a, b \\in \\mathbb{R}$",
+        "proof-method": "Calculation of eigenvectors"
       },
       {
         "type": "assert",
-        "claim": "Solutions of the differential equations are $x(t) = \\alpha e^t$ and $y(t) = \\beta e^t$",
-        "proof-method": "Solving the linear differential equations"
+        "claim": "Solutions of the differential equation are $X(t) = \\alpha e^t + \\beta e^t$",
+        "proof-method": "Solution of linear ODE"
       },
       {
         "type": "assert",
-        "claim": "$\\begin{pmatrix} x(t) \\\\ y(t) \\end{pmatrix} = \\begin{pmatrix} e^t \\\\ e^t \\end{pmatrix}$",
-        "proof-method": "Substituting $\\alpha = 1$ and $\\beta = 1$"
+        "claim": "$\\begin{pmatrix} x \\\\ y \\end{pmatrix} = \\begin{pmatrix} e^t \\\\ e^t \\end{pmatrix}$"
       },
       {
         "type": "assert",
-        "claim": "$X(t) = e^t \\begin{pmatrix} \\alpha \\\\ \\beta \\end{pmatrix}$",
-        "proof-method": "Combining the solutions"
+        "claim": "$X(t) = e^t \\begin{pmatrix} \\alpha \\\\ \\beta \\end{pmatrix}$"
       },
       {
-        "type": "conclude",
-        "statement": "Origin is a source",
-        "errors": [
-          "Incorrect eigenvalue calculations; should be $\\lambda_1 = 1$, $\\lambda_2 = 1$",
-          "Phase portrait and further justification needed"
-        ]
-      },
-      {
-        "type": "remark",
-        "statement": "Phase portrait"
+        "type": "assert",
+        "claim": "The origin is a source.",
+        "deduced_from": [
+          "The eigenvalues of $A$ are $\\lambda_1 = 1$ and $\\lambda_2 = 1$."
+        ],
+        "proof-method": "Known result about eigenvalues"
       }
     ]
   },
   "missing": [
     {
       "type": "problem",
-      "statement": "Justify why the origin is a source based on the solutions and eigenvalues."
+      "statement": "Justify why $X(t) = \\alpha e^t + \\beta e^t$ and $\\begin{pmatrix} x \\\\ y \\end{pmatrix} = \\begin{pmatrix} e^t \\\\ e^t \\end{pmatrix}$."
+    }
+  ],
+  "errors": [
+    {
+      "type": "problem",
+      "statement": "Incorrect statement of eigenvalues. The eigenvalues should be correctly identified as 1."
+    },
+    {
+      "type": "problem",
+      "statement": "Incomplete justification for why the origin is a source."
     }
   ]
 }

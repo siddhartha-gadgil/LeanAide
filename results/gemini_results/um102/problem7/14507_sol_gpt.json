@@ -1,6 +1,6 @@
 {
   "type": "theorem",
-  "name": "Source at the origin for linear differential equations",
+  "name": "Source of Linear Differential Equation",
   "hypothesis": [
     {
       "type": "assume",
@@ -19,45 +19,58 @@
       {
         "type": "assert",
         "claim": "$\\begin{bmatrix} \\dot{x} \\\\ \\dot{y} \\end{bmatrix} = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
-        "proof-method": "Matrix representation of the system."
+        "deduced_from": [
+          "$\\dot{x} = x$",
+          "$\\dot{y} = y$"
+        ],
+        "proof-method": "Matrix form of the system."
       },
       {
         "type": "assert",
-        "claim": "The eigenvalues of the matrix $A = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$ are $\\lambda = 1$ with multiplicity 2.",
-        "proof-method": "Characteristic polynomial and eigenvalue computation."
-      },
-      {
-        "type": "assert",
-        "claim": "Every vector is an eigenvector of the identity matrix.",
-        "proof-method": "Property of the identity transformation."
-      },
-      {
-        "type": "assert",
-        "claim": "$X(t) = V_0 e^{\\lambda t}$",
-        "proof-method": "Solution of the differential equation with initial condition $X(0) = V_0$.",
-        "missing": [
-          {
-            "type": "problem",
-            "statement": "Complete the explicit form of $X(t)$, explaining why it diverges as $t \\to \\infty$."
-          }
+        "claim": "The eigenvalues of $A = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$ are $\\lambda = 1$",
+        "proof-method": "Calculation of eigenvalues",
+        "calculation": [
+          "Characteristic polynomial: $\\det(A - \\lambda I) = (1 - \\lambda)^2 = 0$",
+          "Eigenvalues: $\\lambda = 1$ (repeated)"
         ]
       },
       {
         "type": "assert",
-        "claim": "The system is diverging as $t \\to \\infty$.",
-        "proof-method": "Long-term behavior of the exponential solutions."
+        "claim": "Every vector is an eigenvector of the identity transform.",
+        "proof-method": "Property of the identity matrix."
+      },
+      {
+        "type": "assert",
+        "claim": "$X(t) = V_0 e^{\\lambda t} \\rightarrow \\infty$ as $t \\rightarrow \\infty$",
+        "deduced_from": [
+          "Solution to linear differential equations with eigenvalue $\\lambda = 1$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "Since each phase line is concurrent at the origin, the origin acts as a source.",
+        "deduced_from": [
+          "Eigenvalues have positive real part"
+        ]
       },
       {
         "type": "conclude",
-        "statement": "Since each phase line is concurrent at the origin, the origin acts as a source.",
-        "error": "The proof does not rigorously show that all trajectories diverge from the origin."
+        "statement": "The origin is a source."
       }
+    ],
+    "errors": [
+      "Incomplete justification for the phase lines' concurrency at the origin.",
+      "Missing explanation for the implication of eigenvalue $\\lambda = 1$ leading to origin as a source."
     ]
   },
   "missing": [
     {
       "type": "problem",
-      "statement": "Justify rigorously why the origin is a source based on the phase portrait and the behavior of solutions."
+      "statement": "Complete the justification for the phase lines' concurrency at the origin."
+    },
+    {
+      "type": "problem",
+      "statement": "Provide a detailed explanation for why eigenvalue $\\lambda = 1$ leads to the origin being a source."
     }
   ]
 }

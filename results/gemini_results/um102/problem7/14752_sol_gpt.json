@@ -1,10 +1,14 @@
 {
   "type": "theorem",
-  "name": "Source of Linear Differential Equation",
+  "name": "Theorem: For the linear differential equation \\( \\dot{x}=x \\) and \\( \\dot{y}=y \\). Prove that the origin is source.",
   "hypothesis": [
     {
       "type": "assume",
-      "statement": "The linear differential equations $\\dot{x}=x$ and $\\dot{y}=y$"
+      "statement": "$\\dot{x} = x$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = y$"
     }
   ],
   "conclusion": "The origin is a source.",
@@ -13,88 +17,58 @@
     "type": "proof",
     "steps": [
       {
-        "type": "let",
-        "variable": "A",
-        "value": "\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}",
-        "kind": "matrix"
-      },
-      {
         "type": "assert",
         "claim": "$A\\mathbf{x} = \\mathbf{x}'$",
-        "proof-method": "substitution"
-      },
-      {
-        "type": "assert",
-        "claim": "$\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix} \\begin{bmatrix}x \\\\ y \\end{bmatrix} = \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
-        "proof-method": "matrix multiplication"
+        "calculation": [
+          "$\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} x \\\\ y \\end{bmatrix}$"
+        ]
       },
       {
         "type": "assert",
         "claim": "$\\det(A - dI) = 0$",
-        "proof-method": "characteristic polynomial"
+        "calculation": [
+          "$\\det \\begin{bmatrix} 1-d & 0 \\\\ 0 & 1-d \\end{bmatrix} = 0$",
+          "$(1-d)(1-d)=0$",
+          "$d=1$"
+        ]
       },
       {
         "type": "assert",
-        "claim": "$\\det\\begin{bmatrix} 1-d & 0 \\\\ 0 & 1-d \\end{bmatrix} = 0$",
-        "proof-method": "determinant calculation"
+        "claim": "$d_1 = d_2 = 1$"
       },
       {
         "type": "assert",
-        "claim": "$(1-d)(1-d) = 0$",
-        "proof-method": "simplification of determinant"
+        "claim": "$(A-I) \\begin{bmatrix} c_1 \\\\ c_2 \\end{bmatrix} = \\begin{bmatrix} 0 \\\\ 0 \\end{bmatrix}$",
+        "calculation": [
+          "$\\begin{bmatrix} 0 & 0 \\\\ 0 & 0 \\end{bmatrix} \\begin{bmatrix} c_1 \\\\ c_2 \\end{bmatrix} = \\begin{bmatrix} 0 \\\\ 0 \\end{bmatrix}$"
+        ]
       },
       {
         "type": "assert",
-        "claim": "$d = 1$",
-        "proof-method": "solving quadratic equation"
+        "claim": "True for $\\forall v \\in \\mathbb{R}^2$",
+        "calculation": [
+          "$v_1 = (1,1)$"
+        ]
       },
       {
         "type": "assert",
-        "claim": "Thus $d_1 = d_2 = 1$",
-        "proof-method": "eigenvalue calculation"
-      },
-      {
-        "type": "assert",
-        "claim": "$(A - I)\\begin{bmatrix} c_1 \\\\ c_2 \\end{bmatrix} = \\begin{bmatrix} 0 \\\\ 0 \\end{bmatrix}$",
-        "proof-method": "eigenvector calculation"
-      },
-      {
-        "type": "assert",
-        "claim": "$\\begin{bmatrix} 0 & 0 \\\\ 0 & 0 \\end{bmatrix} \\begin{bmatrix} c_1 \\\\ c_2 \\end{bmatrix} = \\begin{bmatrix} 0 \\\\ 0 \\end{bmatrix}$",
-        "proof-method": "matrix multiplication"
-      },
-      {
-        "type": "assert",
-        "claim": "Thus the above is true for $\\forall (c_1, c_2) \\in \\mathbb{R}^2$",
-        "proof-method": "conclusion from null matrix"
-      },
-      {
-        "type": "let",
-        "variable": "v_1",
-        "value": "(1, 1)",
-        "kind": "vector"
-      },
-      {
-        "type": "define",
-        "term": "X(t)",
-        "statement": "$X(t) = \\mathbf{x}e^t\\begin{bmatrix} 1 \\\\ 1 \\end{bmatrix}$"
-      },
-      {
-        "type": "assert",
-        "claim": "$X(t)$ is a basis of solutions and is the general solution",
-        "proof-method": "solving differential equation"
+        "claim": "$\\mathbf{x(t)} = \\mathbf{x} e^t \\begin{bmatrix} 1 \\\\ 1 \\end{bmatrix}$ is a basis of all solutions and is the general solution"
       },
       {
         "type": "conclude",
-        "statement": "This curve is a source",
-        "error": "The proof does not explicitly show that the origin is a source; detailed reasoning about the stability and direction of trajectories near the origin is missing."
+        "statement": "The curve is a source.",
+        "error": "The proof lacks a rigorous argument showing that all trajectories move away from the origin, thus establishing it as a source."
       }
+    ],
+    "errors": [
+      "The proof assumes that the form of the solution immediately implies that the origin is a source without properly demonstrating how the trajectories behave near the origin."
     ]
   },
   "missing": [
     {
       "type": "problem",
-      "statement": "Show that the origin is a source by analyzing the stability and direction of trajectories near the origin."
+      "statement": "Provide a rigorous argument showing that trajectories move away from the origin, thus proving it to be a source.",
+      "solved": false
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "type": "theorem",
-  "name": "Source at Origin for Linear Differential Equations",
+  "name": "Source of the Origin",
   "hypothesis": [
     {
       "type": "assume",
@@ -11,18 +11,38 @@
       "statement": "$\\dot{y} = y$"
     }
   ],
-  "conclusion": "The origin is a source.",
-  "status": "wrong proof",
+  "conclusion": "The origin is a source",
+  "status": "incomplete proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "assert",
-        "claim": "The origin is a source.",
-        "errors": [
-          "The proof does not provide sufficient justification for why the origin is a source."
+        "claim": "The system can be written as a matrix differential equation $\\dot{\\mathbf{z}} = A \\mathbf{z}$ with $\\mathbf{z} = \\begin{pmatrix} x \\\\ y \\end{pmatrix}$ and $A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$",
+        "proof-method": "Combining the equations $\\dot{x} = x$ and $\\dot{y} = y$ into matrix form."
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of $A$ are both $1$",
+        "proof-method": "Calculating the eigenvalues of $A$"
+      },
+      {
+        "type": "assert",
+        "claim": "The origin is a source",
+        "deduced_from": [
+          "The eigenvalues of $A$ are both $1$",
+          "The origin is a source if the eigenvalues of $A$ have positive real part"
         ]
       }
+    ],
+    "errors": [
+      "The proof lacks detailed calculations and justification for each step."
     ]
-  }
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Show the detailed calculation of the eigenvalues of $A$."
+    }
+  ]
 }

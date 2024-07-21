@@ -1,10 +1,14 @@
 {
   "type": "theorem",
-  "name": "Source of the origin for the linear differential equation",
+  "name": "Origin is a source for the given linear differential equations",
   "hypothesis": [
     {
       "type": "assume",
-      "statement": "$\\dot{x} = x$ and $\\dot{y} = y$"
+      "statement": "$\\dot{x} = x$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = y$"
     }
   ],
   "conclusion": "The origin is a source.",
@@ -13,54 +17,44 @@
     "type": "proof",
     "steps": [
       {
-        "type": "let",
-        "variable": "X",
-        "value": "$\\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
-        "kind": "vector in $\\mathbb{R}^2$"
-      },
-      {
         "type": "assert",
-        "claim": "$\\dot{X} = A X$ where $A = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$",
-        "calculation": [
-          "$\\dot{X} = \\begin{bmatrix} \\dot{x} \\\\ \\dot{y} \\end{bmatrix} = \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$"
-        ]
-      },
-      {
-        "type": "assert",
-        "claim": "This matrix $A$ has repeating real eigenvalues $\\lambda = 1$",
-        "proof-method": "eigenvalue calculation"
-      },
-      {
-        "type": "assert",
-        "claim": "Every vector $V \\in \\mathbb{R}^2$ is an eigenvector",
+        "claim": "$\\dot{X} = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix} X$",
         "deduced_from": [
-          "Eigenvalue $\\lambda = 1$"
-        ],
-        "calculation": [
-          "$A V = V$"
-        ],
-        "errors": [
-          "Incorrect eigenvector statement: $\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix} V = V$ for every $V \\in \\mathbb{R}^2$ is incorrect, as not every vector is an eigenvector."
+          "$\\dot{x} = x$",
+          "$\\dot{y} = y$"
         ]
       },
       {
         "type": "assert",
-        "claim": "The solution for this system is $X(t) = xe^t V + tVe^{t^2}$",
+        "claim": "The matrix $A = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$ has real, repeating eigenvalues $\\lambda = 1$",
+        "proof-method": "Eigenvalue calculation"
+      },
+      {
+        "type": "assert",
+        "claim": "Every vector $V \\in \\mathbb{R}^2$ is an eigenvector of $A$",
         "errors": [
-          "Incorrect solution form: Should be $X(t) = C_1 e^{t} \\begin{bmatrix} 1 \\\\ 0 \\end{bmatrix} + C_2 e^{t} \\begin{bmatrix} 0 \\\\ 1 \\end{bmatrix}$"
-        ],
-        "missing": [
-          {
-            "type": "problem",
-            "statement": "Find the correct solution to the differential equation."
-          }
+          "Incorrect eigenvector calculation; correct $A$ should be $\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$ but $\\begin{bmatrix} 0 & 1 \\\\ 0 & 1 \\end{bmatrix}$ is used."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The general solution is $X(t) = \\alpha e^t V + t V e^{Rt^2}$",
+        "errors": [
+          "Incorrect general solution form; should be $X(t) = e^{At} X(0)$."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "These are straight line solutions moving away from the origin.",
+        "errors": [
+          "Incorrect deduction due to previous errors."
         ]
       },
       {
         "type": "conclude",
-        "statement": "These are straight line solutions moving away from the origin. This system is a source.",
+        "statement": "This system is a source.",
         "errors": [
-          "Incorrect solution form invalidates the conclusion."
+          "Conclusion is based on incorrect steps."
         ]
       }
     ]
@@ -68,11 +62,13 @@
   "missing": [
     {
       "type": "problem",
-      "statement": "Correctly solve the system of differential equations."
+      "statement": "Correctly find the eigenvectors and general solution for $\\dot{X} = AX$",
+      "solved": false
     },
     {
       "type": "problem",
-      "statement": "Verify the system is indeed a source with the correct solution."
+      "statement": "Correctly deduce the nature of the origin based on the eigenvalues",
+      "solved": false
     }
   ]
 }
