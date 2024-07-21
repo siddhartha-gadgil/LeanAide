@@ -171,6 +171,20 @@ def has_type(data, target_type = "assertion"):
         return True
   return False
 
+
+def extract_fields(data, key="error"):
+  """Recursively extracts all specified fields from a JSON structure."""
+  results = []
+  if isinstance(data, dict):
+    for k, v in data.items():
+      if k == key:
+        results.append(v)
+      results.extend(extract_fields(v, key))
+  elif isinstance(data, list):
+    for item in data:
+      results.extend(extract_fields(item, key))
+  return results
+
 class ChatClient:
     verbose = False
 
