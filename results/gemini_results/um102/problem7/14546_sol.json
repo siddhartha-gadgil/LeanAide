@@ -1,62 +1,69 @@
 {
   "type": "theorem",
-  "name": "Origin as a Source",
-  "status": "incomplete proof",
+  "name": "Origin as Source",
   "hypothesis": [
     {
       "type": "let",
       "variable": "<anonymous>",
-      "kind": "linear differential equation",
-      "property": "$\\dot{x}=x$"
-    },
-    {
-      "type": "let",
-      "variable": "<anonymous>",
-      "kind": "linear differential equation",
-      "property": "$\\dot{y}=y$"
+      "kind": "differential equations",
+      "property": "linear",
+      "value": "$\\dot{x} = x$, $\\dot{y} = y$"
     }
   ],
-  "conclusion": "The origin is a source.",
-  "missing": [
-    {
-      "type": "problem",
-      "statement": "Show that the real parts of the eigenvalues of the matrix $A$ are both positive."
-    },
-    {
-      "type": "problem",
-      "statement": "Explain how the solution $x(t)$  indicates that the origin is a source."
-    }
-  ],
+  "conclusion": "The origin is a source for the given system of differential equations.",
+  "status": "incomplete proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "assert",
-        "claim": "$x=Ax$ where $A=\\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$",
-        "proof-method": "Rewriting the system of differential equations in matrix form."
-      },
-      {
-        "type": "assert",
-        "claim": "The matrix $A$ has eigenvalues $1,1$ with corresponding eigenvectors $\\begin{pmatrix} 1\\\\ 0 \\end{pmatrix}$, $\\begin{pmatrix} 0\\\\ 1 \\end{pmatrix}$.",
+        "claim": "$x = \\lambda x$",
         "errors": [
-          "The eigenvectors are not unique; any scalar multiple of these vectors is also an eigenvector."
+          "This equation doesn't make sense in this context. It seems to be confusing eigenvalues with the variables themselves."
         ]
       },
       {
         "type": "assert",
-        "claim": "$x\\left(c_1e^tx+c_2te^t\\begin{pmatrix} 1\\\\ 0 \\end{pmatrix}+e^t\\begin{pmatrix} 0\\\\ 1 \\end{pmatrix}\\right)$",
-        "proof-method": "Solving the system of differential equations.",
+        "claim": "$x$ is $Ax$ where $A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$",
+        "proof-method": "rewriting the system in matrix form"
+      },
+      {
+        "type": "assert",
+        "claim": "The matrix $A$ has eigenvalues $1, 1$ and corresponding eigenvectors $\\begin{pmatrix} 1 \\\\ 0 \\end{pmatrix}$, $\\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix}$",
+        "proof-method": "standard calculation"
+      },
+      {
+        "type": "assert",
+        "claim": "$x \\begin{pmatrix} 1 \\\\ 0 \\end{pmatrix} + e^t \\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix}$",
         "errors": [
-          "The solution is not correctly expressed. It should be a linear combination of the eigenvectors multiplied by exponential functions of the eigenvalues."
+          "It is unclear what this expression represents. It seems to be attempting to write the general solution, but is missing terms and context."
+        ],
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "How does the general solution of the system relate to the eigenvectors and eigenvalues?",
+            "solved": false
+          }
         ]
       },
       {
         "type": "assert",
-        "claim": "$x(t,(c_1+c_2)-c_1)=0$",
-        "proof-method": "From the previous step.",
+        "claim": "$\\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix}$ are eigenvectors",
         "errors": [
-          "It's unclear what this equation represents and how it's derived from the previous step. It doesn't seem to directly contribute to proving the origin is a source."
+          "This statement is redundant, as the eigenvectors were already stated correctly before."
         ]
+      },
+      {
+        "type": "assert",
+        "claim": "$tr(A) = \\lambda_1 - \\lambda_2 = 2$",
+        "errors": [
+          "The trace of a matrix is the *sum* of the eigenvalues, not the difference: $tr(A) = \\lambda_1 + \\lambda_2 = 2$"
+        ]
+      },
+      {
+        "type": "problem",
+        "statement": "Use the eigenvalues and eigenvectors to analyze the behavior of the system near the origin and conclude whether it is a source.",
+        "solved": false
       }
     ]
   }

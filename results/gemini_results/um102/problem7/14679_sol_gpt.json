@@ -1,63 +1,75 @@
 {
   "type": "theorem",
-  "name": "Source of Origin for Linear Differential Equation",
+  "name": "Origin is a source for the given differential equations",
   "hypothesis": [
     {
       "type": "assume",
-      "statement": "\\dot{x} = x"
+      "statement": "$\\dot{x} = x$"
     },
     {
       "type": "assume",
-      "statement": "\\dot{y} = y"
+      "statement": "$\\dot{y} = y$"
     }
   ],
   "conclusion": "The origin is a source.",
-  "status": "wrong proof",
+  "status": "incomplete proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "assert",
-        "claim": "\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} x \\\\ y \\end{pmatrix} = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}",
-        "proof-method": "Definition of differential equations."
+        "claim": "$\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} x \\\\ y \\end{pmatrix} = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}$",
+        "proof-method": "Matrix representation of the differential equations"
       },
       {
         "type": "let",
         "variable": "A",
-        "value": "\\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}"
+        "value": "$\\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$",
+        "kind": "matrix"
       },
       {
         "type": "assert",
-        "claim": "Eigenvalues of A are \\lambda_1 = 1, \\lambda_2 = 1",
-        "calculation": [
-          "A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}",
-          "A - \\lambda I = 0",
-          "det(A - \\lambda I) = (1 - \\lambda)(1 - \\lambda) = 0",
-          "\\lambda_1 = 1, \\lambda_2 = 1"
-        ]
+        "claim": "Eigenvalues of $A$ are $\\lambda_1 = 1$, $\\lambda_2 = 1$",
+        "proof-method": "Characteristic polynomial"
       },
       {
         "type": "assert",
-        "claim": "Eigenvector is any vector \\begin{pmatrix} a \\\\ b \\end{pmatrix}, a, b \\in \\mathbb{R}",
-        "proof-method": "Eigenvector equation."
+        "claim": "Eigenvector corresponding to $\\lambda_1$ and $\\lambda_2$ is $\\begin{pmatrix} a \\\\ b \\end{pmatrix}$, $a, b \\in \\mathbb{R}$",
+        "proof-method": "Solving $A - \\lambda I$"
       },
       {
         "type": "assert",
-        "claim": "Solutions of the differential equation are \\begin{pmatrix} x(t) \\\\ y(t) \\end{pmatrix} = e^t \\begin{pmatrix} \\alpha \\\\ \\beta \\end{pmatrix}",
-        "calculation": [
-          "x(t) = \\alpha e^t",
-          "y(t) = \\beta e^t"
-        ]
+        "claim": "Solutions of the differential equations are $x(t) = \\alpha e^t$ and $y(t) = \\beta e^t$",
+        "proof-method": "Solving the linear differential equations"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\begin{pmatrix} x(t) \\\\ y(t) \\end{pmatrix} = \\begin{pmatrix} e^t \\\\ e^t \\end{pmatrix}$",
+        "proof-method": "Substituting $\\alpha = 1$ and $\\beta = 1$"
+      },
+      {
+        "type": "assert",
+        "claim": "$X(t) = e^t \\begin{pmatrix} \\alpha \\\\ \\beta \\end{pmatrix}$",
+        "proof-method": "Combining the solutions"
       },
       {
         "type": "conclude",
         "statement": "Origin is a source",
-        "error": "Wrong eigenvalues used in concluding the nature of the origin."
+        "errors": [
+          "Incorrect eigenvalue calculations; should be $\\lambda_1 = 1$, $\\lambda_2 = 1$",
+          "Phase portrait and further justification needed"
+        ]
+      },
+      {
+        "type": "remark",
+        "statement": "Phase portrait"
       }
-    ],
-    "errors": [
-      "The eigenvalues of the system matrix are incorrectly stated as \\lambda_1 = 0 and \\lambda_2 = 1. The correct eigenvalues are \\lambda_1 = 1 and \\lambda_2 = 1.",
-      "The conclusion about the origin being a source is not justified by the provided proof steps."
     ]
-  }
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Justify why the origin is a source based on the solutions and eigenvalues."
+    }
+  ]
 }

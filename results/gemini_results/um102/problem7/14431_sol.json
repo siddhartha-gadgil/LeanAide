@@ -1,13 +1,20 @@
 {
   "type": "theorem",
-  "name": "Origin as Source for a Linear System",
+  "name": "Source at Origin",
   "hypothesis": [
     {
       "type": "let",
       "variable": "<anonymous>",
-      "kind": "differential equations",
-      "property": "linear system",
-      "value": "$\\dot{x} = x$, $\\dot{y} = y$"
+      "kind": "differential equation",
+      "property": "linear",
+      "value": "$\\dot{x} = x$"
+    },
+    {
+      "type": "let",
+      "variable": "<anonymous>",
+      "kind": "differential equation",
+      "property": "linear",
+      "value": "$\\dot{y} = y$"
     }
   ],
   "conclusion": "The origin is a source for the given system of differential equations.",
@@ -16,59 +23,58 @@
     "type": "proof",
     "steps": [
       {
-        "type": "remark",
-        "statement": "We analyze the eigenvalues of the coefficient matrix to determine the stability of the origin."
-      },
-      {
-        "type": "let",
-        "variable": "X",
-        "kind": "vector",
-        "value": "$\\begin{pmatrix} x \\\\ y \\end{pmatrix}$"
-      },
-      {
-        "type": "let",
-        "variable": "A",
-        "kind": "matrix",
-        "property": "coefficient matrix of the system",
-        "value": "$\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$"
+        "type": "assert",
+        "claim": "The system can be written in matrix form as $X' = AX$ where $X = \\begin{pmatrix} x \\\\ y \\end{pmatrix}$ and $A = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$.",
+        "calculation": [
+          {
+            "step": "$X' = AX = \\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} x \\\\ y \\end{pmatrix}$",
+            "justification": "Rewriting the system in matrix form."
+          },
+          {
+            "step": "$\\implies A \\begin{pmatrix} x \\\\ y \\end{pmatrix} = \\begin{pmatrix} x \\\\ y \\end{pmatrix}$",
+            "justification": "Substituting $\\dot{x}$ and $\\dot{y}$."
+          },
+          {
+            "step": "$\\implies A = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$",
+            "justification": "By inspection."
+          }
+        ]
       },
       {
         "type": "assert",
         "claim": "The eigenvalues of A are both equal to 1.",
         "calculation": [
           {
-            "step": "$Tr(A) = 2$",
-            "justification": "Trace is the sum of diagonal elements."
+            "step": "$Tr(A) = a + d = 1+1 = 2$",
+            "justification": "Calculating the trace of A."
           },
           {
-            "step": "$Det(A) = 1$",
-            "justification": "Determinant of a 2x2 matrix."
+            "step": "$Det(A) = ad-bc = 1 \\cdot 1 - 0 \\cdot 0 = 1$",
+            "justification": "Calculating the determinant of A."
           },
           {
-            "step": "$\\lambda = \\frac{1}{2} \\left[ 2 \\pm \\sqrt{4-4} \\right] = 1$",
-            "justification": "Quadratic formula for eigenvalues."
+            "step": "$\\lambda = \\frac{1}{2}\\left[ Tr(A) \\pm \\sqrt{Tr(A)^2-4Det(A)}\\right] = \\frac{1}{2}\\left[ 2 \\pm \\sqrt{4-4}\\right] = 1$",
+            "justification": "Using the quadratic formula for eigenvalues."
           }
         ]
       },
       {
         "type": "conclude",
-        "statement": "Since the only eigenvalue is positive (\\(\\lambda = 1\\)), the origin is a source.",
-        "error": "This statement is incomplete and potentially incorrect. While a positive eigenvalue suggests instability, further analysis of eigenvectors and the phase portrait is needed to definitively classify the origin as a source."
+        "statement": "Since the only eigenvalue is $\\lambda = 1$, which is positive, the origin is a source.",
+        "error": "The conclusion does not follow from the eigenvalue alone. To conclude that the origin is a source, we need to show that the eigenvalue is real, positive, and has multiplicity 1."
       }
     ]
   },
   "missing": [
     {
       "type": "problem",
-      "statement": "Determine the eigenvectors corresponding to the eigenvalue \\(\\lambda = 1\\)."
+      "statement": "Prove that the eigenvalue $\\lambda=1$ has algebraic and geometric multiplicity 1.",
+      "solved": false
     },
     {
       "type": "problem",
-      "statement": "Sketch the phase portrait of the system near the origin."
-    },
-    {
-      "type": "problem",
-      "statement": "Based on the eigenvectors and phase portrait, confirm if the origin is indeed a source."
+      "statement": "State and use the classification of equilibrium points for linear systems based on eigenvalues to conclude that the origin is a source.",
+      "solved": false
     }
   ]
 }

@@ -177,7 +177,7 @@ class ChatClient:
     def set_verbose(self, verbose = True):
         self.verbose = verbose
 
-    def __init__(self, client = client_gpt , model="gpt-4o"):
+    def __init__(self, client = client_gpt() , model="gpt-4o"):
         self.client = client
         self.model = model
         self.data_path = os.path.join(llm_dir, model)
@@ -406,7 +406,7 @@ def process_problem(client, problem, name, n = 3, m =2):
     client.dump(data, name, 'solve_with_expanded_deductions')
     return data
 
-def process_problem_file(filename, client = default_client):
+def process_problem_file(filename, client):
     client.set_verbose()
     print(f"Processing {filename}")
     print(f"Verbose: {client.verbose}")

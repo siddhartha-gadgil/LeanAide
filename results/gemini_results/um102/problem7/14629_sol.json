@@ -1,22 +1,22 @@
 {
   "type": "theorem",
-  "name": "Origin of a System of Linear Differential Equations",
+  "name": "Origin of a Linear System",
+  "status": "wrong proof",
   "hypothesis": [
     {
       "type": "let",
-      "variable": "x(t)",
-      "kind": "function",
+      "variable": "x",
+      "kind": "function of t",
       "property": "solution of the differential equation $\\dot{x} = x$"
     },
     {
       "type": "let",
-      "variable": "y(t)",
-      "kind": "function",
+      "variable": "y",
+      "kind": "function of t",
       "property": "solution of the differential equation $\\dot{y} = y$"
     }
   ],
-  "conclusion": "The origin (0, 0) is a source for the system of linear differential equations $\\dot{x} = x$, $\\dot{y} = y$",
-  "status": "wrong proof",
+  "conclusion": "The origin is a source for the linear system of differential equations given by $\\dot{x} = x$ and $\\dot{y} = y$.",
   "proof": {
     "type": "proof",
     "steps": [
@@ -27,9 +27,7 @@
           "$\\dot{x} = x$",
           "$\\dot{y} = y$"
         ],
-        "errors": [
-          "The correct equations are $\\frac{dx}{dt} = x$ and $\\frac{dy}{dt} = y$. Dividing these equations does not give $\\frac{dx}{dy}$ or $\\frac{dy}{dx}$."
-        ]
+        "proof-method": "Dividing the two differential equations"
       },
       {
         "type": "assert",
@@ -37,102 +35,115 @@
         "deduced_from": [
           "$\\frac{dx}{dy} = x$",
           "$\\frac{dy}{dx} = y$"
-        ]
+        ],
+        "proof-method": "Rearranging the equations"
       },
       {
         "type": "assert",
-        "claim": "$\\log x = y$ and $\\log y = x$",
+        "claim": "$\\log \\, x = y$ and $\\log \\, y = x$",
         "deduced_from": [
           "$\\frac{1}{x} dx = dy$",
           "$\\frac{1}{y} dy = dx$"
         ],
-        "proof-method": "Integrating both sides"
-      },
-      {
-        "type": "assert",
-        "claim": "$\\log x - y = 0$ and $\\log y - x = 0$",
-        "deduced_from": [
-          "$\\log x = y$",
-          "$\\log y = x$"
+        "proof-method": "Integrating both sides of the equations",
+        "errors": [
+          {
+            "type": "remark",
+            "statement": "The integration should include constants of integration. This omission affects the subsequent steps and leads to an incorrect conclusion."
+          }
         ]
       },
       {
         "type": "assert",
-        "claim": "$\\log x - y = \\log y - x$",
+        "claim": "$\\log \\, x - y = 0$ and $\\log \\, y - x = 0$",
         "deduced_from": [
-          "$\\log x - y = 0$",
-          "$\\log y - x = 0$"
+          "$\\log \\, x = y$",
+          "$\\log \\, y = x$"
+        ],
+        "proof-method": "Rearranging the equations"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\log \\, x - y = \\log \\, y - x$",
+        "deduced_from": [
+          "$\\log \\, x - y = 0$",
+          "$\\log \\, y - x = 0$"
         ]
       },
       {
         "type": "assert",
-        "claim": "$\\log x - \\log y + x - y = 0$",
+        "claim": "$\\log \\, x - \\log \\, y + x - y = 0$",
         "deduced_from": [
-          "$\\log x - y = \\log y - x$"
-        ]
+          "$\\log \\, x - y = \\log \\, y - x$"
+        ],
+        "proof-method": "Algebraic manipulation"
       },
       {
         "type": "assert",
         "claim": "$\\log(\\frac{x}{y}) + x - y = 0$",
         "deduced_from": [
-          "$\\log x - \\log y + x - y = 0$"
-        ]
+          "$\\log \\, x - \\log \\, y + x - y = 0$"
+        ],
+        "proof-method": "Using the property of logarithms: $\\log a - \\log b = \\log(\\frac{a}{b})$"
       },
       {
         "type": "assert",
-        "claim": "$\\log(\\frac{x}{y}) = y - x$",
+        "claim": "$\\log(\\frac{x}{y}) =  y - x$",
         "deduced_from": [
           "$\\log(\\frac{x}{y}) + x - y = 0$"
-        ]
+        ],
+        "proof-method": "Rearranging the equation"
       },
       {
         "type": "assert",
         "claim": "$\\frac{x}{y} = e^{y-x}$",
         "deduced_from": [
-          "$\\log(\\frac{x}{y}) = y - x$"
+          "$\\log(\\frac{x}{y}) =  y - x$"
         ],
-        "proof-method": "Exponentiating both sides"
+        "proof-method": "Exponentiating both sides of the equation"
       },
       {
         "type": "assert",
         "claim": "$\\frac{x}{y} = \\frac{e^y}{e^x}$",
         "deduced_from": [
           "$\\frac{x}{y} = e^{y-x}$"
-        ]
+        ],
+        "proof-method": "Using the property of exponents: $a^{b-c} = \\frac{a^b}{a^c}$"
       },
       {
         "type": "assert",
         "claim": "$x e^x = y e^y$",
         "deduced_from": [
           "$\\frac{x}{y} = \\frac{e^y}{e^x}$"
-        ]
-      },
-      {
-        "type": "assert",
-        "claim": "$x e^x - y e^y = 0$",
-        "deduced_from": [
-          "$x e^x = y e^y$"
-        ]
+        ],
+        "proof-method": "Multiplying both sides by $y e^x$"
       },
       {
         "type": "let",
         "variable": "f",
-        "value": "$x e^x - y e^y$"
+        "value": "$x e^x - y e^y$",
+        "kind": "function of x and y"
       },
       {
         "type": "assert",
-        "claim": "$\\nabla f =  xe^x + e^x - (ye^y + e^y) = e^x(x+1) - e^y(y+1)$"
+        "claim": "$\\nabla f = \\begin{pmatrix} x e^x + e^x - (y e^y + e^y) \\  \\end{pmatrix}  = \\begin{pmatrix} e^x(x+1) - e^y(y+1) \\ \\end{pmatrix}$",
+        "deduced_from": [
+          "$f = x e^x - y e^y$"
+        ],
+        "proof-method": "Taking the gradient of f"
       },
       {
         "type": "assert",
-        "claim": "At the origin, $\\nabla f = 0$"
+        "claim": "At the origin, $\\nabla f = \\begin{pmatrix} 0 \\ 0 \\end{pmatrix}$",
+        "deduced_from": [
+          "$\\nabla f = \\begin{pmatrix} e^x(x+1) - e^y(y+1) \\ \\end{pmatrix}$"
+        ],
+        "proof-method": "Substituting x = 0 and y = 0"
       },
       {
         "type": "conclude",
         "statement": "Therefore, the origin is a saddle.",
-        "errors": [
-          "$\\nabla f = 0$ at the origin does not imply that the origin is a saddle. Further analysis, such as finding the eigenvalues of the Jacobian matrix, is required to determine the type of critical point."
-        ]
+        "error": "The conclusion is incorrect. The fact that the gradient is zero at the origin does not imply that the origin is a saddle. Further analysis, such as examining the eigenvalues of the Jacobian matrix, is needed to determine the stability of the origin."
       }
     ]
   }

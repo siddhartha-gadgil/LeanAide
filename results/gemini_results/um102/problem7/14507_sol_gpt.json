@@ -1,6 +1,6 @@
 {
   "type": "theorem",
-  "name": "Source of the Linear Differential Equation",
+  "name": "Source at the origin for linear differential equations",
   "hypothesis": [
     {
       "type": "assume",
@@ -18,63 +18,46 @@
     "steps": [
       {
         "type": "assert",
-        "claim": "$X' = AX$",
-        "deduced_from": [
-          "$\\dot{x} = x$",
-          "$\\dot{y} = y$"
-        ],
-        "proof-method": "Combination of the differential equations"
-      },
-      {
-        "type": "assert",
         "claim": "$\\begin{bmatrix} \\dot{x} \\\\ \\dot{y} \\end{bmatrix} = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
-        "deduced_from": [
-          "$\\dot{x} = x$",
-          "$\\dot{y} = y$"
-        ],
-        "proof-method": "Matrix representation of the system"
+        "proof-method": "Matrix representation of the system."
       },
       {
         "type": "assert",
-        "claim": "The eigenvalues are repeated, $\\lambda = 1$",
-        "deduced_from": [
-          "$\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$"
-        ],
-        "proof-method": "Eigenvalue computation of the identity matrix"
+        "claim": "The eigenvalues of the matrix $A = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$ are $\\lambda = 1$ with multiplicity 2.",
+        "proof-method": "Characteristic polynomial and eigenvalue computation."
       },
       {
         "type": "assert",
-        "claim": "Every vector is an eigenvector of the identity transform",
-        "deduced_from": [
-          "The identity matrix"
-        ]
+        "claim": "Every vector is an eigenvector of the identity matrix.",
+        "proof-method": "Property of the identity transformation."
       },
       {
         "type": "assert",
         "claim": "$X(t) = V_0 e^{\\lambda t}$",
-        "deduced_from": [
-          "Solution to the linear system with eigenvalue $\\lambda$"
+        "proof-method": "Solution of the differential equation with initial condition $X(0) = V_0$.",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Complete the explicit form of $X(t)$, explaining why it diverges as $t \\to \\infty$."
+          }
         ]
       },
       {
         "type": "assert",
-        "claim": "$X(t) \\to \\infty$ as $t \\to \\infty$",
-        "proof-method": "Behavior of the exponential function $e^{\\lambda t}$ with $\\lambda = 1$"
+        "claim": "The system is diverging as $t \\to \\infty$.",
+        "proof-method": "Long-term behavior of the exponential solutions."
       },
       {
         "type": "conclude",
-        "statement": "This is a diverging dynamical system, and since each phase line is concurrent at the origin, the origin acts as a source.",
-        "errors": [
-          "The explanation is not rigorous and lacks details on why the origin acts as a source."
-        ]
+        "statement": "Since each phase line is concurrent at the origin, the origin acts as a source.",
+        "error": "The proof does not rigorously show that all trajectories diverge from the origin."
       }
     ]
   },
   "missing": [
     {
       "type": "problem",
-      "statement": "Provide a rigorous explanation of why the origin acts as a source based on the phase portrait and diverging trajectories.",
-      "solved": false
+      "statement": "Justify rigorously why the origin is a source based on the phase portrait and the behavior of solutions."
     }
   ]
 }

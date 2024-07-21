@@ -1,6 +1,6 @@
 {
   "type": "theorem",
-  "name": "Source of the Origin",
+  "name": "Source at the Origin for Linear Differential Equations",
   "hypothesis": [
     {
       "type": "assume",
@@ -11,7 +11,7 @@
       "statement": "$\\dot{y} = y$"
     }
   ],
-  "conclusion": "The origin is a source.",
+  "conclusion": "The origin is a source for the system",
   "status": "incomplete proof",
   "proof": {
     "type": "proof",
@@ -19,7 +19,7 @@
       {
         "type": "assert",
         "claim": "$\\frac{d}{dt} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
-        "proof-method": "Direct computation"
+        "proof-method": "Matrix representation of the system"
       },
       {
         "type": "let",
@@ -30,14 +30,12 @@
       {
         "type": "assert",
         "claim": "$v = Av$",
-        "deduced_from": [
-          "$\\frac{d}{dt} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = A \\begin{bmatrix} x \\\\ y \\end{bmatrix}$"
-        ]
+        "proof-method": "Eigenvalue equation for matrix $A$"
       },
       {
         "type": "assert",
-        "claim": "$\\lambda_1 = \\lambda_2 = 1$ and the eigenspace is 2-dimensional",
-        "proof-method": "Eigenvalue and eigenspace computation"
+        "claim": "$\\lambda_{1} = \\lambda_{2} = 1$, the eigenvalues of $A$",
+        "proof-method": "Calculation of eigenvalues"
       },
       {
         "type": "let",
@@ -53,47 +51,35 @@
       },
       {
         "type": "assert",
-        "claim": "$\\frac{dx}{dt} = x \\implies x = c_1 e^t$",
-        "proof-method": "Solving the differential equation"
+        "claim": "$\\frac{dx}{dt} = x \\implies x = c_{1}e^{t}$",
+        "proof-method": "Solving the differential equation for $x$"
       },
       {
         "type": "assert",
-        "claim": "$\\frac{dy}{dt} = y \\implies y = c_2 e^t$",
-        "proof-method": "Solving the differential equation"
+        "claim": "$\\frac{dy}{dt} = y \\implies y = c_{2}e^{t}$",
+        "proof-method": "Solving the differential equation for $y$"
       },
       {
         "type": "assert",
-        "claim": "$y = \\frac{c_2}{c_1} x = kx$",
-        "proof-method": "Relation between $x$ and $y$"
+        "claim": "$y = \\frac{c_{2}}{c_{1}} x = kx$",
+        "proof-method": "Relationship between $x$ and $y$"
       },
       {
         "type": "assert",
-        "claim": "$|x|$ and $|y|$ increase as $t$ increases",
-        "proof-method": "Observation"
-      },
-      {
-        "type": "assert",
-        "claim": "The trajectory would be straight lines emerging from the origin",
-        "deduced_from": [
-          "$y = kx$",
-          "$|x|$ and $|y|$ increase as $t$ increases"
-        ]
+        "claim": "$|x|$ and $|y|$ increase with increasing $t$",
+        "proof-method": "Exponential growth of solutions"
       },
       {
         "type": "conclude",
-        "statement": "The origin is a source",
-        "errors": [
-          {
-            "statement": "Lack of rigorous justification for the statement that $|x|$ and $|y|$ increase as $t$ increases."
-          }
-        ]
+        "statement": "The trajectory would be straight lines emerging from the origin, hence the origin is a source",
+        "error": "The conclusion is not fully justified; a rigorous proof of the source property is missing"
       }
     ]
   },
   "missing": [
     {
       "type": "problem",
-      "statement": "Provide a rigorous justification for why $|x|$ and $|y|$ increase as $t$ increases.",
+      "statement": "Rigorous proof that the origin is a source for the system",
       "solved": false
     }
   ]

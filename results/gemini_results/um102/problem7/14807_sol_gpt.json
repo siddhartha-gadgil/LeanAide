@@ -1,6 +1,6 @@
 {
   "type": "theorem",
-  "name": "Source at the Origin",
+  "name": "Source at the origin for the linear differential equation",
   "hypothesis": [
     {
       "type": "assume",
@@ -11,84 +11,45 @@
       "statement": "$\\dot{y} = y$"
     }
   ],
-  "conclusion": "The origin is a source.",
+  "conclusion": "The origin is a source",
   "status": "incomplete proof",
   "proof": {
-    "type": "proof",
     "steps": [
       {
         "type": "assert",
-        "claim": "$\\dot{n} = n$",
-        "deduced_from": [
-          "$\\dot{x} = x$"
-        ],
-        "proof-method": "Direct substitution."
+        "claim": "$\\dot{n} = n$"
       },
       {
         "type": "assert",
-        "claim": "$\\dot{y} = y$",
-        "deduced_from": [
-          "$\\dot{y} = y$"
-        ],
-        "proof-method": "Direct substitution."
+        "claim": "$\\dot{y} = y$"
       },
       {
         "type": "assert",
-        "claim": "$(\\begin{smallmatrix} \\dot{n} \\\\ \\dot{y} \\end{smallmatrix}) = (\\begin{smallmatrix} 1 & 0 \\\\ 0 & 1 \\end{smallmatrix}) (\\begin{smallmatrix} n \\\\ y \\end{smallmatrix})$",
-        "proof-method": "Matrix form of the system."
-      },
-      {
-        "type": "let",
-        "variable": "A",
-        "value": "$(\\begin{smallmatrix} 1 & 0 \\\\ 0 & 1 \\end{smallmatrix})$",
-        "kind": "matrix"
+        "claim": "$\\left(\\begin{smallmatrix} \\dot{n} \\\\ \\dot{y} \\end{smallmatrix}\\right) = \\left(\\begin{smallmatrix} 1 & 0 \\\\ 0 & 1 \\end{smallmatrix}\\right) \\left(\\begin{smallmatrix} n \\\\ y \\end{smallmatrix}\\right)$"
       },
       {
         "type": "assert",
-        "claim": "$x' = Ax$",
-        "deduced_from": [
-          "Let A",
-          "Previous matrix equation"
-        ],
-        "proof-method": "Matrix equation representation of the system."
+        "claim": "$x' = Ax$"
       },
       {
         "type": "assert",
-        "claim": "$|A - \\lambda I| = 0$",
-        "proof-method": "Characteristic equation for eigenvalues."
+        "claim": "$|A - \\lambda I| = 0 \\implies \\left|\\begin{smallmatrix} (1-\\lambda) & 0 \\\\ 0 & (1-\\lambda) \\end{smallmatrix}\\right| = 0$"
       },
       {
         "type": "assert",
-        "claim": "$|(\\begin{smallmatrix} (1-\\lambda) & 0 \\\\ 0 & (1-\\lambda) \\end{smallmatrix})| = 0$",
-        "deduced_from": [
-          "Let A"
-        ],
-        "proof-method": "Substitute A into the characteristic equation."
-      },
-      {
-        "type": "assert",
-        "claim": "$\\lambda = 1, 1$",
-        "proof-method": "Solve the determinant equation."
-      },
-      {
-        "type": "assert",
-        "claim": "$0 < \\lambda_1, \\lambda_2$",
-        "proof-method": "Both eigenvalues are positive."
+        "claim": "$\\lambda = 1, 1$"
       },
       {
         "type": "conclude",
-        "statement": "Therefore, the origin is a source.",
-        "error": "The conclusion requires a more detailed explanation of why positive eigenvalues imply that the origin is a source."
-      }
-    ],
-    "errors": [
-      {
-        "problem": {
-          "type": "problem",
-          "statement": "Justify why positive eigenvalues imply that the origin is a source.",
-          "solved": false
-        }
+        "statement": "$0 < \\lambda_1, \\lambda_2$ implies source at the origin",
+        "error": "The proof does not explain why $0 < \\lambda_1, \\lambda_2$ implies that the origin is a source."
       }
     ]
-  }
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Explain why $0 < \\lambda_1, \\lambda_2$ implies that the origin is a source."
+    }
+  ]
 }

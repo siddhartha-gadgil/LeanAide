@@ -1,6 +1,6 @@
 {
   "type": "theorem",
-  "name": "For the linear differential equation $\\dot{x}=x$ and $\\dot{y}=y$. Prove that the origin is a source.",
+  "name": "Source of the Origin",
   "hypothesis": [
     {
       "type": "assume",
@@ -18,48 +18,52 @@
     "steps": [
       {
         "type": "assert",
-        "claim": "$\\dot{x} = x + 0y$ and $\\dot{y} = ax + y$"
+        "claim": "$\\dot{x} = x + 0 \\cdot y$"
       },
       {
         "type": "assert",
-        "claim": "$\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}$"
+        "claim": "$\\dot{y} = 0 \\cdot x + y$"
       },
       {
         "type": "assert",
-        "claim": "The eigenvalues of $A$ are $1$ and $1$",
-        "proof-method": "Calculation"
+        "claim": "$\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}$",
+        "proof-method": "Matrix form of the system."
       },
       {
         "type": "assert",
-        "claim": "$0 < \\lambda_1, \\lambda_2$ and both are $> 0$",
+        "claim": "Eigenvalues of $A = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$ are $\\lambda_1 = 1$ and $\\lambda_2 = 1$",
+        "proof-method": "Direct calculation of eigenvalues."
+      },
+      {
+        "type": "assert",
+        "claim": "$0 < \\lambda_1, \\lambda_2$"
+      },
+      {
+        "type": "assert",
+        "claim": "Both eigenvalues are positive, so the solutions $e^{\\lambda t}$ scale proportionately.",
+        "proof-method": "Exponential growth of solutions."
+      },
+      {
+        "type": "assert",
+        "claim": "This implies the origin is a source."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{x}{y} = e^{(1-\\lambda_2)t}$ is constant.",
         "errors": [
-          "Incorrect assumption about the sign of the eigenvalues. The statement $0 < \\lambda_1, \\lambda_2$ is redundant given $\\lambda_1 = \\lambda_2 = 1$."
+          "The expression $e^{(1-\\lambda_2)t}$ should be evaluated with respect to both eigenvalues being equal to 1."
         ]
       },
       {
         "type": "assert",
-        "claim": "Both $e^{\\lambda t}$ terms scale proportionately, indicating a source.",
-        "errors": [
-          "Insufficient justification. More explanation is needed as to why positive eigenvalues imply that the origin is a source."
-        ]
-      },
-      {
-        "type": "assert",
-        "claim": "$\\frac{x}{y} = e^{(1-\\lambda_2)t}$ which is constant, implying a straight line slope.",
-        "errors": [
-          "Incorrect conclusion. The ratio $\\frac{x}{y}$ does not necessarily remain constant as $t$ varies. Need correct justification."
-        ]
-      },
-      {
-        "type": "conclude",
-        "statement": "This will be a source.",
-        "errors": [
-          "The conclusion is not properly justified based on the given steps."
-        ]
+        "claim": "The slope is a straight line."
       }
     ],
     "errors": [
-      "The proof lacks complete and correct justifications for the claims made. Specific errors are noted in the individual assertions."
+      {
+        "type": "problem",
+        "statement": "The proof lacks rigor in concluding that $\\frac{x}{y} = e^{(1-\\lambda_2)t}$ is constant. This needs further justification."
+      }
     ]
   }
 }

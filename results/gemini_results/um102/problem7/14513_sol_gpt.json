@@ -4,65 +4,75 @@
   "hypothesis": [
     {
       "type": "assume",
-      "statement": "$\\dot{x} = x$"
-    },
-    {
-      "type": "assume",
-      "statement": "$\\dot{y} = y$"
+      "statement": "$\\dot{x} = x$ and $\\dot{y} = y$"
     }
   ],
   "conclusion": "The origin is a source.",
-  "status": "wrong proof",
+  "status": "incomplete proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
-        "type": "assert",
-        "claim": "$X' = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix} X$",
-        "proof-method": "System of differential equations in matrix form"
+        "type": "let",
+        "variable": "X",
+        "value": "$\\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
+        "kind": "vector in $\\mathbb{R}^2$"
       },
       {
         "type": "assert",
-        "claim": "The matrix $\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$ has eigenvalues $\\lambda = 1$",
-        "deduced_from": [
-          "$\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$"
-        ],
-        "proof-method": "Calculation of eigenvalues"
+        "claim": "$\\dot{X} = A X$ where $A = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$",
+        "calculation": [
+          "$\\dot{X} = \\begin{bmatrix} \\dot{x} \\\\ \\dot{y} \\end{bmatrix} = \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "This matrix $A$ has repeating real eigenvalues $\\lambda = 1$",
+        "proof-method": "eigenvalue calculation"
       },
       {
         "type": "assert",
         "claim": "Every vector $V \\in \\mathbb{R}^2$ is an eigenvector",
-        "proof-method": "Direct multiplication",
-        "errors": [
-          "This is incorrect. Not every vector $V \\in \\mathbb{R}^2$ is an eigenvector. Only non-zero multiples of the eigenvectors of the matrix are eigenvectors."
-        ]
-      },
-      {
-        "type": "assert",
-        "claim": "The solution for this system is $X(t) = \\alpha e^t V + t V e^{Rt^2}$",
-        "errors": [
-          "The proposed general solution $X(t) = \\alpha e^t V + t V e^{Rt^2}$ is incorrect. The correct general solution should be $X(t) = \\alpha e^t V$ where $V$ is an eigenvector corresponding to the eigenvalue 1."
-        ]
-      },
-      {
-        "type": "assert",
-        "claim": "These are straight line solutions moving away from the origin",
         "deduced_from": [
-          "The nature of the exponentials $e^t$ with positive exponent"
+          "Eigenvalue $\\lambda = 1$"
         ],
-        "proof-method": "Observation from the solution $X(t) = \\alpha e^t V$",
+        "calculation": [
+          "$A V = V$"
+        ],
         "errors": [
-          "This step relies on the incorrect general solution stated earlier."
+          "Incorrect eigenvector statement: $\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix} V = V$ for every $V \\in \\mathbb{R}^2$ is incorrect, as not every vector is an eigenvector."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The solution for this system is $X(t) = xe^t V + tVe^{t^2}$",
+        "errors": [
+          "Incorrect solution form: Should be $X(t) = C_1 e^{t} \\begin{bmatrix} 1 \\\\ 0 \\end{bmatrix} + C_2 e^{t} \\begin{bmatrix} 0 \\\\ 1 \\end{bmatrix}$"
+        ],
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Find the correct solution to the differential equation."
+          }
         ]
       },
       {
         "type": "conclude",
-        "statement": "This system is a source.",
+        "statement": "These are straight line solutions moving away from the origin. This system is a source.",
         "errors": [
-          "Due to the errors in the eigenvector assertion and the solution form, the conclusion that the system is a source is not justified by the given proof."
+          "Incorrect solution form invalidates the conclusion."
         ]
       }
     ]
   },
-  "error": "The proof contains incorrect assertions about eigenvectors and the solution of the system, leading to an unjustified conclusion."
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Correctly solve the system of differential equations."
+    },
+    {
+      "type": "problem",
+      "statement": "Verify the system is indeed a source with the correct solution."
+    }
+  ]
 }

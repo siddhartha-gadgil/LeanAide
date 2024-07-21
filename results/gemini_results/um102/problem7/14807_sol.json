@@ -1,62 +1,73 @@
 {
   "type": "theorem",
-  "name": "Origin as Source for a Linear System",
+  "name": "Source at the Origin",
   "hypothesis": [
     {
       "type": "let",
-      "variable": "<anonymous>",
-      "kind": "System of differential equations",
-      "property": "Linear with equations $\\dot{x} = x$ and $\\dot{y} = y$"
+      "variable": "x",
+      "kind": "function of t",
+      "property": "satisfies the differential equation $\\dot{x} = x$"
+    },
+    {
+      "type": "let",
+      "variable": "y",
+      "kind": "function of t",
+      "property": "satisfies the differential equation $\\dot{y} = y$"
     }
   ],
-  "conclusion": "The origin is a source for the given system of differential equations.",
+  "conclusion": "The origin (0, 0) is a source for the system of differential equations $\\dot{x} = x$, $\\dot{y} = y$.",
   "status": "incomplete proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "remark",
-        "statement": "We need to analyze the eigenvalues of the coefficient matrix to determine the stability of the origin."
+        "statement": "We need to analyze the eigenvalues of the coefficient matrix of the system."
       },
       {
         "type": "assert",
-        "claim": "The system can be written in matrix form as $\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}$.",
-        "proof-method": "Rewriting the given equations in matrix form."
+        "claim": "The system can be written in matrix form as  $\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}$.",
+        "proof-method": "Rewriting the given differential equations."
       },
       {
         "type": "let",
         "variable": "A",
         "value": "{\\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}}",
-        "kind": "matrix",
-        "property": "Coefficient matrix of the system"
+        "kind": "matrix"
       },
       {
         "type": "assert",
-        "claim": "The eigenvalues of A are the solutions to the equation  $|A - \\lambda I| = 0$",
+        "claim": "The eigenvalues of A are the solutions to the equation  $|A - \\lambda I| = 0$.",
         "deduced_from": [
-          "Eigenvalues of a matrix"
+          "Definition of eigenvalues"
         ]
       },
       {
         "type": "assert",
-        "claim": "The eigenvalues of A are $\\lambda_1 = 1$ and $\\lambda_2 = 1$.",
-        "calculation": [
-          "$\\left| \\begin{smallmatrix} (1-\\lambda) & 0 \\\\ 0 & (1-\\lambda) \\end{smallmatrix} \\right| = 0$",
-          "$(1-\\lambda)^2 = 0$",
-          "$\\lambda = 1, 1$"
-        ]
+        "claim": "The equation  $|A - \\lambda I| = 0$  is equivalent to  $\\begin{vmatrix} (1-\\lambda) & 0 \\\\ 0 & (1-\\lambda) \\end{vmatrix} = 0$.",
+        "proof-method": "Substitution"
       },
       {
-        "type": "conclude",
-        "statement": "Since both eigenvalues are positive ($0 < \\lambda_1, \\lambda_2$), the origin is a source.",
-        "error": "The conclusion is not fully justified. While having positive eigenvalues is a necessary condition for a source, it is not sufficient. Further analysis, such as considering the eigenvectors or phase portrait, is required to definitively conclude that the origin is a source."
+        "type": "assert",
+        "claim": "Solving the equation $\\begin{vmatrix} (1-\\lambda) & 0 \\\\ 0 & (1-\\lambda) \\end{vmatrix} = 0$ gives us  $\\lambda = 1, 1$.",
+        "proof-method": "Solving the determinant"
+      },
+      {
+        "type": "assert",
+        "claim": "Since both eigenvalues ($\\lambda_1 = 1$ and $\\lambda_2 = 1$) are positive, the origin is a source.",
+        "errors": [
+          {
+            "type": "error",
+            "statement": "The condition for a source is that both eigenvalues are **strictly** positive.  While the eigenvalues are positive, they are not strictly positive (i.e., they are not greater than 0)."
+          }
+        ]
       }
     ]
   },
   "missing": [
     {
       "type": "problem",
-      "statement": "Provide a complete justification for why the origin is a source, potentially using the eigenvectors or analyzing the phase portrait of the system."
+      "statement": "Provide a complete analysis of the phase portrait to correctly classify the equilibrium point at the origin."
     }
   ]
 }

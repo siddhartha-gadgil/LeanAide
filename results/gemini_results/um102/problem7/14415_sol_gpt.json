@@ -1,6 +1,6 @@
 {
   "type": "theorem",
-  "name": "Source at Origin for Linear Differential Equation",
+  "name": "Source of the Origin",
   "hypothesis": [
     {
       "type": "assume",
@@ -11,42 +11,68 @@
       "statement": "$\\dot{y} = y$"
     }
   ],
-  "conclusion": "The origin is a source.",
-  "status": "wrong proof",
+  "conclusion": "The origin is a source for the given system of differential equations.",
+  "status": "incomplete proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "assert",
-        "claim": "$\\frac{dx}{dt} = x$ and $\\frac{dy}{dt} = y$",
-        "deduced_from": [
-          "$\\dot{x} = x$",
-          "$\\dot{y} = y$"
-        ]
+        "claim": "$\\frac{dx}{dt} = x$",
+        "proof-method": "Given"
       },
       {
         "type": "assert",
-        "claim": "$\\log \\frac{dx}{x} = dt$ and $\\log \\frac{dy}{y} = dt$",
-        "proof-method": "Integration of both sides"
+        "claim": "$\\frac{dy}{dt} = y$",
+        "proof-method": "Given"
       },
       {
         "type": "assert",
-        "claim": "$\\log \\frac{x}{x_0} = t + c$ and $\\log \\frac{y}{y_0} = t + c_1$",
-        "proof-method": "Assuming initial points $x_0$ and $y_0$"
+        "claim": "$\\frac{dx}{x} = dt$",
+        "proof-method": "Separation of variables"
       },
       {
         "type": "assert",
-        "claim": "$\\frac{x}{x_0} = Ae^t$ and $\\frac{y}{y_0} = Be^t$",
-        "proof-method": "Exponentiating both sides"
+        "claim": "$\\frac{dy}{y} = dt$",
+        "proof-method": "Separation of variables"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\log \\frac{x}{x_0} = t + c_1$",
+        "proof-method": "Integration"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\log \\frac{y}{y_0} = t + c_2$",
+        "proof-method": "Integration"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{x}{x_0} = Ae^t$",
+        "proof-method": "Exponentiation"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{y}{y_0} = Be^t$",
+        "proof-method": "Exponentiation"
       },
       {
         "type": "conclude",
-        "statement": "It's a saddle",
-        "error": "Incorrect conclusion. The correct classification should be a source, not a saddle."
+        "statement": "It's a saddle saddle",
+        "error": "Incorrect classification; should be justified as a source."
       }
-    ],
-    "errors": [
-      "Error in concluding that the origin is a saddle, rather than a source."
     ]
-  }
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Justify why the origin is a source based on the solutions for $x$ and $y$."
+    }
+  ],
+  "errors": [
+    {
+      "type": "remark",
+      "statement": "The term 'saddle' is incorrect; the system actually represents a source."
+    }
+  ]
 }
