@@ -43,7 +43,7 @@ def mathstralEgs : CoreM (List (List String)) := do
   ["1", "3", "5"].mapM fun problem =>
     [best, worst].mapM (fun student => mathstralWrite problem student)
 
-#eval mathstralWrite "3" best
+-- #eval mathstralWrite "3" best
 
 def numinaExample := numina.structuredProof proofExample
 /-

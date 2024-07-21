@@ -19,25 +19,27 @@ def statement(js):
     return f"{kind} {js['name']}: {js['theorem']} := by sorry"
 
 
-client_azure = AzureOpenAI(
+def client_azure():
+    return AzureOpenAI(
   azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT"), 
   api_key=os.getenv("AZURE_OPENAI_KEY"),  
-  api_version="2023-05-15"
-)
+  api_version="2023-05-15")
+    
 
 from openai import OpenAI
 
-client_gpt = OpenAI(
-  api_key=os.environ['OPENAI_API_KEY'],  # this is also the default, it can be omitted
-)
+def client_gpt():
+    return OpenAI(
+  api_key=os.environ['OPENAI_API_KEY'], )
 
-from mistralai.client import MistralClient
-from mistralai.models.chat_completion import ChatMessage
+def client_mistral():
+    from mistralai.client import MistralClient
 
-api_key = os.environ["MISTRAL_API_KEY"]
-model = "mistral-large-latest"
+    api_key = os.environ["MISTRAL_API_KEY"]
+    model = "mistral-large-latest"
 
-client_mistral = MistralClient(api_key=api_key)
+    return MistralClient(api_key=os.environ["MISTRAL_API_KEY"])
+
 
 deployment_name='GPT4TestDeployment'
 
@@ -314,13 +316,13 @@ class ChatClient:
 class AzureChatClient(ChatClient):
     def __init__(self, deployment_name = deployment_name):
         self.deployment_name = deployment_name
-        self.client = client_azure
+        self.client = client_azure()
         self.data_path = os.path.join(llm_dir, "azure", deployment_name)
         os.makedirs(self.data_path, exist_ok=True)
 
     def choices(self, query, sys_prompt = sys_prompt, examples = [], n= 3):
         messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]
-        completion = client_azure.chat.completions.create(
+        completion = self.client.chat.completions.create(
             model=self.deployment_name,
             n= n,
             temperature=0.8,
@@ -330,7 +332,7 @@ class AzureChatClient(ChatClient):
     
     def choices_json(self, query, sys_prompt = sys_prompt, examples = [], n= 3):
         messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]
-        completion = client_azure.chat.completions.create(
+        completion = self.client.chat.completions.create(
             model=self.deployment_name,
             n= n,
             temperature=0.8,
@@ -339,15 +341,16 @@ class AzureChatClient(ChatClient):
         )
         return completion.choices
 
-default_client = AzureChatClient()
+# default_client = AzureChatClient()
 class MistralChatClient(ChatClient):
     def __init__(self):
         self.model = "mistral-large-latest"
-        self.client = client_mistral
-        self.data_path = os.path.join(llm_dir, "mistral", model)
+        self.client = client_mistral()
+        self.data_path = os.path.join(llm_dir, "mistral", self.model)
         os.makedirs(self.data_path, exist_ok=True)    
 
     def choices(self, query, sys_prompt=sys_prompt, examples = [], n=3):
+        from mistralai.models.chat_completion import ChatMessage
         messages = [ChatMessage(role="user", content=sys_prompt+'\n------\n'+ query)]
         completion = self.client.chat(
             model=self.model,
@@ -421,7 +424,7 @@ def process_problem_file(filename, client = default_client):
 # The code below is deprecated. One should use the classes above.
 def azure_completions(query, sys_prompt = sys_prompt, examples = [], n=5, deployment_name = deployment_name):
     messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]
-    completion = client_azure.chat.completions.create(
+    completion = client_azure().chat.completions.create(
         model=deployment_name,
         n= n,
         temperature=0.8,
@@ -432,7 +435,7 @@ def azure_completions(query, sys_prompt = sys_prompt, examples = [], n=5, deploy
 
 def gpt4t_completions(query, sys_prompt = sys_prompt, examples = [], n= 3):
     messages = [{"role": "system", "content": sys_prompt}] + examples + [{"role": "user", "content": query}]
-    completion = client_gpt.chat.completions.create(
+    completion = client_gpt().chat.completions.create(
         model="gpt-4-turbo-preview",
         n= n,
         temperature=0.8,
@@ -478,7 +481,7 @@ def escape(s):
     return re.sub(r"(?<=[ ])[\t\r](?=[a-zA-Z])",  r"\\t", re.sub(r"(?<=[ ])[\n\r](?=[a-zA-Z])", r"\\n", s))
 
 def azure_embed(text):
-    response = client_azure.embeddings.create(
+    response = client_azure().embeddings.create(
     input=text,
     model="leanaide-embed"
     )
