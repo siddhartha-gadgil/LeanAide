@@ -222,3 +222,12 @@ set_option pp.proofs.withType true in
 #print List.sizeOf_dedupKeys
 
 #check Syntax.getKind
+
+example (P Q: Prop) : P := by
+  have ass : Q := sorry
+  have imp : Q → P := sorry
+  aesop?
+
+example (P : Nat → Prop)(f : Nat → Nat): P (f 5) := by
+  have ass : ∀ n, P n := sorry
+  aesop?

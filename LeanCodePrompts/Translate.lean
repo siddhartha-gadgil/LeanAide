@@ -263,7 +263,7 @@ def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true)
 -/
 def getLeanCodeJson (s: String)
   (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})(numSim : Nat:= 8)(numConcise: Nat := 0)(numDesc : Nat := 0)
-  (includeFixed: Bool := Bool.false)(toChat : ToChatExample := simpleChatExample)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.empty) : CoreM <| Json × Json × Array (String × Json) := do
+  (includeFixed: Bool := Bool.false)(toChat : ToChatExample := simpleChatExample)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.empty)(header: String := "Theorem") : CoreM <| Json × Json × Array (String × Json) := do
   logTimed s!"translating string `{s}` with {numSim} examples"
   match ← getCachedJson? s with
   | some js => return js
@@ -286,7 +286,7 @@ def getLeanCodeJson (s: String)
       let pairs := pairs.map fun (doc, thm) =>
         ("Translate the following statement into Lean 4:\n## Theorem: " ++ doc ++ "\n\nGive ONLY the Lean code", thm)
       let examples := pairs.filterMap toChat
-      let s' := "Translate the following statement into Lean 4:\n## Theorem: " ++ s ++ "\n\nGive ONLY the Lean code"
+      let s' := s!"Translate the following statement into Lean 4:\n## {header}: " ++ s ++ "\n\nGive ONLY the Lean code"
       let messages ← mkMessages s' examples (← transPrompt) !server.hasSysPropmpt
       trace[Translate.info] m!"prompt: \n{messages.pretty}"
       logTimed "querying server"
