@@ -22,7 +22,7 @@ Each JSON object has a "type" field. The possible values for this field are: "de
     * **Proof-method**: (optional) the method of proof for the claim; this should be a single phrase or a fairly simple sentence; if a longer justification is needed break the step into smaller steps. If the method is deduction from a result, use the **deduced_from** field.
     * **Calculation**: (optional) a JSON list of calculation steps, with each step either a JSON string (for an equality, inequality etc) or a JSON object with two fields, **step** (the step) and **justification** (the justification for the step).
     * **Missing**: (optional) a JSON list of **problem** fields which are problems that need to be solved or results that need to be proved to complete the proof. Standard results/criteria may be omitted from the proof: include them in the **deduced_from** field.
-    * **Errors**: (optional) a JSON list of errors in the proof.
+    * **Errors**: a list of errors in the proof. Report only actual errors, with missing steps reported in the **missing** field.
 * **Theorem**: The statement of a mathematical theorem, lemma or claim.
   * Additional fields: 
     * **Hypothesis**: a JSON list of data and assumptions, **let** and **assume** statements.
@@ -32,8 +32,8 @@ Each JSON object has a "type" field. The possible values for this field are: "de
       * **Proof**: the proof, if the status is "proved".
       * **Ref**: reference to earlier proof, if the status is "proved earlier" or "proved later".
       * **Cite**: reference to literature or external sources, if the status is "recalled"; for well known results, this is omitted.
-      * **Error**: the error in the proof, if the status is "wrong proof".
       * **Missing**: a JSON list of **problem** fields which are problems that need to be solved or results that need to be proved to complete the proof, if the status is "incomplete proof". Standard results/criteria may be omitted from the proof.  
+      * **Errors**: the errors in the proof, if the status is "wrong proof". Report only actual errors, with missing steps reported in the **missing** field.
 * **Problem**: A mathematical problem that is not a theorem, such as "Find ..."
   * Additional fields: 
     * **Statement**: the problem statement.
@@ -41,7 +41,7 @@ Each JSON object has a "type" field. The possible values for this field are: "de
     * **Answer**: (optional) If the "solved" field is true, the answer to the problem (without justification).
     * **Proof**: (optional) If the "solved" field is true, a `ProofJSON` block giving a proof that the answer is correct.
     * **Missing**: (optional) a JSON list of **problem** fields which are problems that need to be solved or results that need to be proved to complete the proof. Standard results/criteria may be omitted from the proof.
-    * **Errors**: (optional) a JSON list of errors in the proof.
+    * **Errors**: a list of errors in the proof. Report only actual errors, with missing steps reported in the **missing** field.
 * **Proof**: A proof of a theorem, lemma or claim.
   * Additional fields: 
     * **Steps**: a JSON list of steps in the proof.
@@ -66,7 +66,8 @@ Each JSON object has a "type" field. The possible values for this field are: "de
 * **Conclude**: A conclusion in a proof, typically the last statement in a proof block.
   * Additional fields: 
     * **Statement**: the conclusion.
-    * **Error**: (optional) an error in the proof so that the conclusion is not justified.
+    * **Missing**: a JSON list of **problem** fields which are problems that need to be solved or results that need to be proved to complete the proof, if the status is "incomplete proof". Standard results/criteria may be omitted from the proof.  
+    * **Errors**: (optional) an error in the proof so that the conclusion is not justified. Report only actual errors, with missing steps reported in the **missing** field.
 * **Remark**: A remark or comment that is NOT MATHEMATICAL, instead being for motivation, attention, sectioning etc.
   * Additional fields: 
     * **Statement**: the remark or comment.
