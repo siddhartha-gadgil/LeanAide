@@ -156,8 +156,7 @@ def write_structured_proofs_with_knowns(prefix):
         with open(output_file, "w") as f:
             f.write(f"## Theorem: {thm}\n\n## Proof: {pf}")
 
-# thm = "The map $p \colon \mathbb{R}^2 \to X$, defined by $p(x,y) = (x, y^2)$, is a covering map, where $X = \{(x,y) \in \mathbb{R}^2 : y \ge 0\}$."
-
-# structured, pf = structured_proof_from_image(thm, "mainak-1.png")
-# print(pf)
-# print(structured)
+def truly_missing(knowns, s):
+    prompt = f"The following are known results that can be used without proof, even implicitly.  \n\n## Known results: \n\n{knowns}\n\n---\n\nThe following was reported as a missing step in a proof:\n {s}\n\nDoes this result follow from the above known results? Answer 'yes' or 'no'."
+    response = chat_client.math(prompt)
+    return response[0]
