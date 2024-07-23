@@ -1,73 +1,63 @@
 {
   "type": "theorem",
-  "name": "Origin is Circulation",
+  "name": "For the linear differential equation \\( \\dot{x}=-y \\) and \\( \\dot{y}=x \\). Prove that the origin is circulation.",
   "hypothesis": [
     {
+      "type": "let",
+      "variable": "x",
+      "kind": "function of time"
+    },
+    {
+      "type": "let",
+      "variable": "y",
+      "kind": "function of time"
+    },
+    {
       "type": "assume",
-      "statement": "$\\dot{x} = -y$ and $\\dot{y} = x$"
+      "statement": "The system of differential equations is given by \\( \\dot{x}=-y \\) and \\( \\dot{y}=x \\)"
     }
   ],
-  "conclusion": "The origin is a circulation.",
-  "status": "wrong proof",
+  "conclusion": "The origin is circulation.",
+  "status": "incomplete proof",
   "proof": {
+    "type": "proof",
     "steps": [
       {
         "type": "let",
         "variable": "A",
-        "value": "$\\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}$"
-      },
-      {
-        "type": "assert",
-        "claim": "$AX = \\lambda X$",
-        "proof-method": "Eigenvalue equation for matrix A"
+        "value": "\\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}",
+        "kind": "matrix"
       },
       {
         "type": "assert",
         "claim": "The eigenvalues of $A$ are $\\lambda = \\pm i$",
-        "deduced_from": {
-          "From_context": [
-            "$A = \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}$"
-          ]
-        }
+        "proof-method": "characteristic polynomial"
       },
       {
         "type": "let",
-        "variable": "X(t)",
-        "value": "$e^{-it} \\begin{pmatrix} 1 \\\\ i \\end{pmatrix}$",
-        "kind": "solution to the differential equation"
+        "variable": "v",
+        "value": "\\begin{bmatrix} 1 \\\\ i \\end{bmatrix}",
+        "kind": "eigenvector",
+        "property": "corresponding to $\\lambda = i$"
       },
       {
         "type": "assert",
-        "claim": "$X(t) = \\begin{pmatrix} \\cos t \\\\ -\\sin t \\end{pmatrix} + i \\begin{pmatrix} \\sin t \\\\ \\cos t \\end{pmatrix}$",
-        "calculation": [
-          {
-            "step": "$\\begin{pmatrix} \\cos t + i \\sin t \\\\ i \\cos t - \\sin t \\end{pmatrix} \\begin{pmatrix} 1 \\\\ i \\end{pmatrix}$",
-            "justification": "Multiplication of complex exponentials"
-          }
-        ]
-      },
-      {
-        "type": "assert",
-        "claim": "$X_{im} = \\begin{pmatrix} \\sin t \\\\ \\cos t \\end{pmatrix}$",
-        "calculation": [
-          "$\\begin{pmatrix} \\cos t \\\\ -\\sin t \\end{pmatrix} + i \\begin{pmatrix} \\sin t \\\\ \\cos t \\end{pmatrix}$"
-        ]
-      },
-      {
-        "type": "assert",
-        "claim": "$X(2\\pi) = X(0)$",
-        "proof-method": "Periodicity of sine and cosine functions"
+        "claim": "The general solution is \\[X(t) = e^{it} \\begin{bmatrix} 1 \\\\ i \\end{bmatrix} = \\begin{bmatrix} \\cos t + i \\sin t \\\\ i \\cos t - \\sin t \\end{bmatrix} = \\begin{bmatrix} \\cos t \\\\ - \\sin t \\end{bmatrix} + i \\begin{bmatrix} \\sin t \\\\ \\cos t \\end{bmatrix}.\\]",
+        "proof-method": "solving linear systems using eigenvalues and eigenvectors"
       },
       {
         "type": "conclude",
         "statement": "This is a saddle.",
         "errors": [
-          "The conclusion that the origin is a saddle is incorrect. Given the eigenvalues are purely imaginary, the correct conclusion should be that the origin is a circulation/centre."
+          "Incorrect conclusion: The eigenvalues are purely imaginary, so the origin is a circulation/centre."
         ]
       }
     ]
   },
-  "errors": [
-    "The final conclusion of the proof is incorrect. The eigenvalues being purely imaginary indicates that the origin is a circulation/centre, not a saddle."
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Prove that the origin is a circulation/centre using the correct known result."
+    }
   ]
 }

@@ -1,125 +1,183 @@
 {
   "type": "theorem",
   "name": "Circulation at the Origin",
+  "status": "incomplete proof",
   "hypothesis": [
     {
       "type": "let",
-      "variable": "x(t)",
-      "kind": "function",
-      "property": "solution to differential equation $\\dot{x}=-y$"
+      "variable": "<anonymous>",
+      "value": "$\\dot{x}=-y$",
+      "kind": "differential equation"
     },
     {
       "type": "let",
-      "variable": "y(t)",
-      "kind": "function",
-      "property": "solution to differential equation $\\dot{y} = x$"
+      "variable": "<anonymous>",
+      "value": "$\\dot{y}=x$",
+      "kind": "differential equation"
     }
   ],
-  "conclusion": "The system of differential equations describes a circulation about the origin.",
-  "status": "incomplete proof",
+  "conclusion": "The origin is a circulation for the given system of linear differential equations.",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "remark",
-        "statement": "We are given the system of differential equations $AX=X'$ where $A = \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}$.  To solve this, we will find the eigenvalues and eigenvectors of $A$."
+        "statement": "We analyze the system by representing it in matrix form and finding the eigenvalues."
+      },
+      {
+        "type": "let",
+        "variable": "A",
+        "value": "$\\begin{bmatrix} 0 & -1 \\ 1 & 0 \\end{bmatrix}$",
+        "kind": "matrix"
+      },
+      {
+        "type": "let",
+        "variable": "X",
+        "value": "$\\begin{bmatrix}x \\ y \\end{bmatrix}$",
+        "kind": "vector"
+      },
+      {
+        "type": "let",
+        "variable": "X'",
+        "value": "$\\begin{bmatrix} -y \\ x\\end{bmatrix}$",
+        "kind": "vector"
       },
       {
         "type": "assert",
-        "claim": "The eigenvalues of $A$ are $\\lambda = \\pm i$.",
-        "proof-method": "Solving the characteristic equation.",
+        "claim": "The eigenvalues of A are $\\pm i$.",
+        "proof-method": "Calculation",
         "calculation": [
-          {
-            "step": "$det (A - \\lambda I) = 0$",
-            "justification": "Definition of eigenvalues."
-          },
-          {
-            "step": "$ det \\left( \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix} + \\begin{bmatrix} -\\lambda & 0 \\\\ 0 & -\\lambda \\end{bmatrix} \\right) = 0$",
-            "justification": "Substituting the matrix A and the identity matrix."
-          },
-          {
-            "step": "$ det \\begin{bmatrix} -\\lambda & -1 \\\\ 1 & -\\lambda \\end{bmatrix} = 0$",
-            "justification": "Simplifying."
-          },
-          {
-            "step": "$\\lambda^2 + 1 = 0$",
-            "justification": "Computing the determinant."
-          },
-          {
-            "step": "$\\lambda^2 = -1$",
-            "justification": "Rearranging."
-          },
-          {
-            "step": "$\\lambda = \\pm i$",
-            "justification": "Solving for $\\lambda$."
-          }
+          "$\\det(A - dI) = 0$",
+          "$\\det\\Bigg(\\begin{bmatrix} 0 & -1 \\ 1 & 0 \\end{bmatrix} + \\begin{bmatrix} -d & 0 \\ 0 & -d \\end{bmatrix} \\Bigg) = 0$",
+          "$\\det \\Bigg( \\begin{bmatrix} -d & -1 \\ 1 & -d \\end{bmatrix} \\Bigg) = 0$",
+          "$ d^2 +1 = 0$",
+          "$ d^2 = -1$",
+          "$ d = \\pm i$"
         ]
       },
       {
         "type": "remark",
-        "statement": "Let's start with the eigenvalue  $\\lambda_1 = i$."
-      },
-      {
-        "type": "assert",
-        "claim": "An eigenvector corresponding to $\\lambda_1 = i$ is $\\begin{bmatrix} 1 \\\\ -i \\end{bmatrix}$.",
-        "proof-method": "Solving the system $(A-\\lambda I)X=0$",
-        "calculation": [
-          {
-            "step": "$ \\begin{bmatrix} -i & -1 \\\\ 1 & -i \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 0 \\\\ 0 \\end{bmatrix}$",
-            "justification": "Plugging in $\\lambda_1 = i$ into $(A-\\lambda I)X=0$."
-          },
-          {
-            "step": "$ -ix - y = 0$",
-            "justification": "Expanding the matrix equation."
-          },
-          {
-            "step": "$ +x -iy = 0$",
-            "justification": "Second equation is redundant"
-          },
-          {
-            "step": "$ x = iy$",
-            "justification": "Solving for x"
-          },
-          {
-            "step": "$\\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} iy \\\\ y \\end{bmatrix}$",
-            "justification": "Rewriting in vector form"
-          },
-          {
-            "step": "$\\begin{bmatrix} x \\\\ y \\end{bmatrix} = y\\begin{bmatrix} i \\\\ 1 \\end{bmatrix}$",
-            "justification": "Factoring out y"
-          }
-        ]
+        "statement": "Since the eigenvalues are purely imaginary, the origin is a circulation."
       },
       {
         "type": "remark",
-        "statement": "A solution to the system of differential equations could then be given by $X(t) = e^t \\begin{bmatrix} 1 \\\\ -i \\end{bmatrix}$. However, this solution involves complex numbers and we are seeking real solutions."
+        "statement": "The following section attempts to derive the general solution, but contains errors and is incomplete."
       },
       {
         "type": "assert",
-        "claim": " $X(t) = \\begin{bmatrix} i sin \\theta + cos \\theta \\\\ sin \\theta - i cos \\theta \\end{bmatrix}$ where $\\theta = t$ is a solution to the system of differential equations.",
-        "proof-method": "Using Euler's formula and simplifying.",
-        "missing steps": [
-          {
-            "type": "problem",
-            "statement": "Show the intermediate steps to arrive at the given solution."
-          }
+        "claim": "For $d=i$, the eigenvector is $\\begin{bmatrix}1 \\ i\\end{bmatrix}$.",
+        "proof-method": "Calculation",
+        "calculation": [
+          "$\\begin{bmatrix} -i & -1 \\ 1 & -i \\end{bmatrix} \\begin{bmatrix} x \\ y\\end{bmatrix} = \\begin{bmatrix} 0 \\ 0 \\end{bmatrix}$",
+          "$-ix - y = 0$",
+          "$+ x - iy = 0$",
+          "$ x = iy $"
+        ],
+        "errors": [
+          "The calculation correctly identifies a relationship between components of the eigenvector, but does not properly express the eigenvector itself."
         ]
       },
       {
         "type": "assert",
-        "claim": "The solution can be written as $X(t) = \\begin{bmatrix} cos \\theta \\\\ sin \\theta \\end{bmatrix} + i \\begin{bmatrix} sin \\theta \\\\ -cos \\theta \\end{bmatrix}$ where $\\theta = t$",
-        "proof-method": "Rewriting the previous expression."
+        "claim": "We cannot have the eigenvector $\\begin{bmatrix}1 \\ i\\end{bmatrix}$.",
+        "errors": [
+          "No justification is given for why this eigenvector is unacceptable."
+        ]
+      },
+      {
+        "type": "let",
+        "variable": "X(t)",
+        "value": "$e^{it} \\begin{bmatrix}i \\ 1 \\end{bmatrix}$",
+        "kind": "function"
       },
       {
         "type": "assert",
-        "claim": "The general solution is $X(t) = c_1 X_{Re} + c_2 X_{im}$, where  $X_{Re} = \\begin{bmatrix} cos \\theta \\\\ sin \\theta \\end{bmatrix}$ and $X_{im} = \\begin{bmatrix} sin \\theta \\\\ -cos \\theta \\end{bmatrix}$. This solution describes a circulation about the origin. ",
-        "proof-method": "Interpreting the solution.",
-        "missing steps": [
-          {
-            "type": "problem",
-            "statement": "Explain why the given solution represents a circulation about the origin."
-          }
+        "claim": "We cannot have complex solutions to real equations.",
+        "errors": [
+          "While the desire for real solutions is valid, it is unclear why this presents an issue. Complex solutions can often be manipulated to yield real solutions."
         ]
+      },
+      {
+        "type": "assert",
+        "claim": "$ e^{i \\theta} = (sin \\theta + cos \\theta)$",
+        "errors": [
+          "This is an incorrect statement of Euler's formula. The correct formula is $ e^{i \\theta} = cos \\theta + i \\, sin \\theta$."
+        ]
+      },
+      {
+        "type": "let",
+        "variable": "X(t)",
+        "value": "$\\begin{bmatrix}eit \\ -ie^{it}\\end{bmatrix}$",
+        "kind": "function"
+      },
+      {
+        "type": "let",
+        "variable": "X(t)",
+        "value": "$\\begin{bmatrix} i \\,sin \\, \\theta + cos \\, \\theta \\ -i^2 \\, sin \\, \\theta - i \\, cos \\, \\theta \\end{bmatrix}$",
+        "kind": "function"
+      },
+      {
+        "type": "let",
+        "variable": "X(t)",
+        "value": "$\\begin{bmatrix} i \\, sin \\, \\theta + cos \\, \\theta \\ sin \\, \\theta - i \\, cos \\, \\theta \\end{bmatrix}$",
+        "kind": "function",
+        "errors": [
+          "This step and the preceding steps contain algebraic errors in applying the incorrect Euler's formula."
+        ]
+      },
+      {
+        "type": "let",
+        "variable": "$ \\theta $",
+        "value": "$t$"
+      },
+      {
+        "type": "let",
+        "variable": "X(t)",
+        "value": "$\\begin{bmatrix} cos \\, \\theta \\ sin \\, \\theta \\end{bmatrix} + i \\begin{bmatrix} sin \\, \\theta \\ -cos \\, \\theta \\end{bmatrix}$",
+        "kind": "function"
+      },
+      {
+        "type": "let",
+        "variable": "$X_{Re}$",
+        "value": "$\\begin{bmatrix} cos \\, \\theta \\ sin \\, \\theta \\end{bmatrix}$",
+        "kind": "vector"
+      },
+      {
+        "type": "let",
+        "variable": "$X_{im}$",
+        "value": "$\\begin{bmatrix} sin \\, \\theta \\ -cos \\, \\theta \\end{bmatrix}$",
+        "kind": "vector"
+      },
+      {
+        "type": "assert",
+        "claim": "This is an equation of circulation origin.",
+        "errors": [
+          "The connection between the derived solution and the concept of circulation origin is not explicitly stated."
+        ]
+      },
+      {
+        "type": "let",
+        "variable": "X(t)",
+        "value": "$C_1 X_{Re} + C_2 X_{im}$",
+        "kind": "function"
+      }
+    ],
+    "missing": [
+      {
+        "type": "problem",
+        "statement": "Provide a clear justification for why the eigenvector $\\begin{bmatrix}1 \\ i\\end{bmatrix}$ is unacceptable."
+      },
+      {
+        "type": "problem",
+        "statement": "Address the concern about complex solutions and their relevance to the problem."
+      },
+      {
+        "type": "problem",
+        "statement": "Correct the use of Euler's formula and ensure accurate algebraic manipulation in deriving the general solution."
+      },
+      {
+        "type": "problem",
+        "statement": "Explicitly connect the final solution to the concept of circulation origin, demonstrating how the solution implies circulatory motion."
       }
     ]
   }

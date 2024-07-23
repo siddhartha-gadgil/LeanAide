@@ -1,72 +1,60 @@
 {
   "type": "theorem",
-  "name": "Origin is a circulation",
+  "name": "Circulation of the origin for a linear differential equation",
   "hypothesis": [
     {
       "type": "assume",
-      "statement": "$\\dot{x} = -y$ and $\\dot{y} = x$"
+      "statement": "$\\dot{x} = -y$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = x$"
     }
   ],
   "conclusion": "The origin is a circulation.",
-  "status": "wrong proof",
+  "status": "incomplete proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "assert",
-        "claim": "$\\dot{x} = -y$ and $\\dot{y} = 2x$",
-        "errors": [
-          "Incorrect statement of the differential equations. Should be $\\dot{y} = x$."
-        ]
-      },
-      {
-        "type": "assert",
         "claim": "$\\dot{X} = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix} X$",
-        "deduced_from": {
-          "From_context": [
-            "$\\dot{x} = -y$ and $\\dot{y} = x$"
-          ]
-        }
+        "proof-method": "Matrix form of the system"
       },
       {
         "type": "assert",
-        "claim": "$\\Delta = 1$, $\\text{trace} = 0$",
-        "calculation": [
-          {
-            "step": "$\\Delta = \\text{det}\\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix} = 1$"
-          },
-          {
-            "step": "$\\text{trace} = 0 + 0 = 0$"
-          }
-        ]
+        "claim": "$\\Delta = 1$",
+        "proof-method": "Calculation of determinant"
+      },
+      {
+        "type": "assert",
+        "claim": "trace = 0",
+        "proof-method": "Calculation of trace"
       },
       {
         "type": "assert",
         "claim": "Eigenvalues are $i$ and $-i$",
-        "calculation": [
-          {
-            "step": "Characteristic polynomial: $\\lambda^2 + 1 = 0$"
-          },
-          {
-            "step": "Solving, $\\lambda = i, -i$"
-          }
-        ]
+        "proof-method": "Calculation of eigenvalues"
       },
       {
-        "type": "conclude",
-        "statement": "The origin is a circulation.",
+        "type": "assert",
+        "claim": "The origin is a circulation",
         "deduced_from": {
-          "Known_results": [
+          "known_results": [
             "The origin is a circulation/centre if the eigenvalues of $A$ are purely imaginary."
           ]
-        },
-        "errors": [
-          "Incorrect differential equations invalidate the proof despite correct matrix calculations and conclusions."
-        ]
+        }
       }
+    ],
+    "errors": [
+      "Incorrect assumption: $\\dot{y} = 2x$ instead of $\\dot{y} = x$",
+      "Inconsistent steps: The eigenvalues calculation and conclusion are inconsistent with the incorrect system."
     ]
   },
-  "errors": [
-    "Incorrect differential equations used in the proof."
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Correct the assumption and recompute the eigenvalues."
+    }
   ]
 }

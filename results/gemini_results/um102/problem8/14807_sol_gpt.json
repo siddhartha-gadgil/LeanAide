@@ -1,6 +1,6 @@
 {
   "type": "theorem",
-  "name": "Circulation at the origin for a linear differential system",
+  "name": "Circulation at the origin for a specific linear differential equation",
   "hypothesis": [
     {
       "type": "assume",
@@ -11,54 +11,61 @@
       "statement": "$\\dot{y} = x$"
     }
   ],
-  "conclusion": "The origin is a circulation point for the system.",
+  "conclusion": "The origin is circulation.",
   "status": "incomplete proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "assert",
-        "claim": "$\\begin{pmatrix} \\dot{x} \\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 0 & -1 \\ 1 & 0 \\end{pmatrix} \\begin{pmatrix} x \\ y \\end{pmatrix}$",
-        "proof-method": "Substitution"
+        "claim": "$\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}$",
+        "proof-method": "Matrix form of the system"
       },
       {
         "type": "assert",
-        "claim": "$|\\mathbf{A}-\\lambda \\mathbf{I}| = 0$",
-        "deduced_from": [
-          "Characteristic equation of a matrix"
-        ]
+        "claim": "$|A - \\lambda I| = 0$",
+        "proof-method": "Eigenvalue problem"
       },
       {
         "type": "assert",
-        "claim": "$\\begin{vmatrix} -\\lambda & -1 \\ 1 & -\\lambda \\end{vmatrix} = 0$",
-        "proof-method": "Determinant calculation"
+        "claim": "$\\left| \\begin{pmatrix} -\\lambda & -1 \\\\ 1 & -\\lambda \\end{pmatrix} \\right| = 0$",
+        "proof-method": "Substitution of $A$ and $\\lambda I$ into the determinant"
       },
       {
         "type": "assert",
         "claim": "$\\lambda^2 + 1 = 0$",
-        "proof-method": "Simplification of determinant"
+        "calculation": [
+          {
+            "step": "$(-\\lambda)(-\\lambda) - (-1)(1) = 0$",
+            "justification": "Expansion of the determinant"
+          }
+        ]
       },
       {
         "type": "assert",
         "claim": "$\\lambda = \\pm i$",
-        "proof-method": "Solving quadratic equation"
+        "proof-method": "Solving the quadratic equation $\\lambda^2 + 1 = 0$"
       },
       {
-        "type": "conclude",
-        "statement": "The eigenvalues are purely imaginary, thus the origin is a circulation point.",
-        "error": "The conclusion that the origin is a circulation point requires more justification, specifically about the nature of the trajectories around the origin, which is not provided here."
+        "type": "assert",
+        "claim": "The eigenvalues are complex and purely imaginary.",
+        "proof-method": "Eigenvalue analysis"
+      },
+      {
+        "type": "assert",
+        "claim": "The origin is circulation.",
+        "deduced_from": {
+          "known_results": [
+            "For a system of linear ordinary differential equations in two variables given by the $2 \\times 2$ matrix $A$, the origin is a circulation/centre if the eigenvalues of $A$ are purely imaginary."
+          ]
+        },
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Justify why $Re(\\lambda) = 0$ implies circulation and not spiral in this context."
+          }
+        ]
       }
     ]
-  },
-  "missing": [
-    {
-      "type": "problem",
-      "statement": "Prove that the nature of the trajectories around the origin is circular."
-    }
-  ],
-  "errors": [
-    {
-      "statement": "The proof concludes circulation based only on the eigenvalues being purely imaginary, without discussing the trajectories."
-    }
-  ]
+  }
 }

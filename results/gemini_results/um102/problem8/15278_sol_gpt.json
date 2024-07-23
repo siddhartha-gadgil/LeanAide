@@ -1,49 +1,73 @@
 {
   "type": "theorem",
-  "name": "Origin is Circulation for the Given Linear Differential Equation",
+  "name": "Circulation at the Origin",
   "hypothesis": [
     {
+      "type": "let",
+      "variable": "x",
+      "kind": "function of time $t$"
+    },
+    {
+      "type": "let",
+      "variable": "y",
+      "kind": "function of time $t$"
+    },
+    {
       "type": "assume",
-      "statement": "$\\dot{x} = -y$ and $\\dot{y} = x$"
+      "statement": "$\\dot{x} = -y$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = x$"
     }
   ],
-  "conclusion": "The origin is a circulation point.",
+  "conclusion": "The origin is a circulation.",
   "status": "incomplete proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "assert",
-        "claim": "$\\dot{x} = 0 \\cdot x + (-1) \\cdot y$ and $\\dot{y} = 1 \\cdot x + 0 \\cdot y$",
-        "calculation": [
-          "$\\dot{x} = -y$",
-          "$\\dot{y} = x$"
-        ]
+        "claim": "$\\dot{x} = 0 \\cdot x + (-1) \\cdot y$"
       },
       {
         "type": "assert",
-        "claim": "$\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}$",
-        "deduced_from": [
-          "$\\dot{x} = -y$",
-          "$\\dot{y} = x$"
-        ]
+        "claim": "$\\dot{y} = 1 \\cdot x + 0 \\cdot y$"
       },
       {
         "type": "assert",
-        "claim": "The eigenvalues of matrix $A = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix}$ are $\\lambda = \\pm i$",
+        "claim": "$\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}$"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of the matrix $A = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix}$ are $\\lambda = \\pm i$",
+        "proof-method": "Calculation of the characteristic polynomial and solving for eigenvalues",
         "calculation": [
-          "$\\det(A - \\lambda I) = \\begin{vmatrix} 0-\\lambda & -1 \\\\ 1 & 0-\\lambda \\end{vmatrix} = \\begin{vmatrix} -\\lambda & -1 \\\\ 1 & -\\lambda \\end{vmatrix}$",
+          "$\\left| \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix} - \\begin{pmatrix} \\lambda & 0 \\\\ 0 & \\lambda \\end{pmatrix} \\right| = \\begin{vmatrix} -\\lambda & -1 \\\\ 1 & -\\lambda \\end{vmatrix} = 0$",
           "$\\lambda^2 + 1 = 0$",
           "$\\lambda = \\pm i$"
         ]
       },
       {
+        "type": "assert",
+        "claim": "The real part of the eigenvalues $\\lambda = \\pm i$ is zero."
+      },
+      {
         "type": "conclude",
-        "statement": "Real part of the eigenvalues is 0, so the origin is a circulation point.",
-        "errors": [
-          "Conclusion that the origin is a circulation point needs additional justification. Why does the imaginary part imply circulation?"
+        "statement": "Since the eigenvalues of $A$ are purely imaginary, the origin is a circulation.",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Justify that eigenvalues with purely imaginary parts imply the origin is a circulation."
+          }
         ]
       }
     ]
-  }
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Formalize the relationship between purely imaginary eigenvalues and circulation."
+    }
+  ]
 }

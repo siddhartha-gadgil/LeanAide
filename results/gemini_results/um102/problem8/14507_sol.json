@@ -5,165 +5,116 @@
     {
       "type": "let",
       "variable": "<anonymous>",
-      "kind": "System of differential equations",
-      "value": "$\\dot{x}=-y$\n$\\dot{y}=x$"
+      "kind": "System of linear differential equations",
+      "property": "$\\dot{x} = -y$, $\\dot{y} = x$"
     }
   ],
-  "conclusion": "The origin is a circulation/center for the given system of differential equations.",
+  "conclusion": "The origin is a circulation for the given system of differential equations.",
   "status": "incomplete proof",
-  "missing": [
-    {
-      "type": "problem",
-      "statement": "Show that the solutions being periodic in $t$ and $x^2+y^2$ being constant in $t$ implies that the trajectories are circles. Show that the direction of motion is anticlockwise for $\\alpha<0$ and clockwise for $\\beta<0$.",
-      "solved": false
-    }
-  ],
   "proof": {
     "type": "proof",
     "steps": [
       {
-        "type": "remark",
-        "statement": "We can express the given system of differential equations in matrix form."
+        "type": "assert",
+        "claim": "The system of differential equations can be written in matrix form as $\\dot{X} = AX$, where $A = \\begin{bmatrix} 0 & -1 \\ 1 & 0 \\end{bmatrix}$.",
+        "proof-method": "Rewriting the system in matrix form."
       },
       {
         "type": "assert",
-        "claim": "$\\begin{bmatrix} \\dot{x} \\\\ \\dot{y}  \\end{bmatrix} = \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
-        "proof-method": "Rewriting the system in matrix form"
-      },
-      {
-        "type": "let",
-        "variable": "A",
-        "kind": "matrix",
-        "value": "$\\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}$"
+        "claim": "The characteristic equation of $A$ is $|A - \\lambda I| = 0$.",
+        "proof-method": "Definition of the characteristic equation."
       },
       {
         "type": "assert",
-        "claim": "$\\begin{bmatrix} \\dot{x} \\\\ \\dot{y}  \\end{bmatrix}=AX$",
-        "proof-method": "Using the matrix notation"
-      },
-      {
-        "type": "remark",
-        "statement": "To determine the nature of the origin, we need to find the eigenvalues of matrix A."
-      },
-      {
-        "type": "assert",
-        "claim": "The eigenvalues of A are the solutions to the characteristic equation $|A - \\lambda I| = 0$",
-        "proof-method": "Using the definition of eigenvalues"
+        "claim": "The characteristic equation simplifies to  $\\lambda^2 + 1 = 0$.",
+        "calculation": [
+          "$\\begin{vmatrix} -\\lambda & -1 \\ 1 & -\\lambda \\end{vmatrix} = 0$",
+          "$\\lambda^2 + 1 = 0$"
+        ]
       },
       {
         "type": "assert",
-        "claim": "$\\begin{vmatrix} -\\lambda & -1 \\\\ 1 & -\\lambda \\end{vmatrix} = 0$",
-        "proof-method": "Substituting the matrix A and the identity matrix"
+        "claim": "The eigenvalues of $A$ are $\\lambda = \\pm i$.",
+        "proof-method": "Solving the characteristic equation."
       },
       {
         "type": "assert",
-        "claim": "$\\lambda^2 + 1 = 0$",
-        "proof-method": "Expanding the determinant"
-      },
-      {
-        "type": "assert",
-        "claim": "$\\lambda = \\pm i$",
-        "proof-method": "Solving the quadratic equation"
-      },
-      {
-        "type": "remark",
-        "statement": "The eigenvalues are purely imaginary. We'll now find the eigenvectors for each eigenvalue."
-      },
-      {
-        "type": "cases",
-        "on": "$\\lambda$",
-        "split-kind": "match",
-        "proof-cases": [
+        "claim": "The eigenvector corresponding to $\\lambda = i$ is $\\begin{pmatrix} x \\ y \\end{pmatrix} = y\\begin{pmatrix} i \\ 1 \\end{pmatrix}$.",
+        "calculation": [
           {
-            "type": "case",
-            "condition": "$\\lambda = i$",
-            "proof": {
-              "type": "proof",
-              "steps": [
-                {
-                  "type": "assert",
-                  "claim": "$\\begin{bmatrix} -i & -1 \\\\ 1 & -i \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = 0$",
-                  "proof-method": "Substituting $\\lambda=i$ in $(A-\\lambda I)X=0$"
-                },
-                {
-                  "type": "assert",
-                  "claim": "$-xi + y = 0$\n$x - iy = 0$",
-                  "proof-method": "Expanding the matrix equation"
-                },
-                {
-                  "type": "assert",
-                  "claim": "$\\begin{pmatrix} i \\\\ 1\\end{pmatrix}$ is an eigenvector for $\\lambda=i$",
-                  "proof-method": "Choosing $y=1$ in the solution $x=iy$"
-                }
-              ]
-            }
+            "step": "$\\begin{bmatrix} -i & -1 \\ 1 & -i \\end{bmatrix} \\begin{bmatrix} x \\ y \\end{bmatrix} = 0$",
+            "justification": "Eigenvector equation for $\\lambda = i$"
           },
           {
-            "type": "case",
-            "condition": "$\\lambda = -i$",
-            "proof": {
-              "type": "proof",
-              "steps": [
-                {
-                  "type": "assert",
-                  "claim": "$\\begin{bmatrix} i & -1 \\\\ 1 & i \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = 0$",
-                  "proof-method": "Substituting $\\lambda=-i$ in $(A-\\lambda I)X=0$"
-                },
-                {
-                  "type": "assert",
-                  "claim": "$xi - y = 0$",
-                  "proof-method": "Expanding the matrix equation"
-                },
-                {
-                  "type": "assert",
-                  "claim": "$\\begin{pmatrix} 1 \\\\ i\\end{pmatrix}$ is an eigenvector for $\\lambda=-i$",
-                  "proof-method": "Choosing $x=1$"
-                }
-              ]
-            }
+            "step": "$-ix - y = 0$ and $x - iy = 0$",
+            "justification": "Simplifying the matrix equation"
+          },
+          {
+            "step": "$x = iy$",
+            "justification": "Solving for $x$"
+          },
+          {
+            "step": "$\\begin{pmatrix} x \\ y \\end{pmatrix} = y\\begin{pmatrix} i \\ 1 \\end{pmatrix}$",
+            "justification": "Expressing the eigenvector in terms of $y$"
           }
         ]
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvector corresponding to $\\lambda = -i$ is $\\begin{pmatrix} x \\ y \\end{pmatrix} = y\\begin{pmatrix} -i \\ 1 \\end{pmatrix}$.",
+        "calculation": [
+          {
+            "step": "$\\begin{bmatrix} i & -1 \\ 1 & i \\end{bmatrix} \\begin{bmatrix} x \\ y \\end{bmatrix} = 0$",
+            "justification": "Eigenvector equation for $\\lambda = -i$"
+          },
+          {
+            "step": "$ix - y = 0$ and $x + iy = 0$",
+            "justification": "Simplifying the matrix equation"
+          },
+          {
+            "step": "$x = -iy$",
+            "justification": "Solving for $x$"
+          },
+          {
+            "step": "$\\begin{pmatrix} x \\ y \\end{pmatrix} = y\\begin{pmatrix} -i \\ 1 \\end{pmatrix}$",
+            "justification": "Expressing the eigenvector in terms of $y$"
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The general solution to the system is $X(t) = \\begin{pmatrix} i \\ 1 \\end{pmatrix}Ve^{it} + \\begin{pmatrix} -i \\ 1 \\end{pmatrix}\\bar{V}e^{-it}$.",
+        "proof-method": "Using the eigenvalues and eigenvectors to construct the general solution."
+      },
+      {
+        "type": "assert",
+        "claim": "The general solution simplifies to $X(t) = \\begin{pmatrix} \\beta \\cos t - \\alpha \\sin t \\ \\alpha \\cos t + \\beta \\sin t \\end{pmatrix} + i\\begin{pmatrix} \\alpha \\cos t - \\beta \\sin t \\ \\alpha \\sin t + \\beta \\cos t \\end{pmatrix}$.",
+        "calculation": [
+          "$X(t) = \\alpha \\begin{pmatrix} i \\ 1 \\end{pmatrix} (\\cos t + i \\sin t) + \\beta \\begin{pmatrix} -i \\ 1 \\end{pmatrix} (\\cos t - i\\sin t)$",
+          "$X(t) = \\begin{pmatrix} \\alpha i \\cos t - \\alpha \\sin t \\ \\alpha \\cos t + \\alpha i \\sin t \\end{pmatrix} + \\begin{pmatrix} -\\beta i \\cos t - \\beta \\sin t \\ \\beta \\cos t - \\beta i \\sin t \\end{pmatrix}$",
+          "$X(t) = \\begin{pmatrix} \\beta \\cos t - \\alpha \\sin t \\ \\alpha \\cos t + \\beta \\sin t \\end{pmatrix} + i\\begin{pmatrix} \\alpha \\cos t - \\beta \\sin t \\ \\alpha \\sin t + \\beta \\cos t \\end{pmatrix}$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$x^2$ and $y^2$ are functions of $\\alpha$ and $\\beta$ only, and not $t$.",
+        "proof-method": "Direct observation from the general solution."
+      },
+      {
+        "type": "assert",
+        "claim": "$x$ and $y$ are periodic functions.",
+        "proof-method": "Direct observation from the general solution."
       },
       {
         "type": "remark",
-        "statement": "We can now write the general solution of the system."
-      },
-      {
-        "type": "assert",
-        "claim": "$X(t) = \\overrightarrow{V_1} e^{\\lambda_1 t} + \\overrightarrow{V_2} e^{\\lambda_2 t} = \\alpha \\begin{pmatrix} i \\\\ 1\\end{pmatrix}  ( \\cos t + i \\sin t)  +  \\beta \\begin{pmatrix} 1 \\\\ i\\end{pmatrix}  ( \\cos t - i \\sin t)$",
-        "proof-method": "Using the general solution formula with the eigenvalues and eigenvectors"
-      },
-      {
-        "type": "assert",
-        "claim": "$X(t) =  \\begin{pmatrix} \\beta \\cos t - \\alpha \\sin t \\\\ \\alpha \\cos t + \\beta \\sin t  \\end{pmatrix} + i \\begin{pmatrix}  \\alpha \\cos t + \\beta \\sin t \\\\ - \\alpha \\sin t + \\beta \\cos t \\end{pmatrix}$",
-        "proof-method": "Expanding and rearranging"
-      },
-      {
-        "type": "assert",
-        "claim": "$x^2 + y^2 = \\alpha$",
-        "proof-method": "Direct calculation (not shown)"
-      },
-      {
-        "type": "assert",
-        "claim": "$x$ and $y$ are functions of only $\\alpha$ and $\\beta$ and not $t$",
-        "proof-method": "By inspection of the solution"
-      },
-      {
-        "type": "assert",
-        "claim": "$x$ and $y$ are periodic functions",
-        "proof-method": "By inspection of the solution"
-      },
-      {
-        "type": "conclude",
-        "statement": "The origin is a circulation/center for the given system of differential equations.",
-        "missing": [
-          {
-            "type": "problem",
-            "statement": "Show that the solutions being periodic in $t$ and $x^2+y^2$ being constant in $t$ implies that the trajectories are circles. Show that the direction of motion is anticlockwise for $\\alpha<0$ and clockwise for $\\beta<0$.",
-            "solved": false
-          }
-        ]
+        "statement": "The proof needs to be completed by rigorously showing that these properties imply a circular trajectory."
       }
     ]
-  }
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Prove that the equations and conditions derived for $x$ and $y$ imply a circular trajectory around the origin."
+    }
+  ]
 }

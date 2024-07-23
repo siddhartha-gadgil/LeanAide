@@ -2,94 +2,51 @@
   "type": "theorem",
   "name": "Circulation at the Origin",
   "status": "incomplete proof",
-  "hypothesis": [
-    {
-      "type": "assume",
-      "statement": "We have the linear differential equation $\\dot{x}=-y$ and $\\dot{y}=x$"
-    }
-  ],
-  "conclusion": "The origin is a circulation for the given system of differential equations.",
+  "hypothesis": [],
+  "conclusion": "For the linear differential equation $\\dot{x}=-y$ and $\\dot{y}=x$, the origin is a circulation.",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "let",
         "variable": "y",
-        "value": "$r\\sin(\\theta t)$",
-        "kind": "real number"
-      },
-      {
-        "type": "let",
-        "variable": "r",
-        "kind": "element of",
-        "value": "$(0,\\infty)$"
-      },
-      {
-        "type": "let",
-        "variable": "t",
-        "kind": "element of",
-        "value": "$[-\\pi,\\pi]$"
+        "value": "$r\\sin{\\theta t}$",
+        "kind": "function of $t$"
       },
       {
         "type": "let",
         "variable": "x",
-        "value": "$r\\cos(\\theta t)$",
-        "kind": "real number"
+        "value": "$r\\cos{\\theta t}$",
+        "kind": "function of $t$"
       },
       {
         "type": "assert",
-        "claim": "$\\dot{x} = -r\\sin(t)$",
-        "missing": [
-          {
-            "type": "problem",
-            "statement": "How to derive $\\dot{x}$? The expression appears to be missing a $\\theta$ term.",
-            "solved": false
-          }
+        "claim": "$\\dot{x} = -r\\sin{t}$",
+        "errors": [
+          "The time derivative of $r\\cos{\\theta t}$ is $-r\\theta \\sin{\\theta t}$, not $-r\\sin{t}$."
         ]
       },
       {
         "type": "assert",
-        "claim": "$\\dot{x} = -y$",
-        "proof-method": "Substitution of the chosen value of y"
-      },
-      {
-        "type": "assert",
-        "claim": "$\\dot{y} = r\\cos(t)$",
-        "missing": [
-          {
-            "type": "problem",
-            "statement": "How to derive $\\dot{y}$? The expression appears to be missing a $\\theta$ term.",
-            "solved": false
-          }
+        "claim": "$\\dot{y} = r\\cos{t}$",
+        "errors": [
+          "The time derivative of $r\\sin{\\theta t}$ is $r\\theta \\cos{\\theta t}$, not $r\\cos{t}$."
         ]
-      },
-      {
-        "type": "assert",
-        "claim": "$\\dot{y} = x$",
-        "proof-method": "Substitution of the chosen value of x"
       },
       {
         "type": "remark",
-        "statement": "The phase portrait for this is"
-      },
-      {
-        "type": "missing",
-        "statement": "The phase portrait is not provided"
+        "statement": "(Image of a circulation about the origin)"
       },
       {
         "type": "conclude",
-        "statement": "Hence, Origin is a Circulation",
-        "errors": [
-          "The proof does not demonstrate how the given solutions and the (missing) phase portrait imply that the origin is a circulation. In particular, the eigenvalues of the corresponding matrix were not calculated, nor was there any argument connecting the solutions or phase portrait to the eigenvalues."
+        "statement": "Hence, Origin is a Circulation.",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Show that the system of differential equations corresponds to a matrix with purely imaginary eigenvalues."
+          }
         ]
       }
     ]
-  },
-  "missing": [
-    {
-      "type": "problem",
-      "statement": "Show that the phase portrait of the given system corresponds to a circulation at the origin.",
-      "solved": false
-    }
-  ]
+  }
 }

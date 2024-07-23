@@ -5,43 +5,43 @@
     {
       "type": "let",
       "variable": "<anonymous>",
-      "value": "$\\dot{x}=-y$, $\\dot{y}=x$",
-      "kind": "system of linear differential equations"
+      "kind": "System of linear differential equations",
+      "property": "Given by $\\dot{x}=-y$ and $\\dot{y}=x$"
     }
   ],
-  "conclusion": "The origin is a circulation for the given system of differential equations.",
+  "conclusion": "The origin is a circulation (centre) of the given system of differential equations.",
   "status": "incomplete proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "assert",
-        "claim": "$\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = A \\begin{pmatrix} x \\\\ y \\end{pmatrix} = \\begin{pmatrix} -y \\\\ x \\end{pmatrix}$",
+        "claim": "The system can be represented in matrix form as $(\\begin{matrix} \\dot{x} \\\\ \\dot{y} \\end{matrix}) = A (\\begin{matrix} x \\\\ y \\end{matrix}) = (\\begin{matrix} -y \\\\ x \\end{matrix})$",
         "proof-method": "Rewriting the system in matrix form"
       },
       {
         "type": "assert",
-        "claim": "$A = \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix} $",
-        "proof-method": "By definition of the matrix A"
+        "claim": "The matrix $A$ is given by  $A = \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}$",
+        "proof-method": "By inspection from the matrix representation"
       },
       {
         "type": "assert",
-        "claim": "$Tr(A) = 0$",
-        "proof-method": "Calculation"
+        "claim": "The trace of matrix $A$ is $Tr(A)=0$",
+        "proof-method": "Direct calculation"
       },
       {
         "type": "assert",
-        "claim": "$Det(A) = 1$",
-        "proof-method": "Calculation"
+        "claim": "The determinant of matrix $A$ is $Det(A)=1$",
+        "proof-method": "Direct calculation"
       },
       {
         "type": "assert",
-        "claim": "$\\lambda = i$ & $-i$",
-        "proof-method": "Solving the characteristic equation",
+        "claim": "The eigenvalues of matrix $A$ are $\\lambda = i$ and $-i$",
         "missing": [
           {
             "type": "problem",
-            "statement": "Show the calculation of the eigenvalues of A."
+            "statement": "Calculate the eigenvalues of the matrix $A$",
+            "solved": false
           }
         ]
       },
@@ -51,7 +51,8 @@
         "missing": [
           {
             "type": "problem",
-            "statement": "The Tr-Det phase diagram is not a standard result and needs to be stated and proved or cited."
+            "statement": "Explain how the Tr-Det phase diagram leads to the conclusion of circulation given the calculated eigenvalues",
+            "solved": false
           }
         ]
       }

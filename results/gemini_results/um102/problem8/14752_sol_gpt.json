@@ -1,110 +1,96 @@
 {
   "type": "theorem",
-  "name": "Circulation at the Origin for a Linear Differential System",
+  "name": "Circulation of Origin",
   "hypothesis": [
     {
       "type": "let",
       "variable": "A",
-      "value": "\\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}",
-      "kind": "matrix"
+      "kind": "2x2 matrix",
+      "value": "\\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}"
     },
     {
       "type": "assume",
-      "statement": "$\\dot{x} = -y$ and $\\dot{y} = x$"
+      "statement": "The linear differential equations are $\\dot{x} = -y$ and $\\dot{y} = x$"
     }
   ],
-  "conclusion": "The origin is a center (circulation).",
+  "conclusion": "The origin is circulation (center)",
   "status": "incomplete proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
-        "type": "let",
-        "variable": "X",
-        "value": "\\begin{bmatrix} x \\\\ y \\end{bmatrix}",
-        "kind": "vector"
-      },
-      {
         "type": "assert",
-        "claim": "$AX = X'$",
+        "claim": "AX = X'",
         "calculation": [
-          "$\\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} -y \\\\ x \\end{bmatrix}$"
+          {
+            "step": "\\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} -y \\\\ x \\end{bmatrix}"
+          }
         ]
       },
       {
         "type": "assert",
-        "claim": "$\\det(A - \\lambda I) = 0$",
+        "claim": "$\\det(A - dI) = 0$",
         "calculation": [
-          "$\\det \\left( \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix} - \\begin{bmatrix} \\lambda & 0 \\\\ 0 & \\lambda \\end{bmatrix} \\right) = 0$",
-          "$\\det \\begin{bmatrix} -\\lambda & -1 \\\\ 1 & -\\lambda \\end{bmatrix} = 0$",
-          "$\\lambda^2 + 1 = 0$",
-          "$\\lambda^2 = -1$",
-          "$\\lambda = \\pm i$"
+          "$\\det\\Bigg(\\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix} + \\begin{bmatrix} -d & 0 \\\\ 0 & -d \\end{bmatrix}\\Bigg) = 0$",
+          "$\\det\\Bigg(\\begin{bmatrix} -d & -1 \\\\ 1 & -d \\end{bmatrix}\\Bigg) = 0$",
+          "$d^2 +1 = 0$",
+          "$d^2 = -1$",
+          "$d = \\pm i$"
         ]
       },
       {
         "type": "let",
-        "variable": " \\lambda_1",
-        "value": "i",
-        "kind": "eigenvalue"
-      },
-      {
-        "type": "let",
-        "variable": " \\lambda_2",
-        "value": "-i",
-        "kind": "eigenvalue"
+        "variable": "d",
+        "value": "i"
       },
       {
         "type": "assert",
-        "claim": "The eigenvector corresponding to $\\lambda_1 = i$ is $\\begin{bmatrix} 1 \\\\ -i \\end{bmatrix}$",
+        "claim": "$(A - dI)X = 0$",
         "calculation": [
           "$\\begin{bmatrix} -i & -1 \\\\ 1 & -i \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 0 \\\\ 0 \\end{bmatrix}$",
-          "$-ix - y = 0, x = iy$"
+          "$-ix - y = 0$",
+          "$x - iy = 0$",
+          "$x = iy$"
         ]
       },
       {
         "type": "assert",
-        "claim": "A general solution to the system is $X(t) = e^{it} \\begin{bmatrix} 1 \\\\ -i \\end{bmatrix}$",
-        "calculation": [
-          {
-            "step": "$X(t) = e^{it} \\begin{bmatrix} 1 \\\\ -i \\end{bmatrix}$",
-            "justification": "Solution involves complex numbers"
-          },
-          {
-            "step": "$e^{it} = \\cos t + i \\sin t$",
-            "justification": "Euler's formula"
-          }
-        ],
+        "claim": "Eigenvector $\\begin{bmatrix} 1 \\\\ i \\end{bmatrix}$ for $d = i$",
         "errors": [
-          "We are seeking real solutions"
+          "Eigenvector not acceptable in this context"
         ]
       },
       {
         "type": "assert",
-        "claim": "$X(t) = \\begin{bmatrix} \\cos t \\\\ \\sin t \\end{bmatrix} + i \\begin{bmatrix} \\sin t \\\\ -\\cos t \\end{bmatrix}$",
-        "calculation": [
-          "$\\begin{bmatrix} \\cos t \\\\ \\sin t \\end{bmatrix} + i \\begin{bmatrix} \\sin t \\\\ -\\cos t \\end{bmatrix}$",
-          "$X_{Re} = \\begin{bmatrix} \\cos t \\\\ \\sin t \\end{bmatrix}$",
-          "$X_{Im} = \\begin{bmatrix} \\sin t \\\\ -\\cos t \\end{bmatrix}$"
+        "claim": "General solution $X(t) = e^{it} \\begin{bmatrix} i \\\\ 1 \\end{bmatrix}$",
+        "errors": [
+          "Complex solution is not acceptable for real equations"
         ]
+      },
+      {
+        "type": "assert",
+        "claim": "$e^{i \\theta} = \\cos \\theta + i \\sin \\theta$",
+        "calculation": [
+          "$X(t) = \\begin{bmatrix} e^{it} \\\\ -ie^{it} \\end{bmatrix}$",
+          "$X(t) = \\begin{bmatrix} i \\sin \\theta + \\cos \\theta \\\\ \\sin \\theta - i \\cos \\theta \\end{bmatrix}$",
+          "$X(t) = \\begin{bmatrix} \\cos \\theta \\\\ \\sin \\theta \\end{bmatrix} + i \\begin{bmatrix} \\sin \\theta \\\\ -\\cos \\theta \\end{bmatrix}$",
+          "$\\theta = t$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "Real and imaginary parts: $X_{Re} = \\begin{bmatrix} \\cos \\theta \\\\ \\sin \\theta \\end{bmatrix}$, $X_{im} = \\begin{bmatrix} \\sin \\theta \\\\ -\\cos \\theta \\end{bmatrix}$"
       },
       {
         "type": "conclude",
-        "statement": "Thus, the solution describes a circulation about the origin: $X(t) = c_1 X_{Re} + c_2 X_{Im}$",
-        "errors": [
-          "The use of complex eigenvectors needs to be justified within the context of real solutions."
+        "statement": "Thus the equation represents circulation around the origin.",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Complete justification for why the origin is a center using the eigenvalues."
+          }
         ]
       }
     ]
-  },
-  "missing": [
-    {
-      "type": "problem",
-      "statement": "Justify the use of complex eigenvectors for a real solution."
-    },
-    {
-      "type": "problem",
-      "statement": "Explicitly show how the real part of the solution leads to a circular trajectory around the origin."
-    }
-  ]
+  }
 }

@@ -1,60 +1,89 @@
 {
   "type": "theorem",
-  "name": "Circulation at the Origin",
+  "name": null,
   "hypothesis": [
     {
       "type": "let",
       "variable": "<anonymous>",
-      "kind": "differential equations",
-      "property": "linear",
-      "value": "$\\dot{x}=-y$, $\\dot{y}=x$"
+      "value": null,
+      "kind": "System of linear differential equations",
+      "property": "Given by  $\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix}  \\begin{pmatrix} x \\\\ y \\end{pmatrix}$"
     }
   ],
-  "conclusion": "The origin is a circulation for the given system of differential equations.",
+  "conclusion": "The origin is a circulation.",
   "status": "incomplete proof",
-  "missing": [
-    {
-      "type": "problem",
-      "statement": "Prove that the eigenvalues of the matrix $\\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix}$ being purely imaginary implies the origin is a circulation for the given system of differential equations."
-    }
-  ],
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "remark",
-        "statement": "We will rewrite the system of equations in matrix form and find the eigenvalues of the corresponding matrix."
+        "statement": "(c)"
       },
       {
         "type": "assert",
-        "claim": "The system of equations can be written in matrix form as $\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}$.",
-        "proof-method": "Rewriting the system of equations."
+        "claim": "The eigenvalues of $A = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix}$ are $\\lambda = \\pm i$.",
+        "proof-method": "Calculation",
+        "calculation": [
+          {
+            "step": "$|A - \\lambda I|=0$",
+            "justification": "To find the eigenvalues"
+          },
+          {
+            "step": "$|\\begin{pmatrix} -\\lambda & -1 \\\\ 1 & -\\lambda \\end{pmatrix}| = 0$",
+            "justification": null
+          },
+          {
+            "step": "$\\lambda^2 + 1 = 0$",
+            "justification": "Expanding the determinant"
+          },
+          {
+            "step": "$\\lambda = \\pm i$",
+            "justification": null
+          }
+        ]
       },
       {
         "type": "assert",
-        "claim": "The characteristic equation of the matrix $\\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix}$ is given by $|\\mathbf{A}-\\lambda \\mathbf{I}| = 0$.",
-        "proof-method": "Definition of characteristic equation."
+        "claim": "The phase portrait of the system exhibits either circulation or a spiral.",
+        "deduced_from": {
+          "known_results": [
+            "For a system of linear ordinary differential equations in two variables given by the  $2 \\times 2$ matrix  $A$, the origin is a circulation/centre if the eigenvalues of  $A$ are purely imaginary."
+          ]
+        },
+        "proof-method": "Deduction"
       },
       {
         "type": "assert",
-        "claim": "The characteristic equation expands to  $\\begin{vmatrix} -\\lambda & -1 \\\\ 1 & -\\lambda \\end{vmatrix} = 0$.",
-        "proof-method": "Substitution."
+        "claim": "$Re(\\lambda) = 0$",
+        "proof-method": null,
+        "calculation": [
+          {
+            "step": "$Re(\\pm i) = 0$",
+            "justification": null
+          }
+        ]
       },
       {
         "type": "assert",
-        "claim": "The characteristic equation simplifies to $\\lambda^2 + 1 = 0$.",
-        "proof-method": "Evaluating the determinant."
-      },
-      {
-        "type": "assert",
-        "claim": "Solving for $\\lambda$, we get $\\lambda = \\pm i$.",
-        "proof-method": "Solving the quadratic equation."
+        "claim": "The solution will involve a factor of $e^{\\lambda t}$.",
+        "proof-method": null,
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Show that the solution of the system of differential equations involves a factor of $e^{\\lambda t}$.",
+            "solved": false
+          }
+        ]
       },
       {
         "type": "conclude",
-        "statement": "Since the eigenvalues are purely imaginary, the origin is a circulation.",
-        "error": "This conclusion requires further justification as the relationship between purely imaginary eigenvalues and circulation behavior is not explicitly established in the provided steps."
+        "statement": "Therefore, we observe _circulation_.",
+        "errors": [
+          "The conclusion that the origin is a circulation is not fully justified. While the fact that $Re(\\lambda) = 0$ implies that there is no spiral behavior, it does not definitively prove that the origin is a circulation. Further analysis or justification is needed to conclusively determine the nature of the origin."
+        ],
+        "missing": []
       }
     ]
-  }
+  },
+  "missing": []
 }

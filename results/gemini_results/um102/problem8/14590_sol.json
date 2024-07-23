@@ -1,49 +1,59 @@
 {
   "type": "theorem",
-  "name": "Circulation at the Origin",
+  "name": "Circulation of Linear System",
+  "status": "wrong proof",
   "hypothesis": [
     {
       "type": "let",
-      "variable": "<anonymous>",
-      "kind": "System of linear differential equations",
-      "property": "Given by $\\dot{x} = -y$ and $\\dot{y} = x$"
+      "variable": "x",
+      "kind": "function of t"
+    },
+    {
+      "type": "let",
+      "variable": "y",
+      "kind": "function of t"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{x}=-y$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y}=x$"
     }
   ],
-  "conclusion": "The origin is a circulation (centre).",
-  "status": "wrong proof",
-  "errors": [
-    "The matrix in the proof does not correspond to the system of equations in the theorem statement."
-  ],
+  "conclusion": "The origin is a circulation for the system of differential equations $\\dot{x}=-y$, $\\dot{y}=x$.",
   "proof": {
     "type": "proof",
     "steps": [
       {
-        "type": "remark",
-        "statement": "(c) $\\dot{x} = -y$ and $\\dot{y} = 2x$"
-      },
-      {
         "type": "assert",
         "claim": "$\\dot{X} = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix} X$",
+        "proof-method": "Rewriting the system in matrix form",
         "errors": [
-          "The matrix is incorrect for the given system of equations."
+          "The statement is wrong: it should be $\\dot{X}=\\begin{pmatrix}0&-1\\\\1&0\\end{pmatrix}X$."
         ]
       },
       {
         "type": "assert",
         "claim": "$\\Delta = 1$, $trace = 0$",
-        "proof-method": "Direct calculation from the matrix."
+        "proof-method": "Calculating the determinant and trace of the matrix $\\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix}$."
       },
       {
         "type": "assert",
-        "claim": "The eigenvalues are $(i, -i)$",
-        "proof-method": "Calculation using the characteristic equation."
+        "claim": "The eigenvalues of $\\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix}$ are $i$ and $-i$",
+        "deduced_from": {
+          "known_results": [
+            "The eigenvalues of a $2 \\times 2$ matrix $\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$ are the roots of the quadratic equation $\\lambda^2-(a+d)\\lambda+(ad-bc)=0$."
+          ]
+        }
       },
       {
         "type": "conclude",
-        "statement": "It is a circulation.",
+        "statement": "The origin is a circulation.",
         "deduced_from": {
           "known_results": [
-            "The origin is a circulation/centre if the eigenvalues of the matrix are purely imaginary."
+            "For a system of linear ordinary differential equations in two variables given by the $2 \\times 2$ matrix $A$, the origin is a circulation/centre if the eigenvalues of $A$ are purely imaginary."
           ]
         }
       }

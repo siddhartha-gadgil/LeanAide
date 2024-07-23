@@ -1,19 +1,141 @@
 {
   "type": "theorem",
-  "name": "Circulation at the Origin",
+  "name": null,
+  "status": "wrong proof",
   "hypothesis": [
     {
       "type": "let",
       "variable": "<anonymous>",
-      "kind": "system of linear differential equations",
-      "property": "given by $\\dot{x} = -y$ and $\\dot{y} = x$"
+      "kind": "differential equation system",
+      "property": "linear",
+      "value": "$\\dot{x}=-y$, $\\dot{y}=x$"
     }
   ],
   "conclusion": "The origin is a circulation for the given system of differential equations.",
-  "status": "wrong proof",
-  "errors": [
-    "The proof incorrectly concludes that the origin is a source, while the correct classification should be a circulation.",
-    "The proof uses an incorrect approach by attempting to find a potential function and analyzing its gradient, which is not a valid method for determining the type of critical point for a system of linear differential equations.",
-    "The variable names used in the proof are inconsistent and confusing. The proof uses 'n' and 'j' interchangeably, and it's unclear what they represent in the context of the system of differential equations."
-  ]
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$j = n$",
+        "errors": [
+          "The variables $j$ and $n$ are not defined in the context of the problem."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{dy}{dn} = n$",
+        "errors": [
+          "It is not clear what this derivative represents in the context of the problem, and it seems unrelated to the given system of differential equations."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$y = \\frac{n^2}{2}$",
+        "proof-method": "integration",
+        "calculation": [
+          "$dy = ndn$",
+          "$\\int dy = \\int ndn$",
+          "$y = \\frac{n^2}{2}$"
+        ],
+        "errors": [
+          "The integration is performed with respect to an undefined variable $n$ which seems unrelated to the problem."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$i = -y$",
+        "errors": [
+          "The variable $i$ is not defined in the context of the problem."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{dn}{dy} = -y$",
+        "errors": [
+          "It is not clear what this derivative represents and seems unrelated to the problem."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$n = \\frac{-y^2}{2}$",
+        "proof-method": "integration",
+        "calculation": [
+          "$dn = -y dy$",
+          "$\\int dn = \\int -y dy$",
+          "$n = \\frac{-y^2}{2}$"
+        ],
+        "errors": [
+          "Similar to before, the integration is with respect to unrelated variables."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$y^2 + 2n = 0$",
+        "proof-method": "algebraic manipulation",
+        "calculation": [
+          "$2n = -y^2$",
+          "$y^2 + 2n = 0$"
+        ],
+        "errors": [
+          "The calculations are based on erroneous derivations."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$n^2 - 2y = 0$",
+        "proof-method": "algebraic manipulation",
+        "calculation": [
+          "$y = \\frac{n^2}{2}$",
+          "$2y = n^2$",
+          "$n^2 - 2y = 0$"
+        ],
+        "errors": [
+          "The calculations are based on erroneous derivations."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$n^2 - 2n - (y^2 + 2y) = 0 = f$",
+        "proof-method": "substitution and algebraic manipulation",
+        "calculation": [
+          "$y^2 + 2n = n^2 - 2y$",
+          "$n^2 - y^2 - 2n - 2y = 0$",
+          "$n^2 - 2n - (y^2 + 2y) = 0 = f$"
+        ],
+        "errors": [
+          "The calculations are based on erroneous derivations."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\nabla f = 2n - 2y - 4$",
+        "proof-method": "taking gradient",
+        "calculation": [
+          "$\\nabla f = 2n - 2 - (2y + 2) = 2n - 2y - 4$"
+        ],
+        "errors": [
+          "While the gradient calculation is correct, it is based on an undefined function $f$ derived from erroneous calculations."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "At the origin, $\\nabla f = -4$",
+        "proof-method": "evaluating gradient at origin",
+        "errors": [
+          "The evaluation is based on an erroneous derivation."
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, at the origin, it is a source.",
+        "errors": [
+          "The conclusion is based on an incorrect analysis. The concept of source is related to the eigenvalues of the matrix defining the linear system, which is not considered in the proof attempt."
+        ]
+      }
+    ],
+    "errors": [
+      "The proof does not use the correct approach to determine the nature of the equilibrium point of the given linear system. Instead of analyzing the eigenvalues of the corresponding matrix, it attempts to derive a Lyapunov function, which is not a relevant method for this problem. Furthermore, the proof contains numerous errors in variable definitions, calculations, and application of mathematical concepts."
+    ]
+  }
 }

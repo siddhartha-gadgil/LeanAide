@@ -1,35 +1,44 @@
 {
   "type": "theorem",
-  "name": "Circulation at the Origin",
+  "name": "Circulation of Linear System",
   "status": "incomplete proof",
-  "hypothesis": [
-    {
-      "type": "let",
-      "variable": "<anonymous>",
-      "kind": "System of linear differential equations",
-      "property": "Given by $\\dot{x} = -y$ and $\\dot{y} = x$"
-    }
-  ],
-  "conclusion": "The origin is a circulation (centre)",
+  "hypothesis": [],
+  "conclusion": "For the linear differential equation $\\dot{x}=-y$ and $\\dot{y}=x$, the origin is a circulation.",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "remark",
-        "statement": "(c) $\\dot{x} = -y$ and $\\dot{y} = x$"
+        "statement": "The proof seems to be trying to use the matrix form of the system and the eigenvalues of the matrix to determine the type of critical point at the origin. However, there are several missing steps and errors."
       },
       {
         "type": "assert",
-        "claim": "The system can be written as $\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = A \\begin{pmatrix} x \\\\ y \\end{pmatrix}$ where $A = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix}$",
-        "proof-method": "By rewriting the system in matrix form"
-      },
-      {
-        "type": "conclude",
-        "statement": "The origin is a circulation.",
+        "claim": "The system can be written as $(\\begin{smallmatrix} \\dot{x} \\\\ \\dot{y} \\end{smallmatrix}) = A (\\begin{smallmatrix} x \\\\ y \\end{smallmatrix})$ where $A = (\\begin{smallmatrix} 0 & -1 \\\\ 1 & 0 \\end{smallmatrix})$",
+        "proof-method": "Rewriting the system in matrix form",
         "missing": [
           {
             "type": "problem",
-            "statement": "Show that the eigenvalues of matrix A are purely imaginary."
+            "statement": "Show the derivation of the matrix A from the given system of equations."
+          }
+        ]
+      },
+      {
+        "type": "problem",
+        "statement": "Find the eigenvalues of matrix A",
+        "solved": false
+      },
+      {
+        "type": "problem",
+        "statement": "Determine the nature of the origin based on the eigenvalues of A",
+        "solved": false
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, the origin is a circulation.",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Complete the missing steps to show that the eigenvalues of A are purely imaginary and hence the origin is a circulation."
           }
         ]
       }

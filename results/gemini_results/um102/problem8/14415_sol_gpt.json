@@ -1,41 +1,58 @@
 {
   "type": "theorem",
-  "name": "Origin is Circulation",
+  "name": "Circulation at the origin",
   "hypothesis": [
     {
       "type": "assume",
-      "statement": "$\\dot{x} = -y$"
-    },
-    {
-      "type": "assume",
-      "statement": "$\\dot{y} = x$"
+      "statement": "The linear differential equation is given by $\\dot{x}=-y$ and $\\dot{y}=x$."
     }
   ],
   "conclusion": "The origin is circulation.",
-  "status": "wrong proof",
+  "status": "incomplete proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "assert",
         "claim": "$\\ddot{x} = -x$",
-        "proof-method": "Differentiate $\\dot{x} = -y$ with respect to $t$ and use $\\dot{y} = x$"
+        "deduced_from": {
+          "from_context": [
+            "$\\dot{x} = -y$",
+            "$\\dot{y} = x$"
+          ]
+        },
+        "proof-method": "Substitute $\\dot{y}$ into the first equation."
       },
       {
         "type": "assert",
-        "claim": "$\\frac{d^2 x}{dt^2} = -x$ implies $x(t)$ satisfies $\\frac{d^2 x}{dt^2} + x = 0$",
-        "proof-method": "Rewrite in standard form of a second-order linear differential equation"
+        "claim": "$\\frac{d^2x}{dt^2} = -x$",
+        "deduced_from": {
+          "from_context": [
+            "$\\ddot{x} = -x$"
+          ]
+        },
+        "proof-method": "Rewrite $\\ddot{x}$ as $\\frac{d^2x}{dt^2}$."
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of the system are purely imaginary.",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Find the eigenvalues of the system $\\dot{x}=-y$ and $\\dot{y}=x$."
+          }
+        ]
       },
       {
         "type": "conclude",
-        "statement": "It's a sink",
-        "errors": [
-          "Incorrect conclusion: second-order linear differential equation with purely imaginary eigenvalues implies circulation/centre, not a sink."
+        "statement": "The origin is circulation.",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Show that purely imaginary eigenvalues imply circulation."
+          }
         ]
       }
     ]
-  },
-  "errors": [
-    "Conclusion does not follow from the proved differential equation. Correct conclusion should be that the origin is a circulation/centre since the eigenvalues are purely imaginary."
-  ]
+  }
 }

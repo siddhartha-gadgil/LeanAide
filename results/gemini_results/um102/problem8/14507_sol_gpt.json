@@ -1,51 +1,50 @@
 {
   "type": "theorem",
-  "name": "Linear Differential Equation Circulation",
+  "name": "circulation_origin",
   "hypothesis": [
     {
-      "type": "assume",
-      "statement": "$\\dot{x} = -y$"
+      "type": "let",
+      "variable": "x",
+      "kind": "function of t",
+      "property": "solution to \\( \\dot{x} = -y \\)"
     },
     {
-      "type": "assume",
-      "statement": "$\\dot{y} = x$"
+      "type": "let",
+      "variable": "y",
+      "kind": "function of t",
+      "property": "solution to \\( \\dot{y} = x \\)"
     }
   ],
-  "conclusion": "The origin is circulation.",
+  "conclusion": "The origin is a circulation.",
   "status": "incomplete proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
-        "type": "assert",
-        "claim": "$\\begin{bmatrix} \\dot{x} \\\\ \\dot{y} \\end{bmatrix} = \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
-        "proof-method": "matrix representation"
+        "type": "let",
+        "variable": "<anonymous>",
+        "value": "$\\begin{bmatrix} \\dot{x} \\\\ \\dot{y} \\end{bmatrix} = \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
+        "kind": "matrix form"
+      },
+      {
+        "type": "let",
+        "variable": "A",
+        "value": "$\\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}$",
+        "kind": "matrix"
       },
       {
         "type": "assert",
-        "claim": "$X' = AX$",
+        "claim": "The characteristic equation of $A$ is $\\lambda^2 + 1 = 0$",
         "deduced_from": {
           "from_context": [
-            "$\\dot{x} = -y$",
-            "$\\dot{y} = x$",
-            "$\\begin{bmatrix} \\dot{x} \\\\ \\dot{y} \\end{bmatrix} = \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$"
+            "$|A - \\lambda I| = 0$",
+            "$\\begin{vmatrix} -\\lambda & -1 \\\\ 1 & -\\lambda \\end{vmatrix} = 0$"
           ]
         }
       },
       {
         "type": "assert",
-        "claim": "$|A - \\lambda I| = 0$",
-        "proof-method": "characteristic equation",
-        "calculation": [
-          "$\\begin{vmatrix} -\\lambda & -1 \\\\ 1 & -\\lambda \\end{vmatrix} = 0$",
-          "$\\lambda^2 + 1 = 0$",
-          "$\\lambda = \\pm i$"
-        ]
-      },
-      {
-        "type": "assert",
-        "claim": "The eigenvalues are $\\lambda = \\pm i$",
-        "proof-method": "solving characteristic equation",
+        "claim": "The eigenvalues of $A$ are $\\lambda = \\pm i$",
         "deduced_from": {
           "from_context": [
             "$\\lambda^2 + 1 = 0$"
@@ -53,111 +52,56 @@
         }
       },
       {
-        "type": "cases",
-        "on": "eigenvalues",
-        "split-kind": "condition",
-        "proof-cases": [
-          {
-            "type": "case",
-            "condition": "$\\lambda = i$",
-            "proof": {
-              "type": "proof",
-              "steps": [
-                {
-                  "type": "assert",
-                  "claim": "$\\begin{bmatrix} -i & -1 \\\\ 1 & -i \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = 0$",
-                  "proof-method": "eigenvector equation"
-                },
-                {
-                  "type": "assert",
-                  "claim": "$-ix + y = 0$ and $x - iy = 0$",
-                  "proof-method": "equate components",
-                  "calculation": [
-                    "$-ix + y = 0$",
-                    "$x - iy = 0$"
-                  ]
-                },
-                {
-                  "type": "assert",
-                  "claim": "$x = iy$",
-                  "proof-method": "solving system"
-                },
-                {
-                  "type": "assert",
-                  "claim": "Eigenvector: $\\begin{pmatrix} i \\\\ 1 \\end{pmatrix}$",
-                  "proof-method": "choosing $y = 1$"
-                }
-              ]
-            }
-          },
-          {
-            "type": "case",
-            "condition": "$\\lambda = -i$",
-            "proof": {
-              "type": "proof",
-              "steps": [
-                {
-                  "type": "assert",
-                  "claim": "$\\begin{bmatrix} i & -1 \\\\ 1 & i \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = 0$",
-                  "proof-method": "eigenvector equation"
-                },
-                {
-                  "type": "assert",
-                  "claim": "$ix - y = 0$ and $x + iy = 0$",
-                  "proof-method": "equate components",
-                  "calculation": [
-                    "$ix - y = 0$",
-                    "$x + iy = 0$"
-                  ]
-                },
-                {
-                  "type": "assert",
-                  "claim": "$y = ix$",
-                  "proof-method": "solving system"
-                },
-                {
-                  "type": "assert",
-                  "claim": "Eigenvector: $\\begin{pmatrix} 1 \\\\ i \\end{pmatrix}$",
-                  "proof-method": "choosing $x = 1$"
-                }
-              ]
-            }
-          }
-        ]
+        "type": "assert",
+        "claim": "For $\\lambda = i$, the eigenvector is $\\begin{pmatrix} x \\\\ y \\end{pmatrix} = y \\begin{pmatrix} i \\\\ 1 \\end{pmatrix}$",
+        "deduced_from": {
+          "from_context": [
+            "$\\begin{bmatrix} -i & -1 \\\\ 1 & -i \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = 0$"
+          ]
+        }
       },
       {
         "type": "assert",
-        "claim": "General Solution: $\\begin{bmatrix} x(t) \\\\ y(t) \\end{bmatrix} = \\alpha \\begin{pmatrix} i \\\\ 1 \\end{pmatrix} e^{it} + \\beta \\begin{pmatrix} 1 \\\\ i \\end{pmatrix} e^{-it}$",
-        "proof-method": "superposition of eigenvectors and eigenvalues"
+        "claim": "For $\\lambda = -i$, the eigenvector is $\\begin{pmatrix} x \\\\ y \\end{pmatrix} = y \\begin{pmatrix} -i \\\\ 1 \\end{pmatrix}$",
+        "deduced_from": {
+          "from_context": [
+            "$\\begin{bmatrix} i & -1 \\\\ 1 & i \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = 0$"
+          ]
+        }
       },
       {
         "type": "assert",
-        "claim": "Simplified Solution: $\\begin{bmatrix} x(t) \\\\ y(t) \\end{bmatrix} = \\begin{pmatrix} \\beta \\cos t - \\alpha \\sin t \\\\ \\alpha \\cos t + \\beta \\sin t \\end{pmatrix}$",
-        "proof-method": "simplify using Euler's formula",
-        "calculation": [
-          "$\\alpha \\begin{pmatrix} i \\\\ 1 \\end{pmatrix} e^{it} + \\beta \\begin{pmatrix} 1 \\\\ i \\end{pmatrix} e^{-it}$",
-          "$= \\alpha \\begin{pmatrix} i \\cos t - i^2 \\sin t \\\\ \\cos t + i \\sin t \\end{pmatrix} + \\beta \\begin{pmatrix} \\cos t - i \\sin t \\\\ i \\cos t - i^2 \\sin t \\end{pmatrix}$",
-          "$= \\begin{pmatrix} \\beta \\cos t - \\alpha \\sin t \\\\ \\alpha \\cos t + \\beta \\sin t \\end{pmatrix}$"
-        ]
+        "claim": "The general solution is $X(t) = \\begin{pmatrix} i \\\\ 1 \\end{pmatrix} Ve^{it} + \\begin{pmatrix} -i \\\\ 1 \\end{pmatrix} \\bar{V}e^{-it}$",
+        "deduced_from": {
+          "from_context": [
+            "eigenvalues and eigenvectors of $A$"
+          ]
+        }
       },
       {
         "type": "assert",
-        "claim": "$x^2 + y^2 = \\alpha$",
-        "proof-method": "calculate sum of squares"
+        "claim": "Simplifying, we get $X(t) = \\begin{pmatrix} \\beta \\cos t - \\alpha \\sin t \\\\ \\alpha \\cos t + \\beta \\sin t \\end{pmatrix} + i \\begin{pmatrix} \\alpha \\cos t - \\beta \\sin t \\\\ \\alpha \\sin t + \\beta \\cos t \\end{pmatrix}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$x^2$ and $y^2$ are functions of $\\alpha$ and $\\beta$ only and not $t$. Also, $x$ and $y$ are periodic functions."
       },
       {
         "type": "conclude",
-        "statement": "$x$ and $y$ are periodic functions and the trajectory is a circle."
-      }
-    ],
-    "missing": [
-      {
-        "type": "problem",
-        "statement": "Prove that $x^2 + y^2$ is a constant."
-      },
-      {
-        "type": "problem",
-        "statement": "Justify the direction of motion based on the signs of $\\alpha$ and $\\beta$."
+        "statement": "These equations and conditions satisfy the trajectory of a circle. The distance from the origin also remains the same with time $t$, only the phase changes. The trajectory is anticlockwise for $\\alpha < 0$ and clockwise for $\\beta < 0$.",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Justify why $x^2$ and $y^2$ depending only on $\\alpha$ and $\\beta$ implies that the distance from the origin remains constant."
+          },
+          {
+            "type": "problem",
+            "statement": "Justify why $x$ and $y$ being periodic functions imply the trajectory is a circle."
+          }
+        ],
+        "errors": [
+          "The statement does not rigorously prove that the origin is a circulation."
+        ]
       }
     ]
   }

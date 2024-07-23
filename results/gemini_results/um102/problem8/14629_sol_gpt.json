@@ -1,14 +1,10 @@
 {
   "type": "theorem",
-  "name": "Origin as Circulation for Linear Differential Equation",
+  "name": "Origin is Circulation",
   "hypothesis": [
     {
       "type": "assume",
-      "statement": "$\\dot{x} = -y$"
-    },
-    {
-      "type": "assume",
-      "statement": "$\\dot{y} = x$"
+      "statement": "The linear differential equations are $\\dot{x} = -y$ and $\\dot{y} = x$."
     }
   ],
   "conclusion": "The origin is a circulation.",
@@ -22,6 +18,26 @@
         "value": "n"
       },
       {
+        "type": "assert",
+        "claim": "$\\frac{dy}{dn} = n$",
+        "proof-method": "From $\\dot{y} = x$ and substitution."
+      },
+      {
+        "type": "assert",
+        "claim": "$dy = ndn$",
+        "proof-method": "Rearranging differential equation."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\int dy = \\int ndn$",
+        "proof-method": "Integrating both sides."
+      },
+      {
+        "type": "assert",
+        "claim": "$y = \\frac{n^2}{2}$",
+        "proof-method": "Result of integration."
+      },
+      {
         "type": "let",
         "variable": "i",
         "value": "-y"
@@ -29,91 +45,79 @@
       {
         "type": "assert",
         "claim": "$\\frac{dn}{dy} = -y$",
-        "deduced_from": {
-          "From_context": [
-            "$i = -y$"
-          ]
-        }
+        "proof-method": "From $\\dot{x} = -y$ and substitution."
       },
       {
         "type": "assert",
-        "claim": "$\\frac{dy}{dn} = n$",
-        "deduced_from": {
-          "From_context": [
-            "$j = n$"
-          ]
-        }
+        "claim": "$dn = -y dy$",
+        "proof-method": "Rearranging differential equation."
       },
       {
         "type": "assert",
-        "claim": "$dn = -y \\, dy$"
+        "claim": "$\\int dn = \\int -y dy$",
+        "proof-method": "Integrating both sides."
       },
       {
         "type": "assert",
-        "claim": "$dy = n \\, dn$"
+        "claim": "$n = \\frac{-y^2}{2}$",
+        "proof-method": "Result of integration."
       },
       {
         "type": "assert",
-        "claim": "$\\int dn = \\int -y \\, dy$"
+        "claim": "$2n = -y^2$",
+        "proof-method": "Rearranging the equation."
       },
       {
         "type": "assert",
-        "claim": "$\\int dy = \\int n \\, dn$"
+        "claim": "$y^2 + 2n = 0$",
+        "proof-method": "Rearranging the equation."
       },
       {
         "type": "assert",
-        "claim": "$n = -\\frac{y^2}{2} + C_1$"
+        "claim": "$n^2 - 2y = 0$",
+        "proof-method": "From $y = \\frac{n^2}{2}$ and substituting."
       },
       {
         "type": "assert",
-        "claim": "$y = \\frac{n^2}{2} + C_2$"
+        "claim": "$y^2 + 2n = n^2 - 2y$",
+        "proof-method": "Substitution and rearrangement."
       },
       {
         "type": "assert",
-        "claim": "$2n = -y^2 + 2C_1$"
+        "claim": "$n^2 - y^2 - 2n - 2y = 0$",
+        "proof-method": "Rearranging the equation."
       },
       {
         "type": "assert",
-        "claim": "$2y = n^2 + 2C_2$"
+        "claim": "$n^2 - 2n - (y^2 + 2y) = 0$",
+        "proof-method": "Factoring the equation."
       },
       {
         "type": "assert",
-        "claim": "$y^2 + 2n - 2C_1 = 0$"
+        "claim": "$n^2 - 2n - (y^2 + 2y) = 0 = f$",
+        "proof-method": "Setting equation equal to a function $f$."
       },
       {
         "type": "assert",
-        "claim": "$n^2 - 2y - 2C_2 = 0$"
+        "claim": "$\\nabla f = 2n - 2 - (2y + 2) = 2n - 2y - 4$",
+        "proof-method": "Calculating the gradient of $f$."
       },
       {
         "type": "assert",
-        "claim": "$y^2 + 2n = n^2 - 2y$"
-      },
-      {
-        "type": "assert",
-        "claim": "$x^2 - y^2 - 2x - 2y = 0$"
-      },
-      {
-        "type": "assert",
-        "claim": "$x^2 - 2x - (y^2 + 2y) = 0 = f$"
-      },
-      {
-        "type": "assert",
-        "claim": "$\\nabla f = 2n - 2 - (2y + 2) = 2x - 2y - 4$"
-      },
-      {
-        "type": "assert",
-        "claim": "At the origin, $\\nabla f = -4$"
+        "claim": "$\\nabla f = -4$ at origin",
+        "proof-method": "Substituting origin coordinates into the gradient."
       },
       {
         "type": "conclude",
         "statement": "Therefore, at the origin, it is a source.",
         "errors": [
-          "Incorrect conclusion about the nature of the origin."
+          "Incorrect calculation of the gradient.",
+          "Incorrect conclusion about the nature of the origin based on the gradient."
         ]
       }
     ]
   },
   "errors": [
-    "The problem statement aims to show the origin is a circulation, but the proof incorrectly concludes it is a source."
+    "The method used in the proof does not correctly analyze the nature of the origin for the given system of differential equations."
   ]
 }

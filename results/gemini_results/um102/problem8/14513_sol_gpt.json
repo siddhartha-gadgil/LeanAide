@@ -1,10 +1,14 @@
 {
   "type": "theorem",
-  "name": "Circular Circulation at the Origin",
+  "name": "Origin is Circulation for Given Linear Differential Equations",
   "hypothesis": [
     {
       "type": "assume",
-      "statement": "$\\dot{x} = -y$ and $\\dot{y} = x$"
+      "statement": "$\\dot{x} = -y$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = x$"
     }
   ],
   "conclusion": "The origin is a circulation.",
@@ -13,16 +17,10 @@
     "type": "proof",
     "steps": [
       {
-        "type": "let",
-        "variable": "A",
-        "value": "\\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}",
-        "kind": "matrix"
-      },
-      {
         "type": "assert",
-        "claim": "$X' = AX$",
+        "claim": "$X' = \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix} X$",
         "deduced_from": {
-          "from_context": [
+          "From_context": [
             "$\\dot{x} = -y$",
             "$\\dot{y} = x$"
           ]
@@ -30,58 +28,71 @@
       },
       {
         "type": "assert",
-        "claim": "The characteristic equation of $A$ is $\\lambda^2 + 1 = 0$",
-        "proof-method": "Computation of the determinant $\\det(A - \\lambda I) = 0$",
-        "calculation": [
-          "A - \\lambda I = \\begin{bmatrix} -\\lambda & -1 \\\\ 1 & -\\lambda \\end{bmatrix}",
-          "\\det(A - \\lambda I) = \\lambda^2 + 1 = 0"
-        ]
+        "claim": "The characteristic equation is $\\lambda^2 + 1 = 0$",
+        "proof-method": "Calculation of the determinant $\\det(A - \\lambda I) = 0$"
       },
       {
         "type": "assert",
-        "claim": "The eigenvalues of $A$ are $\\lambda = \\pm i$",
+        "claim": "The eigenvalues are $\\lambda = \\pm i$",
         "deduced_from": {
-          "from_context": [
-            "The characteristic equation $\\lambda^2 + 1 = 0$"
+          "From_context": [
+            "$\\lambda^2 + 1 = 0$"
           ]
         }
       },
       {
         "type": "assert",
-        "claim": "For $\\lambda_1 = i$, the eigenvector $V = \\begin{bmatrix} 1 \\\\ -i \\end{bmatrix}$",
-        "proof-method": "Solve $(A - iI)V = 0$",
-        "calculation": [
-          "A - iI = \\begin{bmatrix} -i & -1 \\\\ 1 & -i \\end{bmatrix}",
-          "(A - iI) \\begin{bmatrix} x \\\\ y \\end{bmatrix} = 0 \\implies \\begin{bmatrix} -i & -1 \\\\ 1 & -i \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = 0",
-          "-ix - y = 0 \\implies y = -ix",
-          "V = \\begin{bmatrix} 1 \\\\ -i \\end{bmatrix}"
-        ]
-      },
-      {
-        "type": "let",
-        "variable": "X(t)",
-        "value": "\\alpha e^{it} \\begin{bmatrix} 1 \\\\ -i \\end{bmatrix}",
-        "kind": "solution"
+        "claim": "For $\\lambda = i$, the eigenvector is $\\begin{bmatrix} 1 \\\\ -i \\end{bmatrix}$",
+        "deduced_from": {
+          "From_context": [
+            "$\\lambda = i$"
+          ]
+        }
       },
       {
         "type": "assert",
-        "claim": "The general solution to the system is $X(t) = \\alpha \\begin{bmatrix} \\cos t \\\\ \\sin t \\end{bmatrix} + \\beta \\begin{bmatrix} \\sin t \\\\ - \\cos t \\end{bmatrix}$",
-        "proof-method": "Expressing $X(t)$ in terms of real and imaginary parts",
-        "calculation": [
-          "e^{it} = \\cos t + i \\sin t",
-          "e^{it} \\begin{bmatrix} 1 \\\\ -i \\end{bmatrix} = \\begin{bmatrix} \\cos t + i \\sin t \\\\ \\sin t - i \\cos t \\end{bmatrix}",
-          "$X_Re(t) = \\alpha \\begin{bmatrix} \\cos t \\\\ \\sin t \\end{bmatrix}$",
-          "$X_{Im}(t) = \\alpha \\begin{bmatrix} \\sin t \\\\ - \\cos t \\end{bmatrix}$",
-          "General solution: $X(t) = \\alpha \\begin{bmatrix} \\cos t \\\\ \\sin t \\end{bmatrix} + \\beta \\begin{bmatrix} \\sin t \\\\ - \\cos t \\end{bmatrix}$"
-        ]
+        "claim": "A solution of the differential equation is $X(t) = \\alpha e^{it} \\begin{bmatrix} 1 \\\\ -i \\end{bmatrix}$",
+        "deduced_from": {
+          "From_context": [
+            "Eigenvalue $\\lambda = i$ and corresponding eigenvector $\\begin{bmatrix} 1 \\\\ -i \\end{bmatrix}$"
+          ]
+        }
       },
       {
-        "type": "conclude",
-        "statement": "This represents a circular circulation as it remains at a constant distance from the origin and has a period of $2\\pi$.",
+        "type": "assert",
+        "claim": "This solution can be written as $X(t) = \\alpha \\begin{bmatrix} \\cos t + i\\sin t \\\\ \\sin t - i\\cos t \\end{bmatrix}$",
+        "deduced_from": {
+          "From_context": [
+            "$X(t) = \\alpha e^{it} \\begin{bmatrix} 1 \\\\ -i \\end{bmatrix}$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "The real part is $X_{Re}(t) = \\alpha \\begin{bmatrix} \\cos t \\\\ \\sin t \\end{bmatrix}$ and the imaginary part is $X_{Im}(t) = \\alpha \\begin{bmatrix} \\sin t \\\\ -\\cos t \\end{bmatrix}$",
+        "deduced_from": {
+          "From_context": [
+            "$X(t) = \\alpha \\begin{bmatrix} \\cos t + i\\sin t \\\\ \\sin t - i\\cos t \\end{bmatrix}$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "The general solution is $X(t) = \\alpha \\begin{bmatrix} \\cos t \\\\ \\sin t \\end{bmatrix} + \\beta \\begin{bmatrix} \\sin t \\\\ -\\cos t \\end{bmatrix}$",
+        "deduced_from": {
+          "From_context": [
+            "$X_{Re}(t) = \\alpha \\begin{bmatrix} \\cos t \\\\ \\sin t \\end{bmatrix}$",
+            "$X_{Im}(t) = \\alpha \\begin{bmatrix} \\sin t \\\\ -\\cos t \\end{bmatrix}$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "This is a circular solution as it remains at a constant distance from the origin and has a period of $2\\pi$",
         "missing": [
           {
             "type": "problem",
-            "statement": "Justify why the general solution describes a circular motion"
+            "statement": "Justify why the solution remains at a constant distance from the origin and has a period of $2\\pi$"
           }
         ]
       }
@@ -90,7 +101,7 @@
   "missing": [
     {
       "type": "problem",
-      "statement": "Conclusion that the origin is a circulation is not explicitly justified."
+      "statement": "Complete the justification for the circular nature of the solution"
     }
   ]
 }

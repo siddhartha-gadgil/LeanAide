@@ -1,50 +1,33 @@
 {
   "type": "theorem",
   "name": "Circulation at the Origin",
+  "status": "incomplete proof",
   "hypothesis": [],
   "conclusion": "For the linear differential equation $\\dot{x}=-y$ and $\\dot{y}=x$, the origin is a circulation.",
-  "status": "incomplete proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
-        "type": "assert",
-        "claim": "$\\ddot{x} = -x$",
-        "calculation": [
-          "{\\dot{x} = -y \\atop \\dot{y}=x} \\implies \\ddot{x} = -\\dot{y} = -x"
-        ]
+        "type": "remark",
+        "statement": "We need to show that the eigenvalues of the matrix corresponding to the system of differential equations are purely imaginary."
       },
       {
         "type": "assert",
-        "claim": "$\\frac{d^2x}{dt^2} = -x$",
-        "deduced_from": {
-          "from_context": [
-            "$\\ddot{x} = -x$"
-          ]
-        },
-        "proof-method": "Rewriting $\\ddot{x}$ as $\\frac{d^2x}{dt^2}$"
+        "claim": "The system can be written in matrix form as $\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix}$",
+        "proof-method": "Direct rewriting of the system of equations"
       },
       {
-        "type": "assert",
-        "claim": "The origin is a sink.",
-        "errors": [
-          "The eigenvalues of the corresponding matrix were not calculated. While the conclusion that the origin is a sink is incorrect, this step is not logically wrong if we assume the previous steps are correct.  The error is in using an insufficient criterion (that the second derivative of $x$ is $-x$) to arrive at this conclusion."
-        ]
+        "type": "problem",
+        "statement": "Find the eigenvalues of the matrix $\\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix}$",
+        "solved": false
       },
       {
         "type": "conclude",
-        "statement": "Therefore, the origin is a circulation.",
-        "errors": [
-          "The conclusion is not justified by the proof, which concluded that the origin is a sink. Further steps are needed to correct the proof."
-        ],
+        "statement": "Since the eigenvalues of the matrix are purely imaginary, the origin is a circulation.",
         "missing": [
           {
             "type": "problem",
-            "statement": "Determine the eigenvalues of the matrix $A = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix}$ corresponding to the given system of differential equations."
-          },
-          {
-            "type": "problem",
-            "statement": "Apply the known results relating the eigenvalues of $A$ to the behavior of the system at the origin."
+            "statement": "Show that the eigenvalues of the matrix $\\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix}$ are purely imaginary."
           }
         ]
       }

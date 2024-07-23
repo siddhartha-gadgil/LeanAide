@@ -1,133 +1,108 @@
 {
   "type": "theorem",
-  "name": "Circulation of the Origin for a Linear Differential Equation",
+  "name": "Circulation of Origin for Linear Differential System",
   "hypothesis": [
     {
       "type": "let",
       "variable": "x",
       "kind": "function of t",
-      "property": [
-        "differentiable"
-      ]
+      "property": "$\\dot{x} = -y$"
     },
     {
       "type": "let",
       "variable": "y",
       "kind": "function of t",
-      "property": [
-        "differentiable"
-      ]
-    },
-    {
-      "type": "assume",
-      "statement": "$\\dot{x} = y - x$ and $\\dot{y} = x$"
+      "property": "$\\dot{y} = x$"
     }
   ],
   "conclusion": "The origin is a circulation.",
-  "status": "wrong proof",
+  "status": "incomplete proof",
   "proof": {
+    "type": "proof",
     "steps": [
       {
         "type": "assert",
-        "claim": "$\\frac{d}{dt} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} -1 & 1 \\\\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
-        "deduced_from": {
-          "from_context": [
-            "$\\dot{x} = y - x$",
-            "$\\dot{y} = x$"
-          ]
-        }
-      },
-      {
-        "type": "let",
-        "variable": "A",
-        "value": "$\\begin{bmatrix} -1 & 1 \\\\ 1 & 0 \\end{bmatrix}$",
-        "kind": "matrix"
+        "claim": "$\\frac{d}{dt} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
+        "proof-method": "Matrix representation of the system of differential equations."
       },
       {
         "type": "assert",
-        "claim": "The characteristic equation of $A$ is $\\lambda^2 = -1$",
-        "deduced_from": {
-          "from_context": [
-            "$A = \\begin{bmatrix} -1 & 1 \\\\ 1 & 0 \\end{bmatrix}$"
-          ]
-        },
-        "errors": [
-          "The correct characteristic equation is $\\lambda^2 - \\lambda + 1 = 0$"
-        ]
+        "claim": "$\\dot{v} = Av$ where $A = \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}$",
+        "proof-method": "Rewrite the system in compact matrix form."
       },
       {
         "type": "assert",
-        "claim": "The eigenvalues are $\\lambda_1 = i$ and $\\lambda_2 = -i$",
+        "claim": "The characteristic equation of $A$ is $\\lambda^2 + 1 = 0$",
         "deduced_from": {
-          "from_context": [
-            "Characteristic equation is $\\lambda^2 = -1$"
+          "From_context": [
+            "$A = \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}$"
           ]
         }
       },
       {
         "type": "assert",
-        "claim": "The eigenvector associated with $\\lambda_1 = i$ is $v_1 = \\begin{pmatrix} i \\\\ 1 \\end{pmatrix}$",
+        "claim": "The eigenvalues of $A$ are $\\lambda_1 = i$ and $\\lambda_2 = -i$",
         "deduced_from": {
-          "from_context": [
-            "Eigenvalue equation $A v_1 = i v_1$"
+          "From_context": [
+            "Characteristic equation: $\\lambda^2 + 1 = 0$"
           ]
         }
       },
       {
         "type": "assert",
-        "claim": "The eigenvector associated with $\\lambda_2 = -i$ is $v_2 = \\begin{pmatrix} -i \\\\ 1 \\end{pmatrix}$",
+        "claim": "$|\\lambda_1| = |\\lambda_2| = 1$",
+        "proof-method": "Magnitude of the purely imaginary eigenvalues $i$ and $-i$."
+      },
+      {
+        "type": "assert",
+        "claim": "For $\\lambda_1 = i$, the eigenvector is $v_1 = \\begin{pmatrix} i \\\\ 1 \\end{pmatrix}$",
+        "proof-method": "Solve $Av_1 = iv_1$."
+      },
+      {
+        "type": "assert",
+        "claim": "For $\\lambda_2 = -i$, the eigenvector is $v_2 = \\begin{pmatrix} -i \\\\ 1 \\end{pmatrix}$",
+        "proof-method": "Solve $Av_2 = -iv_2$."
+      },
+      {
+        "type": "assert",
+        "claim": "The system can be diagonalized as $\\frac{d}{dt}\\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} i & 0 \\\\ 0 & -i \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
         "deduced_from": {
-          "from_context": [
-            "Eigenvalue equation $A v_2 = -i v_2$"
+          "From_context": [
+            "$A = \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}$",
+            "Eigenvectors: $v_1 = \\begin{pmatrix} i \\\\ 1 \\end{pmatrix}$, $v_2 = \\begin{pmatrix} -i \\\\ 1 \\end{pmatrix}$"
           ]
         }
       },
       {
         "type": "assert",
-        "claim": "The general solution can be expressed as $\\frac{d}{dt}\\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 1 & i \\\\ 2 & -i \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} \\text{ where } \\begin{bmatrix} x \\\\ y \\end{bmatrix} = x(t) \\begin{pmatrix} i \\\\ 1 \\end{pmatrix} + y(t) \\begin{pmatrix} 1 \\\\ i \\end{pmatrix}$",
-        "errors": [
-          "Incorrect matrix form for the solution."
-        ]
+        "claim": "The general solution is $\\begin{bmatrix} x \\\\ y \\end{bmatrix} = c_1 e^{it} \\begin{pmatrix} i \\\\ 1 \\end{pmatrix} + c_2 e^{-it} \\begin{pmatrix} -i \\\\ 1 \\end{pmatrix}$",
+        "proof-method": "Solve the diagonalized system."
       },
       {
         "type": "assert",
-        "claim": "Solving $\\frac{dx}{dt} = ix$ gives $x = c_1 e^{it}$",
-        "deduced_from": {
-          "from_context": [
-            "$\\frac{dx}{dt} = ix$"
-          ]
-        }
-      },
-      {
-        "type": "assert",
-        "claim": "Solving $\\frac{dy}{dt} = -iy$ gives $y = c_2 e^{-it}$",
-        "deduced_from": {
-          "from_context": [
-            "$\\frac{dy}{dt} = -iy$"
-          ]
-        }
-      },
-      {
-        "type": "assert",
-        "claim": "$|x| = |c_1|$ and $|y| = |c_2|$ do not change with time",
-        "deduced_from": {
-          "from_context": [
-            "$x = c_1 e^{it}$",
-            "$y = c_2 e^{-it}$"
-          ]
-        }
+        "claim": "$|x| = |c_1|$ and $|y| = |c_2|$ remain constant over time",
+        "proof-method": "Magnitude of the exponential solutions."
       },
       {
         "type": "conclude",
-        "statement": "The trajectory is a circulation.",
-        "errors": [
-          "Incorrect identification of circulation due to errors in the earlier steps."
-        ]
+        "statement": "The trajectory is a circulation."
+      }
+    ],
+    "missing": [
+      {
+        "type": "problem",
+        "statement": "The initial step $\\dot{x} = y - x$ provided in the proof is incorrect and should match the hypothesis $\\dot{x} = -y$."
+      },
+      {
+        "type": "problem",
+        "statement": "The solutions $x=c_1 e^{it}$ and $y=c_2 e^{-it}$ need to be derived correctly from the system."
+      }
+    ],
+    "errors": [
+      {
+        "type": "problem",
+        "statement": "The given system $\\dot{x} = y - x$ is inconsistent with the hypothesis $\\dot{x} = -y$."
       }
     ]
-  },
-  "errors": [
-    "Incorrect characteristic equation and eigenvalues.",
-    "Misapplication of eigenvalues and general solution."
-  ]
+  }
 }

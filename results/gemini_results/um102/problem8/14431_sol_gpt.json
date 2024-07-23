@@ -1,58 +1,77 @@
 {
   "type": "theorem",
-  "name": "Origin is Circulation",
+  "name": "Origin is circulation",
   "hypothesis": [
     {
       "type": "assume",
       "statement": "$\\dot{x} = -y$ and $\\dot{y} = x$"
     }
   ],
-  "conclusion": "The origin is circulation.",
-  "status": "wrong proof",
+  "conclusion": "The origin is a circulation.",
+  "status": "incomplete proof",
   "proof": {
+    "type": "proof",
     "steps": [
       {
-        "type": "let",
-        "variable": "<anonymous>",
-        "value": "$A = \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}$",
-        "kind": "matrix"
+        "type": "assert",
+        "claim": "$(\\begin{matrix} \\dot{x} \\\\ \\dot{y} \\end{matrix}) = A (\\begin{matrix} x \\\\ y \\end{matrix}) = (\\begin{matrix} -y \\\\ x \\end{matrix})$",
+        "proof-method": "Matrix form of the system"
       },
       {
-        "type": "assert",
-        "claim": "$\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = A \\begin{pmatrix} x \\\\ y \\end{pmatrix}$",
-        "proof-method": "matrix multiplication"
+        "type": "let",
+        "variable": "A",
+        "value": "$\\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}$",
+        "kind": "2x2 matrix"
       },
       {
         "type": "assert",
         "claim": "$Tr(A) = 0$",
-        "proof-method": "calculation",
+        "proof-method": "Calculation",
         "calculation": [
-          "$Tr(A) = 0 + 0 = 0$"
+          "Tr(A) = 0 + 0 = 0"
         ]
       },
       {
         "type": "assert",
         "claim": "$Det(A) = 1$",
-        "proof-method": "calculation",
+        "proof-method": "Calculation",
         "calculation": [
-          "$Det(A) = (0 \\cdot 0) - (-1 \\cdot 1) = 1$"
+          "Det(A) = (0)(0) - (-1)(1) = 1"
         ]
       },
       {
         "type": "assert",
-        "claim": "$\\lambda = i$ and $\\lambda = -i$",
-        "proof-method": "eigenvalue calculation"
+        "claim": "The eigenvalues of $A$ are $i$ and $-i$",
+        "proof-method": "Calculation",
+        "calculation": [
+          "$\\lambda^2 + 1 = 0$",
+          "$\\lambda = i, -i$"
+        ]
       },
       {
-        "type": "conclude",
-        "statement": "Hence, according to the Tr-Det phase diagram, this is an example of circulation.",
-        "errors": [
-          "The justification for using the Tr-Det phase diagram is incomplete and not clearly stated."
-        ]
+        "type": "assert",
+        "claim": "The origin is a circulation.",
+        "deduced_from": {
+          "known_results": [
+            "The origin is a circulation/centre if the eigenvalues of $A$ are purely imaginary."
+          ]
+        }
       }
     ]
   },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Justify the step from $\\dot{x} = -y$ and $\\dot{y} = x$ to $(\\begin{matrix} \\dot{x} \\\\ \\dot{y} \\end{matrix}) = A (\\begin{matrix} x \\\\ y \\end{matrix})$"
+    }
+  ],
   "errors": [
-    "The proof lacks a complete justification for the use of the Tr-Det phase diagram to conclude that the origin is a circulation."
+    {
+      "type": "assert",
+      "claim": "The origin is a circulation.",
+      "errors": [
+        "The proof does not justify the step from $\\dot{x} = -y$ and $\\dot{y} = x$ to $(\\begin{matrix} \\dot{x} \\\\ \\dot{y} \\end{matrix}) = A (\\begin{matrix} x \\\\ y \\end{matrix})$"
+      ]
+    }
   ]
 }

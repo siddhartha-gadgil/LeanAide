@@ -1,47 +1,31 @@
 {
   "type": "theorem",
-  "name": "Origin is Circulation for a Linear Differential Equation",
+  "name": "Origin is a circulation",
   "hypothesis": [
     {
       "type": "assume",
       "statement": "$\\dot{x} = -y$ and $\\dot{y} = x$"
     }
   ],
-  "conclusion": "The origin is a circulation",
+  "conclusion": "The origin is a circulation.",
   "status": "incomplete proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
+        "type": "remark",
+        "statement": "[DIAGRAM OF CIRCULAR VECTOR FIELD]"
+      },
+      {
         "type": "assert",
-        "claim": [
-          "The system $\\dot{x} = -y$ and $\\dot{y} = x$ can be written in matrix form as $\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = A \\begin{pmatrix} x \\\\ y \\end{pmatrix}$ where $A = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix}$"
+        "claim": "origin is a circulation",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Eigenvalues of the matrix must be determined to check if they are purely imaginary."
+          }
         ]
-      },
-      {
-        "type": "assert",
-        "claim": [
-          "The eigenvalues of the matrix $A$ are $\\pm i$"
-        ],
-        "deduced_from": {
-          "From_context": [
-            "Matrix $A = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix}$"
-          ]
-        }
-      },
-      {
-        "type": "conclude",
-        "statement": "Since the eigenvalues of $A$ are purely imaginary, the origin is a circulation"
       }
-    ],
-    "missing": [
-      {
-        "type": "problem",
-        "statement": "Justify the calculation of the eigenvalues of $A$"
-      }
-    ],
-    "errors": [
-      "There is an incomplete justification for why the eigenvalues $\\pm i$ lead to the conclusion that the origin is a circulation"
     ]
   }
 }

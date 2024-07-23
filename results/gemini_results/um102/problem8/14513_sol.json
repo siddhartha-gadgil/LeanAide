@@ -5,93 +5,86 @@
     {
       "type": "let",
       "variable": "<anonymous>",
-      "value": "$\\dot{x}=-y$",
-      "kind": "differential equation"
-    },
-    {
-      "type": "let",
-      "variable": "<anonymous>",
-      "value": "$\\dot{y}=x$",
-      "kind": "differential equation"
+      "value": "$ \\dot{x}=-y $ and $ \\dot{y}=x$",
+      "kind": "system of linear differential equations"
     }
   ],
-  "conclusion": "The origin is a circulation for the given system of linear differential equations.",
+  "conclusion": "The origin is a circulation for the given system of differential equations.",
   "status": "incomplete proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
-        "type": "remark",
-        "statement": "We are given the system of differential equations $\\dot{x} = -y$ and $\\dot{y} = x$. This can be written in matrix form as $X' = \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix} X$."
+        "type": "assert",
+        "claim": "The system of differential equations can be written in matrix form as $X' = \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix} X$.",
+        "proof-method": "Rewriting as a system of linear equations."
       },
       {
         "type": "assert",
-        "claim": "The eigenvalues of the matrix $\\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}$ are $\\lambda = \\pm i$.",
-        "proof-method": "Calculation using the characteristic equation.",
+        "claim": "The characteristic equation for this system is $\\lambda^2 + 1 = 0$.",
+        "proof-method": "Using the definition of the characteristic equation."
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues are $\\lambda = \\pm i$.",
         "calculation": [
-          "Characteristic equation: $\\lambda^2 + 1 = 0$",
           "$\\lambda^2 = -1$",
           "$\\lambda = \\pm i$"
         ]
       },
       {
         "type": "assert",
-        "claim": "An eigenvector corresponding to $\\lambda = i$ is $V = \\begin{bmatrix} 1 \\\\ -i \\end{bmatrix}$.",
-        "proof-method": "Calculation.",
-        "calculation": [
-          "$(A-\\lambda I) \\begin{bmatrix} x \\\\ y \\end{bmatrix} = 0$ $\\implies$ $\\begin{bmatrix} -i & -1 \\\\ 1 & -i \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = 0$",
-          "$-ix - y = 0$",
-          "$y = -ix$",
-          "Therefore, $V = \\begin{bmatrix} 1 \\\\ -i \\end{bmatrix}$ is an eigenvector."
-        ],
-        "missing": [
-          {
-            "type": "problem",
-            "statement": "Show the detailed steps to solve for the eigenvector given the equation $-ix - y = 0$.",
-            "solved": false
-          }
-        ]
+        "claim": "For $\\lambda = i$, the eigenvector is $V = \\begin{bmatrix} 1 \\\\ -i \\end{bmatrix}$.",
+        "proof-method": "Solving the equation $(A - \\lambda I) \\begin{bmatrix} x \\\\ y \\end{bmatrix} = 0$ for $\\lambda = i$."
       },
       {
         "type": "assert",
-        "claim": "A solution to the system is $X(t) = \\alpha e^{it} \\begin{bmatrix} 1 \\\\ -i \\end{bmatrix}$.",
-        "proof-method": "This is a standard result in the theory of linear differential equations."
+        "claim": "A solution to the differential equation is $X(t) = \\alpha e^{it}  \\begin{bmatrix} 1 \\\\ -i \\end{bmatrix}$.",
+        "proof-method": "Using the eigenvalue and eigenvector."
       },
       {
         "type": "assert",
-        "claim": "The real and imaginary parts of this solution are $X_{Re}(t) = \\alpha \\begin{bmatrix}  \\cos t \\\\ \\sin t \\end{bmatrix}$ and $X_{Im}(t) = \\alpha \\begin{bmatrix} \\sin t \\\\ - \\cos t \\end{bmatrix}$, respectively.",
-        "proof-method": "Expanding the complex exponential and separating real and imaginary parts.",
-        "missing": [
-          {
-            "type": "problem",
-            "statement": "Show the steps to expand $X(t) = \\alpha e^{it} \\begin{bmatrix} 1 \\\\ -i \\end{bmatrix}$ and obtain the real and imaginary parts.",
-            "solved": false
-          }
-        ]
+        "claim": "This solution can be rewritten as $X(t) = \\alpha  \\begin{bmatrix}  cos t + isin t\\\\ sin t - i cos t \\end{bmatrix}$.",
+        "proof-method": "Using Euler's formula $e^{it} = cos t + isin t$."
+      },
+      {
+        "type": "let",
+        "variable": "$X_{Re}(t)$",
+        "value": "$\\alpha  \\begin{bmatrix}  cos t \\\\ sin t \\end{bmatrix}$",
+        "kind": "real part of the solution"
+      },
+      {
+        "type": "let",
+        "variable": "$X_{Im}(t)$",
+        "value": "$\\alpha  \\begin{bmatrix}  sin t \\\\ -cos t \\end{bmatrix}$",
+        "kind": "imaginary part of the solution"
       },
       {
         "type": "assert",
-        "claim": "The general solution to the system is $X(t) = \\alpha \\begin{bmatrix}  \\cos t \\\\ \\sin t \\end{bmatrix} + \\beta \\begin{bmatrix} \\sin t \\\\ - \\cos t \\end{bmatrix}$.",
-        "proof-method": "The general solution is a linear combination of the real and imaginary parts of the complex solution."
+        "claim": "Both $X_{Re}(t)$ and $X_{Im}(t)$ are solutions to $X' = AX$.",
+        "proof-method": "By direct verification."
+      },
+      {
+        "type": "assert",
+        "claim": "The general solution is $X(t) = \\alpha  \\begin{bmatrix}  cos t \\\\ sin t \\end{bmatrix} + \\beta  \\begin{bmatrix}  sin t \\\\ - cos t \\end{bmatrix}$.",
+        "proof-method": "Using the fact that the real and imaginary parts of a complex solution are also solutions."
       },
       {
         "type": "conclude",
-        "statement": "This represents a circular circulation because it remains at a constant distance from the origin and has a period of $2\\pi$.",
+        "statement": "This is a circular solution as it remains at a constant distance from the origin and has a period of $2\\pi$. Thus, the origin is a circulation.",
         "missing": [
           {
             "type": "problem",
-            "statement": "Prove that the general solution represents a circular circulation. This may require showing that the solutions are ellipses with equal axes, which then implies that they are circles.",
+            "statement": "Show that the general solution remains at a constant distance from the origin.",
+            "solved": false
+          },
+          {
+            "type": "problem",
+            "statement": "Show that the general solution has a period of $2\\pi$",
             "solved": false
           }
         ]
       }
     ]
-  },
-  "missing": [
-    {
-      "type": "problem",
-      "statement": "The proof should explicitly use the fact that the eigenvalues are purely imaginary to conclude that the origin is a circulation, according to the provided known results.",
-      "solved": false
-    }
-  ]
+  }
 }

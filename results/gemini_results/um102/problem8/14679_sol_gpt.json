@@ -1,65 +1,56 @@
 {
   "type": "theorem",
-  "name": "Origin is Circulation",
+  "name": "Origin is a circulation",
   "hypothesis": [
     {
       "type": "assume",
-      "statement": "$\\dot{x}=-y$ and $\\dot{y}=x$"
+      "statement": "The system of linear differential equations is given by $\\dot{x} = -y$ and $\\dot{y} = x$."
     }
   ],
   "conclusion": "The origin is a circulation.",
-  "status": "incomplete proof",
+  "status": "wrong proof",
   "proof": {
-    "type": "proof",
     "steps": [
       {
         "type": "let",
         "variable": "y",
-        "value": "r\\sin(\\theta t)",
-        "kind": "function of t",
-        "property": "$r \\in (0, \\infty)$, $t \\in [-\\pi, \\pi]$"
+        "value": "r\\sin{\\theta t}",
+        "kind": "function of $t$",
+        "property": "$r \\in (0, \\infty)$"
       },
       {
         "type": "let",
         "variable": "x",
-        "value": "r\\cos(\\theta t)",
-        "kind": "function of t"
+        "value": "r\\cos{\\theta t}",
+        "kind": "function of $t$",
+        "property": "$t \\in [-\\pi, \\pi]$"
       },
       {
         "type": "assert",
-        "claim": "$\\dot{x} = -r\\sin(\\theta t) = -y$",
-        "calculation": [
-          "$\\dot{x} = -r\\sin(\\theta t)$",
-          "$-r\\sin(\\theta t) = -y$"
-        ],
-        "proof-method": "Substitution and differentiation"
+        "claim": "$\\dot{x} = -r\\sin{t} = -y$",
+        "proof-method": "Differentiation"
       },
       {
         "type": "assert",
-        "claim": "$\\dot{y} = r\\cos(\\theta t) = x$",
-        "calculation": [
-          "$\\dot{y} = r\\cos(\\theta t)$",
-          "$r\\cos(\\theta t) = x$"
-        ],
-        "proof-method": "Substitution and differentiation"
+        "claim": "$\\dot{y} = r\\cos{t} = x$",
+        "proof-method": "Differentiation"
       },
       {
-        "type": "remark",
-        "statement": "The phase portrait for this is ..."
+        "type": "assert",
+        "claim": "The phase portrait for this is a circulation about the origin."
       },
       {
         "type": "conclude",
         "statement": "Hence, the origin is a circulation.",
-        "missing": [
-          {
-            "type": "problem",
-            "statement": "Verify the eigenvalues of the system matrix $A$ to show they are purely imaginary to conclude the origin is a circulation."
-          }
-        ],
         "errors": [
-          "The proof does not explicitly verify that the eigenvalues of the system matrix $A$ are purely imaginary."
+          "The proof does not demonstrate that the eigenvalues of the system are purely imaginary, which is necessary to conclude that the origin is a circulation.",
+          "The given values for $x$ and $y$ (as functions of time $t$) are not justified or derived from the differential equations."
         ]
       }
     ]
-  }
+  },
+  "errors": [
+    "The proof does not show that the eigenvalues of the system matrix are purely imaginary, which is a known criterion for the origin being a circulation.",
+    "The parameterization of $x$ and $y$ in terms of $r$ and $\\theta$ is not justified from the differential equations given."
+  ]
 }
