@@ -1,6 +1,6 @@
 {
   "type": "theorem",
-  "name": "Origin is Circulation for Linear Differential Equation",
+  "name": "Origin is Circulation",
   "hypothesis": [
     {
       "type": "assume",
@@ -15,57 +15,51 @@
       {
         "type": "let",
         "variable": "y",
-        "value": "r \\sin(\\theta t)",
-        "kind": "function",
+        "value": "r\\sin(\\theta t)",
+        "kind": "function of t",
         "property": "$r \\in (0, \\infty)$, $t \\in [-\\pi, \\pi]$"
       },
       {
         "type": "let",
         "variable": "x",
-        "value": "r \\cos(\\theta t)",
-        "kind": "function"
+        "value": "r\\cos(\\theta t)",
+        "kind": "function of t"
       },
       {
         "type": "assert",
-        "claim": "$\\dot{x} = -r \\sin(t) = -y$",
-        "proof-method": "Substitute $y = r \\sin(\\theta t)$ and calculate $\\dot{x}$",
-        "errors": [
-          {
-            "type": "problem",
-            "statement": "Incorrect differentiation; should be $\\dot{x} = -r \\sin(\\theta t) \\cdot \\theta$ instead of $-r \\sin(t)$"
-          }
-        ]
+        "claim": "$\\dot{x} = -r\\sin(\\theta t) = -y$",
+        "calculation": [
+          "$\\dot{x} = -r\\sin(\\theta t)$",
+          "$-r\\sin(\\theta t) = -y$"
+        ],
+        "proof-method": "Substitution and differentiation"
       },
       {
         "type": "assert",
-        "claim": "$\\dot{y} = r \\cos(t) = x$",
-        "proof-method": "Substitute $x = r \\cos(\\theta t)$ and calculate $\\dot{y}$",
-        "errors": [
-          {
-            "type": "problem",
-            "statement": "Incorrect differentiation; should be $\\dot{y} = r \\cos(\\theta t) \\cdot \\theta$ instead of $r \\cos(t)$"
-          }
-        ]
+        "claim": "$\\dot{y} = r\\cos(\\theta t) = x$",
+        "calculation": [
+          "$\\dot{y} = r\\cos(\\theta t)$",
+          "$r\\cos(\\theta t) = x$"
+        ],
+        "proof-method": "Substitution and differentiation"
       },
       {
         "type": "remark",
-        "statement": "The phase portrait for this is (INSERT IMAGE OF PHASE PORTRAIT HERE)"
+        "statement": "The phase portrait for this is ..."
       },
       {
         "type": "conclude",
-        "statement": "Hence, Origin is a Circulation.",
-        "error": "The proof is incomplete and the correct phase portrait needs to be established."
+        "statement": "Hence, the origin is a circulation.",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Verify the eigenvalues of the system matrix $A$ to show they are purely imaginary to conclude the origin is a circulation."
+          }
+        ],
+        "errors": [
+          "The proof does not explicitly verify that the eigenvalues of the system matrix $A$ are purely imaginary."
+        ]
       }
     ]
-  },
-  "missing": [
-    {
-      "type": "problem",
-      "statement": "Correct differentiation of $x$ and $y$ with respect to $t$"
-    },
-    {
-      "type": "problem",
-      "statement": "Illustrating the correct phase portrait to show the origin is a circulation"
-    }
-  ]
+  }
 }

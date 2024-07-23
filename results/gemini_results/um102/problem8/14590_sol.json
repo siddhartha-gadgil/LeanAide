@@ -4,53 +4,48 @@
   "hypothesis": [
     {
       "type": "let",
-      "variable": "x(t)",
-      "kind": "real function"
-    },
-    {
-      "type": "let",
-      "variable": "y(t)",
-      "kind": "real function"
-    },
-    {
-      "type": "assume",
-      "statement": "The functions $x(t)$ and $y(t)$ satisfy the system of differential equations $\\dot{x} = -y$ and $\\dot{y} = x$."
+      "variable": "<anonymous>",
+      "kind": "System of linear differential equations",
+      "property": "Given by $\\dot{x} = -y$ and $\\dot{y} = x$"
     }
   ],
-  "conclusion": "The origin is a circulation for the given system of differential equations.",
+  "conclusion": "The origin is a circulation (centre).",
   "status": "wrong proof",
+  "errors": [
+    "The matrix in the proof does not correspond to the system of equations in the theorem statement."
+  ],
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "remark",
-        "statement": "The proof seems to be analyzing a different system than the one stated in the theorem."
+        "statement": "(c) $\\dot{x} = -y$ and $\\dot{y} = 2x$"
       },
       {
         "type": "assert",
-        "claim": "The system of differential equations can be written in matrix form as $\\dot{X} = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix} X$ ",
+        "claim": "$\\dot{X} = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix} X$",
         "errors": [
-          "This matrix corresponds to the system $\\dot{x} = -y$ and $\\dot{y} = x$, not the system given in the theorem."
+          "The matrix is incorrect for the given system of equations."
         ]
       },
       {
         "type": "assert",
-        "claim": "The determinant ($\\Delta$) of the matrix is 1 and the trace is 0.",
-        "proof-method": "Direct calculation."
+        "claim": "$\\Delta = 1$, $trace = 0$",
+        "proof-method": "Direct calculation from the matrix."
       },
       {
         "type": "assert",
-        "claim": "The eigenvalues of the matrix are $i$ and $-i$.",
-        "deduced_from": [
-          "$\\Delta = 1$ and $trace = 0$"
-        ]
+        "claim": "The eigenvalues are $(i, -i)$",
+        "proof-method": "Calculation using the characteristic equation."
       },
       {
         "type": "conclude",
-        "statement": "The origin is a circulation.",
-        "errors": [
-          "While the eigenvalues indicate a center, which is a type of circulation, this conclusion is based on an incorrect system of equations."
-        ]
+        "statement": "It is a circulation.",
+        "deduced_from": {
+          "known_results": [
+            "The origin is a circulation/centre if the eigenvalues of the matrix are purely imaginary."
+          ]
+        }
       }
     ]
   }

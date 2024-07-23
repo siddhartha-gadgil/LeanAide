@@ -1,13 +1,17 @@
 {
   "type": "theorem",
-  "name": "Origin is a source for a linear differential equation",
+  "name": "Origin as Circulation for Linear Differential Equation",
   "hypothesis": [
     {
       "type": "assume",
-      "statement": "$\\dot{x} = -y$ and $\\dot{y} = x$"
+      "statement": "$\\dot{x} = -y$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\dot{y} = x$"
     }
   ],
-  "conclusion": "The origin is a source",
+  "conclusion": "The origin is a circulation.",
   "status": "wrong proof",
   "proof": {
     "type": "proof",
@@ -25,58 +29,60 @@
       {
         "type": "assert",
         "claim": "$\\frac{dn}{dy} = -y$",
-        "proof-method": "Differentiation"
-      },
-      {
-        "type": "assert",
-        "claim": "$dn = -y \\, dy$",
-        "proof-method": "Rewriting the differential"
-      },
-      {
-        "type": "assert",
-        "claim": "$\\int dn = \\int -y \\, dy$",
-        "proof-method": "Integration"
-      },
-      {
-        "type": "assert",
-        "claim": "$n = \\frac{-y^2}{2}$"
-      },
-      {
-        "type": "assert",
-        "claim": "$2n = -y^2$"
+        "deduced_from": {
+          "From_context": [
+            "$i = -y$"
+          ]
+        }
       },
       {
         "type": "assert",
         "claim": "$\\frac{dy}{dn} = n$",
-        "deduced_from": [
-          "j = n"
-        ]
+        "deduced_from": {
+          "From_context": [
+            "$j = n$"
+          ]
+        }
       },
       {
         "type": "assert",
-        "claim": "$dy = n \\, dn$",
-        "proof-method": "Rewriting the differential"
+        "claim": "$dn = -y \\, dy$"
       },
       {
         "type": "assert",
-        "claim": "$\\int dy = \\int n \\, dn$",
-        "proof-method": "Integration"
+        "claim": "$dy = n \\, dn$"
       },
       {
         "type": "assert",
-        "claim": "$y = \\frac{n^2}{2}$"
+        "claim": "$\\int dn = \\int -y \\, dy$"
       },
       {
         "type": "assert",
-        "claim": "$2y = n^2$"
+        "claim": "$\\int dy = \\int n \\, dn$"
       },
       {
         "type": "assert",
-        "claim": "$n^2 - 2y = 0$"
+        "claim": "$n = -\\frac{y^2}{2} + C_1$"
       },
       {
         "type": "assert",
-        "claim": "$y^2 + 2n = 0$"
+        "claim": "$y = \\frac{n^2}{2} + C_2$"
+      },
+      {
+        "type": "assert",
+        "claim": "$2n = -y^2 + 2C_1$"
+      },
+      {
+        "type": "assert",
+        "claim": "$2y = n^2 + 2C_2$"
+      },
+      {
+        "type": "assert",
+        "claim": "$y^2 + 2n - 2C_1 = 0$"
+      },
+      {
+        "type": "assert",
+        "claim": "$n^2 - 2y - 2C_2 = 0$"
       },
       {
         "type": "assert",
@@ -84,40 +90,30 @@
       },
       {
         "type": "assert",
-        "claim": "$x^2 - y^2 - 2x - 2y = 0$",
-        "errors": [
-          "Incorrect manipulation"
-        ]
+        "claim": "$x^2 - y^2 - 2x - 2y = 0$"
       },
       {
         "type": "assert",
-        "claim": "$x^2 - 2x - (y^2 + 2y) = 0 = f$",
-        "errors": [
-          "Incorrect manipulation"
-        ]
+        "claim": "$x^2 - 2x - (y^2 + 2y) = 0 = f$"
       },
       {
         "type": "assert",
-        "claim": "$\\nabla f = 2n - 2 - (2y + 2) = 2x - 2y - 4$",
-        "errors": [
-          "Incorrect gradient calculation"
-        ]
+        "claim": "$\\nabla f = 2n - 2 - (2y + 2) = 2x - 2y - 4$"
       },
       {
         "type": "assert",
-        "claim": "At the origin $\\nabla f = -4$",
-        "errors": [
-          "Incorrect calculation"
-        ]
+        "claim": "At the origin, $\\nabla f = -4$"
       },
       {
         "type": "conclude",
-        "statement": "At the origin it is a source",
-        "error": "Incorrect conclusion based on erroneous calculations"
+        "statement": "Therefore, at the origin, it is a source.",
+        "errors": [
+          "Incorrect conclusion about the nature of the origin."
+        ]
       }
-    ],
-    "errors": [
-      "Incorrect manipulation and calculations leading to wrong conclusion."
     ]
-  }
+  },
+  "errors": [
+    "The problem statement aims to show the origin is a circulation, but the proof incorrectly concludes it is a source."
+  ]
 }

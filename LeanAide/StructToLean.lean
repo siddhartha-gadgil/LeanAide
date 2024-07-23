@@ -29,19 +29,19 @@ def contextJSON (js: Json) : Option String :=
     | _ => none
   | some "let" =>
     let varSegment := match js.getObjString? "var" with
-      | some "<anonymous>" => "We have"
+      | some "<anonymous>" => "We have "
       | some v => s!"Let {v} be"
-      | _ => "Consider"
+      | _ => "We have "
     let kindSegment := match js.getObjString? "kind" with
-      | some k => s!"s {k}"
+      | some k => s!"a {k}"
       | _ => ""
     let valueSegment := match js.getObjString? "value" with
       | some v => s!"{v}"
       | _ => ""
-    let propertSegment := match js.getObjString? "property" with
+    let propertySegment := match js.getObjString? "property" with
       | some p => s!"such that {p}"
       | _ => ""
-    return s!"{varSegment} {kindSegment} {valueSegment} {propertSegment}"
+    return s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}."
   | _ => none
 
 def localDeclExists (name: Name) (type : Expr) : MetaM Bool := do
@@ -62,10 +62,10 @@ partial def dropLocalContext (type: Expr) : MetaM Expr := do
 elab "dl!" t: term : term => do
 let t ← elabType t
   let t' ← dropLocalContext t
-  logInfo m!"{t} -> {t'}"
   return t'
 
-def eg_drop (n: Nat)  := dl! (∀ n : Nat, n = n + 1 → False)
+set_option linter.unusedVariables false in
+def eg_drop (n m: Nat)  := dl! (∀ n m: Nat, n = n + 1 → False)
 
 #print eg_drop
 

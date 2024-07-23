@@ -1,25 +1,41 @@
 {
   "type": "theorem",
-  "name": "Circulation at the origin",
+  "name": "Circulation of the Origin for a Linear Differential Equation",
   "hypothesis": [
     {
-      "type": "assume",
-      "statement": "$\\dot{x} = -y$"
+      "type": "let",
+      "variable": "x",
+      "kind": "function of t",
+      "property": [
+        "differentiable"
+      ]
+    },
+    {
+      "type": "let",
+      "variable": "y",
+      "kind": "function of t",
+      "property": [
+        "differentiable"
+      ]
     },
     {
       "type": "assume",
-      "statement": "$\\dot{y} = x$"
+      "statement": "$\\dot{x} = y - x$ and $\\dot{y} = x$"
     }
   ],
-  "conclusion": "The origin is a center, and the trajectory is a circulation.",
-  "status": "incomplete proof",
+  "conclusion": "The origin is a circulation.",
+  "status": "wrong proof",
   "proof": {
-    "type": "proof",
     "steps": [
       {
         "type": "assert",
-        "claim": "$\\dfrac{d}{dt} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} -1 & 1 \\\\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
-        "proof-method": "Given"
+        "claim": "$\\frac{d}{dt} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} -1 & 1 \\\\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
+        "deduced_from": {
+          "from_context": [
+            "$\\dot{x} = y - x$",
+            "$\\dot{y} = x$"
+          ]
+        }
       },
       {
         "type": "let",
@@ -29,117 +45,89 @@
       },
       {
         "type": "assert",
-        "claim": "$\\dot{v} = Av$",
-        "proof-method": "Matrix notation"
-      },
-      {
-        "type": "assert",
-        "claim": "The characteristic equation of $A$ is $\\lambda^2 + 1 = 0$",
-        "proof-method": "Characteristic polynomial"
-      },
-      {
-        "type": "assert",
-        "claim": "$\\lambda_1 = i$, $\\lambda_2 = -i$",
-        "proof-method": "Solving the characteristic equation"
-      },
-      {
-        "type": "let",
-        "variable": "$\\lambda_1$",
-        "value": "$i$",
-        "kind": "eigenvalue"
-      },
-      {
-        "type": "let",
-        "variable": "$\\lambda_2$",
-        "value": "$-i$",
-        "kind": "eigenvalue"
-      },
-      {
-        "type": "assert",
-        "claim": "$|\\lambda_1| = |\\lambda_2| = 1$",
-        "proof-method": "Magnitude of eigenvalues"
-      },
-      {
-        "type": "define",
-        "term": "$v_1$",
-        "statement": "$A v_1 = i v_1$"
-      },
-      {
-        "type": "assert",
-        "claim": "$\\begin{bmatrix} -1 & 1 \\\\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = i \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
-        "proof-method": "Eigenvector definition for $\\lambda_1$"
-      },
-      {
-        "type": "assert",
-        "claim": "$-x + y = ix$ and $x = iy$",
-        "proof-method": "Matrix equation"
-      },
-      {
-        "type": "assert",
-        "claim": "$v_1 = \\begin{pmatrix} i \\\\ 1 \\end{pmatrix}$",
-        "proof-method": "Solving the system"
-      },
-      {
-        "type": "define",
-        "term": "$v_2$",
-        "statement": "$A v_2 = -i v_2$"
-      },
-      {
-        "type": "assert",
-        "claim": "$\\begin{bmatrix} -1 & 1 \\\\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = -i \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
-        "proof-method": "Eigenvector definition for $\\lambda_2$"
-      },
-      {
-        "type": "assert",
-        "claim": "$-x + y = -ix$ and $x = -iy$",
-        "proof-method": "Matrix equation"
-      },
-      {
-        "type": "assert",
-        "claim": "$v_2 = \\begin{pmatrix} -i \\\\ 1 \\end{pmatrix}$",
-        "proof-method": "Solving the system"
-      },
-      {
-        "type": "assert",
-        "claim": "$\\dfrac{d}{dt} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} i & 0 \\\\ 0 & -i \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix}$",
-        "proof-method": "Diagonalization error",
+        "claim": "The characteristic equation of $A$ is $\\lambda^2 = -1$",
+        "deduced_from": {
+          "from_context": [
+            "$A = \\begin{bmatrix} -1 & 1 \\\\ 1 & 0 \\end{bmatrix}$"
+          ]
+        },
         "errors": [
-          {
-            "statement": "Diagonalization is incorrect."
-          }
+          "The correct characteristic equation is $\\lambda^2 - \\lambda + 1 = 0$"
         ]
       },
       {
         "type": "assert",
-        "claim": "$\\begin{bmatrix} x \\\\ y \\end{bmatrix} = x(t) \\begin{pmatrix} i \\\\ 1 \\end{pmatrix} + y(t) \\begin{pmatrix} -i \\\\ 1 \\end{pmatrix}$",
-        "proof-method": "Solution form"
+        "claim": "The eigenvalues are $\\lambda_1 = i$ and $\\lambda_2 = -i$",
+        "deduced_from": {
+          "from_context": [
+            "Characteristic equation is $\\lambda^2 = -1$"
+          ]
+        }
       },
       {
         "type": "assert",
-        "claim": "$\\dfrac{dx}{dt} = ix$ implies $x = c_1 e^{it}$",
-        "proof-method": "Solving ODE"
+        "claim": "The eigenvector associated with $\\lambda_1 = i$ is $v_1 = \\begin{pmatrix} i \\\\ 1 \\end{pmatrix}$",
+        "deduced_from": {
+          "from_context": [
+            "Eigenvalue equation $A v_1 = i v_1$"
+          ]
+        }
       },
       {
         "type": "assert",
-        "claim": "$\\dfrac{dy}{dt} = -iy$ implies $y = c_2 e^{-it}$",
-        "proof-method": "Solving ODE"
+        "claim": "The eigenvector associated with $\\lambda_2 = -i$ is $v_2 = \\begin{pmatrix} -i \\\\ 1 \\end{pmatrix}$",
+        "deduced_from": {
+          "from_context": [
+            "Eigenvalue equation $A v_2 = -i v_2$"
+          ]
+        }
       },
       {
         "type": "assert",
-        "claim": "$|x| = |c_1|$ and $|y| = |c_2|$ do not change with $t$",
-        "proof-method": "Magnitude of exponential functions"
+        "claim": "The general solution can be expressed as $\\frac{d}{dt}\\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 1 & i \\\\ 2 & -i \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} \\text{ where } \\begin{bmatrix} x \\\\ y \\end{bmatrix} = x(t) \\begin{pmatrix} i \\\\ 1 \\end{pmatrix} + y(t) \\begin{pmatrix} 1 \\\\ i \\end{pmatrix}$",
+        "errors": [
+          "Incorrect matrix form for the solution."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "Solving $\\frac{dx}{dt} = ix$ gives $x = c_1 e^{it}$",
+        "deduced_from": {
+          "from_context": [
+            "$\\frac{dx}{dt} = ix$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "Solving $\\frac{dy}{dt} = -iy$ gives $y = c_2 e^{-it}$",
+        "deduced_from": {
+          "from_context": [
+            "$\\frac{dy}{dt} = -iy$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$|x| = |c_1|$ and $|y| = |c_2|$ do not change with time",
+        "deduced_from": {
+          "from_context": [
+            "$x = c_1 e^{it}$",
+            "$y = c_2 e^{-it}$"
+          ]
+        }
       },
       {
         "type": "conclude",
-        "statement": "The trajectory is a circulation."
+        "statement": "The trajectory is a circulation.",
+        "errors": [
+          "Incorrect identification of circulation due to errors in the earlier steps."
+        ]
       }
     ]
   },
-  "missing": [
-    {
-      "type": "problem",
-      "statement": "Correct the diagonalization process.",
-      "solved": false
-    }
+  "errors": [
+    "Incorrect characteristic equation and eigenvalues.",
+    "Misapplication of eigenvalues and general solution."
   ]
 }

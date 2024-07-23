@@ -1,41 +1,47 @@
 {
   "type": "theorem",
-  "name": "Origin Circulation",
+  "name": "Origin is Circulation for a Linear Differential Equation",
   "hypothesis": [
     {
       "type": "assume",
-      "statement": "$\\dot{x} = -y$"
-    },
-    {
-      "type": "assume",
-      "statement": "$\\dot{y} = x$"
+      "statement": "$\\dot{x} = -y$ and $\\dot{y} = x$"
     }
   ],
-  "conclusion": "The origin is a circulation.",
+  "conclusion": "The origin is a circulation",
   "status": "incomplete proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "assert",
-        "claim": "$\\dot{x} = -y$ and $\\dot{y} = x$",
-        "deduced_from": [
-          "$\\dot{x} = -y$",
-          "$\\dot{y} = x$"
+        "claim": [
+          "The system $\\dot{x} = -y$ and $\\dot{y} = x$ can be written in matrix form as $\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = A \\begin{pmatrix} x \\\\ y \\end{pmatrix}$ where $A = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix}$"
         ]
       },
       {
+        "type": "assert",
+        "claim": [
+          "The eigenvalues of the matrix $A$ are $\\pm i$"
+        ],
+        "deduced_from": {
+          "From_context": [
+            "Matrix $A = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix}$"
+          ]
+        }
+      },
+      {
         "type": "conclude",
-        "statement": "Therefore, the origin is a circulation.",
-        "error": "The conclusion that the origin is circulation is not justified by the given statements. Further steps are required to prove this."
+        "statement": "Since the eigenvalues of $A$ are purely imaginary, the origin is a circulation"
       }
+    ],
+    "missing": [
+      {
+        "type": "problem",
+        "statement": "Justify the calculation of the eigenvalues of $A$"
+      }
+    ],
+    "errors": [
+      "There is an incomplete justification for why the eigenvalues $\\pm i$ lead to the conclusion that the origin is a circulation"
     ]
-  },
-  "missing": [
-    {
-      "type": "problem",
-      "statement": "Show that the origin is a circulation point for the system $\\dot{x} = -y$ and $\\dot{y} = x$.",
-      "solved": false
-    }
-  ]
+  }
 }

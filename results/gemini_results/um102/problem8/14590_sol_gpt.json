@@ -1,50 +1,72 @@
 {
   "type": "theorem",
-  "name": "Origin is a circulation for the given differential equations",
+  "name": "Origin is a circulation",
   "hypothesis": [
     {
       "type": "assume",
       "statement": "$\\dot{x} = -y$ and $\\dot{y} = x$"
     }
   ],
-  "conclusion": "The origin is a circulation point.",
-  "status": "incomplete proof",
+  "conclusion": "The origin is a circulation.",
+  "status": "wrong proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "assert",
-        "claim": "$\\dot{X} = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix} X$",
-        "proof-method": "Matrix form of the system"
-      },
-      {
-        "type": "assert",
-        "claim": "The determinant is $1$ and the trace is $0$",
-        "calculation": [
-          "Determinant: $\\det\\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix} = 1$",
-          "Trace: $\\text{tr}\\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix} = 0$"
+        "claim": "$\\dot{x} = -y$ and $\\dot{y} = 2x$",
+        "errors": [
+          "Incorrect statement of the differential equations. Should be $\\dot{y} = x$."
         ]
       },
       {
         "type": "assert",
-        "claim": "The eigenvalues are $i$ and $-i$",
-        "proof-method": "Solving characteristic equation $\\lambda^2 + 1 = 0$"
+        "claim": "$\\dot{X} = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix} X$",
+        "deduced_from": {
+          "From_context": [
+            "$\\dot{x} = -y$ and $\\dot{y} = x$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$\\Delta = 1$, $\\text{trace} = 0$",
+        "calculation": [
+          {
+            "step": "$\\Delta = \\text{det}\\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix} = 1$"
+          },
+          {
+            "step": "$\\text{trace} = 0 + 0 = 0$"
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "Eigenvalues are $i$ and $-i$",
+        "calculation": [
+          {
+            "step": "Characteristic polynomial: $\\lambda^2 + 1 = 0$"
+          },
+          {
+            "step": "Solving, $\\lambda = i, -i$"
+          }
+        ]
       },
       {
         "type": "conclude",
-        "statement": "It is a circulation",
-        "error": "Incorrect definition and applicability of circulation based on eigenvalues; the correct concept involves the stability and nature of the eigenvalues, not just their imaginary nature."
+        "statement": "The origin is a circulation.",
+        "deduced_from": {
+          "Known_results": [
+            "The origin is a circulation/centre if the eigenvalues of $A$ are purely imaginary."
+          ]
+        },
+        "errors": [
+          "Incorrect differential equations invalidate the proof despite correct matrix calculations and conclusions."
+        ]
       }
-    ],
-    "errors": [
-      "The proof incorrectly concludes circulation based on eigenvalues without proper justification. The correct argument should involve showing that the system represents a rotation around the origin."
     ]
   },
-  "missing": [
-    {
-      "type": "problem",
-      "statement": "Properly justify why eigenvalues $i$ and $-i$ imply circulation around the origin.",
-      "solved": false
-    }
+  "errors": [
+    "Incorrect differential equations used in the proof."
   ]
 }

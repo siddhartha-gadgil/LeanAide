@@ -5,38 +5,66 @@
     {
       "type": "let",
       "variable": "<anonymous>",
-      "value": "$\\dot{x} = -y$",
-      "kind": "differential equation"
-    },
-    {
-      "type": "let",
-      "variable": "<anonymous>",
-      "value": "$\\dot{y} = x$",
-      "kind": "differential equation"
+      "kind": "system of linear differential equations",
+      "property": "given by $\\dot{x} = -y$ and $\\dot{y} = x$"
     }
   ],
-  "conclusion": "The origin is a circulation for the given system of linear differential equations.",
-  "status": "incomplete proof",
-  "missing": [
+  "conclusion": "The origin is a circulation for the given system of differential equations.",
+  "status": "wrong proof",
+  "errors": [
     {
-      "type": "problem",
-      "statement": "Complete the calculation of the eigenvalues of the matrix A.",
-      "solved": false
+      "type": "assert",
+      "claim": "The eigenvalues of $A$ are $\\lambda = -i$.",
+      "errors": [
+        "The eigenvalues should be $\\lambda = \\pm i$"
+      ]
     },
     {
-      "type": "problem",
-      "statement": "Justify the claim that the solution is $X(t) = e^{it} \\begin{pmatrix} 1 \\\\ i \\end{pmatrix}$.",
-      "solved": false
-    },
-    {
-      "type": "problem",
-      "statement": "Explain the steps taken to arrive at the real and imaginary parts of the solution, $X_{Re}(t)$ and $X_{im}(t)$.",
-      "solved": false
-    },
-    {
-      "type": "problem",
-      "statement": "Explain the connection between the obtained solution and the conclusion that the origin is a saddle.",
-      "solved": false
+      "type": "assert",
+      "claim": "This is a saddle.",
+      "errors": [
+        "The conclusion that the origin is a saddle is incorrect. The eigenvalues are purely imaginary (after correcting the previous error), so the origin should be a circulation/centre."
+      ]
     }
-  ]
+  ],
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "A",
+        "kind": "matrix",
+        "value": "$\\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}$"
+      },
+      {
+        "type": "assert",
+        "claim": "The eigenvalues of $A$ are $\\lambda = -i$.",
+        "proof-method": "calculation"
+      },
+      {
+        "type": "let",
+        "variable": "X(t)",
+        "kind": "solution to the system of differential equations",
+        "value": "$e^{-it} \\begin{pmatrix} 1 \\\\ i \\end{pmatrix}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$X_{im} = \\begin{pmatrix} \\sin t \\\\ \\cos t \\end{pmatrix}$",
+        "proof-method": "calculation",
+        "calculation": [
+          "$\\begin{pmatrix} \\cos t + i \\sin t \\\\ i \\cos t - \\sin t \\end{pmatrix} \\begin{pmatrix} 1 \\\\ i \\end{pmatrix} = \\begin{pmatrix} \\cos t \\\\ - \\sin t \\end{pmatrix} + i \\begin{pmatrix} \\sin t \\\\ \\cos t \\end{pmatrix}$",
+          "Therefore, $X_{im} = \\begin{pmatrix} \\sin t \\\\ \\cos t \\end{pmatrix}$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$X(2\\pi) = X(0)$",
+        "proof-method": "direct substitution"
+      },
+      {
+        "type": "conclude",
+        "statement": "This is a saddle."
+      }
+    ]
+  }
 }

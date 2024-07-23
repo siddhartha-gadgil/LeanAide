@@ -1,49 +1,52 @@
 {
   "type": "theorem",
   "name": "Circulation at the Origin",
-  "hypothesis": [
-    {
-      "type": "let",
-      "Variable": "x(t)",
-      "Kind": "function of time",
-      "Property": "satisfies the differential equation $\\dot{x}=-y$"
-    },
-    {
-      "type": "let",
-      "Variable": "y(t)",
-      "Kind": "function of time",
-      "Property": "satisfies the differential equation $\\dot{y}=x$"
-    }
-  ],
-  "conclusion": "The origin (x=0, y=0) is a circulation for the given system of differential equations.",
-  "status": "wrong proof",
+  "hypothesis": [],
+  "conclusion": "For the linear differential equation $\\dot{x}=-y$ and $\\dot{y}=x$, the origin is a circulation.",
+  "status": "incomplete proof",
   "proof": {
     "type": "proof",
     "steps": [
       {
         "type": "assert",
         "claim": "$\\ddot{x} = -x$",
-        "deduced_from": [
-          "$\\dot{x} = - y$",
-          "$\\dot{y} = x$"
-        ],
-        "proof-method": "Differentiating the first equation with respect to time and substituting the second equation."
+        "calculation": [
+          "{\\dot{x} = -y \\atop \\dot{y}=x} \\implies \\ddot{x} = -\\dot{y} = -x"
+        ]
       },
       {
         "type": "assert",
         "claim": "$\\frac{d^2x}{dt^2} = -x$",
-        "proof-method": "Rewriting the previous equation using Leibniz notation."
+        "deduced_from": {
+          "from_context": [
+            "$\\ddot{x} = -x$"
+          ]
+        },
+        "proof-method": "Rewriting $\\ddot{x}$ as $\\frac{d^2x}{dt^2}$"
+      },
+      {
+        "type": "assert",
+        "claim": "The origin is a sink.",
+        "errors": [
+          "The eigenvalues of the corresponding matrix were not calculated. While the conclusion that the origin is a sink is incorrect, this step is not logically wrong if we assume the previous steps are correct.  The error is in using an insufficient criterion (that the second derivative of $x$ is $-x$) to arrive at this conclusion."
+        ]
       },
       {
         "type": "conclude",
-        "statement": "The origin is a sink.",
-        "error": "The conclusion that the origin is a sink is incorrect. While the given proof correctly derives the equation of a simple harmonic oscillator, this implies the origin is a center, not a sink. A sink implies trajectories converge to the origin, while a center implies trajectories circle around the origin."
-      }
-    ],
-    "errors": [
-      {
-        "type": "remark",
-        "statement": "The proof incorrectly concludes that the origin is a sink.  The equation $\\ddot{x} = -x$ describes a simple harmonic oscillator, which corresponds to a center, not a sink, in the phase plane."
+        "statement": "Therefore, the origin is a circulation.",
+        "errors": [
+          "The conclusion is not justified by the proof, which concluded that the origin is a sink. Further steps are needed to correct the proof."
+        ],
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Determine the eigenvalues of the matrix $A = \\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix}$ corresponding to the given system of differential equations."
+          },
+          {
+            "type": "problem",
+            "statement": "Apply the known results relating the eigenvalues of $A$ to the behavior of the system at the origin."
+          }
+        ]
       }
     ]
   }

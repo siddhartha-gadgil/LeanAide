@@ -4,61 +4,56 @@
   "hypothesis": [
     {
       "type": "let",
-      "variable": "x(t)",
-      "kind": "function",
-      "property": "solution to the differential equation $\\dot{x} = -y$"
-    },
-    {
-      "type": "let",
-      "variable": "y(t)",
-      "kind": "function",
-      "property": "solution to the differential equation $\\dot{y} = x$"
+      "variable": "<anonymous>",
+      "value": "$\\dot{x}=-y$, $\\dot{y}=x$",
+      "kind": "system of linear differential equations"
     }
   ],
-  "conclusion": "The origin (0, 0) is a center for the system of differential equations.",
+  "conclusion": "The origin is a circulation for the given system of differential equations.",
   "status": "incomplete proof",
-  "missing": [
-    {
-      "type": "problem",
-      "statement": "Show that the eigenvalues of the matrix A correspond to a center in the trace-determinant phase diagram."
-    }
-  ],
   "proof": {
     "type": "proof",
     "steps": [
       {
-        "type": "remark",
-        "statement": "We can rewrite the system of differential equations in matrix form."
+        "type": "assert",
+        "claim": "$\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = A \\begin{pmatrix} x \\\\ y \\end{pmatrix} = \\begin{pmatrix} -y \\\\ x \\end{pmatrix}$",
+        "proof-method": "Rewriting the system in matrix form"
       },
       {
         "type": "assert",
-        "claim": "$ (\\dot{x}, \\dot{y}) = A(x, y) = \\begin{pmatrix} -y \\\\ x \\end{pmatrix}$",
-        "proof-method": "Substitution"
-      },
-      {
-        "type": "assert",
-        "claim": "$A = \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}$",
-        "proof-method": "By the previous step."
+        "claim": "$A = \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix} $",
+        "proof-method": "By definition of the matrix A"
       },
       {
         "type": "assert",
         "claim": "$Tr(A) = 0$",
-        "proof-method": "Direct calculation"
+        "proof-method": "Calculation"
       },
       {
         "type": "assert",
         "claim": "$Det(A) = 1$",
-        "proof-method": "Direct calculation"
+        "proof-method": "Calculation"
       },
       {
         "type": "assert",
-        "claim": "$\\lambda = i \\text{ & } -i$",
-        "proof-method": "Solving the characteristic equation"
+        "claim": "$\\lambda = i$ & $-i$",
+        "proof-method": "Solving the characteristic equation",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Show the calculation of the eigenvalues of A."
+          }
+        ]
       },
       {
         "type": "conclude",
-        "statement": "Hence, according to (Tr-Det) phase diagram, this is an example of circulation.",
-        "error": "The conclusion is not fully justified. While the eigenvalues are imaginary, more work is needed to connect this to the trace-determinant phase diagram and conclusively determine the origin as a center."
+        "statement": "Hence, according to the Tr-Det phase diagram, this is an example of circulation.",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "The Tr-Det phase diagram is not a standard result and needs to be stated and proved or cited."
+          }
+        ]
       }
     ]
   }

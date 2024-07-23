@@ -1,84 +1,58 @@
 {
   "type": "theorem",
-  "name": "Circulation at the Origin",
+  "name": "Origin is Circulation",
   "hypothesis": [
     {
-      "type": "let",
-      "variable": "x",
-      "kind": "function of time",
-      "property": "$x(t)$ is a function of time."
-    },
-    {
-      "type": "let",
-      "variable": "y",
-      "kind": "function of time",
-      "property": "$y(t)$ is a function of time."
-    },
-    {
       "type": "assume",
-      "statement": "$\\dot{x} = -y$"
-    },
-    {
-      "type": "assume",
-      "statement": "$\\dot{y} = x$"
+      "statement": "$\\dot{x} = -y$ and $\\dot{y} = x$"
     }
   ],
-  "conclusion": "The origin is a center, implying circulation around the origin.",
-  "status": "incomplete proof",
+  "conclusion": "The origin is circulation.",
+  "status": "wrong proof",
   "proof": {
     "steps": [
       {
         "type": "let",
         "variable": "<anonymous>",
-        "value": "$A(x, y) = \\begin{pmatrix} -y \\\\ x \\end{pmatrix}$",
-        "kind": "linear mapping"
-      },
-      {
-        "type": "let",
-        "variable": "A",
-        "value": "$\\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}$",
+        "value": "$A = \\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}$",
         "kind": "matrix"
       },
       {
         "type": "assert",
+        "claim": "$\\begin{pmatrix} \\dot{x} \\\\ \\dot{y} \\end{pmatrix} = A \\begin{pmatrix} x \\\\ y \\end{pmatrix}$",
+        "proof-method": "matrix multiplication"
+      },
+      {
+        "type": "assert",
         "claim": "$Tr(A) = 0$",
-        "proof-method": "direct calculation",
+        "proof-method": "calculation",
         "calculation": [
-          {
-            "step": "$Tr(A) = 0 + 0 = 0$",
-            "justification": "Definition of trace"
-          }
+          "$Tr(A) = 0 + 0 = 0$"
         ]
       },
       {
         "type": "assert",
         "claim": "$Det(A) = 1$",
-        "proof-method": "direct calculation",
+        "proof-method": "calculation",
         "calculation": [
-          {
-            "step": "$Det(A) = (0 \\cdot 0) - (-1 \\cdot 1) = 1$",
-            "justification": "Definition of determinant"
-          }
+          "$Det(A) = (0 \\cdot 0) - (-1 \\cdot 1) = 1$"
         ]
       },
       {
-        "type": "let",
-        "variable": "$\\lambda$",
-        "value": "$i$ and $-i$",
-        "kind": "eigenvalues",
-        "property": "The eigenvalues of matrix $A$"
+        "type": "assert",
+        "claim": "$\\lambda = i$ and $\\lambda = -i$",
+        "proof-method": "eigenvalue calculation"
       },
       {
         "type": "conclude",
-        "statement": "Hence, according to the (Tr-Det) phase diagram, this is an example of circulation.",
-        "error": "The conclusion about circulation requires further justification. Specifically, the nature of the eigenvalues ($i$ and $-i$) and their implications on the phase portrait need to be explicitly connected to the notion of circulation."
+        "statement": "Hence, according to the Tr-Det phase diagram, this is an example of circulation.",
+        "errors": [
+          "The justification for using the Tr-Det phase diagram is incomplete and not clearly stated."
+        ]
       }
     ]
   },
-  "missing": [
-    {
-      "type": "problem",
-      "statement": "Show that the eigenvalues $i$ and $-i$ imply that the origin is a center, leading to circulation."
-    }
+  "errors": [
+    "The proof lacks a complete justification for the use of the Tr-Det phase diagram to conclude that the origin is a circulation."
   ]
 }

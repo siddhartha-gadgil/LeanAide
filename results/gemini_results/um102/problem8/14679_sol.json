@@ -1,31 +1,94 @@
 {
   "type": "theorem",
   "name": "Circulation at the Origin",
+  "status": "incomplete proof",
   "hypothesis": [
     {
-      "type": "let",
-      "variable": "x(t)",
-      "kind": "function",
-      "property": "solution to the differential equation $\\dot{x} = -y$"
-    },
-    {
-      "type": "let",
-      "variable": "y(t)",
-      "kind": "function",
-      "property": "solution to the differential equation $\\dot{y} = x$"
+      "type": "assume",
+      "statement": "We have the linear differential equation $\\dot{x}=-y$ and $\\dot{y}=x$"
     }
   ],
-  "conclusion": "The origin (0, 0) is a circulation point for the system of differential equations.",
-  "status": "incomplete proof",
+  "conclusion": "The origin is a circulation for the given system of differential equations.",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "y",
+        "value": "$r\\sin(\\theta t)$",
+        "kind": "real number"
+      },
+      {
+        "type": "let",
+        "variable": "r",
+        "kind": "element of",
+        "value": "$(0,\\infty)$"
+      },
+      {
+        "type": "let",
+        "variable": "t",
+        "kind": "element of",
+        "value": "$[-\\pi,\\pi]$"
+      },
+      {
+        "type": "let",
+        "variable": "x",
+        "value": "$r\\cos(\\theta t)$",
+        "kind": "real number"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\dot{x} = -r\\sin(t)$",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "How to derive $\\dot{x}$? The expression appears to be missing a $\\theta$ term.",
+            "solved": false
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\dot{x} = -y$",
+        "proof-method": "Substitution of the chosen value of y"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\dot{y} = r\\cos(t)$",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "How to derive $\\dot{y}$? The expression appears to be missing a $\\theta$ term.",
+            "solved": false
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\dot{y} = x$",
+        "proof-method": "Substitution of the chosen value of x"
+      },
+      {
+        "type": "remark",
+        "statement": "The phase portrait for this is"
+      },
+      {
+        "type": "missing",
+        "statement": "The phase portrait is not provided"
+      },
+      {
+        "type": "conclude",
+        "statement": "Hence, Origin is a Circulation",
+        "errors": [
+          "The proof does not demonstrate how the given solutions and the (missing) phase portrait imply that the origin is a circulation. In particular, the eigenvalues of the corresponding matrix were not calculated, nor was there any argument connecting the solutions or phase portrait to the eigenvalues."
+        ]
+      }
+    ]
+  },
   "missing": [
     {
       "type": "problem",
-      "statement": "The proposed solution in polar coordinates does not satisfy the given differential equations. A correct parameterization needs to be found.",
-      "solved": false
-    },
-    {
-      "type": "problem",
-      "statement": "Even with a correct parameterization, showing that the phase portrait circles the origin does not rigorously prove that the origin is a circulation point. A proof should formally define circulation and demonstrate that the origin meets those criteria.",
+      "statement": "Show that the phase portrait of the given system corresponds to a circulation at the origin.",
       "solved": false
     }
   ]
