@@ -9,6 +9,7 @@ import LeanCodePrompts.SpawnNearestEmbeddings
 import Lean.Meta.Tactic.TryThis
 import Std.Util.Pickle
 import LeanCodePrompts.ChatClient
+import LeanAide.StatementSyntax
 
 open Lean Meta Elab Parser Command
 
@@ -176,7 +177,7 @@ def fixedPromptsJson : Array <| String × Json :=
 /--
 Given a string, find the nearest documentation strings in Mathlib and return the corresponding theorem data.
 -/
-def getNearestDocsOpenAI (s: String)(numSim : Nat)(numConcise: Nat)(numDesc : Nat)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray))) :
+def getNearestDocs (s: String)(numSim : Nat)(numConcise: Nat)(numDesc : Nat)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray))) :
   IO <| Except String (Array (String × Json)) := do
     let check ← (← picklePath "docString").pathExists
     unless check do
@@ -225,14 +226,6 @@ def getNearestDocsOpenAI (s: String)(numSim : Nat)(numConcise: Nat)(numDesc : Na
           | Except.ok doc =>
             pairs := pairs.push (doc, js)
         return Except.ok pairs.reverse
-
-/--
-Given a string, find the nearest documentation strings in Mathlib and return the corresponding theorem data.
--/
-def getNearestDocs(s: String)(numSim : Nat)(numConcise numDesc: Nat)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)))
--- (source: String := "openai_full")
-   : IO <| Except String (Array (String × Json)) :=
-      getNearestDocsOpenAI s numSim numConcise numDesc dataMap
 
 /-- prompts generated from the declarations in the current file. -/
 def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true) : MetaM <| Array (String × String):= do
@@ -634,8 +627,9 @@ open PrettyPrinter Tactic
   return e
   | _ => throwUnsupportedSyntax
 
-def findTheorem? (s: String) : TermElabM (Option Name) := do
-  let (js, _, prompts) ← getLeanCodeJson s
+def findTheorem? (s: String)(numSim : ℕ := 8)
+  (numConcise numDesc : ℕ := 0) : TermElabM (Option Name) := do
+  let (js, _, prompts) ← getLeanCodeJson s (numSim := numSim) (numConcise := numConcise) (numDesc := numDesc)
   let output ← getMessageContents js
   trace[Translate.info] m!"thmPairs: {prompts}"
   let thmPairs := prompts.reverse.map (fun (_, js) =>
@@ -643,6 +637,39 @@ def findTheorem? (s: String) : TermElabM (Option Name) := do
     js.getObjValAs? String "theorem" |>.toOption.get!))
   matchElab? output thmPairs
 
+def nearbyTheoremsChunk (s: String)(numSim : ℕ := 8)
+  (numConcise numDesc : ℕ := 0)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)))  : TermElabM String := do
+    let pairs? ←
+      getNearestDocs s numSim numConcise numDesc dataMap
+    match pairs? with
+    | Except.error e => throwError e
+    | Except.ok pairs => do
+      let statements : Array String ← pairs.filterMapM (fun (doc, js) => do
+        let name? := js.getObjValAs? String "name" |>.toOption
+        let thm? := js.getObjValAs? String "theorem" |>.toOption
+        let prop? := js.getObjValAs? Bool "isProp" |>.toOption
+        match name?, thm?, prop? with
+        | some name, some thm, some true =>
+          mkTheoremWithDoc name.toName thm doc
+        | _, _,_ => pure <| none
+      )
+      return statements.foldl (fun acc s => acc ++ s ++ "\n\n") ""
+
+def matchingTheorems (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})(s: String)(n: ℕ := 3)(numSim : ℕ := 8)
+  (numConcise numDesc : ℕ := 0)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)))  : TermElabM (List String) := do
+    let chunk ← nearbyTheoremsChunk s numSim numConcise numDesc dataMap
+    let prompt := s!"The following are some theorems in Lean with informal statements as documentation strings\n\n{chunk}\n\n---\n¬List the names of theorems that are equivalent to the following informal statement:\n\n{s}.\n\nOutput ONLY a (possibly empty) list of names."
+    let completions ← server.completions prompt (← sysPrompt) n params
+    let entries : Array (Array String) := completions.filterMap fun s =>
+      let js? := Json.parse s |>.toOption
+      match js? with
+      | some js =>
+        fromJson? js |>.toOption
+      | none => none
+    return entries.join.toList
+
+#check Array.join
+#check Json.parse
 /--
 Translate a string to a Lean expression using the GPT model, returning three componenst:
 * The expression, all elaborated expressions, grouped expressions

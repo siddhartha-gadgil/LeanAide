@@ -80,7 +80,7 @@ def berkeley(filename):
     
 rawdata = os.path.join(homedir, "rawdata")
 
-def structured_berkeley(filename, client = default_client):
+def structured_berkeley(filename, client):
     js_data = berkeley(filename)
     count = 0
     for js in js_data:

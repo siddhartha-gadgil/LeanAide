@@ -39,3 +39,17 @@ def mkStatement (name?: Option Name)(type: Syntax.Term)
     let stx ← mkStatementStx name? type value? isProp
     let fmt ← ppCategory `command stx
     return fmt.pretty
+
+def mkTheoremWithDoc (name: Name)(thm: String)
+    (doc: String) :
+        CoreM String := do
+    let type? := runParserCategory (← getEnv) `term thm |>.toOption
+    match type? with
+    | none => return ""
+    | some type => do
+        let type : Syntax.Term := ⟨type⟩
+        let name := mkIdent name
+        let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom (doc ++ " -/")]
+        let stx ← `(command| $docs:docComment theorem $name : $type := by sorry)
+        let fmt ← ppCategory `command stx
+        return fmt.pretty
