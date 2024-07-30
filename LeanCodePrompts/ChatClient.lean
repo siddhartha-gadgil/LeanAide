@@ -182,10 +182,11 @@ def ChatExample.messages (ex : ChatExample)(responder := "assistant") : List Jso
   [Json.mkObj [("role", "user"), ("content", ex.user)],
     Json.mkObj [("role", responder), ("content", ex.assistant)]]
 
-abbrev ToChatExample := String × Json → Option ChatExample
+abbrev ToChatExample := String × Json → MetaM (Option ChatExample)
 
 def simpleChatExample : ToChatExample
-  | (docString, data) => data.getObjValAs? String "theorem" |>.toOption.map fun thm => {user := docString, assistant:= thm}
+  | (docString, data) =>
+    return data.getObjValAs? String "theorem" |>.toOption.map fun thm => {user := docString, assistant:= thm}
 
 def fullTheorem (js: Json) : Option String := do
   let thm ← js.getObjValAs? String "theorem" |>.toOption
@@ -196,7 +197,7 @@ def fullTheorem (js: Json) : Option String := do
   else
     s!"def {name} : {thm} := sorry"
 
-def displaydDoc (doc: String)(isProp: Bool) : String :=
+def displayedDoc (doc: String)(isProp: Bool) : String :=
   if (isProp) then s!"Consider the mathematical theorem.
 **Theorem:**
 {doc}
@@ -206,20 +207,30 @@ Translate the above mathematical statement into a Lean 4 `theorem` with proof `b
 **Definition:**
 {doc}
 ---
-Translate the above mathematical definition into a Lean 4 `def` with value `by sorry`. Give the Lean code only"
+Translate the above mathematical definition into a Lean 4 `def`. Give the Lean code only"
 
 
 def docChatExample
   (fullThm: Bool := false)(fullDoc : Bool := false) : ToChatExample
-  | (docString, data) =>
-    do
-    let thm ← data.getObjValAs? String "theorem" |>.toOption
-    let name ← data.getObjValAs? String "name" |>.toOption
-    let isProp ← data.getObjValAs? Bool "isProp" |>.toOption
-    let user := if fullDoc then displaydDoc docString isProp else
+  | (docString, data) => do
+    let thm? := data.getObjValAs? String "theorem" |>.toOption
+    let name? := data.getObjValAs? String "name" |>.toOption
+    let isProp?:= data.getObjValAs? Bool "isProp" |>.toOption
+    match thm?, name?, isProp? with
+    | some thm, some name, some isProp =>
+    let user := if fullDoc then displayedDoc docString isProp else
       docString
-    let assistant := if fullThm then s!"theorem {name} : {thm} := by sorry" else thm
-    return {user := user, assistant := assistant}
+    let head := if isProp then "theorem" else "definition"
+    let value ←  if isProp then pure "by sorry" else
+      let env ← getEnv
+      let decl := env.find? name.toName
+      let expr? := decl.bind (fun d => d.value?)
+      let fmt? ← expr?.mapM (fun e => ppExpr e)
+      pure <| fmt?.map (·.pretty) |>.getD "sorry"
+    let assistant :=
+      if fullThm then s!"{head} {name} : {thm} := {value}" else thm
+    return some {user := user, assistant := assistant}
+    | _,_,_ => return none
 
 
 

@@ -277,10 +277,13 @@ def getLeanCodeJson (s: String)
       let pairs := if includeFixed then pairs ++ fixedPromptsJson else pairs
       let pairs  := pairs.filter (fun (s, _) => s.length < 100)
       let pairs := pairs.map fun (doc, thm) =>
-        ("Translate the following statement into Lean 4:\n## Theorem: " ++ doc ++ "\n\nGive ONLY the Lean code", thm)
-      let examples := pairs.filterMap toChat
+        let isThm :=
+          thm.getObjValAs? Bool "isProp" |>.toOption |>.getD true
+        let head := if isThm then "Theorem" else "Definition"
+        (s!"Translate the following statement into Lean 4:\n## {head}: " ++ doc ++ "\n\nGive ONLY the Lean code", thm)
+      let examplesM := pairs.filterMapM toChat
       let s' := s!"Translate the following statement into Lean 4:\n## {header}: " ++ s ++ "\n\nGive ONLY the Lean code"
-      let messages ← mkMessages s' examples (← transPrompt) !server.hasSysPropmpt
+      let messages ← mkMessages s' (← examplesM) (← transPrompt) !server.hasSysPropmpt
       trace[Translate.info] m!"prompt: \n{messages.pretty}"
       logTimed "querying server"
       let fullJson ← server.query messages params
@@ -439,8 +442,8 @@ def leanToPrompt (thm: String)(numSim : Nat:= 5)(numConcise : Nat := 0)(numDesc:
     let pairs? ←
       getNearestDocs thm numSim numConcise numDesc dataMap
     let pairs := pairs?.toOption.getD #[]
-    let examples := pairs.filterMap simpleChatExample
-    let prompt := makeFlipPrompt thm examples
+    let examples := pairs.filterMapM simpleChatExample
+    let prompt := makeFlipPrompt thm (← examples)
     let fullJson ← (ChatServer.openAI).query prompt
       {temp := temp, n := 1}
     let outJson :=
