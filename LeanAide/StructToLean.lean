@@ -1,5 +1,8 @@
 import Lean
 import Mathlib
+import LeanCodePrompts.Translate
+import LeanAide.AesopSyntax
+import LeanAide.CheckedSorry
 
 /-!
 # Lean code from `ProofJSON`
@@ -25,7 +28,7 @@ def contextJSON (js: Json) : Option String :=
   match js.getObjString? "type" with
   | some "assume" =>
     match js.getObjValAs? String "statement" with
-    | Except.ok s => some <| "Assume:" ++ s
+    | Except.ok s => some <| "Assume that " ++ s ++ "."
     | _ => none
   | some "let" =>
     let varSegment := match js.getObjString? "var" with
@@ -58,6 +61,45 @@ partial def dropLocalContext (type: Expr) : MetaM Expr := do
     else
       return type
   | _ => return type
+
+def theoremInContext? (ctx: Array Json)(statement: String)(server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8)(numConcise numDesc : ℕ := 0)(toChat : ToChatExample := simpleChatExample)
+  (dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.empty ) : TermElabM (Option Expr) := do
+  let mut context := #[]
+  for js in ctx do
+    match contextJSON js with
+    | some s => context := context.push s
+    | none => pure ()
+  let fullStatement := context.foldr (· ++ " " ++ ·) statement
+  let type? ← translateToProp?
+    fullStatement.trim server params numSim numConcise numDesc toChat dataMap
+  type?.mapM <| fun e => dropLocalContext e
+
+def purgeLocalContext: Syntax.Command →  TermElabM Syntax.Command
+| `(command|def $name  : $type := $value) => do
+  let typeElab ← elabType type
+  let type ← dropLocalContext typeElab
+  let type ← delab type
+  `(command|def $name : $type := $value)
+| `(command|theorem $name  : $type := $value) => do
+  let typeElab ← elabType type
+  let type ← dropLocalContext typeElab
+  let type ← delab type
+  `(command|theorem $name : $type := $value)
+| stx => return stx
+
+def defnInContext? (ctx: Array Json)(statement: String)(server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8)(numConcise numDesc : ℕ := 0)(toChat : ToChatExample := simpleChatExample)
+  (dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.empty ) : TermElabM (Option Syntax.Command) := do
+  let mut context := #[]
+  for js in ctx do
+    match contextJSON js with
+    | some s => context := context.push s
+    | none => pure ()
+  let fullStatement := context.foldr (· ++ " " ++ ·) statement
+  let cmd? ←
+    translateDefCmdM? fullStatement server params numSim numConcise numDesc toChat dataMap
+  let cmd? ← cmd?.mapM purgeLocalContext
+  return cmd?
+
 
 elab "dl!" t: term : term => do
 let t ← elabType t

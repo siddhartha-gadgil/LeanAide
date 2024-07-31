@@ -256,7 +256,7 @@ def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true)
 -/
 def getLeanCodeJson (s: String)
   (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})(numSim : Nat:= 8)(numConcise: Nat := 0)(numDesc : Nat := 0)
-  (includeFixed: Bool := Bool.false)(toChat : ToChatExample := simpleChatExample)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.empty)(header: String := "Theorem") : CoreM <| Json × Json × Array (String × Json) := do
+  (includeFixed: Bool := Bool.false)(toChat : ToChatExample := simpleChatExample)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.empty)(header: String := "Theorem") : MetaM <| Json × Json × Array (String × Json) := do
   logTimed s!"translating string `{s}` with {numSim} examples"
   match ← getCachedJson? s with
   | some js => return js
@@ -579,11 +579,11 @@ universe u
 Translate a string and output as a string.
 -/
 def translateViewM (s: String)
-  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8)(toChat : ToChatExample := simpleChatExample)
+  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8)(numConcise numDesc : ℕ := 0)(toChat : ToChatExample := simpleChatExample)
   (dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.empty ) : TermElabM String := do
   logTimed "starting translation"
   let (js, _) ← getLeanCodeJson  s server params
-        (numSim := numSim) (toChat := toChat) (dataMap := dataMap)
+        (numSim := numSim) (numConcise := numConcise) (numDesc := numDesc) (toChat := toChat) (dataMap := dataMap)
   let output ← getMessageContents js
   trace[Translate.info] m!"{output}"
   -- let output := params.splitOutputs output
@@ -602,6 +602,43 @@ def translateViewM (s: String)
         trace[Translate.warning] m!"elaboration failed: {e} for {s}"
         pure none
     return view?.getD "False"
+
+def translateToProp? (s: String)
+  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8)(numConcise numDesc : ℕ := 0)(toChat : ToChatExample := simpleChatExample)
+  (dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.empty ) : TermElabM (Option Expr) := do
+  logTimed "starting translation"
+  let (js, _) ← getLeanCodeJson  s server params
+        (numSim := numSim) (numConcise := numConcise) (numDesc := numDesc) (toChat := toChat) (dataMap := dataMap)
+  let output ← getMessageContents js
+  trace[Translate.info] m!"{output}"
+  -- let output := params.splitOutputs output
+  let e? ← bestElab? output
+  return e?.toOption.map (·.1)
+
+/--
+Translating a definition greedily by parsing as a command
+-/
+def translateDefCmdM? (s: String)
+  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8)(numConcise numDesc : ℕ := 0)(toChat : ToChatExample := docChatExample)
+  (dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.empty ) : TermElabM <| Option Syntax.Command := do
+  logTimed "starting translation"
+  let (js, _) ← getLeanCodeJson  s server params
+        (numSim := numSim) (numConcise := numConcise) (numDesc := numDesc) (toChat := toChat) (dataMap := dataMap)
+  let output ← getMessageContents js
+  trace[Translate.info] m!"{output}"
+  let cmd? :  Option Syntax ← output.findSomeM? fun s =>
+    do
+      let cmd? := runParserCategory (← getEnv) `command s |>.toOption
+      pure cmd?
+  return cmd?.map (fun cmd => ⟨cmd⟩)
+
+def translateDefViewM? (s: String)
+  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8)(numConcise numDesc : ℕ := 0)(toChat : ToChatExample := docChatExample)
+  (dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.empty ) : TermElabM <| Option String := do
+  let cmd? ← translateDefCmdM? s server params numSim numConcise numDesc toChat dataMap
+  let fmt? ← cmd?.mapM fun cmd =>
+    PrettyPrinter.ppCommand cmd
+  return fmt?.map (·.pretty)
 
 
 /-- view of string in core; to be run with Snapshot.runCore
