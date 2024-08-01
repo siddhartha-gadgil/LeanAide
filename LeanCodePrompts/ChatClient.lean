@@ -197,28 +197,31 @@ def fullTheorem (js: Json) : Option String := do
   else
     s!"def {name} : {thm} := sorry"
 
-def displayedDoc (doc: String)(isProp: Bool) : String :=
+def displayedDoc (doc: String)(isProp: Bool)(name?: Option String) : String :=
+  let withName : String := match name? with
+    | some n => s!" with name **{n}**"
+    | none => ""
   if (isProp) then s!"Consider the mathematical theorem.
 **Theorem:**
 {doc}
 ---
-Translate the above mathematical statement into a Lean 4 `theorem` with proof `by sorry`. Give the Lean code only"
+Translate the above mathematical statement into a Lean 4 `theorem`{withName} with proof `by sorry`. Give the Lean code only"
   else s!"Consider the mathematical definition.
 **Definition:**
 {doc}
 ---
-Translate the above mathematical definition into a Lean 4 `def`. Give the Lean code only"
+Translate the above mathematical definition into a Lean 4 `def`{withName}. Give the Lean code only"
 
 
 def docChatExample
-  (fullThm: Bool := false)(fullDoc : Bool := false) : ToChatExample
+  (fullThm: Bool := true)(fullDoc : Bool := true) : ToChatExample
   | (docString, data) => do
     let thm? := data.getObjValAs? String "theorem" |>.toOption
     let name? := data.getObjValAs? String "name" |>.toOption
     let isProp?:= data.getObjValAs? Bool "isProp" |>.toOption
     match thm?, name?, isProp? with
     | some thm, some name, some isProp =>
-    let user := if fullDoc then displayedDoc docString isProp else
+    let user := if fullDoc then displayedDoc docString isProp (some name) else
       docString
     let head := if isProp then "theorem" else "definition"
     let value ←  if isProp then pure "by sorry" else
