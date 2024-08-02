@@ -49,7 +49,8 @@ Each JSON object has a "type" field. The possible values for this field are: "de
     * **Steps**: a JSON list of steps in the proof.
 * **Case**: A case in a proof.
   * Additional fields: 
-    * **Condition**: the case statement.
+    * **Condition**: the case condition or pattern.
+    * **Case-type**: one of "induction", "property" and "pattern".
     * **Proof**: a `ProofJSON` block. 
 * **Induction**: A proof by induction.
   * Additional fields: 

@@ -3,6 +3,7 @@ import Mathlib
 import LeanCodePrompts.Translate
 import LeanAide.AesopSyntax
 import LeanAide.CheckedSorry
+open LeanAide.Meta
 
 /-!
 # Lean code from `ProofJSON`
@@ -25,9 +26,9 @@ The cases to cover: "define", "assert", "theorem", "problem", "assume", "let", "
 * **assert**: This is a lemma. We can translate it to a `theorem` in command mode and `have` in tactic mode. We then pass to the proof in tactic mode. We may (or may not) begin the proof with `intro` statements for the hypotheses not already introduced. We build an `aesop` based tactic with fallback and have this as the proof. This includes a search for relevant lemmas.
 * **let** and **assume**: These are context statements. We simply add them to the context, so they get used in assertion.
 * **induction**: We first look ahead to the proof cases to write this as `induction ...` in tactic mode, with the `case` heads also determined. We then use recursively the proofs in the cases.
-* **cases**: We first look ahead to the proof cases to write this as `cases ...`, `by_cases` etc in tactic mode, with the `case` heads also determined. We then use recursively the proofs in the cases.
+* **cases**: We first look ahead to the proof cases to write this as `cases ...`, `by_cases` or `match ...` in tactic mode, with the `case` heads also determined. We then use recursively the proofs in the cases. In the multiple options case, we make claims `p₁ ∨ p₂ ∨ p₃` and `pᵢ → q` and then use `aesop` to complete. Here `q` is the goal.
 * **conclude**: We make an assertion and prove it by default `aesop`.
-* **contradiction**: Can try to use the contradiction tactic. Needs thought.
+* **contradiction**: Translate the statement to be contradicted to a statement `P`, then prove `P → False` using the given proof (with aesop having contradiction as a tactic). Finally follow the claim with `contradiction` (or `aesop` with contradiction).
 -/
 
 def Lean.Json.getObjString? (js: Json) (key: String) : Option String :=
@@ -36,7 +37,7 @@ def Lean.Json.getObjString? (js: Json) (key: String) : Option String :=
   | _ => none
 
 open Lean Meta Elab Term PrettyPrinter Tactic Parser
-def contextJSON (js: Json) : Option String :=
+def contextStatementOfJson (js: Json) : Option String :=
   match js.getObjString? "type" with
   | some "assume" =>
     match js.getObjValAs? String "statement" with
@@ -57,6 +58,24 @@ def contextJSON (js: Json) : Option String :=
       | some p => s!"such that {p}"
       | _ => ""
     return s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}."
+  | some "cases" =>
+    match js.getObjValAs? String "on" with
+    | Except.ok s => some <| "We consider cases based on " ++ s ++ "."
+    | _ => none
+  | some "induction" =>
+    match js.getObjValAs? String "on" with
+    | Except.ok s => some <| "We induct on " ++ s ++ "."
+    | _ => none
+  | some "case" =>
+    match js.getObjValAs? String "condition" with
+    | Except.ok p =>
+      /- one of "induction", "property" and "pattern" -/
+      match js.getObjValAs? String "case-kind" with
+      | Except.ok "induction" => some <| "Consider the induction case: " ++ p ++ "."
+      | Except.ok "property" => some <| "Consider the case " ++ p ++ "."
+      | Except.ok "pattern" => some <| "Consider the case of the form " ++ p ++ "."
+      | _ => none
+    | _ => none
   | _ => none
 
 def localDeclExists (name: Name) (type : Expr) : MetaM Bool := do
@@ -81,7 +100,7 @@ variable (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (n
 def theoremInContext? (ctx: Array Json)(statement: String): TermElabM (Option Expr) := do
   let mut context := #[]
   for js in ctx do
-    match contextJSON js with
+    match contextStatementOfJson js with
     | some s => context := context.push s
     | none => pure ()
   let fullStatement := context.foldr (· ++ " " ++ ·) statement
@@ -105,7 +124,7 @@ def purgeLocalContext: Syntax.Command →  TermElabM Syntax.Command
 def defnInContext? (ctx: Array Json)(statement: String) : TermElabM (Option Syntax.Command) := do
   let mut context := #[]
   for js in ctx do
-    match contextJSON js with
+    match contextStatementOfJson js with
     | some s => context := context.push s
     | none => pure ()
   let fullStatement := context.foldr (· ++ " " ++ ·) statement
@@ -114,6 +133,59 @@ def defnInContext? (ctx: Array Json)(statement: String) : TermElabM (Option Synt
   let cmd? ← cmd?.mapM purgeLocalContext
   return cmd?
 
+open Lean.Parser.Term
+/--
+Convert theorem or definition to `have` or `let`
+-/
+def commandToTactic (cmd: Syntax.Command) : TermElabM Syntax.Tactic := do
+  match cmd with
+  | `(theorem $name:ident $args:bracketedBinder* : $type := $value) =>
+      let mut letArgs := #[]
+      for arg in args do
+        let arg' ← `(letIdBinder| $arg:bracketedBinder)
+        letArgs := letArgs.push arg'
+      `(tactic| have $name $letArgs* : $type := $value)
+  | `(def $name:ident $args:bracketedBinder* : $type := $value) =>
+      let mut letArgs := #[]
+      for arg in args do
+        let arg' ← `(letIdBinder| $arg:bracketedBinder)
+        letArgs := letArgs.push arg'
+      `(tactic| let $name $letArgs* : $type := $value)
+  | `(def $name:ident $args:bracketedBinder* := $value) =>
+      let mut letArgs := #[]
+      for arg in args do
+        let arg' ← `(letIdBinder| $arg:bracketedBinder)
+        letArgs := letArgs.push arg'
+      `(tactic| let $name $letArgs*  := $value)
+  | _ => `(tactic| sorry)
+
+open Lean Meta Tactic
+def powerTactics : CoreM <| List <| TSyntax ``tacticSeq := do
+  return [← `(tacticSeq| omega), ← `(tacticSeq| ring), ← `(tacticSeq| linarith), ← `(tacticSeq| norm_num), ← `(tacticSeq| positivity), ← `(tacticSeq| gcongr), ←`(tacticSeq| contradiction), ← `(tacticSeq| tauto)]
+
+def powerRules (weight sorryWeight: Nat) : MetaM <| List <| TSyntax `Aesop.rule_expr := do
+  let tacs ← powerTactics
+  let rules ← tacs.mapM fun tac => AesopSyntax.RuleExpr.ofTactic tac (some weight)
+  return rules ++ [← AesopSyntax.RuleExpr.sorryRule sorryWeight]
+
+def suggestionRules (names: List Name) (weight: Nat := 90)
+    (rwWeight: Nat := 50) : MetaM <| List <| TSyntax `Aesop.rule_expr := do
+  let tacs ← names.mapM fun n => AesopSyntax.RuleExpr.ofName n (some weight)
+  let rws ← names.mapM fun n => AesopSyntax.RuleExpr.rewriteName n (some rwWeight)
+  let rwsFlip ← names.mapM fun n => AesopSyntax.RuleExpr.rewriteName n (some rwWeight) true
+  return tacs ++ rws ++ rwsFlip
+
+def aesopTactic (weight sorryWeight: Nat) (names: List Name) :
+    MetaM <| Syntax.Tactic := do
+  let rules ← powerRules weight sorryWeight
+  let sugRules ← suggestionRules names
+  AesopSyntax.fold (rules ++ sugRules).toArray
+
+def haveForAssertion (weight sorryWeight: Nat) (type: Syntax.Term)
+  (premises: List Name) :
+    MetaM <| Syntax.Tactic := do
+  let tac ← aesopTactic weight sorryWeight premises
+  `(tactic| have : $type := by $tac:tactic)
 
 elab "dl!" t: term : term => do
 let t ← elabType t

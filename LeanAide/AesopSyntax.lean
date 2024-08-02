@@ -1,5 +1,6 @@
 import Lean
 import Aesop
+import LeanAide.CheckedSorry
 open Lean Meta Elab Tactic Parser
 open Lean.Parser.Tactic
 
@@ -30,7 +31,7 @@ def ofTactic (t: TSyntax ``tacticSeq)(wt?: Option Nat := none) : MetaM <| TSynta
 
 def sorryRule (wt: Nat := 10) :
   MetaM <| TSyntax `Aesop.rule_expr := do
-  let stx ← `(tacticSeq|sorry)
+  let stx ← `(tacticSeq| checked_sorry)
   ofTactic stx (some wt)
 
 def rewrite (e: Syntax.Term)(wt? : Option Nat := none)

@@ -231,3 +231,23 @@ example (P Q: Prop) : P := by
 example (P : Nat → Prop)(f : Nat → Nat): P (f 5) := by
   have ass : ∀ n, P n := sorry
   aesop?
+
+example (p₁ p₂ p₃ q: Prop) : q := by
+  have : p₁ ∨ p₂ ∨ p₃ := by sorry
+  have : p₁ → q := by sorry
+  have : p₂ → q := by sorry
+  have : p₃ → q := by sorry
+  aesop?
+
+example (n: Nat) (q: Prop) : q := by
+  have : (n = 1) ∨ (n = 2) ∨ (n = 3) := by sorry
+  have : (n = 1) → q := by sorry
+  have : (n = 3) → q := by sorry
+  have : (n = 4) → q := by sorry
+  have : (n = 2) → q := by sorry
+  aesop
+
+example : True := by
+  by_cases 1 = 2
+  case pos => simp
+  case neg => simp
