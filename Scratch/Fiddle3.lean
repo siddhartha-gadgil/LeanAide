@@ -82,3 +82,8 @@ open Tactic
 example : {n: Nat} →  (a : Fin n) →  a = a := by
   intro n a
   rfl
+
+example (n: Nat) : n = n := by
+  match n with
+  | 0 => rfl
+  | i+1 => simp

@@ -160,6 +160,100 @@ def commandToTactic (cmd: Syntax.Command) : TermElabM Syntax.Tactic := do
   | _ => `(tactic| sorry)
 
 open Lean Meta Tactic
+#check binderIdent
+
+def inductionCase (name: String)(condition: String)
+    (pf: Array Syntax.Tactic) : TermElabM Syntax.Tactic := do
+  match condition with
+  | "base" =>
+      let zeroId := mkIdent `zero
+      let zeroArg ← `(caseArg| $zeroId:ident)
+      `(tactic| case $zeroArg => $pf*)
+  | _ =>
+      let nId := mkIdent name.toName
+      let succId := mkIdent `succ
+      let succId' ← `(Lean.binderIdent| $succId:ident)
+      let ihId := mkIdent `ih
+      let ihId' ← `(Lean.binderIdent| $ihId:ident)
+      `(tactic| case $succId' $nId:ident $ihId' => $pf*)
+
+def inductionCases (name: String)
+    (condPfs : Array (String × Array Syntax.Tactic))
+    : TermElabM <| Array Syntax.Tactic := do
+  let nId := mkIdent name.toName
+  let mut cases := #[← `(tactic| induction $nId:ident)]
+  for (cond, pf) in condPfs do
+    let caseTac ← inductionCase name cond pf
+    cases := cases.push caseTac
+  return cases
+
+def conditionCases (cond₁ cond₂ : String)
+    (pf₁ pf₂ : Array Syntax.Tactic) : TermElabM <| Array Syntax.Tactic := do
+  let condTerm₁ :=
+    runParserCategory (← getEnv) `term cond₁ |>.toOption.get!
+  let condTerm₂ :=
+    runParserCategory (← getEnv) `term cond₂ |>.toOption.get!
+  let condTerm₁' : Syntax.Term := ⟨condTerm₁⟩
+  let condTerm₂' : Syntax.Term := ⟨condTerm₂⟩
+  let ass₂ ← `(tactic| have : $condTerm₂' := by aesop)
+  let pf₂' := #[ass₂] ++ pf₂
+  let posId := mkIdent `pos
+  let negId := mkIdent `neg
+  let posId' ← `(caseArg| $posId:ident)
+  let negId' ← `(caseArg| $negId:ident)
+  return #[← `(tactic| by_cases $condTerm₁'), ← `(tactic| case $posId' => $pf₁*), ← `(tactic| case $negId' => $pf₂'*)]
+
+def matchAltTac := Term.matchAlt (rhsParser := matchRhs)
+
+def matchCases (discr: String)
+    (pat_pfs: Array <| String × Array Syntax.Tactic) : TermElabM Syntax.Tactic := do
+  let mut alts : Array <| TSyntax ``matchAltTac := #[]
+  for (pat, pf) in pat_pfs do
+    let patTerm :=
+      runParserCategory (← getEnv) `term pat |>.toOption.get!
+    let patTerm' : Syntax.Term := ⟨patTerm⟩
+    let m ← `(matchAltTac| | $patTerm' => $pf*)
+    alts := alts.push m
+  let alts' : Array <| TSyntax ``matchAlt := alts.map fun alt => ⟨alt⟩
+  let discrTerm :=
+    runParserCategory (← getEnv) `term discr |>.toOption.get!
+  let discrTerm' : Syntax.Term := ⟨discrTerm⟩
+  `(tactic| match $discrTerm':term with $alts':matchAlt*)
+
+def groupCasesAux (cond_pfs: List <| String × Array Syntax.Tactic)
+    : TermElabM <| Array Syntax.Tactic := do
+    match cond_pfs with
+    | [] => return #[← `(tactic| aesop)]
+    | (cond, pf) :: tail => do
+      let condTerm :=
+        runParserCategory (← getEnv) `term cond |>.toOption.get!
+      let condTerm' : Syntax.Term := ⟨condTerm⟩
+      let tailTacs ← groupCasesAux tail
+      let posId := mkIdent `pos
+      let negId := mkIdent `neg
+      let posId' ← `(caseArg| $posId:ident)
+      let negId' ← `(caseArg| $negId:ident)
+      return #[← `(tactic| by_cases $condTerm':term), ← `(tactic| case $posId' => $pf*), ← `(tactic| case $negId' => $tailTacs*)]
+
+def groupCases (cond_pfs: List <| String × Array Syntax.Tactic)
+    (union_pfs: Array Syntax.Tactic):
+    TermElabM <| Array Syntax.Tactic := do
+  let conds := cond_pfs.map (·.1)
+  let env ← getEnv
+  let condTerms := conds.map fun cond =>
+    runParserCategory env `term cond |>.toOption.get!
+  let orAll : Syntax.Term ←  match condTerms with
+    | [] => do
+      let falseId := mkIdent `False
+      `($falseId:ident)
+    | h :: t =>
+      let t' : List Syntax.Term := t.map fun term => ⟨term⟩
+      t'.foldlM (fun acc cond => `($acc ∨ $cond)) ⟨h⟩
+  let casesTacs ← groupCasesAux cond_pfs
+  let head ← `(tactic| have : $orAll := by $union_pfs*)
+  return #[head] ++ casesTacs
+
+
 def powerTactics : CoreM <| List <| TSyntax ``tacticSeq := do
   return [← `(tacticSeq| omega), ← `(tacticSeq| ring), ← `(tacticSeq| linarith), ← `(tacticSeq| norm_num), ← `(tacticSeq| positivity), ← `(tacticSeq| gcongr), ←`(tacticSeq| contradiction), ← `(tacticSeq| tauto)]
 
@@ -196,3 +290,4 @@ set_option linter.unusedVariables false in
 def eg_drop (n m: Nat)  := dl! (∀ n m: Nat, n = n + 1 → False)
 
 #print eg_drop
+#check caseArg
