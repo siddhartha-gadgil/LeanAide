@@ -421,6 +421,21 @@ def matchElab? (output: Array String)(defs : Array <| Name × String):
         provedEquiv e₁ e₂)
       pure <| pair?.map (fun (nm, _) => nm))
 
+def matchElabs (output: Array String)(defs : Array <| Name × String):
+  TermElabM (List Name) := do
+  let elabDefs : Array (Name × Expr) ←  defs.filterMapM (fun (nm, s) => do
+    let el? ← elabThm4 s
+    let el? := el?.toOption
+    pure <| el?.map (fun e => (nm, e)))
+  output.toList.filterMapM (fun out => do
+    let el? ← elabThm4Aux out
+    match el? with
+    | Except.error _ => pure none
+    | Except.ok e₁ =>
+      let pair? ← elabDefs.findM? (fun (_, e₂) => do
+        provedEquiv e₁ e₂)
+      pure <| pair?.map (fun (nm, _) => nm))
+
 def sufficientElab? (output: Array String)(defs : Array <| Name × String):
   TermElabM (Option Name) := do
   let elabDefs : Array (Name × Expr) ←  defs.filterMapM (fun (nm, s) => do
@@ -677,6 +692,16 @@ def findTheorem? (s: String)(numSim : ℕ := 8)
     js.getObjValAs? String "theorem" |>.toOption.get!))
   matchElab? output thmPairs
 
+def findTheorems (s: String)(numSim : ℕ := 8)
+  (numConcise numDesc : ℕ := 0) : TermElabM (List Name) := do
+  let (js, _, prompts) ← getLeanCodeJson s (numSim := numSim) (numConcise := numConcise) (numDesc := numDesc)
+  let output ← getMessageContents js
+  trace[Translate.info] m!"thmPairs: {prompts}"
+  let thmPairs := prompts.reverse.map (fun (_, js) =>
+    (js.getObjValAs? String "name" |>.toOption.get! |>.toName,
+    js.getObjValAs? String "theorem" |>.toOption.get!))
+  matchElabs output thmPairs
+
 def nearbyTheoremsChunk (s: String)(numSim : ℕ := 8)
   (numConcise numDesc : ℕ := 0)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)))  : TermElabM String := do
     let pairs? ←
@@ -695,8 +720,8 @@ def nearbyTheoremsChunk (s: String)(numSim : ℕ := 8)
       )
       return statements.foldl (fun acc s => acc ++ s ++ "\n\n") ""
 
-def matchingTheorems (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})(s: String)(n: ℕ := 3)(numSim : ℕ := 8)
-  (numConcise numDesc : ℕ := 0)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)))  : TermElabM (List String) := do
+def matchingTheoremsAI (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})(s: String)(n: ℕ := 3)(numSim : ℕ := 8)
+  (numConcise numDesc : ℕ := 0)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)))  : TermElabM (List Name) := do
     let chunk ← nearbyTheoremsChunk s numSim numConcise numDesc dataMap
     let prompt := s!"The following are some theorems in Lean with informal statements as documentation strings\n\n{chunk}\n\n---\n¬List the names of theorems that are equivalent to the following informal statement:\n\n{s}.\n\nOutput ONLY a (possibly empty) list of names."
     let completions ← server.completions prompt (← sysPrompt) n params
@@ -706,7 +731,15 @@ def matchingTheorems (server: ChatServer := ChatServer.openAI)(params: ChatParam
       | some js =>
         fromJson? js |>.toOption
       | none => none
-    return entries.join.toList
+    return entries.join.toList.map (·.toName)
+
+def matchingTheorems (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})(s: String)(n: ℕ := 3)(numSim : ℕ := 8)
+  (numConcise numDesc : ℕ := 0)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)))  : TermElabM (List Name) := do
+  let elabMatch ← findTheorems s numSim numConcise numDesc
+  if elabMatch.isEmpty then
+    matchingTheoremsAI server params s n numSim numConcise numDesc dataMap
+  else
+    pure elabMatch
 
 #check Array.join
 #check Json.parse

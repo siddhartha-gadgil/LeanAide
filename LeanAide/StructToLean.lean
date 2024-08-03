@@ -253,6 +253,24 @@ def groupCases (cond_pfs: List <| String × Array Syntax.Tactic)
   let head ← `(tactic| have : $orAll := by $union_pfs*)
   return #[head] ++ casesTacs
 
+def conclusionTactic (conclusion: String)
+     : TermElabM Syntax.Tactic := do
+  let conclusionTerm :=
+    runParserCategory (← getEnv) `term conclusion |>.toOption.get!
+  let conclusionTerm' : Syntax.Term := ⟨conclusionTerm⟩
+  `(tactic| have : $conclusionTerm':term := by aesop)
+
+def contradictionTactics (statement: String)
+    (pf: Array Syntax.Tactic) : TermElabM <| Array Syntax.Tactic := do
+  let statementTerm :=
+    runParserCategory (← getEnv) `term statement |>.toOption.get!
+  let statementTerm' : Syntax.Term := ⟨statementTerm⟩
+  let falseId := mkIdent `False
+  let assId := mkIdent `assumption
+  let assumeTactic ← `(tactic| intro $assId:ident)
+  let fullPf := #[assumeTactic] ++ pf
+  return #[←
+    `(tactic| have : $statementTerm':term → $falseId := by $fullPf*), ← `(tactic| aesop)]
 
 def powerTactics : CoreM <| List <| TSyntax ``tacticSeq := do
   return [← `(tacticSeq| omega), ← `(tacticSeq| ring), ← `(tacticSeq| linarith), ← `(tacticSeq| norm_num), ← `(tacticSeq| positivity), ← `(tacticSeq| gcongr), ←`(tacticSeq| contradiction), ← `(tacticSeq| tauto)]
