@@ -287,7 +287,7 @@ def suggestionRules (names: List Name) (weight: Nat := 90)
   let rwsFlip ← names.mapM fun n => AesopSyntax.RuleExpr.rewriteName n (some rwWeight) true
   return tacs ++ rws ++ rwsFlip
 
-def aesopTactic (weight sorryWeight: Nat) (names: List Name) :
+def aesopTactic (weight sorryWeight: Nat) (names: List Name := []) :
     MetaM <| Syntax.Tactic := do
   let rules ← powerRules weight sorryWeight
   let sugRules ← suggestionRules names
