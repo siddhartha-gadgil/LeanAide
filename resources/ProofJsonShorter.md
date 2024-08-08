@@ -1,6 +1,6 @@
 The following is a JSON format for proofs, which we call `ProofJSON`. This format also applies to attempted proofs with errors.
 
-Each JSON object has a "type" field. The possible values for this field are: "define", "assert", "theorem", "problem", "assume", "let", "proof", "cases", "induction", "case", "conclude", "remark". An object can also have a "name" field, which is a string, to be used for reference (for instance it may be the name of a theorem). Use LaTeX when appropriate with formulas enclosed in `$`. The different types of objects and their additional fields are as follows:
+Each JSON object has a "type" field. The possible values for this field are: "define", "assert", "theorem", "problem", "assume", "let", "proof", "cases", "induction", "case", "contradiction",  "conclude", "remark". An object can also have a "name" field, which is a string, to be used for reference (for instance it may be the name of a theorem). Use LaTeX when appropriate with formulas enclosed in `$`. The different types of objects and their additional fields are as follows:
 
 * **Let**: For a statement introducing a new variable with given value, type and/or property.
   * Additional fields 

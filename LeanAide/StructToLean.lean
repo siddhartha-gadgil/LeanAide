@@ -97,7 +97,7 @@ variable (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (n
   (dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.empty )
 
 
-def theoremInContext? (ctx: Array Json)(statement: String): TermElabM (Option Expr) := do
+def theoremExprInContext? (ctx: Array Json)(statement: String): TermElabM (Option Expr) := do
   let mut context := #[]
   for js in ctx do
     match contextStatementOfJson js with
@@ -298,6 +298,71 @@ def haveForAssertion (weight sorryWeight: Nat) (type: Syntax.Term)
     MetaM <| Syntax.Tactic := do
   let tac ← aesopTactic weight sorryWeight premises
   `(tactic| have : $type := by $tac:tactic)
+mutual
+  partial def structToCommand? (context: Array Json)
+      (input: Json) : TermElabM <| Option Syntax.Command := do
+      match input.getObjString? "type" with
+      | some "theorem" => sorry
+      | some "define" => sorry
+      | _ => return none
+
+  partial def structToTactics (accum: Array Syntax.Tactic)(context: Array Json)
+      (input: List Json) : TermElabM <| Array Syntax.Tactic := do
+      match input with
+      | [] => return accum
+      | head :: tail =>
+        let headTactics: Array Syntax.Tactic ←
+          match head.getObjString? "type" with
+          | some "assert" =>
+            match head.getObjValAs? String "claim" with
+            | Except.ok claim =>
+              let useResults: List String :=
+                match head.getObjValAs? Json "deduced_from"  with
+                | Except.ok known =>
+                  match known.getObjValAs? (List String) "known_results" with
+                  | Except.ok results => results
+                  | _ => []
+                | _ => []
+              let type? ← theoremExprInContext? server params numSim numConcise numDesc dataMap context claim
+              match type? with
+              | none => pure #[]
+              | some type =>
+                let names' ← useResults.mapM fun s =>
+                  matchingTheorems server params  (s := s) numSim numConcise numDesc 4 dataMap
+                let premises := names'.join
+                let tac ← haveForAssertion 90 50 (← delab type) premises
+                pure #[tac]
+            | _ => pure #[]
+          | some "define" =>
+            match ← structToCommand? context head with
+            | some cmd =>
+              let tac ← commandToTactic  <| ←  purgeLocalContext cmd
+              pure #[tac]
+            | none => pure #[]
+          | some "theorem" =>
+            match ← structToCommand? context head with
+            | some cmd =>
+              let tac ← commandToTactic  <| ←  purgeLocalContext cmd
+              pure #[tac]
+            | none => pure #[]
+          | some "cases" => sorry
+          | some "induction" => sorry
+          | some "contradiction" =>
+            match head.getObjValAs? String "statement",
+              head.getObjValAs? (List Json) "proof" with
+            | Except.ok s, Except.ok pf =>
+              let proof ← structToTactics #[] context pf
+              contradictionTactics s proof
+            | _, _ => pure #[]
+          | some "conclusion" =>
+            match head.getObjValAs? String "statement" with
+            | Except.ok s => contradictionTactics s accum
+            | _ => pure #[]
+          | _ => pure #[]
+        structToTactics (accum ++ headTactics) (context.push head) tail
+
+end
+
 
 elab "dl!" t: term : term => do
 let t ← elabType t

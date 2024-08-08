@@ -734,7 +734,7 @@ def matchingTheoremsAI (server: ChatServer := ChatServer.openAI)(params: ChatPar
     return entries.join.toList.map (·.toName)
 
 def matchingTheorems (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})(s: String)(n: ℕ := 3)(numSim : ℕ := 8)
-  (numConcise numDesc : ℕ := 0)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)))  : TermElabM (List Name) := do
+  (numConcise numDesc : ℕ := 4)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)))  : TermElabM (List Name) := do
   let elabMatch ← findTheorems s numSim numConcise numDesc
   if elabMatch.isEmpty then
     matchingTheoremsAI server params s n numSim numConcise numDesc dataMap
