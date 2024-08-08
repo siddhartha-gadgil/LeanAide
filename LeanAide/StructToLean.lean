@@ -96,6 +96,29 @@ partial def dropLocalContext (type: Expr) : MetaM Expr := do
 variable (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8)(numConcise numDesc : ℕ := 0)
   (dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.empty )
 
+open Lean Meta Tactic
+
+def powerTactics : CoreM <| List <| TSyntax ``tacticSeq := do
+  return [← `(tacticSeq| omega), ← `(tacticSeq| ring), ← `(tacticSeq| linarith), ← `(tacticSeq| norm_num), ← `(tacticSeq| positivity), ← `(tacticSeq| gcongr), ←`(tacticSeq| contradiction), ← `(tacticSeq| tauto)]
+
+def powerRules (weight sorryWeight: Nat) : MetaM <| List <| TSyntax `Aesop.rule_expr := do
+  let tacs ← powerTactics
+  let rules ← tacs.mapM fun tac => AesopSyntax.RuleExpr.ofTactic tac (some weight)
+  return rules ++ [← AesopSyntax.RuleExpr.sorryRule sorryWeight]
+
+def suggestionRules (names: List Name) (weight: Nat := 90)
+    (rwWeight: Nat := 50) : MetaM <| List <| TSyntax `Aesop.rule_expr := do
+  let tacs ← names.mapM fun n => AesopSyntax.RuleExpr.ofName n (some weight)
+  let rws ← names.mapM fun n => AesopSyntax.RuleExpr.rewriteName n (some rwWeight)
+  let rwsFlip ← names.mapM fun n => AesopSyntax.RuleExpr.rewriteName n (some rwWeight) true
+  return tacs ++ rws ++ rwsFlip
+
+def aesopTactic (weight sorryWeight: Nat) (names: List Name := []) :
+    MetaM <| Syntax.Tactic := do
+  let rules ← powerRules weight sorryWeight
+  let sugRules ← suggestionRules names
+  AesopSyntax.fold (rules ++ sugRules).toArray
+
 
 def theoremExprInContext? (ctx: Array Json)(statement: String): TermElabM (Option Expr) := do
   let mut context := #[]
@@ -159,7 +182,6 @@ def commandToTactic (cmd: Syntax.Command) : TermElabM Syntax.Tactic := do
       `(tactic| let $name $letArgs*  := $value)
   | _ => `(tactic| sorry)
 
-open Lean Meta Tactic
 #check binderIdent
 
 def inductionCase (name: String)(condition: String)
@@ -195,7 +217,8 @@ def conditionCases (cond₁ cond₂ : String)
     runParserCategory (← getEnv) `term cond₂ |>.toOption.get!
   let condTerm₁' : Syntax.Term := ⟨condTerm₁⟩
   let condTerm₂' : Syntax.Term := ⟨condTerm₂⟩
-  let ass₂ ← `(tactic| have : $condTerm₂' := by aesop)
+  let tac ← aesopTactic 90 50
+  let ass₂ ← `(tactic| have : $condTerm₂' := by $tac:tactic)
   let pf₂' := #[ass₂] ++ pf₂
   let posId := mkIdent `pos
   let negId := mkIdent `neg
@@ -223,7 +246,7 @@ def matchCases (discr: String)
 def groupCasesAux (cond_pfs: List <| String × Array Syntax.Tactic)
     : TermElabM <| Array Syntax.Tactic := do
     match cond_pfs with
-    | [] => return #[← `(tactic| aesop)]
+    | [] => return #[← aesopTactic 90 50]
     | (cond, pf) :: tail => do
       let condTerm :=
         runParserCategory (← getEnv) `term cond |>.toOption.get!
@@ -258,7 +281,8 @@ def conclusionTactic (conclusion: String)
   let conclusionTerm :=
     runParserCategory (← getEnv) `term conclusion |>.toOption.get!
   let conclusionTerm' : Syntax.Term := ⟨conclusionTerm⟩
-  `(tactic| have : $conclusionTerm':term := by aesop)
+  let tac ← aesopTactic 90 50
+  `(tactic| have : $conclusionTerm':term := by $tac:tactic)
 
 def contradictionTactics (statement: String)
     (pf: Array Syntax.Tactic) : TermElabM <| Array Syntax.Tactic := do
@@ -270,28 +294,8 @@ def contradictionTactics (statement: String)
   let assumeTactic ← `(tactic| intro $assId:ident)
   let fullPf := #[assumeTactic] ++ pf
   return #[←
-    `(tactic| have : $statementTerm':term → $falseId := by $fullPf*), ← `(tactic| aesop)]
+    `(tactic| have : $statementTerm':term → $falseId := by $fullPf*), ← aesopTactic 90 50]
 
-def powerTactics : CoreM <| List <| TSyntax ``tacticSeq := do
-  return [← `(tacticSeq| omega), ← `(tacticSeq| ring), ← `(tacticSeq| linarith), ← `(tacticSeq| norm_num), ← `(tacticSeq| positivity), ← `(tacticSeq| gcongr), ←`(tacticSeq| contradiction), ← `(tacticSeq| tauto)]
-
-def powerRules (weight sorryWeight: Nat) : MetaM <| List <| TSyntax `Aesop.rule_expr := do
-  let tacs ← powerTactics
-  let rules ← tacs.mapM fun tac => AesopSyntax.RuleExpr.ofTactic tac (some weight)
-  return rules ++ [← AesopSyntax.RuleExpr.sorryRule sorryWeight]
-
-def suggestionRules (names: List Name) (weight: Nat := 90)
-    (rwWeight: Nat := 50) : MetaM <| List <| TSyntax `Aesop.rule_expr := do
-  let tacs ← names.mapM fun n => AesopSyntax.RuleExpr.ofName n (some weight)
-  let rws ← names.mapM fun n => AesopSyntax.RuleExpr.rewriteName n (some rwWeight)
-  let rwsFlip ← names.mapM fun n => AesopSyntax.RuleExpr.rewriteName n (some rwWeight) true
-  return tacs ++ rws ++ rwsFlip
-
-def aesopTactic (weight sorryWeight: Nat) (names: List Name := []) :
-    MetaM <| Syntax.Tactic := do
-  let rules ← powerRules weight sorryWeight
-  let sugRules ← suggestionRules names
-  AesopSyntax.fold (rules ++ sugRules).toArray
 
 def haveForAssertion (weight sorryWeight: Nat) (type: Syntax.Term)
   (premises: List Name) :
@@ -345,8 +349,49 @@ mutual
               let tac ← commandToTactic  <| ←  purgeLocalContext cmd
               pure #[tac]
             | none => pure #[]
-          | some "cases" => sorry
-          | some "induction" => sorry
+          | some "cases" =>
+            match head.getObjValAs? (Array Json) "proof-cases" with
+            | Except.ok cs =>
+              let pairs ← cs.filterMapM fun js =>
+                match js.getObjString? "condition",
+                  js.getObjValAs? (List Json) "proof" with
+                | some cond, Except.ok pfSource => do
+                  let pf ← structToTactics #[] context pfSource
+                  return some (cond, pf)
+                | _, _ => return none
+              match head.getObjString? "split-kind" with
+              | some "match" =>
+                match head.getObjString? "on" with
+                | some discr =>
+                  let casesTac ← matchCases discr pairs
+                  return #[casesTac]
+                | _ => pure #[]
+              | some "group" =>
+                let union_pf : Array Syntax.Tactic ←
+                  match head.getObjValAs? (List Json) "exhaustiveness" with
+                  | Except.ok pfSource => structToTactics #[] context pfSource
+                  | _ => pure #[← aesopTactic 90 50]
+                groupCases pairs.toList union_pf
+              | some "condition" =>
+                match pairs with
+                | #[(cond₁, pf₁), (cond₂, pf₂)] =>
+                  conditionCases cond₁ cond₂ pf₁ pf₂
+                | _ => pure #[]
+              | _ => pure #[]
+            | _ => pure #[]
+          | some "induction" =>
+            match head.getObjValAs? String "on",
+              head.getObjValAs? (Array Json) "proof-cases" with
+            | Except.ok name, Except.ok cs =>
+              let pairs ← cs.filterMapM fun js =>
+                match js.getObjString? "condition",
+                  js.getObjValAs? (List Json) "proof" with
+                | some cond, Except.ok pfSource => do
+                  let pf ← structToTactics #[] context pfSource
+                  return some (cond, pf)
+                | _, _ => return none
+              inductionCases name pairs
+            | _, _ => pure #[]
           | some "contradiction" =>
             match head.getObjValAs? String "statement",
               head.getObjValAs? (List Json) "proof" with
