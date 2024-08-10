@@ -302,12 +302,30 @@ def haveForAssertion (weight sorryWeight: Nat) (type: Syntax.Term)
     MetaM <| Syntax.Tactic := do
   let tac ← aesopTactic weight sorryWeight premises
   `(tactic| have : $type := by $tac:tactic)
+
 mutual
   partial def structToCommand? (context: Array Json)
       (input: Json) : TermElabM <| Option Syntax.Command := do
       match input.getObjString? "type" with
-      | some "theorem" => sorry
-      | some "define" => sorry
+      | some "theorem" =>
+        let name? := input.getObjString? "name" |>.map String.toName
+        let hypothesis :=
+          input.getObjValAs? (Array Json) "hypothesis"
+            |>.toOption.getD #[]
+        match input.getObjValAs? String "statement", input.getObjValAs? (List Json) "proof" with
+        | Except.ok claim, Except.ok pfSource =>
+          let pf ← structToTactics #[] context pfSource
+          let pfTerm ← `(by $pf*)
+          let thm? ← theoremExprInContext? server params numSim numConcise numDesc dataMap (context ++ hypothesis) claim
+          thm?.mapM fun thm => do
+            mkStatementStx name? (← delab thm) pfTerm true
+        | _, _ => return none
+      | some "define" =>
+        match input.getObjValAs? String "statement", input.getObjValAs? String "term" with
+        | Except.ok s, Except.ok t =>
+          let statement := s!"We define {t} as follows:\n{s}."
+          defnInContext? server params numSim numConcise numDesc dataMap context statement
+        | _ , _ => none
       | _ => return none
 
   partial def structToTactics (accum: Array Syntax.Tactic)(context: Array Json)
