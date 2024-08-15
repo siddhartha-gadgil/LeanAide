@@ -56,7 +56,7 @@ end ChatParams
 
 
 inductive ChatServer where
-  | openAI (model: String := "gpt-3.5-turbo")
+  | openAI (model: String := "gpt-4o")
   | azure (deployment: String := "GPT4TestDeployment")
       (model: String := "GPT-4")
   | google (model: String := "gemini-1.5-pro-001") (location: String := "asia-south1")
