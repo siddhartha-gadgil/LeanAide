@@ -319,11 +319,13 @@ mutual
         | Except.ok claim, Except.ok pfSource =>
           match pfSource.getObjValAs? (List Json) "steps" with
           | Except.ok steps =>
-            let pf ← structToTactics #[] context steps
-            let pfTerm ← `(by $pf*)
-            IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
-            let thm? ← theoremExprInContext? server params numSim numConcise numDesc dataMap (context ++ hypothesis) claim
+            let thm? ← theoremExprInContext? server params numSim (numConcise + 4) (numDesc + 4) dataMap (context ++ hypothesis) claim
+            if thm?.isNone then
+              IO.eprintln s!"failed to get theorem conclusion"
             thm?.mapM fun thm => do
+              let pf ← structToTactics #[] context steps
+              let pfTerm ← `(by $pf*)
+              IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
               mkStatementStx name? (← delab thm) pfTerm true
           | _ =>
             IO.eprintln s!"failed to get proof steps"
