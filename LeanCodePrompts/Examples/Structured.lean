@@ -306,7 +306,7 @@ open Lean Meta Elab
 def cubeCode : TermElabM <| Option String := do
   let cube ← cubeJson
   logInfo s!"{cube}"
-  let cubeCode? ← structToCommand? (context := #[]) (input := cube)
+  let cubeCode? ← structToCommand? (params := {n := 12}) (context := #[]) (input := cube)
   cubeCode?.mapM fun code => do
     let fmt ← PrettyPrinter.ppCommand code
     pure fmt.pretty
