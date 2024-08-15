@@ -13,7 +13,7 @@ def main : IO Unit := do
   initSearchPath (← Lean.findSysroot) initFiles
   let env ←
     importModules #[{module := `Mathlib},
-    {module:= `LeanAide.TheoremElab},
+    {module:= `LeanAide.StructToLean},
     {module:= `LeanCodePrompts.Translate},
     {module := `Mathlib}] {}
   let core : CoreM <| Option String := cubeCodeCore

@@ -41,7 +41,7 @@ def contextStatementOfJson (js: Json) : Option String :=
   match js.getObjString? "type" with
   | some "assume" =>
     match js.getObjValAs? String "statement" with
-    | Except.ok s => some <| "Assume that " ++ s ++ "."
+    | Except.ok s => some <| "Assume that " ++ s
     | _ => none
   | some "let" =>
     let varSegment := match js.getObjString? "var" with
@@ -126,9 +126,11 @@ def theoremExprInContext? (ctx: Array Json)(statement: String): TermElabM (Optio
     match contextStatementOfJson js with
     | some s => context := context.push s
     | none => pure ()
-  let fullStatement := context.foldr (· ++ " " ++ ·) statement
+  let fullStatement := context.foldr (· ++ " " ++ ·) s!"Then, {statement}"
+  IO.eprintln s!"Full statement: {fullStatement}"
   let type? ← translateToProp?
     fullStatement.trim server params numSim numConcise numDesc simpleChatExample dataMap
+  IO.eprintln s!"Type: {← type?.mapM fun e => PrettyPrinter.ppExpr e}"
   type?.mapM <| fun e => dropLocalContext e
 
 def purgeLocalContext: Syntax.Command →  TermElabM Syntax.Command
@@ -319,10 +321,12 @@ mutual
           | Except.ok steps =>
             let pf ← structToTactics #[] context steps
             let pfTerm ← `(by $pf*)
+            IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
             let thm? ← theoremExprInContext? server params numSim numConcise numDesc dataMap (context ++ hypothesis) claim
             thm?.mapM fun thm => do
               mkStatementStx name? (← delab thm) pfTerm true
           | _ =>
+            IO.eprintln s!"failed to get proof steps"
             logInfo s!"failed to get proof steps"
             none
         | _, _ =>
@@ -431,6 +435,9 @@ mutual
             | Except.ok s => contradictionTactics s accum
             | _ => pure #[]
           | _ => pure #[]
+        IO.eprintln s!"Head tactics"
+        for tac in headTactics do
+          IO.eprintln s!"{← ppTactic tac}"
         structToTactics (accum ++ headTactics) (context.push head) tail
 
 end
