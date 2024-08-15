@@ -312,3 +312,4 @@ def cubeCode : TermElabM <| Option String := do
     pure fmt.pretty
 
 -- #eval cubeCode
+def cubeCodeCore : CoreM <| Option String := cubeCode.run'.run'

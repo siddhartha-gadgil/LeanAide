@@ -152,6 +152,10 @@ lean_exe termexamples {
 
 lean_lib examples
 
+lean_exe cubecode {
+  supportInterpreter := true
+}
+
 lean_lib Scratch {
 }
 

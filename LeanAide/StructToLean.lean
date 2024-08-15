@@ -341,6 +341,7 @@ mutual
       match input with
       | [] => return accum
       | head :: tail =>
+        IO.eprintln s!"Processing {head}"
         let headTactics: Array Syntax.Tactic ←
           match head.getObjString? "type" with
           | some "assert" =>
