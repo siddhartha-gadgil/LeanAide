@@ -308,18 +308,26 @@ mutual
       (input: Json) : TermElabM <| Option Syntax.Command := do
       match input.getObjString? "type" with
       | some "theorem" =>
+        logInfo s!"Found theorem"
         let name? := input.getObjString? "name" |>.map String.toName
         let hypothesis :=
           input.getObjValAs? (Array Json) "hypothesis"
             |>.toOption.getD #[]
-        match input.getObjValAs? String "statement", input.getObjValAs? (List Json) "proof" with
+        match input.getObjValAs? String "conclusion", input.getObjValAs? Json "proof" with
         | Except.ok claim, Except.ok pfSource =>
-          let pf ← structToTactics #[] context pfSource
-          let pfTerm ← `(by $pf*)
-          let thm? ← theoremExprInContext? server params numSim numConcise numDesc dataMap (context ++ hypothesis) claim
-          thm?.mapM fun thm => do
-            mkStatementStx name? (← delab thm) pfTerm true
-        | _, _ => return none
+          match pfSource.getObjValAs? (List Json) "steps" with
+          | Except.ok steps =>
+            let pf ← structToTactics #[] context steps
+            let pfTerm ← `(by $pf*)
+            let thm? ← theoremExprInContext? server params numSim numConcise numDesc dataMap (context ++ hypothesis) claim
+            thm?.mapM fun thm => do
+              mkStatementStx name? (← delab thm) pfTerm true
+          | _ =>
+            logInfo s!"failed to get proof steps"
+            none
+        | _, _ =>
+          logInfo s!"failed to get theorem conclusion or proof"
+          return none
       | some "define" =>
         match input.getObjValAs? String "statement", input.getObjValAs? String "term" with
         | Except.ok s, Except.ok t =>

@@ -1,4 +1,5 @@
 import LeanCodePrompts.ChatClient
+import LeanAide.StructToLean
 open Lean
 
 def proofExample := "## Theorem: Let $A$ be a square matrix. Prove that if $A^3 = I$ then $A$ is diagonalizable.\n## Proof: \nSince $A^3 = I$, $A$ satisfies the polynomial equation $p(x) = x^3 - 1$. The roots of $p(x)$ are the cube roots of unity, namely $1, \\omega, \\omega^2$, where $\\omega = e^{2\\pi i/3}$ is a primitive cube root of unity. These roots are distinct, so the minimal polynomial of $A$ must divide $p(x)$ and also have distinct roots. Therefore, $A$ is diagonalizable."
@@ -236,3 +237,78 @@ def escapeJson (s: String) := s.replace "\\" "\\\\" |>.replace "\n" " "
 #eval escapeJson jsEg
 #eval Json.parse (escapeJson jsEg)
 #eval (escapeJson jsEg).toList.drop 1270 |>.take 15 |>.toString
+
+def client := ChatServer.openAI
+def prime_thm := "There are infinitely many prime numbers ending in 7."
+def writeSoln : CoreM String := do
+  let resArr ← client.prove prime_thm 1
+  let res := resArr[0]!
+  IO.FS.writeFile "llm_data/gpt-4o/prime_thm.md" res
+  return res
+
+/-
+#[{"type": "theorem",
+ "status": "incomplete proof",
+ "proof":
+ {"type": "proof",
+  "steps":
+  [{"type": "assert",
+    "deduced_from":
+    {"known_results":
+     ["For any matrix A, if A^k = I, then A is a root of the polynomial x^k - 1."],
+     "from_context": ["A^3 = I"]},
+    "claim": "A satisfies the polynomial equation $p(x) = x^3 - 1$."},
+   {"type": "assert",
+    "deduced_from":
+    {"known_results":
+     ["The roots of the polynomial x^3 - 1 are the cube roots of unity."]},
+    "claim":
+    "The roots of $p(x) = x^3 - 1$ are the cube roots of unity, namely $1, \\omega, \\omega^2$, where $\\omega = e^{2\\pi i/3}$."},
+   {"type": "assert",
+    "deduced_from":
+    {"known_results": ["The cube roots of unity are distinct."]},
+    "claim": "The roots $1, \\omega, \\omega^2$ are distinct."},
+   {"type": "assert",
+    "proof-method":
+    "By the definition of the minimal polynomial and properties of the polynomial p(x).",
+    "deduced_from":
+    {"from_context":
+     ["A satisfies the polynomial equation $p(x) = x^3 - 1$.",
+      "The roots $1, \\omega, \\omega^2$ are distinct."]},
+    "claim":
+    "The minimal polynomial of A must divide $p(x) = x^3 - 1$ and have distinct roots."},
+   {"type": "assert",
+    "missing":
+    [{"type": "problem",
+      "statement":
+      "Justify why the minimal polynomial having distinct roots implies A is diagonalizable."}],
+    "deduced_from":
+    {"known_results":
+     ["A matrix A is diagonalizable if and only if its minimal polynomial has distinct roots."],
+     "from_context":
+     ["The minimal polynomial of A must divide $p(x) = x^3 - 1$ and have distinct roots."]},
+    "claim": "A is diagonalizable."}]},
+ "name": "Diagonalizability of A",
+ "hypothesis":
+ [{"type": "assume", "statement": "A is a square matrix."},
+  {"type": "assume", "statement": "A^3 = I."}],
+ "conclusion": "A is diagonalizable."}]
+
+-/
+-- #eval client.structuredProof proofExample
+
+def cubeJson : IO Json := do
+  let src ← IO.FS.readFile "llm_data/gpt-4o/cube.json"
+  return Json.parse src |>.toOption.get!
+
+#eval cubeJson
+open Lean Meta Elab
+def cubeCode : TermElabM <| Option String := do
+  let cube ← cubeJson
+  logInfo s!"{cube}"
+  let cubeCode? ← structToCommand? (context := #[]) (input := cube)
+  cubeCode?.mapM fun code => do
+    let fmt ← PrettyPrinter.ppCommand code
+    pure fmt.pretty
+
+-- #eval cubeCode

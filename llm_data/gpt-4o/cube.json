@@ -1,0 +1,46 @@
+{"type": "theorem",
+ "status": "incomplete proof",
+ "proof":
+ {"type": "proof",
+  "steps":
+  [{"type": "assert",
+    "deduced_from":
+    {"known_results":
+     ["For any matrix A, if A^k = I, then A is a root of the polynomial x^k - 1."],
+     "from_context": ["A^3 = I"]},
+    "claim": "A satisfies the polynomial equation $p(x) = x^3 - 1$."},
+   {"type": "assert",
+    "deduced_from":
+    {"known_results":
+     ["The roots of the polynomial x^3 - 1 are the cube roots of unity."]},
+    "claim":
+    "The roots of $p(x) = x^3 - 1$ are the cube roots of unity, namely $1, \\omega, \\omega^2$, where $\\omega = e^{2\\pi i/3}$."},
+   {"type": "assert",
+    "deduced_from":
+    {"known_results": ["The cube roots of unity are distinct."]},
+    "claim": "The roots $1, \\omega, \\omega^2$ are distinct."},
+   {"type": "assert",
+    "proof-method":
+    "By the definition of the minimal polynomial and properties of the polynomial p(x).",
+    "deduced_from":
+    {"from_context":
+     ["A satisfies the polynomial equation $p(x) = x^3 - 1$.",
+      "The roots $1, \\omega, \\omega^2$ are distinct."]},
+    "claim":
+    "The minimal polynomial of A must divide $p(x) = x^3 - 1$ and have distinct roots."},
+   {"type": "assert",
+    "missing":
+    [{"type": "problem",
+      "statement":
+      "Justify why the minimal polynomial having distinct roots implies A is diagonalizable."}],
+    "deduced_from":
+    {"known_results":
+     ["A matrix A is diagonalizable if and only if its minimal polynomial has distinct roots."],
+     "from_context":
+     ["The minimal polynomial of A must divide $p(x) = x^3 - 1$ and have distinct roots."]},
+    "claim": "A is diagonalizable."}]},
+ "name": "Diagonalizability of A",
+ "hypothesis":
+ [{"type": "assume", "statement": "A is a square matrix."},
+  {"type": "assume", "statement": "A^3 = I."}],
+ "conclusion": "A is diagonalizable."}
