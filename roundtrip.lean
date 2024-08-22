@@ -12,10 +12,6 @@ set_option compiler.extract_closed false
 
 unsafe def runTranslate (p : Parsed) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
-  let name :=
-    p.positionalArg? "input" |>.map (fun s => s.as! String)
-    |>.get!
-  let name := name.toName
   let numSim := p.flag? "prompts" |>.map (fun s => s.as! Nat)
     |>.getD 20
   let numConcise := p.flag? "concise_descriptions" |>.map (fun s => s.as! Nat)
@@ -63,79 +59,81 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
     <|fun (concDescData : Array <| (String × String × Bool × String) ×  FloatArray) => do
   let dataMap :
     HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
-  let coreDesc := getDescriptionCore name chatServer {chatParams with n := 1}
-  let io? :=
-    coreDesc.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
-    {env := env}
-  let io?' ← io?.toIO'
-  match io?' with
-  | .error e => do
-    let msg ← e.toMessageData.toString
-    IO.eprintln "Could not get description"
-    IO.eprintln msg
-    return 1
-  | .ok none => do
-    IO.eprintln "No description"
-    return 1
-  | Except.ok <| some (statement, desc) =>
-    IO.eprintln "Got description"
-    IO.eprintln statement
-    IO.eprintln desc
-    let coreTranslate :=
-      translateViewExprVerboseCore desc chatServer chatParams numSim
-        numConcise numDesc (dataMap := dataMap)
+  let names := p.variableArgsAs! String
+  -- let name :=
+  --   p.positionalArg? "input" |>.map (fun s => s.as! String)
+  --   |>.get!
+  for name in names do
+    let name := name.toName
+    IO.eprintln s!"Translating {name}"
+    let coreDesc := getDescriptionCore name chatServer {chatParams with n := 1}
     let io? :=
-      coreTranslate.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
+      coreDesc.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
       {env := env}
     let io?' ← io?.toIO'
     match io?' with
-    | Except.ok (translation?, output, prompt) =>
-      IO.eprintln "Ran successfully"
-      if showPrompt then
-        IO.eprintln "Prompt:"
-        IO.eprintln prompt.pretty
-        IO.eprintln "---"
-      match translation? with
-      | some (type, s, elabs, gps) =>
-        if p.hasFlag "show_elaborated" then
-          IO.eprintln "Elaborated terms:"
-          for out in elabs do
-            IO.eprintln out
+    | .error e => do
+      let msg ← e.toMessageData.toString
+      IO.eprintln "Could not get description"
+      IO.eprintln msg
+    | .ok none => do
+      IO.eprintln "No description"
+    | Except.ok <| some (statement, desc) =>
+      IO.eprintln "Got description"
+      IO.eprintln statement
+      IO.eprintln desc
+      let coreTranslate :=
+        translateViewExprVerboseCore desc chatServer chatParams numSim
+          numConcise numDesc (dataMap := dataMap)
+      let io? :=
+        coreTranslate.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
+        {env := env}
+      let io?' ← io?.toIO'
+      match io?' with
+      | Except.ok (translation?, output, prompt) =>
+        IO.eprintln "Ran successfully"
+        if showPrompt then
+          IO.eprintln "Prompt:"
+          IO.eprintln prompt.pretty
           IO.eprintln "---"
-          IO.eprintln "Groups:"
-          for gp in gps do
-            for out in gp do
+        match translation? with
+        | some (type, s, elabs, gps) =>
+          if p.hasFlag "show_elaborated" then
+            IO.eprintln "Elaborated terms:"
+            for out in elabs do
               IO.eprintln out
             IO.eprintln "---"
-        IO.eprintln "Translation:"
-        IO.println s
-        let coreCompare := compareThmNameExprCore name type
-        let io? :=
-          coreCompare.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
-          {env := env}
-        let io?' ← io?.toIO'
-        match io?' with
-        | Except.ok b =>
-          IO.eprintln "Compared successfully"
-          IO.println s!"Roundtrip match : {b}"
-          return 0
-        | Except.error e =>
-          IO.eprintln "Could not compare"
+            IO.eprintln "Groups:"
+            for gp in gps do
+              for out in gp do
+                IO.eprintln out
+              IO.eprintln "---"
+          IO.eprintln "Translation:"
+          IO.println s
+          let coreCompare := compareThmNameExprCore name type
+          let io? :=
+            coreCompare.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
+            {env := env}
+          let io?' ← io?.toIO'
+          match io?' with
+          | Except.ok b =>
+            IO.eprintln "Compared successfully"
+            IO.println s!"Roundtrip match : {b}"
+          | Except.error e =>
+            IO.eprintln "Could not compare"
+            let msg ← e.toMessageData.toString
+            IO.eprintln msg
+        | none =>
+          IO.eprintln "No translation"
+          IO.eprintln "All outputs:"
+          for out in output do
+            IO.eprintln <| "* " ++ out
+      | Except.error e =>
+        do
+          IO.eprintln "Ran with error"
           let msg ← e.toMessageData.toString
           IO.eprintln msg
-          return 1
-      | none =>
-        IO.eprintln "No translation"
-        IO.eprintln "All outputs:"
-        for out in output do
-          IO.eprintln <| "* " ++ out
-        return 2
-    | Except.error e =>
-      do
-        IO.eprintln "Ran with error"
-        let msg ← e.toMessageData.toString
-        IO.eprintln msg
-        return 1
+  return 0
 
 unsafe def translate : Cmd := `[Cli|
   translate VIA runTranslate;
@@ -157,7 +155,7 @@ unsafe def translate : Cmd := `[Cli|
     no_sysprompt; "The model has no system prompt (not relevant for GPT models)."
 
   ARGS:
-    input : String;      "The name of the theorem to translate with a roundtrip."
+    ...inputs : String;      "The name of the theorem to translate with a roundtrip."
 
 ]
 

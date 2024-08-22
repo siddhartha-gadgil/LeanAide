@@ -81,8 +81,8 @@ def theoremAndLemmas (name: Name)
         return some (statement, lemmas)
     | _ => return none
 
-#eval theoremAndDefs ``List.length_cons
-#eval theoremAndLemmas ``Nat.le_of_ble_eq_true
+-- #eval theoremAndDefs ``List.length_cons
+-- #eval theoremAndLemmas ``Nat.le_of_ble_eq_true
 
 def theoremPrompt (name: Name) : MetaM <| Option (String × String) := do
   (← theoremAndDefs name).mapM fun (statement, dfns) =>
