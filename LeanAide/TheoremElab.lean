@@ -26,6 +26,7 @@ syntax "example" : theorem_head
 declare_syntax_cat theorem_statement
 syntax bracketedBinder* docComment (theorem_head)?  bracketedBinder*  ":" term : theorem_statement
 syntax (theorem_head)? (ident)? bracketedBinder*  ":" term : theorem_statement
+syntax (theorem_head)? (ident)? bracketedBinder*  ":" term  ":=" term: theorem_statement
 syntax term : theorem_statement
 
 def thmsPrompt : IO (Array String) := do
@@ -93,6 +94,8 @@ def elabThmFromStx (stx : Syntax)
     | `(theorem_statement| $_:docComment $[$_:theorem_head]? $args:bracketedBinder* : $type:term) =>
       elabAux type args
     | `(theorem_statement|$[$_:theorem_head]? $[$_:ident]? $args:bracketedBinder* : $type:term) =>
+      elabAux type args
+    | `(theorem_statement|$[$_:theorem_head]? $[$_:ident]? $args:bracketedBinder* : $type:term := $_:term) =>
       elabAux type args
     | `(theorem_statement|$vars:bracketedBinder* $_:docComment  $[$_:theorem_head]? $args:bracketedBinder* : $type:term ) =>
       elabAux type (vars ++ args)

@@ -118,11 +118,11 @@ def needsInd (name: Name) : MetaM <| Option (List Name) := do
         else return none
     | _ => return none
 
-#eval theoremPrompt ``List.length_cons
+-- #eval theoremPrompt ``List.length_cons
 
-#eval theoremPrompt ``Nat.le_succ
+-- #eval theoremPrompt ``Nat.le_succ
 
-#eval theoremPrompt ``Eq.subst
+-- #eval theoremPrompt ``Eq.subst
 
 def getDescriptionM (name: Name)(server := ChatServer.openAI)(params: ChatParams) : MetaM <| Option (String × String) := do
   let prompt? ← theoremPrompt name
