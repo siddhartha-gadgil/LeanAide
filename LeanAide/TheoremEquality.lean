@@ -98,9 +98,8 @@ def equalThms(s₁ s₂ : String)
 
 def compareThmNameExprM(n: Name) (e: Expr)
   : TermElabM Bool := do
-      let e'' ← mkConstWithFreshMVarLevels n
-      let e' ← inferType e''
-      let e' ← whnf e'
+      let info ← getConstInfo n
+      let e' := info.type
       IO.eprintln s!"Comparing {← ppExpr e} and {← ppExpr e'}"
       let f ← ppExpr e
       let f' ← ppExpr e'
