@@ -14,7 +14,8 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
   let name :=
     p.positionalArg? "input" |>.map (fun s => s.as! String)
-    |>.getD "Nat.add_comm"
+    |>.get!
+  let name := name.toName
   let numSim := p.flag? "prompts" |>.map (fun s => s.as! Nat)
     |>.getD 20
   let numConcise := p.flag? "concise_descriptions" |>.map (fun s => s.as! Nat)
@@ -62,7 +63,7 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
     <|fun (concDescData : Array <| (String × String × Bool × String) ×  FloatArray) => do
   let dataMap :
     HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
-  let coreDesc := getDescriptionCore name.toName chatServer {chatParams with n := 1}
+  let coreDesc := getDescriptionCore name chatServer {chatParams with n := 1}
   let io? :=
     coreDesc.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
     {env := env}
@@ -81,7 +82,7 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
     IO.eprintln statement
     IO.eprintln desc
     let coreTranslate :=
-      translateViewVerboseCore desc chatServer chatParams numSim
+      translateViewExprVerboseCore desc chatServer chatParams numSim
         numConcise numDesc (dataMap := dataMap)
     let io? :=
       coreTranslate.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
@@ -95,7 +96,7 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
         IO.eprintln prompt.pretty
         IO.eprintln "---"
       match translation? with
-      | some (s, elabs, gps) =>
+      | some (type, s, elabs, gps) =>
         if p.hasFlag "show_elaborated" then
           IO.eprintln "Elaborated terms:"
           for out in elabs do
@@ -108,7 +109,21 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
             IO.eprintln "---"
         IO.eprintln "Translation:"
         IO.println s
-        return 0
+        let coreCompare := compareThmNameExprCore name type
+        let io? :=
+          coreCompare.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
+          {env := env}
+        let io?' ← io?.toIO'
+        match io?' with
+        | Except.ok b =>
+          IO.eprintln "Compared successfully"
+          IO.println s!"Roundtrip match : {b}"
+          return 0
+        | Except.error e =>
+          IO.eprintln "Could not compare"
+          let msg ← e.toMessageData.toString
+          IO.eprintln msg
+          return 1
       | none =>
         IO.eprintln "No translation"
         IO.eprintln "All outputs:"

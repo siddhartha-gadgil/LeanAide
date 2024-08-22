@@ -781,3 +781,42 @@ def translateViewVerboseCore (s: String)(server: ChatServer)
   (toChat : ToChatExample := simpleChatExample)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.empty) :
   CoreM ((Option (String × (Array String) × (Array (Array String)))) × Array String × Json) :=
   (translateViewVerboseM s server params numSim numConcise numDesc toChat dataMap).run'.run'
+
+/--
+Translate a string to a Lean expression using the GPT model, returning three componenst:
+* The expression, all elaborated expressions, grouped expressions
+* All outputs from the LLM
+* The prompt used for the LLM.
+-/
+def translateViewExprVerboseM (s: String)(server: ChatServer)
+  (params: ChatParams)(numSim : Nat:= 10)(numConcise: Nat := 0)(numDesc: Nat := 0)
+  (toChat : ToChatExample := simpleChatExample)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)))  :
+  TermElabM ((Option (Expr × String × (Array String) × (Array (Array String)) )) × Array String × Json) := do
+  let (js,prompt, _) ←
+    getLeanCodeJson s server params numSim numConcise numDesc false toChat dataMap
+  let output ← getMessageContents js
+  if output.isEmpty then
+     return (none, output, prompt)
+  else
+    -- let output := params.splitOutputs output
+    let res ← bestElab? output
+    match res with
+    | Except.error jsErr =>
+      let js := Json.mkObj [
+        ("input", Json.str s),
+        ("error", jsErr)]
+      appendLog "translate_fail" js
+      pure ()
+    | Except.ok _ =>
+      pure ()
+    let view? ←  res.toOption.mapM <|
+          fun (e, a, b) => do
+            let fmt ←  PrettyPrinter.ppExpr e
+            pure (e, fmt.pretty, a, b)
+    return (view?, output, prompt)
+
+def translateViewExprVerboseCore (s: String)(server: ChatServer)
+  (params: ChatParams)(numSim : Nat:= 10)(numConcise: Nat := 0)(numDesc: Nat := 0)
+  (toChat : ToChatExample := simpleChatExample)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.empty) :
+  CoreM ((Option (Expr × String × (Array String) × (Array (Array String)))) × Array String × Json) :=
+  (translateViewExprVerboseM s server params numSim numConcise numDesc toChat dataMap).run'.run'

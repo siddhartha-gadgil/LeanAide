@@ -31,7 +31,7 @@ def provedEqual (e₁ e₂ : Expr) : TermElabM Bool :=
   let type ← mkEq e₁ e₂
   let mvar ← mkFreshExprMVar <| some type
   let mvarId := mvar.mvarId!
-  let stx ← `(tactic| aesop (rule_sets := [PowerTactic]))
+  let stx ← `(tactic| aesop)
   let res ←  runTactic mvarId stx
   let (remaining, _) := res
   return remaining.isEmpty
@@ -44,6 +44,7 @@ def provedEquiv (e₁ e₂ : Expr) : TermElabM Bool :=
   let mvar ← mkFreshExprMVar <| some type
   let mvarId := mvar.mvarId!
   let stx ← `(tactic| aesop)
+  mvarId.withContext do
   let res ←  runTactic mvarId stx
   let (remaining, _) := res
   return remaining.isEmpty
@@ -87,12 +88,28 @@ def compareThmExpsCore(e₁ e₂: Expr)
   : CoreM <| Except String Bool := do
       (compareThmExps e₁ e₂).run'.run'
 
+
 def equalThms(s₁ s₂ : String)
   (levelNames : List Lean.Name := levelNames)
   : TermElabM Bool := do
   match ← compareThms s₁ s₂ levelNames with
   | Except.ok p => return p
   | Except.error _ => return false
+
+def compareThmNameExprM(n: Name) (e: Expr)
+  : TermElabM Bool := do
+      let e'' ← mkConstWithFreshMVarLevels n
+      let e' ← inferType e''
+      let e' ← whnf e'
+      IO.eprintln s!"Comparing {← ppExpr e} and {← ppExpr e'}"
+      let f ← ppExpr e
+      let f' ← ppExpr e'
+      equalThms f.pretty f'.pretty
+
+def compareThmNameExprCore(n: Name) (e: Expr)
+  : CoreM Bool := do
+      (compareThmNameExprM n e).run'.run'
+
 
 def groupThms(ss: Array String)
   (levelNames : List Lean.Name := levelNames)
