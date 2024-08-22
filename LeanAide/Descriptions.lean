@@ -124,12 +124,11 @@ def needsInd (name: Name) : MetaM <| Option (List Name) := do
 
 #eval theoremPrompt ``Eq.subst
 
-def getDescriptionM (name: Name) : MetaM <| Option (String × String) := do
+def getDescriptionM (name: Name)(server := ChatServer.openAI)(params: ChatParams) : MetaM <| Option (String × String) := do
   let prompt? ← theoremPrompt name
-  let server := ChatServer.azure
   prompt?.mapM fun (prompt, statement) => do
     let messages ← mkMessages prompt #[] (← sysPrompt)
-    let fullJson ←  server.query messages {}
+    let fullJson ←  server.query messages params
     let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
     let contents ← getMessageContents outJson
@@ -139,10 +138,10 @@ def getDescriptionM (name: Name) : MetaM <| Option (String × String) := do
 
 def egFreq := Json.mkObj [("name", "Iff.rfl"), ("freq", 4882)]
 
-def addDescription (js: Json) : MetaM (Json × Bool) := do
+def addDescription (js: Json)(server := ChatServer.openAI)(params: ChatParams) : MetaM (Json × Bool) := do
   let name? := js.getObjValAs? String "name"
   let modified? ← name?.mapM fun name => do
-    let desc? ← getDescriptionM name.toName
+    let desc? ← getDescriptionM name.toName server params
     match desc? with
       | some (desc, statement) =>
         let newObj := Json.mkObj [("statement", statement), ("description", desc)]
@@ -152,11 +151,11 @@ def addDescription (js: Json) : MetaM (Json × Bool) := do
 
 -- #eval addDescription egFreq
 
-def getDescriptionCore (name: Name) : CoreM <| Option (String × String) :=
-  (getDescriptionM name).run' {}
+def getDescriptionCore (name: Name)(server := ChatServer.openAI)(params: ChatParams := {}) : CoreM <| Option (String × String) :=
+  (getDescriptionM name server params).run' {}
 
-def addDescriptionCore (js: Json) : CoreM (Json × Bool) :=
-  (addDescription js).run' {}
+def addDescriptionCore (js: Json)(server := ChatServer.openAI)(params: ChatParams := {}) : CoreM (Json × Bool) :=
+  (addDescription js server params).run' {}
 
 def needsIndCore (name: Name) : CoreM <| Option (List Name)  :=
   (needsInd name).run' {}
@@ -202,12 +201,12 @@ def getCachedDescriptionsMap : IO (HashMap String Json) := do
     name?.map fun name => (name, js)
   return pairs.foldl (init := {}) fun m (name, js) => m.insert name js
 
-def getDescriptionCached (name: String)
+def getDescriptionCached (name: String)(server := ChatServer.openAI)(params: ChatParams)
   (cacheMap: HashMap String Json) : MetaM (Option Json) := do
   match cacheMap.find? name with
   | some js => return some js
   | none =>
-    let desc? ← getDescriptionM name.toName
+    let desc? ← getDescriptionM name.toName server params
     match desc? with
       | some (desc, statement) =>
         let js := Json.mkObj [("name", name),
@@ -216,9 +215,9 @@ def getDescriptionCached (name: String)
         return some js
       | none => return none
 
-def getDescriptionCachedCore (name: String)
+def getDescriptionCachedCore (name: String)(server := ChatServer.openAI)(params: ChatParams := {})
   (cacheMap: HashMap String Json) : CoreM (Option Json) :=
-  (getDescriptionCached name cacheMap).run' {}
+  (getDescriptionCached name server params cacheMap).run' {}
 
 def lemmaUserPrompt' (name: Name)(description: String) :
   MetaM <| Option String := do

@@ -145,6 +145,9 @@ lean_exe descdetails {
   supportInterpreter := true
 }
 
+lean_exe roundtrip {
+  supportInterpreter := true
+}
 
 lean_exe termexamples {
   supportInterpreter := true

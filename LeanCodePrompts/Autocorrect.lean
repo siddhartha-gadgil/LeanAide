@@ -206,7 +206,7 @@ def binName?(s : String) : MetaM <| Option String := do
 
 
 def caseOrBinName?(s : String) : MetaM (Option String) := do
-  match ← lean4Name? s with
+  match ← lean4Name? s.toName with
   | some name => return some name.toString
   | none => do
     let res ← caseName? s
