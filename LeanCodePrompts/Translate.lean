@@ -406,6 +406,13 @@ def greedyBestExpr? (output: Array String) : TermElabM (Option Expr) := do
       let el? ← elabThm4 out
       pure el?.toOption
 
+def greedyStrictBestExpr? (output: Array String) :
+    TermElabM (Option Expr) := do
+  output.findSomeM? <| fun out => do
+    let el? ← elabThm4 out
+    return el?.toOption.filter (fun e => !e.hasMVar && !e.hasSorry)
+
+
 def matchElab? (output: Array String)(defs : Array <| Name × String):
   TermElabM (Option Name) := do
   let elabDefs : Array (Name × Expr) ←  defs.filterMapM (fun (nm, s) => do
@@ -627,8 +634,8 @@ def translateToProp? (s: String)
   let output ← getMessageContents js
   trace[Translate.info] m!"{output}"
   -- let output := params.splitOutputs output
-  let e? ← bestElab? output
-  return e?.toOption.map (·.1)
+  let e? ← greedyStrictBestExpr? output
+  return e?
 
 /--
 Translating a definition greedily by parsing as a command

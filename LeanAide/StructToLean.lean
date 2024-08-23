@@ -303,7 +303,9 @@ def haveForAssertion (weight sorryWeight: Nat) (type: Syntax.Term)
   (premises: List Name) :
     MetaM <| Syntax.Tactic := do
   let tac ← aesopTactic weight sorryWeight premises
-  `(tactic| have : $type := by $tac:tactic)
+  `(tactic| have : $type := by
+    $tac:tactic
+    try (repeat (sorry)))
 
 mutual
   partial def structToCommand? (context: Array Json)
@@ -312,6 +314,7 @@ mutual
       | some "theorem" =>
         logInfo s!"Found theorem"
         let name? := input.getObjString? "name" |>.map String.toName
+        let name? := name?.filter (· ≠ Name.anonymous)
         let hypothesis :=
           input.getObjValAs? (Array Json) "hypothesis"
             |>.toOption.getD #[]
@@ -324,6 +327,7 @@ mutual
               IO.eprintln s!"failed to get theorem conclusion"
             thm?.mapM fun thm => do
               let pf ← structToTactics #[] context steps
+              let pf := pf.push <| ← `(tactic|try (repeat (sorry)))
               let pfTerm ← `(by $pf*)
               IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
               mkStatementStx name? (← delab thm) pfTerm true
@@ -455,3 +459,4 @@ def eg_drop (n m: Nat)  := dl! (∀ n m: Nat, n = n + 1 → False)
 
 #print eg_drop
 #check caseArg
+#check Name.anonymous
