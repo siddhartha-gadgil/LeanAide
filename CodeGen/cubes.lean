@@ -91,8 +91,8 @@ theorem eg :
           90%
             (by
                 gcongr)) (add
-        unsafe 90% (by contradiction)) (add unsafe 90% (by tauto)) (add unsafe 50% (by checked_sorry))
-    repeat (sorry)
+        unsafe 90% (by contradiction)) (add unsafe 90% (by tauto)) (add unsafe 50% (by checked_sorry)) (add unsafe 10% (by sorry))
+    -- repeat (sorry)
   have :
     ∀ {A : Type u} [inst : CommRing A] [inst_1 : Algebra A (Polynomial A)] (x : A),
       IsIntegral A x → minpoly A x ∣ Polynomial.X ^ 3 - 1 ∧ (minpoly A x).Separable :=
@@ -122,5 +122,30 @@ theorem eg :
           90%
             (by
                 gcongr)) (add
-        unsafe 90% (by contradiction)) (add unsafe 90% (by tauto)) (add unsafe 50% (by checked_sorry))
-  repeat (sorry)
+        unsafe 90% (by contradiction)) (add unsafe 90% (by tauto)) (add unsafe 50% (by checked_sorry)) (add unsafe 10% (by sorry))
+  aesop (add
+        unsafe
+          90%
+            (by
+                omega)) (add
+        unsafe
+          90%
+            (by
+                ring)) (add
+        unsafe
+          90%
+            (by
+                linarith)) (add
+        unsafe
+          90%
+            (by
+                norm_num)) (add
+        unsafe
+          90%
+            (by
+                positivity)) (add
+        unsafe
+          90%
+            (by
+                gcongr)) (add
+        unsafe 90% (by contradiction)) (add unsafe 90% (by tauto)) (add unsafe 50% (by checked_sorry)) (add unsafe 10% (by sorry))
