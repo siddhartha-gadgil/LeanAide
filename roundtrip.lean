@@ -63,6 +63,8 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
   -- let name :=
   --   p.positionalArg? "input" |>.map (fun s => s.as! String)
   --   |>.get!
+  let mut matched := 0
+  let mut mismatched := 0
   for name in names do
     let name := name.toName
     IO.eprintln s!"Translating {name}"
@@ -119,6 +121,8 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
           | Except.ok b =>
             IO.eprintln "Compared successfully"
             IO.println s!"Roundtrip match : {b}"
+            if b then matched := matched + 1
+            else mismatched := mismatched + 1
           | Except.error e =>
             IO.eprintln "Could not compare"
             let msg ← e.toMessageData.toString
@@ -133,6 +137,7 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
           IO.eprintln "Ran with error"
           let msg ← e.toMessageData.toString
           IO.eprintln msg
+  IO.println s!"Matched: {matched}, Mismatched: {mismatched}"
   return 0
 
 unsafe def translate : Cmd := `[Cli|
