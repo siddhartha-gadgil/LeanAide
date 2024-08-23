@@ -365,7 +365,7 @@ mutual
               | none => pure #[]
               | some type =>
                 let names' ← useResults.mapM fun s =>
-                  matchingTheorems server params  (s := s) numSim numConcise numDesc 4 dataMap
+                  matchingTheoremsAI server params  (s := s) numSim numConcise numDesc 4 dataMap
                 let premises := names'.join
                 let tac ← haveForAssertion 90 50 (← delab type) premises
                 pure #[tac]

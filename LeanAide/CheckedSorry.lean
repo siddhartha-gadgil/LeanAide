@@ -95,3 +95,4 @@ theorem multigoal : 1 + 1 = 2 ∧ 2 + 2 = 4 ∧ 1 + 1 = 2 := by
   checked_sorry
 
 #check #sorry_free multigoal
+#check Expr.hasSorry
