@@ -2,32 +2,34 @@ import Lean
 import Mathlib
 import LeanAide.TheoremElab
 open Lean Meta Elab Term
-open Mathlib.Prelude.Rename
+
+-- As Mathlib support for port is dropped, this is also dropped
 
 
-def lean4Name? (name: Name) : MetaM (Option Name) := do
-  let m := renameExtension.getState (← getEnv) |>.get
-  let name? :=
-    (m.find? name).map (·.2)
-  match name? with
-  | none => pure none
-  | some name =>
-    pure name
+-- def lean4Name? (name: Name) : MetaM (Option Name) := do
+--   let m := renameExtension.getState (← getEnv) |>.get
+--   let name? :=
+--     (m.find? name).map (·.2)
+--   match name? with
+--   | none => pure none
+--   | some name =>
+--     pure name
 
 -- #eval lean4Name? `nat.prime -- some (`Nat.Prime, true)
 -- #eval lean4Name? `nat -- some (`Nat, true)
 
-partial def lean4NamesSyntax : Syntax → MetaM Syntax := fun stx => do
-match stx with
-| Syntax.ident _ _ name .. =>
-    match ← lean4Name? name with
-    | some name' => do
-        return mkIdent name'
-    | none => return stx
-| Syntax.node _ k args  => do
-  let args ← args.mapM lean4NamesSyntax
-  return mkNode k args
-| stx => pure stx
+partial def lean4NamesSyntax : Syntax → MetaM Syntax := fun stx => pure stx
+-- do
+-- match stx with
+-- | Syntax.ident _ _ name .. =>
+--     match ← lean4Name? name with
+--     | some name' => do
+--         return mkIdent name'
+--     | none => return stx
+-- | Syntax.node _ k args  => do
+--   let args ← args.mapM lean4NamesSyntax
+--   return mkNode k args
+-- | stx => pure stx
 
 def parseThm4 (s : String) : TermElabM <| Except String Syntax := do
   let env ← getEnv

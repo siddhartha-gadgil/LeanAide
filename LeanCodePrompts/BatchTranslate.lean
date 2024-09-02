@@ -29,7 +29,7 @@ def translateWithDataM (s: String)(server: ChatServer)
   | 0 => return (none, output, prompt?)
   | k + 1 =>
     IO.eprintln s!"No outputs; repeating ({k} left)"
-    IO.sleep (sleepTime * 1000)
+    IO.sleep (sleepTime * 1000).toUInt32
     translateWithDataM s server params
       numSim numConcise numDesc includeFixed embedding k
       (sleepTime * 2) queryData?
@@ -124,7 +124,7 @@ def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
       failed := failed.push statement
     IO.eprintln s!"total : {count}"
     IO.eprintln s!"elaborated: {elaborated}"
-    IO.sleep <| delay * 1000
+    IO.sleep <| (delay * 1000).toUInt32
 
   let js :=
     Json.mkObj

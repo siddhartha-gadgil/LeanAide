@@ -1,5 +1,5 @@
 import Lean
-import Std.Data.HashMap
+import Batteries.Data.HashMap
 import LeanAide.ConstDeps
 import LeanAide.VerboseDelabs
 import LeanAide.PremiseData

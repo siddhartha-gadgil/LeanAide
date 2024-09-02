@@ -3,7 +3,7 @@ import Lean.Meta
 import Lean.Elab
 import Lean.Parser
 import Lean.Parser.Extension
-import Std.Data.List.Basic
+import Batteries.Data.List.Basic
 import LeanAide.Config
 
 open Lean Meta Elab Parser Tactic
@@ -59,18 +59,17 @@ def getDelabBound : MetaM UInt32 := do
 def setDelabBound (n: UInt32) : MetaM Unit := do
    delab_bound.set n
 
-def Lean.MessageData.toCrudeString (msg: MessageData) : String :=
-  match msg with
-  | .compose l₁ l₂ => l₁.toCrudeString ++ l₂.toCrudeString
-  | .nest _ l => l.toCrudeString
-  | .withContext _ l => l.toCrudeString
-  | .withNamingContext _ l => l.toCrudeString
-  | .ofFormat m => s!"{m}"
-  | .ofPPFormat _ => "ofPPFormat"
-  | .tagged _ l => l.toCrudeString
-  | .group l => l.toCrudeString
-  | .trace _ s _  => s.toCrudeString
-  | .ofGoal _ => "ofGoal"
+-- def Lean.MessageData.toCrudeString (msg: MessageData) : String :=
+--   match msg with
+--   | .compose l₁ l₂ => l₁.toCrudeString ++ l₂.toCrudeString
+--   | .nest _ l => l.toCrudeString
+--   | .withContext _ l => l.toCrudeString
+--   | .withNamingContext _ l => l.toCrudeString
+--   | .ofFormat m => s!"{m}"
+--   | .tagged _ l => l.toCrudeString
+--   | .group l => l.toCrudeString
+--   | .trace _ s _  => s.toCrudeString
+--   | .ofGoal _ => "ofGoal"
 
 def EIO.runToIO' (eio: EIO Exception α) : IO α  := do
   match ←  eio.toIO' with
@@ -361,7 +360,7 @@ def partialParser  (parser : Parser) (input : String) (fileName := "<input>") : 
   let p := andthenFn whitespace parser.fn
   let ictx := mkInputContext input fileName
   let s := p.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
-  let stack := s.stxStack.toSubarray.as.filter fun s => !s.hasMissing
+  let stack := s.stxStack.toSubarray.array.filter fun s => !s.hasMissing
   if stack.isEmpty &&  s.hasError then
     return Except.error (s.toErrorMsg ictx)
   else

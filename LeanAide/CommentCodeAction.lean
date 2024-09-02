@@ -1,4 +1,4 @@
-import Std.CodeAction.Misc
+import Batteries.CodeAction.Misc
 import Lean.Meta.Tactic.TryThis
 
 open Lean Std Parser CodeAction Elab Command Server Lsp RequestM Snapshots Tactic

@@ -1,5 +1,5 @@
 import LeanCodePrompts.Embeddings
-import Std.Util.Pickle
+import Batteries.Util.Pickle
 
 def main (args: List String) : IO Unit := do
   let fileName := args.getD 0 "mathlib4-prompts-embeddings.json"

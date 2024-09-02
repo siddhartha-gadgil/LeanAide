@@ -3,7 +3,7 @@ import LeanCodePrompts.EpsilonClusters
 import Cache.IO
 import LeanAide.Aides
 import Lean.Data.Json
-import Std.Util.Pickle
+import Batteries.Util.Pickle
 open Lean Cache.IO
 
 unsafe def show_nearest_full (stdin stdout : IO.FS.Stream)

@@ -7,7 +7,7 @@ import LeanAide.TheoremEquality
 import LeanAide.IP
 import LeanCodePrompts.SpawnNearestEmbeddings
 import Lean.Meta.Tactic.TryThis
-import Std.Util.Pickle
+import Batteries.Util.Pickle
 import LeanCodePrompts.Translate
 
 open Lean Meta Elab Parser Command

@@ -1,7 +1,6 @@
 import Lean
 import Mathlib
 open Lean Meta Elab Term Tactic
-open Mathlib.Prelude.Rename
 
 def usingM (type: Expr) : TacticM Unit :=
   withMainContext do
