@@ -1,0 +1,76 @@
+{
+  "type": "theorem",
+  "name": "Convergence of an alternating series",
+  "hypothesis": [],
+  "conclusion": "The series \\( \\sum_{n=1}^{\\infty}(-1)^{n} \\frac{(n+1)^{32}}{n!} \\) is convergent.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\frac{a_{n+1}}{a_n} = \\frac{(n+2)^{32} n!}{(n+1)! (n+1)^{32}} = \\frac{(n+2)^{32}}{(n+1)^{32}} \\cdot \\frac{1}{n+1}$",
+        "deduced_from": {
+          "From_context": [],
+          "Known_results": []
+        },
+        "calculation": [
+          "$\\frac{a_{n+1}}{a_n} = \\frac{(n+2)^{32} n!}{(n+1)! (n+1)^{32}}$",
+          "$= \\frac{(n+2)^{32}}{(n+1)^{32}} \\cdot \\frac{1}{n+1}$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{(n+2)^{32}}{(n+1)^{32}} < 1 \\quad \\forall \\ n \\geq 1$",
+        "deduced_from": {
+          "From_context": [],
+          "Known_results": []
+        },
+        "proof-method": "Since $\\frac{n+2}{n+1} < 1$."
+      },
+      {
+        "type": "assert",
+        "claim": "The sequence $\\left\\{ \\frac{(n+2)^{32}}{(n+1)^{32}} \\cdot \\frac{1}{n+1} \\right\\}$ is decreasing for $n \\geq 1$",
+        "deduced_from": {
+          "From_context": [],
+          "Known_results": []
+        },
+        "missing": [
+          {
+            "statement": "Prove that $\\frac{(n+2)^{32}}{(n+1)^{32} (n+1)}$ is decreasing."
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "By the Alternating Series Test, $\\sum_{n=1}^{\\infty}(-1)^{n} \\frac{(n+1)^{32}}{n!}$ is convergent.",
+        "deduced_from": {
+          "From_context": [
+            "The sequence $\\left\\{ \\frac{(n+2)^{32}}{(n+1)^{32} (n+1)} \\right\\}$ is decreasing for $n \\geq 1$."
+          ],
+          "Known_results": [
+            "Alternating Series Test"
+          ]
+        },
+        "missing": [
+          {
+            "statement": "Prove that $\\lim_{n \\to \\infty} \\frac{(n+2)^{32}}{(n+1)^{32} (n+1)} = 0$."
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Thus, by the Alternating Series Test, the series $\\sum_{n=1}^{\\infty}(-1)^{n} \\frac{(n+1)^{32}}{n!}$ is convergent.",
+        "missing": [
+          {
+            "statement": "Prove that $\\lim_{n \\to \\infty} \\frac{(n+2)^{32}}{(n+1)^{32} (n+1)} = 0$."
+          },
+          {
+            "statement": "Prove that $\\frac{(n+2)^{32}}{(n+1)^{32} (n+1)}$ is decreasing."
+          }
+        ]
+      }
+    ],
+    "errors": []
+  }
+}

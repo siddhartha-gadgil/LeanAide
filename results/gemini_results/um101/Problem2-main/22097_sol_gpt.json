@@ -1,0 +1,54 @@
+{
+  "type": "theorem",
+  "name": "Theorem",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from (-1,1) to \\mathbb{R}",
+      "property": "such that \\lim_{h \\rightarrow 0} |f(h) - f(-h)| = 0"
+    }
+  ],
+  "conclusion": "\\lim_{h \\rightarrow 0} f(h) \\text{ does not exist}",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assume",
+        "statement": "\\lim_{h \\rightarrow 0} f(h) = L \\text{ exists}"
+      },
+      {
+        "type": "assert",
+        "claim": "\\lim_{h \\rightarrow 0} f(-h) = L",
+        "deduced_from": {
+          "from_context": [
+            "\\lim_{h \\rightarrow 0} f(h) = L"
+          ]
+        },
+        "proof-method": "Since f is defined on (-1,1) and limits from both sides must equal for the limit to exist."
+      },
+      {
+        "type": "assert",
+        "claim": "\\lim_{h \\rightarrow 0} |f(h) - f(-h)| = |L - L| = 0",
+        "deduced_from": {
+          "from_context": [
+            "\\lim_{h \\rightarrow 0} f(h) = L",
+            "\\lim_{h \\rightarrow 0} f(-h) = L"
+          ]
+        },
+        "proof-method": "Use the fact that both limits equal L."
+      },
+      {
+        "type": "conclude",
+        "statement": "\\lim_{h \\rightarrow 0} f(h) \\text{ does not exist}",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Justify why the assumption \\lim_{h \\rightarrow 0} f(h) = L leads to a contradiction, considering that \\lim_{h \\rightarrow 0} |f(h) - f(-h)| = 0."
+          }
+        ]
+      }
+    ]
+  }
+}

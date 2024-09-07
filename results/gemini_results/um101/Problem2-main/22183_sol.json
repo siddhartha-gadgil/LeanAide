@@ -1,0 +1,81 @@
+{
+  "type": "theorem",
+  "name": "Nonexistence of Limit",
+  "status": "wrong proof",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from (-1,1) to R"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\lim \\_{h \\rightarrow 0}|f(h)-f(-h)|=0$"
+    }
+  ],
+  "conclusion": "$\\lim \\_{h \\rightarrow 0} f(h)$ does not exist.",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "The proof appears to be attempting to prove the limit exists and then derive a contradiction. However, the steps contain errors."
+      },
+      {
+        "type": "assert",
+        "claim": "Given $|h-0|<\\delta = 2\\epsilon$, we have $|f(h)-L| < \\epsilon$ and $|f(h)-L| < \\epsilon$",
+        "errors": [
+          "This assumes the limit L exists, which is what we are trying to disprove.",
+          "The second inequality should involve f(-h) to use the given hypothesis."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$ \\delta < |f(h)-f(h)| \\leq |f(h)-L| + |f(h)-L| < \\epsilon + \\epsilon = 2\\epsilon = \\epsilon'$ as $\\epsilon=2\\epsilon$, $\\forall\\epsilon>0$",
+        "errors": [
+          "$|f(h)-f(h)|$ should be $|f(h) - f(-h)|$ to be relevant.",
+          "The first inequality $\\delta < |f(h)-f(h)|$ doesn't follow from the previous line and is generally not true.",
+          "The conclusion $2\\epsilon = \\epsilon'$ as $\\epsilon=2\\epsilon$ is incorrect."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "Since $\\lim\\limits_{h \\to 0}0 \\leq \\lim\\limits_{h \\to 0}|f(h)-f(h)| < \\lim\\limits_{h \\to 0} \\epsilon'$, $\\epsilon'$ is arbitrary. So $\\lim\\limits_{h \\to 0}|f(h)-f(h)| = 0$",
+        "errors": [
+          "While the conclusion about the limit being 0 is correct based on the hypothesis, the reasoning from the previous inequalities is flawed due to earlier errors."
+        ]
+      },
+      {
+        "type": "remark",
+        "statement": "The subsequent part of the proof seems unrelated to the initial argument and involves irrelevant statements."
+      },
+      {
+        "type": "assert",
+        "claim": "Given $-8ch \\leq ax+b$ and $f=x^2$, $\\lim\\limits_{x \\to 0} f(1)-f(1) = 0$ and $\\lim\\limits_{h \\to 0} f(h) - \\lim\\limits_{h \\to 0} f(h) = 0$",
+        "errors": [
+          "These statements are irrelevant and don't contribute to the proof."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$|f(h)-f(h)-0| < \\epsilon < \\epsilon'$",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Justify why this inequality holds and how it relates to the overall proof strategy."
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\left|\\frac{|f(h)-0|}{\\delta/2} - \\frac{|f(h)-0|}{-\\delta/2}\\right| < \\delta$",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Explain the derivation of this inequality and its significance in the context of the proof."
+          }
+        ]
+      }
+    ]
+  }
+}

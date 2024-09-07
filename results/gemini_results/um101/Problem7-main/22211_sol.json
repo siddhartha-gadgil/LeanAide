@@ -1,0 +1,19 @@
+{
+  "type": "theorem",
+  "name": "Convergence of a Series",
+  "hypothesis": [],
+  "conclusion": "The series $ \\sum_{n=1}^{\\infty}(-1)^{n} \\frac{(n+1)^{32}}{n!} $ is convergent.",
+  "status": "incomplete proof",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Prove that  $\\lim\\limits_{n \\to \\infty} \\frac{(-1)^{n+1} ((n+1)!)^{32}}{(n+1)!} = 0$",
+      "solved": false
+    },
+    {
+      "type": "problem",
+      "statement": "Prove that $\\lim\\limits_{n \\to \\infty} \\frac{(n!)^{32}}{(n+1)!} = 0$",
+      "solved": false
+    }
+  ]
+}

@@ -1,0 +1,161 @@
+{
+  "type": "theorem",
+  "name": null,
+  "status": "incomplete proof",
+  "hypothesis": [
+    {
+      "type": "let",
+      "Variable": "f",
+      "Value": null,
+      "Kind": "Riemann integrable function",
+      "Property": "$f:[0,1] \\rightarrow \\mathbb{R}$"
+    }
+  ],
+  "conclusion": "The function $F:[0,1] \\rightarrow \\mathbb{R}$ given by\n\\[\nF(x)=\\int\\_{0}^{x} f(t) d t\n\\]\nis not differentiable at each $x \\in(0,1)$.",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "Variable": "f",
+        "Value": null,
+        "Kind": "step function",
+        "Property": "$f: [0,1]\\to \\mathbb{R}$ is given by \n$$f(x) = \\begin{cases}\n0, & x\\in [0,\\frac{1}{2})\\\\ \n1, & x\\in [\\frac{1}{2},1]\n\\end{cases}.$$"
+      },
+      {
+        "type": "assert",
+        "claim": "step function $\\in \\square$",
+        "deduced_from": null,
+        "proof-method": null,
+        "calculation": null,
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "What does $\\square$ represent? Please clarify the statement.",
+            "solved": false
+          }
+        ],
+        "errors": []
+      },
+      {
+        "type": "assert",
+        "claim": "for $x\\in [0,\\frac{1}{2})$,  $[0,x)\\subset [0,1)$ and, so $f|_{[0,x)}$ is also a step function given by \n$$\n\\text{(((} f|_{[0,x)}(t) = \\begin{cases}\n0 & t\\in [0,\\frac{1}{2}); t\\in [0,x)\\\\\n\\end{cases}$$\nif $0<x\\leq \\frac{1}{2}$, and $$f|_{[0,x)}(t) = \\begin{cases}\n0, & t\\in [0,\\frac{1}{2})\\\\\n1, & t\\in [\\frac{1}{2},x)\n\\end{cases}$$\nif $\\frac{1}{2}<x\\leq 1$",
+        "deduced_from": null,
+        "proof-method": null,
+        "calculation": null,
+        "missing": [],
+        "errors": [
+          "The condition $\\frac{1}{2}<x\\leq 1$ contradicts the initial assumption that  $x\\in [0,\\frac{1}{2})$.",
+          "The definition of the step function is incomplete in the first case. It's unclear what the function's value is when $t \\in [0,x)$.",
+          "There are extraneous triple parentheses - ((( - at the beginning of the third line."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "if $x\\in [0,\\frac{1}{2})$ \n$$\\int\\limits_0^x f(t) dt = 0\\cdot (x-0) = 0.$$ and if $x\\in (\\frac{1}{2},1]$ $$\\int\\limits_0^x f(t) dt = (0\\cdot (\\frac{1}{2}-0)) + (1\\cdot (x-\\frac{1}{2}))= x-\\frac{1}{2}$$",
+        "deduced_from": {
+          "from_context": [
+            "Since step functions are Riemann integrable, and their Riemann integral is equivalent to step function definition"
+          ],
+          "known_results": []
+        },
+        "proof-method": null,
+        "calculation": null,
+        "missing": [],
+        "errors": []
+      },
+      {
+        "type": "assert",
+        "claim": "the function $F\\colon [0,1]\\to \\mathbb{R}$ s.t. $F(x)=\\int\\limits_0^x f(t)dt$ \n$$= \\begin{cases}\n0, & x\\in [0,\\frac{1}{2})\\\\\nx-\\frac{1}{2}, & x\\in [\\frac{1}{2},1]\n\\end{cases}$$ is not differentiable at $x=\\frac{1}{2}\\in (0,1)$",
+        "deduced_from": null,
+        "proof-method": null,
+        "calculation": null,
+        "missing": [],
+        "errors": []
+      },
+      {
+        "type": "remark",
+        "statement": "Proof."
+      },
+      {
+        "type": "assert",
+        "claim": "$$\\frac{F(x)-F(\\frac{1}{2})}{x-\\frac{1}{2}} = \\frac{x-1}{x-\\frac{1}{2}}$$",
+        "deduced_from": null,
+        "proof-method": null,
+        "calculation": null,
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Show the steps to arrive at the equation $\\frac{F(x)-F(\\frac{1}{2})}{x-\\frac{1}{2}} = \\frac{x-1}{x-\\frac{1}{2}}$ from the definition of $F(x)$.",
+            "solved": false
+          }
+        ],
+        "errors": []
+      },
+      {
+        "type": "assert",
+        "claim": "((( suppose $\\lim_{x\\to \\frac{1}{2}}\\frac{F(x)-F(\\frac{1}{2})}{x-\\frac{1}{2}}$ exists. Then $\\exists L\\in \\mathbb{R}$ s.t. $\\forall \\epsilon >0$ $\\exists \\delta >0$ s.t. $0<|x-\\frac{1}{2}| < \\delta \\implies |\\frac{F(x)-F(\\frac{1}{2})}{x-\\frac{1}{2}}-L|<\\epsilon$ (i)",
+        "deduced_from": null,
+        "proof-method": null,
+        "calculation": null,
+        "missing": [],
+        "errors": [
+          "There are extraneous triple parentheses - ((( - at the beginning of the statement."
+        ]
+      },
+      {
+        "type": "let",
+        "Variable": "<anonymous>",
+        "Value": null,
+        "Kind": null,
+        "Property": "Let $\\epsilon = \\frac{1}{2}$"
+      },
+      {
+        "type": "assert",
+        "claim": "(By archimedean property on $\\mathbb{R}$) THEN $\\exists N\\in \\mathbb{N}$ s.t $0<\\frac{1}{N}<\\delta$. Then for $n\\geq N, \\frac{1}{n\\frac{1}{2}} \\leq \\frac{1}{2} = \\epsilon$ (as $n \\geq 1$)  so from (i),  $|F(\\frac{1}{2}+\\frac{1}{n})-1| = |\\frac{1}{1+\\frac{2}{n}}-1| \\leq \\frac{2}{n+2} < \\epsilon = \\frac{1}{2}$ (as $F(\\frac{1}{2}+\\frac{1}{n}) = \\frac{\\frac{1}{n}}{\\frac{1}{2}+\\frac{1}{n}} = \\frac{1}{1+\\frac{2}{n}}$), and from (i) $|F(\\frac{1}{2}-\\frac{1}{n})-1| = |\\frac{1}{1-\\frac{2}{n}}-1| = |\\frac{-1}{1-\\frac{2}{n}}| \\leq \\frac{2}{n-2} < \\epsilon = \\frac{1}{2}$ (as $n\\geq 3$,  and $F(\\frac{1}{2}-\\frac{1}{n}) = \\frac{-\\frac{1}{n}}{\\frac{1}{2}-\\frac{1}{n}} = \\frac{-1}{1-\\frac{2}{n}}$)",
+        "deduced_from": {
+          "from_context": [],
+          "known_results": [
+            "Archimedean property on $\\mathbb{R}$"
+          ]
+        },
+        "proof-method": null,
+        "calculation": null,
+        "missing": [],
+        "errors": [
+          "The connection between the choice of $\\epsilon$, the Archimedean property, and the subsequent inequalities is not clear and needs further justification."
+        ]
+      },
+      {
+        "type": "remark",
+        "statement": "(Cant write on page) Considered."
+      },
+      {
+        "type": "assert",
+        "claim": "so, $1 = |(1+L)-(L-1)| \\leq |1+L|+|1-L| \\leq \\epsilon+\\epsilon = 2\\epsilon = 1$ (from (2) & (3)) \n\n$\\implies 1<1$. Contradiction.",
+        "deduced_from": null,
+        "proof-method": null,
+        "calculation": null,
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "The references to (2) and (3) are unclear. What steps or inequalities do they refer to?",
+            "solved": false
+          }
+        ],
+        "errors": [
+          "The implication $1 \\leq 1 \\implies 1 < 1$ is incorrect."
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Thus, $\\lim_{x\\to \\frac{1}{2}}\\frac{F(x)-F(\\frac{1}{2})}{x-\\frac{1}{2}}$ does not exist \n\nand $f$ is not differentiable at $x=\\frac{1}{2} \\in (0,1)$.",
+        "missing": [],
+        "errors": []
+      }
+    ]
+  },
+  "ref": null,
+  "cite": null,
+  "missing": []
+}

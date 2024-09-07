@@ -1,0 +1,180 @@
+{
+  "type": "theorem",
+  "name": "Subspace of Real Sequences",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "𝒮",
+      "kind": "vector space",
+      "property": "over 𝕽 of all real sequences"
+    },
+    {
+      "type": "let",
+      "variable": "W",
+      "value": "{ {x_n}_{n ∈ ℕ} ∈ 𝒮 : {x_n^2}_{n ∈ ℕ} is convergent }"
+    }
+  ],
+  "conclusion": "W is not a subspace of 𝒮",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "{x_n}_{n ∈ ℕ}, {y_n}_{n ∈ ℕ}",
+        "kind": "sequences",
+        "property": "{x_n}_{n ∈ ℕ}, {y_n}_{n ∈ ℕ} ⊆ ℝ"
+      },
+      {
+        "type": "assume",
+        "statement": "x_{n+1} = x_n - \\frac{1}{2} y_n and y_{n+1} = - \\frac{1}{2} x_n"
+      },
+      {
+        "type": "assert",
+        "claim": "{x_n^2}_{n ∈ ℕ} converges (to 1)",
+        "deduced_from": {
+          "known_results": [
+            "Assume the sequences as given"
+          ]
+        },
+        "errors": [
+          "No proof provided for convergence of {x_n^2}_{n ∈ ℕ}"
+        ]
+      },
+      {
+        "type": "assume",
+        "statement": "∀ ε > 0, ∃ N ∈ ℕ such that ∀ n ≥ N_E, |x_n|^2 - 1 = |(1 - \\frac{1}{n})^2 - 1| = 0 < ε ∀ n ≥ n_ε"
+      },
+      {
+        "type": "assert",
+        "claim": "{x_n^2} ∈ l^∞",
+        "errors": [
+          "The provided proof is incomplete and contains possible errors"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "{y_n^2}_{n ∈ ℕ} converges (to 1)",
+        "deduced_from": {
+          "known_results": [
+            "Assume the sequences as given"
+          ]
+        },
+        "errors": [
+          "No proof provided for convergence of {y_n^2}_{n ∈ ℕ}"
+        ]
+      },
+      {
+        "type": "assume",
+        "statement": "∀ ε > 0, ∃ N ∈ ℕ such that ∀ n ≥ N_E, |y_n - 1| = |(-\\frac{1}{2} (1 - \\frac{1}{n}) - 1| = |(-\\frac{1}{2}) (\\frac{n-1}{n}) - 1| = 0 < ε (∀ n ≥ n_ε)"
+      },
+      {
+        "type": "assert",
+        "claim": "{y_n} ∈ l^∞",
+        "errors": [
+          "The provided proof is incomplete and contains possible errors"
+        ]
+      },
+      {
+        "type": "let",
+        "variable": "{a_n}_{n ∈ ℕ}",
+        "value": "{a_n}_{n ∈ ℕ} ∈ ℝ such that a_n = x_n + y_n ∀ n ∈ ℕ"
+      },
+      {
+        "type": "assert",
+        "claim": "a_n = {x_n}_{n ∈ ℕ} + {y_n}_{n ∈ ℕ} not in l^∞",
+        "proof-method": "Contradiction showing addition is not closed",
+        "errors": [
+          "No clear and valid proof provided for this assertion",
+          "The contradiction presented has logical errors"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "a_n = x_n + y_n + 2x_n y_n",
+        "errors": [
+          "This statement does not logically follow from the previous assertions"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "a_n = 2 \\frac{1 + \\frac{1}{n}}{ 1 + ( \\frac{1}{n})} ∀ n ∈ ℕ",
+        "errors": [
+          "This expression is incorrect and not justified"
+        ]
+      },
+      {
+        "type": "assume",
+        "statement": "{a_n}_{n ∈ ℕ} = {x_n}_{n ∈ ℕ} + {y_n}_{n ∈ ℕ} is convergent"
+      },
+      {
+        "type": "assume",
+        "statement": "∃ L ∈ ℝ such that ∀ ε > 0"
+      },
+      {
+        "type": "assert",
+        "claim": "2Nε > Nε because N ∈ ℕ",
+        "errors": [
+          "This inequality doesn't contribute to the argument logically"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "|a_{2Nε} - L| < ε implies |2( \\frac{1 + (\\frac{1}{2Nε})}{(1 + ( \\frac{1}{Nε}))} - L| < ε",
+        "errors": [
+          "The derivation is incorrect and unjustified"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "|4 - L| < 2ε",
+        "errors": [
+          "Incorrect logical step"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "2Nε + 1 > Nε because N ∈ ℕ",
+        "errors": [
+          "This inequality doesn't contribute to the argument logically"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "|x_{2Nε+1}/(2Nε+1) - L| < ε = |2 (\\frac{1 + (\\frac{1}{2Nε + 1})}{(1 + (\\frac{1}{Nε}))} - 1| = |2( \\frac{1 + (\\frac{1}{2Nε + 1})}{(1 + (\\frac{1}{Nε}))} - 1| = |1| < ε",
+        "errors": [
+          "Incorrect logical step"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "4 < \\frac{|4 + L| + |L|}{2} ≤ \\frac{|4 + L|}{2} + \\frac{|L|}{2} < 2 + 1 = 3",
+        "proof-method": "triangle inequality",
+        "errors": [
+          "Incorrect application of the triangle inequality"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "4 < 2",
+        "proof-method": "Contradiction",
+        "errors": [
+          "The contradiction has logical errors"
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "{a_n}_{n ∈ ℕ} is not convergent and {a_n}_{n ∈ ℕ} = {x_n}_{n ∈ ℕ} + {y_n}_{n ∈ ℕ} not in l^∞. Thus, addition is not closed in l^∞ and so l^∞ is not a subspace of V.",
+        "errors": [
+          "Numerous errors and unjustified steps in the proof"
+        ]
+      }
+    ],
+    "missing": [
+      {
+        "type": "problem",
+        "statement": "Provide a correct and complete proof for the theorem"
+      }
+    ]
+  }
+}

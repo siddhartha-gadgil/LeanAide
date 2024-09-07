@@ -1,0 +1,131 @@
+{
+  "type": "theorem",
+  "name": null,
+  "status": "wrong proof",
+  "hypothesis": [
+    {
+      "type": "let",
+      "Variable": "f",
+      "Kind": "function from [0,1] to R",
+      "Property": "Riemann integrable"
+    }
+  ],
+  "conclusion": "The function $F:[0,1] \\rightarrow \\mathbb{R}$ given by  $$F(x)=\\int\\_{0}^{x} f(t) d t$$ is not differentiable at each $x \\in(0,1)$.",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "Variable": "f",
+        "Value": "$\\begin{cases} n; & 0 \\le x \\le 1/2 \\\\ 1; & 1/2 < x \\le 1 \\end{cases}$",
+        "errors": [
+          "The proof attempts to prove the theorem by counterexample, but the counterexample is flawed. The function chosen is not well-defined as the value of 'n' is not specified."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$f$ is Riemann integrable or $\\int_{0}^{1} f(x) dx$ exists",
+        "proof-method": "By showing the integral can be split into two parts",
+        "calculation": [
+          "$\\int_{0}^{1} f(x) dx = \\int_{0}^{1/2} f(x) dx + \\int_{1/2}^{1} f(x) dx$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\int_{0}^{1/2} f(x) dx$ and $\\int_{1/2}^{1} f(x) dx$ exist",
+        "deduced_from": {
+          "known_results": [
+            "Continuous functions on closed intervals are Riemann integrable."
+          ]
+        },
+        "proof-method": "As $n$ and $1$ are continuous functions"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\int_{0}^{1/2} f(x) dx + \\int_{1/2}^{1} f(x) dx = \\int_{0}^{1} f(x) dx$ exists $\\implies f$ is Riemann integrable.",
+        "proof-method": "From previous assertions"
+      },
+      {
+        "type": "assert",
+        "claim": "- $nx$ and $x$ are primitives of $n$ and $1$ respectively.\n- $\\int_{0}^{x} f(t) dt = \\frac{nx^{2}}{2} \\quad \\forall x \\in [0, \\frac{1}{2}]$\n- $\\int_{0}^{x} f(t) dt = \\int_{0}^{1/2} f(t) dt + \\int_{1/2}^{x} f(t) dt, \\quad \\forall x \\in (\\frac{1}{2}, 1]$\n$= \\frac{1}{8} + (x - \\frac{1}{2}) \\cdot 1 = x - \\frac{3}{8} \\quad \\forall x \\in (\\frac{1}{2}, 1]$",
+        "deduced_from": {
+          "known_results": [
+            "Fundamental Theorem of Calculus"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$F(x)$ can be written as \n$F = \\begin{cases} \\frac{nx^{2}}{2}; & 0 \\le x \\le \\frac{1}{2} \\\\ x - \\frac{3}{8}; & \\frac{1}{2} < x \\le 1\\end{cases}$",
+        "proof-method": "From the previous calculations"
+      },
+      {
+        "type": "assert",
+        "claim": "$F$ is not differentiable at $x = \\frac{1}{2}$",
+        "proof-method": "By showing the left and right derivatives do not exist"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\implies F'(x) = \\begin{cases} n; & 0 \\le x < \\frac{1}{2} \\\\ 1; & \\frac{1}{2} < x \\le 1 \\end{cases}$",
+        "proof-method": "By algebra of derivatives, \n$(\\frac{nx^{2}}{2})' = nx$, $(x - \\frac{3}{8})' = 1$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim_{x \\to \\frac{1}{2}^{-}} (nx) = \\frac{1}{2}$, $\\lim_{x \\to \\frac{1}{2}^{+}} (1) = 1$",
+        "errors": [
+          "The limit $\\lim_{x \\to \\frac{1}{2}^{-}} (nx) = \\frac{n}{2}$, not $\\frac{1}{2}$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "For $x \\in [0, \\frac{1}{2}]$, when $n = 1$, then $\\lim_{x \\to \\frac{1}{2}^{-}} F'(x) = \\frac{1}{2}$",
+        "errors": [
+          "This statement contradicts the earlier claim about the limit. It also does not follow logically from the previous steps."
+        ]
+      },
+      {
+        "type": "cases",
+        "on": null,
+        "split-kind": "condition",
+        "proof-cases": [
+          {
+            "type": "case",
+            "condition": "$\\frac{1}{2} - \\delta < x < \\frac{1}{2}$",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "conclude",
+                  "statement": "$\\lim_{x \\to \\frac{1}{2}^{-}} (F'(x)) = 1$",
+                  "errors": [
+                    "The limit is dependent on the value of 'n' which is not defined. "
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "type": "case",
+            "condition": "$\\frac{1}{2} < x < \\frac{1}{2} + \\delta$",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "conclude",
+                  "statement": "$\\lim_{x \\to \\frac{1}{2}^{+}} (F'(x)) = 1$"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Hence as the limit from both sides are not equal,\nwe say that $\\lim_{x \\to \\frac{1}{2}} F'(x)$ does not exist \n$\\implies F$ is not differentiable at $x = \\frac{1}{2}$.",
+        "errors": [
+          "The conclusion is drawn from a flawed case analysis where the limit from the left side is not correctly determined."
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "type": "theorem",
+  "name": null,
+  "hypothesis": [
+    {
+      "type": "let",
+      "Variable": "f",
+      "Kind": "function from (-1,1) to R"
+    },
+    {
+      "type": "assume",
+      "Statement": "$\\lim \\_{h \\rightarrow 0}|f(h)-f(-h)|=0$"
+    }
+  ],
+  "conclusion": "$\\lim \\_{h \\rightarrow 0} f(h)$ does not exist.",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "Statement": "Counterexample:"
+      },
+      {
+        "type": "let",
+        "Variable": "f(x)",
+        "Value": "$\\begin{cases}\n\\frac{1}{x^2} & x \\neq 0 \\\\\n0 & x = 0\n\\end{cases}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$f(h) = \\frac{1}{h^2}$, $f(-h) = \\frac{1}{(-h)^2} = \\frac{1}{h^2}$",
+        "proof-method": "Substitution"
+      },
+      {
+        "type": "assert",
+        "claim": "$(f(h) - f(-h)) = 0$",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "The previous assertion should be $(f(h)-f(-h))=\\frac{1}{h^2}-\\frac{1}{h^2}$. How to proceed from here?",
+            "solved": false
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim_{h \\to 0} (f(h) - f(-h)) = 0$",
+        "proof-method": "constant function (except at 0)"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim_{h \\to 0} f(h)$ D.N.E",
+        "deduced_from": {
+          "known_results": [
+            "$\\lim_{h \\to 0} (\\frac{1}{h^2})$ D.N.E"
+          ]
+        }
+      }
+    ],
+    "errors": [
+      "The counterexample provided does not satisfy the hypothesis of the theorem. The limit $\\lim_{h \\to 0}|f(h)-f(-h)| = \\lim_{h \\to 0}|\\frac{1}{h^2} - \\frac{1}{h^2}| = 0$, so the chosen function does not provide a valid counterexample."
+    ]
+  }
+}

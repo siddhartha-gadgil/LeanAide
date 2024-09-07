@@ -1,0 +1,128 @@
+{
+  "type": "theorem",
+  "name": "Non-differentiability of Integral Function",
+  "Hypothesis": [
+    {
+      "type": "let",
+      "Variable": "f",
+      "Kind": "function from [0,1] to R",
+      "Property": "Riemann integrable"
+    },
+    {
+      "type": "let",
+      "Variable": "F",
+      "Kind": "function from [0,1] to R",
+      "Property": "defined by the integral of f",
+      "Value": "$F(x) = \\int_{0}^{x} f(t) dt$"
+    }
+  ],
+  "Conclusion": "The function $F(x)$ is not differentiable at each $x \\in (0,1)$.",
+  "Status": "wrong statement",
+  "Proof": {
+    "type": "proof",
+    "Steps": [
+      {
+        "type": "remark",
+        "Statement": "The theorem statement is incorrect. We provide a counterexample to demonstrate this."
+      },
+      {
+        "type": "let",
+        "Variable": "F",
+        "Kind": "function",
+        "Value": "$F(x) = \\begin{cases} 0 & 0 \\le x \\le \\frac{1}{2} \\\\ 1 & \\frac{1}{2} < x \\le 1 \\end{cases}$"
+      },
+      {
+        "type": "assert",
+        "Claim": "The function $f$ is Riemann integrable on [0,1]",
+        "Proof-method": "It is bounded by 1."
+      },
+      {
+        "type": "assert",
+        "Claim": "$F(x) = \\int\\limits_0^x f(t) dt = \\begin{cases} \\int\\limits_0^x 0 dt = 0 & 0 \\le x \\le \\frac{1}{2} \\\\ \\int\\limits_0^{\\frac{1}{2}} 0 dt +  \\int\\limits_{\\frac{1}{2}}^x 1 dt = (x - \\frac{1}{2})  & \\frac{1}{2} < x \\le 1 \\end{cases}$",
+        "Proof-method": "Splitting of limits of integration"
+      },
+      {
+        "type": "assert",
+        "Claim": "$\\int\\limits_{\\frac{1}{2}}^1 f dt = (G(b) - G(a))$",
+        "Deduced_from": {
+          "Known_results": [
+            "Second Fundamental Theorem of Calculus"
+          ]
+        }
+      },
+      {
+        "type": "let",
+        "Variable": "G(x)",
+        "Value": "x",
+        "Property": "primitive of $G'(x) = f(x)$"
+      },
+      {
+        "type": "assert",
+        "Claim": "$f$ is Riemann Integrable on $[\\frac{1}{2}, x]$ for $\\frac{1}{2} \\le x \\le 1$",
+        "Proof-method": "Not provided."
+      },
+      {
+        "type": "assert",
+        "Claim": "$\\int\\limits_{\\frac{1}{2}}^1 1 dt = (x - (\\frac{1}{2})) = x - \\frac{1}{2}$",
+        "Proof-method": "Not provided."
+      },
+      {
+        "type": "assert",
+        "Claim": "$F(x) = \\begin{cases} 0 & 0 \\le x \\le \\frac{1}{2} \\\\ x - \\frac{1}{2} & \\frac{1}{2} < x \\le 1 \\end{cases}$",
+        "Proof-method": "Not provided."
+      },
+      {
+        "type": "contradiction",
+        "Assumption": "$F$ is differentiable at $\\frac{1}{2}$",
+        "Proof": {
+          "type": "proof",
+          "Steps": [
+            {
+              "type": "assert",
+              "Claim": "$\\lim\\limits_{h \\to 0} \\frac{F(\\frac{1}{2} + h) - F(\\frac{1}{2})}{h} = \\lim\\limits_{h \\to 0^+} \\frac{F(\\frac{1}{2} + h) - F(\\frac{1}{2})}{h}$",
+              "Proof-method": "Definition of differentiability"
+            },
+            {
+              "type": "assert",
+              "Claim": "$F(\\frac{1}{2}) = 0$",
+              "Proof-method": "Direct from definition of F"
+            },
+            {
+              "type": "assert",
+              "Claim": "$F(\\frac{1}{2} + h) = 0$ when $h < 0$ and $h > \\frac{-1}{2}$",
+              "Proof-method": "Direct from definition of F"
+            },
+            {
+              "type": "assert",
+              "Claim": "$\\lim\\limits_{h \\to 0^-} \\frac{F(\\frac{1}{2} + h) - F(\\frac{1}{2})}{h} = \\lim\\limits_{h \\to 0^-} \\frac{0}{h} = 0$",
+              "Proof-method": "Direct calculation"
+            },
+            {
+              "type": "assert",
+              "Claim": "$F(\\frac{1}{2} + h) = \\frac{1}{2} + h - (\\frac{1}{2}) = h$ when $h > 0$ and $h \\le \\frac{1}{2}$",
+              "Proof-method": "Direct from definition of F"
+            },
+            {
+              "type": "assert",
+              "Claim": "$\\lim\\limits_{h \\to 0^+} \\frac{F(\\frac{1}{2} + h) - F(\\frac{1}{2})}{h} = \\lim\\limits_{h \\to 0^+} \\frac{h - 0}{h} = \\lim\\limits_{h \\to 0^+} 1 = 1$",
+              "Proof-method": "Direct calculation"
+            },
+            {
+              "type": "assert",
+              "Claim": "$\\lim\\limits_{h \\to 0^-} \\frac{F(\\frac{1}{2} + h) - F(\\frac{1}{2})}{h} \\ne \\lim\\limits_{h \\to 0^+} \\frac{F(\\frac{1}{2} + h) - F(\\frac{1}{2})}{h}$",
+              "Proof-method": "As $0 \\ne 1$"
+            },
+            {
+              "type": "conclude",
+              "Statement": "$F$ is not differentiable at $\\frac{1}{2}$"
+            }
+          ]
+        }
+      },
+      {
+        "type": "remark",
+        "Statement": "This provides a counterexample to the theorem statement. The function F(x) is Riemann integrable, but its integral, F(x), is not differentiable at x = 1/2. Therefore, the theorem statement is not universally true."
+      }
+    ]
+  }
+}

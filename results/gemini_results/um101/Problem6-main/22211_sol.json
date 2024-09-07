@@ -1,0 +1,65 @@
+{
+  "type": "theorem",
+  "name": "Convergence of Sine Series",
+  "hypothesis": [],
+  "conclusion": "The series $\\sum\\_{n=1}^{\\infty}\\left(\\sin \\frac{1}{n}\\right)^{3 / 2}$ is convergent.",
+  "status": "incomplete proof",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Show that $\\sin(x) < x$ for $x \\in (0, \\frac{\\pi}{2})$",
+      "solved": false
+    },
+    {
+      "type": "problem",
+      "statement": "State the Comparison test / squeeze theorem for series",
+      "solved": false
+    }
+  ],
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$0 < \\sin(\\frac{1}{n}) < \\frac{1}{n}$ $\\forall n \\in \\mathbb{N}$",
+        "deduced_from": {
+          "known_results": [
+            "$\\sin(x) < x$ for $x \\in (0, \\frac{\\pi}{2})$"
+          ]
+        },
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Show that $\\frac{1}{n} \\in (0, \\frac{\\pi}{2})$ $\\forall n \\in \\mathbb{N}$",
+            "solved": false
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$0 < \\sin(\\frac{1}{n})^{\\frac{3}{2}}  < (\\frac{1}{n})^{\\frac{3}{2}} = \\frac{1}{n^{\\frac{3}{2}}}$ $\\forall n \\in \\mathbb{N}$",
+        "proof-method": "Raising to the power $\\frac{3}{2}$ preserves inequalities for positive numbers"
+      },
+      {
+        "type": "remark",
+        "statement": "Idea: approximation of $\\sin(\\frac{1}{n})$ by $\\frac{1}{n}$ for large n"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\sum\\limits_{n=1}^\\infty \\frac{1}{n^{\\frac{3}{2}}}$ converges",
+        "proof-method": "p-series test"
+      },
+      {
+        "type": "conclude",
+        "statement": "By Comparison test / squeeze for series,  $\\sum\\limits_{n=1}^\\infty \\sin(\\frac{1}{n})^{\\frac{3}{2}}$ converges.",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Apply the Comparison test / squeeze theorem for series to the given series",
+            "solved": false
+          }
+        ]
+      }
+    ]
+  }
+}

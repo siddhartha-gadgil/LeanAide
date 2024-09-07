@@ -1,0 +1,64 @@
+{
+  "type": "theorem",
+  "name": "Nonexistence of Limit",
+  "status": "wrong proof",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from (-1,1) to R"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\lim_{h \\rightarrow 0} |f(h) - f(-h)| = 0$"
+    }
+  ],
+  "conclusion": "$\\lim_{h \\rightarrow 0} f(h)$ does not exist.",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "The proof attempts to show the limit doesn't exist by contradiction, but makes an error in applying the definition of a limit."
+      },
+      {
+        "type": "contradiction",
+        "assumption": "$\\lim_{h \\rightarrow 0} f(h)$ exists",
+        "proof": {
+          "type": "proof",
+          "steps": [
+            {
+              "type": "assert",
+              "claim": "If $\\lim_{h \\rightarrow 0} f(h)$ exists, then $\\lim_{h \\rightarrow 0} f(h) = \\lim_{h \\rightarrow 0} f(-h)$",
+              "proof-method": "This is true because the limit, if it exists, must be unique."
+            },
+            {
+              "type": "assert",
+              "claim": "$\\lim_{h \\rightarrow 0} |f(h) - f(-h)| = |\\lim_{h \\rightarrow 0} f(h) - \\lim_{h \\rightarrow 0} f(-h)|$",
+              "errors": [
+                "This step is incorrect. We cannot directly move the limit inside the absolute value without additional assumptions about the function f, such as continuity."
+              ]
+            },
+            {
+              "type": "assert",
+              "claim": "$\\lim_{h \\rightarrow 0} |f(h) - f(-h)| = 0$",
+              "deduced_from": {
+                "from_context": [
+                  "$\\lim_{h \\rightarrow 0} f(h) = \\lim_{h \\rightarrow 0} f(-h)$"
+                ]
+              },
+              "proof-method": "Substituting the previous result"
+            },
+            {
+              "type": "assert",
+              "claim": "This contradicts the given assumption that $\\lim_{h \\rightarrow 0} |f(h) - f(-h)| = 0$",
+              "errors": [
+                "The previous steps do not lead to a contradiction. Even though the limit inside the absolute value might be 0, it doesn't contradict the given assumption."
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "type": "theorem",
+  "name": "Non-differentiability of Integral Function",
+  "status": "wrong proof",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from [0,1] to R",
+      "property": "Riemann integrable"
+    }
+  ],
+  "conclusion": "The function $F:[0,1] \\rightarrow \\mathbb{R}$ given by  $$F(x)=\\int\\_{0}^{x} f(t) d t$$ is not differentiable at each $x \\in(0,1)$.",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "**Counterexample:**"
+      },
+      {
+        "type": "let",
+        "variable": "f(x)",
+        "value": "$f(x) = \\begin{cases} x, & x \\neq 1/4 \\\\ 1, & x = 1/4. \\end{cases}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$f(x)$ is in $\\mathbb{R}$ over all $[0,1]$",
+        "proof-method": "Exists at all but one point"
+      },
+      {
+        "type": "assert",
+        "claim": "$F(x) = \\int\\limits_{0}^{x} f(t) \\, dt = \\frac{x^2}{2}$",
+        "errors": [
+          "The integral of the given $f(x)$ is not equal to $\\frac{x^2}{2}$ over the entire interval [0,1]."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "There is not a guarantee that $F(x)$ is definitely differentiable at $f(\\frac{1}{4})$",
+        "deduced_from": {
+          "known_results": [
+            "Fundamental Theorem of Calculus I (FTOC)"
+          ]
+        },
+        "proof-method": "Because $f(x)$ is not continuous at that point"
+      },
+      {
+        "type": "let",
+        "variable": "F(x)",
+        "value": "$F(x) = \\frac{x^2}{2}$"
+      },
+      {
+        "type": "assume",
+        "statement": "$F(x)$ is differentiable at all $x \\in (0,1)$"
+      },
+      {
+        "type": "assert",
+        "claim": "$F'(x) = \\frac{2x}{2} = \\boxed{x}$",
+        "deduced_from": {
+          "known_results": [
+            "FTOC"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "We have $f(\\frac{1}{4}) = 1$, but from II FTOC, we have $f(\\frac{1}{4}) = \\frac{1}{4}$",
+        "errors": [
+          "The second fundamental theorem of calculus relates $F'(x)$ to $f(x)$, not $F(x)$ to $f(x)$."
+        ]
+      },
+      {
+        "type": "contradiction",
+        "assumption": "$F(x)$ is differentiable at all $x \\in (0,1)$",
+        "proof": {}
+      },
+      {
+        "type": "conclude",
+        "statement": "$\\therefore$, $F(x)$ is not differentiable $\\forall \\, x  \\in (0,1)$."
+      }
+    ]
+  }
+}

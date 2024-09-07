@@ -1,0 +1,54 @@
+{
+  "type": "theorem",
+  "name": "Convergence of Sine Series",
+  "status": "incomplete proof",
+  "hypothesis": [],
+  "conclusion": "The series $\\sum_{n=1}^{\\infty} \\left(\\sin \\frac{1}{n}\\right)^{3 / 2}$ is convergent.",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We will use the Limit Comparison Test. "
+      },
+      {
+        "type": "let",
+        "variable": "a_n",
+        "value": "$ \\left(\\sin \\frac{1}{n}\\right)^{3 / 2}$"
+      },
+      {
+        "type": "let",
+        "variable": "b_n",
+        "value": "$ \\frac{1}{n^{3/2}}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim _{n \\rightarrow \\infty} \\frac{a_n}{b_n} = 1$",
+        "proof-method": "Using the limit $\\lim_{x \\rightarrow 0} \\frac{\\sin x}{x} = 1$",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Show that $\\lim _{n \\rightarrow \\infty} \\frac{\\left(\\sin \\frac{1}{n}\\right)^{3 / 2}}{\\frac{1}{n^{3/2}}} = 1$ using the given limit.",
+            "solved": false
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The series $\\sum_{n=1}^{\\infty} b_n = \\sum_{n=1}^{\\infty}  \\frac{1}{n^{3/2}}$ is convergent.",
+        "proof-method": "p-series test",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "State and verify the conditions for p-series test.",
+            "solved": false
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, by the Limit Comparison Test, the series $\\sum_{n=1}^{\\infty} a_n = \\sum_{n=1}^{\\infty} \\left(\\sin \\frac{1}{n}\\right)^{3 / 2}$ is also convergent."
+      }
+    ]
+  }
+}

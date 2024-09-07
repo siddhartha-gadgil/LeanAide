@@ -1,0 +1,121 @@
+{
+  "type": "theorem",
+  "name": "Subspace of Real Sequences",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "\\mathscr{S}",
+      "kind": "vector space over \\mathbb{R} of all real sequences"
+    },
+    {
+      "type": "let",
+      "variable": "W",
+      "value": "{ { x_n }_{n \\in \\mathbb{N}} \\in \\mathscr{S} : { x_n^2 }_{n \\in \\mathbb{N}} \\text{ is convergent} }"
+    }
+  ],
+  "conclusion": "The set $W$ is not a subspace of $\\mathscr{S}$.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assume",
+        "statement": "{ x_n }_{n \\in \\mathbb{N}} \\in W"
+      },
+      {
+        "type": "assume",
+        "statement": "{ y_n }_{n \\in \\mathbb{N}} \\in W"
+      },
+      {
+        "type": "assert",
+        "claim": "For $W$ to be a subspace, $c x_n + d y_n \\in W$ for all $c, d \\in \\mathbb{R}$",
+        "proof-method": "Definition of subspace"
+      },
+      {
+        "type": "contradiction",
+        "assumption": "Assume $W$ is a subspace.",
+        "proof": {
+          "type": "proof",
+          "steps": [
+            {
+              "type": "let",
+              "variable": "{ x_n }",
+              "value": "{ (-1)^n }"
+            },
+            {
+              "type": "assert",
+              "claim": "{ x_n^2 } = { 1 }",
+              "proof-method": "Since $(-1)^n$ squared is always 1"
+            },
+            {
+              "type": "assert",
+              "claim": "{ x_n } \\in W"
+            },
+            {
+              "type": "let",
+              "variable": "{ y_n }",
+              "value": "{ (-1)^{n+1} }"
+            },
+            {
+              "type": "assert",
+              "claim": "{ y_n^2 } = { 1 }",
+              "proof-method": "Since $(-1)^{n+1}$ squared is always 1"
+            },
+            {
+              "type": "assert",
+              "claim": "{ y_n } \\in W"
+            },
+            {
+              "type": "assert",
+              "claim": "{ x_n + y_n } = { (-1)^n + (-1)^{n+1} } = { 0 }",
+              "proof-method": "By definition of $x_n$ and $y_n$"
+            },
+            {
+              "type": "assert",
+              "claim": "{ (x_n + y_n)^2 } = { 0 }",
+              "proof-method": "Since the sum is always zero"
+            },
+            {
+              "type": "assert",
+              "claim": "{ 0 } \\text{ is convergent }"
+            },
+            {
+              "type": "assert",
+              "claim": "{ x_n + y_n } = { 0 } \\in W"
+            },
+            {
+              "type": "assert",
+              "claim": "{ 0 } \\in W",
+              "proof-method": "Zero vector property"
+            },
+            {
+              "type": "assert",
+              "claim": "W is a subspace",
+              "proof-method": "Subspace properties hold"
+            },
+            {
+              "type": "assert",
+              "claim": "W is not a subspace",
+              "errors": [
+                {
+                  "error": "The chosen sequences $x_n$ and $y_n$ do not lead to a contradiction explicitly shown in the proof."
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "missing": [
+      {
+        "type": "problem",
+        "statement": "Find a pair of sequences in $W$ whose sum is not in $W$."
+      }
+    ],
+    "errors": [
+      {
+        "error": "The proof lacks a demonstrated contradiction or counterexample."
+      }
+    ]
+  }
+}

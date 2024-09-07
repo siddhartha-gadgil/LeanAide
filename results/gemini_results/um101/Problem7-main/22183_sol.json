@@ -1,0 +1,63 @@
+{
+  "type": "theorem",
+  "name": "Convergence of a Series",
+  "hypothesis": [],
+  "conclusion": "The series $ \\sum_{n=1}^{\\infty}(-1)^{n} \\frac{(n+1)^{32}}{n!} $ is convergent.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "**(b) Convergent**"
+      },
+      {
+        "type": "assert",
+        "claim": "$ \\frac{a_{n+1}}{a_n} = \\frac{(n+2)^{32} n!}{(n+1)! (n+1)^{32}} $",
+        "proof-method": "Definition of $a_n$"
+      },
+      {
+        "type": "assert",
+        "claim": "$ \\frac{a_{n+1}}{a_n} = \\frac{(n+2)^{32}}{(n+1)^{32}} \\cdot \\frac{1}{n+1} $",
+        "proof-method": "Simplifying the previous expression"
+      },
+      {
+        "type": "assert",
+        "claim": "$ \\frac{a_{n+1}}{a_n} < 1 \\qquad \\forall \\ n \\ge $",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Determine the lower bound for n for which the inequality $\\frac{a_{n+1}}{a_n} < 1$ holds.",
+            "solved": false
+          }
+        ],
+        "errors": [
+          "The lower bound for n is missing in the inequality."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The sequence $a_n$ is decreasing.",
+        "deduced_from": {
+          "from_context": [
+            "$\\frac{a_{n+1}}{a_n} < 1 \\qquad \\forall \\ n \\ge $"
+          ]
+        }
+      },
+      {
+        "type": "conclude",
+        "statement": "The series is convergent by the Alternating Series Test.",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Show that the sequence $\\frac{(n+1)^{32}}{n!}$ converges to 0.",
+            "solved": false
+          }
+        ],
+        "errors": [
+          "The Alternating Series Test requires the sequence of terms to converge to 0, which is not shown here."
+        ]
+      }
+    ]
+  }
+}

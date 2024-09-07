@@ -1,0 +1,12 @@
+{
+  "type": "theorem",
+  "name": "Convergence of the Series",
+  "hypothesis": [],
+  "conclusion": "$\\sum_{n=1}^{\\infty}(-1)^{n} \\frac{(n+1)^{32}}{n!}$ is convergent",
+  "status": "incomplete proof",
+  "missing": [
+    {
+      "statement": "Show that the series $\\sum_{n=1}^{\\infty}(-1)^{n} \\frac{(n+1)^{32}}{n!}$ satisfies the criteria for an alternating series test or use a different convergence test."
+    }
+  ]
+}

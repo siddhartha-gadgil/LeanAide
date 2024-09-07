@@ -1,0 +1,57 @@
+{
+  "type": "theorem",
+  "name": "Differentiability of F",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "value": "f:[0,1] \\rightarrow \\mathbb{R}",
+      "kind": "Riemann integrable function"
+    }
+  ],
+  "conclusion": "The function $F:[0,1] \\rightarrow \\mathbb{R}$ given by $F(x)=\\int_{0}^{x} f(t) \\, dt$ is not differentiable at each $x \\in (0,1)$.",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "f",
+        "value": "f(x) = \\begin{cases} n; & 0 \\le x \\le 1/2 \\\\ 1; & 1/2 < x \\le 1 \\end{cases}"
+      },
+      {
+        "type": "assert",
+        "claim": "f is Riemann integrable",
+        "deduced_from": {
+          "Known_results": [
+            "$n$ and $1$ are continuous functions",
+            "The integral of a piecewise continuous function over a finite interval is Riemann integrable"
+          ]
+        },
+        "proof-method": "Direct verification"
+      },
+      {
+        "type": "assert",
+        "claim": "$F(x) = \\begin{cases} \\frac{nx^2}{2}; & 0 \\le x \\le \\frac{1}{2} \\\\ x - \\frac{3}{8}; & \\frac{1}{2} < x \\le 1 \\end{cases}$",
+        "proof-method": "Fundamental theorem of calculus"
+      },
+      {
+        "type": "assert",
+        "claim": "$F$ is not differentiable at $x = \\frac{1}{2}$",
+        "calculation": [
+          {
+            "step": "F'(x) = \\begin{cases} nx; & 0 \\le x < \\frac{1}{2} \\\\ 1; & \\frac{1}{2} < x \\le 1 \\end{cases}",
+            "justification": "Algebra of derivatives"
+          },
+          "$\\lim_{x \\to \\frac{1}{2}^{-}} (nx) = \\frac{n}{2}$, $\\lim_{x \\to \\frac{1}{2}^{+}} (1) = 1$"
+        ],
+        "errors": [
+          "The final claim is incorrect for the general case of $f$ being Riemann integrable. The proof only shows differentiability at $x=1/2$ for a specific function."
+        ]
+      }
+    ]
+  },
+  "errors": [
+    "The proof does not cover the general case, only a specific example."
+  ]
+}

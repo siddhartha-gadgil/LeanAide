@@ -1,0 +1,68 @@
+{
+  "type": "theorem",
+  "name": "Convergence of a series involving sin",
+  "hypothesis": [],
+  "conclusion": "$\\sum_{n=1}^{\\infty}\\left(\\sin \\frac{1}{n}\\right)^{3 / 2}$ is convergent.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\frac{1}{n} \\in (0, \\frac{\\pi}{2})\\ \\forall n \\in \\mathbb{N}$",
+        "deduced_from": {
+          "Known_results": [
+            "$\\frac{1}{n} > 0$ for all $n \\in \\mathbb{N}$",
+            "$\\frac{1}{n} \\rightarrow 0$ as $n \\rightarrow \\infty$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$0 < \\sin(\\frac{1}{n}) < \\frac{1}{n}$",
+        "deduced_from": {
+          "Known_results": [
+            "$\\sin(x) < x$ for $x \\in (0, \\frac{\\pi}{2})$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$0 < \\sin(\\frac{1}{n})^{\\frac{3}{2}} < \\left(\\frac{1}{n}\\right)^{\\frac{3}{2}} = \\frac{1}{n^{\\frac{3}{2}}}$ for all $n \\in \\mathbb{N}$",
+        "deduced_from": {
+          "From_context": [
+            "$0 < \\sin(\\frac{1}{n}) < \\frac{1}{n}$"
+          ]
+        }
+      },
+      {
+        "type": "remark",
+        "statement": "Idea: approximation of $\\sin(\\frac{1}{n})$ by $\\frac{1}{n}$ for large $n$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\sum_{n=1}^{\\infty} \\frac{1}{n^{\\frac{3}{2}}}$ converges",
+        "deduced_from": {
+          "Known_results": [
+            "The $p$-series test: $\\sum_{n=1}^{\\infty} \\frac{1}{n^p}$ converges if $p > 1$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$\\sum_{n=1}^{\\infty} \\sin(\\frac{1}{n})^{\\frac{3}{2}}$ converges",
+        "proof-method": "Comparison test"
+      },
+      {
+        "type": "conclude",
+        "statement": "$\\sum_{n=1}^{\\infty} \\left(\\sin \\frac{1}{n}\\right)^{3 / 2}$ is convergent."
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Justify why the comparison test applies directly to $\\sum_{n=1}^{\\infty} \\sin(\\frac{1}{n})^{\\frac{3}{2}}$ and $\\sum_{n=1}^{\\infty} \\frac{1}{n^{\\frac{3}{2}}}$."
+    }
+  ]
+}

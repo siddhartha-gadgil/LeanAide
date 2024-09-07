@@ -1,0 +1,53 @@
+{
+  "type": "theorem",
+  "name": "Non-differentiability of \\(F(x)\\)",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function",
+      "property": "Riemann integrable",
+      "value": "$f:[0,1] \\to \\mathbb{R}$"
+    },
+    {
+      "type": "let",
+      "variable": "F",
+      "kind": "function",
+      "property": "given by $F(x) = \\int_{0}^{x} f(t) \\, dt$",
+      "value": "$F:[0,1] \\to \\mathbb{R}$"
+    }
+  ],
+  "conclusion": "The function $F$ is not differentiable at each $x \\in (0,1)$.",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assume",
+        "statement": "Given $f:[0,1] \\to \\mathbb{R}$ is Riemann integrable."
+      },
+      {
+        "type": "assert",
+        "claim": "$F'(t) = f(t)$",
+        "proof-method": "Fundamental theorem of calculus",
+        "errors": [
+          "The function $f$ being Riemann integrable does not necessarily imply that $F$ is differentiable everywhere on $(0,1)$. $f$ must also be continuous."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$f$ is continuous on $[0,1]$",
+        "errors": [
+          "$f$ is given as Riemann integrable, not necessarily continuous."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$F$ is differentiable on $(0,1)$ because $f$ is continuous",
+        "errors": [
+          "The proof incorrectly assumes $f$ is continuous, which is not given."
+        ]
+      }
+    ]
+  }
+}

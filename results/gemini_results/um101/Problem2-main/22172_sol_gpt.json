@@ -1,0 +1,108 @@
+{
+  "type": "theorem",
+  "name": "Limit Non-Existence",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function",
+      "value": "(h) \\rightarrow \\mathbb{R}",
+      "property": "$\\lim_{h \\rightarrow 0} |f(h) - f(-h)| = 0$"
+    }
+  ],
+  "conclusion": "$\\lim_{h \\rightarrow 0} f(h)$ does not exist.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "f",
+        "value": "$f(x) = \\begin{cases} \\frac{x}{|x|} & ,x\\neq 0 \\\\ 0 & ,x=0 \\end{cases}$",
+        "kind": "function"
+      },
+      {
+        "type": "assume",
+        "statement": "$\\epsilon \\in \\mathbb{R} > 0$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\exists \\delta_\\epsilon > 0$ such that $0 < |h| < \\delta_\\epsilon \\implies |f(h) - f(-h)| < \\epsilon$",
+        "proof-method": "definition of $f$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim_{h \\rightarrow 0} [f(h) - f(-h)] = 0$",
+        "deduced_from": {
+          "from_context": [
+            "$||f(h) - f(-h)|| = \\left|\\left| \\frac{h}{|h|} \\right| - \\left| \\frac{-h}{|-h|} \\right|\\right| = ||1|-|-1|| = |0| = 0 < \\epsilon$"
+          ]
+        }
+      },
+      {
+        "type": "assume",
+        "statement": "$\\lim_{h \\rightarrow 0} f(h)$ exists"
+      },
+      {
+        "type": "define",
+        "term": "L",
+        "statement": "some limit value"
+      },
+      {
+        "type": "let",
+        "variable": "N",
+        "kind": "natural number",
+        "value": "$\\max\\{2, n\\}$",
+        "property": "$0 < \\frac{1}{N} < \\delta_\\epsilon$"
+      },
+      {
+        "type": "assert",
+        "claim": "$|f(\\frac{1}{N}) - L| < \\epsilon$",
+        "proof-method": "definition of limit"
+      },
+      {
+        "type": "assert",
+        "claim": "$|f(\\frac{-1}{N+1}) - L| < \\epsilon$",
+        "proof-method": "definition of limit"
+      },
+      {
+        "type": "contradiction",
+        "assumption": "$2 = |-2| = |(N+1) - (N-1)|$",
+        "proof": {
+          "type": "proof",
+          "steps": [
+            {
+              "type": "assert",
+              "claim": "$|(N+1) + L -L - (N - L)| \\leq 1$",
+              "proof-method": "triangle inequality"
+            },
+            {
+              "type": "assert",
+              "claim": "$|N+1 + L|+|-L - N + L| < \\epsilon + \\epsilon$",
+              "proof-method": "substitution"
+            },
+            {
+              "type": "assert",
+              "claim": "$2 < 1$",
+              "proof-method": "simplification"
+            }
+          ]
+        }
+      },
+      {
+        "type": "conclude",
+        "statement": "$\\lim_{h \\rightarrow 0}f(h)$ does not exist.",
+        "errors": [
+          "Misapplication of the triangle inequality.",
+          "Incorrect handling of the limit definition."
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Accurate handling of the limit definition and correct application of the triangle inequality."
+    }
+  ]
+}

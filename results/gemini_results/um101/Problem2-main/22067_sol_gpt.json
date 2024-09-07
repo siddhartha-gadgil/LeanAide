@@ -1,0 +1,61 @@
+{
+  "type": "theorem",
+  "name": "",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "value": "$(-1,1) \\rightarrow \\mathbb{R}$",
+      "kind": "function"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\lim_{h \\rightarrow 0}|f(h)-f(-h)|=0$"
+    }
+  ],
+  "conclusion": "$\\lim_{h \\rightarrow 0} f(h)$ does not exist",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\lim_{h \\to 0} f(h)$ may exist, but the function needn't be continuous."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim_{h \\to 0} |f(h) - f(-h)| = 0$",
+        "deduced_from": {
+          "from_context": [
+            "$\\lim_{h \\rightarrow 0}|f(h)-f(-h)|=0$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "From definition, $\\forall \\epsilon > 0$, $\\exists \\delta > 0$, $\\ni$ $|f(h) - f(-h)| < \\epsilon$ when $|h| < \\delta$",
+        "deduced_from": {
+          "from_context": [
+            "$\\lim_{h \\rightarrow 0}|f(h)-f(-h)|=0$"
+          ],
+          "known_results": [
+            "Definition of limit"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$f(h) < \\delta$ when $|h| < \\delta$",
+        "errors": [
+          "Incorrect deduction from the previous statement"
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Justify why $\\lim_{h \\to 0} f(h)$ does not exist if $\\lim_{h \\to 0}|f(h)-f(-h)|=0$"
+    }
+  ]
+}

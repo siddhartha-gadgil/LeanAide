@@ -1,0 +1,77 @@
+{
+  "type": "theorem",
+  "name": "Convergence of Series",
+  "hypothesis": [],
+  "conclusion": "The series $\\sum_{n=1}^{\\infty}(-1)^{n} \\frac{(n+1)^{32}}{n!}$ is convergent.",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "b_n",
+        "value": "\\frac{(n+1)^{32}}{n!}",
+        "kind": "sequence"
+      },
+      {
+        "type": "assert",
+        "claim": "\\frac{b_{n+1}}{b_n} = \\left( 1+\\frac{1}{n+1}\\right)^{32} \\cdot \\frac{1}{n+1}",
+        "calculation": [
+          "\\frac{b_{n+1}}{b_n} = \\frac{(n+2)^{32}}{(n+1)!} \\cdot \\frac{n!}{(n+1)^{32}}",
+          "\\frac{b_{n+1}}{b_n} = \\frac{(n+2)^{32}}{(n+1)^{32}} \\cdot \\frac{1}{n+1}",
+          "\\frac{b_{n+1}}{b_n} = \\left( 1+\\frac{1}{n+1}\\right)^{32} \\cdot \\frac{1}{n+1}"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "\\lim_{n \\to \\infty} \\left(1+\\frac{1}{n+1}\\right)^{32} = 1",
+        "deduced_from": {
+          "known_results": [
+            "Limit laws"
+          ],
+          "from_context": [
+            "Since \\lim_{n \\to \\infty} \\frac{1}{n+1} = 0"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "\\lim_{n \\to \\infty} \\left( 1+\\frac{1}{n+1}\\right)^{32} \\cdot \\frac{1}{n+1} = 0",
+        "deduced_from": {
+          "from_context": [
+            "\\left(1+\\frac{1}{n+1}\\right)^{32} \\to 1",
+            "\\frac{1}{n+1} \\to 0"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "\\lim_{n \\to \\infty} \\frac{b_{n+1}}{b_n} = 0"
+      },
+      {
+        "type": "assert",
+        "claim": "Since 0 < 1, \\sum b_n converges",
+        "proof-method": "Ratio Test"
+      },
+      {
+        "type": "assert",
+        "claim": "Since \\left| \\frac{(-1)^n (n+1)^{32}}{n!}\\right| = b_n, \\sum \\frac{(-1)^n (n+1)^{32}}{n!} converges absolutely",
+        "proof-method": "Absolute convergence implies conditional convergence"
+      },
+      {
+        "type": "conclude",
+        "statement": "The series $\\sum_{n=1}^{\\infty}(-1)^{n} \\frac{(n+1)^{32}}{n!}$ is convergent."
+      }
+    ],
+    "errors": [
+      {
+        "type": "assert",
+        "claim": "\\sum \\frac{(-1)^n (n+1)^{32}}{n!} converges absolutely"
+      },
+      {
+        "type": "assert",
+        "claim": "Absolute convergence implies conditional convergence"
+      }
+    ]
+  }
+}

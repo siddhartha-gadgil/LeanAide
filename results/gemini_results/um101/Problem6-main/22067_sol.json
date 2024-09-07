@@ -1,0 +1,63 @@
+{
+  "type": "theorem",
+  "name": "Convergence of a trigonometric series",
+  "status": "incomplete proof",
+  "hypothesis": [],
+  "conclusion": "The series $\\sum_{n=1}^{\\infty}\\left(\\sin \\frac{1}{n}\\right)^{3 / 2}$ is convergent.",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We will use the comparison test with the series $\\sum_{n=1}^{\\infty}\\frac{1}{n^{2}}$, which is known to converge."
+      },
+      {
+        "type": "assert",
+        "claim": "$0 < (\\sin(\\frac{1}{n}))^{\\frac{3}{2}} < \\frac{1}{n^{2}}$ for all $n \\ge 1$",
+        "proof-method": "Using inequalities and the fact that sine is positive in the first quadrant",
+        "calculation": [
+          {
+            "step": "$\\sin(\\frac{1}{n}) > 0$",
+            "justification": "Since $\\frac{1}{n}$ is in the interval $(0,\\frac{\\pi}{2})$ for all $n \\ge 1$, and sine is positive in the first quadrant"
+          },
+          {
+            "step": "$\\sin(\\frac{1}{n}) < \\frac{1}{n}$",
+            "justification": "By the inequality $\\sin(x) < x$ for $x>0$"
+          },
+          {
+            "step": "$(\\sin(\\frac{1}{n}))^{\\frac{3}{2}} < (\\frac{1}{n})^{\\frac{3}{2}}$",
+            "justification": "Since $x^{\\frac{3}{2}}$ is an increasing function for $x>0$"
+          },
+          {
+            "step": "$0 < (\\sin(\\frac{1}{n}))^{\\frac{3}{2}} < \\frac{1}{n^{2}}$",
+            "justification": "Combining the above inequalities"
+          }
+        ],
+        "errors": [
+          "The inequality $\\sin(x) < x$ only holds for $0 < x < \\frac{\\pi}{2}$, but $\\frac{1}{n}$ can be greater than $\\frac{\\pi}{2}$ for $n=1$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The series $\\sum_{n=1}^{\\infty} (\\sin(\\frac{1}{n}))^{\\frac{3}{2}}$ converges",
+        "deduced_from": {
+          "known_results": [
+            "Comparison test for convergence of series",
+            "The series $\\sum_{n=1}^{\\infty}\\frac{1}{n^{2}}$ converges"
+          ]
+        },
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Fix the error in the previous step by addressing the case $n=1$ separately",
+            "solved": false
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, the series $\\sum_{n=1}^{\\infty}\\left(\\sin \\frac{1}{n}\\right)^{3 / 2}$ is convergent."
+      }
+    ]
+  }
+}

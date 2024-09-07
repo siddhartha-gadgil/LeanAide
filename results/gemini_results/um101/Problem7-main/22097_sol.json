@@ -1,0 +1,61 @@
+{
+  "type": "theorem",
+  "name": "Convergence of a Series",
+  "hypothesis": [],
+  "conclusion": "The series $\\sum_{n=1}^{\\infty}(-1)^{n} \\frac{(n+1)^{32}}{n!}$ is convergent.",
+  "status": "incomplete proof",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Show that  $\\lim_{n \\to \\infty} \\frac{(n+2)^{32}}{(n+1)^{32}} \\cdot \\frac{n+1}{n+2} = 1$.",
+      "solved": false
+    },
+    {
+      "type": "problem",
+      "statement": "Conclude from the ratio test that the series converges.",
+      "solved": false
+    }
+  ],
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We will use the ratio test to prove convergence."
+      },
+      {
+        "type": "let",
+        "variable": "<anonymous>",
+        "value": "$a_n = (-1)^n \\frac{(n+1)^{32}}{n!}$",
+        "kind": "sequence term"
+      },
+      {
+        "type": "assert",
+        "claim": "$|\\frac{a_{n+1}}{a_n}| = \\frac{(n+2)^{32}}{(n+1)^{32}} \\cdot \\frac{n+1}{n+2}$",
+        "proof-method": "by simplification"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim_{n \\to \\infty} |\\frac{a_{n+1}}{a_n}| = 1$",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Show that  $\\lim_{n \\to \\infty} \\frac{(n+2)^{32}}{(n+1)^{32}} \\cdot \\frac{n+1}{n+2} = 1$.",
+            "solved": false
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, by the ratio test, the series converges.",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Conclude from the ratio test that the series converges.",
+            "solved": false
+          }
+        ]
+      }
+    ]
+  }
+}

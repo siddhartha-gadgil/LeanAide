@@ -1,0 +1,91 @@
+{
+  "type": "theorem",
+  "name": "Continuity of cube root at x = 1",
+  "hypothesis": [
+    {
+      "type": "define",
+      "statement": "Let $f(x) = x^{1/3}$ be the cube root function.",
+      "term": "f(x)"
+    }
+  ],
+  "conclusion": "The function $f(x) = x^{1/3}$ is continuous at $x = 1$.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We need to show that $\\lim_{x \\to 1} x^{1/3} = 1$ using an $\\epsilon-\\delta$ proof."
+      },
+      {
+        "type": "let",
+        "variable": "<anonymous>",
+        "kind": "real number",
+        "property": "$\\epsilon > 0$"
+      },
+      {
+        "type": "let",
+        "variable": "<anonymous>",
+        "value": "$\\min \\{\\frac{\\epsilon}{2}, \\frac{7}{8}\\}$",
+        "kind": "real number",
+        "property": "$\\delta > 0$"
+      },
+      {
+        "type": "assert",
+        "claim": "When $|n - 1| < \\delta = \\frac{7}{8}$, then $\\frac{1}{8} < n < \\frac{15}{8}$.",
+        "proof-method": "Direct reasoning from the definition of $\\delta$ and the domain of $f(n)$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{7}{8} = (\\frac{1}{8})^{2/3} + (\\frac{1}{8})^{1/3} + 1 < n^{2/3} + n^{1/3} + 1$",
+        "proof-method": "Since $n^{2/3}$, $n^{1/3}$, and $1$ are increasing functions and $\\frac{1}{8} < n$."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{1}{n^{2/3} + n^{1/3} + 1} < \\frac{8}{7}$",
+        "proof-method": "Taking the reciprocal of the previous inequality."
+      },
+      {
+        "type": "assert",
+        "claim": "When $|n - 1| < \\delta$,  $|n^{1/3} - 1| < \\epsilon$",
+        "calculation": [
+          {
+            "step": "$|n^{1/3} - 1| = |\\frac{n^{1/3} - 1}{1} * \\frac{n^{2/3} + n^{1/3} + 1}{n^{2/3} + n^{1/3} + 1}|$",
+            "justification": "Multiplying by the conjugate"
+          },
+          {
+            "step": "$|n^{1/3} - 1| = \\frac{|n - 1|}{|n^{2/3} + n^{1/3} + 1|}$",
+            "justification": "Simplifying the numerator"
+          },
+          {
+            "step": "$|n^{1/3} - 1| < \\frac{8}{7} \\delta$",
+            "justification": "Using the previous inequality $\\frac{1}{n^{2/3} + n^{1/3} + 1} < \\frac{8}{7}$"
+          },
+          {
+            "step": "$|n^{1/3} - 1| \\leq \\frac{8}{7} * \\frac{\\epsilon}{2}$",
+            "justification": "Since $\\delta \\leq \\frac{\\epsilon}{2}$"
+          },
+          {
+            "step": "$|n^{1/3} - 1| \\leq \\epsilon$",
+            "justification": "Simplifying"
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, $\\lim_{n \\to 1} n^{1/3} = 1 = 1^{1/3}$, which implies that $x^{1/3}$ is continuous at $1$.",
+        "errors": [
+          "The proof uses $n$ instead of $x$ inconsistently.",
+          "The justification for  $\\frac{1}{n^{2/3} + n^{1/3} + 1} < \\frac{8}{7}$ should specify that  $n^{2/3} + n^{1/3} + 1 > 0$ in $(0, \\infty)$."
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Prove that $n^{2/3}$, $n^{1/3}$, and $1$ are increasing functions.",
+      "solved": false
+    }
+  ]
+}

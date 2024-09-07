@@ -1,0 +1,82 @@
+{
+  "type": "theorem",
+  "name": "Convergence of Series",
+  "hypothesis": [],
+  "conclusion": "The series $\\sum\\_{n=1}^{\\infty}(-1)^{n} \\frac{(n+1)^{32}}{n!}$ is convergent.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "Problem (b): $\\sum\\limits_{n=1}^\\infty (-1)^n \\frac{(n+1)^{32}}{n!}$"
+      },
+      {
+        "type": "remark",
+        "statement": "We must check if this series converges absolutely or not."
+      },
+      {
+        "type": "let",
+        "variable": "$a_n$",
+        "value": "$(-1)^n \\frac{(n+1)^{32}}{n!}$",
+        "kind": "term of a series"
+      },
+      {
+        "type": "assert",
+        "claim": "$|a_n| = \\frac{(n+1)^{32}}{n!}$",
+        "proof-method": "By definition of absolute value"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim\\limits_{n \\to \\infty} \\frac{a_{n+1}}{a_n} = 0$",
+        "calculation": [
+          {
+            "step": "$\\lim\\limits_{n \\to \\infty} \\frac{a_{n+1}}{a_n} = \\lim\\limits_{n \\to \\infty} \\frac{\\frac{((n+1)+1)^{32}}{(n+1)!}}{\\frac{(n+1)^{32}}{n!}} = \\lim\\limits_{n \\to \\infty} \\frac{(n+2)^{32}}{(n+1)^{32}} \\cdot \\frac{n!}{(n+1)!} = \\lim\\limits_{n \\to \\infty} \\frac{(n+2)^{32}}{(n+1)^{32}} \\cdot \\frac{1}{n+1}$",
+            "justification": "Substituting the expression for $a_n$"
+          },
+          {
+            "step": "$\\lim\\limits_{n \\to \\infty} \\frac{a_{n+1}}{a_n} =  \\lim\\limits_{n \\to \\infty}(1 + \\frac{1}{n})^{32} \\times \\frac{1}{n+1}$",
+            "justification": "Simplifying and dividing numerator and denominator by $n^{32}$"
+          },
+          {
+            "step": "$\\lim\\limits_{n \\to \\infty} \\frac{a_{n+1}}{a_n} =  \\lim\\limits_{n \\to \\infty} \\frac{(1 + \\frac{1}{n})^{32}}{(1 + \\frac{1}{n})^{32}} \\times \\lim\\limits_{n \\to \\infty} \\frac{1}{n+1} = \\lim\\limits_{n \\to \\infty} \\frac{(1+\\frac{1}{n})^{32}}{(1+\\frac{1}{n})^{32} \\times 0} = 0$",
+            "justification": "Using properties of limits and simplifying"
+          }
+        ]
+      },
+      {
+        "type": "remark",
+        "statement": "We write this as $\\lim\\limits_{n \\to \\infty} 1 + \\frac{1}{n}$ exists $= 0$."
+      },
+      {
+        "type": "assert",
+        "claim": "$a_n$ converges absolutely.",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Show that the limit being 0 implies absolute convergence (e.g., by the Ratio Test).",
+            "solved": false
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "$\\sum\\limits_{n=1}^\\infty a_n$ converges.",
+        "errors": [
+          "The conclusion that the series of $a_n$ converges follows from absolute convergence, which hasn't been fully established yet."
+        ]
+      },
+      {
+        "type": "remark",
+        "statement": "Hence proved."
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "State and properly apply a convergence test (such as the Ratio Test) to rigorously prove the absolute convergence, rather than just calculating the limit.",
+      "solved": false
+    }
+  ]
+}

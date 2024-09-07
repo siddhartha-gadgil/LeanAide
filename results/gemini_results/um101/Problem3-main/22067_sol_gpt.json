@@ -1,0 +1,111 @@
+{
+  "type": "theorem",
+  "name": "Non-differentiability of Integral Function",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from [0,1] to \\mathbb{R}",
+      "property": "Riemann integrable"
+    }
+  ],
+  "conclusion": "The function $F:[0,1] \\rightarrow \\mathbb{R}$ given by $F(x)=\\int_{0}^{x} f(t) \\, dt$ is not differentiable at each $x \\in (0,1)$.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "define",
+        "term": "F",
+        "statement": "Let $F(x) = \\int_{0}^{x} f(t) \\, dt$."
+      },
+      {
+        "type": "let",
+        "variable": "f",
+        "value": "$\\begin{cases} x, & x \\neq 1/4 \\\\ 1, & x = 1/4 \\end{cases}$",
+        "kind": "function from [0,1] to \\mathbb{R}"
+      },
+      {
+        "type": "assert",
+        "claim": "$f(x)$ is in $\\mathbb{R}$ over all $[0,1]$, as it exists at all but 1 point."
+      },
+      {
+        "type": "assert",
+        "claim": "$F(x) = \\int_{0}^{x} f(t) \\, dt = \\frac{x^2}{2}$",
+        "deduced_from": {
+          "from_context": [
+            "definition of F",
+            "definition of f"
+          ]
+        }
+      },
+      {
+        "type": "assume",
+        "statement": "Assume $F(x)$ is differentiable at all $x \\in (0,1)$."
+      },
+      {
+        "type": "assert",
+        "claim": "$F'(x) = \\frac{d}{dx}\\left(\\frac{x^2}{2}\\right) = x$",
+        "deduced_from": {
+          "known_results": [
+            "Fundamental Theorem of Calculus (FTOC)"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "We have $f(\\frac{1}{4}) = 1$, but from the Fundamental Theorem of Calculus, $f(\\frac{1}{4})$ should be $F'(\\frac{1}{4}) = \\frac{1}{4}$.",
+        "deduced_from": {
+          "from_context": [
+            "definition of f",
+            "assertion of F'(x)"
+          ]
+        }
+      },
+      {
+        "type": "contradiction",
+        "assumption": "Assume $F(x)$ is differentiable at $x = \\frac{1}{4}$.",
+        "proof": {
+          "type": "proof",
+          "steps": [
+            {
+              "type": "assert",
+              "claim": "$1 \\neq \\frac{1}{4}$",
+              "deduced_from": {
+                "from_context": [
+                  "previous assertion"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, $F(x)$ is not differentiable at $\\forall \\, x \\in (0,1)$."
+      }
+    ],
+    "errors": [
+      {
+        "type": "assert",
+        "claim": "$F(x) = \\int_{0}^{x} f(t) \\, dt = \\frac{x^2}{2}$",
+        "errors": [
+          "The integral $F(x)$ might not be $\\frac{x^2}{2}$ for the non-continuous function $f$ as given."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "We have $f(\\frac{1}{4}) = 1$, but from the Fundamental Theorem of Calculus, $f(\\frac{1}{4})$ should be $F'(\\frac{1}{4}) = \\frac{1}{4}$.",
+        "errors": [
+          "Misapplication of the Fundamental Theorem of Calculus; $f$ not continuous at $1/4$ means $F$ is not necessarily differentiable there."
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Prove that $F(x)$ is not differentiable at a general $x \\in (0,1)$."
+    }
+  ]
+}

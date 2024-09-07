@@ -1,0 +1,77 @@
+{
+  "type": "theorem",
+  "name": "SubspaceNonExample",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "𝒮",
+      "kind": "vector space",
+      "property": "over ℝ of all real sequences with usual addition and scalar multiplication"
+    },
+    {
+      "type": "let",
+      "variable": "W",
+      "value": "{ { x_n }_{n ∈ ℕ} ∈ 𝒮 : { x_n^2 }_{n ∈ ℕ} is convergent }"
+    }
+  ],
+  "conclusion": "W is not a subspace of 𝒮",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "W ⊆ 𝒮",
+        "proof-method": "definition of W"
+      },
+      {
+        "type": "assert",
+        "claim": "To confirm W is a vector subspace, we need to verify three properties: the zero vector is in W, closure under addition, and closure under scalar multiplication.",
+        "proof-method": "Subspace criterion"
+      },
+      {
+        "type": "assert",
+        "claim": "The zero vector is in W",
+        "proof-method": "Verification of zero vector",
+        "calculation": [
+          "0 = {0_n}_{n ∈ ℕ}",
+          "{0_n^2}_{n ∈ ℕ} = {0}_{n ∈ ℕ} is convergent"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "Closure under scalar multiplication",
+        "proof-method": "Verification of closure under scalar multiplication",
+        "calculation": [
+          "{x_n}_{n ∈ ℕ} ∈ W ⇒ {x_n^2}_{n ∈ ℕ} convergent",
+          "∀ λ ∈ ℝ, λ{x_n}_{n ∈ ℕ} = {λx_n}_{n ∈ ℕ}",
+          "{(λx_n)^2}_{n ∈ ℕ} = {λ^2 x_n^2}_{n ∈ ℕ}",
+          "{λ^2 x_n^2}_{n ∈ ℕ} convergent (since scalar multiple of a convergent sequence is convergent)"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "Closure under addition",
+        "proof-method": "Verification of closure under addition",
+        "calculation": [
+          "{x_n}_{n ∈ ℕ}, {y_n}_{n ∈ ℕ} ∈ W ⇒ {x_n^2}_{n ∈ ℕ}, {y_n^2}_{n ∈ ℕ} convergent",
+          "(x_n + y_n)^2 = x_n^2 + 2x_ny_n + y_n^2",
+          "Since {x_n^2}_{n ∈ ℕ} and {y_n^2}_{n ∈ ℕ} are convergent, we need to check if {2x_ny_n}_{n ∈ ℕ} is convergent."
+        ],
+        "errors": [
+          "Incorrectly assumes {2x_ny_n}_{n ∈ ℕ} is necessarily convergent"
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "W is a vector subspace of 𝒮",
+        "errors": [
+          "Incorrect conclusion based on invalid assumption about {2x_ny_n}_{n ∈ ℕ}."
+        ]
+      }
+    ]
+  },
+  "errors": [
+    "The proof incorrectly assumes that the product of two convergent sequences is always convergent. This is not necessarily true."
+  ]
+}

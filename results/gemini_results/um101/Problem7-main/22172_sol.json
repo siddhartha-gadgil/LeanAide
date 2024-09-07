@@ -1,0 +1,83 @@
+{
+  "type": "theorem",
+  "name": "Convergence of a Series",
+  "status": "proved",
+  "hypothesis": [],
+  "conclusion": "The series $\\sum\\_{n=1}^{\\infty}(-1)^{n} \\frac{(n+1)^{32}}{n!}$ is convergent.",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "$b_n$",
+        "kind": "sequence",
+        "property": " $b_n = \\frac{(n+1)^{32}}{n!}$ for all $n \\in \\mathbb{P}$"
+      },
+      {
+        "type": "assert",
+        "claim": "For $n \\in \\mathbb{P}$, $\\frac{b_{n+1}}{b_n}=\\frac{(n+2)^{32}}{(n+1)!} \\cdot \\frac{n!}{(n+1)^{32}}=\\frac{(n+2)^{32}}{(n+1)^{32}} \\cdot \\frac{n!}{n+1}=\\left( 1+\\frac{1}{n+1}\\right)^{32} \\cdot \\frac{1}{n+1}$.",
+        "proof-method": "Direct calculation"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim_{n \\to \\infty} \\frac{1}{n+1} = 0$",
+        "deduced_from": {
+          "known_results": [
+            "$\\lim_{n \\to \\infty} \\frac{1}{n} = 0$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim_{n \\to \\infty} \\left(1+\\frac{1}{n+1}\\right) = 1 + 0 = 1$",
+        "proof-method": "Limit laws"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim_{n \\to \\infty} \\left(1+\\frac{1}{n+1}\\right)^{32} = \\left(\\lim_{n \\to \\infty} \\left(1+\\frac{1}{n+1}\\right)\\right)^{32}=1^{32} = 1$",
+        "proof-method": "Limit laws"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim_{k \\to \\infty} \\frac{b_{n+1}}{b_n}=(1)(0)=0$",
+        "errors": [
+          "The limit should be taken as n goes to infinity, not k."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\sum b_n$ converges.",
+        "deduced_from": {
+          "known_results": [
+            "Ratio test for convergence"
+          ]
+        },
+        "errors": [
+          "The ratio test requires the limit to be strictly less than 1, not just less than or equal to 1."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\left| \\frac{(-1)^n (n+1)^{32}}{n!}\\right| = b_n$ for all $n \\in \\mathbb{P}$",
+        "proof-method": "Direct calculation"
+      },
+      {
+        "type": "assert",
+        "claim": "The series $\\sum \\frac{(-1)^n (n+1)^{32}}{n!}$ converges absolutely.",
+        "deduced_from": {
+          "from_context": [
+            "$\\sum b_n$ converges.",
+            "$\\left| \\frac{(-1)^n (n+1)^{32}}{n!}\\right| = b_n$ for all $n \\in \\mathbb{P}$"
+          ],
+          "known_results": [
+            "Definition of absolute convergence"
+          ]
+        }
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, the series $\\sum \\frac{(-1)^n (n+1)^{32}}{n!}$ converges."
+      }
+    ]
+  }
+}

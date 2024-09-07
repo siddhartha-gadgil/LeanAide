@@ -1,0 +1,98 @@
+{
+  "type": "theorem",
+  "name": "Limit of f(h) does not exist",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from (-1,1) to \\mathbb{R}",
+      "property": "for which \\lim_{h \\to 0}|f(h)-f(-h)|=0"
+    }
+  ],
+  "conclusion": " \\lim_{h \\to 0} f(h) \\text{ does not exist} ",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assume",
+        "statement": "For all \\varepsilon > 0, there exists \\delta > 0 such that when 0<|h|<\\delta, |f(h)-f(-h)|<\\varepsilon"
+      },
+      {
+        "type": "let",
+        "variable": "f",
+        "value": "\\frac{1}{|x|}",
+        "kind": "function",
+        "property": "\\forall x \\in (-1,1)"
+      },
+      {
+        "type": "assert",
+        "claim": "\\lim_{h \\to 0}|f(h)-f(-h)|=0",
+        "deduced_from": {
+          "known_results": [
+            "Direct calculation"
+          ]
+        },
+        "calculation": [
+          "|f(h)-f(-h)| = \\left|\\frac{1}{|h|} - \\frac{1}{|-h|}\\right| = |\\frac{1}{h} - \\frac{1}{h}| = 0",
+          "||f(h)-f(-h)| - 0| = 0 < \\varepsilon"
+        ]
+      },
+      {
+        "type": "contradiction",
+        "assumption": "\\lim_{h \\to 0}f(h) \\text{ exists and is equal to } l",
+        "proof": {
+          "type": "proof",
+          "steps": [
+            {
+              "type": "let",
+              "variable": "\\varepsilon",
+              "value": "1",
+              "kind": "real number"
+            },
+            {
+              "type": "let",
+              "variable": "\\delta",
+              "kind": "real number",
+              "property": "\\delta < 1 such that when 0<|h|<\\delta, |f(h)-l|<1"
+            },
+            {
+              "type": "assert",
+              "claim": "By the Archimedean property of \\mathbb{R}, there exists N \\in \\mathbb{N} excluding zero such that N\\delta < \\frac{1}{|N|}<\\delta"
+            },
+            {
+              "type": "assert",
+              "claim": "Similarly, \\frac{-1}{N}<\\frac{1}{N+2}<\\frac{1}{N}<\\delta"
+            },
+            {
+              "type": "assert",
+              "claim": "|f(\\frac{1}{N})-l|=|N-l|<1 and |f(\\frac{1}{N+2})-l|=|N+2-l|<1"
+            },
+            {
+              "type": "assert",
+              "claim": "2=|N+2-N| \\le |N+2-l + l-N| < 2",
+              "errors": [
+                "Incorrect inequality handling",
+                "Validation of steps required"
+              ]
+            },
+            {
+              "type": "assert",
+              "claim": "2<2, which is a contradiction"
+            }
+          ]
+        }
+      },
+      {
+        "type": "conclude",
+        "statement": "\\therefore \\lim_{h \\to 0}f(h) \\text{ does not exist}"
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Validation of all steps in concluding 2 < 2"
+    }
+  ]
+}

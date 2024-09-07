@@ -1,0 +1,49 @@
+{
+  "type": "theorem",
+  "name": "Non-differentiability of Riemann integral",
+  "status": "wrong proof",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from [0,1] to R",
+      "property": "Riemann integrable"
+    },
+    {
+      "type": "let",
+      "variable": "F",
+      "kind": "function from [0,1] to R",
+      "property": "defined by $F(x) = \\int_{0}^{x} f(t) dt$"
+    }
+  ],
+  "conclusion": "The function $F$ is not differentiable at each $x \\in (0,1)$.",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "Given $f:[0,1] \\to \\mathbb{R}$ is Riemann integrable, I also have $F'(t) = f(t)$.",
+        "errors": [
+          "This statement is incorrect.  A Riemann integrable function need not be continuous, and its integral is not necessarily differentiable.  A counterexample is provided by a function with a jump discontinuity: the integral will have a corner at that point and thus not be differentiable."
+        ]
+      },
+      {
+        "type": "assume",
+        "statement": "$f$ is continuous over the interval $[0,1]$."
+      },
+      {
+        "type": "assert",
+        "claim": "$F'(t)$ can be assumed to be continuous over the same interval and hence $F$ can be said to be differentiable over the interval $(0,1)$.",
+        "deduced_from": {
+          "from_context": [
+            "Given $f:[0,1] \\to \\mathbb{R}$ is Riemann integrable, I also have $F'(t) = f(t)$.",
+            "$f$ is continuous over the interval $[0,1]$."
+          ]
+        }
+      }
+    ],
+    "errors": [
+      "The proof incorrectly assumes the continuity of  $f$. The fundamental theorem of calculus states that the derivative of the integral of a function is equal to the original function,  _provided that the function is continuous_. Since the theorem explicitly states that $f$ is Riemann integrable, not continuous, this assumption is not valid, and the conclusion does not follow."
+    ]
+  }
+}

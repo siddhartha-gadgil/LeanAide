@@ -1,0 +1,36 @@
+{
+  "type": "theorem",
+  "name": null,
+  "hypothesis": [
+    {
+      "type": "let",
+      "Variable": "\\mathscr{S}",
+      "Kind": "vector space",
+      "Property": "the vector space over $\\mathbb{R}$ of all real sequences (with usual addition and scalar multiplication of sequences)."
+    },
+    {
+      "type": "let",
+      "Variable": "W",
+      "Value": "\\left\\{\\left\\{x*{n}\\right\\}*{n \\in \\mathbb{N}} \\in \\mathscr{S}:\\left\\{x*{n}^{2}\\right\\}*{n \\in \\mathbb{N}} \\text { is convergent }\\right\\}",
+      "Kind": "set"
+    }
+  ],
+  "conclusion": "$W$ is not a subspace of $\\mathscr{S}$.",
+  "status": "wrong proof",
+  "errors": [
+    {
+      "type": "assert",
+      "claim": "$\\sum v_n^2$ and $\\sum w_n^2$ are convergent $\\implies \\sum v_n^2 + w_n^2$ is convergent and $\\sum v_n w_n$ are convergent.",
+      "errors": [
+        "The implication that $\\sum v_n w_n$ is convergent because $\\sum v_n^2$ and $\\sum w_n^2$ are convergent is not generally true."
+      ]
+    },
+    {
+      "type": "assert",
+      "claim": "As we cannot say anything about the convergence of $\\sum v_n w_n^2$, we cannot say anything about the convergence of $\\sum v_n^2 + w_n^2 + 2 v_n w_n^2 = \\sum (v_n + w_n)^2$.",
+      "errors": [
+        "While it's true that the convergence of  $\\sum v_n w_n^2$ is uncertain, this does not automatically mean $\\sum (v_n + w_n)^2$  cannot converge. There might be cases where it does converge."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "type": "theorem",
+  "name": "Continuity of \\( f(x) = x^{1 / 3} \\) at \\( x = 1 \\)",
+  "hypothesis": [
+    {
+      "type": "define",
+      "term": "continuity at \\(x=1\\)",
+      "statement": "$f$ is continuous at $x=1$ if for every $\\epsilon > 0$, there exists $\\delta > 0$ such that $|x - 1| < \\delta$ implies $|f(x) - f(1)| < \\epsilon$."
+    },
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from real numbers to real numbers",
+      "value": "$f(x) = x^{\\frac{1}{3}}$"
+    }
+  ],
+  "conclusion": "$f$ is continuous at $x=1$",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assume",
+        "statement": "$\\epsilon > 0$"
+      },
+      {
+        "type": "let",
+        "variable": "δ",
+        "value": "$\\min\\{1, \\epsilon^3, 3\\epsilon^2 + 3\\epsilon\\}$"
+      },
+      {
+        "type": "assume",
+        "statement": "$|x - 1| < δ$"
+      },
+      {
+        "type": "assert",
+        "claim": "$|f(x) - f(1)| < \\epsilon$",
+        "deduced_from": {
+          "known_results": [
+            "Monotonicity of $x^{\\frac{1}{3}}$"
+          ]
+        },
+        "calculation": [
+          {
+            "step": "$f(1) = 1$"
+          },
+          {
+            "step": "$|x - 1| < δ$"
+          },
+          {
+            "step": "$-δ + 1 < x < δ + 1$"
+          },
+          {
+            "step": "$x^{\\frac{1}{3}} < (δ + 1)^{\\frac{1}{3}}$"
+          },
+          {
+            "step": "$x^{\\frac{1}{3}} - 1 < (δ + 1)^{\\frac{1}{3}} - 1$"
+          },
+          {
+            "step": "$|x^{\\frac{1}{3}} - 1| < (δ + 1)^{\\frac{1}{3}} - 1$"
+          },
+          {
+            "step": "$|f(x) - f(1)| < (δ + 1)^{\\frac{1}{3}} - 1$"
+          },
+          {
+            "step": "$(δ + 1)^{\\frac{1}{3}} - 1 \\leq \\epsilon$",
+            "justification": "By choice of $δ$"
+          }
+        ],
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Prove that $(δ + 1)^{\\frac{1}{3}} - 1 \\leq \\epsilon$ using the choice of $δ$."
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "type": "theorem",
+  "name": null,
+  "status": "incomplete proof",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "\\mathscr{S}",
+      "kind": "vector space",
+      "property": "the vector space over $\\mathbb{R}$ of all real sequences (with usual addition and scalar multiplication of sequences)"
+    },
+    {
+      "type": "let",
+      "variable": "W",
+      "value": "$\\left\\{\\left\\{x_{n}\\right\\}_{n \\in \\mathbb{N}} \\in \\mathscr{S}:\\left\\{x_{n}^{2}\\right\\}_{n \\in \\mathbb{N}} \\text { is convergent }\\right\\}$",
+      "kind": "set"
+    }
+  ],
+  "conclusion": "W is not a subspace of $\\mathscr{S}$",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "To prove that $W$ is not a subspace, we need to show that it violates at least one of the subspace axioms."
+      },
+      {
+        "type": "remark",
+        "statement": "We will show that W is not closed under addition. "
+      },
+      {
+        "type": "assert",
+        "claim": "There exist sequences $\\left\\{x_n\\right\\}$ and $\\left\\{y_n\\right\\}$ in $W$ such that $\\left\\{x_n + y_n\\right\\}$ is not in $W$.",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Find sequences $\\left\\{x_n\\right\\}$ and $\\left\\{y_n\\right\\}$ such that $\\left\\{x_n^2\\right\\}$ and $\\left\\{y_n^2\\right\\}$ are convergent, but $\\left\\{(x_n+y_n)^2\\right\\}$ is not convergent"
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, $W$ is not closed under addition and hence not a subspace of $\\mathscr{S}$.",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Prove that if $\\left\\{x_n^2\\right\\}$ and $\\left\\{y_n^2\\right\\}$ are convergent, and  $\\left\\{(x_n+y_n)^2\\right\\}$ is not, then $W$ is not closed under addition"
+          }
+        ]
+      }
+    ]
+  }
+}

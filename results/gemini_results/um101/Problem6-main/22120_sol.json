@@ -1,0 +1,73 @@
+{
+  "type": "theorem",
+  "name": "Convergence of a Trigonometric Series",
+  "status": "wrong proof",
+  "hypothesis": [],
+  "conclusion": "The series $\\sum\\_{n=1}^{\\infty}\\left(\\sin \\frac{1}{n}\\right)^{3 / 2}$ is convergent.",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$0 \\leq \\frac{1}{n} \\leq 1$ $\\forall$ $n \\geq 1$",
+        "proof-method": "By definition"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\sin(0) \\leq \\frac{1}{n} \\leq \\sin(1)$",
+        "errors": [
+          "Applying sine to an inequality does not necessarily preserve the inequality."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$0 = \\sin(0) \\leq \\sin(\\frac{1}{n}) \\leq \\sin(1)$ $\\forall$ $n \\geq 1$",
+        "proof-method": "(sin is an increasing function)"
+      },
+      {
+        "type": "assert",
+        "claim": "$0 \\leq (\\sin(\\frac{1}{n}))^{3/2} \\leq (\\sin(1))^{3/2}$ $\\forall$ $n \\geq 1$",
+        "proof-method": "Taking both sides of inequality to power 3/2"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim_{n \\rightarrow \\infty} \\frac{1}{n} = 0$",
+        "proof-method": "Standard limit"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim_{n \\rightarrow \\infty} \\sin(\\frac{1}{n}) = \\sin(0) = 0$",
+        "deduced_from": {
+          "known_results": [
+            "Sequential character of continuity"
+          ]
+        },
+        "proof-method": "As $\\sin(x)$ is continuous"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim_{n \\rightarrow \\infty} (\\sin(\\frac{1}{n}))^{3/2} = 0^{3/2} = 0$",
+        "deduced_from": {
+          "known_results": [
+            "Sequential character of continuity"
+          ]
+        },
+        "proof-method": "($\\because$ $n^{3/2}$ is continuous)"
+      },
+      {
+        "type": "conclude",
+        "statement": "Hence, by some convergence test, the series converges.",
+        "errors": [
+          "The proof does not provide a valid convergence test. Showing the terms of a series converge to 0 is not sufficient to prove the convergence of the series.",
+          "The proof incorrectly applies the sine function to an inequality."
+        ],
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Find a valid convergence test to apply to the series and show that it satisfies the conditions of that test."
+          }
+        ]
+      }
+    ]
+  }
+}

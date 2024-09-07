@@ -1,0 +1,47 @@
+{
+  "type": "theorem",
+  "name": "Non-differentiability of a Riemann Integral",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from [0,1] to R",
+      "property": "Riemann integrable"
+    },
+    {
+      "type": "let",
+      "variable": "F",
+      "kind": "function from [0,1] to R",
+      "property": "given by $F(x) = \\int_{0}^{x} f(t) dt$"
+    }
+  ],
+  "conclusion": "The function $F$ is not differentiable at each $x \\in (0,1)$.",
+  "status": "wrong proof",
+  "errors": [
+    {
+      "type": "assert",
+      "claim": "The given function is $f(x) = \\begin{cases} \\frac{Y}{2} & x \\in [0, \\frac{1}{2}] \\\\ 1 & x \\in (\\frac{Y}{2}, 1] \\end{cases}$.",
+      "errors": [
+        "The proof assumes a specific form for $f(x)$ instead of arguing for a general Riemann integrable function."
+      ]
+    },
+    {
+      "type": "assert",
+      "claim": "$f(\\frac{1}{2})$ is not continuous at $x = \\frac{Y}{2}$.",
+      "errors": [
+        "There is a typographical error: $Y$ should likely be $1$. Additionally, the statement misuses terminology: a function, not its value at a point, can be discontinuous at a point."
+      ]
+    },
+    {
+      "type": "conclude",
+      "statement": "Therefore, $f(x)$ is not differentiable on $(\\infty, 1)$.",
+      "errors": [
+        "This conclusion is erroneous. The discontinuity of  $f$  at a point doesn't guarantee non-differentiability on the entire interval $(\\infty, 1)$. Moreover, the interval should be $(0,1)$ as per the theorem's statement."
+      ]
+    },
+    {
+      "type": "remark",
+      "statement": "No justification for discontinuity of F at $\\frac{1}{2}$ is given."
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "type": "theorem",
+  "name": "Nonexistence of Limit",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from (-1,1) to R"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\lim \\_{h \\rightarrow 0}|f(h)-f(-h)|=0$"
+    }
+  ],
+  "conclusion": "$\\lim \\_{h \\rightarrow 0} f(h)$ does not exist.",
+  "status": "wrong proof",
+  "errors": [
+    "The initial part of the proof attempts to manipulate the given limit to conclude  $\\lim_{h\\to 0}f(h)=f(h')$. This manipulation is incorrect and does not logically follow from the given limit.",
+    "The proof incorrectly uses $h'$ without defining it or establishing its relationship to $h$. It appears to treat $h'$ as both a constant and a variable, leading to erroneous conclusions.",
+    "The choice of $f(x) = \\frac{1}{|x|}$ is not valid because it does not satisfy the given condition $\\lim \\_{h \\rightarrow 0}|f(h)-f(-h)|=0$ for all $x$ in (-1,1). For instance, at $h=0$ the function is undefined."
+  ],
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We will prove this by contradiction."
+      },
+      {
+        "type": "contradiction",
+        "assumption": "$\\lim_{h\\to 0}f(h)$ exists and is equal to $l$",
+        "proof": {
+          "type": "proof",
+          "steps": [
+            {
+              "type": "let",
+              "variable": "$\\varepsilon$",
+              "value": "1"
+            },
+            {
+              "type": "assert",
+              "claim": "There exists a $\\delta < 1$ such that when $0<|h|<\\delta$,  $|f(h)-l|<1$",
+              "deduced_from": {
+                "known_results": [
+                  "Definition of limit"
+                ]
+              }
+            },
+            {
+              "type": "assert",
+              "claim": "There exists an $N\\in \\mathbb{N}$ excluding zero such that $N\\delta < \\frac{1}{|N|}<\\delta$",
+              "deduced_from": {
+                "known_results": [
+                  "Archimedean property of $\\mathbb{R}$"
+                ]
+              }
+            },
+            {
+              "type": "assert",
+              "claim": "$\\frac{-1}{N}<\\frac{1}{N+2}<\\frac{1}{N}<\\delta$",
+              "proof-method": "Similar to the previous step"
+            },
+            {
+              "type": "assert",
+              "claim": "$|f(\\frac{1}{N})-l|=|N-l|<1$ and $|f(\\frac{1}{N+2})-l|=|N+2-l|<1$",
+              "deduced_from": {
+                "from_context": [
+                  "There exists a $\\delta < 1$ such that when $0<|h|<\\delta$,  $|f(h)-l|<1$",
+                  "$\\frac{-1}{N}<\\frac{1}{N+2}<\\frac{1}{N}<\\delta$"
+                ]
+              }
+            },
+            {
+              "type": "assert",
+              "claim": "$2=|N+2-N|\\le|N+2-l + l-N|<2$",
+              "deduced_from": {
+                "known_results": [
+                  "Triangle inequality"
+                ],
+                "from_context": [
+                  "$|f(\\frac{1}{N})-l|=|N-l|<1$",
+                  "$|f(\\frac{1}{N+2})-l|=|N+2-l|<1$"
+                ]
+              }
+            },
+            {
+              "type": "conclude",
+              "statement": "The inequality $2<2$ is a contradiction.",
+              "errors": [
+                "While the steps leading to $2 < 2$ are flawed due to errors earlier in the proof, there is no inherent error in deriving this contradiction from the incorrect inequalities established before."
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, our assumption that $\\lim_{h\\to 0}f(h)$ exists is false, and hence the limit does not exist."
+      }
+    ]
+  }
+}

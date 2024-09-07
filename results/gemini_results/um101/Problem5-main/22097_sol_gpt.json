@@ -1,0 +1,79 @@
+{
+  "type": "theorem",
+  "name": "Continuity of $f(x) = x^{1/3}$ at $x=1$",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "value": "x^{1/3}",
+      "kind": "function"
+    },
+    {
+      "type": "assume",
+      "statement": "$x=1$"
+    }
+  ],
+  "conclusion": "$f(x)$ is continuous at $x=1$",
+  "status": "incomplete proof",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Complete the $\\epsilon-\\delta$ proof for continuity of $f(x)=x^{1/3}$ at $x=1$",
+      "solved": false
+    }
+  ],
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assume",
+        "statement": "Let $\\epsilon > 0$ be given."
+      },
+      {
+        "type": "let",
+        "variable": "y",
+        "kind": "real number",
+        "property": "$f(x)=x^{1/3}$"
+      },
+      {
+        "type": "assert",
+        "claim": "We need to find $\\delta > 0$ such that $0 < |x - 1| < \\delta$ implies $|x^{1/3} - 1| < \\epsilon$",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Find $\\delta$ in terms of $\\epsilon$",
+            "solved": false
+          }
+        ]
+      },
+      {
+        "type": "let",
+        "variable": "d",
+        "value": "$|x - 1|$",
+        "kind": "real number"
+      },
+      {
+        "type": "assert",
+        "claim": "$|x^{1/3} - 1| = |(1 + (x - 1))^{1/3} - 1|$",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Simplify the expression $|(1 + (x - 1))^{1/3} - 1|$",
+            "solved": false
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Thus, if we can find $\\delta$ such that $|(1 + (x - 1))^{1/3} - 1| < \\epsilon$, we are done.",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Complete the $\\epsilon-\\delta$ argument",
+            "solved": false
+          }
+        ]
+      }
+    ]
+  }
+}

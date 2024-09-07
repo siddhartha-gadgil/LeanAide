@@ -1,0 +1,43 @@
+{
+  "type": "theorem",
+  "name": "Convergence of the series",
+  "hypothesis": [],
+  "conclusion": "The series \\( \\sum_{n=1}^{\\infty}\\left(\\sin \\frac{1}{n}\\right)^{3/2} \\) is convergent.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "\\sin x \\approx x \\text{ for } x \\to 0",
+        "proof-method": "Taylor series expansion"
+      },
+      {
+        "type": "assert",
+        "claim": "\\left(\\sin \\frac{1}{n}\\right)^{3/2} \\approx \\left(\\frac{1}{n}\\right)^{3/2} \\text{ for large } n",
+        "deduced_from": {
+          "from_context": [
+            "\\sin x \\approx x \\text{ for } x \\to 0"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "The series \\( \\sum_{n=1}^{\\infty} n^{-3/2} \\) is convergent.",
+        "known_results": [
+          "p-series test with p > 1"
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "By comparison test, \\( \\sum_{n=1}^{\\infty}\\left(\\sin \\frac{1}{n}\\right)^{3/2} \\) is convergent.",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Rigorous justification of the comparison between \\( \\left(\\sin \\frac{1}{n}\\right)^{3/2} \\) and \\( n^{-3/2} \\)."
+          }
+        ]
+      }
+    ]
+  }
+}

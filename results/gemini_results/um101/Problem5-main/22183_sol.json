@@ -1,0 +1,98 @@
+{
+  "type": "theorem",
+  "name": "Continuity of Cube Root at x=1",
+  "hypothesis": [],
+  "conclusion": "The function $f(x) = x^{1/3}$ is continuous at $x = 1$.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "f(x)",
+        "value": "$x^{\\frac{1}{3}}$",
+        "kind": "function"
+      },
+      {
+        "type": "assert",
+        "claim": "$f(1) = 1$",
+        "proof-method": "Direct calculation",
+        "calculation": [
+          "$f(1) = (1)^{\\frac{1}{3}} = 1$"
+        ]
+      },
+      {
+        "type": "assume",
+        "statement": "$f$ is continuous at $x = 1$"
+      },
+      {
+        "type": "remark",
+        "statement": "Beginning the epsilon-delta proof."
+      },
+      {
+        "type": "let",
+        "variable": "$\\epsilon$",
+        "kind": "real number",
+        "property": "$\\epsilon > 0$"
+      },
+      {
+        "type": "let",
+        "variable": "$\\delta$",
+        "value": "$\\text{min}\\{1, \\epsilon^3, 3\\epsilon^2 + 3\\epsilon\\}$"
+      },
+      {
+        "type": "assume",
+        "statement": "$|x - 1| < \\delta$"
+      },
+      {
+        "type": "assert",
+        "claim": "$-s + 1 < x < s + 1$",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "The variable 's' appears without definition. Determine how 's' relates to $\\delta$ or other quantities.",
+            "solved": false
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$x^{\\frac{1}{3}} < (s + 1)^{\\frac{1}{3}}$",
+        "proof-method": "Since $x^{\\frac{1}{3}}$ is increasing"
+      },
+      {
+        "type": "assert",
+        "claim": "$x^{\\frac{1}{3}} - 1 < (s + 1)^{\\frac{1}{3}} - 1 < (\\epsilon^3 + 3\\epsilon^2 + 3\\epsilon + 1)^{\\frac{1}{3}} - 1$",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Justify the second inequality: how does $(s + 1)$ relate to $(\\epsilon^3 + 3\\epsilon^2 + 3\\epsilon + 1)^{\\frac{1}{3}}$?",
+            "solved": false
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$|x^{\\frac{1}{3}} - 1| < |(s + 1)^{\\frac{1}{3}} - 1| < |(\\epsilon^3 + 3\\epsilon^2 + 3\\epsilon + 1)^{\\frac{1}{3}} - 1|$"
+      },
+      {
+        "type": "assert",
+        "claim": "$|f(x) - f(1)| < (\\epsilon + 1)^{\\frac{3}{3}} - 1$",
+        "errors": [
+          "The right-hand side of the inequality should be derived from the previous step, which involved  $|(\\epsilon^3 + 3\\epsilon^2 + 3\\epsilon + 1)^{\\frac{1}{3}} - 1|$. It appears an incorrect simplification was made."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$|f(x) - f(1)| < \\epsilon$"
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "The proof needs to demonstrate that given any $\\epsilon > 0$, the choice of $\\delta$ ensures $|f(x) - f(1)| < \\epsilon$ whenever $|x - 1| < \\delta$. Currently, there are errors and gaps in the argument.",
+      "solved": false
+    }
+  ]
+}

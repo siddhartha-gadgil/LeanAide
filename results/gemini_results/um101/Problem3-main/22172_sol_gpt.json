@@ -1,0 +1,157 @@
+{
+  "type": "theorem",
+  "name": "Non-differentiability of \\(F(x)\\)",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function",
+      "property": "Riemann integrable",
+      "value": "$f:[0,1] \\rightarrow \\mathbb{R}$"
+    }
+  ],
+  "conclusion": "The function $F:[0,1] \\rightarrow \\mathbb{R}$ given by $F(x) = \\int_{0}^{x} f(t) dt$ is not differentiable at each $x \\in (0,1)$.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "f",
+        "value": "$\\begin{cases} 0, & x \\in [0,\\frac{1}{2}) \\ 1, & x \\in [\\frac{1}{2},1] \\end{cases}$",
+        "kind": "step function"
+      },
+      {
+        "type": "assert",
+        "claim": "$f$ is a Riemann integrable step function."
+      },
+      {
+        "type": "assert",
+        "claim": "$f|_{[0,x)}$ is also a step function for $x \\in [0,\\frac{1}{2})$",
+        "deduced_from": {
+          "from_context": [
+            "Let f …",
+            "f is a step function."
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$\\int_{0}^{x} f(t) dt = 0$ if $x \\in [0,\\frac{1}{2})$",
+        "deduced_from": {
+          "from_context": [
+            "Let f …"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$\\int_{0}^{x} f(t) dt = x - \\frac{1}{2}$ if $x \\in (\\frac{1}{2},1]$",
+        "deduced_from": {
+          "from_context": [
+            "Let f …"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$F(x) = \\begin{cases} 0, & x \\in [0,\\frac{1}{2}) \\ x - \\frac{1}{2}, & x \\in [\\frac{1}{2},1] \\end{cases}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$F$ is not differentiable at $x = \\frac{1}{2}$",
+        "deduced_from": {
+          "from_context": [
+            "Let f …",
+            "Calculation steps"
+          ]
+        },
+        "proof-method": "By showing that the limit does not exist."
+      },
+      {
+        "type": "contradiction",
+        "assumption": "Suppose $\\lim_{x \\to \\frac{1}{2}} \\frac{F(x) - F(\\frac{1}{2})}{x - \\frac{1}{2}}$ exists.",
+        "proof": {
+          "type": "proof",
+          "steps": [
+            {
+              "type": "assert",
+              "claim": "Then there exists $L \\in \\mathbb{R}$ such that for all $\\epsilon > 0$, there exists $\\delta > 0$ such that $0 < |x - \\frac{1}{2}| < \\delta \\implies |\\frac{F(x) - F(\\frac{1}{2})}{x - \\frac{1}{2}} - L| < \\epsilon$."
+            },
+            {
+              "type": "assume",
+              "statement": "Let $\\epsilon = \\frac{1}{2}$."
+            },
+            {
+              "type": "assert",
+              "claim": "By Archimedean property, there exists $N \\in \\mathbb{N}$ such that $0 < \\frac{1}{N} < \\delta$."
+            },
+            {
+              "type": "assert",
+              "claim": "For $n \\geq N$, $\\frac{1}{n \\frac{1}{2}} \\leq \\frac{1}{2} = \\epsilon$."
+            },
+            {
+              "type": "assert",
+              "claim": "$|F(\\frac{1}{2} + \\frac{1}{n}) - 1| = |\\frac{1}{1 + \\frac{2}{n}} - 1| \\leq \\frac{2}{n + 2} < \\epsilon = \\frac{1}{2}$.",
+              "deduced_from": {
+                "from_context": [
+                  "\\frac{F(x) - F(\\frac{1}{2})}{x - \\frac{1}{2}}",
+                  "Let $\\epsilon = \\frac{1}{2}$ …"
+                ]
+              }
+            },
+            {
+              "type": "assert",
+              "claim": "$|F(\\frac{1}{2} - \\frac{1}{n}) - 1| = |\\frac{1}{1 - \\frac{2}{n}} - 1| = |\\frac{-1}{1 - \\frac{2}{n}}| \\leq \\frac{2}{n - 2} < \\epsilon = \\frac{1}{2}$.",
+              "deduced_from": {
+                "from_context": [
+                  "\\frac{F(x) - F(\\frac{1}{2})}{x - \\frac{1}{2}}",
+                  "Let $\\epsilon = \\frac{1}{2}$ …"
+                ]
+              }
+            },
+            {
+              "type": "assert",
+              "claim": "Thus, $1 = |(1 + L) - (L - 1)| \\leq |1 + L| + |1 - L| \\leq \\epsilon + \\epsilon = 2\\epsilon = 1$, leading to $1 < 1$, a contradiction.",
+              "errors": [
+                {
+                  "description": "Misinterpretation in the final argument leading to contradiction."
+                }
+              ]
+            },
+            {
+              "type": "conclude",
+              "statement": "$\\lim_{x \\to \\frac{1}{2}} \\frac{F(x) - F(\\frac{1}{2})}{x - \\frac{1}{2}}$ does not exist.",
+              "errors": [
+                {
+                  "description": "The proof contains errors and is incomplete."
+                }
+              ]
+            },
+            {
+              "type": "conclude",
+              "statement": "$F$ is not differentiable at $x = \\frac{1}{2}$."
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Verify the steps in proving that $\\lim_{x \\to \\frac{1}{2}} \\frac{F(x) - F(\\frac{1}{2})}{x - \\frac{1}{2}}$ does not exist.",
+      "solved": false
+    },
+    {
+      "type": "problem",
+      "statement": "Generalize the proof to show that $F$ is not differentiable at any $x \\in (0,1)$.",
+      "solved": false
+    }
+  ],
+  "errors": [
+    {
+      "description": "The proof is incomplete and contains errors in the argument related to limits and contradiction."
+    }
+  ]
+}

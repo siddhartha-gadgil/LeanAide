@@ -1,0 +1,117 @@
+{
+  "type": "theorem",
+  "name": "Theorem",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function",
+      "property": "Riemann integrable on $[0,1]$"
+    },
+    {
+      "type": "let",
+      "variable": "F",
+      "value": "$F(x) = \\int_0^x f(t) \\, dt$",
+      "kind": "function"
+    }
+  ],
+  "conclusion": "$F$ is not differentiable at each $x \\in (0,1)$",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "F",
+        "value": "$\\begin{cases} 0 & 0 \\le x \\le \\frac{1}{2} \\\\ 1 & \\frac{1}{2} < x \\le 1 \\end{cases}$",
+        "kind": "function"
+      },
+      {
+        "type": "assert",
+        "claim": "$f$ is Riemann integrable on $[0,1]$ as it is bounded by 1",
+        "proof-method": "bounded function implies Riemann integrable on a closed interval"
+      },
+      {
+        "type": "assert",
+        "claim": "$F(x) = \\int_0^x f(t) \\, dt$",
+        "proof-method": "definition of $F$"
+      },
+      {
+        "type": "assert",
+        "claim": "$F(x) = \\begin{cases} \\int_0^x 0 \\, dt = 0 & 0 \\le x \\le \\frac{1}{2} \\\\ \\int_0^{\\frac{1}{2}} 0 \\, dt +  \\int_{\\frac{1}{2}}^x 1 \\, dt = x - \\frac{1}{2} & \\frac{1}{2} < x \\le 1 \\end{cases}$",
+        "proof-method": "splitting the limits of integration"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\int_{\\frac{1}{2}}^1 f \\, dt = G(b) - G(a)$ where $G(x) = x$",
+        "proof-method": "Second Fundamental Theorem of Calculus"
+      },
+      {
+        "type": "assert",
+        "claim": "Since $f$ is RI on $[\\frac{1}{2}, x]$ for $\\frac{1}{2} \\le x \\le 1$, $\\int_{\\frac{1}{2}}^1 1 \\, dt = x - \\frac{1}{2}$",
+        "proof-method": "integrating constant function"
+      },
+      {
+        "type": "assert",
+        "claim": "$F(x) = \\begin{cases} 0 & 0 \\le x \\le \\frac{1}{2} \\\\ x - \\frac{1}{2} & \\frac{1}{2} < x \\le 1 \\end{cases}$",
+        "proof-method": "combining results"
+      },
+      {
+        "type": "assert",
+        "claim": "$F$ is not differentiable at $x = \\frac{1}{2}$",
+        "proof-method": "proof by contradiction"
+      },
+      {
+        "type": "assume",
+        "statement": "Assume $F$ is differentiable at $x = \\frac{1}{2}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim_{h \\to 0} \\frac{F(\\frac{1}{2} + h) - F(\\frac{1}{2})}{h}$ exists",
+        "proof-method": "definition of differentiability"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim_{h \\to 0^+} \\frac{F(\\frac{1}{2} + h) - F(\\frac{1}{2})}{h}$",
+        "proof-method": "right-hand limit"
+      },
+      {
+        "type": "assert",
+        "claim": "$F(\\frac{1}{2}) = 0$",
+        "proof-method": "direct evaluation"
+      },
+      {
+        "type": "assert",
+        "claim": "When $h < 0$, $F(\\frac{1}{2} + h) = 0$ for $h > -\\frac{1}{2}$",
+        "proof-method": "definition of $F$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim_{h \\to 0^-} \\frac{F(\\frac{1}{2} + h) - F(\\frac{1}{2})}{h} = \\lim_{h \\to 0^-} \\frac{0}{h} = 0$",
+        "proof-method": "definition of $F$"
+      },
+      {
+        "type": "assert",
+        "claim": "When $h > 0$ and $h \\le \\frac{1}{2}$, $F(\\frac{1}{2} + h) = h$",
+        "proof-method": "definition of $F$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim_{h \\to 0^+} \\frac{F(\\frac{1}{2} + h) - F(\\frac{1}{2})}{h} = \\lim_{h \\to 0^+} \\frac{h}{h} = 1$",
+        "proof-method": "direct calculation"
+      },
+      {
+        "type": "assert",
+        "claim": "$0 \\ne 1$, so $\\lim_{h \\to 0^-} \\frac{F(\\frac{1}{2} + h) - F(\\frac{1}{2})}{h} \\ne \\lim_{h \\to 0^+} \\frac{F(\\frac{1}{2} + h) - F(\\frac{1}{2})}{h}$",
+        "proof-method": "comparison of left and right limits"
+      },
+      {
+        "type": "conclude",
+        "statement": "$F$ is not differentiable at $x = \\frac{1}{2}$"
+      }
+    ],
+    "errors": [
+      "The counterexample used to disprove the statement only shows non-differentiability at $x = \\frac{1}{2}$, not for all $x \\in (0,1)$."
+    ]
+  }
+}

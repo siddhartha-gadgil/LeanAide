@@ -1,0 +1,40 @@
+{
+  "type": "theorem",
+  "name": null,
+  "status": "wrong proof",
+  "hypothesis": [
+    {
+      "type": "let",
+      "Variable": "f",
+      "Kind": "function from (-1,1) to R"
+    },
+    {
+      "type": "assume",
+      "Statement": "$\\lim \\_{h \\rightarrow 0}|f(h)-f(-h)|=0$"
+    }
+  ],
+  "conclusion": "$\\lim \\_{h \\rightarrow 0} f(h)$ does not exist.",
+  "errors": [
+    {
+      "type": "assert",
+      "claim": "$\\lim_{h \\to 0} f(h)$ may exist, but the function needn't be continuous at 0.",
+      "errors": [
+        "This statement does not contribute to the proof and is irrelevant. The existence of the limit at 0 does not guarantee continuity at 0, but this is not the objective of the proof."
+      ]
+    },
+    {
+      "type": "assert",
+      "claim": "$\\lim_{h \\to 0} |f(h) - f(-h)| = 0$",
+      "errors": [
+        "This statement is just restating the assumption given in the theorem and does not constitute a step in the proof."
+      ]
+    },
+    {
+      "type": "assert",
+      "claim": "from definition, $\\forall \\epsilon > 0$, $\\exists \\delta > 0$, $\\ni$ $f(h) < \\delta$ when $|h| < \\delta$",
+      "errors": [
+        "This is an incorrect application of the definition of a limit. The definition should be applied to $|f(h)-f(-h)|$ rather than $f(h)$. Additionally, the conclusion should involve $|f(h)-f(-h)|$ being less than $\\epsilon$, not $f(h)$ being less than $\\delta$."
+      ]
+    }
+  ]
+}

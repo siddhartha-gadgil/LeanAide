@@ -1,0 +1,95 @@
+{
+  "type": "theorem",
+  "name": "Continuity of x^(1/3) at x=1",
+  "hypothesis": [],
+  "conclusion": "The function $f(x) = x^{1/3}$ is continuous at $x = 1$",
+  "status": "incomplete proof",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Find an appropriate value for $\\delta > 0$ such that the proof holds.",
+      "solved": false
+    }
+  ],
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "<anonymous>",
+        "property": "$\\epsilon > 0$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{7}{3} \\epsilon \\delta > 0$",
+        "errors": [
+          "This statement is not relevant to the proof and the relationship between $\\delta$ and $\\epsilon$ is not yet established."
+        ]
+      },
+      {
+        "type": "let",
+        "variable": "<anonymous>",
+        "property": "$0 < |x - 1| < \\delta$"
+      },
+      {
+        "type": "assert",
+        "claim": "$|f(x) - f(1)| = \\left| \\frac{x - 1}{x^{2/3} + x^{1/3} + 1} \\right|$",
+        "proof-method": "Algebraic manipulation"
+      },
+      {
+        "type": "assert",
+        "claim": "$x^{2/3} + x^{1/3} + 1 \\neq 0$ for all $x \\in \\mathbb{R}$",
+        "proof-method": "By inspection"
+      },
+      {
+        "type": "assert",
+        "claim": "$|f(x) - f(1)| < \\frac{\\delta \\epsilon}{|x^{2/3} + x^{1/3} + 1|}$",
+        "errors": [
+          "This inequality is introduced without justification. It is unclear how it follows from the previous steps."
+        ]
+      },
+      {
+        "type": "assume",
+        "statement": "$0 < |x - 1| < \\delta \\le \\frac{1}{2}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$ \\frac{1}{4} < x^{2/3} + 1 < 5$",
+        "proof-method": "Using $\\frac{1}{2} < x < \\frac{3}{2}$ from previous step and manipulating inequalities"
+      },
+      {
+        "type": "assert",
+        "claim": "$ \\frac{3}{4} < x^{2/3} + x^{1/3} + 1 < \\frac{18}{4}$",
+        "proof-method": "Adding $x^{1/3}$ and using bounds from previous steps"
+      },
+      {
+        "type": "assert",
+        "claim": "$ \\frac{4}{18} < \\frac{1}{x^{2/3} + x^{1/3} + 1} < \\frac{4}{3}$",
+        "proof-method": "Taking reciprocals"
+      },
+      {
+        "type": "assert",
+        "claim": "$0 < \\frac{\\delta \\epsilon}{x^{2/3} + x^{1/3} + 1} < \\frac{4 \\delta \\epsilon}{3}$",
+        "proof-method": "Multiplying by $\\delta \\epsilon$"
+      },
+      {
+        "type": "assert",
+        "claim": "$|f(x) - f(1)| < \\frac{4 \\delta \\epsilon}{3} = \\epsilon$",
+        "errors": [
+          "The equality $\\frac{4 \\delta \\epsilon}{3} = \\epsilon$ is not justified and depends on the choice of $\\delta$ which is yet to be determined."
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Since $\\epsilon > 0$ was arbitrary, $f$ is continuous at $x = 1$",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "The proof needs to demonstrate how to choose $\\delta$ in terms of $\\epsilon$ to ensure that $|f(x) - f(1)| < \\epsilon$ whenever $0 < |x - 1| < \\delta$.",
+            "solved": false
+          }
+        ]
+      }
+    ]
+  }
+}

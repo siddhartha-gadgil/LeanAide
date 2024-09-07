@@ -1,0 +1,79 @@
+{
+  "type": "theorem",
+  "name": "Differentiability of integral function",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "Riemann integrable function",
+      "property": "$f:[0,1] \\rightarrow \\mathbb{R}$"
+    },
+    {
+      "type": "let",
+      "variable": "F",
+      "value": "$\\int_{0}^{x} f(t) dt$",
+      "kind": "function",
+      "property": "$F:[0,1] \\rightarrow \\mathbb{R}$"
+    }
+  ],
+  "conclusion": "The function $F$ is not differentiable at each $x \\in (0,1)$.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "<anonymous>",
+        "value": "$f(x) = \\begin{cases} \\frac{Y}{2} & x \\in [0, \\frac{1}{2}] \\\\ 1 & x \\in (\\frac{Y}{2}, 1] \\end{cases}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$F(x) = \\int_{0}^{x} \\frac{Y}{2} dt$ for $x \\leq \\frac{Y}{2}$",
+        "calculation": [
+          "$F(x) = \\int_{0}^{x} \\frac{Y}{2} dt = \\frac{Y}{2} x$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$F(x) = \\int_{0}^{\\frac{Y}{2}} \\frac{Y}{2} dt + \\int_{\\frac{1}{2}}^{x} 1 dt$ for $x > \\frac{Y}{2}$",
+        "calculation": [
+          "$F(x) = \\frac{Y}{2} \\cdot \\frac{Y}{2} + \\int_{\\frac{1}{2}}^{x} 1 dt = \\frac{Y^2}{4} + (x - \\frac{1}{2})$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$f(\\frac{1}{2})$ is not continuous at $x = \\frac{Y}{2}$",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Justify why $f(\\frac{1}{2})$ is not continuous at $x = \\frac{Y}{2}$."
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$f(x)$ is not differentiable on $(\\infty, 1)$",
+        "errors": [
+          "The interval $(\\infty, 1)$ is incorrect. It should be noted that we are considering the interval $(0,1)$.",
+          "The proof provided is incomplete and lacks justification for the claim of non-differentiability of $F$ on $(0,1)$."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "No justification for discontinuity of $F$ at $\\frac{1}{2}$ is given.",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Provide justification for the discontinuity of $F$ at $\\frac{1}{2}$."
+          }
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Complete the proof that $F$ is not differentiable at each $x \\in (0,1)$, ensuring to correctly justify all assertions."
+    }
+  ]
+}

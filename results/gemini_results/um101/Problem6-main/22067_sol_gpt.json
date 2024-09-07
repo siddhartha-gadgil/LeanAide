@@ -1,0 +1,76 @@
+{
+  "type": "theorem",
+  "name": "Convergence of Series",
+  "hypothesis": [],
+  "conclusion": "The series $\\sum_{n=1}^{\\infty}(\\sin \\frac{1}{n})^{3 / 2}$ is convergent.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\lim_{n\\to\\infty}(\\sin(\\frac{1}{n}))^{\\frac{3}{2}} = 0$",
+        "proof-method": "limit evaluation"
+      },
+      {
+        "type": "assume",
+        "statement": "$0 < \\sin(\\frac{1}{n}) < \\frac{1}{n}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$(\\sin(\\frac{1}{n}))^{\\frac{3}{2}} < (\\frac{1}{n})^{\\frac{3}{2}}$",
+        "deduced_from": {
+          "from_context": [
+            "$0 < \\sin(\\frac{1}{n}) < \\frac{1}{n}$"
+          ],
+          "known_results": []
+        },
+        "proof-method": "raising both sides to the power of $\\frac{3}{2}$"
+      },
+      {
+        "type": "assume",
+        "statement": "$\\sum_{n=1}^{\\infty} \\frac{1}{n^2}$ is convergent"
+      },
+      {
+        "type": "assert",
+        "claim": "$0< (\\sin(\\frac{1}{n}))^{\\frac{3}{2}} < \\frac{1}{n^2}$",
+        "deduced_from": {
+          "from_context": [
+            "$0 < \\sin(\\frac{1}{n}) < \\frac{1}{n}$",
+            "$(\\sin(\\frac{1}{n}))^{\\frac{3}{2}} < (\\frac{1}{n})^{\\frac{3}{2}}$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "By comparison test, $\\sum_{n=1}^{\\infty} (\\sin(\\frac{1}{n}))^{\\frac{3}{2}}$ converges.",
+        "deduced_from": {
+          "from_context": [
+            "$0< (\\sin(\\frac{1}{n}))^{\\frac{3}{2}} < \\frac{1}{n^2}$"
+          ],
+          "known_results": [
+            "$\\sum_{n=1}^{\\infty} \\frac{1}{n^2}$ converges"
+          ]
+        },
+        "proof-method": "comparison test"
+      },
+      {
+        "type": "conclude",
+        "statement": "$\\sum_{n=1}^{\\infty} (\\sin(\\frac{1}{n}))^{\\frac{3}{2}}$ is a convergent series.",
+        "missing": []
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Justify why $\\lim_{n\\to\\infty}(\\sin(\\frac{1}{n}))^{\\frac{3}{2}} = 0$.",
+      "solved": false
+    },
+    {
+      "type": "problem",
+      "statement": "Justify the assumption $0 < \\sin(\\frac{1}{n}) < \\frac{1}{n}$ for all $n \\geq 0$.",
+      "solved": false
+    }
+  ]
+}

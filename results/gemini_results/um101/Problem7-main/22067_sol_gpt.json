@@ -1,0 +1,79 @@
+{
+  "type": "theorem",
+  "name": "Series Convergence Theorem",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "The series $\\sum\\limits_{n=1}^\\infty (-1)^n \\frac{(n+1)^{32}}{n!}$ is given."
+    }
+  ],
+  "conclusion": "The series $\\sum\\limits_{n=1}^\\infty (-1)^n \\frac{(n+1)^{32}}{n!}$ is convergent.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "$a_n$",
+        "value": "$(-1)^n \\frac{(n+1)^{32}}{n!}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$|a_n| = \\frac{(n+1)^{32}}{n!}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim\\limits_{n \\to \\infty} \\frac{a_{n+1}}{a_n} = \\lim\\limits_{n \\to \\infty} \\frac{\\frac{((n+1)+1)^{32}}{(n+1)!}}{\\frac{(n+1)^{32}}{n!}} = \\lim\\limits_{n \\to \\infty} \\frac{(n+2)^{32}}{(n+1)^{32}} \\cdot \\frac{n!}{(n+1)!} = \\lim\\limits_{n \\to \\infty} \\frac{(n+2)^{32}}{(n+1)^{32}} \\cdot \\frac{1}{n+1}$",
+        "deduced_from": {
+          "From_context": [],
+          "Known_results": [
+            "Factorial properties"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim\\limits_{n \\to \\infty} \\left(\\frac{n+2}{n+1}\\right)^{32} \\times \\frac{1}{n+1} = \\lim\\limits_{n \\to \\infty} \\left(1 + \\frac{1}{n+1}\\right)^{32} \\times \\frac{1}{n+1}$",
+        "deduced_from": {
+          "From_context": [],
+          "Known_results": [
+            "Simplification of fractions"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim\\limits_{n \\to \\infty} \\left(1 + \\frac{1}{n}\\right)^{32} \\times \\frac{1}{n+1} = \\lim\\limits_{n \\to \\infty} \\frac{(1 + \\frac{1}{n})^{32}}{(1 + \\frac{1}{n})^{32}} \\times \\lim\\limits_{n \\to \\infty} \\frac{1}{n+1} = 0$",
+        "deduced_from": {
+          "From_context": [],
+          "Known_results": [
+            "Limits of sequences"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$\\sum\\limits_{n=1}^\\infty |a_n|$ converges.",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Show that the above limit calculation is correct and rigorously conclude that $\\sum\\limits_{n=1}^\\infty \\frac{(n+1)^{32}}{n!}$ converges absolutely."
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "$\\sum\\limits_{n=1}^\\infty a_n$ converges."
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Verify the absolute convergence of $\\sum\\limits_{n=1}^\\infty \\frac{(n+1)^{32}}{n!}$ rigorously."
+    }
+  ],
+  "errors": [
+    "Incorrect conclusion that $a_n$ converges absolutely from the limit calculation."
+  ]
+}

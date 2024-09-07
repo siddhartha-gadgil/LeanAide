@@ -1,0 +1,78 @@
+{
+  "type": "theorem",
+  "name": "Convergence of a Trigonometric Series",
+  "hypothesis": [],
+  "conclusion": "The series $\\sum\\limits_{n=1}^{\\infty}\\left(\\sin \\frac{1}{n}\\right)^{3 / 2}$ is convergent.",
+  "status": "incomplete proof",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Show that  $0 < \\frac{\\sin{x}}{x} < 1$ $\\forall x \\in (0, \\frac{\\pi}{2})$.",
+      "solved": false
+    }
+  ],
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We will use the fact that $0 < \\frac{\\sin{x}}{x} < 1$ $\\forall x \\in (0, \\frac{\\pi}{2})$ and the comparison test to prove the convergence."
+      },
+      {
+        "type": "let",
+        "variable": "n",
+        "kind": "element of",
+        "value": "\\mathbb{N}",
+        "property": "such that $n \\ge 1$"
+      },
+      {
+        "type": "assert",
+        "claim": "$0 < \\frac{1}{n} \\le 1 < \\frac{\\pi}{2}$",
+        "proof-method": "follows from the properties of the natural numbers and the fact that  $\\pi > 2$"
+      },
+      {
+        "type": "assert",
+        "claim": "$0 < \\frac{\\sin(\\frac{1}{n})}{\\frac{1}{n}} < 1$",
+        "deduced_from": {
+          "from_context": [
+            "$0 < \\frac{\\sin{x}}{x} < 1$ $\\forall x \\in (0, \\frac{\\pi}{2})$",
+            "$0 < \\frac{1}{n}  < \\frac{\\pi}{2}$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$0 < \\sin(\\frac{1}{n}) < \\frac{1}{n}$",
+        "errors": [
+          "Incorrect deduction: Multiplying the inequality  $0 < \\frac{\\sin(\\frac{1}{n})}{\\frac{1}{n}} < 1$ by $\\frac{1}{n}$ gives $0 < \\sin(\\frac{1}{n}) < \\frac{1}{n}$ only if we know $\\frac{1}{n} > 0$. While this is true in this case, it is not explicitly stated."
+        ],
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Establish that $\\frac{1}{n} > 0$",
+            "solved": false
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$0 < (\\sin{\\frac{1}{n}})^{3/2} < (\\frac{1}{n})^{3/2} = \\frac{1}{n^{3/2}}$",
+        "proof-method": "follows from the previous inequality and the fact that all terms are positive"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\forall n \\ge 1$, $0 < (\\sin{\\frac{1}{n}})^{3/2} < \\frac{1}{n^{3/2}}$",
+        "proof-method": "generalizing the previous result for all n"
+      },
+      {
+        "type": "assert",
+        "claim": "The series $\\sum\\limits_{n=1}^\\infty \\frac{1}{n^{3/2}}$ converges",
+        "proof-method": "p-series test as $\\frac{3}{2} > 1$"
+      },
+      {
+        "type": "conclude",
+        "statement": "Thus, by comparison test, the series $\\sum\\limits_{n=1}^\\infty (\\sin(\\frac{1}{n}))^{3/2}$ also converges."
+      }
+    ]
+  }
+}

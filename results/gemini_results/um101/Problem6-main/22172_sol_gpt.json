@@ -1,0 +1,68 @@
+{
+  "type": "theorem",
+  "name": "Convergence of Series",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$0 < \\frac{\\sin{x}}{x} < 1$ for all $x \\in (0, \\frac{\\pi}{2})$"
+    },
+    {
+      "type": "let",
+      "variable": "n",
+      "kind": "natural number",
+      "property": "$n \\geq 1$"
+    }
+  ],
+  "conclusion": "The series $\\sum_{n=1}^{\\infty}(\\sin \\frac{1}{n})^{3 / 2}$ is convergent.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$0 < \\frac{1}{n} \\leq 1 < \\frac{\\pi}{2}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$0 < \\frac{\\sin(\\frac{1}{n})}{\\frac{1}{n}} < 1$"
+      },
+      {
+        "type": "assert",
+        "claim": "$0 < \\sin(\\frac{1}{n}) < \\frac{1}{n}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$0 < (\\sin{\\frac{1}{n}})^{3/2} < (\\frac{1}{n})^{3/2} = \\frac{1}{n^{3/2}}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\sum_{n=1}^{\\infty} \\frac{1}{n^{3/2}}$ converges",
+        "deduced_from": {
+          "known_results": [
+            "The p-series $\\sum_{n=1}^{\\infty} \\frac{1}{n^p}$ converges if $p > 1$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "By the comparison test, $\\sum_{n=1}^{\\infty} (\\sin(\\frac{1}{n}))^{3/2}$ converges",
+        "deduced_from": {
+          "from_context": [
+            "$0 < (\\sin{\\frac{1}{n}})^{3/2} < \\frac{1}{n^{3/2}}$",
+            "$\\sum_{n=1}^{\\infty} \\frac{1}{n^{3/2}}$ converges"
+          ]
+        }
+      },
+      {
+        "type": "conclude",
+        "statement": "Thus, the series $\\sum_{n=1}^{\\infty} (\\sin(\\frac{1}{n}))^{3/2}$ converges",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Justify the step that $0 < \\frac{\\sin(\\frac{1}{n})}{\\frac{1}{n}} < 1$ implies $0 < \\sin(\\frac{1}{n}) < \\frac{1}{n}$"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "type": "theorem",
+  "name": "Convergence of Series",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$\\lim_{n \\to \\infty} Y_n = 0$"
+    },
+    {
+      "type": "assume",
+      "statement": "$0 < Y_n \\leq 1 < \\frac{\\pi}{2}$"
+    }
+  ],
+  "conclusion": "The series $\\sum_{n=1}^{\\infty}\\left(\\sin \\frac{1}{n}\\right)^{3 / 2}$ is convergent.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\lim_{n \\to \\infty} \\sin(Y_n) = 0$",
+        "deduced_from": {
+          "from_context": [
+            "$\\lim_{n \\to \\infty} Y_n = 0$"
+          ],
+          "known_results": [
+            "Continuity of $\\sin$ function"
+          ]
+        },
+        "proof-method": "By continuity of $\\sin$ function"
+      },
+      {
+        "type": "assert",
+        "claim": "$0 < \\sin(Y_n) < 1$",
+        "deduced_from": {
+          "from_context": [
+            "$0 < Y_n \\leq 1 < \\frac{\\pi}{2}$"
+          ]
+        },
+        "proof-method": "Since $\\sin$ is monotonic and bounded in the interval"
+      },
+      {
+        "type": "assert",
+        "claim": "The series $\\sum_{n=1}^{\\infty} (\\sin Y_n)^{3/2}$ is convergent",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Justify why the series $\\sum_{n=1}^{\\infty} (\\sin Y_n)^{3/2}$ is convergent"
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "The series $\\sum_{n=1}^{\\infty}\\left(\\sin \\frac{1}{n}\\right)^{3 / 2}$ is convergent",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Complete the argument for the convergence of $\\sum_{n=1}^{\\infty} (\\sin Y_n)^{3/2}$"
+          }
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Complete the convergence proof for the series $\\sum_{n=1}^{\\infty}\\left(\\sin \\frac{1}{n}\\right)^{3 / 2}$"
+    }
+  ],
+  "errors": [
+    {
+      "statement": "Proof is missing critical steps to establish the convergence of the series."
+    }
+  ]
+}

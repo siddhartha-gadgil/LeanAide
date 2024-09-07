@@ -1,0 +1,67 @@
+{
+  "type": "theorem",
+  "name": "Non-existence of limit",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "value": "f: (-1,1) \\to \\mathbb{R}",
+      "kind": "function",
+      "property": "such that \\lim_{h \\to 0} |f(h) - f(-h)| = 0"
+    }
+  ],
+  "conclusion": "\\lim_{h \\to 0} f(h) \\text{ does not exist}",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "f",
+        "value": "\\begin{cases} \\frac{1}{x^2} & x \\neq 0 \\\\ 0 & x = 0 \\end{cases}",
+        "kind": "function"
+      },
+      {
+        "type": "assert",
+        "claim": "f(h) = \\frac{1}{h^2}, f(-h) = \\frac{1}{(-h)^2} = \\frac{1}{h^2}"
+      },
+      {
+        "type": "assert",
+        "claim": "f(h) - f(-h) = 0"
+      },
+      {
+        "type": "assert",
+        "claim": "\\lim_{h \\to 0} (f(h) - f(-h)) = 0",
+        "deduced_from": {
+          "from_context": [
+            "f(h) - f(-h) = 0"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "\\lim_{h \\to 0} f(h) = \\lim_{h \\to 0} \\frac{1}{h^2} \\text{ does not exist}",
+        "deduced_from": {
+          "known_results": [
+            {
+              "citation": "from class",
+              "result": "\\lim_{h \\to 0} \\frac{1}{h^2} \\text{ does not exist}"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Justify why the given function f satisfies the condition \\lim_{h \\to 0} |f(h) - f(-h)| = 0"
+    }
+  ],
+  "errors": [
+    {
+      "type": "problem",
+      "statement": "The proof uses an example function but does not generalize the result to all functions satisfying the hypothesis."
+    }
+  ]
+}

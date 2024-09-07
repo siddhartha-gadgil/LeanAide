@@ -1,0 +1,83 @@
+{
+  "type": "theorem",
+  "name": "Limit Non-existence",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from (-1,1) to \\mathbb{R}",
+      "property": "\\lim_{h \\to 0}|f(h)-f(-h)|=0"
+    }
+  ],
+  "conclusion": "\\lim_{h \\to 0} f(h) does not exist.",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assume",
+        "statement": "|h-0|<\\delta = 2\\epsilon"
+      },
+      {
+        "type": "assert",
+        "claim": "|f(h)-L| < \\epsilon and |f(-h)-L| < \\epsilon",
+        "deduced_from": {
+          "From_context": [
+            "\\lim_{h \\to 0}|f(h)-f(-h)|=0"
+          ],
+          "Known_results": []
+        },
+        "proof-method": "assumption of limit definition"
+      },
+      {
+        "type": "assert",
+        "claim": "\\delta < |f(h)-f(-h)| \\leq |f(h)-L| + |f(-h)-L| < \\epsilon + \\epsilon = 2\\epsilon = \\epsilon'",
+        "errors": [
+          "Incorrect application of limit definition, \\epsilon should not be equal to 2\\epsilon."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "\\lim_{h \\to 0}0 \\leq \\lim_{h \\to 0}|f(h)-f(-h)| < \\lim_{h \\to 0} \\epsilon'",
+        "errors": [
+          "Incorrect limit manipulation, \\epsilon' is not arbitrary in this context."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "\\lim_{h \\to 0}|f(h)-f(-h)| = 0",
+        "deduced_from": {
+          "From_context": [
+            "\\lim_{h \\to 0}|f(h)-f(-h)|=0"
+          ],
+          "Known_results": []
+        },
+        "proof-method": "direct consequence from hypothesis"
+      },
+      {
+        "type": "assert",
+        "claim": "\\lim_{x \\to 0} f(1)-f(1) = 0 and \\lim_{h \\to 0} f(h) - \\lim_{h \\to 0} f(h) = 0",
+        "errors": [
+          "Irrelevant calculations unrelated to the theorem's conclusion."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "|f(h)-f(h)-0| < \\epsilon < \\epsilon'",
+        "errors": [
+          "Redundant and incorrect manipulation of terms."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "\\left|\\frac{|f(h)-0|}{\\delta/2} - \\frac{|f(h)-0|}{-\\delta/2}\\right| < \\delta",
+        "errors": [
+          "Incorrect and irrelevant calculation."
+        ]
+      }
+    ]
+  },
+  "errors": [
+    "The proof provided is incorrect and contains several logical and mathematical errors. The steps do not correctly follow from the given hypothesis to the conclusion."
+  ]
+}

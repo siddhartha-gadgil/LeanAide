@@ -1,0 +1,94 @@
+{
+  "type": "theorem",
+  "name": "Convergence of alternating series",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$b_n = (-1)^n \\frac{(n+1)^{32}}{n!}$"
+    }
+  ],
+  "conclusion": "The series $\\sum_{n=1}^{\\infty}b_n$ is convergent.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\sum_{n=1}^{\\infty} |b_n| = \\sum_{n=1}^{\\infty} \\frac{(n+1)^{32}}{n!}$",
+        "proof-method": "Definition of absolute value"
+      },
+      {
+        "type": "assert",
+        "claim": "The ratio test is applicable to $\\sum_{n=1}^{\\infty} |b_n|$",
+        "proof-method": "We use the ratio test"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim_{n \\to \\infty} \\frac{|b_{n+1}|}{|b_n|} = \\lim_{n \\to \\infty} \\frac{(n+2)^{32} / (n+1)!}{(n+1)^{32} / n!} = \\lim_{n \\to \\infty} \\left(\\frac{n+2}{n+1}\\right)^{32} \\cdot \\frac{1}{n+1}$",
+        "proof-method": "Apply the definition of $|b_n|$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim_{n \\to \\infty} \\left(\\frac{n+2}{n+1}\\right)^{32} = 1$",
+        "deduced_from": {
+          "known_results": [
+            "$\\lim_{n \\to \\infty} \\frac{n+2}{n+1} = 1$"
+          ]
+        },
+        "proof-method": "Limit laws"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim_{n \\to \\infty} \\frac{1}{n+1} = 0$",
+        "proof-method": "Limit laws"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim_{n \\to \\infty} \\frac{|b_{n+1}|}{|b_n|} = 0$",
+        "deduced_from": {
+          "from_context": [
+            "$\\lim_{n \\to \\infty} \\left(\\frac{n+2}{n+1}\\right)^{32} = 1$",
+            "$\\lim_{n \\to \\infty} \\frac{1}{n+1} = 0$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$\\sum_{n=1}^{\\infty} |b_n|$ converges",
+        "deduced_from": {
+          "known_results": [
+            "Ratio test"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$\\sum_{n=1}^{\\infty} b_n$ converges",
+        "deduced_from": {
+          "from_context": [
+            "$\\sum_{n=1}^{\\infty} |b_n|$ converges"
+          ],
+          "known_results": [
+            "Absolute convergence implies convergence"
+          ]
+        }
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Justify that the ratio test is applicable to $\\sum_{n=1}^{\\infty} |b_n|$"
+    },
+    {
+      "type": "problem",
+      "statement": "Complete the verification that $\\lim_{n \\to \\infty} \\left(\\frac{n+2}{n+1}\\right)^{32} = 1$ explicitly"
+    }
+  ],
+  "errors": [
+    {
+      "type": "assert",
+      "statement": "In evaluating $\\lim_{n \\to \\infty} \\frac{b_{n+1}}{b_n}$, ensure proper handling of factorial terms and limits."
+    }
+  ]
+}
