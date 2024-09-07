@@ -1,0 +1,111 @@
+{
+  "type": "theorem",
+  "name": "Supremum of Union of Bounded Sets",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "A",
+      "kind": "subset of \\mathbb{R}",
+      "property": "nonempty and bounded above"
+    },
+    {
+      "type": "let",
+      "variable": "B",
+      "kind": "subset of \\mathbb{R}",
+      "property": "nonempty and bounded above"
+    }
+  ],
+  "conclusion": "$A \\cup B$ is nonempty and bounded above, and \\[\\sup (A \\cup B) = \\max \\{\\sup A, \\sup B\\}\\]",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$A \\cup B$ is nonempty",
+        "proof-method": "since A and B are nonempty"
+      },
+      {
+        "type": "assert",
+        "claim": "$A \\cup B$ is bounded above",
+        "proof-method": "bounded above by $\\max \\{\\sup A, \\sup B\\}$"
+      },
+      {
+        "type": "let",
+        "variable": "m",
+        "value": "\\sup A"
+      },
+      {
+        "type": "let",
+        "variable": "n",
+        "value": "\\sup B"
+      },
+      {
+        "type": "assume",
+        "statement": "$x \\in A \\cup B$"
+      },
+      {
+        "type": "cases",
+        "on": "x",
+        "split-kind": "condition",
+        "proof-cases": [
+          {
+            "type": "case",
+            "condition": "$x \\in A$",
+            "proof": {
+              "type": "assert",
+              "claim": "$x \\leq m \\leq \\max \\{m, n\\}$"
+            }
+          },
+          {
+            "type": "case",
+            "condition": "$x \\in B$",
+            "proof": {
+              "type": "assert",
+              "claim": "$x \\leq n \\leq \\max \\{m, n\\}$"
+            }
+          },
+          {
+            "type": "case",
+            "condition": "$x \\in A \\text{ and } x \\in B$",
+            "proof": {
+              "type": "assert",
+              "claim": "$x \\leq \\min \\{m, n\\} \\leq \\max \\{m, n\\}$"
+            }
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "$A \\cup B$ is bounded above by $k = \\max \\{m, n\\}$"
+      },
+      {
+        "type": "assume",
+        "statement": "$z > \\max \\{\\sup A, \\sup B\\}$"
+      },
+      {
+        "type": "assert",
+        "claim": "But then $z$ is not an upper bound for $A \\cup B$",
+        "errors": [
+          "Not well-formulated or clear reasoning in the proof step."
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "$\\sup (A \\cup B) = \\max \\{\\sup A, \\sup B\\}$",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Show that $\\max \\{\\sup A, \\sup B\\}$ is the least upper bound of $A \\cup B$"
+          }
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Prove that the union of two non-empty bounded sets is non-empty."
+    }
+  ]
+}

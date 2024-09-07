@@ -1,0 +1,130 @@
+{
+  "type": "theorem",
+  "name": "Supremum of the Union of Two Sets",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "A",
+      "kind": "set of real numbers",
+      "property": "nonempty, bounded above"
+    },
+    {
+      "type": "let",
+      "variable": "B",
+      "kind": "set of real numbers",
+      "property": "nonempty, bounded above"
+    }
+  ],
+  "conclusion": "Let $A, B \\subset \\mathbb{R}$ be nonempty sets that are bounded above. Then $A \\cup B$ is nonempty and bounded above, and  $\\sup (A \\cup B) = \\max \\{\\sup A, \\sup B\\}$.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We first show that $A \\cup B$ is nonempty and bounded above."
+      },
+      {
+        "type": "assert",
+        "claim": "$A \\cup B$ is nonempty.",
+        "proof-method": "Since A and B are both nonempty, their union must also be nonempty."
+      },
+      {
+        "type": "assert",
+        "claim": "$A \\cup B$ is bounded above.",
+        "proof-method": "Since A and B are both bounded above, their union is also bounded above by the larger of the two upper bounds."
+      },
+      {
+        "type": "remark",
+        "statement": "We will now prove that $\\sup (A \\cup B) = \\max \\{\\sup A, \\sup B\\}$."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\sup A$ exists.",
+        "deduced_from": {
+          "known_results": [
+            "Every nonempty set of real numbers that is bounded above has a least upper bound (supremum)."
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$\\sup B$ exists.",
+        "deduced_from": {
+          "known_results": [
+            "Every nonempty set of real numbers that is bounded above has a least upper bound (supremum)."
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$\\max \\{ \\sup A, \\sup B \\}$ is an upper bound of $A \\cup B$.",
+        "proof-method": "Deduction from previous assertions.",
+        "calculation": [
+          "$\\sup A \\ge a$, $\\forall a \\in A$",
+          "$\\sup B \\ge b$, $\\forall b \\in B$",
+          "$\\max \\{ \\sup A, \\sup B \\} \\ge \\sup A \\ge a$, $\\forall a \\in A$",
+          "$\\max \\{ \\sup A, \\sup B \\} \\ge \\sup B \\ge b$, $\\forall b \\in B$",
+          "Therefore, $\\max \\{ \\sup A, \\sup B \\}$ is an upper bound of $A \\cup B$."
+        ]
+      },
+      {
+        "type": "remark",
+        "statement": "To prove that $\\max \\{ \\sup A, \\sup B \\}$ is the supremum, we need to show that it is the least upper bound."
+      },
+      {
+        "type": "cases",
+        "on": "Relationship between sup A and sup B",
+        "split-kind": "condition",
+        "proof-cases": [
+          {
+            "type": "case",
+            "condition": "$\\max \\{ \\sup A, \\sup B \\} = \\sup A$",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assert",
+                  "claim": "$\\exists \\varepsilon > 0$ such that $\\sup A - \\varepsilon$ is not an upper bound of $A \\cup B$.",
+                  "missing": [
+                    {
+                      "type": "problem",
+                      "statement": "Show the existence of such $\\varepsilon$ based on the definition of supremum and the fact that we are considering the case where $\\sup A$ is the maximum."
+                    }
+                  ]
+                },
+                {
+                  "type": "conclude",
+                  "statement": "Since $\\sup A$ is an upper bound of $A \\cup B$ and no smaller number can be an upper bound, $\\sup A = \\sup (A \\cup B)$."
+                }
+              ]
+            }
+          },
+          {
+            "type": "case",
+            "condition": "$\\max \\{ \\sup A, \\sup B \\} = \\sup B$",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assert",
+                  "claim": "This case follows by a similar argument as the previous case, switching the roles of A and B.",
+                  "missing": [
+                    {
+                      "type": "problem",
+                      "statement": "Replicate the argument from the previous case, but with A and B switched"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, in both cases, $\\sup (A \\cup B) = \\max \\{ \\sup A, \\sup B \\}$."
+      }
+    ]
+  }
+}

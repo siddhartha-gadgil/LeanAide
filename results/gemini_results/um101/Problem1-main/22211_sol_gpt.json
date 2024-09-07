@@ -1,0 +1,107 @@
+{
+  "type": "theorem",
+  "name": "Supremum of Union",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "A",
+      "kind": "subset of \\mathbb{R}",
+      "property": "nonempty and bounded above"
+    },
+    {
+      "type": "let",
+      "variable": "B",
+      "kind": "subset of \\mathbb{R}",
+      "property": "nonempty and bounded above"
+    }
+  ],
+  "conclusion": "$A \\cup B$ is nonempty and bounded above, and $\\sup (A \\cup B) = \\max \\{\\sup A, \\sup B\\}$",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assume",
+        "statement": "Without loss of generality, let $\\sup A \\ge \\sup B$."
+      },
+      {
+        "type": "assert",
+        "claim": "$A \\subseteq A \\cup B$"
+      },
+      {
+        "type": "assert",
+        "claim": "$A \\cup B$ is nonempty."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\forall x \\in A, x \\le \\sup(A)$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\forall y \\in B, y \\le \\sup(B) \\le \\sup(A)$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\forall z \\in A \\cup B, z \\le \\sup(A)$",
+        "deduced_from": {
+          "from_context": [
+            "$A \\subseteq A \\cup B$",
+            "$\\forall x \\in A, x \\le \\sup(A)$",
+            "$\\forall y \\in B, y \\le \\sup(B) \\le \\sup(A)$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$\\sup(A)$ is an upper bound of $A \\cup B$"
+      },
+      {
+        "type": "assert",
+        "claim": "$A \\cup B$ is nonempty and bounded above, so it admits a supremum."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\forall \\varepsilon > 0, \\exists x \\in A \\subseteq A \\cup B$ such that $x > \\sup(A) - \\varepsilon$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\forall \\varepsilon > 0, \\exists x \\in A \\cup B$ such that $x > \\sup(A) - \\varepsilon$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\sup(A \\cup B) = \\sup A$",
+        "deduced_from": {
+          "from_context": [
+            "$\\sup(A)$ is an upper bound of $A \\cup B$",
+            "$\\forall \\varepsilon > 0, \\exists x \\in A \\cup B$ such that $x > \\sup(A) - \\varepsilon$"
+          ]
+        },
+        "proof-method": "Deduction from supremum definition"
+      },
+      {
+        "type": "assume",
+        "statement": "If $\\sup B \\ge \\sup(A)$, then exchange $A$ and $B$ in the above proof."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\sup(A \\cup B) = \\sup B$"
+      },
+      {
+        "type": "conclude",
+        "statement": "$\\sup(A \\cup B) = \\max \\{\\sup A, \\sup B\\}$",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Proper justification of the exchange argument."
+          }
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Proof of $\\sup(A \\cup B) = \\sup B$ when $\\sup B \\ge \\sup A$"
+    }
+  ]
+}

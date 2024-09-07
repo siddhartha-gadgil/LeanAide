@@ -1,0 +1,79 @@
+{
+  "type": "theorem",
+  "name": "Supremum of a Union of Bounded Sets",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "A",
+      "kind": "subset of \\(\\mathbb{R}\\)",
+      "property": "nonempty and bounded above"
+    },
+    {
+      "type": "let",
+      "variable": "B",
+      "kind": "subset of \\(\\mathbb{R}\\)",
+      "property": "nonempty and bounded above"
+    }
+  ],
+  "conclusion": "The set \\( A \\cup B \\) is nonempty and bounded above, and \\( \\sup (A \\cup B) = \\max \\{ \\sup A, \\sup B \\} \\).",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "The set \\(A \\cup B\\) is bounded above.",
+        "proof-method": "Direct proof",
+        "calculation": [
+          "Since \\( A \\) and \\( B \\) are bounded above, there exist \\( P, Q \\in \\mathbb{R} \\) such that \\( a \\le P \\) for all \\( a \\in A \\) and \\( b \\le Q \\) for all \\( b \\in B \\).",
+          {
+            "step": "Let \\(x \\in A \\cup B\\). Then \\(x \\in A\\) or \\(x \\in B\\).",
+            "justification": "Definition of set union."
+          },
+          "Therefore, \\( x \\le P \\) or \\( x \\le Q \\), which implies that \\(x \\le \\max\\{P,Q\\}\\).",
+          {
+            "step": "Since \\( x \\) was arbitrary, this shows that \\( A \\cup B \\) is bounded above by \\( \\max \\{ P, Q \\} \\).",
+            "justification": "Definition of an upper bound."
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "The set \\(A \\cup B\\) is nonempty.",
+        "proof-method": "By hypothesis, \\(A\\) and \\(B\\) are nonempty. Therefore, \\(A \\cup B\\) is nonempty."
+      },
+      {
+        "type": "assert",
+        "claim": "\\( \\sup (A \\cup B) = \\max \\{ \\sup A, \\sup B \\} \\)",
+        "proof-method": "Proof by contradiction",
+        "calculation": [
+          "Let \\( m = \\sup A \\) and \\( n = \\sup B \\), both of which exist by the least upper bound principle since \\( A \\) and \\( B \\) are nonempty and bounded above. Let \\( k = \\max \\{ m, n \\} \\).",
+          {
+            "step": "Suppose for the sake of contradiction that \\( k \\) is not the supremum of \\( A \\cup B \\).",
+            "justification": "Assumption for contradiction."
+          },
+          "Then there exists \\( l < k \\) such that \\( l = \\sup(A \\cup B) \\).",
+          {
+            "step": "Without loss of generality, assume that \\( m < n \\).",
+            "justification": "We can do this because the other case where \\(n \\le m\\) is similar."
+          },
+          "This implies \\( k = \\max\\{m,n\\} = n \\), so \\( l < n \\).",
+          "As \\(l = \\sup (A \\cup B)\\), we have \\(x \\le l\\) for all \\(x \\in A \\cup B\\).",
+          {
+            "step": "Since \\(n = \\sup B\\), there exists \\(b \\in B\\) such that \\(l < b \\le n\\).",
+            "justification": "Property of the supremum and \\(l < n\\)."
+          },
+          {
+            "step": "Therefore, there exists an element \\( b \\in A \\cup B \\) such that \\( l < b \\).",
+            "justification": "Since \\( b \\in B \\) and \\( B \\subseteq A \\cup B \\)."
+          },
+          "This contradicts the fact that \\(l = \\sup(A \\cup B)\\)."
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, our assumption is false and \\( \\sup(A \\cup B) = k = \\max\\{\\sup A, \\sup B\\} \\)."
+      }
+    ]
+  }
+}

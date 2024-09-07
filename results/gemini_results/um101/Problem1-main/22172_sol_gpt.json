@@ -1,0 +1,189 @@
+{
+  "type": "theorem",
+  "name": "Supremum of Union of Sets",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$A, B \\subset \\mathbb{R}$ are nonempty sets that are bounded above"
+    }
+  ],
+  "conclusion": "$A \\cup B$ is nonempty and bounded above, and $\\sup (A \\cup B)=\\max \\{\\sup A, \\sup B\\}$",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$A \\neq \\emptyset$, $B \\neq \\emptyset$",
+        "proof-method": "Given"
+      },
+      {
+        "type": "assert",
+        "claim": "We have that $A$ and $B$ are bounded above."
+      },
+      {
+        "type": "define",
+        "term": "$P$",
+        "statement": "$P$ is an upper bound for $A$"
+      },
+      {
+        "type": "define",
+        "term": "$Q$",
+        "statement": "$Q$ is an upper bound for $B$"
+      },
+      {
+        "type": "assert",
+        "claim": "$a \\le P$ for all $a \\in A$ and $b \\le Q$ for all $b \\in B$",
+        "deduced_from": {
+          "from_context": [
+            "$P$ is an upper bound for $A$",
+            "$Q$ is an upper bound for $B$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$A \\cup B = \\{x \\in \\mathbb{R} : x \\in A \\text{ or } x \\in B\\}$",
+        "proof-method": "Set definition"
+      },
+      {
+        "type": "assert",
+        "claim": "$A \\cup B$ is non-empty",
+        "proof-method": "Since $A$ and $B$ are non-empty"
+      },
+      {
+        "type": "let",
+        "variable": "$x$",
+        "kind": "element of $A \\cup B$"
+      },
+      {
+        "type": "assert",
+        "claim": "$x \\in A$ or $x \\in B$",
+        "proof-method": "Definition of union"
+      },
+      {
+        "type": "assert",
+        "claim": "$x \\le P$ or $x \\le Q$",
+        "proof-method": "By definitions of $P$ and $Q$"
+      },
+      {
+        "type": "assert",
+        "claim": "$x \\le \\max \\{P, Q\\}$",
+        "proof-method": "Properties of $\\max$ function"
+      },
+      {
+        "type": "assert",
+        "claim": "$A \\cup B$ is bounded above",
+        "deduced_from": {
+          "from_context": [
+            "$x \\le \\max \\{P, Q\\}$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$\\sup(A \\cup B)$ exists",
+        "proof-method": "LUB principle for non-empty bounded above sets"
+      },
+      {
+        "type": "let",
+        "variable": "$z$",
+        "kind": "$\\sup(A \\cup B)$"
+      },
+      {
+        "type": "assert",
+        "claim": "$z = \\sup(A \\cup B)$ is an upper bound",
+        "proof-method": "By definition of supremum"
+      },
+      {
+        "type": "assume",
+        "statement": "Suppose $z < \\max \\{P, Q\\}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$z < P$ and $z < Q$"
+      },
+      {
+        "type": "assume",
+        "statement": "Without loss of generality, assume $P < Q$"
+      },
+      {
+        "type": "assert",
+        "claim": "Then $z$ cannot be an upper bound of $B$",
+        "proof-method": "Contradiction"
+      },
+      {
+        "type": "conclude",
+        "statement": "Hence, $z = \\max \\{P, Q\\}$",
+        "errors": [
+          "Step missing in proving $z = \\max\\{P, Q\\}$ conclusively"
+        ]
+      },
+      {
+        "type": "assume",
+        "statement": "Suppose $k$ is not the supremum of $A \\cup B$"
+      },
+      {
+        "type": "assert",
+        "claim": "Then $\\exists l < k$ such that $l = \\sup(A \\cup B)$"
+      },
+      {
+        "type": "assume",
+        "statement": "Without loss of generality, assume $m < n$"
+      },
+      {
+        "type": "assert",
+        "claim": "$k = \\max \\{m, n\\} = n$",
+        "deduced_from": {
+          "from_context": [
+            "$m < n$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$l < n$"
+      },
+      {
+        "type": "assert",
+        "claim": "$x \\le l$ for all $x \\in A \\cup B$",
+        "deduced_from": {
+          "from_context": [
+            "$l$ is the supremum of $A \\cup B$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "As $n = \\sup B$, there exists $b \\in B$ such that $l < b \\le n$"
+      },
+      {
+        "type": "assert",
+        "claim": "$n = \\sup A \\cup B$",
+        "proof-method": "By definition"
+      },
+      {
+        "type": "assert",
+        "claim": "$b \\le l < b_0$ where $b_0 \\in A \\cup B$",
+        "errors": [
+          "Contradicts the assumption $l = \\sup(A \\cup B)$"
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Thus, $\\sup(A \\cup B) = k = \\max \\{\\sup A, \\sup B\\}$",
+        "errors": [
+          "Several missing steps and logical gaps in proof"
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "statement": "Prove conclusively that $z = \\max \\{P, Q\\}$"
+    },
+    {
+      "statement": "Complete the logical steps in proving $\\sup(A \\cup B) = \\max \\{\\sup A, \\sup B\\}$"
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "type": "theorem",
+  "name": "Supremum of a union",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "A",
+      "kind": "set",
+      "property": "nonempty subset of real numbers, bounded above"
+    },
+    {
+      "type": "let",
+      "variable": "B",
+      "kind": "set",
+      "property": "nonempty subset of real numbers, bounded above"
+    }
+  ],
+  "conclusion": "The union $A \\cup B$ is nonempty and bounded above, and  $\\sup (A \\cup B)=\\max \\{\\sup A, \\sup B\\}$",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "a",
+        "kind": "element of A",
+        "property": "$a<M_A$"
+      },
+      {
+        "type": "let",
+        "variable": "b",
+        "kind": "element of B",
+        "property": "$b \\le M_B$"
+      },
+      {
+        "type": "let",
+        "variable": "M",
+        "value": "$\\max \\{M_a, M_b\\}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$a \\le M_a \\le M$, $b \\le M_b \\le M$",
+        "proof-method": "from the definition of M"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\forall a, b \\in A \\cup B$ i.e  $\\forall a, b \\  x \\in A \\cup B$, $x \\le M$",
+        "errors": [
+          "Incorrect notation mixing quantifiers over a and b, and should be $\\forall x \\in A \\cup B$, $x \\le M$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\sup (A \\cup B) = M$",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Need to prove that M is the least upper bound"
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "$\\sup (A \\cup B) = \\max \\{M_a, M_b\\} = \\max \\{\\sup A, \\sup B\\}$",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Need to justify why $M_a = \\sup A$ and $M_b = \\sup B$"
+          }
+        ]
+      }
+    ]
+  }
+}

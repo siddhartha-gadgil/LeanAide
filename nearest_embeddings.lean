@@ -10,14 +10,17 @@ unsafe def checkAndFetch (descField: String) : IO Unit := do
   let picklePath ← picklePath descField
   let picklePresent ←
     if ← picklePath.pathExists then
+    IO.eprintln s!"Pickle file already present at {picklePath}"
     try
       withUnpickle  picklePath <|
         fun (_ : Array <| (String × String × Bool × String) ×  FloatArray) => do
         pure true
-    catch _ => pure false
+    catch e =>
+        IO.eprintln s!"Error unpickling {picklePath}: {e}"
+        pure false
      else pure false
   unless picklePresent do
-    IO.eprintln "Fetching embeddings ..."
+    IO.eprintln s!"Fetching embeddings ... ({picklePath})"
     let out ← runCurl #["--output", picklePath.toString, "-s",  "https://math.iisc.ac.in/~gadgil/data/{picklePath.fileName.get!}"]
     IO.eprintln "Fetched embeddings"
     IO.eprintln out

@@ -1,0 +1,151 @@
+{
+  "type": "theorem",
+  "name": "Supremum of a Union",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "A",
+      "kind": "set of real numbers",
+      "property": "nonempty and bounded above"
+    },
+    {
+      "type": "let",
+      "variable": "B",
+      "kind": "set of real numbers",
+      "property": "nonempty and bounded above"
+    }
+  ],
+  "conclusion": "The union $A \\cup B$ is nonempty and bounded above, and  $\\sup (A \\cup B) = \\max \\{\\sup A, \\sup B\\}$",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$A \\cup B$ is nonempty",
+        "proof-method": "Since A and B are nonempty, their union is also nonempty."
+      },
+      {
+        "type": "let",
+        "variable": "m",
+        "value": "$\\sup A$",
+        "kind": "real number"
+      },
+      {
+        "type": "let",
+        "variable": "n",
+        "value": "$\\sup B$",
+        "kind": "real number"
+      },
+      {
+        "type": "assert",
+        "claim": "$a \\le m$ for all $a \\in A$ and $b \\le n$ for all $b \\in B$",
+        "proof-method": "By definition of supremum."
+      },
+      {
+        "type": "cases",
+        "on": "element of $A \\cup B$",
+        "split-kind": "match",
+        "proof-cases": [
+          {
+            "type": "case",
+            "condition": "$x \\in A$",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assert",
+                  "claim": "$x \\le m \\le \\max \\{m, n\\}$",
+                  "proof-method": "Since $m$ is an upper bound for $A$, and $\\max \\{m, n\\}$ is greater than or equal to $m$."
+                }
+              ]
+            }
+          },
+          {
+            "type": "case",
+            "condition": "$x \\in B$",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assert",
+                  "claim": "$x \\le n \\le \\max \\{m, n\\}$",
+                  "proof-method": "Since $n$ is an upper bound for $B$, and $\\max \\{m, n\\}$ is greater than or equal to $n$."
+                }
+              ]
+            }
+          },
+          {
+            "type": "case",
+            "condition": "$x \\in A$ and $x \\in B$",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assert",
+                  "claim": "$x \\le \\min \\{m, n\\} \\le \\max \\{m, n\\}$",
+                  "proof-method": "Since x is in both A and B, it is less than or equal to both m and n, hence less than or equal to their minimum. The minimum is always less than or equal to the maximum."
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$A \\cup B$ is bounded above and $k = \\max \\{m, n\\}$ is an upper bound.",
+        "proof-method": "From the above case analysis, we see that every element of $A \\cup B$ is less than or equal to $\\max \\{m, n\\}$."
+      },
+      {
+        "type": "remark",
+        "statement": "The proof needs to show that $\\max \\{m, n\\}$ is the least upper bound, i.e., the supremum."
+      },
+      {
+        "type": "let",
+        "variable": "z",
+        "kind": "real number",
+        "property": "an upper bound of $A \\cup B$"
+      },
+      {
+        "type": "remark",
+        "statement": "The following seems like an attempt to prove by contradiction, but it's not clear what's being contradicted and the reasoning is flawed."
+      },
+      {
+        "type": "assume",
+        "statement": "Let $1 \\in B$. But then $b \\in A \\cup B$. Thus $1 \\in A \\cup B$ such that $b > z$. Hence $z$ is not an upper bound, and hence not a supremum of $A \\cup B$."
+      },
+      {
+        "type": "errors",
+        "errors": [
+          "The use of '1' and 'b' is unclear and inconsistent.",
+          "Assuming an arbitrary element of B to be greater than an upper bound of A union B doesn't lead to a valid contradiction."
+        ]
+      },
+      {
+        "type": "assume",
+        "statement": "Let $a \\in A$. Thus $a \\in A \\cup B$ such that $a > z$. Hence $z$ is an upper bound, and thus not a supremum of $A \\cup B$. Thus is a contradiction. Thus $z \\ngtr \\max \\{p, q\\}$."
+      },
+      {
+        "type": "errors",
+        "errors": [
+          "Similar inconsistency in using 'a' and assuming it to be greater than z.",
+          "The variables 'p' and 'q' appear out of nowhere."
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "So from (1) & (2), $z = \\max \\{p, q\\}$. That is, $\\sup (A \\cup B) = \\max \\{\\sup A, \\sup B\\}$.",
+        "errors": [
+          "The references (1) and (2) are not defined.",
+          "The conclusion doesn't follow logically from the previous steps."
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Prove that $\\max \\{m, n\\}$ is the least upper bound of $A \\cup B$."
+    }
+  ]
+}

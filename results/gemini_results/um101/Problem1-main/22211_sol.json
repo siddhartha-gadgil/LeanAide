@@ -1,0 +1,94 @@
+{
+  "type": "theorem",
+  "name": null,
+  "Hypothesis": [
+    {
+      "type": "let",
+      "Variable": "A",
+      "Kind": "subset of \\(\\mathbb{R}\\)",
+      "Property": "nonempty and bounded above"
+    },
+    {
+      "type": "let",
+      "Variable": "B",
+      "Kind": "subset of \\(\\mathbb{R}\\)",
+      "Property": "nonempty and bounded above"
+    }
+  ],
+  "Conclusion": "The set \\( A \\cup B \\) is nonempty and bounded above, and  $$\\sup (A \\cup B)=\\max \\{\\sup A, \\sup B\\}$$",
+  "Status": "incomplete proof",
+  "Proof": {
+    "type": "proof",
+    "Steps": [
+      {
+        "type": "remark",
+        "Statement": "Without loss of generality, let $\\sup A \\ge \\sup B$. (If not, then exchange $A$ by $B$ and $B$ by $A$ in the following proof)."
+      },
+      {
+        "type": "assert",
+        "Claim": "\\(A \\cup B\\) is non-empty.",
+        "Proof-method": "Deduction from \\(A \\subseteq A \\cup B\\) and \\(A\\) being non-empty."
+      },
+      {
+        "type": "assert",
+        "Claim": "For all \\( x \\in A\\), \\(x \\le \\sup(A)\\).",
+        "Proof-method": "Definition of supremum, as $\\sup(A)$ is an upper bound of $A$."
+      },
+      {
+        "type": "assert",
+        "Claim": "For all \\(y \\in B\\), \\(y \\le \\sup(B) \\le \\sup(A)\\).",
+        "Proof-method": "Definition of supremum, as $\\sup(B)$ is an upper bound of $B$, and $\\sup B \\le \\sup A$."
+      },
+      {
+        "type": "assert",
+        "Claim": "For all \\(z \\in A \\cup B\\), \\( z \\le \\sup (A)\\).",
+        "Proof-method": "Deduction from the previous two statements."
+      },
+      {
+        "type": "assert",
+        "Claim": "\\(\\sup (A)\\) is an upper bound of \\(A\\cup B\\).",
+        "Proof-method": "Deduction from the previous statement."
+      },
+      {
+        "type": "assert",
+        "Claim": "\\(A \\cup B\\) admits a supremum.",
+        "Proof-method": "Because \\(A \\cup B\\) is non-empty and bounded above."
+      },
+      {
+        "type": "assert",
+        "Claim": "For all $\\varepsilon > 0$, there exists \\( x \\in A \\subseteq A\\cup B\\) such that \\(x > \\sup (A) - \\varepsilon\\).",
+        "Proof-method": "Definition of supremum."
+      },
+      {
+        "type": "assert",
+        "Claim": "For all $\\varepsilon > 0$, there exists \\(x \\in A \\cup B\\) such that \\(x> \\sup (A) - \\varepsilon\\).",
+        "Proof-method": "Deduction from the previous statement and the fact that \\(A \\subseteq A \\cup B\\)."
+      },
+      {
+        "type": "conclude",
+        "Statement": "$\\sup (A \\cup B) = \\sup A$.",
+        "Missing": [
+          {
+            "type": "problem",
+            "Statement": "Show that the assumption $\\sup(A \\cup B) < \\sup (A)$ leads to a contradiction using the previous statements.",
+            "Solved": false
+          }
+        ]
+      },
+      {
+        "type": "remark",
+        "Statement": "The proof for the case where $\\sup A < \\sup B$ is obtained by exchanging $A$ and $B$ in the above argument."
+      },
+      {
+        "type": "assert",
+        "Claim": "If $\\sup B \\ge \\sup (A)$, then $\\sup (A \\cup B) = \\sup (B)$",
+        "Proof-method": "Exchanging \\(A\\) and \\(B\\) in the above argument"
+      },
+      {
+        "type": "conclude",
+        "Statement": "From the two cases, we have $\\sup (A \\cup B) = \\max \\{\\sup (A), \\sup (B) \\}$."
+      }
+    ]
+  },
+  "Missing": []
+}

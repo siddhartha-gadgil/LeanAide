@@ -1,0 +1,112 @@
+{
+  "type": "theorem",
+  "name": "Supremum of Union",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$A, B \\subset \\mathbb{R}$ are nonempty sets that are bounded above"
+    }
+  ],
+  "conclusion": "$A \\cup B$ is nonempty and bounded above, and $\\sup (A \\cup B) = \\max \\{ \\sup A, \\sup B \\}$",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "A",
+        "property": "nonempty and bounded above"
+      },
+      {
+        "type": "let",
+        "variable": "B",
+        "property": "nonempty and bounded above"
+      },
+      {
+        "type": "let",
+        "variable": "a",
+        "value": "an element in A",
+        "kind": "element of \\mathbb{R}"
+      },
+      {
+        "type": "let",
+        "variable": "b",
+        "value": "an element in B",
+        "kind": "element of \\mathbb{R}"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\exists M_A \\in \\mathbb{R}$ such that $\\forall x \\in A$, $x \\leq M_A$",
+        "proof-method": "A is bounded above"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\exists M_B \\in \\mathbb{R}$ such that $\\forall x \\in B$, $x \\leq M_B$",
+        "proof-method": "B is bounded above"
+      },
+      {
+        "type": "let",
+        "variable": "M",
+        "value": "$\\max \\{M_A, M_B\\}$",
+        "kind": "real number"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\forall x \\in A$, $x \\leq M$",
+        "proof-method": "By definition of $M$ and $M_A$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\forall x \\in B$, $x \\leq M$",
+        "proof-method": "By definition of $M$ and $M_B$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\forall x \\in A \\cup B$, $x \\leq M$",
+        "proof-method": "Union of sets"
+      },
+      {
+        "type": "assert",
+        "claim": "$A \\cup B$ is bounded above",
+        "proof-method": "By previous assertion"
+      },
+      {
+        "type": "assert",
+        "claim": "$A \\cup B$ is nonempty",
+        "proof-method": "Since both $A$ and $B$ are nonempty"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\sup (A \\cup B) \\leq M$",
+        "proof-method": "By definition of supremum"
+      },
+      {
+        "type": "assert",
+        "claim": "If $M = \\sup A$ and $M \\geq \\sup B$, then $\\sup (A \\cup B) = M$",
+        "proof-method": "Based on the properties of $\\sup A$ and $\\sup B$"
+      },
+      {
+        "type": "conclude",
+        "statement": "$\\sup (A \\cup B) = \\max \\{\\sup A, \\sup B\\}$",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Formal proof that $\\sup (A \\cup B) \\leq M$ and $M$ is the least upper bound"
+          }
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Formal proof that $M = \\max \\{\\sup A, \\sup B\\}$ and $\\sup (A \\cup B) = M$"
+    }
+  ],
+  "errors": [
+    {
+      "type": "error",
+      "statement": "Missing formal justification for $\\sup (A \\cup B) = M$"
+    }
+  ]
+}

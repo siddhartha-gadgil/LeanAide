@@ -1,0 +1,128 @@
+{
+  "type": "theorem",
+  "name": "Supremum of Union of Sets",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "A",
+      "kind": "subset of \\mathbb{R}"
+    },
+    {
+      "type": "let",
+      "variable": "B",
+      "kind": "subset of \\mathbb{R}"
+    },
+    {
+      "type": "assume",
+      "statement": "A \\neq \\emptyset \\text{ and } B \\neq \\emptyset"
+    },
+    {
+      "type": "assume",
+      "statement": "A \\text{ and } B \\text{ are bounded above}"
+    }
+  ],
+  "conclusion": "\\sup (A \\cup B) = \\max \\{\\sup A, \\sup B\\}",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assume",
+        "statement": "\\sup A = c \\text{ and } \\sup B = d \\text{ where } c, d \\in \\mathbb{R}"
+      },
+      {
+        "type": "assume",
+        "statement": "\\sup(A \\cup B) = e \\text{ such that } e \\neq \\max\\{c, d\\}"
+      },
+      {
+        "type": "cases",
+        "on": "e",
+        "split-kind": "condition",
+        "proof-cases": [
+          {
+            "type": "case",
+            "condition": "e \\in A",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assume",
+                  "statement": "e \\in A"
+                },
+                {
+                  "type": "assert",
+                  "claim": "e \\leq c",
+                  "proof-method": "definition of supremum"
+                },
+                {
+                  "type": "assert",
+                  "claim": "\\sup A = e",
+                  "proof-method": "definition of supremum"
+                },
+                {
+                  "type": "contradiction",
+                  "assumption": "e \\neq c",
+                  "proof": {
+                    "type": "proof",
+                    "steps": [
+                      {
+                        "type": "assert",
+                        "claim": "\\sup A \\neq c",
+                        "proof-method": "contradiction assumption"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "case",
+            "condition": "e \\in B",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assume",
+                  "statement": "e \\in B"
+                },
+                {
+                  "type": "assert",
+                  "claim": "e \\leq d",
+                  "proof-method": "definition of supremum"
+                },
+                {
+                  "type": "assert",
+                  "claim": "\\sup B = e",
+                  "proof-method": "definition of supremum"
+                },
+                {
+                  "type": "contradiction",
+                  "assumption": "e \\neq d",
+                  "proof": {
+                    "type": "proof",
+                    "steps": [
+                      {
+                        "type": "assert",
+                        "claim": "\\sup B \\neq d",
+                        "proof-method": "contradiction assumption"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "\\sup (A \\cup B) = \\max \\{\\sup A, \\sup B\\}",
+        "errors": [
+          "Incomplete handling of cases: 'e not in A or B' is not considered.",
+          "Incorrect use of definition of supremum without proper justification."
+        ]
+      }
+    ]
+  }
+}

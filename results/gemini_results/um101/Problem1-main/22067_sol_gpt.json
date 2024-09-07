@@ -1,0 +1,111 @@
+{
+  "type": "theorem",
+  "name": "Supremum of Union",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "A",
+      "kind": "subset of \\mathbb{R}",
+      "property": "nonempty and bounded above"
+    },
+    {
+      "type": "let",
+      "variable": "B",
+      "kind": "subset of \\mathbb{R}",
+      "property": "nonempty and bounded above"
+    }
+  ],
+  "conclusion": {
+    "claim": [
+      {
+        "type": "assert",
+        "claim": "\\sup (A \\cup B) = \\max \\{ \\sup A, \\sup B \\}."
+      }
+    ]
+  },
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assume",
+        "statement": "Consider non-empty sets $A \\subseteq \\mathbb{R}$ and $B \\subseteq \\mathbb{R}$."
+      },
+      {
+        "type": "assume",
+        "statement": "Assume that both $A$ and $B$ are bounded above."
+      },
+      {
+        "type": "assert",
+        "claim": "\\sup A$ exists and for all $a \\in A, \\sup A \\ge a$.",
+        "proof-method": "by definition of supremum"
+      },
+      {
+        "type": "assert",
+        "claim": "\\sup B$ exists and for all $b \\in B, \\sup B \\ge b$.",
+        "proof-method": "by definition of supremum"
+      },
+      {
+        "type": "assert",
+        "claim": "\\max \\{ \\sup A, \\sup B \\}$ is an upper bound of $A \\cup B$.",
+        "deduced_from": {
+          "from_context": [
+            "\\sup A \\ge a, \\forall a \\in A",
+            "\\sup B \\ge b, \\forall b \\in B"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "To prove that $\\max \\{ \\sup A, \\sup B \\}$ is the supremum of $A \\cup B$, we must use the definition of supremum."
+      },
+      {
+        "type": "assert",
+        "claim": "\\max \\{ \\sup A, \\sup B \\} \\ge x, \\forall x \\in A \\cup B.",
+        "deduced_from": {
+          "from_context": [
+            "\\max \\{ \\sup A, \\sup B \\}$ is an upper bound of $A \\cup B$."
+          ]
+        }
+      },
+      {
+        "type": "problem",
+        "statement": "Consider the element $\\max \\{ \\sup A, \\sup B \\} = \\sup A$. Then there exists $\\varepsilon \\le \\sup A$, $\\forall a \\in A \\cup B$.",
+        "solved": false
+      },
+      {
+        "type": "assert",
+        "claim": "\\sup B \\ge \\sup B > b, \\forall b \\in B.",
+        "proof-method": "by definition of supremum"
+      },
+      {
+        "type": "problem",
+        "statement": "Thus, $\\sup A$ is not an upper bound.",
+        "solved": false
+      },
+      {
+        "type": "assert",
+        "claim": "By definition, since $a \\in A \\cup B, \\sup A$ is the $\\sup (A \\cup B)$.",
+        "errors": [
+          "Logical inconsistency: Conclusion seems to contradict earlier steps."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "This argument can be repeated by switching $A$ and $B$.",
+        "proof-method": "symmetry"
+      },
+      {
+        "type": "conclude",
+        "statement": "$\\sup (A \\cup B) = \\max \\{ \\sup A, \\sup B \\}$."
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Complete the proof that $\\max \\{ \\sup A, \\sup B \\}$ is the supremum of $A \\cup B$.",
+      "solved": false
+    }
+  ]
+}
