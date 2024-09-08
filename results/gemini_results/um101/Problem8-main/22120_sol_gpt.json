@@ -1,0 +1,89 @@
+{
+  "type": "theorem",
+  "name": "Comparison of Differentiable Functions",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from \\mathbb{R} to \\mathbb{R}",
+      "property": "differentiable"
+    },
+    {
+      "type": "let",
+      "variable": "g",
+      "kind": "function from \\mathbb{R} to \\mathbb{R}",
+      "property": "differentiable"
+    },
+    {
+      "type": "assume",
+      "statement": "f(0) = g(0)"
+    },
+    {
+      "type": "assume",
+      "statement": "f^{\\prime}(x) \\leq g^{\\prime}(x) \\text{ for all } x \\geq 0"
+    }
+  ],
+  "conclusion": "f(x) < g(x) \\text{ for all } x \\geq 0",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "F",
+        "value": "f^{\\prime}"
+      },
+      {
+        "type": "let",
+        "variable": "G",
+        "value": "g^{\\prime}"
+      },
+      {
+        "type": "assert",
+        "claim": "\\int_{0}^{x} F(t) dt = f(x) - f(0) \\text{ for all } x \\geq 0",
+        "proof-method": "Second Fundamental Theorem of Calculus"
+      },
+      {
+        "type": "assert",
+        "claim": "\\int_{0}^{x} G(t) dt = g(x) - g(0) \\text{ for all } x \\geq 0",
+        "proof-method": "Second Fundamental Theorem of Calculus"
+      },
+      {
+        "type": "assert",
+        "claim": "\\int_{0}^{x} F(t) dt \\leq \\int_{0}^{x} G(t) dt \\text{ for all } x \\geq 0",
+        "deduced_from": {
+          "From_context": [
+            "f^{\\prime}(x) \\leq g^{\\prime}(x) \\text{ for all } x \\geq 0"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "f(x) - f(0) \\leq g(x) - g(0) \\text{ for all } x \\geq 0",
+        "deduced_from": {
+          "From_context": [
+            "\\int_{0}^{x} F(t) dt = f(x) - f(0)",
+            "\\int_{0}^{x} G(t) dt = g(x) - g(0)",
+            "\\int_{0}^{x} F(t) dt \\leq \\int_{0}^{x} G(t) dt"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "f(x) \\leq g(x) \\text{ for all } x \\geq 0",
+        "deduced_from": {
+          "From_context": [
+            "f(0) = g(0)",
+            "f(x) - f(0) \\leq g(x) - g(0)"
+          ]
+        },
+        "errors": [
+          "The conclusion should be f(x) \\le g(x) and not f(x) < g(x)"
+        ]
+      }
+    ]
+  },
+  "errors": [
+    "The proof concludes f(x) \\le g(x) instead of f(x) < g(x). The strict inequality is not justified by the given argument."
+  ]
+}

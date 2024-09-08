@@ -1,0 +1,65 @@
+{
+  "type": "theorem",
+  "name": "Comparison of Differentiable Functions",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "differentiable function from \\mathbb{R} to \\mathbb{R}"
+    },
+    {
+      "type": "let",
+      "variable": "g",
+      "kind": "differentiable function from \\mathbb{R} to \\mathbb{R}"
+    },
+    {
+      "type": "assume",
+      "statement": "f(0) = g(0)"
+    },
+    {
+      "type": "assume",
+      "statement": "f^{\\prime}(x) \\leq g^{\\prime}(x) \\text{ for all } x \\geq 0"
+    }
+  ],
+  "conclusion": "f(x) \\leq g(x) \\text{ for all } x \\geq 0",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assume",
+        "statement": "f(c) > g(c) \\text{ for some arbitrary } c > 0"
+      },
+      {
+        "type": "assert",
+        "claim": "f^{\\prime}(c) > g^{\\prime}(c)",
+        "deduced_from": {
+          "known_results": [
+            "Both functions are differentiable."
+          ]
+        },
+        "errors": [
+          "The assumption that f(c) > g(c) does not directly imply f'(c) > g'(c)."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "f^{\\prime}(c) > g^{\\prime}(c) \\text{ contradicts } f^{\\prime}(x) \\leq g^{\\prime}(x) \\forall x \\geq 0",
+        "errors": [
+          "The previous claim is incorrect, hence this assertion is invalid."
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "f(x) \\leq g(x) \\text{ for all } x \\geq 0",
+        "errors": [
+          "The proof contains logical errors and incorrect assumptions."
+        ]
+      }
+    ]
+  },
+  "errors": [
+    "The proof incorrectly assumes that f(c) > g(c) implies f'(c) > g'(c).",
+    "The proof does not correctly utilize the given conditions."
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "type": "theorem",
+  "name": "Differentiable Functions Comparison",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "f, g: \\mathbb{R} \\rightarrow \\mathbb{R} \\text{ are differentiable functions such that } f(0)=g(0) \\text{ and } f^{\\prime}(x) \\leq g^{\\prime}(x) \\text{ for all } x \\geq 0."
+    }
+  ],
+  "conclusion": "f(x) \\leq g(x) \\text{ for all } x \\geq 0.",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "f, g",
+        "kind": "differentiable functions"
+      },
+      {
+        "type": "assume",
+        "statement": "f(0) = g(0)"
+      },
+      {
+        "type": "assume",
+        "statement": "f'(x) \\leq g'(x) \\text{ for all } x \\geq 0"
+      },
+      {
+        "type": "assert",
+        "claim": "f(x) \\leq g(x)",
+        "proof-method": "Using the Fundamental Theorem of Calculus and properties of integration"
+      },
+      {
+        "type": "assert",
+        "claim": "f(x), g(x) \\text{ are differentiable for all } x \\in \\mathbb{R}",
+        "proof-method": "Given that f and g are differentiable"
+      },
+      {
+        "type": "assert",
+        "claim": "f'(x), g'(x) \\text{ exist for all } x \\in \\mathbb{R}",
+        "proof-method": "By definition of differentiability"
+      },
+      {
+        "type": "assert",
+        "claim": "f(x) \\text{ and } g(x) \\text{ are primitives of } f'(x) \\text{ and } g'(x), \\text{ respectively}",
+        "proof-method": "By definition of primitives"
+      },
+      {
+        "type": "assert",
+        "claim": "f'(x), g'(x) \\text{ are continuous for all } x \\in \\mathbb{R}",
+        "proof-method": "By the Fundamental Theorem of Calculus (I FTOC)"
+      },
+      {
+        "type": "assert",
+        "claim": "f(x)-f(0) = \\int\\limits_{0}^{x} f'(t) dt",
+        "proof-method": "By the Fundamental Theorem of Calculus (II FTOC)"
+      },
+      {
+        "type": "assert",
+        "claim": "g(x)-g(0) = \\int\\limits_{0}^{x} g'(t) dt",
+        "proof-method": "By the Fundamental Theorem of Calculus (II FTOC)"
+      },
+      {
+        "type": "assert",
+        "claim": "\\int\\limits_{0}^{x} f'(t) dt \\leq \\int\\limits_{0}^{x} g'(t) dt",
+        "proof-method": "Integrating both sides of the inequality f'(t) \\leq g'(t)"
+      },
+      {
+        "type": "assert",
+        "claim": "f(x) \\leq g(x)",
+        "proof-method": "Combining the results"
+      },
+      {
+        "type": "conclude",
+        "statement": "f(x) \\leq g(x) \\text{ for all } x \\geq 0"
+      }
+    ],
+    "errors": [
+      "The statement to be proven is \\( f(x) < g(x) \\) for all \\( x \\geq 0 \\), but the proof shows \\( f(x) \\leq g(x) \\)."
+    ]
+  }
+}

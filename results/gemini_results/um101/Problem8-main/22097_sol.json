@@ -1,0 +1,72 @@
+{
+  "type": "theorem",
+  "name": "Comparison of Differentiable Functions",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from R to R",
+      "property": "differentiable"
+    },
+    {
+      "type": "let",
+      "variable": "g",
+      "kind": "function from R to R",
+      "property": "differentiable"
+    },
+    {
+      "type": "assume",
+      "statement": "$f(0) = g(0)$"
+    },
+    {
+      "type": "assume",
+      "statement": "$f'(x) \\leq g'(x)$ for all $x \\geq 0$"
+    }
+  ],
+  "conclusion": "$f(x) \\leq g(x)$ for all $x > 0$",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "The proof begins by assuming the negation of the conclusion to derive a contradiction."
+      },
+      {
+        "type": "assume",
+        "statement": "$f(c) > g(c)$ for some arbitrary $c \\in \\mathbb{R}$ where $c > 0$"
+      },
+      {
+        "type": "assert",
+        "claim": "$f'(c) > g'(c)$",
+        "proof-method": "Since f and g are one-to-one and f(c) > g(c)",
+        "errors": [
+          "The claim that differentiable functions are one-to-one is incorrect. For example, consider the function h(x) = x^2, which is differentiable but not one-to-one."
+        ]
+      },
+      {
+        "type": "contradiction",
+        "assumption": "$f(c) > g(c)$ for some $c > 0$",
+        "proof": {
+          "type": "proof",
+          "steps": [
+            {
+              "type": "assert",
+              "claim": "The statement $f'(c) > g'(c)$ contradicts the hypothesis that  $f'(x) \\leq g'(x)$ for all $x \\geq 0$",
+              "errors": [
+                "Although the previous assertion is incorrect, even if it were true it does not contradict the hypothesis for arbitrary c since the previous step incorrectly states that this holds *because* f and g are one-to-one."
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "type": "conclude",
+        "statement": "Hence, $f(x) \\leq g(x)$ for all $x \\geq 0$.",
+        "errors": [
+          "The conclusion does not follow logically from the previous steps due to the errors in the proof by contradiction."
+        ]
+      }
+    ]
+  }
+}

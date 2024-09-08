@@ -1,0 +1,90 @@
+{
+  "type": "theorem",
+  "name": "Limit of Integral of Positive Continuous Function",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from [0,1] to R",
+      "property": "positive continuous function"
+    },
+    {
+      "type": "let",
+      "variable": "M",
+      "value": "$\\max \\{f(x): x \\in[0,1]\\}$",
+      "kind": "real number",
+      "property": "maximum value of f on [0,1]"
+    },
+    {
+      "type": "assume",
+      "statement": "The limit $\\lim _{n \\rightarrow \\infty}\\left(\\int_{0}^{1} f(x)^{n} d x\\right)^{1 / n}$ exists."
+    }
+  ],
+  "conclusion": "$\\lim _{n \\rightarrow \\infty}\\left(\\int_{0}^{1} f(x)^{n} d x\\right)^{1 / n} = M$",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$0 \\leq (f(x))^n \\leq M^n \\quad \\forall x \\in [0,1]$",
+        "deduced_from": {
+          "from_context": [
+            "$f(x) \\ge 0$ for all $x \\in [0,1]$",
+            "$f(x) \\le M$ for all $x \\in [0,1]$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$0 \\leq \\int_0^1 (f(x))^n dx \\leq \\int_0^1 M^n dx = M^n(1-0)$",
+        "deduced_from": {
+          "known_results": [
+            "algebra of continuous functions",
+            "comparison rule for integrals"
+          ]
+        },
+        "proof-method": "By the comparison rule for integrals, since  $0 \\leq (f(x))^n \\leq M^n$ for all $x \\in [0,1]$, we have $0 = \\int_0^1 0 dx \\leq \\int_0^1 (f(x))^n dx \\leq \\int_0^1 M^n dx = M^n(1-0)$."
+      },
+      {
+        "type": "assert",
+        "claim": "$0 \\leq (\\int_0^1 (f(x))^n dx)^{1/n} \\leq M \\quad \\forall n \\geq 1$",
+        "calculation": [
+          "$0 \\leq \\int_0^1 (f(x))^n dx \\leq M^n$",
+          "$\\implies 0 \\leq 0 \\leq \\int_0^1 (f(x))^ndx \\leq (M^n)^{1/n} = M$",
+          "$\\implies 0 \\leq (\\int_0^1 (f(x))^n dx)^{1/n} \\leq M$"
+        ]
+      },
+      {
+        "type": "let",
+        "variable": "S",
+        "value": "$\\{(\\int_0^1 (f(x))^n dx)^{1/n} : n \\in \\mathbb{N}\\}$",
+        "kind": "set of real numbers"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\sup S$ exists.",
+        "proof-method": "Since $S$ is non-empty and bounded above by $M$, $\\sup S$ must exist."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim_{n \\rightarrow \\infty} (\\int_0^1 (f(x))^ndx)^{1/n} = M$",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Prove that $\\{(\\int_0^1 (f(x))^n dx)^{1/n}\\}_{n \\in \\mathbb{N}}$ is an increasing sequence.",
+            "solved": false
+          },
+          {
+            "type": "problem",
+            "statement": "Prove that if a sequence is increasing and bounded above, then it converges to its supremum.",
+            "solved": false
+          }
+        ],
+        "errors": [
+          "The proof incorrectly states that $\\sup S = M$ without justification."
+        ]
+      }
+    ]
+  }
+}

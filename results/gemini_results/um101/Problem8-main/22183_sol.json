@@ -1,0 +1,152 @@
+{
+  "type": "theorem",
+  "name": null,
+  "status": "wrong proof",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f, g",
+      "kind": "function from R to R",
+      "property": "differentiable"
+    },
+    {
+      "type": "assume",
+      "statement": "$f(0) = g(0)$"
+    },
+    {
+      "type": "assume",
+      "statement": "$f'(x) \\leq g'(x)$ for all $x \\geq 0$"
+    }
+  ],
+  "conclusion": "$f(x) < q(x)$ for all $x \\geq 0$",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$f'(a) \\leq g'(a)$",
+        "deduced_from": {
+          "from_context": [
+            "$f'(x) \\leq g'(x)$ for all $x \\geq 0$"
+          ]
+        },
+        "proof-method": "By hypothesis"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim\\limits_{x \\to a} \\frac{f(x)-f(a)}{x} \\leq \\lim\\limits_{x \\to a} \\frac{g(x)-g(a)}{x}$",
+        "proof-method": "By definition"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{f(x)-f(a)}{x} \\leq \\frac{g(x)-g(a)}{x}$ as $f(a) = ...$",
+        "errors": [
+          "Incorrect implication from the previous step: limit inequality does not imply inequality of functions",
+          "Unclear what $f(a)$ being equal to is relevant or helpful"
+        ],
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Justify how the inequality of limits implies the inequality of functions, or find a different approach"
+          },
+          {
+            "type": "problem",
+            "statement": "Clarify the missing part of the statement \"as $f(a) = ...$"
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$f(x) \\leq g(x)$",
+        "errors": [
+          "Incorrect implication from the previous step: even if the previous inequality were true, it does not directly imply this inequality"
+        ],
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Justify how the previous inequality implies this one, or find a different approach"
+          }
+        ]
+      },
+      {
+        "type": "remark",
+        "statement": "Proof Contd."
+      },
+      {
+        "type": "contradiction",
+        "assumption": "$f(x) > g(x)$ for some $x \\to a$",
+        "proof": {
+          "type": "proof",
+          "steps": [
+            {
+              "type": "assert",
+              "claim": "$f(x) - f(a) > g(x) - g(a)$",
+              "deduced_from": {
+                "from_context": [
+                  "$f(x) > g(x)$ for some $x \\to a$"
+                ]
+              },
+              "proof-method": "By assumption"
+            },
+            {
+              "type": "assert",
+              "claim": "$\\frac{f(x) - f(a)}{x} > \\frac{g(x) - g(a)}{x}$",
+              "deduced_from": {
+                "from_context": [
+                  "$f(x) - f(a) > g(x) - g(a)$"
+                ]
+              },
+              "proof-method": "Dividing both sides by x"
+            },
+            {
+              "type": "assert",
+              "claim": "$\\lim\\limits_{x \\to a} \\frac{f(x)-f(a)}{x} > \\lim\\limits_{x \\to a} \\frac{g(x)-g(a)}{x}$",
+              "deduced_from": {
+                "from_context": [
+                  "$\\frac{f(x) - f(a)}{x} > \\frac{g(x) - g(a)}{x}$"
+                ]
+              },
+              "proof-method": "Taking limit on b.s., (limit preserve order)"
+            },
+            {
+              "type": "assert",
+              "claim": "$f'(x) > g'(a)$ for some $x$",
+              "deduced_from": {
+                "from_context": [
+                  "$\\lim\\limits_{x \\to a} \\frac{f(x)-f(a)}{x} > \\lim\\limits_{x \\to a} \\frac{g(x)-g(a)}{x}$"
+                ]
+              },
+              "proof-method": "By definition of derivative"
+            },
+            {
+              "type": "conclude",
+              "statement": "which contradicts $f'(a) \\leq g'(a) \\forall x \\to a$",
+              "errors": [
+                "The proof does not actually contradict the given information for all $x$ approaching $a$, only for a specific $x$"
+              ],
+              "missing": [
+                {
+                  "type": "problem",
+                  "statement": "Show that the inequality holds for ALL $x$ approaching $a$, not just a specific one"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "type": "conclude",
+        "statement": "Hence our assumption is wrong $\\implies f(a) \\leq g(a)$ Hence Proved.",
+        "errors": [
+          "Even if the contradiction were valid, this does not prove the original statement with a strict inequality"
+        ],
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Prove that $f(x) < g(x)$, not just $f(x) \\leq g(x)$"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,150 @@
+{
+  "type": "theorem",
+  "name": null,
+  "status": "incomplete proof",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from real numbers to real numbers",
+      "property": "differentiable"
+    },
+    {
+      "type": "let",
+      "variable": "g",
+      "kind": "function from real numbers to real numbers",
+      "property": "differentiable"
+    },
+    {
+      "type": "assume",
+      "statement": "$f(0)=g(0)$"
+    },
+    {
+      "type": "assume",
+      "statement": "$f'(x) \\leq g'(x)$ for all $x \\geq 0$"
+    }
+  ],
+  "conclusion": "$f(x) < g(x)$ for all $x \\geq 0$",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "h",
+        "kind": "function from real numbers to real numbers",
+        "property": "$h=g-f$ i.e $h(x)=g(x)-f(x)$, $\\forall x \\in \\mathbb{R}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$h(0)=0$",
+        "deduced_from": {
+          "from_context": [
+            "$f(0)=g(0)$",
+            "$h(x)=g(x)-f(x)$"
+          ]
+        },
+        "proof-method": "substitution"
+      },
+      {
+        "type": "assert",
+        "claim": "$h$ is differentiable on $\\mathbb{R}$",
+        "deduced_from": {
+          "from_context": [
+            "$f$ is differentiable on $\\mathbb{R}$",
+            "$g$ is differentiable on $\\mathbb{R}$"
+          ],
+          "known_results": [
+            "Algebra of derivatives"
+          ]
+        },
+        "proof-method": "Algebra of derivatives"
+      },
+      {
+        "type": "assert",
+        "claim": "$h'(x)=g'(x)-f'(x)>0$, $\\forall x>0$",
+        "deduced_from": {
+          "from_context": [
+            "$f'(x) \\leq g'(x)$ for all $x \\geq 0$",
+            "$h'(x)=g'(x)-f'(x)$"
+          ]
+        },
+        "errors": [
+          "The conclusion $h'(x) > 0$ is not justified since $f'(x) \\leq g'(x)$ only implies $h'(x) \\geq 0$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$h(x)>0$, $\\forall x >0$",
+        "proof-method": "proof by contradiction",
+        "proof": {
+          "type": "contradiction",
+          "assumption": "$\\exists$ $x_0>0$ such that $h(x_0)<0$",
+          "proof": {
+            "type": "proof",
+            "steps": [
+              {
+                "type": "assert",
+                "claim": "$\\exists c \\in (0, x_0)$ such that $h$ is differentiable on $(0, x_0)$ and continuous on $[0, x_0]$",
+                "deduced_from": {
+                  "known_results": [
+                    "Mean Value Theorem"
+                  ]
+                },
+                "proof-method": "By (Lagrange's) Mean Value Theorem"
+              },
+              {
+                "type": "assert",
+                "claim": "$h'(c)=\\frac{h(x_0)-h(0)}{x_0-0}=\\frac{h(x_0)}{x_0}$",
+                "missing": [
+                  {
+                    "type": "problem",
+                    "statement": "Show that the conditions of the Mean Value Theorem are satisfied",
+                    "solved": false
+                  }
+                ]
+              },
+              {
+                "type": "assert",
+                "claim": "$\\frac{h(x_0)}{x_0}=h'(c)<0$",
+                "deduced_from": {
+                  "from_context": [
+                    "$h'(c)=\\frac{h(x_0)}{x_0}$",
+                    "$h(x_0)<0$",
+                    "$x_0>0$"
+                  ]
+                }
+              },
+              {
+                "type": "assert",
+                "claim": "$h'(x)>0$, $\\forall x>0$",
+                "deduced_from": {
+                  "from_context": []
+                },
+                "errors": [
+                  "This statement was already asserted in the proof and depends on an incorrect conclusion, so cannot be used to derive a contradiction"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "type": "conclude",
+        "statement": "$f(x) < g(x)$",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "The contradiction in the proof by contradiction is not established",
+            "solved": false
+          },
+          {
+            "type": "problem",
+            "statement": "The proof needs to establish $h(x) > 0$ to get $f(x) < g(x)$, but only shows $h(x) \\geq 0$",
+            "solved": false
+          }
+        ]
+      }
+    ]
+  },
+  "missing": []
+}

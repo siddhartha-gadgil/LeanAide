@@ -1,0 +1,77 @@
+{
+  "type": "theorem",
+  "name": "Max Value of Limit of Integral",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from [0,1] to ℝ",
+      "property": "positive and continuous"
+    },
+    {
+      "type": "let",
+      "variable": "M",
+      "value": "max {f(x): x ∈ [0,1]}"
+    },
+    {
+      "type": "assume",
+      "statement": "lim_{n → ∞} (∫_{0}^{1} f(x)^n dx)^{1/n} exists"
+    }
+  ],
+  "conclusion": "lim_{n → ∞} (∫_{0}^{1} f(x)^n dx)^{1/n} = M",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "M is the maximum of f and it is attained in [0,1]",
+        "proof-method": "Extreme Value Theorem"
+      },
+      {
+        "type": "assert",
+        "claim": "0 < f(x) ≤ M ∀ x ∈ [0,1]"
+      },
+      {
+        "type": "assert",
+        "claim": "f(x)^n ≤ M^n ∀ x ∈ [0,1] and ∀ n ∈ ℕ"
+      },
+      {
+        "type": "assert",
+        "claim": "∫_{0}^{1} f(x)^n dx ≤ ∫_{0}^{1} M^n dx = M^n",
+        "proof-method": "comparison property of integrals"
+      },
+      {
+        "type": "assert",
+        "claim": "(∫_{0}^{1} f(x)^n dx)^{1/n} ≤ M ∀ n ∈ ℕ"
+      },
+      {
+        "type": "assert",
+        "claim": "lim_{n → ∞} (∫_{0}^{1} f(x)^n dx)^{1/n} ≤ M",
+        "errors": [
+          "Step not justified. The transition to the limit needs justification."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "lim_{n → ∞} (∫_{0}^{1} f(x)^n dx)^{1/n})^{2n} = m",
+        "errors": [
+          "Step not justified. The expression with exponent 2n is incorrect in this context."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "lim_{n → ∞} (∫_{0}^{1} (f(x)^n / M) dx)^{2n} = 1",
+        "errors": [
+          "Step not justified. The equality with 1 is not properly justified or explained."
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Prove the bound from below to show that the limit is precisely M."
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "type": "theorem",
+  "name": "Comparison of Differentiable Functions",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from \\mathbb{R} to \\mathbb{R}",
+      "property": "differentiable"
+    },
+    {
+      "type": "let",
+      "variable": "g",
+      "kind": "function from \\mathbb{R} to \\mathbb{R}",
+      "property": "differentiable"
+    },
+    {
+      "type": "assume",
+      "statement": "f(0) = g(0)"
+    },
+    {
+      "type": "assume",
+      "statement": "f'(x) \\leq g'(x) \\text{ for all } x \\geq 0"
+    }
+  ],
+  "conclusion": "f(x) < g(x) \\text{ for all } x \\geq 0",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "define",
+        "term": "h",
+        "statement": "h(x) = g(x) - f(x) \\text{ for all } x \\in \\mathbb{R}"
+      },
+      {
+        "type": "assert",
+        "claim": "h(0) = 0"
+      },
+      {
+        "type": "assert",
+        "claim": "h \\text{ is differentiable on } \\mathbb{R}"
+      },
+      {
+        "type": "assert",
+        "claim": "h'(x) = g'(x) - f'(x) \\text{ for all } x \\in \\mathbb{R}"
+      },
+      {
+        "type": "assert",
+        "claim": "h'(x) > 0 \\text{ for all } x > 0",
+        "errors": [
+          "The statement should be h'(x) \\geq 0 for all x \\geq 0 given the assumption f'(x) \\leq g'(x). The strict inequality h'(x) > 0 for all x > 0 is not justified."
+        ]
+      },
+      {
+        "type": "contradiction",
+        "assumption": "\\exists x_0 > 0 \\text{ such that } h(x_0) < 0",
+        "proof": {
+          "type": "proof",
+          "steps": [
+            {
+              "type": "assert",
+              "claim": "By Mean Value Theorem, \\exists c \\in (0, x_0) \\text{ such that } h'(c) = \\frac{h(x_0) - h(0)}{x_0 - 0}",
+              "deduced_from": {
+                "known_results": [
+                  "Mean Value Theorem"
+                ]
+              }
+            },
+            {
+              "type": "assert",
+              "claim": "h'(c) = \\frac{h(x_0)}{x_0}"
+            },
+            {
+              "type": "assert",
+              "claim": "h'(c) < 0 \\text{ since } h(x_0) < 0 \\text{ and } x_0 > 0"
+            },
+            {
+              "type": "assert",
+              "claim": "This contradicts h'(x) > 0 \\text{ for all } x > 0",
+              "errors": [
+                "The contradiction depends on the previously incorrect assertion that h'(x) > 0 for all x > 0. The proof needs the weaker assumption that h'(x) \\geq 0 for all x \\geq 0, which is not sufficient to derive the contradiction."
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "type": "conclude",
+        "statement": "h(x) > 0 \\text{ for all } x > 0",
+        "missing": [
+          {
+            "statement": "A correct justification that h(x) cannot be negative for any x > 0, possibly involving a different approach or additional assumptions."
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "f(x) < g(x) \\text{ for all } x \\geq 0"
+      }
+    ]
+  }
+}

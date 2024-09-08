@@ -1,0 +1,101 @@
+{
+  "type": "theorem",
+  "name": "Finite-dimensional Null Space implies Finite-dimensional Domain",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "V",
+      "kind": "vector space",
+      "property": "over the field of real numbers $\\mathbb{R}$"
+    },
+    {
+      "type": "let",
+      "variable": "T",
+      "kind": "linear transformation",
+      "property": "from V to $\\mathbb{R}$"
+    },
+    {
+      "type": "assume",
+      "statement": "The null space of $T$ is finite-dimensional."
+    }
+  ],
+  "conclusion": "V is finite dimensional.",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "N(T)",
+        "kind": "set",
+        "property": "null space of the linear transformation $T$"
+      },
+      {
+        "type": "let",
+        "variable": "R(T)",
+        "kind": "set",
+        "property": "range of the linear transformation $T$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\dim(R(T)) \\leq 1$",
+        "proof-method": "Since $R(T)$ is a subspace of $\\mathbb{R}$, its dimension is less than or equal to the dimension of $\\mathbb{R}$, which is 1."
+      },
+      {
+        "type": "assert",
+        "claim": "$R(T)$ is finite dimensional.",
+        "deduced_from": {
+          "from_context": [
+            "$\\dim(R(T)) \\leq 1$"
+          ]
+        },
+        "proof-method": "Any vector space with finite dimension is finite dimensional."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\dim(R(T)) + \\dim(N(T)) = \\dim(V)$",
+        "proof-method": "Rank-nullity theorem"
+      },
+      {
+        "type": "assert",
+        "claim": "$V$ must be finite dimensional.",
+        "deduced_from": {
+          "from_context": [
+            "$\\dim(R(T)) + \\dim(N(T)) = \\dim(V)$",
+            "$R(T)$ is finite dimensional.",
+            "The null space of $T$ is finite-dimensional."
+          ]
+        },
+        "proof-method": "The sum of two finite numbers is finite."
+      },
+      {
+        "type": "contradiction",
+        "assumption": "$V$ is infinite dimensional",
+        "proof": {
+          "type": "proof",
+          "steps": [
+            {
+              "type": "assert",
+              "claim": "$N(T)$ is infinite dimensional",
+              "deduced_from": {
+                "from_context": [
+                  "$\\dim(R(T)) + \\dim(N(T)) = \\dim(V)$",
+                  "$R(T)$ is finite dimensional.",
+                  "$V$ is infinite dimensional"
+                ]
+              },
+              "proof-method": "If the sum of two numbers is infinite and one of them is finite, then the other must be infinite."
+            },
+            {
+              "type": "conclude",
+              "statement": "This contradicts the assumption that the null space of $T$ is finite-dimensional.",
+              "errors": [
+                "The contradiction arises from assuming V is infinite dimensional, while the proof already concluded V is finite dimensional based on the rank-nullity theorem. The contradiction does not prove the theorem."
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

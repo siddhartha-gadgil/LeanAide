@@ -1,0 +1,105 @@
+{
+  "type": "theorem",
+  "name": "Comparison of Differentiable Functions",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from $\\mathbb{R}$ to $\\mathbb{R}$",
+      "property": "differentiable"
+    },
+    {
+      "type": "let",
+      "variable": "g",
+      "kind": "function from $\\mathbb{R}$ to $\\mathbb{R}$",
+      "property": "differentiable"
+    },
+    {
+      "type": "assume",
+      "statement": "$f(0) = g(0)$"
+    },
+    {
+      "type": "assume",
+      "statement": "$f'(x) \\leq g'(x)$ for all $x \\geq 0$"
+    }
+  ],
+  "conclusion": "$f(x) < g(x)$ for all $x \\geq 0$",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$f'(a) \\leq g'(a)$ for all $a \\geq 0$"
+      },
+      {
+        "type": "define",
+        "term": "$f'(a)$",
+        "statement": "$\\lim\\limits_{x \\to a} \\frac{f(x)-f(a)}{x - a}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim\\limits_{x \\to a} \\frac{f(x)-f(a)}{x - a} \\leq \\lim\\limits_{x \\to a} \\frac{g(x)-g(a)}{x - a}$",
+        "proof-method": "By definition of derivative",
+        "deduced_from": {
+          "from_context": [
+            "$f'(a) \\leq g'(a)$"
+          ]
+        }
+      },
+      {
+        "type": "assume",
+        "statement": "Assume that $f(x) > g(x)$ for some $x \\geq 0$"
+      },
+      {
+        "type": "assert",
+        "claim": "$f(x) - f(a) > g(x) - g(a)$",
+        "proof-method": "By the assumption"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\frac{f(x) - f(a)}{x - a} > \\frac{g(x) - g(a)}{x - a}$",
+        "proof-method": "By division"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim\\limits_{x \\to a} \\frac{f(x)-f(a)}{x - a} > \\lim\\limits_{x \\to a} \\frac{g(x)-g(a)}{x - a}$",
+        "proof-method": "Taking limits and limits preserve order",
+        "deduced_from": {
+          "from_context": [
+            "$\\frac{f(x) - f(a)}{x - a} > \\frac{g(x) - g(a)}{x - a}$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$f'(a) > g'(a)$",
+        "proof-method": "By the definition of the derivative"
+      },
+      {
+        "type": "contradiction",
+        "assumption": "$f'(a) \\leq g'(a)$",
+        "proof": {
+          "type": "proof",
+          "steps": [
+            {
+              "type": "assert",
+              "claim": "$f'(a) > g'(a)$",
+              "proof-method": "From previous steps"
+            }
+          ]
+        }
+      },
+      {
+        "type": "conclude",
+        "statement": "Hence, our assumption is wrong. Thus $f(a) \\leq g(a)$."
+      }
+    ]
+  },
+  "errors": [
+    {
+      "type": "error",
+      "statement": "The proof does not conclude $f(x) < g(x)$ for all $x \\geq 0$ but only shows $f(a) \\leq g(a)$."
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "type": "theorem",
+  "name": "Finite Dimensionality of Vector Space",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "V",
+      "kind": "vector space",
+      "property": "over $\\mathbb{R}$"
+    },
+    {
+      "type": "let",
+      "variable": "T",
+      "kind": "linear transformation",
+      "property": "$T: V \\rightarrow \\mathbb{R}$"
+    },
+    {
+      "type": "assume",
+      "statement": "The null space of $T$ is finite-dimensional"
+    }
+  ],
+  "conclusion": "Show that $V$ is finite-dimensional.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "The null space of $T = N(T)$ is a space of finite dimension.",
+        "deduced_from": {
+          "from_context": [
+            "The null space of $T$ is finite-dimensional"
+          ]
+        }
+      },
+      {
+        "type": "let",
+        "variable": "$\\dim N(T) = p$",
+        "kind": "natural number",
+        "value": "p",
+        "property": "$p \\in \\mathbb{N}$"
+      },
+      {
+        "type": "assert",
+        "claim": "The range of $T$ is $\\mathbb{R}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\dim(\\text{Range}(T)) = 1$",
+        "deduced_from": {
+          "known_results": [
+            "The dimension of $\\mathbb{R}$ as a vector space over $\\mathbb{R}$ is 1"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$\\dim(N(T)) + \\dim(\\text{Range}(T)) = \\dim(V)$",
+        "deduced_from": {
+          "known_results": [
+            "Rank-Nullity Theorem"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$p + 1 = \\dim(V)$",
+        "proof-method": "Substitution from previous assertions"
+      },
+      {
+        "type": "conclude",
+        "statement": "Thus, $V$ is a finite-dimensional vector space."
+      }
+    ],
+    "errors": [
+      {
+        "type": "problem",
+        "statement": "Incorrect assumption that $\\text{Range}(T) = \\mathbb{R}$ without proof",
+        "solved": false
+      }
+    ]
+  }
+}

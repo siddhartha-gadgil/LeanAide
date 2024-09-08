@@ -1,0 +1,115 @@
+{
+  "type": "theorem",
+  "name": "Comparison of Differentiable Functions",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from \\mathbb{R} to \\mathbb{R}",
+      "property": "differentiable"
+    },
+    {
+      "type": "let",
+      "variable": "g",
+      "kind": "function from \\mathbb{R} to \\mathbb{R}",
+      "property": "differentiable"
+    },
+    {
+      "type": "assume",
+      "statement": "f(0) = g(0)"
+    },
+    {
+      "type": "assume",
+      "statement": "f^{\\prime}(x) \\leq g^{\\prime}(x) \\forall x \\geq 0"
+    }
+  ],
+  "conclusion": "f(x) < g(x) \\forall x \\geq 0",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "h",
+        "kind": "function from \\mathbb{R} to \\mathbb{R}",
+        "value": "g(x) - f(x)"
+      },
+      {
+        "type": "assert",
+        "claim": "h is differentiable on \\mathbb{R} and h^{\\prime}(x) = g^{\\prime}(x) - f^{\\prime}(x) \\forall x \\in \\mathbb{R}",
+        "deduced_from": {
+          "known_results": [
+            "algebra of differentiable functions"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "h(0) = 0",
+        "deduced_from": {
+          "from_context": [
+            "f(0) = g(0)"
+          ]
+        }
+      },
+      {
+        "type": "assume",
+        "statement": "x > 0"
+      },
+      {
+        "type": "assert",
+        "claim": "By the Mean Value Theorem, there exists c \\in (0, x) such that h^{\\prime}(c) = \\frac{h(x) - h(0)}{x - 0} = \\frac{h(x)}{x}"
+      },
+      {
+        "type": "let",
+        "variable": "c",
+        "kind": "real number",
+        "property": "c \\in (0, x)"
+      },
+      {
+        "type": "assert",
+        "claim": "g^{\\prime}(c) - f^{\\prime}(c) = \\frac{h(x)}{x}"
+      },
+      {
+        "type": "assert",
+        "claim": "g^{\\prime}(c) = f^{\\prime}(c) + \\frac{h(x)}{x}"
+      },
+      {
+        "type": "assert",
+        "claim": "g^{\\prime}(c) \\geq f^{\\prime}(c)"
+      },
+      {
+        "type": "assert",
+        "claim": "h(x) \\geq 0 \\implies g(x) \\geq f(x)"
+      },
+      {
+        "type": "conclude",
+        "statement": "Since x > 0 was arbitrary, g(x) \\geq f(x) \\forall x > 0"
+      },
+      {
+        "type": "assert",
+        "claim": "f(0) = g(0) \\implies f(0) \\leq g(0)"
+      },
+      {
+        "type": "conclude",
+        "statement": "f(x) \\leq g(x) \\forall x \\geq 0",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Show that f(x) < g(x) for all x \\geq 0"
+          }
+        ]
+      }
+    ]
+  },
+  "errors": [
+    {
+      "type": "assert",
+      "claim": "g^{\\prime}(c) \\geq f^{\\prime}(c) for all c \\in \\mathbb{R} is incorrectly inferred"
+    },
+    {
+      "type": "assert",
+      "claim": "g(x) \\geq f(x) does not imply f(x) < g(x)"
+    }
+  ]
+}

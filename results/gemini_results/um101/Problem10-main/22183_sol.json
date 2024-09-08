@@ -1,0 +1,78 @@
+{
+  "type": "theorem",
+  "name": "Finite-dimensional Null Space implies Finite-dimensional Domain",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "V",
+      "kind": "vector space",
+      "property": "over the field $\\mathbb{R}$"
+    },
+    {
+      "type": "let",
+      "variable": "T",
+      "kind": "linear transformation",
+      "property": "from $V$ to $\\mathbb{R}$"
+    },
+    {
+      "type": "assume",
+      "statement": "The null space of $T$ is finite-dimensional."
+    }
+  ],
+  "conclusion": "V is finite dimensional.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "N(T)",
+        "value": "null space of $T$"
+      },
+      {
+        "type": "let",
+        "variable": "p",
+        "kind": "element of $\\mathbb{N}$",
+        "property": "$dim N(T) = p$"
+      },
+      {
+        "type": "let",
+        "variable": "R",
+        "value": "Range($T$)"
+      },
+      {
+        "type": "assert",
+        "claim": "$dim (Range(T)) = dim(R) = 1$",
+        "deduced_from": {
+          "known_results": [
+            "The dimension of $\\mathbb{R}$ as a vector space over $\\mathbb{R}$ is 1."
+          ]
+        },
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Prove that the range of T is $\\mathbb{R}$",
+            "solved": false
+          }
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$dim(N(T)) + dim(Range(T)) = dim(V)$",
+        "deduced_from": {
+          "known_results": [
+            "Rank-Nullity Theorem"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$p + 1 = dim(V)$"
+      },
+      {
+        "type": "conclude",
+        "statement": "Thus, $V$ is a finite-dimensional vector space."
+      }
+    ]
+  }
+}

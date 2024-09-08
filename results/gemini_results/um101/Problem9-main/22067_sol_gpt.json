@@ -1,0 +1,89 @@
+{
+  "type": "theorem",
+  "name": "Max value of function via limit",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function",
+      "value": "f: [0,1] \\to \\mathbb{R}",
+      "property": "positive and continuous"
+    },
+    {
+      "type": "let",
+      "variable": "M",
+      "value": "M=\\max \\{f(x): x \\in[0,1]\\}"
+    },
+    {
+      "type": "assume",
+      "statement": "The limit \\lim_{n \\to \\infty}(\\int_{0}^{1} f(x)^{n} \\, dx)^{1 / n} exists"
+    }
+  ],
+  "conclusion": "The limit is equal to $M$",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$f:[0,1] \\to \\mathbb{R}$ is bounded."
+      },
+      {
+        "type": "let",
+        "variable": "M",
+        "value": "M \\ge |f(x)|, \\forall x \\in [0,1]"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\int_{0}^{1} M \\, dx \\ge \\int_{0}^{1} |f(x)| \\, dx$",
+        "proof-method": "since $M$ is an upper bound of $|f(x)|$ on $[0,1]$"
+      },
+      {
+        "type": "assert",
+        "claim": "$M \\ge \\int_{0}^{1} |f(x)| \\, dx$"
+      },
+      {
+        "type": "assert",
+        "claim": "$Mn \\ge |f(x)|^n$ for some $n \\ge N_1$, $N_1 \\in \\mathbb{N}$",
+        "proof-method": "from the definition of limit"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\int_{0}^{1} Mn \\, dx \\ge \\int_{0}^{1} |f(x)|^n \\, dx$"
+      },
+      {
+        "type": "assert",
+        "claim": "$Mn \\ge \\int_{0}^{1} |f(x)|^n \\, dx$"
+      },
+      {
+        "type": "assert",
+        "claim": "$M \\ge (\\int_{0}^{1} |f(x)|^n \\, dx)^{1/n}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$M$ bounds $(\\int_{0}^{1} |f(x)|^n \\, dx)^{1/n}$ above."
+      },
+      {
+        "type": "conclude",
+        "statement": "$\\lim_{n \\to \\infty}(\\int_{0}^{1} |f(x)|^n \\, dx)^{1/n} \\le M$"
+      },
+      {
+        "type": "assume",
+        "statement": "$M \\le \\lim_{n \\to \\infty}(\\int_{0}^{1} |f(x)|^n \\, dx)^{1/n}$ exists"
+      },
+      {
+        "type": "conclude",
+        "statement": "$M = \\lim_{n \\to \\infty}(\\int_{0}^{1} |f(x)|^n \\, dx)^{1/n}$",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Complete proof for the lower bound $M \\le \\lim_{n \\to \\infty}(\\int_{0}^{1} |f(x)|^n \\, dx)^{1/n}$"
+          }
+        ]
+      }
+    ],
+    "errors": [
+      "Incorrect intermediate steps involving $Mn \\ge |f(x)|^n$ were not properly justified."
+    ]
+  }
+}

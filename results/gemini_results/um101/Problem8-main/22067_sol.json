@@ -1,0 +1,106 @@
+{
+  "type": "theorem",
+  "name": "Theorem",
+  "Hypothesis": [
+    {
+      "type": "let",
+      "Variable": "f",
+      "Kind": "function from \\(\\mathbb{R}\\) to \\(\\mathbb{R}\\)",
+      "Property": "differentiable"
+    },
+    {
+      "type": "let",
+      "Variable": "g",
+      "Kind": "function from \\(\\mathbb{R}\\) to \\(\\mathbb{R}\\)",
+      "Property": "differentiable"
+    },
+    {
+      "type": "assume",
+      "Statement": "\\( f(0)=g(0) \\)"
+    },
+    {
+      "type": "assume",
+      "Statement": "\\( f^{\\prime}(x) \\leq g^{\\prime}(x) \\) for all \\( x \\geq 0 \\)"
+    }
+  ],
+  "Conclusion": "\\( f(x) \\leq g(x) \\) for all \\( x \\geq 0 \\)",
+  "Status": "incomplete proof",
+  "Proof": {
+    "type": "proof",
+    "Steps": [
+      {
+        "type": "assert",
+        "Claim": " \\( f(x) \\) and \\( g(x) \\) are primitives of \\( f'(x) \\) and \\( g'(x) \\), respectively.",
+        "Deduced_from": {
+          "From_context": [
+            "\\( f(x) \\) and \\( g(x) \\) are differentiable"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "Claim": "\\( f'(x) \\) and \\( g'(x) \\) are continuous for all \\( x \\in \\mathbb{R} \\)",
+        "Deduced_from": {
+          "From_context": [
+            "\\( f'(x) \\) and \\( g'(x) \\) exist for all \\( x \\in \\mathbb{R} \\)"
+          ],
+          "Known_results": [
+            "Fundamental Theorem of Calculus (I FTOC)"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "Claim": "\\( f'(x) \\) and \\( g'(x) \\) are Riemann integrable over any closed interval",
+        "Deduced_from": {
+          "From_context": [
+            "\\( f'(x) \\) and \\( g'(x) \\) are continuous for all \\( x \\in \\mathbb{R} \\)"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "Claim": "\\( f(x)-f(0) = \\int\\limits_{0}^{x} f'(t) dt = \\int\\limits_{0}^{x} f'(t) dt \\)",
+        "Deduced_from": {
+          "From_context": [
+            "\\( f(0)=0 \\)"
+          ],
+          "Known_results": [
+            "Fundamental Theorem of Calculus (II FTOC)"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "Claim": "\\( g(x)-g(0) = \\int\\limits_{0}^{x} g'(t) dt = g(x) \\)",
+        "Deduced_from": {
+          "Known_results": [
+            "Fundamental Theorem of Calculus (II FTOC)"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "Claim": "\\( \\int\\limits_{0}^{x} f'(t) dt \\leq \\int\\limits_{0}^{x} g'(t) dt \\)",
+        "Deduced_from": {
+          "From_context": [
+            "\\( f'(t) \\leq g'(t) \\) for all \\( x > 0 \\) in \\( \\mathbb{R} \\)"
+          ],
+          "Known_results": [
+            "preservation of inequalities under integration"
+          ]
+        }
+      },
+      {
+        "type": "conclude",
+        "Statement": "\\( f(x) \\leq g(x) \\)",
+        "Missing": [
+          {
+            "type": "problem",
+            "Statement": "The proof does not address the strict inequality in the theorem statement. While it shows \\( f(x) \\leq g(x) \\), it does not demonstrate why \\( f(x) \\) cannot be equal to \\( g(x) \\) for \\( x > 0 \\)."
+          }
+        ]
+      }
+    ]
+  }
+}

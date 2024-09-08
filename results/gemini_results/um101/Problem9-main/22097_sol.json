@@ -1,0 +1,35 @@
+{
+  "type": "theorem",
+  "name": "Limit of Integral of Positive Continuous Function",
+  "Hypothesis": [
+    {
+      "type": "let",
+      "Variable": "f",
+      "Kind": "function from [0,1] to R",
+      "Property": "positive continuous function"
+    },
+    {
+      "type": "let",
+      "Variable": "M",
+      "Value": "$\\max \\{f(x): x \\in[0,1]\\}$",
+      "Kind": "real number",
+      "Property": "maximum value of f on [0,1]"
+    },
+    {
+      "type": "assume",
+      "Statement": "The limit $\\lim _{n \\rightarrow \\infty}\\left(\\int_{0}^{1} f(x)^{n} d x\\right)^{1 / n}$ exists."
+    }
+  ],
+  "Conclusion": "$\\lim _{n \\rightarrow \\infty}\\left(\\int_{0}^{1} f(x)^{n} d x\\right)^{1 / n} = M$",
+  "Status": "incomplete proof",
+  "Missing": [
+    {
+      "type": "problem",
+      "Statement": "Show that  $\\lim _{n \\rightarrow \\infty}\\left(\\int_{0}^{1} f(x)^{n} d x\\right)^{1 / n} \\le M$."
+    },
+    {
+      "type": "problem",
+      "Statement": "Show that  $\\lim _{n \\rightarrow \\infty}\\left(\\int_{0}^{1} f(x)^{n} d x\\right)^{1 / n} \\ge M$."
+    }
+  ]
+}

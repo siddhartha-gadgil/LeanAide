@@ -1,0 +1,30 @@
+{
+  "type": "theorem",
+  "name": "Finite Dimension of \\( V \\)",
+  "hypothesis": [
+    {
+      "type": "let",
+      "Variable": "V",
+      "Kind": "vector space",
+      "Property": "over \\( \\mathbb{R} \\)"
+    },
+    {
+      "type": "let",
+      "Variable": "T",
+      "Kind": "linear transformation",
+      "Value": "V \\rightarrow \\mathbb{R}"
+    },
+    {
+      "type": "assume",
+      "Statement": "the null space of \\( T \\) is finite-dimensional"
+    }
+  ],
+  "conclusion": "V is finite dimensional",
+  "status": "incomplete proof",
+  "missing": [
+    {
+      "type": "problem",
+      "Statement": "Show that the dimension of \\( V \\) is finite given that the null space of \\( T \\) is finite-dimensional and \\( \\mathbb{R} \\) is 1-dimensional as a vector space over \\( \\mathbb{R} \\)"
+    }
+  ]
+}

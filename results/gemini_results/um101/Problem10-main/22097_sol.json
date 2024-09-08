@@ -1,0 +1,46 @@
+{
+  "type": "theorem",
+  "name": "Finite-dimensional Null Space Implies Finite-dimensional Domain",
+  "status": "incomplete proof",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "V",
+      "kind": "vector space",
+      "property": "over the field $\\mathbb{R}$"
+    },
+    {
+      "type": "let",
+      "variable": "T",
+      "kind": "linear transformation",
+      "property": "from $V$ to $\\mathbb{R}$"
+    },
+    {
+      "type": "assume",
+      "statement": "The null space of $T$ is finite-dimensional."
+    }
+  ],
+  "conclusion": "$V$ is finite dimensional.",
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Let $N(T)$ denote the null space of $T$. Since $N(T)$ is finite-dimensional, we can choose a basis  $\\{v_1, v_2, ..., v_k\\}$ for $N(T)$. We need to show that we can extend this basis of $N(T)$ to a basis of $V$.",
+      "solved": false
+    },
+    {
+      "type": "problem",
+      "statement": "Recall that the range of $T$, denoted $R(T)$, is a subspace of $\\mathbb{R}$. Use the fact that the dimension of $\\mathbb{R}$ as a vector space over itself is 1 to deduce the possible dimensions of $R(T)$.",
+      "solved": false
+    },
+    {
+      "type": "problem",
+      "statement": "Use the Rank-Nullity Theorem, which states that for a linear transformation $T:V \\rightarrow W$,  $\\text{dim}(V) = \\text{dim}(N(T)) + \\text{dim}(R(T))$, to relate the dimensions of $V$, $N(T)$, and $R(T)$.",
+      "solved": false
+    },
+    {
+      "type": "problem",
+      "statement": "Combine the previous steps to conclude that  $\\text{dim}(V)$ is finite, and therefore $V$ is finite-dimensional.",
+      "solved": false
+    }
+  ]
+}

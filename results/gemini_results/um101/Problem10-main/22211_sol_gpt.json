@@ -1,0 +1,236 @@
+{
+  "type": "theorem",
+  "name": "Finite Dimensional Vector Space",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "V",
+      "kind": "vector space over \\( \\mathbb{R} \\)"
+    },
+    {
+      "type": "let",
+      "variable": "T",
+      "kind": "linear transformation",
+      "property": "\\( T: V \\rightarrow \\mathbb{R} \\)"
+    },
+    {
+      "type": "assume",
+      "statement": "The null space of \\( T \\) is finite-dimensional."
+    }
+  ],
+  "conclusion": "Show that \\( V \\) is finite dimensional.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "N(T)",
+        "kind": "null space of \\( T \\)"
+      },
+      {
+        "type": "let",
+        "variable": "R(T)",
+        "kind": "range space of \\( T \\)"
+      },
+      {
+        "type": "assert",
+        "claim": "From Rank-Nullity Theorem, \\( \\dim(V) = \\dim(N(T)) + \\dim(R(T)) \\)."
+      },
+      {
+        "type": "assert",
+        "claim": "\\( R(T) \\) is a subspace of \\( \\mathbb{R} \\)."
+      },
+      {
+        "type": "assert",
+        "claim": "\\( \\mathbb{R} \\) is a finite-dimensional vector space over \\( \\mathbb{R} \\) with \\( \\dim(\\mathbb{R}) = 1 \\)."
+      },
+      {
+        "type": "assert",
+        "claim": "\\( R(T) \\) is finite-dimensional and \\( \\dim(R(T)) \\leq \\dim(\\mathbb{R}) = 1 \\)."
+      },
+      {
+        "type": "let",
+        "variable": "rank(T)",
+        "value": "\\( \\dim(R(T)) \\)"
+      },
+      {
+        "type": "assert",
+        "claim": "\\( \\text{rank}(T) = 0 \\) or \\( \\text{rank}(T) = 1 \\)."
+      },
+      {
+        "type": "cases",
+        "on": "rank(T)",
+        "split-kind": "condition",
+        "proof-cases": [
+          {
+            "type": "case",
+            "condition": "\\( \\text{rank}(T) = 0 \\)",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assert",
+                  "claim": "\\( \\dim(R(T)) = 0 \\)"
+                },
+                {
+                  "type": "assert",
+                  "claim": "\\( R(T) = \\{ \\vec{0} \\} \\)"
+                },
+                {
+                  "type": "assert",
+                  "claim": "By definition of range space, \\( \\forall \\vec{v} \\in V, T(\\vec{v}) = \\vec{0} \\), i.e., \\( \\forall \\vec{v} \\in V, \\vec{v} \\in N(T) \\)."
+                },
+                {
+                  "type": "assert",
+                  "claim": "From Rank-Nullity Theorem, \\( N(T) \\) is a subspace of \\( V \\)."
+                },
+                {
+                  "type": "assert",
+                  "claim": "\\( V \\subseteq N(T) \\)"
+                },
+                {
+                  "type": "conclude",
+                  "statement": "\\( N(T) = V \\)"
+                },
+                {
+                  "type": "assert",
+                  "claim": "\\( N(T) \\) is finite-dimensional."
+                },
+                {
+                  "type": "conclude",
+                  "statement": "\\( V \\) is also finite-dimensional."
+                }
+              ]
+            }
+          },
+          {
+            "type": "case",
+            "condition": "\\( \\text{rank}(T) = 1 \\)",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assert",
+                  "claim": "\\( \\dim(R(T)) = 1 = \\dim(\\mathbb{R}) \\)"
+                },
+                {
+                  "type": "remark",
+                  "statement": "From assignment 12 or 13, p.3."
+                },
+                {
+                  "type": "assert",
+                  "claim": "\\( R(T) \\) is a subspace of \\( \\mathbb{R} \\) and \\( \\dim(R(T)) = \\dim(\\mathbb{R}) \\)"
+                },
+                {
+                  "type": "assert",
+                  "claim": "\\( R(T) = \\mathbb{R} \\)"
+                },
+                {
+                  "type": "assert",
+                  "claim": "\\( T \\) is surjective."
+                },
+                {
+                  "type": "assume",
+                  "statement": "Let the nullity be \\( n \\) and the basis for \\( N(T) \\) be \\( B_1 = \\{ u_1, u_2, ..., u_n \\} \\)."
+                },
+                {
+                  "type": "assert",
+                  "claim": "\\( \\dim(N(T)) = n \\) and \\( B_1 \\) is linearly independent."
+                },
+                {
+                  "type": "assert",
+                  "claim": "\\( V = R \\oplus N(T) \\)."
+                },
+                {
+                  "type": "assume",
+                  "statement": "\\( \\forall \\vec{v} \\in V, \\exists \\vec{r} \\in R \\) such that \\( \\vec{v} = \\vec{r} + \\vec{n} \\)."
+                },
+                {
+                  "type": "let",
+                  "variable": "\\( \\vec{v_o} \\)",
+                  "value": "an element of \\( V \\setminus \\text{span}(B_1) \\)"
+                },
+                {
+                  "type": "assert",
+                  "claim": "\\( \\vec{v_o} \\neq \\vec{0} \\)."
+                },
+                {
+                  "type": "assert",
+                  "claim": "\\( B_1 \\) is linearly independent and \\( \\vec{v_o} \\notin \\text{span}(B_1) \\)."
+                },
+                {
+                  "type": "let",
+                  "variable": "B_2",
+                  "value": "\\( B_1 \\cup \\{ \\vec{v_o} \\} \\)"
+                },
+                {
+                  "type": "assert",
+                  "claim": "\\( B_2 = \\{ u_1, u_2, ..., u_n, \\vec{v_o} \\} \\) is linearly independent."
+                },
+                {
+                  "type": "assert",
+                  "claim": "To the contrary, suppose \\( \\exists \\vec{v} \\in V \\setminus \\text{span}(B_2) \\)."
+                },
+                {
+                  "type": "assert",
+                  "claim": "\\( \\vec{r_1} = T(\\vec{v_o}) \\neq \\vec{0} \\)."
+                },
+                {
+                  "type": "assert",
+                  "claim": "\\( T(\\vec{v_o}) = \\vec{r_o} \\neq 0 \\)."
+                },
+                {
+                  "type": "assert",
+                  "claim": "\\( T(\\vec{v}) - \\frac{r_1}{r_o}T(\\vec{v_o}) = T(\\vec{v} - \\frac{k}{r_o}\\vec{v_o}) = \\vec{0} \\)."
+                },
+                {
+                  "type": "assert",
+                  "claim": "\\( \\vec{v} - \\frac{k}{r_o}\\vec{v_o} \\in N(T) \\)."
+                },
+                {
+                  "type": "assert",
+                  "claim": "\\( \\vec{v} - \\frac{k}{r_o}\\vec{v_o} = c_1 u_1 + c_2 u_2 + ... + c_n u_n \\)."
+                },
+                {
+                  "type": "assert",
+                  "claim": "\\( \\vec{v} = c_1 u_1 + ... + c_n u_n + y\\vec{v_o} \\)."
+                },
+                {
+                  "type": "assert",
+                  "claim": "\\( \\vec{v} \\in \\text{span}(B_2) \\)."
+                },
+                {
+                  "type": "assert",
+                  "claim": "This contradicts the assumption that \\( \\vec{v} \\in V \\setminus \\text{span}(B_2) \\)."
+                },
+                {
+                  "type": "conclude",
+                  "statement": "\\( \\text{span}(B_2) = V \\)."
+                },
+                {
+                  "type": "assert",
+                  "claim": "From the claim, \\( B_2 \\) is a basis of \\( V \\)."
+                },
+                {
+                  "type": "conclude",
+                  "statement": "\\( V \\) is finite-dimensional."
+                }
+              ],
+              "errors": [
+                "The proof contains notation inconsistencies and some steps are informal or unclear.",
+                "Some steps are not rigorously justified, and there are gaps in establishing the finite-dimensionality formally."
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Provide rigorous justification for each step in Case 2."
+    }
+  ]
+}

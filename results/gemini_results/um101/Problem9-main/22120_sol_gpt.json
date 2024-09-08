@@ -1,0 +1,84 @@
+{
+  "type": "theorem",
+  "name": "Limit of Integral of Positive Continuous Function",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function",
+      "property": "continuous and positive on $[0,1]$"
+    },
+    {
+      "type": "let",
+      "variable": "M",
+      "value": "$\\max \\{f(x): x \\in[0,1]\\}$"
+    },
+    {
+      "type": "assume",
+      "statement": "The limit $\\lim_{n \\rightarrow \\infty}(\\int_{0}^{1} f(x)^{n} d x)^{1 / n}$ exists."
+    }
+  ],
+  "conclusion": "The limit is equal to $M$.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "g",
+        "kind": "function",
+        "value": "$f(x)^n$"
+      },
+      {
+        "type": "assert",
+        "claim": "$0 < f(x)^n = g(x) \\leq M^n$ for all $x \\in [0,1]$",
+        "deduced_from": {
+          "from_context": [
+            "f is a positive continuous function on $[0,1]$",
+            "$M = \\max \\{f(x): x \\in[0,1]\\}$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$\\int_{0}^{1} g(x) dx \\leq \\int_{0}^{1} M^n dx = M^n$",
+        "deduced_from": {
+          "from_context": [
+            "$0 < g(x) \\leq M^n$ for all $x \\in [0,1]$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$(\\int_{0}^{1} g(x) dx)^{1/n} \\leq (M^n)^{1/n} = M$",
+        "deduced_from": {
+          "from_context": [
+            "$\\int_{0}^{1} g(x) dx \\leq M^n$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$(\\int_{0}^{1} g(x) dx)^{1/n}$ is bounded above by $M$",
+        "deduced_from": {
+          "from_context": [
+            "$(\\int_{0}^{1} g(x) dx)^{1/n} \\leq M$"
+          ]
+        }
+      }
+    ],
+    "errors": [
+      "The proof only shows an upper bound and does not establish the lower bound or the actual limit."
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Show that $(\\int_{0}^{1} f(x)^{n} d x)^{1 / n}$ is also bounded below by $M$."
+    },
+    {
+      "type": "problem",
+      "statement": "Show that the limit is indeed equal to $M$."
+    }
+  ]
+}

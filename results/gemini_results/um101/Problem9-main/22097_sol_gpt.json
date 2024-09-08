@@ -1,0 +1,57 @@
+{
+  "type": "theorem",
+  "name": "Limit of Power Integrals",
+  "hypothesis": [
+    {
+      "type": "assume",
+      "statement": "$f : [0,1] \\rightarrow \\mathbb{R}$ is a positive continuous function."
+    },
+    {
+      "type": "let",
+      "variable": "M",
+      "value": "$\\max \\{f(x) : x \\in [0,1] \\}$",
+      "kind": "real number"
+    },
+    {
+      "type": "assume",
+      "statement": "The limit $\\lim_{n \\rightarrow \\infty} \\left( \\int_0^1 f(x)^n \\, dx \\right)^{1/n}$ exists."
+    }
+  ],
+  "conclusion": "The limit $\\lim_{n \\rightarrow \\infty} \\left( \\int_0^1 f(x)^n \\ dx \\right)^{1/n} = M$.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We need to show that the limit is bounded above and below by $M$. The bound from above is easier."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\left( \\int_0^1 f(x)^n \\, dx \\right)^{1/n} \\leq M$",
+        "proof-method": "Since $f(x) \\leq M$ for all $x \\in [0,1]$, $f(x)^n \\leq M^n$."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\left( \\int_0^1 f(x)^n \\, dx \\right)^{1/n} \\geq M$",
+        "proof-method": "This is more complicated and involves the use of the fact that $f(x)$ achieves its maximum at some point in $[0,1]$.",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Prove the lower bound $\\left( \\int_0^1 f(x)^n \\, dx \\right)^{1/n} \\geq M$."
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, $\\lim_{n \\rightarrow \\infty} \\left( \\int_0^1 f(x)^n \\, dx \\right)^{1/n} = M$.",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Complete the proof of the lower bound to conclude the theorem."
+          }
+        ]
+      }
+    ]
+  }
+}

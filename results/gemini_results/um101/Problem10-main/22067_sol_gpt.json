@@ -1,0 +1,104 @@
+{
+  "type": "theorem",
+  "name": "Finite Dimensional Vector Space",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "V",
+      "kind": "vector space",
+      "property": "over $\\mathbb{R}$"
+    },
+    {
+      "type": "let",
+      "variable": "T",
+      "kind": "linear transformation",
+      "value": "$T: V \\rightarrow \\mathbb{R}$"
+    },
+    {
+      "type": "assume",
+      "statement": "$\\text{dim} (\\text{null } T)$ is finite"
+    }
+  ],
+  "conclusion": "$V$ is finite dimensional",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\text{dim(null } T)$ is finite",
+        "proof-method": "Given"
+      },
+      {
+        "type": "assert",
+        "claim": "$T: V \\rightarrow \\mathbb{R}$",
+        "proof-method": "Definition of $T$"
+      },
+      {
+        "type": "assert",
+        "claim": "If $T(v) = w$, where $w \\in \\mathbb{R}$, there exists a vector space $W$ such that $W = \\{w : T(v) = w, w \\in \\mathbb{R}\\}$",
+        "proof-method": "By definition of the image of $T$"
+      },
+      {
+        "type": "assert",
+        "claim": "$W \\subseteq \\mathbb{R}$",
+        "proof-method": "Property of $T$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\mathbb{R}$ has a basis of $\\{1\\}$",
+        "proof-method": "Known result"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\# \\text{basis}(W) \\leq \\# \\text{basis}(\\mathbb{R})$",
+        "proof-method": "Since $W \\subseteq \\mathbb{R}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\text{dim}(W) \\leq \\text{dim}(\\mathbb{R})$",
+        "proof-method": "Dimension of subspaces"
+      },
+      {
+        "type": "assert",
+        "claim": "$0 < \\text{dim}(W) \\leq 1$",
+        "proof-method": "Since $\\text{dim}(\\mathbb{R}) = 1$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\text{dim}(W) = 1$ or $0$",
+        "proof-method": "Possible dimensions"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\text{dim}(W)$ is finite",
+        "proof-method": "Finite values 0 or 1"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\text{Rank}(T)$ is finite",
+        "proof-method": "Since $\\text{dim}(W)$ is finite"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\text{dim}(V)$ is finite",
+        "deduced_from": {
+          "known_results": [
+            {
+              "statement": "Rank-Nullity Theorem"
+            }
+          ]
+        }
+      }
+    ],
+    "errors": [
+      "The steps between asserting that $\\text{dim}(\\text{null } T)$ is finite and concluding $\\text{dim}(V)$ is finite via the Rank-Nullity Theorem are not fully justified. Specifically, the proof does not correctly show that $V$ is finite-dimensional based on the given assumptions."
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Justify each step in detail, proving that $V$ must be finite-dimensional given that $\\text{null}(T)$ is finite-dimensional and $T: V \\to \\mathbb{R}$"
+    }
+  ]
+}

@@ -1,0 +1,229 @@
+{
+  "type": "theorem",
+  "name": "Finite-dimensional Vector Space",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "V",
+      "kind": "vector space",
+      "property": "over the field $\\mathbb{R}$"
+    },
+    {
+      "type": "let",
+      "variable": "T",
+      "kind": "linear transformation",
+      "property": "from V to $\\mathbb{R}$"
+    },
+    {
+      "type": "assume",
+      "statement": "The null space of T is finite-dimensional."
+    }
+  ],
+  "conclusion": "V is finite dimensional.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "$\\dim(R(T)) \\leq \\dim(\\mathbb{R}) = 1$",
+        "deduced_from": {
+          "from_context": [
+            "$R(T)$ is a subspace of $\\mathbb{R}$ (over $\\mathbb{R}$)"
+          ]
+        },
+        "proof-method": "Since $R(T)$ is a subspace of $\\mathbb{R}$, its dimension must be less than or equal to the dimension of $\\mathbb{R}$."
+      },
+      {
+        "type": "assert",
+        "claim": "Either $\\dim(R(T)) = 0$ or $\\dim(R(T)) = 1$",
+        "deduced_from": {
+          "from_context": [
+            "$\\dim(R(T)) \\leq \\dim(\\mathbb{R}) = 1$"
+          ]
+        }
+      },
+      {
+        "type": "cases",
+        "on": "$\\dim(R(T))$",
+        "split-kind": "match",
+        "proof-cases": [
+          {
+            "type": "case",
+            "condition": "$\\dim(R(T)) = 0$",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assert",
+                  "claim": "$R(T) =$ span $\\{\\} =$ span $\\{\\vec{0}\\}$",
+                  "proof-method": "If the dimension of R(T) is 0, its basis is the empty set, implying it is spanned by the zero vector."
+                },
+                {
+                  "type": "assert",
+                  "claim": "$T(\\vec{v}) = \\vec{0}$ for all $\\vec{v} \\in V$",
+                  "deduced_from": {
+                    "from_context": [
+                      "$R(T) =$ span $\\{\\} =$ span $\\{\\vec{0}\\}$"
+                    ]
+                  }
+                },
+                {
+                  "type": "assert",
+                  "claim": "$\\vec{v} \\in N(T)$ for all $\\vec{v} \\in V$",
+                  "deduced_from": {
+                    "from_context": [
+                      "$T(\\vec{v}) = \\vec{0}$ for all $\\vec{v} \\in V$",
+                      "$N(T) = \\{\\vec{v} \\in V \\mid T(\\vec{v})=\\vec{0}\\}$"
+                    ]
+                  }
+                },
+                {
+                  "type": "assert",
+                  "claim": "$N(T) = V$",
+                  "deduced_from": {
+                    "from_context": [
+                      "$\\vec{v} \\in N(T)$ for all $\\vec{v} \\in V$"
+                    ]
+                  }
+                },
+                {
+                  "type": "conclude",
+                  "statement": "Since $N(T)$ is finite dimensional (given), and $N(T) = V$,  it follows that $V$ is finite dimensional."
+                }
+              ]
+            }
+          },
+          {
+            "type": "case",
+            "condition": "$\\dim(R(T)) = 1$",
+            "proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assert",
+                  "claim": "There exists a non-zero vector $\\vec{c} \\in \\mathbb{R} \\backslash \\{\\vec{0}\\}$ such that $\\vec{c} \\in R(T)$",
+                  "deduced_from": {
+                    "from_context": [
+                      "$\\dim(R(T)) = 1$"
+                    ]
+                  }
+                },
+                {
+                  "type": "let",
+                  "variable": "$\\vec{u}$",
+                  "kind": "element of $\\mathbb{R}$"
+                },
+                {
+                  "type": "assert",
+                  "claim": "$\\frac{1}{\\alpha} \\vec{u} \\in \\mathbb{R}$",
+                  "deduced_from": {
+                    "from_context": [
+                      "$\\alpha \\in \\mathbb{R} \\backslash \\{0\\}$"
+                    ]
+                  },
+                  "proof-method": "$\\mathbb{R}$ is a field"
+                },
+                {
+                  "type": "assert",
+                  "claim": "$\\frac{\\vec{c}}{1} = \\vec{c} \\in \\mathbb{R}$ and $\\vec{c} = \\frac{\\vec{c}}{1} \\cdot \\frac{1}{\\alpha} \\vec{u}$",
+                  "proof-method": "$\\mathbb{R}$ is a field"
+                },
+                {
+                  "type": "assert",
+                  "claim": "$(\\frac{1}{\\alpha} \\vec{u}) \\vec{c} = \\vec{u}(\\frac{\\vec{c}}{\\alpha})$",
+                  "deduced_from": {
+                    "from_context": [
+                      "$\\vec{c} = \\frac{\\vec{c}}{1} \\cdot \\frac{1}{\\alpha} \\vec{u}$"
+                    ]
+                  }
+                },
+                {
+                  "type": "assert",
+                  "claim": "$(\\frac{\\vec{u}}{\\alpha})\\cdot \\vec{c} = \\vec{u}(\\frac{\\vec{c}}{\\alpha}) \\in R(T)$",
+                  "deduced_from": {
+                    "from_context": [
+                      "$(\\frac{1}{\\alpha} \\vec{u}) \\vec{c} = \\vec{u}(\\frac{\\vec{c}}{\\alpha})$",
+                      "$\\vec{c} \\in R(T)$",
+                      "$\\alpha \\neq 0 \\in \\mathbb{R}$"
+                    ]
+                  },
+                  "proof-method": "$R(T)$ is a subspace of $\\mathbb{R}$"
+                },
+                {
+                  "type": "assert",
+                  "claim": "$\\mathbb{R} \\in R(T)$",
+                  "deduced_from": {
+                    "from_context": [
+                      "$(\\frac{\\vec{u}}{\\alpha})\\cdot \\vec{c} = \\vec{u}(\\frac{\\vec{c}}{\\alpha}) \\in R(T)$"
+                    ]
+                  },
+                  "proof-method": "Since $\\vec{u}$ was arbitrary"
+                },
+                {
+                  "type": "assert",
+                  "claim": "$R(T) = \\mathbb{R}$",
+                  "deduced_from": {
+                    "from_context": [
+                      "$\\mathbb{R} \\in R(T)$"
+                    ]
+                  }
+                },
+                {
+                  "type": "let",
+                  "variable": "n",
+                  "kind": "natural number",
+                  "property": "$n = \\dim(N(T))$"
+                },
+                {
+                  "type": "assert",
+                  "claim": "There exists a basis $B = \\{\\vec{v}_1, ..., \\vec{v}_n\\}$ of $N(T)$",
+                  "deduced_from": {
+                    "from_context": [
+                      "$n = \\dim(N(T))$"
+                    ]
+                  }
+                },
+                {
+                  "type": "assert",
+                  "claim": "$\\dim(N(T)) + \\dim(R(T)) = n + 1$",
+                  "deduced_from": {
+                    "from_context": [
+                      "$n = \\dim(N(T))$",
+                      "$\\dim(R(T)) = 1$"
+                    ]
+                  }
+                },
+                {
+                  "type": "assert",
+                  "claim": "$\\dim(V) = n+1$",
+                  "deduced_from": {
+                    "from_context": [
+                      "$\\dim(N(T)) + \\dim(R(T)) = n + 1$"
+                    ]
+                  },
+                  "proof-method": "By the Rank-Nullity Theorem, when V is finite-dimensional"
+                },
+                {
+                  "type": "remark",
+                  "statement": "The proof assumes V is finite-dimensional to apply the Rank-Nullity Theorem. The case where dim V is not finite needs further justification."
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "type": "remark",
+        "statement": "The proof attempts to show that if $\\dim V$ is not finite, then $N(T)$ cannot be finite-dimensional. However, this part of the proof is not complete and requires further justification."
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Prove that if $\\dim V$ is not finite, then $N(T)$ cannot have a finite dimension.",
+      "solved": false
+    }
+  ]
+}

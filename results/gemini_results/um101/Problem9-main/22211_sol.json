@@ -1,0 +1,112 @@
+{
+  "type": "theorem",
+  "name": null,
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from [0,1] to R",
+      "property": "positive continuous function"
+    },
+    {
+      "type": "let",
+      "variable": "M",
+      "value": "$\\max \\{f(x): x \\in[0,1]\\}$",
+      "kind": "real number",
+      "property": "maximum value of f on [0,1]"
+    },
+    {
+      "type": "assume",
+      "statement": "The limit $\\lim _{n \\rightarrow \\infty}\\left(\\int_{0}^{1} f(x)^{n} d x\\right)^{1 / n}$ exists."
+    }
+  ],
+  "conclusion": "$\\lim _{n \\rightarrow \\infty}\\left(\\int_{0}^{1} f(x)^{n} d x\\right)^{1 / n} = M$",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "$M$ is maximum of $f$ (it is attained in $[0,1]$ by EVT)"
+      },
+      {
+        "type": "assert",
+        "claim": "$0 < f(x) \\leq M$ $\\forall x \\in (0,1)$",
+        "deduced_from": {
+          "from_context": [
+            "f is positive",
+            "M is the maximum of f"
+          ],
+          "known_results": [
+            "Extreme Value Theorem"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$(f(x))^n \\leq M^n$ $\\forall x \\in (0,1)$ $\\forall n \\in \\mathbb{N}$",
+        "deduced_from": {
+          "from_context": [
+            "$0 < f(x) \\leq M$ $\\forall x \\in (0,1)$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$\\int\\limits_0^1 (f(x))^n dx \\leq \\int\\limits_0^1 M^n dx = M^n (1-0) = M^n$",
+        "deduced_from": {
+          "from_context": [
+            "$(f(x))^n \\leq M^n$ $\\forall x \\in (0,1)$ $\\forall n \\in \\mathbb{N}$"
+          ],
+          "known_results": [
+            "Comparison property of integrals"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$\\left(\\int\\limits_0^1 (f(x))^n dx\\right)^h \\leq M$ $\\forall n \\in \\mathbb{N}$",
+        "errors": [
+          "The exponent should be 1/n, not h"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim\\limits_{h \\to \\infty} \\left(\\int\\limits_0^1 (f(x))^n dx\\right)^h \\leq M$",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Justify taking limits on both sides of the inequality",
+            "solved": false
+          }
+        ],
+        "errors": [
+          "The limit variable should be n, not h"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim\\limits_{h \\to \\infty} \\left(\\int\\limits_0^1 (f(x))^n dx\\right)^{2h} = m$",
+        "errors": [
+          "The limit variable should be n, not h",
+          "Unclear what m represents"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\lim\\limits_{h \\to \\infty} \\left(\\int\\limits_0^1 \\frac{(f(x))^n}{M} dx\\right)^{2h} = 1$",
+        "errors": [
+          "The limit variable should be n, not h",
+          "No justification for this equality is provided"
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Show that the limit is bounded below by M",
+      "solved": false
+    }
+  ]
+}

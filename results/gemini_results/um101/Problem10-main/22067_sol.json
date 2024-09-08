@@ -1,0 +1,137 @@
+{
+  "type": "theorem",
+  "name": "Finite-Dimensional Vector Space",
+  "hypothesis": [
+    {
+      "type": "let",
+      "Variable": "V",
+      "Kind": "vector space",
+      "Property": "over $\\mathbb{R}$"
+    },
+    {
+      "type": "let",
+      "Variable": "T",
+      "Kind": "linear transformation",
+      "Property": "$T: V \\rightarrow \\mathbb{R}$"
+    },
+    {
+      "type": "assume",
+      "Statement": "The null space of $T$ is finite-dimensional."
+    }
+  ],
+  "conclusion": "$V$ is finite dimensional.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "\\(\\text{dim(null }T)\\) is finite.",
+        "deduced_from": {
+          "from_context": [
+            "The null space of $T$ is finite-dimensional."
+          ]
+        },
+        "proof-method": "From the hypothesis"
+      },
+      {
+        "type": "let",
+        "Variable": "w",
+        "Kind": "element of $\\mathbb{R}$",
+        "Property": "$T(v) = w$, where $v \\in V$"
+      },
+      {
+        "type": "let",
+        "Variable": "W",
+        "Kind": "vector space",
+        "Property": "$W = \\{w : T(v) = w, w \\in \\mathbb{R}\\}$"
+      },
+      {
+        "type": "assert",
+        "claim": "$W \\subseteq \\mathbb{R}$",
+        "proof-method": "By definition of W"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\{1\\}$ is a basis for $\\mathbb{R}$",
+        "proof-method": "Standard result"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\# \\text{basis}(W)  \\leq  \\# \\text{basis}(\\mathbb{R})$",
+        "deduced_from": {
+          "from_context": [
+            "$W \\subseteq \\mathbb{R}$"
+          ]
+        },
+        "proof-method": "The number of basis vectors in a subspace is less than or equal to the number of basis vectors in the vector space."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\text{dim}(W) \\leq \\text{dim}(\\mathbb{R})$",
+        "deduced_from": {
+          "from_context": [
+            "$\\# \\text{basis}(W)  \\leq  \\# \\text{basis}(\\mathbb{R})$"
+          ]
+        },
+        "proof-method": "The dimension of a vector space is equal to the number of vectors in its basis."
+      },
+      {
+        "type": "assert",
+        "claim": "$0 < \\text{dim}(W) \\leq 1$",
+        "errors": [
+          "The dimension of W can be 0 if W is the zero vector space."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$\\text{dim}(W) = 1$ or $0$",
+        "deduced_from": {
+          "from_context": [
+            "$0 < \\text{dim}(W) \\leq 1$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$\\text{dim}(W)$ is finite"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\text{Rank}(T)$ is finite.",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Show that because $\\text{dim}(W)$ is finite, then $\\text{Rank}(T)$ is finite."
+          }
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "$\\text{dim}(V)$ is finite.",
+        "deduced_from": {
+          "from_context": [
+            "$\\text{dim(null }T)$ is finite",
+            "$\\text{Rank}(T)$ is finite."
+          ],
+          "known_results": [
+            "Rank-Nullity Theorem"
+          ]
+        },
+        "errors": [
+          "The Rank-Nullity Theorem only applies to finite-dimensional vector spaces. It is circular to use the theorem to prove that V is finite-dimensional."
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Prove that because the dimension of the image of T ($\\text{dim}(W)$) is finite, then $\\text{Rank}(T)$ is finite"
+    },
+    {
+      "type": "problem",
+      "statement": "Show that if V is infinite-dimensional, the Rank-Nullity Theorem cannot be used to conclude that V is finite-dimensional."
+    }
+  ]
+}

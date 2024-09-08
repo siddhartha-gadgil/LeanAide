@@ -1,0 +1,96 @@
+{
+  "type": "theorem",
+  "name": "Limit of powers of a positive continuous function",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function",
+      "property": "positive continuous",
+      "value": "f:[0,1] \\rightarrow \\mathbb{R}"
+    },
+    {
+      "type": "let",
+      "variable": "M",
+      "value": "M=\\max \\{f(x): x \\in[0,1]\\}"
+    },
+    {
+      "type": "assume",
+      "statement": "\\lim _{n \\rightarrow \\infty}\\left(\\int_{0}^{1} f(x)^{n} d x\\right)^{1 / n} \\text{ exists}"
+    }
+  ],
+  "conclusion": "\\lim _{n \\rightarrow \\infty}\\left(\\int_{0}^{1} f(x)^{n} d x\\right)^{1 / n} = M",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "claim": "0 \\leq (f(x))^n \\leq M^n \\quad \\forall x \\in [0,1]",
+        "proof-method": "By definition of M"
+      },
+      {
+        "type": "assert",
+        "claim": "0 \\leq (f(x))^n \\leq M^n \\quad \\forall n \\in \\mathbb{N}, \\exists x \\in [0,1]",
+        "proof-method": "Since (f(x))^n is non-negative"
+      },
+      {
+        "type": "assert",
+        "claim": "(f(x))^n \\text{ is continuous on } [0,1]",
+        "proof-method": "Algebra of continuous functions"
+      },
+      {
+        "type": "assert",
+        "claim": "(f(x))^n \\text{ is Riemann integrable on } [0,1]",
+        "proof-method": "Continuity implies Riemann integrability"
+      },
+      {
+        "type": "assert",
+        "claim": "0 \\leq \\int_0^1 (f(x))^n dx \\leq M^n",
+        "proof-method": "Comparison rule for integrals"
+      },
+      {
+        "type": "assert",
+        "claim": "0 \\leq (\\int_0^1 (f(x))^n dx)^{1/n} \\leq M",
+        "proof-method": "Taking nth root"
+      },
+      {
+        "type": "let",
+        "variable": "S",
+        "value": "\\{(\\int_0^1 (f(x))^n dx)^{1/n} : n \\in \\mathbb{N}\\}"
+      },
+      {
+        "type": "assert",
+        "claim": "S \\text{ is bounded above by } M",
+        "proof-method": "From previous inequality"
+      },
+      {
+        "type": "assert",
+        "claim": "S \\text{ is non-empty}",
+        "proof-method": "By definition"
+      },
+      {
+        "type": "assert",
+        "claim": "\\sup S \\text{ exists}",
+        "proof-method": "S is bounded and non-empty"
+      },
+      {
+        "type": "assert",
+        "claim": "\\{(\\int_0^1 (f(x))^n dx)^{1/n}\\}_{n \\in \\mathbb{N}} \\text{ is an increasing sequence}",
+        "errors": [
+          "Not proved"
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "\\lim_{n \\rightarrow \\infty} (\\int_0^1 (f(x))^n dx)^{1/n} = M",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Prove that \\{ (\\int_0^1 (f(x))^n dx)^{1/n}\\}_{n \\in \\mathbb{N}} is an increasing sequence."
+          }
+        ]
+      }
+    ]
+  }
+}

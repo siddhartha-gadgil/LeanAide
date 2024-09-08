@@ -1,0 +1,64 @@
+{
+  "type": "theorem",
+  "name": "Limit of Integrals and Maximum Value",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from [0,1] to R",
+      "property": "positive continuous function"
+    },
+    {
+      "type": "let",
+      "variable": "M",
+      "value": "$\\max \\{f(x): x \\in[0,1]\\}$",
+      "kind": "real number",
+      "property": "maximum value of f on [0,1]"
+    },
+    {
+      "type": "assume",
+      "statement": "The limit $\\lim _{n \\rightarrow \\infty}\\left(\\int_{0}^{1} f(x)^{n} d x\\right)^{1 / n}$ exists."
+    }
+  ],
+  "conclusion": "The limit $\\lim _{n \\rightarrow \\infty}\\left(\\int_{0}^{1} f(x)^{n} d x\\right)^{1 / n}$ is equal to M.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "remark",
+        "statement": "We will prove the theorem by showing that the limit is bounded above and below by M."
+      },
+      {
+        "type": "assert",
+        "claim": "$M \\ge \\int_0^1 |f(x)| \\, dx$",
+        "proof-method": "Direct proof",
+        "calculation": [
+          "$\\int_0^1 M \\, dx \\ge \\int_0^1 |f(x)| \\, dx$ (since $M \\ge |f(x)|$ for all $x \\in [0,1]$)",
+          "$M \\ge \\int_0^1 |f(x)| \\, dx$"
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$M \\ge \\left(\\int_0^1 |f(x)|^n \\, dx\\right)^{1/n}$",
+        "proof-method": "Direct proof",
+        "calculation": [
+          "$Mn \\ge |f(x)|n$ (since $M \\ge |f(x)|$)",
+          "$\\int_0^1 Mn \\, dx \\ge \\int_0^1 |f(x)|^n \\, dx$",
+          "$Mn \\ge \\int_0^1 |f(x)|^n \\, dx$",
+          "$M \\ge \\left(\\int_0^1 |f(x)|^n \\, dx\\right)^{1/n}$"
+        ]
+      },
+      {
+        "type": "conclude",
+        "statement": "Therefore, $M$ is an upper bound for the sequence $\\left\\{ \\left(\\int_0^1 |f(x)|^n \\, dx\\right)^{1/n} \\right\\}$.",
+        "missing": [
+          {
+            "type": "problem",
+            "statement": "Show that $\\lim_{n \\to \\infty} \\left(\\int_0^1 |f(x)|^n \\, dx\\right)^{1/n} \\ge M$."
+          }
+        ]
+      }
+    ]
+  }
+}

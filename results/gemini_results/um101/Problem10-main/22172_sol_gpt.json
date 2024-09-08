@@ -1,0 +1,145 @@
+{
+  "type": "theorem",
+  "name": "Finite Dimensional Vector Space",
+  "hypothesis": [
+    {
+      "type": "let",
+      "Variable": "V",
+      "Kind": "vector space over \\( \\mathbb{R} \\)"
+    },
+    {
+      "type": "let",
+      "Variable": "T",
+      "Kind": "linear transformation",
+      "Value": "T: V \\rightarrow \\mathbb{R}"
+    },
+    {
+      "type": "assume",
+      "Statement": "The null space of \\( T \\) is finite-dimensional."
+    }
+  ],
+  "conclusion": "Show that \\( V \\) is finite dimensional.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "assert",
+        "Claim": "\\( R(T) \\) is a subspace of \\( \\mathbb{R} \\).",
+        "Proof-method": "By definition of range space."
+      },
+      {
+        "type": "assert",
+        "Claim": "\\( \\dim(R(T)) \\leq 1 \\).",
+        "Deduced_from": {
+          "From_context": [
+            "\\( R(T) \\subseteq \\mathbb{R} \\)"
+          ]
+        },
+        "Proof-method": "Since \\( \\dim(\\mathbb{R}) = 1 \\)."
+      },
+      {
+        "type": "cases",
+        "On": "\\( \\dim(R(T)) \\)",
+        "Split-kind": "condition",
+        "Proof-cases": [
+          {
+            "type": "case",
+            "Condition": "\\( \\dim(R(T)) = 0 \\)",
+            "Proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assert",
+                  "Claim": "The basis of \\( R(T) \\) is the empty set.",
+                  "Proof-method": "By definition of dimension 0."
+                },
+                {
+                  "type": "assert",
+                  "Claim": "For any \\( \\vec{v} \\in V \\), we have \\( T(\\vec{v}) = \\vec{0} \\).",
+                  "Deduced_from": {
+                    "From_context": [
+                      "\\( R(T) = \\{\\vec{0}\\} \\)"
+                    ]
+                  },
+                  "Proof-method": "Since \\( T(\\vec{v}) \\in R(T) \\) for all \\( \\vec{v} \\in V \\)."
+                },
+                {
+                  "type": "assert",
+                  "Claim": "We conclude that \\( N(T) = V \\).",
+                  "Proof-method": "By definition of null space."
+                },
+                {
+                  "type": "assert",
+                  "Claim": "Since \\( N(T) \\) is finite dimensional, \\( V \\) is also finite dimensional.",
+                  "Deduced_from": {
+                    "From_context": [
+                      "\\( N(T) = V \\)"
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "case",
+            "Condition": "\\( \\dim(R(T)) = 1 \\)",
+            "Proof": {
+              "type": "proof",
+              "steps": [
+                {
+                  "type": "assert",
+                  "Claim": "There exists a non-zero vector \\( \\vec{c} \\in \\mathbb{R} \\\\ \\{\\vec{0}\\} \\) such that \\( \\vec{c} \\in R(T) \\).",
+                  "Proof-method": "By definition of dimension 1."
+                },
+                {
+                  "type": "assert",
+                  "Claim": "Every element of \\( \\mathbb{R} \\) belongs to \\( R(T) \\), implying \\( R(T) = \\mathbb{R} \\).",
+                  "Errors": [
+                    "Incorrect handling of field properties and arbitrary vector assumptions."
+                  ]
+                },
+                {
+                  "type": "assert",
+                  "Claim": "Let \\( n = \\dim(N(T)) \\). There exists a basis for \\( N(T) \\) consisting of \\( n \\) vectors.",
+                  "Proof-method": "By definition of basis."
+                },
+                {
+                  "type": "assert",
+                  "Claim": "\\( \\dim(N(T)) + \\dim(R(T)) = n + 1 \\).",
+                  "Proof-method": "By definition of dimension."
+                },
+                {
+                  "type": "assert",
+                  "Claim": "Using the Rank-Nullity Theorem, we can conclude that \\( \\dim(V) = n + 1 \\), which is finite.",
+                  "Known_results": [
+                    "Rank-Nullity Theorem"
+                  ],
+                  "Errors": [
+                    "Assumption that \\( V \\) is finite-dimensional not properly justified."
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "Statement": "Proper justification for the case when \\( \\dim(R(T)) = 1 \\).",
+      "Solved": false
+    },
+    {
+      "type": "problem",
+      "Statement": "Proper application of the Rank-Nullity Theorem.",
+      "Solved": false
+    }
+  ],
+  "errors": [
+    "Incorrect handling of arbitrary vectors and field properties in Case 2.",
+    "Assumption that \\( V \\) is finite-dimensional not properly justified."
+  ]
+}

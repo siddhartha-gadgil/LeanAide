@@ -1,0 +1,75 @@
+{
+  "type": "theorem",
+  "name": "Finite Dimensionality of V",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "V",
+      "kind": "vector space over \\( \\mathbb{R} \\)"
+    },
+    {
+      "type": "assume",
+      "statement": "T: V \\rightarrow \\mathbb{R} is a linear transformation such that the null space of T is finite-dimensional."
+    }
+  ],
+  "conclusion": "V is finite dimensional.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "N(T)",
+        "value": "null space of T",
+        "kind": "subspace of V"
+      },
+      {
+        "type": "let",
+        "variable": "R(T)",
+        "value": "range space of T",
+        "kind": "subspace of \\( \\mathbb{R} \\)"
+      },
+      {
+        "type": "assert",
+        "claim": "\\dim(R(T)) \\leq \\dim(\\mathbb{R}) \\implies \\dim(R(T)) \\leq 1",
+        "deduced_from": {
+          "known_results": [
+            "Subspace of a finite-dimensional vector space has dimension at most that of the vector space."
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "R(T) is finite dimensional",
+        "proof-method": "Since \\( \\mathbb{R} \\) is finite dimensional."
+      },
+      {
+        "type": "assert",
+        "claim": "\\dim(R(T)) + \\dim(N(T)) = \\dim(V)",
+        "deduced_from": {
+          "known_results": [
+            "Rank-Nullity Theorem"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "V must be finite dimensional",
+        "proof-method": "Both R(T) and N(T) are finite dimensional."
+      },
+      {
+        "type": "assert",
+        "claim": "If V is infinite dimensional, then N(T) is infinite dimensional which is a contradiction.",
+        "errors": [
+          "The proof that \\( N(T) \\) would be infinite dimensional if \\( V \\) were infinite dimensional is not justified."
+        ]
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Justify why \\( N(T) \\) would be infinite dimensional if \\( V \\) were infinite dimensional."
+    }
+  ]
+}

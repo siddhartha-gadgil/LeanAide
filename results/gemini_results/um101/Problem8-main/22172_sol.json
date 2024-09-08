@@ -1,0 +1,90 @@
+{
+  "type": "theorem",
+  "name": "Theorem",
+  "Hypothesis": [
+    {
+      "type": "let",
+      "Variable": "f, g",
+      "Kind": "function from R to R",
+      "Property": "differentiable"
+    },
+    {
+      "type": "assume",
+      "Statement": "$f(0)=g(0)$"
+    },
+    {
+      "type": "assume",
+      "Statement": "$f^{\\prime}(x) \\leq g^{\\prime}(x)$ for all $x \\geq 0$"
+    }
+  ],
+  "Conclusion": "$f(x) < q(x)$ for all $x \\geq 0$",
+  "Status": "wrong proof",
+  "Proof": {
+    "type": "proof",
+    "Steps": [
+      {
+        "type": "let",
+        "Variable": "h",
+        "Kind": "function from R to R",
+        "Property": "$h(x)=g(x)-f(x)$ $\\forall x \\in \\mathbb{R}$"
+      },
+      {
+        "type": "assert",
+        "Claim": "$h$ is differentiable on $\\mathbb{R}$ and $h'(x)=g'(x)-f'(x)$ $\\forall x \\in \\mathbb{R}$",
+        "Deduced_from": {
+          "Known_results": [
+            "algebra of differentiable functions"
+          ],
+          "From_context": [
+            "$g$, $f$ are diff. on $\\mathbb{R}$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "Claim": "$h(x)=g(x)-f(x)=0$",
+        "Deduced_from": {
+          "From_context": [
+            "$g(0)=f(0)$"
+          ]
+        }
+      },
+      {
+        "type": "let",
+        "Variable": "x",
+        "Property": "$x>0$"
+      },
+      {
+        "type": "assert",
+        "Claim": "Since $h$ is diff. on $\\mathbb{R}$, it is differentiable on $[-1,x] = [0,x]$  ($x+1>0 \\implies 0<1$)."
+      },
+      {
+        "type": "assert",
+        "Claim": "By the mean value theorem,  $h'(c)=\\frac{h(x)-h(0)}{x-0} = \\frac{h(x)}{x}$ (note: $x\\neq 0$) $\\implies g'(c)-f'(c) = \\frac{h(x)}{x}$  $\\implies g'(c)=f'(c)+\\frac{h(x)}{x}$ $\\forall c \\in (0,x)$. so, $g'(c)\\geq f'(c)$."
+      },
+      {
+        "type": "assert",
+        "Claim": "now, $g'(c)\\geq f'(c)$ $\\forall c\\in \\mathbb{R}$. so, $\\frac{h(x)}{x}\\geq 0$."
+      },
+      {
+        "type": "assert",
+        "Claim": "$\\implies \\frac{h(x)}{x}\\times x \\geq 0.x$ $\\implies$ $h(x)\\geq 0$. $\\implies g(x)-f(x)\\geq 0$ $\\implies g(x)\\geq f(x)$."
+      },
+      {
+        "type": "assert",
+        "Claim": "since $x>0$ was arbitrary, $g(x)\\geq f(x)$ $\\forall x>0$."
+      },
+      {
+        "type": "assert",
+        "Claim": "Also, $f(0)=g(0) \\implies f(0)\\leq g(0)$."
+      },
+      {
+        "type": "conclude",
+        "Statement": "Thus, $f(x)\\leq g(x)$ $\\forall x \\geq 0$.",
+        "Errors": [
+          "The proof incorrectly concludes that $f(x) \\le g(x)$ for all $x \\ge 0$. The correct conclusion should be $f(x) \\le g(x)$ for all $x \\ge 0$."
+        ]
+      }
+    ]
+  }
+}

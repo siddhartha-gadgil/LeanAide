@@ -1,0 +1,95 @@
+{
+  "type": "theorem",
+  "name": "Theorem: Comparison of Differentiable Functions",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from R to R",
+      "property": "differentiable"
+    },
+    {
+      "type": "let",
+      "variable": "g",
+      "kind": "function from R to R",
+      "property": "differentiable"
+    },
+    {
+      "type": "assume",
+      "statement": "$f(0)=g(0)$"
+    },
+    {
+      "type": "assume",
+      "statement": "$f^{\\prime}(x) \\leq g^{\\prime}(x)$ for all $x \\geq 0$"
+    }
+  ],
+  "conclusion": "$f(x) < g(x)$ for all $x \\geq 0$",
+  "status": "wrong proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "<anonymous>",
+        "statement": "Let $f$ and $g$ be primitives of $f'$ and $g'$ respectively."
+      },
+      {
+        "type": "assert",
+        "claim": "$\\int_{0}^{x} f'(t) dt = f(x)-f(0)$ for all $x \\ge 0$, where $x \\in \\mathbb{R}$",
+        "deduced_from": {
+          "known_results": [
+            "Second Fundamental Theorem of Calculus"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$\\int_{0}^{x} g'(t) dt = g(x)-g(0)$ for all $x \\ge 0$, where $x \\in \\mathbb{R}$",
+        "deduced_from": {
+          "known_results": [
+            "Second Fundamental Theorem of Calculus"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$\\int_{0}^{x} f'(t)dt  \\le  \\int_{0}^{x} g'(t)dt$ for all $x \\ge 0$",
+        "deduced_from": {
+          "from_context": [
+            "$f(t) = g(t)$ for all $t \\in [0,\\infty)$",
+            "$f(0)=g(0)$"
+          ]
+        },
+        "proof-method": "Since $[0,x]$ is a subset of $[0,\\infty)$ for all $x \\ge 0$"
+      },
+      {
+        "type": "assert",
+        "claim": "$\\int_{0}^{x} f'(t)dt  \\le  \\int_{0}^{x} g'(t)dt$ for all $x \\ge 0$",
+        "deduced_from": {
+          "from_context": [
+            "$f(t) \\le g(t)$ for all $t \\in [0,x]$ where $x \\ge 0$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$f(x)-f(0) \\le g(x)-g(0)$ for all $n \\ge 0$",
+        "proof-method": "As shown above"
+      },
+      {
+        "type": "conclude",
+        "statement": "$f(x) \\le g(x)$ for all $n \\ge 0$",
+        "deduced_from": {
+          "from_context": [
+            "$f(x)-f(0) \\le g(x)-g(0)$ for all $n \\ge 0$",
+            "$f(0)=g(0)$"
+          ]
+        }
+      }
+    ],
+    "errors": [
+      "The proof incorrectly assumes that $f(t) = g(t)$ for all  $t \\in [0,\\infty)$.",
+      "The proof concludes that $f(x) \\le g(x)$ for all $n \\ge 0$, while the theorem to prove is $f(x) < g(x)$ for all $x \\ge 0$"
+    ]
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "type": "theorem",
+  "name": "Limit of Integral of Positive Continuous Function",
+  "hypothesis": [
+    {
+      "type": "let",
+      "variable": "f",
+      "kind": "function from [0,1] to R",
+      "property": "positive continuous function"
+    },
+    {
+      "type": "let",
+      "variable": "M",
+      "value": "$ \\max \\{f(x): x \\in[0,1]\\} $",
+      "kind": "real number",
+      "property": "maximum value of f"
+    },
+    {
+      "type": "assume",
+      "statement": "The limit $ \\lim _{n \\rightarrow \\infty}\\left(\\int_{0}^{1} f(x)^{n} d x\\right)^{1 / n} $ exists"
+    }
+  ],
+  "conclusion": "The limit $ \\lim _{n \\rightarrow \\infty}\\left(\\int_{0}^{1} f(x)^{n} d x\\right)^{1 / n} $ is equal to M.",
+  "status": "incomplete proof",
+  "proof": {
+    "type": "proof",
+    "steps": [
+      {
+        "type": "let",
+        "variable": "g(x)",
+        "value": "$f(x)^n$",
+        "property": "holds for all $n \\in [0,1]$"
+      },
+      {
+        "type": "assert",
+        "claim": "$0 < f(x)^n = g(x) \\leq M^n$ for all $n \\in [0,1]$",
+        "deduced_from": {
+          "from_context": [
+            "$f(x) \\leq M$ for all $x \\in [0,1]$",
+            "$f(x) \\geq 0$ for all $x \\in [0,1]$"
+          ]
+        }
+      },
+      {
+        "type": "assert",
+        "claim": "$\\int_{0}^{1} g(x) dx = \\int_{0}^{1} M^n dx = M^n$",
+        "errors": [
+          "Incorrect deduction: The integral of $g(x) = f(x)^n$ is not necessarily equal to the integral of $M^n$."
+        ]
+      },
+      {
+        "type": "assert",
+        "claim": "$(\\int_{0}^{1} g(x) dx)^{1/n} \\leq (M^n)^{1/n} = M$",
+        "errors": [
+          "This deduction relies on the previous incorrect assertion."
+        ]
+      },
+      {
+        "type": "remark",
+        "statement": "$\\lim_{n \\to \\infty}$?"
+      },
+      {
+        "type": "assert",
+        "claim": "$(\\int_{0}^{1} g(x) dx)^{1/n}$ is bounded above by $M$",
+        "deduced_from": {
+          "from_context": [
+            "$(\\int_{0}^{1} g(x) dx)^{1/n} \\leq (M^n)^{1/n} = M$"
+          ]
+        }
+      },
+      {
+        "type": "remark",
+        "statement": "As $g(n) > 0$ $\\implies \\int_{0}^{1} g(x) dx > 0$ $\\forall n \\in [0,1]$"
+      }
+    ]
+  },
+  "missing": [
+    {
+      "type": "problem",
+      "statement": "Prove that the limit is also bounded below by M."
+    },
+    {
+      "type": "problem",
+      "statement": "Correctly show that $(\\int_{0}^{1} g(x) dx)^{1/n} \\leq (M^n)^{1/n} = M$."
+    }
+  ]
+}
