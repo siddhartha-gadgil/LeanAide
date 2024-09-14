@@ -21,7 +21,7 @@ unsafe def checkAndFetch (descField: String) : IO Unit := do
      else pure false
   unless picklePresent do
     IO.eprintln s!"Fetching embeddings ... ({picklePath})"
-    let out ← runCurl #["--output", picklePath.toString, "-s",  "https://math.iisc.ac.in/~gadgil/data/{picklePath.fileName.get!}"]
+    let out ← runCurl #["--output", picklePath.toString, "-k", "-s",  "https://math.iisc.ac.in/~gadgil/data/{picklePath.fileName.get!}"]
     IO.eprintln "Fetched embeddings"
     IO.eprintln out
 

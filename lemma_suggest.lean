@@ -18,7 +18,7 @@ unsafe def checkAndFetch (descField: String) : IO Unit := do
      else pure false
   unless picklePresent do
     IO.eprintln "Fetching embeddings ..."
-    let out ← runCurl #["--output", picklePath.toString, "-s",  "https://math.iisc.ac.in/~gadgil/data/{picklePath.fileName.get!}"]
+    let out ← runCurl #["--output", picklePath.toString, "-k", "-s",  "https://math.iisc.ac.in/~gadgil/data/{picklePath.fileName.get!}"]
     IO.eprintln "Fetched embeddings"
     IO.eprintln out
 
@@ -79,7 +79,7 @@ unsafe def main  : IO Unit := do
       IO.println s!"{count} {name}"
       count := count + 1
       IO.println s!"{cacheMap.size} descriptions in cache\n"
-      let core := getDescriptionCachedCore name cacheMap
+      let core := getDescriptionCachedCore name  (cacheMap := cacheMap)
       let io? ←
         core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000} {env := env} |>.runToIO'
       match io? with
