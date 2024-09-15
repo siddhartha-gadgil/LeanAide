@@ -406,3 +406,7 @@ def termKindList : MetaM <| List SyntaxNodeKind := do
 -- #check String.dropWhile
 
 -- #check '\n'
+
+abbrev EmbedData := Array <| (String × String × Bool × String) ×  FloatArray
+
+abbrev EmbedMap := HashMap String EmbedData

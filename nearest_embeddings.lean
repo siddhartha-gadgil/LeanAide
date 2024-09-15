@@ -13,7 +13,7 @@ unsafe def checkAndFetch (descField: String) : IO Unit := do
     IO.eprintln s!"Pickle file already present at {picklePath}"
     try
       withUnpickle  picklePath <|
-        fun (_ : Array <| (String × String × Bool × String) ×  FloatArray) => do
+        fun (_ : EmbedData) => do
         pure true
     catch e =>
         IO.eprintln s!"Error unpickling {picklePath}: {e}"
@@ -42,7 +42,7 @@ unsafe def main (args: List String) : IO Unit := do
   logTimed s!"finding nearest to `{doc}`"
   let picklePath ← picklePath descField
   withUnpickle  picklePath <|
-    fun (data : Array <| (String × String × Bool × String) ×  FloatArray) => do
+    fun (data : EmbedData) => do
     let embs ← nearestDocsToDocFull data doc num (penalty := penalty)
     logTimed "found nearest"
     let out :=

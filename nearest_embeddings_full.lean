@@ -53,7 +53,7 @@ unsafe def checkAndFetch (descField: String) : IO Unit := do
     if ← picklePath.pathExists then
     try
       withUnpickle  picklePath <|
-        fun (_ : Array <| (String × String × Bool × String) ×  FloatArray) => do
+        fun (_ : EmbedData) => do
         pure true
     catch _ => pure false
      else pure false
@@ -72,7 +72,7 @@ unsafe def main (args: List String) : IO Unit := do
   let descField := args.getD 1 "docString"
   let picklePath ← picklePath descField
   withUnpickle  picklePath <|
-    fun (data : Array <| (String × String × Bool × String) ×  FloatArray) => do
+    fun (data : EmbedData) => do
         IO.eprintln s!"Searching among {data.size} embeddings"
         let num := (args[1]?.bind fun s => s.toNat?).getD 10
         logTimed s!"finding nearest to `{doc}`"
@@ -93,13 +93,13 @@ unsafe def main (args: List String) : IO Unit := do
   | none =>
     logTimed "No arguments provided, starting interactive mode"
     withUnpickle (← picklePath "docString") <|fun
-    (docStringData : Array <| (String × String × Bool × String) ×  FloatArray) =>
+    (docStringData : EmbedData) =>
     do
     withUnpickle (← picklePath "description") <|fun
-    (descData : Array <| (String × String × Bool × String) ×  FloatArray) =>
+    (descData : EmbedData) =>
     do
     withUnpickle (← picklePath "concise-description") <|fun
-    (concDescData : Array <| (String × String × Bool × String) ×  FloatArray) =>
+    (concDescData : EmbedData) =>
 
     do
         IO.eprintln "Enter the document string to find the nearest embeddings"

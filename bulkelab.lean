@@ -89,13 +89,13 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
     {module:= `LeanCodePrompts.Translate},
     {module := `Mathlib}] {}
   withUnpickle (← picklePath "docString")
-    <|fun (docStringData : Array <| (String × String × Bool × String) ×  FloatArray) => do
+    <|fun (docStringData : EmbedData) => do
   withUnpickle (← picklePath "description")
-    <|fun (descData : Array <| (String × String × Bool × String) ×  FloatArray) =>  do
+    <|fun (descData : EmbedData) =>  do
   withUnpickle (← picklePath "concise-description")
-    <|fun (concDescData : Array <| (String × String × Bool × String) ×  FloatArray) => do
+    <|fun (concDescData : EmbedData) => do
   let dataMap :
-    HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
+    EmbedMap := HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
   let core :=
     checkTranslatedThmsCore type chatServer chatParams numSim numConcise numDesc includeFixed embedding delay repeats queryData? tag (dataMap := dataMap)
   let io? :=

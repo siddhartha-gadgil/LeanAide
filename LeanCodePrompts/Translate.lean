@@ -10,6 +10,7 @@ import Lean.Meta.Tactic.TryThis
 import Batteries.Util.Pickle
 import LeanCodePrompts.ChatClient
 import LeanAide.StatementSyntax
+import LeanAide.TranslateM
 
 open Lean Meta Elab Parser Command
 
@@ -177,7 +178,7 @@ def fixedPromptsJson : Array <| String × Json :=
 /--
 Given a string, find the nearest documentation strings in Mathlib and return the corresponding theorem data.
 -/
-def getNearestDocs (s: String)(numSim : Nat)(numConcise: Nat)(numDesc : Nat)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray))) :
+def getNearestDocs (s: String)(numSim : Nat)(numConcise: Nat)(numDesc : Nat)(dataMap : EmbedMap) :
   IO <| Except String (Array (String × Json)) := do
     let check ← (← picklePath "docString").pathExists
     unless check do
@@ -256,7 +257,7 @@ def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true)
 -/
 def getLeanCodeJson (s: String)
   (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})(numSim : Nat:= 8)(numConcise: Nat := 0)(numDesc : Nat := 0)
-  (includeFixed: Bool := Bool.false)(toChat : ToChatExample := simpleChatExample)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.empty)(header: String := "Theorem") : MetaM <| Json × Json × Array (String × Json) := do
+  (includeFixed: Bool := Bool.false)(toChat : ToChatExample := simpleChatExample)(dataMap : EmbedMap := HashMap.empty)(header: String := "Theorem") : MetaM <| Json × Json × Array (String × Json) := do
   logTimed s!"translating string `{s}` with {numSim} examples"
   match ← getCachedJson? s with
   | some js => return js
@@ -460,7 +461,7 @@ def sufficientElab? (output: Array String)(defs : Array <| Name × String):
 
 
 /-- reverse translation from `Lean` to natural language -/
-def leanToPrompt (thm: String)(numSim : Nat:= 5)(numConcise : Nat := 0)(numDesc: Nat := 0)(temp : JsonNumber := 0)(textField : String := "text") (dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray))) : TermElabM String := do
+def leanToPrompt (thm: String)(numSim : Nat:= 5)(numConcise : Nat := 0)(numDesc: Nat := 0)(temp : JsonNumber := 0)(textField : String := "text") (dataMap : EmbedMap) : TermElabM String := do
     let pairs? ←
       getNearestDocs thm numSim numConcise numDesc dataMap
     let pairs := pairs?.toOption.getD #[]
@@ -596,13 +597,13 @@ elab "uncurry2" e:term : term => do
   return mkStrLit e
 
 universe u
-
+open LeanAide.Meta
 /--
 Translate a string and output as a string.
 -/
 def translateViewM (s: String)
   (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8)(numConcise numDesc : ℕ := 0)(toChat : ToChatExample := simpleChatExample)
-  (dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.empty ) : TermElabM String := do
+  (dataMap : EmbedMap := HashMap.empty ) : TranslateM String := do
   logTimed "starting translation"
   let (js, _) ← getLeanCodeJson  s server params
         (numSim := numSim) (numConcise := numConcise) (numDesc := numDesc) (toChat := toChat) (dataMap := dataMap)
@@ -627,7 +628,7 @@ def translateViewM (s: String)
 
 def translateToProp? (s: String)
   (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8)(numConcise numDesc : ℕ := 0)(toChat : ToChatExample := simpleChatExample)
-  (dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.empty ) : TermElabM (Option Expr) := do
+  (dataMap : EmbedMap := HashMap.empty ) : TermElabM (Option Expr) := do
   logTimed "starting translation"
   let (js, _) ← getLeanCodeJson  s server params
         (numSim := numSim) (numConcise := numConcise) (numDesc := numDesc) (toChat := toChat) (dataMap := dataMap)
@@ -642,7 +643,7 @@ Translating a definition greedily by parsing as a command
 -/
 def translateDefCmdM? (s: String)
   (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8)(numConcise numDesc : ℕ := 0)(toChat : ToChatExample := docChatExample)
-  (dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.empty ) : TermElabM <| Option Syntax.Command := do
+  (dataMap : EmbedMap := HashMap.empty ) : TermElabM <| Option Syntax.Command := do
   logTimed "starting translation"
   let (js, _) ← getLeanCodeJson  s server params
         (numSim := numSim) (numConcise := numConcise) (numDesc := numDesc) (toChat := toChat) (dataMap := dataMap)
@@ -656,7 +657,7 @@ def translateDefCmdM? (s: String)
 
 def translateDefViewM? (s: String)
   (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8)(numConcise numDesc : ℕ := 0)(toChat : ToChatExample := docChatExample)
-  (dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.empty ) : TermElabM <| Option String := do
+  (dataMap : EmbedMap := HashMap.empty ) : TermElabM <| Option String := do
   let cmd? ← translateDefCmdM? s server params numSim numConcise numDesc toChat dataMap
   let fmt? ← cmd?.mapM fun cmd =>
     PrettyPrinter.ppCommand cmd
@@ -666,7 +667,7 @@ def translateDefViewM? (s: String)
 /-- view of string in core; to be run with Snapshot.runCore
 -/
 def translateViewCore (s: String) : CoreM String :=
-  (translateViewM s (dataMap := HashMap.empty)).run'.run'
+  (translateViewM s (dataMap := HashMap.empty) |>.run' {}).run'.run'
 
 syntax (name := ltrans) "l!" str : term
 
@@ -710,7 +711,7 @@ def findTheorems (s: String)(numSim : ℕ := 8)
   matchElabs output thmPairs
 
 def nearbyTheoremsChunk (s: String)(numSim : ℕ := 8)
-  (numConcise numDesc : ℕ := 0)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)))  : TermElabM String := do
+  (numConcise numDesc : ℕ := 0)(dataMap : EmbedMap)  : TermElabM String := do
     let pairs? ←
       getNearestDocs s numSim numConcise numDesc dataMap
     match pairs? with
@@ -728,7 +729,7 @@ def nearbyTheoremsChunk (s: String)(numSim : ℕ := 8)
       return statements.foldl (fun acc s => acc ++ s ++ "\n\n") ""
 
 def matchingTheoremsAI (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})(s: String)(n: ℕ := 3)(numSim : ℕ := 8)
-  (numConcise numDesc : ℕ := 0)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)))  : TermElabM (List Name) := do
+  (numConcise numDesc : ℕ := 0)(dataMap : EmbedMap)  : TermElabM (List Name) := do
     let chunk ← nearbyTheoremsChunk s numSim numConcise numDesc dataMap
     let prompt := s!"The following are some theorems in Lean with informal statements as documentation strings\n\n{chunk}\n\n---\n¬List the names of theorems that are equivalent to the following informal statement:\n\n{s}.\n\nOutput ONLY a (possibly empty) list of names."
     let completions ← server.completions prompt (← sysPrompt) n params
@@ -741,7 +742,7 @@ def matchingTheoremsAI (server: ChatServer := ChatServer.openAI)(params: ChatPar
     return entries.join.toList.map (·.toName)
 
 def matchingTheorems (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})(s: String)(n: ℕ := 3)(numSim : ℕ := 8)
-  (numConcise numDesc : ℕ := 4)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)))  : TermElabM (List Name) := do
+  (numConcise numDesc : ℕ := 4)(dataMap : EmbedMap)  : TermElabM (List Name) := do
   let elabMatch ← findTheorems s numSim numConcise numDesc
   if elabMatch.isEmpty then
     matchingTheoremsAI server params s n numSim numConcise numDesc dataMap
@@ -758,7 +759,7 @@ Translate a string to a Lean expression using the GPT model, returning three com
 -/
 def translateViewVerboseM (s: String)(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)(numConcise: Nat := 0)(numDesc: Nat := 0)
-  (toChat : ToChatExample := simpleChatExample)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)))  :
+  (toChat : ToChatExample := simpleChatExample)(dataMap : EmbedMap)  :
   TermElabM ((Option (String × (Array String) × (Array (Array String)) )) × Array String × Json) := do
   let (js,prompt, _) ←
     getLeanCodeJson s server params numSim numConcise numDesc false toChat dataMap
@@ -785,7 +786,7 @@ def translateViewVerboseM (s: String)(server: ChatServer)
 
 def translateViewVerboseCore (s: String)(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)(numConcise: Nat := 0)(numDesc: Nat := 0)
-  (toChat : ToChatExample := simpleChatExample)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.empty) :
+  (toChat : ToChatExample := simpleChatExample)(dataMap : EmbedMap := HashMap.empty) :
   CoreM ((Option (String × (Array String) × (Array (Array String)))) × Array String × Json) :=
   (translateViewVerboseM s server params numSim numConcise numDesc toChat dataMap).run'.run'
 
@@ -797,7 +798,7 @@ Translate a string to a Lean expression using the GPT model, returning three com
 -/
 def translateViewExprVerboseM (s: String)(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)(numConcise: Nat := 0)(numDesc: Nat := 0)
-  (toChat : ToChatExample := simpleChatExample)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)))  :
+  (toChat : ToChatExample := simpleChatExample)(dataMap : EmbedMap)  :
   TermElabM ((Option (Expr × String × (Array String) × (Array (Array String)) )) × Array String × Json) := do
   let (js,prompt, _) ←
     getLeanCodeJson s server params numSim numConcise numDesc false toChat dataMap
@@ -824,6 +825,6 @@ def translateViewExprVerboseM (s: String)(server: ChatServer)
 
 def translateViewExprVerboseCore (s: String)(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)(numConcise: Nat := 0)(numDesc: Nat := 0)
-  (toChat : ToChatExample := simpleChatExample)(dataMap : HashMap String (Array ((String × String × Bool × String) × FloatArray)) := HashMap.empty) :
+  (toChat : ToChatExample := simpleChatExample)(dataMap : EmbedMap := HashMap.empty) :
   CoreM ((Option (Expr × String × (Array String) × (Array (Array String)))) × Array String × Json) :=
   (translateViewExprVerboseM s server params numSim numConcise numDesc toChat dataMap).run'.run'

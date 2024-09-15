@@ -29,7 +29,7 @@ def nearestDocsToDocFullEmbedding (data : Array <| (String × String × Bool) ×
   (tuples.map <| fun (((doc, thm, isProp), _), d) => (doc, thm, isProp, d)).toList
 
 
-def nearestDocsToDocFullEmbeddingConc (data : Array <| (String × String × Bool × String) ×  FloatArray)
+def nearestDocsToDocFullEmbeddingConc (data : EmbedData)
   (embedding : Array Float) (k : Nat)
   (dist: FloatArray → Array Float → Float := distL2Sq)(penalty : Float) :
    IO <| List (String × String × Bool × String × Float) := do

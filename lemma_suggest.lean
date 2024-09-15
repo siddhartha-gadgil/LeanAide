@@ -12,7 +12,7 @@ unsafe def checkAndFetch (descField: String) : IO Unit := do
     if ← picklePath.pathExists then
     try
       withUnpickle  picklePath <|
-        fun (_ : Array <| (String × String × Bool × String) ×  FloatArray) => do
+        fun (_ : EmbedData) => do
         pure true
     catch _ => pure false
      else pure false
@@ -72,7 +72,7 @@ unsafe def main  : IO Unit := do
   let picklePath ← picklePath descField
   let penalty := 2.0
   withUnpickle  picklePath <|
-    fun (data : Array <| (String × String × Bool × String) ×  FloatArray) => do
+    fun (data : EmbedData) => do
     let mut count := 0
     let mut cacheMap ← getCachedDescriptionsMap
     for name in names do
