@@ -2,6 +2,7 @@ import LeanCodePrompts.Translate
 import LeanAide.Aides
 
 open Lean Meta Elab
+open LeanAide.Meta
 
 /--
 Translate a string to a Lean expression using the GPT model, returning the expression, all outputs and the prompt used.
@@ -69,7 +70,8 @@ Translate theorems in a given file and record results in a JSON file.
 def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)(numConcise : Nat := 0)(numDesc: Nat := 0)
   (includeFixed: Bool := Bool.false)(embedding: String)
-  (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json) )(tag: Bool := false)(toChat : ToChatExample := simpleChatExample)(dataMap : EmbedMap := HashMap.empty) : TermElabM Json := do
+  (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json) )(tag: Bool := false)(toChat : ToChatExample := simpleChatExample) : TranslateM Json := do
+  let dataMap ← getEmbedMap
   IO.eprintln s!"Writing to file: {type}-elab-{numSim}-{includeFixed}-{params.n}-{params.temp.mantissa}.json"
   let promptsFile := System.mkFilePath ["data",
     s!"prompts-{type}-{numSim}-{includeFixed}-{params.n}-{params.temp.mantissa}.jsonl"]
@@ -154,8 +156,8 @@ Translate theorems in a given file and record results in a JSON file.
 def checkTranslatedThmsCore(type: String := "thm")(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)(numConcise : Nat := 0)(numDesc : Nat := 2)
   (includeFixed: Bool := Bool.false)(embedding: String)
-  (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json))(tag: Bool := false) (toChat : ToChatExample := simpleChatExample)(dataMap : EmbedMap := HashMap.empty): CoreM Json :=
-    (checkTranslatedThmsM type server params numSim numConcise numDesc includeFixed embedding delay repeats queryData? tag toChat dataMap).run'.run'
+  (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json))(tag: Bool := false) (toChat : ToChatExample := simpleChatExample): CoreM Json :=
+    (checkTranslatedThmsM type server params numSim numConcise numDesc includeFixed embedding delay repeats queryData? tag toChat |>.run' {}).run'.run'
 
 def parsedThmsPrompt : IO (Array String) := do
   let file := System.mkFilePath ["data/parsed_thms.txt"]

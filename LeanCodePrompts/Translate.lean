@@ -750,8 +750,6 @@ def matchingTheorems (server: ChatServer := ChatServer.openAI)(params: ChatParam
   else
     pure elabMatch
 
-#check Array.join
-#check Json.parse
 /--
 Translate a string to a Lean expression using the GPT model, returning three componenst:
 * The expression, all elaborated expressions, grouped expressions

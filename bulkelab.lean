@@ -94,10 +94,13 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
     <|fun (descData : EmbedData) =>  do
   withUnpickle (← picklePath "concise-description")
     <|fun (concDescData : EmbedData) => do
+  IO.eprintln "Loading hashmap"
   let dataMap :
     EmbedMap := HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
+  IO.eprintln "Loaded hashmap"
   let core :=
-    checkTranslatedThmsCore type chatServer chatParams numSim numConcise numDesc includeFixed embedding delay repeats queryData? tag (dataMap := dataMap)
+    checkTranslatedThmsM type chatServer chatParams numSim numConcise numDesc includeFixed embedding delay repeats
+    queryData? tag |>.runWithEmbeddings dataMap
   let io? :=
     core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000}
     {env := env}
