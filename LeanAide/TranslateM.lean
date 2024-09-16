@@ -8,6 +8,7 @@ namespace LeanAide.Meta
 
 structure Translate.State where
   embedMap : EmbedMap := HashMap.empty
+deriving Inhabited
 
 abbrev TranslateM := StateT Translate.State TermElabM
 
@@ -40,5 +41,16 @@ unsafe def withAllEmebddings (descFields : List String)
 def printKeys : TranslateM Unit := do
   let em := (← getEmbedMap)
   IO.println s!"Embeddings: {em.toList.map Prod.fst}"
+
+unsafe def runWithEmbeddings (descFields : List String)
+    (x: TranslateM α) : CoreM α := do
+  let x :=
+    withAllEmebddings descFields do
+    printKeys -- for debugging
+    x
+  x.run' {} |>.run'.run'
+
+def runToCore (x: TranslateM α) : CoreM α := do
+  x.run' {} |>.run'.run'
 
 end LeanAide.Meta
