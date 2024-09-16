@@ -186,10 +186,10 @@ abbrev ToChatExample := String × Json → MetaM (Option ChatExample)
 
 def simpleChatExample : ToChatExample
   | (docString, data) =>
-    return data.getObjValAs? String "theorem" |>.toOption.map fun thm => {user := docString, assistant:= thm}
+    return data.getObjValAs? String "type" |>.toOption.map fun thm => {user := docString, assistant:= thm}
 
 def fullTheorem (js: Json) : Option String := do
-  let thm ← js.getObjValAs? String "theorem" |>.toOption
+  let thm ← js.getObjValAs? String "type" |>.toOption
   let name ← js.getObjValAs? String "name" |>.toOption
   let isProp ← js.getObjValAs? Bool "isProp" |>.toOption
   return if isProp then
@@ -216,7 +216,7 @@ Translate the above mathematical definition into a Lean 4 `def`{withName}. Give 
 def docChatExample
   (fullThm: Bool := true)(fullDoc : Bool := true) : ToChatExample
   | (docString, data) => do
-    let thm? := data.getObjValAs? String "theorem" |>.toOption
+    let thm? := data.getObjValAs? String "type" |>.toOption
     let name? := data.getObjValAs? String "name" |>.toOption
     let isProp?:= data.getObjValAs? Bool "isProp" |>.toOption
     match thm?, name?, isProp? with

@@ -174,7 +174,7 @@ Fixed prompts with names from Lean Chat in JSON format
 def fixedPromptsJson : Array <| String × Json :=
   fixedPromptTriples.map (fun (ds, thm, name) =>
     (ds,
-    Json.mkObj [("docString", ds), ("theorem", thm), ("name", name)]))
+    Json.mkObj [("docString", ds), ("type", thm), ("name", name)]))
 
 /--
 Given a string, find the nearest documentation strings in Mathlib and return the corresponding theorem data.
@@ -697,7 +697,7 @@ def findTheorem? (s: String)(numSim : ℕ := 8)
   trace[Translate.info] m!"thmPairs: {prompts}"
   let thmPairs := prompts.reverse.map (fun (_, js) =>
     (js.getObjValAs? String "name" |>.toOption.get! |>.toName,
-    js.getObjValAs? String "theorem" |>.toOption.get!))
+    js.getObjValAs? String "type" |>.toOption.get!))
   matchElab? output thmPairs
 
 def findTheorems (s: String)(numSim : ℕ := 8)
@@ -707,7 +707,7 @@ def findTheorems (s: String)(numSim : ℕ := 8)
   trace[Translate.info] m!"thmPairs: {prompts}"
   let thmPairs := prompts.reverse.map (fun (_, js) =>
     (js.getObjValAs? String "name" |>.toOption.get! |>.toName,
-    js.getObjValAs? String "theorem" |>.toOption.get!))
+    js.getObjValAs? String "type" |>.toOption.get!))
   matchElabs output thmPairs
 
 def nearbyTheoremsChunk (s: String)(numSim : ℕ := 8)
@@ -720,7 +720,7 @@ def nearbyTheoremsChunk (s: String)(numSim : ℕ := 8)
     | Except.ok pairs => do
       let statements : Array String ← pairs.filterMapM (fun (doc, js) => do
         let name? := js.getObjValAs? String "name" |>.toOption
-        let thm? := js.getObjValAs? String "theorem" |>.toOption
+        let thm? := js.getObjValAs? String "type" |>.toOption
         let prop? := js.getObjValAs? Bool "isProp" |>.toOption
         match name?, thm?, prop? with
         | some name, some thm, some true =>
