@@ -759,13 +759,16 @@ Translate a string to a Lean expression using the GPT model, returning three com
 -/
 def translateViewVerboseM (s: String)(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)(numConcise: Nat := 0)(numDesc: Nat := 0)
-  (toChat : ToChatExample := simpleChatExample)(dataMap : EmbedMap)  :
-  TermElabM ((Option (String × (Array String) × (Array (Array String)) )) × Array String × Json) := do
+  (toChat : ToChatExample := simpleChatExample)  :
+  TranslateM ((Option (String × (Array String) × (Array (Array String)) )) × Array String × Json) := do
+  let dataMap ← getEmbedMap
+  IO.println s!"dataMap keys: {dataMap.toList.map Prod.fst}"
   let (js,prompt, _) ←
     getLeanCodeJson s server params numSim numConcise numDesc false toChat dataMap
   let output ← getMessageContents js
   if output.isEmpty then
-     return (none, output, prompt)
+    IO.eprintln "no output"
+    return (none, output, prompt)
   else
     -- let output := params.splitOutputs output
     let res ← bestElab? output
@@ -784,11 +787,6 @@ def translateViewVerboseM (s: String)(server: ChatServer)
             pure (fmt.pretty, a, b)
     return (view?, output, prompt)
 
-def translateViewVerboseCore (s: String)(server: ChatServer)
-  (params: ChatParams)(numSim : Nat:= 10)(numConcise: Nat := 0)(numDesc: Nat := 0)
-  (toChat : ToChatExample := simpleChatExample)(dataMap : EmbedMap := HashMap.empty) :
-  CoreM ((Option (String × (Array String) × (Array (Array String)))) × Array String × Json) :=
-  (translateViewVerboseM s server params numSim numConcise numDesc toChat dataMap).run'.run'
 
 /--
 Translate a string to a Lean expression using the GPT model, returning three componenst:
@@ -798,8 +796,9 @@ Translate a string to a Lean expression using the GPT model, returning three com
 -/
 def translateViewExprVerboseM (s: String)(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)(numConcise: Nat := 0)(numDesc: Nat := 0)
-  (toChat : ToChatExample := simpleChatExample)(dataMap : EmbedMap)  :
-  TermElabM ((Option (Expr × String × (Array String) × (Array (Array String)) )) × Array String × Json) := do
+  (toChat : ToChatExample := simpleChatExample)  :
+  TranslateM ((Option (Expr × String × (Array String) × (Array (Array String)) )) × Array String × Json) := do
+  let dataMap ← getEmbedMap
   let (js,prompt, _) ←
     getLeanCodeJson s server params numSim numConcise numDesc false toChat dataMap
   let output ← getMessageContents js
@@ -822,9 +821,3 @@ def translateViewExprVerboseM (s: String)(server: ChatServer)
             let fmt ←  PrettyPrinter.ppExpr e
             pure (e, fmt.pretty, a, b)
     return (view?, output, prompt)
-
-def translateViewExprVerboseCore (s: String)(server: ChatServer)
-  (params: ChatParams)(numSim : Nat:= 10)(numConcise: Nat := 0)(numDesc: Nat := 0)
-  (toChat : ToChatExample := simpleChatExample)(dataMap : EmbedMap := HashMap.empty) :
-  CoreM ((Option (Expr × String × (Array String) × (Array (Array String)))) × Array String × Json) :=
-  (translateViewExprVerboseM s server params numSim numConcise numDesc toChat dataMap).run'.run'

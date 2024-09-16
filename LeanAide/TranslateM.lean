@@ -23,34 +23,52 @@ def getEmbedMap : TranslateM EmbedMap := do
 def addEmbeddings (descField: String) (embeddings: EmbedData) : TranslateM Unit := do
   modify fun s => {s with embedMap := s.embedMap.insert descField embeddings}
 
-unsafe def withEmbeddings (descField: String)
+def setEmbedMap (em : EmbedMap) : TranslateM Unit := do
+  modify fun s => {s with embedMap := em}
+
+def withEmbeddings (em : EmbedMap) (x: TranslateM α) :
+    TranslateM α := do
+  setEmbedMap em
+  x
+
+def printKeys : TranslateM Unit := do
+  let em := (← getEmbedMap)
+  IO.println s!"Embeddings: {em.toList.map Prod.fst}"
+
+def TranslateM.runWithEmbeddings (em : EmbedMap)
+    (x: TranslateM α) : CoreM α := do
+  let x :=
+    withEmbeddings em do
+      printKeys
+      x
+  x.run' {} |>.run'.run'
+
+unsafe def withLoadedEmbeddings (descField: String)
     (x: TranslateM α) :TranslateM α := do
   withUnpickle (← picklePath descField)
     <|fun (descData : EmbedData) =>  do
       addEmbeddings descField descData
       x
 
-unsafe def withAllEmebddings (descFields : List String)
+unsafe def withAllEmbeddings (descFields : List String)
     (x: TranslateM α) : TranslateM α := do
   match descFields with
   | [] => x
   | descField::descFields => do
-    withEmbeddings descField do
-      withAllEmebddings descFields x
+    withLoadedEmbeddings descField do
+      withAllEmbeddings descFields x
 
-def printKeys : TranslateM Unit := do
-  let em := (← getEmbedMap)
-  IO.println s!"Embeddings: {em.toList.map Prod.fst}"
 
-unsafe def runWithEmbeddings (descFields : List String)
+
+unsafe def TranslateM.runWithLoadingEmbeddings (descFields : List String)
     (x: TranslateM α) : CoreM α := do
   let x :=
-    withAllEmebddings descFields do
-    printKeys -- for debugging
+    withAllEmbeddings descFields do
+    printKeys
     x
   x.run' {} |>.run'.run'
 
-def runToCore (x: TranslateM α) : CoreM α := do
+def TranslateM.runToCore (x: TranslateM α) : CoreM α := do
   x.run' {} |>.run'.run'
 
 end LeanAide.Meta

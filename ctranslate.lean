@@ -24,7 +24,7 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
     |>.getD 8
   let temp : JsonNumber := ⟨temp10, 1⟩
   let model := p.flag? "model" |>.map (fun s => s.as! String)
-    |>.getD "gpt-3.5-turbo"
+    |>.getD "gpt-4o"
   let azure := p.hasFlag "azure"
   let tag := p.hasFlag "tag"
   let maxTokens := p.flag? "max_tokens" |>.map (fun s => s.as! Nat)
@@ -58,8 +58,8 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
   let dataMap :
     EmbedMap := HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
   let core :=
-    translateViewVerboseCore type chatServer chatParams numSim
-      numConcise (dataMap := dataMap)
+    translateViewVerboseM type chatServer chatParams numSim
+      numConcise |>.runWithEmbeddings dataMap
   let io? :=
     core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
     {env := env}
@@ -109,7 +109,7 @@ unsafe def translate : Cmd := `[Cli|
     concise_descriptions : Nat; "Number of example descriptions (default 2)."
     r, responses : Nat;    "Number of responses to ask for (default 10)."
     t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t` (default 8)."
-    m, model : String ; "Model to be used (default `gpt-3.5-turbo`)"
+    m, model : String ; "Model to be used (default `gpt-4o`)"
     azure; "Use Azure instead of OpenAI."
     url : String; "URL to query (for a local server)."
     show_prompt; "Output the prompt to the LLM."
