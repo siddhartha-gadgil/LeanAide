@@ -86,7 +86,7 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
       IO.eprintln desc
       let coreTranslate :=
         translateViewExprVerboseM desc chatServer chatParams numSim
-          numConcise numDesc |>.runToCore
+          numConcise numDesc |>.runWithEmbeddings dataMap
       let io? :=
         coreTranslate.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
         {env := env}
