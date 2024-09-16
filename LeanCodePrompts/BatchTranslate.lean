@@ -11,11 +11,11 @@ def translateWithDataM (s: String)(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)(numConcise : Nat := 0)(numDesc: Nat := 0)
   (includeFixed: Bool := Bool.false)
   (embedding: String)(repeats: Nat := 0)(sleepTime : Nat := 1)
-  (queryData? : Option <| (HashMap String Json)  )(toChat : ToChatExample := simpleChatExample) (dataMap : EmbedMap := HashMap.empty) :
-  TermElabM ((Option (Expr × (Array String) × (Array (Array String)) )) × Array String × (Option String)) := do
+  (queryData? : Option <| (HashMap String Json)  )(toChat : ToChatExample := simpleChatExample) :
+  TranslateM ((Option (Expr × (Array String) × (Array (Array String)) )) × Array String × (Option String)) := do
   let (output, prompt?) ←  match queryData? with
   | none =>
-    let (js,prompt, _) ← getLeanCodeJson s server params numSim numConcise numDesc includeFixed  toChat dataMap
+    let (js,prompt, _) ← getLeanCodeJson s server params numSim numConcise numDesc includeFixed  toChat
     pure (← getMessageContents js, some prompt.pretty)
   | some f =>
     let res? := f.find? s.trim
@@ -56,13 +56,13 @@ def translateWithDataCore (s: String)(server: ChatServer)
   (includeFixed: Bool := Bool.false)
   (embedding: String)(repeats: Nat := 0)
   (queryData? : Option <| (HashMap String Json)  )
-  (toChat : ToChatExample := simpleChatExample) (dataMap : EmbedMap := HashMap.empty)  :
+  (toChat : ToChatExample := simpleChatExample)   :
   CoreM ((Option (Expr × (Array String) ×  (Array (Array String)) )) × Array String × Option String) :=
     (translateWithDataM s server params
       numSim numConcise numDesc includeFixed
          embedding repeats
         (queryData? := queryData?)
-        (toChat := toChat) (dataMap := dataMap)).run'.run'
+        (toChat := toChat) |>.run' {}).run'.run'
 
 /--
 Translate theorems in a given file and record results in a JSON file.
@@ -71,7 +71,6 @@ def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
   (params: ChatParams)(numSim : Nat:= 10)(numConcise : Nat := 0)(numDesc: Nat := 0)
   (includeFixed: Bool := Bool.false)(embedding: String)
   (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json) )(tag: Bool := false)(toChat : ToChatExample := simpleChatExample) : TranslateM Json := do
-  let dataMap ← getEmbedMap
   IO.eprintln s!"Writing to file: {type}-elab-{numSim}-{includeFixed}-{params.n}-{params.temp.mantissa}.json"
   let promptsFile := System.mkFilePath ["data",
     s!"prompts-{type}-{numSim}-{includeFixed}-{params.n}-{params.temp.mantissa}.jsonl"]
@@ -102,7 +101,7 @@ def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
     IO.println ""
     IO.println statement
     let (res?, _, prompt?) ←
-        translateWithDataM statement server params numSim numConcise numDesc includeFixed embedding repeats 0 queryData? toChat dataMap
+        translateWithDataM statement server params numSim numConcise numDesc includeFixed embedding repeats 0 queryData? toChat
     let fullPrompt := prompt?.getD "No prompt (maybe using cached data)"
     let js := Json.mkObj [("text", Json.str statement),
        ("fullPrompt", Json.str fullPrompt)]

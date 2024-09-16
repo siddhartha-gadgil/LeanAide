@@ -114,4 +114,4 @@ def fromComponentTemplates (names: List String)(json: Json)
     | none => fromComponentTemplates names json
 
 
-#eval fieldsFromTemplate "The matrix $A$ satisfies the polynomial equation $p(x) = x^3 - 1$ by ${proof}."
+-- #eval fieldsFromTemplate "The matrix $A$ satisfies the polynomial equation $p(x) = x^3 - 1$ by ${proof}."
