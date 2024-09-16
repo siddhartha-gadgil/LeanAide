@@ -133,7 +133,7 @@ def theoremExprInContext? (ctx: Array Json)(statement: String): TermElabM (Optio
   IO.eprintln s!"Type: {← type?.mapM fun e => PrettyPrinter.ppExpr e}"
   type?.mapM <| fun e => dropLocalContext e
 
-def purgeLocalContext: Syntax.Command →  TermElabM Syntax.Command
+def purgeLocalContext: Syntax.Command →  TranslateM Syntax.Command
 | `(command|def $name  : $type := $value) => do
   let typeElab ← elabType type
   let type ← dropLocalContext typeElab
@@ -146,7 +146,7 @@ def purgeLocalContext: Syntax.Command →  TermElabM Syntax.Command
   `(command|theorem $name : $type := $value)
 | stx => return stx
 
-def defnInContext? (ctx: Array Json)(statement: String) : TermElabM (Option Syntax.Command) := do
+def defnInContext? (ctx: Array Json)(statement: String) : TranslateM (Option Syntax.Command) := do
   let mut context := #[]
   for js in ctx do
     match contextStatementOfJson js with
@@ -154,7 +154,7 @@ def defnInContext? (ctx: Array Json)(statement: String) : TermElabM (Option Synt
     | none => pure ()
   let fullStatement := context.foldr (· ++ " " ++ ·) statement
   let cmd? ←
-    translateDefCmdM? fullStatement server params numSim numConcise numDesc docChatExample dataMap
+    translateDefCmdM? fullStatement server params numSim numConcise numDesc docChatExample
   let cmd? ← cmd?.mapM purgeLocalContext
   return cmd?
 
@@ -307,7 +307,7 @@ def haveForAssertion (weight sorryWeight strongSorryWeight: Nat) (type: Syntax.T
 
 mutual
   partial def structToCommand? (context: Array Json)
-      (input: Json) : TermElabM <| Option Syntax.Command := do
+      (input: Json) : TranslateM <| Option Syntax.Command := do
       match input.getObjString? "type" with
       | some "theorem" =>
         logInfo s!"Found theorem"
@@ -340,12 +340,12 @@ mutual
         match input.getObjValAs? String "statement", input.getObjValAs? String "term" with
         | Except.ok s, Except.ok t =>
           let statement := s!"We define {t} as follows:\n{s}."
-          defnInContext? server params numSim numConcise numDesc dataMap context statement
+          defnInContext? server params numSim numConcise numDesc context statement
         | _ , _ => none
       | _ => return none
 
   partial def structToTactics (accum: Array Syntax.Tactic)(context: Array Json)
-      (input: List Json) : TermElabM <| Array Syntax.Tactic := do
+      (input: List Json) : TranslateM <| Array Syntax.Tactic := do
       match input with
       | [] => return accum
       | head :: tail =>
@@ -367,7 +367,7 @@ mutual
               | none => pure #[]
               | some type =>
                 let names' ← useResults.mapM fun s =>
-                  matchingTheoremsAI server params  (s := s) numSim numConcise numDesc 4 dataMap
+                  matchingTheoremsAI server params  (s := s) numSim numConcise numDesc 4
                 let premises := names'.join
                 let tac ← haveForAssertion 90 50 10 (← delab type) premises
                 pure #[tac]

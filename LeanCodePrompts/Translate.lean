@@ -13,6 +13,7 @@ import LeanAide.StatementSyntax
 import LeanAide.TranslateM
 
 open Lean Meta Elab Parser Command
+open LeanAide.Meta
 
 register_option lean_aide.translate.prompt_size : Nat :=
   { defValue := 10
@@ -461,7 +462,10 @@ def sufficientElab? (output: Array String)(defs : Array <| Name × String):
 
 
 /-- reverse translation from `Lean` to natural language -/
-def leanToPrompt (thm: String)(numSim : Nat:= 5)(numConcise : Nat := 0)(numDesc: Nat := 0)(temp : JsonNumber := 0)(textField : String := "text") (dataMap : EmbedMap) : TermElabM String := do
+def leanToPrompt (thm: String)(numSim : Nat:= 5)
+  (numConcise : Nat := 0) (numDesc: Nat := 0)(temp : JsonNumber := 0)
+  (textField : String := "text")  : TranslateM String := do
+    let dataMap ← getEmbedMap
     let pairs? ←
       getNearestDocs thm numSim numConcise numDesc dataMap
     let pairs := pairs?.toOption.getD #[]
@@ -597,7 +601,7 @@ elab "uncurry2" e:term : term => do
   return mkStrLit e
 
 universe u
-open LeanAide.Meta
+
 /--
 Translate a string and output as a string.
 -/
@@ -642,8 +646,9 @@ def translateToProp? (s: String)
 Translating a definition greedily by parsing as a command
 -/
 def translateDefCmdM? (s: String)
-  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8)(numConcise numDesc : ℕ := 0)(toChat : ToChatExample := docChatExample)
-  (dataMap : EmbedMap := HashMap.empty ) : TermElabM <| Option Syntax.Command := do
+  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8)(numConcise numDesc : ℕ := 0)
+  (toChat : ToChatExample := docChatExample) : TranslateM <| Option Syntax.Command := do
+  let dataMap ← getEmbedMap
   logTimed "starting translation"
   let (js, _) ← getLeanCodeJson  s server params
         (numSim := numSim) (numConcise := numConcise) (numDesc := numDesc) (toChat := toChat) (dataMap := dataMap)
@@ -657,17 +662,12 @@ def translateDefCmdM? (s: String)
 
 def translateDefViewM? (s: String)
   (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8)(numConcise numDesc : ℕ := 0)(toChat : ToChatExample := docChatExample)
-  (dataMap : EmbedMap := HashMap.empty ) : TermElabM <| Option String := do
-  let cmd? ← translateDefCmdM? s server params numSim numConcise numDesc toChat dataMap
+   : TranslateM <| Option String := do
+  let cmd? ← translateDefCmdM? s server params numSim numConcise numDesc toChat
   let fmt? ← cmd?.mapM fun cmd =>
     PrettyPrinter.ppCommand cmd
   return fmt?.map (·.pretty)
 
-
-/-- view of string in core; to be run with Snapshot.runCore
--/
-def translateViewCore (s: String) : CoreM String :=
-  (translateViewM s (dataMap := HashMap.empty) |>.run' {}).run'.run'
 
 syntax (name := ltrans) "l!" str : term
 
@@ -711,7 +711,8 @@ def findTheorems (s: String)(numSim : ℕ := 8)
   matchElabs output thmPairs
 
 def nearbyTheoremsChunk (s: String)(numSim : ℕ := 8)
-  (numConcise numDesc : ℕ := 0)(dataMap : EmbedMap)  : TermElabM String := do
+  (numConcise numDesc : ℕ := 0)  : TranslateM String := do
+    let dataMap ← getEmbedMap
     let pairs? ←
       getNearestDocs s numSim numConcise numDesc dataMap
     match pairs? with
@@ -729,8 +730,8 @@ def nearbyTheoremsChunk (s: String)(numSim : ℕ := 8)
       return statements.foldl (fun acc s => acc ++ s ++ "\n\n") ""
 
 def matchingTheoremsAI (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})(s: String)(n: ℕ := 3)(numSim : ℕ := 8)
-  (numConcise numDesc : ℕ := 0)(dataMap : EmbedMap)  : TermElabM (List Name) := do
-    let chunk ← nearbyTheoremsChunk s numSim numConcise numDesc dataMap
+  (numConcise numDesc : ℕ := 0)  : TranslateM (List Name) := do
+    let chunk ← nearbyTheoremsChunk s numSim numConcise numDesc
     let prompt := s!"The following are some theorems in Lean with informal statements as documentation strings\n\n{chunk}\n\n---\n¬List the names of theorems that are equivalent to the following informal statement:\n\n{s}.\n\nOutput ONLY a (possibly empty) list of names."
     let completions ← server.completions prompt (← sysPrompt) n params
     let entries : Array (Array String) := completions.filterMap fun s =>
@@ -742,10 +743,10 @@ def matchingTheoremsAI (server: ChatServer := ChatServer.openAI)(params: ChatPar
     return entries.join.toList.map (·.toName)
 
 def matchingTheorems (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})(s: String)(n: ℕ := 3)(numSim : ℕ := 8)
-  (numConcise numDesc : ℕ := 4)(dataMap : EmbedMap)  : TermElabM (List Name) := do
+  (numConcise numDesc : ℕ := 4)  : TranslateM (List Name) := do
   let elabMatch ← findTheorems s numSim numConcise numDesc
   if elabMatch.isEmpty then
-    matchingTheoremsAI server params s n numSim numConcise numDesc dataMap
+    matchingTheoremsAI server params s n numSim numConcise numDesc
   else
     pure elabMatch
 
