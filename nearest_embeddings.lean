@@ -50,7 +50,7 @@ unsafe def main (args: List String) : IO Unit := do
         embs.toArray.map fun (doc, thm, isProp, name, d) =>
           Json.mkObj <| [
             ("docString", Json.str doc),
-            ("theorem", Json.str thm),
+            ("type", Json.str thm),
             ("isProp", Json.bool isProp),
             ("name", Json.str name),
             ("distance", toJson d)

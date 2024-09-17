@@ -284,7 +284,9 @@ def getLeanCodeJson (s: String)
           thm.getObjValAs? Bool "isProp" |>.toOption |>.getD true
         let head := if isThm then "Theorem" else "Definition"
         (s!"Translate the following statement into Lean 4:\n## {head}: " ++ doc ++ "\n\nGive ONLY the Lean code", thm)
+      trace[Translate.info] m!"prompt pairs: \n{pairs}"
       let examplesM := pairs.filterMapM toChat
+      trace[Translate.info] m!"examples: \n{(← examplesM).size}"
       let s' := s!"Translate the following statement into Lean 4:\n## {header}: " ++ s ++ "\n\nGive ONLY the Lean code"
       let messages ← mkMessages s' (← examplesM) (← transPrompt) !server.hasSysPropmpt
       trace[Translate.info] m!"prompt: \n{messages.pretty}"
