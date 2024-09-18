@@ -183,7 +183,7 @@ def clearEmbedQueries : TranslateM Unit := do
 def embedQueryCached (s: String)(retry : Bool := false) : TranslateM (Except String Json) := do
   match (← get).queryEmbeddingCache.find? s with
   | some js? =>
-    IO.eprintln s!"cache hit for {s}"
+    -- IO.eprintln s!"cache hit for {s}"
     if !retry then
       return js?
     else match js? with
@@ -207,20 +207,19 @@ def getNearestDocs (s: String)(numSim : Nat)(numConcise: Nat)(numDesc : Nat) :
     unless check do
       return Except.error "Mathlib embeddings not found; run `lake exe fetch_embeddings` first to fetch them."
     let start ← IO.monoMsNow
-    let queryRes? ← embedQuery s
     let finish ← IO.monoMsNow
     IO.eprintln s!"Embedding query time: {finish - start}"
     let outJs ←
-       getNearestEmbeddingsFull s queryRes? numSim 2.0 (dataMap := dataMap)
+       getNearestEmbeddingsFull s (← embedQueryCached s) numSim 2.0 (dataMap := dataMap)
     logTimed "obtained neighbours"
     let outJs' ←
       if numConcise > 0 then
-      getNearestEmbeddingsFull s queryRes? numConcise 2.0 "concise-description" (dataMap := dataMap)
+      getNearestEmbeddingsFull s (← embedQueryCached s) numConcise 2.0 "concise-description" (dataMap := dataMap)
       else pure <| (Json.arr #[]).compress
     logTimed "obtained concise descriptions"
     let outJs'' ←
       if numDesc > 0 then
-      getNearestEmbeddingsFull s queryRes? numDesc 2.0 "description" (dataMap := dataMap)
+      getNearestEmbeddingsFull s (← embedQueryCached s) numDesc 2.0 "description" (dataMap := dataMap)
       else pure <| (Json.arr #[]).compress
     logTimed "obtained descriptions"
     match Json.parse outJs, Json.parse outJs', Json.parse outJs''  with
