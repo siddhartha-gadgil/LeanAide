@@ -176,6 +176,27 @@ def fixedPromptsJson : Array <| String × Json :=
     (ds,
     Json.mkObj [("docString", ds), ("type", thm), ("name", name)]))
 
+
+def clearEmbedQueries : TranslateM Unit := do
+  modify fun st => {st with queryEmbeddingCache := HashMap.empty}
+
+def embedQueryCached (s: String)(retry : Bool := false) : TranslateM (Except String Json) := do
+  match (← get).queryEmbeddingCache.find? s with
+  | some js? =>
+    IO.eprintln s!"cache hit for {s}"
+    if !retry then
+      return js?
+    else match js? with
+      | Except.ok _ => return js?
+      | Except.error _ =>
+        let js? ← embedQuery s
+        modify fun st => {st with queryEmbeddingCache := st.queryEmbeddingCache.insert s js?}
+    return js?
+  | none =>
+    let js? ← embedQuery s
+    modify fun st => {st with queryEmbeddingCache := st.queryEmbeddingCache.insert s js?}
+    return js?
+
 /--
 Given a string, find the nearest documentation strings in Mathlib and return the corresponding theorem data.
 -/

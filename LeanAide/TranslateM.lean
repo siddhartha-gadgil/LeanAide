@@ -7,7 +7,12 @@ open Lean Meta Elab Term
 namespace LeanAide.Meta
 
 structure Translate.State where
+  /-- Embeddings to preload -/
   embedMap : EmbedMap := HashMap.empty
+  /-- Embedding response associated to the query -/
+  queryEmbeddingCache : HashMap String (Except String Json) := HashMap.empty
+  /-- Descriptions, docstrings etc -/
+  descriptionMap : HashMap Name Json := HashMap.empty
 deriving Inhabited
 
 abbrev TranslateM := StateT Translate.State TermElabM
@@ -43,6 +48,59 @@ def TranslateM.runWithEmbeddings (em : EmbedMap)
       x
   x.run' {} |>.run'.run'
 
+def getDescMap : TranslateM (HashMap Name Json) := do
+  return (← get).descriptionMap
+
+def addDescription (desc: Json) : TranslateM Unit := do
+  match desc.getObjValAs? String "name" with
+  | Except.ok name => do
+    let m ← getDescMap
+    let newDesc :=
+      match m.find? name.toName with
+      | some d => d.mergeObj desc
+      | none =>  desc
+    modify fun s =>
+      {s with descriptionMap := s.descriptionMap.insert name.toName newDesc}
+  | Except.error _ => return
+
+def uploadDesciptions (file: System.FilePath) : TranslateM Unit := do
+  let lines ← IO.FS.lines file
+  for line in lines do
+    match Json.parse line with
+    | Except.ok desc =>
+      addDescription desc
+    | Except.error _ => continue
+
+def preloadDescriptions : TranslateM Unit := do
+  uploadDesciptions <| "resources" / "mathlib4-prompts.jsonl"
+  uploadDesciptions <| "resources" / "mathlib4-descs.jsonl"
+
+def getDescription (name: Name) : TranslateM <| Option Json := do
+  let m ← getDescMap
+  if m.isEmpty then preloadDescriptions
+  let m ← getDescMap
+  match m.find? name with
+  | some desc => return desc
+  | none => return none
+
+def TranslateM.runToCore (x: TranslateM α) : CoreM α := do
+  x.run' {} |>.run'.run'
+
+
+
+def timedTest : TranslateM (Nat × Nat × Nat × Json × Json × Json) := do
+  let t₀ ← IO.monoMsNow
+  let d₁ ← getDescription ``Nat.add_assoc
+  let t₁ ← IO.monoMsNow
+  let d₂ ← getDescription ``Nat.add_comm
+  let t₂ ← IO.monoMsNow
+  let d₃ ← getDescription ``Nat.mul_comm
+  let t₃ ← IO.monoMsNow
+  return (t₁ - t₀, t₂ - t₁, t₃ - t₂, d₁.getD Json.null, d₂.getD Json.null, d₃.getD Json.null)
+
+-- #eval timedTest
+
+-- Should probably purge everything below
 unsafe def withLoadedEmbeddings (descField: String)
     (x: TranslateM α) :TranslateM α := do
   withUnpickle (← picklePath descField)
@@ -66,9 +124,6 @@ unsafe def TranslateM.runWithLoadingEmbeddings (descFields : List String)
     withAllEmbeddings descFields do
     printKeys
     x
-  x.run' {} |>.run'.run'
-
-def TranslateM.runToCore (x: TranslateM α) : CoreM α := do
   x.run' {} |>.run'.run'
 
 end LeanAide.Meta
