@@ -1,6 +1,6 @@
 import LeanCodePrompts.ChatClient
 import LeanAide.StructToLean
-open Lean
+open Lean LeanAide.Meta
 
 def proofExample := "## Theorem: Let $A$ be a square matrix. Prove that if $A^3 = I$ then $A$ is diagonalizable.\n## Proof: \nSince $A^3 = I$, $A$ satisfies the polynomial equation $p(x) = x^3 - 1$. The roots of $p(x)$ are the cube roots of unity, namely $1, \\omega, \\omega^2$, where $\\omega = e^{2\\pi i/3}$ is a primitive cube root of unity. These roots are distinct, so the minimal polynomial of $A$ must divide $p(x)$ and also have distinct roots. Therefore, $A$ is diagonalizable."
 
@@ -303,7 +303,7 @@ def cubeJson : IO Json := do
 
 #eval cubeJson
 open Lean Meta Elab
-def cubeCode : TermElabM <| Option String := do
+def cubeCode : TranslateM <| Option String := do
   let cube ← cubeJson
   logInfo s!"{cube}"
   let cubeCode? ← structToCommand? (params := {n := 12}) (context := #[]) (input := cube)
@@ -312,4 +312,4 @@ def cubeCode : TermElabM <| Option String := do
     pure fmt.pretty
 
 -- #eval cubeCode
-def cubeCodeCore : CoreM <| Option String := cubeCode.run'.run'
+def cubeCodeCore : CoreM <| Option String := cubeCode.runToCore

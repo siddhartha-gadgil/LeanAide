@@ -59,7 +59,7 @@ end RuleExpr
 def fold (rules : Array <| TSyntax `Aesop.rule_expr) :
   MetaM <| Syntax.Tactic  := do
   let clauses ← rules.mapM fun r => `(tactic_clause| (add $r))
-  `(tactic| aesop $clauses*)
+  `(tactic| aesop? $clauses*)
 
 def runFold (rules : Array <| TSyntax `Aesop.rule_expr) :
     TacticM Unit := do

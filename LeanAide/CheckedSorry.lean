@@ -3,7 +3,7 @@ import Mathlib.Tactic.SlimCheck
 /-!
 # Checked sorry
 
-This file defines tactics that falls back to sorry if the target passes a check given by `slim_check` and possibly other checks.
+This file defines tactics that falls back to sorry if the target passes a check given by `slim_check` or the check is not applicable and possibly passes other checks.
 -/
 open Lean Meta Elab Tactic
 

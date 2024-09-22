@@ -120,7 +120,7 @@ def aesopTactic (weight sorryWeight strongSorryWeight: Nat) (names: List Name :=
   AesopSyntax.fold (rules ++ sugRules).toArray
 
 
-def theoremExprInContext? (ctx: Array Json)(statement: String): TermElabM (Option Expr) := do
+def theoremExprInContext? (ctx: Array Json)(statement: String): TranslateM (Option Expr) := do
   let mut context := #[]
   for js in ctx do
     match contextStatementOfJson js with
@@ -129,7 +129,7 @@ def theoremExprInContext? (ctx: Array Json)(statement: String): TermElabM (Optio
   let fullStatement := context.foldr (· ++ " " ++ ·) s!"Then, {statement}"
   IO.eprintln s!"Full statement: {fullStatement}"
   let type? ← translateToProp?
-    fullStatement.trim server params numSim numConcise numDesc simpleChatExample dataMap
+    fullStatement.trim server params numSim numConcise numDesc simpleChatExample
   IO.eprintln s!"Type: {← type?.mapM fun e => PrettyPrinter.ppExpr e}"
   type?.mapM <| fun e => dropLocalContext e
 
@@ -320,7 +320,7 @@ mutual
         | Except.ok claim, Except.ok pfSource =>
           match pfSource.getObjValAs? (List Json) "steps" with
           | Except.ok steps =>
-            let thm? ← theoremExprInContext? server params numSim (numConcise + 4) (numDesc + 4) dataMap (context ++ hypothesis) claim
+            let thm? ← theoremExprInContext? server params numSim (numConcise + 4) (numDesc + 4) (context ++ hypothesis) claim
             if thm?.isNone then
               IO.eprintln s!"failed to get theorem conclusion"
             thm?.mapM fun thm => do
@@ -362,7 +362,7 @@ mutual
                   | Except.ok results => results
                   | _ => []
                 | _ => []
-              let type? ← theoremExprInContext? server params numSim numConcise numDesc dataMap context claim
+              let type? ← theoremExprInContext? server params numSim numConcise numDesc context claim
               match type? with
               | none => pure #[]
               | some type =>
