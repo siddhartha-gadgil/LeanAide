@@ -672,7 +672,7 @@ def translateDefCmdM? (s: String)
   (toChat : ToChatExample := docChatExample) : TranslateM <| Option Syntax.Command := do
   logTimed "starting translation"
   let (js, _) ← getLeanCodeJson  s server params
-        (numSim := numSim) (numConcise := numConcise) (numDesc := numDesc) (toChat := toChat)
+        (numSim := numSim) (numConcise := numConcise) (numDesc := numDesc) (toChat := toChat) (header := "Definition")
   let output ← getMessageContents js
   trace[Translate.info] m!"{output}"
   let cmd? :  Option Syntax ← output.findSomeM? fun s =>

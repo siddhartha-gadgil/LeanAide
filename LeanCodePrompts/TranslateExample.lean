@@ -6,7 +6,7 @@ import LeanCodePrompts.Translate
 
 -/
 
-set_option lean_aide.translate.model "gpt-4-turbo-preview" -- remove to use "gpt-3.5-turbo"
+set_option lean_aide.translate.model "gpt-4o" -- remove to use "gpt-3.5-turbo"
 set_option trace.Translate.info true
 
 -- Testing local server at the given url
@@ -15,3 +15,5 @@ set_option trace.Translate.info true
 #eval translateViewM "There are infinitely many odd numbers"
 
 #eval translateViewM "If a vector space has dimension `2` then it is finite dimensional."
+
+#eval translateDefViewM? "A square matrix A is said to be diagonalizable if there exists an invertible matrix P such that P^(-1)AP is a diagonal matrix."
