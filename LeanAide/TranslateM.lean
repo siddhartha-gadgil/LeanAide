@@ -51,7 +51,7 @@ def TranslateM.runWithEmbeddings (em : EmbedMap)
 def getDescMap : TranslateM (HashMap Name Json) := do
   return (← get).descriptionMap
 
-def addDescription (desc: Json) : TranslateM Unit := do
+def Translate.addDescription (desc: Json) : TranslateM Unit := do
   match desc.getObjValAs? String "name" with
   | Except.ok name => do
     let m ← getDescMap
@@ -68,7 +68,7 @@ def uploadDesciptions (file: System.FilePath) : TranslateM Unit := do
   for line in lines do
     match Json.parse line with
     | Except.ok desc =>
-      addDescription desc
+      Translate.addDescription desc
     | Except.error _ => continue
 
 def preloadDescriptions : TranslateM Unit := do

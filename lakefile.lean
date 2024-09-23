@@ -17,8 +17,8 @@ lean_lib LeanCodePrompts {
 lean_lib StatementAutoformalisation {
 }
 
-lean_lib CodeAction {
-}
+-- lean_lib CodeAction {
+-- }
 
 lean_lib TacticExtraction {
 }
