@@ -55,70 +55,6 @@ def inferType?(e: Expr) : MetaM (Option Expr) := do
     return some type
   catch _ => return none
 
-/-- recursively find (whitelisted) names of constants in an expression; -/
-partial def recExprNames (depth: Nat): Expr → MetaM (Array Name) :=
-  fun e =>
-  do
-  match depth with
-  | 0 => return #[]
-  | k + 1 =>
-  -- let fmt ← PrettyPrinter.ppExpr e
-  -- IO.println s!"expr : {e}"
-  match ← getCached? e with
-  | some offs => return offs
-  | none =>
-    -- IO.println "matching"
-    let res ← match e with
-      | Expr.bvar ..       => return #[]
-      | Expr.fvar ..       => return #[]
-      | Expr.const name ..  =>
-        do
-        if ← (isWhiteListed name)
-          then return #[name]
-          else
-          if ← (isNotAux name)  then
-            match ←  nameExpr?  name with
-            | some e => recExprNames k e
-            | none => return #[]
-          else pure #[]
-      | Expr.app f a .. =>
-          do
-            -- IO.println "app"
-            let ftype? ← inferType? f
-            -- IO.println "got ftype"
-            let expl? :=
-              ftype?.map $ fun ftype =>
-              (ftype.binderInfo.isExplicit)
-            let expl := expl?.getD true
-            -- IO.println s!"got expl: {expl}"
-            let s ←
-              if !expl then
-                -- IO.println a
-                match a with
-                | Expr.const name ..  =>
-                    do
-                    if ← (isWhiteListed name)
-                      then
-                        return (← recExprNames k f).push name
-                      else recExprNames k f
-                | _ =>
-                  -- IO.println s!"using only f: {f}"
-                  recExprNames k f
-                else return (← recExprNames k f) ++ (← recExprNames k a)
-            return s
-      | Expr.lam _ _ b _ =>
-          do
-            -- IO.println s!"lam; body: {b}"
-            return ← recExprNames k b
-      | Expr.forallE _ _ b _ => do
-          return  ← recExprNames k b
-      | Expr.letE _ _ v b _ =>
-            return (← recExprNames k b) ++ (← recExprNames k v)
-      | _ => pure #[]
-    cache e res
-    return res
-
--- #check lambdaTelescope
 
 partial def getSorryTypes (e: Expr) : MetaM (Array Expr) := do
   match e with
@@ -180,11 +116,14 @@ def withSorry' (n m: Nat) : n + m = m + n := by
 -- #check show_sorries# LeanAide.Meta.withSorry'
 
 /-- names that are offspring of the constant with a given name -/
-def offSpring? (depth: Nat)(name: Name) : MetaM (Option (Array Name)) := do
+def offSpring? (name: Name) : MetaM (Option (Array Name)) := do
   let expr? ← nameExpr?  name
   match expr? with
   | some e =>
-    return  some <| (← recExprNames depth e)
+    let deps := e.getUsedConstants
+    let deps ←  deps.filterM fun n => do
+      pure !(← isBlackListed n)
+    return  some deps
   | none =>
     IO.println s!"no expr for {name}"
     return none
@@ -221,12 +160,14 @@ def offSpringShallowTriple(excludePrefixes: List Name := [])(depth: Nat)
   let h ← IO.FS.Handle.mk depsFile IO.FS.Mode.append
   let mut count := 0
   for (n, type) in  (goodKeys) do
-      let l := (← offSpring? depth n).getD #[]
+      let l := (← offSpring?  n).getD #[]
       -- let type ← type.simplify
       -- IO.println "simplified"
       let l := l.filter fun n => !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf n))
       -- IO.println s!"Computing offspring for {type}"
-      let tl ←  recExprNames depth type
+      let tl := type.getUsedConstants
+      let tl ← tl.filterM fun n => do
+        pure !(← isBlackListed n)
       let tl := tl.filter fun n => !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n))
       -- IO.println s!"Type offspring (excluding system code): {tl.size}"
       h.putStrLn s!"- name: {n}"
@@ -462,11 +403,6 @@ def ConstructorTypes.fromName? (name : Name) : MetaM <| Option ConstructorTypes 
         let ind := dfn.induct
         return some ⟨name, ind, fmt.pretty, doc?⟩
     | _ => return none
-
--- #eval DefnTypes.thmFromName? ``List.length_cons
--- #eval DefnTypes.defFromName? ``List.length
-
--- #eval DefnTypes.defFromName? ``Fin.val
 
 def writeDocsM : MetaM <| Json := do
   IO.println "Getting defn types"

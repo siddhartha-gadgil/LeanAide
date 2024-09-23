@@ -16,7 +16,7 @@ def main : IO Unit := do
   let core := offSpringShallowTripleCore 100
   let io? :=
     core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000, options := ⟨[(`synthInstance.maxHeartbeats, (DataValue.ofNat 100000))]⟩} {env := env}
-    match ← io?.toIO' with
+  match ← io?.toIO' with
     | Except.ok _ =>
       IO.println s!"obtained triples"
       -- let file := System.mkFilePath ["extra_resources/dep_names.txt"]
