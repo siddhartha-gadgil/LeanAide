@@ -410,3 +410,8 @@ def termKindList : MetaM <| List SyntaxNodeKind := do
 abbrev EmbedData := Array <| (String × String × Bool × String) ×  FloatArray
 
 abbrev EmbedMap := HashMap String EmbedData
+
+partial def idents : Syntax → List String
+| Syntax.ident _ s .. => [s.toString]
+| Syntax.node _ _ ss => ss.toList.bind idents
+| _ => []

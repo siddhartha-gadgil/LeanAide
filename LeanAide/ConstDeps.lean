@@ -31,17 +31,6 @@ def constantNameTypes  : MetaM (Array (Name ×  Expr)) := do
   let names := names.filter fun (n, _) => !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n))
   return names
 
-initialize exprRecCache : IO.Ref (HashMap Expr (Array Name)) ← IO.mkRef (HashMap.empty)
-
-def getCached? (e : Expr) : IO (Option (Array Name)) := do
-  let cache ← exprRecCache.get
-  return cache.find? e
-
-def cache (e: Expr) (offs : Array Name) : IO Unit := do
-  let cache ← exprRecCache.get
-  exprRecCache.set (cache.insert  e offs)
-  return ()
-
 /-- given name, optional expression of definition for the corresponding constant -/
 def nameExpr? : Name → MetaM ( Option Expr) :=
   fun name => do
@@ -108,12 +97,6 @@ def withSorry' (n m: Nat) : n + m = m + n := by
   | zero => simp
   | succ n ih => sorry
 
--- #print withSorry
--- #print withSorry'
-
--- #check show_sorries withSorry
--- #check show_sorries withSorry'
--- #check show_sorries# LeanAide.Meta.withSorry'
 
 /-- names that are offspring of the constant with a given name -/
 def offSpring? (name: Name) : MetaM (Option (Array Name)) := do
@@ -125,7 +108,7 @@ def offSpring? (name: Name) : MetaM (Option (Array Name)) := do
       pure !(← isBlackListed n)
     return  some deps
   | none =>
-    IO.println s!"no expr for {name}"
+    IO.eprintln s!"no expr for {name}"
     return none
 
 initialize simplifyCache : IO.Ref (HashMap Expr Expr) ← IO.mkRef HashMap.empty
@@ -148,7 +131,7 @@ def excludeSuffixes := #[`dcasesOn, `recOn, `casesOn, `rawCast, `freeVar, `brec,
 /--
 Array of constants, names in their definition, and names in their type.
 -/
-def offSpringShallowTriple(excludePrefixes: List Name := [])(depth: Nat)
+def offSpringShallowTriple(excludePrefixes: List Name := [])
               : MetaM (Unit) :=
   do
   let keys ←  constantNameTypes
@@ -161,15 +144,11 @@ def offSpringShallowTriple(excludePrefixes: List Name := [])(depth: Nat)
   let mut count := 0
   for (n, type) in  (goodKeys) do
       let l := (← offSpring?  n).getD #[]
-      -- let type ← type.simplify
-      -- IO.println "simplified"
       let l := l.filter fun n => !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf n))
-      -- IO.println s!"Computing offspring for {type}"
       let tl := type.getUsedConstants
       let tl ← tl.filterM fun n => do
         pure !(← isBlackListed n)
       let tl := tl.filter fun n => !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n))
-      -- IO.println s!"Type offspring (excluding system code): {tl.size}"
       h.putStrLn s!"- name: {n}"
       h.putStrLn <| s!"  defn: " ++ ((s!"{l}").drop 1)
       h.putStrLn <| s!"  type: " ++ ((s!"{tl}").drop 1)
@@ -183,9 +162,9 @@ def offSpringShallowTriple(excludePrefixes: List Name := [])(depth: Nat)
   return ()
 
 
-def offSpringShallowTripleCore (depth: Nat):
+def offSpringShallowTripleCore:
     CoreM Unit :=
-          (offSpringShallowTriple excludePrefixes depth).run'
+          (offSpringShallowTriple excludePrefixes).run'
 
 /-- All constants in the environment with value and type. -/
 def constantNameValueTypes  : MetaM (Array (Name × Expr ×   Expr × Option String)) := do
@@ -500,5 +479,43 @@ def nameViewM? (name: Name) : MetaM <| Option String := do
 
 def nameViewCore? (name: Name) : CoreM <| Option String :=
     (nameViewM? name).run'
+
+open PrettyPrinter in
+def defsInExpr (expr: Expr) : MetaM <| Array Name := do
+  let typeStx ← delab expr
+  let defNames := idents typeStx |>.eraseDups |>.map String.toName
+  let defNames := defNames.filter fun name =>
+    (excludePrefixes.all fun pre => !pre.isPrefixOf name) &&
+    (excludeSuffixes.all fun suff => !suff.isSuffixOf name)
+  let tails := defNames.filterMap fun n =>
+    n.componentsRev.head?
+  let constsInType := expr.getUsedConstants
+  let dotNames := constsInType.filter fun n =>
+    match n.componentsRev.head? with
+    | some t => tails.contains t || defNames.contains n
+    | none => false
+  return dotNames
+
+def defsInTypeRec (name : Name) (type: Expr) (depth:Nat) :
+    MetaM <| Array Name := do
+  match depth with
+  | 0 => return #[name]
+  | k + 1 =>
+    let children ← defsInExpr type
+    let childrenTypes ← children.filterMapM fun n => do
+      let info ← getConstInfo n
+      pure <| some (n, info.type)
+    let childValueTypes ← children.filterMapM fun n => do
+      let info ← getConstInfo n
+      match info with
+      | ConstantInfo.defnInfo val => pure <| some (n, val.value)
+      | _ => return none
+    let res ← (childrenTypes ++ childValueTypes).mapM fun (n, t) => defsInTypeRec n t k
+    return res.foldl (· ++ ·) children |>.toList |>.eraseDups |>.toArray
+
+def defsInConst (name: Name) (depth: Nat) :
+    MetaM <| Array Name := do
+  let info ← getConstInfo name
+  defsInTypeRec name info.type depth
 
 end LeanAide.Meta

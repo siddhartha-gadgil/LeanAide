@@ -5,7 +5,7 @@ open Lean Meta Elab
 
 namespace LeanAide.Meta
 
-def theoremAndDefs (name: Name) : MetaM <|
+def theoremAndDefs (name: Name) (depth: Nat := 2) : MetaM <|
   Option (String × (List String)) := do
   let env ← getEnv
   let info? := env.find? name
@@ -20,12 +20,12 @@ def theoremAndDefs (name: Name) : MetaM <|
         let statement := match doc? with
           | some doc => s!"/-- {doc} -/\n" ++ statement
           | none => statement
-        let defNames := idents typeStx |>.eraseDups
+        let defNames ← defsInTypeRec name type depth
         let defs ←  defNames.filterMapM <| fun n =>
-          DefnTypes.defFromName? n.toName
+          DefnTypes.defFromName? n
         let defViews := defs.map <| fun df => df.withDoc
         let defViews := defViews.filter fun df => df.length < 600
-        return some (statement, defViews)
+        return some (statement, defViews.toList)
     | _ => return none
 
 def theoremStatement (name: Name) : MetaM <|

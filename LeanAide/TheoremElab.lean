@@ -78,10 +78,7 @@ def promptsThmSplitCore : CoreM ((Array String) × (Array String)) :=
 def levelNames :=
   [`u, `v, `u_1, `u_2, `u_3, `u_4, `u_5, `u_6, `u_7, `u_8, `u_9, `u_10, `u_11, `u₁, `u₂, `uι, `W₁, `W₂, `w₁, `w₂, `u', `v', `uu, `w, `w', `wE, `uE, `x]
 
-partial def idents : Syntax → List String
-| Syntax.ident _ s .. => [s.toString]
-| Syntax.node _ _ ss => ss.toList.bind idents
-| _ => []
+
 
 
 /--

@@ -13,7 +13,7 @@ def main : IO Unit := do
   let env ←
     importModules #[
     {module := `Mathlib}] {}
-  let core := offSpringShallowTripleCore 100
+  let core := offSpringShallowTripleCore
   let io? :=
     core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000, options := ⟨[(`synthInstance.maxHeartbeats, (DataValue.ofNat 100000))]⟩} {env := env}
   match ← io?.toIO' with
