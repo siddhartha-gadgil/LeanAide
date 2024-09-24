@@ -13,7 +13,6 @@ def clearEmbedQueries : TranslateM Unit := do
 def embedQueryCached (s: String)(retry : Bool := false) : TranslateM (Except String Json) := do
   match (← get).queryEmbeddingCache.find? s with
   | some js? =>
-    -- IO.eprintln s!"cache hit for {s}"
     if !retry then
       return js?
     else match js? with
@@ -44,7 +43,7 @@ def blended (gps: List (List α)) : List α :=
 
 def useragent : String := "LeanAide"
 
-def getLeanSearchQueryJson (s : String) (num_results : Nat := 6) : CoreM <| Array Json := do
+def getLeanSearchQueryJsonArray (s : String) (num_results : Nat := 6) : CoreM <| Array Json := do
   let apiUrl := "https://leansearch.net/api/search"
   let s' := System.Uri.escapeUri s
   let q := apiUrl ++ s!"?query={s'}&num_results={num_results}"
@@ -58,7 +57,7 @@ def getLeanSearchQueryJson (s : String) (num_results : Nat := 6) : CoreM <| Arra
         return arr[0:num_results]
       | Except.error e => IO.throwServerError s!"Could not obtain array from {js}; error: {e}"
 
-def getMoogleQueryJson (s : String) (num_results : Nat := 6) : CoreM <| Array Json := do
+def getMoogleQueryJsonArray (s : String) (num_results : Nat := 6) : CoreM <| Array Json := do
   let apiUrl := "https://www.moogle.ai/api/search"
   let data := Json.arr
     #[Json.mkObj [("isFind", false), ("contents", s)]]
@@ -122,6 +121,27 @@ def toJson (res: SearchResult) : Json :=
   | none => l
   Json.mkObj l
 
+#check List.findSome?
+
+def withDoc? (res: SearchResult) (descFields: List String)
+    (preferDocs : Bool) : TranslateM (Option <| String × Json) := do
+  let data? ← getDescriptionData res.name.toName
+  data?.bindM  fun data => do
+  let data := data.mergeObj res.toJson
+  match res.docString? with
+  | some doc =>
+    if preferDocs then return some (doc, data)
+    else
+      let fromField? := data?.bind fun data =>
+      descFields.findSome? fun descField =>
+        data.getObjValAs? String descField |>.toOption
+      return some <| (fromField?.getD doc, data)
+  | none =>
+      let fromField? := data?.bind fun data =>
+      descFields.findSome? fun descField =>
+        data.getObjValAs? String descField |>.toOption
+      return fromField?.map fun s => (s, data)
+
 end SearchResult
 
 inductive PromptExampleBuilder where
@@ -142,4 +162,48 @@ partial def num : PromptExampleBuilder →  Nat
 | sequence ps => (ps.map num).sum
 | blend ps => (ps.map num).sum
 
+def pairsFromEmbeddingJson (js: String) :
+    TranslateM <| Except String (Array (String × Json)) := do
+  match Json.parse js with
+  | Except.error e => return Except.error e
+  | Except.ok js =>
+      match js.getArr? with
+      | Except.error e => return Except.error e
+      | Except.ok jsArr  =>
+        let mut pairs : Array <| String × Json := #[]
+        for js in jsArr do
+          match js.getObjValAs? String "docString" with
+          | Except.error e => return Except.error e
+          | Except.ok doc =>
+            pairs := pairs.push (doc, js)
+        return Except.ok pairs
+
+def pairsFromSearchResults (srs: Array SearchResult)(descFields: List String)
+    (preferDocs : Bool) : TranslateM <| (Array (String × Json)) := do
+    srs.filterMapM fun sr =>
+      sr.withDoc? descFields preferDocs
+
+def getPromptPairs (pb: PromptExampleBuilder) (query: String) :
+   TranslateM ((Array (String × Json))) := do
+  let dataMap ← getEmbedMap
+  match pb with
+  | embedSearch descField n =>
+      let outJs ←
+        getNearestEmbeddingsFull query (← embedQueryCached query) n 2.0 (dataMap := dataMap)
+      match ← pairsFromEmbeddingJson outJs with
+      | Except.ok jsArr => return jsArr
+      | Except.error e => throwError e
+  | leansearch descFields preferDocs n =>
+    let jsArr ← getLeanSearchQueryJsonArray query
+    let srs := jsArr.filterMap SearchResult.ofLeanSearchJson?
+    pairsFromSearchResults srs descFields preferDocs
+  | moogle descFields preferDocs n =>
+    let jsArr ← getMoogleQueryJsonArray query
+    let srs ←  jsArr.filterMapM fun js =>
+       SearchResult.ofMoogleJson? js
+    pairsFromSearchResults srs descFields preferDocs
+  | _ => sorry
+
 end PromptExampleBuilder
+
+end LeanAide.Meta

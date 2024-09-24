@@ -75,7 +75,7 @@ def preloadDescriptions : TranslateM Unit := do
   uploadDesciptions <| "resources" / "mathlib4-prompts.jsonl"
   uploadDesciptions <| "resources" / "mathlib4-descs.jsonl"
 
-def getDescription (name: Name) : TranslateM <| Option Json := do
+def getDescriptionData (name: Name) : TranslateM <| Option Json := do
   let m ← getDescMap
   if m.isEmpty then preloadDescriptions
   let m ← getDescMap
@@ -90,11 +90,11 @@ def TranslateM.runToCore (x: TranslateM α) : CoreM α := do
 
 def timedTest : TranslateM (Nat × Nat × Nat × Json × Json × Json) := do
   let t₀ ← IO.monoMsNow
-  let d₁ ← getDescription ``Nat.add_assoc
+  let d₁ ← getDescriptionData ``Nat.add_assoc
   let t₁ ← IO.monoMsNow
-  let d₂ ← getDescription ``Nat.add_comm
+  let d₂ ← getDescriptionData ``Nat.add_comm
   let t₂ ← IO.monoMsNow
-  let d₃ ← getDescription ``Nat.mul_comm
+  let d₃ ← getDescriptionData ``Nat.mul_comm
   let t₃ ← IO.monoMsNow
   return (t₁ - t₀, t₂ - t₁, t₃ - t₂, d₁.getD Json.null, d₂.getD Json.null, d₃.getD Json.null)
 
