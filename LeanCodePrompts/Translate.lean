@@ -12,6 +12,7 @@ import Batteries.Util.Pickle
 import LeanCodePrompts.ChatClient
 import LeanAide.StatementSyntax
 import LeanAide.TranslateM
+import LeanAide.PromptBuilder
 
 open Lean Meta Elab Parser Command
 open LeanAide.Meta
@@ -258,9 +259,10 @@ def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true)
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
 def getLeanCodeJson (s: String)
-  (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})(numSim : Nat:= 8)(numConcise: Nat := 0)(numDesc : Nat := 0)
+  (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})
+  (pb: PromptExampleBuilder := .embedBuilder 8 0 0)
   (includeFixed: Bool := Bool.false)(toChat : ToChatExample := simpleChatExample)(header: String := "Theorem") : TranslateM <| Json × Json × Array (String × Json) := do
-  logTimed s!"translating string `{s}` with {numSim} examples"
+  logTimed s!"translating string `{s}` with  examples"
   match ← getCachedJson? s with
   | some js => return js
   | none =>
@@ -270,13 +272,14 @@ def getLeanCodeJson (s: String)
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.insert s)
       -- work starts here; before this was caching, polling etc
-      let pairs? ←
-        if numSim > 0 then
-          getNearestDocs s numSim numConcise numDesc
-        else pure <| Except.ok #[]
-      match pairs? with
-      | Except.error e => throwError e
-      | Except.ok pairs => do
+      -- let pairs? ←
+      --   if numSim > 0 then
+      --     getNearestDocs s numSim numConcise numDesc
+      --   else pure <| Except.ok #[]
+      -- match pairs? with
+      -- | Except.error e => throwError e
+      -- | Except.ok pairs => do
+      let pairs ← pb.getPromptPairs s
       let pairs := if includeFixed then pairs ++ fixedPromptsJson else pairs
       let pairs  := pairs.filter (fun (s, _) => s.length < 100)
       let pairs := pairs.map fun (doc, thm) =>
@@ -560,7 +563,7 @@ elab "//-" cb:commentBody  : term => do
   -- querying codex
   let (js, _) ←
     getLeanCodeJson  s
-      (numSim := 8) (numConcise := 0) |>.run' {}
+      (pb := PromptExampleBuilder.embedBuilder 8 0 0) |>.run' {}
   -- filtering, autocorrection and selection
   let e ←
     jsonToExpr' js true !(← chatParams).stopColEq
@@ -612,7 +615,7 @@ def translateViewM (s: String)
   : TranslateM String := do
   logTimed "starting translation"
   let (js, _) ← getLeanCodeJson  s server params
-        (numSim := numSim) (numConcise := numConcise) (numDesc := numDesc) (toChat := toChat)
+        (pb := PromptExampleBuilder.embedBuilder numSim numConcise numDesc) (toChat := toChat)
   let output ← getMessageContents js
   trace[Translate.info] m!"{output}"
   -- let output := params.splitOutputs output
@@ -637,7 +640,7 @@ def translateToProp? (s: String)
    : TranslateM (Option Expr) := do
   logTimed "starting translation"
   let (js, _) ← getLeanCodeJson  s server params
-        (numSim := numSim) (numConcise := numConcise) (numDesc := numDesc) (toChat := toChat)
+        (pb := PromptExampleBuilder.embedBuilder numSim numConcise numDesc)  (toChat := toChat)
   let output ← getMessageContents js
   trace[Translate.info] m!"{output}"
   -- let output := params.splitOutputs output
@@ -652,7 +655,7 @@ def translateDefCmdM? (s: String)
   (toChat : ToChatExample := docChatExample) : TranslateM <| Option Syntax.Command := do
   logTimed "starting translation"
   let (js, _) ← getLeanCodeJson  s server params
-        (numSim := numSim) (numConcise := numConcise) (numDesc := numDesc) (toChat := toChat) (header := "Definition")
+        (pb := PromptExampleBuilder.embedBuilder numSim numConcise numDesc)  (toChat := toChat) (header := "Definition")
   let output ← getMessageContents js
   trace[Translate.info] m!"{output}"
   let cmd? :  Option Syntax ← output.findSomeM? fun s =>
@@ -681,7 +684,7 @@ open PrettyPrinter Tactic
   let s := s.getString
   let (js, _) ←
     getLeanCodeJson  s (← chatServer) (← chatParams)
-      (← promptSize) (← conciseDescSize) |>.run' {}
+      (pb := PromptExampleBuilder.embedBuilder  (← promptSize) (← conciseDescSize) 0)|>.run' {}
   let e ← jsonToExpr' js (← greedy) !(← chatParams).stopColEq
   logTimed "obtained expression"
   let stx' ← delab e
@@ -693,7 +696,7 @@ open PrettyPrinter Tactic
 
 def findTheorem? (s: String)(numSim : ℕ := 8)
   (numConcise numDesc : ℕ := 0) : TranslateM (Option Name) := do
-  let (js, _, prompts) ← getLeanCodeJson s (numSim := numSim) (numConcise := numConcise) (numDesc := numDesc)
+  let (js, _, prompts) ← getLeanCodeJson s (pb := PromptExampleBuilder.embedBuilder numSim numConcise numDesc)
   let output ← getMessageContents js
   trace[Translate.info] m!"thmPairs: {prompts}"
   let thmPairs := prompts.reverse.map (fun (_, js) =>
@@ -703,7 +706,7 @@ def findTheorem? (s: String)(numSim : ℕ := 8)
 
 def findTheorems (s: String)(numSim : ℕ := 8)
   (numConcise numDesc : ℕ := 0) : TranslateM (List Name) := do
-  let (js, _, prompts) ← getLeanCodeJson s (numSim := numSim) (numConcise := numConcise) (numDesc := numDesc)
+  let (js, _, prompts) ← getLeanCodeJson s (pb := PromptExampleBuilder.embedBuilder numSim numConcise numDesc)
   let output ← getMessageContents js
   trace[Translate.info] m!"thmPairs: {prompts}"
   let thmPairs := prompts.reverse.map (fun (_, js) =>
@@ -757,13 +760,13 @@ Translate a string to a Lean expression using the GPT model, returning three com
 * The prompt used for the LLM.
 -/
 def translateViewVerboseM (s: String)(server: ChatServer)
-  (params: ChatParams)(numSim : Nat:= 10)(numConcise: Nat := 0)(numDesc: Nat := 0)
+  (params: ChatParams)(pb: PromptExampleBuilder := .embedBuilder 10 0 0)
   (toChat : ToChatExample := simpleChatExample)  :
   TranslateM ((Option (String × (Array String) × (Array (Array String)) )) × Array String × Json) := do
   let dataMap ← getEmbedMap
   IO.println s!"dataMap keys: {dataMap.toList.map Prod.fst}"
   let (js,prompt, _) ←
-    getLeanCodeJson s server params numSim numConcise numDesc false toChat
+    getLeanCodeJson s server params pb false toChat
   let output ← getMessageContents js
   if output.isEmpty then
     IO.eprintln "no output"
@@ -798,7 +801,7 @@ def translateViewExprVerboseM (s: String)(server: ChatServer)
   (toChat : ToChatExample := simpleChatExample)  :
   TranslateM ((Option (Expr × String × (Array String) × (Array (Array String)) )) × Array String × Json) := do
   let (js,prompt, _) ←
-    getLeanCodeJson s server params numSim numConcise numDesc false toChat
+    getLeanCodeJson s server params (PromptExampleBuilder.embedBuilder numSim numConcise numDesc) false toChat
   let output ← getMessageContents js
   if output.isEmpty then
      return (none, output, prompt)

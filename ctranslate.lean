@@ -3,7 +3,7 @@ import LeanCodePrompts
 import LeanCodePrompts.BatchTranslate
 import LeanAide.Config
 import Cli
-open Lean Cli
+open Lean Cli LeanAide.Meta
 
 set_option maxHeartbeats 10000000
 set_option maxRecDepth 1000
@@ -58,8 +58,7 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
   let dataMap :
     EmbedMap := HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
   let core :=
-    translateViewVerboseM type chatServer chatParams numSim
-      numConcise |>.runWithEmbeddings dataMap
+    translateViewVerboseM type chatServer chatParams (PromptExampleBuilder.embedBuilder numSim numConcise 0) |>.runWithEmbeddings dataMap
   let io? :=
     core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
     {env := env}
