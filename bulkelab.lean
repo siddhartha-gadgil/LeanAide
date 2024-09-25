@@ -20,6 +20,15 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
     (fun s => s.as! Nat) |>.getD 2
   let numDesc := p.flag? "descriptions" |>.map
     (fun s => s.as! Nat) |>.getD 2
+  let pbSource? := p.flag? "prompt_examples" |>.map
+    (fun s => s.as! String)
+  let pbJs? := pbSource?.bind fun pb =>
+    (Json.parse pb |>.toOption)
+  let pb? : Option PromptExampleBuilder := pbJs?.bind
+    fun js =>
+      fromJson? js |>.toOption
+  let pb := pb?.getD <|
+    PromptExampleBuilder.embedBuilder numSim numConcise numDesc
   let includeFixed := p.hasFlag "include_fixed"
   let queryNum := p.flag? "responses" |>.map (fun s => s.as! Nat)
     |>.getD 5
@@ -99,7 +108,7 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
     EmbedMap := HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
   IO.eprintln "Loaded hashmap"
   let core :=
-    checkTranslatedThmsM type chatServer chatParams (PromptExampleBuilder.embedBuilder numSim numConcise numDesc) includeFixed embedding delay repeats
+    checkTranslatedThmsM type chatServer chatParams pb includeFixed embedding delay repeats
     queryData? tag |>.runWithEmbeddings dataMap
   let io? :=
     core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000}
@@ -125,6 +134,7 @@ unsafe def bulkElab : Cmd := `[Cli|
   FLAGS:
     include_fixed;         "Include the 'Lean Chat' fixed prompts."
     o, output : String;    "Output file (default `results/{type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp10}.json`)."
+    prompt_examples : String; "Example prompts in Json"
     p, prompts : Nat;      "Number of example prompts (default 10)."
     concise_descriptions : Nat; "Number of example concise descriptions (default 2)."
     descriptions : Nat; "Number of example descriptions (default 2)."
