@@ -797,11 +797,11 @@ Translate a string to a Lean expression using the GPT model, returning three com
 * The prompt used for the LLM.
 -/
 def translateViewExprVerboseM (s: String)(server: ChatServer)
-  (params: ChatParams)(numSim : Nat:= 10)(numConcise: Nat := 0)(numDesc: Nat := 0)
+  (params: ChatParams)(pb: PromptExampleBuilder := .embedBuilder 10 0 0)
   (toChat : ToChatExample := simpleChatExample)  :
   TranslateM ((Option (Expr × String × (Array String) × (Array (Array String)) )) × Array String × Json) := do
   let (js,prompt, _) ←
-    getLeanCodeJson s server params (PromptExampleBuilder.embedBuilder numSim numConcise numDesc) false toChat
+    getLeanCodeJson s server params pb false toChat
   let output ← getMessageContents js
   if output.isEmpty then
      return (none, output, prompt)
