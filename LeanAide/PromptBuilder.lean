@@ -152,7 +152,7 @@ inductive PromptExampleBuilder where
   (preferDocs: Bool := false) (n: Nat) : PromptExampleBuilder
 | sequence : List PromptExampleBuilder → PromptExampleBuilder
 | blend : List PromptExampleBuilder → PromptExampleBuilder
-
+deriving Repr, ToJson, FromJson
 namespace PromptExampleBuilder
 
 partial def num : PromptExampleBuilder →  Nat
@@ -183,26 +183,51 @@ def pairsFromSearchResults (srs: Array SearchResult)(descFields: List String)
     srs.filterMapM fun sr =>
       sr.withDoc? descFields preferDocs
 
-def getPromptPairs (pb: PromptExampleBuilder) (query: String) :
-   TranslateM ((Array (String × Json))) := do
+partial def getPromptPairsOrdered (pb: PromptExampleBuilder)
+  (query: String) : TranslateM ((Array (String × Json))) := do
   let dataMap ← getEmbedMap
   match pb with
   | embedSearch descField n =>
       let outJs ←
-        getNearestEmbeddingsFull query (← embedQueryCached query) n 2.0 (dataMap := dataMap)
+        getNearestEmbeddingsFull query (← embedQueryCached query) n 2.0 (descField := descField) (dataMap := dataMap)
       match ← pairsFromEmbeddingJson outJs with
       | Except.ok jsArr => return jsArr
       | Except.error e => throwError e
   | leansearch descFields preferDocs n =>
-    let jsArr ← getLeanSearchQueryJsonArray query
+    let jsArr ← getLeanSearchQueryJsonArray query n
     let srs := jsArr.filterMap SearchResult.ofLeanSearchJson?
     pairsFromSearchResults srs descFields preferDocs
   | moogle descFields preferDocs n =>
-    let jsArr ← getMoogleQueryJsonArray query
+    let jsArr ← getMoogleQueryJsonArray query n
     let srs ←  jsArr.filterMapM fun js =>
        SearchResult.ofMoogleJson? js
     pairsFromSearchResults srs descFields preferDocs
-  | _ => sorry
+  | sequence ps => do
+    let offspringGps ← ps.mapM fun pb => getPromptPairsOrdered pb query
+    return offspringGps.toArray.join
+  | blend ps =>
+    let offspringGps ← ps.mapM fun pb => getPromptPairsOrdered pb query
+    let offSpringGps := offspringGps.map fun l => l.toList
+    return blended offSpringGps |>.toArray
+
+def getPromptPairs (pb: PromptExampleBuilder)
+    (query: String) : TranslateM ((Array (String × Json))) := do
+  let pairs ← getPromptPairsOrdered pb query
+  return pairs.reverse
+
+def embedBuilder (numSim numConcise numDesc: Nat) : PromptExampleBuilder :=
+  .sequence [
+    .embedSearch "docString" numSim,
+    .embedSearch "concise-description" numConcise,
+    .embedSearch "description" numDesc]
+
+partial def usedEmbeddings : PromptExampleBuilder → List String
+| .embedSearch d _ => [d]
+| .blend pbs => pbs.map usedEmbeddings |>.join
+| .sequence pbs => pbs.map usedEmbeddings |>.join
+| _ => []
+
+-- #eval toJson (embedBuilder 3 4 5)
 
 end PromptExampleBuilder
 

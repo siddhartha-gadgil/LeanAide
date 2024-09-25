@@ -518,4 +518,17 @@ def defsInConst (name: Name) (depth: Nat) :
   let info ← getConstInfo name
   defsInTypeRec name info.type depth
 
+open Elab Term
+def defsInTypeString? (name: Name)(typeStr: String) (depth: Nat):
+    TermElabM <| Option (Array Name) := do
+    let typeStx? := Parser.runParserCategory (← getEnv) `term typeStr
+    match typeStx? with
+    | .error _ => return none
+    | .ok stx =>
+      try
+        let type ← elabType stx
+        defsInTypeRec name type depth
+      catch _ =>
+        return none
+
 end LeanAide.Meta
