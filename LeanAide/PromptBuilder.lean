@@ -221,6 +221,10 @@ def embedBuilder (numSim numConcise numDesc: Nat) : PromptExampleBuilder :=
     .embedSearch "concise-description" numConcise,
     .embedSearch "description" numDesc]
 
+def searchBuilder (numLeanSearch numMoogle: Nat) : PromptExampleBuilder :=
+  .blend [.leansearch ["concise-description", "description"] true numLeanSearch,
+      .moogle ["concise-description", "description"] true numMoogle]
+
 partial def usedEmbeddings : PromptExampleBuilder → List String
 | .embedSearch d _ => [d]
 | .blend pbs => pbs.map usedEmbeddings |>.join

@@ -703,9 +703,9 @@ def findTheorem? (s: String)(numSim : ℕ := 8)
     js.getObjValAs? String "type" |>.toOption.get!))
   matchElab? output thmPairs
 
-def findTheorems (s: String)(numSim : ℕ := 8)
-  (numConcise numDesc : ℕ := 0) : TranslateM (List Name) := do
-  let (js, _, prompts) ← getLeanCodeJson s (pb := PromptExampleBuilder.embedBuilder numSim numConcise numDesc)
+def findTheorems (s: String)(numLeanSearch : ℕ := 8)
+  (numMoogle : ℕ := 0) : TranslateM (List Name) := do
+  let (js, _, prompts) ← getLeanCodeJson s (pb := PromptExampleBuilder.searchBuilder numLeanSearch numMoogle)
   let output ← getMessageContents js
   trace[Translate.info] m!"thmPairs: {prompts}"
   let thmPairs := prompts.reverse.map (fun (_, js) =>
@@ -716,8 +716,7 @@ def findTheorems (s: String)(numSim : ℕ := 8)
 def nearbyTheoremsChunk (s: String)
   (numLeanSearch numMoogle : ℕ := 5)  : TranslateM String := do
     let pb : PromptExampleBuilder :=
-      .blend [.leansearch ["concise-description", "description"] true numLeanSearch,
-      .moogle ["concise-description", "description"] true numMoogle]
+      PromptExampleBuilder.searchBuilder numLeanSearch numMoogle
     let pairs ← pb.getPromptPairs s
     let statements : Array String ← pairs.filterMapM (fun (doc, js) => do
       let name? := js.getObjValAs? String "name" |>.toOption
@@ -732,7 +731,7 @@ def nearbyTheoremsChunk (s: String)
 
 def matchingTheoremsAI (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})(s: String)(n: ℕ := 3)(numLeanSearch : ℕ := 8)
   (numMoogle : ℕ := 0)  : TranslateM (List Name) := do
-    let chunk ← nearbyTheoremsChunk s numLeanSearch
+    let chunk ← nearbyTheoremsChunk s numLeanSearch numMoogle
     let prompt := s!"The following are some theorems in Lean with informal statements as documentation strings\n\n{chunk}\n\n---\n¬List the names of theorems that are equivalent to the following informal statement:\n\n{s}.\n\nOutput ONLY a (possibly empty) list of names."
     let completions ← server.completions prompt (← sysPrompt) n params
     let entries : Array (Array String) := completions.filterMap fun s =>
@@ -743,11 +742,12 @@ def matchingTheoremsAI (server: ChatServer := ChatServer.openAI)(params: ChatPar
       | none => none
     return entries.join.toList.map (·.toName)
 
-def matchingTheorems (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})(s: String)(n: ℕ := 3)(numSim : ℕ := 8)
-  (numConcise numDesc : ℕ := 4)  : TranslateM (List Name) := do
-  let elabMatch ← findTheorems s numSim numConcise numDesc
+def matchingTheorems (server: ChatServer := ChatServer.openAI)
+    (params: ChatParams := {})(s: String)(n: ℕ := 3)(numLeanSearch : ℕ := 8)
+    (numMoogle : ℕ := 4)  : TranslateM (List Name) := do
+  let elabMatch ← findTheorems s numLeanSearch numMoogle
   if elabMatch.isEmpty then
-    matchingTheoremsAI server params s n numSim numConcise
+    matchingTheoremsAI server params s n numLeanSearch numMoogle
   else
     pure elabMatch
 
