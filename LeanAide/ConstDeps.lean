@@ -536,8 +536,14 @@ def weightedDefsInConsts (names: List Name) (depth: Nat)
     let novel := headConsts.filter fun x => !tailConsts.contains x
     let novelWtdConsts :=
       novel.map fun x => (x, weight)
-    return novelWtdConsts ++ (tailWtdConsts.map fun (x, w) =>
+    let unsorted := novelWtdConsts ++ (tailWtdConsts.map fun (x, w) =>
       (x, if headConsts.contains x then w + weight else w))
+    return unsorted.qsort fun (_, w₁) (_, w₂) => w₁ > w₂
+
+def bestDefsInConsts (n: Nat) (names: List Name) (depth: Nat)
+  (weight: Float := 1.0) (decay: Float := 0.8) : MetaM <| Array Name := do
+    let weighted ← weightedDefsInConsts names depth weight decay
+    return weighted[0:n] |>.toArray.map fun (n, _) => n
 
 open Elab Term
 def defsInTypeString? (name: Name)(typeStr: String) (depth: Nat):

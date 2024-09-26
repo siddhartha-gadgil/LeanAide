@@ -13,6 +13,7 @@ import LeanCodePrompts.ChatClient
 import LeanAide.StatementSyntax
 import LeanAide.TranslateM
 import LeanAide.PromptBuilder
+import LeanAide.ConstDeps
 
 open Lean Meta Elab Parser Command
 open LeanAide.Meta
@@ -714,7 +715,7 @@ def findTheorems (s: String)(numLeanSearch : ℕ := 8)
   matchElabs output thmPairs
 
 def nearbyTheoremsChunk (s: String)
-  (numLeanSearch numMoogle : ℕ := 5)  : TranslateM String := do
+  (numLeanSearch : Nat := 8) (numMoogle: Nat := 0)  : TranslateM String := do
     let pb : PromptExampleBuilder :=
       PromptExampleBuilder.searchBuilder numLeanSearch numMoogle
     let pairs ← pb.getPromptPairs s
@@ -728,6 +729,21 @@ def nearbyTheoremsChunk (s: String)
       | _, _,_ => pure <| none
     )
     return statements.foldl (fun acc s => acc ++ s ++ "\n\n") ""
+
+def nearbyDefs (s: String) (numLeanSearch : Nat := 8) (numMoogle: Nat := 0)
+    (numClosure: Nat := 4)  : TranslateM <| Array Name := do
+    let pb : PromptExampleBuilder :=
+      PromptExampleBuilder.searchBuilder numLeanSearch numMoogle
+    let pairs ← pb.getPromptPairs s
+    let searchNames : Array Name := pairs.filterMap (fun (_, js) => do
+      js.getObjValAs? Name "name" |>.toOption
+    )
+    let defNames : Array Name := pairs.filterMap (fun (_, js) => do
+      let prop := js.getObjValAs? Bool "isProp" |>.toOption |>.getD true
+      if prop then none else js.getObjValAs? Name "name" |>.toOption
+    )
+    let closureNames ←  bestDefsInConsts numClosure searchNames.toList 1
+    return defNames ++ closureNames
 
 def matchingTheoremsAI (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})(s: String)(n: ℕ := 3)(numLeanSearch : ℕ := 8)
   (numMoogle : ℕ := 0)  : TranslateM (List Name) := do
