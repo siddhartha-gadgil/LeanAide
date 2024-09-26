@@ -27,4 +27,4 @@ def Matrix.isDiagonalizable {n : Type u} {α : Type v} [Fintype n] [DecidableEq 
     (A : Matrix n n α) : Prop :=
       ∃ (P : Matrix n n α), P.det ≠ 0 ∧ ∃ (D : Matrix n n α), D.IsDiag ∧ P⁻¹ * A * P = D
 
-#eval LeanAide.Meta.getDescription ``Matrix.IsDiag
+-- #eval LeanAide.Meta.getDescription ``Matrix.IsDiag

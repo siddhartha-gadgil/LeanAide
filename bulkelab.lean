@@ -134,6 +134,7 @@ unsafe def bulkElab : Cmd := `[Cli|
   FLAGS:
     include_fixed;         "Include the 'Lean Chat' fixed prompts."
     o, output : String;    "Output file (default `results/{type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp10}.json`)."
+    roundtrip; "Translate back to natural language and compare."
     prompt_examples : String; "Example prompts in Json"
     p, prompts : Nat;      "Number of example prompts (default 10)."
     concise_descriptions : Nat; "Number of example concise descriptions (default 2)."
