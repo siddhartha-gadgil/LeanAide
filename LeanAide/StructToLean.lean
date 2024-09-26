@@ -93,13 +93,13 @@ partial def dropLocalContext (type: Expr) : MetaM Expr := do
       return type
   | _ => return type
 
-variable (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8)(numConcise numDesc : ℕ := 0)
+variable (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb: PromptExampleBuilder) (numLeanSearch : Nat := 8)(numMoogle: Nat := 0)
   (dataMap : EmbedMap := HashMap.empty )
 
 open Lean Meta Tactic
 
 def powerTactics : CoreM <| List <| TSyntax ``tacticSeq := do
-  return [← `(tacticSeq| omega), ← `(tacticSeq| ring), ← `(tacticSeq| linarith), ← `(tacticSeq| norm_num), ← `(tacticSeq| positivity), ← `(tacticSeq| gcongr), ←`(tacticSeq| contradiction), ← `(tacticSeq| tauto)]
+  return [← `(tacticSeq| omega), ← `(tacticSeq| ring), ← `(tacticSeq| linarith), ← `(tacticSeq| norm_num), ← `(tacticSeq| positivity), ← `(tacticSeq| gcongr), ←`(tacticSeq| contradiction)]
 
 def powerRules (weight sorryWeight strongSorryWeight: Nat) : MetaM <| List <| TSyntax `Aesop.rule_expr := do
   let tacs ← powerTactics
@@ -129,7 +129,7 @@ def theoremExprInContext? (ctx: Array Json)(statement: String): TranslateM (Opti
   let fullStatement := context.foldr (· ++ " " ++ ·) s!"Then, {statement}"
   IO.eprintln s!"Full statement: {fullStatement}"
   let type? ← translateToProp?
-    fullStatement.trim server params numSim numConcise numDesc simpleChatExample
+    fullStatement.trim server params pb simpleChatExample
   IO.eprintln s!"Type: {← type?.mapM fun e => PrettyPrinter.ppExpr e}"
   type?.mapM <| fun e => dropLocalContext e
 
@@ -154,7 +154,7 @@ def defnInContext? (ctx: Array Json)(statement: String) : TranslateM (Option Syn
     | none => pure ()
   let fullStatement := context.foldr (· ++ " " ++ ·) statement
   let cmd? ←
-    translateDefCmdM? fullStatement server params numSim numConcise numDesc docChatExample
+    translateDefCmdM? fullStatement server params pb docChatExample
   let cmd? ← cmd?.mapM purgeLocalContext
   return cmd?
 
@@ -320,7 +320,7 @@ mutual
         | Except.ok claim, Except.ok pfSource =>
           match pfSource.getObjValAs? (List Json) "steps" with
           | Except.ok steps =>
-            let thm? ← theoremExprInContext? server params numSim (numConcise + 4) (numDesc + 4) (context ++ hypothesis) claim
+            let thm? ← theoremExprInContext? server params pb (context ++ hypothesis) claim
             if thm?.isNone then
               IO.eprintln s!"failed to get theorem conclusion"
             thm?.mapM fun thm => do
@@ -340,11 +340,11 @@ mutual
         match input.getObjValAs? String "statement", input.getObjValAs? String "term" with
         | Except.ok s, Except.ok t =>
           let statement := s!"We define {t} as follows:\n{s}."
-          defnInContext? server params numSim numConcise numDesc context statement
+          defnInContext? server params pb context statement
         | _ , _ => none
       | _ => return none
 
-  partial def structToTactics (accum: Array Syntax.Tactic)(context: Array Json)
+  partial def structToTactics  (accum: Array Syntax.Tactic)(context: Array Json)
       (input: List Json) : TranslateM <| Array Syntax.Tactic := do
       match input with
       | [] => return accum
@@ -362,12 +362,12 @@ mutual
                   | Except.ok results => results
                   | _ => []
                 | _ => []
-              let type? ← theoremExprInContext? server params numSim numConcise numDesc context claim
+              let type? ← theoremExprInContext? server params pb context claim
               match type? with
               | none => pure #[]
               | some type =>
                 let names' ← useResults.mapM fun s =>
-                  matchingTheoremsAI server params  (s := s) numSim numConcise numDesc 4
+                  matchingTheoremsAI server params  (s := s) numLeanSearch numMoogle
                 let premises := names'.join
                 let tac ← haveForAssertion 90 50 10 (← delab type) premises
                 pure #[tac]

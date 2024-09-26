@@ -11,11 +11,11 @@ def translateWithDataM (s: String)(server: ChatServer)
   (params: ChatParams)(pb: PromptExampleBuilder := .embedBuilder 10 0 0)
   (includeFixed: Bool := Bool.false)
   (embedding: String)(repeats: Nat := 0)(sleepTime : Nat := 1)
-  (queryData? : Option <| (HashMap String Json)  )(toChat : ToChatExample := simpleChatExample) :
+  (queryData? : Option <| (HashMap String Json)  )(toChat : ToChatExample := simpleChatExample) (useDefs : String → TranslateM (Array String) := fun _ => pure #[]) :
   TranslateM ((Option (Expr × (Array String) × (Array (Array String)) )) × Array String × (Option String)) := do
   let (output, prompt?) ←  match queryData? with
   | none =>
-    let (js,prompt, _) ← getLeanCodeJson s server params pb includeFixed  toChat
+    let (js,prompt, _) ← getLeanCodeJson s server params pb includeFixed  toChat (useDefs := useDefs)
     pure (← getMessageContents js, some prompt.pretty)
   | some f =>
     let res? := f.find? s.trim
