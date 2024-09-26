@@ -235,7 +235,6 @@ def getNearestDocs (s: String)(numSim : Nat)(numConcise: Nat)(numDesc : Nat) :
 def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true) : MetaM <| Array (String × String):= do
   if moduleNames.isEmpty && !useMain? then
     return #[]
-
   let env ← getEnv
   let moduleNames :=
     if useMain? then
@@ -259,9 +258,10 @@ def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true)
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
 def getLeanCodeJson (s: String)
-  (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})
-  (pb: PromptExampleBuilder := .embedBuilder 8 0 0)
-  (includeFixed: Bool := Bool.false)(toChat : ToChatExample := simpleChatExample)(header: String := "Theorem") : TranslateM <| Json × Json × Array (String × Json) := do
+    (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})
+    (pb: PromptExampleBuilder := .embedBuilder 8 0 0)
+    (includeFixed: Bool := Bool.false)(toChat : ToChatExample := simpleChatExample)(header: String := "Theorem")
+    (useDefs : String → TranslateM (Array String) := fun _ => pure #[]) : TranslateM <| Json × Json × Array (String × Json) := do
   logTimed s!"translating string `{s}` with  examples"
   match ← getCachedJson? s with
   | some js => return js
@@ -272,21 +272,20 @@ def getLeanCodeJson (s: String)
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.insert s)
       -- work starts here; before this was caching, polling etc
-      -- let pairs? ←
-      --   if numSim > 0 then
-      --     getNearestDocs s numSim numConcise numDesc
-      --   else pure <| Except.ok #[]
-      -- match pairs? with
-      -- | Except.error e => throwError e
-      -- | Except.ok pairs => do
       let pairs ← pb.getPromptPairs s
       let pairs := if includeFixed then pairs ++ fixedPromptsJson else pairs
       let pairs  := pairs.filter (fun (s, _) => s.length < 100)
+      let dfns ← useDefs s
+      let prelude :=
+        if dfns.isEmpty then ""
+      else
+        let defsBlob := dfns.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
+        s!"Your goal is to translate from natural language to Lean. The following are some definitions that may be relevant:\n\n{defsBlob}"
       let pairs := pairs.map fun (doc, thm) =>
         let isThm :=
           thm.getObjValAs? Bool "isProp" |>.toOption |>.getD true
         let head := if isThm then "Theorem" else "Definition"
-        (s!"Translate the following statement into Lean 4:\n## {head}: " ++ doc ++ "\n\nGive ONLY the Lean code", thm)
+        (prelude ++ s!"Translate the following statement into Lean 4:\n## {head}: " ++ doc ++ "\n\nGive ONLY the Lean code", thm)
       trace[Translate.info] m!"prompt pairs: \n{pairs}"
       let examplesM := pairs.filterMapM toChat
       trace[Translate.info] m!"examples: \n{(← examplesM).size}"
@@ -714,27 +713,26 @@ def findTheorems (s: String)(numSim : ℕ := 8)
     js.getObjValAs? String "type" |>.toOption.get!))
   matchElabs output thmPairs
 
-def nearbyTheoremsChunk (s: String)(numSim : ℕ := 8)
-  (numConcise numDesc : ℕ := 0)  : TranslateM String := do
-    let pairs? ←
-      getNearestDocs s numSim numConcise numDesc
-    match pairs? with
-    | Except.error e => throwError e
-    | Except.ok pairs => do
-      let statements : Array String ← pairs.filterMapM (fun (doc, js) => do
-        let name? := js.getObjValAs? String "name" |>.toOption
-        let thm? := js.getObjValAs? String "type" |>.toOption
-        let prop? := js.getObjValAs? Bool "isProp" |>.toOption
-        match name?, thm?, prop? with
-        | some name, some thm, some true =>
-          mkTheoremWithDoc name.toName thm doc
-        | _, _,_ => pure <| none
-      )
-      return statements.foldl (fun acc s => acc ++ s ++ "\n\n") ""
+def nearbyTheoremsChunk (s: String)
+  (numLeanSearch numMoogle : ℕ := 5)  : TranslateM String := do
+    let pb : PromptExampleBuilder :=
+      .blend [.leansearch ["concise-description", "description"] true numLeanSearch,
+      .moogle ["concise-description", "description"] true numMoogle]
+    let pairs ← pb.getPromptPairs s
+    let statements : Array String ← pairs.filterMapM (fun (doc, js) => do
+      let name? := js.getObjValAs? String "name" |>.toOption
+      let thm? := js.getObjValAs? String "type" |>.toOption
+      let prop? := js.getObjValAs? Bool "isProp" |>.toOption
+      match name?, thm?, prop? with
+      | some name, some thm, some true =>
+        mkTheoremWithDoc name.toName thm doc
+      | _, _,_ => pure <| none
+    )
+    return statements.foldl (fun acc s => acc ++ s ++ "\n\n") ""
 
-def matchingTheoremsAI (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})(s: String)(n: ℕ := 3)(numSim : ℕ := 8)
-  (numConcise numDesc : ℕ := 0)  : TranslateM (List Name) := do
-    let chunk ← nearbyTheoremsChunk s numSim numConcise numDesc
+def matchingTheoremsAI (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})(s: String)(n: ℕ := 3)(numLeanSearch : ℕ := 8)
+  (numMoogle : ℕ := 0)  : TranslateM (List Name) := do
+    let chunk ← nearbyTheoremsChunk s numLeanSearch
     let prompt := s!"The following are some theorems in Lean with informal statements as documentation strings\n\n{chunk}\n\n---\n¬List the names of theorems that are equivalent to the following informal statement:\n\n{s}.\n\nOutput ONLY a (possibly empty) list of names."
     let completions ← server.completions prompt (← sysPrompt) n params
     let entries : Array (Array String) := completions.filterMap fun s =>
@@ -749,7 +747,7 @@ def matchingTheorems (server: ChatServer := ChatServer.openAI)(params: ChatParam
   (numConcise numDesc : ℕ := 4)  : TranslateM (List Name) := do
   let elabMatch ← findTheorems s numSim numConcise numDesc
   if elabMatch.isEmpty then
-    matchingTheoremsAI server params s n numSim numConcise numDesc
+    matchingTheoremsAI server params s n numSim numConcise
   else
     pure elabMatch
 

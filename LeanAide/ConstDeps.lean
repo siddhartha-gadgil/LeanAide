@@ -513,10 +513,31 @@ def defsInTypeRec (name : Name) (type: Expr) (depth:Nat) :
     let res ← (childrenTypes ++ childValueTypes).mapM fun (n, t) => defsInTypeRec n t k
     return res.foldl (· ++ ·) children |>.toList |>.eraseDups |>.toArray
 
+def isDefn (name: Name) : MetaM Bool := do
+  let info ←  getConstInfo name
+  match info with
+  | .defnInfo _ => return true
+  | _ => return false
+
 def defsInConst (name: Name) (depth: Nat) :
     MetaM <| Array Name := do
   let info ← getConstInfo name
-  defsInTypeRec name info.type depth
+  let base ←  defsInTypeRec name info.type depth
+  base.filterM isDefn
+
+def weightedDefsInConsts (names: List Name) (depth: Nat)
+  (weight: Float := 1.0) (decay: Float := 0.8) : MetaM (Array (Name × Float)) :=
+  match names with
+  | [] => return #[]
+  | h :: ts => do
+    let tailWtdConsts ← weightedDefsInConsts ts depth (weight * decay) decay
+    let headConsts ← defsInConst h depth
+    let tailConsts := tailWtdConsts.map (fun (x, _) => x)
+    let novel := headConsts.filter fun x => !tailConsts.contains x
+    let novelWtdConsts :=
+      novel.map fun x => (x, weight)
+    return novelWtdConsts ++ (tailWtdConsts.map fun (x, w) =>
+      (x, if headConsts.contains x then w + weight else w))
 
 open Elab Term
 def defsInTypeString? (name: Name)(typeStr: String) (depth: Nat):
