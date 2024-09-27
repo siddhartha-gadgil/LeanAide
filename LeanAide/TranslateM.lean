@@ -1,6 +1,7 @@
 import Lean
 import LeanAide.Aides
 import Batteries.Util.Pickle
+import LeanAide.SimpleFrontend
 
 open Lean Meta Elab Term
 
@@ -13,6 +14,7 @@ structure Translate.State where
   queryEmbeddingCache : HashMap String (Except String Json) := HashMap.empty
   /-- Descriptions, docstrings etc -/
   descriptionMap : HashMap Name Json := HashMap.empty
+  cmdPrelude : Array String := #[]
 deriving Inhabited
 
 abbrev TranslateM := StateT Translate.State TermElabM
@@ -83,10 +85,20 @@ def getDescriptionData (name: Name) : TranslateM <| Option Json := do
   | some desc => return desc
   | none => return none
 
-def TranslateM.runToCore (x: TranslateM α) : CoreM α := do
+def cmdPreludeBlob : TranslateM String := do
+  let cmds := (← get).cmdPrelude
+  return cmds.foldr (· ++ "\n" ++ · ) "\n\n"
+
+def runCommand (cmd: String) : TranslateM Unit := do
+  discard <|  runFrontendM cmd true
+  modify fun s  => {s with cmdPrelude := s.cmdPrelude.push cmd}
+
+namespace TranslateM
+
+def runToCore (x: TranslateM α) : CoreM α := do
   x.run' {} |>.run'.run'
 
-
+end TranslateM
 
 def timedTest : TranslateM (Nat × Nat × Nat × Json × Json × Json) := do
   let t₀ ← IO.monoMsNow

@@ -145,7 +145,7 @@ def withDoc? (res: SearchResult) (descFields: List String)
 end SearchResult
 
 inductive PromptExampleBuilder where
-| embedSearch (descField : String) (n: Nat) : PromptExampleBuilder
+| embedSearch (descField : String) (n: Nat) (penalty: Float := 1.0) : PromptExampleBuilder
 | leansearch (descFields : List String)
   (preferDocs: Bool := false) (n: Nat) : PromptExampleBuilder
 | moogle (descFields : List String)
@@ -156,7 +156,7 @@ deriving Repr, ToJson, FromJson
 namespace PromptExampleBuilder
 
 partial def num : PromptExampleBuilder →  Nat
-| embedSearch _ n => n
+| embedSearch _ n _ => n
 | leansearch _ _ n => n
 | moogle _ _ n => n
 | sequence ps => (ps.map num).sum
@@ -187,9 +187,9 @@ partial def getPromptPairsOrdered (pb: PromptExampleBuilder)
   (query: String) : TranslateM ((Array (String × Json))) := do
   let dataMap ← getEmbedMap
   match pb with
-  | embedSearch descField n =>
+  | embedSearch descField n p =>
       let outJs ←
-        getNearestEmbeddingsFull query (← embedQueryCached query) n 2.0 (descField := descField) (dataMap := dataMap)
+        getNearestEmbeddingsFull query (← embedQueryCached query) n p (descField := descField) (dataMap := dataMap)
       match ← pairsFromEmbeddingJson outJs with
       | Except.ok jsArr => return jsArr
       | Except.error e => throwError e
@@ -226,12 +226,24 @@ def searchBuilder (numLeanSearch numMoogle: Nat) : PromptExampleBuilder :=
       .moogle ["concise-description", "description"] true numMoogle]
 
 partial def usedEmbeddings : PromptExampleBuilder → List String
-| .embedSearch d _ => [d]
+| .embedSearch d _ _ => [d]
 | .blend pbs => pbs.map usedEmbeddings |>.join
 | .sequence pbs => pbs.map usedEmbeddings |>.join
 | _ => []
 
 -- #eval toJson (embedBuilder 3 4 5)
+
+instance : Append PromptExampleBuilder :=
+  {append := fun x y =>
+    match x, y with
+    | .blend ps, .blend qs => .blend <| ps ++ qs
+    | .sequence ps, .sequence qs => .sequence <| ps ++ qs
+    | .blend ps, x => .blend <| ps ++ [x]
+    | .sequence ps, x => .sequence <| ps ++ [x]
+    | x, .sequence ps => .sequence <| x :: ps
+    | x, .blend ps => .blend <| x :: ps
+    | x, y => .blend [x, y]
+  }
 
 end PromptExampleBuilder
 

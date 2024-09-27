@@ -309,7 +309,7 @@ def cubeCode : TranslateM <| Option String := do
   let cubeCode? ← structToCommand? (params := {n := 12}) (context := #[])  (pb := PromptExampleBuilder.embedBuilder 8 0 0) (input := cube)
   cubeCode?.mapM fun code => do
     let fmt ← PrettyPrinter.ppCommand code
-    pure fmt.pretty
+    pure <| topCode ++ fmt.pretty
 
 -- #eval cubeCode
 def cubeCodeCore : CoreM <| Option String := cubeCode.runToCore

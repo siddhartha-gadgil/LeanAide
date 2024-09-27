@@ -3,7 +3,7 @@ import LeanAide.CheckedSorry
 universe u v u_1
 set_option maxHeartbeats 10000000
 set_option linter.unreachableTactic false
-set_option linter.unreachableTactic false
+set_option linter.unusedTactic false
 
 theorem eg :
     ∀ {n : Type u} {α : Type v} [inst : CommRing α] [inst_1 : DecidableEq n] [inst_2 : Fintype n] {A : Matrix n n α},

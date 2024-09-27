@@ -455,6 +455,11 @@ let t ← elabType t
 set_option linter.unusedVariables false in
 def eg_drop (n m: Nat)  := dl! (∀ n m: Nat, n = n + 1 → False)
 
-#print eg_drop
-#check caseArg
-#check Name.anonymous
+def topCode := "import Mathlib
+import LeanAide.CheckedSorry
+universe u v u_1
+set_option maxHeartbeats 10000000
+set_option linter.unreachableTactic false
+set_option linter.unusedTactic false
+
+"
