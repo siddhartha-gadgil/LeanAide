@@ -334,6 +334,26 @@ def solve (server: ChatServer)
   let queryString ← fromTemplate "solve" [("problem", problem)]
   ChatServer.mathCompletions server queryString n params examples
 
+def checkEquivalence (server: ChatServer)
+  (thm1 thm2 : String)(n: Nat := 3)
+  (params: ChatParams := {n := n, stopTokens := #[]})
+  (examples: Array ChatExample := #[]): CoreM (Array Bool) := do
+  let queryString ← fromTemplate "check_equivalence" [("theorem1", thm1), ("theorem2", thm2)]
+  let responses ← ChatServer.mathCompletions server queryString n params examples
+  return responses.map fun s =>
+    (s.toLower.trim.splitOn "true").length > 1
+
+def mathTerms (server: ChatServer)
+    (statement : String)(n: Nat := 3)
+    (params: ChatParams := {n := n, stopTokens := #[]})
+    (examples: Array ChatExample := #[]): CoreM (Array (Array String)) := do
+    let queryString ← fromTemplate "math_terms" [("statement", statement)]
+    let responses ← ChatServer.mathCompletions server queryString n params examples
+    return responses.filterMap getTerms
+  where getTerms (s: String) : Option (Array String) :=
+    let js? := Json.parse s |>.toOption
+    js?.bind fun js => fromJson? js |>.toOption
+
 def solution_to_theory (server: ChatServer)
   (problem solution: String)(n: Nat := 1)
   (params: ChatParams := {n := n, stopTokens := #[]})

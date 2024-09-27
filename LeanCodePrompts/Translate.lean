@@ -14,6 +14,7 @@ import LeanAide.StatementSyntax
 import LeanAide.TranslateM
 import LeanAide.PromptBuilder
 import LeanAide.ConstDeps
+import LeanAide.SimpleFrontend
 
 open Lean Meta Elab Parser Command
 open LeanAide.Meta
@@ -661,11 +662,16 @@ def translateDefCmdM? (s: String)
   let cmd? :  Option Syntax ← output.findSomeM? fun s =>
     do
       let cmd? := runParserCategory (← getEnv) `command s |>.toOption
-      pure cmd?
+      let check ← checkElabFrontM s
+      if check.isEmpty then pure cmd? else
+        trace[Translate.info] s!"Not a valid command:\n{s}"
+        for chk in check do
+          trace[Translate.info] chk
+        pure none
   return cmd?.map (fun cmd => ⟨cmd⟩)
 
 def translateDefViewM? (s: String)
-  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb := PromptExampleBuilder.embedBuilder 8 0 0)(toChat : ToChatExample := docChatExample)
+  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb := PromptExampleBuilder.embedBuilder 8 8 0)(toChat : ToChatExample := docChatExample)
    : TranslateM <| Option String := do
   let cmd? ← translateDefCmdM? s server params pb toChat
   let fmt? ← cmd?.mapM fun cmd =>
