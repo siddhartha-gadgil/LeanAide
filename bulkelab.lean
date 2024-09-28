@@ -20,15 +20,14 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
     (fun s => s.as! Nat) |>.getD 2
   let numDesc := p.flag? "descriptions" |>.map
     (fun s => s.as! Nat) |>.getD 2
-  let pbSource? := p.flag? "prompt_examples" |>.map
-    (fun s => s.as! String)
-  let pbJs? := pbSource?.bind fun pb =>
-    (Json.parse pb |>.toOption)
-  let pb? : Option PromptExampleBuilder := pbJs?.bind
-    fun js =>
-      fromJson? js |>.toOption
-  let pb := pb?.getD <|
-    PromptExampleBuilder.embedBuilder numSim numConcise numDesc
+  let pb₁ :=
+    PromptExampleBuilder.embedBuilder numSim numConcise numDesc |>.simplify
+  let numLeanSeach := p.flag? "leansearch_prompts" |>.map
+    (fun s => s.as! Nat) |>.getD 0
+  let numMoogle := p.flag? "moogle_prompts" |>.map
+    (fun s => s.as! Nat) |>.getD 2
+  let pb₂ := PromptExampleBuilder.searchBuilder numLeanSeach numMoogle |>.simplify
+  let pb := pb₁ ++ pb₂
   let includeFixed := p.hasFlag "include_fixed"
   let queryNum := p.flag? "responses" |>.map (fun s => s.as! Nat)
     |>.getD 5
@@ -139,6 +138,8 @@ unsafe def bulkElab : Cmd := `[Cli|
     p, prompts : Nat;      "Number of example prompts (default 10)."
     concise_descriptions : Nat; "Number of example concise descriptions (default 2)."
     descriptions : Nat; "Number of example descriptions (default 2)."
+    leansearch_prompts: Nat; "Number of examples from LeanSearch"
+    moogle_prompts: Nat; "Number of examples from Moogle"
     r, responses : Nat;    "Number of responses to ask for (default 5)."
     t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t` (default 8)."
     m, model : String ; "Model to be used (default `gpt-3.5-turbo`)"

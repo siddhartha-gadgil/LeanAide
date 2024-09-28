@@ -231,19 +231,49 @@ partial def usedEmbeddings : PromptExampleBuilder → List String
 | .sequence pbs => pbs.map usedEmbeddings |>.join
 | _ => []
 
--- #eval toJson (embedBuilder 3 4 5)
+partial def simplify? (pb : PromptExampleBuilder): Option (PromptExampleBuilder) :=
+match pb with
+| .embedSearch _ _ n => if n > 0 then some pb else none
+| .leansearch _ _ n => if n > 0 then some pb else none
+| .moogle _ _ n => if n > 0 then some pb else none
+| .sequence pbs =>
+  match pbs.filterMap simplify? with
+  | [] => none
+  | [pb] => some pb
+  | simpPbs => some <| .sequence simpPbs
+| .blend pbs =>
+  match pbs.filterMap simplify? with
+  | [] => none
+  | [pb] => some pb
+  | simpPbs => some <| .blend simpPbs
+
+def simplify (pb : PromptExampleBuilder): PromptExampleBuilder :=
+  (simplify? pb).getD <| .blend []
+
+-- #eval toJson (embedBuilder 3 4 5) |>.compress
+-- #eval toJson (searchBuilder 3 4) |>.compress
 
 instance : Append PromptExampleBuilder :=
   {append := fun x y =>
     match x, y with
+    | .sequence [], y => y
+    | .blend [], y => y
     | .blend ps, .blend qs => .blend <| ps ++ qs
     | .sequence ps, .sequence qs => .sequence <| ps ++ qs
     | .blend ps, x => .blend <| ps ++ [x]
     | .sequence ps, x => .sequence <| ps ++ [x]
     | x, .sequence ps => .sequence <| x :: ps
-    | x, .blend ps => .blend <| x :: ps
-    | x, y => .blend [x, y]
+    | x, y => .sequence [x, y]
   }
+
+partial def signature (pb: PromptExampleBuilder) : String := match pb with
+| .embedSearch descField n _ => s!"{descField}:{n}"
+| .leansearch _ _  n => s!"leansearch:{n}"
+| .moogle _ _ n => s!"moogle:{n}"
+| .sequence pbs => (pbs.map signature).foldl (· ++ "-" ++ ·) "" |>.drop 1
+| .blend pbs => (pbs.map signature).foldl (· ++ "~" ++ ·) "" |>.drop 1
+
+#eval signature <| searchBuilder 3 4
 
 end PromptExampleBuilder
 

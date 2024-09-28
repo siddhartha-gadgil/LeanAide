@@ -71,19 +71,19 @@ def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
   (params: ChatParams)(pb: PromptExampleBuilder := .embedBuilder 10 0 0)
   (includeFixed: Bool := Bool.false)(embedding: String)
   (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json) )(tag: Bool := false)(toChat : ToChatExample := simpleChatExample) : TranslateM Json := do
-  IO.eprintln s!"Writing to file: {type}-elab-{pb.num}-{includeFixed}-{params.n}-{params.temp.mantissa}.json"
+  IO.eprintln s!"Writing to file: {type}-elab-{pb.signature}-{includeFixed}-{params.n}-{params.temp.mantissa}.json"
   let promptsFile := System.mkFilePath ["data",
-    s!"prompts-{type}-{pb.num}-{includeFixed}-{params.n}-{params.temp.mantissa}.jsonl"]
+    s!"prompts-{type}-{pb.signature}-{includeFixed}-{params.n}-{params.temp.mantissa}.jsonl"]
   let gitHash ← gitHash
   let outFile :=
       if tag then
       System.mkFilePath
       ["results", server.model,gitHash,
-      s!"{type}-elab-{pb.num}-{includeFixed}-{params.n}-{params.temp.mantissa}.jsonl"]
+      s!"{type}-elab-{pb.signature}-{includeFixed}-{params.n}-{params.temp.mantissa}.jsonl"]
       else
       System.mkFilePath
       ["results", server.model,
-      s!"{type}-elab-{pb.num}-{includeFixed}-{params.n}-{params.temp.mantissa}.jsonl"]
+      s!"{type}-elab-{pb.signature}-{includeFixed}-{params.n}-{params.temp.mantissa}.jsonl"]
   IO.println s!"Writing to {outFile}"
   IO.FS.writeFile outFile ""
   let outHandle ← IO.FS.Handle.mk outFile IO.FS.Mode.append
@@ -131,7 +131,7 @@ def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
     Json.mkObj
       [("total-prompts", count),
         ("elaborated", elaborated),
-        ("number-similar-sentences", pb.num),
+        ("number-similar-sentences", pb.signature),
         ("prompt-examples", toJson pb),
        ("include-fixed", includeFixed),
        ("query-number", params.n),
