@@ -15,6 +15,7 @@ structure Translate.State where
   /-- Descriptions, docstrings etc -/
   descriptionMap : HashMap Name Json := HashMap.empty
   cmdPrelude : Array String := #[]
+  context : Option String := none
 deriving Inhabited
 
 abbrev TranslateM := StateT Translate.State TermElabM

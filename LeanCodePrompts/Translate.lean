@@ -328,7 +328,7 @@ def bestElab (output: Array String) : TermElabM Expr := do
           elaborated := elaborated.push expr
           elabStrs := elabStrs.push out
           trace[Translate.info] m!"elaborated: {out}"
-          if !expr.hasExprMVar then
+          if !(← whnf expr).hasExprMVar then
             fullElaborated := fullElaborated.push expr
   if elaborated.isEmpty then
     let mut errors : Array Json := #[]
@@ -380,7 +380,7 @@ def bestElab? (output: Array String)(maxVoting: Nat := 5) : TermElabM (Except Js
       | Except.ok expr =>
           elaborated := elaborated.push expr
           elabStrs := elabStrs.push out
-          if !expr.hasExprMVar then
+          if !(← whnf expr).hasExprMVar then
             fullElaborated := fullElaborated.push expr
   if elaborated.isEmpty then
     let mut errors : Array Json := #[]

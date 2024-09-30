@@ -48,6 +48,14 @@ def checkElabFrontM(s: String) : MetaM <| List String := do
       l := l.append [x]
   return l
 
+def checkTypeElabFrontM(s: String) : MetaM <| List String := do
+  checkElabFrontM s!"example : {s} := by sorry"
+
+def checkTermElabFrontM(s: String) : MetaM <| List String := do
+  checkElabFrontM s!"example := {s}"
+
+-- #eval checkTermElabFrontM "(fun n => 3 : Nat → Nat)"
+
 -- Not efficient, should generate per command if this is needed
 def newDeclarations (s: String) : MetaM <| List Name := do
   let constants := (← getEnv).constants.map₁.toList.map (·.1)

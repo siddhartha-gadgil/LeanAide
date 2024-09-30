@@ -1,7 +1,9 @@
 import Lean
 import Mathlib
 import LeanAide.TheoremElab
-open Lean Meta Elab Term
+import LeanAide.SimpleFrontend
+import LeanAide.TranslateM
+open Lean Meta Elab Term LeanAide.Meta
 
 -- As Mathlib support for port is dropped, this is also dropped
 
@@ -40,7 +42,7 @@ def parseThm4 (s : String) : TermElabM <| Except String Syntax := do
 
 def elabThm4Aux (s : String)
   (levelNames : List Lean.Name := levelNames)
-  : TermElabM <| Except String Expr := do
+  : TranslateM <| Except String Expr := do
   let env ← getEnv
   let stx? :=
     Lean.Parser.runParserCategory env `theorem_statement  s
@@ -59,25 +61,22 @@ def elabThm4Aux (s : String)
   where elaborate (stx) := do
     match ← elabThmFromStx stx levelNames with
     | Except.error err₁ =>
-      match ← elabThmFromStx (← lean4NamesSyntax stx) levelNames with
-      | Except.error err₂ =>
-        -- logInfo m!"failed to elaborate {stx} with error {err₁} (with lean4NamesSyntax)"
-        let jsError := Json.mkObj [
-          ("input", s),
-          ("parsed", true),
-          ("elab-error", err₁),
-          ("elab-error-lean4names", err₂)
-          ]
-        appendLog "elab_errors" jsError
-        return Except.error s!"{err₁}\n{err₂} (with lean4NamesSyntax)"
-      | Except.ok e => return Except.ok e
+      let frontEndErrs ← checkTypeElabFrontM s
+      let jsError := Json.mkObj [
+        ("input", s),
+        ("parsed", true),
+        ("elab-error", err₁),
+        ("frontend-errors", toJson frontEndErrs)
+        ]
+      appendLog "elab_errors" jsError
+      return Except.error s!"{err₁}"
     | Except.ok e => return  Except.ok e
 
 -- for testing
 
 def elabThm4 (s : String)
   (levelNames : List Lean.Name := levelNames)
-  : TermElabM <| Except String Expr := do
+  : TranslateM <| Except String Expr := do
   match ← elabThm4Aux s levelNames with
   | Except.error err =>
       let groups := lineBlocks s
