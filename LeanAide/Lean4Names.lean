@@ -44,6 +44,7 @@ def elabThm4Aux (s : String)
   (levelNames : List Lean.Name := levelNames)
   : TranslateM <| Except String Expr := do
   let env ← getEnv
+  let ctx? ← getContext
   let stx? :=
     Lean.Parser.runParserCategory env `theorem_statement  s
   match stx? with
@@ -52,13 +53,15 @@ def elabThm4Aux (s : String)
         Json.mkObj [
         ("input", s),
         ("parsed", false),
-        ("parse-error", err)
+        ("parse-error", err),
+        ("context", ctx?.getD "")
         ]
       appendLog "elab_errors" jsError
       return Except.error s!"{err} for:\n {s}"
   | Except.ok stx =>
     elaborate stx
   where elaborate (stx) := do
+    let ctx? ← getContext
     match ← elabThmFromStx stx levelNames with
     | Except.error err₁ =>
       let frontEndErrs ← checkTypeElabFrontM s
@@ -66,7 +69,8 @@ def elabThm4Aux (s : String)
         ("input", s),
         ("parsed", true),
         ("elab-error", err₁),
-        ("frontend-errors", toJson frontEndErrs)
+        ("frontend-errors", toJson frontEndErrs),
+        ("context", ctx?.getD "")
         ]
       appendLog "elab_errors" jsError
       return Except.error s!"{err₁}"

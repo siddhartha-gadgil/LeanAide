@@ -19,19 +19,22 @@ partial def arrowHeads (type: Syntax.Term)
 
 
 def mkStatementStx (name?: Option Name)(type: Syntax.Term)
-    (value?: Option Syntax.Term)(isProp: Bool) :
+    (value?: Option Syntax.Term)(isProp: Bool)(useExample: Bool := false) :
         CoreM (TSyntax `command) := do
     let (ctxs, tailType) ← arrowHeads type
     let value := value?.getD (← `(by sorry))
-    let hash := hash type.raw.reprint
-    let inner_name :=
-        Name.num (Name.mkSimple "aux") hash.toNat
-    let name := mkIdent <| name?.getD inner_name
-    if isProp
-    then
-        `(command| theorem $name $ctxs* : $tailType := $value)
+    if name?.isNone && useExample then
+        `(command| example $ctxs* : $tailType := $value)
     else
-        `(command| def $name:ident $ctxs* : $tailType := $value)
+        let hash := hash type.raw.reprint
+        let inner_name :=
+            Name.num (Name.mkSimple "aux") hash.toNat
+        let name := mkIdent <| name?.getD inner_name
+        if isProp
+        then
+            `(command| theorem $name $ctxs* : $tailType := $value)
+        else
+            `(command| def $name:ident $ctxs* : $tailType := $value)
 
 def mkStatement (name?: Option Name)(type: Syntax.Term)
     (value?: Option Syntax.Term)(isProp: Bool) :

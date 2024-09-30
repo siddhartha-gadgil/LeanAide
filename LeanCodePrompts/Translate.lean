@@ -158,7 +158,7 @@ partial def pollCacheJson (s : String) : IO <| Json × Json × Array (String × 
     pollCacheJson s
 
 /-- check if there is a valid elaboration after translation, autocorrection -/
-def hasElab (s: String) : TermElabM Bool := do
+def hasElab (s: String) : TranslateM Bool := do
   let elab? ← elabThm4 s
   return elab?.toOption.isSome
 
@@ -265,6 +265,7 @@ def getLeanCodeJson (s: String)
     (includeFixed: Bool := Bool.false)(toChat : ToChatExample := simpleChatExample)(header: String := "Theorem")
     (useDefs : String → TranslateM (Array String) := fun _ => pure #[]) : TranslateM <| Json × Json × Array (String × Json) := do
   logTimed s!"translating string `{s}` with  examples"
+  setContext s
   match ← getCachedJson? s with
   | some js => return js
   | none =>
@@ -305,7 +306,7 @@ def getLeanCodeJson (s: String)
       return (outJson, messages, pairs)
 
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and returns the best choice, throwing an error if nothing elaborates.  -/
-def bestElab (output: Array String) : TermElabM Expr := do
+def bestElab (output: Array String) : TranslateM Expr := do
   trace[Translate.info] m!"output:\n{output}"
   let mut elabStrs : Array String := Array.empty
   let mut elaborated : Array Expr := Array.empty
@@ -357,7 +358,7 @@ def bestElab (output: Array String) : TermElabM Expr := do
 
 
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and optionally returns the best choice as well as all elaborated terms (used for batch processing, interactive code uses `bestElab` instead)  -/
-def bestElab? (output: Array String)(maxVoting: Nat := 5) : TermElabM (Except Json (Expr× (Array String) × (Array (Array String)) )) := do
+def bestElab? (output: Array String)(maxVoting: Nat := 5) : TranslateM (Except Json (Expr× (Array String) × (Array (Array String)) )) := do
   -- IO.println s!"arrayToExpr? called with {output.size} outputs"
   let mut elabStrs : Array String := Array.empty
   let mut elaborated : Array Expr := Array.empty
@@ -410,20 +411,20 @@ def bestElab? (output: Array String)(maxVoting: Nat := 5) : TermElabM (Except Js
     return Except.ok (thm, elabStrs, gpView)
 
 
-def greedyBestExpr? (output: Array String) : TermElabM (Option Expr) := do
+def greedyBestExpr? (output: Array String) : TranslateM (Option Expr) := do
     output.findSomeM? <| fun out => do
       let el? ← elabThm4 out
       pure el?.toOption
 
 def greedyStrictBestExpr? (output: Array String) :
-    TermElabM (Option Expr) := do
+    TranslateM (Option Expr) := do
   output.findSomeM? <| fun out => do
     let el? ← elabThm4 out
     return el?.toOption.filter (fun e => !e.hasMVar && !e.hasSorry)
 
 
 def matchElab? (output: Array String)(defs : Array <| Name × String):
-  TermElabM (Option Name) := do
+  TranslateM (Option Name) := do
   let elabDefs : Array (Name × Expr) ←  defs.filterMapM (fun (nm, s) => do
     let el? ← elabThm4 s
     let el? := el?.toOption
@@ -438,7 +439,7 @@ def matchElab? (output: Array String)(defs : Array <| Name × String):
       pure <| pair?.map (fun (nm, _) => nm))
 
 def matchElabs (output: Array String)(defs : Array <| Name × String):
-  TermElabM (List Name) := do
+  TranslateM (List Name) := do
   let elabDefs : Array (Name × Expr) ←  defs.filterMapM (fun (nm, s) => do
     let el? ← elabThm4 s
     let el? := el?.toOption
@@ -453,7 +454,7 @@ def matchElabs (output: Array String)(defs : Array <| Name × String):
       pure <| pair?.map (fun (nm, _) => nm))
 
 def sufficientElab? (output: Array String)(defs : Array <| Name × String):
-  TermElabM (Option Name) := do
+  TranslateM (Option Name) := do
   let elabDefs : Array (Name × Expr) ←  defs.filterMapM (fun (nm, s) => do
     let el? ← elabThm4 s
     let el? := el?.toOption
@@ -502,7 +503,7 @@ def egThm := "theorem eg_thm : ∀ n: Nat, ∃ m : Nat, m > n ∧ m % 2 = 0"
 -- #eval leanToPrompt "{  n :  ℕ } ->  Even   (    (   n +  1  ) * n  )"
 
 /-- array of outputs extracted from OpenAI Json -/
-def exprStrsFromJson (json: Json) : TermElabM (Array String) := do
+def exprStrsFromJson (json: Json) : TranslateM (Array String) := do
   let outArr : Array String ←
     match json.getArr? with
     | Except.ok arr =>
@@ -521,7 +522,7 @@ def exprStrsFromJson (json: Json) : TermElabM (Array String) := do
   return outArr
 
 /-- array of outputs extracted from Json Array -/
-def exprStrsFromJsonStr (jsString: String) : TermElabM (Array String) := do
+def exprStrsFromJsonStr (jsString: String) : TranslateM (Array String) := do
   try
   let json := Lean.Json.parse  jsString |>.toOption.get!
   let outArr : Array String ←
@@ -544,7 +545,7 @@ def exprStrsFromJsonStr (jsString: String) : TermElabM (Array String) := do
 
 
 /-- given json returned by open-ai obtain the best translation -/
-def jsonToExpr' (json: Json)(greedy: Bool)(splitOutput := false) : TermElabM Expr := do
+def jsonToExpr' (json: Json)(greedy: Bool)(splitOutput := false) : TranslateM Expr := do
   let output ← getMessageContents json
   let output := if splitOutput
     then
@@ -567,7 +568,7 @@ elab "//-" cb:commentBody  : term => do
       (pb := PromptExampleBuilder.embedBuilder 8 0 0) |>.run' {}
   -- filtering, autocorrection and selection
   let e ←
-    jsonToExpr' js true !(← chatParams).stopColEq
+    jsonToExpr' js true !(← chatParams).stopColEq |>.run' {}
   trace[Translate.info] m!"{e}"
   return e
 
@@ -691,7 +692,7 @@ open PrettyPrinter Tactic
   let (js, _) ←
     getLeanCodeJson  s (← chatServer) (← chatParams)
       (pb := PromptExampleBuilder.embedBuilder  (← promptSize) (← conciseDescSize) 0)|>.run' {}
-  let e ← jsonToExpr' js (← greedy) !(← chatParams).stopColEq
+  let e ← jsonToExpr' js (← greedy) !(← chatParams).stopColEq |>.run' {}
   logTimed "obtained expression"
   let stx' ← delab e
   logTimed "obtained syntax"

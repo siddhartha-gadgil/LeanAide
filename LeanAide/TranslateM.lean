@@ -39,6 +39,12 @@ def withEmbeddings (em : EmbedMap) (x: TranslateM α) :
   setEmbedMap em
   x
 
+def setContext (ctx : String) : TranslateM Unit := do
+  modify fun s => {s with context := some ctx}
+
+def getContext : TranslateM <| Option String := do
+  return (← get).context
+
 def printKeys : TranslateM Unit := do
   let em := (← getEmbedMap)
   IO.println s!"Embeddings: {em.toList.map Prod.fst}"

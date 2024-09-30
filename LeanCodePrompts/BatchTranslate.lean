@@ -166,7 +166,7 @@ def parsedThmsPrompt : IO (Array String) := do
 /--
 Split theorems based on whether they elaborate
 -/
-def elabThmSplit(start? size?: Option Nat := none) : TermElabM ((Array String) × (Array String)) := do
+def elabThmSplit(start? size?: Option Nat := none) : TranslateM ((Array String) × (Array String)) := do
   let deps ← parsedThmsPrompt
   let deps := deps.toList.drop (start?.getD 0)
   let deps := deps.take (size?.getD (deps.length))
@@ -194,13 +194,13 @@ def elabThmSplit(start? size?: Option Nat := none) : TermElabM ((Array String) �
 Split theorems based on whether they elaborate
 -/
 def elabThmSplitCore(start? size?: Option Nat := none) : CoreM ((Array String) × (Array String)) :=
-  (elabThmSplit start? size?).run'.run'
+  (elabThmSplit start? size? |>.run' {}).run'.run'
 
 /--
 Check theorems in file and return data on success in elaboration.
 -/
 def outputFromCompletionsM (s: String) :
-  TermElabM (String) := do
+  TranslateM (String) := do
   let output ← exprStrsFromJsonStr s
   let output := output ++ (output.map (fun s => ": " ++ s))
   -- IO.println s!"output: {output}"
@@ -217,4 +217,4 @@ def outputFromCompletionsM (s: String) :
 Check theorems in file and return data on success in elaboration.
 -/
 def outputFromCompletionsCore (s: String) : CoreM String :=
-  (outputFromCompletionsM s).run'.run'
+  (outputFromCompletionsM s |>.run' {}).run'.run'

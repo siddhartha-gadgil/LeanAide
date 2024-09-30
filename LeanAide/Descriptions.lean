@@ -81,7 +81,8 @@ def theoremAndLemmas (name: Name)
         return some (statement, lemmas)
     | _ => return none
 
-def theoremPrompt (name: Name) : MetaM <| Option (String × String) := do
+def describeTheoremPrompt (name: Name) :
+    MetaM <| Option (String × String) := do
   (← theoremAndDefs name).mapM fun (statement, dfns) =>
     if dfns.isEmpty then
       return (← fromTemplate "describe_theorem" [("theorem", statement)], statement)
@@ -89,6 +90,21 @@ def theoremPrompt (name: Name) : MetaM <| Option (String × String) := do
       let defsBlob := dfns.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
       return (← fromTemplate "describe_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trim)],
       statement)
+
+def describeAnonymousTheoremPrompt (type: Expr) :
+    MetaM <| Option (String × String) := do
+  let dfns ← defsInExpr type
+  let dfns := dfns.map (toString)
+  let typeStx ← PrettyPrinter.delab type
+  let statementStx ← `(command| example : $typeStx := by sorry)
+  let statement ← PrettyPrinter.ppCommand statementStx
+  let statement := statement.pretty
+  if dfns.isEmpty then
+    return (← fromTemplate "describe_theorem" [("theorem", statement)], statement)
+  else
+    let defsBlob := dfns.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
+    return (← fromTemplate "describe_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trim)],
+    statement)
 
 def needsInd (name: Name) : MetaM <| Option (List Name) := do
   let env ← getEnv
@@ -122,7 +138,17 @@ def needsInd (name: Name) : MetaM <| Option (List Name) := do
 -- #eval theoremPrompt ``Eq.subst
 
 def getDescriptionM (name: Name)(server := ChatServer.openAI)(params: ChatParams) : MetaM <| Option (String × String) := do
-  let prompt? ← theoremPrompt name
+  let prompt? ← describeTheoremPrompt name
+  prompt?.mapM fun (prompt, statement) => do
+    let messages ← mkMessages prompt #[] (← sysPrompt)
+    let fullJson ←  server.query messages params
+    let outJson :=
+        (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
+    let contents ← getMessageContents outJson
+    return (contents[0]!, statement)
+
+def getTypeDescriptionM (type: Expr)(server := ChatServer.openAI)(params: ChatParams) : MetaM <| Option (String × String) := do
+  let prompt? ← describeAnonymousTheoremPrompt type
   prompt?.mapM fun (prompt, statement) => do
     let messages ← mkMessages prompt #[] (← sysPrompt)
     let fullJson ←  server.query messages params
