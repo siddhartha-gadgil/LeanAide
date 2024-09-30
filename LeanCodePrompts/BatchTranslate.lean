@@ -68,31 +68,31 @@ def translateWithDataCore (s: String)(server: ChatServer)
 /--
 Translate theorems in a given file and record results in a JSON file.
 -/
-def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
+def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
   (params: ChatParams)(pb: PromptExampleBuilder := .embedBuilder 10 0 0)
   (includeFixed: Bool := Bool.false)(embedding: String)
   (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json) )(tag: Bool := false)(toChat : ToChatExample := simpleChatExample)(roundtrip: Bool := false) : TranslateM Json := do
-  IO.eprintln s!"Writing to file: {type}-elab-{pb.signature}-{includeFixed}-{params.n}-{params.temp.mantissa}.json"
+  IO.eprintln s!"Writing to file: {inputFile}-elab-{pb.signature}-{includeFixed}-{params.n}-{params.temp.mantissa}.json"
   let promptsFile := System.mkFilePath ["data",
-    s!"prompts-{type}-{pb.signature}-{includeFixed}-{params.n}-{params.temp.mantissa}.jsonl"]
+    s!"prompts-{inputFile}-{pb.signature}-{includeFixed}-{params.n}-{params.temp.mantissa}.jsonl"]
   let gitHash ← gitHash
   let outFile :=
       if tag then
       System.mkFilePath
       ["results", server.model,gitHash,
-      s!"{type}-elab-{pb.signature}-{includeFixed}-{params.n}-{params.temp.mantissa}.jsonl"]
+      s!"{inputFile}-elab-{pb.signature}-{includeFixed}-{params.n}-{params.temp.mantissa}.jsonl"]
       else
       System.mkFilePath
       ["results", server.model,
-      s!"{type}-elab-{pb.signature}-{includeFixed}-{params.n}-{params.temp.mantissa}.jsonl"]
+      s!"{inputFile}-elab-{pb.signature}-{includeFixed}-{params.n}-{params.temp.mantissa}.jsonl"]
   IO.println s!"Writing to {outFile}"
   IO.FS.writeFile outFile ""
   let outHandle ← IO.FS.Handle.mk outFile IO.FS.Mode.append
   let h ← IO.FS.Handle.mk promptsFile IO.FS.Mode.append
-  let file := System.mkFilePath [s!"data/{type}-prompts.txt"]
+  let file := System.mkFilePath [s!"data/{inputFile}-prompts.txt"]
   let statements ←  IO.FS.lines file
   let statements :=
-      statements.map <| fun s => s.replace "<br>" "\n"
+      statements.map <| fun s => s.replace "<br>" "\n" |>.replace "\\n" "\n"
   let mut count := 0
   let mut elaborated := 0
   let mut elabPairs: Array (String × String × (Array String) × Array (Array String)) := #[]

@@ -11,7 +11,7 @@ set_option compiler.extract_closed false
 
 unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
   initSearchPath (← Lean.findSysroot) initFiles
-  let type :=
+  let input_file :=
     p.positionalArg? "input" |>.map (fun s => s.as! String)
     |>.getD "thm"
   let numSim := p.flag? "prompts" |>.map (fun s => s.as! Nat)
@@ -87,11 +87,11 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
     if tag then
         System.mkFilePath <|
     p.flag? "output" |>.map (fun s => [s.as! String]) |>.getD
-      ["results", model, gitHash, s!"{type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp10}.json"]
+      ["results", model, gitHash, s!"{input_file}-elab-{numSim}-{includeFixed}-{queryNum}-{temp10}.json"]
     else
     System.mkFilePath <|
     p.flag? "output" |>.map (fun s => [s.as! String]) |>.getD
-      ["results", model, s!"{type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp10}.json"]
+      ["results", model, s!"{input_file}-elab-{numSim}-{includeFixed}-{queryNum}-{temp10}.json"]
   let env ←
     importModules #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
@@ -108,7 +108,7 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
     EmbedMap := HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
   IO.eprintln "Loaded hashmap"
   let core :=
-    checkTranslatedThmsM type chatServer chatParams pb includeFixed embedding delay repeats (roundtrip := roundtrip)
+    checkTranslatedThmsM input_file chatServer chatParams pb includeFixed embedding delay repeats (roundtrip := roundtrip)
     queryData? tag |>.runWithEmbeddings dataMap
   let io? :=
     core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000}
