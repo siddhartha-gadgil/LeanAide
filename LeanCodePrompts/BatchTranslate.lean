@@ -1,5 +1,6 @@
 import LeanCodePrompts.Translate
 import LeanAide.Aides
+import LeanAide.Descriptions
 
 open Lean Meta Elab
 open LeanAide.Meta
@@ -70,7 +71,7 @@ Translate theorems in a given file and record results in a JSON file.
 def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
   (params: ChatParams)(pb: PromptExampleBuilder := .embedBuilder 10 0 0)
   (includeFixed: Bool := Bool.false)(embedding: String)
-  (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json) )(tag: Bool := false)(toChat : ToChatExample := simpleChatExample) : TranslateM Json := do
+  (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json) )(tag: Bool := false)(toChat : ToChatExample := simpleChatExample)(roundtrip: Bool := false) : TranslateM Json := do
   IO.eprintln s!"Writing to file: {type}-elab-{pb.signature}-{includeFixed}-{params.n}-{params.temp.mantissa}.json"
   let promptsFile := System.mkFilePath ["data",
     s!"prompts-{type}-{pb.signature}-{includeFixed}-{params.n}-{params.temp.mantissa}.jsonl"]
@@ -118,6 +119,21 @@ def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
        ("theorem", v),
        ("all_elaborations", Json.arr <|thms.map Json.str),
        ("gps", Json.arr <| gps.map (Json.arr ∘ Array.map Json.str))]
+
+      let js ←  if roundtrip then
+          let pair? ←  checkTranslationM statement e server params
+          match pair? with
+          | none =>
+            pure <| js.mergeObj <|
+              Json.mkObj [("roundtrip-success", false)]
+          | some (statement, check) =>
+            pure <| js.mergeObj (Json.mkObj [
+               ("roundtrip-success", true),
+              ("roundtrip-statement", Json.str statement),
+              ("roundtrip-check", toJson check)
+              ])
+        else
+          pure js
       outHandle.putStrLn <| js.compress
       elabPairs := elabPairs.push (statement, v, thms, gps)
     | none =>
@@ -150,14 +166,6 @@ def checkTranslatedThmsM(type: String := "thm")(server: ChatServer)
             ]
   return js
 
-/--
-Translate theorems in a given file and record results in a JSON file.
--/
-def checkTranslatedThmsCore(type: String := "thm")(server: ChatServer)
-  (params: ChatParams)(pb: PromptExampleBuilder := .embedBuilder 10 0 0)
-  (includeFixed: Bool := Bool.false)(embedding: String)
-  (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json))(tag: Bool := false) (toChat : ToChatExample := simpleChatExample): CoreM Json :=
-    (checkTranslatedThmsM type server params pb includeFixed embedding delay repeats queryData? tag toChat |>.run' {}).run'.run'
 
 def parsedThmsPrompt : IO (Array String) := do
   let file := System.mkFilePath ["data/parsed_thms.txt"]

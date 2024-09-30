@@ -157,6 +157,13 @@ def getTypeDescriptionM (type: Expr)(server := ChatServer.openAI)(params: ChatPa
     let contents ← getMessageContents outJson
     return (contents[0]!, statement)
 
+def checkTranslationM (s: String) (type: Expr)(server := ChatServer.openAI)(params: ChatParams)(n: Nat := 3) :
+  MetaM <| Option (String × Array Bool) := do
+  let pair? ←  getTypeDescriptionM type server params
+  pair?.mapM fun (trans, _) => do
+    let checks ← server.checkEquivalence s trans n params
+    return (trans,  checks)
+
 -- #eval getDescriptionM ``Iff.rfl
 
 def egFreq := Json.mkObj [("name", "Iff.rfl"), ("freq", 4882)]

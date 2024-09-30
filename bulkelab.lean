@@ -46,6 +46,7 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
     |>.getD 1600
   let azure := p.hasFlag "azure"
   let tag := p.hasFlag "tag"
+  let roundtrip := p.hasFlag "roundtrip"
   let url? := p.flag? "url" |>.map (fun s => s.as! String)
   let sysLess := p.hasFlag "no_sysprompt"
   let chatServer :=
@@ -107,7 +108,7 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
     EmbedMap := HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
   IO.eprintln "Loaded hashmap"
   let core :=
-    checkTranslatedThmsM type chatServer chatParams pb includeFixed embedding delay repeats
+    checkTranslatedThmsM type chatServer chatParams pb includeFixed embedding delay repeats (roundtrip := roundtrip)
     queryData? tag |>.runWithEmbeddings dataMap
   let io? :=
     core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000}
@@ -142,6 +143,7 @@ unsafe def bulkElab : Cmd := `[Cli|
     moogle_prompts: Nat; "Number of examples from Moogle"
     r, responses : Nat;    "Number of responses to ask for (default 5)."
     t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t` (default 8)."
+    roundtrip; "Translate back to natural language and compare."
     m, model : String ; "Model to be used (default `gpt-3.5-turbo`)"
     e, embedding : String; "Embedding to be used (default `openai_full`)"
     d, delay : Nat; "Delay between requests in seconds (default 20)."
