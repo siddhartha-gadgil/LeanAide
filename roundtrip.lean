@@ -85,7 +85,7 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
       IO.eprintln statement
       IO.eprintln desc
       let coreTranslate :=
-        translateViewExprVerboseM desc chatServer chatParams (PromptExampleBuilder.embedBuilder numSim numConcise numDesc) |>.runWithEmbeddings dataMap
+        translateViewVerboseM desc chatServer chatParams (PromptExampleBuilder.embedBuilder numSim numConcise numDesc) |>.runWithEmbeddings dataMap
       let io? :=
         coreTranslate.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
         {env := env}
@@ -98,20 +98,20 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
           IO.eprintln prompt.pretty
           IO.eprintln "---"
         match translation? with
-        | some (type, s, elabs, gps) =>
+        | some res =>
           if p.hasFlag "show_elaborated" then
             IO.eprintln "Elaborated terms:"
-            for out in elabs do
+            for out in res.allElaborated do
               IO.eprintln out
             IO.eprintln "---"
             IO.eprintln "Groups:"
-            for gp in gps do
+            for gp in res.groups do
               for out in gp do
                 IO.eprintln out
               IO.eprintln "---"
           IO.eprintln "Translation:"
-          IO.println s
-          let coreCompare := compareThmNameExprCore name type
+          IO.println res.view
+          let coreCompare := compareThmNameExprCore name res.term
           let io? :=
             coreCompare.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
             {env := env}

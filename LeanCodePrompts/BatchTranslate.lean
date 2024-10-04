@@ -13,7 +13,7 @@ def translateWithDataM (s: String)(server: ChatServer)
   (includeFixed: Bool := Bool.false)
   (embedding: String)(repeats: Nat := 0)(sleepTime : Nat := 1)
   (queryData? : Option <| (HashMap String Json)  )(toChat : ToChatExample := simpleChatExample) (useDefs : String → TranslateM (Array String) := fun _ => pure #[]) :
-  TranslateM ((Option (Expr × (Array String) × (Array (Array String)) )) × Array String × (Option String)) := do
+  TranslateM ((Option (ElabResult)) × Array String × (Option String)) := do
   let (output, prompt?) ←  match queryData? with
   | none =>
     let (js,prompt, _) ← getLeanCodeJson s server params pb includeFixed  toChat (useDefs := useDefs)
@@ -49,21 +49,6 @@ def translateWithDataM (s: String)(server: ChatServer)
       pure ()
     return (res.toOption, output, prompt?)
 
-/--
-Translate a string to a Lean expression using the GPT model, returning the expression, all outputs and the prompt used.
--/
-def translateWithDataCore (s: String)(server: ChatServer)
-  (params: ChatParams)(pb: PromptExampleBuilder := .embedBuilder 10 0 0)
-  (includeFixed: Bool := Bool.false)
-  (embedding: String)(repeats: Nat := 0)
-  (queryData? : Option <| (HashMap String Json)  )
-  (toChat : ToChatExample := simpleChatExample)   :
-  CoreM ((Option (Expr × (Array String) ×  (Array (Array String)) )) × Array String × Option String) :=
-    (translateWithDataM s server params
-      pb includeFixed
-         embedding repeats
-        (queryData? := queryData?)
-        (toChat := toChat) |>.run' {}).run'.run'
 
 /--
 Translate theorems in a given file and record results in a JSON file.
@@ -109,19 +94,19 @@ def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
     h.putStrLn <| js.compress
     count := count + 1
     match res? with
-    | some (e, thms, gps) =>
-      let v ← e.view
+    | some res =>
+      let v ← res.view
       IO.println s!"theorem {v}"
       elaborated := elaborated + 1
       let js := Json.mkObj [("text", Json.str statement),
        ("fullPrompt", Json.str fullPrompt),
        ("result", true),
        ("theorem", v),
-       ("all_elaborations", Json.arr <|thms.map Json.str),
-       ("gps", Json.arr <| gps.map (Json.arr ∘ Array.map Json.str))]
+       ("all_elaborations", Json.arr <| res.allElaborated.map Json.str),
+       ("gps", Json.arr <| res.groups.map (Json.arr ∘ Array.map Json.str))]
 
       let js ←  if roundtrip then
-          let pair? ←  checkTranslationM statement e server params
+          let pair? ←  checkTranslationM statement res.term server params
           match pair? with
           | none =>
             pure <| js.mergeObj <|
@@ -135,7 +120,7 @@ def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
         else
           pure js
       outHandle.putStrLn <| js.compress
-      elabPairs := elabPairs.push (statement, v, thms, gps)
+      elabPairs := elabPairs.push (statement, v, res.allElaborated, res.groups)
     | none =>
       IO.eprintln "failed to elaborate"
       failed := failed.push statement
@@ -214,10 +199,10 @@ def outputFromCompletionsM (s: String) :
   -- IO.println s!"output: {output}"
   let res? ← bestElab? output
   let js : Json ←  match res?.toOption with
-  | some (thm, elabs, _) => do
-    let thm ←  thm.view
+  | some res => do
+    let thm ←  res.view
     pure <| Json.mkObj [("success", Bool.true), ("theorem", thm),
-            ("all-elabs", Json.arr <| elabs.map (Json.str))]
+            ("all-elabs", Json.arr <| res.allElaborated.map (Json.str))]
   | none => pure <| Json.mkObj [("success", Bool.false)]
   return js.compress
 

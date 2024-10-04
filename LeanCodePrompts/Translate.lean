@@ -356,9 +356,28 @@ def bestElab (output: Array String) : TranslateM Expr := do
     logTimed "finished majority voting"
     return (groupSorted[0]!)[0]!
 
+structure ElabResult where
+  term : Expr
+  allElaborated : Array String
+  groups : Array (Array String)
+
+def ElabResult.view (er: ElabResult) : MetaM String :=
+  er.term.view
+
+structure TranslateResult extends ElabResult where
+  view : String
+
+def ElabResult.withView (er: ElabResult) : MetaM TranslateResult := do
+  return {
+    term := er.term,
+    allElaborated := er.allElaborated,
+    groups := er.groups,
+    view := (← er.view)
+  }
+
 
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and optionally returns the best choice as well as all elaborated terms (used for batch processing, interactive code uses `bestElab` instead)  -/
-def bestElab? (output: Array String)(maxVoting: Nat := 5) : TranslateM (Except Json (Expr× (Array String) × (Array (Array String)) )) := do
+def bestElab? (output: Array String)(maxVoting: Nat := 5) : TranslateM (Except Json ElabResult) := do
   -- IO.println s!"arrayToExpr? called with {output.size} outputs"
   let mut elabStrs : Array String := Array.empty
   let mut elaborated : Array Expr := Array.empty
@@ -408,7 +427,7 @@ def bestElab? (output: Array String)(maxVoting: Nat := 5) : TranslateM (Except J
     let thm := (groupSorted[0]!)[0]!
     let gpView ←  groupSorted.mapM (fun gp => gp.mapM (fun e => e.view))
     logTimed "obtained majority vote"
-    return Except.ok (thm, elabStrs, gpView)
+    return Except.ok ⟨thm, elabStrs, gpView⟩
 
 
 def greedyBestExpr? (output: Array String) : TranslateM (Option Expr) := do
@@ -623,8 +642,8 @@ def translateViewM (s: String)
   -- let output := params.splitOutputs output
   let e? ← bestElab? output
   match e? with
-  | Except.ok (e, _) => do
-    e.view
+  | Except.ok res => do
+    res.view
   | Except.error _ => do
     let view? ← output.findSomeM? <| fun s => do
       let elab? ← elabThm4 s
@@ -784,7 +803,7 @@ Translate a string to a Lean expression using the GPT model, returning three com
 def translateViewVerboseM (s: String)(server: ChatServer)
   (params: ChatParams)(pb: PromptExampleBuilder := .embedBuilder 10 0 0)
   (toChat : ToChatExample := simpleChatExample) (useDefs : String → TranslateM (Array String) := fun _ => pure #[]) :
-  TranslateM ((Option (String × (Array String) × (Array (Array String)) )) × Array String × Json) := do
+  TranslateM ((Option TranslateResult) × Array String × Json) := do
   let dataMap ← getEmbedMap
   IO.println s!"dataMap keys: {dataMap.toList.map Prod.fst}"
   let (js,prompt, _) ←
@@ -795,8 +814,8 @@ def translateViewVerboseM (s: String)(server: ChatServer)
     return (none, output, prompt)
   else
     -- let output := params.splitOutputs output
-    let res ← bestElab? output
-    match res with
+    let res? ← bestElab? output
+    match res? with
     | Except.error jsErr =>
       let js := Json.mkObj [
         ("input", Json.str s),
@@ -805,42 +824,5 @@ def translateViewVerboseM (s: String)(server: ChatServer)
       pure ()
     | Except.ok _ =>
       pure ()
-    let view? ←  res.toOption.mapM <|
-          fun (e, a, b) => do
-            let fmt ←  PrettyPrinter.ppExpr e
-            pure (fmt.pretty, a, b)
-    return (view?, output, prompt)
-
-
-/--
-Translate a string to a Lean expression using the GPT model, returning three componenst:
-* The expression, all elaborated expressions, grouped expressions
-* All outputs from the LLM
-* The prompt used for the LLM.
--/
-def translateViewExprVerboseM (s: String)(server: ChatServer)
-  (params: ChatParams)(pb: PromptExampleBuilder := .embedBuilder 10 0 0)
-  (toChat : ToChatExample := simpleChatExample) (useDefs : String → TranslateM (Array String) := fun _ => pure #[]) :
-  TranslateM ((Option (Expr × String × (Array String) × (Array (Array String)) )) × Array String × Json) := do
-  let (js,prompt, _) ←
-    getLeanCodeJson s server params pb false toChat (useDefs := useDefs)
-  let output ← getMessageContents js
-  if output.isEmpty then
-     return (none, output, prompt)
-  else
-    -- let output := params.splitOutputs output
-    let res ← bestElab? output
-    match res with
-    | Except.error jsErr =>
-      let js := Json.mkObj [
-        ("input", Json.str s),
-        ("error", jsErr)]
-      appendLog "translate_fail" js
-      pure ()
-    | Except.ok _ =>
-      pure ()
-    let view? ←  res.toOption.mapM <|
-          fun (e, a, b) => do
-            let fmt ←  PrettyPrinter.ppExpr e
-            pure (e, fmt.pretty, a, b)
+    let view? ←  res?.toOption.mapM fun res => res.withView
     return (view?, output, prompt)
