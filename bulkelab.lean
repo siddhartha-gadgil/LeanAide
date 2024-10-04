@@ -27,8 +27,10 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
   let numMoogle := p.flag? "moogle_prompts" |>.map
     (fun s => s.as! Nat) |>.getD 2
   let pb₂ := PromptExampleBuilder.searchBuilder numLeanSeach numMoogle |>.simplify
-  let pb := pb₁ ++ pb₂
   let includeFixed := p.hasFlag "include_fixed"
+  let pb :=
+    if includeFixed then pb₁ ++ pb₂ ++ PromptExampleBuilder.proofNetPromptBuilder
+    else pb₁ ++ pb₂
   let queryNum := p.flag? "responses" |>.map (fun s => s.as! Nat)
     |>.getD 5
   let temp10 := p.flag? "temperature" |>.map (fun s => s.as! Nat)
@@ -36,8 +38,6 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
   let temp : JsonNumber := ⟨temp10, 1⟩
   let model := p.flag? "model" |>.map (fun s => s.as! String)
     |>.getD "gpt-3.5-turbo"
-  let embedding := p.flag? "embedding" |>.map (fun s => s.as! String)
-    |>.getD "openai_full"
   let delay := p.flag? "delay" |>.map (fun s => s.as! Nat)
     |>.getD 20
   let repeats := p.flag? "repeats" |>.map (fun s => s.as! Nat)
@@ -87,11 +87,11 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
     if tag then
         System.mkFilePath <|
     p.flag? "output" |>.map (fun s => [s.as! String]) |>.getD
-      ["results", model, gitHash, s!"{input_file}-elab-{numSim}-{includeFixed}-{queryNum}-{temp10}.json"]
+      ["results", model, gitHash, s!"{input_file}-elab-{numSim}-{queryNum}-{temp10}.json"]
     else
     System.mkFilePath <|
     p.flag? "output" |>.map (fun s => [s.as! String]) |>.getD
-      ["results", model, s!"{input_file}-elab-{numSim}-{includeFixed}-{queryNum}-{temp10}.json"]
+      ["results", model, s!"{input_file}-elab-{numSim}-{queryNum}-{temp10}.json"]
   let env ←
     importModules #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
@@ -108,7 +108,7 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
     EmbedMap := HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
   IO.eprintln "Loaded hashmap"
   let core :=
-    checkTranslatedThmsM input_file chatServer chatParams pb includeFixed embedding delay repeats (roundtrip := roundtrip)
+    checkTranslatedThmsM input_file chatServer chatParams pb delay repeats (roundtrip := roundtrip)
     queryData? tag |>.runWithEmbeddings dataMap
   let io? :=
     core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000}
@@ -133,7 +133,7 @@ unsafe def bulkElab : Cmd := `[Cli|
 
   FLAGS:
     include_fixed;         "Include the 'Lean Chat' fixed prompts."
-    o, output : String;    "Output file (default `results/{type}-elab-{numSim}-{includeFixed}-{queryNum}-{temp10}.json`)."
+    o, output : String;    "Output file (default `results/{type}-elab-{numSim}-{queryNum}-{temp10}.json`)."
     roundtrip; "Translate back to natural language and compare."
     prompt_examples : String; "Example prompts in Json"
     p, prompts : Nat;      "Number of example prompts (default 10)."
@@ -145,7 +145,6 @@ unsafe def bulkElab : Cmd := `[Cli|
     t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t` (default 8)."
     roundtrip; "Translate back to natural language and compare."
     m, model : String ; "Model to be used (default `gpt-3.5-turbo`)"
-    e, embedding : String; "Embedding to be used (default `openai_full`)"
     d, delay : Nat; "Delay between requests in seconds (default 20)."
     query_data : String; "Query data jsonlines file if cached queries are to be used; should have the result of the 'choices' field of the output and a 'docString' field for the query."
     repeats : Nat; "Number of times to repeat the request (default 0)."

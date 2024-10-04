@@ -121,8 +121,6 @@ def toJson (res: SearchResult) : Json :=
   | none => l
   Json.mkObj l
 
-#check List.findSome?
-
 def withDoc? (res: SearchResult) (descFields: List String)
     (preferDocs : Bool) : TranslateM (Option <| String × Json) := do
   let data? ← getDescriptionData res.name.toName
@@ -144,21 +142,26 @@ def withDoc? (res: SearchResult) (descFields: List String)
 
 end SearchResult
 
+instance : Repr Json where
+  reprPrec js _ := js.pretty
+
 inductive PromptExampleBuilder where
 | embedSearch (descField : String) (n: Nat) (penalty: Float := 1.0) : PromptExampleBuilder
 | leansearch (descFields : List String)
   (preferDocs: Bool := false) (n: Nat) : PromptExampleBuilder
 | moogle (descFields : List String)
   (preferDocs: Bool := false) (n: Nat) : PromptExampleBuilder
+| fixed (prompts : Array (String × Json)) : PromptExampleBuilder
 | sequence : List PromptExampleBuilder → PromptExampleBuilder
 | blend : List PromptExampleBuilder → PromptExampleBuilder
-deriving Repr, ToJson, FromJson
+deriving  Repr, ToJson, FromJson
 namespace PromptExampleBuilder
 
 partial def num : PromptExampleBuilder →  Nat
 | embedSearch _ n _ => n
 | leansearch _ _ n => n
 | moogle _ _ n => n
+| fixed ps => ps.size
 | sequence ps => (ps.map num).sum
 | blend ps => (ps.map num).sum
 
@@ -202,6 +205,7 @@ partial def getPromptPairsOrdered (pb: PromptExampleBuilder)
     let srs ←  jsArr.filterMapM fun js =>
        SearchResult.ofMoogleJson? js
     pairsFromSearchResults srs descFields preferDocs
+  | fixed ps => return ps
   | sequence ps => do
     let offspringGps ← ps.mapM fun pb => getPromptPairsOrdered pb query
     return offspringGps.toArray.join
@@ -236,6 +240,7 @@ match pb with
 | .embedSearch _ _ n => if n > 0 then some pb else none
 | .leansearch _ _ n => if n > 0 then some pb else none
 | .moogle _ _ n => if n > 0 then some pb else none
+| .fixed ps => if ps.size > 0 then some pb else none
 | .sequence pbs =>
   match pbs.filterMap simplify? with
   | [] => none
@@ -270,10 +275,27 @@ partial def signature (pb: PromptExampleBuilder) : String := match pb with
 | .embedSearch descField n _ => s!"{descField}:{n}"
 | .leansearch _ _  n => s!"leansearch:{n}"
 | .moogle _ _ n => s!"moogle:{n}"
+| .fixed ps => s!"fixed:{ps.size}"
 | .sequence pbs => (pbs.map signature).foldl (· ++ "-" ++ ·) "" |>.drop 1
 | .blend pbs => (pbs.map signature).foldl (· ++ "~" ++ ·) "" |>.drop 1
 
 #eval signature <| searchBuilder 3 4
+
+/--
+Fixed prompts with names from Lean Chat
+-/
+def fixedPromptTriples:= #[("If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.", "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)", "abs_sum_leq_sum_abs"), ("If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.", "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2", "sum_add_square_sub_square_eq_sum_square"), ("If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.", "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n", "distinct_powers_of_infinite_order_element"), ("Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.", "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A", "subset_of_open_subset_is_open")]
+
+/--
+Fixed prompts with names from Lean Chat in JSON format
+-/
+def fixedPromptsJson : Array <| String × Json :=
+  fixedPromptTriples.map (fun (ds, thm, name) =>
+    (ds,
+    Json.mkObj [("docString", ds), ("type", thm), ("name", name)]))
+
+def proofNetPromptBuilder : PromptExampleBuilder :=
+  .fixed fixedPromptsJson
 
 end PromptExampleBuilder
 

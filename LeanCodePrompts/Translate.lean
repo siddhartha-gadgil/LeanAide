@@ -167,18 +167,6 @@ Fixed prompts without names from Lean Chat
 -/
 def fixedPrompts:= #[("If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.", "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"), ("If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.", "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"), ("If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.", "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"), ("Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.", "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A")]
 
-/--
-Fixed prompts with names from Lean Chat
--/
-def fixedPromptTriples:= #[("If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.", "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)", "abs_sum_leq_sum_abs"), ("If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.", "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2", "sum_add_square_sub_square_eq_sum_square"), ("If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.", "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n", "distinct_powers_of_infinite_order_element"), ("Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.", "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A", "subset_of_open_subset_is_open")]
-
-/--
-Fixed prompts with names from Lean Chat in JSON format
--/
-def fixedPromptsJson : Array <| String × Json :=
-  fixedPromptTriples.map (fun (ds, thm, name) =>
-    (ds,
-    Json.mkObj [("docString", ds), ("type", thm), ("name", name)]))
 
 /--
 Given a string, find the nearest documentation strings in Mathlib and return the corresponding theorem data.
@@ -262,7 +250,7 @@ def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true)
 def getLeanCodeJson (s: String)
     (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})
     (pb: PromptExampleBuilder := .embedBuilder 8 0 0)
-    (includeFixed: Bool := Bool.false)(toChat : ToChatExample := simpleChatExample)(header: String := "Theorem")
+    (toChat : ToChatExample := simpleChatExample)(header: String := "Theorem")
     (useDefs : String → TranslateM (Array String) := fun _ => pure #[]) : TranslateM <| Json × Json × Array (String × Json) := do
   logTimed s!"translating string `{s}` with  examples"
   setContext s
@@ -276,7 +264,6 @@ def getLeanCodeJson (s: String)
       pendingJsonQueries.set (pending.insert s)
       -- work starts here; before this was caching, polling etc
       let pairs ← pb.getPromptPairs s
-      let pairs := if includeFixed then pairs ++ fixedPromptsJson else pairs
       let pairs  := pairs.filter (fun (s, _) => s.length < 100)
       let dfns ← useDefs s
       let prelude :=
@@ -807,7 +794,7 @@ def translateViewVerboseM (s: String)(server: ChatServer)
   let dataMap ← getEmbedMap
   IO.println s!"dataMap keys: {dataMap.toList.map Prod.fst}"
   let (js,prompt, _) ←
-    getLeanCodeJson s server params pb false toChat (useDefs := useDefs)
+    getLeanCodeJson s server params pb toChat (useDefs := useDefs)
   let output ← getMessageContents js
   if output.isEmpty then
     IO.eprintln "no output"
