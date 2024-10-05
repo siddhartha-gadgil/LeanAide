@@ -33,6 +33,7 @@ structure ChatParams where
   temp : JsonNumber := 0.8
   stopTokens : Array String :=  #[]
   maxTokens : Nat := 1600
+  deriving Repr, Hashable, FromJson, ToJson, Inhabited, DecidableEq
 
 namespace ChatParams
 def stopColEq (params: ChatParams) : Bool :=
@@ -61,8 +62,15 @@ inductive ChatServer where
       (model: String := "GPT-4")
   | google (model: String := "gemini-1.5-pro-001") (location: String := "asia-south1")
   | generic (model: String) (url: String) (hasSysPropmpt : Bool := false)
+  deriving Repr, FromJson, ToJson, Inhabited, DecidableEq, Hashable
 
 namespace ChatServer
+
+initialize queryCache : IO.Ref
+  (HashMap (ChatServer × Json × ChatParams) Json) ← IO.mkRef {}
+
+initialize pendingQueries :
+  IO.Ref (Array (ChatServer × Json × ChatParams)) ← IO.mkRef #[]
 
 def url : ChatServer → IO String
   | openAI _ =>
@@ -142,6 +150,35 @@ def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Jso
     appendLog "chat_queries"
       (Json.mkObj [("query", queryJs), ("success", false), ("error", e), ("response", output)])
     panic! s!"Error parsing JSON: {e}; source: {output}"
+
+partial def pollCacheQuery (server: ChatServer)(messages : Json)
+    (params : ChatParams) : CoreM Json := do
+  let key := (server, messages, params)
+  let cache ← queryCache.get
+  match cache.find? key with
+  | some j => return j
+  | none => do
+    IO.sleep 200
+    pollCacheQuery server messages params
+
+def cachedQuery (server: ChatServer)(messages : Json)
+    (params : ChatParams) : CoreM Json := do
+  let key := (server, messages, params)
+  let queue ← pendingQueries.get
+  if queue.contains key then
+    pollCacheQuery server messages params
+  else do
+    let cache ← queryCache.get
+    match cache.find? key with
+    | some j =>
+      return j
+    | none => do
+      pendingQueries.modify (·.push key)
+      let j ← query server messages params
+      queryCache.modify (·.insert key j)
+      pendingQueries.modify fun q =>
+        q.filter (· != key)
+      return j
 
 def dataPath (server: ChatServer) : IO  FilePath := do
   match server with
