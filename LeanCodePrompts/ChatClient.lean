@@ -151,22 +151,30 @@ def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Jso
       (Json.mkObj [("query", queryJs), ("success", false), ("error", e), ("response", output)])
     panic! s!"Error parsing JSON: {e}; source: {output}"
 
-partial def pollCacheQuery (server: ChatServer)(messages : Json)
-    (params : ChatParams) : CoreM Json := do
+def pollCacheQuery (server: ChatServer)(messages : Json)
+    (params : ChatParams) (retries: Nat) : CoreM Json := do
   let key := (server, messages, params)
   let cache ← queryCache.get
   match cache.find? key with
   | some j => return j
   | none => do
-    IO.sleep 200
-    pollCacheQuery server messages params
+    match retries with
+    | 0 =>
+      let data ←  server.query messages params
+      queryCache.modify (·.insert key data)
+      pendingQueries.modify fun q =>
+        q.filter (· != key)
+      return data
+    | k + 1 =>
+      IO.sleep 200
+      pollCacheQuery server messages params k
 
 def cachedQuery (server: ChatServer)(messages : Json)
     (params : ChatParams) : CoreM Json := do
   let key := (server, messages, params)
   let queue ← pendingQueries.get
   if queue.contains key then
-    pollCacheQuery server messages params
+    pollCacheQuery server messages params 40
   else do
     let cache ← queryCache.get
     match cache.find? key with
