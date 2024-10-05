@@ -115,22 +115,6 @@ def chatServer : CoreM ChatServer := do
       return ChatServer.generic model url (← hasSysPrompt)
 
 
-/--
-Flip prompt; should be corrected before use.
--/
-def makeFlipPrompt(query : String)(examples: Array ChatExample) : Json:= sysMessages sysPrompt' (examples.toList.map (fun ⟨x, y⟩  => ⟨y, x⟩)) query
-
-
-/-- make prompt for reverse translation from prompt pairs -/
-def makeFlipStatementsPrompt(statement : String)(pairs: Array (String × String)) : String :=
-      pairs.foldr (fun  (ds, thm) acc =>
-s!"{thm} :=
-/- {ds} -/
-
-{acc}"
-          ) s!"{statement} :=
-/- "
-
 /-!
 Caching, polling etc to avoid repeatedly calling servers
 -/
@@ -161,65 +145,6 @@ partial def pollCacheJson (s : String) : IO <| Json × Json × Array (String × 
 def hasElab (s: String) : TranslateM Bool := do
   let elab? ← elabThm4 s
   return elab?.toOption.isSome
-
-/--
-Fixed prompts without names from Lean Chat
--/
-def fixedPrompts:= #[("If $z_1, \\dots, z_n$ are complex, then $|z_1 + z_2 + \\dots + z_n|\\leq |z_1| + |z_2| + \\dots + |z_n|$.", "(n : ℕ) (f : ℕ → ℂ) :\n Complex.abs (∑ i in Finset.range n, f i) ≤ ∑ i in Finset.range n, Complex.abs (f i)"), ("If x and y are in $\\mathbb{R}^n$, then $|x+y|^2 + |x-y|^2 = 2|x|^2 + 2|y|^2$.", "(n : ℕ) (x y : EuclideanSpace ℝ (Fin n)) :\n ‖x + y‖^2 + ‖x - y‖^2 = 2*‖x‖ ^2 + 2*‖y‖^2"), ("If $x$ is an element of infinite order in $G$, prove that the elements $x^n$, $n\\in\\mathbb{Z}$ are all distinct.", "(G : Type*) [Group G] (x : G) (hx : x ≠ 1) (hx_inf : ∀ n : ℕ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n"), ("Let $X$ be a topological space; let $A$ be a subset of $X$. Suppose that for each $x\\in A$ there is an open set $U$ containing $x$ such that $U\\subset A$. Show that $A$ is open in $X$.", "(X : Type*) [TopologicalSpace X]\n (A : Set X) (hA : ∀ x ∈ A, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ⊆ A):\n IsOpen A")]
-
-
-/--
-Given a string, find the nearest documentation strings in Mathlib and return the corresponding theorem data.
--/
-def getNearestDocs (s: String)(numSim : Nat)(numConcise: Nat)(numDesc : Nat) :
-  TranslateM <| Except String (Array (String × Json)) := do
-    let dataMap ← getEmbedMap
-    let check ← (← picklePath "docString").pathExists
-    unless check do
-      return Except.error "Mathlib embeddings not found; run `lake exe fetch_embeddings` first to fetch them."
-    let start ← IO.monoMsNow
-    let finish ← IO.monoMsNow
-    IO.eprintln s!"Embedding query time: {finish - start}"
-    let outJs ←
-       getNearestEmbeddingsFull s (← embedQueryCached s) numSim 2.0 (dataMap := dataMap)
-    logTimed "obtained neighbours"
-    let outJs' ←
-      if numConcise > 0 then
-      getNearestEmbeddingsFull s (← embedQueryCached s) numConcise 2.0 "concise-description" (dataMap := dataMap)
-      else pure <| (Json.arr #[]).compress
-    logTimed "obtained concise descriptions"
-    let outJs'' ←
-      if numDesc > 0 then
-      getNearestEmbeddingsFull s (← embedQueryCached s) numDesc 2.0 "description" (dataMap := dataMap)
-      else pure <| (Json.arr #[]).compress
-    logTimed "obtained descriptions"
-    match Json.parse outJs, Json.parse outJs', Json.parse outJs''  with
-    | Except.error e, _, _ => return Except.error e
-    | _, Except.error e, _ => return Except.error e
-    | _, _, Except.error e => return Except.error e
-    | Except.ok js, Except.ok js', Except.ok js'' =>
-      match js.getArr?, js'.getArr?, js''.getArr? with
-      | Except.error e, _, _ => return Except.error e
-      | _, Except.error e, _ => return Except.error e
-      | _, _, Except.error e => return Except.error e
-      | Except.ok jsArr, Except.ok jsArr', Except.ok jsArr'' =>
-        let mut pairs : Array <| String × Json := #[]
-        for js in jsArr do
-          match js.getObjValAs? String "docString" with
-          | Except.error e => return Except.error e
-          | Except.ok doc =>
-            pairs := pairs.push (doc, js)
-        for js in jsArr' do
-          match js.getObjValAs? String "docString" with
-          | Except.error e => return Except.error e
-          | Except.ok doc =>
-            pairs := pairs.push (doc, js)
-        for js in jsArr'' do
-          match js.getObjValAs? String "docString" with
-          | Except.error e => return Except.error e
-          | Except.ok doc =>
-            pairs := pairs.push (doc, js)
-        return Except.ok pairs.reverse
 
 /-- prompts generated from the declarations in the current file. -/
 def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true) : MetaM <| Array (String × String):= do
@@ -475,25 +400,6 @@ def sufficientElab? (output: Array String)(defs : Array <| Name × String):
       pure <| pair?.map (fun (nm, _) => nm))
 
 
-/-- reverse translation from `Lean` to natural language -/
-def leanToPrompt (thm: String)(numSim : Nat:= 5)
-  (numConcise : Nat := 0) (numDesc: Nat := 0)(temp : JsonNumber := 0)
-  (textField : String := "text")  : TranslateM String := do
-    let pairs? ←
-      getNearestDocs thm numSim numConcise numDesc
-    let pairs := pairs?.toOption.getD #[]
-    let examples := pairs.filterMapM simpleChatExample
-    let prompt := makeFlipPrompt thm (← examples)
-    let fullJson ← (ChatServer.openAI).query prompt
-      {temp := temp, n := 1}
-    let outJson :=
-      (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
-    let out? := (outJson.getArrVal? 0) >>= fun js => js.getObjVal? textField
-    let outJson :=
-        match (out?) with
-        | Except.error s => Json.str s!"query for translation failed: {s}"
-        | Except.ok js => js
-    return outJson.getStr!
 
 def egThm := "theorem eg_thm : ∀ n: Nat, ∃ m : Nat, m > n ∧ m % 2 = 0"
 
@@ -502,11 +408,6 @@ def egThm := "theorem eg_thm : ∀ n: Nat, ∃ m : Nat, m > n ∧ m % 2 = 0"
 
 -- #eval statementToDoc egThm 5 0
 
--- #eval leanToPrompt "∀ {p : ℕ} [inst : Fact (Nat.Prime p)], p = 2 ∨ p % 2 = 1"
-
--- #eval leanToPrompt "∀ {α : Type u} {x : FreeGroup α}, x ≠ 1 → ¬IsOfFinOrder x"
-
--- #eval leanToPrompt "{  n :  ℕ } ->  Even   (    (   n +  1  ) * n  )"
 
 /-- array of outputs extracted from OpenAI Json -/
 def exprStrsFromJson (json: Json) : TranslateM (Array String) := do
