@@ -481,6 +481,10 @@ def nameViewCore? (name: Name) : CoreM <| Option String :=
     (nameViewM? name).run'
 
 open PrettyPrinter in
+/--
+Definitions and theorems in an expression that are both present in its
+syntax tree and are *used constants*. Allows for dot notation.
+-/
 def defsInExpr (expr: Expr) : MetaM <| Array Name := do
   let typeStx ← delab expr
   let defNames := idents typeStx |>.eraseDups |>.map String.toName
@@ -499,7 +503,7 @@ def defsInExpr (expr: Expr) : MetaM <| Array Name := do
 def defsInTypeRec (name : Name) (type: Expr) (depth:Nat) :
     MetaM <| Array Name := do
   match depth with
-  | 0 => return #[name]
+  | 0 => if ← isProp type then return #[] else return #[name]
   | k + 1 =>
     let children ← defsInExpr type
     let childrenTypes ← children.filterMapM fun n => do

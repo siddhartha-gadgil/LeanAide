@@ -56,3 +56,29 @@ def mkTheoremWithDoc (name: Name)(thm: String)
         let stx ← `(command| $docs:docComment theorem $name : $type := by sorry)
         let fmt ← ppCategory `command stx
         return fmt.pretty
+
+def mkStatementWithDocStx (name?: Option Name)(type: Syntax.Term)
+        (value?: Option Syntax.Term)(isProp: Bool)
+        (useExample: Bool := false)(doc: String) : CoreM Syntax.Command := do
+    let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom (doc ++ " -/")]
+    let (ctxs, tailType) ← arrowHeads type
+    let value := value?.getD (← `(by sorry))
+    if name?.isNone && useExample then
+        `(command| $docs:docComment example $ctxs* : $tailType := $value)
+    else
+        let hash := hash type.raw.reprint
+        let inner_name :=
+            Name.num (Name.mkSimple "aux") hash.toNat
+        let name := mkIdent <| name?.getD inner_name
+        if isProp
+        then
+            `(command| $docs:docComment theorem $name $ctxs* : $tailType := $value)
+        else
+            `(command| $docs:docComment def $name:ident $ctxs* : $tailType := $value)
+
+def mkStatementWithDoc (name?: Option Name)(type: Syntax.Term)
+        (value?: Option Syntax.Term)(isProp: Bool)(useExample: Bool := false)
+        (doc: String) : CoreM String := do
+    let stx ← mkStatementWithDocStx name? type value? isProp useExample doc
+    let fmt ← ppCategory `command stx
+    return fmt.pretty

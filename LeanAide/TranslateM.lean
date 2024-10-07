@@ -17,7 +17,7 @@ structure Translate.State where
   /-- Descriptions, docstrings etc -/
   descriptionMap : HashMap Name Json := HashMap.empty
   cmdPrelude : Array String := #[]
-  defs : Array DefData := #[]
+  defs : Array (DefData × String) := #[]
   context : Option String := none
 deriving Inhabited
 
@@ -103,13 +103,13 @@ def runCommand (cmd: String) : TranslateM Unit := do
   discard <|  runFrontendM cmd true
   modify fun s  => {s with cmdPrelude := s.cmdPrelude.push cmd}
 
-def addDefn (dfn: DefData) : TranslateM Unit := do
+def addDefn (dfn: DefData)(doc: String) : TranslateM Unit := do
   runCommand <| ← dfn.statement
-  modify fun s => {s with defs := s.defs.push dfn}
+  modify fun s => {s with defs := s.defs.push (dfn, doc)}
 
 def defsBlob : TranslateM <| Array String := do
   let defs := (← get).defs
-  defs.mapM <| (·.statement)
+  defs.mapM <| fun (dfn, doc) => dfn.statementWithDoc doc
 namespace TranslateM
 
 def runToCore (x: TranslateM α) : CoreM α := do

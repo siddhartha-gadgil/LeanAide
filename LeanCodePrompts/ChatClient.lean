@@ -233,14 +233,15 @@ def simpleChatExample : ToChatExample
   | (docString, data) =>
     return data.getObjValAs? String "type" |>.toOption.map fun thm => {user := docString, assistant:= thm}
 
-def fullTheorem (js: Json) : Option String := do
-  let thm ← js.getObjValAs? String "type" |>.toOption
+def fullStatement? (js: Json) : Option String := do
+  let type ← js.getObjValAs? String "type" |>.toOption
   let name ← js.getObjValAs? String "name" |>.toOption
   let isProp ← js.getObjValAs? Bool "isProp" |>.toOption
   return if isProp then
-    s!"theorem {name} : {thm} := by sorry"
+    s!"theorem {name} : {type} := by sorry"
   else
-    s!"def {name} : {thm} := sorry"
+    let value := js.getObjValAs? String "value" |>.toOption |>.getD "sorry"
+    s!"def {name} : {type} := {value}"
 
 def displayedDoc (doc: String)(isProp: Bool)(name?: Option String) : String :=
   let withName : String := match name? with

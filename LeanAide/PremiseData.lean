@@ -704,6 +704,14 @@ def DefData.statement (data: DefData)(omitProofs: Bool := true) :
     let value? := if omitProofs && data.isProp then none else some data.value
     mkStatement (some data.name) data.type value? data.isProp
 
+def DefData.statementWithDoc (data: DefData)(doc: String)
+    (omitProofs: Bool := true)(useExample: Bool := true) :
+        CoreM String := do
+    let value? := if omitProofs && data.isProp then none else some data.value
+    mkStatementWithDoc
+        (some data.name) data.type value? data.isProp useExample doc
+
+
 structure IdentData where
     context : Array String
     type : String

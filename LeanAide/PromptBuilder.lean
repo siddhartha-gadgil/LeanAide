@@ -301,6 +301,63 @@ def proofNetPromptBuilder : PromptExampleBuilder :=
 
 end PromptExampleBuilder
 
+inductive NearbyDefs where
+  | select (bound? : Option Nat) : NearbyDefs
+  | closure (num : Nat)(depth: Nat := 1) : NearbyDefs
+  | env : NearbyDefs
+  | seq : List NearbyDefs → NearbyDefs
+  deriving Repr, FromJson, ToJson
+
+partial def NearbyDefs.names (nbd: NearbyDefs)(s: String) (pairs : Array (String × Json)) : TranslateM (Array Name) := do
+  match nbd with
+  | NearbyDefs.select bound? =>
+    let pairs := pairs.filter fun (doc, _) => match bound? with
+      | some bound => doc.length < bound
+      | none => true
+    return pairs.filterMap fun (_, js) => do
+      js.getObjValAs? Name "name" |>.toOption
+  | NearbyDefs.closure num depth =>
+    let searchNames : Array Name := pairs.filterMap (fun (_, js) => do
+      js.getObjValAs? Name "name" |>.toOption
+    )
+    bestDefsInConsts num searchNames.toList depth
+  | NearbyDefs.env => do
+    let env ← get
+    return env.defs.map (·.1.name)
+  | NearbyDefs.seq nbs => do
+    let names ← nbs.mapM fun nb => nb.names s pairs
+    return names.toArray.join
+
+partial def NearbyDefs.blob (nbd: NearbyDefs)(s: String) (pairs : Array (String × Json)) : TranslateM (Array String) := do
+  match nbd with
+  | NearbyDefs.select bound? =>
+    let pairs := pairs.filter fun (doc, _) => match bound? with
+      | some bound => doc.length < bound
+      | none => true
+    return pairs.filterMap fun (doc, js) =>
+      fullStatement? js |>.map fun s => s!"/-- {doc} -/" ++ "\n" ++ s
+  | NearbyDefs.closure num depth =>
+    let searchNames : Array Name := pairs.filterMap (fun (_, js) => do
+      js.getObjValAs? Name "name" |>.toOption
+    )
+    let names ← bestDefsInConsts num searchNames.toList depth
+    names.filterMapM fun n => do
+      let info ← getConstInfo n
+      let doc? ← findDocString? (← getEnv) n
+      match doc? with
+      | some doc =>
+        let value? ← info.value?.mapM fun e => PrettyPrinter.delab e
+        mkStatementWithDoc n
+          (← PrettyPrinter.delab info.type) value? false (doc := doc)
+      | none =>
+        mkStatement n (← PrettyPrinter.delab info.type) none false
+  | NearbyDefs.env => do
+    defsBlob
+  | NearbyDefs.seq nbs => do
+    let names ← nbs.mapM fun nb => nb.blob s pairs
+    return names.toArray.join
+
+
 def translatePromptPairs (docPairs: Array (String × Json))
       (dfns: Array String): Array (String × Json) :=
   let preludeCode :=
