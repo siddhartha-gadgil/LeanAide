@@ -215,8 +215,9 @@ partial def getPromptPairsOrdered (pb: PromptExampleBuilder)
     return blended offSpringGps |>.toArray
 
 def getPromptPairs (pb: PromptExampleBuilder)
-    (query: String) : TranslateM ((Array (String × Json))) := do
+    (query: String)(bound: Nat := 600) : TranslateM ((Array (String × Json))) := do
   let pairs ← getPromptPairsOrdered pb query
+  let pairs := pairs.filter fun (doc, _) => doc.length < bound
   return pairs.reverse
 
 def embedBuilder (numSim numConcise numDesc: Nat) : PromptExampleBuilder :=

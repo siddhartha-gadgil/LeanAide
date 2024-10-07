@@ -90,7 +90,7 @@ def model : ChatServer → String
   | generic model _ _ => model
   | google model _ => "google/" ++ model
 
-def hasSysPropmpt : ChatServer → Bool
+def hasSysPrompt : ChatServer → Bool
   | openAI _ => true
   | azure _ _ => true
   | generic _ _ b => b
@@ -341,7 +341,7 @@ def completions (server: ChatServer)
   (queryString: String)(sysPrompt: String)(n: Nat := 3)
   (params: ChatParams := {n := n, stopTokens := #[]})
   (examples: Array ChatExample := #[]): CoreM (Array String) := do
-  let messages ←  mkMessages queryString examples sysPrompt !(server.hasSysPropmpt)
+  let messages ←  mkMessages queryString examples sysPrompt !(server.hasSysPrompt)
   let data ← ChatServer.query server messages params
   match data.getObjValAs? Json "choices" with
   | Except.error _ =>

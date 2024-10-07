@@ -169,6 +169,27 @@ def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true)
     let some type ← try? (Format.pretty <$> PrettyPrinter.ppExpr ci.type) | pure none
     return some ⟨docstring, s!"{kind} : {type} :="⟩
 
+def translatePromptPairs (docPairs: Array (String × Json))
+      (dfns: Array String): Array (String × Json) :=
+  let preludeCode :=
+  if dfns.isEmpty then ""
+  else
+      let defsBlob := dfns.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
+      s!"Your goal is to translate from natural language to Lean. The following are some definitions that may be relevant:\n\n{defsBlob}"
+  docPairs.map fun (doc, thm) =>
+    let isThm :=
+      thm.getObjValAs? Bool "isProp" |>.toOption |>.getD true
+    let head := if isThm then "Theorem" else "Definition"
+    (preludeCode ++ s!"Translate the following statement into Lean 4:\n## {head}: " ++ doc ++ "\n\nGive ONLY the Lean code", thm)
+
+def translateMessages (s: String)(promptPairs: Array (String × Json))
+      (header: String) (toChat : ToChatExample := simpleChatExample)
+      (sysPrompt: Bool) : TranslateM Json := do
+  let examples ←  promptPairs.filterMapM fun pair => toChat pair
+  trace[Translate.info] m!"examples: \n{(examples).size}"
+  let s' := s!"Translate the following statement into Lean 4:\n## {header}: " ++ s ++ "\n\nGive ONLY the Lean code"
+  mkMessages s' examples (← transPrompt) !sysPrompt
+
 
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
@@ -176,7 +197,7 @@ def getLeanCodeJson (s: String)
     (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})
     (pb: PromptExampleBuilder := .embedBuilder 8 0 0)
     (toChat : ToChatExample := simpleChatExample)(header: String := "Theorem")
-    (useDefs : String → TranslateM (Array String) := fun _ => pure #[]) : TranslateM <| Json × Json × Array (String × Json) := do
+    (useDefs : String → Array (String × Json) →  TranslateM (Array String) := fun _ _ => pure #[]) : TranslateM <| Json × Json × Array (String × Json) := do
   logTimed s!"translating string `{s}` with  examples"
   setContext s
   match ← getCachedJson? s with
@@ -188,24 +209,12 @@ def getLeanCodeJson (s: String)
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.insert s)
       -- work starts here; before this was caching, polling etc
-      let pairs ← pb.getPromptPairs s
-      let pairs  := pairs.filter (fun (s, _) => s.length < 100)
-      let dfns ← useDefs s
-      let prelude :=
-        if dfns.isEmpty then ""
-      else
-        let defsBlob := dfns.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
-        s!"Your goal is to translate from natural language to Lean. The following are some definitions that may be relevant:\n\n{defsBlob}"
-      let pairs := pairs.map fun (doc, thm) =>
-        let isThm :=
-          thm.getObjValAs? Bool "isProp" |>.toOption |>.getD true
-        let head := if isThm then "Theorem" else "Definition"
-        (prelude ++ s!"Translate the following statement into Lean 4:\n## {head}: " ++ doc ++ "\n\nGive ONLY the Lean code", thm)
-      trace[Translate.info] m!"prompt pairs: \n{pairs}"
-      let examplesM := pairs.filterMapM toChat
-      trace[Translate.info] m!"examples: \n{(← examplesM).size}"
-      let s' := s!"Translate the following statement into Lean 4:\n## {header}: " ++ s ++ "\n\nGive ONLY the Lean code"
-      let messages ← mkMessages s' (← examplesM) (← transPrompt) !server.hasSysPropmpt
+      let docPairs ← pb.getPromptPairs s
+      let dfns ← useDefs s docPairs
+      let promptPairs := translatePromptPairs docPairs dfns
+      trace[Translate.info] m!"prompt pairs: \n{promptPairs}"
+      let messages ←
+        translateMessages s docPairs header toChat server.hasSysPrompt
       trace[Translate.info] m!"prompt: \n{messages.pretty}"
       logTimed "querying server"
       let fullJson ← server.query messages params
@@ -214,8 +223,8 @@ def getLeanCodeJson (s: String)
       logTimed "obtained gpt response"
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.erase s)
-      cacheJson s (outJson, messages, pairs)
-      return (outJson, messages, pairs)
+      cacheJson s (outJson, messages, promptPairs)
+      return (outJson, messages, promptPairs)
 
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and returns the best choice, throwing an error if nothing elaborates.  -/
 def bestElab (output: Array String) : TranslateM Expr := do
@@ -520,7 +529,7 @@ universe u
 Translate a string and output as a string.
 -/
 def translateViewM (s: String)
-  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8)(numConcise numDesc : ℕ := 0)(toChat : ToChatExample := simpleChatExample)(useDefs : String → TranslateM (Array String) := fun _ => pure #[])
+  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8)(numConcise numDesc : ℕ := 0)(toChat : ToChatExample := simpleChatExample)(useDefs : String → Array (String × Json) →  TranslateM (Array String) := fun _ _ => pure #[])
   : TranslateM String := do
   logTimed "starting translation"
   let (js, _) ← getLeanCodeJson  s server params
@@ -545,7 +554,7 @@ def translateViewM (s: String)
     return view?.getD "False"
 
 def translateToProp? (s: String)
-  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb := PromptExampleBuilder.embedBuilder 8 0 0)(toChat : ToChatExample := simpleChatExample) (useDefs : String → TranslateM (Array String) := fun _ => pure #[])
+  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb := PromptExampleBuilder.embedBuilder 8 0 0)(toChat : ToChatExample := simpleChatExample) (useDefs : String → Array (String × Json) →  TranslateM (Array String) := fun _ _ => pure #[])
    : TranslateM (Option Expr) := do
   logTimed "starting translation"
   let (js, _) ← getLeanCodeJson  s server params
@@ -561,7 +570,7 @@ Translating a definition greedily by parsing as a command
 -/
 def translateDefCmdM? (s: String)
   (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb := PromptExampleBuilder.embedBuilder 8 0 0)
-  (toChat : ToChatExample := docChatExample) (useDefs : String → TranslateM (Array String) := fun _ => pure #[]): TranslateM <| Option Syntax.Command := do
+  (toChat : ToChatExample := docChatExample) (useDefs : String → Array (String × Json) →  TranslateM (Array String) := fun _ _ => pure #[]): TranslateM <| Option Syntax.Command := do
   logTimed "starting translation"
   let (js, _) ← getLeanCodeJson  s server params
         (pb := pb)  (toChat := toChat) (header := "Definition") (useDefs := useDefs)
@@ -644,12 +653,8 @@ def nearbyTheoremsChunk (s: String)
     )
     return statements.foldl (fun acc s => acc ++ s ++ "\n\n") ""
 
-def nearbyDefs (numLeanSearch : Nat := 8) (numMoogle: Nat := 0)
-    (numClosure: Nat := 4)  : String → TranslateM (Array Name) :=
-    fun s => do
-    let pb : PromptExampleBuilder :=
-      PromptExampleBuilder.searchBuilder numLeanSearch numMoogle
-    let pairs ← pb.getPromptPairsOrdered s
+def nearbyDefs
+    (numClosure: Nat := 4) (pairs : Array (String × Json)) : TranslateM (Array Name) := do
     let searchNames : Array Name := pairs.filterMap (fun (_, js) => do
       js.getObjValAs? Name "name" |>.toOption
     )
@@ -690,7 +695,7 @@ Translate a string to a Lean expression using the GPT model, returning three com
 -/
 def translateViewVerboseM (s: String)(server: ChatServer)
   (params: ChatParams)(pb: PromptExampleBuilder := .embedBuilder 10 0 0)
-  (toChat : ToChatExample := simpleChatExample) (useDefs : String → TranslateM (Array String) := fun _ => pure #[]) :
+  (toChat : ToChatExample := simpleChatExample) (useDefs : String → Array (String × Json) →  TranslateM (Array String) := fun _ _ => pure #[]) :
   TranslateM ((Option TranslateResult) × Array String × Json) := do
   let dataMap ← getEmbedMap
   IO.println s!"dataMap keys: {dataMap.toList.map Prod.fst}"
