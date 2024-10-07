@@ -508,11 +508,11 @@ universe u
 Translate a string and output as a string.
 -/
 def translateViewM (s: String)
-  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8)(numConcise numDesc : ℕ := 0)(toChat : ChatExampleType := .simple)(relDefs: RelevantDefs := .empty)
+  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb := PromptExampleBuilder.embedBuilder 8 0 0)(toChat : ChatExampleType := .doc)(relDefs: RelevantDefs := .empty)
   : TranslateM String := do
   logTimed "starting translation"
   let (js, _) ← getLeanCodeJson  s server params
-        (pb := PromptExampleBuilder.embedBuilder numSim numConcise numDesc) (toChat := toChat) (relDefs := relDefs)
+        pb (toChat := toChat) (relDefs := relDefs)
   let output ← getMessageContents js
   trace[Translate.info] m!"{output}"
   -- let output := params.splitOutputs output
@@ -596,9 +596,8 @@ open PrettyPrinter Tactic
   return e
   | _ => throwUnsupportedSyntax
 
-def findTheorem? (s: String)(numSim : ℕ := 8)
-  (numConcise numDesc : ℕ := 0) : TranslateM (Option Name) := do
-  let (js, _, prompts) ← getLeanCodeJson s (pb := PromptExampleBuilder.embedBuilder numSim numConcise numDesc)
+def findTheorem? (s: String)(pb := PromptExampleBuilder.embedBuilder 8 0 0) : TranslateM (Option Name) := do
+  let (js, _, prompts) ← getLeanCodeJson s (pb := pb)
   let output ← getMessageContents js
   trace[Translate.info] m!"thmPairs: {prompts}"
   let thmPairs := prompts.reverse.map (fun (_, js) =>
