@@ -2,6 +2,7 @@ import Lean
 import LeanAide.Aides
 import LeanAide.TranslateM
 import LeanCodePrompts.SpawnNearestEmbeddings
+import LeanCodePrompts.ChatClient
 import Mathlib
 open Lean Meta Elab Term
 
@@ -299,5 +300,27 @@ def proofNetPromptBuilder : PromptExampleBuilder :=
   .fixed fixedPromptsJson
 
 end PromptExampleBuilder
+
+def translatePromptPairs (docPairs: Array (String × Json))
+      (dfns: Array String): Array (String × Json) :=
+  let preludeCode :=
+  if dfns.isEmpty then ""
+  else
+      let defsBlob := dfns.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
+      s!"Your goal is to translate from natural language to Lean. The following are some definitions that may be relevant:\n\n{defsBlob}"
+  docPairs.map fun (doc, thm) =>
+    let isThm :=
+      thm.getObjValAs? Bool "isProp" |>.toOption |>.getD true
+    let head := if isThm then "Theorem" else "Definition"
+    (preludeCode ++ s!"Translate the following statement into Lean 4:\n## {head}: " ++ doc ++ "\n\nGive ONLY the Lean code", thm)
+
+def translateMessages (s: String)(promptPairs: Array (String × Json))
+      (header: String) (toChat : ToChatExample := simpleChatExample)
+      (sysPrompt: Bool) : TranslateM Json := do
+  let examples ←  promptPairs.filterMapM fun pair => toChat pair
+  trace[Translate.info] m!"examples: \n{(examples).size}"
+  let s' := s!"Translate the following statement into Lean 4:\n## {header}: " ++ s ++ "\n\nGive ONLY the Lean code"
+  mkMessages s' examples (← transPrompt) !sysPrompt
+
 
 end LeanAide.Meta
