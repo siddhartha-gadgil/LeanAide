@@ -308,6 +308,10 @@ inductive RelevantDefs where
   | seq : List RelevantDefs → RelevantDefs
   deriving Repr, FromJson, ToJson
 
+def RelevantDefs.empty := RelevantDefs.seq []
+
+def RelevantDefs.base := RelevantDefs.env
+
 partial def RelevantDefs.names (nbd: RelevantDefs)(s: String) (pairs : Array (String × Json)) : TranslateM (Array Name) := do
   match nbd with
   | RelevantDefs.select bound? =>

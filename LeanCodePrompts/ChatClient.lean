@@ -281,7 +281,15 @@ def docChatExample
     return some {user := user, assistant := assistant}
     | _,_,_ => return none
 
+inductive ChatExampleType
+  | simple
+  | doc
+  deriving Repr, FromJson, ToJson, Inhabited, DecidableEq
 
+def ChatExampleType.map (t: ChatExampleType) : ToChatExample :=
+  match t with
+  | ChatExampleType.simple => simpleChatExample
+  | ChatExampleType.doc => docChatExample
 
 /--
 A Json object representing a chat message
