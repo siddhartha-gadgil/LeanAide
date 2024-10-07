@@ -175,8 +175,8 @@ def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true)
 def getLeanCodeJson (s: String)
     (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})
     (pb: PromptExampleBuilder := .embedBuilder 8 0 0)
-    (toChat : ToChatExample := simpleChatExample)(header: String := "Theorem")
-    (useDefs : String → Array (String × Json) →  TranslateM (Array String) := fun _ _ => pure #[]) : TranslateM <| Json × Json × Array (String × Json) := do
+    (toChat : ChatExampleType := .simple)(header: String := "Theorem")
+    (relDefs: RelevantDefs := .empty) : TranslateM <| Json × Json × Array (String × Json) := do
   logTimed s!"translating string `{s}` with  examples"
   setContext s
   match ← getCachedJson? s with
@@ -189,7 +189,7 @@ def getLeanCodeJson (s: String)
       pendingJsonQueries.set (pending.insert s)
       -- work starts here; before this was caching, polling etc
       let docPairs ← pb.getPromptPairs s
-      let dfns ← useDefs s docPairs
+      let dfns ← relDefs.blob s docPairs
       let promptPairs := translatePromptPairs docPairs dfns
       trace[Translate.info] m!"prompt pairs: \n{promptPairs}"
       let messages ←
@@ -508,11 +508,11 @@ universe u
 Translate a string and output as a string.
 -/
 def translateViewM (s: String)
-  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8)(numConcise numDesc : ℕ := 0)(toChat : ToChatExample := simpleChatExample)(useDefs : String → Array (String × Json) →  TranslateM (Array String) := fun _ _ => pure #[])
+  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (numSim: Nat := 8)(numConcise numDesc : ℕ := 0)(toChat : ChatExampleType := .simple)(relDefs: RelevantDefs := .empty)
   : TranslateM String := do
   logTimed "starting translation"
   let (js, _) ← getLeanCodeJson  s server params
-        (pb := PromptExampleBuilder.embedBuilder numSim numConcise numDesc) (toChat := toChat) (useDefs := useDefs)
+        (pb := PromptExampleBuilder.embedBuilder numSim numConcise numDesc) (toChat := toChat) (relDefs := relDefs)
   let output ← getMessageContents js
   trace[Translate.info] m!"{output}"
   -- let output := params.splitOutputs output
@@ -533,11 +533,11 @@ def translateViewM (s: String)
     return view?.getD "False"
 
 def translateToProp? (s: String)
-  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb := PromptExampleBuilder.embedBuilder 8 0 0)(toChat : ToChatExample := simpleChatExample) (useDefs : String → Array (String × Json) →  TranslateM (Array String) := fun _ _ => pure #[])
+  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb := PromptExampleBuilder.embedBuilder 8 0 0)(toChat : ChatExampleType := .simple) (relDefs: RelevantDefs := .empty)
    : TranslateM (Option Expr) := do
   logTimed "starting translation"
   let (js, _) ← getLeanCodeJson  s server params
-        pb  (toChat := toChat) (useDefs := useDefs)
+        pb  (toChat := toChat) (relDefs := relDefs)
   let output ← getMessageContents js
   trace[Translate.info] m!"{output}"
   -- let output := params.splitOutputs output
@@ -549,10 +549,10 @@ Translating a definition greedily by parsing as a command
 -/
 def translateDefCmdM? (s: String)
   (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb := PromptExampleBuilder.embedBuilder 8 0 0)
-  (toChat : ToChatExample := docChatExample) (useDefs : String → Array (String × Json) →  TranslateM (Array String) := fun _ _ => pure #[]): TranslateM <| Option Syntax.Command := do
+  (toChat : ChatExampleType := .doc) (relDefs: RelevantDefs := .empty): TranslateM <| Option Syntax.Command := do
   logTimed "starting translation"
   let (js, _) ← getLeanCodeJson  s server params
-        (pb := pb)  (toChat := toChat) (header := "Definition") (useDefs := useDefs)
+        (pb := pb)  (toChat := toChat) (header := "Definition") (relDefs := relDefs)
   let output ← getMessageContents js
   trace[Translate.info] m!"{output}"
   let cmd? :  Option Syntax ← output.findSomeM? fun s =>
@@ -567,7 +567,7 @@ def translateDefCmdM? (s: String)
   return cmd?.map (fun cmd => ⟨cmd⟩)
 
 def translateDefViewM? (s: String)
-  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb := PromptExampleBuilder.embedBuilder 8 8 0)(toChat : ToChatExample := docChatExample)
+  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb := PromptExampleBuilder.embedBuilder 8 8 0)(toChat : ChatExampleType := .doc)
    : TranslateM <| Option String := do
   let cmd? ← translateDefCmdM? s server params pb toChat
   let fmt? ← cmd?.mapM fun cmd =>
@@ -674,12 +674,12 @@ Translate a string to a Lean expression using the GPT model, returning three com
 -/
 def translateViewVerboseM (s: String)(server: ChatServer)
   (params: ChatParams)(pb: PromptExampleBuilder := .embedBuilder 10 0 0)
-  (toChat : ToChatExample := simpleChatExample) (useDefs : String → Array (String × Json) →  TranslateM (Array String) := fun _ _ => pure #[]) :
+  (toChat : ChatExampleType := .simple) (relDefs: RelevantDefs := .empty) :
   TranslateM ((Option TranslateResult) × Array String × Json) := do
   let dataMap ← getEmbedMap
   IO.println s!"dataMap keys: {dataMap.toList.map Prod.fst}"
   let (js,prompt, _) ←
-    getLeanCodeJson s server params pb toChat (useDefs := useDefs)
+    getLeanCodeJson s server params pb toChat (relDefs := relDefs)
   let output ← getMessageContents js
   if output.isEmpty then
     IO.eprintln "no output"

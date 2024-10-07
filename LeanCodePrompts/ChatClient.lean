@@ -286,7 +286,7 @@ inductive ChatExampleType
   | doc
   deriving Repr, FromJson, ToJson, Inhabited, DecidableEq
 
-def ChatExampleType.map (t: ChatExampleType) : ToChatExample :=
+def ChatExampleType.map? (t: ChatExampleType) : ToChatExample :=
   match t with
   | ChatExampleType.simple => simpleChatExample
   | ChatExampleType.doc => docChatExample

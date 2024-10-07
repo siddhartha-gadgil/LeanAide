@@ -10,11 +10,11 @@ Translate a string to a Lean expression using the GPT model, returning the expre
 -/
 def translateWithDataM (s: String)(server: ChatServer)
   (params: ChatParams)(pb: PromptExampleBuilder := .embedBuilder 10 0 0)  (repeats: Nat := 0)(sleepTime : Nat := 1)
-  (queryData? : Option <| (HashMap String Json)  )(toChat : ToChatExample := simpleChatExample) (useDefs : String → Array (String × Json) →  TranslateM (Array String) := fun _ _  => pure #[]) :
+  (queryData? : Option <| (HashMap String Json)  )(toChat : ChatExampleType := .simple) (relDefs: RelevantDefs := .empty) :
   TranslateM ((Option (ElabResult)) × Array String × (Option String)) := do
   let (output, prompt?) ←  match queryData? with
   | none =>
-    let (js,prompt, _) ← getLeanCodeJson s server params pb toChat (useDefs := useDefs)
+    let (js,prompt, _) ← getLeanCodeJson s server params pb toChat (relDefs := relDefs)
     pure (← getMessageContents js, some prompt.pretty)
   | some f =>
     let res? := f.find? s.trim
@@ -53,7 +53,7 @@ Translate theorems in a given file and record results in a JSON file.
 -/
 def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
   (params: ChatParams)(pb: PromptExampleBuilder := .embedBuilder 10 0 0)
-  (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json) )(tag: Bool := false)(toChat : ToChatExample := simpleChatExample)(roundtrip: Bool := false) : TranslateM Json := do
+  (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json) )(tag: Bool := false)(toChat : ChatExampleType := .simple)(roundtrip: Bool := false) : TranslateM Json := do
   IO.eprintln s!"Writing to file: {inputFile}-elab-{pb.signature}-{params.n}-{params.temp.mantissa}.json"
   let promptsFile := System.mkFilePath ["data",
     s!"prompts-{inputFile}-{pb.signature}-{params.n}-{params.temp.mantissa}.jsonl"]
