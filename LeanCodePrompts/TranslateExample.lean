@@ -28,3 +28,11 @@ def Matrix.isDiagonalizable {n : Type u} {α : Type v} [Fintype n] [DecidableEq 
       ∃ (P : Matrix n n α), P.det ≠ 0 ∧ ∃ (D : Matrix n n α), D.IsDiag ∧ P⁻¹ * A * P = D
 
 -- #eval LeanAide.Meta.getDescription ``Matrix.IsDiag
+
+example : ∃ x y : Nat, x = y := by
+  apply Exists.intro 0
+  apply Exists.intro 0
+  rfl
+
+def Matrix.IsDiagonalizable {n : Type u} [Fintype n] {𝕜 : Type v} [Field 𝕜] [DecidableEq n] (A : Matrix n n 𝕜) :=
+  ∃ (P : Matrix n n 𝕜) (_ : Invertible P), IsDiag (P⁻¹ * A * P)
