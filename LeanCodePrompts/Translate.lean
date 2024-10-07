@@ -211,7 +211,7 @@ def bestElab (output: Array String) : TranslateM Expr := do
   let mut elabStrs : Array String := Array.empty
   let mut elaborated : Array Expr := Array.empty
   let mut fullElaborated : Array Expr := Array.empty
-  let mut cache : HashMap String (Except String Expr) :=
+  let mut cache : HashMap String (Except ElabError Expr) :=
     HashMap.empty
   for out in output do
     -- IO.println s!"elaboration called: {out}"
@@ -275,16 +275,17 @@ def ElabResult.withView (er: ElabResult) : MetaM TranslateResult := do
     view := (← er.view)
   }
 
-
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and optionally returns the best choice as well as all elaborated terms (used for batch processing, interactive code uses `bestElab` instead)  -/
-def bestElab? (output: Array String)(maxVoting: Nat := 5) : TranslateM (Except Json ElabResult) := do
+def bestElab? (output: Array String)(maxVoting: Nat := 5) : TranslateM (Except (Array ElabError) ElabResult) := do
   -- IO.println s!"arrayToExpr? called with {output.size} outputs"
   let mut elabStrs : Array String := Array.empty
   let mut elaborated : Array Expr := Array.empty
   let mut fullElaborated : Array Expr := Array.empty
-  let mut cache : HashMap String (Except String Expr) :=
+  let mut cache : HashMap String (Except ElabError Expr) :=
     HashMap.empty
   logTimed "elaborating outputs"
+  let mut errors : Array ElabError := #[]
+
   for out in output do
     -- IO.println s!"elaboration called: {out}"
     let elab? ←
@@ -296,28 +297,16 @@ def bestElab? (output: Array String)(maxVoting: Nat := 5) : TranslateM (Except J
         pure res
 
     match elab? with
-      | Except.error _ => pure ()
+      | Except.error e =>
+        errors := errors.push e
+        pure ()
       | Except.ok expr =>
           elaborated := elaborated.push expr
           elabStrs := elabStrs.push out
           if !(← whnf expr).hasExprMVar then
             fullElaborated := fullElaborated.push expr
   if elaborated.isEmpty then
-    let mut errors : Array Json := #[]
-    for out in output do
-      let stx ← parseThm4 out
-      match stx with
-      | Except.error err =>
-          errors := errors.push <|
-            Json.mkObj [("parsed", false),
-              ("error", Json.str err), ("output", Json.str out)]
-          pure ()
-      | Except.ok stx => do
-        errors := errors.push <|
-            Json.mkObj [("parsed", true),
-              ("syntax", stx.reprint.get!), ("output", Json.str out)]
-    let errorJson := Json.arr errors
-    return Except.error errorJson
+    return Except.error errors
   else
     logTimed "elaborated outputs, starting majority voting"
     -- let priority :=
@@ -684,16 +673,11 @@ def translateViewVerboseM (s: String)(server: ChatServer)
     IO.eprintln "no output"
     return (none, output, prompt)
   else
-    -- let output := params.splitOutputs output
     let res? ← bestElab? output
     match res? with
-    | Except.error jsErr =>
-      let js := Json.mkObj [
-        ("input", Json.str s),
-        ("error", jsErr)]
-      appendLog "translate_fail" js
-      pure ()
-    | Except.ok _ =>
-      pure ()
-    let view? ←  res?.toOption.mapM fun res => res.withView
-    return (view?, output, prompt)
+    | Except.error err =>
+      appendLog "translate_fail" <| toJson err
+      return (none, output, prompt)
+    | Except.ok res =>
+      let view ←  res.withView
+      return (some view, output, prompt)

@@ -384,5 +384,11 @@ def translateMessages (s: String)(promptPairs: Array (String × Json))
   let s' := s!"Translate the following statement into Lean 4:\n## {header}: " ++ s ++ "\n\nGive ONLY the Lean code"
   mkMessages s' examples (← transPrompt) !sysPrompt
 
+/--
+Just collecting for now. Should add selectors if these grow.
+-/
+def tips :=
+  #["Multiplication is usually denoted `*` in Lean, not `⬝`",
+  "Within quantifiers `∀` and `∃`, do not use typeclasses, use anonymous variables with types instead. For example, NOT: `∃ (G: Type) [Group G], ...` USE: `∃ G : Type, (_ : Group G), ...`"]
 
 end LeanAide.Meta

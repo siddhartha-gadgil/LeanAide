@@ -33,6 +33,18 @@ partial def lean4NamesSyntax : Syntax → MetaM Syntax := fun stx => pure stx
 --   return mkNode k args
 -- | stx => pure stx
 
+inductive ElabError where
+| unparsed (text parseError: String) (context? : Option String) : ElabError
+| parsed (text elabError : String) (cmdErrors : List String)
+    (context? : Option String) : ElabError
+deriving Repr, ToJson, FromJson
+
+instance : ToMessageData (ElabError) where
+  toMessageData (err) := match err with
+  | .unparsed text parseError _ => m!"Parsing error: {parseError} for {text}"
+  | .parsed text elabError cmdErrors _ =>
+      m!"Elaboration errors : {elabError} for {text}; front-end errors: {cmdErrors}"
+
 def parseThm4 (s : String) : TermElabM <| Except String Syntax := do
   let env ← getEnv
   let stx? := Lean.Parser.runParserCategory env `theorem_statement  s
@@ -42,22 +54,16 @@ def parseThm4 (s : String) : TermElabM <| Except String Syntax := do
 
 def elabThm4Aux (s : String)
   (levelNames : List Lean.Name := levelNames)
-  : TranslateM <| Except String Expr := do
+  : TranslateM <| Except ElabError Expr := do
   let env ← getEnv
   let ctx? ← getContext
   let stx? :=
     Lean.Parser.runParserCategory env `theorem_statement  s
   match stx? with
   | Except.error err =>
-      let jsError :=
-        Json.mkObj [
-        ("input", s),
-        ("parsed", false),
-        ("parse-error", err),
-        ("context", ctx?.getD "")
-        ]
-      appendLog "elab_errors" jsError
-      return Except.error s!"{err} for:\n {s}"
+      let res := .unparsed s err ctx?
+      appendLog "elab_errors" <| toJson res
+      return .error <| res
   | Except.ok stx =>
     elaborate stx
   where elaborate (stx) := do
@@ -65,22 +71,16 @@ def elabThm4Aux (s : String)
     match ← elabThmFromStx stx levelNames with
     | Except.error err₁ =>
       let frontEndErrs ← checkTypeElabFrontM s
-      let jsError := Json.mkObj [
-        ("input", s),
-        ("parsed", true),
-        ("elab-error", err₁),
-        ("frontend-errors", toJson frontEndErrs),
-        ("context", ctx?.getD "")
-        ]
-      appendLog "elab_errors" jsError
-      return Except.error s!"{err₁}"
+      let res := .parsed s err₁ frontEndErrs ctx?
+      appendLog "elab_errors" <| toJson res
+      return Except.error res
     | Except.ok e => return  Except.ok e
 
 -- for testing
 
 def elabThm4 (s : String)
   (levelNames : List Lean.Name := levelNames)
-  : TranslateM <| Except String Expr := do
+  : TranslateM <| Except ElabError Expr := do
   match ← elabThm4Aux s levelNames with
   | Except.error err =>
       let groups := lineBlocks s

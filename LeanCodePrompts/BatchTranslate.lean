@@ -35,17 +35,13 @@ def translateWithDataM (s: String)(server: ChatServer)
       (sleepTime * 2) queryData?
   else
     -- let output := params.splitOutputs output
-    let res ← bestElab? output
-    match res with
-    | Except.error jsErr =>
-      let js := Json.mkObj [
-        ("input", Json.str s),
-        ("error", jsErr)]
-      appendLog "translate_fail" js
-      pure ()
-    | Except.ok _ =>
-      pure ()
-    return (res.toOption, output, prompt?)
+    let res? ← bestElab? output
+    match res? with
+    | Except.error err =>
+      appendLog "translate_fail" <| toJson err
+      return (none, output, prompt?)
+    | Except.ok res =>
+      return (some res, output, prompt?)
 
 
 /--
