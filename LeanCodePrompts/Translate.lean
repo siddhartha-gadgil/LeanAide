@@ -193,7 +193,7 @@ def getLeanCodeJson (s: String)
       let promptPairs := translatePromptPairs docPairs dfns
       trace[Translate.info] m!"prompt pairs: \n{promptPairs}"
       let messages ←
-        translateMessages s docPairs header toChat server.hasSysPrompt
+        translateMessages s promptPairs header toChat server.hasSysPrompt
       trace[Translate.info] m!"prompt: \n{messages.pretty}"
       logTimed "querying server"
       let fullJson ← server.query messages params
