@@ -105,6 +105,7 @@ def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
             pure <| js.mergeObj <|
               Json.mkObj [("roundtrip-success", false)]
           | some (statement, check) =>
+            IO.eprintln s!"roundtrip check: {check}"
             pure <| js.mergeObj (Json.mkObj [
                ("roundtrip-success", true),
               ("roundtrip-statement", Json.str statement),

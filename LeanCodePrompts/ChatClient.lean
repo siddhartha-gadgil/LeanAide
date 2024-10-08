@@ -394,6 +394,7 @@ def checkEquivalence (server: ChatServer)
   (examples: Array ChatExample := #[]): CoreM (Array Bool) := do
   let queryString ← fromTemplate "check_equivalence" [("theorem1", thm1), ("theorem2", thm2)]
   let responses ← ChatServer.mathCompletions server queryString n params examples
+  IO.eprintln responses
   return responses.map fun s =>
     (s.toLower.trim.splitOn "true").length > 1
 
