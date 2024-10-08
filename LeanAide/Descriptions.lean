@@ -139,23 +139,25 @@ def needsInd (name: Name) : MetaM <| Option (List Name) := do
 
 def getDescriptionM (name: Name)(server := ChatServer.openAI)(params: ChatParams) : MetaM <| Option (String × String) := do
   let prompt? ← describeTheoremPrompt name
-  prompt?.mapM fun (prompt, statement) => do
+  prompt?.bindM fun (prompt, statement) => do
     let messages ← mkMessages prompt #[] (← sysPrompt)
     let fullJson ←  server.query messages params
     let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
     let contents ← getMessageContents outJson
-    return (contents[0]!, statement)
+    let res := contents.get? 0 |>.map fun h => (h, statement)
+    return res
 
 def getTypeDescriptionM (type: Expr)(server := ChatServer.openAI)(params: ChatParams) : MetaM <| Option (String × String) := do
   let prompt? ← describeAnonymousTheoremPrompt type
-  prompt?.mapM fun (prompt, statement) => do
+  prompt?.bindM fun (prompt, statement) => do
     let messages ← mkMessages prompt #[] (← sysPrompt)
     let fullJson ←  server.query messages params
     let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
     let contents ← getMessageContents outJson
-    return (contents[0]!, statement)
+    let res := contents.get? 0 |>.map fun h => (h, statement)
+    return res
 
 def checkTranslationM (s: String) (type: Expr)(server := ChatServer.openAI)(params: ChatParams)(n: Nat := 3) :
   MetaM <| Option (String × Array Bool) := do

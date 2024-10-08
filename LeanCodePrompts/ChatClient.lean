@@ -149,7 +149,7 @@ def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Jso
   | Except.error e =>
     appendLog "chat_queries"
       (Json.mkObj [("query", queryJs), ("success", false), ("error", e), ("response", output)])
-    panic! s!"Error parsing JSON: {e}; source: {output}"
+    return .null
 
 def pollCacheQuery (server: ChatServer)(messages : Json)
     (params : ChatParams) (retries: Nat) : CoreM Json := do
