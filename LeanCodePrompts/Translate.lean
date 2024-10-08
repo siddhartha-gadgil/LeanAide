@@ -402,7 +402,9 @@ def exprStrsFromJson (json: Json) : TranslateM (Array String) := do
               | Except.error _ =>
                 throwError m!"no text field"
         pure parsedArr
-    | Except.error e => throwError m!"json parsing error: {e}"
+    | Except.error e =>
+      IO.eprintln s!"json parsing error: {e}"
+      pure #[]
   return outArr
 
 /-- array of outputs extracted from Json Array -/

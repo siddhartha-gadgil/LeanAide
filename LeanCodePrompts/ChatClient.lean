@@ -26,7 +26,9 @@ def getMessageContents (json: Json) : CoreM (Array String) := do
                 throwError m!"no message field in {js}"
 
         pure parsedArr
-    | Except.error e => throwError m!"json parsing error: {e}"
+    | Except.error e =>
+      IO.eprintln s!"json parsing error: {e}"
+      return #[]
 
 structure ChatParams where
   n : Nat := 1
