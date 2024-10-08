@@ -11,7 +11,7 @@ Translate a string to a Lean expression using the GPT model, returning the expre
 def translateWithDataM (s: String)(server: ChatServer)
   (params: ChatParams)(pb: PromptExampleBuilder := .embedBuilder 10 0 0)  (repeats: Nat := 0)(sleepTime : Nat := 1)
   (queryData? : Option <| (HashMap String Json)  )(toChat : ChatExampleType := .simple) (relDefs: RelevantDefs := .empty) :
-  TranslateM ((Option (ElabResult)) × Array String × (Option String)) := do
+  TranslateM ((Except (Array ElabError) (ElabResult)) × Array String × (Option String)) := do
   let (output, prompt?) ←  match queryData? with
   | none =>
     let (js,prompt, _) ← getLeanCodeJson s server params pb toChat (relDefs := relDefs)
@@ -26,7 +26,7 @@ def translateWithDataM (s: String)(server: ChatServer)
       pure (arr.map fun js => js.getStr!, none)
   if output.isEmpty then
   match repeats with
-  | 0 => return (none, output, prompt?)
+  | 0 => return (Except.error #[], output, prompt?)
   | k + 1 =>
     IO.eprintln s!"No outputs; repeating ({k} left)"
     IO.sleep (sleepTime * 1000).toUInt32
@@ -39,9 +39,9 @@ def translateWithDataM (s: String)(server: ChatServer)
     match res? with
     | Except.error err =>
       appendLog "translate_fail" <| toJson err
-      return (none, output, prompt?)
+      return (Except.error err, output, prompt?)
     | Except.ok res =>
-      return (some res, output, prompt?)
+      return (Except.ok res, output, prompt?)
 
 
 /--
@@ -74,7 +74,7 @@ def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
   let mut count := 0
   let mut elaborated := 0
   let mut elabPairs: Array (String × String × (Array String) × Array (Array String)) := #[]
-  let mut failed : Array String := #[]
+  let mut failed : Array (Array ElabError) := #[]
   for statement in statements do
     trace[Translate.info] m!"{statement}"
     IO.println ""
@@ -87,16 +87,16 @@ def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
     h.putStrLn <| js.compress
     count := count + 1
     match res? with
-    | some res =>
+    | Except.ok res =>
       let v ← res.view
-      IO.println s!"theorem {v}"
+      IO.eprintln s!"theorem {v}"
       elaborated := elaborated + 1
       let js := Json.mkObj [("text", Json.str statement),
-       ("fullPrompt", Json.str fullPrompt),
-       ("result", true),
+       ("prompt", toJson prompt?),
+       ("result-obtained", true),
        ("theorem", v),
-       ("all_elaborations", Json.arr <| res.allElaborated.map Json.str),
-       ("gps", Json.arr <| res.groups.map (Json.arr ∘ Array.map Json.str))]
+       ("all-elaborations", Json.arr <| res.allElaborated.map Json.str),
+       ("elaboration-groups", Json.arr <| res.groups.map (Json.arr ∘ Array.map Json.str))]
 
       let js ←  if roundtrip then
           let pair? ←  checkTranslationM statement res.term server params
@@ -114,9 +114,9 @@ def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
           pure js
       outHandle.putStrLn <| js.compress
       elabPairs := elabPairs.push (statement, v, res.allElaborated, res.groups)
-    | none =>
+    | .error err =>
       IO.eprintln "failed to elaborate"
-      failed := failed.push statement
+      failed := failed.push err
     IO.eprintln s!"total : {count}"
     IO.eprintln s!"elaborated: {elaborated}"
     IO.sleep <| (delay * 1000).toUInt32
@@ -139,7 +139,7 @@ def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
             ("comments", ""), ("correct", Json.null),
             ("some-correct", Json.null)
             ]),
-        ("failures", Json.arr <| failed.map (Json.str))
+        ("failures", Json.arr <| failed.map (toJson))
             ]
   return js
 

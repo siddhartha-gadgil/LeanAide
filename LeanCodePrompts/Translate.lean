@@ -203,7 +203,7 @@ def getLeanCodeJson (s: String)
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.erase s)
       cacheJson s (outJson, messages, promptPairs)
-      return (outJson, messages, promptPairs)
+      return (outJson, messages, docPairs)
 
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and returns the best choice, throwing an error if nothing elaborates.  -/
 def bestElab (output: Array String) : TranslateM Expr := do
