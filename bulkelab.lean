@@ -37,7 +37,7 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
     |>.getD 8
   let temp : JsonNumber := ⟨temp10, 1⟩
   let model := p.flag? "model" |>.map (fun s => s.as! String)
-    |>.getD "gpt-3.5-turbo"
+    |>.getD "gpt-4o"
   let delay := p.flag? "delay" |>.map (fun s => s.as! Nat)
     |>.getD 20
   let repeats := p.flag? "repeats" |>.map (fun s => s.as! Nat)
@@ -87,11 +87,11 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
     if tag then
         System.mkFilePath <|
     p.flag? "output" |>.map (fun s => [s.as! String]) |>.getD
-      ["results", model, gitHash, s!"{input_file}-elab-{numSim}-{queryNum}-{temp10}.json"]
+      ["results", model, gitHash, s!"{input_file}-elab-{pb.signature}-{chatParams.n}-{chatParams.temp.mantissa}.json"]
     else
     System.mkFilePath <|
     p.flag? "output" |>.map (fun s => [s.as! String]) |>.getD
-      ["results", model, s!"{input_file}-elab-{numSim}-{queryNum}-{temp10}.json"]
+      ["results", model, s!"{input_file}-elab-{pb.signature}-{chatParams.n}-{chatParams.temp.mantissa}.json"]
   let env ←
     importModules #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
@@ -144,7 +144,7 @@ unsafe def bulkElab : Cmd := `[Cli|
     r, responses : Nat;    "Number of responses to ask for (default 5)."
     t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t` (default 8)."
     roundtrip; "Translate back to natural language and compare."
-    m, model : String ; "Model to be used (default `gpt-3.5-turbo`)"
+    m, model : String ; "Model to be used (default `gpt-4o`)"
     d, delay : Nat; "Delay between requests in seconds (default 20)."
     query_data : String; "Query data jsonlines file if cached queries are to be used; should have the result of the 'choices' field of the output and a 'docString' field for the query."
     repeats : Nat; "Number of times to repeat the request (default 0)."
