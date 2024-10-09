@@ -32,7 +32,7 @@ def getMessageContents (json: Json) : CoreM (Array String) := do
 
 structure ChatParams where
   n : Nat := 1
-  temp : JsonNumber := 0.8
+  temp : JsonNumber := 1.0
   stopTokens : Array String :=  #[]
   maxTokens : Nat := 1600
   deriving Repr, Hashable, FromJson, ToJson, Inhabited, DecidableEq
@@ -395,7 +395,8 @@ def checkEquivalence (server: ChatServer)
   (params: ChatParams := {n := n, stopTokens := #[]})
   (examples: Array ChatExample := #[]): CoreM (Array <| Bool × String) := do
   let queryString ← fromTemplate "check_equivalence" [("theorem1", thm1), ("theorem2", thm2)]
-  let responses ← ChatServer.mathCompletions server queryString n params examples
+  let server := ChatServer.openAI "o1-mini"
+  let responses ← ChatServer.mathCompletions server queryString 1 {} examples
   IO.eprintln responses
   return responses.map fun s =>
     ((s.toLower.trim.splitOn "true").length > 1, s)
