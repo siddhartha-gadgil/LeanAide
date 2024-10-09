@@ -100,19 +100,13 @@ def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
 
       let js ←  if roundtrip then
           let pair? ←  checkTranslationM statement res.term server params
-          match pair? with
-          | none =>
-            pure <| js.mergeObj <|
-              Json.mkObj [("roundtrip-success", false)]
-          | some (statement, check') =>
+          let translateBackResult : TranslateBackResult := match pair? with
+          | none => .failure
+          | some (translation, check') =>
             let check := check'.map (·.1)
-            IO.eprintln s!"roundtrip check: {check}"
-            pure <| js.mergeObj (Json.mkObj [
-               ("roundtrip-success", true),
-              ("roundtrip-statement", Json.str statement),
-              ("roundtrip-check", toJson check),
-              ("roundtrip-check'", toJson check')
-              ])
+            let checkData := check'.map (·.2)
+            .success statement translation check checkData
+          pure <| js.mergeObj (toJson translateBackResult)
         else
           pure js
       outHandle.putStrLn <| js.compress

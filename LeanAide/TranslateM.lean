@@ -28,6 +28,12 @@ inductive DefTranslateResult : Type where
   | failure
     (progress : Array DefWithDoc) (error : Array CmdElabError) : DefTranslateResult
 
+inductive TranslateBackResult where
+  | success (statement translation: String)
+    (checks : Array Bool) (checksData : Array String) : TranslateBackResult
+  | failure  : TranslateBackResult
+  deriving Repr, ToJson, FromJson
+
 structure Translate.State where
   /-- Embeddings to preload -/
   embedMap : EmbedMap := HashMap.empty
