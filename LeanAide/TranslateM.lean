@@ -12,6 +12,7 @@ namespace LeanAide.Meta
 structure DefSource where
   doc : String
   isProp : Bool
+deriving ToJson, FromJson, Repr
 
 structure DefWithDoc extends DefData where
   doc : String
@@ -124,6 +125,9 @@ def runCommand (cmd: String) : TranslateM Unit := do
 def addDefn (dfn: DefWithDoc) : TranslateM Unit := do
   runCommand <| ← dfn.statement
   modify fun s => {s with defs := s.defs.push dfn}
+
+def clearDefs : TranslateM Unit := do
+  modify fun s => {s with defs := #[]}
 
 def defsBlob : TranslateM <| Array String := do
   let defs := (← get).defs

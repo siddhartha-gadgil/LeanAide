@@ -584,7 +584,8 @@ def translateDefViewM? (s: String)
   return fmt?.map (·.pretty)
 
 def translateDefList (dfns : List DefSource)
-  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb := PromptExampleBuilder.embedBuilder 8 8 0)(toChat : ChatExampleType := .doc) (relDefs: RelevantDefs := .empty) (progress : Array DefWithDoc := #[]) : TranslateM DefTranslateResult := do
+  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb := PromptExampleBuilder.embedBuilder 8 8 0)(toChat : ChatExampleType := .doc) (relDefs: RelevantDefs := .empty) (progress : Array DefWithDoc := #[]) (initial : Bool := true): TranslateM DefTranslateResult := do
+  if initial then clearDefs
   match dfns with
   | [] => return .success progress
   | x :: ys =>
@@ -595,7 +596,8 @@ def translateDefList (dfns : List DefSource)
     | Except.ok dd => do
       let progress :=
         progress.push <| {dd with doc := x.doc, isProp := x.isProp}
-      translateDefList ys server params pb toChat relDefs progress
+      translateDefList ys server params pb toChat relDefs progress false
+
 
 syntax (name := ltrans) "l!" str : term
 

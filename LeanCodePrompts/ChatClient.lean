@@ -393,12 +393,12 @@ def solve (server: ChatServer)
 def checkEquivalence (server: ChatServer)
   (thm1 thm2 : String)(n: Nat := 3)
   (params: ChatParams := {n := n, stopTokens := #[]})
-  (examples: Array ChatExample := #[]): CoreM (Array Bool) := do
+  (examples: Array ChatExample := #[]): CoreM (Array <| Bool × String) := do
   let queryString ← fromTemplate "check_equivalence" [("theorem1", thm1), ("theorem2", thm2)]
   let responses ← ChatServer.mathCompletions server queryString n params examples
   IO.eprintln responses
   return responses.map fun s =>
-    (s.toLower.trim.splitOn "true").length > 1
+    ((s.toLower.trim.splitOn "true").length > 1, s)
 
 def mathTerms (server: ChatServer)
     (statement : String)(n: Nat := 3)

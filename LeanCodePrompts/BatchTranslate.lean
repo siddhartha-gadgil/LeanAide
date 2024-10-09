@@ -11,7 +11,7 @@ Translate a string to a Lean expression using the GPT model, returning the expre
 def translateWithDataM (s: String)(server: ChatServer)
   (params: ChatParams)(pb: PromptExampleBuilder := .embedBuilder 10 0 0)  (repeats: Nat := 0)(sleepTime : Nat := 1)
   (queryData? : Option <| (HashMap String Json)  )(toChat : ChatExampleType := .simple) (relDefs: RelevantDefs := .empty) :
-  TranslateM ((Except (Array ElabError) (ElabResult)) × Array String × (Option String)) := do
+  TranslateM ((Except (Array ElabError) (ElabSuccessResult)) × Array String × (Option String)) := do
   let (output, prompt?) ←  match queryData? with
   | none =>
     let (js,prompt, _) ← getLeanCodeJson s server params pb toChat (relDefs := relDefs)
@@ -104,12 +104,14 @@ def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
           | none =>
             pure <| js.mergeObj <|
               Json.mkObj [("roundtrip-success", false)]
-          | some (statement, check) =>
+          | some (statement, check') =>
+            let check := check'.map (·.1)
             IO.eprintln s!"roundtrip check: {check}"
             pure <| js.mergeObj (Json.mkObj [
                ("roundtrip-success", true),
               ("roundtrip-statement", Json.str statement),
-              ("roundtrip-check", toJson check)
+              ("roundtrip-check", toJson check),
+              ("roundtrip-check'", toJson check')
               ])
         else
           pure js
