@@ -93,7 +93,7 @@ def model : ChatServer → String
   | google model _ => "google/" ++ model
 
 def hasSysPrompt : ChatServer → Bool
-  | openAI _ => true
+  | openAI model => !(model.startsWith "o1")
   | azure _ _ => true
   | generic _ _ b => b
   | google _ _ => true
@@ -123,7 +123,7 @@ def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Jso
   let stopJs := Json.mkObj <| if params.stopTokens.isEmpty then [] else
     [("stop", Json.arr <| params.stopTokens |>.map Json.str)]
   let dataJs := Json.mkObj [("model", server.model), ("messages", messages)
-  , ("temperature", Json.num params.temp), ("n", params.n), ("max_tokens", params.maxTokens)]
+  , ("temperature", Json.num params.temp), ("n", params.n), ("max_completion_tokens", params.maxTokens)]
   let dataJs := dataJs.mergeObj stopJs
   let data := dataJs.pretty
   trace[Translate.info] "Model query: {data}"
