@@ -16,5 +16,5 @@ example : l!"If a vector space has dimension `2` then it is finite dimensional."
   by
     sorry
 
-set_option trace.Translate.info true in
-#eval findTheorem? "There are infinitely many prime numbers." (numConcise := 3) (numSim := 2)
+-- set_option trace.Translate.info true in
+-- #eval findTheorem? "There are infinitely many prime numbers." (numConcise := 3) (numSim := 2)

@@ -9,6 +9,24 @@ open Lean Meta Elab Term
 
 namespace LeanAide.Meta
 
+structure DefSource where
+  doc : String
+  isProp : Bool
+
+structure DefWithDoc extends DefData where
+  doc : String
+
+inductive CmdElabError : Type where
+| unparsed (text parseError: String) (context? : Option String) : CmdElabError
+| parsed (text : String) (cmdErrors : List String)
+    (context? : Option String) : CmdElabError
+deriving Repr, ToJson, FromJson
+
+inductive DefTranslateResult : Type where
+  | success (dfns : Array DefWithDoc) : DefTranslateResult
+  | failure
+    (progress : Array DefWithDoc) (error : Array CmdElabError) : DefTranslateResult
+
 structure Translate.State where
   /-- Embeddings to preload -/
   embedMap : EmbedMap := HashMap.empty
@@ -17,7 +35,7 @@ structure Translate.State where
   /-- Descriptions, docstrings etc -/
   descriptionMap : HashMap Name Json := HashMap.empty
   cmdPrelude : Array String := #[]
-  defs : Array (DefData × String) := #[]
+  defs : Array (DefWithDoc) := #[]
   context : Option String := none
 deriving Inhabited
 
@@ -103,13 +121,13 @@ def runCommand (cmd: String) : TranslateM Unit := do
   discard <|  runFrontendM cmd true
   modify fun s  => {s with cmdPrelude := s.cmdPrelude.push cmd}
 
-def addDefn (dfn: DefData)(doc: String) : TranslateM Unit := do
+def addDefn (dfn: DefWithDoc) : TranslateM Unit := do
   runCommand <| ← dfn.statement
-  modify fun s => {s with defs := s.defs.push (dfn, doc)}
+  modify fun s => {s with defs := s.defs.push dfn}
 
 def defsBlob : TranslateM <| Array String := do
   let defs := (← get).defs
-  defs.mapM <| fun (dfn, doc) => dfn.statementWithDoc doc
+  defs.mapM <| fun dfn => dfn.statementWithDoc dfn.doc
 namespace TranslateM
 
 def runToCore (x: TranslateM α) : CoreM α := do

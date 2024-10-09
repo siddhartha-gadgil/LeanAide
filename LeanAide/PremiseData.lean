@@ -694,8 +694,8 @@ structure DefData where
     type : Syntax.Term
     value : Syntax.Term
     isProp : Bool
-    typeDepth : Nat
-    valueDepth : Nat
+    typeDepth : Option Nat
+    valueDepth : Option Nat
     premises : List PremiseData -- empty if depth exceeds bound
     deriving Inhabited,  Repr
 
@@ -711,6 +711,25 @@ def DefData.statementWithDoc (data: DefData)(doc: String)
     mkStatementWithDoc
         (some data.name) data.type value? data.isProp useExample doc
 
+def DefData.ofSyntax? (stx: Syntax) : MetaM <| Option DefData := do
+    match stx with
+    | `(command| def $n:ident : $type := $val) =>
+        let name := n.getId
+        let type := type
+        let value := val
+        let isProp := false
+        let typeDepth := none
+        let valueDepth := none
+        return some ⟨name, type, value, isProp, typeDepth, valueDepth, []⟩
+    | `(command| theorem $n:ident : $type := $val) =>
+        let name := n.getId
+        let type := type
+        let value := val
+        let isProp := true
+        let typeDepth := none
+        let valueDepth := none
+        return some ⟨name, type, value, isProp, typeDepth, valueDepth, []⟩
+    | _ => return none
 
 structure IdentData where
     context : Array String

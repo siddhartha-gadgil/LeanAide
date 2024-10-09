@@ -129,7 +129,7 @@ def theoremExprInContext? (ctx: Array Json)(statement: String): TranslateM (Opti
   let fullStatement := context.foldr (· ++ " " ++ ·) s!"Then, {statement}"
   IO.eprintln s!"Full statement: {fullStatement}"
   let type? ← translateToProp?
-    fullStatement.trim server params pb simpleChatExample
+    fullStatement.trim server params pb .simple
   IO.eprintln s!"Type: {← type?.mapM fun e => PrettyPrinter.ppExpr e}"
   type?.mapM <| fun e => dropLocalContext e
 
@@ -154,9 +154,9 @@ def defnInContext? (ctx: Array Json)(statement: String) : TranslateM (Option Syn
     | none => pure ()
   let fullStatement := context.foldr (· ++ " " ++ ·) statement
   let cmd? ←
-    translateDefCmdM? fullStatement server params pb docChatExample
+    translateDefCmdM? fullStatement server params pb .doc
   let cmd? ← cmd?.mapM purgeLocalContext
-  return cmd?
+  return cmd?.toOption
 
 open Lean.Parser.Term
 /--

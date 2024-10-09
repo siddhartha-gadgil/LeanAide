@@ -256,18 +256,18 @@ def bestElab (output: Array String) : TranslateM Expr := do
     logTimed "finished majority voting"
     return (groupSorted[0]!)[0]!
 
-structure ElabResult where
+structure ElabSuccessResult where
   term : Expr
   allElaborated : Array String
   groups : Array (Array String)
 
-def ElabResult.view (er: ElabResult) : MetaM String :=
+def ElabSuccessResult.view (er: ElabSuccessResult) : MetaM String :=
   er.term.view
 
-structure TranslateResult extends ElabResult where
+structure TranslateResult extends ElabSuccessResult where
   view : String
 
-def ElabResult.withView (er: ElabResult) : MetaM TranslateResult := do
+def ElabSuccessResult.withView (er: ElabSuccessResult) : MetaM TranslateResult := do
   return {
     term := er.term,
     allElaborated := er.allElaborated,
@@ -276,7 +276,7 @@ def ElabResult.withView (er: ElabResult) : MetaM TranslateResult := do
   }
 
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and optionally returns the best choice as well as all elaborated terms (used for batch processing, interactive code uses `bestElab` instead)  -/
-def bestElab? (output: Array String)(maxVoting: Nat := 5) : TranslateM (Except (Array ElabError) ElabResult) := do
+def bestElab? (output: Array String)(maxVoting: Nat := 5) : TranslateM (Except (Array ElabError) ElabSuccessResult) := do
   -- IO.println s!"arrayToExpr? called with {output.size} outputs"
   let mut elabStrs : Array String := Array.empty
   let mut elaborated : Array Expr := Array.empty
@@ -540,31 +540,62 @@ Translating a definition greedily by parsing as a command
 -/
 def translateDefCmdM? (s: String)
   (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb := PromptExampleBuilder.embedBuilder 8 0 0)
-  (toChat : ChatExampleType := .doc) (relDefs: RelevantDefs := .empty): TranslateM <| Option Syntax.Command := do
+  (toChat : ChatExampleType := .doc) (relDefs: RelevantDefs := .empty) (isProp: Bool := false): TranslateM <| Except (Array CmdElabError) Syntax.Command := do
   logTimed "starting translation"
+  let header := if isProp then "Theorem" else "Definition"
   let (js, _) ← getLeanCodeJson  s server params
-        (pb := pb)  (toChat := toChat) (header := "Definition") (relDefs := relDefs)
+        (pb := pb)  (toChat := toChat) (header := header) (relDefs := relDefs)
   let output ← getMessageContents js
   trace[Translate.info] m!"{output}"
-  let cmd? :  Option Syntax ← output.findSomeM? fun s =>
-    do
-      let cmd? := runParserCategory (← getEnv) `command s |>.toOption
+  let context? ← getContext
+  let mut checks : Array (CmdElabError) := #[]
+  for s in output do
+    let cmd? := runParserCategory (← getEnv) `command s
+    match cmd? with
+    | Except.error e =>
+      checks := checks.push <| .unparsed s e context?
+    | Except.ok cmd =>
       let check ← checkElabFrontM s
-      if check.isEmpty then pure cmd? else
-        trace[Translate.info] s!"Not a valid command:\n{s}"
-        for chk in check do
-          trace[Translate.info] chk
-        pure none
-  return cmd?.map (fun cmd => ⟨cmd⟩)
+      if check.isEmpty then return .ok ⟨ cmd ⟩
+      checks := checks.push (.parsed s check context?)
+      trace[Translate.info] s!"Not a valid command:\n{s}"
+      for chk in check do
+        trace[Translate.info] chk
+  return .error checks
+
+def translateDefData? (s: String)
+  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb := PromptExampleBuilder.embedBuilder 8 0 0)(toChat : ChatExampleType := .doc) (relDefs: RelevantDefs := .empty) (isProp: Bool := false)
+   : TranslateM <| Except (Array CmdElabError) DefData := do
+  let cmd? ← translateDefCmdM? s server params pb toChat relDefs isProp
+  match cmd? with
+  | Except.error e => return .error e
+  | Except.ok cmd =>
+    match ← DefData.ofSyntax? cmd with
+    | none =>
+      return .error #[.unparsed s "not a command def/theorem" (← getContext)]
+    | some dd => return .ok dd
 
 def translateDefViewM? (s: String)
-  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb := PromptExampleBuilder.embedBuilder 8 8 0)(toChat : ChatExampleType := .doc)
+  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb := PromptExampleBuilder.embedBuilder 8 8 0)(toChat : ChatExampleType := .doc) (relDefs: RelevantDefs := .empty) (isProp: Bool := false)
    : TranslateM <| Option String := do
-  let cmd? ← translateDefCmdM? s server params pb toChat
-  let fmt? ← cmd?.mapM fun cmd =>
+  let cmd? ← translateDefCmdM? s server params pb toChat relDefs isProp
+  let fmt? ← cmd?.toOption.mapM fun cmd =>
     PrettyPrinter.ppCommand cmd
   return fmt?.map (·.pretty)
 
+def translateDefList (dfns : List DefSource)
+  (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb := PromptExampleBuilder.embedBuilder 8 8 0)(toChat : ChatExampleType := .doc) (relDefs: RelevantDefs := .empty) (progress : Array DefWithDoc := #[]) : TranslateM DefTranslateResult := do
+  match dfns with
+  | [] => return .success progress
+  | x :: ys =>
+    let head? ← translateDefData? x.doc server params pb toChat relDefs x.isProp
+    match head? with
+    | Except.error e => do
+      return .failure (progress : Array DefWithDoc) e
+    | Except.ok dd => do
+      let progress :=
+        progress.push <| {dd with doc := x.doc, isProp := x.isProp}
+      translateDefList ys server params pb toChat relDefs progress
 
 syntax (name := ltrans) "l!" str : term
 

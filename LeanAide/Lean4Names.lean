@@ -33,11 +33,12 @@ partial def lean4NamesSyntax : Syntax → MetaM Syntax := fun stx => pure stx
 --   return mkNode k args
 -- | stx => pure stx
 
-inductive ElabError where
+inductive ElabError : Type where
 | unparsed (text parseError: String) (context? : Option String) : ElabError
 | parsed (text elabError : String) (cmdErrors : List String)
     (context? : Option String) : ElabError
 deriving Repr, ToJson, FromJson
+
 
 instance : ToMessageData (ElabError) where
   toMessageData (err) := match err with
