@@ -73,7 +73,7 @@ def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
       statements.map <| fun s => s.replace "<br>" "\n" |>.replace "\\n" "\n"
   let mut count := 0
   let mut elaborated := 0
-  let mut elabPairs: Array (String × String × (Array String) × Array (Array String)) := #[]
+  let mut elabData: Array Json := #[]
   let mut failed : Array (Array ElabError) := #[]
   for statement in statements do
     trace[Translate.info] m!"{statement}"
@@ -110,7 +110,7 @@ def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
         else
           pure js
       outHandle.putStrLn <| js.compress
-      elabPairs := elabPairs.push (statement, v, res.allElaborated, res.groups)
+      elabData := elabData.push js
     | .error err =>
       IO.eprintln "failed to elaborate"
       failed := failed.push err
@@ -126,16 +126,7 @@ def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
         ("prompt-examples", toJson pb),
        ("query-number", params.n),
        ("temperature", Json.num params.temp),
-       ("elaborated-prompts",
-        Json.arr <| ←  elabPairs.mapM <|
-          fun (p, s, thms, gps) => do
-            return Json.mkObj [
-            ("prompt", p), ("theorem", s),
-            ("all-elabs", Json.arr <| thms.map (Json.str)),
-            ("groups", Json.arr <| gps.map (Json.arr ∘ Array.map Json.str)),
-            ("comments", ""), ("correct", Json.null),
-            ("some-correct", Json.null)
-            ]),
+       ("elaborated-prompts", Json.arr elabData),
         ("failures", Json.arr <| failed.map (toJson))
             ]
   return js
