@@ -305,8 +305,20 @@ inductive RelevantDefs where
   | select (bound? : Option Nat) : RelevantDefs
   | closure (num : Nat)(depth: Nat := 1) : RelevantDefs
   | env : RelevantDefs
+  | data (d: Array (Name × String)) : RelevantDefs
   | seq : List RelevantDefs → RelevantDefs
   deriving Repr, FromJson, ToJson
+
+instance : Append RelevantDefs where
+  append := fun x y =>
+    match x, y with
+    | RelevantDefs.seq xs, RelevantDefs.seq ys => RelevantDefs.seq <| xs ++ ys
+    | RelevantDefs.seq xs, y => RelevantDefs.seq <| xs ++ [y]
+    | x, RelevantDefs.seq ys => RelevantDefs.seq <|  x :: ys
+    | x, y => RelevantDefs.seq [x, y]
+
+instance : HAppend RelevantDefs (Array (Name × String)) RelevantDefs where
+  hAppend x y := x ++ RelevantDefs.data y
 
 def RelevantDefs.empty := RelevantDefs.seq []
 
@@ -328,6 +340,7 @@ partial def RelevantDefs.names (nbd: RelevantDefs)(s: String) (pairs : Array (St
   | RelevantDefs.env => do
     let env ← get
     return env.defs.map (·.1.name)
+  | .data d => return d.map (·.1)
   | RelevantDefs.seq nbs => do
     let names ← nbs.mapM fun nb => nb.names s pairs
     return names.toArray.join
@@ -357,6 +370,7 @@ partial def RelevantDefs.blob (nbd: RelevantDefs)(s: String) (pairs : Array (Str
         mkStatement n (← PrettyPrinter.delab info.type) none false
   | RelevantDefs.env => do
     defsBlob
+  | .data d => return d.map (·.2)
   | RelevantDefs.seq nbs => do
     let names ← nbs.mapM fun nb => nb.blob s pairs
     return names.toArray.join

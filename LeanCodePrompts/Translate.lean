@@ -596,7 +596,9 @@ def translateDefList (dfns : List DefSource)
     | Except.ok dd => do
       let progress :=
         progress.push <| {dd with doc := x.doc, isProp := x.isProp}
-      translateDefList ys server params pb toChat relDefs progress false
+      let progBlob ← progress.mapM <|
+        fun dfn => do pure (dfn.name, ← dfn.statementWithDoc dfn.doc)
+      translateDefList ys server params pb toChat (relDefs ++ progBlob) progress false
 
 
 syntax (name := ltrans) "l!" str : term

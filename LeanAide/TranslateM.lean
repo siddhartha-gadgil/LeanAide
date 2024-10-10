@@ -138,6 +138,10 @@ def clearDefs : TranslateM Unit := do
 def defsBlob : TranslateM <| Array String := do
   let defs := (← get).defs
   defs.mapM <| fun dfn => dfn.statementWithDoc dfn.doc
+
+def defsNameBlob : TranslateM <| Array <| Name × String := do
+  let defs := (← get).defs
+  defs.mapM <| fun dfn => do pure (dfn.name, ← dfn.statementWithDoc dfn.doc)
 namespace TranslateM
 
 def runToCore (x: TranslateM α) : CoreM α := do
