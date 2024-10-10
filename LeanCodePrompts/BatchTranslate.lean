@@ -11,11 +11,11 @@ Translate a string to a Lean expression using the GPT model, returning the expre
 def translateWithDataM (s: String)(server: ChatServer)
   (params: ChatParams)(pb: PromptExampleBuilder := .embedBuilder 10 0 0)  (repeats: Nat := 0)(sleepTime : Nat := 1)
   (queryData? : Option <| (HashMap String Json)  )(toChat : ChatExampleType := .simple) (relDefs: RelevantDefs := .empty) :
-  TranslateM ((Except (Array ElabError) (ElabSuccessResult)) × Array String × (Option String)) := do
+  TranslateM ((Except (Array ElabError) (ElabSuccessResult)) × Array String × (Option Json)) := do
   let (output, prompt?) ←  match queryData? with
   | none =>
     let (js,prompt, _) ← getLeanCodeJson s server params pb toChat (relDefs := relDefs)
-    pure (← getMessageContents js, some prompt.pretty)
+    pure (← getMessageContents js, some prompt)
   | some f =>
     let res? := f.find? s.trim
     match res? with
@@ -83,7 +83,7 @@ def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
         translateWithDataM statement server params pb repeats 0 queryData? toChat
     let fullPrompt := prompt?.getD "No prompt (maybe using cached data)"
     let js := Json.mkObj [("text", Json.str statement),
-       ("fullPrompt", Json.str fullPrompt)]
+       ("fullPrompt", fullPrompt)]
     h.putStrLn <| js.compress
     count := count + 1
     match res? with
