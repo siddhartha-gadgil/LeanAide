@@ -25,7 +25,7 @@ A finite torsion-free group is trivial
 Every finite division ring is a field.
 Every finite topological space is compact.
 Every surjective homomorphism from a finitely generated free group to itself is injective.
-Every positive even integer can be written as the sum of two primes.
+Every positive even integer greater than $4$ can be written as the sum of two primes.
 Every matrix satisfies its own characteristic polynomial.
 The square root of an irrational number is irrational.
 If the square of a number is even, the number itself is even.
