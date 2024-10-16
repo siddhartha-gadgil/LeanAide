@@ -44,6 +44,12 @@ def translateWithDataM (s: String)(server: ChatServer)
       return (Except.ok res, output, prompt?)
 
 
+structure ElabErrorData where
+  prompt? : Option Json
+  elabErrors : Array ElabError
+deriving FromJson, ToJson
+
+
 /--
 Translate theorems in a given file and record results in a JSON file.
 -/
@@ -74,7 +80,7 @@ def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
   let mut count := 0
   let mut elaborated := 0
   let mut elabData: Array Json := #[]
-  let mut failed : Array (Array ElabError) := #[]
+  let mut failed : Array (ElabErrorData) := #[]
   for statement in statements do
     trace[Translate.info] m!"{statement}"
     IO.println ""
@@ -113,7 +119,7 @@ def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
       elabData := elabData.push js
     | .error err =>
       IO.eprintln "failed to elaborate"
-      failed := failed.push err
+      failed := failed.push ⟨prompt?, err⟩
     IO.eprintln s!"total : {count}"
     IO.eprintln s!"elaborated: {elaborated}"
     IO.sleep <| (delay * 1000).toUInt32
