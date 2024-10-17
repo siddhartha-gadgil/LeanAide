@@ -23,12 +23,12 @@ def IndentedList.renderAux : IndentedList → String → String
   | IndentedList.nil, _ => ""
   | IndentedList.cons h o t, indent =>
       let subList := o.renderAux (indent ++ "  ")
-      indent ++ "* " ++ h ++ "\n" ++ subList ++ "¬" ++ t.renderAux indent
+      "\n" ++ indent ++ "* " ++ h  ++ subList ++ t.renderAux indent
   | IndentedList.kv_cons h b optional o t, indent =>
       let subList := o.renderAux (indent ++ "  ")
       let body := if optional then s!"(OPTIONAL) {b}" else b
-      indent ++ s!"* **{h}**: {body}" ++ "\n" ++
-          subList ++ "\n" ++ t.renderAux indent
+      "\n" ++ indent ++ s!"* **{h}**: {body}" ++
+          subList ++ t.renderAux indent
 
 def IndentedList.render (l : IndentedList) : String :=
   l.renderAux ""
@@ -145,20 +145,20 @@ def claim : MathPara :=
   .text `claim "The mathematical claim being asserted, NOT INCLUDING proofs, justifications or results used. The claim should be purely a logical statement which is the *consequence* obtained."
 
 def proof_method : MathPara :=
-  .text `proof_method "The method used to prove the claim. This could be a direct proof, proof by contradiction, proof by induction, etc. this should be a single phrase or a fairly simple sentence; if a longer justification is needed break the step into smaller steps. If the method is deduction from a result, use the **deduced_using** field"
+  .text `proof_method "The method used to prove the claim. This could be a direct proof, proof by contradiction, proof by induction, etc. this should be a single phrase or a fairly simple sentence; if a longer justification is needed break the step into smaller steps. If the method is deduction from a result, use the 'deduced_using' field"
 
 def calculations : MathPara :=
   .list_of `calculation (type := calculation_step)
 end assert
 
 def missing_result : MathPara :=
-  .text `missing "A  problem that need to be solved or results that need to be proved to complete the proof. Standard results/criteria may be omitted from the proof: include them in the **deduced_from** field."
+  .text `missing "A  problem that need to be solved or results that need to be proved to complete the proof. Standard results/criteria may be omitted from the proof: include them in the 'deduced_from' field."
 
 def missing : MathPara :=
   .list_of `missing missing_result
 
 def error : MathPara :=
-  .text `error "An error in a proof or calculation. Report only actual errors, with missing steps reported in the **missing** field."
+  .text `error "An error in a proof or calculation. Report only actual errors, with missing steps reported in the 'missing' field."
 
 def errors : MathPara :=
   .list_of `errors error
@@ -190,7 +190,7 @@ def cite : MathPara :=
 end thm
 
 def proof : MathPara :=
-  .list `proof (fieldType := `math_object) (describeOptions := false) "A proof of a lemma, theorem or claim. A list of steps each of which is an arbitrary `math_object` (as in a `math_document`)."
+  .list `proof (fieldType := `math_object) (describeOptions := false) "A proof of a lemma, theorem or claim, having the same structure as a `math_document`."
 
 open thm in
 def thm : MathPara :=
@@ -305,24 +305,28 @@ def elemMap : Std.HashMap Name <| List MathPara :=
 
 open IndentedList in
 def toIndendentList (p: MathPara) (optional : Bool := false)
-  (elemMap : Std.HashMap Name <| List MathPara := elemMap) (maxDepth: Nat := 3): IndentedList :=
+  (elemMap : Std.HashMap Name <| List MathPara := elemMap) (maxDepth: Nat := 5): IndentedList :=
   match p with
-  | .text name description => kvLine name.toString description optional
-  | .bool name description => kvLine name.toString description optional
+  | .text name description =>
+    kvLine name.toString (description ++ " This is a JSON string.") optional
+  | .bool name description =>
+    kvLine name.toString (description ++ " This is a JSON boolean.") optional
   | .enum name _ description =>
       kvLine name.toString description optional
   | .list name fieldType describeOptions description =>
-    if describeOptions then
     match maxDepth with
     | 0 => kvLine name.toString description optional
     | k + 1 =>
       let fields := elemMap.getD fieldType []
+      let names := fields.map (fun elem => elem.name)
+      let namesBlob := names.foldl (fun acc elem => acc ++ s!"`{elem}`" ++ ", ") "" |>.dropRight 2
       let innerList :=
         fields.map (fun elem => toIndendentList elem false elemMap k)
       let inner := innerList.foldl (fun acc elem => acc.append elem) nil
-      let body := description ++ s!"Each element of the list is a JSON object of type {fieldType}.The options for elements of {fieldType} are as follows:\n"
-      .kv_cons name.toString body optional inner .nil
-    else kvLine name.toString description optional
+      let body := description ++ s!" This is a JSON list, with each element of the list is a JSON object with exactly one key-value pair, with the key one of {namesBlob}."
+      if describeOptions then
+        .kv_cons name.toString (body ++ " The descriptions for the choice of key and corresponding values are as follows:") optional inner .nil
+      else kvLine name.toString body optional
   | .one_of name choices description =>
     match maxDepth with
     | 0 => kvLine name.toString description optional
@@ -336,7 +340,7 @@ def toIndendentList (p: MathPara) (optional : Bool := false)
       match maxDepth with
       | 0 => .nil
       | k + 1 => toIndendentList type false elemMap k
-      .kv_cons name.toString s!"A list of elements of {type.name}. Each element of type {type.name} is as follows" optional inner .nil
+      .kv_cons name.toString s!"A list of elements of type `{type.name}`. Each element of type `{type.name}` is as follows" optional inner .nil
   | .obj name fields optFields description =>
     match maxDepth with
     | k + 1 =>
@@ -346,10 +350,16 @@ def toIndendentList (p: MathPara) (optional : Bool := false)
         optFields.map (fun elem => toIndendentList elem true elemMap k)
       let inner := innerList ++ optInnerList
         |>.foldl (fun acc elem => acc.append elem) nil
-      .kv_cons name.toString description optional inner .nil
+      .kv_cons name.toString (description ++ " This is a JSON object. The keys and corresponding values are as follows.") optional inner .nil
     | 0 => kvLine name.toString description optional
 
 
 end MathPara
 
 #eval MathPara.mathDoc.toIndendentList |>.render
+
+def writeMathDoc : IO Unit :=
+  IO.FS.writeFile "resources/MathDoc.md"
+    (MathPara.mathDoc.toIndendentList |>.render)
+
+#eval writeMathDoc
