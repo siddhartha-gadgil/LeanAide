@@ -51,7 +51,8 @@ def getLeanSearchQueryJsonArray (s : String) (num_results : Nat := 6) : CoreM <|
   let s ← IO.Process.output {cmd := "curl", args := #["-X", "GET", "--user-agent", useragent, q]}
   match Json.parse s.stdout with
   | Except.error e =>
-      IO.throwServerError s!"Could not parse JSON from {s.stdout}; error: {e}"
+      IO.eprintln s!"Could not parse JSON from leansearch output: {s.stdout}; error: {e}"
+      return #[]
   | Except.ok js =>
       match js.getArr? with
       | Except.ok arr =>
@@ -65,7 +66,8 @@ def getMoogleQueryJsonArray (s : String) (num_results : Nat := 6) : CoreM <| Arr
   let s ← IO.Process.output {cmd := "curl", args := #[apiUrl, "-H", "content-type: application/json",  "--user-agent", useragent, "--data", data.pretty]}
   match Json.parse s.stdout with
   | Except.error e =>
-    IO.throwServerError s!"Could not parse JSON from {s.stdout}; error: {e}"
+    IO.eprintln s!"Could not parse JSON from Moogle output: {s.stdout}; error: {e}"
+    return #[]
   | Except.ok js =>
   let result? := js.getObjValAs?  Json "data"
   match result? with
