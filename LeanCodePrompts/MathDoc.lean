@@ -1,34 +1,74 @@
 import Lean
 open Std Lean
 
+inductive IndentedList where
+  | nil
+  | cons (head : String) (offsetList : IndentedList) (tail : IndentedList)
+  | kv_cons (head body : String) (optional: Bool)
+      (offsetList : IndentedList) (tail : IndentedList)
+deriving Inhabited, Repr, ToJson, FromJson
+
+def IndentedList.append : IndentedList → IndentedList → IndentedList
+  | IndentedList.nil, l => l
+  | l, IndentedList.nil => l
+  | IndentedList.cons h1 o1 t1, l2 => IndentedList.cons h1 o1 (t1.append l2)
+  | IndentedList.kv_cons h1 b1 optional o1 t1, l2 => IndentedList.kv_cons h1 b1 optional o1 (t1.append l2)
+
+instance : Append IndentedList := ⟨IndentedList.append⟩
+
+def IndentedList.kvLine (head body : String) (optional: Bool) : IndentedList :=
+  IndentedList.kv_cons head body optional IndentedList.nil IndentedList.nil
+
+def IndentedList.renderAux : IndentedList → String → String
+  | IndentedList.nil, _ => ""
+  | IndentedList.cons h o t, indent =>
+      let subList := o.renderAux (indent ++ "  ")
+      indent ++ "* " ++ h ++ "\n" ++ subList ++ "¬" ++ t.renderAux indent
+  | IndentedList.kv_cons h b optional o t, indent =>
+      let subList := o.renderAux (indent ++ "  ")
+      let body := if optional then s!"(OPTIONAL) {b}" else b
+      indent ++ s!"* **{h}**: {body}" ++ "\n" ++
+          subList ++ "\n" ++ t.renderAux indent
+
+def IndentedList.render (l : IndentedList) : String :=
+  l.renderAux ""
+
 /--
 Building blocks for structured math documents. Additional data is given as a HashMap from `Name` to `MathPara` for elements in a group.
 -/
 inductive MathPara where
-  | text (name: Name) (description : String := "ToDo")
-  | bool (name: Name) (description : String := "ToDo")
+  | text (name: Name) (description : String)
+  | bool (name: Name) (description : String)
   | enum (name: Name) (choices: List String)
-      (description : String := "ToDo")
-  | list (name: Name) (fieldType: Name) (describeOptions: Bool) (description : String := "ToDo")
-  | one_of (name: Name) (choices: List MathPara) (description : String := "ToDo")
+      (description : String)
+  | list (name: Name) (fieldType: Name) (describeOptions: Bool) (description : String)
+  | one_of (name: Name) (choices: List MathPara) (description : String)
   | list_of (name: Name) (type : MathPara)
   | obj (name: Name) (fields: List MathPara) (optFields : List MathPara)
-      (description : String := "ToDo")
-
+      (description : String)
 namespace MathPara
 
+def name : MathPara → Name
+  | text n _ => n
+  | bool n _ => n
+  | enum n _ _ => n
+  | list n _ _ _ => n
+  | one_of n _ _ => n
+  | list_of n _ => n
+  | obj n _ _ _ => n
+
 def mathDoc : MathPara :=
-  .list `document (fieldType := `mathBlock) (describeOptions := true) "A structured math document. This is a list of math blocks."
+  .list `math_document (fieldType := `math_object) (describeOptions := true) "A structured math document in a custom JSON format."
 
 namespace let_statement
 
-def var : MathPara := .text `variable ("the variable being defined (use `<anonymous>` if there is no name such as in `We have a group structure on S`)")
+def var : MathPara := .text `variable ("The variable being defined (use `<anonymous>` if there is no name such as in `We have a group structure on S`)")
 
-def value : MathPara := .text `value ("the value of the variable being defined")
+def value : MathPara := .text `value ("The value of the variable being defined")
 
-def kind : MathPara := .text `kind ("the type of the variable, such as `real number`, `function from S to T`, `element of G` etc.")
+def kind : MathPara := .text `kind ("The type of the variable, such as `real number`, `function from S to T`, `element of G` etc.")
 
-def properties : MathPara := .text `properties "specific properties of the variable beyond the type."
+def properties : MathPara := .text `properties "Specific properties of the variable beyond the type."
 
 end let_statement
 
@@ -150,7 +190,7 @@ def cite : MathPara :=
 end thm
 
 def proof : MathPara :=
-  .list `proof (fieldType := `mathBlock) (describeOptions := false) "A proof of a lemma, theorem or claim. A list of steps each of which is an arbitrary math block (as in a math document)."
+  .list `proof (fieldType := `math_object) (describeOptions := false) "A proof of a lemma, theorem or claim. A list of steps each of which is an arbitrary `math_object` (as in a `math_document`)."
 
 open thm in
 def thm : MathPara :=
@@ -199,7 +239,7 @@ def split_kind : MathPara :=
   .enum `split_kind ["match", "condition", "groups"] "one of 'match' (for pattern matching), 'condition' (if based on a condition being true or false) and 'groups' (for more complex cases)"
 
 def exhaustiveness : MathPara :=
-  .list `exhaustiveness (fieldType := `mathBlock) (describeOptions := false) "Proof that the cases are exhaustive."
+  .list `exhaustiveness (fieldType := `math_object) (describeOptions := false) "Proof that the cases are exhaustive."
 
 end cases
 
@@ -230,7 +270,7 @@ def assumption : MathPara :=
   .text `assumption "The assumption being made to be contradicted."
 
 def proof : MathPara :=
-  .list `proof (fieldType := `mathBlock) (describeOptions := false) "The proof of the contradiction given the assumption."
+  .list `proof (fieldType := `math_object) (describeOptions := false) "The proof of the contradiction given the assumption."
 
 end contradiction
 
@@ -256,11 +296,60 @@ def conclude : MathPara :=
 def remark : MathPara :=
   .text `remark "A remark or comment that is NOT MATHEMATICAL, instead being for motivation, attention, sectioning etc."
 
-def mathBlockElems := [let_statement, assume, define, assert, thm, problem, cases, induction, contradiction, conclude, remark]
+def math_objectElems := [let_statement, assume, define, assert, thm, problem, cases, induction, contradiction, conclude, remark]
 
 def contextBlockElems := [let_statement, assume]
 
 def elemMap : Std.HashMap Name <| List MathPara :=
-  Std.HashMap.ofList [(`mathBlock, mathBlockElems), (`contextBlock, contextBlockElems)]
+  Std.HashMap.ofList [(`math_object, math_objectElems), (`contextBlock, contextBlockElems)]
+
+open IndentedList in
+def toIndendentList (p: MathPara) (optional : Bool := false)
+  (elemMap : Std.HashMap Name <| List MathPara := elemMap) (maxDepth: Nat := 3): IndentedList :=
+  match p with
+  | .text name description => kvLine name.toString description optional
+  | .bool name description => kvLine name.toString description optional
+  | .enum name _ description =>
+      kvLine name.toString description optional
+  | .list name fieldType describeOptions description =>
+    if describeOptions then
+    match maxDepth with
+    | 0 => kvLine name.toString description optional
+    | k + 1 =>
+      let fields := elemMap.getD fieldType []
+      let innerList :=
+        fields.map (fun elem => toIndendentList elem false elemMap k)
+      let inner := innerList.foldl (fun acc elem => acc.append elem) nil
+      let body := description ++ s!"Each element of the list is a JSON object of type {fieldType}.The options for elements of {fieldType} are as follows:\n"
+      .kv_cons name.toString body optional inner .nil
+    else kvLine name.toString description optional
+  | .one_of name choices description =>
+    match maxDepth with
+    | 0 => kvLine name.toString description optional
+    | k + 1 =>
+      let innerList :=
+        choices.map (fun elem => toIndendentList elem false elemMap k)
+      let inner := innerList.foldl (fun acc elem => acc.append elem) nil
+      .kv_cons name.toString description optional inner .nil
+  | .list_of name type =>
+      let inner :=
+      match maxDepth with
+      | 0 => .nil
+      | k + 1 => toIndendentList type false elemMap k
+      .kv_cons name.toString s!"A list of elements of {type.name}. Each element of type {type.name} is as follows" optional inner .nil
+  | .obj name fields optFields description =>
+    match maxDepth with
+    | k + 1 =>
+      let innerList :=
+        fields.map (fun elem => toIndendentList elem false elemMap k)
+      let optInnerList :=
+        optFields.map (fun elem => toIndendentList elem true elemMap k)
+      let inner := innerList ++ optInnerList
+        |>.foldl (fun acc elem => acc.append elem) nil
+      .kv_cons name.toString description optional inner .nil
+    | 0 => kvLine name.toString description optional
+
 
 end MathPara
+
+#eval MathPara.mathDoc.toIndendentList |>.render
