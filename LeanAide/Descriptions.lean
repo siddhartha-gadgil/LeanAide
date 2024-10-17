@@ -100,7 +100,7 @@ def describeAnonymousTheoremPrompt (type: Expr) :
   let statement ← PrettyPrinter.ppCommand statementStx
   let statement := statement.pretty
   if dfns.isEmpty then
-    return (← fromTemplate "describe_theorem" [("theorem", statement)], statement)
+    return (← fromTemplate "state_theorem" [("theorem", statement)], statement)
   else
     let defsBlob := dfns.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
     return (← fromTemplate "describe_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trim)],

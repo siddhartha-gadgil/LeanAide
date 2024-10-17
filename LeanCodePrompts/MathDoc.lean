@@ -1,3 +1,4 @@
+import Lean
 open Std Lean
 
 /--
@@ -11,7 +12,7 @@ inductive MathPara where
   | list (name: Name) (fieldType: Name) (describeOptions: Bool) (description : String := "ToDo")
   | one_of (name: Name) (choices: List MathPara) (description : String := "ToDo")
   | list_of (name: Name) (type : MathPara)
-  | obj (fields: List MathPara) (optFields : List MathPara)
+  | obj (name: Name) (fields: List MathPara) (optFields : List MathPara)
       (description : String := "ToDo")
 
 namespace MathPara
@@ -33,7 +34,7 @@ end let_statement
 
 open let_statement in
 def let_statement : MathPara :=
-  .obj (fields := [var])
+  .obj `let (fields := [var])
     (optFields := [value, kind, properties])
     (description := "A statement introducing a new variable with given value, type and/or property.")
 
@@ -51,7 +52,7 @@ def term : MathPara :=
 end define
 
 def define : MathPara :=
-  .obj (fields := [define.statement, define.term]) (optFields := [])
+  .obj `def (fields := [define.statement, define.term]) (optFields := [])
     (description := "A mathematical definition of a term.")
 
 namespace deduced_using
@@ -60,10 +61,11 @@ def deduced_from : MathPara := .text `deduced_from "The assumptions or previousl
 
 def in_context : MathPara := .bool `in_context "Whether the statement from which deduction is made is in the current context. Answer `true` or `false` (answer `false` if a result from the mathematical literature is being invoked)."
 
-def instantiations : MathPara := .list `instantiations (fieldType := `instantiation) (describeOptions := true) "The instantiations of the assumptions or previously known results."
 
--- This will be a case of instantiations
 def instantiation : MathPara :=  .text `instantiation "The instantiation of the assumption or previously known result to which the result is applied. For example,  `42` if we apply uniqueness of prime factorisation to `42`."
+
+def instantiations : MathPara :=
+  .list_of `instantiations instantiation
 
 end deduced_using
 
@@ -85,14 +87,14 @@ def calculation : MathPara :=
   .one_of `calculation [inline, step, continuation]  "A series of calculations or computations."
 
 def calculation_step : MathPara :=
-  .obj (fields := [calculation])
+  .obj `calculation (fields := [calculation])
     (optFields := [calculation_step.justification])
     (description := "A step in a calculation or computation.")
 
 namespace assert
 open deduced_using in
 def deduction : MathPara :=
-  .obj (fields := [deduced_from, in_context])
+  .obj `deduction (fields := [deduced_from, in_context])
     (optFields := [instantiations])
     (description := "A deduction of a mathematical result from assumptions or previously known results.")
 
@@ -123,7 +125,7 @@ def errors : MathPara :=
 
 open assert in
 def assert : MathPara :=
-  .obj (fields := [claim])
+  .obj `assert (fields := [claim])
     (optFields := [proof_method, deductions, calculations, missing, errors])
     (description := "A mathematical statement whose proof is a straightforward consequence of given and known results following some method.")
 
@@ -152,7 +154,7 @@ def proof : MathPara :=
 
 open thm in
 def thm : MathPara :=
-  .obj (fields := [hypothesis, conclusion, proved])
+  .obj `theorem (fields := [hypothesis, conclusion, proved])
     (optFields := [proof, ref, cite, missing, errors])
     (description := "A mathematical theorem, with a list of hypotheses and a conclusion.")
 
@@ -171,7 +173,7 @@ end problem
 
 open problem in
 def problem : MathPara :=
-  .obj (fields := [statement, solved])
+  .obj `problem (fields := [statement, solved])
     (optFields := [answer, proof, missing, errors])
     (description := "A mathematical problem, with a statement and an answer.")
 
@@ -184,7 +186,7 @@ end case
 
 open case in
 def case : MathPara :=
-  .obj (fields := [condition, proof])
+  .obj `case (fields := [condition, proof])
     (optFields := [missing, errors])
     (description := "A case in a proof by cases or proof by induction.")
 
@@ -206,7 +208,7 @@ def proof_cases : MathPara :=
 
 open cases in
 def cases : MathPara :=
-  .obj (fields := [on, split_kind, proof_cases])
+  .obj `cases (fields := [on, split_kind, proof_cases])
     (optFields := [exhaustiveness, missing, errors])
     (description := "A proof by cases or proof by induction, with a list of cases.")
 
@@ -219,7 +221,7 @@ end induction
 
 open induction in
 def induction : MathPara :=
-  .obj (fields := [on, proof_cases])
+  .obj `induction (fields := [on, proof_cases])
     (optFields := [missing, errors])
     (description := "A proof by induction, with a base case and an induction step.")
 
@@ -234,22 +236,31 @@ end contradiction
 
 open contradiction in
 def contradiction : MathPara :=
-  .obj (fields := [assumption, contradiction.proof])
+  .obj `contradiction (fields := [assumption, contradiction.proof])
     (optFields := [missing, errors])
     (description := "A proof by contradiction, with an assumption and a proof of the contradiction.")
 
-namespace conclusion
+namespace conclude
 
-def statement : MathPara :=
-  .text `statement "The conclusion of the proof."
+def claim : MathPara :=
+  .text `claim "The conclusion of the proof."
 
-end conclusion
+end conclude
 
-open conclusion in
-def conclusion : MathPara :=
-  .obj (fields := [statement])
+open conclude in
+def conclude : MathPara :=
+  .obj `conclude (fields := [claim])
     (optFields := [missing, errors])
-    (description := "A conclusion obtained from the steps so far. This is typically the final statement of a proof giving the conclusion of the theorem.")
+    (description := "Conclude a claim obtained from the steps so far. This is typically the final statement of a proof giving the conclusion of the theorem.")
 
 def remark : MathPara :=
   .text `remark "A remark or comment that is NOT MATHEMATICAL, instead being for motivation, attention, sectioning etc."
+
+def mathBlockElems := [let_statement, assume, define, assert, thm, problem, cases, induction, contradiction, conclude, remark]
+
+def contextBlockElems := [let_statement, assume]
+
+def elemMap : Std.HashMap Name <| List MathPara :=
+  Std.HashMap.ofList [(`mathBlock, mathBlockElems), (`contextBlock, contextBlockElems)]
+
+end MathPara
