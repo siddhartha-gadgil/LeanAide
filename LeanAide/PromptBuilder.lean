@@ -276,10 +276,10 @@ instance : Append PromptExampleBuilder :=
   }
 
 partial def signature (pb: PromptExampleBuilder) : String := match pb with
-| .embedSearch descField n _ => s!"{descField}:{n}"
-| .leansearch _ _  n => s!"leansearch:{n}"
-| .moogle _ _ n => s!"moogle:{n}"
-| .fixed ps => s!"fixed:{ps.size}"
+| .embedSearch descField n _ => s!"{descField}${n}"
+| .leansearch _ _  n => s!"leansearch${n}"
+| .moogle _ _ n => s!"moogle${n}"
+| .fixed ps => s!"fixed${ps.size}"
 | .sequence pbs => (pbs.map signature).foldl (· ++ "-" ++ ·) "" |>.drop 1
 | .blend pbs => (pbs.map signature).foldl (· ++ "~" ++ ·) "" |>.drop 1
 
