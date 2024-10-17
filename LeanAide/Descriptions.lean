@@ -103,7 +103,7 @@ def describeAnonymousTheoremPrompt (type: Expr) :
     return (← fromTemplate "state_theorem" [("theorem", statement)], statement)
   else
     let defsBlob := dfns.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
-    return (← fromTemplate "describe_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trim)],
+    return (← fromTemplate "state_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trim)],
     statement)
 
 def needsInd (name: Name) : MetaM <| Option (List Name) := do
