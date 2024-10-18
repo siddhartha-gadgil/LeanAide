@@ -5,7 +5,7 @@
     * **value**: (OPTIONAL) The value of the variable being defined Give a JSON string.
     * **kind**: (OPTIONAL) The type of the variable, such as `real number`, `function from S to T`, `element of G` etc. Give a JSON string.
     * **properties**: (OPTIONAL) Specific properties of the variable beyond the type. Give a JSON string.
-  * **assume**: A mathematical assumption being made. In case this is a variable or structure being introduced, use a **let** statement. Give a JSON string.
+  * **assume**: A mathematical assumption being made. In case this is a variable or structure being introduced, use a 'let' statement. Give a JSON string.
   * **def**: A mathematical definition of a term. Give a JSON object. The keys and corresponding values are as follows.
     * **statement**: The mathematical definition. Give a JSON string.
     * **term**: The term being defined. Give a JSON string.
@@ -18,9 +18,9 @@
         * **in_context**: Whether the statement from which deduction is made is in the current context. Answer `true` or `false` (answer `false` if a result from the mathematical literature is being invoked). Give a JSON boolean.
         * **instantiations**: (OPTIONAL) A list of elements of type `instantiation`. Each element of type `instantiation` is as follows:
           * **instantiation**: The instantiation of the assumption or previously known result to which the result is applied. For example, write '42' if we apply uniqueness of prime factorisation to `42`. Give a JSON string.
-    * **calculation**: (OPTIONAL) A list of elements of type `calculation`. Each element of type `calculation` is as follows:
-      * **calculation**: A step in a calculation or computation. Give a JSON object. The keys and corresponding values are as follows.
-        * **calculation**: A series of calculations or computations.
+    * **calculations**: (OPTIONAL) A list of elements of type `calculation_step`. Each element of type `calculation_step` is as follows:
+      * **calculation_step**: A step in a calculation or computation. Give a JSON object. The keys and corresponding values are as follows.
+        * **equation**: An equation, inequality, short calculation etc.Give a JSON object with exactly one *key-value pair*, with the *key* one of `inline`, `step`, `continuation`.
           * **inline**: A simple calculation or computation written as a single line. Give a JSON string.
           * **step**: A step, typically an equality or inequality, in a calculation or computation. Give a JSON string.
           * **continuation**: A continuation of a chain of equalities/inequalities, for example `= x + 3`. Should begin with an operator such as `=` or `≤` and be followed by a term. Give a JSON string.

@@ -80,7 +80,7 @@ def let_statement : MathPara :=
     (description := "A statement introducing a new variable with given value, type and/or property.")
 
 def assume : MathPara :=
-  .text `assume "A mathematical assumption being made. In case this is a variable or structure being introduced, use a **let** statement."
+  .text `assume "A mathematical assumption being made. In case this is a variable or structure being introduced, use a 'let' statement."
 
 namespace define
 
@@ -124,11 +124,11 @@ def calculation_step.justification : MathPara :=
   .text `justification "The justification for the step in a calculation or computation."
 
 open calculation in
-def calculation : MathPara :=
-  .one_of `calculation [inline, step, continuation]  "A series of calculations or computations."
+def equation : MathPara :=
+  .one_of `equation [inline, step, continuation]  "An equation, inequality, short calculation etc."
 
 def calculation_step : MathPara :=
-  .obj `calculation (fields := [calculation])
+  .obj `calculation_step (fields := [equation])
     (optFields := [calculation_step.justification])
     (description := "A step in a calculation or computation.")
 
@@ -149,7 +149,7 @@ def proof_method : MathPara :=
   .text `proof_method "The method used to prove the claim. This could be a direct proof, proof by contradiction, proof by induction, etc. this should be a single phrase or a fairly simple sentence; if a longer justification is needed break the step into smaller steps. If the method is deduction from a result, use the 'deduced_using' field"
 
 def calculations : MathPara :=
-  .list_of `calculation (type := calculation_step)
+  .list_of `calculations (type := calculation_step)
 end assert
 
 def missing_result : MathPara :=
@@ -334,10 +334,13 @@ def toIndendentList (p: MathPara) (optional : Bool := false)
     match maxDepth with
     | 0 => kvLine name.toString (suppress description) optional
     | k + 1 =>
+      let names := choices.map (fun elem => elem.name)
+      let namesBlob := names.foldl (fun acc elem => acc ++ s!"`{elem}`" ++ ", ") "" |>.dropRight 2
+      let body := description ++ s!"Give a JSON object with exactly one *key-value pair*, with the *key* one of {namesBlob}."
       let innerList :=
         choices.map (fun elem => toIndendentList elem false elemMap k)
       let inner := innerList.foldl (fun acc elem => acc.append elem) nil
-      .kv_cons name.toString description optional inner .nil
+      .kv_cons name.toString body optional inner .nil
   | .list_of name type =>
     match maxDepth with
     | 0 =>
