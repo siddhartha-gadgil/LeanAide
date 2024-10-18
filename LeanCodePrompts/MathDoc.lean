@@ -46,6 +46,7 @@ inductive MathPara where
   | list_of (name: Name) (type : MathPara)
   | obj (name: Name) (fields: List MathPara) (optFields : List MathPara)
       (description : String)
+deriving Inhabited, Repr, FromJson, ToJson, BEq
 namespace MathPara
 
 def name : MathPara → Name
@@ -171,8 +172,8 @@ def assert : MathPara :=
 
 namespace thm
 
-def hypothesis : MathPara :=
-  .list `hypothesis (fieldType := `contextBlock) (describeOptions := false)  "a JSON list of data and assumptions, i.e., **let** and **assume** statements"
+def hypothesis (describeOptions := false) : MathPara :=
+  .list `hypothesis (fieldType := `contextBlock) (describeOptions := describeOptions)  "a JSON list of data and assumptions, i.e., **let** and **assume** statements"
 
 def conclusion : MathPara :=
   .text `conclusion "The conclusion of the theorem."
@@ -189,12 +190,12 @@ def cite : MathPara :=
 
 end thm
 
-def proof : MathPara :=
-  .list `proof (fieldType := `math_object) (describeOptions := false) "A proof of a lemma, theorem or claim, having the same structure as a `math_document`."
+def proof (describeOptions := false) : MathPara :=
+  .list `proof (fieldType := `math_object) (describeOptions := describeOptions) "A proof of a lemma, theorem or claim, having the same structure as a `math_document`."
 
 open thm in
-def thm : MathPara :=
-  .obj `theorem (fields := [hypothesis, conclusion, proved])
+def thm (describeOptions := false) : MathPara :=
+  .obj `theorem (fields := [hypothesis describeOptions, conclusion, proved])
     (optFields := [proof, ref, cite, missing, errors])
     (description := "A mathematical theorem, with a list of hypotheses and a conclusion.")
 
@@ -225,8 +226,8 @@ def condition : MathPara :=
 end case
 
 open case in
-def case : MathPara :=
-  .obj `case (fields := [condition, proof])
+def case (describeOptions := false) : MathPara :=
+  .obj `case (fields := [condition, proof describeOptions])
     (optFields := [missing, errors])
     (description := "A case in a proof by cases or proof by induction.")
 
@@ -236,19 +237,19 @@ def on : MathPara :=
   .text `on "The variable or expression on which the cases are being done."
 
 def split_kind : MathPara :=
-  .enum `split_kind ["match", "condition", "groups"] "one of 'match' (for pattern matching), 'condition' (if based on a condition being true or false) and 'groups' (for more complex cases)"
+  .enum `split_kind ["match", "condition", "groups"] "one of 'match' (for pattern matching), 'condition' (if based on a condition being true or false) and 'groups' (for more complex cases)."
 
-def exhaustiveness : MathPara :=
-  .list `exhaustiveness (fieldType := `math_object) (describeOptions := false) "Proof that the cases are exhaustive."
+def exhaustiveness (describeOptions := false) : MathPara :=
+  .list `exhaustiveness (fieldType := `math_object) (describeOptions := describeOptions) "Proof that the cases are exhaustive."
 
 end cases
 
-def proof_cases : MathPara :=
-  .list_of `proof_cases case
+def proof_cases (describeOptions := false) : MathPara :=
+  .list_of `proof_cases <| case describeOptions
 
 open cases in
-def cases : MathPara :=
-  .obj `cases (fields := [on, split_kind, proof_cases])
+def cases (describeOptions := false) : MathPara :=
+  .obj `cases (fields := [on, split_kind, proof_cases describeOptions])
     (optFields := [exhaustiveness, missing, errors])
     (description := "A proof by cases or proof by induction, with a list of cases.")
 
@@ -260,8 +261,8 @@ def on : MathPara :=
 end induction
 
 open induction in
-def induction : MathPara :=
-  .obj `induction (fields := [on, proof_cases])
+def induction (describeOptions := false) : MathPara :=
+  .obj `induction (fields := [on, proof_cases describeOptions])
     (optFields := [missing, errors])
     (description := "A proof by induction, with a base case and an induction step.")
 
@@ -269,14 +270,14 @@ namespace contradiction
 def assumption : MathPara :=
   .text `assumption "The assumption being made to be contradicted."
 
-def proof : MathPara :=
-  .list `proof (fieldType := `math_object) (describeOptions := false) "The proof of the contradiction given the assumption."
+def proof (describeOptions := false) : MathPara :=
+  .list `proof (fieldType := `math_object) (describeOptions := describeOptions) "The proof of the contradiction given the assumption."
 
 end contradiction
 
 open contradiction in
-def contradiction : MathPara :=
-  .obj `contradiction (fields := [assumption, contradiction.proof])
+def contradiction (describeOptions := false) : MathPara :=
+  .obj `contradiction (fields := [assumption, contradiction.proof describeOptions])
     (optFields := [missing, errors])
     (description := "A proof by contradiction, with an assumption and a proof of the contradiction.")
 
@@ -340,11 +341,11 @@ def toIndendentList (p: MathPara) (optional : Bool := false)
   | .list_of name type =>
     match maxDepth with
     | 0 =>
-      kvLine name.toString (suppress s!"A list of elements of type `{type.name}`") optional
+      kvLine name.toString (suppress s!"A list of elements of type `{type.name}`.") optional
     | k + 1 =>
           let inner :=
               toIndendentList type false elemMap k
-          .kv_cons name.toString s!"A list of elements of type `{type.name}`. Each element of type `{type.name}` is as follows" optional inner .nil
+          .kv_cons name.toString s!"A list of elements of type `{type.name}`. Each element of type `{type.name}` is as follows:" optional inner .nil
   | .obj name fields optFields description =>
     match maxDepth with
     | k + 1 =>
@@ -357,10 +358,47 @@ def toIndendentList (p: MathPara) (optional : Bool := false)
       .kv_cons name.toString (description ++ " Give a JSON object. The keys and corresponding values are as follows.") optional inner .nil
     | 0 => kvLine name.toString description optional
 
+def suppressed (p: MathPara)
+  (elemMap : Std.HashMap Name <| List MathPara := elemMap) (maxDepth: Nat := 5): List MathPara :=
+  match p with
+  | .list _ fieldType describeOptions _ =>
+    match maxDepth with
+    | 0 => [p]
+    | k + 1 =>
+      if describeOptions then
+        let fields := elemMap.getD fieldType []
+        let innerList :=
+          fields.map (fun elem => suppressed elem elemMap k)
+        innerList.join
+      else []
+  | .obj _ fields optFields _ =>
+    match maxDepth with
+    | k + 1 =>
+      let innerList :=
+        fields.map (fun elem => suppressed elem elemMap k)
+      let optInnerList :=
+        optFields.map (fun elem => suppressed elem elemMap k)
+      innerList.join ++ optInnerList.join
+    | 0 => [p]
+  | .list_of _ type =>
+    match maxDepth with
+    | 0 => [p]
+    | k + 1 => suppressed type elemMap k
+  | .one_of _ choices _ =>
+    match maxDepth with
+    | 0 => [p]
+    | k + 1 =>
+      choices.map (fun elem => suppressed elem elemMap k)
+        |>.join
+  | _ => []
+
 
 end MathPara
 
 #eval MathPara.mathDoc.toIndendentList |>.render
+
+
+#eval MathPara.mathDoc.suppressed (maxDepth := 4) |>.eraseDups |>.map (·.name)
 
 def writeMathDoc : IO Unit :=
   IO.FS.writeFile "resources/MathDoc.md"
