@@ -1,10 +1,11 @@
 import os
 from os.path import join
 from pathlib import Path
-from .queries import extract_json_block, ChatClient
 
 import vertexai
 from vertexai.generative_models import GenerativeModel, Part
+
+from .queries import ChatClient, extract_json_block
 
 homedir = Path(".")
 if "lakefile.lean"  not in os.listdir(homedir):
@@ -19,18 +20,26 @@ model = GenerativeModel("gemini-1.5-pro-001")
 
 vertexai.init(project=project_id, location="asia-south1")
 
+ocr_rules = """
+Follow the below rules while extracting text from the image:
+1. Use `$` to enclose LaTeX formulas.
+2. If equations are being referred with symbols or numbers, retain the symbols or numbers within the proof.
+3. Do not use previously written fractions/expressions as references for upcoming steps for initial proof extraction. Interpret fractions/expressions at each step.
+4. The generated proof will be used to CHECK the correctness of the original proof, so DO NOT make corrections or complete proofs, only clean up the language.
+"""
+
 def solution_from_image(image_path):
     response = model.generate_content([
-          "Extract text with LaTeX from the following mathematics solution (using `$` to enclose LaTeX formulas)",
+          "Extract text with LaTeX from the following mathematics solution.",
           Part.from_uri(f"gs://leanaide/{image_path}", mime_type="image/png"),
-          "Also, rewrite the extracted text as a clean mathematical proof with full sentences, conjuctions etc. Note that this will be used to CHECK the correctness of the original proof, so DO NOT make corrections or complete proofs, only clean up the language."])
+          f"Also, rewrite the extracted text as a clean mathematical proof with full sentences, conjuctions etc. {ocr_rules}"])
     return response.text
 
 def solution_from_images(image_paths):
     response = model.generate_content([
-          "Extract text with LaTeX from the following mathematics solution (using `$` to enclose LaTeX formulas)"]+ 
+          "Extract text with LaTeX from the following mathematics solution."]+ 
           [Part.from_uri(f"gs://leanaide/{image_path}", mime_type="image/png") for image_path in image_paths] +
-          ["Also, rewrite the extracted text as a clean mathematical proof with full sentences, conjuctions etc. Note that this will be used to CHECK the correctness of the original proof, so DO NOT make corrections or complete proofs, only clean up the language."])
+          [f"Also, rewrite the extracted text as a clean mathematical proof with full sentences, conjuctions etc. {ocr_rules}"])
     return response.text
 
 proof_json = open(join(resources, "ProofJsonShorter.md")).read()
@@ -66,6 +75,7 @@ def structured_proof_from_images_with_knowns(thm, paths, knowns):
     return pf, structured_proof_with_knowns(thm, pf, knowns)
 
 from google.cloud import storage
+
 client = storage.Client()
 bucket = client.bucket('leanaide')
 def images_in_gs(prefix):
@@ -80,7 +90,9 @@ def solutions_from_images(thm, prefix):
         triples.append((path, pf, structured))
     return triples
 
-import pathlib, json
+import json
+import pathlib
+
 gemini_results = join(results, "gemini_results")
 pathlib.Path(gemini_results).mkdir(parents=True, exist_ok=True)
 
@@ -102,6 +114,8 @@ def write_structured_proofs_simple(prefix):
 
 chat_client = ChatClient()
 import itertools
+
+
 def write_structured_proofs(prefix):
     thm_blob = bucket.blob(f"{prefix}theorem.md")
     with thm_blob.open("r") as f:
