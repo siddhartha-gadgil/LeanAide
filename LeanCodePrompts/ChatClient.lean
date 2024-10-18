@@ -390,13 +390,12 @@ def solve (server: ChatServer)
   let queryString ← fromTemplate "solve" [("problem", problem)]
   ChatServer.mathCompletions server queryString n params examples
 
-def checkEquivalence (server: ChatServer)
-  (thm1 thm2 : String)(n: Nat := 3)
-  (params: ChatParams := {n := n, stopTokens := #[]})
+def checkEquivalence
+  (thm1 thm2 : String) (server: ChatServer := ChatServer.openAI "o1-mini")
+  (params: ChatParams := {})
   (examples: Array ChatExample := #[]): CoreM (Array <| Bool × String) := do
   let queryString ← fromTemplate "check_equivalence" [("theorem1", thm1), ("theorem2", thm2)]
-  let server := ChatServer.openAI "o1-mini"
-  let responses ← ChatServer.mathCompletions server queryString 1 {} examples
+  let responses ← ChatServer.mathCompletions server queryString 1 params examples
   IO.eprintln responses
   return responses.map fun s =>
     ((s.toLower.trim.splitOn "true").length > 1, s)

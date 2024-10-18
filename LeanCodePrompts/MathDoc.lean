@@ -102,7 +102,7 @@ def deduced_from : MathPara := .text `deduced_from "The assumptions or previousl
 def in_context : MathPara := .bool `in_context "Whether the statement from which deduction is made is in the current context. Answer `true` or `false` (answer `false` if a result from the mathematical literature is being invoked)."
 
 
-def instantiation : MathPara :=  .text `instantiation "The instantiation of the assumption or previously known result to which the result is applied. For example,  `42` if we apply uniqueness of prime factorisation to `42`."
+def instantiation : MathPara :=  .text `instantiation "The instantiation of the assumption or previously known result to which the result is applied. For example, write '42' if we apply uniqueness of prime factorisation to `42`."
 
 def instantiations : MathPara :=
   .list_of `instantiations instantiation
@@ -303,19 +303,21 @@ def contextBlockElems := [let_statement, assume]
 def elemMap : Std.HashMap Name <| List MathPara :=
   Std.HashMap.ofList [(`math_object, math_objectElems), (`contextBlock, contextBlockElems)]
 
+def suppress (s: String) := s!"{s} Give the corresponding source text as a JSON string (this will be processed subsequently)."
+
 open IndentedList in
 def toIndendentList (p: MathPara) (optional : Bool := false)
   (elemMap : Std.HashMap Name <| List MathPara := elemMap) (maxDepth: Nat := 5): IndentedList :=
   match p with
   | .text name description =>
-    kvLine name.toString (description ++ " This is a JSON string.") optional
+    kvLine name.toString (description ++ " Give a JSON string.") optional
   | .bool name description =>
-    kvLine name.toString (description ++ " This is a JSON boolean.") optional
+    kvLine name.toString (description ++ " Give a JSON boolean.") optional
   | .enum name _ description =>
       kvLine name.toString description optional
   | .list name fieldType describeOptions description =>
     match maxDepth with
-    | 0 => kvLine name.toString description optional
+    | 0 => kvLine name.toString (suppress description) optional
     | k + 1 =>
       let fields := elemMap.getD fieldType []
       let names := fields.map (fun elem => elem.name)
@@ -323,24 +325,26 @@ def toIndendentList (p: MathPara) (optional : Bool := false)
       let innerList :=
         fields.map (fun elem => toIndendentList elem false elemMap k)
       let inner := innerList.foldl (fun acc elem => acc.append elem) nil
-      let body := description ++ s!" This is a JSON list, with each element of the list is a JSON object with exactly one key-value pair, with the key one of {namesBlob}."
+      let body := description ++ s!" Give a JSON list, with each element of the list is a JSON object with exactly one *key-value pair*, with the *key* one of {namesBlob}."
       if describeOptions then
-        .kv_cons name.toString (body ++ " The descriptions for the choice of key and corresponding values are as follows:") optional inner .nil
+        .kv_cons name.toString (body ++ " The descriptions for the choices of *key* and corresponding *value* are as follows:") optional inner .nil
       else kvLine name.toString body optional
   | .one_of name choices description =>
     match maxDepth with
-    | 0 => kvLine name.toString description optional
+    | 0 => kvLine name.toString (suppress description) optional
     | k + 1 =>
       let innerList :=
         choices.map (fun elem => toIndendentList elem false elemMap k)
       let inner := innerList.foldl (fun acc elem => acc.append elem) nil
       .kv_cons name.toString description optional inner .nil
   | .list_of name type =>
-      let inner :=
-      match maxDepth with
-      | 0 => .nil
-      | k + 1 => toIndendentList type false elemMap k
-      .kv_cons name.toString s!"A list of elements of type `{type.name}`. Each element of type `{type.name}` is as follows" optional inner .nil
+    match maxDepth with
+    | 0 =>
+      kvLine name.toString (suppress s!"A list of elements of type `{type.name}`") optional
+    | k + 1 =>
+          let inner :=
+              toIndendentList type false elemMap k
+          .kv_cons name.toString s!"A list of elements of type `{type.name}`. Each element of type `{type.name}` is as follows" optional inner .nil
   | .obj name fields optFields description =>
     match maxDepth with
     | k + 1 =>
@@ -350,7 +354,7 @@ def toIndendentList (p: MathPara) (optional : Bool := false)
         optFields.map (fun elem => toIndendentList elem true elemMap k)
       let inner := innerList ++ optInnerList
         |>.foldl (fun acc elem => acc.append elem) nil
-      .kv_cons name.toString (description ++ " This is a JSON object. The keys and corresponding values are as follows.") optional inner .nil
+      .kv_cons name.toString (description ++ " Give a JSON object. The keys and corresponding values are as follows.") optional inner .nil
     | 0 => kvLine name.toString description optional
 
 

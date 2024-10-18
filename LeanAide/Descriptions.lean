@@ -159,12 +159,12 @@ def getTypeDescriptionM (type: Expr)(server := ChatServer.openAI)(params: ChatPa
     let res := contents.get? 0 |>.map fun h => (h, statement)
     return res
 
-def checkTranslationM (s: String) (type: Expr)(server := ChatServer.openAI)(params: ChatParams)(n: Nat := 3) :
+def checkTranslationM (s: String) (type: Expr)(server := ChatServer.openAI)(params: ChatParams) :
   MetaM <| Option (String × Array (Bool × String)) := do
   let pair? ←  getTypeDescriptionM type server params
   pair?.mapM fun (trans, _) => do
     IO.eprintln s!"translation: {trans}"
-    let checks ← server.checkEquivalence s trans n params
+    let checks ← ChatServer.checkEquivalence s trans
     return (trans,  checks)
 
 -- #eval getDescriptionM ``Iff.rfl
