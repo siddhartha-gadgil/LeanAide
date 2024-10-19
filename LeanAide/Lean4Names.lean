@@ -72,9 +72,17 @@ def elabThm4Aux (s : String)
     match ← elabThmFromStx stx levelNames with
     | Except.error err₁ =>
       let frontEndErrs ← checkTypeElabFrontM s
-      let res := .parsed s err₁ frontEndErrs ctx?
-      appendLog "elab_errors" <| toJson res
-      return Except.error res
+      if frontEndErrs.isEmpty then
+        match ← elabFrontTheoremExprM s with
+        | Except.error err₂ =>
+          let res := .parsed s err₁ err₂ ctx?
+          appendLog "elab_errors" <| toJson res
+          return Except.error res
+        | Except.ok e => return Except.ok e
+      else
+        let res := .parsed s err₁ frontEndErrs ctx?
+        appendLog "elab_errors" <| toJson res
+        return Except.error res
     | Except.ok e => return  Except.ok e
 
 -- for testing
