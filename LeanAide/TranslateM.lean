@@ -34,6 +34,11 @@ inductive TranslateBackResult where
   | failure  : TranslateBackResult
   deriving Repr, ToJson, FromJson
 
+def TranslateBackResult.checkFailed (r: TranslateBackResult) : Bool :=
+  match r with
+  | TranslateBackResult.success _ _ checks _ => checks.any id
+  | TranslateBackResult.failure => true
+
 structure Translate.State where
   /-- Embeddings to preload -/
   embedMap : EmbedMap := HashMap.empty
