@@ -294,6 +294,7 @@ def conclude : MathPara :=
     (optFields := [missing, errors])
     (description := "Conclude a claim obtained from the steps so far. This is typically the final statement of a proof giving the conclusion of the theorem.")
 
+
 def remark : MathPara :=
   .text `remark "A remark or comment that is NOT MATHEMATICAL, instead being for motivation, attention, sectioning etc."
 
