@@ -1,5 +1,6 @@
 import Lean
-open Std Lean
+import Batteries
+open Batteries Lean
 
 inductive IndentedList where
   | nil
@@ -301,14 +302,14 @@ def math_objectElems := [let_statement, assume, define, assert, thm, problem, ca
 
 def contextBlockElems := [let_statement, assume]
 
-def elemMap : Std.HashMap Name <| List MathPara :=
-  Std.HashMap.ofList [(`math_object, math_objectElems), (`contextBlock, contextBlockElems)]
+def elemMap : Batteries.HashMap Name <| List MathPara :=
+  Batteries.HashMap.ofList [(`math_object, math_objectElems), (`contextBlock, contextBlockElems)]
 
 def suppress (s: String) := s!"{s} Give the corresponding source text as a JSON string (this will be processed subsequently)."
 
 open IndentedList in
 def toIndendentList (p: MathPara) (optional : Bool := false)
-  (elemMap : Std.HashMap Name <| List MathPara := elemMap) (maxDepth: Nat := 5): IndentedList :=
+  (elemMap : Batteries.HashMap Name <| List MathPara := elemMap) (maxDepth: Nat := 5): IndentedList :=
   match p with
   | .text name description =>
     kvLine name.toString (description ++ " Give a JSON string.") optional
@@ -320,7 +321,7 @@ def toIndendentList (p: MathPara) (optional : Bool := false)
     match maxDepth with
     | 0 => kvLine name.toString (suppress description) optional
     | k + 1 =>
-      let fields := elemMap.getD fieldType []
+      let fields := elemMap.findD fieldType []
       let names := fields.map (fun elem => elem.name)
       let namesBlob := names.foldl (fun acc elem => acc ++ s!"`{elem}`" ++ ", ") "" |>.dropRight 2
       let innerList :=
@@ -362,14 +363,14 @@ def toIndendentList (p: MathPara) (optional : Bool := false)
     | 0 => kvLine name.toString description optional
 
 def suppressed (p: MathPara)
-  (elemMap : Std.HashMap Name <| List MathPara := elemMap) (maxDepth: Nat := 5): List MathPara :=
+  (elemMap : Batteries.HashMap Name <| List MathPara := elemMap) (maxDepth: Nat := 5): List MathPara :=
   match p with
   | .list _ fieldType describeOptions _ =>
     match maxDepth with
     | 0 => [p]
     | k + 1 =>
       if describeOptions then
-        let fields := elemMap.getD fieldType []
+        let fields := elemMap.findD fieldType []
         let innerList :=
           fields.map (fun elem => suppressed elem elemMap k)
         innerList.join
