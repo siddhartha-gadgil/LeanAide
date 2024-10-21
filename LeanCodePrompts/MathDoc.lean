@@ -37,20 +37,20 @@ def IndentedList.render (l : IndentedList) : String :=
 /--
 Building blocks for structured math documents. Additional data is given as a HashMap from `Name` to `MathPara` for elements in a group.
 -/
-inductive MathPara where
+inductive MathParaStructure where
   | text (name: Name) (description : String)
   | bool (name: Name) (description : String)
   | enum (name: Name) (choices: List String)
       (description : String)
   | list (name: Name) (fieldType: Name) (describeOptions: Bool) (description : String)
-  | one_of (name: Name) (choices: List MathPara) (description : String)
-  | list_of (name: Name) (type : MathPara)
-  | obj (name: Name) (fields: List MathPara) (optFields : List MathPara)
+  | one_of (name: Name) (choices: List MathParaStructure) (description : String)
+  | list_of (name: Name) (type : MathParaStructure)
+  | obj (name: Name) (fields: List MathParaStructure) (optFields : List MathParaStructure)
       (description : String)
 deriving Inhabited, Repr, FromJson, ToJson, BEq
-namespace MathPara
+namespace MathParaStructure
 
-def name : MathPara → Name
+def name : MathParaStructure → Name
   | text n _ => n
   | bool n _ => n
   | enum n _ _ => n
@@ -59,257 +59,257 @@ def name : MathPara → Name
   | list_of n _ => n
   | obj n _ _ _ => n
 
-def mathDoc : MathPara :=
+def mathDoc : MathParaStructure :=
   .list `math_document (fieldType := `math_object) (describeOptions := true) "A structured math document in a custom JSON format."
 
 namespace let_statement
 
-def var : MathPara := .text `variable ("The variable being defined (use `<anonymous>` if there is no name such as in `We have a group structure on S`)")
+def var : MathParaStructure := .text `variable ("The variable being defined (use `<anonymous>` if there is no name such as in `We have a group structure on S`)")
 
-def value : MathPara := .text `value ("The value of the variable being defined")
+def value : MathParaStructure := .text `value ("The value of the variable being defined")
 
-def kind : MathPara := .text `kind ("The type of the variable, such as `real number`, `function from S to T`, `element of G` etc.")
+def kind : MathParaStructure := .text `kind ("The type of the variable, such as `real number`, `function from S to T`, `element of G` etc.")
 
-def properties : MathPara := .text `properties "Specific properties of the variable beyond the type."
+def properties : MathParaStructure := .text `properties "Specific properties of the variable beyond the type."
 
 end let_statement
 
 open let_statement in
-def let_statement : MathPara :=
+def let_statement : MathParaStructure :=
   .obj `let (fields := [var])
     (optFields := [value, kind, properties])
     (description := "A statement introducing a new variable with given value, type and/or property.")
 
-def assume : MathPara :=
+def assume : MathParaStructure :=
   .text `assume "A mathematical assumption being made. In case this is a variable or structure being introduced, use a 'let' statement."
 
 namespace define
 
-def statement : MathPara :=
+def statement : MathParaStructure :=
   .text `statement "The mathematical definition."
 
-def term : MathPara :=
+def term : MathParaStructure :=
   .text `term "The term being defined."
 
 end define
 
-def define : MathPara :=
+def define : MathParaStructure :=
   .obj `def (fields := [define.statement, define.term]) (optFields := [])
     (description := "A mathematical definition of a term.")
 
 namespace deduced_using
 
-def deduced_from : MathPara := .text `deduced_from "An assumption or previously known results from which the deduction is made. If more than one result is used, list them in the 'deductions' field as separate `deduction` objects. If the result used needs justification, have a separate `assert` object earlier."
+def deduced_from : MathParaStructure := .text `deduced_from "An assumption or previously known results from which the deduction is made. If more than one result is used, list them in the 'deductions' field as separate `deduction` objects. If the result used needs justification, have a separate `assert` object earlier."
 
-def in_context : MathPara := .bool `proved_earlier "Whether the statement from which deduction has been proved earlier IN THIS DOCUMENT. Answer `true` or `false` (answer `false` if a result from the mathematical literature is being invoked)."
+def in_context : MathParaStructure := .bool `proved_earlier "Whether the statement from which deduction has been proved earlier IN THIS DOCUMENT. Answer `true` or `false` (answer `false` if a result from the mathematical literature is being invoked)."
 
 
-def instantiation : MathPara :=  .text `instantiation "Specific numbers, functions etc to which a known result is applied. For example, if we apply uniqueness of prime factorisation to `42` write `{'deduced_from' : 'uniqueness of prime factorization', 'instantiation': '42'}`."
+def instantiation : MathParaStructure :=  .text `instantiation "Specific numbers, functions etc to which a known result is applied. For example, if we apply uniqueness of prime factorisation to `42` write `{'deduced_from' : 'uniqueness of prime factorization', 'instantiation': '42'}`."
 
-def instantiations : MathPara :=
+def instantiations : MathParaStructure :=
   .list_of `instantiations instantiation
 
 end deduced_using
 
 namespace calculation
 
-def inline : MathPara := .text `inline "A simple calculation or computation written as a single line."
+def inline : MathParaStructure := .text `inline "A simple calculation or computation written as a single line."
 
-def step : MathPara := .text `step "A step, typically an equality or inequality, in a calculation or computation."
+def step : MathParaStructure := .text `step "A step, typically an equality or inequality, in a calculation or computation."
 
-def continuation : MathPara := .text `continuation "A continuation of a chain of equalities/inequalities, for example `= x + 3`. Should begin with an operator such as `=` or `≤` and be followed by a term."
+def continuation : MathParaStructure := .text `continuation "A continuation of a chain of equalities/inequalities, for example `= x + 3`. Should begin with an operator such as `=` or `≤` and be followed by a term."
 
 end calculation
 
-def calculation_step.justification : MathPara :=
+def calculation_step.justification : MathParaStructure :=
   .text `justification "The justification for the step in a calculation or computation."
 
 open calculation in
-def equation : MathPara :=
+def equation : MathParaStructure :=
   .one_of `equation [inline, step, continuation]  "An equation, inequality, short calculation etc."
 
-def calculation_step : MathPara :=
+def calculation_step : MathParaStructure :=
   .obj `calculation_step (fields := [equation])
     (optFields := [calculation_step.justification])
     (description := "A step in a calculation or computation.")
 
 namespace assert
 open deduced_using in
-def deduction : MathPara :=
+def deduction : MathParaStructure :=
   .obj `deduction (fields := [deduced_from, in_context])
     (optFields := []) -- removed instantiations as it was not understood.
     (description := "A deduction of a mathematical result from assumptions or previously known results.")
 
-def deductions : MathPara :=
+def deductions : MathParaStructure :=
   .list_of `deductions deduction
 
-def claim : MathPara :=
+def claim : MathParaStructure :=
   .text `claim "The mathematical claim being asserted, NOT INCLUDING proofs, justifications or results used. The claim should be purely a logical statement which is the *consequence* obtained."
 
-def proof_method : MathPara :=
+def proof_method : MathParaStructure :=
   .text `proof_method "The method used to prove the claim. This could be a direct proof, proof by contradiction, proof by induction, etc. this should be a single phrase or a fairly simple sentence; if a longer justification is needed break the step into smaller steps. If the method is deduction from a result, use the 'deduced_using' field"
 
-def calculations : MathPara :=
+def calculations : MathParaStructure :=
   .list_of `calculations (type := calculation_step)
 end assert
 
-def missing_result : MathPara :=
+def missing_result : MathParaStructure :=
   .text `missing "A  problem that need to be solved or results that need to be proved to complete the proof. Standard results/criteria may be omitted from the proof: include them in the 'deduced_from' field."
 
-def missing : MathPara :=
+def missing : MathParaStructure :=
   .list_of `missing missing_result
 
-def error : MathPara :=
+def error : MathParaStructure :=
   .text `error "An error in a proof or calculation. Report only actual errors, with missing steps reported in the 'missing' field."
 
-def errors : MathPara :=
+def errors : MathParaStructure :=
   .list_of `errors error
 
 open assert in
-def assert : MathPara :=
+def assert : MathParaStructure :=
   .obj `assert (fields := [claim])
     (optFields := [proof_method, deductions, calculations, missing, errors])
     (description := "A mathematical statement whose proof is a straightforward consequence of given and known results following some method.")
 
 namespace thm
 
-def hypothesis (describeOptions := false) : MathPara :=
+def hypothesis (describeOptions := false) : MathParaStructure :=
   .list `hypothesis (fieldType := `contextBlock) (describeOptions := describeOptions)  "a JSON list of data and assumptions, i.e., **let** and **assume** statements"
 
-def conclusion : MathPara :=
+def conclusion : MathParaStructure :=
   .text `conclusion "The conclusion of the theorem."
 
-def proved : MathPara :=
+def proved : MathParaStructure :=
   .bool `proved "Whether the theorem has been proved, either here or earlier or by citing the literature."
 
 
-def ref : MathPara :=
+def ref : MathParaStructure :=
   .text `ref "A reference where the result has been previously proved."
 
-def cite : MathPara :=
+def cite : MathParaStructure :=
   .text `cite "A citation of a result from the mathematical literature which gives the proof."
 
 end thm
 
-def proof (describeOptions := false) : MathPara :=
+def proof (describeOptions := false) : MathParaStructure :=
   .list `proof (fieldType := `math_object) (describeOptions := describeOptions) "A proof of a lemma, theorem or claim, having the same structure as a `math_document`."
 
 open thm in
-def thm (describeOptions := false) : MathPara :=
+def thm (describeOptions := false) : MathParaStructure :=
   .obj `theorem (fields := [hypothesis describeOptions, conclusion, proved])
     (optFields := [proof, ref, cite, missing, errors])
     (description := "A mathematical theorem, with a list of hypotheses and a conclusion.")
 
 namespace problem
 
-def statement : MathPara :=
+def statement : MathParaStructure :=
   .text `statement "The statement of the problem."
 
-def solved : MathPara :=
+def solved : MathParaStructure :=
   .bool `solved "Whether the problem has been solved."
 
-def answer : MathPara :=
+def answer : MathParaStructure :=
   .text `answer "The answer to the problem."
 
 end problem
 
 open problem in
-def problem : MathPara :=
+def problem : MathParaStructure :=
   .obj `problem (fields := [statement, solved])
     (optFields := [answer, proof, missing, errors])
     (description := "A mathematical problem, with a statement and an answer.")
 
 namespace case
 
-def condition : MathPara :=
-  .text `condition "The case condition or pattern; for induction one of 'base' or 'induction-step'"
+def condition : MathParaStructure :=
+  .text `condition "The case condition or pattern; for induction one of 'base' or 'induction-step'; for a side of an 'iff' statement or a disjuntion, write the claim being proved."
 
 end case
 
 open case in
-def case (describeOptions := false) : MathPara :=
+def case (describeOptions := false) : MathParaStructure :=
   .obj `case (fields := [condition, proof describeOptions])
     (optFields := [missing, errors])
     (description := "A case in a proof by cases or proof by induction.")
 
 namespace cases
 
-def on : MathPara :=
-  .text `on "The variable or expression on which the cases are being done. Write 'implication' for two sides of an 'iff' statement."
+def on : MathParaStructure :=
+  .text `on "The variable or expression on which the cases are being done. Write 'disjunction' for two sides of an 'iff' statement or multiple statements to be proved."
 
-def split_kind : MathPara :=
-  .enum `split_kind ["match", "condition", "groups"] "one of 'iff' (for two sides of an implication), 'match' (for pattern matching), 'condition' (if based on a condition being true or false) and 'groups' (for more complex cases)."
+def split_kind : MathParaStructure :=
+  .enum `split_kind ["logical", "match", "condition", "groups"] "one of 'logical' (for two sides of an implication or multiple statements to be proved), 'match' (for pattern matching), 'condition' (if based on a condition being true or false) and 'groups' (for more complex cases)."
 
-def exhaustiveness (describeOptions := false) : MathPara :=
+def exhaustiveness (describeOptions := false) : MathParaStructure :=
   .list `exhaustiveness (fieldType := `math_object) (describeOptions := describeOptions) "Proof that the cases are exhaustive."
 
 end cases
 
-def proof_cases (describeOptions := false) : MathPara :=
+def proof_cases (describeOptions := false) : MathParaStructure :=
   .list_of `proof_cases <| case describeOptions
 
 open cases in
-def cases (describeOptions := false) : MathPara :=
+def cases (describeOptions := false) : MathParaStructure :=
   .obj `cases (fields := [split_kind, on, proof_cases describeOptions])
     (optFields := [exhaustiveness, missing, errors])
     (description := "A proof by cases or proof by induction, with a list of cases.")
 
 namespace induction
 
-def on : MathPara :=
+def on : MathParaStructure :=
   .text `on "The variable or expression on which induction is being done."
 
 end induction
 
 open induction in
-def induction (describeOptions := false) : MathPara :=
+def induction (describeOptions := false) : MathParaStructure :=
   .obj `induction (fields := [on, proof_cases describeOptions])
     (optFields := [missing, errors])
     (description := "A proof by induction, with a base case and an induction step.")
 
 namespace contradiction
-def assumption : MathPara :=
+def assumption : MathParaStructure :=
   .text `assumption "The assumption being made to be contradicted."
 
-def proof (describeOptions := false) : MathPara :=
+def proof (describeOptions := false) : MathParaStructure :=
   .list `proof (fieldType := `math_object) (describeOptions := describeOptions) "The proof of the contradiction given the assumption."
 
 end contradiction
 
 open contradiction in
-def contradiction (describeOptions := false) : MathPara :=
+def contradiction (describeOptions := false) : MathParaStructure :=
   .obj `contradiction (fields := [assumption, contradiction.proof describeOptions])
     (optFields := [missing, errors])
     (description := "A proof by contradiction, with an assumption and a proof of the contradiction.")
 
 namespace conclude
 
-def claim : MathPara :=
+def claim : MathParaStructure :=
   .text `claim "The conclusion of the proof."
 
 end conclude
 
 open conclude in
-def conclude : MathPara :=
+def conclude : MathParaStructure :=
   .obj `conclude (fields := [claim])
     (optFields := [missing, errors])
     (description := "Conclude a claim obtained from the steps so far. This is typically the final statement of a proof giving the conclusion of the theorem.")
 
-def remark : MathPara :=
+def remark : MathParaStructure :=
   .text `remark "A remark or comment that is NOT MATHEMATICAL, instead being for motivation, attention, sectioning etc."
 
 def math_objectElems := [let_statement, assume, define, assert, thm, problem, cases, induction, contradiction, conclude, remark]
 
 def contextBlockElems := [let_statement, assume]
 
-def elemMap : Batteries.HashMap Name <| List MathPara :=
+def elemMap : Batteries.HashMap Name <| List MathParaStructure :=
   Batteries.HashMap.ofList [(`math_object, math_objectElems), (`contextBlock, contextBlockElems)]
 
 def suppress (s: String) := s!"{s} Give the corresponding source text as a JSON string (this will be processed subsequently)."
 
 open IndentedList in
-def toIndendentList (p: MathPara) (optional : Bool := false)
-  (elemMap : Batteries.HashMap Name <| List MathPara := elemMap) (maxDepth: Nat := 5): IndentedList :=
+def toIndendentList (p: MathParaStructure) (optional : Bool := false)
+  (elemMap : Batteries.HashMap Name <| List MathParaStructure := elemMap) (maxDepth: Nat := 5): IndentedList :=
   match p with
   | .text name description =>
     kvLine name.toString (description ++ " Give a JSON string.") optional
@@ -362,8 +362,8 @@ def toIndendentList (p: MathPara) (optional : Bool := false)
       .kv_cons name.toString (description ++ " Give a JSON object. The keys and corresponding values are as follows.") optional inner .nil
     | 0 => kvLine name.toString description optional
 
-def suppressed (p: MathPara)
-  (elemMap : Batteries.HashMap Name <| List MathPara := elemMap) (maxDepth: Nat := 5): List MathPara :=
+def suppressed (p: MathParaStructure)
+  (elemMap : Batteries.HashMap Name <| List MathParaStructure := elemMap) (maxDepth: Nat := 5): List MathParaStructure :=
   match p with
   | .list _ fieldType describeOptions _ =>
     match maxDepth with
@@ -397,20 +397,20 @@ def suppressed (p: MathPara)
   | _ => []
 
 
-end MathPara
+end MathParaStructure
 
-#eval MathPara.mathDoc.toIndendentList |>.render
+#eval MathParaStructure.mathDoc.toIndendentList |>.render
 
 
-#eval MathPara.mathDoc.suppressed (maxDepth := 4) |>.eraseDups |>.map (·.name)
+#eval MathParaStructure.mathDoc.suppressed (maxDepth := 4) |>.eraseDups |>.map (·.name)
 
 def writeMathDoc : IO Unit :=
   IO.FS.writeFile "resources/MathDoc.md"
-    (MathPara.mathDoc.toIndendentList |>.render)
+    (MathParaStructure.mathDoc.toIndendentList |>.render)
 
 #eval writeMathDoc
 
 def MathDoc.instructions (alertErrors : Bool := false) : IO String := do
-  let jsonProofInstructions := MathPara.mathDoc.toIndendentList |>.render
+  let jsonProofInstructions := MathParaStructure.mathDoc.toIndendentList |>.render
   let alert := if alertErrors then " Note that the proof may not be complete and may have some errors, which you should note in the appropriate fields." else ""
   return s!"The following is a custom JSON format, which we call `mathDocJSON`, for mathematical documents. Note that a document is translated to a JSON object with a single key 'math_document' and a corresponding value.\n\n {jsonProofInstructions}\n---\n\nWrite the following theorem and proof into `MathDocJSON` format.{alert} Output JSON only. The theorem and proof are as follows:"

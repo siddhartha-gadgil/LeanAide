@@ -48,11 +48,11 @@
     * **errors**: (OPTIONAL) A list of elements of type `error`. Each element of type `error` is as follows:
       * **error**: An error in a proof or calculation. Report only actual errors, with missing steps reported in the 'missing' field. Give a JSON string.
   * **cases**: A proof by cases or proof by induction, with a list of cases. Give a JSON object. The keys and corresponding values are as follows.
-    * **split_kind**: one of 'iff' (for two sides of an implication), 'match' (for pattern matching), 'condition' (if based on a condition being true or false) and 'groups' (for more complex cases).
-    * **on**: The variable or expression on which the cases are being done. Write 'implication' for two sides of an 'iff' statement. Give a JSON string.
+    * **split_kind**: one of 'logical' (for two sides of an implication or multiple statements to be proved), 'match' (for pattern matching), 'condition' (if based on a condition being true or false) and 'groups' (for more complex cases).
+    * **on**: The variable or expression on which the cases are being done. Write 'disjunction' for two sides of an 'iff' statement or multiple statements to be proved. Give a JSON string.
     * **proof_cases**: A list of elements of type `case`. Each element of type `case` is as follows:
       * **case**: A case in a proof by cases or proof by induction. Give a JSON object. The keys and corresponding values are as follows.
-        * **condition**: The case condition or pattern; for induction one of 'base' or 'induction-step' Give a JSON string.
+        * **condition**: The case condition or pattern; for induction one of 'base' or 'induction-step'; for a side of an 'iff' statement or a disjuntion, write the claim being proved. Give a JSON string.
         * **proof**: A proof of a lemma, theorem or claim, having the same structure as a `math_document`. Give a JSON list, with each element of the list is a JSON object with exactly one *key-value pair*, with the *key* one of `let`, `assume`, `def`, `assert`, `theorem`, `problem`, `cases`, `induction`, `contradiction`, `conclude`, `remark`.
         * **missing**: (OPTIONAL) A list of elements of type `missing`. Each element of type `missing` is as follows:
           * **missing**: A  problem that need to be solved or results that need to be proved to complete the proof. Standard results/criteria may be omitted from the proof: include them in the 'deduced_from' field. Give a JSON string.
@@ -67,7 +67,7 @@
     * **on**: The variable or expression on which induction is being done. Give a JSON string.
     * **proof_cases**: A list of elements of type `case`. Each element of type `case` is as follows:
       * **case**: A case in a proof by cases or proof by induction. Give a JSON object. The keys and corresponding values are as follows.
-        * **condition**: The case condition or pattern; for induction one of 'base' or 'induction-step' Give a JSON string.
+        * **condition**: The case condition or pattern; for induction one of 'base' or 'induction-step'; for a side of an 'iff' statement or a disjuntion, write the claim being proved. Give a JSON string.
         * **proof**: A proof of a lemma, theorem or claim, having the same structure as a `math_document`. Give a JSON list, with each element of the list is a JSON object with exactly one *key-value pair*, with the *key* one of `let`, `assume`, `def`, `assert`, `theorem`, `problem`, `cases`, `induction`, `contradiction`, `conclude`, `remark`.
         * **missing**: (OPTIONAL) A list of elements of type `missing`. Each element of type `missing` is as follows:
           * **missing**: A  problem that need to be solved or results that need to be proved to complete the proof. Standard results/criteria may be omitted from the proof: include them in the 'deduced_from' field. Give a JSON string.

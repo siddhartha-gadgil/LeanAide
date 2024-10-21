@@ -36,17 +36,6 @@ def Lean.Json.getObjString? (js: Json) (key: String) : Option String :=
   | Except.ok s => some s
   | _ => none
 
-/--
-Get a key-value pair from a JSON object which is a single key-value pair.
--/
-def Lean.Json.getKV? (js : Json) : Option (String × Json) :=
-  match js with
-  | Json.obj m =>
-    match m.toArray with
-    | #[⟨k, v⟩] => some (k, v)
-    | _ => none
-  | _ => none
-
 #check Lean.Json.getObjVal?
 
 open Lean Meta Elab Term PrettyPrinter Tactic Parser
