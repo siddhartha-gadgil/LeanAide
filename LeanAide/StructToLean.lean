@@ -119,6 +119,10 @@ def aesopTactic (weight sorryWeight strongSorryWeight: Nat) (names: List Name :=
   let sugRules ← suggestionRules names
   AesopSyntax.fold (rules ++ sugRules).toArray
 
+-- Should add configuration for this
+elab "auto?" : tactic => do
+  let tac ← aesopTactic 90 50 10
+  evalTactic tac
 
 def theoremExprInContext? (ctx: Array Json)(statement: String): TranslateM (Option Expr) := do
   let mut context := #[]
@@ -219,7 +223,7 @@ def conditionCases (cond₁ cond₂ : String)
     runParserCategory (← getEnv) `term cond₂ |>.toOption.get!
   let condTerm₁' : Syntax.Term := ⟨condTerm₁⟩
   let condTerm₂' : Syntax.Term := ⟨condTerm₂⟩
-  let tac ← aesopTactic 90 50 10
+  let tac ← `(tactic| auto?)
   let ass₂ ← `(tactic| have : $condTerm₂' := by $tac:tactic)
   let pf₂' := #[ass₂] ++ pf₂
   let posId := mkIdent `pos
@@ -248,7 +252,7 @@ def matchCases (discr: String)
 def groupCasesAux (cond_pfs: List <| String × Array Syntax.Tactic)
     : TermElabM <| Array Syntax.Tactic := do
     match cond_pfs with
-    | [] => return #[← aesopTactic 90 50 10]
+    | [] => return #[← `(tactic| auto?)]
     | (cond, pf) :: tail => do
       let condTerm :=
         runParserCategory (← getEnv) `term cond |>.toOption.get!
@@ -283,7 +287,7 @@ def conclusionTactic (conclusion: String)
   let conclusionTerm :=
     runParserCategory (← getEnv) `term conclusion |>.toOption.get!
   let conclusionTerm' : Syntax.Term := ⟨conclusionTerm⟩
-  let tac ← aesopTactic 90 50 10
+  let tac ← `(tactic| auto?)
   `(tactic| have : $conclusionTerm':term := by $tac:tactic)
 
 def contradictionTactics (statement: String)
@@ -296,13 +300,13 @@ def contradictionTactics (statement: String)
   let assumeTactic ← `(tactic| intro $assId:ident)
   let fullPf := #[assumeTactic] ++ pf
   return #[←
-    `(tactic| have : $statementTerm':term → $falseId := by $fullPf*), ← aesopTactic 90 50 10]
+    `(tactic| have : $statementTerm':term → $falseId := by $fullPf*), ← `(tactic| auto?)]
 
 
-def haveForAssertion (weight sorryWeight strongSorryWeight: Nat) (type: Syntax.Term)
+def haveForAssertion  (type: Syntax.Term)
   (premises: List Name) :
     MetaM <| Syntax.Tactic := do
-  let tac ← aesopTactic weight sorryWeight strongSorryWeight premises
+  let tac ← aesopTactic 90 50 10 premises
   `(tactic| have : $type := by $tac:tactic)
 
 mutual
@@ -325,7 +329,7 @@ mutual
               IO.eprintln s!"failed to get theorem conclusion"
             thm?.mapM fun thm => do
               let pf ← structToTactics #[] context steps
-              let pf := pf.push <| ← aesopTactic 90 50 10
+              let pf := pf.push <| ← `(tactic| auto?)
               let pfTerm ← `(by $pf*)
               IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
               mkStatementStx name? (← delab thm) pfTerm true
@@ -369,7 +373,7 @@ mutual
                 let names' ← useResults.mapM fun s =>
                   matchingTheoremsAI server params  (s := s) numLeanSearch numMoogle
                 let premises := names'.join
-                let tac ← haveForAssertion 90 50 10 (← delab type) premises
+                let tac ← haveForAssertion  (← delab type) premises
                 pure #[tac]
             | _ => pure #[]
           | some "define" =>
@@ -405,7 +409,7 @@ mutual
                 let union_pf : Array Syntax.Tactic ←
                   match head.getObjValAs? (List Json) "exhaustiveness" with
                   | Except.ok pfSource => structToTactics #[] context pfSource
-                  | _ => pure #[← aesopTactic 90 50 10]
+                  | _ => pure #[← `(tactic| auto?)]
                 groupCases pairs.toList union_pf
               | some "condition" =>
                 match pairs with
