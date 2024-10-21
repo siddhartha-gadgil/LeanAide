@@ -119,10 +119,19 @@ def aesopTactic (weight sorryWeight strongSorryWeight: Nat) (names: List Name :=
   let sugRules ← suggestionRules names
   AesopSyntax.fold (rules ++ sugRules).toArray
 
--- Should add configuration for this
-elab "auto?" : tactic => do
+syntax (name := auto_aesop) "auto?" ("[" ident,* "]")? : tactic
+
+-- should configure 90, 50, 10
+@[tactic auto_aesop] def autoAesopImpl : Tactic := fun stx => do
+match stx with
+| `(tactic| auto?) => do
   let tac ← aesopTactic 90 50 10
   evalTactic tac
+| `(tactic| auto? [$names,*]) => do
+  let names := names.getElems.map fun n => n.getId
+  let tac ← aesopTactic 90 50 10 names.toList
+  evalTactic tac
+| _ => throwUnsupportedSyntax
 
 def theoremExprInContext? (ctx: Array Json)(statement: String): TranslateM (Option Expr) := do
   let mut context := #[]
@@ -306,7 +315,8 @@ def contradictionTactics (statement: String)
 def haveForAssertion  (type: Syntax.Term)
   (premises: List Name) :
     MetaM <| Syntax.Tactic := do
-  let tac ← aesopTactic 90 50 10 premises
+  let ids := premises.toArray.map fun n => Lean.mkIdent n
+  let tac ← `(tactic| auto? [$ids,*])
   `(tactic| have : $type := by $tac:tactic)
 
 mutual
