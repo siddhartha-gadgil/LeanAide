@@ -93,8 +93,12 @@ def term : MathParaStructure :=
 
 end define
 
+
+def name_field : MathParaStructure :=
+  .text `name "The name of the theorem, lemma or claim."
+
 def define : MathParaStructure :=
-  .obj `def (fields := [define.statement, define.term]) (optFields := [])
+  .obj `def (fields := [define.statement, define.term]) (optFields := [name_field])
     (description := "A mathematical definition of a term.")
 
 namespace deduced_using
@@ -197,7 +201,7 @@ def proof (describeOptions := false) : MathParaStructure :=
 open thm in
 def thm (describeOptions := false) : MathParaStructure :=
   .obj `theorem (fields := [hypothesis describeOptions, conclusion, proved])
-    (optFields := [proof, ref, cite, missing, errors])
+    (optFields := [name_field, proof, ref, cite, missing, errors])
     (description := "A mathematical theorem, with a list of hypotheses and a conclusion.")
 
 namespace problem
@@ -222,7 +226,7 @@ def problem : MathParaStructure :=
 namespace case
 
 def condition : MathParaStructure :=
-  .text `condition "The case condition or pattern; for induction one of 'base' or 'induction-step'; for a side of an 'iff' statement or a disjuntion, write the claim being proved."
+  .text `condition "The case condition or pattern; for induction one of 'base' or 'induction-step'; for a side of an 'iff' statement write the claim being proved (i.e., the statement `P => Q` or `Q => P`)."
 
 end case
 
@@ -235,10 +239,10 @@ def case (describeOptions := false) : MathParaStructure :=
 namespace cases
 
 def on : MathParaStructure :=
-  .text `on "The variable or expression on which the cases are being done. Write 'disjunction' for two sides of an 'iff' statement or multiple statements to be proved."
+  .text `on "The variable or expression on which the cases are being done. Write 'implication direction' an 'iff' statement."
 
 def split_kind : MathParaStructure :=
-  .enum `split_kind ["logical", "match", "condition", "groups"] "one of 'logical' (for two sides of an implication or multiple statements to be proved), 'match' (for pattern matching), 'condition' (if based on a condition being true or false) and 'groups' (for more complex cases)."
+  .enum `split_kind ["implication_direction", "match", "condition", "groups"] "one of 'implication_direction' (for two sides of an 'iff' implication), 'match' (for pattern matching), 'condition' (if based on a condition being true or false) and 'groups' (for more complex cases)."
 
 def exhaustiveness (describeOptions := false) : MathParaStructure :=
   .list `exhaustiveness (fieldType := `math_object) (describeOptions := describeOptions) "Proof that the cases are exhaustive."

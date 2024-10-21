@@ -51,13 +51,13 @@ def Lean.Json.getKV? (js : Json) : Option (String × Json) :=
 
 open Lean Meta Elab Term PrettyPrinter Tactic Parser
 def contextStatementOfJson (js: Json) : Option String :=
-  match js.getObjString? "type" with
-  | some "assume" =>
-    match js.getObjValAs? String "statement" with
-    | Except.ok s => some <| "Assume that " ++ s
+  match js.getKV?  with
+  | some ("assume", v) =>
+    match v with
+    | .str s => some <| "Assume that " ++ s
     | _ => none
-  | some "let" =>
-    let varSegment := match js.getObjString? "var" with
+  | some ("let", v) =>
+    let varSegment := match v.getObjString? "variable" with
       | some "<anonymous>" => "We have "
       | some v => s!"Let {v} be"
       | _ => "We have "
@@ -67,20 +67,20 @@ def contextStatementOfJson (js: Json) : Option String :=
     let valueSegment := match js.getObjString? "value" with
       | some v => s!"{v}"
       | _ => ""
-    let propertySegment := match js.getObjString? "property" with
+    let propertySegment := match js.getObjString? "properties" with
       | some p => s!"such that {p}"
       | _ => ""
     return s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}."
-  | some "cases" =>
-    match js.getObjValAs? String "on" with
+  | some ("cases", v) =>
+    match v.getObjValAs? String "on" with
     | Except.ok s => some <| "We consider cases based on " ++ s ++ "."
     | _ => none
-  | some "induction" =>
-    match js.getObjValAs? String "on" with
+  | some ("induction", v) =>
+    match v.getObjValAs? String "on" with
     | Except.ok s => some <| "We induct on " ++ s ++ "."
     | _ => none
-  | some "case" =>
-    match js.getObjValAs? String "condition" with
+  | some ("case", v) =>
+    match v.getObjValAs? String "condition" with
     | Except.ok p =>
       /- one of "induction", "property" and "pattern" -/
       match js.getObjValAs? String "case-kind" with
@@ -210,7 +210,6 @@ def commandToTactic (cmd: Syntax.Command) : TermElabM Syntax.Tactic := do
       `(tactic| let $name $letArgs*  := $value)
   | _ => `(tactic| sorry)
 
-#check binderIdent
 
 def inductionCase (name: String)(condition: String)
     (pf: Array Syntax.Tactic) : TermElabM Syntax.Tactic := do
@@ -335,15 +334,15 @@ def haveForAssertion  (type: Syntax.Term)
 mutual
   partial def structToCommand? (context: Array Json)
       (input: Json) : TranslateM <| Option Syntax.Command := do
-      match input.getObjString? "type" with
-      | some "theorem" =>
+      match input.getKV? with
+      | some ("theorem", v) =>
         logInfo s!"Found theorem"
-        let name? := input.getObjString? "name" |>.map String.toName
+        let name? := v.getObjString? "name" |>.map String.toName
         let name? := name?.filter (· ≠ Name.anonymous)
         let hypothesis :=
-          input.getObjValAs? (Array Json) "hypothesis"
+          v.getObjValAs? (Array Json) "hypothesis"
             |>.toOption.getD #[]
-        match input.getObjValAs? String "conclusion", input.getObjValAs? Json "proof" with
+        match v.getObjValAs? String "conclusion", v.getObjValAs? Json "proof" with
         | Except.ok claim, Except.ok pfSource =>
           match pfSource.getObjValAs? (List Json) "steps" with
           | Except.ok steps =>
@@ -363,8 +362,8 @@ mutual
         | _, _ =>
           logInfo s!"failed to get theorem conclusion or proof"
           return none
-      | some "define" =>
-        match input.getObjValAs? String "statement", input.getObjValAs? String "term" with
+      | some ("define", v) =>
+        match v.getObjValAs? String "statement", v.getObjValAs? String "term" with
         | Except.ok s, Except.ok t =>
           let statement := s!"We define {t} as follows:\n{s}."
           defnInContext? server params pb context statement
@@ -378,8 +377,8 @@ mutual
       | head :: tail =>
         IO.eprintln s!"Processing {head}"
         let headTactics: Array Syntax.Tactic ←
-          match head.getObjString? "type" with
-          | some "assert" =>
+          match head.getKV? with
+          | some ("assert", head) =>
             match head.getObjValAs? String "claim" with
             | Except.ok claim =>
               let useResults: List String :=
@@ -399,19 +398,19 @@ mutual
                 let tac ← haveForAssertion  (← delab type) premises
                 pure #[tac]
             | _ => pure #[]
-          | some "define" =>
+          | some ("define", head) =>
             match ← structToCommand? context head with
             | some cmd =>
               let tac ← commandToTactic  <| ←  purgeLocalContext cmd
               pure #[tac]
             | none => pure #[]
-          | some "theorem" =>
+          | some ("theorem", head) =>
             match ← structToCommand? context head with
             | some cmd =>
               let tac ← commandToTactic  <| ←  purgeLocalContext cmd
               pure #[tac]
             | none => pure #[]
-          | some "cases" =>
+          | some ("cases", head) =>
             match head.getObjValAs? (Array Json) "proof-cases" with
             | Except.ok cs =>
               let pairs ← cs.filterMapM fun js =>
@@ -441,7 +440,7 @@ mutual
                 | _ => pure #[]
               | _ => pure #[]
             | _ => pure #[]
-          | some "induction" =>
+          | some ("induction", head) =>
             match head.getObjValAs? String "on",
               head.getObjValAs? (Array Json) "proof-cases" with
             | Except.ok name, Except.ok cs =>
@@ -454,14 +453,14 @@ mutual
                 | _, _ => return none
               inductionCases name pairs
             | _, _ => pure #[]
-          | some "contradiction" =>
+          | some ("contradiction", head) =>
             match head.getObjValAs? String "statement",
               head.getObjValAs? (List Json) "proof" with
             | Except.ok s, Except.ok pf =>
               let proof ← structToTactics #[] context pf
               contradictionTactics s proof
             | _, _ => pure #[]
-          | some "conclusion" =>
+          | some ("conclusion", head) =>
             match head.getObjValAs? String "statement" with
             | Except.ok s => contradictionTactics s accum
             | _ => pure #[]
