@@ -235,10 +235,10 @@ def case (describeOptions := false) : MathPara :=
 namespace cases
 
 def on : MathPara :=
-  .text `on "The variable or expression on which the cases are being done."
+  .text `on "The variable or expression on which the cases are being done. Write 'implication' for two sides of an 'iff' statement."
 
 def split_kind : MathPara :=
-  .enum `split_kind ["match", "condition", "groups"] "one of 'match' (for pattern matching), 'condition' (if based on a condition being true or false) and 'groups' (for more complex cases)."
+  .enum `split_kind ["match", "condition", "groups"] "one of 'iff' (for two sides of an implication), 'match' (for pattern matching), 'condition' (if based on a condition being true or false) and 'groups' (for more complex cases)."
 
 def exhaustiveness (describeOptions := false) : MathPara :=
   .list `exhaustiveness (fieldType := `math_object) (describeOptions := describeOptions) "Proof that the cases are exhaustive."
@@ -250,7 +250,7 @@ def proof_cases (describeOptions := false) : MathPara :=
 
 open cases in
 def cases (describeOptions := false) : MathPara :=
-  .obj `cases (fields := [on, split_kind, proof_cases describeOptions])
+  .obj `cases (fields := [split_kind, on, proof_cases describeOptions])
     (optFields := [exhaustiveness, missing, errors])
     (description := "A proof by cases or proof by induction, with a list of cases.")
 
@@ -409,3 +409,8 @@ def writeMathDoc : IO Unit :=
     (MathPara.mathDoc.toIndendentList |>.render)
 
 #eval writeMathDoc
+
+def MathDoc.instructions (alertErrors : Bool := false) : IO String := do
+  let jsonProofInstructions := MathPara.mathDoc.toIndendentList |>.render
+  let alert := if alertErrors then " Note that the proof may not be complete and may have some errors, which you should note in the appropriate fields." else ""
+  return s!"The following is a custom JSON format, which we call `mathDocJSON`, for mathematical documents. Note that a document is translated to a JSON object with a single key 'math_document' and a corresponding value.\n\n {jsonProofInstructions}\n---\n\nWrite the following theorem and proof into `MathDocJSON` format.{alert} Output JSON only. The theorem and proof are as follows:"
