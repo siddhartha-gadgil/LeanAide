@@ -31,10 +31,10 @@ The cases to cover: "define", "assert", "theorem", "problem", "assume", "let", "
 * **contradiction**: Translate the statement to be contradicted to a statement `P`, then prove `P → False` using the given proof (with aesop having contradiction as a tactic). Finally follow the claim with `contradiction` (or `aesop` with contradiction).
 -/
 
-elab "#note" _s:str : command => do
+elab "#note" "[" term,* "]" : command => do
   return ()
 
-macro "#note" _s:str : tactic => `(tactic| sorry)
+macro "#note" "[" term,* "]" : tactic => `(tactic| sorry)
 
 def Lean.Json.getObjString? (js: Json) (key: String) : Option String :=
   match js.getObjValAs? String key with
@@ -346,22 +346,16 @@ mutual
           v.getObjValAs? (Array Json) "hypothesis"
             |>.toOption.getD #[]
         match v.getObjValAs? String "conclusion", v.getObjValAs? Json "proof" with
-        | Except.ok claim, Except.ok pfSource =>
-          match pfSource.getObjValAs? (List Json) "steps" with
-          | Except.ok steps =>
+        | Except.ok claim, Except.ok (.arr steps) =>
             let thm? ← theoremExprInContext? server params pb (context ++ hypothesis) claim
             if thm?.isNone then
               IO.eprintln s!"failed to get theorem conclusion"
             thm?.mapM fun thm => do
-              let pf ← structToTactics #[] context steps
+              let pf ← structToTactics #[] (context ++ hypothesis) steps.toList
               let pf := pf.push <| ← `(tactic| auto?)
               let pfTerm ← `(by $pf*)
               IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
               mkStatementStx name? (← delab thm) pfTerm true
-          | _ =>
-            IO.eprintln s!"failed to get proof steps"
-            logInfo s!"failed to get proof steps"
-            none
         | _, _ =>
           logInfo s!"failed to get theorem conclusion or proof"
           return none
@@ -490,6 +484,31 @@ mutual
 
 end
 
+#check Syntax.StrLit
+
+def structToCommandSeq? (context: Array Json)
+    (input: Json) : TranslateM <| Option <| Array Syntax.Command := do
+  match input with
+  | Json.arr js =>
+    let mut cmds := #[]
+    let mut ctx := context
+    for j in js do
+      match ← structToCommand? server params pb
+        numLeanSearch numMoogle ctx j with
+      | some cmd => cmds := cmds.push cmd
+      | none =>
+        unless contextStatementOfJson j |>.isSome do
+          let s := s!"JSON object not command or context: {j.compress}"
+          let sLit := Syntax.mkStrLit s
+          let cmd ←
+            `(command| #note [ $sLit:term ])
+          cmds := cmds.push cmd
+        pure ()
+      ctx := ctx.push j
+    match cmds with
+    | #[] => none
+    | _ => pure <| some  cmds
+  | _ => none
 
 elab "dl!" t: term : term => do
 let t ← elabType t
