@@ -47,7 +47,8 @@ def Lean.Json.getKV? (js : Json) : Option (String × Json) :=
     | _ => none
   | _ => none
 
-#check Lean.Json.getObjVal?
+def addFullStop (s: String) : String :=
+  if s.endsWith "." then s else s ++ "."
 
 open Lean Meta Elab Term PrettyPrinter Tactic Parser
 def contextStatementOfJson (js: Json) : Option String :=
@@ -73,21 +74,17 @@ def contextStatementOfJson (js: Json) : Option String :=
     return s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}."
   | some ("cases", v) =>
     match v.getObjValAs? String "on" with
-    | Except.ok s => some <| "We consider cases based on " ++ s ++ "."
+    | Except.ok s => some <| "We consider cases based on " ++ (addFullStop s)
     | _ => none
   | some ("induction", v) =>
     match v.getObjValAs? String "on" with
-    | Except.ok s => some <| "We induct on " ++ s ++ "."
+    | Except.ok s => some <| "We induct on " ++ (addFullStop s)
     | _ => none
   | some ("case", v) =>
     match v.getObjValAs? String "condition" with
     | Except.ok p =>
       /- one of "induction", "property" and "pattern" -/
-      match js.getObjValAs? String "case-kind" with
-      | Except.ok "induction" => some <| "Consider the induction case: " ++ p ++ "."
-      | Except.ok "property" => some <| "Consider the case " ++ p ++ "."
-      | Except.ok "pattern" => some <| "Consider the case of the form " ++ p ++ "."
-      | _ => none
+      "Consider the case " ++ (addFullStop p)
     | _ => none
   | _ => none
 
@@ -296,6 +293,7 @@ def groupCases (cond_pfs: List <| String × Array Syntax.Tactic)
     | [] => do
       let falseId := mkIdent `False
       `($falseId:ident)
+    | [h] => pure ⟨h⟩
     | h :: t =>
       let t' : List Syntax.Term := t.map fun term => ⟨term⟩
       t'.foldlM (fun acc cond => `($acc ∨ $cond)) ⟨h⟩
@@ -411,20 +409,23 @@ mutual
               pure #[tac]
             | none => pure #[]
           | some ("cases", head) =>
-            match head.getObjValAs? (Array Json) "proof-cases" with
+            match head.getObjValAs? (Array Json) "proof_cases" with
             | Except.ok cs =>
-              let pairs ← cs.filterMapM fun js =>
-                match js.getObjString? "condition",
-                  js.getObjValAs? (List Json) "proof" with
-                | some cond, Except.ok pfSource => do
-                  let pf ← structToTactics #[] context pfSource
-                  return some (cond, pf)
-                | _, _ => return none
-              match head.getObjString? "split-kind" with
+              let conditionProofs ← cs.filterMapM fun js =>
+                match js.getKV? with
+                | some ("case", js) =>
+                  match js.getObjString? "condition",
+                    js.getObjValAs? (List Json) "proof" with
+                  | some cond, Except.ok pfSource => do
+                    let pf ← structToTactics #[] context pfSource
+                    pure <| some (cond, pf)
+                  | _, _ => pure none
+                | _ => pure none
+              match head.getObjString? "split_kind" with
               | some "match" =>
                 match head.getObjString? "on" with
                 | some discr =>
-                  let casesTac ← matchCases discr pairs
+                  let casesTac ← matchCases discr conditionProofs
                   return #[casesTac]
                 | _ => pure #[]
               | some "group" =>
@@ -432,37 +433,45 @@ mutual
                   match head.getObjValAs? (List Json) "exhaustiveness" with
                   | Except.ok pfSource => structToTactics #[] context pfSource
                   | _ => pure #[← `(tactic| auto?)]
-                groupCases pairs.toList union_pf
+                groupCases conditionProofs.toList union_pf
               | some "condition" =>
-                match pairs with
+                match conditionProofs with
                 | #[(cond₁, pf₁), (cond₂, pf₂)] =>
                   conditionCases cond₁ cond₂ pf₁ pf₂
                 | _ => pure #[]
-              | _ => pure #[]
-            | _ => pure #[]
+              | _ => /- treat like a group but with conditions as claims;
+                      works for `iff` -/
+                let union_pf : Array Syntax.Tactic ←
+                  pure #[← `(tactic| auto?)]
+                groupCases conditionProofs.toList union_pf
+            | _ =>
+              pure #[]
           | some ("induction", head) =>
             match head.getObjValAs? String "on",
-              head.getObjValAs? (Array Json) "proof-cases" with
+              head.getObjValAs? (Array Json) "proof_cases" with
             | Except.ok name, Except.ok cs =>
-              let pairs ← cs.filterMapM fun js =>
-                match js.getObjString? "condition",
-                  js.getObjValAs? (List Json) "proof" with
-                | some cond, Except.ok pfSource => do
-                  let pf ← structToTactics #[] context pfSource
-                  return some (cond, pf)
-                | _, _ => return none
-              inductionCases name pairs
+              let conditionProofs ← cs.filterMapM fun js =>
+                match js.getKV? with
+                | some ("case", js) =>
+                  match js.getObjString? "condition",
+                    js.getObjValAs? (List Json) "proof" with
+                  | some cond, Except.ok pfSource => do
+                    let pf ← structToTactics #[] context pfSource
+                    return some (cond, pf)
+                  | _, _ => return none
+                | _ => return none
+              inductionCases name conditionProofs
             | _, _ => pure #[]
           | some ("contradiction", head) =>
-            match head.getObjValAs? String "statement",
+            match head.getObjValAs? String "assumption",
               head.getObjValAs? (List Json) "proof" with
             | Except.ok s, Except.ok pf =>
               let proof ← structToTactics #[] context pf
               contradictionTactics s proof
             | _, _ => pure #[]
-          | some ("conclusion", head) =>
-            match head.getObjValAs? String "statement" with
-            | Except.ok s => contradictionTactics s accum
+          | some ("conclude", head) =>
+            match head.getObjValAs? String "claim" with
+            | Except.ok s => pure #[← conclusionTactic s]
             | _ => pure #[]
           | _ => pure #[]
         IO.eprintln s!"Head tactics"

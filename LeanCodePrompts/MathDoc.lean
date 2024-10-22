@@ -157,11 +157,11 @@ def calculations : MathParaStructure :=
   .list_of `calculations (type := calculation_step)
 end assert
 
-def missing_result : MathParaStructure :=
+def missing_proofs : MathParaStructure :=
   .text `missing "A  problem that need to be solved or results that need to be proved to complete the proof. Standard results/criteria may be omitted from the proof: include them in the 'deduced_from' field."
 
 def missing : MathParaStructure :=
-  .list_of `missing missing_result
+  .list_of `missing_proofs missing_proofs
 
 def error : MathParaStructure :=
   .text `error "An error in a proof or calculation. Report only actual errors, with missing steps reported in the 'missing' field."
@@ -196,7 +196,7 @@ def cite : MathParaStructure :=
 end thm
 
 def proof (describeOptions := false) : MathParaStructure :=
-  .list `proof (fieldType := `math_object) (describeOptions := describeOptions) "A proof of a lemma, theorem or claim, having the same structure as a `math_document`."
+  .list `proof (fieldType := `math_object) (describeOptions := describeOptions) "A proof of a lemma, theorem or claim, having the same structure as (the value for) a `math_document`."
 
 open thm in
 def thm (describeOptions := false) : MathParaStructure :=
@@ -239,13 +239,13 @@ def case (describeOptions := false) : MathParaStructure :=
 namespace cases
 
 def on : MathParaStructure :=
-  .text `on "The variable or expression on which the cases are being done. Write 'implication direction' an 'iff' statement."
+  .text `on "The variable or expression on which the cases are being done. Write 'implication direction' for an 'iff' statement."
 
 def split_kind : MathParaStructure :=
   .enum `split_kind ["implication_direction", "match", "condition", "groups"] "one of 'implication_direction' (for two sides of an 'iff' implication), 'match' (for pattern matching), 'condition' (if based on a condition being true or false) and 'groups' (for more complex cases)."
 
 def exhaustiveness (describeOptions := false) : MathParaStructure :=
-  .list `exhaustiveness (fieldType := `math_object) (describeOptions := describeOptions) "Proof that the cases are exhaustive."
+  .list `exhaustiveness (fieldType := `math_object) (describeOptions := describeOptions) "Proof that the cases are exhaustive, similar to (the value for) 'math_document'."
 
 end cases
 
@@ -268,7 +268,7 @@ end induction
 open induction in
 def induction (describeOptions := false) : MathParaStructure :=
   .obj `induction (fields := [on, proof_cases describeOptions])
-    (optFields := [missing, errors])
+    (optFields := [])
     (description := "A proof by induction, with a base case and an induction step.")
 
 namespace contradiction
