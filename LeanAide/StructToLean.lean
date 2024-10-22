@@ -3,7 +3,7 @@ import Mathlib
 import LeanCodePrompts.Translate
 import LeanAide.AesopSyntax
 import LeanAide.CheckedSorry
-open LeanAide.Meta
+open LeanAide.Meta Lean Meta
 
 /-!
 # Lean code from `ProofJSON`
@@ -34,7 +34,16 @@ The cases to cover: "define", "assert", "theorem", "problem", "assume", "let", "
 elab "#note" "[" term,* "]" : command => do
   return ()
 
-macro "#note" "[" term,* "]" : tactic => `(tactic| sorry)
+elab "#note" "[" term,* "]" : tactic => do
+  return ()
+
+def mkNoteCmd (s: String) : MetaM Syntax.Command :=
+  let sLit := Lean.Syntax.mkStrLit  s
+  `(command | #note [$sLit])
+
+def mkNoteTactic (s: String) : MetaM Syntax.Tactic :=
+  let sLit := Lean.Syntax.mkStrLit  s
+  `(tactic | #note [$sLit])
 
 def Lean.Json.getObjString? (js: Json) (key: String) : Option String :=
   match js.getObjValAs? String key with
@@ -484,7 +493,15 @@ mutual
 
 end
 
-#check Syntax.StrLit
+syntax commandSeq := sepBy1IndentSemicolon(command)
+
+def commands : TSyntax `commandSeq → Array (TSyntax `command)
+  | `(commandSeq| $cs*) => cs
+  | _ => #[]
+
+def toCommandSeq : Array (TSyntax `command) → CoreM (TSyntax `commandSeq)
+  | cs => `(commandSeq| $cs*)
+
 
 def structToCommandSeq? (context: Array Json)
     (input: Json) : TranslateM <| Option <| Array Syntax.Command := do
@@ -499,9 +516,8 @@ def structToCommandSeq? (context: Array Json)
       | none =>
         unless contextStatementOfJson j |>.isSome do
           let s := s!"JSON object not command or context: {j.compress}"
-          let sLit := Syntax.mkStrLit s
           let cmd ←
-            `(command| #note [ $sLit:term ])
+            mkNoteCmd s
           cmds := cmds.push cmd
         pure ()
       ctx := ctx.push j
@@ -509,6 +525,16 @@ def structToCommandSeq? (context: Array Json)
     | #[] => none
     | _ => pure <| some  cmds
   | _ => none
+
+def mathDocumentCommands (doc: Json) :
+  TranslateM <| Array Syntax.Command := do
+    match doc.getKV? with
+    | some  ("math_document", proof) =>
+      let cmds? ←
+        structToCommandSeq? server params pb numLeanSearch numMoogle
+          #[] proof
+      return cmds?.getD #[← mkNoteCmd "No commands found"]
+    | _ => return #[← mkNoteCmd "No math document found"]
 
 elab "dl!" t: term : term => do
 let t ← elabType t
