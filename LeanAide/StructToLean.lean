@@ -31,6 +31,11 @@ The cases to cover: "define", "assert", "theorem", "problem", "assume", "let", "
 * **contradiction**: Translate the statement to be contradicted to a statement `P`, then prove `P → False` using the given proof (with aesop having contradiction as a tactic). Finally follow the claim with `contradiction` (or `aesop` with contradiction).
 -/
 
+elab "#note" _s:str : command => do
+  return ()
+
+macro "#note" _s:str : tactic => `(tactic| sorry)
+
 def Lean.Json.getObjString? (js: Json) (key: String) : Option String :=
   match js.getObjValAs? String key with
   | Except.ok s => some s
@@ -380,10 +385,14 @@ mutual
             match head.getObjValAs? String "claim" with
             | Except.ok claim =>
               let useResults: List String :=
-                match head.getObjValAs? Json "deduced_from"  with
+                match head.getObjValAs? Json "deduced_from_results"  with
                 | Except.ok known =>
-                  match known.getObjValAs? (List String) "known_results" with
-                  | Except.ok results => results
+                  match known.getKV? with
+                  | some ("deduced_from", .arr results) =>
+                    results.toList.filterMap fun js =>
+                      match js.getObjString? "deduced_from", js.getObjValAs? Bool "proved_earlier" with
+                      | some s, Except.ok false => some s
+                      | _, _ => none
                   | _ => []
                 | _ => []
               let type? ← theoremExprInContext? server params pb context claim

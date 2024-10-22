@@ -13,9 +13,9 @@
   * **assert**: A mathematical statement whose proof is a straightforward consequence of given and known results following some method. Give a JSON object. The keys and corresponding values are as follows.
     * **claim**: The mathematical claim being asserted, NOT INCLUDING proofs, justifications or results used. The claim should be purely a logical statement which is the *consequence* obtained. Give a JSON string.
     * **proof_method**: (OPTIONAL) The method used to prove the claim. This could be a direct proof, proof by contradiction, proof by induction, etc. this should be a single phrase or a fairly simple sentence; if a longer justification is needed break the step into smaller steps. If the method is deduction from a result, use the 'deduced_using' field Give a JSON string.
-    * **deductions**: (OPTIONAL) A list of elements of type `deduction`. Each element of type `deduction` is as follows:
-      * **deduction**: A deduction of a mathematical result from assumptions or previously known results. Give a JSON object. The keys and corresponding values are as follows.
-        * **deduced_from**: An assumption or previously known results from which the deduction is made. If more than one result is used, list them in the 'deductions' field as separate `deduction` objects. If the result used needs justification, have a separate `assert` object earlier. Give a JSON string.
+    * **deduced_from_results**: (OPTIONAL) A list of elements of type `deduced_from`. Each element of type `deduced_from` is as follows:
+      * **deduced_from**: A deduction of a mathematical result from assumptions or previously known results. Give a JSON object. The keys and corresponding values are as follows.
+        * **result_used**: An assumption or previously known results from which the deduction is made. If more than one result is used, list them in the 'deductions' field as separate `deduction` objects. If the result used needs justification, have a separate `assert` object earlier. Give a JSON string.
         * **proved_earlier**: Whether the statement from which deduction has been proved earlier IN THIS DOCUMENT. Answer `true` or `false` (answer `false` if a result from the mathematical literature is being invoked). Give a JSON boolean.
     * **calculations**: (OPTIONAL) A list of elements of type `calculation_step`. Each element of type `calculation_step` is as follows:
       * **calculation_step**: A step in a calculation or computation. Give a JSON object. The keys and corresponding values are as follows.

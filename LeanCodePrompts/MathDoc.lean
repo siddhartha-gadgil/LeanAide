@@ -103,12 +103,12 @@ def define : MathParaStructure :=
 
 namespace deduced_using
 
-def deduced_from : MathParaStructure := .text `deduced_from "An assumption or previously known results from which the deduction is made. If more than one result is used, list them in the 'deductions' field as separate `deduction` objects. If the result used needs justification, have a separate `assert` object earlier."
+def result_used : MathParaStructure := .text `result_used "An assumption or previously known results from which the deduction is made. If more than one result is used, list them in the 'deductions' field as separate `deduction` objects. If the result used needs justification, have a separate `assert` object earlier."
 
 def in_context : MathParaStructure := .bool `proved_earlier "Whether the statement from which deduction has been proved earlier IN THIS DOCUMENT. Answer `true` or `false` (answer `false` if a result from the mathematical literature is being invoked)."
 
 
-def instantiation : MathParaStructure :=  .text `instantiation "Specific numbers, functions etc to which a known result is applied. For example, if we apply uniqueness of prime factorisation to `42` write `{'deduced_from' : 'uniqueness of prime factorization', 'instantiation': '42'}`."
+def instantiation : MathParaStructure :=  .text `instantiation "Specific numbers, functions etc to which a known result is applied. For example, if we apply uniqueness of prime factorisation to `42` write `{'result_used' : 'uniqueness of prime factorization', 'instantiation': '42'}`."
 
 def instantiations : MathParaStructure :=
   .list_of `instantiations instantiation
@@ -140,12 +140,12 @@ def calculation_step : MathParaStructure :=
 namespace assert
 open deduced_using in
 def deduction : MathParaStructure :=
-  .obj `deduction (fields := [deduced_from, in_context])
+  .obj `deduced_from (fields := [result_used, in_context])
     (optFields := []) -- removed instantiations as it was not understood.
     (description := "A deduction of a mathematical result from assumptions or previously known results.")
 
 def deductions : MathParaStructure :=
-  .list_of `deductions deduction
+  .list_of `deduced_from_results deduction
 
 def claim : MathParaStructure :=
   .text `claim "The mathematical claim being asserted, NOT INCLUDING proofs, justifications or results used. The claim should be purely a logical statement which is the *consequence* obtained."
