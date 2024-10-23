@@ -332,3 +332,35 @@ end Structured
 -- #eval eg2
 
 -- #eval Structured.eg3
+
+def parseEg : TranslateM <| Array Format := do
+  let source ← IO.FS.readFile "resources/mathdoc.json"
+  match Json.parse source with
+  | Except.error e => throwError s!"Failed to parse JSON: {e}"
+  | Except.ok js => do
+    let doc ←
+      mathDocumentCommands (doc := js)
+        (pb := LeanAide.Meta.PromptExampleBuilder.embedBuilder 5 5 5)
+    let doc' ←  doc.mapM fun c => PrettyPrinter.ppCommand c
+    return doc'
+
+-- #eval parseEg
+
+def egJson : TranslateM <| Array String := do
+  let source ← IO.FS.readFile "resources/mathdoc.json"
+  match Json.parse source with
+  | Except.error e => throwError s!"Failed to parse JSON: {e}"
+  | Except.ok js =>
+    match js.getKV? with
+    | some ("math_document", .arr jsArr) =>
+      let js := jsArr.get! 0
+      match js.getKV? with
+      | some ("theorem", js) =>
+        match js.getObjValAs? (Array Json) "hypothesis" with
+        | Except.ok hyps =>
+          hyps.filterMapM fun hyp => contextStatementOfJson hyp
+        | _ => throwError "Expected JSON object with key 'hypothesis'"
+      | _ => throwError "Expected JSON object with key 'theorem'"
+    | _ => throwError "Expected JSON object with key 'math_document'"
+
+#eval egJson

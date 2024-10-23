@@ -76,13 +76,13 @@ def contextStatementOfJson (js: Json) : Option String :=
       | some "<anonymous>" => "We have "
       | some v => s!"Let {v} be"
       | _ => "We have "
-    let kindSegment := match js.getObjString? "kind" with
-      | some k => s!"a {k}"
-      | _ => ""
+    let kindSegment := match v.getObjValAs? String "kind" with
+      | Except.ok k => s!"a {k}"
+      | Except.error e => s!"kind error: {e}; {v.getObjVal? "kind"}; {v}"
     let valueSegment := match js.getObjString? "value" with
       | some v => s!"{v}"
       | _ => ""
-    let propertySegment := match js.getObjString? "properties" with
+    let propertySegment := match v.getObjString? "properties" with
       | some p => s!"such that {p}"
       | _ => ""
     return s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}."
@@ -367,14 +367,14 @@ mutual
               mkStatementStx name? (← delab thm) pfTerm true
         | _, _ =>
           logInfo s!"failed to get theorem conclusion or proof"
-          return none
+          mkNoteCmd "No theorem conclusion or proof found"
       | some ("define", v) =>
         match v.getObjValAs? String "statement", v.getObjValAs? String "term" with
         | Except.ok s, Except.ok t =>
           let statement := s!"We define {t} as follows:\n{s}."
           defnInContext? server params pb context statement
         | _ , _ => none
-      | _ => return none
+      | _ => mkNoteCmd s!"Json not a KV pair {input.compress}"
 
   partial def structToTactics  (accum: Array Syntax.Tactic)(context: Array Json)
       (input: List Json) : TranslateM <| Array Syntax.Tactic := do
