@@ -398,7 +398,7 @@ mutual
                   match known.getKV? with
                   | some ("deduced_from", .arr results) =>
                     results.toList.filterMap fun js =>
-                      match js.getObjString? "deduced_from", js.getObjValAs? Bool "proved_earlier" with
+                      match js.getObjString? "result_used", js.getObjValAs? Bool "proved_earlier" with
                       | some s, Except.ok false => some s
                       | _, _ => none
                   | _ => []

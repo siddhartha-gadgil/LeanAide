@@ -487,6 +487,34 @@ theorem aux.1430888143716163738 {G : Type u_1} [inst : CommGroup G] {H : Subgrou
   auto?)
 
 -/
+
+/-
+(#[(Let \( G \) be an abelian group, and let \( H \) be a subgroup of \( G \). We must show that \( H \) is abelian.
+
+Take any \( a, b \in H \). Since \( H \subseteq G \) and \( G \) is an abelian group, the operation in \( G \) satisfies \( a \cdot b = b \cdot a \) for any \( a, b \in G \).
+
+Thus, specifically for \( a, b \in H \), we have \( a \cdot b = b \cdot a \). Therefore, \( H \) is abelian., #[{"math_document":
+ [{"theorem":
+   {"proved": true,
+    "proof":
+    [{"assume": "Take any a, b in H"},
+     {"assert":
+      {"deduced_from_results":
+       [{"deduced_from":
+         {"result_used": "G is abelian", "proved_earlier": true}}],
+       "claim": "a * b = b * a"}},
+     {"conclude": {"claim": "H is abelian"}}],
+    "hypothesis":
+    [{"let": {"variable": "G", "kind": "abelian group"}},
+     {"let": {"variable": "H", "kind": "subgroup of G"}}],
+    "conclusion": "H is abelian"}}]}])],
+theorem aux.6439339685659580310 {G : Type u_1} [inst : CommGroup G] (H : Subgroup G) : CommGroup ↥H :=
+  by
+  have : ∀ {G : Type u_1} [inst : CommGroup G] (H : Subgroup G) {a b : G}, a ∈ H → b ∈ H → a * b = b * a := by auto?[]
+  have : H is abelian := by auto?
+  auto?)
+
+-/
 -- #eval Structured.eg3
 
 def parseEg : TranslateM <| Array Format := do
