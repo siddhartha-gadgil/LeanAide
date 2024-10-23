@@ -1,315 +1,330 @@
 import LeanCodePrompts.ChatClient
-import LeanAide.StructToLean
-open Lean LeanAide.Meta
+open Lean Json
+namespace Structured
 
-def proofExample := "## Theorem: Let $A$ be a square matrix. Prove that if $A^3 = I$ then $A$ is diagonalizable.\n## Proof: \nSince $A^3 = I$, $A$ satisfies the polynomial equation $p(x) = x^3 - 1$. The roots of $p(x)$ are the cube roots of unity, namely $1, \\omega, \\omega^2$, where $\\omega = e^{2\\pi i/3}$ is a primitive cube root of unity. These roots are distinct, so the minimal polynomial of $A$ must divide $p(x)$ and also have distinct roots. Therefore, $A$ is diagonalizable."
+def server := ChatServer.openAI
 
-#eval proofExample
+def eg1 := server.structuredProofFromStatement "There are infinitely many odd numbers."
 
-def gemini := ChatServer.google
+def eg2 := server.structuredProofFromStatement "Every subgroup of a cyclic group is cyclic."
 
-def geminiFlash := ChatServer.google "gemini-1.5-flash-001"
+def eg3 := do
+  let jsArr ← server.structuredProofFromStatement "Every subgroup of an abelian group is abelian."
+  let js := jsArr.get! 0
+  let doc : Except String MathParaStructure := fromJson? js
+  return (jsArr, repr doc)
 
-def structExampl := gemini.structuredProof proofExample
+end Structured
 
-def structExamplFlash := gemini.structuredProof proofExample
-
-def numina :=
-  ChatServer.generic (model := "AI-MO/NuminaMath-7B-TIR") (url := "10.134.13.103:8000")
-
-def mistral :=
-  ChatServer.generic (model := "mistralai/Mistral-7B-Instruct-v0.3") (url := "10.134.13.103:8000")
-
-def mathstral :=
-  ChatServer.generic (model := "mistralai/mathstral-7B-v0.1") (url := "10.134.13.103:8000")
-
-def worst := "14546"
-def best := "14590"
-
-def basePath : System.FilePath := "results" / "gemini_results" / "um102"
-
-def readSol (problem student : String) : IO String := do
-  IO.FS.readFile (basePath / s!"problem{problem}" / s!"{student}_sol.md")
-
-#eval readSol "5" best
-
-def mathstralWrite (problem student : String) : CoreM String := do
-  let sol ← readSol problem student
-  let resArr ←  mathstral.structuredProof sol
-  let res := resArr[0]!
-  IO.FS.writeFile (basePath / s!"problem{problem}" / s!"{student}_mathstral.json") (res.pretty)
-  return res.pretty
-
-def mathstralEgs : CoreM (List (List String)) := do
-  ["1", "3", "5"].mapM fun problem =>
-    [best, worst].mapM (fun student => mathstralWrite problem student)
-
--- #eval mathstralWrite "3" best
-
-def numinaExample := numina.structuredProof proofExample
-/-
-#[{"type": "theorem",
- "status": "proved",
- "proof":
- {"steps":
-  [{"type": "assert",
-    "statement": "A satisfies the polynomial equation p(x) = x^3 - 1"},
-   {"type": "assert",
-    "statement":
-    "The roots of p(x) are the cube roots of unity: 1, omega, omega^2, where omega = e^{2pi i / 3}"},
-   {"type": "assert",
-    "statement":
-    "These roots are distinct, so the minimal polynomial of A must divide p(x) and also have distinct roots"},
-   {"type": "assert", "statement": "Therefore, A is diagonalizable"}]},
- "name": "Theorem: A matrix A satisfying A^3 = I is diagonalizable",
- "hypothesis":
- [{"variable": "A",
-   "type": "let",
-   "property": "square matrix",
-   "kind": "matrix"},
-  {"type": "assert", "statement": "A^3 = I"}],
- "conclusion": "A is diagonalizable"}]
-
--/
--- #eval numinaExample
-
-def mistralExample := mistral.structuredProof proofExample
-/-
-#[{"type": "theorem",
- "Status": "proved",
- "Proof":
- {"Steps":
-  [{"type": "assert",
-    "Deduced_from": ["Assumption"],
-    "Claim": "A satisfies the polynomial equation p(x) = x^3 - 1."},
-   {"type": "assert",
-    "Deduced_from": ["Assertion"],
-    "Claim":
-    "The roots of p(x) are 1, ω, and ω^2, where ω = e^(2πi/3) is a primitive cube root of unity."},
-   {"type": "assert",
-    "Deduced_from": ["Assertion"],
-    "Claim": "These roots are distinct."},
-   {"type": "assert",
-    "Deduced_from": ["Assertion", "Assertion", "Assertion"],
-    "Claim":
-    "The minimal polynomial of A must divide p(x) and also have distinct roots."},
-   {"type": "conclude", "Statement": "A is diagonalizable."}]},
- "Hypothesis":
- [{"type": "assume", "Statement": "A is a square matrix and A^3 = I"}],
- "Conclusion": "A is diagonalizable"}]
--/
--- #eval mistralExample
 
 /-
-#[{"type": "theorem",
- "name": "Diagonalizability of Matrices Satisfying A^3 = I",
- "Status": "proved",
- "Proof":
- {"type": "proof",
-  "Steps":
-  [{"type": "assert",
-    "Deduced_from": ["$A^3 = I$"],
-    "Claim": "The minimal polynomial of $A$ divides $x^3 - 1$."},
-   {"type": "assert",
-    "Proof-method": "direct computation",
-    "Claim":
-    "The roots of $x^3 - 1$ are $1, \\omega, \\omega^2$, where $\\omega = e^{2 \\pi i / 3}$."},
-   {"type": "assert",
-    "Proof-method": "direct verification",
-    "Claim": "The roots $1, \\omega, \\omega^2$ are distinct."},
-   {"type": "assert",
-    "Deduced_from":
-    ["The minimal polynomial of $A$ divides $x^3 - 1$",
-     "The roots of $x^3 - 1$ are $1, \\omega, \\omega^2$",
-     "The roots $1, \\omega, \\omega^2$ are distinct."],
-    "Claim": "The minimal polynomial of $A$ has distinct roots."},
-   {"type": "conclude",
-    "Statement": "$A$ is diagonalizable.",
-    "Deduced_from": ["The minimal polynomial of $A$ has distinct roots."]}]},
- "Hypothesis":
- [{"type": "let", "Variable": "A", "Kind": "square matrix"},
-  {"type": "assume", "Statement": "$A^3 = I$"}],
- "Conclusion": "A is diagonalizable."}]
+#[{"math_document":
+ [{"theorem":
+   {"proved": true,
+    "proof":
+    [{"contradiction":
+      {"proof":
+       [{"let":
+         {"variable": "O",
+          "value": "{o_1, o_2, \\ldots, o_n}",
+          "kind": "set of all odd numbers"}},
+        {"assert":
+         {"deductions":
+          [{"deduction":
+            {"in_context": true, "deduced_from": "definition of odd numbers"}}],
+          "claim":
+          "Every odd number is of the form 2k + 1 for some integer k."}},
+        {"let":
+         {"variable": "m",
+          "value": "2 \\cdot \\max(o_1, o_2, \\ldots, o_n) + 3",
+          "properties": "greater than any element in O"}},
+        {"assert":
+         {"proof_method": "can be expressed in the form 2k + 1",
+          "deductions":
+          [{"deduction":
+            {"instantiations":
+             [{"instantiation": "k = \\max(o_1, o_2, \\ldots, o_n) + 1"}],
+             "in_context": true,
+             "deduced_from": "definition of odd numbers"}}],
+          "claim": "m is an odd number."}},
+        {"assert": {"claim": "m is not in the set O."}},
+        {"assert":
+         {"claim":
+          "There is a contradiction in the assumption that O contains all odd numbers."}}],
+       "assumption": "There are only finitely many odd numbers."}},
+     {"conclude": {"claim": "There are infinitely many odd numbers."}}],
+    "hypothesis": [],
+    "conclusion": "There are infinitely many odd numbers."}}]}]
+
 -/
--- #eval structExampl
+-- #eval eg1
+
+-- Before tweak for instantiation
 /-
-#[[{"type": "theorem",
-  "status": "stated",
-  "name": "Diagonalizability of Matrices Satisfying A^3 = I",
-  "hypothesis":
-  [{"type": "fix", "Variable": "A", "Kind": "square matrix"},
-   {"type": "assume", "Statement": "$A^3 = I$"}],
-  "conclusion": "$A$ is diagonalizable."},
- {"type": "proof",
-  "steps":
-  [{"type": "observe",
-    "claim":
-    "The matrix $A$ satisfies the polynomial equation $p(x) = x^3 - 1$",
-    "Deduced_from": ["$A^3 = I$"]},
-   {"type": "observe",
-    "error":
-    "This observation is ambiguous. Over which field are we considering the polynomial $p(x)$ and its roots? The field needs to be specified since the diagonalizability of the matrix $A$ depends on the field.",
-    "claim":
-    "The roots of $p(x)$ are $1, \\omega, \\omega^2$, where $\\omega = e^{2\\pi i/3}$ is a primitive cube root of unity."},
-   {"type": "observe",
-    "missing":
-    [{"type": "problem",
-      "statement":
-      "Prove that if a matrix $A$ satisfies a polynomial equation $q(A) = 0$, then the minimal polynomial of $A$ divides $q(x)$."}],
-    "claim":
-    "The roots of $p(x)$ are distinct, so the minimal polynomial of $A$ must divide $p(x)$ and also have distinct roots."},
-   {"type": "assert",
-    "missing":
-    [{"type": "problem",
-      "statement":
-      "Prove that if the minimal polynomial of a matrix has distinct roots, then the matrix is diagonalizable."}],
-    "error":
-    "The converse of this statement is true, but this statement is not true in general. It is not sufficient for the minimal polynomial to have distinct roots to guarantee diagonalizability. The minimal polynomial needs to split into linear factors over the field being considered. ",
-    "claim": "Therefore, $A$ is diagonalizable.",
-    "Deduced_from": ["The minimal polynomial of $A$ has distinct roots"]}]}]]
+#[{"math_document":
+ [{"theorem":
+   {"proved": true,
+    "proof":
+    [{"cases":
+      {"split_kind": "condition",
+       "proof_cases":
+       [{"case":
+         {"proof":
+          [{"assert": {"proof_method": "direct", "claim": "H is cyclic"}}],
+          "condition": "H is trivial"}},
+        {"case":
+         {"proof":
+          [{"assert":
+            {"deductions":
+             [{"deduction":
+               {"in_context": true, "deduced_from": "H ⊆ G and G = <g>"}}],
+             "claim":
+             "each h in H can be expressed as h = g^k for some integer k"}},
+           {"let":
+            {"variable": "n",
+             "value": "smallest positive integer such that g^n ∈ H"}},
+           {"assert":
+            {"proof_method": "direct",
+             "deductions":
+             [{"deduction":
+               {"instantiations": [{"instantiation": "(g^n)^m = g^{nm} ∈ H"}],
+                "in_context": true,
+                "deduced_from":
+                "H is a subgroup and closed under group operation"}}],
+             "claim": "H = <g^n>",
+             "calculations":
+             [{"calculation_step": {"equation": {"inline": "<g^n> ⊆ H"}}}]}},
+           {"assert":
+            {"proof_method": "division algorithm",
+             "missing":
+             [{"missing":
+               "Show that g^r being in H and n being minimal implies r=0"}],
+             "claim": "H ⊆ <g^n>",
+             "calculations":
+             [{"calculation_step":
+               {"justification": "division algorithm",
+                "equation": {"inline": "k = qn + r where 0 ≤ r < n"}}},
+              {"calculation_step":
+               {"equation": {"inline": "g^k = g^{qn}g^r = (g^n)^q g^r"}}}]}},
+           {"conclude": {"claim": "H = <g^n>"}}],
+          "condition": "H is non-trivial"}}],
+       "on": "H being trivial"}}],
+    "hypothesis":
+    [{"let": {"variable": "G", "value": "<g>", "kind": "cyclic group"}},
+     {"assume": "H is a subgroup of G"}],
+    "conclusion": "H is cyclic"}}]}]
 
 -/
--- #eval structExamplFlash
 
-/-
-#[[{"type": "theorem",
-  "status": "proved",
-  "proof":
-  {"type": "proof",
-   "steps":
-   [{"type": "observe",
-     "claim": "The matrix A satisfies the polynomial equation x^3 - 1 = 0"},
-    {"variable": "ω", "value": "e^(2πi/3)", "type": "let"},
-    {"type": "observe", "claim": "The roots of x^3 - 1 = 0 are 1, ω, and ω^2"},
-    {"type": "assert",
-     "proof-method": "by the definition of the minimal polynomial",
-     "deduced_from": ["A satisfies the polynomial equation x^3 - 1 = 0"],
-     "claim": "The minimal polynomial of A divides x^3 - 1"},
-    {"type": "assert",
-     "error":
-     "The minimal polynomial of A could have multiple roots even if it divides x^3 - 1. For example, it could be (x-1)^2(x-ω).",
-     "deduced_from":
-     ["The minimal polynomial of A divides x^3 - 1",
-      "The roots of x^3 - 1 = 0 are 1, ω, and ω^2"],
-     "claim": "The roots of the minimal polynomial of A are distinct"},
-    {"type": "assert",
-     "proof-method":
-     "This is a consequence of the fact that a matrix is diagonalizable if and only if its minimal polynomial has distinct roots.",
-     "deduced_from": ["The roots of the minimal polynomial of A are distinct"],
-     "claim": "A is diagonalizable"}]},
-  "name": "Diagonalizability of Matrices Satisfying A^3 = I",
-  "hypothesis":
-  [{"variable": "A", "type": "fix", "kind": "square matrix"},
-   {"type": "assume", "statement": "A^3 = I"}],
-  "conclusion": "A is diagonalizable"}]]
-
--/
--- #eval structExampl
-
-def jsEg := "{\n  \"ProofJSON\": {\n   \"theorem\": {\n      \"Hypothesis\": [\n       {\n          \"type\": \"define\",\n          \"Statement\": \"Let $ f(x, y)=x^{3}-3 x+y^{2} $ for $ x, y \\in \\mathbb{R} $.\"\n        }\n      ],\n    \"Conclusion\": \"Prove that at the points (1,0) and (-1,0) the gradient of $ f $ is zero.\",\n      \"Status\": \"proved\"\n    },\n    \"proof\": {\n    \"steps\": [\n       {\n         \"type\": \"assert\",\n       \"Claim\": \"The function is $ f(x, y) = x^2 - 3xy + y^2
-$.\",\n        \"Deduced_from\": [],\n         \"Proof-method\": \"Given problem statement.\"\n      },\n        {\n
-  \"type\": \"assert\",\n         \"Claim\": \"The gradient of a function $f(x, y) $ is $\\nabla f(x, y) = \\frac{\\partial
- f}{\\partial x} \\hat{i} + \\frac{\\partial f}{\\partial y} \\hat{j} $.\",\n          \"Deduced_from\": [],\n         \"Proof-me
-thod\": \"Textbook definition of gradient.\"\n        },\n        {\n          \"type\": \"assert\",\n         \"Claim\": \"$\\nabla f(x, y) = (2x -3) \\hat{i} + 2y \\hat{j}$.\",\n          \"Deduced_from\": [\n           \"The function is $ f(x, y) = x^2
-- 3xy + y^2 $.\",\n            \"The gradient of a function $ f(x, y) $ is $ \\nabla f(x, y) = \\frac{\\partial f}{\\partial
- x} \\hat{i} + \\frac{\\partial f}{\\partial y} \\hat{j} $.\"\n          ],\n          \"Calculation\": [\n            \"Step 1\":
- {\n              \"step\": \"Compute $\\frac{\\partial f}{\\partial x}$.\",\n              \"justification\": \"Using the parti
-al derivative formula and the given function $ f(x, y) = x^2 - 3xy + y^2 $.\"\n            },\n            \"Step 2\": {\n
-        \"step\": \"Compute $\\frac{\\partial f}{\\partial y}$.\",\n              \"justification\": \"Using the partial derivat
-ive formula and the given function $ f(x, y) = x^2 - 3xy + y^2 $.\"\n            }\n          ]\n        },\n        {\n
-  \"type\": \"assert\",\n          \"Claim\": \"If $\\nabla f = 0$, then $3x - 3 = 0$ and $2y = 0$.\",\n          \"Dedu
-ced_from\": [\n            \"$\\nabla f(x, y) = (2x -3) \\hat{i} + 2y \\hat{j}$\"\n          ],\n          \"Calculation\": [\n
-           \"Step 1\": {\n              \"step\": \"Set $\\frac{\\partial f}{\\partial x} = 0$.\",\n              \"justificatio
-n\": \"Since $\\nabla f = 0$, its partial derivative with respect to $x$ must be zero.\"\n            },\n            \"Step
- 2\": {\n              \"step\": \"Set $\\frac{\\partial f}{\\partial y} = 0$.\",\n              \"justification\": \"Since $\
-\nabla f = 0$, its partial derivative with respect to $y$ must be zero.\"\n            }\n          ]\n        },\n        {\n
-          \"type\": \"assert\",\n          \"Claim\": \"$x = 1$ and $y = 0$.\",\n          \"Deduced_from\": [\n
-\"If $\\nabla f = 0$, then $3x - 3 = 0$ and $2y = 0$.\"\n          ],\n          \"Calculation\": [\n            \"Step
-1\": {\n              \"step\": \"Solve $3x - 3 = 0$ for $x$.\",\n              \"justification\": \"Using basic algebra.\"\
-n            },\n            \"Step 2\": {\n              \"step\": \"Solve $2y = 0$ for $y$.\",\n              \"justificat
-ion\": \"Using basic algebra.\"\n            }\n          ]\n        },\n        {\n          \"type\": \"assert\",\n          \"Cla
-im\": \"$\\nabla f = 0$ at $(1,0)$ and $(0,1)$.\",\n          \"Deduced_from\": [\n            \"$x = 1$ and $y =
-0$.\"\n          ],\n          \"Calculation\": [\n            \"Step 1\": {\n              \"step\": \"Substitute $x = 1$ and
- $y = 0$ into $\\nabla f(x, y) = (2x -3) \\hat{i} + 2y \\hat{j}$.\",\n              \"justification\": \"Using the expressio
-n for $\\nabla f$.\"\n            }"
-
-def escapeJson (s: String) := s.replace "\\" "\\\\" |>.replace "\n" " "
-#eval escapeJson jsEg
-#eval Json.parse (escapeJson jsEg)
-#eval (escapeJson jsEg).toList.drop 1270 |>.take 15 |>.toString
-
-def client := ChatServer.openAI
-def prime_thm := "There are infinitely many prime numbers ending in 7."
-def writeSoln : CoreM String := do
-  let resArr ← client.prove prime_thm 1
-  let res := resArr[0]!
-  IO.FS.writeFile "llm_data/gpt-4o/prime_thm.md" res
-  return res
 
 /-
-#[{"type": "theorem",
- "status": "incomplete proof",
- "proof":
- {"type": "proof",
-  "steps":
-  [{"type": "assert",
-    "deduced_from":
-    {"known_results":
-     ["For any matrix A, if A^k = I, then A is a root of the polynomial x^k - 1."],
-     "from_context": ["A^3 = I"]},
-    "claim": "A satisfies the polynomial equation $p(x) = x^3 - 1$."},
-   {"type": "assert",
-    "deduced_from":
-    {"known_results":
-     ["The roots of the polynomial x^3 - 1 are the cube roots of unity."]},
-    "claim":
-    "The roots of $p(x) = x^3 - 1$ are the cube roots of unity, namely $1, \\omega, \\omega^2$, where $\\omega = e^{2\\pi i/3}$."},
-   {"type": "assert",
-    "deduced_from":
-    {"known_results": ["The cube roots of unity are distinct."]},
-    "claim": "The roots $1, \\omega, \\omega^2$ are distinct."},
-   {"type": "assert",
-    "proof-method":
-    "By the definition of the minimal polynomial and properties of the polynomial p(x).",
-    "deduced_from":
-    {"from_context":
-     ["A satisfies the polynomial equation $p(x) = x^3 - 1$.",
-      "The roots $1, \\omega, \\omega^2$ are distinct."]},
-    "claim":
-    "The minimal polynomial of A must divide $p(x) = x^3 - 1$ and have distinct roots."},
-   {"type": "assert",
-    "missing":
-    [{"type": "problem",
-      "statement":
-      "Justify why the minimal polynomial having distinct roots implies A is diagonalizable."}],
-    "deduced_from":
-    {"known_results":
-     ["A matrix A is diagonalizable if and only if its minimal polynomial has distinct roots."],
-     "from_context":
-     ["The minimal polynomial of A must divide $p(x) = x^3 - 1$ and have distinct roots."]},
-    "claim": "A is diagonalizable."}]},
- "name": "Diagonalizability of A",
- "hypothesis":
- [{"type": "assume", "statement": "A is a square matrix."},
-  {"type": "assume", "statement": "A^3 = I."}],
- "conclusion": "A is diagonalizable."}]
+#[{"math_document":
+ [{"theorem":
+   {"proved": true,
+    "proof":
+    [{"cases":
+      {"split_kind": "condition",
+       "proof_cases":
+       [{"case":
+         {"proof":
+          [{"assert":
+            {"proof_method": "trivial",
+             "claim": "H is cyclic, generated by e"}}],
+          "condition": "H = {e}"}},
+        {"case":
+         {"proof":
+          [{"let":
+            {"variable": "m",
+             "properties": "least integer such that g^m ∈ H",
+             "kind": "positive integer"}},
+           {"assert":
+            {"proof_method": "direct proof",
+             "missing": [{"missing": "By the minimality of m, r = 0"}],
+             "deductions":
+             [{"deduction":
+               {"instantiations":
+                [{"instantiation":
+                  "g^m ∈ H and (g^m)^k = g^{mk} ∈ H for all k ∈ ℤ"}],
+                "in_context": true,
+                "deduced_from": "m is the smallest integer such that g^m ∈ H"}},
+              {"deduction":
+               {"instantiations":
+                [{"instantiation": "k = mq + r with 0 ≤ r < m"}],
+                "in_context": false,
+                "deduced_from": "Division Algorithm"}}],
+             "claim": "H = ⟨g^m⟩",
+             "calculations":
+             [{"calculation_step": {"equation": {"step": "g^k = (g^m)^q g^r"}}},
+              {"calculation_step":
+               {"equation": {"inline": "g^r = g^k (g^m)^{-q} ∈ H"}}}]}},
+           {"conclude": {"claim": "H = ⟨g^m⟩"}}],
+          "condition": "H ≠ {e}"}}],
+       "on": "H",
+       "missing": [{"missing": "Ensure that all cases of H are considered"}]}}],
+    "hypothesis":
+    [{"let":
+      {"variable": "G",
+       "properties": "generated by element g",
+       "kind": "cyclic group"}},
+     {"let": {"variable": "H", "kind": "subgroup of G"}}],
+    "conclusion": "H is cyclic."}}]}]
 
 -/
--- #eval client.structuredProof proofExample
 
-def cubeJson : IO Json := do
-  let src ← IO.FS.readFile "llm_data/gpt-4o/cube.json"
-  return Json.parse src |>.toOption.get!
+-- Removed instantiation
+/-
+#[{"math_document":
+ [{"theorem":
+   {"proved": true,
+    "proof":
+    [{"assume":
+      "Every element h in H can be written as h = g^k for some integer k."},
+     {"let":
+      {"variable": "K",
+       "value": "\\{ k \\in \\mathbb{Z} \\mid g^k \\in H \\}",
+       "kind": "set"}},
+     {"assert":
+      {"deductions":
+       [{"deduction":
+         {"proved_earlier": false,
+          "deduced_from": "H is a subgroup, identity e = g^0 is in H."}}],
+       "claim": "0 \\in K"}},
+     {"assert":
+      {"proof_method": "K is closed under subtraction and contains negatives.",
+       "claim": "K is a subgroup of \\mathbb{Z}",
+       "calculations":
+       [{"calculation_step":
+         {"equation": {"step": "a, b \\in K \\Rightarrow g^a, g^b \\in H"}}},
+        {"calculation_step":
+         {"equation":
+          {"continuation":
+           "g^{a-b} = g^a g^{-b} \\in H \\Rightarrow a-b \\in K"}}},
+        {"calculation_step":
+         {"equation":
+          {"step":
+           "a \\in K \\Rightarrow g^a \\in H \\Rightarrow g^{-a} = (g^a)^{-1} \\in H, -a \\in K"}}}]}},
+     {"assert":
+      {"deductions":
+       [{"deduction":
+         {"proved_earlier": false,
+          "deduced_from": "K is a subgroup of \\mathbb{Z}"}}],
+       "claim": "K is cyclic"}},
+     {"let":
+      {"variable": "d", "properties": "smallest positive generator of K"}},
+     {"assert":
+      {"proof_method":
+       "Every element h = g^k in H can be expressed as h = (g^d)^m for some integer m.",
+       "claim": "H = <g^d>",
+       "calculations":
+       [{"calculation_step":
+         {"equation":
+          {"inline":
+           "k \\in K \\Rightarrow k = md \\text{ for some integer } m"}}},
+        {"calculation_step":
+         {"equation": {"inline": "h = g^k = g^{md} = (g^d)^m"}}}]}},
+     {"conclude": {"claim": "H is cyclic."}}],
+    "hypothesis":
+    [{"let": {"variable": "G", "value": "<g>", "kind": "cyclic group"}},
+     {"let": {"variable": "H", "properties": "H ≤ G, subgroup of G"}}],
+    "conclusion": "H is cyclic"}}]}]
 
-#eval cubeJson
-open Lean Meta Elab
-def cubeCode : TranslateM <| Option String := do
-  let cube ← cubeJson
-  logInfo s!"{cube}"
-  let cubeCode? ← structToCommand? (params := {n := 12}) (context := #[])  (pb := PromptExampleBuilder.embedBuilder 8 0 0) (input := cube)
-  cubeCode?.mapM fun code => do
-    let fmt ← PrettyPrinter.ppCommand code
-    pure <| topCode ++ fmt.pretty
+-/
 
--- #eval cubeCode
-def cubeCodeCore : CoreM <| Option String := cubeCode.runToCore
+
+/-
+#[{"math_document":
+ [{"theorem":
+   {"proved": true,
+    "proof":
+    [{"remark":
+      "Let G = <g> be a cyclic group generated by an element g. Suppose H is a subgroup of G. Our aim is to show that H is cyclic."},
+     {"let":
+      {"variable": "S",
+       "value": "{ k ∈ ℤ | g^k ∈ H }",
+       "properties": "of all such exponents k corresponding to elements in H",
+       "kind": "set"}},
+     {"assert":
+      {"deductions":
+       [{"deduction":
+         {"proved_earlier": false,
+          "deduced_from": "identity element e = g^0 belongs to H"}}],
+       "claim": "0 ∈ S"}},
+     {"let":
+      {"variable": "d",
+       "properties": "smallest positive element in S",
+       "kind": "integer"}},
+     {"assert":
+      {"proof_method": "by division algorithm",
+       "claim": "for any k ∈ S, k = qd + r where q ∈ ℤ and 0 ≤ r < d"}},
+     {"assert":
+      {"deductions":
+       [{"deduction":
+         {"proved_earlier": false,
+          "deduced_from": "(g^d)^q ∈ H since g^d ∈ H and H is a subgroup"}}],
+       "claim": "g^k = (g^d)^q g^r and g^r ∈ H"}},
+     {"assume": "r ≠ 0 implies contradiction to the minimality of d"},
+     {"assert":
+      {"proof_method": "by contradiction", "claim": "r = 0, hence k = qd"}},
+     {"assert":
+      {"deductions":
+       [{"deduction":
+         {"proved_earlier": true,
+          "deduced_from": "every g^k ∈ H can be expressed as g^(qd)"}}],
+       "claim": "H = <g^d>"}},
+     {"conclude": {"claim": "Every subgroup H of a cyclic group G is cyclic"}}],
+    "hypothesis":
+    [{"let":
+      {"variable": "G",
+       "properties": "generated by an element g",
+       "kind": "cyclic group"}},
+     {"let": {"variable": "H", "kind": "subgroup of G"}}],
+    "conclusion": "H is cyclic"}}]}]
+
+-/
+
+-- This is after `deduction` instructions included splitting and separating justifications as `assert`.
+/-
+#[{"math_document":
+ [{"theorem":
+   {"proved": true,
+    "proof":
+    [{"def": {"term": "S", "statement": "S = { k ∈ ℤ | g^k ∈ H }"}},
+     {"assert":
+      {"proof_method": "H contains the identity element, implying 0 ∈ S",
+       "claim": "S is nonempty"}},
+     {"assert":
+      {"proof_method": "By the well-ordering principle",
+       "claim": "S contains a smallest positive integer d"}},
+     {"let":
+      {"variable": "<anonymous>", "value": "g^d", "kind": "element of H"}},
+     {"assert": {"proof_method": "since g^d ∈ H", "claim": "⟨g^d⟩ ⊆ H"}},
+     {"assume": "Suppose g^k ∈ H"},
+     {"assert":
+      {"proof_method": "Using the division algorithm",
+       "claim": "g^k = (g^d)^q ⋅ g^r for some q ∈ ℤ and 0 ≤ r < d"}},
+     {"assert":
+      {"proof_method": "since g^k and (g^d)^q are both in H",
+       "claim": "g^r ∈ H"}},
+     {"assert":
+      {"proof_method": "By minimality of d, since 0 ≤ r < d",
+       "claim": "r = 0"}},
+     {"assert": {"proof_method": "Since r = 0", "claim": "g^k = (g^d)^q"}},
+     {"assert":
+      {"proof_method": "because every g^k ∈ H is a power of g^d",
+       "claim": "H ⊆ ⟨g^d⟩"}},
+     {"conclude": {"claim": "H = ⟨g^d⟩"}}],
+    "hypothesis":
+    [{"let":
+      {"variable": "G",
+       "properties": "generated by an element g",
+       "kind": "cyclic group"}},
+     {"let":
+      {"variable": "H",
+       "properties": "H is a subgroup of G",
+       "kind": "subgroup"}}],
+    "conclusion": "H is cyclic"}}]}]
+
+-/
+-- #eval eg2
+
+-- #eval Structured.eg3

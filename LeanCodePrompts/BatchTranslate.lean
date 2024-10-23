@@ -79,6 +79,7 @@ def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
       statements.map <| fun s => s.replace "<br>" "\n" |>.replace "\\n" "\n"
   let mut count := 0
   let mut elaborated := 0
+  let mut roundTripError := 0
   let mut elabData: Array Json := #[]
   let mut failed : Array (ElabErrorData) := #[]
   for statement in statements do
@@ -104,7 +105,7 @@ def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
        ("all-elaborations", Json.arr <| res.allElaborated.map Json.str),
        ("elaboration-groups", Json.arr <| res.groups.map (Json.arr ∘ Array.map Json.str))]
 
-      let js ←  if roundtrip then
+      let (js, rt) ←  if roundtrip then
           let pair? ←  checkTranslationM statement res.term server params
           let translateBackResult : TranslateBackResult := match pair? with
           | none => .failure
@@ -112,9 +113,11 @@ def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
             let check := check'.map (·.1)
             let checkData := check'.map (·.2)
             .success statement translation check checkData
-          pure <| js.mergeObj (toJson translateBackResult)
+          pure <| (js.mergeObj (toJson translateBackResult), translateBackResult.checkFailed)
         else
-          pure js
+          pure (js, true)
+      unless rt do
+        roundTripError := roundTripError + 1
       outHandle.putStrLn <| js.compress
       elabData := elabData.push js
     | .error err =>
@@ -122,6 +125,7 @@ def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
       failed := failed.push ⟨prompt?, err⟩
     IO.eprintln s!"total : {count}"
     IO.eprintln s!"elaborated: {elaborated}"
+    IO.eprintln s!"roundtrip errors: {roundTripError}"
     IO.sleep <| (delay * 1000).toUInt32
 
   let js :=
@@ -133,6 +137,7 @@ def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
        ("query-number", params.n),
        ("temperature", Json.num params.temp),
        ("elaborated-prompts", Json.arr elabData),
+        ("roundtrip-errors", roundTripError),
         ("failures", Json.arr <| failed.map (toJson))
             ]
   return js

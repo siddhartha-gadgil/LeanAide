@@ -39,6 +39,31 @@ def elabFrontDefViewM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM Stri
   let fmt ←  ppExpr val
   return fmt.pretty
 
+def elabFrontTheoremExprM (type: String) : MetaM <| Except (List String) Expr := do
+  let n := `my_shiny_new_theorem
+  let s := s!"theorem {n} : {type} := by sorry"
+  let (env, logs) ←  runFrontendM s
+  let errors := logs.toList.filter (·.severity == MessageSeverity.error)
+  let errorStrings ←  errors.mapM (·.data.toString)
+  if errors.isEmpty then
+    let seek? : Option ConstantInfo :=  env.find? n
+    match seek? with
+    | none => return Except.error ["Could not find theorem after elaboration"]
+    | some seek => return Except.ok seek.type
+  else
+    return Except.error errorStrings
+
+#eval elabFrontTheoremExprM "∀ n: Nat, n ≤ n + 1"
+
+def elabFrontTypeExprM(type: String) : MetaM <| Option Expr := do
+  let n := `my_shiny_new_theorem
+  let s := s!"def {n} : {type} := by sorry"
+  let (env, _) ← runFrontendM s
+  let seek? : Option ConstantInfo :=  env.find? n
+  match seek? with
+  | none => throwError "Definition not found"
+  | some seek => return seek.type
+
 def checkElabFrontM(s: String) : MetaM <| List String := do
   let (_, log) ← runFrontendM s
   let mut l := []

@@ -2,6 +2,7 @@ import Lean
 import Cache.IO
 import LeanAide.Aides
 import LeanAide.Template
+import LeanCodePrompts.MathDoc
 
 open Lean Meta System
 
@@ -421,8 +422,9 @@ def solution_to_theory (server: ChatServer)
 def structuredProof (server: ChatServer)
   (pf: String)(n: Nat := 1)
   (params: ChatParams := {n := n, stopTokens := #[]})
+  (alertErrors : Bool := false)
   : CoreM (Array Json) := do
-  let instructions ← jsonProofInstructions
+  let instructions ← MathDoc.instructions alertErrors
   let init : ChatExample := {
     user := instructions
     assistant := "Please provide the theorem and proof. I will translated this into ProofJSON format."
@@ -449,6 +451,15 @@ def structuredProofFromSolution (server: ChatServer)
   (params: ChatParams := {n := n, stopTokens := #[]})
   (examples: Array ChatExample := #[]) : CoreM (Array Json) := do
   let theories ← solution_to_theory server problem solution n params examples
+  let results ← theories.mapM (structuredProof server)
+  return results.foldl (· ++ ·) #[]
+
+def structuredProofFromStatement (server: ChatServer)
+  (statement: String)(n m: Nat := 1)
+  (params: ChatParams := {n := m, stopTokens := #[]})
+  (examples: Array ChatExample := #[]) : CoreM (Array Json) := do
+  let proofs ← server.prove statement n params examples
+  let theories := proofs.map fun pf => s!"## Theorem : {statement}\n##Proof: {pf}"
   let results ← theories.mapM (structuredProof server)
   return results.foldl (· ++ ·) #[]
 

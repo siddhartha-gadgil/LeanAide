@@ -1,6 +1,6 @@
 import Lean.Meta
 import LeanCodePrompts
-import LeanCodePrompts.Examples.Structured
+import LeanCodePrompts.Examples.OldStructured
 import LeanAide.Config
 import Cli
 open Lean Cli

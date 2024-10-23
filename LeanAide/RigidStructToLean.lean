@@ -3,7 +3,7 @@ import Mathlib
 import LeanCodePrompts.Translate
 import LeanAide.AesopSyntax
 import LeanAide.CheckedSorry
-open LeanAide.Meta Lean Meta
+open LeanAide.Meta
 
 /-!
 # Lean code from `ProofJSON`
@@ -31,48 +31,22 @@ The cases to cover: "define", "assert", "theorem", "problem", "assume", "let", "
 * **contradiction**: Translate the statement to be contradicted to a statement `P`, then prove `P → False` using the given proof (with aesop having contradiction as a tactic). Finally follow the claim with `contradiction` (or `aesop` with contradiction).
 -/
 
-elab "#note" "[" term,* "]" : command => do
-  return ()
-
-elab "#note" "[" term,* "]" : tactic => do
-  return ()
-
-def mkNoteCmd (s: String) : MetaM Syntax.Command :=
-  let sLit := Lean.Syntax.mkStrLit  s
-  `(command | #note [$sLit])
-
-def mkNoteTactic (s: String) : MetaM Syntax.Tactic :=
-  let sLit := Lean.Syntax.mkStrLit  s
-  `(tactic | #note [$sLit])
-
 def Lean.Json.getObjString? (js: Json) (key: String) : Option String :=
   match js.getObjValAs? String key with
   | Except.ok s => some s
   | _ => none
 
-/--
-Get a key-value pair from a JSON object which is a single key-value pair.
--/
-def Lean.Json.getKV? (js : Json) : Option (String × Json) :=
-  match js with
-  | Json.obj m =>
-    match m.toArray with
-    | #[⟨k, v⟩] => some (k, v)
-    | _ => none
-  | _ => none
-
-def addFullStop (s: String) : String :=
-  if s.endsWith "." then s else s ++ "."
+#check Lean.Json.getObjVal?
 
 open Lean Meta Elab Term PrettyPrinter Tactic Parser
 def contextStatementOfJson (js: Json) : Option String :=
-  match js.getKV?  with
-  | some ("assume", v) =>
-    match v with
-    | .str s => some <| "Assume that " ++ s
+  match js.getObjString? "type" with
+  | some "assume" =>
+    match js.getObjValAs? String "statement" with
+    | Except.ok s => some <| "Assume that " ++ s
     | _ => none
-  | some ("let", v) =>
-    let varSegment := match v.getObjString? "variable" with
+  | some "let" =>
+    let varSegment := match js.getObjString? "var" with
       | some "<anonymous>" => "We have "
       | some v => s!"Let {v} be"
       | _ => "We have "
@@ -82,23 +56,27 @@ def contextStatementOfJson (js: Json) : Option String :=
     let valueSegment := match js.getObjString? "value" with
       | some v => s!"{v}"
       | _ => ""
-    let propertySegment := match js.getObjString? "properties" with
+    let propertySegment := match js.getObjString? "property" with
       | some p => s!"such that {p}"
       | _ => ""
     return s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}."
-  | some ("cases", v) =>
-    match v.getObjValAs? String "on" with
-    | Except.ok s => some <| "We consider cases based on " ++ (addFullStop s)
+  | some "cases" =>
+    match js.getObjValAs? String "on" with
+    | Except.ok s => some <| "We consider cases based on " ++ s ++ "."
     | _ => none
-  | some ("induction", v) =>
-    match v.getObjValAs? String "on" with
-    | Except.ok s => some <| "We induct on " ++ (addFullStop s)
+  | some "induction" =>
+    match js.getObjValAs? String "on" with
+    | Except.ok s => some <| "We induct on " ++ s ++ "."
     | _ => none
-  | some ("case", v) =>
-    match v.getObjValAs? String "condition" with
+  | some "case" =>
+    match js.getObjValAs? String "condition" with
     | Except.ok p =>
       /- one of "induction", "property" and "pattern" -/
-      "Consider the case " ++ (addFullStop p)
+      match js.getObjValAs? String "case-kind" with
+      | Except.ok "induction" => some <| "Consider the induction case: " ++ p ++ "."
+      | Except.ok "property" => some <| "Consider the case " ++ p ++ "."
+      | Except.ok "pattern" => some <| "Consider the case of the form " ++ p ++ "."
+      | _ => none
     | _ => none
   | _ => none
 
@@ -221,6 +199,7 @@ def commandToTactic (cmd: Syntax.Command) : TermElabM Syntax.Tactic := do
       `(tactic| let $name $letArgs*  := $value)
   | _ => `(tactic| sorry)
 
+#check binderIdent
 
 def inductionCase (name: String)(condition: String)
     (pf: Array Syntax.Tactic) : TermElabM Syntax.Tactic := do
@@ -307,7 +286,6 @@ def groupCases (cond_pfs: List <| String × Array Syntax.Tactic)
     | [] => do
       let falseId := mkIdent `False
       `($falseId:ident)
-    | [h] => pure ⟨h⟩
     | h :: t =>
       let t' : List Syntax.Term := t.map fun term => ⟨term⟩
       t'.foldlM (fun acc cond => `($acc ∨ $cond)) ⟨h⟩
@@ -346,30 +324,36 @@ def haveForAssertion  (type: Syntax.Term)
 mutual
   partial def structToCommand? (context: Array Json)
       (input: Json) : TranslateM <| Option Syntax.Command := do
-      match input.getKV? with
-      | some ("theorem", v) =>
+      match input.getObjString? "type" with
+      | some "theorem" =>
         logInfo s!"Found theorem"
-        let name? := v.getObjString? "name" |>.map String.toName
+        let name? := input.getObjString? "name" |>.map String.toName
         let name? := name?.filter (· ≠ Name.anonymous)
         let hypothesis :=
-          v.getObjValAs? (Array Json) "hypothesis"
+          input.getObjValAs? (Array Json) "hypothesis"
             |>.toOption.getD #[]
-        match v.getObjValAs? String "conclusion", v.getObjValAs? Json "proof" with
-        | Except.ok claim, Except.ok (.arr steps) =>
+        match input.getObjValAs? String "conclusion", input.getObjValAs? Json "proof" with
+        | Except.ok claim, Except.ok pfSource =>
+          match pfSource.getObjValAs? (List Json) "steps" with
+          | Except.ok steps =>
             let thm? ← theoremExprInContext? server params pb (context ++ hypothesis) claim
             if thm?.isNone then
               IO.eprintln s!"failed to get theorem conclusion"
             thm?.mapM fun thm => do
-              let pf ← structToTactics #[] (context ++ hypothesis) steps.toList
+              let pf ← structToTactics #[] context steps
               let pf := pf.push <| ← `(tactic| auto?)
               let pfTerm ← `(by $pf*)
               IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
               mkStatementStx name? (← delab thm) pfTerm true
+          | _ =>
+            IO.eprintln s!"failed to get proof steps"
+            logInfo s!"failed to get proof steps"
+            none
         | _, _ =>
           logInfo s!"failed to get theorem conclusion or proof"
           return none
-      | some ("define", v) =>
-        match v.getObjValAs? String "statement", v.getObjValAs? String "term" with
+      | some "define" =>
+        match input.getObjValAs? String "statement", input.getObjValAs? String "term" with
         | Except.ok s, Except.ok t =>
           let statement := s!"We define {t} as follows:\n{s}."
           defnInContext? server params pb context statement
@@ -383,19 +367,15 @@ mutual
       | head :: tail =>
         IO.eprintln s!"Processing {head}"
         let headTactics: Array Syntax.Tactic ←
-          match head.getKV? with
-          | some ("assert", head) =>
+          match head.getObjString? "type" with
+          | some "assert" =>
             match head.getObjValAs? String "claim" with
             | Except.ok claim =>
               let useResults: List String :=
-                match head.getObjValAs? Json "deduced_from_results"  with
+                match head.getObjValAs? Json "deduced_from"  with
                 | Except.ok known =>
-                  match known.getKV? with
-                  | some ("deduced_from", .arr results) =>
-                    results.toList.filterMap fun js =>
-                      match js.getObjString? "deduced_from", js.getObjValAs? Bool "proved_earlier" with
-                      | some s, Except.ok false => some s
-                      | _, _ => none
+                  match known.getObjValAs? (List String) "known_results" with
+                  | Except.ok results => results
                   | _ => []
                 | _ => []
               let type? ← theoremExprInContext? server params pb context claim
@@ -408,36 +388,33 @@ mutual
                 let tac ← haveForAssertion  (← delab type) premises
                 pure #[tac]
             | _ => pure #[]
-          | some ("define", head) =>
+          | some "define" =>
             match ← structToCommand? context head with
             | some cmd =>
               let tac ← commandToTactic  <| ←  purgeLocalContext cmd
               pure #[tac]
             | none => pure #[]
-          | some ("theorem", head) =>
+          | some "theorem" =>
             match ← structToCommand? context head with
             | some cmd =>
               let tac ← commandToTactic  <| ←  purgeLocalContext cmd
               pure #[tac]
             | none => pure #[]
-          | some ("cases", head) =>
-            match head.getObjValAs? (Array Json) "proof_cases" with
+          | some "cases" =>
+            match head.getObjValAs? (Array Json) "proof-cases" with
             | Except.ok cs =>
-              let conditionProofs ← cs.filterMapM fun js =>
-                match js.getKV? with
-                | some ("case", js) =>
-                  match js.getObjString? "condition",
-                    js.getObjValAs? (List Json) "proof" with
-                  | some cond, Except.ok pfSource => do
-                    let pf ← structToTactics #[] context pfSource
-                    pure <| some (cond, pf)
-                  | _, _ => pure none
-                | _ => pure none
-              match head.getObjString? "split_kind" with
+              let pairs ← cs.filterMapM fun js =>
+                match js.getObjString? "condition",
+                  js.getObjValAs? (List Json) "proof" with
+                | some cond, Except.ok pfSource => do
+                  let pf ← structToTactics #[] context pfSource
+                  return some (cond, pf)
+                | _, _ => return none
+              match head.getObjString? "split-kind" with
               | some "match" =>
                 match head.getObjString? "on" with
                 | some discr =>
-                  let casesTac ← matchCases discr conditionProofs
+                  let casesTac ← matchCases discr pairs
                   return #[casesTac]
                 | _ => pure #[]
               | some "group" =>
@@ -445,45 +422,37 @@ mutual
                   match head.getObjValAs? (List Json) "exhaustiveness" with
                   | Except.ok pfSource => structToTactics #[] context pfSource
                   | _ => pure #[← `(tactic| auto?)]
-                groupCases conditionProofs.toList union_pf
+                groupCases pairs.toList union_pf
               | some "condition" =>
-                match conditionProofs with
+                match pairs with
                 | #[(cond₁, pf₁), (cond₂, pf₂)] =>
                   conditionCases cond₁ cond₂ pf₁ pf₂
                 | _ => pure #[]
-              | _ => /- treat like a group but with conditions as claims;
-                      works for `iff` -/
-                let union_pf : Array Syntax.Tactic ←
-                  pure #[← `(tactic| auto?)]
-                groupCases conditionProofs.toList union_pf
-            | _ =>
-              pure #[]
-          | some ("induction", head) =>
+              | _ => pure #[]
+            | _ => pure #[]
+          | some "induction" =>
             match head.getObjValAs? String "on",
-              head.getObjValAs? (Array Json) "proof_cases" with
+              head.getObjValAs? (Array Json) "proof-cases" with
             | Except.ok name, Except.ok cs =>
-              let conditionProofs ← cs.filterMapM fun js =>
-                match js.getKV? with
-                | some ("case", js) =>
-                  match js.getObjString? "condition",
-                    js.getObjValAs? (List Json) "proof" with
-                  | some cond, Except.ok pfSource => do
-                    let pf ← structToTactics #[] context pfSource
-                    return some (cond, pf)
-                  | _, _ => return none
-                | _ => return none
-              inductionCases name conditionProofs
+              let pairs ← cs.filterMapM fun js =>
+                match js.getObjString? "condition",
+                  js.getObjValAs? (List Json) "proof" with
+                | some cond, Except.ok pfSource => do
+                  let pf ← structToTactics #[] context pfSource
+                  return some (cond, pf)
+                | _, _ => return none
+              inductionCases name pairs
             | _, _ => pure #[]
-          | some ("contradiction", head) =>
-            match head.getObjValAs? String "assumption",
+          | some "contradiction" =>
+            match head.getObjValAs? String "statement",
               head.getObjValAs? (List Json) "proof" with
             | Except.ok s, Except.ok pf =>
               let proof ← structToTactics #[] context pf
               contradictionTactics s proof
             | _, _ => pure #[]
-          | some ("conclude", head) =>
-            match head.getObjValAs? String "claim" with
-            | Except.ok s => pure #[← conclusionTactic s]
+          | some "conclusion" =>
+            match head.getObjValAs? String "statement" with
+            | Except.ok s => contradictionTactics s accum
             | _ => pure #[]
           | _ => pure #[]
         IO.eprintln s!"Head tactics"
@@ -493,48 +462,6 @@ mutual
 
 end
 
-syntax commandSeq := sepBy1IndentSemicolon(command)
-
-def commands : TSyntax `commandSeq → Array (TSyntax `command)
-  | `(commandSeq| $cs*) => cs
-  | _ => #[]
-
-def toCommandSeq : Array (TSyntax `command) → CoreM (TSyntax `commandSeq)
-  | cs => `(commandSeq| $cs*)
-
-
-def structToCommandSeq? (context: Array Json)
-    (input: Json) : TranslateM <| Option <| Array Syntax.Command := do
-  match input with
-  | Json.arr js =>
-    let mut cmds := #[]
-    let mut ctx := context
-    for j in js do
-      match ← structToCommand? server params pb
-        numLeanSearch numMoogle ctx j with
-      | some cmd => cmds := cmds.push cmd
-      | none =>
-        unless contextStatementOfJson j |>.isSome do
-          let s := s!"JSON object not command or context: {j.compress}"
-          let cmd ←
-            mkNoteCmd s
-          cmds := cmds.push cmd
-        pure ()
-      ctx := ctx.push j
-    match cmds with
-    | #[] => none
-    | _ => pure <| some  cmds
-  | _ => none
-
-def mathDocumentCommands (doc: Json) :
-  TranslateM <| Array Syntax.Command := do
-    match doc.getKV? with
-    | some  ("math_document", proof) =>
-      let cmds? ←
-        structToCommandSeq? server params pb numLeanSearch numMoogle
-          #[] proof
-      return cmds?.getD #[← mkNoteCmd "No commands found"]
-    | _ => return #[← mkNoteCmd "No math document found"]
 
 elab "dl!" t: term : term => do
 let t ← elabType t
