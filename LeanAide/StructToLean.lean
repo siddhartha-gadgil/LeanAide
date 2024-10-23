@@ -195,7 +195,7 @@ def defnInContext? (ctx: Array Json)(statement: String) : TranslateM (Option Syn
   let cmd? ← cmd?.mapM purgeLocalContext
   match cmd? with
   | Except.error e => do
-    mkNoteCmd s!"Failed to parse definition: {repr e}"
+    mkNoteCmd s!"Failed to parse definition {fullStatement}: {repr e}"
   | Except.ok cmd => return cmd
 
 open Lean.Parser.Term
@@ -252,11 +252,17 @@ def inductionCases (name: String)
   return cases
 
 def conditionCases (cond₁ cond₂ : String)
-    (pf₁ pf₂ : Array Syntax.Tactic) : TermElabM <| Array Syntax.Tactic := do
-  let condTerm₁ :=
-    runParserCategory (← getEnv) `term cond₁ |>.toOption.get!
-  let condTerm₂ :=
-    runParserCategory (← getEnv) `term cond₂ |>.toOption.get!
+    (pf₁ pf₂ : Array Syntax.Tactic) (context: Array Json) (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb: PromptExampleBuilder)  : TranslateM <| Array Syntax.Tactic := do
+  let condProp₁? ← theoremExprInContext?  server params pb context cond₁
+  let condProp₂? ← theoremExprInContext?  server params pb context cond₂
+  match condProp₁?, condProp₂? with
+  | Except.error e, _ => do
+    return #[← mkNoteTactic s!"Failed to translate condition {cond₁}: {repr e}"]
+  | _, Except.error e => do
+    return #[← mkNoteTactic s!"Failed to translate condition {cond₂}: {repr e}"]
+  | Except.ok condProp₁, Except.ok condProp₂ => do
+  let condTerm₁ ← delab condProp₁
+  let condTerm₂ ← delab condProp₂
   let condTerm₁' : Syntax.Term := ⟨condTerm₁⟩
   let condTerm₂' : Syntax.Term := ⟨condTerm₂⟩
   let tac ← `(tactic| auto?)
@@ -285,24 +291,28 @@ def matchCases (discr: String)
   let discrTerm' : Syntax.Term := ⟨discrTerm⟩
   `(tactic| match $discrTerm':term with $alts':matchAlt*)
 
-def groupCasesAux (cond_pfs: List <| String × Array Syntax.Tactic)
-    : TermElabM <| Array Syntax.Tactic := do
+def groupCasesAux (context: Array Json) (cond_pfs: List <| String × Array Syntax.Tactic)(server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb: PromptExampleBuilder)
+    : TranslateM <| Array Syntax.Tactic := do
     match cond_pfs with
     | [] => return #[← `(tactic| auto?)]
     | (cond, pf) :: tail => do
-      let condTerm :=
-        runParserCategory (← getEnv) `term cond |>.toOption.get!
+      let condProp? ← theoremExprInContext? server params pb context cond
+      match condProp? with
+      | Except.error e =>
+        return #[← mkNoteTactic s!"Failed to translate condition {cond}: {repr e}"]
+      | Except.ok condProp => do
+      let condTerm ← delab condProp
       let condTerm' : Syntax.Term := ⟨condTerm⟩
-      let tailTacs ← groupCasesAux tail
+      let tailTacs ← groupCasesAux context tail server params pb
       let posId := mkIdent `pos
       let negId := mkIdent `neg
       let posId' ← `(caseArg| $posId:ident)
       let negId' ← `(caseArg| $negId:ident)
       return #[← `(tactic| by_cases $condTerm':term), ← `(tactic| case $posId' => $pf*), ← `(tactic| case $negId' => $tailTacs*)]
 
-def groupCases (cond_pfs: List <| String × Array Syntax.Tactic)
-    (union_pfs: Array Syntax.Tactic):
-    TermElabM <| Array Syntax.Tactic := do
+def groupCases (context : Array Json) (cond_pfs: List <| String × Array Syntax.Tactic)
+    (union_pfs: Array Syntax.Tactic) (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb: PromptExampleBuilder):
+    TranslateM <| Array Syntax.Tactic := do
   let conds := cond_pfs.map (·.1)
   let env ← getEnv
   let condTerms := conds.map fun cond =>
@@ -315,7 +325,7 @@ def groupCases (cond_pfs: List <| String × Array Syntax.Tactic)
     | h :: t =>
       let t' : List Syntax.Term := t.map fun term => ⟨term⟩
       t'.foldlM (fun acc cond => `($acc ∨ $cond)) ⟨h⟩
-  let casesTacs ← groupCasesAux cond_pfs
+  let casesTacs ← groupCasesAux context cond_pfs server params pb
   let head ← `(tactic| have : $orAll := by $union_pfs*)
   return #[head] ++ casesTacs
 
@@ -363,7 +373,7 @@ mutual
             let thm? ← theoremExprInContext? server params pb (context ++ hypothesis) claim
             match thm? with
             | Except.error es =>
-              mkNoteCmd s!"Failed to translate theorem: {repr es}"
+              mkNoteCmd s!"Failed to translate theorem {claim}: {repr es}"
             | Except.ok thm => do
               let pf ← structToTactics #[] (context ++ hypothesis) steps.toList
               let pf := pf.push <| ← `(tactic| auto?)
@@ -406,7 +416,7 @@ mutual
               let type? ← theoremExprInContext? server params pb context claim
               match type? with
               | Except.error es =>
-                pure #[← mkNoteTactic s!"Failed to translate assertion: {repr es}"]
+                pure #[← mkNoteTactic s!"Failed to translate assertion {claim}: {repr es}"]
               | Except.ok type =>
                 let names' ← useResults.mapM fun s =>
                   matchingTheoremsAI server params  (s := s) numLeanSearch numMoogle
@@ -451,17 +461,17 @@ mutual
                   match head.getObjValAs? (List Json) "exhaustiveness" with
                   | Except.ok pfSource => structToTactics #[] context pfSource
                   | _ => pure #[← `(tactic| auto?)]
-                groupCases conditionProofs.toList union_pf
+                groupCases context conditionProofs.toList union_pf server params pb
               | some "condition" =>
                 match conditionProofs with
                 | #[(cond₁, pf₁), (cond₂, pf₂)] =>
-                  conditionCases cond₁ cond₂ pf₁ pf₂
+                  conditionCases cond₁ cond₂ pf₁ pf₂ context server params pb
                 | _ => pure #[]
               | _ => /- treat like a group but with conditions as claims;
                       works for `iff` -/
                 let union_pf : Array Syntax.Tactic ←
                   pure #[← `(tactic| auto?)]
-                groupCases conditionProofs.toList union_pf
+                groupCases context conditionProofs.toList union_pf server params pb
             | _ =>
               pure #[]
           | some ("induction", head) =>
