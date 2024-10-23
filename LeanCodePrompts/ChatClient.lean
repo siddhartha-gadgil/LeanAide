@@ -457,11 +457,12 @@ def structuredProofFromSolution (server: ChatServer)
 def structuredProofFromStatement (server: ChatServer)
   (statement: String)(n m: Nat := 1)
   (params: ChatParams := {n := m, stopTokens := #[]})
-  (examples: Array ChatExample := #[]) : CoreM (Array Json) := do
+  (examples: Array ChatExample := #[]) :
+    CoreM (Array (String × Array Json)) := do
   let proofs ← server.prove statement n params examples
-  let theories := proofs.map fun pf => s!"## Theorem : {statement}\n##Proof: {pf}"
-  let results ← theories.mapM (structuredProof server)
-  return results.foldl (· ++ ·) #[]
+  let theories := proofs.map fun pf => (pf, s!"## Theorem : {statement}\n##Proof: {pf}")
+  theories.mapM fun (pf, thmPf) => do
+    pure (pf, ← structuredProof server thmPf)
 
 @[deprecated structuredProof]
 def structuredProofFull (server: ChatServer)

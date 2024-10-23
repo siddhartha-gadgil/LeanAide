@@ -1,5 +1,7 @@
 import LeanCodePrompts.ChatClient
-open Lean Json
+import LeanAide.StructToLean
+import LeanAide.TranslateM
+open Lean Json LeanAide.Meta
 namespace Structured
 
 def server := ChatServer.openAI
@@ -8,11 +10,13 @@ def eg1 := server.structuredProofFromStatement "There are infinitely many odd nu
 
 def eg2 := server.structuredProofFromStatement "Every subgroup of a cyclic group is cyclic."
 
-def eg3 := do
+def eg3 : TranslateM (Array (String × Array Json) × (Array String)) := do
   let jsArr ← server.structuredProofFromStatement "Every subgroup of an abelian group is abelian."
-  let js := jsArr.get! 0
-  let doc : Except String MathParaStructure := fromJson? js
-  return (jsArr, repr doc)
+  let js := jsArr.get! 0 |>.2.get! 0
+  let doc ←  mathDocumentCommands (doc := js) (pb := LeanAide.Meta.PromptExampleBuilder.embedBuilder 5 5 5)
+  let doc' ←  doc.mapM fun c => PrettyPrinter.ppCommand c
+  let doc' := doc'.map fun c => c.pretty
+  return (jsArr, doc')
 
 end Structured
 
