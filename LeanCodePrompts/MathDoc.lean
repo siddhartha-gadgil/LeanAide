@@ -299,6 +299,9 @@ def conclude : MathParaStructure :=
     (optFields := [missing, errors])
     (description := "Conclude a claim obtained from the steps so far. This is typically the final statement of a proof giving the conclusion of the theorem.")
 
+def end_of_source : MathParaStructure :=
+  .text `eos_error "For the source ending when proofs are not complete, state what proofs were left incomplete."
+
 def remark : MathParaStructure :=
   .text `remark "A remark or comment that is NOT MATHEMATICAL, instead being for motivation, attention, sectioning etc."
 
