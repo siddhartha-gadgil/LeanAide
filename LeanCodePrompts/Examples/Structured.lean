@@ -10,13 +10,11 @@ def eg1 := server.structuredProofFromStatement "There are infinitely many odd nu
 
 def eg2 := server.structuredProofFromStatement "Every subgroup of a cyclic group is cyclic."
 
-def eg3 : TranslateM (Array (String × Array Json) × (Array String)) := do
+def eg3 : TranslateM (Array (String × Array Json) × Format) := do
   let jsArr ← server.structuredProofFromStatement "Every subgroup of an abelian group is abelian."
   let js := jsArr.get! 0 |>.2.get! 0
-  let doc ←  mathDocumentCommands (doc := js) (pb := LeanAide.Meta.PromptExampleBuilder.embedBuilder 5 5 5)
-  let doc' ←  doc.mapM fun c => PrettyPrinter.ppCommand c
-  let doc' := doc'.map fun c => c.pretty
-  return (jsArr, doc')
+  let doc ←  mathDocumentCode (doc := js) (pb := LeanAide.Meta.PromptExampleBuilder.embedBuilder 8 6 6)
+  return (jsArr, doc)
 
 end Structured
 
@@ -331,6 +329,164 @@ end Structured
 -/
 -- #eval eg2
 
+/-
+Full statement: Let G be a abelian group  . Let H be a subgroup of G  . Then, H is an abelian group.
+Type: (some {G : Type u_1} → [inst : CommGroup G] → (H : Subgroup G) → CommGroup ↥H)
+Processing {"remark": "We need to show that for any a, b \\in H, ab = ba."}
+Head tactics
+Processing {"assert":
+ {"proof_method": "Since H is a subgroup of G.",
+  "claim": "For any a, b \\in H, we have a, b \\in G."}}
+Full statement: Let G be a abelian group  . Let H be a subgroup of G  . Then, For any a, b \in H, we have a, b \in G.
+Type: none
+Head tactics
+Processing {"assert":
+ {"deduced_from_results":
+  [{"deduced_from":
+    {"result_used": "G is abelian, so for any a, b \\in G, ab = ba.",
+     "proved_earlier": true}}],
+  "claim": "For any a, b \\in H, ab = ba."}}
+Full statement: Let G be a abelian group  . Let H be a subgroup of G  . Then, For any a, b \in H, ab = ba.
+Type: (some (∀ {G : Type u_1} [inst : CommGroup G] {H : Subgroup G} {a b : G}, a ∈ H → b ∈ H → a * b = b * a))
+Head tactics
+have : ∀ {G : Type u_1} [inst : CommGroup G] {H : Subgroup G} {a b : G}, a ∈ H → b ∈ H → a * b = b * a := by auto?[]
+Processing {"conclude": {"claim": "H is abelian."}}
+Head tactics
+have : H is abelian. := by auto?
+Proof term: by
+  have : ∀ {G : Type u_1} [inst : CommGroup G] {H : Subgroup G} {a b : G}, a ∈ H → b ∈ H → a * b = b * a := by auto?[]
+  have : H is abelian. := by auto?
+  auto?
+parsed JSON: {"math_document":
+ [{"theorem":
+   {"proved": true,
+    "proof":
+    [{"remark": "We need to show that for any a, b \\in H, ab = ba."},
+     {"assert":
+      {"proof_method": "Since H is a subgroup of G.",
+       "claim": "For any a, b \\in H, we have a, b \\in G."}},
+     {"assert":
+      {"deduced_from_results":
+       [{"deduced_from":
+         {"result_used": "G is abelian, so for any a, b \\in G, ab = ba.",
+          "proved_earlier": true}}],
+       "claim": "For any a, b \\in H, ab = ba."}},
+     {"conclude": {"claim": "H is abelian."}}],
+    "hypothesis":
+    [{"let": {"variable": "G", "kind": "abelian group"}},
+     {"let": {"variable": "H", "kind": "subgroup of G"}}],
+    "conclusion": "H is an abelian group."}}]}
+
+Found theorem
+
+error: Elaboration errors : unknown identifier 'AbelianGroup' ; identifiers [G, u_1, inst, AbelianGroup, G, H, Subgroup, G, a, b, G, a, H, b, H, a, G, b, G] (during elaboration) for ∀ {G : Type u_1} [inst : AbelianGroup G] (H : Subgroup G) {a b : G}, a ∈ H → b ∈ H → a ∈ G ∧ b ∈ G for ∀ {G : Type u_1} [inst : AbelianGroup G] (H : Subgroup G) {a b : G}, a ∈ H → b ∈ H → a ∈ G ∧ b ∈ G; front-end errors: [invalid binder annotation, type is not a class instance
+   ?m.12
+ use the command `set_option checkBinderAnnotations false` to disable the check,
+ function expected at
+   AbelianGroup
+ term has type
+   ?m.6,
+ unused universe parameter 'u_1']
+
+error: Elaboration errors : unknown identifier 'AbelianGroup' ; identifiers [G, u_1, inst, AbelianGroup, G, H, Subgroup, G, a, b, G, a, H, b, H, a, G, b, G] (during elaboration) for ∀ {G : Type u_1} [inst : AbelianGroup G] (H : Subgroup G) {a b : G}, a ∈ H → b ∈ H → a ∈ G ∧ b ∈ G for ∀ {G : Type u_1} [inst : AbelianGroup G] (H : Subgroup G) {a b : G}, a ∈ H → b ∈ H → a ∈ G ∧ b ∈ G; front-end errors: [invalid binder annotation, type is not a class instance
+   ?m.12
+ use the command `set_option checkBinderAnnotations false` to disable the check,
+ function expected at
+   AbelianGroup
+ term has type
+   ?m.6,
+ unused universe parameter 'u_1']
+
+error: Elaboration errors : unknown identifier 'AbelianGroup' ; identifiers [G, u_1, inst, AbelianGroup, G, H, Subgroup, G, a, b, G, a, H, b, H, a, G, b, G] (during elaboration) for ∀ {G : Type u_1} [inst : AbelianGroup G] (H : Subgroup G) {a b : G}, a ∈ H → b ∈ H → a ∈ G ∧ b ∈ G for ∀ {G : Type u_1} [inst : AbelianGroup G] (H : Subgroup G) {a b : G}, a ∈ H → b ∈ H → a ∈ G ∧ b ∈ G; front-end errors: [invalid binder annotation, type is not a class instance
+   ?m.12
+ use the command `set_option checkBinderAnnotations false` to disable the check,
+ function expected at
+   AbelianGroup
+ term has type
+   ?m.6,
+ unused universe parameter 'u_1']
+
+error: Elaboration errors : unknown identifier 'AbelianGroup' ; identifiers [G, u_1, inst, AbelianGroup, G, H, Subgroup, G, a, b, G, a, H, b, H, a, G, b, G] (during elaboration) for ∀ {G : Type u_1} [inst : AbelianGroup G] {H : Subgroup G} {a b : G}, a ∈ H → b ∈ H → a ∈ G ∧ b ∈ G for ∀ {G : Type u_1} [inst : AbelianGroup G] {H : Subgroup G} {a b : G}, a ∈ H → b ∈ H → a ∈ G ∧ b ∈ G; front-end errors: [invalid binder annotation, type is not a class instance
+   ?m.12
+ use the command `set_option checkBinderAnnotations false` to disable the check,
+ function expected at
+   AbelianGroup
+ term has type
+   ?m.6,
+ unused universe parameter 'u_1']
+
+error: Elaboration errors : unknown identifier 'AbelianGroup' ; identifiers [G, u_1, inst, AbelianGroup, G, H, Subgroup, G, a, b, G, a, H, b, H, a, G, b, G] (during elaboration) for ∀ {G : Type u_1} [inst : AbelianGroup G] {H : Subgroup G} {a b : G}, a ∈ H → b ∈ H → a ∈ G ∧ b ∈ G for ∀ {G : Type u_1} [inst : AbelianGroup G] {H : Subgroup G} {a b : G}, a ∈ H → b ∈ H → a ∈ G ∧ b ∈ G; front-end errors: [invalid binder annotation, type is not a class instance
+   ?m.12
+ use the command `set_option checkBinderAnnotations false` to disable the check,
+ function expected at
+   AbelianGroup
+ term has type
+   ?m.6,
+ unused universe parameter 'u_1']
+
+no elaboration found for Let G be a abelian group  . Let H be a subgroup of G  . Then, For any a, b \in H, we have a, b \in G.
+
+outputs: [∀ {G : Type u_1} [inst : AbelianGroup G] (H : Subgroup G) {a b : G}, a ∈ H → b ∈ H → a ∈ G ∧ b ∈ G,
+ ∀ {G : Type u_1} [inst : AbelianGroup G] (H : Subgroup G) {a b : G}, a ∈ H → b ∈ H → a ∈ G ∧ b ∈ G,
+ ∀ {G : Type u_1} [inst : AbelianGroup G] (H : Subgroup G) {a b : G}, a ∈ H → b ∈ H → a ∈ G ∧ b ∈ G,
+ ∀ {G : Type u_1} [inst : AbelianGroup G] {H : Subgroup G} {a b : G}, a ∈ H → b ∈ H → a ∈ G ∧ b ∈ G,
+ ∀ {G : Type u_1} [inst : AbelianGroup G] {H : Subgroup G} {a b : G}, a ∈ H → b ∈ H → a ∈ G ∧ b ∈ G]
+
+(#[("Let \\( G \\) be an abelian group, and let \\( H \\) be a subgroup of \\( G \\). We need to show that \\( H \\) is abelian, i.e., for any \\( a, b \\in H \\), \\( ab = ba \\).\n\nSince \\( H \\) is a subgroup of \\( G \\), it follows that for any \\( a, b \\in H \\), we also have \\( a, b \\in G \\). Given that \\( G \\) is an abelian group, the operation in \\( G \\) is commutative, meaning for any \\( a, b \\in G \\), \\( ab = ba \\).\n\nThus, for any \\( a, b \\in H \\), since \\( a, b \\in G \\) and \\( G \\) is abelian, we have:\n\n\\[\nab = ba\n\\]\n\nTherefore, \\( H \\) is abelian.",
+    #[{"math_document":
+       [{"theorem":
+         {"proved": true,
+          "proof":
+          [{"remark": "We need to show that for any a, b \\in H, ab = ba."},
+           {"assert":
+            {"proof_method": "Since H is a subgroup of G.",
+             "claim": "For any a, b \\in H, we have a, b \\in G."}},
+           {"assert":
+            {"deduced_from_results":
+             [{"deduced_from":
+               {"result_used": "G is abelian, so for any a, b \\in G, ab = ba.",
+                "proved_earlier": true}}],
+             "claim": "For any a, b \\in H, ab = ba."}},
+           {"conclude": {"claim": "H is abelian."}}],
+          "hypothesis":
+          [{"let": {"variable": "G", "kind": "abelian group"}},
+           {"let": {"variable": "H", "kind": "subgroup of G"}}],
+          "conclusion": "H is an abelian group."}}]}])],
+ #["theorem aux.6439339685659580310 {G : Type u_1} [inst : CommGroup G] (H : Subgroup G) : CommGroup ↥H :=\n  by\n  have : ∀ {G : Type u_1} [inst : CommGroup G] {H : Subgroup G} {a b : G}, a ∈ H → b ∈ H → a * b = b * a := by auto?[]\n  have : H is abelian. := by auto?\n  auto?"])
+
+-/
+
+
+/-
+(#[(Let \( G \) be an abelian group, and let \( H \) be a subgroup of \( G \). We need to show that \( H \) is also abelian, which means we must show that for any elements \( a, b \in H \), the equation \( ab = ba \) holds.
+
+Since \( G \) is abelian, we have that for any elements \( x, y \in G \), it holds that \( xy = yx \). In particular, since \( a, b \) are elements of \( H \) and \( H \subseteq G \), they are also elements of \( G \).
+
+Therefore, for \( a, b \in H \), we have \( ab = ba \), since \( ab = ba \) holds for all elements in the group \( G \).
+
+Thus, \( H \) is abelian., #[{"math_document":
+ [{"theorem":
+   {"proved": true,
+    "proof":
+    [{"assume": "a, b \\in H"},
+     {"assert":
+      {"deduced_from_results":
+       [{"deduced_from":
+         {"result_used": "G is abelian, so ab = ba for all a, b \\in G",
+          "proved_earlier": false}}],
+       "claim": "ab = ba"}},
+     {"conclude": {"claim": "H is abelian"}}],
+    "hypothesis":
+    [{"let": {"variable": "G", "kind": "abelian group"}},
+     {"let": {"variable": "H", "kind": "subgroup of G"}}],
+    "conclusion": "H is abelian"}}]}])],
+theorem aux.1430888143716163738 {G : Type u_1} [inst : CommGroup G] {H : Subgroup G} : CommGroup ↥H :=
+  by
+  have : ∀ {G : Type u_1} [inst : CommGroup G] (H : Subgroup G) {a b : G}, a ∈ H → b ∈ H → a * b = b * a := by auto?[]
+  have : H is abelian := by auto?
+  auto?)
+
+-/
 -- #eval Structured.eg3
 
 def parseEg : TranslateM <| Array Format := do

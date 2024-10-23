@@ -83,9 +83,9 @@ def contextStatementOfJson (js: Json) : Option String :=
       | some v => s!"{v}"
       | _ => ""
     let propertySegment := match v.getObjString? "properties" with
-      | some p => s!"such that {p}"
+      | some p => s!"(such that) {p}"
       | _ => ""
-    return s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}."
+    return s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}".trim ++ "."
   | some ("cases", v) =>
     match v.getObjValAs? String "on" with
     | Except.ok s => some <| "We consider cases based on " ++ (addFullStop s)
@@ -157,17 +157,17 @@ match stx with
   evalTactic tac
 | _ => throwUnsupportedSyntax
 
-def theoremExprInContext? (ctx: Array Json)(statement: String): TranslateM (Option Expr) := do
+def theoremExprInContext? (ctx: Array Json)(statement: String): TranslateM (Except (Array ElabError) Expr) := do
   let mut context := #[]
   for js in ctx do
     match contextStatementOfJson js with
     | some s => context := context.push s
     | none => pure ()
   let fullStatement := context.foldr (· ++ " " ++ ·) s!"Then, {statement}"
-  IO.eprintln s!"Full statement: {fullStatement}"
+  -- IO.eprintln s!"Full statement: {fullStatement}"
   let type? ← translateToProp?
-    fullStatement.trim server params pb .simple
-  IO.eprintln s!"Type: {← type?.mapM fun e => PrettyPrinter.ppExpr e}"
+    fullStatement.trim server {params with n := 5} pb .simple
+  -- IO.eprintln s!"Type: {← type?.mapM fun e => PrettyPrinter.ppExpr e}"
   type?.mapM <| fun e => dropLocalContext e
 
 def purgeLocalContext: Syntax.Command →  TranslateM Syntax.Command
@@ -193,7 +193,10 @@ def defnInContext? (ctx: Array Json)(statement: String) : TranslateM (Option Syn
   let cmd? ←
     translateDefCmdM? fullStatement server params pb .doc
   let cmd? ← cmd?.mapM purgeLocalContext
-  return cmd?.toOption
+  match cmd? with
+  | Except.error e => do
+    mkNoteCmd s!"Failed to parse definition: {repr e}"
+  | Except.ok cmd => return cmd
 
 open Lean.Parser.Term
 /--
@@ -201,24 +204,25 @@ Convert theorem or definition to `have` or `let`
 -/
 def commandToTactic (cmd: Syntax.Command) : TermElabM Syntax.Tactic := do
   match cmd with
-  | `(theorem $name:ident $args:bracketedBinder* : $type := $value) =>
+  | `(command| theorem $name:ident $args:bracketedBinder* : $type := $value) =>
       let mut letArgs := #[]
       for arg in args do
         let arg' ← `(letIdBinder| $arg:bracketedBinder)
         letArgs := letArgs.push arg'
       `(tactic| have $name $letArgs* : $type := $value)
-  | `(def $name:ident $args:bracketedBinder* : $type := $value) =>
+  | `(command| def $name:ident $args:bracketedBinder* : $type := $value) =>
       let mut letArgs := #[]
       for arg in args do
         let arg' ← `(letIdBinder| $arg:bracketedBinder)
         letArgs := letArgs.push arg'
       `(tactic| let $name $letArgs* : $type := $value)
-  | `(def $name:ident $args:bracketedBinder* := $value) =>
+  | `(command| def $name:ident $args:bracketedBinder* := $value) =>
       let mut letArgs := #[]
       for arg in args do
         let arg' ← `(letIdBinder| $arg:bracketedBinder)
         letArgs := letArgs.push arg'
       `(tactic| let $name $letArgs*  := $value)
+  | `(command| #note [$s,*]) => `(tactic| #note [$s,*])
   | _ => `(tactic| sorry)
 
 
@@ -348,7 +352,7 @@ mutual
       (input: Json) : TranslateM <| Option Syntax.Command := do
       match input.getKV? with
       | some ("theorem", v) =>
-        logInfo s!"Found theorem"
+        -- logInfo s!"Found theorem"
         let name? := v.getObjString? "name" |>.map String.toName
         let name? := name?.filter (· ≠ Name.anonymous)
         let hypothesis :=
@@ -357,16 +361,17 @@ mutual
         match v.getObjValAs? String "conclusion", v.getObjValAs? Json "proof" with
         | Except.ok claim, Except.ok (.arr steps) =>
             let thm? ← theoremExprInContext? server params pb (context ++ hypothesis) claim
-            if thm?.isNone then
-              IO.eprintln s!"failed to get theorem conclusion"
-            thm?.mapM fun thm => do
+            match thm? with
+            | Except.error es =>
+              mkNoteCmd s!"Failed to translate theorem: {repr es}"
+            | Except.ok thm => do
               let pf ← structToTactics #[] (context ++ hypothesis) steps.toList
               let pf := pf.push <| ← `(tactic| auto?)
               let pfTerm ← `(by $pf*)
-              IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
+              -- IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
               mkStatementStx name? (← delab thm) pfTerm true
         | _, _ =>
-          logInfo s!"failed to get theorem conclusion or proof"
+          -- logInfo s!"failed to get theorem conclusion or proof"
           mkNoteCmd "No theorem conclusion or proof found"
       | some ("define", v) =>
         match v.getObjValAs? String "statement", v.getObjValAs? String "term" with
@@ -381,7 +386,7 @@ mutual
       match input with
       | [] => return accum
       | head :: tail =>
-        IO.eprintln s!"Processing {head}"
+        -- IO.eprintln s!"Processing {head}"
         let headTactics: Array Syntax.Tactic ←
           match head.getKV? with
           | some ("assert", head) =>
@@ -400,8 +405,9 @@ mutual
                 | _ => []
               let type? ← theoremExprInContext? server params pb context claim
               match type? with
-              | none => pure #[]
-              | some type =>
+              | Except.error es =>
+                pure #[← mkNoteTactic s!"Failed to translate assertion: {repr es}"]
+              | Except.ok type =>
                 let names' ← useResults.mapM fun s =>
                   matchingTheoremsAI server params  (s := s) numLeanSearch numMoogle
                 let premises := names'.join
@@ -486,9 +492,9 @@ mutual
             | Except.ok s => pure #[← conclusionTactic s]
             | _ => pure #[]
           | _ => pure #[]
-        IO.eprintln s!"Head tactics"
-        for tac in headTactics do
-          IO.eprintln s!"{← ppTactic tac}"
+        -- IO.eprintln s!"Head tactics"
+        -- for tac in headTactics do
+        --   IO.eprintln s!"{← ppTactic tac}"
         structToTactics (accum ++ headTactics) (context.push head) tail
 
 end
@@ -535,6 +541,15 @@ def mathDocumentCommands (doc: Json) :
           #[] proof
       return cmds?.getD #[← mkNoteCmd "No commands found"]
     | _ => return #[← mkNoteCmd "No math document found"]
+
+def mathDocumentCode (doc: Json) :
+  TranslateM Format := do
+    let cmds ←
+       mathDocumentCommands server params pb numLeanSearch numMoogle doc
+    let cmds' ← cmds.mapM fun cmd => do
+      let cmd' ← PrettyPrinter.ppCommand cmd
+      return cmd'
+    return cmds'.foldl (· ++ "\n" ++ ·) ""
 
 elab "dl!" t: term : term => do
 let t ← elabType t

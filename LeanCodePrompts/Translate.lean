@@ -325,10 +325,15 @@ def greedyBestExpr? (output: Array String) : TranslateM (Option Expr) := do
       pure el?.toOption
 
 def greedyStrictBestExpr? (output: Array String) :
-    TranslateM (Option Expr) := do
-  output.findSomeM? <| fun out => do
+    TranslateM (Except (Array ElabError) Expr) := do
+  let mut errs : Array ElabError := #[]
+  for out in output do
     let el? ← elabThm4 out
-    return el?.toOption.filter (fun e => !e.hasMVar && !e.hasSorry)
+    match el? with
+    | Except.error e =>
+      errs := errs.push e
+    | Except.ok e => return Except.ok e
+  return Except.error errs
 
 
 def matchElab? (output: Array String)(defs : Array <| Name × String):
@@ -525,15 +530,14 @@ def translateViewM (s: String)
 
 def translateToProp? (s: String)
   (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb := PromptExampleBuilder.embedBuilder 8 0 0)(toChat : ChatExampleType := .simple) (relDefs: RelevantDefs := .empty)
-   : TranslateM (Option Expr) := do
+   : TranslateM (Except (Array ElabError) Expr) := do
   logTimed "starting translation"
   let (js, _) ← getLeanCodeJson  s server params
         pb  (toChat := toChat) (relDefs := relDefs)
   let output ← getMessageContents js
   trace[Translate.info] m!"{output}"
   -- let output := params.splitOutputs output
-  let e? ← greedyStrictBestExpr? output
-  return e?
+  greedyStrictBestExpr? output
 
 /--
 Translating a definition greedily by parsing as a command

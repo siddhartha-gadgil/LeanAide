@@ -345,7 +345,7 @@ def extractJsonM (s: String) : CoreM Json :=
   let code := code.trim
   match Json.parse code with
   | Except.ok j => do
-    logInfo s!"parsed JSON: {j}"
+    -- logInfo s!"parsed JSON: {j}"
     appendLog "json_parsed" j
     return j
   | Except.error e => do
