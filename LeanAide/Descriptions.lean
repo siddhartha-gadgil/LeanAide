@@ -92,7 +92,7 @@ def describeTheoremPrompt (name: Name) :
       statement)
 
 def describeAnonymousTheoremPrompt (type: Expr) :
-    MetaM <| Option (String × String) := do
+    MetaM <| Option (String × String × Option String) := do
   let dfns ← defsInExpr type
   let dfns := dfns.map (toString)
   let typeStx ← PrettyPrinter.delab type
@@ -100,11 +100,11 @@ def describeAnonymousTheoremPrompt (type: Expr) :
   let statement ← PrettyPrinter.ppCommand statementStx
   let statement := statement.pretty
   if dfns.isEmpty then
-    return (← fromTemplate "state_theorem" [("theorem", statement)], statement)
+    return some (← fromTemplate "state_theorem" [("theorem", statement)], statement, none)
   else
     let defsBlob := dfns.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
-    return (← fromTemplate "state_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trim)],
-    statement)
+    return some (← fromTemplate "state_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trim)],
+    statement, some defsBlob)
 
 def needsInd (name: Name) : MetaM <| Option (List Name) := do
   let env ← getEnv
@@ -148,23 +148,23 @@ def getDescriptionM (name: Name)(server := ChatServer.openAI)(params: ChatParams
     let res := contents.get? 0 |>.map fun h => (h, statement)
     return res
 
-def getTypeDescriptionM (type: Expr)(server := ChatServer.openAI)(params: ChatParams) : MetaM <| Option (String × String) := do
+def getTypeDescriptionM (type: Expr)(server := ChatServer.openAI)(params: ChatParams) : MetaM <| Option (String × String × Option String) := do
   let prompt? ← describeAnonymousTheoremPrompt type
-  prompt?.bindM fun (prompt, statement) => do
+  prompt?.bindM fun (prompt, statement, defBlob?) => do
     let messages ← mkMessages prompt #[] (← sysPrompt)
     let fullJson ←  server.query messages params
     let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
     let contents ← getMessageContents outJson
-    let res := contents.get? 0 |>.map fun h => (h, statement)
+    let res := contents.get? 0 |>.map fun h => (h, statement, defBlob?)
     return res
 
 def checkTranslationM (s: String) (type: Expr)(server := ChatServer.openAI)(params: ChatParams) :
   MetaM <| Option (String × Array (Bool × String)) := do
-  let pair? ←  getTypeDescriptionM type server params
-  pair?.mapM fun (trans, _) => do
+  let triple? ←  getTypeDescriptionM type server params
+  triple?.mapM fun (trans, _, defBlob?) => do
     IO.eprintln s!"translation: {trans}"
-    let checks ← ChatServer.checkEquivalence s trans
+    let checks ← ChatServer.checkEquivalence s trans defBlob?
     return (trans,  checks)
 
 -- #eval getDescriptionM ``Iff.rfl
