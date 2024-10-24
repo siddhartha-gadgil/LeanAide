@@ -13,13 +13,13 @@ def eg2 := server.structuredProofFromStatement "Every subgroup of a cyclic group
 def eg3 : TranslateM (Array (String × Array Json) × Format) := do
   let jsArr ← server.structuredProofFromStatement "Every subgroup of an abelian group is abelian."
   let js := jsArr.get! 0 |>.2.get! 0
-  let doc ←  mathDocumentCode (doc := js) (pb := LeanAide.Meta.PromptExampleBuilder.embedBuilder 8 6 6)
+  let doc ←  mathDocumentCode (doc := js) (qp := {})
   return (jsArr, doc)
 
 def eg4 : TranslateM (Array (String × Array Json) × Format) := do
   let jsArr ← server.structuredProofFromStatement "Every subgroup of a cyclic group is cyclic."
   let js := jsArr.get! 0 |>.2.get! 0
-  let doc ←  mathDocumentCode (doc := js) (pb := LeanAide.Meta.PromptExampleBuilder.embedBuilder 8 6 6)
+  let doc ←  mathDocumentCode (doc := js) (qp := {})
   return (jsArr, doc)
 
 end Structured
@@ -610,7 +610,7 @@ def parseEg : TranslateM <| Array Format := do
   | Except.ok js => do
     let doc ←
       mathDocumentCommands (doc := js)
-        (pb := LeanAide.Meta.PromptExampleBuilder.embedBuilder 5 5 5)
+        (qp := {})
     let doc' ←  doc.mapM fun c => PrettyPrinter.ppCommand c
     return doc'
 

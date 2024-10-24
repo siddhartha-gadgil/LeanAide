@@ -407,4 +407,14 @@ def tips :=
   #["Multiplication is usually denoted `*` in Lean, not `⬝`",
   "Within quantifiers `∀` and `∃`, do not use typeclasses, use anonymous variables with types instead. For example, NOT: `∃ (G: Type) [Group G], ...` USE: `∃ G : Type, (_ : Group G), ...`"]
 
+
 end LeanAide.Meta
+
+open LeanAide.Meta
+
+structure QueryParams where
+  server : ChatServer := .openAI
+  params : ChatParams := {n := 8}
+  pb : PromptExampleBuilder := .embedBuilder 8 4 4
+  numLeanSearch : Nat := 6
+  numMoogle : Nat := 6

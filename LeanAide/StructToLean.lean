@@ -117,8 +117,6 @@ partial def dropLocalContext (type: Expr) : MetaM Expr := do
       return type
   | _ => return type
 
-variable (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb: PromptExampleBuilder) (numLeanSearch : Nat := 8)(numMoogle: Nat := 0)
-  (dataMap : EmbedMap := HashMap.empty )
 
 open Lean Meta Tactic
 
@@ -157,7 +155,7 @@ match stx with
   evalTactic tac
 | _ => throwUnsupportedSyntax
 
-def theoremExprInContext? (ctx: Array Json)(statement: String): TranslateM (Except (Array ElabError) Expr) := do
+def theoremExprInContext? (ctx: Array Json)(statement: String) (qp: QueryParams): TranslateM (Except (Array ElabError) Expr) := do
   let mut context := #[]
   for js in ctx do
     match contextStatementOfJson js with
@@ -166,7 +164,7 @@ def theoremExprInContext? (ctx: Array Json)(statement: String): TranslateM (Exce
   let fullStatement := context.foldr (· ++ " " ++ ·) s!"Then, {statement}"
   -- IO.eprintln s!"Full statement: {fullStatement}"
   let type? ← translateToProp?
-    fullStatement.trim server {params with n := 5} pb .simple
+    fullStatement.trim qp.server {qp.params with n := 5} qp.pb .simple
   -- IO.eprintln s!"Type: {← type?.mapM fun e => PrettyPrinter.ppExpr e}"
   type?.mapM <| fun e => dropLocalContext e
 
@@ -183,7 +181,7 @@ def purgeLocalContext: Syntax.Command →  TranslateM Syntax.Command
   `(command|theorem $name : $type := $value)
 | stx => return stx
 
-def defnInContext? (ctx: Array Json)(statement: String) : TranslateM (Option Syntax.Command) := do
+def defnInContext? (ctx: Array Json)(statement: String) (qp: QueryParams) : TranslateM (Option Syntax.Command) := do
   let mut context := #[]
   for js in ctx do
     match contextStatementOfJson js with
@@ -191,7 +189,7 @@ def defnInContext? (ctx: Array Json)(statement: String) : TranslateM (Option Syn
     | none => pure ()
   let fullStatement := context.foldr (· ++ " " ++ ·) statement
   let cmd? ←
-    translateDefCmdM? fullStatement server params pb .doc
+    translateDefCmdM? fullStatement qp.server qp.params qp.pb .doc
   let cmd? ← cmd?.mapM purgeLocalContext
   match cmd? with
   | Except.error e => do
@@ -252,9 +250,9 @@ def inductionCases (name: String)
   return cases
 
 def conditionCases (cond₁ cond₂ : String)
-    (pf₁ pf₂ : Array Syntax.Tactic) (context: Array Json) (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb: PromptExampleBuilder)  : TranslateM <| Array Syntax.Tactic := do
-  let condProp₁? ← theoremExprInContext?  server params pb context cond₁
-  let condProp₂? ← theoremExprInContext?  server params pb context cond₂
+    (pf₁ pf₂ : Array Syntax.Tactic) (context: Array Json) (qp: QueryParams)  : TranslateM <| Array Syntax.Tactic := do
+  let condProp₁? ← theoremExprInContext?  context cond₁ qp
+  let condProp₂? ← theoremExprInContext?  context cond₂ qp
   match condProp₁?, condProp₂? with
   | Except.error e, _ => do
     return #[← mkNoteTactic s!"Failed to translate condition {cond₁}: {repr e}"]
@@ -291,19 +289,19 @@ def matchCases (discr: String)
   let discrTerm' : Syntax.Term := ⟨discrTerm⟩
   `(tactic| match $discrTerm':term with $alts':matchAlt*)
 
-def groupCasesAux (context: Array Json) (cond_pfs: List <| String × Array Syntax.Tactic)(server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb: PromptExampleBuilder)
+def groupCasesAux (context: Array Json) (cond_pfs: List <| String × Array Syntax.Tactic)(qp: QueryParams)
     : TranslateM <| Array Syntax.Tactic := do
     match cond_pfs with
     | [] => return #[← `(tactic| auto?)]
     | (cond, pf) :: tail => do
-      let condProp? ← theoremExprInContext? server params pb context cond
+      let condProp? ← theoremExprInContext? context cond qp
       match condProp? with
       | Except.error e =>
         return #[← mkNoteTactic s!"Failed to translate condition {cond}: {repr e}"]
       | Except.ok condProp => do
       let condTerm ← delab condProp
       let condTerm' : Syntax.Term := ⟨condTerm⟩
-      let tailTacs ← groupCasesAux context tail server params pb
+      let tailTacs ← groupCasesAux context tail qp
       let posId := mkIdent `pos
       let negId := mkIdent `neg
       let posId' ← `(caseArg| $posId:ident)
@@ -311,7 +309,7 @@ def groupCasesAux (context: Array Json) (cond_pfs: List <| String × Array Synta
       return #[← `(tactic| by_cases $condTerm':term), ← `(tactic| case $posId' => $pf*), ← `(tactic| case $negId' => $tailTacs*)]
 
 def groupCases (context : Array Json) (cond_pfs: List <| String × Array Syntax.Tactic)
-    (union_pfs: Array Syntax.Tactic) (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb: PromptExampleBuilder):
+    (union_pfs: Array Syntax.Tactic) (qp: QueryParams) :
     TranslateM <| Array Syntax.Tactic := do
   let conds := cond_pfs.map (·.1)
   let env ← getEnv
@@ -325,7 +323,7 @@ def groupCases (context : Array Json) (cond_pfs: List <| String × Array Syntax.
     | h :: t =>
       let t' : List Syntax.Term := t.map fun term => ⟨term⟩
       t'.foldlM (fun acc cond => `($acc ∨ $cond)) ⟨h⟩
-  let casesTacs ← groupCasesAux context cond_pfs server params pb
+  let casesTacs ← groupCasesAux context cond_pfs qp
   let head ← `(tactic| have : $orAll := by $union_pfs*)
   return #[head] ++ casesTacs
 
@@ -359,7 +357,7 @@ def haveForAssertion  (type: Syntax.Term)
 
 mutual
   partial def structToCommand? (context: Array Json)
-      (input: Json) : TranslateM <| Option Syntax.Command := do
+      (input: Json) (qp: QueryParams) : TranslateM <| Option Syntax.Command := do
       match input.getKV? with
       | some ("theorem", v) =>
         -- logInfo s!"Found theorem"
@@ -370,12 +368,12 @@ mutual
             |>.toOption.getD #[]
         match v.getObjValAs? String "conclusion", v.getObjValAs? Json "proof" with
         | Except.ok claim, Except.ok (.arr steps) =>
-            let thm? ← theoremExprInContext? server params pb (context ++ hypothesis) claim
+            let thm? ← theoremExprInContext?  (context ++ hypothesis) claim qp
             match thm? with
             | Except.error es =>
               mkNoteCmd s!"Failed to translate theorem {claim}: {repr es}"
             | Except.ok thm => do
-              let pf ← structToTactics #[] (context ++ hypothesis) steps.toList
+              let pf ← structToTactics #[] (context ++ hypothesis) steps.toList qp
               let pf := pf.push <| ← `(tactic| auto?)
               let pfTerm ← `(by $pf*)
               -- IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
@@ -387,12 +385,13 @@ mutual
         match v.getObjValAs? String "statement", v.getObjValAs? String "term" with
         | Except.ok s, Except.ok t =>
           let statement := s!"We define {t} as follows:\n{s}."
-          defnInContext? server params pb context statement
+          defnInContext? context statement qp
         | _ , _ => none
       | _ => mkNoteCmd s!"Json not a KV pair {input.compress}"
 
-  partial def structToTactics  (accum: Array Syntax.Tactic)(context: Array Json)
-      (input: List Json) : TranslateM <| Array Syntax.Tactic := do
+  partial def structToTactics  (accum: Array Syntax.Tactic)
+    (context: Array Json)(input: List Json)
+    (qp: QueryParams): TranslateM <| Array Syntax.Tactic := do
       match input with
       | [] => return accum
       | head :: tail =>
@@ -413,25 +412,25 @@ mutual
                       | _, _ => none
                   | _ => []
                 | _ => []
-              let type? ← theoremExprInContext? server params pb context claim
+              let type? ← theoremExprInContext? context claim qp
               match type? with
               | Except.error es =>
                 pure #[← mkNoteTactic s!"Failed to translate assertion {claim}: {repr es}"]
               | Except.ok type =>
                 let names' ← useResults.mapM fun s =>
-                  matchingTheoremsAI server params  (s := s) numLeanSearch numMoogle
+                  matchingTheoremsAI qp.server qp.params  (s := s) qp.numLeanSearch qp.numMoogle
                 let premises := names'.join
                 let tac ← haveForAssertion  (← delab type) premises
                 pure #[tac]
             | _ => pure #[]
           | some ("define", head) =>
-            match ← structToCommand? context head with
+            match ← structToCommand? context head qp with
             | some cmd =>
               let tac ← commandToTactic  <| ←  purgeLocalContext cmd
               pure #[tac]
             | none => pure #[]
           | some ("theorem", head) =>
-            match ← structToCommand? context head with
+            match ← structToCommand? context head qp with
             | some cmd =>
               let tac ← commandToTactic  <| ←  purgeLocalContext cmd
               pure #[tac]
@@ -445,7 +444,7 @@ mutual
                   match js.getObjString? "condition",
                     js.getObjValAs? (List Json) "proof" with
                   | some cond, Except.ok pfSource => do
-                    let pf ← structToTactics #[] context pfSource
+                    let pf ← structToTactics #[] context pfSource qp
                     pure <| some (cond, pf)
                   | _, _ => pure none
                 | _ => pure none
@@ -459,19 +458,19 @@ mutual
               | some "group" =>
                 let union_pf : Array Syntax.Tactic ←
                   match head.getObjValAs? (List Json) "exhaustiveness" with
-                  | Except.ok pfSource => structToTactics #[] context pfSource
+                  | Except.ok pfSource => structToTactics #[] context pfSource qp
                   | _ => pure #[← `(tactic| auto?)]
-                groupCases context conditionProofs.toList union_pf server params pb
+                groupCases context conditionProofs.toList union_pf qp
               | some "condition" =>
                 match conditionProofs with
                 | #[(cond₁, pf₁), (cond₂, pf₂)] =>
-                  conditionCases cond₁ cond₂ pf₁ pf₂ context server params pb
+                  conditionCases cond₁ cond₂ pf₁ pf₂ context qp
                 | _ => pure #[]
               | _ => /- treat like a group but with conditions as claims;
                       works for `iff` -/
                 let union_pf : Array Syntax.Tactic ←
                   pure #[← `(tactic| auto?)]
-                groupCases context conditionProofs.toList union_pf server params pb
+                groupCases context conditionProofs.toList union_pf qp
             | _ =>
               pure #[]
           | some ("induction", head) =>
@@ -484,7 +483,7 @@ mutual
                   match js.getObjString? "condition",
                     js.getObjValAs? (List Json) "proof" with
                   | some cond, Except.ok pfSource => do
-                    let pf ← structToTactics #[] context pfSource
+                    let pf ← structToTactics #[] context pfSource qp
                     return some (cond, pf)
                   | _, _ => return none
                 | _ => return none
@@ -494,7 +493,7 @@ mutual
             match head.getObjValAs? String "assumption",
               head.getObjValAs? (List Json) "proof" with
             | Except.ok s, Except.ok pf =>
-              let proof ← structToTactics #[] context pf
+              let proof ← structToTactics #[] context pf qp
               contradictionTactics s proof
             | _, _ => pure #[]
           | some ("conclude", head) =>
@@ -505,7 +504,7 @@ mutual
         -- IO.eprintln s!"Head tactics"
         -- for tac in headTactics do
         --   IO.eprintln s!"{← ppTactic tac}"
-        structToTactics (accum ++ headTactics) (context.push head) tail
+        structToTactics (accum ++ headTactics) (context.push head) tail qp
 
 end
 
@@ -520,14 +519,13 @@ def toCommandSeq : Array (TSyntax `command) → CoreM (TSyntax `commandSeq)
 
 
 def structToCommandSeq? (context: Array Json)
-    (input: Json) : TranslateM <| Option <| Array Syntax.Command := do
+    (input: Json) (qp: QueryParams) : TranslateM <| Option <| Array Syntax.Command := do
   match input with
   | Json.arr js =>
     let mut cmds := #[]
     let mut ctx := context
     for j in js do
-      match ← structToCommand? server params pb
-        numLeanSearch numMoogle ctx j with
+      match ← structToCommand?  ctx j qp with
       | some cmd => cmds := cmds.push cmd
       | none =>
         unless contextStatementOfJson j |>.isSome do
@@ -542,20 +540,19 @@ def structToCommandSeq? (context: Array Json)
     | _ => pure <| some  cmds
   | _ => none
 
-def mathDocumentCommands (doc: Json) :
+def mathDocumentCommands (doc: Json) (qp: QueryParams) :
   TranslateM <| Array Syntax.Command := do
     match doc.getKV? with
     | some  ("math_document", proof) =>
       let cmds? ←
-        structToCommandSeq? server params pb numLeanSearch numMoogle
-          #[] proof
+        structToCommandSeq? #[] proof qp
       return cmds?.getD #[← mkNoteCmd "No commands found"]
     | _ => return #[← mkNoteCmd "No math document found"]
 
-def mathDocumentCode (doc: Json) :
+def mathDocumentCode (doc: Json) (qp: QueryParams) :
   TranslateM Format := do
     let cmds ←
-       mathDocumentCommands server params pb numLeanSearch numMoogle doc
+       mathDocumentCommands doc qp
     let cmds' ← cmds.mapM fun cmd => do
       let cmd' ← PrettyPrinter.ppCommand cmd
       return cmd'
