@@ -15,6 +15,7 @@ def checkedSorry (checkType: Expr → MetaM Bool) : TacticM Unit := do
   try
     evalTactic (← `(tactic|slim_check))
     s.restore
+    logWarning s!"Goal remains: {← ppExpr <| ← getMainTarget}"
     evalTactic (← `(tactic|sorry))
   catch e =>
     let msgs := e.toMessageData
@@ -23,6 +24,7 @@ def checkedSorry (checkType: Expr → MetaM Bool) : TacticM Unit := do
       throwError "checkedSorry failed with {e.toMessageData}"
     else
       s.restore
+      logWarning s!"Goal remains: {← ppExpr <| ← getMainTarget}"
       evalTactic (← `(tactic|sorry))
 
 
@@ -30,6 +32,9 @@ elab "checked_sorry" : tactic => checkedSorry (isProp)
 
 elab "checked_sorry'" : tactic => checkedSorry (fun _ => pure true)
 
+elab "unchecked_sorry" : tactic => do
+  logWarning s!"Goal remains: {← ppExpr <| ← getMainTarget}"
+  evalTactic (← `(tactic|sorry))
 
 example : 1 + 1 = 2 := by checked_sorry
 example : Nat := by

@@ -36,7 +36,7 @@ def sorryRule (wt: Nat := 10) :
 
 def strongSorryRule (wt: Nat := 10) :
   MetaM <| TSyntax `Aesop.rule_expr := do
-  let stx ← `(tacticSeq| sorry)
+  let stx ← `(tacticSeq| unchecked_sorry)
   ofTactic stx (some wt)
 
 def rewrite (e: Syntax.Term)(wt? : Option Nat := none)
