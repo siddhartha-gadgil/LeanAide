@@ -155,10 +155,6 @@ match stx with
   evalTactic tac
 | _ => throwUnsupportedSyntax
 
-example : ∃(f : Nat → Nat), 2 ≤ f 1 := by
-  (checked_sorry)
-
-
 def theoremExprInContext? (ctx: Array Json)(statement: String) (qp: CodeGenParams): TranslateM (Except (Array ElabError) Expr) := do
   let mut context := #[]
   for js in ctx do
