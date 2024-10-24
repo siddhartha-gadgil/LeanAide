@@ -412,9 +412,11 @@ end LeanAide.Meta
 
 open LeanAide.Meta
 
-structure QueryParams where
+structure CodeGenParams where
   server : ChatServer := .openAI
   params : ChatParams := {n := 8}
   pb : PromptExampleBuilder := .embedBuilder 8 4 4
   numLeanSearch : Nat := 6
   numMoogle : Nat := 6
+  numLeanSearchDirect : Nat := 2
+  numMoogleDirect : Nat := 2

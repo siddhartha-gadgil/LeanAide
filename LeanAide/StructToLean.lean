@@ -155,7 +155,7 @@ match stx with
   evalTactic tac
 | _ => throwUnsupportedSyntax
 
-def theoremExprInContext? (ctx: Array Json)(statement: String) (qp: QueryParams): TranslateM (Except (Array ElabError) Expr) := do
+def theoremExprInContext? (ctx: Array Json)(statement: String) (qp: CodeGenParams): TranslateM (Except (Array ElabError) Expr) := do
   let mut context := #[]
   for js in ctx do
     match contextStatementOfJson js with
@@ -181,7 +181,7 @@ def purgeLocalContext: Syntax.Command →  TranslateM Syntax.Command
   `(command|theorem $name : $type := $value)
 | stx => return stx
 
-def defnInContext? (ctx: Array Json)(statement: String) (qp: QueryParams) : TranslateM (Option Syntax.Command) := do
+def defnInContext? (ctx: Array Json)(statement: String) (qp: CodeGenParams) : TranslateM (Option Syntax.Command) := do
   let mut context := #[]
   for js in ctx do
     match contextStatementOfJson js with
@@ -250,7 +250,7 @@ def inductionCases (name: String)
   return cases
 
 def conditionCases (cond₁ cond₂ : String)
-    (pf₁ pf₂ : Array Syntax.Tactic) (context: Array Json) (qp: QueryParams)  : TranslateM <| Array Syntax.Tactic := do
+    (pf₁ pf₂ : Array Syntax.Tactic) (context: Array Json) (qp: CodeGenParams)  : TranslateM <| Array Syntax.Tactic := do
   let condProp₁? ← theoremExprInContext?  context cond₁ qp
   let condProp₂? ← theoremExprInContext?  context cond₂ qp
   match condProp₁?, condProp₂? with
@@ -289,7 +289,7 @@ def matchCases (discr: String)
   let discrTerm' : Syntax.Term := ⟨discrTerm⟩
   `(tactic| match $discrTerm':term with $alts':matchAlt*)
 
-def groupCasesAux (context: Array Json) (cond_pfs: List <| String × Array Syntax.Tactic)(qp: QueryParams)
+def groupCasesAux (context: Array Json) (cond_pfs: List <| String × Array Syntax.Tactic)(qp: CodeGenParams)
     : TranslateM <| Array Syntax.Tactic := do
     match cond_pfs with
     | [] => return #[← `(tactic| auto?)]
@@ -309,7 +309,7 @@ def groupCasesAux (context: Array Json) (cond_pfs: List <| String × Array Synta
       return #[← `(tactic| by_cases $condTerm':term), ← `(tactic| case $posId' => $pf*), ← `(tactic| case $negId' => $tailTacs*)]
 
 def groupCases (context : Array Json) (cond_pfs: List <| String × Array Syntax.Tactic)
-    (union_pfs: Array Syntax.Tactic) (qp: QueryParams) :
+    (union_pfs: Array Syntax.Tactic) (qp: CodeGenParams) :
     TranslateM <| Array Syntax.Tactic := do
   let conds := cond_pfs.map (·.1)
   let env ← getEnv
@@ -357,7 +357,7 @@ def haveForAssertion  (type: Syntax.Term)
 
 mutual
   partial def structToCommand? (context: Array Json)
-      (input: Json) (qp: QueryParams) : TranslateM <| Option Syntax.Command := do
+      (input: Json) (qp: CodeGenParams) : TranslateM <| Option Syntax.Command := do
       match input.getKV? with
       | some ("theorem", v) =>
         -- logInfo s!"Found theorem"
@@ -391,7 +391,7 @@ mutual
 
   partial def structToTactics  (accum: Array Syntax.Tactic)
     (context: Array Json)(input: List Json)
-    (qp: QueryParams): TranslateM <| Array Syntax.Tactic := do
+    (qp: CodeGenParams): TranslateM <| Array Syntax.Tactic := do
       match input with
       | [] => return accum
       | head :: tail =>
@@ -519,7 +519,7 @@ def toCommandSeq : Array (TSyntax `command) → CoreM (TSyntax `commandSeq)
 
 
 def structToCommandSeq? (context: Array Json)
-    (input: Json) (qp: QueryParams) : TranslateM <| Option <| Array Syntax.Command := do
+    (input: Json) (qp: CodeGenParams) : TranslateM <| Option <| Array Syntax.Command := do
   match input with
   | Json.arr js =>
     let mut cmds := #[]
@@ -540,7 +540,7 @@ def structToCommandSeq? (context: Array Json)
     | _ => pure <| some  cmds
   | _ => none
 
-def mathDocumentCommands (doc: Json) (qp: QueryParams) :
+def mathDocumentCommands (doc: Json) (qp: CodeGenParams) :
   TranslateM <| Array Syntax.Command := do
     match doc.getKV? with
     | some  ("math_document", proof) =>
@@ -549,7 +549,7 @@ def mathDocumentCommands (doc: Json) (qp: QueryParams) :
       return cmds?.getD #[← mkNoteCmd "No commands found"]
     | _ => return #[← mkNoteCmd "No math document found"]
 
-def mathDocumentCode (doc: Json) (qp: QueryParams) :
+def mathDocumentCode (doc: Json) (qp: CodeGenParams) :
   TranslateM Format := do
     let cmds ←
        mathDocumentCommands doc qp

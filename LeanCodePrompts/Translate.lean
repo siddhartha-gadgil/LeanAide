@@ -673,7 +673,7 @@ def nearbyDefs
     let closureNames ←  bestDefsInConsts numClosure searchNames.toList 1
     return defNames ++ closureNames
 
-def matchingTheoremsAI (s: String)(n: ℕ := 3)(qp: QueryParams) : TranslateM (List Name) := do
+def matchingTheoremsAI (s: String)(n: ℕ := 3)(qp: CodeGenParams) : TranslateM (List Name) := do
     let chunk ← nearbyTheoremsChunk s qp.numLeanSearch qp.numMoogle
     let prompt := s!"The following are some theorems in Lean with informal statements as documentation strings\n\n{chunk}\n\n---\n¬List the names of theorems that are equivalent to the following informal statement:\n\n{s}.\n\nOutput ONLY a (possibly empty) list of names."
     let completions ← qp.server.completions prompt (← sysPrompt) n qp.params
@@ -683,9 +683,15 @@ def matchingTheoremsAI (s: String)(n: ℕ := 3)(qp: QueryParams) : TranslateM (L
       | some js =>
         fromJson? js |>.toOption
       | none => none
-    return entries.join.toList.map (·.toName)
+    let checked := entries.join.toList.map (·.toName)
+    let pb : PromptExampleBuilder :=
+      PromptExampleBuilder.searchBuilder qp.numLeanSearchDirect qp.numMoogleDirect
+    let pairs ← pb.getPromptPairs s
+    let names : Array Name ← pairs.filterMapM fun (_, js) => do
+      js.getObjValAs? String "name" |>.toOption |>.map (·.toName)
+    return checked ++ names.toList
 
-def matchingTheorems (s: String)(n: ℕ := 3)(qp: QueryParams)  : TranslateM (List Name) := do
+def matchingTheorems (s: String)(n: ℕ := 3)(qp: CodeGenParams)  : TranslateM (List Name) := do
   let elabMatch ← findTheorems s qp.numLeanSearch qp.numMoogle
   if elabMatch.isEmpty then
     matchingTheoremsAI  s n qp
