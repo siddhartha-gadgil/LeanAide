@@ -673,11 +673,10 @@ def nearbyDefs
     let closureNames ←  bestDefsInConsts numClosure searchNames.toList 1
     return defNames ++ closureNames
 
-def matchingTheoremsAI (server: ChatServer := ChatServer.openAI)(params: ChatParams := {})(s: String)(n: ℕ := 3)(numLeanSearch : ℕ := 8)
-  (numMoogle : ℕ := 0)  : TranslateM (List Name) := do
-    let chunk ← nearbyTheoremsChunk s numLeanSearch numMoogle
+def matchingTheoremsAI (s: String)(n: ℕ := 3)(qp: QueryParams) : TranslateM (List Name) := do
+    let chunk ← nearbyTheoremsChunk s qp.numLeanSearch qp.numMoogle
     let prompt := s!"The following are some theorems in Lean with informal statements as documentation strings\n\n{chunk}\n\n---\n¬List the names of theorems that are equivalent to the following informal statement:\n\n{s}.\n\nOutput ONLY a (possibly empty) list of names."
-    let completions ← server.completions prompt (← sysPrompt) n params
+    let completions ← qp.server.completions prompt (← sysPrompt) n qp.params
     let entries : Array (Array String) := completions.filterMap fun s =>
       let js? := Json.parse s |>.toOption
       match js? with
@@ -686,12 +685,10 @@ def matchingTheoremsAI (server: ChatServer := ChatServer.openAI)(params: ChatPar
       | none => none
     return entries.join.toList.map (·.toName)
 
-def matchingTheorems (server: ChatServer := ChatServer.openAI)
-    (params: ChatParams := {})(s: String)(n: ℕ := 3)(numLeanSearch : ℕ := 8)
-    (numMoogle : ℕ := 4)  : TranslateM (List Name) := do
-  let elabMatch ← findTheorems s numLeanSearch numMoogle
+def matchingTheorems (s: String)(n: ℕ := 3)(qp: QueryParams)  : TranslateM (List Name) := do
+  let elabMatch ← findTheorems s qp.numLeanSearch qp.numMoogle
   if elabMatch.isEmpty then
-    matchingTheoremsAI server params s n numLeanSearch numMoogle
+    matchingTheoremsAI  s n qp
   else
     pure elabMatch
 

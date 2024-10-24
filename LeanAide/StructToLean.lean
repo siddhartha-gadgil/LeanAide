@@ -418,7 +418,7 @@ mutual
                 pure #[← mkNoteTactic s!"Failed to translate assertion {claim}: {repr es}"]
               | Except.ok type =>
                 let names' ← useResults.mapM fun s =>
-                  matchingTheoremsAI qp.server qp.params  (s := s) qp.numLeanSearch qp.numMoogle
+                  matchingTheoremsAI   (s := s) (qp:= qp)
                 let premises := names'.join
                 let tac ← haveForAssertion  (← delab type) premises
                 pure #[tac]
