@@ -236,6 +236,19 @@ def simpleChatExample : ToChatExample
   | (docString, data) =>
     return data.getObjValAs? String "type" |>.toOption.map fun thm => {user := docString, assistant:= thm}
 
+def detailedType (js: Json) : MetaM <| Option String := do
+  let type? := js.getObjValAs? String "type" |>.toOption
+  let name? := js.getObjValAs? String "name" |>.toOption
+  let info? ← name?.mapM fun n => getConstInfo n.toName
+  let expr? := info?.map (·.type)
+  let type?' ← expr?.mapM (fun e => ppExprDetailed e)
+  return type?' |>.orElse fun _ => type?
+
+def simpleDetailedChatExample : ToChatExample
+  | (docString, data) => do
+    let type? ← detailedType data
+    return type?.map fun type => {user := docString, assistant:= type}
+
 def fullStatement? (js: Json) : Option String := do
   let type ← js.getObjValAs? String "type" |>.toOption
   let name ← js.getObjValAs? String "name" |>.toOption
@@ -284,15 +297,40 @@ def docChatExample
     return some {user := user, assistant := assistant}
     | _,_,_ => return none
 
+def docDetailedChatExample (fullThm: Bool := true)(fullDoc : Bool := true) : ToChatExample
+  | (docString, data) => do
+    let thm? ← detailedType data
+    let name? := data.getObjValAs? String "name" |>.toOption
+    let isProp?:= data.getObjValAs? Bool "isProp" |>.toOption
+    match thm?, name?, isProp? with
+    | some thm, some name, some isProp =>
+    let user := if fullDoc then displayedDoc docString isProp (some name) else
+      docString
+    let head := if isProp then "theorem" else "definition"
+    let value ←  if isProp then pure "by sorry" else
+      let env ← getEnv
+      let decl := env.find? name.toName
+      let expr? := decl.bind (fun d => d.value?)
+      let fmt? ← expr?.mapM (fun e => ppExpr e)
+      pure <| fmt?.map (·.pretty) |>.getD "sorry"
+    let assistant :=
+      if fullThm then s!"{head} {name} : {thm} := {value}" else thm
+    return some {user := user, assistant := assistant}
+    | _,_,_ => return none
+
 inductive ChatExampleType
   | simple
   | doc
+  | detailed
+  | detailedDoc
   deriving Repr, FromJson, ToJson, Inhabited, DecidableEq
 
 def ChatExampleType.map? (t: ChatExampleType) : ToChatExample :=
   match t with
   | ChatExampleType.simple => simpleChatExample
   | ChatExampleType.doc => docChatExample
+  | ChatExampleType.detailed => simpleDetailedChatExample
+  | ChatExampleType.detailedDoc => docDetailedChatExample
 
 /--
 A Json object representing a chat message
