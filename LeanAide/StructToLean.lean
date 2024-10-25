@@ -393,7 +393,7 @@ mutual
     (context: Array Json)(input: List Json)
     (qp: CodeGenParams): TranslateM <| Array Syntax.Tactic := do
       match input with
-      | [] => return accum
+      | [] => return accum.push <| ← `(tactic| auto?)
       | head :: tail =>
         -- IO.eprintln s!"Processing {head}"
         let headTactics: Array Syntax.Tactic ←
