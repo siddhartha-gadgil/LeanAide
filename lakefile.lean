@@ -90,6 +90,8 @@ lean_exe fetch_embeddings
 
 lean_exe nearest_embeddings_test
 
+lean_exe benchmark_embeddings
+
 lean_exe lemma_suggest{
   supportInterpreter := true
 }
