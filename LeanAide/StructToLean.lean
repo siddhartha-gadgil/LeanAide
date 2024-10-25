@@ -254,10 +254,10 @@ def conditionCases (cond₁ cond₂ : String)
   let condProp₁? ← theoremExprInContext?  context cond₁ qp
   let condProp₂? ← theoremExprInContext?  context cond₂ qp
   match condProp₁?, condProp₂? with
-  | Except.error e, _ => do
-    return #[← mkNoteTactic s!"Failed to translate condition {cond₁}: {repr e}"]
-  | _, Except.error e => do
-    return #[← mkNoteTactic s!"Failed to translate condition {cond₂}: {repr e}"]
+  | Except.error _, _ => do
+    return #[← mkNoteTactic s!"Failed to translate condition {cond₁}"]
+  | _, Except.error _ => do
+    return #[← mkNoteTactic s!"Failed to translate condition {cond₂}"]
   | Except.ok condProp₁, Except.ok condProp₂ => do
   let condTerm₁ ← delab condProp₁
   let condTerm₂ ← delab condProp₂
@@ -296,8 +296,8 @@ def groupCasesAux (context: Array Json) (cond_pfs: List <| String × Array Synta
     | (cond, pf) :: tail => do
       let condProp? ← theoremExprInContext? context cond qp
       match condProp? with
-      | Except.error e =>
-        return #[← mkNoteTactic s!"Failed to translate condition {cond}: {repr e}"]
+      | Except.error _ =>
+        return #[← mkNoteTactic s!"Failed to translate condition {cond}"]
       | Except.ok condProp => do
       let condTerm ← delab condProp
       let condTerm' : Syntax.Term := ⟨condTerm⟩
@@ -370,8 +370,8 @@ mutual
         | Except.ok claim, Except.ok (.arr steps) =>
             let thm? ← theoremExprInContext?  (context ++ hypothesis) claim qp
             match thm? with
-            | Except.error es =>
-              mkNoteCmd s!"Failed to translate theorem {claim}: {repr es}"
+            | Except.error _ =>
+              mkNoteCmd s!"Failed to translate theorem {claim}"
             | Except.ok thm => do
               let pf ← structToTactics #[] (context ++ hypothesis) steps.toList qp
               let pf := pf.push <| ← `(tactic| auto?)
@@ -414,8 +414,8 @@ mutual
                 | _ => []
               let type? ← theoremExprInContext? context claim qp
               match type? with
-              | Except.error es =>
-                pure #[← mkNoteTactic s!"Failed to translate assertion {claim}: {repr es}"]
+              | Except.error _ =>
+                pure #[← mkNoteTactic s!"Failed to translate assertion {claim}"]
               | Except.ok type =>
                 let names' ← useResults.mapM fun s =>
                   matchingTheoremsAI   (s := s) (qp:= qp)
