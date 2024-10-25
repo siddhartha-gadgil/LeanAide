@@ -62,12 +62,14 @@ partial def epsilonClustersAux  (ε: Float)
   if elements.isEmpty then
     return accum
   else
+    IO.eprintln s!"Splitting {elements.size}"
     let idx ← IO.rand 0 (elements.size - 1)
     let pivot := elements[idx]!
     -- IO.eprintln s!"Found pivot"
     let (group, rest) :=
       elements.split (fun x => distance x pivot < ε)
     -- IO.eprintln s!"Split into {group.size} and {rest.size}"
+    IO.eprintln s!"Split into {group.size} and {rest.size}"
     let (cluster, tail) ← do
       if group.size ≥ minSize then
         pure ({pivot := pivot, elements := group, ε := ε},
@@ -125,10 +127,14 @@ def Cluster.nearest (cs : Array <| Cluster α)(x : β)
 The `k` nearest points to a given point `x` in a set of clusters.
 -/
 def Cluster.kNearest (k: Nat)(cs : Array <| Cluster α)(x : β)
-  (distance : α -> β  -> Float) : Array (α × Float) :=
+  (distance : α -> β  -> Float) : IO <| Array (α × Float) := do
   let withDistance := cs.map (fun c => (c, distance c.pivot x))
+  let start ← IO.monoMsNow
   let sorted :=
     withDistance.qsort (fun (_, d1) (_, d2) => d1 < d2)
+  let finish ← IO.monoMsNow
+  IO.eprintln s!"Cluster centers Sorted in {finish - start} ms"
+  IO.eprintln <| sorted.map fun (c, d) => (c.ε, d)
   let best :=
     sorted.foldl (fun best (cl, d) =>
       let check: Bool := match best[k - 1]? with
@@ -138,7 +144,7 @@ def Cluster.kNearest (k: Nat)(cs : Array <| Cluster α)(x : β)
         bestWithCost cl.elements (fun y => distance y x) k best
       else
         best) #[]
-  best
+  return best
 
 /--
 A tree of recusively defined clusters.
@@ -231,7 +237,7 @@ def randomClustered : IO <| Float × Float × (Array (Float × Float)) ×
     2  randoms.toArray
   let best := Cluster.nearest clusters a
     (fun x y => (x - y).abs)
-  let best2 := Cluster.kNearest 3 clusters a
+  let best2 ←  Cluster.kNearest 3 clusters a
     (fun x y => (x - y).abs)
   let tree ←
     EpsilonTree.build randoms.toArray [(7.0, 2), (1.5, 1)]
