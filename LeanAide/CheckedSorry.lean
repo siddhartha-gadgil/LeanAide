@@ -1,5 +1,6 @@
 import Lean
 import Mathlib.Tactic.SlimCheck
+import Lake.Toml.Decode
 /-!
 # Checked sorry
 
@@ -101,3 +102,5 @@ theorem multigoal : 1 + 1 = 2 ∧ 2 + 2 = 4 ∧ 1 + 1 = 2 := by
 
 #check #sorry_free multigoal
 #check Expr.hasSorry
+
+#check Lake.DecodeToml
