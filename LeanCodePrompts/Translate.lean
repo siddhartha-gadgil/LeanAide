@@ -532,12 +532,16 @@ def translateToProp? (s: String)
   (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb := PromptExampleBuilder.embedBuilder 8 0 0)(toChat : ChatExampleType := .simple) (relDefs: RelevantDefs := .empty)
    : TranslateM (Except (Array ElabError) Expr) := do
   logTimed "starting translation"
-  let (js, _) ← getLeanCodeJson  s server params
+  let (js, prompt, _) ← getLeanCodeJson  s server params
         pb  (toChat := toChat) (relDefs := relDefs)
   let output ← getMessageContents js
   trace[Translate.info] m!"{output}"
   -- let output := params.splitOutputs output
-  greedyStrictBestExpr? output
+  match ← greedyStrictBestExpr? output with
+  | Except.ok res => return Except.ok res
+  | Except.error e =>
+    logError s prompt e
+    return Except.error e
 
 /--
 Translating a definition greedily by parsing as a command
@@ -721,6 +725,7 @@ def translateViewVerboseM (s: String)(server: ChatServer)
     match res? with
     | Except.error err =>
       appendLog "translate_fail" <| toJson err
+      logError s prompt err
       return (none, output, prompt)
     | Except.ok res =>
       let view ←  res.withView

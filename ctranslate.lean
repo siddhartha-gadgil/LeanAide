@@ -71,19 +71,19 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
       IO.eprintln prompt.pretty
       IO.eprintln "---"
     match translation? with
-    | some (s, elabs, gps) =>
+    | some result =>
       if p.hasFlag "show_elaborated" then
         IO.eprintln "Elaborated terms:"
-        for out in elabs do
+        for out in result.allElaborated do
           IO.eprintln out
         IO.eprintln "---"
         IO.eprintln "Groups:"
-        for gp in gps do
+        for gp in result.groups do
           for out in gp do
             IO.eprintln out
           IO.eprintln "---"
       IO.eprintln "Translation:"
-      IO.println s
+      IO.println result.view
       return 0
     | none =>
       IO.eprintln "No translation"

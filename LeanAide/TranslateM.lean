@@ -6,7 +6,6 @@ import LeanAide.ConstDeps
 import LeanAide.PremiseData
 
 open Lean Meta Elab Term
-
 namespace LeanAide.Meta
 
 structure DefSource where
@@ -16,6 +15,24 @@ deriving ToJson, FromJson, Repr
 
 structure DefWithDoc extends DefData where
   doc : String
+
+inductive ElabError : Type where
+| unparsed (text parseError: String) (context? : Option String) : ElabError
+| parsed (text elabError : String) (cmdErrors : List String)
+    (context? : Option String) : ElabError
+deriving Repr, ToJson, FromJson
+
+instance : ToMessageData (ElabError) where
+  toMessageData (err) := match err with
+  | .unparsed text parseError _ => m!"Parsing error: {parseError} for {text}"
+  | .parsed text elabError cmdErrors _ =>
+      m!"Elaboration errors : {elabError} for {text}; front-end errors: {cmdErrors}"
+
+structure ElabErrorData where
+  source : String
+  prompt? : Option Json
+  elabErrors : Array ElabError
+deriving FromJson, ToJson, Repr
 
 inductive CmdElabError : Type where
 | unparsed (text parseError: String) (context? : Option String) : CmdElabError
@@ -48,6 +65,7 @@ structure Translate.State where
   descriptionMap : HashMap Name Json := HashMap.empty
   cmdPrelude : Array String := #[]
   defs : Array (DefWithDoc) := #[]
+  errorLog : Array ElabErrorData := #[]
   context : Option String := none
 deriving Inhabited
 
@@ -77,6 +95,12 @@ def setContext (ctx : String) : TranslateM Unit := do
 
 def getContext : TranslateM <| Option String := do
   return (← get).context
+
+def logError (source: String) (prompt?: Option Json) (errs: Array ElabError) : TranslateM Unit := do
+  modify fun s => {s with errorLog := s.errorLog.push {source := source, prompt? := prompt?, elabErrors := errs}}
+
+def getErrors : TranslateM <| Array ElabErrorData := do
+  return (← get).errorLog
 
 def printKeys : TranslateM Unit := do
   let em := (← getEmbedMap)

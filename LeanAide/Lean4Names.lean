@@ -33,19 +33,6 @@ partial def lean4NamesSyntax : Syntax → MetaM Syntax := fun stx => pure stx
 --   return mkNode k args
 -- | stx => pure stx
 
-inductive ElabError : Type where
-| unparsed (text parseError: String) (context? : Option String) : ElabError
-| parsed (text elabError : String) (cmdErrors : List String)
-    (context? : Option String) : ElabError
-deriving Repr, ToJson, FromJson
-
-
-instance : ToMessageData (ElabError) where
-  toMessageData (err) := match err with
-  | .unparsed text parseError _ => m!"Parsing error: {parseError} for {text}"
-  | .parsed text elabError cmdErrors _ =>
-      m!"Elaboration errors : {elabError} for {text}; front-end errors: {cmdErrors}"
-
 def parseThm4 (s : String) : TermElabM <| Except String Syntax := do
   let env ← getEnv
   let stx? := Lean.Parser.runParserCategory env `theorem_statement  s

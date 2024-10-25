@@ -428,3 +428,7 @@ def ppExprDetailed (e : Expr): MetaM String := do
                     pp.unicode.fun.set o₈ true) do
     ppExpr e
   return fmtDetailed.pretty
+
+
+instance : Repr Json where
+  reprPrec js _ := js.pretty

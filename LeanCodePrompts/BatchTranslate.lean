@@ -44,11 +44,6 @@ def translateWithDataM (s: String)(server: ChatServer)
       return (Except.ok res, output, prompt?)
 
 
-structure ElabErrorData where
-  prompt? : Option Json
-  elabErrors : Array ElabError
-deriving FromJson, ToJson
-
 
 /--
 Translate theorems in a given file and record results in a JSON file.
@@ -122,7 +117,7 @@ def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
       elabData := elabData.push js
     | .error err =>
       IO.eprintln "failed to elaborate"
-      failed := failed.push ⟨prompt?, err⟩
+      failed := failed.push ⟨statement, prompt?, err⟩
     IO.eprintln s!"total : {count}"
     IO.eprintln s!"elaborated: {elaborated}"
     IO.eprintln s!"roundtrip errors: {roundTripError}"

@@ -145,9 +145,6 @@ def withDoc? (res: SearchResult) (descFields: List String)
 
 end SearchResult
 
-instance : Repr Json where
-  reprPrec js _ := js.pretty
-
 inductive PromptExampleBuilder where
 | embedSearch (descField : String) (n: Nat) (penalty: Float := 1.0) : PromptExampleBuilder
 | leansearch (descFields : List String)
