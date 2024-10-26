@@ -51,4 +51,6 @@ open LeanAide.Meta
 
 #synth Repr (Except (Array ElabError) ElabSuccessResult × Array String × Option Lean.Json)
 
-#eval detailedTranslator.translateWithDataM "Show that the lower limit topology `ℝ_l` and the `K`-topology `ℝ_K` are not comparable." (queryData? := none)
+-- #eval detailedTranslator.translateWithDataM "Show that the lower limit topology `ℝ_l` and the `K`-topology `ℝ_K` are not comparable." (queryData? := none)
+
+-- example : ∀ {X : Type u_1} {Y : Type u_2} [inst : MetricSpace X] [inst_1 : MetricSpace Y] {E : Set X} {f : X → Y},  Dense E → Continuous f → Dense (f '' E) (f '' (Set.Univ : Set X)) := by sorry
