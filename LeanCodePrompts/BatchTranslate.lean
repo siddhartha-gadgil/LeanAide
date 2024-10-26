@@ -4,18 +4,17 @@ import LeanAide.Descriptions
 
 open Lean Meta Elab
 open LeanAide.Meta
-namespace LeanAide
+namespace LeanAide.Translator
 
 /--
 Translate a string to a Lean expression using the GPT model, returning the expression, all outputs and the prompt used.
 -/
-def translateWithDataM (s: String)(server: ChatServer)
-  (params: ChatParams)(pb: PromptExampleBuilder := .embedBuilder 10 0 0)  (repeats: Nat := 0)(sleepTime : Nat := 1)
-  (queryData? : Option <| (HashMap String Json)  )(toChat : ChatExampleType := .simple) (relDefs: RelevantDefs := .empty) :
+def translateWithDataM (s: String)(translator: Translator)  (repeats: Nat := 0)(sleepTime : Nat := 1)
+  (queryData? : Option <| (HashMap String Json)  ) :
   TranslateM ((Except (Array ElabError) (ElabSuccessResult)) × Array String × (Option Json)) := do
   let (output, prompt?) ←  match queryData? with
   | none =>
-    let (js,prompt, _) ← getLeanCodeJson s server params pb toChat (relDefs := relDefs)
+    let (js,prompt, _) ← translator.getLeanCodeJson s
     pure (← getMessageContents js, some prompt)
   | some f =>
     let res? := f.find? s.trim
@@ -31,8 +30,8 @@ def translateWithDataM (s: String)(server: ChatServer)
   | k + 1 =>
     IO.eprintln s!"No outputs; repeating ({k} left)"
     IO.sleep (sleepTime * 1000).toUInt32
-    translateWithDataM s server params
-      pb k
+    translator.translateWithDataM s
+       k
       (sleepTime * 2) queryData?
   else
     -- let output := params.splitOutputs output
@@ -49,22 +48,21 @@ def translateWithDataM (s: String)(server: ChatServer)
 /--
 Translate theorems in a given file and record results in a JSON file.
 -/
-def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
-  (params: ChatParams)(pb: PromptExampleBuilder := .embedBuilder 10 0 0)
-  (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json) )(tag: Bool := false)(toChat : ChatExampleType := .simple)(roundtrip: Bool := false) : TranslateM Json := do
-  IO.eprintln s!"Writing to file: {inputFile}-elab-{pb.signature}-{params.n}-{params.temp.mantissa}.json"
+def checkTranslatedThmsM(inputFile: String := "thm")(translator: Translator)
+  (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json) )(tag: Bool := false) : TranslateM Json := do
+  IO.eprintln s!"Writing to file: {inputFile}-elab-{translator.pb.signature}-{translator.params.n}-{translator.params.temp.mantissa}.json"
   let promptsFile := System.mkFilePath ["data",
-    s!"prompts-{inputFile}-{pb.signature}-{params.n}-{params.temp.mantissa}.jsonl"]
+    s!"prompts-{inputFile}-{translator.pb.signature}-{translator.params.n}-{translator.params.temp.mantissa}.jsonl"]
   let gitHash ← gitHash
   let outFile :=
       if tag then
       System.mkFilePath
-      ["results", server.model,gitHash,
-      s!"{inputFile}-elab-{pb.signature}-{params.n}-{params.temp.mantissa}.jsonl"]
+      ["results", translator.server.model,gitHash,
+      s!"{inputFile}-elab-{translator.pb.signature}-{translator.params.n}-{translator.params.temp.mantissa}.jsonl"]
       else
       System.mkFilePath
-      ["results", server.model,
-      s!"{inputFile}-elab-{pb.signature}-{params.n}-{params.temp.mantissa}.jsonl"]
+      ["results", translator.server.model,
+      s!"{inputFile}-elab-{translator.pb.signature}-{translator.params.n}-{translator.params.temp.mantissa}.jsonl"]
   IO.println s!"Writing to {outFile}"
   IO.FS.writeFile outFile ""
   let outHandle ← IO.FS.Handle.mk outFile IO.FS.Mode.append
@@ -83,7 +81,7 @@ def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
     IO.println ""
     IO.println statement
     let (res?, _, prompt?) ←
-        translateWithDataM statement server params pb repeats 0 queryData? toChat
+        translator.translateWithDataM statement  repeats 0 queryData?
     let fullPrompt := prompt?.getD "No prompt (maybe using cached data)"
     let js := Json.mkObj [("text", Json.str statement),
        ("fullPrompt", fullPrompt)]
@@ -101,8 +99,8 @@ def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
        ("all-elaborations", Json.arr <| res.allElaborated.map Json.str),
        ("elaboration-groups", Json.arr <| res.groups.map (Json.arr ∘ Array.map Json.str))]
 
-      let (js, rt) ←  if roundtrip then
-          let pair? ←  checkTranslationM statement res.term server params
+      let (js, rt) ←  if translator.roundTrip then
+          let pair? ←  checkTranslationM statement res.term translator.server translator.params
           let translateBackResult : TranslateBackResult := match pair? with
           | none => .failure
           | some (translation, check') =>
@@ -128,10 +126,10 @@ def checkTranslatedThmsM(inputFile: String := "thm")(server: ChatServer)
     Json.mkObj
       [("total-prompts", count),
         ("elaborated", elaborated),
-        ("number-similar-sentences", pb.signature),
-        ("prompt-examples", toJson pb),
-       ("query-number", params.n),
-       ("temperature", Json.num params.temp),
+        ("number-similar-sentences", translator.pb.signature),
+        ("prompt-examples", toJson translator.pb),
+       ("query-number", translator.params.n),
+       ("temperature", Json.num translator.params.temp),
        ("elaborated-prompts", Json.arr elabData),
         ("roundtrip-errors", roundTripError),
         ("failures", Json.arr <| failed.map (toJson))

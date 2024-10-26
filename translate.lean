@@ -5,7 +5,7 @@ import LeanAide.Config
 import LeanAide.TranslateM
 import LeanAide.PromptBuilder
 import Cli
-open Lean Cli LeanAide.Meta LeanAide
+open Lean Cli LeanAide.Meta LeanAide Translator
 
 set_option maxHeartbeats 10000000
 set_option maxRecDepth 1000
@@ -64,8 +64,9 @@ def runTranslate (p : Parsed) : IO UInt32 := do
     importModules #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanCodePrompts.Translate}] {}
+  let translator : Translator := {pb := pb, server := chatServer, params := chatParams}
   let core :=
-    translateViewVerboseM type chatServer chatParams pb  |>.runToCore
+    translator.translateViewVerboseM type   |>.runToCore
   let io? :=
     core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
     {env := env}

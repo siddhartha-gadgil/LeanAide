@@ -323,6 +323,9 @@ def RelevantDefs.empty := RelevantDefs.seq []
 
 def RelevantDefs.base := RelevantDefs.env
 
+def RelevantDefs.addDefs (nbs: Array (Name × String)) (nbd: RelevantDefs) : RelevantDefs :=
+  nbd ++ nbs
+
 partial def RelevantDefs.names (nbd: RelevantDefs)(s: String) (pairs : Array (String × Json)) : TranslateM (Array Name) := do
   match nbd with
   | RelevantDefs.select bound? =>
@@ -417,6 +420,8 @@ structure Translator where
   pb : PromptExampleBuilder := .embedBuilder 8 4 4 ++ .searchBuilder 4 4
   toChat : ChatExampleType := .simple
   relDefs : RelevantDefs := .empty
+  roundTrip : Bool := false
+  roundTripSelect : Bool := false -- selecting first to pass roundtrip
 deriving Repr, FromJson, ToJson
 
 structure CodeGenerator extends Translator where

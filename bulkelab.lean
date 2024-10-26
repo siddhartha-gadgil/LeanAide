@@ -3,7 +3,7 @@ import LeanCodePrompts
 import LeanCodePrompts.BatchTranslate
 import LeanAide.Config
 import Cli
-open Lean Cli LeanAide.Meta LeanAide
+open Lean Cli LeanAide.Meta LeanAide Translator
 
 set_option maxHeartbeats 10000000
 set_option maxRecDepth 1000
@@ -107,8 +107,9 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
   let dataMap :
     EmbedMap := HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
   IO.eprintln "Loaded hashmap"
+  let translator : Translator := {pb := pb, server := chatServer, params := chatParams, roundTrip := roundtrip}
   let core :=
-    checkTranslatedThmsM input_file chatServer chatParams pb delay repeats (roundtrip := roundtrip)
+    translator.checkTranslatedThmsM input_file  delay repeats
     queryData? tag |>.runWithEmbeddings dataMap
   let io? :=
     core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000}
