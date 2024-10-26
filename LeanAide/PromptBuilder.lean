@@ -409,11 +409,21 @@ end LeanAide.Meta
 
 open LeanAide.Meta
 
-structure CodeGenParams where
+namespace LeanAide
+
+structure Translator where
   server : ChatServer := .openAI
   params : ChatParams := {n := 8}
-  pb : PromptExampleBuilder := .embedBuilder 8 4 4
+  pb : PromptExampleBuilder := .embedBuilder 8 4 4 ++ .searchBuilder 4 4
+  toChat : ChatExampleType := .simple
+  relDefs : RelevantDefs := .empty
+deriving Repr, FromJson, ToJson
+
+structure CodeGenerator extends Translator where
   numLeanSearch : Nat := 6
   numMoogle : Nat := 6
   numLeanSearchDirect : Nat := 2
   numMoogleDirect : Nat := 2
+deriving Repr, FromJson, ToJson
+
+#eval toJson <| ({} : CodeGenerator)

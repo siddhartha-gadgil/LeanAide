@@ -3,7 +3,7 @@ import LeanCodePrompts
 import LeanCodePrompts.BatchTranslate
 import LeanAide.Config
 import Cli
-open Lean Cli LeanAide.Meta
+open Lean Cli LeanAide.Meta LeanAide
 
 set_option maxHeartbeats 10000000
 set_option maxRecDepth 1000
