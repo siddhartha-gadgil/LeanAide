@@ -241,7 +241,10 @@ def detailedType (js: Json) : MetaM <| Option String := do
   let name? := js.getObjValAs? String "name" |>.toOption
   let info? ← name?.mapM fun n => getConstInfo n.toName
   let expr? := info?.map (·.type)
-  let type?' ← expr?.mapM (fun e => ppExprDetailed e)
+  let type?' ←
+    try
+      expr?.mapM (fun e => ppExprDetailed e)
+    catch _ => pure none
   return type?' |>.orElse fun _ => type?
 
 def simpleDetailedChatExample : ToChatExample

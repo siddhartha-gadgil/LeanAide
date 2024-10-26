@@ -4,7 +4,7 @@ import LeanCodePrompts.BatchTranslate
 import LeanAide.Config
 import LeanAide.Descriptions
 import Cli
-open Lean Cli LeanAide.Meta
+open Lean Cli LeanAide.Meta LeanAide
 
 set_option maxHeartbeats 10000000
 set_option maxRecDepth 1000
@@ -68,7 +68,8 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
   for name in names do
     let name := name.toName
     IO.eprintln s!"Translating {name}"
-    let coreDesc := getDescriptionCore name chatServer {chatParams with n := 1}
+    let translator : Translator := {server := chatServer, params := {chatParams with n := 1}}
+    let coreDesc := translator.getDescriptionCore name
     let io? :=
       coreDesc.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
       {env := env}
@@ -84,8 +85,9 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
       IO.eprintln "Got description"
       IO.eprintln statement
       IO.eprintln desc
+      let translator' := {translator with pb :=  (PromptExampleBuilder.embedBuilder numSim numConcise numDesc)}
       let coreTranslate :=
-        translateViewVerboseM desc chatServer chatParams (PromptExampleBuilder.embedBuilder numSim numConcise numDesc) |>.runWithEmbeddings dataMap
+        translator'.translateViewVerboseM desc  |>.runWithEmbeddings dataMap
       let io? :=
         coreTranslate.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
         {env := env}

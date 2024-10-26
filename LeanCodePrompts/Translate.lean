@@ -259,6 +259,7 @@ structure ElabSuccessResult where
   term : Expr
   allElaborated : Array String
   groups : Array (Array String)
+  deriving Repr
 
 def ElabSuccessResult.view (er: ElabSuccessResult) : MetaM String :=
   er.term.view

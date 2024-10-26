@@ -100,7 +100,7 @@ def checkTranslatedThmsM(inputFile: String := "thm")(translator: Translator)
        ("elaboration-groups", Json.arr <| res.groups.map (Json.arr ∘ Array.map Json.str))]
 
       let (js, rt) ←  if translator.roundTrip then
-          let pair? ←  checkTranslationM statement res.term translator.server translator.params
+          let pair? ←  checkTranslationM statement res.term translator
           let translateBackResult : TranslateBackResult := match pair? with
           | none => .failure
           | some (translation, check') =>
@@ -196,3 +196,16 @@ Check theorems in file and return data on success in elaboration.
 -/
 def outputFromCompletionsCore (s: String) : CoreM String :=
   (outputFromCompletionsM s |>.run' {}).run'.run'
+
+def checkStatementTranslationM (s: String) (typeString: String) (translator: Translator) :
+  TranslateM <| Option (String × Array (Bool × String)) := do
+  match ← elabThm4 typeString with
+  | Except.error err =>
+    logWarning s!"error while elaborating: {repr err}"
+    return none
+  | Except.ok type => do
+    let triple? ←  getTypeDescriptionM type translator
+    triple?.mapM fun (transl, _, defBlob?) => do
+      IO.eprintln s!"translation: {transl}"
+      let checks ← ChatServer.checkEquivalence s transl defBlob?
+      return (transl,  checks)

@@ -177,8 +177,8 @@ def theoremExprInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerato
     | none => pure ()
   let fullStatement := context.foldr (· ++ " " ++ ·) s!"Then, {statement}"
   -- IO.eprintln s!"Full statement: {fullStatement}"
-  let type? ← translateToProp?
-    fullStatement.trim qp.server {qp.params with n := 5} qp.pb .simple
+  let type? ← Translator.translateToProp?
+    fullStatement.trim {server:= qp.server, params:={qp.params with n := 5}, pb:= qp.pb}
   -- IO.eprintln s!"Type: {← type?.mapM fun e => PrettyPrinter.ppExpr e}"
   type?.mapM <| fun e => dropLocalContext e
 
@@ -203,7 +203,7 @@ def defnInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerator) : Tr
     | none => pure ()
   let fullStatement := context.foldr (· ++ " " ++ ·) statement
   let cmd? ←
-    translateDefCmdM? fullStatement qp.server qp.params qp.pb .doc
+    Translator.translateDefCmdM? fullStatement {server:= qp.server, params:= qp.params, pb := qp.pb, toChat := .doc}
   let cmd? ← cmd?.mapM purgeLocalContext
   match cmd? with
   | Except.error e => do
@@ -432,7 +432,7 @@ mutual
                 pure #[← mkNoteTactic s!"Failed to translate assertion {claim}"]
               | Except.ok type =>
                 let names' ← useResults.mapM fun s =>
-                  matchingTheoremsAI   (s := s) (qp:= qp)
+                  Translator.matchingTheoremsAI   (s := s) (qp:= qp)
                 let premises := names'.join
                 let tac ← haveForAssertion  (← delab type) premises
                 pure #[tac]

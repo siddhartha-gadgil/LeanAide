@@ -1,6 +1,7 @@
 import LeanAide.ConstDeps
 import LeanAide.TheoremElab
 import LeanCodePrompts.ChatClient
+import LeanAide.PromptBuilder
 open Lean Meta Elab
 
 namespace LeanAide.Meta
@@ -47,7 +48,7 @@ def theoremStatement (name: Name) : MetaM <|
     | _ => return none
 
 def filteredNames (names: Array Name) : Array Name :=
-  let common := [``Eq.mp, ``Eq.mpr, ``congrArg, ``id, ``Eq.refl, ``trans, ``of_eq_true, ``trans, ``rfl, `symm, ``eq_self, `Eq, ``congr, ``propext, ``funext, ``Exists.intro, `left, `right, ``Iff.rfl, ``iff_self, `CategoryTheory.Functor.toPrefunctor, ``forall_congr, ``Eq.rec, ``Eq.ndrec, `Iff, ``And.left, ``And.right, ``And.intro, ``And.elim, ``And.rec, ``implies_congr, `obj, `map, ``And, `app, `hom, ``Not, ``Exists, ``eq_true, `self, ``HEq, ``HEq.refl, `congr_arg, `congr_fun, ``Subtype.property, ``Iff.trans, ``False, ``eq_false, ``true, ``false, ``not_false_eq_true, ``Trans.trans, ``True, ``inferInstance, `Set.ext,
+  let common := [``Eq.mp, ``Eq.mpr, ``congrArg, ``id, ``Eq.refl,  ``of_eq_true,  ``rfl, `symm, ``eq_self, `Eq, ``congr, ``propext, ``funext, ``Exists.intro, `left, `right, ``Iff.rfl, ``iff_self, `CategoryTheory.Functor.toPrefunctor, ``forall_congr, ``Eq.rec, ``Eq.ndrec, `Iff, ``And.left, ``And.right, ``And.intro, ``And.elim, ``And.rec, ``implies_congr, `obj, `map, ``And, `app, `hom, ``Not, ``Exists, ``eq_true, `self, ``HEq, ``HEq.refl, `congr_arg, `congr_fun, ``Subtype.property, ``Iff.trans, ``False, ``eq_false, ``true, ``false, ``not_false_eq_true, ``Trans.trans, ``True, ``inferInstance, `Set.ext,
   `elim, `inst]
   names.filter fun n =>
     !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n)) &&
@@ -74,8 +75,9 @@ def theoremAndLemmas (name: Name)
         let consts := dfn.value.getUsedConstants
         let consts := consts.filter fun name =>
           !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name))
+        let ns : List Name := [``Eq.mp, ``Eq.mpr, ``congrArg, ``id]
         let consts := consts.filter fun name =>
-          ![``Eq.mp, ``Eq.mpr, ``congrArg, ``id].contains name
+          !ns.contains name
         let consts := lemmaFilter consts
         let lemmas ← consts.filterMapM theoremStatement
         return some (statement, lemmas)
@@ -136,45 +138,49 @@ def needsInd (name: Name) : MetaM <| Option (List Name) := do
 -- #eval theoremPrompt ``Nat.le_succ
 
 -- #eval theoremPrompt ``Eq.subst
+end LeanAide.Meta
 
-def getDescriptionM (name: Name)(server := ChatServer.openAI)(params: ChatParams) : MetaM <| Option (String × String) := do
+namespace LeanAide.Translator
+open LeanAide.Meta
+
+def getDescriptionM (name: Name)(translator: Translator) : MetaM <| Option (String × String) := do
   let prompt? ← describeTheoremPrompt name
   prompt?.bindM fun (prompt, statement) => do
     let messages ← mkMessages prompt #[] (← sysPrompt)
-    let fullJson ←  server.query messages params
+    let fullJson ←  translator.server.query messages translator.params
     let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
     let contents ← getMessageContents outJson
     let res := contents.get? 0 |>.map fun h => (h, statement)
     return res
 
-def getTypeDescriptionM (type: Expr)(server := ChatServer.openAI)(params: ChatParams) : MetaM <| Option (String × String × Option String) := do
+def getTypeDescriptionM (type: Expr)(translator: Translator) : MetaM <| Option (String × String × Option String) := do
   let prompt? ← describeAnonymousTheoremPrompt type
   prompt?.bindM fun (prompt, statement, defBlob?) => do
     let messages ← mkMessages prompt #[] (← sysPrompt)
-    let fullJson ←  server.query messages params
+    let fullJson ←  translator.server.query messages translator.params
     let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
     let contents ← getMessageContents outJson
     let res := contents.get? 0 |>.map fun h => (h, statement, defBlob?)
     return res
 
-def checkTranslationM (s: String) (type: Expr)(server := ChatServer.openAI)(params: ChatParams) :
+def checkTranslationM (s: String) (type: Expr) (translator: Translator) :
   MetaM <| Option (String × Array (Bool × String)) := do
-  let triple? ←  getTypeDescriptionM type server params
-  triple?.mapM fun (trans, _, defBlob?) => do
-    IO.eprintln s!"translation: {trans}"
-    let checks ← ChatServer.checkEquivalence s trans defBlob?
-    return (trans,  checks)
+  let triple? ←  getTypeDescriptionM type translator
+  triple?.mapM fun (transl, _, defBlob?) => do
+    IO.eprintln s!"translation: {transl}"
+    let checks ← ChatServer.checkEquivalence s transl defBlob?
+    return (transl,  checks)
 
 -- #eval getDescriptionM ``Iff.rfl
 
 def egFreq := Json.mkObj [("name", "Iff.rfl"), ("freq", 4882)]
 
-def addDescription (js: Json)(server := ChatServer.openAI)(params: ChatParams) : MetaM (Json × Bool) := do
+def addDescription (js: Json)(translator: Translator) : MetaM (Json × Bool) := do
   let name? := js.getObjValAs? String "name"
   let modified? ← name?.mapM fun name => do
-    let desc? ← getDescriptionM name.toName server params
+    let desc? ← translator.getDescriptionM name.toName
     match desc? with
       | some (desc, statement) =>
         let newObj := Json.mkObj [("statement", statement), ("description", desc)]
@@ -184,11 +190,11 @@ def addDescription (js: Json)(server := ChatServer.openAI)(params: ChatParams) :
 
 -- #eval addDescription egFreq
 
-def getDescriptionCore (name: Name)(server := ChatServer.openAI)(params: ChatParams := {}) : CoreM <| Option (String × String) :=
-  (getDescriptionM name server params).run' {}
+def getDescriptionCore (name: Name)(translator: Translator) : CoreM <| Option (String × String) :=
+  (getDescriptionM name translator).run' {}
 
-def addDescriptionCore (js: Json)(server := ChatServer.openAI)(params: ChatParams := {}) : CoreM (Json × Bool) :=
-  (addDescription js server params).run' {}
+def addDescriptionCore (js: Json)(translator: Translator) : CoreM (Json × Bool) :=
+  (addDescription js translator).run' {}
 
 def needsIndCore (name: Name) : CoreM <| Option (List Name)  :=
   (needsInd name).run' {}
@@ -234,12 +240,12 @@ def getCachedDescriptionsMap : IO (HashMap String Json) := do
     name?.map fun name => (name, js)
   return pairs.foldl (init := {}) fun m (name, js) => m.insert name js
 
-def getDescriptionCached (name: String)(server := ChatServer.openAI)(params: ChatParams)
+def getDescriptionCached (name: String)(translator: Translator)
   (cacheMap: HashMap String Json) : MetaM (Option Json) := do
   match cacheMap.find? name with
   | some js => return some js
   | none =>
-    let desc? ← getDescriptionM name.toName server params
+    let desc? ← getDescriptionM name.toName translator
     match desc? with
       | some (desc, statement) =>
         let js := Json.mkObj [("name", name),
@@ -248,9 +254,9 @@ def getDescriptionCached (name: String)(server := ChatServer.openAI)(params: Cha
         return some js
       | none => return none
 
-def getDescriptionCachedCore (name: String)(server := ChatServer.openAI)(params: ChatParams := {})
+def getDescriptionCachedCore (name: String)(translator: Translator)
   (cacheMap: HashMap String Json) : CoreM (Option Json) :=
-  (getDescriptionCached name server params cacheMap).run' {}
+  (getDescriptionCached name translator  cacheMap).run' {}
 
 def lemmaUserPrompt' (name: Name)(description: String) :
   MetaM <| Option String := do
@@ -332,4 +338,4 @@ def lemmaChatQueryCore? (name: Name)(description: String)(n: Nat)
     CoreM <| Option (Array String × String × Array String) :=
   (lemmaChatQueryM? name description n lemmaPairs).run' {}
 
-end LeanAide.Meta
+end LeanAide.Translator
