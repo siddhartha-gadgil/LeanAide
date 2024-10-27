@@ -54,8 +54,10 @@ partial def getSorryTypes (e: Expr) : MetaM (Array Expr) := do
     lambdaTelescope e fun xs b => do
       let inner ← getSorryTypes b
       inner.mapM <| mkForallFVars xs
-  | Expr.forallE _ _ b _ =>
-    getSorryTypes b
+  | Expr.forallE .. =>
+    forallTelescope e fun xs b => do
+      let inner ← getSorryTypes b
+      inner.mapM <| mkForallFVars xs
   | Expr.letE .. =>
       lambdaLetTelescope e fun xs b => do
       let inner ← getSorryTypes b

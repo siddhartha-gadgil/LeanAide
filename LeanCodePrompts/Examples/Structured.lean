@@ -1,7 +1,7 @@
 import LeanCodePrompts.ChatClient
 import LeanAide.StructToLean
 import LeanAide.TranslateM
-open Lean Json LeanAide.Meta
+open Lean Json LeanAide.Meta LeanAide
 namespace Structured
 
 def server := ChatServer.openAI

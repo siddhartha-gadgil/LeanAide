@@ -35,6 +35,14 @@ def elabFrontDefExprM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM Expr
     | none => throwError "Definition has no value"
     | some val => return val
 
+def elabsFrontDefExprM(s: String)(ns: List Name)(modifyEnv: Bool := false) : MetaM <| List (Name × Expr) × MessageLog := do
+  let (env, msgs) ← runFrontendM s modifyEnv
+  let nameDefs := ns.filterMap fun n =>
+    match env.find? n with
+    | none => none
+    | some c => c.value?.map (n, ·)
+  return (nameDefs, msgs)
+
 def elabFrontDefViewM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM String := do
   let val ← elabFrontDefExprM s n modifyEnv
   let fmt ←  ppExpr val
@@ -56,14 +64,19 @@ def elabFrontTheoremExprM (type: String) : MetaM <| Except (List String) Expr :=
 
 #eval elabFrontTheoremExprM "∀ n: Nat, n ≤ n + 1"
 
-def elabFrontTypeExprM(type: String) : MetaM <| Option Expr := do
+def elabFrontTypeExprM(type: String) : MetaM <| Except (List String) Expr := do
   let n := `my_shiny_new_theorem
   let s := s!"def {n} : {type} := by sorry"
-  let (env, _) ← runFrontendM s
-  let seek? : Option ConstantInfo :=  env.find? n
-  match seek? with
-  | none => throwError "Definition not found"
-  | some seek => return seek.type
+  let (env, logs) ←  runFrontendM s
+  let errors := logs.toList.filter (·.severity == MessageSeverity.error)
+  let errorStrings ←  errors.mapM (·.data.toString)
+  if errors.isEmpty then
+    let seek? : Option ConstantInfo :=  env.find? n
+    match seek? with
+    | none => return Except.error ["Could not find theorem after elaboration"]
+    | some seek => return Except.ok seek.type
+  else
+    return Except.error errorStrings
 
 def checkElabFrontM(s: String) : MetaM <| List String := do
   let (_, log) ← runFrontendM s
@@ -79,6 +92,8 @@ def checkTypeElabFrontM(s: String) : MetaM <| List String := do
 
 def checkTermElabFrontM(s: String) : MetaM <| List String := do
   checkElabFrontM s!"example := {s}"
+
+
 
 -- #eval checkTermElabFrontM "(fun n => 3 : Nat → Nat)"
 

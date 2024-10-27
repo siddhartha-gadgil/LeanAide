@@ -3,6 +3,7 @@ import Mathlib
 import LeanCodePrompts.Translate
 import LeanAide.AesopSyntax
 import LeanAide.CheckedSorry
+import LeanAide.AutoTactic
 open LeanAide.Meta Lean Meta
 
 /-!
@@ -133,41 +134,6 @@ partial def dropLocalContext (type: Expr) : MetaM Expr := do
 
 
 open Lean Meta Tactic
-
-def powerTactics : CoreM <| List <| TSyntax ``tacticSeq := do
-  return [← `(tacticSeq| omega), ← `(tacticSeq| ring), ← `(tacticSeq| linarith), ← `(tacticSeq| norm_num), ← `(tacticSeq| positivity), ← `(tacticSeq| gcongr), ←`(tacticSeq| contradiction)]
-
-def powerRules (weight sorryWeight strongSorryWeight: Nat) : MetaM <| List <| TSyntax `Aesop.rule_expr := do
-  let tacs ← powerTactics
-  let rules ← tacs.mapM fun tac => AesopSyntax.RuleExpr.ofTactic tac (some weight)
-  return rules ++ [← AesopSyntax.RuleExpr.sorryRule sorryWeight, ← AesopSyntax.RuleExpr.strongSorryRule strongSorryWeight]
-
-def suggestionRules (names: List Name) (weight: Nat := 90)
-    (rwWeight: Nat := 50) : MetaM <| List <| TSyntax `Aesop.rule_expr := do
-  let tacs ← names.mapM fun n => AesopSyntax.RuleExpr.ofName n (some weight)
-  let rws ← names.mapM fun n => AesopSyntax.RuleExpr.rewriteName n (some rwWeight)
-  let rwsFlip ← names.mapM fun n => AesopSyntax.RuleExpr.rewriteName n (some rwWeight) true
-  return tacs ++ rws ++ rwsFlip
-
-def aesopTactic (weight sorryWeight strongSorryWeight: Nat) (names: List Name := []) :
-    MetaM <| Syntax.Tactic := do
-  let rules ← powerRules weight sorryWeight strongSorryWeight
-  let sugRules ← suggestionRules names
-  AesopSyntax.fold (rules ++ sugRules).toArray
-
-syntax (name := auto_aesop) "auto?" ("[" ident,* "]")? : tactic
-
--- should configure 90, 50, 10
-@[tactic auto_aesop] def autoAesopImpl : Tactic := fun stx => do
-match stx with
-| `(tactic| auto?) => do
-  let tac ← aesopTactic 90 50 10
-  evalTactic tac
-| `(tactic| auto? [$names,*]) => do
-  let names := names.getElems.map fun n => n.getId
-  let tac ← aesopTactic 90 50 10 names.toList
-  evalTactic tac
-| _ => throwUnsupportedSyntax
 
 def theoremExprInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerator): TranslateM (Except (Array ElabError) Expr) := do
   let mut context := #[]
@@ -556,14 +522,22 @@ def mathDocumentCommands (doc: Json) (qp: CodeGenerator) :
       return cmds?.getD #[← mkNoteCmd "No commands found"]
     | _ => return #[← mkNoteCmd "No math document found"]
 
+def namesFromCommands (cmds: Array Syntax.Command) : Array Name :=
+  cmds.foldl (fun acc cmd =>
+    match cmd with
+    | `(command| theorem $name:ident $_:bracketedBinder* : $_ := $_) => acc.push name.getId
+    | `(command| def $name:ident $_:bracketedBinder* : $_ := $_) => acc.push name.getId
+    | _ => acc) #[]
+
 def mathDocumentCode (doc: Json) (qp: CodeGenerator) :
-  TranslateM Format := do
+  TranslateM <| Format × Array Name := do
     let cmds ←
        mathDocumentCommands doc qp
     let cmds' ← cmds.mapM fun cmd => do
       let cmd' ← PrettyPrinter.ppCommand cmd
       return cmd'
-    return cmds'.foldl (· ++ "\n" ++ ·) ""
+    let view : Format := cmds'.foldl (· ++ "\n" ++ ·) ""
+    return (view, namesFromCommands cmds)
 
 elab "dl!" t: term : term => do
 let t ← elabType t
@@ -574,7 +548,7 @@ set_option linter.unusedVariables false in
 def eg_drop (n m: Nat)  := dl! (∀ n m: Nat, n = n + 1 → False)
 
 def topCode := "import Mathlib
-import LeanAide.CheckedSorry
+import LeanAide.AutoTactic
 universe u v u_1
 set_option maxHeartbeats 10000000
 set_option linter.unreachableTactic false
