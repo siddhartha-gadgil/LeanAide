@@ -1,0 +1,23 @@
+{"toChat": "simple",
+ "server": {"openAI": {"model": "gpt-4o"}},
+ "roundTripSelect": false,
+ "roundTrip": false,
+ "relDefs": {"seq": []},
+ "pb":
+ {"blend":
+  [{"embedSearch": {"penalty": 1, "n": 8, "descField": "docString"}},
+   {"embedSearch": {"penalty": 1, "n": 4, "descField": "concise-description"}},
+   {"embedSearch": {"penalty": 1, "n": 4, "descField": "description"}},
+   {"leansearch":
+    {"preferDocs": true,
+     "n": 4,
+     "descFields": ["concise-description", "description"]}},
+   {"moogle":
+    {"preferDocs": true,
+     "n": 4,
+     "descFields": ["concise-description", "description"]}}]},
+ "params": {"temp": 1, "stopTokens": [], "n": 8, "maxTokens": 1600},
+ "numMoogleDirect": 2,
+ "numMoogle": 6,
+ "numLeanSearchDirect": 2,
+ "numLeanSearch": 6}

@@ -221,7 +221,7 @@ def getPromptPairs (pb: PromptExampleBuilder)
   return pairs.reverse
 
 def embedBuilder (numSim numConcise numDesc: Nat) : PromptExampleBuilder :=
-  .sequence [
+  .blend [
     .embedSearch "docString" numSim,
     .embedSearch "concise-description" numConcise,
     .embedSearch "description" numDesc]
@@ -432,3 +432,4 @@ structure CodeGenerator extends Translator where
 deriving Repr, FromJson, ToJson
 
 #eval toJson <| ({} : CodeGenerator)
+#eval (fromJson? (toJson <| ({} : CodeGenerator)) : Except _ Translator)
