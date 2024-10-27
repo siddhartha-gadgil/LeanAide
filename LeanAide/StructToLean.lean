@@ -177,8 +177,9 @@ def theoremExprInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerato
     | none => pure ()
   let fullStatement := context.foldr (· ++ " " ++ ·) s!"Then, {statement}"
   -- IO.eprintln s!"Full statement: {fullStatement}"
+  let translator := qp.toTranslator
   let type? ← Translator.translateToProp?
-    fullStatement.trim {server:= qp.server, params:={qp.params with n := 5}, pb:= qp.pb}
+    fullStatement.trim {translator with params:={translator.params with n := 5}}
   -- IO.eprintln s!"Type: {← type?.mapM fun e => PrettyPrinter.ppExpr e}"
   type?.mapM <| fun e => dropLocalContext e
 
@@ -202,8 +203,9 @@ def defnInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerator) : Tr
     | some s => context := context.push s
     | none => pure ()
   let fullStatement := context.foldr (· ++ " " ++ ·) statement
+  let translator := qp.toTranslator
   let cmd? ←
-    Translator.translateDefCmdM? fullStatement {server:= qp.server, params:= qp.params, pb := qp.pb, toChat := .doc}
+    Translator.translateDefCmdM? fullStatement {translator with toChat := .doc}
   let cmd? ← cmd?.mapM purgeLocalContext
   match cmd? with
   | Except.error e => do
