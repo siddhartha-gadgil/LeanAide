@@ -598,7 +598,7 @@ def statementToCode (s: String) (qp: CodeGenerator) :
         fmt := fmt ++ s!"* Sorries in {n}:\n"
         let sorries ← getSorryTypes e
         for s in sorries do
-          fmt := fmt ++ s!"\n  * `{s}`".replace "\n" " "
+          fmt := fmt ++ s!"\n  * `{← PrettyPrinter.ppExpr s}`".replace "\n" " "
       fmt := fmt ++ "\n-/\n"
       IO.println fmt
       return topCode ++ fmt
