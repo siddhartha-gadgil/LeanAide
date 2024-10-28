@@ -266,13 +266,13 @@ def matchCases (discr: String)
   let mut alts : Array <| TSyntax ``matchAltTac := #[]
   for (pat, pf) in pat_pfs do
     let patTerm :=
-      runParserCategory (← getEnv) `term pat |>.toOption.get!
+      runParserCategory (← getEnv) `term pat |>.toOption.getD (← `(_))
     let patTerm' : Syntax.Term := ⟨patTerm⟩
     let m ← `(matchAltTac| | $patTerm' => $pf*)
     alts := alts.push m
   let alts' : Array <| TSyntax ``matchAlt := alts.map fun alt => ⟨alt⟩
   let discrTerm :=
-    runParserCategory (← getEnv) `term discr |>.toOption.get!
+    runParserCategory (← getEnv) `term discr |>.toOption.getD (← `(_))
   let discrTerm' : Syntax.Term := ⟨discrTerm⟩
   `(tactic| match $discrTerm':term with $alts':matchAlt*)
 
@@ -299,9 +299,9 @@ def groupCases (context : Array Json) (cond_pfs: List <| String × Array Syntax.
     (union_pfs: Array Syntax.Tactic) (qp: CodeGenerator) :
     TranslateM <| Array Syntax.Tactic := do
   let conds := cond_pfs.map (·.1)
-  let env ← getEnv
-  let condTerms := conds.map fun cond =>
-    runParserCategory env `term cond |>.toOption.get!
+  let condTerms ←  conds.filterMapM fun cond => do
+    let e? ← qp.theoremExprInContext? context cond
+    e?.toOption.mapM fun e => delab e
   let orAll : Syntax.Term ←  match condTerms with
     | [] => do
       let falseId := mkIdent `False
@@ -314,19 +314,21 @@ def groupCases (context : Array Json) (cond_pfs: List <| String × Array Syntax.
   let head ← `(tactic| have : $orAll := by $union_pfs*)
   return #[head] ++ casesTacs
 
-def conclusionTactic (conclusion: String)
-     : TermElabM Syntax.Tactic := do
+def conclusionTactic (conclusion: String)(context: Array Json) (qp: CodeGenerator)
+     : TranslateM Syntax.Tactic := do
+  let conclusionTerm? ← qp.theoremExprInContext? context conclusion
   let conclusionTerm :=
-    runParserCategory (← getEnv) `term conclusion |>.toOption.get!
-  let conclusionTerm' : Syntax.Term := ⟨conclusionTerm⟩
+    conclusionTerm? |>.toOption.getD (mkConst ``True)
+  let conclusionTerm' : Syntax.Term ← delab conclusionTerm
   let tac ← `(tactic| auto?)
   `(tactic| have : $conclusionTerm':term := by $tac:tactic)
 
 def contradictionTactics (statement: String)
-    (pf: Array Syntax.Tactic) : TermElabM <| Array Syntax.Tactic := do
+    (pf: Array Syntax.Tactic)(context: Array Json) (qp: CodeGenerator) : TranslateM <| Array Syntax.Tactic := do
+  let statementTerm? ← qp.theoremExprInContext? context statement
   let statementTerm :=
-    runParserCategory (← getEnv) `term statement |>.toOption.get!
-  let statementTerm' : Syntax.Term := ⟨statementTerm⟩
+    statementTerm? |>.toOption.getD (mkConst ``True)
+  let statementTerm' : Syntax.Term ← delab statementTerm
   let falseId := mkIdent `False
   let assId := mkIdent `assumption
   let assumeTactic ← `(tactic| intro $assId:ident)
@@ -481,11 +483,11 @@ mutual
               head.getObjValAs? (List Json) "proof" with
             | Except.ok s, Except.ok pf =>
               let proof ← structToTactics #[] context pf qp
-              contradictionTactics s proof
+              contradictionTactics s proof context qp
             | _, _ => pure #[]
           | some ("conclude", head) =>
             match head.getObjValAs? String "claim" with
-            | Except.ok s => pure #[← conclusionTactic s]
+            | Except.ok s => pure #[← conclusionTactic s context qp]
             | _ => pure #[]
           | _ => pure #[]
         -- IO.eprintln s!"Head tactics"
@@ -564,18 +566,18 @@ set_option linter.unusedTactic false
 
 def statementToCode (s: String) (qp: CodeGenerator) :
   TranslateM <| Format  := do
-    let mut fmt : Format := "/-!\n# Theorem and Proof"
+    let mut fmt : Format := s!"/-!\n## Theorem\n{s}"
     let xs ← qp.server.structuredProofFromStatement s
     match xs.get? 0 with
-    | some (thmPf, #[js]) =>
-      fmt := fmt ++ "\n" ++ thmPf ++ "\n"
-      fmt := fmt ++ "\n# JSON structured proof\n" ++ js.pretty ++ "-/\n"
+    | some (pf, #[js]) =>
+      fmt := fmt ++ "\n## Proof" ++ pf ++ "\n"
+      fmt := fmt ++ "\n## JSON structured proof\n" ++ js.pretty ++ "-/\n"
       IO.println fmt
       let (code, names) ← mathDocumentCode js qp
       fmt := fmt ++ topCode ++ code
       IO.println fmt
       let (exprs, msgLogs) ← elabFrontDefsExprM code.pretty names.toList
-      fmt := fmt ++ "/-!\n# Elaboration logs\n"
+      fmt := fmt ++ "/-!\n## Elaboration logs\n"
       for msg in msgLogs.toList do
         fmt := fmt ++ (← msg.data.format) ++ "\n"
       fmt := fmt ++ "\n"

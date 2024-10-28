@@ -151,6 +151,10 @@ lean_exe roundtrip {
   supportInterpreter := true
 }
 
+lean_exe codegen {
+  supportInterpreter := true
+}
+
 lean_exe termexamples {
   supportInterpreter := true
 }
