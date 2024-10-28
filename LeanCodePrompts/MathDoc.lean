@@ -83,6 +83,12 @@ def let_statement : MathParaStructure :=
 def assume : MathParaStructure :=
   .text `assume "A mathematical assumption being made. In case this is a variable or structure being introduced, use a 'let' statement."
 
+open let_statement in
+def exists_statement : MathParaStructure :=
+  .obj `exists (fields := [var])
+    (optFields := [kind, properties])
+    (description := "A statement introducing and claiming the existence of a new variable, possibly with given type and/or property, with possible further properties in subsequent claims. This corresponds to eg 'There exists an integer `n` ....`.")
+
 namespace define
 
 def statement : MathParaStructure :=
@@ -305,9 +311,9 @@ def end_of_source : MathParaStructure :=
 def remark : MathParaStructure :=
   .text `remark "A remark or comment that is NOT MATHEMATICAL, instead being for motivation, attention, sectioning etc."
 
-def math_objectElems := [let_statement, assume, define, assert, thm, problem, cases, induction, contradiction, conclude, remark]
+def math_objectElems := [let_statement, exists_statement, assume, define, assert, thm, problem, cases, induction, contradiction, conclude, remark]
 
-def contextBlockElems := [let_statement, assume]
+def contextBlockElems := [let_statement, exists_statement, assume]
 
 def elemMap : Batteries.HashMap Name <| List MathParaStructure :=
   Batteries.HashMap.ofList [(`math_object, math_objectElems), (`contextBlock, contextBlockElems)]

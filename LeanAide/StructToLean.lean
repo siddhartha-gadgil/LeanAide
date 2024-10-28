@@ -101,6 +101,18 @@ def contextStatementOfJson (js: Json) : Option String :=
       | some p => s!"(such that) {p}"
       | _ => ""
     return s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}".trim ++ "."
+  | some ("exists", v) =>
+    let varSegment := match v.getObjString? "variable" with
+      | some "<anonymous>" => "There exists some "
+      | some v => s!"There exists {v} "
+      | _ => "There exists some "
+    let kindSegment := match v.getObjValAs? String "kind" with
+      | Except.ok k => s!"a {k}"
+      | Except.error e => s!"kind error: {e}; {v.getObjVal? "kind"}; {v}"
+    let propertySegment := match v.getObjString? "properties" with
+      | some p => s!"(such that) {p}"
+      | _ => ""
+    return s!"{varSegment} {kindSegment} {propertySegment}".trim ++ "."
   | some ("cases", v) =>
     match v.getObjValAs? String "on" with
     | Except.ok s => some <| "We consider cases based on " ++ (addFullStop s)
