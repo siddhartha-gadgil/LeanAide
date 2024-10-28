@@ -357,24 +357,31 @@ def haveForAssertion  (type: Syntax.Term)
   let tac ← `(tactic| auto? [$ids,*])
   `(tactic| have : $type := by $tac:tactic)
 
-def calculateStatement (js: Json) : String :=
+def calculateStatement (js: Json) : IO <| Array String := do
   match js.getKV? with
-  | some ("inline_calculation", .str s) => "We have: " ++ s
+  | some ("inline_calculation", .str s) => return #["We have: " ++ s]
   | some ("calculation_sequence", .arr seq) =>
-    let steps := seq.filterMap fun js => js.getObjString? "calculation_step"
-    steps.foldl (· ++ "\n" ++ ·) "We have:\n"
-  | _ => ""
+    IO.eprintln s!"Calculating sequence: {seq}"
+    let steps := seq.filterMap fun js =>
+      js.getStr? |>.toOption
+    return steps.map fun s => "We have: " ++ s
+  | _ => do
+    IO.eprintln s!"No calculation found in {js.compress}"
+    return #[]
 
 def calculateTactics (js: Json) (context: Array Json) (qp: CodeGenerator) :
-    TranslateM <| Syntax.Tactic := do
-  let statement := calculateStatement js
-  let type? ← theoremExprInContext? context statement qp
-  match type? with
-    | Except.error _ =>
-      mkNoteTactic s!"Failed to translate calculation {js.compress}"
-    | Except.ok type =>
-      let typeStx ← delab type
-      `(tactic| have : $typeStx := by auto?)
+    TranslateM <| Array Syntax.Tactic := do
+  let statements ←  calculateStatement js
+  IO.eprintln s!"Calculating: {statements}"
+  statements.mapM fun statement => do
+    let type? ← theoremExprInContext? context statement qp
+    match type? with
+      | Except.error e =>
+        IO.eprintln s!"Failed to translate calculation: {repr e}"
+        mkNoteTactic s!"Failed to translate calculation {js.compress}"
+      | Except.ok type =>
+        let typeStx ← delab type
+        `(tactic| have : $typeStx := by auto?)
 
 mutual
   partial def structToCommand? (context: Array Json)
@@ -402,7 +409,7 @@ mutual
         | _, _ =>
           -- logInfo s!"failed to get theorem conclusion or proof"
           mkNoteCmd "No theorem conclusion or proof found"
-      | some ("define", v) =>
+      | some ("def", v) =>
         match v.getObjValAs? String "statement", v.getObjValAs? String "term" with
         | Except.ok s, Except.ok t =>
           let statement := s!"We define {t} as follows:\n{s}."
@@ -444,11 +451,12 @@ mutual
               match head.getObjValAs? Json "calculate" with
               | Except.ok js =>
                 let tac ← calculateTactics js context qp
-                prevTacs := prevTacs.push tac
+                prevTacs := prevTacs ++ tac
               | _ => pure ()
               let type? ← theoremExprInContext? context claim qp
               match type? with
               | Except.error _ =>
+                IO.eprintln s!"Failed to translate assertion {claim}"
                 pure #[← mkNoteTactic s!"Failed to translate assertion {claim}"]
               | Except.ok type =>
                 let names' ← useResults.toList.mapM fun s =>
@@ -533,10 +541,13 @@ mutual
           | some ("conclude", head) =>
             match head.getObjValAs? String "claim" with
             | Except.ok s => pure #[← conclusionTactic s context qp]
-            | _ => pure #[]
+            | _ =>
+              IO.eprintln s!"Failed to translate conclusion {head}"
+              pure #[]
           | some ("calculate", js) =>
-            return #[← calculateTactics js context qp]
-          | _ => pure #[]
+            calculateTactics js context qp
+          | _ =>
+            pure #[]
         -- IO.eprintln s!"Head tactics"
         -- for tac in headTactics do
         --   IO.eprintln s!"{← ppTactic tac}"
@@ -557,6 +568,7 @@ def structToCommandSeq? (context: Array Json)
       | none =>
         unless contextStatementOfJson j |>.isSome do
           let s := s!"JSON object not command or context: {j.compress}"
+          IO.eprintln s
           let cmd ←
             mkNoteCmd s
           cmds := cmds.push cmd

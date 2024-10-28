@@ -10,7 +10,7 @@
     * **kind**: (OPTIONAL) The type of the variable, such as `real number`, `function from S to T`, `element of G` etc. Give a JSON string.
     * **properties**: (OPTIONAL) Specific properties of the variable beyond the type. Give a JSON string.
   * **assume**: A mathematical assumption being made. In case this is a variable or structure being introduced, use a 'let' statement. Give a JSON string.
-  * **def**: A mathematical definition of a term. Give a JSON object. The keys and corresponding values are as follows.
+  * **def**: A mathematical term being defined. In case a definition is being used, use 'assert' or 'theorem' instead. Give a JSON object. The keys and corresponding values are as follows.
     * **statement**: The mathematical definition. Give a JSON string.
     * **term**: The term being defined. Give a JSON string.
     * **name**: (OPTIONAL) The name of the theorem, lemma or claim. Give a JSON string.

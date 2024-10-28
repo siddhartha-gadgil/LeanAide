@@ -105,7 +105,7 @@ def name_field : MathParaStructure :=
 
 def define : MathParaStructure :=
   .obj `def (fields := [define.statement, define.term]) (optFields := [name_field])
-    (description := "A mathematical definition of a term.")
+    (description := "A mathematical term being defined. In case a definition is being used, use 'assert' or 'theorem' instead.")
 
 namespace deduced_using
 
