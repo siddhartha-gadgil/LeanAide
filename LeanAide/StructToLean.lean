@@ -101,11 +101,12 @@ def contextStatementOfJson (js: Json) : Option String :=
       | some p => s!"(such that) {p}"
       | _ => ""
     return s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}".trim ++ "."
-  | some ("exists", v) =>
-    let varSegment := match v.getObjString? "variable" with
-      | some "<anonymous>" => "There exists some "
-      | some v => s!"There exists {v} "
-      | _ => "There exists some "
+  | some ("some", v) =>
+    let varSegment := "There exists some " ++
+      match v.getObjString? "variable" with
+      | some "<anonymous>" => ""
+      | some v => s!"{v} "
+      | _ => ""
     let kindSegment := match v.getObjValAs? String "kind" with
       | Except.ok k => s!"a {k}"
       | Except.error e => s!"kind error: {e}; {v.getObjVal? "kind"}; {v}"
@@ -589,7 +590,7 @@ def statementToCode (s: String) (qp: CodeGenerator) :
       fmt := fmt ++ code
       IO.println fmt
       let (exprs, msgLogs) ← elabFrontDefsExprM code.pretty names.toList
-      fmt := fmt ++ "/-!\n## Elaboration logs\n"
+      fmt := fmt ++ "\n\n/-!\n## Elaboration logs\n"
       for msg in msgLogs.toList do
         fmt := fmt ++ (← msg.data.format) ++ "\n"
       fmt := fmt ++ "\n"
@@ -598,6 +599,7 @@ def statementToCode (s: String) (qp: CodeGenerator) :
         let sorries ← getSorryTypes e
         for s in sorries do
           fmt := fmt ++ s!"\n  * `{s}`".replace "\n" " "
+      fmt := fmt ++ "\n-/\n"
       IO.println fmt
       return topCode ++ fmt
     | _ =>

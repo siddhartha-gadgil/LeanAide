@@ -78,16 +78,16 @@ open let_statement in
 def let_statement : MathParaStructure :=
   .obj `let (fields := [var])
     (optFields := [value, kind, properties])
-    (description := "A statement introducing a new variable with given value, type and/or property.")
+    (description := "A statement introducing a new variable with given value, type and/or property. For saying that **some** value of the variable is as needed, use a 'some' statement.")
 
 def assume : MathParaStructure :=
   .text `assume "A mathematical assumption being made. In case this is a variable or structure being introduced, use a 'let' statement."
 
 open let_statement in
 def exists_statement : MathParaStructure :=
-  .obj `exists (fields := [var])
+  .obj `some (fields := [var])
     (optFields := [kind, properties])
-    (description := "A statement introducing and claiming the existence of a new variable, possibly with given type and/or property, with possible further properties in subsequent claims. This corresponds to eg 'There exists an integer `n` ....`.")
+    (description := "A statement introducing a new variable and saying that **some** value of this variable is as required (i.e., an existence statement). This is possibly with given type and/or property. This corresponds to statements like 'for some integer `n` ...' or 'There exists an integer `n` ....'.")
 
 namespace define
 

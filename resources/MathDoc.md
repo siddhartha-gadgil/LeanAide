@@ -1,11 +1,11 @@
 
-* **math_document**: A structured math document in a custom JSON format. Give a JSON list, with each element of the list is a JSON object with exactly one *key-value pair*, with the *key* one of `let`, `exists`, `assume`, `def`, `assert`, `theorem`, `problem`, `cases`, `induction`, `contradiction`, `conclude`, `remark`. The descriptions for the choices of *key* and corresponding *value* are as follows:
-  * **let**: A statement introducing a new variable with given value, type and/or property. Give a JSON object. The keys and corresponding values are as follows.
+* **math_document**: A structured math document in a custom JSON format. Give a JSON list, with each element of the list is a JSON object with exactly one *key-value pair*, with the *key* one of `let`, `some`, `assume`, `def`, `assert`, `theorem`, `problem`, `cases`, `induction`, `contradiction`, `conclude`, `remark`. The descriptions for the choices of *key* and corresponding *value* are as follows:
+  * **let**: A statement introducing a new variable with given value, type and/or property. For saying that **some** value of the variable is as needed, use a 'some' statement. Give a JSON object. The keys and corresponding values are as follows.
     * **variable**: The variable being defined (use `<anonymous>` if there is no name such as in `We have a group structure on S`) Give a JSON string.
     * **value**: (OPTIONAL) The value of the variable being defined Give a JSON string.
     * **kind**: (OPTIONAL) The type of the variable, such as `real number`, `function from S to T`, `element of G` etc. Give a JSON string.
     * **properties**: (OPTIONAL) Specific properties of the variable beyond the type. Give a JSON string.
-  * **exists**: A statement introducing and claiming the existence of a new variable, possibly with given type and/or property, with possible further properties in subsequent claims. This corresponds to eg 'There exists an integer `n` ....`. Give a JSON object. The keys and corresponding values are as follows.
+  * **some**: A statement introducing a new variable and saying that **some** value of this variable is as required (i.e., an existence statement). This is possibly with given type and/or property. This corresponds to statements like 'for some integer `n` ...' or 'There exists an integer `n` ....'. Give a JSON object. The keys and corresponding values are as follows.
     * **variable**: The variable being defined (use `<anonymous>` if there is no name such as in `We have a group structure on S`) Give a JSON string.
     * **kind**: (OPTIONAL) The type of the variable, such as `real number`, `function from S to T`, `element of G` etc. Give a JSON string.
     * **properties**: (OPTIONAL) Specific properties of the variable beyond the type. Give a JSON string.
@@ -33,11 +33,11 @@
     * **errors**: (OPTIONAL) A list of elements of type `error`. Each element of type `error` is as follows:
       * **error**: An error in a proof or calculation. Report only actual errors, with missing steps reported in the 'missing' field. Give a JSON string.
   * **theorem**: A mathematical theorem, with a list of hypotheses and a conclusion. Give a JSON object. The keys and corresponding values are as follows.
-    * **hypothesis**: a JSON list of data and assumptions, i.e., **let** and **assume** statements Give a JSON list, with each element of the list is a JSON object with exactly one *key-value pair*, with the *key* one of `let`, `exists`, `assume`.
+    * **hypothesis**: a JSON list of data and assumptions, i.e., **let** and **assume** statements Give a JSON list, with each element of the list is a JSON object with exactly one *key-value pair*, with the *key* one of `let`, `some`, `assume`.
     * **conclusion**: The conclusion of the theorem. Give a JSON string.
     * **proved**: Whether the theorem has been proved, either here or earlier or by citing the literature. Give a JSON boolean.
     * **name**: (OPTIONAL) The name of the theorem, lemma or claim. Give a JSON string.
-    * **proof**: (OPTIONAL) A proof of a lemma, theorem or claim, having the same structure as (the value for) a `math_document`. Give a JSON list, with each element of the list is a JSON object with exactly one *key-value pair*, with the *key* one of `let`, `exists`, `assume`, `def`, `assert`, `theorem`, `problem`, `cases`, `induction`, `contradiction`, `conclude`, `remark`.
+    * **proof**: (OPTIONAL) A proof of a lemma, theorem or claim, having the same structure as (the value for) a `math_document`. Give a JSON list, with each element of the list is a JSON object with exactly one *key-value pair*, with the *key* one of `let`, `some`, `assume`, `def`, `assert`, `theorem`, `problem`, `cases`, `induction`, `contradiction`, `conclude`, `remark`.
     * **ref**: (OPTIONAL) A reference where the result has been previously proved. Give a JSON string.
     * **cite**: (OPTIONAL) A citation of a result from the mathematical literature which gives the proof. Give a JSON string.
     * **missing_proofs**: (OPTIONAL) A list of elements of type `missing`. Each element of type `missing` is as follows:
@@ -48,7 +48,7 @@
     * **statement**: The statement of the problem. Give a JSON string.
     * **solved**: Whether the problem has been solved. Give a JSON boolean.
     * **answer**: (OPTIONAL) The answer to the problem. Give a JSON string.
-    * **proof**: (OPTIONAL) A proof of a lemma, theorem or claim, having the same structure as (the value for) a `math_document`. Give a JSON list, with each element of the list is a JSON object with exactly one *key-value pair*, with the *key* one of `let`, `exists`, `assume`, `def`, `assert`, `theorem`, `problem`, `cases`, `induction`, `contradiction`, `conclude`, `remark`.
+    * **proof**: (OPTIONAL) A proof of a lemma, theorem or claim, having the same structure as (the value for) a `math_document`. Give a JSON list, with each element of the list is a JSON object with exactly one *key-value pair*, with the *key* one of `let`, `some`, `assume`, `def`, `assert`, `theorem`, `problem`, `cases`, `induction`, `contradiction`, `conclude`, `remark`.
     * **missing_proofs**: (OPTIONAL) A list of elements of type `missing`. Each element of type `missing` is as follows:
       * **missing**: A  problem that need to be solved or results that need to be proved to complete the proof. Standard results/criteria may be omitted from the proof: include them in the 'deduced_from' field. Give a JSON string.
     * **errors**: (OPTIONAL) A list of elements of type `error`. Each element of type `error` is as follows:
@@ -59,12 +59,12 @@
     * **proof_cases**: A list of elements of type `case`. Each element of type `case` is as follows:
       * **case**: A case in a proof by cases or proof by induction. Give a JSON object. The keys and corresponding values are as follows.
         * **condition**: The case condition or pattern; for induction one of 'base' or 'induction-step'; for a side of an 'iff' statement write the claim being proved (i.e., the statement `P => Q` or `Q => P`). Give a JSON string.
-        * **proof**: A proof of a lemma, theorem or claim, having the same structure as (the value for) a `math_document`. Give a JSON list, with each element of the list is a JSON object with exactly one *key-value pair*, with the *key* one of `let`, `exists`, `assume`, `def`, `assert`, `theorem`, `problem`, `cases`, `induction`, `contradiction`, `conclude`, `remark`.
+        * **proof**: A proof of a lemma, theorem or claim, having the same structure as (the value for) a `math_document`. Give a JSON list, with each element of the list is a JSON object with exactly one *key-value pair*, with the *key* one of `let`, `some`, `assume`, `def`, `assert`, `theorem`, `problem`, `cases`, `induction`, `contradiction`, `conclude`, `remark`.
         * **missing_proofs**: (OPTIONAL) A list of elements of type `missing`. Each element of type `missing` is as follows:
           * **missing**: A  problem that need to be solved or results that need to be proved to complete the proof. Standard results/criteria may be omitted from the proof: include them in the 'deduced_from' field. Give a JSON string.
         * **errors**: (OPTIONAL) A list of elements of type `error`. Each element of type `error` is as follows:
           * **error**: An error in a proof or calculation. Report only actual errors, with missing steps reported in the 'missing' field. Give a JSON string.
-    * **exhaustiveness**: (OPTIONAL) Proof that the cases are exhaustive, similar to (the value for) 'math_document'. Give a JSON list, with each element of the list is a JSON object with exactly one *key-value pair*, with the *key* one of `let`, `exists`, `assume`, `def`, `assert`, `theorem`, `problem`, `cases`, `induction`, `contradiction`, `conclude`, `remark`.
+    * **exhaustiveness**: (OPTIONAL) Proof that the cases are exhaustive, similar to (the value for) 'math_document'. Give a JSON list, with each element of the list is a JSON object with exactly one *key-value pair*, with the *key* one of `let`, `some`, `assume`, `def`, `assert`, `theorem`, `problem`, `cases`, `induction`, `contradiction`, `conclude`, `remark`.
     * **missing_proofs**: (OPTIONAL) A list of elements of type `missing`. Each element of type `missing` is as follows:
       * **missing**: A  problem that need to be solved or results that need to be proved to complete the proof. Standard results/criteria may be omitted from the proof: include them in the 'deduced_from' field. Give a JSON string.
     * **errors**: (OPTIONAL) A list of elements of type `error`. Each element of type `error` is as follows:
@@ -74,14 +74,14 @@
     * **proof_cases**: A list of elements of type `case`. Each element of type `case` is as follows:
       * **case**: A case in a proof by cases or proof by induction. Give a JSON object. The keys and corresponding values are as follows.
         * **condition**: The case condition or pattern; for induction one of 'base' or 'induction-step'; for a side of an 'iff' statement write the claim being proved (i.e., the statement `P => Q` or `Q => P`). Give a JSON string.
-        * **proof**: A proof of a lemma, theorem or claim, having the same structure as (the value for) a `math_document`. Give a JSON list, with each element of the list is a JSON object with exactly one *key-value pair*, with the *key* one of `let`, `exists`, `assume`, `def`, `assert`, `theorem`, `problem`, `cases`, `induction`, `contradiction`, `conclude`, `remark`.
+        * **proof**: A proof of a lemma, theorem or claim, having the same structure as (the value for) a `math_document`. Give a JSON list, with each element of the list is a JSON object with exactly one *key-value pair*, with the *key* one of `let`, `some`, `assume`, `def`, `assert`, `theorem`, `problem`, `cases`, `induction`, `contradiction`, `conclude`, `remark`.
         * **missing_proofs**: (OPTIONAL) A list of elements of type `missing`. Each element of type `missing` is as follows:
           * **missing**: A  problem that need to be solved or results that need to be proved to complete the proof. Standard results/criteria may be omitted from the proof: include them in the 'deduced_from' field. Give a JSON string.
         * **errors**: (OPTIONAL) A list of elements of type `error`. Each element of type `error` is as follows:
           * **error**: An error in a proof or calculation. Report only actual errors, with missing steps reported in the 'missing' field. Give a JSON string.
   * **contradiction**: A proof by contradiction, with an assumption and a proof of the contradiction. Give a JSON object. The keys and corresponding values are as follows.
     * **assumption**: The assumption being made to be contradicted. Give a JSON string.
-    * **proof**: The proof of the contradiction given the assumption. Give a JSON list, with each element of the list is a JSON object with exactly one *key-value pair*, with the *key* one of `let`, `exists`, `assume`, `def`, `assert`, `theorem`, `problem`, `cases`, `induction`, `contradiction`, `conclude`, `remark`.
+    * **proof**: The proof of the contradiction given the assumption. Give a JSON list, with each element of the list is a JSON object with exactly one *key-value pair*, with the *key* one of `let`, `some`, `assume`, `def`, `assert`, `theorem`, `problem`, `cases`, `induction`, `contradiction`, `conclude`, `remark`.
     * **missing_proofs**: (OPTIONAL) A list of elements of type `missing`. Each element of type `missing` is as follows:
       * **missing**: A  problem that need to be solved or results that need to be proved to complete the proof. Standard results/criteria may be omitted from the proof: include them in the 'deduced_from' field. Give a JSON string.
     * **errors**: (OPTIONAL) A list of elements of type `error`. Each element of type `error` is as follows:
