@@ -70,13 +70,17 @@ theorem aux_17159876999765957439 : ∀ (n : ℕ), Even (n * (n + 1)) :=
     by_cases ∀ {n : ℕ}, Odd n
     case
       pos =>
-      have : ∀ (n k : ℕ), (n = 2 * k + 1 → n * (n + 1) = 2 * k.succ * (2 * k.succ)) = 2 * (2 * k ^ 2 + 3 * k + 1) := by
+      have : ∀ (n k : ℕ), (n = 2 * k + 1 → n * (n + 1) = 2 * k.succ * (2 * k.succ))  := by
         auto?
+      have : ∀ (n k : ℕ), 2 * k.succ * (2 * k.succ) = 2 * (2 * k ^ 2 + 3 * k + 1) := by        -- expanded auto?
+        intro n k
+        simp_all only [implies_true, or_true, not_forall, Nat.not_even_iff_odd, exists_const, Nat.succ_eq_add_one]
+        (checked_sorry)
       have : ∀ (n : ℕ), (∃ k, ↑n = 2 * k + 1) → Even (n * (n + 1)) := by auto?
       auto?
     case neg => auto?
-  have : ∀ (n : ℕ), Even (n * (n + 1)) := by auto?
-  auto?
+  -- have : ∀ (n : ℕ), Even (n * (n + 1)) := by auto?
+  -- auto?
 
 /-!
 ## Elaboration logs

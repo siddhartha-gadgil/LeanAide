@@ -8,7 +8,8 @@ This file defines tactics that falls back to sorry if the target passes a check 
 -/
 open Lean Meta Elab Tactic
 
-def checkedSorry (checkType: Expr → MetaM Bool) : TacticM Unit := do
+def checkedSorry (checkType: Expr → MetaM Bool) : TacticM Unit :=
+  withMainContext do
   let s ← Tactic.saveState
   let check ← checkType (← getMainTarget)
   unless check do
