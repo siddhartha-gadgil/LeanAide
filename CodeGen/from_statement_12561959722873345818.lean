@@ -60,7 +60,6 @@ theorem aux_12569077504778724371 : ∀ {a b : ℤ}, Odd a → Odd b → Odd (a *
   have : ∀ {a b m n : ℤ}, a = 2 * m + 1 → b = 2 * n + 1 → (∃ k, a * b = 2 * k + 1) → Odd (a * b) := by auto?[]
   have : ∀ {a b : ℤ}, Odd a → Odd b → Odd (a * b) := by auto?
   auto?
-  try (auto?)
 
 /-!
 ## Elaboration logs

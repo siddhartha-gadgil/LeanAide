@@ -363,7 +363,10 @@ def calculateStatement (js: Json) : IO <| Array String := do
   | some ("calculation_sequence", .arr seq) =>
     IO.eprintln s!"Calculating sequence: {seq}"
     let steps := seq.filterMap fun js =>
-      js.getStr? |>.toOption
+      js.getStr? |>.toOption |>.orElse fun _ =>
+      match js.getKV? with
+      | some ("calculation_step", .str s) => some s
+      | _ => none
     return steps.map fun s => "We have: " ++ s
   | _ => do
     IO.eprintln s!"No calculation found in {js.compress}"
@@ -402,7 +405,6 @@ mutual
               mkNoteCmd s!"Failed to translate theorem {claim}"
             | Except.ok thm => do
               let pf ← structToTactics #[] (context ++ hypothesis) steps.toList qp
-              let pf := pf.push <| ← `(tactic| try(auto?))
               let pfTerm ← `(by $pf*)
               -- IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
               mkStatementStx name? (← delab thm) pfTerm true
