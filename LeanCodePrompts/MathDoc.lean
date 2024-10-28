@@ -121,27 +121,21 @@ def instantiations : MathParaStructure :=
 
 end deduced_using
 
-namespace calculation
+namespace calculate
 
-def inline : MathParaStructure := .text `inline "A simple calculation or computation written as a single line."
+def inline : MathParaStructure := .text `inline_calculation "A simple calculation or computation written as a single line."
 
-def step : MathParaStructure := .text `step "A step, typically an equality or inequality, in a calculation or computation."
+def step : MathParaStructure := .text `calculation_step "A step, typically an equality or inequality, in a calculation or computation."
 
-def continuation : MathParaStructure := .text `continuation "A continuation of a chain of equalities/inequalities, for example `= x + 3`. Should begin with an operator such as `=` or `≤` and be followed by a term."
-
-end calculation
+def sequence : MathParaStructure := .list_of `calculation_sequence step
+end calculate
 
 def calculation_step.justification : MathParaStructure :=
   .text `justification "The justification for the step in a calculation or computation."
 
-open calculation in
-def equation : MathParaStructure :=
-  .one_of `equation [inline, step, continuation]  "An equation, inequality, short calculation etc."
-
-def calculation_step : MathParaStructure :=
-  .obj `calculation_step (fields := [equation])
-    (optFields := [calculation_step.justification])
-    (description := "A step in a calculation or computation.")
+open calculate in
+def calculate : MathParaStructure :=
+  .one_of `calculate [inline, sequence]  "An equation, inequality, short calculation etc."
 
 namespace assert
 open deduced_using in
@@ -160,7 +154,7 @@ def proof_method : MathParaStructure :=
   .text `proof_method "The method used to prove the claim. This could be a direct proof, proof by contradiction, proof by induction, etc. this should be a single phrase or a fairly simple sentence; if a longer justification is needed break the step into smaller steps. If the method is deduction from a result, use the 'deduced_using' field"
 
 def calculations : MathParaStructure :=
-  .list_of `calculations (type := calculation_step)
+  .list_of `calculate (type := calculate)
 end assert
 
 def missing_proofs : MathParaStructure :=
@@ -178,7 +172,7 @@ def errors : MathParaStructure :=
 open assert in
 def assert : MathParaStructure :=
   .obj `assert (fields := [claim])
-    (optFields := [proof_method, deductions, calculations, missing, errors])
+    (optFields := [proof_method, deductions, calculate, missing, errors])
     (description := "A mathematical statement whose proof is a straightforward consequence of given and known results following some method.")
 
 namespace thm
@@ -311,7 +305,7 @@ def end_of_source : MathParaStructure :=
 def remark : MathParaStructure :=
   .text `remark "A remark or comment that is NOT MATHEMATICAL, instead being for motivation, attention, sectioning etc."
 
-def math_objectElems := [let_statement, exists_statement, assume, define, assert, thm, problem, cases, induction, contradiction, conclude, remark]
+def math_objectElems := [let_statement, exists_statement, assume, define, assert, thm, problem, cases, induction, contradiction, calculate, conclude, remark]
 
 def contextBlockElems := [let_statement, exists_statement, assume]
 
@@ -350,7 +344,7 @@ def toIndendentList (p: MathParaStructure) (optional : Bool := false)
     | k + 1 =>
       let names := choices.map (fun elem => elem.name)
       let namesBlob := names.foldl (fun acc elem => acc ++ s!"`{elem}`" ++ ", ") "" |>.dropRight 2
-      let body := description ++ s!"Give a JSON object with exactly one *key-value pair*, with the *key* one of {namesBlob}."
+      let body := description ++ s!" Give a JSON object with exactly one *key-value pair*, with the *key* one of {namesBlob}."
       let innerList :=
         choices.map (fun elem => toIndendentList elem false elemMap k)
       let inner := innerList.foldl (fun acc elem => acc.append elem) nil
