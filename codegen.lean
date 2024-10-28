@@ -15,7 +15,9 @@ unsafe def main (args: List String) : IO UInt32 := do
   let env ←
     importModules #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
-    {module:= `LeanCodePrompts.Translate}] {}
+    {module:= `LeanCodePrompts.Translate},
+    {module:= `LeanAide.AutoTactic},
+    {module:= `LeanAide.StructToLean}] {}
   withUnpickle (← picklePath "docString")
     <|fun (docStringData : EmbedData) => do
   withUnpickle (← picklePath "description")

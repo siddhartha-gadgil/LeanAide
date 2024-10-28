@@ -363,7 +363,7 @@ mutual
               mkNoteCmd s!"Failed to translate theorem {claim}"
             | Except.ok thm => do
               let pf ← structToTactics #[] (context ++ hypothesis) steps.toList qp
-              let pf := pf.push <| ← `(tactic| auto?)
+              let pf := pf.push <| ← `(tactic| try(auto?))
               let pfTerm ← `(by $pf*)
               -- IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
               mkStatementStx name? (← delab thm) pfTerm true
@@ -566,15 +566,15 @@ set_option linter.unusedTactic false
 
 def statementToCode (s: String) (qp: CodeGenerator) :
   TranslateM <| Format  := do
-    let mut fmt : Format := s!"/-!\n## Theorem\n{s}"
+    let mut fmt : Format := topCode ++ s!"/-!\n## Theorem\n{s}"
     let xs ← qp.server.structuredProofFromStatement s
     match xs.get? 0 with
     | some (pf, #[js]) =>
-      fmt := fmt ++ "\n## Proof" ++ pf ++ "\n"
+      fmt := fmt ++ "\n## Proof\n" ++ pf ++ "\n"
       fmt := fmt ++ "\n## JSON structured proof\n" ++ js.pretty ++ "-/\n"
       IO.println fmt
       let (code, names) ← mathDocumentCode js qp
-      fmt := fmt ++ topCode ++ code
+      fmt := fmt ++ code
       IO.println fmt
       let (exprs, msgLogs) ← elabFrontDefsExprM code.pretty names.toList
       fmt := fmt ++ "/-!\n## Elaboration logs\n"
@@ -585,7 +585,7 @@ def statementToCode (s: String) (qp: CodeGenerator) :
         fmt := fmt ++ s!"* Sorries in {n}:"
         let sorries ← getSorryTypes e
         for s in sorries do
-          fmt := fmt ++ s!"\n  * {s}"
+          fmt := fmt ++ s!"\n  * `{s}`".replace "\n" " "
       IO.println fmt
       return fmt
     | _ =>

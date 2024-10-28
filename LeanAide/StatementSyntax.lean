@@ -28,7 +28,7 @@ def mkStatementStx (name?: Option Name)(type: Syntax.Term)
     else
         let hash := hash type.raw.reprint
         let inner_name :=
-            Name.num (Name.mkSimple "aux") hash.toNat
+            Name.mkSimple s!"aux_{hash}"
         let name := mkIdent <| name?.getD inner_name
         if isProp
         then
@@ -68,7 +68,7 @@ def mkStatementWithDocStx (name?: Option Name)(type: Syntax.Term)
     else
         let hash := hash type.raw.reprint
         let inner_name :=
-            Name.num (Name.mkSimple "aux") hash.toNat
+            Name.mkSimple s!"aux_{hash}"
         let name := mkIdent <| name?.getD inner_name
         if isProp
         then

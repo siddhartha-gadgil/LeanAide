@@ -768,3 +768,24 @@ def egJson : TranslateM <| Array String := do
     | _ => throwError "Expected JSON object with key 'math_document'"
 
 #eval egJson
+
+def code := "theorem aux_6254569564645631286 : ∀ {a b : ℕ}, Odd a → Odd b → Odd (a * b) :=
+  by
+  have : ∀ {a b m n : ℤ}, Odd a → Odd b → a = 2 * m + 1 ∧ b = 2 * n + 1 := by auto?[]
+  have : ∀ {m n : ℤ}, Odd (2 * m + 1) → Odd (2 * n + 1) → (2 * m + 1) * (2 * n + 1) = 4 * m * n + 2 * m + 2 * n + 1 :=
+    by auto?[]
+  have : ∀ {m n : ℤ}, Odd m → Odd n → ∃ k, (2 * m + 1) * (2 * n + 1) = 2 * k + 1 := by auto?[]
+  have : ∀ {m n : ℤ}, Odd m → Odd n → Odd (m * n) := by auto?
+  auto?"
+
+def elabEgs := elabFrontDefsExprM code ["aux_6254569564645631286".toName]
+
+def sorryEgView : MetaM (Array Format) := do
+  let (egs, _) ← elabEgs
+  let (_, eg) := egs[0]!
+  let sorryEgs ←  getSorryTypes eg
+  sorryEgs.mapM fun e => do
+    PrettyPrinter.ppExpr e
+
+set_option maxHeartbeats 1000000
+#eval sorryEgView
