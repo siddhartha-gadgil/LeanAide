@@ -1,7 +1,7 @@
 import LeanCodePrompts.ChatClient
 import LeanAide.StructToLean
 import LeanAide.TranslateM
-open Lean Json LeanAide.Meta LeanAide
+open Lean Json LeanAide.Meta LeanAide CodeGenerator
 namespace Structured
 
 def server := ChatServer.openAI
@@ -13,13 +13,13 @@ def eg2 := server.structuredProofFromStatement "Every subgroup of a cyclic group
 def eg3 : TranslateM (Array (String × Array Json) × Format) := do
   let jsArr ← server.structuredProofFromStatement "Every subgroup of an abelian group is abelian."
   let js := jsArr.get! 0 |>.2.get! 0
-  let doc ←  mathDocumentCode (doc := js) (qp := {})
+  let (doc, _) ←  mathDocumentCode (doc := js) (qp := {})
   return (jsArr, doc)
 
 def eg4 : TranslateM (Array (String × Array Json) × Format) := do
   let jsArr ← server.structuredProofFromStatement "Every subgroup of a cyclic group is cyclic."
   let js := jsArr.get! 0 |>.2.get! 0
-  let doc ←  mathDocumentCode (doc := js) (qp := {})
+  let (doc, _) ←  mathDocumentCode (doc := js) (qp := {})
   return (jsArr, doc)
 
 end Structured

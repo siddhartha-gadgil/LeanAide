@@ -135,20 +135,6 @@ partial def dropLocalContext (type: Expr) : MetaM Expr := do
 
 open Lean Meta Tactic
 
-def theoremExprInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerator): TranslateM (Except (Array ElabError) Expr) := do
-  let mut context := #[]
-  for js in ctx do
-    match contextStatementOfJson js with
-    | some s => context := context.push s
-    | none => pure ()
-  let fullStatement := context.foldr (· ++ " " ++ ·) s!"Then, {statement}"
-  -- IO.eprintln s!"Full statement: {fullStatement}"
-  let translator := qp.toTranslator
-  let type? ← Translator.translateToProp?
-    fullStatement.trim {translator with params:={translator.params with n := 5}}
-  -- IO.eprintln s!"Type: {← type?.mapM fun e => PrettyPrinter.ppExpr e}"
-  type?.mapM <| fun e => dropLocalContext e
-
 def purgeLocalContext: Syntax.Command →  TranslateM Syntax.Command
 | `(command|def $name  : $type := $value) => do
   let typeElab ← elabType type
@@ -162,21 +148,7 @@ def purgeLocalContext: Syntax.Command →  TranslateM Syntax.Command
   `(command|theorem $name : $type := $value)
 | stx => return stx
 
-def defnInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerator) : TranslateM (Option Syntax.Command) := do
-  let mut context := #[]
-  for js in ctx do
-    match contextStatementOfJson js with
-    | some s => context := context.push s
-    | none => pure ()
-  let fullStatement := context.foldr (· ++ " " ++ ·) statement
-  let translator := qp.toTranslator
-  let cmd? ←
-    Translator.translateDefCmdM? fullStatement {translator with toChat := .doc}
-  let cmd? ← cmd?.mapM purgeLocalContext
-  match cmd? with
-  | Except.error e => do
-    mkNoteCmd s!"Failed to parse definition {fullStatement}: {repr e}"
-  | Except.ok cmd => return cmd
+
 
 open Lean.Parser.Term
 /--
@@ -230,6 +202,39 @@ def inductionCases (name: String)
     let caseTac ← inductionCase name cond pf
     cases := cases.push caseTac
   return cases
+
+namespace CodeGenerator
+
+def theoremExprInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerator): TranslateM (Except (Array ElabError) Expr) := do
+  let mut context := #[]
+  for js in ctx do
+    match contextStatementOfJson js with
+    | some s => context := context.push s
+    | none => pure ()
+  let fullStatement := context.foldr (· ++ " " ++ ·) s!"Then, {statement}"
+  -- IO.eprintln s!"Full statement: {fullStatement}"
+  let translator := qp.toTranslator
+  let type? ← Translator.translateToProp?
+    fullStatement.trim {translator with params:={translator.params with n := 5}}
+  -- IO.eprintln s!"Type: {← type?.mapM fun e => PrettyPrinter.ppExpr e}"
+  type?.mapM <| fun e => dropLocalContext e
+
+def defnInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerator) : TranslateM (Option Syntax.Command) := do
+  let mut context := #[]
+  for js in ctx do
+    match contextStatementOfJson js with
+    | some s => context := context.push s
+    | none => pure ()
+  let fullStatement := context.foldr (· ++ " " ++ ·) statement
+  let translator := qp.toTranslator
+  let cmd? ←
+    Translator.translateDefCmdM? fullStatement {translator with toChat := .doc}
+  let cmd? ← cmd?.mapM purgeLocalContext
+  match cmd? with
+  | Except.error e => do
+    mkNoteCmd s!"Failed to parse definition {fullStatement}: {repr e}"
+  | Except.ok cmd => return cmd
+
 
 def conditionCases (cond₁ cond₂ : String)
     (pf₁ pf₂ : Array Syntax.Tactic) (context: Array Json) (qp: CodeGenerator)  : TranslateM <| Array Syntax.Tactic := do
@@ -585,3 +590,6 @@ def statementToCode (s: String) (qp: CodeGenerator) :
       fmt := fmt ++ "No structured proof found"
       IO.println fmt
     return fmt
+
+end CodeGenerator
+end LeanAide
