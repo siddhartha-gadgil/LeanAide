@@ -357,6 +357,25 @@ def haveForAssertion  (type: Syntax.Term)
   let tac ← `(tactic| auto? [$ids,*])
   `(tactic| have : $type := by $tac:tactic)
 
+def calculateStatement (js: Json) : String :=
+  match js.getKV? with
+  | some ("inline_calculation", .str s) => "We have: " ++ s
+  | some ("calculation_sequence", .arr seq) =>
+    let steps := seq.filterMap fun js => js.getObjString? "calculation_step"
+    steps.foldl (· ++ "\n" ++ ·) "We have:\n"
+  | _ => ""
+
+def calculateTactics (js: Json) (context: Array Json) (qp: CodeGenerator) :
+    TranslateM <| Syntax.Tactic := do
+  let statement := calculateStatement js
+  let type? ← theoremExprInContext? context statement qp
+  match type? with
+    | Except.error _ =>
+      mkNoteTactic s!"Failed to translate calculation {js.compress}"
+    | Except.ok type =>
+      let typeStx ← delab type
+      `(tactic| have : $typeStx := by auto?)
+
 mutual
   partial def structToCommand? (context: Array Json)
       (input: Json) (qp: CodeGenerator) : TranslateM <| Option Syntax.Command := do
@@ -403,27 +422,40 @@ mutual
           | some ("assert", head) =>
             match head.getObjValAs? String "claim" with
             | Except.ok claim =>
-              let useResults: List String :=
-                match head.getObjValAs? Json "deduced_from_results"  with
-                | Except.ok known =>
-                  match known.getKV? with
-                  | some ("deduced_from", .arr results) =>
-                    results.toList.filterMap fun js =>
-                      match js.getObjString? "result_used", js.getObjValAs? Bool "proved_earlier" with
-                      | some s, Except.ok false => some s
-                      | _, _ => none
-                  | _ => []
-                | _ => []
+              let mut useResults: Array String := #[]
+              let mut prevTacs : Array Syntax.Tactic := #[]
+              match head.getObjValAs? Json "deduced_from_results"  with
+              | Except.ok known =>
+                match known.getKV? with
+                | some ("deduced_from", .arr results) =>
+                  for js in results do
+                    match js.getObjString? "result_used", js.getObjValAs? Bool "proved_earlier" with
+                    | some s, Except.ok false => useResults := useResults.push s
+                    | some s, Except.ok true =>
+                      let type? ← theoremExprInContext? context s qp
+                      match type? with
+                      | Except.ok e =>
+                        let stx ← delab e
+                        prevTacs := prevTacs.push <| ← `(tactic| have : $stx := by auto?)
+                      | _ => pure ()
+                    | _, _ => pure ()
+                | _ => pure ()
+              | _ => pure ()
+              match head.getObjValAs? Json "calculate" with
+              | Except.ok js =>
+                let tac ← calculateTactics js context qp
+                prevTacs := prevTacs.push tac
+              | _ => pure ()
               let type? ← theoremExprInContext? context claim qp
               match type? with
               | Except.error _ =>
                 pure #[← mkNoteTactic s!"Failed to translate assertion {claim}"]
               | Except.ok type =>
-                let names' ← useResults.mapM fun s =>
+                let names' ← useResults.toList.mapM fun s =>
                   Translator.matchingTheoremsAI   (s := s) (qp:= qp)
                 let premises := names'.join
                 let tac ← haveForAssertion  (← delab type) premises
-                pure #[tac]
+                pure <| prevTacs ++ #[tac]
             | _ => pure #[]
           | some ("define", head) =>
             match ← structToCommand? context head qp with
@@ -502,6 +534,8 @@ mutual
             match head.getObjValAs? String "claim" with
             | Except.ok s => pure #[← conclusionTactic s context qp]
             | _ => pure #[]
+          | some ("calculate", js) =>
+            return #[← calculateTactics js context qp]
           | _ => pure #[]
         -- IO.eprintln s!"Head tactics"
         -- for tac in headTactics do
