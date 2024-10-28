@@ -35,7 +35,7 @@ def elabFrontDefExprM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM Expr
     | none => throwError "Definition has no value"
     | some val => return val
 
-def elabsFrontDefExprM(s: String)(ns: List Name)(modifyEnv: Bool := false) : MetaM <| List (Name × Expr) × MessageLog := do
+def elabFrontDefsExprM(s: String)(ns: List Name)(modifyEnv: Bool := false) : MetaM <| List (Name × Expr) × MessageLog := do
   let (env, msgs) ← runFrontendM s modifyEnv
   let nameDefs := ns.filterMap fun n =>
     match env.find? n with

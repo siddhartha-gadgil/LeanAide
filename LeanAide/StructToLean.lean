@@ -539,6 +539,7 @@ def mathDocumentCode (doc: Json) (qp: CodeGenerator) :
     let view : Format := cmds'.foldl (· ++ "\n" ++ ·) ""
     return (view, namesFromCommands cmds)
 
+
 elab "dl!" t: term : term => do
 let t ← elabType t
   let t' ← dropLocalContext t
@@ -555,3 +556,32 @@ set_option linter.unreachableTactic false
 set_option linter.unusedTactic false
 
 "
+
+def statementToCode (s: String) (qp: CodeGenerator) :
+  TranslateM <| Format  := do
+    let mut fmt : Format := "/-!\n# Theorem and Proof"
+    let xs ← qp.server.structuredProofFromStatement s
+    match xs.get? 0 with
+    | some (thmPf, #[js]) =>
+      fmt := fmt ++ "\n" ++ thmPf ++ "\n"
+      fmt := fmt ++ "\n# JSON structured proof\n" ++ js.pretty ++ "-/\n"
+      IO.println fmt
+      let (code, names) ← mathDocumentCode js qp
+      fmt := fmt ++ topCode ++ code
+      IO.println fmt
+      let (exprs, msgLogs) ← elabFrontDefsExprM code.pretty names.toList
+      fmt := fmt ++ "/-!\n# Elaboration logs\n"
+      for msg in msgLogs.toList do
+        fmt := fmt ++ (← msg.data.format) ++ "\n"
+      fmt := fmt ++ "\n"
+      for (n, e) in exprs do
+        fmt := fmt ++ s!"* Sorries in {n}:"
+        let sorries ← getSorryTypes e
+        for s in sorries do
+          fmt := fmt ++ s!"\n  * {s}"
+      IO.println fmt
+      return fmt
+    | _ =>
+      fmt := fmt ++ "No structured proof found"
+      IO.println fmt
+    return fmt
