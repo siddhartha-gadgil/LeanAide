@@ -578,7 +578,7 @@ set_option linter.unusedTactic false
 
 def statementToCode (s: String) (qp: CodeGenerator) :
   TranslateM <| Format  := do
-    let mut fmt : Format := topCode ++ s!"/-!\n## Theorem\n{s}"
+    let mut fmt : Format := s!"/-!\n## Theorem\n{s}"
     let xs ← qp.server.structuredProofFromStatement s
     match xs.get? 0 with
     | some (pf, #[js]) =>
@@ -594,12 +594,12 @@ def statementToCode (s: String) (qp: CodeGenerator) :
         fmt := fmt ++ (← msg.data.format) ++ "\n"
       fmt := fmt ++ "\n"
       for (n, e) in exprs do
-        fmt := fmt ++ s!"* Sorries in {n}:"
+        fmt := fmt ++ s!"* Sorries in {n}:\n"
         let sorries ← getSorryTypes e
         for s in sorries do
           fmt := fmt ++ s!"\n  * `{s}`".replace "\n" " "
       IO.println fmt
-      return fmt
+      return topCode ++ fmt
     | _ =>
       fmt := fmt ++ "No structured proof found"
       IO.println fmt
