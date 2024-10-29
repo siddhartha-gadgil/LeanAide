@@ -308,21 +308,46 @@ def groupCasesAux (context: Array Json) (cond_pfs: List <| String × Array Synta
       let negId' ← `(caseArg| $negId:ident)
       return #[← `(tactic| by_cases $condTerm':term), ← `(tactic| case $posId' => $pf*), ← `(tactic| case $negId' => $tailTacs*)]
 
+def orAllSimple (terms: List Syntax.Term) : Syntax.Term :=
+  match terms with
+  | [] => mkIdent `False
+  | [h] => h
+  | h :: t =>
+      let t' : List Syntax.Term := t.map fun term => ⟨term⟩
+    t'.foldl (fun acc cond => Syntax.mkApp (mkIdent `or) #[acc, cond]) h
+
+def orAllSimpleExpr (terms: List Expr) : MetaM Expr := do
+  match terms with
+  | [] => return mkConst ``False
+  | [h] => return h
+  | h :: t =>
+    let mut result := h
+    for term in t do
+      result ← mkAppM ``Or #[result, term]
+    return result
+
+
+partial def orAllWithGoal (terms: List Expr) (goal: Expr) : MetaM Expr := do
+  match goal with
+  | .forallE name type _ bi =>
+    withLocalDecl name bi type fun x => do
+      let inner ← orAllWithGoal terms goal
+      mkForallFVars #[x] inner
+  | _ =>
+    let terms ← terms.mapM dropLocalContext
+    orAllSimpleExpr terms
+
 def groupCases (context : Array Json) (cond_pfs: List <| String × Array Syntax.Tactic)
-    (union_pfs: Array Syntax.Tactic) (qp: CodeGenerator) :
+    (union_pfs: Array Syntax.Tactic) (qp: CodeGenerator) (goal?: Option Expr) :
     TranslateM <| Array Syntax.Tactic := do
   let conds := cond_pfs.map (·.1)
-  let condTerms ←  conds.filterMapM fun cond => do
+  let condExprs ←  conds.filterMapM fun cond => do
     let e? ← qp.theoremExprInContext? context cond
-    e?.toOption.mapM fun e => delab e
-  let orAll : Syntax.Term ←  match condTerms with
-    | [] => do
-      let falseId := mkIdent `False
-      `($falseId:ident)
-    | [h] => pure ⟨h⟩
-    | h :: t =>
-      let t' : List Syntax.Term := t.map fun term => ⟨term⟩
-      t'.foldlM (fun acc cond => `($acc ∨ $cond)) ⟨h⟩
+    pure e?.toOption
+  let orAllExpr ←  match goal? with
+    | some goal => orAllWithGoal condExprs goal
+    | none => orAllSimpleExpr condExprs
+  let orAll ← delab orAllExpr
   let casesTacs ← groupCasesAux context cond_pfs qp
   let head ← `(tactic| have : $orAll := by $union_pfs*)
   return #[head] ++ casesTacs
@@ -404,7 +429,8 @@ mutual
             | Except.error _ =>
               mkNoteCmd s!"Failed to translate theorem {claim}"
             | Except.ok thm => do
-              let pf ← structToTactics #[] (context ++ hypothesis) steps.toList qp
+              let pf ←
+                structToTactics #[] (context ++ hypothesis) steps.toList qp (some thm)
               let pfTerm ← `(by $pf*)
               -- IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
               mkStatementStx name? (← delab thm) pfTerm true
@@ -421,7 +447,7 @@ mutual
 
   partial def structToTactics  (accum: Array Syntax.Tactic)
     (context: Array Json)(input: List Json)
-    (qp: CodeGenerator): TranslateM <| Array Syntax.Tactic := do
+    (qp: CodeGenerator) (goal?: Option Expr): TranslateM <| Array Syntax.Tactic := do
       match input with
       | [] => return accum.push <| ← `(tactic| auto?)
       | head :: tail =>
@@ -488,7 +514,7 @@ mutual
                   match js.getObjString? "condition",
                     js.getObjValAs? (List Json) "proof" with
                   | some cond, Except.ok pfSource => do
-                    let pf ← structToTactics #[] context pfSource qp
+                    let pf ← structToTactics #[] context pfSource qp goal?
                     pure <| some (cond, pf)
                   | _, _ => pure none
                 | _ => pure none
@@ -502,9 +528,10 @@ mutual
               | some "group" =>
                 let union_pf : Array Syntax.Tactic ←
                   match head.getObjValAs? (List Json) "exhaustiveness" with
-                  | Except.ok pfSource => structToTactics #[] context pfSource qp
+                  | Except.ok pfSource =>
+                    structToTactics #[] context pfSource qp goal?
                   | _ => pure #[← `(tactic| auto?)]
-                groupCases context conditionProofs.toList union_pf qp
+                groupCases context conditionProofs.toList union_pf qp goal?
               | some "condition" =>
                 match conditionProofs with
                 | #[(cond₁, pf₁), (cond₂, pf₂)] =>
@@ -514,7 +541,7 @@ mutual
                       works for `iff` -/
                 let union_pf : Array Syntax.Tactic ←
                   pure #[← `(tactic| auto?)]
-                groupCases context conditionProofs.toList union_pf qp
+                groupCases context conditionProofs.toList union_pf qp goal?
             | _ =>
               pure #[]
           | some ("induction", head) =>
@@ -527,7 +554,7 @@ mutual
                   match js.getObjString? "condition",
                     js.getObjValAs? (List Json) "proof" with
                   | some cond, Except.ok pfSource => do
-                    let pf ← structToTactics #[] context pfSource qp
+                    let pf ← structToTactics #[] context pfSource qp goal?
                     return some (cond, pf)
                   | _, _ => return none
                 | _ => return none
@@ -537,7 +564,7 @@ mutual
             match head.getObjValAs? String "assumption",
               head.getObjValAs? (List Json) "proof" with
             | Except.ok s, Except.ok pf =>
-              let proof ← structToTactics #[] context pf qp
+              let proof ← structToTactics #[] context pf qp goal?
               contradictionTactics s proof context qp
             | _, _ => pure #[]
           | some ("conclude", head) =>
@@ -553,7 +580,7 @@ mutual
         -- IO.eprintln s!"Head tactics"
         -- for tac in headTactics do
         --   IO.eprintln s!"{← ppTactic tac}"
-        structToTactics (accum ++ headTactics) (context.push head) tail qp
+        structToTactics (accum ++ headTactics) (context.push head) tail qp goal?
 
 end
 
