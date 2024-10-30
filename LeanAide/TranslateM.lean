@@ -4,9 +4,11 @@ import Batteries.Util.Pickle
 import LeanAide.SimpleFrontend
 import LeanAide.ConstDeps
 import LeanAide.PremiseData
+import LeanAide.PromptExampleBuilder
+import LeanCodePrompts.ChatClient
 
 open Lean Meta Elab Term
-namespace LeanAide.Meta
+namespace LeanAide
 
 structure DefSource where
   doc : String
@@ -89,6 +91,9 @@ structure Translate.State where
   defs : Array (DefWithDoc) := #[]
   errorLog : Array ElabErrorData := #[]
   context : Option String := none
+  server : ChatServer := ChatServer.default
+  params : ChatParams := {}
+  pb : PromptExampleBuilder := PromptExampleBuilder.default
 deriving Inhabited
 
 abbrev TranslateM := StateT Translate.State TermElabM
@@ -97,6 +102,8 @@ instance [MetaEval α] : MetaEval (TranslateM α) :=
   let me : MetaEval (TermElabM α) := inferInstance
   { eval := fun env opts x b =>
     me.eval env opts (x.run' {}) b}
+
+namespace Translate
 
 def getEmbedMap : TranslateM EmbedMap := do
   return (← get).embedMap
@@ -128,18 +135,10 @@ def printKeys : TranslateM Unit := do
   let em := (← getEmbedMap)
   IO.println s!"Embeddings: {em.toList.map Prod.fst}"
 
-def TranslateM.runWithEmbeddings (em : EmbedMap)
-    (x: TranslateM α) : CoreM α := do
-  let x :=
-    withEmbeddings em do
-      printKeys
-      x
-  x.run' {} |>.run'.run'
-
 def getDescMap : TranslateM (HashMap Name Json) := do
   return (← get).descriptionMap
 
-def Translate.addDescription (desc: Json) : TranslateM Unit := do
+def addDescription (desc: Json) : TranslateM Unit := do
   match desc.getObjValAs? String "name" with
   | Except.ok name => do
     let m ← getDescMap
@@ -193,13 +192,25 @@ def defsBlob : TranslateM <| Array String := do
 def defsNameBlob : TranslateM <| Array <| Name × String := do
   let defs := (← get).defs
   defs.mapM <| fun dfn => do pure (dfn.name, ← dfn.statementWithDoc dfn.doc)
+end Translate
+
 namespace TranslateM
+open Translate
+def runWithEmbeddings (em : EmbedMap)
+    (x: TranslateM α) : CoreM α := do
+  let x :=
+    withEmbeddings em do
+      printKeys
+      x
+  x.run' {} |>.run'.run'
+
 
 def runToCore (x: TranslateM α) : CoreM α := do
   x.run' {} |>.run'.run'
 
 end TranslateM
 
+open Translate
 def timedTest : TranslateM (Nat × Nat × Nat × Json × Json × Json) := do
   let t₀ ← IO.monoMsNow
   let d₁ ← getDescriptionData ``Nat.add_assoc
@@ -238,4 +249,5 @@ unsafe def TranslateM.runWithLoadingEmbeddings (descFields : List String)
     x
   x.run' {} |>.run'.run'
 
-end LeanAide.Meta
+
+end LeanAide

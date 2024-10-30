@@ -20,6 +20,7 @@ open Lean Meta Elab Parser Command
 open LeanAide.Meta
 
 namespace LeanAide
+open Translate
 
 register_option lean_aide.translate.prompt_size : Nat :=
   { defValue := 10

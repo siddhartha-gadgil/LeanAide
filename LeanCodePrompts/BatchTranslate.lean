@@ -5,6 +5,7 @@ import LeanAide.Descriptions
 open Lean Meta Elab
 open LeanAide.Meta
 namespace LeanAide.Translator
+open Translate
 
 /--
 Translate a string to a Lean expression using the GPT model, returning the expression, all outputs and the prompt used.

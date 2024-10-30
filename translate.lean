@@ -5,7 +5,7 @@ import LeanAide.Config
 import LeanAide.TranslateM
 import LeanAide.PromptBuilder
 import Cli
-open Lean Cli LeanAide.Meta LeanAide Translator
+open Lean Cli LeanAide.Meta LeanAide Translator Translate
 
 set_option maxHeartbeats 10000000
 set_option maxRecDepth 1000

@@ -65,9 +65,13 @@ inductive ChatServer where
       (model: String := "GPT-4")
   | google (model: String := "gemini-1.5-pro-001") (location: String := "asia-south1")
   | generic (model: String) (url: String) (hasSysPropmpt : Bool := false)
-  deriving Repr, FromJson, ToJson, Inhabited, DecidableEq, Hashable
+  deriving Repr, FromJson, ToJson, DecidableEq, Hashable
 
 namespace ChatServer
+
+def default : ChatServer := .openAI "gpt-4o"
+
+instance : Inhabited ChatServer := ⟨default⟩
 
 initialize queryCache : IO.Ref
   (HashMap (ChatServer × Json × ChatParams) Json) ← IO.mkRef {}

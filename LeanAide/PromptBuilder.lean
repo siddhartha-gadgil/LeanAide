@@ -3,10 +3,12 @@ import LeanAide.Aides
 import LeanAide.TranslateM
 import LeanCodePrompts.SpawnNearestEmbeddings
 import LeanCodePrompts.ChatClient
+import LeanAide.PromptExampleBuilder
 import Mathlib
 open Lean Meta Elab Term
 
-namespace LeanAide.Meta
+namespace LeanAide
+open Translate
 
 def clearEmbedQueries : TranslateM Unit := do
   modify fun st => {st with queryEmbeddingCache := HashMap.empty}
@@ -148,16 +150,6 @@ end SearchResult
 local instance : Hashable Float where
   hash f := hash (f * 100).toUInt32
 
-inductive PromptExampleBuilder where
-| embedSearch (descField : String) (n: Nat) (penalty: Float := 1.0) : PromptExampleBuilder
-| leansearch (descFields : List String)
-  (preferDocs: Bool := false) (n: Nat) : PromptExampleBuilder
-| moogle (descFields : List String)
-  (preferDocs: Bool := false) (n: Nat) : PromptExampleBuilder
-| fixed (prompts : Array (String × Json)) : PromptExampleBuilder
-| sequence : List PromptExampleBuilder → PromptExampleBuilder
-| blend : List PromptExampleBuilder → PromptExampleBuilder
-deriving  Repr, ToJson, FromJson, Hashable
 namespace PromptExampleBuilder
 
 partial def num : PromptExampleBuilder →  Nat
@@ -253,16 +245,6 @@ def getPromptPairs (pb: PromptExampleBuilder)
   let pairs := pairs.filter fun (doc, _) => doc.length < bound
   return pairs.reverse
 
-def embedBuilder (numSim numConcise numDesc: Nat) : PromptExampleBuilder :=
-  .blend [
-    .embedSearch "docString" numSim,
-    .embedSearch "concise-description" numConcise,
-    .embedSearch "description" numDesc]
-
-def searchBuilder (numLeanSearch numMoogle: Nat) : PromptExampleBuilder :=
-  .blend [.leansearch ["concise-description", "description"] true numLeanSearch,
-      .moogle ["concise-description", "description"] true numMoogle]
-
 partial def usedEmbeddings : PromptExampleBuilder → List String
 | .embedSearch d _ _ => [d]
 | .blend pbs => pbs.map usedEmbeddings |>.join
@@ -292,19 +274,6 @@ def simplify (pb : PromptExampleBuilder): PromptExampleBuilder :=
 -- #eval toJson (embedBuilder 3 4 5) |>.compress
 -- #eval toJson (searchBuilder 3 4) |>.compress
 
-instance : Append PromptExampleBuilder :=
-  {append := fun x y =>
-    match x, y with
-    | .sequence [], y => y
-    | .blend [], y => y
-    | .blend ps, .blend qs => .blend <| ps ++ qs
-    | .sequence ps, .sequence qs => .sequence <| ps ++ qs
-    | .blend ps, x => .blend <| ps ++ [x]
-    | .sequence ps, x => .sequence <| ps ++ [x]
-    | x, .sequence ps => .sequence <| x :: ps
-    | x, y => .sequence [x, y]
-  }
-
 partial def signature (pb: PromptExampleBuilder) : String := match pb with
 | .embedSearch descField n _ => s!"{descField}${n}"
 | .leansearch _ _  n => s!"leansearch${n}"
@@ -313,7 +282,7 @@ partial def signature (pb: PromptExampleBuilder) : String := match pb with
 | .sequence pbs => (pbs.map signature).foldl (· ++ "-" ++ ·) "" |>.drop 1
 | .blend pbs => (pbs.map signature).foldl (· ++ "~" ++ ·) "" |>.drop 1
 
-#eval signature <| searchBuilder 3 4
+-- #eval signature <| searchBuilder 3 4
 
 /--
 Fixed prompts with names from Lean Chat
@@ -358,6 +327,8 @@ def RelevantDefs.base := RelevantDefs.env
 
 def RelevantDefs.addDefs (nbs: Array (Name × String)) (nbd: RelevantDefs) : RelevantDefs :=
   nbd ++ nbs
+
+open LeanAide.Meta
 
 partial def RelevantDefs.names (nbd: RelevantDefs)(s: String) (pairs : Array (String × Json)) : TranslateM (Array Name) := do
   match nbd with
@@ -440,17 +411,10 @@ def tips :=
   #["Multiplication is usually denoted `*` in Lean, not `⬝`",
   "Within quantifiers `∀` and `∃`, do not use typeclasses, use anonymous variables with types instead. For example, NOT: `∃ (G: Type) [Group G], ...` USE: `∃ G : Type, (_ : Group G), ...`"]
 
-
-end LeanAide.Meta
-
-open LeanAide.Meta
-
-namespace LeanAide
-
 structure Translator where
-  server : ChatServer := .openAI
+  server : ChatServer := .default
   params : ChatParams := {n := 8}
-  pb : PromptExampleBuilder := .embedBuilder 8 4 4 ++ .searchBuilder 4 4
+  pb : PromptExampleBuilder := .default
   toChat : ChatExampleType := .simple
   relDefs : RelevantDefs := .empty
   roundTrip : Bool := false
@@ -464,5 +428,7 @@ structure CodeGenerator extends Translator where
   numMoogleDirect : Nat := 2
 deriving Repr, FromJson, ToJson
 
-#eval toJson <| ({} : CodeGenerator)
-#eval (fromJson? (toJson <| ({} : CodeGenerator)) : Except _ Translator)
+-- #eval toJson <| ({} : CodeGenerator)
+-- #eval (fromJson? (toJson <| ({} : CodeGenerator)) : Except _ Translator)
+
+end LeanAide

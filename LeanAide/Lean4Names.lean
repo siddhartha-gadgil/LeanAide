@@ -6,6 +6,7 @@ import LeanAide.TranslateM
 open Lean Meta Elab Term LeanAide.Meta
 
 namespace LeanAide
+open Translate
 -- As Mathlib support for port is dropped, this is also dropped
 
 
