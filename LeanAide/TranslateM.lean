@@ -94,6 +94,7 @@ structure Translate.State where
   server : ChatServer := ChatServer.default
   params : ChatParams := {}
   pb : PromptExampleBuilder := PromptExampleBuilder.default
+  translationStack: Array (Name × TranslateResult) := #[]
 deriving Inhabited
 
 abbrev TranslateM := StateT Translate.State TermElabM
@@ -124,6 +125,35 @@ def setContext (ctx : String) : TranslateM Unit := do
 
 def getContext : TranslateM <| Option String := do
   return (← get).context
+
+def getParams : TranslateM ChatParams := do
+  return (← get).params
+
+def setParams (params : ChatParams) : TranslateM Unit := do
+  modify fun s => {s with params := params}
+
+def getServer : TranslateM (Option ChatServer) := do
+  return (← get).server
+
+def setServer (server : ChatServer) : TranslateM Unit := do
+  modify fun s => {s with server := server}
+
+def getPromptBuilder : TranslateM PromptExampleBuilder := do
+  return (← get).pb
+
+def setPromptBuilder (pb : PromptExampleBuilder) : TranslateM Unit := do
+  modify fun s => {s with pb := pb}
+
+def addTranslation (name : Name := Name.anonymous) (result : TranslateResult) : TranslateM Unit := do
+  modify fun s => {s with translationStack := s.translationStack.push (name, result)}
+
+def findTranslationByName? (name : Name) : TranslateM (Option TranslateResult) := do
+  let stack := (← get).translationStack
+  return stack.find? (fun (n, _) => n == name) |>.map Prod.snd
+
+def getLastTranslation? : TranslateM (Option (Name × TranslateResult)) := do
+  let stack := (← get).translationStack
+  return stack.back?
 
 def logError (source: String) (prompt?: Option Json) (errs: Array ElabError) : TranslateM Unit := do
   modify fun s => {s with errorLog := s.errorLog.push {source := source, prompt? := prompt?, elabErrors := errs}}
