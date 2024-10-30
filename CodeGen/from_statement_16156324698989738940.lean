@@ -149,5 +149,6 @@ Try this:
 no goals to be solved
 
 * Sorries in aux_17159876999765957439:
-   * `(∀ (n : ℕ), Even n) ∨ ∀ {n : ℕ}, Odd n`   * `((∀ (n : ℕ), Even n) ∨ ∀ {n : ℕ}, Odd n) → (¬∀ (n : ℕ), Even n) → (∀ {n : ℕ}, Odd n) → ∀ (n : ℕ), Even (n * (n + 1))`
+   * `(∀ (n : ℕ), Even n) ∨ ∀ {n : ℕ}, Odd n`
+   * `((∀ (n : ℕ), Even n) ∨ ∀ {n : ℕ}, Odd n) → (¬∀ (n : ℕ), Even n) → (∀ {n : ℕ}, Odd n) → ∀ (n : ℕ), Even (n * (n + 1))`
 -/
