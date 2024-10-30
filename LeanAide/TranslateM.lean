@@ -56,6 +56,28 @@ def TranslateBackResult.checkFailed (r: TranslateBackResult) : Bool :=
   | TranslateBackResult.success _ _ checks _ => checks.any id
   | TranslateBackResult.failure => true
 
+structure ElabSuccessResult where
+  term : Expr
+  allElaborated : Array String
+  groups : Array (Array String)
+  deriving Repr
+
+def ElabSuccessResult.view (er: ElabSuccessResult) : MetaM String :=
+  er.term.view
+
+structure TranslateSuccessResult extends ElabSuccessResult where
+  view : String
+
+def ElabSuccessResult.withView (er: ElabSuccessResult) : MetaM TranslateSuccessResult := do
+  return {
+    term := er.term,
+    allElaborated := er.allElaborated,
+    groups := er.groups,
+    view := (← er.view)
+  }
+
+abbrev TranslateResult := Except (Array ElabErrorData) ElabSuccessResult
+
 structure Translate.State where
   /-- Embeddings to preload -/
   embedMap : EmbedMap := HashMap.empty

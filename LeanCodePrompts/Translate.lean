@@ -255,25 +255,6 @@ def bestElab (output: Array String) : TranslateM Expr := do
     logTimed "finished majority voting"
     return (groupSorted[0]!)[0]!
 
-structure ElabSuccessResult where
-  term : Expr
-  allElaborated : Array String
-  groups : Array (Array String)
-  deriving Repr
-
-def ElabSuccessResult.view (er: ElabSuccessResult) : MetaM String :=
-  er.term.view
-
-structure TranslateResult extends ElabSuccessResult where
-  view : String
-
-def ElabSuccessResult.withView (er: ElabSuccessResult) : MetaM TranslateResult := do
-  return {
-    term := er.term,
-    allElaborated := er.allElaborated,
-    groups := er.groups,
-    view := (← er.view)
-  }
 
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and optionally returns the best choice as well as all elaborated terms (used for batch processing, interactive code uses `bestElab` instead)  -/
 def bestElab? (output: Array String)(maxVoting: Nat := 5) : TranslateM (Except (Array ElabError) ElabSuccessResult) := do
@@ -705,7 +686,7 @@ Translate a string to a Lean expression using the GPT model, returning three com
 * All outputs from the LLM
 * The prompt used for the LLM.
 -/
-def translateViewVerboseM (s: String)(translator : Translator) :   TranslateM ((Option TranslateResult) × Array String × Json) := do
+def translateViewVerboseM (s: String)(translator : Translator) :   TranslateM ((Option TranslateSuccessResult) × Array String × Json) := do
   let dataMap ← getEmbedMap
   IO.println s!"dataMap keys: {dataMap.toList.map Prod.fst}"
   let (js,prompt, _) ←

@@ -169,7 +169,7 @@ partial def num : PromptExampleBuilder →  Nat
 | blend ps => (ps.map num).sum
 
 def pairsFromEmbeddingJson (js: String) :
-    TranslateM <| Except String (Array (String × Json)) := do
+    CoreM <| Except String (Array (String × Json)) := do
   match Json.parse js with
   | Except.error e => return Except.error e
   | Except.ok js =>
