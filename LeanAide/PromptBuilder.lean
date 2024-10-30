@@ -145,6 +145,9 @@ def withDoc? (res: SearchResult) (descFields: List String)
 
 end SearchResult
 
+local instance : Hashable Float where
+  hash f := hash (f * 100).toUInt32
+
 inductive PromptExampleBuilder where
 | embedSearch (descField : String) (n: Nat) (penalty: Float := 1.0) : PromptExampleBuilder
 | leansearch (descFields : List String)
@@ -154,7 +157,7 @@ inductive PromptExampleBuilder where
 | fixed (prompts : Array (String × Json)) : PromptExampleBuilder
 | sequence : List PromptExampleBuilder → PromptExampleBuilder
 | blend : List PromptExampleBuilder → PromptExampleBuilder
-deriving  Repr, ToJson, FromJson
+deriving  Repr, ToJson, FromJson, Hashable
 namespace PromptExampleBuilder
 
 partial def num : PromptExampleBuilder →  Nat
@@ -186,7 +189,7 @@ def pairsFromSearchResults (srs: Array SearchResult)(descFields: List String)
     srs.filterMapM fun sr =>
       sr.withDoc? descFields preferDocs
 
-partial def getPromptPairsOrdered (pb: PromptExampleBuilder)
+partial def getPromptPairsOrderedAux (pb: PromptExampleBuilder)
   (query: String) : TranslateM ((Array (String × Json))) := do
   let dataMap ← getEmbedMap
   match pb with
@@ -207,12 +210,42 @@ partial def getPromptPairsOrdered (pb: PromptExampleBuilder)
     pairsFromSearchResults srs descFields preferDocs
   | fixed ps => return ps
   | sequence ps => do
-    let offspringGps ← ps.mapM fun pb => getPromptPairsOrdered pb query
+    let offspringGps ← ps.mapM fun pb => getPromptPairsOrderedAux pb query
     return offspringGps.toArray.join
   | blend ps =>
-    let offspringGps ← ps.mapM fun pb => getPromptPairsOrdered pb query
+    let offspringGps ← ps.mapM fun pb => getPromptPairsOrderedAux pb query
     let offSpringGps := offspringGps.map fun l => l.toList
     return blended offSpringGps |>.toArray
+
+def getPromptPairsOrdered (pb: PromptExampleBuilder)
+  (query: String) : TranslateM ((Array (String × Json))) := do
+    let file : System.FilePath :=
+      ".leanaide_cache"/ "prompt" / s!"{hash pb}_{hash query}.json"
+    if (← file.pathExists) then
+      IO.eprintln s!"Getting prompt pairs from cache: {file}"
+      let js ← IO.FS.readFile file
+      match Json.parse js with
+      | Except.error e =>
+        IO.eprintln s!"Could not parse JSON from file {file}; error: {e}"
+        let pairs ← getPromptPairsOrderedAux pb query
+        let js := toJson pairs
+        IO.FS.writeFile file js.compress
+        return pairs
+      | Except.ok js =>
+        match (fromJson? js : Except String (Array (String × Json))) with
+        | Except.error e =>
+          IO.eprintln s!"Could not parse JSON from file {file}; error: {e}"
+          let pairs ← getPromptPairsOrderedAux pb query
+          let js := toJson pairs
+          IO.FS.writeFile file js.compress
+          return pairs
+        | Except.ok pairs  =>
+          return pairs
+    else do
+      let pairs ← getPromptPairsOrderedAux pb query
+      let js := toJson pairs
+      IO.FS.writeFile file js.compress
+      return pairs
 
 def getPromptPairs (pb: PromptExampleBuilder)
     (query: String)(bound: Nat := 600) : TranslateM ((Array (String × Json))) := do

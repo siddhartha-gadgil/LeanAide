@@ -156,7 +156,7 @@ def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM 
 
 def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Json := do
   let file : System.FilePath :=
-    ".cache" / "chat" /
+    ".leanaide_cache" / "chat" /
       s!"{hash server}_{hash params}_{hash messages}.json"
   if ← file.pathExists then
     IO.eprintln "Reading from cache"
