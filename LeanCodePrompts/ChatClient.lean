@@ -120,7 +120,7 @@ def authHeader? : ChatServer → IO (Option String)
     let key ← IO.Process.run {cmd := "gcloud", args := #["auth", "print-access-token"]}
     return some <|"Authorization: Bearer " ++ key.trim
 
-def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Json := do
+def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Json := do
   let stopJs := Json.mkObj <| if params.stopTokens.isEmpty then [] else
     [("stop", Json.arr <| params.stopTokens |>.map Json.str)]
   let dataJs := Json.mkObj [("model", server.model), ("messages", messages)
@@ -153,6 +153,25 @@ def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Jso
     appendLog "chat_queries"
       (Json.mkObj [("query", queryJs), ("success", false), ("error", e), ("response", output)])
     return .null
+
+def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Json := do
+  let file : System.FilePath :=
+    ".cache" / "chat" /
+      s!"{hash server}_{hash params}_{hash messages}.json"
+  if ← file.pathExists then
+    IO.eprintln "Reading from cache"
+    let output ← IO.FS.readFile file
+    match Json.parse output with
+    | Except.ok j => return j
+    | Except.error e =>
+      IO.eprintln s!"Error parsing JSON: {e}; source: {output}"
+      let result ←  queryAux server messages params
+      IO.FS.writeFile file result.pretty
+      return result
+  else
+    let result ←  queryAux server messages params
+    IO.FS.writeFile file result.pretty
+    return result
 
 def pollCacheQuery (server: ChatServer)(messages : Json)
     (params : ChatParams) (retries: Nat) : CoreM Json := do
