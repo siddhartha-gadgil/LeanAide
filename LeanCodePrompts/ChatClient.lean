@@ -36,7 +36,9 @@ structure ChatParams where
   temp : JsonNumber := 1.0
   stopTokens : Array String :=  #[]
   maxTokens : Nat := 1600
-  deriving Repr, Hashable, FromJson, ToJson, Inhabited, DecidableEq
+  deriving Repr, Hashable, FromJson, ToJson, DecidableEq
+
+instance : Inhabited ChatParams := ⟨{}⟩
 
 namespace ChatParams
 def stopColEq (params: ChatParams) : Bool :=

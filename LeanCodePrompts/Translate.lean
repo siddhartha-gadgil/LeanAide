@@ -15,6 +15,7 @@ import LeanAide.TranslateM
 import LeanAide.PromptBuilder
 import LeanAide.ConstDeps
 import LeanAide.SimpleFrontend
+import LeanAide.Descriptions
 
 open Lean Meta Elab Parser Command
 open LeanAide.Meta
@@ -298,8 +299,8 @@ def bestElab? (output: Array String)(maxVoting: Nat := 5) : TranslateM (Except (
     let thm := (groupSorted[0]!)[0]!
     let gpView ←  groupSorted.mapM (fun gp => gp.mapM (fun e => e.view))
     logTimed "obtained majority vote"
-    return Except.ok ⟨thm, elabStrs, gpView⟩
-
+    return Except.ok {term := thm, allElaborated := elabStrs, groups := gpView, allElaboratedExprs := elaborated, groupsExprs := groupSorted}
+    -- {⟨thm, elabStrs, gpView⟩}
 
 def greedyBestExpr? (output: Array String) : TranslateM (Option Expr) := do
     output.findSomeM? <| fun out => do

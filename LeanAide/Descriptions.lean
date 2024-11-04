@@ -173,6 +173,29 @@ def checkTranslationM (s: String) (type: Expr) (translator: Translator) :
     let checks ← ChatServer.checkEquivalence s transl defBlob?
     return (transl,  checks)
 
+-- Modifies the result to one passing roundtrip checks (if any)
+def roundTripFilteredM? (statement: String) (res: ElabSuccessResult) (translator: Translator) :
+    TranslateM <| Option ElabSuccessResult := do
+  let groupHeads := res.groupsExprs.filterMap fun gp => gp[0]?
+  let type? ← groupHeads.findM? fun type => do
+    let pair? ←  checkTranslationM statement type translator
+    pair?.map fun (_, checks) =>
+      checks.any (·.1)
+  return type?.map fun type => {res with term := type}
+
+def roundTripFilteredM (statement: String) (res: ElabSuccessResult) (translator: Translator) :
+    TranslateM <| Except (Array (String × Bool)) ElabSuccessResult := do
+  let groupHeads := res.groupsExprs.filterMap fun gp => gp[0]?
+  let mut pairs : Array (String × Bool) := #[]
+  for type in groupHeads do
+    let pair? ←  checkTranslationM statement type translator
+    if let some (_, checks) := pair? then
+      if checks.any (·.1) then
+        return Except.ok {res with term := type}
+      else
+        pairs := pairs.push (statement, false)
+  return Except.error pairs
+
 -- #eval getDescriptionM ``Iff.rfl
 
 def egFreq := Json.mkObj [("name", "Iff.rfl"), ("freq", 4882)]

@@ -61,7 +61,9 @@ def TranslateBackResult.checkFailed (r: TranslateBackResult) : Bool :=
 structure ElabSuccessResult where
   term : Expr
   allElaborated : Array String
+  allElaboratedExprs : Array Expr
   groups : Array (Array String)
+  groupsExprs : Array (Array Expr)
   deriving Repr
 
 def ElabSuccessResult.view (er: ElabSuccessResult) : MetaM String :=
@@ -71,12 +73,7 @@ structure TranslateSuccessResult extends ElabSuccessResult where
   view : String
 
 def ElabSuccessResult.withView (er: ElabSuccessResult) : MetaM TranslateSuccessResult := do
-  return {
-    term := er.term,
-    allElaborated := er.allElaborated,
-    groups := er.groups,
-    view := (← er.view)
-  }
+  return {er with view := (← er.view)}
 
 abbrev TranslateResult := Except (Array ElabErrorData) ElabSuccessResult
 
