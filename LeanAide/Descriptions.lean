@@ -183,18 +183,19 @@ def roundTripFilteredM? (statement: String) (res: ElabSuccessResult) (translator
       checks.any (·.1)
   return type?.map fun type => {res with term := type}
 
-def roundTripFilteredM (statement: String) (res: ElabSuccessResult) (translator: Translator) :
-    TranslateM <| Except (Array (String × Array (Bool × String))) ElabSuccessResult := do
+def roundTripFilteredM (statement: String) (res: ElabSuccessResult) (translator: Translator)(dropHead : Bool := false) :
+    TranslateM  ElabSuccessResult := do
   let groupHeads := res.groupsExprs.filterMap fun gp => gp[0]?
+  let groupHeads := if dropHead then groupHeads[1:].toArray else groupHeads
   let mut pairs : Array (String × Array (Bool × String)) := #[]
   for type in groupHeads do
     let pair? ←  checkTranslationM statement type translator
     if let some (_, checks) := pair? then
       if checks.any (·.1) then
-        return Except.ok {res with term := type}
+        return {res with term := type, roundTripCheck? := some true, roundTripFailures := pairs}
       else
         pairs := pairs.push ((← ppExpr type).pretty, checks)
-  return Except.error pairs
+  return {res with roundTripFailures := pairs, roundTripCheck? := some false}
 
 -- #eval getDescriptionM ``Iff.rfl
 
