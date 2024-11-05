@@ -183,4 +183,4 @@ require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git"@"v4.11.0"
 
 require LeanSearchClient from git
-  "https://github.com/leanprover-community/LeanSearchClient"@"main"
+  "https://github.com/leanprover-community/LeanSearchClient"@"v4.11.0"

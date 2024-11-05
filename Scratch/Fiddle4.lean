@@ -1,5 +1,6 @@
 import Lean
 import Mathlib
+import LeanSearchClient.Syntax
 
 open Lean Meta Elab Term PrettyPrinter Tactic Parser
 
@@ -251,3 +252,5 @@ example : True := by
   by_cases 1 = 2
   case pos => simp
   case neg => simp
+
+#check Nat.exists_infinite_primes
