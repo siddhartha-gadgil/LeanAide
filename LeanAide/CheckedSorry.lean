@@ -56,7 +56,7 @@ def findSorry? (n: Name) : MetaM (Option Expr) := do
   return e?.bind (fun e =>
     e.find? fun expr => expr.isSorry)
 
-#eval findSorry? `myTheorem
+-- #eval findSorry? `myTheorem
 
 def replaceSorryWithMVarM? (e: Expr) : MetaM (Option (Expr × Expr × Expr)) := do
   let sorryPos? := e.find? fun expr => expr.isSorry

@@ -76,7 +76,7 @@ def default : ChatServer := .openAI "gpt-4o"
 instance : Inhabited ChatServer := ⟨default⟩
 
 initialize queryCache : IO.Ref
-  (HashMap (ChatServer × Json × ChatParams) Json) ← IO.mkRef {}
+  (Std.HashMap (ChatServer × Json × ChatParams) Json) ← IO.mkRef {}
 
 initialize pendingQueries :
   IO.Ref (Array (ChatServer × Json × ChatParams)) ← IO.mkRef #[]
@@ -183,7 +183,7 @@ def pollCacheQuery (server: ChatServer)(messages : Json)
     (params : ChatParams) (retries: Nat) : CoreM Json := do
   let key := (server, messages, params)
   let cache ← queryCache.get
-  match cache.find? key with
+  match cache.get? key with
   | some j => return j
   | none => do
     match retries with
@@ -205,7 +205,7 @@ def cachedQuery (server: ChatServer)(messages : Json)
     pollCacheQuery server messages params 40
   else do
     let cache ← queryCache.get
-    match cache.find? key with
+    match cache.get? key with
     | some j =>
       return j
     | none => do

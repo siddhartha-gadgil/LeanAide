@@ -257,7 +257,7 @@ def cacheDescription (js: Json) : IO Unit := do
     h.putStrLn jsStr
   else IO.FS.writeFile path (jsStr ++ "\n")
 
-def getCachedDescriptionsMap : IO (HashMap String Json) := do
+def getCachedDescriptionsMap : IO (Std.HashMap String Json) := do
   let cached ← getCachedDescriptions
   let pairs := cached.filterMap fun js => do
     let name? := js.getObjValAs? String "name" |>.toOption
@@ -265,8 +265,8 @@ def getCachedDescriptionsMap : IO (HashMap String Json) := do
   return pairs.foldl (init := {}) fun m (name, js) => m.insert name js
 
 def getDescriptionCached (name: String)(translator: Translator)
-  (cacheMap: HashMap String Json) : MetaM (Option Json) := do
-  match cacheMap.find? name with
+  (cacheMap: Std.HashMap String Json) : MetaM (Option Json) := do
+  match cacheMap.get? name with
   | some js => return some js
   | none =>
     let desc? ← getDescriptionM name.toName translator
@@ -279,7 +279,7 @@ def getDescriptionCached (name: String)(translator: Translator)
       | none => return none
 
 def getDescriptionCachedCore (name: String)(translator: Translator)
-  (cacheMap: HashMap String Json) : CoreM (Option Json) :=
+  (cacheMap: Std.HashMap String Json) : CoreM (Option Json) :=
   (getDescriptionCached name translator  cacheMap).run' {}
 
 def lemmaUserPrompt' (name: Name)(description: String) :

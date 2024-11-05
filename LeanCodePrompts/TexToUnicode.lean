@@ -7,15 +7,15 @@ import LeanCodePrompts.TeXPrompts
 
 open Lean
 
-initialize texCommandCache : IO.Ref (HashMap String String) ← do
+initialize texCommandCache : IO.Ref (Std.HashMap String String) ← do
   -- IO.println "Initialising TeX Command cache..."
   -- let js ← Json.parseFile <| ← reroutePath "data/texcmds.json"
   -- let l := js.map $ fun j => (j[0]!.getStr!, j[1]!.getStr!)
   let .obj js ← IO.ofExcept $ Json.parse $ ← IO.FS.readFile (← reroutePath "data/full-tex.json") | panic! "Invalid JSON format"
   let l : List (String × String) := js.fold (λ as s j => (s, j.getStr!) :: as) []
-  IO.mkRef $ HashMap.ofList l
+  IO.mkRef $ Std.HashMap.ofList l
 
-/-- Replaces the TeX sequences in a string with their 
+/-- Replaces the TeX sequences in a string with their
   corresponding Unicode characters using the `texcmds` list. -/
 def teXToUnicode (s : String) : IO String := do
   match s.splitOn "\\" with
@@ -27,13 +27,13 @@ def teXToUnicode (s : String) : IO String := do
       let cmd := l.takeWhile (· ∉ teXDelimiters)
       let s ← findUnicodeReplacement cmd
       pure $ s ++ l.dropWhile (· ∉ teXDelimiters)
-    
+
     return .join (h :: us)
 
   where
     findUnicodeReplacement (cmd : String) : IO String := do
       if let .some u :=
-          (← texCommandCache.get).find? cmd then
+          (← texCommandCache.get).get? cmd then
         pure u else
         pure <| "\\" ++ cmd
 
@@ -54,7 +54,7 @@ def interleave : List α → List α → List α
   | a :: as, b :: bs =>
     a :: b :: interleave as bs
 
-theorem alternate_interleave : (l : List α) → 
+theorem alternate_interleave : (l : List α) →
   let (odds, evens) := l.alternate
   .interleave odds evens = l
   | [] => rfl
@@ -80,24 +80,24 @@ def openAIQuery (prompt : String)
   (stopTokens : Array String :=  #[":=", "-/"]) : IO Json := do
 
   let .some key ← openAIKey | panic! "OPENAI_API_KEY not set"
-  
+
   let data := Json.mkObj [
-    ("model", "code-davinci-002"), 
-    ("prompt", prompt), 
-    ("temperature", Json.num temp), 
-    ("n", n), 
-    ("max_tokens", 150), 
+    ("model", "code-davinci-002"),
+    ("prompt", prompt),
+    ("temperature", Json.num temp),
+    ("n", n),
+    ("max_tokens", 150),
     ("stop", Json.arr <| stopTokens |>.map Json.str)
     ] |>.pretty
-  
+
   let out ←  IO.Process.output {
-        cmd:= "curl", 
+        cmd:= "curl",
         args:= #["https://api.openai.com/v1/completions",
         "-X", "POST",
         "-H", "Authorization: Bearer " ++ key,
         "-H", "Content-Type: application/json",
         "--data", data]}
-  
+
   IO.ofExcept $ Json.parse out.stdout
 
 def makePrompt (formula : String) : IO String := do
@@ -105,7 +105,7 @@ def makePrompt (formula : String) : IO String := do
   let teXPromptsProcessed ← teXPrompts.mapM $ λ (teXFormula, leanFormula) => do
         return s!"TeX: ${← teXToUnicode teXFormula}$\nLean: `{leanFormula}`\n\n"
 
-  let promptPrefix := String.join teXPromptsProcessed.toList 
+  let promptPrefix := String.join teXPromptsProcessed.toList
 
   return s!"{promptPrefix}TeX: ${formula}$\nLean: `"
 
@@ -121,14 +121,14 @@ def teXToLean (s : String) : IO String := do
     return s!"`{translation}`"
   else
     IO.println s!"Translated via Unicode mapping: {t}"
-    return s!"`{t}`" 
+    return s!"`{t}`"
 
 /-- Extracts the TeX formulas within `$` or `$$` in the given string,
   translates them individually to Lean code, and then
   replaces them back with `\`` (backticks). -/
 def translateTeX : String → IO String :=
   translateTeXAux "$$"
-    (translateTeXAux "$" 
+    (translateTeXAux "$"
       (translateTeXAux "`"
           pure
           pure)
@@ -138,8 +138,8 @@ def translateTeX : String → IO String :=
     /-- Splits a string according to the delimiter.
         The substrings in the odd positions are processed as text,
         while those in the even positions are processed as formulas. -/
-    translateTeXAux (teXDelimiter : String) 
-      (modText : String → IO String) 
+    translateTeXAux (teXDelimiter : String)
+      (modText : String → IO String)
       (modFormula : String → IO String) :
           String → IO String := fun s => do
         let (text, formulas) := s.splitOn teXDelimiter |>.alternate

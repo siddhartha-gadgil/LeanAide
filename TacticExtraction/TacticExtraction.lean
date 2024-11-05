@@ -36,7 +36,7 @@ section Misc
             if env.contains declName && !simpOnlyBuiltins.contains declName then
               args := args.push (← `(Parser.Tactic.simpLemma| $(mkIdent (← unresolveNameGlobal declName)):ident))
           | .fvar fvarId => -- local hypotheses in the context
-            if let some ldecl := lctx.find? fvarId then
+            if let some ldecl := lctx.get? fvarId then
               localsOrStar := localsOrStar.bind fun locals =>
                 if !ldecl.userName.isInaccessibleUserName &&
                     (lctx.findFromUserName? ldecl.userName).get!.fvarId == ldecl.fvarId then

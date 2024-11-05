@@ -5,7 +5,7 @@ import Lean
 
 open Lean Meta Elab Tactic Parser
 
-initialize cacheTacticJson : IO.Ref (HashMap String Json) ← IO.mkRef (HashMap.empty)
+initialize cacheTacticJson : IO.Ref (Std.HashMap String Json) ← IO.mkRef (Std.HashMap.empty)
 
 def getTacticString : TacticM String := do
   let s ← saveState
@@ -258,7 +258,7 @@ def tacticList : TacticM <| List String := do
   -- let prompt ← makeTacticPrompt 20
   let cache ← cacheTacticJson.get
   let fullJson ←
-    match cache.find? prompt.pretty with
+    match cache.get? prompt.pretty with
     | some json => pure json
     | none =>
       let res ← gptQuery prompt 5 ⟨8, 1⟩ #[";", "sorry", "\n"]

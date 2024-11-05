@@ -68,11 +68,11 @@ def GoalKey.get : TacticM GoalKey := do
 
 section Caches
 
-initialize tacticCache : IO.Ref (HashMap GoalKey ProofState)
+initialize tacticCache : IO.Ref (Std.HashMap GoalKey ProofState)
         ← IO.mkRef ∅
 
 initialize spawnedKeys :
-  IO.Ref (HashSet <| GoalKey)
+  IO.Ref (Std.HashSet <| GoalKey)
         ← IO.mkRef  ∅
 
 def isSpawned (key : GoalKey) : IO Bool := do
@@ -87,7 +87,7 @@ def putTactic (key : GoalKey) (s : ProofState) : MetaM Unit := do
 
 def getStates (key : GoalKey) : TacticM (Option ProofState) := do
   let m ← tacticCache.get
-  return m.find? key
+  return m.get? key
 
 def clearCache : IO Unit := do
   tacticCache.modify fun _ => ∅

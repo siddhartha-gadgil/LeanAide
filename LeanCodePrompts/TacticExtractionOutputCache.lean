@@ -13,8 +13,8 @@ deriving Inhabited
 
 initialize counter : IO.Ref Nat ← IO.mkRef .zero
 
-initialize tacticSnapRef : IO.Ref <|HashMap Nat (Array TacticSnapshot) 
-  ← IO.mkRef .empty 
+initialize tacticSnapRef : IO.Ref <|Std.HashMap Nat (Array TacticSnapshot)
+  ← IO.mkRef .empty
 
 
 def counter.getIdx : IO Nat := do

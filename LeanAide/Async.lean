@@ -58,14 +58,14 @@ def GoalKey.get : TacticM GoalKey := do
 
 section Caches
 
-initialize tacticCache : IO.Ref (HashMap GoalKey ProofState)
+initialize tacticCache : IO.Ref (Std.HashMap GoalKey ProofState)
         ← IO.mkRef ∅
 
-initialize tacticPosCache : IO.Ref (HashMap CacheKey ProofState)
+initialize tacticPosCache : IO.Ref (Std.HashMap CacheKey ProofState)
         ← IO.mkRef ∅
 
 initialize spawnedKeys :
-  IO.Ref (HashSet <| GoalKey × Option String.Pos × Option String.Pos)
+  IO.Ref (Std.HashSet <| GoalKey × Option String.Pos × Option String.Pos)
         ← IO.mkRef  ∅
 
 def isSpawned (key : GoalKey) (pos? tailPos? : Option String.Pos) : IO Bool := do
@@ -84,7 +84,7 @@ def putPosTactic (key : CacheKey) (s : ProofState) : MetaM Unit := do
 
 def getStates (key : GoalKey) : TacticM (Option ProofState) := do
   let m ← tacticCache.get
-  return m.find? key
+  return m.get? key
 
 end Caches
 
@@ -338,7 +338,7 @@ elab "check_auto" : tactic => withMainContext do
   let target ← getMainTarget
   let key : GoalKey := { goal := target, lctx := lctx.decls.toList }
   logInfo m!"Checking for cached result for the goal : {← ppExpr <| key.goal }"
-  let cache : HashMap GoalKey ProofState ← tacticCache.get
+  let cache : Std.HashMap GoalKey ProofState ← tacticCache.get
   logInfo m!"Cache size : {cache.size}"
   logInfo m!"Cache keys"
   for (k, _) in cache.toList do

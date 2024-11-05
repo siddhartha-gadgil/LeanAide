@@ -45,7 +45,7 @@ def Declaration.fromConstantInfo (ci : ConstantInfo) (extractValue? := false) : 
 open Lean in
 /-- The declaration in the environment with the given name, as a `Declaration`. -/
 def Declaration.fromName? (nm : Name) : MetaM <| Option _root_.Declaration := do
-  let ci? := (← getEnv).constants.find? nm
+  let ci? := (← getEnv).constants.get? nm
   ci?.mapM Declaration.fromConstantInfo
 
 open Lean in

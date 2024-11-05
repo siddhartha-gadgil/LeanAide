@@ -123,14 +123,14 @@ def chatServer : CoreM ChatServer := do
 Caching, polling etc to avoid repeatedly calling servers
 -/
 
-initialize webCacheJson : IO.Ref (HashMap String (Json × Json × Array (String × Json))) ← IO.mkRef (HashMap.empty)
+initialize webCacheJson : IO.Ref (Std.HashMap String (Json × Json × Array (String × Json))) ← IO.mkRef (Std.HashMap.empty)
 
-initialize pendingJsonQueries : IO.Ref (HashSet String)
-    ← IO.mkRef (HashSet.empty)
+initialize pendingJsonQueries : IO.Ref (Std.HashSet String)
+    ← IO.mkRef (Std.HashSet.empty)
 
 def getCachedJson? (s: String) : IO (Option (Json × Json × Array (String × Json))) := do
   let cache ← webCacheJson.get
-  return cache.find? s
+  return cache.get? s
 
 def cacheJson (s: String)(js: Json × Json × Array (String × Json))  : IO Unit := do
   let cache ← webCacheJson.get
@@ -139,7 +139,7 @@ def cacheJson (s: String)(js: Json × Json × Array (String × Json))  : IO Unit
 
 partial def pollCacheJson (s : String) : IO <| Json × Json × Array (String × Json) := do
   let cache ← webCacheJson.get
-  match cache.find? s with
+  match cache.get? s with
   | some jsBlob => return jsBlob
   | none => do
     IO.sleep 200
@@ -212,12 +212,12 @@ def bestElab (output: Array String) : TranslateM Expr := do
   let mut elabStrs : Array String := Array.empty
   let mut elaborated : Array Expr := Array.empty
   let mut fullElaborated : Array Expr := Array.empty
-  let mut cache : HashMap String (Except ElabError Expr) :=
-    HashMap.empty
+  let mut cache : Std.HashMap String (Except ElabError Expr) :=
+    Std.HashMap.empty
   for out in output do
     -- IO.println s!"elaboration called: {out}"
     let elab? ←
-      match cache.find? out with
+      match cache.get? out with
       | some elab? =>
         pure elab?
       | none =>
@@ -264,15 +264,15 @@ def bestElab? (output: Array String)(maxVoting: Nat := 5) : TranslateM (Except (
   let mut elabStrs : Array String := Array.empty
   let mut elaborated : Array Expr := Array.empty
   let mut fullElaborated : Array Expr := Array.empty
-  let mut cache : HashMap String (Except ElabError Expr) :=
-    HashMap.empty
+  let mut cache : Std.HashMap String (Except ElabError Expr) :=
+    Std.HashMap.empty
   logTimed "elaborating outputs"
   let mut errors : Array ElabError := #[]
 
   for out in output do
     -- IO.println s!"elaboration called: {out}"
     let elab? ←
-      match cache.find? out with
+      match cache.get? out with
       | some elab? => pure elab?
       | none =>
         let res ← elabThm4 out

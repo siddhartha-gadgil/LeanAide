@@ -47,7 +47,7 @@ def viewSyntax (s: String) : MetaM <| Syntax × String := do
 
 
 def nameDefTypeSyntax (name: Name) : MetaM <| Syntax × Syntax := do
-    let info? := ((← getEnv).find? name)
+    let info? := ((← getEnv).get? name)
     let info := info?.get!
     let exp := info.value?.get!
     let type := info.type
@@ -139,10 +139,10 @@ def nameDefViewVerbose (name: Name) : MetaM String := do
 
 -- #eval egSplitView
 
--- set_option pp.proofs false in 
+-- set_option pp.proofs false in
 -- #eval nameDefView ``Nat.gcd_eq_zero_iff
 
--- set_option pp.proofs.withType true in 
+-- set_option pp.proofs.withType true in
 -- #eval nameDefView ``Nat.gcd_eq_zero_iff
 
 -- #eval nameDefViewVerbose ``Nat.gcd_eq_zero_iff
@@ -165,7 +165,7 @@ def nameDefViewVerbose (name: Name) : MetaM String := do
 --   intro n -- introduce a variable n
 --   use 2 * n + 1 -- use `m = 2 * n + 1`
 --   apply And.intro -- apply the constructor of `∧` to split goals
---   · linarith -- solve the first goal using `linarith` 
+--   · linarith -- solve the first goal using `linarith`
 --   · simp [Nat.add_mod] -- solve the second goal using `simp` with the lemma `Nat.add_mod`
 
 -- -- #eval premisesViewFromName ``oddExample
@@ -176,13 +176,13 @@ open LeanAide.Meta
 
 
 structure ConstsData where
-    definitions : HashMap Name  Syntax
-    theorems : HashMap Name  Syntax
+    definitions : Std.HashMap Name  Syntax
+    theorems : Std.HashMap Name  Syntax
 
 def constsData : MetaM ConstsData := do
     let consts ← constantNameTypes
-    let mut definitions := HashMap.empty
-    let mut theorems := HashMap.empty
+    let mut definitions := Std.HashMap.empty
+    let mut theorems := Std.HashMap.empty
     for (c, type) in consts do
         let tstx ← delab type
         let tstx ←  tstx.raw.purge
@@ -215,14 +215,14 @@ partial def Lean.Syntax.identsM (stx: Syntax)(context: Array Syntax)(maxDepth? :
         return prev.map (fun (s, m) => (s, m + args.size))
     | none =>
         match stx with
-        | Syntax.node _ _ args => 
-            let prev ← args.mapM (identsM · context (maxDepth?.map (· -1))) 
+        | Syntax.node _ _ args =>
+            let prev ← args.mapM (identsM · context (maxDepth?.map (· -1)))
             return prev.toList.join.map (fun (s, m) => (s, m + 1))
-        | Syntax.ident _ _ name .. => 
+        | Syntax.ident _ _ name .. =>
             let contextVars := context.filterMap getVar?
             -- IO.println s!"Context: {contextVars} from {context}"
             if  !(contextVars.contains name) &&
-                !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name)) then 
+                !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name)) then
                 pure [(name, 0)]
             else pure []
         | _ => pure []
@@ -262,16 +262,16 @@ partial def Lean.Syntax.termsM (context : Array Syntax)(stx: Syntax)(maxDepth? :
         return prev.map (fun s => s.increaseDepth args.size)
     | none =>
         match stx with
-        | Syntax.node _ k args => 
+        | Syntax.node _ k args =>
             -- IO.println s!"Node: {k}"
             let prev ← args.mapM (termsM context · (maxDepth?.map (· -1)))
-            let head : TermData := 
+            let head : TermData :=
                 ⟨context, ← stx.purge, (← stx.purge).size, 0, false⟩
-            if tks.contains k then 
+            if tks.contains k then
                 return (head) :: prev.toList.join.map (fun s => s.increaseDepth 1)
-            else  
+            else
             return prev.toList.join.map (fun s => s.increaseDepth 1)
-        | Syntax.ident .. => 
+        | Syntax.ident .. =>
              pure []
         | _ => pure []
 
@@ -291,7 +291,7 @@ partial def Lean.Syntax.proofsM (context : Array Syntax)(stx: Syntax)(maxDepth? 
     | some (proof, prop) =>
         -- IO.println s!"Proof: {proof}"
         let prev ←  proofsM context  proof (maxDepth?.map (· -1))
-        let head : PropProofData := 
+        let head : PropProofData :=
             ⟨context, prop, proof, prop.size, proof.size, 0⟩
         return  (head) :: prev.map (fun s => s.increaseDepth 1)
     | none =>
@@ -302,11 +302,11 @@ partial def Lean.Syntax.proofsM (context : Array Syntax)(stx: Syntax)(maxDepth? 
         return prev.map (fun s => s.increaseDepth args.size)
     | none =>
         match stx with
-        | Syntax.node _ _ args => 
+        | Syntax.node _ _ args =>
             -- IO.println s!"Node: {k}"
             let prev ← args.mapM (proofsM context · (maxDepth?.map (· -1)))
             return prev.toList.join.map (fun s => s.increaseDepth 1)
-        | Syntax.ident .. => 
+        | Syntax.ident .. =>
              pure []
         | _ => pure []
 
@@ -314,7 +314,7 @@ partial def Lean.Syntax.proofsM (context : Array Syntax)(stx: Syntax)(maxDepth? 
 def PremiseData.get(ctx : Array Syntax)(name: Name)(prop pf : Syntax) : MetaM PremiseData := do
     let subProofs: List (PropProofData) ←  pf.proofsM ctx
     let subTerms : List (TermData)  ← Syntax.termsM ctx pf
-    let ids : List (Name  × Nat) ← pf.identsM ctx 
+    let ids : List (Name  × Nat) ← pf.identsM ctx
     let ids := ids.map <| fun (n, d) => (n.toString, d)
     return ⟨ctx, some name, name, ← prop.purge, ← prop.purge, ← pf.purge, (← prop.purge).size, (← pf.purge).size, subTerms.toArray, subProofs.toArray, ids.toArray⟩
 
@@ -322,7 +322,7 @@ def viewData (name: Name) : MetaM <| String := do
     let (stx, tstx) ← nameDefTypeSyntax name
     -- IO.println s!"{stx.reprint.get!}"
     -- IO.println s!"{← proofWithProp? stx}"
-    let data ←  PremiseData.get  #[] name tstx stx 
+    let data ←  PremiseData.get  #[] name tstx stx
     data.view
 
 -- #eval viewData ``Nat.succ_le_succ
@@ -332,8 +332,8 @@ partial def Lean.Syntax.kinds (stx: Syntax)(maxDepth?: Option Nat := none) : Lis
         []
     else
     match stx with
-    | Syntax.node _ k args => 
-        let head? : Option String := 
+    | Syntax.node _ k args =>
+        let head? : Option String :=
             k.components.head?.map (· |>.toString)
         match head? with
         | some head => head :: (args.map (kinds · (maxDepth?.map (· -1))) |>.toList.join)
@@ -345,17 +345,17 @@ partial def Lean.Syntax.idents (stx: Syntax)(maxDepth? : Option Nat := none) : L
         []
     else
     match stx with
-    | Syntax.node _ _ args => 
-         args.map (idents · (maxDepth?.map (· -1))) 
+    | Syntax.node _ _ args =>
+         args.map (idents · (maxDepth?.map (· -1)))
             |>.toList.join.map (fun (s, m) => (s, m + 1))
-    | Syntax.ident _ _ name .. => 
-        if !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name)) then 
+    | Syntax.ident _ _ name .. =>
+        if !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name)) then
             [(name, 0)]
         else []
     | _ => []
 
 
-partial def Lean.Syntax.terms (stx: Syntax)(maxDepth?: Option Nat := none) : 
+partial def Lean.Syntax.terms (stx: Syntax)(maxDepth?: Option Nat := none) :
      MetaM <|  List <| String × Nat × List Name := do
     let tks ← termKindList
     let tks := tks.map (·.1)
@@ -363,27 +363,27 @@ partial def Lean.Syntax.terms (stx: Syntax)(maxDepth?: Option Nat := none) :
         pure []
     else
     match stx with
-    | Syntax.node _ k args => 
-        match stx with 
-        | `(proved_prop| ($pf:term =: $_:term )) =>  
+    | Syntax.node _ k args =>
+        match stx with
+        | `(proved_prop| ($pf:term =: $_:term )) =>
            pf.raw.terms
         | _ =>
-        let head? : Option String := do 
-            if 
-                k ∈ tks 
+        let head? : Option String := do
+            if
+                k ∈ tks
             then
                 ← stx.reprint
             else
                 none
-        let argTerms ← args.mapM (terms · (maxDepth?.map (· -1))) 
+        let argTerms ← args.mapM (terms · (maxDepth?.map (· -1)))
         let argTerms := argTerms.toList.join
         match head? with
-        | some head =>             
+        | some head =>
             return (head.trim, 0, stx.idents.map (·.1)) ::
                  (argTerms.map (fun (s, m, l) => (s, m + 1, l)))
-        | none => 
+        | none =>
             return (argTerms.map (fun (s, m, l) => (s, m + 1, l)))
-    
+
     | _ => pure []
 
 structure Premises where
@@ -391,7 +391,7 @@ structure Premises where
     defTerms : List <| String × Nat × List Name
     defIdents : List <| Name × Nat
     typeTerms : List <| String × Nat × List Name
-    typeIdents : List <| Name × Nat 
+    typeIdents : List <| Name × Nat
 deriving Repr, Inhabited
 
 def Premises.defMainTerms (p: Premises) : List <| String × Nat × List Name  :=
@@ -399,7 +399,7 @@ def Premises.defMainTerms (p: Premises) : List <| String × Nat × List Name  :=
             fun (s, _) => s.1.length < 20)
 
 def Premises.typeMainTerms (p: Premises) : List <| String × Nat × List Name :=
-    p.typeTerms.filter (fun (s, _) => (s.splitOn "=>").length == 1  
+    p.typeTerms.filter (fun (s, _) => (s.splitOn "=>").length == 1
                 && (s.splitOn "↦").length == 1)
 
 
@@ -443,7 +443,7 @@ def showKinds (s: String) : MetaM <| List String := do
     | Except.error e => throwError e
     | Except.ok s => pure (s.kinds)
 
-def nameDefTerms (name: Name)(maxDepth? : Option Nat := none ) : MetaM <| 
+def nameDefTerms (name: Name)(maxDepth? : Option Nat := none ) : MetaM <|
     List <| String × Nat × List Name  := do
     let stx? ← nameDefSyntax name
     match stx? with
@@ -483,13 +483,13 @@ def zeroOrOne : Nat → Nat
 -- #eval showKinds "n = n + 1"
 
 -- def egTerms : MetaM <| List <| String × Nat × List Name := do
---     let p ←  getPremises ``oddExample (some 30) 
+--     let p ←  getPremises ``oddExample (some 30)
 --     return p.defMainTerms
 
 -- #eval egTerms
 
 -- def egIdents : MetaM <| List <| Name × Nat:= do
---     let p ←  getPremises ``oddExample (some 50) 
+--     let p ←  getPremises ``oddExample (some 50)
 --     return p.defIdents
 
 -- #eval egIdents
@@ -506,7 +506,7 @@ def zeroOrOne : Nat → Nat
 
 def dataSize : MetaM Nat := do
     let names ← constantNames
-    return names.size 
+    return names.size
 
 -- #eval dataSize
 
@@ -522,7 +522,7 @@ def sampleExtract (n: Nat := 100) : MetaM <|
         (List <| Name × Nat)) := do
     let names ← constantNames
     let names := names.toList.take n
-    names.mapM (fun n => do 
+    names.mapM (fun n => do
         let p ← nameDefTerms n
         let q ← nameDefIdents n
         pure (n, p, q)
@@ -532,7 +532,7 @@ def batchPremiseExtractM (start stop: Nat) : MetaM Nat  := do
     let names ← constantNames
     let premisesFile := System.mkFilePath ["rawdata",
     s!"outer-premises.jsonl"]
-    let h ← IO.FS.Handle.mk premisesFile IO.FS.Mode.append 
+    let h ← IO.FS.Handle.mk premisesFile IO.FS.Mode.append
     let names := names.toList.drop start |>.take (stop - start)
     let mut cursor := start
     IO.println s!"start: {start}, stop: {stop}"
@@ -540,8 +540,8 @@ def batchPremiseExtractM (start stop: Nat) : MetaM Nat  := do
         IO.println <| s!"starting: {cursor} {name}"
         let premises ← getPremises name (some 30)
         let p := premises.defMainTerms
-        let pJson := p.map 
-            (fun (s, n, l) => 
+        let pJson := p.map
+            (fun (s, n, l) =>
                 Json.mkObj [
                     ("term", s),
                     ("depth", n),
@@ -554,8 +554,8 @@ def batchPremiseExtractM (start stop: Nat) : MetaM Nat  := do
             )
         let q:= premises.defIdents
         let q := q.filter (fun (name, _) => names.contains name)
-        let qJson := q.map 
-            (fun (name, n) => 
+        let qJson := q.map
+            (fun (name, n) =>
                 Json.mkObj [
                     ("name", name.toString),
                     ("depth", n)
@@ -564,19 +564,19 @@ def batchPremiseExtractM (start stop: Nat) : MetaM Nat  := do
         let js := Json.mkObj [
             ("name", name.toString),
             ("type", premises.type),
-            ("terms", Json.arr 
+            ("terms", Json.arr
                 pJson.toArray),
-            ("idents", Json.arr 
+            ("idents", Json.arr
                 qJson.toArray)
         ]
         let out := js.pretty 10000
-        if out.length < 9000 then 
+        if out.length < 9000 then
             h.putStrLn <| out
         IO.println <| s!"{cursor}. {name} : {premises.type} ({p.length}, {q.length}, {out.length})"
         cursor := cursor + 1
     return cursor
 
-def batchPremiseExtractCore (start stop: Nat) : CoreM Nat := 
+def batchPremiseExtractCore (start stop: Nat) : CoreM Nat :=
     (batchPremiseExtractM start stop).run'
 
 -- -- #eval sampleExtract
@@ -597,7 +597,7 @@ def batchPremiseExtractCore (start stop: Nat) : CoreM Nat :=
 
 def nameSize : MetaM <| Nat × Nat := do
     let cs ← constantNameValueTypes
-    let cs' ← cs.filterM <| fun (_, term, _) => 
+    let cs' ← cs.filterM <| fun (_, term, _) =>
         Meta.isProof term
     return (cs.size, cs'.size)
 
@@ -606,19 +606,19 @@ def nameSize : MetaM <| Nat × Nat := do
 -- #eval nameSize
 
 def nameSample (n: Nat) : MetaM (Array Name) := do
-    let cs ← constantNameValueTypes 
+    let cs ← constantNameValueTypes
     let mut out : Array Name := #[]
     let mut count := 0
     for (name, _, _) in cs do
         if count % n = 0 then
             out := out.push name
-        count := count + 1    
+        count := count + 1
     return out
 
 -- #eval nameSample 100
 
 def batchDefns (start batch : Nat) : MetaM (Array Json) := do
-    let cs ← constantNameValueTypes 
+    let cs ← constantNameValueTypes
     let mut out : Array Json := #[]
     let mut count := 0
     for (name, term, type, _) in cs do
@@ -627,32 +627,32 @@ def batchDefns (start batch : Nat) : MetaM (Array Json) := do
             match defData? with
             | none => pure ()
             | some defData => out := out.push <| toJson defData
-        count := count + 1    
+        count := count + 1
     return out
 
 
 def writeBatchDefnsM (start batch : Nat) : MetaM Nat  := do
-    let cs ← constantNameValueTypes 
+    let cs ← constantNameValueTypes
     let names := cs.map (·.1)
     IO.println <| s!"{start}; {batch} from {cs.size}"
     let mut count := 0
     let defnsFile := System.mkFilePath ["rawdata", s!"defns.jsonl"]
     let h ← IO.FS.Handle.mk defnsFile IO.FS.Mode.append
     let idsFile := System.mkFilePath ["rawdata", s!"idents.jsonl"]
-    let h' ← IO.FS.Handle.mk idsFile IO.FS.Mode.append 
+    let h' ← IO.FS.Handle.mk idsFile IO.FS.Mode.append
     for (name, term, type, _) in cs do
         if count >= start && count < start + batch then
             IO.println <| s!"{count} {name}"
             let defData? ← DefData.getM? name term type
             match defData? with
-            | none => 
+            | none =>
                 IO.println <| s!"{count} {name} omitted"
                 pure ()
             | some defData =>
                 IO.println <| s!"{count} {name} written"
                 let idData := defData.identData
-                let idData := 
-                    idData.map (fun d ↦ d.filter 
+                let idData :=
+                    idData.map (fun d ↦ d.filter
                         (names.contains · ))
                 let l := (toJson defData).compress
                 if l.length < 9000000 then
@@ -661,14 +661,14 @@ def writeBatchDefnsM (start batch : Nat) : MetaM Nat  := do
                     let l := (toJson d).compress
                     if l.length < 9000000 then
                     h'.putStrLn l
-        count := count + 1    
+        count := count + 1
     return start + batch
 
 def writePremisesM  : MetaM Nat  := do
-    let cs ← constantNameValueTypes 
+    let cs ← constantNameValueTypes
     let names := cs.map (·.1)
     let namesFile := System.mkFilePath ["rawdata", s!"names.txt"]
-    IO.FS.writeFile namesFile <| 
+    IO.FS.writeFile namesFile <|
         names.map toString |>.foldl (fun a b ↦ a  ++ b ++ "\n") ""
     let defIdsFile := System.mkFilePath ["rawdata", s!"def_ids.jsonl"]
     IO.FS.writeFile defIdsFile ""
@@ -694,7 +694,7 @@ def writePremisesM  : MetaM Nat  := do
         IO.println <| s!"{count} {name} (of {cs.size})"
         let defData? ← DefData.getM? name term type
         match defData? with
-        | none => 
+        | none =>
             IO.println <| s!"{count} {name} omitted"
             pure ()
         | some defData =>
@@ -702,13 +702,13 @@ def writePremisesM  : MetaM Nat  := do
             let gh ←  match ← IO.rand 0 9 with
                 | 0 => do
                     testNum := testNum + 1
-                    IO.println s!"writing to test; now :{testNum}" 
+                    IO.println s!"writing to test; now :{testNum}"
                     pure hTest
-                | 1 => 
+                | 1 =>
                     validNum := validNum + 1
                     IO.println s!"writing to valid; now :{validNum}"
                     pure hValid
-                | _ => 
+                | _ =>
                     trainNum := trainNum + 1
                     IO.println s!"writing to train; now :{trainNum}"
                     pure hTrain
@@ -728,8 +728,8 @@ def writePremisesM  : MetaM Nat  := do
                         gh.putStrLn l
             IO.println ""
             let idData := defData.identData.bind (fun d ↦ d.ids.toList)
-            let idData ←  idData.filterM 
-                (fun n => checkName <| String.toName n) 
+            let idData ←  idData.filterM
+                (fun n => checkName <| String.toName n)
             let idData := idData.eraseDups
             let idData := Json.mkObj [
                 ("name", toJson defData.name),
@@ -740,11 +740,11 @@ def writePremisesM  : MetaM Nat  := do
             let l := idData.compress
             if l.length < 9000000 then
                 hId.putStrLn l
-        count := count + 1    
+        count := count + 1
     return count
 
-def writeBatchDefnsCore (start batch : Nat) : CoreM Nat := 
-    (writeBatchDefnsM start batch).run' {} 
+def writeBatchDefnsCore (start batch : Nat) : CoreM Nat :=
+    (writeBatchDefnsM start batch).run' {}
 
 def writePremisesCore : CoreM Nat :=
     writePremisesM.run' {}

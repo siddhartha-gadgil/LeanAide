@@ -88,5 +88,5 @@ deriving instance BEq for LocalDecl
 #synth Hashable FVarId
 deriving instance Hashable for LocalDecl
 #synth Hashable <| List LocalDecl
-#check PersistentHashMap
+#check PersistentStd.HashMap
 #check LocalContext

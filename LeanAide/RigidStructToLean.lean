@@ -96,7 +96,7 @@ partial def dropLocalContext (type: Expr) : MetaM Expr := do
   | _ => return type
 
 variable (server: ChatServer := ChatServer.openAI)(params : ChatParams := {}) (pb: PromptExampleBuilder) (numLeanSearch : Nat := 8)(numMoogle: Nat := 0)
-  (dataMap : EmbedMap := HashMap.empty )
+  (dataMap : EmbedMap := Std.HashMap.empty )
 
 open Lean Meta Tactic
 
