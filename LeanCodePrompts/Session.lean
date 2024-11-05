@@ -45,9 +45,10 @@ abbrev SessionM := StateT  SessionM.State TranslateM
 
 abbrev Session := SessionM Unit
 
-def sessionLogs (sess: Session) : TranslateM (Array String) := do
+def sessionLogs (sess: Session) : TranslateM (Format) := do
   let (_, s) ←  sess.run {logs := #[]}
-  return s.logs
+  let fmts : Array Format := s.logs.map fun s => .text s
+  return fmts.foldl (init := "") fun acc s => acc ++ s ++ "\n"
 
 namespace Session
 
@@ -122,7 +123,7 @@ macro "#session" n:ident ":=" t:term : command => do
   consider "Let $n$ be a natural number."
   let t ← text
   say t
-  consider "Don't"
+  consider "Don't."
   sayM text
 
 end LeanAide.Translate
