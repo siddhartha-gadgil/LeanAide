@@ -66,7 +66,7 @@ theorem aux_12569077504778724371 : ∀ {a b : ℤ}, Odd a → Odd b → Odd (a *
 ## Elaboration logs
 Try this:
   intro a b a_1 a_2
-  (checked_sorry)
+  (plausible_sorry)
 Try this:
   intro a b a_1 a_2
   simp_all only [Odd.mul]

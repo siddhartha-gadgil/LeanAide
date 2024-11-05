@@ -73,7 +73,7 @@ def addTranslation (name : Name := Name.anonymous) (result : TranslateResult) : 
 
 def findTranslationByName? (name : Name) : SessionM (Option TranslateResult) := do
   let stack := (← get).translationStack
-  return stack.get? (fun (n, _) => n == name) |>.map Prod.snd
+  return stack.find? (fun (n, _) => n == name) |>.map Prod.snd
 
 def getLastTranslation? : SessionM (Option (Name × TranslateResult)) := do
   let stack := (← get).translationStack

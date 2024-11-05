@@ -75,7 +75,7 @@ theorem aux_17159876999765957439 : ∀ (n : ℕ), Even (n * (n + 1)) :=
       have : ∀ (n k : ℕ), 2 * k.succ * (2 * k.succ) = 2 * (2 * k ^ 2 + 3 * k + 1) := by        -- expanded auto?
         intro n k
         simp_all only [implies_true, or_true, not_forall, Nat.not_even_iff_odd, exists_const, Nat.succ_eq_add_one]
-        (checked_sorry)
+        (plausible_sorry)
       have : ∀ (n : ℕ), (∃ k, ↑n = 2 * k + 1) → Even (n * (n + 1)) := by auto?
       auto?
     case neg => auto?
@@ -131,7 +131,7 @@ Try this:
   simp_all only [implies_true, or_true, not_forall, Nat.not_even_iff_odd, exists_const]
   obtain ⟨w, h⟩ := a
   subst h
-  (checked_sorry)
+  (plausible_sorry)
 Try this:
   intro n k
   simp_all only [implies_true, or_true, not_forall, Nat.not_even_iff_odd, exists_const, forall_exists_index]

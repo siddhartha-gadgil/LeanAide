@@ -8,7 +8,7 @@ This file defines tactics that falls back to sorry if the target passes a check 
 -/
 open Lean Meta Elab Tactic
 
-def checkedSorry (checkType: Expr → MetaM Bool) : TacticM Unit :=
+def plausibleSorry (checkType: Expr → MetaM Bool) : TacticM Unit :=
   withMainContext do
   let s ← Tactic.saveState
   let check ← checkType (← getMainTarget)
@@ -30,20 +30,20 @@ def checkedSorry (checkType: Expr → MetaM Bool) : TacticM Unit :=
       evalTactic (← `(tactic|sorry))
 
 
-elab "checked_sorry" : tactic => checkedSorry (isProp)
+elab "plausible_sorry" : tactic => plausibleSorry (isProp)
 
-elab "checked_sorry'" : tactic => checkedSorry (fun _ => pure true)
+elab "plausible_sorry'" : tactic => plausibleSorry (fun _ => pure true)
 
 elab "unchecked_sorry" : tactic => do
   logWarning s!"Goal remains: {← ppExpr <| ← getMainTarget}"
   evalTactic (← `(tactic|sorry))
 
-example : 1 + 1 = 2 := by checked_sorry
+example : 1 + 1 = 2 := by plausible_sorry
 example : Nat := by
-  checked_sorry'
--- example : 2 + 1 = 4 := by checked_sorry
--- example : Nat := by checked_sorry
-theorem myTheorem (n: Nat): 1 + 1 = 2 := by checked_sorry
+  plausible_sorry'
+-- example : 2 + 1 = 4 := by plausible_sorry
+-- example : Nat := by plausible_sorry
+theorem myTheorem (n: Nat): 1 + 1 = 2 := by plausible_sorry
 
 #print myTheorem
 
@@ -96,12 +96,10 @@ set_option pp.mvars.withType true
 
 theorem multigoal : 1 + 1 = 2 ∧ 2 + 2 = 4 ∧ 1 + 1 = 2 := by
   apply And.intro
-  checked_sorry
+  plausible_sorry
   apply And.intro
-  checked_sorry
-  checked_sorry
+  plausible_sorry
+  plausible_sorry
 
-#check #sorry_free multigoal
-#check Expr.hasSorry
-
-#check Lake.DecodeToml
+-- #check #sorry_free multigoal
+-- #check Expr.hasSorry

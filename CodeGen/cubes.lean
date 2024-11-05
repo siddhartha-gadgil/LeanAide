@@ -35,7 +35,7 @@ theorem eg :
           90%
             (by
                 gcongr)) (add
-        unsafe 90% (by contradiction)) (add unsafe 90% (by tauto)) (add unsafe 50% (by checked_sorry))
+        unsafe 90% (by contradiction)) (add unsafe 90% (by tauto)) (add unsafe 50% (by plausible_sorry))
   have : {K : Type u} → [inst : Field K] → [inst_1 : CharZero K] → sorryAx (Sort u) := by
     aesop (add
         unsafe
@@ -62,7 +62,7 @@ theorem eg :
           90%
             (by
                 gcongr)) (add
-        unsafe 90% (by contradiction)) (add unsafe 90% (by tauto)) (add unsafe 50% (by checked_sorry))
+        unsafe 90% (by contradiction)) (add unsafe 90% (by tauto)) (add unsafe 50% (by plausible_sorry))
   have :
     ∀ {K : Type u_1} [inst : Field K] {ω : K},
       ω ≠ 1 ∧ ω ^ 3 = 1 → ∀ {x y z : K}, [1, ω, ω ^ 2] = sorry → x ≠ y ∧ y ≠ z ∧ x ≠ z :=
@@ -92,7 +92,7 @@ theorem eg :
           90%
             (by
                 gcongr)) (add
-        unsafe 90% (by contradiction)) (add unsafe 90% (by tauto)) (add unsafe 50% (by checked_sorry)) (add unsafe 10% (by sorry))
+        unsafe 90% (by contradiction)) (add unsafe 90% (by tauto)) (add unsafe 50% (by plausible_sorry)) (add unsafe 10% (by sorry))
     -- repeat (sorry)
   have :
     ∀ {A : Type u} [inst : CommRing A] [inst_1 : Algebra A (Polynomial A)] (x : A),
@@ -123,7 +123,7 @@ theorem eg :
           90%
             (by
                 gcongr)) (add
-        unsafe 90% (by contradiction)) (add unsafe 90% (by tauto)) (add unsafe 50% (by checked_sorry)) (add unsafe 10% (by sorry))
+        unsafe 90% (by contradiction)) (add unsafe 90% (by tauto)) (add unsafe 50% (by plausible_sorry)) (add unsafe 10% (by sorry))
   aesop (add
         unsafe
           90%
@@ -149,4 +149,4 @@ theorem eg :
           90%
             (by
                 gcongr)) (add
-        unsafe 90% (by contradiction)) (add unsafe 90% (by tauto)) (add unsafe 50% (by checked_sorry)) (add unsafe 10% (by sorry))
+        unsafe 90% (by contradiction)) (add unsafe 90% (by tauto)) (add unsafe 50% (by plausible_sorry)) (add unsafe 10% (by sorry))

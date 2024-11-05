@@ -97,7 +97,7 @@ theorem aux_17159876999765957439 : ∀ (n : ℕ), Even (n * (n + 1)) :=
 ## Elaboration logs
 Try this:
   intro n
-  (checked_sorry)
+  (plausible_sorry)
 Try this:
   intro n
   simp_all only [true_implies, implies_true]
@@ -107,14 +107,14 @@ Try this:
   simp_all
   obtain ⟨w, h⟩ := h
   obtain ⟨left, right⟩ := h
-  (checked_sorry)
+  (plausible_sorry)
 Try this:
   rename_i h
   intro n
   simp_all
   obtain ⟨w, h⟩ := h
   obtain ⟨left, right⟩ := h
-  (checked_sorry)
+  (plausible_sorry)
 Try this:
   intro n
   simp_all only [true_implies, not_forall, Nat.not_even_iff_odd, isEmpty_Prop, Nat.not_odd_iff_even, IsEmpty.forall_iff,
