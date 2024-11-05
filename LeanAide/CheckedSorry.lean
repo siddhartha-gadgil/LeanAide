@@ -1,10 +1,10 @@
 import Lean
-import Mathlib.Tactic.SlimCheck
+import Plausible
 import Lake.Toml.Decode
 /-!
 # Checked sorry
 
-This file defines tactics that falls back to sorry if the target passes a check given by `slim_check` or the check is not applicable and possibly passes other checks.
+This file defines tactics that falls back to sorry if the target passes a check given by `plausible` or the check is not applicable and possibly passes other checks.
 -/
 open Lean Meta Elab Tactic
 
@@ -15,7 +15,7 @@ def checkedSorry (checkType: Expr → MetaM Bool) : TacticM Unit :=
   unless check do
     throwError "checkedSorry failed: not a proposition or other requirement"
   try
-    evalTactic (← `(tactic|slim_check))
+    evalTactic (← `(tactic|plausible))
     s.restore
     logWarning s!"Goal remains: {← ppExpr <| ← getMainTarget}"
     evalTactic (← `(tactic|sorry))

@@ -476,6 +476,6 @@ import LeanAide.CheckedSorry
 universe u v u_1
 set_option maxHeartbeats 10000000
 set_option linter.unreachableTactic false
-set_option linter.unusedTactic false
+
 
 "

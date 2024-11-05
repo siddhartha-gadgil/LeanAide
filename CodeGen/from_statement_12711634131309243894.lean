@@ -3,7 +3,7 @@ import LeanAide.AutoTactic
 universe u v u_1
 set_option maxHeartbeats 10000000
 set_option linter.unreachableTactic false
-set_option linter.unusedTactic false
+
 
 /-!
 ## Theorem
@@ -29,7 +29,7 @@ We can factor \( 4mn + 2m + 2n \):
 4mn + 2m + 2n = 2(2mn + m + n)
 \]
 
-Thus, 
+Thus,
 
 \[
 a \cdot b = 2(2mn + m + n) + 1

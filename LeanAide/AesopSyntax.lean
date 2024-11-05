@@ -79,7 +79,7 @@ elab "aesop_fold" "["ts:term ,*"]"* ";" "["tacs:tacticSeq ,*"]"*  : tactic => do
   evalTactic stx
   return ()
 
-set_option linter.unusedTactic false
+
 set_option linter.unreachableTactic false
 
 example (n m : Nat) : n + m = m + n := by

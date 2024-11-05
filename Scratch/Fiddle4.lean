@@ -196,7 +196,7 @@ def someData : CoreM (List (Array Name)) := do
 #check getModuleDoc? -- getModuleDoc? : Environment → Name → Option String
 
 example : 2 ≤ 1 := by
-  try slim_check
+  try plausible
   sorry
 
 #check Nat.infinite_setOf_prime

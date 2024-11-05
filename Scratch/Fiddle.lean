@@ -6,7 +6,7 @@ import LeanAide.VerboseDelabs
 import LeanAide.Premises
 import LeanAide.SimpleFrontend
 open Lean Meta Elab Parser Json.Parser
-open Mathlib.Prelude.Rename
+-- open Mathlib.Prelude.Rename
 
 #check FiniteDimensional.finrank
 #check ContinuousLinearEquiv.preimage_symm_preimage
@@ -78,7 +78,7 @@ def one : Nat := 1
 #reduce sorry
 #check sorryAx
 
-#check SlimCheck.Testable
+-- #check SlimCheck.Testable
 -- #eval natural: 3 + 4 only -- Error
 
 example :(A B C : Prop) → (f : A → B → C) → (a : A) → (b : B) → C := by
