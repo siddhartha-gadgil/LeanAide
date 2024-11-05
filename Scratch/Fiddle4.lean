@@ -1,5 +1,6 @@
 import Lean
 import Mathlib
+import Plausible
 import LeanSearchClient.Syntax
 
 open Lean Meta Elab Term PrettyPrinter Tactic Parser
@@ -254,3 +255,4 @@ example : True := by
   case neg => simp
 
 #check Nat.exists_infinite_primes
+-- #moogle "There are infinitely many even numbers."

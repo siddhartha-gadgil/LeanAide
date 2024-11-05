@@ -37,7 +37,9 @@ structure SessionM.State where
   roundTrip : Bool := false
   roundTripSelect : Bool := false -- selecting first to pass roundtrip
 
+  contextStatement? : Option String := none
   translationStack: Array (Name × TranslateResult) := #[]
+  logs : Array MessageData := #[]
 
 abbrev SessionM := StateT  SessionM.State TranslateM
 
@@ -79,4 +81,30 @@ def getLastTranslation? : SessionM (Option (Name × TranslateResult)) := do
   let stack := (← get).translationStack
   return stack.back?
 
+-- Simple commands to be used in the session.
+
+def consider (statement: String) : SessionM Unit := do
+  logInfo s!"Consider: {statement}"
+  modify fun s => {s with contextStatement? := some statement}
+
+def text : SessionM String := do
+  match (← get).contextStatement? with
+  | some s => return s
+  | none => throwError "No text in context"
+
+def nil : Session := pure ()
+
 end Session
+
+
+
+
+open Session
+
+def eg : Session := do
+  consider "Let $n$ be a natural number."
+  let t ← text
+
+#check eg
+
+end LeanAide.Translate
