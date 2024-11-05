@@ -11,7 +11,7 @@ unsafe def main (args: List String) : IO UInt32 := do
     IO.eprintln s!"Embeddings already present at {picklePath}, use --force to redownload."
     return 1
   IO.eprintln "Fetching embeddings ..."
-  let out ← runCurl #["--output", picklePath.toString, "-k", "-s",  s!"https://math.iisc.ac.in/~gadgil/data/{picklePath.fileName.get!}"]
+  let out ← runCurl #["--output", picklePath.toString, "-k", "-s",  s!"https://storage.googleapis.com/leanaide_data/{picklePath.fileName.get!}"]
   IO.eprintln "Fetched embeddings"
   IO.eprintln out
   return 0
