@@ -1,6 +1,28 @@
 import LeanCodePrompts.BatchTranslate
 import LeanAide.Aides
 import LeanAide.Descriptions
+/-!
+# Translation Session
+
+This is a session for translating Lean code interactively to natural language. The goal is to allow experimentation similar to the tactics mode in Lean, but for translation. Caching should ensure that if the same query is recomputed, there is no cost.
+
+A session is a term of type `SessionM Unit`. The state keeps track of the history and various settings. We have commands for modifying the settings and for translating and related tasks. Some of the commands are:
+
+* `translate`: translating a string literal that is given or from the context.
+* `consider`: add a string literal to the context.
+* `translateDef`: translate a definition.
+* `promptExamples`: generate a prompt for a string literal.
+* `message`: the message to be sent to the chat server.
+* `roundtrip` for testing and selecting the first translation that passes roundtrip.
+* `add_prompt`: add a fixed prompt to the context to be used.
+* `add_definition`: add a definition to the context to be used.
+* `set` and `get` for the prompt builder, server, and other settings.
+
+Commands need to be designed for more complex tasks:
+
+* Given the name of something in Mathlib, add the corresponding definition or prompt to the context.
+* On locating a missing definition, translate it and add it to the context.
+-/
 
 open Lean Meta Elab
 open LeanAide.Meta

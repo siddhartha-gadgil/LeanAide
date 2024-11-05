@@ -1,6 +1,5 @@
 import Lean
 import LeanAide.Aides
-
 namespace LeanAide
 open Lean
 
@@ -49,6 +48,10 @@ def default :=
   PromptExampleBuilder.embedBuilder 8 4 4 ++ .searchBuilder 4 4
 
 instance : Inhabited PromptExampleBuilder := ⟨default⟩
+
+def prependFixed (pb: PromptExampleBuilder)
+  (prompts: Array (String × Json)) : PromptExampleBuilder :=
+  .sequence [.fixed prompts, pb]
 
 end PromptExampleBuilder
 end LeanAide
