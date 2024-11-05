@@ -39,11 +39,15 @@ structure SessionM.State where
 
   contextStatement? : Option String := none
   translationStack: Array (Name × TranslateResult) := #[]
-  logs : Array MessageData := #[]
+  logs : Array String := #[]
 
 abbrev SessionM := StateT  SessionM.State TranslateM
 
 abbrev Session := SessionM Unit
+
+def sessionLogs (sess: Session) : TranslateM (Array String) := do
+  let (_, s) ←  sess.run {logs := #[]}
+  return s.logs
 
 namespace Session
 
@@ -83,28 +87,41 @@ def getLastTranslation? : SessionM (Option (Name × TranslateResult)) := do
 
 -- Simple commands to be used in the session.
 
+def sayM (msg : SessionM String) : SessionM Unit := do
+  let msg ← msg
+  modify fun s => {s with logs := s.logs.push msg}
+
+def say (msg : String) : SessionM Unit := do
+  modify fun s => {s with logs := s.logs.push msg}
+
 def consider (statement: String) : SessionM Unit := do
-  logInfo s!"Consider: {statement}"
   modify fun s => {s with contextStatement? := some statement}
 
 def text : SessionM String := do
   match (← get).contextStatement? with
   | some s => return s
-  | none => throwError "No text in context"
-
-def nil : Session := pure ()
+  | none =>
+      log <| m!"No text in context"
+      throwError "No text in context"
 
 end Session
-
-
-
 
 open Session
 
 def eg : Session := do
   consider "Let $n$ be a natural number."
   let t ← text
+  say t ; #eval sessionLogs eg
 
-#check eg
+macro "#session" n:ident ":=" t:term : command => do
+  `(def $n : Session := $t
+  #eval sessionLogs $n)
+
+#session eg' := do
+  consider "Let $n$ be a natural number."
+  let t ← text
+  say t
+  consider "Don't"
+  sayM text
 
 end LeanAide.Translate
