@@ -114,8 +114,9 @@ def eg : Session := do
   say t ; #eval sessionLogs eg
 
 macro "#session" n:ident ":=" t:term : command => do
-  `(def $n : Session := $t
-  #eval sessionLogs $n)
+  withRef t (
+    `(def $n : Session := $t
+    #eval sessionLogs $n))
 
 #session eg' := do
   consider "Let $n$ be a natural number."
