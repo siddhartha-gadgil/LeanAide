@@ -8,10 +8,13 @@ unsafe def fetchEmbedding (descField : String) (force: Bool) : IO UInt32 := do
     IO.eprintln s!"Embeddings already present at {picklePath}, use --force to redownload."
   IO.eprintln "Fetching embeddings ..."
   IO.eprintln s!"https://storage.googleapis.com/leanaide_data/{picklePath.fileName.get!}"
-  let out ← runCurl #["--output", picklePath.toString,   s!"https://storage.googleapis.com/leanaide_data/{picklePath.fileName.get!}"]
+  let out ← IO.Process.output {cmd:= "curl", args:=#["--output", picklePath.toString,   s!"https://storage.googleapis.com/leanaide_data/{picklePath.fileName.get!}"]}
   IO.eprintln "Fetched embeddings"
-  IO.eprintln out
-  return 0
+  if out.exitCode != 0 then
+    IO.eprintln s!"Failed to fetch embeddings: {out.stderr}"
+  else
+    IO.eprintln s!"Fetched embeddings: {out.stdout}"
+  return out.exitCode
 
 
 unsafe def main (args: List String) : IO UInt32 := do

@@ -155,3 +155,5 @@ macro "#session" n:ident ":=" t:term : command => do
 end LeanAide.Translate
 
 #check {n | Odd n}.Infinite
+
+#leansearch "The circle."
