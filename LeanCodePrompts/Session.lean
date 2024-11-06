@@ -30,7 +30,7 @@ namespace LeanAide.Translate
 
 structure SessionM.State where
   server : ChatServer := ChatServer.default
-  params : ChatParams := {}
+  params : ChatParams := {n := 8}
   pb : PromptExampleBuilder := PromptExampleBuilder.default
   toChat : ChatExampleType := .simple
   relDefs : RelevantDefs := .empty
@@ -130,6 +130,10 @@ def translate (s : String) (name: Name := Name.anonymous) : SessionM Unit := do
       Except.error {source := s, prompt? := prompt?, elabErrors := err}
   addTranslation name result
 
+def translateText (name: Name := Name.anonymous) : SessionM Unit := do
+  let s ← text
+  translate s name
+
 end Session
 
 open Session
@@ -145,7 +149,9 @@ macro "#session" n:ident ":=" t:term : command => do
     #eval sessionLogs $n))
 
 #session eg' := do
-  consider "There are infinitely many prime numbers"
-  translate (← text)
+  consider "There are infinitely many odd numbers"
+  translateText
 
 end LeanAide.Translate
+
+#check {n | Odd n}.Infinite
