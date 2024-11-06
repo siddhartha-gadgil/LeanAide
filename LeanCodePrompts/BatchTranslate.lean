@@ -11,7 +11,7 @@ open Translate
 Translate a string to a Lean expression using the GPT model, returning the expression, all outputs and the prompt used.
 -/
 def translateWithDataM (s: String)(translator: Translator)  (repeats: Nat := 0)(sleepTime : Nat := 1)
-  (queryData? : Option <| (Std.HashMap String Json)  ) :
+  (queryData? : Option <| (Std.HashMap String Json) := none ) :
   TranslateM ((Except (Array ElabError) (ElabSuccessResult)) × Array String × (Option Json)) := do
   let (output, prompt?) ←  match queryData? with
   | none =>

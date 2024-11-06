@@ -39,7 +39,7 @@ structure SessionM.State where
 
   contextStatement? : Option String := none
   translationStack: Array (Name × TranslateResult) := #[]
-  logs : Array String := #[]
+  logs : Array Format := #[]
 
 abbrev SessionM := StateT  SessionM.State TranslateM
 
@@ -47,8 +47,7 @@ abbrev Session := SessionM Unit
 
 def sessionLogs (sess: Session) : TranslateM (Format) := do
   let (_, s) ←  sess.run {logs := #[]}
-  let fmts : Array Format := s.logs.map fun s => .text s
-  return fmts.foldl (init := "") fun acc s => acc ++ s ++ "\n"
+  return s.logs.foldl (init := "") fun acc s => acc ++ s ++ "\n"
 
 namespace Session
 
@@ -88,11 +87,13 @@ def getLastTranslation? : SessionM (Option (Name × TranslateResult)) := do
 
 -- Simple commands to be used in the session.
 
-def sayM (msg : SessionM String) : SessionM Unit := do
+def sayM [ToJson α] (msg : SessionM α) : SessionM Unit := do
   let msg ← msg
+  let msg := (toJson msg).pretty
   modify fun s => {s with logs := s.logs.push msg}
 
-def say (msg : String) : SessionM Unit := do
+def say [ToJson α] (msg : α): SessionM Unit := do
+  let msg := (toJson msg).pretty
   modify fun s => {s with logs := s.logs.push msg}
 
 def consider (statement: String) : SessionM Unit := do
@@ -102,8 +103,32 @@ def text : SessionM String := do
   match (← get).contextStatement? with
   | some s => return s
   | none =>
-      log <| m!"No text in context"
-      throwError "No text in context"
+      throwError "ERROR: No text in context"
+
+#print TranslateResult
+
+def translate (s : String) (name: Name := Name.anonymous) : SessionM Unit := do
+  let translator ← getTranslator
+  let (res, _, prompt?) ← translator.translateWithDataM s
+  match res with
+  | Except.ok res => do
+    say "Success in translation"
+    say res.toElabSuccessBase
+  | Except.error err =>
+    say "Error in translation"
+    say "Prompt:"
+    match prompt? with
+    | some p => say p
+    | none => say "No prompt"
+    for e in err do
+      say e
+  let result : TranslateResult :=
+    match res with
+    | Except.ok res => do
+      Except.ok res
+    | Except.error err =>
+      Except.error {source := s, prompt? := prompt?, elabErrors := err}
+  addTranslation name result
 
 end Session
 
@@ -120,10 +145,7 @@ macro "#session" n:ident ":=" t:term : command => do
     #eval sessionLogs $n))
 
 #session eg' := do
-  consider "Let $n$ be a natural number."
-  let t ← text
-  say t
-  consider "Don't."
-  sayM text
+  consider "There are infinitely many prime numbers"
+  translate (← text)
 
 end LeanAide.Translate

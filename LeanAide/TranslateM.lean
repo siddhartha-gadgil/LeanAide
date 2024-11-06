@@ -58,15 +58,18 @@ def TranslateBackResult.checkFailed (r: TranslateBackResult) : Bool :=
   | TranslateBackResult.success _ _ checks _ => checks.any id
   | TranslateBackResult.failure => true
 
-structure ElabSuccessResult where
-  term : Expr
+structure ElabSuccessBase where
+  typeView : String
   allElaborated : Array String
-  allElaboratedExprs : Array Expr
   groups : Array (Array String)
-  groupsExprs : Array (Array Expr)
   roundTripCheck? : Option Bool := none
   roundTripFailures : Array (String × Array (Bool × String)) := #[]
-  deriving Repr
+  deriving Repr, ToJson, FromJson
+
+structure ElabSuccessResult extends ElabSuccessBase where
+  term : Expr
+  allElaboratedExprs : Array Expr
+  groupsExprs : Array (Array Expr)
 
 def ElabSuccessResult.view (er: ElabSuccessResult) : MetaM String :=
   er.term.view
@@ -77,7 +80,7 @@ structure TranslateSuccessResult extends ElabSuccessResult where
 def ElabSuccessResult.withView (er: ElabSuccessResult) : MetaM TranslateSuccessResult := do
   return {er with view := (← er.view)}
 
-abbrev TranslateResult := Except (Array ElabErrorData) ElabSuccessResult
+abbrev TranslateResult := Except ElabErrorData ElabSuccessResult
 
 structure Translate.State where
   /-- Embeddings to preload -/

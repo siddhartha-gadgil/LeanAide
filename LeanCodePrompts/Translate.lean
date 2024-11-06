@@ -299,7 +299,7 @@ def bestElab? (output: Array String)(maxVoting: Nat := 5) : TranslateM (Except (
     let thm := (groupSorted[0]!)[0]!
     let gpView ←  groupSorted.mapM (fun gp => gp.mapM (fun e => e.view))
     logTimed "obtained majority vote"
-    return Except.ok {term := thm, allElaborated := elabStrs, groups := gpView, allElaboratedExprs := elaborated, groupsExprs := groupSorted}
+    return Except.ok {term := thm, allElaborated := elabStrs, groups := gpView, allElaboratedExprs := elaborated, groupsExprs := groupSorted, typeView := (← ppExpr thm).pretty}
     -- {⟨thm, elabStrs, gpView⟩}
 
 def greedyBestExpr? (output: Array String) : TranslateM (Option Expr) := do
