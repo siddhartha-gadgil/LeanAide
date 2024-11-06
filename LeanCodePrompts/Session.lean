@@ -69,10 +69,36 @@ def getPromptBuilder : SessionM PromptExampleBuilder := do
 def setPromptBuilder (pb : PromptExampleBuilder) : SessionM Unit := do
   modify fun s => {s with pb := pb}
 
+def getRoundTrip : SessionM Bool := do
+  return (← get).roundTrip
+
+def setRoundTrip (value : Bool) : SessionM Unit := do
+  modify fun s => {s with roundTrip := value}
+
+def getRoundTripSelect : SessionM Bool := do
+  return (← get).roundTripSelect
+
+def setRoundTripSelect (value : Bool) : SessionM Unit := do
+  modify fun s => {s with roundTripSelect := value}
+
+def getToChat : SessionM ChatExampleType := do
+  return (← get).toChat
+
+def setToChat (value : ChatExampleType) : SessionM Unit := do
+  modify fun s => {s with toChat := value}
+
+def detailedPrompt : SessionM Unit := do
+  setToChat .detailed
+
+def simplePrompt : SessionM Unit := do
+  setToChat .simple
+
+def docPrompt : SessionM Unit := do
+  setToChat .doc
 
 def getTranslator : SessionM Translator := do
   let s ← get
-  return {server := s.server, params := s.params, pb := s.pb, toChat := s.toChat, relDefs := s.relDefs}
+  return {server := s.server, params := s.params, pb := s.pb, toChat := s.toChat, relDefs := s.relDefs, roundTrip := s.roundTrip, roundTripSelect := s.roundTripSelect}
 
 def addTranslation (name : Name := Name.anonymous) (result : TranslateResult) : SessionM Unit := do
   modify fun s => {s with translationStack := s.translationStack.push (name, result)}
@@ -109,7 +135,7 @@ def text : SessionM String := do
 
 def translate (s : String) (name: Name := Name.anonymous) : SessionM Unit := do
   let translator ← getTranslator
-  let (res, _, prompt?) ← translator.translateWithDataM s
+  let (res, prompt) ← translator.translateM s
   match res with
   | Except.ok res => do
     say "Success in translation"
@@ -117,9 +143,7 @@ def translate (s : String) (name: Name := Name.anonymous) : SessionM Unit := do
   | Except.error err =>
     say "Error in translation"
     say "Prompt:"
-    match prompt? with
-    | some p => say p
-    | none => say "No prompt"
+    say prompt
     for e in err do
       say e
   let result : TranslateResult :=
@@ -127,12 +151,36 @@ def translate (s : String) (name: Name := Name.anonymous) : SessionM Unit := do
     | Except.ok res => do
       Except.ok res
     | Except.error err =>
-      Except.error {source := s, prompt? := prompt?, elabErrors := err}
+      Except.error {source := s, prompt? := prompt, elabErrors := err}
   addTranslation name result
 
 def translateText (name: Name := Name.anonymous) : SessionM Unit := do
   let s ← text
   translate s name
+
+def docs (s: String) : SessionM (Array (String × Json)) := do
+  let translator ← getTranslator
+  let docs ← translator.pb.getPromptPairs s
+  say docs
+  return docs
+
+def docsText : SessionM (Array (String × Json)) := do
+  let s ← text
+  docs s
+
+def messages (s: String) (header: String := "theorem") : SessionM Json := do
+  let translator ← getTranslator
+  let docPairs ← docs s
+  let dfns ← translator.relDefs.blob s docPairs
+  let promptPairs := translatePromptPairs docPairs dfns
+  let messages ←
+    translateMessages s promptPairs header translator.toChat translator.server.hasSysPrompt
+  say messages
+  return messages
+
+def messagesText (header: String := "theorem") : SessionM Json := do
+  let s ← text
+  messages s header
 
 end Session
 
@@ -150,10 +198,10 @@ macro "#session" n:ident ":=" t:term : command => do
 
 #session eg' := do
   consider "There are infinitely many odd numbers"
+  setRoundTrip true
   translateText
+  -- discard docsText
 
 end LeanAide.Translate
 
 #check {n | Odd n}.Infinite
-
-#leansearch "The circle."

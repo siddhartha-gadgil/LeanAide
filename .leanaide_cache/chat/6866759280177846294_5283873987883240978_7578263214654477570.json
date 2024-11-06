@@ -1,0 +1,20 @@
+{"usage":
+ {"total_tokens": 477,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 331,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 128,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 146},
+ "system_fingerprint": "fp_35c19d48ca",
+ "object": "chat.completion",
+ "model": "o1-mini-2024-09-12",
+ "id": "chatcmpl-AQXycootbpl7rM9iC1ShokqVBM5GK",
+ "created": 1730890498,
+ "choices":
+ [{"message":
+   {"role": "assistant", "refusal": null, "content": "```plaintext\ntrue\n```"},
+   "index": 0,
+   "finish_reason": "stop"}]}

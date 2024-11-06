@@ -429,6 +429,16 @@ def ppExprDetailed (e : Expr): MetaM String := do
     ppExpr e
   return fmtDetailed.pretty
 
-
 instance : Repr Json where
   reprPrec js _ := js.pretty
+
+-- test
+
+elab "detailed" t:term : term => do
+  let e ← Term.elabTerm t none
+  let fmt ← ppExprDetailed e
+  logInfo fmt
+  logInfo m!"{← ppExpr e}"
+  return e
+
+#check detailed (fun (n : Nat) => n + 1)

@@ -707,3 +707,34 @@ def translateViewVerboseM (s: String)(translator : Translator) :   TranslateM ((
     | Except.ok res =>
       let view ←  res.withView
       return (some view, output, prompt)
+
+def translateM (s: String)(translator: Translator)  :
+  TranslateM ((Except (Array ElabError) (ElabSuccessResult))  × ( Json)) := do
+  let (js,prompt, _) ← translator.getLeanCodeJson s
+  let output ← getMessageContents js
+  let res? ← bestElab? output
+  match res? with
+  | Except.error err =>
+    appendLog "translate_fail" <| toJson err
+    return (Except.error err,  prompt)
+  | Except.ok res =>
+    if translator.roundTripSelect then
+      let res ←  translator.roundTripRefinedM s res
+      return (Except.ok res,  prompt)
+    else
+      if translator.roundTrip then
+        let pair? ←  checkTranslationM s res.term translator
+        match pair? with
+        | none =>
+          let res := {res with roundTripCheck? := some false}
+          return (Except.ok res, prompt)
+        | some (_, checkStrings) =>
+          let checks := checkStrings.map (fun (b, _) => b)
+          if checks.any id then
+            let res := {res with roundTripCheck? := some true}
+            return (Except.ok res,  prompt)
+          else
+            let res := {res with roundTripCheck? := some false, roundTripFailures := #[(s, checkStrings)]}
+            return (Except.ok res,  prompt)
+      else
+        return (Except.ok res, prompt)
