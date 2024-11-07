@@ -100,6 +100,15 @@ def simplePrompt : SessionM Unit := do
 def docPrompt : SessionM Unit := do
   setToChat .doc
 
+def getRelDefs : SessionM RelevantDefs := do
+  return (← get).relDefs
+
+def setRelDefs (value : RelevantDefs) : SessionM Unit := do
+  modify fun s => {s with relDefs := value}
+
+def useEnvDefs : SessionM Unit := do
+  modify fun s => {s with relDefs := s.relDefs ++ .env}
+
 def getTranslator : SessionM Translator := do
   let s ← get
   return {server := s.server, params := s.params, pb := s.pb, toChat := s.toChat, relDefs := s.relDefs, roundTrip := s.roundTrip, roundTripSelect := s.roundTripSelect}
