@@ -163,7 +163,7 @@ def translateText (name: Name := Name.anonymous) : SessionM Unit := do
   let s ← text
   translate s name
 
-def translateDef (s: String)(n: Name) : SessionM Unit := do
+def translateDef (s: String)(n: Name)(add : Bool := true) : SessionM Unit := do
   let translator ← getTranslator
   let res ← translator.translateDefData? s
   addDefTranslation n res
@@ -171,6 +171,9 @@ def translateDef (s: String)(n: Name) : SessionM Unit := do
   | Except.ok res => do
     say "Success in translation"
     sayM res.jsonView
+    if add then
+      let dd : DefWithDoc := {res with doc := s}
+      addDefn dd
   | Except.error err =>
     say "Error in translation"
     for e in err do
