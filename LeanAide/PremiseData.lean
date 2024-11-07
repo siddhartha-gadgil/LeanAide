@@ -730,6 +730,12 @@ def DefData.ofSyntax? (stx: Syntax) : MetaM <| Option DefData := do
         return some ⟨name, type, value, isProp, typeDepth, valueDepth, []⟩
     | _ => return none
 
+def DefData.jsonView (data: DefData) : MetaM Json := do
+    return Json.mkObj [("name", toJson data.name),
+    ("type", toJson (← ppTerm data.type).pretty),
+    ("value", toJson (← ppTerm data.value).pretty),
+    ("isProp", toJson data.isProp)]
+
 structure IdentData where
     context : Array String
     type : String

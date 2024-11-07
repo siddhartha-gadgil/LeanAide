@@ -39,7 +39,11 @@ structure SessionM.State where
 
   contextStatement? : Option String := none
   translationStack: Array (Name × TranslateResult) := #[]
+  defTranslationStack: Array <| Name × (Except (Array CmdElabError) DefData) := #[]
   logs : Array Format := #[]
+
+  descFields: List String := ["concise-description", "description"]
+  preferDocs : Bool := true
 
 abbrev SessionM := StateT  SessionM.State TranslateM
 
@@ -103,6 +107,9 @@ def getTranslator : SessionM Translator := do
 def addTranslation (name : Name := Name.anonymous) (result : TranslateResult) : SessionM Unit := do
   modify fun s => {s with translationStack := s.translationStack.push (name, result)}
 
+def addDefTranslation (name : Name := Name.anonymous) (result : Except (Array CmdElabError) DefData) : SessionM Unit := do
+  modify fun s => {s with defTranslationStack := s.defTranslationStack.push (name, result)}
+
 def findTranslationByName? (name : Name) : SessionM (Option TranslateResult) := do
   let stack := (← get).translationStack
   return stack.find? (fun (n, _) => n == name) |>.map Prod.snd
@@ -131,8 +138,6 @@ def text : SessionM String := do
   | none =>
       throwError "ERROR: No text in context"
 
-#print TranslateResult
-
 def translate (s : String) (name: Name := Name.anonymous) : SessionM Unit := do
   let translator ← getTranslator
   let (res, prompt) ← translator.translateM s
@@ -158,6 +163,19 @@ def translateText (name: Name := Name.anonymous) : SessionM Unit := do
   let s ← text
   translate s name
 
+def translateDef (s: String)(n: Name) : SessionM Unit := do
+  let translator ← getTranslator
+  let res ← translator.translateDefData? s
+  addDefTranslation n res
+  match res with
+  | Except.ok res => do
+    say "Success in translation"
+    sayM res.jsonView
+  | Except.error err =>
+    say "Error in translation"
+    for e in err do
+      say e
+
 def docs (s: String) : SessionM (Array (String × Json)) := do
   let translator ← getTranslator
   let docs ← translator.pb.getPromptPairs s
@@ -181,6 +199,23 @@ def messages (s: String) (header: String := "theorem") : SessionM Json := do
 def messagesText (header: String := "theorem") : SessionM Json := do
   let s ← text
   messages s header
+
+def add_prompt (name: Name)(type? : Option String := none) (docString?: Option String := none) : SessionM Unit := do
+  let sr : SearchResult := {name := name.toString, type? := type?, docString? := docString?, doc_url? := none, kind? := none}
+  let state ← get
+  let pair? ← sr.withDoc? state.descFields state.preferDocs
+  match pair? with
+  | some pair => do
+    let pb ← getPromptBuilder
+    let pb := pb.prependFixed #[pair]
+    setPromptBuilder pb
+  | none => throwError "No prompt found"
+
+def add_defs (nbs: Array (Name × String)) : SessionM Unit := do
+  let state ← get
+  let rds := state.relDefs
+  let rds := rds ++ nbs
+  set {state with relDefs := rds}
 
 end Session
 
