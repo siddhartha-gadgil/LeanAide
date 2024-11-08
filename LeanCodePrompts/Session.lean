@@ -37,7 +37,7 @@ structure SessionM.State where
   roundTrip : Bool := false
   roundTripSelect : Bool := false -- selecting first to pass roundtrip
 
-  contextStatement? : Option String := none
+  contextStatements : Array String := #[]
   translationStack: Array (Name × TranslateResult) := #[]
   defTranslationStack: Array <| Name × (Except (Array CmdElabError) DefData) := #[]
   logs : Array Format := #[]
@@ -139,10 +139,11 @@ def say [ToJson α] (msg : α): SessionM Unit := do
   modify fun s => {s with logs := s.logs.push msg}
 
 def consider (statement: String) : SessionM Unit := do
-  modify fun s => {s with contextStatement? := some statement}
+  modify fun s =>
+    {s with contextStatements := s.contextStatements.push statement}
 
 def text : SessionM String := do
-  match (← get).contextStatement? with
+  match (← get).contextStatements.back? with
   | some s => return s
   | none =>
       throwError "ERROR: No text in context"
@@ -252,3 +253,7 @@ macro "#session" n:ident ":=" t:term : command => do
 end LeanAide.Translate
 
 #check {n | Odd n}.Infinite
+
+-- #leansearch "Topological Circle; Unit Circle."
+
+-- #moogle "Topological Circle; Unit Circle."

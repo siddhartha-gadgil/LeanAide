@@ -165,7 +165,7 @@ def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Jso
     ".leanaide_cache" / "chat" /
       s!"{hash server}_{hash params}_{hash messages}.json"
   if ← file.pathExists then
-    IO.eprintln "Reading from cache"
+    IO.eprintln s!"Reading from cache: {file}"
     let output ← IO.FS.readFile file
     match Json.parse output with
     | Except.ok j => return j
