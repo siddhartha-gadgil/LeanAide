@@ -266,6 +266,15 @@ macro "#session" n:ident ":=" t:term : command => do
   translateText
   -- discard docsText
 
+/-
+def LeanAide.Translate.eg' : Session :=
+do
+  consider "There are infinitely many odd numbers"
+  setRoundTrip true
+  translateText
+-/
+#print eg'
+
 end LeanAide.Translate
 
 #check {n | Odd n}.Infinite
