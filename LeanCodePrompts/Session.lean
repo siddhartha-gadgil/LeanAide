@@ -138,15 +138,31 @@ def say [ToJson α] (msg : α): SessionM Unit := do
   let msg := (toJson msg).pretty
   modify fun s => {s with logs := s.logs.push msg}
 
+def showLastText : SessionM Unit := do
+  match (← get).contextStatements.back? with
+  | some s => say s
+  | none => say "No text in context"
+
 def consider (statement: String) : SessionM Unit := do
   modify fun s =>
     {s with contextStatements := s.contextStatements.push statement}
+
+def considerAll (statements: Array String) : SessionM Unit := do
+  modify fun s =>
+    {s with contextStatements := s.contextStatements ++ statements}
+  showLastText
 
 def text : SessionM String := do
   match (← get).contextStatements.back? with
   | some s => return s
   | none =>
       throwError "ERROR: No text in context"
+
+def skipText : SessionM Unit := do
+  modify fun s =>
+    {s with contextStatements := s.contextStatements.pop}
+  showLastText
+
 
 def translate (s : String) (name: Name := Name.anonymous) : SessionM Unit := do
   let translator ← getTranslator
