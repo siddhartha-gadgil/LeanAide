@@ -40,7 +40,7 @@ structure SessionM.State where
   contextStatements : Array String := #[]
   translationStack: Array (Name × TranslateResult) := #[]
   defTranslationStack: Array <| Name × (Except (Array CmdElabError) DefData) := #[]
-  logs : Array Format := #[]
+  logs : Array Json := #[]
 
   descFields: List String := ["concise-description", "description"]
   preferDocs : Bool := true
@@ -51,7 +51,8 @@ abbrev Session := SessionM Unit
 
 def sessionLogs (sess: Session) : TranslateM (Format) := do
   let (_, s) ←  sess.run {logs := #[]}
-  return s.logs.foldl (init := "") fun acc s => acc ++ s ++ "\n"
+  let logs := s.logs.foldl (init := "") fun acc s => acc ++ s.pretty ++ "\n"
+  return logs
 
 namespace Session
 
@@ -129,14 +130,15 @@ def getLastTranslation? : SessionM (Option (Name × TranslateResult)) := do
 
 -- Simple commands to be used in the session.
 
-def sayM [ToJson α] (msg : SessionM α) : SessionM Unit := do
-  let msg ← msg
-  let msg := (toJson msg).pretty
+
+def say [ToJson α] (msg : α) (name: Name := `say): SessionM Unit := do
+  let msg := Json.mkObj [("cmd", toJson name), ("res", toJson msg)]
   modify fun s => {s with logs := s.logs.push msg}
 
-def say [ToJson α] (msg : α): SessionM Unit := do
-  let msg := (toJson msg).pretty
-  modify fun s => {s with logs := s.logs.push msg}
+def sayM [ToJson α] (msg : SessionM α) (name: Name := `sayM) : SessionM Unit := do
+  let msg ← msg
+  say msg name
+
 
 def showLastText : SessionM Unit := do
   match (← get).contextStatements.back? with
@@ -169,14 +171,14 @@ def translate (s : String) (name: Name := Name.anonymous) : SessionM Unit := do
   let (res, prompt) ← translator.translateM s
   match res with
   | Except.ok res => do
-    say "Success in translation"
-    say res.toElabSuccessBase
+    say "Success in translation" `translate
+    say res.toElabSuccessBase `translate
   | Except.error err =>
-    say "Error in translation"
-    say "Prompt:"
-    say prompt
+    say "Error in translation" `translate
+    say "Prompt:" `translate
+    say prompt `translate
     for e in err do
-      say e
+      say e `translate
   let result : TranslateResult :=
     match res with
     | Except.ok res => do
@@ -195,20 +197,20 @@ def translateDef (s: String)(n: Name)(add : Bool := true) : SessionM Unit := do
   addDefTranslation n res
   match res with
   | Except.ok res => do
-    say "Success in translation"
-    sayM res.jsonView
+    say "Success in translation" `translateDef
+    sayM res.jsonView `translateDef
     if add then
       let dd : DefWithDoc := {res with doc := s}
       addDefn dd
   | Except.error err =>
     say "Error in translation"
     for e in err do
-      say e
+      say e `translateDef
 
 def docs (s: String) : SessionM (Array (String × Json)) := do
   let translator ← getTranslator
   let docs ← translator.pb.getPromptPairs s
-  say docs
+  say docs `docs
   return docs
 
 def docsText : SessionM (Array (String × Json)) := do
@@ -222,7 +224,7 @@ def messages (s: String) (header: String := "theorem") : SessionM Json := do
   let promptPairs := translatePromptPairs docPairs dfns
   let messages ←
     translateMessages s promptPairs header translator.toChat translator.server.hasSysPrompt
-  say messages
+  say messages `messages
   return messages
 
 def messagesText (header: String := "theorem") : SessionM Json := do
@@ -246,6 +248,14 @@ def add_defs (nbs: Array (Name × String)) : SessionM Unit := do
   let rds := rds ++ nbs
   set {state with relDefs := rds}
 
+def save (name?: Option Name := none) : SessionM Unit := do
+  let state ← get
+  let logs := state.logs
+  let name := name?.map (·.toString) |>.getD s!"session_{hash logs}"
+  let path := System.mkFilePath ["sessions", s!"{name}.json"]
+  let json := Json.arr logs
+  IO.FS.writeFile path json.pretty
+
 end Session
 
 open Session
@@ -264,6 +274,7 @@ macro "#session" n:ident ":=" t:term : command => do
   consider "There are infinitely many odd numbers"
   setRoundTrip true
   translateText
+  save `small
   -- discard docsText
 
 /-

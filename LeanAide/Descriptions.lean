@@ -169,7 +169,7 @@ def checkTranslationM (s: String) (type: Expr) (translator: Translator) :
   MetaM <| Option (String × Array (Bool × String)) := do
   let triple? ←  getTypeDescriptionM type translator
   triple?.mapM fun (transl, _, defBlob?) => do
-    IO.eprintln s!"translation: {transl}"
+    -- IO.eprintln s!"translation: {transl}"
     let checks ← ChatServer.checkEquivalence s transl defBlob?
     return (transl,  checks)
 

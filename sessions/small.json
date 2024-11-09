@@ -1,0 +1,18 @@
+[{"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView": "{n | Odd n}.Infinite",
+   "roundTripFailures": [],
+   "roundTripCheck": true,
+   "groups":
+   [["{n | Odd n}.Infinite",
+     "{n | Odd n}.Infinite",
+     "{n | Odd n}.Infinite",
+     "{n | Odd n}.Infinite",
+     "{n | Odd n}.Infinite"]],
+   "allElaborated":
+   ["Set.Infinite {n : ℕ | Odd n}",
+    "Set.Infinite {n : ℕ | Odd n}",
+    "{n : ℕ | Odd n}.Infinite",
+    "{n : ℕ | Odd n}.Infinite",
+    "{n : ℕ | Odd n}.Infinite"]},
+  "cmd": "translate"}]
