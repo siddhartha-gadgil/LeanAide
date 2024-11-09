@@ -1,4 +1,5 @@
-[{"res": "Success in translation", "cmd": "translate"},
+[{"res": "There are infinitely many odd numbers", "cmd": "consider"},
+ {"res": "Success in translation", "cmd": "translate"},
  {"res":
   {"typeView": "{n | Odd n}.Infinite",
    "roundTripFailures": [],

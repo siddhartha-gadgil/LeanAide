@@ -1,6 +1,7 @@
 import LeanCodePrompts.BatchTranslate
 import LeanAide.Aides
 import LeanAide.Descriptions
+import LeanAide.PutnamBench
 /-!
 # Translation Session
 
@@ -146,10 +147,12 @@ def showLastText : SessionM Unit := do
   | none => say "No text in context"
 
 def consider (statement: String) : SessionM Unit := do
+  say statement `consider
   modify fun s =>
     {s with contextStatements := s.contextStatements.push statement}
 
 def considerAll (statements: Array String) : SessionM Unit := do
+  say statements `considerAll
   modify fun s =>
     {s with contextStatements := s.contextStatements ++ statements}
   showLastText
@@ -275,6 +278,7 @@ macro "#session" n:ident ":=" t:term : command => do
   setRoundTrip true
   translateText
   save `small
+  -- consider (← putnamProblem 57)
   -- discard docsText
 
 /-
