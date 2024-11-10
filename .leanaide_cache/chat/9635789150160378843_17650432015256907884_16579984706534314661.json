@@ -1,0 +1,80 @@
+{"usage":
+ {"total_tokens": 3417,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 2588,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 829},
+ "system_fingerprint": "fp_45cf54deae",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-ARx4FB7prveLtkiEX6PZtWRgPQy96",
+ "created": 1731225275,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "theorem rational_set_conditions {S : Set ℚ} :\n  (∀ a b, a ∈ S → b ∈ S → a + b ∈ S ∧ a * b ∈ S) →\n  (∀ r : ℚ, (r ∈ S ∧ -r ∉ S) ∨ (-r ∈ S ∧ r ∉ S) ∨ (r = 0)) →\n  S = {r | 0 < r} :=  "},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "theorem positive_rationals {S : Set ℚ}\n  (h_add : ∀ {a b}, a ∈ S → b ∈ S → a + b ∈ S)\n  (h_mul : ∀ {a b}, a ∈ S → b ∈ S → a * b ∈ S)\n  (h_trichotomy : ∀ r, r ∈ S ∨ -r ∈ S ∨ r = 0) :\n  S = {r | 0 < r} := \nsorry"},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "theorem rational_set_is_positive (S : Set ℚ)\n  (h_add_mul : ∀ {a b : ℚ}, a ∈ S → b ∈ S → a + b ∈ S ∧ a * b ∈ S)\n  (h_exclusive : ∀ r : ℚ, r ∈ S ∨ -r ∈ S ∨ r = 0) :\n  S = {r | 0 < r} := sorry"},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "theorem rational_set_is_positive {S : Set ℚ}\n  (h_add : ∀ {a b : ℚ}, a ∈ S → b ∈ S → a + b ∈ S)\n  (h_mul : ∀ {a b : ℚ}, a ∈ S → b ∈ S → a * b ∈ S)\n  (h_partition : ∀ r : ℚ, r ∈ S ∨ -r ∈ S ∨ r = 0) :\n  S = {r : ℚ | 0 < r} :=  -- Proof omitted\nsorry"},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "theorem set_of_positive_rationals (S : Set ℚ) :\n  (∀ a b ∈ S, a + b ∈ S ∧ a * b ∈ S) →\n  (∀ r : ℚ, r ∈ S ∨ -r ∈ S ∨ r = 0) →\n  S = {r | 0 < r} :=\nsorry"},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "theorem rational_set_positive {S : Set ℚ}\n  (closed_add : ∀ a b ∈ S, a + b ∈ S) (closed_mul : ∀ a b ∈ S, a * b ∈ S)\n  (trichotomy : ∀ r : ℚ, r ∈ S ∨ -r ∈ S ∨ r = 0) : S = {r : ℚ | 0 < r} :=\nbegin\n  -- proof omitted\nend"},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "theorem rational_set_positive\n  (S : Set ℚ) (h₁ : ∀ a b ∈ S, a + b ∈ S ∧ a * b ∈ S)\n  (h₂ : ∀ r : ℚ, r ∈ S ∨ -r ∈ S ∨ r = 0) :\n  S = {r : ℚ | 0 < r} := "},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "theorem pos_rat_set {S : Set ℚ} (h_add : ∀ {a b}, a ∈ S → b ∈ S → a + b ∈ S)\n  (h_mul : ∀ {a b}, a ∈ S → b ∈ S → a * b ∈ S)\n  (h_class : ∀ r : ℚ, r ∈ S ∨ -r ∈ S ∨ r = 0) :\n  S = { r : ℚ | 0 < r } :=\nsorry"},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"}]}

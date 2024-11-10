@@ -26,12 +26,13 @@ def getTheorem (index : Nat) : IO String := do
   let src ← getSrc
   let js ←  match src.getArr? with
     | Except.ok js => pure js
-    | _ => IO.throwServerError "invalid json"
+    | _ => IO.throwServerError "invalid json source"
   match js.get? index with
   | some j => match j.getObjValAs? String "informal_statement", j.getObjValAs? String "informal_solution" with
     | Except.ok s, Except.ok "None." => pure s
     | Except.ok s, Except.ok soln => pure <| s ++ soln
-    | _, _ => IO.throwServerError "invalid json"
+    | Except.ok s, _ => pure s
+    | _, _ => IO.throwServerError s!"invalid json at index {index}; {j.pretty}"
   | _ => IO.throwServerError "invalid index"
 
 end putnam

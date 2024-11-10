@@ -1,4 +1,6 @@
 [{"res": "There are infinitely many odd numbers", "cmd": "consider"},
+ {"res": "Translating: There are infinitely many odd numbers",
+  "cmd": "translate"},
  {"res": "Success in translation", "cmd": "translate"},
  {"res":
   {"typeView": "{n | Odd n}.Infinite",

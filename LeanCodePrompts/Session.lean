@@ -171,6 +171,7 @@ def skipText : SessionM Unit := do
 
 def translate (s : String) (name: Name := Name.anonymous) : SessionM Unit := do
   let translator ← getTranslator
+  say ("Translating: " ++ s) `translate
   let (res, prompt) ← translator.translateM s
   match res with
   | Except.ok res => do
@@ -290,7 +291,14 @@ do
 -/
 #print eg'
 
+#session putnam_eg := do
+  for i in [15:45] do
+    consider (← putnamProblem i)
+    -- translateText
+
 end LeanAide.Translate
+
+
 
 #check {n | Odd n}.Infinite
 
