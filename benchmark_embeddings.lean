@@ -45,7 +45,6 @@ unsafe def main : IO Unit := do
   withUnpickle  picklePath <|
     fun (data : EmbedData) => do
     let doc ←  pickEmbed data
-    -- let doc := doc[:256]
     IO.eprintln "Finding nearest embeddings without clustering"
     let start ← IO.monoMsNow
     let embs ← nearestDocsToDocFullEmbeddingConc data doc num (penalty := 1.0)
@@ -54,6 +53,15 @@ unsafe def main : IO Unit := do
     let out :=
         embs.toArray.map fun (_, _, _, name, _) => name
     IO.println out
+    IO.eprintln "Finding nearest embeddings with smaller vectors"
+    let start ← IO.monoMsNow
+    let embs ← nearestDocsToDocFullEmbeddingConc data doc[:256] num (penalty := 1.0)
+    let finish ← IO.monoMsNow
+    IO.eprintln s!"Found nearest in {finish - start} ms"
+    let out :=
+        embs.toArray.map fun (_, _, _, name, _) => name
+    IO.println out
+
     -- let ε := 0.3
     -- let minSize := 50
     -- IO.eprintln "Finding nearest embeddings with clustering"
