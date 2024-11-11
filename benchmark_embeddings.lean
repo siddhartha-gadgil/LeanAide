@@ -40,11 +40,12 @@ instance : BEq ((String × String × Bool × String) × FloatArray) :=
 unsafe def main : IO Unit := do
   let descField := "concise-description"
   checkAndFetch descField
-  let num := 10
+  let num := 25
   let picklePath ← picklePath descField
   withUnpickle  picklePath <|
     fun (data : EmbedData) => do
     let doc ←  pickEmbed data
+    -- let doc := doc[:256]
     IO.eprintln "Finding nearest embeddings without clustering"
     let start ← IO.monoMsNow
     let embs ← nearestDocsToDocFullEmbeddingConc data doc num (penalty := 1.0)

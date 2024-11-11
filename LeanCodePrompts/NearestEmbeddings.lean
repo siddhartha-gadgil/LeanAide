@@ -13,7 +13,7 @@ def distL2Sq' (v₁ : FloatArray) (v₂ : Array Float) : Float :=
 def distL2Sq (v₁ : FloatArray) (v₂ : Array Float) : Float :=
     Id.run do
     let mut c := 0.0
-    for i in [0:v₁.size] do
+    for i in [0:v₂.size] do
       c := c + (v₁[i]! - v₂[i]!) * (v₁[i]! - v₂[i]!)
     return c
 

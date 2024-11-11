@@ -18,14 +18,13 @@ def insertByMemo (l: Array <| α × Float)(cost : α → Float)(sizeBound: Nat)
 
 def insertBy (l: Array <| α × Float)(cost : α → Float)(sizeBound: Nat)
     (x : α)  : Array <| α × Float :=
-  match sizeBound with
-  | 0 => l
-  | k + 1 =>
-    let cx :=  cost x
-    match l.findIdx? (fun (_, cy) => cx < cy) with
-    | some idx =>
-      l.insertAt idx (x, cx) |>.shrink (k + 1)
-    | none => l.push (x, cx) |>.shrink (k + 1)
+  let cx :=  cost x
+  match l.findIdx? (fun (_, cy) => cx < cy) with
+  | some idx =>
+    l.insertAt idx (x, cx) |>.shrink sizeBound
+  | none => l.push (x, cx) |>.shrink sizeBound
+
+#eval #[1, 3, 44].shrink 0
 
 def bestWithCost (l: Array <| α)
   (cost : α → Float)(n: Nat)(accum : Array <| α × Float := #[]): Array <| α × Float :=
