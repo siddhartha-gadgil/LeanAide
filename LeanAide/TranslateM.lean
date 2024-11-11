@@ -58,15 +58,18 @@ def TranslateBackResult.checkFailed (r: TranslateBackResult) : Bool :=
   | TranslateBackResult.success _ _ checks _ => checks.any id
   | TranslateBackResult.failure => true
 
-structure ElabSuccessResult where
-  term : Expr
+structure ElabSuccessBase where
+  typeView : String
   allElaborated : Array String
-  allElaboratedExprs : Array Expr
   groups : Array (Array String)
-  groupsExprs : Array (Array Expr)
   roundTripCheck? : Option Bool := none
   roundTripFailures : Array (String × Array (Bool × String)) := #[]
-  deriving Repr
+  deriving Repr, ToJson, FromJson
+
+structure ElabSuccessResult extends ElabSuccessBase where
+  term : Expr
+  allElaboratedExprs : Array Expr
+  groupsExprs : Array (Array Expr)
 
 def ElabSuccessResult.view (er: ElabSuccessResult) : MetaM String :=
   er.term.view
@@ -77,15 +80,15 @@ structure TranslateSuccessResult extends ElabSuccessResult where
 def ElabSuccessResult.withView (er: ElabSuccessResult) : MetaM TranslateSuccessResult := do
   return {er with view := (← er.view)}
 
-abbrev TranslateResult := Except (Array ElabErrorData) ElabSuccessResult
+abbrev TranslateResult := Except ElabErrorData ElabSuccessResult
 
 structure Translate.State where
   /-- Embeddings to preload -/
-  embedMap : EmbedMap := HashMap.empty
+  embedMap : EmbedMap := Std.HashMap.empty
   /-- Embedding response associated to the query -/
-  queryEmbeddingCache : HashMap String (Except String Json) := HashMap.empty
+  queryEmbeddingCache : Std.HashMap String (Except String Json) := Std.HashMap.empty
   /-- Descriptions, docstrings etc -/
-  descriptionMap : HashMap Name Json := HashMap.empty
+  descriptionMap : Std.HashMap Name Json := Std.HashMap.empty
   cmdPrelude : Array String := #[]
   defs : Array (DefWithDoc) := #[]
   errorLog : Array ElabErrorData := #[]
@@ -131,7 +134,7 @@ def printKeys : TranslateM Unit := do
   let em := (← getEmbedMap)
   IO.println s!"Embeddings: {em.toList.map Prod.fst}"
 
-def getDescMap : TranslateM (HashMap Name Json) := do
+def getDescMap : TranslateM (Std.HashMap Name Json) := do
   return (← get).descriptionMap
 
 def addDescription (desc: Json) : TranslateM Unit := do
@@ -139,7 +142,7 @@ def addDescription (desc: Json) : TranslateM Unit := do
   | Except.ok name => do
     let m ← getDescMap
     let newDesc :=
-      match m.find? name.toName with
+      match m.get? name.toName with
       | some d => d.mergeObj desc
       | none =>  desc
     modify fun s =>
@@ -162,7 +165,7 @@ def getDescriptionData (name: Name) : TranslateM <| Option Json := do
   let m ← getDescMap
   if m.isEmpty then preloadDescriptions
   let m ← getDescMap
-  match m.find? name with
+  match m.get? name with
   | some desc => return desc
   | none => return none
 

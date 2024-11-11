@@ -13,7 +13,7 @@ deriving Inhabited
 
 initialize counter : IO.Ref Nat ← IO.mkRef .zero
 
-initialize tacticSnapRef : IO.Ref <|HashMap Nat (Array TacticSnapshot)
+initialize tacticSnapRef : IO.Ref <|Std.HashMap Nat (Array TacticSnapshot)
   ← IO.mkRef .empty
 
 

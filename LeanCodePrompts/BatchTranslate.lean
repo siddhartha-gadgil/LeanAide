@@ -11,14 +11,14 @@ open Translate
 Translate a string to a Lean expression using the GPT model, returning the expression, all outputs and the prompt used.
 -/
 def translateWithDataM (s: String)(translator: Translator)  (repeats: Nat := 0)(sleepTime : Nat := 1)
-  (queryData? : Option <| (HashMap String Json)  ) :
+  (queryData? : Option <| (Std.HashMap String Json) := none ) :
   TranslateM ((Except (Array ElabError) (ElabSuccessResult)) × Array String × (Option Json)) := do
   let (output, prompt?) ←  match queryData? with
   | none =>
     let (js,prompt, _) ← translator.getLeanCodeJson s
     pure (← getMessageContents js, some prompt)
   | some f =>
-    let res? := f.find? s.trim
+    let res? := f.get? s.trim
     match res? with
     | none =>
       throwError s!"no data for {s}"
@@ -50,7 +50,7 @@ def translateWithDataM (s: String)(translator: Translator)  (repeats: Nat := 0)(
 Translate theorems in a given file and record results in a JSON file.
 -/
 def checkTranslatedThmsM(inputFile: String := "thm")(translator: Translator)
-  (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (HashMap String Json) )(tag: Bool := false) : TranslateM Json := do
+  (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (Std.HashMap String Json) )(tag: Bool := false) : TranslateM Json := do
   IO.eprintln s!"Writing to file: {inputFile}-elab-{translator.pb.signature}-{translator.params.n}-{translator.params.temp.mantissa}.json"
   let promptsFile := System.mkFilePath ["data",
     s!"prompts-{inputFile}-{translator.pb.signature}-{translator.params.n}-{translator.params.temp.mantissa}.jsonl"]

@@ -41,7 +41,7 @@ def main (args: List String) : IO Unit := do
         let dfns : Array DefnTypes :=
           lines.filterMap (fun l=>  (fromJson? l).toOption)
         let propList := dfns.toList.filter (·.isProp) |>.map (fun d => (d.name.toString, (d.type, d.statement)))
-        pure <| HashMap.ofList propList
+        pure <| Std.HashMap.ofList propList
     else
         IO.println s!"File {path} not found, running to generate it"
         propMapCore.run' coreContext {env := env} |>.runToIO'

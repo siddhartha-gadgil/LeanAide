@@ -29,30 +29,30 @@ def fullSplit (s : String) : List String :=
 -- #eval fullSplit "CamelCaseWord"
 -- #eval fullSplit "snake_caseBut_wordWithCamel"
 
-initialize caseNameCache : IO.Ref (HashMap String String)
-  ← IO.mkRef (HashMap.empty)
+initialize caseNameCache : IO.Ref (Std.HashMap String String)
+  ← IO.mkRef (Std.HashMap.empty)
 
--- initialize xNameCache : IO.Ref (HashMap String String)
---   ← IO.mkRef (HashMap.empty)
+-- initialize xNameCache : IO.Ref (Std.HashMap String String)
+--   ← IO.mkRef (Std.HashMap.empty)
 
--- initialize xxNameCache : IO.Ref (HashMap String String)
---   ← IO.mkRef (HashMap.empty)
+-- initialize xxNameCache : IO.Ref (Std.HashMap String String)
+--   ← IO.mkRef (Std.HashMap.empty)
 
-initialize dotNameCache : IO.Ref (HashMap String String)
-  ← IO.mkRef (HashMap.empty)
+initialize dotNameCache : IO.Ref (Std.HashMap String String)
+  ← IO.mkRef (Std.HashMap.empty)
 
 
 initialize binNamesCache : IO.Ref (Array String) ← IO.mkRef (#[])
 
-initialize binNameMapCache : IO.Ref (HashMap (List String) String)
-  ← IO.mkRef (HashMap.empty)
+initialize binNameMapCache : IO.Ref (Std.HashMap (List String) String)
+  ← IO.mkRef (Std.HashMap.empty)
 
-initialize binNameNoIsMapCache : IO.Ref (HashMap (List String) String)
-  ← IO.mkRef (HashMap.empty)
+initialize binNameNoIsMapCache : IO.Ref (Std.HashMap (List String) String)
+  ← IO.mkRef (Std.HashMap.empty)
 
-initialize elabPromptsCache : IO.Ref (HashSet String) ← IO.mkRef (HashSet.empty)
+initialize elabPromptsCache : IO.Ref (Std.HashSet String) ← IO.mkRef (Std.HashSet.empty)
 
-def caseNames : MetaM (HashMap String String) := do
+def caseNames : MetaM (Std.HashMap String String) := do
   let cache ← caseNameCache.get
   if cache.isEmpty then
       let jsBlob ←
@@ -62,7 +62,7 @@ def caseNames : MetaM (HashMap String String) := do
       match json.getArr? with
       | Except.error e => throwError e
       | Except.ok arr => do
-        let mut m : HashMap String String := HashMap.empty
+        let mut m : Std.HashMap String String := Std.HashMap.empty
         for js in arr do
           let snakeCase? :=
             (js.getObjVal? "snakecase").toOption.bind (fun s =>
@@ -77,36 +77,36 @@ def caseNames : MetaM (HashMap String String) := do
         return m
   else return cache
 
--- def xNames : MetaM (HashMap String String) := do
+-- def xNames : MetaM (Std.HashMap String String) := do
 --   let cache ← xNameCache.get
 --   if cache.isEmpty then
 --       let lines ←
 --         IO.FS.lines (← reroutePath <| System.mkFilePath ["extra_resources", "x_names.txt"])
---       let mut m : HashMap String String := HashMap.empty
+--       let mut m : Std.HashMap String String := Std.HashMap.empty
 --       for xname in lines do
 --         m := m.insert (xname.dropRight 1) xname
 --       xNameCache.set m
 --       return m
 --   else return cache
 
--- def xxNames : MetaM (HashMap String String) := do
+-- def xxNames : MetaM (Std.HashMap String String) := do
 --   let cache ← xxNameCache.get
 --   if cache.isEmpty then
 --       let lines ←
 --         IO.FS.lines (← reroutePath <| System.mkFilePath ["extra_resources", "xx_names.txt"])
---       let mut m : HashMap String String := HashMap.empty
+--       let mut m : Std.HashMap String String := Std.HashMap.empty
 --       for xxname in lines do
 --         m := m.insert (xxname.dropRight 2) xxname
 --       xxNameCache.set m
 --       return m
 --   else return cache
 
-def dotNames : MetaM (HashMap String String) := do
+def dotNames : MetaM (Std.HashMap String String) := do
   let cache ← dotNameCache.get
   if cache.isEmpty then
       let lines ←
         IO.FS.lines (← reroutePath <| System.mkFilePath ["extra_resources", "simple_dot_names.txt"])
-      let mut m : HashMap String String := HashMap.empty
+      let mut m : Std.HashMap String String := Std.HashMap.empty
       for name in lines do
         m := m.insert (name.toLower) name
       dotNameCache.set m
@@ -115,22 +115,22 @@ def dotNames : MetaM (HashMap String String) := do
 
 def caseName?(s: String) : MetaM (Option String) := do
   let cache ← caseNames
-  return cache.find? s
+  return cache.get? s
 
 -- def xName?(s: String) : MetaM (Option String) := do
 --   let cache ← xNames
---   return cache.find? s
+--   return cache.get? s
 
 -- def xxName?(s: String) : MetaM (Option String) := do
 --   let cache ← xxNames
---   return cache.find? s
+--   return cache.get? s
 
 def dotName?(s: String) : MetaM (Option String) := do
 match s.splitOn "." with
 | [head, field] =>
   if head.length ≤ 2 then
     let cache ← dotNames
-    return cache.find? field |>.map (fun s => head ++ "." ++ s)
+    return cache.get? field |>.map (fun s => head ++ "." ++ s)
   else return none
 | _ => return none
 
@@ -146,18 +146,18 @@ def binNames : IO (Array String) := do
     binNamesCache.set filtered.toArray
     return all.filter (fun s => !(s.contains  '.'))
 
-def binNameMap : IO (HashMap (List String) String) := do
+def binNameMap : IO (Std.HashMap (List String) String) := do
   let cacheMap ← binNameMapCache.get
   if cacheMap.isEmpty then
     let names ← binNames
     let res := names.foldl
-      (fun m s => m.insert (fullSplit s) s) (HashMap.empty)
+      (fun m s => m.insert (fullSplit s) s) (Std.HashMap.empty)
     binNameMapCache.set res
     return res
   else
     return cacheMap
 
-def elabPrompts : IO (HashSet String) := do
+def elabPrompts : IO (Std.HashSet String) := do
   let cacheStr ← elabPromptsCache.get
   if !cacheStr.isEmpty then
     return cacheStr
@@ -165,7 +165,7 @@ def elabPrompts : IO (HashSet String) := do
     let arr ←
       IO.FS.lines (←
        reroutePath <| System.mkFilePath ["extra_resources", "elab_thms.txt"])
-    return arr.foldl (fun acc n => acc.insert n) HashSet.empty
+    return arr.foldl (fun acc n => acc.insert n) Std.HashSet.empty
 
 def isElabPrompt(s: String) : IO Bool := do
   let prompts ← elabPrompts
@@ -177,7 +177,7 @@ def withoutIs? : List String → Option (List String)
   if x = "is" || x = "has" then some ys else none
 | [] => none
 
-def binNameNoIsMap : IO (HashMap (List String) String) := do
+def binNameNoIsMap : IO (Std.HashMap (List String) String) := do
   let cacheMap ← binNameNoIsMapCache.get
   if cacheMap.isEmpty then
     let names ← binNames
@@ -186,7 +186,7 @@ def binNameNoIsMap : IO (HashMap (List String) String) := do
         match withoutIs? (fullSplit s) with
         | some ys => m.insert ys s
         | none => m
-          ) (HashMap.empty)
+          ) (Std.HashMap.empty)
     binNameNoIsMapCache.set res
     return res
   else
@@ -197,10 +197,10 @@ def binName?(s : String) : MetaM <| Option String := do
   let mapNoIs ← binNameNoIsMap
   let split := fullSplit s
   let splitNoIs? := withoutIs? split
-  let res := ((map.find? split).orElse
-              (fun _ => mapNoIs.find? split)).orElse
+  let res := ((map.get? split).orElse
+              (fun _ => mapNoIs.get? split)).orElse
               (fun _ => splitNoIs?.bind (
-                  fun splitNoIs => map.find? splitNoIs))
+                  fun splitNoIs => map.get? splitNoIs))
   return res
 
 

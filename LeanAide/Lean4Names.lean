@@ -13,7 +13,7 @@ open Translate
 -- def lean4Name? (name: Name) : MetaM (Option Name) := do
 --   let m := renameExtension.getState (← getEnv) |>.get
 --   let name? :=
---     (m.find? name).map (·.2)
+--     (m.get? name).map (·.2)
 --   match name? with
 --   | none => pure none
 --   | some name =>

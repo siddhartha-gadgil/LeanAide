@@ -59,7 +59,7 @@ unsafe def checkAndFetch (descField: String) : IO Unit := do
      else pure false
   unless picklePresent do
     IO.eprintln "Fetching embeddings ..."
-    let out ← runCurl #["--output", picklePath.toString, "-k", "-s",  "https://storage.googleapis.com/leanaide_data/{picklePath.fileName.get!}"]
+    let out ← runCurl #["--output", picklePath.toString,   "https://storage.googleapis.com/leanaide_data/{picklePath.fileName.get!}"]
     IO.eprintln "Fetched embeddings"
     IO.eprintln out
 

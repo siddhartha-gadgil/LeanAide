@@ -23,7 +23,7 @@ section Source
         if env.contains declName && !simpOnlyBuiltins.contains declName then
           args := args.push (← `(Parser.Tactic.simpLemma| $(mkIdent (← unresolveNameGlobal declName)):ident))
       | .fvar fvarId => -- local hypotheses in the context
-        if let some ldecl := lctx.find? fvarId then
+        if let some ldecl := lctx.get? fvarId then
           localsOrStar := localsOrStar.bind fun locals =>
             if !ldecl.userName.isInaccessibleUserName &&
                 (lctx.findFromUserName? ldecl.userName).get!.fvarId == ldecl.fvarId then
@@ -33,13 +33,13 @@ section Source
         -- Note: the `if let` can fail for `simp (config := {contextual := true})` when
         -- rewriting with a variable that was introduced in a scope. In that case we just ignore.
       | .stx _ thmStx => -- simp theorems provided in the local invocation
-        args := args.push ⟨thmStx⟩ 
+        args := args.push ⟨thmStx⟩
       | .other _ => -- Ignore "special" simp lemmas such as constructed by `simp_all`.
         pure ()     -- We can't display them anyway.
     if let some locals := localsOrStar then
       args := args ++ (← locals.mapM fun id => `(Parser.Tactic.simpLemma| $(mkIdent id):ident))
     else
-      args := args.push ⟨(← `(Parser.Tactic.simpStar| *))⟩ 
+      args := args.push ⟨(← `(Parser.Tactic.simpStar| *))⟩
     let argsStx := if args.isEmpty then #[] else #[mkAtom "[", (mkAtom ",").mkSep args, mkAtom "]"]
     stx := stx.setArg 4 (mkNullNode argsStx)
     return stx
@@ -111,11 +111,11 @@ def traceTacticCallAt (stx : TSyntax `tactic) (tac : TSyntax `tactic) : TacticM 
 
 partial def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
   /- Dealing with bracketing -/
-  | `(tactic| { $[$tacs]* }) => do 
-    for tac in tacs do 
+  | `(tactic| { $[$tacs]* }) => do
+    for tac in tacs do
       evalTacticWithTrace tac
-  | `(tactic| ( $[$tacs]* )) => do 
-    for tac in tacs do 
+  | `(tactic| ( $[$tacs]* )) => do
+    for tac in tacs do
       evalTacticWithTrace tac
   /- Dealing with focused goals -/
   | `(tactic| · $[$tacs]*) => do
@@ -162,21 +162,21 @@ partial def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
   | `(tactic| rw $[$cfg]? [$rs,*] $[$loc]?) => do
     for r in (rs : TSyntaxArray `Lean.Parser.Tactic.rwRule) do
       traceGoalsAt ⟨r.raw⟩
-      let rtac ← `(tactic| rw $[$cfg]? [$r] $[$loc]?) 
+      let rtac ← `(tactic| rw $[$cfg]? [$r] $[$loc]?)
       evalTactic rtac
       traceTacticCallAt ⟨r.raw⟩ rtac
       traceGoalsAt ⟨r.raw⟩
   | `(tactic| erw [$rs,*] $[$loc]?) => do
     for r in (rs : TSyntaxArray `Lean.Parser.Tactic.rwRule) do
       traceGoalsAt ⟨r.raw⟩
-      let rtac ← `(tactic| erw [$r] $[$loc]?) 
+      let rtac ← `(tactic| erw [$r] $[$loc]?)
       evalTactic rtac
       traceTacticCallAt ⟨r.raw⟩ rtac
       traceGoalsAt ⟨r.raw⟩
   | `(tactic| rwa [$rs,*] $[$loc]?) => do
     for r in (rs : TSyntaxArray `Lean.Parser.Tactic.rwRule) do
       traceGoalsAt ⟨r.raw⟩
-      let rtac ← `(tactic| rw [$r] $[$loc]?) 
+      let rtac ← `(tactic| rw [$r] $[$loc]?)
       evalTactic rtac
       traceTacticCallAt ⟨r.raw⟩ rtac
       traceGoalsAt ⟨r.raw⟩
@@ -259,7 +259,7 @@ partial def evalTacticWithTrace : TSyntax `tactic → TacticM Unit
     let trm ← Tactic.elabTerm val none
     let typ ← inferType trm
     let typStx ← PrettyPrinter.delab typ
-    `(tactic| let $x:ident : $typStx := $val) >>= traceTacticCallAt stx 
+    `(tactic| let $x:ident : $typStx := $val) >>= traceTacticCallAt stx
     traceGoalsAt stx
   /- Otherwise, evaluate the tactic normally -/
   | stx@`(tactic| $tac) => do
@@ -279,7 +279,7 @@ def traceSequence : Tactic := fun s => do
 
 -- an example of the `seq` tactic
 example (h : x = y) : 0 + x = y ∧ 1 = 1 := by
-  seq 
+  seq
     rw [Nat.zero_add, (h : x = y)]
   refine' ⟨_, _⟩
   focus
@@ -308,7 +308,7 @@ example : 1 + 1 = 2 := by' -- the new `by'` syntax can be used to replace `by`
 -- intercepting the `by` tactic to output intermediate trace data
 -- the `by'` clone is needed here to avoid infinite recursion
 macro_rules
-  | `(by $t) => `(by' seq $t) 
+  | `(by $t) => `(by' seq $t)
 
 section Test
 

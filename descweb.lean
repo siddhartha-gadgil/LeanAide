@@ -41,7 +41,7 @@ def main : IO Unit := do
     match js.getObjValAs? String "name" with
     | Except.error _ => none
     | Except.ok name => some (name, js))
-  let dataMap : HashMap String Json := HashMap.ofList dataMapArr.toList
+  let dataMap : Std.HashMap String Json := Std.HashMap.ofList dataMapArr.toList
   let core := modulePairs
   let mp ← core.run' coreContext {env := env} |>.runToIO'
   IO.println s!"{mp.size} module pairs"
@@ -66,7 +66,7 @@ def main : IO Unit := do
       h.putStrLn "<hr>"
     h.putStrLn "<table class=\"table table-striped\">\n<tbody>"
     for n in consts do
-      match dataMap.find? (toString n) with
+      match dataMap.get? (toString n) with
       | some js =>
         match ← block? n js with
         | some ul =>

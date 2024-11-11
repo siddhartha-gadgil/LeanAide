@@ -1,5 +1,4 @@
 import Lean
-import Batteries.Data.HashMap
 import LeanAide.ConstDeps
 import LeanAide.Using
 import LeanAide.StatementSyntax
@@ -35,26 +34,26 @@ def freshDataHandle (fileNamePieces : List String)(clean: Bool := true) : IO IO.
     IO.FS.Handle.mk path IO.FS.Mode.append
 
 
-def fileNamePieces : HashMap (String × String) (List String) :=
-    HashMap.ofList <|
+def fileNamePieces : Std.HashMap (String × String) (List String) :=
+    Std.HashMap.ofList <|
         ["core", "full", "identifiers", "ident_pairs", "ident_strings",
         "term_pairs", "lemma_pairs"].bind fun kind =>
             ("all" :: "extra" :: groups).map fun group => ((kind, group), ["premises", kind, group++".jsonl"])
 
-def mainFileNamePieces : HashMap (String × String) (List String) :=
-    HashMap.ofList <|
+def mainFileNamePieces : Std.HashMap (String × String) (List String) :=
+    Std.HashMap.ofList <|
         ["core",  "identifiers", "ident_pairs", "ident_strings",
         "term_pairs", "lemma_pairs"].bind fun kind =>
             ("all"  :: groups).map fun group => ((kind, group), ["premises", kind, group++".jsonl"])
 
-def fileHandles (clean : Bool := true) : IO (HashMap (String × String) IO.FS.Handle)  := do
-    let mut handles := HashMap.empty
+def fileHandles (clean : Bool := true) : IO (Std.HashMap (String × String) IO.FS.Handle)  := do
+    let mut handles := Std.HashMap.empty
     for (k, v) in fileNamePieces.toList do
         handles := handles.insert k <| ← freshDataHandle v clean
     return handles
 
-def mainFileHandles : IO (HashMap (String × String) IO.FS.Handle) := do
-    let mut handles := HashMap.empty
+def mainFileHandles : IO (Std.HashMap (String × String) IO.FS.Handle) := do
+    let mut handles := Std.HashMap.empty
     for (k, v) in mainFileNamePieces.toList do
         handles := handles.insert k <| ← freshDataHandle v
     return handles
@@ -434,17 +433,17 @@ def thm (pd: PremiseData) : CoreM Syntax.Term := do
 def statement (pd: PremiseData) : CoreM String := do
     mkStatement pd.name? (← pd.thm) none true
 
-def writeFull (data: PremiseData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : CoreM Unit := do
+def writeFull (data: PremiseData)(group: String)(handles: Std.HashMap (String × String) IO.FS.Handle) : CoreM Unit := do
     let l := (← toJsonM data).compress
     -- IO.println s!"Handles:  {handles.toList.map (fun (k, _) => k)}"
     let key := ("full", group)
     -- IO.println s!"Key: {key}, contained in handles: {handles.contains key}"
-    let gh ←  match handles.find? key with
+    let gh ←  match handles.get? key with
                 | some h => pure h
                 | none =>
                  IO.throwServerError
                     ("No handle for " ++ group ++ " in " ++ "full")
-    let h ←  match handles.find? ("full", "all") with
+    let h ←  match handles.get? ("full", "all") with
                 | some h => pure h
                 | none =>
                     IO.throwServerError "No handle for 'all' in full"
@@ -514,34 +513,34 @@ def checkName (name: Name) : MetaM Bool := do
 
 -- #eval checkName `Or.inl
 
-def getDefn? (name: String)(propMap : HashMap String (String × String)) : MetaM <| Option (String × String) := do
-    match propMap.find? name with
+def getDefn? (name: String)(propMap : Std.HashMap String (String × String)) : MetaM <| Option (String × String) := do
+    match propMap.get? name with
     | some ss => return some ss
     | none => do
     let l ← resolveGlobalName name.toName
     let names := l.map (fun (n, _) => n.toString)
     return names.findSome? (fun n =>
-        (propMap.find? n))
+        (propMap.get? n))
 
 namespace CorePremiseData
 
-def fromDirect (direct: CorePremiseDataDirect)(propMap : HashMap String (String × String)) : MetaM CorePremiseData := do
+def fromDirect (direct: CorePremiseDataDirect)(propMap : Std.HashMap String (String × String)) : MetaM CorePremiseData := do
     return {direct with
         namedLemmas := ←
             direct.ids.toList.eraseDups.toArray.filterMapM (
             fun id =>  getDefn? id propMap)}
 
-def fromPremiseData (pd: PremiseData)(propMap : HashMap String (String × String)) : MetaM CorePremiseData := do
+def fromPremiseData (pd: PremiseData)(propMap : Std.HashMap String (String × String)) : MetaM CorePremiseData := do
     CorePremiseData.fromDirect (← CorePremiseDataDirect.fromPremiseData pd) propMap
 
 
-def write (data: CorePremiseData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
+def write (data: CorePremiseData)(group: String)(handles: Std.HashMap (String × String) IO.FS.Handle) : IO Unit := do
     let l := (toJson data).compress
-    let gh ← match handles.find? ("core", group) with
+    let gh ← match handles.get? ("core", group) with
                 | some h => pure h
                 | none =>
                     IO.throwServerError ("No handle for " ++ group ++ " in " ++ "core")
-    let h ←  match handles.find? ("core", "all") with
+    let h ←  match handles.get? ("core", "all") with
                 | some h => pure h
                 | none =>
                     IO.throwServerError "No handle for 'all' in core"
@@ -560,12 +559,12 @@ fun data ↦
     ⟨data.context, data.name?, data.doc?, data.defnName, data.type, data.typeGroup, data.proof, data.typeSize, data.proofSize, (data.terms.map (fun td => td.increaseDepth d)), (data.propProofs.map (fun p => p.increaseDepth d)),
         (data.ids.map (fun (n,  m) => (n,  m + d))) ⟩
 
-def coreData (data: PremiseData)(propMap : HashMap String (String × String)) : MetaM CorePremiseData :=
+def coreData (data: PremiseData)(propMap : Std.HashMap String (String × String)) : MetaM CorePremiseData :=
     CorePremiseData.fromPremiseData data propMap
 
 def write (data: PremiseData)(group: String)
-    (handles: HashMap (String × String) IO.FS.Handle)
-    (propMap : HashMap String (String × String)) : MetaM Unit := do
+    (handles: Std.HashMap (String × String) IO.FS.Handle)
+    (propMap : Std.HashMap String (String × String)) : MetaM Unit := do
         data.writeFull group handles
         let coreData ←  CorePremiseData.fromPremiseData data propMap
         coreData.write group handles
@@ -604,15 +603,15 @@ def termKindsIn (stx: Syntax) : MetaM <| List SyntaxNodeKind := do
     termKindsInAux stx kinds
 
 def termKindBestEgsM (choice: Nat := 3)(constantNameValueDocs  := constantNameValueDocs)(termKindList : MetaM <| List SyntaxNodeKind := termKindList) :
-    MetaM <| HashMap Name
+    MetaM <| Std.HashMap Name
         (Nat × (Array (Name × Nat × String × Bool ×  String)) ×
          Array (Name × Nat × String × Bool)) := do
     let cs ← constantNameValueDocs
     let kinds ← termKindList
     IO.eprintln s!"Found {cs.size} constants"
     let mut count := 0
-    let mut m : HashMap Name (Nat × (Array (Name × Nat × String × Bool × String)) ×
-         Array (Name × Nat × String × Bool)) := HashMap.empty
+    let mut m : Std.HashMap Name (Nat × (Array (Name × Nat × String × Bool × String)) ×
+         Array (Name × Nat × String × Bool)) := Std.HashMap.empty
     for ⟨name, type, doc?⟩ in cs do
         count := count + 1
         if count % 400 == 0 then
@@ -625,7 +624,7 @@ def termKindBestEgsM (choice: Nat := 3)(constantNameValueDocs  := constantNameVa
             let tks ← termKindsInAux stx.raw kinds
             let tks := tks.eraseDups
             for tk in tks do
-                let (c, egs, noDocEgs) := m.findD tk ((0, #[], #[]))
+                let (c, egs, noDocEgs) := m.getD tk ((0, #[], #[]))
                 match doc? with
                 | some doc =>
                   match egs.findIdx? (fun (_, d, _, p', _) =>
@@ -731,6 +730,12 @@ def DefData.ofSyntax? (stx: Syntax) : MetaM <| Option DefData := do
         return some ⟨name, type, value, isProp, typeDepth, valueDepth, []⟩
     | _ => return none
 
+def DefData.jsonView (data: DefData) : MetaM Json := do
+    return Json.mkObj [("name", toJson data.name),
+    ("type", toJson (← ppTerm data.type).pretty),
+    ("value", toJson (← ppTerm data.value).pretty),
+    ("isProp", toJson data.isProp)]
+
 structure IdentData where
     context : Array String
     type : String
@@ -751,31 +756,31 @@ deriving Inhabited, ToJson
 
 namespace IdentData
 
-def write (data: IdentData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
+def write (data: IdentData)(group: String)(handles: Std.HashMap (String × String) IO.FS.Handle) : IO Unit := do
     let thm := data.thm
     let js := Json.mkObj [("theorem", thm), ("statement", data.statement), ("identifiers", toJson data.ids)]
     let l := js.compress
-    let gh ← match handles.find? ("identifiers", group) with
+    let gh ← match handles.get? ("identifiers", group) with
                 | some h => pure h
                 | none =>
                     IO.throwServerError ("No handle for " ++ group ++ " in " ++ "identifiers")
-    let h ←  match handles.find? ("identifiers", "all") with
+    let h ←  match handles.get? ("identifiers", "all") with
                 | some h => pure h
                 | none =>
                     IO.throwServerError "No handle for 'all' in indentifiers"
     h.putStrLn  l
     gh.putStrLn l
 
-def writeString (data: IdentData)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
+def writeString (data: IdentData)(group: String)(handles: Std.HashMap (String × String) IO.FS.Handle) : IO Unit := do
     let thm := data.thm
     let idString : String := toJson data.ids |>.compress
     let js := Json.mkObj [("theorem", thm), ("statement", data.statement), ("identifiers", idString)]
     let l := js.compress
-    let gh ← match handles.find? ("ident_strings", group) with
+    let gh ← match handles.get? ("ident_strings", group) with
                 | some h => pure h
                 | none =>
                     IO.throwServerError ("No handle for " ++ group ++ " in " ++ "ident_strings")
-    let h ←  match handles.find? ("ident_strings", "all") with
+    let h ←  match handles.get? ("ident_strings", "all") with
                 | some h => pure h
                 | none =>
                     IO.throwServerError "No handle for 'all' in indentifiers"
@@ -793,15 +798,15 @@ end IdentData
 
 namespace IdentPair
 
-def write (data: IdentPair)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
+def write (data: IdentPair)(group: String)(handles: Std.HashMap (String × String) IO.FS.Handle) : IO Unit := do
     let thm := data.thm
     let js := Json.mkObj [("theorem", thm), ("statement", data.statement), ("identifier", toJson data.id)]
     let l := js.compress
-    let gh ← match handles.find? ("ident_pairs", group) with
+    let gh ← match handles.get? ("ident_pairs", group) with
                 | some h => pure h
                 | none =>
                     IO.throwServerError ("No handle for " ++ group ++ " in " ++ "ident_pairs")
-    let h ←  match handles.find? ("ident_pairs", "all") with
+    let h ←  match handles.get? ("ident_pairs", "all") with
                 | some h => pure h
                 | none =>
                     IO.throwServerError "No handle for 'all' in indent_pairs"
@@ -827,7 +832,7 @@ namespace LemmaPair
 
 -- def thm (data: LemmaPair) : String := data.thmContext.foldr (fun s c => s ++ c) s!" : {data.thmType}"
 
-def write (data: LemmaPair)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
+def write (data: LemmaPair)(group: String)(handles: Std.HashMap (String × String) IO.FS.Handle) : IO Unit := do
     let d : List (String × Json) := [("theorem", data.statement), ("lemma", data.lemmaStatement), ("theorem-type", data.thmType), ("lemma-type", data.lemmaType)]
     let d := match data.name? with
         | some n => ("name", toJson n.toString) :: d
@@ -837,11 +842,11 @@ def write (data: LemmaPair)(group: String)(handles: HashMap (String × String) I
         | none => d
     let js := Json.mkObj d
     let l := js.compress
-    let gh ← match handles.find? ("lemma_pairs", group) with
+    let gh ← match handles.get? ("lemma_pairs", group) with
                 | some h => pure h
                 | none =>
                     IO.throwServerError ("No handle for " ++ group ++ " in " ++ "lemma_pairs")
-    let h ←  match handles.find? ("lemma_pairs", "all") with
+    let h ←  match handles.get? ("lemma_pairs", "all") with
                 | some h => pure h
                 | none =>
                     IO.throwServerError "No handle for 'all' in lemma_pairs"
@@ -869,7 +874,7 @@ structure TermPair where
 
 namespace TermPair
 
-def write (data: TermPair)(group: String)(handles: HashMap (String × String) IO.FS.Handle) : IO Unit := do
+def write (data: TermPair)(group: String)(handles: Std.HashMap (String × String) IO.FS.Handle) : IO Unit := do
     let js := Json.mkObj [
         ("theorem", data.thm),
         ("statement", data.statement),
@@ -878,11 +883,11 @@ def write (data: TermPair)(group: String)(handles: HashMap (String × String) IO
         ("is_prop", data.isProp)
         ]
     let l := js.compress
-    let gh ← match handles.find? ("term_pairs", group) with
+    let gh ← match handles.get? ("term_pairs", group) with
                 | some h => pure h
                 | none =>
                     IO.throwServerError ("No handle for " ++ group ++ " in " ++ "term_pairs")
-    let h ←  match handles.find? ("term_pairs", "all") with
+    let h ←  match handles.get? ("term_pairs", "all") with
                 | some h => pure h
                 | none =>
                     IO.throwServerError "No handle for 'all' in term_pairs"

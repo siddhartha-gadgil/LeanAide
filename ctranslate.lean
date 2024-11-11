@@ -56,7 +56,7 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
   withUnpickle (← picklePath "concise-description")
     <|fun (concDescData : EmbedData) => do
   let dataMap :
-    EmbedMap := HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
+    EmbedMap := Std.HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
   let translator : Translator := {server := chatServer, params := chatParams}
   let core :=
     translator.translateViewVerboseM type  |>.runWithEmbeddings dataMap

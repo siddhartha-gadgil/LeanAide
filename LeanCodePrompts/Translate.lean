@@ -123,14 +123,14 @@ def chatServer : CoreM ChatServer := do
 Caching, polling etc to avoid repeatedly calling servers
 -/
 
-initialize webCacheJson : IO.Ref (HashMap String (Json × Json × Array (String × Json))) ← IO.mkRef (HashMap.empty)
+initialize webCacheJson : IO.Ref (Std.HashMap String (Json × Json × Array (String × Json))) ← IO.mkRef (Std.HashMap.empty)
 
-initialize pendingJsonQueries : IO.Ref (HashSet String)
-    ← IO.mkRef (HashSet.empty)
+initialize pendingJsonQueries : IO.Ref (Std.HashSet String)
+    ← IO.mkRef (Std.HashSet.empty)
 
 def getCachedJson? (s: String) : IO (Option (Json × Json × Array (String × Json))) := do
   let cache ← webCacheJson.get
-  return cache.find? s
+  return cache.get? s
 
 def cacheJson (s: String)(js: Json × Json × Array (String × Json))  : IO Unit := do
   let cache ← webCacheJson.get
@@ -139,7 +139,7 @@ def cacheJson (s: String)(js: Json × Json × Array (String × Json))  : IO Unit
 
 partial def pollCacheJson (s : String) : IO <| Json × Json × Array (String × Json) := do
   let cache ← webCacheJson.get
-  match cache.find? s with
+  match cache.get? s with
   | some jsBlob => return jsBlob
   | none => do
     IO.sleep 200
@@ -212,12 +212,12 @@ def bestElab (output: Array String) : TranslateM Expr := do
   let mut elabStrs : Array String := Array.empty
   let mut elaborated : Array Expr := Array.empty
   let mut fullElaborated : Array Expr := Array.empty
-  let mut cache : HashMap String (Except ElabError Expr) :=
-    HashMap.empty
+  let mut cache : Std.HashMap String (Except ElabError Expr) :=
+    Std.HashMap.empty
   for out in output do
     -- IO.println s!"elaboration called: {out}"
     let elab? ←
-      match cache.find? out with
+      match cache.get? out with
       | some elab? =>
         pure elab?
       | none =>
@@ -264,15 +264,15 @@ def bestElab? (output: Array String)(maxVoting: Nat := 5) : TranslateM (Except (
   let mut elabStrs : Array String := Array.empty
   let mut elaborated : Array Expr := Array.empty
   let mut fullElaborated : Array Expr := Array.empty
-  let mut cache : HashMap String (Except ElabError Expr) :=
-    HashMap.empty
+  let mut cache : Std.HashMap String (Except ElabError Expr) :=
+    Std.HashMap.empty
   logTimed "elaborating outputs"
   let mut errors : Array ElabError := #[]
 
   for out in output do
     -- IO.println s!"elaboration called: {out}"
     let elab? ←
-      match cache.find? out with
+      match cache.get? out with
       | some elab? => pure elab?
       | none =>
         let res ← elabThm4 out
@@ -299,7 +299,7 @@ def bestElab? (output: Array String)(maxVoting: Nat := 5) : TranslateM (Except (
     let thm := (groupSorted[0]!)[0]!
     let gpView ←  groupSorted.mapM (fun gp => gp.mapM (fun e => e.view))
     logTimed "obtained majority vote"
-    return Except.ok {term := thm, allElaborated := elabStrs, groups := gpView, allElaboratedExprs := elaborated, groupsExprs := groupSorted}
+    return Except.ok {term := thm, allElaborated := elabStrs, groups := gpView, allElaboratedExprs := elaborated, groupsExprs := groupSorted, typeView := (← ppExpr thm).pretty}
     -- {⟨thm, elabStrs, gpView⟩}
 
 def greedyBestExpr? (output: Array String) : TranslateM (Option Expr) := do
@@ -707,3 +707,34 @@ def translateViewVerboseM (s: String)(translator : Translator) :   TranslateM ((
     | Except.ok res =>
       let view ←  res.withView
       return (some view, output, prompt)
+
+def translateM (s: String)(translator: Translator)  :
+  TranslateM ((Except (Array ElabError) (ElabSuccessResult))  × ( Json)) := do
+  let (js,prompt, _) ← translator.getLeanCodeJson s
+  let output ← getMessageContents js
+  let res? ← bestElab? output
+  match res? with
+  | Except.error err =>
+    appendLog "translate_fail" <| toJson err
+    return (Except.error err,  prompt)
+  | Except.ok res =>
+    if translator.roundTripSelect then
+      let res ←  translator.roundTripRefinedM s res
+      return (Except.ok res,  prompt)
+    else
+      if translator.roundTrip then
+        let pair? ←  checkTranslationM s res.term translator
+        match pair? with
+        | none =>
+          let res := {res with roundTripCheck? := some false}
+          return (Except.ok res, prompt)
+        | some (_, checkStrings) =>
+          let checks := checkStrings.map (fun (b, _) => b)
+          if checks.any id then
+            let res := {res with roundTripCheck? := some true}
+            return (Except.ok res,  prompt)
+          else
+            let res := {res with roundTripCheck? := some false, roundTripFailures := #[(s, checkStrings)]}
+            return (Except.ok res,  prompt)
+      else
+        return (Except.ok res, prompt)

@@ -169,7 +169,7 @@ def checkTranslationM (s: String) (type: Expr) (translator: Translator) :
   MetaM <| Option (String × Array (Bool × String)) := do
   let triple? ←  getTypeDescriptionM type translator
   triple?.mapM fun (transl, _, defBlob?) => do
-    IO.eprintln s!"translation: {transl}"
+    -- IO.eprintln s!"translation: {transl}"
     let checks ← ChatServer.checkEquivalence s transl defBlob?
     return (transl,  checks)
 
@@ -183,7 +183,7 @@ def roundTripFilteredM? (statement: String) (res: ElabSuccessResult) (translator
       checks.any (·.1)
   return type?.map fun type => {res with term := type}
 
-def roundTripFilteredM (statement: String) (res: ElabSuccessResult) (translator: Translator)(dropHead : Bool := false) :
+def roundTripRefinedM (statement: String) (res: ElabSuccessResult) (translator: Translator)(dropHead : Bool := false) :
     TranslateM  ElabSuccessResult := do
   let groupHeads := res.groupsExprs.filterMap fun gp => gp[0]?
   let groupHeads := if dropHead then groupHeads[1:].toArray else groupHeads
@@ -257,7 +257,7 @@ def cacheDescription (js: Json) : IO Unit := do
     h.putStrLn jsStr
   else IO.FS.writeFile path (jsStr ++ "\n")
 
-def getCachedDescriptionsMap : IO (HashMap String Json) := do
+def getCachedDescriptionsMap : IO (Std.HashMap String Json) := do
   let cached ← getCachedDescriptions
   let pairs := cached.filterMap fun js => do
     let name? := js.getObjValAs? String "name" |>.toOption
@@ -265,8 +265,8 @@ def getCachedDescriptionsMap : IO (HashMap String Json) := do
   return pairs.foldl (init := {}) fun m (name, js) => m.insert name js
 
 def getDescriptionCached (name: String)(translator: Translator)
-  (cacheMap: HashMap String Json) : MetaM (Option Json) := do
-  match cacheMap.find? name with
+  (cacheMap: Std.HashMap String Json) : MetaM (Option Json) := do
+  match cacheMap.get? name with
   | some js => return some js
   | none =>
     let desc? ← getDescriptionM name.toName translator
@@ -279,7 +279,7 @@ def getDescriptionCached (name: String)(translator: Translator)
       | none => return none
 
 def getDescriptionCachedCore (name: String)(translator: Translator)
-  (cacheMap: HashMap String Json) : CoreM (Option Json) :=
+  (cacheMap: Std.HashMap String Json) : CoreM (Option Json) :=
   (getDescriptionCached name translator  cacheMap).run' {}
 
 def lemmaUserPrompt' (name: Name)(description: String) :

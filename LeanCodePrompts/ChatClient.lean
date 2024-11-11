@@ -76,7 +76,7 @@ def default : ChatServer := .openAI "gpt-4o"
 instance : Inhabited ChatServer := ⟨default⟩
 
 initialize queryCache : IO.Ref
-  (HashMap (ChatServer × Json × ChatParams) Json) ← IO.mkRef {}
+  (Std.HashMap (ChatServer × Json × ChatParams) Json) ← IO.mkRef {}
 
 initialize pendingQueries :
   IO.Ref (Array (ChatServer × Json × ChatParams)) ← IO.mkRef #[]
@@ -165,7 +165,7 @@ def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Jso
     ".leanaide_cache" / "chat" /
       s!"{hash server}_{hash params}_{hash messages}.json"
   if ← file.pathExists then
-    IO.eprintln "Reading from cache"
+    IO.eprintln s!"Reading from cache: {file}"
     let output ← IO.FS.readFile file
     match Json.parse output with
     | Except.ok j => return j
@@ -183,7 +183,7 @@ def pollCacheQuery (server: ChatServer)(messages : Json)
     (params : ChatParams) (retries: Nat) : CoreM Json := do
   let key := (server, messages, params)
   let cache ← queryCache.get
-  match cache.find? key with
+  match cache.get? key with
   | some j => return j
   | none => do
     match retries with
@@ -205,7 +205,7 @@ def cachedQuery (server: ChatServer)(messages : Json)
     pollCacheQuery server messages params 40
   else do
     let cache ← queryCache.get
-    match cache.find? key with
+    match cache.get? key with
     | some j =>
       return j
     | none => do
@@ -468,7 +468,7 @@ def checkEquivalence
     | some defBlob =>
     fromTemplate "check_equivalence_with_defs" [("theorem1", thm1), ("theorem2", thm2), ("definitions", defBlob)]
   let responses ← ChatServer.mathCompletions server queryString 1 params examples
-  IO.eprintln responses
+  -- IO.eprintln responses
   return responses.map fun s =>
     ((s.toLower.trim.splitOn "true").length > 1, s)
 

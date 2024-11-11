@@ -35,7 +35,7 @@ def IndentedList.render (l : IndentedList) : String :=
   l.renderAux ""
 
 /--
-Building blocks for structured math documents. Additional data is given as a HashMap from `Name` to `MathPara` for elements in a group.
+Building blocks for structured math documents. Additional data is given as a Std.HashMap from `Name` to `MathPara` for elements in a group.
 -/
 inductive MathParaStructure where
   | text (name: Name) (description : String)
@@ -309,14 +309,14 @@ def math_objectElems := [let_statement, exists_statement, assume, define, assert
 
 def contextBlockElems := [let_statement, exists_statement, assume]
 
-def elemMap : Batteries.HashMap Name <| List MathParaStructure :=
-  Batteries.HashMap.ofList [(`math_object, math_objectElems), (`contextBlock, contextBlockElems)]
+def elemMap : Std.HashMap Name <| List MathParaStructure :=
+  Std.HashMap.ofList [(`math_object, math_objectElems), (`contextBlock, contextBlockElems)]
 
 def suppress (s: String) := s!"{s} Give the corresponding source text as a JSON string (this will be processed subsequently)."
 
 open IndentedList in
 def toIndendentList (p: MathParaStructure) (optional : Bool := false)
-  (elemMap : Batteries.HashMap Name <| List MathParaStructure := elemMap) (maxDepth: Nat := 5): IndentedList :=
+  (elemMap : Std.HashMap Name <| List MathParaStructure := elemMap) (maxDepth: Nat := 5): IndentedList :=
   match p with
   | .text name description =>
     kvLine name.toString (description ++ " Give a JSON string.") optional
@@ -328,7 +328,7 @@ def toIndendentList (p: MathParaStructure) (optional : Bool := false)
     match maxDepth with
     | 0 => kvLine name.toString (suppress description) optional
     | k + 1 =>
-      let fields := elemMap.findD fieldType []
+      let fields := elemMap.getD fieldType []
       let names := fields.map (fun elem => elem.name)
       let namesBlob := names.foldl (fun acc elem => acc ++ s!"`{elem}`" ++ ", ") "" |>.dropRight 2
       let innerList :=
@@ -370,14 +370,14 @@ def toIndendentList (p: MathParaStructure) (optional : Bool := false)
     | 0 => kvLine name.toString description optional
 
 def suppressed (p: MathParaStructure)
-  (elemMap : Batteries.HashMap Name <| List MathParaStructure := elemMap) (maxDepth: Nat := 5): List MathParaStructure :=
+  (elemMap : Std.HashMap Name <| List MathParaStructure := elemMap) (maxDepth: Nat := 5): List MathParaStructure :=
   match p with
   | .list _ fieldType describeOptions _ =>
     match maxDepth with
     | 0 => [p]
     | k + 1 =>
       if describeOptions then
-        let fields := elemMap.findD fieldType []
+        let fields := elemMap.getD fieldType []
         let innerList :=
           fields.map (fun elem => suppressed elem elemMap k)
         innerList.join
@@ -406,10 +406,10 @@ def suppressed (p: MathParaStructure)
 
 end MathParaStructure
 
-#eval MathParaStructure.mathDoc.toIndendentList |>.render
+-- #eval MathParaStructure.mathDoc.toIndendentList |>.render
 
 
-#eval MathParaStructure.mathDoc.suppressed (maxDepth := 4) |>.eraseDups |>.map (·.name)
+-- #eval MathParaStructure.mathDoc.suppressed (maxDepth := 4) |>.eraseDups |>.map (·.name)
 
 def writeMathDoc : IO Unit :=
   IO.FS.writeFile "resources/MathDoc.md"

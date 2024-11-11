@@ -25,7 +25,7 @@ unsafe def main (args: List String) : IO UInt32 := do
   withUnpickle (← picklePath "concise-description")
     <|fun (concDescData : EmbedData) => do
   let dataMap :
-    EmbedMap := HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
+    EmbedMap := Std.HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
   let codeGen : CodeGenerator := {}
   let statement := args.get! 0
   let core :=

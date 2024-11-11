@@ -27,8 +27,8 @@ def getNearestEmbeddingsExe
 def getNearestEmbeddingsFull
   (query: String)(queryRes? : Except String Json)(numSim: Nat)(penalty: Float)
   (descField: String := "docString")
-  (dataMap : EmbedMap := HashMap.empty) : IO String := do
-  match dataMap.find? descField with
+  (dataMap : EmbedMap := Std.HashMap.empty) : IO String := do
+  match dataMap.get? descField with
   | none =>
     getNearestEmbeddingsExe query numSim penalty descField
   | some data =>

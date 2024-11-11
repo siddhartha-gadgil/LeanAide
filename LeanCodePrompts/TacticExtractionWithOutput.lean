@@ -6,7 +6,7 @@ open Lean Elab Parser Term Meta Tactic
 section Misc
 
   section Utils
-  
+
   def evalTacticM (stx : TacticM <| TSyntax `tactic) : TacticM Unit :=
     stx >>= evalTactic ∘ TSyntax.raw
 
@@ -36,7 +36,7 @@ section Misc
             if env.contains declName && !simpOnlyBuiltins.contains declName then
               args := args.push (← `(Parser.Tactic.simpLemma| $(mkIdent (← unresolveNameGlobal declName)):ident))
           | .fvar fvarId => -- local hypotheses in the context
-            if let some ldecl := lctx.find? fvarId then
+            if let some ldecl := lctx.get? fvarId then
               localsOrStar := localsOrStar.bind fun locals =>
                 if !ldecl.userName.isInaccessibleUserName &&
                     (lctx.findFromUserName? ldecl.userName).get!.fvarId == ldecl.fvarId then
@@ -46,13 +46,13 @@ section Misc
             -- Note: the `if let` can fail for `simp (config := {contextual := true})` when
             -- rewriting with a variable that was introduced in a scope. In that case we just ignore.
           | .stx _ thmStx => -- simp theorems provided in the local invocation
-            args := args.push ⟨thmStx⟩ 
+            args := args.push ⟨thmStx⟩
           | .other _ => -- Ignore "special" simp lemmas such as constructed by `simp_all`.
             pure ()     -- We can't display them anyway.
         if let some locals := localsOrStar then
           args := args ++ (← locals.mapM fun id => `(Parser.Tactic.simpLemma| $(mkIdent id):ident))
         else
-          args := args.push ⟨(← `(Parser.Tactic.simpStar| *))⟩ 
+          args := args.push ⟨(← `(Parser.Tactic.simpStar| *))⟩
         let argsStx := if args.isEmpty then #[] else #[mkAtom "[", (mkAtom ",").mkSep args, mkAtom "]"]
         stx := stx.setArg 4 (mkNullNode argsStx)
         return ⟨stx⟩
@@ -104,7 +104,7 @@ section Misc
           withRef ref <| addRawTrace snap.goalsAfter
         | none => pure ()
     | _ => throwUnsupportedSyntax
-      
+
   def TacticSnapshot.toJson : TacticSnapshot → IO Json
     | ⟨depth, goalsBefore, tac, goalsAfter, _⟩ => do
       return .mkObj <| [
@@ -116,7 +116,7 @@ section Misc
         ("goals_after", goalsAfter)
       ]
 
-  def outputLocation : System.FilePath := 
+  def outputLocation : System.FilePath :=
     "."/"data"/"tactics"
 
   syntax (name := log_and_clear_ref) "log_and_clear_ref" num : tactic
@@ -247,17 +247,17 @@ syntax (name := byTactic') "by' " tacticSeq : term
 
 -- intercepting the `by` tactic to output intermediate trace data
 -- the `by'` clone is needed here to avoid infinite recursion
-@[term_elab byTactic] def elabByTacticLog : TermElab := 
+@[term_elab byTactic] def elabByTacticLog : TermElab :=
   adaptExpander <| fun
     | `(term| by $tacs:tacticSeq) => do
       let i ← counter.getIdx
       let idx := Syntax.mkNumLit <| toString i
       let ts : TSyntaxArray `tactic :=
-        #[← `(tactic| seq $idx 0 $tacs), 
+        #[← `(tactic| seq $idx 0 $tacs),
           -- Uncomment to enable tactic trace
-          -- ← `(tactic| trace_tactic_snapshots $idx), 
+          -- ← `(tactic| trace_tactic_snapshots $idx),
           ← `(tactic| log_and_clear_ref $idx)]
-      `(by' $[$ts]*) 
+      `(by' $[$ts]*)
     | _ => throwUnsupportedSyntax
 
 end ByTactic

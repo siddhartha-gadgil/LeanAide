@@ -58,11 +58,11 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
     let params: ChatParams :=
       {temp := temp, n := queryNum, maxTokens := maxTokens}
     params.withoutStop (p.hasFlag "no_stop")
-  let queryData? : Option (HashMap String Json) ←
+  let queryData? : Option (Std.HashMap String Json) ←
     p.flag? "query_data" |>.map (fun s => s.as! String) |>.mapM
       fun filename => do
         let lines ←  IO.FS.lines filename
-        let mut qdMap := HashMap.empty
+        let mut qdMap := Std.HashMap.empty
         for l in lines do
           let json? := Json.parse l
           match json? with
@@ -105,7 +105,7 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
     <|fun (concDescData : EmbedData) => do
   IO.eprintln "Loading hashmap"
   let dataMap :
-    EmbedMap := HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
+    EmbedMap := Std.HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
   IO.eprintln "Loaded hashmap"
   let translator : Translator := {pb := pb, server := chatServer, params := chatParams, roundTrip := roundtrip}
   let core :=

@@ -62,7 +62,7 @@ def elabFrontTheoremExprM (type: String) : MetaM <| Except (List String) Expr :=
   else
     return Except.error errorStrings
 
-#eval elabFrontTheoremExprM "∀ n: Nat, n ≤ n + 1"
+-- #eval elabFrontTheoremExprM "∀ n: Nat, n ≤ n + 1"
 
 def elabFrontTypeExprM(type: String) : MetaM <| Except (List String) Expr := do
   let n := `my_shiny_new_theorem

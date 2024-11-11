@@ -5,11 +5,17 @@ import LeanCodePrompts.EpsilonClusters
 import Mathlib
 open Std Lean
 
-def distL2Sq (v₁ : FloatArray) (v₂ : Array Float) : Float :=
+def distL2Sq' (v₁ : FloatArray) (v₂ : Array Float) : Float :=
   let squaredDiffs : Array Float :=
     (v₁.data.zip v₂).map (fun (x, y) => (x - y) * (x - y))
   squaredDiffs.foldl (Float.add) 0.0
 
+def distL2Sq (v₁ : FloatArray) (v₂ : Array Float) : Float :=
+    Id.run do
+    let mut c := 0.0
+    for i in [0:v₂.size] do
+      c := c + (v₁[i]! - v₂[i]!) * (v₁[i]! - v₂[i]!)
+    return c
 
 def nearestDocsToDocEmbedding (data : Array <| (String × String) ×  FloatArray)
   (embedding : Array Float) (k : Nat)

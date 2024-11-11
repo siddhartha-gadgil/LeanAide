@@ -297,6 +297,9 @@ def appendFile (fname : FilePath) (content : String) : IO Unit := do
   h.flush
 
 def appendLog (logFile: String) (content : Json) : IO Unit := do
+  let dir : FilePath := "rawdata"
+  if !(← dir.pathExists) then
+        IO.FS.createDirAll dir
   let fname : FilePath := "rawdata/" / ("log_" ++ logFile ++ ".jsonl")
   appendFile fname content.compress
 
@@ -409,7 +412,7 @@ def termKindList : MetaM <| List SyntaxNodeKind := do
 
 abbrev EmbedData := Array <| (String × String × Bool × String) ×  FloatArray
 
-abbrev EmbedMap := HashMap String EmbedData
+abbrev EmbedMap := Std.HashMap String EmbedData
 
 partial def idents : Syntax → List String
 | Syntax.ident _ s .. => [s.toString]
@@ -429,6 +432,16 @@ def ppExprDetailed (e : Expr): MetaM String := do
     ppExpr e
   return fmtDetailed.pretty
 
-
 instance : Repr Json where
   reprPrec js _ := js.pretty
+
+-- test
+
+elab "detailed" t:term : term => do
+  let e ← Term.elabTerm t none
+  let fmt ← ppExprDetailed e
+  logInfo fmt
+  logInfo m!"{← ppExpr e}"
+  return e
+
+#check detailed (fun (n : Nat) => n + 1)

@@ -51,7 +51,11 @@ instance : Inhabited PromptExampleBuilder := ⟨default⟩
 
 def prependFixed (pb: PromptExampleBuilder)
   (prompts: Array (String × Json)) : PromptExampleBuilder :=
-  .sequence [.fixed prompts, pb]
+  match pb with
+  | .sequence (.fixed ps :: pbs) =>
+      .sequence <| .fixed (prompts ++ ps) :: pbs
+  | .sequence ps => .sequence <| .fixed prompts :: ps ++ [pb]
+  | _ => .sequence [.fixed prompts, pb]
 
 end PromptExampleBuilder
 end LeanAide
