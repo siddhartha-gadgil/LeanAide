@@ -279,7 +279,7 @@ macro "#session" n:ident ":=" t:term : command => do
   setRoundTrip true
   translateText
   save `small
-  -- consider (← putnamProblem 57)
+  consider (← putnamProblem 57)
   -- discard docsText
 
 /-

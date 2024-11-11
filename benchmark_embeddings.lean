@@ -53,18 +53,18 @@ unsafe def main : IO Unit := do
     let out :=
         embs.toArray.map fun (_, _, _, name, _) => name
     IO.println out
-    let ε := 0.3
-    let minSize := 50
-    IO.eprintln "Finding nearest embeddings with clustering"
-    IO.eprintln "Clustering embeddings"
-    let clusters ←  epsilonClusters ε  dist minSize data
-    IO.eprintln s!"Found {clusters.size} clusters"
-    IO.eprintln "Finding nearest embeddings"
-    let start ← IO.monoMsNow
-    let embs ← Cluster.kNearest num clusters doc
-                  fun (_, d) e => distL2Sq d e
-    let finish ← IO.monoMsNow
-    IO.eprintln s!"Found nearest in {finish - start} ms"
-    let out :=
-        embs.map fun (((_, _, _, name), _), _) => name
-    IO.println out
+    -- let ε := 0.3
+    -- let minSize := 50
+    -- IO.eprintln "Finding nearest embeddings with clustering"
+    -- IO.eprintln "Clustering embeddings"
+    -- let clusters ←  epsilonClusters ε  dist minSize data
+    -- IO.eprintln s!"Found {clusters.size} clusters"
+    -- IO.eprintln "Finding nearest embeddings"
+    -- let start ← IO.monoMsNow
+    -- let embs ← Cluster.kNearest num clusters doc
+    --               fun (_, d) e => distL2Sq d e
+    -- let finish ← IO.monoMsNow
+    -- IO.eprintln s!"Found nearest in {finish - start} ms"
+    -- let out :=
+    --     embs.map fun (((_, _, _, name), _), _) => name
+    -- IO.println out
