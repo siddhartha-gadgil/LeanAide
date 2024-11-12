@@ -26,8 +26,6 @@ unsafe def checkAndFetch (descField: String) : IO Unit := do
     IO.eprintln out
 
 unsafe def main (args: List String) : IO Unit := do
-  for descField in ["docString", "description", "concise-description"] do
-    checkAndFetch descField
   let inp := args.get! 0
   let (descField, doc, num, penalty) :=
     match Json.parse inp with
@@ -39,6 +37,7 @@ unsafe def main (args: List String) : IO Unit := do
         |>.getD inp,
       j.getObjValAs? Nat "n" |>.toOption.getD 10,
       j.getObjValAs? Float "penalty" |>.toOption.getD 2.0)
+  checkAndFetch descField
   logTimed s!"finding nearest to `{doc}`"
   let picklePath ← picklePath descField
   withUnpickle  picklePath <|
