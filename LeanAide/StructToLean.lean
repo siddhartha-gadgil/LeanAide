@@ -359,7 +359,7 @@ def conclusionTactic (conclusion: String)(context: Array Json) (qp: CodeGenerato
     conclusionTerm? |>.toOption.getD (mkConst ``True)
   let conclusionTerm' : Syntax.Term ← delab conclusionTerm
   let tac ← `(tactic| auto?)
-  `(tactic| have : $conclusionTerm':term := by $tac:tactic)
+  `(tactic| first | done |have : $conclusionTerm':term := by $tac:tactic)
 
 def contradictionTactics (statement: String)
     (pf: Array Syntax.Tactic)(context: Array Json) (qp: CodeGenerator) : TranslateM <| Array Syntax.Tactic := do
