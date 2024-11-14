@@ -200,6 +200,8 @@ example : 2 ≤ 1 := by
   try plausible
   sorry
 
+-- example : 2 * (k + 1) * (2 * (k + 1)) = 2 * (2 * k ^ 2 + 3 * k + 1) := by plausible
+
 #check Nat.infinite_setOf_prime
 #check lambdaTelescope
 
@@ -210,6 +212,7 @@ def omitEg : MetaM Syntax := do
 
 #check delab
 #check withOptions
+#check Lean.exprDependsOn
 
 set_option pp.match false in
 set_option pp.proofs false in

@@ -4,7 +4,7 @@ import LeanCodePrompts.Translate
 set_option lean_aide.translate.model "gpt-4o" -- remove to use "gpt-3.5-turbo"
 
 -- set_option lean_aide.translate.azure true
-set_option lean_aide.translate.greedy true
+-- set_option lean_aide.translate.greedy true
 
 theorem infinitude_odds : l!"There are infinitely many odd numbers" :=
   by

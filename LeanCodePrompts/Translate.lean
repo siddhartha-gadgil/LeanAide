@@ -179,9 +179,12 @@ def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true)
 def Translator.getLeanCodeJson (s: String)
     (translator : Translator)(header: String := "Theorem") : TranslateM <| Json × Json × Array (String × Json) := do
   logTimed s!"translating string `{s}` with  examples"
+  IO.eprintln s!"translating string `{s}` with  examples"
   setContext s
   match ← getCachedJson? s with
-  | some js => return js
+  | some js =>
+    IO.eprintln s!"cached json found"
+    return js
   | none =>
     let pending ←  pendingJsonQueries.get
     if pending.contains s then pollCacheJson s
@@ -189,7 +192,9 @@ def Translator.getLeanCodeJson (s: String)
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.insert s)
       -- work starts here; before this was caching, polling etc
+      IO.eprintln s!"getting prompt pairs"
       let docPairs ← translator.pb.getPromptPairs s
+      IO.eprintln s!"Got prompt pairs"
       let dfns ← translator.relDefs.blob s docPairs
       let promptPairs := translatePromptPairs docPairs dfns
       trace[Translate.info] m!"prompt pairs: \n{promptPairs}"
@@ -197,6 +202,7 @@ def Translator.getLeanCodeJson (s: String)
         translateMessages s promptPairs header translator.toChat translator.server.hasSysPrompt
       trace[Translate.info] m!"prompt: \n{messages.pretty}"
       logTimed "querying server"
+      IO.eprintln s!"querying server"
       let fullJson ← translator.server.query messages translator.params
       let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
@@ -486,7 +492,7 @@ namespace Translator
 /--
 Translate a string and output as a string.
 -/
-def translateViewM (s: String)(translator : Translator) : TranslateM String := do
+def translateViewM (s: String)(translator : Translator := {}) : TranslateM String := do
   logTimed "starting translation"
   let (js, _) ← translator.getLeanCodeJson  s
   let output ← getMessageContents js

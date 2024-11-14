@@ -136,8 +136,8 @@ def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM 
   trace[Translate.info] "Model query: {data}"
   let url ← server.url
   let authHeader? ← server.authHeader?
-  -- IO.eprintln s!"Querying {url} at {← IO.monoMsNow }"
-  -- let start ← IO.monoMsNow
+  IO.eprintln s!"Querying {url} at {← IO.monoMsNow }"
+  let start ← IO.monoMsNow
   let baseArgs :=
     #[url, "-X", "POST", "-H", "Content-Type: application/json"]
   let args := match authHeader? with
@@ -149,13 +149,14 @@ def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM 
     ("url", Json.str url),
     ("arguments", Json.arr <| baseArgs.map (Json.str)),
     ("data", data)]
-  -- IO.eprintln s!"Received response from {url} at {← IO.monoMsNow }; time taken: {(← IO.monoMsNow) - start}"
+  IO.eprintln s!"Received response from {url} at {← IO.monoMsNow }; time taken: {(← IO.monoMsNow) - start}"
   match Lean.Json.parse output with
   | Except.ok j =>
     appendLog "chat_queries"
       (Json.mkObj [("query", queryJs), ("success", true), ("response", j)])
     return j
   | Except.error e =>
+    IO.eprintln s!"Error parsing JSON: {e}; source: {output}"
     appendLog "chat_queries"
       (Json.mkObj [("query", queryJs), ("success", false), ("error", e), ("response", output)])
     return .null
@@ -175,6 +176,7 @@ def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Jso
       IO.FS.writeFile file result.pretty
       return result
   else
+    IO.eprintln s!"Querying server"
     let result ←  queryAux server messages params
     IO.FS.writeFile file result.pretty
     return result

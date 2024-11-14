@@ -190,7 +190,9 @@ partial def getPromptPairsOrderedAux (pb: PromptExampleBuilder)
         getNearestEmbeddingsFull query (← embedQueryCached query) n p (descField := descField) (dataMap := dataMap)
       match ← pairsFromEmbeddingJson outJs with
       | Except.ok jsArr => return jsArr
-      | Except.error e => throwError e
+      | Except.error e =>
+        IO.eprintln s!"Could not parse JSON from embedding output: {outJs}; error: {e}"
+        throwError e
   | leansearch descFields preferDocs n =>
     let jsArr ← getLeanSearchQueryJsonArray query n
     let srs := jsArr.filterMap SearchResult.ofLeanSearchJson?
@@ -234,6 +236,7 @@ def getPromptPairsOrdered (pb: PromptExampleBuilder)
         | Except.ok pairs  =>
           return pairs
     else do
+      IO.eprintln s!"Getting prompt pairs, no cache"
       let pairs ← getPromptPairsOrderedAux pb query
       let js := toJson pairs
       IO.FS.writeFile file js.compress
