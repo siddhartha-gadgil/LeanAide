@@ -107,11 +107,7 @@ def hasSysPrompt : ChatServer → Bool
 
 def authHeader? : ChatServer → IO (Option String)
   | openAI _ => do
-    let key? ← openAIKey
-    let key :=
-    match key? with
-      | some k => k
-      | none => panic! "OPENAI_API_KEY not set"
+    let key ←  openAIKey
     return some <|"Authorization: Bearer " ++ key
   | azure .. => do
     let key? ← azureKey

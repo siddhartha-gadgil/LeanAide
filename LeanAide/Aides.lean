@@ -268,7 +268,17 @@ def structuralTerm (stx: Syntax) : MetaM Bool := do
     -- IO.println s!"function with name: {n}; blocked: {check}"
     return check
 
-def openAIKey : IO (Option String) := IO.getEnv "OPENAI_API_KEY"
+def openAIKey? : IO (Option String) := IO.getEnv "OPENAI_API_KEY"
+
+def openAIKey : IO String := do
+  match ← openAIKey? with
+      | some k => return k
+      | none =>
+          let path : System.FilePath := "rawdata" / "OPENAI_API_KEY"
+          if (← path.pathExists) then
+            return (← IO.FS.readFile path).trim
+          else
+            panic! "OPENAI_API_KEY not set"
 
 def azureKey : IO (Option String) := IO.getEnv "AZURE_OPENAI_KEY"
 

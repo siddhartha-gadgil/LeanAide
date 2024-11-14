@@ -50,11 +50,7 @@ def nearestDocsToDocFullEmbeddingConc (data : EmbedData)
   return (tuples.map <| fun (((doc, thm, isProp, name), _), d) => (doc, thm, isProp, name, d)).toList
 
 def embedQuery (doc: String) : IO <| Except String Json := do
-  let key? ← openAIKey
-  let key :=
-    match key? with
-    | some k => k
-    | none => panic! "OPENAI_API_KEY not set"
+  let key ← openAIKey
   let dataJs := Json.mkObj
       [("input", doc), ("model", "text-embedding-ada-002")]
   let data := dataJs.pretty
