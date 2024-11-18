@@ -6,7 +6,6 @@ import Plausible.Tactic
 
 open Lean Meta Elab Tactic Plausible
 
-/-- Run a test suite for `p` in `BaseIO` using the global RNG in `stdGenRef`. -/
 def Plausible.Testable.checkDirect (p : Prop) [Testable p] (cfg : Configuration := {})(defaultSeed : Nat) : TestResult p :=
   let seed := cfg.randomSeed.getD defaultSeed
   let suite : RandT Id (TestResult p) := Testable.runSuite p cfg
@@ -15,7 +14,7 @@ def Plausible.Testable.checkDirect (p : Prop) [Testable p] (cfg : Configuration 
 
 
 def getProof? (p e: Expr) : MetaM <| Option Expr := do
-  let p ← instantiateMVars p
+  -- let p ← instantiateMVars p
   let n ← mkFreshExprMVar <| mkConst ``Nat
   let s ← mkFreshExprMVar <| ← mkAppM ``List #[mkConst ``String]
   let np ← mkAppM ``Not #[p]
@@ -26,12 +25,14 @@ def getProof? (p e: Expr) : MetaM <| Option Expr := do
   else
     return none
 
-#check Plausible.TestResult.failure
-
-def findDisproof (p: Expr) : MetaM <| Option Expr := do
+def findDisproof? (p: Expr) : MetaM <| Option Expr := do
   try
-    let inst ← synthInstance (← mkAppM ``Testable #[p])
-    -- logInfo m!"Found instance"
+    unless ← isProp p do
+      return none
+    let p' ← Decorations.addDecorations p
+    logInfo "Added decorations"
+    let inst ← synthInstance (← mkAppM ``Testable #[p'])
+    logInfo m!"Found instance"
     let cfg : Configuration := {}
     let cfg : Configuration := {cfg with
     traceDiscarded := cfg.traceDiscarded || (← isTracingEnabledFor `plausible.discarded),
@@ -40,16 +41,37 @@ def findDisproof (p: Expr) : MetaM <| Option Expr := do
     traceShrinkCandidates := cfg.traceShrinkCandidates
       || (← isTracingEnabledFor `plausible.shrink.candidates) }
     let defaultSeed ← IO.rand 0 1000000
+    logInfo "Checking direct"
     let testResult ← mkAppOptM ``Testable.checkDirect #[p, inst, toExpr cfg, toExpr defaultSeed]
-    let testResult ← reduce testResult
+    let testResult ← whnf testResult
+    logInfo m!"Reduced test result {← ppExpr testResult}"
     getProof? p testResult
-  catch _ =>
+  catch e =>
+    logWarning m!"Failed to find disproof: {e.toMessageData}"
     return none
+
+def proveVacuous? (p: Expr) : MetaM <| Option Expr := do
+  match p with
+  | .forallE n d b bi =>
+    withLocalDecl n bi d fun x => do
+      let b := b.instantiate1 x
+      let contra? ← findDisproof? d -- proof of ¬d
+      match contra? with
+      | some contra =>
+        let pfFalse ← mkAppM' contra #[x]
+        let pfBody ← mkAppOptM ``False.elim #[b, pfFalse]
+        mkLambdaFVars #[x] pfBody
+      | none =>
+        return none
+  | _ =>
+    return none
+
+#check False.elim
 
 elab "find_disproof" type:term : term => do
   let p ← Term.elabType type
   -- logInfo m!"Finding disproof of {p}"
-  let disproof ← findDisproof p
+  let disproof ← findDisproof? p
   match disproof with
   | some contra =>
     -- logInfo m!"Found disproof: {contra}"
@@ -58,4 +80,20 @@ elab "find_disproof" type:term : term => do
     logWarning m!"No disproof found"
     return mkConst ``False
 
-#check find_disproof ((2 : Nat) < 3)
+#check find_disproof ((2 : Nat) < 1)
+
+elab "prove_vacuous" type:term : term => do
+  let p ← Term.elabType type
+  let vacuous ← proveVacuous? p
+  match vacuous with
+  | some pf =>
+    return pf
+  | none =>
+    logWarning m!"No vacuous proof found"
+    return mkConst ``False
+
+#check prove_vacuous ((2 : Nat) < 1) → 1 ≤ 3
+
+#check find_disproof (∀ n: Nat, n < (4: Nat))
+
+-- example : ∀ n: Nat, n < 4 := by plausible
