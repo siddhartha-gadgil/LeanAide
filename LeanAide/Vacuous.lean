@@ -1,8 +1,5 @@
 import Lean
 import Plausible
-import Plausible.Testable
-import Plausible.Attr
-import Plausible.Tactic
 
 open Lean Meta Elab Tactic Plausible
 
@@ -14,7 +11,6 @@ def Plausible.Testable.checkDirect (p : Prop) [Testable p] (cfg : Configuration 
 
 
 def getProof? (p e: Expr) : MetaM <| Option Expr := do
-  -- let p ← instantiateMVars p
   let n ← mkFreshExprMVar <| mkConst ``Nat
   let s ← mkFreshExprMVar <| ← mkAppM ``List #[mkConst ``String]
   let np ← mkAppM ``Not #[p]
@@ -30,9 +26,7 @@ def findDisproof? (p: Expr) : MetaM <| Option Expr := do
     unless ← isProp p do
       return none
     let p' ← Decorations.addDecorations p
-    logInfo "Added decorations"
     let inst ← synthInstance (← mkAppM ``Testable #[p'])
-    logInfo m!"Found instance"
     let cfg : Configuration := {}
     let cfg : Configuration := {cfg with
     traceDiscarded := cfg.traceDiscarded || (← isTracingEnabledFor `plausible.discarded),
@@ -41,10 +35,8 @@ def findDisproof? (p: Expr) : MetaM <| Option Expr := do
     traceShrinkCandidates := cfg.traceShrinkCandidates
       || (← isTracingEnabledFor `plausible.shrink.candidates) }
     let defaultSeed ← IO.rand 0 1000000
-    logInfo "Checking direct"
     let testResult ← mkAppOptM ``Testable.checkDirect #[p, inst, toExpr cfg, toExpr defaultSeed]
-    let testResult ← whnf testResult
-    logInfo m!"Reduced test result {← ppExpr testResult}"
+    let testResult ← reduce testResult -- crashes
     getProof? p testResult
   catch e =>
     logWarning m!"Failed to find disproof: {e.toMessageData}"
@@ -65,8 +57,6 @@ def proveVacuous? (p: Expr) : MetaM <| Option Expr := do
         return none
   | _ =>
     return none
-
-#check False.elim
 
 elab "find_disproof" type:term : term => do
   let p ← Term.elabType type
@@ -92,8 +82,9 @@ elab "prove_vacuous" type:term : term => do
     logWarning m!"No vacuous proof found"
     return mkConst ``False
 
+/-
+fun a => False.elim (Nat.not_le_of_not_ble_eq_true (fun h => Bool.noConfusion h) a) : 2 < 1 → 1 ≤ 3
+-/
 #check prove_vacuous ((2 : Nat) < 1) → 1 ≤ 3
 
-#check find_disproof (∀ n: Nat, n < (4: Nat))
-
--- example : ∀ n: Nat, n < 4 := by plausible
+-- #check find_disproof (∀ n: Nat, n < (4: Nat))

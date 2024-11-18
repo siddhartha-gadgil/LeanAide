@@ -165,6 +165,10 @@ lean_exe cubecode {
   supportInterpreter := true
 }
 
+lean_exe putnamelab {
+  supportInterpreter := true
+}
+
 lean_lib Scratch {
 }
 

@@ -1,0 +1,113 @@
+[{"parsed":
+  {"text":
+   "∀ {f : ℝ → ℝ} {a b : ℝ}, a < b → 2 ≤ b - a → (∀ x ∈ Icc a b, |f x| ≤ 1) → (∀ x ∈ Icc a b, |f'' x| ≤ 1) → ∀ x ∈ Icc a b, |f' x| ≤ 2",
+   "elabError":
+   "unknown identifier 'Icc' ; identifiers [f, a, b, a, b, b, a, x, Icc, a, b, f, x, x, Icc, a, b, f'', x, x, Icc, a, b, f', x] (during elaboration) for ∀ {f : ℝ → ℝ} {a b : ℝ}, a < b → 2 ≤ b - a → (∀ x ∈ Icc a b, |f x| ≤ 1) → (∀ x ∈ Icc a b, |f'' x| ≤ 1) → ∀ x ∈ Icc a b, |f' x| ≤ 2",
+   "context?":
+   "Assume that $\\lvert f(x) \\rvert \\le 1$ and $\\lvert f''(x) \\rvert \\le 1$ for all $x$ on an interval of length at least 2. Show that $\\lvert f'(x) \\rvert \\le 2$ on the interval.",
+   "cmdErrors":
+   ["failed to synthesize\n  AddGroup ℕ\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+    "failed to synthesize\n  AddGroup ℕ\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+    "function expected at\n  Icc\nterm has type\n  ?m.201",
+    "function expected at\n  Icc\nterm has type\n  ?m.201",
+    "function expected at\n  f''\nterm has type\n  ?m.807",
+    "function expected at\n  Icc\nterm has type\n  ?m.201",
+    "function expected at\n  f'\nterm has type\n  ?m.2748"]}},
+ {"parsed":
+  {"text":
+   "∀ {f : ℝ → ℝ} {a b : ℝ},\n  2 ≤ b - a →\n    (∀ x ∈ Icc a b, |f x| ≤ 1) →\n      (∀ x ∈ Icc a b, HasDerivWithinAt f (f' x) (Icc a b) x) →\n        (∀ x ∈ Icc a b, HasDerivWithinAt f' (f'' x) (Icc a b) x) →\n          (∀ x ∈ Icc a b, |f'' x| ≤ 1) → ∀ x ∈ Icc a b, |f' x| ≤ 2",
+   "elabError":
+   "unknown identifier 'Icc' ; identifiers [f, a, b, b, a, x, Icc, a, b, f, x, x, Icc, a, b, HasDerivWithinAt, f, f', x, Icc, a, b, x, x, Icc, a, b, HasDerivWithinAt, f', f'', x, Icc, a, b, x, x, Icc, a, b, f'', x, x, Icc, a, b, f', x] (during elaboration) for ∀ {f : ℝ → ℝ} {a b : ℝ},   2 ≤ b - a →     (∀ x ∈ Icc a b, |f x| ≤ 1) →       (∀ x ∈ Icc a b, HasDerivWithinAt f (f' x) (Icc a b) x) →         (∀ x ∈ Icc a b, HasDerivWithinAt f' (f'' x) (Icc a b) x) →           (∀ x ∈ Icc a b, |f'' x| ≤ 1) → ∀ x ∈ Icc a b, |f' x| ≤ 2",
+   "context?":
+   "Assume that $\\lvert f(x) \\rvert \\le 1$ and $\\lvert f''(x) \\rvert \\le 1$ for all $x$ on an interval of length at least 2. Show that $\\lvert f'(x) \\rvert \\le 2$ on the interval.",
+   "cmdErrors":
+   ["failed to synthesize\n  AddGroup ℕ\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+    "function expected at\n  Icc\nterm has type\n  ?m.193",
+    "function expected at\n  Icc\nterm has type\n  ?m.193",
+    "function expected at\n  Icc\nterm has type\n  ?m.193",
+    "function expected at\n  Icc\nterm has type\n  ?m.193",
+    "function expected at\n  f''\nterm has type\n  ?m.2357",
+    "function expected at\n  Icc\nterm has type\n  ?m.193",
+    "function expected at\n  Icc\nterm has type\n  ?m.193",
+    "function expected at\n  f''\nterm has type\n  ?m.2357",
+    "function expected at\n  Icc\nterm has type\n  ?m.193"]}},
+ {"parsed":
+  {"text":
+   "∀ {f : ℝ → ℝ} {a b : ℝ},\n  a < b → 2 ≤ b - a →\n    (∀ x ∈ Icc a b, |f x| ≤ 1) →\n      (∀ x ∈ Icc a b, |iterated_deriv 2 f x| ≤ 1) →\n        ∀ x ∈ Icc a b, |deriv f x| ≤ 2",
+   "elabError":
+   "unknown identifier 'Icc' ; identifiers [f, a, b, a, b, b, a, x, Icc, a, b, f, x, x, Icc, a, b, iterated_deriv, f, x, x, Icc, a, b, deriv, f, x] (during elaboration) for ∀ {f : ℝ → ℝ} {a b : ℝ},   a < b → 2 ≤ b - a →     (∀ x ∈ Icc a b, |f x| ≤ 1) →       (∀ x ∈ Icc a b, |iterated_deriv 2 f x| ≤ 1) →         ∀ x ∈ Icc a b, |deriv f x| ≤ 2",
+   "context?":
+   "Assume that $\\lvert f(x) \\rvert \\le 1$ and $\\lvert f''(x) \\rvert \\le 1$ for all $x$ on an interval of length at least 2. Show that $\\lvert f'(x) \\rvert \\le 2$ on the interval.",
+   "cmdErrors":
+   ["failed to synthesize\n  AddGroup ℕ\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+    "function expected at\n  Icc\nterm has type\n  ?m.201",
+    "function expected at\n  Icc\nterm has type\n  ?m.201",
+    "function expected at\n  iterated_deriv\nterm has type\n  ?m.807",
+    "function expected at\n  Icc\nterm has type\n  ?m.201"]}},
+ {"parsed":
+  {"text":
+   "∀ {f : ℝ → ℝ} {a b : ℝ},\n  2 ≤ b - a →\n    (∀ x ∈ Icc a b, |f x| ≤ 1) →\n      (∀ x ∈ Icc a b, HasDerivAt f (deriv f x) x ∧ HasDerivAt (deriv f) (deriv (deriv f) x) x ∧ |deriv (deriv f) x| ≤ 1) →\n        ∀ x ∈ Icc a b, |deriv f x| ≤ 2",
+   "elabError":
+   "unknown identifier 'Icc' ; identifiers [f, a, b, b, a, x, Icc, a, b, f, x, x, Icc, a, b, HasDerivAt, f, deriv, f, x, x, HasDerivAt, deriv, f, deriv, deriv, f, x, x, deriv, deriv, f, x, x, Icc, a, b, deriv, f, x] (during elaboration) for ∀ {f : ℝ → ℝ} {a b : ℝ},   2 ≤ b - a →     (∀ x ∈ Icc a b, |f x| ≤ 1) →       (∀ x ∈ Icc a b, HasDerivAt f (deriv f x) x ∧ HasDerivAt (deriv f) (deriv (deriv f) x) x ∧ |deriv (deriv f) x| ≤ 1) →         ∀ x ∈ Icc a b, |deriv f x| ≤ 2",
+   "context?":
+   "Assume that $\\lvert f(x) \\rvert \\le 1$ and $\\lvert f''(x) \\rvert \\le 1$ for all $x$ on an interval of length at least 2. Show that $\\lvert f'(x) \\rvert \\le 2$ on the interval.",
+   "cmdErrors":
+   ["function expected at\n  Icc\nterm has type\n  ?m.193",
+    "function expected at\n  Icc\nterm has type\n  ?m.193",
+    "function expected at\n  Icc\nterm has type\n  ?m.193"]}},
+ {"parsed":
+  {"text":
+   "∀ {f : ℝ → ℝ} {a b : ℝ},\n  2 ≤ b - a →\n    (∀ x ∈ Icc a b, |f x| ≤ 1) →\n      (∀ x ∈ Icc a b, |f'' x| ≤ 1) → ∀ x ∈ Icc a b, |f' x| ≤ 2",
+   "elabError":
+   "unknown identifier 'Icc' ; identifiers [f, a, b, b, a, x, Icc, a, b, f, x, x, Icc, a, b, f'', x, x, Icc, a, b, f', x] (during elaboration) for ∀ {f : ℝ → ℝ} {a b : ℝ},   2 ≤ b - a →     (∀ x ∈ Icc a b, |f x| ≤ 1) →       (∀ x ∈ Icc a b, |f'' x| ≤ 1) → ∀ x ∈ Icc a b, |f' x| ≤ 2",
+   "context?":
+   "Assume that $\\lvert f(x) \\rvert \\le 1$ and $\\lvert f''(x) \\rvert \\le 1$ for all $x$ on an interval of length at least 2. Show that $\\lvert f'(x) \\rvert \\le 2$ on the interval.",
+   "cmdErrors":
+   ["failed to synthesize\n  AddGroup ℕ\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+    "failed to synthesize\n  AddGroup ℕ\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+    "function expected at\n  Icc\nterm has type\n  ?m.193",
+    "function expected at\n  Icc\nterm has type\n  ?m.193",
+    "function expected at\n  f''\nterm has type\n  ?m.794",
+    "function expected at\n  Icc\nterm has type\n  ?m.193",
+    "function expected at\n  f'\nterm has type\n  ?m.2730"]}},
+ {"parsed":
+  {"text":
+   "∀ {f : ℝ → ℝ} {a b : ℝ},\n  2 ≤ b - a →\n    (∀ x ∈ Icc a b, |f x| ≤ 1) →\n      (∀ x ∈ Icc a b, ‖derivWithin (derivWithin f (Icc a b)) (Icc a b) x‖ ≤ 1) →\n        ∀ x ∈ Icc a b, ‖derivWithin f (Icc a b) x‖ ≤ 2",
+   "elabError":
+   "unknown identifier 'Icc' ; identifiers [f, a, b, b, a, x, Icc, a, b, f, x, x, Icc, a, b, derivWithin, derivWithin, f, Icc, a, b, Icc, a, b, x, x, Icc, a, b, derivWithin, f, Icc, a, b, x] (during elaboration) for ∀ {f : ℝ → ℝ} {a b : ℝ},   2 ≤ b - a →     (∀ x ∈ Icc a b, |f x| ≤ 1) →       (∀ x ∈ Icc a b, ‖derivWithin (derivWithin f (Icc a b)) (Icc a b) x‖ ≤ 1) →         ∀ x ∈ Icc a b, ‖derivWithin f (Icc a b) x‖ ≤ 2",
+   "context?":
+   "Assume that $\\lvert f(x) \\rvert \\le 1$ and $\\lvert f''(x) \\rvert \\le 1$ for all $x$ on an interval of length at least 2. Show that $\\lvert f'(x) \\rvert \\le 2$ on the interval.",
+   "cmdErrors":
+   ["function expected at\n  Icc\nterm has type\n  ?m.193",
+    "function expected at\n  Icc\nterm has type\n  ?m.193",
+    "function expected at\n  Icc\nterm has type\n  ?m.193",
+    "function expected at\n  Icc\nterm has type\n  ?m.193",
+    "function expected at\n  Icc\nterm has type\n  ?m.193",
+    "function expected at\n  Icc\nterm has type\n  ?m.193"]}},
+ {"parsed":
+  {"text":
+   "∀ {f : ℝ → ℝ} {a b : ℝ},\n  2 ≤ b - a →\n    (∀ x ∈ Set.Icc a b, |f x| ≤ 1) →\n      (∀ x ∈ Set.Icc a b, |f'' x| ≤ 1) → ∀ x ∈ Set.Icc a b, |f' x| ≤ 2",
+   "elabError":
+   "unknown identifier 'f''' ; identifiers [f, a, b, b, a, x, Set.Icc, a, b, f, x, x, Set.Icc, a, b, f'', x, x, Set.Icc, a, b, f', x] (during elaboration) for ∀ {f : ℝ → ℝ} {a b : ℝ},   2 ≤ b - a →     (∀ x ∈ Set.Icc a b, |f x| ≤ 1) →       (∀ x ∈ Set.Icc a b, |f'' x| ≤ 1) → ∀ x ∈ Set.Icc a b, |f' x| ≤ 2",
+   "context?":
+   "Assume that $\\lvert f(x) \\rvert \\le 1$ and $\\lvert f''(x) \\rvert \\le 1$ for all $x$ on an interval of length at least 2. Show that $\\lvert f'(x) \\rvert \\le 2$ on the interval.",
+   "cmdErrors":
+   ["failed to synthesize\n  AddGroup ℕ\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+    "failed to synthesize\n  AddGroup ℕ\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+    "function expected at\n  f''\nterm has type\n  ?m.532",
+    "function expected at\n  f'\nterm has type\n  ?m.2288"]}},
+ {"parsed":
+  {"text":
+   "∀ {f : ℝ → ℝ} {a b : ℝ},\n  2 ≤ b - a →\n    (∀ x ∈ Set.Icc a b, |f x| ≤ 1) →\n      (∀ x ∈ Set.Icc a b, HasDerivAt f (f' x) x) →\n        (∀ x ∈ Set.Icc a b, HasDerivAt (f' x) (f'' x) x) →\n          (∀ x ∈ Set.Icc a b, |f'' x| ≤ 1) →\n            ∀ x ∈ Set.Icc a b, |f' x| ≤ 2",
+   "elabError":
+   "unknown identifier 'f'' ; identifiers [f, a, b, b, a, x, Set.Icc, a, b, f, x, x, Set.Icc, a, b, HasDerivAt, f, f', x, x, x, Set.Icc, a, b, HasDerivAt, f', x, f'', x, x, x, Set.Icc, a, b, f'', x, x, Set.Icc, a, b, f', x] (during elaboration) for ∀ {f : ℝ → ℝ} {a b : ℝ},   2 ≤ b - a →     (∀ x ∈ Set.Icc a b, |f x| ≤ 1) →       (∀ x ∈ Set.Icc a b, HasDerivAt f (f' x) x) →         (∀ x ∈ Set.Icc a b, HasDerivAt (f' x) (f'' x) x) →           (∀ x ∈ Set.Icc a b, |f'' x| ≤ 1) →             ∀ x ∈ Set.Icc a b, |f' x| ≤ 2",
+   "context?":
+   "Assume that $\\lvert f(x) \\rvert \\le 1$ and $\\lvert f''(x) \\rvert \\le 1$ for all $x$ on an interval of length at least 2. Show that $\\lvert f'(x) \\rvert \\le 2$ on the interval.",
+   "cmdErrors":
+   ["failed to synthesize\n  AddGroup ℕ\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+    "failed to synthesize\n  AddGroup ℕ\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+    "function expected at\n  f'\nterm has type\n  ?m.735",
+    "function expected at\n  f'\nterm has type\n  ?m.735",
+    "function expected at\n  f''\nterm has type\n  ?m.1910",
+    "function expected at\n  f''\nterm has type\n  ?m.1910",
+    "function expected at\n  f'\nterm has type\n  ?m.735"]}}]
