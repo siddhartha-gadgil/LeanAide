@@ -259,3 +259,5 @@ example : True := by
 
 #check Nat.exists_infinite_primes
 -- #moogle "There are infinitely many even numbers."
+
+#check False.elim
