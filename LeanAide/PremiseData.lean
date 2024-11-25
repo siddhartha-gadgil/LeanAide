@@ -137,9 +137,13 @@ def foldContext (type: Syntax.Term) : List Syntax → CoreM (Syntax.Term)
         `([$type] → $tailType)
     | `(bracketedBinderF|⦃$n:ident : $type:term⦄) => do
         `(($n : $type) → $tailType)
+    | `(bracketedBinderF|($n:ident : $type:term)) => do
+        `(($n : $type) → $tailType)
     | _ =>
         IO.println s!"foldContext: {x}, i.e., {x.reprint.get!} could not be folded"
         return type
+
+#check Term.explicitBinder
 
 -- #check letDecl
 
@@ -710,9 +714,19 @@ def DefData.statementWithDoc (data: DefData)(doc: String)
     mkStatementWithDoc
         (some data.name) data.type value? data.isProp useExample doc
 
+def relType (xs:  List (TSyntax [`ident, `Lean.Parser.Term.hole, `Lean.Parser.Term.bracketedBinder])) (type: Syntax.Term) : MetaM Syntax.Term := do
+    match xs with
+    | [] => return type
+    | h :: t =>
+        let prev ← relType t type
+        `(h → $prev)
+
+#check foldContext
+
 def DefData.ofSyntax? (stx: Syntax) : MetaM <| Option DefData := do
     match stx with
-    | `(command| def $n:ident : $type := $val) =>
+    | `(command| def $n:ident $xs* : $type := $val) => do
+        let type ← foldContext type xs.toList
         let name := n.getId
         let type := type
         let value := val
@@ -720,7 +734,8 @@ def DefData.ofSyntax? (stx: Syntax) : MetaM <| Option DefData := do
         let typeDepth := none
         let valueDepth := none
         return some ⟨name, type, value, isProp, typeDepth, valueDepth, []⟩
-    | `(command| theorem $n:ident : $type := $val) =>
+    | `(command| theorem $n:ident $xs* : $type := $val) =>
+        let type ← foldContext type xs.toList
         let name := n.getId
         let type := type
         let value := val

@@ -296,6 +296,9 @@ do
     consider (← putnamProblem i)
     -- translateText
 
+#session def_eg := do
+  translateDef "Let \\( \\delta(x) \\) be the greatest odd divisor of the positive integer \\( x \\)" `δ
+
 end LeanAide.Translate
 
 
