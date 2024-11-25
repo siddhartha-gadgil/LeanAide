@@ -1,0 +1,29 @@
+[{"res":
+  "Suppose that $f : \\mathbb{R} \\to \\mathbb{R}$ is continuous on $(-\\infty, \\infty)$ and that $\\int_{-\\infty}^{\\infty} f(x) dx$ exists. Prove that $$\\int_{-\\infty}^{\\infty} f\\left(x - \\frac{1}{x}\\right) dx = \\int_{-\\infty}^{\\infty} f(x) dx.$$",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Suppose that $f : \\mathbb{R} \\to \\mathbb{R}$ is continuous on $(-\\infty, \\infty)$ and that $\\int_{-\\infty}^{\\infty} f(x) dx$ exists. Prove that $$\\int_{-\\infty}^{\\infty} f\\left(x - \\frac{1}{x}\\right) dx = \\int_{-\\infty}^{\\infty} f(x) dx.$$",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView":
+   "∀ {f : ℝ → ℝ}, Continuous f → ∫ (x : ℝ) in Set.univ, f (x - 1 / x) = ∫ (x : ℝ) in Set.univ, f x",
+   "roundTripFailures":
+   [["Suppose that $f : \\mathbb{R} \\to \\mathbb{R}$ is continuous on $(-\\infty, \\infty)$ and that $\\int_{-\\infty}^{\\infty} f(x) dx$ exists. Prove that $$\\int_{-\\infty}^{\\infty} f\\left(x - \\frac{1}{x}\\right) dx = \\int_{-\\infty}^{\\infty} f(x) dx.$$",
+     [[false,
+       "false\nTheorem 2 does not assume that the integral of \\( f \\) over \\( \\mathbb{R} \\) exists."]]]],
+   "roundTripCheck": false,
+   "groups":
+   [["∀ {f : ℝ → ℝ}, Continuous f → ∫ (x : ℝ) in Set.univ, f (x - 1 / x) = ∫ (x : ℝ) in Set.univ, f x",
+     "∀ {f : ℝ → ℝ}, Continuous f → ∫ (x : ℝ) in Set.univ, f (x - 1 / x) = ∫ (x : ℝ) in Set.univ, f x"],
+    ["∀ {f : ℝ → ℝ}, ContinuousOn f Set.univ → ∫ (x : ℝ) in Set.Ioi 0, f (x - 1 / x) + f (-x + 1 / x) = ∫ (x : ℝ), f x"],
+    ["∀ {f : ℝ → ℝ}, ContinuousOn f Set.univ → ∫ (x : ℝ) in Set.univ, f (x - 1 / x) = ∫ (x : ℝ) in Set.univ, f x"],
+    ["sorryAx (Sort ?u.13624)"]],
+   "allElaborated":
+   ["∀ {f : ℝ → ℝ},\n  ContinuousOn f Set.univ →\n    MeasureTheory.IntegrableOn f MeasureTheory.volume Set.univ →\n      ∫ (x : ℝ) in Set.univ, f (x - 1/x) = ∫ (x : ℝ) in Set.univ, f x",
+    "∀ {f : ℝ → ℝ},\n  Continuous f →\n    IntegrableOn f MeasureTheory.volume Set.univ →\n      ∫ (x : ℝ) in Set.univ, f (x - 1 / x) = ∫ (x : ℝ) in Set.univ, f x",
+    "theorem integral_shift_invariance {f : ℝ → ℝ} \n  (h_cont : Continuous f) \n  (h_int : IntervalIntegrable f MeasureTheory.volume (-∞) ∞) : \n  ∫ (x : ℝ) in (-∞)..∞, f(x - 1/x) = ∫ (x : ℝ) in (-∞)..∞, f x := \nsorry",
+    "∀ {f : ℝ → ℝ},\n  Continuous f →\n    IntegrableOn f MeasureTheory.volume Set.univ →\n      ∫ (x : ℝ) in Set.univ, f (x - 1 / x) = ∫ (x : ℝ) in Set.univ, f x",
+    "∀ {f : ℝ → ℝ},\n  ContinuousOn f Set.univ →\n    IntegrableOn f MeasureTheory.volume Set.univ →\n      (∫ x in Set.Ioi (0 : ℝ), f (x - 1 / x) + f (-x + 1 / x) ∂MeasureTheory.volume) = ∫ x, f x ∂MeasureTheory.volume",
+    "import measure_theory.integral.interval_integral\n\ntheorem integral_translation {f : ℝ → ℝ} (hf : Continuous f)\n  (h_int : IntervalIntegrable f MeasureTheory.volume 0 1) :\n  ∫ x : ℝ, f (x - 1/x) = ∫ x : ℝ, f x :=\nsorry"]},
+  "cmd": "translate"}]

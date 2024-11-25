@@ -1,0 +1,17 @@
+[{"res":
+  "Find $$\\lim_{n \\to \\infty} \\int_{0}^{1} \\int_{0}^{1} \\cdots \\int_{0}^{1} \\cos^2\\left(\\frac{\\pi}{2n}(x_1 + x_2 + \\cdots + x_n)\\right) dx_1 dx_2 \\cdots dx_n.$$Show that the limit is $\\frac{1}{2}$.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Find $$\\lim_{n \\to \\infty} \\int_{0}^{1} \\int_{0}^{1} \\cdots \\int_{0}^{1} \\cos^2\\left(\\frac{\\pi}{2n}(x_1 + x_2 + \\cdots + x_n)\\right) dx_1 dx_2 \\cdots dx_n.$$Show that the limit is $\\frac{1}{2}$.",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView":
+   "Filter.Tendsto\n  (fun n =>\n    ∫ (x : Fin n → ℝ) in Set.Icc (Function.const (Fin n) 0) (Function.const (Fin n) 1),\n      Real.cos (Real.pi / (2 * ↑n) * ∑ i : Fin n, x i) ^ 2)\n  Filter.atTop (nhds (1 / 2))",
+   "roundTripFailures": [],
+   "roundTripCheck": true,
+   "groups":
+   [["Filter.Tendsto\n  (fun n =>\n    ∫ (x : Fin n → ℝ) in Set.Icc (Function.const (Fin n) 0) (Function.const (Fin n) 1),\n      Real.cos (Real.pi / (2 * ↑n) * ∑ i : Fin n, x i) ^ 2)\n  Filter.atTop (nhds (1 / 2))"]],
+   "allElaborated":
+   ["Filter.Tendsto (fun n => ∫ (x : Fin n → ℝ) in Set.Icc (Function.const (Fin n) 0) (Function.const (Fin n) 1), Real.cos (Real.pi / (2 * n) * (Finset.univ.sum (fun i => x i))) ^ 2) Filter.atTop (nhds (1 / 2))"]},
+  "cmd": "translate"}]

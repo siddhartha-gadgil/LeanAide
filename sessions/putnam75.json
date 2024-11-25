@@ -1,0 +1,19 @@
+[{"res":
+  "Let $p$ be a prime number. Find the number of distinct $2 \\times 2$ matrices $$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$$ such that $a, b, c, d \\in \\{0, 1, ..., p - 1\\}$, $a + d \\equiv 1 \\pmod p$, and $ad - bc \\equiv 0 \\pmod p$.There are $p^2 + p$ such matrices.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Let $p$ be a prime number. Find the number of distinct $2 \\times 2$ matrices $$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$$ such that $a, b, c, d \\in \\{0, 1, ..., p - 1\\}$, $a + d \\equiv 1 \\pmod p$, and $ad - bc \\equiv 0 \\pmod p$.There are $p^2 + p$ such matrices.",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView":
+   "∀ {p : ℕ} [hp : Fact (Nat.Prime p)],\n  (∃ a b c d, ↑a + ↑d ≡ 1 [MOD p] ∧ ↑a * ↑d - ↑b * ↑c ≡ 0 [MOD p]) →\n    (Finset.filter (fun M => ↑(M 0 0) + ↑(M 1 1) ≡ 1 [MOD p] ∧ ↑(M 0 0) * ↑(M 1 1) - ↑(M 0 1) * ↑(M 1 0) ≡ 0 [MOD p])\n          Finset.univ).card =\n      p ^ 2 + p",
+   "roundTripFailures": [],
+   "roundTripCheck": true,
+   "groups":
+   [["∀ {p : ℕ} [hp : Fact (Nat.Prime p)],\n  (∃ a b c d, ↑a + ↑d ≡ 1 [MOD p] ∧ ↑a * ↑d - ↑b * ↑c ≡ 0 [MOD p]) →\n    (Finset.filter (fun M => ↑(M 0 0) + ↑(M 1 1) ≡ 1 [MOD p] ∧ ↑(M 0 0) * ↑(M 1 1) - ↑(M 0 1) * ↑(M 1 0) ≡ 0 [MOD p])\n          Finset.univ).card =\n      p ^ 2 + p"],
+    ["∀ {p : ℕ} [inst : Fact (Nat.Prime p)], Fin p → ?m.5030 = p ^ 2 + p"]],
+   "allElaborated":
+   ["∀ {p : ℕ} [inst : Fact (Nat.Prime p)], (Fin p) → ↑{m : Matrix (Fin 2) (Fin 2) (Fin p) // m 0 0 + m 1 1 = 1 ∧ m 0 0 * m 1 1 - m 0 1 * m 1 0 = 0}.toFinset.card = p ^ 2 + p",
+    "∀ {p : ℕ} [hp : Fact (Nat.Prime p)], (∃ a b c d : Fin p, a + d ≡ 1 [MOD p] ∧ a * d - b * c ≡ 0 [MOD p]) → Finset.card {M : Matrix (Fin 2) (Fin 2) (Fin p) | M 0 0 + M 1 1 ≡ 1 [MOD p] ∧ M 0 0 * M 1 1 - M 0 1 * M 1 0 ≡ 0 [MOD p]} = p ^ 2 + p"]},
+  "cmd": "translate"}]

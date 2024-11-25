@@ -1,0 +1,25 @@
+[{"res":
+  "Let $S$ be a convex region in the Euclidean plane, containing the origin, for which every ray from the origin has at least one point outside $S$. Assuming that either the origin is an interior point of $S$ or $S$ is topologically closed, prove that $S$ is bounded.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Let $S$ be a convex region in the Euclidean plane, containing the origin, for which every ray from the origin has at least one point outside $S$. Assuming that either the origin is an interior point of $S$ or $S$ is topologically closed, prove that $S$ is bounded.",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView": "sorryAx (Sort ?u.9383)",
+   "roundTripFailures":
+   [["Let $S$ be a convex region in the Euclidean plane, containing the origin, for which every ray from the origin has at least one point outside $S$. Assuming that either the origin is an interior point of $S$ or $S$ is topologically closed, prove that $S$ is bounded.",
+     [[false,
+       "false\nTheorem 1 is a specific geometric statement, while Theorem 2 describes a placeholder axiom without substantive content."]]]],
+   "roundTripCheck": false,
+   "groups":
+   [["sorryAx (Sort ?u.9383)"],
+    ["∀ {S : Set (ℝ × ℝ)}, Convex ℝ S → (0, 0) ∈ S → (0, 0) ∈ interior S ∨ IsClosed S → Bornology.IsBounded S"],
+    ["sorryAx (Sort ?u.2397)"],
+    ["sorryAx (Sort ?u.8956)"]],
+   "allElaborated":
+   ["```lean\ntheorem convex_region_bounded \n  {S : Set (ℝ × ℝ)} (h_convex : Convex ℝ S) (h_origin : (0, 0) ∈ S)\n  (h_ray_outside : ∀ θ : ℝ, ∃ r > 0, (r * real.cos θ, r * real.sin θ) ∉ S)\n  (h_condition : (0, 0) ∈ interior S ∨ IsClosed S) : Bornology.IsBounded S :=\nsorry\n```",
+    "```lean\nimport Mathlib.Analysis.Convex.Basic\nimport Mathlib.Topology.Basic\nimport Mathlib.LinearAlgebra.AffineSpace.Basic\n\ntheorem convex_region_bounded {S : Set ℝ} (hS_convex : Convex ℝ S) (hS_origin : (0 : ℝ) ∈ S)\n  (hS_rays : ∀ ray : ℝ → ℝ, ∃ x, x ∉ S) (hS : ((0 : ℝ) ∈ interior S ∨ IsClosed S)) : Bornology.Bounded S :=\nbegin\n  sorry\nend\n```",
+    "```lean\ntheorem convex_region_bounded {S : set (ℝ × ℝ)} (h_convex : convex ℝ S) (h_origin : (0 : ℝ × ℝ) ∈ S)\n  (h_ray : ∀ θ : ℝ, ∃ t : ℝ, t • (cos θ, sin θ) ∉ S)\n  (h_interior : (0 : ℝ × ℝ) ∈ interior S ∨ is_closed S) : bounded S :=\nbegin\n  sorry -- Proof placeholder\nend\n```",
+    "```lean\nvariables {R : Type*} [linear_ordered_field R] {E : Type*} [normed_group E] [normed_space R E]\nvariables {S : set E}\n\ntheorem convex_region_bounded (h_convex : convex R S) (h_origin : (0 : E) ∈ S)\n  (h_ray : ∀ r : R, ∃ x : E, r • x ∉ S)\n  (h_interior_or_closed : (0 : E) ∈ interior S ∨ is_closed S) :\n  bounded S :=\nsorry\n```"]},
+  "cmd": "translate"}]

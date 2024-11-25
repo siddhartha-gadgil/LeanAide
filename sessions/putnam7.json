@@ -1,0 +1,30 @@
+[{"res":
+  "Let $\\mathbb{S}$ be the set of all subsets of the natural numbers. Prove the existence of a function $f : \\mathbb{R} \\to \\mathbb{S}$ such that $f(a) \\subset f(b)$ whenever $a < b$.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Let $\\mathbb{S}$ be the set of all subsets of the natural numbers. Prove the existence of a function $f : \\mathbb{R} \\to \\mathbb{S}$ such that $f(a) \\subset f(b)$ whenever $a < b$.",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView": "∃ f, ∀ ⦃a b : ℝ⦄, a < b → f a ⊂ f b",
+   "roundTripFailures":
+   [["Let $\\mathbb{S}$ be the set of all subsets of the natural numbers. Prove the existence of a function $f : \\mathbb{R} \\to \\mathbb{S}$ such that $f(a) \\subset f(b)$ whenever $a < b$.",
+     [[false,
+       "false\nThey specify different codomains for the function \\( f \\)."]]]],
+   "roundTripCheck": false,
+   "groups":
+   [["∃ f, ∀ ⦃a b : ℝ⦄, a < b → f a ⊂ f b",
+     "∃ f, ∀ {a b : ℝ}, a < b → f a ⊂ f b",
+     "∃ f, ∀ (a b : ℝ), a < b → f a ⊂ f b"],
+    ["∃ f, ∀ {a b : ℝ}, a < b → f a ⊆ f b",
+     "∃ f, ∀ {a b : ℝ}, a < b → f a ⊆ f b"]],
+   "allElaborated":
+   ["∃ (f : ℝ → Set (Set ℕ)), ∀ ⦃a b : ℝ⦄, a < b → f a ⊂ f b",
+    "∃ (f : ℝ → Set (Set ℕ)), ∀ {a b : ℝ}, a < b → f a ⊆ f b",
+    "∃ (f : ℝ → Set (Set ℕ)), ∀ {a b : ℝ}, a < b → f a ⊆ f b",
+    "∃ (f : ℝ → Set (Set ℕ)), ∀ {a b : ℝ}, a < b → f a ⊂ f b",
+    "∃ (f : ℝ → Set (Set ℕ)), ∀ (a b : ℝ), a < b → f a ⊂ f b",
+    "∃ (f : ℝ → Set (Set ℕ)), ∀ {a b : ℝ}, a < b → f a ⊂ f b",
+    "∃ (f : ℝ → Set (Set ℕ)), ∀ {a b : ℝ}, a < b → f a ⊂ f b",
+    "∀ (f : ℝ → Set (Set ℕ)), ∃ f, ∀ a b : ℝ, a < b → f a ⊂ f b"]},
+  "cmd": "translate"}]

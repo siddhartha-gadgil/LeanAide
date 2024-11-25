@@ -1,0 +1,27 @@
+[{"res":
+  "Evaluate in closed form \\[ \\sum_{k=1}^n {n \\choose k} k^2. \\]Show that the expression equals $n(n+1)2^{n-2}$.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Evaluate in closed form \\[ \\sum_{k=1}^n {n \\choose k} k^2. \\]Show that the expression equals $n(n+1)2^{n-2}$.",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView":
+   "∀ (n : ℕ), ∑ k ∈ Finset.range (n + 1), n.choose k * k ^ 2 = n * (n + 1) * 2 ^ (n - 2)",
+   "roundTripFailures": [],
+   "roundTripCheck": false,
+   "groups":
+   [["∀ (n : ℕ), ∑ k ∈ Finset.range (n + 1), n.choose k * k ^ 2 = n * (n + 1) * 2 ^ (n - 2)",
+     "∀ (n : ℕ), ∑ k ∈ Finset.range (n + 1), n.choose k * k ^ 2 = n * (n + 1) * 2 ^ (n - 2)",
+     "∀ (n : ℕ), ∑ k ∈ Finset.range (n + 1), n.choose k * k ^ 2 = n * (n + 1) * 2 ^ (n - 2)",
+     "∀ (n : ℕ), ∑ k ∈ Finset.range (n + 1), n.choose k * k ^ 2 = n * (n + 1) * 2 ^ (n - 2)",
+     "∀ (n : ℕ), ∑ k ∈ Finset.range (n + 1), n.choose k * k ^ 2 = n * (n + 1) * 2 ^ (n - 2)"]],
+   "allElaborated":
+   ["∀ (n : ℕ), (Finset.sum (Finset.range (n + 1)) fun k => n.choose k * k^2) = n * (n + 1) * 2^(n - 2)",
+    "∀ (n : ℕ), (∑ k in Finset.range (n + 1), n.choose k * k^2) = n * (n + 1) * 2^(n - 2)",
+    "∀ (n : ℕ), (∑ k in Finset.range (n + 1), n.choose k * k^2) = n * (n + 1) * 2^(n - 2)",
+    "∀ (n : ℕ), (∑ k in Finset.range (n + 1), n.choose k * k^2) = n * (n + 1) * 2^(n - 2)",
+    "∀ (n : ℕ), (∑ k in Finset.range (n + 1), n.choose k * k^2) = n * (n + 1) * 2 ^ (n - 2)",
+    "∀ (n : ℕ), ∑ k in Finset.range (n + 1), n.choose k * k^2 = n * (n + 1) * 2^(n - 2)",
+    "∀ (n : ℕ), (Finset.sum (Finset.range (n + 1)) fun k => n.choose k * k^2) = n * (n + 1) * 2^(n-2)"]},
+  "cmd": "translate"}]

@@ -1,0 +1,20 @@
+[{"res":
+  "What are the possible ranges (across all real inputs $x$ and $y$) of a polynomial $f(x, y)$ with real coefficients?Show that the possibles ranges are a single point, any half-open or half-closed semi-infinite interval, or all real numbers.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: What are the possible ranges (across all real inputs $x$ and $y$) of a polynomial $f(x, y)$ with real coefficients?Show that the possibles ranges are a single point, any half-open or half-closed semi-infinite interval, or all real numbers.",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView":
+   "∀ {f : ℝ × ℝ → ℝ},\n  (∃ c, ∀ (x y : ℝ), f (x, y) = c) ∨\n    (∃ a, ∀ (x y : ℝ), f (x, y) ≥ a) ∨ (∃ b, ∀ (x y : ℝ), f (x, y) ≤ b) ∨ ∀ (r : ℝ), ∃ x y, f (x, y) = r",
+   "roundTripFailures":
+   [["What are the possible ranges (across all real inputs $x$ and $y$) of a polynomial $f(x, y)$ with real coefficients?Show that the possibles ranges are a single point, any half-open or half-closed semi-infinite interval, or all real numbers.",
+     [[false,
+       "false\nTheorem 1 is specific to polynomial functions, whereas Theorem 2 applies to all functions \\( f: \\mathbb{R} \\times \\mathbb{R} \\to \\mathbb{R} \\)."]]]],
+   "roundTripCheck": false,
+   "groups":
+   [["∀ {f : ℝ × ℝ → ℝ},\n  (∃ c, ∀ (x y : ℝ), f (x, y) = c) ∨\n    (∃ a, ∀ (x y : ℝ), f (x, y) ≥ a) ∨ (∃ b, ∀ (x y : ℝ), f (x, y) ≤ b) ∨ ∀ (r : ℝ), ∃ x y, f (x, y) = r"]],
+   "allElaborated":
+   ["∀ {f : ℝ × ℝ → ℝ}, (∃ c, ∀ x y, f (x, y) = c) ∨ (∃ a, ∀ x y, f (x, y) ≥ a) ∨ (∃ b, ∀ x y, f (x, y) ≤ b) ∨ (∀ r, ∃ x y, f (x, y) = r)"]},
+  "cmd": "translate"}]

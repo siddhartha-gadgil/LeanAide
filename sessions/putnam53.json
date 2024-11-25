@@ -1,0 +1,21 @@
+[{"res":
+  "Prove that any set of $n \\ge 3$ distinct points in the Euclidean plane, no three of which are collinear, forms the vertex set of some simple (non-self-intersecting) closed polygon.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Prove that any set of $n \\ge 3$ distinct points in the Euclidean plane, no three of which are collinear, forms the vertex set of some simple (non-self-intersecting) closed polygon.",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView": "sorryAx (Sort ?u.25266)",
+   "roundTripFailures":
+   [["Prove that any set of $n \\ge 3$ distinct points in the Euclidean plane, no three of which are collinear, forms the vertex set of some simple (non-self-intersecting) closed polygon.",
+     [[false,
+       "false\nOne statement is a geometric theorem about polygons, while the other pertains to type universes in Lean."]]]],
+   "roundTripCheck": false,
+   "groups":
+   [["sorryAx (Sort ?u.25266)"],
+    ["∀ {P : Type u_1} [inst : MetricSpace P] [inst_1 : NormedAddTorsor ℝ P] {n : ℕ},\n  3 ≤ n →\n    ∀ (s : Finset P),\n      s.card = n → ∀ (p₁ p₂ p₃ : P), p₁ ∈ s → p₂ ∈ s → p₃ ∈ s → p₁ ≠ p₂ → p₁ ≠ p₃ → p₂ ≠ p₃ → ¬Collinear ℝ {p₁, p₂, p₃}"]],
+   "allElaborated":
+   ["∀ {P : Type u_1} [inst : MetricSpace P] [inst_1 : NormedAddTorsor ℝ P] {n : ℕ}, \n  3 ≤ n → ∀ (s : Finset P), \n  s.card = n → \n  (∀ (p₁ p₂ p₃ : P), p₁ ∈ s → p₂ ∈ s → p₃ ∈ s → p₁ ≠ p₂ → p₁ ≠ p₃ → p₂ ≠ p₃ → ¬Collinear ℝ {p₁, p₂, p₃}) \n  → ∃ (σ : Finset (Fin n)) (f : Fin n → P), \n      σ.card = n ∧ (∀ i, f i ∈ s) ∧ (∀ i j, σ i ≠ σ j → f i ≠ f j) ∧ \n      (∀ (i : Fin n), ∃ p₀ p₁ p₂, f (σ i) = p₀ ∧ f (σ (i + 1)) = p₁ ∧ f (σ (i + 2)) = p₂ \n        ∧ ¬Collinear ℝ {p₀, p₁, p₂})",
+    "```lean\nimport Mathlib.Data.Real.Basic -- Importing basic real number operations\nimport Mathlib.Geometry.Euclidean.Basic -- Importing Euclidean Geometry basics\nimport Mathlib.Combinatorics.SimpleGraph.Trees -- Importing combinatorial tree basics\n\n-- Necessary for finrank ℝ V = 2 check\nopen FiniteDimensional\n\n-- Define theorem for n ≥ 3 distinct non-collinear points in Euclidean plane forming a simple polygon\ntheorem distinct_noncollinear_points_simple_polygon\n  {V : Type} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [hd2 : Fact (finrank ℝ V = 2)]\n  (n : ℕ) (hn : 3 ≤ n) (s : Finset V) :\n  (s.card = n) →\n  (∀ {p₁ p₂ p₃ : V}, p₁ ∈ s → p₂ ∈ s → p₃ ∈ s → ¬Collinear ℝ ({p₁, p₂, p₃} : Set V)) →\n  ∃ edges : Finset (Sym2 V), Sym2.isSimpleCycle s edges :=\n\n  sorry -- Proof goes here in a full development\n```\n"]},
+  "cmd": "translate"}]

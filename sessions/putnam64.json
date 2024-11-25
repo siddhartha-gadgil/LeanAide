@@ -1,0 +1,23 @@
+[{"res":
+  "A certain locker room contains $n$ lockers numbered $1,2,3,\\cdots,n$ and all are originally locked. An attendant performs a sequence of operations $T_1,T_2,\\cdots,T_n$ whereby with the operation $T_k$, $1 \\leq k \\leq n$, the condition of being locked or unlocked is changed for all those lockers and only those lockers whose numbers are multiples of $k$. After all the $n$ operations have been performed it is observed that all lockers whose numbers are perfect squares (and only those lockers) are now open or unlocked. Prove this mathematically.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: A certain locker room contains $n$ lockers numbered $1,2,3,\\cdots,n$ and all are originally locked. An attendant performs a sequence of operations $T_1,T_2,\\cdots,T_n$ whereby with the operation $T_k$, $1 \\leq k \\leq n$, the condition of being locked or unlocked is changed for all those lockers and only those lockers whose numbers are multiples of $k$. After all the $n$ operations have been performed it is observed that all lockers whose numbers are perfect squares (and only those lockers) are now open or unlocked. Prove this mathematically.",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView": "∀ {n : ℕ}, (∀ (k : ℕ), k ∣ n → n / k % 2 = 1) ↔ ∃ t, t ^ 2 = n",
+   "roundTripFailures":
+   [["A certain locker room contains $n$ lockers numbered $1,2,3,\\cdots,n$ and all are originally locked. An attendant performs a sequence of operations $T_1,T_2,\\cdots,T_n$ whereby with the operation $T_k$, $1 \\leq k \\leq n$, the condition of being locked or unlocked is changed for all those lockers and only those lockers whose numbers are multiples of $k$. After all the $n$ operations have been performed it is observed that all lockers whose numbers are perfect squares (and only those lockers) are now open or unlocked. Prove this mathematically.",
+     [[false,
+       "false\nThey address different contexts: Theorem 1 describes the locker toggling process, while Theorem 2 characterizes perfect squares based on their divisors."]]]],
+   "roundTripCheck": false,
+   "groups":
+   [["∀ {n : ℕ}, (∀ (k : ℕ), k ∣ n → n / k % 2 = 1) ↔ ∃ t, t ^ 2 = n"],
+    ["∀ (n : ℕ) (locker : ℕ → Prop),\n  (∀ (k : ℕ), 1 ≤ k ∧ k ≤ n → ∀ (m : ℕ), m % k = 0 → locker m ↔ ¬locker m) →\n    ∀ (m : ℕ), m ≤ n → locker m ↔ ∃ x, x ^ 2 = m"],
+    ["∀ {n : ℕ}, ∀ m ≤ n, ∃ k, k * k = m ↔ (∑ i ∈ Finset.range n.succ, if m ∣ i then 1 else 0) % 2 = 1"]],
+   "allElaborated":
+   ["∀ (n : ℕ) (locker : ℕ → Prop), (∀ k, (1 ≤ k ∧ k ≤ n) → ∀ m, m % k = 0 → locker m ↔ ¬locker m) → (∀ m, m ≤ n → locker m ↔ ∃ x, x ^ 2 = m)",
+    "∀ {n : ℕ}, ∀ (m : ℕ), m ≤ n → (∃ k, k * k = m ↔ (∑ i in Finset.range n.succ, (ite (m ∣ i) (1 : ℕ) 0)) % 2 = 1)",
+    "∀ {n : ℕ}, (∀ k : ℕ, k ∣ n → (n / k) % 2 = 1) ↔ ∃ t : ℕ, t ^ 2 = n"]},
+  "cmd": "translate"}]

@@ -1,0 +1,17 @@
+[{"res":
+  "Show that $\\int_0^1 x^x dx = \\sum_{n=1}^{\\infty} (-1)^{n+1}n^{-n}$.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Show that $\\int_0^1 x^x dx = \\sum_{n=1}^{\\infty} (-1)^{n+1}n^{-n}$.",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView":
+   "HasSum (fun n => (-1) ^ (n + 1) / n ^ n) (∫ (x : ℝ) in 0 ..1, x ^ x)",
+   "roundTripFailures": [],
+   "roundTripCheck": true,
+   "groups":
+   [["HasSum (fun n => (-1) ^ (n + 1) / n ^ n) (∫ (x : ℝ) in 0 ..1, x ^ x)"]],
+   "allElaborated":
+   ["HasSum (fun n => (-1) ^ (n + 1) / n ^ n) (∫ x in (0 : ℝ)..1, x ^ x)"]},
+  "cmd": "translate"}]

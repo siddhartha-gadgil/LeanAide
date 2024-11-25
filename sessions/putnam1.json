@@ -1,0 +1,21 @@
+[{"res":
+  "Find every real-valued function $f$ whose domain is an interval $I$ (finite or infinite) having 0 as a left-hand endpoint, such that for every positive member $x$ of $I$ the average of $f$ over the closed interval $[0, x]$ is equal to the geometric mean of the numbers $f(0)$ and $f(x)$.Show that \\[ f(x) = \\frac{a}{(1 - cx)^2} \\begin{cases} \\text{for } 0 \\le x < \\frac{1}{c}, & \\text{if } c > 0\\\\ \\text{for } 0 \\le x < \\infty, & \\text{if } c \\le 0, \\end{cases} \\] where $a > 0$.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Find every real-valued function $f$ whose domain is an interval $I$ (finite or infinite) having 0 as a left-hand endpoint, such that for every positive member $x$ of $I$ the average of $f$ over the closed interval $[0, x]$ is equal to the geometric mean of the numbers $f(0)$ and $f(x)$.Show that \\[ f(x) = \\frac{a}{(1 - cx)^2} \\begin{cases} \\text{for } 0 \\le x < \\frac{1}{c}, & \\text{if } c > 0\\\\ \\text{for } 0 \\le x < \\infty, & \\text{if } c \\le 0, \\end{cases} \\] where $a > 0$.",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView":
+   "∀ {I : Set ℝ} {f : ℝ → ℝ} {a c : ℝ}, 0 < a → ∀ x ∈ I, f x = a / (1 - c * x) ^ 2",
+   "roundTripFailures": [],
+   "roundTripCheck": false,
+   "groups":
+   [["∀ {I : Set ℝ} {f : ℝ → ℝ} {a c : ℝ}, 0 < a → ∀ x ∈ I, f x = a / (1 - c * x) ^ 2"],
+    ["∀ {a : ℕ}, 0 < a"],
+    ["sorryAx (Sort ?u.9712)"]],
+   "allElaborated":
+   ["∀ {I : Set ℝ} {f : ℝ → ℝ} (a c : ℝ), (∀ ⦃x : ℝ⦄, x ∈ I → 0 < x → ⨍ y in 0..x, f y = real.geomMean (f 0) (f x)) → \n  (∀ x ∈ I, f x = a / (1 - c * x)^2) ∧\n  ((c > 0 → ∀ x ∈ I, 0 ≤ x ∧ x < 1 / c) ∧ (c ≤ 0 → ∀ x ∈ I, 0 ≤ x)) →\n  0 < a",
+    "theorem find_functions {f : ℝ → ℝ} {I : Set.Ici (0 : ℝ)} {a c : ℝ} (h : ∀ x ∈ I, 0 < x →\n  (∫ y in 0..x, f y) / x = real.sqrt (f 0 * f x)) :\n  f = λ x, a / (1 - c * x) ^ 2 ∧\n  (∀ x, 0 ≤ x → x < 1 / c ∧ 0 < c → f x = a / (1 - c * x) ^ 2) ∨\n  (∀ x, 0 ≤ x → (c ≤ 0) → f x = a / (1 - c * x) ^ 2) :=\nbegin\n  -- Proof yet to be completed.\n  sorry\nend",
+    "∀ {I : Set ℝ} {f : ℝ → ℝ} {a c : ℝ}, (0 < a) →\n  (∀ x ∈ I, 0 < x → ⨍ y in 0..x, f y = real.sqrt (f 0 * f x)) →\n  (∀ x, x ∈ I → f x = a / (1 - c * x)^2)\n   ∧ ((c > 0 → ∀ x ∈ I, 0 ≤ x ∧ x < 1/c) ∧ (c ≤ 0 → ∀ x ∈ I, 0 ≤ x))"]},
+  "cmd": "translate"}]

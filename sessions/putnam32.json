@@ -1,0 +1,28 @@
+[{"res":
+  "Prove that $$\\sum_{r=0}^{\\lfloor\\frac{n-1}{2}\\rfloor} \\left(\\frac{n - 2r}{n} {n \\choose r}\\right)^2 = \\frac{1}{n} {{2n - 2} \\choose {n - 1}}$$ for every positive integer $n$.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Prove that $$\\sum_{r=0}^{\\lfloor\\frac{n-1}{2}\\rfloor} \\left(\\frac{n - 2r}{n} {n \\choose r}\\right)^2 = \\frac{1}{n} {{2n - 2} \\choose {n - 1}}$$ for every positive integer $n$.",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView":
+   "∀ (n : ℕ),\n  0 < n →\n    ∑ r ∈ Finset.range ((n - 1) / 2 + 1), ((↑n - 2 * ↑r) / ↑n * ↑(n.choose r)) ^ 2 =\n      1 / ↑n * ↑((2 * n - 2).choose (n - 1))",
+   "roundTripFailures": [],
+   "roundTripCheck": true,
+   "groups":
+   [["∀ (n : ℕ),\n  0 < n →\n    ∑ r ∈ Finset.range ((n - 1) / 2 + 1), ((↑n - 2 * ↑r) / ↑n * ↑(n.choose r)) ^ 2 =\n      1 / ↑n * ↑((2 * n - 2).choose (n - 1))",
+     "∀ (n : ℕ),\n  0 < n →\n    ∑ r ∈ Finset.range ((n - 1) / 2 + 1), ((↑n - 2 * ↑r) / ↑n * ↑(n.choose r)) ^ 2 =\n      1 / ↑n * ↑((2 * n - 2).choose (n - 1))"],
+    ["∀ (n : ℕ),\n  0 < n → ∑ r ∈ Finset.range (n / 2 + 1), ((n - 2 * r) / n * n.choose r) ^ 2 = 1 / n * (2 * n - 2).choose (n - 1)"],
+    ["∀ (n : ℕ),\n  0 < n → ∑ r ∈ Finset.range ((n - 1) / 2 + 1), ((n - 2 * r) / n * n.choose r) ^ 2 = 1 / n * (2 * n - 2).choose (n - 1)"],
+    ["∀ (n : ℕ),\n  0 < n → ∑ r ∈ Finset.range (n / 2 + 1), ((n - 2 * r) * n.choose r / n) ^ 2 = 1 / n * (2 * n - 2).choose (n - 1)"]],
+   "allElaborated":
+   ["∀ (n : ℕ), 0 < n → (∑ r in Finset.range ((n - 1) / 2 + 1), ((n - 2 * r : ℚ) / n * (n.choose r)) ^ 2) = (1 / n) * ((2 * n - 2).choose (n - 1))",
+    "∀ (n : ℕ), 0 < n → (∑ r in Finset.range ((n - 1) / 2 + 1), ((n - 2 * r) / n * (n.choose r)) ^ 2) = (1 / n) * ((2 * n - 2).choose (n - 1))",
+    "∀ (n : ℕ), 0 < n → (∑ r in Finset.range (n / 2 + 1), ((n - 2 * r) * (n.choose r) / n) ^ 2) = (1 / n) * ((2 * n - 2).choose (n - 1))",
+    "∀ (n : ℕ), 0 < n → (∑ r in Finset.range ((n - 1) / 2 + 1), ((n - 2 * r : ℚ) / n * Nat.choose n r) ^ 2) = (1 / n) * Nat.choose (2 * n - 2) (n - 1)",
+    "∀ (n : ℕ), 0 < n →\n  (∑ r in Finset.range (n / 2 + 1), ((n - 2 * r) / n * Nat.choose n r) ^ 2) =\n    (1 / n) * Nat.choose (2 * n - 2) (n - 1)",
+    "∀ (n : ℕ), 0 < n → (∑ r in Finset.range (n / 2 + 1), ((n - 2 * r : ℚ) / n * (Nat.choose n r))^2) = (1 / n : ℚ) * (Nat.choose (2 * n - 2) (n - 1))",
+    "∀ (n : ℕ), 0 < n → (∑ r in Finset.range (n / 2 + 1), ((n - 2 * r) / n * n.choose r) ^ 2) = 1 / n * (2 * n - 2).choose (n - 1)",
+    "∀ (n : ℕ), 0 < n → (Finset.sum (Finset.range ((n - 1) / 2 + 1)) fun r => ((n - 2 * r : ℚ) / n * ↑(n.choose r))^2) = (1 / n : ℚ) * ((2 * n - 2).choose (n - 1))"]},
+  "cmd": "translate"}]

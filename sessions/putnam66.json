@@ -1,0 +1,204 @@
+[{"res":
+  "Let $f$ be a real-valued function having partial derivatives and which is defined for $x^2+y^2 \\leq 1$ and is such that $|f(x,y)| \\leq 1$. Show that there exists a point $(x_0,y_0)$ in the interior of the unit circle such that $\\left(\\frac{\\partial f}{\\partial x} (x_0,y_0)\\right)^2+\\left(\\frac{\\partial f}{\\partial y} (x_0,y_0)\\right)^2 \\leq 16$.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Let $f$ be a real-valued function having partial derivatives and which is defined for $x^2+y^2 \\leq 1$ and is such that $|f(x,y)| \\leq 1$. Show that there exists a point $(x_0,y_0)$ in the interior of the unit circle such that $\\left(\\frac{\\partial f}{\\partial x} (x_0,y_0)\\right)^2+\\left(\\frac{\\partial f}{\\partial y} (x_0,y_0)\\right)^2 \\leq 16$.",
+  "cmd": "translate"},
+ {"res": "Error in translation", "cmd": "translate"},
+ {"res": "Prompt:", "cmd": "translate"},
+ {"res":
+  [{"role": "system",
+    "content":
+    "You are a Mathematics, Lean 4 and coding assistant who answers questions about Mathematics and Lean 4, gives hints while coding in Lean 4. You also translates from natural language to Lean Theorem Prover code and vice versa when asked. Follow EXACTLY any examples given when generating Lean code."},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Let `f` be a function continuous on a convex (or, equivalently, connected) subset `D`\nof the real line. If `f` is differentiable on the interior of `D` and `C < f'`, then\n`f` grows faster than `C * x` on `D`, i.e., `C * (y - x) < f y - f x` whenever `x, y ∈ D`,\n`x < y`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {D : Set ℝ},\n  Convex ℝ D →\n    ∀ {f : ℝ → ℝ},\n      ContinuousOn f D →\n        DifferentiableOn ℝ f (interior D) →\n          ∀ {C : ℝ}, (∀ x ∈ interior D, C < deriv f x) → ∀ x ∈ D, ∀ y ∈ D, x < y → C * (y - x) < f y - f x"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: If `f` is continuous on the circle `|z - c| = R`, `R > 0`, the `‖f z‖` is less than or equal to\n`C : ℝ` on this circle, and this norm is strictly less than `C` at some point `z` of the circle,\nthen `‖∮ z in C(c, R), f z‖ < 2 * π * R * C`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {f : ℂ → E} {c : ℂ} {R C : ℝ},\n  0 < R →\n    ContinuousOn f (Metric.sphere c R) →\n      (∀ z ∈ Metric.sphere c R, ‖f z‖ ≤ C) →\n        (∃ z ∈ Metric.sphere c R, ‖f z‖ < C) → ‖∮ (z : ℂ) in C(c, R), f z‖ < 2 * Real.pi * R * C"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: **Phragmen-Lindelöf principle** in the fourth quadrant. Let `f : ℂ → E` be a function such that\n\n* `f` is differentiable in the open fourth quadrant and is continuous on its closure;\n* `‖f z‖` is bounded from above by `A * exp(B * (abs z) ^ c)` on the open fourth quadrant\n  for some `A`, `B`, and `c < 2`;\n* `f` is equal to zero on the boundary of the fourth quadrant.\n\nThen `f` is equal to zero on the closed fourth quadrant. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {f : ℂ → E},\n  DiffContOnCl ℂ f (Set.Ioi 0 ×ℂ Set.Iio 0) →\n    (∃ c < 2,\n        ∃ B,\n          f =O[Bornology.cobounded ℂ ⊓ Filter.principal (Set.Ioi 0 ×ℂ Set.Iio 0)] fun z =>\n            Real.exp (B * Complex.abs z ^ c)) →\n      (∀ (x : ℝ), 0 ≤ x → f ↑x = 0) → (∀ x ≤ 0, f (↑x * Complex.I) = 0) → Set.EqOn f 0 {z | 0 ≤ z.re ∧ z.im ≤ 0}"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Let `f` be a contracting map with constant `K`; let `g` be another map uniformly\n`C`-close to `f`. If `x` and `y` are their fixed points, then `dist x y ≤ C / (1 - K)`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u_1} [inst : MetricSpace α] {K : NNReal} {f : α → α},\n  ContractingWith K f →\n    ∀ (g : α → α) {x y : α},\n      Function.IsFixedPt f x →\n        Function.IsFixedPt g y → ∀ {C : ℝ}, (∀ (z : α), dist (f z) (g z) ≤ C) → dist x y ≤ C / (1 - ↑K)"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: This theorem states that for any two real numbers `x` and `y`, if the square of `x` is less than or equal to `y`, then `x` is less than or equal to the square root of `y`. In mathematical terms, it would be expressed as: for all $x, y \\in \\mathbb{R}$, if $x^2 \\leq y$, then $x \\leq \\sqrt{y}$. This theorem establishes a relationship between the square of a number and the square root of another number in the context of inequality.\n\nGive ONLY the Lean code"},
+   {"role": "assistant", "content": "∀ {x y : ℝ}, x ^ 2 ≤ y → x ≤ y.sqrt"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For all real numbers x and y, if x^2 ≤ y then |x| ≤ √y.\n\nGive ONLY the Lean code"},
+   {"role": "assistant", "content": "∀ {x y : ℝ}, x ^ 2 ≤ y → |x| ≤ y.sqrt"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Let `f : ℝ → ℝ` be a differentiable function. If `f' ≤ C`, then `f` grows at most as fast\nas `C * x`, i.e., `f y - f x ≤ C * (y - x)` whenever `x ≤ y`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {f : ℝ → ℝ}, Differentiable ℝ f → ∀ {C : ℝ}, (∀ (x : ℝ), deriv f x ≤ C) → ∀ ⦃x y : ℝ⦄, x ≤ y → f y - f x ≤ C * (y - x)"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: This theorem represents the Cauchy-Schwarz inequality for real inner products. It states that for any type `F` which is a normed add comm group and an inner product space over the real numbers, and for any two elements `x` and `y` of this type, the square of the inner product of `x` and `y` is less than or equal to the product of the inner product of `x` with itself and `y` with itself. In mathematical notation, this can be written as: $(x \\cdot y)^2 \\leq (x \\cdot x) \\cdot (y \\cdot y)$, where `$\\cdot$` denotes the inner product.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {F : Type u_3} [inst : NormedAddCommGroup F] [inst_1 : InnerProductSpace ℝ F] (x y : F),\n  ⟪x, y⟫_ℝ * ⟪x, y⟫_ℝ ≤ ⟪x, x⟫_ℝ * ⟪y, y⟫_ℝ"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For any strictly concave function $f$ on an open segment $s$ of real numbers and any distinct $x, y \\in s$, there holds $f(ax+(1-a)y) < \\min(fx, fy)$ for all $0 < a < 1$.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {𝕜 : Type u_1} {E : Type u_2} {β : Type u_5} [inst : OrderedSemiring 𝕜] [inst_1 : AddCommMonoid E]\n  [inst_2 : LinearOrderedAddCommMonoid β] [inst_3 : SMul 𝕜 E] [inst_4 : Module 𝕜 β] [inst_5 : OrderedSMul 𝕜 β]\n  {s : Set E} {f : E → β},\n  StrictConcaveOn 𝕜 s f →\n    ∀ {x y : E}, x ∈ s → y ∈ s → x ≠ y → ∀ {a b : 𝕜}, 0 < a → 0 < b → a + b = 1 → min (f x) (f y) < f (a • x + b • y)"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Let `f : ℝ → ℝ` be a differentiable function. If `C ≤ f'`, then `f` grows at least as fast\nas `C * x`, i.e., `C * (y - x) ≤ f y - f x` whenever `x ≤ y`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {f : ℝ → ℝ}, Differentiable ℝ f → ∀ {C : ℝ}, (∀ (x : ℝ), C ≤ deriv f x) → ∀ ⦃x y : ℝ⦄, x ≤ y → C * (y - x) ≤ f y - f x"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For any two points in a topological space and a bounded, continuous function to a semi-normed additive commutative group, the image distance is less than or equal to twice the function's norm.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u} {β : Type v} [inst : TopologicalSpace α] [inst_1 : SeminormedAddCommGroup β]\n  (f : BoundedContinuousFunction α β) (x y : α), dist (f x) (f y) ≤ 2 * ‖f‖"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: If `f` is complex differentiable on an open disc of radius `R > 0`, is continuous on its\nclosure, and its values on the boundary circle of this disc are bounded from above by `C`, then the\nnorm of its derivative at the center is at most `C / R`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {F : Type v} [inst : NormedAddCommGroup F] [inst_1 : NormedSpace ℂ F] {c : ℂ} {R C : ℝ} {f : ℂ → F},   0 < R → DiffContOnCl ℂ f (ball c R) → (∀ z ∈ sphere c R, ‖f z‖ ≤ C) → ‖deriv f c‖ ≤ C / R"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: This theorem states that for any function `f` of type `CircleDeg1Lift` and for any real numbers `x` and `y`, if `x` is less than or equal to `y`, then `f(x)` is less than or equal to `f(y)`. In other words, the function `f` is monotonic: it preserves or increases the order of its inputs.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content": "∀ (f : CircleDeg1Lift) {x y : ℝ}, x ≤ y → f x ≤ f y"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For a real-valued, differentiable function `f` and any `x` and `y` with `x <= y`, `C * (y - x) <= f(y) - f(x)` holds if `C` is less than or equal to the derivative of `f` at every point.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {f : ℝ → ℝ}, Differentiable ℝ f → ∀ {C : ℝ}, (∀ (x : ℝ), C ≤ deriv f x) → ∀ ⦃x y : ℝ⦄, x ≤ y → C * (y - x) ≤ f y - f x"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Let `f` be a function continuous on a convex (or, equivalently, connected) subset `D`\nof the real line. If `f` is differentiable on the interior of `D` and `C ≤ f'`, then\n`f` grows at least as fast as `C * x` on `D`, i.e., `C * (y - x) ≤ f y - f x` whenever `x, y ∈ D`,\n`x ≤ y`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {D : Set ℝ},\n  Convex ℝ D →\n    ∀ {f : ℝ → ℝ},\n      ContinuousOn f D →\n        DifferentiableOn ℝ f (interior D) →\n          ∀ {C : ℝ}, (∀ x ∈ interior D, C ≤ deriv f x) → ∀ x ∈ D, ∀ y ∈ D, x ≤ y → C * (y - x) ≤ f y - f x"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For any function `f` of type `CircleDeg1Lift`, if `x <= y` then `f x <= f y`.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content": "∀ (f : CircleDeg1Lift) {x y : ℝ}, x ≤ y → f x ≤ f y"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: The derivative of a `circleTransform` is locally bounded. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {R : ℝ},   0 < R →     ∀ {z x : ℂ} {f : ℂ → ℂ},       x ∈ ball z R →         ContinuousOn f (sphere z R) →           ∃ B ε, 0 < ε ∧ ball x ε ⊆ ball z R ∧ ∀ (t : ℝ), ∀ y ∈ ball x ε, ‖Complex.circleTransformDeriv R z y f t‖ ≤ B"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For any differentiable real-function `f` and real numbers `x` and `y` with `x <= y`, if `|f'(x)| <= C`, then `|f(y) - f(x)| <= C * |y - x|`.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {f : ℝ → ℝ}, Differentiable ℝ f → ∀ {C : ℝ}, (∀ (x : ℝ), deriv f x ≤ C) → ∀ ⦃x y : ℝ⦄, x ≤ y → f y - f x ≤ C * (y - x)"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Let `f` be a function continuous on a convex (or, equivalently, connected) subset `D`\nof the real line. If `f` is differentiable on the interior of `D` and `f' ≤ C`, then\n`f` grows at most as fast as `C * x` on `D`, i.e., `f y - f x ≤ C * (y - x)` whenever `x, y ∈ D`,\n`x ≤ y`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {D : Set ℝ},\n  Convex ℝ D →\n    ∀ {f : ℝ → ℝ},\n      ContinuousOn f D →\n        DifferentiableOn ℝ f (interior D) →\n          ∀ {C : ℝ}, (∀ x ∈ interior D, deriv f x ≤ C) → ∀ x ∈ D, ∀ y ∈ D, x ≤ y → f y - f x ≤ C * (y - x)"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Let $f$ be a real-valued function having partial derivatives and which is defined for $x^2+y^2 \\leq 1$ and is such that $|f(x,y)| \\leq 1$. Show that there exists a point $(x_0,y_0)$ in the interior of the unit circle such that $\\left(\\frac{\\partial f}{\\partial x} (x_0,y_0)\\right)^2+\\left(\\frac{\\partial f}{\\partial y} (x_0,y_0)\\right)^2 \\leq 16$.\n\nGive ONLY the Lean code"}],
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {f : ℝ × ℝ → ℝ},   (∀ x y, x ^ 2 + y ^ 2 ≤ 1 → |f (x, y)| ≤ 1) →     (∀ x y, DifferentiableAt ℝ (λ p : ℝ × ℝ, f p) (x, y)) →       ∃ (x₀ y₀ : ℝ), x₀ ^ 2 + y₀ ^ 2 < 1 ∧ (fderiv ℝ (λ p, f p) (x₀, y₀)).1^2 + (fderiv ℝ (λ p, f p) (x₀, y₀)).2^2 ≤ 16",
+    "parseError": "<input>:1:110: expected '↦', '=>'",
+    "context?":
+    "Let $f$ be a real-valued function having partial derivatives and which is defined for $x^2+y^2 \\leq 1$ and is such that $|f(x,y)| \\leq 1$. Show that there exists a point $(x_0,y_0)$ in the interior of the unit circle such that $\\left(\\frac{\\partial f}{\\partial x} (x_0,y_0)\\right)^2+\\left(\\frac{\\partial f}{\\partial y} (x_0,y_0)\\right)^2 \\leq 16$."}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {f : ℝ × ℝ → ℝ}, (∀ x y, x^2 + y^2 ≤ 1 → |f (x, y)| ≤ 1) →\n  (∃ (x_0 y_0 : ℝ), x_0^2 + y_0^2 < 1 ∧ (fderiv ℝ f (x_0, y_0) 1 0)^2 + (fderiv ℝ f (x_0, y_0) 0 1)^2 ≤ 16)",
+    "elabError":
+    "function expected at\n  (fderiv ℝ f (x_0, y_0)) 1\nterm has type\n  ℝ ; identifiers [f, x, y, x, y, f, x, y, x_0, y_0, x_0, y_0, fderiv, f, x_0, y_0, fderiv, f, x_0, y_0] (during elaboration) for ∀ {f : ℝ × ℝ → ℝ}, (∀ x y, x^2 + y^2 ≤ 1 → |f (x, y)| ≤ 1) →   (∃ (x_0 y_0 : ℝ), x_0^2 + y_0^2 < 1 ∧ (fderiv ℝ f (x_0, y_0) 1 0)^2 + (fderiv ℝ f (x_0, y_0) 0 1)^2 ≤ 16)",
+    "context?":
+    "Let $f$ be a real-valued function having partial derivatives and which is defined for $x^2+y^2 \\leq 1$ and is such that $|f(x,y)| \\leq 1$. Show that there exists a point $(x_0,y_0)$ in the interior of the unit circle such that $\\left(\\frac{\\partial f}{\\partial x} (x_0,y_0)\\right)^2+\\left(\\frac{\\partial f}{\\partial y} (x_0,y_0)\\right)^2 \\leq 16$.",
+    "cmdErrors":
+    ["function expected at\n  (fderiv ℝ f (x_0, y_0)) 1\nterm has type\n  ℝ",
+     "function expected at\n  (fderiv ℝ f (x_0, y_0)) 0\nterm has type\n  ℝ"]}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {f : ℝ × ℝ → ℝ},   \n  (∀ x y, x ^ 2 + y ^ 2 ≤ 1 → |f (x, y)| ≤ 1) →   \n  (∃ x0 y0, x0 ^ 2 + y0 ^ 2 < 1 ∧ (fderiv ℝ (uncurry f) (x0, y0)).1 ^ 2 + (fderiv ℝ (uncurry f) (x0, y0)).2 ^ 2 ≤ 16)",
+    "elabError":
+    "unknown identifier 'uncurry' ; identifiers [f, x, y, x, y, f, x, y, x0, y0, x0, y0, fderiv, uncurry, f, x0, y0, fderiv, uncurry, f, x0, y0] (during elaboration) for ∀ {f : ℝ × ℝ → ℝ},      (∀ x y, x ^ 2 + y ^ 2 ≤ 1 → |f (x, y)| ≤ 1) →      (∃ x0 y0, x0 ^ 2 + y0 ^ 2 < 1 ∧ (fderiv ℝ (uncurry f) (x0, y0)).1 ^ 2 + (fderiv ℝ (uncurry f) (x0, y0)).2 ^ 2 ≤ 16)",
+    "context?":
+    "Let $f$ be a real-valued function having partial derivatives and which is defined for $x^2+y^2 \\leq 1$ and is such that $|f(x,y)| \\leq 1$. Show that there exists a point $(x_0,y_0)$ in the interior of the unit circle such that $\\left(\\frac{\\partial f}{\\partial x} (x_0,y_0)\\right)^2+\\left(\\frac{\\partial f}{\\partial y} (x_0,y_0)\\right)^2 \\leq 16$.",
+    "cmdErrors":
+    ["failed to synthesize\n  NormedAddCommGroup (ℕ × ?m.20071 x0)\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+     "failed to synthesize\n  NormedAddCommGroup (ℕ × ?m.20071 x0)\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+     "function expected at\n  uncurry\nterm has type\n  ?m.800",
+     "function expected at\n  uncurry\nterm has type\n  ?m.800"]}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {f : ℝ × ℝ → ℝ},\n  (∀ x y, x ^ 2 + y ^ 2 ≤ 1 → |f (x, y)| ≤ 1) →\n    (∃ x₀ y₀, (x₀ ^ 2 + y₀ ^ 2 < 1) ∧ (fderiv ℝ f (x₀, y₀)).fst ^ 2 + (fderiv ℝ f (x₀, y₀)).snd ^ 2 ≤ 16)",
+    "elabError":
+    "invalid field notation, function 'ContinuousLinearMap.fst' does not have argument with type (ContinuousLinearMap ...) that can be used, it must be explicit or implicit with a unique name ; identifiers [f, x, y, x, y, f, x, y, x₀, y₀, x₀, y₀, fderiv, f, x₀, y₀, fst, fderiv, f, x₀, y₀, snd] (during elaboration) for ∀ {f : ℝ × ℝ → ℝ},   (∀ x y, x ^ 2 + y ^ 2 ≤ 1 → |f (x, y)| ≤ 1) →     (∃ x₀ y₀, (x₀ ^ 2 + y₀ ^ 2 < 1) ∧ (fderiv ℝ f (x₀, y₀)).fst ^ 2 + (fderiv ℝ f (x₀, y₀)).snd ^ 2 ≤ 16)",
+    "context?":
+    "Let $f$ be a real-valued function having partial derivatives and which is defined for $x^2+y^2 \\leq 1$ and is such that $|f(x,y)| \\leq 1$. Show that there exists a point $(x_0,y_0)$ in the interior of the unit circle such that $\\left(\\frac{\\partial f}{\\partial x} (x_0,y_0)\\right)^2+\\left(\\frac{\\partial f}{\\partial y} (x_0,y_0)\\right)^2 \\leq 16$.",
+    "cmdErrors":
+    ["invalid field notation, function 'ContinuousLinearMap.fst' does not have argument with type (ContinuousLinearMap ...) that can be used, it must be explicit or implicit with a unique name",
+     "invalid field notation, function 'ContinuousLinearMap.snd' does not have argument with type (ContinuousLinearMap ...) that can be used, it must be explicit or implicit with a unique name"]}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {f : ℝ × ℝ → ℝ},   (∀ x y, x^2 + y^2 ≤ 1 → |f(x, y)| ≤ 1) →   (∀ x y, ContDiffOn ℝ 1 f (set.Icc (-1) 1 ×ˢ set.Icc (-1) 1)) →   ∃ (x₀ y₀ : ℝ), x₀^2 + y₀^2 < 1 ∧ (fderiv ℝ f (x₀, y₀)).snd.1^2 + (fderiv ℝ f (x₀, y₀)).snd.2^2 ≤ 16",
+    "parseError": "<input>:1:47: expected '|' or '|ₘ'",
+    "context?":
+    "Let $f$ be a real-valued function having partial derivatives and which is defined for $x^2+y^2 \\leq 1$ and is such that $|f(x,y)| \\leq 1$. Show that there exists a point $(x_0,y_0)$ in the interior of the unit circle such that $\\left(\\frac{\\partial f}{\\partial x} (x_0,y_0)\\right)^2+\\left(\\frac{\\partial f}{\\partial y} (x_0,y_0)\\right)^2 \\leq 16$."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {f : ℝ × ℝ → ℝ}, (∀ x y, x ^ 2 + y ^ 2 ≤ 1 → |f (x, y)| ≤ 1) → ∃ (x₀ y₀ : ℝ), x₀ ^ 2 + y₀ ^ 2 < 1 ∧ (fderiv ℝ (λ p : ℝ × ℝ, f p) (x₀, y₀)).squaredNorm ≤ 16",
+    "parseError": "<input>:1:124: expected '↦', '=>'",
+    "context?":
+    "Let $f$ be a real-valued function having partial derivatives and which is defined for $x^2+y^2 \\leq 1$ and is such that $|f(x,y)| \\leq 1$. Show that there exists a point $(x_0,y_0)$ in the interior of the unit circle such that $\\left(\\frac{\\partial f}{\\partial x} (x_0,y_0)\\right)^2+\\left(\\frac{\\partial f}{\\partial y} (x_0,y_0)\\right)^2 \\leq 16$."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {f : ℝ × ℝ → ℝ},   (∀ (x y : ℝ), x ^ 2 + y ^ 2 ≤ 1 → |f (x, y)| ≤ 1) →     (∃ (x₀ y₀ : ℝ),       x₀ ^ 2 + y₀ ^ 2 < 1 ∧         (∂ f / (∂ x) (x₀, y₀)) ^ 2 + (∂ f / (∂ y) (x₀, y₀)) ^ 2 ≤ 16)",
+    "parseError":
+    "<input>:1:130: expected ')', '_', '↑', '↥', '⇑', identifier or term",
+    "context?":
+    "Let $f$ be a real-valued function having partial derivatives and which is defined for $x^2+y^2 \\leq 1$ and is such that $|f(x,y)| \\leq 1$. Show that there exists a point $(x_0,y_0)$ in the interior of the unit circle such that $\\left(\\frac{\\partial f}{\\partial x} (x_0,y_0)\\right)^2+\\left(\\frac{\\partial f}{\\partial y} (x_0,y_0)\\right)^2 \\leq 16$."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {f : ℝ × ℝ → ℝ},   (∀ x y, x^2 + y^2 ≤ 1 → |f (x, y)| ≤ 1) →     (Differentiable ℝ f) →       ∃ (x₀ y₀ : ℝ), (x₀^2 + y₀^2 < 1) ∧ (∂ f / ∂ x (x₀, y₀))^2 + (∂ f / ∂ y (x₀, y₀))^2 ≤ 16",
+    "parseError":
+    "<input>:1:132: expected ')', '_', '↑', '↥', '⇑', identifier or term",
+    "context?":
+    "Let $f$ be a real-valued function having partial derivatives and which is defined for $x^2+y^2 \\leq 1$ and is such that $|f(x,y)| \\leq 1$. Show that there exists a point $(x_0,y_0)$ in the interior of the unit circle such that $\\left(\\frac{\\partial f}{\\partial x} (x_0,y_0)\\right)^2+\\left(\\frac{\\partial f}{\\partial y} (x_0,y_0)\\right)^2 \\leq 16$."}},
+  "cmd": "translate"}]
