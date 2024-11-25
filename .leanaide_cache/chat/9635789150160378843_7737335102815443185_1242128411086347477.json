@@ -1,0 +1,6 @@
+{"error":
+ {"type": "invalid_request_error",
+  "param": "temperature",
+  "message":
+  "Invalid 'temperature': decimal above maximum value. Expected a value <= 2, but got 8 instead.",
+  "code": "decimal_above_max_value"}}

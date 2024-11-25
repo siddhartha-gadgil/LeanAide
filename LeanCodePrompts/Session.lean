@@ -31,8 +31,8 @@ namespace LeanAide.Translate
 
 structure SessionM.State where
   server : ChatServer := ChatServer.default
-  params : ChatParams := {n := 8}
-  pb : PromptExampleBuilder := PromptExampleBuilder.default
+  params : ChatParams := {n := 10, temp := ⟨8, 1⟩}
+  pb : PromptExampleBuilder := PromptExampleBuilder.classicDefault
   toChat : ChatExampleType := .simple
   relDefs : RelevantDefs := .empty
   roundTrip : Bool := false

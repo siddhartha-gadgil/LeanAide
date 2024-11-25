@@ -47,6 +47,9 @@ instance : Append PromptExampleBuilder :=
 def default :=
   PromptExampleBuilder.embedBuilder 8 4 4 ++ .searchBuilder 4 4
 
+def classicDefault :=
+  PromptExampleBuilder.embedBuilder 20 2 2
+
 instance : Inhabited PromptExampleBuilder := ⟨default⟩
 
 def prependFixed (pb: PromptExampleBuilder)
