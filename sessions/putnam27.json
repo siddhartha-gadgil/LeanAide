@@ -1,0 +1,19 @@
+[{"res":
+  "Let $S$ be a finite set. A set $P$ of subsets of $S$ has the property that any two members of $P$ have at least one element in common and that $P$ cannot be extended (whilst keeping this property). Prove that $P$ contains exactly half of the subsets of $S$.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Let $S$ be a finite set. A set $P$ of subsets of $S$ has the property that any two members of $P$ have at least one element in common and that $P$ cannot be extended (whilst keeping this property). Prove that $P$ contains exactly half of the subsets of $S$.",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView":
+   "∀ {α : Type u} [inst : DecidableEq α] {S : Finset α} (P : Finset (Finset α)),\n  (∀ X ⊆ S, (∀ A ∈ P, (X ∩ A).Nonempty) → X ∈ P) → P.card = 2 ^ (S.card - 1)",
+   "roundTripFailures": [],
+   "roundTripCheck": true,
+   "groups":
+   [["∀ {α : Type u} [inst : DecidableEq α] {S : Finset α} (P : Finset (Finset α)),\n  (∀ X ⊆ S, (∀ A ∈ P, (X ∩ A).Nonempty) → X ∈ P) → P.card = 2 ^ (S.card - 1)"],
+    ["∀ {α : Type u} {S : Finset α} {P : Finset (Finset α)}, P.card = 2 ^ (S.card - 1)"]],
+   "allElaborated":
+   ["∀ {α : Type u} {S : Finset α} {P : Finset (Finset α)},\n  (∀ A B ∈ P, (A ∩ B).Nonempty) ∧ ¬∃ Q, P ⊂ Q ∧ (∀ C D ∈ Q, (C ∩ D).Nonempty) →\n  P.card = 2 ^ (S.card - 1)",
+    "theorem Sperner_extension {α : Type u} [DecidableEq α] {S : Finset α} (P : Finset (Finset α))\n  (h1 : ∀ A B ∈ P, (A ∩ B).Nonempty)\n  (h2 : ∀ X ⊆ S, (∀ A ∈ P, (X ∩ A).Nonempty) → X ∈ P) :\n  P.card = 2^(S.card - 1) := sorry"]},
+  "cmd": "translate"}]

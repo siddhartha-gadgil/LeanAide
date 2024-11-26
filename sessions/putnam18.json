@@ -1,0 +1,17 @@
+[{"res":
+  "Let $\\{a_n\\}$ be a sequence of real numbers satisfying the inequalities $0 \\leq a_k \\leq 100a_n$ for $n \\leq k \\leq 2n$ and $n=1,2,\\dots$, and such that the series $\\sum_{n=0}^\\infty a_n$ converges. Prove that $\\lim_{n \\to \\infty}na_n=0$.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Let $\\{a_n\\}$ be a sequence of real numbers satisfying the inequalities $0 \\leq a_k \\leq 100a_n$ for $n \\leq k \\leq 2n$ and $n=1,2,\\dots$, and such that the series $\\sum_{n=0}^\\infty a_n$ converges. Prove that $\\lim_{n \\to \\infty}na_n=0$.",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView":
+   "∀ {a : ℕ → ℝ},\n  (∀ (n : ℕ), 0 ≤ a n) →\n    (∀ (n k : ℕ), n ≤ k ∧ k ≤ 2 * n → a k ≤ 100 * a n) →\n      Summable a → Filter.Tendsto (fun n => ↑n * a n) Filter.atTop (nhds 0)",
+   "roundTripFailures": [],
+   "roundTripCheck": true,
+   "groups":
+   [["∀ {a : ℕ → ℝ},\n  (∀ (n : ℕ), 0 ≤ a n) →\n    (∀ (n k : ℕ), n ≤ k ∧ k ≤ 2 * n → a k ≤ 100 * a n) →\n      Summable a → Filter.Tendsto (fun n => ↑n * a n) Filter.atTop (nhds 0)"]],
+   "allElaborated":
+   ["∀ {a : ℕ → ℝ}, (∀ n, 0 ≤ a n) → (∀ n k, n ≤ k ∧ k ≤ 2 * n → a k ≤ 100 * a n) →\n  Summable a →\n  Filter.Tendsto (fun n => n * a n) Filter.atTop (nhds 0)"]},
+  "cmd": "translate"}]

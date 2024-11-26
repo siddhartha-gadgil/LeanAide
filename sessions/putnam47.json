@@ -1,0 +1,23 @@
+[{"res":
+  "Let $C$ be the set of continuous functions $f : \\mathbb{R} \\to \\mathbb{R}$. Let $T : C \\to C$ satisfty the following two properties:\n\\begin{enumerate}\n\\item Linearity: $T(af + bg) = aT(f) + bT(g)$ for all $a, b \\in \\mathbb{R}$ and all $f, g \\in C$.\n\\item Locality: If $f \\in C$ and $g \\in C$ are identical on some interval $I$, then $T(f)$ and $T(g)$ are also identical on $I$.\n\\end{enumerate}\nProve that there exists some function $f \\in C$ such that $T(g(x)) = f(x)g(x)$ for all $g \\in C$.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Let $C$ be the set of continuous functions $f : \\mathbb{R} \\to \\mathbb{R}$. Let $T : C \\to C$ satisfty the following two properties:\n\\begin{enumerate}\n\\item Linearity: $T(af + bg) = aT(f) + bT(g)$ for all $a, b \\in \\mathbb{R}$ and all $f, g \\in C$.\n\\item Locality: If $f \\in C$ and $g \\in C$ are identical on some interval $I$, then $T(f)$ and $T(g)$ are also identical on $I$.\n\\end{enumerate}\nProve that there exists some function $f \\in C$ such that $T(g(x)) = f(x)g(x)$ for all $g \\in C$.",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView":
+   "∀ (C : Set (ℝ → ℝ)) (T : (ℝ → ℝ) → ℝ → ℝ),\n  (∀ (f : ℝ → ℝ), f ∈ C ↔ Continuous f) →\n    (∀ (a b : ℝ) (f g : ℝ → ℝ), T (a • f + b • g) = a • T f + b • T g) →\n      (∀ (f g : ℝ → ℝ) (I : Set ℝ), (∀ x ∈ I, f x = g x) → ∀ x ∈ I, T f x = T g x) →\n        ∃ f ∈ C, ∀ g ∈ C, ∀ (x : ℝ), T g x = f x * g x",
+   "roundTripFailures": [],
+   "roundTripCheck": true,
+   "groups":
+   [["∀ (C : Set (ℝ → ℝ)) (T : (ℝ → ℝ) → ℝ → ℝ),\n  (∀ (f : ℝ → ℝ), f ∈ C ↔ Continuous f) →\n    (∀ (a b : ℝ) (f g : ℝ → ℝ), T (a • f + b • g) = a • T f + b • T g) →\n      (∀ (f g : ℝ → ℝ) (I : Set ℝ), (∀ x ∈ I, f x = g x) → ∀ x ∈ I, T f x = T g x) →\n        ∃ f ∈ C, ∀ g ∈ C, ∀ (x : ℝ), T g x = f x * g x"],
+    ["sorryAx (Sort ?u.9205)"],
+    ["sorryAx (Sort ?u.9315)"],
+    ["sorryAx (Sort ?u.17102)"]],
+   "allElaborated":
+   ["theorem exists_functional_multiplier {C : Type} [TopologicalSpace C] [NormedSpace ℝ C]\n  (T : C → C)\n  (h_linearity : ∀ (a b : ℝ) (f g : C), T (a • f + b • g) = a • T f + b • T g)\n  (h_locality : ∀ (f g : C) (I : Set ℝ), (∀ x ∈ I, f x = g x) → ∀ x ∈ I, T f x = T g x) :\n  ∃ f : C, ∀ g : C, T g = f * g := \nsorry",
+    "theorem exists_f_continuous_mul {C : Type*} [inst : topological_space C] \n  (T : (ℝ → C) → (ℝ → C))\n  (linearity : ∀ (a b : ℝ) (f g : ℝ → C), T (a • f + b • g) = a • T f + b • T g)\n  (locality : ∀ (f g : ℝ → C) (I : set ℝ), (∀ x ∈ I, f x = g x) → ∀ x ∈ I, T f x = T g x) : \n  ∃ (f : ℝ → C), ∀ (g : ℝ → C), T g = λ x, f x * g x := \nsorry",
+    "theorem exists_function_for_T {C : Type*} [add_comm_group C] [vector_space ℝ C] \n  (T : C → C) \n  (h_linear : ∀ (a b : ℝ) (f g : C), T (a • f + b • g) = a • T f + b • T g)\n  (h_local : ∀ (f g : C) (I : Set ℝ), (∀ x ∈ I, f x = g x) → ∀ x ∈ I, T f x = T g x) :\n  ∃ f : ℝ → ℝ, ∀ g : C, (∀ x : ℝ, T (λ x, g x) = f x * g x) :=\nsorry",
+    "import Mathlib.Topology.ContinuousFunction.Algebra\n\ntheorem exists_multiplier_function\n    (C : Set (ℝ →ℝ)) (T : (ℝ →ℝ) → (ℝ →ℝ))\n    (hC : ∀ f : ℝ → ℝ, f ∈ C ↔ Continuous f)\n    (h1 : ∀ a b : ℝ, ∀ f g : ℝ → ℝ, T (a • f + b • g) = a • T f + b • T g)\n    (h2 : ∀ f g : ℝ → ℝ, ∀ I : Set ℝ, (∀ x ∈ I, f x = g x) → ∀ x ∈ I, T f x = T g x) :\n    ∃ f : ℝ → ℝ, f ∈ C ∧ ∀ g ∈ C, ∀ x : ℝ, T g x = f x * g x := sorry"]},
+  "cmd": "translate"}]

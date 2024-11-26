@@ -1,0 +1,26 @@
+[{"res":
+  "Prove that for every integer $n$ greater than 1: \\[ \\frac{3n+1}{2n+2} < \\left( \\frac{1}{n} \\right)^n + \\left(\\frac{2}{n} \\right)^n + \\cdots + \\left(\\frac{n}{n} \\right)^n < 2. \\]",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Prove that for every integer $n$ greater than 1: \\[ \\frac{3n+1}{2n+2} < \\left( \\frac{1}{n} \\right)^n + \\left(\\frac{2}{n} \\right)^n + \\cdots + \\left(\\frac{n}{n} \\right)^n < 2. \\]",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView":
+   "∀ {n : ℕ}, (3 * n + 1) / (2 * n + 2) < ∑ i ∈ Finset.range n, (i / n) ^ n ∧ ∑ i ∈ Finset.range n, (i / n) ^ n < 2",
+   "roundTripFailures":
+   [["Prove that for every integer $n$ greater than 1: \\[ \\frac{3n+1}{2n+2} < \\left( \\frac{1}{n} \\right)^n + \\left(\\frac{2}{n} \\right)^n + \\cdots + \\left(\\frac{n}{n} \\right)^n < 2. \\]",
+     [[false,
+       "false\nTheorem 1 sums from 1 to n, whereas Theorem 2 sums from 0 to n−1."]]]],
+   "roundTripCheck": false,
+   "groups":
+   [["∀ {n : ℕ}, (3 * n + 1) / (2 * n + 2) < ∑ i ∈ Finset.range n, (i / n) ^ n ∧ ∑ i ∈ Finset.range n, (i / n) ^ n < 2"],
+    ["∀ (n : ℕ),\n  1 < n →\n    (3 * n + 1) / (2 * n + 2) < ∑ i ∈ Finset.range n, (i + 1) ^ n / n ^ n ∧\n      ∑ i ∈ Finset.range n, (i + 1) ^ n / n ^ n < 2"],
+    ["∀ (n : ℕ),\n  1 < n →\n    (3 * ↑n + 1) / (2 * ↑n + 2) < ∑ i ∈ Finset.range n, (↑i + 1) ^ n / ↑n ^ n ∧\n      ∑ i ∈ Finset.range n, (↑i + 1) ^ n / ↑n ^ n < 2"],
+    ["∀ {n : ℕ},\n  (3 * ↑n + 1) / (2 * ↑n + 2) < ∑ k ∈ Finset.range n, (↑k + 1) / ↑n ^ n ∧ ∑ k ∈ Finset.range n, (↑k + 1) / ↑n ^ n < 2"]],
+   "allElaborated":
+   ["∀ (n : ℕ), 1 < n → (3 * n + 1) / (2 * n + 2) < ∑ i in Finset.range n, (↑i + 1) ^ n / ↑n ^ n ∧ ∑ i in Finset.range n, (↑i + 1) ^ n / ↑n ^ n < 2",
+    "∀ (n : ℕ), 1 < n → (3 * n + 1 : ℝ) / (2 * n + 2) < ∑ i in Finset.range n, (i + 1 : ℝ) ^ n / n ^ n ∧ ∑ i in Finset.range n, (i + 1 : ℝ) ^ n / n ^ n < 2",
+    "∀ {n : ℤ}, 1 < n →\n  (3 * n + 1) / (2 * n + 2) < (Finset.sum (Finset.range n) fun k => (k + 1 : ℚ) / n ^ n) ∧\n  (Finset.sum (Finset.range n) fun k => (k + 1 : ℚ) / n ^ n) < 2",
+    "∀ (n : ℤ), 1 < n →\n  (3 * n + 1) / (2 * n + 2) < ∑ i in Finset.range n, (↑i / n) ^ n ∧ ∑ i in Finset.range n, (↑i / n) ^ n < 2"]},
+  "cmd": "translate"}]

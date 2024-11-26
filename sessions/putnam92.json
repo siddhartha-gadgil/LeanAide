@@ -1,0 +1,19 @@
+[{"res":
+  "Let $H$ be a polynomial of degree at most $3$ and $T$ be a positive real number. Show that the average value of $H(t)$ over the interval $[-T, T]$ equals the average of $H\\left(-\\frac{T}{\\sqrt{3}}\\right)$ and $H\\left(\\frac{T}{\\sqrt{3}}\\right)$.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Let $H$ be a polynomial of degree at most $3$ and $T$ be a positive real number. Show that the average value of $H(t)$ over the interval $[-T, T]$ equals the average of $H\\left(-\\frac{T}{\\sqrt{3}}\\right)$ and $H\\left(\\frac{T}{\\sqrt{3}}\\right)$.",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView":
+   "∀ (H : Polynomial ℝ) (T : ℝ),\n  H.degree ≤ 3 →\n    0 < T →\n      1 / (2 * T) * ∫ (t : ℝ) in -T..T, Polynomial.eval t H =\n        (Polynomial.eval (-(T / √3)) H + Polynomial.eval (T / √3) H) / 2",
+   "roundTripFailures": [],
+   "roundTripCheck": true,
+   "groups":
+   [["∀ (H : Polynomial ℝ) (T : ℝ),\n  H.degree ≤ 3 →\n    0 < T →\n      1 / (2 * T) * ∫ (t : ℝ) in -T..T, Polynomial.eval t H =\n        (Polynomial.eval (-(T / √3)) H + Polynomial.eval (T / √3) H) / 2"],
+    ["∀ {H : Polynomial ℝ} {T : ℝ},\n  H.degree ≤ 3 →\n    0 < T →\n      (∫ (t : ℝ) in -T..T, Polynomial.eval t H) / (2 * T) =\n        (Polynomial.eval (-T / √3) H + Polynomial.eval (T / √3) H) / 2"]],
+   "allElaborated":
+   ["∀ {R : Type u_1} [inst : LinearOrderedField R] {H : Polynomial R},\n  Polynomial.degree H ≤ 3 →\n    ∀ {T : R},\n      0 < T →\n        (∫ (t : ℝ) in -T..T, (Polynomial.eval t H)) / (2 * T) =\n          ((Polynomial.eval (-T / Real.sqrt 3) H) + (Polynomial.eval (T / Real.sqrt 3) H)) / 2",
+    "∀ (H : Polynomial ℝ) (T : ℝ),\n  H.degree ≤ 3 →\n    0 < T →\n      (1 / (2 * T)) * ∫ (t : ℝ) in -T..T, H.eval t =\n        (H.eval (-(T / Real.sqrt 3)) + H.eval (T / Real.sqrt 3)) / 2"]},
+  "cmd": "translate"}]

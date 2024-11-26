@@ -1,0 +1,31 @@
+[{"res":
+  "For any positive integer $n$, prove that the sum of the first $n$ terms of the bimonial expansion of $(2 - 1)^{-n}$ (starting with the maximal exponent of $2$) is $\\frac{1}{2}.$",
+  "cmd": "consider"},
+ {"res":
+  "Translating: For any positive integer $n$, prove that the sum of the first $n$ terms of the bimonial expansion of $(2 - 1)^{-n}$ (starting with the maximal exponent of $2$) is $\\frac{1}{2}.$",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView":
+   "∀ {n : ℕ}, 0 < n → ∑ k ∈ Finset.range n, ↑(n.choose k) * 2 ^ k = 1 / 2",
+   "roundTripFailures":
+   [["For any positive integer $n$, prove that the sum of the first $n$ terms of the bimonial expansion of $(2 - 1)^{-n}$ (starting with the maximal exponent of $2$) is $\\frac{1}{2}.$",
+     [[false,
+       "false\nTheorem 2's sum does not match Theorem 1's binomial expansion result."]]]],
+   "roundTripCheck": false,
+   "groups":
+   [["∀ {n : ℕ}, 0 < n → ∑ k ∈ Finset.range n, ↑(n.choose k) * 2 ^ k = 1 / 2"],
+    ["∀ (n : ℕ), 0 < n → ∑ k ∈ Finset.range n, (2 * n).choose k * (2 ^ k)⁻¹ = 1 / 2"],
+    ["∀ (n : ℕ), 0 < n → ∑ i ∈ Finset.range n, ↑(n.choose i) * 2 ^ (n - i) * (-1) ^ i = 1 / 2"],
+    ["∀ (n : ℕ), 0 < n → ∑ m ∈ Finset.range n, n.choose m * 2 ^ (n - m) = 1 / 2"],
+    ["∀ {n : ℕ}, 0 < n → ∑ i ∈ Finset.range n, n.choose i * 2 ^ (n - i) = 2 ^ n / 2"]],
+   "allElaborated":
+   ["∀ (n : ℕ), 0 < n → (∑ k in Finset.range n, Nat.choose (2 * n) k * (2 ^ k)⁻¹) = 1 / 2",
+    "∀ (n : ℕ), 0 < n → (∑ i in Finset.range n, Nat.choose n i * (2:ℚ) ^ (n - i) * (-1) ^ i) = 1 / 2",
+    "∀ (n : ℕ), 0 < n → ∑ m in Finset.range n, Nat.choose n m * 2^(n - m) = 1 / 2",
+    "∀ {n : ℕ}, 0 < n → (∑ i in Finset.range n, Nat.choose n i * 2 ^ (n - i)) = 2 ^ n / 2",
+    "∀ {n : ℕ}, 0 < n → (∑ k in Finset.range n, Nat.choose n k * 2 ^ k : ℚ) = 1 / 2",
+    "∀ (n : ℕ), 0 < n → (∑ i in Finset.range n, Nat.choose n i * 2 ^ (n - 1 - i)) = 1 / 2",
+    "∀ (n : ℕ), 0 < n → (∑ i in Finset.range n, (Nat.choose n i) * 2^(i - n)) = (1/2)",
+    "∀ (n : ℕ), n ≠ 0 → (∑ i in Finset.range n, Nat.choose n i * ((2:ℚ) ^ i) * ((-1) ^ (n - i))) = 1 / 2"]},
+  "cmd": "translate"}]

@@ -1,0 +1,212 @@
+[{"res":
+  "Let $\\triangle ABC$ be a triangle in the Euclidean plane, with points $P$, $Q$, and $R$ lying on segments $\\overline{BC}$, $\\overline{CA}$, $\\overline{AB}$ respectively such that $$\\frac{AQ}{QC} = \\frac{BR}{RA} = \\frac{CP}{PB} = k$$ for some positive constant $k$. If $\\triangle UVW$ is the triangle formed by parts of segments $\\overline{AP}$, $\\overline{BQ}$, and $\\overline{CR}$, prove that $$\\frac{[\\triangle UVW]}{[\\triangle ABC]} = \\frac{(k - 1)^2}{k^2 + k + 1},$$ where $[\\triangle]$ denotes the area of the triangle $\\triangle$.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Let $\\triangle ABC$ be a triangle in the Euclidean plane, with points $P$, $Q$, and $R$ lying on segments $\\overline{BC}$, $\\overline{CA}$, $\\overline{AB}$ respectively such that $$\\frac{AQ}{QC} = \\frac{BR}{RA} = \\frac{CP}{PB} = k$$ for some positive constant $k$. If $\\triangle UVW$ is the triangle formed by parts of segments $\\overline{AP}$, $\\overline{BQ}$, and $\\overline{CR}$, prove that $$\\frac{[\\triangle UVW]}{[\\triangle ABC]} = \\frac{(k - 1)^2}{k^2 + k + 1},$$ where $[\\triangle]$ denotes the area of the triangle $\\triangle$.",
+  "cmd": "translate"},
+ {"res": "Error in translation", "cmd": "translate"},
+ {"res": "Prompt:", "cmd": "translate"},
+ {"res":
+  [{"role": "system",
+    "content":
+    "You are a Mathematics, Lean 4 and coding assistant who answers questions about Mathematics and Lean 4, gives hints while coding in Lean 4. You also translates from natural language to Lean Theorem Prover code and vice versa when asked. Follow EXACTLY any examples given when generating Lean code."},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Shows that `|v - Aₙ / Bₙ| ≤ 1 / (Bₙ * Bₙ₊₁)`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {K : Type u_1} {v : K} {n : ℕ} [inst : LinearOrderedField K] [inst_1 : FloorRing K],\n  ¬GeneralizedContinuedFraction.TerminatedAt (GeneralizedContinuedFraction.of v) n →\n    |v - GeneralizedContinuedFraction.convergents (GeneralizedContinuedFraction.of v) n| ≤\n      1 /\n        (GeneralizedContinuedFraction.denominators (GeneralizedContinuedFraction.of v) n *\n          GeneralizedContinuedFraction.denominators (GeneralizedContinuedFraction.of v) (n + 1))"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: If ∠BCD = π, then ∠ACB + ∠ACD = π. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] (p1 : P) {p2 p3 p4 : P},\n  EuclideanGeometry.angle p2 p3 p4 = Real.pi →\n    EuclideanGeometry.angle p1 p3 p2 + EuclideanGeometry.angle p1 p3 p4 = Real.pi"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: If ∠ABC = 0, then (dist A C) = abs ((dist A B) - (dist B C)). \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] {p1 p2 p3 : P},\n  EuclideanGeometry.angle p1 p2 p3 = 0 → dist p1 p3 = |dist p1 p2 - dist p3 p2|"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: If A ≠ B and C ≠ B then ∠ABC = π if and only if (dist A C) = (dist A B) + (dist B C). \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] {p1 p2 p3 : P},\n  p1 ≠ p2 → p3 ≠ p2 → (dist p1 p3 = dist p1 p2 + dist p3 p2 ↔ EuclideanGeometry.angle p1 p2 p3 = Real.pi)"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  In Euclidean geometry, if angle ∠ABC between lines BA and BC is equal to 180 degrees (π radians), then the length of segment AC is equal to the sum of the lengths of segments AB and BC.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] {p1 p2 p3 : P},\n  EuclideanGeometry.angle p1 p2 p3 = Real.pi → dist p1 p3 = dist p1 p2 + dist p3 p2"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  In Euclidean geometry, if angle ∠ABC between lines BA and BC is equal to 180 degrees (π radians), then the length of segment AC is equal to the sum of the lengths of segments AB and BC.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] {p1 p2 p3 : P},\n  EuclideanGeometry.angle p1 p2 p3 = Real.pi → dist p1 p3 = dist p1 p2 + dist p3 p2"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Triangle inequality for the extended distance \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u} [inst : PseudoEMetricSpace α] (x y z : α), edist x y ≤ edist z x + edist z y"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  In a Euclidean space, if the angle formed by points B and D is π radians (180 degrees), then the angles formed by point B with points A and C, and angles formed by point B with points A and D, are equal.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] (p1 : P) {p2 p3 p4 : P},\n  EuclideanGeometry.angle p2 p3 p4 = Real.pi → EuclideanGeometry.angle p1 p2 p3 = EuclideanGeometry.angle p1 p2 p4"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: This theorem states that in a right-angled triangle (in a two-dimensional real inner-product space, or Euclidean space), if the angle at a point `p₂` between line segments `p₂p₁` and `p₂p₃` is π/2 (which indicates a right angle), then the length of the side `p₃p₂` divided by the cosine of the angle at `p₃` between `p₃p₂` and `p₃p₁` is equal to the length of the hypotenuse `p₁p₃`.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] [hd2 : Fact (FiniteDimensional.finrank ℝ V = 2)] [inst_4 : Module.Oriented ℝ V (Fin 2)]\n  {p₁ p₂ p₃ : P},\n  EuclideanGeometry.oangle p₁ p₂ p₃ = ↑(Real.pi / 2) → dist p₃ p₂ / (EuclideanGeometry.oangle p₂ p₃ p₁).cos = dist p₁ p₃"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  In a sphere in a Euclidean space with a 2-dimensional normed additive commutative group, the sum of twice the base angle and twice the angle at the apex of two isosceles triangles with the same base and apex on the sphere is equal to $\\pi$.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] [hd2 : Fact (FiniteDimensional.finrank ℝ V = 2)] [inst_4 : Module.Oriented ℝ V (Fin 2)]\n  {s : EuclideanGeometry.Sphere P} {p₁ p₂ p₃ : P},\n  p₁ ∈ s →\n    p₂ ∈ s →\n      p₃ ∈ s →\n        p₂ ≠ p₁ →\n          p₂ ≠ p₃ →\n            p₁ ≠ p₃ → 2 • EuclideanGeometry.oangle p₃ p₁ s.center + 2 • EuclideanGeometry.oangle p₁ p₂ p₃ = ↑Real.pi"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: If ∠ABC = π, then (dist A C) = (dist A B) + (dist B C). \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] {p1 p2 p3 : P},\n  EuclideanGeometry.angle p1 p2 p3 = Real.pi → dist p1 p3 = dist p1 p2 + dist p3 p2"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  In a right-angled triangle, the length of the hypotenuse is equal to the product of the length of the adjacent side and the tangent of the right angle.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] {p₁ p₂ p₃ : P},\n  EuclideanGeometry.angle p₁ p₂ p₃ = Real.pi / 2 →\n    p₁ ≠ p₂ ∨ p₃ = p₂ → dist p₁ p₂ / Real.tan (EuclideanGeometry.angle p₂ p₃ p₁) = dist p₃ p₂"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: This theorem states that in a right-angled triangle, the length of a side (the distance between points p₃ and p₂) divided by the tangent of the angle opposite to that side (the angle at p₃ formed by points p₃, p₁, and p₂) equals the length of the adjacent side (the distance between points p₁ and p₂). This is under the conditions that we are working in a 2-dimensional real inner product space, which has a specified orientation.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] [hd2 : Fact (FiniteDimensional.finrank ℝ V = 2)] [inst_4 : Module.Oriented ℝ V (Fin 2)]\n  {p₁ p₂ p₃ : P},\n  EuclideanGeometry.oangle p₁ p₂ p₃ = ↑(Real.pi / 2) → dist p₃ p₂ / (EuclideanGeometry.oangle p₃ p₁ p₂).tan = dist p₁ p₂"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For any positive integers m, n, and k, the quotient of n by k is equal to the quotient of the product of m and n by the product of m and k. In other words, (m * n) / (m * k) = n / k.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content": "∀ {m : ℕ} (n k : ℕ), 0 < m → m * n / (m * k) = n / k"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Definition: A `Triangle k P` is a collection of three affinely independent points. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "(k : Type u_1) →\n  {V : Type u_2} →\n    (P : Type u_3) →\n      [inst : Ring k] → [inst_1 : AddCommGroup V] → [inst : Module k V] → [inst : AddTorsor V P] → Type u_3"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  In a right-angled triangle, the length of the hypotenuse is equal to the sum of the lengths of the other two sides, each multiplied by the cosine of the respective adjacent angles. (This is the Pythagorean theorem in disguise, with the given condition ensuring the presence of a right angle.)\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] {p₁ p₂ p₃ : P},\n  EuclideanGeometry.angle p₁ p₂ p₃ = Real.pi / 2 →\n    p₁ = p₂ ∨ p₃ ≠ p₂ → dist p₃ p₂ / Real.cos (EuclideanGeometry.angle p₂ p₃ p₁) = dist p₁ p₃"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: **Pythagorean theorem**, if-and-only-if angle-at-point form. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]   [inst_3 : NormedAddTorsor V P] (p1 p2 p3 : P),   dist p1 p3 * dist p1 p3 = dist p1 p2 * dist p1 p2 + dist p3 p2 * dist p3 p2 ↔ ∠ p1 p2 p3 = π / 2"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: This theorem, from the field of Euclidean geometry, states that for any points `p₁`, `p₂`, and `p₃` in a two-dimensional real inner product space with a given orientation, if the oriented angle `p₁ p₂ p₃` is equal to π/2 (which corresponds to a right angle), then the ratio of the distance from `p₁` to `p₂` to the cosine of the oriented angle `p₃ p₁ p₂` is equal to the distance from `p₁` to `p₃`. This corresponds to the geometric property of a right-angled triangle where the length of a side adjacent to an angle, divided by the cosine of that angle, equals the length of the hypotenuse.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] [hd2 : Fact (FiniteDimensional.finrank ℝ V = 2)] [inst_4 : Module.Oriented ℝ V (Fin 2)]\n  {p₁ p₂ p₃ : P},\n  EuclideanGeometry.oangle p₁ p₂ p₃ = ↑(Real.pi / 2) → dist p₁ p₂ / (EuclideanGeometry.oangle p₃ p₁ p₂).cos = dist p₁ p₃"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For points P, Q, R, and S on a line in a 2-dimensional Euclidean space with an inner product, if the angle between PQ and QR is of the same sign as the angle between QR and RS, then the points lie on the same line.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] [hd2 : Fact (FiniteDimensional.finrank ℝ V = 2)] [inst_4 : Module.Oriented ℝ V (Fin 2)]\n  {p₁ p₂ p₃ : P} (p₄ : P),\n  Sbtw ℝ p₁ p₂ p₃ → (EuclideanGeometry.oangle p₁ p₄ p₂).sign = (EuclideanGeometry.oangle p₂ p₄ p₃).sign"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: The quotient norm satisfies the triangle inequality. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {M : Type u_1} [inst : SeminormedAddCommGroup M] (S : AddSubgroup M) (x y : M ⧸ S), ‖x + y‖ ≤ ‖x‖ + ‖y‖"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Let $\\triangle ABC$ be a triangle in the Euclidean plane, with points $P$, $Q$, and $R$ lying on segments $\\overline{BC}$, $\\overline{CA}$, $\\overline{AB}$ respectively such that $$\\frac{AQ}{QC} = \\frac{BR}{RA} = \\frac{CP}{PB} = k$$ for some positive constant $k$. If $\\triangle UVW$ is the triangle formed by parts of segments $\\overline{AP}$, $\\overline{BQ}$, and $\\overline{CR}$, prove that $$\\frac{[\\triangle UVW]}{[\\triangle ABC]} = \\frac{(k - 1)^2}{k^2 + k + 1},$$ where $[\\triangle]$ denotes the area of the triangle $\\triangle$.\n\nGive ONLY the Lean code"}],
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "```lean import Mathlib.Data.Real.Basic import Mathlib.Geometry.Triangle  theorem cevian_area_ratio {A B C P Q R U V W : Point}   (k : ℝ)    (hPQ : AQ / QC = k)   (hQR : BR / RA = k)   (hRP : CP / PB = k)   (hU : U = meet_line A P Q R)   (hV : V = meet_line B Q R P)   (hW : W = meet_line C R P Q) :   triangle_area U V W / triangle_area A B C = (k - 1)^2 / (k^2 + k + 1) := begin   sorry end ``` ",
+    "parseError": "<input>:1:2: expected identifier",
+    "context?":
+    "Let $\\triangle ABC$ be a triangle in the Euclidean plane, with points $P$, $Q$, and $R$ lying on segments $\\overline{BC}$, $\\overline{CA}$, $\\overline{AB}$ respectively such that $$\\frac{AQ}{QC} = \\frac{BR}{RA} = \\frac{CP}{PB} = k$$ for some positive constant $k$. If $\\triangle UVW$ is the triangle formed by parts of segments $\\overline{AP}$, $\\overline{BQ}$, and $\\overline{CR}$, prove that $$\\frac{[\\triangle UVW]}{[\\triangle ABC]} = \\frac{(k - 1)^2}{k^2 + k + 1},$$ where $[\\triangle]$ denotes the area of the triangle $\\triangle$."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "```lean theorem cevian_triangle_area_ratio {V : Type*} [inner_product_space ℝ V]    {A B C P Q R U V W : V} (k : ℝ) (hA : is_linear_combination k Q C = A)    (hB : is_linear_combination k R A = B) (hC : is_linear_combination k P B = C)    (collinear_APU : collinear ℝ ({A, P, U} : set V))   (collinear_BQV : collinear ℝ ({B, Q, V} : set V))    (collinear_CRW : collinear ℝ ({C, R, W} : set V))   (area_ABC_ne_zero : 0 < area (triangle.mk A B C)) :   area (triangle.mk U V W) / area (triangle.mk A B C) = (k - 1) ^ 2 / (k ^ 2 + k + 1) := begin   -- proof would go here end ```",
+    "parseError": "<input>:1:2: expected identifier",
+    "context?":
+    "Let $\\triangle ABC$ be a triangle in the Euclidean plane, with points $P$, $Q$, and $R$ lying on segments $\\overline{BC}$, $\\overline{CA}$, $\\overline{AB}$ respectively such that $$\\frac{AQ}{QC} = \\frac{BR}{RA} = \\frac{CP}{PB} = k$$ for some positive constant $k$. If $\\triangle UVW$ is the triangle formed by parts of segments $\\overline{AP}$, $\\overline{BQ}$, and $\\overline{CR}$, prove that $$\\frac{[\\triangle UVW]}{[\\triangle ABC]} = \\frac{(k - 1)^2}{k^2 + k + 1},$$ where $[\\triangle]$ denotes the area of the triangle $\\triangle$."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "```lean import Mathlib.Geometry.Euclidean.Triangle import Mathlib.Algebra.Field.Basic  theorem cevian_ratio {A B C P Q R U V W : Point ℝ} (k : ℝ) (hP : SameRay C P B) (hQ : SameRay A Q C) (hR : SameRay B R A)   (hPQ : AQ / QC = k) (hBR : BR / RA = k) (hCP : CP / PB = k) :   (Triangle.area U V W / Triangle.area A B C) = ((k - 1) ^ 2) / (k ^ 2 + k + 1) := begin   sorry end ```",
+    "parseError": "<input>:1:2: expected identifier",
+    "context?":
+    "Let $\\triangle ABC$ be a triangle in the Euclidean plane, with points $P$, $Q$, and $R$ lying on segments $\\overline{BC}$, $\\overline{CA}$, $\\overline{AB}$ respectively such that $$\\frac{AQ}{QC} = \\frac{BR}{RA} = \\frac{CP}{PB} = k$$ for some positive constant $k$. If $\\triangle UVW$ is the triangle formed by parts of segments $\\overline{AP}$, $\\overline{BQ}$, and $\\overline{CR}$, prove that $$\\frac{[\\triangle UVW]}{[\\triangle ABC]} = \\frac{(k - 1)^2}{k^2 + k + 1},$$ where $[\\triangle]$ denotes the area of the triangle $\\triangle$."}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {V : Type u} [inst : RealInnerProductSpace V] {A B C P Q R U V W : V} {k : ℝ},\n  P ∈ lineSegment ℝ B C → Q ∈ lineSegment ℝ C A → R ∈ lineSegment ℝ A B →\n  AQ / QC = k → BR / RA = k → CP / PB = k →\n  U = lineSegment ℝ A P ∩ lineSegment ℝ B Q →\n  V = lineSegment ℝ B Q ∩ lineSegment ℝ C R →\n  W = lineSegment ℝ C R ∩ lineSegment ℝ A P →\n  (area (Δ U V W) / area (Δ A B C) = (k - 1)^2 / (k^2 + k + 1))",
+    "elabError":
+    "(deterministic) timeout at `elaborator`, maximum number of heartbeats (200000) has been reached\nUse `set_option maxHeartbeats <num>` to set the limit.(invalid MessageData.lazy, missing context) ; identifiers [V, u, inst, RealInnerProductSpace, V, A, B, C, P, Q, R, U, V, W, V, k, P, lineSegment, B, C, Q, lineSegment, C, A, R, lineSegment, A, B, AQ, QC, k, BR, RA, k, CP, PB, k, U, lineSegment, A, P, lineSegment, B, Q, V, lineSegment, B, Q, lineSegment, C, R, W, lineSegment, C, R, lineSegment, A, P, area, Δ, U, V, W, area, Δ, A, B, C, k, k, k] (during elaboration) for ∀ {V : Type u} [inst : RealInnerProductSpace V] {A B C P Q R U V W : V} {k : ℝ},   P ∈ lineSegment ℝ B C → Q ∈ lineSegment ℝ C A → R ∈ lineSegment ℝ A B →   AQ / QC = k → BR / RA = k → CP / PB = k →   U = lineSegment ℝ A P ∩ lineSegment ℝ B Q →   V = lineSegment ℝ B Q ∩ lineSegment ℝ C R →   W = lineSegment ℝ C R ∩ lineSegment ℝ A P →   (area (Δ U V W) / area (Δ A B C) = (k - 1)^2 / (k^2 + k + 1))",
+    "context?":
+    "Let $\\triangle ABC$ be a triangle in the Euclidean plane, with points $P$, $Q$, and $R$ lying on segments $\\overline{BC}$, $\\overline{CA}$, $\\overline{AB}$ respectively such that $$\\frac{AQ}{QC} = \\frac{BR}{RA} = \\frac{CP}{PB} = k$$ for some positive constant $k$. If $\\triangle UVW$ is the triangle formed by parts of segments $\\overline{AP}$, $\\overline{BQ}$, and $\\overline{CR}$, prove that $$\\frac{[\\triangle UVW]}{[\\triangle ABC]} = \\frac{(k - 1)^2}{k^2 + k + 1},$$ where $[\\triangle]$ denotes the area of the triangle $\\triangle$.",
+    "cmdErrors":
+    ["invalid binder annotation, type is not a class instance\n  ?m.12\nuse the command `set_option checkBinderAnnotations false` to disable the check",
+     "function expected at\n  RealInnerProductSpace\nterm has type\n  ?m.6",
+     "unused universe parameter 'u'"]}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {V : Type u_1} [inst : InnerProductSpace ℝ V] (A B C P Q R U V W : V) (k : ℝ),\n  P ∈ openSegment ℝ B C →\n  Q ∈ openSegment ℝ C A →\n  R ∈ openSegment ℝ A B →\n  (dist A Q / dist Q C = k) ∧\n  (dist B R / dist R A = k) ∧\n  (dist C P / dist P B = k) →\n  U = (1 / (1 + k)) • A + (k / (1 + k)) • P →\n  V = (1 / (1 + k)) • B + (k / (1 + k)) • Q →\n  W = (1 / (1 + k)) • C + (k / (1 + k)) • R →\n  real.area (triangle U V W) / real.area (triangle A B C) = (k - 1)^2 / (k^2 + k + 1)",
+    "elabError":
+    "(deterministic) timeout at `elaborator`, maximum number of heartbeats (200000) has been reached\nUse `set_option maxHeartbeats <num>` to set the limit.(invalid MessageData.lazy, missing context) ; identifiers [V, u_1, inst, InnerProductSpace, V, A, B, C, P, Q, R, U, V, W, V, k, P, openSegment, B, C, Q, openSegment, C, A, R, openSegment, A, B, dist, A, Q, dist, Q, C, k, dist, B, R, dist, R, A, k, dist, C, P, dist, P, B, k, U, k, A, k, k, P, V, k, B, k, k, Q, W, k, C, k, k, R, real.area, triangle, U, V, W, real.area, triangle, A, B, C, k, k, k] (during elaboration) for ∀ {V : Type u_1} [inst : InnerProductSpace ℝ V] (A B C P Q R U V W : V) (k : ℝ),   P ∈ openSegment ℝ B C →   Q ∈ openSegment ℝ C A →   R ∈ openSegment ℝ A B →   (dist A Q / dist Q C = k) ∧   (dist B R / dist R A = k) ∧   (dist C P / dist P B = k) →   U = (1 / (1 + k)) • A + (k / (1 + k)) • P →   V = (1 / (1 + k)) • B + (k / (1 + k)) • Q →   W = (1 / (1 + k)) • C + (k / (1 + k)) • R →   real.area (triangle U V W) / real.area (triangle A B C) = (k - 1)^2 / (k^2 + k + 1)",
+    "context?":
+    "Let $\\triangle ABC$ be a triangle in the Euclidean plane, with points $P$, $Q$, and $R$ lying on segments $\\overline{BC}$, $\\overline{CA}$, $\\overline{AB}$ respectively such that $$\\frac{AQ}{QC} = \\frac{BR}{RA} = \\frac{CP}{PB} = k$$ for some positive constant $k$. If $\\triangle UVW$ is the triangle formed by parts of segments $\\overline{AP}$, $\\overline{BQ}$, and $\\overline{CR}$, prove that $$\\frac{[\\triangle UVW]}{[\\triangle ABC]} = \\frac{(k - 1)^2}{k^2 + k + 1},$$ where $[\\triangle]$ denotes the area of the triangle $\\triangle$.",
+    "cmdErrors":
+    ["failed to synthesize\n  SeminormedAddCommGroup V\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+     "unused universe parameter 'u_1'"]}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "-- Theorem: given triangle ABC, with points P, Q, R on segments BC, CA, AB -- respectively, such that AQ/QC = BR/RA = CP/PB = k for some k > 0. -- The triangle ∆UVW is formed by segments AP, BQ, CR. The area ratio is given as -- (area ∆UVW) / (area ∆ABC) = (k - 1)² / (k² + k + 1).  theorem triangle_area_ratio   {V : Type*} [inner_product_space ℝ V] [finite_dimensional ℝ V] :    ∀ (A B C P Q R U V W : V) (k : ℝ),   P ∈ affine_segment ℝ B C →   Q ∈ affine_segment ℝ C A →   R ∈ affine_segment ℝ A B →   (P - B) = k • (C - B) →   (Q - C) = k • (A - C) →   (R - A) = k • (B - A) →   let UVW : finset V := {U, V, W},       ABC : finset V := {A, B, C} in   finset.card UVW = 3 →   finset.card ABC = 3 →   (area ℝ UVW : ℝ) / (area ℝ ABC) = (k - 1) ^ 2 / (k ^ 2 + k + 1) := begin   sorry end",
+    "parseError": "<input>:1:787: unexpected end of input",
+    "context?":
+    "Let $\\triangle ABC$ be a triangle in the Euclidean plane, with points $P$, $Q$, and $R$ lying on segments $\\overline{BC}$, $\\overline{CA}$, $\\overline{AB}$ respectively such that $$\\frac{AQ}{QC} = \\frac{BR}{RA} = \\frac{CP}{PB} = k$$ for some positive constant $k$. If $\\triangle UVW$ is the triangle formed by parts of segments $\\overline{AP}$, $\\overline{BQ}$, and $\\overline{CR}$, prove that $$\\frac{[\\triangle UVW]}{[\\triangle ABC]} = \\frac{(k - 1)^2}{k^2 + k + 1},$$ where $[\\triangle]$ denotes the area of the triangle $\\triangle$."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "```lean import Mathlib.Tactic import Mathlib.Geometry.Euclidean.Basic import Mathlib.Geometry.Triangle.Basic import Mathlib.Algebra.Ring  namespace EuclideanGeometry  variable {R : Type _} [LinearOrderedField R]   theorem cevas (A B C P Q R U V W : EuclideanSpace R 2) (hP : P ∈ line_segment R B C) (hQ : Q ∈ line_segment R C A)   (hR : R ∈ line_segment R A B) (k : R) (hk : 0 < k)   (h1 : dist C P / dist P B = k) (h2 : dist A Q / dist Q C = k) (h3 : dist B R / dist R A = k) :   area [A, B, C] ≠ 0 →   area [U, V, W] / area [A, B, C] = (k - 1) ^ 2 / (k ^ 2 + k + 1) := sorry  end EuclideanGeometry ```",
+    "parseError": "<input>:1:2: expected identifier",
+    "context?":
+    "Let $\\triangle ABC$ be a triangle in the Euclidean plane, with points $P$, $Q$, and $R$ lying on segments $\\overline{BC}$, $\\overline{CA}$, $\\overline{AB}$ respectively such that $$\\frac{AQ}{QC} = \\frac{BR}{RA} = \\frac{CP}{PB} = k$$ for some positive constant $k$. If $\\triangle UVW$ is the triangle formed by parts of segments $\\overline{AP}$, $\\overline{BQ}$, and $\\overline{CR}$, prove that $$\\frac{[\\triangle UVW]}{[\\triangle ABC]} = \\frac{(k - 1)^2}{k^2 + k + 1},$$ where $[\\triangle]$ denotes the area of the triangle $\\triangle$."}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {P : Type u_1} [inst : EuclideanGeometry.Plane P ℝ] {A B C P Q R U V W : P} {k : ℝ},\n  k > 0 →\n  P ∈ lineSegment ℝ B C →\n  Q ∈ lineSegment ℝ C A →\n  R ∈ lineSegment ℝ A B →\n  (dist A Q / dist Q C = k) →\n  (dist B R / dist R A = k) →\n  (dist C P / dist P B = k) →\n  U ∈ lineSegment ℝ A P →\n  V ∈ lineSegment ℝ B Q →\n  W ∈ lineSegment ℝ C R →\n  (EuclideanGeometry.triArea U V W / EuclideanGeometry.triArea A B C) = ((k - 1) ^ 2 / (k ^ 2 + k + 1))",
+    "elabError":
+    "(deterministic) timeout at `elaborator`, maximum number of heartbeats (200000) has been reached\nUse `set_option maxHeartbeats <num>` to set the limit.(invalid MessageData.lazy, missing context) ; identifiers [P, u_1, inst, EuclideanGeometry.Plane, P, A, B, C, P, Q, R, U, V, W, P, k, k, P, lineSegment, B, C, Q, lineSegment, C, A, R, lineSegment, A, B, dist, A, Q, dist, Q, C, k, dist, B, R, dist, R, A, k, dist, C, P, dist, P, B, k, U, lineSegment, A, P, V, lineSegment, B, Q, W, lineSegment, C, R, EuclideanGeometry.triArea, U, V, W, EuclideanGeometry.triArea, A, B, C, k, k, k] (during elaboration) for ∀ {P : Type u_1} [inst : EuclideanGeometry.Plane P ℝ] {A B C P Q R U V W : P} {k : ℝ},   k > 0 →   P ∈ lineSegment ℝ B C →   Q ∈ lineSegment ℝ C A →   R ∈ lineSegment ℝ A B →   (dist A Q / dist Q C = k) →   (dist B R / dist R A = k) →   (dist C P / dist P B = k) →   U ∈ lineSegment ℝ A P →   V ∈ lineSegment ℝ B Q →   W ∈ lineSegment ℝ C R →   (EuclideanGeometry.triArea U V W / EuclideanGeometry.triArea A B C) = ((k - 1) ^ 2 / (k ^ 2 + k + 1))",
+    "context?":
+    "Let $\\triangle ABC$ be a triangle in the Euclidean plane, with points $P$, $Q$, and $R$ lying on segments $\\overline{BC}$, $\\overline{CA}$, $\\overline{AB}$ respectively such that $$\\frac{AQ}{QC} = \\frac{BR}{RA} = \\frac{CP}{PB} = k$$ for some positive constant $k$. If $\\triangle UVW$ is the triangle formed by parts of segments $\\overline{AP}$, $\\overline{BQ}$, and $\\overline{CR}$, prove that $$\\frac{[\\triangle UVW]}{[\\triangle ABC]} = \\frac{(k - 1)^2}{k^2 + k + 1},$$ where $[\\triangle]$ denotes the area of the triangle $\\triangle$.",
+    "cmdErrors":
+    ["unknown identifier 'EuclideanGeometry.Plane'",
+     "unused universe parameter 'u_1'"]}},
+  "cmd": "translate"}]

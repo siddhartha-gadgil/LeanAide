@@ -1,0 +1,17 @@
+[{"res":
+  "Prove that the sum of the squares of the distances between any $n$ points on the unit sphere $\\{(x, y, z) \\mid x^2 + y^2 + z^2 = 1\\}$ is at most $n^2$.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Prove that the sum of the squares of the distances between any $n$ points on the unit sphere $\\{(x, y, z) \\mid x^2 + y^2 + z^2 = 1\\}$ is at most $n^2$.",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView":
+   "∀ {E : Type u} [inst : NormedAddCommGroup E] [inst_1 : InnerProductSpace ℝ E] [inst_2 : Module.Oriented ℝ E (Fin 3)]\n  (s : Finset E), (∀ x ∈ s, ‖x‖ = 1) → ∑ x ∈ s, ∑ y ∈ s, dist x y ^ 2 ≤ ↑s.card ^ 2",
+   "roundTripFailures": [],
+   "roundTripCheck": true,
+   "groups":
+   [["∀ {E : Type u} [inst : NormedAddCommGroup E] [inst_1 : InnerProductSpace ℝ E] [inst_2 : Module.Oriented ℝ E (Fin 3)]\n  (s : Finset E), (∀ x ∈ s, ‖x‖ = 1) → ∑ x ∈ s, ∑ y ∈ s, dist x y ^ 2 ≤ ↑s.card ^ 2"]],
+   "allElaborated":
+   ["∀ {E : Type u} [inst : NormedAddCommGroup E] [inst_1 : InnerProductSpace ℝ E] [inst_2 : Module.Oriented ℝ E (Fin 3)]\n  (s : Finset E),\n  (∀ x ∈ s, ‖x‖ = 1) → (s.sum fun x => s.sum fun y => dist x y ^ 2) ≤ s.card ^ 2"]},
+  "cmd": "translate"}]

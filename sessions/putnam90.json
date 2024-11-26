@@ -1,0 +1,21 @@
+[{"res":
+  "Suppose $(x_n)$ is a sequence such that $\\lim_{n \\to \\infty} (x_n - x_{n-2} = 0$. Prove that $\\lim_{n \\to \\infty} \\frac{x_n - x_{n-1}}{n} = 0$.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Suppose $(x_n)$ is a sequence such that $\\lim_{n \\to \\infty} (x_n - x_{n-2} = 0$. Prove that $\\lim_{n \\to \\infty} \\frac{x_n - x_{n-1}}{n} = 0$.",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView":
+   "∀ {α : Type u} [inst : NormedAddCommGroup α] {x : ℕ → α},\n  Filter.Tendsto (fun n => x n - x (n - 2)) Filter.atTop (nhds 0) →\n    Filter.Tendsto (fun n => (x n - x (n - 1)) / n) Filter.atTop (nhds 0)",
+   "roundTripFailures": [],
+   "roundTripCheck": true,
+   "groups":
+   [["∀ {α : Type u} [inst : NormedAddCommGroup α] {x : ℕ → α},\n  Filter.Tendsto (fun n => x n - x (n - 2)) Filter.atTop (nhds 0) →\n    Filter.Tendsto (fun n => (x n - x (n - 1)) / n) Filter.atTop (nhds 0)"],
+    ["∀ (x : ℕ → ℝ),\n  Filter.Tendsto (fun n => x n - x (n - 2)) Filter.atTop (nhds 0) →\n    Filter.Tendsto (fun n => (x n - x (n - 1)) / ↑n) Filter.atTop (nhds 0)"],
+    ["∀ {α : Type u_1} [inst : AddCommGroup α] [inst_1 : TopologicalSpace α] [inst_2 : TopologicalAddGroup α] {x : ℕ → α},\n  Filter.Tendsto (fun n => x n - x (n - 2)) Filter.atTop (nhds 0) →\n    Filter.Tendsto (fun n => (x n - x (n - 1)) / n) Filter.atTop (nhds 0)"]],
+   "allElaborated":
+   ["∀ (x : ℕ → ℝ), (Filter.Tendsto (fun n => x n - x (n - 2)) Filter.atTop (nhds 0)) →\n  Filter.Tendsto (fun n => (x n - x (n - 1)) / n) Filter.atTop (nhds 0)",
+    "∀ {α : Type u_1} [inst : AddCommGroup α] [inst_1 : TopologicalSpace α] [inst_2 : TopologicalAddGroup α]\n  {x : ℕ → α}, Filter.Tendsto (fun n => x n - x (n - 2)) Filter.atTop (nhds 0) →\n    Filter.Tendsto (fun n => (x n - x (n - 1)) / ↑n) Filter.atTop (nhds 0)",
+    "∀ {α : Type u} [inst : NormedAddCommGroup α] {x : ℕ → α},\n  (Filter.Tendsto (fun n => x n - x (n - 2)) Filter.atTop (nhds 0)) →\n  Filter.Tendsto (fun n => (x n - x (n - 1)) / ↑n) Filter.atTop (nhds 0)"]},
+  "cmd": "translate"}]

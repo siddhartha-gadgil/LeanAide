@@ -1,0 +1,198 @@
+[{"res":
+  "Prove that, if $4E \\le V^2$, there exists a graph with $E$ edges and $V$ vertices with no triangles (cycles of length $3$).",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Prove that, if $4E \\le V^2$, there exists a graph with $E$ edges and $V$ vertices with no triangles (cycles of length $3$).",
+  "cmd": "translate"},
+ {"res": "Error in translation", "cmd": "translate"},
+ {"res": "Prompt:", "cmd": "translate"},
+ {"res":
+  [{"role": "system",
+    "content":
+    "You are a Mathematics, Lean 4 and coding assistant who answers questions about Mathematics and Lean 4, gives hints while coding in Lean 4. You also translates from natural language to Lean Theorem Prover code and vice versa when asked. Follow EXACTLY any examples given when generating Lean code."},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Part of proving $A_5$ is simple. Shows that the square of any element of $A_5$ with a 3-cycle in\nits cycle decomposition is a 3-cycle, so the normal closure of the original element must be\n$A_5$. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {g : Equiv.Perm (Fin 5)}, 3 ∈ Equiv.Perm.cycleType g → Equiv.Perm.IsThreeCycle (g * g)"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: There exists a vertex of minimal degree. Note the assumption of being nonempty is necessary, as\nthe lemma implies there exists a vertex. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u} (G : SimpleGraph V) [inst : Fintype V] [inst_1 : DecidableRel G.Adj] [inst_2 : Nonempty V],\n  ∃ v, SimpleGraph.minDegree G = SimpleGraph.degree G v"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Any graph on `n` vertices has at most `n.choose 2` edges. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u} {G : SimpleGraph V} [inst : Fintype ↑(SimpleGraph.edgeSet G)] [inst_1 : Fintype V]\n  [inst_2 : DecidableEq V], (SimpleGraph.edgeFinset G).card ≤ Nat.choose (Fintype.card V) 2"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Definition: The one-vertex subgraph. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "{V : Type u} → (G : SimpleGraph V) → V → SimpleGraph.Subgraph G"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: The theorem states that for any three non-zero integers `a`, `b`, and `c` that satisfy the equation `a ^ 4 + b ^ 4 = c ^ 2`, there exists a minimal solution involving another set of integers `a0`, `b0`, and `c0`, where `a0` is odd. A minimal solution here means that there are no other solutions with a smaller `c` (in terms of absolute value).\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {a b c : ℤ}, Fermat42 a b c → ∃ a0 b0 c0, Fermat42.Minimal a0 b0 c0 ∧ a0 % 2 = 1"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  In a simple graph, no edge can connect a vertex to itself.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u} (G : SimpleGraph V) {e : Sym2 V}, e ∈ G.edgeSet → ¬e.IsDiag"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Triangle inequality for the extended distance \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u} [inst : PseudoEMetricSpace α] (x y z : α), edist x y ≤ edist z x + edist z y"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: This theorem states that for any type `V`, the edge set of the bottom graph (`⊥`) is the empty set (`∅`). In other words, the graph with no vertices and no edges (designated by `⊥`) does not contain any edges in its edge set, hence it is equal to the empty set.\n\nGive ONLY the Lean code"},
+   {"role": "assistant", "content": "∀ {V : Type u}, ⊥.edgeSet = ∅"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  The theorem asserts that in a simple graph, the distance between two vertices is zero if and only if they are the same vertex or there is no path connecting them.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u_1} {G : SimpleGraph V} {u v : V}, (G.dist u v = 0) = (u = v ∨ ¬G.Reachable u v)"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: A sort of triangle inequality. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u_2} [inst : LinearOrder α] [inst_1 : LocallyFiniteOrder α] {a b c : α},\n  Finset.uIcc a c ⊆ Finset.uIcc a b ∪ Finset.uIcc b c"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: This theorem, an alias of the forward direction of `SimpleGraph.farFromTriangleFree_iff`, states that for any types `α` and `𝕜`, with `α` being a finite type and `𝕜` being a linear ordered ring, and any simple graphs `G` and `H` on `α`, if `G` is far from triangle-free with respect to some ε in `𝕜`, `H` is a subgraph of `G`, and `H` is 3-clique-free (i.e., doesn't contain any triangles), then ε times the square of the number of vertices in `α` is less than or equal to the difference of the number of edges in `G` and the number of edges in `H`.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u_1} {𝕜 : Type u_2} [inst : Fintype α] [inst_1 : LinearOrderedRing 𝕜] {G : SimpleGraph α} {ε : 𝕜},\n  G.FarFromTriangleFree ε →\n    ∀ ⦃H : SimpleGraph α⦄ [inst_2 : DecidableRel H.Adj],\n      H ≤ G → H.CliqueFree 3 → ε * ↑(Fintype.card α ^ 2) ≤ ↑G.edgeFinset.card - ↑H.edgeFinset.card"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  In a simple graph, no vertex is adjacent to itself.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u} {G : SimpleGraph V} {a b : V}, G.Adj a b → a ≠ b"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Definition: The graph with no edges on a given vertex type `V`. `Mathlib` prefers the notation `⊥`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant", "content": "(V : Type u) → SimpleGraph V"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: This theorem states that for any given graph 'G' with vertex set 'V', the number of edges in 'G' is at most the binomial coefficient \"n choose 2\", where 'n' is the number of vertices in 'V'. This is a consequence of the fact that any pair of distinct vertices can contribute at most one edge, and there are \"n choose 2\" such pairs in a graph with 'n' vertices.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u_1} {G : SimpleGraph V} [inst : Fintype ↑G.edgeSet] [inst_1 : Fintype V],\n  G.edgeFinset.card ≤ (Fintype.card V).choose 2"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For any decidably equal type `V` and simple graph `G` over `V`, if we replace a vertex `s` with another vertex `t`, there are no edges between `s` and `t` in the resulting graph.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u_1} [inst : DecidableEq V] (G : SimpleGraph V) (s t : V), ¬(G.replaceVertex s t).Adj s t"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Definition: A simple graph is *`ε`-far from triangle-free* if one must remove at least\n`ε * (card α) ^ 2` edges to make it triangle-free. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "{α : Type u_1} → {𝕜 : Type u_2} → [inst : Fintype α] → [inst : LinearOrderedField 𝕜] → SimpleGraph α → 𝕜 → Prop"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Prove that, if $4E \\le V^2$, there exists a graph with $E$ edges and $V$ vertices with no triangles (cycles of length $3$).\n\nGive ONLY the Lean code"}],
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {V E : ℕ}, 4 * E ≤ V ^ 2 → ∃ (G : SimpleGraph (Fin V)), G.edgeFinset.card = E ∧ G.CliqueFree 3",
+    "elabError":
+    "failed to synthesize\n  Fintype ↑G.edgeSet\nAdditional diagnostic information may be available using the `set_option diagnostics true` command. ; identifiers [V, E, E, V, G, SimpleGraph, Fin, V, G.edgeFinset.card, E, G.CliqueFree] (during elaboration) for ∀ {V E : ℕ}, 4 * E ≤ V ^ 2 → ∃ (G : SimpleGraph (Fin V)), G.edgeFinset.card = E ∧ G.CliqueFree 3",
+    "context?":
+    "Prove that, if $4E \\le V^2$, there exists a graph with $E$ edges and $V$ vertices with no triangles (cycles of length $3$).",
+    "cmdErrors":
+    ["failed to synthesize\n  Fintype ↑G.edgeSet\nAdditional diagnostic information may be available using the `set_option diagnostics true` command."]}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {V E : ℕ}, 4 * E ≤ V ^ 2 → ∃ (G : SimpleGraph (Fin V)), G.edgeFinset.card = E ∧ G.CliqueFree 3",
+    "elabError":
+    "failed to synthesize\n  Fintype ↑G.edgeSet\nAdditional diagnostic information may be available using the `set_option diagnostics true` command. ; identifiers [V, E, E, V, G, SimpleGraph, Fin, V, G.edgeFinset.card, E, G.CliqueFree] (during elaboration) for ∀ {V E : ℕ}, 4 * E ≤ V ^ 2 → ∃ (G : SimpleGraph (Fin V)), G.edgeFinset.card = E ∧ G.CliqueFree 3",
+    "context?":
+    "Prove that, if $4E \\le V^2$, there exists a graph with $E$ edges and $V$ vertices with no triangles (cycles of length $3$).",
+    "cmdErrors":
+    ["failed to synthesize\n  Fintype ↑G.edgeSet\nAdditional diagnostic information may be available using the `set_option diagnostics true` command."]}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {V E : ℕ}, 4 * E ≤ V ^ 2 → ∃ (G : SimpleGraph (Fin V)), G.edgeFinset.card = E ∧ G.TriangleFree",
+    "elabError":
+    "failed to synthesize\n  Fintype ↑G.edgeSet\nAdditional diagnostic information may be available using the `set_option diagnostics true` command. ; identifiers [V, E, E, V, G, SimpleGraph, Fin, V, G.edgeFinset.card, E, G.TriangleFree] (during elaboration) for ∀ {V E : ℕ}, 4 * E ≤ V ^ 2 → ∃ (G : SimpleGraph (Fin V)), G.edgeFinset.card = E ∧ G.TriangleFree",
+    "context?":
+    "Prove that, if $4E \\le V^2$, there exists a graph with $E$ edges and $V$ vertices with no triangles (cycles of length $3$).",
+    "cmdErrors":
+    ["failed to synthesize\n  Fintype ↑G.edgeSet\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+     "invalid field 'TriangleFree', the environment does not contain 'SimpleGraph.TriangleFree'\n  G\nhas type\n  SimpleGraph (Fin V)"]}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {V E : ℕ}, 4 * E ≤ V ^ 2 → ∃ (G : SimpleGraph (Fin V)), G.edgeFinset.card = E ∧ G.CliqueFree 3",
+    "elabError":
+    "failed to synthesize\n  Fintype ↑G.edgeSet\nAdditional diagnostic information may be available using the `set_option diagnostics true` command. ; identifiers [V, E, E, V, G, SimpleGraph, Fin, V, G.edgeFinset.card, E, G.CliqueFree] (during elaboration) for ∀ {V E : ℕ}, 4 * E ≤ V ^ 2 → ∃ (G : SimpleGraph (Fin V)), G.edgeFinset.card = E ∧ G.CliqueFree 3",
+    "context?":
+    "Prove that, if $4E \\le V^2$, there exists a graph with $E$ edges and $V$ vertices with no triangles (cycles of length $3$).",
+    "cmdErrors":
+    ["failed to synthesize\n  Fintype ↑G.edgeSet\nAdditional diagnostic information may be available using the `set_option diagnostics true` command."]}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {V E : ℕ}, 4 * E ≤ V ^ 2 → ∃ G : SimpleGraph (Fin V), G.edgeFinset.card = E ∧ G.TriangleFree",
+    "elabError":
+    "failed to synthesize\n  Fintype ↑G.edgeSet\nAdditional diagnostic information may be available using the `set_option diagnostics true` command. ; identifiers [V, E, E, V, G, SimpleGraph, Fin, V, G.edgeFinset.card, E, G.TriangleFree] (during elaboration) for ∀ {V E : ℕ}, 4 * E ≤ V ^ 2 → ∃ G : SimpleGraph (Fin V), G.edgeFinset.card = E ∧ G.TriangleFree",
+    "context?":
+    "Prove that, if $4E \\le V^2$, there exists a graph with $E$ edges and $V$ vertices with no triangles (cycles of length $3$).",
+    "cmdErrors":
+    ["failed to synthesize\n  Fintype ↑G.edgeSet\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+     "invalid field 'TriangleFree', the environment does not contain 'SimpleGraph.TriangleFree'\n  G\nhas type\n  SimpleGraph (Fin V)"]}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {V E : ℕ}, 4 * E ≤ V ^ 2 → ∃ (G : SimpleGraph (Fin V)), G.edgeFinset.card = E ∧ G.CliqueFree 3",
+    "elabError":
+    "failed to synthesize\n  Fintype ↑G.edgeSet\nAdditional diagnostic information may be available using the `set_option diagnostics true` command. ; identifiers [V, E, E, V, G, SimpleGraph, Fin, V, G.edgeFinset.card, E, G.CliqueFree] (during elaboration) for ∀ {V E : ℕ}, 4 * E ≤ V ^ 2 → ∃ (G : SimpleGraph (Fin V)), G.edgeFinset.card = E ∧ G.CliqueFree 3",
+    "context?":
+    "Prove that, if $4E \\le V^2$, there exists a graph with $E$ edges and $V$ vertices with no triangles (cycles of length $3$).",
+    "cmdErrors":
+    ["failed to synthesize\n  Fintype ↑G.edgeSet\nAdditional diagnostic information may be available using the `set_option diagnostics true` command."]}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {V E : ℕ}, 4 * E ≤ V ^ 2 → ∃ (G : SimpleGraph (Fin V)), G.edgeFinset.card = E ∧ G.CliqueFree 3",
+    "elabError":
+    "failed to synthesize\n  Fintype ↑G.edgeSet\nAdditional diagnostic information may be available using the `set_option diagnostics true` command. ; identifiers [V, E, E, V, G, SimpleGraph, Fin, V, G.edgeFinset.card, E, G.CliqueFree] (during elaboration) for ∀ {V E : ℕ}, 4 * E ≤ V ^ 2 → ∃ (G : SimpleGraph (Fin V)), G.edgeFinset.card = E ∧ G.CliqueFree 3",
+    "context?":
+    "Prove that, if $4E \\le V^2$, there exists a graph with $E$ edges and $V$ vertices with no triangles (cycles of length $3$).",
+    "cmdErrors":
+    ["failed to synthesize\n  Fintype ↑G.edgeSet\nAdditional diagnostic information may be available using the `set_option diagnostics true` command."]}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {V E : ℕ}, 4 * E ≤ V ^ 2 → ∃ (G : SimpleGraph (Fin V)), G.edgeFinset.card = E ∧ G.CliqueFree 3",
+    "elabError":
+    "failed to synthesize\n  Fintype ↑G.edgeSet\nAdditional diagnostic information may be available using the `set_option diagnostics true` command. ; identifiers [V, E, E, V, G, SimpleGraph, Fin, V, G.edgeFinset.card, E, G.CliqueFree] (during elaboration) for ∀ {V E : ℕ}, 4 * E ≤ V ^ 2 → ∃ (G : SimpleGraph (Fin V)), G.edgeFinset.card = E ∧ G.CliqueFree 3",
+    "context?":
+    "Prove that, if $4E \\le V^2$, there exists a graph with $E$ edges and $V$ vertices with no triangles (cycles of length $3$).",
+    "cmdErrors":
+    ["failed to synthesize\n  Fintype ↑G.edgeSet\nAdditional diagnostic information may be available using the `set_option diagnostics true` command."]}},
+  "cmd": "translate"}]

@@ -1,0 +1,196 @@
+[{"res":
+  "If a convex polygon $L$ is contained entirely within a square of side length $1$, prove that the sum of the squares of the side lengths of $L$ is no greater than $4$.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: If a convex polygon $L$ is contained entirely within a square of side length $1$, prove that the sum of the squares of the side lengths of $L$ is no greater than $4$.",
+  "cmd": "translate"},
+ {"res": "Error in translation", "cmd": "translate"},
+ {"res": "Prompt:", "cmd": "translate"},
+ {"res":
+  [{"role": "system",
+    "content":
+    "You are a Mathematics, Lean 4 and coding assistant who answers questions about Mathematics and Lean 4, gives hints while coding in Lean 4. You also translates from natural language to Lean Theorem Prover code and vice versa when asked. Follow EXACTLY any examples given when generating Lean code."},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Convex hull of a finite set is closed. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {E : Type u_3} [inst : AddCommGroup E] [inst_1 : Module ℝ E] [inst_2 : TopologicalSpace E]\n  [inst_3 : TopologicalAddGroup E] [inst_4 : ContinuousSMul ℝ E] [inst_5 : T2Space E] {s : Set E},\n  Set.Finite s → IsClosed ((convexHull ℝ) s)"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Special case of **Chebyshev's Sum Inequality** or the **Cauchy-Schwarz Inequality**: The square\nof the sum is less than the size of the set times the sum of the squares. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {ι : Type u_1} {α : Type u_2} [inst : LinearOrderedRing α] {s : Finset ι} {f : ι → α},\n  (Finset.sum s fun i => f i) ^ 2 ≤ ↑s.card * Finset.sum s fun i => f i ^ 2"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: A (left) adjoint square has a lifting if and only if the original square has a lifting. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {C : Type u_1} {D : Type u_2} [inst : CategoryTheory.Category.{u_4, u_1} C]\n  [inst_1 : CategoryTheory.Category.{u_3, u_2} D] {G : CategoryTheory.Functor C D} {F : CategoryTheory.Functor D C}\n  {A B : C} {X Y : D} {i : A ⟶ B} {p : X ⟶ Y} {u : A ⟶ F.obj X} {v : B ⟶ F.obj Y}\n  (sq : CategoryTheory.CommSq u i (F.map p) v) (adj : G ⊣ F),\n  CategoryTheory.CommSq.HasLift\n      (_ :\n        CategoryTheory.CommSq ((CategoryTheory.Adjunction.homEquiv adj A X).symm u) (G.map i) p\n          ((CategoryTheory.Adjunction.homEquiv adj B Y).symm v)) ↔\n    CategoryTheory.CommSq.HasLift sq"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: The sum of two squares is zero iff both elements are zero. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u} [inst : LinearOrderedSemiring α] {a b : α} [inst_1 : ExistsAddOfLE α], a * a + b * b = 0 ↔ a = 0 ∧ b = 0"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: This theorem is a special case of either Chebyshev's Sum Inequality or the Cauchy-Schwarz Inequality. It states that for any finite set `s` and any function `f` from the elements of `s` to a linearly ordered ring `α`, the square of the sum of the function values across the set `s` is less than or equal to the size of the set `s` times the sum of the squares of the function values.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {ι : Type u_1} {α : Type u_2} [inst : LinearOrderedRing α] {s : Finset ι} {f : ι → α},\n  (s.sum fun i => f i) ^ 2 ≤ ↑s.card * s.sum fun i => f i ^ 2"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  In a strict convex real normed space, if two distinct points belong to the same closed ball, then any convex combination of them with positive coefficients summing to 1 lies in the smaller open ball with the same radius.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {E : Type u_2} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] [inst_2 : StrictConvexSpace ℝ E] {x y z : E}\n  {a b r : ℝ},\n  x ∈ Metric.closedBall z r →\n    y ∈ Metric.closedBall z r → x ≠ y → 0 < a → 0 < b → a + b = 1 → a • x + b • y ∈ Metric.ball z r"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Definition: Convexity of sets. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "(𝕜 : Type u_1) →\n  {E : Type u_2} → [inst : OrderedSemiring 𝕜] → [inst : AddCommMonoid E] → [inst : SMul 𝕜 E] → Set E → Prop"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: **Ptolemy's Inequality**: For any four points (labeled `a`, `b`, `c`, `d`) in a space where distances follow the rules of Euclidean geometry, the product of the distances between points `a` and `c` and between `b` and `d` is less than or equal to the sum of the product of the distances between `a` and `b` and `c` and `d` and the product of the distances between `b` and `c` and `a` and `d`. If these four points form a convex cyclic polygon, this inequality becomes an equality.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst : NormedAddTorsor V P] (a b c d : P), dist a c * dist b d ≤ dist a b * dist c d + dist b c * dist a d"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For any orthonormal system $(v\\_i)\\_i$ in a normed inner product space and any finite subset $s$ of its index set, the sum of the squares of the inner products of elements from the system with any vector in the space is less than or equal to the square of the norm of that vector, i.e., $\\sum\\_{i \\in s} \\|\\langle v\\_i, x \\rangle\\|^2 \\leq \\|x\\|^2$.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {𝕜 : Type u_1} {E : Type u_2} [inst : RCLike 𝕜] [inst_1 : NormedAddCommGroup E] [inst_2 : InnerProductSpace 𝕜 E]\n  {ι : Type u_4} (x : E) {v : ι → E} {s : Finset ι}, Orthonormal 𝕜 v → (s.sum fun i => ‖⟪v i, x⟫_𝕜‖ ^ 2) ≤ ‖x‖ ^ 2"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: A square has a lifting if and only if its (right) adjoint square has a lifting. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {C : Type u_1} {D : Type u_2} [inst : CategoryTheory.Category.{u_3, u_1} C]\n  [inst_1 : CategoryTheory.Category.{u_4, u_2} D] {G : CategoryTheory.Functor C D} {F : CategoryTheory.Functor D C}\n  {A B : C} {X Y : D} {i : A ⟶ B} {p : X ⟶ Y} {u : G.obj A ⟶ X} {v : G.obj B ⟶ Y}\n  (sq : CategoryTheory.CommSq u (G.map i) p v) (adj : G ⊣ F),\n  CategoryTheory.CommSq.HasLift\n      (_ :\n        CategoryTheory.CommSq ((CategoryTheory.Adjunction.homEquiv adj A X) u) i (F.map p)\n          ((CategoryTheory.Adjunction.homEquiv adj B Y) v)) ↔\n    CategoryTheory.CommSq.HasLift sq"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For any orthonormal set of vectors in a real or complex inner product space, the sum of the squares of the inner products of each vector with an arbitrary element and the vector itself is less than or equal to the square of the norm of the element.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {𝕜 : Type u_1} {E : Type u_2} [inst : RCLike 𝕜] [inst_1 : NormedAddCommGroup E] [inst_2 : InnerProductSpace 𝕜 E]\n  {ι : Type u_4} (x : E) {v : ι → E}, Orthonormal 𝕜 v → ∑' (i : ι), ‖⟪v i, x⟫_𝕜‖ ^ 2 ≤ ‖x‖ ^ 2"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Definition: Square of the norm. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content": "{R : Type u_3} → [inst : CommRing R] → Quaternion R →*₀ R"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  In a linearly ordered ring, the square of an element is less than or equal to the square of another element if and only if the absolute values of the elements are in that order.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u_1} [inst : LinearOrderedRing α] {a b : α}, a ^ 2 ≤ b ^ 2 ↔ |a| ≤ |b|"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Special case of **Chebyshev's Sum Inequality** or the **Cauchy-Schwarz Inequality**: The square\nof the sum is less than the size of the set times the sum of the squares. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {ι : Type u_1} {α : Type u_2} [inst : LinearOrderedRing α] {s : Finset ι} {f : ι → α},   (∑ i in s, f i) ^ 2 ≤ ↑s.card * ∑ i in s, f i ^ 2"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: The \"Four Squares Theorem\" states that for any natural number `n`, there exist four natural numbers `a`, `b`, `c`, and `d`, such that the sum of their squares equals `n`. In other words, any natural number can be expressed as the sum of four perfect squares.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content": "∀ (n : ℕ), ∃ a b c d, a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = n"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  In Euclidean geometry, the product of the lengths of the sides opposite two non-adjacent vertices of a convex cyclic quadrilateral is greater than or equal to the sum of the products of the lengths of the adjacent sides. If the quadrilateral is convex and cyclic, then equality holds.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst : NormedAddTorsor V P] (a b c d : P), dist a c * dist b d ≤ dist a b * dist c d + dist b c * dist a d"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: **Four squares theorem** \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content": "∀ (n : ℕ), ∃ a b c d, a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = n"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: If a convex polygon $L$ is contained entirely within a square of side length $1$, prove that the sum of the squares of the side lengths of $L$ is no greater than $4$.\n\nGive ONLY the Lean code"}],
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {P : Type u_1} [inst : EuclideanGeometry.Polygon P] {L : P} {s : ℝ}, L ⊆ Metric.closedBall (0 : ℝ × ℝ) (1 / 2) → ∑ (i : ℕ) in Finset.range L.sides.length, (L.side_length i) ^ 2 ≤ 4",
+    "parseError": "<input>:1:125: expected ','",
+    "context?":
+    "If a convex polygon $L$ is contained entirely within a square of side length $1$, prove that the sum of the squares of the side lengths of $L$ is no greater than $4$."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {V : Type u_1} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] (L : List V) (h : ∀ v ∈ L, ∥v∥ ≤ 1),   (L.map (λ v, ∥v∥^2)).sum ≤ 4",
+    "parseError": "<input>:1:107: expected token",
+    "context?":
+    "If a convex polygon $L$ is contained entirely within a square of side length $1$, prove that the sum of the squares of the side lengths of $L$ is no greater than $4$."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {E : Type u_1} [inst : InnerProductSpace ℝ E] (P : List E), Convex ℝ (ConvexHull ℝ (Set.range P)) →   ∀ s : Finset ℕ, (∀ i ∈ s, ∀ j ∈ s, dist (P.nth_le i (Finset.mem_to_list.mp i).property) (P.nth_le j (Finset.mem_to_list.mp j).property) ≤ 1) →   s.sum (λ i, dist (P.nth_le i (Finset.mem_to_list.mp i).property) (P.nth_le ((i + 1) % P.length) (Finset.mem_to_list.mp ((i + 1) % P.length)).property) ^ 2) ≤ 4",
+    "parseError": "<input>:1:259: expected '↦', '=>'",
+    "context?":
+    "If a convex polygon $L$ is contained entirely within a square of side length $1$, prove that the sum of the squares of the side lengths of $L$ is no greater than $4$."}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {E : Type u_1} [inst : EuclideanSpace E] (L : Polygon E), \n  (∃ s, isSquare s ∧ L ⊆ s ∧ sideLength s = 1) → (Σ i, (sideLength (L.edge i)) ^ 2) ≤ 4",
+    "elabError":
+    "type expected, got\n  (EuclideanSpace E : Type ?u.5 → Type (max u_1 ?u.5)) ; identifiers [E, u_1, inst, EuclideanSpace, E, L, Polygon, E, s, isSquare, s, L, s, sideLength, s, i, sideLength, L.edge, i] (during elaboration) for ∀ {E : Type u_1} [inst : EuclideanSpace E] (L : Polygon E),    (∃ s, isSquare s ∧ L ⊆ s ∧ sideLength s = 1) → (Σ i, (sideLength (L.edge i)) ^ 2) ≤ 4",
+    "context?":
+    "If a convex polygon $L$ is contained entirely within a square of side length $1$, prove that the sum of the squares of the side lengths of $L$ is no greater than $4$.",
+    "cmdErrors":
+    ["type expected, got\n  (EuclideanSpace E : Type ?u.5 → Type (max u_1 ?u.5))",
+     "unused universe parameter 'u_1'"]}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {V : Type u_1} [inst : NormedAddCommGroup V] [inst_1 : NormedSpace ℝ V] (L : Finset V),   (∀ x ∈ L, ∥x∥ ≤ 1) → L.convexHull ⊆ Metric.closedBall 0 1 → ∑ (x ∈ L) (y ∈ L), dist x y ^ 2 ≤ 4",
+    "parseError": "<input>:1:102: expected token",
+    "context?":
+    "If a convex polygon $L$ is contained entirely within a square of side length $1$, prove that the sum of the squares of the side lengths of $L$ is no greater than $4$."}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {E : Type u_1} [inst : EuclideanSpace E] (L : Polygon E), \n  L ⊆ Metric.closedBall (0 : E) 1 → ∑ (s : L.sides), s.length^2 ≤ 4",
+    "elabError":
+    "type expected, got\n  (EuclideanSpace E : Type ?u.62 → Type (max u_1 ?u.62)) ; identifiers [E, u_1, inst, EuclideanSpace, E, L, Polygon, E, L, Metric.closedBall, E, s, L.sides, s.length] (during elaboration) for ∀ {E : Type u_1} [inst : EuclideanSpace E] (L : Polygon E),    L ⊆ Metric.closedBall (0 : E) 1 → ∑ (s : L.sides), s.length^2 ≤ 4",
+    "context?":
+    "If a convex polygon $L$ is contained entirely within a square of side length $1$, prove that the sum of the squares of the side lengths of $L$ is no greater than $4$.",
+    "cmdErrors":
+    ["type expected, got\n  (EuclideanSpace E : Type ?u.5 → Type (max u_1 ?u.5))",
+     "unused universe parameter 'u_1'"]}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {V : Type u_1} [inst : InnerProductSpace ℝ V] (L : List V), (∀ (p : V), p ∈ L → ∃ (q : V), ‖q‖ ≤ 1) → ∑ s in L.pairs, ‖s.1 - s.2‖ ^ 2 ≤ 4",
+    "elabError":
+    "failed to synthesize\n  SeminormedAddCommGroup V\nAdditional diagnostic information may be available using the `set_option diagnostics true` command. ; identifiers [V, u_1, inst, InnerProductSpace, V, L, List, V, p, V, p, L, q, V, q, s, L.pairs, s, s] (during elaboration) for ∀ {V : Type u_1} [inst : InnerProductSpace ℝ V] (L : List V), (∀ (p : V), p ∈ L → ∃ (q : V), ‖q‖ ≤ 1) → ∑ s in L.pairs, ‖s.1 - s.2‖ ^ 2 ≤ 4",
+    "context?":
+    "If a convex polygon $L$ is contained entirely within a square of side length $1$, prove that the sum of the squares of the side lengths of $L$ is no greater than $4$.",
+    "cmdErrors":
+    ["failed to synthesize\n  SeminormedAddCommGroup V\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+     "unused universe parameter 'u_1'"]}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {ι : Type u_1} {V : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] \n  {p : ι → V}, ConvexPolygon p → (∀ i, ‖p i‖ ≤ 1) → ∑ i, ‖p i - p (i + 1)‖ ^ 2 ≤ 4",
+    "elabError":
+    "unknown identifier 'ConvexPolygon' ; identifiers [ι, u_1, V, u_2, inst, NormedAddCommGroup, V, inst_1, InnerProductSpace, V, p, ι, V, ConvexPolygon, p, i, p, i, i, p, i, p, i] (during elaboration) for ∀ {ι : Type u_1} {V : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V]    {p : ι → V}, ConvexPolygon p → (∀ i, ‖p i‖ ≤ 1) → ∑ i, ‖p i - p (i + 1)‖ ^ 2 ≤ 4",
+    "context?":
+    "If a convex polygon $L$ is contained entirely within a square of side length $1$, prove that the sum of the squares of the side lengths of $L$ is no greater than $4$.",
+    "cmdErrors":
+    ["failed to synthesize\n  Fintype ι\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+     "failed to synthesize\n  HAdd ι ℕ ι\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+     "function expected at\n  ConvexPolygon\nterm has type\n  ?m.153"]}},
+  "cmd": "translate"}]

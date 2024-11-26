@@ -1,0 +1,244 @@
+[{"res":
+  "If $f$ and $g$ are continuous and periodic functions with period $1$ on the real line, then $\\lim_{n \\to \\infty} \\int_0^1 f(x)g(nx)\\,dx=(\\int_0^1 f(x)\\,dx)(\\int_0^1 g(x)\\,dx)$.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: If $f$ and $g$ are continuous and periodic functions with period $1$ on the real line, then $\\lim_{n \\to \\infty} \\int_0^1 f(x)g(nx)\\,dx=(\\int_0^1 f(x)\\,dx)(\\int_0^1 g(x)\\,dx)$.",
+  "cmd": "translate"},
+ {"res": "Error in translation", "cmd": "translate"},
+ {"res": "Prompt:", "cmd": "translate"},
+ {"res":
+  [{"role": "system",
+    "content":
+    "You are a Mathematics, Lean 4 and coding assistant who answers questions about Mathematics and Lean 4, gives hints while coding in Lean 4. You also translates from natural language to Lean Theorem Prover code and vice versa when asked. Follow EXACTLY any examples given when generating Lean code."},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: If `g : ℝ → ℝ` is periodic with period `T > 0` and `0 < ∫ x in 0..T, g x`, then\n`t ↦ ∫ x in 0..t, g x` tends to `-∞` as `t` tends to `-∞`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {T : ℝ} {g : ℝ → ℝ},\n  Function.Periodic g T →\n    (∀ (t₁ t₂ : ℝ), IntervalIntegrable g MeasureTheory.volume t₁ t₂) →\n      0 < ∫ (x : ℝ) in 0 ..T, g x → 0 < T → Filter.Tendsto (fun t => ∫ (x : ℝ) in 0 ..t, g x) Filter.atBot Filter.atBot"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: A uniform limit of continuous functions is continuous. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u} {β : Type v} {ι : Type x} [inst : UniformSpace β] {F : ι → α → β} {f : α → β} {p : Filter ι}\n  [inst_1 : TopologicalSpace α],\n  TendstoUniformly F f p → (∀ᶠ (n : ι) in p, Continuous (F n)) → ∀ [inst_2 : Filter.NeBot p], Continuous f"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: A continuous, periodic function is bounded. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u} [inst : PseudoMetricSpace α] {f : ℝ → α} {c : ℝ},\n  Function.Periodic f c → c ≠ 0 → Continuous f → Bornology.IsBounded (Set.range f)"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: If `f` and `g` are two functions that are interval integrable on `a..b`, `a ≤ b`,\n`f x ≤ g x` for a.e. `x ∈ Set.Ioc a b`, and `f x < g x` on a subset of `Set.Ioc a b`\nof nonzero measure, then `∫ x in a..b, f x ∂μ < ∫ x in a..b, g x ∂μ`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {f g : ℝ → ℝ} {a b : ℝ} {μ : MeasureTheory.Measure ℝ},\n  a ≤ b →\n    IntervalIntegrable f μ a b →\n      IntervalIntegrable g μ a b →\n        f ≤ᶠ[MeasureTheory.Measure.ae (MeasureTheory.Measure.restrict μ (Set.Ioc a b))] g →\n          ↑↑(MeasureTheory.Measure.restrict μ (Set.Ioc a b)) {x | f x < g x} ≠ 0 →\n            ∫ (x : ℝ) in a..b, f x ∂μ < ∫ (x : ℝ) in a..b, g x ∂μ"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  If `g` is a real-valued, periodic function with positive period `T` that is interval integrable over any `[t1, t2]` and has a positive integral over `[0, T]`, then the function that maps `t` to the integral of `g` from `0` to `t` approaches positive infinity as `t` approaches positive infinity.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {T : ℝ} {g : ℝ → ℝ},\n  Function.Periodic g T →\n    (∀ (t₁ t₂ : ℝ), IntervalIntegrable g MeasureTheory.volume t₁ t₂) →\n      0 < ∫ (x : ℝ) in 0 ..T, g x → 0 < T → Filter.Tendsto (fun t => ∫ (x : ℝ) in 0 ..t, g x) Filter.atTop Filter.atTop"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: If `f` is an integrable periodic function with period `T`, and `n` is an integer, then its\nintegral over `[t, t + n • T]` is `n` times its integral over `[t, t + T]`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {f : ℝ → E} {T : ℝ},   Periodic f T →     ∀ (n : ℤ) (t : ℝ),       (∀ (t₁ t₂ : ℝ), IntervalIntegrable f volume t₁ t₂) →         ∫ (x : ℝ) in t..t + n • T, f x = n • ∫ (x : ℝ) in t..t + T, f x"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: This theorem states that if we have a function `f` that is periodic with period `T` and integrable over an interval, then the integral of `f` over the interval `[t, s + T]` is equal to the sum of the integrals of `f` over the intervals `[t, s]` and `[t, t + T]`. In essence, this theorem relates the integral of a periodic function over a shifted interval to the integrals over the original and shifted periods.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {f : ℝ → E} {T : ℝ},\n  Function.Periodic f T →\n    ∀ (t s : ℝ),\n      (∀ (t₁ t₂ : ℝ), IntervalIntegrable f MeasureTheory.volume t₁ t₂) →\n        ∫ (x : ℝ) in t..s + T, f x = (∫ (x : ℝ) in t..s, f x) + ∫ (x : ℝ) in t..t + T, f x"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For measurable functions $f$ and $g$ with respect to a measure $\\mu$, and for any $0 \\leq p, q$ such that $p + q = 1$, the integral $\\int (f^p \\cdot g^q) d\\mu$ is less than or equal to $(\\int f d\\mu)^p \\cdot (\\int g d\\mu)^q$.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u_2} [inst : MeasurableSpace α] {μ : MeasureTheory.Measure α} {f g : α → ENNReal},\n  AEMeasurable f μ →\n    AEMeasurable g μ →\n      ∀ {p q : ℝ},\n        0 ≤ p →\n          0 ≤ q → p + q = 1 → ∫⁻ (a : α), f a ^ p * g a ^ q ∂μ ≤ (∫⁻ (a : α), f a ∂μ) ^ p * (∫⁻ (a : α), g a ∂μ) ^ q"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: If `f` is an integrable periodic function with period `T`, and `n` is an integer, then its\nintegral over `[t, t + n • T]` is `n` times its integral over `[t, t + T]`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {f : ℝ → E} {T : ℝ},\n  Function.Periodic f T →\n    ∀ (n : ℤ) (t : ℝ),\n      (∀ (t₁ t₂ : ℝ), IntervalIntegrable f MeasureTheory.volume t₁ t₂) →\n        ∫ (x : ℝ) in t..t + n • T, f x = n • ∫ (x : ℝ) in t..t + T, f x"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  If a real-valued function `g` is periodic with positive period `T` and is integrable over any interval of length `T`, then for any real number `t`, the integral of `g` from `0` to `t` is bounded above by the supremum of integrals of `g` over intervals of length `T` plus `⌊t/T⌋` times the integral of `g` over one period.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {T : ℝ} {g : ℝ → ℝ},\n  Function.Periodic g T →\n    (∀ (t₁ t₂ : ℝ), IntervalIntegrable g MeasureTheory.volume t₁ t₂) →\n      0 < T →\n        ∀ (t : ℝ),\n          ∫ (x : ℝ) in 0 ..t, g x ≤\n            sSup ((fun t => ∫ (x : ℝ) in 0 ..t, g x) '' Set.Icc 0 T) + ⌊t / T⌋ • ∫ (x : ℝ) in 0 ..T, g x"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: If `f` is a periodic function with period `T`, then its integral over `[t, t + T]` does not\ndepend on `t`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {f : ℝ → E} {T : ℝ},   Periodic f T → ∀ (t s : ℝ), ∫ (x : ℝ) in t..t + T, f x = ∫ (x : ℝ) in s..s + T, f x"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: The theorem states that if a real-valued function `g` is periodic with a positive period `T` and the integral of `g` from 0 to `T` is positive, then the function `t ↦ ∫ x in 0..t, g x` (representing the integral of `g` from 0 to `t`) tends to negative infinity as `t` tends to negative infinity. In other words, as we move `t` further into the negative numbers, the accumulated area under the curve of `g` from 0 to `t` keeps decreasing without bound. This holds for all `t₁` and `t₂` such that `g` is interval integrable over the interval from `t₁` to `t₂` with respect to the Lebesgue measure.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {T : ℝ} {g : ℝ → ℝ},\n  Function.Periodic g T →\n    (∀ (t₁ t₂ : ℝ), IntervalIntegrable g MeasureTheory.volume t₁ t₂) →\n      0 < ∫ (x : ℝ) in 0 ..T, g x → 0 < T → Filter.Tendsto (fun t => ∫ (x : ℝ) in 0 ..t, g x) Filter.atBot Filter.atBot"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For non-negative real-valued functions f and g, and for any p, q > 0 with p^(-1) + q^(-1) = 1, the following inequality holds: $\\int_X |f(x) \\cdot g(x)| dx \\leq (\\int_X |f(x)|^p dx)^{\\frac{1}{p}} (\\int_X |g(x)|^q dx)^{\\frac{1}{q}}$.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {ι : Type u} {f g : ι → ℝ} {p q : ℝ},\n  p.IsConjExponent q →\n    ∀ {A B : ℝ},\n      0 ≤ A →\n        0 ≤ B →\n          (∀ (i : ι), 0 ≤ f i) →\n            (∀ (i : ι), 0 ≤ g i) →\n              HasSum (fun i => f i ^ p) (A ^ p) →\n                HasSum (fun i => g i ^ q) (B ^ q) → ∃ C, 0 ≤ C ∧ C ≤ A * B ∧ HasSum (fun i => f i * g i) C"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: If `f` and `g` are continuous on `[a, b]`, `a < b`, `f x ≤ g x` on this interval, and\n`f c < g c` at some point `c ∈ [a, b]`, then `∫ x in a..b, f x < ∫ x in a..b, g x`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {f g : ℝ → ℝ} {a b : ℝ},\n  a < b →\n    ContinuousOn f (Set.Icc a b) →\n      ContinuousOn g (Set.Icc a b) →\n        (∀ x ∈ Set.Ioc a b, f x ≤ g x) →\n          (∃ c ∈ Set.Icc a b, f c < g c) → ∫ (x : ℝ) in a..b, f x < ∫ (x : ℝ) in a..b, g x"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  Given a real-valued, periodic function `g` with period `T` and integrable over any interval, the function mapping `t` to the integral of `g` from `0` to `t` has a lower bound `X + ⌊t/T⌋ • Y`, where `X` is the integral of `g` over `[0, T]` and `Y` is a constant.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {T : ℝ} {g : ℝ → ℝ},\n  Function.Periodic g T →\n    (∀ (t₁ t₂ : ℝ), IntervalIntegrable g MeasureTheory.volume t₁ t₂) →\n      0 < T →\n        ∀ (t : ℝ),\n          sInf ((fun t => ∫ (x : ℝ) in 0 ..t, g x) '' Set.Icc 0 T) + ⌊t / T⌋ • ∫ (x : ℝ) in 0 ..T, g x ≤\n            ∫ (x : ℝ) in 0 ..t, g x"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: The key lemma for Poisson summation: the `m`-th Fourier coefficient of the periodic function\n`∑' n : ℤ, f (x + n)` is the value at `m` of the Fourier transform of `f`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {f : C(ℝ, ℂ)},   (∀ (K : Compacts ℝ),       Summable fun n => ‖ContinuousMap.restrict (↑K) (ContinuousMap.comp f (ContinuousMap.addRight ↑n))‖) →     ∀ (m : ℤ),       fourierCoeff           (Periodic.lift (_ : Periodic (⇑(∑' (n : ℤ), ContinuousMap.comp f (ContinuousMap.addRight (n • 1)))) 1)) m =         𝓕 ⇑f ↑m"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: This theorem states that if a function `g : ℝ → ℝ` is periodic with a positive period `T > 0` and all values of the function are positive (`∀ x, 0 < g x`), then the function that maps a real number `t` to the integral of `g` from `0` to `t` tends to infinity as `t` tends to infinity. This is denoted as `t ↦ ∫ x in 0..t, g x` tending to `∞` as `t` tends to `∞`. The theorem also assumes that `g` is interval integrable with respect to the Lebesgue measure on any interval `[t₁, t₂]`.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {T : ℝ} {g : ℝ → ℝ},\n  Function.Periodic g T →\n    (∀ (t₁ t₂ : ℝ), IntervalIntegrable g MeasureTheory.volume t₁ t₂) →\n      (∀ (x : ℝ), 0 < g x) → 0 < T → Filter.Tendsto (fun t => ∫ (x : ℝ) in 0 ..t, g x) Filter.atTop Filter.atTop"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For measurable functions $f, g : \\alpha \\to \\mathbb{R} \\cup \\{+\\infty\\}$, and a measure $\\mu$ on $\\alpha$, if $p, q > 0$ satisfy $\\frac{1}{p} + \\frac{1}{q} = 1$, then $\\int_\\alpha |f(x) g(x)| d\\mu \\leq \\left(\\int_\\alpha |f(x)|^p d\\mu\\right)^\\frac{1}{p} \\left(\\int_\\alpha |g(x)|^q d\\mu\\right)^\\frac{1}{q}$.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u_1} [inst : MeasurableSpace α] (μ : MeasureTheory.Measure α) {p q : ℝ},\n  p.IsConjExponent q →\n    ∀ {f g : α → ENNReal},\n      AEMeasurable f μ →\n        AEMeasurable g μ →\n          ∫⁻ (a : α), (f * g) a ∂μ ≤ (∫⁻ (a : α), f a ^ p ∂μ) ^ (1 / p) * (∫⁻ (a : α), g a ^ q ∂μ) ^ (1 / q)"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: If `g : ℝ → ℝ` is periodic with period `T > 0` and `∀ x, 0 < g x`, then `t ↦ ∫ x in 0..t, g x`\ntends to `∞` as `t` tends to `∞`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {T : ℝ} {g : ℝ → ℝ},\n  Function.Periodic g T →\n    (∀ (t₁ t₂ : ℝ), IntervalIntegrable g MeasureTheory.volume t₁ t₂) →\n      (∀ (x : ℝ), 0 < g x) → 0 < T → Filter.Tendsto (fun t => ∫ (x : ℝ) in 0 ..t, g x) Filter.atTop Filter.atTop"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  If `f` is a periodic integrable function with period `T`, then the integral of `f` over any interval of length `nT` starting at `t` is `n` times the integral of `f` over one period `[t, t + T]`.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {f : ℝ → E} {T : ℝ},\n  Function.Periodic f T →\n    ∀ (n : ℤ) (t : ℝ),\n      (∀ (t₁ t₂ : ℝ), IntervalIntegrable f MeasureTheory.volume t₁ t₂) →\n        ∫ (x : ℝ) in t..t + n • T, f x = n • ∫ (x : ℝ) in t..t + T, f x"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: An auxiliary lemma for a more general `Function.Periodic.intervalIntegral_add_eq`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {f : ℝ → E} {T : ℝ},   Periodic f T → 0 < T → ∀ (t s : ℝ), ∫ (x : ℝ) in t..t + T, f x = ∫ (x : ℝ) in s..s + T, f x"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: This theorem states that if a real-valued function `g` is periodic with a positive period `T`, and the integral of `g` over the interval `0` to `T` is positive, then the function that maps a real number `t` to the integral of `g` from `0` to `t` tends to positive infinity as `t` itself tends to positive infinity. It also requires that `g` is interval integrable for any interval `[t1, t2]` with respect to the Lebesgue measure.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {T : ℝ} {g : ℝ → ℝ},\n  Function.Periodic g T →\n    (∀ (t₁ t₂ : ℝ), IntervalIntegrable g MeasureTheory.volume t₁ t₂) →\n      0 < ∫ (x : ℝ) in 0 ..T, g x → 0 < T → Filter.Tendsto (fun t => ∫ (x : ℝ) in 0 ..t, g x) Filter.atTop Filter.atTop"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  If $f: (a, \\infty) \\to \\mathbb{R}$, $f'(x)$ exists for all $x \\in (a, \\infty)$, $g: \\operatorname{Im} f \\to E$ is continuous and integrable, and $f$ is continuous, tends to infinity, and has an integrable product derivatives $f'(x) \\cdot (g \\circ f)(x)$, then $\\int_{a}^{\\infty} f'(x) \\cdot (g \\circ f)(x) \\, dx = \\int_{f(a)}^{\\infty} g(u) \\, du$.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {f f' : ℝ → ℝ} {g : ℝ → E} {a : ℝ},\n  ContinuousOn f (Set.Ici a) →\n    Filter.Tendsto f Filter.atTop Filter.atTop →\n      (∀ x ∈ Set.Ioi a, HasDerivWithinAt f (f' x) (Set.Ioi x) x) →\n        ContinuousOn g (f '' Set.Ioi a) →\n          MeasureTheory.IntegrableOn g (f '' Set.Ici a) MeasureTheory.volume →\n            MeasureTheory.IntegrableOn (fun x => f' x • (g ∘ f) x) (Set.Ici a) MeasureTheory.volume →\n              ∫ (x : ℝ) in Set.Ioi a, f' x • (g ∘ f) x = ∫ (u : ℝ) in Set.Ioi (f a), g u"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: If `g : ℝ → ℝ` is periodic with period `T > 0` and `0 < ∫ x in 0..T, g x`, then\n`t ↦ ∫ x in 0..t, g x` tends to `∞` as `t` tends to `∞`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {T : ℝ} {g : ℝ → ℝ},\n  Function.Periodic g T →\n    (∀ (t₁ t₂ : ℝ), IntervalIntegrable g MeasureTheory.volume t₁ t₂) →\n      0 < ∫ (x : ℝ) in 0 ..T, g x → 0 < T → Filter.Tendsto (fun t => ∫ (x : ℝ) in 0 ..t, g x) Filter.atTop Filter.atTop"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: If $f$ and $g$ are continuous and periodic functions with period $1$ on the real line, then $\\lim_{n \\to \\infty} \\int_0^1 f(x)g(nx)\\,dx=(\\int_0^1 f(x)\\,dx)(\\int_0^1 g(x)\\,dx)$.\n\nGive ONLY the Lean code"}],
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {f g : ℝ → ℝ},\n  Function.Periodic f 1 →\n    Function.Periodic g 1 →\n      Continuous f →\n        Continuous g →\n          Filter.Tendsto (fun n : ℕ => ∫ (x : ℝ) in 0..1, f x * g (n * x)) Filter.atTop $\n            Filter.pure ((∫ (x : ℝ) in 0..1, f x) * (∫ (x : ℝ) in 0..1, g x))",
+    "elabError":
+    "type expected, got\n  (Filter.Tendsto (fun n => ∫ (x : ℝ) in ?m.2416 n, f x * g (↑n * x)) Filter.atTop : Filter ℝ → Prop) ; identifiers [f, g, Function.Periodic, f, Function.Periodic, g, Continuous, f, Continuous, g, Filter.Tendsto, n, x, f, x, g, n, x, Filter.atTop, Filter.pure, x, f, x, x, g, x] (during elaboration) for ∀ {f g : ℝ → ℝ},   Function.Periodic f 1 →     Function.Periodic g 1 →       Continuous f →         Continuous g →           Filter.Tendsto (fun n : ℕ => ∫ (x : ℝ) in 0..1, f x * g (n * x)) Filter.atTop $             Filter.pure ((∫ (x : ℝ) in 0..1, f x) * (∫ (x : ℝ) in 0..1, g x))",
+    "context?":
+    "If $f$ and $g$ are continuous and periodic functions with period $1$ on the real line, then $\\lim_{n \\to \\infty} \\int_0^1 f(x)g(nx)\\,dx=(\\int_0^1 f(x)\\,dx)(\\int_0^1 g(x)\\,dx)$.",
+    "cmdErrors":
+    ["type expected, got\n  (Filter.Tendsto (fun n => ∫ (x : ℝ) in ?m.2155 n, f x * g (↑n * x)) Filter.atTop : Filter ℝ → Prop)",
+     "type mismatch\n  Float.val 0.\nhas type\n  floatSpec.float : Type\nbut is expected to have type\n  Set ℝ : Type"]}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {f g : ℝ → ℝ}, Continuous f → Continuous g → Function.Periodic f 1 → Function.Periodic g 1 → Filter.Tendsto (fun n : ℕ => ∫ (x : ℝ) in 0..1, f x * g (n * x)) Filter.atTop (Filter.pure ((∫ (x : ℝ) in 0..1, f x) * (∫ (x : ℝ) in 0..1, g x)))",
+    "elabError":
+    "unknown constant 'Filter.pure' ; identifiers [f, g, Continuous, f, Continuous, g, Function.Periodic, f, Function.Periodic, g, Filter.Tendsto, n, x, f, x, g, n, x, Filter.atTop, Filter.pure, x, f, x, x, g, x] (during elaboration) for ∀ {f g : ℝ → ℝ}, Continuous f → Continuous g → Function.Periodic f 1 → Function.Periodic g 1 → Filter.Tendsto (fun n : ℕ => ∫ (x : ℝ) in 0..1, f x * g (n * x)) Filter.atTop (Filter.pure ((∫ (x : ℝ) in 0..1, f x) * (∫ (x : ℝ) in 0..1, g x)))",
+    "context?":
+    "If $f$ and $g$ are continuous and periodic functions with period $1$ on the real line, then $\\lim_{n \\to \\infty} \\int_0^1 f(x)g(nx)\\,dx=(\\int_0^1 f(x)\\,dx)(\\int_0^1 g(x)\\,dx)$.",
+    "cmdErrors":
+    ["unknown constant 'Filter.pure'",
+     "type mismatch\n  Float.val 0.\nhas type\n  floatSpec.float : Type\nbut is expected to have type\n  Set ℝ : Type"]}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {f g : ℝ → ℝ},   Function.Periodic f 1 →     Function.Periodic g 1 →       Continuous f →         Continuous g →           Filter.Tendsto (fun n : ℕ => ∫ (x : ℝ) in 0 ..1, f x * g (n * x)) Filter.atTop (𝓝 ((∫ (x : ℝ) in 0 ..1, f x) * ∫ (x : ℝ) in 0 ..1, g x))",
+    "parseError": "<input>:1:171: expected ',' or '..'",
+    "context?":
+    "If $f$ and $g$ are continuous and periodic functions with period $1$ on the real line, then $\\lim_{n \\to \\infty} \\int_0^1 f(x)g(nx)\\,dx=(\\int_0^1 f(x)\\,dx)(\\int_0^1 g(x)\\,dx)$."}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {f g : ℝ → ℝ}, Continuous f → Continuous g → Function.Periodic f 1 → Function.Periodic g 1 →\n  Filter.Tendsto (fun n : ℕ => ∫ x in 0..1, f x * g (n * x)) Filter.atTop (𝓝 ((∫ x in 0..1, f x) * (∫ x in 0..1, g x)))",
+    "elabError":
+    "unknown identifier '𝓝' ; identifiers [f, g, Continuous, f, Continuous, g, Function.Periodic, f, Function.Periodic, g, Filter.Tendsto, n, x, f, x, g, n, x, Filter.atTop, 𝓝, x, f, x, x, g, x] (during elaboration) for ∀ {f g : ℝ → ℝ}, Continuous f → Continuous g → Function.Periodic f 1 → Function.Periodic g 1 →   Filter.Tendsto (fun n : ℕ => ∫ x in 0..1, f x * g (n * x)) Filter.atTop (𝓝 ((∫ x in 0..1, f x) * (∫ x in 0..1, g x)))",
+    "context?":
+    "If $f$ and $g$ are continuous and periodic functions with period $1$ on the real line, then $\\lim_{n \\to \\infty} \\int_0^1 f(x)g(nx)\\,dx=(\\int_0^1 f(x)\\,dx)(\\int_0^1 g(x)\\,dx)$.",
+    "cmdErrors":
+    ["type mismatch\n  Float.val 0.\nhas type\n  floatSpec.float : Type\nbut is expected to have type\n  Set ℝ : Type",
+     "function expected at\n  𝓝\nterm has type\n  ?m.2374"]}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {f g : ℝ → ℝ},   Function.Periodic f 1 →     Function.Periodic g 1 →       Continuous f →         Continuous g →           Filter.Tendsto (fun n : ℕ => (∫ x in 0 ..1, f x * g (n * x))) Filter.atTop (𝓝 ((∫ x in 0 ..1, f x) * (∫ x in 0 ..1, g x)))",
+    "parseError": "<input>:1:166: expected ',' or '..'",
+    "context?":
+    "If $f$ and $g$ are continuous and periodic functions with period $1$ on the real line, then $\\lim_{n \\to \\infty} \\int_0^1 f(x)g(nx)\\,dx=(\\int_0^1 f(x)\\,dx)(\\int_0^1 g(x)\\,dx)$."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {f g : ℝ → ℝ},   Function.Periodic f 1 →     Function.Periodic g 1 →       Continuous f →         Continuous g →           Tendsto (fun n : ℕ => ∫ (x : ℝ) in 0 ..1, f x * g (n * x)) atTop (𝓝 (∫ (x : ℝ) in 0 ..1, f x * ∫ (x : ℝ) in 0 ..1, g x))",
+    "parseError": "<input>:1:164: expected ',' or '..'",
+    "context?":
+    "If $f$ and $g$ are continuous and periodic functions with period $1$ on the real line, then $\\lim_{n \\to \\infty} \\int_0^1 f(x)g(nx)\\,dx=(\\int_0^1 f(x)\\,dx)(\\int_0^1 g(x)\\,dx)$."}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {f g : ℝ → ℝ},\n  Continuous f →\n    Function.Periodic f 1 →\n      Continuous g →\n        Function.Periodic g 1 →\n          Filter.Tendsto (fun n : ℕ => ∫ (x : ℝ) in 0..1, f x * g (n * x)) Filter.atTop\n            (𝓝 ((∫ (x : ℝ) in 0..1, f x) * (∫ (x : ℝ) in 0..1, g x)))",
+    "elabError":
+    "unknown identifier '𝓝' ; identifiers [f, g, Continuous, f, Function.Periodic, f, Continuous, g, Function.Periodic, g, Filter.Tendsto, n, x, f, x, g, n, x, Filter.atTop, 𝓝, x, f, x, x, g, x] (during elaboration) for ∀ {f g : ℝ → ℝ},   Continuous f →     Function.Periodic f 1 →       Continuous g →         Function.Periodic g 1 →           Filter.Tendsto (fun n : ℕ => ∫ (x : ℝ) in 0..1, f x * g (n * x)) Filter.atTop             (𝓝 ((∫ (x : ℝ) in 0..1, f x) * (∫ (x : ℝ) in 0..1, g x)))",
+    "context?":
+    "If $f$ and $g$ are continuous and periodic functions with period $1$ on the real line, then $\\lim_{n \\to \\infty} \\int_0^1 f(x)g(nx)\\,dx=(\\int_0^1 f(x)\\,dx)(\\int_0^1 g(x)\\,dx)$.",
+    "cmdErrors":
+    ["type mismatch\n  Float.val 0.\nhas type\n  floatSpec.float : Type\nbut is expected to have type\n  Set ℝ : Type",
+     "function expected at\n  𝓝\nterm has type\n  ?m.2373"]}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {f g : ℝ → ℝ}, Continuous f → Continuous g → Function.Periodic f 1 → Function.Periodic g 1 → Filter.Tendsto (fun n : ℕ => ∫ (x : ℝ) in 0..1, f x * g (n * x)) Filter.atTop (Filter.pure ((∫ (x : ℝ) in 0..1, f x) * (∫ (x : ℝ) in 0..1, g x)))",
+    "elabError":
+    "unknown constant 'Filter.pure' ; identifiers [f, g, Continuous, f, Continuous, g, Function.Periodic, f, Function.Periodic, g, Filter.Tendsto, n, x, f, x, g, n, x, Filter.atTop, Filter.pure, x, f, x, x, g, x] (during elaboration) for ∀ {f g : ℝ → ℝ}, Continuous f → Continuous g → Function.Periodic f 1 → Function.Periodic g 1 → Filter.Tendsto (fun n : ℕ => ∫ (x : ℝ) in 0..1, f x * g (n * x)) Filter.atTop (Filter.pure ((∫ (x : ℝ) in 0..1, f x) * (∫ (x : ℝ) in 0..1, g x)))",
+    "context?":
+    "If $f$ and $g$ are continuous and periodic functions with period $1$ on the real line, then $\\lim_{n \\to \\infty} \\int_0^1 f(x)g(nx)\\,dx=(\\int_0^1 f(x)\\,dx)(\\int_0^1 g(x)\\,dx)$.",
+    "cmdErrors":
+    ["unknown constant 'Filter.pure'",
+     "type mismatch\n  Float.val 0.\nhas type\n  floatSpec.float : Type\nbut is expected to have type\n  Set ℝ : Type"]}},
+  "cmd": "translate"}]

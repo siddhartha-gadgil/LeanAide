@@ -1,0 +1,25 @@
+[{"res":
+  "Prove that, for any ten consecutive integers, at least one is relatively prime to all of the others.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Prove that, for any ten consecutive integers, at least one is relatively prime to all of the others.",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView":
+   "∀ (n : ℕ), ∃ k ∈ Finset.range 10, ∀ m ∈ (Finset.range 10).erase k, (n + k).Coprime (n + m)",
+   "roundTripFailures": [],
+   "roundTripCheck": true,
+   "groups":
+   [["∀ (n : ℕ), ∃ k ∈ Finset.range 10, ∀ m ∈ (Finset.range 10).erase k, (n + k).Coprime (n + m)"],
+    ["∀ (n : ℕ), ∃ k < 10, ∀ i < 10, (n + k).gcd (n + i) = 1 → k = i"],
+    ["∀ (n : ℕ), ∃ k < 10, ∀ i < 10, (n + k).gcd (n + i) = 1"],
+    ["∀ (n : ℕ), ∃ k < 10, ∀ i < 10, i ≠ k → (n + k).gcd (n + i) = 1"],
+    ["∀ (n : ℤ), ∃ k ∈ Finset.range 10, ∀ m ∈ Finset.range 10 \\ {k}, (n + ↑k).gcd (n + ↑m) = 1"]],
+   "allElaborated":
+   ["∀ (n : ℕ), ∃ k : ℕ, k < 10 ∧ ∀ i : ℕ, i < 10 → Nat.gcd (n + k) (n + i) = 1 → k = i",
+    "∀ n : ℕ, ∃ k : ℕ, k < 10 ∧ ∀ i : ℕ, i < 10 → Nat.gcd (n + k) (n + i) = 1",
+    "∀ (n : ℕ), ∃ (k : ℕ), k < 10 ∧ ∀ (i : ℕ), i < 10 → (i ≠ k → Nat.gcd (n + k) (n + i) = 1)",
+    "∀ (n : ℤ), ∃ k ∈ Finset.range 10, ∀ m ∈ (Finset.range 10 \\ {k}), Int.gcd (n + k) (n + m) = 1",
+    "∀ n : ℕ, ∃ k ∈ Finset.range 10, ∀ m ∈ Finset.erase (Finset.range 10) k, (n + k).Coprime (n + m)"]},
+  "cmd": "translate"}]

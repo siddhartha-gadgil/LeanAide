@@ -1,0 +1,194 @@
+[{"res":
+  "Prove that any convex region in the Euclidean plane with area greater than $\\pi/4$ contains a pair of points exactly $1$ unit apart.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Prove that any convex region in the Euclidean plane with area greater than $\\pi/4$ contains a pair of points exactly $1$ unit apart.",
+  "cmd": "translate"},
+ {"res": "Error in translation", "cmd": "translate"},
+ {"res": "Prompt:", "cmd": "translate"},
+ {"res":
+  [{"role": "system",
+    "content":
+    "You are a Mathematics, Lean 4 and coding assistant who answers questions about Mathematics and Lean 4, gives hints while coding in Lean 4. You also translates from natural language to Lean Theorem Prover code and vice versa when asked. Follow EXACTLY any examples given when generating Lean code."},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: A subset of a convex independent set of points is convex independent as well. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {𝕜 : Type u_1} {E : Type u_2} [inst : OrderedSemiring 𝕜] [inst_1 : AddCommGroup E] [inst_2 : Module 𝕜 E]\n  {s t : Set E}, ConvexIndependent 𝕜 Subtype.val → s ⊆ t → ConvexIndependent 𝕜 Subtype.val"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: A real normed vector space is strictly convex provided that the unit ball is strictly convex. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ (𝕜 : Type u_1) {E : Type u_2} [inst : NormedLinearOrderedField 𝕜] [inst_1 : NormedAddCommGroup E]\n  [inst_2 : NormedSpace 𝕜 E] [inst_3 : NormedSpace ℝ E] [inst_4 : LinearMap.CompatibleSMul E E 𝕜 ℝ],\n  StrictConvex 𝕜 (Metric.closedBall 0 1) → StrictConvexSpace 𝕜 E"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: To check convex independence, one only has to check finsets thanks to Carathéodory's theorem. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {𝕜 : Type u_1} {E : Type u_2} {ι : Type u_3} [inst : LinearOrderedField 𝕜] [inst_1 : AddCommGroup E]\n  [inst_2 : Module 𝕜 E] {p : ι → E},\n  ConvexIndependent 𝕜 p ↔ ∀ (s : Finset ι) (x : ι), p x ∈ (convexHull 𝕜) ↑(Finset.image p s) → x ∈ s"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: If three points lie in the affine span of two points, the first four points are collinear. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {k : Type u_1} {V : Type u_2} {P : Type u_3} [inst : DivisionRing k] [inst_1 : AddCommGroup V] [inst_2 : Module k V]\n  [inst_3 : AddTorsor V P] {p₁ p₂ p₃ p₄ p₅ : P},\n  p₁ ∈ affineSpan k {p₄, p₅} → p₂ ∈ affineSpan k {p₄, p₅} → p₃ ∈ affineSpan k {p₄, p₅} → Collinear k {p₁, p₂, p₃, p₄}"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: This theorem states that in an infinite dimensional space over a nontrivially normed field, given any finite set of points and a vector with norm greater than one but less than some real number R, we can always find a point with norm less than or equal to R that is at least unit distance away from all the points in the given set. Note that this theorem does not hold if the space is finite-dimensional.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {𝕜 : Type u} [inst : NontriviallyNormedField 𝕜] {E : Type v} [inst_1 : NormedAddCommGroup E]\n  [inst_2 : NormedSpace 𝕜 E] [inst_3 : CompleteSpace 𝕜] {c : 𝕜},\n  1 < ‖c‖ → ∀ {R : ℝ}, ‖c‖ < R → ¬FiniteDimensional 𝕜 E → ∀ (s : Finset E), ∃ x, ‖x‖ ≤ R ∧ ∀ y ∈ s, 1 ≤ ‖y - x‖"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  In Euclidean geometry, if four cospherical points {a, b, c, d} satisfy the condition that the angles at the center of the sphere between a and c, and between b and d are each π (180 degrees), then the product of the inter-point distances (a, b) and (c, d), plus the product of the inter-point distances (b, c) and (d, a), equals the product of the inter-point distances (a, c) and (b, d).\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u_1} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] {P : Type u_2} [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] {a b c d p : P},\n  EuclideanGeometry.Cospherical {a, b, c, d} →\n    EuclideanGeometry.angle a p c = Real.pi →\n      EuclideanGeometry.angle b p d = Real.pi → dist a b * dist c d + dist b c * dist d a = dist a c * dist b d"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Deduce the equality of points from the vanishing of the nonnegative distance\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {γ : Type w} [inst : MetricSpace γ] {x y : γ}, nndist x y = 0 → x = y"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: This theorem states that for a given four points where the first three points are in strict order on the same line in a two-dimensional Euclidean space with an inner product, the sign of the angle at the fourth point between the first and second points is equal to the sign of the angle at the fourth point between the second and third points. This essentially implies that the fourth point sees the three points in the same order along the line.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] [hd2 : Fact (FiniteDimensional.finrank ℝ V = 2)] [inst_4 : Module.Oriented ℝ V (Fin 2)]\n  {p₁ p₂ p₃ : P} (p₄ : P),\n  Sbtw ℝ p₁ p₂ p₃ → (EuclideanGeometry.oangle p₁ p₄ p₂).sign = (EuclideanGeometry.oangle p₂ p₄ p₃).sign"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  In a 2-dimensional real inner product space, for any four distinct points on the same sphere, the twice-signed oriented angle from the first point to the third, is equal to the twice-signed oriented angle from the first point to the fourth.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] [hd2 : Fact (FiniteDimensional.finrank ℝ V = 2)] [inst_4 : Module.Oriented ℝ V (Fin 2)]\n  {s : EuclideanGeometry.Sphere P} {p₁ p₂ p₃ p₄ : P},\n  p₁ ∈ s →\n    p₂ ∈ s →\n      p₃ ∈ s →\n        p₄ ∈ s →\n          p₂ ≠ p₁ →\n            p₂ ≠ p₄ → p₃ ≠ p₁ → p₃ ≠ p₄ → 2 • EuclideanGeometry.oangle p₁ p₂ p₄ = 2 • EuclideanGeometry.oangle p₁ p₃ p₄"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Every two points in a Hausdorff space admit disjoint open neighbourhoods. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {X : Type u} [inst : TopologicalSpace X] [self : T2Space X],\n  Pairwise fun x y => ∃ u v, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ Disjoint u v"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  If a differentiable and continuous complex-valued function `f` on the closed fourth quadrant satisfies a specific growth condition on its open subset and on the boundary, then `f` is bounded on the closed fourth quadrant.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {C : ℝ} {f : ℂ → E} {z : ℂ},\n  DiffContOnCl ℂ f (Set.Ioi 0 ×ℂ Set.Iio 0) →\n    (∃ c < 2,\n        ∃ B,\n          f =O[Bornology.cobounded ℂ ⊓ Filter.principal (Set.Ioi 0 ×ℂ Set.Iio 0)] fun z =>\n            Real.exp (B * Complex.abs z ^ c)) →\n      (∀ (x : ℝ), 0 ≤ x → ‖f ↑x‖ ≤ C) → (∀ x ≤ 0, ‖f (↑x * Complex.I)‖ ≤ C) → 0 ≤ z.re → z.im ≤ 0 → ‖f z‖ ≤ C"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Given a point `x` in the convex hull of `s` and a point `y`, there exists a point\nof `s` at distance at least `dist x y` from `y`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {E : Type u_2} [inst : SeminormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {s : Set E} {x : E},   x ∈ (convexHull ℝ) s → ∀ (y : E), ∃ x' ∈ s, dist x y ≤ dist x' y"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: The theorem states that for a metric space of points equipped with a real inner product space and a torsor structure over the normed add commutative group, if four points `A`, `B`, `C`, `D` are cospherical (i.e., they are all equidistant from some common point), and another point `P` lies on the lines `AB` and `CD` (with certain non-trivial scaling factors), then the product of the Euclidean distances from `P` to `A` and `B` equals the product of the Euclidean distances from `P` to `C` and `D`.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {V : Type u_1} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] {P : Type u_2} [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] {a b c d p : P},\n  EuclideanGeometry.Cospherical {a, b, c, d} →\n    (∃ k₁, k₁ ≠ 1 ∧ b -ᵥ p = k₁ • (a -ᵥ p)) →\n      (∃ k₂, k₂ ≠ 1 ∧ d -ᵥ p = k₂ • (c -ᵥ p)) → dist a p * dist b p = dist c p * dist d p"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  In a strict convex real normed space, if two distinct points belong to the same closed ball, then any convex combination of them with positive coefficients summing to 1 lies in the smaller open ball with the same radius.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {E : Type u_2} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] [inst_2 : StrictConvexSpace ℝ E] {x y z : E}\n  {a b r : ℝ},\n  x ∈ Metric.closedBall z r →\n    y ∈ Metric.closedBall z r → x ≠ y → 0 < a → 0 < b → a + b = 1 → a • x + b • y ∈ Metric.ball z r"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: A point with a finite neighborhood has to be isolated. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {X : Type u_1} [inst : TopologicalSpace X] [inst_1 : T1Space X] (x : X) {s : Set X},\n  s ∈ nhds x → Set.Finite s → IsOpen {x}"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  If a differentiable function $f : \\mathbb{C} \\rightarrow E$ is continuous on the closed fourth quadrant, has norm bounded by $Ae^{B|z|^c}$ for $z \\in \\mathbb{C}$ and some constants $A, B, c < 2$, and is zero on the boundary, then $f$ is the zero function on the entire closed fourth quadrant.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {f : ℂ → E},\n  DiffContOnCl ℂ f (Set.Ioi 0 ×ℂ Set.Iio 0) →\n    (∃ c < 2,\n        ∃ B,\n          f =O[Bornology.cobounded ℂ ⊓ Filter.principal (Set.Ioi 0 ×ℂ Set.Iio 0)] fun z =>\n            Real.exp (B * Complex.abs z ^ c)) →\n      (∀ (x : ℝ), 0 ≤ x → f ↑x = 0) → (∀ x ≤ 0, f (↑x * Complex.I) = 0) → Set.EqOn f 0 {z | 0 ≤ z.re ∧ z.im ≤ 0}"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Given a point `x` in the convex hull of `s` and a point `y` in the convex hull of `t`,\nthere exist points `x' ∈ s` and `y' ∈ t` at distance at least `dist x y`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {E : Type u_2} [inst : SeminormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {s t : Set E} {x y : E},   x ∈ (convexHull ℝ) s → y ∈ (convexHull ℝ) t → ∃ x' ∈ s, ∃ y' ∈ t, dist x y ≤ dist x' y'"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For any locally convex topological vector space over the real numbers and two distinct points, there exists a continuous linear functional separating them.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {E : Type u_2} [inst : TopologicalSpace E] [inst_1 : AddCommGroup E] [inst_2 : TopologicalAddGroup E]\n  [inst_3 : Module ℝ E] [inst_4 : ContinuousSMul ℝ E] {x y : E} [inst_5 : LocallyConvexSpace ℝ E] [inst_6 : T1Space E],\n  x ≠ y → ∃ f, f x < f y"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Two points coincide if their distance is `< ε` for all positive ε \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {γ : Type w} [inst : EMetricSpace γ] {x y : γ}, (∀ ε > 0, edist x y ≤ ε) → x = y"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Prove that any convex region in the Euclidean plane with area greater than $\\pi/4$ contains a pair of points exactly $1$ unit apart.\n\nGive ONLY the Lean code"}],
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {P : Type u_1} [inst : NormedAddCommGroup P] [inst_1 : InnerProductSpace ℝ P] [inst_2 : MeasureSpace P]    [Fact (FiniteDimensional.finrank ℝ P = 2)] {s : Set P},   Convex ℝ s → measure_theory.measure s > ennreal.of_real (π / 4) → ∃ x y ∈ s, dist x y = 1",
+    "parseError": "<input>:1:239: expected ','",
+    "context?":
+    "Prove that any convex region in the Euclidean plane with area greater than $\\pi/4$ contains a pair of points exactly $1$ unit apart."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {E : Type u_2} [inst : NormedAddCommGroup E] [inst_1 : InnerProductSpace ℝ E]   [inst_2 : NormedSpace ℝ E] {s : Set E},   MeasurableSet s →     Convex ℝ s →       (∃ A : ℝ, (2 : ℝ) ≤ A * A) →         ∃ x y ∈ s, dist x y = 1",
+    "parseError": "<input>:1:208: expected ','",
+    "context?":
+    "Prove that any convex region in the Euclidean plane with area greater than $\\pi/4$ contains a pair of points exactly $1$ unit apart."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {E : Type u_2} [inst : NormedAddCommGroup E] [inst_1 : InnerProductSpace ℝ E] [inst_2 : MeasureSpace E] {s : Set E},   (MeasureTheory.MeasureSpace.volume s).toReal > π / 4 → Convex ℝ s → ∃ x y ∈ s, dist x y = 1",
+    "parseError": "<input>:1:195: expected ','",
+    "context?":
+    "Prove that any convex region in the Euclidean plane with area greater than $\\pi/4$ contains a pair of points exactly $1$ unit apart."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {s : Set ℝ} [inst : MetricSpace ℝ] [inst_1 : NormedAddCommGroup ℝ] [inst_2 : NormedSpace ℝ ℝ],   Convex ℝ s → MeasureTheory.Measure.measure_univ ℝ s > Real.pi / 4 → ∃ x y ∈ s, dist x y = 1",
+    "parseError": "<input>:1:173: expected ','",
+    "context?":
+    "Prove that any convex region in the Euclidean plane with area greater than $\\pi/4$ contains a pair of points exactly $1$ unit apart."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {E : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup E] [inst_1 : InnerProductSpace ℝ E] [inst_2 : MetricSpace P]   [inst_3 : NormedAddTorsor E P] {s : Set P},   Convex ℝ s → 1 < 4 * Real.pi⁻¹ * MeasureTheory.measure s → ∃ x y ∈ s, dist x y = 1",
+    "parseError": "<input>:1:233: expected ','",
+    "context?":
+    "Prove that any convex region in the Euclidean plane with area greater than $\\pi/4$ contains a pair of points exactly $1$ unit apart."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {E : Type u_2} [inst : EuclideanSpace 2 E] {s : Set E},   Convex ℝ s → MeasureTheory.measureOf (MeasureTheory.measureSpaceMeasurableSet s) s > π / 4 →    ∃ x y ∈ s, dist x y = 1 ",
+    "parseError": "<input>:1:162: expected ','",
+    "context?":
+    "Prove that any convex region in the Euclidean plane with area greater than $\\pi/4$ contains a pair of points exactly $1$ unit apart."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : InnerProductSpace ℝ E] [inst_2 : NormedAddTorsor E (Set ℝ)]   {s : Set E},   Convex ℝ s → 2 ≤ (2 : ℝ) →     ((2 : ℝ) * ∥2 • (1 : E)∥ ^ 2 * (Real.pi ^ 2 - 3 * Real.pi) / 6  < (Real.pi / 4)) → ∃ x y ∈ s, dist x y = 1 ",
+    "parseError": "<input>:1:176: expected token",
+    "context?":
+    "Prove that any convex region in the Euclidean plane with area greater than $\\pi/4$ contains a pair of points exactly $1$ unit apart."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {P : Type u_1} [inst : MetricSpace P] [inst_1 : NormedAddCommGroup P] [inst_2 : InnerProductSpace ℝ P]   [hd2 : Fact (FiniteDimensional.finrank ℝ P = 2)] {s : Set P},   Convex ℝ s → MeasureTheory.measureOf ℝ s > Real.pi / 4 → ∃ x y ∈ s, dist x y = 1",
+    "parseError": "<input>:1:234: expected ','",
+    "context?":
+    "Prove that any convex region in the Euclidean plane with area greater than $\\pi/4$ contains a pair of points exactly $1$ unit apart."}},
+  "cmd": "translate"}]
