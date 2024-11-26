@@ -7,14 +7,18 @@
    "roundTripFailures": [],
    "roundTripCheck": true,
    "groups":
-   [["{n | Odd n}.Infinite", "{n | Odd n}.Infinite", "{n | Odd n}.Infinite"],
-    ["{n | n % 2 = 1}.Infinite", "{n | n % 2 = 1}.Infinite"]],
+   [["{n | Odd n}.Infinite",
+     "{n | Odd n}.Infinite",
+     "{n | Odd n}.Infinite",
+     "{n | Odd n}.Infinite",
+     "{n | Odd n}.Infinite"]],
    "allElaborated":
-   ["Set.Infinite {n : ℕ | n % 2 = 1}",
+   ["{n : ℕ | Odd n}.Infinite",
+    "{n : ℕ | Odd n}.Infinite",
     "Set.Infinite {n : ℕ | Odd n}",
     "Set.Infinite {n : ℕ | Odd n}",
     "Set.Infinite {n : ℕ | Odd n}",
-    "Set.Infinite {n : ℕ | n % 2 = 1}",
     "Set.Infinite {n : ℕ | Odd n}",
-    "Set.Infinite {n : ℕ | Odd n}"]},
+    "Set.Infinite {n : ℕ | Odd n}",
+    "{n : ℕ | Odd n}.Infinite"]},
   "cmd": "translate"}]

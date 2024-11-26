@@ -540,6 +540,7 @@ def translateDefCmdM? (s: String) (translator : Translator)
   let context? ← getContext
   let mut checks : Array (CmdElabError) := #[]
   for s in output do
+    let s := s.replace "\n" " "
     let cmd? := runParserCategory (← getEnv) `command s
     match cmd? with
     | Except.error e =>
@@ -562,7 +563,7 @@ def translateDefData? (s: String)
   | Except.ok cmd =>
     match ← DefData.ofSyntax? cmd with
     | none =>
-      return .error #[.unparsed s "not a command def/theorem" (← getContext)]
+      return .error #[.unparsed s s!"{← PrettyPrinter.ppCommand cmd} not a command def/theorem" (← getContext)]
     | some dd => return .ok dd
 
 def translateDefViewM? (s: String)
