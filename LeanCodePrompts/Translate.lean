@@ -174,6 +174,18 @@ def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true)
     return some ⟨docstring, s!"{kind} : {type} :="⟩
 
 
+def Translator.getMessages (s: String) (translator : Translator)
+    (header: String := "Theorem") :
+      TranslateM <| Json × Array (String × Json):= do
+  let docPairs ← translator.pb.getPromptPairs s
+  let dfns ← translator.relDefs.blob s docPairs
+  let promptPairs := translatePromptPairs docPairs dfns
+  trace[Translate.info] m!"prompt pairs: \n{promptPairs}"
+  let messages ←
+    translateMessages s promptPairs header translator.toChat translator.server.hasSysPrompt
+  trace[Translate.info] m!"prompt: \n{messages.pretty}"
+  return (messages, promptPairs)
+
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
 def Translator.getLeanCodeJson (s: String)
@@ -192,25 +204,18 @@ def Translator.getLeanCodeJson (s: String)
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.insert s)
       -- work starts here; before this was caching, polling etc
-      IO.eprintln s!"getting prompt pairs"
-      let docPairs ← translator.pb.getPromptPairs s
-      IO.eprintln s!"Got prompt pairs"
-      let dfns ← translator.relDefs.blob s docPairs
-      let promptPairs := translatePromptPairs docPairs dfns
-      trace[Translate.info] m!"prompt pairs: \n{promptPairs}"
-      let messages ←
-        translateMessages s promptPairs header translator.toChat translator.server.hasSysPrompt
+      let (messages, promptPairs) ← translator.getMessages s header
       trace[Translate.info] m!"prompt: \n{messages.pretty}"
       logTimed "querying server"
       IO.eprintln s!"querying server"
       let fullJson ← translator.server.query messages translator.params
       let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
-      logTimed "obtained gpt response"
+      logTimed "obtained llm response"
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.erase s)
       cacheJson s (outJson, messages, promptPairs)
-      return (outJson, messages, docPairs)
+      return (outJson, messages, promptPairs)
 
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and returns the best choice, throwing an error if nothing elaborates.  -/
 def bestElab (output: Array String) : TranslateM Expr := do
