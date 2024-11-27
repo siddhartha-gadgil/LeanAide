@@ -252,6 +252,19 @@ def add_defs (nbs: Array (Name × String)) : SessionM Unit := do
   let rds := rds ++ nbs
   set {state with relDefs := rds}
 
+def chatQuery (queryString: String)(n: Nat := 3)
+  (params: ChatParams := {n := n, stopTokens := #[]})
+  (examples: Array ChatExample := #[]) : SessionM (Array String) := do
+  unless queryString.endsWith "." || queryString.endsWith "?" do
+    say "Query should end with a full stop or question mark" `chatQuery
+    return #[]
+  let translator ← getTranslator
+  let server := translator.server
+  let res ← server.mathCompletions queryString n params examples
+  say "Chat Query responses" `chatQuery
+  say res `chatQuery
+  return res
+
 def save (name?: Option Name := none) : SessionM Unit := do
   let state ← get
   let logs := state.logs
@@ -280,6 +293,7 @@ macro "#session" n:ident ":=" t:term : command => do
   translateText
   save `small
   consider (← putnamProblem 57)
+  discard <|  chatQuery "Are there infinitely many odd numbers?"
   -- discard docsText
 
 /-
