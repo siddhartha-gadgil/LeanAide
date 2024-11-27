@@ -1,0 +1,96 @@
+{"usage":
+ {"total_tokens": 3915,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 2984,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 931},
+ "system_fingerprint": "fp_7f6be3efb0",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-AXRAtdL8g5Zgoxp6od9GgxZPcQKNG",
+ "created": 1732532647,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (p : ℕ), 1 < p → (∀ x, 0 < x ∧ x < p → Nat.Prime (x^2 - x + p)) →\n  ∃! (a b c : ℤ), b^2 - 4*a*c = 1 - 4*p ∧ 0 < a ∧ a ≤ c ∧ -a ≤ b ∧ b < a"},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (p : ℤ), 1 < p ∧ (∀ x : ℤ, 0 < x ∧ x < p → Nat.Prime (x^2 - x + p)) →\n  ∃! (a b c : ℤ), b^2 - 4*a*c = 1 - 4*p ∧ 0 < a ∧ a ≤ c ∧ -a ≤ b ∧ b < a"},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (p : ℕ), 1 < p → (∀ x, 0 < x ∧ x < p → Nat.Prime (x ^ 2 - x + p)) →\n  ∃! (a b c : ℤ), b ^ 2 - 4 * a * c = 1 - 4 * ↑p ∧ 0 < a ∧ a ≤ c ∧ -a ≤ b ∧ b < a"},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {p : ℕ}, 1 < p → (∀ x, 0 < x → x < p → Nat.Prime (x^2 - x + p)) →\n  ∃! (a b c : ℤ), b^2 - 4*a*c = 1 - 4*p ∧ 0 < a ∧ a ≤ c ∧ -a ≤ b ∧ b < a"},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (p : ℕ), 1 < p → (∀ x, 0 < x ∧ x < p → Nat.Prime (x^2 - x + p)) →\n  ∃! (a b c : ℤ), b^2 - 4*a*c = 1 - 4*p ∧ 0 < a ∧ a ≤ c ∧ -a ≤ b ∧ b < a"},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {p : ℕ}, p > 1 → (∀ x : ℕ, 0 < x ∧ x < p → Nat.Prime (x ^ 2 - x + p)) →\n  ∃! (a b c : ℤ), b ^ 2 - 4 * a * c = 1 - 4 * ↑p ∧ 0 < a ∧ a ≤ c ∧ -a ≤ b ∧ b < a"},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\ntheorem unique_triple_exists {p : ℤ} (hp : 1 < p) \n  (h : ∀ x : ℤ, 0 < x → x < p → Nat.Prime (x^2 - x + p)) :\n  ∃! (a b c : ℤ), b^2 - 4*a*c = 1 - 4*p ∧ 0 < a ∧ a ≤ c ∧ -a ≤ b ∧ b < a :=\nbegin\n  -- Proof goes here\nend\n```"},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (p : ℤ), 1 < p → (∀ x, 0 < x ∧ x < p → Nat.Prime (x^2 - x + p)) →\n  ∃! (a b c : ℤ), b^2 - 4*a*c = 1 - 4*p ∧ 0 < a ∧ a ≤ c ∧ -a ≤ b ∧ b < a"},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {p : ℕ}, 1 < p → (∀ x, 0 < x ∧ x < p → Nat.Prime (x^2 - x + p)) →\n  ∃! (a b c : ℤ), b^2 - 4 * a * c = 1 - 4 * p ∧ 0 < a ∧ a ≤ c ∧ -a ≤ b ∧ b < a"},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (p : ℕ), 1 < p → (∀ x, 0 < x ∧ x < p → Nat.Prime (x^2 - x + p)) →\n  ∃! (a b c : ℤ), b^2 - 4*a*c = 1 - 4*p ∧ 0 < a ∧ a ≤ c ∧ -a ≤ b ∧ b < a"},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"}]}

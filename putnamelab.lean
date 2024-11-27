@@ -22,7 +22,6 @@ unsafe def main (args : List String) : IO UInt32 := do
   let last := args.get! 1 |>.toNat!
   let outFile :=
         System.mkFilePath <| ["results", "putnam", s!"statements_{start}_{last}.jsonl"]
-  IO.FS.writeFile outFile ""
   let handle ← IO.FS.Handle.mk outFile IO.FS.Mode.append
   let env ←
     importModules #[{module := `Mathlib},

@@ -80,6 +80,32 @@ def runTranslate (p : Parsed) : IO UInt32 := do
       IO.eprintln "---"
     match translation? with
     | some result =>
+      if p.hasFlag "roundtrip" then
+        IO.eprintln "Roundtrip:"
+        let core :=
+          translator.checkTranslationM result.view result.term |>.run' {}
+          let io? :=
+            core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
+            {env := env}
+          let io?' ← io?.toIO'
+          match io?' with
+          | Except.ok <| some p =>
+            let trans:= p.1
+            let checks := p.2
+            IO.eprintln "Checked translation"
+            IO.eprintln "Translation:"
+            IO.eprintln trans
+            IO.eprintln "Checks:"
+            for check in checks do
+              IO.eprintln check
+          | Except.ok none =>
+            IO.eprintln "Ran with error (no output)"
+            return 1
+          | Except.error e =>
+            do
+              IO.eprintln "Ran with error"
+              let msg ← e.toMessageData.toString
+              IO.eprintln msg
       if p.hasFlag "show_elaborated" then
         IO.eprintln "Elaborated terms:"
         for out in result.allElaborated do
@@ -119,6 +145,7 @@ def translate : Cmd := `[Cli|
     r, responses : Nat;    "Number of responses to ask for (default 10)."
     t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t` (default 8)."
     m, model : String ; "Model to be used (default `gpt-4o`)"
+    roundtrip; "Roundtrip the translation."
     azure; "Use Azure instead of OpenAI."
     gemini; "Use Gemini instead of OpenAI."
     url : String; "URL to query (for a local server)."
