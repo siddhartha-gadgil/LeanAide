@@ -1,0 +1,23 @@
+[{"res":
+  "Let $$f(x, n) = \\frac{{n \\choose 0} + {n \\choose 2}x + {n \\choose 4}x^2 + \\cdots}{{n \\choose 1} + {n \\choose 3}x + {n \\choose 5}x^2 + \\cdots}$$ for all real numbers $x$ and positive integers $n$. Express $f(x, n+1)$ as a rational function involving $f(x, n)$ and $x$, and find $\\lim_{n \\to \\infty} f(x, n)$ for all $x$ for which this limit converges.We have $$f(x, n+1) = \\frac{f(x, n) + x}{f(x, n) + 1};$$ $\\lim_{n \\to \\infty} f(x, n) = \\sqrt{x}$ for all $x \\ge 0$ and diverges otherwise.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Let $$f(x, n) = \\frac{{n \\choose 0} + {n \\choose 2}x + {n \\choose 4}x^2 + \\cdots}{{n \\choose 1} + {n \\choose 3}x + {n \\choose 5}x^2 + \\cdots}$$ for all real numbers $x$ and positive integers $n$. Express $f(x, n+1)$ as a rational function involving $f(x, n)$ and $x$, and find $\\lim_{n \\to \\infty} f(x, n)$ for all $x$ for which this limit converges.We have $$f(x, n+1) = \\frac{f(x, n) + x}{f(x, n) + 1};$$ $\\lim_{n \\to \\infty} f(x, n) = \\sqrt{x}$ for all $x \\ge 0$ and diverges otherwise.",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView": "ℝ → ℕ → ℝ",
+   "roundTripFailures":
+   [["Let $$f(x, n) = \\frac{{n \\choose 0} + {n \\choose 2}x + {n \\choose 4}x^2 + \\cdots}{{n \\choose 1} + {n \\choose 3}x + {n \\choose 5}x^2 + \\cdots}$$ for all real numbers $x$ and positive integers $n$. Express $f(x, n+1)$ as a rational function involving $f(x, n)$ and $x$, and find $\\lim_{n \\to \\infty} f(x, n)$ for all $x$ for which this limit converges.We have $$f(x, n+1) = \\frac{f(x, n) + x}{f(x, n) + 1};$$ $\\lim_{n \\to \\infty} f(x, n) = \\sqrt{x}$ for all $x \\ge 0$ and diverges otherwise.",
+     [[false,
+       "false\nTheorem 1 describes a specific recursive function and its limit, while Theorem 2 only asserts the existence of a general function between certain sets."]]]],
+   "roundTripCheck": false,
+   "groups":
+   [["ℝ → ℕ → ℝ"],
+    ["(x : ℝ) → ℕ → 0 ≤ x → sorryAx (Sort ?u.362)"],
+    ["∀ (f : ℝ → ℕ → ℝ) (x : ℝ) (n : ℕ),\n  f x (n + 1) = (f x n + x) / (f x n + 1) ∧\n    (x ≥ 0 → Filter.Tendsto (fun n => f x n) Filter.atTop (nhds √x)) ∧\n      (x < 0 → ¬Filter.Tendsto (fun n => f x n) Filter.atTop (nhds √x))"]],
+   "allElaborated":
+   ["theorem f_eq_and_limit (x : ℝ) (n : ℕ) (h : 0 ≤ x) :\n  let f : ℕ → ℝ := λ n, ((finset.range (n + 1)).filter (even)).sum (λ i, nat.choose n i * x^(i / 2)) /\n                   ((finset.range (n + 1)).filter (odd)).sum (λ i, nat.choose n i * x^((i - 1) / 2))\n  in \n  f (n + 1) = (f n + x) / (f n + 1) ∧ Filter.Tendsto f Filter.atTop (nhds (real.sqrt x)) := \nbegin\n  sorry -- This is a non-trivial theorem that requires proof. This statement just serves as an example.\nend",
+    "theorem f_recurrence_and_limit (f : ℝ → ℕ → ℝ) (x : ℝ) (n : ℕ) :\n  f x (n + 1) = (f x n + x) / (f x n + 1) ∧ (x ≥ 0 → Filter.Tendsto (fun n => f x n) Filter.atTop (nhds (Real.sqrt x))) ∧ (x < 0 → ¬Filter.Tendsto (fun n => f x n) Filter.atTop (nhds (Real.sqrt x))) :=\nbegin\n  sorry\nend",
+    "def f (x : ℝ) : ℕ → ℝ\n| 0     := 0\n| (n+1) := (f n + x) / (f n + 1)\n\ntheorem limit_f {x : ℝ} (hx : x ≥ 0) : Filter.Tendsto (f x) Filter.atTop (nhds (Real.sqrt x)) :=\nsorry\n\ntheorem diverges_f {x : ℝ} (hx : x < 0) : ¬ Filter.Tendsto (f x) Filter.atTop (nhds (Real.sqrt x)) :=\nsorry"]},
+  "cmd": "translate"}]

@@ -1,0 +1,20 @@
+[{"res":
+  "Let $(x_n)$ be a sequence, and let $y_n = x_{n-1} + 2*x_n$ for $n \\geq 2$. Suppose that $(y_n)$ converges, then prove that $(x_n)$ converges.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Let $(x_n)$ be a sequence, and let $y_n = x_{n-1} + 2*x_n$ for $n \\geq 2$. Suppose that $(y_n)$ converges, then prove that $(x_n)$ converges.",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView":
+   "∀ {α : Type u_1} [inst : AddCommGroup α] [inst_1 : TopologicalSpace α] [inst_2 : TopologicalAddGroup α] {x y : ℕ → α},\n  (∀ (n : ℕ), 2 ≤ n → y n = x (n - 1) + 2 * x n) →\n    Filter.Tendsto y Filter.atTop (nhds 0) → Filter.Tendsto x Filter.atTop (nhds 0)",
+   "roundTripFailures":
+   [["Let $(x_n)$ be a sequence, and let $y_n = x_{n-1} + 2*x_n$ for $n \\geq 2$. Suppose that $(y_n)$ converges, then prove that $(x_n)$ converges.",
+     [[false,
+       "false\nTheorem 1 allows convergence to any limit, while Theorem 2 requires convergence specifically to 0."]]]],
+   "roundTripCheck": false,
+   "groups":
+   [["∀ {α : Type u_1} [inst : AddCommGroup α] [inst_1 : TopologicalSpace α] [inst_2 : TopologicalAddGroup α] {x y : ℕ → α},\n  (∀ (n : ℕ), 2 ≤ n → y n = x (n - 1) + 2 * x n) →\n    Filter.Tendsto y Filter.atTop (nhds 0) → Filter.Tendsto x Filter.atTop (nhds 0)"]],
+   "allElaborated":
+   ["∀ {α : Type u_1} [inst : AddCommGroup α] [inst_1 : TopologicalSpace α] [inst_2 : TopologicalAddGroup α] \n  {x : ℕ → α} {y : ℕ → α},\n  (∀ n, 2 ≤ n → y n = x (n - 1) + 2 * x n) → Filter.Tendsto y Filter.atTop (nhds (0 : α)) → Filter.Tendsto x Filter.atTop (nhds (0 : α))"]},
+  "cmd": "translate"}]

@@ -1,0 +1,199 @@
+[{"res":
+  "Let $G$ be a finite group (with a multiplicative operation), and $A$ be a subset of $G$ that contains more than half of $G$'s elements. Prove that every element of $G$ can be expressed as the product of two elements of $A$.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Let $G$ be a finite group (with a multiplicative operation), and $A$ be a subset of $G$ that contains more than half of $G$'s elements. Prove that every element of $G$ can be expressed as the product of two elements of $A$.",
+  "cmd": "translate"},
+ {"res": "Error in translation", "cmd": "translate"},
+ {"res": "Prompt:", "cmd": "translate"},
+ {"res":
+  [{"role": "system",
+    "content":
+    "You are a Mathematics, Lean 4 and coding assistant who answers questions about Mathematics and Lean 4, gives hints while coding in Lean 4. You also translates from natural language to Lean Theorem Prover code and vice versa when asked. Follow EXACTLY any examples given when generating Lean code."},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Definition: We have `fin 1 → G ≅ G` as `G`-sets, with `G` acting by left multiplication. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "(G : Type u) → [inst : Monoid G] → Action.diagonal G 1 ≅ Action.leftRegular G"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Definition: Product of subgroups is isomorphic to their product as groups. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "{G : Type u_1} →\n  [inst : Group G] →\n    {N : Type u_5} → [inst_1 : Group N] → (H : Subgroup G) → (K : Subgroup N) → ↥(Subgroup.prod H K) ≃* ↥H × ↥K"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Definition: Let `A', A, B', B` be subgroups of `G`. If `A' ≤ B'` and `A ≤ B`,\nthen there is a map `A / (A' ⊓ A) →* B / (B' ⊓ B)` induced by the inclusions. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "{G : Type u} →\n  [inst : Group G] →\n    {A' A B' B : Subgroup G} →\n      [_hAN : Subgroup.Normal (Subgroup.subgroupOf A' A)] →\n        [_hBN : Subgroup.Normal (Subgroup.subgroupOf B' B)] →\n          A' ≤ B' → A ≤ B → ↥A ⧸ Subgroup.subgroupOf A' A →* ↥B ⧸ Subgroup.subgroupOf B' B"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: To prove a property of a finite product, it suffices to prove that the property is\nmultiplicative and holds on the factors. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {M : Type u_2} {α : Sort u_4} [inst : CommMonoid M] {f : α → M} (p : M → Prop),\n  p 1 → (∀ (x y : M), p x → p y → p (x * y)) → (∀ (i : α), p (f i)) → p (finprod fun i => f i)"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: This is a theorem about groups and subgroups in the field of algebra. It states that for any group `G` and any subgroup `H` of `G`, and for any elements `x` and `y` of `G`, if `x` is an element of `H`, then the multiplication of `x` and `y` (`x * y`) is in `H` if and only if `y` is in `H`. In other words, within a group, if a member of a subgroup multiplies with any element and the result is still in the subgroup, then the other element must also be a member of the subgroup. This theorem applies to all types `G` that have a group structure.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {G : Type u_1} [inst : Group G] (H : Subgroup G) {x y : G}, x ∈ H → (x * y ∈ H ↔ y ∈ H)"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  If `G` is a commutative group, `K` is a subgroup of `G`, and every element in the multiset `g` of `G` belongs to `K`, then the product of the elements in `g` belongs to `K`.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {G : Type u_3} [inst : CommGroup G] (K : Subgroup G) (g : Multiset G), (∀ a ∈ g, a ∈ K) → g.prod ∈ K"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Product of a list of elements in a subgroup is in the subgroup. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {G : Type u_1} [inst : Group G] (K : Subgroup G) {l : List G}, (∀ x ∈ l, x ∈ K) → List.prod l ∈ K"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: A generalisation of the **Cauchy-Davenport theorem** to arbitrary groups. The size of `s * t` is\nlower-bounded by `|s| + |t| - 1` unless this quantity is greater than the size of the smallest\nsubgroup. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u_1} [inst : Group α] [inst_1 : DecidableEq α] {s t : Finset α},   s.Nonempty → t.Nonempty → min (minOrder α) ↑(s.card + t.card - 1) ≤ ↑(s * t).card"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: This theorem states that for any element 'a' in a group 'G', the product of 'a' and its inverse 'a⁻¹' equals the identity element '1'. This is a fundamental property of groups in abstract algebra, where every element has an inverse such that multiplying the element and its inverse always gives the identity element.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content": "∀ {G : Type u_1} [inst : Group G] (a : G), a * a⁻¹ = 1"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For any additive group G and subset k of its elements, k is contained in the additive subgroup generated by k.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {G : Type u_1} [inst : AddGroup G] {k : Set G}, k ⊆ ↑(AddSubgroup.closure k)"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: To prove a property of a finite product, it suffices to prove that the property is\nmultiplicative and holds on factors. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u_1} {M : Type u_5} [inst : CommMonoid M] {f : α → M} {s : Set α} (p : M → Prop),\n  p 1 → (∀ (x y : M), p x → p y → p (x * y)) → (∀ x ∈ s, p (f x)) → p (finprod fun i => finprod fun h => f i)"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: **Ruzsa's covering lemma** for sets. See also `Finset.exists_subset_mul_div`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u_1} [inst : CommGroup α] {s t : Set α},   Set.Finite s →     Set.Finite t → Set.Nonempty t → ∃ u, Nat.card ↑u * Nat.card ↑t ≤ Nat.card ↑(s * t) ∧ s ⊆ u * t / t ∧ Set.Finite u"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: This theorem states that for any element `a` in a group with zero `G₀`, the operation of dividing `a` by itself and then multiplying by itself will result in `a`. This is true regardless of whether `a` is zero or not. In mathematical terms, it expresses the equation $\\frac{a}{a} * a = a$ for all `a` in `G₀`.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {G₀ : Type u_3} [inst : GroupWithZero G₀] (a : G₀), a / a * a = a"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  Given two nonempty finite sets `A` and `B` in a group `G` with multiplication operation, there exists a unique pair `(a0, b0)` of elements, one in `A` and one in `B`, such that their product is the product of any other pair in `A × B`.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {G : Type u_1} [inst : Mul G] [self : UniqueProds G] {A B : Finset G},\n  A.Nonempty → B.Nonempty → ∃ a0 ∈ A, ∃ b0 ∈ B, UniqueMul A B a0 b0"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: For `A B` two finite sets whose product has cardinality at least 2,\nwe can find at least two unique pairs. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {G : Type u_1} [inst : Mul G] [self : TwoUniqueProds G] {A B : Finset G},\n  1 < A.card * B.card → ∃ p1 ∈ A ×ˢ B, ∃ p2 ∈ A ×ˢ B, p1 ≠ p2 ∧ UniqueMul A B p1.1 p1.2 ∧ UniqueMul A B p2.1 p2.2"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  If a group `G` has the property that any two distinct product expressions of elements result in equal values, then this property holds for any three product expressions.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {G : Type u_1} [inst : Group G] [inst_1 : UniqueProds G], TwoUniqueProds G"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: **Ruzsa's covering lemma**. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u_1} [inst : DecidableEq α] [inst_1 : CommGroup α] (s : Finset α) {t : Finset α},   t.Nonempty → ∃ u, u.card * t.card ≤ (s * t).card ∧ s ⊆ u * t / t"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: This theorem states that, for any type `G` that forms a group, and any subgroup `K` of that group, the product of a list of elements from `G` is included in `K`, provided that each element in the list is also in `K`. In other words, if all elements of the list belong to the subgroup, then their product also belongs to the same subgroup.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {G : Type u_1} [inst : Group G] (K : Subgroup G) {l : List G}, (∀ x ∈ l, x ∈ K) → l.prod ∈ K"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For any type `G` with multiplication operation and finite sets `A` and `B` of size greater than 1, there exist at least two distinct pairs `(p1, p2)` in `A × B` such that each pair satisfies the property that their product can be written as the product of an element from `A` and an element from `B` in at most one way.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {G : Type u_1} [inst : Mul G] [self : TwoUniqueProds G] {A B : Finset G},\n  1 < A.card * B.card → ∃ p1 ∈ A ×ˢ B, ∃ p2 ∈ A ×ˢ B, p1 ≠ p2 ∧ UniqueMul A B p1.1 p1.2 ∧ UniqueMul A B p2.1 p2.2"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Definition: Given groups `G H` with `G` acting on `A`, `G` acts by\nmultiplicative automorphisms on `A → H`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "{G : Type u_1} →\n  {A : Type u_2} →\n    {H : Type u_3} → [inst : Group G] → [inst_1 : MulAction G A] → [inst_2 : Monoid H] → G →* MulAut (A → H)"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Let $G$ be a finite group (with a multiplicative operation), and $A$ be a subset of $G$ that contains more than half of $G$'s elements. Prove that every element of $G$ can be expressed as the product of two elements of $A$.\n\nGive ONLY the Lean code"}],
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {G : Type u_1} [inst : Fintype G] [inst_1 : Group G] {A : Finset G},   2 * A.card > Fintype.card G → ∀ g : G, ∃ x y ∈ A, x * y = g",
+    "parseError": "<input>:1:118: expected ','",
+    "context?":
+    "Let $G$ be a finite group (with a multiplicative operation), and $A$ be a subset of $G$ that contains more than half of $G$'s elements. Prove that every element of $G$ can be expressed as the product of two elements of $A$."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {G : Type u_1} [inst : Fintype G] [inst_1 : Group G] {A : Finset G},   A.card > Fintype.card G / 2 → ∀ g : G, ∃ a b ∈ A, a * b = g",
+    "parseError": "<input>:1:118: expected ','",
+    "context?":
+    "Let $G$ be a finite group (with a multiplicative operation), and $A$ be a subset of $G$ that contains more than half of $G$'s elements. Prove that every element of $G$ can be expressed as the product of two elements of $A$."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "{G : Type u_1} [inst : Fintype G] [inst_1 : Group G] {A : Finset G},   2 * A.card > Fintype.card G → ∀ g : G, ∃ x y ∈ A, x * y = g",
+    "parseError": "<input>:1:67: expected end of input",
+    "context?":
+    "Let $G$ be a finite group (with a multiplicative operation), and $A$ be a subset of $G$ that contains more than half of $G$'s elements. Prove that every element of $G$ can be expressed as the product of two elements of $A$."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {G : Type u_1} [inst : Fintype G] [inst_1 : Group G] (A : Finset G),   2 * A.card > Fintype.card G → ∀ g : G, ∃ a₁ a₂ ∈ A, a₁ * a₂ = g",
+    "parseError": "<input>:1:120: expected ','",
+    "context?":
+    "Let $G$ be a finite group (with a multiplicative operation), and $A$ be a subset of $G$ that contains more than half of $G$'s elements. Prove that every element of $G$ can be expressed as the product of two elements of $A$."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {G : Type u_1} [inst : Fintype G] [inst_1 : Group G] (A : Finset G),   Fintype.card G / 2 < A.card → ∀ g ∈ G, ∃ a₁ a₂ ∈ A, a₁ * a₂ = g",
+    "parseError": "<input>:1:120: expected ','",
+    "context?":
+    "Let $G$ be a finite group (with a multiplicative operation), and $A$ be a subset of $G$ that contains more than half of $G$'s elements. Prove that every element of $G$ can be expressed as the product of two elements of $A$."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {G : Type u_1} [inst : Fintype G] [inst_1 : Group G] (A : Finset G), 2 * A.card > Fintype.card G → (∀ g : G, ∃ a b ∈ A, a * b = g)",
+    "parseError": "<input>:1:117: expected ','",
+    "context?":
+    "Let $G$ be a finite group (with a multiplicative operation), and $A$ be a subset of $G$ that contains more than half of $G$'s elements. Prove that every element of $G$ can be expressed as the product of two elements of $A$."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {G : Type u_1} [inst : Fintype G] [inst_1 : Group G] {A : Finset G}, (A.card > Fintype.card G / 2) → ∀ g : G, ∃ a b ∈ A, a * b = g",
+    "parseError": "<input>:1:118: expected ','",
+    "context?":
+    "Let $G$ be a finite group (with a multiplicative operation), and $A$ be a subset of $G$ that contains more than half of $G$'s elements. Prove that every element of $G$ can be expressed as the product of two elements of $A$."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {G : Type u_1} [inst : Fintype G] [inst_1 : Group G] (A : Finset G),   2 * A.card > Fintype.card G → ∀ g : G, ∃ x y ∈ A, x * y = g",
+    "parseError": "<input>:1:118: expected ','",
+    "context?":
+    "Let $G$ be a finite group (with a multiplicative operation), and $A$ be a subset of $G$ that contains more than half of $G$'s elements. Prove that every element of $G$ can be expressed as the product of two elements of $A$."}},
+  "cmd": "translate"}]

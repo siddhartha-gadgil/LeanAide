@@ -1,0 +1,23 @@
+[{"res":
+  "Prove that there are exactly three right triangles (up to orientation and translation) with integer side lengths and area equal to twice their perimeter.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Prove that there are exactly three right triangles (up to orientation and translation) with integer side lengths and area equal to twice their perimeter.",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView":
+   "∀ (x y z : ℕ),\n  x ^ 2 + y ^ 2 = z ^ 2 ∧ x * y = (x + y + z) * 2 →\n    x = 5 ∧ y = 12 ∧ z = 13 ∨\n      x = 12 ∧ y = 5 ∧ z = 13 ∨\n        x = 6 ∧ y = 8 ∧ z = 10 ∨ x = 8 ∧ y = 6 ∧ z = 10 ∨ x = 9 ∧ y = 12 ∧ z = 15 ∨ x = 12 ∧ y = 9 ∧ z = 15",
+   "roundTripFailures": [],
+   "roundTripCheck": true,
+   "groups":
+   [["∀ (x y z : ℕ),\n  x ^ 2 + y ^ 2 = z ^ 2 ∧ x * y = (x + y + z) * 2 →\n    x = 5 ∧ y = 12 ∧ z = 13 ∨\n      x = 12 ∧ y = 5 ∧ z = 13 ∨\n        x = 6 ∧ y = 8 ∧ z = 10 ∨ x = 8 ∧ y = 6 ∧ z = 10 ∨ x = 9 ∧ y = 12 ∧ z = 15 ∨ x = 12 ∧ y = 9 ∧ z = 15"],
+    ["sorryAx (Sort ?u.11)"],
+    ["∃ a b c, a * b / 2 = 2 * (a + b + c) ∧ a ^ 2 + b ^ 2 = c ^ 2 ∧ sorryAx Prop"],
+    ["sorryAx (Sort ?u.39958)"]],
+   "allElaborated":
+   ["theorem integer_right_triangles_area_twice_perimeter :\n  {t : Triangle ℕ // t.is_right ∧ 2 * t.perimeter = t.area}.card = 3 :=\nsorry",
+    "theorem right_triangle_integer_sides_with_area_twice_perimeter_unique :\n  ∃ (a b c : ℕ), a * b / 2 = 2 * (a + b + c) ∧ a^2 + b^2 = c^2 ∧ \n    ∀ (d e f : ℕ), d * e / 2 = 2 * (d + e + f) ∧ d^2 + e^2 = f^2 → {a, b, c} = {d, e, f} :=\nbegin\n  sorry\nend",
+    "theorem exists_unique_three_right_triangles_with_given_area_and_perimeter :\n  ∃! (a b c : ℕ), a * b / 2 = 2 * (a + b + c) ∧ a^2 + b^2 = c^2 ∧ a ≤ b :=  -- The formula a^2 + b^2 = c^2 ensures a right triangle\nbegin\n  sorry -- Proof goes here\nend",
+    "theorem classification_of_special_right_triangles :\n  ∀ (x y z : ℕ), x^2 + y^2 = z^2 ∧ (x * y) = (x + y + z) * 2 →\n    (x = 5 ∧ y = 12 ∧ z = 13) ∨ (x = 12 ∧ y = 5 ∧ z = 13) ∨\n    (x = 6 ∧ y = 8 ∧ z = 10) ∨ (x = 8 ∧ y = 6 ∧ z = 10) ∨\n    (x = 9 ∧ y = 12 ∧ z = 15) ∨ (x = 12 ∧ y = 9 ∧ z = 15) :=\nbegin\n  -- proof goes here, it's more about showing that other configurations can't work\nend"]},
+  "cmd": "translate"}]

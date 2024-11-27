@@ -1,0 +1,17 @@
+[{"res":
+  "Let $D_n$ be the determinant of the $n$ by $n$ matrix whose value in the $i$th row and $j$th column is $|i-j|$. Show that $D_n = (-1)^{n-1} * (n-1) * (2^{n-2}).$",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Let $D_n$ be the determinant of the $n$ by $n$ matrix whose value in the $i$th row and $j$th column is $|i-j|$. Show that $D_n = (-1)^{n-1} * (n-1) * (2^{n-2}).$",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView":
+   "∀ {n : ℕ}, ∃ A, (∀ (i j : Fin n), A i j = |i - j|) → A.det = (-1) ^ (n - 1) * (↑n - 1) * 2 ^ (n - 2)",
+   "roundTripFailures": [],
+   "roundTripCheck": true,
+   "groups":
+   [["∀ {n : ℕ}, ∃ A, (∀ (i j : Fin n), A i j = |i - j|) → A.det = (-1) ^ (n - 1) * (↑n - 1) * 2 ^ (n - 2)"]],
+   "allElaborated":
+   ["∀ {n : ℕ}, ∃ (A : Matrix (Fin n) (Fin n) ℤ), (∀ i j, A i j = |↑i - ↑j|) → Matrix.det A = (-1) ^ (n - 1) * (n - 1) * 2 ^ (n - 2)"]},
+  "cmd": "translate"}]

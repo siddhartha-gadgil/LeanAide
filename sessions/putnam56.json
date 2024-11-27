@@ -1,0 +1,23 @@
+[{"res":
+  "Define $S_0$ to be $1$. For $n \\geq 1$, let $S_n$ be the number of $n \\times n$ matrices whose elements are nonnegative integers with the property that $a_{ij}=a_{ji}$, ($i,j=1,2,\\dots,n$) and where $\\sum_{i=1}^n a_{ij}=1$, ($j=1,2,\\dots,n$). Prove\n\\begin{enumerate}\n\\item[(a)] $S_{n+1}=S_n+nS_{n-1}$\n\\item[(b)] $\\sum_{n=0}^\\infty S_n\\frac{x^n}{n!} = \\exp(x+x^2/2)$, where $\\exp(x)=e^x$.\n\\end{enumerate}",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Define $S_0$ to be $1$. For $n \\geq 1$, let $S_n$ be the number of $n \\times n$ matrices whose elements are nonnegative integers with the property that $a_{ij}=a_{ji}$, ($i,j=1,2,\\dots,n$) and where $\\sum_{i=1}^n a_{ij}=1$, ($j=1,2,\\dots,n$). Prove\n\\begin{enumerate}\n\\item[(a)] $S_{n+1}=S_n+nS_{n-1}$\n\\item[(b)] $\\sum_{n=0}^\\infty S_n\\frac{x^n}{n!} = \\exp(x+x^2/2)$, where $\\exp(x)=e^x$.\n\\end{enumerate}",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView": "ℕ → ℕ",
+   "roundTripFailures":
+   [["Define $S_0$ to be $1$. For $n \\geq 1$, let $S_n$ be the number of $n \\times n$ matrices whose elements are nonnegative integers with the property that $a_{ij}=a_{ji}$, ($i,j=1,2,\\dots,n$) and where $\\sum_{i=1}^n a_{ij}=1$, ($j=1,2,\\dots,n$). Prove\n\\begin{enumerate}\n\\item[(a)] $S_{n+1}=S_n+nS_{n-1}$\n\\item[(b)] $\\sum_{n=0}^\\infty S_n\\frac{x^n}{n!} = \\exp(x+x^2/2)$, where $\\exp(x)=e^x$.\n\\end{enumerate}",
+     [[false,
+       "false\nTheorem 1 is a specific combinatorial statement about matrix counts, while Theorem 2 is a general existence statement about functions."]]]],
+   "roundTripCheck": false,
+   "groups": [["ℕ → ℕ", "ℕ → ℕ", "ℕ → ℕ", "ℕ → ℕ", "ℕ → ℕ"]],
+   "allElaborated":
+   ["def S : ℕ → ℕ\n| 0       := 1\n| (n + 1) := S n + n * S (n - 1)\n\ntheorem a : ∀ n, S (n + 1) = S n + n * S (n - 1) := sorry\n\ntheorem b : (PowerSeries.mk fun n => S n * (algebraMap ℚ ℝ) (↑(Nat.factorial n))⁻¹) = \n  PowerSeries.exp ℝ * (PowerSeries.X + PowerSeries.X^2 / (2 : ℝ)) := sorry",
+    "-- Part (a)\ndef Sn : ℕ → ℕ\n| 0     => 1\n| 1     => 0\n| (n+2) => Sn (n+1) + n * Sn n\n\n-- Part (b)\n∀ {x : ℝ}, (Summable (λ n, Sn n * (x ^ n) / Nat.factorial n)) →\n  (TSum (λ n, Sn n * (x ^ n) / Nat.factorial n) = Real.exp (x + x^2 / 2))",
+    "-- Theorem setup\ndef S : ℕ → ℕ\n| 0       := 1\n| (n + 1) := S n + n * S (n - 1)\n\n-- Part (a)\ntheorem S_recursion : ∀ n, S (n + 1) = S n + n * S (n - 1) := -- proof omitted\n\n-- Part (b)\ntheorem S_generating_function :\n  (∑ n, (S n : ℝ) * x^n / (n.factorial)) = real.exp(x + x^2 / 2) := -- proof omitted",
+    "def S : ℕ → ℕ\n| 0 => 1\n| n + 1 => S n + n * S (n - 1)\n\ntheorem matrix_count_recurrence :\n  (∀ (n : ℕ), S (n + 1) = S n + n * S (n - 1)) ∧\n  (∑' (n : ℕ), S n * (x ^ n) / n.fact = Real.exp (x + x ^ 2 / 2))",
+    "def S : ℕ → ℕ\n| 0 => 1\n| n+1 => S n + n * S (n - 1)\n\ntheorem sns_recurrence : ∀ n, S (n + 1) = S n + n * S (n - 1) :=\nλ n, rfl\n\ntheorem sns_generating_function (x : ℝ) :\n  (∑' n, S n * x^n / n!) = Real.exp (x + x^2 / 2) := sorry",
+    "def S : ℕ → ℕ\n| 0     := 1\n| (n+1) := S n + n * S (n-1)\n\ntheorem part_a : ∀ n, S (n + 1) = S n + n * S (n - 1)\n\ntheorem part_b : PowerSeries.mk (λ n, S n * (algebraMap ℕ ℝ) (1 / n.factorial)) = (PowerSeries.exp ℝ).eval (X + X^2 / 2)"]},
+  "cmd": "translate"}]

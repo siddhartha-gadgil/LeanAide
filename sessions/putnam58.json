@@ -1,0 +1,203 @@
+[{"res":
+  "Show that if $\\lambda > \\frac{1}{2}$ there does not exist a real-valued function $u$ such that for all $x$ in the closed interval $0 \\leq x \\leq 1$, $u(x)=1+\\lambda\\int_x^1 u(y)u(y-x)\\,dy$.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Show that if $\\lambda > \\frac{1}{2}$ there does not exist a real-valued function $u$ such that for all $x$ in the closed interval $0 \\leq x \\leq 1$, $u(x)=1+\\lambda\\int_x^1 u(y)u(y-x)\\,dy$.",
+  "cmd": "translate"},
+ {"res": "Error in translation", "cmd": "translate"},
+ {"res": "Prompt:", "cmd": "translate"},
+ {"res":
+  [{"role": "system",
+    "content":
+    "You are a Mathematics, Lean 4 and coding assistant who answers questions about Mathematics and Lean 4, gives hints while coding in Lean 4. You also translates from natural language to Lean Theorem Prover code and vice versa when asked. Follow EXACTLY any examples given when generating Lean code."},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Log-convexity of the Gamma function on the positive reals (stated in multiplicative form),\nproved using the Hölder inequality applied to Euler's integral. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {s t a b : ℝ},\n  0 < s → 0 < t → 0 < a → 0 < b → a + b = 1 → Real.Gamma (a * s + b * t) ≤ Real.Gamma s ^ a * Real.Gamma t ^ b"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Riemann-Lebesgue lemma for functions on a real inner-product space: the integral\n`∫ v, exp (-2 * π * ⟪w, v⟫ * I) • f v` tends to 0 as `w → ∞`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {E : Type u_1} {V : Type u_2} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] (f : V → E)\n  [inst_2 : NormedAddCommGroup V] [inst_3 : MeasurableSpace V] [inst_4 : BorelSpace V] [inst_5 : InnerProductSpace ℝ V]\n  [inst_6 : FiniteDimensional ℝ V],\n  Filter.Tendsto (fun w => ∫ (v : V), ↑(Real.fourierChar (Multiplicative.ofAdd (-⟪v, w⟫_ℝ))) • f v) (Filter.cocompact V)\n    (nhds 0)"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: The sum of the lower Lebesgue integrals of two functions is less than or equal to the integral\nof their sum. The other inequality needs one of these functions to be (a.e.-)measurable. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u_1} {m : MeasurableSpace α} {μ : MeasureTheory.Measure α} (f g : α → ENNReal),\n  ∫⁻ (a : α), f a ∂μ + ∫⁻ (a : α), g a ∂μ ≤ ∫⁻ (a : α), f a + g a ∂μ"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: The Riesz content can be approximated arbitrarily well by evaluating the positive linear\nfunctional on test functions: for any `ε > 0`, there exists a bounded continuous nonnegative\nfunction f on X such that `f ≥ 1` on K and such that `λ(K) ≤ Λ f < λ(K) + ε`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {X : Type u_1} [inst : TopologicalSpace X] (Λ : BoundedContinuousFunction X NNReal →ₗ[NNReal] NNReal)\n  (K : TopologicalSpace.Compacts X) {ε : NNReal}, 0 < ε → ∃ f, (∀ x ∈ K, 1 ≤ f x) ∧ Λ f < rieszContentAux Λ K + ε"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: The function `fun x => (x - c)⁻¹` is integrable on `a..b` if and only if\n`a = b` or `c ∉ [a, b]`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {a b c : ℝ}, IntervalIntegrable (fun x => (x - c)⁻¹) volume a b ↔ a = b ∨ c ∉ [[a, b]]"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: This theorem expresses that for any integrable function `f` mapping to non-negative real numbers (`ℝ≥0`) in a sigma-finite space, given a positive real number `ε`, there exists another function `g` that exceeds `f` at every point, is lower semicontinuous, and such that almost every point `x`under measure `μ`, `g(x)` is less than infinity. Furthermore, `g` is also integrable and the integration of `g` over the entire domain is less than the integration of `f` plus `ε`. This is an auxiliary lemma for the Vitali-Carathéodory theorem `exists_lt_lower_semicontinuous_integral_lt`.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u_1} [inst : TopologicalSpace α] [inst_1 : MeasurableSpace α] [inst_2 : BorelSpace α]\n  {μ : MeasureTheory.Measure α} [inst_3 : μ.WeaklyRegular] [inst_4 : MeasureTheory.SigmaFinite μ] (f : α → NNReal),\n  MeasureTheory.Integrable (fun x => ↑(f x)) μ →\n    ∀ {ε : ℝ},\n      0 < ε →\n        ∃ g,\n          (∀ (x : α), ↑(f x) < g x) ∧\n            LowerSemicontinuous g ∧\n              (∀ᵐ (x : α) ∂μ, g x < ⊤) ∧\n                MeasureTheory.Integrable (fun x => (g x).toReal) μ ∧\n                  ∫ (x : α), (g x).toReal ∂μ < ∫ (x : α), ↑(f x) ∂μ + ε"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For a continuous function `f` on `[0,1]`, given `ε > 0`, `n > 0`, `x ∈ [0,1]`, `k ∈ [0,1]` not in `S` where `S = {k/n | k ∈ ℕ, |k/n - x| < δ}`, and `δ` is the modulus of continuity for `f` such that `|f(x) - f(y)| < ε/2` for `|x - y| < δ`, the inequality `1 ≤ δ² * (x - k/n)²` holds.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {f : C(↑unitInterval, ℝ)} {ε : ℝ} {h : 0 < ε} {n : ℕ} {x : ↑unitInterval} {k : Fin (n + 1)},\n  k ∈ (bernsteinApproximation.S f ε h n x)ᶜ → 1 ≤ bernsteinApproximation.δ f ε h ^ (-2) * (↑x - ↑(bernstein.z k)) ^ 2"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Hölder's inequality in case of finite non-zero integrals \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u_1} [inst : MeasurableSpace α] {μ : MeasureTheory.Measure α} {p q : ℝ},\n  Real.IsConjugateExponent p q →\n    ∀ {f g : α → ENNReal},\n      AEMeasurable f →\n        ∫⁻ (a : α), f a ^ p ∂μ ≠ ⊤ →\n          ∫⁻ (a : α), g a ^ q ∂μ ≠ ⊤ →\n            ∫⁻ (a : α), f a ^ p ∂μ ≠ 0 →\n              ∫⁻ (a : α), g a ^ q ∂μ ≠ 0 →\n                ∫⁻ (a : α), (f * g) a ∂μ ≤ (∫⁻ (a : α), f a ^ p ∂μ) ^ (1 / p) * (∫⁻ (a : α), g a ^ q ∂μ) ^ (1 / q)"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: The real power function with any exponent is not integrable on `(0, +∞)`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content": "∀ (s : ℝ), ¬IntegrableOn (fun x => x ^ s) (Ioi 0)"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  Given an integrable real-valued function on a topological space, there exists an integrable, upper semicontinuous function with values in the extended real numbers whose integral is arbitrarily close to that of the original function, and which is almost everywhere greater than negative infinity.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u_1} [inst : TopologicalSpace α] [inst_1 : MeasurableSpace α] [inst_2 : BorelSpace α]\n  {μ : MeasureTheory.Measure α} [inst_3 : μ.WeaklyRegular] [inst_4 : MeasureTheory.SigmaFinite μ] (f : α → ℝ),\n  MeasureTheory.Integrable f μ →\n    ∀ {ε : ℝ},\n      0 < ε →\n        ∃ g,\n          (∀ (x : α), g x < ↑(f x)) ∧\n            UpperSemicontinuous g ∧\n              MeasureTheory.Integrable (fun x => (g x).toReal) μ ∧\n                (∀ᵐ (x : α) ∂μ, ⊥ < g x) ∧ ∫ (x : α), f x ∂μ < ∫ (x : α), (g x).toReal ∂μ + ε"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: If the product of two independent real-valued random variables is integrable and\nthe second one is not almost everywhere zero, then the first one is integrable. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {Ω : Type u_1} {mΩ : MeasurableSpace Ω} {μ : MeasureTheory.Measure Ω} {β : Type u_2} [inst : MeasurableSpace β]\n  {X Y : Ω → β} [inst_1 : NormedDivisionRing β] [inst_2 : BorelSpace β],\n  ProbabilityTheory.IndepFun X Y →\n    MeasureTheory.Integrable (X * Y) →\n      MeasureTheory.AEStronglyMeasurable X μ →\n        MeasureTheory.AEStronglyMeasurable Y μ → ¬Y =ᶠ[MeasureTheory.Measure.ae μ] 0 → MeasureTheory.Integrable X"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  Given a measurable space, a normed add commutative group, a measure, and extended nonnegative real numbers `p`, `δ`, there exists `η` such that for almost everywhere strongly measurable functions `f` and `g` on the space, if `||f||_p` and `||g||_p` are both less than `η`, then `||f + g||_p` is less than `δ`.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u_1} (E : Type u_2) {m : MeasurableSpace α} [inst : NormedAddCommGroup E] (μ : MeasureTheory.Measure α)\n  (p : ENNReal) {δ : ENNReal},\n  δ ≠ 0 →\n    ∃ η,\n      0 < η ∧\n        ∀ (f g : α → E),\n          MeasureTheory.AEStronglyMeasurable f μ →\n            MeasureTheory.AEStronglyMeasurable g μ →\n              MeasureTheory.eLpNorm f p μ ≤ η → MeasureTheory.eLpNorm g p μ ≤ η → MeasureTheory.eLpNorm (f + g) p μ < δ"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: The function `fun x ↦ x⁻¹` is not integrable on any interval `[a, +∞)`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content": "∀ {a : ℝ}, ¬IntegrableOn (fun x => x⁻¹) (Ici a)"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: This theorem states that for any real number 'x', if 'x' is greater than or equal to 1, the value of the infinitely smooth transition function at 'x' is 1. The smooth transition function referred to here is defined such that its value is 0 for all 'x' less than or equal to 0, 1 for 'x' greater than or equal to 1, and between 0 and 1 for 'x' in the open interval (0, 1).\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content": "∀ {x : ℝ}, 1 ≤ x → x.smoothTransition = 1"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For measurable functions $f$ and $g$ with respect to a measure $\\mu$, and for any $0 \\leq p, q$ such that $p + q = 1$, the integral $\\int (f^p \\cdot g^q) d\\mu$ is less than or equal to $(\\int f d\\mu)^p \\cdot (\\int g d\\mu)^q$.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u_2} [inst : MeasurableSpace α] {μ : MeasureTheory.Measure α} {f g : α → ENNReal},\n  AEMeasurable f μ →\n    AEMeasurable g μ →\n      ∀ {p q : ℝ},\n        0 ≤ p →\n          0 ≤ q → p + q = 1 → ∫⁻ (a : α), f a ^ p * g a ^ q ∂μ ≤ (∫⁻ (a : α), f a ∂μ) ^ p * (∫⁻ (a : α), g a ∂μ) ^ q"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: If the product of two independent real-valued random variables is integrable and the\nfirst one is not almost everywhere zero, then the second one is integrable. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {Ω : Type u_1} {mΩ : MeasurableSpace Ω} {μ : MeasureTheory.Measure Ω} {β : Type u_2} [inst : MeasurableSpace β]\n  {X Y : Ω → β} [inst_1 : NormedDivisionRing β] [inst_2 : BorelSpace β],\n  ProbabilityTheory.IndepFun X Y →\n    MeasureTheory.Integrable (X * Y) →\n      MeasureTheory.AEStronglyMeasurable X μ →\n        MeasureTheory.AEStronglyMeasurable Y μ → ¬X =ᶠ[MeasureTheory.Measure.ae μ] 0 → MeasureTheory.Integrable Y"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  Given a simple, nonnegative real-valued function `f` on a measurable space with a weakly regular measure `μ`, if the integral of `f` is finite, then there exists an upper semicontinuous function `g` that does not exceed `f` and satisfies the integral of `g` being less than or equal to the integral of `f` plus a given positive `ε`.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u_1} [inst : TopologicalSpace α] [inst_1 : MeasurableSpace α] [inst_2 : BorelSpace α]\n  {μ : MeasureTheory.Measure α} [inst_3 : μ.WeaklyRegular] (f : MeasureTheory.SimpleFunc α NNReal),\n  ∫⁻ (x : α), ↑(f x) ∂μ ≠ ⊤ →\n    ∀ {ε : ENNReal},\n      ε ≠ 0 → ∃ g, (∀ (x : α), g x ≤ f x) ∧ UpperSemicontinuous g ∧ ∫⁻ (x : α), ↑(f x) ∂μ ≤ ∫⁻ (x : α), ↑(g x) ∂μ + ε"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: The function `fun x => x⁻¹` is integrable on `a..b` if and only if\n`a = b` or `0 ∉ [a, b]`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {a b : ℝ}, IntervalIntegrable (fun x => x⁻¹) volume a b ↔ a = b ∨ 0 ∉ [[a, b]]"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: The theorem states that given an integrable function `f` which takes values in the non-negative real numbers, there exists another function `g` that is upper semicontinuous and less than or equal to `f` such that the integral of `g` is arbitrarily close to the integral of `f`. More precisely, for any positive real number `ε`, there exists such a function `g` that satisfies these properties and also that the difference between the integral of `f` and the integral of `g` is greater than or equal to negative `ε`. This is an auxiliary lemma for the Vitali-Carathéodory theorem.\n\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u_1} [inst : TopologicalSpace α] [inst_1 : MeasurableSpace α] [inst_2 : BorelSpace α]\n  {μ : MeasureTheory.Measure α} [inst_3 : μ.WeaklyRegular] (f : α → NNReal),\n  MeasureTheory.Integrable (fun x => ↑(f x)) μ →\n    ∀ {ε : ℝ},\n      0 < ε →\n        ∃ g,\n          (∀ (x : α), g x ≤ f x) ∧\n            UpperSemicontinuous g ∧\n              MeasureTheory.Integrable (fun x => ↑(g x)) μ ∧ ∫ (x : α), ↑(f x) ∂μ - ε ≤ ∫ (x : α), ↑(g x) ∂μ"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For measurable functions $f, g : \\alpha \\to \\mathbb{R} \\cup \\{+\\infty\\}$, and a measure $\\mu$ on $\\alpha$, if $p, q > 0$ satisfy $\\frac{1}{p} + \\frac{1}{q} = 1$, then $\\int_\\alpha |f(x) g(x)| d\\mu \\leq \\left(\\int_\\alpha |f(x)|^p d\\mu\\right)^\\frac{1}{p} \\left(\\int_\\alpha |g(x)|^q d\\mu\\right)^\\frac{1}{q}$.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u_1} [inst : MeasurableSpace α] (μ : MeasureTheory.Measure α) {p q : ℝ},\n  p.IsConjExponent q →\n    ∀ {f g : α → ENNReal},\n      AEMeasurable f μ →\n        AEMeasurable g μ →\n          ∫⁻ (a : α), (f * g) a ∂μ ≤ (∫⁻ (a : α), f a ^ p ∂μ) ^ (1 / p) * (∫⁻ (a : α), g a ^ q ∂μ) ^ (1 / q)"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: This lemma implies that a single function is uniformly integrable (in the probability sense). \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u_1} {β : Type u_2} {m : MeasurableSpace α} (μ : MeasureTheory.Measure α) [inst : NormedAddCommGroup β]\n  {p : ENNReal} {f : α → β},\n  MeasureTheory.Memℒp f p →\n    MeasureTheory.StronglyMeasurable f →\n      ∀ {ε : ℝ}, 0 < ε → ∃ M, 0 < M ∧ MeasureTheory.snorm (Set.indicator {x | M ≤ ↑‖f x‖₊} f) p μ ≤ ENNReal.ofReal ε"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Show that if $\\lambda > \\frac{1}{2}$ there does not exist a real-valued function $u$ such that for all $x$ in the closed interval $0 \\leq x \\leq 1$, $u(x)=1+\\lambda\\int_x^1 u(y)u(y-x)\\,dy$.\n\nGive ONLY the Lean code"}],
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {u : ℝ → ℝ} {λ : ℝ}, 1 / 2 < λ → ¬(∀ x ∈ Icc 0 1, u x = 1 + λ * ∫ y in Ioc x 1, u y * u (y - x))",
+    "parseError": "<input>:1:15: expected '_' or identifier",
+    "context?":
+    "Show that if $\\lambda > \\frac{1}{2}$ there does not exist a real-valued function $u$ such that for all $x$ in the closed interval $0 \\leq x \\leq 1$, $u(x)=1+\\lambda\\int_x^1 u(y)u(y-x)\\,dy$."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {λ : ℝ}, λ > 1 / 2 → ¬∃ u : ℝ → ℝ, ∀ (x : ℝ), 0 ≤ x ∧ x ≤ 1 → u x = 1 + λ * ∫ (y : ℝ) in x..1, u y * u (y - x)",
+    "parseError": "<input>:1:3: expected '_' or identifier",
+    "context?":
+    "Show that if $\\lambda > \\frac{1}{2}$ there does not exist a real-valued function $u$ such that for all $x$ in the closed interval $0 \\leq x \\leq 1$, $u(x)=1+\\lambda\\int_x^1 u(y)u(y-x)\\,dy$."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {λ : ℝ}, (1 / 2) < λ → ¬∃ u : ℝ → ℝ, ∀ x ∈ Icc 0 1, u x = 1 + λ * ∫ y in x..1, u y * u (y - x)",
+    "parseError": "<input>:1:3: expected '_' or identifier",
+    "context?":
+    "Show that if $\\lambda > \\frac{1}{2}$ there does not exist a real-valued function $u$ such that for all $x$ in the closed interval $0 \\leq x \\leq 1$, $u(x)=1+\\lambda\\int_x^1 u(y)u(y-x)\\,dy$."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {λ : ℝ}, 1 / 2 < λ →   ¬∃ u : ℝ → ℝ, ∀ (x : ℝ), 0 ≤ x ∧ x ≤ 1 → u x = 1 + λ * ∫ y in Set.Icc x 1, u y * u (y - x)",
+    "parseError": "<input>:1:3: expected '_' or identifier",
+    "context?":
+    "Show that if $\\lambda > \\frac{1}{2}$ there does not exist a real-valued function $u$ such that for all $x$ in the closed interval $0 \\leq x \\leq 1$, $u(x)=1+\\lambda\\int_x^1 u(y)u(y-x)\\,dy$."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {u : ℝ → ℝ} {λ : ℝ}, λ > 1 / 2 →   ¬∃ u, ∀ x ∈ Icc 0 1, u x = 1 + λ * ∫ y in Ioc x 1, u y * u (y - x)",
+    "parseError": "<input>:1:15: expected '_' or identifier",
+    "context?":
+    "Show that if $\\lambda > \\frac{1}{2}$ there does not exist a real-valued function $u$ such that for all $x$ in the closed interval $0 \\leq x \\leq 1$, $u(x)=1+\\lambda\\int_x^1 u(y)u(y-x)\\,dy$."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {λ : ℝ}, λ > 1 / 2 → ¬∃ u : ℝ → ℝ, ∀ x ∈ Icc 0 1, u x = 1 + λ * ∫ y in Icc x 1, u y * u (y - x)",
+    "parseError": "<input>:1:3: expected '_' or identifier",
+    "context?":
+    "Show that if $\\lambda > \\frac{1}{2}$ there does not exist a real-valued function $u$ such that for all $x$ in the closed interval $0 \\leq x \\leq 1$, $u(x)=1+\\lambda\\int_x^1 u(y)u(y-x)\\,dy$."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {λ : ℝ}, (1 / 2) < λ → ¬∃ u : ℝ → ℝ, ∀ x ∈ set.Icc 0 1, u x = 1 + λ * ∫ y in set.Icc x 1, u y * u (y - x)",
+    "parseError": "<input>:1:3: expected '_' or identifier",
+    "context?":
+    "Show that if $\\lambda > \\frac{1}{2}$ there does not exist a real-valued function $u$ such that for all $x$ in the closed interval $0 \\leq x \\leq 1$, $u(x)=1+\\lambda\\int_x^1 u(y)u(y-x)\\,dy$."}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text":
+    "∀ {λ : ℝ} (hλ : λ > 1 / 2), ¬∃ u : ℝ → ℝ, ∀ x ∈ Icc 0 1, u x = 1 + λ * ∫ y in Ioc x 1, u y * u (y - x)",
+    "parseError": "<input>:1:3: expected '_' or identifier",
+    "context?":
+    "Show that if $\\lambda > \\frac{1}{2}$ there does not exist a real-valued function $u$ such that for all $x$ in the closed interval $0 \\leq x \\leq 1$, $u(x)=1+\\lambda\\int_x^1 u(y)u(y-x)\\,dy$."}},
+  "cmd": "translate"}]

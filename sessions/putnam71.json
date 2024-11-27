@@ -1,0 +1,18 @@
+[{"res":
+  "Let $V$ be the set of all quadratic polynomials with real coefficients such that $|P(x)| \\le 1$ for all $x \\in [0, 1]$. Find the supremum of $|P'(0)|$ across all $P \\in V$.The supremum is $8$.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Let $V$ be the set of all quadratic polynomials with real coefficients such that $|P(x)| \\le 1$ for all $x \\in [0, 1]$. Find the supremum of $|P'(0)|$ across all $P \\in V$.The supremum is $8$.",
+  "cmd": "translate"},
+ {"res": "Success in translation", "cmd": "translate"},
+ {"res":
+  {"typeView": "Set (Polynomial ℝ)",
+   "roundTripFailures":
+   [["Let $V$ be the set of all quadratic polynomials with real coefficients such that $|P(x)| \\le 1$ for all $x \\in [0, 1]$. Find the supremum of $|P'(0)|$ across all $P \\in V$.The supremum is $8$.",
+     [[false,
+       "false\nTheorem 2 does not specify conditions on the polynomials or address the supremum of |P′(0)|."]]]],
+   "roundTripCheck": false,
+   "groups": [["Set (Polynomial ℝ)"]],
+   "allElaborated":
+   ["def V : Set (Polynomial ℝ) :=\n  {P | P.degree ≤ 2 ∧ ∀ x ∈ Icc 0 1, |P.eval x| ≤ 1}\n\ntheorem supremum_derivative_quadratic_polynomials :\n  sSup { |(P.derivative.eval 0)| | P ∈ V } = 8 := sorry"]},
+  "cmd": "translate"}]

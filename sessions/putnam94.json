@@ -1,0 +1,253 @@
+[{"res":
+  "Let $x : \\mathbb{R} \\to \\mathbb{R}$ be a twice differentiable function satisfying $x(1) - x(0) = 1$, $x'(0) = x'(1) = 0$, and $|x'(t)| \\le \\frac{3}{2}$ for all $t \\in (0, 1)$. Prove that there exists some $t \\in [0, 1]$ such that $|x''(t)| \\ge \\frac{9}{2}$.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Let $x : \\mathbb{R} \\to \\mathbb{R}$ be a twice differentiable function satisfying $x(1) - x(0) = 1$, $x'(0) = x'(1) = 0$, and $|x'(t)| \\le \\frac{3}{2}$ for all $t \\in (0, 1)$. Prove that there exists some $t \\in [0, 1]$ such that $|x''(t)| \\ge \\frac{9}{2}$.",
+  "cmd": "translate"},
+ {"res": "Error in translation", "cmd": "translate"},
+ {"res": "Prompt:", "cmd": "translate"},
+ {"res":
+  [{"role": "system",
+    "content":
+    "You are a Mathematics, Lean 4 and coding assistant who answers questions about Mathematics and Lean 4, gives hints while coding in Lean 4. You also translates from natural language to Lean Theorem Prover code and vice versa when asked. Follow EXACTLY any examples given when generating Lean code."},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: If a function `f` is twice differentiable on `ℝ`, and `f''` is nonpositive on `ℝ`,\nthen `f` is concave on `ℝ`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {f : ℝ → ℝ}, Differentiable ℝ f → Differentiable ℝ (deriv f) → (∀ (x : ℝ), deriv^[2] f x ≤ 0) → ConcaveOn ℝ Set.univ f"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Markov's inequality for the counting measure with hypothesis using `tsum` in `ℝ≥0∞`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u_1} [inst : MeasurableSpace α] [inst_1 : MeasurableSingletonClass α] {a : α → ENNReal},\n  Measurable a →\n    ∀ {c : ENNReal},\n      ∑' (i : α), a i ≤ c → ∀ {ε : ENNReal}, ε ≠ 0 → ε ≠ ⊤ → ↑↑MeasureTheory.Measure.count {i | ε ≤ a i} ≤ c / ε"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Markov's inequality for counting measure with hypothesis using `tsum` in `ℝ≥0`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {α : Type u_1} [inst : MeasurableSpace α] [inst_1 : MeasurableSingletonClass α] {a : α → NNReal},\n  Measurable a →\n    Summable a →\n      ∀ {c : NNReal},\n        ∑' (i : α), a i ≤ c → ∀ {ε : NNReal}, ε ≠ 0 → ↑↑MeasureTheory.Measure.count {i | ε ≤ a i} ≤ ↑c / ↑ε"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: **Phragmen-Lindelöf principle** in the third quadrant. Let `f : ℂ → E` be a function such that\n\n* `f` is differentiable in the open third quadrant and is continuous on its closure;\n* `‖f z‖` is bounded from above by `A * exp(B * (abs z) ^ c)` on the open third quadrant\n  for some `A`, `B`, and `c < 2`;\n* `f` is equal to zero on the boundary of the third quadrant.\n\nThen `f` is equal to zero on the closed third quadrant. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {f : ℂ → E},\n  DiffContOnCl ℂ f (Set.Iio 0 ×ℂ Set.Iio 0) →\n    (∃ c < 2,\n        ∃ B,\n          f =O[Bornology.cobounded ℂ ⊓ Filter.principal (Set.Iio 0 ×ℂ Set.Iio 0)] fun z =>\n            Real.exp (B * Complex.abs z ^ c)) →\n      (∀ x ≤ 0, f ↑x = 0) → (∀ x ≤ 0, f (↑x * Complex.I) = 0) → Set.EqOn f 0 {z | z.re ≤ 0 ∧ z.im ≤ 0}"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  Given a complex function `f` differentiable in the open third quadrant and continuous on its closure, if the norm of `f` is bounded by an exponential function and a constant on the open and boundary of the third quadrant, respectively, then the norm of `f` is bounded by the constant in the closed third quadrant.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℂ E] {C : ℝ} {f : ℂ → E} {z : ℂ},\n  DiffContOnCl ℂ f (Set.Iio 0 ×ℂ Set.Iio 0) →\n    (∃ c < 2,\n        ∃ B,\n          f =O[Bornology.cobounded ℂ ⊓ Filter.principal (Set.Iio 0 ×ℂ Set.Iio 0)] fun z =>\n            Real.exp (B * Complex.abs z ^ c)) →\n      (∀ x ≤ 0, ‖f ↑x‖ ≤ C) → (∀ x ≤ 0, ‖f (↑x * Complex.I)‖ ≤ C) → z.re ≤ 0 → z.im ≤ 0 → ‖f z‖ ≤ C"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For all positive real numbers x <= 1 and t > 0, |log(x) * x^t| < 1/t.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content": "∀ (x t : ℝ), 0 < x → x ≤ 1 → 0 < t → |x.log * x ^ t| < 1 / t"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: If a function `f` is twice differentiable on `ℝ`, and `f''` is nonnegative on `ℝ`,\nthen `f` is convex on `ℝ`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {f : ℝ → ℝ}, Differentiable ℝ f → Differentiable ℝ (deriv f) → (∀ (x : ℝ), 0 ≤ deriv^[2] f x) → ConvexOn ℝ Set.univ f"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For all real numbers x, the left limit of StieltjesFunction.id at x equals x.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content": "∀ (x : ℝ), Function.leftLim (↑StieltjesFunction.id) x = x"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: A function on `[0, 1]` with the norm of the derivative within `[0, 1]`\nbounded by `C` satisfies `‖f 1 - f 0‖ ≤ C`, `HasDerivWithinAt`\nversion. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {f f' : ℝ → E} {C : ℝ},   (∀ x ∈ Icc 0 1, HasDerivWithinAt f (f' x) (Icc 0 1) x) → (∀ x ∈ Ico 0 1, ‖f' x‖ ≤ C) → ‖f 1 - f 0‖ ≤ C"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  Given a real-valued function `f` that is (n+1) times continuously differentiable on the closed interval [x₀, x] and (n+1) times differentiable on the open interval (x₀, x), there exists a real number x' in (x₀, x) such that f(x) = Pn(x₀, x) + (1/n!)(f^((n+1))(x'))*(x - x₀)^(n+1), where Pn is the n-th Taylor polynomial of f evaluated at x₀ and x.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ},\n  x₀ < x →\n    ContDiffOn ℝ (↑n) f (Set.Icc x₀ x) →\n      DifferentiableOn ℝ (iteratedDerivWithin n f (Set.Icc x₀ x)) (Set.Ioo x₀ x) →\n        ∃ x' ∈ Set.Ioo x₀ x,\n          f x - taylorWithinEval f n (Set.Icc x₀ x) x₀ x =\n            iteratedDerivWithin (n + 1) f (Set.Icc x₀ x) x' * (x - x₀) ^ (n + 1) / ↑(n + 1).factorial"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: The power function `x ↦ x^s` is integrable on `(0, t)` iff `-1 < s`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {s t : ℝ}, 0 < t → (MeasureTheory.IntegrableOn (fun x => x ^ s) (Set.Ioo 0 t) ↔ -1 < s)"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  Given a closed embedding of a topological space X into a normal space Y and a bounded continuous function f from X to the real numbers, there exists a bounded continuous g from Y to the real numbers with norm less than or equal to 1/3 * norm(f) such that |g ∘ e - f| ≤ 2/3 * norm(f).\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] [inst_2 : NormalSpace Y]\n  (f : BoundedContinuousFunction X ℝ) (e : C(X, Y)),\n  IsClosedEmbedding ⇑e → ∃ g, ‖g‖ ≤ ‖f‖ / 3 ∧ dist (g.compContinuous e) f ≤ 2 / 3 * ‖f‖"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: **Darboux's theorem**: if `a ≤ b` and `f' a < m < f' b`, then `f' c = m` for some\n`c ∈ (a, b)`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {a b : ℝ} {f f' : ℝ → ℝ},   a ≤ b → (∀ x ∈ Icc a b, HasDerivWithinAt f (f' x) (Icc a b) x) → ∀ {m : ℝ}, f' a < m → m < f' b → m ∈ f' '' Ioo a b"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: This theorem states that for any real number `x` falling between 0 and 1 (exclusive of 0 and inclusive of 1), the value of `x` subtracted by the cube of `x` divided by 4 is less than the sine of `x`. While this inequality also holds for `x` greater than 1, the proof is more complex especially for numbers just above 1. There is a tighter inequality where sine of `x` is greater than `x` subtracted by the cube of `x` divided by 6 for all `x` greater than 0, but the proof of this current inequality is simpler.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content": "∀ {x : ℝ}, 0 < x → x ≤ 1 → x - x ^ 3 / 4 < x.sin"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  Given a function `f` that is `n+1`-times differentiable on the open interval between `x₀` and `x`, and `n+1`-times continuously differentiable on the closed interval between `x₀` and `x`, there exists `x'` in the open interval between `x₀` and `x` such that $f(x) = \\sum\\_{i=0}^n \\frac{f^{(i)}(x\\_0)}{i!}(x - x\\_0)^i + \\frac{f^{(n+1)}(x')}{(n+1)!}(x - x\\_0)^{n+1}$.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ},\n  x₀ < x →\n    ContDiffOn ℝ (↑n) f (Set.Icc x₀ x) →\n      DifferentiableOn ℝ (iteratedDerivWithin n f (Set.Icc x₀ x)) (Set.Ioo x₀ x) →\n        ∃ x' ∈ Set.Ioo x₀ x,\n          f x - taylorWithinEval f n (Set.Icc x₀ x) x₀ x =\n            iteratedDerivWithin (n + 1) f (Set.Icc x₀ x) x' * (x - x') ^ n / ↑n.factorial * (x - x₀)"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: For 0 < x ≤ 1 we have x - x ^ 3 / 4 < sin x.\n\nThis is also true for x > 1, but it's nontrivial for x just above 1. This inequality is not\ntight; the tighter inequality is sin x > x - x ^ 3 / 6 for all x > 0, but this inequality has\na simpler proof. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content": "∀ {x : ℝ}, 0 < x → x ≤ 1 → x - x ^ 3 / 4 < Real.sin x"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For any real number `x` in the open interval `(0, π/2)`, `x` is strictly less than its tangent value, i.e., `x < tan x`.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content": "∀ {x : ℝ}, 0 < x → x < Real.pi / 2 → x < Real.tan x"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: **Darboux's theorem**: if `a ≤ b` and `f' a ≤ m ≤ f' b`, then `f' c = m` for some\n`c ∈ [a, b]`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {a b : ℝ} {f f' : ℝ → ℝ},   a ≤ b → (∀ x ∈ Icc a b, HasDerivWithinAt f (f' x) (Icc a b) x) → ∀ {m : ℝ}, f' a ≤ m → m ≤ f' b → m ∈ f' '' Icc a b"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: This theorem states that for any real number 'x', if 'x' is greater than or equal to 1, the value of the infinitely smooth transition function at 'x' is 1. The smooth transition function referred to here is defined such that its value is 0 for all 'x' less than or equal to 0, 1 for 'x' greater than or equal to 1, and between 0 and 1 for 'x' in the open interval (0, 1).\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content": "∀ {x : ℝ}, 1 ≤ x → x.smoothTransition = 1"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  If $F(x,t)$ is a function that is locally Lipschitz continuous and integrable in the first variable at $x_0$ for almost every $a$, strongly measurable in the second variable for $x$ near $x_0$, and has a derivative in the second variable that is integrable, then the function $x \\mapsto \\int\\_a^b F(x,t) dt$ is differentiable at $x_0$ and its derivative is $\\int\\_a^b F'(x,t) dt$.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {𝕜 : Type u_1} [inst : RCLike 𝕜] {μ : MeasureTheory.Measure ℝ} {E : Type u_2} [inst_1 : NormedAddCommGroup E]\n  [inst_2 : NormedSpace ℝ E] [inst_3 : NormedSpace 𝕜 E] {H : Type u_3} [inst_4 : NormedAddCommGroup H]\n  [inst_5 : NormedSpace 𝕜 H] {a b ε : ℝ} {bound : ℝ → ℝ} {F : H → ℝ → E} {F' : ℝ → H →L[𝕜] E} {x₀ : H},\n  0 < ε →\n    (∀ᶠ (x : H) in nhds x₀, MeasureTheory.AEStronglyMeasurable (F x) (μ.restrict (Ι a b))) →\n      IntervalIntegrable (F x₀) μ a b →\n        MeasureTheory.AEStronglyMeasurable F' (μ.restrict (Ι a b)) →\n          (∀ᵐ (t : ℝ) ∂μ, t ∈ Ι a b → LipschitzOnWith (Real.nnabs (bound t)) (fun x => F x t) (Metric.ball x₀ ε)) →\n            IntervalIntegrable bound μ a b →\n              (∀ᵐ (t : ℝ) ∂μ, t ∈ Ι a b → HasFDerivAt (fun x => F x t) (F' t) x₀) →\n                IntervalIntegrable F' μ a b ∧\n                  HasFDerivAt (fun x => ∫ (t : ℝ) in a..b, F x t ∂μ) (∫ (t : ℝ) in a..b, F' t ∂μ) x₀"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: For all `0 < x < π/2` we have `x < tan x`.\n\nThis is proved by checking that the function `tan x - x` vanishes\nat zero and has non-negative derivative. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content": "∀ {x : ℝ}, 0 < x → x < Real.pi / 2 → x < Real.tan x"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Let $x : \\mathbb{R} \\to \\mathbb{R}$ be a twice differentiable function satisfying $x(1) - x(0) = 1$, $x'(0) = x'(1) = 0$, and $|x'(t)| \\le \\frac{3}{2}$ for all $t \\in (0, 1)$. Prove that there exists some $t \\in [0, 1]$ such that $|x''(t)| \\ge \\frac{9}{2}$.\n\nGive ONLY the Lean code"}],
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {x : ℝ → ℝ}, TwiceDifferentiable ℝ x → (x 1 - x 0 = 1) →\n  (x.deriv 0 = 0) → (x.deriv 1 = 0) → (∀ t ∈ Set.Ioo 0 1, |x.deriv t| ≤ 3 / 2) →\n  ∃ t ∈ Set.Icc 0 1, |x.deriv^[2] t| ≥ 9 / 2",
+    "elabError":
+    "unknown identifier 'TwiceDifferentiable' ; identifiers [x, TwiceDifferentiable, x, x, x, x.deriv, x.deriv, t, Set.Ioo, x.deriv, t, t, Set.Icc, x.deriv, t] (during elaboration) for ∀ {x : ℝ → ℝ}, TwiceDifferentiable ℝ x → (x 1 - x 0 = 1) →   (x.deriv 0 = 0) → (x.deriv 1 = 0) → (∀ t ∈ Set.Ioo 0 1, |x.deriv t| ≤ 3 / 2) →   ∃ t ∈ Set.Icc 0 1, |x.deriv^[2] t| ≥ 9 / 2",
+    "context?":
+    "Let $x : \\mathbb{R} \\to \\mathbb{R}$ be a twice differentiable function satisfying $x(1) - x(0) = 1$, $x'(0) = x'(1) = 0$, and $|x'(t)| \\le \\frac{3}{2}$ for all $t \\in (0, 1)$. Prove that there exists some $t \\in [0, 1]$ such that $|x''(t)| \\ge \\frac{9}{2}$.",
+    "cmdErrors":
+    ["invalid field notation, type is not of the form (C ...) where C is a constant\n  x\nhas type\n  ℝ → ℝ",
+     "invalid field notation, type is not of the form (C ...) where C is a constant\n  x\nhas type\n  ℝ → ℝ",
+     "invalid field notation, type is not of the form (C ...) where C is a constant\n  x\nhas type\n  ℝ → ℝ",
+     "invalid field notation, type is not of the form (C ...) where C is a constant\n  x\nhas type\n  ℝ → ℝ",
+     "failed to synthesize\n  AddGroup ℕ\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+     "failed to synthesize\n  AddGroup ℕ\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+     "function expected at\n  TwiceDifferentiable\nterm has type\n  ?m.9"]}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {x : ℝ → ℝ},   x 1 - x 0 = 1 → x.deriv 0 = 0 → x.deriv 1 = 0 → (∀ t ∈ Set.Ioo 0 1, |deriv x t| ≤ 3 / 2) → ∃ t ∈ Set.Icc 0 1, |deriv₂ x t| ≥ 9 / 2",
+    "elabError":
+    "invalid field notation, type is not of the form (C ...) where C is a constant\n  x\nhas type\n  ℝ → ℝ ; identifiers [x, x, x, x.deriv, x.deriv, t, Set.Ioo, deriv, x, t, t, Set.Icc, deriv₂, x, t] (during elaboration) for ∀ {x : ℝ → ℝ},   x 1 - x 0 = 1 → x.deriv 0 = 0 → x.deriv 1 = 0 → (∀ t ∈ Set.Ioo 0 1, |deriv x t| ≤ 3 / 2) → ∃ t ∈ Set.Icc 0 1, |deriv₂ x t| ≥ 9 / 2",
+    "context?":
+    "Let $x : \\mathbb{R} \\to \\mathbb{R}$ be a twice differentiable function satisfying $x(1) - x(0) = 1$, $x'(0) = x'(1) = 0$, and $|x'(t)| \\le \\frac{3}{2}$ for all $t \\in (0, 1)$. Prove that there exists some $t \\in [0, 1]$ such that $|x''(t)| \\ge \\frac{9}{2}$.",
+    "cmdErrors":
+    ["invalid field notation, type is not of the form (C ...) where C is a constant\n  x\nhas type\n  ℝ → ℝ",
+     "invalid field notation, type is not of the form (C ...) where C is a constant\n  x\nhas type\n  ℝ → ℝ",
+     "failed to synthesize\n  AddGroup ℕ\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+     "function expected at\n  deriv₂\nterm has type\n  ?m.1317"]}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {x : ℝ → ℝ}, TwiceDifferentiableOn ℝ x (Set.Icc 0 1) → (x 1 - x 0 = 1) → (x' 0 = 0) → (x' 1 = 0) → (∀ t ∈ Set.Ioo 0 1, |deriv x t| ≤ 3 / 2) → ∃ t ∈ Set.Icc 0 1, |deriv^[2] x t| ≥ 9 / 2",
+    "elabError":
+    "unknown identifier 'TwiceDifferentiableOn' ; identifiers [x, TwiceDifferentiableOn, x, Set.Icc, x, x, x', x', t, Set.Ioo, deriv, x, t, t, Set.Icc, deriv, x, t] (during elaboration) for ∀ {x : ℝ → ℝ}, TwiceDifferentiableOn ℝ x (Set.Icc 0 1) → (x 1 - x 0 = 1) → (x' 0 = 0) → (x' 1 = 0) → (∀ t ∈ Set.Ioo 0 1, |deriv x t| ≤ 3 / 2) → ∃ t ∈ Set.Icc 0 1, |deriv^[2] x t| ≥ 9 / 2",
+    "context?":
+    "Let $x : \\mathbb{R} \\to \\mathbb{R}$ be a twice differentiable function satisfying $x(1) - x(0) = 1$, $x'(0) = x'(1) = 0$, and $|x'(t)| \\le \\frac{3}{2}$ for all $t \\in (0, 1)$. Prove that there exists some $t \\in [0, 1]$ such that $|x''(t)| \\ge \\frac{9}{2}$.",
+    "cmdErrors":
+    ["function expected at\n  TwiceDifferentiableOn\nterm has type\n  ?m.9",
+     "function expected at\n  x'\nterm has type\n  ?m.134",
+     "function expected at\n  x'\nterm has type\n  ?m.134"]}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {x : ℝ → ℝ}, TwiceDifferentiable ℝ x →\n  x 1 - x 0 = 1 →\n  x.deriv 0 = 0 →\n  x.deriv 1 = 0 →\n  (∀ t ∈ Ioo 0 1, |x.deriv t| ≤ 3 / 2) →\n  ∃ t ∈ Icc 0 1, |x.deriv^[2] t| ≥ 9 / 2",
+    "elabError":
+    "unknown identifier 'TwiceDifferentiable' ; identifiers [x, TwiceDifferentiable, x, x, x, x.deriv, x.deriv, t, Ioo, x.deriv, t, t, Icc, x.deriv, t] (during elaboration) for ∀ {x : ℝ → ℝ}, TwiceDifferentiable ℝ x →   x 1 - x 0 = 1 →   x.deriv 0 = 0 →   x.deriv 1 = 0 →   (∀ t ∈ Ioo 0 1, |x.deriv t| ≤ 3 / 2) →   ∃ t ∈ Icc 0 1, |x.deriv^[2] t| ≥ 9 / 2",
+    "context?":
+    "Let $x : \\mathbb{R} \\to \\mathbb{R}$ be a twice differentiable function satisfying $x(1) - x(0) = 1$, $x'(0) = x'(1) = 0$, and $|x'(t)| \\le \\frac{3}{2}$ for all $t \\in (0, 1)$. Prove that there exists some $t \\in [0, 1]$ such that $|x''(t)| \\ge \\frac{9}{2}$.",
+    "cmdErrors":
+    ["invalid field notation, type is not of the form (C ...) where C is a constant\n  x\nhas type\n  ℝ → ℝ",
+     "invalid field notation, type is not of the form (C ...) where C is a constant\n  x\nhas type\n  ℝ → ℝ",
+     "invalid field notation, type is not of the form (C ...) where C is a constant\n  x\nhas type\n  ℝ → ℝ",
+     "invalid field notation, type is not of the form (C ...) where C is a constant\n  x\nhas type\n  ℝ → ℝ",
+     "failed to synthesize\n  AddGroup ℕ\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+     "failed to synthesize\n  AddGroup ℕ\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+     "function expected at\n  TwiceDifferentiable\nterm has type\n  ?m.9",
+     "function expected at\n  Ioo\nterm has type\n  ?m.278",
+     "function expected at\n  Icc\nterm has type\n  ?m.1825"]}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ (x : ℝ → ℝ), Differentiable ℝ x → Differentiable ℝ (deriv x) → (x 1 - x 0 = 1) →\n  (deriv x 0 = 0) → (deriv x 1 = 0) → (∀ t ∈ Ioo 0 1, |deriv x t| ≤ 3 / 2) →\n  ∃ t ∈ Icc 0 1, |deriv^[2] x t| ≥ 9 / 2",
+    "elabError":
+    "unknown identifier 'Ioo' ; identifiers [x, Differentiable, x, Differentiable, deriv, x, x, x, deriv, x, deriv, x, t, Ioo, deriv, x, t, t, Icc, deriv, x, t] (during elaboration) for ∀ (x : ℝ → ℝ), Differentiable ℝ x → Differentiable ℝ (deriv x) → (x 1 - x 0 = 1) →   (deriv x 0 = 0) → (deriv x 1 = 0) → (∀ t ∈ Ioo 0 1, |deriv x t| ≤ 3 / 2) →   ∃ t ∈ Icc 0 1, |deriv^[2] x t| ≥ 9 / 2",
+    "context?":
+    "Let $x : \\mathbb{R} \\to \\mathbb{R}$ be a twice differentiable function satisfying $x(1) - x(0) = 1$, $x'(0) = x'(1) = 0$, and $|x'(t)| \\le \\frac{3}{2}$ for all $t \\in (0, 1)$. Prove that there exists some $t \\in [0, 1]$ such that $|x''(t)| \\ge \\frac{9}{2}$.",
+    "cmdErrors":
+    ["function expected at\n  Ioo\nterm has type\n  ?m.655",
+     "function expected at\n  Icc\nterm has type\n  ?m.1647"]}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {x : ℝ → ℝ}, TwiceDifferentiable ℝ x → x 1 - x 0 = 1 → x' 0 = 0 → x' 1 = 0 → (∀ t ∈ Ioo 0 1, |x' t| ≤ 3 / 2) → ∃ t ∈ Icc 0 1, |x'' t| ≥ 9 / 2",
+    "elabError":
+    "unknown identifier 'TwiceDifferentiable' ; identifiers [x, TwiceDifferentiable, x, x, x, x', x', t, Ioo, x', t, t, Icc, x'', t] (during elaboration) for ∀ {x : ℝ → ℝ}, TwiceDifferentiable ℝ x → x 1 - x 0 = 1 → x' 0 = 0 → x' 1 = 0 → (∀ t ∈ Ioo 0 1, |x' t| ≤ 3 / 2) → ∃ t ∈ Icc 0 1, |x'' t| ≥ 9 / 2",
+    "context?":
+    "Let $x : \\mathbb{R} \\to \\mathbb{R}$ be a twice differentiable function satisfying $x(1) - x(0) = 1$, $x'(0) = x'(1) = 0$, and $|x'(t)| \\le \\frac{3}{2}$ for all $t \\in (0, 1)$. Prove that there exists some $t \\in [0, 1]$ such that $|x''(t)| \\ge \\frac{9}{2}$.",
+    "cmdErrors":
+    ["failed to synthesize\n  AddGroup ℕ\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+     "failed to synthesize\n  AddGroup ℕ\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+     "function expected at\n  TwiceDifferentiable\nterm has type\n  ?m.9",
+     "function expected at\n  x'\nterm has type\n  ?m.134",
+     "function expected at\n  x'\nterm has type\n  ?m.134",
+     "function expected at\n  Ioo\nterm has type\n  ?m.347",
+     "function expected at\n  x'\nterm has type\n  ?m.134",
+     "function expected at\n  Icc\nterm has type\n  ?m.1898",
+     "function expected at\n  x''\nterm has type\n  ?m.3603"]}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {x : ℝ → ℝ}, Differentiable ℝ x → Differentiable ℝ (deriv x) → \n  x 1 - x 0 = 1 → deriv x 0 = 0 → deriv x 1 = 0 → \n  (∀ t ∈ Ioo 0 1, |deriv x t| ≤ 3 / 2) → \n  ∃ t ∈ Icc 0 1, |deriv^[2] x t| ≥ 9 / 2",
+    "elabError":
+    "unknown identifier 'Ioo' ; identifiers [x, Differentiable, x, Differentiable, deriv, x, x, x, deriv, x, deriv, x, t, Ioo, deriv, x, t, t, Icc, deriv, x, t] (during elaboration) for ∀ {x : ℝ → ℝ}, Differentiable ℝ x → Differentiable ℝ (deriv x) →    x 1 - x 0 = 1 → deriv x 0 = 0 → deriv x 1 = 0 →    (∀ t ∈ Ioo 0 1, |deriv x t| ≤ 3 / 2) →    ∃ t ∈ Icc 0 1, |deriv^[2] x t| ≥ 9 / 2",
+    "context?":
+    "Let $x : \\mathbb{R} \\to \\mathbb{R}$ be a twice differentiable function satisfying $x(1) - x(0) = 1$, $x'(0) = x'(1) = 0$, and $|x'(t)| \\le \\frac{3}{2}$ for all $t \\in (0, 1)$. Prove that there exists some $t \\in [0, 1]$ such that $|x''(t)| \\ge \\frac{9}{2}$.",
+    "cmdErrors":
+    ["function expected at\n  Ioo\nterm has type\n  ?m.655",
+     "function expected at\n  Icc\nterm has type\n  ?m.1647"]}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {x : ℝ → ℝ}, Differentiable ℝ x → Differentiable ℝ (deriv x) →   x 1 - x 0 = 1 → deriv x 0 = 0 → deriv x 1 = 0 → (∀ t ∈ Ioo 0 1, |deriv x t| ≤ 3 / 2) → ∃ t ∈ Icc 0 1, |deriv^[2] x t| ≥ 9 / 2",
+    "elabError":
+    "unknown identifier 'Ioo' ; identifiers [x, Differentiable, x, Differentiable, deriv, x, x, x, deriv, x, deriv, x, t, Ioo, deriv, x, t, t, Icc, deriv, x, t] (during elaboration) for ∀ {x : ℝ → ℝ}, Differentiable ℝ x → Differentiable ℝ (deriv x) →   x 1 - x 0 = 1 → deriv x 0 = 0 → deriv x 1 = 0 → (∀ t ∈ Ioo 0 1, |deriv x t| ≤ 3 / 2) → ∃ t ∈ Icc 0 1, |deriv^[2] x t| ≥ 9 / 2",
+    "context?":
+    "Let $x : \\mathbb{R} \\to \\mathbb{R}$ be a twice differentiable function satisfying $x(1) - x(0) = 1$, $x'(0) = x'(1) = 0$, and $|x'(t)| \\le \\frac{3}{2}$ for all $t \\in (0, 1)$. Prove that there exists some $t \\in [0, 1]$ such that $|x''(t)| \\ge \\frac{9}{2}$.",
+    "cmdErrors":
+    ["function expected at\n  Ioo\nterm has type\n  ?m.655",
+     "function expected at\n  Icc\nterm has type\n  ?m.1647"]}},
+  "cmd": "translate"}]

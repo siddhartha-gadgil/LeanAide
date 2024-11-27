@@ -1,0 +1,194 @@
+[{"res":
+  "Prove that the $n$th item in the ascending list of non-perfect-square positive integers equals $n + \\{\\sqrt{n}\\}$, where $\\{m\\}$ denotes the closest integer to $m$.",
+  "cmd": "consider"},
+ {"res":
+  "Translating: Prove that the $n$th item in the ascending list of non-perfect-square positive integers equals $n + \\{\\sqrt{n}\\}$, where $\\{m\\}$ denotes the closest integer to $m$.",
+  "cmd": "translate"},
+ {"res": "Error in translation", "cmd": "translate"},
+ {"res": "Prompt:", "cmd": "translate"},
+ {"res":
+  [{"role": "system",
+    "content":
+    "You are a Mathematics, Lean 4 and coding assistant who answers questions about Mathematics and Lean 4, gives hints while coding in Lean 4. You also translates from natural language to Lean Theorem Prover code and vice versa when asked. Follow EXACTLY any examples given when generating Lean code."},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: The set of natural numbers that are sums of two squares is closed under multiplication. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {a b x y u v : ℕ}, a = x ^ 2 + y ^ 2 → b = u ^ 2 + v ^ 2 → ∃ r s, a * b = r ^ 2 + s ^ 2"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: The set of `k`-smooth numbers `≤ N` is contained in the set of numbers of the form `m^2 * P`,\nwhere `m ≤ √N` and `P` is a product of distinct primes `< k`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ (N k : ℕ),\n  Nat.smoothNumbersUpTo N k ⊆\n    Finset.image\n      (fun x =>\n        match x with\n        | (s, m) => m ^ 2 * Finset.prod s id)\n      (Finset.powerset (Nat.primesBelow k) ×ˢ Finset.erase (Finset.range (Nat.succ (Nat.sqrt N))) 0)"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: If the natural number `n` is a sum of two squares of coprime natural numbers, then\n`-1` is a square modulo `n`. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {n x y : ℕ}, n = x ^ 2 + y ^ 2 → Nat.Coprime x y → IsSquare (-1)"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Definition: positive integers summing to `n`\n\nGive ONLY the Lean code"},
+   {"role": "assistant", "content": "{n : ℕ} → Nat.Partition n → Multiset ℕ"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: This theorem states that for any natural number `n` and for any other natural number `a` such that `a` is less than or equal to twice `n`, the square root (calculated using the `Nat.sqrt` function) of the sum of the square of `n` and `a` is equal to `n`. In mathematical notation, this is stating that for all $n, a \\in \\mathbb{N}$ such that $a \\leq 2n$, we have $\\sqrt{n^2 + a} = n$.\n\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content": "∀ {a : ℕ} (n : ℕ), a ≤ n + n → (n * n + a).sqrt = n"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For all natural numbers m and n, m ≤ √n if and only if m² ≤ n.\n\nGive ONLY the Lean code"},
+   {"role": "assistant", "content": "∀ {m n : ℕ}, m ≤ n.sqrt ↔ m * m ≤ n"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Proves that Bertrand's postulate holds over all positive naturals less than n by identifying a\ndescending list of primes, each no more than twice the next, such that the list contains a witness\nfor each number ≤ n.\n\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {n : ℕ} (q : ℕ) {p : ℕ},\n  Nat.Prime p →\n    p ≤ 2 * q → (n < q → ∃ p, Nat.Prime p ∧ n < p ∧ p ≤ 2 * n) → n < p → ∃ p, Nat.Prime p ∧ n < p ∧ p ≤ 2 * n"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: The theorem states that for all natural numbers `m` and `n`, if `n` is strictly greater than the square of `m` but is also strictly less than the square of `m+1`, then there does not exist any natural number `t` such that `t` squared equals `n`. In other words, there are no perfect squares strictly between `m²` and `(m+1)²`.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {m n : ℕ}, m * m < n → n < (m + 1) * (m + 1) → ¬∃ t, t * t = n"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For all natural numbers m and n, if m <= n then m^2 <= n^2.\n\nGive ONLY the Lean code"},
+   {"role": "assistant", "content": "∀ {m n : ℕ}, m ≤ n → m * m ≤ n * n"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: There are no perfect squares strictly between m² and (m+1)² \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {n m : ℕ}, m * m < n → n < (m + 1) * (m + 1) → ¬∃ t, t * t = n"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For all natural numbers `m` and `n`, if `m² < n < (m+1)²`, then `n` is not the square of any natural number.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {m n : ℕ}, m * m < n → n < (m + 1) * (m + 1) → ¬∃ t, t * t = n"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: This theorem states that for any natural number `n`, the square of its integer square root (calculated using the `Nat.sqrt` function) is less than or equal to `n` itself. In other words, for all `n` in the set of natural numbers, the inequality $(\\text{Nat.sqrt } n)^2 \\leq n$ holds. This is a property of integer square roots, reflecting the fact that they are the largest whole number whose square does not exceed the original number.\n\nGive ONLY the Lean code"},
+   {"role": "assistant", "content": "∀ (n : ℕ), n.sqrt * n.sqrt ≤ n"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For any natural numbers $n$ and $a$ with $a \\leq 2n$, we have $\\sqrt{n^2 + a} = n$.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content": "∀ {a : ℕ} (n : ℕ), a ≤ n + n → (n * n + a).sqrt = n"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: If `-1` is a square modulo the natural number `n`, then `n` is a sum of two squares. \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content": "∀ {n : ℕ}, IsSquare (-1) → ∃ x y, n = x ^ 2 + y ^ 2"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For any natural numbers $n$ and $a$ with $a \\leq 2n$, we have $\\sqrt{n^2 + a} = n$.\n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content": "∀ {a : ℕ} (n : ℕ), a ≤ n + n → (n * n + a).sqrt = n"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: There are no perfect squares strictly between m² and (m+1)² \n\nGive ONLY the Lean code"},
+   {"role": "assistant",
+    "content":
+    "∀ {n m : ℕ}, m * m < n → n < (m + 1) * (m + 1) → ¬∃ t, t * t = n"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: The theorem `Nat.sqrt_eq` states that for every natural number `n`, the integer square root of the square of `n` is equal to `n` itself. In other words, if we square a natural number and then take its integer square root, we will arrive back at the original number. This corresponds to the mathematical statement: $\\forall n \\in \\mathbb{N}, \\ \\sqrt{n^2} = n$.\n\nGive ONLY the Lean code"},
+   {"role": "assistant", "content": "∀ (n : ℕ), (n * n).sqrt = n"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem:  For every natural number $n$, the integer square root of $n^2$ equals $n$. In other words, $\\sqrt{n^2} = n$.\n\nGive ONLY the Lean code"},
+   {"role": "assistant", "content": "∀ (n : ℕ), (n * n).sqrt = n"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Definition: List of positive integers summing to `n`\n\nGive ONLY the Lean code"},
+   {"role": "assistant", "content": "{n : ℕ} → Composition n → List ℕ"},
+   {"role": "user",
+    "content":
+    "Translate the following statement into Lean 4:\n## Theorem: Prove that the $n$th item in the ascending list of non-perfect-square positive integers equals $n + \\{\\sqrt{n}\\}$, where $\\{m\\}$ denotes the closest integer to $m$.\n\nGive ONLY the Lean code"}],
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text": "∀ {n : ℕ}, ∃ m, m ∈ nonPerfectSquareList n → m = n + Nat.sqrt n",
+    "elabError":
+    "unknown identifier 'nonPerfectSquareList' ; identifiers [n, m, m, nonPerfectSquareList, n, m, n, Nat.sqrt, n] (during elaboration) for ∀ {n : ℕ}, ∃ m, m ∈ nonPerfectSquareList n → m = n + Nat.sqrt n",
+    "context?":
+    "Prove that the $n$th item in the ascending list of non-perfect-square positive integers equals $n + \\{\\sqrt{n}\\}$, where $\\{m\\}$ denotes the closest integer to $m$.",
+    "cmdErrors":
+    ["function expected at\n  nonPerfectSquareList\nterm has type\n  ?m.92"]}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ (n : ℕ), nth_non_perfect_square n = n + ∃ (m: ℕ), Nat.round (Nat.sqrt n) = m",
+    "elabError":
+    "unknown identifier 'nth_non_perfect_square' ; identifiers [n, nth_non_perfect_square, n, n, m, Nat.round, Nat.sqrt, n, m] (during elaboration) for ∀ (n : ℕ), nth_non_perfect_square n = n + ∃ (m: ℕ), Nat.round (Nat.sqrt n) = m",
+    "context?":
+    "Prove that the $n$th item in the ascending list of non-perfect-square positive integers equals $n + \\{\\sqrt{n}\\}$, where $\\{m\\}$ denotes the closest integer to $m$.",
+    "cmdErrors":
+    ["unknown constant 'Nat.round'",
+     "failed to synthesize\n  HAdd ℕ Prop ?m.1539\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+     "function expected at\n  nth_non_perfect_square\nterm has type\n  ?m.7"]}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text": "∀ (n : ℕ), nth_non_perfect_square n = n + ⌊√n⌋",
+    "elabError":
+    "unknown identifier 'nth_non_perfect_square' ; identifiers [n, nth_non_perfect_square, n, n, n] (during elaboration) for ∀ (n : ℕ), nth_non_perfect_square n = n + ⌊√n⌋",
+    "context?":
+    "Prove that the $n$th item in the ascending list of non-perfect-square positive integers equals $n + \\{\\sqrt{n}\\}$, where $\\{m\\}$ denotes the closest integer to $m$.",
+    "cmdErrors":
+    ["function expected at\n  nth_non_perfect_square\nterm has type\n  ?m.7"]}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text": "∀ (n : ℕ), nthNonPerfectSquare n = n + Nat.sqrt n",
+    "elabError":
+    "unknown identifier 'nthNonPerfectSquare' ; identifiers [n, nthNonPerfectSquare, n, n, Nat.sqrt, n] (during elaboration) for ∀ (n : ℕ), nthNonPerfectSquare n = n + Nat.sqrt n",
+    "context?":
+    "Prove that the $n$th item in the ascending list of non-perfect-square positive integers equals $n + \\{\\sqrt{n}\\}$, where $\\{m\\}$ denotes the closest integer to $m$.",
+    "cmdErrors":
+    ["function expected at\n  nthNonPerfectSquare\nterm has type\n  ?m.7"]}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text":
+    "∀ {n : ℕ}, nthNonPerfectSquareAsc n = n + Nat.ceiling (Nat.sqrt n)",
+    "elabError":
+    "unknown identifier 'nthNonPerfectSquareAsc' ; identifiers [n, nthNonPerfectSquareAsc, n, n, Nat.ceiling, Nat.sqrt, n] (during elaboration) for ∀ {n : ℕ}, nthNonPerfectSquareAsc n = n + Nat.ceiling (Nat.sqrt n)",
+    "context?":
+    "Prove that the $n$th item in the ascending list of non-perfect-square positive integers equals $n + \\{\\sqrt{n}\\}$, where $\\{m\\}$ denotes the closest integer to $m$.",
+    "cmdErrors":
+    ["unknown constant 'Nat.ceiling'",
+     "function expected at\n  nthNonPerfectSquareAsc\nterm has type\n  ?m.7"]}},
+  "cmd": "translate"},
+ {"res":
+  {"unparsed":
+   {"text": "∀ (n : ℕ), nthNonPerfectSquare n = n + ⌊Real.sqrt n⌉",
+    "parseError": "<input>:1:51: expected '⌋' or '⌋₊'",
+    "context?":
+    "Prove that the $n$th item in the ascending list of non-perfect-square positive integers equals $n + \\{\\sqrt{n}\\}$, where $\\{m\\}$ denotes the closest integer to $m$."}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text": "∀ (n : ℕ), nonPerfectSquareList !! n = n + round (Real.sqrt n)",
+    "elabError":
+    "unknown identifier 'nonPerfectSquareList' ; identifiers [n, nonPerfectSquareList, n, n, round, Real.sqrt, n] (during elaboration) for ∀ (n : ℕ), nonPerfectSquareList !! n = n + round (Real.sqrt n)",
+    "context?":
+    "Prove that the $n$th item in the ascending list of non-perfect-square positive integers equals $n + \\{\\sqrt{n}\\}$, where $\\{m\\}$ denotes the closest integer to $m$.",
+    "cmdErrors":
+    ["function expected at\n  nonPerfectSquareList\nterm has type\n  ?m.6"]}},
+  "cmd": "translate"},
+ {"res":
+  {"parsed":
+   {"text": "∀ (n : ℕ), nthNonPerfectSquare n = n + round (Real.sqrt n)",
+    "elabError":
+    "unknown identifier 'nthNonPerfectSquare' ; identifiers [n, nthNonPerfectSquare, n, n, round, Real.sqrt, n] (during elaboration) for ∀ (n : ℕ), nthNonPerfectSquare n = n + round (Real.sqrt n)",
+    "context?":
+    "Prove that the $n$th item in the ascending list of non-perfect-square positive integers equals $n + \\{\\sqrt{n}\\}$, where $\\{m\\}$ denotes the closest integer to $m$.",
+    "cmdErrors":
+    ["function expected at\n  nthNonPerfectSquare\nterm has type\n  ?m.7"]}},
+  "cmd": "translate"}]
