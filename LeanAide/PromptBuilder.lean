@@ -386,25 +386,26 @@ partial def RelevantDefs.blob (nbd: RelevantDefs)(s: String) (pairs : Array (Str
 
 
 def translatePromptPairs (docPairs: Array (String × Json))
-      (dfns: Array String): Array (String × Json) :=
-  let preludeCode :=
-  if dfns.isEmpty then ""
-  else
-      let defsBlob := dfns.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
-      s!"Your goal is to translate from natural language to Lean. The following are some definitions that may be relevant:\n\n{defsBlob}"
+      : Array (String × Json) :=
   docPairs.map fun (doc, thm) =>
     let isThm :=
       thm.getObjValAs? Bool "isProp" |>.toOption |>.getD true
     let head := if isThm then "Theorem" else "Definition"
-    (preludeCode ++ s!"Translate the following statement into Lean 4:\n## {head}: " ++ doc ++ "\n\nGive ONLY the Lean code", thm)
+    (s!"Translate the following statement into Lean 4:\n## {head}: " ++ doc ++ "\n\nGive ONLY the Lean code", thm)
 
 def translateMessages (s: String)(promptPairs: Array (String × Json))
-      (header: String) (toChat : ChatExampleType := .simple)
+      (header: String) (dfns: Array String) (toChat : ChatExampleType := .simple)
       (sysPrompt: Bool) : TranslateM Json := do
   let examples ←  promptPairs.filterMapM fun pair =>
     toChat.map? pair
+  let preludeCode :=
+    if dfns.isEmpty then ""
+    else
+        let defsBlob := dfns.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
+        s!"Your goal is to translate from natural language to Lean. The following are some definitions that may be relevant:\n\n{defsBlob}"
+
   trace[Translate.info] m!"examples: \n{(examples).size}"
-  let s' := s!"Translate the following statement into Lean 4:\n## {header}: " ++ s ++ "\n\nGive ONLY the Lean code"
+  let s' := preludeCode ++ s!"Translate the following statement into Lean 4:\n## {header}: " ++ s ++ "\n\nGive ONLY the Lean code"
   mkMessages s' examples (← transPrompt) !sysPrompt
 
 /--

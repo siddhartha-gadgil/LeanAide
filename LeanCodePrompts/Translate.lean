@@ -179,10 +179,10 @@ def Translator.getMessages (s: String) (translator : Translator)
       TranslateM <| Json × Array (String × Json):= do
   let docPairs ← translator.pb.getPromptPairs s
   let dfns ← translator.relDefs.blob s docPairs
-  let promptPairs := translatePromptPairs docPairs dfns
+  let promptPairs := translatePromptPairs docPairs
   trace[Translate.info] m!"prompt pairs: \n{promptPairs}"
   let messages ←
-    translateMessages s promptPairs header translator.toChat translator.server.hasSysPrompt
+    translateMessages s promptPairs header dfns translator.toChat translator.server.hasSysPrompt
   trace[Translate.info] m!"prompt: \n{messages.pretty}"
   return (messages, docPairs)
 

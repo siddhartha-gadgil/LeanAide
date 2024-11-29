@@ -366,6 +366,7 @@ do
     def egg : Nat := Nat.zero
   sayM getRelDefs
   checkElab "egg"
+  sayM <| messages "scrambled egg"
 
 
 -- Avoid this
