@@ -17,6 +17,15 @@ inductive PromptExampleBuilder where
 | blend : List PromptExampleBuilder → PromptExampleBuilder
 deriving  Repr, ToJson, FromJson, Hashable
 
+structure SimpleDef where
+  name : String
+  type : String
+  docString : String
+  isProp : Bool
+  value : Option String := none
+deriving Repr, FromJson, ToJson
+
+
 namespace PromptExampleBuilder
 
 def embedBuilder (numSim numConcise numDesc: Nat) : PromptExampleBuilder :=
@@ -60,5 +69,11 @@ def prependFixed (pb: PromptExampleBuilder)
   | .sequence ps => .sequence <| .fixed prompts :: ps ++ [pb]
   | _ => .sequence [.fixed prompts, pb]
 
+def prependSimpleDef (pb: PromptExampleBuilder)
+  (sd: SimpleDef) : PromptExampleBuilder :=
+  let pair := (sd.name, toJson sd)
+  pb.prependFixed #[pair]
+
 end PromptExampleBuilder
+
 end LeanAide

@@ -184,7 +184,7 @@ def Translator.getMessages (s: String) (translator : Translator)
   let messages ←
     translateMessages s promptPairs header translator.toChat translator.server.hasSysPrompt
   trace[Translate.info] m!"prompt: \n{messages.pretty}"
-  return (messages, promptPairs)
+  return (messages, docPairs)
 
 /-- given string to translate, build prompt and query OpenAI; returns JSON response
 -/
@@ -204,7 +204,7 @@ def Translator.getLeanCodeJson (s: String)
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.insert s)
       -- work starts here; before this was caching, polling etc
-      let (messages, promptPairs) ← translator.getMessages s header
+      let (messages, docPairs) ← translator.getMessages s header
       trace[Translate.info] m!"prompt: \n{messages.pretty}"
       logTimed "querying server"
       IO.eprintln s!"querying server"
@@ -214,8 +214,8 @@ def Translator.getLeanCodeJson (s: String)
       logTimed "obtained llm response"
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.erase s)
-      cacheJson s (outJson, messages, promptPairs)
-      return (outJson, messages, promptPairs)
+      cacheJson s (outJson, messages, docPairs)
+      return (outJson, messages, docPairs)
 
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and returns the best choice, throwing an error if nothing elaborates.  -/
 def bestElab (output: Array String) : TranslateM Expr := do

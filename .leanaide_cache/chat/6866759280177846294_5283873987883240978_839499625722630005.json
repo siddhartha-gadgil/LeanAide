@@ -1,0 +1,23 @@
+{"usage":
+ {"total_tokens": 1022,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 436,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 512,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 586},
+ "system_fingerprint": "fp_35c19d48ca",
+ "object": "chat.completion",
+ "model": "o1-mini-2024-09-12",
+ "id": "chatcmpl-AYW1eg15rPxQUYF7v1yCW5FtnJ9oe",
+ "created": 1732789622,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "false\nLean Theorem 1 implies H is normal even if H is not a coatom, whereas Theorem 2 requires H to be a coatom."},
+   "index": 0,
+   "finish_reason": "stop"}]}

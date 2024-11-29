@@ -1,0 +1,96 @@
+{"usage":
+ {"total_tokens": 3503,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 3070,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 433},
+ "system_fingerprint": "fp_7f6be3efb0",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-AYVc08T7EpZoqjVXQuEtUujYGbLT7",
+ "created": 1732788032,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {G : Type u_1} [inst : Group G] {H : Subgroup G}, (∀ K : Subgroup G, K < ⊤ → K = H) → Subgroup.Normal H"},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {G : Type u_1} [inst : Group G] {H : Subgroup G}, (∀ K : Subgroup G, K ≠ ⊤ → K = H) → Subgroup.Normal H"},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {G : Type u_1} [inst : Group G] {H : Subgroup G}, (Unique (maximalProperSubgroup G)) → Subgroup.Normal H"},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {G : Type u_1} [inst : Group G] {H : Subgroup G}, (∀ K : Subgroup G, IsCoatom K → K = H) → Subgroup.Normal H"},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {G : Type u_1} [inst : Group G] {H : Subgroup G}, Unique (IsCoatom H) → Subgroup.Normal H"},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {G : Type u_1} [inst : Group G] {H : Subgroup G}, Unique (IsCoatom H) → Subgroup.Normal H"},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {G : Type u_1} [inst : Group G] {H : Subgroup G}, IsCoatom H → (∀ K : Subgroup G, IsCoatom K → K = H) → Subgroup.Normal H"},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {G : Type u_1} [inst : Group G] {H : Subgroup G}, (∀ K : Subgroup G, IsCoatom K → K = H) → Subgroup.Normal H"},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {G : Type u_1} [inst : Group G] {H : Subgroup G}, (IsCoatom H ∧ ∀ K : Subgroup G, IsCoatom K → K = H) → Subgroup.Normal H"},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {G : Type u_1} [inst : Group G] {H : Subgroup G}, IsCoatom H → (∀ K : Subgroup G, IsCoatom K → K = H) → Subgroup.Normal H"},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"}]}

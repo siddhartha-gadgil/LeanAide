@@ -80,6 +80,8 @@ def runTranslate (p : Parsed) : IO UInt32 := do
       IO.eprintln "---"
     match translation? with
     | some result =>
+      IO.eprintln "Translation:"
+      IO.println result.view
       if p.hasFlag "roundtrip" then
         IO.eprintln "Roundtrip:"
         let core :=
@@ -116,8 +118,6 @@ def runTranslate (p : Parsed) : IO UInt32 := do
           for out in gp do
             IO.eprintln out
           IO.eprintln "---"
-      IO.eprintln "Translation:"
-      IO.println result.view
       return 0
     | none =>
       IO.eprintln "No translation"

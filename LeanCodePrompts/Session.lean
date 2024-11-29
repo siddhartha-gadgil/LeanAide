@@ -223,19 +223,14 @@ def docsText : SessionM (Array (String × Json)) := do
 
 def messages (s: String) (header: String := "theorem") : SessionM Json := do
   let translator ← getTranslator
-  let docPairs ← docs s
-  let dfns ← translator.relDefs.blob s docPairs
-  let promptPairs := translatePromptPairs docPairs dfns
-  let messages ←
-    translateMessages s promptPairs header translator.toChat translator.server.hasSysPrompt
-  say messages `messages
+  let (messages, _) ← translator.getMessages s header
   return messages
 
 def messagesText (header: String := "theorem") : SessionM Json := do
   let s ← text
   messages s header
 
-def add_prompt (name: Name)(type? : Option String := none) (docString?: Option String := none) : SessionM Unit := do
+def addPromptByName (name: Name)(type? : Option String := none) (docString?: Option String := none) : SessionM Unit := do
   let sr : SearchResult := {name := name.toString, type? := type?, docString? := docString?, doc_url? := none, kind? := none}
   let state ← get
   let pair? ← sr.withDoc? state.descFields state.preferDocs
@@ -245,6 +240,11 @@ def add_prompt (name: Name)(type? : Option String := none) (docString?: Option S
     let pb := pb.prependFixed #[pair]
     setPromptBuilder pb
   | none => throwError "No prompt found"
+
+def addPromptByDef (sd: SimpleDef) : SessionM Unit := do
+    let pb ← getPromptBuilder
+    let pb := pb.prependSimpleDef sd
+    setPromptBuilder pb
 
 def add_defs (nbs: Array (Name × String)) : SessionM Unit := do
   let state ← get
@@ -312,6 +312,11 @@ do
 
 #session def_eg := do
   translateDef "Let \\( \\delta(x) \\) be the greatest odd divisor of the positive integer \\( x \\)" `δ
+
+
+#session egP := do
+  addPromptByDef {name := "δ", type := "ℕ → ℕ", docString := "The greatest odd divisor of a positive integer.", isProp := false}
+  discard <|  docs "There are infinitely many odd numbers"
 
 end LeanAide.Translate
 
