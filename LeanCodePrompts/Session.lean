@@ -169,15 +169,24 @@ def skipText : SessionM Unit := do
   showLastText
 
 def checkElab (s: String) : SessionM Unit := do
-  let res ← Term.withoutErrToSorry do
-    elabThm4 s
-  match res with
-  | Except.ok e =>
-    say "Success in elaboration" `checkElab
-    say (← ppExpr e).pretty `checkElab
-  | Except.error err => do
-    say "Error in elaboration" `checkElab
-    say err `checkElab
+  let stx? := Parser.runParserCategory (← getEnv) `term s
+  match stx? with
+  | Except.ok stx =>
+    try
+      let e ← Term.withoutErrToSorry do
+         Term.elabTerm stx none
+      say "Elaborated" `checkEl
+      let v ← ppExpr e
+      say v.pretty `checkElab
+      pure ()
+    catch ex =>
+      say "Failed to elaborate" `checkElab
+      let m := ex.toMessageData
+      say (← m.format).pretty `checkElab
+      pure ()
+  | Except.error e =>
+    say "Error in parsing" `checkElab
+    say e `checkElab
 
 def translate (s : String) (name: Name := Name.anonymous) : SessionM Unit := do
   let translator ← getTranslator
@@ -356,7 +365,7 @@ do
     "Hello"
     def egg : Nat := Nat.zero
   sayM getRelDefs
-  checkElab "egg = 1"
+  checkElab "egg"
 
 
 -- Avoid this
