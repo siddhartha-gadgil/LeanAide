@@ -168,6 +168,16 @@ def skipText : SessionM Unit := do
     {s with contextStatements := s.contextStatements.pop}
   showLastText
 
+def checkElab (s: String) : SessionM Unit := do
+  let res ← Term.withoutErrToSorry do
+    elabThm4 s
+  match res with
+  | Except.ok e =>
+    say "Success in elaboration" `checkElab
+    say (← ppExpr e).pretty `checkElab
+  | Except.error err => do
+    say "Error in elaboration" `checkElab
+    say err `checkElab
 
 def translate (s : String) (name: Name := Name.anonymous) : SessionM Unit := do
   let translator ← getTranslator
@@ -246,11 +256,36 @@ def addPromptByDef (sd: SimpleDef) : SessionM Unit := do
     let pb := pb.prependSimpleDef sd
     setPromptBuilder pb
 
-def add_defs (nbs: Array (Name × String)) : SessionM Unit := do
+def addDefsRaw (nbs: Array (Name × String)) : SessionM Unit := do
   let state ← get
   let rds := state.relDefs
   let rds := rds ++ nbs
   set {state with relDefs := rds}
+
+def addDefRaw (name: Name)(s: String) : SessionM Unit := do
+  addDefsRaw #[(name, s)]
+
+def null : SessionM Unit := do
+  return ()
+
+syntax (name := add_def)
+  withPosition("add_def%" (colGt str command)) : term
+
+open Lean.Elab.Term
+@[term_elab add_def] def addDefImpl : TermElab :=
+  fun stx _ =>
+    match stx with
+    | `(add_def% $s $cmd) => do
+      let s := s.getString
+      let dfn? ←  DefData.ofSyntax? cmd
+      let dfn ← match dfn? with
+        | some dfn => pure dfn
+        | none => throwError "Error in parsing definition"
+      dfn.addDeclaration
+      let dfnStatement ←  dfn.statementWithDoc s
+      let name := dfn.name
+      mkAppM ``addDefRaw #[toExpr name, toExpr dfnStatement]
+    | _ => throwUnsupportedSyntax
 
 def chatQuery (queryString: String)(n: Nat := 3)
   (params: ChatParams := {n := n, stopTokens := #[]})
@@ -310,10 +345,21 @@ do
     consider (← putnamProblem i)
     -- translateText
 
-#session def_eg := do
+#session translate_def_eg := do
   translateDef "Let \\( \\delta(x) \\) be the greatest odd divisor of the positive integer \\( x \\)" `δ
 
+#session eg_add_def := do
+  sayM getRelDefs
+  checkElab "(0 : Nat) = 1"
+  checkElab "eg = 1"
+  add_def%
+    "Hello"
+    def egg : Nat := Nat.zero
+  sayM getRelDefs
+  checkElab "egg = 1"
 
+
+-- Avoid this
 #session egP := do
   addPromptByDef {name := "δ", type := "ℕ → ℕ", docString := "The greatest odd divisor of a positive integer.", isProp := false}
   discard <|  docs "There are infinitely many odd numbers"

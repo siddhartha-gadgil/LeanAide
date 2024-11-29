@@ -10,7 +10,6 @@ open Lean Meta Elab Term
 
 namespace Homogeneous
 
-attribute [-instance] Nat.instDivNat
 example (n : ℕ) : ℚ := ((4 *((n*(n-1)/2 : ℚ)^3 : ℚ) - (((n*(n-1)/2 : ℚ)^2) : ℚ)) : ℚ)/3
 
 scoped syntax  (name := homdiv) (priority := high) term:71 " / " term:70 : term
@@ -28,8 +27,8 @@ scoped syntax  (name := hompow) (priority := high) term:85 "^" term:86 : term
     | none =>
         let x ← elabTerm x none
         let y ← elabTerm y none
-        mkAppM ``HDiv.hDiv #[x, y] 
-    | some expectedType => 
+        mkAppM ``HDiv.hDiv #[x, y]
+    | some expectedType =>
         let x ← elabTermEnsuringType x (some expectedType)
         let y ← elabTermEnsuringType y (some expectedType)
         mkAppOptM ``HDiv.hDiv #[some expectedType, some expectedType, some expectedType, none, x, y]
@@ -43,8 +42,8 @@ scoped syntax  (name := hompow) (priority := high) term:85 "^" term:86 : term
     | none =>
         let x ← elabTerm x none
         let y ← elabTerm y none
-        mkAppM ``HMul.hMul #[x, y] 
-    | some expectedType => 
+        mkAppM ``HMul.hMul #[x, y]
+    | some expectedType =>
         let x ← elabTermEnsuringType x (some expectedType)
         let y ← elabTermEnsuringType y (some expectedType)
         mkAppOptM ``HMul.hMul #[some expectedType, some expectedType, some expectedType, none, x, y]
@@ -60,11 +59,11 @@ scoped syntax  (name := hompow) (priority := high) term:85 "^" term:86 : term
     | none =>
         let x ← elabTerm x none
         let y ← elabTerm y none
-        mkAppM ``HAdd.hAdd #[x, y] 
-    | some expectedType => 
+        mkAppM ``HAdd.hAdd #[x, y]
+    | some expectedType =>
         let x ← elabTermEnsuringType x (some expectedType)
         let y ← elabTermEnsuringType y (some expectedType)
-        mkAppOptM ``HAdd.hAdd 
+        mkAppOptM ``HAdd.hAdd
           #[some expectedType, some expectedType, some expectedType, none, x, y]
   | _ => throwUnsupportedSyntax
 
@@ -77,8 +76,8 @@ scoped syntax  (name := hompow) (priority := high) term:85 "^" term:86 : term
     | none =>
         let x ← elabTerm x none
         let y ← elabTerm y none
-        mkAppM ``HSub.hSub #[x, y] 
-    | some expectedType => 
+        mkAppM ``HSub.hSub #[x, y]
+    | some expectedType =>
         let x ← elabTermEnsuringType x (some expectedType)
         let y ← elabTermEnsuringType y (some expectedType)
         mkAppOptM ``HSub.hSub #[some expectedType, some expectedType, some expectedType, none, x, y]
@@ -93,11 +92,11 @@ scoped syntax  (name := hompow) (priority := high) term:85 "^" term:86 : term
     | none =>
         let x ← elabTerm x none
         let y ← elabTerm y none
-        mkAppM ``HPow.hPow #[x, y] 
-    | some expectedType => 
+        mkAppM ``HPow.hPow #[x, y]
+    | some expectedType =>
         let x ← elabTermEnsuringType x (some expectedType)
-        try 
-          let y ← elabTerm y (mkConst ``Nat) 
+        try
+          let y ← elabTerm y (mkConst ``Nat)
           mkAppOptM ``HPow.hPow #[some expectedType, some (mkConst ``Nat), some expectedType, none, x, y]
         catch _ =>
           let y ← elabTerm y none

@@ -714,14 +714,44 @@ def DefData.statementWithDoc (data: DefData)(doc: String)
     mkStatementWithDoc
         (some data.name) data.type value? data.isProp useExample doc
 
-def relType (xs:  List (TSyntax [`ident, `Lean.Parser.Term.hole, `Lean.Parser.Term.bracketedBinder])) (type: Syntax.Term) : MetaM Syntax.Term := do
-    match xs with
-    | [] => return type
-    | h :: t =>
-        let prev ← relType t type
-        `(h → $prev)
+-- incorrect
+-- def relType (xs:  List (TSyntax [`ident, `Lean.Parser.Term.hole, `Lean.Parser.Term.bracketedBinder])) (type: Syntax.Term) : MetaM Syntax.Term := do
+--     match xs with
+--     | [] => return type
+--     | h :: t =>
+--         let prev ← relType t type
+--         `(h → $prev)
 
-#check foldContext
+open Elab Term in
+def DefData.toDeclaration (data: DefData) : TermElabM Declaration := do
+    let typeExpr ← elabType data.type
+    let valueEpr ← elabTerm data.value typeExpr
+    Term.synthesizeSyntheticMVarsNoPostponing
+    let decl ← match data.isProp with
+    | true => do
+        let decl := .thmDecl {
+            name := data.name,
+            type := typeExpr,
+            value := valueEpr,
+            levelParams := []
+        }
+        return decl
+    | false => do
+        let decl := Declaration.defnDecl {
+            name := data.name,
+            levelParams := [],
+            type := typeExpr,
+            value := valueEpr,
+            hints := ReducibilityHints.abbrev,
+            safety := DefinitionSafety.safe
+        }
+        -- logInfo s!"DefData.toDeclaration: {data.name} : {data.type} := {data.value}"
+        return decl
+
+def DefData.addDeclaration (data: DefData) : TermElabM Unit := do
+    let decl ← data.toDeclaration
+    addAndCompile decl
+
 
 def DefData.ofSyntax? (stx: Syntax) : MetaM <| Option DefData := do
     match stx with
@@ -750,6 +780,8 @@ def DefData.jsonView (data: DefData) : MetaM Json := do
     ("type", toJson (← ppTerm data.type).pretty),
     ("value", toJson (← ppTerm data.value).pretty),
     ("isProp", toJson data.isProp)]
+
+#check Declaration
 
 structure IdentData where
     context : Array String
