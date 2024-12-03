@@ -368,6 +368,17 @@ do
   checkElab "egg"
   sayM <| messages "scrambled egg"
 
+def quas : (N : Nat) → Prop :=
+  fun N => N > 0 ∧ (Finset.sum (Nat.divisors N) id = 2 * N + 1)
+
+#session quasi_add_def := do
+  sayM getRelDefs
+  add_def%
+    "Definition of quasiperfect"
+    def quas : (N : ℕ) → Prop := fun N => N > 0 ∧ (Finset.sum (Nat.divisors N) id = 2 * N + 1)
+  sayM getRelDefs
+  checkElab "quas"
+
 
 -- Avoid this
 #session egP := do

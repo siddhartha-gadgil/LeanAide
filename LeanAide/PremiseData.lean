@@ -722,17 +722,22 @@ def DefData.statementWithDoc (data: DefData)(doc: String)
 --         let prev ← relType t type
 --         `(h → $prev)
 
-open Elab Term in
+open Elab Term  in
 def DefData.toDeclaration (data: DefData) : TermElabM Declaration := do
     let typeExpr ← elabType data.type
-    let valueEpr ← elabTerm data.value typeExpr
+    let valueExpr ← elabTerm data.value typeExpr
+    let valueExpr ← instantiateMVars valueExpr
+    let typeExpr ← instantiateMVars typeExpr
     Term.synthesizeSyntheticMVarsNoPostponing
+    -- logInfo s!"DefData.toDeclaration: {data.name} : {← PrettyPrinter.ppExpr typeExpr} := {← PrettyPrinter.ppExpr valueExpr}"
+    -- logInfo s!"Mvar? : {valueExpr.hasExprMVar}, {valueExpr.hasLevelMVar}"
+    -- logInfo s!"{repr valueExpr}"
     let decl ← match data.isProp with
     | true => do
         let decl := .thmDecl {
             name := data.name,
             type := typeExpr,
-            value := valueEpr,
+            value := valueExpr,
             levelParams := []
         }
         return decl
@@ -741,7 +746,7 @@ def DefData.toDeclaration (data: DefData) : TermElabM Declaration := do
             name := data.name,
             levelParams := [],
             type := typeExpr,
-            value := valueEpr,
+            value := valueExpr,
             hints := ReducibilityHints.abbrev,
             safety := DefinitionSafety.safe
         }
