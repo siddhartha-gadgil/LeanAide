@@ -2,6 +2,7 @@ import LeanCodePrompts.BatchTranslate
 import LeanAide.Aides
 import LeanAide.Descriptions
 import LeanAide.PutnamBench
+-- import LeanAide.Premises
 /-!
 # Translation Session
 
@@ -296,6 +297,14 @@ open Lean.Elab.Term
       mkAppM ``addDefRaw #[toExpr name, toExpr dfnStatement]
     | _ => throwUnsupportedSyntax
 
+def addDefByName (name: Name)(doc? : Option String := none) : SessionM Unit := do
+  let dfn ← DefData.ofNameM name
+  let envdoc?  ← findDocString? (← getEnv) name
+  let doc? := doc?.orElse fun _ => envdoc?
+  let some doc := doc? | throwError "No docstring found or specified"
+  let dfnStatement ← dfn.statementWithDoc doc
+  addDefRaw name dfnStatement
+
 def chatQuery (queryString: String)(n: Nat := 3)
   (params: ChatParams := {n := n, stopTokens := #[]})
   (examples: Array ChatExample := #[]) : SessionM (Array String) := do
@@ -379,6 +388,13 @@ def quas : (N : Nat) → Prop :=
   sayM getRelDefs
   checkElab "quas"
 
+#session env_add_def := do
+  sayM getRelDefs
+  addDefByName ``Nat.add
+  sayM getRelDefs
+
+
+#check Nat.add
 
 -- Avoid this
 #session egP := do

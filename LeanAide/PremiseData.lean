@@ -786,7 +786,19 @@ def DefData.jsonView (data: DefData) : MetaM Json := do
     ("value", toJson (← ppTerm data.value).pretty),
     ("isProp", toJson data.isProp)]
 
-#check Declaration
+def DefData.ofNameM (name: Name) : MetaM DefData := do
+    let decl ← getConstInfo name
+    let type ← instantiateMVars decl.type
+    let value ← instantiateMVars decl.value!
+    let typeStx ← delab type
+    let valueStx ← delab value
+    let isProp := match decl with
+    | ConstantInfo.defnInfo _ => false
+    | ConstantInfo.thmInfo _ => true
+    | _ => false
+    let typeDepth := type.approxDepth.toNat
+    let valueDepth := value.approxDepth.toNat
+    return ⟨name, typeStx, valueStx, isProp, typeDepth, valueDepth, []⟩
 
 structure IdentData where
     context : Array String

@@ -304,7 +304,7 @@ def DefData.getM? (name: Name)(term type: Expr) : MetaM (Option  DefData) :=  wi
         IO.println s!"Error {← ex.toMessageData.toString} getting {name}"
         return none
 
-def DefData.ofNameM? (name: Name) : MetaM (Option DefData) := do
+def DefData.ofNameVerboseM? (name: Name) : MetaM (Option DefData) := do
     let info ←  getConstInfo name
     let type := info.type
     let term? := info.value?
@@ -343,10 +343,10 @@ def verboseViewCore? (name: Name) : CoreM (Option String) :=
     (verboseView? name).run' {}
 
 def DefData.ofNameCore? (name: Name) : CoreM (Option DefData) :=
-    (DefData.ofNameM? name).run' {}
+    (DefData.ofNameVerboseM? name).run' {}
 
 def PremiseData.ofNames (names: List Name) : MetaM (List PremiseData) := do
-    let defs ← names.filterMapM DefData.ofNameM?
+    let defs ← names.filterMapM DefData.ofNameVerboseM?
     return defs >>= (fun d => d.premises)
 
 
@@ -359,7 +359,7 @@ def PremiseData.writeBatch (names: List Name)(group: String)
     for name in names do
         let dfn ←
             try
-                DefData.ofNameM? name
+                DefData.ofNameVerboseM? name
             catch ex =>
                 IO.println s!"Error {← ex.toMessageData.toString} writing {name}"
                 pure none
@@ -398,7 +398,7 @@ def PremiseData.writeBatchCore (names: List Name)(group: String)
 
 def CorePremiseData.ofNameM? (name: Name) :
     MetaM (Option <| List CorePremiseData) := do
-    let dfn? ← DefData.ofNameM? name
+    let dfn? ← DefData.ofNameVerboseM? name
     let premises := dfn?.map (·.premises)
     let propMap ← getPropMapStr
     match premises with
