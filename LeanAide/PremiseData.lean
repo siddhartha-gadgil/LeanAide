@@ -286,7 +286,9 @@ partial def runInRelForallCtx (decls: List Syntax)(c: TermElabM Expr) : TermElab
     | `(letIdDecl|$n:ident : $type := $val) =>
         let name := n.getId
         let type ←  Term.elabType type
+        let type ← instantiateMVars type
         let val ← Term.elabTerm val none
+        let val ← instantiateMVars val
         withLetDecl name type val fun x => do
             let tail ← runInRelForallCtx ds c
             mkLambdaFVars #[x] tail

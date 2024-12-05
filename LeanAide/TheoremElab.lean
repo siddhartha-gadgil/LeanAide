@@ -111,6 +111,7 @@ def elabThmFromStx (stx : Syntax)
           let expr ← Term.withoutErrToSorry <|
               Term.elabType typeStx
           Term.synthesizeSyntheticMVarsNoPostponing
+          let expr ← instantiateMVars expr
           return Except.ok expr
         catch e =>
           return Except.error s!"{← e.toMessageData.toString} ; identifiers {idents typeStx} (during elaboration) for {typeStx.raw.reprint.get!}"

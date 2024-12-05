@@ -385,6 +385,7 @@ def elabFuncTyp (funTypeStr : String) (levelNames : List Lean.Name := levelNames
             -- IO.println "elaborating"
             let expr ← Term.withoutErrToSorry <|
                 Term.elabTerm termStx none
+            let expr ← instantiateMVars expr
             return Except.ok (termStx, expr)
           catch e =>
             return Except.error s!"{← e.toMessageData.toString} for {termStx.reprint} (during elaboration)"
