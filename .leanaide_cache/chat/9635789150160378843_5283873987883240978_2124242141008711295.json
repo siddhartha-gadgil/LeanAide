@@ -1,0 +1,24 @@
+{"usage":
+ {"total_tokens": 4913,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 4422,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 491},
+ "system_fingerprint": "fp_7f6be3efb0",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-Ab2vGSVexbQ0cbGsml1n2XSCy0hgc",
+ "created": 1733392734,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```json\n{\n  \"math_document\": [\n    {\n      \"theorem\": {\n        \"hypothesis\": [\n          {\n            \"let\": {\n              \"variable\": \"n\",\n              \"kind\": \"natural number\"\n            }\n          }\n        ],\n        \"conclusion\": \"The product of two consecutive natural numbers is even.\",\n        \"proved\": true,\n        \"proof\": [\n          {\n            \"cases\": {\n              \"split_kind\": \"condition\",\n              \"on\": \"n is even or odd\",\n              \"proof_cases\": [\n                {\n                  \"case\": {\n                    \"condition\": \"n is even\",\n                    \"proof\": [\n                      {\n                        \"assert\": {\n                          \"claim\": \"n(n+1) is even\",\n                          \"proof_method\": \"direct proof\",\n                          \"deduced_from_results\": [\n                            {\n                              \"deduced_from\": {\n                                \"result_used\": \"n = 2k for some integer k\",\n                                \"proved_earlier\": false\n                              }\n                            }\n                          ],\n                          \"calculate\": {\n                            \"inline_calculation\": \"n(n+1) = 2k(n+1)\"\n                          }\n                        }\n                      }\n                    ]\n                  }\n                },\n                {\n                  \"case\": {\n                    \"condition\": \"n is odd\",\n                    \"proof\": [\n                      {\n                        \"assert\": {\n                          \"claim\": \"n(n+1) is even\",\n                          \"proof_method\": \"direct proof\",\n                          \"deduced_from_results\": [\n                            {\n                              \"deduced_from\": {\n                                \"result_used\": \"n = 2k+1 for some integer k\",\n                                \"proved_earlier\": false\n                              }\n                            }\n                          ],\n                          \"calculate\": {\n                            \"calculation_sequence\": [\n                              {\n                                \"calculation_step\": \"n(n+1) = (2k+1)(2k+2)\"\n                              },\n                              {\n                                \"calculation_step\": \"= 2k(2k+2) + 2\"\n                              },\n                              {\n                                \"calculation_step\": \"= 2(k(2k+2) + 1)\"\n                              }\n                            ]\n                          }\n                        }\n                      }\n                    ]\n                  }\n                }\n              ]\n            }\n          },\n          {\n            \"conclude\": {\n              \"claim\": \"The product of two consecutive natural numbers is even.\"\n            }\n          }\n        ]\n      }\n    }\n  ]\n}\n```"},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"}]}
