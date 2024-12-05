@@ -1,0 +1,56 @@
+{"usage":
+ {"total_tokens": 2255,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 1939,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 316},
+ "system_fingerprint": "fp_831e067d82",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-Ab3b9LYrtzUPvmkt5LrJcnxyAVfOw",
+ "created": 1733395331,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {a b : ℤ}, Odd a → Odd b → ∃ m n, a = 2 * m + 1 ∧ b = 2 * n + 1 ∧ a * b = (2 * m + 1) * (2 * n + 1)"},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {a b : ℤ}, Odd a → Odd b → ∃ m n : ℤ, a = 2 * m + 1 ∧ b = 2 * n + 1 ∧ a * b = (2 * m + 1) * (2 * n + 1)"},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {a b : ℤ}, Odd a → Odd b → ∃ m n, a = 2 * m + 1 ∧ b = 2 * n + 1 ∧ a * b = (2 * m + 1) * (2 * n + 1)"},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {a b : ℤ}, Odd a → Odd b → ∃ m n, a = 2 * m + 1 ∧ b = 2 * n + 1 ∧ a * b = (2 * m + 1) * (2 * n + 1)"},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {a b : ℤ}, Odd a → Odd b → ∃ m n : ℤ, a = 2 * m + 1 ∧ b = 2 * n + 1 ∧ a * b = (2 * m + 1) * (2 * n + 1)"},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"}]}
