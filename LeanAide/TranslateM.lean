@@ -10,14 +10,23 @@ import LeanCodePrompts.ChatClient
 open Lean Meta Elab Term
 namespace LeanAide
 
+/--
+Text source for a definition.
+-/
 structure DefSource where
   doc : String
   isProp : Bool
 deriving ToJson, FromJson, Repr
 
+/--
+Data for a definition, in particular *syntax* of components, together with a documentation string.
+-/
 structure DefWithDoc extends DefData where
   doc : String
 
+/--
+Error during elaboration.
+-/
 inductive ElabError : Type where
 | unparsed (text parseError: String) (context? : Option String) : ElabError
 | parsed (text elabError : String) (cmdErrors : List String)
@@ -30,23 +39,35 @@ instance : ToMessageData (ElabError) where
   | .parsed text elabError cmdErrors _ =>
       m!"Elaboration errors : {elabError} for {text}; front-end errors: {cmdErrors}"
 
+/--
+A collection of elaboration errors during translation.
+-/
 structure ElabErrorData where
   source : String
   prompt? : Option Json
   elabErrors : Array ElabError
 deriving FromJson, ToJson, Repr
 
+/--
+A collection of elaboration errors during translation, when elaboration is done by forming a command.
+-/
 inductive CmdElabError : Type where
 | unparsed (text parseError: String) (context? : Option String) : CmdElabError
 | parsed (text : String) (cmdErrors : List String)
     (context? : Option String) : CmdElabError
 deriving Repr, ToJson, FromJson
 
+/--
+Result of translating a definition.
+-/
 inductive DefTranslateResult : Type where
   | success (dfns : Array DefWithDoc) : DefTranslateResult
   | failure
     (progress : Array DefWithDoc) (error : Array CmdElabError) : DefTranslateResult
 
+/--
+Result of translating back a definition and comparing.
+-/
 inductive TranslateBackResult where
   | success (statement translation: String)
     (checks : Array Bool) (checksData : Array String) : TranslateBackResult
@@ -58,6 +79,9 @@ def TranslateBackResult.checkFailed (r: TranslateBackResult) : Bool :=
   | TranslateBackResult.success _ _ checks _ => checks.any id
   | TranslateBackResult.failure => true
 
+/--
+Result of elaborating a term, excluding the resulting expressions (to allow serialization).
+-/
 structure ElabSuccessBase where
   typeView : String
   allElaborated : Array String
@@ -66,6 +90,9 @@ structure ElabSuccessBase where
   roundTripFailures : Array (String × Array (Bool × String)) := #[]
   deriving Repr, ToJson, FromJson
 
+/--
+Result of elaborating a term.
+-/
 structure ElabSuccessResult extends ElabSuccessBase where
   term : Expr
   allElaboratedExprs : Array Expr
@@ -82,6 +109,9 @@ def ElabSuccessResult.withView (er: ElabSuccessResult) : MetaM TranslateSuccessR
 
 abbrev TranslateResult := Except ElabErrorData ElabSuccessResult
 
+/--
+State for translation. The main motivation for this was to avoid repeatedly loading embeddings.
+-/
 structure Translate.State where
   /-- Embeddings to preload -/
   embedMap : EmbedMap := Std.HashMap.empty
@@ -90,11 +120,13 @@ structure Translate.State where
   /-- Descriptions, docstrings etc -/
   descriptionMap : Std.HashMap Name Json := Std.HashMap.empty
   cmdPrelude : Array String := #[]
+  /-- Relevant definitions to include in a prompt -/
   defs : Array (DefWithDoc) := #[]
   errorLog : Array ElabErrorData := #[]
   context : Option String := none
 deriving Inhabited
 
+/-- Monad with environment for translation -/
 abbrev TranslateM := StateT Translate.State TermElabM
 
 instance [MetaEval α] : MetaEval (TranslateM α) :=

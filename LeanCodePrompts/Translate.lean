@@ -313,11 +313,17 @@ def bestElab? (output: Array String)(maxVoting: Nat := 5) : TranslateM (Except (
     return Except.ok {term := thm, allElaborated := elabStrs, groups := gpView, allElaboratedExprs := elaborated, groupsExprs := groupSorted, typeView := (← ppExpr thm).pretty}
     -- {⟨thm, elabStrs, gpView⟩}
 
+/--
+Pick the first elaboration that succeeds.
+-/
 def greedyBestExpr? (output: Array String) : TranslateM (Option Expr) := do
     output.findSomeM? <| fun out => do
       let el? ← elabThm4 out
       pure el?.toOption
 
+/--
+Pick the first elaboration that succeeds, accumulating errors.
+-/
 def greedyStrictBestExpr? (output: Array String) :
     TranslateM (Except (Array ElabError) Expr) := do
   let mut errs : Array ElabError := #[]

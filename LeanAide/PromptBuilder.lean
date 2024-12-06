@@ -242,6 +242,9 @@ def getPromptPairsOrdered (pb: PromptExampleBuilder)
       IO.FS.writeFile file js.compress
       return pairs
 
+/--
+Obtain prompt pairs from a builder given a target sentence.
+-/
 def getPromptPairs (pb: PromptExampleBuilder)
     (query: String)(bound: Nat := 600) : TranslateM ((Array (String × Json))) := do
   let pairs ← getPromptPairsOrdered pb query
@@ -415,16 +418,29 @@ def tips :=
   #["Multiplication is usually denoted `*` in Lean, not `⬝`",
   "Within quantifiers `∀` and `∃`, do not use typeclasses, use anonymous variables with types instead. For example, NOT: `∃ (G: Type) [Group G], ...` USE: `∃ G : Type, (_ : Group G), ...`"]
 
+/--
+Structure collecting together parameters used in translation.
+-/
 structure Translator where
+  /-- The LLM server being used. -/
   server : ChatServer := .default
+  /-- Parameters for the LLM server called. -/
   params : ChatParams := {n := 8}
+  /-- Builder for prompt examples given sentence. -/
   pb : PromptExampleBuilder := .default
+  /-- Chat examples, i.e., the dialogues of `user` and `assistant`, from the examples. -/
   toChat : ChatExampleType := .simple
+  /-- Relevant definitions to include in the prompt -/
   relDefs : RelevantDefs := .empty
+  /-- Whether to do a roundtrip test -/
   roundTrip : Bool := false
+  /-- Whether to select the first elaboration that passes a roundtrip-/
   roundTripSelect : Bool := false -- selecting first to pass roundtrip
 deriving Repr, FromJson, ToJson
 
+/--
+Structure collecting together parameters used in code generation.
+-/
 structure CodeGenerator extends Translator where
   numLeanSearch : Nat := 6
   numMoogle : Nat := 6

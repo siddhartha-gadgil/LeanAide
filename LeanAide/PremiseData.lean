@@ -694,6 +694,9 @@ def termKindExamplesM (choices: Nat := 3)(constantNameValueDocs  := constantName
 def termKindExamplesCore (choices: Nat := 3) : CoreM <| List Json := do
     termKindExamplesM choices |>.run' {}
 
+/--
+Data associated to a definition. This was originally intended to be used for tracking premises but is also used ignoring a few parameters as *syntax* data for a definition.
+-/
 structure DefData where
     name : Name
     type : Syntax.Term

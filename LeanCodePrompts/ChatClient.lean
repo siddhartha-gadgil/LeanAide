@@ -344,10 +344,15 @@ def docDetailedChatExample (fullThm: Bool := true)(fullDoc : Bool := true) : ToC
     return some {user := user, assistant := assistant}
     | _,_,_ => return none
 
+/-- Chat examples, i.e., the dialogues of `user` and `assistant`, from the examples. -/
 inductive ChatExampleType
+  /-- *user* just gives documentation string, *assistant* responds with only type -/
   | simple
+  /-- translation task explicitly spelled out by *user*, *assistant* responds with full statement.-/
   | doc
+  /-- *user* just gives documentation string, *assistant* responds with only type but with details in the type -/
   | detailed
+  /-- translation task explicitly spelled out by *user*, *assistant* responds with full statement with details in the type.-/
   | detailedDoc
   deriving Repr, FromJson, ToJson, Inhabited, DecidableEq
 
