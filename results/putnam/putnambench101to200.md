@@ -1,6 +1,8 @@
-PUTNAM PROBLEMS: 
+# PUTNAM PROBLEMS: 
 
-PROBLEM 101: 
+## Problem 101: 
+
+```json
 {"res":
  "Translating: After each play of a certain game of solitaire, the player receives either $a$ or $b$ points, where $a$ and $b$ are positive integers with $a > b$; scores accumulate from play to play. If there are $35$ unattainable scores, one of which is $58$, find $a$ and $b$.Show that the solution is $a = 11$ and $b = 8$.",
  "cmd": "translate"}
@@ -22,8 +24,10 @@ PROBLEM 101:
    "def unattainable_scores (a b : ℕ) : ℕ → Prop :=\n  λ n, ∀ (x y : ℕ), n ≠ a * x + b * y\n\nexample : unattainable_scores 11 8 58 ∧ (35 = Finset.univ.filter (unattainable_scores 11 8).card) :=\nbegin\n  -- Proof goes here (not implemented in this template)\nend",
    "example : ∃ (a b : ℕ), a > b ∧ (∀ n < 35, ∃ k, n ≠ 58 ∧ n = k * b % a ∧ k * b < a) ∧ a = 11 ∧ b = 8 :=\n⟨11, 8, by decide⟩"]},
  "cmd": "translate"}
+```
 
-PROBLEM 102: 
+## Problem 102: 
+```json
 {"res":
  "Translating: Let $c$ be a real number such that $n^c$ is an integer for every positive integer $n$. Show that $c$ is a non-negative integer.",
  "cmd": "translate"}
@@ -199,12 +203,12 @@ PROBLEM 102:
    "cmdErrors":
    ["failed to synthesize\n  HPow ℤ ℝ ?m.1748\nAdditional diagnostic information may be available using the `set_option diagnostics true` command."]}},
  "cmd": "translate"}
+```
 
-
-PROBLEM 103 : 
+## Problem 103 : 
 (deterministic) timeout at `delab`, maximum number of heartbeats (200000) has been reached
 Use `set_option maxHeartbeats <num>` to set the limit.(invalid MessageData.lazy, missing context)
-
+```json
 {"res":
  "Translating: Let $S$ be a set and let $\\cdot$ be a binary operation on $S$ satisfying the two following laws: (1) for all $x$ in $S$, $x = x \\cdot x$, (2) for all $x,y,z$ in $S$, $(x \\cdot y) \\cdot z) = (y \\cdot z) \\cdot x$. Show that $\\cdot$ is associative and commutative. ",
  "cmd": "translate"}
@@ -235,7 +239,7 @@ Use `set_option maxHeartbeats <num>` to set the limit.(invalid MessageData.lazy,
  "cmd": "translate"}
 
 
-PROBLEM 104: 
+## Problem 104: 
 {"res":
  "Translating: Find all functions $F : \\mathbb{R} \\setminus \\{0, 1\\} \\to \\mathbb{R}$ that satisfy $F(x) + F\\left(\\frac{x - 1}{x}\\right) = 1 + x$ for all $x \\in \\mathbb{R} \\setminus \\{0, 1\\}$.The only such function is $F(x) = \\frac{x^3 - x^2 - 1}{2x(x - 1)}$.",
  "cmd": "translate"}
@@ -259,11 +263,11 @@ PROBLEM 104:
    "∀ {F : (ℝ \\ {0, 1}) → ℝ},\n  (∀ x ∈ (ℝ \\ {0, 1}), F x + F ((x - 1) / x) = 1 + x) ↔\n    F = fun x => (x^3 - x^2 - 1) / (2 * x * (x - 1))",
    "∀ {F : ℝ → ℝ},\n  (∀ x, x ≠ 0 ∧ x ≠ 1 → F x + F ((x - 1) / x) = 1 + x) ↔\n    ∀ x, x ∉ ({0, 1} : Set ℝ) → F x = (x ^ 3 - x ^ 2 - 1) / (2 * x * (x - 1))"]},
  "cmd": "translate"}
-
-PROBLEM 105: 
+```
+## Problem 105: 
 (deterministic) timeout at `delab`, maximum number of heartbeats (200000) has been reached
 Use `set_option maxHeartbeats <num>` to set the limit.(invalid MessageData.lazy, missing context)
-
+```json
 {"res":
  "Translating: If two cars travel around a track at constant speeds of one lap per hour, starting from the same point but at different times, prove that the total amount of time for which the first car has completed exactly twice as many laps as the second is exactly $1$ hour.",
  "cmd": "translate"}
@@ -284,9 +288,10 @@ Use `set_option maxHeartbeats <num>` to set the limit.(invalid MessageData.lazy,
    "∀ {n m : ℕ}, ∀ {t₁ t₂ : ℝ} (H₁ : t₁ ∈ Set.Icc 0 m) (H₂ : t₂ ∈ Set.Icc 0 n),\n  (∃ h : ℝ, h ∈ Set.Icc 0 1 ∧ ⌊(h + t₁) * (n + m)⌋ = 2 * ⌊(h + t₂) * (n + m)⌋) → ∃ h : ℝ, h = 1",
    "∀ {t₁ t₂ : ℝ}, (t₁ < t₂ ∧ ∀ t : ℝ, t ≥ t₂ → (t - t₁) / 1 = 2 * (t - t₂) / 1) → (t₂ - t₁ = 1)"]},
  "cmd": "translate"}
+```
 
-
-PROBLEM 106: 
+## Problem 106: 
+```json
 {"res":
  "Translating: Let $\\delta(x) be the greatest odd divisor of the positive integer $x$. Show that $|\\sum_{n = 1}^x \\delta(n)/n - 2x/3| < 1$ for all positive integers $x$.",
  "cmd": "translate"}
@@ -488,12 +493,12 @@ PROBLEM 106:
    "context?":
    "Let $\\delta(x) be the greatest odd divisor of the positive integer $x$. Show that $|\\sum_{n = 1}^x \\delta(n)/n - 2x/3| < 1$ for all positive integers $x$."}},
  "cmd": "translate"}
-
-PROBLEM 107: 
+```
+## Problem 107: 
 (deterministic) timeout at `delab`, maximum number of heartbeats (200000) has been reached
 Use `set_option maxHeartbeats <num>` to set the limit.(invalid MessageData.lazy, missing context)
 All Messages (2)
-
+```json
 {"res":
  "Translating: Show that there are no four consecutive binomial coefficients ${n \\choose r}, {n \\choose (r+1)}, {n \\choose (r+2)}, {n \\choose (r+3)}$ where $n,r$ are positive integers and $r+3 \\leq n$, which are in arithmetic progression.",
  "cmd": "translate"}
@@ -519,11 +524,11 @@ All Messages (2)
    "∀ (n r : ℕ), r + 3 ≤ n → ¬ (n.choose r + n.choose (r + 3) = n.choose (r + 1) * 2)",
    "∀ (n r : ℕ), r + 3 ≤ n → ¬(n.choose r : ℤ) + n.choose (r + 3) = 2 * (n.choose (r + 1) + n.choose (r + 2))"]},
  "cmd": "translate"}
-
-PROBLEM 108: 
+```
+## Problem 108: 
 (deterministic) timeout at `delab`, maximum number of heartbeats (200000) has been reached
 Use `set_option maxHeartbeats <num>` to set the limit.(invalid MessageData.lazy, missing context)
-
+```json
 {"res":
  "Translating: Let $S$ be a set and $\\cdot$ be a binary operation on $S$ satisfying: (1) for all $x,y$ in $S$, $x \\cdot (x \\cdot y) = y$ (2) for all $x,y$ in $S$, $(y \\cdot x) \\cdot x = y$. Show that $\\cdot$ is commutative but not necessarily associative.",
  "cmd": "translate"}
@@ -550,12 +555,13 @@ Use `set_option maxHeartbeats <num>` to set the limit.(invalid MessageData.lazy,
    "∀ {S : Type u_1} {op : S → S → S} (h1 : ∀ (x y : S), op x (op x y) = y) (h2 : ∀ (x y : S), op (op y x) x = y), \n  ∀ (x y : S), op x y = op y x ∧ ¬(∀ a b c : S, op (op a b) c = op a (op b c))"]},
  "cmd": "translate"}
 
-PROBLEM 109:
+## Problem 109:
 DIDN’T TERMINATE
 Translation:
 (ℝ → ℝ) → Prop
-
-PROBLEM 110:
+```
+## Problem 110:
+```json
 {"res":
  "Translating: Show that if $n$ is an integer greater than $1$, then $n$ does not divide $2^n - 1$.",
  "cmd": "translate"}
@@ -574,12 +580,12 @@ PROBLEM 110:
    "∀ {n : ℕ}, 1 < n → ¬n ∣ (2 ^ n - 1)"]},
  "cmd": "translate"}
 
-PROBLEM 111: 
+## Problem 111: 
 TYPE MISMATCH 
 (deterministic) timeout at `delab`, maximum number of heartbeats (200000) has been reached
 Use `set_option maxHeartbeats <num>` to set the limit.(invalid MessageData.lazy, missing context)
 
-PROBLEM 112: 
+## Problem 112: 
 (deterministic) timeout at `delab`, maximum number of heartbeats (200000) has been reached
 Use `set_option maxHeartbeats <num>` to set the limit.(invalid MessageData.lazy, missing context)
 
@@ -604,7 +610,7 @@ Use `set_option maxHeartbeats <num>` to set the limit.(invalid MessageData.lazy,
  "cmd": "translate"}
 
 
-PROBLEM 113:
+## Problem 113:
 DIDN’T TERMINATE
 "Let $x : \\mathbb{R} \\to \\mathbb{R}$ be a twice differentiable function whose second derivative is nonstrictly decreasing. If $x(t) - x(0) = s$, $x'(0) = 0$, and $x'(t) = v$ for some $t > 0$, find the maximum possible value of $t$ in terms of $s$ and $v$.Show that the maximum possible time is $t = \\frac{2s}{v}$."
 Translation:
@@ -612,11 +618,11 @@ Translation:
   (∀ (t : ℝ), deriv (deriv x) t ≤ 0) → x t - x 0 = s → deriv x 0 = 0 → deriv x t = v → t = 2 * s / v
 
 
-PROBLEM 114:
+## Problem 114:
 (deterministic) timeout at `delab`, maximum number of heartbeats (200000) has been reached
 Use `set_option maxHeartbeats <num>` to set the limit.(invalid MessageData.lazy, missing context)
 
-PROBLEM 115:
+## Problem 115:
 {"res":
  "Translating: Let $n \\geq 2$ be an integer. Show that there exists a polynomial $P(x,y,z)$ with integral coefficients such that $x \\equiv P(x^n, x^{n+1}, x + x^{n+2})$.",
  "cmd": "translate"}
@@ -635,7 +641,7 @@ PROBLEM 115:
   ["∀ (n : ℕ),\n  n ≥ 2 →\n    ∃ P : Polynomial ℤ × Polynomial ℤ × Polynomial ℤ → Polynomial ℤ,\n      ∀ x : ℤ, x = P (x ^ n, x ^ (n + 1), x + x ^ (n + 2))"]},
  "cmd": "translate"}
 
-PROBLEM 116:
+## Problem 116:
 {"res":
  "Translating: Let $ABCD$ be a skew (non-planar) quadrilateral. Prove that if $\\angle ABC = \\angle CDA$ and $\\angle BCD = \\angle DAB$, then $AB = CD$ and $AD = BC$.",
  "cmd": "translate"}
@@ -662,7 +668,7 @@ PROBLEM 116:
    "∀ {V : Type u_1} {P : Type u_2} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]\n  [NormedAddTorsor V P] {A B C D : P},\n  EuclideanGeometry.angle A B C = EuclideanGeometry.angle C D A →\n  EuclideanGeometry.angle B C D = EuclideanGeometry.angle D A B →\n  dist A B = dist C D ∧ dist A D = dist B C"]},
  "cmd": "translate"}
 
-PROBLEM 117:
+## Problem 117:
 (deterministic) timeout at `delab`, maximum number of heartbeats (200000) has been reached
 Use `set_option maxHeartbeats <num>` to set the limit.(invalid MessageData.lazy, missing context)
 
@@ -690,7 +696,7 @@ Use `set_option maxHeartbeats <num>` to set the limit.(invalid MessageData.lazy,
    "∀ {k : ℕ} (n : Fin k → ℕ), StrictMono n →\n  ∀ z : ℂ, Complex.abs z < (Real.sqrt 5 - 1) / 2 → Polynomial.eval z (Polynomial.C 1 + ∑ i, Polynomial.X ^ n i) ≠ 0"]},
  "cmd": "translate"}
 
-PROBLEM 118: 
+## Problem 118: 
 {"res":
  "Translating: Let $\\triangle ABC$ be any triangle in the Euclidean plane, and let points $X$, $Y$, and $Z$ lie on sides $\\overline{BC}$, $\\overline{CA}$, and $\\overline{AB}$ respectively. If $BX \\le XC$, $CY \\le YA$, and $AZ \\le ZB$, prove that $[\\triangle XYZ] \\ge \\frac{1}{4} [\\triangle ABC]$.  Regardless of this constraint on $X$, $Y$, and $Z$, prove that one of $[\\triangle AZY]$, $[\\triangle BXZ]$, or $[\\triangle CYX]$ is less than or equal to $[\\triangle XYZ]$. (Here, $[\\triangle]$ denotes the area of triangle $\\triangle$.)",
  "cmd": "translate"}
@@ -898,10 +904,10 @@ PROBLEM 118:
    "Let $\\triangle ABC$ be any triangle in the Euclidean plane, and let points $X$, $Y$, and $Z$ lie on sides $\\overline{BC}$, $\\overline{CA}$, and $\\overline{AB}$ respectively. If $BX \\le XC$, $CY \\le YA$, and $AZ \\le ZB$, prove that $[\\triangle XYZ] \\ge \\frac{1}{4} [\\triangle ABC]$.  Regardless of this constraint on $X$, $Y$, and $Z$, prove that one of $[\\triangle AZY]$, $[\\triangle BXZ]$, or $[\\triangle CYX]$ is less than or equal to $[\\triangle XYZ]$. (Here, $[\\triangle]$ denotes the area of triangle $\\triangle$.)"}},
  "cmd": "translate"}
 
-PROBLEM 119: 
+## Problem 119: 
 DIDN’T TERMINATE 
 
-PROBLEM 120: 
+## Problem 120: 
 {"res":
  "Translating: Let $n$ be a fixed positive integer and let $b(n)$ be the minimum value of $k + \\frac{n}{k}$ as $k$ is allowed to range through all positive integers. Prove that $b(n)$ and $\\sqrt{4n + 1}$ have the same integer part.",
  "cmd": "translate"}
@@ -918,7 +924,7 @@ PROBLEM 120:
   ["∀ (n : ℕ) (k : ℕ), 0 < n → 0 < k → Int.floor ((k + n / k : ℝ)) = Int.floor (Real.sqrt (4 * n + 1))"]},
  "cmd": "translate"}
 
-PROBLEM 121: 
+## Problem 121: 
 {"res":
  "Translating: How many zeros does the function $f(x) = 2^x - 1 - x^2$ have on the real line?Show that the solution is 3.",
  "cmd": "translate"}
@@ -940,14 +946,14 @@ PROBLEM 121:
    "∃! x : ℝ, (λ x => 2^x - 1 - x^2) x = 0"]},
  "cmd": "translate"}
 
-PROBLEM 122: 
+## Problem 122: 
 DIDN’T TERMINATE 
 
-PROBLEM 123: 
+## Problem 123: 
 (deterministic) timeout at `delab`, maximum number of heartbeats (200000) has been reached
 Use `set_option maxHeartbeats <num>` to set the limit.(invalid MessageData.lazy, missing context)
 
-PROBLEM 124: 
+## Problem 124: 
 {"res":
  "Translating: Let $z = x+iy$ be a complex number with $x$ and $y$ rational and with $\\| z \\| = 1$. Show thaat the number $\\| z^{2n} - 1 \\|$ is rational for every integer $n$.",
  "cmd": "translate"}
@@ -963,7 +969,7 @@ PROBLEM 124:
   ["∀ (x y : ℚ), (x ^ 2 + y ^ 2 = 1) → ∀ (n : ℤ), ∃ (q : ℚ), ‖(x + y * Complex.I) ^ (2 * n) - 1‖ = q"]},
  "cmd": "translate"}
 
-PROBLEM 125: 
+## Problem 125: 
 {"res":
  "Translating: Let $p > 1$ be an integer with the property that $x^2 - x + p$ is prime for all $x$ in the range $0 < x < p$. Show there exists exactly one triple of integers $a,b,c$ satisfying $b^2 - 4ac = 1 - 4p$, $0 < a \\leq c$, and $-a \\leq b < a$.",
  "cmd": "translate"}
@@ -1177,11 +1183,11 @@ PROBLEM 125:
    ["The `ExistsUnique` notation should not be used with more than one binder.\n\nThe reason for this is that `∃! (x : α), ∃! (y : β), p x y` has a completely different meaning from `∃! q : α × β, p q.1 q.2`. To prevent confusion, this notation requires that you be explicit and use one with the correct interpretation."]}},
  "cmd": "translate"}
 
-PROBLEM 126: 
+## Problem 126: 
 (deterministic) timeout at `delab`, maximum number of heartbeats (200000) has been reached
 Use `set_option maxHeartbeats <num>` to set the limit.(invalid MessageData.lazy, missing context)
 
-PROBLEM 127: 
+## Problem 127: 
 {"res":
  "Translating: Call a set of positive integers 'conspiratorial' if no three of them are pairwise relatively prime. What is the largest number of elements in any conspiratorial subset of the integers 1 through 16?Show that the answer is 11.",
  "cmd": "translate"}
@@ -1201,13 +1207,13 @@ PROBLEM 127:
    "theorem conspiratorial_subset_max (s : Finset ℕ) (h₁ : ∀ {a b c}, a ∈ s → b ∈ s → c ∈ s → ¬(a.Coprime b ∧ b.Coprime c ∧ a.Coprime c)) (h₂ : ∀ x ∈ s, 1 ≤ x ∧ x ≤ 16) : s.card ≤ 11 :=\nbegin\n  -- Proof of the theorem goes here\nend"]},
  "cmd": "translate"}
 
-PROBLEM 128: 
+## Problem 128: 
 DIDN’T TERMINATE
 "A well-known theorem asserts that a prime $p > 2$ can be written as the sum of two perfect squres if and only if $p \\equiv 1 \\bmod 4$. Find which primes $p > 2$ can be written in each of the following forms, using (not necessarily positive) integers $x$ and $y$: (a) $x^2 + 16y^2$, (b) $4x^2 + 4xy + 5y^2$.Show that that the answer to (a) is the set of primes which are $1 \\bmod 8$, and the solution to (b) is the set of primes which are $5 \\bmod 8$."
 "Translation: ∀ {p : ℕ} [inst : Fact (Nat.Prime p)],
   p > 2 → (∃ x y, p = x ^ 2 + 16 * y ^ 2 ↔ p % 8 = 1) ∧ ∃ x y, p = x ^ 2 + 4 * x * y + 5 * y ^ 2 ↔ p % 8 = 1"
 
-PROBLEM 129: 
+## Problem 129: 
 {"res":
  "Translating: Evaluate in closed form: $\\frac{1}{2^{n-1}} \\sum_{k < n/2} (n-2k)*{n \\choose k}$.Show that the solution is $\\frac{n}{2^{n-1}} * {(n-1) \\choose \\left[ (n-1)/2 \\right]}$.",
  "cmd": "translate"}
@@ -1234,7 +1240,7 @@ PROBLEM 129:
    "∀ (n : ℕ), (1 / 2 ^ (n - 1)) * ∑ k in Finset.range (n / 2), (n - 2 * k) * n.choose k = (n / 2 ^ (n - 1)) * ((n - 1).choose ((n - 1) / 2))"]},
  "cmd": "translate"}
 
-PROBLEM 130:  
+## Problem 130:  
 {"res":
  "Translating: Given $n$, let $k(n)$ be the minimal degree of any monic integral polynomial $f$ such that the value of $f(x)$ is divisible by $n$ for every integer $x$. Find the value of $k(1000000)$.Show that the answer is 25.",
  "cmd": "translate"}
@@ -1442,11 +1448,11 @@ PROBLEM 130:
    "Given $n$, let $k(n)$ be the minimal degree of any monic integral polynomial $f$ such that the value of $f(x)$ is divisible by $n$ for every integer $x$. Find the value of $k(1000000)$.Show that the answer is 25."}},
  "cmd": "translate"}
 
-PROBLEM 131: 
+## Problem 131: 
 (deterministic) timeout at `delab`, maximum number of heartbeats (200000) has been reached
 Use `set_option maxHeartbeats <num>` to set the limit.(invalid MessageData.lazy, missing context)
 
-PROBLEM 132: 
+## Problem 132: 
 {"res":
  "Translating: Let $y(x)$ be a continuously differentiable real-valued function of a real vairable $x$. Show that if $(y')^2 + y^3 \\to 0$ as $x \\to +\\infty$, then $y(x)$ and $y'(x) \\to 0$ as $x \\to +\\infty$.",
  "cmd": "translate"}
@@ -1466,7 +1472,7 @@ PROBLEM 132:
    "∀ {y : ℝ → ℝ}, (∀ x, ContinuousAt (deriv y) x) →\n  Filter.Tendsto (fun x => (deriv y x) ^ 2 + (y x) ^ 3) Filter.atTop (nhds 0) →\n    Filter.Tendsto y Filter.atTop (nhds 0) ∧ Filter.Tendsto (deriv y) Filter.atTop (nhds 0)"]},
  "cmd": "translate"}
 
-PROBLEM 133: 
+## Problem 133: 
 {"res":
  "Translating: Prove that if $\\alpha$ is a real number such that $\\cos (\\pi \\alpha) = 1/3$, the $\\alpha$ is irrational.",
  "cmd": "translate"}
@@ -1492,7 +1498,7 @@ PROBLEM 133:
    "∀ {α : ℝ}, Real.cos (Real.pi * α) = 1 / 3 → Irrational α"]},
  "cmd": "translate"}
 
-PROBLEM 134: 
+## Problem 134: 
 {"res":
  "Translating: Let $f : \\mathbb{R} \\to \\mathbb{R}$ be continuous in each variable seperately. Show that there exists a sequence of continuous functions $g_n : \\mathbb{R}^2 \\to \\mathbb{R}$ such that $f(x,y) = \\lim_{n \\to \\infty} g_n(x,y)$ for all $(x,y) \\in \\mathbb{R}^2$.",
  "cmd": "translate"}
@@ -1512,7 +1518,7 @@ PROBLEM 134:
    "∀ {f : ℝ → ℝ → ℝ}, (∀ x, Continuous (f x)) → (∀ y, Continuous (fun x => f x y)) → ∃ (g_n : ℕ → ℝ × ℝ → ℝ), (∀ n, Continuous (g_n n)) ∧ ∀ (x y : ℝ), Filter.Tendsto (fun n => g_n n (x, y)) Filter.atTop (nhds (f x y))"]},
  "cmd": "translate"}
 
-PROBLEM 135: 
+## Problem 135: 
 {"res":
  "Translating: Show that $1 + (n/1!) + (n^2/2!) + \\dots + (n^n/n!) > e^n/2$ for every integer $n \\geq 0$.",
  "cmd": "translate"}
@@ -1539,7 +1545,7 @@ PROBLEM 135:
    "∀ (n : ℕ), 1 + ∑ i in Finset.range (n + 1), n ^ i / Nat.factorial i > Real.exp n / 2"]},
  "cmd": "translate"}
 
-PROBLEM 136: 
+## Problem 136: 
 {"res":
  "Translating: For a set with $1000$ elements, how many subsets are there whose candinality is respectively $\\equiv 0 \\bmod 3, \\equiv 1 \\bmod 3, \\equiv 2 \\bmod 3$?Show that there answer is that there are $(2^1000-1)/3$ subsets of cardinality $\\equiv 0 \\bmod 3$ and $\\equiv 1 \\bmod 3$, and $1 + (2^1000-1)/3$ subsets of cardinality $\\equiv 2 \\bmod 3$.",
  "cmd": "translate"}
@@ -1562,7 +1568,7 @@ PROBLEM 136:
    "∀ (s : Finset (Fin 1000)), \n  ((2^1000 - 1) / 3) = (Finset.card {t | t ⊆ s ∧ t.card % 3 = 0}) ∧\n  ((2^1000 - 1) / 3) = (Finset.card {t | t ⊆ s ∧ t.card % 3 = 1}) ∧\n  (1 + (2^1000 - 1) / 3) = (Finset.card {t | t ⊆ s ∧ t.card % 3 = 2})"]},
  "cmd": "translate"}
 
-PROBLEM 137: 
+## Problem 137: 
 (deterministic) timeout at `delab`, maximum number of heartbeats (200000) has been reached
 Use `set_option maxHeartbeats <num>` to set the limit.(invalid MessageData.lazy, missing context)
 
@@ -1593,7 +1599,7 @@ Use `set_option maxHeartbeats <num>` to set the limit.(invalid MessageData.lazy,
  "cmd": "translate"}
 
 
-PROBLEM 138: 
+## Problem 138: 
 {"res":
  "Translating: For which ordered pairs $(b, c)$ of real numbers do both roots of $z^2 + bz + c$ lie strictly inside the unit disk (i.e., $\\{|z| < 1\\}$) in the complex plane?The desired region is the strict interior of the triangle with vertices $(0, -1)$, $(2, 1)$, and $(-2, 1)$.",
  "cmd": "translate"}
@@ -1614,7 +1620,7 @@ PROBLEM 138:
    "∀ {b c : ℝ}, (∀ z : ℂ, z^2 + (b : ℂ) * z + (c : ℂ) = 0 → Complex.abs z < 1) ↔ (-1 < c ∧ c < 1 ∧ -2 < b - c ∧ b - c < 2)"]},
  "cmd": "translate"}
 
-PROBLEM 139: 
+## Problem 139: 
 (deterministic) timeout at `delab`, maximum number of heartbeats (200000) has been reached
 Use `set_option maxHeartbeats <num>` to set the limit.(invalid MessageData.lazy, missing context)
 
@@ -1638,7 +1644,7 @@ Use `set_option maxHeartbeats <num>` to set the limit.(invalid MessageData.lazy,
    "∀ {a b c : ℝ}, 0 < a → a < b → b < c →\n  (∀ (x y z : ℝ), x^b + y^b + z^b = 1 → x ≥ 0 → y ≥ 0 → z ≥ 0 →\n    ∃ (x₀ y₀ z₀ : ℝ), f x y z ≤ f x₀ y₀ z₀ ∧\n      (x₀ = (a / b) ^ (1 / (b - a)) ∧ y₀ = (1 - x₀^b)^(1/b) ∧ z₀ = 0) ∧\n    ∃ (x₀ y₀ z₀ : ℝ), f x y z ≥ f x₀ y₀ z₀ ∧\n      (x₀ = 0 ∧ y₀ = (1 - z₀^b)^(1/b) ∧ z₀ = (b / c) ^ (1 / (c - b))))"]},
  "cmd": "translate"}
 
-PROBLEM 140: 
+## Problem 140: 
 {"res":
  "Translating: Let $n = 2m$, where $m$ is an odd integer greater than 1. Let $\\theta = e^{2\\pi i/n}$. Expression $(1 - \\theta)^{-1}$ explicitly as a polynomial in $\\theta$ \\[ a_k \\theta^k  + a_{k-1}\\theta^{k-1} + \\dots + a_1\\theta + a_0\\], with integer coefficients $a_i$.Show that the solution is the polynomial $0 + \\theta + \\theta^3 + \\dots + \\theta^{m-2}$, alternating consecutive coefficients between 0 and 1.",
  "cmd": "translate"}
@@ -1657,20 +1663,20 @@ PROBLEM 140:
   ["∀ {n m : ℕ} (θ : ℂ),\n  n = 2 * m →\n  Odd (2 * m) →\n  1 < m →\n  (1 - θ)⁻¹ =\n    Finset.sum (Finset.range m)\n      (fun k => if k % 2 = 0 then (algebraMap ℤ ℂ) 0 * θ ^ k else (algebraMap ℤ ℂ) 1 * θ ^ k)"]},
  "cmd": "translate"}
 
- PROBLEM 141: 
+ ## Problem 141: 
  didn't terminate 
  Translation : SorryAx 
  
- PROBLEM 142: 
+ ## Problem 142: 
  timeout 
  Successes: 0, Failures: 0
  Successes:
  Failures:
  
- PROBLEM 143: 
+ ## Problem 143: 
  didn't run 
  
- PROBLEM 144: 
+ ## Problem 144: 
  {"res":
   "Translating: Let $s_k (a_1, a_2, \\dots, a_n)$ denote the $k$-th elementary symmetric function; that is, the sum of all $k$-fold products of the $a_i$. For example, $s_1 (a_1, \\dots, a_n) = \\sum_{i=1}^{n} a_i$, and $s_2 (a_1, a_2, a_3) = a_1a_2 + a_2a_3 + a_1a_3$. Find the supremum $M_k$ (which is never attained) of $$\\frac{s_k (a_1, a_2, \\dots, a_n)}{(s_1 (a_1, a_2, \\dots, a_n))^k}$$ across all $n$-tuples $(a_1, a_2, \\dots, a_n)$ of positive real numbers with $n \\ge k$.The supremum $M_k$ is $\\frac{1}{k!}$.",
   "cmd": "translate"}
@@ -1867,7 +1873,7 @@ PROBLEM 140:
      "function expected at\n  esymm\nterm has type\n  ?m.39"]}},
   "cmd": "translate"}
  
- PROBLEM 145: 
+ ## Problem 145: 
  {"res":
   "Translating: Let $C = \\{(x, y) \\in \\mathbb{R}^2 : x^2 + y^2 = 1\\}$ denote the unit circle. Does there exist $B \\subseteq C$ for which $B$ is topologically closed and contains exactly one point from each pair of diametrically opposite points in $C$?Such $B$ does not exist.",
   "cmd": "translate"}
@@ -1893,7 +1899,7 @@ PROBLEM 140:
     "let C := {p : ℝ × ℝ | p.1^2 + p.2^2 = 1},\n  ¬∃ B ⊆ C, IsClosed B ∧ ∀ p ∈ C, (p ∈ B ↔ -p ∉ B)"]},
   "cmd": "translate"}
  
- PROBLEM 146: 
+ ## Problem 146: 
  {"res":
   "Translating: Let $f_0(x) = e^x$ and $f_{n+1}(x) = xf'_n(x)$ for all $n \\ge 0$. Prove that $$\\sum_{n=0}^{\\infty} \\frac{f_n(1)}{n!} = e^e.$$",
   "cmd": "translate"}
@@ -1919,7 +1925,7 @@ PROBLEM 140:
     "```lean\ntheorem exp_nested_sum :\n  let f : ℕ → ℝ → ℝ\n  | 0, x => Real.exp x\n  | (n + 1), x => x * (f n x)' in\n  ∑' (n : ℕ), f n 1 / (Nat.factorial n) = Real.exp (Real.exp 1) :=\nbegin\n  sorry\nend\n```"]},
   "cmd": "translate"}
  
- PROBLEM 147: 
+ ## Problem 147: 
  {"res":
   "Translating: Show that if $s_n = 1 + \\frac{1}{2} + \\frac{1}{3} + \\dots + 1/n, then $n(n+1)^{1/n} < n + s_n$ whenever $n > 1$ and $(n-1)n^{-1/(n-1)} < n - s_n$ whenever $n > 2$.",
   "cmd": "translate"}
@@ -1934,7 +1940,7 @@ PROBLEM 140:
    "allElaborated":
    ["∀ (n : ℕ), 1 < n → (n * (n + 1) ^ (1 / ↑n) < n + (∑ i in Finset.range n, 1 / ↑(i + 1))) ∧ 2 < n → ((n - 1) * n ^ (-(1 / ↑(n - 1))) < n - (∑ i in Finset.range n, 1 / ↑(i + 1)))"]},
   "cmd": "translate"}
- PROBLEM 148: 
+ ## Problem 148: 
  {"res":
   "Translating: Let $P(x, y) = x^2y + xy^2$, $Q(x, y) = x^2 + xy + y^2$, $F_n(x, y) = (x + y)^n - x^n - y^n$, and $G_n(x, y) = (x + y)^n + x^n + y^n$. Prove that for all positive integers $n$, either $F_n$ or $G_n$ can be represented as a polynomial in $P$ and $Q$ with integer coefficients.",
   "cmd": "translate"}
@@ -1950,7 +1956,7 @@ PROBLEM 140:
    ["∀ (x y : ℤ) (n : ℕ) (hn : 0 < n),\n  ∃ a b c d,\n    ((x + y) ^ n - x ^ n - y ^ n = a * (x ^ 2 * y + x * y ^ 2) + b * (x ^ 2 + x * y + y ^ 2)) ∨\n      ((x + y) ^ n + x ^ n + y ^ n = c * (x ^ 2 * y + x * y ^ 2) + d * (x ^ 2 + x * y + y ^ 2))"]},
   "cmd": "translate"}
  
- PROBLEM 149: 
+ ## Problem 149: 
  {"res":
   "Translating: Find all integer solutions $(p, r, q, s)$ of the equation $|p^r - q^s| = 1$, where $p$ and $q$ are prime and $r$ and $s$ are greater than $1$.The only solutions are $(p, r, q, s) = (3, 2, 2, 3)$ and $(p, r, q, s) = (2, 3, 3, 2)$.",
   "cmd": "translate"}
@@ -1968,7 +1974,7 @@ PROBLEM 140:
     "theorem eq_one_of_prime_powers :\n  ∀ {p q r s : ℕ}, Nat.Prime p → Nat.Prime q → 1 < r → 1 < s →\n  abs (p ^ r - q ^ s) = 1 →\n  (p = 3 ∧ r = 2 ∧ q = 2 ∧ s = 3) ∨ (p = 2 ∧ r = 3 ∧ q = 3 ∧ s = 2)  "]},
   "cmd": "translate"}
  
- PROBLEM 150: 
+ ## Problem 150: 
  {"res":
   "Translating: Let $r$ be a real root of $P(x) = x^3 + ax^2 + bx - 1$, where $a$ and $b$ are integers and $P$ is irreducible over the rationals. Suppose that $r + 1$ is a root of $x^3 + cx^2 + dx + 1$, where $c$ and $d$ are also integers. Express another root $s$ of $P$ as a function of $r$ that does not depend on the values of $a$, $b$, $c$, or $d$.The possible answers are $s = -\\frac{1}{r + 1}$ and $s = -\\frac{r + 1}{r}$.",
   "cmd": "translate"}
@@ -1993,7 +1999,7 @@ PROBLEM 140:
     "∀ {r a b c d : ℝ},   Polynomial.eval r (Polynomial.C 1 + Polynomial.C b * Polynomial.X + Polynomial.C a * Polynomial.X^2 + Polynomial.X^3) = 0 →   Polynomial.eval (r + 1) (Polynomial.C 1 + Polynomial.C d * Polynomial.X + Polynomial.C c * Polynomial.X^2 + Polynomial.X^3) = 0 →   ∃ s : ℝ, (s = -1 / (r + 1) ∨ s = -(r + 1) / r) ∧ Polynomial.eval s (Polynomial.C 1 + Polynomial.C b * Polynomial.X + Polynomial.C a * Polynomial.X^2 + Polynomial.X^3) = 0"]},
   "cmd": "translate"}
  
- PROBLEM 151: 
+ ## Problem 151: 
  {"res":
   "Translating: Suppose that $f : \\mathbb{R} \\to \\mathbb{R}$ is a twice continuously differentiable function such that $|f(x)| \\le 1$ for all real $x$ and $(f(0))^2 + (f'(0))^2 = 4$. Prove that $f(y) + f''(y) = 0$ for some real number $y$.",
   "cmd": "translate"}
@@ -2019,7 +2025,7 @@ PROBLEM 140:
     "∀ {f : ℝ → ℝ},\n  Differentiable ℝ f →\n    Differentiable ℝ (deriv f) →\n      Continuous ℝ (deriv^[2] f) →\n        (∀ x : ℝ, |f x| ≤ 1) →\n        (f 0) ^ 2 + (deriv f 0) ^ 2 = 4 →\n        ∃ y : ℝ, f y + deriv^[2] f y = 0"]},
   "cmd": "translate"}
  
- PROBLEM 152: 
+ ## Problem 152: 
  {"res":
   "Translating: Find $$\\lim_{n \\to \\infty} \\frac{1}{n} \\sum_{k=1}^{n}\\left(\\left\\lfloor \\frac{2n}{k} \\right\\rfloor - 2\\left\\lfloor \\frac{n}{k} \\right\\rfloor\\right).$$ Your answer should be in the form $\\ln(a) - b$, where $a$ and $b$ are positive integers.The limit equals $\\ln(4) - 1$, so $a = 4$ and $b = 1$.",
   "cmd": "translate"}
@@ -2230,7 +2236,7 @@ PROBLEM 140:
     ["application type mismatch\n  Finset.range n\nargument\n  n\nhas type\n  ℝ : Type\nbut is expected to have type\n  ℕ : Type"]}},
   "cmd": "translate"}
  
- PROBLEM 153: 
+ ## Problem 153: 
  {"res":
   "Translating: Let $G$ be a group generated by two elements $A$ and $B$; i.e., every element of $G$ can be expressed as a finite word $A^{n_1}B^{n_2} \\cdots A^{n_{k-1}}B^{n_k}$, where the $n_i$ can assume any integer values and $A^0 = B^0 = 1$. Further assume that $A^4 = B^7 = ABA^{-1}B = 1$, but $A^2 \\ne 1$ and $B \\ne 1$. Find the number of elements of $G$ than can be written as $C^2$ for some $C \\in G$ and express each such square as a word in $A$ and $B$.There are $8$ such squares: $1$, $A^2$, $B$, $B^2$, $B^3$, $B^4$, $B^5$, and $B^6$.",
   "cmd": "translate"}
@@ -2254,7 +2260,7 @@ PROBLEM 140:
     "∀ {G : Type u_1} [inst : Group G] {A B : G},\n  (∀ g : G, ∃ (n1 n2 : ℤ) (k : ℕ) (n : Fin k → ℤ),\n    g = List.foldl (*) 1 ((List.finRange k).map (λ i, if i % 2 = 0 then A ^ n i else B ^ n i))) →\n  A ^ 4 = 1 ∧ B ^ 7 = 1 ∧ A * B * A⁻¹ * B = 1 ∧ A ^ 2 ≠ 1 ∧ B ≠ 1 →\n  (Fintype.card {C : G // ∃ g : G, C = g ^ 2}) = 8 ∧\n  ∀ C : G, (∃ g : G, C = g ^ 2) ↔ C = 1 ∨ C = A ^ 2 ∨ C = B ∨ C = B ^ 2 ∨ C = B ^ 3 ∨ C = B ^ 4 ∨ C = B ^ 5 ∨ C = B ^ 6"]},
   "cmd": "translate"}
  
- PROBLEM 154: 
+ ## Problem 154: 
  
  Suppose that we have $ events , \dots, A_n$, each of which has probability at least  - a$ of occufring, where  < 1/4$. Further suppose that $ and $ are mutually independent if $|i-j| > 1$, although $ and {i+1}$ may be dependent. Assume as known that the recurrence {k+1} = u_k - au_{k-1}$,  = 1, u_1 = 1-a$ defines positive real numbers $ for  = 0,1,\dots$. Show that the probability of all , \dots, A_n$ occurring is at least $.
  
@@ -2455,7 +2461,7 @@ PROBLEM 140:
      "function expected at\n  u\nterm has type\n  ?m.2152"]}},
   "cmd": "translate"}
  
- PROBLEM 155: 
+ ## Problem 155: 
  {"res":
   "Translating: Find $$\\sum_{k=0}^{n} (-1)^k {n \\choose k} (x - k)^n.$$The sum equals $n!$.",
   "cmd": "translate"}
@@ -2481,7 +2487,7 @@ PROBLEM 140:
     "∀ {n : ℕ} (x : ℝ), ((Finset.range (n + 1)).sum fun k => (-1 : ℝ) ^ k * (Nat.choose n k) * (x - k) ^ n) = n.factorial"]},
   "cmd": "translate"}
  
- PROBLEM 156: 
+ ## Problem 156: 
  {"res":
   "Translating: Let $\\sigma(N)$ denote the sum of all positive integer divisors of $N$, including $1$ and $N$. Call a positive integer $N$ \\textit{quasiperfect} if $\\sigma(N) = 2N + 1$. Prove that every quasiperfect number is the square of an odd integer.",
   "cmd": "translate"}
@@ -2672,7 +2678,7 @@ PROBLEM 140:
     "cmdErrors": ["function expected at\n  σ\nterm has type\n  ?m.46"]}},
   "cmd": "translate"}
  
- PROBLEM 157: 
+ ## Problem 157: 
  {"res":
   "Translating: Show that if four distinct points of the curve $y = 2x^4 + 7x^3 + 3x - 5$ are collinear, then their average $x$-coordinate is some constant $k$. Find $k$.Prove that $k = -\\frac{7}{8}$.",
   "cmd": "translate"}
@@ -2700,7 +2706,7 @@ PROBLEM 140:
     "theorem collinear_points_average_x_coordinate\n  {p₁ p₂ p₃ p₄ : ℝ × ℝ}\n  (h1 : p₁.2 = 2 * p₁.1^4 + 7 * p₁.1^3 + 3 * p₁.1 - 5)\n  (h2 : p₂.2 = 2 * p₂.1^4 + 7 * p₂.1^3 + 3 * p₂.1 - 5)\n  (h3 : p₃.2 = 2 * p₃.1^4 + 7 * p₃.1^3 + 3 * p₃.1 - 5)\n  (h4 : p₄.2 = 2 * p₄.1^4 + 7 * p₄.1^3 + 3 * p₄.1 - 5)\n  (h_collinear : Collinear ℝ {p₁, p₂, p₃, p₄}) :\n  (p₁.1 + p₂.1 + p₃.1 + p₄.1) / 4 = -7 / 8 := \nbegin\n  sorry -- Proof omitted for brevity\nend"]},
   "cmd": "translate"}
  
- PROBLEM 158: 
+ ## Problem 158: 
  {"res":
   "Translating: Find all real solutions $(a, b, c, d)$ to the equations $a + b + c = d$, $\\frac{1}{a} + \\frac{1}{b} + \\frac{1}{c} = \\frac{1}{d}$.Prove that the solutions are $d = a$ and $b = -c$, $d = b$ and $a = -c$, or $d = c$ and $a = -b$, with $a, b, c, d$ nonzero.",
   "cmd": "translate"}
@@ -2727,7 +2733,7 @@ PROBLEM 140:
     "∀ {a b c d : ℝ}, a ≠ 0 → b ≠ 0 → c ≠ 0 → d ≠ 0 →\n  (a + b + c = d ∧ 1/a + 1/b + 1/c = 1/d) ↔\n  (d = a ∧ b = -c) ∨ (d = b ∧ a = -c) ∨ (d = c ∧ a = -b)"]},
   "cmd": "translate"}
  
- PROBLEM 159: 
+ ## Problem 159: 
  {"res":
   "Translating: Let $f, g, h$ be functions $\\mathbb{R} \\to \\mathbb{R}$. Find an expression for $h(x)$ in terms of $f$ and $g$ such that $f(x) = \\frac{h(x + 1) + h(x - 1)}{2}$ and $g(x) = \\frac{h(x + 4) + h(x - 4)}{2}$.Prove that $h(x) = g(x) - f(x - 3) + f(x - 1) + f(x + 1) - f(x + 3)$ suffices.",
   "cmd": "translate"}
@@ -2757,7 +2763,7 @@ PROBLEM 140:
     "∀ {h f g : ℝ → ℝ}, \n  (∀ x, f x = (h (x + 1) + h (x - 1)) / 2) →\n  (∀ x, g x = (h (x + 4) + h (x - 4)) / 2) →\n  ∀ x, h x = g x - f (x - 3) + f (x - 1) + f (x + 1) - f (x + 3)"]},
   "cmd": "translate"}
  
- PROBLEM 160: 
+ ## Problem 160: 
  {"res":
   "Translating: Find $\\sum_{n=0}^{\\infty} \\frac{x^{2^n}}{1 - x^{2^{n+1}}}$ as a rational function of $x$ for $x \\in (0, 1)$.Prove that the sum equals $\\frac{x}{1 - x}$.",
   "cmd": "translate"}
@@ -2784,7 +2790,7 @@ PROBLEM 140:
     "∀ {x : ℝ}, 0 < x ∧ x < 1 → HasSum (fun n => x ^ (2 ^ n) / (1 - x ^ (2 ^ (n + 1)))) (x / (1 - x))"]},
   "cmd": "translate"}
  
- PROBLEM 161: 
+ ## Problem 161: 
  {"res":
   "Translating: Let $p$ be a prime and $m \\geq n$ be non-negative integers. Show that $\\binom{pm}{pn} = \\binom{m}{n} \\pmod p$, where $\\binom{m}{n}$ is the binomial coefficient.",
   "cmd": "translate"}
@@ -2810,11 +2816,11 @@ PROBLEM 140:
     "∀ {p m n : ℕ}, Nat.Prime p → n ≤ m → (p * m).choose (p * n) ≡ m.choose n [MOD p]"]},
   "cmd": "translate"}
  
- PROBLEM 162:
+ ## Problem 162:
  didn't terminate 
  sorryAx
  
- PROBLEM 163:
+ ## Problem 163:
  {"res":
   "Translating: Find $\\prod_{n=2}^{\\infty} \\frac{(n^3 - 1)}{(n^3 + 1)}$.Prove that the product equals $\\frac{2}{3}$.",
   "cmd": "translate"}
@@ -2833,11 +2839,11 @@ PROBLEM 140:
    ["Filter.Tendsto (fun n => (Finset.prod (Finset.range n) fun k => (k + 2) ^ 3 - 1 / (k + 2) ^ 3 + 1)) Filter.atTop (nhds (2 / 3))"]},
   "cmd": "translate"}
  
- PROBLEM 164:
+ ## Problem 164:
  didn't run/terminate 
  ℝ → ℝ → ℝ → Prop
  
- PROBLEM 165:
+ ## Problem 165:
  {"res":
   "Translating: If $a_1, a_2, \\dots, a_n$ are real numbers with $n > 1$ and $A$ satisfies $$A + \\sum_{i = 1}^{n} a_i^2 < \\frac{1}{n-1}\\left(\\sum_{i=1}^{n}a_i\\right)^2,$$ prove that $A < 2a_{i}a_{j}$ for all $i, j$ with $1 \\le i < j \\le n$.",
   "cmd": "translate"}
@@ -2863,7 +2869,7 @@ PROBLEM 140:
     "∀ {n : ℕ} {A : ℝ} {a : ℕ → ℝ}, 1 < n → A + ∑ i in Finset.range n, a i ^ 2 < (1 / (n - 1)) * (∑ i in Finset.range n, a i) ^ 2 → ∀ (i j : ℕ), i < j → i < n → j ≤ n → A < 2 * a i * a j"]},
   "cmd": "translate"}
  
- PROBLEM 166:
+ ## Problem 166:
  {"res":
   "Translating: Let $G$ be a group and $H$ be a subgroup of $G$ with $h$ elements. Suppose that $G$ contains some element $a$ such that $(xa)^3 = 1$ for all $x \\in H$ (here $1$ represents the identity element of $G$). Let $P$ be the subset of $G$ containing all products of the form $x_1 a x_2 a \\cdots x_n a$ with $n \\ge 1$ and $x_i \\in H$ for all $i \\in \\{1, 2, \\dots, n\\}$. Prove that $P$ is a finite set and contains no more than $3h^2$ elements.",
   "cmd": "translate"}
@@ -2884,7 +2890,7 @@ PROBLEM 140:
     "```lean\nimport GroupTheory.Subgroup\n\ntheorem subgroup_finite_set_bound {G : Type*} [Group G] (H : Subgroup G) (h : Nat) (a : G)\n  (h_elements : H.card = h)\n  (h_order : ∀ x ∈ H, (x * a) ^ 3 = 1) :\n  ∃ P : Finset G, (∀ n (x : Fin n → G), (∀ i, x i ∈ H) → list.product (list.ofFn (λ i, x i * a)) ∈ P) ∧ P.card ≤ 3 * h ^ 2 := \nbegin\n  sorry\nend\n```"]},
   "cmd": "translate"}
  
- PROBLEM 167:
+ ## Problem 167:
 " Ran successfully
  No translation
  All outputs:
@@ -2914,7 +2920,7 @@ PROBLEM 140:
  have h : A.card = 50,
  show ∃ (x y ∈ A), x ≠ y ∧ x + y = 104"
  
- PROBLEM 168:
+ ## Problem 168:
  {"res":
   "Translating: Let $A$ be the real $n \\times n$ matrix $(a_{ij})$ where $a_{ij} = a$ for $i < j$, $b \\; (\\neq a)$ for $i > j$, and $c_i$ for $i = j$. Show that $\\det A = \\frac{b p(a) - a p(b)}{b - a}$, where $p(x) = \\prod_{i=1}^n (c_i - x)$.",
   "cmd": "translate"}
@@ -2938,7 +2944,7 @@ PROBLEM 140:
     "```lean\n∀ {R : Type u_1} [inst : Field R] {n : ℕ} (A : Matrix (Fin n) (Fin n) R) (a b : R) (c : Fin n → R),\n  (∀ i j : Fin n, A i j = if i < j then a else if i > j then b else c i) →\n  A.det = (b * (Finset.univ.prod fun i => (c i - a)) - a * (Finset.univ.prod fun i => (c i - b))) / (b - a)\n```"]},
   "cmd": "translate"}
  
- PROBLEM 169:
+ ## Problem 169:
  {"res":
   "Translating: Let $p(x) = 2(x^6 + 1) + 4(x^5 + x) + 3(x^4 + x^2) + 5x^3$. For $k$ with $0 < k < 5$, let\n\\[\nI_k = \\int_0^{\\infty} \\frac{x^k}{p(x)} \\, dx.\n\\]\nFor which $k$ is $I_k$ smallest?Show that $I_k$ is smallest for $k = 2$.",
   "cmd": "translate"}
@@ -2961,10 +2967,10 @@ PROBLEM 140:
     "∀ (p : ℝ → ℝ),\n  p = (λ x, 2 * (x^6 + 1) + 4 * (x^5 + x) + 3 * (x^4 + x^2) + 5 * x^3) →\n    ∀ (k : ℕ), 0 < k ∧ k < 5 →\n      (∀ j, 0 < j ∧ j < 5 → (∫ (x : ℝ) in Set.Ioi 0, x^k / p x) ≤ (∫ (x : ℝ) in Set.Ioi 0, x^j / p x)) →\n        k = 2"]},
   "cmd": "translate"}
  
- PROBLEM 170:
+ ## Problem 170:
  didn't run 
  
- PROBLEM 171:
+ ## Problem 171:
  {"res":
   "Translating: Let $a_1, a_2, \\dots , a_n$ be reals in the interval $(0, \\pi)$ with arithmetic mean $\\mu$. Show that\n\\[\n\\prod_{i=1}^n \\left( \\frac{\\sin a_i}{a_i} \\right) \\leq \\left( \\frac{\\sin \\mu}{\\mu} \\right)^n.\n\\]",
   "cmd": "translate"}
@@ -2991,7 +2997,7 @@ PROBLEM 140:
     "∀ {n : ℕ} (a : Fin n → ℝ),\n  (∀ i, 0 < a i ∧ a i < Real.pi) →\n  let μ := (∑ i, a i) / n in\n  (∏ i, Real.sin (a i) / a i) ≤ (Real.sin μ / μ) ^ n"]},
   "cmd": "translate"}
  
- PROBLEM 172:
+ ## Problem 172:
  
  "Given $ distinct points in the plane, prove that fewer than n^{3/2}$ pairs of these points are a distance of $ apart."
  {"res":
@@ -3176,7 +3182,7 @@ PROBLEM 140:
     "Given $n$ distinct points in the plane, prove that fewer than $2n^{3/2}$ pairs of these points are a distance of $1$ apart."}},
   "cmd": "translate"}
  
- PROBLEM 173:
+ ## Problem 173:
  {"res":
   "Translating: Find\n\\[\n\\sum_{i=1}^{\\infty} \\sum_{j=1}^{\\infty} \\frac{1}{i^2j + 2ij + ij^2}.\n\\]Prove that the sum evaluates to $\\frac{7}{4}$.",
   "cmd": "translate"}
@@ -3204,12 +3210,12 @@ PROBLEM 140:
     "∑' i : ℕ, ∑' j : ℕ, 1 / (i ^ 2 * j + 2 * i * j + i * j ^ 2) = 7 / 4"]},
   "cmd": "translate"}
  
- PROBLEM 174:
+ ## Problem 174:
  didn't run 
  ℕ → Polynomial ℝ
  
  
- PROBLEM 175:
+ ## Problem 175:
  {"res":
   "Translating: Show that we can find integers $a, b, c, d$ such that $a^2 + b^2 + c^2 + d^2 = abc + abd + acd + bcd$, and the smallest of $a, b, c, d$ is arbitrarily large.",
   "cmd": "translate"}
@@ -3239,10 +3245,10 @@ PROBLEM 140:
     "∀ N : ℤ, ∃ a b c d : ℤ, a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = a * b * c + a * b * d + a * c * d + b * c * d ∧ N ≤ min a (min b (min c d))"]},
   "cmd": "translate"}
  
- PROBLEM 176:
+ ## Problem 176:
  didn't run 
  
- PROBLEM 177:
+ ## Problem 177:
  {"res":
   "Translating: Let $a_{ij}$ be real numbers in $[0, 1]$. Show that\n\\[\n\\left( \\sum_{i=1}^n  \\sum_{j=1}^{mi} \\frac{a_{ij}}{i} \\right) ^2 \\leq 2m \\sum_{i=1}^n \\sum_{j=1}^{mi} a_{ij}.\n\\]",
   "cmd": "translate"}
@@ -3272,11 +3278,11 @@ PROBLEM 140:
     "∀ {n m : ℕ} {a : ℕ → ℕ → ℝ}, (∀ i j, 0 ≤ a i j ∧ a i j ≤ 1) →\n  (∑ i in Finset.range n, ∑ j in Finset.range (m * i), a i j / i) ^ 2 ≤\n    2 * m * (∑ i in Finset.range n, ∑ j in Finset.range (m * i), a i j)"]},
   "cmd": "translate"}
  
- PROBLEM 178:
+ ## Problem 178:
  didn't run 
  maximum recursion depth has been reached
  
- PROBLEM 179:
+ ## Problem 179:
  {"res":
   "Translating: For which real numbers $k$ does there exist a continuous function $f : \\mathbb{R} \\to \\mathbb{R}$ such that $f(f(x)) = kx^9$ for all real $x$?Such a function exists if and only if $k \\ge 0$.",
   "cmd": "translate"}
@@ -3303,7 +3309,7 @@ PROBLEM 140:
     "∀ (k : ℝ), (∃ f : ℝ → ℝ, Continuous f ∧ ∀ x : ℝ, f (f x) = k * x ^ 9) ↔ 0 ≤ k"]},
   "cmd": "translate"}
  
- PROBLEM 180:
+ ## Problem 180:
  {"res":
   "Translating: Let $x_1, x_2, x_3, \\dots$ be a sequence of nonzero real numbers such that $$x_n = \\frac{x_{n-2}x_{n-1}}{2x_{n-2}-x_{n-1}}$$ for all $n \\ge 3$. For which real values of $x_1$ and $x_2$ does $x_n$ attain integer values for infinitely many $n$?We must have $x_1 = x_2 = m$ for some integer $m$.",
   "cmd": "translate"}
@@ -3319,10 +3325,10 @@ PROBLEM 140:
    ["∀ (x : ℕ → ℝ), (∀ n ≥ 3, x n = x (n - 2) * x (n - 1) / (2 * x (n - 2) - x (n - 1))) →\n  (∀ m : ℤ, ∃ᶠ n in Filter.atTop, x n ∈ Set.Icc m m) →\n  x 1 = x 2 ∧ ∃ m : ℤ, x 1 = m ∧ x 2 = m"]},
   "cmd": "translate"}
  
- PROBLEM 181:
+ ## Problem 181:
  didn't run 
  
- PROBLEM 182:
+ ## Problem 182:
  {"res":
   "Translating: Let $S(x)$ denote the sequence $\\lfloor 0 \\rfloor, \\lfloor x \\rfloor, \\lfloor 2x \\rfloor, \\lfloor 3x \\rfloor, \\dots$, where $\\lfloor x \\rfloor$ denotes the greatest integer less than or equal to $x$. Prove that there exist distinct real roots $\\alpha$ and $\\beta$ of $x^3 - 10x^2 + 29x - 25$ such that infinitely many positive integers appear in both $S(\\alpha)$ and $S(\\beta)$.",
   "cmd": "translate"}
@@ -3342,7 +3348,7 @@ PROBLEM 140:
     "∃ α β : ℝ, α ≠ β ∧ Polynomial.eval α (Polynomial.C 1 * X^3 - Polynomial.C 10 * X^2 + Polynomial.C 29 * X - Polynomial.C 25) = 0 ∧ Polynomial.eval β (Polynomial.C 1 * X^3 - Polynomial.C 10 * X^2 + Polynomial.C 29 * X - Polynomial.C 25) = 0 ∧ Set.Infinite ({n : ℕ | ∃ m : ℕ, (⌊m * α⌋ : ℤ) = n} ∩ {n : ℕ | ∃ m : ℕ, (⌊m * β⌋ : ℤ) = n})"]},
   "cmd": "translate"}
  
- PROBLEM 183:
+ ## Problem 183:
  {"res":
   "Translating: For all $i \\in \\{0, 1, \\dots, n - 1\\}$, let $p_i \\in [0, 1]$. Prove that there exists some $x \\in [0, 1]$ such that $$\\sum_{i = 0}^{n - 1} \\frac{1}{|x - p_i|} \\le 8n\\left(\\sum_{i = 0}^{n-1} \\frac{1}{2i + 1}\\right).$$",
   "cmd": "translate"}
@@ -3364,10 +3370,10 @@ PROBLEM 140:
     "∀ {n : ℕ} (p : Fin n → ℝ),   (∀ i, 0 ≤ p i ∧ p i ≤ 1) → ∃ x, 0 ≤ x ∧ x ≤ 1 ∧ (∑ i, 1 / |x - p i|) ≤ 8 * n * (∑ i in Finset.range n, 1 / (2 * i + 1))"]},
   "cmd": "translate"}
  
- PROBLEM 184:
+ ## Problem 184:
  didn't run 
  
- PROBLEM 185:
+ ## Problem 185:
  {"res":
   "Translating: Let $F$ be a finite field with $n$ elements, and assume $n$ is odd. Suppose $x^2 + bx + c$ is an irreducible polynomial over $F$. For how many elements $d \\in F$ is $x^2 + bx + c + d$ irreducible?Show that there are $\\frac{n - 1}{2}$ such elements $d$.",
   "cmd": "translate"}
@@ -3583,7 +3589,7 @@ PROBLEM 140:
     "Let $F$ be a finite field with $n$ elements, and assume $n$ is odd. Suppose $x^2 + bx + c$ is an irreducible polynomial over $F$. For how many elements $d \\in F$ is $x^2 + bx + c + d$ irreducible?Show that there are $\\frac{n - 1}{2}$ such elements $d$."}},
   "cmd": "translate"}
  
- PROBLEM 186:
+ ## Problem 186:
 " No translation
  All outputs:
  * ∀ {C : Set (ℝ × ℝ)}, Convex ℝ C → IsClosed C →
@@ -3614,7 +3620,7 @@ PROBLEM 140:
    (∀ (Q : ℕ), (Q = 1 ∨ Q = 2 ∨ Q = 3 ∨ Q = 4) → MeasureTheory.measure Q C = MeasureTheory.measure (5 - Q) C) →
    MeasureTheory.measure 1 C ≤ 4"
  
- PROBLEM 187:
+ ## Problem 187:
  {"res":
   "Translating: Let $z_i$ be complex numbers for $i = 1, 2, \\dots, n$. Show that\n\\[\n\\left \\lvert \\mathrm{Re} \\, [(z_1^2 + z_2^2 + \\dots + z_n^2)^{1/2} ] \\right \\rvert \\leq \\lvert \\mathrm{Re} \\, z_1 \\rvert + \\lvert \\mathrm{Re} \\, z_2 \\rvert + \\dots + \\lvert \\mathrm{Re} \\, z_n \\rvert.\n\\]",
   "cmd": "translate"}
@@ -3801,7 +3807,7 @@ PROBLEM 140:
     ["invalid field 'sqrt', the environment does not contain 'Complex.sqrt'\n  ∑ i : Fin n, z i ^ 2\nhas type\n  ℂ"]}},
   "cmd": "translate"}
  
- PROBLEM 188:
+ ## Problem 188:
  {"res":
   "Translating: Let $r$ and $s$ be positive integers. Derive a formula for the number of ordered quadruples $(a,b,c,d)$ of positive integers such that $3^r \\cdot 7^s=\\text{lcm}[a,b,c]=\\text{lcm}[a,b,d]=\\text{lcm}[a,c,d]=\\text{lcm}[b,c,d]$. The answer should be a function of $r$ and $s$. (Note that $\\text{lcm}[x,y,z]$ denotes the least common multiple of $x,y,z$.)Show that the number is $(1+4r+6r^2)(1+4s+6s^2)$.",
   "cmd": "translate"}
@@ -3828,10 +3834,10 @@ PROBLEM 140:
     "∀ {r s : ℕ}, 0 < r → 0 < s → (∃ f : ℕ → ℕ, f r = 1 + 4 * r + 6 * r ^ 2) ∧ (∃ g : ℕ → ℕ, g s = 1 + 4 * s + 6 * s ^ 2)"]},
   "cmd": "translate"}
  
- PROBLEM 189:
+ ## Problem 189:
  didn't run 
  
- PROBLEM 190:
+ ## Problem 190:
  {"res":
   "Translating: \\begin{enumerate}\n\\item[(a)] Prove that there exist integers $a,b,c$, not all zero and each of absolute value less than one million, such that $|a+b\\sqrt{2}+c\\sqrt{3}|<10^{-11}$.\n\\item[(b)] Let $a,b,c$ be integers, not all zero and each of absolute value less than one million. Prove that $|a+b\\sqrt{2}+c\\sqrt{3}|>10^{-21}$.\n\\end{enumerate}",
   "cmd": "translate"}
@@ -3859,8 +3865,8 @@ PROBLEM 140:
     "theorem part_a : ∃ (a b c : ℤ), |a| < 10^6 ∧ |b| < 10^6 ∧ |c| < 10^6 ∧ ¬(a = 0 ∧ b = 0 ∧ c = 0) ∧ |a + b * Real.sqrt 2 + c * Real.sqrt 3| < 10^(-11) := sorry\n\ntheorem part_b : ∀ (a b c : ℤ), |a| < 10^6 → |b| < 10^6 → |c| < 10^6 → ¬(a = 0 ∧ b = 0 ∧ c = 0) → 10^(-21) < |a + b * Real.sqrt 2 + c * Real.sqrt 3| := sorry"]},
   "cmd": "translate"}
  
- PROBLEM 191:
- PROBLEM 192:
+ ## Problem 191:
+ ## Problem 192:
  {"res":
   "Translating: Let $C$ be the class of all real valued continuously differentiable functions $f$ on the interval $0 \\leq x \\leq 1$ with $f(0)=0$ and $f(1)=1$. Determine the largest real number $u$ such that $u \\leq \\int_0^1|f'(x)-f(x)|\\,dx$ for all $f$ in $C$.Show that $u=1/e$.",
   "cmd": "translate"}
@@ -3881,7 +3887,7 @@ PROBLEM 140:
     "theorem exists_real_number_u :\n  ∃ (u : ℝ), u = 1 / Real.exp 1 ∧\n  ∀ f : ℝ → ℝ,\n    (∀ x ∈ Set.Icc 0 1, DifferentiableAt ℝ f x) ∧ f 0 = 0 ∧ f 1 = 1 →\n      u ≤ ∫ x in 0..1, |deriv f x - f x| :=\nbegin\n  sorry\nend"]},
   "cmd": "translate"}
  
- PROBLEM 193:
+ ## Problem 193:
  {"res":
   "Translating: For which real numbers $c$ is $(e^x+e^{-x})/2 \\leq e^{cx^2}$ for all real $x$?Show that the inequality holds if and only if $c \\geq 1/2$.",
   "cmd": "translate"}
@@ -3908,7 +3914,7 @@ PROBLEM 140:
     "∀ (c : ℝ), (∀ x : ℝ, (Real.exp x + Real.exp (-x)) / 2 ≤ Real.exp (c * x^2)) ↔ c ≥ 1 / 2"]},
   "cmd": "translate"}
  
- PROBLEM 194:
+ ## Problem 194:
  {"res":
   "Translating: For which real numbers $a$ does the sequence defined by the initial condition $u_0=a$ and the recursion $u_{n+1}=2u_n-n^2$ have $u_n>0$ for all $n \\geq 0$? (Express the answer in the simplest form.)Show that $u_n>0$ for all $n \\geq 0$ if and only if $a \\geq 3$.",
   "cmd": "translate"}
@@ -3930,7 +3936,7 @@ PROBLEM 140:
     "∀ {a : ℝ} (u : ℕ → ℝ), u 0 = a → (∀ n, u (n + 1) = 2 * u n - n ^ 2) → (∀ n, 0 < u n ↔ 3 ≤ a)"]},
   "cmd": "translate"}
  
- PROBLEM 195:
+ ## Problem 195:
  {"res":
   "Translating: Let $X$ be a finite set with at least $10$ elements; for each $i \\in \\{0, 1, ..., 1065\\}$, let $A_i \\subseteq X$ satisfy $|A_i| > \\frac{1}{2}|X|$. Prove that there exist $10$ elements $x_1, x_2, \\dots, x_{10} \\in X$ such that each $A_i$ contains at least one of $x_1, x_2, \\dots, x_{10}$.",
   "cmd": "translate"}
@@ -3950,10 +3956,10 @@ PROBLEM 140:
     "∀ {X : Type u} [Fintype X] (hX : 10 ≤ Fintype.card X) (A : Fin 1066 → Finset X),\n  (∀ i, A i.card > Fintype.card X / 2) → ∃ S : Finset X, S.card = 10 ∧ ∀ i, ∃ x ∈ S, x ∈ A i"]},
   "cmd": "translate"}
  
- PROBLEM 196:
+ ## Problem 196:
  didn't run 
  
- PROBLEM 197:
+ ## Problem 197:
  {"res":
   "Translating: For integers $d, n$ with $1 \\le d \\le n$, let $G(1, n) = \\frac{1}{n}$ and $G(d, n) = \\frac{d}{n}\\sum_{i=d}^{n}G(d - 1, i - 1)$ for all $d > 1$. If $1 < d \\le p$ for some prime $p$, prove that the reduced denominator of $G(d, p)$ is not divisible by $p$.",
   "cmd": "translate"}
@@ -3972,7 +3978,7 @@ PROBLEM 140:
    ["import Mathlib.Algebra.GroupPower.Order\nimport Mathlib.Data.Nat.Parity\nimport Mathlib.Tactic.FinCases\n\ntheorem G_not_divisible_by_p (p : ℕ) {d : ℕ} (hprime : Nat.Prime p) (hd : 1 < d) (hdp : d ≤ p) :\n  ¬p ∣ (G (d, p)).den :=\n  sorry\n\n-- Define the function `G`\ndef G : ℕ × ℕ → ℚ\n| (1, n) => Rat.mk 1 n\n| (d, n) => if h : 1 ≤ d ∧ d ≤ n then\n    Rat.mk d n * ∑ i in Finset.range n, G (d - 1, i)\n  else 0 "]},
   "cmd": "translate"}
  
- PROBLEM 198:
+ ## Problem 198:
  {"res":
   "Translating: Let $E(n)$ be the greatest integer $k$ such that $5^k$ divides $1^1 2^2 3^3 \\cdots n^n$. Find $\\lim_{n \\rightarrow \\infty} \\frac{E(n)}{n^2}$.The limit equals $\\frac{1}{8}$.",
   "cmd": "translate"}
@@ -4159,7 +4165,7 @@ PROBLEM 140:
     "cmdErrors": ["unknown constant 'Nat.factorsInFactorialOfPowers'"]}},
   "cmd": "translate"}
  
- PROBLEM 199:
+ ## Problem 199:
  {"res":
   "Translating: Does the limit $$lim_{t \\rightarrow \\infty}e^{-t}\\int_{0}^{t}\\int_{0}^{t}\\frac{e^x - e^y}{x - y} dx dy$$exist?The limit does not exist.",
   "cmd": "translate"}
@@ -4385,7 +4391,7 @@ PROBLEM 140:
      "function expected at\n  exp\nterm has type\n  ?m.17"]}},
   "cmd": "translate"}
  
- PROBLEM 200:
+ ## Problem 200:
  {"res":
   "Translating: Let $P(x)$ be a polynomial with real coefficients; let $$Q(x) = (x^2 + 1)P(x)P'(x) + x((P(x))^2 + (P'(x))^2).$$\nGiven that $P$ has $n$ distinct real roots all greater than $1$, prove or disprove that $Q$ must have at least $2n - 1$ distinct real roots.$Q(x)$ must have at least $2n - 1$ distinct real roots.",
   "cmd": "translate"}
