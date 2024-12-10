@@ -1,0 +1,96 @@
+{"usage":
+ {"total_tokens": 4913,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 3966,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 947},
+ "system_fingerprint": "fp_9d50cd990b",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-Acni6C8mt8e29NniEmgzgokLJ1IKO",
+ "created": 1733810914,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {R : Type u_1} [inst : LinearOrderedField R] (k : ℕ),\n  iSup (fun (s : Multiset R) =>\n    Multiset.esymm s k / Multiset.esymm s 1 ^ k) = 1 / ↑(Nat.factorial k)"},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {R : Type u_1} [inst : CommSemiring R] {n k : ℕ} (s : Multiset R),\n  iSup (fun a : Multiset R => Multiset.esymm a k / Multiset.esymm a 1 ^ k) = 1 / (Nat.factorial k)"},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {R : Type u_1} [inst : LinearOrderedField R] (k : ℕ) (s : Multiset R) (hs : 0 < Multiset.card s),\n  s.esymm k / (s.esymm 1 ^ k) ≤ 1 / ↑(Nat.factorial k)"},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {R : Type u_1} [inst : LinearOrderedField R] {n k : ℕ} (s : Finset (Fin n → R)),\n  (∀ (a : Fin n → R), (∀ i, 0 ≤ a i) → a ∈ s) →\n  Sup (s.image (λ a, Multiset.esymm (Finset.univ.val.map a) k / (Multiset.esymm (Finset.univ.val.map a) 1) ^ k)) = 1 / k.factorial"},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {α : Type u_1} [inst : LinearOrderedField α] {n k : ℕ} (s : Multiset α),\n  let s_k := Multiset.esymm s k\n  in let s_1 := Multiset.esymm s 1\n  in BddAbove (Set.range fun a : (Fin n → α) => s_k (Multiset.map a (Finset.univ : Finset (Fin n))) / (s_1 (Multiset.map a (Finset.univ : Finset (Fin n))) ^ k)) ∧\n     M_k = (1 : α) / ↑(Nat.factorial k)"},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {R : Type u_1} [inst : LinearOrderedField R] {n k : ℕ} (s : Multiset R),\n  (s.card = n) →\n  (sSup {x | ∃ (a : Fin n → R), x = Multiset.esymm a k / (Multiset.esymm a 1) ^ k}) = 1 / Nat.factorial k"},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {R : Type u_1} [inst : LinearOrderedField R] {n k : ℕ} (s : Multiset R),\n  (∀ (a : Fin n → R), (Multiset.esymm (Multiset.ofFn a) k) / (Multiset.esymm (Multiset.ofFn a) 1) ^ k ≤ 1 / ↑(Nat.factorial k)) →\n    ∀ (a : Fin n → R), (Multiset.esymm (Multiset.ofFn a) k) / (Multiset.esymm (Multiset.ofFn a) 1) ^ k = 1 / ↑(Nat.factorial k)"},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {R : Type u_1} [inst : LinearOrderedField R] {n k : ℕ} (s : Multiset R),\n  let sk := Multiset.esymm s k\n  let s1 := Multiset.esymm s 1\n  let mk := iSup fun (a : Fin n → R) => sk a / (s1 a ^ k)\n  mk = 1 / ↑(Nat.factorial k)"},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {R : Type u_1} [inst : LinearOrderedField R] (n k : ℕ),\n  let s : R → R := λ a => Multiset.esymm (Multiset.repeat a n)\n  in let M_k := iSup (λ (a : R), s k a / (s 1 a) ^ k)\n  in M_k = 1 / k.factorial"},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {R : Type u_1} [inst : LinearOrderedField R] (n k : ℕ) (s : Multiset R),\n  let a := Multiset.map (λ i, (s.esymm k / (s.esymm 1) ^ k)) (Multiset.powersetLen n s) in\n  (iSup a) = (1 / (Nat.factorial k : R))"},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"}]}

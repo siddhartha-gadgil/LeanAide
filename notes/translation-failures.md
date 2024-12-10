@@ -25,7 +25,7 @@ This is easy to recognize from the error message.
 
 ## Fixing the error
 
-* Write a parser in Lean to recognize the pattern - this may already exist for reporting the error.
+* Write a parser in Lean to recognize the pattern - this may already exist for reporting the error (not needed?).
 * Match in the syntax tree and replace with the correct form.
 * One can even do this with strings and regular expressions.
 
