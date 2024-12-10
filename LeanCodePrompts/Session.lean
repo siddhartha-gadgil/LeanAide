@@ -231,10 +231,14 @@ def translateDef (s: String)(n: Name)(add : Bool := true) : SessionM Unit := do
     for e in err do
       say e `translateDef
 
-def showPrompt : SessionM Unit := do
+def showPrompt (s : String) : SessionM Unit := do
   let translator ← getTranslator
-  let (msgs, _) ← translator.getMessages (← text)
+  let (msgs, _) ← translator.getMessages s
   say msgs
+
+def showPromptText : SessionM Unit := do
+  let s ← text
+  showPrompt s
 
 def docs (s: String) : SessionM (Array (String × Json)) := do
   let translator ← getTranslator
