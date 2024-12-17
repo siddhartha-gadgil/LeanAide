@@ -36,11 +36,13 @@ def mkStatementStx (name?: Option Name)(type: Syntax.Term)
         else
             `(command| def $name:ident $ctxs* : $tailType := $value)
 
+#check PrettyPrinter.ppCommand
+
 def mkStatement (name?: Option Name)(type: Syntax.Term)
     (value?: Option Syntax.Term)(isProp: Bool) :
         CoreM String := do
     let stx ← mkStatementStx name? type value? isProp
-    let fmt ← ppCategory `command stx
+    let fmt ← ppCommand stx
     return fmt.pretty
 
 def mkTheoremWithDoc (name: Name)(thm: String)

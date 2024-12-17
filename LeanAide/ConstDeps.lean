@@ -216,7 +216,7 @@ structure DefnTypes where
     type: String
     isProp : Bool
     docString? : Option String
-    value : Option String
+    value? : Option String
     statement : String
     deriving Repr, ToJson, FromJson
 
@@ -256,27 +256,28 @@ def getM : MetaM <| Array DefnTypes := do
     IO.println s!"Total: {cs.size}"
     let mut count := 0
     let mut dfns : Array DefnTypes := #[]
-    for (name, term, type, doc?) in cs do
+    for (name, value, type, doc?) in cs do
         if count % 1000 = 0 then
           IO.println s!"count: {count}"
         count := count + 1
         let depth := type.approxDepth
         unless depth > 60 do
         try
-          let fmt ← Meta.ppExpr type
-          let isProp ← isProof term
-          let v ← ppExpr term
-          let value :=
+          let typeFmt ← Meta.ppExpr type
+          let isProp ← isProof value
+          let valueStr ←  do
             if isProp
-              then none
-              else some <| v.pretty
+              then pure none
+              else
+                pure <| some <| (← ppExpr value).pretty
           let typeStx ← PrettyPrinter.delab type
-          let valueStx ←  PrettyPrinter.delab term
-          let valueStx? := if isProp then none else some valueStx
+          let valueStx? ←
+            if isProp then pure none
+              else pure <| some (←  PrettyPrinter.delab value)
           let statement ←
             mkStatement (some name) typeStx valueStx? isProp
           dfns := dfns.push
-            ⟨name, fmt.pretty, isProp, doc?, value, statement⟩
+            ⟨name, typeFmt.pretty, isProp, doc?, valueStr, statement⟩
         catch e =>
           let msg := e.toMessageData
           IO.eprintln s!"Failed to process {name}; error {← msg.toString}"
