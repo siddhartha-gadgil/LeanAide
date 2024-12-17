@@ -13,7 +13,7 @@ def existsUniqueSeqTerm (xs : List (TSyntax `Lean.binderIdent)) (type prop : Syn
 
 mutual
 
-partial def expandExistsUnique? (stx: Syntax.Term) :
+partial def expandExistsUniqueStep? (stx: Syntax.Term) :
   MetaM <| Option Syntax.Term := do
   match stx with
   | `(∃! ($xs* : $type), $value) =>
@@ -22,7 +22,7 @@ partial def expandExistsUnique? (stx: Syntax.Term) :
   | _  => return none
 
 partial def expandExistsUnique (stx: Syntax.Term) : MetaM Syntax.Term := do
-  match ← expandExistsUnique? stx with
+  match ← expandExistsUniqueStep? stx with
   | some newStx => some newStx
   | none =>
     match stx.raw with
@@ -32,3 +32,19 @@ partial def expandExistsUnique (stx: Syntax.Term) : MetaM Syntax.Term := do
       return {raw := Syntax.node info kind newArgs}
     | s => return ⟨s⟩
 end
+
+elab "ex_uniq" t:term : term => do
+  let newTerm ← expandExistsUnique t
+  let type ← elabType newTerm
+  return type
+
+#check ex_uniq (∃! (x y : Nat), x + y = 0)
+
+set_option pp.funBinderTypes true
+#check ex_uniq (∃! (x y : Nat), x + y = 0)
+
+#check ex_uniq (∀ n: Nat, (∃! (x y : Nat), x + y = n))
+
+
+#check ex_uniq (∀ n: Nat, (∃! (x y : Nat), x + y = n
+  ∧ (∃! (z w : Nat), z + w = x + y)))
