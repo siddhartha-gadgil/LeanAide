@@ -4,6 +4,7 @@ import Lean.Elab
 import Lean.Parser
 import Lean.Parser.Extension
 import LeanAide.Aides
+import LeanAide.TranslateHelpers
 open Lean Meta Elab Parser  Tactic
 
 /-!
@@ -106,6 +107,7 @@ def elabThmFromStx (stx : Syntax)
         for arg in args.reverse do
           let stx ← `(Lean.Parser.Term.depArrow|$arg → $typeStx)
           typeStx := ⟨stx.raw⟩
+        typeStx ← expandExistsUnique typeStx
         Term.withLevelNames levelNames <|
         try
           let expr ← Term.withoutErrToSorry <|
