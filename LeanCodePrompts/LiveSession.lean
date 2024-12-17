@@ -15,21 +15,3 @@ open LeanAide.Translate Session
   translateText
 
 open Parser
-
-open Lean Meta Elab Term
-
-def existsUniqueSeqTerm (xs : List (TSyntax `Lean.binderIdent)) (type prop : Syntax.Term) : MetaM Syntax.Term := do
-  match xs with
-  | [] => return prop
-  | h :: t =>
-    let tailTerm ← existsUniqueSeqTerm t type prop
-    `(∃! ($h : $type), $tailTerm)
-
-partial def expandExistsUnique? (stx: Syntax.Term) :
-  MetaM <| Option Syntax.Term := do
-  match stx with
-  | `(∃! ($xs* : $type), $value) =>
-    let xs' := xs.toList
-    let value? ← expandExistsUnique? value
-    existsUniqueSeqTerm xs' type (value?.getD value)
-  | _  => return none
