@@ -55,13 +55,15 @@ def small_embeddings_descs():
     count = 0
 
     with open("rawdata/mathlib4-descs-embeddings-small.json", 'w', encoding='utf-8') as out:
-        with jsonlines.open("resources/mathlib4-descs.jsonl", 'r') as reader:
-            for l in reader:
+        with open("resources/mathlib4-descs.jsonl", 'r', encoding='utf-8') as reader:
+            for line in reader:
+                l = json.loads(line)
                 for field in ["description", "concise-description"]:
                     if field in l and l[field]:
                         response = client.embeddings.create(
                             input=l[field],
                             model="text-embedding-3-small"
+                            # dimensions = 256
                         )
                         embedding = response.data[0].embedding
                         l[field + "-embedding"] = embedding
@@ -71,5 +73,10 @@ def small_embeddings_descs():
                         print(f"Field {field} not found")
                 out_lines.append(l)
                 count = count + 1
+
+                if count>5:
+                    break
+
                 print(f"Completed {count}")
+            
             json.dump(out_lines, out, indent=4, ensure_ascii=False)
