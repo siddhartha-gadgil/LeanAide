@@ -1,7 +1,6 @@
 import json
 import jsonlines
 from openai import OpenAI
-from scripts.queries import azure_embed
 
 def ada_embeddings():
     inp = open("resources/mathlib4-prompts.json", 'r', encoding='utf-8')
@@ -30,6 +29,7 @@ def ada_embeddings():
     inp.close()
     out.close()
 
+'''
 def small_embeddings_prompt():
     inp = open("resources/mathlib4-prompts.json", 'r', encoding='utf-8')
     out = open("rawdata/mathlib4-docStrings-small-embeddings.json", 'w', encoding='utf-8')
@@ -61,6 +61,35 @@ def small_embeddings_prompt():
                 count = count + 1
                 print(f"Completed {count}")
             json.dump(out_lines, out, indent=4, ensure_ascii=False)
+'''
+
+def small_embeddings_prompt():
+    client = OpenAI()
+    out_lines = []
+    count = 0
+
+    with open("resources/mathlib4-prompts.json", 'r', encoding='utf-8') as inp, open("rawdata/mathlib4-docStrings-small-embeddings.json", 'w', encoding='utf-8') as out:
+        js = json.load(inp)
+        for l in js:
+            response = client.embeddings.create(
+                input=l["docString"],
+                model="text-embedding-3-small",
+                dimensions = 256
+            )
+            embedding = response.data[0].embedding
+            l["embedding"] = embedding
+            out_lines.append(l)
+            count = count + 1
+            
+            '''
+            if count>=5:
+                break
+            '''
+
+            print(l["docString"])
+            print(f"Completed {count}")
+    
+        json.dump(out_lines, out, indent=4, ensure_ascii=False)
 
 def small_embeddings_descs():
     client = OpenAI()
@@ -86,3 +115,5 @@ def small_embeddings_descs():
                 count = count + 1
                 print(f"Completed {count}")
             json.dump(out_lines, out, indent=4, ensure_ascii=False)
+
+small_embeddings_prompt()
