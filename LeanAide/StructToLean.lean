@@ -442,7 +442,7 @@ mutual
         | Except.ok s, Except.ok t =>
           let statement := s!"We define {t} as follows:\n{s}."
           defnInContext? context statement qp
-        | _ , _ => none
+        | _ , _ => return none
       | _ => mkNoteCmd s!"Json not a KV pair {input.compress}"
 
   partial def structToTactics  (accum: Array Syntax.Tactic)
@@ -489,7 +489,7 @@ mutual
               | Except.ok type =>
                 let names' ← useResults.toList.mapM fun s =>
                   Translator.matchingTheoremsAI   (s := s) (qp:= qp)
-                let premises := names'.join
+                let premises := names'.flatten
                 let tac ← haveForAssertion  (← delab type) premises
                 pure <| prevTacs ++ #[tac]
             | _ => pure #[]
@@ -604,9 +604,9 @@ def structToCommandSeq? (context: Array Json)
         pure ()
       ctx := ctx.push j
     match cmds with
-    | #[] => none
+    | #[] => return none
     | _ => pure <| some  cmds
-  | _ => none
+  | _ => return none
 
 def mathDocumentCommands (doc: Json) (qp: CodeGenerator) :
   TranslateM <| Array Syntax.Command := do

@@ -215,6 +215,7 @@ structure DefnTypes where
     name: Name
     type: String
     isProp : Bool
+    isNoncomputable : Bool
     docString? : Option String
     value? : Option String
     statement : String
@@ -274,10 +275,11 @@ def getM : MetaM <| Array DefnTypes := do
           let valueStx? ←
             if isProp then pure none
               else pure <| some (←  PrettyPrinter.delab value)
+          let isNoncomputable := Lean.isNoncomputable (← getEnv) name
           let statement ←
-            mkStatement (some name) typeStx valueStx? isProp
+            mkStatement (some name) typeStx valueStx? isProp (isNoncomputable := isNoncomputable)
           dfns := dfns.push
-            ⟨name, typeFmt.pretty, isProp, doc?, valueStr, statement⟩
+            ⟨name, typeFmt.pretty, isProp, isNoncomputable, doc?, valueStr, statement⟩
         catch e =>
           let msg := e.toMessageData
           IO.eprintln s!"Failed to process {name}; error {← msg.toString}"
@@ -333,9 +335,10 @@ def thmFromName? (name : Name) : MetaM <| Option DefnTypes := do
         let value := none
         let typeStx ← PrettyPrinter.delab type
         let valueStx? := none
+        let isNoncomputable := Lean.isNoncomputable (← getEnv) name
         let statement ←
-          mkStatement (some name) typeStx valueStx? isProp
-        return some ⟨name, fmt.pretty, isProp, doc?, value, statement⟩
+          mkStatement (some name) typeStx valueStx? isProp (isNoncomputable := isNoncomputable)
+        return some ⟨name, fmt.pretty, isProp, isNoncomputable, doc?, value, statement⟩
     | _ => return none
 
 def thmFromNameCore? (name : Name) : CoreM <| Option DefnTypes :=
@@ -356,9 +359,10 @@ def defFromName? (name : Name) : MetaM <| Option DefnTypes := do
         let typeStx ← PrettyPrinter.delab type
         let valueStx ←  PrettyPrinter.delab term
         let valueStx? := if isProp then none else some valueStx
+        let isNoncomputable := Lean.isNoncomputable (← getEnv) name
         let statement ←
-          mkStatement (some name) typeStx valueStx? isProp
-        return some ⟨name, fmt.pretty, isProp, doc?, value, statement⟩
+          mkStatement (some name) typeStx valueStx? isProp (isNoncomputable := isNoncomputable)
+        return some ⟨name, fmt.pretty, isProp, isNoncomputable, doc?, value, statement⟩
     | _ => return none
 
 end DefnTypes
@@ -437,11 +441,12 @@ def getPropMapStr : MetaM <| Std.HashMap String (String × String) := do
         let typeStx ← PrettyPrinter.delab type
         let valueStx ←  PrettyPrinter.delab value
         let valueStx? := if isProp then none else some valueStx
+        let isNoncomputable := Lean.isNoncomputable (← getEnv) name
         let statement ←
-            mkStatement (some name) typeStx valueStx? isProp
+            mkStatement (some name) typeStx valueStx? isProp (isNoncomputable := isNoncomputable)
 
         let dfn : DefnTypes :=
-          ⟨name, fmt.pretty, isProp, doc?, value?, statement⟩
+          ⟨name, fmt.pretty, isProp, isNoncomputable, doc?, value?, statement⟩
         dfs := dfs.push dfn
         if count % 1000 = 0 then
           IO.println s!"count: {count}"

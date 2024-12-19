@@ -253,8 +253,8 @@ def getPromptPairs (pb: PromptExampleBuilder)
 
 partial def usedEmbeddings : PromptExampleBuilder → List String
 | .embedSearch d _ _ => [d]
-| .blend pbs => pbs.map usedEmbeddings |>.join
-| .sequence pbs => pbs.map usedEmbeddings |>.join
+| .blend pbs => pbs.map usedEmbeddings |>.flatten
+| .sequence pbs => pbs.map usedEmbeddings |>.flatten
 | _ => []
 
 partial def simplify? (pb : PromptExampleBuilder): Option (PromptExampleBuilder) :=
@@ -377,7 +377,7 @@ partial def RelevantDefs.blob (nbd: RelevantDefs)(s: String) (pairs : Array (Str
       | some doc =>
         let value? ← info.value?.mapM fun e => PrettyPrinter.delab e
         mkStatementWithDoc n
-          (← PrettyPrinter.delab info.type) value? false (doc := doc)
+          (← PrettyPrinter.delab info.type) value? false (doc := doc) (isNoncomputable := Lean.isNoncomputable (← getEnv) n)
       | none =>
         mkStatement n (← PrettyPrinter.delab info.type) none false
   | RelevantDefs.env => do
@@ -385,7 +385,7 @@ partial def RelevantDefs.blob (nbd: RelevantDefs)(s: String) (pairs : Array (Str
   | .data d => return d.map (·.2)
   | RelevantDefs.seq nbs => do
     let names ← nbs.mapM fun nb => nb.blob s pairs
-    return names.toArray.join
+    return names.toArray.flatten
 
 
 def translatePromptPairs (docPairs: Array (String × Json))
