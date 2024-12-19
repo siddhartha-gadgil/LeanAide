@@ -1,39 +1,36 @@
 import json
-import jsonlines
 from openai import OpenAI
 
+
 def ada_embeddings():
-    inp = open("resources/mathlib4-prompts.json", 'r', encoding='utf-8')
-    out = open("rawdata/mathlib4-prompts-embeddings.json", 'w', encoding='utf-8')
+    client = OpenAI()
 
-    # read `inp` and extract json
-    js = json.load(inp)
-    count = 0
-    print(len(js))
-    # for each line, compute the embeddings
-    for l in js:
-        # response = openai.Embedding.create(
-        # input=l["docString"],
-        # model="text-embedding-ada-002"
-        # )
-        # embedding = response['data'][0]['embedding']
-        embedding = azure_embed(l["docString"])
-        l["embedding"] = embedding
-        print(l["docString"])
-        count = count + 1
-        print(f"Completed {count} out of {len(js)}")
+    with open("resources/mathlib4-prompts.json", 'r', encoding='utf-8') as inp, open("rawdata/mathlib4-prompts-embeddings.json", 'w', encoding='utf-8') as out:
+        js = json.load(inp)
+        count = 0
+        print(len(js))
 
-    # write the embeddings to `out`
-    json.dump(js, out, indent=4, ensure_ascii=False)
-    # close `inp` and `out`
-    inp.close()
-    out.close()
+        # for each line, compute the embeddings
+        for l in js:
+            response = client.embeddings.create(
+                input=l["docString"],
+                model="text-embedding-ada-002",
+            )
+            embedding = response.data[0].embedding
+            l["embedding"] = embedding
+            print(l["docString"])
+            count = count + 1
+            print(f"Completed {count} out of {len(js)}")
+
+        # write the embeddings to `out`
+        json.dump(js, out, indent=4, ensure_ascii=False)
 
 
 def small_embeddings_prompt():
     client = OpenAI()
     out_lines = []
     count = 0
+
     with open("resources/mathlib4-prompts.json", 'r', encoding='utf-8') as inp, open("rawdata/mathlib4-docStrings-small-embeddings.json", 'w', encoding='utf-8') as out:
         js = json.load(inp)
         for l in js:
@@ -47,7 +44,8 @@ def small_embeddings_prompt():
             out_lines.append(l)
             count = count + 1
             print(l["docString"])
-            print(f"Completed {count}")
+            print(f"Completed {count} out of {len(js)}")
+        
         json.dump(out_lines, out, indent=4, ensure_ascii=False)
 
 
