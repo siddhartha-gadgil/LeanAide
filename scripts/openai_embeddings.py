@@ -75,5 +75,3 @@ def small_embeddings_descs():
                 count = count + 1
                 print(f"Completed {count}")
             json.dump(out_lines, out, indent=4, ensure_ascii=False)
-
-small_embeddings_prompt()
