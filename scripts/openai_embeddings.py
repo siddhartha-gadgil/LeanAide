@@ -73,10 +73,6 @@ def small_embeddings_descs():
                         print(f"Field {field} not found")
                 out_lines.append(l)
                 count = count + 1
-
-                if count>5:
-                    break
-
                 print(f"Completed {count}")
             
             json.dump(out_lines, out, indent=4, ensure_ascii=False)
