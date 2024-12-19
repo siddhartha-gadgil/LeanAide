@@ -13,11 +13,11 @@ def coreContext : Core.Context := {fileName := "", fileMap := {source:= "", posi
 
 unsafe def main : IO Unit := do
   initSearchPath (← Lean.findSysroot) initFiles
+  enableInitializersExecution
   let env ←
     importModules #[
     {module := `Mathlib},
     {module := `LeanAide.ConstDeps}] {}
   let core := writeDocsCore
-  enableInitializersExecution
   let js ← core.run' coreContext {env := env} |>.runToIO'
   IO.FS.writeFile ("resources" / "mathlib4-prompts.json") js.pretty
