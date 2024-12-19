@@ -13,18 +13,18 @@ def insertByMemo (l: Array <| α × Float)(cost : α → Float)(sizeBound: Nat)
     | none => cost x
     match l.findIdx? (fun (_, cy) => cx < cy) with
     | some idx =>
-      l.insertAt idx (x, cx) |>.shrink (k + 1)
-    | none => l.push (x, cx) |>.shrink (k + 1)
+      l.insertIdx! idx (x, cx) |>.take (k + 1)
+    | none => l.push (x, cx) |>.take (k + 1)
 
 def insertBy (l: Array <| α × Float)(cost : α → Float)(sizeBound: Nat)
     (x : α)  : Array <| α × Float :=
   let cx :=  cost x
   match l.findIdx? (fun (_, cy) => cx < cy) with
   | some idx =>
-    l.insertAt idx (x, cx) |>.shrink sizeBound
-  | none => l.push (x, cx) |>.shrink sizeBound
+    l.insertIdx! idx (x, cx) |>.take sizeBound
+  | none => l.push (x, cx) |>.take sizeBound
 
-#eval #[1, 3, 44].shrink 0
+#eval #[1, 3, 44].take 0
 
 def bestWithCost (l: Array <| α)
   (cost : α → Float)(n: Nat)(accum : Array <| α × Float := #[]): Array <| α × Float :=
@@ -38,7 +38,7 @@ def bestWithCostConc (l: Array <| α)
     bestWithCost group cost n
   let resultGroups := tasks.map Task.get
   let results := resultGroups.foldl (fun acc group => acc ++ group) #[]
-  return results.qsort (fun (_, c₁) (_, c₂) => c₁ < c₂) |>.shrink n
+  return results.qsort (fun (_, c₁) (_, c₂) => c₁ < c₂) |>.take n
 
 /--
 A cluster is a set of elements with a pivot element and a
@@ -66,7 +66,7 @@ partial def epsilonClustersAux  (ε: Float)
     let pivot := elements[idx]!
     -- IO.eprintln s!"Found pivot"
     let (group, rest) :=
-      elements.split (fun x => distance x pivot < ε)
+      elements.partition (fun x => distance x pivot < ε)
     -- IO.eprintln s!"Split into {group.size} and {rest.size}"
     IO.eprintln s!"Split into {group.size} and {rest.size}"
     let (cluster, tail) ← do

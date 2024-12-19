@@ -23,7 +23,7 @@ partial def expandExistsUniqueStep? (stx: Syntax.Term) :
 
 partial def expandExistsUnique (stx: Syntax.Term) : MetaM Syntax.Term := do
   match ← expandExistsUniqueStep? stx with
-  | some newStx => some newStx
+  | some newStx => return newStx
   | none =>
     match stx.raw with
     | .node info kind args =>

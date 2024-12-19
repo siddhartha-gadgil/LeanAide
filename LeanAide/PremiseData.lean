@@ -87,7 +87,7 @@ open Lean.Parser.Term
 
 
 def getBinders : List Syntax → MetaM (Option (List ContextTerm))
-| [] => none
+| [] => return none
 | x :: ys => do
     let tail? ←  getBinders ys
     match tail? with
@@ -114,7 +114,7 @@ def getBinders : List Syntax → MetaM (Option (List ContextTerm))
         | `(bracketedBinderF|⦃$n:ident : $type:term⦄) => do
             let s ← `(bracketedBinderF|⦃$n:ident : $type:term⦄)
             return some (s :: t)
-        | _ => none
+        | _ => return none
 
 def foldContext (type: Syntax.Term) : List Syntax → CoreM (Syntax.Term)
 | [] => return type
@@ -636,7 +636,7 @@ def termKindBestEgsM (choice: Nat := 3)(constantNameValueDocs  := constantNameVa
                   match egs.findIdx? (fun (_, d, _, p', _) =>
                     d > depth ∨ (¬p' ∧ p)) with
                   | some k =>
-                    let egs := egs.insertAt k (name, depth, (← ppTerm stx).pretty, p, doc)
+                    let egs := egs.insertIdx! k (name, depth, (← ppTerm stx).pretty, p, doc)
                     let egs := if egs.size > choice then egs.pop else egs
                     let noDocEgs :=
                         if egs.size + noDocEgs.size > choice then
@@ -659,7 +659,7 @@ def termKindBestEgsM (choice: Nat := 3)(constantNameValueDocs  := constantNameVa
                     match noDocEgs.findIdx? (fun (_, d, _, p') =>
                     d > depth ∨ (¬p' ∧ p)) with
                     | some k =>
-                        let noDocEgs := noDocEgs.insertAt k (name, depth, (← ppTerm stx).pretty, p)
+                        let noDocEgs := noDocEgs.insertIdx! k (name, depth, (← ppTerm stx).pretty, p)
                         let noDocEgs :=
                             if egs.size + noDocEgs.size > choice then
                                 noDocEgs.pop

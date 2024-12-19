@@ -179,8 +179,9 @@ def roundTripFilteredM? (statement: String) (res: ElabSuccessResult) (translator
   let groupHeads := res.groupsExprs.filterMap fun gp => gp[0]?
   let type? ← groupHeads.findM? fun type => do
     let pair? ←  checkTranslationM statement type translator
-    pair?.map fun (_, checks) =>
+    let any? := pair?.map fun (_, checks) =>
       checks.any (·.1)
+    pure <| any?.getD false
   return type?.map fun type => {res with term := type}
 
 def roundTripRefinedM (statement: String) (res: ElabSuccessResult) (translator: Translator)(dropHead : Bool := false) :
