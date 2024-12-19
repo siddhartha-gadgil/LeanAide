@@ -40,7 +40,7 @@ def small_embeddings_prompt():
             response = client.embeddings.create(
                 input=l["docString"],
                 model="text-embedding-3-small",
-                dimensions = 256
+                # dimensions = 256
             )
             embedding = response.data[0].embedding
             l["embedding"] = embedding
