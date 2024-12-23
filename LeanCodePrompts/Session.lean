@@ -375,16 +375,16 @@ do
 #session translate_def_eg := do
   translateDef "Let \\( \\delta(x) \\) be the greatest odd divisor of the positive integer \\( x \\)" `δ
 
-#session eg_add_def := do
-  sayM getRelDefs
-  checkElab "(0 : Nat) = 1"
-  checkElab "eg = 1"
-  add_def%
-    "Hello"
-    def egg : Nat := Nat.zero
-  sayM getRelDefs
-  checkElab "egg"
-  sayM <| messages "scrambled egg"
+-- #session eg_add_def := do
+--   sayM getRelDefs
+--   checkElab "(0 : Nat) = 1"
+--   checkElab "eg = 1"
+--   add_def%
+--     "Hello"
+--     def egg : Nat := Nat.zero
+--   sayM getRelDefs
+--   checkElab "egg"
+--   sayM <| messages "scrambled egg"
 
 def quas : (N : Nat) → Prop :=
   fun N => N > 0 ∧ (Finset.sum (Nat.divisors N) id = 2 * N + 1)
