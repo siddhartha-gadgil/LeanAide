@@ -455,3 +455,26 @@ elab "detailed" t:term : term => do
   return e
 
 #check detailed (fun (n : Nat) => n + 1)
+
+def delabMatchless (e: Expr) : MetaM Syntax := withOptions (fun o₁ =>
+                    let o₂ := pp.motives.all.set o₁ true
+                    let o₃ := pp.fieldNotation.set o₂ false
+                    let o₄ := pp.proofs.set o₃ true
+                    let o₅ := pp.deepTerms.set o₄ true
+                    let o₆ := pp.funBinderTypes.set o₅ true
+                    let o₇ := pp.piBinderTypes.set o₆ true
+                    let o₈ := pp.letVarTypes.set o₇ true
+                    let o₉ := pp.match.set o₈ false
+                    pp.unicode.fun.set o₉ true) do
+              PrettyPrinter.delab e
+
+elab "matchless_test" n:ident : term => do
+  let name := n.getId
+  let info ← getConstInfo name
+  let value := info.value!
+  let stx ← delabMatchless value
+  let fmt ← PrettyPrinter.ppCategory `term stx
+  logInfo m!"without match: {fmt}"
+  return value
+
+#check matchless_test Nat.add
