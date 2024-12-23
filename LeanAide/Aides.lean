@@ -325,7 +325,7 @@ def colEqSegments (s: String) : List String :=
     tail.scanl (fun acc x => acc ++ ":=" ++ x) head |>.map (String.trim)
 
 def splitColEqSegments (ss: Array String) : Array String :=
-  ss.toList.bind colEqSegments |>.toArray
+  ss.toList.flatMap colEqSegments |>.toArray
 
 def trivialEquality : Syntax → CoreM Bool
   | `($a = $b) => return a == b
@@ -426,7 +426,7 @@ abbrev EmbedMap := Std.HashMap String EmbedData
 
 partial def idents : Syntax → List String
 | Syntax.ident _ s .. => [s.toString]
-| Syntax.node _ _ ss => ss.toList.bind idents
+| Syntax.node _ _ ss => ss.toList.flatMap idents
 | _ => []
 
 def ppExprDetailed (e : Expr): MetaM String := do

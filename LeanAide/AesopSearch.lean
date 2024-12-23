@@ -278,7 +278,7 @@ def tacticConstRuleMembers (goal: MVarId)(name: Name)(p: Float) : TermElabM <| A
 -- partial def syntaxNames (stx: Syntax) : List Name :=
 --   match stx with
 --   | Syntax.node _ _ args =>
---     args.toList.bind syntaxNames
+--     args.toList.flatMap syntaxNames
 --   | Syntax.ident _ _ name _ =>
 --     [name]
 --   | _ => []

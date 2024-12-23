@@ -95,7 +95,7 @@ intro α inst x y ε simp_all only [Metric.mem_ball]
 
 #check Filter.eventuallyEq_bind
 example: ∀ {α : Type u} {β : Type v} {γ : Type w} {f : Filter α} {m : α → Filter β} {g₁ g₂ : β → γ},
-  g₁ =ᶠ[Filter.bind f m] g₂ ↔ ∀ᶠ (x : α) in f, g₁ =ᶠ[m x] g₂ := by
+  g₁ =ᶠ[Filter.flatMap f m] g₂ ↔ ∀ᶠ (x : α) in f, g₁ =ᶠ[m x] g₂ := by
 intro α β γ f m g₁ g₂ simp_all only [Filter.eventuallyEq_bind]
 
 
@@ -1300,4 +1300,3 @@ intro J j' h aesop_subst h simp_all only
 #print SymAlg.mul_def
 
 #check Lists'.nil.sizeOf_spec -- not elaborated
-

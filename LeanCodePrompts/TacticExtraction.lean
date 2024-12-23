@@ -24,7 +24,7 @@ section Source
           args := args.push (← `(Parser.Tactic.simpLemma| $(mkIdent (← unresolveNameGlobal declName)):ident))
       | .fvar fvarId => -- local hypotheses in the context
         if let some ldecl := lctx.get? fvarId then
-          localsOrStar := localsOrStar.bind fun locals =>
+          localsOrStar := localsOrStar.flatMap fun locals =>
             if !ldecl.userName.isInaccessibleUserName &&
                 (lctx.findFromUserName? ldecl.userName).get!.fvarId == ldecl.fvarId then
               some (locals.push ldecl.userName)
@@ -86,9 +86,9 @@ def findTag? (mvarIds : List MVarId) (tag : Name) : TacticM (Option MVarId) := d
   | some mvarId => return mvarId
   | none => mvarIds.findM? fun mvarId => return tag.isPrefixOf (← mvarId.getDecl).userName
 
-def getCaseGoals (tag : TSyntax `Lean.binderIdent) : TacticM (MVarId × List MVarId) := do
+def getCaseGoals (tag : TSyntax `Lean.flatMaperIdent) : TacticM (MVarId × List MVarId) := do
   let gs ← getUnsolvedGoals
-  let g ← if let `(Lean.binderIdent| $tag:ident) := tag then
+  let g ← if let `(Lean.flatMaperIdent| $tag:ident) := tag then
     let tag := tag.getId
     let some g ← findTag? gs tag | throwError "tag not found"
     pure g

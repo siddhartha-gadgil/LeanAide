@@ -6,7 +6,7 @@ open Lean Json Data LeanAide.Meta
 def pairs? (s: String) : Option <| List IdentPair :=
   let js? := Lean.Json.parse s |>.toOption
   let ids? : Option IdentData :=
-     js?.bind (fun js => fromJson? js |>.toOption)
+     js?.flatMap (fun js => fromJson? js |>.toOption)
   ids?.map <| fun id => id.unfold |>.toList
 
 def allPairs (ss: List String) : List IdentPair :=
@@ -45,7 +45,7 @@ def main (_: List String) : IO Unit := do
         prevLines := prevLines.insert l
         let js? := Lean.Json.parse l |>.toOption
         let premise? : Option CorePremiseData :=
-          js?.bind <| fun js => (fromJson? js).toOption
+          js?.flatMap <| fun js => (fromJson? js).toOption
         match premise? with
         | some corePremise =>
             corePremise.write group handles

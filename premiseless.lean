@@ -17,7 +17,7 @@ def filterPremiseless (init : Array String)(full: Bool) : Array String :=
   init.filterMap <| fun l =>
     let js? := Lean.Json.parse l |>.toOption
     let premise? : Option CorePremiseData :=
-      js?.bind <| fun js => (fromJson? js).toOption
+      js?.flatMap <| fun js => (fromJson? js).toOption
     match premise? with
     | some corePremise =>
       let ids := corePremise.ids.map (·.toName)
@@ -51,7 +51,7 @@ def serial (testLines : Array String)(preChecked: Bool := false) : IO Unit := do
       IO.println s!"{count} processed, {premiselessCount} premiseless, {provedCount} proved, {elaboratedCount} elaborated"
     let js? := Lean.Json.parse l |>.toOption
     let premise? : Option CorePremiseData :=
-      js?.bind <| fun js => (fromJson? js).toOption
+      js?.flatMap <| fun js => (fromJson? js).toOption
     match premise? with
     | some corePremise =>
       count := count + 1
