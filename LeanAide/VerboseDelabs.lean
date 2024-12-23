@@ -167,7 +167,7 @@ def unexpandStructureInstance (stx : Syntax) : Delab := whenPPOption getPPStruct
 --   -- This is e.g. necessary for `@Eq`.
 --   let isImplicitApp ← try
 --       let ty ← whnf (← inferType (← getExpr))
---       pure <| ty.isForall && (ty.flatMaperInfo == BinderInfo.implicit || ty.flatMaperInfo == BinderInfo.instImplicit)
+--       pure <| ty.isForall && (ty.binderInfo == BinderInfo.implicit || ty.binderInfo == BinderInfo.instImplicit)
 --     catch _ => pure false
 --   if isImplicitApp then failure
 
@@ -243,7 +243,7 @@ where
     | 0,   varNames => x varNames
     | n+1, varNames => do
       let rec visitLambda : DelabM α := do
-        let varName := (← getExpr).flatMapingName!.eraseMacroScopes
+        let varName := (← getExpr).bindingName!.eraseMacroScopes
         -- Pattern variables cannot shadow each other
         if varNames.contains varName then
           let varName := (← getLCtx).getUnusedName varName
@@ -385,7 +385,7 @@ Return `true` iff current binder should be merged with the nested
 binder, if any, into a single binder group:
 * both binders must have same binder info and domain
 * they cannot be inst-implicit (`[a b : A]` is not valid syntax)
-* `pp.flatMaperTypes` must be the same value for both terms
+* `pp.binderTypes` must be the same value for both terms
 * prefer `fun a b` over `fun (a b)`
 -/
 private def shouldGroupWithNext : DelabM Bool := do
@@ -393,11 +393,11 @@ private def shouldGroupWithNext : DelabM Bool := do
   let ppEType ← getPPOption (getPPBinderTypes e)
   let go (e' : Expr) := do
     let ppE'Type ← withBindingBody `_ $ getPPOption (getPPBinderTypes e)
-    pure $ e.flatMaperInfo == e'.flatMaperInfo &&
-      e.flatMapingDomain! == e'.flatMapingDomain! &&
-      e'.flatMaperInfo != BinderInfo.instImplicit &&
+    pure $ e.binderInfo == e'.binderInfo &&
+      e.bindingDomain! == e'.bindingDomain! &&
+      e'.binderInfo != BinderInfo.instImplicit &&
       ppEType == ppE'Type &&
-      (e'.flatMaperInfo != BinderInfo.default || ppE'Type)
+      (e'.binderInfo != BinderInfo.default || ppE'Type)
   match e with
   | Expr.lam _ _     e'@(Expr.lam _ _ _ _) _     => go e'
   | Expr.forallE _ _ e'@(Expr.forallE _ _ _ _) _ => go e'
@@ -407,7 +407,7 @@ where
     if e.isForall then getPPPiBinderTypes else getPPFunBinderTypes
 
 def withBindingBodyUnusedName {α} (d : Syntax → DelabM α) : DelabM α := do
-  let n ← getUnusedName (← getExpr).flatMapingName! (← getExpr).flatMapingBody!
+  let n ← getUnusedName (← getExpr).bindingName! (← getExpr).bindingBody!
   -- let n := n.append "domVar"
   let stxN ← annotateCurPos (mkIdent n)
   withBindingBody n $ d stxN
@@ -446,7 +446,7 @@ def delabLam : Delab :=
           `(funBinder| ($stxCurNames : $stxT))
         else -- never
           pure curNames.back  -- here `curNames.size == 1`
-      let group ← match e.flatMaperInfo, ppTypes with
+      let group ← match e.binderInfo, ppTypes with
         | BinderInfo.default,        _      => defaultCase ()
         | BinderInfo.implicit,       true   => `(funBinder| {$curNames* : $stxT})
         | BinderInfo.implicit,       false  => `(funBinder| {$curNames*})
@@ -485,7 +485,7 @@ def delabForall : Delab := do
     let e ← getExpr
     let prop ← try isProp e catch _ => pure false
     let stxT ← withBindingDomain delab
-    let group ← match e.flatMaperInfo with
+    let group ← match e.binderInfo with
     | BinderInfo.implicit       => `(bracketedBinderF|{$curNames* : $stxT})
     | BinderInfo.strictImplicit => `(bracketedBinderF|⦃$curNames* : $stxT⦄)
     -- here `curNames.size == 1`
@@ -562,7 +562,7 @@ def delabSigmaCore (sigma : Bool) : Delab := whenPPOption getPPNotation do
   guard $ (← getExpr).appArg!.isLambda
   withAppArg do
     let α ← withBindingDomain delab
-    let bodyExpr := (← getExpr).flatMapingBody!
+    let bodyExpr := (← getExpr).bindingBody!
     withBindingBodyUnusedName fun n => do
       let b ← delabVerbose
       if bodyExpr.hasLooseBVars then
@@ -579,7 +579,7 @@ def delabPSigma : Delab := delabSigmaCore (sigma := false)
 partial def delabDoElems : DelabM (List Syntax) := do
   let e ← getExpr
   checkExprDepth e
-  if e.isAppOfArity ``Bind.flatMap 6 then
+  if e.isAppOfArity ``Bind.bind 6 then
     let α := e.getAppArgs[2]!
     let ma ← withAppFn $ withAppArg delabVerbose
     withAppArg do
