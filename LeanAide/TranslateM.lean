@@ -129,10 +129,9 @@ deriving Inhabited
 /-- Monad with environment for translation -/
 abbrev TranslateM := StateT Translate.State TermElabM
 
-instance [MetaEval α] : MetaEval (TranslateM α) :=
-  let me : MetaEval (TermElabM α) := inferInstance
-  { eval := fun env opts x b =>
-    me.eval env opts (x.run' {}) b}
+open Command in
+instance : MonadEval TranslateM CommandElabM where
+  monadEval := fun x => liftTermElabM <| x.run' {}
 
 namespace Translate
 

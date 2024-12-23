@@ -2,7 +2,7 @@ import Lean.Meta
 -- import LeanCodePrompts
 import LeanAide.Config
 import LeanAide.Descriptions
-open Lean LeanAide.Meta
+open Lean LeanAide.Meta LeanAide.Translator
 
 set_option maxHeartbeats 10000000
 set_option maxRecDepth 1000
@@ -51,7 +51,7 @@ def main : IO Unit := do
         let mut count := 1
         for js in jsarr do
           IO.println s!"Processing {count} of {jsarr.size}"
-          let core := addDescriptionCore js
+          let core := addDescriptionCore js {}
           let (js, check) ← core.run' coreContext {env := env} |>.runToIO'
           handle.putStrLn js.compress
           handle.flush

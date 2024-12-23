@@ -685,12 +685,12 @@ def matchingTheoremsAI (s: String)(n: ℕ := 3)(qp: CodeGenerator) : TranslateM 
       | some js =>
         fromJson? js |>.toOption
       | none => none
-    let checked := entries.join.toList.map (·.toName)
+    let checked := entries.flatten.toList.map (·.toName)
     let pb : PromptExampleBuilder :=
       PromptExampleBuilder.searchBuilder qp.numLeanSearchDirect qp.numMoogleDirect
     let pairs ← pb.getPromptPairs s
     let names : Array Name ← pairs.filterMapM fun (_, js) => do
-      js.getObjValAs? String "name" |>.toOption |>.map (·.toName)
+      pure <| js.getObjValAs? String "name" |>.toOption |>.map (·.toName)
     return checked ++ names.toList
 
 def matchingTheorems (s: String)(n: ℕ := 3)(qp: CodeGenerator)  : TranslateM (List Name) := do

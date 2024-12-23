@@ -132,7 +132,8 @@ def runTranslate (p : Parsed) : IO UInt32 := do
       IO.eprintln msg
       return 1
 
-def translate : Cmd := `[Cli|
+
+def translateCmd : Cmd := `[Cli|
   translate VIA runTranslate;
   "Elaborate a set of inputs and report whether successful and the result if successful."
 
@@ -160,4 +161,4 @@ def translate : Cmd := `[Cli|
 ]
 
 def main (args: List String) : IO UInt32 :=
-  translate.validate args
+  translateCmd.validate args

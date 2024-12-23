@@ -87,7 +87,7 @@ open Lean.Parser.Term
 
 
 def getBinders : List Syntax → MetaM (Option (List ContextTerm))
-| [] => none
+| [] => return none
 | x :: ys => do
     let tail? ←  getBinders ys
     match tail? with
@@ -114,7 +114,7 @@ def getBinders : List Syntax → MetaM (Option (List ContextTerm))
         | `(bracketedBinderF|⦃$n:ident : $type:term⦄) => do
             let s ← `(bracketedBinderF|⦃$n:ident : $type:term⦄)
             return some (s :: t)
-        | _ => none
+        | _ => return none
 
 def foldContext (type: Syntax.Term) : List Syntax → CoreM (Syntax.Term)
 | [] => return type
@@ -589,7 +589,7 @@ partial def termKindsInAux (stx: Syntax)(kinds: List SyntaxNodeKind) : MetaM <| 
     match stx with
     | .node _ k args  =>
         let prevs ← args.toList.mapM (fun a => termKindsInAux a kinds)
-        let prevs := prevs.join
+        let prevs := prevs.flatten
         if prevs.contains k then
             return prevs
         else
@@ -636,7 +636,7 @@ def termKindBestEgsM (choice: Nat := 3)(constantNameValueDocs  := constantNameVa
                   match egs.findIdx? (fun (_, d, _, p', _) =>
                     d > depth ∨ (¬p' ∧ p)) with
                   | some k =>
-                    let egs := egs.insertAt k (name, depth, (← ppTerm stx).pretty, p, doc)
+                    let egs := egs.insertIdx! k (name, depth, (← ppTerm stx).pretty, p, doc)
                     let egs := if egs.size > choice then egs.pop else egs
                     let noDocEgs :=
                         if egs.size + noDocEgs.size > choice then
@@ -659,7 +659,7 @@ def termKindBestEgsM (choice: Nat := 3)(constantNameValueDocs  := constantNameVa
                     match noDocEgs.findIdx? (fun (_, d, _, p') =>
                     d > depth ∨ (¬p' ∧ p)) with
                     | some k =>
-                        let noDocEgs := noDocEgs.insertAt k (name, depth, (← ppTerm stx).pretty, p)
+                        let noDocEgs := noDocEgs.insertIdx! k (name, depth, (← ppTerm stx).pretty, p)
                         let noDocEgs :=
                             if egs.size + noDocEgs.size > choice then
                                 noDocEgs.pop
@@ -702,6 +702,7 @@ structure DefData where
     type : Syntax.Term
     value : Syntax.Term
     isProp : Bool
+    isNoncomputable : Bool
     typeDepth : Option Nat
     valueDepth : Option Nat
     premises : List PremiseData -- empty if depth exceeds bound
@@ -710,14 +711,14 @@ structure DefData where
 def DefData.statement (data: DefData)(omitProofs: Bool := true) :
         CoreM String := do
     let value? := if omitProofs && data.isProp then none else some data.value
-    mkStatement (some data.name) data.type value? data.isProp
+    mkStatement (some data.name) data.type value? data.isProp (isNoncomputable := data.isNoncomputable)
 
 def DefData.statementWithDoc (data: DefData)(doc: String)
     (omitProofs: Bool := true)(useExample: Bool := true) :
         CoreM String := do
     let value? := if omitProofs && data.isProp then none else some data.value
     mkStatementWithDoc
-        (some data.name) data.type value? data.isProp useExample doc
+        (some data.name) data.type value? data.isProp useExample doc data.isNoncomputable
 
 -- incorrect
 -- def relType (xs:  List (TSyntax [`ident, `Lean.Parser.Term.hole, `Lean.Parser.Term.bracketedBinder])) (type: Syntax.Term) : MetaM Syntax.Term := do
@@ -773,7 +774,16 @@ def DefData.ofSyntax? (stx: Syntax) : MetaM <| Option DefData := do
         let isProp := false
         let typeDepth := none
         let valueDepth := none
-        return some ⟨name, type, value, isProp, typeDepth, valueDepth, []⟩
+        return some ⟨name, type, value, isProp, false, typeDepth, valueDepth, []⟩
+    | `(command| noncomputable def $n:ident $xs* : $type := $val) => do
+        let type ← foldContext type xs.toList
+        let name := n.getId
+        let type := type
+        let value := val
+        let isProp := false
+        let typeDepth := none
+        let valueDepth := none
+        return some ⟨name, type, value, isProp, true, typeDepth, valueDepth, []⟩
     | `(command| theorem $n:ident $xs* : $type := $val) =>
         let type ← foldContext type xs.toList
         let name := n.getId
@@ -782,7 +792,7 @@ def DefData.ofSyntax? (stx: Syntax) : MetaM <| Option DefData := do
         let isProp := true
         let typeDepth := none
         let valueDepth := none
-        return some ⟨name, type, value, isProp, typeDepth, valueDepth, []⟩
+        return some ⟨name, type, value, isProp, false, typeDepth, valueDepth, []⟩
     | _ => return none
 
 def DefData.jsonView (data: DefData) : MetaM Json := do
@@ -797,13 +807,14 @@ def DefData.ofNameM (name: Name) : MetaM DefData := do
     let value ← instantiateMVars decl.value!
     let typeStx ← delab type
     let valueStx ← delab value
+    let nc := Lean.isNoncomputable (← getEnv) name
     let isProp := match decl with
     | ConstantInfo.defnInfo _ => false
     | ConstantInfo.thmInfo _ => true
     | _ => false
     let typeDepth := type.approxDepth.toNat
     let valueDepth := value.approxDepth.toNat
-    return ⟨name, typeStx, valueStx, isProp, typeDepth, valueDepth, []⟩
+    return ⟨name, typeStx, valueStx, isProp, nc, typeDepth, valueDepth, []⟩
 
 structure IdentData where
     context : Array String

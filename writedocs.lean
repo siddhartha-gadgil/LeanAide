@@ -11,8 +11,9 @@ set_option compiler.extract_closed false
 def coreContext : Core.Context := {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000
     }
 
-def main : IO Unit := do
+unsafe def main : IO Unit := do
   initSearchPath (← Lean.findSysroot) initFiles
+  enableInitializersExecution
   let env ←
     importModules #[
     {module := `Mathlib},

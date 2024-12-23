@@ -15,15 +15,3 @@ open LeanAide.Translate Session
   translateText
 
 open Parser
-
--- open Lean Meta Elab Term
--- def expandExists (stx: Syntax) :
---   MetaM <| Option Syntax := do
---   match stx with
---   | `(∃! ($xs* : $type), $value) =>
---     let xs' := xs.toList
---     let x := xs'[0]!
---     let eg ←
---       `(bracketedBinder|($x : $type))
---     sorry
---   | _  => return none

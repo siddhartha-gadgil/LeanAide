@@ -215,8 +215,9 @@ structure DefnTypes where
     name: Name
     type: String
     isProp : Bool
+    isNoncomputable : Bool
     docString? : Option String
-    value : Option String
+    value? : Option String
     statement : String
     deriving Repr, ToJson, FromJson
 
@@ -256,27 +257,29 @@ def getM : MetaM <| Array DefnTypes := do
     IO.println s!"Total: {cs.size}"
     let mut count := 0
     let mut dfns : Array DefnTypes := #[]
-    for (name, term, type, doc?) in cs do
+    for (name, value, type, doc?) in cs do
         if count % 1000 = 0 then
           IO.println s!"count: {count}"
         count := count + 1
         let depth := type.approxDepth
         unless depth > 60 do
         try
-          let fmt ← Meta.ppExpr type
-          let isProp ← isProof term
-          let v ← ppExpr term
-          let value :=
+          let typeFmt ← Meta.ppExpr type
+          let isProp ← isProof value
+          let valueStr ←  do
             if isProp
-              then none
-              else some <| v.pretty
+              then pure none
+              else
+                pure <| some <| (← ppExpr value).pretty
           let typeStx ← PrettyPrinter.delab type
-          let valueStx ←  PrettyPrinter.delab term
-          let valueStx? := if isProp then none else some valueStx
+          let valueStx? ←
+            if isProp then pure none
+              else pure <| some (←  PrettyPrinter.delab value)
+          let isNoncomputable := Lean.isNoncomputable (← getEnv) name
           let statement ←
-            mkStatement (some name) typeStx valueStx? isProp
+            mkStatement (some name) typeStx valueStx? isProp (isNoncomputable := isNoncomputable)
           dfns := dfns.push
-            ⟨name, fmt.pretty, isProp, doc?, value, statement⟩
+            ⟨name, typeFmt.pretty, isProp, isNoncomputable, doc?, valueStr, statement⟩
         catch e =>
           let msg := e.toMessageData
           IO.eprintln s!"Failed to process {name}; error {← msg.toString}"
@@ -332,9 +335,10 @@ def thmFromName? (name : Name) : MetaM <| Option DefnTypes := do
         let value := none
         let typeStx ← PrettyPrinter.delab type
         let valueStx? := none
+        let isNoncomputable := Lean.isNoncomputable (← getEnv) name
         let statement ←
-          mkStatement (some name) typeStx valueStx? isProp
-        return some ⟨name, fmt.pretty, isProp, doc?, value, statement⟩
+          mkStatement (some name) typeStx valueStx? isProp (isNoncomputable := isNoncomputable)
+        return some ⟨name, fmt.pretty, isProp, isNoncomputable, doc?, value, statement⟩
     | _ => return none
 
 def thmFromNameCore? (name : Name) : CoreM <| Option DefnTypes :=
@@ -355,9 +359,10 @@ def defFromName? (name : Name) : MetaM <| Option DefnTypes := do
         let typeStx ← PrettyPrinter.delab type
         let valueStx ←  PrettyPrinter.delab term
         let valueStx? := if isProp then none else some valueStx
+        let isNoncomputable := Lean.isNoncomputable (← getEnv) name
         let statement ←
-          mkStatement (some name) typeStx valueStx? isProp
-        return some ⟨name, fmt.pretty, isProp, doc?, value, statement⟩
+          mkStatement (some name) typeStx valueStx? isProp (isNoncomputable := isNoncomputable)
+        return some ⟨name, fmt.pretty, isProp, isNoncomputable, doc?, value, statement⟩
     | _ => return none
 
 end DefnTypes
@@ -436,11 +441,12 @@ def getPropMapStr : MetaM <| Std.HashMap String (String × String) := do
         let typeStx ← PrettyPrinter.delab type
         let valueStx ←  PrettyPrinter.delab value
         let valueStx? := if isProp then none else some valueStx
+        let isNoncomputable := Lean.isNoncomputable (← getEnv) name
         let statement ←
-            mkStatement (some name) typeStx valueStx? isProp
+            mkStatement (some name) typeStx valueStx? isProp (isNoncomputable := isNoncomputable)
 
         let dfn : DefnTypes :=
-          ⟨name, fmt.pretty, isProp, doc?, value?, statement⟩
+          ⟨name, fmt.pretty, isProp, isNoncomputable, doc?, value?, statement⟩
         dfs := dfs.push dfn
         if count % 1000 = 0 then
           IO.println s!"count: {count}"
