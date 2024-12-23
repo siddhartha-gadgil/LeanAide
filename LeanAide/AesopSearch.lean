@@ -81,7 +81,7 @@ def applyConstRuleMembers (goal: MVarId)(name: Name)(p: Float) :
   let stx ← `(attr|aesop unsafe $prob:num % apply $id:ident)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
   let rules ← runTermElabMAsCoreM $
-      config.rules.concatMapM (·.buildAdditionalLocalRules goal)
+      config.rules.flatMapM (·.buildAdditionalLocalRules goal)
   return rules
 
 def safeApplyConstRuleMembers (goal: MVarId)(name: Name) :
@@ -90,7 +90,7 @@ def safeApplyConstRuleMembers (goal: MVarId)(name: Name) :
   let stx ← `(attr|aesop safe apply $id:ident)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
   let rules ← runTermElabMAsCoreM $
-      config.rules.concatMapM (·.buildAdditionalLocalRules goal)
+      config.rules.flatMapM (·.buildAdditionalLocalRules goal)
   return rules
 
 -- #check Parser.numLit
@@ -101,7 +101,7 @@ partial def simpConstRuleMember (goal: MVarId)(name: Name) : TermElabM <| Array 
   let stx ← `(attr|aesop norm simp $id:ident)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
   let rules ← runTermElabMAsCoreM $
-      config.rules.concatMapM (·.buildAdditionalLocalRules goal)
+      config.rules.flatMapM (·.buildAdditionalLocalRules goal)
   return rules
 
 /-- Rule set member for `forward` for a global constant -/
@@ -111,7 +111,7 @@ def forwardConstRuleMembers (goal: MVarId)(name: Name)(p: Float) : TermElabM <| 
   let stx ← `(attr|aesop unsafe $prob:num % forward $id:ident)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
   let rules ← runTermElabMAsCoreM $
-      config.rules.concatMapM (·.buildAdditionalLocalRules goal)
+      config.rules.flatMapM (·.buildAdditionalLocalRules goal)
   return rules
 
 /-- Rule set member for `destruct` for a global constant -/
@@ -121,7 +121,7 @@ def destructConstRuleMembers (goal: MVarId)(name: Name)(p: Float) : TermElabM <|
   let stx ← `(attr|aesop unsafe $prob:num % destruct $id:ident)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
   let rules ← runTermElabMAsCoreM $
-      config.rules.concatMapM (·.buildAdditionalLocalRules goal)
+      config.rules.flatMapM (·.buildAdditionalLocalRules goal)
   return rules
 
 /-- Rule set member for `cases` for a global constant -/
@@ -131,7 +131,7 @@ def casesConstRuleMembers (goal: MVarId)(name: Name)(p: Float) : TermElabM <| Ar
   let stx ← `(attr|aesop unsafe $prob:num % cases $id:ident)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
   let rules ← runTermElabMAsCoreM $
-      config.rules.concatMapM (·.buildAdditionalLocalRules goal)
+      config.rules.flatMapM (·.buildAdditionalLocalRules goal)
   return rules
 
 /-- Rule set member for `constructors` for a global constant -/
@@ -141,7 +141,7 @@ def constructorConstRuleMembers (goal: MVarId)(name: Name)(p: Float) : TermElabM
   let stx ← `(attr|aesop unsafe $prob:num % constructors $id:ident)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
   let rules ← runTermElabMAsCoreM $
-      config.rules.concatMapM (·.buildAdditionalLocalRules goal)
+      config.rules.flatMapM (·.buildAdditionalLocalRules goal)
   return rules
 
 /-- Rule set member for `unfold` for a global constant -/
@@ -150,7 +150,7 @@ def unfoldConstRuleMembers (goal: MVarId)(name: Name) : TermElabM <| Array Local
   let stx ← `(attr|aesop norm unfold $id:ident)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
   let rules ← runTermElabMAsCoreM $
-      config.rules.concatMapM (·.buildAdditionalLocalRules goal)
+      config.rules.flatMapM (·.buildAdditionalLocalRules goal)
   return rules
 
 /-- Rule set member for `tactic` for a global constant -/
@@ -160,7 +160,7 @@ def tacticConstRuleMembers (goal: MVarId)(name: Name)(p: Float) : TermElabM <| A
   let stx ← `(attr|aesop unsafe $prob:num % tactic $id:ident)
   let config ← runTermElabMAsCoreM $ Aesop.Frontend.AttrConfig.elab stx
   let rules ← runTermElabMAsCoreM $
-      config.rules.concatMapM (·.buildAdditionalLocalRules goal)
+      config.rules.flatMapM (·.buildAdditionalLocalRules goal)
   return rules
 
 

@@ -380,7 +380,7 @@ def suppressed (p: MathParaStructure)
         let fields := elemMap.getD fieldType []
         let innerList :=
           fields.map (fun elem => suppressed elem elemMap k)
-        innerList.join
+        innerList.flatten
       else []
   | .obj _ fields optFields _ =>
     match maxDepth with
@@ -389,7 +389,7 @@ def suppressed (p: MathParaStructure)
         fields.map (fun elem => suppressed elem elemMap k)
       let optInnerList :=
         optFields.map (fun elem => suppressed elem elemMap k)
-      innerList.join ++ optInnerList.join
+      innerList.flatten ++ optInnerList.flatten
     | 0 => [p]
   | .list_of _ type =>
     match maxDepth with
@@ -400,7 +400,7 @@ def suppressed (p: MathParaStructure)
     | 0 => [p]
     | k + 1 =>
       choices.map (fun elem => suppressed elem elemMap k)
-        |>.join
+        |>.flatten
   | _ => []
 
 

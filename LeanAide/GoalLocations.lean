@@ -3,7 +3,7 @@ import Mathlib.Tactic
 import Init.Conv
 import Std
 
-open Lean Expr 
+open Lean Expr
 
 def Lean.Expr.getName! : Expr → Name
   | .lam n _ _ _ => n
@@ -16,7 +16,7 @@ partial def Lean.Expr.getConvEnters (expr : Expr) (φ : Expr → MetaM α)
     (explicit? : Bool) : MetaM (Array (List String × α)) :=
   match expr with
   | .app _ _ => do
-    let fn := expr.getAppFn 
+    let fn := expr.getAppFn
     let args := expr.getAppArgs
     let fnInfo ← getFunInfo fn
     let argsWithBinderInfo := Array.zip args (fnInfo.paramInfo.map (·.isExplicit))
@@ -28,13 +28,13 @@ partial def Lean.Expr.getConvEnters (expr : Expr) (φ : Expr → MetaM α)
     let enterArgs ← args'.mapIdxM fun idx arg ↦ do
       let argConvEnters ← arg.getConvEnters φ explicit?
       let enterArg := (if explicit? then "@" else "") ++ s!"{idx.val + 1}"
-      return argConvEnters.map <| fun (path, a) ↦ (enterArg :: path, a) 
-    return (enterArgs.push #[([], ← φ expr)]).concatMap id
+      return argConvEnters.map <| fun (path, a) ↦ (enterArg :: path, a)
+    return (enterArgs.push #[([], ← φ expr)])flatMap id
   | .forallE _ _ _ _ => do
     let binders := expr.getForallBinderNames |>.map (·.getRoot.toString)
     let body := expr.getForallBody
     body.getConvEnters φ explicit? >>= updatePaths binders
-  | .lam _ _ _ _ 
+  | .lam _ _ _ _
   | .letE _ _ _ _ _ =>
     lambdaLetTelescope expr <| fun args body ↦ do
       let binders := args |>.map (·.getName!.toString) |>.toList
@@ -43,13 +43,13 @@ partial def Lean.Expr.getConvEnters (expr : Expr) (φ : Expr → MetaM α)
   | .proj _ _ struct => do
     struct.getConvEnters φ explicit? >>= updatePaths ["1"]
   | _ => return #[]
-  where updatePaths (pre : List String) (entries : Array (List String × α)) : 
+  where updatePaths (pre : List String) (entries : Array (List String × α)) :
       MetaM <| Array (List String × α) := do
     return ( entries.map <| fun (path, a) ↦ (pre ++ path, a) ) |>.push ([], ← φ expr)
 
 open Meta Elab Term in
 #eval show TermElabM _ from do
-  let stx ← `(term| ∀ x, Nat.succ x = 1) 
+  let stx ← `(term| ∀ x, Nat.succ x = 1)
   let t ← Term.elabTerm stx none
   let enters ← t.getConvEnters pure (explicit? := false)
   for (path, expr) in enters do
@@ -57,10 +57,10 @@ open Meta Elab Term in
     let stx ← PrettyPrinter.delab expr
     IO.println stx.raw.reprint.get!
 
-def Lean.Meta.DiscrTree.getSubexpressionConvMatches (d : Meta.DiscrTree α s) 
+def Lean.Meta.DiscrTree.getSubexpressionConvMatches (d : Meta.DiscrTree α s)
     (e : Expr) (explicit? : Bool) : MetaM (Array (List String × α)) := do
   let convEnters ← e.getConvEnters d.getMatch explicit?
-  return convEnters.concatMap <| fun (path, as) ↦ as.map (path, ·) 
+  return convEntersflatMap <| fun (path, as) ↦ as.map (path, ·)
 
 macro (priority := high) "enter" "[""]" : conv => `(conv| skip)
 
@@ -119,10 +119,10 @@ def targetedRewritesCore (hyps : Array (Expr × Bool × Nat))
 
   trace[Tactic.rewrites.lemmas] m!"Candidate rewrite lemmas:\n{deduped}"
 
-  -- let hyps' : Array (List String × Expr × Bool × ℕ) ← hyps.concatMapM fun ⟨hyp, _symm, weight⟩ ↦ do
+  -- let hyps' : Array (List String × Expr × Bool × ℕ) ← hypsflatMapM fun ⟨hyp, _symm, weight⟩ ↦ do
   --   let enters ← hyp.getConvEnters pure explicit?
   --   return enters.map fun (path, subhyp) ↦ (path, subhyp, _symm, weight)
-  
+
   -- Lift to a monadic list, so the caller can decide how much of the computation to run.
   -- let hyps := MLList.ofArray <| hyps'.map fun ⟨path, hyp, _symm, weight⟩ => (path, Sum.inl hyp, _symm, weight)
   let lemmas := MLList.ofArray <| deduped.map fun ⟨path, lem, _symm, weight⟩ => (path, Sum.inr lem, _symm, weight)
@@ -239,7 +239,7 @@ elab_rules : tactic |
         throwError "Could not find any lemmas which can rewrite the hypothesis {nm}"
       for (path, r) in results do withMCtx r.mctx do
         addTargetedRewriteSuggestion tk [(r.expr, r.symm)] path
-          r.result.eNew (loc? := .some (.mk <| .ident .none "".toSubstring nm [])) 
+          r.result.eNew (loc? := .some (.mk <| .ident .none "".toSubstring nm []))
           (origSpan? := ← getRef)
       if lucky.isSome then
         match results[0]? with
