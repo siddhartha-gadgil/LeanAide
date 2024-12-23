@@ -49,7 +49,7 @@ def splitOutputs (params: ChatParams)
   if stopColEq params then
     outputs
   else
-    let outs := outputs.toList.bind colEqSegments
+    let outs := outputs.toList.flatMap colEqSegments
     outs.toArray
 
 def noStop (p: ChatParams) : ChatParams :=
@@ -314,8 +314,8 @@ def docChatExample
     let head := if isProp then "theorem" else "definition"
     let value ←  if isProp then pure "by sorry" else
       let env ← getEnv
-      let decl := env.find? name.toName
-      let expr? := decl.bind (fun d => d.value?)
+      let decl? := env.find? name.toName
+      let expr? := decl?.bind (fun d => d.value?)
       let fmt? ← expr?.mapM (fun e => ppExpr e)
       pure <| fmt?.map (·.pretty) |>.getD "sorry"
     let assistant :=
@@ -377,7 +377,7 @@ def sysMessages (sys: String) (egs : List <| ChatExample)
   (query : String) : Json :=
   let head := message "system" sys
   let egArr :=
-    egs.bind (fun eg  => eg.messages)
+    egs.flatMap (fun eg  => eg.messages)
   Json.arr <| head :: egArr ++ [message "user" query] |>.toArray
 
 def syslessAnswer := "Sure. I will answer precisely and concisely following instructions"
@@ -390,7 +390,7 @@ def syslessMessages (sys: String)(egs : List <| ChatExample)
     (query : String) : Json :=
   let headEg : ChatExample := ⟨sys, syslessAnswer⟩
   let egArr :=
-    (headEg :: egs).bind (fun eg  => eg.messages)
+    (headEg :: egs).flatMap (fun eg  => eg.messages)
   Json.arr <| egArr ++ [message "user" query] |>.toArray
 
 

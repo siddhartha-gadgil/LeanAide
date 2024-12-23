@@ -61,7 +61,7 @@ import Mathlib
 #check CategoryTheory.ComposableArrows.homMkSucc
 #check CategoryTheory.subterminalsEquivMonoOverTerminal.proof_9
 #check CategoryTheory.Pretriangulated.TriangleOpEquivalence.inverse.proof_5
-#check Filter.Realizer.bind.proof_5
+#check Filter.Realizer.flatMap.proof_5
 #check CategoryTheory.ComposableArrows.homMk_app
 #check TopCat.GlueData.ofOpenSubsets.proof_6
 #check CategoryTheory.Limits.HasLimitOfHasProductsOfHasEqualizers.buildIsLimit.proof_3

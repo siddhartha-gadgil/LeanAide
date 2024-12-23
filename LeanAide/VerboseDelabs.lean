@@ -440,7 +440,7 @@ def delabLam : Delab :=
           -- as a term, i.e. a single `Syntax.ident` or an application thereof
           let stxCurNames ←
             if curNames.size > 1 then -- never
-              `($(curNames.get! 0) $(curNames.eraseIdx 0)*)
+              `($(curNames.get! 0) $(curNames.eraseIdx! 0)*)
             else -- always ungrouped
               pure $ curNames.get! 0;
           `(funBinder| ($stxCurNames : $stxT))

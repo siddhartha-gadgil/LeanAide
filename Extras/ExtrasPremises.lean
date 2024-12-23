@@ -727,7 +727,7 @@ def writePremisesM  : MetaM Nat  := do
                         h.putStrLn  l
                         gh.putStrLn l
             IO.println ""
-            let idData := defData.identData.bind (fun d ↦ d.ids.toList)
+            let idData := defData.identData.flatMap (fun d ↦ d.ids.toList)
             let idData ←  idData.filterM
                 (fun n => checkName <| String.toName n)
             let idData := idData.eraseDups

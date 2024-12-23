@@ -295,11 +295,12 @@ def DefData.getM? (name: Name)(term type: Expr) : MetaM (Option  DefData) :=  wi
         let (stx, _) ←  delabCore term {} (delabVerbose)
         let (tstx, _) ←  delabCore type {} (delabVerbose)
         let isProp ← Meta.isProof term
+        let isNoncomputable := Lean.isNoncomputable (← getEnv) name
         let premises ←
             Lean.Syntax.premiseDataM #[] stx tstx isProp (some name) name
         let typeDepth := type.approxDepth
         let valueDepth := term.approxDepth
-        return some {name := name, type := ← purgeTerm tstx, value := ← purgeTerm stx, isProp := isProp, typeDepth := typeDepth.toNat, valueDepth := valueDepth.toNat, premises := premises.eraseDups}
+        return some {name := name, type := ← purgeTerm tstx, value := ← purgeTerm stx, isProp := isProp, isNoncomputable := isNoncomputable, typeDepth := typeDepth.toNat, valueDepth := valueDepth.toNat, premises := premises.eraseDups}
     catch ex =>
         IO.println s!"Error {← ex.toMessageData.toString} getting {name}"
         return none

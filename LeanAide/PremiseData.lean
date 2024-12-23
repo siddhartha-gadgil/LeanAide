@@ -37,13 +37,13 @@ def freshDataHandle (fileNamePieces : List String)(clean: Bool := true) : IO IO.
 def fileNamePieces : Std.HashMap (String × String) (List String) :=
     Std.HashMap.ofList <|
         ["core", "full", "identifiers", "ident_pairs", "ident_strings",
-        "term_pairs", "lemma_pairs"].bind fun kind =>
+        "term_pairs", "lemma_pairs"].flatMap fun kind =>
             ("all" :: "extra" :: groups).map fun group => ((kind, group), ["premises", kind, group++".jsonl"])
 
 def mainFileNamePieces : Std.HashMap (String × String) (List String) :=
     Std.HashMap.ofList <|
         ["core",  "identifiers", "ident_pairs", "ident_strings",
-        "term_pairs", "lemma_pairs"].bind fun kind =>
+        "term_pairs", "lemma_pairs"].flatMap fun kind =>
             ("all"  :: groups).map fun group => ((kind, group), ["premises", kind, group++".jsonl"])
 
 def fileHandles (clean : Bool := true) : IO (Std.HashMap (String × String) IO.FS.Handle)  := do

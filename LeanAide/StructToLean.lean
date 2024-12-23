@@ -201,9 +201,9 @@ def inductionCase (name: String)(condition: String)
   | _ =>
       let nId := mkIdent name.toName
       let succId := mkIdent `succ
-      let succId' ← `(Lean.binderIdent| $succId:ident)
+      let succId' ← `(Lean.flatMaperIdent| $succId:ident)
       let ihId := mkIdent `ih
-      let ihId' ← `(Lean.binderIdent| $ihId:ident)
+      let ihId' ← `(Lean.flatMaperIdent| $ihId:ident)
       `(tactic| case $succId' $nId:ident $ihId' => $pf*)
 
 def inductionCases (name: String)

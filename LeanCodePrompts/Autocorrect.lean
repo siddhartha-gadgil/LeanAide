@@ -24,7 +24,7 @@ def camelSplit(s : String) : List String :=
 
 def fullSplit (s : String) : List String :=
   let parts := s.splitOn "_"
-  parts.bind (fun s => camelSplit s)
+  parts.flatMap (fun s => camelSplit s)
 
 -- #eval fullSplit "CamelCaseWord"
 -- #eval fullSplit "snake_caseBut_wordWithCamel"
@@ -65,10 +65,10 @@ def caseNames : MetaM (Std.HashMap String String) := do
         let mut m : Std.HashMap String String := Std.HashMap.empty
         for js in arr do
           let snakeCase? :=
-            (js.getObjVal? "snakecase").toOption.bind (fun s =>
+            (js.getObjVal? "snakecase").toOption.flatMap (fun s =>
                 s.getStr?.toOption)
           let camelCase? :=
-            (js.getObjVal? "camelcase").toOption.bind (fun s =>
+            (js.getObjVal? "camelcase").toOption.flatMap (fun s =>
                 s.getStr?.toOption)
           m := match (snakeCase?, camelCase?) with
             | (some sc, some cc) =>  m.insert sc cc
@@ -199,7 +199,7 @@ def binName?(s : String) : MetaM <| Option String := do
   let splitNoIs? := withoutIs? split
   let res := ((map.get? split).orElse
               (fun _ => mapNoIs.get? split)).orElse
-              (fun _ => splitNoIs?.bind (
+              (fun _ => splitNoIs?.flatMap (
                   fun splitNoIs => map.get? splitNoIs))
   return res
 
@@ -237,7 +237,7 @@ def identCorrection(s err: String) : MetaM (Option String) := do
 /-- identifier substrings -/
 partial def identSubs : Syntax → List Substring
 | Syntax.ident _ s .. => [s]
-| Syntax.node _ _ ss => ss.toList.bind identSubs
+| Syntax.node _ _ ss => ss.toList.flatMap identSubs
 | _ => []
 
 partial def extractByteAux (s: String) (start stop : String.Pos) (accum: String)
@@ -332,7 +332,7 @@ def polyTransform (pairs: (List (String × String)))
               extraTransf.filterMapM (fun f => f ident')
           let h' := (ident' :: extraIdents).map ((pred, .))
           let prev ← polyTransform ts  transf extraTransf
-          return h'.bind (fun x => prev.map (x :: .))
+          return h'.flatMap (fun x => prev.map (x :: .))
 
 /-- given a string like `{A: Type} → (a : A) → P a` broken up into identifiers and intermediate segments, transforms this by translating identifiers using a given one-one and a given one-many transformation and builds strings from the results -/
 def polyTransformBuild (segs: (Array (String × String)) × String)
