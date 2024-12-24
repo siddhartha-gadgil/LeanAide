@@ -29,7 +29,8 @@ def environment' : IO Environment := do
 def coreContext : Core.Context := {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]
     }
 
-def main (_: List String) : IO Unit := do
+unsafe def main (_: List String) : IO Unit := do
+  enableInitializersExecution
   init
   let env ← environment
   let names ←
