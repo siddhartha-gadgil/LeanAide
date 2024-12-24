@@ -471,8 +471,8 @@ elab "detailed" t:term : term => do
 #check detailed (fun (n : Nat) => n + 1)
 
 def delabMatchless (e: Expr) : MetaM Syntax := withOptions (fun o₁ =>
-                    let o₂ := pp.motives.all.set o₁ true
-                    let o₃ := pp.fieldNotation.set o₂ false
+                    -- let o₂ := pp.motives.all.set o₁ true
+                    let o₃ := pp.fieldNotation.set o₁ false
                     let o₄ := pp.proofs.set o₃ true
                     let o₅ := pp.deepTerms.set o₄ true
                     let o₆ := pp.funBinderTypes.set o₅ true

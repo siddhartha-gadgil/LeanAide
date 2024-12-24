@@ -67,6 +67,24 @@ partial def propIdents (termExpr : Expr) :
           return head :: children
         else
           return children
+    | `($f:term $xs*) =>
+      let termStxs := f :: xs.toList |>.map fun stx => stx.raw
+      let termExprs : List Expr ← termStxs.filterMapM fun stx =>
+        try
+          Elab.Term.withoutErrToSorry do
+          let t ← elabTerm stx none
+          let t ←  instantiateMVars t
+          pure <| some t
+        catch _ => pure none
+      let groups ← termExprs.mapM propIdents
+      let children := groups.flatten
+      if (← isProof termExpr) && (← termKinds).contains stx.getKind
+      then
+          let prevNames ← identNames stx
+          let head := (typeExpr, prevNames)
+          return head :: children
+        else
+          return children
     | stx =>
       match stx with
     | Syntax.node _ _ ss => do
