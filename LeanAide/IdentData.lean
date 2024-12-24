@@ -4,11 +4,6 @@ open Lean Meta Elab Term
 
 namespace LeanAide.Meta
 
-def isMatchCase : Name → Bool
-| name =>
-  let last? := name.components.reverse.head?
-  (last?.getD Name.anonymous).toString.startsWith "match_"
-
 partial def identNames : Syntax → MetaM (List Name)
 | Syntax.ident _ _ s .. => do
   if (← isWhiteListed s) &&

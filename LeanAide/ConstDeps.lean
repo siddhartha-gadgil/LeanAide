@@ -16,7 +16,8 @@ def constantNames  : MetaM (Array Name) := do
   let decls := env.constants.map₁.toArray
   let allNames := decls.map $ fun (name, _) => name
   let names ← allNames.filterM (isWhiteListed)
-  let names := names.filter fun n => !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n))
+  let names ←  names.filterM fun n => do pure <|
+    !(excludePrefixes.any (fun pfx => pfx.isPrefixOf n)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf n)) && !(← isWhiteListed n) && !(isMatchCase n)
   return names
 
 def constantNamesCore  : CoreM (Array Name) :=

@@ -33,11 +33,9 @@ def main (_: List String) : IO Unit := do
   init
   let env ← environment
   let env' ← environment'
-  let propMap ←
-    propMapCore.run' coreContext {env := env'} |>.runToIO'
-  IO.println s!"Obtained prop-map: {propMap.size} entries"
-  let propNames := propMap.toArray.map (·.1)
-  let groupedNames ←  splitData propNames
+  let names ←
+    constantNamesCore.run' coreContext {env := env'} |>.runToIO'
+  let groupedNames ←  splitData names
   let handles ← PropIdentData.handles
   let concurrency := (← threadNum) * 3 / 4
   IO.println s!"Using {concurrency} threads"
@@ -46,7 +44,7 @@ def main (_: List String) : IO Unit := do
     let allNames := groupedNames[group]? |>.getD (Array.empty)
     IO.println s!"Definitions in group {group}: {allNames.size}"
     let batches := allNames.batches' concurrency
-    let batches := batches.map (fun batch => batch.map (·.toName) |>.toList)
+    let batches := batches.map (fun batch => batch.toList)
     IO.println s!"Made {batches.size} batches"
     let batches' := batches.zip (Array.range batches.size)
     let tasks ←  batches'.mapM fun (names, k) => do

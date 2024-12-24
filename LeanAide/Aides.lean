@@ -229,6 +229,11 @@ def excludePrefixes := [`Lean,  `IO,
 
 def excludeSuffixes := #[`dcasesOn, `recOn, `casesOn, `rawCast, `freeVar, `brec, `brecOn, `rec, `recOn, `cases, `casesOn, `dcases, `below, `ndrec]
 
+def isMatchCase : Name → Bool
+| name =>
+  let last? := name.components.reverse.head?
+  (last?.getD Name.anonymous).toString.startsWith "match_"
+
 /-- This is a slight modification of `Parser.runParserCategory` due to Scott Morrison/Kim Liesinger. -/
 def parseAsTacticSeq (env : Environment) (input : String) (fileName := "<input>") :
     Except String (TSyntax ``tacticSeq) :=
