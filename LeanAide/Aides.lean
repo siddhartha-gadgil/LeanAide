@@ -196,6 +196,7 @@ def Array.batches' (l: Array α)(numBatches: Nat) : Array (Array α) :=
 /-
 Obtaining names of constants
 -/
+#check Name.isInternalDetail
 
 def isBlackListed  (declName : Name) : MetaM  Bool := do
   let env ← getEnv
@@ -223,7 +224,10 @@ def isWhiteListed (declName : Name) : MetaM Bool := do
   catch _ => return false
 
 def excludePrefixes := [`Lean,  `IO,
-          `Char, `String, `ST, `StateT, `Repr, `ReaderT, `EIO, `BaseIO, `UInt8, ``UInt16, ``UInt32, ``UInt64, `Mathlib.Tactic, `Mathlib.Meta, `LeanAide, `Aesop, `Qq, `SlimCheck]
+          `Char, `String, `ST, `StateT, `Repr, `ReaderT, `EIO, `BaseIO, `UInt8, ``UInt16, ``UInt32, ``UInt64, `Mathlib.Tactic, `Mathlib.Meta, `LeanAide, `Aesop, `Qq, `Plausible, `LeanSearchClient]
+
+
+def excludeSuffixes := #[`dcasesOn, `recOn, `casesOn, `rawCast, `freeVar, `brec, `brecOn, `rec, `recOn, `cases, `casesOn, `dcases, `below, `ndrec]
 
 /-- This is a slight modification of `Parser.runParserCategory` due to Scott Morrison/Kim Liesinger. -/
 def parseAsTacticSeq (env : Environment) (input : String) (fileName := "<input>") :
@@ -429,6 +433,16 @@ partial def idents : Syntax → List String
 | Syntax.node _ _ ss => ss.toList.flatMap idents
 | _ => []
 
+partial def identNames : Syntax → MetaM (List Name)
+| Syntax.ident _ _ s .. => do
+  if (← isWhiteListed s) &&
+    !(excludeSuffixes.any fun sfx => sfx.isSuffixOf s) && !(excludePrefixes.any fun pfx => pfx.isPrefixOf s)
+    then return [s] else return []
+| Syntax.node _ _ ss => do
+    let groups ← ss.toList.mapM identNames
+    return groups.flatten.eraseDup
+| _ => return []
+
 def ppExprDetailed (e : Expr): MetaM String := do
   let fmtDetailed ← withOptions (fun o₁ =>
                     let o₂ := pp.motives.all.set o₁ true
@@ -468,6 +482,17 @@ def delabMatchless (e: Expr) : MetaM Syntax := withOptions (fun o₁ =>
                     pp.unicode.fun.set o₉ true) do
               PrettyPrinter.delab e
 
+-- Too crude, for example for `fun` and `let`
+partial def getStxTerms (stx: Syntax) : MetaM (List Syntax) := do
+  match stx with
+  | Syntax.node _ _ ss => do
+    let groups ← ss.toList.mapM getStxTerms
+    let children := groups.flatten
+    if (← termKinds).contains stx.getKind
+    then return stx :: children else return children
+  | _ => if (← termKinds).contains stx.getKind
+    then return [stx] else return []
+
 elab "matchless_test" n:ident : term => do
   let name := n.getId
   let info ← getConstInfo name
@@ -475,6 +500,7 @@ elab "matchless_test" n:ident : term => do
   let stx ← delabMatchless value
   let fmt ← PrettyPrinter.ppCategory `term stx
   logInfo m!"without match: {fmt}"
+  logInfo m!"terms: {← getStxTerms stx}; kind: {stx.getKind}"
   return value
 
 #check matchless_test Nat.add

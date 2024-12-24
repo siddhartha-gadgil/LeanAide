@@ -41,7 +41,7 @@ def main (_: List String) : IO Unit := do
   IO.println s!"Using {concurrency} threads"
   for group in groups do
     IO.println s!"Finding premises for group {group}"
-    let allNames := groupedNames[group].get!
+    let allNames := groupedNames[group]? |>.getD (Array.empty)
     IO.println s!"Definitions in group {group}: {allNames.size}"
     let batches := allNames.batches' concurrency
     let batches := batches.map (fun batch => batch.map (·.toName) |>.toList)
