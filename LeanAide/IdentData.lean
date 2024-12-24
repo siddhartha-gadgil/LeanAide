@@ -116,8 +116,8 @@ partial def propIdents (termExpr : Expr) :
         return []
 
 structure PropIdentData where
-  expr : String
-  names : List Name
+  thm : String
+  identifiers : List Name
 deriving Inhabited, Repr, FromJson, ToJson
 
 namespace PropIdentData
@@ -128,16 +128,72 @@ def fromPair (pair : Expr × List Name) : MetaM PropIdentData := do
     let info? := (← getEnv).find? n
     pure info?.isSome
   let fmt ← PrettyPrinter.ppExpr expr
-  return { expr := fmt.pretty, names := idents }
+  return { thm := fmt.pretty, identifiers := idents }
 
 def fromExpr (expr : Expr) : TermElabM <| List  PropIdentData := do
   let pairs ← propIdents expr
   pairs.mapM fun pair => fromPair pair
 
-def fromName (name : Name) : TermElabM <| List PropIdentData := do
-  let decl ← getConstInfo name
-  let term := decl.value!
-  fromExpr term
+def ofName? (name : Name) : TermElabM <| Option (List PropIdentData) := do
+  let decl? := (← getEnv).find? name
+  let term? ←  decl?.bindM fun decl => do
+    pure decl.value?
+  let term? := term?.filter fun term => term.approxDepth < 60
+  term?.mapM fun term => fromExpr term
+
+def handles : IO <| Std.HashMap String IO.FS.Handle := do
+  let handleList ←  ["test", "train", "valid", "all"].mapM fun s => do
+    let pieces := ["premises", "identifiers", s ++ ".jsonl"]
+    let h ← freshDataHandle pieces
+    pure (s, h)
+  return Std.HashMap.ofList handleList
+
+def write (data: PropIdentData)(handles: List IO.FS.Handle) : CoreM Unit := do
+    let l := (toJson data).compress
+    for h in handles do
+      h.putStrLn  l
+
+
+def write' (data: PropIdentData)(group: String)
+  (handles: Std.HashMap String IO.FS.Handle) : CoreM Unit := do
+    let gh ←  match handles.get? group with
+                | some h => pure h
+                | none =>
+                 IO.throwServerError
+                    ("No handle for " ++ group)
+    let h ←  match handles.get? "all" with
+                | some h => pure h
+                | none =>
+                    IO.throwServerError "No handle for 'all'"
+    data.write [gh, h]
+
+def writeBatchM (batch: List Name)(group: String)
+  (handles: Std.HashMap String IO.FS.Handle) (tag: String) : TermElabM Unit := do
+    let gh ←  match handles.get? group with
+                | some h => pure h
+                | none =>
+                 IO.throwServerError
+                    ("No handle for " ++ group)
+    let h ←  match handles.get? "all" with
+                | some h => pure h
+                | none =>
+                    IO.throwServerError "No handle for 'all'"
+    let propData ← batch.filterMapM fun name => do
+      PropIdentData.ofName? name
+    let propData := propData.flatten
+    IO.eprintln s!"Got {propData.length} entries for {group}"
+    let mut count := 0
+    for data in propData do
+      PropIdentData.write data [gh, h]
+      count := count + 1
+      if count % 100 == 0 then
+        IO.eprintln s!"Wrote {count} entries for {tag}"
+
+def writeBatchCore (batch: List Name)(group: String)
+  (handles: Std.HashMap String IO.FS.Handle) (tag: String) : CoreM Unit :=
+    MetaM.run' do
+      TermElabM.run' do
+        writeBatchM batch group handles tag
 
 end PropIdentData
 
@@ -146,14 +202,14 @@ def propIdentsFromName (name : Name) : TermElabM (List (Expr × List Name)) := d
   let type := decl.value!
   propIdents type
 
-#print List.length_concat
+-- #print List.length_concat
 
-#print List.of_concat_eq_concat
+-- #print List.of_concat_eq_concat
 
-#eval PropIdentData.fromName ``List.length_concat
+-- #eval PropIdentData.fromName ``List.length_concat
 
-set_option pp.rawOnError true in
-#eval PropIdentData.fromName ``List.of_concat_eq_concat
+-- set_option pp.rawOnError true in
+-- #eval PropIdentData.fromName ``List.of_concat_eq_concat
 
 
 end LeanAide.Meta

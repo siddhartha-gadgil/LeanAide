@@ -483,6 +483,16 @@ def delabMatchless (e: Expr) : MetaM Syntax := withOptions (fun o₁ =>
                     pp.unicode.fun.set o' true) do
               PrettyPrinter.delab e
 
+def freshDataHandle (fileNamePieces : List String)(clean: Bool := true) : IO IO.FS.Handle := do
+    let path := System.mkFilePath <| [".", "rawdata"] ++ fileNamePieces
+    let dir := System.mkFilePath <| [".", "rawdata"] ++
+        fileNamePieces.take (fileNamePieces.length - 1)
+    if !(← dir.pathExists) then
+        IO.FS.createDirAll dir
+    if clean then
+        IO.FS.writeFile path ""
+    IO.FS.Handle.mk path IO.FS.Mode.append
+
 -- Too crude, for example for `fun` and `let`
 partial def getStxTerms (stx: Syntax) : MetaM (List Syntax) := do
   match stx with
