@@ -33,9 +33,12 @@ unsafe def main (_: List String) : IO Unit := do
   enableInitializersExecution
   init
   let env ← environment
+  IO.eprintln "Obtaining names"
   let names ←
     constantNamesCore.run' coreContext {env := env} |>.runToIO'
+  IO.eprintln s!"Obtained names: {names.size} entries"
   let groupedNames ←  splitData names
+  IO.eprintln s!"Obtained grouped names: {groupedNames.size} entries"
   let handles ← PropIdentData.handles
   let concurrency := (← threadNum) * 3 / 4
   IO.println s!"Using {concurrency} threads"
