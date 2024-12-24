@@ -23,6 +23,16 @@ def constantNames  : MetaM (Array Name) := do
 def constantNamesCore  : CoreM (Array Name) :=
   constantNames.run'
 
+def propNames : MetaM (Array Name) := do
+  (← constantNames).filterM fun name => do
+    let info? := ((← getEnv).find? name)
+    let value? := info? >>= ConstantInfo.value?
+    let check? ← value?.mapM isProof
+    return check?.getD false
+
+def propNamesCore : CoreM (Array Name) :=
+  propNames.run'
+
 /-- names with types of global constants -/
 def constantNameTypes  : MetaM (Array (Name ×  Expr)) := do
   let env ← getEnv
