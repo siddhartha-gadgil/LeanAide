@@ -253,12 +253,16 @@ def groups := ["train", "test", "valid"]
 
 def splitData (data: Array α) : IO <| Std.HashMap String (Array α) := do
     let mut img := Std.HashMap.ofList <| groups.map fun g => (g, #[])
+    let mut count := 0
     for d in data do
         let group :=  match ← IO.rand 0 9 with
             | 0 => "test"
             | 1 => "valid"
             | _ => "train"
-        img := img.insert group <| (img.getD group #[]) ++ #[d]
+        img := img.insert group <| (img.getD group #[]).push d
+        count := count + 1
+        if count % 1000 = 0 then
+            IO.println s!"split count: {count}"
     return img
 namespace DefnTypes
 def getM : MetaM <| Array DefnTypes := do
