@@ -479,7 +479,8 @@ def delabMatchless (e: Expr) : MetaM Syntax := withOptions (fun o₁ =>
                     let o₇ := pp.piBinderTypes.set o₆ true
                     let o₈ := pp.letVarTypes.set o₇ true
                     let o₉ := pp.match.set o₈ false
-                    pp.unicode.fun.set o₉ true) do
+                    let o' := pp.fullNames.set o₉ false
+                    pp.unicode.fun.set o' true) do
               PrettyPrinter.delab e
 
 -- Too crude, for example for `fun` and `let`

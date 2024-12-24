@@ -6,6 +6,7 @@ open Lean Meta LeanAide.Meta
 set_option maxHeartbeats 10000000
 set_option maxRecDepth 1000
 set_option compiler.extract_closed false
+set_option pp.fullNames false
 
 def init : IO Unit := do
   initSearchPath (← Lean.findSysroot) initFiles
