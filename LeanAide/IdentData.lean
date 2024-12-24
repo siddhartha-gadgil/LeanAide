@@ -173,16 +173,15 @@ def writeBatchM (batch: List Name)(group: String)
                 | some h => pure h
                 | none =>
                     IO.throwServerError "No handle for 'all'"
-    let propData ← batch.filterMapM fun name => do
-      PropIdentData.ofName? name
-    let propData := propData.flatten
-    IO.eprintln s!"Got {propData.length} entries for {group}"
     let mut count := 0
-    for data in propData do
-      PropIdentData.write data [gh, h]
+    for name in batch do
+      let propData ← PropIdentData.ofName? name
+      let propData := propData.getD []
       count := count + 1
+      for data in propData do
+        PropIdentData.write data [gh, h]
       if count % 100 == 0 then
-        IO.eprintln s!"Wrote {count} entries for {tag}"
+        IO.eprintln s!"Wrote {count} names for {tag}"
 
 def writeBatchCore (batch: List Name)(group: String)
   (handles: Std.HashMap String IO.FS.Handle) (tag: String) : CoreM Unit :=
