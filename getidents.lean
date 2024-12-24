@@ -1,5 +1,5 @@
 import LeanAide.IdentData
-import LeanAide.PremiseData
+import LeanAide.ConstDeps
 import Lean.Meta
 import LeanAide.Config
 open Lean Meta LeanAide.Meta
@@ -14,9 +14,9 @@ def init : IO Unit := do
 
 def environment : IO Environment := do
   importModules #[{module := `Mathlib},
-    {module:= `LeanAide.TheoremElab},
-    {module:= `LeanAide.VerboseDelabs},
-    {module:= `LeanAide.Premises},
+    {module:= `LeanAide.ConstDeps},
+    {module:= `LeanAide.IdentData},
+    {module:= `LeanAide.Aides},
     {module := `Mathlib}] {}
 
 def environment' : IO Environment := do
@@ -32,9 +32,8 @@ def coreContext : Core.Context := {fileName := "", fileMap := {source:= "", posi
 def main (_: List String) : IO Unit := do
   init
   let env ← environment
-  let env' ← environment'
   let names ←
-    constantNamesCore.run' coreContext {env := env'} |>.runToIO'
+    constantNamesCore.run' coreContext {env := env} |>.runToIO'
   let groupedNames ←  splitData names
   let handles ← PropIdentData.handles
   let concurrency := (← threadNum) * 3 / 4
