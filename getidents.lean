@@ -59,6 +59,7 @@ unsafe def main (_: List String) : IO Unit := do
       let m ← splitData names
       for group in groups do
         let names := m[group]!
+        IO.FS.writeFile (groupedNameFiles group) ""
         let h ← IO.FS.Handle.mk (groupedNameFiles group) IO.FS.Mode.write
         for name in names do
           h.putStrLn <| name.toString
