@@ -176,8 +176,7 @@ def writeBatchM (batch: List Name)(group: String)
     let mut count := 0
     let doneNamesFile : System.FilePath :=
       "rawdata" / "premises" / "identifiers" / "done_names.json"
-    let doneNamesData ← IO.FS.readFile doneNamesFile
-    let doneNames := doneNamesData.splitOn "\n"
+    let doneNames ← IO.FS.lines doneNamesFile
     for name in batch do
       unless doneNames.contains name.toString do
         let propData ← PropIdentData.ofName? name
