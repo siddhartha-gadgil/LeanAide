@@ -261,3 +261,34 @@ example : True := by
 -- #moogle "There are infinitely many even numbers."
 
 #check False.elim
+
+def lineFn : ParserFn := takeUntilFn fun c => c == '\n'
+
+def lineBody : Parser :=
+  { fn := rawFn lineFn}
+
+@[combinator_parenthesizer lineBody] def lineBody.parenthesizer := PrettyPrinter.Parenthesizer.visitToken
+@[combinator_formatter lineBody] def lineBody.formatter := PrettyPrinter.Formatter.visitAtom Name.anonymous
+
+
+declare_syntax_cat block
+syntax (name := block) lineBody*  : block
+open Command
+
+syntax (name := sourceCmd) withPosition("#source" ppLine (colGt commentBody)) : command
+
+open Command
+@[command_elab sourceCmd] def elabSource : CommandElab :=
+  fun stx => Command.liftTermElabM do
+  let s := stx.getArgs[1]!.reprint.get!.trim.dropRight 2
+  logInfo m!"{s}"
+
+#check 1
+
+#source
+  This is not the most elegant way
+
+  but it works.
+  -/
+
+#check 1
