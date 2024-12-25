@@ -34,12 +34,31 @@ unsafe def main (_: List String) : IO Unit := do
   init
   let env ← environment
   IO.eprintln "Obtaining names"
-  let names ←
-    propNamesCore.run' coreContext {env := env} |>.runToIO'
-  IO.eprintln s!"Obtained names: {names.size} entries"
-  let groupedNames ←  splitData names
+  let groupedNameFile : System.FilePath :=
+    "rawdata" / "premises" / "identifiers" / "grouped_names.json"
+  let doneNamesFile : System.FilePath :=
+    "rawdata" / "premises" / "identifiers" / "done_names.json"
+  let groupNameList? : Option (List (String × Array Name)) ← do
+    if ← groupedNameFile.pathExists then
+      let jsNames ← IO.FS.readFile groupedNameFile
+      let l  : Option (List (String × Array Name)) :=
+        fromJson? jsNames |>.toOption
+      pure <| l
+    else pure none
+  let groupedNames ← match groupNameList? with
+    | some l =>
+      IO.eprintln s!"Obtained names: {l.length} entries from file"
+      pure <| Std.HashMap.ofList l
+    | none => do
+      let names ←
+        propNamesCore.run' coreContext {env := env} |>.runToIO'
+      IO.eprintln s!"Obtained names: {names.size} entries"
+      let m ← splitData names
+      IO.FS.writeFile groupedNameFile <| toJson m.toList |>.pretty
+      IO.FS.writeFile doneNamesFile ""
+      pure m
   IO.eprintln s!"Obtained grouped names: {groupedNames.size} entries"
-  let handles ← PropIdentData.handles
+  let handles ← PropIdentData.handles groupNameList?.isNone
   let concurrency := (← threadNum) * 3 / 4
   IO.println s!"Using {concurrency} threads"
   for group in groups do

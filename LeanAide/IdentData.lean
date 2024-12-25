@@ -136,10 +136,10 @@ def ofName? (name : Name) : TermElabM <| Option (List PropIdentData) := do
   let term? := term?.filter fun term => term.approxDepth < 60
   term?.mapM fun term => fromExpr term
 
-def handles : IO <| Std.HashMap String IO.FS.Handle := do
+def handles (clean: Bool := true) : IO <| Std.HashMap String IO.FS.Handle := do
   let handleList ←  ["test", "train", "valid", "all"].mapM fun s => do
     let pieces := ["premises", "identifiers", s ++ ".jsonl"]
-    let h ← freshDataHandle pieces
+    let h ← freshDataHandle pieces clean
     pure (s, h)
   return Std.HashMap.ofList handleList
 
@@ -174,12 +174,20 @@ def writeBatchM (batch: List Name)(group: String)
                 | none =>
                     IO.throwServerError "No handle for 'all'"
     let mut count := 0
+    let doneNamesFile : System.FilePath :=
+      "rawdata" / "premises" / "identifiers" / "done_names.json"
+    let doneNamesData ← IO.FS.readFile doneNamesFile
+    let doneNames := doneNamesData.splitOn "\n"
     for name in batch do
-      let propData ← PropIdentData.ofName? name
-      let propData := propData.getD []
+      unless doneNames.contains name.toString do
+        let propData ← PropIdentData.ofName? name
+        let propData := propData.getD []
+        for data in propData do
+          PropIdentData.write data [gh, h]
+        let h ← IO.FS.Handle.mk doneNamesFile IO.FS.Mode.append
+        h.putStrLn name.toString
+        h.flush
       count := count + 1
-      for data in propData do
-        PropIdentData.write data [gh, h]
       if count % 100 == 0 then
         IO.eprintln s!"Wrote {count} names for {tag}"
 
