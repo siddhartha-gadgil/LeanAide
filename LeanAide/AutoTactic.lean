@@ -31,12 +31,13 @@ syntax (name := auto_aesop) "auto?" ("[" ident,* "]")? : tactic
 
 -- should configure 90, 50, 10
 @[tactic auto_aesop] def autoAesopImpl : Tactic := fun stx => do
-match stx with
-| `(tactic| auto?) => do
-  let tac ← aesopTactic 90 50 10
-  evalTactic tac
-| `(tactic| auto? [$names,*]) => do
-  let names := names.getElems.map fun n => n.getId
-  let tac ← aesopTactic 90 50 10 names.toList
-  evalTactic tac
-| _ => throwUnsupportedSyntax
+unless (← getGoals).isEmpty do
+  match stx with
+  | `(tactic| auto?) => do
+    let tac ← aesopTactic 90 50 10
+    evalTactic tac
+  | `(tactic| auto? [$names,*]) => do
+    let names := names.getElems.map fun n => n.getId
+    let tac ← aesopTactic 90 50 10 names.toList
+    evalTactic tac
+  | _ => throwUnsupportedSyntax
