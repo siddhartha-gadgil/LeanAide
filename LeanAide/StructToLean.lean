@@ -447,11 +447,19 @@ mutual
             | Except.error _ =>
               mkNoteCmd s!"Failed to translate theorem {claim}"
             | Except.ok thm => do
-              let pf ←
-                structToTactics #[] (context ++ hypothesis) steps.toList qp (some thm)
-              let pfTerm ← `(by $pf*)
-              -- IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
-              mkStatementStx name? (← delab thm) pfTerm true
+              let mvar ← mkFreshExprMVar thm
+              let mvarId := mvar.mvarId!
+              let vars ← getVars thm
+              let varIds := vars.toArray.map fun n => Lean.mkIdent n
+              let introTacs ← `(tactic| intro $varIds*)
+              let (_, mvarId) ← mvarId.introN vars.length vars
+              mvarId.withContext do
+                let pf ←
+                  structToTactics #[] (context ++ hypothesis) steps.toList qp (some thm)
+                let pf := #[introTacs] ++  pf
+                let pfTerm ← `(by $pf*)
+                -- IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
+                mkStatementStx name? (← delab thm) pfTerm true
         | _, _ =>
           -- logInfo s!"failed to get theorem conclusion or proof"
           mkNoteCmd "No theorem conclusion or proof found"
