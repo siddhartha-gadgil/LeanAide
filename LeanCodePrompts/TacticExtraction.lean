@@ -86,9 +86,9 @@ def findTag? (mvarIds : List MVarId) (tag : Name) : TacticM (Option MVarId) := d
   | some mvarId => return mvarId
   | none => mvarIds.findM? fun mvarId => return tag.isPrefixOf (← mvarId.getDecl).userName
 
-def getCaseGoals (tag : TSyntax `Lean.flatMaperIdent) : TacticM (MVarId × List MVarId) := do
+def getCaseGoals (tag : TSyntax `Lean.binderIdent) : TacticM (MVarId × List MVarId) := do
   let gs ← getUnsolvedGoals
-  let g ← if let `(Lean.flatMaperIdent| $tag:ident) := tag then
+  let g ← if let `(Lean.binderIdent| $tag:ident) := tag then
     let tag := tag.getId
     let some g ← findTag? gs tag | throwError "tag not found"
     pure g

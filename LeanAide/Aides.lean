@@ -387,7 +387,7 @@ def partialParser  (parser : Parser) (input : String) (fileName := "<input>") : 
     return Except.error (s.toErrorMsg ictx)
   else
     let head := input.extract 0 s.pos
-    let stx := stack.back
+    let stx := stack.back!
     return Except.ok (stx, head, input.drop head.length)
 
 partial def polyParser (parser: Parser) (input: String) (fileName := "<input>") : MetaM <| Option  Syntax := do
