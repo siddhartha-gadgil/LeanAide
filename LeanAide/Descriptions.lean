@@ -193,7 +193,7 @@ open Command in
     let name := id.getId
     let stx' ← `(command| theorem $id:ident $ty $val)
     let fmt ← PrettyPrinter.ppCommand stx'
-    let type : Expr ← elabFrontThmExprM fmt.pretty name
+    let type : Expr ← elabFrontThmExprM fmt.pretty name true
     let some (desc, _) ←
       Translator.getTypeDescriptionM type {} | throwError "No description found for type {type}"
     let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom (desc ++ " -/")]
