@@ -1,6 +1,6 @@
 import LeanCodePrompts.Translate
 
-open Lean Meta Elab Term Tactic
+open Lean Meta Elab Term Tactic  Parser Command
 
 namespace LeanAide
 
@@ -8,7 +8,7 @@ def addDocLint : Linter where
   run stx :=
     Command.liftTermElabM do
       match stx with
-      | `(command| theorem $id:ident $ty $val) =>
+      | `(command| theorem $id:ident $ty:declSig $val:declVal) =>
 
         let name := id.getId
         let info ← getConstInfo name
@@ -24,3 +24,6 @@ def addDocLint : Linter where
         return
 
 initialize addLinter addDocLint
+
+
+end LeanAide

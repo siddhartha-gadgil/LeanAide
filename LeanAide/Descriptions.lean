@@ -183,6 +183,25 @@ elab "why" : tactic => do
   logInfo m!"Theorem: {transl}"
   logInfo m!"Proof: {proof}"
 
+syntax (name:= addDocs) "#doc" "theorem" ident declSig declVal : command
+
+open Command in
+@[command_elab addDocs] def elabAddDocsImpl : CommandElab := fun stx =>
+  match stx with
+  | `(#doc theorem $id:ident $ty:declSig $val:declVal) =>
+    Command.liftTermElabM do
+    let name := id.getId
+    let stx' ← `(command| theorem $id:ident $ty $val)
+    let fmt ← PrettyPrinter.ppCommand stx'
+    let type : Expr ← elabFrontThmExprM fmt.pretty name
+    let some (desc, _) ←
+      Translator.getTypeDescriptionM type {} | throwError "No description found for type {type}"
+    let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom (desc ++ " -/")]
+    let stx' ← `(command| $docs:docComment theorem $id:ident $ty $val)
+    TryThis.addSuggestion stx stx'
+  | _ => throwError "unexpected syntax"
+
+
 def checkTranslationM (s: String) (type: Expr) (translator: Translator) :
   MetaM <| Option (String × Array (Bool × String)) := do
   let triple? ←  getTypeDescriptionM type translator
