@@ -266,23 +266,24 @@ example : True := by
 open Lake.Toml
 def lineFn : ParserFn := takeWhile1Fn fun c => c != '∎'
 
-def lineBody : Parser :=
+def lineBodyInit : Parser :=
   { fn := rawFn lineFn}
+
+def lineBody : Parser := andthen lineBodyInit "∎"
 
 @[combinator_parenthesizer lineBody] def lineBody.parenthesizer := PrettyPrinter.Parenthesizer.visitToken
 @[combinator_formatter lineBody] def lineBody.formatter := PrettyPrinter.Formatter.visitAtom Name.anonymous
 
 
-declare_syntax_cat block
-syntax (name := block) (lineBody "∎")*  : block
 open Command
 
-syntax (name := sourceCmd) withPosition("#source" ppLine (colGt lineBody "∎")) : command
+syntax (name := sourceCmd) withPosition("#source" ppLine (colGt lineBody )) : command
 
 open Command
 @[command_elab sourceCmd] def elabSource : CommandElab :=
   fun stx => Command.liftTermElabM do
   let s := stx.getArgs[1]!.reprint.get!.trim
+  logInfo m!"{repr stx}"
   logInfo m!"{s}"
 
 #check 1
@@ -294,3 +295,21 @@ open Command
   ∎
 
 #check 1
+
+
+open Parser.Command
+syntax (name:= textPf) "Proof" ppLine (str <|> lineBody) : tactic
+
+open Tactic
+@[tactic textPf] def textProofImpl : Tactic :=
+  fun _ => do
+  evalTactic (← `(tactic|sorry))
+
+example : True := by
+  Proof
+    This is trivial.
+
+    It really is.
+    I said so.∎
+
+#check "This"
