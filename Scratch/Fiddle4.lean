@@ -2,6 +2,7 @@ import Lean
 import Mathlib
 import Plausible
 import LeanSearchClient.Syntax
+import Lake.Toml.ParserUtil
 
 open Lean Meta Elab Term PrettyPrinter Tactic Parser
 
@@ -262,7 +263,8 @@ example : True := by
 
 #check False.elim
 
-def lineFn : ParserFn := takeUntilFn fun c => c == '\n'
+open Lake.Toml
+def lineFn : ParserFn := takeWhile1Fn fun c => c != '∎'
 
 def lineBody : Parser :=
   { fn := rawFn lineFn}
@@ -272,15 +274,15 @@ def lineBody : Parser :=
 
 
 declare_syntax_cat block
-syntax (name := block) lineBody*  : block
+syntax (name := block) (lineBody "∎")*  : block
 open Command
 
-syntax (name := sourceCmd) withPosition("#source" ppLine (colGt commentBody)) : command
+syntax (name := sourceCmd) withPosition("#source" ppLine (colGt lineBody "∎")) : command
 
 open Command
 @[command_elab sourceCmd] def elabSource : CommandElab :=
   fun stx => Command.liftTermElabM do
-  let s := stx.getArgs[1]!.reprint.get!.trim.dropRight 2
+  let s := stx.getArgs[1]!.reprint.get!.trim
   logInfo m!"{s}"
 
 #check 1
@@ -289,6 +291,6 @@ open Command
   This is not the most elegant way
 
   but it works.
-  -/
+  ∎
 
 #check 1
