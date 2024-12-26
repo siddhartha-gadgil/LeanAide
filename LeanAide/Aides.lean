@@ -517,3 +517,5 @@ def relLCtx (mvarId : MVarId) : MetaM Expr :=
     let decls := (← getLCtx).decls.toArray |>.filterMap id
     let decls := decls[1:].toArray
     relLCtxAux (← mvarId.getType) decls.toList
+
+#check addLinter
