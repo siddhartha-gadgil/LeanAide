@@ -498,25 +498,20 @@ def freshDataHandle (fileNamePieces : List String)(clean: Bool := true) : IO IO.
         IO.FS.writeFile path ""
     IO.FS.Handle.mk path IO.FS.Mode.append
 
--- Too crude, for example for `fun` and `let`
-partial def getStxTerms (stx: Syntax) : MetaM (List Syntax) := do
-  match stx with
-  | Syntax.node _ _ ss => do
-    let groups ← ss.toList.mapM getStxTerms
-    let children := groups.flatten
-    if (← termKinds).contains stx.getKind
-    then return stx :: children else return children
-  | _ => if (← termKinds).contains stx.getKind
-    then return [stx] else return []
+def relLCtxAux (goal: Expr) (decls: List LocalDecl) : MetaM Expr := do
+  match decls with
+  | [] => return goal
+  | (.ldecl _ _ name type value _ kind) :: tail =>
+    withLetDecl name type value (kind := kind) fun x => do
+      let inner ← relLCtxAux (goal.instantiate1 x) tail
+      mkLetFVars #[x] inner
+  | (.cdecl _ _ name type bi kind) :: tail =>
+    withLocalDecl name bi type (kind := kind) fun x => do
+      let inner ← relLCtxAux (goal.instantiate1 x) tail
+      mkForallFVars #[x] inner
 
-elab "matchless_test" n:ident : term => do
-  let name := n.getId
-  let info ← getConstInfo name
-  let value := info.value!
-  let stx ← delabMatchless value
-  let fmt ← PrettyPrinter.ppCategory `term stx
-  logInfo m!"without match: {fmt}"
-  logInfo m!"terms: {← getStxTerms stx}; kind: {stx.getKind}"
-  return value
 
-#check matchless_test Nat.add
+def relLCtx (mvarId : MVarId) : MetaM Expr :=
+  mvarId.withContext do
+    let decls := (← getLCtx).decls.toArray |>.filterMap id
+    relLCtxAux (← mvarId.getType) decls.toList

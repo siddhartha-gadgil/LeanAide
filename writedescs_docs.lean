@@ -2,7 +2,7 @@ import Lean.Meta
 -- import LeanCodePrompts
 import LeanAide.Config
 import LeanAide.Descriptions
-open Lean LeanAide.Meta
+open Lean LeanAide.Meta LeanAide
 
 set_option maxHeartbeats 10000000
 set_option maxRecDepth 1000
@@ -40,7 +40,8 @@ def main : IO Unit := do
   for name in names do
     IO.println s!"Processing {count} of {names.size}"
     let js := Json.mkObj [("name", Json.str name)]
-    let core := addDescriptionCore js
+    let translator : Translator := {}
+    let core := translator.addDescriptionCore js
     let (js, check) ← core.run' coreContext {env := env} |>.runToIO'
     handle.putStrLn js.compress
     handle.flush
