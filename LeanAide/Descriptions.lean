@@ -165,6 +165,24 @@ def getTypeDescriptionM (type: Expr)(translator: Translator) : MetaM <| Option (
     let res := contents.get? 0 |>.map fun h => (h, statement, defBlob?)
     return res
 
+open Tactic
+elab "what" : tactic => do
+  let goal ← getMainGoal
+  let type ← relLCtx goal
+  logInfo m!"goal : {type}"
+  let some (transl, _, _) ← getTypeDescriptionM type {} | throwError "No description from LLM"
+  logInfo transl
+
+elab "why" : tactic => do
+  let goal ← getMainGoal
+  let type ← relLCtx goal
+  logInfo m!"goal : {type}"
+  let some (transl, _, _) ← getTypeDescriptionM type {} | throwError "No description from LLM"
+  let server : ChatServer := ChatServer.default
+  let proof ← server.prove transl (n := 1)
+  logInfo m!"Theorem: {transl}"
+  logInfo m!"Proof: {proof}"
+
 def checkTranslationM (s: String) (type: Expr) (translator: Translator) :
   MetaM <| Option (String × Array (Bool × String)) := do
   let triple? ←  getTypeDescriptionM type translator

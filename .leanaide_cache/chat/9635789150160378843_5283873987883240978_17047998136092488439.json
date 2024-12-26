@@ -1,0 +1,24 @@
+{"usage":
+ {"total_tokens": 253,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 155,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 98},
+ "system_fingerprint": "fp_d28bcae782",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-AidnX7v6aU2ZHXHYWsjk4cbd3dy9q",
+ "created": 1735202779,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "Assume for contradiction that the set of all odd natural numbers is finite. Then there must be a largest odd natural number, say \\( n \\). Consider the number \\( n+2 \\). Since \\( n \\) is odd, \\( n+2 \\) is also odd. Moreover, \\( n+2 > n \\), which contradicts the assumption that \\( n \\) is the largest odd natural number. Therefore, the set of all odd natural numbers must be infinite."},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"}]}

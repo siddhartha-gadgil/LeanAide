@@ -506,6 +506,7 @@ def relLCtxAux (goal: Expr) (decls: List LocalDecl) : MetaM Expr := do
       let inner ← relLCtxAux (goal.instantiate1 x) tail
       mkLetFVars #[x] inner
   | (.cdecl _ _ name type bi kind) :: tail =>
+    logInfo m!"decl: {name}"
     withLocalDecl name bi type (kind := kind) fun x => do
       let inner ← relLCtxAux (goal.instantiate1 x) tail
       mkForallFVars #[x] inner
@@ -514,4 +515,5 @@ def relLCtxAux (goal: Expr) (decls: List LocalDecl) : MetaM Expr := do
 def relLCtx (mvarId : MVarId) : MetaM Expr :=
   mvarId.withContext do
     let decls := (← getLCtx).decls.toArray |>.filterMap id
+    let decls := decls[1:].toArray
     relLCtxAux (← mvarId.getType) decls.toList
