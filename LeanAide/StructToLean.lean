@@ -130,18 +130,36 @@ def contextStatementOfJson (js: Json) : Option String :=
     | _ => none
   | _ => none
 
-def localDeclExists (name: Name) (type : Expr) : MetaM Bool := do
+partial def getVars (type: Expr) : MetaM <| List Name := do
+  match type with
+  | .forallE n type body bi => do
+    withLocalDecl n  bi type fun x => do
+      let type' := body.instantiate1 x
+      let names ← getVars type'
+      return n::names
+  | _ => return []
+
+
+def findLocalDecl? (name: Name) (type : Expr) : MetaM <| Option FVarId := do
   let lctx ← getLCtx
   match lctx.findFromUserName? name with
-  | some (.cdecl _ _ _ dtype ..) => isDefEq dtype type
-  | _ => return false
+  | some (.cdecl _ fVarId _ dtype ..) =>
+    let check ← isDefEq dtype type
+    logInfo m!"Checking {dtype} and {type} gives {check}"
+    if check
+      then return fVarId
+      else return none
+  | _ => return none
+
 
 partial def dropLocalContext (type: Expr) : MetaM Expr := do
   match type with
   | .forallE name binderType body _ => do
-    if ← localDeclExists name binderType then
-        dropLocalContext body
-    else
+    match ← findLocalDecl? name binderType with
+    | some fVarId =>
+      let body' := body.instantiate1 (mkFVar fVarId)
+      dropLocalContext body'
+    | none => do
       return type
   | _ => return type
 
@@ -201,9 +219,9 @@ def inductionCase (name: String)(condition: String)
   | _ =>
       let nId := mkIdent name.toName
       let succId := mkIdent `succ
-      let succId' ← `(Lean.flatMaperIdent| $succId:ident)
+      let succId' ← `(Lean.binderIdent| $succId:ident)
       let ihId := mkIdent `ih
-      let ihId' ← `(Lean.flatMaperIdent| $ihId:ident)
+      let ihId' ← `(Lean.binderIdent| $ihId:ident)
       `(tactic| case $succId' $nId:ident $ihId' => $pf*)
 
 def inductionCases (name: String)
@@ -429,11 +447,19 @@ mutual
             | Except.error _ =>
               mkNoteCmd s!"Failed to translate theorem {claim}"
             | Except.ok thm => do
-              let pf ←
-                structToTactics #[] (context ++ hypothesis) steps.toList qp (some thm)
-              let pfTerm ← `(by $pf*)
-              -- IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
-              mkStatementStx name? (← delab thm) pfTerm true
+              let mvar ← mkFreshExprMVar thm
+              let mvarId := mvar.mvarId!
+              let vars ← getVars thm
+              let varIds := vars.toArray.map fun n => Lean.mkIdent n
+              let introTacs ← `(tactic| intro $varIds*)
+              let (_, mvarId) ← mvarId.introN vars.length vars
+              mvarId.withContext do
+                let pf ←
+                  structToTactics #[] (context ++ hypothesis) steps.toList qp (some thm)
+                let pf := #[introTacs] ++  pf
+                let pfTerm ← `(by $pf*)
+                -- IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
+                mkStatementStx name? (← delab thm) pfTerm true
         | _, _ =>
           -- logInfo s!"failed to get theorem conclusion or proof"
           mkNoteCmd "No theorem conclusion or proof found"
@@ -681,6 +707,47 @@ def statementToCode (s: String) (qp: CodeGenerator) :
       fmt := fmt ++ "No structured proof found"
       IO.println fmt
     return fmt
+
+#check MVarId.introN
+
+elab "intro_experiment%" t:term : term => do
+  let t ← elabType t
+  let mvar ← mkFreshExprMVar t
+  let mvarId := mvar.mvarId!
+  let vars ← getVars t
+  let (xs, mvarId) ← mvarId.introN vars.length vars
+  mvarId.withContext do
+    for x in xs do
+      let fvar ←  x.getUserName
+      logInfo m!"Intro: {fvar}"
+    logInfo m!"MVar type: {← mvarId.getType}"
+    let type' ← dropLocalContext t
+    logInfo m!"Inner type: {← PrettyPrinter.ppExpr type'}"
+  return t
+
+#check intro_experiment% ∀(n m : Nat), ∀ (fin: Fin n), n = m
+
+#check intro_experiment% ∀(n m : Nat), ∀ (fin: Fin n), n = m → (m = n)
+
+elab "intro_experiment%%" t:term "vs" s:term : term => do
+  let t ← elabType t
+  let mvar ← mkFreshExprMVar t
+  let mvarId := mvar.mvarId!
+  let vars ← getVars t
+  let (xs, mvarId) ← mvarId.introN vars.length vars
+  mvarId.withContext do
+    for x in xs do
+      let fvar ←  x.getUserName
+      logInfo m!"Intro: {fvar}"
+    logInfo m!"MVar type: {← mvarId.getType}"
+    let s ← elabType s
+    let type' ← dropLocalContext s
+    logInfo m!"Inner type: {← PrettyPrinter.ppExpr type'}"
+  return t
+
+#check intro_experiment%% (∀(n  : Nat), n = 1) vs
+    (∀(n m : Nat), ∀ (fin: Fin n), n = m → (m = n))
+
 
 end CodeGenerator
 end LeanAide

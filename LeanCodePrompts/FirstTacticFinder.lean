@@ -119,7 +119,7 @@ def getTacticStateProxy : TacticM <| Option TacticStateProxy :=
 
 def equalStates (s₁ s₂ : TacticStateProxy) : TacticM Bool :=
    withMainContext do
-    return s₁.flatMapers == s₂.flatMapers
+    return s₁.binders == s₂.binders
             && s₁.letData.size == s₂.letData.size &&
             (← isDefEq s₁.target s₂.target) &&
             (← (List.range s₁.letData.size).allM (fun i =>

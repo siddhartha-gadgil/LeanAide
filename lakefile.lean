@@ -100,6 +100,11 @@ lean_exe getpremises{
   supportInterpreter := true
 }
 
+lean_exe getidents{
+  supportInterpreter := true
+}
+
+
 lean_exe props{
   supportInterpreter := true
 }

@@ -1,4 +1,5 @@
-import LeanAide.Premises
+import LeanAide.IdentData
+import LeanAide.ConstDeps
 import Lean.Meta
 import LeanAide.Config
 open Lean Meta LeanAide.Meta
@@ -13,9 +14,9 @@ def init : IO Unit := do
 
 def environment : IO Environment := do
   importModules #[{module := `Mathlib},
-    {module:= `LeanAide.TheoremElab},
-    {module:= `LeanAide.VerboseDelabs},
-    {module:= `LeanAide.Premises},
+    {module:= `LeanAide.ConstDeps},
+    {module:= `LeanAide.IdentData},
+    {module:= `LeanAide.Aides},
     {module := `Mathlib}] {}
 
 def environment' : IO Environment := do
@@ -28,16 +29,44 @@ def environment' : IO Environment := do
 def coreContext : Core.Context := {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]
     }
 
-def main (_: List String) : IO Unit := do
+unsafe def main (_: List String) : IO Unit := do
+  enableInitializersExecution
   init
   let env ← environment
-  let env' ← environment'
-  let propMap ←
-    propMapCore.run' coreContext {env := env'} |>.runToIO'
-  IO.println s!"Obtained prop-map: {propMap.size} entries"
-  let propNames := propMap.toArray.map (·.1)
-  let groupedNames ←  splitData propNames
-  let handles ← fileHandles
+  IO.eprintln "Obtaining names"
+  let groupedNameFiles (group: String) : System.FilePath :=
+    "rawdata" / "premises" / "identifiers" / "grouped_names" / s!"{group}.txt"
+  let preGroups : Bool ← groups.allM fun group => do
+    let groupedNameFile := groupedNameFiles group
+    pure (← groupedNameFile.pathExists)
+  let doneNamesFile : System.FilePath :=
+    "rawdata" / "premises" / "identifiers" / "done_names.json"
+  let groupedNames ← if preGroups
+    then
+      let mut m : Std.HashMap String (Array Name) := Std.HashMap.empty
+      for group in groups do
+        let mut names : Array Name := Array.empty
+        let lines ← IO.FS.lines (groupedNameFiles group)
+        for line in lines do
+          let name := line.toName
+          names := names.push name
+        m := m.insert group names
+      pure m
+    else do
+      let names ←
+        propNamesCore.run' coreContext {env := env} |>.runToIO'
+      IO.eprintln s!"Obtained names: {names.size} entries"
+      let m ← splitData names
+      for group in groups do
+        let names := m[group]!
+        IO.FS.writeFile (groupedNameFiles group) ""
+        let h ← IO.FS.Handle.mk (groupedNameFiles group) IO.FS.Mode.write
+        for name in names do
+          h.putStrLn <| name.toString
+      IO.FS.writeFile doneNamesFile ""
+      pure m
+  IO.eprintln s!"Obtained grouped names: {groupedNames.size} entries"
+  let handles ← PropIdentData.handles !preGroups
   let concurrency := (← threadNum) * 3 / 4
   IO.println s!"Using {concurrency} threads"
   for group in groups do
@@ -45,11 +74,13 @@ def main (_: List String) : IO Unit := do
     let allNames := groupedNames[group]? |>.getD (Array.empty)
     IO.println s!"Definitions in group {group}: {allNames.size}"
     let batches := allNames.batches' concurrency
-    let batches := batches.map (fun batch => batch.map (·.toName) |>.toList)
+    let batches := batches.map (fun batch => batch.toList)
     IO.println s!"Made {batches.size} batches"
     let batches' := batches.zip (Array.range batches.size)
     let tasks ←  batches'.mapM fun (names, k) => do
-        let writeCore := PremiseData.writeBatchCore names group handles propMap s!"batch: {k}"
+        let writeCore :=
+          PropIdentData.writeBatchCore names group handles
+            s!"batch: {k} of group {group}"
         let t ← writeCore.run' coreContext {env := env} |>.spawnToIO
         pure (t, k)
     IO.println "Spawned tasks"
