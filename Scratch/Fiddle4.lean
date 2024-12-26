@@ -271,8 +271,8 @@ def lineBodyInit : Parser :=
 
 def lineBody : Parser := andthen lineBodyInit "∎"
 
-@[combinator_parenthesizer lineBody] def lineBody.parenthesizer := PrettyPrinter.Parenthesizer.visitToken
-@[combinator_formatter lineBody] def lineBody.formatter := PrettyPrinter.Formatter.visitAtom Name.anonymous
+@[combinator_parenthesizer lineBodyInit] def lineBodyInit.parenthesizer := PrettyPrinter.Parenthesizer.visitToken
+@[combinator_formatter lineBodyInit] def lineBodyInit.formatter := PrettyPrinter.Formatter.visitAtom Name.anonymous
 
 
 open Command
@@ -282,9 +282,16 @@ syntax (name := sourceCmd) withPosition("#source" ppLine (colGt lineBody )) : co
 open Command
 @[command_elab sourceCmd] def elabSource : CommandElab :=
   fun stx => Command.liftTermElabM do
-  let s := stx.getArgs[1]!.reprint.get!.trim
-  logInfo m!"{repr stx}"
-  logInfo m!"{s}"
+  match stx with
+  | `(command| #source $t:lineBodyInit ∎) =>
+    let s := stx.getArgs[1]!.reprint.get!.trim
+    logInfo m!"Syntax: {stx}"
+    let stx' ←
+    `(command| #source $(t):lineBodyInit ∎)
+    logInfo m!"Extract: {s}"
+    logInfo m!"Details: {repr stx}"
+    logInfo m!"{repr stx'}"
+  | _ => throwUnsupportedSyntax
 
 #check 1
 
@@ -298,7 +305,7 @@ open Command
 
 
 open Parser.Command
-syntax (name:= textPf) "Proof" ppLine (str <|> lineBody) : tactic
+syntax (name:= textPf) withPosition("#Proof" ppLine (colGt (str <|> lineBody))) : tactic
 
 open Tactic
 @[tactic textPf] def textProofImpl : Tactic :=
@@ -306,7 +313,7 @@ open Tactic
   evalTactic (← `(tactic|sorry))
 
 example : True := by
-  Proof
+  #Proof
     This is trivial.
 
     It really is.
