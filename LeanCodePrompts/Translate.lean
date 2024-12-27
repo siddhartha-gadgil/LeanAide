@@ -50,9 +50,9 @@ register_option lean_aide.translate.definition_penalty : Nat :=
     descr := "Penalty for a prompt being from a definition scaled by 10" }
 
 register_option lean_aide.translate.model : String :=
-  { defValue := "gpt-3.5-turbo"
+  { defValue := "gpt-4o"
     group := "lean_aide.translate"
-    descr := "Model to use (gpt-3.5-turbo)." }
+    descr := "Model to use (gpt-4o)." }
 
 register_option lean_aide.translate.azure : Bool :=
   { defValue := false

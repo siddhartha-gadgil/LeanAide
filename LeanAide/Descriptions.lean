@@ -143,7 +143,7 @@ end LeanAide.Meta
 namespace LeanAide.Translator
 open LeanAide.Meta
 
-def getDescriptionM (name: Name)(translator: Translator) : MetaM <| Option (String × String) := do
+def getDescriptionM (name: Name)(translator: Translator := {}) : MetaM <| Option (String × String) := do
   let prompt? ← describeTheoremPrompt name
   prompt?.bindM fun (prompt, statement) => do
     let messages ← mkMessages prompt #[] (← sysPrompt)
