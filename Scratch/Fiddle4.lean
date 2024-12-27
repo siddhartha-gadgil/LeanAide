@@ -264,10 +264,10 @@ example : True := by
 #check False.elim
 
 open Lake.Toml
-def lineFn : ParserFn := takeWhile1Fn fun c => c != '∎'
+def proofFn : ParserFn := takeWhile1Fn fun c => c != '∎'
 
 def proofBodyInit : Parser :=
-  { fn := rawFn lineFn}
+  { fn := rawFn proofFn}
 
 def proofBody : Parser := andthen proofBodyInit "∎"
 
@@ -279,7 +279,7 @@ open Command
 
 syntax (name := sourceCmd) withPosition("#proof" ppLine (colGt proofBody )) : command
 
-def mkSourceStx (s: String) : Syntax :=
+def mkProofStx (s: String) : Syntax :=
   mkNode ``sourceCmd #[mkAtom "#proof", mkAtom s, mkAtom "∎"]
 
 open Command
@@ -289,7 +289,7 @@ open Command
   | `(command| #proof $t:proofBodyInit ∎) =>
     let s := stx.getArgs[1]!.reprint.get!.trim
     logInfo m!"Syntax: {stx}"
-    let stx' := mkSourceStx "Some proof."
+    let stx' := mkProofStx "Some proof."
     logInfo m!"Extract: {s}"
     logInfo m!"Details: {repr stx}"
     logInfo m!"{stx'}"

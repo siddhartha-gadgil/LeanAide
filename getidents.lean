@@ -65,6 +65,7 @@ unsafe def main (_: List String) : IO Unit := do
           h.putStrLn <| name.toString
       IO.FS.writeFile doneNamesFile ""
       pure m
+  let doneNames ← IO.FS.lines doneNamesFile
   IO.eprintln s!"Obtained grouped names: {groupedNames.size} entries"
   let handles ← PropIdentData.handles !preGroups
   let concurrency := (← threadNum) * 3 / 4
@@ -73,6 +74,8 @@ unsafe def main (_: List String) : IO Unit := do
     IO.println s!"Finding premises for group {group}"
     let allNames := groupedNames[group]? |>.getD (Array.empty)
     IO.println s!"Definitions in group {group}: {allNames.size}"
+    let allNames := allNames.filter (fun name => !doneNames.contains name.toString)
+    IO.println s!"Definitions in group {group} not done: {allNames.size}"
     let batches := allNames.batches' concurrency
     let batches := batches.map (fun batch => batch.toList)
     IO.println s!"Made {batches.size} batches"

@@ -165,59 +165,6 @@ def getTypeDescriptionM (type: Expr)(translator: Translator) : MetaM <| Option (
     let res := contents.get? 0 |>.map fun h => (h, statement, defBlob?)
     return res
 
-open Parser.Command
-syntax (name:= textProof) "text_proof" ppLine (str <|> commentBody) : tactic
-
-open Tactic
-@[tactic textProof] def textProofImpl : Tactic :=
-  fun _ => do
-  evalTactic (← `(tactic|sorry))
-
-example : True := by
-  text_proof "trivial"
-
-open Tactic
-elab "what" : tactic => do
-  let goal ← getMainGoal
-  let type ← relLCtx goal
-  logInfo m!"goal : {type}"
-  let some (transl, _, _) ← getTypeDescriptionM type {} | throwError "No description from LLM"
-  logInfo transl
-
-syntax (name:= whyTac) "why" : tactic
-@[tactic whyTac] def whyTacImpl : Tactic := fun stx => do
-  let goal ← getMainGoal
-  let type ← relLCtx goal
-  logInfo m!"goal : {type}"
-  let some (transl, _, _) ← getTypeDescriptionM type {} | throwError "No description from LLM"
-  let server : ChatServer := ChatServer.default
-  let proof ← server.prove transl (n := 1)
-  logInfo m!"Theorem: {transl}"
-  logInfo m!"Proof: {proof}"
-  let pfStx := Syntax.mkStrLit proof[0]!
-  let proofTac ← `(tactic| text_proof $pfStx)
-  TryThis.addSuggestion stx proofTac
-
-syntax (name:= addDocs) "#doc" "theorem" ident declSig declVal : command
-
-open Command in
-@[command_elab addDocs] def elabAddDocsImpl : CommandElab := fun stx =>
-  match stx with
-  | `(#doc theorem $id:ident $ty:declSig $val:declVal) =>
-    Command.liftTermElabM do
-    let name := id.getId
-    let stx' ← `(command| theorem $id:ident $ty $val)
-    let fmt ← PrettyPrinter.ppCommand stx'
-    let type : Expr ← elabFrontThmExprM fmt.pretty name true
-    let some (desc, _) ←
-      Translator.getTypeDescriptionM type {} | throwError "No description found for type {type}"
-    let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom (desc ++ " -/")]
-    let stx' ← `(command| $docs:docComment theorem $id:ident $ty $val)
-    TryThis.addSuggestion stx stx'
-  | _ => throwError "unexpected syntax"
-
-
-
 def checkTranslationM (s: String) (type: Expr) (translator: Translator) :
   MetaM <| Option (String × Array (Bool × String)) := do
   let triple? ←  getTypeDescriptionM type translator

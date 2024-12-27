@@ -627,68 +627,6 @@ open PrettyPrinter Tactic
   return e
   | _ => throwUnsupportedSyntax
 
-syntax (name := thmCommand) "#theorem" (ident)? str : command
-@[command_elab thmCommand] def thmCommandImpl : CommandElab :=
-  fun stx => Command.liftTermElabM do
-  match stx with
-  | `(command| #theorem $s:str) =>
-    let s := s.getString
-    go s stx none
-  | `(command| #theorem $name:ident $s:str) =>
-    let s := s.getString
-    let name := name.getId
-    go s stx (some name)
-
-  | _ => throwUnsupportedSyntax
-  where go (s: String) (stx: Syntax) (name? : Option Name) : TermElabM Unit := do
-    if s.endsWith "." then
-      let translator : Translator := {server := ← chatServer, pb := PromptExampleBuilder.embedBuilder (← promptSize) (← conciseDescSize) 0, params := ← chatParams}
-      let (js, _) ←
-        translator.getLeanCodeJson  s |>.run' {}
-      let e ← jsonToExpr' js (← greedy) !(← chatParams).stopColEq |>.run' {}
-      logTimed "obtained expression"
-      let stx' ← delab e
-      logTimed "obtained syntax"
-      let name ← match name? with
-      | some name => pure name
-      | none =>
-        let query := s!"Give a name following the conventions of the Lean Prover and Mathlib for the theorem: \n{s}\n\nGive ONLY the name of the theorem."
-        let namesArr ←  translator.server.mathCompletions query 1
-        let llm_name := namesArr.get! 0 |>.replace "`" ""
-          |>.replace "\""  "" |>.trim
-        logInfo llm_name
-        pure llm_name.toName
-      let name := mkIdent name
-      let cmd ← `(command| theorem $name : $stx' := by sorry)
-      TryThis.addSuggestion stx cmd
-      logTimed "added suggestion"
-      return
-    else
-      logWarning "To translate a theorem, end the string with a `.`."
-
-syntax (name := askCommand) "#ask" (num)? str : command
-@[command_elab askCommand] def askCommandImpl : CommandElab :=
-  fun stx => Command.liftTermElabM do
-  match stx with
-  | `(command| #ask $s:str) =>
-    let s := s.getString
-    go s none
-  | `(command| #ask $n:num $s:str) =>
-    let s := s.getString
-    let n := n.getNat
-    go s n
-  | _ => throwUnsupportedSyntax
-  where go (s: String) (n?: Option Nat) : TermElabM Unit := do
-    if s.endsWith "." || s.endsWith "?" then
-      let server ← chatServer
-      let n := n?.getD 3
-      let responses ← server.mathCompletions s (n := n)
-      for r in responses do
-        logInfo r
-    else
-      logWarning "To make a query, end the string with a `.` or `?`."
-
-
 def findTheorem? (s: String)(translator: Translator := {}) : TranslateM (Option Name) := do
   let (js, _, prompts) ← translator.getLeanCodeJson s
   let output ← getMessageContents js
