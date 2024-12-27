@@ -495,7 +495,9 @@ def freshDataHandle (fileNamePieces : List String)(clean: Bool := true) : IO IO.
     if !(← dir.pathExists) then
         IO.FS.createDirAll dir
     if clean then
+        IO.eprintln s!"cleaning {path}"
         IO.FS.writeFile path ""
+    else IO.eprintln s!"{path} already exists, adding to it"
     IO.FS.Handle.mk path IO.FS.Mode.append
 
 def relLCtxAux (goal: Expr) (decls: List LocalDecl) : MetaM Expr := do

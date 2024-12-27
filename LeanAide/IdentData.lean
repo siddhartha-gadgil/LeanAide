@@ -174,6 +174,7 @@ def writeBatchM (batch: List Name)(group: String)
                 | none =>
                     IO.throwServerError "No handle for 'all'"
     let mut count := 0
+    let mut dataCount := 0
     let doneNamesFile : System.FilePath :=
       "rawdata" / "premises" / "identifiers" / "done_names.json"
     let doneNames ← IO.FS.lines doneNamesFile
@@ -183,12 +184,13 @@ def writeBatchM (batch: List Name)(group: String)
         let propData := propData.getD []
         for data in propData do
           PropIdentData.write data [gh, h]
-        let h ← IO.FS.Handle.mk doneNamesFile IO.FS.Mode.append
-        h.putStrLn name.toString
-        h.flush
+          dataCount := dataCount + 1
+        let h' ← IO.FS.Handle.mk doneNamesFile IO.FS.Mode.append
+        h'.putStrLn name.toString
+        h'.flush
       count := count + 1
       if count % 100 == 0 then
-        IO.eprintln s!"Wrote {count} names for {tag}"
+        IO.eprintln s!"Wrote {count} names for {tag}; data size: {dataCount}"
 
 def writeBatchCore (batch: List Name)(group: String)
   (handles: Std.HashMap String IO.FS.Handle) (tag: String) : CoreM Unit :=
