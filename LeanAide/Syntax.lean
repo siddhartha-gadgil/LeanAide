@@ -44,28 +44,6 @@ syntax (name := thmCommand) "#theorem" (ident)? str : command
     else
       logWarning "To translate a theorem, end the string with a `.`."
 
-syntax (name := askCommand) "#ask" (num)? str : command
-@[command_elab askCommand] def askCommandImpl : CommandElab :=
-  fun stx => Command.liftTermElabM do
-  match stx with
-  | `(command| #ask $s:str) =>
-    let s := s.getString
-    go s none
-  | `(command| #ask $n:num $s:str) =>
-    let s := s.getString
-    let n := n.getNat
-    go s n
-  | _ => throwUnsupportedSyntax
-  where go (s: String) (n?: Option Nat) : TermElabM Unit := do
-    if s.endsWith "." || s.endsWith "?" then
-      let server ← chatServer
-      let n := n?.getD 3
-      let responses ← server.mathCompletions s (n := n)
-      for r in responses do
-        logInfo r
-    else
-      logWarning "To make a query, end the string with a `.` or `?`."
-
 /-!
 # Proof Syntax
 -/
@@ -80,12 +58,12 @@ def proofBody : Parser := andthen proofBodyInit "∎"
 @[combinator_parenthesizer proofBodyInit] def proofBodyInit.parenthesizer := PrettyPrinter.Parenthesizer.visitToken
 @[combinator_formatter proofBodyInit] def proofBodyInit.formatter := PrettyPrinter.Formatter.visitAtom Name.anonymous
 
-syntax (name := sourceCmd) withPosition("#proof" ppLine (colGt (str <|> proofBody) )) : command
+syntax (name := proofCmd) withPosition("#proof" ppLine (colGt (str <|> proofBody) )) : command
 
 def mkProofStx (s: String) : Syntax :=
-  mkNode ``sourceCmd #[mkAtom "#proof", mkAtom s, mkAtom "∎"]
+  mkNode ``proofCmd #[mkAtom "#proof", mkAtom s, mkAtom "∎"]
 
-@[command_elab sourceCmd] def elabSource : CommandElab :=
+@[command_elab proofCmd] def elabProofCmd : CommandElab :=
   fun stx => Command.liftTermElabM do
   match stx with
   | `(command| #proof $t:proofBodyInit ∎) =>
@@ -95,6 +73,18 @@ def mkProofStx (s: String) : Syntax :=
     logInfo m!"Extract: {s}"
     logInfo m!"Details: {repr stx}"
     logInfo m!"{stx'}"
+  | _ => throwUnsupportedSyntax
+
+syntax (name := textCmd) withPosition("#text" ppLine (colGt (str <|> proofBody) )) : command
+
+def mkTextStx (s: String) : Syntax :=
+  mkNode ``textCmd #[mkAtom "#text", mkAtom s, mkAtom "∎"]
+
+@[command_elab textCmd] def elabTextCmd : CommandElab :=
+  fun stx => Command.liftTermElabM do
+  match stx with
+  | `(command| #text $t:proofBodyInit ∎) =>
+    let s := stx.getArgs[1]!.reprint.get!.trim
   | _ => throwUnsupportedSyntax
 
 /-!
@@ -150,3 +140,35 @@ open Command in
     let stx' ← `(command| $docs:docComment theorem $id:ident $ty $val)
     TryThis.addSuggestion stx stx'
   | _ => throwError "unexpected syntax"
+
+
+syntax (name := askCommand) "#ask" (num)? str : command
+@[command_elab askCommand] def askCommandImpl : CommandElab :=
+  fun stx => Command.liftTermElabM do
+  match stx with
+  | `(command| #ask $s:str) =>
+    let s := s.getString
+    go s none stx
+  | `(command| #ask $n:num $s:str) =>
+    let s := s.getString
+    let n := n.getNat
+    go s n stx
+  | _ => throwUnsupportedSyntax
+  where go (s: String) (n?: Option Nat)(stx: Syntax) : TermElabM Unit := do
+    if s.endsWith "." || s.endsWith "?" then
+      let server ← chatServer
+      let n := n?.getD 3
+      let responses ← server.mathCompletions s (n := n)
+      for r in responses do
+        logInfo r
+      let stxs ← responses.mapM fun res =>
+        let qr := s!"**Query**: {s}\n\n **Response:** {res}"
+        let stx := mkNode ``textCmd #[mkAtom "#text", mkAtom qr, mkAtom "∎"]
+        ppCategory ``textCmd stx
+      let stxs : Array TryThis.Suggestion :=
+        stxs.map fun stx => stx.pretty
+      TryThis.addSuggestions stx <| stxs
+    else
+      logWarning "To make a query, end the string with a `.` or `?`."
+
+#check TryThis.Suggestion
