@@ -190,5 +190,10 @@ Try this:
   simp_all only
 
 * Sorries in aux_17159876999765957439:
-   * `∀ (n : ℕ), Even n → ∃ k, n = 2 * k`   * `∀ (n : ℕ), Even n → (∃ k, n = 2 * k) → ∀ (k w : ℕ), n = 2 * w → Even (2 * w) → w = k`   * `(n : ℕ) →   Even n →     (∃ k, n = 2 * k) → (∀ (k : ℕ), n * (n + 1) = 2 * k * (n + 1)) → (∀ (k : ℕ), Even (2 * k * (n + 1))) → HMul ℕ ℕ Prop`   * `∀ (n : ℕ),   ¬Even n →     (Odd n ↔ ∃ k, n = 2 * k + 1) →       (∃ k, n = 2 * k + 1) →         (∀ {k : ℕ}, n + 1 = 2 * k + 2 ↔ n + 1 = 2 * (k + 1)) → ∀ (w : ℕ), n + 1 = 2 * (w + 1) → False`   * `∀ (n : ℕ), n * (n + 1)`   * `∀ (n : ℕ), n * (n + 1) → Even (n * (n + 1))`
+   * `∀ (n : ℕ), Even n → ∃ k, n = 2 * k`
+   * `∀ (n : ℕ), Even n → (∃ k, n = 2 * k) → ∀ (k w : ℕ), n = 2 * w → Even (2 * w) → w = k`
+   * `(n : ℕ) →   Even n →     (∃ k, n = 2 * k) → (∀ (k : ℕ), n * (n + 1) = 2 * k * (n + 1)) → (∀ (k : ℕ), Even (2 * k * (n + 1))) → HMul ℕ ℕ Prop`
+   * `∀ (n : ℕ),   ¬Even n →     (Odd n ↔ ∃ k, n = 2 * k + 1) →       (∃ k, n = 2 * k + 1) →         (∀ {k : ℕ}, n + 1 = 2 * k + 2 ↔ n + 1 = 2 * (k + 1)) → ∀ (w : ℕ), n + 1 = 2 * (w + 1) → False`
+   * `∀ (n : ℕ), n * (n + 1)`
+   * `∀ (n : ℕ), n * (n + 1) → Even (n * (n + 1))`
 -/
