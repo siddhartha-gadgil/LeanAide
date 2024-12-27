@@ -266,36 +266,38 @@ example : True := by
 open Lake.Toml
 def lineFn : ParserFn := takeWhile1Fn fun c => c != '∎'
 
-def lineBodyInit : Parser :=
+def proofBodyInit : Parser :=
   { fn := rawFn lineFn}
 
-def lineBody : Parser := andthen lineBodyInit "∎"
+def proofBody : Parser := andthen proofBodyInit "∎"
 
-@[combinator_parenthesizer lineBodyInit] def lineBodyInit.parenthesizer := PrettyPrinter.Parenthesizer.visitToken
-@[combinator_formatter lineBodyInit] def lineBodyInit.formatter := PrettyPrinter.Formatter.visitAtom Name.anonymous
+@[combinator_parenthesizer proofBodyInit] def proofBodyInit.parenthesizer := PrettyPrinter.Parenthesizer.visitToken
+@[combinator_formatter proofBodyInit] def proofBodyInit.formatter := PrettyPrinter.Formatter.visitAtom Name.anonymous
 
 
 open Command
 
-syntax (name := sourceCmd) withPosition("#source" ppLine (colGt lineBody )) : command
+syntax (name := sourceCmd) withPosition("#proof" ppLine (colGt proofBody )) : command
+
+def mkSourceStx (s: String) : Syntax :=
+  mkNode ``sourceCmd #[mkAtom "#proof", mkAtom s, mkAtom "∎"]
 
 open Command
 @[command_elab sourceCmd] def elabSource : CommandElab :=
   fun stx => Command.liftTermElabM do
   match stx with
-  | `(command| #source $t:lineBodyInit ∎) =>
+  | `(command| #proof $t:proofBodyInit ∎) =>
     let s := stx.getArgs[1]!.reprint.get!.trim
     logInfo m!"Syntax: {stx}"
-    let stx' ←
-    `(command| #source $(t):lineBodyInit ∎)
+    let stx' := mkSourceStx "Some proof."
     logInfo m!"Extract: {s}"
     logInfo m!"Details: {repr stx}"
-    logInfo m!"{repr stx'}"
+    logInfo m!"{stx'}"
   | _ => throwUnsupportedSyntax
 
 #check 1
 
-#source
+#proof
   This is not the most elegant way
 
   but it works.
@@ -305,7 +307,7 @@ open Command
 
 
 open Parser.Command
-syntax (name:= textPf) withPosition("#Proof" ppLine (colGt (str <|> lineBody))) : tactic
+syntax (name:= textPf) withPosition("#Proof" ppLine (colGt (str <|> proofBody))) : tactic
 
 open Tactic
 @[tactic textPf] def textProofImpl : Tactic :=
