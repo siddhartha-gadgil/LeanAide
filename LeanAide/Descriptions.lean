@@ -1,6 +1,7 @@
 import LeanAide.TheoremElab
 import LeanCodePrompts.ChatClient
 import LeanAide.PromptBuilder
+import LeanAide.ConstDeps
 open Lean Meta Elab
 
 namespace LeanAide.Meta
@@ -132,11 +133,11 @@ def needsInd (name: Name) : MetaM <| Option (List Name) := do
         else return none
     | _ => return none
 
--- #eval theoremPrompt ``List.length_cons
+#eval describeTheoremPrompt ``List.length_concat
 
--- #eval theoremPrompt ``Nat.le_succ
+-- #eval describeTheoremPrompt ``Nat.le_succ
 
--- #eval theoremPrompt ``Eq.subst
+-- #eval describeTheoremPrompt ``Eq.subst
 end LeanAide.Meta
 
 namespace LeanAide.Translator
