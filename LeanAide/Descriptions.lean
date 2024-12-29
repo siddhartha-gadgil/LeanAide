@@ -1,4 +1,3 @@
-import LeanAide.ConstDeps
 import LeanAide.TheoremElab
 import LeanCodePrompts.ChatClient
 import LeanAide.PromptBuilder

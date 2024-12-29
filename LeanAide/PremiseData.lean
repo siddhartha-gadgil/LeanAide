@@ -1,5 +1,6 @@
 import Lean
-import LeanAide.ConstDeps
+import LeanAide.Aides
+-- import LeanAide.ConstDeps
 import LeanAide.Using
 import LeanAide.StatementSyntax
 
@@ -19,7 +20,8 @@ As theorems are equivalent to others where we trade `∀` with context terms, we
 
 open Lean Meta Elab Parser PrettyPrinter
 
-open LeanAide.Meta
+namespace LeanAide
+-- open LeanAide.Meta
 
 universe u v w u_1 u_2 u_3 u₁ u₂ u₃
 
@@ -566,122 +568,6 @@ def write (data: PremiseData)(group: String)
 
 end PremiseData
 
-
-
-partial def Lean.Syntax.size (stx: Syntax) : Nat :=
-    match stx with
-    | Syntax.ident _ _ _ _ => 1
-    | Syntax.node _ _ args => args.foldl (fun acc x => acc + x.size) 0
-    | _ => 1
-
-partial def termKindsInAux (stx: Syntax)(kinds: List SyntaxNodeKind) : MetaM <| List SyntaxNodeKind := do
-    match stx with
-    | .node _ k args  =>
-        let prevs ← args.toList.mapM (fun a => termKindsInAux a kinds)
-        let prevs := prevs.flatten
-        if prevs.contains k then
-            return prevs
-        else
-        if kinds.contains k then
-            return k :: prevs
-        else
-            return prevs
-    | _ =>
-        let k := stx.getKind
-        if kinds.contains k then
-            return [k]
-        else
-            return []
-
-def termKindsIn (stx: Syntax) : MetaM <| List SyntaxNodeKind := do
-    let kinds ← termKindList
-    termKindsInAux stx kinds
-
-def termKindBestEgsM (choice: Nat := 3)(constantNameValueDocs  := constantNameValueDocs)(termKindList : MetaM <| List SyntaxNodeKind := termKindList) :
-    MetaM <| Std.HashMap Name
-        (Nat × (Array (Name × Nat × String × Bool ×  String)) ×
-         Array (Name × Nat × String × Bool)) := do
-    let cs ← constantNameValueDocs
-    let kinds ← termKindList
-    IO.eprintln s!"Found {cs.size} constants"
-    let mut count := 0
-    let mut m : Std.HashMap Name (Nat × (Array (Name × Nat × String × Bool × String)) ×
-         Array (Name × Nat × String × Bool)) := Std.HashMap.empty
-    for ⟨name, type, doc?⟩ in cs do
-        count := count + 1
-        if count % 400 == 0 then
-            IO.eprintln s!"Processed {count} constants out of {cs.size}"
-        let depth := type.approxDepth.toNat
-        unless depth > 50 do
-            try
-            let stx ← delab type
-            let p ← isProp type
-            let tks ← termKindsInAux stx.raw kinds
-            let tks := tks.eraseDups
-            for tk in tks do
-                let (c, egs, noDocEgs) := m.getD tk ((0, #[], #[]))
-                match doc? with
-                | some doc =>
-                  match egs.findIdx? (fun (_, d, _, p', _) =>
-                    d > depth ∨ (¬p' ∧ p)) with
-                  | some k =>
-                    let egs := egs.insertIdx! k (name, depth, (← ppTerm stx).pretty, p, doc)
-                    let egs := if egs.size > choice then egs.pop else egs
-                    let noDocEgs :=
-                        if egs.size + noDocEgs.size > choice then
-                            noDocEgs.pop
-                        else
-                            noDocEgs
-                    m := m.insert tk (c + 1, egs, noDocEgs)
-                  | none =>
-                    if egs.size < choice then
-                        let egs := egs.push (name, depth, (← ppTerm stx).pretty, p, doc)
-                        let noDocEgs :=
-                            if egs.size + noDocEgs.size > choice then
-                                noDocEgs.pop
-                            else
-                                noDocEgs
-                        m := m.insert tk (c + 1, egs, noDocEgs)
-                    else
-                        m := m.insert tk (c + 1, egs, noDocEgs)
-                | none =>
-                    match noDocEgs.findIdx? (fun (_, d, _, p') =>
-                    d > depth ∨ (¬p' ∧ p)) with
-                    | some k =>
-                        let noDocEgs := noDocEgs.insertIdx! k (name, depth, (← ppTerm stx).pretty, p)
-                        let noDocEgs :=
-                            if egs.size + noDocEgs.size > choice then
-                                noDocEgs.pop
-                            else
-                                noDocEgs
-                        m := m.insert tk (c + 1, egs, noDocEgs)
-                    | none =>
-                        if noDocEgs.size + egs.size < choice then
-                            m := m.insert tk (c + 1, egs, noDocEgs.push (name, depth, (← ppTerm stx).pretty, p))
-                        else
-                            m := m.insert tk (c + 1, egs, noDocEgs)
-            catch e =>
-                IO.eprintln s!"Error {← e.toMessageData.toString} delaborating {name}"
-    return m
-
-
-def termKindExamplesM (choices: Nat := 3)(constantNameValueDocs  := constantNameValueDocs)(termKindList : MetaM <| List SyntaxNodeKind := termKindList) : MetaM <| List Json := do
-    let egs ← termKindBestEgsM choices constantNameValueDocs termKindList
-    IO.eprintln s!"Found {egs.size} term kinds"
-    let examples := egs.toArray.qsort (
-        fun (_, n, _, _) (_, m, _, _) => n > m
-    ) |>.toList
-    return examples.map (fun (k, n, v, v') => Json.mkObj [("kind", toJson k),
-    ("count", n), ("examples",
-        Json.arr <| v.map (fun (n, d, s, p, doc) =>
-        Json.mkObj [("name", toJson n.toString), ("depth", d), ("type", toJson s), ("isProp", toJson p), ("doc", toJson doc)])),
-        ("noDocExamples",
-        Json.arr <| v'.map (fun (n, d, s, p) =>
-        Json.mkObj [("name", toJson n.toString), ("depth", d), ("type", toJson s), ("isProp", toJson p)]))])
-
-
-def termKindExamplesCore (choices: Nat := 3) : CoreM <| List Json := do
-    termKindExamplesM choices |>.run' {}
 
 /--
 Data associated to a definition. This was originally intended to be used for tracking premises but is also used ignoring a few parameters as *syntax* data for a definition.
