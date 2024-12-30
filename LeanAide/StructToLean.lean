@@ -265,7 +265,8 @@ def theoremExprInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerato
       let type ←  dropLocalContext type
       return Except.ok type
     else
-      return Except.error #[ElabError.parsed statement "Not a type" [] none]
+      IO.eprintln s!"Not a type: {type}"
+      return Except.error #[ElabError.parsed statement s!"Not a type {type}" [] none]
 
 #check Expr.isType
 

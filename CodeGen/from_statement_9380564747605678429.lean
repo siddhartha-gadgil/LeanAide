@@ -4,6 +4,7 @@ universe u v u_1
 set_option maxHeartbeats 10000000
 set_option linter.unreachableTactic false
 
+-- DEMO example
 /-!
 ## Theorem
 The product of two successive natural numbers is even.
@@ -81,25 +82,27 @@ In either case, the product \( n(n+1) \) is even. Therefore, the product of any 
 theorem aux_17159876999765957439 : ∀ (n : ℕ), Even (n * (n + 1)) :=
   by
   intro n
-  -- have : n * (n + 1) := by auto?
+  -- have calculation_12928321614448728289 : n * (n + 1) := by auto?
   by_cases Even n
   case pos =>
-    have : ∃ k, ↑n = 2 * k := by auto?[]
-    have : ∀ (k : ℕ), n * (n + 1) = 2 * k * (n + 1) := by auto?
-    have : ∀ (k : ℕ), Even (2 * k * (n + 1)) := by auto?[]
+    have assert_5319112468382426543 : ∃ k, ↑n = 2 * k := by auto?[]
+    have calculation_14047433094544108429 : ∀ (k : ℕ), n * (n + 1) = 2 * k * (n + 1) := by auto?
+    have assert_4302669041932502115 : ∀ (k : ℕ), Even (2 * k * (n + 1)) := by auto?[]
     auto?
   case neg =>
-    have : Odd n ↔ ∃ k, n = 2 * k + 1 := by auto?
-    have : ∃ k, ↑n = 2 * k + 1 := by auto?[]
-    have : ∀ {k : ℕ}, n + 1 = 2 * k + 2 ↔ n + 1 = 2 * (k + 1) := by auto?
-    have : n * (n + 1) = (2 * n + 1) * (n + 1) := by auto?
-    have : ∀ (k : ℕ), n * (n + 1) = 2 * (2 * k ^ 2 + 3 * k + 1) := by auto?
-    have : ∀ (k : ℕ), Even (2 * (2 * k ^ 2 + 3 * k + 1)) := by auto?[]
+    have cond_2667733541464095191 : Odd n ↔ ∃ k, n = 2 * k + 1 := by auto?
+    have assert_758821247436174302 : ∃ k, ↑n = 2 * k + 1 := by auto?[]
+    have calculation_11041185977590610505 : ∀ {k : ℕ}, n + 1 = 2 * k + 2 ↔ n + 1 = 2 * (k + 1) := by auto?
+    have calculation_17388922601861285712 : n * (n + 1) = (2 * n + 1) * (n + 1) := by auto?
+    have calculation_17817816054343669924 : ∀ (k : ℕ), n * (n + 1) = 2 * (2 * k ^ 2 + 3 * k + 1) := by auto?
+    have assert_1018076716932953991 : ∀ (k : ℕ), Even (2 * (2 * k ^ 2 + 3 * k + 1)) := by auto?[]
     auto?
   first
   | done
-  | have : Even (n * (n + 1)) := by auto?
+  | have conclusion_15884785423130108433 : Even (n * (n + 1)) := by auto?
   auto?
+
+#print aux_17159876999765957439
 
 /-!
 ## Elaboration logs
@@ -117,7 +120,7 @@ Try this:
 Try this:
   intro k
   simp_all only [mul_eq_mul_right_iff, AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, or_false]
-  obtain ⟨w, h_1⟩ := this
+  obtain ⟨w, h_1⟩ := assert_5319112468382426543
   subst h_1
   simp_all only [even_two, Even.mul_right, mul_eq_mul_left_iff, OfNat.ofNat_ne_zero, or_false]
   (plausible_sorry)
@@ -136,10 +139,10 @@ Try this:
 Try this:
 simp_all only [Nat.not_even_iff_odd, iff_true]
 Try this:
-  rename_i h this_1
+  rename_i h
   intro k
   simp_all only [Nat.not_even_iff_odd, iff_true, add_left_inj]
-  obtain ⟨w, h⟩ := this
+  obtain ⟨w, h⟩ := assert_758821247436174302
   subst h
   simp_all only [even_two, Even.mul_right, Even.add_one, add_left_inj, mul_eq_mul_left_iff, OfNat.ofNat_ne_zero,
     or_false]
@@ -150,11 +153,11 @@ Try this:
   · intro a
     (omega)
 Try this:
-  rename_i h this_1 this_2
+  rename_i h
   simp_all only [Nat.not_even_iff_odd, iff_true, add_left_inj, mul_eq_mul_right_iff, ne_eq,
     AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, not_false_eq_true, right_eq_mul₀, OfNat.ofNat_ne_one,
     or_self]
-  obtain ⟨w, h⟩ := this_2
+  obtain ⟨w, h⟩ := assert_758821247436174302
   simp_all only [mul_eq_mul_left_iff, add_left_inj, OfNat.ofNat_ne_zero, or_false]
   (plausible_sorry)
 Try this:
@@ -172,26 +175,26 @@ simp_all only [Nat.not_even_iff_odd, iff_true, add_left_inj, mul_eq_mul_right_if
     AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, not_false_eq_true, right_eq_mul₀, OfNat.ofNat_ne_one,
     or_self]
 Try this:
-  aesop_unfold at this
-  aesop_unfold at this
-  aesop_unfold at this
-  aesop_unfold at this
-  aesop_unfold at this
+  aesop_unfold at calculation_12928321614448728289
+  aesop_unfold at calculation_12928321614448728289
+  aesop_unfold at calculation_12928321614448728289
+  aesop_unfold at calculation_12928321614448728289
+  aesop_unfold at calculation_12928321614448728289
   (plausible_sorry)
 Try this:
-  rename_i this_1
-  aesop_unfold at this_1
-  aesop_unfold at this_1
-  aesop_unfold at this_1
-  aesop_unfold at this_1
-  aesop_unfold at this_1
+  aesop_unfold at calculation_12928321614448728289
+  aesop_unfold at calculation_12928321614448728289
+  aesop_unfold at calculation_12928321614448728289
+  aesop_unfold at calculation_12928321614448728289
+  aesop_unfold at calculation_12928321614448728289
   simp_all only
 
 * Sorries in aux_17159876999765957439:
-   * `∀ (n : ℕ), Even n → ∃ k, n = 2 * k`
-   * `∀ (n : ℕ), Even n → (∃ k, n = 2 * k) → ∀ (k w : ℕ), n = 2 * w → Even (2 * w) → w = k`
-   * `(n : ℕ) →   Even n →     (∃ k, n = 2 * k) → (∀ (k : ℕ), n * (n + 1) = 2 * k * (n + 1)) → (∀ (k : ℕ), Even (2 * k * (n + 1))) → HMul ℕ ℕ Prop`
-   * `∀ (n : ℕ),   ¬Even n →     (Odd n ↔ ∃ k, n = 2 * k + 1) →       (∃ k, n = 2 * k + 1) →         (∀ {k : ℕ}, n + 1 = 2 * k + 2 ↔ n + 1 = 2 * (k + 1)) → ∀ (w : ℕ), n + 1 = 2 * (w + 1) → False`
-   * `∀ (n : ℕ), n * (n + 1)`
-   * `∀ (n : ℕ), n * (n + 1) → Even (n * (n + 1))`
+
+ * `∀ (n : ℕ), Even n → ∃ k, n = 2 * k`
+ * `∀ (n : ℕ), Even n → (∃ k, n = 2 * k) → ∀ (k w : ℕ), n = 2 * w → Even (2 * w) → w = k`
+ * `(n : ℕ) →   Even n →     (∃ k, n = 2 * k) → (∀ (k : ℕ), n * (n + 1) = 2 * k * (n + 1)) → (∀ (k : ℕ), Even (2 * k * (n + 1))) → HMul ℕ ℕ Prop`
+ * `∀ (n : ℕ),   ¬Even n →     (Odd n ↔ ∃ k, n = 2 * k + 1) →       (∃ k, n = 2 * k + 1) →         (∀ {k : ℕ}, n + 1 = 2 * k + 2 ↔ n + 1 = 2 * (k + 1)) → ∀ (w : ℕ), n + 1 = 2 * (w + 1) → False`
+ * `∀ (n : ℕ), n * (n + 1)`
+ * `∀ (n : ℕ), n * (n + 1) → Even (n * (n + 1))`
 -/
