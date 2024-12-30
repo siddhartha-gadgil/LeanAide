@@ -61,18 +61,18 @@ partial def getSorryTypes (e: Expr) : MetaM (Array Expr) := do
   | .app (.const ``sorryAx _) a => return #[a]
   | Expr.app f a  =>
     return (← getSorryTypes f) ++ (← getSorryTypes a)
-  | Expr.lam .. =>
-    lambdaTelescope e fun xs b => do
-      let inner ← getSorryTypes b
-      inner.mapM <| mkForallFVars xs
-  | Expr.forallE .. =>
-    forallTelescope e fun xs b => do
-      let inner ← getSorryTypes b
-      inner.mapM <| mkForallFVars xs
-  | Expr.letE .. =>
-      lambdaLetTelescope e fun xs b => do
-      let inner ← getSorryTypes b
-      inner.mapM <| mkForallFVars xs
+  | Expr.lam name type body bi =>
+    withLocalDecl name bi type fun x => do
+      let body := body.instantiate1 x
+      let inner ← getSorryTypes body
+      inner.mapM <| mkForallFVars #[x]
+  | Expr.letE name type value bdy nondep =>
+      withLetDecl name type value fun x => do
+        let bdy := bdy.instantiate1 x
+        let inner ← getSorryTypes bdy
+        inner.mapM <| fun type => do
+          let y ←  mkLetFVars #[x] type
+          pure <| .letE name type value y nondep
   | .proj _ _ s => getSorryTypes s
   | _ => pure #[]
 

@@ -6,6 +6,8 @@ open LeanAide.Meta Lean Meta Elab
 
 open Lean Meta Tactic Parser.Tactic
 
+namespace LeanAide
+
 def powerTactics : CoreM <| List <| TSyntax ``tacticSeq := do
   return [← `(tacticSeq| omega), ← `(tacticSeq| ring), ← `(tacticSeq| linarith), ← `(tacticSeq| norm_num), ← `(tacticSeq| positivity), ← `(tacticSeq| gcongr), ←`(tacticSeq| contradiction)]
 
@@ -41,3 +43,17 @@ unless (← getGoals).isEmpty do
     let tac ← aesopTactic 90 50 10 names.toList
     evalTactic tac
   | _ => throwUnsupportedSyntax
+
+elab "#note" "[" term,* "]" : command => do
+  return ()
+
+elab "#note" "[" term,* "]" : tactic => do
+  return ()
+
+def mkNoteCmd (s: String) : MetaM Syntax.Command :=
+  let sLit := Lean.Syntax.mkStrLit  s
+  `(command | #note [$sLit])
+
+def mkNoteTactic (s: String) : MetaM Syntax.Tactic :=
+  let sLit := Lean.Syntax.mkStrLit  s
+  `(tactic | #note [$sLit])

@@ -70,21 +70,6 @@ def toCommandSeq : Array (TSyntax `command) → CoreM (TSyntax `commandSeq)
 namespace LeanAide
 
 
-elab "#note" "[" term,* "]" : command => do
-  return ()
-
-elab "#note" "[" term,* "]" : tactic => do
-  return ()
-
-def mkNoteCmd (s: String) : MetaM Syntax.Command :=
-  let sLit := Lean.Syntax.mkStrLit  s
-  `(command | #note [$sLit])
-
-def mkNoteTactic (s: String) : MetaM Syntax.Tactic :=
-  let sLit := Lean.Syntax.mkStrLit  s
-  `(tactic | #note [$sLit])
-
-
 def addFullStop (s: String) : String :=
   if s.endsWith "." then s else s ++ "."
 
@@ -261,8 +246,20 @@ def theoremExprInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerato
   | Except.error e => do
     return Except.error e
   | Except.ok type => do
-    if ← Meta.isType type then
+    let type ← instantiateMVars type
+    Term.synthesizeSyntheticMVarsNoPostponing
+    if type.hasSorry || type.hasExprMVar then
+      return Except.error #[ElabError.parsed statement s!"Failed to infer type {type} has sorry or mvar" [] none]
+    let univ ← try
+      withoutErrToSorry do
+      if type.hasSorry then
+        throwError "Type has sorry"
+      inferType type
+    catch e =>
+      return Except.error #[ElabError.parsed statement s!"Failed to infer type {type}, error {← e.toMessageData.format}" [] none]
+    if univ.isSort then
       let type ←  dropLocalContext type
+      IO.eprintln s!"Type: {← PrettyPrinter.ppExpr type}; {repr type}"
       return Except.ok type
     else
       IO.eprintln s!"Not a type: {type}"
