@@ -1,5 +1,6 @@
 import Mathlib
 import LeanAide.AutoTactic
+import LeanAide.Syntax
 universe u v u_1
 set_option maxHeartbeats 10000000
 set_option linter.unreachableTactic false
