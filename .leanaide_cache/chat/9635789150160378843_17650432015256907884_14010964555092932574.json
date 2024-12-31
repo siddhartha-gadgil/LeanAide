@@ -1,0 +1,80 @@
+{"usage":
+ {"total_tokens": 471,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 160,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 311},
+ "system_fingerprint": "fp_5f20662549",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-AkUuTaLtW0eppV4qqLSKRQT6U0aER",
+ "created": 1735645269,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "The theorem states that for any natural number $n$, if $n$ is even, then there exists a natural number $m$ such that $n = 2m$."},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "The theorem states that for any natural number $n$, if $n$ is even, then there exists a natural number $m$ such that $2 \\times m = n$."},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "The theorem states that for every natural number $n$, if $n$ is even, then there exists a natural number $m$ such that $n = 2 \\cdot m$."},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "The theorem states that for any natural number $n$, if $n$ is even, then there exists some natural number $m$ such that $n$ equals $2 \\times m$."},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "The theorem states that for any natural number $n$, if $n$ is even, then there exists a natural number $m$ such that $n = 2 \\cdot m$."},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "The theorem states that for any natural number $n$, if $n$ is even, then there exists a natural number $m$ such that $2 \\times m = n$."},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "The theorem states that for any natural number $n$, if $n$ is even, then there exists a natural number $m$ such that $n$ is equal to $2$ times $m$."},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "The theorem states that for any natural number $n$, if $n$ is even, then there exists a natural number $m$ such that $n$ is equal to $2$ times $m$."},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"}]}

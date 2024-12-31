@@ -6,7 +6,10 @@ set_option lean_aide.translate.greedy true
 
 #theorem silly "If a vector space has dimension `2` then it is finite dimensional"
 
-/-- The set of all odd natural numbers is infinite. -/
-theorem exists_infinitely_many_odd : {n | n % 2 = 1}.Infinite := by sorry
+
+#theorem "There are infinitely many odd numbers"
 
 #ask "Prove that there are infinitely many even numbers"
+
+example (n: Nat) : Even n → ∃ k, 2 * k = n := by
+  sorry
