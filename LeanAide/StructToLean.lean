@@ -33,12 +33,13 @@ The cases to cover: "define", "assert", "theorem", "problem", "assume", "let", "
 
 ## TODO
 
-* For generating tactics, have an MVarId for the goal as an argument.
+* In the case of an **exists** `have`, follow this by introducing the variable and witness.
+* For generating tactics, possibly have an MVarId for the goal as an argument (but this could lead to repeatedly running automation).
+* Alternatively, we add appropriate declarations to the context whenever a new variable is introduced by an assertion or a pattern matching.
 * Start the code with `mvarId.withContext do`.
 * Use helpers `MVarId.cases` etc to generate the inner `mvarId`s.
-* Add names for all the `have` statements.
 * If there are no sorries except in `have` statements that are unused, then we can remove them.
-* Split `by auto?` into two lines to take care of the aesop bug.
+* Split `by auto?` into two lines to take care of the aesop bug (the naive way did not work).
 -/
 
 def Lean.Json.getObjString? (js: Json) (key: String) : Option String :=

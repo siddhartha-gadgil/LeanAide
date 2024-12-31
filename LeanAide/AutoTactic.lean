@@ -29,7 +29,7 @@ def aesopTactic (weight sorryWeight strongSorryWeight: Nat) (names: List Name :=
   let sugRules ← suggestionRules names
   AesopSyntax.fold (rules ++ sugRules).toArray
 
-syntax (name := auto_aesop) "auto?" ("[" ident,* "]")? : tactic
+syntax (name := auto_aesop) "auto?" (ppSpace "[" ident,* "]")? : tactic
 
 -- should configure 90, 50, 10
 @[tactic auto_aesop] def autoAesopImpl : Tactic := fun stx => do
