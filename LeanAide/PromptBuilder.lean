@@ -334,7 +334,7 @@ def RelevantDefs.base := RelevantDefs.env
 def RelevantDefs.addDefs (nbs: Array (Name × String)) (nbd: RelevantDefs) : RelevantDefs :=
   nbd ++ nbs
 
-open LeanAide.Meta
+open LeanAide
 
 partial def RelevantDefs.names (nbd: RelevantDefs)(s: String) (pairs : Array (String × Json)) : TranslateM (Array Name) := do
   match nbd with

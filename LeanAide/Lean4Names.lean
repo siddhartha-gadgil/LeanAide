@@ -3,7 +3,7 @@ import Mathlib
 import LeanAide.TheoremElab
 import LeanAide.SimpleFrontend
 import LeanAide.TranslateM
-open Lean Meta Elab Term LeanAide.Meta
+open Lean Meta Elab Term
 
 namespace LeanAide
 open Translate

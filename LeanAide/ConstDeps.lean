@@ -61,18 +61,18 @@ partial def getSorryTypes (e: Expr) : MetaM (Array Expr) := do
   | .app (.const ``sorryAx _) a => return #[a]
   | Expr.app f a  =>
     return (← getSorryTypes f) ++ (← getSorryTypes a)
-  | Expr.lam .. =>
-    lambdaTelescope e fun xs b => do
-      let inner ← getSorryTypes b
-      inner.mapM <| mkForallFVars xs
-  | Expr.forallE .. =>
-    forallTelescope e fun xs b => do
-      let inner ← getSorryTypes b
-      inner.mapM <| mkForallFVars xs
-  | Expr.letE .. =>
-      lambdaLetTelescope e fun xs b => do
-      let inner ← getSorryTypes b
-      inner.mapM <| mkForallFVars xs
+  | Expr.lam name type body bi =>
+    withLocalDecl name bi type fun x => do
+      let body := body.instantiate1 x
+      let inner ← getSorryTypes body
+      inner.mapM <| mkForallFVars #[x]
+  | Expr.letE name type value bdy nondep =>
+      withLetDecl name type value fun x => do
+        let bdy := bdy.instantiate1 x
+        let inner ← getSorryTypes bdy
+        inner.mapM <| fun type => do
+          let y ←  mkLetFVars #[x] type
+          pure <| .letE name type value y nondep
   | .proj _ _ s => getSorryTypes s
   | _ => pure #[]
 
@@ -248,22 +248,6 @@ def propMapFromDefns (dfns : Array DefnTypes) : MetaM <| Std.HashMap Name (Strin
        dfns.filter (fun d => d.isProp)
         |>.toList.map fun d => (d.name, (d.type, d.statement))
 
-
-def groups := ["train", "test", "valid"]
-
-def splitData (data: Array α) : IO <| Std.HashMap String (Array α) := do
-    let mut img := Std.HashMap.ofList <| groups.map fun g => (g, #[])
-    let mut count := 0
-    for d in data do
-        let group :=  match ← IO.rand 0 9 with
-            | 0 => "test"
-            | 1 => "valid"
-            | _ => "train"
-        img := img.insert group <| (img.getD group #[]).push d
-        count := count + 1
-        if count % 1000 = 0 then
-            IO.println s!"split count: {count}"
-    return img
 namespace DefnTypes
 def getM : MetaM <| Array DefnTypes := do
     let cs ← constantNameValueTypes
@@ -365,10 +349,10 @@ def defFromName? (name : Name) : MetaM <| Option DefnTypes := do
     | some (.defnInfo dfn) =>
         let term := dfn.value
         let type := dfn.type
-        let fmt ← Meta.ppExpr type
+        let fmt ← PrettyPrinter.ppExpr type
         let isProp := false
         let value :=
-            some <| (← Meta.ppExpr term).pretty
+            some <| (← PrettyPrinter.ppExpr term).pretty
         let typeStx ← PrettyPrinter.delab type
         let valueStx ←  PrettyPrinter.delab term
         let valueStx? := if isProp then none else some valueStx
@@ -422,15 +406,6 @@ def getPropMap : MetaM <| Std.HashMap Name (String × String) := do
     let dfns ← DefnTypes.getM
     propMapFromDefns dfns
 
-partial def shrink (s: String) : String :=
-    let step := s.replace "  " " " |>.replace "( " "("
-                |>.replace " )" ")"
-                |>.replace "{ " "{"
-                |>.replace " }" "}"
-                |>.replace "[ " "["
-                |>.replace " ]" "]"
-                |>.trim
-    if step == s then s else shrink step
 
 def getPropMapStr : MetaM <| Std.HashMap String (String × String) := do
     let mut count := 0
@@ -501,86 +476,115 @@ def nameViewM? (name: Name) : MetaM <| Option String := do
 def nameViewCore? (name: Name) : CoreM <| Option String :=
     (nameViewM? name).run'
 
-open PrettyPrinter in
-/--
-Definitions and theorems in an expression that are both present in its
-syntax tree and are *used constants*. Allows for dot notation.
--/
-def defsInExpr (expr: Expr) : MetaM <| Array Name := do
-  let typeStx ← delab expr
-  let defNames := idents typeStx |>.eraseDups |>.map String.toName
-  let defNames := defNames.filter fun name =>
-    (excludePrefixes.all fun pre => !pre.isPrefixOf name) &&
-    (excludeSuffixes.all fun suff => !suff.isSuffixOf name)
-  let tails := defNames.filterMap fun n =>
-    n.componentsRev.head?
-  let constsInType := expr.getUsedConstants
-  let dotNames := constsInType.filter fun n =>
-    match n.componentsRev.head? with
-    | some t => tails.contains t || defNames.contains n
-    | none => false
-  return dotNames
 
-def defsInTypeRec (name : Name) (type: Expr) (depth:Nat) :
-    MetaM <| Array Name := do
-  match depth with
-  | 0 => if ← isProp type then return #[] else return #[name]
-  | k + 1 =>
-    let children ← defsInExpr type
-    let childrenTypes ← children.filterMapM fun n => do
-      let info ← getConstInfo n
-      pure <| some (n, info.type)
-    let childValueTypes ← children.filterMapM fun n => do
-      let info ← getConstInfo n
-      match info with
-      | ConstantInfo.defnInfo val => pure <| some (n, val.value)
-      | _ => return none
-    let res ← (childrenTypes ++ childValueTypes).mapM fun (n, t) => defsInTypeRec n t k
-    return res.foldl (· ++ ·) children |>.toList |>.eraseDups |>.toArray
+partial def termKindsInAux (stx: Syntax)(kinds: List SyntaxNodeKind) : MetaM <| List SyntaxNodeKind := do
+    match stx with
+    | .node _ k args  =>
+        let prevs ← args.toList.mapM (fun a => termKindsInAux a kinds)
+        let prevs := prevs.flatten
+        if prevs.contains k then
+            return prevs
+        else
+        if kinds.contains k then
+            return k :: prevs
+        else
+            return prevs
+    | _ =>
+        let k := stx.getKind
+        if kinds.contains k then
+            return [k]
+        else
+            return []
+open PrettyPrinter
+def termKindsIn (stx: Syntax) : MetaM <| List SyntaxNodeKind := do
+    let kinds ← termKindList
+    termKindsInAux stx kinds
 
-def isDefn (name: Name) : MetaM Bool := do
-  let info ←  getConstInfo name
-  match info with
-  | .defnInfo _ => return true
-  | _ => return false
+def termKindBestEgsM (choice: Nat := 3)(constantNameValueDocs  := constantNameValueDocs)(termKindList : MetaM <| List SyntaxNodeKind := termKindList) :
+    MetaM <| Std.HashMap Name
+        (Nat × (Array (Name × Nat × String × Bool ×  String)) ×
+         Array (Name × Nat × String × Bool)) := do
+    let cs ← constantNameValueDocs
+    let kinds ← termKindList
+    IO.eprintln s!"Found {cs.size} constants"
+    let mut count := 0
+    let mut m : Std.HashMap Name (Nat × (Array (Name × Nat × String × Bool × String)) ×
+         Array (Name × Nat × String × Bool)) := Std.HashMap.empty
+    for ⟨name, type, doc?⟩ in cs do
+        count := count + 1
+        if count % 400 == 0 then
+            IO.eprintln s!"Processed {count} constants out of {cs.size}"
+        let depth := type.approxDepth.toNat
+        unless depth > 50 do
+            try
+            let stx ← PrettyPrinter.delab type
+            let p ← isProp type
+            let tks ← termKindsInAux stx.raw kinds
+            let tks := tks.eraseDups
+            for tk in tks do
+                let (c, egs, noDocEgs) := m.getD tk ((0, #[], #[]))
+                match doc? with
+                | some doc =>
+                  match egs.findIdx? (fun (_, d, _, p', _) =>
+                    d > depth ∨ (¬p' ∧ p)) with
+                  | some k =>
+                    let egs := egs.insertIdx! k (name, depth, (← ppTerm stx).pretty, p, doc)
+                    let egs := if egs.size > choice then egs.pop else egs
+                    let noDocEgs :=
+                        if egs.size + noDocEgs.size > choice then
+                            noDocEgs.pop
+                        else
+                            noDocEgs
+                    m := m.insert tk (c + 1, egs, noDocEgs)
+                  | none =>
+                    if egs.size < choice then
+                        let egs := egs.push (name, depth, (← ppTerm stx).pretty, p, doc)
+                        let noDocEgs :=
+                            if egs.size + noDocEgs.size > choice then
+                                noDocEgs.pop
+                            else
+                                noDocEgs
+                        m := m.insert tk (c + 1, egs, noDocEgs)
+                    else
+                        m := m.insert tk (c + 1, egs, noDocEgs)
+                | none =>
+                    match noDocEgs.findIdx? (fun (_, d, _, p') =>
+                    d > depth ∨ (¬p' ∧ p)) with
+                    | some k =>
+                        let noDocEgs := noDocEgs.insertIdx! k (name, depth, (← ppTerm stx).pretty, p)
+                        let noDocEgs :=
+                            if egs.size + noDocEgs.size > choice then
+                                noDocEgs.pop
+                            else
+                                noDocEgs
+                        m := m.insert tk (c + 1, egs, noDocEgs)
+                    | none =>
+                        if noDocEgs.size + egs.size < choice then
+                            m := m.insert tk (c + 1, egs, noDocEgs.push (name, depth, (← ppTerm stx).pretty, p))
+                        else
+                            m := m.insert tk (c + 1, egs, noDocEgs)
+            catch e =>
+                IO.eprintln s!"Error {← e.toMessageData.toString} delaborating {name}"
+    return m
 
-def defsInConst (name: Name) (depth: Nat) :
-    MetaM <| Array Name := do
-  let info ← getConstInfo name
-  let base ←  defsInTypeRec name info.type depth
-  base.filterM isDefn
 
-def weightedDefsInConsts (names: List Name) (depth: Nat)
-  (weight: Float := 1.0) (decay: Float := 0.8) : MetaM (Array (Name × Float)) :=
-  match names with
-  | [] => return #[]
-  | h :: ts => do
-    let tailWtdConsts ← weightedDefsInConsts ts depth (weight * decay) decay
-    let headConsts ← defsInConst h depth
-    let tailConsts := tailWtdConsts.map (fun (x, _) => x)
-    let novel := headConsts.filter fun x => !tailConsts.contains x
-    let novelWtdConsts :=
-      novel.map fun x => (x, weight)
-    let unsorted := novelWtdConsts ++ (tailWtdConsts.map fun (x, w) =>
-      (x, if headConsts.contains x then w + weight else w))
-    return unsorted.qsort fun (_, w₁) (_, w₂) => w₁ > w₂
+def termKindExamplesM (choices: Nat := 3)(constantNameValueDocs  := constantNameValueDocs)(termKindList : MetaM <| List SyntaxNodeKind := termKindList) : MetaM <| List Json := do
+    let egs ← termKindBestEgsM choices constantNameValueDocs termKindList
+    IO.eprintln s!"Found {egs.size} term kinds"
+    let examples := egs.toArray.qsort (
+        fun (_, n, _, _) (_, m, _, _) => n > m
+    ) |>.toList
+    return examples.map (fun (k, n, v, v') => Json.mkObj [("kind", toJson k),
+    ("count", n), ("examples",
+        Json.arr <| v.map (fun (n, d, s, p, doc) =>
+        Json.mkObj [("name", toJson n.toString), ("depth", d), ("type", toJson s), ("isProp", toJson p), ("doc", toJson doc)])),
+        ("noDocExamples",
+        Json.arr <| v'.map (fun (n, d, s, p) =>
+        Json.mkObj [("name", toJson n.toString), ("depth", d), ("type", toJson s), ("isProp", toJson p)]))])
 
-def bestDefsInConsts (n: Nat) (names: List Name) (depth: Nat)
-  (weight: Float := 1.0) (decay: Float := 0.8) : MetaM <| Array Name := do
-    let weighted ← weightedDefsInConsts names depth weight decay
-    return weighted[0:n] |>.toArray.map fun (n, _) => n
 
-open Elab Term
-def defsInTypeString? (name: Name)(typeStr: String) (depth: Nat):
-    TermElabM <| Option (Array Name) := do
-    let typeStx? := Parser.runParserCategory (← getEnv) `term typeStr
-    match typeStx? with
-    | .error _ => return none
-    | .ok stx =>
-      try
-        let type ← elabType stx
-        defsInTypeRec name type depth
-      catch _ =>
-        return none
+def termKindExamplesCore (choices: Nat := 3) : CoreM <| List Json := do
+    termKindExamplesM choices |>.run' {}
+
 
 end LeanAide.Meta
