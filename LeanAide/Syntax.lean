@@ -105,6 +105,8 @@ elab "what" : tactic => do
   let goal ← getMainGoal
   let type ← relLCtx goal
   logInfo m!"goal : {type}"
+  -- let defs ← defsInExpr type
+  -- logInfo m!"defs : {defs}"
   let some (transl, _, _) ← getTypeDescriptionM type {} | throwError "No description from LLM"
   logInfo transl
 
@@ -113,14 +115,11 @@ syntax (name:= whyTac) "why" : tactic
   let goal ← getMainGoal
   let type ← relLCtx goal
   logInfo m!"goal : {type}"
-  let some (transl, _, _) ← getTypeDescriptionM type {} | throwError "No description from LLM"
-  let server : ChatServer := ChatServer.default
-  let proof ← server.prove transl (n := 1)
-  logInfo m!"Theorem: {transl}"
-  logInfo m!"Proof: {proof}"
+  let some (transl, _, _) ← getTypeProofM type {} | throwError "No description from LLM"
+  logInfo m!"Theorem and proof: {transl}"
   -- let pfStx := Syntax.mkStrLit proof[0]!
   -- let proofTac ← `(tactic| #proof $pfStx)
-  let proofTac : Syntax.Tactic := ⟨mkProofStx proof[0]!⟩
+  let proofTac : Syntax.Tactic := ⟨mkProofStx transl⟩
   TryThis.addSuggestion stx proofTac
 
 syntax (name:= addDocs) "#doc" "theorem" ident declSig declVal : command

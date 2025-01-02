@@ -705,6 +705,7 @@ def eg_drop (n m: Nat)  := dl! (∀ n m: Nat, n = n + 1 → False)
 
 def topCode := "import Mathlib
 import LeanAide.AutoTactic
+import LeanAide.Syntax
 universe u v u_1
 set_option maxHeartbeats 10000000
 set_option linter.unreachableTactic false

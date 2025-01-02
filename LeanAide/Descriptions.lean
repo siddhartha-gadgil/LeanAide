@@ -96,7 +96,6 @@ def describeTheoremPrompt (name: Name) :
 def describeAnonymousTheoremPrompt (type: Expr) :
     MetaM <| Option (String × String × Option String) := do
   let dfns ← defsInExpr type
-  let dfns := dfns.map (toString)
   let typeStx ← PrettyPrinter.delab type
   let statementStx ← `(command| example : $typeStx := by sorry)
   let statement ← PrettyPrinter.ppCommand statementStx
@@ -104,9 +103,44 @@ def describeAnonymousTheoremPrompt (type: Expr) :
   if dfns.isEmpty then
     return some (← fromTemplate "state_theorem" [("theorem", statement)], statement, none)
   else
-    let defsBlob := dfns.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
+    let defsStrs ← dfns.filterMapM fun n => do
+      let info ← getConstInfo n
+      let doc? ← findDocString? (← getEnv) n
+      match doc? with
+      | some doc =>
+        let value? ← info.value?.mapM fun e => PrettyPrinter.delab e
+        pure <| some <| ←  mkStatementWithDoc n
+          (← PrettyPrinter.delab info.type) value? false (doc := doc) (isNoncomputable := Lean.isNoncomputable (← getEnv) n)
+      | none =>
+        mkStatement n (← PrettyPrinter.delab info.type) none false
+    let defsBlob := defsStrs.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
     return some (← fromTemplate "state_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trim)],
     statement, some defsBlob)
+
+def proveAnonymousTheoremPrompt (type: Expr) :
+    MetaM <| Option (String × String × Option String) := do
+  let dfns ← defsInExpr type
+  let typeStx ← PrettyPrinter.delab type
+  let statementStx ← `(command| example : $typeStx := by sorry)
+  let statement ← PrettyPrinter.ppCommand statementStx
+  let statement := statement.pretty
+  if dfns.isEmpty then
+    return some (← fromTemplate "prove_theorem" [("theorem", statement)], statement, none)
+  else
+    let defsStrs ← dfns.filterMapM fun n => do
+      let info ← getConstInfo n
+      let doc? ← findDocString? (← getEnv) n
+      match doc? with
+      | some doc =>
+        let value? ← info.value?.mapM fun e => PrettyPrinter.delab e
+        pure <| some <| ←  mkStatementWithDoc n
+          (← PrettyPrinter.delab info.type) value? false (doc := doc) (isNoncomputable := Lean.isNoncomputable (← getEnv) n)
+      | none =>
+        mkStatement n (← PrettyPrinter.delab info.type) none false
+    let defsBlob := defsStrs.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
+    return some (← fromTemplate "prove_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trim)],
+    statement, some defsBlob)
+
 
 def needsInd (name: Name) : MetaM <| Option (List Name) := do
   let env ← getEnv
@@ -164,6 +198,18 @@ def getTypeDescriptionM (type: Expr)(translator: Translator) : MetaM <| Option (
     let contents ← getMessageContents outJson
     let res := contents.get? 0 |>.map fun h => (h, statement, defBlob?)
     return res
+
+def getTypeProofM (type: Expr)(translator: Translator) : MetaM <| Option (String × String × Option String) := do
+  let prompt? ← proveAnonymousTheoremPrompt type
+  prompt?.bindM fun (prompt, statement, defBlob?) => do
+    let messages ← mkMessages prompt #[] (← sysPrompt)
+    let fullJson ←  translator.server.query messages translator.params
+    let outJson :=
+        (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
+    let contents ← getMessageContents outJson
+    let res := contents.get? 0 |>.map fun h => (h, statement, defBlob?)
+    return res
+
 
 def checkTranslationM (s: String) (type: Expr) (translator: Translator) :
   MetaM <| Option (String × Array (Bool × String)) := do
