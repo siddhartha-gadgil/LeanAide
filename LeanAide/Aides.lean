@@ -279,6 +279,8 @@ def structuralTerm (stx: Syntax) : MetaM Bool := do
 
 def openAIKey? : IO (Option String) := IO.getEnv "OPENAI_API_KEY"
 
+#eval openAIKey?
+
 def openAIKey : IO String := do
   match ← openAIKey? with
       | some k => return k

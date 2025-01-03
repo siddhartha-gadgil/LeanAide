@@ -111,11 +111,12 @@ elab "what" : tactic => do
   logInfo transl
 
 syntax (name:= whyTac) "why" : tactic
-@[tactic whyTac] def whyTacImpl : Tactic := fun stx => do
+@[tactic whyTac] def whyTacImpl : Tactic := fun stx => withMainContext do
   let goal ← getMainGoal
   let type ← relLCtx goal
   logInfo m!"goal : {type}"
-  let some (transl, _, _) ← getTypeProofM type {} | throwError "No description from LLM"
+  let some (transl, _, _) ← getTypeProofM type {} |
+            throwError "No description from LLM"
   logInfo m!"Theorem and proof: {transl}"
   -- let pfStx := Syntax.mkStrLit proof[0]!
   -- let proofTac ← `(tactic| #proof $pfStx)

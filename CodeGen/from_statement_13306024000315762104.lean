@@ -1,8 +1,10 @@
 import Mathlib
 import LeanAide.AutoTactic
+import LeanAide.Syntax
 universe u v u_1
 set_option maxHeartbeats 10000000
 set_option linter.unreachableTactic false
+
 
 /-!
 ## Theorem
@@ -81,56 +83,45 @@ In either case, the product \( n(n+1) \) is even. Therefore, the product of any 
 theorem aux_17159876999765957439 : ∀ (n : ℕ), Even (n * (n + 1)) :=
   by
   intro n
-  -- have calculation_12928321614448728289 : n * (n + 1) := by auto?
+  #note["Failed to translate calculation {\"inline_calculation\":\"n(n+1)\"}"]
   by_cases Even n
   case pos =>
-    have assert_5319112468382426543 : ∃ k, ↑n = 2 * k := by auto?[]
+    have ⟨k, assert_5319112468382426543⟩ : ∃ k, ↑n = 2 * k := by auto? []
     have calculation_14047433094544108429 : ∀ (k : ℕ), n * (n + 1) = 2 * k * (n + 1) := by auto?
-    have assert_4302669041932502115 : ∀ (k : ℕ), Even (2 * k * (n + 1)) := by auto?[]
+    have assert_4302669041932502115 : ∀ (k : ℕ), Even (2 * k * (n + 1)) := by auto? []
     auto?
   case neg =>
     have cond_2667733541464095191 : Odd n ↔ ∃ k, n = 2 * k + 1 := by auto?
-    have assert_758821247436174302 : ∃ k, ↑n = 2 * k + 1 := by auto?[]
+    have ⟨k, assert_758821247436174302⟩ : ∃ k, ↑n = 2 * k + 1 := by auto? []
     have calculation_11041185977590610505 : ∀ {k : ℕ}, n + 1 = 2 * k + 2 ↔ n + 1 = 2 * (k + 1) := by auto?
     have calculation_17388922601861285712 : n * (n + 1) = (2 * n + 1) * (n + 1) := by auto?
     have calculation_17817816054343669924 : ∀ (k : ℕ), n * (n + 1) = 2 * (2 * k ^ 2 + 3 * k + 1) := by auto?
-    have assert_1018076716932953991 : ∀ (k : ℕ), Even (2 * (2 * k ^ 2 + 3 * k + 1)) := by auto?[]
+    have assert_1018076716932953991 : ∀ (k : ℕ), Even (2 * (2 * k ^ 2 + 3 * k + 1)) := by auto? []
     auto?
   first
   | done
   | have conclusion_15884785423130108433 : Even (n * (n + 1)) := by auto?
   auto?
 
-#print aux_17159876999765957439
-
 /-!
 ## Elaboration logs
-failed to synthesize
-  HMul ℕ ℕ (Sort ?u.435)
-Additional diagnostic information may be available using the `set_option diagnostics true` command.
-Try this:
-sorry
-tactic 'aesop' failed, made no progress
-Initial goal:
-  n : ℕ
-  ⊢ n * (n + 1)
 Try this:
 (plausible_sorry)
 Try this:
-  intro k
-  simp_all only [mul_eq_mul_right_iff, AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, or_false]
-  obtain ⟨w, h_1⟩ := assert_5319112468382426543
-  subst h_1
-  simp_all only [even_two, Even.mul_right, mul_eq_mul_left_iff, OfNat.ofNat_ne_zero, or_false]
+  intro k_1
+  subst assert_5319112468382426543
+  simp_all only [even_two, Even.mul_right, mul_eq_mul_right_iff, mul_eq_mul_left_iff, OfNat.ofNat_ne_zero, or_false,
+    AddLeftCancelMonoid.add_eq_zero, mul_eq_zero, false_or, one_ne_zero, and_false]
   (plausible_sorry)
 Try this:
-  intro k
-  simp_all only [mul_eq_mul_right_iff, AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, or_false, even_two,
-    Even.mul_right]
+  intro k_1
+  subst assert_5319112468382426543
+  simp_all only [even_two, Even.mul_right, mul_eq_mul_right_iff, mul_eq_mul_left_iff, OfNat.ofNat_ne_zero, or_false,
+    AddLeftCancelMonoid.add_eq_zero, mul_eq_zero, false_or, one_ne_zero, and_false]
 Try this:
-  simp_all only [mul_eq_mul_right_iff, AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, or_false, even_two,
-    Even.mul_right, implies_true]
-  (unchecked_sorry)
+  subst assert_5319112468382426543
+  simp_all only [even_two, Even.mul_right, mul_eq_mul_right_iff, mul_eq_mul_left_iff, OfNat.ofNat_ne_zero, or_false,
+    AddLeftCancelMonoid.add_eq_zero, mul_eq_zero, false_or, one_ne_zero, and_false, implies_true]
 Try this:
   rename_i h
   simp_all only [Nat.not_even_iff_odd, true_iff]
@@ -138,62 +129,36 @@ Try this:
 Try this:
 simp_all only [Nat.not_even_iff_odd, iff_true]
 Try this:
-  rename_i h
-  intro k
-  simp_all only [Nat.not_even_iff_odd, iff_true, add_left_inj]
-  obtain ⟨w, h⟩ := assert_758821247436174302
-  subst h
-  simp_all only [even_two, Even.mul_right, Even.add_one, add_left_inj, mul_eq_mul_left_iff, OfNat.ofNat_ne_zero,
-    or_false]
+  intro k_1
+  subst assert_758821247436174302
+  simp_all only [Nat.not_even_bit1, not_false_eq_true, even_two, Even.mul_right, Even.add_one, add_left_inj,
+    mul_eq_mul_left_iff, OfNat.ofNat_ne_zero, or_false, exists_eq']
   apply Iff.intro
   · intro a
     subst a
     rfl
   · intro a
     (omega)
-Try this:
-  rename_i h
-  simp_all only [Nat.not_even_iff_odd, iff_true, add_left_inj, mul_eq_mul_right_iff, ne_eq,
-    AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, not_false_eq_true, right_eq_mul₀, OfNat.ofNat_ne_one,
-    or_self]
-  obtain ⟨w, h⟩ := assert_758821247436174302
-  simp_all only [mul_eq_mul_left_iff, add_left_inj, OfNat.ofNat_ne_zero, or_false]
-  (plausible_sorry)
-Try this:
-  intro k
-  simp_all only [Nat.not_even_iff_odd, iff_true, add_left_inj, mul_eq_mul_right_iff, ne_eq,
-    AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, not_false_eq_true, right_eq_mul₀, OfNat.ofNat_ne_one,
-    or_self]
-Try this:
-  intro k
-  simp_all only [Nat.not_even_iff_odd, iff_true, add_left_inj, mul_eq_mul_right_iff, ne_eq,
-    AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, not_false_eq_true, right_eq_mul₀, OfNat.ofNat_ne_one,
-    or_self]
-Try this:
-simp_all only [Nat.not_even_iff_odd, iff_true, add_left_inj, mul_eq_mul_right_iff, ne_eq,
-    AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, not_false_eq_true, right_eq_mul₀, OfNat.ofNat_ne_one,
-    or_self]
-Try this:
-  aesop_unfold at calculation_12928321614448728289
-  aesop_unfold at calculation_12928321614448728289
-  aesop_unfold at calculation_12928321614448728289
-  aesop_unfold at calculation_12928321614448728289
-  aesop_unfold at calculation_12928321614448728289
-  (plausible_sorry)
-Try this:
-  aesop_unfold at calculation_12928321614448728289
-  aesop_unfold at calculation_12928321614448728289
-  aesop_unfold at calculation_12928321614448728289
-  aesop_unfold at calculation_12928321614448728289
-  aesop_unfold at calculation_12928321614448728289
-  simp_all only
+aesop: error in norm simp: tactic 'simp' failed, nested error:
+maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+aesop: error in norm simp: tactic 'simp' failed, nested error:
+maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+aesop: error in norm simp: tactic 'simp' failed, nested error:
+maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+aesop: error in norm simp: tactic 'simp' failed, nested error:
+maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
 
 * Sorries in aux_17159876999765957439:
 
  * `∀ (n : ℕ), Even n → ∃ k, n = 2 * k`
- * `∀ (n : ℕ), Even n → (∃ k, n = 2 * k) → ∀ (k w : ℕ), n = 2 * w → Even (2 * w) → w = k`
- * `(n : ℕ) →   Even n →     (∃ k, n = 2 * k) → (∀ (k : ℕ), n * (n + 1) = 2 * k * (n + 1)) → (∀ (k : ℕ), Even (2 * k * (n + 1))) → HMul ℕ ℕ Prop`
- * `∀ (n : ℕ),   ¬Even n →     (Odd n ↔ ∃ k, n = 2 * k + 1) →       (∃ k, n = 2 * k + 1) →         (∀ {k : ℕ}, n + 1 = 2 * k + 2 ↔ n + 1 = 2 * (k + 1)) → ∀ (w : ℕ), n + 1 = 2 * (w + 1) → False`
- * `∀ (n : ℕ), n * (n + 1)`
- * `∀ (n : ℕ), n * (n + 1) → Even (n * (n + 1))`
+ * `∀ (n : ℕ), Even n → ∀ (k : ℕ), n = 2 * k → ∀ (k_1 : ℕ), Even (2 * k) → k = k_1`
+ * `∀ (n : ℕ), ¬Even n → Even (n * (n + 1))`
 -/
