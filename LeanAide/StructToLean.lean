@@ -150,12 +150,23 @@ def findLocalDecl? (name: Name) (type : Expr) : MetaM <| Option FVarId := do
 partial def dropLocalContext (type: Expr) : MetaM Expr := do
   match type with
   | .forallE name binderType body _ => do
-    match ← findLocalDecl? name binderType with
-    | some fVarId =>
-      let body' := body.instantiate1 (mkFVar fVarId)
-      dropLocalContext body'
-    | none => do
-      return type
+    let lctx ← getLCtx
+    match lctx.findFromUserName? name with
+    | some (.cdecl _ fVarId _ dtype ..) =>
+      let check ← isDefEq dtype binderType
+      -- logInfo m!"Checking {dtype} and {type} gives {check}"
+      if check then
+        let body' := body.instantiate1 (mkFVar fVarId)
+        dropLocalContext body'
+      else return type
+    | some (.ldecl _ fVarId _ dtype value ..) =>
+      let check ← isDefEq dtype binderType
+      -- logInfo m!"Checking {dtype} and {type} gives {check}"
+      if check then
+        let body' := body.instantiate1 value
+        dropLocalContext body'
+      else return type
+    | _ => return type
   | _ => return type
 
 
@@ -174,7 +185,9 @@ def purgeLocalContext: Syntax.Command →  TranslateM Syntax.Command
   `(command|theorem $name : $type := $value)
 | stx => return stx
 
-
+example (p: ∃ n m : Nat, n + m = 3): True := by
+  let ⟨n, m, h⟩ := p
+  exact trivial
 
 open Lean.Parser.Term
 /--
@@ -419,6 +432,15 @@ def contradictionTactics (statement: String)
   return #[←
     `(tactic| have $statementId : $statementTerm':term → $falseId := by $fullPf*), ← `(tactic| auto?)]
 
+-- Does not work for multiple variables together
+partial def existsVars (type: Syntax.Term) : MetaM <| Option (Array Syntax.Term) :=
+  match type with
+  | `(∃ $n:ident, $t) => do
+    return some <| #[n] ++ ((← existsVars t).getD #[])
+  | `(∃ ($n:ident: $_), $t) => do
+    return some <| #[n] ++ ((← existsVars t).getD #[])
+  | _ => return none
+
 
 def haveForAssertion  (type: Syntax.Term)
   (premises: List Name) :
@@ -427,6 +449,9 @@ def haveForAssertion  (type: Syntax.Term)
   let hash := hash type.raw.reprint
   let name := mkIdent <| Name.mkSimple s!"assert_{hash}"
   let tac ← `(tactic| auto? [$ids,*])
+  let term ← match ← existsVars type with
+    | some vars => `(tactic| have ⟨$(vars[0]!), $name⟩ : $type := by $tac:tactic)
+    | none => `(tactic| have $name : $type := by $tac:tactic)
   `(tactic| have $name : $type := by $tac:tactic)
 
 def calculateStatement (js: Json) : IO <| Array String := do
