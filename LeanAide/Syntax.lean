@@ -94,14 +94,14 @@ syntax (name:= textProof) withPosition("#proof" ppLine (str <|> proofBody)) : ta
 
 open Tactic
 @[tactic textProof] def textProofImpl : Tactic :=
-  fun _ => do
+  fun _ => withMainContext do
   evalTactic (← `(tactic|sorry))
 
 example : True := by
   #proof "trivial"
 
 open Tactic Translator
-elab "what" : tactic => do
+elab "what" : tactic => withMainContext do
   let goal ← getMainGoal
   let type ← relLCtx goal
   logInfo m!"goal : {type}"
