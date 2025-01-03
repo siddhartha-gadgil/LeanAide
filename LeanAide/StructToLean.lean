@@ -441,6 +441,11 @@ partial def existsVars (type: Syntax.Term) : MetaM <| Option (Array Syntax.Term)
     return some <| #[n] ++ ((← existsVars t).getD #[])
   | _ => return none
 
+#check Syntax.SepArray
+
+example (h : ∃ l n m : Nat, l + n + m = 3) : True := by
+  let ⟨l, ⟨n, ⟨m, h⟩⟩⟩  := h
+  trivial
 
 def haveForAssertion  (type: Syntax.Term)
   (premises: List Name) :
@@ -449,10 +454,14 @@ def haveForAssertion  (type: Syntax.Term)
   let hash := hash type.raw.reprint
   let name := mkIdent <| Name.mkSimple s!"assert_{hash}"
   let tac ← `(tactic| auto? [$ids,*])
-  let term ← match ← existsVars type with
-    | some vars => `(tactic| have ⟨$(vars[0]!), $name⟩ : $type := by $tac:tactic)
-    | none => `(tactic| have $name : $type := by $tac:tactic)
-  `(tactic| have $name : $type := by $tac:tactic)
+  match ← existsVars type with
+    | some vars =>
+      let mut lhs : Syntax.Term ← `($name)
+      for var in vars.reverse do
+        lhs ← `(⟨$var, $lhs⟩)
+      `(tactic| have $lhs:term : $type  := by $tac:tactic)
+    | none =>
+      `(tactic| have $name : $type := by $tac:tactic)
 
 def calculateStatement (js: Json) : IO <| Array String := do
   match js.getKV? with
