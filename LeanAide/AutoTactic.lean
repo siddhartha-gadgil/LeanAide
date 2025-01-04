@@ -2,6 +2,7 @@ import Lean
 import Mathlib
 import LeanAide.AesopSyntax
 import LeanAide.CheckedSorry
+import LeanAide.Aides
 open LeanAide.Meta Lean Meta Elab
 
 open Lean Meta Tactic Parser.Tactic
@@ -37,11 +38,17 @@ unless (← getGoals).isEmpty do
   match stx with
   | `(tactic| auto?) => do
     let tac ← aesopTactic 90 50 10
-    evalTactic tac
+    let check ← evalTacticSafe tac
+    unless check do
+      let tac ← `(tactic|sorry)
+      evalTactic tac
   | `(tactic| auto? [$names,*]) => do
     let names := names.getElems.map fun n => n.getId
     let tac ← aesopTactic 90 50 10 names.toList
-    evalTactic tac
+    let check ← evalTacticSafe tac
+    unless check do
+      let tac ← `(tactic|sorry)
+      evalTactic tac
   | _ => throwUnsupportedSyntax
 
 elab "#note" "[" term,* "]" : command => do

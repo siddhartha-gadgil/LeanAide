@@ -643,7 +643,7 @@ def runTacticToCore (mvarId: MVarId) (stx: Syntax)
   MetaM.run (
     Elab.runTactic mvarId stx ctx s) mctx s'
 
-def runSafe (tacticCode: Syntax): TacticM Bool := do
+def evalTacticSafe (tacticCode: Syntax): TacticM Bool := do
   let mvarId ← getMainGoal
   let ctx ← readThe Term.Context
   let s ← getThe Term.State
@@ -662,5 +662,5 @@ def runSafe (tacticCode: Syntax): TacticM Bool := do
     return true
   | Except.error e =>
     state.restore
-    logInfo m!"Error while running automation: {e.toMessageData}"
+    logWarning m!"Error while running tactic: {e.toMessageData}"
     return false
