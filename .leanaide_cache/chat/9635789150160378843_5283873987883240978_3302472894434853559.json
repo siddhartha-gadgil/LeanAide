@@ -1,0 +1,24 @@
+{"usage":
+ {"total_tokens": 5003,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 4453,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 550},
+ "system_fingerprint": "fp_d28bcae782",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-Am0XyuqcNWR28x1K3lYuTR0dbsjCp",
+ "created": 1736005210,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```json\n{\n  \"math_document\": [\n    {\n      \"theorem\": {\n        \"hypothesis\": [],\n        \"conclusion\": \"The square of the sum of the first n numbers is the sum of the first n cubes, i.e., \\\\( \\\\left( \\\\sum_{k=1}^n k \\\\right)^2 = \\\\sum_{k=1}^n k^3 \\\\).\",\n        \"proved\": true,\n        \"name\": \"The square of the sum of the first n numbers is the sum of the first n cubes\",\n        \"proof\": [\n          {\n            \"let\": {\n              \"variable\": \"<anonymous>\",\n              \"value\": \"\\\\sum_{k=1}^n k\",\n              \"kind\": \"sum of the first n numbers\"\n            }\n          },\n          {\n            \"assert\": {\n              \"claim\": \"The sum of the first n numbers is \\\\( \\\\sum_{k=1}^n k = \\\\frac{n(n+1)}{2} \\\\).\",\n              \"calculate\": {\n                \"inline_calculation\": \"\\\\sum_{k=1}^n k = \\\\frac{n(n+1)}{2}\"\n              }\n            }\n          },\n          {\n            \"assert\": {\n              \"claim\": \"The square of the sum of the first n numbers is \\\\( \\\\left(\\\\frac{n(n+1)}{2}\\\\right)^2 = \\\\frac{n^2(n+1)^2}{4} \\\\).\",\n              \"calculate\": {\n                \"inline_calculation\": \"\\\\left(\\\\frac{n(n+1)}{2}\\\\right)^2 = \\\\frac{n^2(n+1)^2}{4}\"\n              }\n            }\n          },\n          {\n            \"assert\": {\n              \"claim\": \"The sum of the first n cubes is \\\\( \\\\sum_{k=1}^n k^3 = \\\\left( \\\\frac{n(n+1)}{2} \\\\right)^2 \\\\).\",\n              \"calculate\": {\n                \"inline_calculation\": \"\\\\sum_{k=1}^n k^3 = \\\\left( \\\\frac{n(n+1)}{2} \\\\right)^2\"\n              }\n            }\n          },\n          {\n            \"conclude\": {\n              \"claim\": \"Hence, \\\\( \\\\left( \\\\sum_{k=1}^n k \\\\right)^2 = \\\\sum_{k=1}^n k^3 = \\\\frac{n^2(n+1)^2}{4} \\\\), proving the theorem.\"\n            }\n          }\n        ]\n      }\n    }\n  ]\n}\n```"},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"}]}

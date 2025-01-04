@@ -1,0 +1,56 @@
+{"usage":
+ {"total_tokens": 2627,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 2335,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 292},
+ "system_fingerprint": "fp_5f20662549",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-Am0YoW3ySLyV9LS0tAzmXGfaEDmz3",
+ "created": 1736005262,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (n : ℕ), ((Finset.range (n + 1)).sum fun k => k) ^ 2 = (Finset.range (n + 1)).sum fun k => k ^ 3 = n ^ 2 * (n + 1) ^ 2 / 4"},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (n : ℕ), ((Finset.range n).sum fun k => k) ^ 2 = (Finset.range n).sum fun k => k ^ 3 = n ^ 2 * (n + 1) ^ 2 / 4"},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (n : ℕ), ((Finset.range (n + 1)).sum fun k => k) ^ 2 = (Finset.range (n + 1)).sum fun k => k ^ 3 = n^2 * (n + 1)^2 / 4"},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (n : ℕ), ((Finset.range n).sum fun k => k) ^ 2 = ((Finset.range n).sum fun k => k ^ 3) = n ^ 2 * (n + 1) ^ 2 / 4"},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (n : ℕ), (Finset.range n).sum id ^ 2 = (Finset.range n).sum (fun k => k ^ 3) = n ^ 2 * (n + 1) ^ 2 / 4"},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"}]}
