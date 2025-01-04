@@ -279,8 +279,6 @@ def theoremExprInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerato
       IO.eprintln s!"Not a type: {type}"
       return Except.error #[ElabError.parsed statement s!"Not a type {type}" [] none]
 
-#check Expr.isType
-
 def defnInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerator) : TranslateM (Option Syntax.Command) := do
   let mut context := #[]
   for js in ctx do
@@ -341,16 +339,16 @@ def matchCases (discr: String)
   let discrTerm' : Syntax.Term := ⟨discrTerm⟩
   `(tactic| match $discrTerm':term with $alts':matchAlt*)
 
-def groupCasesAux (context: Array Json) (cond_pfs: List <| String × Array Syntax.Tactic)(qp: CodeGenerator)
+def groupCasesAux (context: Array Json) (cond_pfs: List <| Expr × Array Syntax.Tactic)(qp: CodeGenerator)
     : TranslateM <| Array Syntax.Tactic := do
     match cond_pfs with
     | [] => return #[← `(tactic| auto?)]
-    | (cond, pf) :: tail => do
-      let condProp? ← theoremExprInContext? context cond qp
-      match condProp? with
-      | Except.error _ =>
-        return #[← mkNoteTactic s!"Failed to translate condition {cond}"]
-      | Except.ok condProp => do
+    | (condProp, pf) :: tail => do
+      -- let condProp? ← theoremExprInContext? context cond qp
+      -- match condProp? with
+      -- | Except.error _ =>
+      --   return #[← mkNoteTactic s!"Failed to translate condition {cond}"]
+      -- | Except.ok condProp => do
       let condTerm ← delab condProp
       let condTerm' : Syntax.Term := ⟨condTerm⟩
       let tailTacs ← groupCasesAux context tail qp
@@ -396,13 +394,16 @@ def groupCases (context : Array Json) (cond_pfs: List <| String × Array Syntax.
   let condExprs ←  conds.filterMapM fun cond => do
     let e? ← qp.theoremExprInContext? context cond
     pure e?.toOption
+  let condPfExprs ←  cond_pfs.filterMapM fun (cond, pf) => do
+    let e? ← qp.theoremExprInContext? context cond
+    pure <| e?.toOption.map (·, pf)
   let orAllExpr ←  match goal? with
     | some goal => orAllWithGoal condExprs goal
     | none => orAllSimpleExpr condExprs
   let orAll ← delab orAllExpr
   let hash := hash orAll.raw.reprint
   let orAllId := mkIdent <| Name.mkSimple s!"orAll_{hash}"
-  let casesTacs ← groupCasesAux context cond_pfs qp
+  let casesTacs ← groupCasesAux context condPfExprs qp
   let head ← `(tactic| have $orAllId : $orAll := by $union_pfs*)
   return #[head] ++ casesTacs
 

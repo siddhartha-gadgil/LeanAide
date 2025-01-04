@@ -20,9 +20,20 @@ lake build mathlib
 lake build
 ```
 
-After this open the folder in VS code (or equivalent) with Lean 4 and go to the file `LeanCodePrompts/TranslateExample.lean` or the file `LeanCodePrompts/TranslateDemo.lean`. Any statement written using syntax 
-similar to `l!"There are infinitely many primes"` will be translated into Lean code. You will see examples of this in the demo files. Once the translation is done, a `Try this` hyperlink and code-action will appear. Clicking on this will add the translated code to the file.
+You also need to download pre-built embeddings for the translation model. This can be done with the following shell command (the lean command `lake exe fetch_embeddings` is supposed to work but is error-prone).:
 
+```bash
+./fetch.sh
+```
+
+After this open the folder in VS code (or equivalent) with Lean 4 and go to the file `LeanCodePrompts/TranslateExample.lean` or the file `LeanCodePrompts/TranslateDemo.lean`. Any statement written using syntax 
+similar to `l!"There are infinitely many primes"` for a term or `#theorem "There are infinitely many primes"` will be translated into Lean code. You will see examples of this in the demo files. Once the translation is done, a `Try this` hyperlink and code-action will appear. Clicking on this will add the translated code to the file.
+
+Alternatively, you can translate a statement using the following command in the Lean REPL:
+
+```lean
+lake exe translate "There are infinitely many primes"
+```
 
 To use in your own project, include this project as a dependency in `lakefile.lean` using the following.
 

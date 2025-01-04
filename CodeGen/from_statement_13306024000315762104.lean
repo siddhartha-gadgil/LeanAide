@@ -5,7 +5,7 @@ universe u v u_1
 set_option maxHeartbeats 10000000
 set_option linter.unreachableTactic false
 
-
+-- Slightly updated demo example
 /-!
 ## Theorem
 The product of two successive natural numbers is even.
