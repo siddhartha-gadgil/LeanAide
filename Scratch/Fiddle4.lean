@@ -322,3 +322,7 @@ example : True := by
     I said so.∎
 
 #check "This"
+
+#check Aesop.runTacticSyntaxAsMetaM
+
+#check Elab.runTactic
