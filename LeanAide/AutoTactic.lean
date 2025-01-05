@@ -44,8 +44,9 @@ unless (← getGoals).isEmpty do
       evalTactic tac
   | `(tactic| auto? [$names,*]) => do
     let names := names.getElems.map fun n => n.getId
-    let tac ← aesopTactic 90 50 10 names.toList
+    let tac ← aesopTactic 90 20 10 names.toList
     let check ← evalTacticSafe tac
+    trace[leanaide.codegen.info] "auto tactic: {← PrettyPrinter.ppTactic tac}"
     unless check do
       let tac ← `(tactic|sorry)
       evalTactic tac
