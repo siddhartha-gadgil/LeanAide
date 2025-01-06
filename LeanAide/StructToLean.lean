@@ -310,11 +310,11 @@ def conditionCases (cond₁ cond₂ : String)
   let condTerm₂ ← delab condProp₂
   let condTerm₁' : Syntax.Term := ⟨condTerm₁⟩
   let condTerm₂' : Syntax.Term := ⟨condTerm₂⟩
-  let tac ← `(tactic| auto?)
+  let tac ← `(tacticSeq| auto?)
   let hash := hash cond₂
   let condId₂ := mkIdent <| Name.mkSimple s!"cond_{hash}"
   let ass₂ ← `(tactic| have $condId₂ : $condTerm₂' := by
-    $tac:tactic)
+    $tac:tacticSeq)
   let pf₂' := #[ass₂] ++ pf₂
   let posId := mkIdent `pos
   let negId := mkIdent `neg
@@ -415,8 +415,8 @@ def conclusionTactic (conclusion: String)(context: Array Json) (qp: CodeGenerato
   let conclusionTerm' : Syntax.Term ← delab conclusionTerm
   let hash := hash conclusion
   let conclusionId := mkIdent <| Name.mkSimple s!"conclusion_{hash}"
-  let tac ← `(tactic| auto?)
-  `(tactic| first | done |have $conclusionId : $conclusionTerm':term := by $tac:tactic)
+  let tac ← `(tacticSeq| auto?)
+  `(tactic| first | done |have $conclusionId : $conclusionTerm':term := by $tac:tacticSeq)
 
 def contradictionTactics (statement: String)
     (pf: Array Syntax.Tactic)(context: Array Json) (qp: CodeGenerator) : TranslateM <| Array Syntax.Tactic := do
@@ -454,15 +454,15 @@ def haveForAssertion  (type: Syntax.Term)
   let ids := premises.toArray.map fun n => Lean.mkIdent n
   let hash := hash type.raw.reprint
   let name := mkIdent <| Name.mkSimple s!"assert_{hash}"
-  let tac ← `(tactic| auto? [$ids,*])
+  let tac ← `(tacticSeq| auto? [$ids,*])
   match ← existsVars type with
     | some vars =>
       let mut lhs : Syntax.Term ← `($name)
       for var in vars.reverse do
         lhs ← `(⟨$var, $lhs⟩)
-      `(tactic| have $lhs:term : $type  := by $tac:tactic)
+      `(tactic| have $lhs:term : $type  := by $tac:tacticSeq)
     | none =>
-      `(tactic| have $name : $type := by $tac:tactic)
+      `(tactic| have $name : $type := by $tac:tacticSeq)
 
 def calculateStatement (js: Json) : IO <| Array String := do
   match js.getKV? with
