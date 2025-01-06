@@ -81,10 +81,12 @@ theorem aux_15927697716450643236 : ∀ (n : ℕ), (∑ k ∈ Finset.range (n + 1
   by
   intro n
   have calculation_17958781550356263392 : ∑ k ∈ Finset.range (n + 1), k = n * (n + 1) / 2 := by
-    rw [Finset.sum_range_id]
-    simp [mul_comm]
+    rw [Finset.sum_range_id] -- from leansearch/moogle
+    auto?
   have assert_14898319343719751211 : ∑ k ∈ Finset.range (n + 1), k = n * (n + 1) / 2 := by auto? []
-  have calculation_301749212572833871 : (n * (n + 1) / 2) ^ 2 = n ^ 2 * (n + 1) ^ 2 / 4 := by auto?
+  have calculation_301749212572833871 : (n * (n + 1) / 2) ^ 2 = n ^ 2 * (n + 1) ^ 2 / 4 := by
+    simp_all only
+    (plausible_sorry)
   have assert_295016085462832130 : (∑ i ∈ Finset.range n.succ, i) ^ 2 = (n * (n + 1) / 2) ^ 2 := by auto? []
   have calculation_11198307469788079558 : ∑ k ∈ Finset.range n, k ^ 3 = (n * (n + 1) / 2) ^ 2 := by auto?
   have assert_6670652257912361737 : ∑ k ∈ Finset.range n.succ, k ^ 3 = (n * (n + 1) / 2) ^ 2 := by auto? []
