@@ -77,12 +77,13 @@ Thus, the theorem is proved.
     "conclusion":
     "The square of the sum of the first n numbers is the sum of the first n cubes, i.e., \\( \\left( \\sum_{k=1}^n k \\right)^2 = \\sum_{k=1}^n k^3 \\)."}}]}-/
 
+set_option trace.leanaide.codegen.info true
 theorem aux_15927697716450643236 : ∀ (n : ℕ), (∑ k ∈ Finset.range (n + 1), k) ^ 2 = ∑ k ∈ Finset.range (n + 1), k ^ 3 :=
   by
   intro n
   have calculation_17958781550356263392 : ∑ k ∈ Finset.range (n + 1), k = n * (n + 1) / 2 := by
-    rw [Finset.sum_range_id] -- from leansearch/moogle
-    auto?
+    aesop?  (add unsafe 90% Finset.sum_range_id)(add unsafe 90% (by rw [Finset.sum_range_id])) (add unsafe 50% (by ring))
+    -- from leansearch/moogle
   have assert_14898319343719751211 : ∑ k ∈ Finset.range (n + 1), k = n * (n + 1) / 2 := by auto? []
   have calculation_301749212572833871 : (n * (n + 1) / 2) ^ 2 = n ^ 2 * (n + 1) ^ 2 / 4 := by
     simp_all only
