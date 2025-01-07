@@ -82,7 +82,8 @@ theorem aux_15927697716450643236 : ∀ (n : ℕ), (∑ k ∈ Finset.range (n + 1
   by
   intro n
   have calculation_17958781550356263392 : ∑ k ∈ Finset.range (n + 1), k = n * (n + 1) / 2 := by
-    aesop?  (add unsafe 90% Finset.sum_range_id)(add unsafe 90% (by rw [Finset.sum_range_id])) (add unsafe 50% (by ring))
+    auto? [Finset.sum_range_id]
+    -- aesop?  (add unsafe 90% Finset.sum_range_id)(add unsafe 90% (by rw [Finset.sum_range_id])) (add unsafe 50% (by ring))
     -- from leansearch/moogle
   have assert_14898319343719751211 : ∑ k ∈ Finset.range (n + 1), k = n * (n + 1) / 2 := by auto? []
   have calculation_301749212572833871 : (n * (n + 1) / 2) ^ 2 = n ^ 2 * (n + 1) ^ 2 / 4 := by
