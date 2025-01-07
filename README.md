@@ -6,12 +6,6 @@ LeanAide or Lean**AI**de (accidental pun) is work in progress to build AI based 
 
 ## Quickstart: translation to Lean statements
 
-Our translation is based on GPT 3.5-turbo/GPT 4, to use which you need an OpenAI key. To get started please configure environment variables using the following bash commands or equivalent in your system:
-
-```bash
-export OPENAI_API_KEY=<your-open-ai-key>
-```
-
 Build this repository with the following commands:
 
 ```bash
@@ -19,15 +13,24 @@ lake exe cache get # download prebuilt mathlib binaries
 lake build mathlib
 lake build
 ```
-
 You also need to download pre-built embeddings for the translation model. This can be done with the following shell command (the lean command `lake exe fetch_embeddings` is supposed to work but is error-prone).:
 
 ```bash
 ./fetch.sh
 ```
 
-After this open the folder in VS code (or equivalent) with Lean 4 and go to the file `LeanCodePrompts/TranslateExample.lean` or the file `LeanCodePrompts/TranslateDemo.lean`. Any statement written using syntax 
-similar to `l!"There are infinitely many primes"` for a term or `#theorem "There are infinitely many primes"` will be translated into Lean code. You will see examples of this in the demo files. Once the translation is done, a `Try this` hyperlink and code-action will appear. Clicking on this will add the translated code to the file.
+Our translation is based on GPT 3.5-turbo/GPT 4, to use which you need an OpenAI key. To get started please configure environment variables using the following bash commands or equivalent in your system at the base of the repository (the angle brackets are **not** to be included in the command), and then launch VS code. 
+
+```bash
+export OPENAI_API_KEY=<your-open-ai-key>
+code .
+```
+
+Alternatively, you can create a file with path `rawdata/OPENAI_API_KEY` (relative to the root of LeanAIDE) containing your key.
+
+
+After this open the folder in VS code (or equivalent) with Lean 4 and go to the file `LeanCodePrompts/TranslateDemo.lean`. Any statement written using syntax 
+similar to `#theorem "There are infinitely many primes"` will be translated into Lean code. You will see examples of this in the demo files. Once the translation is done, a `Try this` hyperlink and code-action will appear. Clicking on this will add the translated code to the file.
 
 Alternatively, you can translate a statement using the following command in the Lean REPL:
 
@@ -35,10 +38,18 @@ Alternatively, you can translate a statement using the following command in the 
 lake exe translate "There are infinitely many primes"
 ```
 
-To use in your own project, include this project as a dependency in `lakefile.lean` using the following.
+Using in your own project still involves some issues which we are working on (because of matching of toolchains being needed). Include this project as a dependency in `lakefile.lean` using the following.
 
 ```lean
-require LeanCodePrompts from git "https://github.com/siddhartha-gadgil/LeanAide"@"main
+require LeanCodePrompts from git "https://github.com/siddhartha-gadgil/LeanAide"@"main"
+```
+
+The run from bash the following statements to download the prebuilt embeddings.
+
+```bash
+curl --output .lake/build/lib/mathlib4-concise-description-embeddings-v4.15.0-rc1.olean https://storage.googleapis.com/leanaide_data/mathlib4-concise-description-embeddings-v4.15.0-rc1.olean
+curl --output .lake/build/lib/mathlib4-description-embeddings-v4.15.0-rc1.olean https://storage.googleapis.com/leanaide_data/mathlib4-description-embeddings-v4.15.0-rc1.olean
+curl --output .lake/build/lib/mathlib4-prompts-embeddings-v4.15.0-rc1.olean https://storage.googleapis.com/leanaide_data/mathlib4-prompts-embeddings-v4.15.0-rc1.olean
 ```
 
 If you import `LeanAide` and `Mathlib` to a file, the translation will be available.
