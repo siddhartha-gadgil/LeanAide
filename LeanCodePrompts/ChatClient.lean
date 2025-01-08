@@ -130,8 +130,11 @@ def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM 
   let dataJs := dataJs.mergeObj stopJs
   let data := dataJs.pretty
   trace[Translate.info] "Model query: {data}"
+  logInfo s!"Querying {server.model} with {data}"
   let url ← server.url
+  logInfo "Authenticating"
   let authHeader? ← server.authHeader?
+  logInfo s!"Auth header: {authHeader?}"
   IO.eprintln s!"Querying {url} at {← IO.monoMsNow }"
   let start ← IO.monoMsNow
   let baseArgs :=
@@ -139,6 +142,7 @@ def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM 
   let args := match authHeader? with
     | some h => #["-H", h] ++ baseArgs
     | none => baseArgs
+  logInfo s!"Querying {url} with {data}"
   let output ← Cache.IO.runCurl (args ++ #["--data", data])
   trace[Translate.info] "Model response: {output}"
   let queryJs := Json.mkObj [
@@ -158,11 +162,13 @@ def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM 
     return .null
 
 def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Json := do
+  logInfo s!"Querying {server.model}"
   let file : System.FilePath :=
     ".leanaide_cache" / "chat" /
       s!"{hash server}_{hash params}_{hash messages}.json"
   if ← file.pathExists then
     IO.eprintln s!"Reading from cache: {file}"
+    logInfo s!"Reading from cache: {file}"
     let output ← IO.FS.readFile file
     match Json.parse output with
     | Except.ok j => return j
@@ -173,6 +179,7 @@ def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Jso
       return result
   else
     IO.eprintln s!"Querying server"
+    logInfo s!"Querying server"
     let result ←  queryAux server messages params
     IO.FS.writeFile file result.pretty
     return result

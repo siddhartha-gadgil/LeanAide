@@ -1,0 +1,56 @@
+{"usage":
+ {"total_tokens": 2750,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 2534,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 216},
+ "system_fingerprint": "fp_5f20662549",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-Am0Ye7PeJMee8M32DJ0RTh9OMW7CP",
+ "created": 1736005252,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (n : ℕ), (∑ k in Finset.range n, k ^ 3) = (n * (n + 1) / 2) ^ 2"},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (n : ℕ), (∑ k in Finset.range (n + 1), k ^ 3) = (n * (n + 1) / 2) ^ 2"},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (n : ℕ), (∑ k in Finset.range (n + 1), k ^ 3) = (n * (n + 1) / 2) ^ 2"},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (n : ℕ), (∑ k in Finset.range (n + 1), k ^ 3) = (n * (n + 1) / 2) ^ 2"},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (n : ℕ), (∑ k in Finset.range (n + 1), k ^ 3) = (n * (n + 1) / 2) ^ 2"},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"}]}

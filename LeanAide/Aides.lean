@@ -279,6 +279,8 @@ def structuralTerm (stx: Syntax) : MetaM Bool := do
 
 def openAIKey? : IO (Option String) := IO.getEnv "OPENAI_API_KEY"
 
+#eval openAIKey?
+
 def openAIKey : IO String := do
   match ← openAIKey? with
       | some k => return k
@@ -635,3 +637,30 @@ def bestDefsInConsts (n: Nat) (names: List Name) (depth: Nat)
   (weight: Float := 1.0) (decay: Float := 0.8) : MetaM <| Array Name := do
     let weighted ← weightedDefsInConsts names depth weight decay
     return weighted[0:n] |>.toArray.map fun (n, _) => n
+
+def runTacticToCore (mvarId: MVarId) (stx: Syntax)
+    (ctx: Term.Context) (s : Term.State) (mctx : Meta.Context) (s' : Meta.State) : CoreM <| (List MVarId × Term.State) × Meta.State  :=
+  MetaM.run (
+    Elab.runTactic mvarId stx ctx s) mctx s'
+
+def evalTacticSafe (tacticCode: Syntax): TacticM (Bool × Nat) := do
+  let mvarId ← getMainGoal
+  let ctx ← readThe Term.Context
+  let s ← getThe Term.State
+  let mctx ← readThe Meta.Context
+  let s' ← getThe Meta.State
+  let state ← saveState
+  let res ← Core.tryCatchRuntimeEx (do
+      let res ← runTacticToCore mvarId tacticCode ctx s mctx s'
+      pure <| Except.ok res
+      ) (fun e => pure <| Except.error e)
+  match res with
+  | Except.ok ((mvarIds, s), ms) => do
+    set ms
+    set s
+    replaceMainGoal mvarIds
+    return (true, mvarIds.length)
+  | Except.error e =>
+    state.restore
+    logWarning e.toMessageData
+    return (false, 1)

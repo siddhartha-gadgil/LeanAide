@@ -150,12 +150,23 @@ def findLocalDecl? (name: Name) (type : Expr) : MetaM <| Option FVarId := do
 partial def dropLocalContext (type: Expr) : MetaM Expr := do
   match type with
   | .forallE name binderType body _ => do
-    match ← findLocalDecl? name binderType with
-    | some fVarId =>
-      let body' := body.instantiate1 (mkFVar fVarId)
-      dropLocalContext body'
-    | none => do
-      return type
+    let lctx ← getLCtx
+    match lctx.findFromUserName? name with
+    | some (.cdecl _ fVarId _ dtype ..) =>
+      let check ← isDefEq dtype binderType
+      -- logInfo m!"Checking {dtype} and {type} gives {check}"
+      if check then
+        let body' := body.instantiate1 (mkFVar fVarId)
+        dropLocalContext body'
+      else return type
+    | some (.ldecl _ fVarId _ dtype value ..) =>
+      let check ← isDefEq dtype binderType
+      -- logInfo m!"Checking {dtype} and {type} gives {check}"
+      if check then
+        let body' := body.instantiate1 value
+        dropLocalContext body'
+      else return type
+    | _ => return type
   | _ => return type
 
 
@@ -174,7 +185,9 @@ def purgeLocalContext: Syntax.Command →  TranslateM Syntax.Command
   `(command|theorem $name : $type := $value)
 | stx => return stx
 
-
+example (p: ∃ n m : Nat, n + m = 3): True := by
+  let ⟨n, m, h⟩ := p
+  exact trivial
 
 open Lean.Parser.Term
 /--
@@ -266,8 +279,6 @@ def theoremExprInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerato
       IO.eprintln s!"Not a type: {type}"
       return Except.error #[ElabError.parsed statement s!"Not a type {type}" [] none]
 
-#check Expr.isType
-
 def defnInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerator) : TranslateM (Option Syntax.Command) := do
   let mut context := #[]
   for js in ctx do
@@ -299,11 +310,11 @@ def conditionCases (cond₁ cond₂ : String)
   let condTerm₂ ← delab condProp₂
   let condTerm₁' : Syntax.Term := ⟨condTerm₁⟩
   let condTerm₂' : Syntax.Term := ⟨condTerm₂⟩
-  let tac ← `(tactic| auto?)
+  let tac ← `(tacticSeq| auto?)
   let hash := hash cond₂
   let condId₂ := mkIdent <| Name.mkSimple s!"cond_{hash}"
   let ass₂ ← `(tactic| have $condId₂ : $condTerm₂' := by
-    $tac:tactic)
+    $tac:tacticSeq)
   let pf₂' := #[ass₂] ++ pf₂
   let posId := mkIdent `pos
   let negId := mkIdent `neg
@@ -328,16 +339,16 @@ def matchCases (discr: String)
   let discrTerm' : Syntax.Term := ⟨discrTerm⟩
   `(tactic| match $discrTerm':term with $alts':matchAlt*)
 
-def groupCasesAux (context: Array Json) (cond_pfs: List <| String × Array Syntax.Tactic)(qp: CodeGenerator)
+def groupCasesAux (context: Array Json) (cond_pfs: List <| Expr × Array Syntax.Tactic)(qp: CodeGenerator)
     : TranslateM <| Array Syntax.Tactic := do
     match cond_pfs with
     | [] => return #[← `(tactic| auto?)]
-    | (cond, pf) :: tail => do
-      let condProp? ← theoremExprInContext? context cond qp
-      match condProp? with
-      | Except.error _ =>
-        return #[← mkNoteTactic s!"Failed to translate condition {cond}"]
-      | Except.ok condProp => do
+    | (condProp, pf) :: tail => do
+      -- let condProp? ← theoremExprInContext? context cond qp
+      -- match condProp? with
+      -- | Except.error _ =>
+      --   return #[← mkNoteTactic s!"Failed to translate condition {cond}"]
+      -- | Except.ok condProp => do
       let condTerm ← delab condProp
       let condTerm' : Syntax.Term := ⟨condTerm⟩
       let tailTacs ← groupCasesAux context tail qp
@@ -383,13 +394,16 @@ def groupCases (context : Array Json) (cond_pfs: List <| String × Array Syntax.
   let condExprs ←  conds.filterMapM fun cond => do
     let e? ← qp.theoremExprInContext? context cond
     pure e?.toOption
+  let condPfExprs ←  cond_pfs.filterMapM fun (cond, pf) => do
+    let e? ← qp.theoremExprInContext? context cond
+    pure <| e?.toOption.map (·, pf)
   let orAllExpr ←  match goal? with
     | some goal => orAllWithGoal condExprs goal
     | none => orAllSimpleExpr condExprs
   let orAll ← delab orAllExpr
   let hash := hash orAll.raw.reprint
   let orAllId := mkIdent <| Name.mkSimple s!"orAll_{hash}"
-  let casesTacs ← groupCasesAux context cond_pfs qp
+  let casesTacs ← groupCasesAux context condPfExprs qp
   let head ← `(tactic| have $orAllId : $orAll := by $union_pfs*)
   return #[head] ++ casesTacs
 
@@ -401,8 +415,8 @@ def conclusionTactic (conclusion: String)(context: Array Json) (qp: CodeGenerato
   let conclusionTerm' : Syntax.Term ← delab conclusionTerm
   let hash := hash conclusion
   let conclusionId := mkIdent <| Name.mkSimple s!"conclusion_{hash}"
-  let tac ← `(tactic| auto?)
-  `(tactic| first | done |have $conclusionId : $conclusionTerm':term := by $tac:tactic)
+  let tac ← `(tacticSeq| auto?)
+  `(tactic| first | done |have $conclusionId : $conclusionTerm':term := by $tac:tacticSeq)
 
 def contradictionTactics (statement: String)
     (pf: Array Syntax.Tactic)(context: Array Json) (qp: CodeGenerator) : TranslateM <| Array Syntax.Tactic := do
@@ -419,6 +433,20 @@ def contradictionTactics (statement: String)
   return #[←
     `(tactic| have $statementId : $statementTerm':term → $falseId := by $fullPf*), ← `(tactic| auto?)]
 
+-- Does not work for multiple variables together
+partial def existsVars (type: Syntax.Term) : MetaM <| Option (Array Syntax.Term) :=
+  match type with
+  | `(∃ $n:ident, $t) => do
+    return some <| #[n] ++ ((← existsVars t).getD #[])
+  | `(∃ ($n:ident: $_), $t) => do
+    return some <| #[n] ++ ((← existsVars t).getD #[])
+  | _ => return none
+
+#check Syntax.SepArray
+
+example (h : ∃ l n m : Nat, l + n + m = 3) : True := by
+  let ⟨l, ⟨n, ⟨m, h⟩⟩⟩  := h
+  trivial
 
 def haveForAssertion  (type: Syntax.Term)
   (premises: List Name) :
@@ -426,8 +454,15 @@ def haveForAssertion  (type: Syntax.Term)
   let ids := premises.toArray.map fun n => Lean.mkIdent n
   let hash := hash type.raw.reprint
   let name := mkIdent <| Name.mkSimple s!"assert_{hash}"
-  let tac ← `(tactic| auto? [$ids,*])
-  `(tactic| have $name : $type := by $tac:tactic)
+  let tac ← `(tacticSeq| auto? [$ids,*])
+  match ← existsVars type with
+    | some vars =>
+      let mut lhs : Syntax.Term ← `($name)
+      for var in vars.reverse do
+        lhs ← `(⟨$var, $lhs⟩)
+      `(tactic| have $lhs:term : $type  := by $tac:tacticSeq)
+    | none =>
+      `(tactic| have $name : $type := by $tac:tacticSeq)
 
 def calculateStatement (js: Json) : IO <| Array String := do
   match js.getKV? with

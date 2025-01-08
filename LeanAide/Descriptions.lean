@@ -202,8 +202,11 @@ def getTypeDescriptionM (type: Expr)(translator: Translator) : MetaM <| Option (
 def getTypeProofM (type: Expr)(translator: Translator) : MetaM <| Option (String × String × Option String) := do
   let prompt? ← proveAnonymousTheoremPrompt type
   prompt?.bindM fun (prompt, statement, defBlob?) => do
+    logInfo s!"prompt: {prompt}"
     let messages ← mkMessages prompt #[] (← sysPrompt)
+    logInfo s!"messages: {messages}"
     let fullJson ←  translator.server.query messages translator.params
+    logInfo s!"fullJson: {fullJson}"
     let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
     let contents ← getMessageContents outJson

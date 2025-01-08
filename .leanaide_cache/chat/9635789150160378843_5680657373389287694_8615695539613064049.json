@@ -1,0 +1,95 @@
+{"usage":
+ {"total_tokens": 2575,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 2170,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 405},
+ "system_fingerprint": "fp_7f6be3efb0",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-AYRI0gA0vaJJ963LRdjFlPZEyPrsu",
+ "created": 1732771416,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (n : ℕ), Finset.card {k | k < n ∧ Odd k} = Finset.card {k | k < n ∧ Even k}"},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (n : ℕ), Fintype.card {k : ℕ // k ≤ 2 * n ∧ Even k} = Fintype.card {k : ℕ // k ≤ 2 * n + 1 ∧ Odd k}"},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (n : ℕ), Finset.card { m ∈ Finset.range (2 * n) | Even m } = Finset.card { m ∈ Finset.range (2 * n) | Odd m }"},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (n : ℕ), Nat.card { k | k < 2 * n ∧ Even k } = Nat.card { k | k < 2 * n ∧ Odd k }"},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (n : ℕ), Finset.card {k | k < n ∧ Even k} = Finset.card {k | k < n ∧ Odd k}"},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (n : ℕ), ∃ f : ℕ → ℕ, Bijective f ∧ (∀ k, Even (f k) ↔ Odd k)"},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "∀ n : ℕ, (∃ m, 2 * m = n) ↔ (∃ k, 2 * k + 1 = n)"},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (n : ℕ), Nat.card {m | m < n ∧ Even m} = Nat.card {m | m < n ∧ Odd m}"},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (n : ℕ), ∃ (f : {k // k < n} → {k // k < n}), Function.Bijective f ∧ ∀ k, Even k ↔ Odd (f k)"},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (n : ℕ), Finset.card (Finset.filter Even (Finset.range (2 * n))) = Finset.card (Finset.filter Odd (Finset.range (2 * n)))"},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"}]}

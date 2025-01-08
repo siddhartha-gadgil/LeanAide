@@ -2,6 +2,7 @@ import Lean
 import Mathlib
 import LeanAide.AesopSyntax
 import LeanAide.CheckedSorry
+import LeanAide.Aides
 open LeanAide.Meta Lean Meta Elab
 
 open Lean Meta Tactic Parser.Tactic
@@ -9,12 +10,17 @@ open Lean Meta Tactic Parser.Tactic
 namespace LeanAide
 
 def powerTactics : CoreM <| List <| TSyntax ``tacticSeq := do
-  return [← `(tacticSeq| omega), ← `(tacticSeq| ring), ← `(tacticSeq| linarith), ← `(tacticSeq| norm_num), ← `(tacticSeq| positivity), ← `(tacticSeq| gcongr), ←`(tacticSeq| contradiction)]
+  return [← `(tacticSeq| ring),← `(tacticSeq| omega),  ← `(tacticSeq| linarith)
+  -- , ← `(tacticSeq| norm_num), ← `(tacticSeq| positivity), ← `(tacticSeq| gcongr), ←`(tacticSeq| contradiction)
+  ]
 
 def powerRules (weight sorryWeight strongSorryWeight: Nat) : MetaM <| List <| TSyntax `Aesop.rule_expr := do
   let tacs ← powerTactics
   let rules ← tacs.mapM fun tac => AesopSyntax.RuleExpr.ofTactic tac (some weight)
-  return rules ++ [← AesopSyntax.RuleExpr.sorryRule sorryWeight, ← AesopSyntax.RuleExpr.strongSorryRule strongSorryWeight]
+  if sorryWeight == 0 then
+    return rules
+  else
+    return rules ++ [← AesopSyntax.RuleExpr.sorryRule sorryWeight, ← AesopSyntax.RuleExpr.strongSorryRule strongSorryWeight]
 
 def suggestionRules (names: List Name) (weight: Nat := 90)
     (rwWeight: Nat := 50) : MetaM <| List <| TSyntax `Aesop.rule_expr := do
@@ -36,12 +42,30 @@ syntax (name := auto_aesop) "auto?" (ppSpace "[" ident,* "]")? : tactic
 unless (← getGoals).isEmpty do
   match stx with
   | `(tactic| auto?) => do
-    let tac ← aesopTactic 90 50 10
-    evalTactic tac
+    let tac ← aesopTactic 90 0 0
+    -- logInfo m!"auto tactic: {← PrettyPrinter.ppTactic tac}"
+    let (_, goals) ← evalTacticSafe tac
+    if goals == 0 then
+      return ()
+    let tac ← aesopTactic 90 20 10
+    let (check, _) ← evalTacticSafe tac
+    unless check do
+      let tac ← `(tactic|sorry)
+      evalTactic tac
   | `(tactic| auto? [$names,*]) => do
     let names := names.getElems.map fun n => n.getId
-    let tac ← aesopTactic 90 50 10 names.toList
-    evalTactic tac
+    let tac ← aesopTactic 90 0 0 names.toList
+    trace[leanaide.codegen.info] s!"auto tactic: {← PrettyPrinter.ppTactic tac}"
+    -- logInfo m!"auto tactic: {← PrettyPrinter.ppTactic tac}"
+    let (_, goals) ← evalTacticSafe tac
+    if goals == 0 then
+      return ()
+    let tac ← aesopTactic 90 20 10 names.toList
+    trace[leanaide.codegen.info] s!"auto tactic: {← PrettyPrinter.ppTactic tac}"
+    let (check, _) ← evalTacticSafe tac
+    unless check do
+      let tac ← `(tactic|sorry)
+      evalTactic tac
   | _ => throwUnsupportedSyntax
 
 elab "#note" "[" term,* "]" : command => do

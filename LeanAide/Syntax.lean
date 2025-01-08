@@ -94,14 +94,14 @@ syntax (name:= textProof) withPosition("#proof" ppLine (str <|> proofBody)) : ta
 
 open Tactic
 @[tactic textProof] def textProofImpl : Tactic :=
-  fun _ => do
+  fun _ => withMainContext do
   evalTactic (← `(tactic|sorry))
 
 example : True := by
   #proof "trivial"
 
 open Tactic Translator
-elab "what" : tactic => do
+elab "what" : tactic => withMainContext do
   let goal ← getMainGoal
   let type ← relLCtx goal
   logInfo m!"goal : {type}"
@@ -111,11 +111,12 @@ elab "what" : tactic => do
   logInfo transl
 
 syntax (name:= whyTac) "why" : tactic
-@[tactic whyTac] def whyTacImpl : Tactic := fun stx => do
+@[tactic whyTac] def whyTacImpl : Tactic := fun stx => withMainContext do
   let goal ← getMainGoal
   let type ← relLCtx goal
   logInfo m!"goal : {type}"
-  let some (transl, _, _) ← getTypeProofM type {} | throwError "No description from LLM"
+  let some (transl, _, _) ← getTypeProofM type {} |
+            throwError "No description from LLM"
   logInfo m!"Theorem and proof: {transl}"
   -- let pfStx := Syntax.mkStrLit proof[0]!
   -- let proofTac ← `(tactic| #proof $pfStx)
