@@ -52,7 +52,7 @@ def nearestDocsToDocFullEmbeddingConc (data : EmbedData)
 def embedQuery (doc: String) : IO <| Except String Json := do
   let key ← openAIKey
   let dataJs := Json.mkObj
-      [("input", doc), ("model", "text-embedding-ada-002")]
+      [("input", doc), ("model", "text-embedding-3-small")]
   let data := dataJs.pretty
   let out ←  Cache.IO.runCurl #["https://api.openai.com/v1/embeddings",
         "-H", "Authorization: Bearer " ++ key,
