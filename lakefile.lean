@@ -189,5 +189,4 @@ lean_exe extras.depnames{
 
 
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git"@"933ad54"
-  -- using newer version because of proofwidgets fix
+  "https://github.com/leanprover-community/mathlib4.git"@"v4.15.0"
