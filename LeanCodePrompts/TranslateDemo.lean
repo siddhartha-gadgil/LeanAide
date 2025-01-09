@@ -10,6 +10,3 @@ set_option lean_aide.translate.greedy true
 #theorem "There are infinitely many odd numbers"
 
 #ask "Prove that there are infinitely many even numbers"
-
-example (n: Nat) : Even n → ∃ k, 2 * k = n := by
-  sorry
