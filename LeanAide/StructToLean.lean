@@ -705,6 +705,9 @@ mutual
 
 end
 
+#check MVarId.induction
+#check InductionSubgoal
+
 
 def structToCommandSeq? (context: Array Json)
     (input: Json) (qp: CodeGenerator) : TranslateM <| Option <| Array Syntax.Command := do
