@@ -6,7 +6,13 @@ def llmDir := FilePath.mk "llm_data"
 def resources := FilePath.mk "resources"
 
 def promptTemplates : IO Json := do
-  let path := resources / "templates.json"
+  let path : System.FilePath := resources / "templates.json"
+  let path ← if (← path.pathExists) then
+    pure path
+    else
+      let p : System.FilePath :=
+        ".lake" / "packages" / "leanaide" / "resources" / "templates.json"
+      pure p
   let js ← IO.FS.readFile path
   match Json.parse js with
   | Except.ok j => return j
@@ -15,6 +21,12 @@ def promptTemplates : IO Json := do
 
 def componentTemplates : IO Json := do
   let path := resources / "component_templates.json"
+  let path ← if (← path.pathExists) then
+    pure path
+    else
+      let p : System.FilePath :=
+        ".lake" / "packages" / "leanaide" / "resources" / "component_templates.json"
+      pure p
   let js ← IO.FS.readFile path
   match Json.parse js with
   | Except.ok j => return j
