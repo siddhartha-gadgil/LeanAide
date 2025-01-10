@@ -411,7 +411,10 @@ end MathParaStructure
 
 -- #eval MathParaStructure.mathDoc.suppressed (maxDepth := 4) |>.eraseDups |>.map (·.name)
 
-def writeMathDoc : IO Unit :=
+def writeMathDoc : IO Unit := do
+  let dir : System.FilePath := "resources"
+  if !(← dir.pathExists) then
+        IO.FS.createDirAll dir
   IO.FS.writeFile "resources/MathDoc.md"
     (MathParaStructure.mathDoc.toIndendentList |>.render)
 
