@@ -191,11 +191,11 @@ def Translator.getMessages (s: String) (translator : Translator)
 def Translator.getLeanCodeJson (s: String)
     (translator : Translator)(header: String := "Theorem") : TranslateM <| Json × Json × Array (String × Json) := do
   logTimed s!"translating string `{s}` with  examples"
-  IO.eprintln s!"translating string `{s}` with  examples"
+  -- IO.eprintln s!"translating string `{s}` with  examples"
   setContext s
   match ← getCachedJson? s with
   | some js =>
-    IO.eprintln s!"cached json found"
+    -- IO.eprintln s!"cached json found"
     return js
   | none =>
     let pending ←  pendingJsonQueries.get
@@ -207,7 +207,7 @@ def Translator.getLeanCodeJson (s: String)
       let (messages, docPairs) ← translator.getMessages s header
       trace[Translate.info] m!"prompt: \n{messages.pretty}"
       logTimed "querying server"
-      IO.eprintln s!"querying server"
+      -- IO.eprintln s!"querying server"
       let fullJson ← translator.server.query messages translator.params
       let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])

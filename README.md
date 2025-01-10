@@ -56,15 +56,26 @@ If you import `LeanAide` and `Mathlib` to a file, the translation will be availa
 
 ## Contributions and details
 
-This is joint work by our team, 
+The principal author of this repository is [Siddhartha Gadgil](https://math.iisc.ac.in/~gadgil/).
 
-* Siddhartha Gadgil
+The first phase of this work (roughly June 2022-October 2023) was done in collaboration with:
+
 * Anand Rao Tadipatri
 * Ayush Agrawal
 * Ashvni Narayanan
 * Navin Goyal
 
-with a lot of help from the Lean community and from collaborators at Microsoft Research. Our server is hosted with support from research credits from Google.
+We had a lot of help from the Lean community and from collaborators at Microsoft Research. Our server is hosted with support from research credits from Google.
+
+More recently (since about October 2024) the work has been done in collaboration with:
+
+* Anirudh Gupta
+* Vaishnavi Shirsath
+* Ajay Kumar Nair
+* Malhar Patel
+* Sushrut Jog
+
+This is supported by ARCNet, ART-PARK, IISc.
 
 Our work is described in a [note](https://mathai2022.github.io/papers/17.pdf) at the [2nd Math AI workshop](https://mathai2022.github.io/papers/) and in more detail (along with related work) in a [preprint](https://arxiv.org/abs/2211.07524).
 

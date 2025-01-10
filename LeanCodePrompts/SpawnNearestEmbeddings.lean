@@ -10,6 +10,7 @@ def getNearestEmbeddingsExe
   let exePath := System.mkFilePath [".", ".lake", "build", "bin", "nearest_embeddings"]
   if !(← exePath.pathExists) then
     let _ ←  IO.Process.run {cmd := "lake", args := #["build",  "nearest_embeddings"], cwd := "."}
+  let exePath ← reroutePath exePath
   let cmd := exePath.toString
   -- let child ← getNearestEmbeddingsFullProcess
   -- let stdin := child.stdin

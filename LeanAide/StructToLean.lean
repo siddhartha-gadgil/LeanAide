@@ -433,16 +433,44 @@ def contradictionTactics (statement: String)
   return #[←
     `(tactic| have $statementId : $statementTerm':term → $falseId := by $fullPf*), ← `(tactic| auto?)]
 
+
 -- Does not work for multiple variables together
-partial def existsVars (type: Syntax.Term) : MetaM <| Option (Array Syntax.Term) :=
+partial def existsVars (type: Syntax.Term) : MetaM <| Option (Array Syntax.Term) := do
   match type with
   | `(∃ $n:ident, $t) => do
     return some <| #[n] ++ ((← existsVars t).getD #[])
   | `(∃ ($n:ident: $_), $t) => do
     return some <| #[n] ++ ((← existsVars t).getD #[])
-  | _ => return none
+  | `(∃ $n:ident: $_, $t) => do
+    return some <| #[n] ++ ((← existsVars t).getD #[])
+  | `(∃ $n:ident $ms*, $t) => do
+    let ms' := ms.toList.toArray
+    let t' ← `(∃ $ms':binderIdent*, $t)
+    return some <| #[n] ++ ((← existsVars t').getD #[])
+  | `(∃ ($n:ident $ms* : $type), $t) => do
+    let ms' := ms.toList.toArray
+    let t' ← `(∃ ($ms':binderIdent* : $type), $t)
+    return some <| #[n] ++ ((← existsVars t').getD #[])
+  | `(∃ $n:ident $ms* : $type, $t) => do
+    let ms' := ms.toList.toArray
+    let t' ← `(∃ ($ms':binderIdent* : $type), $t)
+    return some <| #[n] ++ ((← existsVars t').getD #[])
+  | _ =>
+    logInfo s!"No vars in {type}, i.e., {← ppTerm {env := ← getEnv} type}"
+    return none
 
-#check Syntax.SepArray
+
+elab "#exists_vars" type:term : command => do
+  Command.liftTermElabM do
+  match ← existsVars type with
+  | some vars =>
+      logInfo s!"Vars: {vars}"
+      return
+  | none =>
+      logInfo s!"No vars"
+      return
+
+-- #exists_vars ∃ n m : Nat, ∃ k: Nat, n + m  = 3
 
 example (h : ∃ l n m : Nat, l + n + m = 3) : True := by
   let ⟨l, ⟨n, ⟨m, h⟩⟩⟩  := h
@@ -457,9 +485,7 @@ def haveForAssertion  (type: Syntax.Term)
   let tac ← `(tacticSeq| auto? [$ids,*])
   match ← existsVars type with
     | some vars =>
-      let mut lhs : Syntax.Term ← `($name)
-      for var in vars.reverse do
-        lhs ← `(⟨$var, $lhs⟩)
+      let lhs ← `(⟨[$vars:term,*], $name⟩)
       `(tactic| have $lhs:term : $type  := by $tac:tacticSeq)
     | none =>
       `(tactic| have $name : $type := by $tac:tacticSeq)
@@ -678,6 +704,9 @@ mutual
         structToTactics (accum ++ headTactics) (context.push head) tail qp goal?
 
 end
+
+#check MVarId.induction
+#check InductionSubgoal
 
 
 def structToCommandSeq? (context: Array Json)

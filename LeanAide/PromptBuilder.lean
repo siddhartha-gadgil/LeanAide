@@ -216,7 +216,7 @@ def getPromptPairsOrdered (pb: PromptExampleBuilder)
     let file : System.FilePath :=
       ".leanaide_cache"/ "prompt" / s!"{hash pb}_{hash query}.json"
     if (← file.pathExists) then
-      IO.eprintln s!"Getting prompt pairs from cache: {file}"
+      -- IO.eprintln s!"Getting prompt pairs from cache: {file}"
       let js ← IO.FS.readFile file
       match Json.parse js with
       | Except.error e =>
@@ -236,7 +236,7 @@ def getPromptPairsOrdered (pb: PromptExampleBuilder)
         | Except.ok pairs  =>
           return pairs
     else do
-      IO.eprintln s!"Getting prompt pairs, no cache"
+      -- IO.eprintln s!"Getting prompt pairs, no cache"
       let pairs ← getPromptPairsOrderedAux pb query
       let js := toJson pairs
       IO.FS.writeFile file js.compress
