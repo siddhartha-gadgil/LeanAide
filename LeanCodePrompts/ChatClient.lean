@@ -545,22 +545,22 @@ def structuredProofFromStatement (server: ChatServer)
   theories.mapM fun (pf, thmPf) => do
     pure (pf, ← structuredProof server thmPf)
 
-@[deprecated structuredProof]
-def structuredProofFull (server: ChatServer)
-  (pf: String)(n: Nat := 1)
-  (params: ChatParams := {n := n, stopTokens := #[]})
-  (examples: Array ChatExample := #[]): CoreM (Array Json) := do
-  let queryString ← structuredProofQueryFull pf
-  let outs ← ChatServer.mathCompletions server queryString n params examples
-  return outs.map extractJson
+-- @[deprecated structuredProof]
+-- def structuredProofFull (server: ChatServer)
+--   (pf: String)(n: Nat := 1)
+--   (params: ChatParams := {n := n, stopTokens := #[]})
+--   (examples: Array ChatExample := #[]): CoreM (Array Json) := do
+--   let queryString ← structuredProofQueryFull pf
+--   let outs ← ChatServer.mathCompletions server queryString n params examples
+--   return outs.map extractJson
 
-@[deprecated structuredProof]
-def make_structured (server: ChatServer)
-  (text: String)(n: Nat := 3)
-  (params: ChatParams := {n := n, stopTokens := #[]})
-  (examples: Array ChatExample := #[]): CoreM (Array String) := do
-  let queryString ← fromTemplate "make_structured" [("text", text)]
-  ChatServer.mathCompletions server queryString n params examples
+-- @[deprecated structuredProof]
+-- def make_structured (server: ChatServer)
+--   (text: String)(n: Nat := 3)
+--   (params: ChatParams := {n := n, stopTokens := #[]})
+--   (examples: Array ChatExample := #[]): CoreM (Array String) := do
+--   let queryString ← fromTemplate "make_structured" [("text", text)]
+--   ChatServer.mathCompletions server queryString n params examples
 
 def informalize (server: ChatServer)
   (code: String)(n: Nat := 3)

@@ -167,7 +167,7 @@ def needsInd (name: Name) : MetaM <| Option (List Name) := do
         else return none
     | _ => return none
 
-#eval describeTheoremPrompt ``List.length_concat
+-- #eval describeTheoremPrompt ``List.length_concat
 
 -- #eval describeTheoremPrompt ``Nat.le_succ
 
