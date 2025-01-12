@@ -40,7 +40,7 @@ syntax (name := thmCommand) "#theorem" (ident)? (":")? str : command
         let namesArr ←  translator.server.mathCompletions query 1
         let llm_name := namesArr.get! 0 |>.replace "`" ""
           |>.replace "\""  "" |>.trim
-        logInfo llm_name
+        -- logInfo llm_name
         pure llm_name.toName
       let name := mkIdent name
       let cmd ← `(command| theorem $name : $stx' := by sorry)
