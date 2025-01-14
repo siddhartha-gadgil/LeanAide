@@ -20,7 +20,16 @@ partial def showSyntax : Syntax → String
 | Lean.Syntax.ident _ _ val _ => val.toString
 | _ => ""
 
-def leanAidePath : System.FilePath := ".lake" /"packages" /"leanaide/"
+def leanAidePath : System.FilePath := ".lake" /"packages" /"leanaide"
+
+def cachePath : IO System.FilePath := do
+  let path : System.FilePath :=  ".leanaide_cache"
+  if ← path.pathExists then
+    return path
+  else
+    return leanAidePath / path
+
+#eval cachePath
 
 def reroutePath (fp : System.FilePath) : IO System.FilePath := do
   if ← fp.pathExists then
