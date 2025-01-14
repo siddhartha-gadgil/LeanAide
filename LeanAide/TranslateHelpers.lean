@@ -38,13 +38,13 @@ elab "ex_uniq" t:term : term => do
   let type ← elabType newTerm
   return type
 
-#check ex_uniq (∃! (x y : Nat), x + y = 0)
+-- #check ex_uniq (∃! (x y : Nat), x + y = 0)
 
-set_option pp.funBinderTypes true
-#check ex_uniq (∃! (x y : Nat), x + y = 0)
+-- set_option pp.funBinderTypes true
+-- #check ex_uniq (∃! (x y : Nat), x + y = 0)
 
-#check ex_uniq (∀ n: Nat, (∃! (x y : Nat), x + y = n))
+-- #check ex_uniq (∀ n: Nat, (∃! (x y : Nat), x + y = n))
 
 
-#check ex_uniq (∀ n: Nat, (∃! (x y : Nat), x + y = n
-  ∧ (∃! (z w : Nat), z + w = x + y)))
+-- #check ex_uniq (∀ n: Nat, (∃! (x y : Nat), x + y = n
+--   ∧ (∃! (z w : Nat), z + w = x + y)))
