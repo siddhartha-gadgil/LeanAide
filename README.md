@@ -6,17 +6,13 @@ LeanAide or Lean**AI**de (accidental pun) is work in progress to build AI based 
 
 ## Quickstart: translation to Lean statements
 
-Build this repository with the following commands:
+Build this repository and fetch pre-loaded embeddings with the following commands:
 
 ```bash
 lake exe cache get # download prebuilt mathlib binaries
 lake build mathlib
 lake build
-```
-You also need to download pre-built embeddings for the translation model. This can be done with the following shell command (the lean command `lake exe fetch_embeddings` is supposed to work but is error-prone).:
-
-```bash
-./fetch.sh
+lake exe fetch_embeddings
 ```
 
 Our translation is based on GPT 3.5-turbo/GPT 4, to use which you need an OpenAI key. To get started please configure environment variables using the following bash commands or equivalent in your system at the base of the repository (the angle brackets are **not** to be included in the command), and then launch VS code. 
@@ -38,18 +34,20 @@ Alternatively, you can translate a statement using the following command in the 
 lake exe translate "There are infinitely many primes"
 ```
 
-Using in your own project still involves some issues which we are working on (because of matching of toolchains being needed). Include this project as a dependency in `lakefile.lean` using the following.
+### Using as a dependency
+
+Using in your own project still involves some issues, for example it is slow. 
+
+As we use precompiled embeddings, we must have toolchains matching. For using with `v4.15.0` (so far the only version supported), include this project as a dependency in `lakefile.lean` using the following (or use the equivalent in `lakefile.toml`):
 
 ```lean
 require LeanCodePrompts from git "https://github.com/siddhartha-gadgil/LeanAide"@"main"
 ```
 
-The run from bash the following statements to download the prebuilt embeddings.
+The run from a terminal the following to download the prebuilt embeddings.
 
 ```bash
-curl --output .lake/build/lib/mathlib4-concise-description-embeddings-v4.15.0-rc1.olean https://storage.googleapis.com/leanaide_data/mathlib4-concise-description-embeddings-v4.15.0-rc1.olean
-curl --output .lake/build/lib/mathlib4-description-embeddings-v4.15.0-rc1.olean https://storage.googleapis.com/leanaide_data/mathlib4-description-embeddings-v4.15.0-rc1.olean
-curl --output .lake/build/lib/mathlib4-prompts-embeddings-v4.15.0-rc1.olean https://storage.googleapis.com/leanaide_data/mathlib4-prompts-embeddings-v4.15.0-rc1.olean
+lake exe fetch_embeddings
 ```
 
 If you import `LeanAide` and `Mathlib` to a file, the translation will be available.
