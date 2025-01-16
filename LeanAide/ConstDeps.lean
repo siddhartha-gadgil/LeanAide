@@ -3,6 +3,7 @@ import Lean.Meta
 import Init.System
 import LeanAide.Aides
 import LeanAide.StatementSyntax
+import LeanAide.DefData
 open Lean Meta Elab
 
 set_option synthInstance.maxHeartbeats 1000000
@@ -219,17 +220,6 @@ def nameValueDocs (consts: Array Name) : MetaM (Array (Name × Expr ×  Option S
     fun (name, _, _)  ↦ !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name))
   return names
 
-
-structure DefDataRepr where
-    name: Name
-    type: String
-    isProp : Bool
-    isNoncomputable : Bool
-    docString? : Option String
-    value? : Option String
-    statement : String
-    deriving Repr, ToJson, FromJson
-
 structure ConstructorTypes where
     name: Name
     induc : Name
@@ -316,7 +306,7 @@ def getWriteCore : CoreM ((Array DefDataRepr) × (Std.HashMap Name (String × St
     (getWriteM).run'
 
 def withDoc (dfn: DefDataRepr) : String :=
-  match dfn.docString? with
+  match dfn.doc? with
   | some doc => s!"/-- {doc} -/\n{dfn.statement}"
   | none => dfn.statement
 
@@ -392,7 +382,7 @@ def writeDocsM : MetaM <| Json := do
   let dfns ← DefDataRepr.getM
   IO.println s!"Total: {dfns.size}"
   DefDataRepr.writeM dfns
-  let dfns := dfns.filter (fun d => d.docString?.isSome)
+  let dfns := dfns.filter (fun d => d.doc?.isSome)
   IO.println s!"Total: {dfns.size}"
   DefDataRepr.writeM dfns "docs.jsonl"
   return Json.arr <| dfns.map toJson

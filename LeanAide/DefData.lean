@@ -44,6 +44,17 @@ structure DefData where
     doc? : Option String := none
     deriving Inhabited,  Repr
 
+structure DefDataRepr where
+    name: Name
+    type: String
+    isProp : Bool
+    isNoncomputable : Bool
+    doc? : Option String
+    value? : Option String
+    statement : String
+    deriving Repr, ToJson, FromJson
+
+
 namespace DefData
 
 def statement (data: DefData)(omitProofs: Bool := true) :
@@ -136,6 +147,10 @@ def ofSyntax? (stx: Syntax) : MetaM <| Option DefData := do
         let isProp := true
         return some ⟨name, type, value, isProp, false, none⟩
     | _ => return none
+
+def repr (data: DefData) : MetaM DefDataRepr := do
+    let statement ← data.statement
+    return {name := data.name, type := (← ppTerm data.type).pretty, isProp := data.isProp, isNoncomputable := data.isNoncomputable, doc? := data.doc?, value? := (← ppTerm data.value).pretty, statement := statement}
 
 def jsonView (data: DefData) : MetaM Json := do
     return Json.mkObj [("name", toJson data.name),

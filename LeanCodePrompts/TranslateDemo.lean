@@ -4,12 +4,7 @@ import LeanAide.Syntax
 
 set_option lean_aide.translate.greedy true
 
-/-- If a vector space has dimension `2` then it is finite dimensional. -/
-theorem silly :
-    ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V]
-      [inst_2 : Module K V], Module.rank K V = 2 → FiniteDimensional K V :=
-  by sorry
-
+#theorem silly "If a vector space has dimension `2` then it is finite dimensional"
 
 #theorem "There are infinitely many odd numbers"
 
