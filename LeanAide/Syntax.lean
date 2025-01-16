@@ -46,6 +46,10 @@ syntax (name := thmCommand) "#theorem" (ident)? (":")? str : command
       let cmd ← `(command| theorem $name : $stx' := by sorry)
       TryThis.addSuggestion stx cmd
       logTimed "added suggestion"
+      let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom (s ++ " -/")]
+      let cmd ←
+        `(command| $docs:docComment theorem $name:ident : $stx' := by sorry)
+      TryThis.addSuggestion stx cmd (header := "Try This (with docstring): ")
       return
     else
       logWarning "To translate a theorem, end the string with a `.`."
