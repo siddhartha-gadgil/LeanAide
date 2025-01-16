@@ -166,7 +166,7 @@ syntax (name:= whyTac) "why" : tactic
   let proofTac : Syntax.Tactic := ⟨mkProofStx transl⟩
   TryThis.addSuggestion stx proofTac
 
-syntax (name:= addDocs) "#doc" "theorem" ident declSig declVal : command
+syntax (name:= addDocs) "#doc" command : command
 
 open Command in
 @[command_elab addDocs] def elabAddDocsImpl : CommandElab := fun stx =>

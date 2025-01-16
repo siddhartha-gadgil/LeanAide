@@ -23,7 +23,7 @@ def theoremAndDefs (name: Name) (depth: Nat := 2) : MetaM <|
           | none => statement
         let defNames ← defsInTypeRec name type depth
         let defs ←  defNames.filterMapM <| fun n =>
-          DefnTypes.defFromName? n
+          DefDataRepr.defFromName? n
         let defViews := defs.map <| fun df => df.withDoc
         let defViews := defViews.filter fun df => df.length < 600
         return some (statement, defViews.toList)
@@ -154,7 +154,7 @@ def needsInd (name: Name) : MetaM <| Option (List Name) := do
           mkStatement (some name) typeStx valueStx? true
         let defNames := idents typeStx |>.eraseDups
         let defs ←  defNames.filterMapM <| fun n =>
-          DefnTypes.defFromName? n.toName
+          DefDataRepr.defFromName? n.toName
         if defs.isEmpty then
           let inds ←  defNames.filterMapM <| fun n =>
             InductiveTypes.fromName? n.toName
