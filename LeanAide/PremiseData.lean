@@ -1,8 +1,7 @@
 import Lean
 import LeanAide.Aides
--- import LeanAide.ConstDeps
-import LeanAide.Using
 import LeanAide.StatementSyntax
+import LeanAide.DefData
 
 /-!
 # Premise data
@@ -107,32 +106,6 @@ def getBinders : List Syntax → MetaM (Option (List ContextTerm))
             return some (s :: t)
         | _ => return none
 
-def foldContext (type: Syntax.Term) : List Syntax → CoreM (Syntax.Term)
-| [] => return type
-| x :: ys => do
-    let tailType ← foldContext type ys
-    match x with
-    | `(letDecl|$n:ident : $type := $val) => do
-        `(let $n : $type := $val; $tailType)
-    | `(funBinder|($n:ident : $type:term)) => do
-        `(($n : $type) → $tailType)
-    | `(funImplicitBinder |{$n:ident : $type:term}) => do
-        `({$n : $type} → $tailType)
-    | `(funBinder|(_ : $type:term)) => do
-        `((_ : $type) → $tailType)
-    | `(funImplicitBinder|{_ : $type:term}) => do
-        `({_ : $type} → $tailType)
-    | `(instBinder|[$n:ident : $type:term]) => do
-        `([$n : $type] → $tailType)
-    | `(instBinder|[$type:term]) => do
-        `([$type] → $tailType)
-    | `(bracketedBinderF|⦃$n:ident : $type:term⦄) => do
-        `(($n : $type) → $tailType)
-    | `(bracketedBinderF|($n:ident : $type:term)) => do
-        `(($n : $type) → $tailType)
-    | _ =>
-        IO.println s!"foldContext: {x}, i.e., {x.reprint.get!} could not be folded"
-        return type
 
 #check Term.explicitBinder
 
@@ -550,16 +523,6 @@ def write (data: PremiseData)(group: String)
 end PremiseData
 
 
-/--
-Data associated to a definition. This was originally intended to be used for tracking premises but is also used ignoring a few parameters as *syntax* data for a definition.
--/
-structure DefData where
-    name : Name
-    type : Syntax.Term
-    value : Syntax.Term
-    isProp : Bool
-    isNoncomputable : Bool
-    deriving Inhabited,  Repr
 
 structure DefPremiseData extends DefData where
     typeDepth : Option Nat
@@ -567,94 +530,7 @@ structure DefPremiseData extends DefData where
     premises : List PremiseData -- empty if depth exceeds bound
     deriving Inhabited,  Repr
 
-def DefData.statement (data: DefData)(omitProofs: Bool := true) :
-        CoreM String := do
-    let value? := if omitProofs && data.isProp then none else some data.value
-    mkStatement (some data.name) data.type value? data.isProp (isNoncomputable := data.isNoncomputable)
-
-def DefData.statementWithDoc (data: DefData)(doc: String)
-    (omitProofs: Bool := true)(useExample: Bool := true) :
-        CoreM String := do
-    let value? := if omitProofs && data.isProp then none else some data.value
-    mkStatementWithDoc
-        (some data.name) data.type value? data.isProp useExample doc data.isNoncomputable
-
--- incorrect
--- def relType (xs:  List (TSyntax [`ident, `Lean.Parser.Term.hole, `Lean.Parser.Term.bracketedBinder])) (type: Syntax.Term) : MetaM Syntax.Term := do
---     match xs with
---     | [] => return type
---     | h :: t =>
---         let prev ← relType t type
---         `(h → $prev)
-
-open Elab Term  in
-def DefData.toDeclaration (data: DefData) : TermElabM Declaration := do
-    let typeExpr ← elabType data.type
-    let valueExpr ← elabTerm data.value typeExpr
-    let valueExpr ← instantiateMVars valueExpr
-    let typeExpr ← instantiateMVars typeExpr
-    Term.synthesizeSyntheticMVarsNoPostponing
-    -- logInfo s!"DefData.toDeclaration: {data.name} : {← PrettyPrinter.ppExpr typeExpr} := {← PrettyPrinter.ppExpr valueExpr}"
-    -- logInfo s!"Mvar? : {valueExpr.hasExprMVar}, {valueExpr.hasLevelMVar}"
-    -- logInfo s!"{repr valueExpr}"
-    let decl ← match data.isProp with
-    | true => do
-        let decl := .thmDecl {
-            name := data.name,
-            type := typeExpr,
-            value := valueExpr,
-            levelParams := []
-        }
-        return decl
-    | false => do
-        let decl := Declaration.defnDecl {
-            name := data.name,
-            levelParams := [],
-            type := typeExpr,
-            value := valueExpr,
-            hints := ReducibilityHints.abbrev,
-            safety := DefinitionSafety.safe
-        }
-        -- logInfo s!"DefData.toDeclaration: {data.name} : {data.type} := {data.value}"
-        return decl
-
-def DefData.addDeclaration (data: DefData) : TermElabM Unit := do
-    let decl ← data.toDeclaration
-    addAndCompile decl
-
-
-def DefData.ofSyntax? (stx: Syntax) : MetaM <| Option DefData := do
-    match stx with
-    | `(command| def $n:ident $xs* : $type := $val) => do
-        let type ← foldContext type xs.toList
-        let name := n.getId
-        let type := type
-        let value := val
-        let isProp := false
-        return some ⟨name, type, value, isProp, false⟩
-    | `(command| noncomputable def $n:ident $xs* : $type := $val) => do
-        let type ← foldContext type xs.toList
-        let name := n.getId
-        let type := type
-        let value := val
-        let isProp := false
-        return some ⟨name, type, value, isProp, true⟩
-    | `(command| theorem $n:ident $xs* : $type := $val) =>
-        let type ← foldContext type xs.toList
-        let name := n.getId
-        let type := type
-        let value := val
-        let isProp := true
-        return some ⟨name, type, value, isProp, false⟩
-    | _ => return none
-
-def DefData.jsonView (data: DefData) : MetaM Json := do
-    return Json.mkObj [("name", toJson data.name),
-    ("type", toJson (← ppTerm data.type).pretty),
-    ("value", toJson (← ppTerm data.value).pretty),
-    ("isProp", toJson data.isProp)]
-
-def DefData.ofNameM (name: Name) : MetaM DefPremiseData := do
+def DefPremiseData.ofNameM (name: Name) : MetaM DefPremiseData := do
     let decl ← getConstInfo name
     let type ← instantiateMVars decl.type
     let value ← instantiateMVars decl.value!
@@ -667,7 +543,10 @@ def DefData.ofNameM (name: Name) : MetaM DefPremiseData := do
     | _ => false
     let typeDepth := type.approxDepth.toNat
     let valueDepth := value.approxDepth.toNat
-    return {name := name, type := typeStx, value := valueStx, isProp := isProp, isNoncomputable := nc, typeDepth := typeDepth, valueDepth := valueDepth, premises := []}
+    let doc? ← findDocString? (← getEnv) name
+    return {name := name, type := typeStx, value := valueStx, isProp := isProp, isNoncomputable := nc, doc? := doc?, typeDepth := typeDepth, valueDepth := valueDepth, premises := []}
+
+
 
 structure IdentData where
     context : Array String
