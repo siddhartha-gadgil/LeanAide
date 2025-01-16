@@ -578,6 +578,9 @@ structure DefData where
     value : Syntax.Term
     isProp : Bool
     isNoncomputable : Bool
+    deriving Inhabited,  Repr
+
+structure DefPremiseData extends DefData where
     typeDepth : Option Nat
     valueDepth : Option Nat
     premises : List PremiseData -- empty if depth exceeds bound
@@ -647,27 +650,21 @@ def DefData.ofSyntax? (stx: Syntax) : MetaM <| Option DefData := do
         let type := type
         let value := val
         let isProp := false
-        let typeDepth := none
-        let valueDepth := none
-        return some ⟨name, type, value, isProp, false, typeDepth, valueDepth, []⟩
+        return some ⟨name, type, value, isProp, false⟩
     | `(command| noncomputable def $n:ident $xs* : $type := $val) => do
         let type ← foldContext type xs.toList
         let name := n.getId
         let type := type
         let value := val
         let isProp := false
-        let typeDepth := none
-        let valueDepth := none
-        return some ⟨name, type, value, isProp, true, typeDepth, valueDepth, []⟩
+        return some ⟨name, type, value, isProp, true⟩
     | `(command| theorem $n:ident $xs* : $type := $val) =>
         let type ← foldContext type xs.toList
         let name := n.getId
         let type := type
         let value := val
         let isProp := true
-        let typeDepth := none
-        let valueDepth := none
-        return some ⟨name, type, value, isProp, false, typeDepth, valueDepth, []⟩
+        return some ⟨name, type, value, isProp, false⟩
     | _ => return none
 
 def DefData.jsonView (data: DefData) : MetaM Json := do
@@ -676,7 +673,7 @@ def DefData.jsonView (data: DefData) : MetaM Json := do
     ("value", toJson (← ppTerm data.value).pretty),
     ("isProp", toJson data.isProp)]
 
-def DefData.ofNameM (name: Name) : MetaM DefData := do
+def DefData.ofNameM (name: Name) : MetaM DefPremiseData := do
     let decl ← getConstInfo name
     let type ← instantiateMVars decl.type
     let value ← instantiateMVars decl.value!
@@ -689,7 +686,7 @@ def DefData.ofNameM (name: Name) : MetaM DefData := do
     | _ => false
     let typeDepth := type.approxDepth.toNat
     let valueDepth := value.approxDepth.toNat
-    return ⟨name, typeStx, valueStx, isProp, nc, typeDepth, valueDepth, []⟩
+    return ⟨⟨name, typeStx, valueStx, isProp, nc⟩, typeDepth, valueDepth, []⟩
 
 structure IdentData where
     context : Array String
@@ -858,7 +855,7 @@ end TermPair
 def IdentData.filter (d: IdentData)(p : String → Bool) : IdentData :=
     {d with ids := d.ids.filter p}
 
-def DefData.identData (d: DefData) : CoreM <| List IdentData := do
+def DefPremiseData.identData (d: DefPremiseData) : CoreM <| List IdentData := do
     d.premises.mapM (fun p => do
         pure {
                 context:= ← p.context.mapM declToString

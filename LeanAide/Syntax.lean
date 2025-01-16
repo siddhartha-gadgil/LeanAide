@@ -60,9 +60,9 @@ syntax (name := defCommand) "#def"  str : command
   match stx with
   | `(command| #def $s:str) =>
     let s := s.getString
-    go s stx none
+    go s stx
   | _ => throwUnsupportedSyntax
-  where go (s: String) (stx: Syntax) (name? : Option Name) : TermElabM Unit := do
+  where go (s: String) (stx: Syntax) : TermElabM Unit := do
     if s.endsWith "." then
       let translator : Translator := {server := ← chatServer, pb := PromptExampleBuilder.embedBuilder (← promptSize) (← conciseDescSize) 0, params := ← chatParams}
       let cmd? ←
@@ -127,7 +127,8 @@ def mkTextStx (s: String) : Syntax :=
   fun stx => Command.liftTermElabM do
   match stx with
   | `(command| #text $t:proofBodyInit ∎) =>
-    let s := stx.getArgs[1]!.reprint.get!.trim
+    -- let s := stx.getArgs[1]!.reprint.get!.trim
+    return
   | _ => throwUnsupportedSyntax
 
 /-!

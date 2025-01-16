@@ -707,7 +707,7 @@ Translate a string to a Lean expression using the GPT model, returning three com
 * The prompt used for the LLM.
 -/
 def translateViewVerboseM (s: String)(translator : Translator) :   TranslateM ((Option TranslateSuccessResult) × Array String × Json) := do
-  let dataMap ← getEmbedMap
+  -- let dataMap ← getEmbedMap
   -- IO.eprintln s!"dataMap keys: {dataMap.toList.map Prod.fst}"
   let (js,prompt, _) ←
     translator.getLeanCodeJson s
