@@ -28,6 +28,10 @@ inductive ElabError : Type where
     (context? : Option String) : ElabError
 deriving Repr, ToJson, FromJson
 
+def ElabError.text : ElabError → String
+  | .unparsed text _ _ => text
+  | .parsed text _ _ _ => text
+
 instance : ToMessageData (ElabError) where
   toMessageData (err) := match err with
   | .unparsed text parseError _ => m!"Parsing error: {parseError} for {text}"
@@ -51,6 +55,22 @@ inductive CmdElabError : Type where
 | parsed (text : String) (cmdErrors : List String)
     (context? : Option String) : CmdElabError
 deriving Repr, ToJson, FromJson
+
+def CmdElabError.text : CmdElabError → String
+  | .unparsed text _ _ => text
+  | .parsed text _ _ => text
+
+def CmdElabError.fallback (errs : Array CmdElabError) :
+    MetaM String := do
+  let bestParsed? := errs.findSome? (fun e => do
+    match e with
+    | CmdElabError.parsed e .. => some e
+    | _ => none)
+  match bestParsed? with
+  | some e => return e
+  | none => match errs.get? 0 with
+    | some e => return e.text
+    | _ => throwError "no outputs found"
 
 /--
 Result of translating a definition.

@@ -324,7 +324,7 @@ def greedyBestExpr? (output: Array String) : TranslateM (Option Expr) := do
 /--
 Pick the first elaboration that succeeds, accumulating errors.
 -/
-def greedyStrictBestExpr? (output: Array String) :
+def greedyBestExprWithErr? (output: Array String) :
     TranslateM (Except (Array ElabError) Expr) := do
   let mut errs : Array ElabError := #[]
   for out in output do
@@ -449,6 +449,36 @@ def jsonToExpr' (json: Json)(greedy: Bool)(splitOutput := false) : TranslateM Ex
   else
     bestElab output
 
+def ElabError.fallback (errs : Array ElabError) :
+    TranslateM String := do
+  let bestParsed? := errs.findSome? (fun e => do
+    match e with
+    | ElabError.parsed e .. => some e
+    | _ => none)
+  match bestParsed? with
+  | some e => return e
+  | none => match errs.get? 0 with
+    | some e => return e.text
+    | _ => throwError "no outputs found"
+
+/-- given json returned by open-ai obtain the best translation -/
+def jsonToExprFallback (json: Json)(greedy: Bool)(splitOutput := false) : TranslateM <|Except String Expr := do
+  let output ← getMessageContents json
+  let output := if splitOutput
+    then
+      splitColEqSegments output
+    else output
+  let res? ← if greedy then
+    greedyBestExprWithErr? output
+    else
+    match ← bestElab? output with
+    | Except.ok res => pure <| .ok res.term
+    | Except.error e => pure <| Except.error e
+  match res? with
+  | Except.ok e => return .ok e
+  | Except.error e => return .error (←  ElabError.fallback e)
+
+
 /-- translation from a comment-like syntax to a theorem statement -/
 elab "//-" cb:commentBody  : term => do
   let s := cb.raw.getAtomVal
@@ -532,11 +562,12 @@ def translateToProp? (s: String)(translator : Translator)
   let output ← getMessageContents js
   trace[Translate.info] m!"{output}"
   -- let output := params.splitOutputs output
-  match ← greedyStrictBestExpr? output with
+  match ← greedyBestExprWithErr? output with
   | Except.ok res => return Except.ok res
   | Except.error e =>
     logError s prompt e
     return Except.error e
+
 
 /--
 Translating a definition greedily by parsing as a command

@@ -305,10 +305,6 @@ def getWriteM : MetaM <| (Array DefDataRepr) × (Std.HashMap Name (String × Str
 def getWriteCore : CoreM ((Array DefDataRepr) × (Std.HashMap Name (String × String))) :=
     (getWriteM).run'
 
-def withDoc (dfn: DefDataRepr) : String :=
-  match dfn.doc? with
-  | some doc => s!"/-- {doc} -/\n{dfn.statement}"
-  | none => dfn.statement
 
 def thmFromName? (name : Name) : MetaM <| Option DefDataRepr := do
   let env ← getEnv

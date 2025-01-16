@@ -173,3 +173,8 @@ def ofNameM (name: Name) : MetaM DefData := do
     return {name := name, type := typeStx, value := valueStx, isProp := isProp, isNoncomputable := nc, doc? := doc?}
 
 end DefData
+
+def DefDataRepr.withDoc (dfn: DefDataRepr) : String :=
+  match dfn.doc? with
+  | some doc => s!"/-- {doc} -/\n{dfn.statement}"
+  | none => dfn.statement

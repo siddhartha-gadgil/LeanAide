@@ -29,10 +29,6 @@ syntax (name := thmCommand) "#theorem" (ident)? (":")? str : command
       let translator : Translator := {server := ← chatServer, pb := PromptExampleBuilder.embedBuilder (← promptSize) (← conciseDescSize) 0, params := ← chatParams}
       let (js, _) ←
         translator.getLeanCodeJson  s |>.run' {}
-      let e ← jsonToExpr' js (← greedy) !(← chatParams).stopColEq |>.run' {}
-      logTimed "obtained expression"
-      let stx' ← delab e
-      logTimed "obtained syntax"
       let name ← match name? with
       | some name => pure name
       | none =>
@@ -43,14 +39,28 @@ syntax (name := thmCommand) "#theorem" (ident)? (":")? str : command
         -- logInfo llm_name
         pure llm_name.toName
       let name := mkIdent name
-      let cmd ← `(command| theorem $name : $stx' := by sorry)
-      TryThis.addSuggestion stx cmd
-      logTimed "added suggestion"
-      let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom (s ++ " -/")]
-      let cmd ←
-        `(command| $docs:docComment theorem $name:ident : $stx' := by sorry)
-      TryThis.addSuggestion stx cmd (header := "Try This (with docstring): ")
-      return
+      let e? ←
+        jsonToExprFallback js (← greedy) !(← chatParams).stopColEq |>.run' {}
+      match e? with
+      | .ok e =>
+        logTimed "obtained expression"
+        let stx' ← delab e
+        logTimed "obtained syntax"
+        let cmd ← `(command| theorem $name : $stx' := by sorry)
+        TryThis.addSuggestion stx cmd
+        logTimed "added suggestion"
+        let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom (s ++ " -/")]
+        let cmd ←
+          `(command| $docs:docComment theorem $name:ident : $stx' := by sorry)
+        TryThis.addSuggestion stx cmd (header := "Try This (with docstring): ")
+        return
+      | .error e =>
+        logWarning "No valid lean code found, suggesting best option"
+        let cmd := s!"theorem {name} : {e} := by sorry"
+        TryThis.addSuggestion stx cmd
+        let cmd := s!"/-- {s} -/\ntheorem {name} : {e} := by sorry"
+        TryThis.addSuggestion stx cmd (header := "Try This (with docstring): ")
+
     else
       logWarning "To translate a theorem, end the string with a `.`."
 
@@ -67,22 +77,28 @@ syntax (name := defCommand) "#def"  str : command
       let translator : Translator := {server := ← chatServer, pb := PromptExampleBuilder.embedBuilder (← promptSize) (← conciseDescSize) 0, params := ← chatParams}
       let cmd? ←
         translator.translateDefCmdM?  s |>.run' {}
-      let .ok cmd := cmd? | throwError "No definition found"
-      TryThis.addSuggestion stx cmd
-      logTimed "added suggestion"
-      let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom (s ++ " -/")]
-      match cmd with
-      | `(command| def $name $args* : $stx' := $val) =>
-        let cmd ←
-          `(command| $docs:docComment def $name $args* : $stx' := $val)
+      match cmd? with
+      | .ok cmd =>
+        TryThis.addSuggestion stx cmd
+        logTimed "added suggestion"
+        let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom (s ++ " -/")]
+        match cmd with
+        | `(command| def $name $args* : $stx' := $val) =>
+          let cmd ←
+            `(command| $docs:docComment def $name $args* : $stx' := $val)
+          TryThis.addSuggestion stx cmd (header := "Try This (with docstring): ")
+        | `(command| noncomputable def $name:ident $args* : $stx' := $val) =>
+          let cmd ←
+            `(command| $docs:docComment noncomputable def $name:ident $args* : $stx' := $val)
+          TryThis.addSuggestion stx cmd (header := "Try This (with docstring): ")
+        | _ => pure ()
+        return
+      | .error es =>
+        let e ← CmdElabError.fallback es
+        logWarning "No valid lean code found, suggesting best option"
+        TryThis.addSuggestion stx e
+        let cmd := s!"/-- {s} -/\n{e}"
         TryThis.addSuggestion stx cmd (header := "Try This (with docstring): ")
-      | `(command| noncomputable def $name:ident $args* : $stx' := $val) =>
-        let cmd ←
-          `(command| $docs:docComment noncomputable def $name:ident $args* : $stx' := $val)
-        TryThis.addSuggestion stx cmd (header := "Try This (with docstring): ")
-
-      | _ => pure ()
-      return
     else
       logWarning "To translate a definition, end the string with a `.`."
 
@@ -141,8 +157,8 @@ open Tactic
   fun _ => withMainContext do
   evalTactic (← `(tactic|sorry))
 
-example : True := by
-  #proof "trivial"
+-- example : True := by
+--   #proof "trivial"
 
 open Tactic Translator
 elab "what" : tactic => withMainContext do
