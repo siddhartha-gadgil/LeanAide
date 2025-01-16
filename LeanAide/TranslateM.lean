@@ -18,11 +18,6 @@ structure DefSource where
   isProp : Bool
 deriving ToJson, FromJson, Repr
 
-/--
-Data for a definition, in particular *syntax* of components, together with a documentation string.
--/
-structure DefWithDoc extends DefData where
-  doc : String
 
 /--
 Error during elaboration.
@@ -61,9 +56,9 @@ deriving Repr, ToJson, FromJson
 Result of translating a definition.
 -/
 inductive DefTranslateResult : Type where
-  | success (dfns : Array DefWithDoc) : DefTranslateResult
+  | success (dfns : Array DefData) : DefTranslateResult
   | failure
-    (progress : Array DefWithDoc) (error : Array CmdElabError) : DefTranslateResult
+    (progress : Array DefData) (error : Array CmdElabError) : DefTranslateResult
 
 /--
 Result of translating back a definition and comparing.
@@ -121,7 +116,7 @@ structure Translate.State where
   descriptionMap : Std.HashMap Name Json := Std.HashMap.empty
   cmdPrelude : Array String := #[]
   /-- Relevant definitions to include in a prompt -/
-  defs : Array (DefWithDoc) := #[]
+  defs : Array (DefData) := #[]
   errorLog : Array ElabErrorData := #[]
   context : Option String := none
 deriving Inhabited
@@ -208,7 +203,7 @@ def runCommand (cmd: String) : TranslateM Unit := do
   discard <|  runFrontendM cmd true
   modify fun s  => {s with cmdPrelude := s.cmdPrelude.push cmd}
 
-def addDefn (dfn: DefWithDoc) : TranslateM Unit := do
+def addDefn (dfn: DefData) : TranslateM Unit := do
   runCommand <| ← dfn.statement
   modify fun s => {s with defs := s.defs.push dfn}
 
@@ -217,11 +212,11 @@ def clearDefs : TranslateM Unit := do
 
 def defsBlob : TranslateM <| Array String := do
   let defs := (← get).defs
-  defs.mapM <| fun dfn => dfn.statementWithDoc dfn.doc
+  defs.mapM <| fun dfn => dfn.statement
 
 def defsNameBlob : TranslateM <| Array <| Name × String := do
   let defs := (← get).defs
-  defs.mapM <| fun dfn => do pure (dfn.name, ← dfn.statementWithDoc dfn.doc)
+  defs.mapM <| fun dfn => do pure (dfn.name, ← dfn.statement)
 end Translate
 
 namespace TranslateM

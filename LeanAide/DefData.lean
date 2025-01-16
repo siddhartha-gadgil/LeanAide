@@ -3,6 +3,7 @@ import LeanAide.Aides
 import LeanAide.StatementSyntax
 open Lean Meta Elab Term Parser PrettyPrinter Lean.Parser.Term
 
+namespace LeanAide
 
 def foldContext (type: Syntax.Term) : List Syntax → CoreM (Syntax.Term)
 | [] => return type
@@ -48,7 +49,11 @@ namespace DefData
 def statement (data: DefData)(omitProofs: Bool := true) :
         CoreM String := do
     let value? := if omitProofs && data.isProp then none else some data.value
-    mkStatement (some data.name) data.type value? data.isProp (isNoncomputable := data.isNoncomputable)
+    match data.doc? with
+    | none =>
+      mkStatement (some data.name) data.type value? data.isProp (isNoncomputable := data.isNoncomputable)
+    | some doc =>
+      mkStatementWithDoc (some data.name) data.type value? data.isProp true doc data.isNoncomputable
 
 def statementWithDoc (data: DefData)(doc: String)
     (omitProofs: Bool := true)(useExample: Bool := true) :

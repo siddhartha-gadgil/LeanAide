@@ -586,7 +586,7 @@ def translateDefViewM? (s: String)
   return fmt?.map (·.pretty)
 
 def translateDefList (dfns : List DefSource)
- (translator : Translator) (progress : Array DefWithDoc := #[]) (initial : Bool := true): TranslateM DefTranslateResult := do
+ (translator : Translator) (progress : Array DefData := #[]) (initial : Bool := true): TranslateM DefTranslateResult := do
   if initial then clearDefs
   match dfns with
   | [] => return .success progress
@@ -594,12 +594,12 @@ def translateDefList (dfns : List DefSource)
     let head? ← translator.translateDefData? x.doc x.isProp
     match head? with
     | Except.error e => do
-      return .failure (progress : Array DefWithDoc) e
+      return .failure (progress : Array DefData) e
     | Except.ok dd => do
       let progress :=
-        progress.push <| {dd with doc := x.doc, isProp := x.isProp}
+        progress.push <| {dd with doc? := x.doc, isProp := x.isProp}
       let progBlob ← progress.mapM <|
-        fun dfn => do pure (dfn.name, ← dfn.statementWithDoc dfn.doc)
+        fun dfn => do pure (dfn.name, ← dfn.statement)
       let relDefs := translator.relDefs ++ progBlob
       let translator : Translator :=
         {translator with relDefs := relDefs}
