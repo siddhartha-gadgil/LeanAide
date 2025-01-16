@@ -14,3 +14,5 @@ theorem silly :
 #theorem "There are infinitely many odd numbers"
 
 #ask "Prove that there are infinitely many even numbers"
+
+#def "A group is said to be sane if every proper normal subgroup is cyclic"

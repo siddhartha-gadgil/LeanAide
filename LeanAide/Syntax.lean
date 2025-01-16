@@ -54,6 +54,39 @@ syntax (name := thmCommand) "#theorem" (ident)? (":")? str : command
     else
       logWarning "To translate a theorem, end the string with a `.`."
 
+syntax (name := defCommand) "#def"  str : command
+@[command_elab defCommand] def defCommandImpl : CommandElab :=
+  fun stx => Command.liftTermElabM do
+  match stx with
+  | `(command| #def $s:str) =>
+    let s := s.getString
+    go s stx none
+  | _ => throwUnsupportedSyntax
+  where go (s: String) (stx: Syntax) (name? : Option Name) : TermElabM Unit := do
+    if s.endsWith "." then
+      let translator : Translator := {server := ← chatServer, pb := PromptExampleBuilder.embedBuilder (← promptSize) (← conciseDescSize) 0, params := ← chatParams}
+      let cmd? ←
+        translator.translateDefCmdM?  s |>.run' {}
+      let .ok cmd := cmd? | throwError "No definition found"
+      TryThis.addSuggestion stx cmd
+      logTimed "added suggestion"
+      let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom (s ++ " -/")]
+      match cmd with
+      | `(command| def $name $args* : $stx' := $val) =>
+        let cmd ←
+          `(command| $docs:docComment def $name $args* : $stx' := $val)
+        TryThis.addSuggestion stx cmd (header := "Try This (with docstring): ")
+      | `(command| noncomputable def $name:ident $args* : $stx' := $val) =>
+        let cmd ←
+          `(command| $docs:docComment noncomputable def $name:ident $args* : $stx' := $val)
+        TryThis.addSuggestion stx cmd (header := "Try This (with docstring): ")
+
+      | _ => pure ()
+      return
+    else
+      logWarning "To translate a definition, end the string with a `.`."
+
+
 /-!
 # Proof Syntax
 -/
