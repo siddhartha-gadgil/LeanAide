@@ -316,13 +316,45 @@ def conditionCases (cond₁ cond₂ : String)
   let ass₂ ← `(tactic| have $condId₂ : $condTerm₂' := by
     $tac:tacticSeq)
   let pf₂' := #[ass₂] ++ pf₂
-  let posId := mkIdent `pos
-  let negId := mkIdent `neg
-  let posId' ← `(caseArg| $posId:ident)
-  let negId' ← `(caseArg| $negId:ident)
-  return #[← `(tactic| by_cases $condTerm₁'), ← `(tactic| case $posId' => $pf₁*), ← `(tactic| case $negId' => $pf₂'*)]
+  return #[← `(tactic| if $condTerm₁' then $pf₁* else $pf₂'*)]
 
 def matchAltTac := Term.matchAlt (rhsParser := matchRhs)
+
+def matchCasesSkeleton (discr: String)
+    (pats: Array <| String) : TermElabM Syntax.Tactic := do
+  let mut alts : Array <| TSyntax ``matchAltTac := #[]
+  for pat in pats do
+    let patTerm :=
+      runParserCategory (← getEnv) `term pat |>.toOption.getD (← `(_))
+    let patTerm' : Syntax.Term := ⟨patTerm⟩
+    let m ← `(matchAltTac| | $patTerm' => _)
+    alts := alts.push m
+  let alts' : Array <| TSyntax ``matchAlt := alts.map fun alt => ⟨alt⟩
+  let discrTerm :=
+    runParserCategory (← getEnv) `term discr |>.toOption.getD (← `(_))
+  let discrTerm' : Syntax.Term := ⟨discrTerm⟩
+  `(tactic| match $discrTerm':term with $alts':matchAlt*)
+
+example (n: Nat) : n = n := by
+  induction n with
+  | zero  => _
+  | succ n ih => _
+  rfl
+  rfl
+
+example (n: Nat) : n = n := by
+  match n with
+  | Nat.zero  => _
+  | Nat.succ n  => _
+  rfl
+  rfl
+
+example (n: Nat) : n = n := by
+  if n = 0 then _ else _
+  rfl
+  rfl
+
+
 
 def matchCases (discr: String)
     (pat_pfs: Array <| String × Array Syntax.Tactic) : TermElabM Syntax.Tactic := do
@@ -352,11 +384,7 @@ def groupCasesAux (context: Array Json) (cond_pfs: List <| Expr × Array Syntax.
       let condTerm ← delab condProp
       let condTerm' : Syntax.Term := ⟨condTerm⟩
       let tailTacs ← groupCasesAux context tail qp
-      let posId := mkIdent `pos
-      let negId := mkIdent `neg
-      let posId' ← `(caseArg| $posId:ident)
-      let negId' ← `(caseArg| $negId:ident)
-      return #[← `(tactic| by_cases $condTerm':term), ← `(tactic| case $posId' => $pf*), ← `(tactic| case $negId' => $tailTacs*)]
+      return #[← `(tactic| if $condTerm':term then $pf* else  $tailTacs*)]
 
 def orAllSimple (terms: List Syntax.Term) : Syntax.Term :=
   match terms with
@@ -485,7 +513,7 @@ def haveForAssertion  (type: Syntax.Term)
   let tac ← `(tacticSeq| auto? [$ids,*])
   match ← existsVars type with
     | some vars =>
-      let lhs ← `(⟨[$vars:term,*], $name⟩)
+      let lhs ← `(⟨$vars:term,*, $name⟩)
       `(tactic| have $lhs:term : $type  := by $tac:tacticSeq)
     | none =>
       `(tactic| have $name : $type := by $tac:tacticSeq)
