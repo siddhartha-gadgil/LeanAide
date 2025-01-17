@@ -673,3 +673,24 @@ def evalTacticSafe (tacticCode: Syntax): TacticM (Bool × Nat) := do
     state.restore
     logWarning e.toMessageData
     return (false, 1)
+
+def checkTacticSafe (mvarId: MVarId)(tacticCode: Syntax):
+    TermElabM Bool := withoutModifyingState do
+  let ctx ← readThe Term.Context
+  let s ← getThe Term.State
+  let mctx ← readThe Meta.Context
+  let s' ← getThe Meta.State
+  let state ← saveState
+  let res ← Core.tryCatchRuntimeEx (do
+      let res ← runTacticToCore mvarId tacticCode ctx s mctx s'
+      pure <| Except.ok res
+      ) (fun e => pure <| Except.error e)
+  match res with
+  | Except.ok ((mvarIds, s), ms) => do
+    set ms
+    set s
+    return mvarIds.isEmpty
+  | Except.error e =>
+    state.restore
+    logWarning e.toMessageData
+    return false
