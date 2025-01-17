@@ -117,6 +117,36 @@ def describeAnonymousTheoremPrompt (type: Expr) :
     return some (← fromTemplate "state_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trim)],
     statement, some defsBlob)
 
+def describeDefPrompt (type val: Expr) (name: Name) :
+    MetaM <| Option (String × String × Option String) := do
+  let dfns ← defsInExpr type
+  let dfns' ← defsInExpr val
+  let dfns := dfns ++ dfns'
+  let typeStx ← PrettyPrinter.delab type
+  let valueStx ← PrettyPrinter.delab val
+  let nameId := mkIdent name
+  let statementStx ←
+    `(command| def $nameId : $typeStx := $valueStx)
+  let statement ← PrettyPrinter.ppCommand statementStx
+  let statement := statement.pretty
+  if dfns.isEmpty then
+    return some (← fromTemplate "state_def" [("defn", statement)], statement, none)
+  else
+    let defsStrs ← dfns.filterMapM fun n => do
+      let info ← getConstInfo n
+      let doc? ← findDocString? (← getEnv) n
+      match doc? with
+      | some doc =>
+        let value? ← info.value?.mapM fun e => PrettyPrinter.delab e
+        pure <| some <| ←  mkStatementWithDoc n
+          (← PrettyPrinter.delab info.type) value? false (doc := doc) (isNoncomputable := Lean.isNoncomputable (← getEnv) n)
+      | none =>
+        mkStatement n (← PrettyPrinter.delab info.type) none false
+    let defsBlob := defsStrs.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
+    return some (← fromTemplate "state_def_with_defs" [("defn", statement), ("definitions", defsBlob.trim)],
+    statement, some defsBlob)
+
+
 def proveAnonymousTheoremPrompt (type: Expr) :
     MetaM <| Option (String × String × Option String) := do
   let dfns ← defsInExpr type
@@ -198,6 +228,18 @@ def getTypeDescriptionM (type: Expr)(translator: Translator) : MetaM <| Option (
     let contents ← getMessageContents outJson
     let res := contents.get? 0 |>.map fun h => (h, statement, defBlob?)
     return res
+
+def getDefDescriptionM (type val: Expr) (name: Name)(translator: Translator) : MetaM <| Option (String × String × Option String) := do
+  let prompt? ← describeDefPrompt type val name
+  prompt?.bindM fun (prompt, statement, defBlob?) => do
+    let messages ← mkMessages prompt #[] (← sysPrompt)
+    let fullJson ←  translator.server.query messages translator.params
+    let outJson :=
+        (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
+    let contents ← getMessageContents outJson
+    let res := contents.get? 0 |>.map fun h => (h, statement, defBlob?)
+    return res
+
 
 def getTypeProofM (type: Expr)(translator: Translator) : MetaM <| Option (String × String × Option String) := do
   let prompt? ← proveAnonymousTheoremPrompt type
